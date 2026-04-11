@@ -1173,29 +1173,11 @@ IN_PROC_BROWSER_TEST_F(ContextMenuFencedFrameTestNoTestingConfig,
   EXPECT_EQ(response.http_request()->content, kBeaconMessage);
 }
 
-class GlicInteractiveContextMenuTest
-    : public glic::test::InteractiveGlicTest,
-      public ::testing::WithParamInterface<bool> {
+class GlicInteractiveContextMenuTestBase
+    : public glic::test::InteractiveGlicTest {
  public:
-  GlicInteractiveContextMenuTest() {
-    if (UseMultiInstance()) {
-      scoped_feature_list_.InitWithFeatures(
-          /*enabled_features=*/{features::kGlic, features::kGlicShareImage,
-                                features::kGlicMultitabUnderlines},
-          /*disabled_features=*/{features::kGlicWarming,
-                                 blink::features::kSvgFallBackToContainerSize,
-                                 features::kGlicTrustFirstOnboarding});
-    } else {
-      scoped_feature_list_.InitWithFeatures(
-          /*enabled_features=*/{features::kGlic, features::kGlicShareImage},
-          /*disabled_features=*/{features::kGlicWarming,
-                                 blink::features::kSvgFallBackToContainerSize,
-                                 features::kGlicTrustFirstOnboarding});
-    }
-    // Ensure that we open the FRE.
-    glic_test_environment().SetFreStatusForNewProfiles(std::nullopt);
-  }
-  ~GlicInteractiveContextMenuTest() override = default;
+  GlicInteractiveContextMenuTestBase() = default;
+  ~GlicInteractiveContextMenuTestBase() override = default;
 
   void SetUpOnMainThread() override {
     glic::test::InteractiveGlicTest::SetUpOnMainThread();
@@ -1212,8 +1194,6 @@ class GlicInteractiveContextMenuTest
     base::CommandLine::ForCurrentProcess()->AppendSwitch(::switches::kGlicDev);
   }
 
-  bool UseMultiInstance() const { return GetParam(); }
-
   auto PollForAndAcceptFre() {
     return Steps(
         PollUntil(
@@ -1222,6 +1202,21 @@ class GlicInteractiveContextMenuTest
                      glic::mojom::FreWebUiState::kReady;
             },
             "polling until the fre is ready"),
+        Do([this]() { glic_service()->fre_controller().AcceptFre(nullptr); }));
+  }
+
+  auto PollForAndCompleteOnboarding() {
+    return Steps(
+        PollUntil(
+            [this]() {
+              if (glic::GlicInstance* instance =
+                      glic_service()->GetInstanceForActiveTab(browser())) {
+                return instance->host().GetPrimaryWebUiState() ==
+                       glic::mojom::WebUiState::kReady;
+              }
+              return false;
+            },
+            "polling until the client is ready"),
         Do([this]() { glic_service()->fre_controller().AcceptFre(nullptr); }));
   }
 
@@ -1302,6 +1297,16 @@ class GlicInteractiveContextMenuTest
         "}");
   }
 
+  auto CheckAdditionalContextNotPresent() {
+    return CheckJsResult(
+        glic::test::kGlicContentsElementId,
+        "() => { "
+        "  let c = document.querySelector('#additionalContextResult');"
+        "  return !c || c.children.length === 0;"
+        "}",
+        true);
+  }
+
   auto CheckToastIsShowing(ToastId toast_id) {
     return PollUntil(
         [this, toast_id]() {
@@ -1329,9 +1334,37 @@ class GlicInteractiveContextMenuTest
   static constexpr char kPageWithUnsupportedImage[] =
       "/glic/page_with_simple_svg.html";
 
+  glic::InstanceId cached_instance_id_;
+};
+
+class GlicInteractiveContextMenuTest
+    : public GlicInteractiveContextMenuTestBase,
+      public ::testing::WithParamInterface<bool> {
+ public:
+  GlicInteractiveContextMenuTest() {
+    if (UseMultiInstance()) {
+      scoped_feature_list_.InitWithFeatures(
+          /*enabled_features=*/{features::kGlic, features::kGlicShareImage,
+                                features::kGlicMultitabUnderlines},
+          /*disabled_features=*/{features::kGlicWarming,
+                                 blink::features::kSvgFallBackToContainerSize,
+                                 features::kGlicTrustFirstOnboarding});
+    } else {
+      scoped_feature_list_.InitWithFeatures(
+          /*enabled_features=*/{features::kGlic, features::kGlicShareImage},
+          /*disabled_features=*/{features::kGlicWarming,
+                                 blink::features::kSvgFallBackToContainerSize,
+                                 features::kGlicTrustFirstOnboarding});
+    }
+    // Ensure that we open the FRE.
+    glic_test_environment().SetFreStatusForNewProfiles(std::nullopt);
+  }
+  ~GlicInteractiveContextMenuTest() override = default;
+
+  bool UseMultiInstance() const { return GetParam(); }
+
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
-  glic::InstanceId cached_instance_id_;
 };
 
 IN_PROC_BROWSER_TEST_P(GlicInteractiveContextMenuTest, GlicShareImage) {
@@ -1427,6 +1460,46 @@ INSTANTIATE_TEST_SUITE_P(MultiInstance,
                          GlicInteractiveContextMenuTest,
                          // This parameter toggles multi-instance mode.
                          testing::Bool());
+
+class GlicTrustFirstOnboardingContextMenuTest
+    : public GlicInteractiveContextMenuTestBase {
+ public:
+  GlicTrustFirstOnboardingContextMenuTest() {
+    scoped_feature_list_.InitWithFeaturesAndParameters(
+        {
+            {features::kGlic, {}},
+            {features::kGlicShareImage, {}},
+            {features::kGlicTrustFirstOnboarding,
+             {{features::kGlicTrustFirstOnboardingArmParam.name, "2"}}},
+        },
+        {features::kGlicWarming, blink::features::kSvgFallBackToContainerSize});
+    glic_test_environment().SetFreStatusForNewProfiles(
+        glic::prefs::FreStatus::kNotStarted);
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(GlicTrustFirstOnboardingContextMenuTest,
+                       GlicShareImageArm2) {
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kActiveTab);
+  const GURL url = embedded_https_test_server().GetURL(kPageWithImage);
+  const DeepQuery kPathToImg{"img"};
+  RunTestSequence(
+      InstrumentTab(kActiveTab, std::nullopt, browser(), true),
+      NavigateWebContents(kActiveTab, url),
+      WaitForElementVisible(kActiveTab, kPathToImg),
+      MoveMouseTo(kActiveTab, kPathToImg),
+      MayInvolveNativeContextMenu(
+          ClickMouse(ui_controls::RIGHT),
+          SelectMenuItem(RenderViewContextMenu::kGlicShareImageMenuItem)),
+      PollForAndInstrumentGlic(),
+      // Wait for 100ms to ensure that the image context is not sent while
+      // the FRE is showing.
+      Wait(base::Milliseconds(100)), CheckAdditionalContextNotPresent(),
+      PollForAndCompleteOnboarding(), WaitForAdditionalContext());
+}
 
 #if BUILDFLAG(ENTERPRISE_CLOUD_CONTENT_ANALYSIS)
 

@@ -4,6 +4,7 @@
 
 export interface PageElementTypes {
   actuationOnWebSwitch: HTMLInputElement;
+  onboarding: HTMLElement;
   content: HTMLElement;
   status: HTMLElement;
   pageHeader: HTMLElement;
@@ -66,6 +67,7 @@ export interface PageElementTypes {
   attachpanelbn: HTMLButtonElement;
   detachpanelbn: HTMLButtonElement;
   refreshbn: HTMLButtonElement;
+  onboardingbn: HTMLButtonElement;
   navigateWebviewUrl: HTMLInputElement;
   audioCapStop: HTMLButtonElement;
   audioCapStart: HTMLButtonElement;

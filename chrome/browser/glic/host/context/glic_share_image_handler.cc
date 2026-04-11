@@ -414,7 +414,8 @@ void GlicShareImageHandler::OnPastePolicyCheckComplete(
 
 bool GlicShareImageHandler::IsClientReady(tabs::TabInterface& tab) {
   if (GlicInstance* instance = service_->GetInstanceForTab(&tab)) {
-    return instance->host().IsReady();
+    return instance->host().IsReady() &&
+           GlicEnabling::HasConsentedForProfile(service_->profile());
   }
   return false;
 }
