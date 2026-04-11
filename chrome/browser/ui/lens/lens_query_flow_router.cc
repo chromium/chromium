@@ -476,6 +476,20 @@ void LensQueryFlowRouter::SendInteractionToContextualTasks(
     pending_session_handle_->NotifySessionStarted();
   }
 
+  // If the request is not going to load in AIM, start the task ui right away
+  // to show the ghost loader while the request is being uploaded.
+  if (request_info->search_url_type != SearchUrlType::kAim &&
+      request_info->invocation_source !=
+          lens::LensOverlayInvocationSource::kContextualTasksComposebox &&
+      pending_session_handle_) {
+    auto* service =
+        contextual_tasks::ContextualTasksUiServiceFactory::GetForBrowserContext(
+            web_contents()->GetBrowserContext());
+    service->InitSidePanelWithGhostLoader(browser_window_interface(),
+                                          tab_interface(),
+                                          std::move(pending_session_handle_));
+  }
+
   if (!overlay_tab_context_file_token_.has_value()) {
     pending_search_url_request_ = std::move(request_info);
     // Upload the page context when creating a session handle.

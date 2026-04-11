@@ -202,6 +202,12 @@ void ContextualTasksPageHandler::GetUrlForTask(const base::Uuid& uuid,
     return;
   }
 
+  // If the task is waiting for a URL to be generated, register a callback.
+  if (ui_service_->IsTaskWaitingForUrl(uuid)) {
+    ui_service_->AddPendingUrlCallback(uuid, std::move(callback));
+    return;
+  }
+
   // There's a slight difference in the callback signature between the mojo
   // api (wants a reference) and the ui service (provided a moved object).
   // The latter can't provide a reference since we're not keeping it

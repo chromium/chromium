@@ -685,6 +685,8 @@ bool LensOverlayController::IsUrlEligibleForTutorialIPHForTesting(
 
 void LensOverlayController::ShowUI(
     lens::LensOverlayInvocationSource invocation_source) {
+  invocation_source_ = invocation_source;
+
   if (!CanShowModalUI()) {
     return;
   }
@@ -706,9 +708,6 @@ void LensOverlayController::ShowUI(
       pref_service_->GetInteger(prefs::kLensOverlayStartCount);
   pref_service_->SetInteger(prefs::kLensOverlayStartCount,
                             lens_overlay_start_count + 1);
-
-  // Store reference for later use.
-  invocation_source_ = invocation_source;
 
   // Create the languages controller.
   languages_controller_ =

@@ -1119,6 +1119,16 @@ std::optional<GURL> ContextualTasksUiService::GetInitialUrlForTask(
   return std::nullopt;
 }
 
+void ContextualTasksUiService::AddPendingUrlCallback(
+    const base::Uuid& task_id,
+    base::OnceCallback<void(const GURL&)> callback) {
+  tasks_waiting_for_url_[task_id] = std::move(callback);
+}
+
+bool ContextualTasksUiService::IsTaskWaitingForUrl(const base::Uuid& task_id) {
+  return tasks_waiting_for_url_.contains(task_id);
+}
+
 void ContextualTasksUiService::GetThreadUrlFromTaskId(
     const base::Uuid& task_id,
     base::OnceCallback<void(GURL)> callback) {
@@ -1250,6 +1260,7 @@ void ContextualTasksUiService::StartTaskUiInSidePanel(
     const GURL& url,
     std::unique_ptr<contextual_search::ContextualSearchSessionHandle>
         session_handle) {
+  CHECK(!url.is_empty());
   CHECK(contextual_tasks_service_);
 
   // Get the controller for the current window.
@@ -1271,6 +1282,19 @@ void ContextualTasksUiService::StartTaskUiInSidePanel(
 
   // If the side panel contents already exist, get the WebUI controller to
   // load the URL into the already loaded contextual tasks UI.
+  auto* helper = ContextualSearchWebContentsHelper::GetOrCreateForWebContents(
+      panel_contents);
+  // If the task was waiting for a URL to be generated (e.g. opened early
+  // with ghost loader but no URL), provide the URL now to unblock the WebUI's
+  // initial pull request via GetUrlForTask.
+  if (helper->task_id().has_value() &&
+      IsTaskWaitingForUrl(helper->task_id().value())) {
+    OnInitialThreadUrlAvailable(helper->task_id().value(), url);
+    return;
+  }
+
+  // Otherwise, if the panel is already open and initialized, push the
+  // navigation directly to the embedded page.
   if (ContextualTasksUIInterface* web_ui_interface =
           GetWebUiInterface(panel_contents)) {
     content::OpenURLParams url_params(
@@ -1278,6 +1302,34 @@ void ContextualTasksUiService::StartTaskUiInSidePanel(
         ui::PAGE_TRANSITION_LINK, /*is_renderer_initiated=*/false);
     web_ui_interface->TransferNavigationToEmbeddedPage(url_params);
   }
+}
+
+void ContextualTasksUiService::InitSidePanelWithGhostLoader(
+    BrowserWindowInterface* browser_window_interface,
+    tabs::TabInterface* tab_interface,
+    std::unique_ptr<contextual_search::ContextualSearchSessionHandle>
+        session_handle) {
+  CHECK(contextual_tasks_service_);
+
+  // Get the controller for the current window.
+  auto* controller =
+      ContextualTasksPanelController::From(browser_window_interface);
+  auto* panel_contents = controller->GetActiveWebContents();
+  // If the side panel is already open for a task, do nothing. The ghost
+  // loader will be shown whenever the URL navigation is transferred to the
+  // embedded page.
+  if (panel_contents || controller->IsPanelOpenForContextualTask()) {
+    return;
+  }
+
+  // Create a task for the URL if the side panel wasn't already showing a task.
+  ContextualTask task = contextual_tasks_service_->CreateTask();
+  tasks_waiting_for_url_[task.GetTaskId()] = base::NullCallback();
+  AssociateWebContentsToTask(tab_interface->GetContents(), task.GetTaskId());
+  controller->Show();
+
+  InitializeTaskInSidePanel(controller->GetActiveWebContents(),
+                            task.GetTaskId(), std::move(session_handle));
 }
 
 void ContextualTasksUiService::StartTaskUiInSidePanelWithErrorPage(
@@ -1526,6 +1578,19 @@ bool ContextualTasksUiService::IsAllowedHost(const GURL& url) {
     return true;
   }
   return false;
+}
+
+void ContextualTasksUiService::OnInitialThreadUrlAvailable(
+    const base::Uuid& task_id,
+    const GURL& url) {
+  task_id_to_creation_url_[task_id] = url;
+  auto it = tasks_waiting_for_url_.find(task_id);
+  if (it != tasks_waiting_for_url_.end()) {
+    if (it->second) {
+      std::move(it->second).Run(GetInitialUrlForTask(task_id).value());
+    }
+    tasks_waiting_for_url_.erase(it);
+  }
 }
 
 }  // namespace contextual_tasks
