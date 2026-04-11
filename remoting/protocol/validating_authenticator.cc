@@ -95,7 +95,12 @@ JingleAuthentication ValidatingAuthenticator::GetNextMessage() {
     return result;
   }
 
+  auto self = weak_factory_.GetWeakPtr();
   JingleAuthentication result = current_authenticator_->GetNextMessage();
+  if (!self) {
+    return result;
+  }
+
   state_ = current_authenticator_->state();
   DCHECK(state_ == ACCEPTED || state_ == WAITING_MESSAGE);
 

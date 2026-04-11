@@ -71,11 +71,10 @@ void NegotiatingAuthenticatorBase::ProcessMessageInternal(
   if (current_authenticator_->state() == WAITING_MESSAGE) {
     // If the message was not discarded and the authenticator is waiting for it,
     // give it to the underlying authenticator to process.
-    // |current_authenticator_| is owned, so Unretained() is safe here.
     current_authenticator_->ProcessMessage(
         message,
         base::BindOnce(&NegotiatingAuthenticatorBase::UpdateState,
-                       base::Unretained(this), std::move(resume_callback)));
+                       weak_factory_.GetWeakPtr(), std::move(resume_callback)));
   } else {
     // Otherwise, just discard the message.
     UpdateState(std::move(resume_callback));
@@ -108,9 +107,15 @@ JingleAuthentication NegotiatingAuthenticatorBase::GetNextMessageInternal() {
   DCHECK(current_method_ != AuthenticationMethod::INVALID);
 
   JingleAuthentication result;
+  auto self = weak_factory_.GetWeakPtr();
   if (current_authenticator_->state() == MESSAGE_READY) {
     result = current_authenticator_->GetNextMessage();
   }
+
+  if (!self) {
+    return result;
+  }
+
   state_ = current_authenticator_->state();
   // |state_| may be MESSAGE_READY if the underlying authenticator has
   // multiple messages to send.

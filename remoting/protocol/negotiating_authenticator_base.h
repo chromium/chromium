@@ -9,6 +9,7 @@
 #include <string>
 #include <vector>
 
+#include "base/memory/weak_ptr.h"
 #include "remoting/protocol/authenticator.h"
 #include "remoting/protocol/host_authentication_config.h"
 
@@ -104,6 +105,8 @@ class NegotiatingAuthenticatorBase : public Authenticator {
   State state_;
   RejectionReason rejection_reason_ = RejectionReason::INVALID_CREDENTIALS;
   RejectionDetails rejection_details_;
+
+  base::WeakPtrFactory<NegotiatingAuthenticatorBase> weak_factory_{this};
 };
 
 }  // namespace remoting::protocol

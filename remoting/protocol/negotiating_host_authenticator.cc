@@ -105,7 +105,7 @@ void NegotiatingHostAuthenticator::ProcessMessage(
     CreateAuthenticator(
         MESSAGE_READY,
         base::BindOnce(&NegotiatingHostAuthenticator::UpdateState,
-                       base::Unretained(this), std::move(resume_callback)));
+                       weak_factory_.GetWeakPtr(), std::move(resume_callback)));
     return;
   }
 
@@ -117,7 +117,7 @@ void NegotiatingHostAuthenticator::ProcessMessage(
     CreateAuthenticator(
         WAITING_MESSAGE,
         base::BindOnce(&NegotiatingAuthenticatorBase::ProcessMessageInternal,
-                       base::Unretained(this), message,
+                       weak_factory_.GetWeakPtr(), message,
                        std::move(resume_callback)));
     return;
   }

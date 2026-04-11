@@ -75,7 +75,7 @@ void NegotiatingClientAuthenticator::ProcessMessage(
     CreateAuthenticatorForCurrentMethod(
         WAITING_MESSAGE,
         base::BindOnce(&NegotiatingAuthenticatorBase::ProcessMessageInternal,
-                       base::Unretained(this), message,
+                       weak_factory_.GetWeakPtr(), message,
                        std::move(resume_callback)));
     return;
   }

@@ -41,8 +41,9 @@ void Authenticator::NotifyStateChangeAfterAccepted() {
 
 void Authenticator::ChainStateChangeAfterAcceptedWithUnderlying(
     Authenticator& underlying) {
-  underlying.set_state_change_after_accepted_callback(base::BindRepeating(
-      &Authenticator::NotifyStateChangeAfterAccepted, base::Unretained(this)));
+  underlying.set_state_change_after_accepted_callback(
+      base::BindRepeating(&Authenticator::NotifyStateChangeAfterAccepted,
+                          weak_factory_.GetWeakPtr()));
 }
 
 }  // namespace remoting::protocol

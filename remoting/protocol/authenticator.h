@@ -11,6 +11,7 @@
 
 #include "base/functional/callback.h"
 #include "base/location.h"
+#include "base/memory/weak_ptr.h"
 #include "remoting/base/session_policies.h"
 #include "remoting/protocol/credentials_type.h"
 #include "remoting/signaling/jingle_data_structures.h"
@@ -224,6 +225,8 @@ class Authenticator {
 
  private:
   base::RepeatingClosure on_state_change_after_accepted_;
+
+  base::WeakPtrFactory<Authenticator> weak_factory_{this};
 };
 
 // Factory for Authenticator instances.

@@ -96,7 +96,11 @@ void PairingAuthenticatorBase::ProcessMessage(
 
 JingleAuthentication PairingAuthenticatorBase::GetNextMessage() {
   DCHECK_EQ(state(), MESSAGE_READY);
+  auto self = weak_factory_.GetWeakPtr();
   JingleAuthentication result = spake2_authenticator_->GetNextMessage();
+  if (!self) {
+    return result;
+  }
   MaybeAddErrorMessage(result);
   return result;
 }
