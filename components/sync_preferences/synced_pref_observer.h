@@ -7,6 +7,8 @@
 
 #include <string_view>
 
+#include "base/values.h"
+
 namespace sync_preferences {
 
 class SyncedPrefObserver {
@@ -18,7 +20,8 @@ class SyncedPrefObserver {
   // 1) once after you enable Chrome Sync, and then after you disable Chrome
   // Sync and enable it again.
   // 2) every time you open a profile and sync is enabled.
-  virtual void OnStartedSyncing(std::string_view path) {}
+  virtual void OnStartedSyncing(std::string_view path,
+                                const base::Value& sync_value) {}
 };
 
 }  // namespace sync_preferences

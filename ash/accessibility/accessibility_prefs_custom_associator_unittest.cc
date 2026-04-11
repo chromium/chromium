@@ -49,7 +49,8 @@ const base::Value kIrrelevantServerValue;
 class AccessibilityPrefsCustomAssociatorTest : public testing::Test {
  protected:
   void SetUp() override {
-    associator_ = std::make_unique<AccessibilityPrefsCustomAssociator>();
+    associator_ = std::make_unique<AccessibilityPrefsCustomAssociator>(
+        /*pref_service=*/nullptr);
   }
 
   void TearDown() override { associator_.reset(); }

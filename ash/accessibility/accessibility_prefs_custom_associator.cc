@@ -14,6 +14,8 @@
 #include "ash/constants/ash_pref_names.h"
 #include "base/notimplemented.h"
 #include "components/live_caption/pref_names.h"
+#include "components/prefs/pref_service.h"
+#include "components/sync_preferences/pref_service_syncable.h"
 
 namespace ash {
 
@@ -24,15 +26,39 @@ static AccessibilityPrefsCustomAssociator*
 
 }  // namespace
 
-AccessibilityPrefsCustomAssociator::AccessibilityPrefsCustomAssociator()
-    : enabled_sync_prefs_(GetAccessibilityPrefBatchesWithSyncEnabled()) {
+AccessibilityPrefsCustomAssociator::AccessibilityPrefsCustomAssociator(
+    PrefService* prefs)
+    : enabled_sync_prefs_(GetAccessibilityPrefBatchesWithSyncEnabled()),
+      prefs_(static_cast<sync_preferences::PrefServiceSyncable*>(prefs)) {
   CHECK(g_accessibility_prefs_custom_associator == nullptr);
   g_accessibility_prefs_custom_associator = this;
+
+  if (!prefs_) {
+    return;
+  }
+
+  for (auto& enabled_sync_pref : enabled_sync_prefs_) {
+    if (enabled_sync_pref.resolution_policy ==
+        ConflictResolutionPolicy::kDialogNeeded) {
+      prefs_->AddSyncedPrefObserver(enabled_sync_pref.pref_name, this);
+    }
+  }
 }
 
 AccessibilityPrefsCustomAssociator::~AccessibilityPrefsCustomAssociator() {
   CHECK(g_accessibility_prefs_custom_associator);
   g_accessibility_prefs_custom_associator = nullptr;
+
+  if (!prefs_) {
+    return;
+  }
+
+  for (auto& enabled_sync_pref : enabled_sync_prefs_) {
+    if (enabled_sync_pref.resolution_policy ==
+        ConflictResolutionPolicy::kDialogNeeded) {
+      prefs_->RemoveSyncedPrefObserver(enabled_sync_pref.pref_name, this);
+    }
+  }
 }
 
 // static
@@ -134,6 +160,14 @@ AccessibilityPrefsCustomAssociator::GetLockedAndAccountStorePrefs() const {
 void AccessibilityPrefsCustomAssociator::ToString() const {
   VLOG(1) << " locked_prefs_: " << locked_prefs_;
   VLOG(1) << " account_store_prefs_: " << account_store_prefs_;
+}
+
+void AccessibilityPrefsCustomAssociator::OnStartedSyncing(
+    std::string_view pref_name,
+    const base::Value& sync_value) {
+  if (!sync_value.is_none()) {
+    TrySetAccountStorePref(pref_name, sync_value);
+  }
 }
 
 }  // namespace ash

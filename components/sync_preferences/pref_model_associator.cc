@@ -262,7 +262,9 @@ std::optional<syncer::ModelError> PrefModelAssociator::MergeDataAndStartSyncing(
 
     remaining_preferences.erase(it);
     InitPrefAndAssociate(sync_data, sync_pref_name, &new_changes);
-    NotifyStartedSyncing(sync_pref_name);
+    NotifyStartedSyncing(
+        sync_pref_name,
+        ReadPreferenceSpecifics(preference).value_or(base::Value()));
   }
 
   // Go through and build sync data for any remaining preferences.
@@ -583,14 +585,15 @@ bool PrefModelAssociator::SetPrefWithTypeCheck(std::string_view pref_name,
   return true;
 }
 
-void PrefModelAssociator::NotifyStartedSyncing(const std::string& path) const {
+void PrefModelAssociator::NotifyStartedSyncing(const std::string& path,
+                                               const base::Value& value) const {
   auto observer_iter = synced_pref_observers_.find(path);
   if (observer_iter == synced_pref_observers_.end()) {
     return;
   }
 
   for (auto& observer : *observer_iter->second) {
-    observer.OnStartedSyncing(path);
+    observer.OnStartedSyncing(path, value);
   }
 }
 

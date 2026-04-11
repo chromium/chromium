@@ -1,0 +1,6 @@
+specific_include_rules = {
+  "accessibility_prefs_custom_associator\.(cc|h)" : [
+    "+components/sync_preferences/synced_pref_observer.h",
+    "+components/sync_preferences/pref_service_syncable.h",
+  ],
+}

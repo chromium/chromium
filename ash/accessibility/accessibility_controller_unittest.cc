@@ -25,8 +25,10 @@
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/display/cursor_window_controller.h"
+#include "ash/display/screen_ash.h"
 #include "ash/display/window_tree_host_manager.h"
 #include "ash/keyboard/ui/keyboard_util.h"
+#include "ash/public/cpp/ash_prefs.h"
 #include "ash/public/cpp/event_rewriter_controller.h"
 #include "ash/public/cpp/session/session_observer.h"
 #include "ash/public/cpp/test/test_system_tray_client.h"
@@ -48,12 +50,14 @@
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "chromeos/dbus/power/fake_power_manager_client.h"
 #include "components/live_caption/pref_names.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/testing_pref_service.h"
+#include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "ui/accessibility/accessibility_features.h"
 #include "ui/accessibility/aura/aura_window_properties.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -2720,7 +2724,7 @@ INSTANTIATE_TEST_SUITE_P(All,
                          ::testing::Values(true, false));
 
 class AccessibilityControllerSyncablePrefsOnSigninTest
-    : public NoSessionAshTestBase,
+    : public testing::Test,
       public SessionObserver,
       public testing::WithParamInterface<TestUserLoginType> {
  public:
@@ -2731,7 +2735,9 @@ class AccessibilityControllerSyncablePrefsOnSigninTest
   AccessibilityControllerSyncablePrefsOnSigninTest& operator=(
       const AccessibilityControllerSyncablePrefsOnSigninTest&) = delete;
 
-  ~AccessibilityControllerSyncablePrefsOnSigninTest() = default;
+  ~AccessibilityControllerSyncablePrefsOnSigninTest() {
+    ScreenAsh::DeleteScreenForShutdown();
+  }
 
   void SetUp() override {
     scoped_feature_list_.InitWithFeatures(
@@ -2739,13 +2745,21 @@ class AccessibilityControllerSyncablePrefsOnSigninTest
          features::kOsSyncAccessibilitySettingsBatch2,
          features::kOsSyncAccessibilitySettingsBatch3},
         {});
-    NoSessionAshTestBase::SetUp();
+
+    AshTestHelper::InitParams params;
+    params.start_session = false;
+    params.destroy_screen = false;
+    ash_test_helper_ = std::make_unique<AshTestHelper>();
+    ash_test_helper_->SetUp(std::move(params));
+
     Shell::Get()->session_controller()->AddObserver(this);
   }
 
   void TearDown() override {
     Shell::Get()->session_controller()->RemoveObserver(this);
-    NoSessionAshTestBase::TearDown();
+
+    ash_test_helper_->TearDown();
+    ash_test_helper_.reset();
   }
 
   // SessionObserver:
@@ -2824,16 +2838,25 @@ class AccessibilityControllerSyncablePrefsOnSigninTest
 
   void SimulateLogin() {
     constexpr char kUserEmail[] = "user1@test.com";
+    auto pref_service =
+        std::make_unique<sync_preferences::TestingPrefServiceSyncable>();
+    RegisterUserProfilePrefs(pref_service->registry(), /*country=*/"",
+                             /*for_test=*/true);
+
     switch (GetParam()) {
       case TestUserLoginType::kNewUser:
-        SimulateNewUserFirstLogin(kUserEmail);
+        ash_test_helper_->SimulateUserLogin(
+            {.display_email = kUserEmail, .is_new_profile = true},
+            /*opt_account_id=*/std::nullopt, std::move(pref_service));
         break;
 
       case TestUserLoginType::kGuest:
         NOTREACHED();
 
       case TestUserLoginType::kExistingUser:
-        SimulateUserLogin({kUserEmail});
+        ash_test_helper_->SimulateUserLogin({kUserEmail},
+                                            /*opt_account_id=*/std::nullopt,
+                                            std::move(pref_service));
         break;
     }
   }
@@ -2852,7 +2875,10 @@ class AccessibilityControllerSyncablePrefsOnSigninTest
   static constexpr float kMagnifierScale = 4.3f;
 
  private:
+  std::unique_ptr<AshTestHelper> ash_test_helper_;
   base::test::ScopedFeatureList scoped_feature_list_;
+  base::test::TaskEnvironment task_environment_{
+      base::test::TaskEnvironment::MainThreadType::UI};
 };
 
 INSTANTIATE_TEST_SUITE_P(All,

@@ -156,7 +156,8 @@ class PrefModelAssociator final : public syncer::SyncableService,
 
   // Notifies the synced pref observers that the pref for the given |path| is
   // synced.
-  void NotifyStartedSyncing(const std::string& path) const;
+  void NotifyStartedSyncing(const std::string& path,
+                            const base::Value& value) const;
 
   void Stop(bool is_browser_shutdown);
 

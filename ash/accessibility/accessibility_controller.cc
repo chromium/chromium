@@ -2550,7 +2550,8 @@ void AccessibilityController::CopySigninPrefsIfNeeded(
   // Ensure a fresh state on the associator.
   CHECK(!prefs_custom_associator_);
   prefs_custom_associator_ =
-      std::make_unique<AccessibilityPrefsCustomAssociator>();
+      std::make_unique<AccessibilityPrefsCustomAssociator>(
+          current_pref_service);
 
   PrefService* signin_prefs =
       Shell::Get()->session_controller()->GetSigninScreenPrefService();

@@ -43,6 +43,7 @@ namespace {
 using testing::Eq;
 using testing::NotNull;
 
+const char kBooleanPrefName[] = "pref.boolean";
 const char kStringPrefName[] = "pref.string";
 const char kListPrefName[] = "pref.list";
 const char kDictionaryPrefName[] = "pref.dictionary";
@@ -56,6 +57,8 @@ const char kStringOsPriorityPrefName[] = "os.priority.pref.string";
 
 // Assigning an id of 0 to all the test prefs.
 const TestSyncablePrefsDatabase::PrefsMap kSyncablePrefsDatabase = {
+    {kBooleanPrefName,
+     {0, syncer::PREFERENCES, PrefSensitivity::kNone, MergeBehavior::kNone}},
     {kStringPrefName,
      {0, syncer::PREFERENCES, PrefSensitivity::kNone, MergeBehavior::kNone}},
     {kListPrefName,
@@ -160,6 +163,12 @@ std::unique_ptr<PrefServiceSyncable> CreatePrefService(
   factory.set_user_prefs(user_prefs);
   return factory.CreateSyncable(pref_registry.get());
 }
+
+class MockSyncedPrefObserver : public SyncedPrefObserver {
+ public:
+  MOCK_METHOD2(OnStartedSyncing,
+               void(std::string_view path, const base::Value& sync_value));
+};
 
 class AbstractPreferenceMergeTest : public testing::Test {
  protected:
@@ -762,8 +771,14 @@ class PrefModelAssociatorWithPreferencesAccountStorageTest
             base::MakeRefCounted<user_prefs::PrefRegistrySyncable>()),
         local_pref_store_(base::MakeRefCounted<TestingPrefStore>()),
         account_pref_store_(base::MakeRefCounted<TestingPrefStore>()) {
+    pref_registry_->RegisterBooleanPref(
+        kBooleanPrefName, false,
+        user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
     pref_registry_->RegisterStringPref(
         kStringPrefName, std::string(),
+        user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
+    pref_registry_->RegisterBooleanPref(
+        kCustomMergePrefName, false,
         user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
 
     PrefServiceMockFactory factory;
@@ -886,6 +901,65 @@ TEST_F(PrefModelAssociatorWithPreferencesAccountStorageTest,
 
   MergeDataAndStartSyncing(initial_data);
   ASSERT_EQ(pref_service_->GetString(kStringPrefName), "new value");
+}
+
+// Ensures that during the initial merge, OnStartedSyncing() is invoked with
+// the value coming from sync (remote data), even if the effective pref value
+// after merge differs due to merge logic.
+//
+// The local store is pre-populated and the remote sync data contains different
+// values. One pref remains unchanged when GetValue is called, due to the merge
+// logic, while the other adopts the remote value.
+TEST_F(PrefModelAssociatorWithPreferencesAccountStorageTest,
+       InitialMerge_OnStartedSyncingReceivesRemoteValue) {
+  testing::StrictMock<MockSyncedPrefObserver> mock_synced_pref_observer;
+  pref_model_associator_->AddSyncedPrefObserver(kCustomMergePrefName,
+                                                &mock_synced_pref_observer);
+  pref_model_associator_->AddSyncedPrefObserver(kBooleanPrefName,
+                                                &mock_synced_pref_observer);
+
+  // Load value to local store before initial merge.
+  local_pref_store_->SetValue(kCustomMergePrefName, base::Value(true), 0);
+  local_pref_store_->SetValue(kBooleanPrefName, base::Value(true), 0);
+
+  ASSERT_EQ(pref_service_->GetBoolean(kCustomMergePrefName), true);
+  ASSERT_EQ(pref_service_->GetBoolean(kBooleanPrefName), true);
+
+  // Listen to pref changes.
+  MockPrefChangeCallback pref_change_observer(pref_service_.get());
+  PrefChangeRegistrar registrar;
+  registrar.Init(pref_service_.get());
+  registrar.Add(kCustomMergePrefName, pref_change_observer.GetCallback());
+  registrar.Add(kBooleanPrefName, pref_change_observer.GetCallback());
+
+  // Observers should get notified since the effective value changes.
+  EXPECT_CALL(pref_change_observer, OnPreferenceChanged(kCustomMergePrefName));
+  EXPECT_CALL(pref_change_observer, OnPreferenceChanged(kBooleanPrefName));
+  EXPECT_CALL(
+      mock_synced_pref_observer,
+      OnStartedSyncing(kCustomMergePrefName,
+                       testing::Property(&base::Value::GetBool, false)));
+  EXPECT_CALL(
+      mock_synced_pref_observer,
+      OnStartedSyncing(kBooleanPrefName,
+                       testing::Property(&base::Value::GetBool, false)));
+
+  // Create initial sync data with a different pref value than that in the
+  // local store.
+  syncer::SyncDataList initial_data;
+  initial_data.push_back(
+      CreateRemoteSyncData(kCustomMergePrefName, base::Value(false)));
+  initial_data.push_back(
+      CreateRemoteSyncData(kBooleanPrefName, base::Value(false)));
+
+  MergeDataAndStartSyncing(initial_data);
+  ASSERT_EQ(pref_service_->GetBoolean(kCustomMergePrefName), true);
+  ASSERT_EQ(pref_service_->GetBoolean(kBooleanPrefName), false);
+
+  pref_model_associator_->RemoveSyncedPrefObserver(kCustomMergePrefName,
+                                                   &mock_synced_pref_observer);
+  pref_model_associator_->RemoveSyncedPrefObserver(kBooleanPrefName,
+                                                   &mock_synced_pref_observer);
 }
 
 TEST_F(PrefModelAssociatorWithPreferencesAccountStorageTest,

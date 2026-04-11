@@ -47,7 +47,8 @@ class NewUserRestorePrefHandler
       delete;
 
   // sync_preferences::SyncedPrefObserver overrides:
-  void OnStartedSyncing(std::string_view path) override;
+  void OnStartedSyncing(std::string_view path,
+                        const base::Value& new_value) override;
 
   // sync_preferences::PrefServiceSyncableObserver overrides:
   void OnIsSyncingChanged() override;

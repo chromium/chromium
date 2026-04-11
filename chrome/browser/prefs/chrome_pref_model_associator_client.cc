@@ -15,6 +15,7 @@
 #include "components/content_settings/core/browser/website_settings_registry.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
+#include "ash/accessibility/accessibility_prefs_custom_associator.h"
 #include "ash/constants/ash_pref_names.h"
 #include "base/json/values_util.h"
 #endif  // BUILDFLAG(IS_CHROMEOS)
@@ -60,6 +61,20 @@ base::Value ChromePrefModelAssociatorClient::MaybeMergePreferenceValues(
     // Case: Neither value has expected type.
     return base::Value();
   }
+
+  if (auto* accessibility_prefs_custom_associator =
+          ash::AccessibilityPrefsCustomAssociator::Get()) {
+    // ash::AccessibilityPrefsCustomAssociator::GetPreferredPrefMergeValue()
+    // first checks whether a given preference is part of one of the enabled
+    // batches of syncable accessibility preferences that require conflict
+    // resolution.
+    if (std::optional<base::Value> value =
+            accessibility_prefs_custom_associator->GetPreferredPrefMergeValue(
+                pref_name, server_value)) {
+      return value->Clone();
+    }
+  }
+
 #endif  // BUILDFLAG(IS_CHROMEOS)
   return base::Value();
 }

@@ -38,7 +38,8 @@ NewUserRestorePrefHandler::~NewUserRestorePrefHandler() {
   }
 }
 
-void NewUserRestorePrefHandler::OnStartedSyncing(std::string_view path) {
+void NewUserRestorePrefHandler::OnStartedSyncing(std::string_view path,
+                                                 const base::Value& new_value) {
   is_restore_pref_synced_ = true;
   PrefServiceSyncableFromProfile(profile_)->RemoveSyncedPrefObserver(
       prefs::kRestoreAppsAndPagesPrefName, this);

@@ -183,7 +183,8 @@ class TestSyncedPrefObserver : public SyncedPrefObserver {
     changed_count_++;
   }
 
-  void OnStartedSyncing(std::string_view path) override {
+  void OnStartedSyncing(std::string_view path,
+                        const base::Value& value) override {
     synced_pref_ = std::string(path);
     sync_started_count_++;
   }

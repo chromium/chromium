@@ -5,6 +5,9 @@ specific_include_rules = {
   "chrome_pref_service_factory\.cc": [
     "+services/preferences/tracked",
   ],
+  "chrome_pref_model_associator_client\.cc": [
+    "+ash/accessibility",
+  ],
   "pref_hash_browsertest\.cc":[
     "+services/preferences/tracked",
   ],
