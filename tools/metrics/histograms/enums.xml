@@ -14007,6 +14007,7 @@ from previous Chrome versions.
   <int value="-22506564" label="OptimizeDataUrls:disabled"/>
   <int value="-22311932"
       label="QuickIntensiveWakeUpThrottlingAfterLoading:disabled"/>
+  <int value="-21840927" label="TabGroupColorRefresh:disabled"/>
   <int value="-21771427" label="HistoryClustersPersistedClusters:disabled"/>
   <int value="-21693450" label="RetryGetVideoCaptureDeviceInfos:disabled"/>
   <int value="-20597579" label="UseMultiloginEndpoint:enabled"/>
@@ -20044,6 +20045,7 @@ from previous Chrome versions.
   <int value="1982280338" label="IOSPromoAddressBubble:disabled"/>
   <int value="1982520858" label="XplatSyncedSetup:enabled"/>
   <int value="1982576646" label="PanelSelfRefresh2:disabled"/>
+  <int value="1983635890" label="TabGroupColorRefresh:enabled"/>
   <int value="1984029104" label="test-third-party-cookie-phaseout:enabled"/>
   <int value="1985040337" label="EnableFastTouchpadClick:enabled"/>
   <int value="1985567360" label="VulkanFromANGLE:enabled"/>

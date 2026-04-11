@@ -4058,6 +4058,10 @@ inline constexpr char kSidePanelFlyoverAnimationDescription[] =
     "elements will appear to float over the contents, which resize at the "
     "beginning or end of the animation.";
 
+inline constexpr char kTabGroupColorRefreshName[] = "Tab Group Color Refresh";
+inline constexpr char kTabGroupColorRefreshDescription[] =
+    "Update the color selection for tab groups.";
+
 inline constexpr char kTabGroupsFocusingName[] = "Tab Groups Focusing";
 inline constexpr char kTabGroupsFocusingDescription[] =
     "When a tab group is focused, the tabstrip constrains visiblity to the "
