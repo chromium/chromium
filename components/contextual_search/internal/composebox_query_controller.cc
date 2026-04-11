@@ -1696,6 +1696,7 @@ void ComposeboxQueryController::CreateUploadRequestBodiesAndContinue(
   if (enable_viewport_images_ &&
       contextual_input_data->viewport_screenshot_bytes.has_value()) {
     CHECK(image_options.has_value());
+    size_t request_index = file_info->num_outstanding_network_requests_++;
     CreateImageUploadRequest(
         GetRequestIdForViewportImage(file_token),
         // Pass ownership of the viewport screenshot bytes to the callback.
@@ -1712,10 +1713,11 @@ void ComposeboxQueryController::CreateUploadRequestBodiesAndContinue(
                 base::BindOnce(
                     &ComposeboxQueryController::OnUploadRequestBodyReady,
                     weak_ptr_factory_.GetWeakPtr(), file_token,
-                    file_info->num_outstanding_network_requests_++))));
+                    request_index))));
   } else if (enable_viewport_images_ &&
              contextual_input_data->viewport_screenshot.has_value()) {
     CHECK(image_options.has_value());
+    size_t request_index = file_info->num_outstanding_network_requests_++;
     ProcessDecodedImageAndContinue(
         GetRequestIdForViewportImage(file_token), image_options.value(),
         base::BindOnce(
@@ -1729,11 +1731,20 @@ void ComposeboxQueryController::CreateUploadRequestBodiesAndContinue(
                 base::BindOnce(
                     &ComposeboxQueryController::OnUploadRequestBodyReady,
                     weak_ptr_factory_.GetWeakPtr(), file_token,
-                    file_info->num_outstanding_network_requests_++))),
+                    request_index))),
         /*file_name=*/std::nullopt,
         // Pass ownership of the viewport screenshot to the
         // callback.
         std::move(*contextual_input_data->viewport_screenshot));
+  }
+
+  // After potentially synchronous image processing, ensure the FileInfo
+  // still exists. It may have been deleted by an error callback. We re-fetch
+  // it from the map here to avoid a Use-After-Free if the original file_info
+  // pointer was invalidated.
+  file_info = GetMutableFileInfo(file_token);
+  if (!file_info) {
+    return;
   }
 
   switch (file_info->mime_type) {
@@ -1741,7 +1752,7 @@ void ComposeboxQueryController::CreateUploadRequestBodiesAndContinue(
       [[fallthrough]];
     case lens::MimeType::kAnnotatedPageContent:
       [[fallthrough]];
-    case lens::MimeType::kUnknown:
+    case lens::MimeType::kUnknown: {
       if (!contextual_input_data->context_input.has_value() ||
           contextual_input_data->context_input->empty()) {
         if (enable_viewport_images_ &&
@@ -1763,6 +1774,7 @@ void ComposeboxQueryController::CreateUploadRequestBodiesAndContinue(
       }
       // Call CreateContentextualDataUploadPayload off the main thread to avoid
       // blocking the main thread on compression.
+      size_t request_index = file_info->num_outstanding_network_requests_++;
       create_request_task_runner_->PostTaskAndReplyWithResult(
           FROM_HERE,
           base::BindOnce(
@@ -1788,8 +1800,8 @@ void ComposeboxQueryController::CreateUploadRequestBodiesAndContinue(
                       base::BindOnce(
                           &ComposeboxQueryController::OnUploadRequestBodyReady,
                           weak_ptr_factory_.GetWeakPtr(), file_token,
-                          file_info->num_outstanding_network_requests_++)))));
-      break;
+                          request_index)))));
+    } break;
     case lens::MimeType::kImage:
       if (contextual_input_data->context_input.has_value() &&
           contextual_input_data->context_input->empty() &&
@@ -1800,6 +1812,7 @@ void ComposeboxQueryController::CreateUploadRequestBodiesAndContinue(
       } else {
         CHECK(contextual_input_data->context_input.has_value() &&
               contextual_input_data->context_input->size() == 1);
+        size_t request_index = file_info->num_outstanding_network_requests_++;
         CreateImageUploadRequest(
             file_info->request_id.value(),
             // Pass ownership of the contextual input data to the callback.
@@ -1812,7 +1825,7 @@ void ComposeboxQueryController::CreateUploadRequestBodiesAndContinue(
                 base::BindOnce(
                     &ComposeboxQueryController::OnUploadRequestBodyReady,
                     weak_ptr_factory_.GetWeakPtr(), file_token,
-                    file_info->num_outstanding_network_requests_++)));
+                    request_index)));
       }
       break;
     default:

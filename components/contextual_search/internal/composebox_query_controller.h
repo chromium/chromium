@@ -69,6 +69,10 @@ using RequestBodyProtoCreatedCallback = base::OnceCallback<void(
 using InteractionRequestBodyProtoCreatedCallback =
     base::OnceCallback<void(lens::LensOverlayServerRequest)>;
 
+namespace contextual_search {
+class ComposeboxQueryControllerTest;
+}
+
 // TODO(crbug.com/449970296): Rename this class.
 class ComposeboxQueryController
     : public contextual_search::ContextualSearchContextController {
@@ -203,6 +207,7 @@ class ComposeboxQueryController
     }
 
    private:
+    friend class contextual_search::ComposeboxQueryControllerTest;
     friend class ComposeboxQueryController;
     friend class ComposeboxQueryControllerIOS;
 
