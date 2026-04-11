@@ -1018,7 +1018,7 @@
 <translation id="166454475160289583">키보드 입력 재정의 허용되지 않음</translation>
 <translation id="1665328953287874063">비밀번호 또는 PIN을 사용하여 <ph name="DEVICE_TYPE" /> 잠금 해제하기</translation>
 <translation id="1665859804801131136">표현주의</translation>
-<translation id="1667842670298352129">특정 텍스트를 소리 내어 읽어줍니다. 먼저 화면 하단에 있는 텍스트 읽어주기 아이콘을 선택한 다음 텍스트를 강조표시하세요. 단축키를 사용할 수도 있습니다. 텍스트를 강조표시한 다음 검색 + S를 누르세요.</translation>
+<translation id="1667842670298352129">특정 텍스트를 소리 내어 읽어줍니다. 먼저 화면 하단에 있는 텍스트 읽어주기 아이콘을 선택한 다음 텍스트를 강조 표시하세요. 키보드 단축키를 사용할 수도 있습니다. 텍스트를 강조 표시한 다음 검색 + S를 누르세요.</translation>
 <translation id="1668435968811469751">직접 등록</translation>
 <translation id="1668804837842452164"><ph name="EMAIL" />의 <ph name="BRAND" />에 저장</translation>
 <translation id="1668979692599483141">추천에 관해 알아보기</translation>
@@ -1457,7 +1457,7 @@
 <translation id="1957426642613794386">저장된 정보</translation>
 <translation id="1959421829481337178">이동통신사에서 제공한 활성화 코드를 입력하세요</translation>
 <translation id="1960211333621141174">절벽</translation>
-<translation id="1962356719152496092">여기에서 단축키 맞춤설정</translation>
+<translation id="1962356719152496092">여기에서 키보드 단축키 맞춤설정</translation>
 <translation id="1963976881984600709">표준 보호 모드</translation>
 <translation id="1964009877615282740">더보기</translation>
 <translation id="1965578266762387357">글쓰기 도우미를 사용하면 페이지의 URL, 콘텐츠, 텍스트가 Google로 전송됩니다. 개인 정보(의료 또는 금융 정보 등)를 입력하지 마세요.</translation>
@@ -3415,7 +3415,7 @@
 <translation id="3289856944988573801">업데이트를 확인하려면 이더넷 또는 Wi-Fi를 사용하세요.</translation>
 <translation id="3290249595466894471">또한 페이지, 다운로드 항목, 확장 프로그램 활동, 시스템 정보의 표본을 일부 전송하여 새로운 위협을 발견하는 데 도움을 줍니다.</translation>
 <translation id="3293181007446299124">방문 기록은 기기에서 비공개로 유지되며 사용자의 신원을 보호하기 위해 보고서 전송이 지연됩니다.</translation>
-<translation id="329324683265785818">재생/일시중지, 단축키 k</translation>
+<translation id="329324683265785818">재생/일시중지, 키보드 단축키 k</translation>
 <translation id="3293644607209440645">이 페이지 전송</translation>
 <translation id="32939749466444286">Linux 컨테이너가 시작되지 않았습니다. 다시 시도해 주세요.</translation>
 <translation id="3294437725009624529">게스트</translation>
@@ -3453,7 +3453,7 @@
 <translation id="3311445899360743395">앱과 관련된 데이터가 기기에서 삭제될 수 있습니다.</translation>
 <translation id="3312300514034250578">향상된 세이프 브라우징</translation>
 <translation id="3312470654018965389">Linux 컨테이너를 설정하는 중</translation>
-<translation id="3312883087018430408">특정 사이트 또는 Chrome의 일부를 검색하려면 주소 표시줄에 바로가기를 입력한 다음 원하는 단축키를 누르세요. 예를 들어 북마크만 검색하려면 '@bookmarks'라고 입력한 다음 Tab 또는 스페이스바를 누르세요.</translation>
+<translation id="3312883087018430408">특정 사이트 또는 Chrome의 일부를 검색하려면 주소 표시줄에 바로가기를 입력한 다음 원하는 키보드 단축키를 누르세요. 예를 들어 북마크만 검색하려면 '@bookmarks'라고 입력한 다음 Tab 또는 스페이스바를 누르세요.</translation>
 <translation id="3313622045786997898">인증서 서명 값</translation>
 <translation id="3313950410573257029">연결 확인</translation>
 <translation id="3315158641124845231"><ph name="PRODUCT_NAME" /> 숨기기</translation>
@@ -3514,7 +3514,7 @@
 <translation id="3360306038446926262">Windows</translation>
 <translation id="3361421571228286637">{COUNT,plural, =1{<ph name="DEVICE_NAME" />에서 <ph name="ATTACHMENTS" />을(를) 공유 중입니다.}other{<ph name="DEVICE_NAME" />에서 <ph name="ATTACHMENTS" />을(를) 공유 중입니다.}}</translation>
 <translation id="3361954577771524115">앱에서 가져온 설명</translation>
-<translation id="3362651095484543782">Gemini를 종료하거나 Gemini로 돌아가려면 단축키를 사용하세요.</translation>
+<translation id="3362651095484543782">Gemini를 종료하거나 Gemini로 돌아가려면 키보드 단축키를 사용하세요.</translation>
 <translation id="3362915550009543917">노란색 초원을 보여주는 고요한 분위기의 유화로, 평온함과 지적 반성을 떠올리게 합니다.</translation>
 <translation id="3363202073972776113">이 새 프로필은 조직에서 관리합니다. <ph name="BEGIN_LINK" />자세히 알아보기<ph name="END_LINK" /></translation>
 <translation id="3364159059299045452">Alt+마우스 오버</translation>
@@ -5006,7 +5006,7 @@
 <translation id="4341905082470253054">TPM 상태 확인 중...</translation>
 <translation id="434198521554309404">빠르고 안전하며 편리한 브라우저</translation>
 <translation id="4342417854108207000">기기의 파일 또는 폴더 수정이 허용됨</translation>
-<translation id="4343250402091037179">특정 사이트 또는 Chrome의 일부를 검색하려면 주소 표시줄에 바로가기를 입력한 다음 원하는 단축키를 누르세요.</translation>
+<translation id="4343250402091037179">특정 사이트 또는 Chrome의 일부를 검색하려면 주소 표시줄에 바로가기를 입력한 다음 원하는 키보드 단축키를 누르세요.</translation>
 <translation id="4343283008857332996">앱, 카메라 권한이 있는 웹사이트, 시스템 서비스에 카메라 액세스가 허용됩니다. 카메라를 사용하려면 앱을 다시 시작하거나 페이지를 새로고침해야 할 수 있습니다.</translation>
 <translation id="4345457680916430965"><ph name="APP" />에서 열기(O)</translation>
 <translation id="4345587454538109430">설정...</translation>
@@ -5149,7 +5149,7 @@
 <translation id="4430369329743628066">북마크 추가됨</translation>
 <translation id="4430422687972614133">가상 카드 사용</translation>
 <translation id="4431962107539413562">모든 기기에서 비밀번호 가져오기</translation>
-<translation id="443196770280837407">단축키를 사용하여 Gemini를 엽니다.</translation>
+<translation id="443196770280837407">키보드 단축키를 사용하여 Gemini를 엽니다.</translation>
 <translation id="4432621511648257259">비밀번호가 잘못됨</translation>
 <translation id="4434611816075088065">지금은 확인이 필요한 항목이 없습니다</translation>
 <translation id="4435020454241191356">프로필 이름 또는 라벨 추가</translation>
@@ -6179,7 +6179,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="5154702632169343078">대상</translation>
 <translation id="5154917547274118687">메모리</translation>
 <translation id="5155299520372681119">파일 업로드가 만료되어 삭제되었습니다.</translation>
-<translation id="5155327081870541046">주소 표시줄에 '@bookmarks'와 같이 검색하려는 사이트의 바로가기를 입력하세요. 그런 다음 원하는 단축키를 누르고 검색어를 입력하세요.</translation>
+<translation id="5155327081870541046">주소 표시줄에 '@bookmarks'와 같이 검색하려는 사이트의 바로가기를 입력하세요. 그런 다음 원하는 키보드 단축키를 누르고 검색어를 입력하세요.</translation>
 <translation id="5156638757840305347">커서가 나타나거나 이동할 때 이를 강조표시합니다</translation>
 <translation id="5157250307065481244">사이트 세부정보 보기</translation>
 <translation id="5158206172605340248">발음 구별 부호 메뉴를 닫았습니다.</translation>
@@ -6499,7 +6499,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="5388719243178419614">업로드할 수 없습니다. 이미지 파일을 처리할 수 없습니다.</translation>
 <translation id="5388885445722491159">페어링됨</translation>
 <translation id="5389224261615877010">무지개</translation>
-<translation id="538945906186309152">Gemini 단축키 사용 설정</translation>
+<translation id="538945906186309152">Gemini 키보드 단축키 사용 설정</translation>
 <translation id="5389794555912875905">안전하지 않은 사이트로 이동하기 전에 경고를 표시합니다(권장).</translation>
 <translation id="5389943529251318913">다음 값만큼 마우스 속도 줄이기</translation>
 <translation id="5390112241331447203">전송된 system_logs.txt 파일을 의견 보고서에 포함합니다.</translation>
@@ -7347,7 +7347,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="5968400720580217226">AI 모드</translation>
 <translation id="5969364029958154283">설정 재설정에 관해 자세히 알아보기</translation>
 <translation id="5969419185858894314"><ph name="ORIGIN" />에서 <ph name="FOLDERNAME" />의 파일을 볼 수 있습니다.</translation>
-<translation id="5969728632630673489">단축키 알림 닫힘</translation>
+<translation id="5969728632630673489">키보드 단축키 알림 닫힘</translation>
 <translation id="5970443501603581692">로컬 네트워크의 다른 기기에 액세스하도록 허용되지 않음</translation>
 <translation id="5971037678316050792">블루투스 어댑터 상태 및 페어링을 제어합니다.</translation>
 <translation id="5971861540200650391"><ph name="MODULE_TITLE" />시간 동안 숨기기</translation>
@@ -7688,7 +7688,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="6208521041562685716">모바일 데이터가 활성화됨</translation>
 <translation id="6208725777148613371"><ph name="WEB_DRIVE" />에 저장할 수 없음(<ph name="INTERRUPT_REASON" />)</translation>
 <translation id="6209908325007204267">기기에 Chrome Enterprise 업그레이드가 있지만 사용자 이름이 엔터프라이즈 계정에 연결되어 있지 않았습니다. 다른 기기에서 다음 페이지를 방문하여 엔터프라이즈 계정을 만드세요. g.co/ChromeEnterpriseAccount</translation>
-<translation id="6210282067670792090">주소 표시줄에 검색엔진 및 사이트 검색의 바로가기를 입력하고 단축키를 누르세요.</translation>
+<translation id="6210282067670792090">주소 표시줄에 검색엔진 및 사이트 검색의 바로가기를 입력하고 키보드 단축키를 누르세요.</translation>
 <translation id="6211067089253408231">인스턴트 핫스팟 사용 설정</translation>
 <translation id="6211659910592825123">카메라를 확인하세요.</translation>
 <translation id="621172521139737651">{COUNT,plural, =0{새 탭 그룹에서 모두 열기(&amp;N)}=1{새 탭 그룹에서 열기(&amp;N)}other{새 탭 그룹에서 {COUNT}개 모두 열기(&amp;N)}}</translation>
@@ -9109,7 +9109,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="7196272782924897510">다른 기기의 패스키를 사용하시겠습니까?</translation>
 <translation id="7196455519852483601">방문 기록, 쿠키, 사이트 데이터 등을 일부 또는 모두 삭제할 수 있습니다</translation>
 <translation id="7197682514647286393">인터넷 사용 기록을 빠르게 삭제</translation>
-<translation id="719791532916917144">단축키</translation>
+<translation id="719791532916917144">키보드 단축키</translation>
 <translation id="7198503619164954386">엔터프라이즈 등록 기기를 사용해야 합니다.</translation>
 <translation id="7199158086730159431">도움말 보기</translation>
 <translation id="7199452998289813782"><ph name="DEVICE_NAME" /> 기기로 전송 일시중지</translation>
@@ -9222,7 +9222,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="727595954130325265">지금 구매</translation>
 <translation id="727952162645687754">다운로드 오류</translation>
 <translation id="7280649757394340890">TTS 음성 설정</translation>
-<translation id="7280683802406059877">단축키 맞춤설정</translation>
+<translation id="7280683802406059877">키보드 단축키 맞춤설정</translation>
 <translation id="7280877790564589615">권한 요청됨</translation>
 <translation id="7281166215790160128">모드</translation>
 <translation id="7282056103720203738">연결된 기기 정보 및 데이터 읽기</translation>
@@ -9385,7 +9385,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="7385870590821097913">다른 기기에 안내된 단계를 따르세요</translation>
 <translation id="7387107590792462040">설치가 진행되는 동안 잠시 기다려 주세요</translation>
 <translation id="7387273928653486359">양호함</translation>
-<translation id="7387951778417998929">기본 검색엔진이 아닌 다른 검색엔진을 사용하려면 주소 표시줄에 사용할 검색엔진의 바로가기를 입력한 다음 원하는 단축키를 누르세요. 여기에서 기본 검색엔진을 변경할 수도 있습니다.</translation>
+<translation id="7387951778417998929">기본 검색엔진이 아닌 다른 검색엔진을 사용하려면 주소 표시줄에 사용할 검색엔진의 바로가기를 입력한 다음 원하는 키보드 단축키를 누르세요. 여기에서 기본 검색엔진을 변경할 수도 있습니다.</translation>
 <translation id="7388615499319468910">사이트 및 광고주가 광고 실적을 파악할 수 있습니다. 설정이 사용 중지되어 있습니다.</translation>
 <translation id="738903649531469042">읽기 목록에 탭 추가</translation>
 <translation id="7389615853658756494">사이트에서 변경</translation>
@@ -9791,7 +9791,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="7661451191293163002">등록 인증서를 확인할 수 없습니다.</translation>
 <translation id="7662283695561029522">설정하려면 탭하세요.</translation>
 <translation id="7663719505383602579">수신기: <ph name="ARC_PROCESS_NAME" /></translation>
-<translation id="7663774460282684730">단축키 사용 가능</translation>
+<translation id="7663774460282684730">키보드 단축키 사용 가능</translation>
 <translation id="7663859337051362114">eSIM 프로필 추가</translation>
 <translation id="76641554187607347">연결된 키보드 없음</translation>
 <translation id="7664442418269614729">iPhone에서 이 카드 사용하기</translation>
@@ -9960,7 +9960,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="7768507955883790804">사이트를 방문할 때 이 설정을 자동으로 따릅니다.</translation>
 <translation id="7768770796815395237">변경</translation>
 <translation id="7768784765476638775">텍스트 읽어주기</translation>
-<translation id="7769709635093101687">일시중지 단축키</translation>
+<translation id="7769709635093101687">일시중지 키보드 단축키</translation>
 <translation id="7769748505895274502">최근에 닫은 탭 접기</translation>
 <translation id="7770072242481632881">측면 패널 선택기</translation>
 <translation id="7770450735129978837">마우스 오른쪽 버튼 클릭</translation>
@@ -9983,7 +9983,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="7781335840981796660">모든 사용자 계정과 로컬 데이터가 삭제됩니다.</translation>
 <translation id="7782102568078991263">Google의 추천 단어 없음</translation>
 <translation id="7782717250816686129">로그인 화면의 지속 데이터를 저장하고 세션에 사용자 인증 정보를 삽입합니다.</translation>
-<translation id="7784020347632229094">단축키에 대해 자세히 알아보기</translation>
+<translation id="7784020347632229094">키보드 단축키에 대해 자세히 알아보기</translation>
 <translation id="7784067724422331729">컴퓨터의 보안 설정에 의해 파일이 차단되었습니다.</translation>
 <translation id="7784796923038949829">사이트 데이터를 읽거나 변경할 수 없음</translation>
 <translation id="778480864305029524">인스턴트 테더링을 사용하려면 Google Play 서비스의 알림을 사용 설정하세요</translation>
@@ -10787,7 +10787,7 @@ https://support.google.com/chromebook/?p=sm</translation>
 <translation id="8314835274931377415">스위치 제어 설정을 시작하시겠습니까?</translation>
 <translation id="8315018673856831477">메모리 절약 모드 옵션</translation>
 <translation id="8315514906653279104">켜는 중...</translation>
-<translation id="8316480109537174997">작업 표시줄에 Gemini 표시 및 단축키 사용 설정</translation>
+<translation id="8316480109537174997">작업 표시줄에 Gemini 표시 및 키보드 단축키 사용 설정</translation>
 <translation id="8317291727028594010">이 기기의 다른 앱 및 서비스에 액세스하도록 허용되지 않음</translation>
 <translation id="8317671367883557781">네트워크 연결 추가</translation>
 <translation id="8317965619823678157">비밀번호 복사</translation>
@@ -11201,7 +11201,7 @@ https://support.google.com/chromebook/?p=sm</translation>
 <translation id="8607661817136110841">내 탭 그룹</translation>
 <translation id="8607828412110648570">블루투스 기기를 페어링 모드로 설정하고 가까이 두세요. 신뢰하는 기기만 페어링하세요. 페어링된 기기는 이 Chromebook의 모든 계정에 표시됩니다. <ph name="BEGIN_LINK_LEARN_MORE" />자세히 알아보기<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="8608618451198398104">Kerberos 티켓 추가</translation>
-<translation id="860907040896565281">단축키 맞춤설정…</translation>
+<translation id="860907040896565281">키보드 단축키 맞춤설정…</translation>
 <translation id="8609465669617005112">위로 이동</translation>
 <translation id="8611922158252451755">링크가 있는 사용자는 모든 탭을 수정할 수 있으므로, 신중하게 공유하세요. 링크는 48시간 후에 만료됩니다.</translation>
 <translation id="8612252270453580753"><ph name="VISUAL_SEARCH_PROVIDER" />(으)로 동영상 프레임 검색(&amp;S)</translation>
@@ -11358,7 +11358,7 @@ https://support.google.com/chromebook/?p=sm</translation>
 <translation id="8703346390800944767">광고 건너뛰기</translation>
 <translation id="8703372953981978786">링크가 작동하지 않음</translation>
 <translation id="8703766890819308134">검색 바로가기 표시</translation>
-<translation id="8704248383043944131">단축키 수정</translation>
+<translation id="8704248383043944131">키보드 단축키 수정</translation>
 <translation id="8704662571571150811">도메인</translation>
 <translation id="8705331520020532516">일련번호</translation>
 <translation id="870536819717176711">Gemini와 현재 탭을 공유하도록 선택하면 탭의 전체 콘텐츠와 미디어 및 URL이 Google로 전송됩니다.</translation>
@@ -11867,7 +11867,7 @@ https://support.google.com/chromebook/?p=sm</translation>
 <translation id="9024127637873500333">새 탭에서 열기(&amp;O)</translation>
 <translation id="9024158959543687197">공유를 마운트하는 중에 오류가 발생했습니다. 파일 공유 URL을 확인한 후 다시 시도해 주세요.</translation>
 <translation id="9024692527554990034">주소 표시줄에서 바로가기를 사용하여 특정 사이트를 빠르게 검색하거나 다른 검색엔진을 사용할 수 있습니다.</translation>
-<translation id="9024975946059881308">Mac 메뉴 바에 Gemini 표시 및 단축키 사용 설정</translation>
+<translation id="9024975946059881308">Mac 메뉴 바에 Gemini 표시 및 키보드 단축키 사용 설정</translation>
 <translation id="9025222334598338152">비교 표를 사용하여 선택지를 좁혀가며 기록을 관리할 수 있습니다.</translation>
 <translation id="902638246363752736">키보드 설정</translation>
 <translation id="9026393603776578602">음성기록</translation>

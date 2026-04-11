@@ -2855,7 +2855,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="2901348420151309559">Fotos y aplicaciones recientes</translation>
 <translation id="2901431118738474110">Esta llave de acceso ya no funciona. Se ha eliminado de <ph name="RPID" /> y pronto se eliminará de aquí. &lt;a href='https://support.google.com/chrome/?p=passkeys'&gt;Información sobre las llaves de acceso&lt;/a&gt;</translation>
 <translation id="2902127500170292085"><ph name="EXTENSION_NAME" /> no ha podido establecer comunicación con la impresora. Comprueba que la impresora esté conectada e inténtalo de nuevo.</translation>
-<translation id="2902265136119311513">Navegar como invitado</translation>
+<translation id="2902265136119311513">Navegar como invitado/a</translation>
 <translation id="2902312830803030883">Más acciones</translation>
 <translation id="2903457445916429186">Abrir los elementos seleccionados</translation>
 <translation id="2903882649406874750">No permitir que <ph name="HOST" /> acceda a los sensores</translation>
@@ -3789,7 +3789,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="3555812735919707620">Eliminar extensión</translation>
 <translation id="3557101512409028104">Define restricciones de sitios web y límites de tiempo de pantalla con Family Link</translation>
 <translation id="3557267430539505890"><ph name="BEGIN_PARAGRAPH1" />Si permites que los dispositivos ChromeOS nos envíen informes de forma automática, nos ayudarás a priorizar qué debemos arreglar y mejorar en ChromeOS. Estos informes pueden incluir información como cuándo ha fallado ChromeOS, qué funciones se han utilizado y cuánta memoria se ha usado habitualmente.<ph name="END_PARAGRAPH1" />
-    <ph name="BEGIN_PARAGRAPH2" />Puedes activar o desactivar la opción para permitir que se generen estos informes en cualquier momento en los ajustes del dispositivo ChromeOS de tu hijo/a. Si eres el administrador de un dominio, puedes cambiar esta opción en la consola de administración.<ph name="END_PARAGRAPH2" /></translation>
+    <ph name="BEGIN_PARAGRAPH2" />Puedes activar o desactivar la opción para permitir que se generen estos informes en cualquier momento en los ajustes del dispositivo ChromeOS de tu hijo/a. Si eres el administrador/a de un dominio, puedes cambiar esta opción en la consola de administración.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="3558579881215044733"><ph name="WINDOW_TITLE" /> - Gemini está trabajando en tu tarea...</translation>
 <translation id="3559079791149580653">Detener envío de pantalla a <ph name="DEVICE_NAME" /></translation>
 <translation id="3559262020195162408">Se ha producido un error al instalar la política en el dispositivo.</translation>
@@ -5119,7 +5119,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="4423525817792153232">Mostrar todos los dientes</translation>
 <translation id="4424262960694990728">Acción necesaria</translation>
 <translation id="4424867131226116718"><ph name="BEGIN_PARAGRAPH1" />Si permites que los dispositivos ChromeOS nos envíen informes de forma automática, nos ayudarás a priorizar qué debemos arreglar y mejorar en ChromeOS. Estos informes pueden incluir información como cuándo ha fallado ChromeOS, qué funciones se han utilizado y cuánta memoria se ha usado habitualmente.<ph name="END_PARAGRAPH1" />
-    <ph name="BEGIN_PARAGRAPH2" />Puedes activar o desactivar la opción para permitir que se generen estos informes en cualquier momento en los ajustes de tu dispositivo ChromeOS. Si eres el administrador de un dominio, puedes cambiar esta opción en la consola de administración.<ph name="END_PARAGRAPH2" /></translation>
+    <ph name="BEGIN_PARAGRAPH2" />Puedes activar o desactivar la opción para permitir que se generen estos informes en cualquier momento en los ajustes de tu dispositivo ChromeOS. Si eres el administrador/a de un dominio, puedes cambiar esta opción en la consola de administración.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="442528696198546304">Las contraseñas, llaves de acceso y otros datos se eliminarán de forma permanente de <ph name="BRAND" /></translation>
 <translation id="4426268963847471040">Eliminar <ph name="FILE_NAME" /></translation>
 <translation id="4426464032773610160">Para empezar, comprueba que tu interruptor USB o Bluetooth esté conectado a tu Chromebook. También puedes usar teclas del teclado.</translation>
@@ -7651,7 +7651,7 @@ Exponente público (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bits):
 <translation id="6195155925303302899">Centrar</translation>
 <translation id="6195693561221576702">Este dispositivo no se puede configurar en el modo Demo sin conexión.</translation>
 <translation id="6196640612572343990">Bloquear cookies de terceros</translation>
-<translation id="6196854373336333322">La extensión <ph name="EXTENSION_NAME" /> ahora controla la configuración del proxy, lo que significa que puede cambiar, deshacer o espiar cualquier acción que hagas online. Si no estás seguro de los motivos por los que se ha producido este cambio, probablemente no haya sido intencionado.</translation>
+<translation id="6196854373336333322">La extensión <ph name="EXTENSION_NAME" /> ahora controla la configuración del proxy, lo que significa que puede cambiar, deshacer o espiar cualquier acción que hagas online. Si no conoces con seguridad los motivos por los que se ha producido este cambio, probablemente no haya sido intencionado.</translation>
 <translation id="6197128521826316819">Crear código QR para esta página</translation>
 <translation id="6198223452299275399">Deslizar de una página a otra</translation>
 <translation id="6198252989419008588">Cambiar PIN</translation>
@@ -8110,7 +8110,7 @@ Exponente público (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bits):
 <translation id="6520115099532274511"><ph name="SITE" /> quiere verificar que eres tú. Introduce tu PIN alfanumérico para el Gestor de contraseñas de Google.</translation>
 <translation id="6520876759015997832">Resultado de búsqueda <ph name="LIST_POSITION" /> de <ph name="LIST_SIZE" />: <ph name="SEARCH_RESULT_TEXT" />. Pulsa Intro para ir a esa sección.</translation>
 <translation id="6521214596282732365">Los sitios suelen usar tus fuentes para que puedas crear contenido de alta fidelidad con herramientas de diseño y gráficos online</translation>
-<translation id="652492607360843641">Estás conectado a una red <ph name="NETWORK_TYPE" />.</translation>
+<translation id="652492607360843641">Te has conectado a una red <ph name="NETWORK_TYPE" />.</translation>
 <translation id="6525767484449074555">Haz clic en "Instalar"</translation>
 <translation id="6527303717912515753">Compartir</translation>
 <translation id="6527574156657772563">No hay dispositivos disponibles. Añade tu cuenta de Google a tu teléfono para conectarla a este <ph name="DEVICE_TYPE" />. <ph name="LINK_BEGIN" />Más información<ph name="LINK_END" /></translation>
@@ -8665,7 +8665,7 @@ Tienes # contraseñas vulneradas más. El Gestor de contraseñas de Google te re
 <translation id="6897363604023044284">Elegir sitios para borrar datos</translation>
 <translation id="6897688156970667447">Útil en condiciones de poca luz y para ahorrar batería</translation>
 <translation id="6897756054229464646">Con Gemini</translation>
-<translation id="6897972855231767338">Más información sobre la navegación como invitado</translation>
+<translation id="6897972855231767338">Más información sobre la navegación como invitado/a</translation>
 <translation id="6898438890765871056">Abrir carpeta de OneDrive</translation>
 <translation id="6898440773573063262">Ya se pueden configurar las aplicaciones del kiosco para que se inicien automáticamente en este dispositivo.</translation>
 <translation id="6898524422976162959">Inicia el tutorial del grupo de pestañas</translation>
@@ -10063,7 +10063,7 @@ Pulsa un interruptor o una tecla con una acción asignada para quitársela.</tra
 <translation id="784934925303690534">Tiempo</translation>
 <translation id="7850320739366109486">No molestar</translation>
 <translation id="7850717413915978159"><ph name="BEGIN_PARAGRAPH1" />Si permites que tus dispositivos Chrome OS nos envíen informes de forma automática, nos ayudarás a priorizar qué debemos arreglar y mejorar en Chrome OS. Estos informes pueden incluir información como cuándo ha fallado Chrome OS, qué funciones utilizas y cuánta memoria sueles usar, así como datos de diagnóstico y de uso de aplicaciones Android. Parte de los datos agregados también ayudarán a las aplicaciones y a los partners de Google, como los desarrolladores de Android.<ph name="END_PARAGRAPH1" />
-    <ph name="BEGIN_PARAGRAPH2" />Puedes activar o desactivar la opción para permitir que se generen estos informes en cualquier momento en los ajustes de tu dispositivo Chrome OS. Si eres el administrador de un dominio, puedes cambiar esta opción en la consola de administración.<ph name="END_PARAGRAPH2" />
+    <ph name="BEGIN_PARAGRAPH2" />Puedes activar o desactivar la opción para permitir que se generen estos informes en cualquier momento en los ajustes de tu dispositivo Chrome OS. Si eres el administrador/a de un dominio, puedes cambiar esta opción en la consola de administración.<ph name="END_PARAGRAPH2" />
     <ph name="BEGIN_PARAGRAPH3" />Si el ajuste Actividad en la Web y en Aplicaciones está activado en tu cuenta de Google, es posible que tus datos de Android se guarden en tu cuenta de Google. Puedes ver tus datos, eliminarlos y cambiar la configuración de tu cuenta en account.google.com.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="7851457902707056880">El inicio de sesión se ha restringido únicamente a la cuenta del propietario. Reinicia el sistema e inicia sesión con la cuenta del propietario. El ordenador se reiniciará automáticamente en 30 segundos.</translation>
 <translation id="7851716364080026749">Bloquear siempre el acceso a la cámara y al micrófono</translation>
@@ -10826,7 +10826,7 @@ Guarda tu archivo de clave en un lugar seguro, ya que lo necesitarás para crear
 <translation id="8349826889576450703">menú de aplicaciones</translation>
 <translation id="8350789879725387295">Herramientas del lápiz óptico en el Dock</translation>
 <translation id="8351316842353540018">Mostrar siempre las opciones de accesibilidad</translation>
-<translation id="8351419472474436977">Esta extensión ha tomado el control de la configuración del proxy, lo que significa que puede cambiar, deshacer o espiar cualquier acción que hagas online. Si no estás seguro de los motivos por los que se ha producido este cambio, probablemente no lo quieras.</translation>
+<translation id="8351419472474436977">Esta extensión ha tomado el control de la configuración del proxy, lo que significa que puede cambiar, deshacer o espiar cualquier acción que hagas online. Si no conoces con seguridad los motivos por los que se ha producido este cambio, probablemente no lo quieras.</translation>
 <translation id="8351630282875799764">La batería no se está cargando</translation>
 <translation id="8352287103893778223">Título del grupo de pestañas</translation>
 <translation id="835238322900896202">Se ha producido un error durante la desinstalación. Realiza la desinstalación a través del terminal.</translation>

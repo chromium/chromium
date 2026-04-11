@@ -191,7 +191,7 @@
 <translation id="1653274177966208838">{TIME,plural, =0{Tiempo restante: {TIME} segundos}=1{Tiempo restante: {TIME} segundo}other{Tiempo restante: {TIME} segundos}}</translation>
 <translation id="1654232554734641711">Acceso a micrófono permitido</translation>
 <translation id="16554782717487656">Detectar unidades</translation>
-<translation id="1657011748321897393">Error al compartir contenido porque no estás conectado a la red</translation>
+<translation id="1657011748321897393">Error al compartir contenido porque no te has conectado a la red</translation>
 <translation id="1668001730617725852">Abrir en un nuevo grupo de pestañas</translation>
 <translation id="1674504678466460478">De <ph name="SOURCE_LANGUAGE" /> a <ph name="TARGET_LANGUAGE" /></translation>
 <translation id="168389590065701766">Ahora puedes abrir Google Lens desde la barra de direcciones y buscar cualquier cosa que veas</translation>

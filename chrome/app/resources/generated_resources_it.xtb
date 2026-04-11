@@ -124,7 +124,7 @@
 <translation id="107278043869924952">Usa il PIN oltre alla password</translation>
 <translation id="107450319332239199">Si è verificato un problema. Apri le finestre manualmente.</translation>
 <translation id="1075920807995555452">Esegui strumenti, editor e IDE in un ambiente gestito dalla tua azienda su <ph name="DEVICE_TYPE" />. <ph name="LINK_BEGIN" />Scopri di più<ph name="LINK_END" /></translation>
-<translation id="1076176485976385390">Spostati da una pagina all'altra con un cursore di testo</translation>
+<translation id="1076176485976385390">Naviga nelle pagine con un cursore di testo</translation>
 <translation id="1076698951459398590">Attiva tema</translation>
 <translation id="1076730357641144594">Puoi visualizzare e gestire le passkey salvate in <ph name="GOOGLE_PASSWORD_MANAGER" /></translation>
 <translation id="1076766328672150609">Tuo figlio può usare il PIN per sbloccare il dispositivo.</translation>
@@ -6611,7 +6611,7 @@ Puoi assegnare più sensori a questa azione.</translation>
 <translation id="5468330507528805311">Stato tethering:</translation>
 <translation id="5468504405124548160">Cambia il nome del pulsante</translation>
 <translation id="5469540749878136997">Libera memoria in base all'utilizzo</translation>
-<translation id="5469852975082458401">Puoi spostarti da una pagina all'altra con un cursore di testo. Premi F7 per disattivare questa opzione.</translation>
+<translation id="5469852975082458401">Puoi navigare nelle pagine con un cursore di testo. Premi F7 per disattivare questa opzione.</translation>
 <translation id="5470735824776589490">È necessario riavviare prima che il dispositivo possa essere reimpostato con Powerwash. <ph name="LINK_BEGIN" />Ulteriori informazioni<ph name="LINK_END" /></translation>
 <translation id="5470741195701938302">Numeri</translation>
 <translation id="5471768120198416576">Ciao! Sono la voce della sintesi locale.</translation>
@@ -7491,7 +7491,7 @@ Puoi assegnare più sensori a questa azione.</translation>
 <translation id="608531959444400877"><ph name="WINDOW_TITLE" /> - Parte di un gruppo senza nome</translation>
 <translation id="6086004606538989567">L'account che hai verificato non è autorizzato ad accedere a questo dispositivo.</translation>
 <translation id="6086350918562605938">Programma di aggiornamento per sistema</translation>
-<translation id="6086418630711763366">Puoi spostarti da una pagina all'altra con un cursore di testo. Premi Ctrl + <ph name="KEY" /> per disattivare.</translation>
+<translation id="6086418630711763366">Puoi navigare nelle pagine con un cursore di testo. Premi Ctrl + <ph name="KEY" /> per disattivare.</translation>
 <translation id="6086846494333236931">Installata dall'amministratore</translation>
 <translation id="6087286598828478206">Bloccare e uscire dal gruppo?</translation>
 <translation id="6087960857463881712">Faccina splendente</translation>
