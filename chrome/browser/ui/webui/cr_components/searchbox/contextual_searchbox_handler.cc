@@ -867,23 +867,16 @@ void ContextualSearchboxHandler::ContextualizeQueryWithRelevantTabsAndOpenUrl(
     std::map<std::string, std::string> additional_params,
     std::vector<content::WebContents*> relevant_tabs) {
   if (query_contextualizer_) {
-    auto* browser_window_interface =
-        webui::GetBrowserWindowInterface(web_contents_);
-    if (browser_window_interface) {
-      auto* active_web_contents =
-          browser_window_interface->GetTabStripModel()->GetActiveWebContents();
-      std::vector<int32_t> tabs_to_recontextualize =
-          active_web_contents
-              ? std::vector<int32_t>{sessions::SessionTabHelper::IdForTab(
-                                         active_web_contents)
-                                         .id()}
-              : std::vector<int32_t>();
-      std::vector<int32_t> tabs_to_force_contextualize;
-      tabs_to_force_contextualize.reserve(relevant_tabs.size());
-      for (content::WebContents* relevant_tab : relevant_tabs) {
-        tabs_to_force_contextualize.push_back(
-            sessions::SessionTabHelper::IdForTab(relevant_tab).id());
+    std::vector<int32_t> tabs_to_recontextualize;
+    std::vector<int32_t> tabs_to_force_contextualize;
+    tabs_to_force_contextualize.reserve(relevant_tabs.size());
+    for (content::WebContents* relevant_tab : relevant_tabs) {
+      tabs::TabInterface* tab =
+          tabs::TabInterface::MaybeGetFromContents(relevant_tab);
+      if (tab) {
+        tabs_to_force_contextualize.push_back(tab->GetHandle().raw_value());
       }
+    }
       // It is safe to use base::Unretained(this) here because
       // `query_contextualizer_` is owned by `this` and will be destroyed when
       // `this` is destroyed, cancelling any pending callbacks.
@@ -907,7 +900,6 @@ void ContextualSearchboxHandler::ContextualizeQueryWithRelevantTabsAndOpenUrl(
               base::Unretained(this), query_text, disposition, aim_entry_point,
               std::move(additional_params)));
       return;
-    }
   }
 
   ComputeAndOpenQueryUrl(query_text, disposition, aim_entry_point,
