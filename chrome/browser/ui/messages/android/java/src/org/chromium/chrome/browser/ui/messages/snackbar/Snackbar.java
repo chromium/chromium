@@ -143,6 +143,7 @@ public class Snackbar {
     public static final int UMA_CHROME_FINDS_OPT_IN = 85;
     public static final int UMA_AUTOFILL_AI_LOCAL_SAVE_FALLBACK = 86;
     public static final int UMA_EXCLUSIVE_ACCESS_BUBBLE = 87;
+    public static final int UMA_CONTEXTUAL_TASKS_BOTTOM_SHEET_CLOSED_UNDO = 88;
     // LINT.ThenChange(//tools/metrics/histograms/metadata/ui/enums.xml:SnackbarIdentifier)
 
     private final @Nullable SnackbarController mController;

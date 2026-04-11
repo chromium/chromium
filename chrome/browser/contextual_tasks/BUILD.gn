@@ -534,8 +534,16 @@ source_set("interactive_ui_tests") {
 }
 
 if (is_android) {
+  android_resources("java_resources") {
+    deps = [
+      "//components/browser_ui/strings/android:browser_ui_strings_grd",
+      "//components/strings:components_strings_grd",
+    ]
+  }
+
   android_library("java") {
     srcjar_deps = [ ":jni_headers" ]
+    resources_package = "org.chromium.chrome.browser.contextual_tasks"
 
     sources = [
       "android/java/src/org/chromium/chrome/browser/contextual_tasks/ContextualTasksBridge.java",
@@ -545,6 +553,7 @@ if (is_android) {
     ]
 
     deps = [
+      ":java_resources",
       "//base:base_java",
       "//build/android:build_java",
       "//chrome/browser/android/content:java",
@@ -554,7 +563,9 @@ if (is_android) {
       "//chrome/browser/profiles/android:java",
       "//chrome/browser/ui/android/native_page:java",
       "//chrome/browser/ui/browser_window/public/android:java",
+      "//chrome/browser/ui/messages/android:java",
       "//components/embedder_support/android:util_java",
+      "//components/strings:components_strings_grd",
       "//content/public/android:content_java",
       "//third_party/androidx:androidx_annotation_annotation_java",
       "//third_party/jni_zero:jni_zero_java",
@@ -591,6 +602,7 @@ source_set("test_support") {
     "mock_contextual_tasks_panel_host.h",
     "mock_contextual_tasks_ui_service.cc",
     "mock_contextual_tasks_ui_service.h",
+    "test_contextual_tasks_ui_service_delegate.h",
   ]
   deps = [
     ":contextual_tasks",

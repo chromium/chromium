@@ -480,6 +480,7 @@ chromium-metrics-reviews@google.com.
   <int value="85" label="UMA_CHROME_FINDS_OPT_IN"/>
   <int value="86" label="UMA_AUTOFILL_AI_LOCAL_SAVE_FALLBACK"/>
   <int value="87" label="UMA_EXCLUSIVE_ACCESS_BUBBLE"/>
+  <int value="88" label="UMA_CONTEXTUAL_TASKS_BOTTOM_SHEET_CLOSED_UNDO"/>
 </enum>
 
 <!-- LINT.ThenChange(//chrome/browser/ui/messages/android/java/src/org/chromium/chrome/browser/ui/messages/snackbar/Snackbar.java:SnackbarIdentifier) -->

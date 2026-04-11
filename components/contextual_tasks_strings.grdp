@@ -114,4 +114,7 @@
   <message name="IDS_CONTEXTUAL_TASKS_COMPOSEBOX_PLACEHOLDER_TEXT" desc="Placeholder text shown on the compose box of the contextual task page.">
     Ask anything
   </message>
+  <message name="IDS_CONTEXTUAL_TASKS_THREAD_CLOSED" desc="Text shown on the snackbar after closing the contextual tasks sheet." formatter_data="android_java">
+    Thread closed
+  </message>
 </grit-part>

@@ -1066,6 +1066,12 @@ void ContextualTasksUiService::OpenFeedbackUi(BrowserWindowInterface* browser,
                                               const GURL& page_url) {
   delegate_->OpenFeedbackUi(browser, page_url);
 }
+
+void ContextualTasksUiService::ShowUndoSnackbar(
+    BrowserWindowInterface* browser_window_interface) {
+  delegate_->ShowUndoSnackbar(browser_window_interface);
+}
+
 GURL ContextualTasksUiService::GetContextualTaskUrlForTask(
     const base::Uuid& task_id) {
   GURL url;

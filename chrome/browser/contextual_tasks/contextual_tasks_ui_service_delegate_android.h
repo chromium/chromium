@@ -24,9 +24,14 @@ class ContextualTasksUiServiceDelegateAndroid
   ContextualTasksUiServiceDelegateAndroid& operator=(
       const ContextualTasksUiServiceDelegateAndroid&) = delete;
 
+  // Called from Java via JNI to undo the closure of the sheet.
+  void UndoClose(JNIEnv* env, int64_t browser_window_ptr);
+
   // ContextualTasksUiServiceDelegate overrides:
   void OpenFeedbackUi(BrowserWindowInterface* browser,
                       const GURL& page_url) override;
+  void ShowUndoSnackbar(
+      BrowserWindowInterface* browser_window_interface) override;
 
  protected:
   Profile* profile() const { return profile_; }

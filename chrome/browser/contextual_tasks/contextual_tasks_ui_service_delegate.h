@@ -21,6 +21,10 @@ class ContextualTasksUiServiceDelegate {
   // Called to open the feedback page UI.
   virtual void OpenFeedbackUi(BrowserWindowInterface* browser,
                               const GURL& page_url) = 0;
+
+  // Called to show the undo closure snackbar.
+  virtual void ShowUndoSnackbar(
+      BrowserWindowInterface* browser_window_interface) = 0;
 };
 
 }  // namespace contextual_tasks

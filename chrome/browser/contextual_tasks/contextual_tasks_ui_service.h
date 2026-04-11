@@ -280,6 +280,10 @@ class ContextualTasksUiService : public KeyedService {
   virtual void OpenFeedbackUi(BrowserWindowInterface* browser,
                               const GURL& page_url);
 
+  // Shows a snackbar to undo the closure of the contextual tasks sheet.
+  virtual void ShowUndoSnackbar(
+      BrowserWindowInterface* browser_window_interface);
+
   base::WeakPtr<ContextualTasksUiService> GetWeakPtr() {
     return weak_ptr_factory_.GetWeakPtr();
   }

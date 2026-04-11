@@ -31,4 +31,7 @@ void ContextualTasksUiServiceDelegateDesktop::OpenFeedbackUi(
                            /*extra_diagnostics=*/std::string());
 }
 
+void ContextualTasksUiServiceDelegateDesktop::ShowUndoSnackbar(
+    BrowserWindowInterface* browser_window_interface) {}
+
 }  // namespace contextual_tasks

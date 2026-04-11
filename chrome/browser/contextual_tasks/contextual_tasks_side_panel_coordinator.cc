@@ -910,6 +910,11 @@ void ContextualTasksSidePanelCoordinator::OnSurfaceStateChanged(
     NotifyActiveTaskContextProvider();
   }
 
+  if (state == ContextualTasksPanelHost::SurfaceState::kClosed &&
+      reason == ContextualTasksPanelHost::StateChangeReason::kUserAction) {
+    ui_service_->ShowUndoSnackbar(browser_window_);
+  }
+
   observers_.Notify(
       &ContextualTasksPanelController::Observer::OnSurfaceStateChanged, state,
       reason);

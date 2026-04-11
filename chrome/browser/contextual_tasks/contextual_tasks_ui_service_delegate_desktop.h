@@ -26,6 +26,8 @@ class ContextualTasksUiServiceDelegateDesktop
   // ContextualTasksUiServiceDelegate overrides:
   void OpenFeedbackUi(BrowserWindowInterface* browser,
                       const GURL& page_url) override;
+  void ShowUndoSnackbar(
+      BrowserWindowInterface* browser_window_interface) override;
 
  protected:
   Profile* profile() const { return profile_; }
