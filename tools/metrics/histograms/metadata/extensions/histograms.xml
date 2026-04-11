@@ -1677,16 +1677,6 @@ This is emitted for two scenarios when a worker may be unregistered:
   </summary>
 </histogram>
 
-<histogram name="Extensions.ErrorCodeFromCrxOpen" units="units"
-    expires_after="M85">
-  <owner>rdevlin.cronin@chromium.org</owner>
-  <owner>extensions-core@chromium.org</owner>
-  <summary>
-    If opening the CRX file for unpacking fails, this integer is the error code
-    given by the OS.
-  </summary>
-</histogram>
-
 <histogram name="Extensions.EsbAllowlistOmahaAttribute"
     enum="ExtensionAllowlistOmahaAttributeValue" expires_after="2023-10-01">
   <owner>jeffcyr@google.com</owner>
