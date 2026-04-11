@@ -51,6 +51,9 @@ class FjordImageSelectionScreen
 
   static std::string GetResultString(Result result);
 
+  // Sets error message to be displayed when the screen is next shown.
+  void SetErrorMessage(const std::string& error_message);
+
  private:
   // BaseScreen
   void ShowImpl() override;
@@ -64,6 +67,9 @@ class FjordImageSelectionScreen
   ScreenExitCallback exit_callback_;
 
   base::WeakPtr<FjordImageSelectionScreenView> view_;
+
+  // Error message to be passed to the view on the next Show.
+  std::string error_message_;
 };
 
 }  // namespace ash

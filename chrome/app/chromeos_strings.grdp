@@ -1244,6 +1244,9 @@
   <message name="IDS_FJORD_IMAGE_SELECTION_NEXT_BUTTON_TEXT" desc="Button shown to the user to go to the next step.">
     Next
   </message>
+  <message name="IDS_FJORD_IMAGE_SELECTION_ERROR_SUBTITLE" desc="Subtitle shown on the image selection screen when the image download has failed.">
+    Something went wrong. Try again.
+  </message>
   <message name="IDS_FJORD_IMAGE_DOWNLOAD_TITLE" desc="Title of the OOBE screen shown while the device image download is in progress.">
     Installing software
   </message>

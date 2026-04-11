@@ -46,7 +46,9 @@ TEST_F(FjordImageDownloaderTest, PerformUpdateSucceeds) {
 
   downloader.RunDissidia(
       FjordImageDownloader::ImageType::kNoctis,
-      base::BindOnce([](bool* out, bool success) { *out = success; }, &result));
+      base::BindOnce([](bool* out, bool success,
+                        const std::string& error_message) { *out = success; },
+                     &result));
 
   // PerformUpdate returned kStarted, so we're waiting for the Completed signal.
   // Simulate the Completed signal.
@@ -67,12 +69,19 @@ TEST_F(FjordImageDownloaderTest, PerformUpdateFailsOnError) {
 
   FjordImageDownloader downloader;
   bool result = true;
+  std::string error_msg;
 
-  downloader.RunDissidia(
-      FjordImageDownloader::ImageType::kSelphie,
-      base::BindOnce([](bool* out, bool success) { *out = success; }, &result));
+  downloader.RunDissidia(FjordImageDownloader::ImageType::kSelphie,
+                         base::BindOnce(
+                             [](bool* out, std::string* err_out, bool success,
+                                const std::string& error_message) {
+                               *out = success;
+                               *err_out = error_message;
+                             },
+                             &result, &error_msg));
 
   EXPECT_FALSE(result);
+  EXPECT_EQ(error_msg, "Error 4: System error");
   EXPECT_EQ("selphie", fake_dissidia_client_->last_target());
   EXPECT_EQ(
       chromeos::FakePowerManagerClient::Get()->num_request_restart_calls(), 0);
@@ -88,7 +97,9 @@ TEST_F(FjordImageDownloaderTest, PerformUpdateAlreadyOnImage) {
 
   downloader.RunDissidia(
       FjordImageDownloader::ImageType::kNoctis,
-      base::BindOnce([](bool* out, bool success) { *out = success; }, &result));
+      base::BindOnce([](bool* out, bool success,
+                        const std::string& error_message) { *out = success; },
+                     &result));
 
   EXPECT_FALSE(result);
 }
@@ -99,16 +110,23 @@ TEST_F(FjordImageDownloaderTest, CompletedSignalWithFailure) {
 
   FjordImageDownloader downloader;
   bool result = true;
+  std::string error_msg;
 
-  downloader.RunDissidia(
-      FjordImageDownloader::ImageType::kSelphie,
-      base::BindOnce([](bool* out, bool success) { *out = success; }, &result));
+  downloader.RunDissidia(FjordImageDownloader::ImageType::kSelphie,
+                         base::BindOnce(
+                             [](bool* out, std::string* err_out, bool success,
+                                const std::string& error_message) {
+                               *out = success;
+                               *err_out = error_message;
+                             },
+                             &result, &error_msg));
 
   // Simulate a failed Completed signal.
   fake_dissidia_client_->NotifyCompleted(
       false, dissidia::CompletedErrorCode::kDownloadFailed, "Download failed");
 
   EXPECT_FALSE(result);
+  EXPECT_EQ(error_msg, "Error 2: Download failed");
   EXPECT_EQ(
       chromeos::FakePowerManagerClient::Get()->num_request_restart_calls(), 0);
 }
@@ -123,13 +141,15 @@ TEST_F(FjordImageDownloaderTest, RejectsSecondRequestWhileRunning) {
 
   downloader.RunDissidia(
       FjordImageDownloader::ImageType::kNoctis,
-      base::BindOnce([](bool* out, bool success) { *out = success; },
+      base::BindOnce([](bool* out, bool success,
+                        const std::string& error_message) { *out = success; },
                      &first_result));
 
   // Try a second request while the first is in progress.
   downloader.RunDissidia(
       FjordImageDownloader::ImageType::kSelphie,
-      base::BindOnce([](bool* out, bool success) { *out = success; },
+      base::BindOnce([](bool* out, bool success,
+                        const std::string& error_message) { *out = success; },
                      &second_result));
 
   EXPECT_FALSE(second_result);

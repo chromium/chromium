@@ -22,10 +22,12 @@ void FjordImageSelectionScreenHandler::DeclareLocalizedValues(
                IDS_FJORD_IMAGE_SELECTION_ZOOM_LABEL);
   builder->Add("fjordImageSelectionNextButton",
                IDS_FJORD_IMAGE_SELECTION_NEXT_BUTTON_TEXT);
+  builder->Add("fjordImageSelectionErrorSubtitle",
+               IDS_FJORD_IMAGE_SELECTION_ERROR_SUBTITLE);
 }
 
-void FjordImageSelectionScreenHandler::Show() {
-  ShowInWebUI();
+void FjordImageSelectionScreenHandler::Show(base::DictValue data) {
+  ShowInWebUI(std::move(data));
 }
 
 base::WeakPtr<FjordImageSelectionScreenView>

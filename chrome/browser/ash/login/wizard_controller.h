@@ -526,7 +526,8 @@ class WizardController : public OobeUI::Observer {
   void OnFjordImageSelectionScreenExit(
       FjordImageSelectionScreen::Result result);
   void OnFjordImageDownloadScreenExit();
-  void OnFjordImageDownloadCompleted(bool success);
+  void OnFjordImageDownloadCompleted(bool success,
+                                     const std::string& error_message);
   void OnFjordTouchControllerScreenExit();
   void OnFjordStationSetupScreenExit();
   void OnFjordFwUpdateScreenExit();

@@ -3156,12 +3156,15 @@ void WizardController::OnFjordImageDownloadScreenExit() {
   OnScreenExit(FjordImageDownloadScreenView::kScreenId, kDefaultExitReason);
 }
 
-void WizardController::OnFjordImageDownloadCompleted(bool success) {
+void WizardController::OnFjordImageDownloadCompleted(
+    bool success,
+    const std::string& error_message) {
+  // TODO(b:501556529): Add a histogram for image download success/failure.
   if (success) {
     VLOG(1) << "Fjord image download (dissidia) completed successfully.";
   } else {
-    LOG(ERROR) << "Fjord image download (dissidia) failed.";
-    // TODO(b/499112422): Surface the error message from the download.
+    LOG(ERROR) << "Fjord image download (dissidia) failed: " << error_message;
+    GetScreen<FjordImageSelectionScreen>()->SetErrorMessage(error_message);
     ShowFjordImageSelectionScreen();
   }
 }

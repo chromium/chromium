@@ -34,11 +34,16 @@ export class FjordImageSelectionScreen extends
         type: String,
         value: '',
       },
+      errorMessage: {
+        type: String,
+        value: '',
+      },
     };
   }
 
   private selectedImageType: string;
-  private handler: FjordImageSelectionPageHandlerRemote;
+  private errorMessage!: string;
+  private handler!: FjordImageSelectionPageHandlerRemote;
 
   override ready(): void {
     super.ready();
@@ -47,6 +52,11 @@ export class FjordImageSelectionScreen extends
     OobeScreensFactoryBrowserProxy.getInstance()
         .screenFactory.establishFjordImageSelectionScreenPipe(
             this.handler.$.bindNewPipeAndPassReceiver());
+  }
+
+  override onBeforeShow(data: {errorMessage?: string}): void {
+    super.onBeforeShow(data);
+    this.errorMessage = data?.errorMessage || '';
   }
 
   private onNextButtonClicked(): void {

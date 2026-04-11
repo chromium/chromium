@@ -8,6 +8,11 @@
   width: 48px;
   height: 48px;
 }
+
+.error-message {
+  color: var(--cros-color-alert);
+  margin-top: 8px;
+}
 </style>
 <oobe-adaptive-dialog id="fjordImageSelectionDialog"
     role="dialog">
@@ -15,6 +20,10 @@
   <h1 slot="title">
     [[i18nDynamic(locale, 'fjordImageSelectionTitle')]]
   </h1>
+  <div slot="subtitle" class="error-message" hidden="[[!errorMessage]]">
+    <div>[[i18nDynamic(locale, 'fjordImageSelectionErrorSubtitle')]]</div>
+    <div>[[errorMessage]]</div>
+  </div>
   <div slot="content" class="layout vertical landscape-vertical">
     <cr-radio-group selected="{{selectedImageType}}">
       <cr-card-radio-button id="meetButton" class="flex" name="meet"

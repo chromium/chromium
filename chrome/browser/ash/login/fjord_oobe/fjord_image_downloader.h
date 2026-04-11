@@ -33,8 +33,10 @@ class FjordImageDownloader : public chromeos::DissidiaClient::Observer {
   // Initiates an image update via the dissidia D-Bus service. The
   // |image_type| determines which image name to request. The result is
   // reported via |callback| when the Completed signal is received.
-  void RunDissidia(ImageType image_type,
-                   base::OnceCallback<void(bool success)> callback);
+  void RunDissidia(
+      ImageType image_type,
+      base::OnceCallback<void(bool success, const std::string& error_message)>
+          callback);
 
   // chromeos::DissidiaClient::Observer:
   void OnProgress(int32_t percent, const std::string& stage) override;
@@ -47,7 +49,8 @@ class FjordImageDownloader : public chromeos::DissidiaClient::Observer {
   void OnPerformUpdateResponse(dissidia::PerformUpdateStatus status,
                                const std::string& message);
 
-  base::OnceCallback<void(bool success)> callback_;
+  base::OnceCallback<void(bool success, const std::string& error_message)>
+      callback_;
   bool is_running_ = false;
 
   base::WeakPtrFactory<FjordImageDownloader> weak_ptr_factory_{this};

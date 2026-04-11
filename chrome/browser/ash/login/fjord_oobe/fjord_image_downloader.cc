@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "base/logging.h"
+#include "base/strings/stringprintf.h"
 #include "chromeos/dbus/dissidia/dissidia_client.h"
 #include "chromeos/dbus/power/power_manager_client.h"
 
@@ -43,17 +44,18 @@ FjordImageDownloader::~FjordImageDownloader() {
 
 void FjordImageDownloader::RunDissidia(
     ImageType image_type,
-    base::OnceCallback<void(bool success)> callback) {
+    base::OnceCallback<void(bool success, const std::string& error_message)>
+        callback) {
   if (is_running_) {
     LOG(WARNING) << "Dissidia is already running, ignoring new request";
-    std::move(callback).Run(false);
+    std::move(callback).Run(false, "Update already in progress");
     return;
   }
 
   chromeos::DissidiaClient* client = chromeos::DissidiaClient::Get();
   if (!client) {
     LOG(ERROR) << "DissidiaClient is not available";
-    std::move(callback).Run(false);
+    std::move(callback).Run(false, "Client is not available");
     return;
   }
 
@@ -74,7 +76,9 @@ void FjordImageDownloader::OnPerformUpdateResponse(
                << static_cast<int>(status) << ": " << message;
     is_running_ = false;
     if (callback_) {
-      std::move(callback_).Run(false);
+      std::move(callback_).Run(
+          false, base::StringPrintf("Error %d: %s", static_cast<int>(status),
+                                    message.c_str()));
     }
   }
 }
@@ -101,7 +105,10 @@ void FjordImageDownloader::OnCompleted(bool success,
   }
 
   if (callback_) {
-    std::move(callback_).Run(success);
+    std::move(callback_).Run(
+        success,
+        base::StringPrintf("Error %d: %s", static_cast<int>(error_code),
+                           message.c_str()));
   }
 }
 

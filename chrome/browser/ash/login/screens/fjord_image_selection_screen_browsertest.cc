@@ -5,6 +5,7 @@
 #include "chrome/browser/ash/login/screens/fjord_image_selection_screen.h"
 
 #include "ash/constants/ash_features.h"
+#include "base/functional/callback_helpers.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "chrome/browser/ash/login/test/js_checker.h"
@@ -18,6 +19,7 @@ namespace ash {
 namespace {
 
 constexpr char kFjordImageSelectionElementId[] = "fjord-image-selection";
+constexpr char kTestErrorMessage[] = "Test error: image download failed";
 
 const test::UIPath kFjordImageSelectionDialog = {kFjordImageSelectionElementId};
 const test::UIPath kMeetButton = {kFjordImageSelectionElementId, "meetButton"};
@@ -36,11 +38,14 @@ class FjordImageSelectionScreenBrowserTest : public OobeBaseTest {
 
   void SetUpOnMainThread() override {
     OobeBaseTest::SetUpOnMainThread();
-    FjordImageSelectionScreen* screen =
-        WizardController::default_controller()
-            ->GetScreen<FjordImageSelectionScreen>();
+    FjordImageSelectionScreen* screen = GetScreen();
     screen->set_exit_callback_for_testing(
         screen_exit_waiter_.GetRepeatingCallback());
+  }
+
+  FjordImageSelectionScreen* GetScreen() {
+    return WizardController::default_controller()
+        ->GetScreen<FjordImageSelectionScreen>();
   }
 
   void ShowFjordImageSelectionScreen() {
@@ -123,6 +128,44 @@ IN_PROC_BROWSER_TEST_F(FjordImageSelectionScreenBrowserTest,
   // Select Meet and verify the button becomes enabled.
   test::OobeJS().ClickOnPath(kMeetButton);
   test::OobeJS().ExpectEnabledPath(kNextButton);
+}
+
+// Verifies that the error message subtitle is hidden when no error message
+// is set.
+IN_PROC_BROWSER_TEST_F(FjordImageSelectionScreenBrowserTest,
+                       ErrorMessageHiddenByDefault) {
+  ShowFjordImageSelectionScreen();
+  OobeScreenWaiter(FjordImageSelectionScreenView::kScreenId).Wait();
+
+  test::OobeJS()
+      .CreateVisibilityWaiter(true, kFjordImageSelectionDialog)
+      ->Wait();
+
+  // The errorMessage property should be empty, so the subtitle div should
+  // be hidden.
+  test::OobeJS().ExpectAttributeEQ(
+      "errorMessage", {kFjordImageSelectionElementId}, std::string(""));
+}
+
+// Verifies that the error message is displayed when SetErrorMessage is called
+// before showing the screen.
+IN_PROC_BROWSER_TEST_F(FjordImageSelectionScreenBrowserTest,
+                       ErrorMessageShownWhenSet) {
+  // Set the error message before showing the screen, matching the real usage
+  // flow in WizardController.
+  GetScreen()->SetErrorMessage(kTestErrorMessage);
+
+  ShowFjordImageSelectionScreen();
+  OobeScreenWaiter(FjordImageSelectionScreenView::kScreenId).Wait();
+
+  test::OobeJS()
+      .CreateVisibilityWaiter(true, kFjordImageSelectionDialog)
+      ->Wait();
+
+  // Verify the errorMessage property was set on the element.
+  test::OobeJS().ExpectAttributeEQ("errorMessage",
+                                   {kFjordImageSelectionElementId},
+                                   std::string(kTestErrorMessage));
 }
 
 }  // namespace

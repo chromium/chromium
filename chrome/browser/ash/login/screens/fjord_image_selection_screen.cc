@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "base/values.h"
 #include "chrome/browser/ash/login/oobe_screen.h"
 #include "chrome/browser/ui/webui/ash/login/fjord_image_selection_screen_handler.h"
 
@@ -35,7 +36,17 @@ FjordImageSelectionScreen::FjordImageSelectionScreen(
 FjordImageSelectionScreen::~FjordImageSelectionScreen() = default;
 
 void FjordImageSelectionScreen::ShowImpl() {
-  view_->Show();
+  base::DictValue data;
+  if (!error_message_.empty()) {
+    data.Set("errorMessage", error_message_);
+    error_message_.clear();
+  }
+  view_->Show(std::move(data));
+}
+
+void FjordImageSelectionScreen::SetErrorMessage(
+    const std::string& error_message) {
+  error_message_ = error_message;
 }
 
 void FjordImageSelectionScreen::OnImageSelected(
