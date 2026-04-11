@@ -76,6 +76,26 @@ TEST(FacilitatedPaymentsMetricsTest, LogPixCodeCopiedInIframe) {
       /*expected_bucket_count=*/1);
 }
 
+class FacilitatedPaymentsMetricsPixIframeUrlTypeTest
+    : public testing::TestWithParam<PixIframeUrlType> {};
+
+TEST_P(FacilitatedPaymentsMetricsPixIframeUrlTypeTest, LogPixIframeUrlType) {
+  base::HistogramTester histogram_tester;
+
+  LogPixIframeUrlType(GetParam());
+
+  histogram_tester.ExpectUniqueSample("FacilitatedPayments.Pix.Iframe.UrlType",
+                                      /*sample=*/GetParam(),
+                                      /*expected_bucket_count=*/1);
+}
+
+INSTANTIATE_TEST_SUITE_P(FacilitatedPaymentsMetricsTest,
+                         FacilitatedPaymentsMetricsPixIframeUrlTypeTest,
+                         testing::Values(PixIframeUrlType::kOtherNonEmptyUrl,
+                                         PixIframeUrlType::kAboutBlank,
+                                         PixIframeUrlType::kEmpty,
+                                         PixIframeUrlType::kAboutSrcDoc));
+
 TEST(FacilitatedPaymentsMetricsTest, LogEwalletPaymentLinkDetected) {
   base::HistogramTester histogram_tester;
 

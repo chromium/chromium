@@ -117,6 +117,43 @@ TEST_F(
       /*expected_count=*/0);
 }
 
+TEST_F(ContentFacilitatedPaymentsDriverFactoryTest,
+       OnTextCopiedToClipboard_PixCodeInIFrame_UrlTypeLogged) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(kEnableIframeForPix);
+
+  ON_CALL(*client_, GetOptimizationGuideDecider)
+      .WillByDefault(testing::Return(decider_.get()));
+
+  NavigateAndCommit(GURL("https://example.com"));
+  content::RenderFrameHost* main_frame = web_contents()->GetPrimaryMainFrame();
+
+  const std::u16string kValidPixCode = u"00020126180014br.gov.bcb.pix63041D3D";
+  std::vector<std::pair<std::string, PixIframeUrlType>> test_cases = {
+      {"https://psp.com", PixIframeUrlType::kOtherNonEmptyUrl},
+      {"about:blank", PixIframeUrlType::kAboutBlank},
+      {"", PixIframeUrlType::kEmpty},
+      {"about:srcdoc", PixIframeUrlType::kAboutSrcDoc}};
+
+  for (const auto& [url_string, expected_type] : test_cases) {
+    base::HistogramTester histogram_tester;
+    content::RenderFrameHost* iframe =
+        content::RenderFrameHostTester::For(main_frame)->AppendChild("iframe");
+
+    if (!url_string.empty()) {
+      iframe = content::NavigationSimulator::NavigateAndCommitFromDocument(
+          GURL(url_string), iframe);
+    }
+
+    factory_->OnTextCopiedToClipboard(iframe, kValidPixCode);
+
+    histogram_tester.ExpectUniqueSample(
+        "FacilitatedPayments.Pix.Iframe.UrlType",
+        /*sample=*/expected_type,
+        /*expected_bucket_count=*/1);
+  }
+}
+
 TEST_F(
     ContentFacilitatedPaymentsDriverFactoryTest,
     OnTextCopiedToClipboard_PixCodeInIFrame_FlagEnabled_CorrectIframeUrlPassedToDriver) {

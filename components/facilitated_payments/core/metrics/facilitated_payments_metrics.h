@@ -231,6 +231,19 @@ enum class PixCodeValidationResult {
 };
 // LINT.ThenChange(/tools/metrics/histograms/metadata/facilitated_payments/enums.xml:FacilitatedPayments.PixCodeValidationResult)
 
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+//
+// LINT.IfChange(PixIframeUrlType)
+enum class PixIframeUrlType {
+  kOtherNonEmptyUrl = 0,
+  kAboutBlank = 1,
+  kEmpty = 2,
+  kAboutSrcDoc = 3,
+  kMaxValue = kAboutSrcDoc
+};
+// LINT.ThenChange(/tools/metrics/histograms/metadata/facilitated_payments/enums.xml:FacilitatedPayments.Pix.IframeUrlType)
+
 // Converts `PaymentLinkValidator::Scheme` to a string for logging.
 std::string SchemeToString(PaymentLinkValidator::Scheme scheme);
 
@@ -240,6 +253,9 @@ void LogPixCodeCopied(ukm::SourceId ukm_source_id);
 
 // Log that a Pix code is copied to the clipboard within any iframe.
 void LogPixCodeCopiedInIframe();
+
+// Log the URL type of the iframe when a Pix code is copied in an iframe.
+void LogPixIframeUrlType(PixIframeUrlType url_type);
 
 // Log when a given payment link in a certain page for an eWallet push payment
 // flow is detected.
