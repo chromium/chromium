@@ -9096,6 +9096,7 @@ from previous Chrome versions.
   <int value="-1649778035" label="disable-clear-browsing-data-counters"/>
   <int value="-1649640812" label="WelcomeTourForceUserEligibility:disabled"/>
   <int value="-1648476870" label="SpeculationRulesPrefetchProxy:enabled"/>
+  <int value="-1648268766" label="NtpShortcutsRedesign:disabled"/>
   <int value="-1648216169" label="NewOmniboxAnswerTypes:disabled"/>
   <int value="-1647433421" label="use-passthrough-command-decoder"/>
   <int value="-1647250046" label="LauncherPlayStoreSearch:enabled"/>
@@ -13536,6 +13537,7 @@ from previous Chrome versions.
   <int value="-171798137" label="HdrAgtm:enabled"/>
   <int value="-171232290" label="ListAllDisplayModes:disabled"/>
   <int value="-171173736" label="VrBrowsingExperimentalFeatures:disabled"/>
+  <int value="-171012437" label="NtpShortcutsRedesign:enabled"/>
   <int value="-170986053" label="EnableManualFallbacksFilling:enabled"/>
   <int value="-170809452" label="QueryTilesOnStart:enabled"/>
   <int value="-170706267" label="DesktopAndroidLinkCapturing:disabled"/>
