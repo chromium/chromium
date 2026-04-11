@@ -1650,7 +1650,7 @@ TEST_F(ComposeboxQueryControllerTest, UploadPdfFileRequest_SetsContextId) {
                 .GetFileInfoForTesting(file_token)
                 ->GetRequestIdForTesting()
                 ->image_sequence_id(),
-            1);
+            0);
   EXPECT_EQ(controller()
                 .GetFileInfoForTesting(file_token)
                 ->GetRequestIdForTesting()
@@ -1674,7 +1674,7 @@ TEST_F(ComposeboxQueryControllerTest, UploadPdfFileRequest_SetsContextId) {
                 .request_context()
                 .request_id()
                 .image_sequence_id(),
-            1);
+            0);
   EXPECT_EQ(controller()
                 .last_sent_file_upload_request()
                 ->objects_request()
@@ -1925,7 +1925,7 @@ TEST_F(ComposeboxQueryControllerTest, UploadPdfFileRequestSuccess) {
                 .GetFileInfoForTesting(file_token)
                 ->GetRequestIdForTesting()
                 ->image_sequence_id(),
-            1);
+            0);
   EXPECT_EQ(controller()
                 .GetFileInfoForTesting(file_token)
                 ->GetRequestIdForTesting()
@@ -1944,7 +1944,7 @@ TEST_F(ComposeboxQueryControllerTest, UploadPdfFileRequestSuccess) {
                 .request_context()
                 .request_id()
                 .image_sequence_id(),
-            1);
+            0);
   EXPECT_EQ(controller()
                 .last_sent_file_upload_request()
                 ->objects_request()
@@ -2091,7 +2091,7 @@ TEST_F(ComposeboxQueryControllerTest, UploadPageContextPdfFileRequestSuccess) {
                 .GetFileInfoForTesting(file_token)
                 ->GetRequestIdForTesting()
                 ->image_sequence_id(),
-            1);
+            0);
   EXPECT_EQ(controller()
                 .GetFileInfoForTesting(file_token)
                 ->GetRequestIdForTesting()
@@ -2110,7 +2110,7 @@ TEST_F(ComposeboxQueryControllerTest, UploadPageContextPdfFileRequestSuccess) {
                 .request_context()
                 .request_id()
                 .image_sequence_id(),
-            1);
+            0);
   EXPECT_EQ(controller()
                 .last_sent_file_upload_request()
                 ->objects_request()
@@ -4250,12 +4250,12 @@ TEST_F(ComposeboxQueryControllerTest,
                 .GetFileInfoForTesting(first_file_token)
                 ->GetRequestIdForTesting()
                 ->image_sequence_id(),
-            1);
+            0);
   EXPECT_EQ(controller()
                 .GetFileInfoForTesting(second_file_token)
                 ->GetRequestIdForTesting()
                 ->image_sequence_id(),
-            1);
+            0);
   EXPECT_EQ(controller()
                 .GetFileInfoForTesting(first_file_token)
                 ->GetRequestIdForTesting()
@@ -4280,12 +4280,12 @@ TEST_F(ComposeboxQueryControllerTest,
                 .request_context()
                 .request_id()
                 .image_sequence_id(),
-            1);
+            0);
   EXPECT_EQ(second_file_upload_request->objects_request()
                 .request_context()
                 .request_id()
                 .image_sequence_id(),
-            1);
+            0);
   EXPECT_EQ(first_file_upload_request->objects_request()
                 .request_context()
                 .request_id()

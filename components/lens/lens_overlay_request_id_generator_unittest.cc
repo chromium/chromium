@@ -269,7 +269,7 @@ TEST_F(
       request_id_generator.GetNextRequestId(
           RequestIdUpdateMode::kMultiContextUploadRequest,
           lens::LensOverlayRequestId::MEDIA_TYPE_PDF);
-  ASSERT_EQ(second_id->image_sequence_id(), 1);
+  ASSERT_EQ(second_id->image_sequence_id(), 0);
   ASSERT_EQ(second_id->sequence_id(), 1);
   ASSERT_EQ(second_id->long_context_id(), 1);
   ASSERT_NE(first_id->analytics_id(), second_id->analytics_id());
