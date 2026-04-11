@@ -155,7 +155,7 @@ export function createSampleOmniboxExtension(canBeDisabled: boolean = false):
     canBeEdited: false,
     canBeRemoved: false,
     canBeActivated: false,
-    canBeDeactivated: false,
+    canBeDeactivated: true,
     default: false,
     displayName: 'Omnibox extension displayName',
     iconPath: 'images/foo.png',

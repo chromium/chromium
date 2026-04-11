@@ -669,6 +669,112 @@ suite('SearchEngineEntryTest_SearchSettingsUpdate', function() {
     return flushTasks();
   });
 
+  // Test the edit option availability for different states.
+  test('Edit option visibility', function() {
+    const extension = {
+      id: '1',
+      name: 'ext',
+      canBeDisabled: true,
+      icon: 'chrome://extension-icon/some-extension-icon',
+    };
+
+    // Should be visible (not hidden)
+    assertFalse(isButtonDisabled(
+        entry, '#editOption',
+        createSampleSearchEngine({canBeEdited: true, isStarterPack: false})));
+
+    // Should be hidden for Starter Packs
+    assertButtonHidden(
+        entry, '#editOption', createSampleSearchEngine({isStarterPack: true}));
+
+    // Should be hidden for non-default extensions
+    assertButtonHidden(
+        entry, '#editOption',
+        createSampleSearchEngine({extension, default: false}));
+
+    // Should be visible if the extension is the default (policy override)
+    assertFalse(isButtonDisabled(
+        entry, '#editOption',
+        createSampleSearchEngine({extension, default: true})));
+
+    // Should be hidden if managed and not editable
+    assertButtonHidden(
+        entry, '#editOption',
+        createSampleSearchEngine({isManaged: true, canBeEdited: false}));
+  });
+
+  // Test the make default option availability for different states.
+  test('Make default option visibility', function() {
+    const extension = {
+      id: '1',
+      name: 'ext',
+      canBeDisabled: true,
+      icon: 'chrome://extension-icon/some-extension-icon',
+    };
+
+    // Should be visible and enabled for regular engines.
+    assertFalse(isButtonDisabled(
+        entry, '#makeDefaultOption',
+        createSampleSearchEngine({canBeDefault: true, isStarterPack: false})));
+
+    // Should be hidden for Starter Packs.
+    assertButtonHidden(
+        entry, '#makeDefaultOption',
+        createSampleSearchEngine({isStarterPack: true}));
+
+    // Should be hidden for extensions that aren't the default.
+    assertButtonHidden(
+        entry, '#makeDefaultOption',
+        createSampleSearchEngine({extension, default: false}));
+
+    // Should be visible (but disabled) if the extension is the default.
+    assertTrue(isButtonDisabled(
+        entry, '#makeDefaultOption',
+        createSampleSearchEngine(
+            {extension, default: true, canBeDefault: false})));
+  });
+
+  // Test the delete option availability for different states.
+  test('Delete option visibility', function() {
+    // Should be visible and enabled for removable engines.
+    assertFalse(isButtonDisabled(
+        entry, '#deleteOption',
+        createSampleSearchEngine({canBeRemoved: true, isPrepopulated: false})));
+
+    // Should be hidden for prepopulated engines.
+    assertButtonHidden(
+        entry, '#deleteOption',
+        createSampleSearchEngine({isPrepopulated: true}));
+
+    // Should be visible but disabled if it's the default (and not
+    // prepopulated).
+    assertTrue(isButtonDisabled(
+        entry, '#deleteOption',
+        createSampleSearchEngine(
+            {default: true, canBeRemoved: false, isPrepopulated: false})));
+  });
+
+  // Test the deactivate option availability for different states.
+  test('Deactivate option visibility', function() {
+    // Should be visible and enabled if it can be deactivated.
+    assertFalse(isButtonDisabled(
+        entry, '#deactivateOption',
+        createSampleSearchEngine(
+            {canBeDeactivated: true, isPrepopulated: false})));
+
+    // Should be hidden for prepopulated engines.
+    assertButtonHidden(
+        entry, '#deactivateOption',
+        createSampleSearchEngine({isPrepopulated: true}));
+
+    // Should be visible but disabled if it's the default (and not
+    // prepopulated).
+    assertTrue(isButtonDisabled(
+        entry, '#deactivateOption',
+        createSampleSearchEngine(
+            {default: true, canBeDeactivated: false, isPrepopulated: false})));
+  });
+
   // Test that clicking the "Turn off" button fires a deactivate event.
   test('Deactivate', async function() {
     entry.engine = createSampleSearchEngine({canBeDeactivated: true});

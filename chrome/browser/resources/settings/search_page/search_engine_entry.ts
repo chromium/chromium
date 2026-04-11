@@ -145,7 +145,14 @@ export class SettingsSearchEngineEntryElement extends
     this.shadowRoot!.querySelector('cr-action-menu')!.close();
   }
 
-  private canBeEdited_(): boolean {
+  private showEditOption_(): boolean {
+    // Hide the edit option for extension shortcuts except if they are the
+    // current default (e.g. by policy).
+    if (this.searchSettingsUpdateEnabled_ && this.engine.extension &&
+        !this.engine.default) {
+      return false;
+    }
+
     if (this.engine.isStarterPack) {
       return false;
     }
@@ -162,7 +169,7 @@ export class SettingsSearchEngineEntryElement extends
   }
 
   private computeShowEditIcon_(): boolean {
-    return !this.searchSettingsUpdateEnabled_ && this.canBeEdited_() &&
+    return !this.searchSettingsUpdateEnabled_ && this.showEditOption_() &&
         !this.engine.canBeActivated;
   }
 
@@ -172,6 +179,13 @@ export class SettingsSearchEngineEntryElement extends
   }
 
   private computeDisableDots_(): boolean {
+    // Disable the dots if none of the options are available for the engine.
+    if (this.searchSettingsUpdateEnabled_) {
+      return !this.showEditOption_() && !this.engine.canBeActivated &&
+          !this.engine.canBeDeactivated && !this.engine.canBeRemoved &&
+          !this.engine.canBeDefault;
+    }
+
     return this.engine.default ||
         (this.engine.isManaged && !this.engine.canBeActivated &&
          !this.engine.canBeDeactivated && !this.engine.canBeRemoved);
@@ -187,18 +201,39 @@ export class SettingsSearchEngineEntryElement extends
                                    this.i18n('searchDeactivate');
   }
 
-  private showEditOption_(): boolean {
-    return this.searchSettingsUpdateEnabled_ && this.canBeEdited_() &&
-        !this.engine.extension;
-  }
+  private showDeactivateOption_(): boolean {
+    assert(this.searchSettingsUpdateEnabled_);
 
-  private showDisableExtensionOption_(): boolean {
-    return this.searchSettingsUpdateEnabled_ && !!this.engine.extension &&
-        this.engine.extension.canBeDisabled;
+    // `canBeDeactivated` is always false if the engine is the current default,
+    // but it should be shown (and disabled) anyway. Hide the deactivate option
+    // if the engine is prepopulated, as the user should not be able to turn it
+    // off.
+    return this.engine.canBeDeactivated ||
+        (this.engine.default && !this.engine.isPrepopulated);
   }
 
   private showDeleteOption_(): boolean {
-    return this.searchSettingsUpdateEnabled_ && this.engine.canBeRemoved;
+    assert(this.searchSettingsUpdateEnabled_);
+
+    // `canBeRemoved` is always false if the engine is the current default,
+    // but it should be shown (and disabled) anyway. Hide the delete option if
+    // the engine is prepopulated, as the user should not be able to delete it.
+    return this.engine.canBeRemoved ||
+        (this.engine.default && !this.engine.isPrepopulated);
+  }
+
+  private showMakeDefaultOption_(): boolean {
+    assert(this.searchSettingsUpdateEnabled_);
+
+    // Hide the make default option for starter pack and extension shortcuts,
+    // except if they are the current default (e.g. by policy).
+    return !this.engine.isStarterPack &&
+        (!this.engine.extension || this.engine.default);
+  }
+
+  private showDisableExtensionOption_(): boolean {
+    assert(this.searchSettingsUpdateEnabled_);
+    return !!this.engine.extension && this.engine.extension.canBeDisabled;
   }
 
   private showControlledIndicator_(): boolean {
