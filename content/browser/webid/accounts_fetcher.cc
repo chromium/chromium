@@ -220,6 +220,9 @@ void AccountsFetcher::OnAllConfigAndWellKnownFetched(
 
     if (!ValidateWellKnownFormatForClientMetadata(
             fetch_result.wellknown, has_client_metadata_endpoint)) {
+      fedcm_metrics_->RecordWellKnownInvalidDueToClientMetadata(
+          identity_provider_config_url);
+
       render_frame_host_->AddMessageToConsole(
           blink::mojom::ConsoleMessageLevel::kWarning,
           "The FedCM configuration uses client_metadata but the "

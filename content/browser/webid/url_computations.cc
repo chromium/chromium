@@ -53,8 +53,7 @@ std::string ComputeUrlEncodedTokenPostData(
         blink::mojom::ConsoleMessageLevel::kWarning,
         "The 'nonce' parameter should be passed within the 'params' "
         "object instead of as a top-level parameter. Top-level nonce "
-        "support will be removed in Chrome 145.");
-
+        "support will be removed in a future Chrome version.");
     if (!query.empty()) {
       query += "&";
     }
