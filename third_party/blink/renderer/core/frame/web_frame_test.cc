@@ -14232,6 +14232,9 @@ TEST_F(WebFrameTest, RemoteViewportAndMainframeIntersections) {
   helper.InitializeRemote();
   WebLocalFrameImpl* local_frame =
       helper.CreateLocalChild(*helper.RemoteMainFrame(), "frameName");
+
+  local_frame->FrameWidgetImpl()->Resize(gfx::Size(200, 100));
+
   frame_test_helpers::LoadHTMLString(local_frame, R"HTML(
       <!DOCTYPE html>
       <style>
@@ -14270,6 +14273,9 @@ TEST_F(WebFrameTest, RemoteViewportAndMainframeIntersections) {
           viewport_intersection, mainframe_intersection, viewport_intersection,
           occlusion_state, gfx::Size(), gfx::Point(), viewport_transform));
 
+  local_frame->FrameWidgetImpl()->UpdateAllLifecyclePhases(
+      DocumentUpdateReason::kTest);
+
   // The viewport intersection should be applied by the layout geometry mapping
   // code when these flags are used.
   int viewport_intersection_flags =
@@ -14296,6 +14302,23 @@ TEST_F(WebFrameTest, RemoteViewportAndMainframeIntersections) {
       ->MapToVisualRectInAncestorSpace(nullptr, mainframe_rect,
                                        kDontApplyMainFrameOverflowClip);
   EXPECT_EQ(PhysicalRect(7, -11, 25, 35), mainframe_rect);
+
+  constexpr auto kGeometryMapperFlags = static_cast<VisualRectFlags>(
+      kUseGeometryMapper | kVisualRectApplyRemoteViewportTransform |
+      kIgnoreFilters);
+
+  // Translate (0,0) by (7, -11) => (7, -11)
+  // Clip against parent viewport (0, 0, 200, 140):
+  // Resulting Rect Top: max(-11, 0) = 0.
+  // Resulting Rect Height: 35 - 11 = 24.
+  // Final Result: (7, 0, 25, 24).
+  PhysicalRect geometry_mapper_rect(0, 0, 25, 35);
+  local_frame->GetFrame()
+      ->GetDocument()
+      ->GetLayoutView()
+      ->MapToVisualRectInAncestorSpace(nullptr, geometry_mapper_rect,
+                                       kGeometryMapperFlags);
+  EXPECT_EQ(PhysicalRect(7, 0, 25, 24), geometry_mapper_rect);
 }
 
 class TestUpdateFaviconURLLocalFrameHost : public FakeLocalFrameHost {
