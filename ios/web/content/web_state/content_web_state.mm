@@ -6,6 +6,7 @@
 
 #import "base/apple/foundation_util.h"
 #import "base/functional/callback_helpers.h"
+#import "base/notimplemented.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/strings/utf_string_conversions.h"
 #import "components/embedder_support/ios/delegate/color_chooser/color_chooser_ios.h"
@@ -567,6 +568,15 @@ id<CRWFindInteraction> ContentWebState::GetFindInteraction() {
 
 id ContentWebState::GetActivityItem() {
   return nil;
+}
+
+bool ContentWebState::IsCustomOpenPanelSupported() const {
+  NOTIMPLEMENTED();
+  return false;
+}
+
+void ContentWebState::SetCustomOpenPanelSupported(bool supports) {
+  NOTIMPLEMENTED();
 }
 
 UIColor* ContentWebState::GetThemeColor() {
