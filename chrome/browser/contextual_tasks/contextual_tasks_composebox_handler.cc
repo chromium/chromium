@@ -26,6 +26,7 @@
 #include "chrome/browser/tab_list/tab_list_interface.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/contextual_search/desktop_query_contextualizer_delegate.h"
 #include "chrome/browser/ui/contextual_search/tab_contextualization_controller.h"
 #include "chrome/browser/ui/lens/lens_overlay_controller.h"
 #include "chrome/browser/ui/lens/lens_search_controller.h"
@@ -57,17 +58,6 @@
 
 namespace {
 
-std::optional<lens::ImageEncodingOptions> CreateImageEncodingOptions() {
-  // TODO(crbug.com/462208418): Use contextual tasks fieldtrial when available.
-  auto image_upload_config =
-      ntp_composebox::FeatureConfig::Get().config.composebox().image_upload();
-  return lens::ImageEncodingOptions{
-      .enable_webp_encoding = image_upload_config.enable_webp_encoding(),
-      .max_size = image_upload_config.downscale_max_image_size(),
-      .max_height = image_upload_config.downscale_max_image_height(),
-      .max_width = image_upload_config.downscale_max_image_width(),
-      .compression_quality = image_upload_config.image_compression_quality()};
-}
 
 std::unique_ptr<FileData> ReadFileAndProcess(const base::FilePath& local_path) {
   auto file_data = std::make_unique<FileData>();
@@ -187,9 +177,16 @@ ContextualTasksComposeboxHandler::ContextualTasksComposeboxHandler(
       contextual_tasks_service_(
           contextual_tasks::ContextualTasksServiceFactory::GetForProfile(
               profile)),
+      desktop_delegate_(std::make_unique<
+                        contextual_tasks::DesktopQueryContextualizerDelegate>(
+          base::BindRepeating(
+              &ContextualTasksComposeboxHandler::GetContextualSessionHandle,
+              base::Unretained(this)),
+          base::BindRepeating(
+              &ContextualSearchboxHandler::CreateImageEncodingOptions))),
       recontextualizer_(std::make_unique<contextual_tasks::QueryContextualizer>(
           contextual_tasks_service_,
-          this)) {
+          desktop_delegate_.get())) {
   // Set the callback for getting suggest inputs from the session.
   // The session is owned by WebUI controller and accessed via callback.
   // It is safe to use Unretained because omnibox client is owned by `this`.
@@ -340,21 +337,28 @@ void ContextualTasksComposeboxHandler::CreateAndSendQueryMessage(
   // Kick off the on-submit contextualization flow to upload delayed tabs and
   // recontextualize the active tab.
   recontextualization_pending_count_++;
+  // It is safe to use base::Unretained(this) here because `recontextualizer_`
+  // is owned by `this` and will be destroyed when `this` is destroyed,
+  // cancelling any pending callbacks.
   recontextualizer_->Contextualize(
       task_id, query, tabs_to_recontextualize, tabs_to_force_contextualize,
+      base::BindRepeating(
+          &ContextualTasksComposeboxHandler::OnPageContextIneligible,
+          base::Unretained(this)),
+      base::BindRepeating(&ContextualTasksComposeboxHandler::
+                              OnTabProcessedForQueryContextualization,
+                          base::Unretained(this)),
       base::BindOnce(
-          [](base::WeakPtr<ContextualTasksComposeboxHandler> handler,
-             std::string query, std::optional<base::Uuid> task_id,
+          [](ContextualTasksComposeboxHandler* handler, std::string query,
+             std::optional<base::Uuid> task_id,
              std::optional<base::UnguessableToken> token,
              base::WeakPtr<contextual_search::ContextualSearchSessionHandle>
                  handle) {
             // The session handle is accessed via GetContextualSessionHandle(),
             // so we ignore it here.
-            if (handler) {
-              handler->ContinueCreateAndSendQueryMessage(query, task_id, token);
-            }
+            handler->ContinueCreateAndSendQueryMessage(query, task_id, token);
           },
-          weak_factory_.GetWeakPtr(), query, task_id, overlay_token));
+          base::Unretained(this), query, task_id, overlay_token));
 }
 
 contextual_tasks::ContextualTasksService*
@@ -426,46 +430,7 @@ void ContextualTasksComposeboxHandler::AddFileContextFromBrowser(
   std::move(callback).Run(base::ok(token));
 }
 
-GURL ContextualTasksComposeboxHandler::GetTabUrl(
-    contextual_tasks::QueryContextualizer::TabId id) {
-  tabs::TabHandle handle = tabs::TabHandle(id);
-  tabs::TabInterface* const tab = handle.Get();
-  if (!tab || !tab->GetContents()) {
-    return GURL();
-  }
-  return tab->GetContents()->GetLastCommittedURL();
-}
 
-SessionID ContextualTasksComposeboxHandler::GetTabSessionId(
-    contextual_tasks::QueryContextualizer::TabId id) {
-  tabs::TabHandle handle = tabs::TabHandle(id);
-  tabs::TabInterface* const tab = handle.Get();
-  if (!tab || !tab->GetContents()) {
-    return SessionID::InvalidValue();
-  }
-  return sessions::SessionTabHelper::IdForTab(tab->GetContents());
-}
-
-void ContextualTasksComposeboxHandler::GetPageContext(
-    contextual_tasks::QueryContextualizer::TabId id,
-    base::OnceCallback<void(std::unique_ptr<lens::ContextualInputData>)>
-        callback) {
-  tabs::TabHandle handle = tabs::TabHandle(id);
-  tabs::TabInterface* const tab = handle.Get();
-  if (!tab) {
-    std::move(callback).Run(nullptr);
-    return;
-  }
-
-  tabs::TabFeatures* tab_features = tab->GetTabFeatures();
-  if (!tab_features || !tab_features->tab_contextualization_controller()) {
-    std::move(callback).Run(nullptr);
-    return;
-  }
-
-  tab_features->tab_contextualization_controller()->GetPageContext(
-      std::move(callback));
-}
 
 
 void ContextualTasksComposeboxHandler::OnPageContextIneligible() {
@@ -475,12 +440,6 @@ void ContextualTasksComposeboxHandler::OnPageContextIneligible() {
 void ContextualTasksComposeboxHandler::OnTabProcessedForQueryContextualization(
     contextual_tasks::QueryContextualizer::TabId id) {
   pending_delayed_tab_ids_.erase(id);
-}
-
-contextual_search::ContextualSearchSessionHandle*
-ContextualTasksComposeboxHandler::
-    GetOrCreateSessionHandleForQueryContextualizer() {
-  return GetContextualSessionHandle();
 }
 
 void ContextualTasksComposeboxHandler::ContinueCreateAndSendQueryMessage(
@@ -673,9 +632,9 @@ void ContextualTasksComposeboxHandler::AddFileContext(
   ContextualSearchboxHandler::page_->AddFileContext(token,
                                                     std::move(file_info));
   std::move(callback).Run(base::ok(token));
-  session_handle->StartFileContextUploadFlow(token, file_name, mime_type,
-                                             std::move(file_bytes),
-                                             CreateImageEncodingOptions());
+  session_handle->StartFileContextUploadFlow(
+      token, file_name, mime_type, std::move(file_bytes),
+      ContextualSearchboxHandler::CreateImageEncodingOptions());
 }
 
 void ContextualTasksComposeboxHandler::FileSelectionCanceled() {

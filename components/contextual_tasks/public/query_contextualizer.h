@@ -76,12 +76,6 @@ class QueryContextualizer {
     virtual std::optional<lens::ImageEncodingOptions>
     GetTabViewportEncodingOptionsForQueryContextualizer() = 0;
 
-    // Called when the page context is ineligible.
-    virtual void OnPageContextIneligible() = 0;
-
-    // Called when contextualization for a tab has been processed (either
-    // uploaded or skipped), to allow state cleanup.
-    virtual void OnTabProcessedForQueryContextualization(TabId id) = 0;
 
     // Returns the session handle for context upload, creating it if necessary.
     // If it cannot create one, returning nullptr is fine.
@@ -97,6 +91,9 @@ class QueryContextualizer {
 
   using ContextualizedCallback = base::OnceCallback<void(
       base::WeakPtr<contextual_search::ContextualSearchSessionHandle>)>;
+
+  using PageContextIneligibleCallback = base::RepeatingClosure;
+  using TabProcessedCallback = base::RepeatingCallback<void(TabId)>;
 
   // Starts the contextualization flow for the given task and tabs.
   // `task_id` is the ID of the active contextual task to contextualize for,
@@ -114,6 +111,8 @@ class QueryContextualizer {
                      const std::string& query_text,
                      const std::vector<TabId>& tabs_to_recontextualize,
                      const std::vector<TabId>& tabs_to_force_contextualize,
+                     PageContextIneligibleCallback on_ineligible_callback,
+                     TabProcessedCallback on_processed_callback,
                      ContextualizedCallback callback);
 
  private:
@@ -124,6 +123,8 @@ class QueryContextualizer {
       const std::vector<TabId>& tabs_to_force_contextualize,
       base::WeakPtr<contextual_search::ContextualSearchSessionHandle>
           session_handle,
+      PageContextIneligibleCallback on_ineligible_callback,
+      TabProcessedCallback on_processed_callback,
       ContextualizedCallback callback,
       std::unique_ptr<ContextualTaskContext> context);
 
@@ -136,6 +137,8 @@ class QueryContextualizer {
       base::WeakPtr<contextual_search::ContextualSearchSessionHandle>
           session_handle,
       scoped_refptr<UploadTracker> upload_tracker,
+      PageContextIneligibleCallback on_ineligible_callback,
+      TabProcessedCallback on_processed_callback,
       std::unique_ptr<lens::ContextualInputData> page_content_data);
 
   std::vector<TabUpdate> GetTabsToUpdate(
