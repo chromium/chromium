@@ -30,6 +30,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/metrics_proto/omnibox_event.pb.h"
 #include "third_party/metrics_proto/omnibox_scoring_signals.pb.h"
+#include "third_party/omnibox_proto/answer_type.pb.h"
 #include "third_party/omnibox_proto/entity_info.pb.h"
 #include "third_party/omnibox_proto/suggest_template_info.pb.h"
 #include "ui/gfx/vector_icon_types.h"
@@ -923,6 +924,23 @@ TEST_F(AutocompleteMatchTest, BetterDuplicate) {
       create_match(featured_search_provider, 100,
                    AutocompleteMatchType::STARTER_PACK)));
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+
+  // Prefer entity matches.
+  auto entity_match = create_match(
+      history_provider, 100, AutocompleteMatchType::SEARCH_SUGGEST_ENTITY);
+  auto high_relevance_match = create_match(history_provider, 1500);
+  EXPECT_TRUE(
+      AutocompleteMatch::BetterDuplicate(entity_match, high_relevance_match));
+  EXPECT_FALSE(
+      AutocompleteMatch::BetterDuplicate(high_relevance_match, entity_match));
+
+  // Prefer answer matches.
+  auto answer_match = create_match(history_provider, 100);
+  answer_match.answer_type = omnibox::ANSWER_TYPE_FINANCE;
+  EXPECT_TRUE(
+      AutocompleteMatch::BetterDuplicate(answer_match, high_relevance_match));
+  EXPECT_FALSE(
+      AutocompleteMatch::BetterDuplicate(high_relevance_match, answer_match));
 
   // Prefer more relevant matches.
   EXPECT_FALSE(
