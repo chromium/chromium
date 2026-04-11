@@ -25,7 +25,6 @@ import {getInstance as getAnnouncerInstance} from '//resources/cr_elements/cr_a1
 import {assert} from '//resources/js/assert.js';
 import {EventTracker} from '//resources/js/event_tracker.js';
 import {loadTimeData} from '//resources/js/load_time_data.js';
-import {hasKeyModifiers} from '//resources/js/util.js';
 import type {PropertyValues} from '//resources/lit/v3_0/lit.rollup.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 import type {AutocompleteResult, FileAttachment, PageCallbackRouter as SearchboxPageCallbackRouter, PageHandlerRemote as SearchboxPageHandlerRemote, SearchContext, TabAttachment, TabInfo} from '//resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
@@ -168,7 +167,6 @@ export class ComposeboxElement extends ComposeboxEmbedderMixin
       },
       isFollowupQuery: {type: Boolean},
       enableFileHint: {type: Boolean},
-      dropdownNeeded: {type: Boolean},
     };
   }
 
@@ -191,10 +189,6 @@ export class ComposeboxElement extends ComposeboxEmbedderMixin
   accessor entrypointName: string = '';
   accessor disableVoiceSearchAnimation: boolean = false;
   accessor lensButtonDisabled: boolean = false;
-  // If linked to `showDropdown`, then matches will not be propagated upwards to
-  // parent component. This is purely to hide cr composebox's dropdown, while
-  // `showDropdown` seems to be affecting the presence of matches in `result`.
-  accessor dropdownNeeded: boolean = true;
 
   accessor submitButtonIconType: SubmitButtonIconType =
       SubmitButtonIconType.UPWARD;
@@ -926,7 +920,7 @@ export class ComposeboxElement extends ComposeboxEmbedderMixin
   }
 
   protected onSubmitClick_(e: MouseEvent) {
-    this.submitQuery_(e);
+    this.submitQuery(e);
   }
 
   protected async onContextMenuClosed_() {
@@ -965,7 +959,7 @@ export class ComposeboxElement extends ComposeboxEmbedderMixin
     this.searchboxHandler_.submitQuery(
         e.detail, /*mouse_button=*/ 0, /*alt_key=*/ false,
         /*ctrl_key=*/ false, /*meta_key=*/ false, /*shift_key=*/ false);
-    this.submitCleanup_();
+    this.submitCleanup();
   }
 
   protected onVoiceSearchButtonClick_() {
@@ -1022,19 +1016,7 @@ export class ComposeboxElement extends ComposeboxEmbedderMixin
         this.getInputElement().resetCaret();
       }
     } else {
-      this.closeComposebox_();
-    }
-  }
-
-  handleEscapeKeyLogic(): void {
-    if (!this.composeboxCloseByEscape && this.hasContent()) {
-      this.resetModes();
-      this.clearAllInputs(/* querySubmitted= */ false,
-                          /* shouldBlockAutoSuggestedTabs= */ false);
-      this.focusInput();
-      this.queryAutocomplete(/* clearMatches= */ true);
-    } else {
-      this.closeComposebox_();
+      this.closeComposebox();
     }
   }
 
@@ -1123,124 +1105,6 @@ export class ComposeboxElement extends ComposeboxEmbedderMixin
     }
   }
 
-  private isFocusInInput_(): boolean {
-    return this.shadowRoot.activeElement === this.getInputElement();
-  }
-
-  private finalizeMatchSelection_(e: KeyboardEvent) {
-    this.smartComposeInlineHint = '';
-    e.preventDefault();
-    if (this.shadowRoot.activeElement === this.$.matches) {
-      this.$.matches.focusSelected();
-    }
-  }
-
-  private handleArrowKey_(e: KeyboardEvent) {
-    if (!this.dropdownNeeded) {
-      return;
-    }
-    if (this.isFocusInInput_() && !this.showDropdown) {
-      return;
-    }
-    if (!this.hasMatches() || hasKeyModifiers(e)) {
-      return;
-    }
-
-    if (e.key === 'ArrowDown') {
-      this.$.matches.selectNext();
-    } else if (e.key === 'ArrowUp') {
-      this.$.matches.selectPrevious();
-    }
-    this.finalizeMatchSelection_(e);
-  }
-
-  private handleTab_(e: KeyboardEvent) {
-    if (this.isFocusInInput_()) {
-      // If focus leaves the input, unselect the first match.
-      if (e.shiftKey) {
-        this.$.matches.unselect();
-      } else if (this.smartComposeEnabled && this.smartComposeInlineHint) {
-        this.input = this.input + this.smartComposeInlineHint;
-        this.smartComposeInlineHint = '';
-        e.preventDefault();
-        this.queryAutocomplete(/* clearMatches= */ true);
-      }
-      return;
-    }
-
-    if (this.hasMatches() && this.dropdownNeeded && !hasKeyModifiers(e)) {
-      // If focus goes past the last match, unselect the last match.
-      if (this.selectedMatchIndex === this.result!.matches.length - 1) {
-        if (this.selectedMatch!.supportsDeletion) {
-          const focusedMatchElem =
-              this.shadowRoot.activeElement?.shadowRoot?.activeElement;
-          const focusedButtonElem = focusedMatchElem?.shadowRoot?.activeElement;
-          if (focusedButtonElem?.id === 'remove') {
-            this.$.matches.unselect();
-          }
-        } else {
-          this.$.matches.unselect();
-        }
-      }
-    }
-  }
-
-  private handleEnter_(e: KeyboardEvent) {
-    if (this.shadowRoot.activeElement === this.$.matches || !e.shiftKey) {
-      e.preventDefault();
-      if (this.canSubmitFilesAndInput) {
-        this.submitQuery_(e);
-      }
-    }
-    this.finalizeMatchSelection_(e);
-  }
-
-  private handleEscape_(e: KeyboardEvent) {
-    this.handleEscapeKeyLogic();
-    e.stopPropagation();
-    e.preventDefault();
-  }
-
-  private handlePageNavigation_(e: KeyboardEvent) {
-    if (!this.hasMatches() || !this.dropdownNeeded || hasKeyModifiers(e)) {
-      return;
-    }
-
-    if (e.key === 'PageUp') {
-      this.selectFirstMatch();
-    } else {
-      this.$.matches.selectLast();
-    }
-    this.finalizeMatchSelection_(e);
-  }
-
-  protected onKeydown_(e: KeyboardEvent) {
-    const HANDLED_KEYS = [
-      'ArrowDown',
-      'ArrowUp',
-      'Enter',
-      'Escape',
-      'PageDown',
-      'PageUp',
-      'Tab',
-    ];
-    if (!HANDLED_KEYS.includes(e.key)) {
-      return;
-    }
-
-    const handlers: Record<string, (e: KeyboardEvent) => void> = {
-      'ArrowDown': (e) => this.handleArrowKey_(e),
-      'ArrowUp': (e) => this.handleArrowKey_(e),
-      'Enter': (e) => this.handleEnter_(e),
-      'Escape': (e) => this.handleEscape_(e),
-      'Tab': (e) => this.handleTab_(e),
-      'PageUp': (e) => this.handlePageNavigation_(e),
-      'PageDown': (e) => this.handlePageNavigation_(e),
-    };
-
-    handlers[e.key]!(e);
-  }
-
   protected onComposeboxFocusin_(e: FocusEvent) {
     // Exit early if the focus is still within the composebox.
     if (this.$.composebox.contains(e.relatedTarget as Node)) {
@@ -1296,7 +1160,7 @@ export class ComposeboxElement extends ComposeboxEmbedderMixin
     }
   }
 
-  private closeComposebox_() {
+  override closeComposebox() {
     this.resetModes();
     this.searchboxHandler_.clearFiles(/*shouldBlockAutoSuggestedTabs=*/ false);
     this.resetToolsAndModels();
@@ -1309,7 +1173,7 @@ export class ComposeboxElement extends ComposeboxEmbedderMixin
     }
   }
 
-  protected submitCleanup_() {
+  override submitCleanup() {
     // Update states after submitting:
     this.animationState = GlowAnimationState.SUBMITTING;
 
@@ -1323,39 +1187,6 @@ export class ComposeboxElement extends ComposeboxEmbedderMixin
     this.fire('composebox-submit');
   }
 
-  protected submitQuery_(e: KeyboardEvent|MouseEvent) {
-    // If we're unable to submit (e.g., still uploading files) or the query
-    // synchronously evaluates to invalid (e.g. state hasn't updated in Lit
-    // due to synchronous eventing), do nothing.
-    if (!this.canSubmitFilesAndInput || !this.hasValidQuery()) {
-      return;
-    }
-
-    // If there is a match that is selected, open that match, else follow the
-    // non-autocomplete submission flow. The non-autocomplete submission flow
-    // will not have omnibox metrics recorded for it.
-    if (this.selectedMatchIndex >= 0) {
-      const match = this.result!.matches[this.selectedMatchIndex];
-      assert(match);
-      this.searchboxHandler_.openAutocompleteMatch(
-          this.selectedMatchIndex, match.destinationUrl,
-          /* are_matches_showing */ true, (e as MouseEvent).button || 0,
-          e.altKey, e.ctrlKey, e.metaKey, e.shiftKey);
-    } else {
-      this.searchboxHandler_.submitQuery(
-          this.input.trim(), (e as MouseEvent).button || 0, e.altKey, e.ctrlKey,
-          e.metaKey, e.shiftKey);
-    }
-
-    this.submitCleanup_();
-    // We only close the composebox when opening in a new tab because doing
-    // so in the current tab causes a visual jitter where the composebox
-    // closes before the new results page finishes loading.
-    if (e.ctrlKey || e.metaKey || e.shiftKey) {
-      this.closeComposebox_();
-    }
-  }
-
   protected onMatchClick_(e: CustomEvent<{
     ctrlKey: boolean,
     metaKey: boolean,
@@ -1367,7 +1198,7 @@ export class ComposeboxElement extends ComposeboxEmbedderMixin
     // closes before the new results page finishes loading.
     if (e && e.detail &&
         (e.detail.ctrlKey || e.detail.metaKey || e.detail.shiftKey)) {
-      this.closeComposebox_();
+      this.closeComposebox();
     }
   }
 
@@ -1502,13 +1333,15 @@ export class ComposeboxElement extends ComposeboxEmbedderMixin
     }
   }
 
-  clearAllInputs(
+  // TODO(crbug.com/486706573): Refactor this function and move the common logic
+  // to the mixin class. Move embedder specific logic to the embedder class.
+  override clearAllInputs(
       querySubmitted: boolean, shouldBlockAutoSuggestedTabs: boolean) {
     this.clearInput();
     this.automaticActiveTab_ = null;
     this.pendingAutomaticActiveTabUrl_ = '';
     this.pendingAutomaticActiveTabTitle_ = '';
-    // Let `querySubmit_` handle clearing files if the tool mode is a tool mode
+    // Let `querySubmit` handle clearing files if the tool mode is a tool mode
     // that should be cleared after submitting. For all other general
     // clearing, clear input here.
     if (!querySubmitted) {

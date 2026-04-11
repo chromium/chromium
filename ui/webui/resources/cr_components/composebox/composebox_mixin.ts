@@ -5,8 +5,9 @@
 import {getInstance as getAnnouncerInstance} from '//resources/cr_elements/cr_a11y_announcer/cr_a11y_announcer.js';
 import {I18nMixinLit} from '//resources/cr_elements/i18n_mixin_lit.js';
 import type {I18nMixinLitInterface} from '//resources/cr_elements/i18n_mixin_lit.js';
-import {assertNotReached} from '//resources/js/assert.js';
+import {assert, assertNotReached} from '//resources/js/assert.js';
 import {loadTimeData} from '//resources/js/load_time_data.js';
+import {hasKeyModifiers} from '//resources/js/util.js';
 import type {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 import type {AutocompleteMatch, AutocompleteResult, PageHandlerRemote as SearchboxPageHandlerRemote, SelectedFileInfo, TabInfo} from '//resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
 import type {BigBuffer} from '//resources/mojo/mojo/public/mojom/base/big_buffer.mojom-webui.js';
@@ -79,6 +80,7 @@ export const ComposeboxEmbedderMixin =
               reflect: true,
               type: Boolean,
             },
+            dropdownNeeded: {type: Boolean},
             showFileCarousel: {
               reflect: true,
               type: Boolean,
@@ -154,6 +156,7 @@ export const ComposeboxEmbedderMixin =
         accessor selectedMatchIndex: number = -1;
         accessor showDropdown: boolean =
             loadTimeData.getBoolean('composeboxShowZps');
+        accessor dropdownNeeded: boolean = true;
         accessor showFileCarousel: boolean = false;
         accessor usePecApi: boolean = getLoadTimeBoolean(
             'contextualMenuUsePecApi', /*defaultValue=*/ false);
@@ -288,6 +291,128 @@ export const ComposeboxEmbedderMixin =
           }
         }
 
+        isFocusInInput(): boolean {
+          return this.getActiveElement() === this.getInputElement();
+        }
+
+        finalizeMatchSelection(e: KeyboardEvent) {
+          this.smartComposeInlineHint = '';
+          e.preventDefault();
+          if (this.getActiveElement() === this.getDropdownElement()) {
+            this.getDropdownElement().focusSelected();
+          }
+        }
+
+        protected handleArrowKey_(e: KeyboardEvent) {
+          if (!this.dropdownNeeded) {
+            return;
+          }
+          if (this.isFocusInInput() && !this.showDropdown) {
+            return;
+          }
+          if (!this.hasMatches() || hasKeyModifiers(e)) {
+            return;
+          }
+
+          if (e.key === 'ArrowDown') {
+            this.getDropdownElement().selectNext();
+          } else if (e.key === 'ArrowUp') {
+            this.getDropdownElement().selectPrevious();
+          }
+          this.finalizeMatchSelection(e);
+        }
+
+        protected handleTab_(e: KeyboardEvent) {
+          if (this.isFocusInInput()) {
+            // If focus leaves the input, unselect the first match.
+            if (e.shiftKey) {
+              this.getDropdownElement().unselect();
+            } else if (
+                this.smartComposeEnabled && this.smartComposeInlineHint) {
+              this.input = this.input + this.smartComposeInlineHint;
+              this.smartComposeInlineHint = '';
+              e.preventDefault();
+              this.queryAutocomplete(/* clearMatches= */ true);
+            }
+            return;
+          }
+
+          if (this.hasMatches() && this.dropdownNeeded && !hasKeyModifiers(e)) {
+            // If focus goes past the last match, unselect the last match.
+            if (this.selectedMatchIndex === this.result!.matches.length - 1) {
+              if (this.selectedMatch!.supportsDeletion) {
+                const focusedMatchElem =
+                    this.getActiveElement()?.shadowRoot?.activeElement;
+                const focusedButtonElem =
+                    focusedMatchElem?.shadowRoot?.activeElement;
+                if (focusedButtonElem?.id === 'remove') {
+                  this.getDropdownElement().unselect();
+                }
+              } else {
+                this.getDropdownElement().unselect();
+              }
+            }
+          }
+        }
+
+        protected handleEnter_(e: KeyboardEvent) {
+          if (this.getActiveElement() === this.getDropdownElement() ||
+              !e.shiftKey) {
+            e.preventDefault();
+            if (this.canSubmitFilesAndInput) {
+              this.submitQuery(e);
+            }
+          }
+          this.finalizeMatchSelection(e);
+        }
+
+        protected handleEscape_(e: KeyboardEvent) {
+          this.handleEscapeKeyLogic();
+          e.stopPropagation();
+          e.preventDefault();
+        }
+
+        protected handlePageNavigation_(e: KeyboardEvent) {
+          if (!this.hasMatches() || !this.dropdownNeeded ||
+              hasKeyModifiers(e)) {
+            return;
+          }
+
+          if (e.key === 'PageUp') {
+            this.selectFirstMatch();
+          } else {
+            this.getDropdownElement().selectLast();
+          }
+          this.finalizeMatchSelection(e);
+        }
+
+        onKeydown(e: KeyboardEvent) {
+          const HANDLED_KEYS = [
+            'ArrowDown',
+            'ArrowUp',
+            'Enter',
+            'Escape',
+            'PageDown',
+            'PageUp',
+            'Tab',
+          ];
+          if (!HANDLED_KEYS.includes(e.key)) {
+            return;
+          }
+
+          const handlers: Record<string, (e: KeyboardEvent) => void> = {
+            'ArrowDown': (e) => this.handleArrowKey_(e),
+            'ArrowUp': (e) => this.handleArrowKey_(e),
+            'Enter': (e) => this.handleEnter_(e),
+            'Escape': (e) => this.handleEscape_(e),
+            'Tab': (e) => this.handleTab_(e),
+            'PageUp': (e) => this.handlePageNavigation_(e),
+            'PageDown': (e) => this.handlePageNavigation_(e),
+          };
+
+          handlers[e.key]!(e);
+        }
+
         updateInputPlaceholder() {
           assertNotReached();
         }
@@ -353,6 +478,11 @@ export const ComposeboxEmbedderMixin =
           this.input = '';
           this.lastQueriedInput = '';
           this.getDropdownElement().unselect();
+        }
+
+        clearAllInputs(
+            _querySubmitted: boolean, _shouldBlockAutoSuggestedTabs: boolean) {
+          assertNotReached();
         }
 
         handleProcessFilesError(error: ProcessFilesError) {
@@ -480,6 +610,58 @@ export const ComposeboxEmbedderMixin =
           this.clearAutocompleteMatches();
         }
 
+        closeComposebox() {
+          assertNotReached();
+        }
+
+        handleEscapeKeyLogic() {
+          if (!this.composeboxCloseByEscape && this.hasContent()) {
+            this.resetModes();
+            this.clearAllInputs(/* querySubmitted= */ false,
+                                /* shouldBlockAutoSuggestedTabs= */ false);
+            this.focusInput();
+            this.queryAutocomplete(/* clearMatches= */ true);
+          } else {
+            this.closeComposebox();
+          }
+        }
+
+        submitQuery(e: KeyboardEvent|MouseEvent) {
+          // If we're unable to submit (e.g., still uploading files) or the
+          // query synchronously evaluates to invalid (e.g. state hasn't updated
+          // in Lit due to synchronous eventing), do nothing.
+          if (!this.canSubmitFilesAndInput || !this.hasValidQuery()) {
+            return;
+          }
+
+          // If there is a match that is selected, open that match, else follow
+          // the non-autocomplete submission flow. The non-autocomplete
+          // submission flow will not have omnibox metrics recorded for it.
+          if (this.selectedMatchIndex >= 0) {
+            const match = this.result!.matches[this.selectedMatchIndex];
+            assert(match);
+            this.getSearchboxHandler().openAutocompleteMatch(
+                this.selectedMatchIndex, match.destinationUrl,
+                /* are_matches_showing */ true, (e as MouseEvent).button || 0,
+                e.altKey, e.ctrlKey, e.metaKey, e.shiftKey);
+          } else {
+            this.getSearchboxHandler().submitQuery(
+                this.input.trim(), (e as MouseEvent).button || 0, e.altKey,
+                e.ctrlKey, e.metaKey, e.shiftKey);
+          }
+
+          this.submitCleanup();
+          // We only close the composebox when opening in a new tab because
+          // doing so in the current tab causes a visual jitter where the
+          // composebox closes before the new results page finishes loading.
+          if (e.ctrlKey || e.metaKey || e.shiftKey) {
+            this.closeComposebox();
+          }
+        }
+
+        submitCleanup() {
+          assertNotReached();
+        }
 
         hasImageFiles(): boolean {
           return Array.from(this.files.values())
@@ -848,6 +1030,7 @@ export interface ComposeboxEmbedderMixinInterface extends
   selectedMatch: AutocompleteMatch|null;
   selectedMatchIndex: number;
   showDropdown: boolean;
+  dropdownNeeded: boolean;
   showFileCarousel: boolean;
   usePecApi: boolean;
   showVoiceSearch: boolean;
@@ -867,6 +1050,9 @@ export interface ComposeboxEmbedderMixinInterface extends
   updateInputPlaceholder(): void;
   deleteFile(uuidToDelete: UnguessableToken, fromUserAction?: boolean): void;
   closeMenu(): void;
+  closeComposebox(): void;
+  submitQuery(e: KeyboardEvent|MouseEvent): void;
+  submitCleanup(): void;
   getInputElement(): ComposeboxInputElement;
   getDropdownElement(): ComposeboxDropdownElement;
   getActiveElement(): Element|null;
@@ -883,6 +1069,8 @@ export interface ComposeboxEmbedderMixinInterface extends
   onInputStateChanged(inputState: InputState): void;
   onInputInput(e: CustomEvent<Event>): void;
   onInputFocusin(): void;
+  onKeydown(e: KeyboardEvent): void;
+  handleEscapeKeyLogic(): void;
   onToolClick(e: CustomEvent<{toolMode: ToolMode}>): void;
   handleToolClick(tool: ToolMode): void;
   handleToolModeUpdate(newTool: ToolMode): void;
@@ -893,6 +1081,8 @@ export interface ComposeboxEmbedderMixinInterface extends
   focusInput(): void;
   hasContent(): boolean;
   clearInput(): void;
+  clearAllInputs(
+      _querySubmitted: boolean, _shouldBlockAutoSuggestedTabs: boolean): void;
   handleProcessFilesError(error: ProcessFilesError): void;
   isFileAllowed(fileType: string): boolean;
   isMimeTypeAllowed(mimeType: string, allowedTypes: string[]): boolean;
