@@ -11348,6 +11348,7 @@ from previous Chrome versions.
   <int value="-904337228" label="CameraMicPreview:enabled"/>
   <int value="-903524547" label="DiscoFeedEndpoint:disabled"/>
   <int value="-903359589" label="CrOSEnforceSystemAec:enabled"/>
+  <int value="-903039070" label="ComposeboxDriveContextMenuOption:enabled"/>
   <int value="-902719249" label="EnableSchemeBoundCookies:disabled"/>
   <int value="-902227224" label="MlRelevanceScoring:disabled"/>
   <int value="-902125579" label="ImmersiveUiMode:disabled"/>
@@ -11391,6 +11392,7 @@ from previous Chrome versions.
   <int value="-892428689" label="ManualPasswordGenerationAndroid:enabled"/>
   <int value="-892297699" label="EditContext:enabled"/>
   <int value="-891856063" label="MidiManagerAndroid:enabled"/>
+  <int value="-890843885" label="ComposeboxDriveContextMenuOption:disabled"/>
   <int value="-889670978" label="AssistantRoutines:disabled"/>
   <int value="-888688589" label="DevToolsAutomaticFileSystems:enabled"/>
   <int value="-888336510" label="NtpSingleRowShortcuts:enabled"/>

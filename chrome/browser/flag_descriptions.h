@@ -6171,6 +6171,11 @@ inline constexpr char kCastMirroringTargetPlayoutDelay300ms[] = "300ms.";
 inline constexpr char kCastMirroringTargetPlayoutDelay350ms[] = "350ms.";
 inline constexpr char kCastMirroringTargetPlayoutDelay400ms[] = "400ms.";
 
+inline constexpr char kComposeboxDriveContextMenuOptionName[] =
+    "Composebox Drive Context Menu Option";
+inline constexpr char kComposeboxDriveContextMenuOptionDescription[] =
+    "Enables Google Drive option in the Composebox context menu.";
+
 inline constexpr char kEnableHeadlessLiveCaptionName[] =
     "Headless Live Captions";
 inline constexpr char kEnableHeadlessLiveCaptionDescription[] =
