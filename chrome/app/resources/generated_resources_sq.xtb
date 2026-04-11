@@ -2096,6 +2096,7 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="2434915728183570229">Tani mund të shikosh aplikacionet e telefonit</translation>
 <translation id="2435248616906486374">Rrjeti u shkëput</translation>
 <translation id="2435457462613246316">Shfaq fjalëkalimin</translation>
+<translation id="2435670725585845785">Gozhdo "Kërkimin e skedës"</translation>
 <translation id="2436385001956947090">Kopjo &amp;lidhjen</translation>
 <translation id="2437105255211187922">{NUM_TABS,plural, =1{Ndarja e skedës së zgjedhur do të tejkalojë kufirin e ndarjes}other{Ndarja e # skedave do të tejkalojë kufirin e ndarjes}}</translation>
 <translation id="2437561292559037753">Ndarja e të dhënave</translation>
@@ -3150,6 +3151,7 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="3157387275655328056">Shto te lista e leximit</translation>
 <translation id="3157931365184549694">Restauro</translation>
 <translation id="3158033540161634471">Konfiguro gjurmën e gishtit</translation>
+<translation id="3158203338449343164">Zhgozhdo "Kërkimin e skedës"</translation>
 <translation id="3158732900546890991">Fjalëkalimi duhet të ketë të paktën 8 karaktere dhe të përfshijë të paktën dy nga sa më poshtë: shkronja të mëdha, shkronja të vogla, numra ose simbole</translation>
 <translation id="3158770568048368350">Kjo mund të shkaktojë shkëputjen e shkurtër të rrjetit tënd celular</translation>
 <translation id="3159335509547415276">Mëso rreth llogarive të bllokuara</translation>
@@ -4878,6 +4880,7 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="4360738659108163902">Kliko me butonin djathtas të miut</translation>
 <translation id="4361745360460842907">Hape si skedë</translation>
 <translation id="4362459470237309049">Përdor “.” për të lëshuar një buton të miut</translation>
+<translation id="4362871358537270439">Shfaq skedat nga pajisjet e tjera në panelin anësor</translation>
 <translation id="4363262124589131906">Skedarët e rinj te "Disku im" nuk do të sinkronizohen më automatikisht në këtë Chromebook</translation>
 <translation id="4364327530094270451">Pjepër</translation>
 <translation id="4364417397164696363">{ITEM_COUNT,plural, =1{1 artikull është ruajtur vetëm në këtë pajisje. Për ta përdorur atë në pajisje të tjera, ruaje në "Llogarinë tënde të Google".}other{{ITEM_COUNT} artikuj janë ruajtur vetëm në këtë pajisje. Për t'i përdorur në pajisjet e tua të tjera, ruaji në "Llogarinë tënde të Google".}}</translation>
@@ -6315,6 +6318,7 @@ Përdor Ctrl + Alt + "Ul ndriçimin" për ta zvogëluar.</translation>
 <translation id="538822246583124912">Politika e ndërmarrjes u ndryshua. Butoni i eksperimenteve u shtua te shiriti i veglave. Kliko te butoni për të hapur një dialog për të aktivizuar eksperimentet.</translation>
 <translation id="5388436023007579456">Aplikacionet dhe uebsajtet me lejen për kamerën, si dhe shërbimet e sistemit, mund të përdorin kamerën. Për ta përdorur kamerën, mund të të duhet të rinisësh aplikacionin ose të rifreskosh faqen.</translation>
 <translation id="5388719243178419614">Nuk mund të ngarkohet. Përpunimi i skedarit të imazhit dështoi.</translation>
+<translation id="5388834241575213051">Shfaq skedat nga pajisjet e tjera në panelin anësor</translation>
 <translation id="5388885445722491159">I çiftuar</translation>
 <translation id="5389224261615877010">Ylber</translation>
 <translation id="538945906186309152">Aktivizo shkurtoren e tastierës për Gemini</translation>
@@ -7598,6 +7602,7 @@ Mund të caktosh shumë çelësa për këtë veprim.</translation>
 <translation id="6291741848715722067">Kodi i konfirmimit</translation>
 <translation id="6291953229176937411">Shfaqe te "Gjetësi"</translation>
 <translation id="6293862149782163840"><ph name="DEVICE_NAME" /> është çaktivizuar</translation>
+<translation id="629405221789675953">Zhgozhdo "Kërkimin e skedës"</translation>
 <translation id="6294759976468837022">Shpejtësia e skanimit automatik</translation>
 <translation id="6295158916970320988">Të gjitha sajtet</translation>
 <translation id="6295855836753816081">Po ruan...</translation>
@@ -8612,6 +8617,7 @@ Ke edhe # fjalëkalime të tjera të komprometuara. "Menaxheri i fjalëkalimeve 
 <translation id="7003844668372540529">Produkt i panjohur <ph name="PRODUCT_ID" /> nga <ph name="VENDOR_NAME" /></translation>
 <translation id="7004402701596653846">Sajti mund të përdorë MIDI</translation>
 <translation id="7004499039102548441">Skedat e fundit</translation>
+<translation id="7004923218520748660">Gozhdo "Kërkimin e skedës"</translation>
 <translation id="7004969808832734860">Deri në <ph name="DISCOUNT_UP_TO_AMOUNT" /> ulje</translation>
 <translation id="7005496624875927304">Lejet shtesë</translation>
 <translation id="7005812687360380971">Dështim</translation>
@@ -9835,6 +9841,7 @@ Shtyp një çelës ose tast të caktuar për të hequr detyrën.</translation>
 <translation id="7864539943188674973">Çaktivizo Bluetooth-in</translation>
 <translation id="7864825798076155402">Të ruhet në "Llogarinë tënde të Google"?</translation>
 <translation id="7865127013871431856">Opsionet e "Përkthe"</translation>
+<translation id="7867763367097007079">{COUNT,plural, =1{Ruaj <ph name="WEBSITE" /> fjalëkalim në "Llogarinë tënde të Google"}other{Ruaj <ph name="WEBSITE" /> fjalëkalime në "Llogarinë tënde të Google"}}</translation>
 <translation id="786957569166715433"><ph name="DEVICE_NAME" /> - E çiftuar</translation>
 <translation id="7870005751202275328">Kliko te shiriti i adresave</translation>
 <translation id="787069710204604994">Për shembull, nëse viziton një sajt që shet atlete vrapimi për distanca të gjata, sajti mund të vendosë që je i interesuar të vraposh në maratona. Më vonë, nëse viziton një sajt tjetër, ai sajt mund të të shfaqë një reklamë për atlete për vrapim sipas sugjerimit nga sajti i parë.</translation>

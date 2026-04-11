@@ -2096,6 +2096,7 @@ Wenn du die Family Link App auf deinem Gerät installierst, kannst du die Einste
 <translation id="2434915728183570229">Du kannst jetzt die Apps von deinem Smartphone aufrufen</translation>
 <translation id="2435248616906486374">Netzwerkverbindung getrennt</translation>
 <translation id="2435457462613246316">Passwort anzeigen</translation>
+<translation id="2435670725585845785">Tab-Suche anpinnen</translation>
 <translation id="2436385001956947090">&amp;Link kopieren</translation>
 <translation id="2437105255211187922">{NUM_TABS,plural, =1{Durch das Teilen des ausgewählten Tabs wird das Limit überschritten}other{Durch das Teilen von # Tabs wird das Limit überschritten}}</translation>
 <translation id="2437561292559037753">Weitergabe von Daten</translation>
@@ -3150,6 +3151,7 @@ Servernachricht: <ph name="SERVER_MSG" /></translation>
 <translation id="3157387275655328056">Zur Leseliste hinzufügen</translation>
 <translation id="3157931365184549694">Wieder­her­stellen</translation>
 <translation id="3158033540161634471">Fingerabdruck einrichten</translation>
+<translation id="3158203338449343164">Tab-Suche loslösen</translation>
 <translation id="3158732900546890991">Das Passwort muss mindestens 8 Zeichen lang sein und mindestens zwei der folgenden Elemente enthalten: Großbuchstaben, Kleinbuchstaben, Ziffern oder Symbole</translation>
 <translation id="3158770568048368350">Hierdurch wird die Verbindung zu deinem Mobilfunknetz möglicherweise kurz getrennt</translation>
 <translation id="3159335509547415276">Informationen zu blockierten Konten</translation>
@@ -7593,6 +7595,7 @@ Du kannst dieser Aktion mehrere Schalter zuweisen.</translation>
 <translation id="6291741848715722067">Bestätigungscode</translation>
 <translation id="6291953229176937411">Im Finder &amp;zeigen</translation>
 <translation id="6293862149782163840"><ph name="DEVICE_NAME" /> ist deaktiviert</translation>
+<translation id="629405221789675953">Tab-Suche loslösen</translation>
 <translation id="6294759976468837022">Geschwindigkeit des automatischen Scans</translation>
 <translation id="6295158916970320988">Alle Websites</translation>
 <translation id="6295855836753816081">Wird gespeichert...</translation>
@@ -8607,6 +8610,7 @@ Du hast # weitere kompromittierte Passwörter. Der Google Passwortmanager empfi
 <translation id="7003844668372540529">Unbekanntes Produkt <ph name="PRODUCT_ID" /> von <ph name="VENDOR_NAME" /></translation>
 <translation id="7004402701596653846">Die Website kann ein MIDI-Gerät verwenden</translation>
 <translation id="7004499039102548441">Zuletzt geöffnete Tabs</translation>
+<translation id="7004923218520748660">Tab-Suche anpinnen</translation>
 <translation id="7004969808832734860">Bis zu <ph name="DISCOUNT_UP_TO_AMOUNT" /> Rabatt</translation>
 <translation id="7005496624875927304">Zusätzliche Berechtigungen</translation>
 <translation id="7005812687360380971">Fehler</translation>
@@ -9831,6 +9835,7 @@ Drücke zum Entfernen der Zuweisung einen bereits zugewiesenen Schalter oder ein
 <translation id="7864539943188674973">Bluetooth deaktivieren</translation>
 <translation id="7864825798076155402">Im Google-Konto speichern?</translation>
 <translation id="7865127013871431856">Übersetzungsoptionen</translation>
+<translation id="7867763367097007079">{COUNT,plural, =1{<ph name="WEBSITE" />-Passwort in deinem Google-Konto speichern}other{<ph name="WEBSITE" />-Passwörter in deinem Google-Konto speichern}}</translation>
 <translation id="786957569166715433"><ph name="DEVICE_NAME" /> – gekoppelt</translation>
 <translation id="7870005751202275328">Klicke auf die Adressleiste</translation>
 <translation id="787069710204604994">Wenn du beispielsweise eine Website besuchst, auf der Schuhe für den Langstreckenlauf verkauft werden, könnte die Website daraus schließen, dass du an Marathons interessiert bist. Wenn du dann später eine andere Website besuchst, kann dir dort unter Umständen Werbung für Laufschuhe präsentiert werden, die von der ersten Website vorgeschlagen wurde.</translation>

@@ -4896,6 +4896,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="4360738659108163902">Right-click the mouse</translation>
 <translation id="4361745360460842907">Open as tab</translation>
 <translation id="4362459470237309049">Use '.' to release a mouse button</translation>
+<translation id="4362871358537270439">Show tabs from other devices in side panel</translation>
 <translation id="4363262124589131906">New files in My Drive will stop syncing automatically to this Chromebook</translation>
 <translation id="4364327530094270451">Melon</translation>
 <translation id="4364417397164696363">{ITEM_COUNT,plural, =1{1 item is saved only to this device. To use it on your other devices, save it in your Google Account.}other{{ITEM_COUNT} passwords are saved only to this device. To use them on your other devices, save them in your Google Account.}}</translation>
@@ -6335,6 +6336,7 @@ Use Ctrl + Alt + Brightness down to zoom out.</translation>
 <translation id="538822246583124912">Enterprise policy changed. Experiments button added to toolbar. Click the button to open a dialogue to enable experiments.</translation>
 <translation id="5388436023007579456">Apps and websites with the camera permission, as well as system services, can use your camera. To use the camera, you may need to restart the app or refresh the page.</translation>
 <translation id="5388719243178419614">Can't upload. Failed to process image file.</translation>
+<translation id="5388834241575213051">Show tabs from other devices in side panel</translation>
 <translation id="5388885445722491159">Paired</translation>
 <translation id="5389224261615877010">Rainbow</translation>
 <translation id="538945906186309152">Turn on Gemini keyboard shortcut</translation>

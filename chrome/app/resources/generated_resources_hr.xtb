@@ -2102,6 +2102,7 @@ Postavkama računa možete upravljati tako da instalirate aplikaciju Family Link
 <translation id="2434915728183570229">Sada možete pregledati aplikacije telefona</translation>
 <translation id="2435248616906486374">Mreža je isključena</translation>
 <translation id="2435457462613246316">Pokaži zaporku</translation>
+<translation id="2435670725585845785">Prikvači pretraživanje kartica</translation>
 <translation id="2436385001956947090">Kopiraj &amp;vezu</translation>
 <translation id="2437105255211187922">{NUM_TABS,plural, =1{Dijeljenjem odabrane kartice premašilo bi se ograničenje dijeljenja}one{Dijeljenjem # kartice premašilo bi se ograničenje dijeljenja}few{Dijeljenjem # kartice premašilo bi se ograničenje dijeljenja}other{Dijeljenjem # kartica premašilo bi se ograničenje dijeljenja}}</translation>
 <translation id="2437561292559037753">Dijeljenje podataka</translation>
@@ -3156,6 +3157,7 @@ Postavkama računa možete upravljati tako da instalirate aplikaciju Family Link
 <translation id="3157387275655328056">Dodaj na popis za čitanje</translation>
 <translation id="3157931365184549694">Vrati</translation>
 <translation id="3158033540161634471">Postavljanje otiska prsta</translation>
+<translation id="3158203338449343164">Otkvači pretraživanje kartica</translation>
 <translation id="3158732900546890991">Zaporka mora imati najmanje osam znakova i uključivati najmanje dvije od sljedećih vrsta znakova: velika slova, mala slova, brojeve ili simbole</translation>
 <translation id="3158770568048368350">Veza s mobilnom mrežom može se nakratko prekinuti</translation>
 <translation id="3159335509547415276">Saznajte više o blokiranim računima</translation>
@@ -4883,6 +4885,7 @@ Postavkama računa možete upravljati tako da instalirate aplikaciju Family Link
 <translation id="4360738659108163902">Kliknite desnom tipkom miša</translation>
 <translation id="4361745360460842907">Otvori kao karticu</translation>
 <translation id="4362459470237309049">Pomoću tipke točke otpustite tipku miša</translation>
+<translation id="4362871358537270439">Prikaži kartice s drugih uređaja na bočnoj ploči</translation>
 <translation id="4363262124589131906">Nove datoteke na Mojem disku prestat će se automatski sinkronizirati s ovim Chromebookom</translation>
 <translation id="4364327530094270451">Dinja</translation>
 <translation id="4364417397164696363">{ITEM_COUNT,plural, =1{Jedna stavka sprema se samo na ovaj uređaj. Da biste je upotrebljavali na svojim drugim uređajima, spremite je na svoj Google račun.}one{{ITEM_COUNT} stavka sprema se samo na ovaj uređaj. Da biste ih upotrebljavali na svojim drugim uređajima, spremite ih na svoj Google račun.}few{{ITEM_COUNT} stavke spremaju se samo na ovaj uređaj. Da biste ih upotrebljavali na svojim drugim uređajima, spremite ih na svoj Google račun.}other{{ITEM_COUNT} stavki sprema se samo na ovaj uređaj. Da biste ih upotrebljavali na svojim drugim uređajima, spremite ih na svoj Google račun.}}</translation>
@@ -6320,6 +6323,7 @@ Upotrijebite Ctrl + Alt + Smanjivanje svjetline za smanjivanje prikaza.</transla
 <translation id="538822246583124912">Promijenila su se pravila organizacije. Gumb eksperimenata dodan je na alatnu traku. Kliknite taj gumb da biste otvorili dijaloški okvir za omogućivanje eksperimenata.</translation>
 <translation id="5388436023007579456">Aplikacije i web-lokacije s dopuštenjem za mikrofon, kao i usluge sustava, mogu upotrebljavati vašu kameru. Da biste upotrebljavali kameru, možda ćete trebati ponovno pokrenuti aplikaciju ili osvježiti stranicu.</translation>
 <translation id="5388719243178419614">Prijenos nije moguć. Obrada slikovne datoteke nije uspjela.</translation>
+<translation id="5388834241575213051">Prikaži kartice s drugih uređaja na bočnoj ploči</translation>
 <translation id="5388885445722491159">Upareno</translation>
 <translation id="5389224261615877010">Duga</translation>
 <translation id="538945906186309152">Uključite tipkovni prečac za Gemini</translation>
@@ -7600,6 +7604,7 @@ Toj radnji možete dodijeliti više prekidača.</translation>
 <translation id="6291741848715722067">Potvrdni kôd</translation>
 <translation id="6291953229176937411">&amp;Prikaži u programu Finder</translation>
 <translation id="6293862149782163840">Uređaj <ph name="DEVICE_NAME" /> se isključuje</translation>
+<translation id="629405221789675953">Otkvači pretraživanje kartica</translation>
 <translation id="6294759976468837022">Brzina automatskog traženja</translation>
 <translation id="6295158916970320988">Sve web-lokacije</translation>
 <translation id="6295855836753816081">Spremanje...</translation>
@@ -8618,6 +8623,7 @@ Imate još # ugroženih zaporki. Google upravitelj zaporki preporučuje da odmah
 <translation id="7003844668372540529">Nepoznati proizvod <ph name="PRODUCT_ID" />, <ph name="VENDOR_NAME" /></translation>
 <translation id="7004402701596653846">Web-lokacija može upotrebljavati MIDI</translation>
 <translation id="7004499039102548441">Nedavne kartice</translation>
+<translation id="7004923218520748660">Prikvači pretraživanje kartica</translation>
 <translation id="7004969808832734860">Do <ph name="DISCOUNT_UP_TO_AMOUNT" /> popusta</translation>
 <translation id="7005496624875927304">Dodatna dopuštenja</translation>
 <translation id="7005812687360380971">Neuspjeh</translation>
@@ -9842,6 +9848,7 @@ Pritisnite dodijeljeni prekidač ili tipku da biste uklonili dodjelu.</translati
 <translation id="7864539943188674973">Onemogući Bluetooth</translation>
 <translation id="7864825798076155402">Želite li spremiti zaporku na Google račun?</translation>
 <translation id="7865127013871431856">Opcije Prevoditelja</translation>
+<translation id="7867763367097007079">{COUNT,plural, =1{Spremite <ph name="WEBSITE" /> zaporku na svoj Google račun}one{Spremite <ph name="WEBSITE" /> zaporku na svoj Google račun}few{Spremite <ph name="WEBSITE" /> zaporke na svoj Google račun}other{Spremite <ph name="WEBSITE" /> zaporki na svoj Google račun}}</translation>
 <translation id="786957569166715433"><ph name="DEVICE_NAME" /> – uparen</translation>
 <translation id="7870005751202275328">Kliknite adresnu traku</translation>
 <translation id="787069710204604994">Na primjer, ako posjetite neku web-lokaciju koja prodaje obuću za trčanje na duge staze, ta web-lokacija može odlučiti da vas zanima trčanje maratona. Ako poslije posjetite neku drugu web-lokaciju, ta vam web-lokacija može prikazati oglas za tenisice za trčanje koji predlaže prva web-lokacija.</translation>

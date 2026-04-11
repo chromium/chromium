@@ -2092,6 +2092,7 @@
 <translation id="2434915728183570229">您现在可以查看手机中的应用</translation>
 <translation id="2435248616906486374">网络连接已断开</translation>
 <translation id="2435457462613246316">显示密码</translation>
+<translation id="2435670725585845785">固定标签页搜索功能</translation>
 <translation id="2436385001956947090">复制链接(&amp;L)</translation>
 <translation id="2437105255211187922">{NUM_TABS,plural, =1{分享所选标签页会超出分享上限}other{分享 # 个标签页会超出分享上限}}</translation>
 <translation id="2437561292559037753">数据共享</translation>
@@ -3145,6 +3146,7 @@
 <translation id="3157387275655328056">添加到阅读清单</translation>
 <translation id="3157931365184549694">恢复</translation>
 <translation id="3158033540161634471">设置指纹</translation>
+<translation id="3158203338449343164">取消固定标签页搜索功能</translation>
 <translation id="3158732900546890991">密码长度必须至少为 8 个字符，且需至少包含以下两种字符：大写字母、小写字母、数字或符号</translation>
 <translation id="3158770568048368350">这可能会导致您的移动网络连接暂时断开</translation>
 <translation id="3159335509547415276">了解被屏蔽的账号</translation>
@@ -7587,6 +7589,7 @@
 <translation id="6291741848715722067">确认码</translation>
 <translation id="6291953229176937411">在 Finder 中显示(&amp;S)</translation>
 <translation id="6293862149782163840"><ph name="DEVICE_NAME" />已关闭</translation>
+<translation id="629405221789675953">取消固定标签页搜索功能</translation>
 <translation id="6294759976468837022">自动扫描速度</translation>
 <translation id="6295158916970320988">所有网站</translation>
 <translation id="6295855836753816081">正在保存…</translation>
@@ -8601,6 +8604,7 @@
 <translation id="7003844668372540529">来自<ph name="VENDOR_NAME" />的未知产品 <ph name="PRODUCT_ID" /></translation>
 <translation id="7004402701596653846">此网站可能会使用 MIDI</translation>
 <translation id="7004499039102548441">最近打开的标签页</translation>
+<translation id="7004923218520748660">固定标签页搜索功能</translation>
 <translation id="7004969808832734860">最多可享 <ph name="DISCOUNT_UP_TO_AMOUNT" /> 的折扣</translation>
 <translation id="7005496624875927304">更多权限</translation>
 <translation id="7005812687360380971">失败</translation>
@@ -9825,6 +9829,7 @@
 <translation id="7864539943188674973">停用蓝牙</translation>
 <translation id="7864825798076155402">保存到您的 Google 账号中？</translation>
 <translation id="7865127013871431856">翻译选项</translation>
+<translation id="7867763367097007079">{COUNT,plural, =1{将 <ph name="WEBSITE" /> 密码保存到 Google 账号}other{将 <ph name="WEBSITE" /> 密码保存到 Google 账号}}</translation>
 <translation id="786957569166715433"><ph name="DEVICE_NAME" /> - 已配对</translation>
 <translation id="7870005751202275328">点击地址栏</translation>
 <translation id="787069710204604994">例如，如果您访问一个销售长跑鞋的网站，该网站可能会推测您对跑马拉松感兴趣。之后，如果您访问别的网站，相应网站便可能向您展示第一个网站建议的跑鞋广告。</translation>

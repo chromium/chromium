@@ -2101,6 +2101,7 @@
 <translation id="2434915728183570229">اب آپ اپنے فون کی ایپس دیکھ سکتے ہیں</translation>
 <translation id="2435248616906486374">نیٹ ورک منقطع ہوگیا</translation>
 <translation id="2435457462613246316">پاس ورڈ دکھائیں</translation>
+<translation id="2435670725585845785">ٹیب تلاش کو پن کریں</translation>
 <translation id="2436385001956947090">لنک کاپی کریں</translation>
 <translation id="2437105255211187922">{NUM_TABS,plural, =1{منتخب ٹیب کا اشتراک کرنے سے اشتراک کی حد تجاوز ہو جائے گی}other{‫# ٹیبز کا اشتراک کرنے سے اشتراک کی حد متجاوز ہو جائے گی}}</translation>
 <translation id="2437561292559037753">ڈیٹا کا اشتراک</translation>
@@ -3155,6 +3156,7 @@
 <translation id="3157387275655328056">پڑھنے کی فہرست میں شامل کریں</translation>
 <translation id="3157931365184549694">بحال کریں</translation>
 <translation id="3158033540161634471">اپنے فنگر پرنٹ کو ترتیب دیں</translation>
+<translation id="3158203338449343164">ٹیب تلاش سے پن ہٹائیں</translation>
 <translation id="3158732900546890991">پاس ورڈ کم از کم 8 حروف کا ہونا چاہیے اور اس میں درج ذیل میں سے کم از کم دو شامل ہونے چاہئیں: بڑے حروف، چھوٹے حروف، نمبرز یا علامات</translation>
 <translation id="3158770568048368350">یہ آپ کے موبائل نیٹ ورک کو مختصر طور پر غیر منسلک کرنے کا سبب بن سکتا ہے</translation>
 <translation id="3159335509547415276">مسدود کردہ اکاؤنٹس کے بارے میں جانیں</translation>
@@ -7600,6 +7602,7 @@
 <translation id="6291741848715722067">توثیقی کوڈ</translation>
 <translation id="6291953229176937411">فائنڈر میں &amp;دکھائیں</translation>
 <translation id="6293862149782163840"><ph name="DEVICE_NAME" /> آف ہے</translation>
+<translation id="629405221789675953">ٹیب تلاش سے پن ہٹائیں</translation>
 <translation id="6294759976468837022">خودکار اسکین کی رفتار</translation>
 <translation id="6295158916970320988">سبھی سائٹس</translation>
 <translation id="6295855836753816081">محفوظ کیا جا رہا ہے…</translation>
@@ -8614,6 +8617,7 @@
 <translation id="7003844668372540529"><ph name="VENDOR_NAME" /> کی جانب سے نامعلوم پروڈکٹ <ph name="PRODUCT_ID" /></translation>
 <translation id="7004402701596653846">‏سائٹ MIDI استعمال کر سکتی ہے</translation>
 <translation id="7004499039102548441">حالیہ ٹیبز</translation>
+<translation id="7004923218520748660">ٹیب تلاش کو پن کریں</translation>
 <translation id="7004969808832734860"><ph name="DISCOUNT_UP_TO_AMOUNT" /> تک کی رعایت</translation>
 <translation id="7005496624875927304">اضافی اجازتیں</translation>
 <translation id="7005812687360380971">ناکامی</translation>
@@ -9837,6 +9841,7 @@
 <translation id="7864539943188674973">بلوٹوتھ غیر فعال کریں</translation>
 <translation id="7864825798076155402">‏اپنے Google اکاؤنٹ میں محفوظ کریں؟</translation>
 <translation id="7865127013871431856">ترجمہ کے اختیارات</translation>
+<translation id="7867763367097007079">{COUNT,plural, =1{‏اپنے Google اکاؤنٹ میں <ph name="WEBSITE" /> پاس ورڈ محفوظ کریں}other{‏اپنے Google اکاؤنٹ میں <ph name="WEBSITE" /> پاس ورڈز محفوظ کریں}}</translation>
 <translation id="786957569166715433"><ph name="DEVICE_NAME" /> - جوڑا بنایا گیا</translation>
 <translation id="7870005751202275328">ایڈریس بار پر کلک کریں</translation>
 <translation id="787069710204604994">مثال کے طور پر، اگر آپ کوئی ایسی سائٹ ملاحظہ کرتے ہیں جو لمبے فاصلے والے دوڑنے کے جوتوں کو فروخت کرتی ہے تو سائٹ یہ فیصلہ کر سکتی ہے کہ آپ کو دوڑ کے میراتھنز میں دلچسپی ہے۔ بعد میں اگر آپ کوئی مختلف سائٹ ملاحظہ کرتے ہیں تو وہ سائٹ آپ کو پہلی سائٹ کے ذریعے تجویز کردہ دوڑنے کے جوتوں کا اشتہار دکھا سکتی ہے۔</translation>

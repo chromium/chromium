@@ -2099,6 +2099,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="2434915728183570229">Je kunt nu de apps van je telefoon bekijken</translation>
 <translation id="2435248616906486374">Geen verbinding met netwerk</translation>
 <translation id="2435457462613246316">Wachtwoord bekijken</translation>
+<translation id="2435670725585845785">Tabbladen doorzoeken vastzetten</translation>
 <translation id="2436385001956947090">&amp;Link kopiëren</translation>
 <translation id="2437105255211187922">{NUM_TABS,plural, =1{Als je het geselecteerde tabblad deelt, overschrijd je de limiet voor delen}other{Als je # tabbladen deelt, overschrijd je de limiet voor delen}}</translation>
 <translation id="2437561292559037753">Gegevens delen</translation>
@@ -3153,6 +3154,7 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="3157387275655328056">Toevoegen aan leeslijst</translation>
 <translation id="3157931365184549694">Herstellen</translation>
 <translation id="3158033540161634471">Je vingerafdruk instellen</translation>
+<translation id="3158203338449343164">Tabbladen doorzoeken losmaken</translation>
 <translation id="3158732900546890991">Het wachtwoord moet minstens 8 tekens lang zijn en minstens 2 van de volgende elementen bevatten: hoofdletters, kleine letters, cijfers of symbolen</translation>
 <translation id="3158770568048368350">Hierdoor kan de verbinding met het mobiele netwerk kort worden verbroken</translation>
 <translation id="3159335509547415276">Meer informatie over geblokkeerde accounts</translation>
@@ -4878,6 +4880,7 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="4360738659108163902">Klikken met de rechtermuisknop</translation>
 <translation id="4361745360460842907">Openen als tabblad</translation>
 <translation id="4362459470237309049">Gebruik . om een muisknop los te laten</translation>
+<translation id="4362871358537270439">Tabbladen van andere apparaten tonen in het zijvenster</translation>
 <translation id="4363262124589131906">Nieuwe bestanden in Mijn Drive worden niet meer automatisch gesynchroniseerd met deze Chromebook</translation>
 <translation id="4364327530094270451">Meloen</translation>
 <translation id="4364417397164696363">{ITEM_COUNT,plural, =1{1 item wordt alleen op dit apparaat opgeslagen. Als je het wilt gebruiken op je andere apparaten, sla je het op in je Google-account.}other{{ITEM_COUNT} items worden alleen op dit apparaat opgeslagen. Als je ze wilt gebruiken op je andere apparaten, sla je ze op in je Google-account.}}</translation>
@@ -6315,6 +6318,7 @@ Zichtbaar als <ph name="DEVICE_TYPE" />…</translation>
 <translation id="538822246583124912">Bedrijfsbeleid gewijzigd. Knop voor experimenten toegevoegd aan de werkbalk. Klik op de knop om een dialoogvenster te openen waarmee je experimenten kunt aanzetten.</translation>
 <translation id="5388436023007579456">Apps en websites met camerarechten en systeemservices kunnen je camera gebruiken. Als je de camera wilt gebruiken, moet je de app misschien opnieuw opstarten of de pagina vernieuwen.</translation>
 <translation id="5388719243178419614">Kan niet uploaden. Kan afbeeldingsbestand niet verwerken.</translation>
+<translation id="5388834241575213051">Tabbladen van andere apparaten tonen in het zijvenster</translation>
 <translation id="5388885445722491159">Gekoppeld</translation>
 <translation id="5389224261615877010">Regenboog</translation>
 <translation id="538945906186309152">Sneltoets voor Gemini aanzetten</translation>
@@ -7595,6 +7599,7 @@ Je kunt meerdere schakelaars toewijzen aan deze actie.</translation>
 <translation id="6291741848715722067">Bevestigingscode</translation>
 <translation id="6291953229176937411">&amp;Toon in Finder</translation>
 <translation id="6293862149782163840"><ph name="DEVICE_NAME" /> is uitgezet</translation>
+<translation id="629405221789675953">Tabbladen doorzoeken losmaken</translation>
 <translation id="6294759976468837022">Snelheid voor automatisch scannen</translation>
 <translation id="6295158916970320988">Alle sites</translation>
 <translation id="6295855836753816081">Opslaan...</translation>
@@ -8609,6 +8614,7 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="7003844668372540529">Onbekend product <ph name="PRODUCT_ID" /> van <ph name="VENDOR_NAME" /></translation>
 <translation id="7004402701596653846">De site kan MIDI gebruiken.</translation>
 <translation id="7004499039102548441">Recente tabbladen</translation>
+<translation id="7004923218520748660">Tabbladen doorzoeken vastzetten</translation>
 <translation id="7004969808832734860">Tot <ph name="DISCOUNT_UP_TO_AMOUNT" /> korting</translation>
 <translation id="7005496624875927304">Aanvullende rechten</translation>
 <translation id="7005812687360380971">Mislukt</translation>
@@ -9832,6 +9838,7 @@ Zichtbaar voor apparaten in de buurt als <ph name="QUICK_START_DEVICE_DISPLAY_NA
 <translation id="7864539943188674973">Bluetooth uitzetten</translation>
 <translation id="7864825798076155402">Opslaan in je Google-account?</translation>
 <translation id="7865127013871431856">Opties voor vertalen</translation>
+<translation id="7867763367097007079">{COUNT,plural, =1{<ph name="WEBSITE" /> wachtwoord opslaan in je Google-account}other{<ph name="WEBSITE" /> wachtwoorden opslaan in je Google-account}}</translation>
 <translation id="786957569166715433"><ph name="DEVICE_NAME" /> - gekoppeld</translation>
 <translation id="7870005751202275328">Klik op de adresbalk</translation>
 <translation id="787069710204604994">Als je bijvoorbeeld een site bezoekt waarop langeafstandshardloopschoenen worden verkocht, kan de site besluiten dat je geïnteresseerd bent in marathons. Als je later een andere site bezoekt, kan die site een advertentie voor hardloopschoenen laten zien die door de eerste site is voorgesteld.</translation>

@@ -1855,6 +1855,7 @@
 <translation id="7506817096924591340"><ph name="FILENAME" /> (<ph name="FILESIZE" />).</translation>
 <translation id="7508728395076009983">Щоб закріпляти анонімні вкладки, налаштуйте Touch ID, Face ID або код доступу.</translation>
 <translation id="750886945254958667">Збережіть цю групу, щоб додавати вкладки пізніше, або вийдіть із неї, якщо вона вам більше не потрібна</translation>
+<translation id="7511099437872594216">Вкладки</translation>
 <translation id="7511727374778217603">{COUNT,plural, =1{Можна додати щонайбільше 1 вкладку}one{Можна додати щонайбільше {COUNT} вкладку}few{Можна додати щонайбільше {COUNT} вкладки}many{Можна додати щонайбільше {COUNT} вкладок}other{Можна додати щонайбільше {COUNT} вкладки}}</translation>
 <translation id="7512909159512473473">Ввести парольну фразу…</translation>
 <translation id="7514365320538308">Завантажити</translation>

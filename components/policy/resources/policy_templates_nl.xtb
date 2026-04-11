@@ -10156,6 +10156,10 @@ Beleidsregels die moeten worden samengevoegd, moeten ook worden ingesteld in <ph
       Als je dit beleid instelt op False of niet instelt, wordt de rapportage uitgezet.
       Regels die zijn gedefinieerd met beperkingen op ALLOW-niveau in DataLeakPreventionRulesList, rapporteren in beide gevallen geen gebeurtenissen.</translation>
 <translation id="7648907905084499629">Gedrag van <ph name="FEATURE_NAME_SAMESITE_BY_DEFAULT_COOKIES" /> voor cookies op alle sites gebruiken</translation>
+<translation id="7649831723389657756">Als je het beleid instelt, wordt gespecificeerd voor welke herkomsten alle HTTP-verificatieschema's worden toegestaan die <ph name="PRODUCT_NAME" /> ondersteunt, ongeacht het beleid <ph name="AUTH_SCHEMES_POLICY_NAME" />.
+
+      Maak het herkomstpatroon op volgens deze indeling (<ph name="URL_SCHEME_FORMAT_LINK" />). Je kunt maximaal 1000 uitzonderingen definiëren in <ph name="ALL_HTTP_AUTH_ALLOWED_FOR_ORIGINS_POLICY_NAME" />.
+      Jokertekens zijn toegestaan voor de hostcomponent (bijvoorbeeld *:8000 komt overeen met alle hosts op poort 8000). Als je alle schema's of alle poorten wilt matchen, laat je de component helemaal weg (bijvoorbeeld example.com komt overeen met elk schema en elke poort). Een hostnaam (bijvoorbeeld example.com) komt ook overeen met de subdomeinen. Als je een host exact wilt matchen en de subdomeinen wilt uitsluiten, voeg je een punt toe (bijvoorbeeld .example.com). Als je alle oorsprongen wilt matchen, gebruik je één asterisk (*).</translation>
 <translation id="7657261947024629645">Optimaliseren voor betere prestaties.</translation>
 <translation id="76580522298425324">Schermopname zonder eerder gebruikersgebaar toestaan</translation>
 <translation id="7661379728107156839">Weinig complex</translation>

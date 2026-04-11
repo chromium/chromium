@@ -4873,6 +4873,7 @@
 <translation id="4360738659108163902">マウスを右クリックする</translation>
 <translation id="4361745360460842907">タブとして開く</translation>
 <translation id="4362459470237309049">「.」キーを使用してマウスボタンを離す</translation>
+<translation id="4362871358537270439">サイドパネルに他のデバイスのタブを表示</translation>
 <translation id="4363262124589131906">マイドライブ内の新しいファイルは、この Chromebook と自動的に同期されなくなります</translation>
 <translation id="4364327530094270451">メロン</translation>
 <translation id="4364417397164696363">{ITEM_COUNT,plural, =1{1 件の項目がこのデバイスのみに保存されています。他のデバイスで使用するには、Google アカウントに保存してください。}other{{ITEM_COUNT} 件の項目がこのデバイスのみに保存されています。他のデバイスで使用するには、Google アカウントに保存してください。}}</translation>
@@ -6307,6 +6308,7 @@
 <translation id="538822246583124912">エンタープライズ ポリシーが変更され、ツールバーにテストボタンが追加されました。ボタンをクリックすると、ダイアログを開いてテストを有効にできます。</translation>
 <translation id="5388436023007579456">カメラへのアクセス権を持つアプリとウェブサイト、システム サービスでカメラを使用できます。カメラを使用するには、アプリの再起動やページの更新が必要になることがあります。</translation>
 <translation id="5388719243178419614">アップロードできません。画像ファイルを処理できませんでした。</translation>
+<translation id="5388834241575213051">サイドパネルに他のデバイスのタブを表示</translation>
 <translation id="5388885445722491159">ペア設定済み</translation>
 <translation id="5389224261615877010">虹</translation>
 <translation id="538945906186309152">Gemini のキーボード ショートカットをオンにする</translation>

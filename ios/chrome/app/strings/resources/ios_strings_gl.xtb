@@ -1855,6 +1855,7 @@ Handoff tamén debe estar activado na sección Xeral da configuración e os teus
 <translation id="7506817096924591340"><ph name="FILENAME" /> (<ph name="FILESIZE" />).</translation>
 <translation id="7508728395076009983">Para bloquear as pestanas do modo de incógnito, configura Touch ID, Face ID ou un código de desbloqueo.</translation>
 <translation id="750886945254958667">Mantén este grupo para engadir pestanas máis adiante ou abandónao se xa non vas acceder a el</translation>
+<translation id="7511099437872594216">Pestanas</translation>
 <translation id="7511727374778217603">{COUNT,plural, =1{Engade 1 pestana como máximo}other{Engade ata {COUNT} pestanas}}</translation>
 <translation id="7512909159512473473">Poñer frase de acceso…</translation>
 <translation id="7514365320538308">Descargar</translation>

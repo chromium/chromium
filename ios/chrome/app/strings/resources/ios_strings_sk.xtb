@@ -1855,6 +1855,7 @@ Funkciu Handoff musíte povoliť v nastaveniach v časti Všeobecné a vaše zar
 <translation id="7506817096924591340"><ph name="FILENAME" /> (<ph name="FILESIZE" />).</translation>
 <translation id="7508728395076009983">Ak chcete karty inkognito uzamknúť, nastavte Touch ID, Face ID alebo vstupný kód.</translation>
 <translation id="750886945254958667">Ponechajte si túto skupinu, aby ste mohli neskôr pridať karty, alebo ju opustite, keď už k nej nechcete mať prístup</translation>
+<translation id="7511099437872594216">Karty</translation>
 <translation id="7511727374778217603">{COUNT,plural, =1{Môžete pridať maximálne 1 kartu}few{Môžete pridať maximálne {COUNT} karty}many{Add up to {COUNT} tabs}other{Môžete pridať maximálne {COUNT} kariet}}</translation>
 <translation id="7512909159512473473">Zadať prístupovú frázu…</translation>
 <translation id="7514365320538308">Stiahnuť</translation>

@@ -2110,6 +2110,7 @@
 <translation id="2434915728183570229">သင့်ဖုန်းအက်ပ်များကို ယခု ကြည့်နိုင်ပြီ</translation>
 <translation id="2435248616906486374">ကွန်ရက် ချိတ်ဆက်မှုပျက်တောက်</translation>
 <translation id="2435457462613246316">စကားဝှက်ကို ပြပါ</translation>
+<translation id="2435670725585845785">တဘ်ရှာဖွေမှုကို ပင်ထိုးရန်</translation>
 <translation id="2436385001956947090">&amp;လင့်ခ် မိတ္တူကူးရန်</translation>
 <translation id="2437105255211187922">{NUM_TABS,plural, =1{ရွေးထားသောတဘ်ကို မျှဝေခြင်းသည် မျှဝေမှုကန့်သတ်ချက်ကို ကျော်လွန်ပါမည်}other{တဘ် # ခုကို မျှဝေခြင်းသည် မျှဝေမှုကန့်သတ်ချက်ကို ကျော်လွန်ပါမည်}}</translation>
 <translation id="2437561292559037753">ဒေတာမျှဝေခြင်း</translation>
@@ -3165,6 +3166,7 @@
 <translation id="3157387275655328056">ဖတ်ရန်စာရင်းသို့ ထည့်ပါ</translation>
 <translation id="3157931365184549694">ပြန်လည်ဖေါ်ထုတ်ရန်</translation>
 <translation id="3158033540161634471">သင်၏ လက်ဗွေကို စနစ်ထည့်သွင်းခြင်း</translation>
+<translation id="3158203338449343164">တဘ်ရှာဖွေမှုကို ပင်ဖြုတ်ခြင်း</translation>
 <translation id="3158732900546890991">စကားဝှက်သည် အနည်းဆုံး အက္ခရာ ၈ လုံးရှိရမည်ဖြစ်ပြီး ဖော်ပြပါအနက် အနည်းဆုံးနှစ်ခု ပါဝင်ရမည်- စာလုံးအကြီး၊ စာလုံးအသေး၊ ဂဏန်း (သို့) သင်္ကေတများ</translation>
 <translation id="3158770568048368350">၎င်းက သင့်မိုဘိုင်းကွန်ရက်ကို ချိတ်ဆက်မှု ခဏရပ်ထားနိုင်သည်</translation>
 <translation id="3159335509547415276">ပိတ်ဆို့ထားသည့် အကောင့်များအကြောင်း လေ့လာရန်</translation>
@@ -7614,6 +7616,7 @@
 <translation id="6291741848715722067">မှန်ကြောင်းအတည်ပြုကုဒ်</translation>
 <translation id="6291953229176937411">&amp;တွေ့ရှိချက် ထဲမှာ ပြရန်</translation>
 <translation id="6293862149782163840"><ph name="DEVICE_NAME" /> ပိတ်ထားသည်</translation>
+<translation id="629405221789675953">တဘ်ရှာဖွေမှုကို ပင်ဖြုတ်ရန်</translation>
 <translation id="6294759976468837022">အော်တိုစကင်ဖတ်ခြင်း မြန်နှုန်း</translation>
 <translation id="6295158916970320988">ဆိုဒ်များအားလုံး</translation>
 <translation id="6295855836753816081">သိမ်းဆည်းနေသည်...</translation>
@@ -8626,6 +8629,7 @@
 <translation id="7003844668372540529">အမည်မသိပစ္စည်း <ph name="PRODUCT_ID" /> သည် <ph name="VENDOR_NAME" /> မှ ဖြစ်၏</translation>
 <translation id="7004402701596653846">ဝဘ်ဆိုက်က MIDI ကို အသုံးပြုနိုင်သည်</translation>
 <translation id="7004499039102548441">မကြာမီက တဲဘ်များ</translation>
+<translation id="7004923218520748660">တဘ်ရှာဖွေမှုကို ပင်ထိုးခြင်း</translation>
 <translation id="7004969808832734860"><ph name="DISCOUNT_UP_TO_AMOUNT" /> အထိ လျှော့ဈေး</translation>
 <translation id="7005496624875927304">ထပ်ဆောင်း ခွင့်ပြုချက်များ</translation>
 <translation id="7005812687360380971">မအောင်မြင်မှု</translation>
@@ -9849,6 +9853,7 @@
 <translation id="7864539943188674973">ဘလူးတုရှ် ပိတ်ရန်</translation>
 <translation id="7864825798076155402">သင့် Google Account တွင် သိမ်းမလား။</translation>
 <translation id="7865127013871431856">ဘာသာပြန်ရန် ရွေးစရာများ</translation>
+<translation id="7867763367097007079">{COUNT,plural, =1{<ph name="WEBSITE" /> စကားဝှက်ကို သင့် Google Account တွင် သိမ်းရန်}other{<ph name="WEBSITE" /> စကားဝှက်များကို သင့် Google Account တွင် သိမ်းရန်}}</translation>
 <translation id="786957569166715433"><ph name="DEVICE_NAME" /> - တွဲချိတ်ပြီးပါပြီ</translation>
 <translation id="7870005751202275328">လိပ်စာဘားကို နှိပ်ပါ</translation>
 <translation id="787069710204604994">ဥပမာ တာဝေးပြေးဖိနပ်ရောင်းသည့် ဝဘ်ဆိုက်သို့ ဝင်ကြည့်သောအခါ မာရသွန်ပြေးခြင်းကို သင်စိတ်ဝင်စားသည်ဟု ထိုဝဘ်ဆိုက်က ဆုံးဖြတ်နိုင်သည်။ နောင်တွင် အခြားဝဘ်ဆိုက်သို့ ဝင်ကြည့်သောအခါ ထိုဝဘ်ဆိုက်က ပထမဝဘ်ဆိုက် အကြံပြုထားသည့် အပြေးဖိနပ်ကြော်ငြာကို ပြနိုင်သည်။</translation>

@@ -834,6 +834,7 @@ Din krypterade data kan endast läsas av en person som har din lösenfras. Löse
 <translation id="4521489764227272523">Markerad data har tagits bort från Chrome och från synkroniserade enheter.
 
 Det kan finnas andra former av webbhistorik i Google-kontot på <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />, t.ex. sökningar och aktivitet på andra tjänster från Google.</translation>
+<translation id="4521637321901000942">Hantera dina tillägg i verktygsfältet</translation>
 <translation id="4523326818319942067">senaste timmen</translation>
 <translation id="452750746583162491">Granska din synkroniserade data</translation>
 <translation id="4532845899244822526">Välj mapp</translation>
@@ -1299,6 +1300,7 @@ Vissa webbplatser kan till exempel svara på begäran genom att visa annonser so
 <translation id="6380100320871303656">Chrome läser oftare in sidor som du kanske vill besöka i förväg. Den här inställningen kan leda till ökad dataanvändning.</translation>
 <translation id="6382848304055775421">Exporterar</translation>
 <translation id="6388152137132427505">Dela alltid smart. Länkar upphör att gälla om 48 timmar.</translation>
+<translation id="6389513857577090038">Vill du tillåta tillägget <ph name="EXTENSION_NAME" />?</translation>
 <translation id="6394791151443660613">Sök efter: <ph name="SEARCH_QUERY" /></translation>
 <translation id="6397616442223433927">Online igen</translation>
 <translation id="6399363707848566877">Nu kan du enkelt lägga till flikar i grupper här</translation>

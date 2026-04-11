@@ -2113,6 +2113,7 @@
 <translation id="2434915728183570229">ਤੁਸੀਂ ਹੁਣ ਆਪਣੇ ਫ਼ੋਨ ਦੀਆਂ ਐਪਾਂ ਨੂੰ ਦੇਖ ਸਕਦੇ ਹੋ</translation>
 <translation id="2435248616906486374">ਨੈੱਟਵਰਕ ਡਿਸਕਨੈਕਟ ਕੀਤਾ</translation>
 <translation id="2435457462613246316">ਪਾਸਵਰਡ ਵੇਖੋ</translation>
+<translation id="2435670725585845785">ਟੈਬ ਖੋਜ ਨੂੰ ਪਿੰਨ ਕਰੋ</translation>
 <translation id="2436385001956947090">ਲਿੰਕ ਕਾਪੀ ਕਰੋ</translation>
 <translation id="2437105255211187922">{NUM_TABS,plural, =1{ਚੁਣੀ ਗਈ ਟੈਬ ਨੂੰ ਸਾਂਝਾ ਕਰਨ ਨਾਲ ਸਾਂਝਾਕਰਨ ਸੀਮਾ ਪਾਰ ਹੋ ਜਾਵੇਗੀ}one{# ਟੈਬ ਨੂੰ ਸਾਂਝਾ ਕਰਨ ਨਾਲ ਸਾਂਝਾਕਰਨ ਸੀਮਾ ਪਾਰ ਹੋ ਜਾਵੇਗੀ}other{# ਟੈਬਾਂ ਨੂੰ ਸਾਂਝਾ ਕਰਨ ਨਾਲ ਸਾਂਝਾਕਰਨ ਸੀਮਾ ਪਾਰ ਹੋ ਜਾਵੇਗੀ}}</translation>
 <translation id="2437561292559037753">ਡਾਟਾ ਸਾਂਝਾਕਰਨ</translation>
@@ -3168,6 +3169,7 @@
 <translation id="3157387275655328056">ਪੜ੍ਹਨ ਸੂਚੀ ਵਿੱਚ ਸ਼ਾਮਲ ਕਰੋ</translation>
 <translation id="3157931365184549694">ਰੀਸਟੋਰ ਕਰੋ</translation>
 <translation id="3158033540161634471">ਆਪਣਾ ਫਿੰਗਰਪ੍ਰਿੰਟ ਸੈੱਟਅੱਪ ਕਰੋ</translation>
+<translation id="3158203338449343164">ਟੈਬ ਖੋਜ ਨੂੰ ਅਣਪਿੰਨ ਕਰੋ</translation>
 <translation id="3158732900546890991">ਪਾਸਵਰਡ ਘੱਟੋ-ਘੱਟ 8 ਅੱਖਰ-ਚਿੰਨ੍ਹਾਂ ਦਾ ਹੋਣਾ ਚਾਹੀਦਾ ਹੈ ਅਤੇ ਇਸ ਵਿੱਚ ਅੱਗੇ ਦਿੱਤਿਆਂ ਵਿੱਚੋਂ ਘੱਟੋ-ਘੱਟ ਦੋ ਚੀਜ਼ਾਂ ਹੋਣੀਆਂ ਚਾਹੀਦੀਆਂ ਹਨ: ਵੱਡੇ ਅੱਖਰ, ਛੋਟੇ ਅੱਖਰ, ਸੰਖਿਆਵਾਂ ਜਾਂ ਚਿੰਨ੍ਹ</translation>
 <translation id="3158770568048368350">ਇਸ ਨਾਲ ਤੁਹਾਡਾ ਮੋਬਾਈਲ ਨੈੱਟਵਰਕ ਥੋੜ੍ਹੇ ਸਮੇਂ ਲਈ ਡਿਸਕਨੈਕਟ ਹੋ ਸਕਦਾ ਹੈ</translation>
 <translation id="3159335509547415276">ਬਲਾਕ ਕੀਤੇ ਖਾਤਿਆਂ ਬਾਰੇ ਜਾਣੋ</translation>
@@ -7617,6 +7619,7 @@
 <translation id="6291741848715722067">ਤਸਦੀਕੀ ਕੋਡ</translation>
 <translation id="6291953229176937411">&amp;ਫਾਈਂਡਰ ਵਿੱਚ ਦਿਖਾਓ</translation>
 <translation id="6293862149782163840"><ph name="DEVICE_NAME" /> ਬੰਦ ਹੈ</translation>
+<translation id="629405221789675953">ਟੈਬ ਖੋਜ ਨੂੰ ਅਣਪਿੰਨ ਕਰੋ</translation>
 <translation id="6294759976468837022">ਸਵੈਚਲਿਤ-ਸਕੈਨ ਦੀ ਗਤੀ</translation>
 <translation id="6295158916970320988">ਸਾਰੀਆਂ ਸਾਈਟਾਂ</translation>
 <translation id="6295855836753816081">ਰੱਖਿਅਤ ਕੀਤਾ ਜਾ ਰਿਹਾ ਹੈ...</translation>
@@ -8633,6 +8636,7 @@
 <translation id="7003844668372540529"><ph name="VENDOR_NAME" /> ਤੋਂ ਅਗਿਆਤ ਉਤਪਾਦ <ph name="PRODUCT_ID" /></translation>
 <translation id="7004402701596653846">ਸਾਈਟ MIDI ਨੂੰ ਵਰਤ ਸਕਦੀ ਹੈ</translation>
 <translation id="7004499039102548441">ਹਾਲੀਆ ਟੈਬਸ</translation>
+<translation id="7004923218520748660">ਟੈਬ ਖੋਜ ਨੂੰ ਪਿੰਨ ਕਰੋ</translation>
 <translation id="7004969808832734860"><ph name="DISCOUNT_UP_TO_AMOUNT" /> ਤੱਕ ਦੀ ਛੋਟ</translation>
 <translation id="7005496624875927304">ਵਧੀਕ ਇਜਾਜ਼ਤਾਂ</translation>
 <translation id="7005812687360380971">ਅਸਫਲਤਾ</translation>
@@ -9856,6 +9860,7 @@
 <translation id="7864539943188674973">Bluetooth ਨੂੰ ਅਸਮਰੱਥ ਬਣਾਓ</translation>
 <translation id="7864825798076155402">ਕੀ ਆਪਣੇ Google ਖਾਤੇ ਵਿੱਚ ਰੱਖਿਅਤ ਕਰਨਾ ਹੈ?</translation>
 <translation id="7865127013871431856">Translate ਦੇ ਵਿਕਲਪ</translation>
+<translation id="7867763367097007079">{COUNT,plural, =1{ਆਪਣੇ Google ਖਾਤੇ ਵਿੱਚ <ph name="WEBSITE" /> ਪਾਸਵਰਡ ਰੱਖਿਅਤ ਕਰੋ}one{ਆਪਣੇ Google ਖਾਤੇ ਵਿੱਚ <ph name="WEBSITE" /> ਪਾਸਵਰਡ ਰੱਖਿਅਤ ਕਰੋ}other{ਆਪਣੇ Google ਖਾਤੇ ਵਿੱਚ <ph name="WEBSITE" /> ਪਾਸਵਰਡ ਰੱਖਿਅਤ ਕਰੋ}}</translation>
 <translation id="786957569166715433"><ph name="DEVICE_NAME" /> - ਜੋੜਾਬੱਧ ਕੀਤੀ ਗਈ</translation>
 <translation id="7870005751202275328">ਪਤਾ ਬਾਰ 'ਤੇ ਕਲਿੱਕ ਕਰੋ</translation>
 <translation id="787069710204604994">ਉਦਾਹਰਨ ਲਈ, ਜੇ ਤੁਸੀਂ ਕਿਸੇ ਅਜਿਹੀ ਸਾਈਟ 'ਤੇ ਜਾਂਦੇ ਹੋ ਜੋ ਲੰਮੀ ਦੂਰੀ ਦੇ ਦੌੜਨ ਵਾਲੇ ਜੁੱਤੇ ਵੇਚਦੀ ਹੈ, ਤਾਂ ਉਹ ਸਾਈਟ ਇਹ ਫ਼ੈਸਲਾ ਕਰ ਸਕਦੀ ਹੈ ਕਿ ਤੁਸੀਂ ਮੈਰਾਥਨ ਦੌੜਨ ਵਿੱਚ ਦਿਲਚਸਪੀ ਰੱਖਦੇ ਹੋ। ਬਾਅਦ ਵਿੱਚ, ਜੇ ਤੁਸੀਂ ਕਿਸੇ ਵੱਖਰੀ ਸਾਈਟ 'ਤੇ ਜਾਂਦੇ ਹੋ, ਤਾਂ ਉਹ ਸਾਈਟ ਪਹਿਲੀ ਵਾਲੀ ਸਾਈਟ ਵੱਲੋਂ ਸੁਝਾਏ ਗਏ ਦੌੜਨ ਵਾਲੇ ਜੁੱਤਿਆਂ ਦਾ ਵਿਗਿਆਪਨ ਦਿਖਾ ਸਕਦੀ ਹੈ।</translation>

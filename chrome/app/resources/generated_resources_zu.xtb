@@ -2112,6 +2112,7 @@ Ungaphatha izilungiselelo zale akhawunti ngokufaka uhlelo lokusebenza lwe-Family
 <translation id="2434915728183570229">Manje usungabuka ama-app wefoni yakho</translation>
 <translation id="2435248616906486374">Inethiwekhi inqanyuliwe</translation>
 <translation id="2435457462613246316">Bonisa iphasiwedi</translation>
+<translation id="2435670725585845785">Phina ithebhu yokusesha</translation>
 <translation id="2436385001956947090">Kopisha &amp;ilinki</translation>
 <translation id="2437105255211187922">{NUM_TABS,plural, =1{Ukwabelana Ngethebhu Ekhethiwe Kuzodlula Umkhawulo Wokwabelana}one{Ukwabelana Ngamathebhu angu-# Kuzodlula Umkhawulo Wokwabelana}other{Ukwabelana Ngamathebhu angu-# Kuzodlula Umkhawulo Wokwabelana}}</translation>
 <translation id="2437561292559037753">Ukwabelana Ngedatha</translation>
@@ -3166,6 +3167,7 @@ I-<ph name="DOMAIN" /> idinga ukuba ugcine ikhadi lakho elimsathi lifakiwe.</tra
 <translation id="3157387275655328056">Engeza kuhlu lokufunda</translation>
 <translation id="3157931365184549694">Buyisela</translation>
 <translation id="3158033540161634471">Setha izigxivizo zakho zeminwe</translation>
+<translation id="3158203338449343164">Susa ukuphina Ithebhu Yokusesha</translation>
 <translation id="3158732900546890991">Iphasiwedi kufanele ibe yizinhlamvu okungenani eziyisi-8 futhi ihlanganise okungenani okubili kokulandelayo: amakhephithali, izinhlamvu ezincane, izinombolo, noma izimpawu</translation>
 <translation id="3158770568048368350">Lokhu kungase kubangele ukuthi inethiwekhi yakho yeselula inqamule kafushane</translation>
 <translation id="3159335509547415276">Funda mayelana nama-akhawunti avinjiwe</translation>
@@ -7616,6 +7618,7 @@ I-<ph name="DOMAIN" /> idinga ukuba ugcine ikhadi lakho elimsathi lifakiwe.</tra
 <translation id="6291741848715722067">Ikhodi yokuqinisekisa</translation>
 <translation id="6291953229176937411">Bonisa kusitholi</translation>
 <translation id="6293862149782163840">I-<ph name="DEVICE_NAME" /> ivaliwe</translation>
+<translation id="629405221789675953">Susa ukuphina ithebhu yokusesha</translation>
 <translation id="6294759976468837022">Isivinini sokuskena okuzenzakalelayo</translation>
 <translation id="6295158916970320988">Wonke amasayithi</translation>
 <translation id="6295855836753816081">Iyalondoloza...</translation>
@@ -8632,6 +8635,7 @@ Unamaphasiwedi onakalisiwe angu-# ngokwengeziwe. Umphathi Wephasiwedi Ye-Google 
 <translation id="7003844668372540529">Umkhiqizo ongaziwa ongu-<ph name="PRODUCT_ID" /> kusukela ku-<ph name="VENDOR_NAME" /></translation>
 <translation id="7004402701596653846">Isayithi lingasebenzisa i-MIDI</translation>
 <translation id="7004499039102548441">Amathebhu wakamuva</translation>
+<translation id="7004923218520748660">Phina Ithebhu Yokusesha</translation>
 <translation id="7004969808832734860">Kufikela kwisaphulelo sokungu-<ph name="DISCOUNT_UP_TO_AMOUNT" /></translation>
 <translation id="7005496624875927304">Izimvume ezingeziwe</translation>
 <translation id="7005812687360380971">Ukuhluleka</translation>
@@ -9855,6 +9859,7 @@ Cindezela iswishi enikeziwe noma ukhiye ukuze ususe umsebenzi ozokwenziwa</trans
 <translation id="7864539943188674973">Khubaza i-Bluetooth</translation>
 <translation id="7864825798076155402">Londoloza ku-Google Account yakho?</translation>
 <translation id="7865127013871431856">Izinketho zokuhumusha</translation>
+<translation id="7867763367097007079">{COUNT,plural, =1{Londoloza iphasiwedi ye-<ph name="WEBSITE" /> kuGoogle Account yakho}one{Londoloza amaphasiwedi e-<ph name="WEBSITE" /> kuGoogle Account yakho}other{Londoloza amaphasiwedi e-<ph name="WEBSITE" /> kuGoogle Account yakho}}</translation>
 <translation id="786957569166715433">I-<ph name="DEVICE_NAME" /> - ibhangqiwe</translation>
 <translation id="7870005751202275328">Chofoza ibha yekheli</translation>
 <translation id="787069710204604994">Ngokwesibonelo, uma uvakashela isayithi elithengisa izicathulo zokugijima ibanga elide, isayithi lingase linqume ukuthi uthanda ukugijima ama-marathon. Kamuva, uma uvakashela isayithi ehlukile, leyo sayithi ingakubonisa isikhangiso sezicathulo zokugijima eziphakanyiswe yisayithi lokuqala.</translation>

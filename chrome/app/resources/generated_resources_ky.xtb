@@ -2112,6 +2112,7 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="2434915728183570229">Телефонуңуздагы колдонмолорду көрө аласыз</translation>
 <translation id="2435248616906486374">Тармак ажыратылды</translation>
 <translation id="2435457462613246316">Сырсөздү көрсөтүү</translation>
+<translation id="2435670725585845785">Өтмөктөрдөн издөө функциясын кадап коюу</translation>
 <translation id="2436385001956947090">&amp;Шилтемени көчүрүү</translation>
 <translation id="2437105255211187922">{NUM_TABS,plural, =1{Тандалган өтмөктү бөлүшсөңүз, бөлүшүү чегинен ашып кетесиз}other{# өтмөктү бөлүшсөңүз, бөлүшүү чегинен ашып кетесиз}}</translation>
 <translation id="2437561292559037753">Маалымат бөлүшүү</translation>
@@ -3166,6 +3167,7 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="3157387275655328056">Окуу тизмесине кошуу</translation>
 <translation id="3157931365184549694">Калыбына келтирүү</translation>
 <translation id="3158033540161634471">Манжа изин кошуу</translation>
+<translation id="3158203338449343164">Өтмөктөрдөн издөө функциясын бошотуу</translation>
 <translation id="3158732900546890991">Сырсөз кеминде 8 символдон туруп, төмөнкүлөрдүн кеминде экөөнү камтышы керек: баш тамгалар, кичине тамгалар, сандар же символдор</translation>
 <translation id="3158770568048368350">Ушуну менен мобилдик тармагыңыз бир аз убакытка ажырап калышы мүмкүн</translation>
 <translation id="3159335509547415276">Бөгөттөлгөн аккаунттар жөнүндө кеңири маалымат</translation>
@@ -7616,6 +7618,7 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="6291741848715722067">Ырастоо коду:</translation>
 <translation id="6291953229176937411">&amp;Тапкычта көрсөтүү</translation>
 <translation id="6293862149782163840"><ph name="DEVICE_NAME" /> өчүрүлдү</translation>
+<translation id="629405221789675953">Өтмөктөрдөн издөө функциясын бошотуу</translation>
 <translation id="6294759976468837022">Авто-скандоо ылдамдыгы</translation>
 <translation id="6295158916970320988">Бардык сайттар</translation>
 <translation id="6295855836753816081">Сакталууда…</translation>
@@ -8630,6 +8633,7 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="7003844668372540529"><ph name="VENDOR_NAME" /> дегенден белгисиз өндүрүм <ph name="PRODUCT_ID" /></translation>
 <translation id="7004402701596653846">Сайт MIDI'ни колдоно алат</translation>
 <translation id="7004499039102548441">Акыркы өтмөктөр</translation>
+<translation id="7004923218520748660">Өтмөктөрдөн издөө функциясын кадап коюу</translation>
 <translation id="7004969808832734860"><ph name="DISCOUNT_UP_TO_AMOUNT" /> чейин арзандатылган</translation>
 <translation id="7005496624875927304">Кошумча уруксаттар</translation>
 <translation id="7005812687360380971">Бузулуу</translation>
@@ -9853,6 +9857,7 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="7864539943188674973">Bluetooth'ду өчүрүп коюу</translation>
 <translation id="7864825798076155402">Google аккаунтуңузга сакталсынбы?</translation>
 <translation id="7865127013871431856">Которуу параметрлери</translation>
+<translation id="7867763367097007079">{COUNT,plural, =1{<ph name="WEBSITE" /> сырсөздү Google аккаунтуңузга сактаңыз}other{<ph name="WEBSITE" /> сырсөздү Google аккаунтуңузга сактаңыз}}</translation>
 <translation id="786957569166715433"><ph name="DEVICE_NAME" /> жупташты</translation>
 <translation id="7870005751202275328">Дарек тилкесин басыңыз</translation>
 <translation id="787069710204604994">Мисалы, узак аралыкка чуркоо үчүн бут кийим карасаңыз, сайт марафондо чуркоону кызыккан нерсеңиз катары аныктайт. Кийинчерээк башка сайтка киргениңизде ал буга чейин кирген сайтта сатылган спорттук бут кийимдин жарнамасын көрсөтөт.</translation>

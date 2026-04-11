@@ -2111,6 +2111,7 @@ Postavkama ovog računa možete upravljati instaliranjem aplikacije Family Link 
 <translation id="2434915728183570229">Sada možete pregledati aplikacije telefona</translation>
 <translation id="2435248616906486374">Mrežna veza je prekinuta</translation>
 <translation id="2435457462613246316">Prikaži lozinku</translation>
+<translation id="2435670725585845785">Zakači pretraživanje kartica</translation>
 <translation id="2436385001956947090">Kopiraj &amp;link</translation>
 <translation id="2437105255211187922">{NUM_TABS,plural, =1{Dijeljenje odabrane kartice bi premašilo ograničenje dijeljenja}one{Dijeljenje # kartice bi premašilo ograničenje dijeljenja}few{Dijeljenje # kartice bi premašilo ograničenje dijeljenja}other{Dijeljenje # kartica bi premašilo ograničenje dijeljenja}}</translation>
 <translation id="2437561292559037753">Dijeljenje podataka</translation>
@@ -3165,6 +3166,7 @@ Domena <ph name="DOMAIN" /> zahtijeva da pametna kartica ostane umetnuta.</trans
 <translation id="3157387275655328056">Dodaj na Listu za čitanje</translation>
 <translation id="3157931365184549694">Vrati</translation>
 <translation id="3158033540161634471">Postavite otisak prsta</translation>
+<translation id="3158203338449343164">Otkači pretraživanje kartica</translation>
 <translation id="3158732900546890991">Lozinka mora sadržavati najmanje 8 znakova i uključivati najmanje dvije od sljedećih vrsta znakova: velika slova, mala slova, brojeve ili simbole</translation>
 <translation id="3158770568048368350">To može uzrokovati kratki prekid vaše mobilne mreže</translation>
 <translation id="3159335509547415276">Saznajte više o blokiranim računima</translation>
@@ -4893,6 +4895,7 @@ Domena <ph name="DOMAIN" /> zahtijeva da pametna kartica ostane umetnuta.</trans
 <translation id="4360738659108163902">Desni klik mišem</translation>
 <translation id="4361745360460842907">Otvori kao karticu</translation>
 <translation id="4362459470237309049">Koristite "." da otpustite dugme miša</translation>
+<translation id="4362871358537270439">Prikaži kartice s drugih uređaja na bočnoj ploči</translation>
 <translation id="4363262124589131906">Novi fajlovi na usluzi Moj disk će se prestati automatski sinhronizirati s Chromebookom</translation>
 <translation id="4364327530094270451">Dinja</translation>
 <translation id="4364417397164696363">{ITEM_COUNT,plural, =1{1 stavka je sačuvana samo na ovom uređaju. Da je koristite na drugim uređajima, sačuvajte je na Google računu.}one{{ITEM_COUNT} stavka je sačuvana samo na ovom uređaju. Da ih koristite na drugim uređajima, sačuvajte ih na Google računu.}few{{ITEM_COUNT} stavke su sačuvane samo na ovom uređaju. Da ih koristite na drugim uređajima, sačuvajte ih na Google računu.}other{{ITEM_COUNT} stavki je sačuvano samo na ovom uređaju. Da ih koristite na drugim uređajima, sačuvajte ih na Google računu.}}</translation>
@@ -6332,6 +6335,7 @@ Koristite Ctrl + Alt + Smanjivanje osvjetljenja da umanjite.</translation>
 <translation id="538822246583124912">Pravila preduzeća su izmijenjena. Dugme Eksperimenti je dodano na alatnu traku. Kliknite na dugme da otvorite dijaloški okvir i omogućite eksperimente.</translation>
 <translation id="5388436023007579456">Kameru mogu koristiti aplikacije i web lokacije s odobrenjem za kameru, kao i sistemske usluge. Da aplikacija ili stranica koristi kameru, možda ćete trebati ponovo pokrenuti aplikaciju odnosno osvježiti stranicu.</translation>
 <translation id="5388719243178419614">Nije moguće otpremiti. Obrada fajla slike nije uspjela.</translation>
+<translation id="5388834241575213051">Prikaži kartice s drugih uređaja na bočnoj ploči</translation>
 <translation id="5388885445722491159">Upareno</translation>
 <translation id="5389224261615877010">Duga</translation>
 <translation id="538945906186309152">Uključi prečicu na tastaturi za Gemini</translation>
@@ -7615,6 +7619,7 @@ Domena <ph name="DOMAIN" /> zahtijeva da pametna kartica ostane umetnuta.</trans
 <translation id="6291741848715722067">Kôd za potvrdu</translation>
 <translation id="6291953229176937411">&amp;Prikaži u Tražiocu</translation>
 <translation id="6293862149782163840">Uređaj <ph name="DEVICE_NAME" /> je isključen.</translation>
+<translation id="629405221789675953">Otkači pretraživanje kartica</translation>
 <translation id="6294759976468837022">Brzina automatskog skeniranja</translation>
 <translation id="6295158916970320988">Sve web lokacije</translation>
 <translation id="6295855836753816081">Pohranjivanje…</translation>
@@ -8633,6 +8638,7 @@ Imate još # ugroženih lozinki. Googleov Upravitelj lozinki preporučuje da odm
 <translation id="7003844668372540529">Nepoznati proizvod <ph name="PRODUCT_ID" /> dobavljača <ph name="VENDOR_NAME" /></translation>
 <translation id="7004402701596653846">Web lokacija može koristiti MIDI</translation>
 <translation id="7004499039102548441">Nedavne kartice</translation>
+<translation id="7004923218520748660">Zakači pretraživanje kartica</translation>
 <translation id="7004969808832734860">Do <ph name="DISCOUNT_UP_TO_AMOUNT" /> popusta</translation>
 <translation id="7005496624875927304">Dodatna odobrenja</translation>
 <translation id="7005812687360380971">Neuspješno</translation>
@@ -9857,6 +9863,7 @@ Pritisnite dodijeljeni prekidač ili tipku da uklonite dodjeljivanje.</translati
 <translation id="7864539943188674973">Onemogućite Bluetooth</translation>
 <translation id="7864825798076155402">Sačuvati na Google račun?</translation>
 <translation id="7865127013871431856">Opcije za prevođenje</translation>
+<translation id="7867763367097007079">{COUNT,plural, =1{Pohranjivanje <ph name="WEBSITE" /> lozinke na Google računu}one{Pohranjivanje <ph name="WEBSITE" /> lozinke na Google računu}few{Pohranjivanje <ph name="WEBSITE" /> lozinke na Google računu}other{Pohranjivanje <ph name="WEBSITE" /> lozinki na Google računu}}</translation>
 <translation id="786957569166715433"><ph name="DEVICE_NAME" /> – upareno</translation>
 <translation id="7870005751202275328">Kliknite na traku za adresu</translation>
 <translation id="787069710204604994">Naprimjer, ako posjetite web lokaciju koja prodaje patike za trčanje na duge staze, web lokacija može odlučiti da ste zainteresirani za trčanje maratona. Kasnije, ako posjetite drugu web lokaciju, ta web lokacija vam može prikazati oglas koji prikazuje patike za trčanje koje je predložila prva web lokacija.</translation>

@@ -2115,6 +2115,7 @@ Gallwch reoli gosodiadau'r cyfrif hwn drwy osod yr ap Family Link ar eich dyfais
 <translation id="2434915728183570229">Gallwch bellach weld apiau eich ffôn</translation>
 <translation id="2435248616906486374">Mae'r rhwydwaith wedi'i ddatgysylltu</translation>
 <translation id="2435457462613246316">Dangos y cyfrinair</translation>
+<translation id="2435670725585845785">Pinio chwilio tabiau</translation>
 <translation id="2436385001956947090">Copïo &amp;dolen</translation>
 <translation id="2437105255211187922">{NUM_TABS,plural, =1{Byddai Rhannu'r Tab a Ddewiswyd yn Mynd Y Tu Hwnt i'r Terfyn Rhannu}zero{Byddai Rhannu # Tab yn Mynd Y Tu Hwnt i'r Terfyn Rhannu}two{Byddai Rhannu # Dab yn Mynd Y Tu Hwnt i'r Terfyn Rhannu}few{Byddai Rhannu # Thab yn Mynd Y Tu Hwnt i'r Terfyn Rhannu}many{Byddai Rhannu # Thab yn Mynd Y Tu Hwnt i'r Terfyn Rhannu}other{Byddai Rhannu # Tab yn Mynd Y Tu Hwnt i'r Terfyn Rhannu}}</translation>
 <translation id="2437561292559037753">Rhannu Data</translation>
@@ -3169,6 +3170,7 @@ Mae <ph name="DOMAIN" /> yn gofyn i chi gadw'ch cerdyn smart wedi'i fewnosod.</t
 <translation id="3157387275655328056">Ychwanegu at y Rhestr Ddarllen</translation>
 <translation id="3157931365184549694">Adfer</translation>
 <translation id="3158033540161634471">Gosod eich ôl bys</translation>
+<translation id="3158203338449343164">Dad-binio Chwilio Tabiau</translation>
 <translation id="3158732900546890991">Rhaid i'r cyfrinair fod o leiaf 8 nod o hyd a chynnwys o leiaf ddau o'r canlynol: priflythrennau, llythrennau bach, rhifau neu symbolau</translation>
 <translation id="3158770568048368350">Mae'n bosib y bydd hyn yn achosi i'ch rhwydwaith symudol ddatgysylltu am gyfnod byr</translation>
 <translation id="3159335509547415276">Dysgu am gyfrifon sydd wedi'u rhwystro</translation>
@@ -4897,6 +4899,7 @@ Mae <ph name="DOMAIN" /> yn gofyn i chi gadw'ch cerdyn smart wedi'i fewnosod.</t
 <translation id="4360738659108163902">De-gliciwch y llygoden</translation>
 <translation id="4361745360460842907">Agor fel tab</translation>
 <translation id="4362459470237309049">Defnyddiwch “.” i ryddhau botwm llygoden</translation>
+<translation id="4362871358537270439">Dangos tabiau o ddyfeisiau eraill yn y panel ochr</translation>
 <translation id="4363262124589131906">Bydd ffeiliau newydd yn My Drive yn stopio cysoni'n awtomatig i'r Chromebook hwn</translation>
 <translation id="4364327530094270451">Melon</translation>
 <translation id="4364417397164696363">{ITEM_COUNT,plural, =1{Mae 1 eitem wedi'i chadw i'r ddyfais hon yn unig. Er mwyn ei defnyddio ar eich dyfeisiau eraill, cadwch hi yn eich Cyfrif Google.}zero{Mae {ITEM_COUNT} eitem yn cael eu cadw i'r ddyfais hon yn unig. Er mwyn eu defnyddio ar eich dyfeisiau eraill, cadwch nhw yn eich Cyfrif Google.}two{Mae {ITEM_COUNT} eitem yn cael eu cadw i'r ddyfais hon yn unig. Er mwyn eu defnyddio ar eich dyfeisiau eraill, cadwch nhw yn eich Cyfrif Google.}few{Mae {ITEM_COUNT} eitem yn cael eu cadw i'r ddyfais hon yn unig. Er mwyn eu defnyddio ar eich dyfeisiau eraill, cadwch nhw yn eich Cyfrif Google.}many{Mae {ITEM_COUNT} eitem yn cael eu cadw i'r ddyfais hon yn unig. Er mwyn eu defnyddio ar eich dyfeisiau eraill, cadwch nhw yn eich Cyfrif Google.}other{Mae {ITEM_COUNT} eitem yn cael eu cadw i'r ddyfais hon yn unig. Er mwyn eu defnyddio ar eich dyfeisiau eraill, cadwch nhw yn eich Cyfrif Google.}}</translation>
@@ -6336,6 +6339,7 @@ Defnyddiwch Ctrl + Alt + Lleihau disgleirdeb i bellhau.</translation>
 <translation id="538822246583124912">Mae'r polisi menter wedi newid. Cafodd botwm Arbrofion ei ychwanegu at y bar offer. Cliciwch y botwm i agor deialog i alluogi arbrofion.</translation>
 <translation id="5388436023007579456">Gall apiau a gwefannau gyda chaniatâd camera, yn ogystal â gwasanaethau system, ddefnyddio'ch camera. I ddefnyddio'r camera, mae'n bosib y bydd angen i chi ailgychwyn yr ap neu ail-lwytho'r dudalen.</translation>
 <translation id="5388719243178419614">Methu ag uwchlwytho. Wedi methu â phrosesu'r ffeil delwedd.</translation>
+<translation id="5388834241575213051">Dangos Tabiau O Ddyfeisiau Eraill yn y Panel Ochr</translation>
 <translation id="5388885445722491159">Wedi paru</translation>
 <translation id="5389224261615877010">Enfys</translation>
 <translation id="538945906186309152">Troi llwybr byr bysellfwrdd Gemini ymlaen</translation>
@@ -7619,6 +7623,7 @@ Mae <ph name="DOMAIN" /> yn gofyn i chi gadw'ch cerdyn smart wedi'i fewnosod.</t
 <translation id="6291741848715722067">Cod cadarnhad</translation>
 <translation id="6291953229176937411">&amp;Dangos yn Finder</translation>
 <translation id="6293862149782163840">Mae <ph name="DEVICE_NAME" /> wedi'i ddiffodd</translation>
+<translation id="629405221789675953">Dad-binio chwilio tabiau</translation>
 <translation id="6294759976468837022">Cyflymder awtosganio</translation>
 <translation id="6295158916970320988">Pob gwefan</translation>
 <translation id="6295855836753816081">Wrthi'n cadw...</translation>
@@ -8641,6 +8646,7 @@ Mae gennych # cyfrinair arall sydd wedi'u darganfod. Mae Rheolwr Cyfrineiriau Go
 <translation id="7003844668372540529">Cynnyrch anhysbys <ph name="PRODUCT_ID" /> gan <ph name="VENDOR_NAME" /></translation>
 <translation id="7004402701596653846">Gall y wefan ddefnyddio MIDI</translation>
 <translation id="7004499039102548441">Tabiau Diweddar</translation>
+<translation id="7004923218520748660">Pinio Chwilio Tabiau</translation>
 <translation id="7004969808832734860">Hyd at <ph name="DISCOUNT_UP_TO_AMOUNT" /> i ffwrdd</translation>
 <translation id="7005496624875927304">Caniatadau Ychwanegol</translation>
 <translation id="7005812687360380971">Methiant</translation>
@@ -9864,6 +9870,7 @@ Pwyswch switsh neu fysell a aseiniwyd i dynnu aseiniad.</translation>
 <translation id="7864539943188674973">Analluogi Bluetooth</translation>
 <translation id="7864825798076155402">Cadw yn eich Cyfrif Google?</translation>
 <translation id="7865127013871431856">Dewisiadau cyfieithu</translation>
+<translation id="7867763367097007079">{COUNT,plural, =1{Cadw cyfrinair <ph name="WEBSITE" /> yn eich Cyfrif Google}zero{Cadw cyfrineiriau <ph name="WEBSITE" /> yn eich Cyfrif Google}two{Cadw cyfrineiriau <ph name="WEBSITE" /> yn eich Cyfrif Google}few{Cadw cyfrineiriau <ph name="WEBSITE" /> yn eich Cyfrif Google}many{Cadw cyfrineiriau <ph name="WEBSITE" /> yn eich Cyfrif Google}other{Cadw cyfrineiriau <ph name="WEBSITE" /> yn eich Cyfrif Google}}</translation>
 <translation id="786957569166715433"><ph name="DEVICE_NAME" /> - Wedi paru</translation>
 <translation id="7870005751202275328">Cliciwch ar y bar cyfeiriad</translation>
 <translation id="787069710204604994">Er enghraifft, os ydych yn ymweld â gwefan sy'n gwerthu esgidiau rhedeg pellter hir, mae'n bosib y bydd y wefan yn penderfynu bod gennych ddiddordeb mewn rhedeg marathonau. Yn ddiweddarach, os byddwch yn ymweld â gwefan wahanol, bydd y wefan honno yn dangos hysbyseb i chi ar gyfer esgidiau rhedeg a awgrymir gan y wefan gyntaf.</translation>

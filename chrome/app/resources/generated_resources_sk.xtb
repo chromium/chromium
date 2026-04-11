@@ -2101,6 +2101,7 @@ Ak chcete spravovať nastavenia tohto účtu, nainštalujte si do zariadenia apl
 <translation id="2434915728183570229">Teraz si môžete zobraziť aplikácie svojho telefónu</translation>
 <translation id="2435248616906486374">Sieť je odpojená</translation>
 <translation id="2435457462613246316">Zobraziť heslo</translation>
+<translation id="2435670725585845785">Pripnúť vyhľadávanie kariet</translation>
 <translation id="2436385001956947090">Kopírovať odkaz</translation>
 <translation id="2437105255211187922">{NUM_TABS,plural, =1{Zdieľaním vybranej karty prekročíte limit zdieľania}few{Zdieľaním # kariet prekročíte limit zdieľania}many{Sharing # Tabs Would Exceed the Sharing Limit}other{Zdieľaním # kariet prekročíte limit zdieľania}}</translation>
 <translation id="2437561292559037753">Zdieľanie údajov</translation>
@@ -3155,6 +3156,7 @@ Ak chcete spravovať nastavenia tohto účtu, nainštalujte si do zariadenia apl
 <translation id="3157387275655328056">Pridať do čitateľského zoznamu</translation>
 <translation id="3157931365184549694">Obnoviť</translation>
 <translation id="3158033540161634471">Nastavenie odtlačku prsta</translation>
+<translation id="3158203338449343164">Odopnúť Vyhľadávanie kariet</translation>
 <translation id="3158732900546890991">Heslo musí mať aspoň 8 znakov a obsahovať aspoň dva z nasledujúcich typov znakov: veľké písmená, malé písmená, číslice alebo symboly</translation>
 <translation id="3158770568048368350">Môže to spôsobiť krátke odpojenie mobilnej siete</translation>
 <translation id="3159335509547415276">Ďalšie informácie o blokovaných účtoch</translation>
@@ -7603,6 +7605,7 @@ Tejto akcii môžete prideliť viacero prepínačov.</translation>
 <translation id="6291741848715722067">Potvrdzovací kód</translation>
 <translation id="6291953229176937411">&amp;Zobraziť v aplikácii Finder</translation>
 <translation id="6293862149782163840">Zariadenie <ph name="DEVICE_NAME" /> je vypnuté</translation>
+<translation id="629405221789675953">Odopnúť vyhľadávanie kariet</translation>
 <translation id="6294759976468837022">Rýchlosť automatického prehľadávania</translation>
 <translation id="6295158916970320988">Všetky weby</translation>
 <translation id="6295855836753816081">Ukladá sa...</translation>
@@ -8621,6 +8624,7 @@ Máte ešte # ďalších. Správca hesiel Google odporúča okamžite dané hes
 <translation id="7003844668372540529">Neznámy produkt <ph name="PRODUCT_ID" /> od dodávateľa <ph name="VENDOR_NAME" /></translation>
 <translation id="7004402701596653846">Web môže používať MIDI</translation>
 <translation id="7004499039102548441">Nedávne karty</translation>
+<translation id="7004923218520748660">Pripnúť Vyhľadávanie kariet</translation>
 <translation id="7004969808832734860">Zľava až <ph name="DISCOUNT_UP_TO_AMOUNT" /></translation>
 <translation id="7005496624875927304">Ďalšie povolenia</translation>
 <translation id="7005812687360380971">Zlyhanie</translation>
@@ -9844,6 +9848,7 @@ Odstráňte ju stlačením prideleného prepínača alebo klávesa.</translation
 <translation id="7864539943188674973">Zakázať rozhranie Bluetooth</translation>
 <translation id="7864825798076155402">Chcete uložiť vo svojom účte Google?</translation>
 <translation id="7865127013871431856">Možnosti prekladu</translation>
+<translation id="7867763367097007079">{COUNT,plural, =1{Uložte si heslo k účtu <ph name="WEBSITE" /> do účtu Google}few{Uložte si heslá k účtom <ph name="WEBSITE" /> do účtu Google}many{Save <ph name="WEBSITE" /> passwords in your Google Account}other{Uložte si heslá k účtom <ph name="WEBSITE" /> do účtu Google}}</translation>
 <translation id="786957569166715433"><ph name="DEVICE_NAME" /> – spárované</translation>
 <translation id="7870005751202275328">Kliknite na panel s adresou</translation>
 <translation id="787069710204604994">Ak napríklad navštívite web predávajúci bežeckú obuv na dlhé trate, môže usúdiť, že máte záujem o behanie maratónov. Ak neskôr navštívite iný web, môže vám zobraziť reklamu na bežeckú obuv navrhnutú prvým webom.</translation>

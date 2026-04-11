@@ -2098,6 +2098,7 @@ Kontu honen ezarpenak kudeatzeko, instalatu Family Link aplikazioa zure gailuan.
 <translation id="2434915728183570229">Orain, telefonoko aplikazioak ikus ditzakezu</translation>
 <translation id="2435248616906486374">Sarea deskonektatu da</translation>
 <translation id="2435457462613246316">Erakutsi pasahitza</translation>
+<translation id="2435670725585845785">Ainguratu fitxa-bilaketa</translation>
 <translation id="2436385001956947090">Kopiatu esteka</translation>
 <translation id="2437105255211187922">{NUM_TABS,plural, =1{Hautatutako fitxa partekatuz gero, partekatzeko muga gaindituko litzateke}other{# fitxa partekatuz gero, partekatzeko muga gaindituko litzateke}}</translation>
 <translation id="2437561292559037753">Datuak partekatzea</translation>
@@ -3152,6 +3153,7 @@ Txartel adimenduna sartuta edukitzea eskatzen du <ph name="DOMAIN" /> domeinuak.
 <translation id="3157387275655328056">Gehitu zerrendan</translation>
 <translation id="3157931365184549694">Leheneratu</translation>
 <translation id="3158033540161634471">Konfiguratu hatz-marka</translation>
+<translation id="3158203338449343164">Kendu aingura fitxa-bilaketari</translation>
 <translation id="3158732900546890991">Pasahitzak gutxienez 8 karaktere izan behar ditu, eta hauetako 2 gutxienez: maiuskulak, minuskulak, zenbakiak edo ikurrak</translation>
 <translation id="3158770568048368350">Baliteke horren ondorioz sare mugikorra une batez deskonektatzea</translation>
 <translation id="3159335509547415276">Lortu blokeatutako kontuei buruzko informazioa</translation>
@@ -7595,6 +7597,7 @@ Txartel adimenduna sartuta edukitzea eskatzen du <ph name="DOMAIN" /> domeinuak.
 <translation id="6291741848715722067">Berrespen-kodea</translation>
 <translation id="6291953229176937411">&amp;Erakutsi Finder-en</translation>
 <translation id="6293862149782163840"><ph name="DEVICE_NAME" /> desaktibatuta dago</translation>
+<translation id="629405221789675953">Kendu aingura fitxa-bilaketari</translation>
 <translation id="6294759976468837022">Pantailan automatikoki mugitzeko abiadura</translation>
 <translation id="6295158916970320988">Webgune guztiak</translation>
 <translation id="6295855836753816081">Gordetzen…</translation>
@@ -8609,6 +8612,7 @@ Arriskuan dauden # pasahitz gehiago dauzkazu. Google-ren Pasahitz-kudeatzailea z
 <translation id="7003844668372540529"><ph name="VENDOR_NAME" /> saltzailearen <ph name="PRODUCT_ID" /> produktu ezezaguna</translation>
 <translation id="7004402701596653846">MIDI gailuak erabil ditzake webguneak</translation>
 <translation id="7004499039102548441">Azkenaldiko fitxak</translation>
+<translation id="7004923218520748660">Ainguratu fitxa-bilaketa</translation>
 <translation id="7004969808832734860">Gehieneko deskontua: <ph name="DISCOUNT_UP_TO_AMOUNT" /></translation>
 <translation id="7005496624875927304">Baimen gehigarriak</translation>
 <translation id="7005812687360380971">Hutsegitea</translation>
@@ -9831,6 +9835,7 @@ Esleipen bat kentzeko, berriz, sakatu esleipen bat daukan erabilerraztasun-eteng
 <translation id="7864539943188674973">Desgaitu Bluetootha</translation>
 <translation id="7864825798076155402">Google-ko kontuan gorde nahi duzu?</translation>
 <translation id="7865127013871431856">Itzultzeko aukerak</translation>
+<translation id="7867763367097007079">{COUNT,plural, =1{Gorde <ph name="WEBSITE" /> pasahitz Google-ko kontuan}other{Gorde <ph name="WEBSITE" /> pasahitz Google-ko kontuan}}</translation>
 <translation id="786957569166715433"><ph name="DEVICE_NAME" /> - Parekatu da</translation>
 <translation id="7870005751202275328">Sakatu helbide-barra</translation>
 <translation id="787069710204604994">Esaterako, webgune batera joaten bazara distantzia luzeetan korrika egiteko oinetakoak erostera, baliteke webgune horrek maratoiak interesatzen zaizkizula ondorioztatzea. Beranduago, beste webgune batera joaten bazara, litekeena da webgune horrek korrika egiteko oinetakoekin erlazionatutako iragarki bat erakustea, aurreko webguneak iradokita.</translation>

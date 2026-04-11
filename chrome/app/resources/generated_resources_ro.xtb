@@ -966,7 +966,7 @@ Permisiunile pe care le-ai acordat deja aplicațiilor se pot aplica acestui cont
 <translation id="1650801028905250434">Fișierele din Contul meu Drive se vor sincroniza automat cu Chromebookul, ca să le poți accesa fără conexiune la internet. Poți modifica oricând opțiunea în Setări &gt; Fișiere.</translation>
 <translation id="1651008383952180276">Trebuie să introduci aceeași expresie de acces de două ori</translation>
 <translation id="1651609627703324721">Această filă prezintă conținut RV unui set de căști-microfon</translation>
-<translation id="1652281434788353738">Gânditor</translation>
+<translation id="1652281434788353738">Persoană gânditoare</translation>
 <translation id="1652326691684645429">Activează Trimiterea în apropiere</translation>
 <translation id="1652862280638399816">Pentru a folosi Managerul de parole cu macOS Keychain, relansează Chromium și permite accesul pentru Keychain. Filele se vor redeschide după relansare.</translation>
 <translation id="165448107578581061">Gemini lucrează la activitatea ta...</translation>
@@ -2100,6 +2100,7 @@ Poți gestiona setările contului dacă instalezi aplicația Family Link pe disp
 <translation id="2434915728183570229">Acum poți vedea aplicațiile de pe telefon</translation>
 <translation id="2435248616906486374">Rețea deconectată</translation>
 <translation id="2435457462613246316">Afișați parola</translation>
+<translation id="2435670725585845785">Fixează căutarea filelor</translation>
 <translation id="2436385001956947090">Copiază &amp;linkul</translation>
 <translation id="2437105255211187922">{NUM_TABS,plural, =1{Dacă trimiți fila selectată, vei depăși limita de trimitere}few{Dacă trimiți # file, vei depăși limita de trimitere}other{Dacă trimiți # de file, vei depăși limita de trimitere}}</translation>
 <translation id="2437561292559037753">Trimiterea datelor</translation>
@@ -3154,6 +3155,7 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="3157387275655328056">Adaugă în lista de lectură</translation>
 <translation id="3157931365184549694">Restabilește</translation>
 <translation id="3158033540161634471">Adaugă amprenta</translation>
+<translation id="3158203338449343164">Anulează fixarea Căutării filelor</translation>
 <translation id="3158732900546890991">Parola trebuie să aibă cel puțin opt caractere și să includă cel puțin două dintre următoarele: majuscule, minuscule, cifre sau simboluri.</translation>
 <translation id="3158770568048368350">Poate cauza deconectarea temporară de la rețeaua mobilă</translation>
 <translation id="3159335509547415276">Află despre conturile blocate</translation>
@@ -4881,6 +4883,7 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="4360738659108163902">Dă clic dreapta pe mouse</translation>
 <translation id="4361745360460842907">Deschideți ca filă</translation>
 <translation id="4362459470237309049">Folosește „.” pentru a elibera un buton al mouse-ului</translation>
+<translation id="4362871358537270439">Afișează filele de pe alte dispozitive în panoul lateral</translation>
 <translation id="4363262124589131906">Fișierele noi din Contul meu Drive nu se vor mai sincroniza automat cu acest Chromebook</translation>
 <translation id="4364327530094270451">Pepene galben</translation>
 <translation id="4364417397164696363">{ITEM_COUNT,plural, =1{Un element se salvează numai pe acest dispozitiv. Pentru a-l folosi pe celelalte dispozitive, salvează-l în Contul Google.}few{{ITEM_COUNT} elemente se salvează numai pe acest dispozitiv. Pentru a le folosi pe celelalte dispozitive, salvează-le în Contul Google.}other{{ITEM_COUNT} de elemente se salvează numai pe acest dispozitiv. Pentru a le folosi pe celelalte dispozitive, salvează-le în Contul Google.}}</translation>
@@ -6318,6 +6321,7 @@ Folosește Ctrl + Alt + tasta de reducere a luminozității pentru a micșora.</
 <translation id="538822246583124912">Politica de companie a fost modificată. Butonul Experimente a fost adăugat în bara de instrumente. Dă clic pe buton pentru a deschide o casetă de dialog ca să activezi experimente.</translation>
 <translation id="5388436023007579456">Aplicațiile și site-urile care au permisiunea pentru camera foto, precum și serviciile de sistem, pot folosi camera foto. Pentru a folosi camera foto, poate fi necesar să repornești aplicația sau să actualizezi pagina.</translation>
 <translation id="5388719243178419614">Încărcarea nu a reușit. Fișierul imagine nu a putut fi procesat.</translation>
+<translation id="5388834241575213051">Afișează filele de pe alte dispozitive în panoul lateral</translation>
 <translation id="5388885445722491159">Împerecheat</translation>
 <translation id="5389224261615877010">Curcubeu</translation>
 <translation id="538945906186309152">Activează comanda rapidă de la tastatură pentru Gemini</translation>
@@ -7601,6 +7605,7 @@ Poți atribui mai multe comutatoare acestei acțiuni.</translation>
 <translation id="6291741848715722067">Cod de confirmare</translation>
 <translation id="6291953229176937411">&amp;Afișează în Finder</translation>
 <translation id="6293862149782163840"><ph name="DEVICE_NAME" /> este dezactivată</translation>
+<translation id="629405221789675953">Anulează fixarea căutării filelor</translation>
 <translation id="6294759976468837022">Viteza de scanare automată</translation>
 <translation id="6295158916970320988">Toate site-urile</translation>
 <translation id="6295855836753816081">Se salvează...</translation>
@@ -8617,6 +8622,7 @@ Mai ai # de parole compromise. Managerul de parole Google recomandă să verific
 <translation id="7003844668372540529">Produs necunoscut <ph name="PRODUCT_ID" /> de la <ph name="VENDOR_NAME" /></translation>
 <translation id="7004402701596653846">Este posibil ca site-ul să folosească dispozitive MIDI</translation>
 <translation id="7004499039102548441">File recente</translation>
+<translation id="7004923218520748660">Fixează Căutarea filelor</translation>
 <translation id="7004969808832734860">Până la <ph name="DISCOUNT_UP_TO_AMOUNT" /> reducere</translation>
 <translation id="7005496624875927304">Permisiuni suplimentare</translation>
 <translation id="7005812687360380971">Eroare</translation>
@@ -9841,6 +9847,7 @@ Apasă un comutator sau o tastă atribuită pentru a elimina atribuirea</transla
 <translation id="7864539943188674973">Dezactivați Bluetooth</translation>
 <translation id="7864825798076155402">Salvezi în Contul Google?</translation>
 <translation id="7865127013871431856">Opțiuni de traducere</translation>
+<translation id="7867763367097007079">{COUNT,plural, =1{Salvează <ph name="WEBSITE" /> parolă în Contul Google}few{Salvează <ph name="WEBSITE" /> parole în Contul Google}other{Salvează <ph name="WEBSITE" /> de parole în Contul Google}}</translation>
 <translation id="786957569166715433"><ph name="DEVICE_NAME" /> – asociat</translation>
 <translation id="7870005751202275328">Dă clic pe bara de adrese</translation>
 <translation id="787069710204604994">De exemplu, dacă accesezi un site care vinde pantofi de alergare pe distanțe mari, site-ul poate deduce că te interesează maratoanele. Mai târziu, dacă accesezi alt site, acel site îți poate afișa un anunț pentru pantofi de alergare, pe baza sugestiei de pe primul site.</translation>

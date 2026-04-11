@@ -2096,6 +2096,7 @@
 <translation id="2434915728183570229">Енді телефондағы қолданбаларды көре аласыз</translation>
 <translation id="2435248616906486374">Желі ажыратылды</translation>
 <translation id="2435457462613246316">Құпия сөзді көрсету</translation>
+<translation id="2435670725585845785">Қойынды іздеу функциясын бекіту</translation>
 <translation id="2436385001956947090">&amp;Сілтемені көшіру</translation>
 <translation id="2437105255211187922">{NUM_TABS,plural, =1{Таңдалған қойындыны бөлісу шектен асып кетеді}other{# қойындыны бөлісу шектен асып кетеді}}</translation>
 <translation id="2437561292559037753">Деректерді бөлісу</translation>
@@ -3150,6 +3151,7 @@
 <translation id="3157387275655328056">Оқу тізіміне қосу</translation>
 <translation id="3157931365184549694">Қалпына келтіру</translation>
 <translation id="3158033540161634471">Саусақ ізін орнату</translation>
+<translation id="3158203338449343164">Қойынды іздеу функциясын босату</translation>
 <translation id="3158732900546890991">Құпия сөз кемінде 8 таңбадан тұруы және келесілердің кемінде екеуін қамтуы керек: бас әріптер, кіші әріптер, сандар немесе таңбалар.</translation>
 <translation id="3158770568048368350">Бұл мобильдік желінің қысқа уақыт үзілуіне себеп болуы мүмкін.</translation>
 <translation id="3159335509547415276">Блокталған аккаунттар туралы ақпарат</translation>
@@ -7593,6 +7595,7 @@
 <translation id="6291741848715722067">Растау коды</translation>
 <translation id="6291953229176937411">&amp;Іздеу жүйесінде көрсету</translation>
 <translation id="6293862149782163840"><ph name="DEVICE_NAME" /> өшірулі</translation>
+<translation id="629405221789675953">Қойынды іздеу функциясын босату</translation>
 <translation id="6294759976468837022">Автоматты сканерлеу жылдамдығы</translation>
 <translation id="6295158916970320988">Барлық сайттар</translation>
 <translation id="6295855836753816081">Сақталуда…</translation>
@@ -8607,6 +8610,7 @@
 <translation id="7003844668372540529"><ph name="VENDOR_NAME" /> ұсынған белгісіз өнім <ph name="PRODUCT_ID" /></translation>
 <translation id="7004402701596653846">Сайт MIDI құрылғысын пайдалана алады</translation>
 <translation id="7004499039102548441">Соңғы қойындылар</translation>
+<translation id="7004923218520748660">Қойынды іздеу функциясын бекіту</translation>
 <translation id="7004969808832734860"><ph name="DISCOUNT_UP_TO_AMOUNT" /> дейінгі жеңілдік</translation>
 <translation id="7005496624875927304">Қосымша рұқсаттар</translation>
 <translation id="7005812687360380971">Орындалмады</translation>
@@ -9829,6 +9833,7 @@
 <translation id="7864539943188674973">Bluetooth өшіру</translation>
 <translation id="7864825798076155402">Google аккаунтына сақтау қажет пе?</translation>
 <translation id="7865127013871431856">Аудару опциялары</translation>
+<translation id="7867763367097007079">{COUNT,plural, =1{<ph name="WEBSITE" /> құпия сөзіңізді Google аккаунтыңызға сақтаңыз}other{<ph name="WEBSITE" /> құпия сөзіңізді Google аккаунтыңызға сақтаңыз}}</translation>
 <translation id="786957569166715433"><ph name="DEVICE_NAME" /> – жұпталды</translation>
 <translation id="7870005751202275328">Мекенжай жолағын басыңыз.</translation>
 <translation id="787069710204604994">Мысалы, алыс қашықтыққа жүгіретін кроссовкалар сататын сайтқа кірсеңіз, сайт сізді жүгіру марафондарына қызығады деп ұйғаруы мүмкін. Кейінірек басқа сайтқа кірсеңіз, сол сайт сізге бірінші сайт ұсынған кроссовкаларға арналған жарнаманы көрсете алады.</translation>

@@ -2113,6 +2113,7 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="2434915728183570229">Nú geturðu séð forrit símans</translation>
 <translation id="2435248616906486374">Nettenging slitnaði</translation>
 <translation id="2435457462613246316">Sýna aðgangsorð</translation>
+<translation id="2435670725585845785">Festa flipaleit</translation>
 <translation id="2436385001956947090">Afrita tengil</translation>
 <translation id="2437105255211187922">{NUM_TABS,plural, =1{Ef völdum flipa er deilt verður farið yfir hámarksfjölda deilinga}one{Ef # flipa er deilt verður farið yfir hámarksfjölda deilinga}other{Ef # flipum er deilt verður farið yfir hámarksfjölda deilinga}}</translation>
 <translation id="2437561292559037753">Gagnadeiling</translation>
@@ -3167,6 +3168,7 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="3157387275655328056">Bæta við leslista</translation>
 <translation id="3157931365184549694">Endurheimta</translation>
 <translation id="3158033540161634471">Skráðu fingrafarið þitt</translation>
+<translation id="3158203338449343164">Losa flipaleit</translation>
 <translation id="3158732900546890991">Aðgangsorð verður að vera að minnsta kosti 8 stafir og innihalda a.m.k. tvennt af eftirfarandi: hástafi, lágstafi, tölustafi eða tákn</translation>
 <translation id="3158770568048368350">Þetta gæti valdið því að tengingin við farsímakerfið rofni um stund</translation>
 <translation id="3159335509547415276">Nánar um reikninga á bannlista</translation>
@@ -7617,6 +7619,7 @@ Notaðu Ctrl + Alt + minnka birtustig til að minnka aðdrátt.</translation>
 <translation id="6291741848715722067">Staðfestingarkóði</translation>
 <translation id="6291953229176937411">&amp;Sýna í Finder</translation>
 <translation id="6293862149782163840">Slökkt er á <ph name="DEVICE_NAME" /></translation>
+<translation id="629405221789675953">Losa flipaleit</translation>
 <translation id="6294759976468837022">Hraði sjálfvirkrar skönnunar</translation>
 <translation id="6295158916970320988">Öll vefsvæði</translation>
 <translation id="6295855836753816081">Vistar...</translation>
@@ -8633,6 +8636,7 @@ Notaðu Ctrl + Alt + minnka birtustig til að minnka aðdrátt.</translation>
 <translation id="7003844668372540529">Óþekkt vara <ph name="PRODUCT_ID" /> frá <ph name="VENDOR_NAME" /></translation>
 <translation id="7004402701596653846">Vefsvæðið getur notað MIDI</translation>
 <translation id="7004499039102548441">Nýlegir flipar</translation>
+<translation id="7004923218520748660">Festa flipaleit</translation>
 <translation id="7004969808832734860">Allt að <ph name="DISCOUNT_UP_TO_AMOUNT" /> afsláttur</translation>
 <translation id="7005496624875927304">Viðbótarheimildir</translation>
 <translation id="7005812687360380971">Bilun</translation>
@@ -9856,6 +9860,7 @@ Notaðu Ctrl + Alt + minnka birtustig til að minnka aðdrátt.</translation>
 <translation id="7864539943188674973">Slökkva á Bluetooth</translation>
 <translation id="7864825798076155402">Vista á Google reikningnum þínum?</translation>
 <translation id="7865127013871431856">Valkostir þýðinga</translation>
+<translation id="7867763367097007079">{COUNT,plural, =1{Vista <ph name="WEBSITE" /> aðgangsorð á Google-reikningnum þínum}one{Vista <ph name="WEBSITE" /> aðgangsorð á Google-reikningnum þínum}other{Vista <ph name="WEBSITE" /> aðgangsorð á Google-reikningnum þínum}}</translation>
 <translation id="786957569166715433"><ph name="DEVICE_NAME" /> – parað</translation>
 <translation id="7870005751202275328">Smelltu á veffangastikuna</translation>
 <translation id="787069710204604994">Ef þú heimsækir til dæmis vefsvæði sem selur hlaupaskó fyrir langhlaup gæti vefsvæðið áætlað að þú hafir áhuga á að hlaupa maraþon. Ef þú heimsækir annað vefsvæði síðar gætu auglýsingar fyrir hlaupaskó birst á því vefsvæði í samræmi við tillögu frá fyrra vefsvæðinu.</translation>

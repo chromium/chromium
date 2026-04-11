@@ -2111,6 +2111,7 @@
 <translation id="2434915728183570229">ຕອນນີ້ທ່ານສາມາດເບິ່ງແອັບຫຼ້າສຸດຂອງໂທລະສັບທ່ານໄດ້ແລ້ວ</translation>
 <translation id="2435248616906486374">ຕັດເຊື່ອມຕໍ່ເຄືອຂ່າຍແລ້ວ</translation>
 <translation id="2435457462613246316">ສະ​ແດງ​ລະ​ຫັດ​ຜ່ານ</translation>
+<translation id="2435670725585845785">ປັກໝຸດການຊອກຫາແຖບ</translation>
 <translation id="2436385001956947090">ສຳເນົາລິ້ງ</translation>
 <translation id="2437105255211187922">{NUM_TABS,plural, =1{ການແບ່ງປັນແຖບທີ່ເລືອກຈະເກີນຂີດຈຳກັດການແບ່ງປັນ}other{ການແບ່ງປັນ # ແຖບຈະເກີນຂີດຈຳກັດການແບ່ງປັນ}}</translation>
 <translation id="2437561292559037753">ການແບ່ງປັນຂໍ້ມູນ</translation>
@@ -3165,6 +3166,7 @@
 <translation id="3157387275655328056">ເພີ່ມໃສ່ລາຍການທີ່ຈະອ່ານ</translation>
 <translation id="3157931365184549694">ເອົາຄືນມາ</translation>
 <translation id="3158033540161634471">ຕັ້ງຄ່າລາຍນິ້ວມືຂອງທ່ານ</translation>
+<translation id="3158203338449343164">ຖອນໝຸດການຊອກຫາແຖບ</translation>
 <translation id="3158732900546890991">ລະຫັດຜ່ານຕ້ອງມີຕົວອັກສອນຢ່າງໜ້ອຍ 8 ຕົວ ແລະ ຕ້ອງມີຕົວອັກສອນຕໍ່ໄປນີ້ຢ່າງໜ້ອຍ 2 ປະເພດຄື: ຕົວພິມໃຫຍ່, ຕົວພິມນ້ອຍ, ຕົວເລກ ຫຼື ສັນຍະລັກ</translation>
 <translation id="3158770568048368350">ນີ້ອາດເຮັດໃຫ້ເຄືອຂ່າຍມືຖືຂອງທ່ານຕັດການເຊື່ອມຕໍ່ເປັນເວລາສັ້ນໆ</translation>
 <translation id="3159335509547415276">ສຶກສາກ່ຽວກັບບັນຊີທີ່ຖືກບລັອກ</translation>
@@ -7614,6 +7616,7 @@
 <translation id="6291741848715722067">ລະຫັດຢືນຢັນ</translation>
 <translation id="6291953229176937411">ສະແດງຢູ່ໃນຕົວຊອກ​ຫາ</translation>
 <translation id="6293862149782163840">ປິດ <ph name="DEVICE_NAME" /> ໄວ້ແລ້ວ</translation>
+<translation id="629405221789675953">ຖອນໝຸດການຊອກຫາແຖບ</translation>
 <translation id="6294759976468837022">ຄວາມໄວສະແກນອັດຕະໂນມັດ</translation>
 <translation id="6295158916970320988">ທຸກ​ເວັບ​ໄຊ​ທ໌</translation>
 <translation id="6295855836753816081">ກໍາລັງບັນທຶກ...</translation>
@@ -8628,6 +8631,7 @@
 <translation id="7003844668372540529">ຜະ​ລິດ​ຕະ​ພັນ​ບໍ່​ຮູ້​ຈັກ <ph name="PRODUCT_ID" /> ຈາກ <ph name="VENDOR_NAME" /></translation>
 <translation id="7004402701596653846">ເວັບໄຊສາມາດໃຊ້ MIDI</translation>
 <translation id="7004499039102548441">ແຖບບໍ່ດົນມານີ້</translation>
+<translation id="7004923218520748660">ປັກໝຸດການຊອກຫາແຖບ</translation>
 <translation id="7004969808832734860">ຫຼຸດສູງສຸດ <ph name="DISCOUNT_UP_TO_AMOUNT" /></translation>
 <translation id="7005496624875927304">ການອະນຸຍາດເພີ່ມເຕີມ</translation>
 <translation id="7005812687360380971">ລົ້ມເຫລວ</translation>
@@ -9850,6 +9854,7 @@
 <translation id="7864539943188674973">ປິດການນຳໃຊ້ Bluetooth</translation>
 <translation id="7864825798076155402">ບັນທຶກໄວ້ໃນບັນຊີ Google ຂອງທ່ານບໍ?</translation>
 <translation id="7865127013871431856">ຕົວເລືອກແປພາສາ</translation>
+<translation id="7867763367097007079">{COUNT,plural, =1{ບັນທຶກລະຫັດຜ່ານ <ph name="WEBSITE" /> ລາຍການໄວ້ໃນບັນຊີ Google ຂອງທ່ານ}other{ບັນທຶກລະຫັດຜ່ານ <ph name="WEBSITE" /> ລາຍການໄວ້ໃນບັນຊີ Google ຂອງທ່ານ}}</translation>
 <translation id="786957569166715433"><ph name="DEVICE_NAME" /> - ຈັບຄູ່ແລ້ວ</translation>
 <translation id="7870005751202275328">ຄລິກແຖບທີ່ຢູ່</translation>
 <translation id="787069710204604994">ຕົວຢ່າງ: ຫາກທ່ານເຂົ້າເບິ່ງເວັບໄຊທີ່ຂາຍເກີບແລ່ນໄລຍະໄກ, ເວັບໄຊດັ່ງກ່າວອາດເຂົ້າໃຈວ່າທ່ານສົນໃຈໃນການແລ່ນມາຣາທອນ. ຕໍ່ມາ, ຖ້າທ່ານເຂົ້າເບິ່ງເວັບໄຊອື່ນ, ເວັບໄຊນັ້ນກໍອາດສະແດງໂຄສະນາເກີບແລ່ນທີ່ແນະນຳໂດຍເວັບໄຊທຳອິດໃຫ້ທ່ານເຫັນ.</translation>

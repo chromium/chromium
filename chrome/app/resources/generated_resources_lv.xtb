@@ -2101,6 +2101,7 @@ Varat pārvaldīt šī konta iestatījumus, savā ierīcē instalējot lietotni 
 <translation id="2434915728183570229">Tagad varat skatīt tālruņa lietotnes.</translation>
 <translation id="2435248616906486374">Tika pārtraukts tīkla savienojums.</translation>
 <translation id="2435457462613246316">Rādīt paroli</translation>
+<translation id="2435670725585845785">Piespraust meklēšanu cilnēs</translation>
 <translation id="2436385001956947090">Kopēt &amp;saiti</translation>
 <translation id="2437105255211187922">{NUM_TABS,plural, =1{Kopīgojot atlasīto cilni, tiktu pārsniegts kopīgošanas ierobežojums}zero{Kopīgojot # cilnes, tiktu pārsniegts kopīgošanas ierobežojums}one{Kopīgojot # cilni, tiktu pārsniegts kopīgošanas ierobežojums}other{Kopīgojot # cilnes, tiktu pārsniegts kopīgošanas ierobežojums}}</translation>
 <translation id="2437561292559037753">Datu kopīgošana</translation>
@@ -3155,6 +3156,7 @@ Saskaņā ar domēna <ph name="DOMAIN" /> prasībām viedkartei ir jābūt ievie
 <translation id="3157387275655328056">Pievienot lasīšanas sarakstam</translation>
 <translation id="3157931365184549694">Atjaunot</translation>
 <translation id="3158033540161634471">Iestatiet pirksta nospiedumu</translation>
+<translation id="3158203338449343164">Atspraust meklēšanu cilnēs</translation>
 <translation id="3158732900546890991">Parolē ir jābūt vismaz astoņām rakstzīmēm, kā arī tajā ir jābūt vismaz divām no šādām rakstzīmēm: lielajiem burtiem, mazajiem burtiem, cipariem vai simboliem.</translation>
 <translation id="3158770568048368350">Tādējādi īslaicīgi var tikt pārtraukts savienojums ar mobilo tīklu</translation>
 <translation id="3159335509547415276">Uzziniet vairāk par bloķētiem kontiem.</translation>
@@ -4881,6 +4883,7 @@ Vai vēlaties palaist rīku <ph name="CONTROL_PANEL_APPLET_NAME" />?</translatio
 <translation id="4360738659108163902">Noklikšķināt ar peles labo pogu</translation>
 <translation id="4361745360460842907">Atvērt kā cilni</translation>
 <translation id="4362459470237309049">Lai atlaistu peles pogu, izmantojiet taustiņu “.”</translation>
+<translation id="4362871358537270439">Rādīt cilnes no citām ierīcēm sānu panelī</translation>
 <translation id="4363262124589131906">Jaunie faili, kas atrodas mapē “Mans disks”, vairs netiks automātiski sinhronizēti ar šo Chromebook datoru.</translation>
 <translation id="4364327530094270451">Melone</translation>
 <translation id="4364417397164696363">{ITEM_COUNT,plural, =1{Viens vienums ir saglabāts tikai šajā ierīcē. Lai varētu izmantot šo vienumu citās ierīcēs, saglabājiet to savā Google kontā.}zero{{ITEM_COUNT} vienumi ir saglabāti tikai šajā ierīcē. Lai varētu izmantot šos vienumus citās ierīcēs, saglabājiet tos savā Google kontā.}one{{ITEM_COUNT} vienums ir saglabāts tikai šajā ierīcē. Lai varētu izmantot šos vienumus citās ierīcēs, saglabājiet tos savā Google kontā.}other{{ITEM_COUNT} vienumi ir saglabāti tikai šajā ierīcē. Lai varētu izmantot šos vienumus citās ierīcēs, saglabājiet tos savā Google kontā.}}</translation>
@@ -6319,6 +6322,7 @@ Lai tālinātu, nospiediet Ctrl + Alt + spilgtuma samazināšanas taustiņu.
 <translation id="538822246583124912">Uzņēmuma politika tika mainīta. Rīkjoslai tika pievienota eksperimentu poga. Lai atvērtu dialoglodziņu un iespējotu eksperimentus, noklikšķiniet uz pogas.</translation>
 <translation id="5388436023007579456">Jūsu kameru var izmantot lietotnes un vietnes, kurām ir kameras atļauja, kā arī sistēmas pakalpojumi. Lai izmantotu kameru, iespējams, būs jārestartē lietotne vai jāatsvaidzina lapa.</translation>
 <translation id="5388719243178419614">Nevar augšupielādēt. Neizdevās apstrādāt attēla failu.</translation>
+<translation id="5388834241575213051">Rādīt cilnes no citām ierīcēm sānu panelī</translation>
 <translation id="5388885445722491159">Sapārots</translation>
 <translation id="5389224261615877010">Varavīksne</translation>
 <translation id="538945906186309152">Ieslēgt Gemini īsinājumtaustiņu</translation>
@@ -7599,6 +7603,7 @@ Saskaņā ar domēna <ph name="DOMAIN" /> prasībām viedkartei ir jābūt ievie
 <translation id="6291741848715722067">Apstiprinājuma kods</translation>
 <translation id="6291953229176937411">Rādīt lietojumprogrammā &amp;Finder</translation>
 <translation id="6293862149782163840">Ierīce (<ph name="DEVICE_NAME" />) ir izslēgta.</translation>
+<translation id="629405221789675953">Atspraust meklēšanu cilnēs</translation>
 <translation id="6294759976468837022">Automātiskās pārlūkošanas ātrums</translation>
 <translation id="6295158916970320988">Visas vietnes</translation>
 <translation id="6295855836753816081">Notiek saglabāšana...</translation>
@@ -8617,6 +8622,7 @@ Jums ir vēl # uzlauztas paroles. Google paroļu pārvaldnieks iesaka nekavējot
 <translation id="7003844668372540529">Nezināms produkts (ID: <ph name="PRODUCT_ID" />), ko piedāvā <ph name="VENDOR_NAME" /></translation>
 <translation id="7004402701596653846">Vietnē var izmantot MIDI ierīci</translation>
 <translation id="7004499039102548441">Nesen atvērtas cilnes</translation>
+<translation id="7004923218520748660">Piespraust meklēšanu cilnēs</translation>
 <translation id="7004969808832734860">Atlaide līdz <ph name="DISCOUNT_UP_TO_AMOUNT" /></translation>
 <translation id="7005496624875927304">Papildu atļaujas</translation>
 <translation id="7005812687360380971">Kļūme</translation>
@@ -9841,6 +9847,7 @@ Lai noņemtu piešķīrumu, nospiediet piešķirto slēdzi vai taustiņu.</trans
 <translation id="7864539943188674973">Atspējot Bluetooth</translation>
 <translation id="7864825798076155402">Vai saglabāt jūsu Google kontā?</translation>
 <translation id="7865127013871431856">Tulkotāja opcijas</translation>
+<translation id="7867763367097007079">{COUNT,plural, =1{Saglabājiet <ph name="WEBSITE" /> paroli savā Google kontā.}zero{Saglabājiet <ph name="WEBSITE" /> paroles savā Google kontā.}one{Saglabājiet <ph name="WEBSITE" /> paroli savā Google kontā.}other{Saglabājiet <ph name="WEBSITE" /> paroles savā Google kontā.}}</translation>
 <translation id="786957569166715433"><ph name="DEVICE_NAME" /> — izveidots savienojums pārī</translation>
 <translation id="7870005751202275328">Noklikšķiniet uz adreses joslas</translation>
 <translation id="787069710204604994">Piemēram, ja apmeklējat vietni, kurā tiek tirgoti garo distanču skriešanas apavi, vietne var izsecināt, ka interesējaties par maratonu skriešanu. Vēlāk apmeklējot citu vietni, tajā var tikt rādīta skriešanas apavu reklāma, pamatojoties uz iepriekš apmeklētās vietnes izsecinātajām interesēm.</translation>

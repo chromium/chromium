@@ -2097,6 +2097,7 @@ Cihazınızda Family Link uygulamasını yükleyerek bu hesabın ayarlarını y�
 <translation id="2434915728183570229">Artık telefonunuzdaki uygulamaları görüntüleyebilirsiniz</translation>
 <translation id="2435248616906486374">Ağ bağlantısı kesildi</translation>
 <translation id="2435457462613246316">Şifreyi göster</translation>
+<translation id="2435670725585845785">Sekme aramayı sabitle</translation>
 <translation id="2436385001956947090">&amp;Bağlantıyı kopyala</translation>
 <translation id="2437105255211187922">{NUM_TABS,plural, =1{Seçili sekme paylaşıldığında paylaşım sınırı aşılacak}other{# sekme paylaşıldığında paylaşım sınırı aşılacak}}</translation>
 <translation id="2437561292559037753">Veri Paylaşımı</translation>
@@ -3151,6 +3152,7 @@ Sunucunun mesajı: <ph name="SERVER_MSG" /></translation>
 <translation id="3157387275655328056">Okuma Listesine Ekle</translation>
 <translation id="3157931365184549694">Geri yükle</translation>
 <translation id="3158033540161634471">Parmak izinizi kurun</translation>
+<translation id="3158203338449343164">Sekme Arama'nın Sabitlemesini Kaldır</translation>
 <translation id="3158732900546890991">Şifre; büyük harf, küçük harf, rakam veya sembol seçeneklerinden en az ikisini içerecek şekilde en az 8 karakter olmalıdır</translation>
 <translation id="3158770568048368350">Bu işlem, mobil ağınızın kısa süreliğine kopmasına neden olabilir</translation>
 <translation id="3159335509547415276">Engellenen hesaplar hakkında bilgi</translation>
@@ -7599,6 +7601,7 @@ Hassas bilgileri vermediğinizden emin olun.</translation>
 <translation id="6291741848715722067">Onay kodu</translation>
 <translation id="6291953229176937411">Bulucu'da &amp;Göster</translation>
 <translation id="6293862149782163840"><ph name="DEVICE_NAME" /> kapatıldı</translation>
+<translation id="629405221789675953">Sekme aramanın sabitlemesini kaldır</translation>
 <translation id="6294759976468837022">Otomatik tarama hızı</translation>
 <translation id="6295158916970320988">Tüm siteler</translation>
 <translation id="6295855836753816081">Kaydediliyor...</translation>
@@ -8613,6 +8616,7 @@ Sızdırılmış # şifreniz daha var. Google Şifre Yöneticisi bu şifreleri h
 <translation id="7003844668372540529"><ph name="VENDOR_NAME" /> tarafından sağlanan <ph name="PRODUCT_ID" /> ürün kimliğine sahip bilinmeyen ürün</translation>
 <translation id="7004402701596653846">Sitede MIDI işlevi kullanılabilir</translation>
 <translation id="7004499039102548441">Son Sekmeler</translation>
+<translation id="7004923218520748660">Sekme Arama'yı Sabitle</translation>
 <translation id="7004969808832734860"><ph name="DISCOUNT_UP_TO_AMOUNT" /> kadar indirim</translation>
 <translation id="7005496624875927304">Ek izinler</translation>
 <translation id="7005812687360380971">Hata</translation>
@@ -9836,6 +9840,7 @@ Atamayı kaldırmak için atanmış bir anahtara veya tuşa basın.</translation
 <translation id="7864539943188674973">Bluetooth'u devre dışı bırak</translation>
 <translation id="7864825798076155402">Google Hesabınıza kaydedilsin mi?</translation>
 <translation id="7865127013871431856">Çeviri seçenekleri</translation>
+<translation id="7867763367097007079">{COUNT,plural, =1{<ph name="WEBSITE" /> şifreyi Google Hesabınıza kaydedin}other{<ph name="WEBSITE" /> şifreyi Google Hesabınıza kaydedin}}</translation>
 <translation id="786957569166715433"><ph name="DEVICE_NAME" /> - Eşlendi</translation>
 <translation id="7870005751202275328">Adres çubuğunu tıklayın.</translation>
 <translation id="787069710204604994">Örneğin, uzun mesafe koşu ayakkabıları satan bir siteyi ziyaret ederseniz bu site maraton koşularıyla ilgilendiğinize karar verebilir. Daha sonra farklı bir siteyi ziyaret ettiğinizde de o site, ilk sitenin önerisi üzerine koşu ayakkabısı reklamı gösterebilir.</translation>

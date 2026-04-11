@@ -2102,6 +2102,7 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="2434915728183570229">İndi telefonunuzun tətbiqlərinə baxa bilərsiniz</translation>
 <translation id="2435248616906486374">Şəbəkə bağlantısı kəsildi</translation>
 <translation id="2435457462613246316">Parol görünsün</translation>
+<translation id="2435670725585845785">Tab axtarışını bərkidin</translation>
 <translation id="2436385001956947090">Keçidi &amp;kopyalayın</translation>
 <translation id="2437105255211187922">{NUM_TABS,plural, =1{Seçilmiş tab paylaşılsa, paylaşım limitini keçəcəksiniz}other{# tab paylaşılsa, paylaşım limitini keçəcəksiniz}}</translation>
 <translation id="2437561292559037753">Data paylaşımı</translation>
@@ -3156,6 +3157,7 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="3157387275655328056">Oxu Siyahısına əlavə edin</translation>
 <translation id="3157931365184549694">Bərpa edin</translation>
 <translation id="3158033540161634471">Barmaq izi ayarlayın</translation>
+<translation id="3158203338449343164">Tab Axtarışının bərkidilməsini ləğv edin</translation>
 <translation id="3158732900546890991">Parol ən azı 8 simvoldan ibarət olmalı və aşağıdakılardan ən azı ikisini əhatə etməlidir: böyük hərflər, kiçik hərflər, rəqəmlər və ya simvollar</translation>
 <translation id="3158770568048368350">Bu, mobil şəbəkənizin qısa müddətə kəsilməsinə səbəb ola bilər</translation>
 <translation id="3159335509547415276">Bloklanmış hesablar haqqında məlumat əldə edin</translation>
@@ -4882,6 +4884,7 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="4360738659108163902">Mausun sağ düyməsi ilə toxunun</translation>
 <translation id="4361745360460842907">Tab olaraq açın</translation>
 <translation id="4362459470237309049">Maus düyməsini buraxmaq üçün "." düyməsindən istifadə edin</translation>
+<translation id="4362871358537270439">Digər cihazlardakı tablar yan paneldə göstərilsin</translation>
 <translation id="4363262124589131906">Mənim diskim bölməsindəki yeni fayllar bu Chromebook-a avtomatik sinxronlaşdırılmayacaq</translation>
 <translation id="4364327530094270451">Yemiş</translation>
 <translation id="4364417397164696363">{ITEM_COUNT,plural, =1{1 element yalnız bu cihazda yadda saxlanılır. Onu digər cihazlarda istifadə etmək üçün Google Hesabınızda yadda saxlayın.}other{{ITEM_COUNT} element yalnız bu cihazda yadda saxlanılır. Onları digər cihazlarda istifadə etmək üçün Google Hesabınızda yadda saxlayın.}}</translation>
@@ -6321,6 +6324,7 @@ Uzaqlaşdırmaq üçün Ctrl + Alt + Parlaqlığı Azalt düymələrindən istif
 <translation id="538822246583124912">Müəssisə siyasəti dəyişdirilib. Təcrübələr düyməsi alətlər panelinə əlavə edilib. Təcrübələri aktivləşdirmək məqsədi ilə dialoqu açmaq üçün düyməyə toxunun.</translation>
 <translation id="5388436023007579456">Kamera icazəsi olan tətbiq və veb-saytlar, eləcə də sistem xidmətləri kameradan istifadə edə bilər. Kameradan istifadə üçün tətbiqi yenidən başlatmalı, yaxud səhifəni təzələməlisiniz.</translation>
 <translation id="5388719243178419614">Yükləmək olmur. Şəkil faylını emal etmək olmadı.</translation>
+<translation id="5388834241575213051">Digər Cihazlardakı Tablar Yan Paneldə Göstərilsin</translation>
 <translation id="5388885445722491159">Qoşalaşdırıldı</translation>
 <translation id="5389224261615877010">Göy qurşağı</translation>
 <translation id="538945906186309152">Gemini klaviatura qısayolunu aktiv edin</translation>
@@ -7602,6 +7606,7 @@ Bu əməliyyata birdən çox keçirici təyin edə bilərsiniz.</translation>
 <translation id="6291741848715722067">Təsdiq kodu</translation>
 <translation id="6291953229176937411">&amp;Axtarıcıda göstərin</translation>
 <translation id="6293862149782163840"><ph name="DEVICE_NAME" /> deaktiv edilib</translation>
+<translation id="629405221789675953">Tab axtarışının bərkidilməsini ləğv edin</translation>
 <translation id="6294759976468837022">Avtomatik skanlama sürəti</translation>
 <translation id="6295158916970320988">Bütün saytlar</translation>
 <translation id="6295855836753816081">Yadda saxlanılır...</translation>
@@ -8616,6 +8621,7 @@ Daha # oğurlanmış parolunuz var. Google Parol Meneceri bu parolları indi yox
 <translation id="7003844668372540529"><ph name="VENDOR_NAME" /> vendorundan naməlum <ph name="PRODUCT_ID" /> məhsulu</translation>
 <translation id="7004402701596653846">Sayt MIDI istifadə edə bilər</translation>
 <translation id="7004499039102548441">Son Tablar</translation>
+<translation id="7004923218520748660">Tab Axtarışını bərkidin</translation>
 <translation id="7004969808832734860">Maksimum <ph name="DISCOUNT_UP_TO_AMOUNT" /> endirim</translation>
 <translation id="7005496624875927304">Əlavə icazələr</translation>
 <translation id="7005812687360380971">Uğursuz oldu</translation>
@@ -9839,6 +9845,7 @@ Təyinatı silmək üçün təyin edilmiş keçirici və ya düyməni basın.</t
 <translation id="7864539943188674973">Bluetooth'u deaktiv edin</translation>
 <translation id="7864825798076155402">Google Hesabında yadda saxlansın?</translation>
 <translation id="7865127013871431856">Tərcümə seçimləri</translation>
+<translation id="7867763367097007079">{COUNT,plural, =1{<ph name="WEBSITE" /> parolunu Google Hesabınızda yadda saxlayın}other{<ph name="WEBSITE" /> parolunu Google Hesabınızda yadda saxlayın}}</translation>
 <translation id="786957569166715433"><ph name="DEVICE_NAME" /> - Cütləşdi</translation>
 <translation id="7870005751202275328">Ünvan panelinə klikləyin</translation>
 <translation id="787069710204604994">Məsələn, uzun məsafəli qaçış ayaqqabıları satan sayta baş çəksəniz, sayt marafonlarda qaçmaqda maraqlı olduğunuza qərar verə bilər. Daha sonra başqa sayta daxil olsanız, həmin sayt sizə ilk saytın təklif etdiyi qaçış ayaqqabısı reklamını göstərə bilər.</translation>

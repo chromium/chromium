@@ -2114,6 +2114,7 @@ Nastavitve tega računa je mogoče upravljati z namestitvijo aplikacije Family L
 <translation id="2434915728183570229">Zdaj si lahko ogledate aplikacije telefona</translation>
 <translation id="2435248616906486374">Povezava z omrežjem je prekinjena</translation>
 <translation id="2435457462613246316">Pokaži geslo</translation>
+<translation id="2435670725585845785">Pripni iskanje zavihkov</translation>
 <translation id="2436385001956947090">Kopiraj &amp;povezavo</translation>
 <translation id="2437105255211187922">{NUM_TABS,plural, =1{Če boste delili izbrani zavihek, boste presegli omejitev deljenja}one{Če boste delili # zavihek, boste presegli omejitev deljenja}two{Če boste delili # zavihka, boste presegli omejitev deljenja}few{Če boste delili # zavihke, boste presegli omejitev deljenja}other{Če boste delili # zavihkov, boste presegli omejitev deljenja}}</translation>
 <translation id="2437561292559037753">Deljenje podatkov</translation>
@@ -3168,6 +3169,7 @@ Domena <ph name="DOMAIN" /> zahteva, da je pametna kartica vstavljena.</translat
 <translation id="3157387275655328056">Dodaj na bralni seznam</translation>
 <translation id="3157931365184549694">Obnovi</translation>
 <translation id="3158033540161634471">Nastavite prstni odtis</translation>
+<translation id="3158203338449343164">Odpni iskanje zavihkov</translation>
 <translation id="3158732900546890991">Geslo mora imeti najmanj 8 znakov in vsebovati vsaj dve od naslednjih vrst znakov: velike črke, male črke, številke ali simbole</translation>
 <translation id="3158770568048368350">Zaradi tega bo mobilno omrežje za kratek čas prekinilo povezavo.</translation>
 <translation id="3159335509547415276">Preberite več o blokiranih računih</translation>
@@ -4896,6 +4898,7 @@ Domena <ph name="DOMAIN" /> zahteva, da je pametna kartica vstavljena.</translat
 <translation id="4360738659108163902">Klik z desnim gumbom</translation>
 <translation id="4361745360460842907">Odpri kot zavihek</translation>
 <translation id="4362459470237309049">Uporabite ».« za sprostitev gumba miške</translation>
+<translation id="4362871358537270439">Prikaz zavihkov iz drugih naprav v stranskem podoknu</translation>
 <translation id="4363262124589131906">Nove datoteke v Mojem disku se bodo samodejno nehale sinhronizirati s tem Chromebookom</translation>
 <translation id="4364327530094270451">Melona</translation>
 <translation id="4364417397164696363">{ITEM_COUNT,plural, =1{1 element je shranjen samo v tej napravi. Če ga želite uporabiti v drugih napravah, ga shranite v računu Google.}one{{ITEM_COUNT} element je shranjen samo v tej napravi. Če jih želite uporabljati v drugih napravah, jih shranite v računu Google.}two{{ITEM_COUNT} elementa sta shranjena samo v tej napravi. Če jih želite uporabljati v drugih napravah, jih shranite v računu Google.}few{{ITEM_COUNT} elementi so shranjeni samo v tej napravi. Če jih želite uporabljati v drugih napravah, jih shranite v računu Google.}other{{ITEM_COUNT} elementov je shranjenih samo v tej napravi. Če jih želite uporabljati v drugih napravah, jih shranite v računu Google.}}</translation>
@@ -6335,6 +6338,7 @@ Za pomanjšavo pritisnite Ctrl + Alt + tipko za zmanjšanje svetlosti.</translat
 <translation id="538822246583124912">Pravilnik podjetja se je spremenil. Gumb za preizkuse je bil dodan v orodno vrstico. Kliknite gumb, če želite odpreti pogovorno okno za omogočanje preizkusov.</translation>
 <translation id="5388436023007579456">Kamero lahko uporabljajo aplikacije in spletna mesta, ki imajo dovoljenje za kamero, ter sistemske storitve. Če želite uporabljati kamero, morate znova zagnati aplikacijo ali osvežiti stran.</translation>
 <translation id="5388719243178419614">Nalaganje ni mogoče. Slikovne datoteke ni bilo mogoče obdelati.</translation>
+<translation id="5388834241575213051">Prikaz zavihkov iz drugih naprav v stranskem podoknu</translation>
 <translation id="5388885445722491159">Povezano</translation>
 <translation id="5389224261615877010">Mavrica</translation>
 <translation id="538945906186309152">Vklop bližnjične tipke za Geminija</translation>
@@ -7619,6 +7623,7 @@ Domena <ph name="DOMAIN" /> zahteva, da je pametna kartica vstavljena.</translat
 <translation id="6291741848715722067">Potrditvena koda</translation>
 <translation id="6291953229176937411">&amp;Pokaži v Finderju</translation>
 <translation id="6293862149782163840">Naprava <ph name="DEVICE_NAME" /> je izklopljena</translation>
+<translation id="629405221789675953">Odpni iskanje zavihkov</translation>
 <translation id="6294759976468837022">Hitrost samodejnega iskanja</translation>
 <translation id="6295158916970320988">Vsa spletna mesta</translation>
 <translation id="6295855836753816081">Shranjevanje ...</translation>
@@ -8639,6 +8644,7 @@ Imate še # ogroženih gesel. Googlov upravitelj gesel priporoča, da takoj prev
 <translation id="7003844668372540529">Neznan izdelek <ph name="PRODUCT_ID" /> dobavitelja <ph name="VENDOR_NAME" /></translation>
 <translation id="7004402701596653846">Spletno mesto lahko uporablja MIDI</translation>
 <translation id="7004499039102548441">Nedavni zavihki</translation>
+<translation id="7004923218520748660">Pripni iskanje zavihkov</translation>
 <translation id="7004969808832734860">Do <ph name="DISCOUNT_UP_TO_AMOUNT" /> popusta</translation>
 <translation id="7005496624875927304">Dodatna dovoljenja</translation>
 <translation id="7005812687360380971">Napaka</translation>
@@ -9863,6 +9869,7 @@ Pritisnite dodeljeno stikalo ali tipko, če želite odstraniti dodelitev.</trans
 <translation id="7864539943188674973">Onemogoči Bluetooth</translation>
 <translation id="7864825798076155402">Želite shraniti v računu Google?</translation>
 <translation id="7865127013871431856">Možnosti za Google Prevajalnik</translation>
+<translation id="7867763367097007079">{COUNT,plural, =1{Shranjevanje <ph name="WEBSITE" /> gesla v račun Google}one{Shranjevanje <ph name="WEBSITE" /> gesla v račun Google}two{Shranjevanje <ph name="WEBSITE" /> gesel v račun Google}few{Shranjevanje <ph name="WEBSITE" /> gesel v račun Google}other{Shranjevanje <ph name="WEBSITE" /> gesel v račun Google}}</translation>
 <translation id="786957569166715433"><ph name="DEVICE_NAME" /> – seznanjeno</translation>
 <translation id="7870005751202275328">Kliknite naslovno vrstico</translation>
 <translation id="787069710204604994">Če na primer obiščete spletno mesto, ki prodaja tekaško obutev za dolge razdalje, se lahko spletno mesto odloči, da vas zanimajo maratoni. Če pozneje obiščete drugo spletno mesto, lahko to spletno mesto prikaže oglas za tekaško obutev, ki ga je predlagalo prvo spletno mesto.</translation>

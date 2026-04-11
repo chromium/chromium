@@ -2112,6 +2112,7 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-app op jou t
 <translation id="2434915728183570229">Jy kan nou jou foon se programme bekyk</translation>
 <translation id="2435248616906486374">Netwerk ontkoppel</translation>
 <translation id="2435457462613246316">Wys wagwoord</translation>
+<translation id="2435670725585845785">Speld Oortjiesoektog vas</translation>
 <translation id="2436385001956947090">Kopieer &amp;skakel</translation>
 <translation id="2437105255211187922">{NUM_TABS,plural, =1{As jy die gekose oortjie deel, sal dit die deellimiet oorskry}other{As jy # oortjies deel, sal dit die deellimiet oorskry}}</translation>
 <translation id="2437561292559037753">Datadeling</translation>
@@ -3166,6 +3167,7 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-app op jou t
 <translation id="3157387275655328056">Voeg by leeslys</translation>
 <translation id="3157931365184549694">Stel terug</translation>
 <translation id="3158033540161634471">Stel jou vingerafdruk op</translation>
+<translation id="3158203338449343164">Ontspeld Oortjiesoektog</translation>
 <translation id="3158732900546890991">Wagwoord moet minstens 8 karakters lank wees en minstens twee van die volgende insluit: hoofletters, kleinletters, syfers of simbole</translation>
 <translation id="3158770568048368350">Dit kan veroorsaak dat jou selnetwerk kortstondig ontkoppel</translation>
 <translation id="3159335509547415276">Kry meer inligting oor geblokkeerde rekeninge</translation>
@@ -7617,6 +7619,7 @@ Maak seker jy wys nie enige sensitiewe inligting nie.</translation>
 <translation id="6291741848715722067">Bevestigingkode</translation>
 <translation id="6291953229176937411">Wys in vinder</translation>
 <translation id="6293862149782163840"><ph name="DEVICE_NAME" /> is afgeskakel</translation>
+<translation id="629405221789675953">Ontspeld Oortjiesoektog</translation>
 <translation id="6294759976468837022">Outoskanderingspoed</translation>
 <translation id="6295158916970320988">Alle werwe</translation>
 <translation id="6295855836753816081">Stoor tans …</translation>
@@ -8631,6 +8634,7 @@ Jy het nog # gekompromitteerde wagwoorde. Google Wagwoordbestuurder beveel aan d
 <translation id="7003844668372540529">Onbekende produk <ph name="PRODUCT_ID" /> vanaf <ph name="VENDOR_NAME" /></translation>
 <translation id="7004402701596653846">Werf kan MIDI gebruik</translation>
 <translation id="7004499039102548441">Onlangse oortjies</translation>
+<translation id="7004923218520748660">Speld Oortjiesoektog vas</translation>
 <translation id="7004969808832734860">Afslag van tot <ph name="DISCOUNT_UP_TO_AMOUNT" /></translation>
 <translation id="7005496624875927304">Bykomende toestemmings</translation>
 <translation id="7005812687360380971">Mislukking</translation>
@@ -9854,6 +9858,7 @@ Druk 'n toegewese skakelaar of sleutel om toewysing te verwyder.</translation>
 <translation id="7864539943188674973">Deaktiveer Bluetooth</translation>
 <translation id="7864825798076155402">Stoor in jou Google-rekening?</translation>
 <translation id="7865127013871431856">Vertaalopsies</translation>
+<translation id="7867763367097007079">{COUNT,plural, =1{Stoor <ph name="WEBSITE" /> wagwoord in jou Google-rekening}other{Stoor <ph name="WEBSITE" /> wagwoorde in jou Google-rekening}}</translation>
 <translation id="786957569166715433"><ph name="DEVICE_NAME" /> – saamgebind</translation>
 <translation id="7870005751202275328">Klik die adresbalk</translation>
 <translation id="787069710204604994">Byvoorbeeld, as jy ’n werf besoek wat langafstandhardloopskoene verkoop, kan die werf dalk besluit dat jy belangstel om marathons te hardloop. As jy later ’n ander werf besoek, kan daardie werf vir jou ’n advertensie vir hardloopskoene wys wat deur die eerste werf voorgestel is.</translation>

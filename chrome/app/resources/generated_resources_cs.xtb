@@ -1034,7 +1034,7 @@ Na tento účet se mohou vztahovat oprávnění, která jste již udělili aplik
 <translation id="1696685050160038195">Aby vaše zařízení zůstalo bezpečné, doporučujeme spouštět a instalovat jen software z důvěryhodných zdrojů a od důvěryhodných vývojářů.</translation>
 <translation id="169675691788639886">Zařízení má nakonfigurovaná server SSH. Nepřihlašujte se pomocí účtů s citlivými údaji.</translation>
 <translation id="1697122132646041614">Palec dolů otevře formulář k odeslání podrobné zpětné vazby o tom, proč se vám tyto výsledky nelíbí.</translation>
-<translation id="1697532407822776718">Vše je nastaveno!</translation>
+<translation id="1697532407822776718">Hotovo!</translation>
 <translation id="1698796500103229697">&amp;Platební metody</translation>
 <translation id="1698899521169711967">Procházení pomocí kurzoru</translation>
 <translation id="1699807488537653303">Opravte chybu hesla</translation>
@@ -2101,6 +2101,7 @@ Chcete-li spravovat nastavení tohoto účtu, nainstalujte si do zařízení apl
 <translation id="2434915728183570229">Nyní můžete zobrazit aplikace v telefonu</translation>
 <translation id="2435248616906486374">Síť odpojena</translation>
 <translation id="2435457462613246316">Zobrazit heslo</translation>
+<translation id="2435670725585845785">Připnout vyhledávání v kartách</translation>
 <translation id="2436385001956947090">Kopírovat odkaz</translation>
 <translation id="2437105255211187922">{NUM_TABS,plural, =1{Sdílením vybrané karty by se překročil limit sdílení}few{Sdílením # karet by se překročil limit sdílení}many{Sdílením # karty by se překročil limit sdílení}other{Sdílením # karet by se překročil limit sdílení}}</translation>
 <translation id="2437561292559037753">Sdílení dat</translation>
@@ -3155,6 +3156,7 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="3157387275655328056">Přidat do seznamu četby</translation>
 <translation id="3157931365184549694">Obnovit</translation>
 <translation id="3158033540161634471">Nastavení otisku prstu</translation>
+<translation id="3158203338449343164">Odepnout vyhledávání v kartách</translation>
 <translation id="3158732900546890991">Heslo musí mít alespoň 8 znaků a musí obsahovat znaky z alespoň dvou z následujících kategorií: velká písmena, malá písmena, číslice nebo symboly</translation>
 <translation id="3158770568048368350">Tato akce může vést k chvilkovému odpojení od mobilní sítě.</translation>
 <translation id="3159335509547415276">Další informace o blokovaných účtech</translation>
@@ -4880,6 +4882,7 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="4360738659108163902">Klepnutí pravým tlačítkem myši</translation>
 <translation id="4361745360460842907">Otevřít jako kartu</translation>
 <translation id="4362459470237309049">Klávesou „.“ uvolníte tlačítko myši</translation>
+<translation id="4362871358537270439">Zobrazit na bočním panelu karty z jiných zařízení</translation>
 <translation id="4363262124589131906">Nové soubory ve složce Můj disk se přestanou automaticky synchronizovat do tohoto Chromebooku</translation>
 <translation id="4364327530094270451">Meloun</translation>
 <translation id="4364417397164696363">{ITEM_COUNT,plural, =1{1 položka je uložena jen na tomto zařízení. Pokud ho chcete používat i na jiných zařízeních, uložte ho do svého účtu Google.}few{{ITEM_COUNT} položky jsou uložené jen na tomto zařízení. Pokud je chcete používat i na jiných zařízeních, uložte je do svého účtu Google.}many{{ITEM_COUNT} položky je uloženo jen na tomto zařízení. Pokud je chcete používat i na jiných zařízeních, uložte je do svého účtu Google.}other{{ITEM_COUNT} položek je uloženo jen na tomto zařízení. Pokud je chcete používat i na jiných zařízeních, uložte je do svého účtu Google.}}</translation>
@@ -6317,6 +6320,7 @@ Oddálení provedete stisknutím kláves Ctrl + Alt + Snížit jas.</translation
 <translation id="538822246583124912">Podnikové zásady se změnily. Na lištu bylo přidáno tlačítko experimentálních funkcí. Kliknutím na něj otevřete dialogové okno k aktivaci experimentálních funkcí.</translation>
 <translation id="5388436023007579456">Aplikace a weby s oprávněním ke kameře a systémové služby mohou používat vaši kameru. Je možné, že k použití kamery budete muset restartovat aplikaci nebo obnovit stránku.</translation>
 <translation id="5388719243178419614">Soubor nelze nahrát. Obrazový soubor se nepodařilo zpracovat.</translation>
+<translation id="5388834241575213051">Zobrazit na bočním panelu karty z jiných zařízení</translation>
 <translation id="5388885445722491159">Párováno</translation>
 <translation id="5389224261615877010">Duha</translation>
 <translation id="538945906186309152">Zapnout klávesovou zkratku pro Gemini</translation>
@@ -7597,6 +7601,7 @@ K této akci lze přiřadit několik přepínačů.</translation>
 <translation id="6291741848715722067">Potvrzovací kód</translation>
 <translation id="6291953229176937411">Zobrazit ve &amp;službě Finder</translation>
 <translation id="6293862149782163840">Zařízení <ph name="DEVICE_NAME" /> je vypnuté</translation>
+<translation id="629405221789675953">Odepnout vyhledávání v kartách</translation>
 <translation id="6294759976468837022">Rychlost automatického prohledávání</translation>
 <translation id="6295158916970320988">Všechny weby</translation>
 <translation id="6295855836753816081">Ukládání...</translation>
@@ -8615,6 +8620,7 @@ Máte # dalších prolomených hesel. Správce hesel Google doporučuje ihned ta
 <translation id="7003844668372540529">Neznámý produkt <ph name="PRODUCT_ID" /> od dodavatele <ph name="VENDOR_NAME" /></translation>
 <translation id="7004402701596653846">Web může používat zařízení MIDI</translation>
 <translation id="7004499039102548441">Nedávno použité karty</translation>
+<translation id="7004923218520748660">Připnout vyhledávání v kartách</translation>
 <translation id="7004969808832734860">Sleva až <ph name="DISCOUNT_UP_TO_AMOUNT" /></translation>
 <translation id="7005496624875927304">Další oprávnění</translation>
 <translation id="7005812687360380971">Selhání</translation>
@@ -9838,6 +9844,7 @@ Pokud přiřazení chcete odstranit, stiskněte přiřazený přepínač nebo kl
 <translation id="7864539943188674973">Vypnout Bluetooth</translation>
 <translation id="7864825798076155402">Uložit do účtu Google?</translation>
 <translation id="7865127013871431856">Možnosti Překladače</translation>
+<translation id="7867763367097007079">{COUNT,plural, =1{Uložit <ph name="WEBSITE" /> heslo do účtu Google}few{Uložit <ph name="WEBSITE" /> hesla do účtu Google}many{Uložit <ph name="WEBSITE" /> hesla do účtu Google}other{Uložit <ph name="WEBSITE" /> hesel do účtu Google}}</translation>
 <translation id="786957569166715433"><ph name="DEVICE_NAME" /> – spárováno</translation>
 <translation id="7870005751202275328">Klikněte na adresní řádek</translation>
 <translation id="787069710204604994">Pokud například navštívíte web, který prodává běžecké boty, může odhadnout, že máte zájem o běhání maratonů. Když později navštívíte jiný web, může se na něm zobrazit reklama na běžecké boty navržená prvním webem.</translation>

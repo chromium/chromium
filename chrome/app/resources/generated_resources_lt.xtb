@@ -2115,6 +2115,7 @@ Jei nenorite, dabar atsijunkite, kad šios paskyros pakeitimai būtų matomi ši
 <translation id="2434915728183570229">Dabar galite peržiūrėti telefono programas</translation>
 <translation id="2435248616906486374">Tinklas atjungtas</translation>
 <translation id="2435457462613246316">Rodyti slaptažodį</translation>
+<translation id="2435670725585845785">Prisegti skirtukų paiešką</translation>
 <translation id="2436385001956947090">Kopijuoti nuorodą</translation>
 <translation id="2437105255211187922">{NUM_TABS,plural, =1{Bendrinant pasirinktą skirtuką būtų viršytas bendrinimo apribojimas}one{Bendrinant # skirtuką būtų viršytas bendrinimo apribojimas}few{Bendrinant # skirtukus būtų viršytas bendrinimo apribojimas}many{Bendrinant # skirtuko būtų viršytas bendrinimo apribojimas}other{Bendrinant # skirtukų būtų viršytas bendrinimo apribojimas}}</translation>
 <translation id="2437561292559037753">Duomenų bendrinimas</translation>
@@ -3169,6 +3170,7 @@ Jei nenorite, dabar atsijunkite, kad šios paskyros pakeitimai būtų matomi ši
 <translation id="3157387275655328056">Pridėti prie skaitomų sąrašo</translation>
 <translation id="3157931365184549694">Atkurti</translation>
 <translation id="3158033540161634471">Piršto antspaudo nustatymas</translation>
+<translation id="3158203338449343164">Atsegti skirtukų paiešką</translation>
 <translation id="3158732900546890991">Slaptažodį turi sudaryti bent aštuoni simboliai ir jame turi būti bent du iš šių elementų: didžiųjų raidžių, mažųjų raidžių, skaičių arba simbolių</translation>
 <translation id="3158770568048368350">Dėl to mobiliojo ryšio tinklas gali būti laikinai atjungtas</translation>
 <translation id="3159335509547415276">Sužinokite apie užblokuotas paskyras</translation>
@@ -7622,6 +7624,7 @@ Jei norite nutolinti, naudokite „Ctrl“ + „Alt“ + šviesumo mažinimo kla
 <translation id="6291741848715722067">Patvirtinimo kodas</translation>
 <translation id="6291953229176937411">&amp;Rodyti ieškojimo priemonėje</translation>
 <translation id="6293862149782163840">Įrenginys (<ph name="DEVICE_NAME" />) išjungtas</translation>
+<translation id="629405221789675953">Atsegti skirtukų paiešką</translation>
 <translation id="6294759976468837022">Automatinio nuskaitymo sparta</translation>
 <translation id="6295158916970320988">Visos svetainės</translation>
 <translation id="6295855836753816081">Išsaugoma...</translation>
@@ -8642,6 +8645,7 @@ Turite dar # pažeistų slaptažodžių. „Google“ slaptažodžių tvarkyklė
 <translation id="7003844668372540529">Nežinomas produktas „<ph name="PRODUCT_ID" />“ iš „<ph name="VENDOR_NAME" />“</translation>
 <translation id="7004402701596653846">Svetainėje gali būti naudojamas MIDI įrenginys</translation>
 <translation id="7004499039102548441">Naujausi skirtukai</translation>
+<translation id="7004923218520748660">Prisegti skirtukų paiešką</translation>
 <translation id="7004969808832734860">Iki <ph name="DISCOUNT_UP_TO_AMOUNT" /> nuolaida</translation>
 <translation id="7005496624875927304">Papildomi leidimai</translation>
 <translation id="7005812687360380971">Triktis</translation>
@@ -9866,6 +9870,7 @@ Paspauskite priskirtą jungiklį ar klavišą, kad pašalintumėte priskyrimą</
 <translation id="7864539943188674973">Neleisti „Bluetooth“</translation>
 <translation id="7864825798076155402">Išsaugoti „Google“ paskyroje?</translation>
 <translation id="7865127013871431856">Vertimo parinktys</translation>
+<translation id="7867763367097007079">{COUNT,plural, =1{Išsaugokite <ph name="WEBSITE" /> slaptažodį „Google“ paskyroje}one{Išsaugokite <ph name="WEBSITE" /> slaptažodį „Google“ paskyroje}few{Išsaugokite <ph name="WEBSITE" /> slaptažodžius „Google“ paskyroje}many{Išsaugokite <ph name="WEBSITE" /> slaptažodžio „Google“ paskyroje}other{Išsaugokite <ph name="WEBSITE" /> slaptažodžių „Google“ paskyroje}}</translation>
 <translation id="786957569166715433">„<ph name="DEVICE_NAME" />“ – susietas</translation>
 <translation id="7870005751202275328">Spustelėkite adreso juostą</translation>
 <translation id="787069710204604994">Pavyzdžiui, jei lankotės svetainėje, kurioje parduodami ilgo nuotolio bėgimo bateliai, ji gali nuspręsti, kad jus domina bėgimo maratonai. Vėliau, apsilankius kitoje svetainėje, joje gali būti rodomas pirmosios svetainės siūlomas bėgimo batelių skelbimas.</translation>
