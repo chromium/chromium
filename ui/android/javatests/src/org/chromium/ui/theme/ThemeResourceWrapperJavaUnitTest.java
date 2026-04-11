@@ -28,13 +28,13 @@ import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.BaseActivityTestRule;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.Batch;
-import org.chromium.base.test.util.DisableIf;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.ui.R;
-import org.chromium.ui.base.DeviceFormFactor;
 
 /** Java test show case how to use the wrapper. */
 @Batch(Batch.PER_CLASS)
 @RunWith(BaseJUnit4ClassRunner.class)
+@DisabledTest(message = "crbug.com/499024053")
 public class ThemeResourceWrapperJavaUnitTest {
 
     @Rule
@@ -55,7 +55,6 @@ public class ThemeResourceWrapperJavaUnitTest {
 
     @Test
     @SmallTest
-    @DisableIf.Device(DeviceFormFactor.DESKTOP_FREEFORM) // https://crbug.com/499024053
     public void setThemeForOriginalActivity() {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
@@ -74,7 +73,6 @@ public class ThemeResourceWrapperJavaUnitTest {
 
     @Test
     @SmallTest
-    @DisableIf.Device(DeviceFormFactor.DESKTOP_FREEFORM) // https://crbug.com/499024053
     public void setThemeNoOpWithThemeResourceWrapper() {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
@@ -100,7 +98,6 @@ public class ThemeResourceWrapperJavaUnitTest {
 
     @Test
     @SmallTest
-    @DisableIf.Device(DeviceFormFactor.DESKTOP_FREEFORM) // https://crbug.com/499024053
     public void themeWrapperNoImpactOnOtherAttribute() {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
