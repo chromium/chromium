@@ -202,8 +202,9 @@ suite('AutofillAiAddOrEditDialogUiTest', function() {
             expectedEntityInstance.storedInWallet = true;
           }
 
-          const dialogConfirmedPromise =
-              eventToPromise('autofill-ai-add-or-edit-done', dialog);
+          const dialogConfirmedPromise = eventToPromise<
+              CustomEvent<chrome.autofillPrivate.EntityInstance>>(
+              'autofill-ai-add-or-edit-done', dialog);
           saveButton.click();
 
           const dialogConfirmedEvent = await dialogConfirmedPromise;
@@ -626,7 +627,8 @@ suite('AutofillAiAddOrEditDialogSelectElementUiTest', function() {
         assertTrue(!!saveButton);
 
         const dialogConfirmedPromise =
-            eventToPromise('autofill-ai-add-or-edit-done', dialog);
+            eventToPromise<CustomEvent<chrome.autofillPrivate.EntityInstance>>(
+                'autofill-ai-add-or-edit-done', dialog);
         saveButton.click();
 
         const dialogConfirmedEvent = await dialogConfirmedPromise;
@@ -729,7 +731,8 @@ suite('AutofillAiAddOrEditDialogSelectElementUiTest', function() {
         assertTrue(!!saveButton);
 
         const dialogConfirmedPromise =
-            eventToPromise('autofill-ai-add-or-edit-done', dialog);
+            eventToPromise<CustomEvent<chrome.autofillPrivate.EntityInstance>>(
+                'autofill-ai-add-or-edit-done', dialog);
         saveButton.click();
 
         const dialogConfirmedEvent = await dialogConfirmedPromise;

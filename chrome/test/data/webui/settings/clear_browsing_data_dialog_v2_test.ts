@@ -849,7 +849,8 @@ suite('DeleteBrowsingDataDialog', function() {
 
     dialog.$.deleteButton.click();
     const deletionEvent1 =
-        await eventToPromise('browsing-data-deleted', dialog);
+        await eventToPromise<CustomEvent<{deletionConfirmationText: string}>>(
+            'browsing-data-deleted', dialog);
     assertEquals(
         deletionEvent1.detail.deletionConfirmationText,
         loadTimeData.getStringF(
@@ -869,7 +870,8 @@ suite('DeleteBrowsingDataDialog', function() {
 
     dialog.$.deleteButton.click();
     const deletionEvent2 =
-        await eventToPromise('browsing-data-deleted', dialog);
+        await eventToPromise<CustomEvent<{deletionConfirmationText: string}>>(
+            'browsing-data-deleted', dialog);
     assertEquals(
         deletionEvent2.detail.deletionConfirmationText,
         loadTimeData.getString('deletionConfirmationAllTimeToast'));

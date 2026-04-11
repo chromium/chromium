@@ -51,7 +51,8 @@ suite('SettingsMenu', function() {
         Router.getInstance().getQueryParameters().toString());
 
     const selector = settingsMenu.$.menu;
-    const whenIronSelect = eventToPromise('iron-select', selector);
+    const whenIronSelect = eventToPromise<CustomEvent<{item: HTMLElement}>>(
+        'iron-select', selector);
     settingsMenu.$.people.click();
     const event = await whenIronSelect;
 
@@ -72,7 +73,8 @@ suite('SettingsMenu', function() {
     assertTrue(!!selector.selected);
     assertEquals('/reset', selector.selected.toString());
 
-    const whenIronSelect = eventToPromise('iron-select', selector);
+    const whenIronSelect = eventToPromise<CustomEvent<{item: HTMLElement}>>(
+        'iron-select', selector);
     Router.getInstance().navigateTo(routes.PEOPLE);
     const event = await whenIronSelect;
 
@@ -109,7 +111,8 @@ suite('SettingsMenu', function() {
     createSettingsMenu();
     const selector = settingsMenu.$.menu;
 
-    const whenIronSelect = eventToPromise('iron-select', selector);
+    const whenIronSelect = eventToPromise<CustomEvent<{item: HTMLElement}>>(
+        'iron-select', selector);
     Router.getInstance().navigateTo(routes.AI);
     const event = await whenIronSelect;
 
@@ -179,7 +182,8 @@ suite('SettingsMenu', function() {
     assertTrue(isVisible(entry));
 
     const selector = settingsMenu.$.menu;
-    const whenIronSelect = eventToPromise('iron-select', selector);
+    const whenIronSelect = eventToPromise<CustomEvent<{item: HTMLElement}>>(
+        'iron-select', selector);
     entry.click();
     // Ensure UMA is logged.
     assertEquals(
@@ -202,7 +206,8 @@ suite('SettingsMenu', function() {
     assertTrue(isVisible(entry));
 
     const selector = settingsMenu.$.menu;
-    const whenIronSelect = eventToPromise('iron-select', selector);
+    const whenIronSelect = eventToPromise<CustomEvent<{item: HTMLElement}>>(
+        'iron-select', selector);
     entry.click();
     const [histogramName, referrer] =
         await metricsBrowserProxy.whenCalled('recordAutofillSettingsReferrer');
@@ -222,7 +227,8 @@ suite('SettingsMenu', function() {
     await microtasksFinished();
 
     const selector = settingsMenu.$.menu;
-    const whenIronSelect = eventToPromise('iron-select', selector);
+    const whenIronSelect = eventToPromise<CustomEvent<{item: HTMLElement}>>(
+        'iron-select', selector);
     const entry = settingsMenu.shadowRoot!.querySelector<HTMLElement>(
         'a[href=\'/autofill\']');
     assertTrue(!!entry);

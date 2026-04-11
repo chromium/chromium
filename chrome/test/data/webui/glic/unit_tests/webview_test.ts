@@ -4,6 +4,7 @@
 
 import {ZoomAction} from 'chrome://glic/glic.mojom-webui.js';
 import {matcherForOrigin, urlMatchesAllowedOrigin, WebviewController, WebviewPersistentState} from 'chrome://glic/webview.js';
+import type {CrA11yAnnouncerMessagesSentEvent} from 'chrome://resources/cr_elements/cr_a11y_announcer/cr_a11y_announcer.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {eventToPromise} from 'chrome://webui-test/test_util.js';
@@ -183,7 +184,8 @@ suite('WebviewZoomTest', () => {
 
   test('ZoomAnnouncementMade', async () => {
     const announcementPromise =
-        eventToPromise('cr-a11y-announcer-messages-sent', document.body);
+        eventToPromise<CrA11yAnnouncerMessagesSentEvent>(
+            'cr-a11y-announcer-messages-sent', document.body);
 
     // Simulate a zoom change to 125%
     const zoomEvent = new Event('zoomchange') as WebViewZoomChangeEvent;

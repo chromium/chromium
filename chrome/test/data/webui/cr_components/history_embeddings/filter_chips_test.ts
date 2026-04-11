@@ -46,8 +46,8 @@ suite('cr-history-embeddings-filter-chips', () => {
   });
 
   test('UpdatesShowByGroupSelectMenu', async () => {
-    let notifyEventPromise =
-        eventToPromise('show-results-by-group-changed', element);
+    let notifyEventPromise = eventToPromise<CustomEvent<{value: boolean}>>(
+        'show-results-by-group-changed', element);
     element.$.showByGroupSelectMenu.value = 'true';
     element.$.showByGroupSelectMenu.dispatchEvent(new Event('change'));
     let notifyEvent = await notifyEventPromise;
@@ -55,8 +55,8 @@ suite('cr-history-embeddings-filter-chips', () => {
     assertEquals('true', element.$.showByGroupSelectMenu.value);
     assertTrue(notifyEvent.detail.value);
 
-    notifyEventPromise =
-        eventToPromise('show-results-by-group-changed', element);
+    notifyEventPromise = eventToPromise<CustomEvent<{value: boolean}>>(
+        'show-results-by-group-changed', element);
     element.$.showByGroupSelectMenu.value = 'false';
     element.$.showByGroupSelectMenu.dispatchEvent(new Event('change'));
     notifyEvent = await notifyEventPromise;
@@ -69,10 +69,11 @@ suite('cr-history-embeddings-filter-chips', () => {
     async function clickChipAndGetSelectedSuggestion(chip: HTMLElement):
         Promise<Suggestion> {
       const eventPromise =
-          eventToPromise('selected-suggestion-changed', element);
+          eventToPromise<CustomEvent<{value: Suggestion | undefined}>>(
+              'selected-suggestion-changed', element);
       chip.click();
       const event = await eventPromise;
-      return event.detail.value;
+      return event.detail.value!;
     }
 
     function assertDaysFromToday(days: number, date: Date) {
@@ -99,13 +100,15 @@ suite('cr-history-embeddings-filter-chips', () => {
     const firstChip =
         element.shadowRoot.querySelector<HTMLElement>('#suggestions cr-chip')!;
     const selectPromise =
-        eventToPromise('selected-suggestion-changed', element);
+        eventToPromise<CustomEvent<{value: Suggestion | undefined}>>(
+            'selected-suggestion-changed', element);
     firstChip.click();
     const selectEvent = await selectPromise;
-    assertEquals('yesterday', selectEvent.detail.value.label);
+    assertEquals('yesterday', selectEvent.detail.value!.label);
 
     const unselectPromise =
-        eventToPromise('selected-suggestion-changed', element);
+        eventToPromise<CustomEvent<{value: Suggestion | undefined}>>(
+            'selected-suggestion-changed', element);
     firstChip.click();
     const unselectEvent = await unselectPromise;
     assertEquals(undefined, unselectEvent.detail.value);

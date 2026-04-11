@@ -18,6 +18,11 @@ import {TestExtensionControlBrowserProxy} from './test_extension_control_browser
 import {createSampleOmniboxExtension, createSampleSearchEngine, TestSearchEnginesBrowserProxy} from './test_search_engines_browser_proxy.js';
 // clang-format on
 
+type ViewOrEditSearchEngineEvent = CustomEvent<{
+  engine: SearchEngine,
+  anchorElement: HTMLElement,
+}>;
+
 /**
  * Opens and returns the action menu for a SettingsSearchEngineEntryElement.
  */
@@ -149,7 +154,8 @@ suite('SearchEngineEntryTest', function() {
         entry.shadowRoot!.querySelector<HTMLButtonElement>(`#editIconButton`)!;
     assertTrue(isVisible(editButton));
 
-    const promise = eventToPromise('view-or-edit-search-engine', entry);
+    const promise = eventToPromise<ViewOrEditSearchEngineEvent>(
+        'view-or-edit-search-engine', entry);
     editButton.click();
     const e = await promise;
     assertEquals(engine, e.detail.engine);
@@ -492,7 +498,8 @@ suite('EnterpriseSiteSearchEntryTests', function() {
         entry.shadowRoot!.querySelector<HTMLButtonElement>(`#editIconButton`)!;
     assertTrue(isVisible(editButton));
 
-    const whenFired = eventToPromise('view-or-edit-search-engine', entry);
+    const whenFired = eventToPromise<ViewOrEditSearchEngineEvent>(
+        'view-or-edit-search-engine', entry);
     editButton.click();
     const e = await whenFired;
     assertEquals(engineUnfeatured, e.detail.engine);
@@ -577,7 +584,8 @@ suite('EnterpriseSiteSearchEntryTests', function() {
         'button#delete.dropdown-item')!;
     assertTrue(isVisible(deleteButton));
 
-    const whenFired = eventToPromise('delete-search-engine', entry);
+    const whenFired = eventToPromise<ViewOrEditSearchEngineEvent>(
+        'delete-search-engine', entry);
     deleteButton.click();
     const e = await whenFired;
     assertEquals(entry.engine, e.detail.engine);
@@ -600,7 +608,8 @@ suite('EnterpriseSiteSearchEntryTests', function() {
                 `#viewDetailsButton`)!;
         assertTrue(isVisible(viewDetailsButton));
 
-        const whenFired = eventToPromise('view-or-edit-search-engine', entry);
+        const whenFired = eventToPromise<ViewOrEditSearchEngineEvent>(
+            'view-or-edit-search-engine', entry);
         viewDetailsButton.click();
         const e = await whenFired;
         assertEquals(managedEngine, e.detail.engine);
@@ -828,7 +837,8 @@ suite('SearchEngineEntryTest_SearchSettingsUpdate', function() {
     assertTrue(!!editButton);
     assertTrue(isVisible(editButton));
 
-    const whenFired = eventToPromise('view-or-edit-search-engine', entry);
+    const whenFired = eventToPromise<ViewOrEditSearchEngineEvent>(
+        'view-or-edit-search-engine', entry);
     editButton.click();
     const e = await whenFired;
     assertFalse(menu.open);

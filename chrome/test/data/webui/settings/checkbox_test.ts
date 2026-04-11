@@ -143,8 +143,8 @@ suite('SettingsCheckbox', function() {
     const actionLink = testElement.$.subLabel.querySelector('a');
     assertTrue(!!actionLink);
 
-    const clickEventPromise =
-        eventToPromise('sub-label-link-clicked', testElement);
+    const clickEventPromise = eventToPromise<CustomEvent<{id: string}>>(
+        'sub-label-link-clicked', testElement);
     actionLink.click();
     const clickEvent = await clickEventPromise;
     assertEquals('subLabelWithLink', clickEvent.detail.id);

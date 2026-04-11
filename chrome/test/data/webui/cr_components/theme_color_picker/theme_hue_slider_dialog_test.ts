@@ -70,7 +70,8 @@ suite('CrComponentsThemeHueSliderDialogTest', () => {
 
   test('DispatchesSelectedHueChangedEvent', async () => {
     const selectedHueChangedEvent =
-        eventToPromise('selected-hue-changed', element);
+        eventToPromise<CustomEvent<{selectedHue: number}>>(
+            'selected-hue-changed', element);
     element.$.slider.value = 100;
     element.$.slider.dispatchEvent(new PointerEvent('pointerup'));
     const e = await selectedHueChangedEvent;

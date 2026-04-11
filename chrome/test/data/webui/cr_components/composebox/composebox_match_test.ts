@@ -94,7 +94,8 @@ suite('ComposeboxMatch', () => {
 
   test('focusing a match fires `match-focusin` event', async () => {
     matchElement.matchIndex = 2;
-    const whenMatchFocusin = eventToPromise('match-focusin', matchElement);
+    const whenMatchFocusin = eventToPromise<CustomEvent<{index: number}>>(
+        'match-focusin', matchElement);
 
     matchElement.dispatchEvent(new FocusEvent('focusin'));
 

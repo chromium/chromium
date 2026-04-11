@@ -40,7 +40,7 @@ suite('CrShortcutInputTest', function() {
 
   async function activateInputCapture() {
     const whenInputCaptureChange =
-        eventToPromise('input-capture-change', input);
+        eventToPromise<CustomEvent<boolean>>('input-capture-change', input);
     input.$.edit.click();
     const event = await whenInputCaptureChange;
     assertTrue(event.detail);
@@ -67,7 +67,8 @@ suite('CrShortcutInputTest', function() {
 
     // Add 'A'. Once a valid shortcut is typed (like Ctrl + A), it is
     // committed.
-    const whenShortcutUpdate = eventToPromise('shortcut-updated', input);
+    const whenShortcutUpdate =
+        eventToPromise<CustomEvent<string>>('shortcut-updated', input);
     keyDownOn(field, 65, ['ctrl']);
     let event = await whenShortcutUpdate;
     assertEquals('Ctrl+A', event.detail);
@@ -84,7 +85,7 @@ suite('CrShortcutInputTest', function() {
 
     // Test that ending capture using the escape key restores the value.
     const stopInputCapturePromise =
-        eventToPromise('input-capture-change', input);
+        eventToPromise<CustomEvent<boolean>>('input-capture-change', input);
     keyDownOn(field, 27);  // Escape key.
     await stopInputCapturePromise;
     assertEquals('Ctrl + A', field.value);
@@ -92,7 +93,8 @@ suite('CrShortcutInputTest', function() {
 
     // Test that clicking clear erases the field value and the stored shortcut
     // value.
-    const clearShortcutPromise = eventToPromise('shortcut-updated', input);
+    const clearShortcutPromise =
+        eventToPromise<CustomEvent<string>>('shortcut-updated', input);
     input.$.clear.click();
     event = await clearShortcutPromise;
     await microtasksFinished();

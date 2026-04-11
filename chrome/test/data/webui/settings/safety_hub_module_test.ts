@@ -101,7 +101,8 @@ suite('SafetyHubModule', function() {
     assertEquals('cr20:block', button.ironIcon);
 
     const clickEventPromise =
-        eventToPromise('sh-module-item-button-click', testElement);
+        eventToPromise<CustomEvent<{origin: string, detail: string}>>(
+            'sh-module-item-button-click', testElement);
     button.click();
     const e = await clickEventPromise;
     const clickedItem = e.detail;

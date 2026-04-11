@@ -140,7 +140,8 @@ suite('FileCarouselTest', function() {
   });
 
   test('fires carousel-resize event on resize', async () => {
-    const eventPromise = eventToPromise('carousel-resize', fileCarousel);
+    const eventPromise = eventToPromise<CustomEvent<{height: number}>>(
+        'carousel-resize', fileCarousel);
 
     // Trigger the callback
     resizeObserverCallback([], window.ResizeObserver as any);

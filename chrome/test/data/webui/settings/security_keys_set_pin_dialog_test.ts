@@ -126,7 +126,7 @@ suite('SecurityKeysSetPINDialog', function() {
   }
 
   async function setNewPINEntries(
-      pinValue: string, confirmPINValue: string): Promise<void> {
+      pinValue: string, confirmPINValue: string): Promise<Event> {
     await setPINEntry(dialog.$.newPIN, pinValue);
     await setPINEntry(dialog.$.confirmPIN, confirmPINValue);
     const ret = eventToPromise('ui-ready', dialog);

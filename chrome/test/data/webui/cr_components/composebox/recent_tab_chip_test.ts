@@ -14,6 +14,14 @@ import type {MetricsTracker} from 'chrome://webui-test/metrics_test_support.js';
 import {fakeMetricsPrivate} from 'chrome://webui-test/metrics_test_support.js';
 import {$$, eventToPromise, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
+type AddTabContextEvent = CustomEvent<{
+  id: number,
+  title: string,
+  url: string,
+  delayUpload: boolean,
+  origin: TabUploadOrigin,
+}>;
+
 suite('RecentTabChipTest', function() {
   let recentTabChip: RecentTabChipElement;
   let metrics: MetricsTracker;
@@ -59,7 +67,8 @@ suite('RecentTabChipTest', function() {
   });
 
   test('fires event on click with correct data', async () => {
-    const eventPromise = eventToPromise('add-tab-context', recentTabChip);
+    const eventPromise =
+        eventToPromise<AddTabContextEvent>('add-tab-context', recentTabChip);
     const button = getButton();
     button.click();
 
@@ -85,7 +94,8 @@ suite('RecentTabChipTest', function() {
     recentTabChip.recentTab = MOCK_TAB_INFO;
     await microtasksFinished();
 
-    const eventPromise = eventToPromise('add-tab-context', recentTabChip);
+    const eventPromise =
+        eventToPromise<AddTabContextEvent>('add-tab-context', recentTabChip);
     const button = getButton();
     button.click();
 
