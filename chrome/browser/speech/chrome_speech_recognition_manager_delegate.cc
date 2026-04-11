@@ -23,7 +23,7 @@
 #include "media/mojo/mojom/speech_recognition_error.mojom.h"
 #include "media/mojo/mojom/speech_recognition_result.mojom.h"
 
-#if BUILDFLAG(ENABLE_EXTENSIONS)
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 #include "chrome/browser/extensions/extension_service.h"
 #include "extensions/browser/process_map.h"
 #include "extensions/browser/view_type_utils.h"
@@ -180,7 +180,7 @@ void ChromeSpeechRecognitionManagerDelegate::CheckRenderFrameType(
       allowed = true;
     } else {
       bool is_extension = false;
-  #if BUILDFLAG(ENABLE_EXTENSIONS)
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
       content::RenderProcessHost* render_process_host =
           content::RenderProcessHost::FromID(render_process_id);
       if (render_process_host) {
@@ -188,7 +188,7 @@ void ChromeSpeechRecognitionManagerDelegate::CheckRenderFrameType(
                            render_process_host->GetBrowserContext())
                            ->Contains(render_process_id);
       }
-  #endif
+#endif
       // Allow if it's a valid extension; otherwise deny (frame destroyed/invalid).
       allowed = is_extension;
     }
@@ -212,7 +212,7 @@ void ChromeSpeechRecognitionManagerDelegate::CheckRenderFrameType(
     return;
   }
 
-#if BUILDFLAG(ENABLE_EXTENSIONS)
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
   extensions::mojom::ViewType view_type =
       extensions::GetViewType(render_frame_host);
 
