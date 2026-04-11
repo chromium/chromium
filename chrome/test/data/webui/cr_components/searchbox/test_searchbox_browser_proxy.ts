@@ -59,6 +59,7 @@ class FakePageHandler extends TestBrowserProxy implements PageHandlerInterface {
       'openPopupSelection',
       'shouldShowDriveDisclaimer',
       'onDriveDisclaimerAccepted',
+      'getPageClassification',
     ]);
   }
 
@@ -258,6 +259,11 @@ class FakePageHandler extends TestBrowserProxy implements PageHandlerInterface {
 
   onDriveDisclaimerAccepted() {
     this.methodCalled('onDriveDisclaimerAccepted');
+  }
+
+  getPageClassification() {
+    this.methodCalled('getPageClassification');
+    return Promise.resolve({metricSource: 'NTP_REALBOX'});
   }
 }
 

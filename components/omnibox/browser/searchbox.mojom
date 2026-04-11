@@ -406,6 +406,9 @@ interface PageHandler {
 
   // Informs the browser that the user accepted the AIM x Drive disclaimer.
   OnDriveDisclaimerAccepted();
+
+  // Gets the page classification for the current context.
+  GetPageClassification() => (string metricSource);
 };
 
 // WebUI-side handler for requests from the browser.

@@ -186,6 +186,9 @@ suite('ContextualTasksComposeboxMiscInputsTest', () => {
 
     mockComposeboxPageHandler = TestMock.fromClass(ComposeboxPageHandlerRemote);
     mockSearchboxPageHandler = TestMock.fromClass(SearchboxPageHandlerRemote);
+    mockSearchboxPageHandler.setResultFor(
+        'getPageClassification',
+        Promise.resolve({metricSource: 'CONTEXTUAL_SEARCHBOX'}));
 
     const searchboxCallbackRouter = new SearchboxPageCallbackRouter();
     searchboxCallbackRouterRemote =

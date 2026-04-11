@@ -1291,3 +1291,12 @@ void SearchboxHandler::set_page_is_bound_callback_for_testing(
 OmniboxEditModel* SearchboxHandler::edit_model() const {
   return omnibox_controller()->edit_model();
 }
+
+void SearchboxHandler::GetPageClassification(
+    GetPageClassificationCallback callback) {
+  metrics::OmniboxEventProto::PageClassification classification_enum =
+      omnibox_controller()->client()->GetPageClassification(
+          /*is_prefetch=*/false);
+  std::move(callback).Run(::metrics::OmniboxEventProto::PageClassification_Name(
+      classification_enum));
+}

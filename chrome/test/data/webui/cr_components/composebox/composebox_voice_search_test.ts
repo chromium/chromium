@@ -10,15 +10,16 @@ import type {ComposeboxElement} from 'chrome://resources/cr_components/composebo
 import {PageCallbackRouter, PageHandlerRemote} from 'chrome://resources/cr_components/composebox/composebox.mojom-webui.js';
 import {ComposeboxProxyImpl} from 'chrome://resources/cr_components/composebox/composebox_proxy.js';
 import type {ComposeboxVoiceSearchElement} from 'chrome://resources/cr_components/composebox/composebox_voice_search.js';
+import {VoiceSearchAction, VoiceSearchError} from 'chrome://resources/cr_components/composebox/composebox_voice_search.js';
 import {WindowProxy} from 'chrome://resources/cr_components/composebox/window_proxy.js';
 import type {AudioWaveElement} from 'chrome://resources/cr_components/search/audio_wave.js';
-import {GlowAnimationState} from 'chrome://resources/cr_components/search/constants.js';
+import {GlowAnimationState, VoiceSearchState} from 'chrome://resources/cr_components/search/constants.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {PageCallbackRouter as SearchboxPageCallbackRouter, PageHandlerRemote as SearchboxPageHandlerRemote} from 'chrome://resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {fakeMetricsPrivate} from 'chrome://webui-test/metrics_test_support.js';
 import type {MetricsTracker} from 'chrome://webui-test/metrics_test_support.js';
-import type {TestMock} from 'chrome://webui-test/test_mock.js';
+import {TestMock} from 'chrome://webui-test/test_mock.js';
 import {$$, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 import {assertStyle, installMock} from './composebox_test_utils.js';
@@ -112,6 +113,9 @@ suite('ComposeboxVoiceSearch', () => {
     searchboxHandler = installMock(
         SearchboxPageHandlerRemote,
         mock => ComposeboxProxyImpl.getInstance().searchboxHandler = mock);
+    searchboxHandler.setResultFor(
+        'getPageClassification',
+        Promise.resolve({metricSource: 'NTP_REALBOX'}));
     searchboxHandler.setResultFor('getRecentTabs', Promise.resolve({tabs: []}));
     searchboxHandler.setResultFor('getInputState', Promise.resolve({
       state: {
@@ -613,5 +617,198 @@ suite('ComposeboxVoiceSearch', () => {
 
         // Restore API
         windowProxy.setResultFor('hasWebkitSpeechRecognition', true);
+      });
+});
+
+suite('ComposeboxVoiceSearchMetrics', () => {
+  let voiceSearchElement: ComposeboxVoiceSearchElement;
+  let metrics: MetricsTracker;
+  let handler: TestMock<PageHandlerRemote>;
+  let searchboxHandler: TestMock<SearchboxPageHandlerRemote>;
+
+  setup(async () => {
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
+
+    // Intercept metrics recording.
+    metrics = fakeMetricsPrivate();
+    handler = TestMock.fromClass(PageHandlerRemote);
+    searchboxHandler = TestMock.fromClass(SearchboxPageHandlerRemote);
+    searchboxHandler.setResultFor(
+        'getPageClassification',
+        Promise.resolve({metricSource: 'NTP_REALBOX'}));
+
+    ComposeboxProxyImpl.setInstance(new ComposeboxProxyImpl(
+        handler as unknown as PageHandlerRemote, new PageCallbackRouter(),
+        searchboxHandler as unknown as SearchboxPageHandlerRemote,
+        new SearchboxPageCallbackRouter()));
+
+    // Cast to `typeof SpeechRecognition` is necessary because
+    // MockSpeechRecognition only implements a subset of the actual
+    // SpeechRecognition API required for testing.
+    window.webkitSpeechRecognition =
+        MockSpeechRecognition as unknown as typeof SpeechRecognition;
+
+    voiceSearchElement = document.createElement('cr-composebox-voice-search');
+
+    document.body.appendChild(voiceSearchElement);
+    await microtasksFinished();
+  });
+
+  test('Records SUCCESS and SUBMITTED metrics on final result', async () => {
+    // Trigger: Simulate receiving the final voice result.
+    (voiceSearchElement as any).onFinalResult_('hello world');
+    await microtasksFinished();
+    // Verify: Action logged QUERY_SUBMITTED.
+    assertEquals(
+        1,
+        metrics.count(
+            'VoiceSearch.Action.NTP_REALBOX',
+            VoiceSearchAction.QUERY_SUBMITTED));
+
+    // Verify: State logged SUCCESSFUL_TRANSCRIPT.
+    assertEquals(
+        1,
+        metrics.count(
+            'VoiceSearch.State.NTP_REALBOX',
+            VoiceSearchState.SUCCESSFUL_TRANSCRIPT));
+  });
+
+  test('Records CANCELED metrics on close button click', async () => {
+    // Trigger: Simulate user clicking close.
+    (voiceSearchElement as any).onCloseClick_();
+    await microtasksFinished();
+
+    // Verify: Action logged CLOSED_BY_USER.
+    assertEquals(
+        1,
+        metrics.count(
+            'VoiceSearch.Action.NTP_REALBOX',
+            VoiceSearchAction.CLOSED_BY_USER));
+
+    // Verify: State logged VOICE_SEARCH_CANCELED.
+    assertEquals(
+        1,
+        metrics.count(
+            'VoiceSearch.State.NTP_REALBOX',
+            VoiceSearchState.VOICE_SEARCH_CANCELED));
+  });
+
+  test('Records ERROR metrics on API error event', async () => {
+    // Change parameters to test if dynamic concatenation works.
+    searchboxHandler.setResultFor(
+        'getPageClassification',
+        Promise.resolve({metricSource: 'CO_BROWSING_COMPOSEBOX'}));
+    await microtasksFinished();
+
+    // Trigger: Simulate underlying API throwing an error (network).
+    const errorEvent = new Event('error') as any;
+    errorEvent.error = 'network';
+    (voiceSearchElement as any).voiceRecognition_.onerror(errorEvent);
+
+    await microtasksFinished();
+    // Verify: Errors logged NETWORK.
+    assertEquals(
+        1,
+        metrics.count(
+            'VoiceSearch.Errors.CO_BROWSING_COMPOSEBOX',
+            VoiceSearchError.NETWORK));
+  });
+
+  test('Records ERROR_NON_CANCELING state for NOT_ALLOWED error', async () => {
+    // Trigger: Simulate permission denied (not-allowed).
+    const errorEvent = new Event('error') as any;
+    errorEvent.error = 'not-allowed';
+    (voiceSearchElement as any).voiceRecognition_.onerror(errorEvent);
+
+    // Call onEnd_ to simulate recognition ending, which is when the State is
+    // recorded.
+    (voiceSearchElement as any).onEnd_();
+    await microtasksFinished();
+
+    // Verify: State logged a non-canceling error (ERROR_NON_CANCELING).
+    assertEquals(
+        1,
+        metrics.count(
+            'VoiceSearch.State.NTP_REALBOX',
+            VoiceSearchState.VOICE_SEARCH_ERROR));
+  });
+
+  test('Records ERROR_CANCELING state for other errors in onEnd_', async () => {
+    // Trigger: Simulate network error.
+    const errorEvent = new Event('error') as any;
+    errorEvent.error = 'network';
+    (voiceSearchElement as any).voiceRecognition_.onerror(errorEvent);
+
+    // Call onEnd_ to simulate recognition ending.
+    (voiceSearchElement as any).onEnd_();
+    await microtasksFinished();
+
+    // Verify: State logged a canceling error (ERROR_CANCELING).
+    assertEquals(
+        1,
+        metrics.count(
+            'VoiceSearch.State.NTP_REALBOX',
+            VoiceSearchState.VOICE_SEARCH_ERROR_AND_CANCELED));
+  });
+
+  test('Records NO_MATCH error on nomatch event', async () => {
+    // Trigger: Simulate no match (onnomatch).
+    (voiceSearchElement as any)
+        .voiceRecognition_.onnomatch(new Event('nomatch'));
+
+    await microtasksFinished();
+    // Verify: Errors logged NO_MATCH.
+    assertEquals(
+        1,
+        metrics.count(
+            'VoiceSearch.Errors.NTP_REALBOX', VoiceSearchError.NO_MATCH));
+  });
+
+  test('Records Action metrics on link interactions', async () => {
+    const mockRetryEvent = new MouseEvent('click');
+    mockRetryEvent.stopPropagation = () => {};
+    (voiceSearchElement as any).onTryAgainClick_(mockRetryEvent);
+    await microtasksFinished();
+
+    assertEquals(
+        1,
+        metrics.count(
+            'VoiceSearch.Action.NTP_REALBOX',
+            VoiceSearchAction.RETRY_BY_TRY_AGAIN_CLICKED));
+
+    const mockLinkEvent = new MouseEvent('click');
+    mockLinkEvent.preventDefault = () => {};
+
+    Object.defineProperty(
+        mockLinkEvent, 'currentTarget',
+        {value: {href: 'https://support.google.com/'}});
+
+    (voiceSearchElement as any).onLinkClick_(mockLinkEvent);
+    await microtasksFinished();
+
+    assertEquals(
+        1,
+        metrics.count(
+            'VoiceSearch.Action.NTP_REALBOX',
+            VoiceSearchAction.SUPPORT_LINK_CLICKED));
+
+    (voiceSearchElement as any).state_ = -1;
+    (voiceSearchElement as any).voiceRecognition_.abort();
+    await microtasksFinished();
+  });
+
+  test(
+      'Records specific errors in onEnd_ based on fallback state', async () => {
+        // Trigger: Force set internal state to STARTED and call onEnd_.
+        (voiceSearchElement as any).state_ = 0;  // State.STARTED
+        (voiceSearchElement as any).onEnd_();
+        await microtasksFinished();
+        // Verify: Because it ended unexpectedly during STARTED, it should log
+        // an AUDIO_CAPTURE error.
+        assertEquals(
+            1,
+            metrics.count(
+                'VoiceSearch.Errors.NTP_REALBOX',
+                VoiceSearchError.AUDIO_CAPTURE));
       });
 });
