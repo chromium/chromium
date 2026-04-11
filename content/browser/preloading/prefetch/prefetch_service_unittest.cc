@@ -47,6 +47,7 @@
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/frame_accept_header.h"
+#include "content/public/browser/prefetch_priority.h"
 #include "content/public/browser/prefetch_request_status_listener.h"
 #include "content/public/browser/preload_pipeline_info.h"
 #include "content/public/browser/preloading.h"
@@ -1248,7 +1249,10 @@ class PrefetchServicePrePrefetchTest : public PrefetchServiceTest {
  public:
   void SetUp() override {
     PrefetchServiceTest::SetUp();
-    pre_prefetch_service_ = PrePrefetchService::Create(browser_context());
+    pre_prefetch_service_ = PrePrefetchService::Create(
+        browser_context(), url::Origin::Create(GURL("https://example.com")),
+        /*initial_javascript_enabled_hint=*/true,
+        /*initial_should_append_variations_header_hint=*/false);
     PrePrefetchServiceImpl::SetURLLoaderFactoryForTesting(
         test_shared_url_loader_factory_.get());
   }
@@ -1281,7 +1285,7 @@ class PrefetchServicePrePrefetchTest : public PrefetchServiceTest {
                   url, test::kPreloadingEmbedderHistgramSuffixForTesting,
                   /*javascript_enabled=*/true,
                   /*no_vary_search_hint=*/std::nullopt,
-                  /*priority=*/std::nullopt,
+                  /*priority=*/PrefetchPriority::kHighest,
                   /*additional_headers=*/{},
                   /*request_status_listener=*/nullptr, base::TimeDelta(),
                   /*should_append_variations_header=*/false,

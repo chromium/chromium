@@ -27,8 +27,15 @@ class CONTENT_EXPORT PrePrefetchService {
  public:
   virtual ~PrePrefetchService() = default;
 
+  // Creates `PrePrefetchService` with `BrowserContext`. Callers can specify
+  // hints for the initial PrePrefetch request. These hints are utilized to
+  // pre-calculate the UI-thread-dependent parts of the PrePrefetch
+  // `ResourceRequest`, which will later be used on a non-UI thread.
   static std::unique_ptr<PrePrefetchService> Create(
-      BrowserContext* browser_context);
+      BrowserContext* browser_context,
+      std::optional<url::Origin> initial_origin_hint = std::nullopt,
+      bool initial_javascript_enabled_hint = true,
+      bool initial_should_append_variations_header_hint = true);
 
   // Starts PrePrefetch for the given `url`, for embedder triggers.
   // Expected to be called from a non-UI thread. On UI thread, we can simply

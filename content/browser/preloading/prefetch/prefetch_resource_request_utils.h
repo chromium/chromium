@@ -79,6 +79,15 @@ CONTENT_EXPORT std::unique_ptr<network::ResourceRequest>
 MakeInitialResourceRequestForPrefetch(const PrefetchRequest& prefetch_request,
                                       bool is_decoy);
 
+// Constructs a full `ResourceRequest` for PrePrefetch, using the
+// pre-calculated headers on the UI thread via
+// `PrepareInitialHeadersForPrefetch()`, and
+// `MakeInitialResourceRequestWithoutHeadersForPrefetch()`.
+CONTENT_EXPORT std::unique_ptr<network::ResourceRequest>
+MakeInitialResourceRequestForPrePrefetch(
+    const PrefetchRequest& prefetch_request,
+    const PrefetchUpdateHeadersParams& ui_thread_pre_calculated_headers);
+
 }  // namespace content
 
 #endif  // CONTENT_BROWSER_PRELOADING_PREFETCH_PREFETCH_RESOURCE_REQUEST_UTILS_H_

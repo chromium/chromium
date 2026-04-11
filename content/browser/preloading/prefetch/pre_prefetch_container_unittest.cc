@@ -96,8 +96,10 @@ TEST_F(PrePrefetchContainerTest, StartPrePrefetch) {
           [](PrePrefetchContainerTest* test_fixture, const GURL& url,
              mojo::PendingRemote<network::mojom::URLLoaderFactory> factory) {
             auto prefetch_request = test_fixture->CreatePrefetchRequest(url);
+            PrefetchUpdateHeadersParams ui_thread_pre_calculated_headers;
             return PrePrefetchContainer::CreateAndStartForTesting(
-                std::move(prefetch_request), std::move(factory));
+                std::move(prefetch_request), std::move(factory),
+                ui_thread_pre_calculated_headers);
           },
           base::Unretained(this), prefetch_url,
           std::move(url_loader_factory_remote)),

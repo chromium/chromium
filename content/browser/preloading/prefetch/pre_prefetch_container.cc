@@ -27,30 +27,36 @@ namespace content {
 std::unique_ptr<PrePrefetchContainer> PrePrefetchContainer::CreateAndStart(
     base::PassKey<PrePrefetchServiceImpl>,
     std::unique_ptr<const PrefetchRequest> prefetch_request,
-    mojo::PendingRemote<network::mojom::URLLoaderFactory> url_loader_factory) {
+    mojo::PendingRemote<network::mojom::URLLoaderFactory> url_loader_factory,
+    const PrefetchUpdateHeadersParams& ui_thread_pre_calculated_headers) {
   // This should only be called from `PrePrefetchServiceCore` sequence through
   // `PrePrefetchServiceImpl`.
   return CreateAndStartInternal(std::move(prefetch_request),
-                                std::move(url_loader_factory));
+                                std::move(url_loader_factory),
+                                ui_thread_pre_calculated_headers);
 }
 
 // static
 std::unique_ptr<PrePrefetchContainer>
 PrePrefetchContainer::CreateAndStartForTesting(  // IN-TEST
     std::unique_ptr<const PrefetchRequest> prefetch_request,
-    mojo::PendingRemote<network::mojom::URLLoaderFactory> url_loader_factory) {
+    mojo::PendingRemote<network::mojom::URLLoaderFactory> url_loader_factory,
+    const PrefetchUpdateHeadersParams& ui_thread_pre_calculated_headers) {
   return CreateAndStartInternal(std::move(prefetch_request),
-                                std::move(url_loader_factory));
+                                std::move(url_loader_factory),
+                                ui_thread_pre_calculated_headers);
 }
 
 // static
 std::unique_ptr<PrePrefetchContainer>
 PrePrefetchContainer::CreateAndStartInternal(
     std::unique_ptr<const PrefetchRequest> prefetch_request,
-    mojo::PendingRemote<network::mojom::URLLoaderFactory> url_loader_factory) {
+    mojo::PendingRemote<network::mojom::URLLoaderFactory> url_loader_factory,
+    const PrefetchUpdateHeadersParams& ui_thread_pre_calculated_headers) {
   auto container = std::make_unique<PrePrefetchContainer>(
       base::PassKey<PrePrefetchContainer>(), std::move(prefetch_request));
-  container->Start(std::move(url_loader_factory));
+  container->Start(std::move(url_loader_factory),
+                   ui_thread_pre_calculated_headers);
   return container;
 }
 
@@ -65,7 +71,8 @@ PrePrefetchContainer::PrePrefetchContainer(
 }
 
 void PrePrefetchContainer::Start(
-    mojo::PendingRemote<network::mojom::URLLoaderFactory> url_loader_factory) {
+    mojo::PendingRemote<network::mojom::URLLoaderFactory> url_loader_factory,
+    const PrefetchUpdateHeadersParams& ui_thread_pre_calculated_headers) {
   TRACE_EVENT("loading", "PrePrefetchContainer::Start", "url",
               prefetch_request_->key().url());
 
@@ -79,22 +86,10 @@ void PrePrefetchContainer::Start(
   // TODO(crbug.com/452389538): Perform prefetch eligibility checks that are
   // required before starting PrePrefetch's network request.
 
-  // TODO(crbug.com/452389538): Construct a proper ResourceRequest for
-  // PrePrefetch, using the prefetch common utility.
-  // We should also take care of the properties that are UI-thread dependent /
-  // that are tied to the embedder (See the comment of
-  // `PrePrefetchServiceImpl::ctor`).
-  const GURL& url = prefetch_request_->key().url();
-  url::Origin origin = url::Origin::Create(url);
-  net::IsolationInfo isolation_info = net::IsolationInfo::Create(
-      net::IsolationInfo::RequestType::kMainFrame, /*top_frame_origin=*/origin,
-      /*frame_origin=*/origin, net::SiteForCookies::FromOrigin(origin));
-  resource_request_ = CreateResourceRequestForNavigation(
-      net::HttpRequestHeaders::kGetMethod, url,
-      network::mojom::RequestDestination::kDocument,
-      prefetch_request_->initial_referrer(), isolation_info,
-      /*devtools_observer=*/mojo::NullRemote(), net::RequestPriority::HIGHEST,
-      /*is_main_frame=*/true);
+  // Construct a proper `ResourceRequest`, using the pre-calculated headers on
+  // the UI thread.
+  resource_request_ = MakeInitialResourceRequestForPrePrefetch(
+      *prefetch_request_, ui_thread_pre_calculated_headers);
 
   auto receiver = url_loader_.InitWithNewPipeAndPassReceiver();
   auto client_remote =

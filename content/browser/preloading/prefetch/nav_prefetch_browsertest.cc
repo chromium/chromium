@@ -719,8 +719,11 @@ IN_PROC_BROWSER_TEST_F(PrePrefetchBrowserTest, PrePrefetchConsumption) {
   test::TestPrefetchWatcher test_prefetch_watcher;
 
   // Create `PrePrefetchServiceImpl`.
-  auto pre_prefetch_service =
-      PrePrefetchService::Create(shell()->web_contents()->GetBrowserContext());
+  auto pre_prefetch_service = PrePrefetchService::Create(
+      shell()->web_contents()->GetBrowserContext(),
+      url::Origin::Create(prefetch_url),
+      /*initial_javascript_enabled_hint=*/true,
+      /*initial_should_append_variations_header_hint=*/false);
   ASSERT_NE(pre_prefetch_service, nullptr);
 
   // Create `PrePrefetchContainer` on non UI, creating PrePrefetch network

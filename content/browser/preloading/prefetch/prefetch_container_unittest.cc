@@ -138,8 +138,10 @@ class PrefetchContainerTestBase : public PrefetchingMetricsTestBase,
                           /*referring_origin=*/std::nullopt,
                           /*no_vary_search_hint=*/std::nullopt,
                           /*priority=*/std::nullopt);
+                  PrefetchUpdateHeadersParams ui_thread_pre_calculated_headers;
                   return PrePrefetchContainer::CreateAndStartForTesting(
-                      std::move(prefetch_request), std::move(factory));
+                      std::move(prefetch_request), std::move(factory),
+                      ui_thread_pre_calculated_headers);
                 },
                 base::Unretained(this), prefetch_url,
                 std::move(pending_remote)),

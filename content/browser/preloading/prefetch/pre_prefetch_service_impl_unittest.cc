@@ -84,7 +84,10 @@ TEST_F(PrePrefetchServiceImplTest, StartPrePrefetchRequestFromNonUIThread) {
         request_future.SetValue(request);
       }));
 
-  auto service = PrePrefetchService::Create(browser_context());
+  auto service = PrePrefetchService::Create(
+      browser_context(), url::Origin::Create(prefetch_url),
+      /*initial_javascript_enabled_hint=*/true,
+      /*initial_should_append_variations_header_hint=*/false);
   ASSERT_NE(service, nullptr);
 
   base::test::TestFuture<std::unique_ptr<PrePrefetchHandle>> handle_future;
