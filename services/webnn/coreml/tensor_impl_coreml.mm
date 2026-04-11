@@ -131,8 +131,8 @@ MLMultiArray* CreateMultiArrayBackedByIOSurface(OperandDescriptor descriptor) {
 
   // Zero-initialize the IOSurface. Calling IOSurfaceLock/IOSurfaceUnlock
   // appears to be sufficient. https://crbug.com/40455843#comment18
-  CHECK_EQ(IOSurfaceLock(surface, 0, NULL), kIOReturnSuccess);
-  CHECK_EQ(IOSurfaceUnlock(surface, 0, NULL), kIOReturnSuccess);
+  CHECK_EQ(IOSurfaceLock(surface, 0, NULL), KERN_SUCCESS);
+  CHECK_EQ(IOSurfaceUnlock(surface, 0, NULL), KERN_SUCCESS);
 
   CVPixelBufferRef pixel_buffer = nil;
   CVReturn pixel_buffer_result = CVPixelBufferCreateWithIOSurface(
