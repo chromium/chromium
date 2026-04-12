@@ -5,7 +5,10 @@
 #include "third_party/blink/renderer/platform/text/character.h"
 
 #include <ubidi_props.h>
+#include <unicode/uniset.h>
+#include <unicode/unistr.h>
 #include <unicode/uscript.h>
+#include <unicode/utfiterator.h>
 #include <unicode/utypes.h>
 
 #include <algorithm>
@@ -37,6 +40,24 @@ testing::AssertionResult IsCJKIdeographOrSymbolWithMessage(UChar32 codepoint) {
 // These functions may need to be adjusted if Unicode changes.
 TEST(CharacterTest, Derived) {
   StringBuilder builder;
+  // Extended_Pictographic codepoints in RGI emoji sequences must be
+  // IsCJKIdeographOrSymbol so that the word segmenter enters the emoji code
+  // path and keeps multi-codepoint sequences together.
+  UErrorCode error = U_ZERO_ERROR;
+  icu::UnicodeSet set(
+      icu::UnicodeString(
+          "[[:RGI_Emoji_ZWJ_Sequence:][:RGI_Emoji_Modifier_Sequence:]]"),
+      error);
+  ASSERT_EQ(error, U_ZERO_ERROR);
+  for (auto s : set.strings()) {
+    for (auto unit : icu::header::unsafeUTFStringCodePoints<UChar32>(s)) {
+      UChar32 cp = unit.codePoint();
+      if (Character::IsExtendedPictographic(cp)) {
+        EXPECT_TRUE(IsCJKIdeographOrSymbolWithMessage(cp));
+      }
+    }
+  }
+
   for (UChar32 ch = 0; ch < uchar::kMaxCodepoint; ++ch) {
     if (Character::IsEmojiEmojiDefault(ch)) {
       EXPECT_TRUE(IsCJKIdeographOrSymbolWithMessage(ch));

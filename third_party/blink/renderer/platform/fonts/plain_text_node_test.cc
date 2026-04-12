@@ -480,7 +480,9 @@ TEST_F(PlainTextNodeTest, SegmentEmojiSequences) {
       // Signs of horns with skin tone modifier
       "\U0001f918\U0001f3fb",
       // Man, dark skin tone, red hair
-      "\U0001f468\U0001f3ff\u200D\U0001f9b0"};
+      "\U0001f468\U0001f3ff\u200D\U0001f9b0",
+      // Broken chain
+      "\u26D3\uFE0F\u200D\U0001f4a5"};
 
   for (auto test_string : test_strings) {
     String emoji_string = String::FromUtf8(test_string);

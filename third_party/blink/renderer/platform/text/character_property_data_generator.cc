@@ -5,12 +5,14 @@
 #include <stdio.h>
 #include <unicode/brkiter.h>
 #include <unicode/locid.h>
+#include <unicode/uchar.h>
 #include <unicode/ucptrie.h>
 #include <unicode/udata.h>
 #include <unicode/ulocdata.h>
 #include <unicode/umutablecptrie.h>
 #include <unicode/uniset.h>
 #include <unicode/unistr.h>
+#include <unicode/utfiterator.h>
 
 #include <cassert>
 #include <cstring>
@@ -107,13 +109,35 @@ class CharacterPropertyValues {
     SetEastAsianSpacing();
   }
 
-  // Set all characters that have the `UCHAR_EMOJI_PRESENTATION` property as CJK
-  // symbol characters.
+  // Set all characters that have the `UCHAR_EMOJI_PRESENTATION` property, and
+  // all Extended_Pictographic characters that participate in RGI emoji
+  // sequences, as CJK symbol characters. This ensures the word segmenter
+  // enters the emoji code path for text-default emoji in multi-codepoint
+  // sequences.
   void SetIsCJKIdeographOrSymbolForEmoji() {
     SetForUnicodePattern("[:Emoji_Presentation:]",
                          [](CharacterProperty& property) {
                            property.is_cjk_ideograph_or_symbol = true;
                          });
+    SetExtPictFromEmojiSequences(
+        "[[:RGI_Emoji_ZWJ_Sequence:][:RGI_Emoji_Modifier_Sequence:]]");
+  }
+
+  // Mark all Extended_Pictographic codepoints found in the given emoji
+  // sequence set. The ExtPict filter excludes ZWJ, variation selectors,
+  // skin tone modifiers, digits, and other non-pictographic characters.
+  void SetExtPictFromEmojiSequences(const char* pattern) {
+    UErrorCode error = U_ZERO_ERROR;
+    icu::UnicodeSet set(icu::UnicodeString(pattern), error);
+    CHECK_EQ(error, U_ZERO_ERROR);
+    for (auto s : set.strings()) {
+      for (auto unit : icu::header::unsafeUTFStringCodePoints<UChar32>(s)) {
+        UChar32 cp = unit.codePoint();
+        if (u_hasBinaryProperty(cp, UCHAR_EXTENDED_PICTOGRAPHIC)) {
+          values_[cp].is_cjk_ideograph_or_symbol = true;
+        }
+      }
+    }
   }
 
   void SetHanKerning() {
