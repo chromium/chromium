@@ -20,8 +20,6 @@
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "services/network/public/mojom/fetch_api.mojom.h"
 
-class PrefService;
-
 namespace extensions {
 
 class ExtensionsAPIClient;
@@ -92,8 +90,6 @@ class ShellExtensionsBrowserClient : public ExtensionsBrowserClient {
       const ExtensionSet& extensions,
       const ProcessMap& process_map,
       const GURL& upstream_url) override;
-  PrefService* GetPrefServiceForContext(
-      content::BrowserContext* context) override;
   void GetEarlyExtensionPrefsObservers(
       content::BrowserContext* context,
       std::vector<EarlyExtensionPrefsObserver*>* observers) const override;
@@ -139,9 +135,7 @@ class ShellExtensionsBrowserClient : public ExtensionsBrowserClient {
       content::BrowserContext* context) override;
 
   // `context` is the single BrowserContext used for IsValidContext().
-  // `pref_service` is used for GetPrefServiceForContext().
-  void InitWithBrowserContext(content::BrowserContext* context,
-                              PrefService* pref_service);
+  void InitWithBrowserContext(content::BrowserContext* context);
 
   // Sets the API client.
   void SetAPIClientForTest(ExtensionsAPIClient* api_client);
@@ -151,10 +145,6 @@ class ShellExtensionsBrowserClient : public ExtensionsBrowserClient {
   // when ready by calling InitWithBrowserContext().
   raw_ptr<content::BrowserContext, DanglingUntriaged> browser_context_ =
       nullptr;
-
-  // The PrefService for `browser_context_`. Not owned. Must be initialized when
-  // ready by calling InitWithBrowserContext().
-  raw_ptr<PrefService, DanglingUntriaged> pref_service_ = nullptr;
 
   // Support for extension APIs.
   std::unique_ptr<ExtensionsAPIClient> api_client_;

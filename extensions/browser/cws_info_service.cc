@@ -24,6 +24,7 @@
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "components/prefs/pref_service.h"
+#include "components/user_prefs/user_prefs.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/storage_partition.h"
@@ -236,8 +237,7 @@ struct CWSInfoService::FetchContext {
 
 CWSInfoService::CWSInfoService(content::BrowserContext* browser_context)
     : browser_context_(browser_context),
-      pref_service_(ExtensionsBrowserClient::Get()->GetPrefServiceForContext(
-          browser_context)),
+      pref_service_(user_prefs::UserPrefs::Get(browser_context)),
       extension_prefs_(ExtensionPrefs::Get(browser_context)),
       extension_registry_(ExtensionRegistry::Get(browser_context)),
       url_loader_factory_(browser_context->GetDefaultStoragePartition()

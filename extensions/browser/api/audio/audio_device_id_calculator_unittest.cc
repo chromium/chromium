@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "components/prefs/testing_pref_service.h"
+#include "components/user_prefs/user_prefs.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_browser_context.h"
 #include "extensions/browser/api/audio/audio_api.h"
@@ -16,32 +17,6 @@
 namespace extensions {
 
 namespace {
-
-class TestExtensionsBrowserClientWithPrefService
-    : public TestExtensionsBrowserClient {
- public:
-  explicit TestExtensionsBrowserClientWithPrefService(
-      content::BrowserContext* main_context)
-      : TestExtensionsBrowserClient(main_context) {}
-
-  TestExtensionsBrowserClientWithPrefService(
-      const TestExtensionsBrowserClientWithPrefService&) = delete;
-  TestExtensionsBrowserClientWithPrefService& operator=(
-      const TestExtensionsBrowserClientWithPrefService&) = delete;
-
-  ~TestExtensionsBrowserClientWithPrefService() override = default;
-
-  // ExtensionsBrowserClient override:
-  PrefService* GetPrefServiceForContext(
-      content::BrowserContext* context) override {
-    return &pref_service_;
-  }
-
-  TestingPrefServiceSimple* pref_service() { return &pref_service_; }
-
- private:
-  TestingPrefServiceSimple pref_service_;
-};
 
 class AudioDeviceIdCalculatorTest : public testing::Test {
  public:
@@ -54,8 +29,8 @@ class AudioDeviceIdCalculatorTest : public testing::Test {
   ~AudioDeviceIdCalculatorTest() override = default;
 
   void SetUp() override {
-    AudioAPI::RegisterUserPrefs(
-        test_browser_client_.pref_service()->registry());
+    user_prefs::UserPrefs::Set(browser_context(), &pref_service_);
+    AudioAPI::RegisterUserPrefs(pref_service_.registry());
     ExtensionsBrowserClient::Set(&test_browser_client_);
   }
 
@@ -66,7 +41,8 @@ class AudioDeviceIdCalculatorTest : public testing::Test {
  private:
   content::BrowserTaskEnvironment task_environment_;
   content::TestBrowserContext browser_context_;
-  TestExtensionsBrowserClientWithPrefService test_browser_client_;
+  TestingPrefServiceSimple pref_service_;
+  TestExtensionsBrowserClient test_browser_client_;
 };
 
 }  // namespace

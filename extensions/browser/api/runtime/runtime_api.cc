@@ -22,6 +22,7 @@
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #include "components/sessions/content/session_tab_helper.h"
+#include "components/user_prefs/user_prefs.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/child_process_security_policy.h"
 #include "extensions/browser/api/runtime/runtime_api_delegate.h"
@@ -338,9 +339,7 @@ bool RuntimeAPI::RestartDevice(std::string* error_message) {
     // i.e. the app can't unthrottle itself.
     // When running in forced kiosk app mode, we assume the following restart
     // request will succeed.
-    PrefService* pref_service =
-        ExtensionsBrowserClient::Get()->GetPrefServiceForContext(
-            browser_context_);
+    PrefService* pref_service = user_prefs::UserPrefs::Get(browser_context_);
     DCHECK(pref_service);
     pref_service->SetBoolean(kPrefLastRestartWasDueToDelayedRestartApi, true);
   }
@@ -372,9 +371,7 @@ RuntimeAPI::RestartAfterDelayStatus RuntimeAPI::RestartDeviceAfterDelay(
   if (!did_read_delayed_restart_preferences_) {
     // Try to read any previous successful restart attempt time resulting from
     // this API.
-    PrefService* pref_service =
-        ExtensionsBrowserClient::Get()->GetPrefServiceForContext(
-            browser_context_);
+    PrefService* pref_service = user_prefs::UserPrefs::Get(browser_context_);
     DCHECK(pref_service);
 
     was_last_restart_due_to_delayed_restart_api_ =
@@ -457,9 +454,7 @@ void RuntimeAPI::OnDelayedRestartTimerTimeout() {
   // This assumption is important, since once restart is requested, we might not
   // have enough time to persist the data to disk.
   double now = base::Time::NowFromSystemTime().InSecondsFSinceUnixEpoch();
-  PrefService* pref_service =
-      ExtensionsBrowserClient::Get()->GetPrefServiceForContext(
-          browser_context_);
+  PrefService* pref_service = user_prefs::UserPrefs::Get(browser_context_);
   DCHECK(pref_service);
   pref_service->SetDouble(kPrefLastRestartAfterDelayTime, now);
   pref_service->SetBoolean(kPrefLastRestartWasDueToDelayedRestartApi, true);

@@ -7,6 +7,8 @@
 #include "base/strings/string_number_conversions.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
+#include "components/user_prefs/user_prefs.h"
+#include "content/public/browser/browser_context.h"
 #include "extensions/browser/api/audio/pref_names.h"
 #include "extensions/browser/extensions_browser_client.h"
 
@@ -35,8 +37,7 @@ std::string AudioDeviceIdCalculator::GetStableDeviceId(
 void AudioDeviceIdCalculator::LoadStableIdMap() {
   DCHECK(!stable_id_map_loaded_);
 
-  PrefService* pref_service =
-      ExtensionsBrowserClient::Get()->GetPrefServiceForContext(context_);
+  PrefService* pref_service = user_prefs::UserPrefs::Get(context_.get());
   const base::ListValue& audio_service_stable_ids =
       pref_service->GetList(kAudioApiStableDeviceIds);
   const base::ListValue& ids_list = audio_service_stable_ids;
@@ -55,9 +56,8 @@ std::string AudioDeviceIdCalculator::GenerateNewStableDeviceId(
   DCHECK(stable_id_map_loaded_);
   DCHECK_EQ(0u, stable_id_map_.count(audio_service_stable_id));
 
-  ScopedListPrefUpdate update(
-      ExtensionsBrowserClient::Get()->GetPrefServiceForContext(context_),
-      kAudioApiStableDeviceIds);
+  ScopedListPrefUpdate update(user_prefs::UserPrefs::Get(context_.get()),
+                              kAudioApiStableDeviceIds);
 
   std::string api_stable_id = base::NumberToString(update->size());
   stable_id_map_[audio_service_stable_id] = api_stable_id;

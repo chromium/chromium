@@ -34,7 +34,6 @@
 #include "url/gurl.h"
 
 class ExtensionFunctionRegistry;
-class PrefService;
 
 namespace base {
 class CommandLine;
@@ -281,10 +280,6 @@ class ExtensionsBrowserClient {
       const ExtensionSet& extensions,
       const ProcessMap& process_map,
       const GURL& upstream_url) = 0;
-
-  // Returns the PrefService associated with `context`.
-  virtual PrefService* GetPrefServiceForContext(
-      content::BrowserContext* context) = 0;
 
   // Populates a list of ExtensionPrefs observers to be attached to each
   // BrowserContext's ExtensionPrefs upon construction. These observers

@@ -142,8 +142,6 @@ class ChromeExtensionsBrowserClient : public ExtensionsBrowserClient {
       const ExtensionSet& extensions,
       const ProcessMap& process_map,
       const GURL& upstream_url) override;
-  PrefService* GetPrefServiceForContext(
-      content::BrowserContext* context) override;
   void GetEarlyExtensionPrefsObservers(
       content::BrowserContext* context,
       std::vector<EarlyExtensionPrefsObserver*>* observers) const override;

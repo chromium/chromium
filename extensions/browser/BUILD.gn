@@ -686,6 +686,7 @@ source_set("browser_sources") {
     "//components/safe_browsing/core/browser/db:v4_protocol_config",
     "//components/url_matcher",
     "//components/url_pattern_index",
+    "//components/user_prefs",
     "//components/value_store",
     "//content/public/common",
     "//extensions/browser/api/declarative_net_request/flat:extension_ruleset",

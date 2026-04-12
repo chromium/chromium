@@ -7,6 +7,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/test/scoped_feature_list.h"
 #include "components/crx_file/id_util.h"
+#include "components/user_prefs/user_prefs.h"
 #include "content/public/test/mock_render_process_host.h"
 #include "content/public/test/test_browser_context.h"
 #include "extensions/browser/extension_prefs.h"
@@ -208,6 +209,8 @@ class RendererStartupHelperTest : public ExtensionsTest {
     incognito_render_process_host_ =
         std::make_unique<content::MockRenderProcessHost>(incognito_context());
     extension_ = CreateExtension("ext_1");
+    user_prefs::UserPrefs::Set(browser_context(), pref_service());
+    user_prefs::UserPrefs::Set(incognito_context(), pref_service());
   }
 
   void TearDown() override {
@@ -598,8 +601,6 @@ TEST_F(RendererStartupHelperTestCaptivePortalPopupWindow,
   // Set prefs::kCaptivePortalSignin to true in the shared PerfService instance.
   ASSERT_TRUE(pref_service());
   pref_service()->SetBoolean(chromeos::prefs::kCaptivePortalSignin, true);
-  extensions_browser_client()->set_pref_service_for_context(incognito_context(),
-                                                            pref_service());
 
   // Initialize the incognito renderer.
   EXPECT_FALSE(IsProcessInitialized(incognito_render_process_host_.get()));

@@ -52,9 +52,6 @@ class TestExtensionsBrowserClient : public ExtensionsBrowserClient {
   void set_extension_system_factory(ExtensionSystemProvider* factory) {
     extension_system_factory_ = factory;
   }
-  void set_pref_service(PrefService* pref_service) {
-    pref_service_ = pref_service;
-  }
   void set_extension_cache(std::unique_ptr<ExtensionCache> extension_cache) {
     extension_cache_ = std::move(extension_cache);
   }
@@ -124,8 +121,6 @@ class TestExtensionsBrowserClient : public ExtensionsBrowserClient {
       const ExtensionSet& extensions,
       const ProcessMap& process_map,
       const GURL& upstream_url) override;
-  PrefService* GetPrefServiceForContext(
-      content::BrowserContext* context) override;
   void GetEarlyExtensionPrefsObservers(
       content::BrowserContext* context,
       std::vector<EarlyExtensionPrefsObserver*>* observers) const override;
@@ -179,11 +174,6 @@ class TestExtensionsBrowserClient : public ExtensionsBrowserClient {
     return extension_system_factory_;
   }
 
-  void set_pref_service_for_context(content::BrowserContext* context,
-                                    PrefService* pref_service) {
-    set_pref_service_for_context_[context] = pref_service;
-  }
-
  private:
   // Not owned.
   raw_ptr<content::BrowserContext> main_context_ = nullptr;
@@ -195,13 +185,6 @@ class TestExtensionsBrowserClient : public ExtensionsBrowserClient {
 
   // Not owned.
   raw_ptr<ExtensionSystemProvider> extension_system_factory_ = nullptr;
-
-  // Not owned.
-  raw_ptr<PrefService> pref_service_ = nullptr;
-
-  // Not owned.
-  std::map<content::BrowserContext*, raw_ptr<PrefService>>
-      set_pref_service_for_context_;
 
   std::unique_ptr<ExtensionCache> extension_cache_;
 

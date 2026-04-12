@@ -187,12 +187,6 @@ bool ShellExtensionsBrowserClient::AllowCrossRendererResourceLoad(
   return false;
 }
 
-PrefService* ShellExtensionsBrowserClient::GetPrefServiceForContext(
-    BrowserContext* context) {
-  DCHECK(pref_service_);
-  return pref_service_;
-}
-
 void ShellExtensionsBrowserClient::GetEarlyExtensionPrefsObservers(
     content::BrowserContext* context,
     std::vector<EarlyExtensionPrefsObserver*>* observers) const {}
@@ -332,12 +326,9 @@ std::string ShellExtensionsBrowserClient::GetApplicationLocale() {
 }
 
 void ShellExtensionsBrowserClient::InitWithBrowserContext(
-    content::BrowserContext* context,
-    PrefService* pref_service) {
+    content::BrowserContext* context) {
   DCHECK(!browser_context_);
-  DCHECK(!pref_service_);
   browser_context_ = context;
-  pref_service_ = pref_service;
 }
 
 custom_handlers::ProtocolHandlerRegistry*

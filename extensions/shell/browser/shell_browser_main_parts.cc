@@ -175,8 +175,7 @@ int ShellBrowserMainParts::PreMainMessageLoopRun() {
   sessions::SessionIdGenerator::GetInstance()->Init(local_state_.get());
   user_pref_service_ =
       shell_prefs::CreateUserPrefService(browser_context_.get());
-  extensions_browser_client_->InitWithBrowserContext(browser_context_.get(),
-                                                     user_pref_service_.get());
+  extensions_browser_client_->InitWithBrowserContext(browser_context_.get());
 
 #if BUILDFLAG(IS_CHROMEOS)
   mojo::PendingRemote<media_session::mojom::MediaControllerManager>

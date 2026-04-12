@@ -11,6 +11,8 @@
 #include "base/strings/string_split.h"
 #include "components/language/core/browser/pref_names.h"
 #include "components/prefs/pref_service.h"
+#include "components/user_prefs/user_prefs.h"
+#include "content/public/browser/browser_context.h"
 #include "extensions/browser/extensions_browser_client.h"
 #include "extensions/common/api/i18n.h"
 
@@ -26,9 +28,7 @@ static const char kEmptyAcceptLanguagesError[] = "accept-languages is empty.";
 }  // namespace
 
 ExtensionFunction::ResponseAction I18nGetAcceptLanguagesFunction::Run() {
-  PrefService* pref_service =
-      ExtensionsBrowserClient::Get()->GetPrefServiceForContext(
-          browser_context());
+  PrefService* pref_service = user_prefs::UserPrefs::Get(browser_context());
   std::string accept_languages =
       pref_service->GetString(language::prefs::kAcceptLanguages);
   // Currently, there are 2 ways to set browser's accept-languages: through UI

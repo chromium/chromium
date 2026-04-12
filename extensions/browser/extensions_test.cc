@@ -89,7 +89,6 @@ void ExtensionsTest::SetUp() {
   ExtensionPrefs::RegisterProfilePrefs(pref_registry);
   PermissionsManager::RegisterProfilePrefs(pref_registry);
   pref_service_ = factory.Create(pref_registry);
-  extensions_browser_client_->set_pref_service(pref_service_.get());
 
   std::unique_ptr<ExtensionPrefs> extension_prefs = ExtensionPrefs::Create(
       browser_context(), pref_service_.get(),

@@ -69,6 +69,10 @@ class ApiUnitTest : public ExtensionsTest {
   // Run the function and ignore any result.
   void RunFunction(ExtensionFunction* function, api_test_utils::ArgsType args);
 
+  sync_preferences::TestingPrefServiceSyncable* pref_service() {
+    return &testing_pref_service_;
+  }
+
  private:
   sync_preferences::TestingPrefServiceSyncable testing_pref_service_;
 

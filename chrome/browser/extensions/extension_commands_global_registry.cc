@@ -11,6 +11,7 @@
 #include "chrome/browser/extensions/commands/command_service.h"
 #include "chrome/browser/extensions/extension_keybinding_registry.h"
 #include "components/prefs/pref_service.h"
+#include "components/user_prefs/user_prefs.h"
 #include "content/public/browser/browser_context.h"
 #include "extensions/browser/pref_names.h"
 #include "extensions/buildflags/buildflags.h"
@@ -141,9 +142,7 @@ bool ExtensionCommandsGlobalRegistry::PopulateCommands(
             extensions::CommandService::ANY_SCOPE, commands)) {
       return false;
     }
-    PrefService* prefs =
-        ExtensionsBrowserClient::Get()->GetPrefServiceForContext(
-            browser_context_);
+    PrefService* prefs = user_prefs::UserPrefs::Get(browser_context_);
     std::string profile_id = prefs->GetString(pref_names::kGlobalShortcutsUuid);
     if (profile_id.empty()) {
       auto uuid = base::Uuid::GenerateRandomV4();

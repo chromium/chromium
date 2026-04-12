@@ -21,6 +21,7 @@ source_set("i18n") {
     "//base",
     "//components/language/core/browser",
     "//components/prefs",
+    "//content/public/browser",
     "//extensions/common/api",
   ]
 }

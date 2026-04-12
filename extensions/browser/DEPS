@@ -25,6 +25,7 @@ include_rules = [
   "+components/variations",
   "+components/vector_icons",
   "+components/version_info",
+  "+components/user_prefs",
   "+components/web_cache",
   "+components/web_modal",
   "+components/zoom",
@@ -70,7 +71,6 @@ specific_include_rules = {
 
     "+components/account_id",
     "+components/javascript_dialogs",
-    "+components/user_prefs",
 
     "+storage/browser/test",
 

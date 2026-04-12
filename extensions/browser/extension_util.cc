@@ -13,6 +13,7 @@
 #include "build/chromeos_buildflags.h"
 #include "components/crx_file/id_util.h"
 #include "components/download/public/common/download_item.h"
+#include "components/user_prefs/user_prefs.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/child_process_security_policy.h"
 #include "content/public/browser/security_principal.h"
@@ -114,8 +115,7 @@ bool IsIncognitoEnabled(const ExtensionId& extension_id,
   // However, for captive portal signin we do not want want to disable
   // extensions by default. (Proxies are explicitly disabled elsewhere).
   // See b/261727502 for details.
-  PrefService* prefs =
-      ExtensionsBrowserClient::Get()->GetPrefServiceForContext(context);
+  PrefService* prefs = user_prefs::UserPrefs::Get(context);
   if (prefs) {
     const PrefService::Preference* captive_portal_pref =
         prefs->FindPreference(chromeos::prefs::kCaptivePortalSignin);

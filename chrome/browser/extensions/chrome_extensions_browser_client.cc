@@ -430,11 +430,6 @@ bool ChromeExtensionsBrowserClient::AllowCrossRendererResourceLoad(
   return false;
 }
 
-PrefService* ChromeExtensionsBrowserClient::GetPrefServiceForContext(
-    content::BrowserContext* context) {
-  return static_cast<Profile*>(context)->GetPrefs();
-}
-
 void ChromeExtensionsBrowserClient::GetEarlyExtensionPrefsObservers(
     content::BrowserContext* context,
     std::vector<EarlyExtensionPrefsObserver*>* observers) const {

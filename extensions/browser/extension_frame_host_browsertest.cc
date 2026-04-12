@@ -7,6 +7,8 @@
 #include <string>
 
 #include "base/memory/ref_counted.h"
+#include "components/user_prefs/user_prefs.h"
+#include "content/public/browser/browser_context.h"
 #include "content/public/browser/web_contents_user_data.h"
 #include "extensions/browser/browsertest_util.h"
 #include "extensions/browser/extension_host.h"
@@ -145,9 +147,7 @@ class ExtensionFrameHostBrowserTest : public ShellApiTest {
 
     extensions_browser_client_ =
         std::make_unique<ExtensionFrameHostTestExtensionsBrowserClient>();
-    extensions_browser_client_->InitWithBrowserContext(
-        browser_context(),
-        ExtensionPrefs::Get(browser_context())->pref_service());
+    extensions_browser_client_->InitWithBrowserContext(browser_context());
     ExtensionsBrowserClient::Set(extensions_browser_client_.get());
 
     extension_ = LoadExtension("extension");

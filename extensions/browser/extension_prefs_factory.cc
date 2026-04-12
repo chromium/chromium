@@ -9,6 +9,7 @@
 #include "base/command_line.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/prefs/pref_service.h"
+#include "components/user_prefs/user_prefs.h"
 #include "content/public/browser/browser_context.h"
 #include "extensions/browser/extension_pref_value_map.h"
 #include "extensions/browser/extension_pref_value_map_factory.h"
@@ -57,7 +58,7 @@ ExtensionPrefsFactory::BuildServiceInstanceForBrowserContext(
   std::vector<EarlyExtensionPrefsObserver*> prefs_observers;
   client->GetEarlyExtensionPrefsObservers(context, &prefs_observers);
   return ExtensionPrefs::Create(
-      context, client->GetPrefServiceForContext(context),
+      context, user_prefs::UserPrefs::Get(context),
       context->GetPath().AppendASCII(extensions::kInstallDirectoryName),
       ExtensionPrefValueMapFactory::GetForBrowserContext(context),
       client->AreExtensionsDisabled(*base::CommandLine::ForCurrentProcess(),
