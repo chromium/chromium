@@ -166,9 +166,9 @@ void JXLImageDecoder::ScanFrames() {
     return;
   }
 
-  while (scanner_input_offset_ < data_size ||
-         (IsAllDataReceived() && scanner_input_offset_ == data_size &&
-          !scanner_done_)) {
+  while (!scanner_done_ &&
+         (scanner_input_offset_ < data_size ||
+          (IsAllDataReceived() && scanner_input_offset_ == data_size))) {
     base::span<const uint8_t> data_span =
         scanner_input_offset_ < data_size
             ? reader.GetSomeData(scanner_input_offset_)
