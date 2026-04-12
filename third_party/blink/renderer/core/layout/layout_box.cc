@@ -604,15 +604,6 @@ void LayoutBox::StyleWillChange(StyleDifference diff,
   NOT_DESTROYED();
   const ComputedStyle* old_style = Style();
   if (old_style) {
-    if (IsDocumentElement() || IsBody()) {
-      // The background of the root element or the body element could propagate
-      // up to the canvas. Just dirty the entire canvas when our style changes
-      // substantially.
-      if (diff.NeedsNormalPaintInvalidation()) {
-        View()->SetShouldDoFullPaintInvalidation();
-      }
-    }
-
     // When a layout hint happens and an object's position style changes, we
     // have to do a layout to dirty the layout tree using the old position
     // value now.
@@ -673,12 +664,6 @@ void LayoutBox::StyleWillChange(StyleDifference diff,
     }
     style_change_context.did_prevent_spanner_descendants =
         IsInsideMulticol() && ShouldPreventColumnSpannerDescendants();
-
-    // FIXME: This branch runs when !oldStyle, which means that layout was never
-    // called so what's the point in invalidating the whole view that we never
-    // painted?
-  } else if (IsBody()) {
-    View()->SetShouldDoFullPaintInvalidation();
   }
 
   LayoutBoxModelObject::StyleWillChange(diff, new_style, style_change_context);
@@ -795,6 +780,14 @@ void LayoutBox::StyleDidChange(StyleDifference diff,
 
   if (diff.needs_box_paint_property_update) {
     SetNeedsPaintPropertyUpdate();
+  }
+
+  // The background of the root or body element could propagate up to the
+  // canvas. Just dirty the entire canvas when our style changes substantially.
+  if (diff.NeedsNormalPaintInvalidation()) {
+    if (IsDocumentElement() || IsBody()) {
+      View()->SetShouldDoFullPaintInvalidation();
+    }
   }
 
   // Update the script style map, from the new computed style.
