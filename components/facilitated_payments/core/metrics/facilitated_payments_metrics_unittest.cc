@@ -96,6 +96,17 @@ INSTANTIATE_TEST_SUITE_P(FacilitatedPaymentsMetricsTest,
                                          PixIframeUrlType::kEmpty,
                                          PixIframeUrlType::kAboutSrcDoc));
 
+TEST(FacilitatedPaymentsMetricsTest, LogPixIframeIsSameOrigin) {
+  base::HistogramTester histogram_tester;
+
+  LogPixIframeIsSameOriginAsMainFrame(/*is_same_origin=*/true);
+
+  histogram_tester.ExpectUniqueSample(
+      "FacilitatedPayments.Pix.Iframe.IsSameOrigin",
+      /*sample=*/true,
+      /*expected_bucket_count=*/1);
+}
+
 TEST(FacilitatedPaymentsMetricsTest, LogEwalletPaymentLinkDetected) {
   base::HistogramTester histogram_tester;
 
