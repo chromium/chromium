@@ -985,9 +985,16 @@ bool Element::IsFocusableStyle(UpdateBehavior update_behavior) const {
     }
 
     const HTMLCanvasElement* canvas = nullptr;
-    for (const Element* element = this; element;
-         element = element->ParentOrShadowHostElement()) {
-      if ((canvas = DynamicTo<HTMLCanvasElement>(element))) {
+    for (const Element* element = this; element;) {
+      canvas = DynamicTo<HTMLCanvasElement>(element);
+      if (canvas) {
+        break;
+      }
+      if (const Element* parent = element->ParentOrShadowHostElement()) {
+        element = parent;
+      } else if (element->isConnected()) {
+        element = element->GetDocument().LocalOwner();
+      } else {
         break;
       }
     }
