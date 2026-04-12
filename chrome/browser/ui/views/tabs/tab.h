@@ -37,13 +37,13 @@ class TabCloseButton;
 class TabSlotController;
 class TabIcon;
 struct TabSizeInfo;
+class TabTitle;
 
 namespace gfx {
 class Animation;
 class LinearAnimation;
 }  // namespace gfx
 namespace views {
-class Label;
 class View;
 }  // namespace views
 
@@ -288,7 +288,7 @@ class Tab : public gfx::AnimationDelegate,
   raw_ptr<AlertIndicatorButton> alert_indicator_button_ = nullptr;
   raw_ptr<TabCloseButton> close_button_ = nullptr;
 
-  raw_ptr<views::Label> title_;
+  raw_ptr<TabTitle> title_;
   // The title's bounds are animated when switching between showing and hiding
   // the tab's favicon/throbber.
   gfx::Rect start_title_bounds_;

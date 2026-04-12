@@ -76,6 +76,7 @@ TabCloseButton::TabCloseButton(PressedCallback pressed_callback,
       base::TimeDelta());
 
   image_container_view()->DestroyLayer();
+  label()->SetHandlesTooltips(false);
 
   // The ink drop highlight path is the same as the focus ring highlight path,
   // but needs to be explicitly mirrored for RTL.
