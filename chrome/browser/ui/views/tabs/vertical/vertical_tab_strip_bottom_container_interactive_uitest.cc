@@ -124,15 +124,6 @@ IN_PROC_BROWSER_TEST_F(VerticalTabStripBottomContainerInteractiveUiTest,
 
             gfx::Point pt_above = point_above_new_tab_button;
             views::View::ConvertPointFromScreen(vt_region_view, &pt_above);
-
-            LOG(ERROR)
-                << "<<<<<<<<<<<<<<<<<< " << __func__
-                << " vt_region_view->IsPositionInWindowCaption(pt_center)="
-                << vt_region_view->IsPositionInWindowCaption(pt_center);
-            LOG(ERROR)
-                << "<<<<<<<<<<<<<<<<<< " << __func__
-                << " vt_region_view->IsPositionInWindowCaption(pt_above)="
-                << vt_region_view->IsPositionInWindowCaption(pt_above);
             return !vt_region_view->IsPositionInWindowCaption(pt_center) &&
                    !vt_region_view->IsPositionInWindowCaption(pt_above);
           },
