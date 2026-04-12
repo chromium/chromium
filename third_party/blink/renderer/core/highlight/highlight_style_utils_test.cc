@@ -123,7 +123,7 @@ TEST_F(HighlightStyleUtilsTest, SelectedTextIsRespected) {
                     .style;
   background_color = HighlightStyleUtils::HighlightBackgroundColor(
       GetDocument(), div1_style, div1_text, std::nullopt, kPseudoIdSelection,
-      SearchTextIsActiveMatch::kNo);
+      false, SearchTextIsActiveMatch::kNo);
   EXPECT_EQ(Color(0, 128, 0), paint_style.fill_color);
   EXPECT_EQ(Color(0, 128, 0), background_color);
 
@@ -140,7 +140,7 @@ TEST_F(HighlightStyleUtilsTest, SelectedTextIsRespected) {
                     .style;
   background_color = HighlightStyleUtils::HighlightBackgroundColor(
       GetDocument(), div2_style, div2_text, std::nullopt, kPseudoIdSelection,
-      SearchTextIsActiveMatch::kNo);
+      false, SearchTextIsActiveMatch::kNo);
   EXPECT_EQ(default_highlight_background, paint_style.fill_color);
   // Paired defaults means this is transparent
   EXPECT_EQ(Color(0, 0, 0, 0), background_color);
@@ -159,7 +159,7 @@ TEST_F(HighlightStyleUtilsTest, SelectedTextIsRespected) {
   std::optional<Color> current_layer_color = default_highlight_background;
   background_color = HighlightStyleUtils::HighlightBackgroundColor(
       GetDocument(), div3_style, div3_text, current_layer_color,
-      kPseudoIdSelection, SearchTextIsActiveMatch::kNo);
+      kPseudoIdSelection, false, SearchTextIsActiveMatch::kNo);
 #if BUILDFLAG(IS_MAC)
   EXPECT_EQ(default_highlight_background, paint_style.fill_color);
   EXPECT_EQ(Color::FromColorSpace(Color::ColorSpace::kSRGB, 1, 1, 1),
@@ -369,7 +369,7 @@ TEST_F(HighlightStyleUtilsTest, CustomPropertyInheritance) {
 
   Color background_color = HighlightStyleUtils::HighlightBackgroundColor(
       GetDocument(), div_style, div_node, previous_layer_color,
-      kPseudoIdSelection, SearchTextIsActiveMatch::kNo);
+      kPseudoIdSelection, false, SearchTextIsActiveMatch::kNo);
 
   EXPECT_EQ(Color(0, 128, 0), background_color);
 }
@@ -408,7 +408,7 @@ TEST_F(HighlightStyleUtilsTest, CustomPropertyOriginatingInheritanceUniversal) {
   std::optional<Color> previous_layer_color;
   Color div_background_color = HighlightStyleUtils::HighlightBackgroundColor(
       GetDocument(), div_style, div_node, previous_layer_color,
-      kPseudoIdSelection, SearchTextIsActiveMatch::kNo);
+      kPseudoIdSelection, false, SearchTextIsActiveMatch::kNo);
   EXPECT_EQ(Color(0, 128, 0), div_background_color);
 
   auto& div_inherited_vars = div_style.InheritedVariables();
@@ -418,7 +418,7 @@ TEST_F(HighlightStyleUtilsTest, CustomPropertyOriginatingInheritanceUniversal) {
   Color first_p_background_color =
       HighlightStyleUtils::HighlightBackgroundColor(
           GetDocument(), first_p_style, first_p_node, previous_layer_color,
-          kPseudoIdSelection, SearchTextIsActiveMatch::kNo);
+          kPseudoIdSelection, false, SearchTextIsActiveMatch::kNo);
   EXPECT_EQ(Color(0, 128, 0), first_p_background_color);
   auto& first_p_inherited_vars = first_p_style.InheritedVariables();
   EXPECT_EQ(div_inherited_vars, first_p_inherited_vars);
@@ -429,7 +429,7 @@ TEST_F(HighlightStyleUtilsTest, CustomPropertyOriginatingInheritanceUniversal) {
   Color second_p_background_color =
       HighlightStyleUtils::HighlightBackgroundColor(
           GetDocument(), second_p_style, second_p_node, previous_layer_color,
-          kPseudoIdSelection, SearchTextIsActiveMatch::kNo);
+          kPseudoIdSelection, false, SearchTextIsActiveMatch::kNo);
   EXPECT_EQ(Color(0, 0, 255), second_p_background_color);
   auto& second_p_inherited_vars = second_p_style.InheritedVariables();
   EXPECT_NE(second_p_inherited_vars, first_p_inherited_vars);
@@ -441,7 +441,7 @@ TEST_F(HighlightStyleUtilsTest, CustomPropertyOriginatingInheritanceUniversal) {
   Color second_strong_background_color =
       HighlightStyleUtils::HighlightBackgroundColor(
           GetDocument(), second_strong_style, second_strong_node,
-          previous_layer_color, kPseudoIdSelection,
+          previous_layer_color, kPseudoIdSelection, false,
           SearchTextIsActiveMatch::kNo);
   EXPECT_EQ(Color(0, 0, 255), second_strong_background_color);
   auto& second_strong_inherited_vars = second_strong_style.InheritedVariables();

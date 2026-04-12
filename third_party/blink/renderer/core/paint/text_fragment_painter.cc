@@ -570,7 +570,7 @@ void TextFragmentPainter::Paint(const PaintInfo& paint_info,
   if (highlight_painter.Selection() && paint_marker_backgrounds) [[unlikely]] {
     if (highlight_case == HighlightPainter::kFastSelection) {
       highlight_painter.Selection()->PaintSelectionBackground(
-          context, node, document, style, rotation);
+          context, node, document, style, paint_info, rotation);
     }
   }
 

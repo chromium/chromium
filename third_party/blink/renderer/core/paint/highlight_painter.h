@@ -92,6 +92,7 @@ class CORE_EXPORT HighlightPainter {
         Node* node,
         const Document& document,
         const ComputedStyle& style,
+        const PaintInfo& paint_info,
         const std::optional<AffineTransform>& rotation);
 
     void PaintSelectedText(TextPainter& text_painter,

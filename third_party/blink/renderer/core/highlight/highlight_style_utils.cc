@@ -129,9 +129,15 @@ std::optional<Color> DefaultForegroundColor(
     const Document& document,
     PseudoId pseudo,
     mojom::blink::ColorScheme color_scheme,
+    bool preserve_privacy,
     SearchTextIsActiveMatch search_text_is_active_match) {
   switch (pseudo) {
     case kPseudoIdSelection:
+      if (preserve_privacy) {
+        return LayoutTheme::GetTheme().SystemColor(
+            CSSValueID::kHighlighttext, color_scheme,
+            document.GetColorProviderForPainting(color_scheme), false);
+      }
       if (!LayoutTheme::GetTheme().SupportsSelectionForegroundColors()) {
         return std::nullopt;
       }
@@ -166,9 +172,15 @@ Color DefaultBackgroundColor(
     const Document& document,
     PseudoId pseudo,
     mojom::blink::ColorScheme color_scheme,
+    bool preserve_privacy,
     SearchTextIsActiveMatch search_text_is_active_match) {
   switch (pseudo) {
     case kPseudoIdSelection:
+      if (preserve_privacy) {
+        return LayoutTheme::GetTheme().SystemColor(
+            CSSValueID::kHighlight, color_scheme,
+            document.GetColorProviderForPainting(color_scheme), false);
+      }
       return document.GetFrame()->Selection().FrameIsFocusedAndActive()
                  ? LayoutTheme::GetTheme().ActiveSelectionBackgroundColor(
                        color_scheme)
@@ -201,16 +213,18 @@ std::optional<Color> DefaultHighlightColor(
     const ComputedStyle* pseudo_style,
     PseudoId pseudo,
     const CSSProperty& property,
+    bool preserve_privacy,
     SearchTextIsActiveMatch search_text_is_active_match) {
   mojom::blink::ColorScheme color_scheme =
       UsedColorScheme(originating_style, pseudo_style);
   if (property.IDEquals(CSSPropertyID::kBackgroundColor)) {
     return DefaultBackgroundColor(document, pseudo, color_scheme,
+                                  preserve_privacy,
                                   search_text_is_active_match);
   }
   DCHECK(property.IDEquals(CSSPropertyID::kColor));
   return DefaultForegroundColor(document, pseudo, color_scheme,
-                                search_text_is_active_match);
+                                preserve_privacy, search_text_is_active_match);
 }
 
 bool UseForcedColors(const Document& document,
@@ -246,10 +260,11 @@ Color HighlightStyleUtils::ResolveColor(
     PseudoId pseudo,
     const CSSProperty& property,
     std::optional<Color> current_color,
+    bool preserve_privacy,
     SearchTextIsActiveMatch search_text_is_active_match) {
-  std::optional<Color> maybe_color =
-      MaybeResolveColor(document, originating_style, pseudo_style, pseudo,
-                        property, search_text_is_active_match);
+  std::optional<Color> maybe_color = MaybeResolveColor(
+      document, originating_style, pseudo_style, pseudo, property,
+      preserve_privacy, search_text_is_active_match);
   if (maybe_color) {
     return maybe_color.value();
   }
@@ -269,6 +284,7 @@ std::optional<Color> HighlightStyleUtils::MaybeResolveColor(
     const ComputedStyle* pseudo_style,
     PseudoId pseudo,
     const CSSProperty& property,
+    bool preserve_privacy,
     SearchTextIsActiveMatch search_text_is_active_match) {
   if (UseForcedColors(document, originating_style, pseudo_style)) {
     return ForcedColor(
@@ -279,7 +295,8 @@ std::optional<Color> HighlightStyleUtils::MaybeResolveColor(
   }
   if (UseDefaultHighlightColors(pseudo_style, pseudo, property)) {
     return DefaultHighlightColor(document, originating_style, pseudo_style,
-                                 pseudo, property, search_text_is_active_match);
+                                 pseudo, property, preserve_privacy,
+                                 search_text_is_active_match);
   }
   if (pseudo_style) {
     bool is_current_color;
@@ -291,7 +308,7 @@ std::optional<Color> HighlightStyleUtils::MaybeResolveColor(
   }
   if (!property.IDEquals(CSSPropertyID::kColor)) {
     return MaybeResolveColor(document, originating_style, pseudo_style, pseudo,
-                             GetCSSPropertyColor(),
+                             GetCSSPropertyColor(), preserve_privacy,
                              search_text_is_active_match);
   }
   return std::nullopt;
@@ -328,6 +345,7 @@ Color HighlightStyleUtils::HighlightBackgroundColor(
     Node* node,
     std::optional<Color> current_layer_color,
     PseudoId pseudo,
+    bool preserve_privacy,
     SearchTextIsActiveMatch search_text_is_active_match) {
   if (pseudo == kPseudoIdSelection) {
     if (node && !style.IsSelectable()) {
@@ -336,9 +354,9 @@ Color HighlightStyleUtils::HighlightBackgroundColor(
   }
 
   const ComputedStyle* pseudo_style = HighlightPseudoStyle(style, pseudo);
-  Color result = ResolveColor(document, style, pseudo_style, pseudo,
-                              GetCSSPropertyBackgroundColor(),
-                              current_layer_color, search_text_is_active_match);
+  Color result = ResolveColor(
+      document, style, pseudo_style, pseudo, GetCSSPropertyBackgroundColor(),
+      current_layer_color, preserve_privacy, search_text_is_active_match);
   if (pseudo == kPseudoIdSelection) {
     if (NodeIsReplaced(node)) {
       // Avoid that ::selection full obscures selected replaced elements like
@@ -417,9 +435,10 @@ HighlightStyleUtils::HighlightPaintingStyle(
   if (!uses_text_as_clip && !ignored_selection) {
     std::optional<Color> maybe_color;
 
-    maybe_color =
-        MaybeResolveColor(document, originating_style, pseudo_style, pseudo,
-                          GetCSSPropertyColor(), search_text_is_active_match);
+    maybe_color = MaybeResolveColor(document, originating_style, pseudo_style,
+                                    pseudo, GetCSSPropertyColor(),
+                                    paint_info.IsPrivacyPreserving(),
+                                    search_text_is_active_match);
     if (maybe_color) {
       highlight_style.current_color = maybe_color.value();
     } else {
@@ -428,7 +447,7 @@ HighlightStyleUtils::HighlightPaintingStyle(
 
     maybe_color = MaybeResolveColor(document, originating_style, pseudo_style,
                                     pseudo, GetCSSPropertyWebkitTextFillColor(),
-                                    search_text_is_active_match);
+                                    false, search_text_is_active_match);
     if (maybe_color) {
       highlight_style.fill_color = maybe_color.value();
     } else {
@@ -439,7 +458,7 @@ HighlightStyleUtils::HighlightPaintingStyle(
     // https://github.com/w3c/csswg-drafts/issues/7101
     maybe_color = MaybeResolveColor(document, originating_style, pseudo_style,
                                     pseudo, GetCSSPropertyTextEmphasisColor(),
-                                    search_text_is_active_match);
+                                    false, search_text_is_active_match);
     if (maybe_color) {
       highlight_style.emphasis_mark_color = maybe_color.value();
     } else {
@@ -448,7 +467,7 @@ HighlightStyleUtils::HighlightPaintingStyle(
 
     maybe_color = MaybeResolveColor(document, originating_style, pseudo_style,
                                     pseudo, GetCSSPropertyTextDecorationColor(),
-                                    search_text_is_active_match);
+                                    false, search_text_is_active_match);
     if (maybe_color) {
       text_decoration_color = maybe_color.value();
     } else {
@@ -458,6 +477,7 @@ HighlightStyleUtils::HighlightPaintingStyle(
 
     maybe_color = MaybeResolveColor(document, originating_style, pseudo_style,
                                     pseudo, GetCSSPropertyBackgroundColor(),
+                                    paint_info.IsPrivacyPreserving(),
                                     search_text_is_active_match);
     if (maybe_color) {
       background_color = maybe_color.value();
@@ -477,7 +497,8 @@ HighlightStyleUtils::HighlightPaintingStyle(
           selection_decoration->Lines();
       std::optional<Color> selection_decoration_color = MaybeResolveColor(
           document, originating_style, pseudo_style, kPseudoIdSelection,
-          GetCSSPropertyTextDecorationColor(), search_text_is_active_match);
+          GetCSSPropertyTextDecorationColor(), false,
+          search_text_is_active_match);
       if (selection_decoration_color) {
         highlight_style.selection_decoration_color =
             selection_decoration_color.value();

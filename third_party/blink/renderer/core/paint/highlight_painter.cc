@@ -96,23 +96,23 @@ bool HasNonTrivialSpellingGrammarStyles(const FragmentItem& fragment_item,
     // or ‘-webkit-text-stroke-width’ differs from the originating style.
     Color pseudo_color = HighlightStyleUtils::ResolveColor(
         document, originating_style, pseudo_style, pseudo,
-        GetCSSPropertyColor(), {}, SearchTextIsActiveMatch::kNo);
+        GetCSSPropertyColor(), {}, false, SearchTextIsActiveMatch::kNo);
     if (pseudo_color !=
         originating_style.VisitedDependentColor(GetCSSPropertyColor())) {
       return true;
     }
-    if (HighlightStyleUtils::ResolveColor(document, originating_style,
-                                          pseudo_style, pseudo,
-                                          GetCSSPropertyWebkitTextFillColor(),
-                                          {}, SearchTextIsActiveMatch::kNo) !=
+    if (HighlightStyleUtils::ResolveColor(
+            document, originating_style, pseudo_style, pseudo,
+            GetCSSPropertyWebkitTextFillColor(), {}, false,
+            SearchTextIsActiveMatch::kNo) !=
         originating_style.VisitedDependentColor(
             GetCSSPropertyWebkitTextFillColor())) {
       return true;
     }
-    if (HighlightStyleUtils::ResolveColor(document, originating_style,
-                                          pseudo_style, pseudo,
-                                          GetCSSPropertyWebkitTextStrokeColor(),
-                                          {}, SearchTextIsActiveMatch::kNo) !=
+    if (HighlightStyleUtils::ResolveColor(
+            document, originating_style, pseudo_style, pseudo,
+            GetCSSPropertyWebkitTextStrokeColor(), {}, false,
+            SearchTextIsActiveMatch::kNo) !=
         originating_style.VisitedDependentColor(
             GetCSSPropertyWebkitTextStrokeColor())) {
       return true;
@@ -120,9 +120,10 @@ bool HasNonTrivialSpellingGrammarStyles(const FragmentItem& fragment_item,
     if (pseudo_style->TextStrokeWidth() != originating_style.TextStrokeWidth())
       return true;
     // If there is a background color.
-    if (!HighlightStyleUtils::ResolveColor(
-             document, originating_style, pseudo_style, pseudo,
-             GetCSSPropertyBackgroundColor(), {}, SearchTextIsActiveMatch::kNo)
+    if (!HighlightStyleUtils::ResolveColor(document, originating_style,
+                                           pseudo_style, pseudo,
+                                           GetCSSPropertyBackgroundColor(), {},
+                                           false, SearchTextIsActiveMatch::kNo)
              .IsFullyTransparent()) {
       return true;
     }
@@ -154,10 +155,10 @@ bool HasNonTrivialSpellingGrammarStyles(const FragmentItem& fragment_item,
     // TODO(crbug.com/1147859) clean up when spec issue is resolved again
     // https://github.com/w3c/csswg-drafts/issues/7101
     if (originating_style.GetTextEmphasisMark() != TextEmphasisMark::kNone &&
-        HighlightStyleUtils::ResolveColor(document, originating_style,
-                                          pseudo_style, pseudo,
-                                          GetCSSPropertyTextEmphasisColor(), {},
-                                          SearchTextIsActiveMatch::kNo) !=
+        HighlightStyleUtils::ResolveColor(
+            document, originating_style, pseudo_style, pseudo,
+            GetCSSPropertyTextEmphasisColor(), {}, false,
+            SearchTextIsActiveMatch::kNo) !=
             originating_style.VisitedDependentColor(
                 GetCSSPropertyTextEmphasisColor())) {
       return true;
@@ -343,10 +344,12 @@ void HighlightPainter::SelectionPaintState::PaintSelectionBackground(
     Node* node,
     const Document& document,
     const ComputedStyle& style,
+    const PaintInfo& paint_info,
     const std::optional<AffineTransform>& rotation) {
   const Color color = HighlightStyleUtils::HighlightBackgroundColor(
       document, style, node, selection_style_.style.current_color,
-      kPseudoIdSelection, SearchTextIsActiveMatch::kNo);
+      kPseudoIdSelection, paint_info.IsPrivacyPreserving(),
+      SearchTextIsActiveMatch::kNo);
   HighlightPainter::PaintHighlightBackground(context, style, color,
                                              PhysicalSelectionRect(), rotation);
 }

@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html class="reftest-wait">
+<meta charset="UTF-8">
+<title>drawElementImage draws selection using default colors</title>
+<link rel="help" href="https://github.com/WICG/html-in-canvas">
+<link rel="match" href="selection-colors-default-ref.html">
+<meta name="assert" value="When preserving privacy for readback, use the CSS System Highlight colors.">
+<script src="/wpt_internal/css/support/markers.js"></script>
+<script src="/common/reftest-wait.js"></script>
+<style>
+  :focus {
+    outline: none;
+  }
+  #child {
+    width: 100px;
+    height: 100px;
+    background: green;
+  }
+  #canvas {
+    background: grey;
+  }
+</style>
+
+<canvas id=canvas width="200" height="200" layoutsubtree>
+  <div id="child">
+    <div id="editable" contenteditable="true">Many things can happen.</div>
+  </div>
+</canvas>
+<script>
+  async function runTest() {
+    setSelection(editable, 5, 11)
+
+    await new Promise(requestAnimationFrame);
+    await new Promise(setTimeout);
+    canvas.getContext("2d").drawElementImage(child, 0, 0);
+    takeScreenshot();
+  }
+
+  onload = () => runTest();
+</script>

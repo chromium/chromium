@@ -246,7 +246,7 @@ void ReplacedPainter::Paint(const PaintInfo& paint_info) {
     Color selection_bg = HighlightStyleUtils::HighlightBackgroundColor(
         layout_replaced_.GetDocument(), layout_replaced_.StyleRef(),
         layout_replaced_.GetNode(), std::nullopt, kPseudoIdSelection,
-        SearchTextIsActiveMatch::kNo);
+        paint_info.IsPrivacyPreserving(), SearchTextIsActiveMatch::kNo);
     local_paint_info.context.FillRect(
         selection_painting_int_rect, selection_bg,
         PaintAutoDarkMode(layout_replaced_.StyleRef(),
