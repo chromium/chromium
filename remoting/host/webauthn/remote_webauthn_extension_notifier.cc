@@ -48,6 +48,47 @@ namespace {
 // Content of file doesn't matter so we just write an empty string.
 static constexpr char kExtensionWakeupFileContent[] = "";
 
+#if BUILDFLAG(IS_WIN)
+// Helper class to impersonate a user and revert back when it goes out of scope.
+// Note that Windows impersonation is bound to the current thread, so it is
+// thread-safe.
+class ScopedImpersonation {
+ public:
+  ScopedImpersonation(const ScopedImpersonation&) = delete;
+  ScopedImpersonation& operator=(const ScopedImpersonation&) = delete;
+
+  explicit ScopedImpersonation(HANDLE user_token) {
+    if (user_token != nullptr && user_token != INVALID_HANDLE_VALUE) {
+      if (ImpersonateLoggedOnUser(user_token)) {
+        is_impersonating_ = true;
+      } else {
+        PLOG(ERROR) << "ImpersonateLoggedOnUser failed";
+      }
+    }
+  }
+
+  ~ScopedImpersonation() {
+    if (is_impersonating_) {
+      RevertToSelf();
+    }
+  }
+
+  bool is_impersonating() const { return is_impersonating_; }
+
+ private:
+  bool is_impersonating_ = false;
+};
+#endif
+
+}  // namespace
+
+RemoteWebAuthnExtensionNotifier::RemoteStateChangeContext::
+    RemoteStateChangeContext() = default;
+RemoteWebAuthnExtensionNotifier::RemoteStateChangeContext::
+    RemoteStateChangeContext(RemoteStateChangeContext&&) = default;
+RemoteWebAuthnExtensionNotifier::RemoteStateChangeContext::
+    ~RemoteStateChangeContext() = default;
+
 // Returns a list of directories that different Chrome channels might use to
 // watch for file changes for firing the onRemoteSessionStateChange event on the
 // extension.
@@ -71,13 +112,18 @@ static constexpr char kExtensionWakeupFileContent[] = "";
 //
 // Caller should check if the directory exists before writing files to it. A
 // directory only exists if the corresponding Chrome version is installed.
-std::vector<base::FilePath> GetRemoteStateChangeDirPaths() {
+RemoteWebAuthnExtensionNotifier::RemoteStateChangeContext
+RemoteWebAuthnExtensionNotifier::GetRemoteStateChangeContext() {
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
   constexpr base::FilePath::CharType kStateChangeDirName[] =
       FILE_PATH_LITERAL("WebAuthenticationProxyRemoteSessionStateChange");
 #endif
 
-  std::vector<base::FilePath> dirs;
+  RemoteWebAuthnExtensionNotifier::RemoteStateChangeContext context;
+
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+  std::vector<base::FilePath>& dirs = context.dirs;
+#endif
 
 #if BUILDFLAG(IS_LINUX)
   // See: chrome/common/chrome_paths_linux.cc
@@ -111,15 +157,15 @@ std::vector<base::FilePath> GetRemoteStateChangeDirPaths() {
   HANDLE user_token = nullptr;
   if (!WTSQueryUserToken(WTS_CURRENT_SESSION, &user_token)) {
     PLOG(ERROR) << "Failed to get current user token";
-    return dirs;
+    return context;
   }
-  base::win::ScopedHandle scoped_user_token(user_token);
+  context.user_token.Set(user_token);
   base::win::ScopedCoMem<wchar_t> local_app_data_path_buf;
   if (!SUCCEEDED(SHGetKnownFolderPath(FOLDERID_LocalAppData, /* dwFlags= */ 0,
-                                      scoped_user_token.get(),
+                                      context.user_token.get(),
                                       &local_app_data_path_buf))) {
     PLOG(ERROR) << "SHGetKnownFolderPath failed";
-    return dirs;
+    return context;
   }
 
   base::FilePath base_path = base::FilePath(local_app_data_path_buf.get());
@@ -144,7 +190,7 @@ std::vector<base::FilePath> GetRemoteStateChangeDirPaths() {
   base::FilePath base_path;
   if (!base::PathService::Get(base::DIR_APP_DATA, &base_path)) {
     LOG(ERROR) << "Failed to get app data dir";
-    return dirs;
+    return context;
   }
   base::FilePath base_path_google = base_path.Append("Google");
   dirs.push_back(base_path_google.Append("Chrome").Append(kStateChangeDirName));
@@ -156,16 +202,14 @@ std::vector<base::FilePath> GetRemoteStateChangeDirPaths() {
 #else
   NOTIMPLEMENTED();
 #endif
-  return dirs;
+  return context;
 }
-
-}  // namespace
 
 // Core class for writing wakeup files on the IO sequence. Must be used and
 // deleted on the same sequence.
 class RemoteWebAuthnExtensionNotifier::Core final {
  public:
-  explicit Core(std::vector<base::FilePath> remote_state_change_dirs);
+  explicit Core(RemoteStateChangeContext context);
   ~Core();
 
   void WakeUpExtension();
@@ -173,13 +217,12 @@ class RemoteWebAuthnExtensionNotifier::Core final {
  private:
   SEQUENCE_CHECKER(sequence_checker_);
 
-  std::vector<base::FilePath> remote_state_change_dirs_;
+  RemoteStateChangeContext context_;
   base::WeakPtrFactory<Core> weak_factory_{this};
 };
 
-RemoteWebAuthnExtensionNotifier::Core::Core(
-    std::vector<base::FilePath> remote_state_change_dirs)
-    : remote_state_change_dirs_(std::move(remote_state_change_dirs)) {}
+RemoteWebAuthnExtensionNotifier::Core::Core(RemoteStateChangeContext context)
+    : context_(std::move(context)) {}
 
 RemoteWebAuthnExtensionNotifier::Core::~Core() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -188,7 +231,17 @@ RemoteWebAuthnExtensionNotifier::Core::~Core() {
 void RemoteWebAuthnExtensionNotifier::Core::WakeUpExtension() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  for (const base::FilePath& dir : remote_state_change_dirs_) {
+#if BUILDFLAG(IS_WIN)
+  ScopedImpersonation impersonation(context_.user_token.get());
+  if (context_.user_token.is_valid() && !impersonation.is_impersonating()) {
+    PLOG(ERROR) << "Aborting file writes due to impersonation failure.";
+    return;
+  }
+#endif
+
+  for (const base::FilePath& dir : context_.dirs) {
+    // Note: We check DirectoryExists as the user. If they've swapped the
+    // directory for a junction to a protected area, the check will fail.
     if (!base::DirectoryExists(dir)) {
       VLOG(1) << "Ignored non-directory path: " << dir;
       continue;
@@ -196,8 +249,18 @@ void RemoteWebAuthnExtensionNotifier::Core::WakeUpExtension() {
     for (const auto& id : GetRemoteWebAuthnExtensionIds()) {
       auto file_path = dir.Append(id);
       VLOG(1) << "Writing extension wakeup file: " << file_path;
+      // We are impersonating the user, so any junction-based redirection will
+      // be restricted by the user's permissions.
       base::File file(file_path,
                       base::File::FLAG_CREATE_ALWAYS | base::File::FLAG_WRITE);
+      if (!file.IsValid()) {
+        // A file creation failure here is likely due to permission issues,
+        // sharing violations, or the path being redirected via a junction to a
+        // location where the impersonated user lacks write access.
+        VLOG(1) << "Failed to open extension wakeup file: " << file_path
+                << " error: " << file.error_details();
+        continue;
+      }
       file.WriteAtCurrentPos(
           base::byte_span_with_nul_from_cstring(kExtensionWakeupFileContent));
       file.Flush();
@@ -233,15 +296,14 @@ RemoteWebAuthnExtensionNotifier::GetRemoteWebAuthnExtensionIds() {
 
 RemoteWebAuthnExtensionNotifier::RemoteWebAuthnExtensionNotifier()
     : RemoteWebAuthnExtensionNotifier(
-          GetRemoteStateChangeDirPaths(),
+          GetRemoteStateChangeContext(),
           base::ThreadPool::CreateSequencedTaskRunner(
               {base::MayBlock(), base::WithBaseSyncPrimitives()})) {}
 
 RemoteWebAuthnExtensionNotifier::RemoteWebAuthnExtensionNotifier(
-    std::vector<base::FilePath> remote_state_change_dirs,
+    RemoteStateChangeContext context,
     scoped_refptr<base::SequencedTaskRunner> io_task_runner) {
-  core_ = base::SequenceBound<Core>(io_task_runner,
-                                    std::move(remote_state_change_dirs));
+  core_ = base::SequenceBound<Core>(io_task_runner, std::move(context));
 }
 
 RemoteWebAuthnExtensionNotifier::~RemoteWebAuthnExtensionNotifier() {
