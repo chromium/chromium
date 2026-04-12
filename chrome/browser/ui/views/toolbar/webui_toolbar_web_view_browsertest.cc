@@ -2495,6 +2495,10 @@ class WebUIPinnedToolbarActionsBrowserTest
 
   void SetUpOnMainThread() override {
     WebUIToolbarWebViewBrowserTest::SetUpOnMainThread();
+    // Make everything pinnable by default to facilitate testing.
+    for (const auto& mapping : kActionMappings) {
+      SetPinnableProperty(mapping.first, true);
+    }
     model_ = PinnedToolbarActionsModel::Get(browser()->profile());
   }
 
@@ -2541,6 +2545,16 @@ class WebUIPinnedToolbarActionsBrowserTest
                "if (!btn || !btn.checkVisibility()) return false; btn.click(); "
                "return true;")
         .ExtractBool();
+  }
+
+  void SetPinnableProperty(actions::ActionId id, bool pinnable) {
+    actions::ActionManager::Get()
+        .FindAction(id, browser()->GetActions()->root_action_item())
+        ->SetProperty(
+            actions::kActionItemPinnableKey,
+            static_cast<int>(pinnable
+                                 ? actions::ActionPinnableState::kPinnable
+                                 : actions::ActionPinnableState::kNotPinnable));
   }
 
   raw_ptr<PinnedToolbarActionsModel> model_;
@@ -2853,6 +2867,32 @@ IN_PROC_BROWSER_TEST_F(WebUIPinnedToolbarActionsBrowserTest,
                                  "return !!btn && btn.disabled;")
                 .ExtractBool();
   }));
+}
+
+IN_PROC_BROWSER_TEST_F(WebUIPinnedToolbarActionsBrowserTest, PinUnpinnable) {
+  WebUIToolbarWebView* webui_toolbar_view = GetWebUIToolbarWebView(browser());
+  views::WebView* web_view = webui_toolbar_view->GetWebViewForTesting();
+  content::WebContents* web_contents = web_view->GetWebContents();
+
+  actions::ActionId action_id = kActionPrint;
+  toolbar_ui_api::mojom::PinnedToolbarAction mojom_action =
+      toolbar_ui_api::mojom::PinnedToolbarAction::kPrint;
+
+  model_->UpdatePinnedState(action_id, true);
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return IsPinnedButtonVisible(web_contents, mojom_action); }));
+
+  // Make unpinnable.
+  SetPinnableProperty(action_id, false);
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return !IsPinnedButtonVisible(web_contents, mojom_action); }));
+  // Make sure it's still pinned.
+  ASSERT_TRUE(model_->Contains(action_id));
+
+  // Make pinnable.
+  SetPinnableProperty(action_id, true);
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return IsPinnedButtonVisible(web_contents, mojom_action); }));
 }
 
 IN_PROC_BROWSER_TEST_F(WebUIPinnedToolbarActionsBrowserTest, StateAccessors) {

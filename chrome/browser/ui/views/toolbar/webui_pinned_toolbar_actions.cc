@@ -211,6 +211,12 @@ void WebUIPinnedToolbarActions::OnActionsChanged() {
     if (!item->GetVisible()) {
       return;
     }
+    if (static_cast<actions::ActionPinnableState>(
+            item->GetProperty(actions::kActionItemPinnableKey)) ==
+            actions::ActionPinnableState::kNotPinnable &&
+        IsActionPinned(id)) {
+      return;
+    }
     auto mojo_id = ActionIdToPinnedToolbarAction(id);
     CHECK(mojo_id) << "Unsupported pinned action type " << id;
     auto state = toolbar_ui_api::mojom::PinnedToolbarActionState::New();
