@@ -270,6 +270,9 @@ class WebUIBrowserWindow : public BrowserWindow,
   // Called by BrowserWindowThemeObserver when the theme changes.
   void UserChangedTheme(BrowserThemeChangeType theme_change_type);
 
+  // Called by BrowserWindowZoomObserver when zoom changes on the active tab.
+  void ZoomChangedForActiveTab(bool can_show_bubble);
+
   // Called by ExclusiveAccessContext to enter or exit fullscreen.
   void ProcessFullscreen(bool fullscreen);
 
@@ -327,6 +330,8 @@ class WebUIBrowserWindow : public BrowserWindow,
   base::CallbackListSubscription paint_as_active_subscription_;
 
   base::CallbackListSubscription theme_changed_subscription_;
+
+  base::CallbackListSubscription zoom_changed_subscription_;
 };
 
 #endif  // CHROME_BROWSER_UI_WEBUI_BROWSER_WEBUI_BROWSER_WINDOW_H_

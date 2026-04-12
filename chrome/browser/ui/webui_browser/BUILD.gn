@@ -19,6 +19,7 @@ source_set("webui_browser") {
     "webui_browser_ui.h",
     "webui_browser_window.h",
     "webui_stub_location_bar.h",
+    "zoom_bubble_manager_webui_browser.h",
   ]
   public_deps = [
     ":browser_mojo_bindings",
@@ -29,6 +30,7 @@ source_set("webui_browser") {
     "//chrome/browser/ui/side_panel",
     "//chrome/browser/ui/side_panel:side_panel_views_dependent",
     "//chrome/browser/ui/views/interaction",
+    "//chrome/browser/ui/views/location_bar",
     "//chrome/browser/ui/views/side_panel",
     "//chrome/browser/ui/webui/cr_components/searchbox",
     "//chrome/browser/ui/webui/metrics_reporter",
@@ -63,6 +65,7 @@ source_set("impl") {
     "webui_browser_web_contents_delegate.h",
     "webui_browser_window.cc",
     "webui_stub_location_bar.cc",
+    "zoom_bubble_manager_webui_browser.cc",
   ]
 
   if (is_mac) {
@@ -89,13 +92,16 @@ source_set("impl") {
     "//chrome/browser/ui/location_bar",
     "//chrome/browser/ui/side_panel",
     "//chrome/browser/ui/side_panel:side_panel_views_dependent",
+    "//chrome/browser/ui/tabs:tabs_public",
     "//chrome/browser/ui/tabs/tab_strip_api",
     "//chrome/browser/ui/toolbar",
     "//chrome/browser/ui/views/page_info",
     "//chrome/browser/ui/views/toolbar",
+    "//chrome/browser/ui/views/zoom",
     "//chrome/browser/ui/web_applications",
     "//chrome/browser/ui/webui/searchbox",
     "//chrome/browser/ui/webui/util",
+    "//chrome/browser/ui/zoom:browser_window_zoom_observer",
     "//chrome/common:chrome_features",
     "//components/browser_apis/tab_strip/resources",
     "//components/guest_contents/browser",

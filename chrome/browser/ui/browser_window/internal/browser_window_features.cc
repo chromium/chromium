@@ -154,6 +154,7 @@
 #include "chrome/browser/ui/webui_browser/webui_browser_exclusive_access_context.h"
 #include "chrome/browser/ui/webui_browser/webui_browser_side_panel_ui.h"
 #include "chrome/browser/ui/webui_browser/webui_browser_window.h"
+#include "chrome/browser/ui/webui_browser/zoom_bubble_manager_webui_browser.h"
 #include "chrome/browser/ui/zoom/browser_window_zoom_observer.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/pref_names.h"
@@ -732,6 +733,12 @@ void BrowserWindowFeatures::InitPostWindowConstruction(Browser* browser) {
 
     find_bar_owner_ =
         std::make_unique<FindBarOwnerWebUIBrowser>(webui_browser_window);
+
+    zoom_bubble_manager_ =
+        std::make_unique<ZoomBubbleManagerWebUIBrowser>(webui_browser_window);
+    zoom_bubble_coordinator_ =
+        GetUserDataFactory().CreateInstance<ZoomBubbleCoordinator>(
+            *browser_, *browser_, zoom_bubble_manager_.get());
 
     // Provide a stub immersive mode controller so things that use it don't
     // crash. This will need to be changed to use a proper one on platforms
