@@ -154,9 +154,10 @@ export class ContextualActionMenuElement extends
 
   showAt(anchor: HTMLElement) {
     this.$.menu.showAt(anchor, {
-      top: anchor.getBoundingClientRect().bottom,
       width: MENU_WIDTH_PX,
-      anchorAlignmentX: AnchorAlignment['AFTER_START'],
+      anchorAlignmentX: AnchorAlignment.AFTER_START,
+      anchorAlignmentY: AnchorAlignment.AFTER_END,
+      noOffset: true,
     });
     window.addEventListener('blur', this.onWindowBlur_);
   }
