@@ -611,6 +611,10 @@ void HTMLMetaElement::RemovedFrom(ContainerNode& insertion_point) {
     NameRemoved(name_value);
 }
 
+// True if the `element` is in `<head>`.
+// The `element` should be created by parser.
+// Scripts can create `<head>` elements that are not real document head, and
+// that this function may return incorrect `true`.
 static bool InDocumentHead(HTMLMetaElement* element) {
   if (!element->isConnected())
     return false;
@@ -686,7 +690,7 @@ void HTMLMetaElement::ProcessContent() {
 
   if (RuntimeEnabledFeatures::ResponsiveIframesEnabled() &&
       EqualIgnoringAsciiCase(name_value, keywords::kResponsiveEmbeddedSizing) &&
-      is_sync_parser_) {
+      is_sync_parser_ && InDocumentHead(this)) {
     GetDocument().SetResponsiveEmbeddedSizing();
   }
 
