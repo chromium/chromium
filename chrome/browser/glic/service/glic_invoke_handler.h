@@ -16,6 +16,7 @@
 #include "chrome/browser/glic/public/glic_instance.h"
 #include "chrome/browser/glic/public/glic_invoke_options.h"
 #include "chrome/browser/glic/public/glic_passkeys.h"
+#include "content/public/browser/web_contents_observer.h"
 
 namespace tabs {
 class TabInterface;
@@ -27,7 +28,8 @@ class GlicInstanceImpl;
 
 // Handles an invocation of Glic, parsing options and communicating with the
 // instance's host.
-class GlicInvokeHandler : public Host::Observer {
+class GlicInvokeHandler : public Host::Observer,
+                          public content::WebContentsObserver {
  public:
   using CompletionCallback =
       base::OnceCallback<void(GlicInstance*, GlicInvokeHandler*)>;
@@ -53,7 +55,18 @@ class GlicInvokeHandler : public Host::Observer {
   // glic::Host::Observer
   void WebClientConnected() override;
 
+  // content::WebContentsObserver:
+  void PrimaryMainFrameWasResized(bool width_changed) override;
+
  private:
+  void MaybeWaitForWebClientReady();
+  void OnWebClientReady();
+  void MaybeWaitForPanelOpen();
+  void OnPanelOpen();
+  void MaybeWaitForStableWidth();
+  void OnStateChange(bool is_showing);
+  void OnStabilized();
+
   void SendToClient();
   mojom::InvokeOptionsPtr CreateMojoOptions();
   bool RequiresAutoSubmitIncompatibleFre() const;
@@ -72,6 +85,9 @@ class GlicInvokeHandler : public Host::Observer {
   base::CallbackListSubscription tab_destruction_subscription_;
   base::ScopedObservation<Host, Host::Observer> host_observation_{this};
   base::OneShotTimer timeout_timer_;
+
+  base::CallbackListSubscription state_change_subscription_;
+  base::OneShotTimer stabilization_timer_;
 
   base::WeakPtrFactory<GlicInvokeHandler> weak_ptr_factory_{this};
 };

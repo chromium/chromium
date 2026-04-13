@@ -1212,6 +1212,41 @@ IN_PROC_BROWSER_TEST_F(GlicInstanceCoordinatorBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(GlicInstanceCoordinatorBrowserTest,
+                       InvokeWithWaitForPanelOpen) {
+  // Create a tab with a loaded page to measure width.
+  tabs::TabInterface* tab = CreateAndActivateTab(GetSimpleTestUrl());
+
+#if !BUILDFLAG(IS_ANDROID)
+  // Measure page width before invocation.
+  int width_before =
+      content::EvalJs(tab->GetContents(), "window.innerWidth").ExtractInt();
+#endif  // !BUILDFLAG(IS_ANDROID)
+
+  base::test::TestFuture<void> success_future;
+  GlicInvokeOptions options(mojom::InvocationSource::kOsButton);
+  options.wait_for_panel_open = true;
+  options.on_success = success_future.GetCallback();
+
+  coordinator().Invoke(tab, std::move(options));
+
+  auto* instance = coordinator().GetInstanceForTab(tab);
+  ASSERT_TRUE(instance);
+
+  // The success callback should be called after the panel is showing and
+  // stabilized.
+  EXPECT_TRUE(success_future.Wait());
+  EXPECT_TRUE(instance->IsShowing());
+
+#if !BUILDFLAG(IS_ANDROID)
+  // Measure page width after invocation. It should be smaller because the
+  // side panel takes up space.
+  int width_after =
+      content::EvalJs(tab->GetContents(), "window.innerWidth").ExtractInt();
+  EXPECT_LT(width_after, width_before);
+#endif  // !BUILDFLAG(IS_ANDROID)
+}
+
+IN_PROC_BROWSER_TEST_F(GlicInstanceCoordinatorBrowserTest,
                        InvokeWhileInvokeInProgress) {
   tabs::TabInterface* tab = GetTabListInterface()->GetActiveTab();
 

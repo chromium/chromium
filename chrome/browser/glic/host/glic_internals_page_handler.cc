@@ -190,6 +190,7 @@ void GlicInternalsPageHandler::TriggerInvokeFromInternalsAction(
   options.error_message = std::move(mojo_options->error_message);
   options.timeout = mojo_options->timeout;
   options.fre_override = mojo_options->fre_override;
+  options.wait_for_panel_open = mojo_options->wait_for_panel_open;
 
   switch (mojo_options->allowed_inflight_navigation) {
     case mojom::AllowedInflightNavigation::kSameDomain:

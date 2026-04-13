@@ -276,6 +276,7 @@ struct TriggerInvokeFromInternalsOptions {
   AllowedInflightNavigation allowed_inflight_navigation;
   bool auto_submit;
   FreOverride fre_override = kUnspecified;
+  bool wait_for_panel_open;
 };
 
 // Page handler for the glic WebUI.

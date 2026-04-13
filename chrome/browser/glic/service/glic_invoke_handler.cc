@@ -75,12 +75,69 @@ void GlicInvokeHandler::Invoke() {
     SendToClient();
     return;
   }
+  MaybeWaitForWebClientReady();
+}
 
-  host_observation_.Observe(&instance_->host());
+void GlicInvokeHandler::MaybeWaitForWebClientReady() {
+  if (instance_->host().IsWebClientConnected()) {
+    OnWebClientReady();
+  } else {
+    host_observation_.Observe(&instance_->host());
+  }
 }
 
 void GlicInvokeHandler::WebClientConnected() {
   host_observation_.Reset();
+  OnWebClientReady();
+}
+
+void GlicInvokeHandler::OnWebClientReady() {
+  MaybeWaitForPanelOpen();
+}
+
+void GlicInvokeHandler::MaybeWaitForPanelOpen() {
+  if (options_.wait_for_panel_open) {
+    if (instance_->IsShowing()) {
+      OnPanelOpen();
+    } else {
+      state_change_subscription_ = instance_->RegisterStateChange(
+          base::BindRepeating(&GlicInvokeHandler::OnStateChange,
+                              weak_ptr_factory_.GetWeakPtr()));
+    }
+  } else {
+    SendToClient();
+  }
+}
+
+void GlicInvokeHandler::OnStateChange(bool is_showing) {
+  if (is_showing) {
+    state_change_subscription_ = {};
+    OnPanelOpen();
+  }
+}
+
+void GlicInvokeHandler::OnPanelOpen() {
+  MaybeWaitForStableWidth();
+}
+
+void GlicInvokeHandler::MaybeWaitForStableWidth() {
+  if (tab_ && tab_->GetContents()) {
+    Observe(tab_->GetContents());
+  }
+
+  stabilization_timer_.Start(FROM_HERE, base::Milliseconds(300),
+                             base::BindOnce(&GlicInvokeHandler::OnStabilized,
+                                            weak_ptr_factory_.GetWeakPtr()));
+}
+
+void GlicInvokeHandler::PrimaryMainFrameWasResized(bool width_changed) {
+  if (stabilization_timer_.IsRunning()) {
+    stabilization_timer_.Reset();
+  }
+}
+
+void GlicInvokeHandler::OnStabilized() {
+  Observe(nullptr);
   SendToClient();
 }
 

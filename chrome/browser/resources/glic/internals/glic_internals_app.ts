@@ -33,6 +33,7 @@ export class GlicInternalsAppElement extends CrLitElement {
       invokePrompt_: {type: String},
       invokeAutoSubmit_: {type: Boolean},
       invokeFreOverride_: {type: Number},
+      invokeWaitForPanelOpen_: {type: Boolean},
       invokeLogs_: {type: Array},
       selectedTabIndex_: {type: Number},
       tabNames_: {type: Array},
@@ -43,6 +44,7 @@ export class GlicInternalsAppElement extends CrLitElement {
   protected accessor invokePrompt_: string = '';
   protected accessor invokeAutoSubmit_: boolean = true;
   protected accessor invokeFreOverride_: FreOverride = FreOverride.kUnspecified;
+  protected accessor invokeWaitForPanelOpen_: boolean = false;
   protected accessor invokeLogs_: string[] = [];
   protected accessor selectedTabIndex_: number = 0;
   protected accessor tabNames_: string[] = ['General', 'Debug Controls'];
@@ -210,6 +212,9 @@ export class GlicInternalsAppElement extends CrLitElement {
     this.invokeFreOverride_ = Number((e.target as HTMLSelectElement).value);
   }
 
+  protected onInvokeWaitForPanelOpenChange_(e: Event) {
+    this.invokeWaitForPanelOpen_ = (e.target as HTMLInputElement).checked;
+  }
   protected onTriggerInvokeClick_() {
     this.invokeLogs_ =
         [`[${new Date().toLocaleTimeString()}] TRIGGERING INVOKE...`];
@@ -228,6 +233,7 @@ export class GlicInternalsAppElement extends CrLitElement {
       allowedInflightNavigation: AllowedInflightNavigation.kNone,
       autoSubmit: this.invokeAutoSubmit_,
       freOverride: this.invokeFreOverride_,
+      waitForPanelOpen: this.invokeWaitForPanelOpen_,
     };
 
     this.pageHandler_.triggerInvokeFromInternalsAction(options).then(
