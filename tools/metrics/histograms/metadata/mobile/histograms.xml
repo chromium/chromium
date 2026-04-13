@@ -1121,15 +1121,6 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
-<histogram name="MobileFre.SignInChoice" enum="MobileFreSignInChoice"
-    expires_after="M82">
-  <owner>aruslan@chromium.org</owner>
-  <summary>
-    Android: How the user left the sign-in part of the &quot;first run
-    experience&quot; activity (M-38+).
-  </summary>
-</histogram>
-
 <histogram name="MobileFre.SlowestLoadPoint" enum="LoadPoint"
     expires_after="2026-11-12">
   <owner>triploblastic@chromium.org</owner>

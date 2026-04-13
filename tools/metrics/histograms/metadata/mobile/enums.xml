@@ -408,19 +408,6 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(/chrome/browser/first_run/android/java/src/org/chromium/chrome/browser/firstrun/MobileFreProgress.java:MobileFreProgress) -->
 
-<enum name="MobileFreSignInChoice">
-  <summary>
-    These values are defined inside the MobileFreSignInChoice enum
-    chrome/browser/android/metrics/uma_bridge.cc and reference possible ways of
-    completing the sign-in part of the First Run Experience.
-  </summary>
-  <int value="0" label="Settings default account"/>
-  <int value="1" label="Settings another account"/>
-  <int value="2" label="Accept default account"/>
-  <int value="3" label="Accept another account"/>
-  <int value="4" label="No thanks"/>
-</enum>
-
 <enum name="MobileMessagesBadgeState">
   <int value="0" label="Inactive"/>
   <int value="1" label="Active"/>
