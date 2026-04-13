@@ -287,6 +287,15 @@ void OpenSettingsWithBrowser(base::WeakPtr<Browser> weak_browser) {
   }
 }
 
+// Navigates to the history UI.
+void OpenHistoryWithBrowser(base::WeakPtr<Browser> weak_browser) {
+  if (Browser* browser = weak_browser.get()) {
+    id<SceneCommands> handler =
+        HandlerForProtocol(browser->GetCommandDispatcher(), SceneCommands);
+    [handler showHistory];
+  }
+}
+
 // Adds bookmarks to Chrome.
 void AddBookmarkToChromeWithIntent(INIntent* intent,
                                    base::WeakPtr<Browser> weak_browser) {
@@ -459,7 +468,9 @@ std::vector<GURL> GetURLsFromOpenInChromeIntent(INIntent* intent) {
       // TODO(crbug.com/492115056): Add implementation.
       break;
     case UserActivityType::kViewHistory:
-      // TODO(crbug.com/492115056): Add implementation.
+      completion = base::CallbackToBlock(
+          base::BindRepeating(&OpenHistoryWithBrowser, browser->AsWeakPtr()));
+      webpageGURLs.push_back(GURL(kChromeUINewTabURL));
       break;
     case UserActivityType::kOpenNewIncognitoTab:
       webpageGURLs.push_back(GURL(kChromeUINewTabURL));
