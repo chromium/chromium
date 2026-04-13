@@ -862,17 +862,15 @@ class BottomSheet extends FrameLayout
                 && mSheetContent.getFullHeightRatio() == HeightMode.WRAP_CONTENT;
     }
 
-    /** @return The ratio of the height of the screen that the peeking state is. */
-    public float getPeekRatio() {
+    /** Returns the resolved PEEK height in pixels for the current content. */
+    public int getPeekHeightPx() {
         if (mContainerHeight <= 0 || !isPeekStateEnabled()) return 0;
 
         // If the content has a custom peek ratio set, use that instead of computing one.
         if (mSheetContent != null && mSheetContent.getPeekHeight() != HeightMode.DEFAULT) {
             assert mSheetContent.getPeekHeight() != HeightMode.WRAP_CONTENT
                     : "The peek mode can't wrap content.";
-            float ratio = mSheetContent.getPeekHeight() / (float) mContainerHeight;
-            assert ratio > 0 && ratio <= 1 : "Custom peek ratios must be in the range of (0, 1].";
-            return ratio;
+            return mSheetContent.getPeekHeight();
         }
 
         View toolbarView = getToolbarView();
@@ -900,7 +898,15 @@ class BottomSheet extends FrameLayout
                 }
             }
         }
-        return toolbarHeight / (float) mContainerHeight;
+        return toolbarHeight;
+    }
+
+    /** Returns the ratio of the height of the screen that the peeking state is. */
+    public float getPeekRatio() {
+        if (mContainerHeight <= 0 || !isPeekStateEnabled()) return 0;
+        float ratio = getPeekHeightPx() / (float) mContainerHeight;
+        assert ratio > 0 && ratio <= 1 : "Custom peek ratios must be in the range of (0, 1].";
+        return ratio;
     }
 
     private @Nullable View getToolbarView() {

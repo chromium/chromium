@@ -442,6 +442,11 @@ class BottomSheetControllerImpl implements ManagedBottomSheetController, ScrimCo
     }
 
     @Override
+    public int getCurrentPeekHeightPx() {
+        return mBottomSheet != null ? mBottomSheet.getPeekHeightPx() : 0;
+    }
+
+    @Override
     public int getContainerWidth() {
         return mBottomSheet != null ? (int) mBottomSheet.getSheetContainerWidth() : 0;
     }

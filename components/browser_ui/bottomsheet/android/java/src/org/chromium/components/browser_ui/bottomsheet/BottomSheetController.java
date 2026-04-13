@@ -163,6 +163,10 @@ public interface BottomSheetController {
      */
     int getContainerHeight();
 
+    /** Returns the resolved PEEK height in pixels for the current content. */
+    @Px
+    int getCurrentPeekHeightPx();
+
     /**
      * @return The width of the bottom sheet's parent container in px. his is not the bottom sheet
      *     width. This will return 0 if the sheet has not been initialized (content has not been
