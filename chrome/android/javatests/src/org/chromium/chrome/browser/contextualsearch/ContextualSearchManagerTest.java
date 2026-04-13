@@ -76,6 +76,7 @@ import org.chromium.chrome.browser.tabmodel.TabClosureParams;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorObserver;
 import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeController;
 import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeUtils;
+import org.chromium.chrome.browser.ui.signin.ForcedSigninStatusProvider;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.R;
 import org.chromium.chrome.test.util.ChromeTabUtils;
@@ -108,6 +109,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 @Batch(Batch.PER_CLASS)
 public class ContextualSearchManagerTest extends ContextualSearchInstrumentationBase {
     @Mock private EdgeToEdgeController mMockEdgeToEdgeController;
+    @Mock private ForcedSigninStatusProvider mMockForcedSigninStatusProvider;
 
     // DOM element IDs in our test page based on what functions they trigger.
     // TODO(donnd): add more, and also the associated Search Term, or build a similar mapping.
@@ -798,6 +800,27 @@ public class ContextualSearchManagerTest extends ContextualSearchInstrumentation
 
         // Restore the original shared preference value before this test case ends.
         FirstRunStatus.setFirstRunFlowComplete(originalIsFirstRunComplete);
+    }
+
+    /**
+     * Tests when the forced signin screen is being displayed: Tap and Long-press don't activate CS.
+     */
+    @Test
+    @SmallTest
+    @Feature({"ContextualSearch"})
+    public void testForcedSigninIsDisplayed() throws Exception {
+        ForcedSigninStatusProvider.setInstanceForTesting(mMockForcedSigninStatusProvider);
+        when(mMockForcedSigninStatusProvider.isForcedSigninShowing()).thenReturn(true);
+
+        // Simulate a tap that resolves to show the Bar.
+        clickNode("intelligence");
+        assertNoWebContents();
+        assertNoSearchesLoaded();
+
+        // Simulate a Long-press.
+        longPressNodeWithoutWaiting("states");
+        assertNoWebContents();
+        assertNoSearchesLoaded();
     }
 
     // ============================================================================================

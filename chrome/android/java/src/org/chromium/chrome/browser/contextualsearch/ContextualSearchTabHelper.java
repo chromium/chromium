@@ -29,6 +29,7 @@ import org.chromium.chrome.browser.readaloud.ReadAloudControllerSupplier;
 import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
 import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.ui.signin.ForcedSigninStatusProvider;
 import org.chromium.components.search_engines.TemplateUrlService;
 import org.chromium.components.search_engines.TemplateUrlService.TemplateUrlServiceObserver;
 import org.chromium.content_public.browser.GestureListenerManager;
@@ -368,6 +369,8 @@ public class ContextualSearchTabHelper extends EmptyTabObserver
         boolean isActive =
                 !webContents.isIncognito()
                         && FirstRunStatus.getFirstRunFlowComplete()
+                        && !ForcedSigninStatusProvider.getForProfile(profile)
+                                .isForcedSigninShowing()
                         && !ContextualSearchPolicy.isContextualSearchDisabled(profile)
                         && isDseGoogle
                         && !LocaleManager.getInstance().needToCheckForSearchEnginePromo()
@@ -386,6 +389,9 @@ public class ContextualSearchTabHelper extends EmptyTabObserver
                             + !webContents.isIncognito()
                             + " getFirstRunFlowComplete: "
                             + FirstRunStatus.getFirstRunFlowComplete()
+                            + "isForcedSigninShowing: "
+                            + ForcedSigninStatusProvider.getForProfile(profile)
+                                    .isForcedSigninShowing()
                             + " !isContextualSearchDisabled: "
                             + !ContextualSearchManager.isContextualSearchDisabled(profile)
                             + " isDefaultSearchEngineGoogle: "
