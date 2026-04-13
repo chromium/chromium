@@ -8777,6 +8777,7 @@ test("unit_tests") {
       "//chrome/browser/ui/hats:test_support",
       "//chrome/browser/ui/hats:unit_tests",
       "//chrome/browser/ui/hid:unit_tests",
+      "//chrome/browser/ui/javascript_dialogs:unit_tests",
       "//chrome/browser/ui/lens",
       "//chrome/browser/ui/lens:unit_tests",
       "//chrome/browser/ui/media_router:unit_tests",

@@ -64,7 +64,12 @@ void JavaScriptTabModalDialogManagerDelegateDesktop::DidCloseDialog() {
 
 void JavaScriptTabModalDialogManagerDelegateDesktop::SetTabNeedsAttention(
     bool attention) {
-  tabs::TabInterface* tab = tabs::TabInterface::GetFromContents(web_contents_);
+  tabs::TabInterface* tab =
+      tabs::TabInterface::MaybeGetFromContents(web_contents_);
+  if (!tab) {
+    // WebContents may be detached during tab close. See crbug.com/40727952.
+    return;
+  }
   BrowserWindowInterface* browser = tab->GetBrowserWindowInterface();
   if (!browser) {
     // It's possible that the WebContents is no longer in the tab strip. If so,
@@ -99,7 +104,12 @@ bool JavaScriptTabModalDialogManagerDelegateDesktop::IsWebContentsForemost() {
 }
 
 bool JavaScriptTabModalDialogManagerDelegateDesktop::IsApp() {
-  tabs::TabInterface* tab = tabs::TabInterface::GetFromContents(web_contents_);
+  tabs::TabInterface* tab =
+      tabs::TabInterface::MaybeGetFromContents(web_contents_);
+  if (!tab) {
+    // WebContents may be detached during tab close. See crbug.com/40727952.
+    return false;
+  }
   BrowserWindowInterface* browser = tab->GetBrowserWindowInterface();
   return browser &&
          (browser->GetType() == BrowserWindowInterface::Type::TYPE_APP ||
@@ -107,7 +117,8 @@ bool JavaScriptTabModalDialogManagerDelegateDesktop::IsApp() {
 }
 
 bool JavaScriptTabModalDialogManagerDelegateDesktop::CanShowModalUI() {
-  tabs::TabInterface* tab = tabs::TabInterface::GetFromContents(web_contents_);
+  tabs::TabInterface* tab =
+      tabs::TabInterface::MaybeGetFromContents(web_contents_);
   return tab && tab->CanShowModalUI();
 }
 
