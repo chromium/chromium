@@ -106,7 +106,7 @@ public class GlicSettings extends ChromeBaseSettingsFragment {
                 setupSwitchPreference(
                         PERMISSION_DEFAULT_TAB_ACCESS,
                         ChromePreferenceKeys.GLIC_SHARE_CURRENT_TAB_DEFAULT_ACCESS_ENABLED,
-                        GlicPrefNames.GLIC_TAB_CONTEXT_ENABLED,
+                        GlicPrefNames.GLIC_DEFAULT_TAB_CONTEXT_ENABLED,
                         /* extraListener= */ null);
 
         String summary =

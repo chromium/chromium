@@ -170,7 +170,7 @@ public class GlicSettingsUnitTest {
     @Test
     public void testTabAccessPermissionInitialState_Enabled() {
         doTestInitialState(
-                GlicPrefNames.GLIC_TAB_CONTEXT_ENABLED,
+                GlicPrefNames.GLIC_DEFAULT_TAB_CONTEXT_ENABLED,
                 "glic_permissions_default_tab_access",
                 true);
     }
@@ -178,7 +178,7 @@ public class GlicSettingsUnitTest {
     @Test
     public void testTabAccessPermissionInitialState_Disabled() {
         doTestInitialState(
-                GlicPrefNames.GLIC_TAB_CONTEXT_ENABLED,
+                GlicPrefNames.GLIC_DEFAULT_TAB_CONTEXT_ENABLED,
                 "glic_permissions_default_tab_access",
                 false);
     }
@@ -187,7 +187,7 @@ public class GlicSettingsUnitTest {
     public void testTabAccessPermissionToggle() {
         doTestToggle(
                 GLIC_SHARE_CURRENT_TAB_DEFAULT_ACCESS_ENABLED,
-                GlicPrefNames.GLIC_TAB_CONTEXT_ENABLED,
+                GlicPrefNames.GLIC_DEFAULT_TAB_CONTEXT_ENABLED,
                 "glic_permissions_default_tab_access");
     }
 
