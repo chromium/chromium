@@ -230,7 +230,7 @@ public class MessageBannerRenderTest {
         Drawable drawable =
                 ApiCompatibilityUtils.getDrawable(
                         sActivity.getResources(), android.R.drawable.ic_delete);
-        SpannableString spannable = new SpannableString("Dummy Spannable Description!");
+        SpannableString spannable = new SpannableString("Placeholder Spannable Description!");
         StyleSpan boldSpan = new StyleSpan(Typeface.BOLD);
         spannable.setSpan(boldSpan, 0, spannable.length(), Spanned.SPAN_INCLUSIVE_EXCLUSIVE);
         PropertyModel model =
@@ -664,7 +664,8 @@ public class MessageBannerRenderTest {
 
     private View getMainContent(MessageBannerView message) {
         View mainContent = message.getMainContentForTesting();
-        ((ViewGroup) mainContent.getParent()).removeView(mainContent);
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> ((ViewGroup) mainContent.getParent()).removeView(mainContent));
         return mainContent;
     }
 
