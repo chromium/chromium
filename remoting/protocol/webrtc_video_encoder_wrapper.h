@@ -75,7 +75,7 @@ class WebrtcVideoEncoderWrapper : public webrtc::VideoEncoder {
                       std::unique_ptr<WebrtcVideoEncoder::EncodedFrame> frame);
 
   // Notifies WebRTC that this encoder has dropped a frame.
-  void NotifyFrameDropped();
+  void NotifyFrameDropped(uint32_t rtp_timestamp);
 
   // Returns whether the frame should be encoded at low quality, to reduce
   // latency for large frame updates. This is only done here for VP8, as VP9

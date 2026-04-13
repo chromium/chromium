@@ -322,12 +322,26 @@ TEST_F(WebrtcVideoEncoderWrapperTest, FrameDroppedIfAsyncEncoderBusy) {
                                                  kVideoCodecVP9)))
       .Times(2)
       .WillRepeatedly(Return(kResultOk));
+
+  // Expect frame drops for frames 2, 3, 4, 5.
+  EXPECT_CALL(callback_, OnFrameDropped(2, 0, true));
+  EXPECT_CALL(callback_, OnFrameDropped(3, 0, true));
+  EXPECT_CALL(callback_, OnFrameDropped(4, 0, true));
+  EXPECT_CALL(callback_, OnFrameDropped(5, 0, true));
+
   auto frame1 = MakeVideoFrame();
+  frame1.set_rtp_timestamp(1);
   auto frame2 = MakeVideoFrame();
+  frame2.set_rtp_timestamp(2);
   auto frame3 = MakeVideoFrame();
+  frame3.set_rtp_timestamp(3);
   auto frame4 = MakeVideoFrame();
+  frame4.set_rtp_timestamp(4);
   auto frame5 = MakeVideoFrame();
+  frame5.set_rtp_timestamp(5);
   auto frame6 = MakeVideoFrame();
+  frame6.set_rtp_timestamp(6);
+
   auto encoder = InitEncoder(GetVp9Format(), GetVp9Codec());
   encoder->SetEncoderForTest(std::move(mock_video_encoder_));
   std::vector<VideoFrameType> frame_types{VideoFrameType::kVideoFrameKey};
@@ -371,11 +385,17 @@ TEST_F(WebrtcVideoEncoderWrapperTest,
         .WillOnce(Return(kResultOk));
   }
 
+  // Expect frame drop for frame 2.
+  EXPECT_CALL(callback_, OnFrameDropped(2, 0, true));
+
   auto frame1 = MakeVideoFrame();
+  frame1.set_rtp_timestamp(1);
   auto frame2 = MakeVideoFrame();
+  frame2.set_rtp_timestamp(2);
   frame2.set_update_rect(VideoFrame::UpdateRect{
       .offset_x = 100, .offset_y = 200, .width = 10, .height = 10});
   auto frame3 = MakeVideoFrame();
+  frame3.set_rtp_timestamp(3);
   frame3.set_update_rect(VideoFrame::UpdateRect{
       .offset_x = 300, .offset_y = 400, .width = 10, .height = 10});
 
@@ -393,8 +413,13 @@ TEST_F(WebrtcVideoEncoderWrapperTest,
 TEST_F(WebrtcVideoEncoderWrapperTest, EmptyFrameDropped) {
   EXPECT_CALL(callback_, OnEncodedImage(_, _)).WillOnce(Return(kResultOk));
 
+  // Expect frame drop for frame 2.
+  EXPECT_CALL(callback_, OnFrameDropped(2, 0, true));
+
   auto frame1 = MakeVideoFrame();
+  frame1.set_rtp_timestamp(1);
   auto frame2 = MakeEmptyVideoFrame();
+  frame2.set_rtp_timestamp(2);
   auto encoder = InitEncoder(GetVp9Format(), GetVp9Codec());
 
   // Delta is used here, since key-frame requests should not be dropped.
@@ -445,9 +470,15 @@ TEST_F(WebrtcVideoEncoderWrapperTest,
       .Times(2)
       .WillRepeatedly(Return(kResultOk));
 
+  // Expect frame drop for frame 2.
+  EXPECT_CALL(callback_, OnFrameDropped(2, 0, true));
+
   auto frame1 = MakeVideoFrame();
+  frame1.set_rtp_timestamp(1);
   auto frame2 = MakeVideoFrame();
+  frame2.set_rtp_timestamp(2);
   auto frame3 = MakeVideoFrame();
+  frame3.set_rtp_timestamp(3);
   std::vector<VideoFrameType> frame_types1{VideoFrameType::kVideoFrameKey};
   std::vector<VideoFrameType> frame_types2{VideoFrameType::kVideoFrameKey};
   std::vector<VideoFrameType> frame_types3{VideoFrameType::kVideoFrameDelta};

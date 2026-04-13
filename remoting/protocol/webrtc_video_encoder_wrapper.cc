@@ -7,6 +7,7 @@
 #include <stdint.h>
 
 #include <algorithm>
+#include <cstdint>
 #include <functional>
 #include <memory>
 #include <string>
@@ -268,7 +269,8 @@ int32_t WebrtcVideoEncoderWrapper::Encode(
       base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
           FROM_HERE,
           base::BindOnce(&WebrtcVideoEncoderWrapper::NotifyFrameDropped,
-                         weak_factory_.GetWeakPtr()));
+                         weak_factory_.GetWeakPtr(),
+                         pending_frame_->rtp_timestamp()));
     }
     pending_frame_ = std::make_unique<webrtc::VideoFrame>(frame);
 
@@ -360,7 +362,7 @@ int32_t WebrtcVideoEncoderWrapper::Encode(
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE,
         base::BindOnce(&WebrtcVideoEncoderWrapper::NotifyFrameDropped,
-                       weak_factory_.GetWeakPtr()));
+                       weak_factory_.GetWeakPtr(), frame.rtp_timestamp()));
     return WEBRTC_VIDEO_CODEC_OK;
   }
   latest_frame_encode_start_time_ = encode_start;
@@ -487,7 +489,6 @@ void WebrtcVideoEncoderWrapper::OnFrameEncoded(
     // return any error, but hardware-decoders such as H264 may fail.
     LOG(ERROR) << "Video encoder returned error "
                << EncodeResultToString(encode_result);
-    NotifyFrameDropped();
     DropPendingFrame();
     return;
   }
@@ -495,7 +496,6 @@ void WebrtcVideoEncoderWrapper::OnFrameEncoded(
   if (!frame || !frame->data || !frame->data->size()) {
     top_off_active_ = false;
     UpdateTopOffExtrapolationTimer();
-    NotifyFrameDropped();
     DropPendingFrame();
     return;
   }
@@ -528,11 +528,11 @@ void WebrtcVideoEncoderWrapper::OnFrameEncoded(
                                 send_result, std::ref(*frame)));
 }
 
-void WebrtcVideoEncoderWrapper::NotifyFrameDropped() {
+void WebrtcVideoEncoderWrapper::NotifyFrameDropped(uint32_t rtp_timestamp) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(encoded_callback_);
-  encoded_callback_->OnDroppedFrame(
-      webrtc::EncodedImageCallback::DropReason::kDroppedByEncoder);
+  encoded_callback_->OnFrameDropped(rtp_timestamp, /*spatial_id=*/0,
+                                    /*is_end_of_temporal_unit=*/true);
 }
 
 bool WebrtcVideoEncoderWrapper::ShouldDropQualityForLargeFrame(
@@ -574,8 +574,9 @@ void WebrtcVideoEncoderWrapper::SchedulePendingFrame() {
 void WebrtcVideoEncoderWrapper::DropPendingFrame() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (pending_frame_) {
+    uint32_t rtp_timestamp = pending_frame_->rtp_timestamp();
     pending_frame_.reset();
-    NotifyFrameDropped();
+    NotifyFrameDropped(rtp_timestamp);
   }
 }
 
