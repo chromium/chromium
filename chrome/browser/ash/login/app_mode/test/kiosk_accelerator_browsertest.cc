@@ -11,7 +11,6 @@
 #include "chrome/browser/ash/app_mode/test/kiosk_test_utils.h"
 #include "chrome/browser/ash/login/app_mode/test/ash_accelerator_helpers.h"
 #include "chrome/browser/ui/browser_finder.h"
-#include "chrome/browser/ui/test/test_browser_closed_waiter.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/mixin_based_in_process_browser_test.h"
@@ -115,24 +114,27 @@ class NonKioskAcceleratorTest : public InProcessBrowserTest {};
 IN_PROC_BROWSER_TEST_F(NonKioskAcceleratorTest, CloseTabAccelerator) {
   ASSERT_EQ(chrome::GetTotalBrowserCount(), 1u);
   ASSERT_TRUE(PressCloseTabAccelerator(browser()));
-  TestBrowserClosedWaiter settings_browser_closed_waiter{browser()};
-  ASSERT_TRUE(settings_browser_closed_waiter.WaitUntilClosed());
+  ui_test_utils::BrowserDestroyedObserver settings_browser_closed_observer{
+      browser()};
+  settings_browser_closed_observer.Wait();
   ASSERT_EQ(chrome::GetTotalBrowserCount(), 0u);
 }
 
 IN_PROC_BROWSER_TEST_F(NonKioskAcceleratorTest, CloseWindowAccelerator) {
   ASSERT_EQ(chrome::GetTotalBrowserCount(), 1u);
   ASSERT_TRUE(PressCloseWindowAccelerator(browser()));
-  TestBrowserClosedWaiter settings_browser_closed_waiter{browser()};
-  ASSERT_TRUE(settings_browser_closed_waiter.WaitUntilClosed());
+  ui_test_utils::BrowserDestroyedObserver settings_browser_closed_observer{
+      browser()};
+  settings_browser_closed_observer.Wait();
   ASSERT_EQ(chrome::GetTotalBrowserCount(), 0u);
 }
 
 IN_PROC_BROWSER_TEST_F(NonKioskAcceleratorTest, SignOutAccelerator) {
   ASSERT_EQ(chrome::GetTotalBrowserCount(), 1u);
   ASSERT_TRUE(ash::PressSignOutAccelerator());
-  TestBrowserClosedWaiter settings_browser_closed_waiter{browser()};
-  ASSERT_TRUE(settings_browser_closed_waiter.WaitUntilClosed());
+  ui_test_utils::BrowserDestroyedObserver settings_browser_closed_observer{
+      browser()};
+  settings_browser_closed_observer.Wait();
   ASSERT_EQ(chrome::GetTotalBrowserCount(), 0u);
 }
 

@@ -15,7 +15,6 @@
 #include "chrome/browser/ui/tabs/pinned_tab_service_factory.h"
 #include "chrome/browser/ui/tabs/pinned_tab_test_utils.h"
 #include "chrome/browser/ui/tabs/tab_enums.h"
-#include "chrome/browser/ui/test/test_browser_closed_waiter.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "content/public/test/browser_test.h"
@@ -43,12 +42,12 @@ IN_PROC_BROWSER_TEST_F(PinnedTabServiceBrowserTest, TabStripEmpty) {
   // must update data on this event.
   ScopedProfileKeepAlive profile_keep_alive(
       profile, ProfileKeepAliveOrigin::kBrowserWindow);
-  TestBrowserClosedWaiter waiter(browser());
+  ui_test_utils::BrowserDestroyedObserver observer(browser());
   tab_strip_model->SetTabPinned(0, false);
   int previous_tab_count = tab_strip_model->count();
   tab_strip_model->CloseWebContentsAt(0, TabCloseTypes::CLOSE_NONE);
   EXPECT_EQ(previous_tab_count - 1, tab_strip_model->count());
-  ASSERT_TRUE(waiter.WaitUntilClosed());
+  observer.Wait();
 
   // Let's see it's cleared out properly.
   result =
@@ -70,9 +69,9 @@ IN_PROC_BROWSER_TEST_F(PinnedTabServiceBrowserTest, CloseWindow) {
 
   ScopedProfileKeepAlive profile_keep_alive(
       profile, ProfileKeepAliveOrigin::kBrowserWindow);
-  TestBrowserClosedWaiter waiter(browser());
+  ui_test_utils::BrowserDestroyedObserver observer(browser());
   browser()->window()->Close();
-  ASSERT_TRUE(waiter.WaitUntilClosed());
+  observer.Wait();
 
   std::string result =
       PinnedTabTestUtils::TabsToString(PinnedTabCodec::ReadPinnedTabs(profile));

@@ -17,13 +17,13 @@
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/extension_tab_util.h"
 #include "chrome/browser/ui/browser_window.h"
-#include "chrome/browser/ui/test/test_browser_closed_waiter.h"
 #include "chrome/browser/ui/web_applications/test/isolated_web_app_test_utils.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h"
 #include "chrome/browser/web_applications/isolated_web_apps/test/isolated_web_app_builder.h"
 #include "chrome/browser/web_applications/test/os_integration_test_override_impl.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/test/base/profile_destruction_waiter.h"
+#include "chrome/test/base/ui_test_utils.h"
 #include "content/public/browser/service_worker_context.h"
 #include "content/public/browser/service_worker_context_observer.h"
 #include "content/public/common/content_features.h"
@@ -764,9 +764,10 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerLifetimeKeepaliveBrowsertest,
   // this is the only browser window for the incognito context, this also
   // results in the browser context being invalidated.
   ProfileDestructionWaiter profile_destruction_waiter(incognito_profile);
-  TestBrowserClosedWaiter browser_closed_waiter(incognito_browser);
+  ui_test_utils::BrowserDestroyedObserver browser_closed_observer(
+      incognito_browser);
   incognito_browser->window()->Close();
-  ASSERT_TRUE(browser_closed_waiter.WaitUntilClosed());
+  browser_closed_observer.Wait();
   profile_destruction_waiter.Wait();
   // Note: `ProfileDestructionWaiter` only waits for the profile to signal it
   // *will* be destroyed. Spin once to finish the job.
@@ -906,9 +907,10 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerLifetimeKeepaliveBrowsertest,
   // is fine, since the whole context is going away.
   // See https://crbug.com/1476316.
   ProfileDestructionWaiter profile_destruction_waiter(incognito_profile);
-  TestBrowserClosedWaiter browser_closed_waiter(incognito_browser);
+  ui_test_utils::BrowserDestroyedObserver browser_closed_observer(
+      incognito_browser);
   incognito_browser->window()->Close();
-  ASSERT_TRUE(browser_closed_waiter.WaitUntilClosed());
+  browser_closed_observer.Wait();
   profile_destruction_waiter.Wait();
   // Note: `ProfileDestructionWaiter` only waits for the profile to signal it
   // *will* be destroyed. Spin once to finish the job.
@@ -1069,9 +1071,10 @@ IN_PROC_BROWSER_TEST_F(
   // this is the only browser window for the incognito context, this also
   // results in the browser context being invalidated.
   ProfileDestructionWaiter profile_destruction_waiter(incognito_profile);
-  TestBrowserClosedWaiter browser_closed_waiter(incognito_browser);
+  ui_test_utils::BrowserDestroyedObserver browser_closed_observer(
+      incognito_browser);
   incognito_browser->window()->Close();
-  ASSERT_TRUE(browser_closed_waiter.WaitUntilClosed());
+  browser_closed_observer.Wait();
   profile_destruction_waiter.Wait();
   // Note: `ProfileDestructionWaiter` only waits for the profile to signal it
   // *will* be destroyed. Spin once to finish the job.

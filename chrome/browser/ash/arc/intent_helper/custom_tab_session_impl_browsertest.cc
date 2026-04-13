@@ -8,8 +8,8 @@
 #include "chrome/browser/ash/arc/arc_util.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
-#include "chrome/browser/ui/test/test_browser_closed_waiter.h"
 #include "chrome/test/base/in_process_browser_test.h"
+#include "chrome/test/base/ui_test_utils.h"
 #include "chromeos/ash/experiences/arc/intent_helper/custom_tab.h"
 #include "chromeos/ash/experiences/arc/test/arc_util_test_support.h"
 #include "components/exo/shell_surface.h"
@@ -91,10 +91,10 @@ IN_PROC_BROWSER_TEST_F(CustomTabSessionImplTest,
   tab_strip_model->DetachAndDeleteWebContentsAt(1);
   base::RunLoop webcontents_run_loop;
   web_contents_destroyed_closure_ = webcontents_run_loop.QuitClosure();
-  TestBrowserClosedWaiter closed_waiter(browser());
+  ui_test_utils::BrowserDestroyedObserver closed_observer(browser());
   CreateAndDestroyCustomTabSession(std::move(custom_tab), browser());
   webcontents_run_loop.Run();
   EXPECT_FALSE(GetWebContents());
-  ASSERT_TRUE(closed_waiter.WaitUntilClosed());
+  closed_observer.Wait();
   ASSERT_TRUE(GlobalBrowserCollection::GetInstance()->IsEmpty());
 }

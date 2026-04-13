@@ -11054,10 +11054,6 @@ if (!is_android) {
 
     allow_circular_includes_from = [
       # TODO(crbug.com/353332589): Remove this circular dependency when
-      # chrome/test/base/ui_test_utils.h gets componentized.
-      "//chrome/browser/ui/test:closed_waiter",
-
-      # TODO(crbug.com/353332589): Remove this circular dependency when
       # chrome/test/base/in_process_browser_test.h gets componentized.
       "//chrome/browser/ui/test:dialog",
     ]
@@ -11066,7 +11062,6 @@ if (!is_android) {
       "//chrome/browser:test_support_ui",
       "//chrome/browser/renderer_context_menu:test_support",
       "//chrome/browser/ui/exclusive_access",
-      "//chrome/browser/ui/test:closed_waiter",
       "//chrome/browser/ui/test:dialog",
       "//chrome/browser/ui/views/frame:toolbar_button_provider",
       "//chrome/browser/ui/views/interaction",

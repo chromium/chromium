@@ -60,20 +60,6 @@ if (!is_android) {
     }
   }
 
-  source_set("closed_waiter") {
-    testonly = true
-
-    sources = [
-      "test_browser_closed_waiter.cc",
-      "test_browser_closed_waiter.h",
-    ]
-
-    deps = [
-      "//chrome/browser/ui",
-      "//testing/gtest",
-    ]
-  }
-
   source_set("test_support") {
     testonly = true
 

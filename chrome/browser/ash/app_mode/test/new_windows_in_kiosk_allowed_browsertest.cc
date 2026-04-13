@@ -25,7 +25,6 @@
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_context.h"
-#include "chrome/browser/ui/test/test_browser_closed_waiter.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/web_applications/externally_managed_app_manager.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
@@ -175,7 +174,8 @@ IN_PROC_BROWSER_TEST_F(NewWindowsInKioskAllowedTest, CloseBrowserIfReOpen) {
   EXPECT_EQ(VisibleBrowserCount(), 1u);
   ASSERT_FALSE(browser.window()->IsVisible());
   browser.window()->Show();
-  ASSERT_TRUE(TestBrowserClosedWaiter(&browser).WaitUntilClosed());
+  ui_test_utils::BrowserDestroyedObserver observer(&browser);
+  observer.Wait();
   EXPECT_EQ(chrome::GetTotalBrowserCount(), 1u);
 }
 

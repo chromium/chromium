@@ -50,7 +50,6 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
-#include "chrome/browser/ui/test/test_browser_closed_waiter.h"
 #include "chrome/common/chrome_constants.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/pref_names.h"
@@ -1003,22 +1002,22 @@ IN_PROC_BROWSER_TEST_F(ProfileBrowserTest, TestProfileTypes) {
 IN_PROC_BROWSER_TEST_F(ProfileBrowserTest, UnderOneMinute) {
   base::HistogramTester tester;
   Browser* browser = CreateGuestBrowser();
-  TestBrowserClosedWaiter close_waiter(browser);
+  ui_test_utils::BrowserDestroyedObserver close_observer(browser);
 
   chrome::CloseAllBrowsersWithProfile(browser->profile());
-  ASSERT_TRUE(close_waiter.WaitUntilClosed());
+  close_observer.Wait();
   tester.ExpectUniqueSample("Profile.Guest.OTR.Lifetime", 0, 1);
 }
 
 IN_PROC_BROWSER_TEST_F(ProfileBrowserTest, OneHour) {
   base::HistogramTester tester;
   Browser* browser = CreateGuestBrowser();
-  TestBrowserClosedWaiter close_waiter(browser);
+  ui_test_utils::BrowserDestroyedObserver close_observer(browser);
 
   browser->profile()->SetCreationTimeForTesting(base::Time::Now() -
                                                 base::Seconds(60) * 60);
   chrome::CloseAllBrowsersWithProfile(browser->profile());
-  ASSERT_TRUE(close_waiter.WaitUntilClosed());
+  close_observer.Wait();
   tester.ExpectUniqueSample("Profile.Guest.OTR.Lifetime", 60, 1);
 }
 
