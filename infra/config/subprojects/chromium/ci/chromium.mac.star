@@ -648,8 +648,13 @@ ci.thin_tester(
                 ],
                 remove_mixins = "mac_15_vm_optional",
             ),
-            "sync_integration_tests": targets.mixin(
-                ci_only = True,
+            # TODO(crbug.com/500901289): tests are flaky on VM when host OS is 26+ while VM OS is 15.6.1
+            "sync_integration_tests": targets.per_test_modification(
+                mixins = [
+                    "mac_15_arm64",
+                    "ci_only",
+                ],
+                remove_mixins = "mac_15_vm_optional",
             ),
             "telemetry_perf_unittests": targets.mixin(
                 ci_only = True,
