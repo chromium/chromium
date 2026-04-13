@@ -493,7 +493,7 @@ ci.thin_tester(
             "retry_only_failed_tests",
             targets.mixin(
                 args = [
-                    "--enable-features=InitialWebUI,WebUIReloadButton,WebUISplitTabsButton,SkipIPCChannelPausingForNonGuests,WebUIInProcessResourceLoadingV2,InitialWebUISyncNavStartToCommit",
+                    "--enable-features=InitialWebUI:high_stream_priority/true,WebUIReloadButton:WebUIReloadButtonDeferBrowserViewShow/true/WebUIReloadButtonKeepVisibleUntilPaint/true,SkipIPCChannelPausingForNonGuests,WebUIInProcessResourceLoadingV2,InitialWebUISyncNavStartToCommit,InitialWebUIWithoutExtensions,SendGPUChannelEarly",
                 ],
                 swarming = targets.swarming(
                     hard_timeout_sec = 14400,

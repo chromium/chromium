@@ -3,7 +3,7 @@
     "gtest_tests": [
       {
         "args": [
-          "--enable-features=InitialWebUI,WebUIReloadButton,WebUISplitTabsButton,SkipIPCChannelPausingForNonGuests,WebUIInProcessResourceLoadingV2,InitialWebUISyncNavStartToCommit"
+          "--enable-features=InitialWebUI:high_stream_priority/true,WebUIReloadButton:WebUIReloadButtonDeferBrowserViewShow/true/WebUIReloadButtonKeepVisibleUntilPaint/true,SkipIPCChannelPausingForNonGuests,WebUIInProcessResourceLoadingV2,InitialWebUISyncNavStartToCommit,InitialWebUIWithoutExtensions,SendGPUChannelEarly"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -26,7 +26,7 @@
       },
       {
         "args": [
-          "--enable-features=InitialWebUI,WebUIReloadButton,WebUISplitTabsButton,SkipIPCChannelPausingForNonGuests,WebUIInProcessResourceLoadingV2,InitialWebUISyncNavStartToCommit"
+          "--enable-features=InitialWebUI:high_stream_priority/true,WebUIReloadButton:WebUIReloadButtonDeferBrowserViewShow/true/WebUIReloadButtonKeepVisibleUntilPaint/true,SkipIPCChannelPausingForNonGuests,WebUIInProcessResourceLoadingV2,InitialWebUISyncNavStartToCommit,InitialWebUIWithoutExtensions,SendGPUChannelEarly"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -49,7 +49,7 @@
       },
       {
         "args": [
-          "--enable-features=InitialWebUI,WebUIReloadButton,WebUISplitTabsButton,SkipIPCChannelPausingForNonGuests,WebUIInProcessResourceLoadingV2,InitialWebUISyncNavStartToCommit"
+          "--enable-features=InitialWebUI:high_stream_priority/true,WebUIReloadButton:WebUIReloadButtonDeferBrowserViewShow/true/WebUIReloadButtonKeepVisibleUntilPaint/true,SkipIPCChannelPausingForNonGuests,WebUIInProcessResourceLoadingV2,InitialWebUISyncNavStartToCommit,InitialWebUIWithoutExtensions,SendGPUChannelEarly"
         ],
         "isolate_profile_data": true,
         "merge": {
