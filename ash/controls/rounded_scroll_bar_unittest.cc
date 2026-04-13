@@ -78,6 +78,8 @@ class RoundedScrollBarTest : public views::ViewsTestBase {
   }
 
   void TearDown() override {
+    thumb_ = nullptr;
+    scroll_bar_ = nullptr;
     widget_.reset();
     ViewsTestBase::TearDown();
   }
@@ -85,8 +87,8 @@ class RoundedScrollBarTest : public views::ViewsTestBase {
  protected:
   views::UniqueWidgetPtr widget_;
   TestScrollBarController controller_;
-  raw_ptr<RoundedScrollBar, DanglingUntriaged> scroll_bar_ = nullptr;
-  raw_ptr<views::BaseScrollBarThumb, DanglingUntriaged> thumb_ = nullptr;
+  raw_ptr<RoundedScrollBar> scroll_bar_ = nullptr;
+  raw_ptr<views::BaseScrollBarThumb> thumb_ = nullptr;
   std::unique_ptr<ui::test::EventGenerator> generator_;
 };
 
