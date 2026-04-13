@@ -1110,5 +1110,49 @@ suite('General', () => {
       // Folder should still have 4 bookmarks because the click was ignored.
       assertEquals(4, getBookmarksInList(powerBookmarksList, 0).length);
     });
+
+    test('ClosesContextMenuOnVisibilityChange', async () => {
+      const bookmarks = getBookmarks(powerBookmarksList);
+      assertTrue(bookmarks.length > 0);
+      const bookmark = bookmarks[0]!;
+
+      // Open context menu.
+      powerBookmarksList.$.contextMenu.showAt(
+          document.body, [bookmark], false, false, false, 0);
+      await flushTasks();
+      await waitAfterNextRender(powerBookmarksList.$.contextMenu);
+      assertTrue(powerBookmarksList.$.contextMenu.isOpen());
+
+      // Mock visibility state and dispatch event.
+      const originalVisibilityState = document.visibilityState;
+      Object.defineProperty(
+          document, 'visibilityState', {value: 'hidden', configurable: true});
+      document.dispatchEvent(new Event('visibilitychange'));
+      await flushTasks();
+
+      // Verify menu is closed.
+      assertFalse(powerBookmarksList.$.contextMenu.isOpen());
+
+      // Cleanup: restore document state.
+      Object.defineProperty(
+          document, 'visibilityState', {value: originalVisibilityState});
+    });
+
+    test('ShowUiOnlyCalledOnce', async () => {
+      // connectedCallback was already called once during setup.
+      assertEquals(1, bookmarksApi.getArgs('showUi').length);
+
+      // Detach and re-attach the element to simulate switching away and back.
+      const parent = powerBookmarksList.parentElement;
+      assertTrue(!!parent);
+      powerBookmarksList.remove();
+      parent.appendChild(powerBookmarksList);
+
+      await flushTasks();
+
+      // Verify showUi was NOT called a second time.
+      assertEquals(1, bookmarksApi.getArgs('showUi').length);
+    });
+
   });
 });

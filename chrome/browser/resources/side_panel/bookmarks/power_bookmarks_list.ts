@@ -8,7 +8,6 @@ import './icons.html.js';
 import './power_bookmarks_context_menu.js';
 import './power_bookmarks_labels.js';
 import './power_bookmark_row.js';
-import './power_bookmarks_context_menu.js';
 import './power_bookmarks_edit_dialog.js';
 import '//bookmarks-side-panel.top-chrome/shared/sp_empty_state.js';
 import '//bookmarks-side-panel.top-chrome/shared/sp_footer.js';
@@ -344,6 +343,12 @@ export class PowerBookmarksListElement extends PolymerElement implements
   declare private updatedElementIds_: string[];
   declare private bookmarksTreeViewEnabled_: boolean;
   private rebuildNavigationElementsDebouncer_: Debouncer|null = null;
+  private showUiCalled_: boolean = false;
+  private visibilityChangedListener_: () => void = () => {
+    if (document.visibilityState === 'hidden') {
+      this.$.contextMenu.close();
+    }
+  };
 
   constructor() {
     super();
@@ -364,9 +369,14 @@ export class PowerBookmarksListElement extends PolymerElement implements
   override connectedCallback() {
     super.connectedCallback();
     this.setAttribute('role', 'application');
-    listenOnce(this.$.powerBookmarksContainer, 'dom-change', () => {
-      setTimeout(() => this.bookmarksApi_.showUi(), 0);
-    });
+    if (!this.showUiCalled_) {
+      this.showUiCalled_ = true;
+      listenOnce(this.$.powerBookmarksContainer, 'dom-change', () => {
+        setTimeout(() => {
+          this.bookmarksApi_.showUi();
+        }, 0);
+      });
+    }
     this.focusOutlineManager_ = FocusOutlineManager.forDocument(document);
     this.bookmarksService_.startListening();
     this.priceTrackingProxy_.getAllPriceTrackedBookmarkProductInfo().then(
@@ -404,6 +414,9 @@ export class PowerBookmarksListElement extends PolymerElement implements
     this.addEventListener(BOOKMARK_ROW_LOAD_EVENT, () => {
       this.rebuildNavigationElements_();
     });
+
+    document.addEventListener(
+        'visibilitychange', this.visibilityChangedListener_);
   }
 
   override disconnectedCallback() {
@@ -416,6 +429,9 @@ export class PowerBookmarksListElement extends PolymerElement implements
 
     this.bookmarksDragManager_.stopObserving();
     this.keyArrowNavigationService_.stopListening();
+
+    document.removeEventListener(
+        'visibilitychange', this.visibilityChangedListener_);
   }
 
   setCurrentUrl(url: string) {
