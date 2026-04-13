@@ -405,6 +405,7 @@ bool IdentityGetAuthTokenFunction::ShouldStartSigninFlow() {
 }
 
 void IdentityGetAuthTokenFunction::StartSigninFlow() {
+#if BUILDFLAG(ENABLE_EXTENSIONS)
   DCHECK(ShouldStartSigninFlow());
 
   // All cached tokens are invalid because the user is not signed in.
@@ -443,6 +444,9 @@ void IdentityGetAuthTokenFunction::StartSigninFlow() {
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
   ShowExtensionLoginPrompt();
 #endif
+#else
+  SigninFailed();
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 }
 
 void IdentityGetAuthTokenFunction::StartMintTokenFlow(
@@ -915,6 +919,7 @@ void IdentityGetAuthTokenFunction::OnChromeSigninDialogDestroyed() {
 #endif
 
 void IdentityGetAuthTokenFunction::ShowExtensionLoginPrompt() {
+#if BUILDFLAG(ENABLE_EXTENSIONS)
   const CoreAccountInfo& account = token_key_.account_info;
   std::string email_hint = account.IsEmpty()
                                ? GetSigninPrimaryAccount(GetProfile()).email
@@ -922,6 +927,9 @@ void IdentityGetAuthTokenFunction::ShowExtensionLoginPrompt() {
 
   signin_ui_util::ShowExtensionSigninPrompt(GetProfile(),
                                             IsPrimaryAccountOnly(), email_hint);
+#else
+  NOTREACHED();
+#endif
 }
 
 void IdentityGetAuthTokenFunction::ShowRemoteConsentDialog(

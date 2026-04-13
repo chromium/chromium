@@ -13,10 +13,6 @@ DECLARE_UNIMPLEMENTED_EXTENSION_FUNCTION(
     "identity.clearAllCachedAuthTokens",
     IDENTITY_CLEARALLCACHEDAUTHTOKENS);
 
-DECLARE_UNIMPLEMENTED_EXTENSION_FUNCTION(IdentityGetAuthTokenFunction,
-                                         "identity.getAuthToken",
-                                         EXPERIMENTAL_IDENTITY_GETAUTHTOKEN);
-
 DECLARE_UNIMPLEMENTED_EXTENSION_FUNCTION(
     IdentityRemoveCachedAuthTokenFunction,
     "identity.removeCachedAuthToken",
