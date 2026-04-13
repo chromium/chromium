@@ -280,8 +280,19 @@ void SharedImageStub::OnCreateSharedImageWithData(
   TRACE_EVENT2("gpu", "SharedImageStub::OnCreateSharedImageWithData", "width",
                params->si_info->meta.size.width(), "height",
                params->si_info->meta.size.height());
-  bool needs_gl = HasGLES2ReadOrWriteUsage(params->si_info->meta.usage);
+
+  auto& metadata = params->si_info->meta;
+
+  bool needs_gl = HasGLES2ReadOrWriteUsage(metadata.usage);
   if (!MakeContextCurrent(needs_gl)) {
+    OnError();
+    return;
+  }
+
+  auto min_size = metadata.format.MaybeEstimatedSizeInBytes(metadata.size);
+  if (params->pixel_data_size == 0 || !min_size ||
+      params->pixel_data_size < min_size.value()) {
+    LOG(ERROR) << "SharedImageStub: upload data size is invalid";
     OnError();
     return;
   }
@@ -308,10 +319,8 @@ void SharedImageStub::OnCreateSharedImageWithData(
       memory.subspan(params->pixel_data_offset, params->pixel_data_size);
 
   if (!factory_->CreateSharedImage(
-          params->mailbox, params->si_info->meta.format,
-          params->si_info->meta.size, params->si_info->meta.color_space,
-          params->si_info->meta.surface_origin,
-          params->si_info->meta.alpha_type, params->si_info->meta.usage,
+          params->mailbox, metadata.format, metadata.size, metadata.color_space,
+          metadata.surface_origin, metadata.alpha_type, metadata.usage,
           GetLabel(params->si_info->debug_label), subspan)) {
     LOG(ERROR) << kSICreationFailureError;
     OnError();
