@@ -105,6 +105,12 @@ class ProfileTokenPolicyWebSigninService : public UserPolicySigninServiceBase {
   // Observer bridge for profile added events.
   ProfileManagerObserverBridge profile_manager_observer_bridge_{this};
 
+  base::ScopedObservation<CloudPolicyService, CloudPolicyService::Observer>
+      cloud_policy_service_observation_{this};
+
+  base::ScopedObservation<CloudPolicyClient, CloudPolicyClient::Observer>
+      cloud_policy_client_observation_{this};
+
   base::WeakPtrFactory<ProfileTokenPolicyWebSigninService> weak_factory_{this};
 };
 

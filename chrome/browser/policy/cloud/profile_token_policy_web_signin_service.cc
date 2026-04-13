@@ -151,9 +151,9 @@ void ProfileTokenPolicyWebSigninService::InitializeCloudPolicyManager(
   DCHECK(manager->core()->service());
 
   // Observe the client to detect errors fetching policy.
-  manager->core()->client()->AddObserver(this);
+  cloud_policy_client_observation_.Observe(manager->core()->client());
   // Observe the service to determine when it's initialized.
-  manager->core()->service()->AddObserver(this);
+  cloud_policy_service_observation_.Observe(manager->core()->service());
 }
 
 bool ProfileTokenPolicyWebSigninService::CanApplyPolicies(

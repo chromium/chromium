@@ -7,17 +7,19 @@
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/test/bind.h"
+#include "base/test/test_future.h"
 #include "build/build_config.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile_attributes_entry.h"
 #include "chrome/browser/profiles/profile_attributes_storage.h"
 #include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/browser/profiles/profile_manager_observer.h"
 #include "chrome/browser/profiles/profile_test_util.h"
+#include "chrome/browser/signin/signin_browser_test_base.h"
 #include "chrome/browser/signin/web_signin_interceptor.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
-#include "chrome/test/base/browser_with_test_window_test.h"
-#include "chrome/test/base/testing_browser_process.h"
-#include "chrome/test/base/testing_profile.h"
-#include "chrome/test/base/testing_profile_manager.h"
+#include "chrome/test/base/in_process_browser_test.h"
+#include "content/public/test/browser_test.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
@@ -94,24 +96,57 @@ MatchBubbleParameters(
                      parameters.show_managed_disclaimer));
 }
 
+class ProfileAddedWaiter : public ProfileManagerObserver {
+ public:
+  ProfileAddedWaiter() {
+    g_browser_process->profile_manager()->AddObserver(this);
+  }
+  ~ProfileAddedWaiter() override {
+    g_browser_process->profile_manager()->RemoveObserver(this);
+  }
+  void OnProfileAdded(Profile* profile) override { future_.SetValue(profile); }
+  Profile* Wait() { return future_.Get(); }
+
+ private:
+  base::test::TestFuture<Profile*> future_;
+};
+
 }  // namespace
 
-class ProfileTokenWebSigninInterceptorTest : public BrowserWithTestWindowTest {
+class ProfileTokenWebSigninInterceptorTest
+    : public SigninBrowserTestBase,
+      public ProfileAttributesStorage::Observer {
  public:
   ProfileTokenWebSigninInterceptorTest() = default;
 
   ~ProfileTokenWebSigninInterceptorTest() override = default;
 
-  void SetUp() override {
-    BrowserWithTestWindowTest::SetUp();
+  void SetUpOnMainThread() override {
+    SigninBrowserTestBase::SetUpOnMainThread();
+    g_browser_process->profile_manager()
+        ->GetProfileAttributesStorage()
+        .AddObserver(this);
     auto delegate = std::make_unique<MockDelegate>();
     delegate_ = delegate.get();
     interceptor_ = std::make_unique<ProfileTokenWebSigninInterceptor>(
-        profile(), std::move(delegate));
+        browser()->profile(), std::move(delegate));
     interceptor_->SetDisableBrowserCreationAfterInterceptionForTesting(true);
+  }
 
-    // Create the first tab so that web_contents() exists.
-    AddTab(browser(), GURL("http://foo/1"));
+  void TearDownOnMainThread() override {
+    g_browser_process->profile_manager()
+        ->GetProfileAttributesStorage()
+        .RemoveObserver(this);
+    SigninBrowserTestBase::TearDownOnMainThread();
+  }
+
+  void OnProfileAdded(const base::FilePath& profile_path) override {
+    auto* entry = g_browser_process->profile_manager()
+                      ->GetProfileAttributesStorage()
+                      .GetProfileAttributesWithPath(profile_path);
+    if (entry) {
+      entry->SetDasherlessManagement(true);
+    }
   }
 
   content::WebContents* web_contents() {
@@ -123,35 +158,38 @@ class ProfileTokenWebSigninInterceptorTest : public BrowserWithTestWindowTest {
   raw_ptr<MockDelegate> delegate_ = nullptr;  // Owned by `interceptor_`
 };
 
-TEST_F(ProfileTokenWebSigninInterceptorTest, NoInterceptionWithInvalidToken) {
+IN_PROC_BROWSER_TEST_F(ProfileTokenWebSigninInterceptorTest,
+                       NoInterceptionWithInvalidToken) {
   EXPECT_CALL(*delegate_, ShowSigninInterceptionBubble(_, _, _)).Times(0);
   interceptor_->MaybeInterceptSigninProfile(web_contents(), "id",
                                             /*enrollment_token=*/std::string());
 }
 
-TEST_F(ProfileTokenWebSigninInterceptorTest, NoInterceptionWithNoWebContents) {
+IN_PROC_BROWSER_TEST_F(ProfileTokenWebSigninInterceptorTest,
+                       NoInterceptionWithNoWebContents) {
   EXPECT_CALL(*delegate_, ShowSigninInterceptionBubble(_, _, _)).Times(0);
   interceptor_->MaybeInterceptSigninProfile(nullptr, "id", "token");
 }
 
-TEST_F(ProfileTokenWebSigninInterceptorTest, NoInterceptionWithSameProfile) {
+IN_PROC_BROWSER_TEST_F(ProfileTokenWebSigninInterceptorTest,
+                       NoInterceptionWithSameProfile) {
   EXPECT_CALL(*delegate_, ShowSigninInterceptionBubble(_, _, _)).Times(0);
 
-  auto* entry = TestingBrowserProcess::GetGlobal()
-                    ->profile_manager()
-                    ->GetProfileAttributesStorage()
-                    .GetProfileAttributesWithPath(profile()->GetPath());
+  auto* entry =
+      g_browser_process->profile_manager()
+          ->GetProfileAttributesStorage()
+          .GetProfileAttributesWithPath(browser()->profile()->GetPath());
   entry->SetProfileManagementId("id");
   entry->SetProfileManagementEnrollmentToken("token");
+  entry->SetDasherlessManagement(true);
 
   interceptor_->MaybeInterceptSigninProfile(web_contents(), "id", "token");
 }
 
-TEST_F(ProfileTokenWebSigninInterceptorTest,
-       InterceptionCreatesNoProfileIfDeclined) {
-  const int num_profiles_before = TestingBrowserProcess::GetGlobal()
-                                      ->profile_manager()
-                                      ->GetNumberOfProfiles();
+IN_PROC_BROWSER_TEST_F(ProfileTokenWebSigninInterceptorTest,
+                       InterceptionCreatesNoProfileIfDeclined) {
+  const int num_profiles_before =
+      g_browser_process->profile_manager()->GetNumberOfProfiles();
 
   WebSigninInterceptor::Delegate::BubbleParameters expected_parameters(
       WebSigninInterceptor::SigninInterceptionType::kEnterprise, AccountInfo(),
@@ -172,9 +210,8 @@ TEST_F(ProfileTokenWebSigninInterceptorTest,
 
   base::RunLoop().RunUntilIdle();
 
-  const int num_profiles_after = TestingBrowserProcess::GetGlobal()
-                                     ->profile_manager()
-                                     ->GetNumberOfProfiles();
+  const int num_profiles_after =
+      g_browser_process->profile_manager()->GetNumberOfProfiles();
   EXPECT_EQ(num_profiles_before, num_profiles_after);
 }
 
@@ -186,11 +223,10 @@ TEST_F(ProfileTokenWebSigninInterceptorTest,
 #define MAYBE_InterceptionCreatesNewProfileIfAccepted \
   InterceptionCreatesNewProfileIfAccepted
 #endif
-TEST_F(ProfileTokenWebSigninInterceptorTest,
-       MAYBE_InterceptionCreatesNewProfileIfAccepted) {
-  const int num_profiles_before = TestingBrowserProcess::GetGlobal()
-                                      ->profile_manager()
-                                      ->GetNumberOfProfiles();
+IN_PROC_BROWSER_TEST_F(ProfileTokenWebSigninInterceptorTest,
+                       MAYBE_InterceptionCreatesNewProfileIfAccepted) {
+  const int num_profiles_before =
+      g_browser_process->profile_manager()->GetNumberOfProfiles();
   WebSigninInterceptor::Delegate::BubbleParameters expected_parameters(
       WebSigninInterceptor::SigninInterceptionType::kEnterprise, AccountInfo(),
       AccountInfo(), SkColor(), /*show_link_data_option=*/false,
@@ -205,13 +241,13 @@ TEST_F(ProfileTokenWebSigninInterceptorTest,
             std::move(callback).Run(SigninInterceptionResult::kAccepted);
             return nullptr;
           });
+
+  ProfileAddedWaiter waiter;
   interceptor_->MaybeInterceptSigninProfile(web_contents(), "id", "token");
+  waiter.Wait();
 
-  base::RunLoop().RunUntilIdle();
-
-  const int num_profiles_after = TestingBrowserProcess::GetGlobal()
-                                     ->profile_manager()
-                                     ->GetNumberOfProfiles();
+  const int num_profiles_after =
+      g_browser_process->profile_manager()->GetNumberOfProfiles();
   EXPECT_EQ(num_profiles_before + 1, num_profiles_after);
 }
 
@@ -223,11 +259,11 @@ TEST_F(ProfileTokenWebSigninInterceptorTest,
 #define MAYBE_InterceptionCreatesEphemeralProfileIfAcceptedWithNoId \
   InterceptionCreatesEphemeralProfileIfAcceptedWithNoId
 #endif
-TEST_F(ProfileTokenWebSigninInterceptorTest,
-       MAYBE_InterceptionCreatesEphemeralProfileIfAcceptedWithNoId) {
-  const int num_profiles_before = TestingBrowserProcess::GetGlobal()
-                                      ->profile_manager()
-                                      ->GetNumberOfProfiles();
+IN_PROC_BROWSER_TEST_F(
+    ProfileTokenWebSigninInterceptorTest,
+    MAYBE_InterceptionCreatesEphemeralProfileIfAcceptedWithNoId) {
+  const int num_profiles_before =
+      g_browser_process->profile_manager()->GetNumberOfProfiles();
   WebSigninInterceptor::Delegate::BubbleParameters expected_parameters(
       WebSigninInterceptor::SigninInterceptionType::kEnterprise, AccountInfo(),
       AccountInfo(), SkColor(), /*show_link_data_option=*/false,
@@ -242,19 +278,19 @@ TEST_F(ProfileTokenWebSigninInterceptorTest,
             std::move(callback).Run(SigninInterceptionResult::kAccepted);
             return nullptr;
           });
+
+  ProfileAddedWaiter waiter;
   interceptor_->MaybeInterceptSigninProfile(web_contents(), std::string(),
                                             "token");
+  waiter.Wait();
 
-  base::RunLoop().RunUntilIdle();
-
-  const int num_profiles_after = TestingBrowserProcess::GetGlobal()
-                                     ->profile_manager()
-                                     ->GetNumberOfProfiles();
+  const int num_profiles_after =
+      g_browser_process->profile_manager()->GetNumberOfProfiles();
   EXPECT_EQ(num_profiles_before + 1, num_profiles_after);
 }
 
-TEST_F(ProfileTokenWebSigninInterceptorTest,
-       InterceptionSwitchesToExistingProfileIfAccepted) {
+IN_PROC_BROWSER_TEST_F(ProfileTokenWebSigninInterceptorTest,
+                       InterceptionSwitchesToExistingProfileIfAccepted) {
   auto* profile_manager = g_browser_process->profile_manager();
   Profile& new_profile = profiles::testing::CreateProfileSync(
       profile_manager, profile_manager->GenerateNextProfileDirectoryPath());
@@ -263,6 +299,7 @@ TEST_F(ProfileTokenWebSigninInterceptorTest,
                     .GetProfileAttributesWithPath(new_profile.GetPath());
   entry->SetProfileManagementId("id");
   entry->SetProfileManagementEnrollmentToken("token");
+  entry->SetDasherlessManagement(true);
 
   WebSigninInterceptor::Delegate::BubbleParameters expected_parameters(
       WebSigninInterceptor::SigninInterceptionType::kProfileSwitch,
@@ -280,16 +317,14 @@ TEST_F(ProfileTokenWebSigninInterceptorTest,
             return nullptr;
           });
 
-  const int num_profiles_before = TestingBrowserProcess::GetGlobal()
-                                      ->profile_manager()
-                                      ->GetNumberOfProfiles();
+  const int num_profiles_before =
+      g_browser_process->profile_manager()->GetNumberOfProfiles();
 
   interceptor_->MaybeInterceptSigninProfile(web_contents(), "id", "token");
 
   base::RunLoop().RunUntilIdle();
 
-  const int num_profiles_after = TestingBrowserProcess::GetGlobal()
-                                     ->profile_manager()
-                                     ->GetNumberOfProfiles();
+  const int num_profiles_after =
+      g_browser_process->profile_manager()->GetNumberOfProfiles();
   EXPECT_EQ(num_profiles_before, num_profiles_after);
 }
