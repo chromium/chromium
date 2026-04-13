@@ -35,6 +35,7 @@ static_library("auth_factor_config") {
   ]
 
   public_deps = [
+    "//chromeos/ash/components/login/auth/public:authpublic",
     "//chromeos/ash/services/auth_factor_config/public/mojom",
     "//mojo/public/cpp/bindings",
   ]

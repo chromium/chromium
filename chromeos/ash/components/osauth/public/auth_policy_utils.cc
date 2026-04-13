@@ -5,13 +5,18 @@
 #include "auth_policy_utils.h"
 
 #include <optional>
+#include <string>
 
 #include "ash/constants/ash_pref_names.h"
 #include "base/containers/fixed_flat_map.h"
+#include "chromeos/ash/components/cryptohome/auth_factor.h"
+#include "chromeos/ash/components/login/auth/public/cryptohome_key_constants.h"
 #include "chromeos/ash/components/osauth/public/common_types.h"
 #include "components/prefs/pref_service.h"
 
 namespace ash {
+
+namespace {
 
 // Maps auth factors policy values to their corresponding `AshAuthFactor` enum.
 // LINT.IfChange(LocalAuthFactorsPolicyMap)
@@ -22,6 +27,8 @@ constexpr auto kAuthFactorPolicyMap =
          {"LOCAL_PASSWORD", {AshAuthFactor::kLocalPassword}},
          {"PIN", {AshAuthFactor::kCryptohomePin}}});
 // LINT.ThenChange(//components/policy/resources/templates/policy_definitions/Signin/AllowedLocalAuthFactors.yaml:LocalAuthFactorsPolicySchema)
+
+}  // namespace
 
 std::optional<AuthFactorsSet> GetAuthFactorsSetFromPolicyList(
     const base::ListValue* policy_allowed_auth_factors) {
@@ -47,6 +54,25 @@ bool IsPinEnabledAsMainFactorByPolicy(const PrefService* pref_service) {
 
   return policy_list.has_value() &&
          policy_list->Has(ash::AshAuthFactor::kCryptohomePin);
+}
+
+bool IsGaiaPassword(const cryptohome::AuthFactor& factor) {
+  if (factor.ref().type() != cryptohome::AuthFactorType::kPassword) {
+    return false;
+  }
+
+  const std::string& label = factor.ref().label().value();
+  return label == kCryptohomeGaiaKeyLabel ||
+         label.find(kCryptohomeGaiaKeyLegacyLabelPrefix) == 0;
+}
+
+bool IsLocalPassword(const cryptohome::AuthFactor& factor) {
+  if (factor.ref().type() != cryptohome::AuthFactorType::kPassword) {
+    return false;
+  }
+
+  const std::string& label = factor.ref().label().value();
+  return label == kCryptohomeLocalPasswordKeyLabel;
 }
 
 }  // namespace ash

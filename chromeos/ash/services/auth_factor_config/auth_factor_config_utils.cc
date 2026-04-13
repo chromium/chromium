@@ -2,28 +2,18 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chromeos/ash/components/cryptohome/auth_factor.h"
-#include "chromeos/ash/components/login/auth/public/cryptohome_key_constants.h"
+#include "chromeos/ash/services/auth_factor_config/auth_factor_config_utils.h"
+
+#include "chromeos/ash/components/osauth/public/auth_policy_utils.h"
 
 namespace ash::auth {
 
 bool IsGaiaPassword(const cryptohome::AuthFactor& factor) {
-  if (factor.ref().type() != cryptohome::AuthFactorType::kPassword) {
-    return false;
-  }
-
-  const std::string& label = factor.ref().label().value();
-  return label == kCryptohomeGaiaKeyLabel ||
-         label.find(kCryptohomeGaiaKeyLegacyLabelPrefix) == 0;
+  return ash::IsGaiaPassword(factor);
 }
 
 bool IsLocalPassword(const cryptohome::AuthFactor& factor) {
-  if (factor.ref().type() != cryptohome::AuthFactorType::kPassword) {
-    return false;
-  }
-
-  const std::string& label = factor.ref().label().value();
-  return label == kCryptohomeLocalPasswordKeyLabel;
+  return ash::IsLocalPassword(factor);
 }
 
 }  // namespace ash::auth

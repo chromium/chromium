@@ -5,7 +5,9 @@
 #ifndef CHROMEOS_ASH_SERVICES_AUTH_FACTOR_CONFIG_AUTH_FACTOR_CONFIG_UTILS_H_
 #define CHROMEOS_ASH_SERVICES_AUTH_FACTOR_CONFIG_AUTH_FACTOR_CONFIG_UTILS_H_
 
-#include "chromeos/ash/components/cryptohome/auth_factor.h"
+namespace cryptohome {
+class AuthFactor;
+}
 
 namespace ash::auth {
 

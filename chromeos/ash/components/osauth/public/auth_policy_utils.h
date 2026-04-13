@@ -12,6 +12,10 @@
 #include "chromeos/ash/components/osauth/public/common_types.h"
 #include "components/prefs/pref_service.h"
 
+namespace cryptohome {
+class AuthFactor;
+}
+
 namespace ash {
 
 // Takes in a list of a policy values and maps the result into an auth factors
@@ -22,6 +26,12 @@ std::optional<AuthFactorsSet> GetAuthFactorsSetFromPolicyList(
 
 COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_OSAUTH)
 bool IsPinEnabledAsMainFactorByPolicy(const PrefService* pref_service);
+
+COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_OSAUTH)
+bool IsGaiaPassword(const cryptohome::AuthFactor& factor);
+
+COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_OSAUTH)
+bool IsLocalPassword(const cryptohome::AuthFactor& factor);
 
 }  // namespace ash
 
