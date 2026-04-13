@@ -8,8 +8,9 @@
 
 #include "base/task/thread_pool.h"
 #include "chrome/browser/accessibility/phrase_segmentation/dependency_parser_model_loader.h"
-#include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
-#include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
+#include "chrome/browser/optimization_guide/model_execution/optimization_guide_global_state.h"
+#include "chrome/browser/optimization_guide/optimization_guide_global_state_holder_keyed_service.h"
+#include "chrome/browser/optimization_guide/optimization_guide_global_state_holder_keyed_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "ui/accessibility/accessibility_features.h"
 
@@ -34,7 +35,8 @@ DependencyParserModelLoaderFactory::DependencyParserModelLoaderFactory()
               .WithAshInternals(ProfileSelection::kOwnInstance)
               .Build()) {
   if (features::IsReadAnythingReadAloudPhraseHighlightingEnabled()) {
-    DependsOn(OptimizationGuideKeyedServiceFactory::GetInstance());
+    DependsOn(
+        OptimizationGuideGlobalStateHolderKeyedServiceFactory::GetInstance());
   }
 }
 
@@ -50,8 +52,14 @@ DependencyParserModelLoaderFactory::BuildServiceInstanceForBrowserContext(
 
   // The optimization guide service must be available for the translate model
   // service to be created.
-  auto* opt_guide = OptimizationGuideKeyedServiceFactory::GetForProfile(
-      Profile::FromBrowserContext(context));
+  auto* profile = Profile::FromBrowserContext(context);
+  auto* global_state_holder =
+      OptimizationGuideGlobalStateHolderKeyedServiceFactory::GetForProfile(
+          profile);
+  auto* opt_guide =
+      global_state_holder
+          ? &global_state_holder->GetGlobalState().prediction_manager()
+          : nullptr;
 
   if (opt_guide) {
     scoped_refptr<base::SequencedTaskRunner> background_task_runner =
