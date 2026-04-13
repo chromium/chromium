@@ -37,6 +37,8 @@ class LocalAuthFactorsPolicyController : public KeyedService {
       base::RepeatingClosure on_pref_processed);
 
  private:
+  PrefService& prefs();
+
   void OnAllowedAuthFactorsPrefUpdated();
   void OnGetAuthFactorsConfiguration(
       base::ScopedClosureRunner pref_processed_runner,

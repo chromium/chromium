@@ -49,6 +49,10 @@ void LocalAuthFactorsPolicyController::SetPrefProcessedCallbackForTesting(
   GetOnPrefProcessedClosure() = std::move(on_pref_processed);
 }
 
+PrefService& LocalAuthFactorsPolicyController::prefs() {
+  return *pref_change_registrar_.prefs();
+}
+
 LocalAuthFactorsPolicyController::LocalAuthFactorsPolicyController(
     PrefService& pref_service,
     const AccountId& account_id)
@@ -67,8 +71,7 @@ LocalAuthFactorsPolicyController::~LocalAuthFactorsPolicyController() = default;
 
 void LocalAuthFactorsPolicyController::OnAllowedAuthFactorsPrefUpdated() {
   base::ScopedClosureRunner pref_processed_runner(GetOnPrefProcessedClosure());
-  if (!pref_change_registrar_.prefs()->IsManagedPreference(
-          ash::prefs::kAllowedLocalAuthFactors)) {
+  if (!prefs().IsManagedPreference(ash::prefs::kAllowedLocalAuthFactors)) {
     // If the pref is not managed, it means the admin has not set a policy, and
     // thus no action is needed from this handler. Also, it prevents unintended
     // behavior if the preference were to be modified by non-policy means.
@@ -134,8 +137,8 @@ AuthFactorEditor* LocalAuthFactorsPolicyController::GetAuthFactorEditor() {
 
 std::optional<ash::AuthFactorsSet>
 LocalAuthFactorsPolicyController::GetAllowedAuthFactors() {
-  auto& allowed_auth_factors = pref_change_registrar_.prefs()->GetList(
-      ash::prefs::kAllowedLocalAuthFactors);
+  auto& allowed_auth_factors =
+      prefs().GetList(ash::prefs::kAllowedLocalAuthFactors);
   return ash::GetAuthFactorsSetFromPolicyList(&allowed_auth_factors);
 }
 
