@@ -2253,6 +2253,10 @@ crbug.com/420746629 [ Win11 ] virtual/webnn-service-with-gpu/external/wpt/webnn/
 crbug.com/420746629 [ Win11 ] virtual/webnn-service-with-gpu/external/wpt/webnn/conformance_tests/l2Pool2d.https.any.html?gpu [ Failure ]  # Flaky output
 crbug.com/420746629 [ Win11 ] virtual/webnn-service-with-gpu/external/wpt/webnn/conformance_tests/maxPool2d.https.any.html?gpu [ Failure ]  # Flaky output
 crbug.com/429276267 [ Win11 ] virtual/webnn-service-with-gpu/external/wpt/webnn/conformance_tests/tile.https.any.html?gpu [ Crash ]
+crbug.com/501115605 [ Mac14-arm64 ] virtual/webnn-service-on-npu/external/wpt/webnn/conformance_tests/expand.https.any.html?npu [ Failure ]  # Flaky output
+crbug.com/501115605 [ Mac15-arm64 ] virtual/webnn-service-with-gpu/external/wpt/webnn/conformance_tests/expand.https.any.html?gpu [ Failure ]  # Flaky output
+crbug.com/501115605 [ Mac15 ] virtual/webnn-service-with-gpu/external/wpt/webnn/conformance_tests/expand.https.any.html?gpu [ Failure ]  # Flaky output
+crbug.com/501115605 [ Mac15 ] virtual/webnn-service-on-npu/external/wpt/webnn/conformance_tests/expand.https.any.html?npu [ Failure ]  # Flaky output
 
 # `wdspec` tests
 external/wpt/webdriver/tests/classic/element_send_keys/interactability.py [ Failure ]  # Flaky output

@@ -213,6 +213,10 @@ class GraphBuilderOrt {
   std::string CreateTransposeNode(base::cstring_view input,
                                   base::span<const uint32_t> perm_value);
 
+  void EmulateWithIdentityNode(base::cstring_view label,
+                               base::cstring_view input,
+                               base::cstring_view output);
+
   // Clamp the indices to the range [-dim_size, dim_size), the given data type
   // should be indices's data type.
   std::string ClampIndices(base::cstring_view indices,

@@ -767,6 +767,18 @@ std::string GraphBuilderOrt::CreateTransposeNode(
   return output;
 }
 
+void GraphBuilderOrt::EmulateWithIdentityNode(base::cstring_view label,
+                                              base::cstring_view input,
+                                              base::cstring_view output) {
+  const std::string node_name = GenerateNodeName(base::JoinString(
+      {kInserted, kOpTypeIdentity, kToEmulate, label}, kUnderscore));
+
+  std::array<const char*, 1> inputs = {input.c_str()};
+  std::array<const char*, 1> outputs = {output.c_str()};
+
+  model_editor_.AddNode(kOpTypeIdentity, node_name, inputs, outputs);
+}
+
 std::string GraphBuilderOrt::ClampIndices(base::cstring_view indices,
                                           OperandDataType data_type,
                                           uint32_t dim_size) {
@@ -1569,13 +1581,27 @@ void GraphBuilderOrt::AddClampOperation(const mojom::Clamp& clamp) {
 }
 
 void GraphBuilderOrt::AddExpandOperation(const mojom::Expand& expand) {
-  const std::string node_name = GenerateNodeName(expand.label);
   const std::string input = GetOperandNameById(expand.input_operand_id);
   const std::string output = GetOperandNameById(expand.output_operand_id);
 
+  const OperandDescriptor& input_descriptor =
+      GetOperand(expand.input_operand_id).descriptor;
   CHECK(context_properties_.data_type_limits.expand_input.Supports(
-      GetOperand(expand.input_operand_id).descriptor));
+      input_descriptor));
 
+  const OperandDescriptor& output_descriptor =
+      GetOperand(expand.output_operand_id).descriptor;
+
+  // Workaround: expanding a scalar to another scalar is supposed to be a no-op,
+  // here we map it to an Identity node to avoid the mishandling of some ORT
+  // EPs.
+  // TODO(crbug.com/500385615): Remove the workaround when the issue is fixed.
+  if (input_descriptor.Rank() == 0 && output_descriptor.Rank() == 0) {
+    EmulateWithIdentityNode(expand.label, input, output);
+    return;
+  }
+
+  const std::string node_name = GenerateNodeName(expand.label);
   const std::vector<uint32_t>& output_shape =
       GetOperand(expand.output_operand_id).descriptor.shape();
 
@@ -2790,12 +2816,9 @@ void GraphBuilderOrt::AddReverseOperation(const mojom::Reverse& reverse) {
   // Workaround: explicitly empty axes for a reverse operation should result in
   // a no-op per spec. But we map this to an Identity node to prevent ORT
   // EPs from mishandling empty arrays.
+  // TODO(crbug.com/500385615): Remove the workaround when the issue is fixed.
   if (reverse.axes.empty()) {
-    const std::string node_name = GenerateNodeName(base::JoinString(
-        {kInserted, kOpTypeIdentity, kToEmulate, reverse.label}, kUnderscore));
-    std::array<const char*, 1> inputs = {input.c_str()};
-    std::array<const char*, 1> outputs = {output.c_str()};
-    model_editor_.AddNode(kOpTypeIdentity, node_name, inputs, outputs);
+    EmulateWithIdentityNode(reverse.label, input, output);
     return;
   }
 
@@ -3059,24 +3082,20 @@ void GraphBuilderOrt::AddTileOperation(const mojom::Tile& tile) {
   CHECK(context_properties_.data_type_limits.tile_input.Supports(
       input_descriptor));
 
-  std::vector<const char*> inputs = {input.c_str()};
-  std::array<const char*, 1> outputs = {output.c_str()};
-
-  // Emulate the tile operation with identity operation for unsupported scalar
-  // input.
-  // TODO(crbug.com/433414906): Remove the workaround for unsupported scalar
-  // input when the ORT tile operation issue is fixed.
-  // https://github.com/microsoft/onnxruntime/issues/11523
+  // Workaround: emulate the tile operation with identity operation for
+  // unsupported scalar input.
+  // TODO(crbug.com/500385615): Remove the workaround when the issue is fixed.
   if (input_descriptor.Rank() == 0) {
-    const std::string node_name = GenerateNodeName(base::JoinString(
-        {kInserted, kOpTypeIdentity, kToEmulate, tile.label}, kUnderscore));
-    model_editor_.AddNode(kOpTypeIdentity, node_name, inputs, outputs);
+    EmulateWithIdentityNode(tile.label, input, output);
     return;
   }
 
   const std::string repeats =
       CreateInt64InitializerForUint32Array(tile.repetitions);
-  inputs.push_back(repeats.c_str());
+
+  std::array<const char*, 2> inputs = {input.c_str(), repeats.c_str()};
+  std::array<const char*, 1> outputs = {output.c_str()};
+
   const std::string node_name = GenerateNodeName(tile.label);
   model_editor_.AddNode(kOpTypeTile, node_name, inputs, outputs);
 }
