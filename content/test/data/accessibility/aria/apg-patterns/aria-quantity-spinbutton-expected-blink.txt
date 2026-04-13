@@ -1,0 +1,27 @@
+rootWebArea
+++genericContainer ignored
+++++genericContainer ignored
+++++++genericContainer ignored
+++++++++group name='Guests'
+++++++++++legend
+++++++++++++staticText name='Guests'
+++++++++++++++inlineTextBox name='Guests'
+++++++++++genericContainer ignored
+++++++++++++genericContainer ignored
+++++++++++++++labelText
+++++++++++++++++staticText name='Adults'
+++++++++++++++++++inlineTextBox name='Adults'
+++++++++++++++genericContainer
+++++++++++++++++button name='Remove adult' nameFrom=title controlsIds=spinButton
+++++++++++++++++spinButton name='Adults' value='1' valueForRange=1.00 minValueForRange=1.00 maxValueForRange=8.00
+++++++++++++++++++genericContainer
+++++++++++++++++++++staticText name='1'
+++++++++++++++++++++++inlineTextBox name='1'
+++++++++++++++++button name='Add adult' nameFrom=title controlsIds=spinButton
+++++++++++++++genericContainer
+++++++++++++++++staticText name='Must be between 1 and 8 '
+++++++++++++++++++inlineTextBox name='Must be between 1 and 8 '
+++++++++++++++genericContainer
+++++++++++++++++staticText name='1 to 8'
+++++++++++++++++++inlineTextBox name='1 to 8'
+++++++++++++++status

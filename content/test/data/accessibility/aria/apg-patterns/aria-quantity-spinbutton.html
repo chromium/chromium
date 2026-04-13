@@ -1,0 +1,76 @@
+<!--
+@BLINK-ALLOW:controlsIds
+@BLINK-ALLOW:error*
+@BLINK-ALLOW:valueForRange
+@BLINK-ALLOW:*ValueForRange
+@WIN-ALLOW:aria-value
+@WIN-ALLOW:RangeValue*
+@WIN-ALLOW:error=*
+@MAC-ALLOW:AXMinValue
+@MAC-ALLOW:AXMaxValue
+@MAC-ALLOW:AXValue
+@MAC-ALLOW:AXErrorMessage*
+-->
+<!DOCTYPE HTML>
+<html>
+  <body>
+    <!-- HTML snippet based on W3C ARIA Quantity Spinbutton Pattern. -->
+    <!-- https://www.w3.org/WAI/ARIA/apg/patterns/spinbutton/examples/quantity-spinbutton/ -->
+    <!-- The HTML snippet is slightly modified to reduce noise. -->
+    <div class="spinners">
+      <fieldset>
+        <legend>
+          Guests
+        </legend>
+        <div class="spinner-fields">
+          <div class="spinner-field">
+            <label for="adults">
+              Adults
+            </label>
+            <div class="spinner">
+              <button type="button"
+                      title="Remove adult"
+                      aria-controls="adults"
+                      data-spinbutton-operation="decrement"
+                      tabindex="-1">
+                <span aria-hidden="true">
+                  −
+                </span>
+              </button>
+              <input id="adults"
+                     aria-errormessage="error-adults"
+                     role="spinbutton"
+                     type="text"
+                     size="4"
+                     inputmode="numeric"
+                     autocomplete="off"
+                     spellcheck="false"
+                     aria-valuemin="1"
+                     aria-valuemax="8"
+                     aria-valuenow="1"
+                     value="1">
+              <button type="button"
+                      title="Add adult"
+                      aria-controls="adults"
+                      data-spinbutton-operation="increment"
+                      tabindex="-1">
+                <span aria-hidden="true">
+                  +
+                </span>
+              </button>
+            </div>
+            <small id="error-adults">
+              Must be between 1 and 8
+            </small>
+            <small id="help-adults">
+              1 to 8
+            </small>
+            <output for="adults"
+                    data-self-destruct="2000"
+                    class="visually-hidden"></output>
+          </div>
+        </div>
+      </fieldset>
+    </div>
+  </body>
+</html>

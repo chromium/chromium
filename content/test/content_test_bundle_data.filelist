@@ -2009,6 +2009,12 @@ data/accessibility/aria/apg-patterns/aria-listbox-grouped-expected-blink.txt
 data/accessibility/aria/apg-patterns/aria-listbox-grouped-expected-mac.txt
 data/accessibility/aria/apg-patterns/aria-listbox-grouped-expected-win.txt
 data/accessibility/aria/apg-patterns/aria-listbox-grouped.html
+data/accessibility/aria/apg-patterns/aria-quantity-spinbutton-expected-android-external.txt
+data/accessibility/aria/apg-patterns/aria-quantity-spinbutton-expected-android.txt
+data/accessibility/aria/apg-patterns/aria-quantity-spinbutton-expected-blink.txt
+data/accessibility/aria/apg-patterns/aria-quantity-spinbutton-expected-mac.txt
+data/accessibility/aria/apg-patterns/aria-quantity-spinbutton-expected-win.txt
+data/accessibility/aria/apg-patterns/aria-quantity-spinbutton.html
 data/accessibility/aria/apg-patterns/aria-treeview-file-directory-computed-properties-expected-android-external.txt
 data/accessibility/aria/apg-patterns/aria-treeview-file-directory-computed-properties-expected-android.txt
 data/accessibility/aria/apg-patterns/aria-treeview-file-directory-computed-properties-expected-blink.txt

@@ -1,0 +1,15 @@
+AXWebArea
+++AXGroup AXSubrole=AXApplicationGroup AXDescription='Guests'
+++++AXGroup
+++++++AXStaticText AXValue='Guests'
+++++AXGroup
+++++++AXStaticText AXValue='Adults'
+++++AXGroup
+++++++AXButton AXDescription='Remove adult'
+++++++AXIncrementor AXMaxValue=8 AXMinValue=1 AXTitle='Adults' AXValue=1
+++++++AXButton AXDescription='Add adult'
+++++AXGroup
+++++++AXStaticText AXValue='Must be between 1 and 8 '
+++++AXGroup
+++++++AXStaticText AXValue='1 to 8'
+++++AXGroup AXSubrole=AXApplicationStatus

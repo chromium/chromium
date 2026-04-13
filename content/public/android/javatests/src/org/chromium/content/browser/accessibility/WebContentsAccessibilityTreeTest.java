@@ -1309,6 +1309,12 @@ public class WebContentsAccessibilityTreeTest {
 
     @Test
     @SmallTest
+    public void test_ariaQuantitySpinbutton() {
+        performApgPatternTest("aria-quantity-spinbutton.html");
+    }
+
+    @Test
+    @SmallTest
     public void test_ariaAccordion() {
         performApgPatternTest("aria-accordion.html");
     }
