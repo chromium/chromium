@@ -164,8 +164,8 @@ public class ParameterizedTestNameTest {
                         Arrays.asList(
                                 "test__Hello",
                                 "test__World",
-                                "testDefaultName",
-                                "testDefaultName"));
+                                "testDefaultName__0",
+                                "testDefaultName__1"));
         for (Runner r : runners) {
             BlockJUnit4RunnerDelegate castedRunner = (BlockJUnit4RunnerDelegate) r;
             for (FrameworkMethod method : castedRunner.computeTestMethods()) {

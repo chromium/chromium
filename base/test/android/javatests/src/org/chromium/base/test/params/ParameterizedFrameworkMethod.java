@@ -21,17 +21,25 @@ public class ParameterizedFrameworkMethod extends FrameworkMethod {
     private final String mName;
 
     public ParameterizedFrameworkMethod(
-            Method method, ParameterSet parameterSet, String classParameterSetName) {
+            Method method,
+            ParameterSet parameterSet,
+            String classParameterSetName,
+            String methodParameterSetName) {
         super(method);
         mParameterSet = parameterSet;
-        String postFix = "";
+        String suffix = "";
         if (classParameterSetName != null && !classParameterSetName.isEmpty()) {
-            postFix += "_" + classParameterSetName;
+            suffix += "_" + classParameterSetName;
         }
-        if (parameterSet != null && !parameterSet.getName().isEmpty()) {
-            postFix += "_" + parameterSet.getName();
+        if (methodParameterSetName != null && !methodParameterSetName.isEmpty()) {
+            suffix += "_" + methodParameterSetName;
         }
-        mName = postFix.isEmpty() ? method.getName() : method.getName() + "_" + postFix;
+        mName = suffix.isEmpty() ? method.getName() : method.getName() + "_" + suffix;
+    }
+
+    public ParameterizedFrameworkMethod(
+            Method method, ParameterSet parameterSet, String classParameterSetName) {
+        this(method, parameterSet, classParameterSetName, parameterSet.getName());
     }
 
     @Override

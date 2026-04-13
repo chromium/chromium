@@ -47,16 +47,15 @@ public class ParameterizedRunnerDelegateFactory {
     }
 
     /**
-     * Match test methods annotated by @UseMethodParameter(X) with
-     * ParameterSetList annotated by @MethodParameter(X)
+     * Match test methods annotated by @UseMethodParameter(X) with ParameterSetList annotated
+     * by @MethodParameter(X)
      *
-     * @param testClass a {@code TestClass} that wraps around the actual java
-     *            test class
-     * @param postFix a name postfix for each test
+     * @param testClass a {@code TestClass} that wraps around the actual java test class
+     * @param suffix a name suffix for each test
      * @return a list of ParameterizedFrameworkMethod
      */
     static List<FrameworkMethod> generateUnmodifiableFrameworkMethodList(
-            TestClass testClass, String postFix) {
+            TestClass testClass, String suffix) {
         // Represent the list of all ParameterizedFrameworkMethod in this test class
         List<FrameworkMethod> returnList = new ArrayList<>();
 
@@ -64,10 +63,11 @@ public class ParameterizedRunnerDelegateFactory {
             if (method.getMethod().isAnnotationPresent(UseMethodParameter.class)) {
                 Iterable<ParameterSet> parameterSets =
                         getParameters(method.getAnnotation(UseMethodParameter.class).value());
-                returnList.addAll(createParameterizedMethods(method, parameterSets, postFix));
+                returnList.addAll(createParameterizedMethods(method, parameterSets, suffix));
             } else {
                 // If test method is not parameterized (does not have UseMethodParameter annotation)
-                returnList.add(new ParameterizedFrameworkMethod(method.getMethod(), null, postFix));
+                returnList.add(
+                        new ParameterizedFrameworkMethod(method.getMethod(), null, suffix, null));
             }
         }
 
@@ -110,8 +110,15 @@ public class ParameterizedRunnerDelegateFactory {
             FrameworkMethod baseMethod, Iterable<ParameterSet> parameterSetList, String suffix) {
         ParameterizedRunner.validateWidth(parameterSetList);
         List<FrameworkMethod> returnList = new ArrayList<>();
+        int i = 0;
         for (ParameterSet set : parameterSetList) {
-            returnList.add(new ParameterizedFrameworkMethod(baseMethod.getMethod(), set, suffix));
+            String name = set.getName();
+            if (name.isEmpty()) {
+                name = String.valueOf(i);
+            }
+            returnList.add(
+                    new ParameterizedFrameworkMethod(baseMethod.getMethod(), set, suffix, name));
+            i++;
         }
         return returnList;
     }
