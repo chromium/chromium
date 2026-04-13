@@ -45,16 +45,11 @@ namespace content {
 class CONTENT_EXPORT MediaPlayersCallbackAggregator
     : public base::RefCountedThreadSafe<MediaPlayersCallbackAggregator> {
  public:
-  // Individual callbacks to ask the renderer for player's video visibility.
-  using OnDemandRequestVisibilityCb = base::OnceCallback<void(bool)>;
-
-  // Aggregate callback. Run once if any player returns `true` for
-  // `meets_visibility_threshold`, or at destruction time if no player returns
-  // `true` for `meets_visibility_threshold`.
-  using ReportContinuousVisibilityCb = base::OnceCallback<void(bool)>;
+  // Callbacks to ask the renderer for player's video visibility.
+  using VisibilityChangedCB = base::OnceCallback<void(bool)>;
 
   explicit MediaPlayersCallbackAggregator(
-      ReportContinuousVisibilityCb report_continuous_visibility_cb);
+      VisibilityChangedCB report_continuous_visibility_cb);
   MediaPlayersCallbackAggregator() = delete;
   MediaPlayersCallbackAggregator(const MediaPlayersCallbackAggregator&) =
       delete;
@@ -62,10 +57,10 @@ class CONTENT_EXPORT MediaPlayersCallbackAggregator
   MediaPlayersCallbackAggregator& operator=(
       const MediaPlayersCallbackAggregator&) = delete;
 
-  // Creates and returns a `OnDemandRequestVisibilityCb`. The resulting callback
-  // holds a strong reference to the aggregator, therefore it will live until
-  // all `OnDemandRequestVisibilityCb` s are executed.
-  OnDemandRequestVisibilityCb CreateVisibilityCallback();
+  // Creates and returns a `VisibilityChangedCB`. The resulting callback holds a
+  // strong reference to the aggregator, therefore it will live until all
+  // `VisibilityChangedCB`s are executed.
+  VisibilityChangedCB CreateVisibilityCallback();
 
  private:
   friend class base::RefCountedThreadSafe<MediaPlayersCallbackAggregator>;
@@ -73,7 +68,7 @@ class CONTENT_EXPORT MediaPlayersCallbackAggregator
 
   void OnGetVisibility(bool meets_visibility_threshold);
 
-  ReportContinuousVisibilityCb report_continuous_visibility_cb_;
+  VisibilityChangedCB report_continuous_visibility_cb_;
 };
 
 }  // namespace content

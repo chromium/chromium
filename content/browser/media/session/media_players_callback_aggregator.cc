@@ -7,7 +7,7 @@
 namespace content {
 
 MediaPlayersCallbackAggregator::MediaPlayersCallbackAggregator(
-    ReportContinuousVisibilityCb report_continuous_visibility_cb)
+    VisibilityChangedCB report_continuous_visibility_cb)
     : report_continuous_visibility_cb_(
           std::move(report_continuous_visibility_cb)) {}
 
@@ -18,7 +18,7 @@ void MediaPlayersCallbackAggregator::OnGetVisibility(
   }
 }
 
-MediaPlayersCallbackAggregator::OnDemandRequestVisibilityCb
+MediaPlayersCallbackAggregator::VisibilityChangedCB
 MediaPlayersCallbackAggregator::CreateVisibilityCallback() {
   return base::BindOnce(&MediaPlayersCallbackAggregator::OnGetVisibility,
                         base::RetainedRef(this));
