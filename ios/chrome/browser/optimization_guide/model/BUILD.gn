@@ -76,6 +76,21 @@ source_set("download_client_header") {
   ]
 }
 
+source_set("test_support") {
+  testonly = true
+  sources = [
+    "fake_optimization_guide_service.h",
+    "fake_optimization_guide_service.mm",
+  ]
+  deps = [
+    ":model",
+    "//base",
+    "//components/optimization_guide/core",
+    "//components/optimization_guide/proto:optimization_guide_proto",
+    "//services/network/public/cpp",
+  ]
+}
+
 source_set("unit_tests") {
   testonly = true
   sources = [
