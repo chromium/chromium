@@ -2,11 +2,9 @@ noparent = True
 
 include_rules = [
   "+absl",
-  "+base",
   "+fcp",
   "+gmock",
   "+google",
   "+gtest",
-  "+openssl",
   "+components/cbor",
 ]

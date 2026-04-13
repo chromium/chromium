@@ -1,8 +1,8 @@
 Name: federated-compute
 URL: https://github.com/google-parfait/federated-compute/
 Version: N/A
-Date: 2026-03-06
-Revision: 1942343ebb949c8b12e57b52546e9b5ad10e7a50
+Date: 2026-04-09
+Revision: 2fc6c2cd0046cf7bdb86e95c754f9c6cdfd57a95
 Update Mechanism: Manual
 License: Apache-2.0
 License File: src/LICENSE
@@ -19,10 +19,3 @@ Local Modifications:
 
   These files wire up //components/cbor (which Chromium uses) instead of
   libcppbor.
-
-- fcp/confidentialcompute/crypto_test_util.cc
-
-  A utility file useful for testing.  Abseil checks used in this file conflict
-  with Chromium, so an implementation using Chromium's checks is provided.
-  This can be removed in case we stop using it in Chromium, or upstream switches
-  to absl_check.
