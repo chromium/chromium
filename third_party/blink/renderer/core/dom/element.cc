@@ -5808,8 +5808,14 @@ StyleRecalcChange Element::RecalcOwnStyle(
       apply_changes = LayoutObject::ApplyStyleChanges::kYes;
     }
 
+    // Some style changes (when transitioning from in-flow to out-of-flow, and
+    // vice versa) require substantial changes to the layout-tree.
+    // To keep things "relatively" simple, we remove the object, set the new
+    // style, then reinsert it into the layout tree.
+    //
+    // This means that during LayoutObject::SetStyle the parent may be null, but
+    // typically we only need some additional nullptr checks to make this safe.
     const bool needs_reinsert =
-        RuntimeEnabledFeatures::LayoutReinsertOnInFlowStateChangeEnabled() &&
         ComputedStyle::NeedsReinsertLayoutTree(*old_style, *layout_style);
     if (needs_reinsert) {
       layout_object->Remove();

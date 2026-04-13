@@ -349,10 +349,6 @@ class CORE_EXPORT LayoutBoxModelObject : public LayoutObject {
 
   virtual LayoutUnit ContainingBlockLogicalWidthForContent() const;
 
-  virtual void ChildBecameNonInline(LayoutObject* /*child*/) {
-    NOT_DESTROYED();
-  }
-
   // Returns true if the background is painted opaque in the given rect.
   // The query rect is given in local coordinate system.
   virtual bool BackgroundIsKnownToBeOpaqueInRect(const PhysicalRect&) const {

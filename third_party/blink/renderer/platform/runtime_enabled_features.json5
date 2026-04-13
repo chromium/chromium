@@ -3510,10 +3510,6 @@
       status: "stable",
     },
     {
-      name: "LayoutReinsertOnInFlowStateChange",
-      status: "stable",
-    },
-    {
       name: "LayoutTableCellAlignmentSafe",
       status: "stable",
     },

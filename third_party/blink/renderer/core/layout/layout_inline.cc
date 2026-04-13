@@ -322,23 +322,6 @@ void LayoutInline::AddChild(LayoutObject* new_child,
       layout_invalidation_reason::kChildChanged);
 }
 
-void LayoutInline::BlockInInlineBecameFloatingOrOutOfFlow(
-    LayoutBlockFlow* anonymous_block_child) {
-  NOT_DESTROYED();
-  // Look for in-flow children. Any in-flow child will prevent the wrapper from
-  // being deleted.
-  for (const LayoutObject* grandchild = anonymous_block_child->FirstChild();
-       grandchild; grandchild = grandchild->NextSibling()) {
-    if (!grandchild->IsFloating() && !grandchild->IsOutOfFlowPositioned()) {
-      return;
-    }
-  }
-  // There are no longer any in-flow children inside the anonymous block wrapper
-  // child. Get rid of it.
-  anonymous_block_child->MoveAllChildrenTo(this, anonymous_block_child);
-  anonymous_block_child->Destroy();
-}
-
 void LayoutInline::AddChildAsBlockInInline(LayoutObject* new_child,
                                            LayoutObject* before_child) {
   NOT_DESTROYED();
@@ -799,20 +782,6 @@ PaintLayerType LayoutInline::LayerTypeRequired() const {
                  ShouldApplyPaintContainment()
              ? kNormalPaintLayer
              : kNoPaintLayer;
-}
-
-void LayoutInline::ChildBecameNonInline(LayoutObject* child) {
-  NOT_DESTROYED();
-  DCHECK(!RuntimeEnabledFeatures::LayoutReinsertOnInFlowStateChangeEnabled());
-  DCHECK(!child->IsInline());
-  // Following tests reach here.
-  //  * external/wpt/css/CSS2/positioning/toogle-abspos-on-relpos-inline-child.html
-  //  * fast/block/float/float-originating-line-deleted-crash.html
-  //  * paint/stacking/layer-stacking-change-under-inline.html
-  auto* const anonymous_box = CreateAnonymousContainerForBlockChildren();
-  LayoutBoxModelObject::AddChild(anonymous_box, child);
-  Children()->RemoveChildNode(this, child);
-  anonymous_box->AddChild(child);
 }
 
 void LayoutInline::UpdateHitTestResult(HitTestResult& result,

@@ -2776,30 +2776,6 @@ const ComputedStyle& LayoutObject::SlowEffectiveStyle(
   NOTREACHED();
 }
 
-// Called when an object that was floating or positioned becomes a normal flow
-// object again. We have to make sure the layout tree updates as needed to
-// accommodate the new normal flow object.
-static inline void HandleDynamicFloatPositionChange(LayoutObject* object) {
-  DCHECK(!RuntimeEnabledFeatures::LayoutReinsertOnInFlowStateChangeEnabled());
-  // We have gone from not affecting the inline status of the parent flow to
-  // suddenly having an impact.  See if there is a mismatch between the parent
-  // flow's childrenInline() state and our state.
-  object->SetInline(object->StyleRef().IsDisplayInlineType());
-  if (object->IsInline() != object->Parent()->ChildrenInline()) {
-    if (!object->IsInline()) {
-      To<LayoutBoxModelObject>(object->Parent())->ChildBecameNonInline(object);
-    } else {
-      // An anonymous block must be made to wrap this inline.
-      LayoutBlock* block =
-          To<LayoutBlock>(object->Parent())->CreateAnonymousBlock();
-      LayoutObjectChildList* childlist = object->Parent()->VirtualChildren();
-      childlist->InsertChildNode(object->Parent(), block, object);
-      block->Children()->AppendChildNode(
-          block, childlist->RemoveChildNode(object->Parent(), object));
-    }
-  }
-}
-
 StyleDifference LayoutObject::AdjustStyleDifference(
     StyleDifference diff) const {
   NOT_DESTROYED();
@@ -3225,14 +3201,6 @@ void LayoutObject::StyleWillChange(StyleDifference diff,
           *this);
     }
 
-    style_change_context.became_normal_flow =
-        IsFloatingOrOutOfFlowPositioned() &&
-        ((!new_style.IsFloating() ||
-          new_style.IsInsideDisplayIgnoringFloatingChildren()) &&
-         !new_style.HasOutOfFlowPosition()) &&
-        Parent() &&
-        (Parent()->IsLayoutBlockFlow() || Parent()->IsLayoutInline());
-
     // Clearing these bits is required to avoid leaving stale layoutObjects.
     // FIXME: We shouldn't need that hack if our logic was totally correct.
     if (diff.NeedsFullLayout()) {
@@ -3310,7 +3278,6 @@ static void ClearAncestorScrollAnchors(LayoutObject* layout_object) {
 
 void LayoutObject::UpdateAfterReinsert(const ComputedStyle& old_style) {
   NOT_DESTROYED();
-  DCHECK(RuntimeEnabledFeatures::LayoutReinsertOnInFlowStateChangeEnabled());
 
   // Now that we are in the layout-tree, disable scroll-anchoring on our scroll
   // container as per:
@@ -3363,30 +3330,9 @@ void LayoutObject::StyleDidChange(
   // it's not affected.
   SetOutlineMayBeAffectedByDescendants(style_->HasOutline());
 
-  if (!RuntimeEnabledFeatures::LayoutReinsertOnInFlowStateChangeEnabled() &&
-      style_change_context.became_normal_flow) {
-    HandleDynamicFloatPositionChange(this);
-  }
-
   if (diff.NeedsFullLayout()) {
-    // If the in-flow state of an element is changed, disable scroll
-    // anchoring on the containing scroller.
-    //
     // TODO(layout-dev): Move this code down to LayoutBox. Only those can become
     // out-of-flow or spanners.
-    if (!RuntimeEnabledFeatures::LayoutReinsertOnInFlowStateChangeEnabled()) {
-      if (old_style->HasOutOfFlowPosition() != style_->HasOutOfFlowPosition()) {
-        SetScrollAnchorDisablingStyleChangedOnAncestor();
-        MarkParentForSpannerOrOutOfFlowPositionedChange();
-        if (old_style->HasOutOfFlowPosition()) {
-          if (auto* box = DynamicTo<LayoutBox>(this)) {
-            box->NotifyContainingDisplayLocksForAnchorPositioning(
-                box->DisplayLocksAffectedByAnchors(), nullptr);
-          }
-        }
-      }
-    }
-
     if (IsBox() &&
         To<LayoutBox>(this)->IsValidColumnSpannerInTree(*old_style) !=
             To<LayoutBox>(this)->IsValidColumnSpannerInTree(*style_)) {

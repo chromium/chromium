@@ -207,9 +207,7 @@ void LayoutBoxModelObject::StyleDidChange(
 
       CreateLayerAfterStyleChange();
     }
-  } else if (Layer() && (RuntimeEnabledFeatures::
-                             LayoutReinsertOnInFlowStateChangeEnabled() ||
-                         Layer()->Parent())) {
+  } else if (Layer()) {
     Layer()->UpdateFilters(diff, old_style, StyleRef());
     Layer()->UpdateBackdropFilters(old_style, StyleRef());
     Layer()->UpdateClipPath(old_style, StyleRef());

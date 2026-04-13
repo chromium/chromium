@@ -80,7 +80,6 @@ class CORE_EXPORT LayoutBlockFlow : public LayoutBlock {
 
   bool CanMergeWith(const LayoutBoxModelObject&) const override;
 
-  void ChildBecameFloatingOrOutOfFlow(LayoutBox* child);
   void CollapseAnonymousBlockChild(LayoutBlockFlow* child);
 
   // Return true if this block establishes a fragmentation context root (e.g. a
@@ -174,7 +173,6 @@ class CORE_EXPORT LayoutBlockFlow : public LayoutBlock {
   void MakeChildrenInlineIfPossible();
 
   void MakeChildrenNonInline(LayoutObject* insertion_point = nullptr);
-  void ChildBecameNonInline(LayoutObject* child) final;
 
  public:
   bool ShouldTruncateOverflowingText() const;

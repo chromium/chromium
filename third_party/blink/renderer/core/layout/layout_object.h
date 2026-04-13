@@ -3464,9 +3464,6 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
   // Context used by StyleWillChange() and StyleDidChange(). The former will
   // typically set members, and the latter will check them.
   struct StyleChangeContext {
-    // An object ceased to be floating or out-of-flow.
-    bool became_normal_flow = false;
-
     // An object prevented descendants from becoming column spanners (before
     // style change).
     bool did_prevent_spanner_descendants = false;

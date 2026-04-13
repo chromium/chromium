@@ -339,12 +339,10 @@ void LayoutBlockFlow::RemoveChild(LayoutObject* old_child) {
     MakeChildrenInlineIfPossible();
   }
 
-  if (RuntimeEnabledFeatures::LayoutReinsertOnInFlowStateChangeEnabled()) {
-    if (!FirstChild() && IsMergeableAnonymousBlock(this)) {
-      // If we don't have any children, and this was created as an anonymous
-      // block, remove this object as we aren't needed anymore.
-      Destroy();
-    }
+  if (!FirstChild() && IsMergeableAnonymousBlock(this)) {
+    // If we don't have any children, and this was created as an anonymous
+    // block, remove this object as we aren't needed anymore.
+    Destroy();
   }
 }
 
@@ -356,38 +354,6 @@ bool LayoutBlockFlow::CanMergeWith(const LayoutBoxModelObject& other) const {
 
   return IsMergeableAnonymousBlock(this) &&
          IsMergeableAnonymousBlock(other_block_flow);
-}
-
-void LayoutBlockFlow::ChildBecameFloatingOrOutOfFlow(LayoutBox* child) {
-  NOT_DESTROYED();
-  DCHECK(!RuntimeEnabledFeatures::LayoutReinsertOnInFlowStateChangeEnabled());
-
-  if (IsAnonymousBlockFlow()) {
-    if (auto* parent_inline = DynamicTo<LayoutInline>(Parent())) {
-      // The child used to be an in-flow block-in-inline, which requires an
-      // anonymous wrapper (|this|). It is no longer needed for this child, so
-      // unless there are other siblings there that still require it, it needs
-      // to be destroyed (i.e. |this| will be destroyed).
-      parent_inline->BlockInInlineBecameFloatingOrOutOfFlow(this);
-      return;
-    }
-  }
-
-  MakeChildrenInlineIfPossible();
-
-  // Reparent the child to an adjacent anonymous block if one is available.
-  auto* prev = DynamicTo<LayoutBlockFlow>(child->PreviousSibling());
-  if (prev && prev->IsAnonymousBlockFlow()) {
-    MoveChildTo(prev, child, nullptr, false);
-    // The anonymous block we've moved to may now be adjacent to former siblings
-    // of ours that it can contain also.
-    prev->ReparentSubsequentFloatingOrOutOfFlowSiblings();
-    return;
-  }
-  auto* next = DynamicTo<LayoutBlockFlow>(child->NextSibling());
-  if (next && next->IsAnonymousBlockFlow() && !next->IsViewTransitionRoot()) {
-    MoveChildTo(next, child, next->FirstChild(), false);
-  }
 }
 
 static bool AllowsCollapseAnonymousBlockChild(const LayoutBlockFlow& parent,
@@ -619,17 +585,6 @@ void LayoutBlockFlow::MakeChildrenNonInline(LayoutObject* insertion_point) {
 #endif
 
   SetShouldDoFullPaintInvalidation();
-}
-
-void LayoutBlockFlow::ChildBecameNonInline(LayoutObject*) {
-  NOT_DESTROYED();
-  DCHECK(!RuntimeEnabledFeatures::LayoutReinsertOnInFlowStateChangeEnabled());
-  MakeChildrenNonInline();
-  auto* parent_layout_block = DynamicTo<LayoutBlock>(Parent());
-  if (IsAnonymousBlockFlow() && parent_layout_block) {
-    parent_layout_block->RemoveLeftoverAnonymousBlock(this);
-  }
-  // |this| may be dead here
 }
 
 bool LayoutBlockFlow::ShouldTruncateOverflowingText() const {

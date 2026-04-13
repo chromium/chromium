@@ -31,22 +31,6 @@ LayoutBlock* LayoutFieldset::FindAnonymousFieldsetContentBox() const {
 
 void LayoutFieldset::AddChild(LayoutObject* new_child,
                               LayoutObject* before_child) {
-  if (!RuntimeEnabledFeatures::LayoutReinsertOnInFlowStateChangeEnabled() &&
-      !new_child->IsText() && !new_child->IsAnonymous()) {
-    // Adding a child LayoutObject always causes reattach of <fieldset>. So
-    // |before_child| is always nullptr.
-    // See HTMLFieldSetElement::DidRecalcStyle().
-    DCHECK(!before_child);
-  } else if (before_child && before_child->IsRenderedLegend()) {
-    // Whitespace changes resulting from removed nodes are handled in
-    // MarkForWhitespaceReattachment(), and don't trigger
-    // HTMLFieldSetElement::DidRecalcStyle(). So the fieldset is not
-    // reattached. We adjust |before_child| instead.
-    Node* before_node =
-        LayoutTreeBuilderTraversal::NextLayoutSibling(*before_child->GetNode());
-    before_child = before_node ? before_node->GetLayoutObject() : nullptr;
-  }
-
   // https://html.spec.whatwg.org/C/#the-fieldset-and-legend-elements
   // > * If the element has a rendered legend, then that element is expected
   // >   to be the first child box.
@@ -54,11 +38,18 @@ void LayoutFieldset::AddChild(LayoutObject* new_child,
   // >   rendered legend and is expected to contain the content (including
   // >   the '::before' and '::after' pseudo-elements) of the fieldset
   // >   element except for the rendered legend, if there is one.
-
   if (new_child->IsRenderedLegendCandidate() && !FindInFlowLegend()) {
     LayoutBlockFlow::AddChild(new_child, FirstChild());
     return;
   }
+
+  // Adjust before_child so that it avoids the <legend>.
+  if (before_child && before_child->IsRenderedLegend()) {
+    const Node* before_node =
+        LayoutTreeBuilderTraversal::NextLayoutSibling(*before_child->GetNode());
+    before_child = before_node ? before_node->GetLayoutObject() : nullptr;
+  }
+
   LayoutBlock* fieldset_content = FindAnonymousFieldsetContentBox();
   DCHECK(fieldset_content);
   fieldset_content->AddChild(new_child, before_child);
