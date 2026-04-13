@@ -181,8 +181,7 @@ void WaylandToplevelWindow::Hide() {
 bool WaylandToplevelWindow::IsVisible() const {
   // X and Windows return true if the window is minimized. For consistency, do
   // the same.
-  return !!xdg_toplevel_ ||
-         GetPlatformWindowState() == PlatformWindowState::kMinimized;
+  return !!xdg_toplevel_;
 }
 
 void WaylandToplevelWindow::SetTitle(const std::u16string& title) {
@@ -805,7 +804,7 @@ void WaylandToplevelWindow::TriggerStateChanges(
     // UnSetMaximized may result in wrong restored window position that clients
     // are not allowed to know about.
     if (window_state == PlatformWindowState::kMinimized) {
-      LOG(FATAL) << "Should not be called with kMinimized state";
+      xdg_toplevel_->SetMinimized();
     } else if (window_state == PlatformWindowState::kFullScreen) {
       xdg_toplevel_->SetFullscreen(
           GetWaylandOutputForDisplayId(fullscreen_display_id_));
