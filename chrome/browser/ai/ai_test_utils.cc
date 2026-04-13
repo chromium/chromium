@@ -8,7 +8,12 @@
 #include <utility>
 
 #include "chrome/browser/ai/ai_manager.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
+#include "components/optimization_guide/core/optimization_guide_features.h"
+#include "components/optimization_guide/core/optimization_guide_switches.h"
+#include "components/policy/core/common/policy_pref_names.h"
+#include "components/prefs/pref_service.h"
 #include "content/public/test/navigation_simulator.h"
 #include "services/network/public/mojom/permissions_policy/permissions_policy_feature.mojom.h"
 
@@ -153,6 +158,25 @@ void AITestUtils::AITestBase::DisablePolicy(
   ai_manager_ = std::make_unique<AIManager>(
       navigation->GetFinalRenderFrameHost()->GetBrowserContext(),
       navigation->GetFinalRenderFrameHost());
+}
+
+void AITestUtils::AITestBase::SetBuiltInAIAPIsEnterprisePolicy(bool allowed) {
+  profile()->GetPrefs()->SetBoolean(policy::policy_prefs::kBuiltInAIAPIsEnabled,
+                                    allowed);
+}
+
+void AITestUtils::AITestBase::SetGenAILocalEnterprisePolicy(bool allowed) {
+  g_browser_process->local_state()->SetInteger(
+      optimization_guide::model_execution::prefs::localstate::
+          kGenAILocalFoundationalModelEnterprisePolicySettings,
+      allowed ? 0 : 1);
+}
+
+void AITestUtils::AITestBase::SetOnDeviceAiUserSetting(bool allowed) {
+  g_browser_process->local_state()->SetBoolean(
+      optimization_guide::model_execution::prefs::localstate::
+          kOnDeviceAiUserSettingsEnabled,
+      allowed);
 }
 
 // static

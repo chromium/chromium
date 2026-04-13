@@ -26,6 +26,7 @@
 #include "components/optimization_guide/proto/features/proofreader_api.pb.h"
 #include "components/optimization_guide/proto/string_value.pb.h"
 #include "content/public/browser/render_widget_host_view.h"
+#include "mojo/public/cpp/test_support/test_utils.h"
 #include "services/on_device_model/public/cpp/features.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -635,6 +636,57 @@ TEST_F(AIProofreaderTest, NoMetadata) {
   EXPECT_TRUE(responder.WaitForCompletion());
   EXPECT_THAT(responder.responses_without_last(),
               ElementsAreArray({"Correction type: Spelling"}));
+}
+
+TEST_F(AIProofreaderTest, CreateBuiltInAIAPIsEnterprisePolicyDisabled) {
+  SetBuiltInAIAPIsEnterprisePolicy(false);
+  base::test::TestFuture<blink::mojom::ModelAvailabilityCheckResult> future;
+  GetAIManagerInterface()->CanCreateProofreader(GetDefaultOptions(),
+                                                future.GetCallback());
+  EXPECT_EQ(future.Get(), blink::mojom::ModelAvailabilityCheckResult::
+                              kUnavailableEnterprisePolicyDisabled);
+
+  mojo::test::BadMessageObserver observer;
+  TestCreateProofreaderClient create_proofreader_client;
+  GetAIManagerRemote()->CreateProofreader(
+      create_proofreader_client.BindNewPipeAndPassRemote(),
+      GetDefaultOptions());
+  EXPECT_EQ(observer.WaitForBadMessage(), "Policy or user setting disabled");
+  SetBuiltInAIAPIsEnterprisePolicy(true);
+}
+
+TEST_F(AIProofreaderTest, CreateGenAILocalEnterprisePolicyDisabled) {
+  SetGenAILocalEnterprisePolicy(false);
+  base::test::TestFuture<blink::mojom::ModelAvailabilityCheckResult> future;
+  GetAIManagerInterface()->CanCreateProofreader(GetDefaultOptions(),
+                                                future.GetCallback());
+  EXPECT_EQ(future.Get(), blink::mojom::ModelAvailabilityCheckResult::
+                              kUnavailableEnterprisePolicyDisabled);
+
+  mojo::test::BadMessageObserver observer;
+  TestCreateProofreaderClient create_proofreader_client;
+  GetAIManagerRemote()->CreateProofreader(
+      create_proofreader_client.BindNewPipeAndPassRemote(),
+      GetDefaultOptions());
+  EXPECT_EQ(observer.WaitForBadMessage(), "Policy or user setting disabled");
+  SetGenAILocalEnterprisePolicy(true);
+}
+
+TEST_F(AIProofreaderTest, CreateOnDeviceAiUserSettingDisabled) {
+  SetOnDeviceAiUserSetting(false);
+  base::test::TestFuture<blink::mojom::ModelAvailabilityCheckResult> future;
+  GetAIManagerInterface()->CanCreateProofreader(GetDefaultOptions(),
+                                                future.GetCallback());
+  EXPECT_EQ(future.Get(), blink::mojom::ModelAvailabilityCheckResult::
+                              kUnavailableFeatureNotEnabled);
+
+  mojo::test::BadMessageObserver observer;
+  TestCreateProofreaderClient create_proofreader_client;
+  GetAIManagerRemote()->CreateProofreader(
+      create_proofreader_client.BindNewPipeAndPassRemote(),
+      GetDefaultOptions());
+  EXPECT_EQ(observer.WaitForBadMessage(), "Policy or user setting disabled");
+  SetOnDeviceAiUserSetting(true);
 }
 
 }  // namespace

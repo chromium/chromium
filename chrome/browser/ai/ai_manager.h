@@ -25,6 +25,7 @@
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "mojo/public/cpp/bindings/remote_set.h"
+#include "services/network/public/mojom/permissions_policy/permissions_policy_feature.mojom-shared.h"
 #include "services/on_device_model/public/mojom/download_observer.mojom-forward.h"
 #include "third_party/blink/public/mojom/ai/ai_common.mojom-forward.h"
 #include "third_party/blink/public/mojom/ai/ai_language_model.mojom-forward.h"
@@ -108,7 +109,6 @@ class AIManager : public base::SupportsUserData::Data,
                         on_device_model::Capabilities capabilities,
                         CanCreateLanguageModelCallback callback);
 
-  bool IsBuiltInAIAPIsEnabledByPolicy();
 
   // Returns true if `options` uses only `supported` languages, false otherwise.
   // Logs errors and warnings and initializes empty output languages as needed.
@@ -120,6 +120,20 @@ class AIManager : public base::SupportsUserData::Data,
       const base::flat_set<std::string>& default_supported);
 
  private:
+  // Checks if features are allowed by enterprise policy and user preferences.
+  // Returns `std::nullopt` if the checks pass, otherwise a failing result.
+  std::optional<blink::mojom::ModelAvailabilityCheckResult>
+  GetPrefBlockedResult();
+
+  // Checks if the feature is blocked by permissions policy.
+  bool IsPermissionsPolicyBlocked(
+      network::mojom::PermissionsPolicyFeature feature);
+
+  // Checks if the feature is blocked by permissions policy, enterprise policy,
+  // or user settings.
+  bool IsBlocked(std::optional<network::mojom::PermissionsPolicyFeature>
+                     feature = std::nullopt);
+
   void OnModelPathValidationComplete(const base::FilePath& model_path,
                                      bool is_valid_path);
 

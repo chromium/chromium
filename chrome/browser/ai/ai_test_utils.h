@@ -112,6 +112,11 @@ class AITestUtils {
     // Navigates to disable the specified policy and recreates `ai_manager_`.
     void DisablePolicy(network::mojom::PermissionsPolicyFeature feature);
 
+    // Helpers to set enterprise policies and user settings for testing.
+    void SetBuiltInAIAPIsEnterprisePolicy(bool allowed);
+    void SetGenAILocalEnterprisePolicy(bool allowed);
+    void SetOnDeviceAiUserSetting(bool allowed);
+
     raw_ptr<MockOptimizationGuideKeyedService>
         mock_optimization_guide_keyed_service_;
     std::unique_ptr<optimization_guide::FakeModelBroker> fake_broker_;
