@@ -15,6 +15,7 @@
 #include "content/public/common/web_identity.h"
 #include "third_party/blink/public/common/loader/url_loader_throttle.h"
 #include "url/gurl.h"
+#include "url/origin.h"
 
 namespace net {
 class HttpResponseHeaders;
@@ -59,6 +60,7 @@ class CONTENT_EXPORT IdentityUrlLoaderThrottle
                              std::string_view token);
 
   GURL request_url_;
+  std::optional<url::Origin> request_initiator_;
   SetIdpStatusCallback set_idp_status_cb_;
   bool has_user_gesture_ = false;
 

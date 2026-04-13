@@ -1798,6 +1798,7 @@ test("content_browsertests") {
     "../browser/web_package/signed_exchange_subresource_prefetch_browsertest.cc",
     "../browser/webid/delegation/jwt_signer_browsertest.cc",
     "../browser/webid/document_metadata_browsertest.cc",
+    "../browser/webid/idp_signin_status_browsertest.cc",
     "../browser/webid/navigation_interceptor_browsertest.cc",
     "../browser/webid/test/mock_digital_identity_provider.cc",
     "../browser/webid/test/mock_digital_identity_provider.h",
