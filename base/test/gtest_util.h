@@ -6,6 +6,7 @@
 #define BASE_TEST_GTEST_UTIL_H_
 
 #include <string>
+#include <string_view>
 #include <utility>
 #include <vector>
 
@@ -116,8 +117,8 @@ struct TestIdentifier {
 
 // Constructs a full test name given a test case name and a test name,
 // e.g. for test case "A" and test name "B" returns "A.B".
-std::string FormatFullTestName(const std::string& test_case_name,
-                               const std::string& test_name);
+std::string FormatFullTestName(std::string_view test_case_name,
+                               std::string_view test_name);
 
 // Returns the full test name with the "DISABLED_" prefix stripped out.
 // e.g. for the full test names "A.DISABLED_B", "DISABLED_A.B", and
