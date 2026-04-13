@@ -4,6 +4,8 @@
 
 #import "ios/chrome/browser/scene/ui/scene_view_controller.h"
 
+#import <QuartzCore/QuartzCore.h>
+
 #import "base/check.h"
 #import "ios/chrome/browser/app_bar/ui/app_bar_constants.h"
 #import "ios/chrome/browser/app_bar/ui/app_bar_utils.h"
@@ -19,10 +21,10 @@
 #import "ios/chrome/browser/shared/ui/util/layout_guide_names.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/shared/ui/util/util_swift.h"
+#import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 
 @interface SceneViewController () <SceneViewDelegate>
-
 @end
 
 @implementation SceneViewController {
@@ -31,8 +33,16 @@
   // The assistant container view controller.
   AssistantContainerViewController* _assistantContainerViewController;
 
-  // The view containing the app (the part outside the app bar).
+  // Container for App Content view to handle shadow for Side Panel floating
+  // card effect.
+  UIView* _appContentContainerView;
+
+  // The view containing the app content (the part outside the app bar).
   UIView* _appContentView;
+
+  // Container for Assistant view to handle shadow for Side Panel floating card
+  // effect.
+  UIView* _assistantShadowView;
 
   // The Assistant constraints.
   NSArray<NSLayoutConstraint*>* _baseAssistantConstraints;
@@ -40,6 +50,9 @@
   NSArray<NSLayoutConstraint*>* _assistantSheetConstraints;
   NSArray<NSLayoutConstraint*>* _assistantPanelConstraints;
   NSLayoutConstraint* _assistantLeadingConstraint;
+  NSLayoutConstraint* _sideAppContentTopConstraint;
+  NSLayoutConstraint* _sideAppContentTrailingConstraint;
+  NSLayoutConstraint* _sideAppContentBottomConstraint;
 
   // App bar constraints.
   NSArray<NSLayoutConstraint*>* _portraitConstraints;
@@ -48,6 +61,8 @@
 
   // The last fullscreen progress value received.
   CGFloat _fullscreenProgress;
+  // Whether the assistant container is visible.
+  BOOL _assistantVisible;
 }
 
 #pragma mark - UIViewController
@@ -67,20 +82,35 @@
   CHECK(self.layoutGuideCenter);
   [super viewDidLoad];
   UIView* view = self.view;
+  _appContentContainerView = [[UIView alloc] init];
   _appContentView = [[AppContainerView alloc] init];
+  _appContentView.clipsToBounds = YES;
+
   if (IsFullscreenRefactoringEnabled()) {
+    _appContentContainerView.translatesAutoresizingMaskIntoConstraints = NO;
     _appContentView.translatesAutoresizingMaskIntoConstraints = NO;
   } else {
+    _appContentContainerView.autoresizingMask =
+        UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
     _appContentView.autoresizingMask =
         UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
   }
-  [view addSubview:_appContentView];
-  _appContentView.frame = view.bounds;
+
+  [view addSubview:_appContentContainerView];
+  _appContentContainerView.frame = view.bounds;
+
+  [_appContentContainerView addSubview:_appContentView];
+  _appContentView.frame = _appContentContainerView.bounds;
+
+  if (IsFullscreenRefactoringEnabled()) {
+    AddSameConstraints(_appContentView, _appContentContainerView);
+  }
+
   [self.layoutGuideCenter referenceView:_appContentView
                               underName:kAppContentGuide];
 
   if (!IsChromeNextIaEnabled() && !IsAssistantSidePanelEnabled()) {
-    AddSameConstraints(_appContentView, view);
+    AddSameConstraints(_appContentContainerView, view);
   }
 
   [self
@@ -103,6 +133,13 @@
                       completion:nil];
 }
 
+- (void)viewDidLayoutSubviews {
+  [super viewDidLayoutSubviews];
+  if (!IsFullscreenRefactoringEnabled()) {
+    [self applyFrameForLayout];
+  }
+}
+
 #pragma mark - Public
 
 - (UIView*)appContainer {
@@ -114,45 +151,15 @@
   CHECK(!_appBar);
   [self loadViewIfNeeded];
   _appBar = appBar;
-  UIView* appBarView = appBar.view;
-  appBarView.translatesAutoresizingMaskIntoConstraints = NO;
-  UIView* view = self.view;
 
-  [self addChildViewController:appBar];
-  [view addSubview:appBarView];
-
-  AddSameCenterConstraints(view, appBarView);
-
-  [appBar didMoveToParentViewController:self];
+  [self setupAppBarView:appBar];
 
   if (!IsFullscreenRefactoringEnabled()) {
     [self updateLayoutForViews];
     return;
   }
 
-  _portraitConstraints = @[
-    [_appContentView.topAnchor constraintEqualToAnchor:view.topAnchor],
-    [_appContentView.leadingAnchor constraintEqualToAnchor:view.leadingAnchor],
-    [_appContentView.trailingAnchor
-        constraintEqualToAnchor:view.trailingAnchor],
-    [_appContentView.bottomAnchor constraintEqualToAnchor:view.bottomAnchor],
-  ];
-  _landscapeLeftConstraints = @[
-    [_appContentView.topAnchor constraintEqualToAnchor:view.topAnchor],
-    [_appContentView.leadingAnchor constraintEqualToAnchor:view.leadingAnchor
-                                                  constant:kAppBarHeight],
-    [_appContentView.trailingAnchor
-        constraintEqualToAnchor:view.trailingAnchor],
-    [_appContentView.bottomAnchor constraintEqualToAnchor:view.bottomAnchor],
-  ];
-  _landscapeRightConstraints = @[
-    [_appContentView.topAnchor constraintEqualToAnchor:view.topAnchor],
-    [_appContentView.leadingAnchor constraintEqualToAnchor:view.leadingAnchor],
-    [_appContentView.trailingAnchor constraintEqualToAnchor:view.trailingAnchor
-                                                   constant:-kAppBarHeight],
-    [_appContentView.bottomAnchor constraintEqualToAnchor:view.bottomAnchor],
-  ];
-
+  [self setupAppBarConstraints];
   [self updateLayoutForViews];
 }
 
@@ -188,7 +195,7 @@
                             }];
 }
 
-#pragma mark - AssistantContainerProvider
+#pragma mark - AssistantContainerPresenter
 
 - (void)addAssistantContainerViewController:
     (AssistantContainerViewController*)assistantContainerViewController {
@@ -197,11 +204,22 @@
 
   _assistantContainerViewController = assistantContainerViewController;
 
+  _assistantShadowView = [[UIView alloc] init];
+  _assistantShadowView.translatesAutoresizingMaskIntoConstraints = NO;
+  [self.view addSubview:_assistantShadowView];
+
   [self addChildViewController:_assistantContainerViewController];
-  [self.view addSubview:_assistantContainerViewController.view];
+  [_assistantShadowView addSubview:_assistantContainerViewController.view];
+  _assistantContainerViewController.view.clipsToBounds = YES;
   [_assistantContainerViewController didMoveToParentViewController:self];
 
-  [self updateAssistantLayout];
+  _assistantContainerViewController.view
+      .translatesAutoresizingMaskIntoConstraints = NO;
+  AddSameConstraints(_assistantContainerViewController.view,
+                     _assistantShadowView);
+
+  [self updateAssistantLayoutConstraints];
+  [self updateAssistantVisualStyling:IsSidePanelLayout(self.traitCollection)];
 }
 
 - (void)removeAssistantContainerViewController {
@@ -209,26 +227,140 @@
     return;
   }
 
+  [_assistantShadowView removeFromSuperview];
+  _assistantShadowView = nil;
+
+  if (_activeAssistantConstraints) {
+    [NSLayoutConstraint deactivateConstraints:_activeAssistantConstraints];
+    _activeAssistantConstraints = nil;
+  }
   _assistantSheetConstraints = nil;
   _assistantPanelConstraints = nil;
+
   [_assistantContainerViewController willMoveToParentViewController:nil];
   [_assistantContainerViewController.view removeFromSuperview];
   [_assistantContainerViewController removeFromParentViewController];
   _assistantContainerViewController = nil;
 
-  [self updateAssistantLayout];
+  // Resets constraints to default.
+  [self updateAssistantLayoutConstraints];
+
+  // Resets aesthetics.
+  [self updateAssistantVisualStyling:NO];
 }
 
-- (void)updateAssistantContainerOffset:(CGFloat)offset {
-  _assistantLeadingConstraint.constant = offset;
+- (void)setAssistantContainerVisible:(BOOL)visible {
+  _assistantVisible = visible;
+  UIView* assistantView = _assistantShadowView;
+  if (!assistantView) {
+    return;
+  }
+  CGFloat width = assistantView.frame.size.width;
+
+  // Add margin to ensure the shadow doesn't bleed onto the screen.
+  CGFloat startOffset = -(width + kAssistantContainerMargin);
+  CGFloat endOffset = kAssistantContainerMargin;
+
+  CGFloat currentOffset = visible ? endOffset : startOffset;
+  _assistantLeadingConstraint.constant = currentOffset;
+
   [self.view layoutIfNeeded];
-  [self updateLayoutForViews];
+
+  if (IsFullscreenRefactoringEnabled()) {
+    [self updateLayoutForViews];
+  } else {
+    [self applyFrameForAppContentLayout];
+  }
+}
+
+- (void)setAssistantPanelActive:(BOOL)active {
+  [self updateAssistantVisualStyling:active];
+  if (IsFullscreenRefactoringEnabled()) {
+    [self updateAppContentConstraintsForPanel:active];
+  }
 }
 
 #pragma mark - Private
 
-// Updates the active assistant constraints for the current active layout.
+// Helper to update app content constraints for panel layout.
+- (void)updateAppContentConstraintsForPanel:(BOOL)active {
+  // We animate constants instead of switching constraint arrays to avoid layout
+  // jumps caused by anchor switches (e.g. switching from view.top to
+  // safeAreaLayoutGuide.top).
+  if (active) {
+    CHECK(AppBarPositionForView(self.view) == AppBarPosition::kNone);
+    CGFloat safeAreaTop = self.view.safeAreaInsets.top;
+    _sideAppContentTopConstraint.constant =
+        safeAreaTop + kAssistantContainerMargin;
+    _sideAppContentTrailingConstraint.constant = -kAssistantContainerMargin;
+    _sideAppContentBottomConstraint.constant = -kAssistantContainerMargin;
+  } else {
+    _sideAppContentTopConstraint.constant = 0;
+    _sideAppContentTrailingConstraint.constant = 0;
+    _sideAppContentBottomConstraint.constant = 0;
+  }
+  [self.view layoutIfNeeded];
+}
+
+// Sets up and positions the App Bar view.
+- (void)setupAppBarView:(UIViewController*)appBar {
+  UIView* appBarView = appBar.view;
+  appBarView.translatesAutoresizingMaskIntoConstraints = NO;
+  UIView* view = self.view;
+
+  [self addChildViewController:appBar];
+  [view addSubview:appBarView];
+
+  AddSameCenterConstraints(view, appBarView);
+
+  [appBar didMoveToParentViewController:self];
+}
+
+// Sets up the Auto Layout constraints for the App Bar.
+- (void)setupAppBarConstraints {
+  UIView* view = self.view;
+  UIView* appBarRealView =
+      [self.layoutGuideCenter referencedViewUnderName:kAppBarGuide];
+
+  _portraitConstraints = @[
+    [_appContentContainerView.topAnchor constraintEqualToAnchor:view.topAnchor],
+    [_appContentContainerView.leadingAnchor
+        constraintEqualToAnchor:view.leadingAnchor],
+    [_appContentContainerView.trailingAnchor
+        constraintEqualToAnchor:view.trailingAnchor],
+    [_appContentContainerView.bottomAnchor
+        constraintEqualToAnchor:appBarRealView.topAnchor],
+  ];
+  _landscapeLeftConstraints = @[
+    [_appContentContainerView.topAnchor constraintEqualToAnchor:view.topAnchor],
+    [_appContentContainerView.leadingAnchor
+        constraintEqualToAnchor:view.leadingAnchor
+                       constant:kAppBarHeight - kAppBarCornerRadius],
+    [_appContentContainerView.trailingAnchor
+        constraintEqualToAnchor:view.trailingAnchor],
+    [_appContentContainerView.bottomAnchor
+        constraintEqualToAnchor:view.bottomAnchor],
+  ];
+  _landscapeRightConstraints = @[
+    [_appContentContainerView.topAnchor constraintEqualToAnchor:view.topAnchor],
+    [_appContentContainerView.leadingAnchor
+        constraintEqualToAnchor:view.leadingAnchor],
+    [_appContentContainerView.trailingAnchor
+        constraintEqualToAnchor:view.trailingAnchor
+                       constant:-(kAppBarHeight - kAppBarCornerRadius)],
+    [_appContentContainerView.bottomAnchor
+        constraintEqualToAnchor:view.bottomAnchor],
+  ];
+}
+
+// Updates both constraints and visual styling for the Assistant container.
 - (void)updateAssistantLayout {
+  [self updateAssistantLayoutConstraints];
+  [self updateAssistantVisualStyling:IsSidePanelLayout(self.traitCollection)];
+}
+
+// Updates the active assistant constraints for the current active layout.
+- (void)updateAssistantLayoutConstraints {
   if (!IsAssistantSidePanelEnabled() || !self.view.window) {
     return;
   }
@@ -244,11 +376,11 @@
     return;
   }
 
-  UIView* assistantView = _assistantContainerViewController.view;
-  assistantView.translatesAutoresizingMaskIntoConstraints = NO;
+  UIView* containerView = _assistantShadowView;
+  containerView.translatesAutoresizingMaskIntoConstraints = NO;
 
-  [self setupAssistantPanelConstraints:assistantView];
-  [self setupAssistantSheetConstraints:assistantView];
+  [self setupAssistantPanelConstraints:containerView];
+  [self setupAssistantSheetConstraints:containerView];
 
   if (IsSidePanelLayout(self.traitCollection)) {
     _assistantContainerViewController.presentationContext =
@@ -261,6 +393,27 @@
   }
 
   [NSLayoutConstraint activateConstraints:_activeAssistantConstraints];
+}
+
+// Applies visual aesthetics depending on whether the side panel layout is
+// active.
+- (void)updateAssistantVisualStyling:(BOOL)active {
+  if (!IsAssistantSidePanelEnabled() || !self.view.window) {
+    return;
+  }
+
+  UIView* view = self.view;
+
+  if (_assistantContainerViewController) {
+    UIView* assistantView = _assistantContainerViewController.view;
+    ApplyAssistantSidePanelAesthetics(assistantView, _assistantShadowView,
+                                      active);
+  }
+
+  ApplyAssistantSidePanelAesthetics(_appContentView, _appContentContainerView,
+                                    active);
+  // TODO(crbug.com/494503434): Update the chosen background color later.
+  view.backgroundColor = active ? [UIColor colorNamed:kBlue100Color] : nil;
 }
 
 // Updates the layout of the scene views depending on the active layout strategy
@@ -316,12 +469,31 @@
 
 // Applies manual frames to views by combining insets from App Bar and Side
 // Panel features.
-- (void)applyFrameForLayout {
+- (void)applyFrameForAppContentLayout {
   CGRect frame = self.view.bounds;
   UIEdgeInsets insets = [self appBarInsets];
   insets.left += [self sidePanelLeftInset];
 
+  CGFloat panelWidth = [self assistantSidePanelWidth];
+
+  if (IsSidePanelLayout(self.traitCollection) &&
+      _assistantContainerViewController && panelWidth > 0) {
+    CGFloat safeAreaTop = self.view.safeAreaInsets.top;
+    CGFloat margin = _assistantVisible ? kAssistantContainerMargin : 0.0;
+
+    insets.right += margin;
+    insets.top +=
+        _assistantVisible ? (safeAreaTop + kAssistantContainerMargin) : 0.0;
+    insets.bottom += margin;
+  }
+
   _appContentView.frame = UIEdgeInsetsInsetRect(frame, insets);
+}
+
+// Applies manual frames to views. This is the fallback layout path when
+// fullscreen refactoring is disabled.
+- (void)applyFrameForLayout {
+  [self applyFrameForAppContentLayout];
 }
 
 // Calculates insets for the App Bar.
@@ -358,6 +530,12 @@
   return insets;
 }
 
+// Calculates the width of the Assistant Side Panel based on current bounds.
+- (CGFloat)assistantSidePanelWidth {
+  return MIN(self.view.bounds.size.width * kAssistantSidePanelWidthMultiplier,
+             kAssistantSidePanelMaxWidth);
+}
+
 // Calculates left inset for the Assistant Side Panel.
 - (CGFloat)sidePanelLeftInset {
   if (!IsSidePanelLayout(self.traitCollection) ||
@@ -365,9 +543,13 @@
     return 0;
   }
 
-  CGFloat width = _assistantContainerViewController.view.bounds.size.width +
-                  _assistantLeadingConstraint.constant;
-  return MAX(0, width);
+  CGFloat panelWidth = [self assistantSidePanelWidth];
+  if (panelWidth <= 0) {
+    return 0;
+  }
+
+  CGFloat width = panelWidth + _assistantLeadingConstraint.constant;
+  return MAX(0, width + (_assistantVisible ? kAssistantContainerMargin : 0.0));
 }
 
 // Helper method for dismissal block when attempting to show the Gemini floaty
@@ -393,12 +575,14 @@
   if (IsFullscreenRefactoringEnabled()) {
     UIView* view = self.view;
     _baseAssistantConstraints = @[
-      [_appContentView.leadingAnchor
+      [_appContentContainerView.leadingAnchor
           constraintEqualToAnchor:view.leadingAnchor],
-      [_appContentView.trailingAnchor
+      [_appContentContainerView.trailingAnchor
           constraintEqualToAnchor:view.trailingAnchor],
-      [_appContentView.topAnchor constraintEqualToAnchor:view.topAnchor],
-      [_appContentView.bottomAnchor constraintEqualToAnchor:view.bottomAnchor],
+      [_appContentContainerView.topAnchor
+          constraintEqualToAnchor:view.topAnchor],
+      [_appContentContainerView.bottomAnchor
+          constraintEqualToAnchor:view.bottomAnchor],
     ];
   }
 }
@@ -409,13 +593,18 @@
     return;
   }
   UIView* view = self.view;
-  _assistantLeadingConstraint =
-      [assistantView.leadingAnchor constraintEqualToAnchor:view.leadingAnchor];
+  _assistantLeadingConstraint = [assistantView.leadingAnchor
+      constraintEqualToAnchor:view.safeAreaLayoutGuide.leadingAnchor
+                     constant:kAssistantContainerMargin];
 
   NSArray* panelConstraints = @[
     _assistantLeadingConstraint,
-    [assistantView.topAnchor constraintEqualToAnchor:view.topAnchor],
-    [assistantView.bottomAnchor constraintEqualToAnchor:view.bottomAnchor],
+    [assistantView.topAnchor
+        constraintEqualToAnchor:view.safeAreaLayoutGuide.topAnchor
+                       constant:kAssistantContainerMargin],
+    [assistantView.bottomAnchor
+        constraintEqualToAnchor:view.bottomAnchor
+                       constant:-kAssistantContainerMargin],
     [assistantView.widthAnchor
         constraintEqualToAnchor:view.widthAnchor
                      multiplier:kAssistantSidePanelWidthMultiplier],
@@ -425,17 +614,33 @@
 
   _assistantPanelConstraints = panelConstraints;
   if (IsFullscreenRefactoringEnabled()) {
-    _assistantPanelConstraints =
-        [panelConstraints arrayByAddingObjectsFromArray:@[
-          [_appContentView.leadingAnchor
-              constraintEqualToAnchor:assistantView.trailingAnchor],
-          [_appContentView.trailingAnchor
-              constraintEqualToAnchor:view.trailingAnchor],
-          [_appContentView.topAnchor constraintEqualToAnchor:view.topAnchor],
-          [_appContentView.bottomAnchor
-              constraintEqualToAnchor:view.bottomAnchor],
-        ]];
+    [self setupAppContentConstraintsForPanel:assistantView];
   }
+}
+
+// Sets up constraints for the app content view when the assistant side panel is
+// active.
+- (void)setupAppContentConstraintsForPanel:(UIView*)assistantView {
+  UIView* view = self.view;
+  _sideAppContentTopConstraint =
+      [_appContentContainerView.topAnchor constraintEqualToAnchor:view.topAnchor
+                                                         constant:0];
+  _sideAppContentTrailingConstraint = [_appContentContainerView.trailingAnchor
+      constraintEqualToAnchor:view.trailingAnchor
+                     constant:0];
+  _sideAppContentBottomConstraint = [_appContentContainerView.bottomAnchor
+      constraintEqualToAnchor:view.bottomAnchor
+                     constant:0];
+
+  _assistantPanelConstraints =
+      [_assistantPanelConstraints arrayByAddingObjectsFromArray:@[
+        [_appContentContainerView.leadingAnchor
+            constraintEqualToAnchor:assistantView.trailingAnchor
+                           constant:kAssistantContainerMargin],
+        _sideAppContentTrailingConstraint,
+        _sideAppContentTopConstraint,
+        _sideAppContentBottomConstraint,
+      ]];
 }
 
 // Sets up sheet constraints for bottom sheet layout.
@@ -461,12 +666,13 @@
   if (IsFullscreenRefactoringEnabled()) {
     _assistantSheetConstraints =
         [sheetConstraints arrayByAddingObjectsFromArray:@[
-          [_appContentView.leadingAnchor
+          [_appContentContainerView.leadingAnchor
               constraintEqualToAnchor:view.leadingAnchor],
-          [_appContentView.trailingAnchor
+          [_appContentContainerView.trailingAnchor
               constraintEqualToAnchor:view.trailingAnchor],
-          [_appContentView.topAnchor constraintEqualToAnchor:view.topAnchor],
-          [_appContentView.bottomAnchor
+          [_appContentContainerView.topAnchor
+              constraintEqualToAnchor:view.topAnchor],
+          [_appContentContainerView.bottomAnchor
               constraintEqualToAnchor:view.bottomAnchor],
         ]];
   }

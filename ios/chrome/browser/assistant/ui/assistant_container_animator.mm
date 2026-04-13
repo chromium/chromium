@@ -5,11 +5,11 @@
 #import "ios/chrome/browser/assistant/ui/assistant_container_animator.h"
 
 #import "ios/chrome/browser/assistant/ui/assistant_container_animatable.h"
-#import "ios/chrome/browser/assistant/ui/assistant_container_provider.h"
+#import "ios/chrome/browser/assistant/ui/assistant_container_layout_utils.h"
+#import "ios/chrome/browser/assistant/ui/assistant_container_presenter.h"
 
 namespace {
 // Animation constants.
-constexpr NSTimeInterval kAnimationDuration = 0.5;
 constexpr CGFloat kSpringDamping = 0.8;
 constexpr CGFloat kTranslationMargin = 20.0;
 }  // namespace
@@ -31,43 +31,37 @@ constexpr CGFloat kTranslationMargin = 20.0;
 - (void)animateSidePanelPresentation:
             (UIViewController<AssistantContainerAnimatable>*)viewController
                   baseViewController:
-                      (UIViewController<AssistantContainerProvider>*)
+                      (UIViewController<AssistantContainerPresenter>*)
                           baseViewController
                           completion:(void (^)(void))completion {
-  UIView* assistantView = viewController.view;
-  if (!assistantView) {
-    if (completion) {
-      completion();
-    }
-    return;
-  }
-
-  [baseViewController.view layoutIfNeeded];
-  CGFloat width = assistantView.frame.size.width;
-
-  [baseViewController updateAssistantContainerOffset:-width];
-
-  [UIView animateWithDuration:kAnimationDuration
-      delay:0
-      usingSpringWithDamping:kSpringDamping
-      initialSpringVelocity:0
-      options:0
-      animations:^{
-        [baseViewController updateAssistantContainerOffset:0];
-      }
-      completion:^(BOOL finished) {
-        if (completion) {
-          completion();
-        }
-      }];
+  [self animateSidePanel:viewController
+      baseViewController:baseViewController
+            presentation:YES
+              completion:completion];
 }
 
 - (void)animateSidePanelDismissal:
             (UIViewController<AssistantContainerAnimatable>*)viewController
                baseViewController:
-                   (UIViewController<AssistantContainerProvider>*)
+                   (UIViewController<AssistantContainerPresenter>*)
                        baseViewController
                        completion:(void (^)(void))completion {
+  [self animateSidePanel:viewController
+      baseViewController:baseViewController
+            presentation:NO
+              completion:completion];
+}
+
+#pragma mark - Private
+
+// Animates the side panel. If `presentation` is YES, the side panel slides in
+// from the left. Otherwise, it slides out to the left.
+- (void)animateSidePanel:
+            (UIViewController<AssistantContainerAnimatable>*)viewController
+      baseViewController:
+          (UIViewController<AssistantContainerPresenter>*)baseViewController
+            presentation:(BOOL)presentation
+              completion:(void (^)(void))completion {
   UIView* assistantView = viewController.view;
   if (!assistantView) {
     if (completion) {
@@ -77,17 +71,17 @@ constexpr CGFloat kTranslationMargin = 20.0;
   }
 
   [baseViewController.view layoutIfNeeded];
-  CGFloat width = assistantView.frame.size.width;
 
-  [baseViewController updateAssistantContainerOffset:0];
+  [baseViewController setAssistantContainerVisible:!presentation];
 
-  [UIView animateWithDuration:kAnimationDuration
+  [UIView animateWithDuration:kAssistantSidePanelAnimationDuration
       delay:0
       usingSpringWithDamping:kSpringDamping
       initialSpringVelocity:0
       options:0
       animations:^{
-        [baseViewController updateAssistantContainerOffset:-width];
+        [baseViewController setAssistantContainerVisible:presentation];
+        [baseViewController setAssistantPanelActive:presentation];
       }
       completion:^(BOOL finished) {
         if (completion) {
@@ -95,8 +89,6 @@ constexpr CGFloat kTranslationMargin = 20.0;
         }
       }];
 }
-
-#pragma mark - Private
 
 // Animates the container view. If `presentation` is YES, the container slides
 // up from the bottom. Otherwise, it slides down.
@@ -133,7 +125,7 @@ constexpr CGFloat kTranslationMargin = 20.0;
   }
 
   // Animate.
-  [UIView animateWithDuration:kAnimationDuration
+  [UIView animateWithDuration:kAssistantSidePanelAnimationDuration
       delay:0
       usingSpringWithDamping:kSpringDamping
       initialSpringVelocity:0

@@ -8,6 +8,8 @@
 #import <cmath>
 
 #import "ios/chrome/browser/shared/public/features/features.h"
+#import "ios/chrome/common/ui/colors/semantic_color_names.h"
+#import "ios/chrome/common/ui/util/constraints_ui_util.h"
 #import "ios/chrome/common/ui/util/ui_util.h"
 
 namespace {
@@ -25,9 +27,18 @@ const CGFloat kMaxBackgroundDimmingAlpha = 0.11;
 
 const CGFloat kAssistantSidePanelMaxWidth = 400.0;
 const CGFloat kAssistantSidePanelWidthMultiplier = 1.0 / 3.0;
+const CGFloat kAssistantContainerMargin = 8.0;
+const CGFloat kAssistantSidePanelCornerRadius = 22.0;
+
+const float kAssistantShadowOpacity = 0.29f;
+const CGFloat kAssistantShadowRadius = 21.0;
+const CGSize kAssistantShadowOffset = {0, 11};
 
 const NSTimeInterval kAssistantSheetSpringDuration = 0.3;
+const NSTimeInterval kAssistantSidePanelAnimationDuration = 0.5;
+const NSTimeInterval kAssistantSidePanelInsetAnimationDuration = 0.2;
 const CGFloat kAssistantSheetSpringDamping = 0.85;
+
 const CGFloat kAssistantSheetMomentumProjectionSeconds = 0.2;
 
 bool IsSidePanelLayout(UITraitCollection* trait_collection) {
@@ -38,6 +49,31 @@ bool IsSidePanelLayout(UITraitCollection* trait_collection) {
 bool IsIPhoneLandscapeLayout(UITraitCollection* trait_collection) {
   return trait_collection.userInterfaceIdiom == UIUserInterfaceIdiomPhone &&
          trait_collection.verticalSizeClass == UIUserInterfaceSizeClassCompact;
+}
+
+void ApplyAssistantSidePanelAesthetics(UIView* content_view,
+                                       UIView* shadow_view,
+                                       bool active) {
+  if (!active) {
+    content_view.layer.cornerRadius = 0.0;
+    shadow_view.layer.shadowOpacity = 0.0;
+    shadow_view.backgroundColor = [UIColor clearColor];
+    return;
+  }
+
+  content_view.layer.cornerRadius = kAssistantSidePanelCornerRadius;
+  content_view.layer.cornerCurve = kCACornerCurveContinuous;
+
+  // The view must be opaque to cast a shadow.
+  shadow_view.backgroundColor = [UIColor colorNamed:kBlue100Color];
+  shadow_view.layer.cornerRadius = kAssistantSidePanelCornerRadius;
+  shadow_view.layer.cornerCurve = kCACornerCurveContinuous;
+  // TODO(crbug.com/494503434): Update the shadow color to a dynamic color or
+  // handle dark mode properly later.
+  shadow_view.layer.shadowColor = [UIColor blackColor].CGColor;
+  shadow_view.layer.shadowOffset = kAssistantShadowOffset;
+  shadow_view.layer.shadowRadius = kAssistantShadowRadius;
+  shadow_view.layer.shadowOpacity = kAssistantShadowOpacity;
 }
 
 NSInteger RubberBandDistance(NSInteger offset, NSInteger dimension) {

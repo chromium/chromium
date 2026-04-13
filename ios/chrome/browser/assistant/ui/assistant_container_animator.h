@@ -8,7 +8,7 @@
 #import <UIKit/UIKit.h>
 
 @protocol AssistantContainerAnimatable;
-@protocol AssistantContainerProvider;
+@protocol AssistantContainerPresenter;
 
 @interface AssistantContainerAnimator : NSObject
 
@@ -26,7 +26,7 @@
 - (void)animateSidePanelPresentation:
             (UIViewController<AssistantContainerAnimatable>*)viewController
                   baseViewController:
-                      (UIViewController<AssistantContainerProvider>*)
+                      (UIViewController<AssistantContainerPresenter>*)
                           baseViewController
                           completion:(void (^)(void))completion;
 
@@ -34,7 +34,7 @@
 - (void)animateSidePanelDismissal:
             (UIViewController<AssistantContainerAnimatable>*)viewController
                baseViewController:
-                   (UIViewController<AssistantContainerProvider>*)
+                   (UIViewController<AssistantContainerPresenter>*)
                        baseViewController
                        completion:(void (^)(void))completion;
 

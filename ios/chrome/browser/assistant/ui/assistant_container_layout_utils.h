@@ -7,24 +7,50 @@
 
 #import <UIKit/UIKit.h>
 
-// Base horizontal and vertical margins for the morphing container.
+// Morphing sheet layout constants for the sheet presentation.
+
+// Base margins for floating states.
 extern const CGFloat kMorphingBaseMargin;
-// Horizontal margin when the container approaches the Medium detent.
+// Margin for Medium detent.
 extern const CGFloat kMorphingMediumMargin;
-// Default corner radius for standard states.
+// Default top corner radius.
 extern const CGFloat kMorphingBaseCornerRadius;
-// Corner radius for the bottom of the container in the Medium state.
+// Bottom corner radius for Medium state.
 extern const CGFloat kMorphingMediumBottomCornerRadius;
-// Maximum alpha for the background dimming view.
+// Max opacity of dimming view.
 extern const CGFloat kMaxBackgroundDimmingAlpha;
 
-// Constants for the Assistant Side Panel.
-extern const CGFloat kAssistantSidePanelMaxWidth;
-extern const CGFloat kAssistantSidePanelWidthMultiplier;
+// Assistant Side Panel constants (iPad).
 
-// Animation constants for the Assistant Sheet.
+// Maximum width of the panel.
+extern const CGFloat kAssistantSidePanelMaxWidth;
+// Width as fraction of screen width.
+extern const CGFloat kAssistantSidePanelWidthMultiplier;
+// Margin from screen edges.
+extern const CGFloat kAssistantContainerMargin;
+// Corner radius for all 4 corners.
+extern const CGFloat kAssistantSidePanelCornerRadius;
+
+// Shadow styling constants applied for the sheet and side panel.
+
+// Shadow opacity.
+extern const float kAssistantShadowOpacity;
+// Shadow blur radius.
+extern const CGFloat kAssistantShadowRadius;
+// Shadow offset.
+extern const CGSize kAssistantShadowOffset;
+
+// Animation constants for sheet and side panel.
+
+// Spring duration for sheet.
 extern const NSTimeInterval kAssistantSheetSpringDuration;
+// Duration for side panel slide.
+extern const NSTimeInterval kAssistantSidePanelAnimationDuration;
+// Duration for inset changes.
+extern const NSTimeInterval kAssistantSidePanelInsetAnimationDuration;
+// Spring damping ratio.
 extern const CGFloat kAssistantSheetSpringDamping;
+// Momentum projection time.
 extern const CGFloat kAssistantSheetMomentumProjectionSeconds;
 
 // Returns true if the layout traits dictate presenting the Assistant as a side
@@ -33,6 +59,12 @@ bool IsSidePanelLayout(UITraitCollection* trait_collection);
 
 // Returns true if the layout is currently iPhone landscape.
 bool IsIPhoneLandscapeLayout(UITraitCollection* trait_collection);
+
+// Applies side panel aesthetics (rounded corners on content, shadow on shadow
+// view).
+void ApplyAssistantSidePanelAesthetics(UIView* content_view,
+                                       UIView* shadow_view,
+                                       bool active);
 
 // Encapsulates the dynamically computed styling properties with sub-pixel
 // precision.

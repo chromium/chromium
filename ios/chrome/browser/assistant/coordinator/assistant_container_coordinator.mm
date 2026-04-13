@@ -10,7 +10,7 @@
 #import "ios/chrome/browser/assistant/ui/assistant_container_delegate.h"
 #import "ios/chrome/browser/assistant/ui/assistant_container_detent.h"
 #import "ios/chrome/browser/assistant/ui/assistant_container_layout_utils.h"
-#import "ios/chrome/browser/assistant/ui/assistant_container_provider.h"
+#import "ios/chrome/browser/assistant/ui/assistant_container_presenter.h"
 #import "ios/chrome/browser/assistant/ui/assistant_container_view_controller.h"
 #import "ios/chrome/browser/fullscreen/ui_bundled/fullscreen_controller.h"
 #import "ios/chrome/browser/shared/coordinator/layout_guide/layout_guide_util.h"
@@ -111,13 +111,13 @@
     bool isSidePanelLayout =
         IsSidePanelLayout(self.baseViewController.traitCollection);
 
-    [self.provider
+    [self.presenter
         addAssistantContainerViewController:_containerViewController];
 
     if (isSidePanelLayout) {
       [_animator
           animateSidePanelPresentation:_containerViewController
-                    baseViewController:self.provider
+                    baseViewController:self.presenter
                             completion:^{
                               [weakSelf didCompletePresentationAnimation];
                             }];
@@ -232,7 +232,7 @@
     if (animated) {
       [_animator
           animateSidePanelDismissal:_containerViewController
-                 baseViewController:self.provider
+                 baseViewController:self.presenter
                          completion:^{
                            [weakSelf
                                didCompleteDismissalAnimationAnimated:animated];
@@ -283,7 +283,7 @@
   [_containerViewController setUpFullscreenObservation:nullptr];
 
   if (IsAssistantSidePanelEnabled()) {
-    [self.provider removeAssistantContainerViewController];
+    [self.presenter removeAssistantContainerViewController];
   } else {
     [_containerViewController willMoveToParentViewController:nil];
     [_containerViewController.view removeFromSuperview];
@@ -307,18 +307,18 @@
 
 #pragma mark - Accessors
 
-// Returns the provider by casting the base view controller.
+// Returns the presenter by casting the base view controller.
 // When the Assistant Side Panel is disabled, the baseVC might not conform to
 // this protocol.
-- (UIViewController<AssistantContainerProvider>*)provider {
+- (UIViewController<AssistantContainerPresenter>*)presenter {
   if (IsAssistantSidePanelEnabled()) {
     CHECK([self.baseViewController
-              conformsToProtocol:@protocol(AssistantContainerProvider)],
+              conformsToProtocol:@protocol(AssistantContainerPresenter)],
           base::NotFatalUntil::M152);
   }
   if ([self.baseViewController
-          conformsToProtocol:@protocol(AssistantContainerProvider)]) {
-    return (UIViewController<AssistantContainerProvider>*)
+          conformsToProtocol:@protocol(AssistantContainerPresenter)]) {
+    return (UIViewController<AssistantContainerPresenter>*)
         self.baseViewController;
   }
   return nil;

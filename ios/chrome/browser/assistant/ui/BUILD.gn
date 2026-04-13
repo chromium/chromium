@@ -13,7 +13,7 @@ source_set("ui") {
     "assistant_container_layout_utils.h",
     "assistant_container_layout_utils.mm",
     "assistant_container_presentation_context.h",
-    "assistant_container_provider.h",
+    "assistant_container_presenter.h",
     "assistant_container_view.h",
     "assistant_container_view.mm",
     "assistant_container_view_controller.h",

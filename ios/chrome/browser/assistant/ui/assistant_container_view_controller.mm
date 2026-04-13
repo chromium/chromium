@@ -460,6 +460,12 @@ NSInteger GetMediumDetentHeight(NSInteger absoluteMax) {
 // Dynamically updates the bounding constraints and border radius based on
 // scale.
 - (void)updateContainerStylingForHeight:(CGFloat)height {
+  if (_presentationContext == AssistantPresentationContext::kPanel) {
+    // The SceneViewController handles its UI layout in Panel mode.
+    [_assistantContainerView updateTopCornerRadius:0 bottomCornerRadius:0];
+    return;
+  }
+
   CGFloat minimizedHeight =
       _detentHeights[AssistantContainerDetent::kMinimized];
   CGFloat mediumHeight = _detentHeights[AssistantContainerDetent::kMedium];
