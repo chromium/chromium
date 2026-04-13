@@ -631,7 +631,11 @@ suite('HistoryFilterChipsVisibility', function() {
         element.shadowRoot.querySelector<HTMLElement>('#historyFilterChips');
     assertTrue(!!filterChips);
 
-    const changeQueryEventPromise = eventToPromise('change-query', element);
+    const changeQueryEventPromise = eventToPromise<CustomEvent<{
+      search: string,
+      includeUserVisits: boolean,
+      includeActorVisits: boolean,
+    }>>('change-query', element);
 
     filterChips.dispatchEvent(new CustomEvent('filter-changed', {
       detail: {
@@ -644,12 +648,9 @@ suite('HistoryFilterChipsVisibility', function() {
 
     const event = await changeQueryEventPromise;
 
-    assertEquals(false, (element as any).includeUserVisits_);
-    assertEquals(true, (element as any).includeActorVisits_);
-
     // The query sent to the manager includes the new filters.
-    assertEquals(false, event.detail.includeUserVisits);
-    assertEquals(true, event.detail.includeActorVisits);
+    assertFalse(event.detail.includeUserVisits);
+    assertTrue(event.detail.includeActorVisits);
     assertEquals('', event.detail.search);
   });
 

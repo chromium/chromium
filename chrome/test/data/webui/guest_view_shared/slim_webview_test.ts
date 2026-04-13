@@ -6,7 +6,7 @@ import '//glic/shared/guest_view/slim_webview.js';
 
 import {OnBeforeSendHeadersParams} from '//glic/shared/guest_view/request_throttlers.js';
 import {PermissionRequestEvent} from '//glic/shared/guest_view/slim_webview.js';
-import type {LoadAbortEvent, LoadEvent, SlimWebviewElement} from '//glic/shared/guest_view/slim_webview.js';
+import type {LoadAbortEvent, LoadEvent, NewWindowEvent, SlimWebviewElement} from '//glic/shared/guest_view/slim_webview.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {eventToPromise} from 'chrome://webui-test/test_util.js';
 
@@ -214,7 +214,8 @@ suite('Operations', function() {
   });
 
   test('NewWindowEvents', async function() {
-    const newWindowPromise = eventToPromise('newwindow', webview);
+    const newWindowPromise =
+        eventToPromise<NewWindowEvent>('newwindow', webview);
     evalOnWebview(webview, () => {
       window.open('http://foo.bar/', '_blank', 'width=200,height=300');
     });

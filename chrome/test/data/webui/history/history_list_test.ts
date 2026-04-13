@@ -65,7 +65,7 @@ suite('HistoryListTest', function() {
    */
   function finishSetup(
       queryResults: HistoryEntry[], finished: boolean = true,
-      query?: string): Promise<any> {
+      query?: string): Promise<void> {
     testService.handler.setResultFor('queryHistory', Promise.resolve({
       results:
           {info: {finished: finished, term: query || ''}, value: queryResults},
@@ -77,11 +77,13 @@ suite('HistoryListTest', function() {
     const queryManager = app.shadowRoot.querySelector('history-query-manager');
     assertTrue(!!queryManager);
     queryManager.queryState = {...queryManager.queryState, incremental: true};
-    return Promise.all([
-      testService.handler.whenCalled('queryHistory'),
-      microtasksFinished(),
-      eventToPromise('viewport-filled', element.$.infiniteList),
-    ]);
+    return Promise
+        .all([
+          testService.handler.whenCalled('queryHistory'),
+          microtasksFinished(),
+          eventToPromise('viewport-filled', element.$.infiniteList),
+        ])
+        .then(() => {});
   }
 
   function getHistoryData(): HistoryEntry[] {

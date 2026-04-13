@@ -63,7 +63,7 @@ export function eventToPromise<K extends keyof HTMLElementEventMap>(
 export function eventToPromise<K extends keyof WindowEventMap>(
     eventType: K, target: Window): Promise<WindowEventMap[K]>;
 
-export function eventToPromise<E extends Event = any>(
+export function eventToPromise<E extends Event = Event>(
     eventType: string, target: Element|EventTarget|Window): Promise<E>;
 
 export function eventToPromise(
