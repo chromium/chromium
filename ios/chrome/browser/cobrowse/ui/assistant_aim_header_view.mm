@@ -11,6 +11,8 @@
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
+#import "ios/chrome/grit/ios_strings.h"
+#import "ui/base/l10n/l10n_util_mac.h"
 
 namespace {
 
@@ -170,10 +172,28 @@ const CGFloat kSymbolsPointSize = 24.0;
       kMenuSymbol, kHeaderActionSymbolPointSize);
   config.baseForegroundColor = [UIColor colorNamed:kTextPrimaryColor];
 
-  // TODO(crbug.com/493128413): Implement action.
+  // TODO(crbug.com/493128413): Implement missing actions.
   UIButton* button = [UIButton buttonWithConfiguration:config
                                          primaryAction:nil];
   button.translatesAutoresizingMaskIntoConstraints = NO;
+
+  UIAction* historyAction = [UIAction
+      actionWithTitle:l10n_util::GetNSString(IDS_IOS_AIM_HISTORY)
+                image:CustomSymbolWithPointSize(kLineThreeSparkSymbol,
+                                                kHeaderActionSymbolPointSize)
+           identifier:nil
+              handler:^(UIAction* action){
+                  // TODO(crbug.com/499241086): Implement showing conversation
+                  // history.
+              }];
+
+  button.menu = [UIMenu menuWithTitle:@""
+                                image:nil
+                           identifier:nil
+                              options:UIMenuOptionsDisplayInline
+                             children:@[ historyAction ]];
+
+  button.showsMenuAsPrimaryAction = YES;
 
   [NSLayoutConstraint activateConstraints:@[
     [button.heightAnchor constraintEqualToConstant:kButtonSize],

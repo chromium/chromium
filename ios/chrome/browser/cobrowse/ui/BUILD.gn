@@ -13,6 +13,7 @@ source_set("ui") {
   ]
   deps = [
     ":constants",
+    "//ios/chrome/app/strings",
     "//ios/chrome/browser/assistant/ui",
     "//ios/chrome/browser/composebox/ui",
     "//ios/chrome/browser/shared/public/features:system_flags",

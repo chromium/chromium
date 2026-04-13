@@ -344,6 +344,9 @@
       <message name="IDS_IOS_AGE_MISMATCH_SUBTITLE_PART2" desc="Second part of the explanatory body copy in a full-screen notice. Suggests checking the age in the Apple Account if the user is not a child. Align ‘you may want to check the age` phrasing with TC ID 2620449093380639180.">
         If you're not a child, you may want to check the age in the Apple Account on this device. <ph name="BEGIN_LINK">BEGIN_LINK</ph>Learn more<ph name="END_LINK">END_LINK</ph>
       </message>
+      <message name="IDS_IOS_AIM_HISTORY" desc="Title of the AI mode history conversations.">
+        AI Mode History
+      </message>
       <message name="IDS_IOS_AI_HUB_ALWAYS_SHOW_POPUPS_ACCESSIBILITY_LABEL" desc="The accessibility label for the button to always show pop-ups on this site in the AI hub.">
         Always show pop-ups on this site
       </message>
