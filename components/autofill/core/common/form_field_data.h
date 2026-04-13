@@ -366,9 +366,9 @@ class FormFieldData {
   }
 
   // The default value for text fields that have no maxlength attribute
-  // specified. We choose the maximum 32 bit, rather than 64 bit, number because
-  // so we don't need to worry about integer overflows when doing arithmetic
-  // with FormFieldData::max_length.
+  // specified. We choose the maximum 32 bit, rather than 64 bit, number so we
+  // don't need to worry about integer overflows when doing arithmetic with
+  // FormFieldData::max_length.
   static constexpr size_t kDefaultMaxLength =
       std::numeric_limits<uint32_t>::max();
 
@@ -506,7 +506,7 @@ class FormFieldData {
   FormSignature host_form_signature_;
   url::Origin origin_;
   int32_t form_control_ax_id_ = 0;
-  uint64_t max_length_ = std::numeric_limits<uint32_t>::max();
+  uint64_t max_length_ = kDefaultMaxLength;
   bool is_autofilled_according_to_renderer_ = false;
   CheckStatus check_status_ = CheckStatus::kNotCheckable;
   bool is_focusable_ = true;
