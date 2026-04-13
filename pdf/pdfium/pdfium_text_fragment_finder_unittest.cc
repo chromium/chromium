@@ -342,6 +342,17 @@ TEST_P(PDFiumTextFragmentFinderTest,
   EXPECT_EQ(range.page_index(), 1u);
 }
 
+TEST_P(PDFiumTextFragmentFinderTest, InvalidFragmentWithHyphenDoesNotCrash) {
+  PDFiumEngine* engine = CreateEngine(FILE_PATH_LITERAL("spanner.pdf"));
+  ASSERT_TRUE(engine);
+
+  PDFiumTextFragmentFinder finder(engine);
+  // This contains a raw hyphen, which is considered malformed by
+  // FromEscapedString.
+  const auto highlights = finder.FindTextFragments({"Google-Platform"});
+  EXPECT_TRUE(highlights.empty());
+}
+
 INSTANTIATE_TEST_SUITE_P(All, PDFiumTextFragmentFinderTest, testing::Bool());
 
 }  // namespace chrome_pdf

@@ -151,7 +151,12 @@ std::vector<PDFiumRange> PDFiumTextFragmentFinder::FindTextFragments(
   for (const std::string& fragment : text_fragments) {
     const auto text_fragment =
         shared_highlighting::TextFragment::FromEscapedString(fragment);
-    CHECK(text_fragment.has_value());
+    // If the fragment is malformed (e.g. contains raw hyphens),
+    // `FromEscapedString` returns `std::nullopt`. Skip such fragments instead
+    // of crashing, as they can originate from untrusted URLs.
+    if (!text_fragment.has_value()) {
+      continue;
+    }
     StartTextFragmentSearch(text_fragment.value());
   }
 
