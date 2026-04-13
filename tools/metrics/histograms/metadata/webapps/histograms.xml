@@ -302,7 +302,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Webapp.AppIdentityDialog.AlreadyApproved"
-    enum="AppIdentityDisplayMetric" expires_after="2026-05-01">
+    enum="AppIdentityDisplayMetric" expires_after="2027-04-01">
   <owner>peter@chromium.org</owner>
   <owner>dmurph@chromium.org</owner>
   <owner>desktop-pwas-team@google.com</owner>
@@ -325,7 +325,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Webapp.AppIdentityDialog.NotShowing"
-    enum="AppIdentityDisplayMetric" expires_after="2026-05-01">
+    enum="AppIdentityDisplayMetric" expires_after="2027-04-01">
   <owner>peter@chromium.org</owner>
   <owner>dmurph@chromium.org</owner>
   <owner>desktop-pwas-team@google.com</owner>
@@ -346,7 +346,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Webapp.AppIdentityDialog.Showing"
-    enum="AppIdentityDisplayMetric" expires_after="2026-05-01">
+    enum="AppIdentityDisplayMetric" expires_after="2027-04-01">
   <owner>dmurph@chromium.org</owner>
   <owner>peter@chromium.org</owner>
   <owner>pwa-team@google.com</owner>
@@ -470,7 +470,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebApp.DedupeInstallUrls.SessionRunCount" units="runs"
-    expires_after="2026-05-19">
+    expires_after="2027-04-19">
   <owner>dmurph@chromium.org</owner>
   <owner>pwa-team@google.com</owner>
   <summary>
@@ -484,7 +484,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebApp.DefaultOffline.ClosingReason"
-    enum="DefaultOfflineClosingReason" expires_after="2026-05-01">
+    enum="DefaultOfflineClosingReason" expires_after="2027-04-01">
   <owner>finnur@chromium.org</owner>
   <owner>peter@chromium.org</owner>
   <owner>pwa-team@google.com</owner>
@@ -499,7 +499,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebApp.DefaultOffline.DurationShown" units="seconds"
-    expires_after="2026-05-01">
+    expires_after="2027-04-01">
   <owner>finnur@chromium.org</owner>
   <owner>peter@chromium.org</owner>
   <owner>pwa-team@google.com</owner>
@@ -867,7 +867,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebApp.Icon.AppsWithEmptyDownloadedIconSizes" units="web apps"
-    expires_after="2026-05-24">
+    expires_after="2027-04-24">
   <owner>alancutter@chromium.org</owner>
   <owner>pwa-team@google.com</owner>
   <summary>
@@ -2274,7 +2274,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebApp.NewDiyAppInstalled.ByUser" enum="BooleanSuccess"
-    expires_after="2026-05-25">
+    expires_after="2027-04-25">
   <owner>dibyapal@chromium.org</owner>
   <owner>pwa-team@google.com</owner>
   <summary>
@@ -2830,7 +2830,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebApp.Sync.CorruptSyncEntity"
-    enum="WebAppManifestIdParseResult" expires_after="2026-05-25">
+    enum="WebAppManifestIdParseResult" expires_after="2027-04-25">
   <owner>dmurph@chromium.org</owner>
   <owner>pwa-team@google.com</owner>
   <summary>
@@ -2842,7 +2842,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebApp.Sync.InvalidEntity" enum="WebAppStorageKeyParseResult"
-    expires_after="2026-05-25">
+    expires_after="2027-04-25">
   <owner>dmurph@chromium.org</owner>
   <owner>pwa-team@google.com</owner>
   <summary>
