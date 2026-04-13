@@ -836,10 +836,14 @@ chromium-metrics-reviews@google.com.
   <int value="3" label="[Error] Empty primary accountid, with sync consent"/>
 </enum>
 
+<!-- LINT.IfChange(PendingResolutionSource) -->
+
 <enum name="PendingResolutionSource">
   <int value="0" label="Sign in (reauth)"/>
   <int value="1" label="Sign out"/>
 </enum>
+
+<!-- LINT.ThenChange(//components/signin/core/browser/signin_metrics_service.cc:PendingResolutionSource) -->
 
 <!-- LINT.IfChange(ProfileMenuAvatarButtonPromoType) -->
 

@@ -60,12 +60,14 @@ constexpr char kWebSigninAccountStartTimesPref[] =
 
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
+// LINT.IfChange(PendingResolutionSource)
 enum class PendingResolutionSource {
   kReauth = 0,
   kSignout = 1,
 
   kMaxValue = kSignout,
 };
+// LINT.ThenChange(//tools/metrics/histograms/metadata/signin/enums.xml:PendingResolutionSource)
 
 void RecordPendingResolutionTime(const char* histogram_base_name,
                                  PendingResolutionSource resolution,
