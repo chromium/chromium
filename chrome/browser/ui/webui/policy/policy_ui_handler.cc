@@ -484,6 +484,10 @@ void PolicyUIHandler::HandleGetPolicyLogs(const base::ListValue& args) {
                             policy::PolicyLogger::GetInstance()->GetAsList());
 }
 
+void PolicyUIHandler::GetPolicyLogs(GetPolicyLogsCallback callback) {
+  std::move(callback).Run(policy::PolicyLogger::GetInstance()->GetAsMojoList());
+}
+
 #if !BUILDFLAG(IS_CHROMEOS)
 void PolicyUIHandler::HandleUploadReport(const base::ListValue& args) {
   upload_report_count_ += 1;

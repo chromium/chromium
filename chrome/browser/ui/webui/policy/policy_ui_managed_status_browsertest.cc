@@ -22,6 +22,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
+#include "base/test/with_feature_override.h"
 #include "base/time/clock.h"
 #include "base/time/time.h"
 #include "base/values.h"
@@ -138,10 +139,12 @@ class ScopedLocaleSetter {
 };
 
 class PolicyUIManagedStatusTest : public PlatformBrowserTest,
-                                  public ::testing::WithParamInterface<bool> {
+                                  public base::test::WithFeatureOverride {
  public:
   PolicyUIManagedStatusTest()
-      : embedded_test_server_(net::EmbeddedTestServer::TYPE_HTTP) {
+      : base::test::WithFeatureOverride(
+            policy::features::kPolicyPageMojoMigration),
+        embedded_test_server_(net::EmbeddedTestServer::TYPE_HTTP) {
     embedded_test_server_.RegisterRequestHandler(base::BindRepeating(
         &net::test_server::HandlePrefixedRequest, "/oauth2/v1/userinfo",
         base::BindRepeating(&PolicyUIManagedStatusTest::HandleUserInfoRequest,
@@ -153,14 +156,6 @@ class PolicyUIManagedStatusTest : public PlatformBrowserTest,
             base::Unretained(this))));
     embedded_test_server_.RegisterRequestHandler(base::BindRepeating(
         &FakeGaia::HandleRequest, base::Unretained(&fake_gaia_)));
-
-    if (GetParam()) {
-      scoped_feature_list_.InitAndEnableFeature(
-          policy::features::kPolicyPageMojoMigration);
-    } else {
-      scoped_feature_list_.InitAndDisableFeature(
-          policy::features::kPolicyPageMojoMigration);
-    }
   }
 
   PolicyUIManagedStatusTest(const PolicyUIManagedStatusTest&) = delete;
@@ -168,8 +163,6 @@ class PolicyUIManagedStatusTest : public PlatformBrowserTest,
       delete;
 
   ~PolicyUIManagedStatusTest() override = default;
-
-  bool is_mojo_feature_enabled() const { return GetParam(); }
 
   void SetUp() override {
     ASSERT_TRUE(embedded_test_server_.InitializeAndListen());
@@ -332,7 +325,6 @@ class PolicyUIManagedStatusTest : public PlatformBrowserTest,
   }
 
  private:
-  base::test::ScopedFeatureList scoped_feature_list_;
   net::EmbeddedTestServer embedded_test_server_;
   std::unique_ptr<policy::EmbeddedPolicyTestServer> policy_server_;
   FakeGaia fake_gaia_;
@@ -440,6 +432,4 @@ IN_PROC_BROWSER_TEST_P(PolicyUIManagedStatusTest, PageLoadedInGuestMode) {
   EXPECT_EQ(result, kBannerHidden);
 }
 
-INSTANTIATE_TEST_SUITE_P(PolicyManagedUITestInstance,
-                         PolicyUIManagedStatusTest,
-                         testing::Bool());
+INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(PolicyUIManagedStatusTest);

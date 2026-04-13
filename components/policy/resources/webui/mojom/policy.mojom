@@ -4,6 +4,17 @@
 
 module policy.mojom;
 
+// The type of the policy log result object. The definition is based on
+// components/policy/core/common/policy_logger.cc Log::GetAsValue().
+struct Log {
+  string message;
+  string log_severity;
+  string log_source;
+  string file_and_line;
+  string location;
+  string timestamp;
+};
+
 // Messages sent from the renderer WebUI TS to the browser process C++.
 interface PolicyPageHandler {
   // Test function to verify the mojo interface works.
@@ -34,6 +45,9 @@ interface PolicyPageHandler {
   // The callback is invoked once the policies have been successfully loaded.
   SetLocalTestPolicies(string policies, string profile_separation_response)
       => ();
+
+  // Returns the policy logs displayed on the chrome://policy/logs.
+  GetPolicyLogs() => (array<Log> policy_logs);
 };
 
 // Messages sent from the browser process C++ to the renderer WebUI TS.

@@ -238,6 +238,7 @@ source_set("internal") {
     "//components/enterprise/common/proto:chrome_reporting_entity",
     "//components/enterprise/common/proto:upload_request_response",
     "//components/enterprise/connectors/core:constants",
+    "//components/policy/resources/webui/mojom:mojo_bindings",
     "//components/prefs",
     "//components/signin/public/identity_manager",
     "//components/strings",

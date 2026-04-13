@@ -1,1 +1,3 @@
 file://ui/webui/PLATFORM_OWNERS  # For mechanical refactors.
+per-file *.mojom=set noparent
+per-file *.mojom=file://ipc/SECURITY_OWNERS

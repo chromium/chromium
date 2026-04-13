@@ -94,6 +94,7 @@ class PolicyUIHandler : public content::WebUIMessageHandler,
       const std::string& policies,
       const std::string& profile_separation_policy_response,
       SetLocalTestPoliciesCallback callback) override;
+  void GetPolicyLogs(GetPolicyLogsCallback callback) override;
 
  private:
   void HandleExportPoliciesJson(const base::ListValue& args);

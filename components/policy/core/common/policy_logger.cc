@@ -19,6 +19,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/task/sequenced_task_runner.h"
 #include "components/policy/core/common/features.h"
+#include "components/policy/resources/webui/mojom/policy.mojom.h"
 #include "components/version_info/version_info.h"
 
 namespace policy {
@@ -216,25 +217,32 @@ base::DictValue PolicyLogger::Log::GetAsDict() const {
       .Set("timestamp", base::TimeFormatHTTP(timestamp_));
 }
 
+policy::mojom::LogPtr PolicyLogger::Log::GetAsMojoLog() const {
+  return policy::mojom::Log::New(
+      message_, GetLogSeverity(log_severity_), GetLogSourceValue(log_source_),
+      GetFileAndLine(file_, line_), GetLineURL(file_, line_),
+      base::TimeFormatHTTP(timestamp_));
+}
+
 PolicyLogger::PolicyLogger() = default;
 PolicyLogger::~PolicyLogger() = default;
 
 void PolicyLogger::AddLog(PolicyLogger::Log&& new_log) {
-    {
-      base::AutoLock lock(lock_);
+  {
+    base::AutoLock lock(lock_);
 
-      // The logs deque size should not exceed `kMaxLogsSize`. Remove the first
-      // log if the size is reached before adding the new log.
-      if (logs_.size() == kMaxLogsSize) {
-        logs_.pop_front();
-      }
-
-      logs_.emplace_back(std::move(new_log));
+    // The logs deque size should not exceed `kMaxLogsSize`. Remove the first
+    // log if the size is reached before adding the new log.
+    if (logs_.size() == kMaxLogsSize) {
+      logs_.pop_front();
     }
 
-    if (!is_log_deletion_scheduled_ && is_log_deletion_enabled_) {
-      ScheduleOldLogsDeletion();
-    }
+    logs_.emplace_back(std::move(new_log));
+  }
+
+  if (!is_log_deletion_scheduled_ && is_log_deletion_enabled_) {
+    ScheduleOldLogsDeletion();
+  }
 }
 
 void PolicyLogger::DeleteOldLogs() {
@@ -267,6 +275,15 @@ base::ListValue PolicyLogger::GetAsList() {
   for (const Log& log : logs_) {
     all_logs_list.Append(log.GetAsDict());
   }
+  return all_logs_list;
+}
+
+std::vector<policy::mojom::LogPtr> PolicyLogger::GetAsMojoList() {
+  std::vector<policy::mojom::LogPtr> all_logs_list;
+  base::AutoLock lock(lock_);
+  all_logs_list.reserve(logs_.size());
+  std::ranges::transform(logs_, std::back_inserter(all_logs_list),
+                         &PolicyLogger::Log::GetAsMojoLog);
   return all_logs_list;
 }
 

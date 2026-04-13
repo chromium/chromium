@@ -7,19 +7,6 @@
  */
 
 /**
- * The type of the policy log result object. The definition is based on
- * components/policy/core/common/policy_logger.cc Log::GetAsValue()
- */
-export interface Log {
-  logSource: string;
-  logSeverity: string;
-  message: string;
-  fileAndLine: string;
-  location: string;
-  timestamp: string;
-}
-
-/**
  * The type of the version info result object. The definition is based on
  * chrome/browser/ui/webui/policy/policy_ui_handler.cc: GetVersionInfo()
  */

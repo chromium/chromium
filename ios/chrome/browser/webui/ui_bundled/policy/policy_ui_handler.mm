@@ -368,6 +368,10 @@ void PolicyUIHandler::HandleGetPolicyLogs(const base::ListValue& args) {
       args[0], policy::PolicyLogger::GetInstance()->GetAsList());
 }
 
+void PolicyUIHandler::GetPolicyLogs(GetPolicyLogsCallback callback) {
+  std::move(callback).Run(policy::PolicyLogger::GetInstance()->GetAsMojoList());
+}
+
 std::string PolicyUIHandler::GetPoliciesAsJson() {
   return policy::GenerateJson(
       /*policy_values=*/policy::PolicyConversions(

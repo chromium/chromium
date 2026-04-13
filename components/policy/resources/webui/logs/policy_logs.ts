@@ -13,7 +13,12 @@ import {sendWithPromise} from 'chrome://resources/js/cr.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {getRequiredElement} from 'chrome://resources/js/util.js';
 
-import type {Log, VersionInfo} from './types.js';
+import {BrowserProxy} from './../browser_proxy.js';
+import type {Log} from './../policy.mojom-webui.js';
+import type {VersionInfo} from './types.js';
+
+const policyPageMojoMigrationEnabled =
+    loadTimeData.getBoolean('policyPageMojoMigrationEnabled');
 
 let logs: Log[];
 let versionInfo: VersionInfo;
@@ -140,7 +145,12 @@ function displayVersionInfo() {
 }
 
 async function fetchLogs() {
-  logs = await sendWithPromise('getPolicyLogs');
+  if (policyPageMojoMigrationEnabled) {
+    logs =
+        (await BrowserProxy.getInstance().handler.getPolicyLogs()).policyLogs;
+  } else {
+    logs = await sendWithPromise('getPolicyLogs');
+  }
 }
 
 function initialize() {
