@@ -81,6 +81,7 @@ class CORE_EXPORT TextDecorationPainter {
   void ClipIfNeeded(GraphicsContextStateSaver&);
 
   Color LineColorForPhase(TextDecorationInfo& decoration_info,
+                          const ResolvedDecoration& decoration,
                           TextShadowPaintPhase text_shadow_paint_phase) const;
 
   void PaintUnderOrOverLineDecorations(TextDecorationInfo&,

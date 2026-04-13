@@ -683,27 +683,29 @@ LogicalRect InkOverflow::ComputeAppliedDecorationOverflow(
   TextDecorationOffset decoration_offset(style);
   gfx::RectF accumulated_bound;
   for (wtf_size_t i = 0; i < decoration_info.AppliedDecorationCount(); i++) {
-    decoration_info.SetDecorationIndex(i);
+    const ResolvedDecoration decoration =
+        decoration_info.ResolveDecorationAt(i);
     if (!decoration_info.FontData()) {
       continue;
     }
-    if (decoration_info.HasUnderline()) {
+    if (decoration.HasUnderline()) {
       accumulated_bound.Union(DecorationLinePainter::Bounds(
-          decoration_info.ComputeUnderlineLineData(decoration_offset)));
+          decoration_info.ComputeUnderlineLineData(decoration,
+                                                   decoration_offset)));
     }
-    if (decoration_info.HasOverline()) {
+    if (decoration.HasOverline()) {
+      accumulated_bound.Union(
+          DecorationLinePainter::Bounds(decoration_info.ComputeOverlineLineData(
+              decoration, decoration_offset)));
+    }
+    if (decoration.HasLineThrough()) {
       accumulated_bound.Union(DecorationLinePainter::Bounds(
-          decoration_info.ComputeOverlineLineData(decoration_offset)));
+          decoration_info.ComputeLineThroughLineData(decoration)));
     }
-    if (decoration_info.HasLineThrough()) {
-      accumulated_bound.Union(DecorationLinePainter::Bounds(
-          decoration_info.ComputeLineThroughLineData()));
-    }
-    if (decoration_info.HasSpellingError() ||
-        decoration_info.HasGrammarError()) {
+    if (decoration.HasSpellingOrGrammarError()) {
       accumulated_bound.Union(DecorationLinePainter::Bounds(
           decoration_info.ComputeSpellingOrGrammarErrorLineData(
-              decoration_offset)));
+              decoration, decoration_offset)));
     }
   }
   // Adjust the container coordinate system to the local coordinate system.
