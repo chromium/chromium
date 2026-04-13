@@ -66,8 +66,14 @@ ScriptValue NavigationHistoryEntry::getState() const {
 
 void NavigationHistoryEntry::SetAndSaveState(
     scoped_refptr<SerializedScriptValue> state) {
-  CHECK_EQ(this, DomWindow()->navigation()->currentEntry());
   state_ = state;
+  if (this != DomWindow()->navigation()->currentEntry()) {
+    // This can happen when the {state} passed to currentEntry navigates when
+    // serializing, in one of the state object's getter.
+    // Returning here means that the state will not be sent to the browser
+    // process.
+    return;
+  }
   DomWindow()->document()->Loader()->GetHistoryItem()->SetNavigationApiState(
       state_.get());
   // Force the new state object to be synced to the browser process immediately.
