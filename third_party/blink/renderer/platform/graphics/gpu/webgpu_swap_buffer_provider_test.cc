@@ -282,8 +282,9 @@ class WebGPUSwapBufferProviderTest : public testing::Test {
   WireSerializer c2s_serializer_;
   WireSerializer s2c_serializer_;
   dawn::wire::WireClient wire_client_{{.serializer = &c2s_serializer_}};
-  dawn::wire::WireServer wire_server_{
-      {.procs = &GetDawnNativeProcs(), .serializer = &s2c_serializer_}};
+  dawn::wire::WireServer wire_server_{{.procs = &GetDawnNativeProcs(),
+                                       .serializer = &s2c_serializer_,
+                                       .useSpontaneousCallbacks = true}};
   wgpu::Instance instance_;
   wgpu::Adapter adapter_;
   wgpu::Device device_;
