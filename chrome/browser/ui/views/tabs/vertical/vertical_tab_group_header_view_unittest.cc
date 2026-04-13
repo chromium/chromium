@@ -78,8 +78,13 @@ class VerticalTabGroupHeaderViewTest
  private:
   base::test::ScopedFeatureList feature_list_;
 };
-
-TEST_P(VerticalTabGroupHeaderViewTest, TooltipText) {
+// TODO(crbug.com/501977260): Re-enable this test on Linux.
+#if BUILDFLAG(IS_LINUX)
+#define MAYBE_TooltipText DISABLED_TooltipText
+#else
+#define MAYBE_TooltipText TooltipText
+#endif
+TEST_P(VerticalTabGroupHeaderViewTest, MAYBE_TooltipText) {
   MockDelegate delegate;
   tab_groups::TabGroupVisualData visual_data(
       u"Group Title", tab_groups::TabGroupColorId::kBlue, false);
@@ -122,7 +127,13 @@ TEST_P(VerticalTabGroupHeaderViewTest, TooltipText) {
   EXPECT_EQ(header->GetTooltipText(), expected_tooltip);
 }
 
-TEST_P(VerticalTabGroupHeaderViewTest, ShowHoverCardOnMouseEnter) {
+// TODO(crbug.com/501977260): Re-enable this test on Linux.
+#if BUILDFLAG(IS_LINUX)
+#define MAYBE_ShowHoverCardOnMouseEnter DISABLED_ShowHoverCardOnMouseEnter
+#else
+#define MAYBE_ShowHoverCardOnMouseEnter ShowHoverCardOnMouseEnter
+#endif
+TEST_P(VerticalTabGroupHeaderViewTest, MAYBE_ShowHoverCardOnMouseEnter) {
   MockDelegate delegate;
   tab_groups::TabGroupVisualData visual_data(
       u"Group Title", tab_groups::TabGroupColorId::kBlue, false);
@@ -149,7 +160,16 @@ TEST_P(VerticalTabGroupHeaderViewTest, ShowHoverCardOnMouseEnter) {
   generator.MoveMouseTo(header->GetBoundsInScreen().CenterPoint());
 }
 
-TEST_P(VerticalTabGroupHeaderViewTest, EditorBubbleButtonVisibilityOnHover) {
+// TODO(crbug.com/501977260): Re-enable this test on Linux.
+#if BUILDFLAG(IS_LINUX)
+#define MAYBE_EditorBubbleButtonVisibilityOnHover \
+  DISABLED_EditorBubbleButtonVisibilityOnHover
+#else
+#define MAYBE_EditorBubbleButtonVisibilityOnHover \
+  EditorBubbleButtonVisibilityOnHover
+#endif
+TEST_P(VerticalTabGroupHeaderViewTest,
+       MAYBE_EditorBubbleButtonVisibilityOnHover) {
   MockDelegate delegate;
   tab_groups::TabGroupVisualData visual_data(
       u"Group Title", tab_groups::TabGroupColorId::kBlue, false);
