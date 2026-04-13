@@ -4,6 +4,11 @@
 
 #include "chrome/browser/policy/value_provider/extension_install_policies_value_provider.h"
 
+#include <algorithm>
+#include <optional>
+#include <tuple>
+#include <vector>
+
 #include "base/feature_list.h"
 #include "chrome/browser/policy/cloud/extension_install_policy_service.h"
 #include "chrome/browser/policy/profile_policy_connector.h"
@@ -109,6 +114,95 @@ std::string SourceToString(policy::PolicySource source) {
   }
 }
 
+// A helper struct to manage policy entry data, facilitating sorting and
+// conversion to the format expected by the policy UI.
+struct PolicyEntryData {
+  PolicyEntryData(const std::string& version,
+                  const policy::PolicyMap::Entry* entry)
+      : entry_(raw_ref<const policy::PolicyMap::Entry>::from_ptr(entry)) {
+    const base::Value* value =
+        entry_->value(base::Value::Type::DICT)->GetDict().Find(version);
+    action_ = static_cast<em::ExtensionInstallPolicy::Action>(
+        value->GetDict().FindInt("action").value_or(
+            em::ExtensionInstallPolicy::ACTION_ALLOW));
+  }
+
+  // Determines if this policy entry has higher priority than `other`.
+  // "Block" actions always take precedence over others (ACTION_BLOCK = 2,
+  // ACTION_ALLOW = 1). If actions are the same, standard level and scope
+  // precedence rules apply (Mandatory > Recommended, Machine > User). This is
+  // only used for UI presentation purposes; the actual policy precedence logic
+  // is handled by the ExtensionInstallPolicyService and there no actual
+  // precedence difference between user/machine scope.
+  bool operator>(const PolicyEntryData& other) const {
+    return std::tie(action_, entry_->level, entry_->scope) >
+           std::tie(other.action_, other.entry_->level, other.entry_->scope);
+  }
+
+  // Converts the entry's metadata and version-specific value into a dictionary
+  // formatted for the policy UI.
+  base::DictValue ToDict() const {
+    base::DictValue dict;
+    if (value_) {
+      base::DictValue val_dict;
+      val_dict.Set("action", ActionToString(action_));
+      val_dict.Set("reasons",
+                   ReasonsToListValue(value_->GetDict().FindList("reasons")));
+      if (const auto* risk_levels = value_->GetDict().FindDict("risk_levels")) {
+        val_dict.Set("risk_levels", RiskLevelsToValue(risk_levels));
+      }
+      dict.Set("value", std::move(val_dict));
+    }
+    dict.Set("level", base::Value(LevelToString(entry_->level)));
+    dict.Set("scope", base::Value(ScopeToString(entry_->scope)));
+    dict.Set("source", base::Value(SourceToString(entry_->source)));
+    return dict;
+  }
+
+  const std::optional<base::Value>& value() const { return value_; }
+
+ private:
+  raw_ref<const policy::PolicyMap::Entry> entry_;
+  std::optional<base::Value> value_;
+  em::ExtensionInstallPolicy::Action action_;
+};
+
+// Processes a policy entry and its conflicts to determine the primary policy to
+// display (the one that "wins") and categorizes all others as either conflicts
+// (different value) or superseded (same value).
+base::DictValue GetAggregatedPolicyValueForExtension(
+    const std::string& extension_version,
+    const policy::PolicyMap::Entry& entry) {
+  std::vector<PolicyEntryData> entries;
+  entries.emplace_back(extension_version, &entry);
+  for (const auto& conflict : entry.conflicts) {
+    entries.emplace_back(extension_version, &conflict.entry());
+  }
+
+  std::ranges::sort(entries, std::greater<>());
+
+  base::DictValue dict = entries[0].ToDict();
+  base::ListValue conflicts;
+  base::ListValue superseded;
+
+  for (size_t i = 1; i < entries.size(); ++i) {
+    if (entries[0].value() == entries[i].value()) {
+      superseded.Append(entries[i].ToDict());
+    } else {
+      conflicts.Append(entries[i].ToDict());
+    }
+  }
+
+  if (!conflicts.empty()) {
+    dict.Set("conflicts", std::move(conflicts));
+  }
+  if (!superseded.empty()) {
+    dict.Set("superseded", std::move(superseded));
+  }
+
+  return dict;
+}
+
 }  // namespace
 
 ExtensionInstallPoliciesValueProvider::ExtensionInstallPoliciesValueProvider(
@@ -146,9 +240,11 @@ base::DictValue ExtensionInstallPoliciesValueProvider::GetValues() {
   //     "scope": "machine",
   //     "source": "cloud",
   //     "value": {
-  //       "value": "blocked",
+  //       "action": "blocked",
   //       "reasons": ["category", "risk_score"]
-  //     }
+  //     },
+  //     "conflicts": [ ... ],
+  //     "superseded": [ ... ]
   //   },
   //   ...
   // }
@@ -163,27 +259,9 @@ base::DictValue ExtensionInstallPoliciesValueProvider::GetValues() {
     }
 
     for (const auto [extension_version, value] : policy_value->GetDict()) {
-      em::ExtensionInstallPolicy::Action action =
-          static_cast<em::ExtensionInstallPolicy::Action>(
-              value.GetDict().FindInt("action").value_or(
-                  em::ExtensionInstallPolicy::ACTION_ALLOW));
-      base::DictValue policy_value_dict =
-          base::DictValue()
-              .Set("action", ActionToString(action))
-              .Set("reasons",
-                   ReasonsToListValue(value.GetDict().FindList("reasons")));
-      if (auto* risk_levels =
-              value.GetDict().FindDict("evaluated_risk_levels")) {
-        policy_value_dict.Set("evaluated_risk_levels",
-                              RiskLevelsToValue(risk_levels));
-      }
-      // TODO(nicolaso): Show actual extension names instead of IDs.
       base::DictValue policy_dict =
-          base::DictValue()
-              .Set("value", std::move(policy_value_dict))
-              .Set("level", LevelToString(entry.level))
-              .Set("scope", ScopeToString(entry.scope))
-              .Set("source", SourceToString(entry.source));
+          GetAggregatedPolicyValueForExtension(extension_version, entry);
+
       if (const auto* extension =
               registry->GetInstalledExtension(extension_id)) {
         dict.Set(absl::StrFormat("%s (%s@%s)", extension->name(), extension_id,
