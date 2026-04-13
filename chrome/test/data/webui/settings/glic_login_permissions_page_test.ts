@@ -74,7 +74,7 @@ suite('GlicLoginPermissionsPage', function() {
         page.shadowRoot!.querySelector('settings-simple-confirmation-dialog'));
   });
 
-  test('remove permission', async () => {
+  test('remove permission succeded', async () => {
     // Click the remove button.
     const removeButton =
         page.shadowRoot!.querySelector<HTMLElement>('.icon-clear');
@@ -86,19 +86,63 @@ suite('GlicLoginPermissionsPage', function() {
         page.shadowRoot!.querySelector('settings-simple-confirmation-dialog');
     assertTrue(!!dialog);
 
-    // Confirm removal.
+    // Confirm dialog.
     const actionButton =
         dialog.shadowRoot!.querySelector<HTMLElement>('.action-button');
     assertTrue(!!actionButton);
     const whenClose = eventToPromise('close', dialog);
     actionButton.click();
 
-    const result = await browserProxy.whenCalled('revokeActorLoginPermission');
-    assertEquals(origin, result);
+    const capturedSignonRealm =
+        await browserProxy.whenCalled('revokeActorLoginPermission');
+    assertEquals(origin, capturedSignonRealm);
 
     await whenClose;
+    // Closing the dialog is done asynchronously, so still need to wait for the
+    // dialog to close.
+    await flushTasks();
     assertNull(
         page.shadowRoot!.querySelector('settings-simple-confirmation-dialog'));
+
+    const toast = page.shadowRoot!.querySelector<any>('#removeErrorToast');
+    assertTrue(!!toast);
+    assertFalse(toast.open);
+  });
+
+  test('remove permission failed', async () => {
+    browserProxy.setRevokeActorLoginPermissionResponse(false);
+
+    // Click the remove button.
+    const removeButton =
+        page.shadowRoot!.querySelector<HTMLElement>('.icon-clear');
+    assertTrue(!!removeButton);
+    removeButton.click();
+    await flushTasks();
+
+    const dialog =
+        page.shadowRoot!.querySelector('settings-simple-confirmation-dialog');
+    assertTrue(!!dialog);
+    // Confirm dialog.
+    const actionButton =
+        dialog.shadowRoot!.querySelector<HTMLElement>('.action-button');
+    assertTrue(!!actionButton);
+    const whenClose = eventToPromise('close', dialog);
+    actionButton.click();
+
+    const capturedSignonRealm =
+        await browserProxy.whenCalled('revokeActorLoginPermission');
+    assertEquals(origin, capturedSignonRealm);
+
+    await whenClose;
+    // Handling the closed dialog is done asynchronously, so still need to wait.
+    await flushTasks();
+    assertNull(
+        page.shadowRoot!.querySelector('settings-simple-confirmation-dialog'));
+
+    // Check that the error toast is shown.
+    const toast = page.shadowRoot!.querySelector<any>('#removeErrorToast');
+    assertTrue(!!toast);
+    assertTrue(toast.open);
   });
 
   test('offline warning is shown', async () => {

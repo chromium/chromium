@@ -18,6 +18,7 @@ export class TestGlicBrowserProxy extends TestBrowserProxy implements
   private webActuationToggleVisibilityResponse_: boolean = false;
   private webActuationEnabledResponse_: boolean = false;
   private actorLoginPermissions_: LoginPermission[] = [];
+  private revokeActorLoginPermissionResponse_: boolean = true;
 
   constructor() {
     super([
@@ -44,6 +45,7 @@ export class TestGlicBrowserProxy extends TestBrowserProxy implements
     this.glicFocusToggleShortcutResponse_ = '';
     this.webActuationToggleVisibilityResponse_ = false;
     this.actorLoginPermissions_ = [];
+    this.revokeActorLoginPermissionResponse_ = true;
   }
 
   setGlicOsLauncherEnabled(enabled: boolean) {
@@ -134,8 +136,13 @@ export class TestGlicBrowserProxy extends TestBrowserProxy implements
     this.actorLoginPermissions_ = permissions;
   }
 
+  setRevokeActorLoginPermissionResponse(success: boolean) {
+    this.revokeActorLoginPermissionResponse_ = success;
+  }
+
   revokeActorLoginPermission(signonRealm: string) {
     this.methodCalled('revokeActorLoginPermission', signonRealm);
+    return Promise.resolve(this.revokeActorLoginPermissionResponse_);
   }
 
   getGlicSelectionShortcut() {
