@@ -86,6 +86,21 @@ ExtensionsMenuDelegateAndroid::GetActionIcon(JNIEnv* env, int action_index) {
 }
 
 base::android::ScopedJavaLocalRef<jobject>
+ExtensionsMenuDelegateAndroid::GetExtensionSitePermissionsState(
+    JNIEnv* env,
+    const std::string& extension_id) {
+  ExtensionsMenuViewModel::ExtensionSitePermissionsState state =
+      menu_model_->GetExtensionSitePermissionsState(extension_id,
+                                                    kActionIconSize);
+
+  base::android::ScopedJavaLocalRef<jobject> j_show_requests_toggle =
+      CreateJavaControlState(env, state.show_requests_toggle);
+
+  return extensions::Java_ExtensionSitePermissionsState_Constructor(
+      env, j_show_requests_toggle);
+}
+
+base::android::ScopedJavaLocalRef<jobject>
 ExtensionsMenuDelegateAndroid::GetMenuEntry(JNIEnv* env, int action_index) {
   const auto& action_models = menu_model_->action_models();
   CHECK_GE(action_index, 0);
@@ -279,7 +294,7 @@ void ExtensionsMenuDelegateAndroid::OnExtensionToggleSelected(
 void ExtensionsMenuDelegateAndroid::OnShowRequestsTogglePressed(
     const extensions::ExtensionId& extension_id,
     bool is_on) {
-  // TODO(crbug.com/473213115)
+  menu_model_->ShowHostAccessRequestsInToolbar(extension_id, is_on);
 }
 
 void ExtensionsMenuDelegateAndroid::OnSiteAccessSelected(

@@ -128,4 +128,17 @@ public class ExtensionsMenuTypes {
             this.extensionIcon = extensionIcon;
         }
     }
+
+    /** Mirrors {@code ExtensionsMenuViewModel::ExtensionSitePermissionsState} */
+    public static class ExtensionSitePermissionsState {
+        public final ControlState showRequestsToggle;
+
+        // TODO(crbug.com/471016915): Add the other fields from
+        // ExtensionsMenuViewModel::ExtensionSitePermissionsState.
+
+        @CalledByNative
+        public ExtensionSitePermissionsState(ControlState showRequestsToggle) {
+            this.showRequestsToggle = showRequestsToggle;
+        }
+    }
 }

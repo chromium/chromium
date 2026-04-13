@@ -136,6 +136,20 @@ public class ExtensionsMenuMediatorTest {
         when(mExtensionsMenuBridgeJniMock.init(any(), anyLong()))
                 .thenReturn(EXTENSIONS_MENU_BRIDGE_POINTER);
 
+        // Mock default extension site permissions state.
+        ExtensionsMenuTypes.ControlState toggleState =
+                new ExtensionsMenuTypes.ControlState(
+                        ExtensionsMenuTypes.ControlState.Status.ENABLED,
+                        /* text= */ "",
+                        /* accessibleName= */ "",
+                        /* tooltipText= */ "",
+                        /* isOn= */ true,
+                        /* icon= */ null);
+        ExtensionsMenuTypes.ExtensionSitePermissionsState sitePermissionsState =
+                new ExtensionsMenuTypes.ExtensionSitePermissionsState(toggleState);
+        when(mExtensionsMenuBridgeJniMock.getExtensionSitePermissionsState(anyLong(), any()))
+                .thenReturn(sitePermissionsState);
+
         // Set the current tab.
         MockTab tab = new MockTab(TAB_ID, mProfile);
         tab.setWebContentsOverrideForTesting(mWebContents);
@@ -1122,6 +1136,68 @@ public class ExtensionsMenuMediatorTest {
 
         // Verify extension page was opened for the extension.
         verify(openUrlCallback).onResult(UrlConstants.CHROME_EXTENSIONS_ID_URL + "id_a");
+    }
+
+    /**
+     * Tests that clicking on the 'show access requests' toggle on the site permissions page for an
+     * extension notifies the bridge.
+     */
+    @Test
+    public void testSitePermissionsPage_OnSitePermissionsButtonClicked() {
+        // Add extension with host permissions.
+        List<ExtensionsMenuTypes.MenuEntryState> entries = new ArrayList<>();
+        entries.add(
+                ExtensionTestUtils.createMenuEntryWithHostPermissions(
+                        "id_a", "Extension A", ICON_RED, /* isPinned= */ false));
+        when(mExtensionsMenuBridgeJniMock.getMenuEntries(anyLong())).thenReturn(entries);
+
+        // Open extensions menu.
+        mBridgeCaptor.getValue().onReady();
+
+        // Mock the extension site permissions state from native.
+        ExtensionsMenuTypes.ControlState toggleState =
+                new ExtensionsMenuTypes.ControlState(
+                        ExtensionsMenuTypes.ControlState.Status.ENABLED,
+                        /* text= */ "",
+                        /* accessibleName= */ "",
+                        /* tooltipText= */ "",
+                        /* isOn= */ true,
+                        /* icon= */ null);
+        ExtensionsMenuTypes.ExtensionSitePermissionsState sitePermissionsState =
+                new ExtensionsMenuTypes.ExtensionSitePermissionsState(toggleState);
+        when(mExtensionsMenuBridgeJniMock.getExtensionSitePermissionsState(anyLong(), eq("id_a")))
+                .thenReturn(sitePermissionsState);
+
+        // Trigger the click listener for the site permissions button.
+        PropertyModel itemModel = mActionModels.get(0).model;
+        View.OnClickListener listener =
+                itemModel.get(ExtensionsMenuItemProperties.SITE_PERMISSIONS_BUTTON_ON_CLICK);
+        listener.onClick(null);
+
+        // Verify site permissions page is shown for the extension.
+        verify(mMenuPropertyModel)
+                .set(
+                        ExtensionsMenuProperties.CURRENT_PAGE,
+                        ExtensionsMenuProperties.Page.SITE_PERMISSIONS);
+        verify(mSitePermissionsPropertyModel)
+                .set(SitePermissionsPageProperties.EXTENSION_ID, "id_a");
+
+        // Verify toggle is checked.
+        verify(mSitePermissionsPropertyModel)
+                .set(SitePermissionsPageProperties.SHOW_REQUESTS_TOGGLE_CHECKED, true);
+
+        // Verify toggle click listener.
+        ArgumentCaptor<android.widget.CompoundButton.OnCheckedChangeListener> listenerCaptor =
+                ArgumentCaptor.forClass(
+                        android.widget.CompoundButton.OnCheckedChangeListener.class);
+        verify(mSitePermissionsPropertyModel)
+                .set(
+                        eq(SitePermissionsPageProperties.SHOW_REQUESTS_TOGGLE_CLICK_LISTENER),
+                        listenerCaptor.capture());
+
+        listenerCaptor.getValue().onCheckedChanged(null, false);
+        verify(mExtensionsMenuBridgeJniMock)
+                .onShowRequestsTogglePressed(EXTENSIONS_MENU_BRIDGE_POINTER, "id_a", false);
     }
 
     /** Helper to assert that the item at the given index has the correct information. */

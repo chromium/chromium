@@ -391,7 +391,7 @@ class ExtensionsMenuMediator implements Destroyable, ExtensionsMenuBridge.Observ
     private void onSitePermissionsButtonClicked(String extensionId) {
         mSitePermissionsPageModel.set(SitePermissionsPageProperties.EXTENSION_ID, extensionId);
 
-        // Find extension name and icon.
+        // Update the extensions header in the site permissions page.
         for (int i = 0; i < mActionModels.size(); i++) {
             PropertyModel model = mActionModels.get(i).model;
             if (extensionId.equals(model.get(ExtensionsMenuItemProperties.EXTENSION_ID))) {
@@ -405,6 +405,18 @@ class ExtensionsMenuMediator implements Destroyable, ExtensionsMenuBridge.Observ
             }
         }
 
+        // Update the site permissions page content.
+        ExtensionsMenuTypes.ExtensionSitePermissionsState sitePermissionsState =
+                mMenuBridge.getExtensionSitePermissionsState(extensionId);
+        mSitePermissionsPageModel.set(
+                SitePermissionsPageProperties.SHOW_REQUESTS_TOGGLE_CHECKED,
+                sitePermissionsState.showRequestsToggle.isOn);
+        mSitePermissionsPageModel.set(
+                SitePermissionsPageProperties.SHOW_REQUESTS_TOGGLE_CLICK_LISTENER,
+                (buttonView, isChecked) ->
+                        mMenuBridge.onShowRequestsTogglePressed(extensionId, isChecked));
+
+        // Set current page to site permissions page.
         mMainPageModel.set(
                 ExtensionsMenuProperties.CURRENT_PAGE,
                 ExtensionsMenuProperties.Page.SITE_PERMISSIONS);

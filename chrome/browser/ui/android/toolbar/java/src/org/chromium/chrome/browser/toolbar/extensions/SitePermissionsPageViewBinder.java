@@ -5,8 +5,11 @@
 package org.chromium.chrome.browser.toolbar.extensions;
 
 import android.view.View;
+import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.widget.ImageView;
 import android.widget.TextView;
+
+import com.google.android.material.materialswitch.MaterialSwitch;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.ui.extensions.R;
@@ -36,8 +39,23 @@ public class SitePermissionsPageViewBinder {
                     .setOnClickListener(
                             model.get(
                                     SitePermissionsPageProperties.MANAGE_EXTENSION_CLICK_LISTENER));
-        } else if (key == SitePermissionsPageProperties.EXTENSION_ID) {
-            // TODO(cburg.com/432392216): Implement data pull for site permissions page.
+        } else if (key == SitePermissionsPageProperties.SHOW_REQUESTS_TOGGLE_CHECKED) {
+            MaterialSwitch toggle = view.findViewById(R.id.extensions_menu_show_requests_toggle);
+            toggle.setChecked(
+                    model.get(SitePermissionsPageProperties.SHOW_REQUESTS_TOGGLE_CHECKED));
+        } else if (key == SitePermissionsPageProperties.SHOW_REQUESTS_TOGGLE_CLICK_LISTENER) {
+            View toggleContainer =
+                    view.findViewById(R.id.extensions_menu_show_requests_toggle_container);
+            MaterialSwitch toggle = view.findViewById(R.id.extensions_menu_show_requests_toggle);
+            OnCheckedChangeListener listener =
+                    model.get(SitePermissionsPageProperties.SHOW_REQUESTS_TOGGLE_CLICK_LISTENER);
+            toggleContainer.setOnClickListener(
+                    v -> {
+                        toggle.toggle();
+                        if (listener != null) {
+                            listener.onCheckedChanged(toggle, toggle.isChecked());
+                        }
+                    });
         }
     }
 }
