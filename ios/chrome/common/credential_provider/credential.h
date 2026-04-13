@@ -69,7 +69,7 @@
 // Passkey creation time in milliseconds. Used by passkeys only.
 @property(nonatomic, readonly) int64_t creationTime;
 
-// Passkey last used time in microseconds. Used by passkeys only.
+// Last used time in microseconds. Used by passwords and passkeys.
 @property(nonatomic, assign) int64_t lastUsedTime;
 
 // Whether credential should be shown to the user in authentication surfaces,

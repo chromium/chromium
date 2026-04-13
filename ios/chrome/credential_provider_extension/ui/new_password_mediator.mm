@@ -7,6 +7,7 @@
 #import <AuthenticationServices/AuthenticationServices.h>
 
 #import "base/strings/sys_string_conversions.h"
+#import "base/time/time.h"
 #import "components/autofill/core/browser/proto/password_requirements.pb.h"
 #import "components/password_manager/core/browser/generation/password_generator.h"
 #import "ios/chrome/common/app_group/app_group_constants.h"
@@ -138,16 +139,21 @@ using base::SysUTF16ToNSString;
   // the value will be overriden whenever the browser is foregrounded.
   NSString* registryControlledDomain = nil;
 
-  return [[ArchivableCredential alloc] initWithFavicon:nil
-                                                  gaia:gaia
-                                              password:password
-                                                  rank:1
-                                      recordIdentifier:recordIdentifier
-                                     serviceIdentifier:identifier
-                                           serviceName:url.host ?: identifier
-                              registryControlledDomain:registryControlledDomain
-                                              username:username
-                                                  note:note];
+  int64_t lastUsedTimeMicroseconds =
+      base::Time::Now().ToDeltaSinceWindowsEpoch().InMicroseconds();
+
+  return
+      [[ArchivableCredential alloc] initWithFavicon:nil
+                                               gaia:gaia
+                                           password:password
+                                               rank:1
+                                   recordIdentifier:recordIdentifier
+                                  serviceIdentifier:identifier
+                                        serviceName:url.host ?: identifier
+                           registryControlledDomain:registryControlledDomain
+                                           username:username
+                                               note:note
+                                       lastUsedTime:lastUsedTimeMicroseconds];
 }
 
 // Saves the given credential to disk and calls `completion` once the operation

@@ -54,7 +54,8 @@ ArchivableCredential* TestPasswordCredential() {
                                            serviceName:nil
                               registryControlledDomain:nil
                                               username:username
-                                                  note:note];
+                                                  note:note
+                                          lastUsedTime:0];
 }
 
 ArchivableCredential* TestPasskeyCredential(bool valid = true) {

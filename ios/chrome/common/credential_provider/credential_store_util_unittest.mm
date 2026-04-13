@@ -37,7 +37,8 @@ ArchivableCredential* GetTestCredential(NSString* index) {
                    serviceName:@"serviceName"
       registryControlledDomain:@"example.com"
                       username:[@"user" stringByAppendingString:index]
-                          note:@"note"];
+                          note:@"note"
+                  lastUsedTime:0];
 }
 
 // Returns true iff `container` contains a credential with username @"userN"

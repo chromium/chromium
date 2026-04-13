@@ -46,7 +46,8 @@ ArchivableCredential* TestPasswordCredential(NSString* username,
                                            serviceName:url
                               registryControlledDomain:domain
                                               username:username
-                                                  note:@"note"];
+                                                  note:@"note"
+                                          lastUsedTime:0];
 }
 
 ArchivableCredential* TestPasskeyCredential(NSString* username,

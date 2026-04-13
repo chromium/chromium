@@ -76,7 +76,8 @@ ArchivableCredential* TestPasswordCredential() {
                                            serviceName:@"example.com"
                               registryControlledDomain:@"example.com"
                                               username:@"username_value"
-                                                  note:@"note"];
+                                                  note:@"note"
+                                          lastUsedTime:0];
 }
 
 ArchivableCredential* TestPasswordCredential2() {
@@ -90,7 +91,8 @@ ArchivableCredential* TestPasswordCredential2() {
                                         serviceName:@"example2.com"
                            registryControlledDomain:@"example2.com"
                                            username:@"username_value2"
-                                               note:@"note2"];
+                                               note:@"note2"
+                                       lastUsedTime:0];
 }
 
 NSArray<ASCredentialServiceIdentifier*>* ServiceIdentifierWithName(

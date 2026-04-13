@@ -71,7 +71,8 @@ ArchivableCredential* TestCredential(NSString* recordIdentifier) {
                                            serviceName:@"serviceName"
                               registryControlledDomain:@"example.com"
                                               username:@"user"
-                                                  note:@"note"];
+                                                  note:@"note"
+                                          lastUsedTime:0];
 }
 
 class NewPasswordMediatorTest : public PlatformTest {

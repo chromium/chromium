@@ -31,7 +31,8 @@
                     serviceName:(NSString*)serviceName
        registryControlledDomain:(NSString*)registryControlledDomain
                        username:(NSString*)username
-                           note:(NSString*)note NS_DESIGNATED_INITIALIZER;
+                           note:(NSString*)note
+                   lastUsedTime:(int64_t)lastUsedTime NS_DESIGNATED_INITIALIZER;
 
 // Initializer used for passkey credentials.
 - (instancetype)initWithFavicon:(NSString*)favicon

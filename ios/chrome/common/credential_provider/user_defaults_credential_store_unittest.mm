@@ -42,7 +42,8 @@ ArchivableCredential* TestCredential() {
                                            serviceName:@"serviceName"
                               registryControlledDomain:@"example.com"
                                               username:@"user"
-                                                  note:@"note"];
+                                                  note:@"note"
+                                          lastUsedTime:0];
 }
 
 // Tests that an UserDefaultsCredentialStore can be created.
@@ -87,7 +88,8 @@ TEST_F(UserDefaultsCredentialStoreTest, update) {
                                         serviceName:@"other_serviceName"
                            registryControlledDomain:@"otherexample.com"
                                            username:@"other_user"
-                                               note:@"other_note"];
+                                               note:@"other_note"
+                                       lastUsedTime:0];
 
   [credentialStore updateCredential:updatedCredential];
   EXPECT_EQ(1u, credentialStore.credentials.count);

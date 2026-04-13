@@ -115,7 +115,8 @@ BOOL dataAreEqual(NSData* lhs, NSData* rhs) {
                      serviceName:credential.serviceName
         registryControlledDomain:credential.registryControlledDomain
                         username:credential.username
-                            note:credential.note];
+                            note:credential.note
+                    lastUsedTime:credential.lastUsedTime];
   }
   return self;
 }
@@ -129,7 +130,8 @@ BOOL dataAreEqual(NSData* lhs, NSData* rhs) {
                     serviceName:(NSString*)serviceName
        registryControlledDomain:(NSString*)registryControlledDomain
                        username:(NSString*)username
-                           note:(NSString*)note {
+                           note:(NSString*)note
+                   lastUsedTime:(int64_t)lastUsedTime {
   self = [super init];
   if (self) {
     _favicon = favicon;
@@ -142,6 +144,7 @@ BOOL dataAreEqual(NSData* lhs, NSData* rhs) {
     _registryControlledDomain = registryControlledDomain;
     _username = username;
     _note = note;
+    _lastUsedTime = lastUsedTime;
   }
   return self;
 }
@@ -285,6 +288,7 @@ BOOL dataAreEqual(NSData* lhs, NSData* rhs) {
     [coder encodeObject:self.registryControlledDomain
                  forKey:kACRegistryControlledDomainKey];
     [coder encodeObject:self.note forKey:kACNoteKey];
+    [coder encodeInt64:self.lastUsedTime forKey:kACLastUsedTimeKey];
   }
 }
 
@@ -325,7 +329,8 @@ BOOL dataAreEqual(NSData* lhs, NSData* rhs) {
         registryControlledDomain:
             [coder decodeNSStringForKey:kACRegistryControlledDomainKey]
                         username:[coder decodeNSStringForKey:kACUserKey]
-                            note:[coder decodeNSStringForKey:kACNoteKey]];
+                            note:[coder decodeNSStringForKey:kACNoteKey]
+                    lastUsedTime:[coder decodeInt64ForKey:kACLastUsedTimeKey]];
   }
 }
 

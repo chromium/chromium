@@ -91,6 +91,12 @@ password_manager::PasswordForm PasswordFormFromCredential(
 
   DCHECK(serviceIdentifier.length);
 
+  base::Time max_time =
+      std::max({passwordForm.date_created, passwordForm.date_last_filled,
+                passwordForm.date_last_used});
+  int64_t lastUsedTimeMicroseconds =
+      max_time.ToDeltaSinceWindowsEpoch().InMicroseconds();
+
   BOOL inAccountStore = (passwordForm.in_store ==
                          password_manager::PasswordForm::Store::kAccountStore);
   return [self initWithFavicon:favicon
@@ -102,7 +108,8 @@ password_manager::PasswordForm PasswordFormFromCredential(
                    serviceName:serviceName
       registryControlledDomain:registryControlledDomain
                       username:SysUTF16ToNSString(passwordForm.username_value)
-                          note:note];
+                          note:note
+                  lastUsedTime:lastUsedTimeMicroseconds];
 }
 
 @end

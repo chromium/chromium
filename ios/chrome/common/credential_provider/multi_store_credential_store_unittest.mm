@@ -27,7 +27,8 @@ ArchivableCredential* TestCredential(NSString* user) {
                                            serviceName:@"serviceName"
                               registryControlledDomain:@"example.com"
                                               username:user
-                                                  note:@"note"];
+                                                  note:@"note"
+                                          lastUsedTime:0];
 }
 
 NSArray<id<CredentialStore>>* TestStoreArray() {
