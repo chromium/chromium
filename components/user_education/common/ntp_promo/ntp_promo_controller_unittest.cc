@@ -319,10 +319,13 @@ TEST_F(NtpPromoControllerTest, MaxTermsBlocksPromo) {
 TEST_F(NtpPromoControllerTest, DismissedBlocksPromo) {
   CreateController();
   RegisterPromo(kPromoId, kEligible);
+  base::HistogramTester histogram_tester;
 
   controller().OnPromoDismissed(kPromoId);
 
   EXPECT_FALSE(ShowsAnyPromo());
+  histogram_tester.ExpectUniqueSample(
+      "UserEducation.NtpPromos.Promos.TestPromo.Dismissed", true, 1);
 }
 
 TEST_F(NtpPromoControllerTest, ShownPromos) {

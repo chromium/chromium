@@ -70,6 +70,7 @@ chromium-metrics-reviews@google.com.
 <variants name="NtpPromoAction">
   <variant name="Clicked" summary="Promo was clicked"/>
   <variant name="Completed" summary="Promo was completed"/>
+  <variant name="Dismissed" summary="Promo was dismissed"/>
   <variant name="Shown" summary="Promo was shown"/>
   <variant name="ShownTopSpot" summary="Promo was shown in the top spot"/>
 </variants>

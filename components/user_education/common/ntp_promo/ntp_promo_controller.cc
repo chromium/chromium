@@ -60,6 +60,7 @@ constexpr char kPromoMetricPrefix[] = "UserEducation.NtpPromos.Promos.";
 constexpr char kPromoMetricShownSuffix[] = ".Shown";
 constexpr char kPromoMetricClickedSuffix[] = ".Clicked";
 constexpr char kPromoMetricCompletedSuffix[] = ".Completed";
+constexpr char kPromoMetricDismissedSuffix[] = ".Dismissed";
 // LINT.ThenChange(//tools/metrics/histograms/metadata/user_education/histograms.xml:NtpPromoActions)
 
 void LogPromoMetric(const NtpPromoIdentifier& id, const std::string& suffix) {
@@ -77,6 +78,10 @@ void LogPromoClicked(const NtpPromoIdentifier& id) {
 
 void LogPromoCompleted(const NtpPromoIdentifier& id) {
   LogPromoMetric(id, kPromoMetricCompletedSuffix);
+}
+
+void LogPromoDismissed(const NtpPromoIdentifier& id) {
+  LogPromoMetric(id, kPromoMetricDismissedSuffix);
 }
 
 }  // namespace
@@ -238,6 +243,7 @@ void NtpPromoController::OnPromoDismissed(const NtpPromoIdentifier& id) {
   auto prefs = storage_service_->ReadNtpPromoData(id).value_or(NtpPromoData());
   prefs.dismissed_time = storage_service_->GetCurrentTime();
   storage_service_->SaveNtpPromoData(id, prefs);
+  LogPromoDismissed(id);
 }
 
 NtpPromoIdentifier NtpPromoController::GetMostRecentTopSpotPromo() {
