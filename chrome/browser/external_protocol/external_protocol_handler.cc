@@ -91,6 +91,7 @@ ExternalProtocolHandler::Delegate* g_external_protocol_handler_delegate =
 
 constexpr auto kDeniedSchemes = base::MakeFixedFlatSet<std::string_view>({
     "afp",
+    "applescript",
     "data",
     "disk",
     "disks",
