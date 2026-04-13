@@ -5013,10 +5013,11 @@ void Element::MarkNonSlottedHostChildrenForStyleRecalc() {
 
 const ComputedStyle* Element::ParentComputedStyle() const {
   Element* parent = LayoutTreeBuilderTraversal::ParentElement(*this);
-  const bool is_rendered_as_sibling = IsBackdropPseudoElement() ||
-                                      IsScrollButtonPseudoElement() ||
-                                      IsScrollMarkerGroupPseudoElement();
-  if (parent && (parent->ChildrenCanHaveStyle() || is_rendered_as_sibling)) {
+  auto is_rendered_as_sibling = [this] {
+    return IsBackdropPseudoElement() || IsScrollButtonPseudoElement() ||
+           IsScrollMarkerGroupPseudoElement();
+  };
+  if (parent && (parent->ChildrenCanHaveStyle() || is_rendered_as_sibling())) {
     const ComputedStyle* parent_style = parent->GetComputedStyle();
     if (parent_style && !parent_style->IsEnsuredInDisplayNone()) {
       return parent_style;
