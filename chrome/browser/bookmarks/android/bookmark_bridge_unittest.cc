@@ -16,6 +16,7 @@
 #include "chrome/browser/bookmarks/bookmark_model_factory.h"
 #include "chrome/browser/bookmarks/managed_bookmark_service_factory.h"
 #include "chrome/browser/partnerbookmarks/partner_bookmarks_reader.h"
+#include "chrome/browser/partnerbookmarks/partner_bookmarks_shim.h"
 #include "chrome/browser/reading_list/android/reading_list_manager.h"
 #include "chrome/browser/reading_list/android/reading_list_manager_impl.h"
 #include "chrome/test/base/testing_browser_process.h"
@@ -89,6 +90,7 @@ class BookmarkBridgeTest : public testing::Test {
   void TearDown() override {
     bookmark_bridge_.reset();
     profile_manager_.reset();
+    PartnerBookmarksShim::ClearPartnerModelForTesting();
   }
 
   BookmarkModel* bookmark_model() { return bookmark_model_.get(); }
