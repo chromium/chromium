@@ -303,19 +303,6 @@ void LogProfileImportTypeEditedType(AutofillProfileImportType import_type,
 }
 
 // static
-void LogRemovedSettingInaccessibleFields(bool did_remove) {
-  base::UmaHistogramBoolean(
-      "Autofill.ProfileImport.InaccessibleFieldsRemoved.Total", did_remove);
-}
-
-// static
-void LogRemovedSettingInaccessibleField(FieldType field) {
-  base::UmaHistogramEnumeration(
-      "Autofill.ProfileImport.InaccessibleFieldsRemoved.ByFieldType",
-      ConvertSettingsVisibleFieldTypeForMetrics(field));
-}
-
-// static
 void LogPhoneNumberImportParsingResult(bool parsed_successfully) {
   base::UmaHistogramBoolean("Autofill.ProfileImport.PhoneNumberParsed",
                             parsed_successfully);

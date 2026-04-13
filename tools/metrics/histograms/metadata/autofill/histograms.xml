@@ -6292,26 +6292,6 @@ Called by update_autofill_enums.py. This is a manual comment.-->
   </summary>
 </histogram>
 
-<histogram name="Autofill.ProfileImport.InaccessibleFieldsRemoved.ByFieldType"
-    enum="AutofillSettingsVisibleTypes" expires_after="2026-03-08">
-  <owner>fleimgruber@google.com</owner>
-  <owner>chrome-autofill-alerts@google.com</owner>
-  <summary>
-    Logs that a given field type was removed on import, due to being setting
-    inaccessible in the imported profile's country. Emitted on profile import.
-  </summary>
-</histogram>
-
-<histogram name="Autofill.ProfileImport.InaccessibleFieldsRemoved.Total"
-    enum="Boolean" expires_after="2026-10-04">
-  <owner>fleimgruber@google.com</owner>
-  <owner>chrome-autofill-alerts@google.com</owner>
-  <summary>
-    Logs if at least one field was removed on import, due to being setting
-    inaccessible in the imported profile's country. Emitted on profile import.
-  </summary>
-</histogram>
-
 <histogram name="Autofill.ProfileImport.MigrateProfileDecision"
     enum="AutofillProfileImportDecision" expires_after="2026-09-06">
   <owner>koerber@google.com</owner>

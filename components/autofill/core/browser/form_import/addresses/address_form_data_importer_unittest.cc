@@ -1474,33 +1474,6 @@ TEST_F(AddressFormDataImporterTest,
   ExtractAddressProfileAndVerifyExtractionOfDefaultProfile(*form_structure);
 }
 
-// Tests that metrics are correctly recorded when removing setting-inaccessible
-// fields.
-// Note that this function doesn't test the removal functionality itself. This
-// is done in the AutofillProfile unit tests.
-TEST_F(AddressFormDataImporterTest, RemoveInaccessibleProfileValuesMetrics) {
-  // State is setting-inaccessible in Bermuda. Expect that when importing a
-  // Bermudan profile with a state, the state information is removed.
-  TypeValuePairs type_value_pairs =
-      GetDefaultProfileTypeValuePairsWithOverriddenCountry("BM");
-  ASSERT_EQ(type_value_pairs[6].first, ADDRESS_HOME_STATE);
-
-  std::unique_ptr<FormStructure> form_structure =
-      ConstructFormStructureFromTypeValuePairs(type_value_pairs);
-  SetValueForType(type_value_pairs, ADDRESS_HOME_STATE, "");
-  base::HistogramTester histogram_tester;
-  ExtractAddressProfilesAndVerifyExpectation(
-      *form_structure, {ConstructProfileFromTypeValuePairs(type_value_pairs)});
-
-  // State was removed. Expect the metrics to behave accordingly.
-  const std::string metric =
-      "Autofill.ProfileImport.InaccessibleFieldsRemoved.";
-  histogram_tester.ExpectUniqueSample(metric + "Total", true, 1);
-  histogram_tester.ExpectUniqueSample(
-      metric + "ByFieldType",
-      autofill_metrics::SettingsVisibleFieldTypeForMetrics::kState, 1);
-}
-
 // Tests a 2-page multi-step extraction.
 TEST_F(AddressFormDataImporterTest, MultiStepImport) {
   std::unique_ptr<FormStructure> form_structure =

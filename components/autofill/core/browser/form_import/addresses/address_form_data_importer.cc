@@ -563,7 +563,8 @@ bool AddressFormDataImporter::ExtractAddressProfileFromSection(
 
   // This relies on the profile's country code and must be done strictly after
   // `ComplementCountry()`.
-  RemoveInaccessibleProfileValues(candidate_profile);
+  candidate_profile.ClearFields(
+      candidate_profile.FindInaccessibleProfileValues());
 
   // Do not import a profile if any of the requirements is violated.
   // `IsMinimumAddress()` goes first, since it logs to autofill-internals.
@@ -612,18 +613,6 @@ bool AddressFormDataImporter::ExtractAddressProfileFromSection(
   extracted_address_profile.import_metadata = import_metadata;
   extracted_address_profiles->push_back(std::move(extracted_address_profile));
   return true;
-}
-
-void AddressFormDataImporter::RemoveInaccessibleProfileValues(
-    AutofillProfile& profile) {
-  const FieldTypeSet inaccessible_fields =
-      profile.FindInaccessibleProfileValues();
-  profile.ClearFields(inaccessible_fields);
-  autofill_metrics::LogRemovedSettingInaccessibleFields(
-      !inaccessible_fields.empty());
-  for (const FieldType inaccessible_field : inaccessible_fields) {
-    autofill_metrics::LogRemovedSettingInaccessibleField(inaccessible_field);
-  }
 }
 
 bool AddressFormDataImporter::ComplementCountry(AutofillProfile& profile,

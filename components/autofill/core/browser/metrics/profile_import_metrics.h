@@ -210,13 +210,6 @@ void LogHomeAndWorkSupersetAffectedType(FieldType affected_type);
 void LogProfileImportTypeEditedType(AutofillProfileImportType type,
                                     FieldType edited_type);
 
-// Logs if at least one setting-inaccessible field was removed on import.
-void LogRemovedSettingInaccessibleFields(bool did_remove);
-
-// Logs that `field` was removed from a profile on import, because it is
-// setting-inaccessible in the profile's country.
-void LogRemovedSettingInaccessibleField(FieldType field);
-
 // Logs whether a phone number was parsed successfully on profile import.
 // Contrary to the profile import requirement metrics, the parsing result is
 // only emitted when a number is present.

@@ -116,9 +116,6 @@ class AddressFormDataImporter : public AddressDataManager::Observer {
       std::vector<ExtractedAddressProfile>* extracted_address_profiles,
       LogBuffer* import_log_buffer);
 
-  // Clears all setting-inaccessible values from `profile`.
-  void RemoveInaccessibleProfileValues(AutofillProfile& profile);
-
   // If the `profile`'s country is not empty, complements it with
   // `AddressDataManager::GetDefaultCountryCodeForNewAddress()`, while logging
   // to the `import_log_buffer`.
