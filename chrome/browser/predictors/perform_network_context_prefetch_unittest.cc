@@ -183,13 +183,7 @@ auto HasHeader(std::string_view name, ValueMatcher value_matcher) {
   return Contains(Pair(StrCaseEq(name), value_matcher));
 }
 
-// TODO(crbug.com/500215556): Re-enable this test on Android.
-#if BUILDFLAG(IS_ANDROID)
-#define MAYBE_Script DISABLED_Script
-#else
-#define MAYBE_Script Script
-#endif
-TEST_P(PerformNetworkContextPrefetchRecorderTest, MAYBE_Script) {
+TEST_P(PerformNetworkContextPrefetchRecorderTest, Script) {
   DoPrefetch(RequestDestination::kScript);
   const auto request = GetRequest();
   EXPECT_EQ(request.relative_url, "/nocontent");
@@ -233,13 +227,7 @@ TEST_P(PerformNetworkContextPrefetchRecorderTest, MAYBE_Script) {
   EXPECT_TRUE(request.content.empty());
 }
 
-// TODO(crbug.com/500215556): Re-enable this test on Android.
-#if BUILDFLAG(IS_ANDROID)
-#define MAYBE_Style DISABLED_Style
-#else
-#define MAYBE_Style Style
-#endif
-TEST_P(PerformNetworkContextPrefetchRecorderTest, MAYBE_Style) {
+TEST_P(PerformNetworkContextPrefetchRecorderTest, Style) {
   DoPrefetch(RequestDestination::kStyle);
   const auto request = GetRequest();
 
@@ -282,13 +270,7 @@ TEST_P(PerformNetworkContextPrefetchRecorderTest, NonSSLPage) {
   ExpectNoRequest();
 }
 
-// TODO(crbug.com/500217595): Re-enable this test on Android.
-#if BUILDFLAG(IS_ANDROID)
-#define MAYBE_NonSSLResource DISABLED_NonSSLResource
-#else
-#define MAYBE_NonSSLResource NonSSLResource
-#endif
-TEST_P(PerformNetworkContextPrefetchRecorderTest, MAYBE_NonSSLResource) {
+TEST_P(PerformNetworkContextPrefetchRecorderTest, NonSSLResource) {
   InsecureTestServer insecure(GetFutureCallback());
   {
     StrictMock<base::test::MockLog> log;
