@@ -403,9 +403,7 @@ void FullscreenController::WindowFullscreenStateChanged() {
       fullscreen_start_time_ = base::TimeTicks::Now();
     }
   }
-}
 
-void FullscreenController::FullscreenTransitionCompleted() {
   if (fullscreen_transition_complete_callback_) {
     std::move(fullscreen_transition_complete_callback_).Run();
   }

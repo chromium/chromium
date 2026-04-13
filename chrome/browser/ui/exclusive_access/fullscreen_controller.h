@@ -162,13 +162,10 @@ class FullscreenController : public ExclusiveAccessControllerBase {
   void ExitExclusiveAccessIfNecessary() override;
   // Callbacks /////////////////////////////////////////////////////////////////
 
-  // Called by Browser::WindowFullscreenStateChanged. This is called immediately
-  // as fullscreen mode is toggled.
+  // Called by Browser::WindowFullscreenStateChanged. This is called
+  // as fullscreen mode is toggled, and after the transition animation
+  // completes.
   void WindowFullscreenStateChanged();
-
-  // Called by BrowserView::FullscreenStateChanged. This is called after
-  // fullscreen mode is toggled and after the transition animation completes.
-  void FullscreenTransitionCompleted();
 
   // Runs the given closure unless a fullscreen transition is currently in
   // progress. If a transition is in progress, the execution of the closure is

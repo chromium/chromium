@@ -53,6 +53,7 @@ class FullscreenControllerTestWindow : public TestBrowserWindow,
   static const char* GetWindowStateString(WindowState state);
   WindowState state() const { return state_; }
   void set_browser(Browser* browser) { browser_ = browser; }
+  void set_reentrant(bool reentrant) { reentrant_ = reentrant; }
   ExclusiveAccessContext* GetExclusiveAccessContext() override;
 
   // ExclusiveAccessContext Interface:
@@ -82,6 +83,8 @@ class FullscreenControllerTestWindow : public TestBrowserWindow,
 
   WindowState state_ = kNormal;
   raw_ptr<Browser, DanglingUntriaged> browser_;
+  bool reentrant_ =
+      FullscreenControllerStateTest::IsWindowFullscreenStateChangedReentrant();
 };
 
 FullscreenControllerTestWindow::FullscreenControllerTestWindow()
@@ -164,8 +167,7 @@ bool FullscreenControllerTestWindow::IsTransitionReentrant(
     return false;
   }
 
-  if (FullscreenControllerStateTest::
-          IsWindowFullscreenStateChangedReentrant()) {
+  if (reentrant_) {
     return true;
   }
 
@@ -448,13 +450,14 @@ TEST_F(FullscreenControllerStateUnitTest,
 TEST_F(FullscreenControllerStateUnitTest,
        RunOrDeferUntilTransitionIsCompleteDefer) {
   AddTab(browser(), GURL(url::kAboutBlankURL));
+  window_->set_reentrant(false);
   GetFullscreenController()->ToggleBrowserFullscreenMode(
       /*user_initiated=*/false);
   bool lambda_called = false;
   GetFullscreenController()->RunOrDeferUntilTransitionIsComplete(
       base::BindLambdaForTesting([&lambda_called]() { lambda_called = true; }));
   EXPECT_FALSE(lambda_called);
-  GetFullscreenController()->FullscreenTransitionCompleted();
+  GetFullscreenController()->WindowFullscreenStateChanged();
   EXPECT_TRUE(lambda_called);
 }
 

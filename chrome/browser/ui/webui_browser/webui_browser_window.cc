@@ -515,7 +515,6 @@ ui::TrackedElement* WebUIBrowserWindow::GetExtensionsMenuButtonAnchor() const {
 
 void WebUIBrowserWindow::ProcessFullscreen(bool fullscreen) {
   widget_->SetFullscreen(fullscreen);
-  browser_->WindowFullscreenStateChanged();
 
   auto* manager = browser_->GetFeatures().exclusive_access_manager();
   if (!manager) {
@@ -538,7 +537,7 @@ void WebUIBrowserWindow::ProcessFullscreen(bool fullscreen) {
     page->OnFullscreenModeChanged(fullscreen, context);
   }
 
-  controller->FullscreenTransitionCompleted();
+  browser_->WindowFullscreenStateChanged();
 }
 
 void WebUIBrowserWindow::DeleteBrowserWindow() {
