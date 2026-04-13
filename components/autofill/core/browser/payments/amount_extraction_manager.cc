@@ -113,7 +113,10 @@ AmountExtractionManager::GetEligibleFeatures(
     const std::vector<Suggestion>& suggestions,
     FillingProduct filling_product,
     FieldType field_type) const {
-  if (base::FeatureList::IsEnabled(
+  if (payments::ShouldShowBnplSuggestions(autofill_manager_->client(),
+                                          field_type) &&
+      filling_product == FillingProduct::kCreditCard &&
+      base::FeatureList::IsEnabled(
           features::kAutofillEnablePayNowPayLaterTabs)) {
     // In the Pay Now Pay Later tabs case, if there is no BNPL suggestion and no
     // loading throbber suggestion, then no pay later tab was displayed, so
