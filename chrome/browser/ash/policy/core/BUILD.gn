@@ -87,6 +87,7 @@ static_library("core") {
     "//chrome/browser/ash/tpm",
     "//chrome/browser/chromeos/extensions/external_loader",
     "//chrome/browser/device_identity",
+    "//chrome/browser/enterprise",
     "//chrome/browser/invalidation",
     "//chrome/browser/net",
     "//chrome/browser/policy:policy_util",
@@ -147,7 +148,6 @@ static_library("core") {
     "//chromeos/ash/components/dbus/attestation:attestation_proto",
 
     # TODO: Use //chrome/browser/ash/login/reporting instead after fixing cyclic dependency.
-    "//chrome/browser/enterprise",
     "//chrome/browser/policy/messaging_layer/proto:lock_unlock_event_proto",
     "//chrome/browser/policy/messaging_layer/proto:login_logout_event_proto",
     "//chrome/browser/policy/messaging_layer/proto:os_events_proto",
@@ -156,13 +156,14 @@ static_library("core") {
   ]
 
   allow_circular_includes_from = [
-    # enterprise headers include device_attributes.h.
-    "//chrome/browser/enterprise",
     "//chrome/browser/ash/policy/enrollment",
     "//chrome/browser/ash/policy/rsu",
     "//chrome/browser/ash/settings",
     "//chrome/browser/ash/system",
     "//chrome/browser/ash/tpm",
+
+    # enterprise headers include device_attributes.h.
+    "//chrome/browser/enterprise",
   ]
 }
 

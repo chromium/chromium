@@ -161,9 +161,7 @@ source_set("enterprise") {
       "connectors/device_trust/signals/decorators/ash/ash_signals_decorator.h",
       "reporting/android_app_info_generator.h",
     ]
-  }
-
-  if (!is_chromeos) {
+  } else {
     public += [
       "remote_commands/clear_browsing_data_job.h",
       "remote_commands/job_profile_picker.h",
@@ -289,30 +287,6 @@ source_set("enterprise") {
     ]
   }
 
-  if (enterprise_cloud_content_analysis) {
-    public += [
-      "connectors/analysis/clipboard_analysis_request.h",
-      "connectors/analysis/clipboard_request_handler.h",
-      "connectors/analysis/content_analysis_delegate.h",
-      "connectors/analysis/content_analysis_dialog_controller.h",
-      "connectors/analysis/content_analysis_dialog_delegate.h",
-      "connectors/analysis/content_analysis_downloads_delegate.h",
-      "connectors/analysis/content_analysis_views.h",
-      "connectors/analysis/files_request_handler.h",
-      "connectors/analysis/page_print_analysis_request.h",
-      "connectors/analysis/page_print_request_handler.h",
-    ]
-  }
-
-  if (enterprise_local_content_analysis) {
-    public += [
-      "connectors/analysis/local_binary_upload_service.h",
-      "connectors/analysis/local_binary_upload_service_factory.h",
-    ]
-    public_deps +=
-        [ "//chrome/browser/enterprise/connectors/analysis:sdk_manager" ]
-  }
-
   if (is_linux || is_win || is_mac) {
     public += [
       "connectors/device_trust/attestation/browser/device_attester.h",
@@ -359,6 +333,30 @@ source_set("enterprise") {
 
   if (is_linux || is_chromeos) {
     public += [ "signals/device_info_fetcher_linux.h" ]
+  }
+
+  if (enterprise_cloud_content_analysis) {
+    public += [
+      "connectors/analysis/clipboard_analysis_request.h",
+      "connectors/analysis/clipboard_request_handler.h",
+      "connectors/analysis/content_analysis_delegate.h",
+      "connectors/analysis/content_analysis_dialog_controller.h",
+      "connectors/analysis/content_analysis_dialog_delegate.h",
+      "connectors/analysis/content_analysis_downloads_delegate.h",
+      "connectors/analysis/content_analysis_views.h",
+      "connectors/analysis/files_request_handler.h",
+      "connectors/analysis/page_print_analysis_request.h",
+      "connectors/analysis/page_print_request_handler.h",
+    ]
+  }
+
+  if (enterprise_local_content_analysis) {
+    public += [
+      "connectors/analysis/local_binary_upload_service.h",
+      "connectors/analysis/local_binary_upload_service_factory.h",
+    ]
+    public_deps +=
+        [ "//chrome/browser/enterprise/connectors/analysis:sdk_manager" ]
   }
 
   if (enterprise_content_analysis) {

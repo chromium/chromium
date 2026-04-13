@@ -27,10 +27,6 @@
 
 class Profile;
 
-namespace policy {
-class BrowserPolicyConnector;
-}  // namespace policy
-
 namespace content {
 class WebContents;
 }  // namespace content
@@ -38,6 +34,10 @@ class WebContents;
 namespace download {
 class DownloadItem;
 }  // namespace download
+
+namespace policy {
+class BrowserPolicyConnector;
+}  // namespace policy
 
 namespace enterprise_connectors {
 

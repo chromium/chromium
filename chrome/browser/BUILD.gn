@@ -5195,10 +5195,6 @@ static_library("browser") {
         [ "//chrome/browser/background/extensions:impl" ]
   }
 
-  if (is_mac || is_win || is_android) {
-    sources += []
-  }
-
   if (is_mac || is_win) {
     deps += [
       "//chrome/browser/ui/pdf/infobar",
@@ -5477,7 +5473,6 @@ static_library("browser") {
   }
 
   if (enterprise_watermark) {
-    sources += []
     deps += [
       "//chrome/browser/enterprise/watermark:watermark_view_lib",
       "//chrome/browser/ui/webui/watermark",
@@ -5487,18 +5482,10 @@ static_library("browser") {
   }
 
   if (enterprise_data_controls) {
-    sources += []
-
-    # TODO(b/352728209): Update the logic for which file compiles on Android
-    # when the proper methods have been migrated to components/.
-    if (!is_android) {
-      sources += []
-    }
     deps += [ "//chrome/browser/enterprise/data_controls" ]
   }
 
   if (enterprise_client_certificates) {
-    sources += []
     deps += [
       "//chrome/browser/enterprise/connectors/device_trust/key_management/core/network",
       "//components/enterprise/client_certificates/core",
@@ -5510,7 +5497,6 @@ static_library("browser") {
   }
 
   if (is_linux || is_win || is_mac || is_chromeos || is_android) {
-    sources += []
     deps += [ "//chrome/browser/enterprise/connectors/device_trust/common" ]
   }
 
@@ -5549,13 +5535,11 @@ static_library("browser") {
   }
 
   if (is_linux || is_win || is_mac || is_android) {
-    sources += []
     deps += [ "//components/enterprise/idle" ]
   }
 
   if (enterprise_cloud_content_analysis || is_android ||
       safe_browsing_mode == 1) {
-    sources += []
     deps += [
       "//components/enterprise/common/proto:chrome_reporting_entity",
       "//components/enterprise/connectors/core",
@@ -5565,7 +5549,6 @@ static_library("browser") {
   }
 
   if (enterprise_cloud_content_analysis) {
-    sources += []
     deps += [
       "//components/enterprise/common/proto:chrome_reporting_entity",
       "//components/enterprise/connectors/core:cloud_content_scanning",
@@ -5575,7 +5558,6 @@ static_library("browser") {
   }
 
   if (enterprise_local_content_analysis) {
-    sources += []
     public_deps +=
         [ "//chrome/browser/enterprise/connectors/analysis:sdk_manager" ]
   }
@@ -5850,10 +5832,6 @@ static_library("browser") {
     }
   }
 
-  if (enterprise_content_analysis) {
-    sources += []
-  }
-
   if (enable_captive_portal_detection) {
     deps += [ "//chrome/browser/captive_portal" ]
   }
@@ -6000,7 +5978,6 @@ static_library("browser") {
   }
 
   if (enable_extensions_core) {
-    sources += []
     if (enable_guest_view) {
       deps += [
         "//chrome/browser/guest_view",
