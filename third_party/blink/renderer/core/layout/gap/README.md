@@ -72,30 +72,10 @@ for these.
     - Cross gaps after: `[5, 5]`
 
 ### Multicol
-- **MainGap**: Row gap created by `column-wrap: wrap`.
-  The presence of a spanner will add TWO new `MainGap`s.
-- **CrossGap**: Each row gap and spanner implies the creation of a new cross gap for every column gap.
-- **Association rules**: Similar to Grid, any row and column gaps will neatly align,
-so we can avoid duplication by storing cross gaps once and share them across all main gaps.
-- **Example: Multicol container with spanners and row gaps (blue) formed by
-`column-wrap`.
-  -![Diagram with a multicol with row-wrap showing the cross and main gaps](resources/multicol-mc.png)
-
-  - Two spanners (orange).
-  - Six ***Main Gap*** (M1 to M6),similar to Grid and Flex, we keep track of just one offset
-    (block offset) for each.
-    - In the case of a `MainGap`created by a spanner, the block offset represents
-      the block start of the spanner. We can have two types of `MainGap`s created by a spanner:
-        - kStart: Where the spanner starts.
-        - kEnd: Where the spanner ends.
-    - In the case of a `MainGap` created by `column-wrap: wrap`, the block offset represents
-      the midpoint in the gap between one row and the next.
-  - Ten ***Cross Gaps*** (C1 to C10). We keep track of the coordinates of where these start from.
-  - We keep track of which `CrossGaps` are associated with each `MainGap` via a range [start, end] of
-    cross gap indices. For each `MainGap` we say that the `CrossGaps` associated with it are any that start
-    before that main gap. kEnd type `MainGap`s don't have any `CrossGap`s associated with them.
-      - This information is needed by Paint to calculate the intersection points of row gaps and column gaps.
-  - In yellow circles are the gap intersections that would be generated when ***Calculating Intersections during Paint***.
+- Very similar to grid, with some nuances:
+  - **Main Gap**: Row gaps from `column-wrap: wrap` + spanner boundaries (start and end of the spanner).
+  - **Cross Gap**: Column gaps (same as grid)
+  - **Association rules**: Same as grid, any row and column gaps will neatly align.
 
 <!--
 TODO(samomekarajr && javiercon): Complete this for grid-lanes.
@@ -126,15 +106,7 @@ because the cross gaps in flex are the gap between items, and they do not
 ever span multiple flex lines.
 
 ### For Multicol:
-- Main Gaps:
-  - Start of the content || End of the content
-- Cross Gaps:
-  - Start of the `gutter` || end of the `gutter`
-    - `gutters` end wherever there are row gaps and wherever there are spanners.
-    - `gutters` that are adjacent to spanners will end up always having 3 intersections:
-      - One at the start of the gap, one at the end of the gap (the start of the spanner),
-        and one at the end of the spanner.
-- See yellow circles in ![Diagram with a multicol with row-wrap showing the cross and main gaps](resources/multicol-mc.png)
+- Same as grid.
 
 ---
 ## Resulting Gains
