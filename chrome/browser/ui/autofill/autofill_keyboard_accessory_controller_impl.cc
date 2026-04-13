@@ -386,7 +386,15 @@ void AutofillKeyboardAccessoryControllerImpl::OnSuggestionsChanged() {
         FillingSource::AUTOFILL,
         /*has_suggestions=*/true);
   }
-  if (view_) {
+
+  // If any suggestion is in a loading state, we skip updating the view.
+  // This prevents C++ from pushing a new list of suggestions across JNI and
+  // overwriting the Java side's loading indicator state, allowing the Java UI
+  // to maintain the ViewState.LOADING state while the server fetch takes place.
+  bool is_loading = std::ranges::any_of(suggestions_, [](const Suggestion& s) {
+    return s.is_loading == Suggestion::IsLoading(true);
+  });
+  if (view_ && !is_loading) {
     view_->Show();
   }
 }
@@ -422,12 +430,25 @@ void AutofillKeyboardAccessoryControllerImpl::AcceptSuggestion(
 
   if (base::WeakPtr<ManualFillingController> manual_filling_controller =
           ManualFillingController::GetOrCreate(web_contents_.get())) {
-    // Accepting a suggestion should hide all suggestions. To prevent them from
-    // coming up in Multi-Window mode, mark the source as unavailable.
-    manual_filling_controller->UpdateSourceAvailability(
-        FillingSource::AUTOFILL,
-        /*has_suggestions=*/false);
-    manual_filling_controller->Hide();
+    bool is_loading = false;
+    if (const auto* ai_payload =
+            std::get_if<Suggestion::AutofillAiPayload>(&suggestion.payload)) {
+      is_loading = ai_payload->requires_server_fetch;
+    }
+    // If the suggestion requires a server fetch, we do not hide the manual
+    // filling controller here. Instead, we let the Java side display a loading
+    // UI and keep the soft keyboard open. The controller will be torn down
+    // properly via `HideViewAndDie()` when the fetch eventually completes (or
+    // times out) in
+    // `AutofillExternalDelegate::FillAutofillAiFormAndHidePopup()`.
+    if (!is_loading) {
+      // Accepting a suggestion should hide all suggestions. To prevent them
+      // from coming up in Multi-Window mode, mark the source as unavailable.
+      manual_filling_controller->UpdateSourceAvailability(
+          FillingSource::AUTOFILL,
+          /*has_suggestions=*/false);
+      manual_filling_controller->Hide();
+    }
   }
 
   NotifyUserEducationAboutAcceptedSuggestion(web_contents_.get(), suggestion);

@@ -437,6 +437,8 @@ public class KeyboardAccessoryControllerTest {
         // Simulate a click on the first suggestion.
         barItems.get(0).getAction().getCallback().onResult(barItems.get(0).getAction());
 
+        verify(mMockAutofillDelegate).suggestionSelected(0, true);
+
         barItems = flattenItemGroups();
         assertThat(barItems.get(0).getViewState(), is(ActionBarItem.ViewState.LOADING));
         assertThat(barItems.get(1).getViewState(), is(ActionBarItem.ViewState.DEACTIVATED));
@@ -472,6 +474,8 @@ public class KeyboardAccessoryControllerTest {
 
         // Simulate a click on the first suggestion, which does not require loading.
         barItems.get(0).getAction().getCallback().onResult(barItems.get(0).getAction());
+
+        verify(mMockAutofillDelegate).suggestionSelected(0, false);
 
         // The ViewState should remain ENABLED because showLoadingUIOnSuggestion is not called.
         barItems = flattenItemGroups();

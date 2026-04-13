@@ -33,6 +33,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import static org.chromium.chrome.browser.keyboard_accessory.AccessoryAction.GENERATE_PASSWORD_AUTOMATIC;
+import static org.chromium.chrome.browser.keyboard_accessory.ManualFillingProperties.IS_CREDENTIAL_FIELD_OR_HAS_AUTOFILL_SUGGESTIONS;
 import static org.chromium.chrome.browser.keyboard_accessory.ManualFillingProperties.KEYBOARD_EXTENSION_STATE;
 import static org.chromium.chrome.browser.keyboard_accessory.ManualFillingProperties.KeyboardExtensionState.EXTENDING_KEYBOARD;
 import static org.chromium.chrome.browser.keyboard_accessory.ManualFillingProperties.KeyboardExtensionState.FLOATING_BAR;
@@ -67,6 +68,7 @@ import org.mockito.junit.MockitoRule;
 import org.mockito.stubbing.Answer;
 import org.robolectric.RuntimeEnvironment;
 import org.robolectric.annotation.Config;
+import org.robolectric.shadows.ShadowLooper;
 
 import org.chromium.base.UserDataHost;
 import org.chromium.base.supplier.ObservableSuppliers;
@@ -1741,8 +1743,58 @@ public class ManualFillingControllerTest {
      * @param mediator The {@link ManualFillingMediator} whose observers should be triggered.
      * @param id The id of the new browser tab.
      * @param lastTab A previous mocked {@link Tab} to be hidden. Needs |getId()|. May be null.
-     * @return Returns a mock of the newly added {@link Tab}. Provides |getId()|.
      */
+    @Test
+    public void testSetWaitingForFetchPreventsResettingStateInShow() {
+        simulateLayoutSizeChange(
+                2.f, 200, 400, /* keyboardShown= */ false, VirtualKeyboardMode.RESIZES_VISUAL);
+        // Prepare a tab and register a new tab, so there is a reason to display the bar.
+        addBrowserTab(mMediator, 1111, null);
+        mController.registerSheetDataProvider(
+                mLastMockWebContents, AccessoryTabType.PASSWORDS, new Provider<>());
+        mModel.set(KEYBOARD_EXTENSION_STATE, HIDDEN);
+        reset(mMockKeyboardAccessory, mMockAccessorySheet);
+        when(mMockKeyboardAccessory.empty()).thenReturn(false);
+
+        // Set waiting for fetch to true.
+        mController.setWaitingForFetch(true);
+
+        // Showing the keyboard should NOT reset mWaitingForFetch if it's already true.
+        // (In the actual code, show() calls mMediator.show(), which should respect the flag).
+        mController.show(
+                /* waitForKeyboard= */ true, /* isCredentialFieldOrHasAutofillSuggestions= */ true);
+
+        // We can't directly check mWaitingForFetch because it's private in Mediator,
+        // but we can verify that dismissIfWaitingForFetch still works.
+        mController.dismissIfWaitingForFetch();
+        ShadowLooper.idleMainLooper();
+        assertThat(mModel.get(KEYBOARD_EXTENSION_STATE), is(HIDDEN));
+    }
+
+    @Test
+    public void testDismissIfWaitingForFetchOnlyDismissesWhenWaiting() {
+        simulateLayoutSizeChange(
+                2.f, 200, 400, /* keyboardShown= */ false, VirtualKeyboardMode.RESIZES_VISUAL);
+        addBrowserTab(mMediator, 1111, null);
+        mController.registerSheetDataProvider(
+                mLastMockWebContents, AccessoryTabType.PASSWORDS, new Provider<>());
+        mModel.set(SHOW_WHEN_VISIBLE, true);
+        mModel.set(IS_CREDENTIAL_FIELD_OR_HAS_AUTOFILL_SUGGESTIONS, true);
+        mModel.set(KEYBOARD_EXTENSION_STATE, FLOATING_BAR);
+
+        // 1. When NOT waiting, it should NOT dismiss.
+        mController.setWaitingForFetch(false);
+        mController.dismissIfWaitingForFetch();
+        ShadowLooper.idleMainLooper();
+        assertThat(mModel.get(KEYBOARD_EXTENSION_STATE), is(FLOATING_BAR));
+
+        // 2. When waiting, it SHOULD dismiss.
+        mController.setWaitingForFetch(true);
+        mController.dismissIfWaitingForFetch();
+        ShadowLooper.idleMainLooper();
+        assertThat(mModel.get(KEYBOARD_EXTENSION_STATE), is(HIDDEN));
+    }
+
     private Tab addBrowserTab(ManualFillingMediator mediator, int id, @Nullable Tab lastTab) {
         int lastId = INVALID_TAB_ID;
         if (lastTab != null) {
@@ -1834,6 +1886,9 @@ public class ManualFillingControllerTest {
         when(mMockResources.getDimensionPixelSize(R.dimen.keyboard_accessory_suggestion_height))
                 .thenReturn((int) (density * 48));
         when(mMockResources.getDimensionPixelSize(R.dimen.keyboard_accessory_height_redesign))
+                .thenReturn((int) (density * 48));
+        when(mMockResources.getDimensionPixelSize(
+                        R.dimen.keyboard_accessory_height_with_shadow_redesign))
                 .thenReturn((int) (density * 48));
     }
 
