@@ -254,8 +254,8 @@ class BatchUploadCardMediator
                             mContext,
                             mLocalDataDescriptionsMap,
                             mDialogManager,
-                            /* displayableProfileData= */ mProfileDataCache.getProfileDataOrDefault(
-                                    accountInfo.getEmail()),
+                            /* displayableProfileData= */ mProfileDataCache.getById(
+                                    accountInfo.getId()),
                             this);
                 });
 
