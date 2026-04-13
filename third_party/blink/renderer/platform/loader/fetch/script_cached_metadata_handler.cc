@@ -241,8 +241,11 @@ void SourceKeyedCachedMetadataHandler::SetCachedMetadata(
     CodeCacheHost* code_cache_host,
     uint32_t data_type_id,
     base::span<const uint8_t> data) {
-  CHECK(code_cache_host);
   CHECK(!cached_metadata_);
+  if (!code_cache_host) {
+    return;
+  }
+
   cached_metadata_ = CachedMetadata::Create(data_type_id, data);
   code_cache_host->get()->DidGenerateSourceKeyedCacheableMetadata(
       blink::Vector<uint8_t>(source_hash_), cached_metadata_->SerializedData());
