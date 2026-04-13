@@ -34,7 +34,8 @@
   flex: 0 0 25%;
 }
 
-.policy.conflict.row .value {
+.policy.conflict.row .value,
+.value.row .value {
   flex-grow: 1;
   font-family: monospace;
   max-height: 200px;
@@ -55,26 +56,19 @@
 }
 
 <if expr="is_android or is_ios">
-.value,
-.level,
-.messages,
-.scope {
+.policy.conflict.row {
   display: none;
 }
 
-.name {
-  flex: 0 0 50%;
+.policy.conflict.entry {
+  display: block;
 }
 
-.toggle,
-.source,
-.messages.row .name,
-.value.row .name {
-  flex: 0 0 25%;
+.row > .name {
+  flex: 0 0 35%;
 }
 
-.messages.row .value,
-.value.row .value {
+.row > .value {
   display: block;
   flex: 1;
 }
@@ -89,3 +83,23 @@
   <div class="messages" role="cell"></div>
   <div class="toggle" role="cell"></div>
 </div>
+<if expr="is_android or is_ios">
+  <div class="policy conflict entry" role="rowgroup">
+    <div class="value row" role="row">
+      <div class="name" role="rowheader">$i18n{conflictValue}</div>
+      <div class="value" role="cell"></div>
+    </div>
+    <div class="source row" role="row">
+      <div class="name" role="rowheader">$i18n{headerSource}</div>
+      <div class="value" role="cell"></div>
+    </div>
+    <div class="scope row" role="row">
+      <div class="name" role="rowheader">$i18n{headerScope}</div>
+      <div class="value" role="cell"></div>
+    </div>
+    <div class="level row" role="row">
+      <div class="name" role="rowheader">$i18n{headerLevel}</div>
+      <div class="value" role="cell"></div>
+    </div>
+  </div>
+</if>
