@@ -119,7 +119,7 @@
   <message name="IDS_SETTINGS_GLIC_PERMISSIONS_SECTION" desc="Heading on settings page for permissions-related preferences." formatter_data="android_java">
     Permissions
   </message>
-  <message name="IDS_SETTINGS_GLIC_BUTTON_TOGGLE" desc="Name of the toggle that controls whether the Gemini icon is shown in the tabstrip." formatter_data="android_java">
+  <message name="IDS_SETTINGS_GLIC_BUTTON_TOGGLE" desc="Name of the toggle that controls whether the Gemini icon is shown in the tabstrip.">
     Show Gemini at the top of the browser
   </message>
   <message name="IDS_SETTINGS_GLIC_BUTTON_TOGGLE_SUBLABEL" desc="Sublabel of the toggle that controls whether the Gemini icon is shown in the tabstrip." formatter_data="android_java">
@@ -438,6 +438,12 @@
   </message>
   <message name="IDS_GLIC_BUTTON_ENTRYPOINT_LABEL" desc="Label on the button used to open Gemini in Chrome." formatter_data="android_java">
     Gemini
+  </message>
+  <message name="IDS_GLIC_BUTTON_ENTRYPOINT_PINNED_LABEL" desc="Label on the button used to open Gemini in Chrome when pinned." formatter_data="android_java">
+    Current toolbar shortcut
+  </message>
+  <message name="IDS_GLIC_BUTTON_ENTRYPOINT_UNPINNED_LABEL" desc="Label on the button used to open Gemini in Chrome when pinned." formatter_data="android_java">
+    Pin Gemini to toolbar shortcut
   </message>
   <message name="IDS_GLIC_BUTTON_ENTRYPOINT_ASK_GEMINI_LABEL" desc="Label on the button used to open Gemini in Chrome." formatter_data="android_java">
     Ask Gemini

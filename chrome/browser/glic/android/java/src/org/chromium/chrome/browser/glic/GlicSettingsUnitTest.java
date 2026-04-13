@@ -16,7 +16,6 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import static org.chromium.chrome.browser.preferences.ChromePreferenceKeys.GLIC_AUTO_BROWSE_SETTING_ENABLED;
-import static org.chromium.chrome.browser.preferences.ChromePreferenceKeys.GLIC_BUTTON_PINNED;
 import static org.chromium.chrome.browser.preferences.ChromePreferenceKeys.GLIC_PRECISE_LOCATION_SETTING_ENABLED;
 import static org.chromium.chrome.browser.preferences.ChromePreferenceKeys.GLIC_SHARE_CURRENT_TAB_DEFAULT_ACCESS_ENABLED;
 
@@ -39,8 +38,10 @@ import org.robolectric.RuntimeEnvironment;
 import org.robolectric.Shadows;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarButtonVariant;
 import org.chromium.components.browser_ui.settings.ChromeSwitchPreference;
 import org.chromium.components.browser_ui.settings.SettingsCustomTabLauncher;
 import org.chromium.components.prefs.PrefChangeRegistrar;
@@ -135,18 +136,42 @@ public class GlicSettingsUnitTest {
     }
 
     @Test
-    public void testGlicButtonPinnedInitialState_Enabled() {
-        doTestInitialState(GlicPrefNames.GLIC_PINNED_TO_TABSTRIP, "glic_button", true);
+    public void testGlicButtonPreferenceExists() {
+        GlicSettings fragment = launchFragment();
+        Preference preference = fragment.findPreference("glic_button");
+        assertTrue("Preference glic_button should exist", preference != null);
     }
 
     @Test
-    public void testGlicButtonPinnedInitialState_Disabled() {
-        doTestInitialState(GlicPrefNames.GLIC_PINNED_TO_TABSTRIP, "glic_button", false);
+    public void testGlicButtonPreference_Glic() {
+        ChromeSharedPreferences.getInstance()
+                .writeInt(
+                        ChromePreferenceKeys.ADAPTIVE_TOOLBAR_CUSTOMIZATION_SETTINGS,
+                        AdaptiveToolbarButtonVariant.GLIC);
+        GlicSettings fragment = launchFragment();
+        Preference preference = fragment.findPreference("glic_button");
+        assertEquals(
+                mActivity.getString(R.string.glic_button_entrypoint_pinned_label),
+                preference.getTitle());
+        assertEquals(
+                mActivity.getString(R.string.glic_button_entrypoint_label),
+                preference.getSummary());
     }
 
     @Test
-    public void testGlicButtonPinnedToggle() {
-        doTestToggle(GLIC_BUTTON_PINNED, GlicPrefNames.GLIC_PINNED_TO_TABSTRIP, "glic_button");
+    public void testGlicButtonPreference_NotGlic() {
+        ChromeSharedPreferences.getInstance()
+                .writeInt(
+                        ChromePreferenceKeys.ADAPTIVE_TOOLBAR_CUSTOMIZATION_SETTINGS,
+                        AdaptiveToolbarButtonVariant.AUTO);
+        GlicSettings fragment = launchFragment();
+        Preference preference = fragment.findPreference("glic_button");
+        assertEquals(
+                mActivity.getString(R.string.glic_button_entrypoint_unpinned_label),
+                preference.getTitle());
+        assertEquals(
+                mActivity.getString(R.string.settings_glic_button_toggle_sublabel),
+                preference.getSummary());
     }
 
     @Test

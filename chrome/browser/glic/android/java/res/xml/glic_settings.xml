@@ -18,11 +18,11 @@ found in the LICENSE file.
         android:key="glic_preference_section"
         android:title="@string/settings_glic_preferences_section" />
 
-    <org.chromium.components.browser_ui.settings.ChromeSwitchPreference
+    <Preference
             android:key="glic_button"
-            android:title="@string/settings_glic_button_toggle"
+            android:title="@string/glic_button_entrypoint_unpinned_label"
             android:summary="@string/settings_glic_button_toggle_sublabel"
-            android:defaultValue="false" />
+            android:fragment="org.chromium.chrome.browser.toolbar.adaptive.settings.AdaptiveToolbarSettingsFragment" />
 
     <PreferenceCategory
         android:key="glic_permissions_section"

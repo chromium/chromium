@@ -27,6 +27,8 @@ import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.settings.ChromeBaseSettingsFragment;
 import org.chromium.chrome.browser.settings.search.ChromeBaseSearchIndexProvider;
+import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarButtonVariant;
+import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarPrefs;
 import org.chromium.components.browser_ui.settings.ChromeExpandableSwitchPreference;
 import org.chromium.components.browser_ui.settings.ChromeSwitchPreference;
 import org.chromium.components.browser_ui.settings.SettingsCustomTabLauncher;
@@ -79,11 +81,8 @@ public class GlicSettings extends ChromeBaseSettingsFragment {
         mPrefChangeRegistrar = new PrefChangeRegistrar(prefService);
         GlicKeyedService glicService = GlicKeyedServiceFactory.getForProfile(getProfile());
 
-        setupSwitchPreference(
-                PREFERENCE_BUTTON,
-                ChromePreferenceKeys.GLIC_BUTTON_PINNED,
-                GlicPrefNames.GLIC_PINNED_TO_TABSTRIP,
-                /* extraListener= */ null);
+        Preference buttonPref = assertNonNull(findPreference(PREFERENCE_BUTTON));
+        updateButtonPreference(buttonPref);
 
         ChromeSwitchPreference locationPref =
                 setupSwitchPreference(
@@ -174,6 +173,27 @@ public class GlicSettings extends ChromeBaseSettingsFragment {
         if (aiInfoPref != null) {
             aiInfoPref.setOnLearnMoreClicked(
                     () -> customTabLauncher.openUrlInCct(getActivity(), LEARN_MORE_MANAGED_AI_URL));
+        }
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        Preference buttonPref = findPreference(PREFERENCE_BUTTON);
+        if (buttonPref != null) {
+            updateButtonPreference(buttonPref);
+        }
+    }
+
+    // TODO(crbug.com/501502862): Add dynamic indexing for pin glic button setting.
+    private void updateButtonPreference(Preference preference) {
+        int currentSetting = AdaptiveToolbarPrefs.getCustomizationSetting();
+        if (currentSetting == AdaptiveToolbarButtonVariant.GLIC) {
+            preference.setTitle(R.string.glic_button_entrypoint_pinned_label);
+            preference.setSummary(R.string.glic_button_entrypoint_label);
+        } else {
+            preference.setTitle(R.string.glic_button_entrypoint_unpinned_label);
+            preference.setSummary(R.string.settings_glic_button_toggle_sublabel);
         }
     }
 
