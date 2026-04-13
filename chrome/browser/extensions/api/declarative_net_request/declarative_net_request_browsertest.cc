@@ -2513,10 +2513,8 @@ IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestBrowserTest, MAYBE_ChromeURLS) {
   }
 }
 
-#if BUILDFLAG(ENABLE_EXTENSIONS)
 // Test that a packed extension with a DNR ruleset behaves correctly after
 // browser restart.
-// TODO(crbug.com/40200835): Fails with no logs and no stack on desktop Android.
 IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestBrowserTest_Packed,
                        PRE_BrowserRestart) {
   // This is not tested for unpacked extensions since the unpacked extension
@@ -2594,7 +2592,6 @@ IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestBrowserTest_Packed,
   EXPECT_FALSE(IsNavigationBlocked(embedded_test_server()->GetURL(
       "unmatched.com", "/pages_with_script/index.html")));
 }
-#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
 // Tests than an extension can omit the "declarative_net_request" manifest key
 // but can still use dynamic rules.
