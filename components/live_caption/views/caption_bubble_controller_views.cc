@@ -11,6 +11,7 @@
 
 #include "base/functional/bind.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/live_caption/caption_bubble_context.h"
 #include "components/live_caption/caption_bubble_settings.h"
@@ -23,6 +24,11 @@
 #include "components/soda/soda_installer.h"
 #include "components/strings/grit/components_strings.h"
 #include "ui/base/l10n/l10n_util.h"
+
+#if BUILDFLAG(ENABLE_ON_DEVICE_TRANSLATION)
+#include "components/on_device_translation/public/language_pack.h"
+#include "components/on_device_translation/public/supported_languages.h"
+#endif
 
 namespace captions {
 
@@ -56,11 +62,20 @@ CaptionBubbleControllerViews::CaptionBubbleControllerViews(
     soda_installer->AddObserver(this);
   }
 #endif  // BUILDFLAG(IS_CHROMEOS)
+
+#if BUILDFLAG(ENABLE_ON_DEVICE_TRANSLATION)
+  auto* translation_installer =
+      on_device_translation::OnDeviceTranslationInstaller::GetInstance();
+  if (translation_installer) {
+    translation_installer->AddObserver(this);
+  }
+#endif  // BUILDFLAG(ENABLE_ON_DEVICE_TRANSLATION)
 }
 
 CaptionBubbleControllerViews::~CaptionBubbleControllerViews() {
-  if (caption_widget_)
+  if (caption_widget_) {
     caption_widget_->CloseNow();
+  }
 
 #if !BUILDFLAG(IS_CHROMEOS)
   speech::SodaInstaller* soda_installer = speech::SodaInstaller::GetInstance();
@@ -71,6 +86,14 @@ CaptionBubbleControllerViews::~CaptionBubbleControllerViews() {
     soda_installer->RemoveObserver(this);
   }
 #endif  // BUILDFLAG(IS_CHROMEOS)
+
+#if BUILDFLAG(ENABLE_ON_DEVICE_TRANSLATION)
+  auto* translation_installer =
+      on_device_translation::OnDeviceTranslationInstaller::GetInstance();
+  if (translation_installer) {
+    translation_installer->RemoveObserver(this);
+  }
+#endif  // BUILDFLAG(ENABLE_ON_DEVICE_TRANSLATION)
 }
 
 void CaptionBubbleControllerViews::OnCaptionBubbleDestroyed() {
@@ -82,15 +105,18 @@ bool CaptionBubbleControllerViews::OnTranscription(
     content::RenderFrameHost* rfh,
     CaptionBubbleContext* caption_bubble_context,
     const media::SpeechRecognitionResult& result) {
-  if (!caption_bubble_)
+  if (!caption_bubble_) {
     return false;
+  }
   SetActiveModel(caption_bubble_context);
-  if (active_model_->IsClosed())
+  if (active_model_->IsClosed()) {
     return false;
+  }
 
   active_model_->SetPartialText(result.transcription);
-  if (result.is_final)
+  if (result.is_final) {
     active_model_->CommitPartialText();
+  }
 
   return true;
 }
@@ -100,11 +126,13 @@ void CaptionBubbleControllerViews::OnError(
     CaptionBubbleErrorType error_type,
     OnErrorClickedCallback error_clicked_callback,
     OnDoNotShowAgainClickedCallback error_silenced_callback) {
-  if (!caption_bubble_)
+  if (!caption_bubble_) {
     return;
+  }
   SetActiveModel(caption_bubble_context);
-  if (active_model_->IsClosed())
+  if (active_model_->IsClosed()) {
     return;
+  }
   active_model_->OnError(error_type, std::move(error_clicked_callback),
                          std::move(error_silenced_callback));
 }
@@ -112,8 +140,9 @@ void CaptionBubbleControllerViews::OnError(
 void CaptionBubbleControllerViews::OnAudioStreamEnd(
     content::RenderFrameHost* rfh,
     CaptionBubbleContext* caption_bubble_context) {
-  if (!caption_bubble_)
+  if (!caption_bubble_) {
     return;
+  }
 
   auto caption_bubble_model_it =
       caption_bubble_models_.find(caption_bubble_context);
@@ -217,8 +246,9 @@ std::string CaptionBubbleControllerViews::GetBubbleLabelTextForTesting() {
 }
 
 void CaptionBubbleControllerViews::CloseActiveModelForTesting() {
-  if (active_model_)
+  if (active_model_) {
     active_model_->Close();
+  }
 }
 
 views::Widget* CaptionBubbleControllerViews::GetCaptionWidgetForTesting() {
@@ -249,8 +279,12 @@ void CaptionBubbleControllerViews::OnLanguageIdentificationEvent(
 
 void CaptionBubbleControllerViews::OnSodaInstalled(
     speech::LanguageCode language_code) {
-  if (active_model_ && language_code != speech::LanguageCode::kNone) {
-    active_model_->OnLanguagePackInstalled();
+  if (language_code != speech::LanguageCode::kNone) {
+    soda_progress_ = std::nullopt;
+    soda_language_code_ = speech::LanguageCode::kNone;
+    if (active_model_) {
+      UpdateCombinedProgressText();
+    }
   }
 }
 
@@ -268,12 +302,130 @@ void CaptionBubbleControllerViews::OnSodaInstallError(
 void CaptionBubbleControllerViews::OnSodaProgress(
     speech::LanguageCode language_code,
     int progress) {
-  if (active_model_ && language_code != speech::LanguageCode::kNone) {
+  if (language_code != speech::LanguageCode::kNone) {
+    soda_progress_ = progress;
+    soda_language_code_ = language_code;
+    UpdateCombinedProgressText();
+  }
+}
+
+#if BUILDFLAG(ENABLE_ON_DEVICE_TRANSLATION)
+void CaptionBubbleControllerViews::OnLanguagePackProgress(
+    const on_device_translation::LanguagePackKey lang_pack,
+    int progress) {
+  translation_progress_[lang_pack] = progress;
+  UpdateCombinedProgressText();
+}
+
+void CaptionBubbleControllerViews::OnLanguagePackInstalled(
+    const on_device_translation::LanguagePackKey lang_pack) {
+  translation_progress_.erase(lang_pack);
+  UpdateCombinedProgressText();
+}
+
+void CaptionBubbleControllerViews::OnLanguagePackInstallationChanged(
+    const on_device_translation::LanguagePackKey lang_pack) {
+  auto* installer =
+      on_device_translation::OnDeviceTranslationInstaller::GetInstance();
+  if (installer && !installer->RegisteredLanguagePacks().contains(lang_pack) &&
+      !installer->InstalledLanguagePacks().contains(lang_pack)) {
+    translation_progress_.erase(lang_pack);
+    UpdateCombinedProgressText();
+  }
+}
+#endif  // BUILDFLAG(ENABLE_ON_DEVICE_TRANSLATION)
+
+void CaptionBubbleControllerViews::UpdateCombinedProgressText() {
+  if (!active_model_) {
+    return;
+  }
+
+  bool soda_is_downloading = soda_progress_ && *soda_progress_ < 100;
+  bool soda_is_installing = soda_progress_ && *soda_progress_ >= 100;
+  int downloading_translation_count = 0;
+  int installing_count = soda_is_installing ? 1 : 0;
+  int sum_progress = 0;
+
+  if (soda_is_downloading) {
+    sum_progress += *soda_progress_;
+  }
+
+#if BUILDFLAG(ENABLE_ON_DEVICE_TRANSLATION)
+  for (const auto& [lang_pack, progress] : translation_progress_) {
+    if (progress < 100) {
+      downloading_translation_count++;
+      sum_progress += progress;
+    } else {
+      installing_count++;
+    }
+  }
+#endif
+
+  int total_downloading =
+      (soda_is_downloading ? 1 : 0) + downloading_translation_count;
+
+  if (total_downloading > 1) {
+    int average_progress = sum_progress / total_downloading;
     active_model_->SetDownloadProgressText(l10n_util::GetStringFUTF16(
-        IDS_LIVE_CAPTION_DOWNLOAD_PROGRESS,
-        speech::GetLanguageDisplayName(speech::GetLanguageName(language_code),
-                                       application_locale_),
-        base::UTF8ToUTF16(base::NumberToString(progress))));
+        IDS_LIVE_CAPTION_TRANSLATION_DOWNLOADING_LANGUAGE_PACKAGES_WITH_PROGRESS,
+        base::UTF8ToUTF16(base::NumberToString(average_progress))));
+    return;
+  }
+
+  std::vector<std::u16string> parts;
+
+  if (soda_is_downloading) {
+    std::u16string language_name = speech::GetLanguageDisplayName(
+        speech::GetLanguageName(soda_language_code_), application_locale_);
+    parts.push_back(l10n_util::GetStringFUTF16(
+        IDS_LIVE_CAPTION_DOWNLOAD_PROGRESS, language_name,
+        base::UTF8ToUTF16(base::NumberToString(*soda_progress_))));
+  }
+
+  std::u16string installing_language_name;
+  if (soda_is_installing) {
+    installing_language_name = speech::GetLanguageDisplayName(
+        speech::GetLanguageName(soda_language_code_), application_locale_);
+  }
+
+#if BUILDFLAG(ENABLE_ON_DEVICE_TRANSLATION)
+  for (const auto& [lang_pack, progress] : translation_progress_) {
+    if (progress < 0) {
+      continue;
+    }
+
+    auto get_language_name = [&]() {
+      return l10n_util::GetDisplayNameForLocale(
+          std::string(on_device_translation::ToLanguageCode(
+              on_device_translation::
+                  NonEnglishSupportedLanguageFromLanguagePackKey(lang_pack))),
+          application_locale_, /*is_for_ui=*/true);
+    };
+
+    if (progress < 100) {
+      parts.push_back(l10n_util::GetStringFUTF16(
+          IDS_LIVE_CAPTION_DOWNLOAD_PROGRESS, get_language_name(),
+          base::UTF8ToUTF16(base::NumberToString(progress))));
+    } else {
+      installing_language_name = get_language_name();
+    }
+  }
+#endif  // BUILDFLAG(ENABLE_ON_DEVICE_TRANSLATION)
+
+  if (total_downloading == 0 && installing_count > 0) {
+    if (installing_count > 1) {
+      parts.push_back(l10n_util::GetStringUTF16(
+          IDS_LIVE_CAPTION_INSTALLING_LANGUAGE_PACKAGES));
+    } else {
+      parts.push_back(l10n_util::GetStringFUTF16(IDS_LIVE_CAPTION_INSTALLING,
+                                                 installing_language_name));
+    }
+  }
+
+  if (parts.empty()) {
+    active_model_->OnLanguagePackInstalled();
+  } else {
+    active_model_->SetDownloadProgressText(base::JoinString(parts, u", "));
   }
 }
 
