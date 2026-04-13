@@ -1111,4 +1111,102 @@ LayoutUnit GetSynthesizedLogicalBaseline(
              : synthesized_baseline;
 }
 
+void AccommodateSubgridExtraMargins(const GridSizingSubtree& sizing_subtree,
+                                    GridSizingTrackCollection& track_collection,
+                                    GridTrackSizingDirection track_direction) {
+  auto AccommodateExtraMargin = [&](LayoutUnit extra_margin,
+                                    wtf_size_t set_index) {
+    auto& set = track_collection.GetSetAt(set_index);
+    if (set.track_size.HasIntrinsicMinTrackBreadth() &&
+        set.BaseSize() < extra_margin) {
+      set.IncreaseBaseSize(extra_margin);
+    }
+  };
+
+  // Lazily built mapping from track index to set index.
+  Vector<wtf_size_t> track_to_set;
+
+  for (auto& grid_item :
+       sizing_subtree.GetGridItems().IncludeSubgriddedItems()) {
+    if (!grid_item.MustConsiderGridItemsForSizing(track_direction)) {
+      continue;
+    }
+
+    // For auto-placed subgrids within a grid lanes container, we place them
+    // at the beginning of the container for sizing, but their extra margin
+    // should contribute to every track they could be placed in. As such, skip
+    // checking whether they span intrinsic tracks since that will not be known
+    // at this point.
+    if (!grid_item.is_auto_placed &&
+        !grid_item.IsSpanningIntrinsicTrack(track_direction)) {
+      continue;
+    }
+
+    // A subgrid should accommodate its extra margins in the subgridded axis
+    // since it might not have children on its edges to account for them.
+    DCHECK(grid_item.IsSubgrid());
+
+    const bool is_for_columns_in_subgrid =
+        grid_item.RelativeDirectionInSubgrid(track_direction) == kForColumns;
+
+    const auto& subgrid_layout_data =
+        sizing_subtree.SubgridSizingSubtree(grid_item).LayoutData();
+    const auto& subgrid_track_collection = is_for_columns_in_subgrid
+                                               ? subgrid_layout_data.Columns()
+                                               : subgrid_layout_data.Rows();
+
+    auto start_extra_margin = subgrid_track_collection.StartExtraMargin();
+    auto end_extra_margin = subgrid_track_collection.EndExtraMargin();
+
+    if (grid_item.IsOppositeDirectionInRootGrid(track_direction)) {
+      std::swap(start_extra_margin, end_extra_margin);
+    }
+
+    if (grid_item.is_auto_placed) {
+      // The subgrid is auto-placed (e.g., in grid-lanes where placement
+      // happens after track sizing). Walk every possible start track
+      // position and accommodate the sets containing the start and end
+      // tracks.
+      if (track_to_set.empty()) {
+        track_to_set = track_collection.BuildTrackToSetMapping();
+      }
+
+      const auto& span = grid_item.Span(track_direction);
+      const wtf_size_t line_span = span.IsTranslatedDefinite()
+                                       ? span.IntegerSpan()
+                                       : span.IndefiniteSpanSize();
+
+      // TODO(almaher): This is a bit unfortunate, since we have to walk every
+      // track for every auto placed subgrid. We could optimize this by handling
+      // all of these in the same loop once we exit. However, subgrids in grid
+      // lanes should be relatively rare, so this is likely ok for now.
+      for (wtf_size_t start_track = 0;
+           start_track + line_span <= track_to_set.size(); ++start_track) {
+        const wtf_size_t start_set = track_to_set[start_track];
+        const wtf_size_t end_set = track_to_set[start_track + line_span - 1];
+        if (start_set < end_set) {
+          AccommodateExtraMargin(start_extra_margin, start_set);
+          AccommodateExtraMargin(end_extra_margin, end_set);
+        } else {
+          AccommodateExtraMargin(start_extra_margin + end_extra_margin,
+                                 start_set);
+        }
+      }
+    } else {
+      // The subgrid has a definite position; accommodate its specific edge
+      // sets.
+      const auto& set_indices = grid_item.SetIndices(track_direction);
+      const wtf_size_t set_span_size = set_indices.end - set_indices.begin;
+      const wtf_size_t end_position = set_indices.begin + set_span_size - 1;
+      if (set_indices.begin < end_position) {
+        AccommodateExtraMargin(start_extra_margin, set_indices.begin);
+        AccommodateExtraMargin(end_extra_margin, end_position);
+      } else {
+        AccommodateExtraMargin(start_extra_margin + end_extra_margin,
+                               set_indices.begin);
+      }
+    }
+  }
+}
+
 }  // namespace blink

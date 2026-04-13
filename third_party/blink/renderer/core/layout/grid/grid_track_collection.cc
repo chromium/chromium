@@ -543,6 +543,18 @@ wtf_size_t GridLayoutTrackCollection::GetSetTrackCount(
   return sets_geometry_[set_index + 1].track_count;
 }
 
+Vector<wtf_size_t> GridLayoutTrackCollection::BuildTrackToSetMapping() const {
+  Vector<wtf_size_t> track_to_set(EndLineOfImplicitGrid());
+
+  wtf_size_t track_index = 0;
+  for (wtf_size_t i = 0; i < GetSetCount(); ++i) {
+    for (wtf_size_t j = 0; j < GetSetTrackCount(i); ++j) {
+      track_to_set[track_index++] = i;
+    }
+  }
+  return track_to_set;
+}
+
 LayoutUnit GridLayoutTrackCollection::StartExtraMargin(
     wtf_size_t set_index) const {
   return set_index ? accumulated_gutter_size_delta_ / 2

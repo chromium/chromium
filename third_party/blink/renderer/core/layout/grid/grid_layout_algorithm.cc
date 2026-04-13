@@ -1159,53 +1159,10 @@ void GridLayoutAlgorithm::ComputeUsedTrackSizes(
       sizing_subtree.LayoutData().SizingCollection(track_direction);
   track_collection.BuildSets(style, grid_available_size_);
 
-  auto AccomodateExtraMargin = [&](LayoutUnit extra_margin,
-                                   wtf_size_t set_index) {
-    auto& set = track_collection.GetSetAt(set_index);
-
-    if (set.track_size.HasIntrinsicMinTrackBreadth() &&
-        set.BaseSize() < extra_margin) {
-      set.IncreaseBaseSize(extra_margin);
-    }
-  };
+  AccommodateSubgridExtraMargins(sizing_subtree, track_collection,
+                                 track_direction);
 
   auto& grid_items = sizing_subtree.GetGridItems();
-  for (auto& grid_item : grid_items.IncludeSubgriddedItems()) {
-    if (!grid_item.IsSpanningIntrinsicTrack(track_direction) ||
-        !grid_item.MustConsiderGridItemsForSizing(track_direction)) {
-      continue;
-    }
-
-    // A subgrid should accommodate its extra margins in the subgridded axis
-    // since it might not have children on its edges to account for them.
-    DCHECK(grid_item.IsSubgrid());
-
-    const bool is_for_columns_in_subgrid =
-        grid_item.RelativeDirectionInSubgrid(track_direction) == kForColumns;
-
-    const auto& subgrid_layout_data =
-        sizing_subtree.SubgridSizingSubtree(grid_item).LayoutData();
-    const auto& subgrid_track_collection = is_for_columns_in_subgrid
-                                               ? subgrid_layout_data.Columns()
-                                               : subgrid_layout_data.Rows();
-
-    auto start_extra_margin = subgrid_track_collection.StartExtraMargin();
-    auto end_extra_margin = subgrid_track_collection.EndExtraMargin();
-
-    if (grid_item.IsOppositeDirectionInRootGrid(track_direction)) {
-      std::swap(start_extra_margin, end_extra_margin);
-    }
-
-    const auto& set_indices = grid_item.SetIndices(track_direction);
-    if (set_indices.begin < set_indices.end - 1) {
-      AccomodateExtraMargin(start_extra_margin, set_indices.begin);
-      AccomodateExtraMargin(end_extra_margin, set_indices.end - 1);
-    } else {
-      AccomodateExtraMargin(start_extra_margin + end_extra_margin,
-                            set_indices.begin);
-    }
-  }
-
   GridTrackSizingAlgorithm(style, grid_available_size_,
                            grid_min_available_size_, sizing_constraint)
       .ComputeUsedTrackSizes(

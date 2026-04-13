@@ -61,6 +61,12 @@ class GridTrackSizingAlgorithm {
       const GridLayoutTrackCollection& track_collection,
       GridItems* grid_items);
 
+  // Caches track span properties for explicitly placed subgrid items.
+  static void CacheSubgridItemsProperties(
+      const GridLayoutTrackCollection& track_collection,
+      GridItems* grid_items,
+      GridTrackSizingDirection track_direction);
+
   // Calculates the specified `[column|row]-gap` of the container.
   static LayoutUnit CalculateGutterSize(
       const ComputedStyle& container_style,

@@ -1042,10 +1042,12 @@ crbug.com/1076027 external/wpt/css/css-grid/grid-lanes/subgrid/row/grid-lanes-su
 crbug.com/1076027 external/wpt/css/css-grid/grid-lanes/subgrid/row/grid-lanes-subgrid-002g.html [ Failure ]
 crbug.com/1076027 external/wpt/css/css-grid/grid-lanes/subgrid/row/grid-lanes-subgrid-002h.html [ Failure ]
 crbug.com/1076027 external/wpt/css/css-grid/grid-lanes/subgrid/row/grid-lanes-subgrid-002i.html [ Failure ]
+crbug.com/1076027 external/wpt/css/css-grid/grid-lanes/subgrid/track-sizing/column-subgrid-extra-margin-006.html [ Failure ]
 crbug.com/1076027 external/wpt/css/css-grid/grid-lanes/subgrid/track-sizing/grid-lanes-subgrid-display-grid-intrinsic-sizing.html [ Failure ]
 crbug.com/1076027 external/wpt/css/css-grid/grid-lanes/subgrid/track-sizing/grid-lanes-subgrid-flex.html [ Failure ]
 crbug.com/1076027 external/wpt/css/css-grid/grid-lanes/subgrid/track-sizing/grid-lanes-subgrid-intrinsic-sizing.html [ Failure ]
 crbug.com/1076027 external/wpt/css/css-grid/grid-lanes/subgrid/track-sizing/grid-lanes-subgridded-to-grid-lanes.html [ Failure ]
+crbug.com/1076027 external/wpt/css/css-grid/grid-lanes/subgrid/track-sizing/row-subgrid-extra-margin-006.html [ Failure ]
 
 # external/wpt/css/css-fonts/... tests triaged away from the default WPT bug ID
 crbug.com/641861 [ Mac ] external/wpt/css/css-fonts/font-family-name-025.html [ Failure Timeout ]

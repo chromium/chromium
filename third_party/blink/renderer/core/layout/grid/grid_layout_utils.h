@@ -418,6 +418,16 @@ LayoutUnit GetSynthesizedLogicalBaseline(
     LayoutUnit block_size,
     GridTrackSizingDirection track_direction);
 
+// Accommodates extra margins from subgrid items in the given track collection.
+// A subgrid's border/padding/margin can extend beyond the parent's track edges
+// and must be accounted for by flooring the base sizes of the edge tracks it
+// spans. For auto-placed subgrids in grid-lanes, the final position isn't known
+// yet, so the extra margins are accommodated at every possible start/end set
+// pair for the subgrid's set span size.
+void AccommodateSubgridExtraMargins(const GridSizingSubtree& sizing_subtree,
+                                    GridSizingTrackCollection& track_collection,
+                                    GridTrackSizingDirection track_direction);
+
 }  // namespace blink
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_GRID_GRID_LAYOUT_UTILS_H_

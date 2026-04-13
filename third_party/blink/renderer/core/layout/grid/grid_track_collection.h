@@ -213,6 +213,11 @@ class CORE_EXPORT GridLayoutTrackCollection
   LayoutUnit GetSetOffset(wtf_size_t set_index) const;
   wtf_size_t GetSetTrackCount(wtf_size_t set_index) const;
 
+  // Builds a mapping from track index to set index. The vector is sized to
+  // the total number of tracks, where each entry contains the set index
+  // that the track belongs to.
+  Vector<wtf_size_t> BuildTrackToSetMapping() const;
+
   // Returns the accumulated extra margin at the start/end of the specified set;
   // if no index is specified, returns the extra margin of the grid container.
   LayoutUnit StartExtraMargin(wtf_size_t set_index = 0) const;

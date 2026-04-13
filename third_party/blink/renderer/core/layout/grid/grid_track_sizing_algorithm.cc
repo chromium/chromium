@@ -130,6 +130,29 @@ void GridTrackSizingAlgorithm::CacheGridItemsProperties(
 }
 
 // static
+void GridTrackSizingAlgorithm::CacheSubgridItemsProperties(
+    const GridLayoutTrackCollection& track_collection,
+    GridItems* grid_items,
+    GridTrackSizingDirection track_direction) {
+  DCHECK(grid_items);
+
+  for (auto& grid_item : *grid_items) {
+    if (!grid_item.IsSubgrid()) {
+      continue;
+    }
+
+    const auto& range_indices = grid_item.RangeIndices(track_direction);
+    auto& track_span_properties = (track_direction == kForColumns)
+                                      ? grid_item.column_span_properties
+                                      : grid_item.row_span_properties;
+    track_span_properties.ResetType();
+    for (auto i = range_indices.begin; i <= range_indices.end; ++i) {
+      track_span_properties |= track_collection.RangeProperties(i);
+    }
+  }
+}
+
+// static
 LayoutUnit GridTrackSizingAlgorithm::CalculateGutterSize(
     const ComputedStyle& container_style,
     const LogicalSize& container_available_size,

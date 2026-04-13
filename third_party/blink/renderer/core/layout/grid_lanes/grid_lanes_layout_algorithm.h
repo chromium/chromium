@@ -181,6 +181,11 @@ class CORE_EXPORT GridLanesLayoutAlgorithm
                                     GridSizingTree* sizing_tree,
                                     bool needs_intrinsic_track_size) const;
 
+  // Resolves non-definite track sizes for the grid axis.
+  void ComputeUsedTrackSizes(const GridSizingSubtree& sizing_subtree,
+                             SizingConstraint sizing_constraint,
+                             bool needs_intrinsic_track_size) const;
+
   // Performs the final baseline alignment pass of a sizing subtree in the grid
   // axis.
   void ComputeBaselineAlignment(const GridLayoutTree* layout_tree,
