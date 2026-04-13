@@ -36,6 +36,8 @@ using ::base::test::RunOnceCallback;
 using ::page_content_annotations::HistoryVisit;
 using ::page_content_annotations::PageContentAnnotationsResult;
 using ::testing::_;
+using ::testing::AllOf;
+using ::testing::ElementsAre;
 using ::testing::WithArg;
 using ::visited_url_ranking::ResultStatus;
 using ::visited_url_ranking::URLVisitsMetadata;
@@ -351,7 +353,7 @@ TEST_F(AuxiliarySearchDonationServiceTest, DonatesHistoryEntries) {
             std::move(aggregates)));
   }
   base::test::TestFuture<
-      std::vector<visited_url_ranking::URLVisitAggregate::HistoryData>>
+      std::vector<AuxiliarySearchDonationService::HistoryData>>
       future;
   AuxiliarySearchDonationService service(
       page_content_annotations_service(), mock_ranking_service(),
@@ -361,9 +363,19 @@ TEST_F(AuxiliarySearchDonationServiceTest, DonatesHistoryEntries) {
   task_environment().FastForwardBy(service.GetDonationDelay());
 
   EXPECT_TRUE(future.IsReady());
-  std::vector<visited_url_ranking::URLVisitAggregate::HistoryData> entries =
+  std::vector<AuxiliarySearchDonationService::HistoryData> entries =
       future.Take();
   EXPECT_EQ(entries.size(), 1u);
+  // `CreateSampleURLVisitAggregate` has a hard-coded title, so don't check it
+  // here as it could change.
+  EXPECT_THAT(
+      entries,
+      ElementsAre(AllOf(
+          testing::Field(&AuxiliarySearchDonationService::HistoryData::url,
+                         GURL("https://example.com")),
+          testing::Field(
+              &AuxiliarySearchDonationService::HistoryData::last_visited,
+              fake_visit_time))));
 }
 
 }  // namespace

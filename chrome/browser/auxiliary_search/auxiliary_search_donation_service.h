@@ -8,6 +8,7 @@
 #include <jni.h>
 
 #include <memory>
+#include <string>
 #include <vector>
 
 #include "base/android/application_status_listener.h"
@@ -19,6 +20,7 @@
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/page_content_annotations/core/page_content_annotations_service.h"
 #include "components/visited_url_ranking/public/visited_url_ranking_service.h"
+#include "url/gurl.h"
 
 class PrefService;
 class PrefRegistrySimple;
@@ -39,8 +41,33 @@ class AuxiliarySearchDonationService
       public page_content_annotations::PageContentAnnotationsService::
           PageContentAnnotationsObserver {
  public:
-  using DonateCallback = base::RepeatingCallback<void(
-      std::vector<visited_url_ranking::URLVisitAggregate::HistoryData>)>;
+  // Data for a single history entry.
+  struct HistoryData {
+    // From `URLVisitAggregate`.
+    std::string url_key;
+
+    // From `URLVisitAggregate::HistoryData::visit`.
+    GURL url;
+    std::u16string title;
+
+    // From `URLVisitAggregate::HistoryData::last_visited::visit_row`.
+    base::Time last_visited;
+
+    HistoryData(std::string url_key,
+                GURL url,
+                std::u16string title,
+                base::Time last_visited);
+
+    HistoryData(const HistoryData&);
+    HistoryData& operator=(const HistoryData&);
+    HistoryData(HistoryData&&);
+    HistoryData& operator=(HistoryData&&);
+
+    ~HistoryData();
+  };
+  using DonateCallback =
+      base::RepeatingCallback<void(std::vector<HistoryData>)>;
+
   explicit AuxiliarySearchDonationService(
       page_content_annotations::PageContentAnnotationsService*
           page_content_annotations_service,
@@ -73,7 +100,7 @@ class AuxiliarySearchDonationService
       visited_url_ranking::URLVisitsMetadata url_visits_metadata,
       std::vector<visited_url_ranking::URLVisitAggregate> aggregates);
   void DonateHistoryEntries(
-      std::vector<visited_url_ranking::URLVisitAggregate::HistoryData> entries,
+      std::vector<HistoryData> entries,
       const visited_url_ranking::URLVisitsMetadata& metadata);
   void OnApplicationStateChanged(base::android::ApplicationState state);
 

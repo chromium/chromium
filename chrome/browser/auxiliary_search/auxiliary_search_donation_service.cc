@@ -9,6 +9,7 @@
 #include <algorithm>
 #include <map>
 #include <optional>
+#include <string>
 #include <utility>
 #include <variant>
 #include <vector>
@@ -32,6 +33,7 @@
 #include "components/visited_url_ranking/public/fetch_options.h"
 #include "components/visited_url_ranking/public/url_visit.h"
 #include "components/visited_url_ranking/public/visited_url_ranking_service.h"
+#include "url/gurl.h"
 
 namespace {
 
@@ -81,6 +83,28 @@ visited_url_ranking::FetchOptions CreateFetchOptionsForHistoryDonation(
 }
 
 }  // namespace
+
+AuxiliarySearchDonationService::HistoryData::HistoryData(
+    std::string url_key,
+    GURL url,
+    std::u16string title,
+    base::Time last_visited)
+    : url_key(std::move(url_key)),
+      url(std::move(url)),
+      title(std::move(title)),
+      last_visited(last_visited) {}
+
+AuxiliarySearchDonationService::HistoryData::HistoryData(const HistoryData&) =
+    default;
+AuxiliarySearchDonationService::HistoryData&
+AuxiliarySearchDonationService::HistoryData::operator=(const HistoryData&) =
+    default;
+AuxiliarySearchDonationService::HistoryData::HistoryData(HistoryData&&) =
+    default;
+AuxiliarySearchDonationService::HistoryData&
+AuxiliarySearchDonationService::HistoryData::operator=(HistoryData&&) = default;
+
+AuxiliarySearchDonationService::HistoryData::~HistoryData() = default;
 
 AuxiliarySearchDonationService::AuxiliarySearchDonationService(
     page_content_annotations::PageContentAnnotationsService*
@@ -175,7 +199,7 @@ void AuxiliarySearchDonationService::OnHistoryFetched(
     return;
   }
 
-  std::vector<visited_url_ranking::URLVisitAggregate::HistoryData> entries;
+  std::vector<HistoryData> entries;
   entries.reserve(aggregates.size());
   for (visited_url_ranking::URLVisitAggregate& aggregate : aggregates) {
     // In theory, we only use one `visited_url_ranking::Fetcher` which should
@@ -196,7 +220,10 @@ void AuxiliarySearchDonationService::OnHistoryFetched(
       if (auto* history_data =
               std::get_if<visited_url_ranking::URLVisitAggregate::HistoryData>(
                   &it->second)) {
-        entries.push_back(std::move(*history_data));
+        entries.emplace_back(std::move(aggregate.url_key),
+                             std::move(history_data->visit.url),
+                             std::move(history_data->visit.title),
+                             history_data->last_visited.visit_row.visit_time);
         break;
       }
     }
@@ -206,7 +233,7 @@ void AuxiliarySearchDonationService::OnHistoryFetched(
 }
 
 void AuxiliarySearchDonationService::DonateHistoryEntries(
-    std::vector<visited_url_ranking::URLVisitAggregate::HistoryData> entries,
+    std::vector<HistoryData> entries,
     const visited_url_ranking::URLVisitsMetadata& metadata) {
   if (!entries.empty()) {
     donate_callback_.Run(std::move(entries));
