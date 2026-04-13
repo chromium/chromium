@@ -13773,11 +13773,10 @@
             ],
             "experiments": [
                 {
-                    "name": "EnabledWithConfigureMinimalWildcardQuicHintsWithOriginFrame",
+                    "name": "EnabledWithConfigureMinimalQuicHintsWithOriginFrame",
                     "params": {
                         "quic_hints": "google.com,443,443,www.google.com,443,443",
-                        "quic_options": "ORIG",
-                        "wildcard_quic_hints": ".google.com,443,443,.gstatic.com,443,443,.youtube.com,443,443"
+                        "quic_options": "ORIG"
                     },
                     "enable_features": [
                         "ConfigureQuicHints",
