@@ -2912,7 +2912,6 @@ static_library("browser") {
       "//components/safe_browsing/core/browser/password_protection:password_protection_metrics_util",
       "//components/safe_browsing/core/browser/utils",
       "//components/saved_tab_groups/public:conversion_utils",
-      "//components/search:start_suggest",
       "//components/security_state/content/android",
       "//components/segmentation_platform/embedder/home_modules:constants",
       "//components/send_tab_to_self",
