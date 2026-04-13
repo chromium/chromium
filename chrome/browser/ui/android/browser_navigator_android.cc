@@ -26,6 +26,7 @@ namespace {
 // TODO(crbug.com/477944342): Expand the scenarios where we support it.
 bool SupportsContentsToInsert(NavigateParams* params) {
   switch (params->disposition) {
+    case WindowOpenDisposition::IGNORE_ACTION:
     case WindowOpenDisposition::NEW_BACKGROUND_TAB:
     case WindowOpenDisposition::NEW_FOREGROUND_TAB:
       return true;
@@ -87,6 +88,8 @@ void GetOrCreateBrowserWindowForDisposition(
     case WindowOpenDisposition::NEW_BACKGROUND_TAB:
       [[fallthrough]];
     case WindowOpenDisposition::NEW_FOREGROUND_TAB:
+      [[fallthrough]];
+    case WindowOpenDisposition::IGNORE_ACTION:
       [[fallthrough]];
     case WindowOpenDisposition::CURRENT_TAB: {
       base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
@@ -228,6 +231,16 @@ raw_ptr<tabs::TabInterface> GetOrCreateTabForDisposition(
       params->source_contents = active_tab->GetContents();
       return active_tab;
     }
+    case WindowOpenDisposition::IGNORE_ACTION: {
+      if (!params->source_contents) {
+        raw_ptr<tabs::TabInterface> active_tab = tab_model->GetActiveTab();
+        if (active_tab) {
+          params->source_contents = active_tab->GetContents();
+        }
+      }
+      params->browser = nullptr;
+      return nullptr;
+    }
     default:
       NOTIMPLEMENTED();
       return nullptr;
@@ -240,6 +253,7 @@ base::WeakPtr<content::NavigationHandle> GetTabAndPerformNavigation(
 
   tabs::TabInterface* tab = GetOrCreateTabForDisposition(params);
   if (!tab || !tab->GetContents()) {
+    // WindowOpenDisposition::IGNORE_ACTION exits here.
     return nullptr;
   }
 
@@ -280,6 +294,7 @@ base::WeakPtr<content::NavigationHandle> Navigate(NavigateParams* params) {
   }
   // Only handles dispositions that do not create new windows.
   if (params->disposition != WindowOpenDisposition::CURRENT_TAB &&
+      params->disposition != WindowOpenDisposition::IGNORE_ACTION &&
       params->disposition != WindowOpenDisposition::NEW_BACKGROUND_TAB &&
       params->disposition != WindowOpenDisposition::NEW_FOREGROUND_TAB) {
     return nullptr;

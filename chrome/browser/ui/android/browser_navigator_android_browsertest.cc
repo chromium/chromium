@@ -978,3 +978,44 @@ IN_PROC_BROWSER_TEST_F(NavigateAndroidBrowserTest, AttachNavigationUIData) {
   // Verify that NavigationUIData is attached on Android.
   EXPECT_TRUE(ui_data_observer.last_navigation_ui_data());
 }
+
+IN_PROC_BROWSER_TEST_F(NavigateAndroidBrowserTest, Disposition_IgnoreAction) {
+  const GURL url1 = StartAtURL("/title1.html");
+
+  // Prepare and execute a IGNORE_ACTION navigation.
+  const GURL url2 = embedded_test_server()->GetURL("/title2.html");
+  NavigateParams params(browser_window_, url2, ui::PAGE_TRANSITION_LINK);
+  params.disposition = WindowOpenDisposition::IGNORE_ACTION;
+  params.source_contents = nullptr;
+
+  base::WeakPtr<content::NavigationHandle> handle = Navigate(&params);
+  EXPECT_FALSE(handle);
+
+  // Verify the navigation was ignored and params updated.
+  EXPECT_EQ(nullptr, params.browser);
+  EXPECT_EQ(web_contents_, params.source_contents);
+  EXPECT_EQ(url1, web_contents_->GetLastCommittedURL());
+  EXPECT_EQ(1, tab_list_->GetTabCount());
+}
+
+IN_PROC_BROWSER_TEST_F(NavigateAndroidBrowserTest,
+                       Async_Disposition_IgnoreAction) {
+  const GURL url1 = StartAtURL("/title1.html");
+
+  // Prepare and execute a IGNORE_ACTION navigation.
+  const GURL url2 = embedded_test_server()->GetURL("/title2.html");
+  NavigateParams params(browser_window_, url2, ui::PAGE_TRANSITION_LINK);
+  params.disposition = WindowOpenDisposition::IGNORE_ACTION;
+  params.source_contents = nullptr;
+
+  base::test::TestFuture<base::WeakPtr<content::NavigationHandle>> future;
+  Navigate(&params, future.GetCallback());
+  base::WeakPtr<content::NavigationHandle> handle = future.Get();
+  EXPECT_FALSE(handle);
+
+  // Verify the navigation was ignored and params updated.
+  EXPECT_EQ(nullptr, params.browser);
+  EXPECT_EQ(web_contents_, params.source_contents);
+  EXPECT_EQ(url1, web_contents_->GetLastCommittedURL());
+  EXPECT_EQ(1, tab_list_->GetTabCount());
+}
