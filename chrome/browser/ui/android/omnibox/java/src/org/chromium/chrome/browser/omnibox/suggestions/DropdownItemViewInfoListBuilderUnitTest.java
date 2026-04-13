@@ -46,6 +46,7 @@ import org.chromium.chrome.browser.omnibox.suggestions.header.HeaderProcessor;
 import org.chromium.components.omnibox.AutocompleteInput;
 import org.chromium.components.omnibox.AutocompleteMatch;
 import org.chromium.components.omnibox.AutocompleteMatchBuilder;
+import org.chromium.components.omnibox.AutocompleteRequestType;
 import org.chromium.components.omnibox.AutocompleteResult;
 import org.chromium.components.omnibox.GroupsProto.GroupConfig;
 import org.chromium.components.omnibox.GroupsProto.GroupsInfo;
@@ -416,6 +417,37 @@ public class DropdownItemViewInfoListBuilderUnitTest {
 
         verifyNoMoreInteractions(mMockHeaderProcessor);
         verifyNoMoreInteractions(mMockSuggestionProcessor);
+    }
+
+    @Test
+    @EnableFeatures(OmniboxFeatureList.AIM_SUPPRESS_VERBATIM_MATCH)
+    public void buildDropdownViewInfoList_aimMode_removesVerbatimMatches() {
+        when(mInput.getRequestType()).thenReturn(AutocompleteRequestType.AI_MODE);
+        when(mMockSuggestionProcessor.doesProcessSuggestion(any(), anyInt())).thenReturn(true);
+
+        AutocompleteMatch verbatim1 =
+                AutocompleteMatchBuilder.searchWithType(OmniboxSuggestionType.SEARCH_WHAT_YOU_TYPED)
+                        .build();
+        AutocompleteMatch verbatim2 =
+                AutocompleteMatchBuilder.searchWithType(OmniboxSuggestionType.URL_WHAT_YOU_TYPED)
+                        .build();
+        AutocompleteMatch regular =
+                AutocompleteMatchBuilder.searchWithType(OmniboxSuggestionType.SEARCH_SUGGEST)
+                        .build();
+
+        var actualList = List.of(verbatim1, regular, verbatim2);
+        var model =
+                mBuilder.buildDropdownViewInfoList(
+                        mInput,
+                        AutocompleteResult.fromCache(actualList, GroupsInfo.getDefaultInstance()));
+
+        Assert.assertEquals(1, model.size());
+
+        verify(mMockSuggestionProcessor).populateModel(eq(mInput), eq(regular), any(), anyInt());
+        verify(mMockSuggestionProcessor, times(0))
+                .populateModel(eq(mInput), eq(verbatim1), any(), anyInt());
+        verify(mMockSuggestionProcessor, times(0))
+                .populateModel(eq(mInput), eq(verbatim2), any(), anyInt());
     }
 
     @Test

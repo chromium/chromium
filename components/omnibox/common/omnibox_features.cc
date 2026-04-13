@@ -172,9 +172,9 @@ BASE_FEATURE(kHideAimEntrypointOnUserInput,
              "OmniboxHideAimEntrypointOnUserInput",
              DISABLED);
 
-
-// When enabled, removes the Search Ready Omnibox feature.
-BASE_FEATURE(kRemoveSearchReadyOmnibox, DISABLED);
+// When enabled, AI mode will remove verbatim suggestions from the suggestions
+// list.
+BASE_FEATURE(kAIMSuppressVerbatimMatch, ENABLED);
 
 // Feature used to default typed navigations to use HTTPS instead of HTTP.
 // This only applies to navigations that don't have a scheme such as
@@ -400,7 +400,7 @@ static int64_t JNI_OmniboxFeatureMap_GetNativeMap(JNIEnv* env) {
       &kMultilineEditField,
       &kOmniboxImprovementForLFF,
       &kServeJavaCachedZeroSuggest,
-      &kRemoveSearchReadyOmnibox,
+      &kAIMSuppressVerbatimMatch,
       &kResetSuggestionsScroll,
       &kOmniboxItemDecoration};
   static base::NoDestructor<base::android::FeatureMap> kFeatureMap(

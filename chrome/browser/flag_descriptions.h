@@ -3122,6 +3122,12 @@ inline constexpr char kOmitCorsClientCertDescription[] =
     "credential mode disallows. Without this flag enabled, Chrome will always "
     "try sending client certificates regardless of the credential mode.";
 
+inline constexpr char kAIMSuppressVerbatimMatchName[] =
+    "Omnibox AI Mode Suppress Verbatim Match";
+inline constexpr char kAIMSuppressVerbatimMatchDescription[] =
+    "When enabled, AI mode will remove verbatim suggestions from the "
+    "suggestions list.";
+
 inline constexpr char kOmniboxAdjustIndentationName[] =
     "Adjust Indentation for Omnibox Text and Suggestions";
 inline constexpr char kOmniboxAdjustIndentationDescription[] =
@@ -3319,11 +3325,6 @@ inline constexpr char kOmniboxUIMaxAutocompleteMatchesName[] =
 inline constexpr char kOmniboxUIMaxAutocompleteMatchesDescription[] =
     "Changes the maximum number of autocomplete matches displayed in the "
     "Omnibox UI.";
-
-inline constexpr char kOmniboxRemoveSearchReadyOmniboxName[] =
-    "Remove Search Ready Omnibox";
-inline constexpr char kOmniboxRemoveSearchReadyOmniboxDescription[] =
-    "When enabled, removes the Search Ready Omnibox feature.";
 
 inline constexpr char kOmniboxStarterPackExpansionName[] =
     "Expansion pack for the Site search starter pack";

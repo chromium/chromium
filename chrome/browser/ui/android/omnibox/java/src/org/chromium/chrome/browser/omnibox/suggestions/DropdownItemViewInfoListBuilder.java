@@ -39,6 +39,7 @@ import org.chromium.components.omnibox.AutocompleteResult;
 import org.chromium.components.omnibox.GroupsProto.GroupConfig;
 import org.chromium.components.omnibox.OmniboxFeatures;
 import org.chromium.components.omnibox.OmniboxSuggestionType;
+import org.chromium.components.omnibox.ToolModeUtils;
 import org.chromium.components.omnibox.action.OmniboxActionDelegate;
 import org.chromium.ui.modelutil.PropertyModel;
 
@@ -385,6 +386,7 @@ class DropdownItemViewInfoListBuilder {
         var currentGroupMatches = new ArrayList<AutocompleteMatch>();
         var nextSuggestionLogicalIndex = 0;
         var groupsInfo = autocompleteResult.getGroupsInfo();
+        boolean isAimRequest = ToolModeUtils.isAimRequest(input.getRequestType());
 
         GroupConfig previousGroupConfig = null;
 
@@ -400,7 +402,7 @@ class DropdownItemViewInfoListBuilder {
             // Inner loop to populate AutocompleteMatch objects belonging to this group.
             while (index < newMatchesCount) {
                 var match = newMatches.get(index);
-                if (OmniboxFeatures.sRemoveSroIncludingVerbatimMatch.getValue()) {
+                if (isAimRequest && OmniboxFeatures.sAIMSuppressVerbatimMatch.isEnabled()) {
                     if (match.getType() == OmniboxSuggestionType.SEARCH_WHAT_YOU_TYPED
                             || match.getType() == OmniboxSuggestionType.URL_WHAT_YOU_TYPED) {
                         index++;

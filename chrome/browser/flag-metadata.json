@@ -6829,6 +6829,15 @@
     "expiry_milestone": 145
   },
   {
+    "name": "omnibox-aim-suppress-verbatim-match",
+    "owners": [
+      "charlesyc@google.com",
+      "ender@google.com",
+      "chrome-mobile-search@google.com"
+    ],
+    "expiry_milestone": 160
+  },
+  {
     "name": "omnibox-allow-ai-mode-matches",
     "owners": ["manukh@chromium.org", "chrome-desktop-search@google.com"],
     "expiry_milestone": 150
@@ -7048,11 +7057,6 @@
     "name": "omnibox-on-device-tail-suggestions",
     "owners": [ "cechen@google.com", "suggest-2g@google.com" ],
     "expiry_milestone": 150
-  },
-  {
-    "name": "omnibox-remove-search-ready-omnibox",
-    "owners": [ "ender@google.com", "chrome-mobile-search@google.com" ],
-    "expiry_milestone": 160
   },
   {
     "name": "omnibox-rich-autocompletion-promising",
