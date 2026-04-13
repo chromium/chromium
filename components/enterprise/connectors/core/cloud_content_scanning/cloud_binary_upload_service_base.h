@@ -5,8 +5,11 @@
 #ifndef COMPONENTS_ENTERPRISE_CONNECTORS_CORE_CLOUD_CONTENT_SCANNING_CLOUD_BINARY_UPLOAD_SERVICE_BASE_H_
 #define COMPONENTS_ENTERPRISE_CONNECTORS_CORE_CLOUD_CONTENT_SCANNING_CLOUD_BINARY_UPLOAD_SERVICE_BASE_H_
 
+#include "base/callback_list.h"
 #include "base/time/time.h"
+#include "base/timer/timer.h"
 #include "components/enterprise/connectors/core/cloud_content_scanning/binary_upload_request.h"
+#include "components/enterprise/connectors/core/cloud_content_scanning/connector_upload_request.h"
 
 namespace enterprise_connectors {
 
@@ -34,35 +37,119 @@ class CloudBinaryUploadServiceBase {
 
   // Returns the request associated with `request_id`, or nullptr if it doesn't
   // exist in `active_requests_`.
-  BinaryUploadRequest* GetRequest(
-      enterprise_connectors::BinaryUploadRequest::Id request_id);
+  BinaryUploadRequest* GetRequest(BinaryUploadRequest::Id request_id);
 
-  // TODO(crbug.com/501456247): Change this from protected to private once the
-  // migration is done.
+  // If auth check results are available for the matching
+  // `authorization_callbacks`, run and clear the callbacks.
+  void MaybeRunAuthorizationCallbacks(const std::string& dm_token,
+                                      AnalysisConnector connector);
+
+  // Logs the provided information on the chrome://safe-browsing/#tab-deep-scan
+  // debug page.
+  void LogResponseDebugInfo(const std::string& upload_info,
+                            ScanRequestUploadResult result,
+                            BinaryUploadRequest* request,
+                            const ContentAnalysisResponse& response);
+
  protected:
+  void FinishRequest(BinaryUploadRequest* request,
+                     ScanRequestUploadResult result,
+                     ContentAnalysisResponse response);
+
+  void FinishAndCleanupRequest(BinaryUploadRequest* request,
+                               ScanRequestUploadResult result,
+                               ContentAnalysisResponse response);
+
+  scoped_refptr<base::SequencedTaskRunner> ui_task_runner_;
+
+  // TODO(crbug.com/501456247): Change the "protected" below to "private" once
+  // the migration is done.
+ protected:
+  using TokenAndConnector =
+      std::pair<std::string, enterprise_connectors::AnalysisConnector>;
+
   // Records UMA metrics for a finished request.
   void RecordRequestMetrics(BinaryUploadRequest::Id request_id,
                             ScanRequestUploadResult result);
 
   // Records UMA metrics for a finished request, including tag-specific results.
-  void RecordRequestMetrics(
-      BinaryUploadRequest::Id request_id,
-      ScanRequestUploadResult result,
-      const enterprise_connectors::ContentAnalysisResponse& response);
+  void RecordRequestMetrics(BinaryUploadRequest::Id request_id,
+                            ScanRequestUploadResult result,
+                            const ContentAnalysisResponse& response);
+
+  // Tries to start uploads from `request_queue_` depending on the number of
+  // currently active requests. This should be called whenever
+  // `active_requests_` shrinks so queued requests are started as soon as
+  // possible.
+  void PopRequestQueue();
+
+  // Upload the given file contents for deep scanning. The results will be
+  // returned asynchronously by calling `request`'s `callback`. This must be
+  // called on the UI thread.
+  virtual void UploadForDeepScanning(
+      std::unique_ptr<BinaryUploadRequest> request) = 0;
+
+  // Clears request and associated data from memory and starts the next queued
+  // request, if present.
+  void CleanupRequest(BinaryUploadRequest* request);
+
+  // Record metrics for the user action duration if this is the last request for
+  // the batch cancelled by user corresponding to `action_id`.
+  void MaybeTrackUploadUserCancellation(const std::string& action_id);
+
+  bool CheckForUserActionDone(const std::string& action_id);
+
+  void AssertCalledOnUIThread();
+
+  // enterprise_connectors::BinaryUploadRequest queued for upload.
+  base::circular_deque<
+      std::unique_ptr<enterprise_connectors::BinaryUploadRequest>>
+      request_queue_;
 
   // Resources associated with an in-progress request.
   base::flat_map<BinaryUploadRequest::Id, std::unique_ptr<BinaryUploadRequest>>
       active_requests_;
+  base::flat_map<BinaryUploadRequest::Id, std::unique_ptr<base::OneShotTimer>>
+      active_timers_;
+  base::flat_map<BinaryUploadRequest::Id,
+                 std::unique_ptr<ConnectorUploadRequest>>
+      active_uploads_;
+  base::flat_map<enterprise_connectors::BinaryUploadRequest::Id, std::string>
+      active_tokens_;
 
   // Maps request IDs to their start times, used for duration metrics.
   base::flat_map<BinaryUploadRequest::Id, base::TimeTicks> start_times_;
 
   // Maps requests to each corresponding tag-result pairs.
-  base::flat_map<
-      BinaryUploadRequest::Id,
-      base::flat_map<std::string,
-                     enterprise_connectors::ContentAnalysisResponse::Result>>
+  base::flat_map<BinaryUploadRequest::Id,
+                 base::flat_map<std::string, ContentAnalysisResponse::Result>>
       received_connector_results_;
+
+  // Indicates whether this DM token + Connector combination can be used to
+  // upload data for enterprise requests. Advanced Protection scans are
+  // validated using the user's Advanced Protection enrollment status.
+  base::flat_map<TokenAndConnector,
+                 enterprise_connectors::ScanRequestUploadResult>
+      can_upload_enterprise_data_;
+
+  // Callbacks waiting on IsAuthorized request. These are organized by DM token
+  // and Connector.
+  base::flat_map<TokenAndConnector,
+                 std::unique_ptr<base::OnceCallbackList<void(
+                     enterprise_connectors::ScanRequestUploadResult)>>>
+      authorization_callbacks_;
+
+  // Data associated with a user action. Used to track metrics for a user
+  // action.
+  struct UserActionData {
+    bool is_cloud = false;
+    enterprise_connectors::DeepScanAccessPoint access_point;
+    std::optional<base::TimeTicks> cancelled_time;
+  };
+
+  // Tracks the start time and cancellation status for all requests in a user
+  // action. Keyed by user action id.
+  base::flat_map<std::string, UserActionData> user_action_data_;
 };
 
 }  // namespace enterprise_connectors

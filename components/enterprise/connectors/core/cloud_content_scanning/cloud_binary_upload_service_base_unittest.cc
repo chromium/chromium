@@ -37,6 +37,10 @@ class TestCloudBinaryUploadServiceBase : public CloudBinaryUploadServiceBase {
   using CloudBinaryUploadServiceBase::received_connector_results_;
   using CloudBinaryUploadServiceBase::RecordRequestMetrics;
   using CloudBinaryUploadServiceBase::start_times_;
+
+  // CloudBinaryUploadServiceBase:
+  void UploadForDeepScanning(
+      std::unique_ptr<BinaryUploadRequest> request) override {}
 };
 
 }  // namespace
