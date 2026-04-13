@@ -56,6 +56,7 @@
 #include "components/prefs/testing_pref_service.h"
 #include "components/session_manager/core/fake_session_manager_delegate.h"
 #include "components/session_manager/core/session_manager.h"
+#include "components/signin/public/base/oauth_consumer_id.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/sync_preferences/pref_service_syncable.h"
 #include "components/user_manager/scoped_user_manager.h"
@@ -294,15 +295,11 @@ class UserCloudPolicyManagerAshTest : public testing::Test {
       // Since the refresh token is available, IdentityManager was used
       // to request the access token and not UserCloudPolicyTokenForwarder.
       // Issue the access token with the former.
-      signin::ScopeSet scopes;
-      scopes.insert(GaiaConstants::kDeviceManagementServiceOAuth);
-      scopes.insert(GaiaConstants::kGoogleUserInfoEmail);
-
       identity_test_env()
-          ->WaitForAccessTokenRequestIfNecessaryAndRespondWithTokenForScopes(
+          ->WaitForAccessTokenRequestIfNecessaryAndRespondWithTokenForConsumerId(
               kOAuthToken,
               base::Time::Now() + base::Seconds(3600) /*expiration*/,
-              std::string() /*id_token*/, scopes);
+              signin::OAuthConsumerId::kCloudPolicyClientRegistration);
     }
 
     EXPECT_TRUE(job.IsActive());
@@ -1146,13 +1143,10 @@ class UserCloudPolicyManagerAshChildTest
 
   // Issues OAuthToken for device management scopes.
   void IssueOAuth2AccessToken(base::TimeDelta token_lifetime) {
-    signin::ScopeSet scopes;
-    scopes.insert(GaiaConstants::kDeviceManagementServiceOAuth);
-    scopes.insert(GaiaConstants::kGoogleUserInfoEmail);
     identity_test_env()
-        ->WaitForAccessTokenRequestIfNecessaryAndRespondWithTokenForScopes(
+        ->WaitForAccessTokenRequestIfNecessaryAndRespondWithTokenForConsumerId(
             kOAuthToken, task_runner_->Now() + token_lifetime,
-            std::string() /*id_token*/, scopes);
+            signin::OAuthConsumerId::kCloudPolicyClientRegistration);
   }
 
  protected:

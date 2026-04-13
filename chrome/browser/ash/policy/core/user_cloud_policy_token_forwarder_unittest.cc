@@ -31,6 +31,7 @@
 #include "components/policy/core/common/cloud/mock_cloud_policy_client.h"
 #include "components/policy/core/common/cloud/mock_cloud_policy_service.h"
 #include "components/policy/core/common/cloud/mock_cloud_policy_store.h"
+#include "components/signin/public/base/oauth_consumer_id.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "components/sync_preferences/pref_service_syncable.h"
@@ -196,12 +197,10 @@ class UserCloudPolicyTokenForwarderTest : public testing::Test {
   // Issues OAuth token for device management scope for any pending token
   // requests. Blocks waiting for the request if there are no pending requests.
   void IssueOAuthToken(const std::string& token, base::Time expiration) {
-    signin::ScopeSet scopes;
-    scopes.insert(GaiaConstants::kDeviceManagementServiceOAuth);
-    scopes.insert(GaiaConstants::kGoogleUserInfoEmail);
     identity_test_env_profile_adaptor_->identity_test_env()
-        ->WaitForAccessTokenRequestIfNecessaryAndRespondWithTokenForScopes(
-            token, expiration, std::string() /*id_token*/, scopes);
+        ->WaitForAccessTokenRequestIfNecessaryAndRespondWithTokenForConsumerId(
+            token, expiration,
+            signin::OAuthConsumerId::kCloudPolicyClientRegistration);
   }
 
   // Issues OAuth token error for any pending token requests. Blocks waiting for
