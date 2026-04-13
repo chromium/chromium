@@ -338,6 +338,33 @@ TEST_F(TextBreakIteratorTest, GraphemesClusterListTest) {
             Vector<unsigned>({0, 0}));
 }
 
+// word-break:break-all should NOT break before BA-class characters (LB21).
+// U+1361 ETHIOPIC WORDSPACE is line break class BA (Break After).
+// Breaks should occur AFTER U+1361, not before it.
+TEST_F(TextBreakIteratorTest, BreakAllEthiopic) {
+  // Text: U+1260 U+1361 U+1260 U+1361 U+1260
+  // (Ethiopic syllable BA, Ethiopic wordspace, repeated)
+  // AL     BA     AL     BA     AL
+  // LB21 prohibits breaking before BA, so the only break-all opportunities
+  // are after the BA characters (positions 2 and 4).
+  SetTestString16({0x1260, 0x1361, 0x1260, 0x1361, 0x1260});
+  MatchLineBreaks({2, 4, 5}, LineBreakType::kBreakAll);
+}
+
+// word-break:break-all + line-break:loose should allow break before BA-class
+// hyphens (U+2010, U+2013), relaxing LB21.
+TEST_F(TextBreakIteratorTest, BreakAllLooseHyphen) {
+  // Text: a a U+2010 a
+  // AL AL BA    AL
+  // With break-all + loose, break before BA is allowed.
+  SetTestString16({'a', 'a', 0x2010, 'a'});
+  LazyLineBreakIterator iterator(test_string_);
+  iterator.SetBreakType(LineBreakType::kBreakAll);
+  iterator.SetStrictness(LineBreakStrictness::kLoose);
+  TestIsBreakable({1, 2, 3, 4}, iterator);
+  TestNextBreakOpportunity({1, 2, 3, 4}, iterator);
+}
+
 TEST_F(TextBreakIteratorTest, SoftHyphen) {
   SetTestString("xy\u00ADxy\u00ADxy xy\u00ADxy");
   LazyLineBreakIterator break_iterator(test_string_);

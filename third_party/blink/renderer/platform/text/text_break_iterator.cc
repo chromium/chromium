@@ -123,14 +123,27 @@ static inline ULineBreak LineBreakPropertyValue(UChar last_ch, UChar ch) {
 }
 
 static inline bool ShouldBreakAfterBreakAll(ULineBreak last_line_break,
-                                            ULineBreak line_break) {
+                                            ULineBreak line_break,
+                                            UChar ch,
+                                            LineBreakStrictness strictness) {
   if (line_break >= 0 && line_break < BA_LB_COUNT && last_line_break >= 0 &&
       last_line_break < BA_LB_COUNT) {
     const size_t last_line_break_index = last_line_break;
     const size_t line_break_index = line_break;
-    return kBreakAllLineBreakClassTable[last_line_break_index]
-                                       [line_break_index / 8] &
-           (0x80 >> (line_break_index % 8));
+    if (!(kBreakAllLineBreakClassTable[last_line_break_index]
+                                      [line_break_index / 8] &
+          (0x80 >> (line_break_index % 8)))) {
+      return false;
+    }
+    // LB21: Do not break before BA (Break After) class characters
+    // (e.g., U+1361 Ethiopic Wordspace, U+007C Vertical Line),
+    // except U+007C (Vertical Line) which is not relevant for this case.
+    // Allow break only when line-break:loose relaxes LB21 for hyphens.
+    if (line_break == U_LB_BREAK_AFTER && ch != 0x007C &&
+        strictness != LineBreakStrictness::kLoose) {
+      return false;
+    }
+    return true;
   }
   return false;
 }
@@ -314,7 +327,8 @@ inline unsigned LazyLineBreakIterator::NextBreakablePosition(
         }
         ULineBreak line_break =
             LineBreakPropertyValue(context.last.ch, context.current.ch);
-        if (ShouldBreakAfterBreakAll(last_line_break, line_break)) {
+        if (ShouldBreakAfterBreakAll(last_line_break, line_break,
+                                     context.current.ch, strictness_)) {
           return i > pos && U16_IS_TRAIL(context.current.ch) ? i - 1 : i;
         }
         if (line_break != U_LB_COMBINING_MARK) {
