@@ -264,7 +264,7 @@ function setUpAutofillInternals(onLoadArgument: OnLoadArgument) {
   getRequiredElement('logging-note-incognito').innerText =
       'Captured autofill logs are not available in Incognito.';
   setUpScopeCheckboxes();
-  setUpSettingCheckboxe();
+  setUpSettingCheckboxes();
   setUpMarker();
   setUpDumpAddressesButton();
   setUpSubmittedFormsJSONDataDownload();
@@ -287,7 +287,7 @@ function setUpPasswordManagerInternals() {
       no longer captured when all password-manager-internals pages are closed.';
   getRequiredElement('logging-note-incognito').innerText =
       'Captured password manager logs are not available in Incognito.';
-  setUpSettingCheckboxe();
+  setUpSettingCheckboxes();
   setUpMarker();
   setUpDownload('password-manager');
   setUpStopRecording();
@@ -599,9 +599,13 @@ function setUpScopeCheckboxes() {
     {id: 'AutofillAi'},
     {id: 'AutofillActor'},
   ];
-  for (const scope of SCOPES) {
+
+  interface ScopeCheckbox {
+    input: HTMLInputElement;
+    changeHandler: () => void;
+  }
+  const checkboxes: ScopeCheckbox[] = SCOPES.map(scope => {
     const input = createCheckbox(scope);
-    scopesPlaceholder.appendChild(input.parentElement!);
     function changeHandler() {
       const cls = `hide-${scope.id}`;
       const scrollAfterInsert = needsScrollDown();
@@ -614,13 +618,35 @@ function setUpScopeCheckboxes() {
         scrollDown();
       }
     }
-    input.addEventListener('change', changeHandler);
-    changeHandler();  // Call once to initialize |logDiv|'s classes.
+    return {input, changeHandler};
+  });
+
+  function uncheckAllExcept(checkbox: ScopeCheckbox) {
+    for (const otherCheckbox of checkboxes) {
+      if (otherCheckbox !== checkbox && otherCheckbox.input.checked === true) {
+        otherCheckbox.input.checked = false;
+        otherCheckbox.changeHandler();
+      }
+    }
+    if (checkbox.input.checked === false) {
+      checkbox.input.checked = true;
+      checkbox.changeHandler();
+    }
+  }
+
+  for (const checkbox of checkboxes) {
+    checkbox.input.addEventListener('change', checkbox.changeHandler);
+    checkbox.changeHandler();  // Call once to initialize `logDiv`'s classes.
+    checkbox.input.parentElement!.addEventListener('dblclick', function(e) {
+      uncheckAllExcept(checkbox);
+      e.preventDefault();
+    });
+    scopesPlaceholder.appendChild(checkbox.input.parentElement!);
   }
 }
 
 // Sets up another bar of checkboxes to configure the page's behavior.
-function setUpSettingCheckboxe() {
+function setUpSettingCheckboxes() {
   const settingsPlaceholder =
       getRequiredElement('settings-checkbox-placeholder');
 
