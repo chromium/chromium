@@ -1076,3 +1076,260 @@ IN_PROC_BROWSER_TEST_F(ChromeComposeClientBrowserTest,
   EXPECT_EQ(3,
             user_action_tester.GetActionCount("Compose.DialogSeen.MainDialog"));
 }
+
+IN_PROC_BROWSER_TEST_F(ChromeComposeClientBrowserTest,
+                       FirstRunCloseDialogHistogramTest) {
+  base::HistogramTester histograms;
+  base::ScopedMockElapsedTimersForTest test_timer;
+
+  // Enable FRE and show the dialog.
+  browser()->profile()->GetPrefs()->SetBoolean(
+      prefs::kPrefHasCompletedComposeFRE, false);
+  ShowDialogAndBindMojo();
+  client().CloseUI(compose::mojom::CloseReason::kFirstRunCloseButton);
+
+  // The FRE close reason should be |kCloseButtonPressed|.
+  histograms.ExpectUniqueSample(
+      compose::kComposeFirstRunSessionCloseReason,
+      compose::ComposeFreOrMsbbSessionCloseReason::kCloseButtonPressed, 1);
+  // The main dialog close reason should be |kEndedAtFre|.
+  histograms.ExpectTotalCount(compose::kComposeSessionCloseReason, 1);
+  histograms.ExpectUniqueSample(compose::kComposeSessionCloseReason,
+                                compose::ComposeSessionCloseReason::kEndedAtFre,
+                                1);
+  // Expect that the dialog was shown once ending without FRE completed.
+  histograms.ExpectUniqueSample(
+      compose::kComposeFirstRunSessionDialogShownCount +
+          std::string(".Ignored"),
+      1, 1);
+
+  // Check expected session duration metrics.
+  histograms.ExpectUniqueTimeSample(
+      compose::kComposeSessionDuration + std::string(".FRE"),
+      base::ScopedMockElapsedTimersForTest::kMockElapsedTime, 1);
+  histograms.ExpectTotalCount(
+      compose::kComposeSessionDuration + std::string(".MSBB"), 0);
+  histograms.ExpectTotalCount(
+      compose::kComposeSessionDuration + std::string(".Ignored"), 0);
+  histograms.ExpectTotalCount("Compose.Server.Session.Duration.Ignored", 0);
+  histograms.ExpectUniqueSample(compose::kComposeSessionOverOneDay, 0, 1);
+
+  // Check the expected event count metrics.
+  std::vector<std::pair<compose::ComposeSessionEventTypes, int>> event_counts =
+      {
+          {compose::ComposeSessionEventTypes::kComposeDialogOpened, 1},
+          {compose::ComposeSessionEventTypes::kMainDialogShown, 0},
+          {compose::ComposeSessionEventTypes::kFREShown, 1},
+          {compose::ComposeSessionEventTypes::kFREAccepted, 0},
+          {compose::ComposeSessionEventTypes::kMSBBShown, 0},
+          {compose::ComposeSessionEventTypes::kMSBBEnabled, 0},
+      };
+
+  for (auto [event_type, count] : event_counts) {
+    histograms.ExpectBucketCount(compose::kComposeSessionEventCounts,
+                                 event_type, count);
+    histograms.ExpectBucketCount("Compose.Server.Session.EventCounts",
+                                 event_type, 0);
+    histograms.ExpectBucketCount("Compose.OnDevice.Session.EventCounts",
+                                 event_type, 0);
+  }
+
+  // Show the FRE dialog and end the session by re-opening with selection.
+  ShowDialogAndBindMojo();
+  autofill::FormFieldData field = field_data();
+  field.set_value(u"user selected text");
+  field.set_selected_text(u"selected text");
+  ShowDialogAndBindMojoWithFieldData(field);
+  histograms.ExpectBucketCount(
+      compose::kComposeFirstRunSessionCloseReason,
+      compose::ComposeFreOrMsbbSessionCloseReason::kReplacedWithNewSession, 1);
+  histograms.ExpectBucketCount(
+      compose::kComposeFirstRunSessionDialogShownCount +
+          std::string(".Ignored"),
+      1,  // Expect that the dialog was shown once.
+      2);
+
+  // The main dialog should not be shown.
+  histograms.ExpectTotalCount(
+      compose::kComposeSessionDialogShownCount + std::string(".Ignored"), 0);
+}
+
+IN_PROC_BROWSER_TEST_F(ChromeComposeClientBrowserTest,
+                       FirstRunThenMSBBCloseDialogHistogramTest) {
+  base::HistogramTester histograms;
+  base::UserActionTester user_action_tester;
+
+  // Set both FRE and MSBB dialog states.
+  browser()->profile()->GetPrefs()->SetBoolean(
+      prefs::kPrefHasCompletedComposeFRE, false);
+  SetPrefsForComposeMSBBState(false);
+  // Dialog should show at FRE state.
+  ShowDialogAndBindMojo();
+  EXPECT_EQ(1, user_action_tester.GetActionCount(
+                   "Compose.DialogSeen.FirstRunDisclaimer"));
+  // After acknowledging the disclaimer, dialog should show the MSBB state.
+  client().CompleteFirstRun();
+  EXPECT_EQ(
+      1, user_action_tester.GetActionCount("Compose.DialogSeen.FirstRunMSBB"));
+
+  // End the session by re-opening with selection.
+  autofill::FormFieldData field = field_data();
+  field.set_value(u"user selected text");
+  field.set_selected_text(u"selected text");
+  ShowDialogAndBindMojoWithFieldData(field);
+
+  histograms.ExpectUniqueSample(
+      compose::kComposeMSBBSessionCloseReason,
+      compose::ComposeFreOrMsbbSessionCloseReason::kReplacedWithNewSession, 1);
+  histograms.ExpectBucketCount(compose::kComposeFirstRunSessionCloseReason,
+                               compose::ComposeFreOrMsbbSessionCloseReason::
+                                   kAckedOrAcceptedWithoutInsert,
+                               1);
+  // Expect that the FRE dialog was shown+acked once.
+  histograms.ExpectBucketCount(
+      compose::kComposeFirstRunSessionDialogShownCount +
+          std::string(".Acknowledged"),
+      1, 1);
+  // Expect that the MSBB dialog was shown+ignored once.
+  histograms.ExpectBucketCount(
+      compose::kComposeMSBBSessionDialogShownCount + std::string(".Ignored"), 1,
+      1);
+
+  // The main dialog close reason should be |kAckedFreEndedAtMsbb|.
+  histograms.ExpectTotalCount(compose::kComposeSessionCloseReason, 1);
+  histograms.ExpectUniqueSample(
+      compose::kComposeSessionCloseReason,
+      compose::ComposeSessionCloseReason::kAckedFreEndedAtMsbb, 1);
+
+  // The main dialog should not be shown.
+  histograms.ExpectTotalCount(
+      compose::kComposeSessionDialogShownCount + std::string(".Ignored"), 0);
+}
+
+IN_PROC_BROWSER_TEST_F(ChromeComposeClientBrowserTest,
+                       FirstRunCompletedHistogramTest) {
+  base::HistogramTester histograms;
+
+  // Enable FRE and show the dialog.
+  browser()->profile()->GetPrefs()->SetBoolean(
+      prefs::kPrefHasCompletedComposeFRE, false);
+  ShowDialogAndBindMojo();
+  // Show the dialog a second time.
+  ShowDialogAndBindMojo();
+  // Complete FRE and close.
+  client().CompleteFirstRun();
+  client().CloseUI(compose::mojom::CloseReason::kCloseButton);
+
+  histograms.ExpectUniqueSample(compose::kComposeFirstRunSessionCloseReason,
+                                compose::ComposeFreOrMsbbSessionCloseReason::
+                                    kAckedOrAcceptedWithoutInsert,
+                                1);
+  // Expect that the dialog was shown twice ending with FRE completed.
+  histograms.ExpectUniqueSample(
+      compose::kComposeFirstRunSessionDialogShownCount +
+          std::string(".Acknowledged"),
+      2, 1);
+
+  // After FRE is completed, a new set of metrics should be collected for the
+  // remainder of the session.
+  histograms.ExpectUniqueSample(
+      compose::kComposeSessionCloseReason,
+      compose::ComposeSessionCloseReason::kCloseButtonPressed, 1);
+  histograms.ExpectUniqueSample(
+      compose::kComposeSessionDialogShownCount + std::string(".Ignored"),
+      1,  // The dialog was only shown once after having proceeded past FRE.
+      1);
+
+  // Check the expected event count metrics.
+  std::vector<std::pair<compose::ComposeSessionEventTypes, int>> event_counts =
+      {
+          {compose::ComposeSessionEventTypes::kComposeDialogOpened, 1},
+          {compose::ComposeSessionEventTypes::kMainDialogShown, 1},
+          {compose::ComposeSessionEventTypes::kFREShown, 1},
+          {compose::ComposeSessionEventTypes::kFREAccepted, 1},
+          {compose::ComposeSessionEventTypes::kMSBBShown, 0},
+          {compose::ComposeSessionEventTypes::kMSBBEnabled, 0},
+      };
+
+  for (auto [event_type, count] : event_counts) {
+    histograms.ExpectBucketCount(compose::kComposeSessionEventCounts,
+                                 event_type, count);
+    histograms.ExpectBucketCount("Compose.Server.Session.EventCounts",
+                                 event_type, 0);
+    histograms.ExpectBucketCount("Compose.OnDevice.Session.EventCounts",
+                                 event_type, 0);
+  }
+}
+
+IN_PROC_BROWSER_TEST_F(ChromeComposeClientBrowserTest,
+                       FirstRunCompletedThenSuggestionAcceptedHistogramTest) {
+  base::HistogramTester histograms;
+
+  // Enable FRE and show the dialog.
+  browser()->profile()->GetPrefs()->SetBoolean(
+      prefs::kPrefHasCompletedComposeFRE, false);
+  ShowDialogAndBindMojo();
+  // Complete FRE then close by inserting.
+  client().CompleteFirstRun();
+  client().CloseUI(compose::mojom::CloseReason::kInsertButton);
+
+  histograms.ExpectUniqueSample(
+      compose::kComposeFirstRunSessionCloseReason,
+      compose::ComposeFreOrMsbbSessionCloseReason::kAckedOrAcceptedWithInsert,
+      1);
+
+  // Check the expected session event count metrics.
+  std::vector<std::pair<compose::ComposeSessionEventTypes, int>> event_counts =
+      {
+          {compose::ComposeSessionEventTypes::kComposeDialogOpened, 1},
+          {compose::ComposeSessionEventTypes::kMainDialogShown, 1},
+          {compose::ComposeSessionEventTypes::kFREShown, 1},
+          {compose::ComposeSessionEventTypes::kFREAccepted, 1},
+          {compose::ComposeSessionEventTypes::kMSBBShown, 0},
+          {compose::ComposeSessionEventTypes::kMSBBEnabled, 0},
+          {compose::ComposeSessionEventTypes::kStartedWithSelection, 0},
+          {compose::ComposeSessionEventTypes::kInsertClicked, 1},
+      };
+
+  for (auto [event_type, count] : event_counts) {
+    histograms.ExpectBucketCount(compose::kComposeSessionEventCounts,
+                                 event_type, count);
+    histograms.ExpectBucketCount("Compose.Server.Session.EventCounts",
+                                 event_type, 0);
+    histograms.ExpectBucketCount("Compose.OnDevice.Session.EventCounts",
+                                 event_type, 0);
+  }
+}
+
+IN_PROC_BROWSER_TEST_F(ChromeComposeClientBrowserTest, LoseFocusHistogramTest) {
+  base::HistogramTester histograms;
+  base::UserActionTester user_action_tester;
+  ShowDialogAndBindMojo();
+
+  // Dismiss dialog by losing focus by navigating.
+  GURL next_page("http://example.com/a.html");
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), next_page));
+
+  EXPECT_EQ(1, user_action_tester.GetActionCount(
+                   "Compose.EndedSession.EndedImplicitly"));
+  histograms.ExpectUniqueSample(compose::kComposeSessionCloseReason,
+                                compose::ComposeSessionCloseReason::kAbandoned,
+                                1);
+}
+
+IN_PROC_BROWSER_TEST_F(ChromeComposeClientBrowserTest,
+                       LoseFocusFirstRunHistogramTest) {
+  base::HistogramTester histograms;
+  // Enable FRE and show the dialog.
+  GetProfile()->GetPrefs()->SetBoolean(prefs::kPrefHasCompletedComposeFRE,
+                                       false);
+  ShowDialogAndBindMojo();
+
+  // Dismiss dialog by losing focus by navigating.
+  GURL next_page("http://example.com/a.html");
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), next_page));
+
+  histograms.ExpectUniqueSample(
+      compose::kComposeFirstRunSessionCloseReason,
+      compose::ComposeFreOrMsbbSessionCloseReason::kAbandoned, 1);
+}
