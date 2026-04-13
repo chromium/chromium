@@ -312,34 +312,6 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//components/search_engines/search_engine_choice/search_engine_choice_service.cc:PendingDisplayStateStatus) -->
 
-<enum name="QueryTilesGroupPruneReason">
-  <int value="0" label="Expired"/>
-  <int value="1" label="InvalidLocale"/>
-</enum>
-
-<enum name="QueryTilesGroupStatus">
-  <int value="0" label="Success"/>
-  <int value="1" label="Uninitialized"/>
-  <int value="2" label="FailureDbOperation"/>
-  <int value="3" label="NoTiles"/>
-</enum>
-
-<enum name="QueryTilesImageLoadingEvent">
-  <int value="0" label="Start in full browser mode"/>
-  <int value="1" label="Success in full browser mode"/>
-  <int value="2" label="Failure in full browser mode"/>
-  <int value="3" label="Start in reduced mode"/>
-  <int value="4" label="Success in reduced mode"/>
-  <int value="5" label="Failure in reduced mode"/>
-</enum>
-
-<enum name="QueryTilesRequestStatus">
-  <int value="0" label="Init"/>
-  <int value="1" label="Success"/>
-  <int value="2" label="Failure"/>
-  <int value="3" label="Suspend"/>
-</enum>
-
 <enum name="ScrollAndClickStatus">
   <int value="0" label="NO_SCROLL_NO_CLICK"/>
   <int value="1" label="NO_SCROLL_CLICKED"/>
@@ -601,12 +573,6 @@ chromium-metrics-reviews@google.com.
   <int value="5" label="sourceid"/>
   <int value="6" label="t"/>
   <int value="7" label="tt"/>
-</enum>
-
-<enum name="TrendingTileEvent">
-  <int value="0" label="Tile was shown"/>
-  <int value="1" label="Tile was removed"/>
-  <int value="2" label="Tile was clicked"/>
 </enum>
 
 <!-- LINT.IfChange(UnknownCountryIdStored) -->

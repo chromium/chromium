@@ -1221,19 +1221,6 @@ https://chromium.googlesource.com/chromium/src/tools/+/HEAD/metrics/histograms/R
   </summary>
 </histogram>
 
-<histogram name="Search.Lens.ViewportDimensionsSent.Success" enum="Boolean"
-    expires_after="2024-08-04">
-  <owner>mercerd@google.com</owner>
-  <owner>lens-chrome-eng@google.com</owner>
-  <summary>
-    When the user performs a Lens search on Desktop, records if the viewport
-    dimensions of the side panel were included in the request. A false value
-    indicates either the viewport width or height were not included in the
-    request. A true value is recorded if and only if both the `vpw` and `vph`
-    url params were added to the request with non-zero values.
-  </summary>
-</histogram>
-
 <histogram name="Search.OsDefaultsChoice.DelayFromDialogShownToFirstStatus"
     units="ms" expires_after="2026-11-03">
   <owner>dgn@chromium.org</owner>
@@ -1354,85 +1341,6 @@ https://chromium.googlesource.com/chromium/src/tools/+/HEAD/metrics/histograms/R
     since the last button tap. This status indicates whether we identified the
     current tap as the initial one, or whether for a repeated tap we decided to
     avoid requesting the choice screen to be launched again.
-  </summary>
-</histogram>
-
-<histogram name="Search.QueryTiles.Fetcher.FirstFlowDuration" units="hours"
-    expires_after="2023-01-01">
-  <owner>qinmin@chromium.org</owner>
-  <owner>chrome-upboarding-eng@google.com</owner>
-  <summary>
-    Records duration from time when first task scheduled to time the fetch task
-    completed.
-  </summary>
-</histogram>
-
-<histogram name="Search.QueryTiles.Fetcher.Start" units="hours"
-    expires_after="2023-03-05">
-  <owner>qinmin@chromium.org</owner>
-  <owner>chrome-upboarding-eng@google.com</owner>
-  <summary>Records the hour (0-23) when the TileFetcher task starts.</summary>
-</histogram>
-
-<histogram name="Search.QueryTiles.FetcherHttpResponseCode"
-    enum="HttpResponseCode" expires_after="2023-09-10">
-  <owner>qinmin@chromium.org</owner>
-  <owner>chrome-upboarding-eng@google.com</owner>
-  <summary>Records the HTTP response code get from TileFetcher.</summary>
-</histogram>
-
-<histogram name="Search.QueryTiles.FetcherNetErrorCode" enum="NetErrorCodes"
-    expires_after="2023-08-31">
-  <owner>qinmin@chromium.org</owner>
-  <owner>chrome-upboarding-eng@google.com</owner>
-  <summary>Records the net error code get from TileFetcher.</summary>
-</histogram>
-
-<histogram name="Search.QueryTiles.Group.PruneReason"
-    enum="QueryTilesGroupPruneReason" expires_after="2022-12-11">
-  <owner>qinmin@chromium.org</owner>
-  <owner>chrome-upboarding-eng@google.com</owner>
-  <summary>
-    Records the reasons caused the tile group pruned in TileManager.
-  </summary>
-</histogram>
-
-<histogram name="Search.QueryTiles.GroupStatus" enum="QueryTilesGroupStatus"
-    expires_after="2023-02-12">
-  <owner>qinmin@chromium.org</owner>
-  <owner>chrome-upboarding-eng@google.com</owner>
-  <summary>
-    Records the TileManager status after initialized and loaded completed.
-  </summary>
-</histogram>
-
-<histogram name="Search.QueryTiles.ImagePreloadingEvent"
-    enum="QueryTilesImageLoadingEvent" expires_after="2022-04-01">
-  <owner>qinmin@chromium.org</owner>
-  <owner>chrome-upboarding-eng@google.com</owner>
-  <summary>
-    Records the image preloading events when the query tile images are fetched
-    from the background task.
-  </summary>
-</histogram>
-
-<histogram name="Search.QueryTiles.RequestStatus"
-    enum="QueryTilesRequestStatus" expires_after="2023-04-16">
-  <owner>qinmin@chromium.org</owner>
-  <owner>chrome-upboarding-eng@google.com</owner>
-  <summary>
-    Records the TileFetcher status after request send to server and response
-    received.
-  </summary>
-</histogram>
-
-<histogram name="Search.QueryTiles.TrendingTileEvent" enum="TrendingTileEvent"
-    expires_after="2024-09-22">
-  <owner>qinmin@chromium.org</owner>
-  <owner>chrome-upboarding-eng@google.com</owner>
-  <summary>
-    Records events related to trending tiles, including display, removal and
-    click, after the events occur.
   </summary>
 </histogram>
 
@@ -1830,13 +1738,6 @@ https://chromium.googlesource.com/chromium/src/tools/+/HEAD/metrics/histograms/R
     multiple times per run, when initially loading search engines for the
     omnibox, showing a search engine choice screen or settings screen, etc.
   </summary>
-</histogram>
-
-<histogram name="SearchAnswer.AnswerVisibleTime" units="ms"
-    expires_after="2021-09-01">
-  <owner>mmourgos@chromium.org</owner>
-  <owner>newcomer@chromium.org</owner>
-  <summary>Time between showing and hiding the answer card.</summary>
 </histogram>
 
 </histograms>
