@@ -108,51 +108,51 @@ TEST(StringTest, ASCII) {
 
 namespace {
 
-void TestNumberToStringECMAScript(double number, const char* reference) {
-  EXPECT_EQ(reference, String::NumberToStringECMAScript(number));
+void TestNumberToStringEcmaScript(double number, const char* reference) {
+  EXPECT_EQ(reference, String::NumberToStringEcmaScript(number));
 }
 
 }  // anonymous namespace
 
-TEST(StringTest, NumberToStringECMAScriptBoundaries) {
+TEST(StringTest, NumberToStringEcmaScriptBoundaries) {
   typedef std::numeric_limits<double> Limits;
 
   // Infinity.
-  TestNumberToStringECMAScript(Limits::infinity(), "Infinity");
-  TestNumberToStringECMAScript(-Limits::infinity(), "-Infinity");
+  TestNumberToStringEcmaScript(Limits::infinity(), "Infinity");
+  TestNumberToStringEcmaScript(-Limits::infinity(), "-Infinity");
 
   // NaN.
-  TestNumberToStringECMAScript(-Limits::quiet_NaN(), "NaN");
+  TestNumberToStringEcmaScript(-Limits::quiet_NaN(), "NaN");
 
   // Zeros.
-  TestNumberToStringECMAScript(0, "0");
-  TestNumberToStringECMAScript(-0, "0");
+  TestNumberToStringEcmaScript(0, "0");
+  TestNumberToStringEcmaScript(-0, "0");
 
   // Min-Max.
-  TestNumberToStringECMAScript(Limits::min(), "2.2250738585072014e-308");
-  TestNumberToStringECMAScript(Limits::max(), "1.7976931348623157e+308");
+  TestNumberToStringEcmaScript(Limits::min(), "2.2250738585072014e-308");
+  TestNumberToStringEcmaScript(Limits::max(), "1.7976931348623157e+308");
 }
 
-TEST(StringTest, NumberToStringECMAScriptRegularNumbers) {
+TEST(StringTest, NumberToStringEcmaScriptRegularNumbers) {
   // Pi.
-  TestNumberToStringECMAScript(kPiDouble, "3.141592653589793");
-  TestNumberToStringECMAScript(kPiFloat, "3.1415927410125732");
-  TestNumberToStringECMAScript(kPiOverTwoDouble, "1.5707963267948966");
-  TestNumberToStringECMAScript(kPiOverTwoFloat, "1.5707963705062866");
-  TestNumberToStringECMAScript(kPiOverFourDouble, "0.7853981633974483");
-  TestNumberToStringECMAScript(kPiOverFourFloat, "0.7853981852531433");
+  TestNumberToStringEcmaScript(kPiDouble, "3.141592653589793");
+  TestNumberToStringEcmaScript(kPiFloat, "3.1415927410125732");
+  TestNumberToStringEcmaScript(kPiOverTwoDouble, "1.5707963267948966");
+  TestNumberToStringEcmaScript(kPiOverTwoFloat, "1.5707963705062866");
+  TestNumberToStringEcmaScript(kPiOverFourDouble, "0.7853981633974483");
+  TestNumberToStringEcmaScript(kPiOverFourFloat, "0.7853981852531433");
 
   // e.
   const double kE = 2.71828182845904523536028747135266249775724709369995;
-  TestNumberToStringECMAScript(kE, "2.718281828459045");
+  TestNumberToStringEcmaScript(kE, "2.718281828459045");
 
   // c, speed of light in m/s.
   const double kC = 299792458;
-  TestNumberToStringECMAScript(kC, "299792458");
+  TestNumberToStringEcmaScript(kC, "299792458");
 
   // Golen ratio.
   const double kPhi = 1.6180339887498948482;
-  TestNumberToStringECMAScript(kPhi, "1.618033988749895");
+  TestNumberToStringEcmaScript(kPhi, "1.618033988749895");
 }
 
 TEST(StringTest, erase) {

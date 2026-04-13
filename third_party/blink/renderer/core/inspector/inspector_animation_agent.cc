@@ -275,7 +275,7 @@ static std::unique_ptr<protocol::Animation::KeyframeStyle>
 BuildObjectForStringKeyframe(const StringKeyframe* keyframe,
                              double computed_offset) {
   String offset =
-      StrCat({String::NumberToStringECMAScript(computed_offset * 100), "%"});
+      StrCat({String::NumberToStringEcmaScript(computed_offset * 100), "%"});
 
   std::unique_ptr<protocol::Animation::KeyframeStyle> keyframe_object =
       protocol::Animation::KeyframeStyle::create()

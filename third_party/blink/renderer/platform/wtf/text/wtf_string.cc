@@ -283,7 +283,7 @@ String String::Number(double number, unsigned precision) {
   return String(converter.ToStringWithFixedPrecision(number, precision));
 }
 
-String String::NumberToStringECMAScript(double number) {
+String String::NumberToStringEcmaScript(double number) {
   DoubleToStringConverter converter;
   return String(converter.ToString(number));
 }

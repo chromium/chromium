@@ -23,9 +23,9 @@ String LinearTimingFunction::ToString() const {
     if (i != 0) {
       builder.Append(", ");
     }
-    builder.Append(String::NumberToStringECMAScript(linear_->Point(i).output));
+    builder.Append(String::NumberToStringEcmaScript(linear_->Point(i).output));
     builder.Append(" ");
-    builder.Append(String::NumberToStringECMAScript(linear_->Point(i).input));
+    builder.Append(String::NumberToStringEcmaScript(linear_->Point(i).input));
     builder.Append("%");
   }
   builder.Append(")");
@@ -120,10 +120,10 @@ String CubicBezierTimingFunction::ToString() const {
     case CubicBezierTimingFunction::EaseType::EASE_IN_OUT:
       return "ease-in-out";
     case CubicBezierTimingFunction::EaseType::CUSTOM:
-      return StrCat({"cubic-bezier(", String::NumberToStringECMAScript(X1()),
-                     ", ", String::NumberToStringECMAScript(Y1()), ", ",
-                     String::NumberToStringECMAScript(X2()), ", ",
-                     String::NumberToStringECMAScript(Y2()), ")"});
+      return StrCat({"cubic-bezier(", String::NumberToStringEcmaScript(X1()),
+                     ", ", String::NumberToStringEcmaScript(Y1()), ", ",
+                     String::NumberToStringEcmaScript(X2()), ", ",
+                     String::NumberToStringEcmaScript(Y2()), ")"});
     default:
       NOTREACHED();
   }
@@ -187,7 +187,7 @@ String StepsTimingFunction::ToString() const {
 
   StringBuilder builder;
   builder.Append("steps(");
-  builder.Append(String::NumberToStringECMAScript(NumberOfSteps()));
+  builder.Append(String::NumberToStringEcmaScript(NumberOfSteps()));
   if (position_string) {
     builder.Append(", ");
     builder.Append(position_string);

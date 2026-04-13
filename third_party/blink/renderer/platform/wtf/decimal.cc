@@ -639,7 +639,7 @@ Decimal Decimal::Floor() const {
 
 Decimal Decimal::FromDouble(double double_value) {
   if (std::isfinite(double_value))
-    return FromString(String::NumberToStringECMAScript(double_value));
+    return FromString(String::NumberToStringEcmaScript(double_value));
 
   if (std::isinf(double_value))
     return Infinity(double_value < 0 ? kNegative : kPositive);

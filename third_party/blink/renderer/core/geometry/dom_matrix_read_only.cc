@@ -355,17 +355,17 @@ const String DOMMatrixReadOnly::toString(
     }
 
     result.Append("matrix(");
-    result.Append(String::NumberToStringECMAScript(a()));
+    result.Append(String::NumberToStringEcmaScript(a()));
     result.Append(kComma);
-    result.Append(String::NumberToStringECMAScript(b()));
+    result.Append(String::NumberToStringEcmaScript(b()));
     result.Append(kComma);
-    result.Append(String::NumberToStringECMAScript(c()));
+    result.Append(String::NumberToStringEcmaScript(c()));
     result.Append(kComma);
-    result.Append(String::NumberToStringECMAScript(d()));
+    result.Append(String::NumberToStringEcmaScript(d()));
     result.Append(kComma);
-    result.Append(String::NumberToStringECMAScript(e()));
+    result.Append(String::NumberToStringEcmaScript(e()));
     result.Append(kComma);
-    result.Append(String::NumberToStringECMAScript(f()));
+    result.Append(String::NumberToStringEcmaScript(f()));
     result.Append(")");
     return result.ToString();
   }
@@ -383,37 +383,37 @@ const String DOMMatrixReadOnly::toString(
   }
 
   result.Append("matrix3d(");
-  result.Append(String::NumberToStringECMAScript(m11()));
+  result.Append(String::NumberToStringEcmaScript(m11()));
   result.Append(kComma);
-  result.Append(String::NumberToStringECMAScript(m12()));
+  result.Append(String::NumberToStringEcmaScript(m12()));
   result.Append(kComma);
-  result.Append(String::NumberToStringECMAScript(m13()));
+  result.Append(String::NumberToStringEcmaScript(m13()));
   result.Append(kComma);
-  result.Append(String::NumberToStringECMAScript(m14()));
+  result.Append(String::NumberToStringEcmaScript(m14()));
   result.Append(kComma);
-  result.Append(String::NumberToStringECMAScript(m21()));
+  result.Append(String::NumberToStringEcmaScript(m21()));
   result.Append(kComma);
-  result.Append(String::NumberToStringECMAScript(m22()));
+  result.Append(String::NumberToStringEcmaScript(m22()));
   result.Append(kComma);
-  result.Append(String::NumberToStringECMAScript(m23()));
+  result.Append(String::NumberToStringEcmaScript(m23()));
   result.Append(kComma);
-  result.Append(String::NumberToStringECMAScript(m24()));
+  result.Append(String::NumberToStringEcmaScript(m24()));
   result.Append(kComma);
-  result.Append(String::NumberToStringECMAScript(m31()));
+  result.Append(String::NumberToStringEcmaScript(m31()));
   result.Append(kComma);
-  result.Append(String::NumberToStringECMAScript(m32()));
+  result.Append(String::NumberToStringEcmaScript(m32()));
   result.Append(kComma);
-  result.Append(String::NumberToStringECMAScript(m33()));
+  result.Append(String::NumberToStringEcmaScript(m33()));
   result.Append(kComma);
-  result.Append(String::NumberToStringECMAScript(m34()));
+  result.Append(String::NumberToStringEcmaScript(m34()));
   result.Append(kComma);
-  result.Append(String::NumberToStringECMAScript(m41()));
+  result.Append(String::NumberToStringEcmaScript(m41()));
   result.Append(kComma);
-  result.Append(String::NumberToStringECMAScript(m42()));
+  result.Append(String::NumberToStringEcmaScript(m42()));
   result.Append(kComma);
-  result.Append(String::NumberToStringECMAScript(m43()));
+  result.Append(String::NumberToStringEcmaScript(m43()));
   result.Append(kComma);
-  result.Append(String::NumberToStringECMAScript(m44()));
+  result.Append(String::NumberToStringEcmaScript(m44()));
   result.Append(")");
 
   return result.ToString();

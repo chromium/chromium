@@ -114,7 +114,7 @@ class WTF_EXPORT String {
   [[nodiscard]] static String Number(double, unsigned precision = 6);
 
   // Number to String conversion following the ECMAScript definition.
-  [[nodiscard]] static String NumberToStringECMAScript(double);
+  [[nodiscard]] static String NumberToStringEcmaScript(double);
   [[nodiscard]] static String NumberToStringFixedWidth(double,
                                                        unsigned decimal_places);
 

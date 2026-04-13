@@ -293,11 +293,11 @@ ScriptPromise<IDLUndefined> OfflineAudioContext::suspendContext(
     exception_state.ThrowDOMException(
         DOMExceptionCode::kInvalidStateError,
         StrCat({"cannot schedule a suspend at ",
-                String::NumberToStringECMAScript(when),
+                String::NumberToStringEcmaScript(when),
                 " seconds because it is greater than or equal to the "
                 "total render duration of ",
                 String::Number(total_render_frames_), " frames (",
-                String::NumberToStringECMAScript(total_render_duration),
+                String::NumberToStringEcmaScript(total_render_duration),
                 " seconds)"}));
     return EmptyPromise();
   }

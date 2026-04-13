@@ -48,8 +48,8 @@
 
 namespace blink {
 
-static inline constexpr double kMinimumECMADateInMs = -8640000000000000.0;
-static inline constexpr double kMaximumECMADateInMs = 8640000000000000.0;
+static inline constexpr double kMinimumEcmaDateInMs = -8640000000000000.0;
+static inline constexpr double kMaximumEcmaDateInMs = 8640000000000000.0;
 
 WTF_EXPORT bool IsLeapYear(int year);
 

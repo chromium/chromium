@@ -499,7 +499,7 @@ HTMLMarqueeElement::GetAnimationParameters() {
 
 AtomicString HTMLMarqueeElement::CreateTransform(double value) const {
   return AtomicString(StrCat({"translate", IsHorizontal() ? "X" : "Y", "(",
-                              String::NumberToStringECMAScript(value), "px)"}));
+                              String::NumberToStringEcmaScript(value), "px)"}));
 }
 
 void HTMLMarqueeElement::Trace(Visitor* visitor) const {

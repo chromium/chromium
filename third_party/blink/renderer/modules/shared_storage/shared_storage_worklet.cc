@@ -516,7 +516,7 @@ ScriptPromise<V8SharedStorageResponse> SharedStorageWorklet::selectURL(
           resolver->Reject(V8ThrowDOMException::CreateOrEmpty(
               script_state->GetIsolate(), DOMExceptionCode::kDataError,
               StrCat({"The metadata for the url at index ",
-                      String::NumberToStringECMAScript(index),
+                      String::NumberToStringEcmaScript(index),
                       " has an invalid or non-HTTPS report_url parameter \"",
                       report_url_string, "\"."})));
           LogSharedStorageWorkletError(
