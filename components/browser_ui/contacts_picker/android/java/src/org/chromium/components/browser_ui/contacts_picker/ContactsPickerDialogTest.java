@@ -251,7 +251,8 @@ public class ContactsPickerDialogTest
 
                                                     @Override
                                                     protected void addOwnerInfoToContacts(
-                                                            ArrayList<ContactDetails> contacts) {}
+                                                            ArrayList<ContactDetails> contacts,
+                                                            String ownerEmail) {}
                                                 },
                                                 listener,
                                                 multiple,

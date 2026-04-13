@@ -244,8 +244,10 @@ public abstract class PickerAdapter extends Adapter<RecyclerView.ViewHolder>
      *
      * @param contacts the list which is missing an entry for the active user, and to which such an
      *     entry should be prepended.
+     * @param ownerEmail the email address of the current user.
      */
-    protected abstract void addOwnerInfoToContacts(ArrayList<ContactDetails> contacts);
+    protected abstract void addOwnerInfoToContacts(
+            ArrayList<ContactDetails> contacts, String ownerEmail);
 
     // ContactsFetcherWorkerTask.ContactsRetrievedCallback:
     @Override
@@ -257,9 +259,9 @@ public abstract class PickerAdapter extends Adapter<RecyclerView.ViewHolder>
         for (RetrievedContact retrievedContact : contacts) {
             mContactDetails.add(ContactDetails.fromRetrievedContact(retrievedContact));
         }
-
-        if (!processOwnerInfo(mContactDetails, mOwnerEmail)) {
-            addOwnerInfoToContacts(mContactDetails);
+        @Nullable String ownerEmail = getOwnerEmail();
+        if (ownerEmail != null && !processOwnerInfo(mContactDetails, ownerEmail)) {
+            addOwnerInfoToContacts(mContactDetails, ownerEmail);
         }
 
         update();
@@ -414,12 +416,7 @@ public abstract class PickerAdapter extends Adapter<RecyclerView.ViewHolder>
      * @return Returns true if processing is complete, false if waiting on asynchronous fetching of
      *     missing data for the owner info.
      */
-    private static boolean processOwnerInfo(
-            ArrayList<ContactDetails> contacts, @Nullable String ownerEmail) {
-        if (ownerEmail == null) {
-            return true;
-        }
-
+    private static boolean processOwnerInfo(ArrayList<ContactDetails> contacts, String ownerEmail) {
         ArrayList<Integer> matches = new ArrayList<>();
         for (int i = 0; i < contacts.size(); ++i) {
             List<String> emails = contacts.get(i).getEmails();

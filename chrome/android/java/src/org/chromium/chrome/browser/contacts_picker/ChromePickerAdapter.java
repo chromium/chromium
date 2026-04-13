@@ -7,9 +7,7 @@ package org.chromium.chrome.browser.contacts_picker;
 import static org.chromium.build.NullUtil.assertNonNull;
 import static org.chromium.build.NullUtil.assumeNonNull;
 
-import android.annotation.SuppressLint;
 import android.content.Context;
-import android.graphics.drawable.Drawable;
 import android.text.TextUtils;
 
 import androidx.recyclerview.widget.RecyclerView;
@@ -27,6 +25,7 @@ import org.chromium.components.browser_ui.contacts_picker.PickerAdapter;
 import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.signin.identitymanager.IdentityManager;
+import org.chromium.google_apis.gaia.CoreAccountId;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -134,42 +133,40 @@ public class ChromePickerAdapter extends PickerAdapter implements ProfileDataCac
     }
 
     @Override
-    protected void addOwnerInfoToContacts(ArrayList<ContactDetails> contacts) {
+    protected void addOwnerInfoToContacts(ArrayList<ContactDetails> contacts, String ownerEmail) {
         // Processing was not complete, finish the rest asynchronously. Flow continues in
         // onProfileDataUpdated.
         mWaitingOnOwnerInfo = true;
         addProfileDataObserver();
-        contacts.add(0, constructOwnerInfo(getOwnerEmail()));
+        var ownerAccount = mIdentityManager.findExtendedAccountInfoByEmailAddress(ownerEmail);
+        if (ownerAccount != null) {
+            contacts.add(0, constructOwnerInfo(ownerAccount.getId()));
+        }
     }
 
     /**
      * Constructs a {@link ContactDetails} record for the currently signed in user. Name is obtained
-     * via the {@link DisplayableProfileData}, if available, or (alternatively) using the signed in
-     * information.
+     * via the {@link DisplayableProfileData}.
      *
      * @param ownerEmail The email for the currently signed in user.
      * @return The contact info for the currently signed in user.
      */
-    @SuppressLint("HardwareIds")
-    private ContactDetails constructOwnerInfo(@Nullable String ownerEmail) {
-        DisplayableProfileData profileData = mProfileDataCache.getProfileDataOrDefault(ownerEmail);
-        String name = profileData.getFullNameOrEmail();
-        if (TextUtils.isEmpty(name) || TextUtils.equals(name, ownerEmail)) {
-            name =
-                    CoreAccountInfo.getEmailFrom(
-                            mIdentityManager.getPrimaryAccountInfo(ConsentLevel.SIGNIN));
-        }
-
-        ContactDetails contact =
+    private ContactDetails constructOwnerInfo(CoreAccountId ownerAccountId) {
+        final DisplayableProfileData profileData = mProfileDataCache.getById(ownerAccountId);
+        final ContactDetails contact =
                 new ContactDetails(
-                        ContactDetails.SELF_CONTACT_ID,
-                        name,
-                        Collections.singletonList(ownerEmail),
+                        /* id= */ ContactDetails.SELF_CONTACT_ID,
+                        // TODO(crbug.com/500657003): Use getFullNameOrEmail() only. Currently it's
+                        // not possible because that method checks only if full name is null, not if
+                        // it's empty.
+                        /* displayName= */ TextUtils.isEmpty(profileData.getFullName())
+                                ? profileData.getAccountEmail()
+                                : profileData.getFullNameOrEmail(),
+                        /* emails= */ Collections.singletonList(profileData.getAccountEmail()),
                         /* phoneNumbers= */ null,
                         /* addresses= */ null);
-        Drawable icon = profileData.getImage();
         contact.setIsSelf(true);
-        contact.setSelfIcon(icon);
+        contact.setSelfIcon(profileData.getImage());
         return contact;
     }
 }
