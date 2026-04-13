@@ -777,36 +777,7 @@ CloudBinaryUploadService::CreateUploadRequest(
   return upload_request;
 }
 
-class ValidateDataUploadRequest : public BinaryUploadRequest {
- public:
-  ValidateDataUploadRequest(
-      BinaryUploadRequest::ContentAnalysisCallback callback,
-      enterprise_connectors::CloudAnalysisSettings settings)
-      : BinaryUploadRequest(std::move(callback),
-                            enterprise_connectors::CloudOrLocalAnalysisSettings(
-                                std::move(settings)),
-                            base::BindRepeating(&GetBrowserPolicyConnector)) {}
-  ValidateDataUploadRequest(const ValidateDataUploadRequest&) = delete;
-  ValidateDataUploadRequest& operator=(const ValidateDataUploadRequest&) =
-      delete;
-  ~ValidateDataUploadRequest() override = default;
 
- private:
-  // BinaryUploadRequest implementation.
-  void GetRequestData(DataCallback callback) override;
-
-  bool IsAuthRequest() const override;
-};
-
-inline void ValidateDataUploadRequest::GetRequestData(DataCallback callback) {
-  std::move(callback).Run(
-      enterprise_connectors::ScanRequestUploadResult::kSuccess,
-      BinaryUploadRequest::Data());
-}
-
-bool ValidateDataUploadRequest::IsAuthRequest() const {
-  return true;
-}
 
 void CloudBinaryUploadService::IsAuthorized(
     const GURL& url,
@@ -845,7 +816,7 @@ void CloudBinaryUploadService::IsAuthorized(
           base::BindOnce(&CloudBinaryUploadService::
                              ValidateDataUploadRequestConnectorCallback,
                          weakptr_factory_.GetWeakPtr(), dm_token, connector),
-          std::move(settings));
+          std::move(settings), base::BindRepeating(&GetBrowserPolicyConnector));
       request->set_device_token(dm_token);
       request->set_analysis_connector(connector);
       request->set_per_profile_request(per_profile_request);

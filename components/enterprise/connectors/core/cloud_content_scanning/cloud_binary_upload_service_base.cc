@@ -30,6 +30,29 @@ CloudBinaryUploadServiceBase::CloudBinaryUploadServiceBase() = default;
 
 CloudBinaryUploadServiceBase::~CloudBinaryUploadServiceBase() = default;
 
+CloudBinaryUploadServiceBase::ValidateDataUploadRequest::
+    ValidateDataUploadRequest(
+        ContentAnalysisCallback callback,
+        CloudAnalysisSettings settings,
+        BrowserPolicyConnectorGetter policy_connector_getter)
+    : BinaryUploadRequest(std::move(callback),
+                          CloudOrLocalAnalysisSettings(std::move(settings)),
+                          std::move(policy_connector_getter)) {}
+
+CloudBinaryUploadServiceBase::ValidateDataUploadRequest::
+    ~ValidateDataUploadRequest() = default;
+
+void CloudBinaryUploadServiceBase::ValidateDataUploadRequest::GetRequestData(
+    DataCallback callback) {
+  std::move(callback).Run(ScanRequestUploadResult::kSuccess,
+                          BinaryUploadRequest::Data());
+}
+
+bool CloudBinaryUploadServiceBase::ValidateDataUploadRequest::IsAuthRequest()
+    const {
+  return true;
+}
+
 size_t CloudBinaryUploadServiceBase::GetParallelActiveRequestsMax() {
   size_t experiment_max = kParallelContentAnalysisRequestCountMax.Get();
   if (experiment_max > 0) {

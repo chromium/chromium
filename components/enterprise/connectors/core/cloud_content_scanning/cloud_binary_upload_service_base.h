@@ -51,7 +51,33 @@ class CloudBinaryUploadServiceBase {
                             BinaryUploadRequest* request,
                             const ContentAnalysisResponse& response);
 
+  // TODO(crbug.com/501456247): Change the "protected" below to "private" once
+  // the migration is done.
  protected:
+  using TokenAndConnector =
+      std::pair<std::string, enterprise_connectors::AnalysisConnector>;
+  // Auth request class that is used to check if the browser can upload
+  // content to the server.
+  //
+  // TODO(crbug.com/501456247): Move this class to the .cc file, once all the
+  // ValidateDataUploadRequest references in CloudBinaryUploadService are moved
+  // to the base class.
+  class ValidateDataUploadRequest : public BinaryUploadRequest {
+   public:
+    ValidateDataUploadRequest(
+        ContentAnalysisCallback callback,
+        CloudAnalysisSettings settings,
+        BrowserPolicyConnectorGetter policy_connector_getter);
+    ValidateDataUploadRequest(const ValidateDataUploadRequest&) = delete;
+    ValidateDataUploadRequest& operator=(const ValidateDataUploadRequest&) =
+        delete;
+    ~ValidateDataUploadRequest() override;
+
+   private:
+    void GetRequestData(DataCallback callback) override;
+    bool IsAuthRequest() const override;
+  };
+
   void FinishRequest(BinaryUploadRequest* request,
                      ScanRequestUploadResult result,
                      ContentAnalysisResponse response);
@@ -59,14 +85,6 @@ class CloudBinaryUploadServiceBase {
   void FinishAndCleanupRequest(BinaryUploadRequest* request,
                                ScanRequestUploadResult result,
                                ContentAnalysisResponse response);
-
-  scoped_refptr<base::SequencedTaskRunner> ui_task_runner_;
-
-  // TODO(crbug.com/501456247): Change the "protected" below to "private" once
-  // the migration is done.
- protected:
-  using TokenAndConnector =
-      std::pair<std::string, enterprise_connectors::AnalysisConnector>;
 
   // Records UMA metrics for a finished request.
   void RecordRequestMetrics(BinaryUploadRequest::Id request_id,
@@ -150,6 +168,8 @@ class CloudBinaryUploadServiceBase {
   // Tracks the start time and cancellation status for all requests in a user
   // action. Keyed by user action id.
   base::flat_map<std::string, UserActionData> user_action_data_;
+
+  scoped_refptr<base::SequencedTaskRunner> ui_task_runner_;
 };
 
 }  // namespace enterprise_connectors
