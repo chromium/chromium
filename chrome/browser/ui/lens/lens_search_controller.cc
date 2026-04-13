@@ -411,6 +411,12 @@ void LensSearchController::IssueZeroStateRequest(
 
 void LensSearchController::CloseLensAsync(
     lens::LensOverlayDismissalSource dismissal_source) {
+  CloseLensAsync(dismissal_source, /*side_panel_already_closing=*/false);
+}
+
+void LensSearchController::CloseLensAsync(
+    lens::LensOverlayDismissalSource dismissal_source,
+    bool side_panel_already_closing) {
   if (state() == State::kOff) {
     return;
   }
@@ -437,7 +443,10 @@ void LensSearchController::CloseLensAsync(
     // closing process.
     state_ = State::kClosingSidePanel;
     last_dismissal_source_ = dismissal_source;
-    side_panel_ui->Close(lens_overlay_side_panel_coordinator_->GetPanelType());
+    if (!side_panel_already_closing) {
+      side_panel_ui->Close(
+          lens_overlay_side_panel_coordinator_->GetPanelType());
+    }
     // Also trigger the overlay fade out animation, but don't pass a callback
     // to finish the closing process since the side panel will call
     // the finish closing process callback in OnSidePanelHidden().
@@ -974,7 +983,8 @@ void LensSearchController::OnSidePanelWillHide(
     } else {
       // Trigger the close animation and notify the overlay that the side
       // panel is closing so that it can fade out the UI.
-      CloseLensAsync(lens::LensOverlayDismissalSource::kSidePanelCloseButton);
+      CloseLensAsync(lens::LensOverlayDismissalSource::kSidePanelCloseButton,
+                     /*side_panel_already_closing=*/true);
     }
   }
 }
