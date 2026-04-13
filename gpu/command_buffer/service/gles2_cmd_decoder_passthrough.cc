@@ -1315,9 +1315,16 @@ gpu::Capabilities GLES2DecoderPassthroughImpl::GetCapabilities() {
   caps.msaa_is_slow = MSAAIsSlow(feature_info_->workarounds());
   caps.avoid_stencil_buffers =
       feature_info_->workarounds().avoid_stencil_buffers;
-  caps.supports_rgb_to_yuv_conversion = true;
-  // Technically, YUV readback is handled on the client side, but enable it here
-  // so that clients can use this to detect support.
+
+  if (base::FeatureList::IsEnabled(
+          features::kNvidiaWaylandYuvHardwareConversionWorkaround) &&
+      feature_info_->workarounds().disable_rgb_to_yuv_conversion) {
+    caps.supports_rgb_to_yuv_conversion = false;
+  } else {
+    caps.supports_rgb_to_yuv_conversion = true;
+  }
+  // Technically, YUV readback is handled on the client side, but enable it
+  // here so that clients can use this to detect support.
   caps.supports_yuv_readback = true;
   caps.mesa_framebuffer_flip_y =
       feature_info_->feature_flags().mesa_framebuffer_flip_y;

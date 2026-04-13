@@ -312,6 +312,9 @@ crbug.com/425745937 [ fuchsia web-engine-shell ] TraceTest_Canvas2DBlitText [ Sl
 [ mac amd-0x7340 debug ] WebGLCanvasCaptureTraceTest_VideoStreamFrom2DAlphaCanvas [ Slow ]
 [ mac amd-0x7340 debug ] WebGLCanvasCaptureTraceTest_VideoStreamFromWebGLAlphaCanvas [ Slow ]
 
+# Copies from RGB WebGL Canvas to YUV Video Frame is unsupported due to EGL image creation errors on Linux NVIDIA.
+crbug.com/447709687 [ linux nvidia ] WebGLCanvasCaptureTraceTest_VideoStreamFromWebGLCanvas_TwoCopy_Accelerated [ Failure ]
+crbug.com/447709687 [ linux nvidia ] WebGLCanvasCaptureTraceTest_VideoStreamFromWebGLCanvas_OneCopy [ Failure ]
 #######################################################################
 # Automated Entries After This Point - Do Not Manually Add Below Here #
 #######################################################################
