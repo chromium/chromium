@@ -839,6 +839,7 @@ test("android_webview_unittests") {
     "../browser/aw_content_browser_client_content_restriction_throttles_unittest.cc",
     "../browser/aw_content_browser_client_unittest.cc",
     "../browser/aw_contents_client_bridge_unittest.cc",
+    "../browser/aw_cookie_access_policy_unittest.cc",
     "../browser/aw_crash_keys_unittest.cc",
     "../browser/aw_field_trials_unittest.cc",
     "../browser/aw_origin_matched_header_unittest.cc",

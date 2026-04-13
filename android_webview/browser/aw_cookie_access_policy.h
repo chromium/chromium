@@ -48,14 +48,12 @@ class AwCookieAccessPolicy {
       const GURL& url,
       const net::SiteForCookies& site_for_cookies,
       base::optional_ref<const content::GlobalRenderFrameHostToken>
-          global_frame_token,
-      net::StorageAccessApiStatus storage_access_api_status);
+          global_frame_token);
 
   net::NetworkDelegate::PrivacySetting CanAccessCookies(
       const GURL& url,
       const net::SiteForCookies& site_for_cookies,
-      bool accept_third_party_cookies,
-      net::StorageAccessApiStatus storage_access_api_status);
+      bool accept_third_party_cookies);
 
   // Static version that takes all policy values as parameters, allowing
   // callers to use pre-captured/latched values instead of dynamic lookups.
@@ -63,8 +61,7 @@ class AwCookieAccessPolicy {
       const GURL& url,
       const net::SiteForCookies& site_for_cookies,
       bool accept_cookies,
-      bool accept_third_party_cookies,
-      net::StorageAccessApiStatus storage_access_api_status);
+      bool accept_third_party_cookies);
 
  private:
   friend class AwCookieAccessPolicyTest;

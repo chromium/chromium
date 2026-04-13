@@ -45,18 +45,16 @@ class AwProxyingRestrictedCookieManagerListener
       const net::SiteForCookies& site_for_cookies,
       base::WeakPtr<AwProxyingRestrictedCookieManager>
           aw_restricted_cookie_manager,
-      mojo::PendingRemote<network::mojom::CookieChangeListener> client_listener,
-      net::StorageAccessApiStatus storage_access_api_status)
+      mojo::PendingRemote<network::mojom::CookieChangeListener> client_listener)
       : url_(url),
         site_for_cookies_(site_for_cookies),
-        storage_access_api_status_(storage_access_api_status),
         aw_restricted_cookie_manager_(aw_restricted_cookie_manager),
         client_listener_(std::move(client_listener)) {}
 
   void OnCookieChange(const net::CookieChangeInfo& change) override {
     if (aw_restricted_cookie_manager_) {
-      PrivacySetting cookieState = aw_restricted_cookie_manager_->AllowCookies(
-          url_, site_for_cookies_, storage_access_api_status_);
+      PrivacySetting cookieState =
+          aw_restricted_cookie_manager_->AllowCookies(url_, site_for_cookies_);
 
       if (cookieState == PrivacySetting::kStateAllowed ||
           (cookieState == PrivacySetting::kPartitionedStateAllowedOnly &&
@@ -69,11 +67,6 @@ class AwProxyingRestrictedCookieManagerListener
  private:
   const GURL url_;
   const net::SiteForCookies site_for_cookies_;
-  // restricted_cookie_manager in services/network follows a similar pattern of
-  // using the state of "storage_access_api_status" at the time of the listener
-  // being added so we are matching that behaviour. If the storage access was
-  // enabled _after_ the listener was added, it will not be updated here.
-  net::StorageAccessApiStatus storage_access_api_status_;
   base::WeakPtr<AwProxyingRestrictedCookieManager>
       aw_restricted_cookie_manager_;
   mojo::Remote<network::mojom::CookieChangeListener> client_listener_;
@@ -120,8 +113,7 @@ void AwProxyingRestrictedCookieManager::GetAllForUrl(
     GetAllForUrlCallback callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
 
-  PrivacySetting cookieState =
-      AllowCookies(url, site_for_cookies, storage_access_api_status);
+  PrivacySetting cookieState = AllowCookies(url, site_for_cookies);
 
   if (cookieState == PrivacySetting::kStateDisallowed) {
     std::move(callback).Run(std::vector<net::CookieWithAccessResult>());
@@ -148,8 +140,7 @@ void AwProxyingRestrictedCookieManager::SetCanonicalCookie(
     bool apply_devtools_overrides,
     SetCanonicalCookieCallback callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
-  PrivacySetting cookieState =
-      AllowCookies(url, site_for_cookies, storage_access_api_status);
+  PrivacySetting cookieState = AllowCookies(url, site_for_cookies);
 
   if (cookieState == PrivacySetting::kStateDisallowed) {
     std::move(callback).Run(false);
@@ -182,7 +173,7 @@ void AwProxyingRestrictedCookieManager::AddChangeListener(
   auto proxy_listener =
       std::make_unique<AwProxyingRestrictedCookieManagerListener>(
           url, site_for_cookies, weak_factory_.GetWeakPtr(),
-          std::move(listener), storage_access_api_status);
+          std::move(listener));
 
   mojo::MakeSelfOwnedReceiver(
       std::move(proxy_listener),
@@ -205,8 +196,7 @@ void AwProxyingRestrictedCookieManager::SetCookieFromString(
     SetCookieFromStringCallback callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
 
-  PrivacySetting cookieState =
-      AllowCookies(url, site_for_cookies, storage_access_api_status);
+  PrivacySetting cookieState = AllowCookies(url, site_for_cookies);
 
   if (cookieState == PrivacySetting::kStateDisallowed) {
     std::move(callback).Run(/*response=*/nullptr);
@@ -247,8 +237,7 @@ void AwProxyingRestrictedCookieManager::GetCookiesString(
     GetCookiesStringCallback callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
 
-  PrivacySetting cookieState =
-      AllowCookies(url, site_for_cookies, storage_access_api_status);
+  PrivacySetting cookieState = AllowCookies(url, site_for_cookies);
 
   if (cookieState == PrivacySetting::kStateDisallowed) {
     std::move(callback).Run(network::mojom::kInvalidCookieVersion,
@@ -283,9 +272,8 @@ void AwProxyingRestrictedCookieManager::CookiesEnabledFor(
     bool apply_devtools_overrides,
     CookiesEnabledForCallback callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
-  std::move(callback).Run(
-      AllowCookies(url, site_for_cookies, storage_access_api_status) ==
-      PrivacySetting::kStateAllowed);
+  std::move(callback).Run(AllowCookies(url, site_for_cookies) ==
+                          PrivacySetting::kStateAllowed);
 }
 
 AwProxyingRestrictedCookieManager::AwProxyingRestrictedCookieManager(
@@ -330,8 +318,7 @@ void AwProxyingRestrictedCookieManager::CreateAndBindOnIoThread(
 
 PrivacySetting AwProxyingRestrictedCookieManager::AllowCookies(
     const GURL& url,
-    const net::SiteForCookies& site_for_cookies,
-    net::StorageAccessApiStatus storage_access_api_status) const {
+    const net::SiteForCookies& site_for_cookies) const {
   // When feature is enabled, use latched cookie policy state captured at
   // construction time. This enables shared memory cookie versioning.
   if (base::FeatureList::IsEnabled(features::kWebViewLatchedCookiePolicy)) {
@@ -349,9 +336,9 @@ PrivacySetting AwProxyingRestrictedCookieManager::AllowCookies(
       return latched_accept_cookies_ ? PrivacySetting::kStateAllowed
                                      : PrivacySetting::kStateDisallowed;
     }
-    return AwCookieAccessPolicy::CanAccessCookies(
-        url, site_for_cookies, latched_accept_cookies_,
-        latched_accept_third_party_, storage_access_api_status);
+    return AwCookieAccessPolicy::CanAccessCookies(url, site_for_cookies,
+                                                  latched_accept_cookies_,
+                                                  latched_accept_third_party_);
   }
 
   // Original dynamic behavior.
@@ -362,8 +349,8 @@ PrivacySetting AwProxyingRestrictedCookieManager::AllowCookies(
                ? PrivacySetting::kStateAllowed
                : PrivacySetting::kStateDisallowed;
   } else {
-    return cookie_access_policy_->AllowCookies(
-        url, site_for_cookies, global_frame_token_, storage_access_api_status);
+    return cookie_access_policy_->AllowCookies(url, site_for_cookies,
+                                               global_frame_token_);
   }
 }
 

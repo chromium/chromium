@@ -1124,8 +1124,7 @@ void AwProxyingURLLoaderFactory::GetCookieHeader(
   net::CookieOptions options = net::CookieOptions::MakeAllInclusive();
 
   PrivacySetting privacy_setting = cookie_access_policy_->CanAccessCookies(
-      request.url, isolation_info.site_for_cookies(), is_3pc_allowed,
-      request.storage_access_api_status);
+      request.url, isolation_info.site_for_cookies(), is_3pc_allowed);
 
   // We should not bother retrieving the cookie list if cookies are not enabled.
   if (privacy_setting == PrivacySetting::kStateDisallowed) {

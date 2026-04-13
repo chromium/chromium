@@ -68,22 +68,18 @@ PrivacySetting AwCookieAccessPolicy::AllowCookies(
     const GURL& url,
     const net::SiteForCookies& site_for_cookies,
     base::optional_ref<const content::GlobalRenderFrameHostToken>
-        global_frame_token,
-    net::StorageAccessApiStatus storage_access_api_status) {
+        global_frame_token) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
   bool third_party = GetShouldAcceptThirdPartyCookies(global_frame_token);
-  return CanAccessCookies(url, site_for_cookies, third_party,
-                          storage_access_api_status);
+  return CanAccessCookies(url, site_for_cookies, third_party);
 }
 
 PrivacySetting AwCookieAccessPolicy::CanAccessCookies(
     const GURL& url,
     const net::SiteForCookies& site_for_cookies,
-    bool accept_third_party_cookies,
-    net::StorageAccessApiStatus storage_access_api_status) {
+    bool accept_third_party_cookies) {
   return CanAccessCookies(url, site_for_cookies, accept_cookies_,
-                          accept_third_party_cookies,
-                          storage_access_api_status);
+                          accept_third_party_cookies);
 }
 
 // static
@@ -91,8 +87,7 @@ PrivacySetting AwCookieAccessPolicy::CanAccessCookies(
     const GURL& url,
     const net::SiteForCookies& site_for_cookies,
     bool accept_cookies,
-    bool accept_third_party_cookies,
-    net::StorageAccessApiStatus storage_access_api_status) {
+    bool accept_third_party_cookies) {
   if (!accept_cookies) {
     return PrivacySetting::kStateDisallowed;
   }
@@ -107,13 +102,6 @@ PrivacySetting AwCookieAccessPolicy::CanAccessCookies(
   // file URLs.
   if (url.SchemeIsFile()) {
     return PrivacySetting::kStateAllowed;
-  }
-
-  switch (storage_access_api_status) {
-    case net::StorageAccessApiStatus::kNone:
-      break;
-    case net::StorageAccessApiStatus::kAccessViaAPI:
-      return PrivacySetting::kStateAllowed;
   }
 
   // Otherwise, block third-party cookies.

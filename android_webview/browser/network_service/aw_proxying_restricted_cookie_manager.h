@@ -110,8 +110,7 @@ class AwProxyingRestrictedCookieManager
   // This one is internal.
   net::NetworkDelegate::PrivacySetting AllowCookies(
       const GURL& url,
-      const net::SiteForCookies& site_for_cookies,
-      net::StorageAccessApiStatus storage_access_api_status) const;
+      const net::SiteForCookies& site_for_cookies) const;
 
  private:
   AwProxyingRestrictedCookieManager(
