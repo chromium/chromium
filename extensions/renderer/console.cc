@@ -80,7 +80,7 @@ void AddMessage(ScriptContext* script_context,
   }
 
   blink::WebConsoleMessage web_console_message(
-      level, blink::WebString::FromUTF8(message));
+      level, blink::WebString::FromUtf8(message));
   blink::WebConsoleMessage::LogWebConsoleMessage(script_context->v8_context(),
                                                  web_console_message);
 }

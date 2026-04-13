@@ -153,10 +153,9 @@ TEST_F(DOMActivityLoggerTest, LogGetter_ActivityLoggingEnabledLogsEverything) {
           testing::Eq(static_cast<int32_t>(DomActionType::GETTER))));
 
   v8::Local<v8::Context> dummy_context;
-  logger()->LogGetter(nullptr, dummy_context,
-                      blink::WebString::FromUTF8("api_name"),
+  logger()->LogGetter(nullptr, dummy_context, blink::WebString("api_name"),
                       blink::WebURL(GURL("https://example.com")),
-                      blink::WebString::FromUTF8("title"));
+                      blink::WebString("title"));
 }
 
 TEST_F(DOMActivityLoggerTest, LogGetter_PolicyDrivenCheck) {
@@ -179,9 +178,8 @@ TEST_F(DOMActivityLoggerTest, LogGetter_PolicyDrivenCheck) {
                                       testing::Eq(kUrl)))
       .WillOnce(testing::Return(false));
 
-  logger()->LogGetter(nullptr, dummy_context,
-                      blink::WebString::FromUTF8("benign_api"),
-                      blink::WebURL(kUrl), blink::WebString::FromUTF8("title"));
+  logger()->LogGetter(nullptr, dummy_context, blink::WebString("benign_api"),
+                      blink::WebURL(kUrl), blink::WebString("title"));
 
   // 2. Risky event -> IPC sent.
   EXPECT_CALL(filter, IsHighRiskEvent(testing::Eq("test_extension"),
@@ -195,9 +193,8 @@ TEST_F(DOMActivityLoggerTest, LogGetter_PolicyDrivenCheck) {
                   testing::_, testing::Eq(kUrl), testing::_,
                   testing::Eq(static_cast<int32_t>(DomActionType::GETTER))));
 
-  logger()->LogGetter(nullptr, dummy_context,
-                      blink::WebString::FromUTF8("risky_api"),
-                      blink::WebURL(kUrl), blink::WebString::FromUTF8("title"));
+  logger()->LogGetter(nullptr, dummy_context, blink::WebString("risky_api"),
+                      blink::WebURL(kUrl), blink::WebString("title"));
 }
 
 }  // namespace extensions

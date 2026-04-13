@@ -509,7 +509,7 @@ void ExtensionFrameHelper::ExecuteCode(mojom::ExecuteCodeParamsPtr param,
 }
 
 void ExtensionFrameHelper::SetFrameName(const std::string& name) {
-  render_frame()->GetWebFrame()->SetName(blink::WebString::FromUTF8(name));
+  render_frame()->GetWebFrame()->SetName(blink::WebString::FromUtf8(name));
 }
 
 void ExtensionFrameHelper::AppWindowClosed(bool send_onclosed) {

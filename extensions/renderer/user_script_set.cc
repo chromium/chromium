@@ -63,9 +63,9 @@ blink::WebString GetWebStringFromScriptContent(std::string_view script_content,
   if (emulate_greasemonkey) {
     std::string content_with_wrapper =
         base::StrCat({kUserScriptHead, script_content, kUserScriptTail});
-    return blink::WebString::FromUTF8(content_with_wrapper);
+    return blink::WebString::FromUtf8(content_with_wrapper);
   }
-  return blink::WebString::FromUTF8(script_content);
+  return blink::WebString::FromUtf8(script_content);
 }
 
 }  // namespace
@@ -324,7 +324,7 @@ blink::WebString UserScriptSet::GetCssSource(const UserScript::Content& file) {
 
   std::string_view script_content = file.GetContent();
   return script_sources_
-      .insert(std::make_pair(url, blink::WebString::FromUTF8(script_content)))
+      .insert(std::make_pair(url, blink::WebString::FromUtf8(script_content)))
       .first->second;
 }
 

@@ -93,10 +93,10 @@ void IsolatedWorldManager::SetUserScriptWorldProperties(
       info.security_origin =
           blink::WebSecurityOrigin::Create(isolated_world.url);
       info.human_readable_name =
-          blink::WebString::FromUTF8(isolated_world.name);
-      info.stable_id = blink::WebString::FromUTF8(host_id);
+          blink::WebString::FromUtf8(isolated_world.name);
+      info.stable_id = blink::WebString::FromUtf8(host_id);
       info.content_security_policy =
-          blink::WebString::FromUTF8(*pending_info.csp);
+          blink::WebString::FromUtf8(*pending_info.csp);
       blink::SetIsolatedWorldInfo(blink_world_id, info);
     }
   }
@@ -231,11 +231,11 @@ void IsolatedWorldManager::UpdateBlinkIsolatedWorldInfo(
     const IsolatedWorldInfo& world_info) {
   blink::WebIsolatedWorldInfo blink_info;
   blink_info.security_origin = blink::WebSecurityOrigin::Create(world_info.url);
-  blink_info.human_readable_name = blink::WebString::FromUTF8(world_info.name);
-  blink_info.stable_id = blink::WebString::FromUTF8(world_info.host_id);
+  blink_info.human_readable_name = blink::WebString::FromUtf8(world_info.name);
+  blink_info.stable_id = blink::WebString::FromUtf8(world_info.host_id);
   if (world_info.csp) {
     blink_info.content_security_policy =
-        blink::WebString::FromUTF8(*world_info.csp);
+        blink::WebString::FromUtf8(*world_info.csp);
   }
   blink::SetIsolatedWorldInfo(world_id, blink_info);
 }

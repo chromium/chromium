@@ -206,7 +206,7 @@ bool ResourceRequestPolicy::CanRequestResource(
         target_url.spec().c_str());
     frame->AddMessageToConsole(
         blink::WebConsoleMessage(blink::mojom::ConsoleMessageLevel::kError,
-                                 blink::WebString::FromUTF8(message)));
+                                 blink::WebString::FromUtf8(message)));
     return false;
   }
 

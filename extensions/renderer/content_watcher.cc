@@ -150,7 +150,7 @@ void ContentWatcher::OnWatchPages(
   bool changed = new_css_selectors.size() != css_selectors_.size();
   for (size_t i = 0; i < new_css_selectors.size(); ++i) {
     new_css_selectors[i] =
-        blink::WebString::FromUTF8(new_css_selectors_utf8[i]);
+        blink::WebString::FromUtf8(new_css_selectors_utf8[i]);
     if (!changed && new_css_selectors[i] != css_selectors_[i])
       changed = true;
   }

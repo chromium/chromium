@@ -77,7 +77,7 @@ GreasemonkeyApiJsString::GreasemonkeyApiJsString() {
   std::string greasemonky_api_js(
       ui::ResourceBundle::GetSharedInstance().LoadDataResourceString(
           IDR_GREASEMONKEY_API_JS));
-  source_ = blink::WebString::FromUTF8(greasemonky_api_js);
+  source_ = blink::WebString::FromUtf8(greasemonky_api_js);
 }
 
 blink::WebScriptSource GreasemonkeyApiJsString::GetSource() const {
