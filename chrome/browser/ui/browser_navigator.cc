@@ -205,7 +205,7 @@ std::tuple<BrowserWindowInterface*, int> GetBrowserAndTabForDisposition(
   switch (params.disposition) {
     case WindowOpenDisposition::SWITCH_TO_TAB: {
       std::pair<BrowserWindowInterface*, int> browser_and_index =
-          GetIndexAndBrowserOfExistingTab(profile, params);
+          GetIndexAndBrowserOfMatchingTab(profile, params);
       if (browser_and_index.first) {
         return browser_and_index;
       }
@@ -221,7 +221,7 @@ std::tuple<BrowserWindowInterface*, int> GetBrowserAndTabForDisposition(
     case WindowOpenDisposition::SINGLETON_TAB: {
       // If we have a browser window, check it first.
       if (params.browser) {
-        int index = GetIndexOfExistingTab(params.browser, params);
+        int index = GetIndexOfExistingTabMatchingURL(params.browser, params);
         if (index >= 0) {
           return {params.browser, index};
         }
@@ -231,7 +231,7 @@ std::tuple<BrowserWindowInterface*, int> GetBrowserAndTabForDisposition(
       // Instead, make an extra effort to see if there's an already open copy.
       if (!WindowCanOpenTabs(params)) {
         std::pair<BrowserWindowInterface*, int> browser_and_index =
-            GetIndexAndBrowserOfExistingTab(profile, params);
+            GetIndexAndBrowserOfMatchingTab(profile, params);
         if (browser_and_index.first) {
           return browser_and_index;
         }

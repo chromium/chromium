@@ -39,15 +39,4 @@ void ShowSingletonTabOverwritingNTP(NavigateParams* params);
 NavigateParams GetSingletonTabNavigateParams(BrowserWindowInterface* browser,
                                              const GURL& url);
 
-// If the given navigational URL is already open in |browser|, return
-// the tab and tab index for it. Otherwise, returns -1.
-int GetIndexOfExistingTab(BrowserWindowInterface* browser,
-                          const NavigateParams& params);
-
-// This simply calls GetIndexOfExistingTab() for each browser that
-// matches the passed |profile|, and returns the first found tab.
-std::pair<BrowserWindowInterface*, int> GetIndexAndBrowserOfExistingTab(
-    Profile* profile,
-    const NavigateParams& params);
-
 #endif  // CHROME_BROWSER_UI_SINGLETON_TABS_H_

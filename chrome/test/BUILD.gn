@@ -6122,8 +6122,6 @@ if (!is_android) {
     sources +=
         [ "../browser/metrics/structured_metrics_service_browsertest.cc" ]
 
-    sources += [ "../browser/ui/singleton_tabs_browsertest.cc" ]
-
     sources += [ "//chrome/browser/enterprise/data_protection/view_source_navigation_throttle_browsertest.cc" ]
 
     if (is_win || is_mac || is_linux) {
@@ -6763,6 +6761,7 @@ test("unit_tests") {
     "../browser/task_manager/providers/fallback_task_provider_unittest.cc",
     "../browser/task_manager/providers/spare_render_process_host_task_unittest.cc",
     "../browser/top_level_storage_access_api/top_level_storage_access_permission_context_unittest.cc",
+    "../browser/ui/browser_navigator_params_utils_unittest.cc",
     "../browser/ui/url_identity_unittest.cc",
     "../browser/ui/webui/chrome_urls/chrome_urls_handler_unittest.cc",
     "../browser/ui/webui/fileicon_source_unittest.cc",

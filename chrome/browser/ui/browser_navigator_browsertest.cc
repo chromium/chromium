@@ -23,6 +23,7 @@
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_navigator.h"
 #include "chrome/browser/ui/browser_navigator_params.h"
+#include "chrome/browser/ui/browser_navigator_params_utils.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/chrome_pages.h"
@@ -1925,7 +1926,7 @@ IN_PROC_BROWSER_TEST_F(BrowserNavigatorTest, ViewSourceIsntSingleton) {
   NavigateParams singleton_params(browser(), GURL(chrome::kChromeUIVersionURL),
                                   ui::PAGE_TRANSITION_LINK);
   singleton_params.disposition = WindowOpenDisposition::SINGLETON_TAB;
-  EXPECT_EQ(-1, GetIndexOfExistingTab(browser(), singleton_params));
+  EXPECT_EQ(-1, GetIndexOfExistingTabMatchingURL(browser(), singleton_params));
 }
 
 // Ensure that an incognito window invoking |view-source:| on a url forbidden in
