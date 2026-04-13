@@ -11,6 +11,9 @@
 #include "gpu/command_buffer/client/test_shared_image_interface.h"
 #include "gpu/command_buffer/common/shared_image_capabilities.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
+#include "gpu/ipc/common/exported_shared_image.mojom.h"
+#include "gpu/ipc/common/exported_shared_image_mojom_traits.h"
+#include "mojo/public/cpp/test_support/test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/gfx/gpu_fence.h"
 
@@ -62,6 +65,97 @@ TEST(ClientSharedImageTest, ImportUnowned) {
   EXPECT_EQ(client_si->GetTextureTarget(),
             static_cast<uint32_t>(GL_TEXTURE_2D));
   EXPECT_FALSE(client_si->HasHolder());
+}
+
+TEST(ClientSharedImageTest,
+     ExportedSharedImageMojoDeserialization_TextureTargetZero) {
+  auto mailbox = Mailbox::Generate();
+  const auto kFormat = viz::SinglePlaneFormat::kRGBA_8888;
+  const SharedImageUsageSet kUsage =
+      SHARED_IMAGE_USAGE_RASTER_WRITE | SHARED_IMAGE_USAGE_DISPLAY_READ;
+  SharedImageMetadata metadata{kFormat,
+                               kSize,
+                               gfx::ColorSpace(),
+                               kTopLeft_GrSurfaceOrigin,
+                               kOpaque_SkAlphaType,
+                               kUsage};
+
+  ExportedSharedImage exported_si(
+      mailbox, metadata, SyncToken(), "ClientSharedImageTest", std::nullopt,
+      std::nullopt, /*texture_target=*/0, /*is_software=*/false);
+
+  ExportedSharedImage deserialized_si;
+  bool success =
+      mojo::test::SerializeAndDeserialize<gpu::mojom::ExportedSharedImage>(
+          exported_si, deserialized_si);
+
+#if BUILDFLAG(IS_FUCHSIA)
+  EXPECT_TRUE(success);
+  EXPECT_EQ(deserialized_si.texture_target_, 0u);
+#else
+  EXPECT_FALSE(success);
+#endif
+}
+
+TEST(ClientSharedImageTest,
+     ExportedSharedImageMojoDeserialization_EmptyBuffer) {
+  auto mailbox = Mailbox::Generate();
+  const auto kFormat = viz::SinglePlaneFormat::kRGBA_8888;
+  const SharedImageUsageSet kUsage =
+      SHARED_IMAGE_USAGE_RASTER_WRITE | SHARED_IMAGE_USAGE_DISPLAY_READ;
+  SharedImageMetadata metadata{kFormat,
+                               kSize,
+                               gfx::ColorSpace(),
+                               kTopLeft_GrSurfaceOrigin,
+                               kOpaque_SkAlphaType,
+                               kUsage};
+
+  gfx::GpuMemoryBufferHandle empty_handle;
+  empty_handle.type = gfx::EMPTY_BUFFER;
+
+  ExportedSharedImage exported_si(
+      mailbox, metadata, SyncToken(), "ClientSharedImageTest",
+      std::move(empty_handle), gfx::BufferUsage::GPU_READ,
+      /*texture_target=*/GL_TEXTURE_2D, /*is_software=*/false);
+
+  ExportedSharedImage deserialized_si;
+  bool success =
+      mojo::test::SerializeAndDeserialize<gpu::mojom::ExportedSharedImage>(
+          exported_si, deserialized_si);
+
+  EXPECT_FALSE(success);
+}
+
+TEST(ClientSharedImageTest, CreateMappableBufferFromHandle_EmptyBuffer) {
+  auto sii = base::MakeRefCounted<TestSharedImageInterface>();
+
+  const auto kFormat = viz::SinglePlaneFormat::kRGBA_8888;
+  const SharedImageUsageSet kUsage =
+      SHARED_IMAGE_USAGE_RASTER_WRITE | SHARED_IMAGE_USAGE_DISPLAY_READ;
+  SharedImageMetadata metadata{kFormat,
+                               kSize,
+                               gfx::ColorSpace(),
+                               kTopLeft_GrSurfaceOrigin,
+                               kOpaque_SkAlphaType,
+                               kUsage};
+
+  gfx::GpuMemoryBufferHandle empty_handle;
+  empty_handle.type = gfx::EMPTY_BUFFER;
+
+  GpuMemoryBufferHandleInfo handle_info(std::move(empty_handle),
+                                        gfx::BufferUsage::GPU_READ);
+
+  // Creating a ClientSharedImage with an EMPTY_BUFFER handle should not crash.
+  // The handle will be passed to CreateMappableBufferFromHandle which will
+  // return nullptr, and the CHECK(mappable_buffer_) will fail, so we expect a
+  // crash in death tests if we were to proceed, but since it's a CHECK, we can
+  // test it with EXPECT_DEATH_IF_SUPPORTED.
+  EXPECT_DEATH_IF_SUPPORTED(
+      base::MakeRefCounted<ClientSharedImage>(
+          Mailbox::Generate(), SharedImageInfo{metadata, "TestLabel"},
+          SyncToken(), std::move(handle_info),
+          base::MakeRefCounted<SharedImageInterfaceHolder>(sii.get())),
+      "");
 }
 
 TEST(ClientSharedImageTest, CreateViaSharedImageInterface) {

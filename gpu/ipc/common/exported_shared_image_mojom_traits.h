@@ -91,7 +91,18 @@ struct GPU_IPC_COMMON_EXPORT StructTraits<
     if (out->buffer_handle_ && !out->buffer_usage_) {
       return false;
     }
+    if (out->buffer_handle_ && out->buffer_handle_->type == gfx::EMPTY_BUFFER) {
+      return false;
+    }
     out->texture_target_ = data.texture_target();
+#if !BUILDFLAG(IS_FUCHSIA)
+    // On Fuchsia, it is possible for texture_target_ to be 0 because Fuchsia
+    // does not support import of external images to GL for usage with external
+    // sampling. For other platforms, texture_target_ should always be non-zero.
+    if (out->texture_target_ == 0) {
+      return false;
+    }
+#endif
     out->is_software_ = data.is_software();
     return true;
   }

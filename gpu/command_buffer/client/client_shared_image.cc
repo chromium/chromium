@@ -221,6 +221,8 @@ ClientSharedImage::CreateMappableBufferFromHandle(
       base::BindRepeating(&ClientSharedImage::CopyNativeGmbToSharedMemoryAsync,
                           base::Unretained(this));
   switch (handle.type) {
+    case gfx::EMPTY_BUFFER:
+      NOTREACHED();
     case gfx::SHARED_MEMORY_BUFFER:
       return MappableBufferSharedMemory::CreateFromHandle(std::move(handle),
                                                           size, format);
@@ -273,10 +275,6 @@ ClientSharedImage::CreateMappableBufferFromHandle(
           std::move(pool));
     }
 #endif
-    default:
-      // TODO(dcheng): Remove default case (https://crbug.com/676224).
-      NOTREACHED() << format.ToString() << ", "
-                   << gfx::BufferUsageToString(usage);
   }
 }
 

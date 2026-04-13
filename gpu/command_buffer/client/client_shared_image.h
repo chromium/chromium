@@ -525,6 +525,11 @@ struct GPU_COMMAND_BUFFER_CLIENT_EXPORT ExportedSharedImage {
   friend struct mojo::StructTraits<gpu::mojom::ExportedSharedImageDataView,
                                    ExportedSharedImage>;
   FRIEND_TEST_ALL_PREFIXES(ClientSharedImageTest, ImportUnowned);
+  FRIEND_TEST_ALL_PREFIXES(
+      ClientSharedImageTest,
+      ExportedSharedImageMojoDeserialization_TextureTargetZero);
+  FRIEND_TEST_ALL_PREFIXES(ClientSharedImageTest,
+                           ExportedSharedImageMojoDeserialization_EmptyBuffer);
 
   ExportedSharedImage(const Mailbox& mailbox,
                       const SharedImageMetadata& metadata,
