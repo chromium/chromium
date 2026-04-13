@@ -60,7 +60,7 @@ void AnnotatedPageContentCapturerImpl::OnPageStable() {
 
 void AnnotatedPageContentCapturerImpl::CapturePageContent(
     optimization_guide::AIPageContentResultOrError result) {
-  if (callback_ && result.has_value() && result.value().proto.has_root_node()) {
+  if (callback_) {
     std::move(callback_).Run(std::move(result));
   }
 }

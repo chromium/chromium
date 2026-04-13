@@ -570,7 +570,8 @@ enum PasswordChangeFlowStep {
   kOpenFormStep = 0,
   kSubmitFormStep = 1,
   kVerifySubmissionStep = 2,
-  kMaxValue = kVerifySubmissionStep,
+  kLoginCheckStep = 3,
+  kMaxValue = kLoginCheckStep,
 };
 // LINT.ThenChange(/tools/metrics/histograms/metadata/password/enums.xml:PasswordChangeFlowStep)
 

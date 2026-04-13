@@ -876,6 +876,7 @@ chromium-metrics-reviews@google.com.
   <int value="0" label="Open form step"/>
   <int value="1" label="Submit form step"/>
   <int value="2" label="Verify submission step"/>
+  <int value="3" label="Login check step"/>
 </enum>
 
 <!-- LINT.ThenChange(/components/password_manager/core/browser/password_manager_metrics_util.h:PasswordChangeFlowStep) -->

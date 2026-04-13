@@ -64,7 +64,7 @@ TEST_P(AnnotatedPageContentCapturerTest, CaptureEmptyPageContent) {
       .WillOnce(RunOnceCallback<1>(std::move(result)));
   content::WebContentsTester::For(web_contents())->TestSetIsLoading(false);
   capturer->OnPageStable();
-  EXPECT_FALSE(completion_future.IsReady());
+  EXPECT_TRUE(completion_future.IsReady());
 }
 
 TEST_P(AnnotatedPageContentCapturerTest, CaptureSucceedsOnFirstLoad) {
