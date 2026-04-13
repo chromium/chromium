@@ -553,7 +553,7 @@ public class MainSettingsFragmentTest {
                 () -> {
                     return signInPreference
                             .getProfileDataCache()
-                            .hasProfileDataForTesting(accountInfo.getEmail());
+                            .hasProfileDataForTesting(accountInfo.getId());
                 });
 
         // Wait for the default browser promo view to disappear to avoid flakiness due to race
@@ -644,7 +644,7 @@ public class MainSettingsFragmentTest {
                 () -> {
                     return !signInPreference
                             .getProfileDataCache()
-                            .getProfileDataOrDefault(accountInfo.getEmail())
+                            .getById(accountInfo.getId())
                             .hasDisplayableEmailAddress();
                 });
         ThreadUtils.runOnUiThreadBlocking(signInPreference::syncStateChanged);
@@ -675,9 +675,9 @@ public class MainSettingsFragmentTest {
                 () -> {
                     return !signInPreference
                             .getProfileDataCache()
-                            .getProfileDataOrDefault(
+                            .getById(
                                     TestAccounts.CHILD_ACCOUNT_NON_DISPLAYABLE_EMAIL_AND_NO_NAME
-                                            .getEmail())
+                                            .getId())
                             .hasDisplayableEmailAddress();
                 });
         ThreadUtils.runOnUiThreadBlocking(signInPreference::syncStateChanged);
