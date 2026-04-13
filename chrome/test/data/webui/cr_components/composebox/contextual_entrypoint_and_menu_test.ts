@@ -6,6 +6,7 @@ import 'chrome://new-tab-page/strings.m.js';
 import 'chrome://resources/cr_components/composebox/contextual_entrypoint_and_menu.js';
 
 import type {ContextualEntrypointAndMenuElement} from 'chrome://resources/cr_components/composebox/contextual_entrypoint_and_menu.js';
+import type {ContextualEntrypointButtonElement} from 'chrome://resources/cr_components/composebox/contextual_entrypoint_button.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {ToolMode} from 'chrome://resources/mojo/components/omnibox/composebox/composebox_query.mojom-webui.js';
 import type {InputState} from 'chrome://resources/mojo/components/omnibox/composebox/composebox_query.mojom-webui.js';
@@ -40,18 +41,23 @@ suite('ContextualEntrypointAndMenu', () => {
 
   test('context menu description hides in tool mode', async () => {
     // Initial state: not in tool mode. Description should be shown.
-    assertTrue(entrypointAndMenu.$.entrypointButton.showContextMenuDescription);
+    let entrypointButton =
+        $$(entrypointAndMenu, '#entrypointButton') as ContextualEntrypointButtonElement;
+    assertTrue(!!entrypointButton);
+    assertTrue(entrypointButton.showContextMenuDescription);
 
     // Enter tool mode.
-    entrypointAndMenu.$.entrypointButton.inputState = {
+    entrypointButton.inputState = {
       ...createValidInputState(),
       activeTool: ToolMode.kDeepSearch,
     };
     await microtasksFinished();
 
     // In tool mode. Description should be hidden.
-    assertFalse(
-        entrypointAndMenu.$.entrypointButton.showContextMenuDescription);
+    entrypointButton =
+        $$(entrypointAndMenu, '#entrypointButton') as ContextualEntrypointButtonElement;
+    assertTrue(!!entrypointButton);
+    assertFalse(entrypointButton.showContextMenuDescription);
 
     // Exit tool mode.
     entrypointAndMenu.inputState = {
@@ -61,7 +67,10 @@ suite('ContextualEntrypointAndMenu', () => {
     await microtasksFinished();
 
     // Back to unspecified mode. Description should be shown again.
-    assertTrue(entrypointAndMenu.$.entrypointButton.showContextMenuDescription);
+    entrypointButton =
+        $$(entrypointAndMenu, '#entrypointButton') as ContextualEntrypointButtonElement;
+    assertTrue(!!entrypointButton);
+    assertTrue(entrypointButton.showContextMenuDescription);
   });
 
   test('context menu shown on entrypoint click event', async () => {
@@ -99,6 +108,73 @@ suite('ContextualEntrypointAndMenu', () => {
 
     assertFalse(!!entrypoint);
   });
+
+  test('menu does not open if entrypoint button is hidden', async () => {
+    entrypointAndMenu.inputState = null;
+    await microtasksFinished();
+
+    assertFalse(!!$$(entrypointAndMenu, '#entrypointButton'));
+
+    // Attempt to open the menu.
+    entrypointAndMenu.openMenuForMultiSelection();
+    await microtasksFinished();
+
+    // The menu should remain closed when the button is hidden.
+    assertFalse(entrypointAndMenu.$.menu.open);
+  });
+
+  test('menu opens asynchronously once input state becomes valid', async () => {
+    entrypointAndMenu.inputState = null;
+    await microtasksFinished();
+
+    // Attempt to open the menu.
+    entrypointAndMenu.openMenuForMultiSelection();
+    await microtasksFinished();
+
+    // The menu should remain closed when the button is hidden.
+    assertFalse(entrypointAndMenu.$.menu.open);
+
+    // Provide a valid inputState.
+    entrypointAndMenu.inputState = createValidInputState();
+    await microtasksFinished();
+
+    // The menu should now open.
+    assertTrue(entrypointAndMenu.$.menu.open);
+  });
+
+  test(
+      'invalid input state clears pending menu open request',
+      async () => {
+        entrypointAndMenu.inputState = null;
+        await microtasksFinished();
+
+        assertFalse(!!$$(entrypointAndMenu, '#entrypointButton'));
+
+        // Attempt to open the menu.
+        entrypointAndMenu.openMenuForMultiSelection();
+        await microtasksFinished();
+
+        // The menu should remain closed when the button is hidden.
+        assertFalse(entrypointAndMenu.$.menu.open);
+
+        // Provide an invalid inputState by clearing the allowed inputs, tools,
+        // and models.
+        entrypointAndMenu.inputState = {
+          ...createValidInputState(),
+          allowedInputTypes: [],
+          allowedTools: [],
+          allowedModels: [],
+        };
+        await microtasksFinished();
+
+        // Provide a valid inputState.
+        entrypointAndMenu.inputState = createValidInputState();
+        await microtasksFinished();
+
+        // The menu should remain closed because the pending open request was
+        // cleared.
+        assertFalse(entrypointAndMenu.$.menu.open);
+      });
 
   test('event fired on context menu open and close', async () => {
     // Act open menu.
