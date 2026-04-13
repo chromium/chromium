@@ -69,6 +69,16 @@ bool IsExtentOutOfBounds(const void* ptr,
                          size_t extent_bytes,
                          size_t type_size);
 
+PA_ALWAYS_INLINE
+bool IsExtentOutOfBounds(const volatile void* ptr,
+                         size_t extent_bytes,
+                         size_t type_size) {
+  // This const cast is safe because we never actually dereference
+  // `ptr`. Therefore we don't care that it points to volatile.
+  return IsExtentOutOfBounds(const_cast<const void*>(ptr), extent_bytes,
+                             type_size);
+}
+
 // Suitable for external callers. Has the same caveats as
 // `IsExtentOutOfBounds()` (but inverted).
 //
