@@ -7,8 +7,8 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/toolbar_button_provider.h"
-#include "chrome/browser/ui/views/profiles/avatar_toolbar_button.h"
 #include "chrome/browser/ui/views/search_ai_mode/signin_promo_view.h"
+#include "chrome/browser/ui/views/toolbar/avatar_toolbar_button_interface.h"
 #include "chrome/grit/branded_strings.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/signin/public/base/signin_switches.h"
@@ -35,8 +35,9 @@ void SearchAIModeSignInPromoController::ShowPromo(BrowserView* browser_view) {
     return;
   }
 
-  AvatarToolbarButton* avatar_button =
-      browser_view->toolbar_button_provider()->GetAvatarToolbarButton();
+  AvatarToolbarButtonInterface* avatar_button =
+      browser_view->toolbar_button_provider()
+          ->GetAvatarToolbarButtonInterface();
   if (!avatar_button) {
     return;
   }
@@ -47,7 +48,8 @@ void SearchAIModeSignInPromoController::ShowPromo(BrowserView* browser_view) {
       /*accessibility_label=*/std::nullopt, /*explicit_action=*/std::nullopt);
 
   auto promo_view = std::make_unique<SearchAIModeSignInPromoView>(
-      avatar_button, web_contents_.get(), GetWeakPtr());
+      avatar_button->GetBubbleAnchor(*browser_view->browser()),
+      web_contents_.get(), GetWeakPtr());
   promo_view_ = promo_view.get();
 
   views::BubbleDialogDelegateView::CreateBubble(std::move(promo_view));

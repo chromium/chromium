@@ -23,6 +23,7 @@
 #include "chrome/browser/ui/views/page_action/page_action_icon_view.h"
 #include "chrome/browser/ui/views/promos/ios_promo_bubble.h"
 #include "chrome/browser/ui/views/side_panel/side_panel.h"
+#include "chrome/browser/ui/views/toolbar/avatar_toolbar_button_interface.h"
 #include "chrome/browser/ui/views/toolbar/browser_app_menu_button.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
 #include "components/feature_engagement/public/feature_constants.h"
@@ -124,16 +125,16 @@ void ShowIOSDesktopPromoBubble(PromoType promo_type,
     }
     case PromoType::kTabGroups: {
       IOSPromoBubble::ShowPromoBubble(
-          {views::BubbleAnchor(
-              toolbar_button_provider->GetAvatarToolbarButton())},
+          {toolbar_button_provider->GetAvatarToolbarButtonInterface()
+               ->GetBubbleAnchor(*browser_view->browser())},
           /*highlighted_button=*/nullptr, /*highlighted_element=*/std::nullopt,
           profile, PromoType::kTabGroups, bubble_type);
       break;
     }
     case PromoType::kPriceTracking: {
       IOSPromoBubble::ShowPromoBubble(
-          {views::BubbleAnchor(
-              toolbar_button_provider->GetAvatarToolbarButton())},
+          {toolbar_button_provider->GetAvatarToolbarButtonInterface()
+               ->GetBubbleAnchor(*browser_view->browser())},
           /*highlighted_button=*/nullptr, /*highlighted_element=*/std::nullopt,
           profile, PromoType::kPriceTracking, bubble_type);
       break;

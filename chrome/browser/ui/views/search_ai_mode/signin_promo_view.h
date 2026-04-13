@@ -9,9 +9,6 @@
 #include "chrome/browser/ui/views/location_bar/location_bar_bubble_delegate_view.h"
 #include "ui/base/interaction/element_identifier.h"
 
-namespace views {
-class View;
-}
 class SearchAIModeSignInPromoController;
 
 DECLARE_ELEMENT_IDENTIFIER_VALUE(kSearchAIModeSignInPromoFrameViewId);
@@ -21,7 +18,7 @@ class SearchAIModeSignInPromoView : public LocationBarBubbleDelegateView {
   METADATA_HEADER(SearchAIModeSignInPromoView, LocationBarBubbleDelegateView)
  public:
   SearchAIModeSignInPromoView(
-      views::View* anchor_view,
+      views::BubbleAnchor anchor,
       content::WebContents* web_contents,
       base::WeakPtr<SearchAIModeSignInPromoController> controller);
   SearchAIModeSignInPromoView(const SearchAIModeSignInPromoView&) = delete;

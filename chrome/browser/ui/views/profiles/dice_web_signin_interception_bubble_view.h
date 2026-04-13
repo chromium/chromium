@@ -20,7 +20,6 @@
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 
 namespace views {
-class View;
 class WebView;
 }  // namespace views
 
@@ -50,7 +49,7 @@ class DiceWebSigninInterceptionBubbleView
   [[nodiscard]] static std::unique_ptr<ScopedWebSigninInterceptionBubbleHandle>
   CreateBubble(
       Browser* browser,
-      views::View* anchor_view,
+      views::BubbleAnchor anchor,
       const WebSigninInterceptor::Delegate::BubbleParameters& bubble_parameters,
       base::OnceCallback<void(SigninInterceptionResult)> callback);
 
@@ -125,7 +124,7 @@ class DiceWebSigninInterceptionBubbleView
 
   DiceWebSigninInterceptionBubbleView(
       Browser* browser,
-      views::View* anchor_view,
+      views::BubbleAnchor anchor,
       const WebSigninInterceptor::Delegate::BubbleParameters& bubble_parameters,
       base::OnceCallback<void(SigninInterceptionResult)> callback);
 

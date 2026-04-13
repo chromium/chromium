@@ -16,11 +16,11 @@
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/toolbar_button_provider.h"
-#include "chrome/browser/ui/views/profiles/avatar_toolbar_button.h"
 #include "chrome/browser/ui/views/profiles/dice_web_signin_interception_bubble_view.h"
 #include "chrome/browser/ui/views/profiles/profile_menu_coordinator.h"
 #include "chrome/browser/ui/views/profiles/profile_menu_view.h"
 #include "chrome/browser/ui/views/profiles/profile_menu_view_base.h"
+#include "chrome/browser/ui/views/toolbar/avatar_toolbar_button_interface.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/interactive_test_utils.h"
 #include "components/signin/public/identity_manager/account_info.h"
@@ -37,16 +37,6 @@
 
 class ProfileBubbleInteractiveUiTest : public InProcessBrowserTest {
  public:
-  // Returns the avatar button, which is the anchor view for the bubbles.
-  views::View* GetAvatarButton() {
-    BrowserView* browser_view =
-        BrowserView::GetBrowserViewForBrowser(browser());
-    views::View* avatar_button =
-        browser_view->toolbar_button_provider()->GetAvatarToolbarButton();
-    DCHECK(avatar_button);
-    return avatar_button;
-  }
-
   // Returns dummy parameters for the interception bubble.
   WebSigninInterceptor::Delegate::BubbleParameters GetTestBubbleParameters() {
     AccountInfo account;
@@ -106,9 +96,13 @@ IN_PROC_BROWSER_TEST_F(ProfileBubbleInteractiveUiTest,
                        DISABLED_InterceptionBubbleFocus) {
   // Create the inteerception bubble, owned by the view hierarchy.
   DiceWebSigninInterceptionBubbleView* bubble =
-      new DiceWebSigninInterceptionBubbleView(browser(), GetAvatarButton(),
-                                              GetTestBubbleParameters(),
-                                              base::DoNothing());
+      new DiceWebSigninInterceptionBubbleView(
+          browser(),
+          BrowserView::GetBrowserViewForBrowser(browser())
+              ->toolbar_button_provider()
+              ->GetAvatarToolbarButtonInterface()
+              ->GetBubbleAnchor(*browser()),
+          GetTestBubbleParameters(), base::DoNothing());
   views::Widget* widget = views::BubbleDialogDelegateView::CreateBubble(bubble);
   widget->Show();
   // The bubble takes focus when it is displayed.

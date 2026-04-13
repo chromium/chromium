@@ -10,10 +10,10 @@
 #include "chrome/browser/ui/test/test_browser_ui.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/toolbar_button_provider.h"
-#include "chrome/browser/ui/views/profiles/avatar_toolbar_button.h"
 #include "chrome/browser/ui/views/profiles/profiles_pixel_test_utils.h"
 #include "chrome/browser/ui/views/search_ai_mode/signin_promo_controller.h"
 #include "chrome/browser/ui/views/search_ai_mode/signin_promo_view.h"
+#include "chrome/browser/ui/views/toolbar/avatar_toolbar_button_interface.h"
 #include "components/contextual_tasks/public/features.h"
 #include "components/signin/public/base/signin_switches.h"
 #include "content/public/test/browser_test.h"
@@ -61,11 +61,12 @@ class SearchAIModeSignInPromoViewPixelTest
   void ShowUi(const std::string& name) override {
     BrowserView* browser_view =
         BrowserView::GetBrowserViewForBrowser(browser());
-    views::View* anchor_view =
-        browser_view->toolbar_button_provider()->GetAvatarToolbarButton();
+    views::BubbleAnchor anchor = browser_view->toolbar_button_provider()
+                                     ->GetAvatarToolbarButtonInterface()
+                                     ->GetBubbleAnchor(*browser());
 
     auto promo_view = std::make_unique<SearchAIModeSignInPromoView>(
-        anchor_view, browser()->tab_strip_model()->GetActiveWebContents(),
+        anchor, browser()->tab_strip_model()->GetActiveWebContents(),
         /*controller=*/nullptr);
     promo_view_tracker_.SetView(promo_view.get());
     views::BubbleDialogDelegateView::CreateBubble(std::move(promo_view))

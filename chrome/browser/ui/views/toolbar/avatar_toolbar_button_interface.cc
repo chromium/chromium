@@ -15,10 +15,8 @@ base::TimeDelta AvatarToolbarButtonInterface::iph_min_delay_after_creation_ =
 
 views::BubbleAnchor AvatarToolbarButtonInterface::GetBubbleAnchor(
     BrowserWindowInterface& browser) {
-  ui::ElementContext context = BrowserElements::From(&browser)->GetContext();
-  return views::BubbleAnchor(
-      ui::ElementTracker::GetElementTracker()->GetUniqueElement(
-          kToolbarAvatarButtonElementId, context));
+  return views::BubbleAnchor(BrowserElements::From(&browser)->GetElement(
+      kToolbarAvatarButtonElementId));
 }
 
 // static

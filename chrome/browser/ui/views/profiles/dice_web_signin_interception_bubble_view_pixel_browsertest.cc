@@ -17,8 +17,8 @@
 #include "chrome/browser/ui/test/test_browser_dialog.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/toolbar_button_provider.h"
-#include "chrome/browser/ui/views/profiles/avatar_toolbar_button.h"
 #include "chrome/browser/ui/views/profiles/dice_web_signin_interception_bubble_view.h"
+#include "chrome/browser/ui/views/toolbar/avatar_toolbar_button_interface.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/profile_destruction_waiter.h"
 #include "chrome/test/base/testing_browser_process.h"
@@ -43,16 +43,6 @@
 using signin::constants::kNoHostedDomainFound;
 
 namespace {
-
-// Returns the avatar button, which is the anchor view for the interception
-// bubble.
-AvatarToolbarButton* GetAvatarButton(Browser* browser) {
-  BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser);
-  AvatarToolbarButton* avatar_button =
-      browser_view->toolbar_button_provider()->GetAvatarToolbarButton();
-  DCHECK(avatar_button);
-  return avatar_button;
-}
 
 enum class NameFormat { Regular, LongName, LongNameSingleWord };
 
@@ -338,8 +328,12 @@ class DiceWebSigninInterceptionBubblePixelTest
         "DiceWebSigninInterceptionBubbleView");
 
     bubble_handle_ = DiceWebSigninInterceptionBubbleView::CreateBubble(
-        browser(), GetAvatarButton(browser()), GetTestBubbleParameters(),
-        base::DoNothing());
+        browser(),
+        BrowserView::GetBrowserViewForBrowser(browser())
+            ->toolbar_button_provider()
+            ->GetAvatarToolbarButtonInterface()
+            ->GetBubbleAnchor(*browser()),
+        GetTestBubbleParameters(), base::DoNothing());
 
     widget_waiter.WaitIfNeededAndGet();
     observer.Wait();

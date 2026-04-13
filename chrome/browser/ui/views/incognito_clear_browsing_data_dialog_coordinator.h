@@ -7,15 +7,11 @@
 
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/incognito_clear_browsing_data_dialog_interface.h"
+#include "ui/views/bubble/bubble_dialog_delegate_view.h"
 #include "ui/views/view_tracker.h"
 
-class BrowserUserEducationInterface;
 class IncognitoClearBrowsingDataDialog;
 class Profile;
-
-namespace views {
-class View;
-}  // namespace views
 
 // Handles the lifetime and showing/hidden state of the clear data dialog. Owned
 // by the associated incognito browser.
@@ -28,9 +24,9 @@ class IncognitoClearBrowsingDataDialogCoordinator {
       const IncognitoClearBrowsingDataDialogCoordinator&) = delete;
   ~IncognitoClearBrowsingDataDialogCoordinator();
 
-  // Shows the bubble for this browser anchored to `anchor_view`.
+  // Shows the bubble for this browser anchored to `anchor`.
   void Show(IncognitoClearBrowsingDataDialogInterface::Type type,
-            views::View* anchor_view);
+            views::BubbleAnchor anchor);
 
   // Returns true if the bubble is currently showing for this window.
   bool IsShowing() const;

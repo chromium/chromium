@@ -211,6 +211,7 @@
 #include "chrome/browser/ui/views/tabs/tab_strip.h"
 #include "chrome/browser/ui/views/tabs/vertical/vertical_tab_strip_top_container.h"
 #include "chrome/browser/ui/views/theme_copying_widget.h"
+#include "chrome/browser/ui/views/toolbar/avatar_toolbar_button_interface.h"
 #include "chrome/browser/ui/views/toolbar/browser_app_menu_button.h"
 #include "chrome/browser/ui/views/toolbar/chrome_labs/chrome_labs_coordinator.h"
 #include "chrome/browser/ui/views/toolbar/pinned_toolbar_actions_container.h"
@@ -6026,7 +6027,8 @@ void BrowserView::ShowIncognitoClearBrowsingDataDialog() {
       ->GetFeatures()
       .incognito_clear_browsing_data_dialog_coordinator()
       ->Show(IncognitoClearBrowsingDataDialogInterface::Type::kDefaultBubble,
-             toolbar_button_provider_->GetAvatarToolbarButton());
+             toolbar_button_provider_->GetAvatarToolbarButtonInterface()
+                 ->GetBubbleAnchor(*browser()));
 }
 
 void BrowserView::ShowIncognitoHistoryDisclaimerDialog() {
@@ -6036,7 +6038,8 @@ void BrowserView::ShowIncognitoHistoryDisclaimerDialog() {
       .incognito_clear_browsing_data_dialog_coordinator()
       ->Show(IncognitoClearBrowsingDataDialogInterface::Type::
                  kHistoryDisclaimerBubble,
-             toolbar_button_provider_->GetAvatarToolbarButton());
+             toolbar_button_provider_->GetAvatarToolbarButtonInterface()
+                 ->GetBubbleAnchor(*browser()));
 }
 
 bool BrowserView::IsTabModalPopupDeprecated() const {

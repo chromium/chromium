@@ -28,6 +28,7 @@
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/toolbar_button_provider.h"
 #include "chrome/browser/ui/views/profiles/avatar_toolbar_button.h"
+#include "chrome/browser/ui/views/toolbar/avatar_toolbar_button_interface.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "chrome/browser/ui/webui/signin/dice_web_signin_intercept_ui.h"
 #include "chrome/common/webui_url_constants.h"
@@ -219,12 +220,12 @@ DiceWebSigninInterceptionBubbleView::~DiceWebSigninInterceptionBubbleView() {
 std::unique_ptr<ScopedWebSigninInterceptionBubbleHandle>
 DiceWebSigninInterceptionBubbleView::CreateBubble(
     Browser* browser,
-    views::View* anchor_view,
+    views::BubbleAnchor anchor,
     const WebSigninInterceptor::Delegate::BubbleParameters& bubble_parameters,
     base::OnceCallback<void(SigninInterceptionResult)> callback) {
   auto interception_bubble =
       base::WrapUnique(new DiceWebSigninInterceptionBubbleView(
-          browser, anchor_view, bubble_parameters, std::move(callback)));
+          browser, anchor, bubble_parameters, std::move(callback)));
   std::unique_ptr<ScopedWebSigninInterceptionBubbleHandle> handle =
       interception_bubble->GetHandle();
   // The widget is owned by the views system and shown after the view is loaded
@@ -303,11 +304,10 @@ content::WebContents* DiceWebSigninInterceptionBubbleView::AddNewContents(
 
 DiceWebSigninInterceptionBubbleView::DiceWebSigninInterceptionBubbleView(
     Browser* browser,
-    views::View* anchor_view,
+    views::BubbleAnchor anchor,
     const WebSigninInterceptor::Delegate::BubbleParameters& bubble_parameters,
     base::OnceCallback<void(SigninInterceptionResult)> callback)
-    : views::BubbleDialogDelegateView(anchor_view,
-                                      views::BubbleBorder::TOP_RIGHT),
+    : views::BubbleDialogDelegateView(anchor, views::BubbleBorder::TOP_RIGHT),
       profile_keep_alive_(
           browser->profile(),
           ProfileKeepAliveOrigin::kDiceWebSigninInterceptionBubble),
@@ -501,10 +501,12 @@ DiceWebSigninInterceptorDelegate::ShowSigninInterceptionBubbleInternal(
     base::OnceCallback<void(SigninInterceptionResult)> callback) {
   DCHECK(browser);
 
-  views::View* anchor_view = GetAvatarToolbarButton(*browser);
-  DCHECK(anchor_view);
+  views::BubbleAnchor anchor = BrowserView::GetBrowserViewForBrowser(browser)
+                                   ->toolbar_button_provider()
+                                   ->GetAvatarToolbarButtonInterface()
+                                   ->GetBubbleAnchor(*browser);
   return DiceWebSigninInterceptionBubbleView::CreateBubble(
-      browser, anchor_view, bubble_parameters, std::move(callback));
+      browser, anchor, bubble_parameters, std::move(callback));
 }
 
 BEGIN_METADATA(DiceWebSigninInterceptionBubbleView)

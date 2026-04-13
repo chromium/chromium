@@ -23,12 +23,11 @@
 #include "ui/views/metadata/view_factory.h"
 #include "ui/views/style/typography.h"
 #include "ui/views/style/typography_provider.h"
-
 IncognitoClearBrowsingDataDialog::IncognitoClearBrowsingDataDialog(
-    views::View* anchor_view,
+    views::BubbleAnchor anchor,
     Profile* incognito_profile,
     Type type)
-    : BubbleDialogDelegateView(anchor_view, views::BubbleBorder::TOP_RIGHT),
+    : views::BubbleDialogDelegateView(anchor, views::BubbleBorder::TOP_RIGHT),
       dialog_type_(type),
       incognito_profile_(incognito_profile) {
   DCHECK(incognito_profile_);
