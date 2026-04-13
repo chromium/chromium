@@ -46,6 +46,7 @@ std::vector<std::string> GetTestSuiteNames() {
   return {
       "NewGlicApiTest",
       "NewGlicApiTestWithWebContentsWarming",
+      "NewGlicApiTestWithPixelOutput",
   };
 }
 
@@ -136,7 +137,6 @@ class NewGlicApiTest : public GlicApiBrowserTest,
             features::kGlicCountryFiltering,
             features::kGlicLocaleFiltering,
         });
-    EnablePixelOutput(2.0f);
   }
 
   void SetUpOnMainThread() override {
@@ -175,6 +175,15 @@ class NewGlicApiTestWithWebContentsWarming : public NewGlicApiTest {
 
  private:
   base::test::ScopedFeatureList feature_list_;
+};
+
+class NewGlicApiTestWithPixelOutput : public NewGlicApiTest {
+ public:
+  NewGlicApiTestWithPixelOutput() {
+    // Pixel output is necessary for some tests, but it slows down the tests
+    // significantly, and may cause flakes on some platforms.
+    EnablePixelOutput(2.0f);
+  }
 };
 
 IN_PROC_BROWSER_TEST_P(NewGlicApiTestWithWebContentsWarming,
@@ -339,7 +348,8 @@ IN_PROC_BROWSER_TEST_P(NewGlicApiTest, MAYBE_testInvocationSource) {
 #else
 #define MAYBE_testFaviconLoadsWithGetTabById testFaviconLoadsWithGetTabById
 #endif
-IN_PROC_BROWSER_TEST_P(NewGlicApiTest, MAYBE_testFaviconLoadsWithGetTabById) {
+IN_PROC_BROWSER_TEST_P(NewGlicApiTestWithPixelOutput,
+                       MAYBE_testFaviconLoadsWithGetTabById) {
   auto* tab_0_contents = GetTabListInterface()->GetTab(0)->GetContents();
   ASSERT_TRUE(content::NavigateToURL(tab_0_contents, GetTestUrl("page.html")));
   GetTabListInterface()->OpenTab(GetTestUrl("page2.html"), -1);
@@ -351,7 +361,8 @@ IN_PROC_BROWSER_TEST_P(NewGlicApiTest, MAYBE_testFaviconLoadsWithGetTabById) {
   ExecuteJsTest();
 }
 
-IN_PROC_BROWSER_TEST_P(NewGlicApiTest, testFaviconLoadsWithGetTabFaviconById) {
+IN_PROC_BROWSER_TEST_P(NewGlicApiTestWithPixelOutput,
+                       testFaviconLoadsWithGetTabFaviconById) {
   auto* tab_0_contents = GetTabListInterface()->GetTab(0)->GetContents();
   ASSERT_TRUE(content::NavigateToURL(tab_0_contents, GetTestUrl("page.html")));
 
@@ -364,7 +375,7 @@ IN_PROC_BROWSER_TEST_P(NewGlicApiTest, testFaviconLoadsWithGetTabFaviconById) {
   ExecuteJsTest();
 }
 
-IN_PROC_BROWSER_TEST_P(NewGlicApiTest, testFaviconIsUpdated) {
+IN_PROC_BROWSER_TEST_P(NewGlicApiTestWithPixelOutput, testFaviconIsUpdated) {
   ASSERT_OK(OpenGlicForActiveTab());
 
   ExecuteJsTest();
@@ -378,7 +389,7 @@ IN_PROC_BROWSER_TEST_P(NewGlicApiTest, testFaviconIsUpdated) {
   ContinueJsTest();
 }
 
-IN_PROC_BROWSER_TEST_P(NewGlicApiTest, testFaviconIsRemoved) {
+IN_PROC_BROWSER_TEST_P(NewGlicApiTestWithPixelOutput, testFaviconIsRemoved) {
   ASSERT_OK(OpenGlicForActiveTab());
 
   ExecuteJsTest();
@@ -389,7 +400,7 @@ IN_PROC_BROWSER_TEST_P(NewGlicApiTest, testFaviconIsRemoved) {
   ContinueJsTest();
 }
 
-IN_PROC_BROWSER_TEST_P(NewGlicApiTest,
+IN_PROC_BROWSER_TEST_P(NewGlicApiTestWithPixelOutput,
                        testFaviconIsOmittedWithClientCapabilities) {
   ASSERT_OK(OpenGlicForActiveTab());
   GetOnlyGlicInstance()->sharing_manager().PinTabs(
@@ -437,9 +448,15 @@ INSTANTIATE_TEST_SUITE_P(,
                          NewGlicApiTestWithWebContentsWarming,
                          DefaultTestParamSet(),
                          &WithTestParams::PrintTestVariant);
+
+INSTANTIATE_TEST_SUITE_P(,
+                         NewGlicApiTestWithPixelOutput,
+                         DefaultTestParamSet(),
+                         &WithTestParams::PrintTestVariant);
 #else
 GTEST_ALLOW_UNINSTANTIATED_PARAMETERIZED_TEST(NewGlicApiTest);
 GTEST_ALLOW_UNINSTANTIATED_PARAMETERIZED_TEST(
     NewGlicApiTestWithWebContentsWarming);
+GTEST_ALLOW_UNINSTANTIATED_PARAMETERIZED_TEST(NewGlicApiTestWithPixelOutput);
 #endif
 }  // namespace glic

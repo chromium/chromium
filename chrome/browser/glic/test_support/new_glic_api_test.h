@@ -107,6 +107,8 @@ class GlicApiBrowserTestMixin : public GlicBrowserTestMixin<T> {
         /*disabled_features=*/
         {
             features::kGlicWarming,
+            // Tests are sometimes slow, and fail the responsiveness check.
+            features::kGlicClientResponsivenessCheck,
         });
   }
   ~GlicApiBrowserTestMixin() override = default;
