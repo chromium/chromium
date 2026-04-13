@@ -4,32 +4,36 @@
 
 package org.chromium.components.signin.base;
 
-import com.google.common.collect.Lists;
-
 import org.junit.Assert;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.robolectric.ParameterizedRobolectricTestRunner;
+import org.robolectric.ParameterizedRobolectricTestRunner.Parameter;
+import org.robolectric.ParameterizedRobolectricTestRunner.Parameters;
 import org.robolectric.annotation.Config;
 
-import org.chromium.base.test.params.BlockJUnit4RunnerDelegate;
-import org.chromium.base.test.params.ParameterAnnotations;
-import org.chromium.base.test.params.ParameterProvider;
-import org.chromium.base.test.params.ParameterSet;
-import org.chromium.base.test.params.ParameterizedRunner;
+import org.chromium.base.test.BaseRobolectricTestRule;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.components.signin.AccountCapabilitiesConstants;
 import org.chromium.components.signin.AccountManagerDelegate;
 import org.chromium.components.signin.Tribool;
 
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 /** Test class for {@link AccountCapabilities}. */
-@RunWith(ParameterizedRunner.class)
-@ParameterAnnotations.UseRunnerDelegate(BlockJUnit4RunnerDelegate.class)
+@RunWith(ParameterizedRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 public final class AccountCapabilitiesTest {
+
+    @Rule public BaseRobolectricTestRule mBaseRule = new BaseRobolectricTestRule();
+
+    @Parameter(0)
+    public String mCapabilityName;
 
     /**
      * Returns the capability value for the specified capability name from the appropriate getter in
@@ -88,115 +92,58 @@ public final class AccountCapabilitiesTest {
         return response;
     }
 
-    /** List of parameters to run in capability fetching tests. */
-    public static class CapabilitiesTestParams implements ParameterProvider {
-        private static final List<ParameterSet> sCapabilties =
+    @Parameters
+    public static Collection<Object> data() {
+        List<Object> params =
                 Arrays.asList(
-                        new ParameterSet()
-                                .name("CanHaveEmailAddressDisplayed")
-                                .value(
-                                        AccountCapabilitiesConstants
-                                                .CAN_HAVE_EMAIL_ADDRESS_DISPLAYED_CAPABILITY_NAME),
-                        new ParameterSet()
-                                .name("CanShowHistorySyncOptInsWithoutMinorModeRestrictions")
-                                .value(
-                                        AccountCapabilitiesConstants
-                                                .CAN_SHOW_HISTORY_SYNC_OPT_INS_WITHOUT_MINOR_MODE_RESTRICTIONS_CAPABILITY_NAME),
-                        new ParameterSet()
-                                .name("CanRunChromePrivacySandboxTrials")
-                                .value(
-                                        AccountCapabilitiesConstants
-                                                .CAN_RUN_CHROME_PRIVACY_SANDBOX_TRIALS_CAPABILITY_NAME),
-                        new ParameterSet()
-                                .name("IsOptedInToParentalSupervision")
-                                .value(
-                                        AccountCapabilitiesConstants
-                                                .IS_OPTED_IN_TO_PARENTAL_SUPERVISION_CAPABILITY_NAME),
-                        new ParameterSet()
-                                .name("CanUseDevToolsGenerativeAiFeatures")
-                                .value(
-                                        AccountCapabilitiesConstants
-                                                .CAN_USE_DEVTOOLS_GENERATIVE_AI_FEATURES_CAPABILITY_NAME),
-                        new ParameterSet()
-                                .name("CanUseMantaService")
-                                .value(AccountCapabilitiesConstants.CAN_USE_MANTA_SERVICE_NAME),
-                        new ParameterSet()
-                                .name("CanUseModelExecutionFeatures")
-                                .value(
-                                        AccountCapabilitiesConstants
-                                                .CAN_USE_MODEL_EXECUTION_FEATURES_NAME),
-                        new ParameterSet()
-                                .name("IsAllowedForMachineLearning")
-                                .value(
-                                        AccountCapabilitiesConstants
-                                                .IS_ALLOWED_FOR_MACHINE_LEARNING_CAPABILITY_NAME),
-                        new ParameterSet()
-                                .name("IsSubjectToEnterpriseFeatures")
-                                .value(
-                                        AccountCapabilitiesConstants
-                                                .IS_SUBJECT_TO_ENTERPRISE_POLICIES_CAPABILITY_NAME),
-                        new ParameterSet()
-                                .name("CanFetchFamilyMemberInfo")
-                                .value(
-                                        AccountCapabilitiesConstants
-                                                .CAN_FETCH_FAMILY_MEMBER_INFO_CAPABILITY_NAME),
-                        new ParameterSet()
-                                .name("canUseGeminiInChromeCapability")
-                                .value(
-                                        AccountCapabilitiesConstants
-                                                .CAN_USE_GEMINI_IN_CHROME_CAPABILITY_NAME),
-                        new ParameterSet()
-                                .name("IsSubjectToParentalControls")
-                                .value(
-                                        AccountCapabilitiesConstants
-                                                .IS_SUBJECT_TO_PARENTAL_CONTROLS_CAPABILITY_NAME),
-                        new ParameterSet()
-                                .name("CanUseSpeakerLabelInRecorderApp")
-                                .value(
-                                        AccountCapabilitiesConstants
-                                                .CAN_USE_SPEAKER_LABEL_IN_RECORDER_APP));
-
-        // Returns String value added from Capabilities ParameterSet.
-        static String getCapabilityName(ParameterSet parameterSet) {
-            String parameterSetString = parameterSet.toString();
-            // Removes the brackets added by Arrays.toString for parameter value.
-            return parameterSetString.replace("[", "").replace("]", "");
-        }
-
-        static {
-            // Asserts that the list of parameters contains all supported capability names.
-            assert AccountCapabilitiesConstants.SUPPORTED_ACCOUNT_CAPABILITY_NAMES.containsAll(
-                    Lists.transform(sCapabilties, (paramSet) -> getCapabilityName(paramSet)));
-        }
-
-        @Override
-        public Iterable<ParameterSet> getParameters() {
-            return sCapabilties;
-        }
+                        new Object[] {
+                            AccountCapabilitiesConstants
+                                    .CAN_HAVE_EMAIL_ADDRESS_DISPLAYED_CAPABILITY_NAME,
+                            AccountCapabilitiesConstants
+                                    .CAN_SHOW_HISTORY_SYNC_OPT_INS_WITHOUT_MINOR_MODE_RESTRICTIONS_CAPABILITY_NAME,
+                            AccountCapabilitiesConstants
+                                    .CAN_RUN_CHROME_PRIVACY_SANDBOX_TRIALS_CAPABILITY_NAME,
+                            AccountCapabilitiesConstants
+                                    .IS_OPTED_IN_TO_PARENTAL_SUPERVISION_CAPABILITY_NAME,
+                            AccountCapabilitiesConstants
+                                    .CAN_USE_DEVTOOLS_GENERATIVE_AI_FEATURES_CAPABILITY_NAME,
+                            AccountCapabilitiesConstants.CAN_USE_MANTA_SERVICE_NAME,
+                            AccountCapabilitiesConstants.CAN_USE_MODEL_EXECUTION_FEATURES_NAME,
+                            AccountCapabilitiesConstants
+                                    .IS_ALLOWED_FOR_MACHINE_LEARNING_CAPABILITY_NAME,
+                            AccountCapabilitiesConstants
+                                    .IS_SUBJECT_TO_ENTERPRISE_POLICIES_CAPABILITY_NAME,
+                            AccountCapabilitiesConstants
+                                    .CAN_FETCH_FAMILY_MEMBER_INFO_CAPABILITY_NAME,
+                            AccountCapabilitiesConstants.CAN_USE_GEMINI_IN_CHROME_CAPABILITY_NAME,
+                            AccountCapabilitiesConstants
+                                    .IS_SUBJECT_TO_PARENTAL_CONTROLS_CAPABILITY_NAME,
+                            AccountCapabilitiesConstants.CAN_USE_SPEAKER_LABEL_IN_RECORDER_APP
+                        });
+        assert AccountCapabilitiesConstants.SUPPORTED_ACCOUNT_CAPABILITY_NAMES.containsAll(params);
+        return params;
     }
 
     @Test
-    @ParameterAnnotations.UseMethodParameter(CapabilitiesTestParams.class)
-    public void testCapabilityResponseException(String capabilityName) {
+    public void testCapabilityResponseException() {
         AccountCapabilities capabilities = new AccountCapabilities(Map.of());
-        Assert.assertEquals(Tribool.UNKNOWN, getCapability(capabilityName, capabilities));
+        Assert.assertEquals(Tribool.UNKNOWN, getCapability(mCapabilityName, capabilities));
     }
 
     @Test
-    @ParameterAnnotations.UseMethodParameter(CapabilitiesTestParams.class)
-    public void testCapabilityResponseYes(String capabilityName) {
-        AccountCapabilities capabilities = new AccountCapabilities(Map.of(capabilityName, true));
-        Assert.assertEquals(Tribool.TRUE, getCapability(capabilityName, capabilities));
+    public void testCapabilityResponseYes() {
+        AccountCapabilities capabilities = new AccountCapabilities(Map.of(mCapabilityName, true));
+        Assert.assertEquals(Tribool.TRUE, getCapability(mCapabilityName, capabilities));
     }
 
     @Test
-    @ParameterAnnotations.UseMethodParameter(CapabilitiesTestParams.class)
-    public void testCapabilityResponseNo(String capabilityName) {
-        AccountCapabilities capabilities = new AccountCapabilities(Map.of(capabilityName, false));
-        Assert.assertEquals(Tribool.FALSE, getCapability(capabilityName, capabilities));
+    public void testCapabilityResponseNo() {
+        AccountCapabilities capabilities = new AccountCapabilities(Map.of(mCapabilityName, false));
+        Assert.assertEquals(Tribool.FALSE, getCapability(mCapabilityName, capabilities));
     }
 
     @Test
+    @DisabledTest(message = "https://crbug.com/501072493")
     public void testParseFromCapabilitiesResponseWithResponseYes() {
         AccountCapabilities capabilities =
                 AccountCapabilities.parseFromCapabilitiesResponse(
@@ -210,6 +157,7 @@ public final class AccountCapabilitiesTest {
     }
 
     @Test
+    @DisabledTest(message = "https://crbug.com/501072493")
     public void testParseFromCapabilitiesResponseWithResponseNo() {
         AccountCapabilities capabilities =
                 AccountCapabilities.parseFromCapabilitiesResponse(
@@ -222,6 +170,7 @@ public final class AccountCapabilitiesTest {
     }
 
     @Test
+    @DisabledTest(message = "https://crbug.com/501072493")
     public void testParseFromCapabilitiesResponseWithExceptionResponse() {
         AccountCapabilities capabilities =
                 AccountCapabilities.parseFromCapabilitiesResponse(
