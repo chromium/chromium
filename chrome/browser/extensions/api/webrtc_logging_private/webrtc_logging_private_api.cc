@@ -172,9 +172,7 @@ content::RenderProcessHost* WebrtcLoggingPrivateFunction::RphFromRequest(
   GURL expected_origin =
       contents->GetLastCommittedURL().DeprecatedGetOriginAsURL();
   if (expected_origin.spec() != security_origin) {
-    *error = base::StringPrintf(
-        "Invalid security origin. Expected=%s, actual=%s",
-        expected_origin.spec().c_str(), security_origin.c_str());
+    *error = "Invalid security origin.";
     return nullptr;
   }
 
