@@ -728,8 +728,8 @@ static_library("test_support") {
     sources += [
       "../browser/pdf/pdf_extension_test_base.cc",
       "../browser/pdf/pdf_extension_test_base.h",
-      "../browser/pdf/test_pdf_viewer_stream_manager.cc",
-      "../browser/pdf/test_pdf_viewer_stream_manager.h",
+      "../browser/pdf/test_mime_handler_stream_manager.cc",
+      "../browser/pdf/test_mime_handler_stream_manager.h",
     ]
 
     deps += [
@@ -10351,7 +10351,7 @@ test("unit_tests") {
   if (enable_pdf) {
     sources += [
       "../browser/extensions/api/pdf_viewer_private/pdf_viewer_private_api_unittest.cc",
-      "../browser/pdf/pdf_viewer_stream_manager_unittest.cc",
+      "../browser/pdf/mime_handler_stream_manager_unittest.cc",
       "../common/pdf_util_unittest.cc",
     ]
     deps += [

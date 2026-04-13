@@ -69,7 +69,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/with_feature_override.h"
 #include "chrome/browser/pdf/pdf_extension_test_util.h"
-#include "chrome/browser/pdf/test_pdf_viewer_stream_manager.h"
+#include "chrome/browser/pdf/test_mime_handler_stream_manager.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "pdf/pdf_features.h"
@@ -923,13 +923,13 @@ class DebuggerExtensionApiOopifPdfTest : public DebuggerExtensionApiTest {
     feature_list_.InitAndEnableFeature(chrome_pdf::features::kPdfOopif);
   }
 
-  pdf::TestPdfViewerStreamManager* GetTestPdfViewerStreamManager() {
-    return factory_.GetTestPdfViewerStreamManager(GetActiveWebContents());
+  pdf::TestMimeHandlerStreamManager* GetTestMimeHandlerStreamManager() {
+    return factory_.GetTestMimeHandlerStreamManager(GetActiveWebContents());
   }
 
  private:
   base::test::ScopedFeatureList feature_list_;
-  pdf::TestPdfViewerStreamManagerFactory factory_;
+  pdf::TestMimeHandlerStreamManagerFactory factory_;
 };
 
 // Test that the inner PDF frames, i.e. the PDF extension frame and the PDF
@@ -940,7 +940,7 @@ IN_PROC_BROWSER_TEST_F(DebuggerExtensionApiOopifPdfTest, GetTargets) {
   // Load a full-page PDF.
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), pdf_url));
   content::WebContents* web_contents = GetActiveWebContents();
-  ASSERT_TRUE(GetTestPdfViewerStreamManager()->WaitUntilPdfLoaded(
+  ASSERT_TRUE(GetTestMimeHandlerStreamManager()->WaitUntilPdfLoaded(
       web_contents->GetPrimaryMainFrame()));
 
   // Get targets.

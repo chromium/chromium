@@ -2,16 +2,18 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_PDF_PDF_VIEWER_STREAM_MANAGER_H_
-#define CHROME_BROWSER_PDF_PDF_VIEWER_STREAM_MANAGER_H_
+#ifndef CHROME_BROWSER_PDF_MIME_HANDLER_STREAM_MANAGER_H_
+#define CHROME_BROWSER_PDF_MIME_HANDLER_STREAM_MANAGER_H_
 
 #include <map>
 #include <memory>
 #include <optional>
 
+#include "base/memory/weak_ptr.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_contents_user_data.h"
 #include "extensions/browser/mime_handler/stream_info.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
 
 namespace content {
 struct GlobalRenderFrameHostId;
@@ -22,12 +24,15 @@ class WebContents;
 }  // namespace content
 
 namespace extensions {
+namespace mime_handler {
+class BeforeUnloadControl;
+}
 class StreamContainer;
 }  // namespace extensions
 
 namespace pdf {
 
-// `PdfViewerStreamManager` is used for PDF navigation. It tracks all
+// `MimeHandlerStreamManager` is used for PDF navigation. It tracks all
 // PDF navigation events in a `content::WebContents`. It handles multiple PDF
 // viewer instances in a single `content::WebContents`. It is responsible for:
 // 1. Storing the `extensions::StreamContainer` PDF data.
@@ -39,26 +44,26 @@ namespace pdf {
 // 4. Observing for the PDF content RFH to register the stream as a subresource
 //    override for the final PDF commit navigation and to set up postMessage
 //    support.
-// `PdfViewerStreamManager` is scoped to the `content::WebContents` it tracks,
+// `MimeHandlerStreamManager` is scoped to the `content::WebContents` it tracks,
 // but it may also delete itself if all PDF streams are no longer used.
 // `extensions::StreamContainer` objects are stored from
 // `PluginResponseInterceptorURLLoaderThrottle::WillProcessResponse()` until
 // the PDF viewer is no longer in use.
 //
-// Use `PdfViewerStreamManager::Create()` to create an instance.
-// Use `PdfViewerStreamManager::FromWebContents()` to get an instance.
-class PdfViewerStreamManager
+// Use `MimeHandlerStreamManager::Create()` to create an instance.
+// Use `MimeHandlerStreamManager::FromWebContents()` to get an instance.
+class MimeHandlerStreamManager
     : public content::WebContentsObserver,
-      public content::WebContentsUserData<PdfViewerStreamManager> {
+      public content::WebContentsUserData<MimeHandlerStreamManager> {
  public:
   // A factory interface used to generate test PDF stream managers.
   class Factory {
    public:
-    // If PdfViewerStreamManager has a factory set, then
-    // `PdfViewerStreamManager::Create()` will automatically use
-    // `CreatePdfViewerStreamManager()` to create the PDF stream manager if
+    // If MimeHandlerStreamManager has a factory set, then
+    // `MimeHandlerStreamManager::Create()` will automatically use
+    // `CreateMimeHandlerStreamManager()` to create the PDF stream manager if
     // necessary for PDF navigations.
-    virtual void CreatePdfViewerStreamManager(
+    virtual void CreateMimeHandlerStreamManager(
         content::WebContents* contents) = 0;
 
    protected:
@@ -81,20 +86,20 @@ class PdfViewerStreamManager
     content::GlobalRenderFrameHostId global_id;
   };
 
-  // Creates a `PdfViewerStreamManager` for `contents`, if one doesn't already
+  // Creates a `MimeHandlerStreamManager` for `contents`, if one doesn't already
   // exist.
   static void Create(content::WebContents* contents);
 
   // Use `Create()` to create an instance instead.
   static void CreateForWebContents(content::WebContents*) = delete;
 
-  PdfViewerStreamManager(const PdfViewerStreamManager&) = delete;
-  PdfViewerStreamManager& operator=(const PdfViewerStreamManager&) = delete;
-  ~PdfViewerStreamManager() override;
+  MimeHandlerStreamManager(const MimeHandlerStreamManager&) = delete;
+  MimeHandlerStreamManager& operator=(const MimeHandlerStreamManager&) = delete;
+  ~MimeHandlerStreamManager() override;
 
-  // Returns a pointer to the `PdfViewerStreamManager` instance associated with
-  // the `content::WebContents` of `render_frame_host`.
-  static PdfViewerStreamManager* FromRenderFrameHost(
+  // Returns a pointer to the `MimeHandlerStreamManager` instance associated
+  // with the `content::WebContents` of `render_frame_host`.
+  static MimeHandlerStreamManager* FromRenderFrameHost(
       content::RenderFrameHost* render_frame_host);
 
   // Overrides factory for testing. Default (nullptr) value indicates regular
@@ -208,7 +213,7 @@ class PdfViewerStreamManager
 
  protected:
   // Use `Create()` to create an instance instead.
-  explicit PdfViewerStreamManager(content::WebContents* contents);
+  explicit MimeHandlerStreamManager(content::WebContents* contents);
 
   // Returns the stream info claimed by `embedder_host`, or nullptr if there's
   // no existing stream.
@@ -237,7 +242,7 @@ class PdfViewerStreamManager
       content::GlobalRenderFrameHostId global_id);
 
  private:
-  friend class content::WebContentsUserData<PdfViewerStreamManager>;
+  friend class content::WebContentsUserData<MimeHandlerStreamManager>;
   WEB_CONTENTS_USER_DATA_KEY_DECL();
 
   // Mark an unclaimed stream info with the same frame tree node ID as
@@ -280,11 +285,20 @@ class PdfViewerStreamManager
   void SetStreamContentHostFrameTreeNodeId(
       content::NavigationHandle* navigation_handle);
 
+  // Sets up beforeunload API support for full-page PDF viewers.
+  // TODO(crbug.com/40268279): Currently a no-op. Support the beforeunload API.
+  void SetUpBeforeUnloadControl(
+      mojo::PendingRemote<extensions::mime_handler::BeforeUnloadControl>
+          before_unload_control_remote);
+
   // Stores stream info by embedder host info.
   std::map<EmbedderHostInfo, std::unique_ptr<extensions::StreamInfo>>
       stream_infos_;
+
+  // Needed to avoid use-after-free when setting up beforeunload API support.
+  base::WeakPtrFactory<MimeHandlerStreamManager> weak_factory_{this};
 };
 
 }  // namespace pdf
 
-#endif  // CHROME_BROWSER_PDF_PDF_VIEWER_STREAM_MANAGER_H_
+#endif  // CHROME_BROWSER_PDF_MIME_HANDLER_STREAM_MANAGER_H_

@@ -22,7 +22,7 @@
 #include "pdf/buildflags.h"
 
 #if BUILDFLAG(ENABLE_PDF)
-#include "chrome/browser/pdf/pdf_viewer_stream_manager.h"
+#include "chrome/browser/pdf/mime_handler_stream_manager.h"
 #include "extensions/common/constants.h"
 #include "pdf/pdf_features.h"
 #endif  // BUILDFLAG(ENABLE_PDF)
@@ -83,8 +83,8 @@ void SendExecuteMimeTypeHandlerEvent(
 #if BUILDFLAG(ENABLE_PDF)
   if (chrome_pdf::features::IsOopifPdfEnabled() &&
       extension_id == extension_misc::kPdfExtensionId) {
-    pdf::PdfViewerStreamManager::Create(web_contents);
-    pdf::PdfViewerStreamManager::FromWebContents(web_contents)
+    pdf::MimeHandlerStreamManager::Create(web_contents);
+    pdf::MimeHandlerStreamManager::FromWebContents(web_contents)
         ->AddStreamContainer(frame_tree_node_id, internal_id,
                              std::move(stream_container));
     return;

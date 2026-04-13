@@ -43,7 +43,7 @@
 #include "chrome/browser/lens/region_search/lens_region_search_controller.h"
 #include "chrome/browser/pdf/pdf_extension_test_base.h"
 #include "chrome/browser/pdf/pdf_extension_test_util.h"
-#include "chrome/browser/pdf/test_pdf_viewer_stream_manager.h"
+#include "chrome/browser/pdf/test_mime_handler_stream_manager.h"
 #include "chrome/browser/policy/developer_tools_policy_handler.h"
 #include "chrome/browser/policy/profile_policy_connector.h"
 #include "chrome/browser/preloading/scoped_prewarm_feature_list.h"
@@ -604,7 +604,7 @@ class PdfPluginContextMenuBrowserTest : public PDFExtensionTestBase {
     // frame.
     content::RenderFrameHost* frame;
     if (UseOopif()) {
-      ASSERT_TRUE(GetTestPdfViewerStreamManager(web_contents)
+      ASSERT_TRUE(GetTestMimeHandlerStreamManager(web_contents)
                       ->WaitUntilPdfLoadedInFirstChild());
       frame = pdf_extension_test_util::GetOnlyPdfExtensionHost(web_contents);
     } else {
@@ -3058,7 +3058,7 @@ IN_PROC_BROWSER_TEST_P(PdfPluginContextMenuBrowserTestWithOopifOverride,
   if (UseOopif()) {
     // Create the manager first, since the following HTML page doesn't wait for
     // the PDF navigation to complete.
-    CreateTestPdfViewerStreamManager(
+    CreateTestMimeHandlerStreamManager(
         browser()->tab_strip_model()->GetActiveWebContents());
   }
 
@@ -3099,7 +3099,7 @@ IN_PROC_BROWSER_TEST_F(OopifPdfPluginContextMenuBrowserTest,
   WebContents* web_contents = GetActiveWebContents();
 
   // Wait for the PDF content frame to be created.
-  ASSERT_TRUE(GetTestPdfViewerStreamManager(web_contents)
+  ASSERT_TRUE(GetTestMimeHandlerStreamManager(web_contents)
                   ->WaitUntilPdfLoadedInFirstChild());
 
   // Get the PDF content frame.

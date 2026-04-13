@@ -59,7 +59,7 @@
 
 #if BUILDFLAG(ENABLE_PDF)
 #include "base/test/with_feature_override.h"
-#include "chrome/browser/pdf/test_pdf_viewer_stream_manager.h"
+#include "chrome/browser/pdf/test_mime_handler_stream_manager.h"
 #include "components/guest_view/browser/guest_view_base.h"
 #include "components/guest_view/browser/guest_view_manager_delegate.h"
 #include "components/guest_view/browser/test_guest_view_manager.h"
@@ -1561,7 +1561,7 @@ class SitePerProcessInteractivePDFTest
   void SetUpOnMainThread() override {
     SitePerProcessInteractiveBrowserTest::SetUpOnMainThread();
     if (UseOopif()) {
-      factory_ = std::make_unique<pdf::TestPdfViewerStreamManagerFactory>();
+      factory_ = std::make_unique<pdf::TestMimeHandlerStreamManagerFactory>();
     } else {
       auto factory =
           std::make_unique<guest_view::TestGuestViewManagerFactory>();
@@ -1585,23 +1585,24 @@ class SitePerProcessInteractivePDFTest
     return test_guest_view_manager_;
   }
 
-  pdf::TestPdfViewerStreamManager* GetTestPdfViewerStreamManager() const {
-    return std::get<std::unique_ptr<pdf::TestPdfViewerStreamManagerFactory>>(
+  pdf::TestMimeHandlerStreamManager* GetTestMimeHandlerStreamManager() const {
+    return std::get<std::unique_ptr<pdf::TestMimeHandlerStreamManagerFactory>>(
                factory_)
-        ->GetTestPdfViewerStreamManager(
+        ->GetTestMimeHandlerStreamManager(
             browser()->tab_strip_model()->GetActiveWebContents());
   }
 
-  void CreateTestPdfViewerStreamManager() const {
-    std::get<std::unique_ptr<pdf::TestPdfViewerStreamManagerFactory>>(factory_)
-        ->CreatePdfViewerStreamManager(
+  void CreateTestMimeHandlerStreamManager() const {
+    std::get<std::unique_ptr<pdf::TestMimeHandlerStreamManagerFactory>>(
+        factory_)
+        ->CreateMimeHandlerStreamManager(
             browser()->tab_strip_model()->GetActiveWebContents());
   }
 
   void WaitUntilPdfLoaded(content::RenderFrameHost* embedder_host) {
     if (UseOopif()) {
       ASSERT_TRUE(
-          GetTestPdfViewerStreamManager()->WaitUntilPdfLoaded(embedder_host));
+          GetTestMimeHandlerStreamManager()->WaitUntilPdfLoaded(embedder_host));
     } else {
       auto* guest_view =
           GetTestGuestViewManager()->WaitForSingleGuestViewCreated();
@@ -1619,7 +1620,7 @@ class SitePerProcessInteractivePDFTest
  private:
   std::variant<std::monostate,
                std::unique_ptr<guest_view::TestGuestViewManagerFactory>,
-               std::unique_ptr<pdf::TestPdfViewerStreamManagerFactory>>
+               std::unique_ptr<pdf::TestMimeHandlerStreamManagerFactory>>
       factory_;
   raw_ptr<guest_view::TestGuestViewManager> test_guest_view_manager_;
 };
@@ -1756,7 +1757,7 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessInteractivePDFTest,
   if (UseOopif()) {
     // Create the manager first, since the following script doesn't block until
     // navigation is complete.
-    CreateTestPdfViewerStreamManager();
+    CreateTestMimeHandlerStreamManager();
   }
 
   GURL pdf_url(embedded_test_server()->GetURL("/pdf/test.pdf"));

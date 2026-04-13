@@ -38,10 +38,10 @@
 #include "build/build_config.h"
 #include "cc/input/scroll_utils.h"
 #include "chrome/browser/download/download_prefs.h"
+#include "chrome/browser/pdf/mime_handler_stream_manager.h"
 #include "chrome/browser/pdf/pdf_extension_test_base.h"
 #include "chrome/browser/pdf/pdf_extension_test_util.h"
-#include "chrome/browser/pdf/pdf_viewer_stream_manager.h"
-#include "chrome/browser/pdf/test_pdf_viewer_stream_manager.h"
+#include "chrome/browser/pdf/test_mime_handler_stream_manager.h"
 #include "chrome/browser/plugins/plugin_test_utils.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/renderer_context_menu/render_view_context_menu_browsertest_util.h"
@@ -1727,7 +1727,7 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionIsolatedContentTest, PdfAndHtml) {
     // The PDF embed is the second child of the HTML page.
     content::RenderFrameHost* pdf_embed =
         ChildFrameAt(GetActiveWebContents(), 1);
-    ASSERT_TRUE(GetTestPdfViewerStreamManager(GetActiveWebContents())
+    ASSERT_TRUE(GetTestMimeHandlerStreamManager(GetActiveWebContents())
                     ->WaitUntilPdfLoaded(pdf_embed));
   } else {
     ASSERT_TRUE(LoadPdf(main_url));
@@ -3033,8 +3033,8 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionTest, DocumentWriteIntoNewPopup) {
 
   // Verify the PDF loaded successfully.
   if (UseOopif()) {
-    EXPECT_TRUE(
-        GetTestPdfViewerStreamManager(popup)->WaitUntilPdfLoadedInFirstChild());
+    EXPECT_TRUE(GetTestMimeHandlerStreamManager(popup)
+                    ->WaitUntilPdfLoadedInFirstChild());
   } else {
     EXPECT_TRUE(pdf_extension_test_util::EnsurePDFHasLoaded(popup));
   }
@@ -3279,7 +3279,7 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionPrerenderTest, CancelPrerender) {
 
   PrerenderAndExpectCancellation(pdf_url);
   if (UseOopif()) {
-    EXPECT_FALSE(pdf::PdfViewerStreamManager::FromWebContents(web_contents));
+    EXPECT_FALSE(pdf::MimeHandlerStreamManager::FromWebContents(web_contents));
   } else {
     EXPECT_EQ(0U, GetGuestViewManager()->num_guests_created());
   }
@@ -3305,7 +3305,7 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionPrerenderTest,
 
   PrerenderAndExpectCancellation(pdf_url);
   if (UseOopif()) {
-    EXPECT_FALSE(pdf::PdfViewerStreamManager::FromWebContents(web_contents));
+    EXPECT_FALSE(pdf::MimeHandlerStreamManager::FromWebContents(web_contents));
   } else {
     EXPECT_EQ(0U, GetGuestViewManager()->num_guests_created());
   }
@@ -3351,8 +3351,9 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionPrerenderTest,
     navigation_observer.Wait();
 
     ASSERT_EQ(web_contents->GetLastCommittedURL(), pdf_url);
-    ASSERT_TRUE(pdf::TestPdfViewerStreamManager::FromWebContents(web_contents));
-    EXPECT_TRUE(GetTestPdfViewerStreamManager(web_contents)
+    ASSERT_TRUE(
+        pdf::TestMimeHandlerStreamManager::FromWebContents(web_contents));
+    EXPECT_TRUE(GetTestMimeHandlerStreamManager(web_contents)
                     ->WaitUntilPdfLoadedInFirstChild());
   } else {
     prerender_helper().NavigatePrimaryPage(pdf_url);
@@ -3722,7 +3723,7 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionIncognitoTest, IncognitoIframe) {
 
   // Verify the pdf has loaded. The test will timeout if the PDF fails to
   // load.
-  ASSERT_TRUE(GetTestPdfViewerStreamManager(GetIncognitoActiveWebContents())
+  ASSERT_TRUE(GetTestMimeHandlerStreamManager(GetIncognitoActiveWebContents())
                   ->WaitUntilPdfLoadedInFirstChild());
 }
 
@@ -3854,8 +3855,9 @@ class PDFExtensionOopifTest : public PDFExtensionTestWithoutOopifOverride {
  public:
   bool UseOopif() const override { return true; }
 
-  pdf::PdfViewerStreamManager* GetPdfViewerStreamManager() {
-    return pdf::PdfViewerStreamManager::FromWebContents(GetActiveWebContents());
+  pdf::MimeHandlerStreamManager* GetMimeHandlerStreamManager() {
+    return pdf::MimeHandlerStreamManager::FromWebContents(
+        GetActiveWebContents());
   }
 };
 
@@ -3909,7 +3911,7 @@ IN_PROC_BROWSER_TEST_F(PDFExtensionOopifTest,
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(), embedded_test_server()->GetURL("/pdf/test.pdf")));
   auto* web_contents = GetActiveWebContents();
-  ASSERT_TRUE(GetTestPdfViewerStreamManager(web_contents)
+  ASSERT_TRUE(GetTestMimeHandlerStreamManager(web_contents)
                   ->WaitUntilPdfLoaded(web_contents->GetPrimaryMainFrame()));
 
   content::RenderFrameHost* child_frame =
@@ -3966,9 +3968,9 @@ IN_PROC_BROWSER_TEST_F(PDFExtensionOopifTest, NavigateToSamePdf) {
       web_contents->GetPrimaryMainFrame()));
 
   // Make sure the stream has the same URL as the PDF URL.
-  ASSERT_TRUE(GetPdfViewerStreamManager());
+  ASSERT_TRUE(GetMimeHandlerStreamManager());
   base::WeakPtr<extensions::StreamContainer> stream =
-      GetPdfViewerStreamManager()->GetStreamContainer(primary_main_frame1);
+      GetMimeHandlerStreamManager()->GetStreamContainer(primary_main_frame1);
   ASSERT_TRUE(stream);
   EXPECT_EQ(pdf_url, stream->original_url());
 
@@ -3981,9 +3983,10 @@ IN_PROC_BROWSER_TEST_F(PDFExtensionOopifTest, NavigateToSamePdf) {
 
   // Make sure the stream was replaced by a new stream. The new stream should
   // still have the same URL as the PDF URL.
-  ASSERT_TRUE(GetPdfViewerStreamManager());
+  ASSERT_TRUE(GetMimeHandlerStreamManager());
   EXPECT_FALSE(stream);
-  stream = GetPdfViewerStreamManager()->GetStreamContainer(primary_main_frame2);
+  stream =
+      GetMimeHandlerStreamManager()->GetStreamContainer(primary_main_frame2);
   ASSERT_TRUE(stream);
   EXPECT_EQ(pdf_url, stream->original_url());
 }
@@ -4003,9 +4006,9 @@ IN_PROC_BROWSER_TEST_F(PDFExtensionOopifTest, NavigateToDifferentPdf) {
       web_contents->GetPrimaryMainFrame()));
 
   // Make sure the stream has the same URL as the PDF URL.
-  ASSERT_TRUE(GetPdfViewerStreamManager());
+  ASSERT_TRUE(GetMimeHandlerStreamManager());
   base::WeakPtr<extensions::StreamContainer> stream =
-      GetPdfViewerStreamManager()->GetStreamContainer(
+      GetMimeHandlerStreamManager()->GetStreamContainer(
           web_contents->GetPrimaryMainFrame());
   ASSERT_TRUE(stream);
   EXPECT_EQ(pdf_url, stream->original_url());
@@ -4021,9 +4024,9 @@ IN_PROC_BROWSER_TEST_F(PDFExtensionOopifTest, NavigateToDifferentPdf) {
 
   // Make sure the stream was replaced by a new stream. The new stream should
   // have the new PDF URL.
-  ASSERT_TRUE(GetPdfViewerStreamManager());
+  ASSERT_TRUE(GetMimeHandlerStreamManager());
   EXPECT_FALSE(stream);
-  stream = GetPdfViewerStreamManager()->GetStreamContainer(
+  stream = GetMimeHandlerStreamManager()->GetStreamContainer(
       web_contents->GetPrimaryMainFrame());
   ASSERT_TRUE(stream);
   EXPECT_EQ(other_pdf_url, stream->original_url());
@@ -4114,7 +4117,7 @@ IN_PROC_BROWSER_TEST_F(PDFExtensionOopifTest, LoadDataUrlPdfIframe) {
 IN_PROC_BROWSER_TEST_F(PDFExtensionOopifTest, ReplaceDocumentBody) {
   ASSERT_TRUE(LoadPdf(embedded_test_server()->GetURL("/pdf/test.pdf")));
   WebContents* web_contents = GetActiveWebContents();
-  EXPECT_TRUE(pdf::PdfViewerStreamManager::FromWebContents(web_contents));
+  EXPECT_TRUE(pdf::MimeHandlerStreamManager::FromWebContents(web_contents));
 
   // Find the PDF extension frame, which is the parent of the content frame.
   content::RenderFrameHost* pdf_extensions_frame =
@@ -4130,7 +4133,7 @@ IN_PROC_BROWSER_TEST_F(PDFExtensionOopifTest, ReplaceDocumentBody) {
 
   rfh_deleted_observer.WaitUntilDeleted();
   // The stream should no longer exist.
-  EXPECT_FALSE(pdf::PdfViewerStreamManager::FromWebContents(web_contents));
+  EXPECT_FALSE(pdf::MimeHandlerStreamManager::FromWebContents(web_contents));
 }
 
 // If the document.body of the PDF viewer is replaced, any subframes appended
@@ -4138,7 +4141,7 @@ IN_PROC_BROWSER_TEST_F(PDFExtensionOopifTest, ReplaceDocumentBody) {
 IN_PROC_BROWSER_TEST_F(PDFExtensionOopifTest, ReplaceDocumentBodyWithIframe) {
   ASSERT_TRUE(LoadPdf(embedded_test_server()->GetURL("/pdf/test.pdf")));
   WebContents* contents = GetActiveWebContents();
-  EXPECT_TRUE(pdf::PdfViewerStreamManager::FromWebContents(contents));
+  EXPECT_TRUE(pdf::MimeHandlerStreamManager::FromWebContents(contents));
 
   // Replace the document.body.
   EXPECT_TRUE(content::ExecJs(
@@ -4148,7 +4151,7 @@ IN_PROC_BROWSER_TEST_F(PDFExtensionOopifTest, ReplaceDocumentBodyWithIframe) {
       "document.body = body;"));
 
   // The stream should no longer exist.
-  EXPECT_FALSE(pdf::PdfViewerStreamManager::FromWebContents(contents));
+  EXPECT_FALSE(pdf::MimeHandlerStreamManager::FromWebContents(contents));
 
   // The iframe should be able to navigate.
   content::TestNavigationObserver navigation_observer(contents);
@@ -4248,10 +4251,10 @@ IN_PROC_BROWSER_TEST_F(PDFExtensionOopifTest,
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), non_pdf_url));
 
   // Set up a delay for the PDF extension load.
-  CreateTestPdfViewerStreamManager(web_contents2);
-  auto* test_pdf_viewer_stream_manager2 =
-      GetTestPdfViewerStreamManager(web_contents2);
-  test_pdf_viewer_stream_manager2->DelayNextPdfExtensionNavigation();
+  CreateTestMimeHandlerStreamManager(web_contents2);
+  auto* test_mime_handler_stream_manager2 =
+      GetTestMimeHandlerStreamManager(web_contents2);
+  test_mime_handler_stream_manager2->DelayNextPdfExtensionNavigation();
 
   // Navigate to the PDF URL. Pause before the PDF extension loads. Navigating
   // with `ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP` only waits for the
@@ -4261,7 +4264,7 @@ IN_PROC_BROWSER_TEST_F(PDFExtensionOopifTest,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
   content::RenderFrameHost* embedder_host2 =
       web_contents2->GetPrimaryMainFrame();
-  test_pdf_viewer_stream_manager2->WaitUntilPdfExtensionNavigationStarted(
+  test_mime_handler_stream_manager2->WaitUntilPdfExtensionNavigationStarted(
       embedder_host2);
 
   // Close the first tab, destroying the first PDF while the second PDF is in
@@ -4277,9 +4280,10 @@ IN_PROC_BROWSER_TEST_F(PDFExtensionOopifTest,
   ASSERT_EQ(1, browser()->tab_strip_model()->count());
 
   // Resume the PDF load and ensure the second PDF loads without crashing.
-  test_pdf_viewer_stream_manager2->ResumePdfExtensionNavigation(embedder_host2);
+  test_mime_handler_stream_manager2->ResumePdfExtensionNavigation(
+      embedder_host2);
   ASSERT_TRUE(
-      test_pdf_viewer_stream_manager2->WaitUntilPdfLoaded(embedder_host2));
+      test_mime_handler_stream_manager2->WaitUntilPdfLoaded(embedder_host2));
 
   content::RenderFrameHost* extension_host2 =
       pdf_extension_test_util::GetOnlyPdfExtensionHost(web_contents2);
@@ -4337,12 +4341,12 @@ IN_PROC_BROWSER_TEST_F(PDFExtensionOopifTest,
   content::WebContents* incognito_contents =
       incognito->tab_strip_model()->GetActiveWebContents();
 
-  // Create the `pdf::TestPdfViewerStreamManager` before the PDF navigation,
+  // Create the `pdf::TestMimeHandlerStreamManager` before the PDF navigation,
   // since the test needs to delay the PDF extension URL navigation.
-  CreateTestPdfViewerStreamManager(incognito_contents);
-  auto* test_pdf_viewer_stream_manager =
-      GetTestPdfViewerStreamManager(incognito_contents);
-  test_pdf_viewer_stream_manager->DelayNextPdfExtensionNavigation();
+  CreateTestMimeHandlerStreamManager(incognito_contents);
+  auto* test_mime_handler_stream_manager =
+      GetTestMimeHandlerStreamManager(incognito_contents);
+  test_mime_handler_stream_manager->DelayNextPdfExtensionNavigation();
 
   // Navigate the Incognito window to a page with a PDF embedded in an iframe.
   content::TestNavigationObserver navigation_observer(incognito_contents);
@@ -4362,12 +4366,12 @@ IN_PROC_BROWSER_TEST_F(PDFExtensionOopifTest,
 
   // Look up the PDF stream URL to which the navigation will take place.
   base::WeakPtr<extensions::StreamContainer> stream =
-      test_pdf_viewer_stream_manager->GetStreamContainer(embedder_host);
+      test_mime_handler_stream_manager->GetStreamContainer(embedder_host);
   EXPECT_TRUE(stream);
   GURL stream_url(stream->stream_url());
 
   // Resume the PDF extension URL navigation.
-  test_pdf_viewer_stream_manager->ResumePdfExtensionNavigation(embedder_host);
+  test_mime_handler_stream_manager->ResumePdfExtensionNavigation(embedder_host);
 
   // Use TestNavigationManager to wait for first yield after running
   // DidStartNavigation throttles.  This should be precisely after the
@@ -4418,17 +4422,17 @@ IN_PROC_BROWSER_TEST_F(PDFExtensionOopifTest, MetricsPDFLoadStatusPartialLoad) {
   const GURL main_url(embedded_test_server()->GetURL("/pdf/combobox_form.pdf"));
 
   // Delay the PDF extension navigation.
-  CreateTestPdfViewerStreamManager(web_contents);
-  auto* test_pdf_viewer_stream_manager =
-      GetTestPdfViewerStreamManager(web_contents);
-  test_pdf_viewer_stream_manager->DelayNextPdfExtensionNavigation();
+  CreateTestMimeHandlerStreamManager(web_contents);
+  auto* test_mime_handler_stream_manager =
+      GetTestMimeHandlerStreamManager(web_contents);
+  test_mime_handler_stream_manager->DelayNextPdfExtensionNavigation();
 
   // Navigate to the PDF URL and wait for the PDF extension navigation to start.
   ui_test_utils::NavigateToURLWithDisposition(
       browser(), main_url, WindowOpenDisposition::CURRENT_TAB,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
   auto* primary_main_frame = web_contents->GetPrimaryMainFrame();
-  test_pdf_viewer_stream_manager->WaitUntilPdfExtensionNavigationStarted(
+  test_mime_handler_stream_manager->WaitUntilPdfExtensionNavigationStarted(
       primary_main_frame);
 
   // The PDF.LoadStatus2 metric should not be incremented yet.
@@ -4436,10 +4440,10 @@ IN_PROC_BROWSER_TEST_F(PDFExtensionOopifTest, MetricsPDFLoadStatusPartialLoad) {
                                PDFLoadStatus::kLoadedFullPagePdfWithPdfium, 0);
 
   // Finish loading the PDF.
-  test_pdf_viewer_stream_manager->ResumePdfExtensionNavigation(
+  test_mime_handler_stream_manager->ResumePdfExtensionNavigation(
       primary_main_frame);
   EXPECT_TRUE(
-      test_pdf_viewer_stream_manager->WaitUntilPdfLoaded(primary_main_frame));
+      test_mime_handler_stream_manager->WaitUntilPdfLoaded(primary_main_frame));
 
   // The PDF.LoadStatus2 metric should be incremented.
   histograms.ExpectBucketCount(kPdfLoadStatusMetric,
@@ -4464,7 +4468,7 @@ IN_PROC_BROWSER_TEST_F(PDFExtensionOopifTest,
   ASSERT_TRUE(navigation_observer.last_navigation_succeeded());
 
   content::RenderFrameHost* embedder_host = ChildFrameAt(web_contents, 0);
-  ASSERT_TRUE(GetTestPdfViewerStreamManager(web_contents)
+  ASSERT_TRUE(GetTestMimeHandlerStreamManager(web_contents)
                   ->WaitUntilPdfLoaded(embedder_host));
 
   // The PDF embedder CSS sets the margin to 0px. Without the CSS, the margin
@@ -4523,7 +4527,7 @@ class PDFExtensionOopifBlockPdfFrameNavigationTest
     EXPECT_EQ(frame_tree_node_id, error_host->GetFrameTreeNodeId());
 
     // Attempting to navigate the extension host deletes the stream.
-    EXPECT_FALSE(GetPdfViewerStreamManager());
+    EXPECT_FALSE(GetMimeHandlerStreamManager());
   }
 
   // Test that navigating to `url` fails in the content host.  If `url` is
@@ -4554,7 +4558,7 @@ class PDFExtensionOopifBlockPdfFrameNavigationTest
     EXPECT_EQ(frame_tree_node_id, error_host->GetFrameTreeNodeId());
 
     // Attempting to navigate the content host deletes the stream.
-    EXPECT_FALSE(GetPdfViewerStreamManager());
+    EXPECT_FALSE(GetMimeHandlerStreamManager());
   }
 
  private:

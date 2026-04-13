@@ -101,7 +101,7 @@
 #include "third_party/blink/public/mojom/manifest/display_mode.mojom.h"
 
 #if BUILDFLAG(ENABLE_PDF)
-#include "chrome/browser/pdf/test_pdf_viewer_stream_manager.h"
+#include "chrome/browser/pdf/test_mime_handler_stream_manager.h"
 #include "pdf/pdf_features.h"
 #endif
 
@@ -1920,14 +1920,14 @@ class HostedAppSitePerProcessPDFTest : public HostedAppSitePerProcessTest {
 
   // Return value is always non-nullptr. This should only be called after a PDF
   // navigation occurs in a `content::WebContents`.
-  pdf::TestPdfViewerStreamManager* GetTestPdfViewerStreamManager(
+  pdf::TestMimeHandlerStreamManager* GetTestMimeHandlerStreamManager(
       content::WebContents* web_contents) {
-    return factory_.GetTestPdfViewerStreamManager(web_contents);
+    return factory_.GetTestMimeHandlerStreamManager(web_contents);
   }
 
  private:
   base::test::ScopedFeatureList feature_list_;
-  pdf::TestPdfViewerStreamManagerFactory factory_;
+  pdf::TestMimeHandlerStreamManagerFactory factory_;
 };
 
 // Check that a same-site PDF embedded in a hosted app does not crash and does
@@ -1977,7 +1977,7 @@ IN_PROC_BROWSER_TEST_P(HostedAppSitePerProcessPDFTest,
   EXPECT_TRUE(content::WaitForLoadStop(foo_contents));
   content::RenderFrameHost* subframe = ChildFrameAt(app_frame, 0);
   ASSERT_TRUE(subframe);
-  ASSERT_TRUE(GetTestPdfViewerStreamManager(foo_contents)
+  ASSERT_TRUE(GetTestMimeHandlerStreamManager(foo_contents)
                   ->WaitUntilPdfLoaded(subframe));
 
   // Look up the PDF document frame, which should be embedded in the PDF

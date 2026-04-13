@@ -2,15 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/pdf/test_pdf_viewer_stream_manager.h"
+#include "chrome/browser/pdf/test_mime_handler_stream_manager.h"
 
 #include <memory>
 
 #include "base/check.h"
 #include "base/containers/flat_set.h"
 #include "base/run_loop.h"
+#include "chrome/browser/pdf/mime_handler_stream_manager.h"
 #include "chrome/browser/pdf/pdf_extension_test_util.h"
-#include "chrome/browser/pdf/pdf_viewer_stream_manager.h"
 #include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/render_frame_host.h"
@@ -21,25 +21,26 @@
 
 namespace pdf {
 
-TestPdfViewerStreamManager::TestPdfViewerStreamManager(
+TestMimeHandlerStreamManager::TestMimeHandlerStreamManager(
     content::WebContents* contents)
-    : PdfViewerStreamManager(contents) {}
+    : MimeHandlerStreamManager(contents) {}
 
-TestPdfViewerStreamManager::~TestPdfViewerStreamManager() = default;
+TestMimeHandlerStreamManager::~TestMimeHandlerStreamManager() = default;
 
 // static
-TestPdfViewerStreamManager* TestPdfViewerStreamManager::CreateForWebContents(
+TestMimeHandlerStreamManager*
+TestMimeHandlerStreamManager::CreateForWebContents(
     content::WebContents* web_contents) {
-  auto manager = std::make_unique<TestPdfViewerStreamManager>(web_contents);
+  auto manager = std::make_unique<TestMimeHandlerStreamManager>(web_contents);
   auto* manager_ptr = manager.get();
-  web_contents->SetUserData(PdfViewerStreamManager::UserDataKey(),
+  web_contents->SetUserData(MimeHandlerStreamManager::UserDataKey(),
                             std::move(manager));
   return manager_ptr;
 }
 
-void TestPdfViewerStreamManager::DidFinishNavigation(
+void TestMimeHandlerStreamManager::DidFinishNavigation(
     content::NavigationHandle* navigation_handle) {
-  PdfViewerStreamManager::DidFinishNavigation(navigation_handle);
+  MimeHandlerStreamManager::DidFinishNavigation(navigation_handle);
 
   if (!on_pdf_loaded_) {
     return;
@@ -56,7 +57,7 @@ void TestPdfViewerStreamManager::DidFinishNavigation(
   std::move(on_pdf_loaded_).Run();
 }
 
-void TestPdfViewerStreamManager::NavigateToPdfExtensionUrl(
+void TestMimeHandlerStreamManager::NavigateToPdfExtensionUrl(
     content::FrameTreeNodeId extension_host_frame_tree_node_id,
     extensions::StreamInfo* stream_info,
     content::SiteInstance* site_instance,
@@ -71,20 +72,20 @@ void TestPdfViewerStreamManager::NavigateToPdfExtensionUrl(
     // called.
     delay_next_pdf_extension_load_ = false;
     on_resume_pdf_extension_navigation_ = base::BindOnce(
-        &TestPdfViewerStreamManager::GetParamsAndNavigateToPdfExtensionUrl,
+        &TestMimeHandlerStreamManager::GetParamsAndNavigateToPdfExtensionUrl,
         weak_factory_.GetWeakPtr(), global_id);
     return;
   }
 
-  PdfViewerStreamManager::NavigateToPdfExtensionUrl(
+  MimeHandlerStreamManager::NavigateToPdfExtensionUrl(
       extension_host_frame_tree_node_id, stream_info, site_instance, global_id);
 }
 
-void TestPdfViewerStreamManager::DelayNextPdfExtensionNavigation() {
+void TestMimeHandlerStreamManager::DelayNextPdfExtensionNavigation() {
   delay_next_pdf_extension_load_ = true;
 }
 
-void TestPdfViewerStreamManager::WaitUntilPdfExtensionNavigationStarted(
+void TestMimeHandlerStreamManager::WaitUntilPdfExtensionNavigationStarted(
     content::RenderFrameHost* embedder_host) {
   // If `StreamInfo::extension_host_frame_tree_node_id()` has been set, then
   // the navigation to about:blank has already committed.
@@ -97,13 +98,13 @@ void TestPdfViewerStreamManager::WaitUntilPdfExtensionNavigationStarted(
   }
 }
 
-void TestPdfViewerStreamManager::ResumePdfExtensionNavigation(
+void TestMimeHandlerStreamManager::ResumePdfExtensionNavigation(
     content::RenderFrameHost* embedder_host) {
   CHECK(on_resume_pdf_extension_navigation_);
   std::move(on_resume_pdf_extension_navigation_).Run();
 }
 
-testing::AssertionResult TestPdfViewerStreamManager::WaitUntilPdfLoaded(
+testing::AssertionResult TestMimeHandlerStreamManager::WaitUntilPdfLoaded(
     content::RenderFrameHost* embedder_host) {
   WaitUntilPdfNavigationFinished(embedder_host);
 
@@ -112,7 +113,7 @@ testing::AssertionResult TestPdfViewerStreamManager::WaitUntilPdfLoaded(
 }
 
 testing::AssertionResult
-TestPdfViewerStreamManager::WaitUntilPdfLoadedAllowMultipleFrames(
+TestMimeHandlerStreamManager::WaitUntilPdfLoadedAllowMultipleFrames(
     content::RenderFrameHost* embedder_host) {
   WaitUntilPdfNavigationFinished(embedder_host);
 
@@ -124,14 +125,14 @@ TestPdfViewerStreamManager::WaitUntilPdfLoadedAllowMultipleFrames(
 }
 
 testing::AssertionResult
-TestPdfViewerStreamManager::WaitUntilPdfLoadedInFirstChild() {
+TestMimeHandlerStreamManager::WaitUntilPdfLoadedInFirstChild() {
   content::RenderFrameHost* embedder_host =
       ChildFrameAt(web_contents()->GetPrimaryMainFrame(), 0);
   CHECK(embedder_host);
   return WaitUntilPdfLoaded(embedder_host);
 }
 
-void TestPdfViewerStreamManager::GetParamsAndNavigateToPdfExtensionUrl(
+void TestMimeHandlerStreamManager::GetParamsAndNavigateToPdfExtensionUrl(
     content::GlobalRenderFrameHostId global_id) {
   auto* about_blank_host = content::RenderFrameHost::FromID(global_id);
   CHECK(about_blank_host);
@@ -140,12 +141,12 @@ void TestPdfViewerStreamManager::GetParamsAndNavigateToPdfExtensionUrl(
   auto* stream_info = GetClaimedStreamInfo(embedder_host);
   CHECK(stream_info);
 
-  PdfViewerStreamManager::NavigateToPdfExtensionUrl(
+  MimeHandlerStreamManager::NavigateToPdfExtensionUrl(
       about_blank_host->GetFrameTreeNodeId(), stream_info,
       embedder_host->GetSiteInstance(), global_id);
 }
 
-void TestPdfViewerStreamManager::WaitUntilPdfNavigationFinished(
+void TestMimeHandlerStreamManager::WaitUntilPdfNavigationFinished(
     content::RenderFrameHost* embedder_host) {
   // If all of the PDF frames haven't navigated, wait.
   auto* claimed_stream_info = GetClaimedStreamInfo(embedder_host);
@@ -156,32 +157,32 @@ void TestPdfViewerStreamManager::WaitUntilPdfNavigationFinished(
   }
 }
 
-TestPdfViewerStreamManagerFactory::TestPdfViewerStreamManagerFactory() {
-  PdfViewerStreamManager::SetFactoryForTesting(this);
+TestMimeHandlerStreamManagerFactory::TestMimeHandlerStreamManagerFactory() {
+  MimeHandlerStreamManager::SetFactoryForTesting(this);
 }
 
-TestPdfViewerStreamManagerFactory::~TestPdfViewerStreamManagerFactory() {
-  PdfViewerStreamManager::SetFactoryForTesting(nullptr);
+TestMimeHandlerStreamManagerFactory::~TestMimeHandlerStreamManagerFactory() {
+  MimeHandlerStreamManager::SetFactoryForTesting(nullptr);
 }
 
-TestPdfViewerStreamManager*
-TestPdfViewerStreamManagerFactory::GetTestPdfViewerStreamManager(
+TestMimeHandlerStreamManager*
+TestMimeHandlerStreamManagerFactory::GetTestMimeHandlerStreamManager(
     content::WebContents* contents) {
-  PdfViewerStreamManager* manager =
-      PdfViewerStreamManager::FromWebContents(contents);
+  MimeHandlerStreamManager* manager =
+      MimeHandlerStreamManager::FromWebContents(contents);
   CHECK(manager);
 
   // Check if `manager` was created by `this`. If so, the `manager` is safe to
-  // downcast into a `TestPdfViewerStreamManager`.
+  // downcast into a `TestMimeHandlerStreamManager`.
   CHECK(managers_.contains(manager));
 
-  return static_cast<TestPdfViewerStreamManager*>(manager);
+  return static_cast<TestMimeHandlerStreamManager*>(manager);
 }
 
-void TestPdfViewerStreamManagerFactory::CreatePdfViewerStreamManager(
+void TestMimeHandlerStreamManagerFactory::CreateMimeHandlerStreamManager(
     content::WebContents* contents) {
-  PdfViewerStreamManager* manager =
-      TestPdfViewerStreamManager::CreateForWebContents(contents);
+  MimeHandlerStreamManager* manager =
+      TestMimeHandlerStreamManager::CreateForWebContents(contents);
   CHECK(managers_.insert(manager).second);
 }
 

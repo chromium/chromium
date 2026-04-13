@@ -15,8 +15,8 @@
 #include "chrome/browser/glic/public/glic_enabling.h"
 #include "chrome/browser/glic/public/glic_keyed_service.h"
 #include "chrome/browser/glic/public/glic_keyed_service_factory.h"
+#include "chrome/browser/pdf/mime_handler_stream_manager.h"
 #include "chrome/browser/pdf/pdf_pref_names.h"
-#include "chrome/browser/pdf/pdf_viewer_stream_manager.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/extensions/api/pdf_viewer_private.h"
@@ -83,13 +83,13 @@ base::WeakPtr<StreamContainer> GetStreamContainer(
     return nullptr;
   }
 
-  auto* pdf_viewer_stream_manager =
-      pdf::PdfViewerStreamManager::FromRenderFrameHost(embedder_host);
-  if (!pdf_viewer_stream_manager) {
+  auto* mime_handler_stream_manager =
+      pdf::MimeHandlerStreamManager::FromRenderFrameHost(embedder_host);
+  if (!mime_handler_stream_manager) {
     return nullptr;
   }
 
-  return pdf_viewer_stream_manager->GetStreamContainer(embedder_host);
+  return mime_handler_stream_manager->GetStreamContainer(embedder_host);
 }
 
 #if BUILDFLAG(ENABLE_PDF_SAVE_TO_DRIVE)

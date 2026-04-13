@@ -128,7 +128,7 @@
 #include "base/test/with_feature_override.h"
 #include "chrome/browser/pdf/pdf_extension_test_base.h"
 #include "chrome/browser/pdf/pdf_extension_test_util.h"
-#include "chrome/browser/pdf/test_pdf_viewer_stream_manager.h"
+#include "chrome/browser/pdf/test_mime_handler_stream_manager.h"
 #include "pdf/pdf_features.h"
 #endif
 
@@ -2768,7 +2768,7 @@ IN_PROC_BROWSER_TEST_P(ExtensionApiPdfTest, TemporaryAddressSpoof) {
   // Ensure the PDF has loaded, and get the WebContents to click.
   auto* web_contents_for_click = second_web_contents;
   if (UseOopif()) {
-    ASSERT_TRUE(GetTestPdfViewerStreamManager(second_web_contents)
+    ASSERT_TRUE(GetTestMimeHandlerStreamManager(second_web_contents)
                     ->WaitUntilPdfLoadedInFirstChild());
   } else {
     ASSERT_TRUE(

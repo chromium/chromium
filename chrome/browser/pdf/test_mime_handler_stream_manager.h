@@ -2,14 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_PDF_TEST_PDF_VIEWER_STREAM_MANAGER_H_
-#define CHROME_BROWSER_PDF_TEST_PDF_VIEWER_STREAM_MANAGER_H_
+#ifndef CHROME_BROWSER_PDF_TEST_MIME_HANDLER_STREAM_MANAGER_H_
+#define CHROME_BROWSER_PDF_TEST_MIME_HANDLER_STREAM_MANAGER_H_
 
 #include "base/containers/flat_set.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
-#include "chrome/browser/pdf/pdf_viewer_stream_manager.h"
+#include "chrome/browser/pdf/mime_handler_stream_manager.h"
 #include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/web_contents_user_data.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -22,24 +22,24 @@ class WebContents;
 
 namespace pdf {
 
-class TestPdfViewerStreamManager : public PdfViewerStreamManager {
+class TestMimeHandlerStreamManager : public MimeHandlerStreamManager {
  public:
   // Prefer using this over the constructor so that this instance is used for
   // PDF loads.
-  static TestPdfViewerStreamManager* CreateForWebContents(
+  static TestMimeHandlerStreamManager* CreateForWebContents(
       content::WebContents* web_contents);
 
-  explicit TestPdfViewerStreamManager(content::WebContents* contents);
-  TestPdfViewerStreamManager(const TestPdfViewerStreamManager&) = delete;
-  TestPdfViewerStreamManager& operator=(const TestPdfViewerStreamManager&) =
+  explicit TestMimeHandlerStreamManager(content::WebContents* contents);
+  TestMimeHandlerStreamManager(const TestMimeHandlerStreamManager&) = delete;
+  TestMimeHandlerStreamManager& operator=(const TestMimeHandlerStreamManager&) =
       delete;
-  ~TestPdfViewerStreamManager() override;
+  ~TestMimeHandlerStreamManager() override;
 
   // WebContentsObserver overrides.
   void DidFinishNavigation(
       content::NavigationHandle* navigation_handle) override;
 
-  // PdfViewerStreamManager overrides.
+  // MimeHandlerStreamManager overrides.
   void NavigateToPdfExtensionUrl(
       content::FrameTreeNodeId extension_host_frame_tree_node_id,
       extensions::StreamInfo* stream_info,
@@ -106,43 +106,43 @@ class TestPdfViewerStreamManager : public PdfViewerStreamManager {
   base::OnceClosure on_pdf_loaded_;
 
   // Needed to avoid use-after-free in callbacks.
-  base::WeakPtrFactory<TestPdfViewerStreamManager> weak_factory_{this};
+  base::WeakPtrFactory<TestMimeHandlerStreamManager> weak_factory_{this};
 };
 
-// While a `TestPdfViewerStreamManagerFactory` instance exists, it will
+// While a `TestMimeHandlerStreamManagerFactory` instance exists, it will
 // automatically set itself as the global factory override. All PDF navigations
-// will automatically use a `TestPdfViewerStreamManager` instance created from
+// will automatically use a `TestMimeHandlerStreamManager` instance created from
 // this factory.
-class TestPdfViewerStreamManagerFactory
-    : public PdfViewerStreamManager::Factory {
+class TestMimeHandlerStreamManagerFactory
+    : public MimeHandlerStreamManager::Factory {
  public:
-  TestPdfViewerStreamManagerFactory();
+  TestMimeHandlerStreamManagerFactory();
 
-  TestPdfViewerStreamManagerFactory(const TestPdfViewerStreamManagerFactory&) =
-      delete;
-  TestPdfViewerStreamManagerFactory& operator=(
-      const TestPdfViewerStreamManagerFactory&) = delete;
+  TestMimeHandlerStreamManagerFactory(
+      const TestMimeHandlerStreamManagerFactory&) = delete;
+  TestMimeHandlerStreamManagerFactory& operator=(
+      const TestMimeHandlerStreamManagerFactory&) = delete;
 
-  ~TestPdfViewerStreamManagerFactory() override;
+  ~TestMimeHandlerStreamManagerFactory() override;
 
-  // Return value is always non-nullptr. A `TestPdfViewerStreamManager` for
+  // Return value is always non-nullptr. A `TestMimeHandlerStreamManager` for
   // `contents` must have been created by `this`, or else a crash occurs.
-  TestPdfViewerStreamManager* GetTestPdfViewerStreamManager(
+  TestMimeHandlerStreamManager* GetTestMimeHandlerStreamManager(
       content::WebContents* contents);
 
-  // PdfViewerStreamManager::Factory overrides.
-  // Use `CreatePdfViewerStreamManager()` directly to create a test PDF stream
+  // MimeHandlerStreamManager::Factory overrides.
+  // Use `CreateMimeHandlerStreamManager()` directly to create a test PDF stream
   // manager if the test does not block during navigation. If the test does
   // block during navigation, then the test PDF stream manager instance should
   // already be created automatically on navigation.
-  void CreatePdfViewerStreamManager(content::WebContents* contents) override;
+  void CreateMimeHandlerStreamManager(content::WebContents* contents) override;
 
  private:
   // Tracks managers this factory has created. It's safe to track raw pointers,
   // since the pointers are only for comparison and aren't dereferenced.
-  base::flat_set<raw_ptr<PdfViewerStreamManager, CtnExperimental>> managers_;
+  base::flat_set<raw_ptr<MimeHandlerStreamManager, CtnExperimental>> managers_;
 };
 
 }  // namespace pdf
 
-#endif  // CHROME_BROWSER_PDF_TEST_PDF_VIEWER_STREAM_MANAGER_H_
+#endif  // CHROME_BROWSER_PDF_TEST_MIME_HANDLER_STREAM_MANAGER_H_

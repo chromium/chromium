@@ -207,7 +207,7 @@
 #if BUILDFLAG(ENABLE_PDF)
 #include "base/test/with_feature_override.h"
 #include "chrome/browser/pdf/pdf_extension_test_util.h"
-#include "chrome/browser/pdf/test_pdf_viewer_stream_manager.h"
+#include "chrome/browser/pdf/test_mime_handler_stream_manager.h"
 #include "pdf/pdf_features.h"
 #endif  // BUILDFLAG(ENABLE_PDF)
 
@@ -4949,9 +4949,9 @@ class WebViewPdfTest
 
   bool UseOopif() const { return testing::get<0>(GetParam()); }
 
-  pdf::TestPdfViewerStreamManager* GetTestPdfViewerStreamManager(
+  pdf::TestMimeHandlerStreamManager* GetTestMimeHandlerStreamManager(
       content::WebContents* contents) {
-    return factory_.GetTestPdfViewerStreamManager(contents);
+    return factory_.GetTestMimeHandlerStreamManager(contents);
   }
 
   // Waits until the PDF has loaded in the given `web_view_rfh`.
@@ -4960,14 +4960,14 @@ class WebViewPdfTest
     if (UseOopif()) {
       auto* web_contents =
           content::WebContents::FromRenderFrameHost(web_view_rfh);
-      return GetTestPdfViewerStreamManager(web_contents)
+      return GetTestMimeHandlerStreamManager(web_contents)
           ->WaitUntilPdfLoaded(web_view_rfh);
     }
     return pdf_extension_test_util::EnsurePDFHasLoaded(web_view_rfh);
   }
 
  private:
-  pdf::TestPdfViewerStreamManagerFactory factory_;
+  pdf::TestMimeHandlerStreamManagerFactory factory_;
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 

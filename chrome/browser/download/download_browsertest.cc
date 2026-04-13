@@ -178,7 +178,7 @@
 #if BUILDFLAG(ENABLE_PDF)
 #include "base/test/with_feature_override.h"
 #include "chrome/browser/pdf/pdf_extension_test_util.h"
-#include "chrome/browser/pdf/test_pdf_viewer_stream_manager.h"
+#include "chrome/browser/pdf/test_mime_handler_stream_manager.h"
 #include "chrome/browser/ui/pdf/chrome_pdf_document_helper_client.h"
 #include "components/pdf/browser/pdf_document_helper.h"
 #include "pdf/pdf_features.h"
@@ -2276,8 +2276,8 @@ class PdfDownloadTestSplitCacheEnabled
 
   bool UseOopif() const { return GetParam(); }
 
-  pdf::TestPdfViewerStreamManager* GetTestPdfViewerStreamManager() {
-    return factory_.GetTestPdfViewerStreamManager(
+  pdf::TestMimeHandlerStreamManager* GetTestMimeHandlerStreamManager() {
+    return factory_.GetTestMimeHandlerStreamManager(
         browser()->tab_strip_model()->GetActiveWebContents());
   }
 
@@ -2347,7 +2347,7 @@ class PdfDownloadTestSplitCacheEnabled
 
  private:
   base::test::ScopedFeatureList pdf_feature_list_;
-  pdf::TestPdfViewerStreamManagerFactory factory_;
+  pdf::TestMimeHandlerStreamManagerFactory factory_;
 };
 
 // Test that the PDF can be saved from the primary frame's context menu.
@@ -2530,7 +2530,7 @@ IN_PROC_BROWSER_TEST_P(PdfDownloadTestSplitCacheEnabled,
     content::NavigateIframeToURL(web_contents,
                                  /*iframe_id=*/"test", subframe_url);
     ASSERT_TRUE(
-        GetTestPdfViewerStreamManager()->WaitUntilPdfLoadedInFirstChild());
+        GetTestMimeHandlerStreamManager()->WaitUntilPdfLoadedInFirstChild());
 
     document_frame =
         pdf_extension_test_util::GetOnlyPdfPluginFrame(web_contents);
@@ -2724,7 +2724,7 @@ IN_PROC_BROWSER_TEST_P(PdfDownloadTestSplitCacheEnabled,
     content::NavigateIframeToURL(web_contents,
                                  /*iframe_id=*/"test", subframe_url);
     ASSERT_TRUE(
-        GetTestPdfViewerStreamManager()->WaitUntilPdfLoadedInFirstChild());
+        GetTestMimeHandlerStreamManager()->WaitUntilPdfLoadedInFirstChild());
 
     target_frame = pdf_extension_test_util::GetOnlyPdfPluginFrame(web_contents);
     ASSERT_TRUE(target_frame);

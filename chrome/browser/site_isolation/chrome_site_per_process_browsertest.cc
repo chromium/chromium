@@ -63,7 +63,7 @@
 #include "url/gurl.h"
 
 #if BUILDFLAG(ENABLE_PDF)
-#include "chrome/browser/pdf/test_pdf_viewer_stream_manager.h"
+#include "chrome/browser/pdf/test_mime_handler_stream_manager.h"
 #include "pdf/pdf_features.h"
 #endif
 
@@ -362,20 +362,20 @@ class ChromeSitePerProcessOopifPDFTest : public ChromeSitePerProcessTest {
   ~ChromeSitePerProcessOopifPDFTest() override = default;
 
   // Return value could be nullptr.
-  pdf::PdfViewerStreamManager* GetPdfViewerStreamManager() {
-    return pdf::PdfViewerStreamManager::FromWebContents(
+  pdf::MimeHandlerStreamManager* GetMimeHandlerStreamManager() {
+    return pdf::MimeHandlerStreamManager::FromWebContents(
         browser()->tab_strip_model()->GetActiveWebContents());
   }
 
   // Return value is always non-nullptr. This should only be called after a PDF
   // navigation occurs in the active `content::WebContents`.
-  pdf::TestPdfViewerStreamManager* GetTestPdfViewerStreamManager() {
-    return factory_.GetTestPdfViewerStreamManager(
+  pdf::TestMimeHandlerStreamManager* GetTestMimeHandlerStreamManager() {
+    return factory_.GetTestMimeHandlerStreamManager(
         browser()->tab_strip_model()->GetActiveWebContents());
   }
 
  private:
-  pdf::TestPdfViewerStreamManagerFactory factory_;
+  pdf::TestMimeHandlerStreamManagerFactory factory_;
 };
 
 // This test verifies that when navigating an OOPIF to a page with <embed>-ed
@@ -388,7 +388,7 @@ IN_PROC_BROWSER_TEST_F(ChromeSitePerProcessOopifPDFTest,
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), main_url));
 
   // Initially, the stream manager shouldn't be created.
-  EXPECT_FALSE(GetPdfViewerStreamManager());
+  EXPECT_FALSE(GetMimeHandlerStreamManager());
 
   content::WebContents* active_web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
@@ -407,13 +407,13 @@ IN_PROC_BROWSER_TEST_F(ChromeSitePerProcessOopifPDFTest,
   content::RenderFrameHost* embedder_host = ChildFrameAt(subframe_main_host, 0);
   ASSERT_TRUE(embedder_host);
   ASSERT_TRUE(
-      GetTestPdfViewerStreamManager()->WaitUntilPdfLoaded(embedder_host));
+      GetTestMimeHandlerStreamManager()->WaitUntilPdfLoaded(embedder_host));
 
   // The primary main frame shouldn't be the PDF embedder and shouldn't have a
   // PDF stream.
   auto* primary_main_frame = active_web_contents->GetPrimaryMainFrame();
-  ASSERT_FALSE(
-      GetTestPdfViewerStreamManager()->GetStreamContainer(primary_main_frame));
+  ASSERT_FALSE(GetTestMimeHandlerStreamManager()->GetStreamContainer(
+      primary_main_frame));
 
   // Now detach the frame and observe that the stream manager is destroyed.
   content::RenderFrameDeletedObserver deleted_observer(subframe_main_host);
@@ -422,7 +422,7 @@ IN_PROC_BROWSER_TEST_F(ChromeSitePerProcessOopifPDFTest,
              "document.body.removeChild(document.querySelector('iframe'));"));
   deleted_observer.WaitUntilDeleted();
 
-  EXPECT_FALSE(GetPdfViewerStreamManager());
+  EXPECT_FALSE(GetMimeHandlerStreamManager());
 }
 
 // Check that navigating to a PDF and then trying to access localStorage or
@@ -437,7 +437,7 @@ IN_PROC_BROWSER_TEST_F(ChromeSitePerProcessOopifPDFTest,
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
   EXPECT_EQ(pdf_url, web_contents->GetLastCommittedURL());
-  ASSERT_TRUE(GetTestPdfViewerStreamManager()->WaitUntilPdfLoaded(
+  ASSERT_TRUE(GetTestMimeHandlerStreamManager()->WaitUntilPdfLoaded(
       web_contents->GetPrimaryMainFrame()));
 
   // The PDF document should be in the grandchild frame, embedded in the PDF

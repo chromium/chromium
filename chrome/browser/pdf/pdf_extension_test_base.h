@@ -12,7 +12,7 @@
 
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/extensions/extension_apitest.h"
-#include "chrome/browser/pdf/test_pdf_viewer_stream_manager.h"
+#include "chrome/browser/pdf/test_mime_handler_stream_manager.h"
 #include "components/guest_view/browser/test_guest_view_manager.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/input/web_mouse_event.h"
@@ -100,10 +100,10 @@ class PDFExtensionTestBase : public extensions::ExtensionApiTest {
   guest_view::TestGuestViewManager* GetGuestViewManagerForProfile(
       content::BrowserContext* profile);
 
-  pdf::TestPdfViewerStreamManager* GetTestPdfViewerStreamManager(
+  pdf::TestMimeHandlerStreamManager* GetTestMimeHandlerStreamManager(
       content::WebContents* contents);
 
-  void CreateTestPdfViewerStreamManager(content::WebContents* contents);
+  void CreateTestMimeHandlerStreamManager(content::WebContents* contents);
 
   content::RenderFrameHost* GetOnlyPdfExtensionHostEnsureValid();
 
@@ -148,7 +148,7 @@ class PDFExtensionTestBase : public extensions::ExtensionApiTest {
   base::test::ScopedFeatureList feature_list_;
   std::variant<std::monostate,
                std::unique_ptr<guest_view::TestGuestViewManagerFactory>,
-               std::unique_ptr<pdf::TestPdfViewerStreamManagerFactory>>
+               std::unique_ptr<pdf::TestMimeHandlerStreamManagerFactory>>
       factory_;
 };
 

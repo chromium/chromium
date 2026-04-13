@@ -60,7 +60,7 @@
 #include <variant>
 
 #include "chrome/browser/pdf/pdf_extension_test_util.h"
-#include "chrome/browser/pdf/test_pdf_viewer_stream_manager.h"
+#include "chrome/browser/pdf/test_mime_handler_stream_manager.h"
 #include "pdf/pdf_features.h"
 
 namespace {
@@ -731,7 +731,7 @@ class ChromeBackForwardCacheBrowserWithEmbedPdfTest
     ChromeBackForwardCacheBrowserWithEmbedTestBase::SetUpOnMainThread();
 
     if (UseOopif()) {
-      factory_ = std::make_unique<pdf::TestPdfViewerStreamManagerFactory>();
+      factory_ = std::make_unique<pdf::TestMimeHandlerStreamManagerFactory>();
     }
   }
 
@@ -739,10 +739,10 @@ class ChromeBackForwardCacheBrowserWithEmbedPdfTest
 
   bool UseOopif() const { return std::get<1>(GetParam()); }
 
-  pdf::TestPdfViewerStreamManager* GetTestPdfViewerStreamManager(
+  pdf::TestMimeHandlerStreamManager* GetTestMimeHandlerStreamManager(
       content::WebContents* contents) {
     CHECK(UseOopif());
-    return factory_->GetTestPdfViewerStreamManager(contents);
+    return factory_->GetTestMimeHandlerStreamManager(contents);
   }
 
   std::vector<base::test::FeatureRefAndParams> GetEnabledFeaturesAndParams()
@@ -792,9 +792,9 @@ class ChromeBackForwardCacheBrowserWithEmbedPdfTest
   }
 
  private:
-  // `factory_` is necessary to create a `pdf::TestPdfViewerStreamManager`
+  // `factory_` is necessary to create a `pdf::TestMimeHandlerStreamManager`
   // instance whenever a PDF loads.
-  std::unique_ptr<pdf::TestPdfViewerStreamManagerFactory> factory_;
+  std::unique_ptr<pdf::TestMimeHandlerStreamManagerFactory> factory_;
 };
 
 INSTANTIATE_TEST_SUITE_P(
@@ -892,7 +892,7 @@ IN_PROC_BROWSER_TEST_P(
   ASSERT_TRUE(content::NavigateToURL(
       web_contents(), embedded_test_server()->GetURL("a.com", page_with_pdf)));
   if (UseOopif()) {
-    ASSERT_TRUE(GetTestPdfViewerStreamManager(web_contents())
+    ASSERT_TRUE(GetTestMimeHandlerStreamManager(web_contents())
                     ->WaitUntilPdfLoadedInFirstChild());
   } else {
     pdf_extension_test_util::EnsurePDFHasLoadedOptions options{
@@ -956,7 +956,7 @@ IN_PROC_BROWSER_TEST_P(ChromeBackForwardCacheBrowserWithEmbedPdfTest,
                                              tag, GetSrcAttributeForTag(tag))));
   if (UseOopif()) {
     // Wait for the PDF to fully load.
-    ASSERT_TRUE(GetTestPdfViewerStreamManager(web_contents())
+    ASSERT_TRUE(GetTestMimeHandlerStreamManager(web_contents())
                     ->WaitUntilPdfLoadedInFirstChild());
   }
 
@@ -1034,7 +1034,7 @@ IN_PROC_BROWSER_TEST_P(ChromeBackForwardCacheBrowserWithEmbedPdfTest,
                                              tag, GetSrcAttributeForTag(tag))));
   if (UseOopif()) {
     // Wait for the PDF to fully load.
-    ASSERT_TRUE(GetTestPdfViewerStreamManager(web_contents())
+    ASSERT_TRUE(GetTestMimeHandlerStreamManager(web_contents())
                     ->WaitUntilPdfLoadedInFirstChild());
   }
 

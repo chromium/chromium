@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/pdf/pdf_viewer_stream_manager.h"
+#include "chrome/browser/pdf/mime_handler_stream_manager.h"
 
 #include <memory>
 
@@ -37,7 +37,7 @@ constexpr char kOriginalUrl2[] = "https://original_url2";
 
 }  // namespace
 
-class PdfViewerStreamManagerTest : public ChromeRenderViewHostTestHarness {
+class MimeHandlerStreamManagerTest : public ChromeRenderViewHostTestHarness {
  protected:
   void SetUp() override {
     ChromeRenderViewHostTestHarness::SetUp();
@@ -47,12 +47,12 @@ class PdfViewerStreamManagerTest : public ChromeRenderViewHostTestHarness {
 
   void TearDown() override {
     ChromeRenderViewHostTestHarness::web_contents()->RemoveUserData(
-        PdfViewerStreamManager::UserDataKey());
+        MimeHandlerStreamManager::UserDataKey());
     ChromeRenderViewHostTestHarness::TearDown();
   }
 
-  PdfViewerStreamManager* pdf_viewer_stream_manager() {
-    return PdfViewerStreamManager::FromWebContents(
+  MimeHandlerStreamManager* mime_handler_stream_manager() {
+    return MimeHandlerStreamManager::FromWebContents(
         ChromeRenderViewHostTestHarness::web_contents());
   }
 
@@ -64,10 +64,10 @@ class PdfViewerStreamManagerTest : public ChromeRenderViewHostTestHarness {
         content::NavigationSimulator::NavigateAndCommitFromDocument(
             original_url, host);
 
-    // Create `PdfViewerStreamManager` if it doesn't exist already. If `host` is
-    // the primary main frame, then the previous `PdfViewerStreamManager` may
-    // have been deleted as part of the above navigation.
-    PdfViewerStreamManager::Create(
+    // Create `MimeHandlerStreamManager` if it doesn't exist already. If `host`
+    // is the primary main frame, then the previous `MimeHandlerStreamManager`
+    // may have been deleted as part of the above navigation.
+    MimeHandlerStreamManager::Create(
         ChromeRenderViewHostTestHarness::web_contents());
     return new_host;
   }
@@ -85,13 +85,13 @@ class PdfViewerStreamManagerTest : public ChromeRenderViewHostTestHarness {
 };
 
 // Verify adding and getting an `extensions::StreamContainer`.
-TEST_F(PdfViewerStreamManagerTest, AddAndGetStreamContainer) {
+TEST_F(MimeHandlerStreamManagerTest, AddAndGetStreamContainer) {
   content::RenderFrameHost* embedder_host =
       NavigateAndCommit(main_rfh(), GURL(kOriginalUrl1));
   content::FrameTreeNodeId frame_tree_node_id =
       embedder_host->GetFrameTreeNodeId();
 
-  PdfViewerStreamManager* manager = pdf_viewer_stream_manager();
+  MimeHandlerStreamManager* manager = mime_handler_stream_manager();
   manager->AddStreamContainer(frame_tree_node_id, "internal_id",
                               pdf_test_util::GenerateSampleStreamContainer(1));
   EXPECT_TRUE(manager->ContainsUnclaimedStreamInfo(frame_tree_node_id));
@@ -110,19 +110,19 @@ TEST_F(PdfViewerStreamManagerTest, AddAndGetStreamContainer) {
   EXPECT_EQ(transferrable_loader->url, GURL("stream://url1"));
   EXPECT_EQ(transferrable_loader->head->mime_type, "application/pdf");
   EXPECT_EQ(result->original_url(), GURL("https://original_url1"));
-  EXPECT_TRUE(pdf_viewer_stream_manager());
+  EXPECT_TRUE(mime_handler_stream_manager());
 }
 
 // Verify adding an `extensions::StreamContainer` under the same frame tree node
 // ID replaces the original unclaimed `extensions::StreamContainer`.
-TEST_F(PdfViewerStreamManagerTest,
+TEST_F(MimeHandlerStreamManagerTest,
        AddStreamContainerSameFrameTreeNodeIdUnclaimed) {
   content::RenderFrameHost* embedder_host =
       NavigateAndCommit(main_rfh(), GURL(kOriginalUrl2));
   content::FrameTreeNodeId frame_tree_node_id =
       embedder_host->GetFrameTreeNodeId();
 
-  PdfViewerStreamManager* manager = pdf_viewer_stream_manager();
+  MimeHandlerStreamManager* manager = mime_handler_stream_manager();
   manager->AddStreamContainer(frame_tree_node_id, "internal_id1",
                               pdf_test_util::GenerateSampleStreamContainer(1));
   manager->AddStreamContainer(frame_tree_node_id, "internal_id2",
@@ -142,32 +142,32 @@ TEST_F(PdfViewerStreamManagerTest,
   EXPECT_EQ(transferrable_loader->url, GURL("stream://url2"));
   EXPECT_EQ(transferrable_loader->head->mime_type, "application/pdf");
   EXPECT_EQ(result->original_url(), GURL("https://original_url2"));
-  EXPECT_TRUE(pdf_viewer_stream_manager());
+  EXPECT_TRUE(mime_handler_stream_manager());
 }
 
 // Verify getting a `StreamContainer` with a non-matching URL returns nullptr;
-TEST_F(PdfViewerStreamManagerTest, AddAndGetStreamInvalidURL) {
+TEST_F(MimeHandlerStreamManagerTest, AddAndGetStreamInvalidURL) {
   content::RenderFrameHost* embedder_host =
       NavigateAndCommit(main_rfh(), GURL("https://nonmatching_url"));
 
-  PdfViewerStreamManager* manager = pdf_viewer_stream_manager();
+  MimeHandlerStreamManager* manager = mime_handler_stream_manager();
   manager->AddStreamContainer(embedder_host->GetFrameTreeNodeId(),
                               "internal_id",
                               pdf_test_util::GenerateSampleStreamContainer(1));
   manager->ClaimStreamInfoForTesting(embedder_host);
 
   EXPECT_FALSE(manager->GetStreamContainer(embedder_host));
-  EXPECT_TRUE(pdf_viewer_stream_manager());
+  EXPECT_TRUE(mime_handler_stream_manager());
 }
 
 // Verify adding multiple `extensions::StreamContainer`s for different
 // FrameTreeNodes at once.
-TEST_F(PdfViewerStreamManagerTest, AddMultipleStreamContainers) {
+TEST_F(MimeHandlerStreamManagerTest, AddMultipleStreamContainers) {
   auto* embedder_host = NavigateAndCommit(main_rfh(), GURL(kOriginalUrl1));
   auto* child_host = CreateChildRenderFrameHost(embedder_host, "child host");
   child_host = NavigateAndCommit(child_host, GURL(kOriginalUrl2));
 
-  PdfViewerStreamManager* manager = pdf_viewer_stream_manager();
+  MimeHandlerStreamManager* manager = mime_handler_stream_manager();
   manager->AddStreamContainer(embedder_host->GetFrameTreeNodeId(),
                               "internal_id1",
                               pdf_test_util::GenerateSampleStreamContainer(1));
@@ -201,12 +201,12 @@ TEST_F(PdfViewerStreamManagerTest, AddMultipleStreamContainers) {
   EXPECT_EQ(transferrable_loader->url, GURL("stream://url2"));
   EXPECT_EQ(transferrable_loader->head->mime_type, "application/pdf");
   EXPECT_EQ(result->original_url(), GURL("https://original_url2"));
-  EXPECT_TRUE(pdf_viewer_stream_manager());
+  EXPECT_TRUE(mime_handler_stream_manager());
 }
 
-// `PdfViewerStreamManager::IsPdfExtensionHost()` should correctly identify the
-// PDF extension hosts.
-TEST_F(PdfViewerStreamManagerTest, IsPdfExtensionHost) {
+// `MimeHandlerStreamManager::IsPdfExtensionHost()` should correctly identify
+// the PDF extension hosts.
+TEST_F(MimeHandlerStreamManagerTest, IsPdfExtensionHost) {
   auto* embedder_host = CreateChildRenderFrameHost(main_rfh(), "embedder host");
   embedder_host = NavigateAndCommit(embedder_host, GURL(kOriginalUrl1));
 
@@ -219,7 +219,7 @@ TEST_F(PdfViewerStreamManagerTest, IsPdfExtensionHost) {
       CreateChildRenderFrameHost(embedder_host, "extension host");
   auto* other_host = CreateChildRenderFrameHost(embedder_host, "other host");
 
-  PdfViewerStreamManager* manager = pdf_viewer_stream_manager();
+  MimeHandlerStreamManager* manager = mime_handler_stream_manager();
   manager->AddStreamContainer(embedder_host->GetFrameTreeNodeId(),
                               "internal_id",
                               pdf_test_util::GenerateSampleStreamContainer(1));
@@ -249,9 +249,9 @@ TEST_F(PdfViewerStreamManagerTest, IsPdfExtensionHost) {
   EXPECT_FALSE(manager->IsPdfExtensionHost(other_host));
 }
 
-// `PdfViewerStreamManager::IsPdfContentHost()` should correctly identify the
+// `MimeHandlerStreamManager::IsPdfContentHost()` should correctly identify the
 // PDF content hosts.
-TEST_F(PdfViewerStreamManagerTest, IsPdfContentHost) {
+TEST_F(MimeHandlerStreamManagerTest, IsPdfContentHost) {
   const GURL pdf_url = GURL(kOriginalUrl1);
 
   auto* embedder_host = CreateChildRenderFrameHost(main_rfh(), "embedder host");
@@ -269,7 +269,7 @@ TEST_F(PdfViewerStreamManagerTest, IsPdfContentHost) {
   content_host = NavigateAndCommit(content_host, pdf_url);
   auto* other_host = CreateChildRenderFrameHost(extension_host, "other host");
 
-  PdfViewerStreamManager* manager = pdf_viewer_stream_manager();
+  MimeHandlerStreamManager* manager = mime_handler_stream_manager();
   manager->AddStreamContainer(embedder_host->GetFrameTreeNodeId(),
                               "internal_id",
                               pdf_test_util::GenerateSampleStreamContainer(1));
@@ -302,13 +302,13 @@ TEST_F(PdfViewerStreamManagerTest, IsPdfContentHost) {
 
 // If multiple `extensions::StreamContainer`s exist, then deleting one stream
 // shouldn't delete the other stream.
-TEST_F(PdfViewerStreamManagerTest, DeleteWithMultipleStreamContainers) {
+TEST_F(MimeHandlerStreamManagerTest, DeleteWithMultipleStreamContainers) {
   content::RenderFrameHost* embedder_host =
       NavigateAndCommit(main_rfh(), GURL(kOriginalUrl1));
   auto* child_host = CreateChildRenderFrameHost(embedder_host, "child host");
   child_host = NavigateAndCommit(child_host, GURL(kOriginalUrl2));
 
-  PdfViewerStreamManager* manager = pdf_viewer_stream_manager();
+  MimeHandlerStreamManager* manager = mime_handler_stream_manager();
   manager->AddStreamContainer(embedder_host->GetFrameTreeNodeId(),
                               "internal_id1",
                               pdf_test_util::GenerateSampleStreamContainer(1));
@@ -319,40 +319,40 @@ TEST_F(PdfViewerStreamManagerTest, DeleteWithMultipleStreamContainers) {
   ASSERT_TRUE(manager->GetStreamContainer(embedder_host));
   ASSERT_TRUE(manager->GetStreamContainer(child_host));
 
-  // `PdfViewerStreamManager::RenderFrameDeleted()` should cause the stream
+  // `MimeHandlerStreamManager::RenderFrameDeleted()` should cause the stream
   // associated with `child_host` to be deleted.
   manager->RenderFrameDeleted(child_host);
 
   EXPECT_TRUE(manager->GetStreamContainer(embedder_host));
   EXPECT_FALSE(manager->GetStreamContainer(child_host));
-  EXPECT_TRUE(pdf_viewer_stream_manager());
+  EXPECT_TRUE(mime_handler_stream_manager());
 }
 
 // Verify that unclaimed stream infos can be deleted.
-TEST_F(PdfViewerStreamManagerTest, DeleteUnclaimedStreamInfo) {
+TEST_F(MimeHandlerStreamManagerTest, DeleteUnclaimedStreamInfo) {
   content::RenderFrameHost* unclaimed_embedder_host =
       NavigateAndCommit(main_rfh(), GURL(kOriginalUrl1));
   content::FrameTreeNodeId frame_tree_node_id =
       unclaimed_embedder_host->GetFrameTreeNodeId();
 
-  PdfViewerStreamManager* manager = pdf_viewer_stream_manager();
+  MimeHandlerStreamManager* manager = mime_handler_stream_manager();
   manager->AddStreamContainer(frame_tree_node_id, "internal_id",
                               pdf_test_util::GenerateSampleStreamContainer(1));
   EXPECT_FALSE(manager->GetStreamContainer(unclaimed_embedder_host));
 
   manager->DeleteUnclaimedStreamInfo(frame_tree_node_id);
 
-  // There are no remaining streams, so `PdfViewerStreamManager` should delete
+  // There are no remaining streams, so `MimeHandlerStreamManager` should delete
   // itself.
-  EXPECT_FALSE(pdf_viewer_stream_manager());
+  EXPECT_FALSE(mime_handler_stream_manager());
 }
 
 // If the embedder render frame is deleted, the stream should be deleted.
-TEST_F(PdfViewerStreamManagerTest, RenderFrameDeletedWithClaimedStream) {
+TEST_F(MimeHandlerStreamManagerTest, RenderFrameDeletedWithClaimedStream) {
   auto* actual_host = CreateChildRenderFrameHost(main_rfh(), "actual host");
   actual_host = NavigateAndCommit(actual_host, GURL(kOriginalUrl1));
 
-  PdfViewerStreamManager* manager = pdf_viewer_stream_manager();
+  MimeHandlerStreamManager* manager = mime_handler_stream_manager();
   manager->AddStreamContainer(actual_host->GetFrameTreeNodeId(), "internal_id",
                               pdf_test_util::GenerateSampleStreamContainer(1));
   manager->ClaimStreamInfoForTesting(actual_host);
@@ -360,22 +360,22 @@ TEST_F(PdfViewerStreamManagerTest, RenderFrameDeletedWithClaimedStream) {
 
   // Unrelated hosts should be ignored.
   manager->RenderFrameDeleted(main_rfh());
-  ASSERT_EQ(manager, pdf_viewer_stream_manager());
+  ASSERT_EQ(manager, mime_handler_stream_manager());
 
-  // `PdfViewerStreamManager::RenderFrameDeleted()` should cause the stream
+  // `MimeHandlerStreamManager::RenderFrameDeleted()` should cause the stream
   // associated with `actual_host` to be deleted.
   manager->RenderFrameDeleted(actual_host);
 
-  // There are no remaining streams, so `PdfViewerStreamManager` should delete
+  // There are no remaining streams, so `MimeHandlerStreamManager` should delete
   // itself.
-  EXPECT_FALSE(pdf_viewer_stream_manager());
+  EXPECT_FALSE(mime_handler_stream_manager());
 }
 
-TEST_F(PdfViewerStreamManagerTest, RenderFrameDeletedWithUnclaimedStream) {
+TEST_F(MimeHandlerStreamManagerTest, RenderFrameDeletedWithUnclaimedStream) {
   auto* actual_host = CreateChildRenderFrameHost(main_rfh(), "actual host");
   actual_host = NavigateAndCommit(actual_host, GURL(kOriginalUrl1));
 
-  PdfViewerStreamManager* manager = pdf_viewer_stream_manager();
+  MimeHandlerStreamManager* manager = mime_handler_stream_manager();
   manager->AddStreamContainer(actual_host->GetFrameTreeNodeId(), "internal_id",
                               pdf_test_util::GenerateSampleStreamContainer(1));
 
@@ -384,25 +384,25 @@ TEST_F(PdfViewerStreamManagerTest, RenderFrameDeletedWithUnclaimedStream) {
 
   // Unrelated hosts should be ignored.
   manager->RenderFrameDeleted(main_rfh());
-  ASSERT_EQ(manager, pdf_viewer_stream_manager());
+  ASSERT_EQ(manager, mime_handler_stream_manager());
 
-  // `PdfViewerStreamManager::RenderFrameDeleted()` should cause the stream
+  // `MimeHandlerStreamManager::RenderFrameDeleted()` should cause the stream
   // associated with `actual_host` to be deleted.
   manager->RenderFrameDeleted(actual_host);
 
-  // There are no remaining streams, so `PdfViewerStreamManager` should delete
+  // There are no remaining streams, so `MimeHandlerStreamManager` should delete
   // itself.
-  EXPECT_FALSE(pdf_viewer_stream_manager());
+  EXPECT_FALSE(mime_handler_stream_manager());
 }
 
 // If the `content::RenderFrameHost` for the stream changes, then the stream
 // should be deleted.
-TEST_F(PdfViewerStreamManagerTest, EmbedderRenderFrameHostChanged) {
+TEST_F(MimeHandlerStreamManagerTest, EmbedderRenderFrameHostChanged) {
   content::RenderFrameHost* old_host =
       NavigateAndCommit(main_rfh(), GURL(kOriginalUrl1));
   auto* new_host = CreateChildRenderFrameHost(old_host, "new host");
 
-  PdfViewerStreamManager* manager = pdf_viewer_stream_manager();
+  MimeHandlerStreamManager* manager = mime_handler_stream_manager();
   manager->AddStreamContainer(old_host->GetFrameTreeNodeId(), "internal_id",
                               pdf_test_util::GenerateSampleStreamContainer(1));
   manager->ClaimStreamInfoForTesting(old_host);
@@ -417,15 +417,15 @@ TEST_F(PdfViewerStreamManagerTest, EmbedderRenderFrameHostChanged) {
   manager->RenderFrameHostChanged(new_host, new_host);
   EXPECT_TRUE(manager->GetStreamContainer(old_host));
 
-  // There are no remaining streams, so `PdfViewerStreamManager` should delete
+  // There are no remaining streams, so `MimeHandlerStreamManager` should delete
   // itself.
   manager->RenderFrameHostChanged(old_host, new_host);
-  EXPECT_FALSE(pdf_viewer_stream_manager());
+  EXPECT_FALSE(mime_handler_stream_manager());
 }
 
 // If the PDF extension host changes to a different host, the stream should be
 // deleted.
-TEST_F(PdfViewerStreamManagerTest, ExtensionRenderFrameHostChanged) {
+TEST_F(MimeHandlerStreamManagerTest, ExtensionRenderFrameHostChanged) {
   auto* embedder_host = CreateChildRenderFrameHost(main_rfh(), "embedder host");
   embedder_host = NavigateAndCommit(embedder_host, GURL(kOriginalUrl1));
 
@@ -440,7 +440,7 @@ TEST_F(PdfViewerStreamManagerTest, ExtensionRenderFrameHostChanged) {
       CreateChildRenderFrameHost(embedder_host, "extension host");
   auto* new_host = CreateChildRenderFrameHost(embedder_host, "new host");
 
-  PdfViewerStreamManager* manager = pdf_viewer_stream_manager();
+  MimeHandlerStreamManager* manager = mime_handler_stream_manager();
   manager->AddStreamContainer(embedder_host->GetFrameTreeNodeId(),
                               "internal_id",
                               pdf_test_util::GenerateSampleStreamContainer(1));
@@ -458,7 +458,7 @@ TEST_F(PdfViewerStreamManagerTest, ExtensionRenderFrameHostChanged) {
   // stream.
   manager->RenderFrameHostChanged(about_blank_host, extension_host);
 
-  ASSERT_TRUE(pdf_viewer_stream_manager());
+  ASSERT_TRUE(mime_handler_stream_manager());
   EXPECT_TRUE(manager->GetStreamContainer(embedder_host));
 
   // Now, set the extension frame tree node ID to the actual extension frame
@@ -470,14 +470,14 @@ TEST_F(PdfViewerStreamManagerTest, ExtensionRenderFrameHostChanged) {
   // Changing the extension host should delete the stream.
   manager->RenderFrameHostChanged(extension_host, new_host);
 
-  // There are no remaining streams, so `PdfViewerStreamManager` should delete
+  // There are no remaining streams, so `MimeHandlerStreamManager` should delete
   // itself.
-  EXPECT_FALSE(pdf_viewer_stream_manager());
+  EXPECT_FALSE(mime_handler_stream_manager());
 }
 
 // If the PDF content host changes to a different host, the stream should be
 // deleted.
-TEST_F(PdfViewerStreamManagerTest, ContentRenderFrameHostChanged) {
+TEST_F(MimeHandlerStreamManagerTest, ContentRenderFrameHostChanged) {
   const GURL pdf_url = GURL(kOriginalUrl1);
 
   auto* embedder_host = CreateChildRenderFrameHost(main_rfh(), "embedder host");
@@ -495,7 +495,7 @@ TEST_F(PdfViewerStreamManagerTest, ContentRenderFrameHostChanged) {
   content_host = NavigateAndCommit(content_host, pdf_url);
   auto* new_host = CreateChildRenderFrameHost(extension_host, "new host");
 
-  PdfViewerStreamManager* manager = pdf_viewer_stream_manager();
+  MimeHandlerStreamManager* manager = mime_handler_stream_manager();
   manager->AddStreamContainer(embedder_host->GetFrameTreeNodeId(),
                               "internal_id",
                               pdf_test_util::GenerateSampleStreamContainer(1));
@@ -506,7 +506,7 @@ TEST_F(PdfViewerStreamManagerTest, ContentRenderFrameHostChanged) {
 
   // The extension host needs to have the PDF extension origin so that
   // `pdf_frame_util::GetEmbedderHost()` can identify and get the embedder host
-  // in `PdfViewerStreamManager::MaybeDeleteStreamOnPdfContentHostChanged()`.
+  // in `MimeHandlerStreamManager::MaybeDeleteStreamOnPdfContentHostChanged()`.
   content::OverrideLastCommittedOrigin(
       extension_host,
       url::Origin::Create(GURL(
@@ -522,7 +522,7 @@ TEST_F(PdfViewerStreamManagerTest, ContentRenderFrameHostChanged) {
   // Changing `stream_url_host` to `content_host` shouldn't delete the stream.
   manager->RenderFrameHostChanged(stream_url_host, content_host);
 
-  ASSERT_TRUE(pdf_viewer_stream_manager());
+  ASSERT_TRUE(mime_handler_stream_manager());
   EXPECT_TRUE(manager->GetStreamContainer(embedder_host));
 
   // Now, set the content frame tree node ID to the actual content frame tree
@@ -533,33 +533,33 @@ TEST_F(PdfViewerStreamManagerTest, ContentRenderFrameHostChanged) {
   // Changing the content host should delete the stream.
   manager->RenderFrameHostChanged(content_host, new_host);
 
-  // There are no remaining streams, so `PdfViewerStreamManager` should delete
+  // There are no remaining streams, so `MimeHandlerStreamManager` should delete
   // itself.
-  EXPECT_FALSE(pdf_viewer_stream_manager());
+  EXPECT_FALSE(mime_handler_stream_manager());
 }
 
 // If the `content::RenderFrameHost` for the stream is deleted, then the stream
 // should be deleted.
-TEST_F(PdfViewerStreamManagerTest, EmbedderFrameDeleted) {
+TEST_F(MimeHandlerStreamManagerTest, EmbedderFrameDeleted) {
   content::RenderFrameHost* embedder_host =
       NavigateAndCommit(main_rfh(), GURL(kOriginalUrl1));
   content::FrameTreeNodeId frame_tree_node_id =
       embedder_host->GetFrameTreeNodeId();
 
-  PdfViewerStreamManager* manager = pdf_viewer_stream_manager();
+  MimeHandlerStreamManager* manager = mime_handler_stream_manager();
   manager->AddStreamContainer(frame_tree_node_id, "internal_id",
                               pdf_test_util::GenerateSampleStreamContainer(1));
   manager->ClaimStreamInfoForTesting(embedder_host);
   ASSERT_TRUE(manager->GetStreamContainer(embedder_host));
 
-  // There are no remaining streams, so `PdfViewerStreamManager` should delete
+  // There are no remaining streams, so `MimeHandlerStreamManager` should delete
   // itself.
   manager->FrameDeleted(frame_tree_node_id);
-  EXPECT_FALSE(pdf_viewer_stream_manager());
+  EXPECT_FALSE(mime_handler_stream_manager());
 }
 
 // If the PDF extension frame is deleted, the stream should be deleted.
-TEST_F(PdfViewerStreamManagerTest, ExtensionFrameDeleted) {
+TEST_F(MimeHandlerStreamManagerTest, ExtensionFrameDeleted) {
   auto* embedder_host = CreateChildRenderFrameHost(main_rfh(), "actual host");
   embedder_host = NavigateAndCommit(embedder_host, GURL(kOriginalUrl1));
   auto* extension_host =
@@ -567,7 +567,7 @@ TEST_F(PdfViewerStreamManagerTest, ExtensionFrameDeleted) {
   content::FrameTreeNodeId frame_tree_node_id =
       extension_host->GetFrameTreeNodeId();
 
-  PdfViewerStreamManager* manager = pdf_viewer_stream_manager();
+  MimeHandlerStreamManager* manager = mime_handler_stream_manager();
   manager->AddStreamContainer(embedder_host->GetFrameTreeNodeId(),
                               "internal_id",
                               pdf_test_util::GenerateSampleStreamContainer(1));
@@ -582,13 +582,13 @@ TEST_F(PdfViewerStreamManagerTest, ExtensionFrameDeleted) {
   // Deleting the extension host should cause the stream to be deleted.
   manager->FrameDeleted(frame_tree_node_id);
 
-  // There are no remaining streams, so `PdfViewerStreamManager` should delete
+  // There are no remaining streams, so `MimeHandlerStreamManager` should delete
   // itself.
-  EXPECT_FALSE(pdf_viewer_stream_manager());
+  EXPECT_FALSE(mime_handler_stream_manager());
 }
 
 // If the PDF content frame is deleted, the stream should be deleted.
-TEST_F(PdfViewerStreamManagerTest, ContentFrameDeleted) {
+TEST_F(MimeHandlerStreamManagerTest, ContentFrameDeleted) {
   auto* embedder_host = CreateChildRenderFrameHost(main_rfh(), "embedder host");
   embedder_host = NavigateAndCommit(embedder_host, GURL(kOriginalUrl1));
   auto* extension_host =
@@ -599,7 +599,7 @@ TEST_F(PdfViewerStreamManagerTest, ContentFrameDeleted) {
   content::FrameTreeNodeId frame_tree_node_id =
       content_host->GetFrameTreeNodeId();
 
-  PdfViewerStreamManager* manager = pdf_viewer_stream_manager();
+  MimeHandlerStreamManager* manager = mime_handler_stream_manager();
   manager->AddStreamContainer(embedder_host->GetFrameTreeNodeId(),
                               "internal_id",
                               pdf_test_util::GenerateSampleStreamContainer(1));
@@ -614,14 +614,14 @@ TEST_F(PdfViewerStreamManagerTest, ContentFrameDeleted) {
   // Deleting the content host should cause the stream to be deleted.
   manager->FrameDeleted(frame_tree_node_id);
 
-  // There are no remaining streams, so `PdfViewerStreamManager` should delete
+  // There are no remaining streams, so `MimeHandlerStreamManager` should delete
   // itself.
-  EXPECT_FALSE(pdf_viewer_stream_manager());
+  EXPECT_FALSE(mime_handler_stream_manager());
 }
 
 // Starting the navigation for the content host should set the content host
 // frame tree node ID.
-TEST_F(PdfViewerStreamManagerTest,
+TEST_F(MimeHandlerStreamManagerTest,
        DidStartNavigationSetContentHostFrameTreeNodeId) {
   content::RenderFrameHost* embedder_host =
       NavigateAndCommit(main_rfh(), GURL(kOriginalUrl1));
@@ -631,7 +631,7 @@ TEST_F(PdfViewerStreamManagerTest,
   content::FrameTreeNodeId content_frame_tree_node_id =
       pdf_host->GetFrameTreeNodeId();
 
-  PdfViewerStreamManager* manager = pdf_viewer_stream_manager();
+  MimeHandlerStreamManager* manager = mime_handler_stream_manager();
   manager->AddStreamContainer(embedder_host->GetFrameTreeNodeId(),
                               "internal_id",
                               pdf_test_util::GenerateSampleStreamContainer(1));
@@ -642,7 +642,7 @@ TEST_F(PdfViewerStreamManagerTest,
   // deletion, since the content host frame tree node ID hasn't been set.
   manager->FrameDeleted(pdf_host->GetFrameTreeNodeId());
 
-  ASSERT_TRUE(pdf_viewer_stream_manager());
+  ASSERT_TRUE(mime_handler_stream_manager());
 
   NiceMock<content::MockNavigationHandle> navigation_handle(GURL(kOriginalUrl1),
                                                             pdf_host);
@@ -656,27 +656,28 @@ TEST_F(PdfViewerStreamManagerTest,
   // set.
   manager->DidStartNavigation(&navigation_handle);
 
-  ASSERT_TRUE(pdf_viewer_stream_manager());
+  ASSERT_TRUE(mime_handler_stream_manager());
 
   // Deleting the frame should now trigger stream deletion, as the content host
   // frame tree node ID has been set.
   manager->FrameDeleted(content_frame_tree_node_id);
 
-  // There are no remaining streams, so `PdfViewerStreamManager` should delete
+  // There are no remaining streams, so `MimeHandlerStreamManager` should delete
   // itself.
-  EXPECT_FALSE(pdf_viewer_stream_manager());
+  EXPECT_FALSE(mime_handler_stream_manager());
 }
 
-// `PdfViewerStreamManager` should register a subresource
+// `MimeHandlerStreamManager` should register a subresource
 // override if the navigation handle is for a PDF content frame.
-TEST_F(PdfViewerStreamManagerTest, ReadyToCommitNavigationSubresourceOverride) {
+TEST_F(MimeHandlerStreamManagerTest,
+       ReadyToCommitNavigationSubresourceOverride) {
   content::RenderFrameHost* embedder_host =
       NavigateAndCommit(main_rfh(), GURL(kOriginalUrl1));
   auto* extension_host =
       CreateChildRenderFrameHost(embedder_host, "extension host");
   auto* pdf_host = CreateChildRenderFrameHost(extension_host, "pdf host");
 
-  PdfViewerStreamManager* manager = pdf_viewer_stream_manager();
+  MimeHandlerStreamManager* manager = mime_handler_stream_manager();
   manager->AddStreamContainer(embedder_host->GetFrameTreeNodeId(),
                               "internal_id",
                               pdf_test_util::GenerateSampleStreamContainer(1));
@@ -696,13 +697,13 @@ TEST_F(PdfViewerStreamManagerTest, ReadyToCommitNavigationSubresourceOverride) {
 
   // The stream should persist after the PDF load to provide postMessage support
   // and PDF saving.
-  ASSERT_EQ(manager, pdf_viewer_stream_manager());
+  ASSERT_EQ(manager, mime_handler_stream_manager());
   EXPECT_TRUE(manager->GetStreamContainer(embedder_host));
 }
 
-// `PdfViewerStreamManager` should be able to handle registering multiple
+// `MimeHandlerStreamManager` should be able to handle registering multiple
 // subresource override for multiple PDF streams.
-TEST_F(PdfViewerStreamManagerTest,
+TEST_F(MimeHandlerStreamManagerTest,
        ReadyToCommitNavigationSubresourceOverrideMultipleStreams) {
   content::RenderFrameHost* embedder_host1 =
       NavigateAndCommit(main_rfh(), GURL(kOriginalUrl1));
@@ -717,7 +718,7 @@ TEST_F(PdfViewerStreamManagerTest,
       CreateChildRenderFrameHost(embedder_host2, "extension host2");
   auto* pdf_host2 = CreateChildRenderFrameHost(extension_host2, "pdf host2");
 
-  PdfViewerStreamManager* manager = pdf_viewer_stream_manager();
+  MimeHandlerStreamManager* manager = mime_handler_stream_manager();
   manager->AddStreamContainer(embedder_host1->GetFrameTreeNodeId(),
                               "internal_id1",
                               pdf_test_util::GenerateSampleStreamContainer(1));
@@ -753,16 +754,16 @@ TEST_F(PdfViewerStreamManagerTest,
 
   // The streams should persist after the PDF load to provide postMessage
   // support and PDF saving.
-  ASSERT_EQ(manager, pdf_viewer_stream_manager());
+  ASSERT_EQ(manager, mime_handler_stream_manager());
   EXPECT_TRUE(manager->GetStreamContainer(embedder_host1));
   EXPECT_TRUE(manager->GetStreamContainer(embedder_host2));
 }
 
 // The initial load should claim the stream.
-TEST_F(PdfViewerStreamManagerTest, ReadyToCommitNavigationClaimAndReplace) {
+TEST_F(MimeHandlerStreamManagerTest, ReadyToCommitNavigationClaimAndReplace) {
   content::RenderFrameHost* embedder_host =
       NavigateAndCommit(main_rfh(), GURL(kOriginalUrl1));
-  PdfViewerStreamManager* manager = pdf_viewer_stream_manager();
+  MimeHandlerStreamManager* manager = mime_handler_stream_manager();
   manager->AddStreamContainer(embedder_host->GetFrameTreeNodeId(),
                               "internal_id",
                               pdf_test_util::GenerateSampleStreamContainer(1));
@@ -776,7 +777,7 @@ TEST_F(PdfViewerStreamManagerTest, ReadyToCommitNavigationClaimAndReplace) {
   base::WeakPtr<extensions::StreamContainer> original_stream =
       manager->GetStreamContainer(embedder_host);
   EXPECT_TRUE(original_stream);
-  EXPECT_TRUE(pdf_viewer_stream_manager());
+  EXPECT_TRUE(mime_handler_stream_manager());
 
   NiceMock<content::MockNavigationHandle> navigation_handle2;
   navigation_handle2.set_render_frame_host(embedder_host);
@@ -791,7 +792,7 @@ TEST_F(PdfViewerStreamManagerTest, ReadyToCommitNavigationClaimAndReplace) {
   ASSERT_TRUE(original_stream);
   ASSERT_TRUE(same_stream);
   EXPECT_EQ(original_stream.get(), same_stream.get());
-  EXPECT_TRUE(pdf_viewer_stream_manager());
+  EXPECT_TRUE(mime_handler_stream_manager());
 
   // Re-add a duplicate stream.
   manager->AddStreamContainer(embedder_host->GetFrameTreeNodeId(),
@@ -806,12 +807,12 @@ TEST_F(PdfViewerStreamManagerTest, ReadyToCommitNavigationClaimAndReplace) {
   manager->ReadyToCommitNavigation(&navigation_handle3);
   EXPECT_TRUE(manager->GetStreamContainer(embedder_host));
   EXPECT_FALSE(original_stream);
-  EXPECT_TRUE(pdf_viewer_stream_manager());
+  EXPECT_TRUE(mime_handler_stream_manager());
 }
 
-// If the PDF URL is reloaded during a PDF load, `PdfViewerStreamManager` should
-// ignore the initial PDF content frame navigation.
-TEST_F(PdfViewerStreamManagerTest,
+// If the PDF URL is reloaded during a PDF load, `MimeHandlerStreamManager`
+// should ignore the initial PDF content frame navigation.
+TEST_F(MimeHandlerStreamManagerTest,
        DidFinishNavigationReloadOverlappingNavigations) {
   const GURL pdf_url(kOriginalUrl1);
 
@@ -822,7 +823,7 @@ TEST_F(PdfViewerStreamManagerTest,
       CreateChildRenderFrameHost(embedder_host, "extension host1");
   auto* pdf_host1 = CreateChildRenderFrameHost(extension_host1, "pdf host1");
 
-  PdfViewerStreamManager* manager = pdf_viewer_stream_manager();
+  MimeHandlerStreamManager* manager = mime_handler_stream_manager();
   manager->AddStreamContainer(embedder_host->GetFrameTreeNodeId(),
                               "internal_id1",
                               pdf_test_util::GenerateSampleStreamContainer(1));
@@ -868,19 +869,19 @@ TEST_F(PdfViewerStreamManagerTest,
   EXPECT_TRUE(manager->DidPdfContentNavigate(embedder_host));
 }
 
-// Verify `PdfViewerStreamManager::PluginCanSave()` defaults to false
-// and `PdfViewerStreamManager::SetPluginCanSave()` updates the value.
-TEST_F(PdfViewerStreamManagerTest, PluginCanSave) {
+// Verify `MimeHandlerStreamManager::PluginCanSave()` defaults to false
+// and `MimeHandlerStreamManager::SetPluginCanSave()` updates the value.
+TEST_F(MimeHandlerStreamManagerTest, PluginCanSave) {
   auto* embedder_host = NavigateAndCommit(main_rfh(), GURL(kOriginalUrl1));
 
-  PdfViewerStreamManager* manager = pdf_viewer_stream_manager();
+  MimeHandlerStreamManager* manager = mime_handler_stream_manager();
   manager->AddStreamContainer(embedder_host->GetFrameTreeNodeId(),
                               "internal_id",
                               pdf_test_util::GenerateSampleStreamContainer(1));
   manager->ClaimStreamInfoForTesting(embedder_host);
   ASSERT_TRUE(manager->GetStreamContainer(embedder_host));
 
-  // `PdfViewerStreamManager::PluginCanSave()` defaults to false.
+  // `MimeHandlerStreamManager::PluginCanSave()` defaults to false.
   EXPECT_FALSE(manager->PluginCanSave(embedder_host));
 
   // Set to true.
@@ -892,15 +893,15 @@ TEST_F(PdfViewerStreamManagerTest, PluginCanSave) {
   EXPECT_FALSE(manager->PluginCanSave(embedder_host));
 }
 
-// Verify `PdfViewerStreamManager::PluginCanSave()` returns false for an
-// unknown embedder host, and `PdfViewerStreamManager::SetPluginCanSave()` on an
-// unknown host is a no-op.
-TEST_F(PdfViewerStreamManagerTest, PluginCanSaveUnknownHost) {
+// Verify `MimeHandlerStreamManager::PluginCanSave()` returns false for an
+// unknown embedder host, and `MimeHandlerStreamManager::SetPluginCanSave()` on
+// an unknown host is a no-op.
+TEST_F(MimeHandlerStreamManagerTest, PluginCanSaveUnknownHost) {
   auto* embedder_host = NavigateAndCommit(main_rfh(), GURL(kOriginalUrl1));
   auto* other_host = CreateChildRenderFrameHost(embedder_host, "other host");
   other_host = NavigateAndCommit(other_host, GURL(kOriginalUrl2));
 
-  PdfViewerStreamManager* manager = pdf_viewer_stream_manager();
+  MimeHandlerStreamManager* manager = mime_handler_stream_manager();
   manager->AddStreamContainer(embedder_host->GetFrameTreeNodeId(),
                               "internal_id",
                               pdf_test_util::GenerateSampleStreamContainer(1));
@@ -910,7 +911,7 @@ TEST_F(PdfViewerStreamManagerTest, PluginCanSaveUnknownHost) {
   // Unknown host should return false (no claimed stream info).
   EXPECT_FALSE(manager->PluginCanSave(other_host));
 
-  // `PdfViewerStreamManager::SetPluginCanSave()` on unknown host is a
+  // `MimeHandlerStreamManager::SetPluginCanSave()` on unknown host is a
   // no-op -- no crash, and the real host is unaffected.
   manager->SetPluginCanSave(other_host, true);
   EXPECT_FALSE(manager->PluginCanSave(other_host));

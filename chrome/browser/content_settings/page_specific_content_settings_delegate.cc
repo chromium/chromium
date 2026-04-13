@@ -37,7 +37,7 @@
 #endif  // BUILDFLAG(ENABLE_GUEST_VIEW)
 
 #if BUILDFLAG(ENABLE_PDF)
-#include "chrome/browser/pdf/pdf_viewer_stream_manager.h"
+#include "chrome/browser/pdf/mime_handler_stream_manager.h"
 #include "pdf/pdf_features.h"
 #endif  // BUILDFLAG(ENABLE_PDF)
 
@@ -306,17 +306,17 @@ bool PageSpecificContentSettingsDelegate::IsFrameAllowlistedForJavaScript(
     return false;
   }
 
-  // There should be a `pdf::PdfViewerStreamManager` if `render_frame_host`'s
+  // There should be a `pdf::MimeHandlerStreamManager` if `render_frame_host`'s
   // `content::WebContents` has a PDF.
-  auto* pdf_viewer_stream_manager =
-      pdf::PdfViewerStreamManager::FromRenderFrameHost(render_frame_host);
-  if (!pdf_viewer_stream_manager) {
+  auto* mime_handler_stream_manager =
+      pdf::MimeHandlerStreamManager::FromRenderFrameHost(render_frame_host);
+  if (!mime_handler_stream_manager) {
     return false;
   }
 
   // Allow the PDF extension frame and PDF content frame to use JavaScript.
-  if (pdf_viewer_stream_manager->IsPdfExtensionHost(render_frame_host) ||
-      pdf_viewer_stream_manager->IsPdfContentHost(render_frame_host)) {
+  if (mime_handler_stream_manager->IsPdfExtensionHost(render_frame_host) ||
+      mime_handler_stream_manager->IsPdfContentHost(render_frame_host)) {
     return true;
   }
 #endif  // BUILDFLAG(ENABLE_PDF)

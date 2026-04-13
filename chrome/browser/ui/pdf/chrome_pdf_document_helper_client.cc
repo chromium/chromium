@@ -8,8 +8,8 @@
 #include "base/metrics/histogram_functions.h"
 #include "chrome/browser/download/download_stats.h"
 #include "chrome/browser/glic/public/glic_enabling.h"
+#include "chrome/browser/pdf/mime_handler_stream_manager.h"
 #include "chrome/browser/pdf/pdf_extension_util.h"
-#include "chrome/browser/pdf/pdf_viewer_stream_manager.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/screen_ai/screen_ai_install_state.h"
 #include "chrome/browser/ui/tab_contents/core_tab_helper.h"
@@ -125,10 +125,10 @@ void ChromePDFDocumentHelperClient::SetPluginCanSave(
     content::RenderFrameHost* render_frame_host,
     bool can_save) {
   if (chrome_pdf::features::IsOopifPdfEnabled()) {
-    auto* pdf_viewer_stream_manager =
-        pdf::PdfViewerStreamManager::FromWebContents(
+    auto* mime_handler_stream_manager =
+        pdf::MimeHandlerStreamManager::FromWebContents(
             content::WebContents::FromRenderFrameHost(render_frame_host));
-    if (!pdf_viewer_stream_manager) {
+    if (!mime_handler_stream_manager) {
       return;
     }
 
@@ -136,7 +136,7 @@ void ChromePDFDocumentHelperClient::SetPluginCanSave(
         pdf_frame_util::GetEmbedderHost(render_frame_host);
     CHECK(embedder_host);
 
-    pdf_viewer_stream_manager->SetPluginCanSave(embedder_host, can_save);
+    mime_handler_stream_manager->SetPluginCanSave(embedder_host, can_save);
     return;
   }
 

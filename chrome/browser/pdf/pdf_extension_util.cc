@@ -17,7 +17,7 @@
 #include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/glic/public/glic_enabling.h"
-#include "chrome/browser/pdf/pdf_viewer_stream_manager.h"
+#include "chrome/browser/pdf/mime_handler_stream_manager.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/extensions/api/pdf_viewer_private.h"
 #include "chrome/common/url_constants.h"
@@ -409,19 +409,19 @@ std::vector<webui::ResourcePath> GetResources(PdfViewerContext context) {
 bool MaybeDispatchSaveEvent(content::RenderFrameHost* embedder_host) {
   CHECK(chrome_pdf::features::IsOopifPdfEnabled());
 
-  auto* pdf_viewer_stream_manager =
-      pdf::PdfViewerStreamManager::FromRenderFrameHost(embedder_host);
-  if (!pdf_viewer_stream_manager) {
+  auto* mime_handler_stream_manager =
+      pdf::MimeHandlerStreamManager::FromRenderFrameHost(embedder_host);
+  if (!mime_handler_stream_manager) {
     return false;
   }
 
   // Continue only if the PDF plugin should handle the save event.
-  if (!pdf_viewer_stream_manager->PluginCanSave(embedder_host)) {
+  if (!mime_handler_stream_manager->PluginCanSave(embedder_host)) {
     return false;
   }
 
   base::WeakPtr<extensions::StreamContainer> stream =
-      pdf_viewer_stream_manager->GetStreamContainer(embedder_host);
+      mime_handler_stream_manager->GetStreamContainer(embedder_host);
 
   base::ListValue args;
   args.Append(stream->stream_url().spec());

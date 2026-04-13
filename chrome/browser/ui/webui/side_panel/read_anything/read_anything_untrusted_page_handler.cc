@@ -83,7 +83,7 @@
 #include "url/url_constants.h"
 
 #if BUILDFLAG(ENABLE_PDF)
-#include "chrome/browser/pdf/pdf_viewer_stream_manager.h"
+#include "chrome/browser/pdf/mime_handler_stream_manager.h"
 #include "components/pdf/common/pdf_util.h"
 #include "pdf/pdf_features.h"
 #endif  // BUILDFLAG(ENABLE_PDF)
@@ -850,7 +850,7 @@ bool ReadAnythingUntrustedPageHandler::IsObservingTree(
 
   bool are_contents_pdf =
       chrome_pdf::features::IsOopifPdfEnabled()
-          ? !!pdf::PdfViewerStreamManager::FromWebContents(contents)
+          ? !!pdf::MimeHandlerStreamManager::FromWebContents(contents)
           : !!pdf_observer_;
 
   if (!are_contents_pdf) {
@@ -1296,7 +1296,7 @@ void ReadAnythingUntrustedPageHandler::CheckIfActiveAXTreeChangedToPdf() {
                                        : main_observer_->web_contents();
   bool are_contents_pdf =
       chrome_pdf::features::IsOopifPdfEnabled()
-          ? !!pdf::PdfViewerStreamManager::FromWebContents(contents)
+          ? !!pdf::MimeHandlerStreamManager::FromWebContents(contents)
           : !!pdf_observer_;
   if (!are_contents_pdf) {
     return;
