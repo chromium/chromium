@@ -14,6 +14,7 @@
 
 #include "base/command_line.h"
 #include "base/compiler_specific.h"
+#include "base/debug/crash_logging.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/numerics/safe_conversions.h"
@@ -84,6 +85,8 @@ ClientNativePixmapDmaBuf::MapPlane(const NativePixmapPlane& plane) {
   if (data == MAP_FAILED) {
     logging::SystemErrorCode mmap_error = logging::GetLastSystemErrorCode();
     if (mmap_error == ENOMEM) {
+      SCOPED_CRASH_KEY_NUMBER("gfx", "mmap_size_plane_size", plane.size);
+      SCOPED_CRASH_KEY_NUMBER("gfx", "mmap_size_plane_offset", plane.offset);
       base::TerminateBecauseOutOfMemory(size_to_map);
     }
     LOG(ERROR) << "Failed to mmap dmabuf: "
