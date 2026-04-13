@@ -47,9 +47,9 @@ constexpr net::NetworkTrafficAnnotationTag
           "will not contain private information. They will be used to "
           "improve WebRTC (fix bugs, tune performance, etc.)."
         trigger:
-          "A Google service (e.g. Hangouts/Meet) has requested a peer "
-          "connection to be logged, and the resulting event log to be uploaded "
-          "at a time deemed to cause the least interference to the user (i.e., "
+          "A Web application has requested a peer connection to be logged, "
+          "and the resulting event log to be uploaded at a time deemed to "
+          "cause the least interference to the user (i.e., "
           "when the user is not busy making other VoIP calls)."
         data:
           "WebRTC events such as the timing of audio playout (but not the "
@@ -63,6 +63,11 @@ constexpr net::NetworkTrafficAnnotationTag
         chrome_policy {
           WebRtcEventLogCollectionAllowed {
             WebRtcEventLogCollectionAllowed: false
+          }
+          WebRtcDiagnosticLogCollectionAllowedForOrigins {
+            WebRtcDiagnosticLogCollectionAllowedForOrigins: {
+              entries: 'example.com'
+            }
           }
         }
       })");
