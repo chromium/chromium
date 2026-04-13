@@ -78,12 +78,14 @@ const char ChromeDevToolsManagerDelegate::kTypePage[] = "page";
 
 namespace {
 
+// LINT.IfChange(DevToolsRemoteDebuggingConnectionPermission)
 // This enum is used for UMA histograms and should not be renumbered.
 enum class DevToolsRemoteDebuggingConnectionPermission {
   kAllowed = 0,
   kDenied = 1,
   kMaxValue = kDenied,
 };
+// LINT.ThenChange(//tools/metrics/histograms/metadata/dev/enums.xml:DevToolsRemoteDebuggingConnectionPermission)
 
 std::optional<std::string> GetIsolatedWebAppNameAndVersion(
     content::WebContents* web_contents) {

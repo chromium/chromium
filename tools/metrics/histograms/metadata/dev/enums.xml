@@ -1565,10 +1565,14 @@ Called by update_protocol_commands_enum.py.-->
   <int value="2" label="Recording finished"/>
 </enum>
 
+<!-- LINT.IfChange(DevToolsRemoteDebuggingConnectionPermission) -->
+
 <enum name="DevToolsRemoteDebuggingConnectionPermission">
   <int value="0" label="Allowed"/>
   <int value="1" label="Denied"/>
 </enum>
+
+<!-- LINT.ThenChange(//chrome/browser/devtools/chrome_devtools_manager_delegate.cc:DevToolsRemoteDebuggingConnectionPermission) -->
 
 <enum name="DevToolsRemoteDebuggingServerAction">
   <int value="0" label="Started"/>
