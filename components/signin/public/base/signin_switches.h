@@ -392,8 +392,17 @@ BASE_DECLARE_FEATURE(kFirstRunDesktopRefreshSurvey);
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 // It enables the first run revamp (introduce new UIs and additional effects).
 // This feature is no-op if `kFirstRunDesktopRefresh` is disabled.
+//
+// Clients should never use this feature directly to determine if the
+// revamp is enabled, they should use `IsFirstRunDesktopRevampEnabled`
+// instead.
 COMPONENT_EXPORT(SIGNIN_SWITCHES)
 BASE_DECLARE_FEATURE(kFirstRunDesktopRevamp);
+// // A helper function to determine if the first run desktop revamp is enabled
+// (see `kFirstRunDesktopRevamp`, `kFirstRunDesktopRefresh` and
+// `kFirstRunDesktopChoiceScreenRefresh` flags).
+COMPONENT_EXPORT(SIGNIN_SWITCHES)
+bool IsFirstRunDesktopRevampEnabled(bool is_in_search_engine_choice_region);
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 
 #if BUILDFLAG(IS_ANDROID)

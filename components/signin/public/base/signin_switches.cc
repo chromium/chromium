@@ -440,6 +440,10 @@ BASE_FEATURE(kFirstRunDesktopRefreshSurvey, base::FEATURE_DISABLED_BY_DEFAULT);
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 BASE_FEATURE(kFirstRunDesktopRevamp, base::FEATURE_DISABLED_BY_DEFAULT);
+bool IsFirstRunDesktopRevampEnabled(bool is_in_search_engine_choice_region) {
+  return IsFirstRunDesktopRefreshEnabled(is_in_search_engine_choice_region) &&
+         base::FeatureList::IsEnabled(kFirstRunDesktopRevamp);
+}
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 
 #if BUILDFLAG(IS_ANDROID)
