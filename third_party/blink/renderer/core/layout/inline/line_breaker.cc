@@ -1860,10 +1860,16 @@ bool LineBreaker::HandleTextForFastMinContent(InlineItemResult* item_result,
         break;
       }
     }
-    DCHECK_EQ(should_break_at_first_opportunity,
-              is_at_mid_word ||
+    // Negative margins on separate items can cancel out positive inline sizes,
+    // leaving `position_` at `indent` despite previous items having non-zero
+    // `inline_size`. In that case `is_at_mid_word` is true but
+    // `should_break_at_first_opportunity` is false. This is correct: with zero
+    // accumulated width, the first word needs no special handling.
+    DCHECK(should_break_at_first_opportunity
+               ? (is_at_mid_word ||
                   (has_cloned_box_decorations_ &&
-                   cloned_box_decorations_initial_size_ > LayoutUnit()));
+                   cloned_box_decorations_initial_size_ > LayoutUnit()))
+               : (!is_at_mid_word || position_ == indent));
 #endif  // EXPENSIVE_DCHECKS_ARE_ON()
   }
 
