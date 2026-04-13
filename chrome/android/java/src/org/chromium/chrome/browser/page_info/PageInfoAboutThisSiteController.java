@@ -34,10 +34,12 @@ import org.chromium.components.page_info.proto.AboutThisSiteMetadataProto.SiteIn
 import org.chromium.components.security_state.ConnectionSecurityLevel;
 import org.chromium.content_public.browser.BrowserContextHandle;
 import org.chromium.content_public.browser.LoadUrlParams;
+import org.chromium.content_public.browser.NavigationHandle;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.base.PageTransition;
 import org.chromium.ui.base.ViewUtils;
 import org.chromium.url.GURL;
+import org.chromium.url.Origin;
 
 import java.util.function.Supplier;
 
@@ -135,12 +137,16 @@ public class PageInfoAboutThisSiteController {
                     }
 
                     @Override
-                    public void onNavigationStarted(GURL clickedUrl) {
+                    public void onNavigationStarted(NavigationHandle navigation) {
+                        GURL clickedUrl = navigation.getUrl();
                         if (!clickedUrl.equals(originUrl)) {
                             assumeNonNull(mEphemeralTabCoordinator);
                             mEphemeralTabCoordinator.close();
                             mEphemeralTabCoordinator.removeObserver(this);
-                            openInNewTab(clickedUrl.getSpec());
+                            openInNewTab(
+                                    clickedUrl.getSpec(),
+                                    navigation.isRendererInitiated(),
+                                    navigation.getInitiatorOrigin());
                         }
                     }
 
@@ -152,11 +158,17 @@ public class PageInfoAboutThisSiteController {
     }
 
     private void openInNewTab(String url) {
+        openInNewTab(url, false, null);
+    }
+
+    private void openInNewTab(
+            String url, boolean isRendererInitiated, @Nullable Origin initiatorOrigin) {
         if (mTabCreator == null) return;
+        LoadUrlParams params = new LoadUrlParams(url, PageTransition.LINK);
+        params.setIsRendererInitiated(isRendererInitiated);
+        params.setInitiatorOrigin(initiatorOrigin);
         mTabCreator.createNewTab(
-                new LoadUrlParams(url, PageTransition.LINK),
-                TabLaunchType.FROM_LINK,
-                TabUtils.fromWebContents(mWebContents));
+                params, TabLaunchType.FROM_LINK, TabUtils.fromWebContents(mWebContents));
     }
 
     private void setupRow() {

@@ -38,6 +38,7 @@ import org.chromium.chrome.test.util.browser.contextmenu.ContextMenuUtils;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.SheetState;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetTestSupport;
+import org.chromium.content_public.browser.NavigationHandle;
 import org.chromium.content_public.browser.test.util.DOMUtils;
 import org.chromium.url.GURL;
 
@@ -80,7 +81,7 @@ public class PreviewTabTest {
         }
 
         @Override
-        public void onNavigationStarted(GURL clickedUrl) {
+        public void onNavigationStarted(NavigationHandle navigation) {
             onNavigationStartedCallback.notifyCalled();
         }
 

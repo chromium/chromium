@@ -103,11 +103,11 @@ public class EphemeralTabMediator {
     }
 
     /** Notify observers on navigation start. */
-    public void onNavigationStarted(GURL clickedUrl) {
+    public void onNavigationStarted(NavigationHandle navigation) {
         RewindableIterator<EphemeralTabObserver> observersIterator =
                 mObservers.rewindableIterator();
         while (observersIterator.hasNext()) {
-            observersIterator.next().onNavigationStarted(clickedUrl);
+            observersIterator.next().onNavigationStarted(navigation);
         }
     }
 
@@ -192,7 +192,7 @@ public class EphemeralTabMediator {
                                 return;
                             }
 
-                            onNavigationStarted(url);
+                            onNavigationStarted(navigation);
 
                             mCurrentUrl = url;
                             assumeNonNull(mProfile);

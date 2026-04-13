@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.ephemeraltab;
 import android.view.ViewGroup;
 
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.content_public.browser.NavigationHandle;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.url.GURL;
 
@@ -15,7 +16,7 @@ import org.chromium.url.GURL;
 public interface EphemeralTabObserver {
     default void onToolbarCreated(ViewGroup toolbarView) {}
 
-    default void onNavigationStarted(GURL clickedUrl) {}
+    default void onNavigationStarted(NavigationHandle navigation) {}
 
     default void onNavigationFinished(GURL clickedUrl) {}
 
