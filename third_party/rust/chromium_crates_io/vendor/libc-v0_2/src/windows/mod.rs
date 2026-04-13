@@ -268,6 +268,17 @@ cfg_if! {
         extern "C" {
             pub fn printf(format: *const c_char, ...) -> c_int;
             pub fn fprintf(stream: *mut FILE, format: *const c_char, ...) -> c_int;
+            pub fn snprintf(
+                buffer: *mut c_char,
+                count: size_t,
+                format: *const c_char,
+                ...
+            ) -> c_int;
+            pub fn sprintf(buffer: *mut c_char, format: *const c_char, ...) -> c_int;
+
+            pub fn scanf(format: *const c_char, ...) -> c_int;
+            pub fn sscanf(buffer: *const c_char, format: *const c_char, ...) -> c_int;
+            pub fn fscanf(stream: *mut FILE, format: *const c_char, ...) -> c_int;
         }
     }
 }

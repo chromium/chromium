@@ -1873,20 +1873,26 @@ extern "C" {
     pub fn mincore(addr: *mut c_void, len: size_t, vec: *mut c_uchar) -> c_int;
 
     #[cfg_attr(gnu_time_bits64, link_name = "__clock_getres64")]
-    #[cfg_attr(musl32_time64, link_name = "__clock_getres_time64")]
+    #[cfg_attr(musl_redir_time64, link_name = "__clock_getres_time64")]
     pub fn clock_getres(clk_id: crate::clockid_t, tp: *mut crate::timespec) -> c_int;
-    #[cfg_attr(any(gnu_time_bits64, musl32_time64), link_name = "__clock_gettime64")]
+    #[cfg_attr(
+        any(gnu_time_bits64, musl_redir_time64),
+        link_name = "__clock_gettime64"
+    )]
     pub fn clock_gettime(clk_id: crate::clockid_t, tp: *mut crate::timespec) -> c_int;
-    #[cfg_attr(any(gnu_time_bits64, musl32_time64), link_name = "__clock_settime64")]
+    #[cfg_attr(
+        any(gnu_time_bits64, musl_redir_time64),
+        link_name = "__clock_settime64"
+    )]
     pub fn clock_settime(clk_id: crate::clockid_t, tp: *const crate::timespec) -> c_int;
     #[cfg(not(target_os = "l4re"))]
     pub fn clock_getcpuclockid(pid: crate::pid_t, clk_id: *mut crate::clockid_t) -> c_int;
 
     #[cfg_attr(gnu_time_bits64, link_name = "__getitimer64")]
-    #[cfg_attr(musl32_time64, link_name = "__getitimer_time64")]
+    #[cfg_attr(musl_redir_time64, link_name = "__getitimer_time64")]
     pub fn getitimer(which: c_int, curr_value: *mut crate::itimerval) -> c_int;
     #[cfg_attr(gnu_time_bits64, link_name = "__setitimer64")]
-    #[cfg_attr(musl32_time64, link_name = "__setitimer_time64")]
+    #[cfg_attr(musl_redir_time64, link_name = "__setitimer_time64")]
     pub fn setitimer(
         which: c_int,
         new_value: *const crate::itimerval,
@@ -1907,11 +1913,11 @@ extern "C" {
     #[cfg_attr(gnu_file_offset_bits64, link_name = "posix_fadvise64")]
     pub fn posix_fadvise(fd: c_int, offset: off_t, len: off_t, advise: c_int) -> c_int;
     #[cfg_attr(gnu_time_bits64, link_name = "__futimens64")]
-    #[cfg_attr(musl32_time64, link_name = "__futimens_time64")]
+    #[cfg_attr(musl_redir_time64, link_name = "__futimens_time64")]
     #[cfg(not(target_os = "l4re"))]
     pub fn futimens(fd: c_int, times: *const crate::timespec) -> c_int;
     #[cfg_attr(gnu_time_bits64, link_name = "__utimensat64")]
-    #[cfg_attr(musl32_time64, link_name = "__utimensat_time64")]
+    #[cfg_attr(musl_redir_time64, link_name = "__utimensat_time64")]
     pub fn utimensat(
         dirfd: c_int,
         path: *const c_char,
@@ -1963,7 +1969,7 @@ extern "C" {
     pub fn setresgid(rgid: crate::gid_t, egid: crate::gid_t, sgid: crate::gid_t) -> c_int;
     #[cfg(not(target_os = "l4re"))]
     pub fn setresuid(ruid: crate::uid_t, euid: crate::uid_t, suid: crate::uid_t) -> c_int;
-    #[cfg_attr(any(gnu_time_bits64, musl32_time64), link_name = "__wait4_time64")]
+    #[cfg_attr(any(gnu_time_bits64, musl_redir_time64), link_name = "__wait4_time64")]
     #[cfg(not(target_os = "l4re"))]
     pub fn wait4(
         pid: crate::pid_t,

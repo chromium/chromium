@@ -41,7 +41,7 @@ extern "C" {
         vlen: c_uint,
         flags: c_uint,
     ) -> c_int;
-    #[cfg_attr(musl32_time64, link_name = "__recvmmsg_time64")]
+    #[cfg_attr(musl_redir_time64, link_name = "__recvmmsg_time64")]
     pub fn recvmmsg(
         sockfd: c_int,
         msgvec: *mut crate::mmsghdr,

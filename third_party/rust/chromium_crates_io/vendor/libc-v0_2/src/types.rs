@@ -32,7 +32,7 @@ impl<T: Copy> Padding<T> {
 
 impl<T: Copy> fmt::Debug for Padding<T> {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        // Taken frmo `MaybeUninit`'s debug implementation
+        // Taken from `MaybeUninit`'s debug implementation
         // NB: there is no `.pad_fmt` so we can't use a simpler `format_args!("Padding<{..}>").
         let full_name = core::any::type_name::<Self>();
         let prefix_len = full_name.find("Padding").unwrap();

@@ -195,7 +195,7 @@ extern "C" {
 
     #[cfg(any(target_os = "android", target_os = "l4re", target_os = "linux"))]
     #[cfg_attr(gnu_time_bits64, link_name = "__pthread_mutex_timedlock64")]
-    #[cfg_attr(musl32_time64, link_name = "__pthread_mutex_timedlock_time64")]
+    #[cfg_attr(musl_redir_time64, link_name = "__pthread_mutex_timedlock_time64")]
     pub fn pthread_mutex_timedlock(
         lock: *mut crate::pthread_mutex_t,
         abstime: *const crate::timespec,

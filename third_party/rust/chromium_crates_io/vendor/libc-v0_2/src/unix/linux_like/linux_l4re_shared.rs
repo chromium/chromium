@@ -976,7 +976,7 @@ pub const IPC_NOWAIT: c_int = 0o4000;
 
 pub const IPC_RMID: c_int = 0;
 pub const IPC_SET: c_int = 1;
-pub const IPC_STAT: c_int = if cfg!(musl32_time64) { 0x102 } else { 2 };
+pub const IPC_STAT: c_int = if cfg!(musl_redir_time64) { 0x102 } else { 2 };
 pub const IPC_INFO: c_int = 3;
 
 pub const SHM_R: c_int = 0o400;
@@ -1660,7 +1660,7 @@ cfg_if! {
             #[cfg_attr(gnu_file_offset_bits64, link_name = "aio_return64")]
             pub fn aio_return(aiocbp: *mut crate::aiocb) -> ssize_t;
             #[cfg_attr(
-                any(musl32_time64, gnu_time_bits64),
+                any(musl_redir_time64, gnu_time_bits64),
                 link_name = "__aio_suspend_time64"
             )]
             pub fn aio_suspend(
@@ -1725,7 +1725,7 @@ cfg_if! {
                 flags: c_ulong,
             ) -> isize;
             #[cfg_attr(gnu_time_bits64, link_name = "__futimes64")]
-            #[cfg_attr(musl32_time64, link_name = "__futimes_time64")]
+            #[cfg_attr(musl_redir_time64, link_name = "__futimes_time64")]
             pub fn futimes(fd: c_int, times: *const crate::timeval) -> c_int;
         }
     }
@@ -1827,10 +1827,10 @@ extern "C" {
     ) -> c_int;
     pub fn sched_get_priority_max(policy: c_int) -> c_int;
     #[cfg_attr(gnu_time_bits64, link_name = "__settimeofday64")]
-    #[cfg_attr(musl32_time64, link_name = "__settimeofday_time64")]
+    #[cfg_attr(musl_redir_time64, link_name = "__settimeofday_time64")]
     pub fn settimeofday(tv: *const crate::timeval, tz: *const crate::timezone) -> c_int;
     #[cfg_attr(gnu_time_bits64, link_name = "__sem_timedwait64")]
-    #[cfg_attr(musl32_time64, link_name = "__sem_timedwait_time64")]
+    #[cfg_attr(musl_redir_time64, link_name = "__sem_timedwait_time64")]
     pub fn sem_timedwait(sem: *mut crate::sem_t, abstime: *const crate::timespec) -> c_int;
     pub fn sem_getvalue(sem: *mut crate::sem_t, sval: *mut c_int) -> c_int;
     pub fn mount(
@@ -1843,7 +1843,7 @@ extern "C" {
     #[cfg_attr(gnu_time_bits64, link_name = "__prctl_time64")]
     pub fn prctl(option: c_int, ...) -> c_int;
     #[cfg_attr(gnu_time_bits64, link_name = "__ppoll64")]
-    #[cfg_attr(musl32_time64, link_name = "__ppoll_time64")]
+    #[cfg_attr(musl_redir_time64, link_name = "__ppoll_time64")]
     pub fn ppoll(
         fds: *mut crate::pollfd,
         nfds: crate::nfds_t,
@@ -1934,9 +1934,15 @@ extern "C" {
     pub fn timer_delete(timerid: crate::timer_t) -> c_int;
     #[cfg(not(target_os = "l4re"))]
     pub fn timer_getoverrun(timerid: crate::timer_t) -> c_int;
-    #[cfg_attr(any(gnu_time_bits64, musl32_time64), link_name = "__timer_gettime64")]
+    #[cfg_attr(
+        any(gnu_time_bits64, musl_redir_time64),
+        link_name = "__timer_gettime64"
+    )]
     pub fn timer_gettime(timerid: crate::timer_t, curr_value: *mut crate::itimerspec) -> c_int;
-    #[cfg_attr(any(gnu_time_bits64, musl32_time64), link_name = "__timer_settime64")]
+    #[cfg_attr(
+        any(gnu_time_bits64, musl_redir_time64),
+        link_name = "__timer_settime64"
+    )]
     pub fn timer_settime(
         timerid: crate::timer_t,
         flags: c_int,

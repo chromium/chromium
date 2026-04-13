@@ -515,9 +515,17 @@ pub const F_DUPFD_CLOEXEC: c_int = 14;
 pub const O_RDONLY: c_int = 0;
 pub const O_WRONLY: c_int = 1;
 pub const O_RDWR: c_int = 2;
-pub const O_APPEND: c_int = 8;
-pub const O_CREAT: c_int = 512;
-pub const O_TRUNC: c_int = 1024;
+cfg_if! {
+    if #[cfg(espidf_picolibc)] {
+        pub const O_APPEND: c_int = 1024;
+        pub const O_CREAT: c_int = 64;
+        pub const O_TRUNC: c_int = 512;
+    } else {
+        pub const O_APPEND: c_int = 8;
+        pub const O_CREAT: c_int = 512;
+        pub const O_TRUNC: c_int = 1024;
+    }
+}
 pub const O_EXCL: c_int = 2048;
 pub const O_SYNC: c_int = 8192;
 pub const O_NONBLOCK: c_int = 16384;

@@ -13,6 +13,8 @@ use std::{
 // make sure to add it to this list as well.
 const ALLOWED_CFGS: &[&str] = &[
     "emscripten_old_stat_abi",
+    // Should be enabled by users if esp-idf (>=6.0) is build with picolibc instead of newlib.
+    "espidf_picolibc",
     "espidf_time32",
     "freebsd10",
     "freebsd11",
@@ -28,8 +30,10 @@ const ALLOWED_CFGS: &[&str] = &[
     // Corresponds to `__USE_TIME_BITS64` in UAPI
     "linux_time_bits64",
     "musl_v1_2_3",
-    // Corresponds to `_REDIR_TIME64` in musl
+    // musl v1.2.3+ && 32-bit: time_t is i64, struct layouts change
     "musl32_time64",
+    // Corresponds to `_REDIR_TIME64` in musl: symbol redirects to __*_time64
+    "musl_redir_time64",
     "vxworks_lt_25_09",
 ];
 
@@ -51,8 +55,9 @@ const CHECK_CFG_EXTRA: &[(&str, &[&str])] = &[
     ),
 ];
 
-/// Musl architectures that set `#define _REDIR_TIME64 1`.
-const MUSL_REDIR_TIME64_ARCHES: &[&str] = &["arm", "hexagon", "mips", "powerpc", "x86"];
+/// Musl architectures that define `_REDIR_TIME64` (i.e. those that transitioned
+/// from 32-bit to 64-bit `time_t` and need `__*_time64` symbol redirects).
+const MUSL_REDIR_TIME64_ARCHES: &[&str] = &["arm", "mips", "powerpc", "x86"];
 
 fn main() {
     // Avoid unnecessary re-building.
@@ -117,9 +122,12 @@ fn main() {
 
     if musl && musl_v1_2_3 {
         set_cfg("musl_v1_2_3");
-        if MUSL_REDIR_TIME64_ARCHES.contains(&target_arch.as_str()) {
+        if target_ptr_width == "32" {
             set_cfg("musl32_time64");
             set_cfg("linux_time_bits64");
+        }
+        if MUSL_REDIR_TIME64_ARCHES.contains(&target_arch.as_str()) {
+            set_cfg("musl_redir_time64");
         }
     }
 

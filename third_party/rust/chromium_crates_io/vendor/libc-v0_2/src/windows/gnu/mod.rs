@@ -1,5 +1,7 @@
 use crate::prelude::*;
 
+// The below configuration for machines with 32-bit word size aligns with the
+// declaration in the `mingw-w64` headers.
 cfg_if! {
     if #[cfg(target_pointer_width = "64")] {
         s_no_extra_traits! {
@@ -10,9 +12,9 @@ cfg_if! {
         }
     } else if #[cfg(target_pointer_width = "32")] {
         s_no_extra_traits! {
-            #[repr(align(16))]
+            #[repr(align(8))]
             pub struct max_align_t {
-                priv_: [i64; 6],
+                priv_: [i64; 3],
             }
         }
     }
