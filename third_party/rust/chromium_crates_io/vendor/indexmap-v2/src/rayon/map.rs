@@ -14,9 +14,9 @@ use core::fmt;
 use core::hash::{BuildHasher, Hash};
 use core::ops::RangeBounds;
 
-use crate::map::Slice;
 use crate::Bucket;
 use crate::IndexMap;
+use crate::map::Slice;
 
 impl<K, V, S> IntoParallelIterator for IndexMap<K, V, S>
 where

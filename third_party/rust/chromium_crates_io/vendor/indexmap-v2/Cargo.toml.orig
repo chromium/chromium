@@ -1,21 +1,21 @@
 [package]
 name = "indexmap"
-edition = "2021"
-version = "2.13.1"
+edition = "2024"
+version = "2.14.0"
 documentation = "https://docs.rs/indexmap/"
 repository = "https://github.com/indexmap-rs/indexmap"
 license = "Apache-2.0 OR MIT"
 description = "A hash table with consistent order and fast iteration."
 keywords = ["hashmap", "no_std"]
 categories = ["data-structures", "no-std"]
-rust-version = "1.82"
+rust-version = "1.85"
 
 [lib]
 bench = false
 
 [dependencies]
 equivalent = { version = "1.0", default-features = false }
-hashbrown = { version = "0.16.1", default-features = false }
+hashbrown = { version = "0.17", default-features = false }
 
 arbitrary = { version = "1.0", optional = true, default-features = false }
 quickcheck = { version = "1.0", optional = true, default-features = false }
@@ -34,7 +34,7 @@ serde = { version = "1.0.220", default-features = false, optional = true }
 [dev-dependencies]
 itertools = "0.14"
 fastrand = { version = "2", default-features = false }
-quickcheck = { version = "1.0", default-features = false }
+quickcheck = { version = "1.1", default-features = false }
 fnv = "1.0"
 serde = { version = "1.0", default-features = false, features = ["derive"] }
 

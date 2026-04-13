@@ -1,5 +1,12 @@
 # Releases
 
+## 2.14.0 (2026-04-09)
+
+- **MSRV**: Rust 1.85.0 or later is now required.
+- Updated the `hashbrown` dependency to 0.17.
+- Made more `map::Slice` methods `const`: `new_mut`, `first_mut`, `last_mut`,
+  `split_at_mut`, `split_at_mut_checked`, `split_first_mut`, `split_last_mut`
+
 ## 2.13.1 (2026-04-02)
 
 - Made some `Slice` methods `const`:

@@ -10,10 +10,10 @@
 # See Cargo.toml.orig for the original contents.
 
 [package]
-edition = "2021"
-rust-version = "1.82"
+edition = "2024"
+rust-version = "1.85"
 name = "indexmap"
-version = "2.13.1"
+version = "2.14.0"
 build = false
 autolib = false
 autobins = false
@@ -106,7 +106,7 @@ version = "1.0"
 default-features = false
 
 [dependencies.hashbrown]
-version = "0.16.1"
+version = "0.17"
 default-features = false
 
 [dependencies.quickcheck]
@@ -139,7 +139,7 @@ version = "1.0"
 version = "0.14"
 
 [dev-dependencies.quickcheck]
-version = "1.0"
+version = "1.1"
 default-features = false
 
 [dev-dependencies.serde]

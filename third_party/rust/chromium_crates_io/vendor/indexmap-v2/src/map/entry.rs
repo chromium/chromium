@@ -1,5 +1,5 @@
-use crate::inner::{Core, OccupiedEntry, VacantEntry};
 use crate::Bucket;
+use crate::inner::{Core, OccupiedEntry, VacantEntry};
 use core::{fmt, mem};
 
 /// Entry for an existing key-value pair in an [`IndexMap`][crate::IndexMap]

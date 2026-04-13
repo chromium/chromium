@@ -45,18 +45,18 @@ cargo_crate("lib") {
   inputs = []
 
   build_native_rust_unit_tests = false
-  edition = "2021"
+  edition = "2024"
   cargo_pkg_name = "indexmap"
   cargo_pkg_description =
       "A hash table with consistent order and fast iteration."
   cargo_pkg_repository = "https://github.com/indexmap-rs/indexmap"
-  cargo_pkg_version = "2.13.1"
+  cargo_pkg_version = "2.14.0"
 
   allow_unsafe = true
 
   deps = [
     "//third_party/rust/equivalent/v1:lib",
-    "//third_party/rust/hashbrown/v0_16:lib",
+    "//third_party/rust/hashbrown/v0_17:lib",
   ]
   features = [
     "default",

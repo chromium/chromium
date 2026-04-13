@@ -13,9 +13,9 @@ pub use self::iter::{
 pub use self::mutable::MutableValues;
 pub use self::slice::Slice;
 
+use crate::TryReserveError;
 #[cfg(feature = "rayon")]
 pub use crate::rayon::set as rayon;
-use crate::TryReserveError;
 
 #[cfg(feature = "std")]
 use std::hash::RandomState;
@@ -926,11 +926,7 @@ impl<T, S> IndexSet<T, S> {
     /// ```
     pub fn pop_if(&mut self, predicate: impl FnOnce(&T) -> bool) -> Option<T> {
         let last = self.last()?;
-        if predicate(last) {
-            self.pop()
-        } else {
-            None
-        }
+        if predicate(last) { self.pop() } else { None }
     }
 
     /// Scan through each value in the set and keep those where the

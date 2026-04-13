@@ -17,7 +17,7 @@ jobs:
     strategy:
       matrix:
         include:
-          - rust: 1.82.0 # MSRV
+          - rust: 1.85.0 # MSRV
             features:
           - rust: stable
             features: arbitrary
@@ -40,12 +40,6 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4
-      - name: Lock MSRV-compatible dependencies
-        if: matrix.rust == '1.82.0'
-        env:
-          CARGO_RESOLVER_INCOMPATIBLE_RUST_VERSIONS: fallback
-        # Note that this uses the runner's pre-installed stable cargo
-        run: cargo generate-lockfile
       - uses: dtolnay/rust-toolchain@master
         with:
           toolchain: ${{ matrix.rust }}
@@ -72,19 +66,13 @@ jobs:
     strategy:
       matrix:
         include:
-          - rust: 1.82.0
+          - rust: 1.85.0
             target: thumbv6m-none-eabi
           - rust: stable
             target: thumbv6m-none-eabi
 
     steps:
       - uses: actions/checkout@v4
-      - name: Lock MSRV-compatible dependencies
-        if: matrix.rust == '1.82.0'
-        env:
-          CARGO_RESOLVER_INCOMPATIBLE_RUST_VERSIONS: fallback
-        # Note that this uses the runner's pre-installed stable cargo
-        run: cargo generate-lockfile
       - uses: dtolnay/rust-toolchain@master
         with:
           toolchain: ${{ matrix.rust }}
@@ -124,14 +112,12 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - uses: dtolnay/rust-toolchain@nightly
-      - uses: dtolnay/rust-toolchain@1.82.0 # MSRV
+      - uses: dtolnay/rust-toolchain@1.85.0 # MSRV
       - uses: taiki-e/install-action@v2
         with:
           tool: cargo-hack
       - name: Lock minimal direct dependencies
         run: cargo +nightly hack generate-lockfile --remove-dev-deps -Z direct-minimal-versions
-        env:
-          CARGO_RESOLVER_INCOMPATIBLE_RUST_VERSIONS: fallback
       - name: Build (nightly)
         run: cargo +nightly build --verbose --all-features
       - name: Build (MSRV)

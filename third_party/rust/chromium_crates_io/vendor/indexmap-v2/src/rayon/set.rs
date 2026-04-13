@@ -14,8 +14,8 @@ use core::fmt;
 use core::hash::{BuildHasher, Hash};
 use core::ops::RangeBounds;
 
-use crate::set::Slice;
 use crate::IndexSet;
+use crate::set::Slice;
 
 type Bucket<T> = crate::Bucket<T, ()>;
 

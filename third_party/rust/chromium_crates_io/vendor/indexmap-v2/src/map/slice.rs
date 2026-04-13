@@ -1,8 +1,8 @@
 use super::{
     Bucket, IndexMap, IntoIter, IntoKeys, IntoValues, Iter, IterMut, Keys, Values, ValuesMut,
 };
-use crate::util::{slice_eq, try_simplify_range};
 use crate::GetDisjointMutError;
+use crate::util::{slice_eq, try_simplify_range};
 
 use alloc::boxed::Box;
 use alloc::vec::Vec;
@@ -31,7 +31,7 @@ impl<K, V> Slice<K, V> {
         unsafe { &*(entries as *const [Bucket<K, V>] as *const Self) }
     }
 
-    pub(super) fn from_mut_slice(entries: &mut [Bucket<K, V>]) -> &mut Self {
+    pub(super) const fn from_mut_slice(entries: &mut [Bucket<K, V>]) -> &mut Self {
         unsafe { &mut *(entries as *mut [Bucket<K, V>] as *mut Self) }
     }
 
@@ -55,7 +55,7 @@ impl<K, V> Slice<K, V> {
     }
 
     /// Returns an empty mutable slice.
-    pub fn new_mut<'a>() -> &'a mut Self {
+    pub const fn new_mut<'a>() -> &'a mut Self {
         Self::from_mut_slice(&mut [])
     }
 
@@ -111,8 +111,12 @@ impl<K, V> Slice<K, V> {
     }
 
     /// Get the first key-value pair, with mutable access to the value.
-    pub fn first_mut(&mut self) -> Option<(&K, &mut V)> {
-        self.entries.first_mut().map(Bucket::ref_mut)
+    pub const fn first_mut(&mut self) -> Option<(&K, &mut V)> {
+        if let [first, ..] = &mut self.entries {
+            Some(first.ref_mut())
+        } else {
+            None
+        }
     }
 
     /// Get the last key-value pair.
@@ -125,8 +129,12 @@ impl<K, V> Slice<K, V> {
     }
 
     /// Get the last key-value pair, with mutable access to the value.
-    pub fn last_mut(&mut self) -> Option<(&K, &mut V)> {
-        self.entries.last_mut().map(Bucket::ref_mut)
+    pub const fn last_mut(&mut self) -> Option<(&K, &mut V)> {
+        if let [.., last] = &mut self.entries {
+            Some(last.ref_mut())
+        } else {
+            None
+        }
     }
 
     /// Divides one slice into two at an index.
@@ -144,7 +152,7 @@ impl<K, V> Slice<K, V> {
     /// ***Panics*** if `index > len`.
     /// For a non-panicking alternative see [`split_at_mut_checked`][Self::split_at_mut_checked].
     #[track_caller]
-    pub fn split_at_mut(&mut self, index: usize) -> (&mut Self, &mut Self) {
+    pub const fn split_at_mut(&mut self, index: usize) -> (&mut Self, &mut Self) {
         let (first, second) = self.entries.split_at_mut(index);
         (Self::from_mut_slice(first), Self::from_mut_slice(second))
     }
@@ -163,9 +171,12 @@ impl<K, V> Slice<K, V> {
     /// Divides one mutable slice into two at an index.
     ///
     /// Returns `None` if `index > len`.
-    pub fn split_at_mut_checked(&mut self, index: usize) -> Option<(&mut Self, &mut Self)> {
-        let (first, second) = self.entries.split_at_mut_checked(index)?;
-        Some((Self::from_mut_slice(first), Self::from_mut_slice(second)))
+    pub const fn split_at_mut_checked(&mut self, index: usize) -> Option<(&mut Self, &mut Self)> {
+        if let Some((first, second)) = self.entries.split_at_mut_checked(index) {
+            Some((Self::from_mut_slice(first), Self::from_mut_slice(second)))
+        } else {
+            None
+        }
     }
 
     /// Returns the first key-value pair and the rest of the slice,
@@ -180,7 +191,7 @@ impl<K, V> Slice<K, V> {
 
     /// Returns the first key-value pair and the rest of the slice,
     /// with mutable access to the value, or `None` if it is empty.
-    pub fn split_first_mut(&mut self) -> Option<((&K, &mut V), &mut Self)> {
+    pub const fn split_first_mut(&mut self) -> Option<((&K, &mut V), &mut Self)> {
         if let [first, rest @ ..] = &mut self.entries {
             Some((first.ref_mut(), Self::from_mut_slice(rest)))
         } else {
@@ -200,7 +211,7 @@ impl<K, V> Slice<K, V> {
 
     /// Returns the last key-value pair and the rest of the slice,
     /// with mutable access to the value, or `None` if it is empty.
-    pub fn split_last_mut(&mut self) -> Option<((&K, &mut V), &mut Self)> {
+    pub const fn split_last_mut(&mut self) -> Option<((&K, &mut V), &mut Self)> {
         if let [rest @ .., last] = &mut self.entries {
             Some((last.ref_mut(), Self::from_mut_slice(rest)))
         } else {
