@@ -122,7 +122,7 @@ constexpr CGFloat kLocationBarMaxWidth = 600;
 #pragma mark - Public
 
 - (void)setLocationBarHidden:(BOOL)hidden {
-  _locationBarContainer.hidden = hidden;
+  _locationBarContainer.hidden = hidden || !_visible;
 }
 
 - (void)setScrollProgressForTabletOmnibox:(CGFloat)progress {
