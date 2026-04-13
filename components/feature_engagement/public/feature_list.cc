@@ -325,6 +325,7 @@ const base::Feature* const kAllFeatures[] = {
     &kIPHAutofillAccountNameEmailSuggestionFeature,
     &kIPHAutofillAiOptInFeature,
     &kIPHAutofillAiValuablesFeature,
+    &kIPHAutofillAtMemoryFeature,
     &kIPHAutofillBnplAffirmOrZipSuggestionFeature,
     &kIPHAutofillBnplAffirmZipOrKlarnaSuggestionFeature,
     &kIPHAutofillCardInfoRetrievalSuggestionFeature,

@@ -228,6 +228,8 @@ should be able to be added at any place in this file.
   <variant name="_AutofillAiOptIn" summary="For AutofillAiOptIn feature."/>
   <variant name="_AutofillAiValuables"
       summary="For AutofillAiValuables feature."/>
+  <variant name="_AutofillAtMemory"
+      summary="For AutofillAtMemory IPH feature."/>
   <variant name="_AutofillBnplAffirmOrZipSuggestion"
       summary="For AutofillBnplAffirmOrZipSuggestion IPH feature."/>
   <variant name="_AutofillBnplAffirmZipOrKlarnaSuggestion"

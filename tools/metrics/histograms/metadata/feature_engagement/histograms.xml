@@ -76,6 +76,10 @@ chromium-metrics-reviews@google.com.
   <variant name="IPH_AutofillAiValuables"
       summary="snooze educating users about the possibility of autofilling
                Google Wallet passses"/>
+  <variant name="IPH_AutofillAtMemory"
+      summary="message shown when users copy/paste a value from another tab
+               educating them that they can use the Autofill AtMemory feature
+               instead"/>
   <variant name="IPH_AutofillBnplAffirmOrZipSuggestion"
       summary="message shown when users see the Autofill BNPL chip to educate
                users that they can now pay over time using Affirm or Zip."/>
