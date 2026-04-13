@@ -53,7 +53,7 @@ public class GlicToolbarButtonControllerTest {
     @Mock private Tab mTab;
     @Mock private Profile mProfile;
     @Mock private ActorKeyedService mActorService;
-    @Mock private Runnable mToggleGlicCallback;
+    @Mock private GlicToolbarButtonController.GlicButtonDelegate mToggleGlicCallback;
     @Mock private Tracker mTracker;
     @Mock private ButtonDataProvider.ButtonDataObserver mObserver;
     @Captor private ArgumentCaptor<ActorKeyedService.Observer> mActorObserverCaptor;
@@ -114,7 +114,7 @@ public class GlicToolbarButtonControllerTest {
 
         controller.onClick(null);
 
-        verify(mToggleGlicCallback).run();
+        verify(mToggleGlicCallback).onClick(false);
     }
 
     @Test

@@ -58,7 +58,18 @@ public class GlicToolbarButtonController extends BaseButtonDataProvider
         int DONE = 3;
     }
 
-    private final Runnable mToggleGlicCallback;
+    /** Delegate interface for handling clicks on the Glic toolbar button. */
+    @FunctionalInterface
+    public interface GlicButtonDelegate {
+        /**
+         * Called when the Glic button is clicked.
+         *
+         * @param preventClose whether to prevent closing the Glic UI if it's already open.
+         */
+        void onClick(boolean preventClose);
+    }
+
+    private final GlicButtonDelegate mToggleGlicCallback;
     private final Supplier<@Nullable Tracker> mTrackerSupplier;
     private @Nullable Profile mCurrentProfile;
     private @Nullable ActorKeyedService mCurrentActorService;
@@ -79,7 +90,7 @@ public class GlicToolbarButtonController extends BaseButtonDataProvider
     public GlicToolbarButtonController(
             Context context,
             Supplier<@Nullable Tab> activeTabSupplier,
-            Runnable toggleGlicCallback,
+            GlicButtonDelegate toggleGlicCallback,
             Supplier<@Nullable Tracker> trackerSupplier) {
         // TODO(crbug.com/482372270): Add correct styling to button including Nudge state text,
         // active state shape change, and appropriate colors.
@@ -291,7 +302,7 @@ public class GlicToolbarButtonController extends BaseButtonDataProvider
     @Override
     public void onClick(View view) {
         mPersistDoneState = false;
-        mToggleGlicCallback.run();
+        mToggleGlicCallback.onClick(false);
         Tracker tracker = mTrackerSupplier.get();
         if (tracker != null) {
             tracker.notifyEvent(EventConstants.ADAPTIVE_TOOLBAR_CUSTOMIZATION_GLIC_CLICKED);

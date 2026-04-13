@@ -54,8 +54,22 @@ public class TabbedAdaptiveToolbarBehavior implements AdaptiveToolbarBehavior {
     private final Supplier<ModalDialogManager> mModalDialogManagerSupplier;
     private final MonotonicObservableSupplier<@StripVisibilityState Integer>
             mTabStripVisibilitySupplier;
-    private final Runnable mToggleGlicCallback;
+    private final GlicToolbarButtonController.GlicButtonDelegate mToggleGlicCallback;
 
+    /**
+     * @param context The Android context.
+     * @param activityLifecycleDispatcher Dispatcher for activity lifecycle events.
+     * @param tabCreatorManagerSupplier Used to create new tabs.
+     * @param tabBookmarkerSupplier Used to bookmark tabs.
+     * @param bookmarkModelSupplier Used to access bookmark data.
+     * @param activityTabProvider Provider for the active tab.
+     * @param registerVoiceSearchRunnable Runnable to register voice search.
+     * @param groupSuggestionsButtonController Used to control group suggestions on the toolbar.
+     * @param tabModelSelectorSupplier Used to access the current tab model.
+     * @param modalDialogManagerSupplier Used to manage modal dialogs.
+     * @param tabStripVisibilitySupplier Used to check or observe tab strip visibility.
+     * @param toggleGlicCallback Callback to toggle the Glic UI.
+     */
     public TabbedAdaptiveToolbarBehavior(
             Context context,
             ActivityLifecycleDispatcher activityLifecycleDispatcher,
@@ -68,7 +82,7 @@ public class TabbedAdaptiveToolbarBehavior implements AdaptiveToolbarBehavior {
             Supplier<TabModelSelector> tabModelSelectorSupplier,
             Supplier<ModalDialogManager> modalDialogManagerSupplier,
             MonotonicObservableSupplier<@StripVisibilityState Integer> tabStripVisibilitySupplier,
-            Runnable toggleGlicCallback) {
+            GlicToolbarButtonController.GlicButtonDelegate toggleGlicCallback) {
         mContext = context;
         mActivityLifecycleDispatcher = activityLifecycleDispatcher;
         mTabCreatorManagerSupplier = tabCreatorManagerSupplier;
