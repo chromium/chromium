@@ -38,12 +38,11 @@
 #include "chrome/browser/ash/login/test/guest_session_mixin.h"
 #include "chrome/browser/ash/login/test/logged_in_user_mixin.h"
 #include "chrome/browser/ash/system_web_apps/system_web_app_manager.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_finder.h"
-#include "chrome/browser/ui/browser_list.h"
-#include "chrome/browser/ui/browser_list_observer.h"
+#include "chrome/browser/ui/browser_window/public/browser_collection_observer.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
+#include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "chrome/browser/web_applications/preinstalled_web_apps/gemini.h"
 #include "chrome/browser/web_applications/preinstalled_web_apps/gmail.h"
@@ -156,7 +155,8 @@ bool IsAppListItemViewForWebApp(std::string_view id, const views::View* view) {
 }
 
 // Returns if `browser` is the `Browser` for the given web app `id`.
-bool IsBrowserForWebApp(const webapps::AppId& id, const Browser* browser) {
+bool IsBrowserForWebApp(const webapps::AppId& id,
+                        const BrowserWindowInterface* browser) {
   return web_app::AppBrowserController::IsForWebApp(browser, id);
 }
 
@@ -178,14 +178,16 @@ bool IsShelfAppButtonForWebApp(
 
 // Waiters ---------------------------------------------------------------------
 
-// Class which waits for `BrowserListObserver::OnBrowserSetLastActive()` events.
-class OnBrowserSetLastActiveWaiter : public BrowserListObserver {
+// Class which waits for `BrowserCollectionObserver::OnBrowserActivated()`
+// events.
+class OnBrowserSetLastActiveWaiter : public BrowserCollectionObserver {
  public:
   void Wait() {
     CHECK(!run_loop_);
 
-    base::ScopedObservation<BrowserList, BrowserListObserver> observer(this);
-    observer.Observe(BrowserList::GetInstance());
+    base::ScopedObservation<BrowserCollection, BrowserCollectionObserver>
+        observer(this);
+    observer.Observe(GlobalBrowserCollection::GetInstance());
 
     run_loop_ = std::make_unique<base::RunLoop>(
         base::RunLoop::Type::kNestableTasksAllowed);
@@ -195,8 +197,8 @@ class OnBrowserSetLastActiveWaiter : public BrowserListObserver {
   }
 
  private:
-  // BrowserListObserver:
-  void OnBrowserSetLastActive(Browser* browser) override {
+  // BrowserCollectionObserver:
+  void OnBrowserActivated(BrowserWindowInterface* browser) override {
     CHECK(run_loop_);
     run_loop_->Quit();
   }
@@ -263,7 +265,7 @@ class GeminiAppInteractiveUiTestBase
   }
 
   // Returns a builder for a step which waits for a
-  // `BrowserList::OnBrowserSetLastActive()` event.
+  // `BrowserCollectionObserver::OnBrowserActivated()` event.
   [[nodiscard]] auto WaitForOnBrowserSetLastActive() {
     return Do([]() { OnBrowserSetLastActiveWaiter().Wait(); });
   }
