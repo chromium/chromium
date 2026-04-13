@@ -168,20 +168,35 @@ const CGFloat kPromoMaxImpressionCount = 3;
 
 // Did consent to Live Gemini.
 - (void)didConsentToLiveGemini {
-  // TODO(crbug.com/462400054): launch live.
+  gemini::UpdateUserConsentPrefs(YES, _prefService);
+  __weak __typeof(self) weakSelf = self;
+  [_delegate dismissGeminiConsentUIWithCompletion:^{
+    [weakSelf handleFRECompletion:YES];
+  }];
 }
 
 // Did dismiss the Consent UI.
 - (void)didRefuseGeminiConsent {
+  // Retain self to survive synchronous teardown from the delegate.
+  __strong __typeof(self) strongSelf = self;
   gemini::UpdateUserConsentPrefs(NO, _prefService);
   [_delegate dismissGeminiFlow];
-  [self handleFRECompletion:NO];
+  [strongSelf handleFRECompletion:NO];
 }
 
 // Did close Gemini Promo UI.
 - (void)didCloseGeminiPromo {
+  // Retain self to survive synchronous teardown from the delegate.
+  __strong __typeof(self) strongSelf = self;
   [_delegate dismissGeminiFlow];
-  [self handleFRECompletion:NO];
+  [strongSelf handleFRECompletion:NO];
+}
+
+- (void)didRefuseLiveMicPermission {
+  // Retain self to survive synchronous teardown from the delegate.
+  __strong __typeof(self) strongSelf = self;
+  [_delegate dismissGeminiFlow];
+  [strongSelf handleFRECompletion:NO];
 }
 
 // Promo was shown.

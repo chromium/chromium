@@ -4,6 +4,8 @@
 
 #import "ios/chrome/browser/intelligence/bwg/coordinator/gemini_first_run_coordinator.h"
 
+#import <AVFoundation/AVFoundation.h>
+
 #import "base/strings/sys_string_conversions.h"
 #import "components/feature_engagement/public/event_constants.h"
 #import "components/feature_engagement/public/tracker.h"
@@ -55,6 +57,9 @@
 
   // Type of Gemini FRE.
   GeminiFREType _FREType;
+
+  // The completion block passed from Mediator when consent UI is dismissed.
+  void (^_consentCompletion)(void);
 
   // Handler for sending IPH commands.
   id<HelpCommands> _helpCommandsHandler;
@@ -163,14 +168,28 @@
   _prefService = nil;
   _tracker = nil;
   _completion = nil;
-  [self dismissPresentedViewWithCompletion:completion];
+  if (!_consentCompletion) {
+    [self dismissPresentedViewWithCompletion:completion];
+  }
   [super stop];
 }
 
 #pragma mark - GeminiMediatorDelegate
 
 - (void)dismissGeminiConsentUIWithCompletion:(void (^)())completion {
-  [self dismissPresentedViewWithCompletion:completion];
+  if (_FREType == GeminiFREType::kLive) {
+    if (completion) {
+      _consentCompletion = completion;
+    }
+    [self handleLiveMicPermission];
+    return;
+  }
+
+  [self dismissPresentedViewWithCompletion:^{
+    if (completion) {
+      completion();
+    }
+  }];
   _viewController = nil;
 }
 
@@ -187,6 +206,102 @@
 }
 
 #pragma mark - Private
+
+// Checks the current microphone permission status and prompts the user if
+// needed.
+- (void)handleLiveMicPermission {
+  CHECK(_FREType == GeminiFREType::kLive);
+  AVAuthorizationStatus status =
+      [AVCaptureDevice authorizationStatusForMediaType:AVMediaTypeAudio];
+  switch (status) {
+    case AVAuthorizationStatusNotDetermined: {
+      __weak __typeof(self) weakSelf = self;
+      [AVCaptureDevice
+          requestAccessForMediaType:AVMediaTypeAudio
+                  completionHandler:^(BOOL granted) {
+                    __strong __typeof(weakSelf) strongSelf = weakSelf;
+                    if (!strongSelf) {
+                      return;
+                    }
+                    dispatch_async(dispatch_get_main_queue(), ^{
+                      [strongSelf handleLiveMicPermissionResult:granted];
+                    });
+                  }];
+      break;
+    }
+    case AVAuthorizationStatusAuthorized:
+      [self handleLiveMicPermissionResult:YES];
+      break;
+    case AVAuthorizationStatusDenied:
+    case AVAuthorizationStatusRestricted:
+      [self showMicrophoneSettingsAlert];
+      break;
+  }
+}
+
+// Handles the result of the microphone permission request.
+- (void)handleLiveMicPermissionResult:(BOOL)granted {
+  if (granted) {
+    // TODO(crbug.com/462400054): Start the Live session.
+    __weak __typeof(self) weakSelf = self;
+    [self dismissPresentedViewWithCompletion:^{
+      __strong __typeof(weakSelf) strongSelf = weakSelf;
+      if (!strongSelf) {
+        return;
+      }
+      if (strongSelf->_consentCompletion) {
+        strongSelf->_consentCompletion();
+      }
+      strongSelf->_consentCompletion = nil;
+    }];
+    _viewController = nil;
+  } else {
+    _consentCompletion = nil;
+  }
+}
+
+// Shows a custom alert directing the user to iOS Settings to enable the
+// microphone.
+- (void)showMicrophoneSettingsAlert {
+  UIAlertController* alert = [UIAlertController
+      alertControllerWithTitle:@"Lorem Ipsum"
+                       message:@"Lorem ipsum dolor sit amet, consectetur "
+                               @"adipiscing elit, sed do eiusmod."
+                preferredStyle:UIAlertControllerStyleAlert];
+
+  __weak __typeof(self) weakSelf = self;
+  [alert
+      addAction:
+          [UIAlertAction
+              actionWithTitle:@"Lorem Settings"
+                        style:UIAlertActionStyleDefault
+                      handler:^(UIAlertAction* action) {
+                        NSURL* settingsURL = [NSURL
+                            URLWithString:UIApplicationOpenSettingsURLString];
+                        [[UIApplication sharedApplication] openURL:settingsURL
+                                                           options:@{}
+                                                 completionHandler:nil];
+                        __strong __typeof(weakSelf) strongSelf = weakSelf;
+                        if (strongSelf) {
+                          [strongSelf dismissPresentedViewWithCompletion:nil];
+                          strongSelf->_viewController = nil;
+                        }
+                      }]];
+
+  [alert addAction:[UIAlertAction
+                       actionWithTitle:@"Lorem Cancel"
+                                 style:UIAlertActionStyleCancel
+                               handler:^(UIAlertAction* action) {
+                                 __strong __typeof(weakSelf) strongSelf =
+                                     weakSelf;
+                                 if (strongSelf) {
+                                   [strongSelf
+                                       dismissPresentedViewWithCompletion:nil];
+                                   strongSelf->_viewController = nil;
+                                 }
+                               }]];
+  [_viewController presentViewController:alert animated:YES completion:nil];
+}
 
 // Dismisses presented view.
 - (void)dismissPresentedViewWithCompletion:(void (^)())completion {

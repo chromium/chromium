@@ -48,6 +48,9 @@ class IdentityManager;
 // Returns YES if the AI Hub IPH should be shown.
 @property(nonatomic, readonly) BOOL shouldShowAIHubIPH;
 
+// Aborts the flow due to mic permission denial without resetting consent.
+- (void)didRefuseLiveMicPermission;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_INTELLIGENCE_BWG_COORDINATOR_GEMINI_FIRST_RUN_MEDIATOR_H_
