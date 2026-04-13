@@ -85,7 +85,7 @@ public class WindowAndroidTest {
                 .addObserver(any(WindowInsetObserver.class));
 
         WindowAndroidJni.setInstanceForTesting(mWindowAndroidNativeInterface);
-        mWindowAndroid = new WindowAndroid(mContext, false, null, mInsetObserver, false);
+        mWindowAndroid = new WindowAndroid(mContext, false, null, mInsetObserver, true);
         mWindowAndroid.setNativePointerForTesting(MOCK_NATIVE_POINTER);
     }
 

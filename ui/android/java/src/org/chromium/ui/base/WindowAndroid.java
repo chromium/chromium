@@ -214,7 +214,7 @@ public class WindowAndroid
 
     private @Nullable ModalDialogManager mModalDialogManagerForTesting;
 
-    private @Nullable Consumer<Boolean> mOcclusionObserver;
+    private @Nullable Consumer<Boolean> mTrustedPresentationOcclusionObserver;
 
     private final boolean mOcclusionTrackingAllowed;
 
@@ -310,22 +310,22 @@ public class WindowAndroid
         }
 
         mOcclusionTrackingAllowed = occlusionTrackingAllowed;
-        maybeTrackOcclusion();
+        maybeTrackOcclusionWithTrustedPresentationApi();
 
         mActivityTopResumedSupported = activityTopResumedSupported;
     }
 
     @Override
     public void onViewAttachedToWindow(View v) {
-        maybeRegisterOcclusionObserver(v.getWindowToken());
+        maybeRegisterTrustedPresentationObserver(v.getWindowToken());
     }
 
     @Override
     public void onViewDetachedFromWindow(View v) {
-        maybeUnregisterOcclusionObserver();
+        maybeUnregisterTrustedPresentationObserver();
     }
 
-    private boolean shouldTrackOcclusion() {
+    private boolean shouldTrackOcclusionWithTrustedPresentationApi() {
         // On rotate Android seems to send a spurious occlusion signal. See crbug.com/380209799 for
         // details.
         return mOcclusionTrackingAllowed
@@ -333,8 +333,8 @@ public class WindowAndroid
                 && UiAndroidFeatureList.sAndroidWindowOcclusion.isEnabled();
     }
 
-    private void maybeTrackOcclusion() {
-        if (!shouldTrackOcclusion()) {
+    private void maybeTrackOcclusionWithTrustedPresentationApi() {
+        if (!shouldTrackOcclusionWithTrustedPresentationApi()) {
             return;
         }
 
@@ -344,20 +344,20 @@ public class WindowAndroid
         // If the decor view is already attached to the window the listener won't be called.
         // In this case, the window token exists so we can register the occlusion observer.
         if (decorView.isAttachedToWindow()) {
-            maybeRegisterOcclusionObserver(getWindowToken());
+            maybeRegisterTrustedPresentationObserver(getWindowToken());
         }
         decorView.addOnAttachStateChangeListener(this);
     }
 
     @SuppressWarnings("NewApi")
-    private void maybeRegisterOcclusionObserver(@Nullable IBinder windowToken) {
-        assert mOcclusionObserver == null;
+    private void maybeRegisterTrustedPresentationObserver(@Nullable IBinder windowToken) {
+        assert mTrustedPresentationOcclusionObserver == null;
 
         Context context = assumeNonNull(getContext().get());
         WindowManager wm = (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
 
         var thresholds = new TrustedPresentationThresholds(Float.MIN_VALUE, Float.MIN_VALUE, 1);
-        mOcclusionObserver =
+        mTrustedPresentationOcclusionObserver =
                 new Consumer<>() {
                     @Override
                     public void accept(Boolean visible) {
@@ -372,18 +372,18 @@ public class WindowAndroid
                 (r) -> {
                     PostTask.postTask(TaskTraits.UI_DEFAULT, r);
                 },
-                mOcclusionObserver);
+                mTrustedPresentationOcclusionObserver);
     }
 
     @SuppressWarnings("NewApi")
-    private void maybeUnregisterOcclusionObserver() {
-        assert mOcclusionObserver != null;
+    private void maybeUnregisterTrustedPresentationObserver() {
+        assert mTrustedPresentationOcclusionObserver != null;
 
         Context context = assumeNonNull(getContext().get());
         WindowManager wm = (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
-        wm.unregisterTrustedPresentationListener(mOcclusionObserver);
+        wm.unregisterTrustedPresentationListener(mTrustedPresentationOcclusionObserver);
 
-        mOcclusionObserver = null;
+        mTrustedPresentationOcclusionObserver = null;
     }
 
     /** A supplier that returns whether the window is occluded or not. */
@@ -398,7 +398,7 @@ public class WindowAndroid
      */
     public void setOccluded(boolean isOccluded) {
         // If the Trusted Presentation API is already tracking occlusion, it takes precedence.
-        if (shouldTrackOcclusion()) {
+        if (!mOcclusionTrackingAllowed || shouldTrackOcclusionWithTrustedPresentationApi()) {
             return;
         }
         updateOcclusionState(isOccluded);
