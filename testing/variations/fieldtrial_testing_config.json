@@ -13647,22 +13647,7 @@
             ]
         }
     ],
-    "IgnoreInvalidGrantError": [
-        {
-            "platforms": [
-                "ios"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "IgnoreInvalidGrantError"
-                    ]
-                }
-            ]
-        }
-    ],
-    "IgnoreIpMatching": [
+    "IgnoreIPMatching": [
         {
             "platforms": [
                 "android",
@@ -13681,6 +13666,21 @@
                     },
                     "enable_features": [
                         "IgnoreIpMatching"
+                    ]
+                }
+            ]
+        }
+    ],
+    "IgnoreInvalidGrantError": [
+        {
+            "platforms": [
+                "ios"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "IgnoreInvalidGrantError"
                     ]
                 }
             ]
