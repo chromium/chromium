@@ -4,11 +4,11 @@
 
 #include "chrome/browser/ash/policy/status_collector/app_info_generator.h"
 
+#include "ash/constants/ash_pref_names.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/common/pref_names.h"
 #include "components/policy/proto/device_management_backend.pb.h"
 #include "components/prefs/pref_service.h"
 #include "components/services/app_service/public/cpp/app_registry_cache.h"
@@ -82,7 +82,7 @@ namespace policy {
 
 AppInfoGenerator::AppInfoProvider::AppInfoProvider(Profile* profile)
     : activity_storage(profile->GetPrefs(),
-                       prefs::kAppActivityTimes,
+                       ash::prefs::kAppActivityTimes,
                        /*day_start_offset=*/base::Seconds(0)),
       app_service_proxy(*apps::AppServiceProxyFactory::GetForProfile(profile)) {
 }
@@ -111,7 +111,7 @@ AppInfoGenerator::~AppInfoGenerator() {
 
 // static
 void AppInfoGenerator::RegisterProfilePrefs(PrefRegistrySimple* registry) {
-  registry->RegisterDictionaryPref(prefs::kAppActivityTimes);
+  registry->RegisterDictionaryPref(ash::prefs::kAppActivityTimes);
 }
 
 const AppInfoGenerator::Result AppInfoGenerator::Generate() const {

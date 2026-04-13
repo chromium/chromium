@@ -2443,19 +2443,6 @@ inline constexpr char kSameOriginTabCaptureAllowedByOrigins[] =
 // "xkb:us::eng".
 inline constexpr char kHardwareKeyboardLayout[] = "intl.hardware_keyboard";
 
-// The local state pref that stores device activity times before reporting
-// them to the policy server.
-inline constexpr char kDeviceActivityTimes[] = "device_status.activity_times";
-
-// A pref that stores user app activity times before reporting them to the
-// policy server.
-inline constexpr char kAppActivityTimes[] = "device_status.app_activity_times";
-
-// A pref that stores user activity times before reporting them to the policy
-// server.
-inline constexpr char kUserActivityTimes[] =
-    "consumer_device_status.activity_times";
-
 // An any-api scoped refresh token for enterprise-enrolled devices.  Allows
 // for connection to Google APIs when the user isn't logged in.  Currently used
 // for for getting a cloudprint scoped token to allow printing in Guest mode,

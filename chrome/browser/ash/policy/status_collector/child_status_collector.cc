@@ -168,7 +168,7 @@ ChildStatusCollector::ChildStatusCollector(
   DCHECK(pref_service_->GetInitializationStatus() !=
          PrefService::INITIALIZATION_STATUS_WAITING);
   activity_storage_ = std::make_unique<ChildActivityStorage>(
-      pref_service_, prefs::kUserActivityTimes, activity_day_start);
+      pref_service_, ash::prefs::kUserActivityTimes, activity_day_start);
 }
 
 ChildStatusCollector::~ChildStatusCollector() {

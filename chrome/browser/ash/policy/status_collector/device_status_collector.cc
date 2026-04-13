@@ -24,6 +24,7 @@
 #include <vector>
 
 #include "ash/constants/ash_features.h"
+#include "ash/constants/ash_pref_names.h"
 #include "base/check.h"
 #include "base/check_deref.h"
 #include "base/check_op.h"
@@ -1778,7 +1779,7 @@ DeviceStatusCollector::DeviceStatusCollector(
   DCHECK(local_state_->GetInitializationStatus() !=
          PrefService::INITIALIZATION_STATUS_WAITING);
   activity_storage_ = std::make_unique<EnterpriseActivityStorage>(
-      &local_state_.get(), prefs::kDeviceActivityTimes);
+      &local_state_.get(), ash::prefs::kDeviceActivityTimes);
 }
 
 DeviceStatusCollector::DeviceStatusCollector(
@@ -1808,7 +1809,7 @@ constexpr base::TimeDelta DeviceStatusCollector::kIdlePollInterval;
 
 // static
 void DeviceStatusCollector::RegisterPrefs(PrefRegistrySimple* registry) {
-  registry->RegisterDictionaryPref(prefs::kDeviceActivityTimes);
+  registry->RegisterDictionaryPref(ash::prefs::kDeviceActivityTimes);
 }
 
 void DeviceStatusCollector::CheckIdleState() {

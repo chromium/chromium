@@ -3573,6 +3573,23 @@ inline constexpr char kEnrollmentVersionOS[] = "EnrollmentVersionOS";
 inline constexpr char kEnrollmentVersionBrowser[] = "EnrollmentVersionBrowser";
 
 //-----------------------------------------------------------------------------
+// Device status related Prefs
+//-----------------------------------------------------------------------------
+
+// The local state pref that stores device activity times before reporting
+// them to the policy server.
+inline constexpr char kDeviceActivityTimes[] = "device_status.activity_times";
+
+// A pref that stores user app activity times before reporting them to the
+// policy server.
+inline constexpr char kAppActivityTimes[] = "device_status.app_activity_times";
+
+// A pref that stores user activity times before reporting them to the policy
+// server.
+inline constexpr char kUserActivityTimes[] =
+    "consumer_device_status.activity_times";
+
+//-----------------------------------------------------------------------------
 // Child account related Prefs
 //-----------------------------------------------------------------------------
 
