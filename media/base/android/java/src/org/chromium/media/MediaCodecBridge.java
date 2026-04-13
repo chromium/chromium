@@ -7,6 +7,7 @@ package org.chromium.media;
 import android.annotation.SuppressLint;
 import android.media.MediaCodec;
 import android.media.MediaCodec.CryptoInfo;
+import android.media.MediaCodec.LinearBlock;
 import android.media.MediaCrypto;
 import android.media.MediaDrm;
 import android.media.MediaFormat;
@@ -202,18 +203,17 @@ class MediaCodecBridge {
     }
 
     private static class ObtainBlockResult {
-        private MediaCodec.@Nullable LinearBlock mBlock;
+        private @Nullable LinearBlock mBlock;
         private @Nullable ByteBuffer mBuffer;
 
-        private ObtainBlockResult(
-                MediaCodec.@Nullable LinearBlock block, @Nullable ByteBuffer buffer) {
+        private ObtainBlockResult(@Nullable LinearBlock block, @Nullable ByteBuffer buffer) {
             mBlock = block;
             mBuffer = buffer;
             assert (mBlock == null && mBuffer == null) || (mBlock != null && mBuffer != null);
         }
 
         @CalledByNative
-        private MediaCodec.@Nullable LinearBlock block() {
+        private @Nullable LinearBlock block() {
             return mBlock;
         }
 
