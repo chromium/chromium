@@ -20,18 +20,21 @@
 #include "chromeos/ash/components/install_attributes/stub_install_attributes.h"
 #include "chromeos/ash/components/settings/cros_settings.h"
 #include "components/prefs/pref_service.h"
-#include "components/user_manager/fake_user_manager_delegate.h"
-#include "components/user_manager/scoped_user_manager.h"
-#include "components/user_manager/test_helper.h"
+#include "components/session_manager/core/session.h"
+#include "components/session_manager/core/session_manager.h"
+#include "components/session_manager/test/test_user_session_manager.h"
 #include "components/user_manager/user_manager.h"
-#include "components/user_manager/user_manager_impl.h"
 #include "components/user_manager/user_type.h"
 #include "content/public/test/browser_task_environment.h"
 #include "google_apis/gaia/gaia_id.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
+namespace {
+
 constexpr char kTestProfileName[] = "user@gmail.com";
 constexpr GaiaId::Literal kTestGaiaId("1234567890");
+
+}  // namespace
 
 class AmbientClientImplTest : public testing::Test {
  public:
@@ -39,13 +42,18 @@ class AmbientClientImplTest : public testing::Test {
   ~AmbientClientImplTest() override = default;
 
   void SetUp() override {
+    test_user_session_manager_ =
+        std::make_unique<ash::test::TestUserSessionManager>(
+            TestingBrowserProcess::GetGlobal()->local_state());
+
     profile_manager_ = std::make_unique<TestingProfileManager>(
         TestingBrowserProcess::GetGlobal());
     ASSERT_TRUE(profile_manager_->SetUp());
 
     profile_user_manager_controller_ =
         std::make_unique<ash::ProfileUserManagerController>(
-            profile_manager_->profile_manager(), user_manager_.Get());
+            profile_manager_->profile_manager(),
+            user_manager::UserManager::Get());
 
     image_downloader_ = std::make_unique<ash::TestImageDownloader>();
     ambient_client_ = std::make_unique<AmbientClientImpl>();
@@ -58,6 +66,7 @@ class AmbientClientImplTest : public testing::Test {
     profile_manager_.reset();
 
     profile_user_manager_controller_.reset();
+    test_user_session_manager_.reset();
   }
 
  protected:
@@ -65,11 +74,14 @@ class AmbientClientImplTest : public testing::Test {
   TestingProfile* profile() { return profile_; }
 
   void AddAndLoginUser(const AccountId& account_id) {
-    user_manager_->EnsureUser(account_id, user_manager::UserType::kRegular,
-                              /*is_ephemeral=*/false);
-    user_manager_->UserLoggedIn(
-        account_id, user_manager::TestHelper::GetFakeUsernameHash(account_id));
+    ASSERT_TRUE(test_user_session_manager_->AddRegularUser(account_id));
+    LogIn(account_id);
+  }
 
+  void LogIn(const AccountId& account_id) {
+    test_user_session_manager_->LogIn(account_id);
+
+    CHECK(!profile_);
     profile_ = profile_manager_->CreateTestingProfile(
         account_id.GetUserEmail(), /*prefs=*/{},
         base::UTF8ToUTF16(account_id.GetUserEmail()),
@@ -91,16 +103,16 @@ class AmbientClientImplTest : public testing::Test {
     return identity_test_env_adaptor_->identity_test_env();
   }
 
+  ash::test::TestUserSessionManager& test_user_session_manager() {
+    return CHECK_DEREF(test_user_session_manager_.get());
+  }
+
  private:
   content::BrowserTaskEnvironment task_environment_;
 
   ash::ScopedStubInstallAttributes install_attributes_;
   ash::ScopedTestingCrosSettings testing_cros_settings_;
-  user_manager::ScopedUserManager user_manager_{
-      std::make_unique<user_manager::UserManagerImpl>(
-          std::make_unique<user_manager::FakeUserManagerDelegate>(),
-          TestingBrowserProcess::GetGlobal()->local_state(),
-          ash::CrosSettings::Get())};
+  std::unique_ptr<ash::test::TestUserSessionManager> test_user_session_manager_;
   std::unique_ptr<ash::ProfileUserManagerController>
       profile_user_manager_controller_;
 
@@ -120,24 +132,26 @@ TEST_F(AmbientClientImplTest, AllowedByPrimaryUser) {
 }
 
 TEST_F(AmbientClientImplTest, DisallowedByNonPrimaryUser) {
-  auto& user_manager = CHECK_DEREF(user_manager::UserManager::Get());
-
-  // Add primary logged in user first.
-  {
-    const auto account_id =
-        AccountId::FromUserEmailGaiaId("user2@gmail.com", GaiaId("987654321"));
-    user_manager.EnsureUser(account_id, user_manager::UserType::kRegular,
-                            /*is_ephemeral=*/false);
-    user_manager.UserLoggedIn(
-        account_id, user_manager::TestHelper::GetFakeUsernameHash(account_id));
-  }
-
-  auto account_id =
+  // Register two users.
+  const auto primary_account_id =
+      AccountId::FromUserEmailGaiaId("user2@gmail.com", GaiaId("987654321"));
+  const auto account_id =
       AccountId::FromUserEmailGaiaId(kTestProfileName, kTestGaiaId);
-  AddAndLoginUser(account_id);
-  // On secondary log-in, active user switch happens asynchronously.
-  // Invoke the method here explicitly to simulate it.
-  user_manager.SwitchActiveUser(account_id);
+  ASSERT_TRUE(test_user_session_manager().AddRegularUser(primary_account_id));
+  ASSERT_TRUE(test_user_session_manager().AddRegularUser(account_id));
+
+  // Primary log-in first, followed by log-in for the target user including
+  // its profile creation.
+  test_user_session_manager().LogIn(primary_account_id);
+  ASSERT_EQ(
+      session_manager::SessionManager::Get()->GetActiveSession()->account_id(),
+      primary_account_id);
+
+  LogIn(account_id);
+  ASSERT_EQ(
+      session_manager::SessionManager::Get()->GetActiveSession()->account_id(),
+      account_id);
+
   EXPECT_FALSE(ash::AmbientClient::Get()->IsAmbientModeAllowed());
 }
 
