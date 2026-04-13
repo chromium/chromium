@@ -686,4 +686,42 @@ TEST_F(AccessibilityTest, RadioButtonsInGroupInTableRows) {
   EXPECT_EQ(6u, radio_group_ids.size());
 }
 
+// Regression test for crbug.com/501371770. Verifies that an aria-owned element
+// is not pruned via RemoveSubtree while its own AddChildren() is in progress.
+// The exact crash requires a deeply nested cascade during tree building (found
+// by ClusterFuzz) that is difficult to reproduce in a unit test. This test
+// exercises the broader scenario: dynamic aria-owns removal triggers tree
+// rebuilding that includes the RestoreParentOrPrune path.
+TEST_F(AccessibilityTest, NoDetachDuringAddChildrenViaAriaOwns) {
+  SetBodyInnerHTML(R"HTML(
+    <div id="owner" aria-owns="target">Owner</div>
+    <ul id="list">
+      <li id="target">
+        <span>Item text</span>
+      </li>
+    </ul>
+  )HTML");
+
+  // Build the initial tree.
+  GetAXRootObject();
+  GetAXObjectCache().UpdateAXForAllDocuments();
+
+  const AXObject* target = GetAXObjectByElementId("target");
+  ASSERT_NE(nullptr, target);
+  EXPECT_FALSE(target->IsDetached());
+
+  // Remove the owner, which will trigger un-owning the target and
+  // RestoreParentOrPrune logic.
+  Element* owner = GetDocument().getElementById(AtomicString("owner"));
+  ASSERT_NE(nullptr, owner);
+  owner->remove();
+  GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kTest);
+  GetAXObjectCache().UpdateAXForAllDocuments();
+
+  // The target should still exist, parented under its natural <ul> parent.
+  target = GetAXObjectByElementId("target");
+  ASSERT_NE(nullptr, target);
+  EXPECT_FALSE(target->IsDetached());
+}
+
 }  // namespace blink

@@ -6525,6 +6525,14 @@ AXObject* AXObject::ParentObject() {
   // TODO(crbug.com/337178753): this should not be necessary once subtree
   // removals can be immediate, complete and safe.
   if (IsMissingParent()) {
+    // If the node is still in the document, do not self-prune. The parent will
+    // be re-established when tree building reaches this node's ancestor. This
+    // avoids crashing when aria-owns re-evaluation during eager subtree
+    // construction clears the parent before the natural parent's AXObject
+    // exists. See crbug.com/501371770.
+    if (GetNode() && GetNode()->isConnected()) {
+      return nullptr;
+    }
     AXObjectCache().RemoveSubtree(GetNode());
     return nullptr;
   }

@@ -5859,8 +5859,18 @@ void AXObjectCacheImpl::RestoreParentOrPruneWithCleanLayout(Node* child_node) {
     ChildrenChangedOnAncestorOf(child);
   } else {
     // If no parent is currently available, the child may no longer be part of
-    // the tree. Remove the child's subtree and ask the parent (if any) to
-    // rebuild its subtree.
+    // the tree. However, if the node is still connected to the document, it
+    // will get a parent once tree building reaches its natural ancestor. This
+    // can happen during eager subtree construction in CreateAndInit(), where
+    // aria-owns re-evaluation runs before the parent's AXObject exists.
+    // Pruning such a node would corrupt the tree. See crbug.com/501371770.
+    if (child_node && child_node->isConnected()) {
+      // Mark the parent dirty so it picks up this child on next update.
+      if (parent) {
+        ChildrenChangedWithCleanLayout(parent);
+      }
+      return;
+    }
     RemoveSubtree(child_node);
     ChildrenChangedWithCleanLayout(parent);
   }
