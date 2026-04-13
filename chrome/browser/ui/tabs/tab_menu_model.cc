@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/tabs/tab_menu_model.h"
 
 #include <memory>
+#include <optional>
 
 #include "base/command_line.h"
 #include "base/feature_list.h"
@@ -273,8 +274,10 @@ void TabMenuModel::Build(TabStripModel* tab_strip, int index) {
                           IDS_TAB_CXMENU_SOUND_UNMUTE_SITE, num_tabs));
 
   const bool display_read_later = tab_strip->delegate()->SupportsReadLater();
-  const bool display_send_to_self = send_tab_to_self::ShouldDisplayEntryPoint(
-      tab_strip->GetWebContentsAt(index));
+  const std::optional<send_tab_to_self::EntryPointDisplayReason>
+      send_tab_to_self_reason = send_tab_to_self::GetEntryPointDisplayReason(
+          tab_strip->GetWebContentsAt(index));
+  const bool display_send_to_self = send_tab_to_self_reason.has_value();
   if (display_read_later || display_send_to_self) {
     AddSeparator(ui::NORMAL_SEPARATOR);
   }
@@ -312,9 +315,16 @@ void TabMenuModel::Build(TabStripModel* tab_strip, int index) {
 
   if (display_send_to_self) {
     if (base::FeatureList::IsEnabled(
-            send_tab_to_self::kSendTabToSelfShowTargetsInContextMenus)) {
+            send_tab_to_self::kSendTabToSelfShowTargetsInContextMenus) &&
+        send_tab_to_self_reason ==
+            send_tab_to_self::EntryPointDisplayReason::kOfferFeature) {
       BuildSendTabToSelfSubmenu(tab_strip, index);
     } else {
+      if (send_tab_to_self_reason !=
+          send_tab_to_self::EntryPointDisplayReason::kOfferFeature) {
+        // TODO(crbug.com/488252159): Add edge cases (e.g. not signed in
+        // or no target devices available) when UI is fully specified.
+      }
       BuildLegacySendTabToSelfItem();
     }
   }
