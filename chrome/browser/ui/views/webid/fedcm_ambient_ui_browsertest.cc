@@ -710,4 +710,54 @@ IN_PROC_BROWSER_TEST_F(FedCmAmbientUiBrowserTest, CollectsSignUpMetrics) {
   // recorded in the content layer here.
 }
 
+IN_PROC_BROWSER_TEST_F(FedCmAmbientUiBrowserTest, MultiIdpOneAccountFallback) {
+  idps_ = {base::MakeRefCounted<content::IdentityProviderData>(
+               "idp1.com", content::IdentityProviderMetadata(),
+               content::ClientMetadata(GURL(), GURL(), GURL(), gfx::Image()),
+               blink::mojom::RpContext::kSignIn, /*format=*/std::nullopt,
+               std::vector<content::IdentityRequestDialogDisclosureField>(),
+               /*has_login_status_mismatch=*/true),
+           base::MakeRefCounted<content::IdentityProviderData>(
+               "idp2.com", content::IdentityProviderMetadata(),
+               content::ClientMetadata(GURL(), GURL(), GURL(), gfx::Image()),
+               blink::mojom::RpContext::kSignIn, /*format=*/std::nullopt,
+               std::vector<content::IdentityRequestDialogDisclosureField>(),
+               /*has_login_status_mismatch=*/false)};
+
+  // Only one account from the second IDP.
+  auto account = base::MakeRefCounted<content::IdentityRequestAccount>(
+      "id1", "email1", "name1", "email1", "name1", "given1", GURL(), "tel",
+      "user1", std::vector<std::string>(), std::vector<std::string>(),
+      std::vector<std::string>(), std::vector<std::string>());
+  account->identity_provider = idps_[1];
+  account->browser_trusted_login_state =
+      content::IdentityRequestAccount::LoginState::kSignIn;
+
+  // Provide a dummy decoded picture to avoid image fetching.
+  SkBitmap bitmap;
+  bitmap.allocN32Pixels(1, 1);
+  bitmap.eraseColor(SK_ColorRED);
+  account->decoded_picture = gfx::Image::CreateFrom1xBitmap(bitmap);
+
+  accounts_ = {account};
+
+  view()->Show(content::RelyingPartyData(u"rp-example.com", u""), idps_,
+               accounts_, blink::mojom::RpMode::kPassive, {});
+
+  auto* controller = browser()
+                         ->GetActiveTabInterface()
+                         ->GetTabFeatures()
+                         ->page_action_controller();
+
+  page_actions::PageActionObserver observer(kActionFederation);
+  observer.RegisterAsPageActionObserver(*controller);
+
+  // Verify that with multiple IDPs (even with one account), it falls through to
+  // standard UI (widget shown immediately).
+  ASSERT_TRUE(
+      base::test::RunUntil([&]() { return !!view()->GetDialogWidget(); }));
+  EXPECT_TRUE(view()->GetDialogWidget());
+  EXPECT_FALSE(observer.GetCurrentPageActionState().showing);
+}
+
 }  // namespace webid
