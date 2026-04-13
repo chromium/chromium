@@ -10,6 +10,7 @@
 #import "ios/chrome/browser/dom_distiller/model/distiller_service_factory.h"
 #import "ios/chrome/browser/intelligence/bwg/model/bwg_tab_helper.h"
 #import "ios/chrome/browser/intelligence/bwg/model/gemini_service_factory.h"
+#import "ios/chrome/browser/intelligence/bwg/utils/gemini_constants.h"
 #import "ios/chrome/browser/intelligence/features/features.h"
 #import "ios/chrome/browser/intelligence/page_action_menu/coordinator/page_action_menu_mediator.h"
 #import "ios/chrome/browser/intelligence/page_action_menu/ui/page_action_menu_content_entry_point.h"
@@ -34,6 +35,7 @@
 #import "ios/chrome/browser/shared/public/commands/reader_mode_commands.h"
 #import "ios/chrome/browser/shared/public/commands/reader_mode_options_commands.h"
 #import "ios/chrome/browser/signin/model/authentication_service_factory.h"
+#import "ios/public/provider/chrome/browser/bwg/bwg_api.h"
 
 @interface PageActionMenuCoordinator () <
     PageActionMenuViewControllerDelegate,
@@ -219,7 +221,7 @@
   _signinCoordinator.signinCompletion =
       ^(SigninCoordinator* coordinator, SigninCoordinatorResult result,
         id<SystemIdentity> identity) {
-        [weakSelf signinDidFinishWithCoordinator:coordinator];
+        [weakSelf signinDidFinishWithCoordinator:coordinator result:result];
       };
   [_signinCoordinator start];
 }
@@ -269,11 +271,27 @@
   return [_viewController resolveDetentValueForSheetPresentation:context];
 }
 
-// Cleans up the sign-in coordinator and dismisses the Page Action Menu.
-- (void)signinDidFinishWithCoordinator:(SigninCoordinator*)coordinator {
+// Cleans up the sign-in coordinator after completion. On successful sign-in,
+// dismisses the Page Action Menu and starts the Gemini flow.
+- (void)signinDidFinishWithCoordinator:(SigninCoordinator*)coordinator
+                                result:(SigninCoordinatorResult)result {
   CHECK_EQ(_signinCoordinator, coordinator);
   [_signinCoordinator stop];
   _signinCoordinator = nil;
+
+  if (result == SigninCoordinatorResultSuccess) {
+    // Capture the BWG handler before dismissal tears down the coordinator.
+    id<BWGCommands> geminiHandler =
+        HandlerForProtocol(self.browser->GetCommandDispatcher(), BWGCommands);
+    [self.pageActionMenuHandler dismissPageActionMenuWithCompletion:^{
+      [geminiHandler
+          startGeminiFlowWithStartupState:
+              [[GeminiStartupState alloc]
+                  initWithEntryPoint:gemini::EntryPoint::AIHubSignInSheet]];
+    }];
+    return;
+  }
+
   [self.pageActionMenuHandler dismissPageActionMenuWithCompletion:nil];
 }
 

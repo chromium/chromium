@@ -782,6 +782,7 @@ chromium-metrics-reviews@google.com.
   <int value="7" label="Image Remix in-product help"/>
   <int value="8" label="Edit Menu (Explain)"/>
   <int value="9" label="Direct Omnibox Badge"/>
+  <int value="10" label="AI Hub Sign-in Sheet"/>
 </enum>
 
 <!-- LINT.ThenChange(/ios/chrome/browser/intelligence/bwg/utils/gemini_constants.h:EntryPoint) -->
