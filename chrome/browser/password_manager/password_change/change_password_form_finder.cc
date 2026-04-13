@@ -148,7 +148,7 @@ void ChangePasswordFormFinder::OnFormNotFoundInitially() {
         Logger::STRING_PASSWORD_CHANGE_INITIAL_FORM_WAITING_RESULT, false);
   }
 
-  capturer_ = std::make_unique<AnnotatedPageContentCapturer>(
+  capturer_ = AnnotatedPageContentCapturer::Create(
       web_contents_, GetAIPageContentOptions(),
       base::BindOnce(&ChangePasswordFormFinder::OnPageContentReceived,
                      weak_ptr_factory_.GetWeakPtr()));

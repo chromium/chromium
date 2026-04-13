@@ -14,6 +14,7 @@
 #include "chrome/browser/password_manager/factories/account_password_store_factory.h"
 #include "chrome/browser/password_manager/password_change/annotated_page_content_capturer.h"
 #include "chrome/browser/password_manager/password_change/button_click_helper.h"
+#include "chrome/browser/password_manager/password_change/fake_annotated_page_content_capturer.h"
 #include "chrome/browser/password_manager/password_change/model_quality_logs_uploader.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "components/autofill/core/common/autofill_test_utils.h"
@@ -176,6 +177,20 @@ class ChangePasswordFormFinderTest : public ChromeRenderViewHostTestHarness,
         .WillByDefault(Return(&mock_cache_));
     ON_CALL(driver_, CheckViewAreaVisible)
         .WillByDefault(base::test::RunOnceCallback<1>(true));
+
+    AnnotatedPageContentCapturer::SetFactoryForTesting(base::BindRepeating(
+        [](content::WebContents* web_contents,
+           blink::mojom::AIPageContentOptionsPtr options,
+           optimization_guide::OnAIPageContentDone callback)
+            -> std::unique_ptr<AnnotatedPageContentCapturer> {
+          return std::make_unique<FakeAnnotatedPageContentCapturer>(
+              std::move(callback));
+        }));
+  }
+
+  void TearDown() override {
+    OSCryptMocker::TearDown();
+    ChromeRenderViewHostTestHarness::TearDown();
   }
 
   password_manager::PasswordFormManager* CreateFormManager(
@@ -323,8 +338,8 @@ TEST_P(ChangePasswordFormFinderTest, ExecuteModelModelFailedWhenFormNotFound) {
   task_environment()->FastForwardBy(
       ChangePasswordFormWaiter::kChangePasswordFormWaitingTimeout);
   ASSERT_TRUE(form_finder->capturer());
-  form_finder->capturer()->ReplyWithContent(
-      optimization_guide::AIPageContentResult());
+  static_cast<FakeAnnotatedPageContentCapturer*>(form_finder->capturer())
+      ->SimulateResponse(optimization_guide::AIPageContentResult());
 
   // Since ExecuteModel() call was successful, `form_finder` is now attempting
   // to click an underlying button.
@@ -391,8 +406,8 @@ TEST_P(ChangePasswordFormFinderTest, ExecuteModelOpenFormRequestHasArgs) {
   task_environment()->FastForwardBy(
       ChangePasswordFormWaiter::kChangePasswordFormWaitingTimeout);
   ASSERT_TRUE(form_finder->capturer());
-  form_finder->capturer()->ReplyWithContent(
-      optimization_guide::AIPageContentResult());
+  static_cast<FakeAnnotatedPageContentCapturer*>(form_finder->capturer())
+      ->SimulateResponse(optimization_guide::AIPageContentResult());
 
   CheckOpenFormStatus(
       logs_uploader.GetFinalLog(),
@@ -424,8 +439,8 @@ TEST_P(ChangePasswordFormFinderTest, ButtonClickRequestedButFailed) {
   task_environment()->FastForwardBy(
       ChangePasswordFormWaiter::kChangePasswordFormWaitingTimeout);
   ASSERT_TRUE(form_finder->capturer());
-  form_finder->capturer()->ReplyWithContent(
-      optimization_guide::AIPageContentResult());
+  static_cast<FakeAnnotatedPageContentCapturer*>(form_finder->capturer())
+      ->SimulateResponse(optimization_guide::AIPageContentResult());
 
   // Since ExecuteModel() call was successful, `form_finder` is now attempting
   // to click an underlying button.
@@ -462,7 +477,8 @@ TEST_P(ChangePasswordFormFinderTest, FailsCapturingAnnotatedPageContent) {
   task_environment()->FastForwardBy(
       ChangePasswordFormWaiter::kChangePasswordFormWaitingTimeout);
   ASSERT_TRUE(form_finder->capturer());
-  form_finder->capturer()->ReplyWithContent(base::unexpected("Failure"));
+  static_cast<FakeAnnotatedPageContentCapturer*>(form_finder->capturer())
+      ->SimulateResponse(base::unexpected("Failure"));
 
   histogram_tester.ExpectUniqueSample(
       "PasswordManager.PasswordChange.FailedCapturingPageContent",
@@ -491,8 +507,8 @@ TEST_P(ChangePasswordFormFinderTest, ButtonClickRequestedAndSucceeded) {
   task_environment()->FastForwardBy(
       ChangePasswordFormWaiter::kChangePasswordFormWaitingTimeout);
   ASSERT_TRUE(form_finder->capturer());
-  form_finder->capturer()->ReplyWithContent(
-      optimization_guide::AIPageContentResult());
+  static_cast<FakeAnnotatedPageContentCapturer*>(form_finder->capturer())
+      ->SimulateResponse(optimization_guide::AIPageContentResult());
 
   // Since ExecuteModel() call was successful, `form_finder` is now attempting
   // to click an underlying button.
@@ -540,8 +556,8 @@ TEST_P(ChangePasswordFormFinderTest,
   task_environment()->FastForwardBy(
       ChangePasswordFormWaiter::kChangePasswordFormWaitingTimeout);
   ASSERT_TRUE(form_finder->capturer());
-  form_finder->capturer()->ReplyWithContent(
-      optimization_guide::AIPageContentResult());
+  static_cast<FakeAnnotatedPageContentCapturer*>(form_finder->capturer())
+      ->SimulateResponse(optimization_guide::AIPageContentResult());
 
   // Since ExecuteModel() call was successful, `form_finder` is now attempting
   // to click an underlying button.
@@ -590,8 +606,8 @@ TEST_P(ChangePasswordFormFinderTest,
   task_environment()->FastForwardBy(
       ChangePasswordFormWaiter::kChangePasswordFormWaitingTimeout);
   ASSERT_TRUE(form_finder->capturer());
-  form_finder->capturer()->ReplyWithContent(
-      optimization_guide::AIPageContentResult());
+  static_cast<FakeAnnotatedPageContentCapturer*>(form_finder->capturer())
+      ->SimulateResponse(optimization_guide::AIPageContentResult());
 
   // Since ExecuteModel() call was successful, `form_finder` is now attempting
   // to click an underlying button.
@@ -677,8 +693,8 @@ TEST_P(ChangePasswordFormFinderTest, FailsWhenPageTypeIsNotSettingsPage) {
   task_environment()->FastForwardBy(
       ChangePasswordFormWaiter::kChangePasswordFormWaitingTimeout);
   ASSERT_TRUE(form_finder->capturer());
-  form_finder->capturer()->ReplyWithContent(
-      optimization_guide::AIPageContentResult());
+  static_cast<FakeAnnotatedPageContentCapturer*>(form_finder->capturer())
+      ->SimulateResponse(optimization_guide::AIPageContentResult());
   EXPECT_EQ(completion_callback.Get(),
             ChangePasswordFormFinder::ErrorCase::kNoButtonToClick);
 
@@ -723,8 +739,8 @@ TEST_P(ChangePasswordFormFinderTest, InterventionNeededPageCausesFailure) {
   task_environment()->FastForwardBy(
       ChangePasswordFormWaiter::kChangePasswordFormWaitingTimeout);
   ASSERT_TRUE(form_finder->capturer());
-  form_finder->capturer()->ReplyWithContent(
-      optimization_guide::AIPageContentResult());
+  static_cast<FakeAnnotatedPageContentCapturer*>(form_finder->capturer())
+      ->SimulateResponse(optimization_guide::AIPageContentResult());
   EXPECT_EQ(completion_callback.Get(),
             ChangePasswordFormFinder::ErrorCase::kInterruptionDetected);
 

@@ -141,7 +141,7 @@ PasswordChangeSubmissionVerifier::PasswordChangeSubmissionVerifier(
       web_contents_(web_contents),
       logs_uploader_(logs_uploader),
       callback_(std::move(callback)) {
-  capturer_ = std::make_unique<AnnotatedPageContentCapturer>(
+  capturer_ = AnnotatedPageContentCapturer::Create(
       web_contents_, GetAIPageContentOptions(),
       base::BindOnce(
           &PasswordChangeSubmissionVerifier::CheckSubmissionSuccessful,

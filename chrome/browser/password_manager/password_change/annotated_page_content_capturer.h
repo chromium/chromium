@@ -5,66 +5,46 @@
 #ifndef CHROME_BROWSER_PASSWORD_MANAGER_PASSWORD_CHANGE_ANNOTATED_PAGE_CONTENT_CAPTURER_H_
 #define CHROME_BROWSER_PASSWORD_MANAGER_PASSWORD_CHANGE_ANNOTATED_PAGE_CONTENT_CAPTURER_H_
 
+#include <memory>
+
 #include "base/functional/callback_forward.h"
 #include "base/memory/weak_ptr.h"
+#include "base/no_destructor.h"
 #include "components/optimization_guide/content/browser/page_content_proto_provider.h"
 #include "content/public/browser/web_contents_observer.h"
+#include "third_party/blink/public/mojom/content_extraction/ai_page_content.mojom.h"
 
 namespace content {
 class WebContents;
 }
 
-class PasswordChangePageStabilityWaiter;
-
-// Helper class which captures annotated page content. Waits for page loading to
-// finish if necessary.
-class AnnotatedPageContentCapturer : public content::WebContentsObserver {
+class AnnotatedPageContentCapturer {
  public:
+  virtual ~AnnotatedPageContentCapturer() = default;
+
   using GetAIPageContentFunction =
       base::RepeatingCallback<void(blink::mojom::AIPageContentOptionsPtr,
                                    optimization_guide::OnAIPageContentDone)>;
 
-  AnnotatedPageContentCapturer(
+  using FactoryCallback =
+      base::RepeatingCallback<std::unique_ptr<AnnotatedPageContentCapturer>(
+          content::WebContents*,
+          blink::mojom::AIPageContentOptionsPtr,
+          optimization_guide::OnAIPageContentDone)>;
+
+  static std::unique_ptr<AnnotatedPageContentCapturer> Create(
       content::WebContents* web_contents,
       blink::mojom::AIPageContentOptionsPtr options,
       optimization_guide::OnAIPageContentDone callback);
 
-  // Constructor only used for testing. This is needed so
-  // the GetAIPageContent can be mocked.
-  AnnotatedPageContentCapturer(
-      base::PassKey<class AnnotatedPageContentCapturerTest>,
-      content::WebContents* web_contents,
-      blink::mojom::AIPageContentOptionsPtr options,
-      optimization_guide::OnAIPageContentDone callback,
-      GetAIPageContentFunction get_page_content);
-
-  ~AnnotatedPageContentCapturer() override;
-
-  // content::WebContentsObserver
-  void DidStopLoading() override;
-
-  void OnPageStable();
-
 #if defined(UNIT_TEST)
-  void ReplyWithContent(optimization_guide::AIPageContentResultOrError result) {
-    std::move(callback_).Run(std::move(result));
+  static void SetFactoryForTesting(FactoryCallback factory) {
+    GetFactory() = std::move(factory);
   }
 #endif
 
  private:
-  AnnotatedPageContentCapturer(content::WebContents* web_contents,
-                               blink::mojom::AIPageContentOptionsPtr options,
-                               optimization_guide::OnAIPageContentDone callback,
-                               GetAIPageContentFunction get_page_content);
-
-  void CapturePageContent(
-      optimization_guide::AIPageContentResultOrError result);
-  blink::mojom::AIPageContentOptionsPtr options_;
-  optimization_guide::OnAIPageContentDone callback_;
-  GetAIPageContentFunction get_page_content_;
-  std::unique_ptr<PasswordChangePageStabilityWaiter> page_stability_waiter_;
-
-  base::WeakPtrFactory<AnnotatedPageContentCapturer> weak_ptr_factory_{this};
+  static FactoryCallback& GetFactory();
 };
 
 #endif  // CHROME_BROWSER_PASSWORD_MANAGER_PASSWORD_CHANGE_ANNOTATED_PAGE_CONTENT_CAPTURER_H_
