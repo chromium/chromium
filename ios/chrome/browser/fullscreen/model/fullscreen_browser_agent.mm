@@ -108,6 +108,7 @@ void FullscreenBrowserAgent::UpdateProgressAndBroadcast(CGFloat top_progress,
 }
 
 void FullscreenBrowserAgent::NotifyObserversOfUpdatedState() {
+  CHECK(!updating_insets_);
   updating_insets_ = true;
   UIEdgeInsets old_insets = insets_;
   insets_ = UIEdgeInsetsZero;

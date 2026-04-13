@@ -48,7 +48,7 @@ const CGFloat kBackgroundRGBComponents[] = {0.75f, 0.74f, 0.76f};
     _scrollView = scrollView;
     _fullscreenState = fullscreenState;
     // Default resizing value.
-    if (web::GetWebClient()->IsSmoothScrollingSupported()) {
+    if (@available(iOS 26, *)) {
       _webViewResizingType = WebViewResizingType::kContentInset;
     } else {
       _webViewResizingType = WebViewResizingType::kFrame;
@@ -90,6 +90,17 @@ const CGFloat kBackgroundRGBComponents[] = {0.75f, 0.74f, 0.76f};
   _fullscreenState = fullscreenState;
 }
 
+- (void)layoutSubviews {
+  switch (self.webViewResizingType) {
+    case WebViewResizingType::kContentInset:
+      break;
+    case WebViewResizingType::kFrame:
+      _webView.frame = UIEdgeInsetsInsetRect(self.frame, _obscuredInsets);
+      break;
+  }
+  [super layoutSubviews];
+}
+
 #pragma mark Layout
 
 - (void)setContentOffset:(CGPoint)contentOffset {
@@ -125,15 +136,47 @@ const CGFloat kBackgroundRGBComponents[] = {0.75f, 0.74f, 0.76f};
 }
 
 - (void)setObscuredInsets:(UIEdgeInsets)obscuredInsets {
-  if (@available(iOS 26, *)) {
-    [_webView setObscuredContentInsets:obscuredInsets];
+  if (UIEdgeInsetsEqualToEdgeInsets(_obscuredInsets, obscuredInsets)) {
+    return;
+  }
+  switch (self.webViewResizingType) {
+    case WebViewResizingType::kContentInset:
+      _scrollView.contentInsetAdjustmentBehavior =
+          UIScrollViewContentInsetAdjustmentNever;
+      _scrollView.contentInset = obscuredInsets;
+      if (@available(iOS 26, *)) {
+        [_webView setObscuredContentInsets:obscuredInsets];
+      } else {
+        NOTREACHED();
+      }
+      break;
+    case WebViewResizingType::kFrame:
+      // Update the scroll offset to account for the changing frame.
+      CGFloat topDelta = obscuredInsets.top - _obscuredInsets.top;
+      CGPoint offset = _scrollView.contentOffset;
+      offset.y = std::max<CGFloat>(0, offset.y + topDelta);
+      _scrollView.contentOffset = offset;
+      // Update the frame.
+      _webView.frame = UIEdgeInsetsInsetRect(self.frame, obscuredInsets);
+      break;
   }
   _obscuredInsets = obscuredInsets;
 }
 
 - (void)setMinimumViewportInset:(UIEdgeInsets)minInset
            maximumViewportInset:(UIEdgeInsets)maxInset {
-  [_webView setMinimumViewportInset:minInset maximumViewportInset:maxInset];
+  switch (self.webViewResizingType) {
+    case WebViewResizingType::kContentInset:
+      [_webView setMinimumViewportInset:minInset maximumViewportInset:maxInset];
+      break;
+    case WebViewResizingType::kFrame:
+      // Do not set the min/max viewport insets if we are resizing frame. Since
+      // these insets are relative to the frame and we cannot report negative
+      // insets, there is no way to properly report the minimum insets. If we
+      // could report negative insets, we would have to update this every time
+      // the obscured insets changed. See http://crbug.com/40944174#comment17.
+      break;
+  }
 }
 
 - (void)setShouldUseViewContentInset:(BOOL)shouldUseViewContentInset {

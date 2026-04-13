@@ -20,6 +20,7 @@
 #import "ios/chrome/browser/fullscreen/ui_bundled/scoped_fullscreen_disabler.h"
 #import "ios/chrome/browser/overscroll_actions/ui_bundled/overscroll_actions_gesture_recognizer.h"
 #import "ios/chrome/browser/overscroll_actions/ui_bundled/overscroll_actions_view.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/util/rtl_geometry.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/side_swipe/ui_bundled/side_swipe_constants.h"
@@ -623,6 +624,9 @@ UIEdgeInsets TopContentInset(UIScrollView* scrollView, CGFloat topInset) {
 }
 
 - (BOOL)viewportAdjustsContentInset {
+  if (IsFullscreenRefactoringEnabled()) {
+    return _webViewProxy.shouldUseViewContentInset;
+  }
   if (_webViewProxy.shouldUseViewContentInset) {
     return YES;
   }
