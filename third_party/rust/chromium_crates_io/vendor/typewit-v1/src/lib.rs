@@ -496,6 +496,13 @@
 //! 
 //! - `"alloc"`: enable items that use anything from the standard `alloc` crate.
 //! 
+//! ### Opt-in stable features
+//! 
+//! These are features that are NOT enabled by default:
+//! 
+//! - `"serde"`: enables serde dependency and 
+//!  `serde::{Serialize, Deserialize}` impls for types in `const_marker` module.
+//! 
 //! ### Nightly features
 //! 
 //! These features require the nightly Rust compiler:

@@ -1,6 +1,6 @@
 [package]
 name = "typewit"
-version = "1.14.2"
+version = "1.15.1"
 authors = ["rodrimati1992 <rodrimatt1985@gmail.com>"]
 rust-version = "1.57.0"
 edition = "2021"
@@ -34,14 +34,36 @@ default-features = false
 version = "1.0"
 optional = true
 
+[dependencies.serde_]
+package = "serde"
+version = "1.0.200"
+default-features = false
+optional = true
+
+# no such thing as optional dev-dependencies, aaaaaaah
+[dependencies.serde_json]
+version = "1.0"
+default-features = false
+optional = true
+features = ["alloc"]
+
+# no such thing as optional dev-dependencies, aaaaaaah
+[dependencies.postcard]
+version = "1.0"
+default-features = false
+optional = true
+
 [features]
-default = ["proc_macros"]
+default = ["proc_macros", "const_marker_extra_impls"]
+serde = ["serde_"]
+__test_serde = ["serde", "serde_json", "postcard"]
 rust_1_61 = []
 rust_1_65 = ["rust_1_61"]
 rust_1_83 = ["rust_1_65"]
 rust_stable = ["rust_1_83"]
 proc_macros = ["typewit_proc_macros"]
 const_marker = []
+const_marker_extra_impls = []
 adt_const_marker = ["rust_stable"]
 generic_const_exprs = ["rust_stable"]
 alloc = []

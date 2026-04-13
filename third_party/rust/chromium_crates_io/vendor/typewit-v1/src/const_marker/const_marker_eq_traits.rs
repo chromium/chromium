@@ -458,6 +458,7 @@ macro_rules! __const_marker_impls {
     (
         $(#[$struct_docs:meta])*
         $struct:ident($prim:ty)
+        $deser_type:ident,
 
         $(
             $(#[$eq_docs:meta])*

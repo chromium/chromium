@@ -42,11 +42,20 @@ mod const_marker_trait;
 
 pub use const_marker_trait::*;
 
+
 #[cfg(feature = "rust_1_83")]
 mod const_marker_eq_traits;
 
 #[cfg(feature = "rust_1_83")]
 pub use const_marker_eq_traits::*;
+
+
+#[cfg(feature = "serde")]
+mod const_marker_serde_impls;
+
+#[cfg(feature = "serde")]
+pub(crate) use const_marker_serde_impls::*;
+
 
 mod boolwit;
 
@@ -111,7 +120,8 @@ macro_rules! declare_const_param_type {
 macro_rules! __declare_const_param_type {
     (
         $(#[$struct_docs:meta])*
-        $struct:ident($prim:ty)
+        $struct:ident($prim:ty) 
+        $deser_type:ident,
 
         $(
             $(#[$eq_docs:meta])*
@@ -122,6 +132,10 @@ macro_rules! __declare_const_param_type {
             "Marker type for passing `const VAL: ", stringify!($prim),
             "` as a type parameter."
         )]
+        /// # Serde compatibility
+        /// 
+        /// When the `"serde"` feature is enabled, 
+        /// this type is serialized/deserialized as the `VAL` const parameter.
         $(#[$struct_docs])*
         #[derive(Copy, Clone)]
         pub struct $struct<const VAL: $prim>;
@@ -209,13 +223,44 @@ macro_rules! __declare_const_param_type {
         }
 
         impl<const VAL: $prim> core::cmp::Eq for $struct<VAL> {}
+        
+        impl<const VAL: $prim> Default for $struct<VAL> {
+            fn default() -> Self {
+                Self
+            }
+        }
+
+        impl<const L: $prim, const R: $prim> core::cmp::PartialOrd<$struct<R>> for $struct<L> {
+            fn partial_cmp(&self, _: &$struct<R>) -> Option<core::cmp::Ordering> {
+                Some(core::cmp::Ord::cmp(&L, &R))
+            }
+        }
+
+        impl<const VAL: $prim> core::cmp::Ord for $struct<VAL> {
+            fn cmp(&self, _: &Self) -> core::cmp::Ordering {
+                core::cmp::Ordering::Equal
+            }
+        }
+
+        impl<const VAL: $prim> core::hash::Hash for $struct<VAL> {
+            fn hash<H>(&self, state: &mut H)
+            where
+                H: core::hash::Hasher,
+            {
+                core::hash::Hash::hash(&VAL, state)
+            }
+        }
+
+        #[cfg(feature = "serde")]
+        crate::const_marker::__declare_const_marker_serde_impls!{$struct($prim) $deser_type}
+
 
     };
 } pub(crate) use __declare_const_param_type;
 
 
 declare_const_param_type!{
-    Bool(bool)
+    Bool(bool) primitive,
 
     /// 
     /// For getting a type witness that
@@ -226,16 +271,17 @@ declare_const_param_type!{
     /// 
     fn equals;
 }
-declare_const_param_type!{Char(char)}
+declare_const_param_type!{Char(char) primitive,}
 
-declare_const_param_type!{U8(u8)}
-declare_const_param_type!{U16(u16)}
-declare_const_param_type!{U32(u32)}
-declare_const_param_type!{U64(u64)}
-declare_const_param_type!{U128(u128)}
+declare_const_param_type!{U8(u8) primitive,}
+declare_const_param_type!{U16(u16) primitive,}
+declare_const_param_type!{U32(u32) primitive,}
+declare_const_param_type!{U64(u64) primitive,}
+declare_const_param_type!{U128(u128) primitive,}
 
 declare_const_param_type!{
     Usize(usize)
+    primitive,
 
     /// # Examples
     /// 
@@ -329,10 +375,10 @@ declare_const_param_type!{
     fn equals;
 }
 
-declare_const_param_type!{I8(i8)}
-declare_const_param_type!{I16(i16)}
-declare_const_param_type!{I32(i32)}
-declare_const_param_type!{I64(i64)}
-declare_const_param_type!{I128(i128)}
-declare_const_param_type!{Isize(isize)}
+declare_const_param_type!{I8(i8) primitive,}
+declare_const_param_type!{I16(i16) primitive,}
+declare_const_param_type!{I32(i32) primitive,}
+declare_const_param_type!{I64(i64) primitive,}
+declare_const_param_type!{I128(i128) primitive,}
+declare_const_param_type!{Isize(isize) primitive,}
 
