@@ -36,9 +36,8 @@ item:nth-child(1) {
 }
 subgrid {
   display: grid;
-  grid-row: auto/span 2;
   grid-column: auto/span 2;
-  grid: subgrid / subgrid;
+  grid: none / subgrid;
   grid-gap: 6px 8px;
   background: yellow;
 }
@@ -48,7 +47,7 @@ subgrid {
 <!-- auto-placed subgrid inhibits subgridding when parent is doing grid-lanes layout ... -->
 <grid-lanes>
   <item>1</item>
-  <subgrid style="grid: none / subgrid">
+  <subgrid>
     <item>4a</item>
     <item>4b</item>
     <item>4c</item>

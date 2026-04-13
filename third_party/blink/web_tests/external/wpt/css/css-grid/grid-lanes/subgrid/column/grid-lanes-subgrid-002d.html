@@ -36,15 +36,10 @@ item:nth-child(1) {
 }
 subgrid {
   display: grid;
-  grid-row: auto/span 2;
-  grid-column: auto/span 2;
-  grid: subgrid / subgrid;
+  grid-column: auto/span 3;
+  grid: auto / subgrid;
   grid-gap: 6px 8px;
   background: yellow;
-}
-subgrid.extent {
-  grid-row: auto/span 2;
-  grid-column: auto/span 3;
 }
 </style>
 </head>
@@ -54,7 +49,7 @@ subgrid.extent {
   <item>1</item>
   <item>2</item>
   <item>3</item>
-  <subgrid class="extent">
+  <subgrid>
     <item>4a</item>
     <item>4b</item>
     <item>4c</item>
