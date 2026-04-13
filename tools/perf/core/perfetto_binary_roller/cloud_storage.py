@@ -7,28 +7,25 @@ on autorollers).
 """
 
 import hashlib
-import os
 import subprocess
+import shutil
 
 PUBLIC_BUCKET = 'chromium-telemetry'
 INTERNAL_BUCKET = 'chrome-telemetry'
 
 
 def _RunCommand(args):
-  gsutil_command = 'gsutil'
-  pathenv = os.getenv('PATH')
-  for path in pathenv.split(os.path.pathsep):
-    gsutil_path = os.path.join(path, gsutil_command)
-    if os.path.exists(gsutil_path):
-      break
-
-  gsutil = subprocess.Popen([gsutil_path] + args,
-                            stdout=subprocess.PIPE,
-                            stderr=subprocess.PIPE)
-  stdout, stderr = gsutil.communicate()
-  if gsutil.returncode:
-    raise RuntimeError(stderr.decode('utf-8'))
-  return stdout.decode('utf-8')
+  gcloud_path = shutil.which('gcloud')
+  if not gcloud_path:
+    raise RuntimeError("gcloud executable not found in PATH.")
+  try:
+    result = subprocess.run([gcloud_path, 'storage'] + args,
+                            capture_output=True,
+                            text=True,
+                            check=True)
+    return result.stdout
+  except subprocess.CalledProcessError as e:
+    raise RuntimeError(e.stderr)
 
 
 def Get(bucket, remote_path, local_path):
