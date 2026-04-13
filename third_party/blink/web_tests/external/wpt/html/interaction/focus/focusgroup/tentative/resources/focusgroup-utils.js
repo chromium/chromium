@@ -14,6 +14,9 @@ const kDown = "down";
 const kLeft = "left";
 const kRight = "right";
 
+// TODO: Query the platform/user-agent/WebDriver for the correct
+// directional input mapping instead of assuming arrow keys.  See
+// https://github.com/WebKit/standards-positions/issues/171#issuecomment-4199418777
 const DirectionalInputMap = {
   [kUp]:    kArrowUp,
   [kDown]:  kArrowDown,
