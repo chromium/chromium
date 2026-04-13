@@ -1443,7 +1443,8 @@ const CSSValue* StyleCascade::ResolvePendingSubstitution(
 
     // NOTE: We don't actually need the original text to be comment-stripped,
     // since we're not storing it in a custom property anywhere.
-    CSSParserTokenStream stream2(sequence.OriginalText());
+    CSSParserTokenStream stream2(sequence.OriginalText(),
+                                 sequence.GetAttrTaintedRanges());
     if (!CSSPropertyParser::ParseValue(
             shorthand_property_id, /*allow_important_annotation=*/false,
             stream2, shorthand_value->ParserContext(), parsed_properties,
