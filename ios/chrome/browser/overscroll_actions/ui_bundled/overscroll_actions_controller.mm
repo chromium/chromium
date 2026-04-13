@@ -931,6 +931,9 @@ UIEdgeInsets TopContentInset(UIScrollView* scrollView, CGFloat topInset) {
 }
 
 - (CGFloat)initialHeaderInset {
+  if (IsFullscreenRefactoringEnabled() && !self.viewportAdjustsContentInset) {
+    return 0;
+  }
   return [self.delegate headerInsetForOverscrollActionsController:self];
 }
 
@@ -948,23 +951,38 @@ UIEdgeInsets TopContentInset(UIScrollView* scrollView, CGFloat topInset) {
     return;
   }
 
-  // Ask the delegate for a fullscreen controller. It may return nothing if
-  // (for example) the UI is in the middle of teardown.
-  FullscreenController* fullscreenController =
-      [self.delegate fullscreenControllerForOverscrollActionsController:self];
-  if (!fullscreenController) {
-    return;
-  }
-
   // Disabling fullscreen will show the toolbars, which may potentially produce
   // a `-scrollViewDidScroll` event if the browser viewport insets need to be
   // updated.  `_ignoreScrollForDisabledFullscreen` is set to YES while the
   // viewport insets are being updated for the disabled state so that this
   // scroll event can be ignored.
   _ignoreScrollForDisabledFullscreen = YES;
-  _fullscreenDisabler =
-      std::make_unique<ScopedFullscreenDisabler>(fullscreenController);
+  _fullscreenDisabler = [self createFullscreenDisabler];
   _ignoreScrollForDisabledFullscreen = NO;
+}
+
+// Creates a ScopedFullscreenDisabler.
+- (std::unique_ptr<ScopedFullscreenDisabler>)createFullscreenDisabler {
+  if (IsFullscreenRefactoringEnabled()) {
+    id<FullscreenCommands> fullscreenHandler =
+        [self.delegate fullscreenHandlerForOverscrollActionsController:self];
+    if (!fullscreenHandler) {
+      return nullptr;
+    }
+
+    return std::make_unique<ScopedFullscreenDisabler>(fullscreenHandler,
+                                                      /*animated=*/NO);
+  } else {
+    // Ask the delegate for a fullscreen controller. It may return nothing if
+    // (for example) the UI is in the middle of teardown.
+    FullscreenController* fullscreenController =
+        [self.delegate fullscreenControllerForOverscrollActionsController:self];
+    if (!fullscreenController) {
+      return nullptr;
+    }
+
+    return std::make_unique<ScopedFullscreenDisabler>(fullscreenController);
+  }
 }
 
 #pragma mark - Bounce dynamic

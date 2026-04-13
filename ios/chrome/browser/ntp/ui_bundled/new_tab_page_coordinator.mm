@@ -1438,6 +1438,12 @@
   return nullptr;
 }
 
+- (id<FullscreenCommands>)fullscreenHandlerForOverscrollActionsController:
+    (OverscrollActionsController*)controller {
+  // Fullscreen isn't supported here.
+  return nil;
+}
+
 #pragma mark - ProfileStateObserver
 
 - (void)profileState:(ProfileState*)profileState

@@ -61,4 +61,9 @@
   return nullptr;
 }
 
+- (id<FullscreenCommands>)fullscreenHandlerForOverscrollActionsController:
+    (OverscrollActionsController*)controller {
+  return nil;
+}
+
 @end

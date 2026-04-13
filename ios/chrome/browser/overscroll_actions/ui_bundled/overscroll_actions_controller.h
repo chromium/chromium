@@ -11,6 +11,7 @@
 #import "ios/web/public/ui/crw_web_view_scroll_view_proxy.h"
 
 @protocol CRWWebViewProxy;
+@protocol FullscreenCommands;
 class FullscreenController;
 @class OverscrollActionsController;
 
@@ -63,6 +64,10 @@ enum class OverscrollState {
 // interact with fullscreen, so it's fine for a delegate to return nullptr as
 // soon as it enters a state where fullscreen is unsupported.
 - (FullscreenController*)fullscreenControllerForOverscrollActionsController:
+    (OverscrollActionsController*)controller;
+// The fullscreen handler, if any, the delegate makes available for
+// overscroll. Used when kFullscreenRefactoring is enabled.
+- (id<FullscreenCommands>)fullscreenHandlerForOverscrollActionsController:
     (OverscrollActionsController*)controller;
 @end
 

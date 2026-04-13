@@ -5203,6 +5203,11 @@ const char kChromeAppStoreUrl[] =
   return _fullscreenController;
 }
 
+- (id<FullscreenCommands>)fullscreenHandlerForOverscrollActionsController:
+    (OverscrollActionsController*)controller {
+  return HandlerForProtocol(self.dispatcher, FullscreenCommands);
+}
+
 #pragma mark - PasswordControllerDelegate methods
 
 - (BOOL)displaySignInNotification:(UIViewController*)viewController
