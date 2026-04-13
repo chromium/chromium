@@ -802,10 +802,12 @@ function getScrollerInfo(element: HTMLElement, style: CSSStyleDeclaration):
  *
  * @param element The element to process.
  * @param actionableMode Whether to extract actionable interaction info.
+ * @param hasCanvas Whether there is a canvas element on the page.
  * @return The populated PageContentNodeInteractionInfo or undefined if none.
  */
-function getNodeInteractionInfo(element: HTMLElement, actionableMode: boolean):
-    PageContentNodeInteractionInfo|undefined {
+function getNodeInteractionInfo(
+    element: HTMLElement, actionableMode: boolean,
+    hasCanvas: boolean): PageContentNodeInteractionInfo|undefined {
   const interactionInfo: PageContentNodeInteractionInfo = {
     clickabilityReasons: [],
     isDisabled: false,
@@ -813,20 +815,24 @@ function getNodeInteractionInfo(element: HTMLElement, actionableMode: boolean):
     isFocusable: false,
   };
 
+  // If we are not in actionable mode and there is no canvas, we can skip
+  // everything. This assumes that scroller info is only used to compute the
+  // canvas heavy heuristic.
+  if (!actionableMode && !hasCanvas) {
+    return undefined;
+  }
+
   const style = window.getComputedStyle(element);
 
-  // Scroller Info.
+  // Scroller Info
   const scrollerInfo = getScrollerInfo(element, style);
   if (scrollerInfo) {
     interactionInfo.scrollerInfo = scrollerInfo;
   }
 
+  // Just return the scroller info when not in actionable mode.
   if (!actionableMode) {
-    // Just return the scroller info when not in actionable mode.
-    if (interactionInfo.scrollerInfo) {
-      return interactionInfo;
-    }
-    return undefined;
+    return scrollerInfo ? interactionInfo : undefined;
   }
 
   // TODO(crbug.com/486460634): Double check that everything is there to support
@@ -2144,17 +2150,20 @@ function addAnnotatedRoles(
  *
  * @param domNode The DOM node to process (Element or Text).
  * @param nonce Unique identifier for the extraction run.
- * @param interactiveNodeIds Specific node IDs verified as interactive.
- * @param paidNodesSet Set of DOM nodes verified as paid content.
+ * @param depth Current recursion depth.
+ * @param maxDepth The maximum recursion depth.
  * @param interactiveNodeIds A map of interactive node IDs to their
  *     interaction info.
  * @param actionableMode Whether to extract actionable interaction info.
+ * @param paidContentContext Context regarding paid content.
+ * @param hasCanvas Whether there is a canvas element on the page.
  * @return A new PageContentNode if valid content was found, null otherwise.
  */
 function maybeGenerateContentNode(
     domNode: Node, nonce: string, depth: number, maxDepth: number,
     interactiveNodeIds: InteractiveNodeIds, actionableMode: boolean,
-    paidContentContext: PaidContentExtractionContext): PageContentNode|null {
+    paidContentContext: PaidContentExtractionContext,
+    hasCanvas: boolean): PageContentNode|null {
   let contentAttributes: PageContentAttributes|null = null;
   if (domNode.nodeType === Node.TEXT_NODE) {
     contentAttributes = getAttributesForTextNode(domNode);
@@ -2172,7 +2181,8 @@ function maybeGenerateContentNode(
     const element = domNode as HTMLElement;
     const annotatedRoles: PageContentAnnotatedRole[] = [];
     addAnnotatedRoles(element, annotatedRoles, paidContentContext);
-    const interactionInfo = getNodeInteractionInfo(element, actionableMode);
+    const interactionInfo =
+        getNodeInteractionInfo(element, actionableMode, hasCanvas);
 
     const contentNode = getContentForElementNode(
         element, nonce, depth, maxDepth, annotatedRoles, interactionInfo,
@@ -2268,12 +2278,15 @@ interface AncestorStackItem {
  * @param ancestorStack The stack of ancestors that provides the parent node and
  *     where the new node is pushed as the next closest parent.
  * @param interactiveNodeIds Specific node IDs verified as interactive.
- * @param paidNodesSet Set of DOM nodes verified as paid content.
+ * @param actionableMode Whether to extract actionable interaction info.
+ * @param paidContentContext Context regarding paid content.
+ * @param hasCanvas Whether there is a canvas element on the page.
  */
 function generateAndPushContentNode(
     node: Node, nonce: string, maxDepth: number,
     ancestorStack: AncestorStackItem[], interactiveNodeIds: InteractiveNodeIds,
-    actionableMode: boolean, paidContentContext: PaidContentExtractionContext) {
+    actionableMode: boolean, paidContentContext: PaidContentExtractionContext,
+    hasCanvas: boolean) {
   const parentStackItem = ancestorStack[ancestorStack.length - 1]!;
 
   // 2. Generate Content Node. Skip nodes that are too deep while keep
@@ -2286,7 +2299,7 @@ function generateAndPushContentNode(
 
   const newApcNode = maybeGenerateContentNode(
       node, nonce, currentDepth, maxDepth, interactiveNodeIds, actionableMode,
-      paidContentContext);
+      paidContentContext, hasCanvas);
   if (!newApcNode) {
     // Ignore the node if it can't be parsed. That node cannot be a parent
     // either where another node in the ancestor stack will be picked as the
@@ -2449,6 +2462,13 @@ export function extractAnnotatedPageContent(
   }
   root.setAttribute(NONCE_ATTR, nonce);
 
+  // TODO(crbug.com/480945289): Assume there is a canvas when feature is
+  // disabled. We only need to extract the scroller info for nodes when there is
+  // a canvas on the page. It is required to compute the canvas heavy heuristic.
+  const hasCanvas = isPageContextIPCOptimizationEnabled() ?
+      document.querySelector('canvas') !== null :
+      true;
+
   // Perform pre-walk extraction of paid content globals and specific nodes.
   const paidContentContext = extractContainsPaidContent(
       document, extractPaidContent, attemptPaidContentJsonFixing);
@@ -2532,7 +2552,7 @@ export function extractAnnotatedPageContent(
     // walking the tree since future nodes might be shallow enough.
     generateAndPushContentNode(
         currentNode, nonce, maxDepth, ancestorStack, interactiveNodeIds,
-        actionableMode, paidContentContext);
+        actionableMode, paidContentContext, hasCanvas);
 
     currentNode = walker.nextNode();
   }
