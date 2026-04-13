@@ -11,48 +11,6 @@
 #import "ios/chrome/browser/intelligence/bwg/utils/gemini_constants.h"
 #import "ios/public/provider/chrome/browser/bwg/bwg_api.h"
 
-// TODO(crbug.com/478258168): Remove this alias  once callers have migrated.
-// Temporary alias for BWGInputType until internal code is landed.
-typedef gemini::InputType BWGInputType;
-
-// TODO(crbug.com/478258168): Remove these aliases once callers have migrated.
-// Aliases for BWGInputType cases.
-#define BWGInputTypeUnknown gemini::InputType::kUnknown
-#define BWGInputTypeText gemini::InputType::kText
-#define BWGInputTypeSummarize gemini::InputType::kSummarize
-#define BWGInputTypeCheckThisSite gemini::InputType::kCheckThisSite
-#define BWGInputTypeFindRelatedSites gemini::InputType::kFindRelatedSites
-#define BWGInputTypeAskAboutPage gemini::InputType::kAskAboutPage
-#define BWGInputTypeCreateFaq gemini::InputType::kCreateFaq
-#define BWGInputTypeZeroStateModelSuggestion \
-  gemini::InputType::kZeroStateModelSuggestion
-#define BWGInputTypeWhatCanGeminiDo gemini::InputType::kWhatCanGeminiDo
-#define BWGInputTypeDiscoveryCard gemini::InputType::kDiscoveryCard
-#define BWGInputTypeOmniboxSummarize gemini::InputType::kOmniboxSummarize
-#define BWGInputTypeOmniboxPrompt gemini::InputType::kOmniboxPrompt
-#define BWGInputTypeTransitionToLive gemini::InputType::kTransitionToLive
-#define BWGInputTypeOnboardingWhatCanGeminiDo \
-  gemini::InputType::kOnboardingWhatCanGeminiDo
-#define BWGInputTypeOnboardingAskAboutPage \
-  gemini::InputType::kOnboardingAskAboutPage
-#define BWGInputTypeOnboardingSummarize gemini::InputType::kOnboardingSummarize
-#define BWGInputTypeSuggestedReply gemini::InputType::kSuggestedReply
-#define BWGInputTypeNanoBananaTurnThisPageIntoAComicStrip \
-  gemini::InputType::kNanoBananaTurnThisPageIntoAComicStrip
-#define BWGInputTypeNanoBananaMakeAFolkArtIllustration \
-  gemini::InputType::kNanoBananaMakeAFolkArtIllustration
-#define BWGInputTypeNanoBananaMakeACustomMiniFigure \
-  gemini::InputType::kNanoBananaMakeACustomMiniFigure
-#define BWGInputTypeNanoBananaGiveMeAGrungeMakeover \
-  gemini::InputType::kNanoBananaGiveMeAGrungeMakeover
-#define BWGInputTypeNanoBananaTurnThisImageIntoAVintagePostcard \
-  gemini::InputType::kNanoBananaTurnThisImageIntoAVintagePostcard
-#define BWGInputTypeNanoBananaTurnThisImageIntoAWatercolorPainting \
-  gemini::InputType::kNanoBananaTurnThisImageIntoAWatercolorPainting
-#define BWGInputTypeNanoBananaMakeThisImageLookLikeInstantFilm \
-  gemini::InputType::kNanoBananaMakeThisImageLookLikeInstantFilm
-#define BWGInputTypeEditMenuPrompt gemini::InputType::kEditMenuPrompt
-
 // TODO(crbug.com/481711842): Replace this enum and its gemini_metrics.h
 // equivalent with an enum in gemini_constants.h
 // The feedback type for Gemini queries.

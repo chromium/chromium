@@ -831,7 +831,7 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(
     /ios/chrome/browser/intelligence/bwg/metrics/gemini_metrics.h:IOSGeminiFirstPromptSubmissionMethod,
-    /ios/chrome/browser/intelligence/bwg/model/gemini_session_delegate.h:BWGInputType
+    /ios/chrome/browser/intelligence/bwg/model/gemini_constants.h:InputType
 ) -->
 
 <!-- LINT.IfChange(IOSGeminiFloatyUpdateSource) -->
