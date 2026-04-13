@@ -38,6 +38,7 @@
 #import "ios/chrome/browser/shared/public/commands/bookmarks_commands.h"
 #import "ios/chrome/browser/shared/public/commands/browser_coordinator_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
+#import "ios/chrome/browser/shared/public/commands/settings_commands.h"
 #import "ios/chrome/browser/url_loading/model/url_loading_params.h"
 #import "ios/chrome/common/intents/AddBookmarkToChromeIntent.h"
 #import "ios/chrome/common/intents/AddReadingListItemToChromeIntent.h"
@@ -267,6 +268,15 @@ void OpenBookmarksWithBrowser(base::WeakPtr<Browser> weak_browser) {
   }
 }
 
+// Navigates to the password search UI.
+void OpenPasswordSearchWithBrowser(base::WeakPtr<Browser> weak_browser) {
+  if (Browser* browser = weak_browser.get()) {
+    id<SettingsCommands> handler =
+        HandlerForProtocol(browser->GetCommandDispatcher(), SettingsCommands);
+    [handler showPasswordSearchPage];
+  }
+}
+
 // Adds bookmarks to Chrome.
 void AddBookmarkToChromeWithIntent(INIntent* intent,
                                    base::WeakPtr<Browser> weak_browser) {
@@ -452,7 +462,9 @@ std::vector<GURL> GetURLsFromOpenInChromeIntent(INIntent* intent) {
       // TODO(crbug.com/492115056): Add implementation.
       break;
     case UserActivityType::kManagePasswords:
-      // TODO(crbug.com/492115056): Add implementation.
+      completion = base::CallbackToBlock(base::BindRepeating(
+          &OpenPasswordSearchWithBrowser, browser->AsWeakPtr()));
+      webpageGURLs.push_back(GURL(kChromeUINewTabURL));
       break;
     case UserActivityType::kManageSettings:
       // TODO(crbug.com/492115056): Add implementation.
