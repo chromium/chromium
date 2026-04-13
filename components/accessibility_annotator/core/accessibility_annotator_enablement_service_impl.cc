@@ -6,8 +6,12 @@
 
 #include <string>
 
+#include "base/containers/flat_set.h"
 #include "base/feature_list.h"
+#include "base/no_destructor.h"
 #include "base/strings/strcat.h"
+#include "base/strings/string_number_conversions.h"
+#include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "components/accessibility_annotator/core/accessibility_annotator_debug_features.h"
 #include "components/accessibility_annotator/core/accessibility_annotator_features.h"
@@ -16,6 +20,7 @@
 #include "components/account_settings/account_setting_service.h"
 #include "components/prefs/pref_service.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
+#include "components/subscription_eligibility/subscription_eligibility_service.h"
 
 namespace accessibility_annotator {
 namespace {
@@ -46,9 +51,30 @@ void MaybeOutputReason(std::string* out, std::string_view message) {
   return true;
 }
 
+const base::flat_set<int32_t>& GetAnnotatorEligibleTiers() {
+  static const base::NoDestructor<base::flat_set<int32_t>> eligible_tiers([] {
+    std::string tier_list =
+        features::kAccessibilityAnnotatorEligibleTiers.Get();
+    std::vector<std::string_view> tier_pieces = base::SplitStringPiece(
+        tier_list, ",", base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
+    base::flat_set<int32_t> tiers;
+    tiers.reserve(tier_pieces.size());
+    for (std::string_view piece : tier_pieces) {
+      int32_t tier_id = 0;
+      if (base::StringToInt(piece, &tier_id)) {
+        tiers.insert(tier_id);
+      }
+    }
+    return tiers;
+  }());
+  return *eligible_tiers;
+}
+
 // Checks whether all requirements for `IdentityManager` state are met.
 [[nodiscard]] bool SatisfiesAccountRequirements(
     const signin::IdentityManager* identity_manager,
+    subscription_eligibility::SubscriptionEligibilityService*
+        subscription_eligibility_service,
     std::string* debug_message = nullptr) {
   // The user is signed out.
   if (!identity_manager ||
@@ -75,6 +101,19 @@ void MaybeOutputReason(std::string* out, std::string_view message) {
           .capabilities.can_use_model_execution_features() !=
       signin::Tribool::kTrue) {
     MaybeOutputReason(debug_message, "User is underaged.");
+    return false;
+  }
+
+  if (!subscription_eligibility_service) {
+    MaybeOutputReason(debug_message,
+                      "Subscription eligibility service not available.");
+    return false;
+  }
+
+  const int32_t tier =
+      subscription_eligibility_service->GetAiSubscriptionTier();
+  if (!GetAnnotatorEligibleTiers().contains(tier)) {
+    MaybeOutputReason(debug_message, "User subscription tier is not eligible.");
     return false;
   }
 
@@ -125,10 +164,13 @@ AccessibilityAnnotatorEnablementServiceImpl::
     AccessibilityAnnotatorEnablementServiceImpl(
         account_settings::AccountSettingService* account_settings_service,
         signin::IdentityManager* identity_manager,
+        subscription_eligibility::SubscriptionEligibilityService*
+            subscription_eligibility_service,
         PrefService* pref_service,
         GeoIpCountryCode country_code)
     : account_settings_service_(account_settings_service),
       identity_manager_(identity_manager),
+      subscription_eligibility_service_(subscription_eligibility_service),
       pref_service_(pref_service),
       country_code_(std::move(country_code)) {
   if (identity_manager) {
@@ -163,7 +205,8 @@ AccessibilityAnnotatorEnablementServiceImpl::GetEnablementState() {
     return kDisabledNotEligible;
   }
 
-  if (!SatisfiesAccountRequirements(identity_manager_.get())) {
+  if (!SatisfiesAccountRequirements(identity_manager_.get(),
+                                    subscription_eligibility_service_.get())) {
     return kDisabledNotEligible;
   }
 

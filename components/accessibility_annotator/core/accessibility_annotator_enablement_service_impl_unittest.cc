@@ -14,6 +14,9 @@
 #include "components/signin/public/identity_manager/account_capabilities_test_mutator.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
+#include "components/subscription_eligibility/subscription_eligibility_prefs.h"
+#include "components/subscription_eligibility/subscription_eligibility_service.h"
+#include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace accessibility_annotator {
@@ -27,11 +30,7 @@ class AccessibilityAnnotatorEnablementServiceImplTest : public testing::Test {
                               features::kAccessibilityAnnotatorDatabaseStorage},
         /*disabled_features=*/{});
 
-    accessibility_annotator::prefs::RegisterProfilePrefs(
-        pref_service_.registry());
-    pref_service_.SetBoolean(
-        accessibility_annotator::prefs::kShouldShowRemoteAnnotatorFirstRunInfo,
-        false);
+    SetPrefs();
     CreateService("us");
     SignIn("test@gmail.com");
   }
@@ -48,8 +47,24 @@ class AccessibilityAnnotatorEnablementServiceImplTest : public testing::Test {
 
   void CreateService(const std::string& country_code) {
     service_ = std::make_unique<AccessibilityAnnotatorEnablementServiceImpl>(
-        nullptr, identity_test_env_.identity_manager(), &pref_service_,
+        nullptr, identity_test_env_.identity_manager(),
+        subscription_eligibility_service_.get(), &pref_service_,
         GeoIpCountryCode(base::ToUpperASCII(country_code)));
+  }
+
+  void SetPrefs() {
+    accessibility_annotator::prefs::RegisterProfilePrefs(
+        pref_service_.registry());
+    pref_service_.SetBoolean(
+        accessibility_annotator::prefs::kShouldShowRemoteAnnotatorFirstRunInfo,
+        false);
+    subscription_eligibility::prefs::RegisterProfilePrefs(
+        pref_service_.registry());
+    pref_service_.SetInteger(
+        subscription_eligibility::prefs::kAiSubscriptionTier, 1);
+    subscription_eligibility_service_ = std::make_unique<
+        subscription_eligibility::SubscriptionEligibilityService>(
+        &pref_service_);
   }
 
   AccessibilityAnnotatorEnablementServiceImpl& service() { return *service_; }
@@ -57,7 +72,9 @@ class AccessibilityAnnotatorEnablementServiceImplTest : public testing::Test {
   base::test::TaskEnvironment task_environment_;
   signin::IdentityTestEnvironment identity_test_env_;
   base::test::ScopedFeatureList scoped_feature_list_;
-  TestingPrefServiceSimple pref_service_;
+  sync_preferences::TestingPrefServiceSyncable pref_service_;
+  std::unique_ptr<subscription_eligibility::SubscriptionEligibilityService>
+      subscription_eligibility_service_;
   std::unique_ptr<AccessibilityAnnotatorEnablementServiceImpl> service_;
 };
 
@@ -158,6 +175,15 @@ TEST_F(AccessibilityAnnotatorEnablementServiceImplTest, ClearsPrefOnSignout) {
 
 TEST_F(AccessibilityAnnotatorEnablementServiceImplTest, DisabledWhenUnderaged) {
   SignIn("under@gmail.com", /*is_underaged=*/true);
+
+  EXPECT_EQ(service().GetEnablementState(),
+            RemoteAnnotatorEnablementState::kDisabledNotEligible);
+}
+
+TEST_F(AccessibilityAnnotatorEnablementServiceImplTest,
+       DisabledWhenTierNotEligible) {
+  pref_service_.SetInteger(subscription_eligibility::prefs::kAiSubscriptionTier,
+                           3);
 
   EXPECT_EQ(service().GetEnablementState(),
             RemoteAnnotatorEnablementState::kDisabledNotEligible);

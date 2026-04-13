@@ -40,6 +40,7 @@ source_set("impl") {
     "//chrome/browser/history",
     "//chrome/browser/optimization_guide",
     "//chrome/browser/signin",
+    "//chrome/browser/subscription_eligibility",
     "//chrome/browser/sync",
     "//components/accessibility_annotator/core",
     "//components/accessibility_annotator/core:features",

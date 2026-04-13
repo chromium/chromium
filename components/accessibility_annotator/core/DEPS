@@ -5,6 +5,8 @@ include_rules = [
   "+components/optimization_guide/proto",
   "+components/prefs",
   "+components/signin/public/identity_manager",
+  "+components/subscription_eligibility",
+  "+components/sync_preferences",
   "+components/sync/base",
   "+components/sync/model",
   "+components/sync/protocol",

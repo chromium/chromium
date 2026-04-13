@@ -21,6 +21,10 @@ namespace signin {
 class IdentityManager;
 }  // namespace signin
 
+namespace subscription_eligibility {
+class SubscriptionEligibilityService;
+}  // namespace subscription_eligibility
+
 class PrefService;
 
 namespace accessibility_annotator {
@@ -32,6 +36,8 @@ class AccessibilityAnnotatorEnablementServiceImpl
   explicit AccessibilityAnnotatorEnablementServiceImpl(
       account_settings::AccountSettingService* account_settings_service,
       signin::IdentityManager* identity_manager,
+      subscription_eligibility::SubscriptionEligibilityService*
+          subscription_eligibility_service,
       PrefService* pref_service,
       GeoIpCountryCode country_code);
   AccessibilityAnnotatorEnablementServiceImpl(
@@ -57,6 +63,8 @@ class AccessibilityAnnotatorEnablementServiceImpl
   const raw_ptr<account_settings::AccountSettingService>
       account_settings_service_;
   const raw_ptr<signin::IdentityManager> identity_manager_;
+  const raw_ptr<subscription_eligibility::SubscriptionEligibilityService>
+      subscription_eligibility_service_;
   const raw_ptr<PrefService> pref_service_;
   const GeoIpCountryCode country_code_;
   base::ObserverList<AccessibilityAnnotatorEnablementService::Observer>

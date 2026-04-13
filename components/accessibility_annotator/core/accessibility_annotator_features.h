@@ -33,6 +33,7 @@ BASE_DECLARE_FEATURE_PARAM(std::string,
 
 BASE_DECLARE_FEATURE(kAccessibilityAnnotator);
 BASE_DECLARE_FEATURE_PARAM(base::TimeDelta, kAccessibilityAnnotationTTL);
+BASE_DECLARE_FEATURE_PARAM(std::string, kAccessibilityAnnotatorEligibleTiers);
 
 BASE_DECLARE_FEATURE(kAccessibilityAnnotatorFirstRun);
 

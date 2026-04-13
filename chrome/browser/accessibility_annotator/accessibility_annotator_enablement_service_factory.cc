@@ -9,10 +9,12 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
+#include "chrome/browser/subscription_eligibility/subscription_eligibility_service_factory.h"
 #include "components/accessibility_annotator/core/accessibility_annotator_enablement_service_impl.h"
 #include "components/accessibility_annotator/core/accessibility_annotator_features.h"
 #include "components/accessibility_annotator/core/country_type.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
+#include "components/subscription_eligibility/subscription_eligibility_service.h"
 #include "components/variations/service/variations_service.h"
 #include "components/variations/service/variations_service_utils.h"
 
@@ -55,6 +57,8 @@ AccessibilityAnnotatorEnablementServiceFactory::
               .Build()) {
   DependsOn(AccountSettingServiceFactory::GetInstance());
   DependsOn(IdentityManagerFactory::GetInstance());
+  DependsOn(subscription_eligibility::SubscriptionEligibilityServiceFactory::
+                GetInstance());
 }
 
 AccessibilityAnnotatorEnablementServiceFactory::
@@ -75,8 +79,13 @@ std::unique_ptr<KeyedService> AccessibilityAnnotatorEnablementServiceFactory::
           profile->GetOriginalProfile());
   signin::IdentityManager* identity_manager =
       IdentityManagerFactory::GetForProfile(profile->GetOriginalProfile());
+  subscription_eligibility::SubscriptionEligibilityService*
+      subscription_eligibility_service =
+          subscription_eligibility::SubscriptionEligibilityServiceFactory::
+              GetForProfile(profile->GetOriginalProfile());
   return std::make_unique<
       accessibility_annotator::AccessibilityAnnotatorEnablementServiceImpl>(
-      account_settings_service, identity_manager, profile->GetPrefs(),
+      account_settings_service, identity_manager,
+      subscription_eligibility_service, profile->GetPrefs(),
       GetCountryCodeFromVariations());
 }
