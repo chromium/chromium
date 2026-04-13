@@ -11,18 +11,18 @@
 #import "ios/chrome/browser/tab_switcher/tab_grid/base_grid/ui/base_grid_view_controller.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_collection_consumer.h"
 
-@interface ComposeboxTabPickerCoordinator ()
+@interface TabPickerCoordinator ()
 
 // Returns `YES` if the coordinator is started.
 @property(nonatomic, assign) BOOL started;
 
 @end
 
-@implementation ComposeboxTabPickerCoordinator {
+@implementation TabPickerCoordinator {
   /// The tab picker mediator.
-  ComposeboxTabPickerMediator* _mediator;
+  TabPickerMediator* _mediator;
   /// The tab picker view controller.
-  ComposeboxTabPickerViewController* _viewController;
+  TabPickerViewController* _viewController;
   // The navigation controller displaying the tab picker.
   UINavigationController* _navigationController;
   // The theme for the composebox.
@@ -41,9 +41,9 @@
 }
 
 - (void)start {
-  _viewController = [[ComposeboxTabPickerViewController alloc] init];
+  _viewController = [[TabPickerViewController alloc] init];
 
-  _mediator = [[ComposeboxTabPickerMediator alloc]
+  _mediator = [[TabPickerMediator alloc]
         initWithGridConsumer:_viewController.gridViewController
            tabPickerConsumer:_viewController
       tabsAttachmentDelegate:self];
@@ -54,7 +54,7 @@
   _viewController.gridViewController.snapshotAndfaviconDataSource = _mediator;
   _viewController.gridViewController.mutator = _mediator;
   _viewController.gridViewController.gridProvider = _mediator;
-  _viewController.composeboxTabPickerHandler = self.composeboxTabPickerHandler;
+  _viewController.tabPickerHandler = self.tabPickerHandler;
 
   if (_theme.incognito) {
     _viewController.overrideUserInterfaceStyle = UIUserInterfaceStyleDark;
@@ -91,9 +91,9 @@
   [super stop];
 }
 
-#pragma mark - ComposeboxTabsAttachmentDelegate
+#pragma mark - TabsAttachmentDelegate
 
-- (void)attachSelectedTabs:(ComposeboxTabPickerMediator*)tabPickerMediator
+- (void)attachSelectedTabs:(TabPickerMediator*)tabPickerMediator
        selectedWebStateIDs:(std::set<web::WebStateID>)selectedWebStateIDs
          cachedWebStateIDs:(std::set<web::WebStateID>)cachedWebStateIDs {
   [self.delegate attachSelectedTabsWithWebStateIDs:selectedWebStateIDs

@@ -17,7 +17,7 @@ const CGFloat kImageHeight = 190.0;
 const CGFloat kImageWidth = 190.0;
 }  // namespace
 
-@implementation ComposeboxTabPickerEmptyStateView
+@implementation TabPickerEmptyStateView
 // GridEmptyView properties.
 @synthesize scrollViewContentInsets = _scrollViewContentInsets;
 @synthesize activePage = _activePage;

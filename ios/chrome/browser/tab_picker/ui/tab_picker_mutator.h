@@ -6,9 +6,9 @@
 #define IOS_CHROME_BROWSER_TAB_PICKER_UI_TAB_PICKER_MUTATOR_H_
 
 // The tab's picker mutator.
-@protocol ComposeboxTabPickerMutator
+@protocol TabPickerMutator
 
-// Extract and attaches the selected tabs to Aim.
+// Extract and attaches the selected tabs.
 - (void)attachSelectedTabs;
 
 @end

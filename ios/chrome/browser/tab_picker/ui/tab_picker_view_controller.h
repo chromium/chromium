@@ -10,22 +10,20 @@
 #import "ios/chrome/browser/tab_picker/ui/tab_picker_consumer.h"
 
 @class BaseGridViewController;
-@protocol ComposeboxTabPickerCommands;
-@protocol ComposeboxTabPickerMutator;
+@protocol TabPickerCommands;
+@protocol TabPickerMutator;
 
-// The tab picker view controller for AIM.
-@interface ComposeboxTabPickerViewController
-    : UIViewController <ComposeboxTabPickerConsumer>
+// The tab picker view controller.
+@interface TabPickerViewController : UIViewController <TabPickerConsumer>
 
 /// The embedded grid view controller.
 @property(nonatomic, readonly) BaseGridViewController* gridViewController;
 
 /// The tab's picker mutator.
-@property(nonatomic, weak) id<ComposeboxTabPickerMutator> mutator;
+@property(nonatomic, weak) id<TabPickerMutator> mutator;
 
-/// The handler for ComposeboxTabPickerCommands.
-@property(nonatomic, weak) id<ComposeboxTabPickerCommands>
-    composeboxTabPickerHandler;
+/// The handler for TabPickerCommands.
+@property(nonatomic, weak) id<TabPickerCommands> tabPickerHandler;
 
 @end
 

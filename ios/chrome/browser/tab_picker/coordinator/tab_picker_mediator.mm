@@ -26,16 +26,16 @@
 #import "ios/chrome/browser/web/model/page_placeholder_tab_helper.h"
 #import "ios/web/public/web_state.h"
 
-@interface ComposeboxTabPickerMediator () <WebStateDeferredExecutorDelegate>
+@interface TabPickerMediator () <WebStateDeferredExecutorDelegate>
 @end
 
-@implementation ComposeboxTabPickerMediator {
+@implementation TabPickerMediator {
   /// The grid consumer.
   __weak id<TabCollectionConsumer> _gridConsumer;
   /// The tab picker consumer.
-  __weak id<ComposeboxTabPickerConsumer> _tabPickerConsumer;
+  __weak id<TabPickerConsumer> _tabPickerConsumer;
   /// The delegate for tabs attachment.
-  __weak id<ComposeboxTabsAttachmentDelegate> _tabsAttachmentDelegate;
+  __weak id<TabsAttachmentDelegate> _tabsAttachmentDelegate;
   /// Stores the unique identifiers of web states that have valid cached APC
   /// (Annotated Page Content) data.
   std::set<std::string> _validAPCwebStatesIDs;
@@ -46,10 +46,9 @@
 }
 
 - (instancetype)initWithGridConsumer:(id<TabCollectionConsumer>)gridConsumer
-                   tabPickerConsumer:
-                       (id<ComposeboxTabPickerConsumer>)tabPickerConsumer
+                   tabPickerConsumer:(id<TabPickerConsumer>)tabPickerConsumer
               tabsAttachmentDelegate:
-                  (id<ComposeboxTabsAttachmentDelegate>)tabsAttachmentDelegate {
+                  (id<TabsAttachmentDelegate>)tabsAttachmentDelegate {
   TabGridModeHolder* modeHolder =
       [[TabGridModeHolder alloc] initWithTabGridState:nil];
   modeHolder.mode = TabGridMode::kSelection;
@@ -147,7 +146,7 @@
   if (webState && !webState->IsRealized() && !cached) {
     // If the web state is not realized, force it to realize in order to have
     // the latest content and updated snapshot.
-    __weak ComposeboxTabPickerMediator* weakSelf = self;
+    __weak TabPickerMediator* weakSelf = self;
     [_webStateDeferredExecutor
                    webState:webState
         executeOnceRealized:^{
@@ -187,7 +186,7 @@
       tabIdentifier:webStateList->GetWebStateAt(webStateIndex)];
 }
 
-#pragma mark - ComposeboxTabPickerMutator
+#pragma mark - TabPickerMutator
 
 - (void)attachSelectedTabs {
   BOOL selectionChanged = self.selectedEditingItems.allTabs !=
@@ -324,7 +323,7 @@
     [_failedLoadedItemIDs removeObject:itemID];
   }
 
-  __weak ComposeboxTabPickerMediator* weakSelf = self;
+  __weak TabPickerMediator* weakSelf = self;
   SnapshotTabHelper::FromWebState(webState)->UpdateSnapshotWithCallback(
       ^(UIImage* image) {
         [weakSelf reconfigureGridItem:itemID];

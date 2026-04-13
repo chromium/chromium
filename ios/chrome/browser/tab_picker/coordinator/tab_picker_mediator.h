@@ -12,11 +12,11 @@
 #import "ios/web/public/web_state.h"
 
 @protocol ComposeboxDebuggerLogger;
-@class ComposeboxTabPickerMediator;
-@protocol ComposeboxTabPickerConsumer;
+@class TabPickerMediator;
+@protocol TabPickerConsumer;
 
 // The tabs attachment delegate.
-@protocol ComposeboxTabsAttachmentDelegate
+@protocol TabsAttachmentDelegate
 
 // Returns the max number of tab attachments.
 - (NSUInteger)maxTabAttachmentCount;
@@ -24,7 +24,7 @@
 /// Sends the selected tabs identifiers to the tabs attachment delegate.
 /// `cachedWebStateIDs` contains the IDs of the tabs that have their content
 /// cached.
-- (void)attachSelectedTabs:(ComposeboxTabPickerMediator*)tabPickerMediator
+- (void)attachSelectedTabs:(TabPickerMediator*)tabPickerMediator
        selectedWebStateIDs:(std::set<web::WebStateID>)selectedWebStateIDs
          cachedWebStateIDs:(std::set<web::WebStateID>)cachedWebStateIDs;
 
@@ -33,22 +33,19 @@
 
 @end
 
-// The tab picker mediator for AIM.
-@interface ComposeboxTabPickerMediator
-    : BaseGridMediator <ComposeboxTabPickerMutator>
+// The tab picker mediator.
+@interface TabPickerMediator : BaseGridMediator <TabPickerMutator>
 
 - (instancetype)initWithGridConsumer:(id<TabCollectionConsumer>)gridConsumer
-                   tabPickerConsumer:
-                       (id<ComposeboxTabPickerConsumer>)tabPickerConsumer
+                   tabPickerConsumer:(id<TabPickerConsumer>)tabPickerConsumer
               tabsAttachmentDelegate:
-                  (id<ComposeboxTabsAttachmentDelegate>)tabsAttachmentDelegate;
+                  (id<TabsAttachmentDelegate>)tabsAttachmentDelegate;
 
 // Delegate for logging events
 @property(nonatomic, weak) id<ComposeboxDebuggerLogger> debugLogger;
 
 /// The mediator's delegate for attaching selected tabs.
-@property(nonatomic, weak) id<ComposeboxTabsAttachmentDelegate>
-    tabsAttachmentDelegate;
+@property(nonatomic, weak) id<TabsAttachmentDelegate> tabsAttachmentDelegate;
 
 @end
 

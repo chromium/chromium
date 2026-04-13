@@ -7,8 +7,8 @@
 
 #import <Foundation/Foundation.h>
 
-// The composebox tab picker consumer.
-@protocol ComposeboxTabPickerConsumer <NSObject>
+// The tab picker consumer.
+@protocol TabPickerConsumer <NSObject>
 
 /// Updates the UI with selected tabs count.
 - (void)setSelectedTabsCount:(NSUInteger)tabsCount;

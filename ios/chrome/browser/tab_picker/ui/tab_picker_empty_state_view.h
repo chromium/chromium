@@ -8,7 +8,7 @@
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/grid/grid_empty_view.h"
 
 // A view that informs the user that there are no tabs to pick.
-@interface ComposeboxTabPickerEmptyStateView : UIView <GridEmptyView>
+@interface TabPickerEmptyStateView : UIView <GridEmptyView>
 @end
 
 #endif  // IOS_CHROME_BROWSER_TAB_PICKER_UI_TAB_PICKER_EMPTY_STATE_VIEW_H_

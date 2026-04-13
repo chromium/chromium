@@ -58,7 +58,7 @@ class ContextualSearchSessionHandle;
                 ComposeboxInputPlateMutator,
                 ComposeboxContextUploadObserver,
                 ComposeboxModeObserver,
-                ComposeboxTabPickerSelectionDelegate,
+                TabPickerSelectionDelegate,
                 TextFieldViewContainingHeightDelegate,
                 VoiceSearchDelegate>
 

@@ -19,7 +19,7 @@ class Browser;
 
 // The coordinator for the compose box input plate.
 @interface ComposeboxInputPlateCoordinator
-    : ChromeCoordinator <ComposeboxTabPickerCommands>
+    : ChromeCoordinator <TabPickerCommands>
 
 // The view controller managed by this coordinator.
 @property(nonatomic, readonly)

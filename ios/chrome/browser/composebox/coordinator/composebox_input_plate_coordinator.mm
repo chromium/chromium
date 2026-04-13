@@ -134,7 +134,7 @@ contextual_search::ContextualSearchSource ContextualSearchSourceFromEntrypoint(
   std::unique_ptr<LocationBarModelDelegateIOS> _locationBarModelDelegate;
   std::unique_ptr<LocationBarModel> _locationBarModel;
   raw_ptr<contextual_search::ContextualSearchService> _contextualService;
-  ComposeboxTabPickerCoordinator* _tabPickerCoordinator;
+  TabPickerCoordinator* _tabPickerCoordinator;
   ComposeboxTheme* _theme;
   ComposeboxMetricsRecorder* _metricsRecorder;
   ComposeboxModeHolder* _modeHolder;
@@ -469,7 +469,7 @@ contextual_search::ContextualSearchSource ContextualSearchSourceFromEntrypoint(
     [self showMaxAttachmentSnackbarError];
     return;
   }
-  [self showComposeboxTabPicker];
+  [self showTabPicker];
 }
 
 - (void)composeboxViewController:
@@ -743,22 +743,22 @@ contextual_search::ContextualSearchSource ContextualSearchSourceFromEntrypoint(
   return _locationBarModel.get();
 }
 
-#pragma mark - ComposeboxTabPickerCommands
+#pragma mark - TabPickerCommands
 
-- (void)showComposeboxTabPicker {
+- (void)showTabPicker {
   [_metricsRecorder
       recordAttachmentButtonUsed:FuseboxAttachmentButtonType::kTabPicker];
-  _tabPickerCoordinator = [[ComposeboxTabPickerCoordinator alloc]
-      initWithBaseViewController:_viewController
-                         browser:self.browser
-                           theme:_theme];
+  _tabPickerCoordinator =
+      [[TabPickerCoordinator alloc] initWithBaseViewController:_viewController
+                                                       browser:self.browser
+                                                         theme:_theme];
   _tabPickerCoordinator.debugLogger = self.debugLogger;
   _tabPickerCoordinator.delegate = _mediator;
-  _tabPickerCoordinator.composeboxTabPickerHandler = self;
+  _tabPickerCoordinator.tabPickerHandler = self;
   [_tabPickerCoordinator start];
 }
 
-- (void)hideComposeboxTabPicker {
+- (void)hideTabPicker {
   [_tabPickerCoordinator stop];
   _tabPickerCoordinator = nil;
 }

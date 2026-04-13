@@ -7,13 +7,13 @@
 
 #import <Foundation/Foundation.h>
 
-@protocol ComposeboxTabPickerCommands <NSObject>
+@protocol TabPickerCommands <NSObject>
 
-// Shows the composebox tab picker UI.
-- (void)showComposeboxTabPicker;
+// Shows the tab picker UI.
+- (void)showTabPicker;
 
-// Hides the composebox tab picker UI.
-- (void)hideComposeboxTabPicker;
+// Hides the tab picker UI.
+- (void)hideTabPicker;
 
 @end
 

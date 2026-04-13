@@ -1005,7 +1005,7 @@ class QueryContextualizerDelegateBridge
   [self reloadSuggestions];
 }
 
-#pragma mark - ComposeboxTabPickerSelectionDelegate
+#pragma mark - TabPickerSelectionDelegate
 
 - (std::set<web::WebStateID>)allAttachedWebStateIDs {
   std::set<web::WebStateID> webStateIDs;
