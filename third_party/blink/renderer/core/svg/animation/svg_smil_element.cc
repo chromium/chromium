@@ -443,30 +443,54 @@ SMILTime SVGSMILElement::ParseClockValue(const StringView& data) {
   if (parse == indefinite_value)
     return SMILTime::Indefinite();
 
-  double result = 0;
-  wtf_size_t double_point_one = parse.find(':');
-  wtf_size_t double_point_two = parse.find(':', double_point_one + 1);
-  if (double_point_one == 2 && double_point_two == 5 && parse.length() >= 8) {
-    auto parsed_hour = StringToUintStrict(parse.substr(0, 2));
-    auto parsed_min = StringToUintStrict(parse.substr(3, 2));
-    auto parsed_sec = StringToDouble(parse.substr(6));
-    if (!parsed_hour || !parsed_min || !parsed_sec) {
-      return SMILTime::Unresolved();
-    }
-    result += *parsed_hour * 60 * 60 + *parsed_min * 60 + *parsed_sec;
-  } else if (double_point_one == 2 && double_point_two == kNotFound &&
-             parse.length() >= 5) {
-    auto parsed_min = StringToUintStrict(parse.substr(0, 2));
-    auto parsed_sec = StringToDouble(parse.substr(3));
-    if (!parsed_min || !parsed_sec) {
-      return SMILTime::Unresolved();
-    }
-    result += *parsed_min * 60 + *parsed_sec;
-  } else {
+  wtf_size_t colon_one = parse.find(':');
+  if (colon_one == StringView::npos) {
     return ParseOffsetValue(parse);
   }
+  // The first field can be any length, but if it's a minutes value it has to
+  // be 2 digits. We're not abiding by that.
+  if (colon_one != 2) {
+    return SMILTime::Unresolved();
+  }
+  // Assume the format is mm:ss.ff...
+  StringView hour_part;
+  StringView minute_part = parse.substr(0, 2);
+  StringView seconds_part = parse.substr(3);
 
-  return SMILTime::FromSecondsD(result);
+  // If there's one more colon the format is hh:mm:ss.ff...
+  wtf_size_t colon_two = seconds_part.find(':');
+  if (colon_two == 2) {
+    hour_part = minute_part;
+    minute_part = seconds_part.substr(0, 2);
+    seconds_part = seconds_part.substr(3);
+  } else if (colon_two != StringView::npos) {
+    return SMILTime::Unresolved();
+  }
+
+  // The seconds+fractions field needs to be at least two digits. This only
+  // checks characters.
+  if (seconds_part.length() < 2) {
+    return SMILTime::Unresolved();
+  }
+
+  auto parsed_seconds = StringToDouble(seconds_part);
+  if (!parsed_seconds) {
+    return SMILTime::Unresolved();
+  }
+  base::TimeDelta result = base::Seconds(*parsed_seconds);
+  auto parsed_minutes = StringToUintStrict(minute_part);
+  if (!parsed_minutes) {
+    return SMILTime::Unresolved();
+  }
+  result += base::Minutes(*parsed_minutes);
+  if (!hour_part.IsNull()) {
+    auto parsed_hours = StringToUintStrict(hour_part);
+    if (!parsed_hours) {
+      return SMILTime::Unresolved();
+    }
+    result += base::Hours(*parsed_hours);
+  }
+  return SMILTime::FromTimeDelta(result);
 }
 
 bool SVGSMILElement::ParseCondition(const StringView& value,
