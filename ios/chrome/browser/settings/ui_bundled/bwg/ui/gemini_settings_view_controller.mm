@@ -162,7 +162,7 @@ NSString* const kPageContentSharingAction = @"PageContentSharingAction";
         forSectionWithIdentifier:SectionIdentifierLocation];
   }
 
-  if (IsGeminiImageRemixToolEnabled()) {
+  if ([self.mutator isImageRemixAvailable]) {
     [model addSectionWithIdentifier:SectionIdentifierCamera];
     [model addItem:_cameraItem toSectionWithIdentifier:SectionIdentifierCamera];
     [model setFooter:cameraFooterItem

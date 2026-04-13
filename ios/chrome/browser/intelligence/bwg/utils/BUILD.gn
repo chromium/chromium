@@ -21,3 +21,16 @@ source_set("prefs") {
     "//ios/chrome/browser/shared/model/prefs:pref_names",
   ]
 }
+
+source_set("feature_availability") {
+  sources = [
+    "gemini_feature_availability.h",
+    "gemini_feature_availability.mm",
+  ]
+  deps = [
+    "//components/signin/public/identity_manager",
+    "//ios/chrome/browser/intelligence/features",
+    "//ios/chrome/browser/shared/model/profile",
+    "//ios/chrome/browser/signin/model",
+  ]
+}

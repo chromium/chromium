@@ -175,7 +175,7 @@ const CGFloat kBaselineAdjustment = 10.0;
   [_mainStackView addArrangedSubview:askRow];
   [_mainStackView addArrangedSubview:[self createSeparatorView]];
 
-  if (IsGeminiImageRemixToolShowFRERowEnabled()) {
+  if ([self.mutator shouldShowImageRemixRow]) {
     UIView* remixRow = [self
         createFeatureRowWithIcon:DefaultSymbolWithConfiguration(
                                      kPhotoOnRectangleAngled, config)

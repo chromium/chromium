@@ -106,6 +106,9 @@ class PageContext;
 // Whether chat persistence is enabled.
 @property(nonatomic, assign) BOOL geminiChatPersistenceEnabled;
 
+// Whether image remix is enabled.
+@property(nonatomic, assign) BOOL imageRemixEnabled;
+
 // The initial bottom offset of the floaty.
 @property(nonatomic, assign) CGFloat initialBottomOffset;
 

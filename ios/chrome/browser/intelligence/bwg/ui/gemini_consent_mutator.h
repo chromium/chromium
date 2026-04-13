@@ -26,6 +26,9 @@
 // Handles tap on learn about your choices.
 - (void)openNewTabWithURL:(const GURL&)URL;
 
+// Returns whether to show the Image Remix row in the promo.
+- (BOOL)shouldShowImageRemixRow;
+
 // Promo was shown.
 - (void)didShowGeminiPromo;
 

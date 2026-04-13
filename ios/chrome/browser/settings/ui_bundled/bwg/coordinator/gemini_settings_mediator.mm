@@ -5,6 +5,8 @@
 #import "ios/chrome/browser/settings/ui_bundled/bwg/coordinator/gemini_settings_mediator.h"
 
 #import "components/prefs/pref_service.h"
+#import "components/signin/public/identity_manager/identity_manager.h"
+#import "ios/chrome/browser/intelligence/bwg/utils/gemini_feature_availability.h"
 #import "ios/chrome/browser/intelligence/features/features.h"
 #import "ios/chrome/browser/settings/ui_bundled/bwg/model/gemini_dynamic_settings_item.h"
 #import "ios/chrome/browser/settings/ui_bundled/bwg/model/gemini_settings_metadata.h"
@@ -39,14 +41,18 @@ const NSInteger kDynamicSettingsItemTypeOffset = 10000;
   raw_ptr<AuthenticationService> _authService;
   // PrefService.
   raw_ptr<PrefService> _prefService;
+  // The identity manager.
+  raw_ptr<signin::IdentityManager> _identityManager;
 }
 
 - (instancetype)initWithAuthService:(AuthenticationService*)authService
-                        prefService:(PrefService*)prefService {
+                        prefService:(PrefService*)prefService
+                    identityManager:(signin::IdentityManager*)identityManager {
   self = [super init];
   if (self) {
     _authService = authService;
     _prefService = prefService;
+    _identityManager = identityManager;
 
     _preciseLocationPref = [[PrefBackedBoolean alloc]
         initWithPrefService:prefService
@@ -138,6 +144,11 @@ const NSInteger kDynamicSettingsItemTypeOffset = 10000;
       value ? ios::provider::GeminiPageContextAttachmentState::kAttached
             : ios::provider::GeminiPageContextAttachmentState::kUserDisabled;
   ios::provider::UpdatePageAttachmentState(attachmentState);
+}
+
+- (BOOL)isImageRemixAvailable {
+  return gemini::IsFeatureAvailable(gemini::Feature::kImageRemix,
+                                    _identityManager);
 }
 
 #pragma mark - BooleanObserver

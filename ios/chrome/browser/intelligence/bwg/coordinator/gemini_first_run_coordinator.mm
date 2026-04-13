@@ -31,6 +31,7 @@
 #import "ios/chrome/browser/shared/public/commands/scene_commands.h"
 #import "ios/chrome/browser/signin/model/authentication_service.h"
 #import "ios/chrome/browser/signin/model/authentication_service_factory.h"
+#import "ios/chrome/browser/signin/model/identity_manager_factory.h"
 #import "ios/public/provider/chrome/browser/bwg/bwg_api.h"
 #import "ios/web/public/web_state.h"
 
@@ -106,6 +107,7 @@
        baseViewController:self.baseViewController
                BWGService:GeminiServiceFactory::GetForProfile(self.profile)
        geminiBrowserAgent:GeminiBrowserAgent::FromBrowser(self.browser)
+          identityManager:IdentityManagerFactory::GetForProfile(self.profile)
                   tracker:_tracker
                entryPoint:_entryPoint
         completionHandler:_completion];

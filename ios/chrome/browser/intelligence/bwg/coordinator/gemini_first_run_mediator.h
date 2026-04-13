@@ -17,6 +17,10 @@ class GeminiBrowserAgent;
 class PrefService;
 class WebStateList;
 
+namespace signin {
+class IdentityManager;
+}  // namespace signin
+
 @protocol GeminiFirstRunMediatorDelegate;
 
 // Gemini First Run Mediator.
@@ -27,6 +31,7 @@ class WebStateList;
                  baseViewController:(UIViewController*)baseViewController
                          BWGService:(BwgService*)geminiService
                  geminiBrowserAgent:(GeminiBrowserAgent*)geminiBrowserAgent
+                    identityManager:(signin::IdentityManager*)identityManager
                             tracker:(feature_engagement::Tracker*)tracker
                          entryPoint:(gemini::EntryPoint)entryPoint
                   completionHandler:(void (^)(BOOL success))completion;

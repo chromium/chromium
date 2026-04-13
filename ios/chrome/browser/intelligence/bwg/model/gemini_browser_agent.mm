@@ -39,6 +39,7 @@
 #import "ios/chrome/browser/intelligence/bwg/model/gemini_suggestion_handler.h"
 #import "ios/chrome/browser/intelligence/bwg/model/gemini_view_state_change_handler.h"
 #import "ios/chrome/browser/intelligence/bwg/utils/gemini_constants.h"
+#import "ios/chrome/browser/intelligence/bwg/utils/gemini_feature_availability.h"
 #import "ios/chrome/browser/intelligence/bwg/utils/gemini_prefs.h"
 #import "ios/chrome/browser/intelligence/features/features.h"
 #import "ios/chrome/browser/intelligence/proto_wrappers/page_context_utils.h"
@@ -184,7 +185,8 @@ GeminiBrowserAgent::GeminiBrowserAgent(Browser* browser)
         initWithWebStateList:browser_->GetWebStateList()];
     bwg_gateway_.suggestionHandler = gemini_suggestion_handler_;
 
-    if (IsGeminiImageRemixToolEnabled()) {
+    if (gemini::IsFeatureAvailable(gemini::Feature::kImageRemix,
+                                   browser_->GetProfile())) {
       gemini_camera_handler_ = [[GeminiCameraHandler alloc]
           initWithPrefService:browser_->GetProfile()->GetPrefs()];
       bwg_gateway_.cameraHandler = gemini_camera_handler_;
@@ -1125,7 +1127,8 @@ void GeminiBrowserAgent::PresentFloatyWithState(
   config.responseViewDynamicSizeEnabled =
       IsGeminiResponseViewDynamicResizingEnabled();
   config.geminiChatPersistenceEnabled = IsGeminiChatPersistenceEnabled();
-
+  config.imageRemixEnabled = gemini::IsFeatureAvailable(
+      gemini::Feature::kImageRemix, browser_->GetProfile());
   // Set the location permission state.
   // TODO(crbug.com/426207968): Populate with actual value.
   config.geminiLocationPermissionState =

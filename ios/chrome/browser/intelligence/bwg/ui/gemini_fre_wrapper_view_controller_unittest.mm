@@ -31,6 +31,7 @@ class GeminiFREWrapperViewControllerTest : public PlatformTest {
                      country:@"us"];
     mock_mutator_ =
         [OCMockObject mockForProtocol:@protocol(GeminiConsentMutator)];
+    [[[mock_mutator_ stub] andReturnValue:@NO] shouldShowImageRemixRow];
     view_controller.mutator = mock_mutator_;
     // Force view initialisation since this view controller is never added into
     // the hierarchy in this unit test.

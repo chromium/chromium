@@ -13,6 +13,7 @@
 #import "ios/chrome/browser/shared/ui/table_view/table_view_utils.h"
 #import "ios/chrome/browser/signin/model/authentication_service.h"
 #import "ios/chrome/browser/signin/model/authentication_service_factory.h"
+#import "ios/chrome/browser/signin/model/identity_manager_factory.h"
 
 @implementation GeminiSettingsCoordinator {
   // View controller presented by this coordinator.
@@ -39,7 +40,8 @@
   _mediator = [[GeminiSettingsMediator alloc]
       initWithAuthService:AuthenticationServiceFactory::GetForProfile(
                               self.profile)
-              prefService:self.profile->GetPrefs()];
+              prefService:self.profile->GetPrefs()
+          identityManager:IdentityManagerFactory::GetForProfile(self.profile)];
   _mediator.sceneHandler = HandlerForProtocol(commandDispatcher, SceneCommands);
 
   _viewController = [[GeminiSettingsViewController alloc]

@@ -14,6 +14,10 @@ class AuthenticationService;
 class PrefService;
 @protocol SceneCommands;
 
+namespace signin {
+class IdentityManager;
+}  // namespace signin
+
 // Gemini Mediator.
 @interface GeminiSettingsMediator : NSObject <GeminiSettingsMutator>
 
@@ -28,6 +32,7 @@ class PrefService;
 // `prefService`: preference service from the profile.
 - (instancetype)initWithAuthService:(AuthenticationService*)authService
                         prefService:(PrefService*)prefService
+                    identityManager:(signin::IdentityManager*)identityManager
     NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)init NS_UNAVAILABLE;

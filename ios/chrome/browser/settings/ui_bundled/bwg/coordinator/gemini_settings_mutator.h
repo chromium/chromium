@@ -14,6 +14,9 @@ class GURL;
 // Handles tap on learn about your choices.
 - (void)openNewTabWithURL:(const GURL&)URL;
 
+// Returns whether the Image Remix feature is available for the current account.
+- (BOOL)isImageRemixAvailable;
+
 // Sets the Precise Location pref value.
 - (void)setPreciseLocationPref:(BOOL)value;
 

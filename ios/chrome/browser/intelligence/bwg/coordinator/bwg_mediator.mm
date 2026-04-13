@@ -13,6 +13,7 @@
 #import "components/feature_engagement/public/event_constants.h"
 #import "components/feature_engagement/public/tracker.h"
 #import "components/prefs/pref_service.h"
+#import "components/signin/public/identity_manager/identity_manager.h"
 #import "ios/chrome/browser/feature_engagement/model/tracker_factory.h"
 #import "ios/chrome/browser/intelligence/bwg/coordinator/bwg_mediator_delegate.h"
 #import "ios/chrome/browser/intelligence/bwg/metrics/gemini_metrics.h"
@@ -20,11 +21,10 @@
 #import "ios/chrome/browser/intelligence/bwg/model/bwg_tab_helper.h"
 #import "ios/chrome/browser/intelligence/bwg/model/gemini_browser_agent.h"
 #import "ios/chrome/browser/intelligence/bwg/utils/gemini_constants.h"
+#import "ios/chrome/browser/intelligence/bwg/utils/gemini_feature_availability.h"
 #import "ios/chrome/browser/intelligence/bwg/utils/gemini_prefs.h"
 #import "ios/chrome/browser/intelligence/features/features.h"
-#import "ios/chrome/browser/intelligence/proto_wrappers/page_context_wrapper.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
-#import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/open_new_tab_command.h"
@@ -32,6 +32,10 @@
 #import "ios/public/provider/chrome/browser/bwg/bwg_api.h"
 #import "ios/web/public/web_state.h"
 #import "url/gurl.h"
+
+namespace signin {
+class IdentityManager;
+}  // namespace signin
 
 @interface BWGMediator ()
 
@@ -64,6 +68,9 @@
 
   // The entry point BWG was started from.
   gemini::EntryPoint _entryPoint;
+
+  // The identity manager.
+  raw_ptr<signin::IdentityManager> _identityManager;
 }
 
 - (instancetype)initWithPrefService:(PrefService*)prefService
@@ -72,6 +79,7 @@
                          entryPoint:(gemini::EntryPoint)entryPoint
                       geminiService:(BwgService*)geminiService
                  geminiBrowserAgent:(GeminiBrowserAgent*)geminiBrowserAgent
+                    identityManager:(signin::IdentityManager*)identityManager
                             tracker:(feature_engagement::Tracker*)tracker {
   self = [super init];
   if (self) {
@@ -80,6 +88,7 @@
     _baseViewController = baseViewController;
     _geminiService = geminiService;
     _geminiBrowserAgent = geminiBrowserAgent;
+    _identityManager = identityManager;
     _tracker = tracker;
     _entryPoint = entryPoint;
   }
@@ -116,6 +125,12 @@
 }
 
 #pragma mark - GeminiConsentMutator
+
+- (BOOL)shouldShowImageRemixRow {
+  return IsGeminiImageRemixToolShowFRERowEnabled() &&
+         gemini::IsFeatureAvailable(gemini::Feature::kImageRemix,
+                                    _identityManager);
+}
 
 // Did consent to Gemini.
 - (void)didConsentGemini {

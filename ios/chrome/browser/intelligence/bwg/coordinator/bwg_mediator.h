@@ -22,6 +22,10 @@ namespace gemini {
 enum class EntryPoint;
 }  // namespace gemini
 
+namespace signin {
+class IdentityManager;
+}  // namespace signin
+
 // BWG Mediator.
 @interface BWGMediator : NSObject <GeminiConsentMutator>
 
@@ -31,6 +35,7 @@ enum class EntryPoint;
                          entryPoint:(gemini::EntryPoint)entryPoint
                       geminiService:(BwgService*)geminiService
                  geminiBrowserAgent:(GeminiBrowserAgent*)geminiBrowserAgent
+                    identityManager:(signin::IdentityManager*)identityManager
                             tracker:(feature_engagement::Tracker*)tracker;
 
 // The delegate for this mediator.

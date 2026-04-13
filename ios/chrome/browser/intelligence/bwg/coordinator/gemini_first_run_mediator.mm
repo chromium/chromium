@@ -13,17 +13,17 @@
 #import "components/feature_engagement/public/event_constants.h"
 #import "components/feature_engagement/public/tracker.h"
 #import "components/prefs/pref_service.h"
+#import "components/signin/public/identity_manager/identity_manager.h"
 #import "ios/chrome/browser/feature_engagement/model/tracker_factory.h"
 #import "ios/chrome/browser/intelligence/bwg/coordinator/gemini_first_run_mediator_delegate.h"
 #import "ios/chrome/browser/intelligence/bwg/metrics/gemini_metrics.h"
 #import "ios/chrome/browser/intelligence/bwg/model/bwg_service.h"
 #import "ios/chrome/browser/intelligence/bwg/model/bwg_tab_helper.h"
 #import "ios/chrome/browser/intelligence/bwg/model/gemini_browser_agent.h"
+#import "ios/chrome/browser/intelligence/bwg/utils/gemini_feature_availability.h"
 #import "ios/chrome/browser/intelligence/bwg/utils/gemini_prefs.h"
 #import "ios/chrome/browser/intelligence/features/features.h"
-#import "ios/chrome/browser/intelligence/proto_wrappers/page_context_wrapper.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
-#import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/open_new_tab_command.h"
@@ -68,6 +68,9 @@ const CGFloat kPromoMaxImpressionCount = 3;
   // Completion block for the FRE flow.
   void (^_FRECompletion)(BOOL success);
 
+  // The identity manager.
+  raw_ptr<signin::IdentityManager> _identityManager;
+
   // The entry point the mediator was initialized from.
   gemini::EntryPoint _entryPoint;
 }
@@ -77,6 +80,7 @@ const CGFloat kPromoMaxImpressionCount = 3;
                  baseViewController:(UIViewController*)baseViewController
                          BWGService:(BwgService*)geminiService
                  geminiBrowserAgent:(GeminiBrowserAgent*)geminiBrowserAgent
+                    identityManager:(signin::IdentityManager*)identityManager
                             tracker:(feature_engagement::Tracker*)tracker
                          entryPoint:(gemini::EntryPoint)entryPoint
                   completionHandler:(void (^)(BOOL success))completion {
@@ -87,6 +91,7 @@ const CGFloat kPromoMaxImpressionCount = 3;
     _tracker = tracker;
     _entryPoint = entryPoint;
     _FRECompletion = completion;
+    _identityManager = identityManager;
     _geminiOverlayPreparationStartTime = base::TimeTicks::Now();
   }
   return self;
@@ -142,6 +147,12 @@ const CGFloat kPromoMaxImpressionCount = 3;
 }
 
 #pragma mark - GeminiConsentMutator
+
+- (BOOL)shouldShowImageRemixRow {
+  return IsGeminiImageRemixToolShowFRERowEnabled() &&
+         gemini::IsFeatureAvailable(gemini::Feature::kImageRemix,
+                                    _identityManager);
+}
 
 // Did consent to Gemini.
 - (void)didConsentGemini {

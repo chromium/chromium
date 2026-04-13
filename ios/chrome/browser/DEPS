@@ -187,6 +187,7 @@ include_rules = [
   "+ios/chrome/browser/default_browser/model",
   "+ios/chrome/browser/google/model",
   "+ios/chrome/browser/metrics/model",
+  "+ios/chrome/browser/intelligence/bwg/utils/gemini_feature_availability.h",
   "+ios/chrome/browser/ntp/search_engine_logo/mediator",
   "+ios/chrome/browser/ntp/search_engine_logo/ui",
   "+ios/chrome/browser/policy/model",
