@@ -40,6 +40,7 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TrustedCdn;
 import org.chromium.chrome.browser.theme.ThemeUtils;
+import org.chromium.chrome.browser.ui.native_page.NativePage;
 import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
 import org.chromium.components.browser_ui.styles.ChromeColors;
 import org.chromium.components.dom_distiller.core.DomDistillerUrlUtils;
@@ -429,13 +430,16 @@ public class LocationBarModel implements ToolbarDataProvider, LocationBarDataPro
             GURL gurl = getCurrentGurl();
             if (!UrlBarData.shouldShowUrl(gurl, isOffTheRecord())) {
                 if (isNonMultiDisplayContextOnTablet()
-                        && gurl.getScheme().equals(UrlConstants.CHROME_NATIVE_SCHEME)
+                        && NativePage.isChromePageUrl(gurl, isOffTheRecord())
                         && !UrlUtilities.isNtpUrl(gurl)) {
                     String url = gurl.getSpec();
-                    String displayUrl =
-                            url.replaceFirst(
-                                    UrlConstants.CHROME_NATIVE_URL_PREFIX,
-                                    UrlConstants.CHROME_URL_PREFIX);
+                    String displayUrl = url;
+                    if (url.startsWith(UrlConstants.CHROME_NATIVE_URL_PREFIX)) {
+                        displayUrl =
+                                url.replaceFirst(
+                                        UrlConstants.CHROME_NATIVE_URL_PREFIX,
+                                        UrlConstants.CHROME_URL_PREFIX);
+                    }
                     return UrlBarData.create(
                             gurl, displayUrl, 0, displayUrl.length(), /* editingText= */ null);
                 }

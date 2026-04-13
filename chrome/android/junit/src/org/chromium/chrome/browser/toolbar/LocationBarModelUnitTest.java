@@ -600,4 +600,73 @@ public class LocationBarModelUnitTest {
             model.destroy();
         }
     }
+
+    @Test
+    public void getUrlBarData_ChromeSchemeInternalUrlOnTablet() {
+        Context context =
+                new ContextThemeWrapper(
+                        ContextUtils.getApplicationContext(), R.style.Theme_BrowserUI_DayNight);
+
+        LocationBarModel model =
+                new LocationBarModel(
+                        context,
+                        NewTabPageDelegate.EMPTY,
+                        url -> url.getSpec(),
+                        OFFLINE_STATUS,
+                        ObservableSuppliers.createNonNull(ControlsPosition.TOP));
+        model = Mockito.spy(model);
+        doReturn(true).when(model).isNonMultiDisplayContextOnTablet();
+        model.initializeWithNative();
+
+        try {
+            doReturn(true).when(mRegularTabMock).isInitialized();
+            GURL historyGurl = new GURL("chrome://history");
+            doReturn(historyGurl)
+                    .when(mLocationBarModelJni)
+                    .getUrlOfVisibleNavigationEntry(Mockito.anyLong());
+
+            model.setTab(mRegularTabMock, mRegularProfileMock);
+            model.updateVisibleGurl();
+
+            UrlBarData data = model.getUrlBarData();
+            assertEquals("chrome://history/", data.displayText.toString());
+            assertEquals(historyGurl, data.url);
+        } finally {
+            model.destroy();
+        }
+    }
+
+    @Test
+    public void getUrlBarData_ChromeSchemeInternalUrlOnPhone() {
+        Context context =
+                new ContextThemeWrapper(
+                        ContextUtils.getApplicationContext(), R.style.Theme_BrowserUI_DayNight);
+
+        LocationBarModel model =
+                new LocationBarModel(
+                        context,
+                        NewTabPageDelegate.EMPTY,
+                        url -> url.getSpec(),
+                        OFFLINE_STATUS,
+                        ObservableSuppliers.createNonNull(ControlsPosition.TOP));
+        model = Mockito.spy(model);
+        doReturn(false).when(model).isNonMultiDisplayContextOnTablet();
+        model.initializeWithNative();
+
+        try {
+            doReturn(true).when(mRegularTabMock).isInitialized();
+            GURL historyGurl = new GURL("chrome://history");
+            doReturn(historyGurl)
+                    .when(mLocationBarModelJni)
+                    .getUrlOfVisibleNavigationEntry(Mockito.anyLong());
+
+            model.setTab(mRegularTabMock, mRegularProfileMock);
+            model.updateVisibleGurl();
+
+            UrlBarData data = model.getUrlBarData();
+            assertEquals(UrlBarData.EMPTY, data);
+        } finally {
+            model.destroy();
+        }
+    }
 }
