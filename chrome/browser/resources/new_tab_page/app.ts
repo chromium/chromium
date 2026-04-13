@@ -1248,7 +1248,6 @@ export class AppElement extends AppElementBase {
         recordShowBrowserPromosResult(ShowNtpPromosResult.kNotShownNoPromos);
         break;
       case 'simple':
-      case 'setuplist':
         recordShowBrowserPromosResult(ShowNtpPromosResult.kShown);
         break;
       default:
