@@ -4,25 +4,20 @@
 
 #include "chrome/browser/win/installer_downloader/installer_downloader_active_browser_window_tracker.h"
 
-#include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/browser_list.h"
-#include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
-#include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
+#include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 
 namespace installer_downloader {
 
 InstallerDownloaderActiveBrowserWindowTracker::
     InstallerDownloaderActiveBrowserWindowTracker() {
-  BrowserList::GetInstance()->AddObserver(this);
-  MaybeUpdateLastActiveWindow(
-      GetLastActiveBrowserWindowInterfaceWithAnyProfile());
+  auto* global_browser_collection = GlobalBrowserCollection::GetInstance();
+  browser_collection_observation_.Observe(global_browser_collection);
+  MaybeUpdateLastActiveWindow(global_browser_collection->GetActiveBrowser());
 }
 
 InstallerDownloaderActiveBrowserWindowTracker::
-    ~InstallerDownloaderActiveBrowserWindowTracker() {
-  BrowserList::GetInstance()->RemoveObserver(this);
-}
+    ~InstallerDownloaderActiveBrowserWindowTracker() = default;
 
 base::CallbackListSubscription InstallerDownloaderActiveBrowserWindowTracker::
     RegisterActiveWindowChangedCallback(WindowChangedCallback callback) {
@@ -37,23 +32,21 @@ InstallerDownloaderActiveBrowserWindowTracker::RegisterRemovedWindowCallback(
   return window_remove_callbacks_.Add(callback);
 }
 
-void InstallerDownloaderActiveBrowserWindowTracker::OnBrowserSetLastActive(
-    Browser* browser) {
+void InstallerDownloaderActiveBrowserWindowTracker::OnBrowserActivated(
+    BrowserWindowInterface* browser) {
   MaybeUpdateLastActiveWindow(browser);
 }
 
-void InstallerDownloaderActiveBrowserWindowTracker::OnBrowserRemoved(
-    Browser* browser) {
-  window_remove_callbacks_.Notify(
-      static_cast<BrowserWindowInterface*>(browser));
+void InstallerDownloaderActiveBrowserWindowTracker::OnBrowserClosed(
+    BrowserWindowInterface* browser) {
+  window_remove_callbacks_.Notify(browser);
 
-  if (!last_active_window_ ||
-      static_cast<BrowserWindowInterface*>(browser) != last_active_window_) {
+  if (!last_active_window_ || browser != last_active_window_) {
     return;
   }
 
   MaybeUpdateLastActiveWindow(
-      GetLastActiveBrowserWindowInterfaceWithAnyProfile());
+      GlobalBrowserCollection::GetInstance()->GetActiveBrowser());
 }
 
 void InstallerDownloaderActiveBrowserWindowTracker::MaybeUpdateLastActiveWindow(

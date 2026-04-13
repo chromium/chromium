@@ -67,7 +67,7 @@ source_set("infobar") {
   public_deps = [ "//base" ]
 
   deps = [
-    "//chrome/browser/ui:browser_list",
+    "//chrome/browser/ui/browser_window",
     "//components/infobars/core",
     "//content/public/browser",
     "//ui/base",

@@ -8,8 +8,10 @@
 #include "base/callback_list.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
-#include "chrome/browser/ui/browser_list_observer.h"
+#include "base/scoped_observation.h"
+#include "chrome/browser/ui/browser_window/public/browser_collection_observer.h"
 
+class BrowserCollection;
 class BrowserWindowInterface;
 
 namespace installer_downloader {
@@ -19,7 +21,7 @@ namespace installer_downloader {
 // - The tracker **does not** own the window.
 // - When the last window closes, `active_window()` returns `nullptr`.
 class InstallerDownloaderActiveBrowserWindowTracker final
-    : public BrowserListObserver {
+    : public BrowserCollectionObserver {
  public:
   using WindowChangedCallback =
       base::RepeatingCallback<void(BrowserWindowInterface*)>;
@@ -48,9 +50,9 @@ class InstallerDownloaderActiveBrowserWindowTracker final
       WindowChangedCallback callback);
 
  private:
-  // BrowserListObserver:
-  void OnBrowserSetLastActive(Browser* browser) override;
-  void OnBrowserRemoved(Browser* browser) override;
+  // BrowserCollectionObserver:
+  void OnBrowserActivated(BrowserWindowInterface* browser) override;
+  void OnBrowserClosed(BrowserWindowInterface* browser) override;
 
   // Helps to update `last_active_window_` when the active browser changes or
   // when a browser removed.
@@ -67,6 +69,9 @@ class InstallerDownloaderActiveBrowserWindowTracker final
   // Stores the list of callback listening for browser window remove event.
   base::RepeatingCallbackList<void(BrowserWindowInterface*)>
       window_remove_callbacks_;
+
+  base::ScopedObservation<BrowserCollection, BrowserCollectionObserver>
+      browser_collection_observation_{this};
 };
 
 }  // namespace installer_downloader
