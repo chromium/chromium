@@ -1277,7 +1277,7 @@ ContextProperties GraphBuilderCoreml::GetContextProperties() {
        // Note that INT16, and UINT16 is also supported by CoreML, but WebNN
        // does not have corresponding types. See docs here:
        // https://apple.github.io/coremltools/source/coremltools.converters.mil.mil.ops.defs.html#coremltools.converters.mil.mil.ops.defs.iOS17.scatter_gather.gather_along_axis
-       /*gather_elements_input=*/{kFloat16To32Int8To32AndUint8, kMaxRank},
+       /*gather_elements_input=*/{kFloatsAndInt32, kMaxRank},
        /*gather_elements_indices=*/{kGatherIndicesSupportedDataTypes, kMaxRank},
        /*gather_nd_input=*/{kFloat16To32Int8To32AndUint8, kMaxRank},
        /*gather_nd_indices=*/{kGatherIndicesSupportedDataTypes, kMaxRank},
