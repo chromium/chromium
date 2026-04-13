@@ -31,7 +31,7 @@ inline constexpr AccountSetting kWalletPrivacyContextualSurfacing{
     "WALLET_PRIVACY_CONTEXTUAL_SURFACING", base::Value::Type::BOOLEAN};
 
 inline constexpr AccountSetting kAccountSettingContext{
-    "GEMINI_PERSONAL_CONTEXT", base::Value::Type::BOOLEAN,
+    "GEMINI_PERSONAL_CONTEXT_GEMINI", base::Value::Type::BOOLEAN,
     &features::kAccountSettingContext};
 
 inline constexpr AccountSetting kAccountSettingContextWorkspace{
