@@ -22,7 +22,7 @@
 
 namespace {
 
-// In this file, we uses classes that implements the tow following traits.
+// In this file, we uses classes that implements the two following traits.
 // Predicate to decide which identity to filter.
 // class Filter {
 // public:

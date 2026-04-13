@@ -188,6 +188,7 @@ class SystemIdentityManager {
   // is invoked on the calling sequence when the operation completes.
   virtual void ForgetIdentity(id<SystemIdentity> identity,
                               ForgetIdentityCallback callback) = 0;
+
   // Returns true if the identity was removed by calling `ForgetIdentity()`.
   // Returns false If the identity was not removed or disappeared without
   // calling `ForgetIdentity()`.
@@ -288,15 +289,17 @@ class SystemIdentityManager {
       const std::set<std::string>& scopes);
 
   // Presents a new Account Details view and returns a callback that can be
-  // used to dismiss the view (can be ignore if not needed).
+  // used to dismiss the view (can be ignored if not needed).
   virtual DismissViewCallback PresentAccountDetailsController(
       PresentDialogConfiguration configuration) = 0;
+
   // Presents a new Web and App Setting Details view and returns a callback
-  // that can be used to dismiss the view (can be ignore if not needed).
+  // that can be used to dismiss the view (can be ignored if not needed).
   virtual DismissViewCallback PresentWebAndAppSettingDetailsController(
       PresentDialogConfiguration configuration) = 0;
+
   // Presents a new Linked Services Settings Details view and returns a callback
-  // that can be used to dismiss the view (can be ignore if not needed).
+  // that can be used to dismiss the view (can be ignored if not needed).
   virtual DismissViewCallback PresentLinkedServicesSettingsDetailsController(
       PresentDialogConfiguration configuration) = 0;
 
