@@ -81,33 +81,20 @@ std::u16string GetAlternativeNameForInput(
 
 // Finds the best suitable option in the `field` that corresponds to the
 // `phone_country_code`. The strategy is:
-// - If a <select> menu has an option whose value or content exactly matches the
-//   phone country code (e.g. "1" for US), this is picked (e.g. <option
-//   value="1">+1</option>).
-// - As a fallback, the first option with text containing a phone country code
-//   (ignoring leading '00' or '+') (e.g. <option value="US">USA (+1)</option>)
-//   is picked The fallback broken in case there is ambiguity (e.g. there is a
-//   second option
-//   <option value="CA">Canada (+1)</option>)
-//
-// If kAutofillEnableFillingPhoneCountryCodesByAddressCountryCodes is enabled,
-// Autofill will
-// - pick an option whose value or content CONTAINS with prefix (e.g. "+1" or
+// - Pick an option whose value or content CONTAINS with prefix (e.g. "+1" or
 //   "001" for US) the phone country code if it's unambiguous, else
-// - pick an option whose value or content MATCHES the address country code or
+// - Pick an option whose value or content MATCHES the address country code or
 //   country name (after removing a phone country code like "+1") if that's
 //   possible.
 //   - If the options contain phone country codes ("+1", "001"), then this path
 //     is only chosen if the chosen option from the parent bullet CONTAINS the
 //     desired phone country code.
 //   else
-// - pick the FIRST option whose value or content CONTAINS the phone country
+// - Pick the FIRST option whose value or content CONTAINS the phone country
 //   code with prefix (old behavior).
-// - pick the FIRST option whose value or content exactly matches the phone
+// - Pick the FIRST option whose value or content exactly matches the phone
 //   country code (e.g. "1" for US), this is picked
 //   (e.g. <option value="1">+1</option>) (old behavior).
-// TODO(crbug.com/40249216) Clean up the comment above when the feature is
-// launched.
 std::optional<SelectOption> GetPhoneCountryCodeSelectControlValue(
     const std::u16string& phone_country_code,
     base::span<const SelectOption> field_options,
@@ -115,16 +102,6 @@ std::optional<SelectOption> GetPhoneCountryCodeSelectControlValue(
     std::string* failure_to_fill) {
   if (phone_country_code.empty()) {
     return {};
-  }
-  // Find the option that exactly matches the |phone_country_code|.
-  if (std::optional<SelectOption> select_control_option =
-          GetSelectControlOption(phone_country_code, field_options,
-                                 failure_to_fill);
-      select_control_option &&
-      !base::FeatureList::IsEnabled(
-          features::
-              kAutofillEnableFillingPhoneCountryCodesByAddressCountryCodes)) {
-    return select_control_option;
   }
 
   auto value_or_content_matches = [&](const SelectOption& option) {
@@ -136,38 +113,34 @@ std::optional<SelectOption> GetPhoneCountryCodeSelectControlValue(
   auto first_match =
       std::ranges::find_if(field_options, value_or_content_matches);
 
-  if (base::FeatureList::IsEnabled(
-          features::
-              kAutofillEnableFillingPhoneCountryCodesByAddressCountryCodes)) {
-    // If a single option contained the phone country code, return that.
-    if (first_match != field_options.end() &&
-        std::ranges::none_of(first_match + 1, field_options.end(),
-                             value_or_content_matches)) {
-      return *first_match;
-    }
-
-    // Either more than one option matched the country code (this is common for
-    // +1, which is associated with Canada the USA and several other countries)
-    // or none matched the country code. Try to match by address country code or
-    // name.
-    if (std::optional<SelectOption> country_option =
-            GetCountrySelectControlOption(base::UTF8ToUTF16(country_code),
-                                          field_options)) {
-      // If the <option>s don't contain phone country codes, the country name
-      // is the best insight we have, so we go with it.
-      if (first_match == field_options.end()) {
-        return country_option;
-      }
-      // If two or more <option>s do contain the phone country code, we pick
-      // the option matching the address country code only if it also matches
-      // the phone country code.
-      if (value_or_content_matches(*country_option)) {
-        return country_option;
-      }
-    }
-    // Matching by country name failed, so return the first entry containing
-    // the phone country code if that exists.
+  // If a single option contained the phone country code, return that.
+  if (first_match != field_options.end() &&
+      std::ranges::none_of(first_match + 1, field_options.end(),
+                           value_or_content_matches)) {
+    return *first_match;
   }
+
+  // Either more than one option matched the country code (this is common for
+  // +1, which is associated with Canada the USA and several other countries)
+  // or none matched the country code. Try to match by address country code or
+  // name.
+  if (std::optional<SelectOption> country_option =
+          GetCountrySelectControlOption(base::UTF8ToUTF16(country_code),
+                                        field_options)) {
+    // If the <option>s don't contain phone country codes, the country name is
+    // the best insight we have, so we go with it.
+    if (first_match == field_options.end()) {
+      return country_option;
+    }
+    // If two or more <option>s do contain the phone country code, we pick the
+    // option matching the address country code only if it also matches the
+    // phone country code.
+    if (value_or_content_matches(*country_option)) {
+      return country_option;
+    }
+  }
+  // Matching by country name failed, so return the first entry containing the
+  // phone country code if that exists.
   if (first_match != field_options.end()) {
     return *first_match;
   }
@@ -178,11 +151,7 @@ std::optional<SelectOption> GetPhoneCountryCodeSelectControlValue(
   // country code.
   if (std::optional<SelectOption> select_control_option =
           GetSelectControlOption(phone_country_code, field_options,
-                                 failure_to_fill);
-      select_control_option &&
-      base::FeatureList::IsEnabled(
-          features::
-              kAutofillEnableFillingPhoneCountryCodesByAddressCountryCodes)) {
+                                 failure_to_fill)) {
     return select_control_option;
   }
 

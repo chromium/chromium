@@ -190,9 +190,6 @@ BASE_DECLARE_FEATURE_PARAM(int,
 COMPONENT_EXPORT(AUTOFILL)
 BASE_DECLARE_FEATURE(kAutofillEnableExpirationDateImprovements);
 COMPONENT_EXPORT(AUTOFILL)
-BASE_DECLARE_FEATURE(
-    kAutofillEnableFillingPhoneCountryCodesByAddressCountryCodes);
-COMPONENT_EXPORT(AUTOFILL)
 BASE_DECLARE_FEATURE(kAutofillEnableGermanTransliteration);
 COMPONENT_EXPORT(AUTOFILL)
 BASE_DECLARE_FEATURE(kAutofillEnableImportOfUnchangedValuesForCountryAndState);

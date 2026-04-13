@@ -529,14 +529,6 @@ BASE_FEATURE_PARAM(int,
 BASE_FEATURE(kAutofillEnableExpirationDateImprovements,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Improves the selection of phone country codes by also considering address
-// country codes / names.
-// See GetStreetAddressForInput() in field_filling_address_util.cc for a details
-// description.
-// TODO(crbug.com/40249065). Clean up when launched.
-BASE_FEATURE(kAutofillEnableFillingPhoneCountryCodesByAddressCountryCodes,
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Control if Autofill supports German transliteration.
 // TODO(crbug.com/328968064): Remove when/if launched.
 BASE_FEATURE(kAutofillEnableGermanTransliteration,
