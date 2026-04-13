@@ -238,6 +238,8 @@ static_library("ui") {
     "//chrome/browser/loader",
     "//chrome/browser/media/webrtc",
     "//chrome/browser/memory",
+    "//chrome/browser/net",
+    "//chrome/browser/net:impl",
     "//chrome/browser/search",
     "//chrome/browser/tab_contents",
     "//chrome/browser/task_manager",
@@ -791,6 +793,8 @@ static_library("ui") {
     # TODO(crbug.com/353284909): Remove this circular dependency.
     "//chrome/browser/media/webrtc",
     "//chrome/browser/memory",
+    "//chrome/browser/net",
+    "//chrome/browser/net:impl",
     "//chrome/browser/performance_manager:impl",
 
     # TODO(crbug.com/360599255): Remove this circular dependency.

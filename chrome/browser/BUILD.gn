@@ -355,57 +355,6 @@ static_library("browser") {
     "metrics/variations/chrome_variations_service_client.h",
     "metrics/variations/google_groups_manager_factory.cc",
     "metrics/variations/google_groups_manager_factory.h",
-    "net/cert_verifier_service_time_updater.cc",
-    "net/cert_verifier_service_time_updater.h",
-    "net/chrome_mojo_proxy_resolver_factory.cc",
-    "net/chrome_mojo_proxy_resolver_factory.h",
-    "net/chrome_network_delegate.cc",
-    "net/chrome_network_delegate.h",
-    "net/chrome_report_sender.cc",
-    "net/chrome_report_sender.h",
-    "net/convert_explicitly_allowed_network_ports_pref.cc",
-    "net/convert_explicitly_allowed_network_ports_pref.h",
-    "net/default_dns_over_https_config_source.cc",
-    "net/default_dns_over_https_config_source.h",
-    "net/dns_over_https_config_source.h",
-    "net/dns_probe_runner.cc",
-    "net/dns_probe_runner.h",
-    "net/dns_probe_service.h",
-    "net/dns_probe_service_factory.cc",
-    "net/dns_probe_service_factory.h",
-    "net/explicitly_allowed_network_ports_policy_handler.cc",
-    "net/explicitly_allowed_network_ports_policy_handler.h",
-    "net/http_auth_cache_status.cc",
-    "net/http_auth_cache_status.h",
-    "net/net_error_diagnostics_dialog.h",
-    "net/net_error_tab_helper.cc",
-    "net/net_error_tab_helper.h",
-    "net/net_export_helper.cc",
-    "net/net_export_helper.h",
-    "net/probe_message.cc",
-    "net/probe_message.h",
-    "net/profile_network_context_service.cc",
-    "net/profile_network_context_service.h",
-    "net/profile_network_context_service_factory.cc",
-    "net/profile_network_context_service_factory.h",
-    "net/proxy_config_monitor.cc",
-    "net/proxy_config_monitor.h",
-    "net/proxy_service_factory.cc",
-    "net/proxy_service_factory.h",
-    "net/qwac_web_contents_observer.cc",
-    "net/qwac_web_contents_observer.h",
-    "net/referrer.cc",
-    "net/referrer.h",
-    "net/secure_dns_config.cc",
-    "net/secure_dns_config.h",
-    "net/secure_dns_policy_handler.cc",
-    "net/secure_dns_policy_handler.h",
-    "net/secure_dns_util.cc",
-    "net/secure_dns_util.h",
-    "net/stub_resolver_config_reader.cc",
-    "net/stub_resolver_config_reader.h",
-    "net/system_network_context_manager.cc",
-    "net/system_network_context_manager.h",
     "net_benchmarking.cc",
     "net_benchmarking.h",
     "notifications/metrics/notification_metrics_logger.cc",
@@ -957,6 +906,8 @@ static_library("browser") {
     # TODO(crbug.com/394204688): Remove this once we ensure that
     # `PreconnectFromKeyedService` does not cause any regressions.
     "//chrome/browser/navigation_predictor:navigation_predictor",
+    "//chrome/browser/net",
+    "//chrome/browser/net:impl",
     "//chrome/browser/optimization_guide:impl",
     "//chrome/browser/passage_embeddings",
     "//chrome/browser/performance_manager:impl",
@@ -1354,6 +1305,8 @@ static_library("browser") {
     "//chrome/browser/metrics/structured",
     "//chrome/browser/navigation_predictor",
     "//chrome/browser/navigation_predictor:impl",
+    "//chrome/browser/net",
+    "//chrome/browser/net:impl",
     "//chrome/browser/nfc",
     "//chrome/browser/notifications",
     "//chrome/browser/notifications:system_notification_helper",
@@ -2157,16 +2110,6 @@ static_library("browser") {
     # componentized.
     "//chrome/browser/ui/webauthn:impl",
   ]
-
-  # Platforms that have a network diagnostics dialog. All others fall through
-  # to the stub which is not implemented.
-  if (is_chromeos) {
-    sources += [ "net/net_error_diagnostics_dialog_chromeos.cc" ]
-  } else if (is_win) {
-    sources += [ "net/net_error_diagnostics_dialog_win.cc" ]
-  } else {
-    sources += [ "net/net_error_diagnostics_dialog_stub.cc" ]
-  }
 
   if (is_android) {
     deps += [
@@ -3914,8 +3857,6 @@ static_library("browser") {
         "hid/hid_status_icon.h",
         "lifetime/switch_utils.cc",
         "lifetime/switch_utils.h",
-        "net/disk_cache_dir_policy_handler.cc",
-        "net/disk_cache_dir_policy_handler.h",
         "platform_util.cc",
         "policy/cbcm_invalidations_initializer.cc",
         "policy/cbcm_invalidations_initializer.h",
@@ -4147,8 +4088,6 @@ static_library("browser") {
       "metrics/update_engine_metrics_provider.h",
       "metrics/usertype_by_devicetype_metrics_provider.cc",
       "metrics/usertype_by_devicetype_metrics_provider.h",
-      "net/network_annotation_monitor.cc",
-      "net/network_annotation_monitor.h",
       "notifications/arc_application_notifier_controller.cc",
       "notifications/arc_application_notifier_controller.h",
       "notifications/chrome_ash_message_center_client.cc",
@@ -5319,10 +5258,6 @@ static_library("browser") {
       "metrics/system_pdh_metrics_provider_win.h",
       "metrics/tpm_metrics_provider_win.cc",
       "metrics/tpm_metrics_provider_win.h",
-      "net/chrome_mojo_proxy_resolver_win.cc",
-      "net/chrome_mojo_proxy_resolver_win.h",
-      "net/service_providers_win.cc",
-      "net/service_providers_win.h",
       "notifications/notification_platform_bridge_win.cc",
       "notifications/notification_platform_bridge_win.h",
       "notifications/win/notification_launch_id.cc",
@@ -6528,31 +6463,7 @@ static_library("browser") {
   }
 
   if (use_nss_certs) {
-    sources += [
-      "net/nss_service.cc",
-      "net/nss_service.h",
-      "net/nss_service_factory.cc",
-      "net/nss_service_factory.h",
-    ]
-    if (is_chromeos) {
-      sources += [
-        "net/nss_service_chromeos.cc",
-        "net/nss_temp_certs_cache_chromeos.cc",
-        "net/nss_temp_certs_cache_chromeos.h",
-      ]
-    }
-    if (is_linux) {
-      sources += [ "net/nss_service_linux.cc" ]
-    }
     configs += [ "//build/config/linux/nss" ]
-  }
-
-  if (chrome_root_store_cert_management_ui) {
-    sources += [
-      "net/server_certificate_database_service_factory.cc",
-      "net/server_certificate_database_service_factory.h",
-    ]
-    deps += [ "//components/server_certificate_database" ]
   }
 
   if (use_udev) {
@@ -7455,6 +7366,7 @@ if (!is_android) {
     deps = [
       ":browser",
       ":browser_process",
+      "//chrome/browser/net",
       "//chrome/browser/profiles:profile",
       "//content/test:test_support",
     ]

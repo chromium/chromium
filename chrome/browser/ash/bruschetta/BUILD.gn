@@ -63,6 +63,7 @@ static_library("bruschetta") {
     "//chrome/browser/ash/guest_os/public",
     "//chrome/browser/ash/profiles",
     "//chrome/browser/extensions/api/terminal:startup_status",
+    "//chrome/browser/net",
     "//chrome/browser/profiles",
     "//chromeos/ash/components/dbus/attestation",
     "//chromeos/ash/components/dbus/dlcservice",

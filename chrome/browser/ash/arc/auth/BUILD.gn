@@ -32,6 +32,7 @@ static_library("auth") {
     "//chrome/browser/ash/arc:arc_util",
     "//chrome/browser/ash/policy/core",
     "//chrome/browser/ash/profiles",
+    "//chrome/browser/net",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/signin",
     "//chrome/common",

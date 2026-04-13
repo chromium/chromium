@@ -71,6 +71,7 @@ static_library("autofill") {
     "//chrome/browser/accessibility_annotator",
     "//chrome/browser/account_settings",
     "//chrome/browser/history",
+    "//chrome/browser/net",
     "//chrome/browser/optimization_guide",
     "//chrome/browser/profiles",
     "//chrome/browser/signin",

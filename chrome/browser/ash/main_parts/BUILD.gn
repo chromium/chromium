@@ -99,6 +99,7 @@ static_library("main_parts") {
     "//chrome/browser/device_identity",
     "//chrome/browser/lifetime:termination_notification",
     "//chrome/browser/memory",
+    "//chrome/browser/net",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/task_manager",
     "//chrome/browser/tracing",

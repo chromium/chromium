@@ -198,6 +198,7 @@ if (is_android) {
     deps = [
       "//base",
       "//chrome/browser:browser_process",
+      "//chrome/browser/net",
       "//chrome/browser/preferences:java_pref_names_srcjar",
       "//chrome/browser/privacy:jni_headers",
       "//components/country_codes",

@@ -45,6 +45,7 @@ source_set("impl") {
     "//chrome/browser:browser_process",
     "//chrome/browser/app_mode",
     "//chrome/browser/content_settings:content_settings_factory",
+    "//chrome/browser/net",
     "//chrome/browser/permissions",
     "//chrome/browser/policy:policy_util",
     "//chrome/common",

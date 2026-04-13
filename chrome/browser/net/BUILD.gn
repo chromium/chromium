@@ -3,6 +3,10 @@
 # found in the LICENSE file.
 
 import("//chrome/common/features.gni")
+import("//components/enterprise/buildflags/buildflags.gni")
+import("//components/offline_pages/buildflags/features.gni")
+import("//crypto/features.gni")
+import("//extensions/buildflags/buildflags.gni")
 import("//third_party/protobuf/proto_library.gni")
 
 if (is_android) {
@@ -18,6 +22,274 @@ proto_library("key_pinning_proto") {
     "key_pinning.proto",
     "kp_timestamp.proto",
   ]
+}
+
+source_set("net") {
+  public = [
+    "cert_verifier_service_time_updater.h",
+    "chrome_mojo_proxy_resolver_factory.h",
+    "chrome_network_delegate.h",
+    "chrome_report_sender.h",
+    "convert_explicitly_allowed_network_ports_pref.h",
+    "default_dns_over_https_config_source.h",
+    "dns_over_https_config_source.h",
+    "dns_probe_runner.h",
+    "dns_probe_service.h",
+    "dns_probe_service_factory.h",
+    "explicitly_allowed_network_ports_policy_handler.h",
+    "http_auth_cache_status.h",
+    "net_error_diagnostics_dialog.h",
+    "net_error_tab_helper.h",
+    "net_export_helper.h",
+    "probe_message.h",
+    "profile_network_context_service.h",
+    "profile_network_context_service_factory.h",
+    "proxy_config_monitor.h",
+    "proxy_service_factory.h",
+    "qwac_web_contents_observer.h",
+    "referrer.h",
+    "secure_dns_config.h",
+    "secure_dns_policy_handler.h",
+    "secure_dns_util.h",
+    "stub_resolver_config_reader.h",
+    "system_network_context_manager.h",
+  ]
+
+  public_deps = [
+    ":probe_message_proto",
+    "//base",
+    "//build:chromeos_buildflags",
+    "//chrome/browser/enterprise",
+    "//chrome/browser/profiles:profile",
+    "//chrome/common:buildflags",
+    "//chrome/common:constants",
+    "//chrome/common:mojo_bindings",
+    "//components/content_settings/core/browser",
+    "//components/content_settings/core/browser:cookie_settings",
+    "//components/enterprise/buildflags",
+    "//components/error_page/common",
+    "//components/keyed_service/core",
+    "//components/network_time",
+    "//components/network_time/time_tracker",
+    "//components/offline_pages/buildflags",
+    "//components/policy/core/browser",
+    "//components/prefs",
+    "//components/tabs",
+    "//content/public/browser",
+    "//extensions/buildflags",
+    "//mojo/public/cpp/bindings",
+    "//net",
+    "//services/cert_verifier/public/mojom",
+    "//services/network/public/cpp",
+    "//services/network/public/mojom",
+    "//services/proxy_resolver/public/mojom",
+    "//url",
+  ]
+
+  if (!is_android && !is_chromeos) {
+    public += [ "disk_cache_dir_policy_handler.h" ]
+  }
+
+  if (is_chromeos) {
+    public += [ "network_annotation_monitor.h" ]
+  }
+
+  if (is_win) {
+    public += [
+      "chrome_mojo_proxy_resolver_win.h",
+      "service_providers_win.h",
+    ]
+  }
+
+  if (use_nss_certs) {
+    public += [
+      "nss_service.h",
+      "nss_service_factory.h",
+    ]
+    if (is_chromeos) {
+      public += [ "nss_temp_certs_cache_chromeos.h" ]
+    }
+  }
+
+  if (chrome_root_store_cert_management_ui) {
+    public += [ "server_certificate_database_service_factory.h" ]
+    public_deps += [ "//components/server_certificate_database" ]
+  }
+}
+
+source_set("impl") {
+  sources = [
+    "cert_verifier_service_time_updater.cc",
+    "chrome_mojo_proxy_resolver_factory.cc",
+    "chrome_network_delegate.cc",
+    "chrome_report_sender.cc",
+    "convert_explicitly_allowed_network_ports_pref.cc",
+    "default_dns_over_https_config_source.cc",
+    "dns_probe_runner.cc",
+    "dns_probe_service_factory.cc",
+    "explicitly_allowed_network_ports_policy_handler.cc",
+    "http_auth_cache_status.cc",
+    "net_error_tab_helper.cc",
+    "net_export_helper.cc",
+    "probe_message.cc",
+    "profile_network_context_service.cc",
+    "profile_network_context_service_factory.cc",
+    "proxy_config_monitor.cc",
+    "proxy_service_factory.cc",
+    "qwac_web_contents_observer.cc",
+    "referrer.cc",
+    "secure_dns_config.cc",
+    "secure_dns_policy_handler.cc",
+    "secure_dns_util.cc",
+    "stub_resolver_config_reader.cc",
+    "system_network_context_manager.cc",
+  ]
+
+  public_deps = [
+    ":net",
+    "//chrome/browser:browser_public_dependencies",
+  ]
+
+  deps = [
+    ":key_pinning_proto",
+    "//base:build_time",
+    "//chrome/browser:browser_features",
+    "//chrome/browser:browser_process",
+    "//chrome/browser:primitives",
+    "//chrome/browser/browsing_data:constants",
+    "//chrome/browser/component_updater",
+    "//chrome/browser/content_settings:content_settings_factory",
+    "//chrome/browser/domain_reliability",
+    "//chrome/browser/first_party_sets",
+    "//chrome/browser/policy:path_parser",
+    "//chrome/browser/prefs:util",
+    "//chrome/browser/preloading/prefetch/no_state_prefetch",
+    "//chrome/browser/safe_browsing",
+    "//chrome/browser/webid",
+    "//chrome/common:version_header",
+    "//components/certificate_transparency",
+    "//components/content_settings/core/common",
+    "//components/country_codes",
+    "//components/domain_reliability",
+    "//components/domain_reliability:prefs",
+    "//components/embedder_support",
+    "//components/embedder_support:user_agent",
+    "//components/enterprise",
+    "//components/enterprise/connectors/core",
+    "//components/enterprise/encryption/cache",
+    "//components/language/core/browser",
+    "//components/link_header_util",
+    "//components/metrics",
+    "//components/net_log",
+    "//components/no_state_prefetch/browser",
+    "//components/offline_pages/core",
+    "//components/os_crypt/sync",
+    "//components/page_load_metrics/browser",
+    "//components/permissions",
+    "//components/pref_registry",
+    "//components/privacy_sandbox",
+    "//components/proxy_config",
+    "//components/safe_browsing/core/common",
+    "//components/safe_browsing/core/common:safe_browsing_prefs",
+    "//components/signin/public/base:signin_buildflags",
+    "//components/strings:components_strings",
+    "//components/variations",
+    "//components/variations/net",
+    "//components/webui/flags",
+    "//crypto",
+    "//sandbox/policy",
+    "//services/network:network_service",
+    "//services/strings",
+  ]
+
+  if (is_chromeos) {
+    sources += [ "net_error_diagnostics_dialog_chromeos.cc" ]
+  } else if (is_win) {
+    sources += [ "net_error_diagnostics_dialog_win.cc" ]
+  } else {
+    sources += [ "net_error_diagnostics_dialog_stub.cc" ]
+  }
+
+  if (!is_android && !is_chromeos) {
+    sources += [ "disk_cache_dir_policy_handler.cc" ]
+  }
+
+  if (is_chromeos) {
+    sources += [ "network_annotation_monitor.cc" ]
+    deps += [
+      "//ash/constants",
+      "//ash/webui/connectivity_diagnostics",
+      "//chrome/browser/ash/certificate_provider",
+      "//chrome/browser/ash/kcer",
+      "//chrome/browser/ash/login",
+      "//chrome/browser/ash/net",
+      "//chrome/browser/ash/policy/core",
+      "//chrome/browser/ash/profiles",
+      "//chrome/browser/policy:onc",
+      "//chrome/browser/profiles",
+      "//chrome/browser/profiles:profile_manager",
+      "//chrome/browser/ui/ash/network",
+      "//chrome/browser/ui/ash/system_web_apps",
+      "//chromeos/ash/components/browser_context_helper",
+      "//chromeos/ash/components/network",
+      "//chromeos/ash/components/settings",
+      "//chromeos/components/kiosk",
+      "//chromeos/constants",
+      "//chromeos/dbus/regmon",
+    ]
+  }
+
+  if (is_win) {
+    sources += [
+      "chrome_mojo_proxy_resolver_win.cc",
+      "service_providers_win.cc",
+    ]
+    deps += [
+      "//chrome/browser/win",
+      "//ui/gfx",
+      "//ui/shell_dialogs",
+      "//ui/views",
+    ]
+  }
+
+  if (chrome_root_store_cert_management_ui) {
+    sources += [ "server_certificate_database_service_factory.cc" ]
+  }
+
+  if (enable_extensions_core) {
+    deps += [ "//chrome/browser/extensions/api/proxy" ]
+  }
+
+  if (enable_offline_pages) {
+    deps += [ "//chrome/browser/offline_pages" ]
+  }
+
+  if (enterprise_client_certificates) {
+    deps += [ "//components/enterprise/client_certificates/core" ]
+  }
+
+  if (use_nss_certs) {
+    sources += [
+      "nss_service.cc",
+      "nss_service_factory.cc",
+    ]
+    if (is_chromeos) {
+      sources += [
+        "nss_service_chromeos.cc",
+        "nss_temp_certs_cache_chromeos.cc",
+      ]
+      deps += [
+        "//chromeos/ash/components/dbus",
+        "//chromeos/ash/components/dbus/userdataauth",
+        "//chromeos/ash/components/tpm",
+        "//chromeos/components/certificate_provider",
+      ]
+    }
+    if (is_linux) {
+      sources += [ "nss_service_linux.cc" ]
+    }
+    configs += [ "//build/config/linux/nss" ]
+  }
 }
 
 if (is_android) {

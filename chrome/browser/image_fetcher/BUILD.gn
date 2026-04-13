@@ -15,6 +15,7 @@ source_set("image_fetcher") {
   deps = [
     "//base",
     "//chrome/browser/image_decoder",
+    "//chrome/browser/net",
     "//chrome/browser/profiles",
     "//chrome/common:constants",
     "//components/image_fetcher/core",

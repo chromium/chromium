@@ -72,6 +72,7 @@ source_set("impl") {
     "//chrome/browser:browser_public_dependencies",
     "//chrome/browser/content_settings",
     "//chrome/browser/content_settings:content_settings_factory",
+    "//chrome/browser/net",
     "//chrome/browser/preloading:prefs",
     "//chrome/browser/renderer_host",
     "//chrome/common:offline_page_auto_fetcher_mojom",

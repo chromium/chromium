@@ -38,6 +38,7 @@ static_library("safe_browsing") {
     "//chrome/browser/enterprise/connectors/reporting",
     "//chrome/browser/google",
     "//chrome/browser/history",
+    "//chrome/browser/net",
     "//chrome/browser/optimization_guide",
     "//chrome/browser/password_manager/factories",
     "//chrome/browser/preloading/prefetch/no_state_prefetch",

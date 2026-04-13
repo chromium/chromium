@@ -48,6 +48,7 @@ static_library("attestation") {
     "//chrome/browser/ash/policy/rsu",
     "//chrome/browser/ash/profiles",
     "//chrome/browser/ash/settings",
+    "//chrome/browser/net",
     "//chrome/browser/profiles",
     "//chrome/common:constants",
     "//chromeos/ash/components/attestation",

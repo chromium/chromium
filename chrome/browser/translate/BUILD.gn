@@ -48,6 +48,7 @@ source_set("impl") {
     "//chrome/browser:browser_process",
     "//chrome/browser/language",
     "//chrome/browser/language_detection",
+    "//chrome/browser/net",
     "//chrome/browser/profiles",
     "//chrome/browser/profiles:profile_manager",
     "//chrome/browser/ui/translate",

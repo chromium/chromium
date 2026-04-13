@@ -18,6 +18,7 @@ static_library("nssdb_migration") {
     "//ash/constants",
     "//base",
     "//chrome/browser/ash/profiles",
+    "//chrome/browser/net",
     "//chrome/browser/profiles:profile",
     "//chrome/common",
     "//chromeos/ash/components/kcer",

@@ -21,6 +21,7 @@ static_library("kcer") {
     "//base",
     "//chrome/browser/ash/kcer/nssdb_migration",
     "//chrome/browser/ash/profiles",
+    "//chrome/browser/net",
     "//chrome/browser/profiles:profile",
     "//chrome/common",
     "//chromeos/ash/components/browser_context_helper",

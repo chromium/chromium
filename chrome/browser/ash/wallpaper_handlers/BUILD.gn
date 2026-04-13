@@ -33,6 +33,7 @@ static_library("wallpaper_handlers") {
     "//chrome/browser/ash/profiles",
     "//chrome/browser/manta",
     "//chrome/browser/manta:impl",
+    "//chrome/browser/net",
     "//chrome/browser/profiles",
     "//chrome/browser/signin",
     "//content/public/browser",

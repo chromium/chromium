@@ -20,6 +20,7 @@ static_library("login") {
     "//base",
     "//chrome/browser:browser_process",
     "//chrome/browser/ash/policy/core",
+    "//chrome/browser/net",
     "//chromeos/dbus/power",
     "//components/policy:generated",
     "//components/policy/core/browser",

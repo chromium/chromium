@@ -279,6 +279,7 @@ static_library("login") {
     "//chrome/browser/ash/profiles:signin_profile_handler",
     "//chrome/browser/ash/system",
     "//chrome/browser/extensions",
+    "//chrome/browser/net",
     "//chrome/browser/policy:onc",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/resources:component_extension_resources",

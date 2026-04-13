@@ -163,6 +163,7 @@ source_set("signin_impl") {
     "//chrome/browser:browser_process",
     "//chrome/browser/consent_auditor",
     "//chrome/browser/enterprise/browser_management:management_identity",
+    "//chrome/browser/net",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/profiles:profile_manager",
     "//chrome/browser/profiles:profile_util",

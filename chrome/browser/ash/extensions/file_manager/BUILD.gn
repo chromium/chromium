@@ -108,6 +108,7 @@ static_library("file_manager") {
     "//chrome/browser/devtools",
     "//chrome/browser/download",
     "//chrome/browser/feedback",
+    "//chrome/browser/net",
     "//chrome/browser/notifications:system_notification_helper",
     "//chrome/browser/pdf",
     "//chrome/browser/pdf:pdf_pref_names",

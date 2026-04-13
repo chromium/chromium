@@ -70,6 +70,7 @@ source_set("browser_interop") {
     "//base",
     "//chrome/browser:browser_process",
     "//chrome/browser:browser_public_dependencies",
+    "//chrome/browser/net",
     "//content/public/browser",
     "//net",
     "//remoting/base",

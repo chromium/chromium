@@ -40,6 +40,7 @@ static_library("drive") {
     "//chrome/browser/chromeos/drivefs",
     "//chrome/browser/chromeos/drivefs:native_message_host_origins",
     "//chrome/browser/download",
+    "//chrome/browser/net",
     "//chrome/browser/notifications",
     "//chrome/browser/profiles",
     "//chrome/browser/signin",

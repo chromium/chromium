@@ -233,6 +233,7 @@ if (!is_android) {
       "//chrome/browser/media/router/discovery",
       "//chrome/browser/media/router/discovery/access_code:access_code_cast_feature",
       "//chrome/browser/media/webrtc",
+      "//chrome/browser/net",
       "//components/media_router/common/providers/cast/channel",
       "//components/openscreen_platform",
       "//media/cast:common",

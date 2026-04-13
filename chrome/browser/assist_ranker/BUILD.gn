@@ -15,6 +15,7 @@ source_set("impl") {
   deps = [
     ":assist_ranker",
     "//chrome/browser:browser_process",
+    "//chrome/browser/net",
     "//components/assist_ranker",
     "//components/keyed_service/core",
     "//content/public/browser",

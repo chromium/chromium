@@ -124,6 +124,7 @@ static_library("printing") {
     "//chrome/browser/ash/printing/print_management",
     "//chrome/browser/ash/profiles",
     "//chrome/browser/component_updater",
+    "//chrome/browser/net",
     "//chrome/browser/notifications",
     "//chrome/browser/printing",
     "//chrome/browser/sync:factories",

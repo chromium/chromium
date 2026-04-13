@@ -30,6 +30,7 @@ static_library("network_ui") {
     "//chrome/browser/download",
     "//chrome/browser/extensions",
     "//chrome/browser/feedback",
+    "//chrome/browser/net",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/resources/chromeos/network_ui:resources",
     "//chrome/browser/ui/ash/system",

@@ -59,6 +59,7 @@ source_set("impl") {
     ":whats_new",
     "//base",
     "//chrome/browser:browser_features",
+    "//chrome/browser/net",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/ui:ui_features",
     "//chrome/common",

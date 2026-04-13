@@ -19,6 +19,7 @@ static_library("net") {
   deps = [
     "//ash/public/cpp",
     "//base",
+    "//chrome/browser/net",
     "//chrome/browser/profiles:profile",
     "//chromeos/ash/experiences/arc",
     "//components/device_event_log",

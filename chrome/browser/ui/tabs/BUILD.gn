@@ -500,6 +500,7 @@ if (!is_android) {
       "//chrome/browser/image_fetcher",
       "//chrome/browser/indigo",
       "//chrome/browser/media/webrtc",
+      "//chrome/browser/net",
       "//chrome/browser/preloading/bookmarkbar_preload",
       "//chrome/browser/preloading/new_tab_page_preload",
       "//chrome/browser/profiles",

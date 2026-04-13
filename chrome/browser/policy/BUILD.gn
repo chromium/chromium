@@ -70,6 +70,7 @@ source_set("onc") {
       "//chrome/browser/ash/policy/core",
       "//chrome/browser/ash/profiles",
       "//chrome/browser/extensions",
+      "//chrome/browser/net",
       "//chrome/browser/profiles",
       "//chrome/browser/profiles:profile",
       "//chrome/common:constants",

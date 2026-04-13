@@ -426,6 +426,7 @@ source_set("impl") {
     "//chrome/browser/image_fetcher",
     "//chrome/browser/interstitials",
     "//chrome/browser/invalidation",
+    "//chrome/browser/net",
     "//chrome/browser/new_tab_page/chrome_colors:selected_colors_info",
     "//chrome/browser/notifications",
     "//chrome/browser/policy:policy_util",
