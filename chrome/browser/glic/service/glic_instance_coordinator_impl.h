@@ -51,9 +51,6 @@ class Point;
 namespace glic {
 
 class ContextualCueingService;
-
-BASE_DECLARE_FEATURE(kGlicHibernateAllOnMemoryPressure);
-
 BASE_DECLARE_FEATURE(kGlicHibernateOnMemoryUsage);
 
 BASE_DECLARE_FEATURE(kGlicMaxAwakeInstances);

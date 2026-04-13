@@ -711,28 +711,6 @@ class GlicApiTestWithGeminiActOnWebPolicy : public GlicApiTestWithOneTab {
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-class GlicApiTestHibernateAllOnMemoryPressure : public GlicApiTest {
- public:
-  GlicApiTestHibernateAllOnMemoryPressure() {
-    feature_list_.InitAndEnableFeatureWithParameters(
-        kGlicHibernateAllOnMemoryPressure, {{"aggressive", "false"}});
-  }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
-};
-
-class GlicApiTestHibernateAllAggressiveOnMemoryPressure : public GlicApiTest {
- public:
-  GlicApiTestHibernateAllAggressiveOnMemoryPressure() {
-    feature_list_.InitAndEnableFeatureWithParameters(
-        kGlicHibernateAllOnMemoryPressure, {{"aggressive", "true"}});
-  }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
-};
-
 class GlicApiTestHibernateOnMemoryUsage : public GlicApiTest {
  public:
   GlicApiTestHibernateOnMemoryUsage() {
@@ -844,7 +822,6 @@ IN_PROC_BROWSER_TEST_P(GlicApiTest, MAYBE_testReload) {
       .params = base::Value(base::DictValue().Set("failWith", "none")),
   });
 }
-
 
 // The client navigates to the 'sorry' page before it finishes initialize().
 // Chrome should show this page.
@@ -3340,8 +3317,7 @@ IN_PROC_BROWSER_TEST_P(GlicApiTest, testRegisterConversationWithEmptyId) {
 
 // TODO(b/498955581): Clean up glic hibernation experiments, and test in the
 // coordinator test.
-IN_PROC_BROWSER_TEST_P(GlicApiTestHibernateAllOnMemoryPressure,
-                       testHibernateAllOnMemoryPressure) {
+IN_PROC_BROWSER_TEST_P(GlicApiTest, testHibernateAllOnMemoryPressure) {
   GetService()->web_contents_warming_pool().EnsurePreload();
 
   // Open 3 instances, with instance 2 being the active one.
@@ -3383,41 +3359,6 @@ IN_PROC_BROWSER_TEST_P(GlicApiTestHibernateAllOnMemoryPressure,
   // Active instance should not be hibernated.
   ASSERT_TRUE(instance1->IsShowing());
   ASSERT_FALSE(instance1->IsHibernated());
-}
-
-IN_PROC_BROWSER_TEST_P(GlicApiTestHibernateAllAggressiveOnMemoryPressure,
-                       testHibernateAllAggressiveOnMemoryPressure) {
-  GetService()->web_contents_warming_pool().EnsurePreload();
-
-  // Open instance 1, making it active and showing.
-  GlicInstanceImpl* instance1 = OpenGlicInNewTabAndGetInstance(0, kFirstTab);
-  ASSERT_TRUE(instance1->IsShowing());
-
-  // There is a warmed contents initially.
-  GetService()->web_contents_warming_pool().EnsurePreload();
-  ASSERT_TRUE(
-      GetService()->web_contents_warming_pool().HasWarmedContainerForTesting());
-
-  WebUIStateListener listener(&instance1->host());
-
-  // Simulate memory pressure.
-  base::MemoryPressureListener::NotifyMemoryPressure(
-      base::MEMORY_PRESSURE_LEVEL_CRITICAL);
-
-  // Verify the warmed contents is reset.
-  ASSERT_FALSE(
-      GetService()->web_contents_warming_pool().HasWarmedContainerForTesting());
-
-  // In aggressive mode, even the showing instance should be hibernated and
-  // closed.
-  tabs::TabInterface* tab = browser()->tab_strip_model()->GetTabAtIndex(0);
-  ASSERT_TRUE(base::test::RunUntil([&]() {
-    return instance1->IsHibernated() &&
-           !GlicSidePanelCoordinator::IsGlicSidePanelActive(tab);
-  }));
-
-  // The instance should also be closed (not showing).
-  ASSERT_FALSE(instance1->IsShowing());
 }
 
 IN_PROC_BROWSER_TEST_P(GlicApiTest, testPanelWillOpenBeforeClientReady) {
@@ -4004,14 +3945,6 @@ INSTANTIATE_TEST_SUITE_P(,
                          GlicApiTestWithGeminiActOnWebPolicy,
                          DefaultTestParamSet(),
                          &WithTestParams::PrintTestVariant);
-INSTANTIATE_TEST_SUITE_P(,
-                         GlicApiTestHibernateAllOnMemoryPressure,
-                         DefaultTestParamSet(),
-                         WithTestParams::PrintTestVariant);
-INSTANTIATE_TEST_SUITE_P(,
-                         GlicApiTestHibernateAllAggressiveOnMemoryPressure,
-                         DefaultTestParamSet(),
-                         WithTestParams::PrintTestVariant);
 INSTANTIATE_TEST_SUITE_P(,
                          GlicOnboardingApiTest,
                          DefaultTestParamSet(),

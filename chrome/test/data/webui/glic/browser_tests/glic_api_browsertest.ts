@@ -38,8 +38,6 @@ class ApiTests extends ApiTestFixtureBase {
 
   async testHibernateAllOnMemoryPressure() {}
 
-  async testHibernateAllAggressiveOnMemoryPressure() {}
-
   async testHibernateOnMemoryUsage() {}
 
   async testCancelActions() {

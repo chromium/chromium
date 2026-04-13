@@ -59,18 +59,6 @@ BASE_FEATURE(kGlicMaxRecency, base::FEATURE_ENABLED_BY_DEFAULT);
 constexpr base::FeatureParam<base::TimeDelta> kGlicMaxRecencyValue{
     &kGlicMaxRecency, "duration", base::Minutes(30)};
 
-BASE_FEATURE(kGlicMemoryPressureResponse, base::FEATURE_ENABLED_BY_DEFAULT);
-
-constexpr base::FeatureParam<base::MemoryPressureLevel>::Option
-    kGlicMemoryPressureResponseLevelOptions[] = {
-        {base::MEMORY_PRESSURE_LEVEL_MODERATE, "moderate"},
-        {base::MEMORY_PRESSURE_LEVEL_CRITICAL, "critical"}};
-
-constexpr base::FeatureParam<base::MemoryPressureLevel>
-    kGlicMemoryPressureResponseLevel{&kGlicMemoryPressureResponse, "level",
-                                     base::MEMORY_PRESSURE_LEVEL_CRITICAL,
-                                     &kGlicMemoryPressureResponseLevelOptions};
-
 GlicTabRestoreData* GetTabRestoreData(const TabCreationEvent& creation_event) {
   if (!base::FeatureList::IsEnabled(features::kGlicTabRestoration)) {
     return nullptr;
@@ -89,11 +77,6 @@ constexpr base::FeatureParam<int> kGlicHibernateMemoryThresholdMb{
 constexpr base::FeatureParam<base::TimeDelta>
     kGlicHibernateMemoryPollingInterval{&kGlicHibernateOnMemoryUsage,
                                         "polling_interval", base::Minutes(10)};
-
-BASE_FEATURE(kGlicHibernateAllOnMemoryPressure,
-             base::FEATURE_DISABLED_BY_DEFAULT);
-constexpr base::FeatureParam<bool> kGlicHibernateAllAggressive{
-    &kGlicHibernateAllOnMemoryPressure, "aggressive", false};
 
 BASE_FEATURE(kGlicMaxAwakeInstances, base::FEATURE_ENABLED_BY_DEFAULT);
 constexpr base::FeatureParam<int> kGlicMaxAwakeInstancesLimit{
@@ -973,61 +956,18 @@ void GlicInstanceCoordinatorImpl::OnMemoryPressure(
     base::MemoryPressureLevel level) {
   metrics_.OnMemoryPressure(level);
 
-  if (!base::FeatureList::IsEnabled(kGlicMemoryPressureResponse)) {
-    return;
-  }
-
-  if (level < kGlicMemoryPressureResponseLevel.Get()) {
+  if (level < base::MEMORY_PRESSURE_LEVEL_CRITICAL) {
     return;
   }
 
   service_->web_contents_warming_pool().Clear();
 
-  if (base::FeatureList::IsEnabled(kGlicHibernateAllOnMemoryPressure)) {
-    // Iterate over a copy of instances to avoid issues with modification during
-    // iteration.
-    std::vector<GlicInstanceImpl*> instances_to_process;
-    for (auto const& [id, instance] : instances_) {
-      instances_to_process.push_back(instance.get());
-    }
-
-    for (GlicInstanceImpl* instance : instances_to_process) {
-      if (kGlicHibernateAllAggressive.Get()) {
-        auto was_showing = instance->IsShowing();
-        instance->Hibernate();
-        if (was_showing) {
-          instance->CloseAllEmbedders();
-        }
-      } else if (!instance->IsShowing() && !instance->IsActuating()) {
-        instance->Hibernate();
-      }
-    }
-    return;
-  }
-
-  // Safeguard: Do not hibernate if there is only one instance left.
-  if (instances_.size() <= 1) {
-    return;
-  }
-
-  GlicInstanceImpl* least_recently_active_instance = nullptr;
-  base::TimeDelta max_inactive_duration = base::TimeDelta::Min();
-
-  for (auto const& [id, instance] : instances_) {
-    // Safeguard: Do not hibernate actuating or already hibernated instances.
+  for (auto& [_, instance] : instances_) {
     if (instance->IsShowing() || instance->IsActuating() ||
         instance->IsHibernated()) {
       continue;
     }
-
-    if (instance->GetTimeSinceLastActive() > max_inactive_duration) {
-      max_inactive_duration = instance->GetTimeSinceLastActive();
-      least_recently_active_instance = instance.get();
-    }
-  }
-
-  if (least_recently_active_instance) {
-    least_recently_active_instance->Hibernate();
+    instance->Hibernate();
   }
 }
 
