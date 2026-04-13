@@ -7,6 +7,8 @@ package org.chromium.ui.widget;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.content.Context;
+import android.graphics.drawable.Animatable;
+import android.graphics.drawable.Drawable;
 import android.os.SystemClock;
 import android.util.AttributeSet;
 import android.view.View;
@@ -53,6 +55,12 @@ public class LoadingView extends ProgressBar {
                     mStartTime = SystemClock.elapsedRealtime();
                     setVisibility(View.VISIBLE);
                     setAlpha(1.0f);
+
+                    // Force the indeterminate drawable to start animating.
+                    Drawable d = getIndeterminateDrawable();
+                    if (d instanceof Animatable animatable) {
+                        animatable.start();
+                    }
 
                     for (Observer observer : mObservers) {
                         observer.onShowLoadingUiComplete();
