@@ -57,6 +57,7 @@ source_set("impl") {
     "//chrome/browser:browser_process",
     "//chrome/browser/android:tabs_public",
     "//chrome/browser/content_settings:content_settings_factory",
+    "//chrome/browser/glic",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/sessions",
     "//chrome/browser/sync",

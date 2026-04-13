@@ -8,12 +8,11 @@
 #include "chrome/browser/glic/glic_tab_restore_data.h"
 #include "chrome/browser/glic/public/features.h"
 #include "chrome/browser/glic/service/glic_instance_helper.h"
+#include "chrome/browser/glic/test_support/glic_browser_test.h"
 #include "chrome/browser/glic/test_support/glic_test_environment.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/tab_list/tab_list_interface.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/test/base/in_process_browser_test.h"
-#include "chrome/test/base/ui_test_utils.h"
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -37,20 +36,18 @@ class MockInstance : public GlicInstanceHelper::Instance {
   std::optional<std::string> conversation_id_;
 };
 
-class GlicTabRestoreHelperBrowserTest : public InProcessBrowserTest {
+class GlicTabRestoreHelperBrowserTest : public GlicBrowserTest {
  public:
   GlicTabRestoreHelperBrowserTest() {
     scoped_feature_list_.InitAndEnableFeature(features::kGlicTabRestoration);
   }
 
  private:
-  GlicTestEnvironment glic_test_environment_;
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_F(GlicTabRestoreHelperBrowserTest, PopulateAndRestore) {
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL("about:blank")));
-  auto* tab = GetTabListInterface()->GetActiveTab();
+  auto* tab = CreateAndActivateTab(GURL("about:blank"));
 
   // 1. Setup Glic state on the tab
   GlicInstanceHelper* helper = GlicInstanceHelper::From(tab);
@@ -68,7 +65,7 @@ IN_PROC_BROWSER_TEST_F(GlicTabRestoreHelperBrowserTest, PopulateAndRestore) {
 
   // 2. Populate extra_data
   std::map<std::string, std::string> extra_data;
-  PopulateGlicExtraData(tab->GetContents(), &extra_data);
+  PopulateGlicExtraData(tab, &extra_data);
 
   // 3. Verify extra_data contents
   EXPECT_EQ(extra_data["glic.instance_id"], instance_id_str);

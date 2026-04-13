@@ -72,7 +72,6 @@ constexpr base::FeatureParam<base::MemoryPressureLevel>
                                      &kGlicMemoryPressureResponseLevelOptions};
 
 GlicTabRestoreData* GetTabRestoreData(const TabCreationEvent& creation_event) {
-#if !BUILDFLAG(IS_ANDROID)
   if (!base::FeatureList::IsEnabled(features::kGlicTabRestoration)) {
     return nullptr;
   }
@@ -81,9 +80,6 @@ GlicTabRestoreData* GetTabRestoreData(const TabCreationEvent& creation_event) {
   }
   return GlicTabRestoreData::FromWebContents(
       creation_event.new_tab->GetContents());
-#else
-  return nullptr;  // NEEDS_ANDROID_IMPL: TODO(b/481802287)
-#endif
 }
 }  // namespace
 

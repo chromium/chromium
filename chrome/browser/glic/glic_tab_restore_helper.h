@@ -8,14 +8,18 @@
 #include <map>
 #include <string>
 
+namespace tabs {
+class TabInterface;
+}
+
 namespace content {
 class WebContents;
 }
 
 namespace glic {
 
-// Checks the WebContents for Glic state and populates the extra_data map.
-void PopulateGlicExtraData(content::WebContents* web_contents,
+// Checks the tab for Glic state and populates the extra_data map.
+void PopulateGlicExtraData(tabs::TabInterface* tab,
                            std::map<std::string, std::string>* extra_data);
 
 // Checks the extra_data map for Glic state and attaches it to the WebContents

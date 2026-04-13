@@ -30,17 +30,12 @@ constexpr char kInstanceIdKey[] = "instance_id";
 constexpr char kConversationIdKey[] = "conversation_id";
 }  // namespace
 
-void PopulateGlicExtraData(content::WebContents* web_contents,
+void PopulateGlicExtraData(tabs::TabInterface* tab,
                            std::map<std::string, std::string>* extra_data) {
   if (!base::FeatureList::IsEnabled(features::kGlicTabRestoration)) {
     return;
   }
 
-  if (!web_contents) {
-    return;
-  }
-
-  tabs::TabInterface* tab = tabs::TabInterface::GetFromContents(web_contents);
   if (!tab) {
     return;
   }

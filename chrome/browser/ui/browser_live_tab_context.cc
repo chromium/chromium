@@ -155,7 +155,7 @@ std::map<std::string, std::string> BrowserLiveTabContext::GetExtraDataForTab(
     int index) const {
   std::map<std::string, std::string> extra_data;
 
-  glic::PopulateGlicExtraData(tab_strip_model_->GetWebContentsAt(index),
+  glic::PopulateGlicExtraData(tab_strip_model_->GetTabAtIndex(index),
                               &extra_data);
 
   return extra_data;
