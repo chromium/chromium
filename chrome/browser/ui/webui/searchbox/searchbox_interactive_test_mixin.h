@@ -6,8 +6,10 @@
 #define CHROME_BROWSER_UI_WEBUI_SEARCHBOX_SEARCHBOX_INTERACTIVE_TEST_MIXIN_H_
 
 #include <concepts>
+#include <memory>
 #include <string>
 
+#include "base/strings/escape.h"
 #include "base/strings/stringprintf.h"
 #include "chrome/browser/history/history_service_factory.h"
 #include "chrome/test/base/ui_test_utils.h"
@@ -15,6 +17,8 @@
 #include "chrome/test/interaction/tracked_element_webcontents.h"
 #include "chrome/test/interaction/webcontents_interaction_test_util.h"
 #include "components/history/core/browser/history_service.h"
+#include "content/public/test/url_loader_interceptor.h"
+#include "net/base/url_util.h"
 #include "ui/base/interaction/element_identifier.h"
 
 template <typename T>
@@ -62,24 +66,31 @@ class SearchboxInteractiveTestMixin : public T {
             testing::StartsWith("https://www.google.com/search?q=" + query))));
   }
 
+  // Waits for match to render and verifies its text equals `expected_text`.
+  auto WaitForMatch(const ui::ElementIdentifier& contents_id,
+                    const WebContentsInteractionTestUtil::DeepQuery& match_text,
+                    const std::string& expected_text) {
+    DEFINE_LOCAL_CUSTOM_ELEMENT_EVENT_TYPE(kMatchReady);
+    WebContentsInteractionTestUtil::StateChange match_ready;
+    match_ready.event = kMatchReady;
+    match_ready.where = match_text;
+    match_ready.test_function = base::StringPrintf(
+        "(el) => el && el.textContent.replace(/\\s+/g, ' ').trim() === '%s'",
+        expected_text.c_str());
+
+    return T::Steps(
+        T::InAnyContext(T::WaitForElementToRender(contents_id, match_text),
+                        T::WaitForStateChange(contents_id, match_ready)));
+  }
+
   // Waits for match to render and verifies its text equals
   // "<input_text> - Google Search".
   auto WaitForVerbatimMatch(
       const ui::ElementIdentifier& contents_id,
       const WebContentsInteractionTestUtil::DeepQuery& match_text,
       const std::string& input_text) {
-    DEFINE_LOCAL_CUSTOM_ELEMENT_EVENT_TYPE(kVerbatimMatchReady);
-    WebContentsInteractionTestUtil::StateChange verbatim_match_ready;
-    verbatim_match_ready.event = kVerbatimMatchReady;
-    verbatim_match_ready.where = match_text;
-    verbatim_match_ready.test_function = base::StringPrintf(
-        "(el) => el && el.textContent.replace(/\\s+/g, ' ').trim() === "
-        "'%s - Google Search'",
-        input_text.c_str());
-
-    return T::Steps(T::InAnyContext(
-        T::WaitForElementToRender(contents_id, match_text),
-        T::WaitForStateChange(contents_id, verbatim_match_ready)));
+    return WaitForMatch(contents_id, match_text,
+                        input_text + " - Google Search");
   }
 
   // Triggers a voice search with the final result matching `result`.
@@ -94,6 +105,44 @@ class SearchboxInteractiveTestMixin : public T {
                            "{detail: '%s', bubbles: true, composed: true}))",
                            result.c_str()))));
   }
+
+ protected:
+  void SetUpUrlLoaderInterceptor() {
+    url_loader_interceptor_ =
+        std::make_unique<content::URLLoaderInterceptor>(base::BindRepeating(
+            [](content::URLLoaderInterceptor::RequestParams* params) {
+              if (params->url_request.url.path() != "/complete/search") {
+                return false;
+              }
+
+              std::string query;
+              std::string q_param;
+              if (net::GetValueForKeyInQuery(params->url_request.url, "q",
+                                             &q_param)) {
+                query = base::UnescapeURLComponent(
+                    q_param, base::UnescapeRule::REPLACE_PLUS_WITH_SPACE);
+              }
+
+              // Return a mock Autocomplete JSON response array.
+              // The response must be prefixed with ")]}'\n" to prevent XSSI
+              // if xssi=t was passed.
+              std::string response_json = base::StringPrintf(
+                  R"()]}'\n["%s", ["suggestion-1", "suggestion-2"]])",
+                  query.c_str());
+
+              constexpr std::string_view headers =
+                  "HTTP/1.1 200 OK\nContent-Type: application/json\n\n";
+
+              content::URLLoaderInterceptor::WriteResponse(
+                  headers, response_json, params->client.get());
+              return true;
+            }));
+  }
+
+  void TearDownUrlLoaderInterceptor() { url_loader_interceptor_.reset(); }
+
+ private:
+  std::unique_ptr<content::URLLoaderInterceptor> url_loader_interceptor_;
 };
 
 #endif  // CHROME_BROWSER_UI_WEBUI_SEARCHBOX_SEARCHBOX_INTERACTIVE_TEST_MIXIN_H_

@@ -8,6 +8,7 @@
 #include "base/path_service.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
+#include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/buildflag.h"
 #include "chrome/browser/autocomplete/aim_eligibility_service_factory.h"
@@ -351,6 +352,18 @@ class NtpRealboxUiTestBase
     return enabled_features;
   }
 
+  void SetUpOnMainThread() override {
+    SearchboxInteractiveTestMixin<
+        WebUiInteractiveTestMixin<InteractiveBrowserTest>>::SetUpOnMainThread();
+    SetUpUrlLoaderInterceptor();
+  }
+
+  void TearDownOnMainThread() override {
+    TearDownUrlLoaderInterceptor();
+    SearchboxInteractiveTestMixin<WebUiInteractiveTestMixin<
+        InteractiveBrowserTest>>::TearDownOnMainThread();
+  }
+
   void SetUpBrowserContextKeyedServices(
       content::BrowserContext* context) override {
     InteractiveBrowserTest::SetUpBrowserContextKeyedServices(context);
@@ -392,10 +405,6 @@ class NtpRealboxUiScreenshotTest
                                                 disabled_features);
 
     NtpRealboxUiTestBase::SetUp();
-  }
-
-  void SetUpOnMainThread() override {
-    NtpRealboxUiTestBase::SetUpOnMainThread();
   }
 
   void SetUpBrowserContextKeyedServices(
@@ -494,6 +503,30 @@ class NtpRealboxInteractiveTest : public NtpRealboxUiTestBase {
  private:
   base::test::ScopedFeatureList feature_list_;
 };
+
+IN_PROC_BROWSER_TEST_F(NtpRealboxInteractiveTest, ComposeboxTypedSuggestions) {
+  const DeepQuery kComposeboxMatch1 = {"ntp-app", "#composebox", "#matches",
+                                       "#match1", "#textContainer"};
+
+  RunTestSequence(
+      // Load NTP.
+      AddInstrumentedTab(kNtpElementId, GURL(chrome::kChromeUINewTabURL)),
+      WaitForElementToRender(kNtpElementId, kRealbox),
+      WaitForElementToRender(kNtpElementId, kComposeButton),
+      // Click on the compose button.
+      ClickElement(kNtpElementId, kComposeButton),
+      // Observe/assert that the composebox dialog is open.
+      WaitForDialogStateChange(kComposeboxDialog, /*expected_open=*/true),
+      // Type "t" into composebox input.
+      ClickElement(kNtpElementId, kComposeboxInput),
+      SendKeyPress(kNtpElementId, ui::VKEY_T),
+      // Wait for suggestion to appear.
+      WaitForMatch(kNtpElementId, kComposeboxMatch1, "suggestion-1"),
+      // Click the match.
+      ClickElement(kNtpElementId, kComposeboxMatch1),
+      // Ensure google search occurs.
+      WaitForGoogleSearch(kNtpElementId, "suggestion-1"));
+}
 
 IN_PROC_BROWSER_TEST_F(NtpRealboxInteractiveTest, RealboxMultilineInputTest) {
 #if BUILDFLAG(IS_CHROMEOS)
