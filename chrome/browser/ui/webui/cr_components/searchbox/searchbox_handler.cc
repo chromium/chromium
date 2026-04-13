@@ -1174,6 +1174,12 @@ void SearchboxHandler::GetPlaceholderConfig(
         placeholders.emplace_back(l10n_util::GetStringUTF16(it->second));
       }
     }
+
+    // If no tools are eligible, clear the placeholders to disable cycling and
+    // fall back to the static placeholder text.
+    if (placeholders.size() <= 1) {
+      placeholders.clear();
+    }
   }
 
   const auto placeholder_config = ntp_composebox::FeatureConfig::Get()

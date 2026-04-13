@@ -129,8 +129,9 @@ export class NtpSearchboxElement extends SearchboxElement implements
       waitForLazyRender().then(async () => {
         const {config} = await this.pageHandler().getPlaceholderConfig();
         const texts = config.texts;
-        if (texts.length === 0) {
-          // PEC API returned no placeholders; feature is disabled.
+        if (texts.length < 2) {
+          // Need at least 2 placeholders to cycle. If fewer, disable cycling
+          // and let the static placeholder text show instead.
           return;
         }
         this.placeholderText = texts[0]!;
