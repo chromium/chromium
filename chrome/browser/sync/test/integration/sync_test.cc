@@ -1364,12 +1364,12 @@ syncer::DataTypeSet AllowedTypesInStandaloneTransportMode() {
       }
     }
 
-#if BUILDFLAG(ENABLE_EXTENSIONS)
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
     if (switches::IsExtensionsExplicitBrowserSigninEnabled()) {
       allowed_types.Put(syncer::EXTENSIONS);
       allowed_types.Put(syncer::EXTENSION_SETTINGS);
     }
-#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS_CORE)
   }
   allowed_types.Put(syncer::AUTOFILL_VALUABLE);
 
