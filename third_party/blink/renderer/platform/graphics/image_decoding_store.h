@@ -253,35 +253,27 @@ class PLATFORM_EXPORT ImageDecodingStore final {
   void Prune();
 
   // These helper methods are called while |lock_| is held.
-  template <class T, class U, class V>
-  void InsertCacheInternal(std::unique_ptr<T> cache_entry,
-                           U* cache_map,
-                           V* identifier_map) EXCLUSIVE_LOCKS_REQUIRED(lock_);
+  void InsertCacheInternal(std::unique_ptr<DecoderCacheEntry> cache_entry)
+      EXCLUSIVE_LOCKS_REQUIRED(lock_);
 
   // Helper method to remove a cache entry. Ownership is transferred to
   // deletionList. Use of Vector<> is handy when removing multiple entries.
-  template <class T, class U, class V>
   void RemoveFromCacheInternal(
-      const T* cache_entry,
-      U* cache_map,
-      V* identifier_map,
+      const DecoderCacheEntry* cache_entry,
       Vector<std::unique_ptr<CacheEntry>>* deletion_list)
       EXCLUSIVE_LOCKS_REQUIRED(lock_);
 
-  // Helper method to remove a cache entry. Uses the templated version base on
+  // Helper method to remove a cache entry. Uses a specific version base on
   // the type of cache entry.
   void RemoveFromCacheInternal(
-      const CacheEntry*,
+      const CacheEntry* cache_entry,
       Vector<std::unique_ptr<CacheEntry>>* deletion_list)
       EXCLUSIVE_LOCKS_REQUIRED(lock_);
 
   // Helper method to remove all cache entries associated with an
   // ImageFrameGenerator. Ownership of the cache entries is transferred to
   // |deletionList|.
-  template <class U, class V>
   void RemoveCacheIndexedByGeneratorInternal(
-      U* cache_map,
-      V* identifier_map,
       const ImageFrameGenerator*,
       Vector<std::unique_ptr<CacheEntry>>* deletion_list)
       EXCLUSIVE_LOCKS_REQUIRED(lock_);
