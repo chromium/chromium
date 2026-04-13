@@ -33,7 +33,7 @@ def gen_jni_register_function(sb, jni_mode, gen_jni_class,
     sb('\n};')
     sb(f"""
 jni_zero::ScopedJavaLocalRef<jclass> native_clazz =
-    jni_zero::GetClass(env, "{gen_jni_class.full_name_with_slashes}");
+    jni_zero::GetClass(env, "{gen_jni_class.full_name}");
 if (env->RegisterNatives(native_clazz.obj(), kMethods, std::size(kMethods)) < 0) {{
   jni_zero::internal::HandleRegistrationError(env, native_clazz.obj(), __FILE__);
   return false;

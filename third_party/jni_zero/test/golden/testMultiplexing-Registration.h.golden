@@ -236,7 +236,7 @@ bool RegisterNative_J_N(JNIEnv* env) {
 
   };
   jni_zero::ScopedJavaLocalRef<jclass> native_clazz =
-      jni_zero::GetClass(env, "J/N");
+      jni_zero::GetClass(env, "J.N");
   if (env->RegisterNatives(native_clazz.obj(), kMethods, std::size(kMethods)) < 0) {
     jni_zero::internal::HandleRegistrationError(env, native_clazz.obj(), __FILE__);
     return false;
