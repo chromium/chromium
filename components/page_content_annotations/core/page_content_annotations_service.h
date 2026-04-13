@@ -79,7 +79,7 @@ struct HistoryVisit {
   base::Time nav_entry_timestamp;
   GURL url;
   int64_t navigation_id = 0;
-  std::optional<history::VisitID> visit_id;
+  history::VisitID visit_id = history::kInvalidVisitID;
   std::optional<std::string> text_to_annotate;
 
   struct Comp {
@@ -91,12 +91,8 @@ struct HistoryVisit {
       if (lhs.nav_entry_timestamp != rhs.nav_entry_timestamp) {
         return lhs.nav_entry_timestamp < rhs.nav_entry_timestamp;
       }
-      if (lhs.visit_id && rhs.visit_id) {
-        return *lhs.visit_id < *rhs.visit_id;
-      }
-      if (lhs.visit_id) {
-        // If we get here, this means that |rhs| does not have a visit ID.
-        return false;
+      if (lhs.visit_id != rhs.visit_id) {
+        return lhs.visit_id < rhs.visit_id;
       }
       return lhs.url < rhs.url;
     }

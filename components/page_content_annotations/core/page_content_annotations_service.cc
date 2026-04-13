@@ -9,6 +9,7 @@
 #include <utility>
 
 #include "base/barrier_closure.h"
+#include "base/check_op.h"
 #include "base/containers/adapters.h"
 #include "base/functional/callback_helpers.h"
 #include "base/i18n/case_conversion.h"
@@ -520,11 +521,11 @@ void PageContentAnnotationsService::OnPageContentAnnotated(
     return;
   }
 
-  if (visit.visit_id) {
+  if (visit.visit_id != history::kInvalidVisitID) {
     // If the visit ID is known, directly add the annotations for that visit
     // rather than querying history for the closest match.
     history_service_->AddContentModelAnnotationsForVisit(*content_annotations,
-                                                         *visit.visit_id);
+                                                         visit.visit_id);
   } else {
     QueryURL(visit,
              base::BindOnce(
@@ -823,7 +824,7 @@ void PageContentAnnotationsService::PersistRemotePageMetadata(
     const HistoryVisit& visit,
     const optimization_guide::proto::PageEntitiesMetadata&
         page_entities_metadata) {
-  CHECK(visit.visit_id);
+  CHECK_NE(visit.visit_id, history::kInvalidVisitID);
 
   // Persist entities and categories to VisitContentModelAnnotations if that
   // feature is enabled.
@@ -852,13 +853,13 @@ void PageContentAnnotationsService::PersistRemotePageMetadata(
   if (!model_annotations.entities.empty() ||
       !model_annotations.categories.empty()) {
     history_service_->AddContentModelAnnotationsForVisit(model_annotations,
-                                                         *visit.visit_id);
+                                                         visit.visit_id);
   }
 
   // Persist any other metadata to VisitContentAnnotations, if enabled.
   if (!page_entities_metadata.alternative_title().empty()) {
     history_service_->AddPageMetadataForVisit(
-        page_entities_metadata.alternative_title(), *visit.visit_id);
+        page_entities_metadata.alternative_title(), visit.visit_id);
   }
 }
 
@@ -866,7 +867,7 @@ void PageContentAnnotationsService::PersistSalientImageMetadata(
     const HistoryVisit& visit,
     const optimization_guide::proto::SalientImageMetadata&
         salient_image_metadata) {
-  CHECK(visit.visit_id);
+  CHECK_NE(visit.visit_id, history::kInvalidVisitID);
 
   if (salient_image_metadata.thumbnails_size() <= 0) {
     return;
@@ -876,7 +877,7 @@ void PageContentAnnotationsService::PersistSalientImageMetadata(
   for (const auto& thumbnail : salient_image_metadata.thumbnails()) {
     if (!thumbnail.image_url().empty()) {
       history_service_->SetHasUrlKeyedImageForVisit(
-          /*has_url_keyed_image=*/true, *visit.visit_id);
+          /*has_url_keyed_image=*/true, visit.visit_id);
     }
   }
 }

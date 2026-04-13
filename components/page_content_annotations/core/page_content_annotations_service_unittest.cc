@@ -365,7 +365,8 @@ TEST_F(PageContentAnnotationsServiceTest, MAYBE_BatchLimitTriggersJob) {
       .Times(5);
 
   for (int i = 0; i < 5; ++i) {
-    VisitURL(GURL("https://example.com"), u"test", i,
+    // history::kInvalidVisitID is 0, so we need to use i+1 for visit IDs.
+    VisitURL(GURL("https://example.com"), u"test", /*visit_id=*/i + 1,
              /*local_navigation_id=*/i,
              /*is_synced_visit=*/false);
   }
@@ -432,14 +433,16 @@ TEST_F(PageContentAnnotationsServiceTest, MAYBE_OlderVisitsDropped) {
   };
   test_annotator_->UseVisibilityScores(std::nullopt, titles_to_score);
 
-  EXPECT_CALL(*history_service_, AddContentModelAnnotationsForVisit(_, 1));
-  EXPECT_CALL(*history_service_, AddContentModelAnnotationsForVisit(_, 0));
-  EXPECT_CALL(*history_service_, AddContentModelAnnotationsForVisit(_, 4));
   EXPECT_CALL(*history_service_, AddContentModelAnnotationsForVisit(_, 2));
+  EXPECT_CALL(*history_service_, AddContentModelAnnotationsForVisit(_, 1));
+  EXPECT_CALL(*history_service_, AddContentModelAnnotationsForVisit(_, 5));
+  EXPECT_CALL(*history_service_, AddContentModelAnnotationsForVisit(_, 3));
 
   for (int i = 0; i < 6; ++i) {
+    // history::kInvalidVisitID is 0, so we use i+1 for our visit IDs.
     VisitURL(GURL("https://example.com"),
-             base::UTF8ToUTF16((titles_to_score.begin() + i)->first), i,
+             base::UTF8ToUTF16((titles_to_score.begin() + i)->first),
+             /*visit_id=*/i + 1,
              /*local_navigation_id=*/i,
              /*is_synced_visit=*/false, kTimestamps[i]);
   }
