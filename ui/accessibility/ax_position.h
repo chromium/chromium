@@ -19,6 +19,7 @@
 #include <vector>
 
 #include "base/compiler_specific.h"
+#include "base/containers/span.h"
 #include "base/containers/stack.h"
 #include "base/export_template.h"
 #include "base/functional/bind.h"
@@ -364,9 +365,10 @@ class AXPosition {
     // A tree ID can be serialized as a 32-byte string.
     std::string tree_id_string = tree_id_.ToString();
     DCHECK_LE(tree_id_string.size(), SerializedPosition::kMaxTreeIdLength);
-    UNSAFE_TODO(strncpy(result.tree_id, tree_id_string.c_str(),
-                        SerializedPosition::kMaxTreeIdLength));
-    result.tree_id[SerializedPosition::kMaxTreeIdLength] = 0;
+    auto tree_id_span = base::as_writable_byte_span(result.tree_id);
+    std::ranges::fill(tree_id_span, 0);
+    tree_id_span.first(tree_id_string.size())
+        .copy_from(base::as_byte_span(tree_id_string));
 
     result.anchor_id = anchor_id_;
     result.child_index = child_index_;

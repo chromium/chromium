@@ -5,6 +5,7 @@
 #include "ui/accessibility/ax_tree.h"
 
 #include "base/compiler_specific.h"
+#include "base/containers/span.h"
 #include "base/logging.h"
 #include "ui/accessibility/ax_tree_observer.h"
 
@@ -15,16 +16,19 @@ class EmptyAXTreeObserver : public ui::AXTreeObserver {
 };
 
 // Entry point for LibFuzzer.
-extern "C" int LLVMFuzzerTestOneInput(const unsigned char* data, size_t size) {
+extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
+  // SAFETY: `data` points to a buffer containing at least `size` bytes.
+  auto data_span = UNSAFE_BUFFERS(base::span(data, size));
   ui::AXTreeUpdate initial_state;
   size_t i = 0;
-  while (i < size) {
+  while (i < data_span.size()) {
     ui::AXNodeData node;
-    node.id = UNSAFE_TODO(data[i++]);
-    if (i < size) {
-      size_t child_count = UNSAFE_TODO(data[i++]);
-      for (size_t j = 0; j < child_count && i < size; j++)
-        node.child_ids.push_back(UNSAFE_TODO(data[i++]));
+    node.id = data_span[i++];
+    if (i < data_span.size()) {
+      size_t child_count = data_span[i++];
+      for (size_t j = 0; j < child_count && i < data_span.size(); j++) {
+        node.child_ids.push_back(data_span[i++]);
+      }
     }
     initial_state.nodes.push_back(node);
   }

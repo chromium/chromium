@@ -19,22 +19,26 @@
 #include "ui/accessibility/ax_tree_update.h"
 
 FuzzerData::FuzzerData(const unsigned char* data, size_t size)
-    : data_(data), data_size_(size), data_index_(0) {}
+    : data_index_(0) {
+  // SAFETY: `data` points to `size` readable bytes provided by the fuzzer
+  // entrypoint.
+  data_ = (UNSAFE_BUFFERS(base::span(data, size)));
+}
 
 size_t FuzzerData::RemainingBytes() {
-  return data_size_ - data_index_;
+  return data_.size() - data_index_;
 }
 
-unsigned char FuzzerData::NextByte() {
+uint8_t FuzzerData::NextByte() {
   CHECK(RemainingBytes());
-  return UNSAFE_TODO(data_[data_index_++]);
+  return data_[data_index_++];
 }
 
-const unsigned char* FuzzerData::NextBytes(size_t amount) {
+base::span<const uint8_t> FuzzerData::NextBytes(size_t amount) {
   CHECK(RemainingBytes() >= amount);
-  const unsigned char* current_position = &UNSAFE_TODO(data_[data_index_]);
+  auto current = data_.subspan(data_index_, amount);
   data_index_ += amount;
-  return current_position;
+  return current;
 }
 
 ui::AXTree* AXTreeFuzzerGenerator::GetTree() {
@@ -187,7 +191,7 @@ void AXTreeFuzzerGenerator::RecursiveGenerateUpdate(
         text_size = extra_data_size;
       extra_data_size -= text_size;
       inline_text_data.SetName(
-          GenerateInterestingText(fuzz_data.NextBytes(text_size), text_size));
+          GenerateInterestingText(fuzz_data.NextBytes(text_size)));
       static_text_data.SetName(inline_text_data.GetStringAttribute(
           ax::mojom::StringAttribute::kName));
       tree_update.nodes.push_back(static_text_data);
@@ -301,8 +305,7 @@ void AXTreeFuzzerGenerator::AddRoleSpecificProperties(
     if (text_size > extra_data_size)
       text_size = extra_data_size;
     extra_data_size -= text_size;
-    node.SetName(
-        GenerateInterestingText(fuzz_data.NextBytes(text_size), text_size));
+    node.SetName(GenerateInterestingText(fuzz_data.NextBytes(text_size)));
   }
 }
 
@@ -340,15 +343,15 @@ bool AXTreeFuzzerGenerator::CanHaveChildren(ax::mojom::Role role) {
 }
 
 std::u16string AXTreeFuzzerGenerator::GenerateInterestingText(
-    const unsigned char* data,
-    size_t size) {
+    base::span<const uint8_t> data) {
   std::u16string wide_str;
-  for (size_t i = 0; i + 1 < size; i += 2) {
-    char16_t char_16 = UNSAFE_TODO(data[i]) << 8;
-    char_16 |= UNSAFE_TODO(data[i + 1]);
+  for (size_t i = 0; i + 1 < data.size(); i += 2) {
+    char16_t char_16 = data[i] << 8;
+    char_16 |= data[i + 1];
     // Don't insert a null character.
-    if (char_16)
+    if (char_16) {
       wide_str.push_back(char_16);
+    }
   }
   return wide_str;
 }
