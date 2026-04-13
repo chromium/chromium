@@ -1044,9 +1044,9 @@ CanvasNon2DResourceProviderSharedImage::DoExternalOverdrawAndProduceResource(
     }
   }
 
-  if (is_software_) {
-    FlushCanvas(/*is_overwrite=*/true);
+  FlushCanvas(/*is_overwrite=*/true);
 
+  if (is_software_) {
     // Note that the resource *must* be a CanvasResourceSharedImage as this
     // class creates CanvasResourceSharedImage instances exclusively.
     static_cast<CanvasResourceSharedImage*>(software_resource.get())
@@ -1056,10 +1056,8 @@ CanvasNon2DResourceProviderSharedImage::DoExternalOverdrawAndProduceResource(
   }
 
   // We are about to give the caller read access to this resource (and its
-  // backing SharedImage). Hence, we must make sure that the SI is updated to
-  // reflect the ops made in the current write access (if any) and give up any
-  // such write access.
-  FlushCanvas(/*is_overwrite=*/true);
+  // backing SharedImage). Hence, we must give up the current write access
+  // (if any).
   EndWriteAccess();
 
   return resource_;
