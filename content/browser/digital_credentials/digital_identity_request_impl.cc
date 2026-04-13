@@ -424,10 +424,17 @@ void DigitalIdentityRequestImpl::CompleteRequestWithStatus(
     RequestDigitalIdentityStatus status,
     base::expected<DigitalIdentityProvider::DigitalCredential,
                    RequestStatusForMetrics> response) {
-  // Invalidate pending requests in case that the request gets aborted.
-  weak_ptr_factory_.InvalidateWeakPtrs();
-
+  // `provider_.reset()` can synchronously close UI which (via activation
+  // observers) may destroy the hosting WebContents and therefore `this`.
+  // Guard with a WeakPtr and bail out if that happens. Weak pointers must be
+  // invalidated only after the liveness check.
+  base::WeakPtr<DigitalIdentityRequestImpl> weak_this =
+      weak_ptr_factory_.GetWeakPtr();
   provider_.reset();
+  if (!weak_this) {
+    return;
+  }
+  weak_ptr_factory_.InvalidateWeakPtrs();
   update_interstitial_on_abort_callback_.Reset();
 
   base::UmaHistogramEnumeration("Blink.DigitalIdentityRequest.Status",

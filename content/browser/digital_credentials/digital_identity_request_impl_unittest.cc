@@ -1296,6 +1296,114 @@ TEST_F(DigitalIdentityRequestImplTest,
   run_loop.Run();
 }
 
+// A DigitalIdentityProvider whose destructor runs an arbitrary closure. This
+// models the production behaviour where ~DigitalIdentityProviderDesktop tears
+// down a views::Widget, which can synchronously fire activation/visibility
+// observers. If one of those observers destroys the hosting WebContents (e.g. a
+// transient bubble that closes on focus loss), DigitalIdentityRequestImpl is
+// synchronously deleted while CompleteRequestWithStatus() is still on the
+// stack.
+class WebContentsDestroyingProvider : public StubDigitalIdentityProvider {
+ public:
+  explicit WebContentsDestroyingProvider(base::OnceClosure on_destroy)
+      : on_destroy_(std::move(on_destroy)) {}
+  ~WebContentsDestroyingProvider() override {
+    if (on_destroy_) {
+      std::move(on_destroy_).Run();
+    }
+  }
+
+  // Keep the request pending; the test drives completion via Abort().
+  void Get(WebContents*,
+           const url::Origin&,
+           base::ValueView,
+           DigitalIdentityCallback) override {}
+
+ private:
+  base::OnceClosure on_destroy_;
+};
+
+class WebContentsDestroyingBrowserClient : public ContentBrowserClient {
+ public:
+  explicit WebContentsDestroyingBrowserClient(base::OnceClosure on_destroy)
+      : on_destroy_(std::move(on_destroy)) {}
+  ~WebContentsDestroyingBrowserClient() override = default;
+
+  std::unique_ptr<DigitalIdentityProvider> CreateDigitalIdentityProvider()
+      override {
+    return std::make_unique<WebContentsDestroyingProvider>(
+        std::move(on_destroy_));
+  }
+
+ private:
+  base::OnceClosure on_destroy_;
+};
+
+class DigitalIdentityRequestImplProviderResetTest
+    : public RenderViewHostTestHarness {
+ public:
+  void SetUp() override {
+    RenderViewHostTestHarness::SetUp();
+    // Skip the interstitial so provider_->Get() is reached synchronously.
+    scoped_feature_list_.InitAndEnableFeatureWithParameters(
+        features::kWebIdentityDigitalCredentials, {{"dialog", "no_dialog"}});
+
+    browser_client_ =
+        std::make_unique<WebContentsDestroyingBrowserClient>(base::BindOnce(
+            &DigitalIdentityRequestImplProviderResetTest::DeleteContents,
+            base::Unretained(this)));
+    old_client_ = content::SetBrowserClientForTesting(browser_client_.get());
+  }
+
+  void TearDown() override {
+    content::SetBrowserClientForTesting(old_client_);
+    RenderViewHostTestHarness::TearDown();
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+  std::unique_ptr<WebContentsDestroyingBrowserClient> browser_client_;
+  raw_ptr<ContentBrowserClient> old_client_ = nullptr;
+};
+
+// Regression test for a potential use-after-free in
+// DigitalIdentityRequestImpl::CompleteRequestWithStatus(). If destroying the
+// DigitalIdentityProvider synchronously destroys the WebContents that hosts the
+// requesting frame, the DocumentService base class will `delete this` while
+// CompleteRequestWithStatus() is still executing, and the subsequent accesses
+// to `update_interstitial_on_abort_callback_` and `callback_` are
+// use-after-free.
+//
+// This test models that destruction directly: the provider's destructor
+// synchronously deletes the harness WebContents. Under ASAN this surfaces as a
+// heap-use-after-free inside CompleteRequestWithStatus().
+TEST_F(DigitalIdentityRequestImplProviderResetTest,
+       AbortWhileProviderDestroysWebContents) {
+  mojo::Remote<blink::mojom::DigitalIdentityRequest> remote;
+  base::WeakPtr<DigitalIdentityRequestImpl> impl =
+      DigitalIdentityRequestImpl::CreateInstance(
+          *web_contents()->GetPrimaryMainFrame(),
+          remote.BindNewPipeAndPassReceiver());
+  ASSERT_TRUE(impl);
+
+  DigitalCredentialGetRequestPtr request = DigitalCredentialGetRequest::New();
+  request->protocol = "openid4vp";
+  request->data = base::Value(base::DictValue());
+  std::vector<DigitalCredentialGetRequestPtr> requests;
+  requests.push_back(std::move(request));
+
+  // Populates `provider_` (with WebContentsDestroyingProvider) and `callback_`.
+  impl->Get(std::move(requests), base::DoNothing());
+
+  // Abort() -> CompleteRequestWithStatus() -> provider_.reset() ->
+  //   ~WebContentsDestroyingProvider -> DeleteContents() ->
+  //     ~WebContentsImpl -> ~RenderFrameHostImpl ->
+  //       DocumentService::ResetAndDeleteThisInternal -> delete impl
+  // Control then returns to CompleteRequestWithStatus() which touches freed
+  // members.
+  ASSERT_NO_FATAL_FAILURE(impl->Abort());
+}
+
 TEST_F(DigitalIdentityRequestImplTest,
        ShouldReturnSameErrorForNoCredentialAndUserDeclined) {
   const std::string kProtocol = "protocol";
