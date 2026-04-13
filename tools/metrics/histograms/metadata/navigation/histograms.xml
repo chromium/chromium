@@ -522,26 +522,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram
-    name="BackForwardCache.HistoryNavigationOutcome.NotRestoredDueToAccessibility.AXEventType"
-    enum="AXEventType" expires_after="2022-10-31">
-  <owner>yuzus@chromium.org</owner>
-  <owner>bfcache-dev@chromium.org</owner>
-  <summary>
-    For history navigations, records the AX event type that caused
-    RenderFrameHost::IsInactiveAndDisallowActivation calls. The value refers to
-    AX enum in ui/accessibility/ax_enums.mojom.
-
-    The metric is recorded when a history navigation commits and emits the
-    breakdown of a specific bucket in HistoryNavigationOutcome.NotRestoredReason
-    (AXEvent). Compare this with BackForwardCache.HistoryNavigationOutcome,
-    which contains the total number of navigations which were not cached.
-
-    This is recorded for all websites regardless whether back-forward cache is
-    enabled or not.
-  </summary>
-</histogram>
-
 <histogram name="BackForwardCache.HistoryNavigationOutcome.NotRestoredReason"
     enum="BackForwardCacheNotRestoredReason" expires_after="2026-08-09">
   <owner>fergal@chromium.org</owner>
@@ -842,12 +822,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Navigation.BackForward.CacheFlags" enum="NavigationCacheEnum"
-    expires_after="M85">
-  <owner>clamy@chromium.org</owner>
-  <summary>The cache flags set on back-forward navigations.</summary>
-</histogram>
-
 <histogram
     name="Navigation.BackForward.TimeFromOpenBackNavigationMenuToActivateItem"
     units="ms" expires_after="2025-01-05">
@@ -874,12 +848,6 @@ chromium-metrics-reviews@google.com.
     indicates it will be closed. See `BackForwardMenuModel::MenuWillShow()` and
     `BackForwardMenuModel::MenuWillClose()` for details.
   </summary>
-</histogram>
-
-<histogram name="Navigation.BackForward.WasCached"
-    enum="NavigationWasServedFromCache" expires_after="M85">
-  <owner>clamy@chromium.org</owner>
-  <summary>Whether the back-forward navigation was served from cache.</summary>
 </histogram>
 
 <histogram name="Navigation.BackToOpener.Clicked" enum="Boolean"

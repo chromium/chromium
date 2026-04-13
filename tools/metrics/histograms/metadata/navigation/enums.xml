@@ -32,68 +32,6 @@ chromium-metrics-reviews@google.com.
   <int value="2" label="Cross origin frame to mapped URL not opted in"/>
 </enum>
 
-<enum name="AXEventType">
-  <int value="0" label="None"/>
-  <int value="1" label="ActiveDescendantChanged"/>
-  <int value="2" label="Alert"/>
-  <int value="3" label="AriaAttributeChangedDeprecated"/>
-  <int value="4" label="AutocorrectionOccured"/>
-  <int value="5" label="Blur"/>
-  <int value="6" label="CheckedStateChanged"/>
-  <int value="7" label="ChildrenChanged"/>
-  <int value="8" label="Clicked"/>
-  <int value="9" label="ControlsChanged"/>
-  <int value="10" label="DocumentSelectionChanged"/>
-  <int value="11" label="DocumentTitleChanged"/>
-  <int value="12" label="EndOfTest"/>
-  <int value="13" label="ExpandedChanged"/>
-  <int value="14" label="Focus"/>
-  <int value="15" label="FocusAfterMenuClose"/>
-  <int value="16" label="FocusContext"/>
-  <int value="17" label="Hide"/>
-  <int value="18" label="HitTestResult"/>
-  <int value="19" label="Hover"/>
-  <int value="20" label="ImageFrameUpdated"/>
-  <int value="21" label="LayoutComplete"/>
-  <int value="22" label="LiveRegionCreated"/>
-  <int value="23" label="LiveRegionChanged"/>
-  <int value="24" label="LoadComplete"/>
-  <int value="25" label="LoadStart"/>
-  <int value="26" label="LocationChanged"/>
-  <int value="27" label="MediaStartedPlaying"/>
-  <int value="28" label="MediaStoppedPlaying"/>
-  <int value="29" label="MenuEnd"/>
-  <int value="30" label="MenuListValueChanged"/>
-  <int value="31" label="MenuPopupEnd"/>
-  <int value="32" label="MenuPopupStart"/>
-  <int value="33" label="MenuStart"/>
-  <int value="34" label="MouseCanceled"/>
-  <int value="35" label="MouseDragged"/>
-  <int value="36" label="MouseMoved"/>
-  <int value="37" label="MousePressed"/>
-  <int value="38" label="MouseReleased"/>
-  <int value="39" label="RowCollapsed"/>
-  <int value="40" label="RowCountChanged"/>
-  <int value="41" label="RowExpanded"/>
-  <int value="42" label="ScrollPositionChanged"/>
-  <int value="43" label="ScrolledToAnchor"/>
-  <int value="44" label="SelectedChildrenChanged"/>
-  <int value="45" label="Selection"/>
-  <int value="46" label="SelectionAdd"/>
-  <int value="47" label="SelectionRemove"/>
-  <int value="48" label="Show"/>
-  <int value="49" label="StateChanged"/>
-  <int value="50" label="TextChanged"/>
-  <int value="51" label="TextSelectionChanged"/>
-  <int value="52" label="TooltipClosed"/>
-  <int value="53" label="TooltipOpened"/>
-  <int value="54" label="TreeChanged"/>
-  <int value="55" label="ValueChanged"/>
-  <int value="56" label="WindowActivated"/>
-  <int value="57" label="WindowDeactivated"/>
-  <int value="58" label="WindowVisibilityChanged"/>
-</enum>
-
 <!-- LINT.IfChange(BackForwardCacheEntryMatchResult) -->
 
 <enum name="BackForwardCacheEntryMatchResult">
@@ -370,14 +308,6 @@ chromium-metrics-reviews@google.com.
   <int value="1" label="Browser mapped urn::uuid is rendered in iframe"/>
 </enum>
 
-<enum name="NavigationCacheEnum">
-  <int value="0" label="Validate cache"/>
-  <int value="1" label="Bypass cache"/>
-  <int value="2" label="Skip cache validation"/>
-  <int value="3" label="Only from cache"/>
-  <int value="4" label="Disable cache"/>
-</enum>
-
 <enum name="NavigationIsGuest">
   <int value="0" label="Not a guest navigation"/>
   <int value="1" label="Guest navigation"/>
@@ -525,11 +455,6 @@ chromium-metrics-reviews@google.com.
 </enum>
 
 <!-- LINT.ThenChange(//content/browser/renderer_host/navigation_transitions/navigation_transition_data.h:CacheHitOrMissReason)-->
-
-<enum name="NavigationWasServedFromCache">
-  <int value="0" label="Navigation wasn't served from cache"/>
-  <int value="1" label="Navigation was served from cache"/>
-</enum>
 
 <!-- LINT.IfChange(OnAcceptCHFrameReceivedReturnLocation) -->
 
