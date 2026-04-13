@@ -37,7 +37,6 @@ void MaybeOutputReason(std::string* out, std::string_view message) {
   const base::Feature* const kRequiredFeatures[] = {
       &features::kAccessibilityAnnotator,
       &features::kAccessibilityAnnotatorFirstRun,
-      &features::kAccessibilityAnnotatorDatabaseStorage,
   };
 
   for (const base::Feature* feature : kRequiredFeatures) {

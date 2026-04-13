@@ -26,8 +26,7 @@ class AccessibilityAnnotatorEnablementServiceImplTest : public testing::Test {
   AccessibilityAnnotatorEnablementServiceImplTest() {
     scoped_feature_list_.InitWithFeatures(
         /*enabled_features=*/{features::kAccessibilityAnnotator,
-                              features::kAccessibilityAnnotatorFirstRun,
-                              features::kAccessibilityAnnotatorDatabaseStorage},
+                              features::kAccessibilityAnnotatorFirstRun},
         /*disabled_features=*/{});
 
     SetPrefs();
@@ -122,8 +121,7 @@ TEST_F(AccessibilityAnnotatorEnablementServiceImplTest,
   feature_list.InitWithFeatures(
       /*enabled_features=*/{},
       /*disabled_features=*/{features::kAccessibilityAnnotator,
-                             features::kAccessibilityAnnotatorFirstRun,
-                             features::kAccessibilityAnnotatorDatabaseStorage});
+                             features::kAccessibilityAnnotatorFirstRun});
 
   EXPECT_EQ(service().GetEnablementState(),
             RemoteAnnotatorEnablementState::kDisabledNotEligible);
@@ -133,8 +131,7 @@ TEST_F(AccessibilityAnnotatorEnablementServiceImplTest,
        DisabledWhenMainFeatureIsOff) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures(
-      /*enabled_features=*/{features::kAccessibilityAnnotatorFirstRun,
-                            features::kAccessibilityAnnotatorDatabaseStorage},
+      /*enabled_features=*/{features::kAccessibilityAnnotatorFirstRun},
       /*disabled_features=*/{features::kAccessibilityAnnotator});
 
   EXPECT_EQ(service().GetEnablementState(),
