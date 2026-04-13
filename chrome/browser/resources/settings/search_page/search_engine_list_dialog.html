@@ -1,8 +1,4 @@
 <style include="cr-shared-style settings-shared">
-  :host{
-    --icon-size: var(--search-engine-icon-size, 24px);
-  }
-
   .subtitle {
     font-size: 0.75rem;
     line-height: 22px;
@@ -21,12 +17,6 @@
     display: flex;
     flex-direction: row;
     gap: 16px;
-  }
-
-  site-favicon {
-    --site-favicon-border-radius: 4px;
-    --site-favicon-height: var(--icon-size);
-    --site-favicon-width: var(--icon-size);
   }
 
   #setAsDefaultButton {
@@ -70,9 +60,8 @@
       <template is="dom-repeat" items="[[searchEngines]]">
         <cr-radio-button class="label-first" name="[[item.id]]">
           <div class="search-engine">
-            <site-favicon favicon-url="[[item.iconURL]]" url="[[item.url]]"
-                 icon-path="[[item.iconPath]]">
-            </site-favicon>
+            <settings-search-engine-icon engine="[[item]]">
+            </settings-search-engine-icon>
             [[item.name]]
           </div>
         </cr-radio-button>

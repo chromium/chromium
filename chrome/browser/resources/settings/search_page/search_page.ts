@@ -13,11 +13,11 @@ import 'chrome://resources/cr_elements/cr_shared_vars.css.js';
 import 'chrome://resources/cr_elements/cr_toast/cr_toast.js';
 import '/shared/settings/controls/cr_policy_pref_indicator.js';
 import '/shared/settings/controls/extension_controlled_indicator.js';
+import './search_engine_icon.js';
 import './search_engine_list_dialog.js';
 import '../settings_page/settings_section.js';
 import '../settings_shared.css.js';
 import '../settings_vars.css.js';
-import '../site_favicon.js';
 
 import type {CrToastElement} from 'chrome://resources/cr_elements/cr_toast/cr_toast.js';
 import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
@@ -90,10 +90,6 @@ export class SettingsSearchPageElement extends SettingsSearchPageElementBase {
   private browserProxy_: SearchEnginesBrowserProxy =
       SearchEnginesBrowserProxyImpl.getInstance();
 
-  // Whether we need to set the icon size to large because they are loaded
-  // in the binary or smaller because we get them from the favicon service.
-  private isEeaChoiceCountry_: boolean =
-      loadTimeData.getBoolean('isEeaChoiceCountry');
   declare private searchSettingsUpdateEnabled_: boolean;
 
   declare private searchPageTitle_: string;
@@ -101,8 +97,6 @@ export class SettingsSearchPageElement extends SettingsSearchPageElementBase {
 
   override connectedCallback() {
     super.connectedCallback();
-
-    this.setFaviconSize_();
 
     if (this.searchSettingsUpdateEnabled_) {
       // Only regional search engines and the default engine should be visible
@@ -179,11 +173,6 @@ export class SettingsSearchPageElement extends SettingsSearchPageElementBase {
 
   private onSearchEngineListDialogClose_() {
     this.showSearchEngineListDialog_ = false;
-  }
-
-  private setFaviconSize_() {
-    this.style.setProperty(
-        '--favicon-size', this.isEeaChoiceCountry_ ? '24px' : '16px');
   }
 
   // SettingsViewMixin implementation.

@@ -177,6 +177,7 @@ build_webui("build") {
     "search_page/omnibox_extension_entry.ts",
     "search_page/search_engine_edit_dialog.ts",
     "search_page/search_engine_entry.ts",
+    "search_page/search_engine_icon.ts",
     "search_page/search_engine_list_dialog.ts",
     "search_page/search_engines_list.ts",
     "search_page/search_engines_page.ts",
