@@ -474,8 +474,7 @@ LogicalOofInsets ComputeOutOfFlowInsets(
     WritingDirectionMode self_writing_direction) {
   bool force_x_insets_to_zero = false;
   bool force_y_insets_to_zero = false;
-  std::optional<PositionAreaOffsets> offsets = style.PositionAreaOffsets();
-  if (offsets.has_value()) {
+  if (style.PositionAreaOffsets()) {
     force_x_insets_to_zero = force_y_insets_to_zero = true;
   }
   if (alignment.inline_alignment.GetPosition() == ItemPosition::kAnchorCenter) {
