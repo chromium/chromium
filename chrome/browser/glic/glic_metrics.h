@@ -497,7 +497,9 @@ class GlicMetrics : public GlicInstanceMetricsBackwardsCompatibility {
   int session_responses_ = 0;
   base::TimeTicks session_start_time_;
   mojom::InvocationSource invocation_source_ =
-      mojom::InvocationSource::kOsButton;
+      mojom::InvocationSource::kUnsupported;
+  mojom::InvocationSource onboarding_invocation_source_ =
+      mojom::InvocationSource::kUnsupported;
 
   // Used to record impressions of glic entry points.
   base::RepeatingTimer impression_timer_;

@@ -552,6 +552,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Glic.Fre.UserInput.Entrypoint" enum="GlicEntrypoint"
+    expires_after="2026-09-13">
+  <owner>erikchen@google.com</owner>
+  <owner>perrier@google.com</owner>
+  <summary>
+    Recorded when user input is first submitted after completing the onboarding
+    steps. Records the last entrypoint used befor user input is submitted.
+  </summary>
+</histogram>
+
 <histogram name="Glic.Fre.WebClientLoadTime" units="ms"
     expires_after="2026-07-15">
   <owner>birnie@google.com</owner>

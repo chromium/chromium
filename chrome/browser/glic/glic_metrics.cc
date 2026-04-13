@@ -415,6 +415,7 @@ void GlicMetrics::OnInstanceClosed() {
 void GlicMetrics::OnFreAccepted() {
   // Store the current time in a instance variable.
   fre_accepted_time_ = base::TimeTicks::Now();
+  onboarding_invocation_source_ = invocation_source_;
 }
 
 void GlicMetrics::OnUserInputSubmitted(mojom::WebClientMode mode) {
@@ -423,6 +424,9 @@ void GlicMetrics::OnUserInputSubmitted(mojom::WebClientMode mode) {
     base::UmaHistogramLongTimes("Glic.FreToFirstQueryTime", delta);
     base::UmaHistogramCustomTimes("Glic.FreToFirstQueryTimeMax24H", delta,
                                   base::Milliseconds(1), base::Hours(24), 50);
+    base::UmaHistogramEnumeration(
+        "Glic.Fre.UserInput.Entrypoint",
+        glic::GetEntrypointFromInvocationSource(onboarding_invocation_source_));
     fre_accepted_time_ = base::TimeTicks();
   }
 
