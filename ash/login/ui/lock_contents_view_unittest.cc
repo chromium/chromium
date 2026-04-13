@@ -3087,6 +3087,11 @@ class LockContentsViewWithKioskLicenseTest : public LoginTestBase {
     NotifySessionStateChanged(session_manager::SessionState::OOBE);
   }
 
+  void TearDown() override {
+    login_shelf_view_ = nullptr;
+    LoginTestBase::TearDown();
+  }
+
   void SetNFakeKioskApps(int n) {
     std::vector<KioskAppMenuEntry> kiosk_apps(
         n, KioskAppMenuEntry(KioskAppMenuEntry::AppType::kChromeApp,
@@ -3102,8 +3107,7 @@ class LockContentsViewWithKioskLicenseTest : public LoginTestBase {
     GetSessionControllerClient()->FlushForTest();
   }
 
-  raw_ptr<LoginShelfView, DanglingUntriaged> login_shelf_view_ =
-      nullptr;  // Unowned.
+  raw_ptr<LoginShelfView> login_shelf_view_ = nullptr;  // Unowned.
 };
 
 // Checks default message hides if device is with kiosk license but with apps.
