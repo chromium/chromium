@@ -681,7 +681,7 @@ void CompositorFrameSinkSupport::DidNotProduceFrame(const BeginFrameAck& ack) {
 
   // We only check for a timeout if we are currently handling an interaction.
   if (is_handling_interaction_ &&
-      (last_interaction_time_ - last_begin_frame_args_.frame_time) >=
+      (last_begin_frame_args_.frame_time - last_interaction_time_) >=
           kInteractionTimeout) {
     SetIsHandlingInteraction(false);
   }

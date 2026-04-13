@@ -2104,6 +2104,7 @@ TEST_P(CompositorFrameSinkSupportTest, BeginFrameIntervalAccess) {
 // been sent for a while.
 TEST_P(CompositorFrameSinkSupportTest, BeginFrameHandlingInteractionTimeout) {
   base::TimeTicks frame_time = base::TimeTicks::Now();
+  support_->SetNeedsBeginFrame(true);
   // Issue a BeginFrame.
   BeginFrameArgs args =
       CreateBeginFrameArgsForTesting(BEGINFRAME_FROM_HERE, 0, 1, frame_time);
@@ -2116,13 +2117,15 @@ TEST_P(CompositorFrameSinkSupportTest, BeginFrameHandlingInteractionTimeout) {
   BeginFrameAck ack(args, true);
   support_->SubmitCompositorFrame(local_surface_id_,
                                   MakeDefaultInteractiveCompositorFrame());
+  support_->SendCompositorFrameAck();
   EXPECT_TRUE(support_->is_handling_interaction());
   EXPECT_NE(support_->last_interaction_time(), base::TimeTicks());
   base::TimeTicks last_interaction_time = support_->last_interaction_time();
 
   // Issue another BeginFrame after kInteractionTimeout milliseconds.
-  args = CreateBeginFrameArgsForTesting(BEGINFRAME_FROM_HERE, 0, 2,
-                                        frame_time + base::Milliseconds(250));
+  args = CreateBeginFrameArgsForTesting(
+      BEGINFRAME_FROM_HERE, 0, 2,
+      last_interaction_time + base::Milliseconds(300));
   begin_frame_source_.TestOnBeginFrame(args);
 
   // This time, a frame is not produced and we detect the interaction timed out.
