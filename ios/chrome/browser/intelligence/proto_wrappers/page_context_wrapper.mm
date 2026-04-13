@@ -26,6 +26,7 @@
 #import "base/task/bind_post_task.h"
 #import "base/task/sequenced_task_runner.h"
 #import "base/task/task_traits.h"
+#import "base/task/thread_pool.h"
 #import "base/time/time.h"
 #import "base/timer/timer.h"
 #import "base/token.h"
@@ -556,6 +557,15 @@ result.links = linksArray;
                              securityOrigin:securityOrigin
                             localFrameToken:frameId];
       barrier.Run();
+
+      // Defer destruction of the base::DictValue to a background thread to
+      // prevent blocking the main thread. The object is self-contained and
+      // thread-safe.
+      if (value) {
+        base::ThreadPool::PostTask(
+            FROM_HERE, {base::TaskPriority::BEST_EFFORT},
+            base::BindOnce([](base::Value v) {}, std::move(*value)));
+      }
     };
 
     extractorFeature->ExtractPageContextJSON(
