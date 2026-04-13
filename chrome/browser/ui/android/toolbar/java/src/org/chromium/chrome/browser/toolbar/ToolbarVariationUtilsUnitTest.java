@@ -56,6 +56,18 @@ public class ToolbarVariationUtilsUnitTest {
     }
 
     @Test
+    @EnableFeatures({
+        ChromeFeatureList.ANDROID_BOTTOM_BAR + ":keep_app_menu_in_toolbar/true",
+        ChromeFeatureList.ANDROID_BOTTOM_BAR + ":keep_home_button_in_toolbar/true",
+        ChromeFeatureList.ANDROID_BOTTOM_BAR + ":remove_home_button/true"
+    })
+    public void testArm1C_RemoveHomeButton() {
+        assertTrue(ToolbarVariationUtils.shouldBackButtonBeInOmnibox());
+        assertTrue(ToolbarVariationUtils.shouldAppMenuBeInToolbar());
+        assertFalse(ToolbarVariationUtils.shouldHomeButtonBeAtStartOfToolbar());
+    }
+
+    @Test
     @EnableFeatures(ChromeFeatureList.ANDROID_BOTTOM_BAR)
     public void testIsNewToolbarUiEnabled_Enabled() {
         assertTrue(ToolbarVariationUtils.isNewToolbarUiEnabled());

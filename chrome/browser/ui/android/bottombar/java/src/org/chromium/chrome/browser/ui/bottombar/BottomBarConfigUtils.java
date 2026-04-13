@@ -23,6 +23,7 @@ public class BottomBarConfigUtils {
 
     /** Whether to include the home button in the bottom bar if the flag is enabled. */
     public static boolean shouldIncludeHomeButtonIfEnabled() {
+        if (ChromeFeatureList.sAndroidBottomBarRemoveHomeButton.getValue()) return false;
         return !ChromeFeatureList.sAndroidBottomBarKeepHomeButtonInToolbar.getValue();
     }
 
