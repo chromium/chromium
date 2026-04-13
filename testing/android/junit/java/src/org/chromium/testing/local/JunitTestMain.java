@@ -37,7 +37,8 @@ public final class JunitTestMain {
     private static final int CLASS_SUFFIX_LEN = ".class".length();
     private static final Pattern COLON = Pattern.compile(":");
     private static final Pattern FORWARD_SLASH = Pattern.compile("/");
-    private static final Pattern PARAMETERIZED_SUFFIX_REGEX = Pattern.compile("\\[.*?\\]");
+    // Strip SDK suffix, as well as parameterized tests suffix ([xx], and __*).
+    private static final Pattern PARAMETERIZED_SUFFIX_REGEX = Pattern.compile("(\\[.*?\\]$|__.*)");
 
     private JunitTestMain() {}
 
@@ -137,7 +138,7 @@ public final class JunitTestMain {
                     new GtestFilter(
                             PARAMETERIZED_SUFFIX_REGEX
                                     .matcher(gtestFilter)
-                                    .replaceAll("")
+                                    .replaceAll("*")
                                     .replaceAll("#", ".")));
             // Keep the full filter for post-filtering to account for parameterized suffixes and
             // per-method filters.
