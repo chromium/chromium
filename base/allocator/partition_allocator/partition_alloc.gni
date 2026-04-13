@@ -570,4 +570,15 @@ declare_args() {
 }
 
 # Activates bounds checks for two-arg constructor of `base::span`.
-use_checked_span = use_partition_alloc && false
+#
+# We actively exclude sanitizer builds because they show us a data race
+# between early unsafe constructions of `base::span` and PartitionAlloc
+# address space initialization. In PA-E builds, this is not a concern,
+# because the PA-E partition will have initialized address space earlier
+# than any span. More generally, though, at worst this data race causes
+# `IsManagedByPartitionAlloc()` to report a false negative, which will
+# lose us coverage of that particular span in that exact moment. This is
+# not a big deal, and is probably preferable to sticking
+# `base::unchecked` on all those spans (shutting them out entirely).
+use_checked_span = !(is_asan || is_ubsan || is_tsan) && use_partition_alloc &&
+                   has_64_bit_pointers && is_debug
