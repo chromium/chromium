@@ -440,6 +440,7 @@ public class BottomControlsStacker implements BrowserControlsStateProvider.Obser
 
         // Calculate the height for each layer. Given we have limited number of layers, looping
         // through layers shouldn't be too costly.
+        boolean hasNeverScrollOffLayer = false;
         for (int type : STACK_ORDER) {
             BottomControlsLayer layer = mLayers.get(type);
             if (layer == null || !mLayerVisibilities.get(type)) continue;
@@ -463,8 +464,8 @@ public class BottomControlsStacker implements BrowserControlsStateProvider.Obser
             if (!offsetsAppliedByBrowser) {
                 layerYOffset = mLayerRestingOffsets.get(type);
             } else {
-                boolean shouldScrollOff = shouldLayerScrollOff(layer, totalMinHeight);
-                assert totalMinHeight == 0 || !shouldScrollOff
+                boolean shouldScrollOff = shouldLayerScrollOff(layer, hasNeverScrollOffLayer);
+                assert !hasNeverScrollOffLayer || !shouldScrollOff
                         : "A scroll-off layer under a NEVER_SCROLL_OFF layer is not supported."
                                 + " Layer: "
                                 + layer.getType();
@@ -473,6 +474,9 @@ public class BottomControlsStacker implements BrowserControlsStateProvider.Obser
                 // layout update. This is only used for assertion.
                 height += layer.getHeight();
                 totalMinHeight += shouldScrollOff ? 0 : layer.getHeight();
+                if (!shouldScrollOff) {
+                    hasNeverScrollOffLayer = true;
+                }
 
                 if (shouldScrollOff) {
                     // [Scrollable layers]
@@ -603,18 +607,20 @@ public class BottomControlsStacker implements BrowserControlsStateProvider.Obser
     private void recalculateLayerSizes() {
         int height = 0;
         int minHeight = 0;
+        boolean hasNeverScrollOffLayer = false;
+        int nonScrollableLayerCount = 0;
         for (int type : STACK_ORDER) {
             BottomControlsLayer layer = mLayers.get(type);
             if (layer == null || !mLayerVisibilities.get(type)) continue;
 
-            boolean shouldScrollOff = shouldLayerScrollOff(layer, minHeight);
-            assert minHeight == 0 || !shouldScrollOff
+            boolean shouldScrollOff = shouldLayerScrollOff(layer, hasNeverScrollOffLayer);
+            assert !hasNeverScrollOffLayer || !shouldScrollOff
                     : "A scroll-off layer under a NEVER_SCROLL_OFF layer is not supported. Layer: "
                             + layer.getType();
-
-            // When min height exists before processing the current layer's height, it means more
-            // than one non-scrollable layer exists.
-            mHasMoreThanOneNonScrollableLayer = minHeight != 0;
+            if (!shouldScrollOff) {
+                hasNeverScrollOffLayer = true;
+                nonScrollableLayerCount++;
+            }
 
             if (shouldScrollOff) {
                 if (mOffsetTagsInfo != null) {
@@ -629,6 +635,7 @@ public class BottomControlsStacker implements BrowserControlsStateProvider.Obser
             mLayerHasMinHeight.put(type, !shouldScrollOff);
         }
 
+        mHasMoreThanOneNonScrollableLayer = nonScrollableLayerCount > 1;
         mTotalHeight = height;
         mTotalMinHeight = minHeight;
 
@@ -705,10 +712,11 @@ public class BottomControlsStacker implements BrowserControlsStateProvider.Obser
      * The layer should scroll off if it is labeled as ALWAYS_SCROLL_OFF, or if it is labeled as
      * DEFAULT_SCROLL_OFF and isn't positioned under a NEVER_SCROLL_OFF layer.
      */
-    private static boolean shouldLayerScrollOff(BottomControlsLayer layer, int totalMinHeight) {
+    private static boolean shouldLayerScrollOff(
+            BottomControlsLayer layer, boolean hasNeverScrollOffLayer) {
         int scrollOffBehavior = layer.getScrollBehavior();
         return (scrollOffBehavior == LayerScrollBehavior.ALWAYS_SCROLL_OFF)
-                || (totalMinHeight == 0
+                || (!hasNeverScrollOffLayer
                         && scrollOffBehavior == LayerScrollBehavior.DEFAULT_SCROLL_OFF);
     }
 

@@ -451,6 +451,32 @@ public class BottomControlsStackerUnitTest {
     }
 
     @Test
+    public void stackLayerDefaultNoScrollOff_ZeroHeightNeverScrollOff() {
+        TestLayer layer1 =
+                new TestLayer(
+                        TOP_LAYER,
+                        0,
+                        LayerScrollBehavior.NEVER_SCROLL_OFF,
+                        LayerVisibility.VISIBLE);
+        TestLayer layer2 =
+                new TestLayer(
+                        BOTTOM_LAYER,
+                        20,
+                        LayerScrollBehavior.DEFAULT_SCROLL_OFF,
+                        LayerVisibility.VISIBLE);
+        mBottomControlsStacker.addLayer(layer1);
+        mBottomControlsStacker.addLayer(layer2);
+        mBottomControlsStacker.requestLayerUpdate(true);
+
+        verify(mBrowserControlsSizer).setBottomControlsHeight(20, 20);
+        verify(mBrowserControlsSizer).setAnimateBrowserControlsHeightChanges(true);
+
+        assertLayerNonScrollable(TOP_LAYER, true);
+        assertLayerNonScrollable(BOTTOM_LAYER, true);
+        assertHasMultipleNonScrollableLayer(true);
+    }
+
+    @Test
     public void stackLayerDefaultScrollsOff() {
         TestLayer layer1 =
                 new TestLayer(
