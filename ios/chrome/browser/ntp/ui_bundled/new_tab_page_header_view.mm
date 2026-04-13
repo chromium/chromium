@@ -480,7 +480,7 @@ CGFloat MIAAnimationOpacityForScrollProgress(CGFloat percent) {
 // The leading padding to add in the search field when the fakebox is displayed
 // on top.
 - (CGFloat)omniboxLeadingSpace {
-  if ([self showPlusButton]) {
+  if ([self shouldShowPlusButton]) {
     return kOmniboxPlusLeadingSpace;
   } else {
     return kOmniboxImageLeadingSpace;
@@ -490,7 +490,7 @@ CGFloat MIAAnimationOpacityForScrollProgress(CGFloat percent) {
 // The leading padding to add in the search field when the fakebox is displayed
 // in the middle of the screen.
 - (CGFloat)fakeboxLeadingSpace {
-  if ([self showPlusButton]) {
+  if ([self shouldShowPlusButton]) {
     return kFakeboxPlusLeadingSpace;
   } else {
     return kFakeboxImageLeadingSpace;
@@ -501,15 +501,8 @@ CGFloat MIAAnimationOpacityForScrollProgress(CGFloat percent) {
 - (void)addLeadingViewToSearchField:(UIView*)searchField {
   UIView* leadingView;
   CGFloat leadingViewYOffset = 0;
-  if ([self showPlusButton]) {
-    self.plusButton =
-        [ExtendedTouchTargetButton buttonWithType:UIButtonTypeSystem];
-    [self.plusButton
-        setImage:DefaultSymbolWithPointSize(kPlusSymbol, kSymbolActionPointSize)
-        forState:UIControlStateNormal];
-    [self.plusButton addTarget:self.NTPShortcutsHandler
-                        action:@selector(openMultimodalActionsMenu)
-              forControlEvents:UIControlEventTouchUpInside];
+  if ([self shouldShowPlusButton]) {
+    [self createPlusButton];
     leadingView = self.plusButton;
     leadingViewYOffset = -3;
   } else if (base::FeatureList::IsEnabled(
@@ -982,6 +975,11 @@ CGFloat MIAAnimationOpacityForScrollProgress(CGFloat percent) {
   _isAIMAllowed = allowed;
 }
 
+- (BOOL)shouldShowPlusButton {
+  return IsComposeboxIOSEnabled() && IsPlusButtonInFakeboxEnabled() &&
+         _isAIMAllowed;
+}
+
 #pragma mark - Property accessors
 
 - (UIView*)fakeLocationBar {
@@ -1060,10 +1058,18 @@ CGFloat MIAAnimationOpacityForScrollProgress(CGFloat percent) {
 
 #pragma mark - Private
 
-// Whether to show the plus button.
-- (BOOL)showPlusButton {
-  return IsComposeboxIOSEnabled() && IsPlusButtonInFakeboxEnabled() &&
-         _isAIMAllowed;
+// Handles the creation of the plus button.
+- (void)createPlusButton {
+  self.plusButton =
+      [ExtendedTouchTargetButton buttonWithType:UIButtonTypeSystem];
+  self.plusButton.accessibilityLabel = l10n_util::GetNSString(
+      IDS_IOS_COMPOSEBOX_ADD_ATTACHMENT_BUTTON_ACCESSIBILITY_LABEL);
+  [self.plusButton
+      setImage:DefaultSymbolWithPointSize(kPlusSymbol, kSymbolActionPointSize)
+      forState:UIControlStateNormal];
+  [self.plusButton addTarget:self.NTPShortcutsHandler
+                      action:@selector(openMultimodalActionsMenu)
+            forControlEvents:UIControlEventTouchUpInside];
 }
 
 // Sets the background based on the current NTP background, current color
@@ -1418,7 +1424,7 @@ CGFloat MIAAnimationOpacityForScrollProgress(CGFloat percent) {
 #pragma mark - helpers
 
 - (CGFloat)hintLabelFakeboxLeadingSpace {
-  if ([self showPlusButton]) {
+  if ([self shouldShowPlusButton]) {
     return kHintLabelFakeboxLeadingSpaceWithPlus;
   } else if (base::FeatureList::IsEnabled(
                  omnibox::kOmniboxMobileParityUpdateV2)) {
@@ -1429,7 +1435,7 @@ CGFloat MIAAnimationOpacityForScrollProgress(CGFloat percent) {
 }
 
 - (CGFloat)hintLabelOmniboxLeadingSpace {
-  if ([self showPlusButton]) {
+  if ([self shouldShowPlusButton]) {
     return kHintLabelOmniboxLeadingSpaceWithWithPlus;
   } else if (base::FeatureList::IsEnabled(
                  omnibox::kOmniboxMobileParityUpdateV2)) {

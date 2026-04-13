@@ -740,6 +740,18 @@ const CGFloat kIdentityDiscMaxFontSize = 24;
                     selector:@selector(openVoiceSearch)]];
   }
 
+  if ([self.headerView shouldShowPlusButton]) {
+    [accessibilityCustomActions
+        addObject:
+            [[UIAccessibilityCustomAction alloc]
+                initWithName:
+                    l10n_util::GetNSString(
+                        IDS_IOS_COMPOSEBOX_ADD_ATTACHMENT_BUTTON_ACCESSIBILITY_LABEL)
+                       image:nil
+                      target:self
+                    selector:@selector(openMultimodalActionsMenu)]];
+  }
+
   self.accessibilityButton.accessibilityCustomActions =
       accessibilityCustomActions;
 
@@ -1038,6 +1050,11 @@ const CGFloat kIdentityDiscMaxFontSize = 24;
   [self.NTPShortcutsHandler preloadVoiceSearch];
   [self.NTPShortcutsHandler
       loadVoiceSearchFromView:self.headerView.voiceSearchButton];
+}
+
+// Opens the multimodal actions menu.
+- (void)openMultimodalActionsMenu {
+  [self.NTPShortcutsHandler openMultimodalActionsMenu];
 }
 
 - (void)focusAccessibilityOnOmnibox {

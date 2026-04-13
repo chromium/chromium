@@ -136,6 +136,9 @@ enum class SearchEngineLogoState;
 // Whether AIM is allowed.
 - (void)setAIMAllowed:(BOOL)allowed;
 
+// Whether to show the plus button.
+- (BOOL)shouldShowPlusButton;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_NTP_UI_BUNDLED_NEW_TAB_PAGE_HEADER_VIEW_H_
