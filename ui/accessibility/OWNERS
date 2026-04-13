@@ -14,9 +14,6 @@ rhalavati@chromium.org
 grt@chromium.org
 chrishtr@chromium.org
 
-# For Android / Java related changes:
-aldietz@google.com
-
 per-file *.mojom=set noparent
 per-file *.mojom=file://ipc/SECURITY_OWNERS
 
