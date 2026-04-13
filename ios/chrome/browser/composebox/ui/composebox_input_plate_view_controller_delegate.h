@@ -16,6 +16,11 @@ enum class FuseboxAttachmentButtonType;
 /// Delegate for the composebox input plate view controller.
 @protocol ComposeboxInputPlateViewControllerDelegate
 
+/// Informs the delegate that the input plate completed the initial
+/// presentation.
+- (void)composeboxViewControllerDidCompleteInitialPresentation:
+    (ComposeboxInputPlateViewController*)composeboxViewController;
+
 /// Informs the delegate that a user did tap on the gallery button.
 - (void)composeboxViewControllerDidTapGalleryButton:
     (ComposeboxInputPlateViewController*)composeboxViewController;

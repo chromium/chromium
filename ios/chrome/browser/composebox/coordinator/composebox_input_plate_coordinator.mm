@@ -89,6 +89,7 @@ contextual_search::ContextualSearchSource ContextualSearchSourceFromEntrypoint(
     ComposeboxEntrypoint entrypoint) {
   switch (entrypoint) {
     case ComposeboxEntrypoint::kNTPAIMButton:
+    case ComposeboxEntrypoint::kNTPPlusButton:
       return contextual_search::ContextualSearchSource::kNewTabPage;
     case ComposeboxEntrypoint::kNTPFakebox:
     case ComposeboxEntrypoint::kOther:
@@ -380,6 +381,13 @@ contextual_search::ContextualSearchSource ContextualSearchSourceFromEntrypoint(
                                               completion:^{
                                                 [handler showQRScanner];
                                               }];
+}
+
+- (void)composeboxViewControllerDidCompleteInitialPresentation:
+    (ComposeboxInputPlateViewController*)composeboxViewController {
+  if (_entrypoint == ComposeboxEntrypoint::kNTPPlusButton) {
+    [composeboxViewController showMultimodalMenu];
+  }
 }
 
 - (void)composeboxViewControllerDidTapGalleryButton:

@@ -314,6 +314,9 @@ UIImage* SendButtonImage(BOOL highlighted, ComposeboxTheme* theme) {
 
   /// The server side strings for the input plate elements.
   ComposeboxServerStrings* _serverStrings;
+
+  /// Whether the input plate was presented.
+  BOOL _inputPlatePresented;
 }
 
 /// ComposeboxAnimationContext
@@ -378,6 +381,14 @@ UIImage* SendButtonImage(BOOL highlighted, ComposeboxTheme* theme) {
                      withAction:@selector(userInterfaceStyleChanged)];
 
   [self.mutator requestUIRefresh];
+}
+
+- (void)viewDidAppear:(BOOL)animated {
+  [super viewDidAppear:animated];
+  if (!_inputPlatePresented) {
+    [self.delegate composeboxViewControllerDidCompleteInitialPresentation:self];
+    _inputPlatePresented = YES;
+  }
 }
 
 - (void)viewDidLayoutSubviews {
@@ -446,6 +457,12 @@ UIImage* SendButtonImage(BOOL highlighted, ComposeboxTheme* theme) {
 
   [self.mutator requestUIRefresh];
   [self updatePlaceholderText];
+}
+
+- (void)showMultimodalMenu {
+  if (@available(iOS 17.4, *)) {
+    [_plusButton performPrimaryAction];
+  }
 }
 
 #pragma mark - ComposeboxInputItemCellDelegate

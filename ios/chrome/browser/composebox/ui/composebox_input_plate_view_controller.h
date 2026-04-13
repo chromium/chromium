@@ -50,6 +50,9 @@
 /// Sets the omnibox edit view.
 - (void)setEditView:(UIView<TextFieldViewContaining>*)editView;
 
+/// Shows the multimodal menu. Same as pressing the plus button.
+- (void)showMultimodalMenu;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_COMPOSEBOX_UI_COMPOSEBOX_INPUT_PLATE_VIEW_CONTROLLER_H_

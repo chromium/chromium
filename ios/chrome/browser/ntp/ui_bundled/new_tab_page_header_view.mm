@@ -86,12 +86,16 @@ const CGFloat kHintLabelFakeboxTrailingSpace = 12.0f;
 // The constants for the constraints the leading-edge aligned UI elements.
 const CGFloat kHintLabelFakeboxLeadingSpace = 28.0;
 const CGFloat kHintLabelFakeboxLeadingSpaceWithIcon = 42.0;
+const CGFloat kHintLabelFakeboxLeadingSpaceWithPlus = 46.0;
 const CGFloat kHintLabelOmniboxLeadingSpace = 20.0;
 const CGFloat kHintLabelOmniboxLeadingSpaceWithIcon = 42.0;
+const CGFloat kHintLabelOmniboxLeadingSpaceWithWithPlus = 52.0;
 
 // The constants for the search engine image.
 const CGFloat kFakeboxImageLeadingSpace = 13.0;
+const CGFloat kFakeboxPlusLeadingSpace = 18.0;
 const CGFloat kOmniboxImageLeadingSpace = 22.0;
+const CGFloat kOmniboxPlusLeadingSpace = 26.0;
 const CGFloat kFakeboxImageSize = 20.0;
 
 // The spacing between the items in the button stack.
@@ -208,6 +212,10 @@ CGFloat MIAAnimationOpacityForScrollProgress(CGFloat percent) {
 @property(nonatomic, strong, readwrite) ExtendedTouchTargetButton* lensButton;
 // The MIA button. May be null if MIA is not available.
 @property(nonatomic, strong, readwrite) ExtendedTouchTargetButton* miaButton;
+// The button that opens multiodal actions in Composebox. May be nil if
+// Composebox or multimodal actions are not enabled.
+@property(nonatomic, strong, readwrite) ExtendedTouchTargetButton* plusButton;
+
 @property(nonatomic, strong) UIView* voiceAndLensDivider;
 @property(nonatomic, strong) UIView* miaAndVoiceDivider;
 
@@ -221,9 +229,8 @@ CGFloat MIAAnimationOpacityForScrollProgress(CGFloat percent) {
 @property(nonatomic, strong)
     NSLayoutConstraint* fakeLocationBarHeightConstraint;
 
-// Constraint between the search field's leading edge and the search engine
-// logo.
-@property(nonatomic, strong) NSLayoutConstraint* leadingLogoConstraint;
+// Constraint between the search field's leading edge and the leading view.
+@property(nonatomic, strong) NSLayoutConstraint* leadingViewConstraint;
 
 @property(nonatomic, strong) NSLayoutConstraint* hintLabelLeadingConstraint;
 @property(nonatomic, strong) NSLayoutConstraint* hintLabelTrailingConstraint;
@@ -467,32 +474,70 @@ CGFloat MIAAnimationOpacityForScrollProgress(CGFloat percent) {
     self.fakeLocationBarHeightConstraint,
   ]];
 
-  [self addSearchEngineLogoIfNeededToSearchField:searchField];
+  [self addLeadingViewToSearchField:searchField];
 }
 
-- (void)addSearchEngineLogoIfNeededToSearchField:(UIView*)searchField {
-  if (!base::FeatureList::IsEnabled(omnibox::kOmniboxMobileParityUpdateV2)) {
+// The leading padding to add in the search field when the fakebox is displayed
+// on top.
+- (CGFloat)omniboxLeadingSpace {
+  if ([self showPlusButton]) {
+    return kOmniboxPlusLeadingSpace;
+  } else {
+    return kOmniboxImageLeadingSpace;
+  }
+}
+
+// The leading padding to add in the search field when the fakebox is displayed
+// in the middle of the screen.
+- (CGFloat)fakeboxLeadingSpace {
+  if ([self showPlusButton]) {
+    return kFakeboxPlusLeadingSpace;
+  } else {
+    return kFakeboxImageLeadingSpace;
+  }
+}
+
+// Adds the appropriate leading view on the given search field.
+- (void)addLeadingViewToSearchField:(UIView*)searchField {
+  UIView* leadingView;
+  CGFloat leadingViewYOffset = 0;
+  if ([self showPlusButton]) {
+    self.plusButton =
+        [ExtendedTouchTargetButton buttonWithType:UIButtonTypeSystem];
+    [self.plusButton
+        setImage:DefaultSymbolWithPointSize(kPlusSymbol, kSymbolActionPointSize)
+        forState:UIControlStateNormal];
+    [self.plusButton addTarget:self.NTPShortcutsHandler
+                        action:@selector(openMultimodalActionsMenu)
+              forControlEvents:UIControlEventTouchUpInside];
+    leadingView = self.plusButton;
+    leadingViewYOffset = -3;
+  } else if (base::FeatureList::IsEnabled(
+                 omnibox::kOmniboxMobileParityUpdateV2)) {
+    _logoView = [[UIImageView alloc] init];
+    _logoView.contentMode = UIViewContentModeScaleAspectFit;
+    leadingView = _logoView;
+    leadingViewYOffset = -2;
+  }
+
+  if (!leadingView) {
     return;
   }
 
-  UIImageView* logoView = [[UIImageView alloc] init];
-  logoView.contentMode = UIViewContentModeScaleAspectFit;
-  [searchField addSubview:logoView];
+  leadingView.translatesAutoresizingMaskIntoConstraints = NO;
+  [searchField addSubview:leadingView];
+  AddSquareConstraints(leadingView, kFakeboxImageSize);
 
-  logoView.translatesAutoresizingMaskIntoConstraints = NO;
-  AddSquareConstraints(logoView, kFakeboxImageSize);
-
-  self.leadingLogoConstraint = [logoView.leadingAnchor
+  self.leadingViewConstraint = [leadingView.leadingAnchor
       constraintEqualToAnchor:searchField.leadingAnchor
-                     constant:kOmniboxImageLeadingSpace];
+                     constant:[self omniboxLeadingSpace]];
+
   [NSLayoutConstraint activateConstraints:@[
-    self.leadingLogoConstraint,
-    [logoView.centerYAnchor constraintEqualToAnchor:searchField.centerYAnchor
-                                           constant:-2.0],
+    self.leadingViewConstraint,
+    [leadingView.centerYAnchor constraintEqualToAnchor:searchField.centerYAnchor
+                                              constant:leadingViewYOffset],
 
   ]];
-
-  _logoView = logoView;
 }
 
 - (void)setDefaultSearchEngineLogo:(UIImage*)logo {
@@ -615,12 +660,12 @@ CGFloat MIAAnimationOpacityForScrollProgress(CGFloat percent) {
   self.hintLabelTrailingConstraint.constant = -hintLabelScalingExtraOffset -
                                               kHintLabelFakeboxTrailingSpace;
 
-  // Animate the leading image from its fakebox position to its scrolled omnibox
+  // Animate the leading view from its fakebox position to its scrolled omnibox
   // position linearly. When `percent` is 0, the fakebox is displayed in the
   // middle of the screen; when it's 1, the fakebox is fully scrolled up.
-  self.leadingLogoConstraint.constant =
-      kFakeboxImageLeadingSpace * (1 - percent) +
-      kOmniboxImageLeadingSpace * percent;
+  self.leadingViewConstraint.constant =
+      [self fakeboxLeadingSpace] * (1 - percent) +
+      [self omniboxLeadingSpace] * percent;
 
   CGFloat fakeOmniboxHeight = content_suggestions::FakeOmniboxHeight();
   CGFloat locationBarHeight = content_suggestions::PinnedFakeOmniboxHeight();
@@ -1015,6 +1060,12 @@ CGFloat MIAAnimationOpacityForScrollProgress(CGFloat percent) {
 
 #pragma mark - Private
 
+// Whether to show the plus button.
+- (BOOL)showPlusButton {
+  return IsComposeboxIOSEnabled() && IsPlusButtonInFakeboxEnabled() &&
+         _isAIMAllowed;
+}
+
 // Sets the background based on the current NTP background, current color
 // palette, or defaults if neither are set.
 - (void)applyBackgroundTheme {
@@ -1225,6 +1276,7 @@ CGFloat MIAAnimationOpacityForScrollProgress(CGFloat percent) {
   _miaButton.tintColor = tintColor;
   _voiceSearchButton.tintColor = tintColor;
   _lensButton.tintColor = tintColor;
+  _plusButton.tintColor = tintColor;
   _voiceAndLensDivider.backgroundColor = dividerColor;
   _miaAndVoiceDivider.backgroundColor = dividerColor;
 }
@@ -1366,7 +1418,10 @@ CGFloat MIAAnimationOpacityForScrollProgress(CGFloat percent) {
 #pragma mark - helpers
 
 - (CGFloat)hintLabelFakeboxLeadingSpace {
-  if (base::FeatureList::IsEnabled(omnibox::kOmniboxMobileParityUpdateV2)) {
+  if ([self showPlusButton]) {
+    return kHintLabelFakeboxLeadingSpaceWithPlus;
+  } else if (base::FeatureList::IsEnabled(
+                 omnibox::kOmniboxMobileParityUpdateV2)) {
     return kHintLabelFakeboxLeadingSpaceWithIcon;
   } else {
     return kHintLabelFakeboxLeadingSpace;
@@ -1374,7 +1429,10 @@ CGFloat MIAAnimationOpacityForScrollProgress(CGFloat percent) {
 }
 
 - (CGFloat)hintLabelOmniboxLeadingSpace {
-  if (base::FeatureList::IsEnabled(omnibox::kOmniboxMobileParityUpdateV2)) {
+  if ([self showPlusButton]) {
+    return kHintLabelOmniboxLeadingSpaceWithWithPlus;
+  } else if (base::FeatureList::IsEnabled(
+                 omnibox::kOmniboxMobileParityUpdateV2)) {
     return kHintLabelOmniboxLeadingSpaceWithIcon;
   } else {
     return kHintLabelOmniboxLeadingSpace;

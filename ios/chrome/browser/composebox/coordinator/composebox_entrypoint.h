@@ -11,6 +11,8 @@ enum class ComposeboxEntrypoint {
   kNTPAIMButton,
   /// The fakebox on NTP.
   kNTPFakebox,
+  /// The plus button on NTP.
+  kNTPPlusButton,
   /// The cobrowse experience.
   kCobrowse,
   /// Other, commands from OmniboxCommand.
