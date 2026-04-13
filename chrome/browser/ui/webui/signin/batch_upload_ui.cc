@@ -79,7 +79,6 @@ BatchUploadUI::BatchUploadUI(content::WebUI* web_ui)
       {"itemCountSelectedScreenReader",
        IDS_BATCH_UPLOAD_SCREEN_READER_ITEM_COUNT_SELECTED},
       {"selectAllScreenReader", IDS_BATCH_UPLOAD_SCREEN_READER_SELECT_ALL},
-      {"selectNoneScreenReader", IDS_BATCH_UPLOAD_SCREEN_READER_SELECT_NONE},
   };
   source->AddLocalizedStrings(kLocalizedStrings);
 

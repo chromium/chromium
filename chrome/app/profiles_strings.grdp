@@ -1276,9 +1276,6 @@
     <message name="IDS_BATCH_UPLOAD_SCREEN_READER_SELECT_ALL" desc="Text read by the screen reader when focusing the toggle button of a section in the Batch Upload dialog and that toggle is turned off. Notifies that the action on the toggle would select all items in this section.">
       Select all
     </message>
-    <message name="IDS_BATCH_UPLOAD_SCREEN_READER_SELECT_NONE" desc="Text read by the screen reader when focusing the toggle button of a section in the Batch Upload dialog and that toggle is turned on. Notifies that the action on the toggle would select no items in this section.">
-      Select none
-    </message>
     <message name="IDS_BATCH_UPLOAD_PROMO_TITLE" desc="Title of the Batch Upload promo. This promo appears to inform the user that there are items saved only to their device. If the user chooses to save items in their Google Account, the user can access them on any device where they’re signed in to Chrome. This promo leads to the Batch Upload dialog, where the user can select the checkboxes for the items that they want to save in their Google Account. The tone should be motivating.">
       Get your bookmarks and more on all your devices
     </message>

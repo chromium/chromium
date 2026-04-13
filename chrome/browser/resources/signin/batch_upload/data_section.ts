@@ -226,12 +226,9 @@ export class DataSectionElement extends DataSectionElementBase {
   }
 
   protected getToggleAriaLabel_(): string {
-    const selectedStr = this.disabled_ ? this.i18n('selectAllScreenReader') :
-                                         this.i18n('selectNoneScreenReader');
-
     return [
       this.titleWithoutCount_,
-      selectedStr,
+      this.i18n('selectAllScreenReader'),
     ].join('. ');
   }
 
