@@ -401,10 +401,71 @@ TEST_F(BrowsingHistoryHandlerTest, QueryHistoryMojoOptionMapping) {
           testing::Field(&history::QueryOptions::include_user_visits, false)))
       .Times(1);
 
-  handler()->QueryHistory("query", 150, std::nullopt, /*user=*/false,
-                          /*actor=*/true, base::DoNothing());
+  handler()->QueryHistory("query", 150, std::nullopt,
+                          /*include_user_visits=*/false,
+                          /*include_actor_visits=*/true, base::DoNothing());
 }
 #endif
+
+TEST_F(BrowsingHistoryHandlerTest, QueryHistoryWithActorOnly) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
+      history::kBrowsingHistoryActorIntegrationM3);
+
+  EXPECT_CALL(*handler()->mock_service(),
+              QueryHistory(
+                  testing::Eq(u"test_query"),
+                  testing::AllOf(
+                      testing::Field(
+                          &history::QueryOptions::include_user_visits, false),
+                      testing::Field(
+                          &history::QueryOptions::include_actor_visits, true))))
+      .Times(1);
+
+  handler()->QueryHistory("test_query", 150, std::nullopt,
+                          /*include_user_visits=*/false,
+                          /*include_actor_visits=*/true, base::DoNothing());
+}
+
+TEST_F(BrowsingHistoryHandlerTest, QueryHistoryWithUserOnly) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
+      history::kBrowsingHistoryActorIntegrationM3);
+
+  EXPECT_CALL(
+      *handler()->mock_service(),
+      QueryHistory(
+          testing::Eq(u"test_query"),
+          testing::AllOf(
+              testing::Field(&history::QueryOptions::include_user_visits, true),
+              testing::Field(&history::QueryOptions::include_actor_visits,
+                             false))))
+      .Times(1);
+
+  handler()->QueryHistory("test_query", 150, std::nullopt,
+                          /*include_user_visits=*/true,
+                          /*include_actor_visits=*/false, base::DoNothing());
+}
+
+TEST_F(BrowsingHistoryHandlerTest, QueryHistoryWithBothVisits) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
+      history::kBrowsingHistoryActorIntegrationM3);
+
+  EXPECT_CALL(
+      *handler()->mock_service(),
+      QueryHistory(
+          testing::Eq(u"test_query"),
+          testing::AllOf(
+              testing::Field(&history::QueryOptions::include_user_visits, true),
+              testing::Field(&history::QueryOptions::include_actor_visits,
+                             true))))
+      .Times(1);
+
+  handler()->QueryHistory("test_query", 150, std::nullopt,
+                          /*include_user_visits=*/true,
+                          /*include_actor_visits=*/true, base::DoNothing());
+}
 
 class BrowsingHistoryHandlerHistorySyncPromoTest
     : public BrowsingHistoryHandlerTest,
