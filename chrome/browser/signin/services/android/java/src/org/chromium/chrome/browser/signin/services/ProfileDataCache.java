@@ -210,7 +210,7 @@ public class ProfileDataCache implements IdentityManager.Observer {
      * @return The {@link DisplayableProfileData} for the given account ID.
      */
     public DisplayableProfileData getById(CoreAccountId accountId) {
-        if (!mAccountsCache.isLoaded()) {
+        if (!mAccountsCache.isLoaded() || !mAccountsCache.contains(accountId)) {
             updateCache();
         }
 
@@ -313,8 +313,7 @@ public class ProfileDataCache implements IdentityManager.Observer {
     @Override
     public void onExtendedAccountInfoUpdated(AccountInfo accountInfo) {
         var displayableProfileData = toDisplayableProfileData(accountInfo);
-        mAccountsCache.putAccount(
-                new AccountsCache.AccountEntry(accountInfo.getId(), displayableProfileData));
+        mAccountsCache.putAccount(accountInfo.getId(), displayableProfileData);
         fireOnProfileDataUpdated(displayableProfileData);
     }
 
@@ -335,32 +334,40 @@ public class ProfileDataCache implements IdentityManager.Observer {
     }
 
     private void updateCache() {
-        var accounts = getCoreAccountsIfLoaded();
-        if (accounts != null) {
-            updateCache(accounts);
+        final @Nullable List<AccountInfo> coreAccounts = getCoreAccountsIfLoaded();
+        final @Nullable AccountInfo primaryAccountInfo = getPrimaryAccountInfo();
+
+        if (coreAccounts == null && primaryAccountInfo == null) {
             return;
         }
-        // Accounts are not loaded yet, cache will be updated by the observer once they are
-        // available. Right now we can only try to update the cache with the primary account info,
-        // if there is any. Primary account info is available even if the accounts credentials are
-        // not fully loaded yet.
-        final @Nullable CoreAccountInfo primaryAccountInfo =
-                mIdentityManager.getPrimaryAccountInfo(ConsentLevel.SIGNIN);
+
+        // Primary account can be set before list of all accounts is loaded. To avoid that case, we
+        // need to add primary account to the list of all accounts manually. That makes potential
+        // duplicate on the list, but it will be handled by the updateCache(List<AccountInfo>)
+        // method.
+        final var allAccounts =
+                coreAccounts != null ? new ArrayList<>(coreAccounts) : new ArrayList<AccountInfo>();
         if (primaryAccountInfo != null) {
-            updateCache(List.of(new AccountInfo.Builder(primaryAccountInfo).build()));
+            allAccounts.add(primaryAccountInfo);
         }
+        updateCache(allAccounts);
     }
 
     private void updateCache(List<AccountInfo> accounts) {
-        List<AccountsCache.AccountEntry> displayableAccounts = new ArrayList<>();
+        var displayableAccounts = new LinkedHashMap<CoreAccountId, DisplayableProfileData>();
         for (AccountInfo account : accounts) {
-            var extendedAccountInfo =
-                    mIdentityManager.findExtendedAccountInfoByAccountId(account.getId());
-            var displayableProfileData =
-                    toDisplayableProfileData(
-                            extendedAccountInfo != null ? extendedAccountInfo : account);
-            displayableAccounts.add(
-                    new AccountsCache.AccountEntry(account.getId(), displayableProfileData));
+            // Accounts list is combined from accounts with refresh tokens and the primary account
+            // at the last position. Because list of accounts is manually combined, there is a
+            // chance that the primary account is duplicated. We want to use computeIfAbsent here to
+            // avoid overriding the existing entry and double avatar generation.
+            displayableAccounts.computeIfAbsent(
+                    account.getId(),
+                    id -> {
+                        var extendedAccountInfo =
+                                mIdentityManager.findExtendedAccountInfoByAccountId(id);
+                        return toDisplayableProfileData(
+                                extendedAccountInfo != null ? extendedAccountInfo : account);
+                    });
         }
         mAccountsCache.setAccounts(displayableAccounts);
 
@@ -427,15 +434,26 @@ public class ProfileDataCache implements IdentityManager.Observer {
             return accountInfo;
         }
         var coreAccounts = getCoreAccountsIfLoaded();
-        if (coreAccounts == null) {
-            return null;
-        }
-        for (var coreAccountInfo : coreAccounts) {
-            if (coreAccountInfo.getId().equals(accountId)) {
-                return coreAccountInfo;
+        if (coreAccounts != null) {
+            for (var coreAccountInfo : coreAccounts) {
+                if (coreAccountInfo.getId().equals(accountId)) {
+                    return coreAccountInfo;
+                }
             }
         }
+        var primaryAccountInfo = getPrimaryAccountInfo();
+        if (primaryAccountInfo != null && primaryAccountInfo.getId().equals(accountId)) {
+            return primaryAccountInfo;
+        }
         return null;
+    }
+
+    private @Nullable AccountInfo getPrimaryAccountInfo() {
+        var primaryAccountInfo = mIdentityManager.getPrimaryAccountInfo(ConsentLevel.SIGNIN);
+        if (primaryAccountInfo == null) {
+            return null;
+        }
+        return new AccountInfo.Builder(primaryAccountInfo).build();
     }
 
     private @Nullable List<AccountInfo> getCoreAccountsIfLoaded() {
@@ -565,27 +583,22 @@ public class ProfileDataCache implements IdentityManager.Observer {
             }
         }
 
-        private void setAccounts(List<AccountEntry> accounts) {
-            var accountsMap = new LinkedHashMap<CoreAccountId, DisplayableProfileData>();
-            for (var account : accounts) {
-                accountsMap.put(account.mAccountId, account.mProfileData);
-            }
-
+        private void setAccounts(Map<CoreAccountId, DisplayableProfileData> accounts) {
             if (mAccounts.isFulfilled()) {
-                mAccounts = Promise.fulfilled(accountsMap);
+                mAccounts = Promise.fulfilled(accounts);
             } else {
-                mAccounts.fulfill(accountsMap);
+                mAccounts.fulfill(accounts);
             }
         }
 
-        private void putAccount(AccountEntry account) {
+        private void putAccount(CoreAccountId accountId, DisplayableProfileData profileData) {
             if (mAccounts.isFulfilled()) {
                 final var accounts = mAccounts.getResult();
-                accounts.put(account.mAccountId, account.mProfileData);
+                accounts.put(accountId, profileData);
                 mAccounts = Promise.fulfilled(accounts);
             } else {
                 final var accounts = new LinkedHashMap<CoreAccountId, DisplayableProfileData>();
-                accounts.put(account.mAccountId, account.mProfileData);
+                accounts.put(accountId, profileData);
                 mAccounts.fulfill(accounts);
             }
         }
@@ -608,18 +621,12 @@ public class ProfileDataCache implements IdentityManager.Observer {
             return null;
         }
 
-        private boolean isLoaded() {
-            return mAccounts.isFulfilled();
+        private boolean contains(final CoreAccountId accountId) {
+            return getByAccountId(accountId) != null;
         }
 
-        private static final class AccountEntry {
-            private final CoreAccountId mAccountId;
-            private final DisplayableProfileData mProfileData;
-
-            private AccountEntry(CoreAccountId accountId, DisplayableProfileData profileData) {
-                mAccountId = accountId;
-                mProfileData = profileData;
-            }
+        private boolean isLoaded() {
+            return mAccounts.isFulfilled();
         }
     }
 }
