@@ -9,6 +9,7 @@
 #include "base/barrier_closure.h"
 #include "base/check.h"
 #include "base/command_line.h"
+#include "base/containers/span.h"
 #include "base/json/json_writer.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
@@ -22,11 +23,11 @@
 #include "chrome/browser/enterprise/connectors/device_trust/attestation/common/proto/device_trust_attestation_ca.pb.h"
 #include "chrome/browser/enterprise/connectors/device_trust/common/common_types.h"
 #include "crypto/aes_cbc.h"
+#include "crypto/hash.h"
+#include "crypto/hmac.h"
 #include "crypto/keypair.h"
 #include "crypto/random.h"
 #include "crypto/sign.h"
-#include "third_party/boringssl/src/include/openssl/hmac.h"
-#include "third_party/boringssl/src/include/openssl/sha.h"
 
 namespace enterprise_connectors {
 
@@ -61,18 +62,11 @@ VAType GetVAType() {
 }
 
 void FillHMAC(base::span<const uint8_t> key, EncryptedData* data) {
-  std::array<uint8_t, SHA512_DIGEST_LENGTH> hmac;
-  bssl::ScopedHMAC_CTX ctx;
-  CHECK(HMAC_Init_ex(ctx.get(), key.data(), key.size(), EVP_sha512(), nullptr));
-  {
-    auto iv = base::as_byte_span(data->iv());
-    CHECK(HMAC_Update(ctx.get(), iv.data(), iv.size()));
-  }
-  {
-    auto payload = base::as_byte_span(data->encrypted_data());
-    CHECK(HMAC_Update(ctx.get(), payload.data(), payload.size()));
-  }
-  CHECK(HMAC_Final(ctx.get(), hmac.data(), nullptr));
+  crypto::hmac::HmacSigner signer(crypto::hash::kSha512, key);
+  signer.Update(base::as_byte_span(data->iv()));
+  signer.Update(base::as_byte_span(data->encrypted_data()));
+  std::array<uint8_t, crypto::hash::kSha512Size> hmac;
+  signer.Finish(hmac);
   data->mutable_mac()->assign(base::as_string_view(hmac));
 }
 
