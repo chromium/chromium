@@ -1032,25 +1032,27 @@ CanvasNon2DResourceProviderSharedImage::DoExternalOverdrawAndProduceResource(
   cached_snapshot_.reset();
   draw_callback(recorder_->getRecordingCanvas());
 
+  if (!is_software_ && IsGpuContextLost()) {
+    return nullptr;
+  }
+
+  scoped_refptr<CanvasResource> software_resource;
   if (is_software_) {
-    DCHECK(GetSkSurface());
-    scoped_refptr<CanvasResource> output_resource = NewOrRecycledResource();
-    if (!output_resource) {
+    software_resource = NewOrRecycledResource();
+    if (!software_resource) {
       return nullptr;
     }
+  }
 
+  if (is_software_) {
     FlushCanvas(/*is_overwrite=*/true);
 
     // Note that the resource *must* be a CanvasResourceSharedImage as this
     // class creates CanvasResourceSharedImage instances exclusively.
-    static_cast<CanvasResourceSharedImage*>(output_resource.get())
+    static_cast<CanvasResourceSharedImage*>(software_resource.get())
         ->UploadSoftwareRenderingResults(GetSkSurface());
 
-    return output_resource;
-  }
-
-  if (IsGpuContextLost()) {
-    return nullptr;
+    return software_resource;
   }
 
   // We are about to give the caller read access to this resource (and its
