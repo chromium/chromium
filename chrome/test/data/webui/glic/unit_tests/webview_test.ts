@@ -122,7 +122,7 @@ suite('WebviewZoomTest', () => {
 
   test('ZoomInReturnsNextZoomFactor', () => {
     let lastSetZoom = 1.0;
-    const webview = controller.webview as chrome.webviewTag.WebView;
+    const webview = controller.webview;
     webview.getZoom = (cb: (z: number) => void) => cb(lastSetZoom);
     webview.setZoom = (z: number) => {
       lastSetZoom = z;
@@ -137,7 +137,7 @@ suite('WebviewZoomTest', () => {
 
   test('ZoomOutReturnsPreviousZoomFactor', () => {
     let lastSetZoom = 1.25;
-    const webview = controller.webview as chrome.webviewTag.WebView;
+    const webview = controller.webview;
     webview.getZoom = (cb: (z: number) => void) => cb(lastSetZoom);
     webview.setZoom = (currentZoom: number) => {
       lastSetZoom = currentZoom;
@@ -152,7 +152,7 @@ suite('WebviewZoomTest', () => {
 
   test('ZoomResetReturnsOne', () => {
     let lastSetZoom = 1.5;
-    const webview = controller.webview as chrome.webviewTag.WebView;
+    const webview = controller.webview;
     webview.setZoom = (currentZoom: number) => {
       lastSetZoom = currentZoom;
     };
@@ -164,7 +164,7 @@ suite('WebviewZoomTest', () => {
   test('ZoomBoundaryConditions', () => {
     let lastSetZoom = 2.0;
     let setZoomCalled = false;
-    const webview = controller.webview as chrome.webviewTag.WebView;
+    const webview = controller.webview;
     webview.getZoom = (cb: (z: number) => void) => cb(lastSetZoom);
     webview.setZoom = (currentZoom: number) => {
       lastSetZoom = currentZoom;
