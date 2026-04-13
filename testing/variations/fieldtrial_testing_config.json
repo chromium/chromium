@@ -927,21 +927,6 @@
             ]
         }
     ],
-    "AndroidCaretBrowsing": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "AndroidCaretBrowsing"
-                    ]
-                }
-            ]
-        }
-    ],
     "AndroidDesktopStyleScrollbars": [
         {
             "platforms": [
