@@ -588,6 +588,10 @@ class FutexMigrationTestThread : public TestThreadBase {
 // the migration works correctly by enabling the feature with multiple threads
 // contending for the same lock.
 TEST(PartitionAllocLockTest, FutexMigration) {
+  if (!PriorityInheritanceLocksSupported()) {
+    GTEST_SKIP() << "PI futex migration requires kernel support.";
+  }
+
   Lock lock;
   std::atomic<int> num_threads_started{0};
 
