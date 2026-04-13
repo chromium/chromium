@@ -668,6 +668,10 @@ def GitApplyCherryPicks():
     # https://github.com/rust-lang/rust/pull/152404 lands and we roll past it.
     GitCherryPick(RUST_SRC_DIR, 'aefb9a9ae261dae8d84b801c9396dd571a75339a',
                   'https://github.com/rust-lang/rust.git')
+    # TODO(crbug.com/489522417): Remove once
+    # https://github.com/rust-lang/rust/pull/153305 lands and we roll past it.
+    GitCherryPick(RUST_SRC_DIR, '13ddff53be423b17615837846dc959592c32d93d',
+                  'https://github.com/rust-lang/rust.git')
 
     # TODO(crbug.com/477565811): Remove once the outline atomics situation is
     # resolved. This cherry-picks

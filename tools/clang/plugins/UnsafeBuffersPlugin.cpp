@@ -219,7 +219,6 @@ class UnsafeBuffersDiagnosticConsumer : public clang::DiagnosticConsumer {
             clang::DiagnosticsEngine::Level::Note,
             "See //docs/unsafe_buffers.md for help.")) {}
 
-#ifdef LLVM_FORCE_HEAD_REVISION
   ~UnsafeBuffersDiagnosticConsumer() override {
     if (next_) {
       NumErrors = next_->getNumErrors();
@@ -227,17 +226,6 @@ class UnsafeBuffersDiagnosticConsumer : public clang::DiagnosticConsumer {
       next_->clang::DiagnosticConsumer::~DiagnosticConsumer();
     }
   }
-#else
-  ~UnsafeBuffersDiagnosticConsumer() override = default;
-
-  void finish() override {
-    if (next_) {
-      next_->finish();
-      NumErrors = next_->getNumErrors();
-      NumWarnings = next_->getNumWarnings();
-    }
-  }
-#endif
 
   void clear() override {
     if (next_) {
