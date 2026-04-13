@@ -7,11 +7,13 @@
 
 #include <vector>
 
+#include "base/callback_list.h"
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks.mojom.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_ui_interface.h"
 #include "components/contextual_tasks/public/contextual_tasks_service.h"
+#include "components/prefs/pref_change_registrar.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -72,6 +74,8 @@ class ContextualTasksPageHandler
                              GetCommonSearchParamsCallback callback) override;
   void OnboardingTooltipDismissed() override;
   void ReopenTabs() override;
+  void PinSidePanel() override;
+  void UnpinSidePanel() override;
   void PostMessageToWebview(const lens::ClientToAimMessage& message);
 
   // contextual_tasks::ContextualTasksService::Observer:
@@ -92,9 +96,12 @@ class ContextualTasksPageHandler
       const lens::UpdateThreadContextLibrary& message);
   void OnReceivedInjectInput(std::unique_ptr<lens::ModalityChipProps> modality);
   void OnReceivedRemoveInjectedInput(const std::string& id);
+  void OnPinStateChanged(bool is_pinned);
+  void OnPrefChanged();
 
   mojo::Receiver<contextual_tasks::mojom::PageHandler> receiver_;
   raw_ptr<contextual_tasks::ContextualTasksUIInterface> web_ui_controller_;
+  PrefChangeRegistrar pref_change_registrar_;
   raw_ptr<contextual_tasks::ContextualTasksUiService> ui_service_;
   raw_ptr<contextual_tasks::ContextualTasksService> contextual_tasks_service_;
 

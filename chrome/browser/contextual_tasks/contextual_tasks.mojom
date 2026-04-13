@@ -155,6 +155,12 @@ interface PageHandler {
   // to context may or may not be opened in new tabs depending upon what
   // option user selects.
   ReopenTabs();
+
+  // Pins the side panel to the toolbar.
+  PinSidePanel();
+
+  // Unpins the side panel from the toolbar.
+  UnpinSidePanel();
 };
 
 // WebUI-side handler for requests from the browser.
@@ -270,6 +276,10 @@ interface Page {
   // Called by the browser process (C++) to show or hide the reopen tabs
   // section.
   SetShowReopenTabs(bool show);
+
+  // Called by the browser process (C++) to notify the UI when the pin state
+  // changes.
+  OnSidePanelPinStateChanged(bool is_pinned);
 };
 
 // Used to bootstrip bi-directional communication between the browser and webui.
