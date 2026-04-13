@@ -1030,7 +1030,6 @@ scoped_refptr<CanvasResource>
 CanvasNon2DResourceProviderSharedImage::DoExternalOverdrawAndProduceResource(
     base::FunctionRef<void(cc::PaintCanvas&)> draw_callback) {
   cached_snapshot_.reset();
-  draw_callback(recorder_->getRecordingCanvas());
 
   if (!is_software_ && IsGpuContextLost()) {
     return nullptr;
@@ -1044,6 +1043,7 @@ CanvasNon2DResourceProviderSharedImage::DoExternalOverdrawAndProduceResource(
     }
   }
 
+  draw_callback(recorder_->getRecordingCanvas());
   FlushCanvas(/*is_overwrite=*/true);
 
   if (is_software_) {
