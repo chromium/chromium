@@ -697,9 +697,8 @@ class PLATFORM_EXPORT CanvasNon2DResourceProviderSharedImage
                                   uint32_t src_x,
                                   uint32_t src_y);
 
-  scoped_refptr<CanvasResource> DoExternalDrawAndProduceResource(
-      base::FunctionRef<void(cc::PaintCanvas&)> draw_callback,
-      bool is_overwrite);
+  scoped_refptr<CanvasResource> DoExternalOverdrawAndProduceResource(
+      base::FunctionRef<void(cc::PaintCanvas&)> draw_callback);
 
   scoped_refptr<StaticBitmapImage> DoExternalDrawAndSnapshot(
       base::FunctionRef<void(cc::PaintCanvas&)> draw_callback,

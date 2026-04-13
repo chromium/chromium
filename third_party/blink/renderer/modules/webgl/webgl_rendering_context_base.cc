@@ -2202,11 +2202,10 @@ WebGLRenderingContextBase::CopyRenderingResultsFromDrawingBufferToResource(
             kPremul_SkAlphaType, kBottomLeft_GrSurfaceOrigin);
     if (image && image->PaintImageForCurrentFrame()) {
       gfx::Rect dest_rect(resource_provider->Size());
-      resource = resource_provider->DoExternalDrawAndProduceResource(
+      resource = resource_provider->DoExternalOverdrawAndProduceResource(
           [&image, dest_rect](cc::PaintCanvas& canvas) {
             DrawImageToCanvas(image.get(), canvas, dest_rect);
-          },
-          /*is_overwrite=*/true);
+          });
       copy_succeeded = true;
     }
   }

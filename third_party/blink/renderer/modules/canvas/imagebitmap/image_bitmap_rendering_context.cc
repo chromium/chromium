@@ -233,12 +233,11 @@ bool ImageBitmapRenderingContext::PushFrame() {
   cc::PaintFlags paint_flags;
   paint_flags.setBlendMode(SkBlendMode::kSrc);
   scoped_refptr<CanvasResource> resource =
-      resource_provider_for_offscreen_canvas_->DoExternalDrawAndProduceResource(
-          [&](cc::PaintCanvas& canvas) {
+      resource_provider_for_offscreen_canvas_
+          ->DoExternalOverdrawAndProduceResource([&](cc::PaintCanvas& canvas) {
             canvas.drawImage(image->PaintImageForCurrentFrame(), 0, 0,
                              SkSamplingOptions(), &paint_flags);
-          },
-          /*is_overwrite=*/true);
+          });
   Host()->PushFrame(std::move(resource));
   return true;
 }

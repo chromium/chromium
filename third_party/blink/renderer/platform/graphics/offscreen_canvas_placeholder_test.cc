@@ -107,9 +107,8 @@ void OffscreenCanvasPlaceholderTest::CreateDispatcher() {
 }
 
 scoped_refptr<CanvasResource> OffscreenCanvasPlaceholderTest::DrawSomething() {
-  return resource_provider_->DoExternalDrawAndProduceResource(
-      [](cc::PaintCanvas& canvas) { canvas.clear(SkColors::kWhite); },
-      /*is_overwrite=*/true);
+  return resource_provider_->DoExternalOverdrawAndProduceResource(
+      [](cc::PaintCanvas& canvas) { canvas.clear(SkColors::kWhite); });
 }
 
 CanvasResource* OffscreenCanvasPlaceholderTest::DispatchOneFrame() {

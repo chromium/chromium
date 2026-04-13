@@ -451,12 +451,11 @@ ExternalTexture CreateExternalTexture(
 
     media::PaintCanvasVideoRenderer::PaintParams params;
     params.dest_rect = gfx::RectF(resource_provider->Size());
-    canvas_resource = resource_provider->DoExternalDrawAndProduceResource(
+    canvas_resource = resource_provider->DoExternalOverdrawAndProduceResource(
         [&](cc::PaintCanvas& canvas) {
           video_renderer->Paint(media_video_frame.get(), &canvas, media_flags,
                                 params, raster_context_provider);
-        },
-        /*is_overwrite=*/true);
+        });
   }
 
   if (!canvas_resource) {
