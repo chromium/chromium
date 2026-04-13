@@ -169,18 +169,10 @@ id<GREYMatcher> IncognitoInterstitialView() {
 
   [ChromeEarlGrey waitForUIElementToAppearWithMatcher:CreatePasskeyButton()];
 
-  ConditionBlock waitForSheetToDisappear = ^{
-    NSError* error = nil;
-    [[EarlGrey selectElementWithMatcher:CreatePasskeyButton()]
-        assertWithMatcher:grey_notVisible()
-                    error:&error];
-    return error == nil;
-  };
+  // Explicitly trigger the abort signal.
+  [ChromeEarlGrey evaluateJavaScriptForSideEffect:@"window.triggerAbort()"];
 
-  GREYAssert(
-      WaitUntilConditionOrTimeout(kWaitForActionTimeout,
-                                  waitForSheetToDisappear),
-      @"The passkey bottom sheet did not dismiss after the AbortSignal.");
+  [ChromeEarlGrey waitForUIElementToDisappearWithMatcher:CreatePasskeyButton()];
 }
 
 // Tests that the incognito interstitial is automatically dismissed when the
@@ -193,18 +185,11 @@ id<GREYMatcher> IncognitoInterstitialView() {
   [ChromeEarlGrey
       waitForUIElementToAppearWithMatcher:IncognitoInterstitialView()];
 
-  ConditionBlock waitForInterstitialToDisappear = ^{
-    NSError* error = nil;
-    [[EarlGrey selectElementWithMatcher:IncognitoInterstitialView()]
-        assertWithMatcher:grey_notVisible()
-                    error:&error];
-    return error == nil;
-  };
+  // Explicitly trigger the abort signal.
+  [ChromeEarlGrey evaluateJavaScriptForSideEffect:@"window.triggerAbort()"];
 
-  GREYAssert(
-      WaitUntilConditionOrTimeout(kWaitForActionTimeout,
-                                  waitForInterstitialToDisappear),
-      @"The incognito interstitial did not dismiss after the AbortSignal.");
+  [ChromeEarlGrey
+      waitForUIElementToDisappearWithMatcher:IncognitoInterstitialView()];
 }
 
 @end
