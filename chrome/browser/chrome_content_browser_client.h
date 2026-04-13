@@ -218,11 +218,11 @@ class ChromeContentBrowserClient : public content::ContentBrowserClient {
       const GURL& precursor,
       const GURL& url) override;
   bool DoesWebUIUrlRequireProcessLock(const GURL& url) override;
-  bool ShouldTreatURLSchemeAsFirstPartyWhenTopLevel(
-      std::string_view scheme,
+  bool ShouldTreatAsFirstPartyWhenTopLevel(
+      const url::Origin& top_frame_origin,
       bool is_embedded_origin_secure) override;
   bool ShouldIgnoreSameSiteCookieRestrictionsWhenTopLevel(
-      std::string_view scheme,
+      const url::Origin& top_frame_origin,
       bool is_embedded_origin_secure) override;
   std::string GetSiteDisplayNameForCdmProcess(
       content::BrowserContext* browser_context,

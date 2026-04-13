@@ -554,19 +554,19 @@ class CONTENT_EXPORT ContentBrowserClient {
   // TODO(chlily): This doesn't take into account the
   // matching_scheme_cookies_allowed_schemes, but maybe we should remove that
   // anyway.
-  virtual bool ShouldTreatURLSchemeAsFirstPartyWhenTopLevel(
-      std::string_view scheme,
+  virtual bool ShouldTreatAsFirstPartyWhenTopLevel(
+      const url::Origin& top_frame_origin,
       bool is_embedded_origin_secure);
 
   // Similar to the above. Returns whether SameSite cookie restrictions should
-  // be ignored when the site_for_cookies's scheme is |scheme|.
+  // be ignored when the site_for_cookies's origin is |top_frame_origin|.
   // |is_embedded_origin_secure| refers to whether the origin that is embedded
-  // in a document with the given scheme is secure.
+  // in a document with the given origin is secure.
   // This is a separate function from the above because the allowed schemes can
   // be different, as SameSite restrictions and third-party cookie blocking are
   // related but have different semantics.
   virtual bool ShouldIgnoreSameSiteCookieRestrictionsWhenTopLevel(
-      std::string_view scheme,
+      const url::Origin& top_frame_origin,
       bool is_embedded_origin_secure);
 
   // Gets a user friendly display name for a given |site_url| to be used in the

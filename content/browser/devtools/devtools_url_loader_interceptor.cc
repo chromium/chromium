@@ -1521,11 +1521,19 @@ void InterceptionJob::ProcessSetCookies(const net::HttpResponseHeaders& headers,
 
   net::CookieOptions options;
   options.set_include_httponly();
+  url::Origin top_frame_origin =
+      create_loader_params_->request.trusted_params.has_value() &&
+              create_loader_params_->request.trusted_params->isolation_info
+                  .top_frame_origin()
+                  .has_value()
+          ? *create_loader_params_->request.trusted_params->isolation_info
+                 .top_frame_origin()
+          : url::Origin();
   bool should_treat_as_first_party =
       GetContentClient()
           ->browser()
           ->ShouldIgnoreSameSiteCookieRestrictionsWhenTopLevel(
-              create_loader_params_->request.site_for_cookies.scheme(),
+              top_frame_origin,
               create_loader_params_->request.url.SchemeIsCryptographic());
   DCHECK_EQ(create_loader_params_->request.url, url_chain_.back());
   bool is_main_frame_navigation =
@@ -1683,12 +1691,17 @@ void InterceptionJob::FetchCookies(base::OnceClosure callback) {
   const network::ResourceRequest& request = create_loader_params_->request;
   DCHECK_EQ(request.url, url_chain_.back());
 
+  url::Origin top_frame_origin =
+      request.trusted_params.has_value() &&
+              request.trusted_params->isolation_info.top_frame_origin()
+                  .has_value()
+          ? *request.trusted_params->isolation_info.top_frame_origin()
+          : url::Origin();
   bool should_treat_as_first_party =
       GetContentClient()
           ->browser()
           ->ShouldIgnoreSameSiteCookieRestrictionsWhenTopLevel(
-              request.site_for_cookies.scheme(),
-              request.url.SchemeIsCryptographic());
+              top_frame_origin, request.url.SchemeIsCryptographic());
   bool is_main_frame_navigation =
       request.trusted_params.has_value() &&
       request.trusted_params->isolation_info.request_type() ==

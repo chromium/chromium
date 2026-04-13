@@ -476,6 +476,16 @@ void ChromeContentRendererClient::RenderThreadStarted() {
   WebSecurityPolicy::RegisterURLSchemeAsFirstPartyWhenTopLevelEmbeddingSecure(
       chrome_scheme);
 
+#if !BUILDFLAG(IS_ANDROID)
+  // TODO(crbug.com/483614998): Granting Lens side panel is a temporary
+  // exception to use SameSite cookies while it migrates to a <webview>
+  // approach. This should not be done for other untrusted WebUI.
+  blink::WebURL chrome_lens_url =
+      GURL(chrome::kChromeUILensUntrustedSidePanelURL);
+  WebSecurityPolicy::RegisterURLAsFirstPartyWhenTopLevelEmbeddingSecure(
+      chrome_lens_url);
+#endif
+
   // chrome-native: is a scheme used for placeholder navigations that allow
   // UIs to be drawn with platform native widgets instead of HTML.  These pages
   // should not be accessible.  No code should be runnable in these pages,

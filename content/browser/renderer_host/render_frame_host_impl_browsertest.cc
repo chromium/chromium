@@ -175,12 +175,14 @@ class FirstPartySchemeContentBrowserClient
 
   ~FirstPartySchemeContentBrowserClient() override = default;
 
-  bool ShouldTreatURLSchemeAsFirstPartyWhenTopLevel(
-      std::string_view scheme,
+  bool ShouldTreatAsFirstPartyWhenTopLevel(
+      const url::Origin& top_frame_origin,
       bool is_embedded_origin_secure) override {
-    if (is_embedded_origin_secure && scheme == "trustmeifembeddingsecure")
+    if (is_embedded_origin_secure &&
+        top_frame_origin.scheme() == "trustmeifembeddingsecure") {
       return true;
-    return scheme == "trustme";
+    }
+    return top_frame_origin.scheme() == "trustme";
   }
 
   mojo::PendingRemote<network::mojom::URLLoaderFactory>

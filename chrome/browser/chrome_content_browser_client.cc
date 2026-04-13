@@ -2102,19 +2102,31 @@ bool ChromeContentBrowserClient::DoesWebUIUrlRequireProcessLock(
   return true;
 }
 
-bool ChromeContentBrowserClient::ShouldTreatURLSchemeAsFirstPartyWhenTopLevel(
-    std::string_view scheme,
+bool ChromeContentBrowserClient::ShouldTreatAsFirstPartyWhenTopLevel(
+    const url::Origin& top_frame_origin,
     bool is_embedded_origin_secure) {
   // This is needed to bypass the normal SameSite rules for any chrome:// page
   // embedding a secure origin, regardless of the registrable domains of any
   // intervening frames. For example, this is needed for browser UI to interact
   // with SameSite cookies on accounts.google.com, which is used for displaying
   // a list of available accounts on the NTP (chrome://new-tab-page), etc.
-  if (is_embedded_origin_secure && scheme == content::kChromeUIScheme) {
+  if (is_embedded_origin_secure &&
+      top_frame_origin.scheme() == content::kChromeUIScheme) {
     return true;
   }
+  // TODO(crbug.com/483614998): Granting Lens side panel is a temporary
+  // exception to use SameSite cookies while it migrates to a <webview>
+  // approach. This should not be done for other untrusted WebUI.
+#if !BUILDFLAG(IS_ANDROID)
+  if (is_embedded_origin_secure &&
+      top_frame_origin == url::Origin::Create(GURL(
+                              chrome::kChromeUILensUntrustedSidePanelURL))) {
+    return true;
+  }
+#endif
+
 #if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
-  return scheme == extensions::kExtensionScheme;
+  return top_frame_origin.scheme() == extensions::kExtensionScheme;
 #else
   return false;
 #endif
@@ -2122,9 +2134,19 @@ bool ChromeContentBrowserClient::ShouldTreatURLSchemeAsFirstPartyWhenTopLevel(
 
 bool ChromeContentBrowserClient::
     ShouldIgnoreSameSiteCookieRestrictionsWhenTopLevel(
-        std::string_view scheme,
+        const url::Origin& top_frame_origin,
         bool is_embedded_origin_secure) {
-  return is_embedded_origin_secure && scheme == content::kChromeUIScheme;
+  // TODO(crbug.com/483614998): Granting Lens side panel is a temporary
+  // exception to use SameSite cookies while it migrates to a <webview>
+  // approach. This should not be done for other untrusted WebUI.
+  return is_embedded_origin_secure &&
+         (top_frame_origin.scheme() == content::kChromeUIScheme
+#if !BUILDFLAG(IS_ANDROID)
+          ||
+          (top_frame_origin == url::Origin::Create(GURL(
+                                   chrome::kChromeUILensUntrustedSidePanelURL)))
+#endif
+         );
 }
 
 // TODO(crbug.com/40694933): This is based on SubframeTask::GetTitle()
