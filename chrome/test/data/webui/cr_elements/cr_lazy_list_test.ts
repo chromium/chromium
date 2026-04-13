@@ -150,7 +150,7 @@ class TestListPaddingAppElement extends CrLitElement {
 customElements.define(TestListPaddingAppElement.is, TestListPaddingAppElement);
 
 suite('CrLazyListTest', () => {
-  let lazyList: CrLazyListElement;
+  let lazyList: CrLazyListElement<{name: string}>;
   let testApp: TestAppElement;
 
   async function setupTest(

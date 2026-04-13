@@ -15,7 +15,7 @@ import {CrLitElement, html, render} from '//resources/lit/v3_0/lit.rollup.js';
 
 import {getCss} from './cr_infinite_list.css.js';
 
-export class CrInfiniteListElement<T = any> extends CrLitElement {
+export class CrInfiniteListElement<T> extends CrLitElement {
   static get is() {
     return 'cr-infinite-list';
   }
@@ -168,7 +168,7 @@ export class CrInfiniteListElement<T = any> extends CrLitElement {
 
 declare global {
   interface HTMLElementTagNameMap {
-    'cr-infinite-list': CrInfiniteListElement;
+    'cr-infinite-list': CrInfiniteListElement<any>;
   }
 }
 

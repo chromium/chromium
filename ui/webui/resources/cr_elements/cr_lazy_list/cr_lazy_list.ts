@@ -40,14 +40,18 @@ import type {PropertyValues, TemplateResult} from '//resources/lit/v3_0/lit.roll
 
 import {getCss} from './cr_lazy_list.css.js';
 
-export interface CrLazyListElement {
+// Bypass check since without <T> the following TS error is thrown
+// error TS2428: All declarations of 'CrLazyListElement' must have identical
+// type parameters
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+export interface CrLazyListElement<T> {
   $: {
     container: HTMLElement,
     slot: HTMLSlotElement,
   };
 }
 
-export class CrLazyListElement<T = any> extends CrLitElement {
+export class CrLazyListElement<T> extends CrLitElement {
   static get is() {
     return 'cr-lazy-list';
   }
@@ -426,7 +430,7 @@ export class CrLazyListElement<T = any> extends CrLitElement {
 
 declare global {
   interface HTMLElementTagNameMap {
-    'cr-lazy-list': CrLazyListElement;
+    'cr-lazy-list': CrLazyListElement<any>;
   }
 }
 

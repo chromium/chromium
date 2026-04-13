@@ -46,7 +46,7 @@ const HistoryClustersElementBase = I18nMixinLit(CrLitElement);
 
 export interface HistoryClustersElement {
   $: {
-    clusters: CrInfiniteListElement,
+    clusters: CrInfiniteListElement<Cluster>,
     confirmationToast: CrToastElement,
   };
 }

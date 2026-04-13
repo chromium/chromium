@@ -4,12 +4,16 @@
 
 import {assert} from '//resources/js/assert.js';
 
+type MouseEventCallback = (e: MouseEvent) => void;
+type TouchEventCallback = (e: TouchEvent) => void;
+
 export class CrSplitterElement extends HTMLElement {
   static get is() {
     return 'cr-splitter';
   }
 
-  private handlers_: Map<string, (e: any) => void>|null = null;
+  private handlers_: Map<string, MouseEventCallback|TouchEventCallback>|null =
+      null;
   private startX_: number = 0;
   private startWidth_: number = -1;
   resizeNextElement: boolean = false;
@@ -61,9 +65,7 @@ export class CrSplitterElement extends HTMLElement {
     // Use capturing events on the document to get events when the mouse
     // leaves the document.
     for (const [eventType, handler] of this.handlers_) {
-      doc.addEventListener(
-          /** @type {string} */ (eventType),
-          /** @type {Function} */ (handler), true);
+      doc.addEventListener(eventType, handler as EventListener, true);
     }
 
     this.startX_ = clientX;
@@ -74,9 +76,7 @@ export class CrSplitterElement extends HTMLElement {
     const doc = this.ownerDocument;
     assert(!!this.handlers_);
     for (const [eventType, handler] of this.handlers_) {
-      doc.removeEventListener(
-          /** @type {string} */ (eventType),
-          /** @type {Function} */ (handler), true);
+      doc.removeEventListener(eventType, handler as EventListener, true);
     }
     this.handlers_.clear();
   }

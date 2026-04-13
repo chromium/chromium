@@ -84,7 +84,7 @@ class TestAppElement extends CrLitElement {
 
 customElements.define(TestAppElement.is, TestAppElement);
 
-function queryItems(infiniteList: CrInfiniteListElement):
+function queryItems(infiniteList: CrInfiniteListElement<{name: string}>):
     NodeListOf<TestItemElement> {
   return infiniteList.querySelectorAll<TestItemElement>('test-item');
 }
@@ -107,8 +107,8 @@ function getTestItems(count: number): Array<{name: string}> {
   return items.slice(0, count);
 }
 
-function getKeyboardFocusableItem(infiniteList: CrInfiniteListElement):
-    TestItemElement {
+function getKeyboardFocusableItem(
+    infiniteList: CrInfiniteListElement<{name: string}>): TestItemElement {
   const item =
       infiniteList.querySelector<TestItemElement>('test-item[tabindex="0"]');
   assertTrue(!!item);
@@ -131,7 +131,7 @@ function createTestApp(useDefaultScroll: boolean = false): TestAppElement {
 }
 
 suite('InfiniteListTest', () => {
-  let infiniteList: CrInfiniteListElement;
+  let infiniteList: CrInfiniteListElement<{name: string}>;
   let testApp: TestAppElement;
   let innerList: HTMLElement;
 
@@ -235,7 +235,7 @@ suite('InfiniteListTest', () => {
 });
 
 suite('InfiniteListFocusTest', () => {
-  let infiniteList: CrInfiniteListElement;
+  let infiniteList: CrInfiniteListElement<{name: string}>;
   let testApp: TestAppElement;
   let innerList: HTMLElement;
 

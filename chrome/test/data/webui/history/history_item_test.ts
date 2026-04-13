@@ -92,7 +92,7 @@ suite('<history-item> integration test', function() {
   });
 
   function getHistoryData(): HistoryEntry[] {
-    return (element.$.infiniteList.items || []) as HistoryEntry[];
+    return (element.$.infiniteList.items || []);
   }
 
   test('basic separator insertion', async function() {

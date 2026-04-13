@@ -32,7 +32,7 @@ import type {DownloadsToolbarElement} from './toolbar.js';
 export interface DownloadsManagerElement {
   $: {
     toolbar: DownloadsToolbarElement,
-    downloadsList: CrInfiniteListElement,
+    downloadsList: CrInfiniteListElement<MojomData>,
     mainContainer: HTMLElement,
   };
 }

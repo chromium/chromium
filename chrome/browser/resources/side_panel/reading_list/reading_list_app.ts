@@ -37,7 +37,7 @@ const ReadingListAppElementBase = HelpBubbleMixinLit(CrLitElement);
 export interface ReadingListAppElement {
   $: {
     footer: HTMLElement,
-    readingListList: CrLazyListElement,
+    readingListList: CrLazyListElement<ReadLaterEntry>,
   };
 }
 

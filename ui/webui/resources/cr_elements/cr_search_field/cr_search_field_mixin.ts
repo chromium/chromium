@@ -61,7 +61,7 @@ export const CrSearchFieldMixin = dedupingMixin(
           return this.getSearchInput().value;
         }
 
-        private fire_(eventName: string, detail?: any) {
+        private fire_<T>(eventName: string, detail?: T) {
           this.dispatchEvent(new CustomEvent(
               eventName, {bubbles: true, composed: true, detail}));
         }

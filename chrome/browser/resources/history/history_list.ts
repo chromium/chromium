@@ -43,7 +43,7 @@ type HistoryCheckboxSelectEvent = CustomEvent<{
 
 export interface HistoryListElement {
   $: {
-    infiniteList: CrInfiniteListElement,
+    infiniteList: CrInfiniteListElement<HistoryEntry>,
     dialog: CrLazyRenderLitElement<CrDialogElement>,
     noResults: HTMLElement,
     sharedMenu: CrLazyRenderLitElement<CrActionMenuElement>,

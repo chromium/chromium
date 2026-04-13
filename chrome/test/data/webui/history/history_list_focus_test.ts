@@ -50,7 +50,7 @@ suite('<history-list>', function() {
   });
 
   function getHistoryData(): HistoryEntry[] {
-    return (element.$.infiniteList.items || []) as HistoryEntry[];
+    return (element.$.infiniteList.items || []);
   }
 
   test('list focus and keyboard nav', async () => {

@@ -144,7 +144,7 @@ export class SelectableLazyListElement<T = any> extends CrLitElement {
         `cr-lazy-list > *:nth-child(${index + 1})`);
   }
 
-  private lazyList_(): CrLazyListElement {
+  private lazyList_(): CrLazyListElement<T> {
     const list = this.querySelector('cr-lazy-list');
     assert(list);
     return list;

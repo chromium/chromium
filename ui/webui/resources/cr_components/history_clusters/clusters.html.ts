@@ -5,6 +5,7 @@
 import {html} from '//resources/lit/v3_0/lit.rollup.js';
 
 import type {HistoryClustersElement} from './clusters.js';
+import type {Cluster} from './history_cluster_types.mojom-webui.js';
 
 // clang-format off
 export function getHtml(this: HistoryClustersElement) {
@@ -18,7 +19,7 @@ export function getHtml(this: HistoryClustersElement) {
     @remove-visits="${this.onRemoveVisits_}"
     ?hidden="${!this.clusters_.length}" .scrollTarget="${this.scrollTarget}"
     .scrollOffset="${this.scrollOffset}"
-    .template="${(item: any, index: number, tabindex: number) => html`
+    .template="${(item: Cluster, index: number, tabindex: number) => html`
       <history-cluster .cluster="${item}" .index="${index}"
           .query="${this.resultQuery_}" tabindex="${tabindex}"
           @remove-cluster="${this.onRemoveCluster_}" ?is-first="${!index}"

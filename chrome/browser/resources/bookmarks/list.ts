@@ -33,7 +33,7 @@ const BookmarksListElementBase = StoreClientMixinLit(CrLitElement);
 
 export interface BookmarksListElement {
   $: {
-    list: CrLazyListElement,
+    list: CrLazyListElement<string>,
     message: HTMLElement,
   };
 }
