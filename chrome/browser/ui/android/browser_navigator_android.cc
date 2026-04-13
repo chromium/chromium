@@ -15,9 +15,11 @@
 #include "chrome/browser/ui/browser_navigator_params_utils.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/create_browser_window.h"
+#include "chrome/common/webui_url_constants.h"
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/web_contents.h"
+#include "ui/base/base_window.h"
 #include "ui/base/window_open_disposition.h"
 
 namespace {
@@ -71,6 +73,55 @@ bool ValidNavigateParams(NavigateParams* params) {
   return true;
 }
 
+bool IsNtpUrl(const GURL& url) {
+  return url.host() == chrome::kChromeUINewTabHost &&
+         (url.SchemeIs(content::kChromeUIScheme) ||
+          url.SchemeIs(content::kChromeNativeScheme));
+}
+
+// Searches across all windows and tabs to locate a tab with the same url.
+// If such a tab exists, params->browser is set to this tab, it is activated,
+// and the original NTP is closed if applicable.
+// If no tab exists, a fallback disposition is applied to params->disposition.
+void TrySwitchToMatchingTab(NavigateParams* params) {
+  std::pair<BrowserWindowInterface*, int> browser_and_index =
+      GetIndexAndBrowserOfMatchingTab(params->initiating_profile, *params);
+
+  if (!browser_and_index.first || browser_and_index.second < 0) {
+    bool is_empty_source =
+        params->source_contents &&
+        (IsNtpUrl(params->source_contents->GetVisibleURL()) ||
+         params->source_contents->GetVisibleURL() == url::kAboutBlankURL);
+
+    params->disposition = is_empty_source
+                              ? WindowOpenDisposition::CURRENT_TAB
+                              : WindowOpenDisposition::NEW_FOREGROUND_TAB;
+    return;
+  }
+
+  auto bwi = browser_and_index.first;
+  auto* tab_list = TabListInterface::From(bwi);
+  tabs::TabInterface* tab = tab_list->GetTab(browser_and_index.second);
+  tabs::TabInterface* prev_active_tab =
+      TabListInterface::From(params->browser)->GetActiveTab();
+
+  // Activate window and tab being switched to.
+  params->browser = bwi;
+  params->browser->GetWindow()->Activate();
+  tab_list->ActivateTab(tab->GetHandle());
+
+  // Close the previously active tab if NTP, unless it has history.
+  if (prev_active_tab) {
+    content::NavigationController& controller =
+        prev_active_tab->GetContents()->GetController();
+    bool has_history = controller.CanGoBack() || controller.CanGoForward();
+    if (tab != prev_active_tab && !has_history &&
+        IsNtpUrl(prev_active_tab->GetContents()->GetVisibleURL())) {
+      prev_active_tab->Close();
+    }
+  }
+}
+
 // Helper to create/locate windows.
 void GetOrCreateBrowserWindowForDisposition(
     NavigateParams* params,
@@ -94,6 +145,10 @@ void GetOrCreateBrowserWindowForDisposition(
       CreateBrowserWindow(std::move(create_params), std::move(callback));
       break;
     }
+    case WindowOpenDisposition::SWITCH_TO_TAB: {
+      TrySwitchToMatchingTab(params);
+    }
+      [[fallthrough]];
     case WindowOpenDisposition::NEW_BACKGROUND_TAB:
       [[fallthrough]];
     case WindowOpenDisposition::NEW_FOREGROUND_TAB:
@@ -213,8 +268,7 @@ raw_ptr<tabs::TabInterface> GetOrCreateTabForDisposition(
 
       // Bring the new tab to the foreground if necessary.
       if (params->disposition != WindowOpenDisposition::NEW_BACKGROUND_TAB) {
-        tabs::TabHandle new_tab_handle = new_tab->GetHandle();
-        tab_model->HighlightTabs(new_tab_handle, {new_tab_handle});
+        tab_model->ActivateTab(new_tab->GetHandle());
       }
 
       // The new tab's WebContents is the target for our navigation.
@@ -226,6 +280,8 @@ raw_ptr<tabs::TabInterface> GetOrCreateTabForDisposition(
         return tabs::TabInterface::GetFromContents(params->source_contents);
       }
       // Otherwise use the active tab.
+      [[fallthrough]];
+    case WindowOpenDisposition::SWITCH_TO_TAB:
       [[fallthrough]];
     case WindowOpenDisposition::OFF_THE_RECORD:
       // A new incognito window has already been created with a new tab.
@@ -273,6 +329,25 @@ base::WeakPtr<content::NavigationHandle> GetTabAndPerformNavigation(
     return nullptr;
   }
 
+  // If SWITCH_TO_TAB found the tab, skip navigation unless crashed or
+  // IGNORE_AND_NAVIGATE with different URL.
+  if (params->disposition == WindowOpenDisposition::SWITCH_TO_TAB) {
+    content::WebContents* contents = params->navigated_or_inserted_contents;
+
+    if (contents->IsCrashed()) {
+      contents->GetController().Reload(content::ReloadType::NORMAL, true);
+      return nullptr;
+    }
+
+    bool should_navigate_anyway =
+        params->path_behavior == NavigateParams::IGNORE_AND_NAVIGATE &&
+        contents->GetURL() != params->url;
+
+    if (!should_navigate_anyway) {
+      return nullptr;
+    }
+  }
+
   // Perform navigation.
   content::NavigationController::LoadURLParams load_url_params =
       LoadURLParamsFromNavigateParams(params->navigated_or_inserted_contents,
@@ -305,8 +380,15 @@ base::WeakPtr<content::NavigationHandle> Navigate(NavigateParams* params) {
   if (params->disposition != WindowOpenDisposition::CURRENT_TAB &&
       params->disposition != WindowOpenDisposition::IGNORE_ACTION &&
       params->disposition != WindowOpenDisposition::NEW_BACKGROUND_TAB &&
-      params->disposition != WindowOpenDisposition::NEW_FOREGROUND_TAB) {
+      params->disposition != WindowOpenDisposition::NEW_FOREGROUND_TAB &&
+      params->disposition != WindowOpenDisposition::SWITCH_TO_TAB) {
     return nullptr;
+  }
+
+  // This call may activate a different window, but no new window will be
+  // created.
+  if (params->disposition == WindowOpenDisposition::SWITCH_TO_TAB) {
+    TrySwitchToMatchingTab(params);
   }
 
   return GetTabAndPerformNavigation(params);
