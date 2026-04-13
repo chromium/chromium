@@ -12,7 +12,7 @@ BASE_FEATURE(kPrivateAi, base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kPrivateAiServerAttestation, base::FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(kPrivateAiUseTokenAttestation, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kPrivateAiUseTokenAttestation, base::FEATURE_ENABLED_BY_DEFAULT);
 
 const base::FeatureParam<std::string> kPrivateAiApiKey{
     &kPrivateAi, /*name=*/"api-key", /*default_value=*/""};
@@ -24,7 +24,8 @@ const base::FeatureParam<std::string> kPrivateAiUrl{
     "mdi.privatearatea.PrivateArateaService.StartNoiseSession"};
 
 const base::FeatureParam<std::string> kPrivateAiProxyServerUrl{
-    &kPrivateAi, /*name=*/"proxy-url", /*default_value=*/""};
+    &kPrivateAi, /*name=*/"proxy-url",
+    /*default_value=*/"https://proxy.g2.fastly-masque.net:2498"};
 
 const base::FeatureParam<std::string> kPrivateAiTokenServerUrl{
     &kPrivateAi, /*name=*/"token-server-url",

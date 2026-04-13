@@ -43,7 +43,7 @@ class Client {
     base::TimeDelta timeout = kDefaultTimeout;
   };
 
-  static constexpr base::TimeDelta kDefaultTimeout = base::Seconds(120);
+  static constexpr base::TimeDelta kDefaultTimeout = base::Seconds(30);
 
   // Creates a client based on the provided configuration.
   // `url`: The URL for the PrivateAI service.
