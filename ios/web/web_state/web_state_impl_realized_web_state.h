@@ -198,6 +198,8 @@ class WebStateImpl::RealizedWebState final : public NavigationManagerDelegate {
   bool IsWebPageInFullscreenMode() const;
   const FaviconStatus& GetFaviconStatus() const;
   void SetFaviconStatus(const FaviconStatus& favicon_status);
+  bool IsCustomOpenPanelSupported() const;
+  void SetCustomOpenPanelSupported(bool supports);
   int GetNavigationItemCount() const;
   const GURL& GetVisibleURL() const;
   const GURL& GetLastCommittedURL() const;
@@ -328,6 +330,9 @@ class WebStateImpl::RealizedWebState final : public NavigationManagerDelegate {
 
   // The potential User-Agent override string.
   std::optional<std::string> user_agent_override_;
+
+  // Whether the WebState supports a custom open panel.
+  bool supports_custom_open_panel_ = false;
 
   // The unique identifier. Stable across application restarts.
   const WebStateID unique_identifier_;

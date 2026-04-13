@@ -208,6 +208,10 @@ class WebStateImpl;
 // context.
 - (WKWebView*)webViewWithPassKey:(web::WebViewPassKey)passKey;
 
+// Refresh the UIDelegate implemented method cache in Webkit by re-setting the
+// UIDelegate to itself.
+- (void)refreshUIDelegateMethodCache;
+
 // Removes the webView from the view hierarchy. The `shutdown` parameter
 // indicates if this method was called in a shutdown context.
 - (void)removeWebViewFromViewHierarchyForShutdown:(BOOL)shutdown;

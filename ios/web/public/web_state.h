@@ -550,6 +550,19 @@ class WebState : public base::SupportsUserData {
   // UIActivityViewController to share the current URL.
   virtual id GetActivityItem() API_AVAILABLE(ios(16.4)) = 0;
 
+  // Returns whether the WebState supports a custom file open panel.
+  // If this returns true, the capability may still be overridden or disabled by
+  // `WebClient::CanRunOpenPanel()`.
+  // If both `IsCustomOpenPanelSupported()` and `WebClient::CanRunOpenPanel()`
+  // return true, then `WebClient::RunOpenPanel()` will be used to handle the
+  // open panel.
+  // Note: If the value returned by `WebClient::CanRunOpenPanel()` changes,
+  // `SetCustomOpenPanelSupported()` must be called to ensure the underlying
+  // WebView updates its delegate method cache.
+  virtual bool IsCustomOpenPanelSupported() const = 0;
+  // Sets whether the WebState supports a custom open panel.
+  virtual void SetCustomOpenPanelSupported(bool supports) = 0;
+
   // Returns the page theme color.
   virtual UIColor* GetThemeColor() = 0;
 
