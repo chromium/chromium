@@ -32,7 +32,7 @@ import {ModelMode} from '//resources/mojo/components/omnibox/composebox/composeb
 import type {UnguessableToken} from '//resources/mojo/mojo/public/mojom/base/unguessable_token.mojom-webui.js';
 import type {Url} from '//resources/mojo/url/mojom/url.mojom-webui.js';
 
-import {ComposeboxFile, ContextualSearchInputStateDeletionType, FILE_VALIDATION_ERRORS_MAP, ProcessFilesError, recordBoolean, recordContextAdditionMethod, recordEnumerationValue, recordUserAction, TabUploadOrigin} from './common.js';
+import {ComposeboxFile, ContextType, ContextualSearchInputStateDeletionType, FILE_VALIDATION_ERRORS_MAP, ProcessFilesError, recordBoolean, recordContextAdditionMethod, recordContextualElementClickedMetric, recordEnumerationValue, recordUserAction, TabUploadOrigin} from './common.js';
 import type {ComposeboxState, TabUpload} from './common.js';
 import {getCss} from './composebox.css.js';
 import {getHtml} from './composebox.html.js';
@@ -202,7 +202,6 @@ export class ComposeboxElement extends ComposeboxEmbedderMixin
   // is false.
   protected accessor expanding_: boolean = false;
   protected accessor isOmniboxInCompactMode_: boolean = false;
-  protected inVoiceSearchMode_: boolean = false;
   accessor isCanvasQuerySubmitted: boolean = false;
   // Synchronous immediate guard used to deduplicate processing
   // autochips being added, not fully processed chips.
@@ -219,6 +218,7 @@ export class ComposeboxElement extends ComposeboxEmbedderMixin
   private searchboxListenerIds: number[] = [];
   private resizeObservers_: ResizeObserver[] = [];
   private automaticActiveTab_: ComposeboxFile|null = null;
+  private browserTabContextAdded_: boolean = false;
   protected shouldShowDivider_(): boolean {
     // TODO(crbug.com/476175193): Remove `entrypointName` condition.
     if (this.entrypointName === 'Omnibox' &&
@@ -841,6 +841,11 @@ export class ComposeboxElement extends ComposeboxEmbedderMixin
     delayUpload: boolean,
     origin: TabUploadOrigin,
   }>) {
+    if (!this.browserTabContextAdded_) {
+      recordContextualElementClickedMetric(
+          this.composeboxSource, 'AimPopup', ContextType.TAB);
+      this.browserTabContextAdded_ = true;
+    }
     this.addTabContextHandleCallback_({
       tabId: e.detail.id,
       title: e.detail.title,
@@ -931,6 +936,7 @@ export class ComposeboxElement extends ComposeboxEmbedderMixin
   }
 
   protected onContextMenuOpened_() {
+    this.browserTabContextAdded_ = false;
     this.contextMenuOpened = true;
     this.refreshTabSuggestions();
   }

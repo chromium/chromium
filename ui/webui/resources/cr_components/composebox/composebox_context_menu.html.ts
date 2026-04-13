@@ -27,6 +27,8 @@ export function getHtml(this: ComposeboxElement) {
         @get-tab-preview="${this.onGetTabPreview}"
         @context-menu-closed="${this.onContextMenuClosed_ }"
         @context-menu-opened="${this.onContextMenuOpened_}"
+        @open-image-upload="${this.onOpenImageUpload}"
+        @open-file-upload="${this.onOpenFileUpload}"
         .inputState="${this.inputState}"
         .searchboxLayoutMode="${this.searchboxLayoutMode}"
         .tabSuggestions="${this.tabSuggestions}"
