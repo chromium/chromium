@@ -1,0 +1,43 @@
+/* Copyright 2026 The Chromium Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file. */
+
+/* #css_wrapper_metadata_start
+ * #type=style-lit
+ * #import=//resources/cr_elements/cr_icons_lit.css.js
+ * #import=//resources/cr_components/composebox/composebox_shared_style.css.js
+ * #scheme=relative
+ * #include=cr-icons-lit composebox-shared-style
+ * #css_wrapper_metadata_end */
+
+:host {
+  --input-bottom-spacing: 10px;
+  --text-input-top-spacing: 10px;
+  --text-input-inline-end-spacing: 80px;
+  --text-input-inline-start-spacing: 16px;
+  --text-input-max-height: 190px;
+  --fade-duration: 100ms;
+}
+
+#composebox {
+  border-radius: inherit;
+  display: flex;
+  flex-direction: column;
+  pointer-events: auto;
+  position: relative;
+  overflow: hidden;
+  transition:
+    opacity var(--fade-duration) ease-in-out,
+    visibility var(--fade-duration) ease-in-out;
+  padding-bottom: 10px;
+}
+
+#inputContainer {
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  padding-bottom: var(--input-bottom-spacing);
+  overflow: hidden;
+  width: 100%;
+}
+

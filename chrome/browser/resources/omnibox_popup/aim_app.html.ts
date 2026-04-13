@@ -11,6 +11,9 @@ export function getHtml(this: OmniboxAimAppElement) {
   // clang-format off
   return html`<!--_html_template_start_-->
 <div id="content">
+  ${this.composeboxForkEnabled_ ? html`
+  <cr-omnibox-composebox id="composebox">
+  </cr-omnibox-composebox>` : html`
   <cr-composebox id="composebox" searchbox-next-enabled
       .submitButtonIconType="${SubmitButtonIconType.FORWARD}"
       searchbox-layout-mode="${this.getSearchboxLayoutMode_()}"
@@ -23,7 +26,7 @@ export function getHtml(this: OmniboxAimAppElement) {
       .showMenuOnClick="${false}"
       .shouldShowGhostFiles="${true}"
       entrypoint-name="Omnibox">
-  </cr-composebox>
+  </cr-composebox>`}
 </div>
 <!--_html_template_end_-->`;
   // clang-format on
