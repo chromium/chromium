@@ -16,7 +16,7 @@ import org.chromium.build.annotations.NullMarked;
 @NullMarked
 public class KeyboardAccessibleListView extends ListView {
 
-    private int mSelectedItemPosition;
+    private int mSelectedItemPosition = ListView.INVALID_POSITION;
 
     public KeyboardAccessibleListView(Context context) {
         super(context);
