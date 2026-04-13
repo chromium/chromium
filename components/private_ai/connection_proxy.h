@@ -20,10 +20,6 @@
 #include "services/network/public/mojom/network_context.mojom.h"
 #include "url/gurl.h"
 
-namespace network::mojom {
-class NetworkService;
-}  // namespace network::mojom
-
 namespace private_ai {
 
 class PrivateAiLogger;
@@ -55,7 +51,6 @@ class ConnectionProxy : public Connection {
   ConnectionProxy(const GURL& proxy_url,
                   PrivateAiLogger* logger,
                   phosphor::TokenManager* token_manager,
-                  network::mojom::NetworkService* network_service,
                   InnerConnectionFactory inner_connection_factory,
                   base::OnceCallback<void(StatusCode)> on_disconnect);
   ~ConnectionProxy() override;
@@ -92,7 +87,6 @@ class ConnectionProxy : public Connection {
   const GURL proxy_url_;
   raw_ptr<PrivateAiLogger> logger_;
   raw_ptr<phosphor::TokenManager> token_manager_;
-  raw_ptr<network::mojom::NetworkService> network_service_;
   InnerConnectionFactory inner_connection_factory_;
 
   // Called to trigger a disconnect and destruction of the connection.

@@ -24,10 +24,8 @@
 #include "components/private_ai/features.h"
 #include "components/private_ai/phosphor/token_manager.h"
 #include "components/private_ai/proto/private_ai.pb.h"
-#include "content/public/browser/network_service_instance.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "services/network/public/mojom/network_context.mojom.h"
-#include "services/network/public/mojom/network_service.mojom.h"
 
 namespace private_ai {
 
@@ -68,8 +66,7 @@ void PrivateAiInternalsPageHandler::Connect(const std::string& url,
   }
   webui_client_ =
       Client::Create(url, effective_api_key, proxy_url, use_token_attestation,
-                     network_context_, token_manager_,
-                     content::GetNetworkService(), &webui_logger_);
+                     network_context_, token_manager_, &webui_logger_);
   webui_client_->EstablishConnection();
   std::move(callback).Run();
 }

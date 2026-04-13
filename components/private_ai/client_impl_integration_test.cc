@@ -28,7 +28,6 @@
 #include "components/private_ai/status_code.h"
 #include "components/private_ai/testing/fake_secure_channel.h"
 #include "components/private_ai/testing/fake_token_manager.h"
-#include "services/network/network_service.h"
 #include "services/network/test/test_network_context.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -46,8 +45,6 @@ class ClientImplIntegrationTest : public testing::Test {
  public:
   void SetUp() override {
     GURL url("wss://example.com?key=test-api-key");
-
-    network_service_ = network::NetworkService::CreateForTesting();
 
     auto factory = std::make_unique<ConnectionFactoryImpl>(
         url, &test_network_context_, &logger_);
@@ -72,7 +69,6 @@ class ClientImplIntegrationTest : public testing::Test {
     factory_ptr_ = nullptr;
     client_.reset();
     ASSERT_TRUE(secure_channels_.empty());
-    network_service_ = nullptr;
   }
 
   void on_secure_channel_created(FakeSecureChannel* secure_channel) {
@@ -96,7 +92,6 @@ class ClientImplIntegrationTest : public testing::Test {
 
   PrivateAiLogger logger_;
   network::TestNetworkContext test_network_context_;
-  std::unique_ptr<network::NetworkService> network_service_;
   FakeTokenManager token_manager_;
   std::vector<raw_ptr<FakeSecureChannel>> secure_channels_;
   std::unique_ptr<ClientImpl> client_;
@@ -306,8 +301,7 @@ TEST_F(ClientImplIntegrationTest, AttestationTimedOut) {
 TEST_F(ClientImplIntegrationTest, ProxySuccess) {
   // 1. Enable proxy.
   ASSERT_TRUE(secure_channels_.empty());
-  factory_ptr_->EnableProxy(GURL("https://proxy.example.com"),
-                            network_service_.get());
+  factory_ptr_->EnableProxy(GURL("https://proxy.example.com"));
 
   base::test::TestFuture<base::expected<std::string, StatusCode>> future;
   client_->SendTextRequest(proto::FeatureName::FEATURE_NAME_UNSPECIFIED,
@@ -348,8 +342,7 @@ TEST_F(ClientImplIntegrationTest, ProxySuccess) {
 TEST_F(ClientImplIntegrationTest, ProxyConfigFailure) {
   // 1. Enable proxy.
   ASSERT_TRUE(secure_channels_.empty());
-  factory_ptr_->EnableProxy(GURL("https://proxy.example.com"),
-                            network_service_.get());
+  factory_ptr_->EnableProxy(GURL("https://proxy.example.com"));
 
   base::test::TestFuture<base::expected<std::string, StatusCode>> future;
   client_->SendTextRequest(proto::FeatureName::FEATURE_NAME_UNSPECIFIED,
