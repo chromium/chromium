@@ -836,6 +836,24 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerPaymentAppFinderBrowserTest,
   }
 }
 
+// The payment method https://george.example.test/webpay redirects to
+// https://harry.example.test/webpay, which serves a manifest with a relative
+// URL. This test verifies that the relative URL is resolved against the
+// post-redirect URL (harry) and not the pre-redirect URL (george).
+IN_PROC_BROWSER_TEST_F(
+    ServiceWorkerPaymentAppFinderBrowserTest,
+    RedirectResolvesRelativeManifestUrlAgainstPostRedirectUrl) {
+  {
+    GetAllPaymentAppsForMethods({"https://george.example.test/webpay"});
+
+    EXPECT_TRUE(apps().empty());
+    ASSERT_EQ(1U, installable_apps().size());
+    ExpectInstallablePaymentAppInScope("https://harry.example.test/webpay");
+    EXPECT_TRUE(error_message().empty())
+        << "Expected no error, but error message was: " << error_message();
+  }
+}
+
 // The payment method https://larry.example.test/webpay is not valid, because of
 // its cross-origin service worker scope https://harry.example.test/webpay/".
 IN_PROC_BROWSER_TEST_F(ServiceWorkerPaymentAppFinderBrowserTest,

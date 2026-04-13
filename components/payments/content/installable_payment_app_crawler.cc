@@ -142,7 +142,7 @@ void InstallablePaymentAppCrawler::OnPaymentMethodManifestDownloaded(
 
   number_of_payment_method_manifest_to_parse_++;
   parser_->ParsePaymentMethodManifest(
-      method_manifest_url, content,
+      method_manifest_url_after_redirects, content,
       base::BindOnce(
           &InstallablePaymentAppCrawler::OnPaymentMethodManifestParsed,
           weak_ptr_factory_.GetWeakPtr(), method_manifest_url,
