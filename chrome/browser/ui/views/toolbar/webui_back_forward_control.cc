@@ -48,11 +48,17 @@ void WebUIBackForwardControl::HandleContextMenu(
 }
 
 void WebUIBackForwardControl::SetEnabled(bool enabled) {
+  if (enabled_ == enabled) {
+    return;
+  }
   enabled_ = enabled;
   webui_toolbar_web_view_->OnBackForwardStateChanged();
 }
 
 void WebUIBackForwardControl::SetVisible(bool visible) {
+  if (visible_ == visible) {
+    return;
+  }
   visible_ = visible;
   webui_toolbar_web_view_->OnBackForwardStateChanged();
 }

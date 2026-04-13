@@ -104,6 +104,17 @@ void WebUIHomeControl::UpdateState() {
       webui_toolbar_web_view_->browser_,
       toolbar_ui_api::mojom::ToolbarButtonType::kHome);
   state->is_context_menu_visible = menu_runner_ && menu_runner_->IsRunning();
+
+  bool state_changed = false;
+  if (state->is_pinned != is_visible_ ||
+      state->is_context_menu_visible != is_context_menu_visible_) {
+    state_changed = true;
+  }
+
+  is_context_menu_visible_ = state->is_context_menu_visible;
   UpdateVisibility(state.get());
-  webui_toolbar_web_view_->OnHomeControlStateChanged(std::move(state));
+
+  if (state_changed) {
+    webui_toolbar_web_view_->OnHomeControlStateChanged(std::move(state));
+  }
 }

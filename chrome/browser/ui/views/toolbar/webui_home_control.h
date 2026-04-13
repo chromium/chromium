@@ -60,6 +60,7 @@ class WebUIHomeControl {
   raw_ptr<WebUIToolbarWebView> webui_toolbar_web_view_;
   BooleanPrefMember pin_state_;
   bool is_visible_ = false;
+  bool is_context_menu_visible_ = false;
 
   ui::mojom::MenuSourceType last_source_type_for_testing_ =
       ui::mojom::MenuSourceType::kNone;
