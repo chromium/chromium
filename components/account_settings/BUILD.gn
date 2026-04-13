@@ -11,6 +11,8 @@ static_library("account_settings") {
     "account_setting_sync_util.cc",
     "account_setting_sync_util.h",
     "account_settings.h",
+    "account_settings_features.cc",
+    "account_settings_features.h",
   ]
 
   public_deps = [

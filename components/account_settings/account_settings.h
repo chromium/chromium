@@ -8,6 +8,7 @@
 #include "base/feature_list.h"
 #include "base/memory/raw_ptr.h"
 #include "base/values.h"
+#include "components/account_settings/account_settings_features.h"
 
 namespace account_settings {
 
@@ -28,6 +29,26 @@ struct AccountSetting {
 // settings.
 inline constexpr AccountSetting kWalletPrivacyContextualSurfacing{
     "WALLET_PRIVACY_CONTEXTUAL_SURFACING", base::Value::Type::BOOLEAN};
+
+inline constexpr AccountSetting kAccountSettingContext{
+    "GEMINI_PERSONAL_CONTEXT", base::Value::Type::BOOLEAN,
+    &features::kAccountSettingContext};
+
+inline constexpr AccountSetting kAccountSettingContextWorkspace{
+    "PERSONAL_CONTEXT_GEMINI_USING_WORKSPACE", base::Value::Type::BOOLEAN,
+    &features::kAccountSettingContext};
+
+inline constexpr AccountSetting kAccountSettingContextPhotos{
+    "PERSONAL_CONTEXT_GEMINI_USING_PHOTOS", base::Value::Type::BOOLEAN,
+    &features::kAccountSettingContext};
+
+inline constexpr AccountSetting kAccountSettingContextSearch{
+    "GEMINI_PERSONAL_CONTEXT_SEARCH", base::Value::Type::BOOLEAN,
+    &features::kAccountSettingContext};
+
+inline constexpr AccountSetting kAccountSettingContextYoutube{
+    "GEMINI_PERSONAL_CONTEXT_YOUTUBE", base::Value::Type::BOOLEAN,
+    &features::kAccountSettingContext};
 
 }  // namespace account_settings
 
