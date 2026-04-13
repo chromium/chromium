@@ -219,7 +219,7 @@ export class ComposeboxElement extends ComposeboxEmbedderMixin
   private searchboxListenerIds: number[] = [];
   private resizeObservers_: ResizeObserver[] = [];
   private automaticActiveTab_: ComposeboxFile|null = null;
-  protected get shouldShowDivider_(): boolean {
+  protected shouldShowDivider_(): boolean {
     // TODO(crbug.com/476175193): Remove `entrypointName` condition.
     if (this.entrypointName === 'Omnibox' &&
         this.searchboxLayoutMode === 'TallBottomContext' &&
@@ -228,11 +228,11 @@ export class ComposeboxElement extends ComposeboxEmbedderMixin
     }
 
     return this.showDropdown &&
-        (this.showFileCarousel || this.shouldShowSubmitButton_ ||
+        (this.showFileCarousel || this.shouldShowSubmitButton_() ||
          this.inToolMode);
   }
 
-  protected get shouldShowSubmitButton_(): boolean {
+  protected shouldShowSubmitButton_(): boolean {
     return this.searchboxNextEnabled && this.submitEnabled;
   }
 

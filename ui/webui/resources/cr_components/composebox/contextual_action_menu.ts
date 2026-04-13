@@ -60,6 +60,7 @@ export class ContextualActionMenuElement extends ContextualActionMenuElementBase
       },
       tabPreviewUrl_: {type: String},
       tabPreviewsEnabled_: {type: Boolean},
+      showContextMenuHeaders_: {type: Boolean},
     };
   }
 
@@ -76,7 +77,7 @@ export class ContextualActionMenuElement extends ContextualActionMenuElementBase
   protected maxFileCount_: number =
       loadTimeData.getInteger('composeboxFileMaxCount');
   private metricsSource_: string = loadTimeData.getString('composeboxSource');
-  protected showContextMenuHeaders_: boolean =
+  protected accessor showContextMenuHeaders_: boolean =
       loadTimeData.getBoolean('ShowContextMenuHeaders');
   protected get supportedTools_(): Map<ToolMode, {
     icon: string,
@@ -233,14 +234,14 @@ export class ContextualActionMenuElement extends ContextualActionMenuElementBase
     }
   }
 
-  protected get toolHeader_(): string {
+  protected getToolHeader_(): string {
     if (this.inputState && this.inputState.toolsSectionConfig) {
       return this.inputState.toolsSectionConfig.header;
     }
     return '';
   }
 
-  protected get modelHeader_(): string {
+  protected getModelHeader_(): string {
     if (this.inputState && this.inputState.modelSectionConfig) {
       return this.inputState.modelSectionConfig.header;
     }
@@ -268,7 +269,7 @@ export class ContextualActionMenuElement extends ContextualActionMenuElementBase
   }
 
   // Checks if the image upload item in the context menu should be visible.
-  protected get imageUploadAllowed_(): boolean {
+  protected isImageUploadAllowed_(): boolean {
     if (this.inputState) {
       return this.inputState.allowedInputTypes.includes(InputType.kLensImage);
     }
@@ -276,7 +277,7 @@ export class ContextualActionMenuElement extends ContextualActionMenuElementBase
   }
 
   // Checks if the image upload item in the context menu should be disabled.
-  protected get imageUploadDisabled_(): boolean {
+  protected isImageUploadDisabled_(): boolean {
     if (this.inputState) {
       return this.inputState.disabledInputTypes.includes(InputType.kLensImage);
     }
@@ -284,7 +285,7 @@ export class ContextualActionMenuElement extends ContextualActionMenuElementBase
   }
 
   // Checks if the file upload item in the context menu should be visible.
-  protected get fileUploadAllowed_(): boolean {
+  protected isFileUploadAllowed_(): boolean {
     if (this.inputState) {
       return this.inputState.allowedInputTypes.includes(InputType.kLensFile);
     }
@@ -292,7 +293,7 @@ export class ContextualActionMenuElement extends ContextualActionMenuElementBase
   }
 
   // Checks if the file upload item in the context menu should be disabled.
-  protected get fileUploadDisabled_(): boolean {
+  protected isFileUploadDisabled_(): boolean {
     if (this.inputState) {
       return this.inputState.disabledInputTypes.includes(InputType.kLensFile);
     }
@@ -300,7 +301,7 @@ export class ContextualActionMenuElement extends ContextualActionMenuElementBase
   }
 
   // Checks if the browser tab item in the context menu should be visible.
-  protected get browserTabAllowed_(): boolean {
+  protected isBrowserTabAllowed_(): boolean {
     if (this.inputState) {
       return this.inputState.allowedInputTypes.includes(InputType.kBrowserTab);
     }

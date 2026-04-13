@@ -32,7 +32,7 @@ export function getHtml(this: ComposeboxFileThumbnailElement) {
                 class="remove-button"
                 iron-icon="cr:clear"
                 title="${this.file.name}"
-                aria-label="${this.deleteFileButtonTitle_}"
+                aria-label="${this.getDeleteFileButtonTitle_()}"
                 @click="${this.onRemoveButtonClick_}">
             </cr-icon-button>`: ''}
           </div>
@@ -61,7 +61,7 @@ export function getHtml(this: ComposeboxFileThumbnailElement) {
                 class="remove-button"
                 iron-icon="cr:clear"
                 title="${this.file.name}"
-                aria-label="${this.deleteFileButtonTitle_}"
+                aria-label="${this.getDeleteFileButtonTitle_()}"
                 @click="${this.onRemoveButtonClick_}">
             </cr-icon-button>`: ''}
           </div>
@@ -83,7 +83,7 @@ export function getHtml(this: ComposeboxFileThumbnailElement) {
               id="removeInjectedInputImgButton"
               iron-icon="cr:clear"
               title="${this.file.name}"
-              aria-label="${this.deleteFileButtonTitle_}"
+              aria-label="${this.getDeleteFileButtonTitle_()}"
               @click="${this.onRemoveButtonClick_}">
           </cr-icon-button>`: ''}
         </div>
@@ -105,7 +105,7 @@ export function getHtml(this: ComposeboxFileThumbnailElement) {
             <div part="thumbnail-title" class="title">
               ${this.file.name}
             </div>
-            <div class="url">${this.formattedUrl_}</div>
+            <div class="url">${this.getFormattedUrl_()}</div>
           </div>
           <div class="overlay">
             <div class="gradient-protection"></div>
@@ -114,7 +114,7 @@ export function getHtml(this: ComposeboxFileThumbnailElement) {
               class="remove-button"
               iron-icon="cr:clear"
               title="${this.file.name}"
-              aria-label="${this.deleteFileButtonTitle_}"
+              aria-label="${this.getDeleteFileButtonTitle_()}"
               @click="${this.onRemoveButtonClick_}">
               </cr-icon-button>`: ''}
           </div>
@@ -136,7 +136,7 @@ export function getHtml(this: ComposeboxFileThumbnailElement) {
               id="removeImgButton"
               iron-icon="cr:clear"
               title="${this.file.name}"
-              aria-label="${this.deleteFileButtonTitle_}"
+              aria-label="${this.getDeleteFileButtonTitle_()}"
               @click="${this.onRemoveButtonClick_}">
           </cr-icon-button>`: ''}
         </div>` : html`
@@ -148,11 +148,11 @@ export function getHtml(this: ComposeboxFileThumbnailElement) {
               </svg>
             ` : html`
               <cr-icon icon="${
-                  this.usePdfIcon_ ?
+                  this.shouldUsePdfIcon_() ?
                       'thumbnail:pdf' :
                       'thumbnail:document'}"
                   class="${
-                  this.usePdfIcon_ ?
+                  this.shouldUsePdfIcon_() ?
                       'pdf-icon' :
                       'document-icon'}"></cr-icon>
             `}
@@ -166,7 +166,7 @@ export function getHtml(this: ComposeboxFileThumbnailElement) {
                 class="remove-button"
                 iron-icon="cr:clear"
                 title="${this.file.name}"
-                aria-label="${this.deleteFileButtonTitle_}"
+                aria-label="${this.getDeleteFileButtonTitle_()}"
                 @click="${this.onRemoveButtonClick_}">
             </cr-icon-button>`: ''}
           </div>

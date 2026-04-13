@@ -48,7 +48,7 @@ export class RecentTabChipElement extends RecentTabChipBase {
   private composeboxSource_: string =
       loadTimeData.getString('composeboxSource');
 
-  protected get recentTabChipTitle_(): string {
+  protected getRecentTabChipTitle_(): string {
     if (!this.recentTab) {
       return '';
     }

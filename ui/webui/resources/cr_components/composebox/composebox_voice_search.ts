@@ -102,6 +102,7 @@ export class ComposeboxVoiceSearchElement extends
       interimResult_: {type: String},
       errorMessage_: {type: String},
       error_: {type: Number},
+      detailsUrl_: {type: String},
     };
   }
 
@@ -115,14 +116,11 @@ export class ComposeboxVoiceSearchElement extends
   private timerId_: number|null = null;
   protected accessor error_: Error|null = null;
   protected accessor errorMessage_: string = '';
-  protected detailsUrl_: string =
+  protected accessor detailsUrl_: string =
       `https://support.google.com/chrome/?p=ui_voice_search&hl=${
           window.navigator.language}`;
   private pageHandler_: PageHandlerRemote =
       ComposeboxProxyImpl.getInstance().handler;
-  protected get showErrorScrim_(): boolean {
-    return !!this.errorMessage_;
-  }
 
   constructor() {
     super();
@@ -144,6 +142,9 @@ export class ComposeboxVoiceSearchElement extends
     this.voiceRecognition_.abort();
   }
 
+  protected shouldShowErrorScrim_(): boolean {
+    return !!this.errorMessage_;
+  }
 
   start() {
     this.errorMessage_ = '';
