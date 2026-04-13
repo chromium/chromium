@@ -21,6 +21,7 @@ import androidx.annotation.ColorInt;
 import androidx.annotation.DrawableRes;
 import androidx.annotation.StringRes;
 import androidx.annotation.VisibleForTesting;
+import androidx.appcompat.content.res.AppCompatResources;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.ObserverList;
@@ -253,6 +254,7 @@ public class StripLayoutTab extends StripLayoutView {
         mCloseButton =
                 new TintedCompositorButton(
                         context,
+                        incognito,
                         ButtonType.TAB_CLOSE,
                         /* parentView= */ this,
                         /* width= */ 0,
@@ -261,49 +263,43 @@ public class StripLayoutTab extends StripLayoutView {
                         clickHandler,
                         keyboardFocusHandler,
                         R.drawable.btn_tab_close_normal,
+                        R.drawable.tab_close_button_bg,
                         /* clickSlopDp= */ 0f,
                         /* hasLongClickAction= */ true);
-        mCloseButton.setTintResources(
-                R.color.default_icon_color_tint_list,
-                R.color.default_icon_color_tint_list,
-                R.color.default_icon_color_light,
-                R.color.default_icon_color_light);
 
-        mCloseButton.setBackgroundResourceId(R.drawable.tab_close_button_bg);
+        int iconColor =
+                incognito ? R.color.default_icon_color_light : R.color.default_icon_color_tint_list;
+        int iconColorInt =
+                AppCompatResources.getColorStateList(context, iconColor).getDefaultColor();
+        mCloseButton.setTint(iconColorInt);
         @ColorInt
-        int apsBackgroundHoveredTint =
+        int backgroundHoverTint =
                 ColorUtils.setAlphaComponentWithFloat(
                         SemanticColorUtils.getDefaultTextColor(context),
                         CLOSE_BUTTON_HOVER_BACKGROUND_DEFAULT_OPACITY);
         @ColorInt
-        int apsBackgroundPressedTint =
+        int backgroundPeripheralPressedTint =
                 ColorUtils.setAlphaComponentWithFloat(
                         SemanticColorUtils.getDefaultTextColor(context),
                         CLOSE_BUTTON_HOVER_BACKGROUND_PRESSED_OPACITY);
 
-        @ColorInt
-        int apsBackgroundIncognitoHoveredTint =
-                ColorUtils.setAlphaComponentWithFloat(
-                        context.getColor(R.color.tab_strip_button_hover_bg_color),
-                        CLOSE_BUTTON_HOVER_BACKGROUND_DEFAULT_OPACITY);
-        @ColorInt
-        int apsBackgroundIncognitoPressedTint =
-                ColorUtils.setAlphaComponentWithFloat(
-                        context.getColor(R.color.tab_strip_button_hover_bg_color),
-                        CLOSE_BUTTON_HOVER_BACKGROUND_PRESSED_OPACITY);
+        if (incognito) {
+            backgroundHoverTint =
+                    ColorUtils.setAlphaComponentWithFloat(
+                            context.getColor(R.color.tab_strip_button_hover_bg_color),
+                            CLOSE_BUTTON_HOVER_BACKGROUND_DEFAULT_OPACITY);
+            backgroundPeripheralPressedTint =
+                    ColorUtils.setAlphaComponentWithFloat(
+                            context.getColor(R.color.tab_strip_button_hover_bg_color),
+                            CLOSE_BUTTON_HOVER_BACKGROUND_PRESSED_OPACITY);
+        }
 
         // Only set color for hover bg.
         mCloseButton.setBackgroundTint(
                 Color.TRANSPARENT,
+                backgroundHoverTint,
                 Color.TRANSPARENT,
-                Color.TRANSPARENT,
-                Color.TRANSPARENT,
-                apsBackgroundHoveredTint,
-                apsBackgroundPressedTint,
-                apsBackgroundIncognitoHoveredTint,
-                apsBackgroundIncognitoPressedTint);
-
-        mCloseButton.setIncognito(incognito);
+                backgroundPeripheralPressedTint);
         mCloseButtonSize = getCloseButtonSize();
         resetCloseRect();
     }
@@ -479,7 +475,7 @@ public class StripLayoutTab extends StripLayoutView {
         String closeButtonDescription =
                 ContextUtils.getApplicationContext()
                         .getString(R.string.accessibility_tabstrip_btn_close_tab, title);
-        mCloseButton.setAccessibilityDescription(closeButtonDescription, closeButtonDescription);
+        mCloseButton.setAccessibilityDescription(closeButtonDescription);
 
         // Cache the title + resource ID used to create this description so we can avoid unnecessary
         // updates.

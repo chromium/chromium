@@ -8,6 +8,7 @@ import android.content.Context;
 import android.graphics.RectF;
 import android.util.FloatProperty;
 
+import androidx.annotation.DrawableRes;
 import androidx.annotation.IntDef;
 
 import org.chromium.build.annotations.NullMarked;
@@ -58,30 +59,29 @@ public class CompositorButton extends StripLayoutView {
         void setTooltipText(String text);
     }
 
-    protected int mResource;
-    protected int mBackgroundResource;
-
-    private int mPressedResource;
-    private int mIncognitoResource;
-    private int mIncognitoPressedResource;
-
-    private float mOpacity;
-    private boolean mIsPressed;
-    private boolean mIsPressedFromMouse;
-    private boolean mIsHovered;
-    private String mAccessibilityDescriptionIncognito = "";
+    private final @DrawableRes int mResource;
+    private final @DrawableRes int mBackgroundResource;
 
     private final @Nullable TooltipHandler mTooltipHandler;
-
     // @StripLayoutView the button was embedded in. Null if it's not a child view.
     @Nullable private final StripLayoutView mParentView;
     private final @ButtonType int mType;
     private final float mClickSlop;
 
+    private float mOpacity;
+    private boolean mIsPressed;
+    private boolean mIsPressedFromMouse;
+    private boolean mIsHovered;
+
     /**
      * Default constructor for {@link CompositorButton}
      *
      * @param context An Android context for fetching dimens.
+     * @param incognito Whether or not this button is incognito.
+     * @param resource The Android resource id for this button.
+     * @param backgroundResource The Android resource id for this button background.
+     * @param type The type of button.
+     * @param parentView The parent view this button is embedded in.
      * @param width The button width.
      * @param height The button height.
      * @param clickHandler The action to be performed on click.
@@ -90,6 +90,9 @@ public class CompositorButton extends StripLayoutView {
      */
     public CompositorButton(
             Context context,
+            boolean incognito,
+            @DrawableRes int resource,
+            @DrawableRes int backgroundResource,
             @ButtonType int type,
             @Nullable StripLayoutView parentView,
             float width,
@@ -98,7 +101,9 @@ public class CompositorButton extends StripLayoutView {
             StripLayoutViewOnClickHandler clickHandler,
             StripLayoutViewOnKeyboardFocusHandler keyboardFocusHandler,
             float clickSlopDp) {
-        super(false, clickHandler, keyboardFocusHandler, context);
+        super(incognito, clickHandler, keyboardFocusHandler, context);
+        mResource = resource;
+        mBackgroundResource = backgroundResource;
         mDrawBounds.set(0, 0, width, height);
 
         mType = type;
@@ -114,37 +119,10 @@ public class CompositorButton extends StripLayoutView {
     }
 
     /**
-     * A set of Android resources to supply to the compositor.
-     * @param resource                  The default Android resource.
-     * @param pressedResource           The pressed Android resource.
-     * @param incognitoResource         The incognito Android resource.
-     * @param incognitoPressedResource  The incognito pressed resource.
+     * @return The Android resource that represents button background.
      */
-    public void setResources(
-            int resource,
-            int pressedResource,
-            int incognitoResource,
-            int incognitoPressedResource) {
-        mResource = resource;
-        mPressedResource = pressedResource;
-        mIncognitoResource = incognitoResource;
-        mIncognitoPressedResource = incognitoPressedResource;
-    }
-
-    /**
-     * @param description A string describing the resource.
-     */
-    public void setAccessibilityDescription(String description, String incognitoDescription) {
-        super.setAccessibilityDescription(description);
-        mAccessibilityDescriptionIncognito = incognitoDescription;
-    }
-
-    /** {@link org.chromium.chrome.browser.layouts.components.VirtualView} Implementation */
-    @Override
-    public String getAccessibilityDescription() {
-        return isIncognito()
-                ? mAccessibilityDescriptionIncognito
-                : super.getAccessibilityDescription();
+    public int getBackgroundResourceId() {
+        return mBackgroundResource;
     }
 
     @Override
@@ -165,6 +143,13 @@ public class CompositorButton extends StripLayoutView {
      */
     public void setBounds(RectF bounds) {
         mDrawBounds.set(bounds);
+    }
+
+    @Override
+    public void setIncognito(boolean incognito) {
+        // Only the model selector button should be able to toggle incognito state.
+        assert mType == ButtonType.INCOGNITO_SWITCHER;
+        super.setIncognito(incognito);
     }
 
     /**
@@ -189,13 +174,6 @@ public class CompositorButton extends StripLayoutView {
     }
 
     /**
-     * @return The pressed state of the button.
-     */
-    public boolean isPressed() {
-        return mIsPressed;
-    }
-
-    /**
      * @param state The pressed state of the button.
      */
     public void setPressed(boolean state) {
@@ -214,6 +192,29 @@ public class CompositorButton extends StripLayoutView {
     public void setPressed(boolean state, boolean fromMousePrimaryButton) {
         mIsPressed = state;
         mIsPressedFromMouse = fromMousePrimaryButton;
+    }
+
+    /**
+     * Set whether the button is pressed from mouse.
+     *
+     * @param isPressedFromMouse Whether the button is pressed from mouse.
+     */
+    private void setPressedFromMouse(boolean isPressedFromMouse) {
+        mIsPressedFromMouse = isPressedFromMouse;
+    }
+
+    /**
+     * @return The pressed state of the button.
+     */
+    public boolean isPressed() {
+        return mIsPressed;
+    }
+
+    /**
+     * @return Whether the button is pressed from mouse.
+     */
+    public boolean isPressedFromMouse() {
+        return mIsPressed && mIsPressedFromMouse;
     }
 
     /**
@@ -237,10 +238,7 @@ public class CompositorButton extends StripLayoutView {
      * @return The Android resource id for this button based on it's state.
      */
     public int getResourceId() {
-        if (isPressed()) {
-            return isIncognito() ? mIncognitoPressedResource : mPressedResource;
-        }
-        return isIncognito() ? mIncognitoResource : mResource;
+        return mResource;
     }
 
     /**
@@ -310,14 +308,6 @@ public class CompositorButton extends StripLayoutView {
         mIsHovered = isHovered;
     }
 
-    @Override
-    public void setVisible(boolean isVisible) {
-        if (!isVisible) {
-            setHovered(false);
-        }
-        super.setVisible(isVisible);
-    }
-
     /**
      * @return Whether the button is hovered on.
      */
@@ -325,20 +315,12 @@ public class CompositorButton extends StripLayoutView {
         return mIsHovered;
     }
 
-    /**
-     * Set whether the button is pressed from mouse.
-     *
-     * @param isPressedFromMouse Whether the button is pressed from mouse.
-     */
-    private void setPressedFromMouse(boolean isPressedFromMouse) {
-        mIsPressedFromMouse = isPressedFromMouse;
-    }
-
-    /**
-     * @return Whether the button is pressed from mouse.
-     */
-    public boolean isPressedFromMouse() {
-        return mIsPressed && mIsPressedFromMouse;
+    @Override
+    public void setVisible(boolean isVisible) {
+        if (!isVisible) {
+            setHovered(false);
+        }
+        super.setVisible(isVisible);
     }
 
     /**

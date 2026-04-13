@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.compositor.layouts.components;
 
 import android.content.Context;
+import android.content.res.Resources;
 
 import androidx.annotation.DrawableRes;
 
@@ -24,6 +25,7 @@ public class TintedCompositorTextButton extends TintedCompositorButton {
 
     public TintedCompositorTextButton(
             Context context,
+            boolean incognito,
             @ButtonType int type,
             @Nullable StripLayoutView parentView,
             float width,
@@ -37,6 +39,7 @@ public class TintedCompositorTextButton extends TintedCompositorButton {
             @Nullable TintedCompositorButton dismissButton) {
         super(
                 context,
+                incognito,
                 type,
                 parentView,
                 width,
@@ -45,6 +48,7 @@ public class TintedCompositorTextButton extends TintedCompositorButton {
                 clickHandler,
                 keyboardFocusHandler,
                 resource,
+                Resources.ID_NULL,
                 clickSlopDp,
                 hasLongClickAction);
         mDismissButton = dismissButton;

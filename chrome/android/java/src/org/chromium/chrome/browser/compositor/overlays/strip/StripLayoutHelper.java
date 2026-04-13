@@ -42,6 +42,7 @@ import androidx.annotation.ColorInt;
 import androidx.annotation.IntDef;
 import androidx.annotation.StringRes;
 import androidx.annotation.VisibleForTesting;
+import androidx.appcompat.content.res.AppCompatResources;
 import androidx.core.view.ViewCompat;
 
 import org.chromium.base.Callback;
@@ -775,6 +776,7 @@ public class StripLayoutHelper
         mNewTabButton =
                 new TintedCompositorButton(
                         context,
+                        incognito,
                         ButtonType.NEW_TAB,
                         null,
                         BUTTON_BACKGROUND_SIZE_DP,
@@ -783,78 +785,65 @@ public class StripLayoutHelper
                         /* clickHandler= */ this,
                         /* keyboardFocusHandler= */ this,
                         R.drawable.ic_new_tab_button,
+                        R.drawable.bg_circle_tab_strip_button,
                         NEW_TAB_BUTTON_CLICK_SLOP_DP);
-        mNewTabButton.setBackgroundResourceId(R.drawable.bg_circle_tab_strip_button);
 
-        int apsBackgroundHoveredTint =
+        int backgroundHoverTint =
                 ColorUtils.setAlphaComponentWithFloat(
                         SemanticColorUtils.getDefaultTextColor(context),
                         NEW_TAB_BUTTON_HOVER_BACKGROUND_DEFAULT_OPACITY);
-        int apsBackgroundPressedTint =
+        int backgroundPeripheralPressedTint =
                 ColorUtils.setAlphaComponentWithFloat(
                         SemanticColorUtils.getDefaultTextColor(context),
-                        NEW_TAB_BUTTON_HOVER_BACKGROUND_PRESSED_OPACITY);
-
-        int apsBackgroundIncognitoHoveredTint =
-                ColorUtils.setAlphaComponentWithFloat(
-                        context.getColor(R.color.tab_strip_button_hover_bg_color),
-                        NEW_TAB_BUTTON_HOVER_BACKGROUND_DEFAULT_OPACITY);
-        int apsBackgroundIncognitoPressedTint =
-                ColorUtils.setAlphaComponentWithFloat(
-                        context.getColor(R.color.tab_strip_button_hover_bg_color),
                         NEW_TAB_BUTTON_HOVER_BACKGROUND_PRESSED_OPACITY);
 
         // Primary container for default bg color.
-        int backgroundDefaultTint = TabUiThemeProvider.getDefaultNtbContainerColor(context);
-
+        int backgroundTint = TabUiThemeProvider.getDefaultNtbContainerColor(context);
         // Primary @ 20% for default pressed bg color.
         int backgroundPressedTint =
                 ColorUtils.setAlphaComponentWithFloat(
                         SemanticColorUtils.getDefaultIconColorAccent1(context),
                         NEW_TAB_BUTTON_DEFAULT_PRESSED_OPACITY);
 
-        // gm3_baseline_surface_container_dark for incognito bg color.
-        int backgroundIncognitoDefaultTint =
-                context.getColor(R.color.tab_strip_bg_incognito_default_tint);
-
-        // gm3_baseline_surface_container_highest_dark for incognito pressed bg color
-        int backgroundIncognitoPressedTint =
-                context.getColor(R.color.tab_strip_bg_incognito_pressed_tint);
-
         // Tab strip redesign new tab button night mode bg color.
         if (ColorUtils.inNightMode(context)) {
             // colorSurfaceContainerLow for night mode bg color.
-            backgroundDefaultTint = SemanticColorUtils.getColorSurfaceContainerLow(context);
-
+            backgroundTint = SemanticColorUtils.getColorSurfaceContainerLow(context);
             // colorSurfaceContainerHighest for pressed night mode bg color.
-            backgroundPressedTint = SemanticColorUtils.getColorSurfaceContainerHighest(context);
+            backgroundPeripheralPressedTint =
+                    SemanticColorUtils.getColorSurfaceContainerHighest(context);
+        } else if (incognito) {
+            backgroundTint = context.getColor(R.color.tab_strip_bg_incognito_default_tint);
+            backgroundPressedTint = context.getColor(R.color.tab_strip_bg_incognito_pressed_tint);
+            backgroundHoverTint =
+                    ColorUtils.setAlphaComponentWithFloat(
+                            context.getColor(R.color.tab_strip_button_hover_bg_color),
+                            NEW_TAB_BUTTON_HOVER_BACKGROUND_DEFAULT_OPACITY);
+            backgroundPeripheralPressedTint =
+                    ColorUtils.setAlphaComponentWithFloat(
+                            context.getColor(R.color.tab_strip_button_hover_bg_color),
+                            NEW_TAB_BUTTON_HOVER_BACKGROUND_PRESSED_OPACITY);
         }
+
         mNewTabButton.setBackgroundTint(
-                backgroundDefaultTint,
+                backgroundTint,
+                backgroundHoverTint,
                 backgroundPressedTint,
-                backgroundIncognitoDefaultTint,
-                backgroundIncognitoPressedTint,
-                apsBackgroundHoveredTint,
-                apsBackgroundPressedTint,
-                apsBackgroundIncognitoHoveredTint,
-                apsBackgroundIncognitoPressedTint);
+                backgroundPeripheralPressedTint);
 
         // No pressed state color change for new tab button icon.
-        mNewTabButton.setTintResources(
-                R.color.default_icon_color_tint_list,
-                R.color.default_icon_color_tint_list,
-                R.color.modern_white,
-                R.color.modern_white);
+        int iconTint = incognito ? R.color.modern_white : R.color.default_icon_color_tint_list;
+        int iconColor = AppCompatResources.getColorStateList(context, iconTint).getDefaultColor();
+        mNewTabButton.setTint(iconColor);
 
         // y-offset  = lowered tab container + (tab container size - bg size)/2 -
         // Tab title y-offset = 2 + (38 - 32)/2 - 2 = 3dp
         mNewTabButton.setDrawY(NEW_TAB_BUTTON_BACKGROUND_Y_OFFSET_DP);
-
-        mNewTabButton.setIncognito(incognito);
         Resources res = context.getResources();
         mNewTabButton.setAccessibilityDescription(
-                res.getString(R.string.accessibility_toolbar_btn_new_tab),
-                res.getString(R.string.accessibility_toolbar_btn_new_incognito_tab));
+                incognito
+                        ? res.getString(R.string.accessibility_toolbar_btn_new_incognito_tab)
+                        : res.getString(R.string.accessibility_toolbar_btn_new_tab));
         mContext = context;
         mIncognito = incognito;
 

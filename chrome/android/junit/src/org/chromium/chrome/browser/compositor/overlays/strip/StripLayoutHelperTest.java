@@ -1467,13 +1467,10 @@ public class StripLayoutHelperTest {
                 "Unexpected incognito button color.",
                 AppCompatResources.getColorStateList(mContext, R.color.default_icon_color_tint_list)
                         .getDefaultColor(),
-                ((org.chromium.chrome.browser.compositor.layouts.components.TintedCompositorButton)
-                                mStripLayoutHelper.getNewTabButton())
-                        .getTint());
+                ((TintedCompositorButton) mStripLayoutHelper.getNewTabButton()).getTint());
     }
 
     @Test
-    @Feature("Advanced Peripherals Support")
     public void testNewTabButtonHoverHighlightProperties() {
         // Setup
         initializeTest(false, false, 0, 1);
@@ -1481,16 +1478,10 @@ public class StripLayoutHelperTest {
                 STRIP_WIDTH, STRIP_HEIGHT, false, TIMESTAMP, PADDING_LEFT, PADDING_RIGHT, 0f);
         mStripLayoutHelper.updateLayout(TIMESTAMP);
 
-        // Verify new tab button hover highlight resource id.
-        assertEquals(
-                "New tab button hover highlight is not as expected",
-                R.drawable.bg_circle_tab_strip_button,
-                mStripLayoutHelper.getNewTabButton().getBackgroundResourceId());
-
         // Verify new tab button hover highlight default tint.
-        TintedCompositorButton ntb = spy(mStripLayoutHelper.getNewTabButton());
-        when(ntb.isHovered()).thenReturn(true);
+        TintedCompositorButton ntb = mStripLayoutHelper.getNewTabButton();
 
+        ntb.setHovered(true);
         int defaultNtbHoverBackgroundTint =
                 ColorUtils.setAlphaComponent(
                         SemanticColorUtils.getDefaultTextColor(mContext), (int) (0.08 * 255));
@@ -1500,9 +1491,8 @@ public class StripLayoutHelperTest {
                 ntb.getBackgroundTint());
 
         // Verify new tab button hover highlight pressed tint.
-        when(ntb.isHovered()).thenReturn(false);
-        when(ntb.isPressed()).thenReturn(true);
-        when(ntb.isPressedFromMouse()).thenReturn(true);
+        ntb.setHovered(false);
+        ntb.setPressed(true, true);
         int pressedNtbHoverBackgroundTint =
                 ColorUtils.setAlphaComponent(
                         SemanticColorUtils.getDefaultTextColor(mContext), (int) (0.12 * 255));
@@ -1510,11 +1500,21 @@ public class StripLayoutHelperTest {
                 "New tab button hover highlight pressed tint is not as expected",
                 pressedNtbHoverBackgroundTint,
                 ntb.getBackgroundTint());
-        when(ntb.isPressedFromMouse()).thenReturn(false);
+    }
+
+    @Test
+    public void testNewTabButtonHoverHighlightProperties_Incognito() {
+        // Setup
+        initializeTest(false, /* incognito= */ true, 0, 1);
+        mStripLayoutHelper.onSizeChanged(
+                STRIP_WIDTH, STRIP_HEIGHT, false, TIMESTAMP, PADDING_LEFT, PADDING_RIGHT, 0f);
+        mStripLayoutHelper.updateLayout(TIMESTAMP);
+
+        // Verify new tab button hover highlight default tint.
+        TintedCompositorButton ntb = mStripLayoutHelper.getNewTabButton();
 
         // Verify new tab button incognito hover highlight default tint.
-        when(ntb.isHovered()).thenReturn(true);
-        when(ntb.isIncognito()).thenReturn(true);
+        ntb.setHovered(true);
         int defaultNtbHoverBackgroundIncognitoTint =
                 ColorUtils.setAlphaComponent(
                         mContext.getColor(R.color.tab_strip_button_hover_bg_color),
@@ -1525,9 +1525,8 @@ public class StripLayoutHelperTest {
                 ntb.getBackgroundTint());
 
         // Verify new tab button incognito hover highlight pressed tint.
-        when(ntb.isHovered()).thenReturn(false);
-        when(ntb.isPressed()).thenReturn(true);
-        when(ntb.isPressedFromMouse()).thenReturn(true);
+        ntb.setHovered(false);
+        ntb.setPressed(true, true);
         int hoverBackgroundPressedIncognitoColor =
                 ColorUtils.setAlphaComponent(
                         mContext.getColor(R.color.tab_strip_button_hover_bg_color),
@@ -1539,7 +1538,6 @@ public class StripLayoutHelperTest {
     }
 
     @Test
-    @Feature("Advanced Peripherals Support")
     public void testNewTabButtonHoverEnter() {
         // Setup
         initializeTest(false, false, 0, 1);
@@ -1564,7 +1562,6 @@ public class StripLayoutHelperTest {
     }
 
     @Test
-    @Feature("Advanced Peripherals Support")
     public void testNewTabButtonHoverOnDown() {
         // Setup
         initializeTest(false, false, 0, 1);
@@ -1580,12 +1577,11 @@ public class StripLayoutHelperTest {
     }
 
     @Test
-    @Feature("Advanced Peripherals Support")
     public void testCloseButtonHoverHighlightProperties() {
         // Setup
         initializeTest(false, false, 2);
         StripLayoutTab[] tabs = mStripLayoutHelper.getStripLayoutTabsForTesting();
-        TintedCompositorButton closeButton = spy(tabs[0].getCloseButton());
+        TintedCompositorButton closeButton = tabs[0].getCloseButton();
 
         // Verify close button hover highlight resource id.
         assertEquals(
@@ -1601,7 +1597,7 @@ public class StripLayoutHelperTest {
                 closeButton.getBackgroundTint());
 
         // Verify close button hover highlight default tint.
-        when(closeButton.isHovered()).thenReturn(true);
+        closeButton.setHovered(true);
 
         int defaultCloseButtonHoverBackgroundTint =
                 ColorUtils.setAlphaComponent(
@@ -1612,9 +1608,8 @@ public class StripLayoutHelperTest {
                 closeButton.getBackgroundTint());
 
         // Verify close button hover highlight pressed tint.
-        when(closeButton.isHovered()).thenReturn(false);
-        when(closeButton.isPressed()).thenReturn(true);
-        when(closeButton.isPressedFromMouse()).thenReturn(true);
+        closeButton.setHovered(false);
+        closeButton.setPressed(true, true);
         int pressedCloseButtonHoverBackgroundTint =
                 ColorUtils.setAlphaComponent(
                         SemanticColorUtils.getDefaultTextColor(mContext), (int) (0.12 * 255));
@@ -1622,13 +1617,17 @@ public class StripLayoutHelperTest {
                 "Close button hover highlight pressed tint is not as expected",
                 pressedCloseButtonHoverBackgroundTint,
                 closeButton.getBackgroundTint());
+    }
 
-        when(closeButton.isPressed()).thenReturn(false);
-        when(closeButton.isPressedFromMouse()).thenReturn(false);
+    @Test
+    public void testCloseButtonHoverHighlightProperties_Incognito() {
+        // Setup
+        initializeTest(false, /* incognito= */ true, 2);
+        StripLayoutTab[] tabs = mStripLayoutHelper.getStripLayoutTabsForTesting();
+        TintedCompositorButton closeButton = tabs[0].getCloseButton();
 
         // Verify close button incognito hover highlight default tint.
-        when(closeButton.isIncognito()).thenReturn(true);
-        when(closeButton.isHovered()).thenReturn(true);
+        closeButton.setHovered(true);
         int defaultNtbHoverBackgroundIncognitoTint =
                 ColorUtils.setAlphaComponent(
                         mContext.getColor(R.color.tab_strip_button_hover_bg_color),
@@ -1639,9 +1638,8 @@ public class StripLayoutHelperTest {
                 closeButton.getBackgroundTint());
 
         // Verify close button incognito hover highlight pressed tint.
-        when(closeButton.isHovered()).thenReturn(false);
-        when(closeButton.isPressed()).thenReturn(true);
-        when(closeButton.isPressedFromMouse()).thenReturn(true);
+        closeButton.setHovered(false);
+        closeButton.setPressed(true, true);
         int hoverBackgroundPressedIncognitoColor =
                 ColorUtils.setAlphaComponent(
                         mContext.getColor(R.color.tab_strip_button_hover_bg_color),
@@ -1653,7 +1651,6 @@ public class StripLayoutHelperTest {
     }
 
     @Test
-    @Feature("Advanced Peripherals Support")
     public void testCloseButtonHoverEnter() {
         // Setup
         initializeTest(false, false, 2);
@@ -1662,6 +1659,7 @@ public class StripLayoutHelperTest {
         TintedCompositorButton closeButton =
                 new TintedCompositorButton(
                         mContext,
+                        false,
                         ButtonType.TAB_CLOSE,
                         tab,
                         24.f,
@@ -1670,6 +1668,7 @@ public class StripLayoutHelperTest {
                         mClickHandler,
                         mKeyboardFocusHandler,
                         R.drawable.btn_tab_close_normal,
+                        R.drawable.tab_close_button_bg,
                         0f);
         closeButton.setOpacity(1.f);
         int x = (int) closeButton.getDrawX();
@@ -1692,7 +1691,6 @@ public class StripLayoutHelperTest {
     }
 
     @Test
-    @Feature("Advanced Peripherals Support")
     public void testCloseButtonHoverOnDown() {
         // Setup
         initializeTest(false, false, 2);
@@ -1700,6 +1698,7 @@ public class StripLayoutHelperTest {
         TintedCompositorButton closeButton =
                 new TintedCompositorButton(
                         mContext,
+                        false,
                         ButtonType.TAB_CLOSE,
                         tabs[0],
                         24.f,
@@ -1708,6 +1707,7 @@ public class StripLayoutHelperTest {
                         mClickHandler,
                         mKeyboardFocusHandler,
                         R.drawable.btn_tab_close_normal,
+                        R.drawable.tab_close_button_bg,
                         0f);
         closeButton.setOpacity(1.f);
         int x = (int) closeButton.getDrawX();

@@ -776,6 +776,7 @@ public class StripLayoutHelperManager
         mGlicButton =
                 new TintedCompositorTextButton(
                         context,
+                        /* incognito= */ false,
                         ButtonType.GLIC,
                         /* parentView= */ null,
                         GLIC_BUTTON_BACKGROUND_WIDTH_DP,
@@ -799,7 +800,7 @@ public class StripLayoutHelperManager
         int backgroundDefaultColor = SemanticColorUtils.getColorSurfaceContainerLow(context);
 
         @ColorInt
-        int apsBackgroundHoveredColor =
+        int backgroundHoverColor =
                 ColorUtils.setAlphaComponentWithFloat(
                         SemanticColorUtils.getColorPrimary(context),
                         GLIC_BUTTON_HOVER_BACKGROUND_DEFAULT_OPACITY);
@@ -811,19 +812,14 @@ public class StripLayoutHelperManager
 
         mGlicButton.setBackgroundTint(
                 backgroundDefaultColor,
+                backgroundHoverColor,
                 backgroundPressedColor,
-                Color.TRANSPARENT,
-                Color.TRANSPARENT,
-                apsBackgroundHoveredColor,
-                backgroundPressedColor,
-                Color.TRANSPARENT,
-                Color.TRANSPARENT);
+                backgroundPressedColor);
 
         updateGlicButtonOpacity();
 
         mGlicButton.setAccessibilityDescription(
-                context.getString(R.string.glic_tab_strip_button_tooltip),
-                /* incognitoDescription= */ "");
+                context.getString(R.string.glic_tab_strip_button_tooltip));
     }
 
     private void createModelSelectorButton(
@@ -833,6 +829,7 @@ public class StripLayoutHelperManager
         mModelSelectorButton =
                 new TintedCompositorButton(
                         context,
+                        mIsIncognito,
                         ButtonType.INCOGNITO_SWITCHER,
                         /* parentView= */ null,
                         MODEL_SELECTOR_BUTTON_BACKGROUND_WIDTH_DP,
@@ -843,72 +840,15 @@ public class StripLayoutHelperManager
                         selectorClickHandler,
                         keyboardFocusHandler,
                         R.drawable.ic_incognito,
+                        R.drawable.bg_circle_tab_strip_button, // Button bg size is 32 * 32.
                         MODEL_SELECTOR_BUTTON_CLICK_SLOP_DP);
-
-        // Button bg size is 32 * 32.
-        mModelSelectorButton.setBackgroundResourceId(R.drawable.bg_circle_tab_strip_button);
-
-        // Model selector button background color.
-        // Default bg color is surface inverse.
-        @ColorInt
-        int backgroundDefaultColor = context.getColor(R.color.model_selector_button_bg_color);
-
-        // Incognito bg color is surface 1 baseline.
-        @ColorInt
-        int backgroundIncognitoColor =
-                context.getColor(R.color.default_bg_color_dark_elev_1_baseline);
-
-        @ColorInt
-        int apsBackgroundHoveredColor =
-                ColorUtils.setAlphaComponentWithFloat(
-                        SemanticColorUtils.getDefaultTextColor(context),
-                        MODEL_SELECTOR_BUTTON_HOVER_BACKGROUND_DEFAULT_OPACITY);
-        @ColorInt
-        int apsBackgroundPressedColor =
-                ColorUtils.setAlphaComponentWithFloat(
-                        SemanticColorUtils.getDefaultTextColor(context),
-                        MODEL_SELECTOR_BUTTON_HOVER_BACKGROUND_PRESSED_OPACITY);
-        @ColorInt
-        int apsBackgroundHoveredIncognitoColor =
-                ColorUtils.setAlphaComponentWithFloat(
-                        context.getColor(R.color.tab_strip_button_hover_bg_color),
-                        MODEL_SELECTOR_BUTTON_HOVER_BACKGROUND_DEFAULT_OPACITY);
-        @ColorInt
-        int apsBackgroundPressedIncognitoColor =
-                ColorUtils.setAlphaComponentWithFloat(
-                        context.getColor(R.color.tab_strip_button_hover_bg_color),
-                        MODEL_SELECTOR_BUTTON_HOVER_BACKGROUND_PRESSED_OPACITY);
-
-        @ColorInt
-        int iconDefaultColor =
-                AppCompatResources.getColorStateList(context, R.color.default_icon_color_tint_list)
-                        .getDefaultColor();
-        @ColorInt
-        int iconIncognitoColor = context.getColor(R.color.default_icon_color_secondary_light);
-
-        mModelSelectorButton.setTint(
-                iconDefaultColor, iconDefaultColor, iconIncognitoColor, iconIncognitoColor);
-
-        mModelSelectorButton.setBackgroundTint(
-                backgroundDefaultColor,
-                backgroundDefaultColor,
-                backgroundIncognitoColor,
-                backgroundIncognitoColor,
-                apsBackgroundHoveredColor,
-                apsBackgroundPressedColor,
-                apsBackgroundHoveredIncognitoColor,
-                apsBackgroundPressedIncognitoColor);
 
         // y-offset for folio = lowered tab container + (tab container size - bg size)/2 -
         // folio tab title y-offset = 2 + (38 - 32)/2 - 2 = 3dp
         mModelSelectorButton.setDrawY(MODEL_SELECTOR_BUTTON_BACKGROUND_Y_OFFSET_DP);
 
-        mModelSelectorButton.setIncognito(false);
+        updateModelSelectorButtonProperties();
         mModelSelectorButton.setVisible(false);
-
-        mModelSelectorButton.setAccessibilityDescription(
-                context.getString(R.string.accessibility_tabstrip_btn_incognito_toggle_standard),
-                context.getString(R.string.accessibility_tabstrip_btn_incognito_toggle_incognito));
     }
 
     /** Cleans up internal state. An instance should not be used after this method is called. */
@@ -2013,7 +1953,8 @@ public class StripLayoutHelperManager
         return animationFinished;
     }
 
-    private void tabModelSwitched(boolean incognito) {
+    @VisibleForTesting
+    /*package*/ void tabModelSwitched(boolean incognito) {
         if (incognito == mIsIncognito) return;
         mIsIncognito = incognito;
 
@@ -2047,6 +1988,9 @@ public class StripLayoutHelperManager
         // Use helper methods to calculate new visibility of strip buttons.
         boolean newGlicVisibility = shouldGlicBeVisible();
         boolean newMsbVisibility = shouldMsbBeVisible();
+
+        // Update model selector button properties.
+        updateModelSelectorButtonProperties();
 
         // Early exit if visibility of both buttons hasn't changed.
         boolean glicChanged = mGlicButton != null && mGlicButton.isVisible() != newGlicVisibility;
@@ -2111,10 +2055,70 @@ public class StripLayoutHelperManager
     private boolean shouldMsbBeVisible() {
         if (mModelSelectorButton == null) return false;
 
-        // Sync the incognito state whenever the button exists
+        return mTabModelSelector != null && mTabModelSelector.getModel(true).getCount() != 0;
+    }
+
+    private void updateModelSelectorButtonProperties() {
+        if (mModelSelectorButton == null) return;
         mModelSelectorButton.setIncognito(mIsIncognito);
 
-        return mTabModelSelector != null && mTabModelSelector.getModel(true).getCount() != 0;
+        Context context = mContext;
+        @ColorInt
+        int iconDefaultColor =
+                AppCompatResources.getColorStateList(context, R.color.default_icon_color_tint_list)
+                        .getDefaultColor();
+        @ColorInt
+        int iconIncognitoColor = context.getColor(R.color.default_icon_color_secondary_light);
+
+        // Model selector button background color.
+        // Default bg color is surface inverse.
+        @ColorInt
+        int backgroundDefaultColor = context.getColor(R.color.model_selector_button_bg_color);
+        // Incognito bg color is surface 1 baseline.
+        @ColorInt
+        int backgroundIncognitoColor =
+                context.getColor(R.color.default_bg_color_dark_elev_1_baseline);
+
+        @ColorInt
+        int backgroundHoverColor =
+                ColorUtils.setAlphaComponentWithFloat(
+                        SemanticColorUtils.getDefaultTextColor(context),
+                        MODEL_SELECTOR_BUTTON_HOVER_BACKGROUND_DEFAULT_OPACITY);
+        @ColorInt
+        int backgroundPeripheralPressedColor =
+                ColorUtils.setAlphaComponentWithFloat(
+                        SemanticColorUtils.getDefaultTextColor(context),
+                        MODEL_SELECTOR_BUTTON_HOVER_BACKGROUND_PRESSED_OPACITY);
+
+        @ColorInt
+        int backgroundHoverIncognitoColor =
+                ColorUtils.setAlphaComponentWithFloat(
+                        context.getColor(R.color.tab_strip_button_hover_bg_color),
+                        MODEL_SELECTOR_BUTTON_HOVER_BACKGROUND_DEFAULT_OPACITY);
+        @ColorInt
+        int backgroundPeripheralPressedIncognitoColor =
+                ColorUtils.setAlphaComponentWithFloat(
+                        context.getColor(R.color.tab_strip_button_hover_bg_color),
+                        MODEL_SELECTOR_BUTTON_HOVER_BACKGROUND_PRESSED_OPACITY);
+
+        int iconColor = mIsIncognito ? iconIncognitoColor : iconDefaultColor;
+        int bgColor = mIsIncognito ? backgroundIncognitoColor : backgroundDefaultColor;
+        int hoverBgColor = mIsIncognito ? backgroundHoverIncognitoColor : backgroundHoverColor;
+        int peripheralPressedBgColor =
+                mIsIncognito
+                        ? backgroundPeripheralPressedIncognitoColor
+                        : backgroundPeripheralPressedColor;
+
+        TintedCompositorButton button = (TintedCompositorButton) mModelSelectorButton;
+        button.setTint(iconColor);
+        button.setBackgroundTint(bgColor, hoverBgColor, bgColor, peripheralPressedBgColor);
+
+        button.setAccessibilityDescription(
+                mIsIncognito
+                        ? context.getString(
+                                R.string.accessibility_tabstrip_btn_incognito_toggle_incognito)
+                        : context.getString(
+                                R.string.accessibility_tabstrip_btn_incognito_toggle_standard));
     }
 
     /**

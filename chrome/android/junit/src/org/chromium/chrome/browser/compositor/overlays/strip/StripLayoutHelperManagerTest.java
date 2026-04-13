@@ -17,7 +17,6 @@ import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.clearInvocations;
 import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -60,7 +59,6 @@ import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.SettableMonotonicObservableSupplier;
 import org.chromium.base.supplier.SettableNonNullObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Features;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
@@ -477,25 +475,23 @@ public class StripLayoutHelperManagerTest {
     }
 
     @Test
-    @Feature("Advanced Peripherals Support")
     public void testModelSelectorButtonHoverHighlightProperties() {
         // Set model selector button position.
         mStripLayoutHelperManager.onSizeChanged(
                 SCREEN_WIDTH, SCREEN_HEIGHT, VISIBLE_VIEWPORT_Y, ORIENTATION);
 
-        // Verify model selector button hover highlight resource id.
+        // Verify model selector button background resource id.
         assertEquals(
-                "Model selector button hover highlight is not as expected",
+                "Model selector button background resource id is not as expected",
                 R.drawable.bg_circle_tab_strip_button,
                 ((TintedCompositorButton) mStripLayoutHelperManager.getModelSelectorButton())
                         .getBackgroundResourceId());
 
-        // Verify model selector button hover highlight default tint.
         TintedCompositorButton msb =
-                ((TintedCompositorButton) spy(mStripLayoutHelperManager.getModelSelectorButton()));
-        when(msb.isHovered()).thenReturn(true);
-        when(msb.isPressedFromMouse()).thenReturn(false);
+                ((TintedCompositorButton) mStripLayoutHelperManager.getModelSelectorButton());
 
+        // Verify model selector button hover highlight default tint.
+        msb.setHovered(true);
         @ColorInt
         int hoverBackgroundDefaultColor =
                 ColorUtils.setAlphaComponent(
@@ -506,9 +502,8 @@ public class StripLayoutHelperManagerTest {
                 msb.getBackgroundTint());
 
         // Verify model selector button hover highlight pressed tint.
-        when(msb.isPressed()).thenReturn(true);
-        when(msb.isHovered()).thenReturn(false);
-        when(msb.isPressedFromMouse()).thenReturn(true);
+        msb.setHovered(false);
+        msb.setPressed(true, true);
         @ColorInt
         int hoverBackgroundPressedColor =
                 ColorUtils.setAlphaComponent(
@@ -517,38 +512,38 @@ public class StripLayoutHelperManagerTest {
                 "Model selector button hover highlight pressed tint is not as expected",
                 hoverBackgroundPressedColor,
                 msb.getBackgroundTint());
-        when(msb.isPressed()).thenReturn(false);
+
+        // Verify incognito properties.
+        mStripLayoutHelperManager.tabModelSwitched(/* incognito= */ true);
 
         // Verify model selector button incognito hover highlight default tint.
-        when(msb.isHovered()).thenReturn(true);
-        when(msb.isIncognito()).thenReturn(true);
+        msb.setPressed(false);
+        msb.setHovered(true);
         @ColorInt
         int hoverBackgroundDefaultIncognitoColor =
                 ColorUtils.setAlphaComponent(
                         mActivity.getColor(R.color.tab_strip_button_hover_bg_color),
                         (int) (0.08 * 255));
         assertEquals(
-                "Model selector button hover highlight pressed tint is not as expected",
+                "Model selector button incognito hover highlight default tint is not as expected",
                 hoverBackgroundDefaultIncognitoColor,
                 msb.getBackgroundTint());
 
         // Verify model selector button incognito hover highlight pressed tint.
-        when(msb.isPressed()).thenReturn(true);
-        when(msb.isHovered()).thenReturn(false);
-        when(msb.isPressedFromMouse()).thenReturn(true);
+        msb.setHovered(false);
+        msb.setPressed(true, true);
         @ColorInt
         int hoverBackgroundPressedIncognitoColor =
                 ColorUtils.setAlphaComponent(
                         mActivity.getColor(R.color.tab_strip_button_hover_bg_color),
                         (int) (0.12 * 255));
         assertEquals(
-                "Model selector button hover highlight pressed tint is not as expected",
+                "Model selector button incognito hover highlight pressed tint is not as expected",
                 hoverBackgroundPressedIncognitoColor,
                 msb.getBackgroundTint());
     }
 
     @Test
-    @Feature("Advanced Peripherals Support")
     public void testModelSelectorButtonHoverEnter() {
         mStripLayoutHelperManager.setModelSelectorButtonVisibleForTesting(true);
 
@@ -573,7 +568,6 @@ public class StripLayoutHelperManagerTest {
     }
 
     @Test
-    @Feature("Advanced Peripherals Support")
     public void testModelSelectorButtonHoverOnDown() {
         mStripLayoutHelperManager.setModelSelectorButtonVisibleForTesting(true);
 
@@ -673,7 +667,6 @@ public class StripLayoutHelperManagerTest {
     }
 
     @Test
-    @Feature("TabStripPerformance")
     public void testSetTabModelStartupInfo() {
         // Setup
         int expectedStandardCount = 5;
