@@ -354,6 +354,7 @@ linux_memory_builder(
         },
     ),
     cores = 32,
+    ssd = True,
     console_view_entry = consoles.console_view_entry(
         category = "cfi",
         short_name = "lnx",
