@@ -9,10 +9,12 @@
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
+#include "base/i18n/time_formatting.h"
 #include "base/json/json_reader.h"
 #include "base/metrics/histogram_macros_local.h"
 #include "base/notimplemented.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/task/thread_pool.h"
 #include "components/accessibility_annotator/core/accessibility_annotator_features.h"
 #include "components/accessibility_annotator/core/storage/accessibility_annotation_sync_bridge.h"
@@ -152,6 +154,10 @@ base::Value AccessibilityAnnotatorBackendImpl::GetDebugUICacheData() const {
   for (const std::pair<GURL, ContentAnnotationsData>& item :
        content_annotations_cache_) {
     base::DictValue entry;
+    entry.Set("visit_id", base::NumberToString(item.second.visit_id));
+    entry.Set("navigation_timestamp",
+              base::UTF16ToUTF8(base::TimeFormatShortDateAndTime(
+                  item.second.navigation_timestamp)));
     entry.Set("url", item.first.spec());
     entry.Set("title", item.second.page_title);
     entry.Set("classifier_results", item.second.classifier_results.Clone());

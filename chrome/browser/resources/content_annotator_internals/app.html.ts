@@ -26,6 +26,8 @@ export function getHtml(this: ContentAnnotatorInternalsAppElement) {
       <table>
         <thead>
           <tr>
+            <th>Visit ID</th>
+            <th>Nav Time</th>
             <th>URL</th>
             <th>Title</th>
             <th>Tab ID</th>
@@ -37,6 +39,8 @@ export function getHtml(this: ContentAnnotatorInternalsAppElement) {
         <tbody>
           ${this.logContent_.map((entry: AnnotationEntry) => html`
             <tr>
+              <td>${entry.visit_id}</td>
+              <td>${entry.navigation_timestamp}</td>
               <td>${entry.url}</td>
               <td>${entry.title}</td>
               <td>${entry.tab_id || 'N/A'}</td>

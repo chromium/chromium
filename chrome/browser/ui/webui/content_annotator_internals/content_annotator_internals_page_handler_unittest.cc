@@ -8,11 +8,16 @@
 #include <string>
 
 #include "base/files/scoped_temp_dir.h"
+#include "base/i18n/time_formatting.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
+#include "base/test/icu_test_util.h"
+#include "base/test/values_test_util.h"
 #include "chrome/browser/accessibility_annotator/accessibility_annotator_backend_factory.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/accessibility_annotator/core/logging/accessibility_annotator_internals.mojom.h"
 #include "components/accessibility_annotator/core/storage/accessibility_annotator_backend_impl.h"
+#include "components/history/core/browser/history_types.h"
 #include "components/sync/test/data_type_store_test_util.h"
 #include "content/public/test/browser_task_environment.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -23,6 +28,7 @@
 
 namespace content_annotator_internals {
 
+using ::base::test::DictionaryHasValues;
 using ::testing::Eq;
 using ::testing::Pointee;
 
@@ -95,6 +101,8 @@ TEST_F(ContentAnnotatorInternalsPageHandlerTest, GetAnnotatedContentEmpty) {
 }
 
 TEST_F(ContentAnnotatorInternalsPageHandlerTest, GetAnnotatedContentWithData) {
+  base::test::ScopedRestoreICUDefaultLocale locale("en_US");
+  base::test::ScopedRestoreDefaultTimezone timezone("UTC");
   accessibility_annotator::AccessibilityAnnotatorBackend* backend =
       AccessibilityAnnotatorBackendFactory::GetForProfile(profile());
   ASSERT_TRUE(backend);
@@ -104,10 +112,17 @@ TEST_F(ContentAnnotatorInternalsPageHandlerTest, GetAnnotatedContentWithData) {
   base::DictValue classifier_results;
   classifier_results.Set("url_match_result", "test category");
 
+  base::DictValue expected_annotations = annotations.Clone();
+  base::DictValue expected_classifier = classifier_results.Clone();
+  base::Time now;
+  ASSERT_TRUE(base::Time::FromUTCString("2026-04-10 10:00:00 UTC", &now));
+
   accessibility_annotator::AccessibilityAnnotatorBackend::ContentAnnotationsData
       data;
   data.page_title = "Title";
   data.tab_id = 123;
+  data.visit_id = static_cast<history::VisitID>(123);
+  data.navigation_timestamp = now;
   data.annotations = std::move(annotations);
   data.classifier_results = std::move(classifier_results);
 
@@ -121,18 +136,19 @@ TEST_F(ContentAnnotatorInternalsPageHandlerTest, GetAnnotatedContentWithData) {
         const base::ListValue& list = content.GetList();
         ASSERT_EQ(list.size(), 1u);
         const base::DictValue& entry = list[0].GetDict();
-        EXPECT_THAT(entry.FindString("url"), Pointee(Eq("https://example.com/")));
-        EXPECT_THAT(entry.FindString("title"), Pointee(Eq("Title")));
-        EXPECT_THAT(entry.FindInt("tab_id"), 123);
-        const base::DictValue* annotations = entry.FindDict("annotations");
-        ASSERT_TRUE(annotations);
-        EXPECT_THAT(annotations->FindString("key"), Pointee(Eq("value")));
-
-        const base::DictValue* classifier_results =
-            entry.FindDict("classifier_results");
-        ASSERT_TRUE(classifier_results);
-        EXPECT_THAT(classifier_results->FindString("url_match_result"),
-                    Pointee(Eq("test category")));
+        EXPECT_THAT(entry,
+                    DictionaryHasValues(
+                        base::DictValue()
+                            .Set("url", "https://example.com/")
+                            .Set("title", "Title")
+                            .Set("tab_id", 123)
+                            .Set("visit_id", "123")
+                            .Set("navigation_timestamp",
+                                 "4/10/26, 10:00:00\xe2\x80\xaf"
+                                 "AM")
+                            .Set("annotations", std::move(expected_annotations))
+                            .Set("classifier_results",
+                                 std::move(expected_classifier))));
         run_loop.Quit();
       }));
   run_loop.Run();

@@ -11,6 +11,8 @@ import {BrowserProxyImpl} from './browser_proxy.js';
 import type {BrowserProxy} from './browser_proxy.js';
 
 export interface AnnotationEntry {
+  visit_id: string;
+  navigation_timestamp: string;
   url: string;
   title: string;
   tab_id?: number;
