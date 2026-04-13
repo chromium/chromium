@@ -312,4 +312,28 @@ TEST_F(FrameTokenMessageQueueTest, OutOfOrderFrameTokensEnqueue) {
   EXPECT_TRUE(enqueuer->frame_token_callback_called());
 }
 
+namespace {
+void DeleteQueueCallback(std::unique_ptr<FrameTokenMessageQueue>* queue,
+                         base::TimeTicks) {
+  queue->reset();
+}
+}  // namespace
+
+TEST(FrameTokenMessageQueueUAFTest,
+     CallbackDestroysQueueDuringDidProcessFrame) {
+  TestFrameTokenMessageQueueClient client;
+  auto queue = std::make_unique<FrameTokenMessageQueue>();
+  queue->Init(&client);
+
+  const uint32_t frame_token = 42;
+  // Enqueue a callback that will delete the queue.
+  queue->EnqueueOrRunFrameTokenCallback(
+      frame_token,
+      base::BindOnce(&DeleteQueueCallback, base::Unretained(&queue)));
+
+  // This should trigger UAF if the bug is present.
+  queue->DidProcessFrame(frame_token, base::TimeTicks::Now());
+  EXPECT_EQ(nullptr, queue);
+}
+
 }  // namespace content

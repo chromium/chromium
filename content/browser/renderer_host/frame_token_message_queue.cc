@@ -64,11 +64,17 @@ void FrameTokenMessageQueue::DidProcessFrame(uint32_t frame_token,
 
   // std::multimap already sorts on keys, so this will process all enqueued
   // messages up to the current frame token.
-  for (auto it = callback_map_.begin(); it != upper_bound; ++it)
-    std::move(it->second).Run(activation_time);
+  std::vector<base::OnceCallback<void(base::TimeTicks)>> callbacks;
+  for (auto it = callback_map_.begin(); it != upper_bound; ++it) {
+    callbacks.push_back(std::move(it->second));
+  }
 
   // Clear all callbacks up to the current frame token.
   callback_map_.erase(callback_map_.begin(), upper_bound);
+
+  for (auto& callback : callbacks) {
+    std::move(callback).Run(activation_time);
+  }
 }
 
 void FrameTokenMessageQueue::EnqueueOrRunFrameTokenCallback(
