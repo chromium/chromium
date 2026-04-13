@@ -1,5 +1,7 @@
 include_rules = [
   # keep-sorted start
+  "+components/contextual_tasks/public/contextual_task.h",
+  "+components/contextual_tasks/public/contextual_tasks_service.h",
   "+components/contextual_tasks/public/features.h",
   # keep-sorted end
 ]

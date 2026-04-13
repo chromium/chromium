@@ -6,6 +6,7 @@
 #import <WebKit/WebKit.h>
 
 #import "ios/chrome/browser/cobrowse/ui/assistant_aim_header_view.h"
+#import "ios/chrome/browser/cobrowse/ui/assistant_aim_history_item.h"
 #import "ios/chrome/browser/composebox/ui/composebox_input_plate_view_controller.h"
 #import "ios/chrome/browser/shared/public/features/system_flags.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
@@ -217,6 +218,11 @@ constexpr CGFloat kThresholdForCompleteVisibility = 0.3;
   _webStateView = webStateView;
 
   [self setUpWebStateView];
+}
+
+- (void)displayHistoryWithItems:
+    (const std::vector<AssistantAIMHistoryItem>&)items {
+  // TODO(crbug.com/499241086): Implement this when introducing the history UI.
 }
 
 #pragma mark - Private

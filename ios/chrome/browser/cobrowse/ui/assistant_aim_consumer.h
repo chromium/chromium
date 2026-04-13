@@ -7,11 +7,19 @@
 
 #import <UIKit/UIKit.h>
 
+#import <vector>
+
+#import "ios/chrome/browser/cobrowse/ui/assistant_aim_history_item.h"
+
 // Consumer for the Assistant AIM UI.
 @protocol AssistantAIMConsumer <NSObject>
 
 // Sets the WebState view to be displayed.
 - (void)setWebStateView:(UIView*)webStateView;
+
+// Displays the history view with the given items.
+- (void)displayHistoryWithItems:
+    (const std::vector<AssistantAIMHistoryItem>&)items;
 
 @end
 

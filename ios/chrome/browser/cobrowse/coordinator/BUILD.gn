@@ -10,10 +10,12 @@ source_set("coordinator") {
     "assistant_aim_mediator.mm",
   ]
   deps = [
+    "//components/contextual_tasks/public",
     "//components/contextual_tasks/public:feature_list",
     "//ios/chrome/browser/assistant/coordinator:commands",
     "//ios/chrome/browser/assistant/ui",
     "//ios/chrome/browser/cobrowse/model",
+    "//ios/chrome/browser/cobrowse/model:factory",
     "//ios/chrome/browser/cobrowse/ui",
     "//ios/chrome/browser/composebox/coordinator:input_plate",
     "//ios/chrome/browser/composebox/public",
@@ -21,6 +23,7 @@ source_set("coordinator") {
     "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
     "//ios/chrome/browser/shared/coordinator/scene:scene_state_header",
     "//ios/chrome/browser/shared/coordinator/scene/state",
+    "//ios/chrome/browser/shared/model/application_context",
     "//ios/chrome/browser/shared/model/browser",
     "//ios/chrome/browser/shared/model/profile",
     "//ios/chrome/browser/shared/public/commands",

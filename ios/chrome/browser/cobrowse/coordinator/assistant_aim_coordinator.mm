@@ -13,6 +13,7 @@
 #import "ios/chrome/browser/cobrowse/coordinator/assistant_aim_mediator.h"
 #import "ios/chrome/browser/cobrowse/model/cobrowse_browser_agent.h"
 #import "ios/chrome/browser/cobrowse/model/cobrowse_context.h"
+#import "ios/chrome/browser/cobrowse/model/ios_contextual_tasks_service_factory.h"
 #import "ios/chrome/browser/cobrowse/ui/assistant_aim_view_controller.h"
 #import "ios/chrome/browser/composebox/coordinator/composebox_entrypoint.h"
 #import "ios/chrome/browser/composebox/coordinator/composebox_input_plate_coordinator.h"
@@ -69,9 +70,11 @@
     context = [CobrowseContext defaultContext];
   }
   _mediator = [[AssistantAIMMediator alloc]
-      initWithWebState:web::WebState::Create(params)
-               context:context
-      containerHandler:_containerHandler];
+            initWithWebState:web::WebState::Create(params)
+                     context:context
+            containerHandler:_containerHandler
+      contextualTasksService:IOSContextualTasksServiceFactory::GetForProfile(
+                                 self.browser->GetProfile())];
   _mediator.delegate = self;
   _mediator.consumer = _viewController;
 
