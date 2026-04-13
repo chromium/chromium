@@ -674,7 +674,7 @@ void Host::PanelWillOpenComplete(GlicWebClientAccess* client,
   }
 }
 
-bool Host::IsReady() const {
+bool Host::IsWebClientConnected() const {
   if (handler_info_) {
     return handler_info_->web_client != nullptr;
   }
@@ -789,7 +789,7 @@ void Host::RequestToShowCredentialSelectionDialog(
     const base::flat_map<std::string, gfx::Image>& icons,
     const std::vector<actor_login::Credential>& credentials,
     actor::ActorTaskDelegate::CredentialSelectedCallback callback) {
-  if (!IsReady()) {
+  if (!IsWebClientConnected()) {
     std::move(callback).Run(
         actor::webui::mojom::SelectCredentialDialogResponse::New());
     return;
@@ -803,7 +803,7 @@ void Host::RequestToShowUserConfirmationDialog(
     const url::Origin& navigation_origin,
     bool for_blocklisted_origin,
     actor::ActorTaskDelegate::UserConfirmationDialogCallback callback) {
-  if (!IsReady()) {
+  if (!IsWebClientConnected()) {
     std::move(callback).Run(
         actor::webui::mojom::UserConfirmationDialogResponse::New(
             actor::webui::mojom::ConfirmationRequestResult::
@@ -818,7 +818,7 @@ void Host::RequestToConfirmNavigation(
     actor::TaskId task_id,
     const url::Origin& navigation_origin,
     actor::ActorTaskDelegate::NavigationConfirmationCallback callback) {
-  if (!IsReady()) {
+  if (!IsWebClientConnected()) {
     std::move(callback).Run(
         actor::webui::mojom::NavigationConfirmationResponse::New(
             actor::webui::mojom::ConfirmationRequestResult::
@@ -834,7 +834,7 @@ void Host::RequestToShowAutofillSuggestionsDialog(
     std::vector<autofill::ActorFormFillingRequest> requests,
     base::WeakPtr<actor::AutofillSelectionDialogEventHandler> event_handler,
     actor::ActorTaskDelegate::AutofillSuggestionSelectedCallback callback) {
-  if (!IsReady()) {
+  if (!IsWebClientConnected()) {
     std::move(callback).Run(
         actor::webui::mojom::SelectAutofillSuggestionsDialogResponse::New(
             task_id.value(),
@@ -850,7 +850,7 @@ void Host::RequestToShowAutofillSuggestionsDialog(
 }
 
 void Host::FloatingPanelCanAttachChanged(bool can_attach) {
-  if (!IsReady()) {
+  if (!IsWebClientConnected()) {
     return;
   }
   handler_info_->web_client->FloatingPanelCanAttachChanged(can_attach);

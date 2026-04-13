@@ -198,6 +198,7 @@ void SkillsUiTabController::ShowGlicPanel() {
 }
 
 void SkillsUiTabController::NotifySkillToInvokeChangedWhenReady() {
+  // TODO(b/483387751): refactor to use invoke API.
   if (IsClientReady()) {
     NotifySkillToInvokeChanged();
   } else if (base::TimeTicks::Now() - glic_panel_open_time_ >
@@ -278,7 +279,7 @@ void SkillsUiTabController::Reset() {
 bool SkillsUiTabController::IsClientReady() {
   if (auto* service = GetGlicService()) {
     if (auto* instance = service->GetInstanceForTab(&tab_.get())) {
-      return instance->host().IsReady();
+      return instance->host().IsWebClientConnected();
     }
   }
   return false;

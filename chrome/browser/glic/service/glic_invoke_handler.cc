@@ -71,7 +71,7 @@ void GlicInvokeHandler::Invoke() {
 
   instance_->Show(show_options);
 
-  if (instance_->host().IsReady()) {
+  if (instance_->host().IsWebClientConnected()) {
     SendToClient();
     return;
   }
@@ -106,7 +106,7 @@ bool GlicInvokeHandler::RequiresOverrideIncompatibleFre() const {
 }
 
 void GlicInvokeHandler::SendToClient() {
-  if (!instance_->host().IsReady()) {
+  if (!instance_->host().IsWebClientConnected()) {
     OnError(GlicInvokeError::kTimeout);
     return;
   }

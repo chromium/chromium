@@ -3558,7 +3558,7 @@ IN_PROC_BROWSER_TEST_P(GlicApiTest, testPanelWillOpenBeforeClientReady) {
   options.conversation_info->conversation_id = "test_conversation_id";
   options.conversation_info->conversation_title = "Test Conversation Title";
   options.conversation_info->client_data = "test_client_data_from_cc";
-  ASSERT_FALSE(GetHost()->IsReady());
+  ASSERT_FALSE(GetHost()->IsWebClientConnected());
   GetHost()->PanelWillOpen(mojom::InvocationSource::kTopChromeButton,
                            std::move(options));
   ExecuteJsTest();

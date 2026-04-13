@@ -1175,8 +1175,8 @@ IN_PROC_BROWSER_TEST_F(GlicInstanceCoordinatorBrowserTest,
   auto* instance = coordinator().GetInstanceForTab(tab);
 
   // Wait until setup is complete
-  ASSERT_TRUE(
-      base::test::RunUntil([&]() { return instance->host().IsReady(); }));
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return instance->host().IsWebClientConnected(); }));
 
   // Now, invoke should hit the fast path.
   base::test::TestFuture<void> success_future;
