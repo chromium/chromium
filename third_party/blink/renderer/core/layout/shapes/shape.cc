@@ -228,8 +228,7 @@ std::unique_ptr<Shape> Shape::CreateShape(const BasicShape* basic_shape,
                            FloatValueForLength(values.at(i + 1), box_height));
         vertices[i / 2] = converter.ToLogical(vertex);
       }
-      shape = std::make_unique<PolygonShape>(std::move(vertices),
-                                             polygon->GetWindRule());
+      shape = std::make_unique<PolygonShape>(std::move(vertices));
       break;
     }
 

@@ -65,7 +65,7 @@ class OffsetPolygonEdge final : public VertexPair {
 
 class PolygonShape final : public Shape {
  public:
-  PolygonShape(Vector<gfx::PointF> vertices, WindRule fill_rule)
+  explicit PolygonShape(Vector<gfx::PointF> vertices)
       : Shape(), polygon_(std::move(vertices)) {}
   PolygonShape(const PolygonShape&) = delete;
   PolygonShape& operator=(const PolygonShape&) = delete;
