@@ -2877,8 +2877,8 @@
   },
   {
     "name": "enable-arabic-indic-digit-input",
-    "owners": [ "johna@microsoft.com" ],
-    "expiry_milestone": 149
+    "owners": [ "johna@microsoft.com", "gerchiko@microsoft.com" ],
+    "expiry_milestone": 160
   },
   {
     "name": "enable-audio-focus-enforcement",
