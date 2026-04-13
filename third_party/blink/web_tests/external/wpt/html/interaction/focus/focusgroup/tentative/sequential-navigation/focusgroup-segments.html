@@ -93,15 +93,15 @@
 
     await focusAndWait(bold);
 
-    await focusAndKeyPress(bold, kArrowRight);
-    assert_equals(document.activeElement, italic, "Arrow right should move from Bold to Italic");
+    await focusAndSendDirectionalInput(bold, kRight);
+    assert_equals(document.activeElement, italic, "Right should move from Bold to Italic");
 
-    await focusAndKeyPress(italic, kArrowRight);
-    assert_equals(document.activeElement, underline, "Arrow right should skip opted-out span and move to Underline");
+    await focusAndSendDirectionalInput(italic, kRight);
+    assert_equals(document.activeElement, underline, "Right should skip opted-out span and move to Underline");
 
-    await focusAndKeyPress(underline, kArrowLeft);
-    assert_equals(document.activeElement, italic, "Arrow left should skip opted-out span and move to Italic");
-  }, "Arrow key navigation treats opted-out elements as if they don't exist");
+    await focusAndSendDirectionalInput(underline, kLeft);
+    assert_equals(document.activeElement, italic, "Left should skip opted-out span and move to Italic");
+  }, "Directional input navigation treats opted-out elements as if they don't exist");
 
   promise_test(async t => {
     var before2 = document.getElementById("before2");
@@ -138,10 +138,10 @@
 
     await focusAndWait(help);
 
-    await focusAndKeyPress(help, kArrowRight);
-    assert_equals(document.activeElement, help, "Arrow keys should not work within opted-out section");
+    await focusAndSendDirectionalInput(help, kRight);
+    assert_equals(document.activeElement, help, "Directional input should not work within opted-out section");
 
-    await focusAndKeyPress(help, kArrowDown);
-    assert_equals(document.activeElement, help, "Vertical arrow keys should not work within opted-out section");
-  }, "Arrow keys do not work within opted-out focusgroup sections");
+    await focusAndSendDirectionalInput(help, kDown);
+    assert_equals(document.activeElement, help, "Vertical directional input should not work within opted-out section");
+  }, "Directional input does not work within opted-out focusgroup sections");
 </script>

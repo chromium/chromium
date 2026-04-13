@@ -1,9 +1,9 @@
 <!DOCTYPE html>
 <meta charset="utf-8">
-<title>HTML Test: focusgroup - Multiple native arrow key handlers in same segment</title>
+<title>HTML Test: focusgroup - Multiple native directional input handlers in same segment</title>
 <link rel="author" title="Microsoft" href="http://www.microsoft.com/">
 <link rel="help" href="https://open-ui.org/components/scoped-focusgroup.explainer/">
-<meta name="assert" content="Multiple native arrow key handlers can exist in a segment, each blocks arrow navigation independently.">
+<meta name="assert" content="Multiple native directional input handlers can exist in a segment, each blocks directional navigation independently.">
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <script src="/resources/testdriver.js"></script>
@@ -31,15 +31,15 @@
     const btn2 = document.getElementById("btn2");
     const select1 = document.getElementById("select1");
 
-    // Arrow navigation TO native arrow key handlers works.
-    await focusAndKeyPress(btn1, kArrowRight);
+    // Directional navigation TO native directional input handlers works.
+    await focusAndSendDirectionalInput(btn1, kRight);
     assert_equals(document.activeElement, input1);
-    await focusAndKeyPress(btn2, kArrowRight);
+    await focusAndSendDirectionalInput(btn2, kRight);
     assert_equals(document.activeElement, select1);
 
-    // Each native arrow key handler blocks arrow navigation when focused.
-    await assert_arrow_keys_do_not_move_focus(input1);
-    await assert_arrow_keys_do_not_move_focus(select1);
-  }, "Multiple native arrow key handlers each block arrow navigation independently");
+    // Each native directional input handler blocks directional navigation when focused.
+    await assert_directional_input_does_not_move_focus(input1);
+    await assert_directional_input_does_not_move_focus(select1);
+  }, "Multiple native directional input handlers each block directional navigation independently");
 
 </script>

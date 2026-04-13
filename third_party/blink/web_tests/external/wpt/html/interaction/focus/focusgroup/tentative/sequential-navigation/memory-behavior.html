@@ -57,8 +57,8 @@
     await sendTabForward();
     assert_equals(document.activeElement, memoryItem2, "First tab entry should use focusgroupstart element");
 
-    await focusAndKeyPress(memoryItem2, kArrowRight);
-    assert_equals(document.activeElement, memoryItem3, "Arrow navigation should move to Item 3");
+    await focusAndSendDirectionalInput(memoryItem2, kRight);
+    assert_equals(document.activeElement, memoryItem3, "Directional navigation should move to Item 3");
 
     await sendTabForward();
     assert_equals(document.activeElement, between, "Tab should exit to between element");
@@ -78,8 +78,8 @@
     await sendTabForward();
     assert_equals(document.activeElement, noMemoryItem2, "Entry should use focusgroupstart element");
 
-    await focusAndKeyPress(noMemoryItem2, kArrowRight);
-    assert_equals(document.activeElement, noMemoryItem3, "Arrow navigation should move to Item 3");
+    await focusAndSendDirectionalInput(noMemoryItem2, kRight);
+    assert_equals(document.activeElement, noMemoryItem3, "Directional navigation should move to Item 3");
 
     await sendTabForward();
     assert_equals(document.activeElement, afterNoMemory, "Tab should exit focusgroup");
@@ -136,12 +136,12 @@
 
     await focusAndWait(memoryItem2);
 
-    await focusAndKeyPress(memoryItem2, kArrowLeft);
-    assert_equals(document.activeElement, memoryItem1, "Arrow left should move to Item 1");
+    await focusAndSendDirectionalInput(memoryItem2, kLeft);
+    assert_equals(document.activeElement, memoryItem1, "Left should move to Item 1");
 
     await focusAndWait(document.getElementById("between"));
 
     await navigateFocusBackward();
     assert_equals(document.activeElement, memoryItem1, "Should remember Item 1 as last focused");
-  }, "Last focused item is updated by arrow key navigation");
+  }, "Last focused item is updated by directional navigation");
 </script>

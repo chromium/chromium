@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <meta charset="utf-8">
-<title>HTML Test: focusgroup - Tab escape from multi-tab-stop arrow key handler elements</title>
+<title>HTML Test: focusgroup - Tab escape from multi-tab-stop directional input handler elements</title>
 <link rel="author" title="Microsoft" href="http://www.microsoft.com/">
 <link rel="help" href="https://open-ui.org/components/scoped-focusgroup.explainer/">
 <script src="/resources/testharness.js"></script>
@@ -35,9 +35,9 @@
     await focusAndWait(a);
     assert_equals(document.activeElement, a, "Precondition: focus on A");
 
-    await focusAndKeyPress(a, kArrowRight);
+    await focusAndSendDirectionalInput(a, kRight);
     assert_equals(document.activeElement, vid,
-        "Arrow right from A should navigate to video");
+        "Right from A should navigate to video");
 
     await sendTabForward();
     assert_equals(document.activeElement, b,
@@ -52,9 +52,9 @@
     await focusAndWait(b);
     assert_equals(document.activeElement, b, "Precondition: focus on B");
 
-    await focusAndKeyPress(b, kArrowLeft);
+    await focusAndSendDirectionalInput(b, kLeft);
     assert_equals(document.activeElement, vid,
-        "Arrow left from B should navigate to video");
+        "Left from B should navigate to video");
 
     await navigateFocusBackward();
     assert_equals(document.activeElement, a,
@@ -95,9 +95,9 @@
     await focusAndWait(a);
     assert_equals(document.activeElement, a, "Precondition: focus on A");
 
-    await focusAndKeyPress(a, kArrowRight);
+    await focusAndSendDirectionalInput(a, kRight);
     assert_equals(document.activeElement, vid,
-        "Arrow right from A should navigate to video");
+        "Right from A should navigate to video");
 
     // Tab enters the video's internal controls (shadow DOM).
     await sendTabForward();

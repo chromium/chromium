@@ -1,9 +1,9 @@
 <!DOCTYPE html>
 <meta charset="utf-8">
-<title>HTML Test: focusgroup - Scrollable containers as native arrow key handlers</title>
+<title>HTML Test: focusgroup - Scrollable containers as native directional input handlers</title>
 <link rel="author" title="Microsoft" href="http://www.microsoft.com/">
 <link rel="help" href="https://open-ui.org/components/scoped-focusgroup.explainer/">
-<meta name="assert" content="Focusable scrollable containers block arrow navigation only on their scrollable axes.">
+<meta name="assert" content="Focusable scrollable containers block directional navigation only on their scrollable axes.">
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <script src="/resources/testdriver.js"></script>
@@ -65,39 +65,33 @@
 
 <script>
 
-  // Helper to test specific arrow keys.
-  async function pressArrowKey(element, key) {
-    await focusAndWait(element);
-    return test_driver.send_keys(element, key);
-  }
-
   promise_test(async t => {
     const btn1 = document.getElementById("t1_btn1");
     const hscroll = document.getElementById("t1_hscroll");
     const btn2 = document.getElementById("t1_btn2");
 
-    // Arrow navigation TO horizontal scroll container works.
-    await focusAndKeyPress(btn1, kArrowRight);
+    // Directional navigation TO horizontal scroll container works.
+    await focusAndSendDirectionalInput(btn1, kRight);
     assert_equals(document.activeElement, hscroll,
-      "Arrow right should navigate to horizontal scroll container");
+      "Right should navigate to horizontal scroll container");
 
-    // Horizontal arrows (inline axis) are blocked - scroll container uses them.
-    await pressArrowKey(hscroll, kArrowRight);
+    // Horizontal directional input (inline axis) are blocked - scroll container uses them.
+    await focusAndSendDirectionalInput(hscroll, kRight);
     assert_equals(document.activeElement, hscroll,
-      "Arrow right should NOT move focus (scroll container uses inline axis)");
+      "Right should NOT move focus (scroll container uses inline axis)");
 
-    await pressArrowKey(hscroll, kArrowLeft);
+    await focusAndSendDirectionalInput(hscroll, kLeft);
     assert_equals(document.activeElement, hscroll,
-      "Arrow left should NOT move focus (scroll container uses inline axis)");
+      "Left should NOT move focus (scroll container uses inline axis)");
 
-    // Vertical arrows (block axis) should still work - scroll container doesn't use them.
-    await pressArrowKey(hscroll, kArrowDown);
+    // Vertical directional input (block axis) should still work - scroll container doesn't use them.
+    await focusAndSendDirectionalInput(hscroll, kDown);
     assert_equals(document.activeElement, btn2,
-      "Arrow down SHOULD move focus (scroll container doesn't use block axis)");
+      "Down SHOULD move focus (scroll container doesn't use block axis)");
 
-    await pressArrowKey(hscroll, kArrowUp);
+    await focusAndSendDirectionalInput(hscroll, kUp);
     assert_equals(document.activeElement, btn1,
-      "Arrow up SHOULD move focus (scroll container doesn't use block axis)");
+      "Up SHOULD move focus (scroll container doesn't use block axis)");
   }, "Horizontal-only scroll container blocks inline axis but allows block axis navigation");
 
   promise_test(async t => {
@@ -105,28 +99,28 @@
     const vscroll = document.getElementById("t2_vscroll");
     const btn2 = document.getElementById("t2_btn2");
 
-    // Arrow navigation TO vertical scroll container works.
-    await focusAndKeyPress(btn1, kArrowRight);
+    // Directional navigation TO vertical scroll container works.
+    await focusAndSendDirectionalInput(btn1, kRight);
     assert_equals(document.activeElement, vscroll,
-      "Arrow right should navigate to vertical scroll container");
+      "Right should navigate to vertical scroll container");
 
-    // Vertical arrows (block axis) are blocked - scroll container uses them.
-    await pressArrowKey(vscroll, kArrowDown);
+    // Vertical directional input (block axis) are blocked - scroll container uses them.
+    await focusAndSendDirectionalInput(vscroll, kDown);
     assert_equals(document.activeElement, vscroll,
-      "Arrow down should NOT move focus (scroll container uses block axis)");
+      "Down should NOT move focus (scroll container uses block axis)");
 
-    await pressArrowKey(vscroll, kArrowUp);
+    await focusAndSendDirectionalInput(vscroll, kUp);
     assert_equals(document.activeElement, vscroll,
-      "Arrow up should NOT move focus (scroll container uses block axis)");
+      "Up should NOT move focus (scroll container uses block axis)");
 
-    // Horizontal arrows (inline axis) should still work - scroll container doesn't use them.
-    await pressArrowKey(vscroll, kArrowRight);
+    // Horizontal directional input (inline axis) should still work - scroll container doesn't use them.
+    await focusAndSendDirectionalInput(vscroll, kRight);
     assert_equals(document.activeElement, btn2,
-      "Arrow right SHOULD move focus (scroll container doesn't use inline axis)");
+      "Right SHOULD move focus (scroll container doesn't use inline axis)");
 
-    await pressArrowKey(vscroll, kArrowLeft);
+    await focusAndSendDirectionalInput(vscroll, kLeft);
     assert_equals(document.activeElement, btn1,
-      "Arrow left SHOULD move focus (scroll container doesn't use inline axis)");
+      "Left SHOULD move focus (scroll container doesn't use inline axis)");
   }, "Vertical-only scroll container blocks block axis but allows inline axis navigation");
 
   promise_test(async t => {
@@ -134,13 +128,13 @@
     const bothscroll = document.getElementById("t3_bothscroll");
     const btn2 = document.getElementById("t3_btn2");
 
-    // Arrow navigation TO both-axis scroll container works.
-    await focusAndKeyPress(btn1, kArrowRight);
+    // Directional navigation TO both-axis scroll container works.
+    await focusAndSendDirectionalInput(btn1, kRight);
     assert_equals(document.activeElement, bothscroll,
-      "Arrow right should navigate to both-axis scroll container");
+      "Right should navigate to both-axis scroll container");
 
-    // All arrow keys are blocked - scroll container uses both axes.
-    await assert_arrow_keys_do_not_move_focus(bothscroll);
-  }, "Both-axis scroll container blocks all arrow navigation");
+    // All directional input is blocked - scroll container uses both axes.
+    await assert_directional_input_does_not_move_focus(bothscroll);
+  }, "Both-axis scroll container blocks all directional navigation");
 
 </script>

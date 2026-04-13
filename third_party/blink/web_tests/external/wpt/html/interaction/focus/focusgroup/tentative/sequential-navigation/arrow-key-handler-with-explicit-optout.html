@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <meta charset="utf-8">
-<title>HTML Test: focusgroup - Native arrow key handler with explicit focusgroup=none</title>
+<title>HTML Test: focusgroup - Native directional input handler with explicit focusgroup=none</title>
 <link rel="author" title="Microsoft" href="http://www.microsoft.com/">
 <link rel="help" href="https://open-ui.org/components/scoped-focusgroup.explainer/">
 <script src="/resources/testharness.js"></script>
@@ -26,9 +26,9 @@
     const search = document.getElementById("search");
     const btn2 = document.getElementById("btn2");
 
-    // Element with focusgroup="none" is excluded from arrow navigation entirely.
-    await assert_arrow_navigation_bidirectional([btn1, btn2]);
-  }, "Explicit focusgroup=none excludes element from arrow navigation");
+    // Element with focusgroup="none" is excluded from directional navigation entirely.
+    await assert_directional_navigation_bidirectional([btn1, btn2]);
+  }, "Explicit focusgroup=none excludes element from directional navigation");
 
   promise_test(async t => {
     const search = document.getElementById("search");
@@ -36,9 +36,9 @@
     await focusAndWait(search);
     assert_equals(document.activeElement, search, "Can manually focus opted-out element");
 
-    // Arrow keys should not trigger focusgroup navigation from opted-out element.
-    await assert_arrow_keys_do_not_move_focus(search);
-  }, "Arrow keys do not work from explicitly opted-out native arrow key handler");
+    // Directional input should not trigger focusgroup navigation from opted-out element.
+    await assert_directional_input_does_not_move_focus(search);
+  }, "Directional input does not work from explicitly opted-out native directional input handler");
 
   promise_test(async t => {
     const before = document.getElementById("before");
@@ -48,7 +48,7 @@
     const after = document.getElementById("after");
 
     // Explicit opt-out means element is in normal Tab order regardless of focus state.
-    // Native arrow key handlers (without explicit opt-out) remain focusgroup items
+    // Native directional input handlers (without explicit opt-out) remain focusgroup items
     // and use Tab escape to navigate to adjacent items when focused.
     await assert_focusgroup_tab_navigation([before, btn1, search, btn2, after]);
   }, "Explicit focusgroup=none includes element in Tab order even when not focused");

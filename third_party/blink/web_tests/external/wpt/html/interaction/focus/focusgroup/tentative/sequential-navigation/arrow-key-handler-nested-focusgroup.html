@@ -1,9 +1,9 @@
 <!DOCTYPE html>
 <meta charset="utf-8">
-<title>HTML Test: focusgroup - Native arrow key handlers with nested focusgroups</title>
+<title>HTML Test: focusgroup - Native directional input handlers with nested focusgroups</title>
 <link rel="author" title="Microsoft" href="http://www.microsoft.com/">
 <link rel="help" href="https://open-ui.org/components/scoped-focusgroup.explainer/">
-<meta name="assert" content="Native arrow key handler detection considers the nearest focusgroup owner's enabled axes.">
+<meta name="assert" content="Native directional input handler detection considers the nearest focusgroup owner's enabled axes.">
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <script src="/resources/testdriver.js"></script>
@@ -28,11 +28,11 @@
     const btn2 = document.getElementById("btn2");
     const search = document.getElementById("search");
 
-    // Arrow navigation TO native arrow key handler works, FROM does not.
-    await focusAndKeyPress(btn2, kArrowRight);
+    // Directional navigation TO native directional input handler works, FROM does not.
+    await focusAndSendDirectionalInput(btn2, kRight);
     assert_equals(document.activeElement, search);
-    await assert_arrow_keys_do_not_move_focus(search);
-  }, "Native arrow key handler detection respects nested focusgroup's enabled axes");
+    await assert_directional_input_does_not_move_focus(search);
+  }, "Native directional input handler detection respects nested focusgroup's enabled axes");
 
   promise_test(async t => {
     const btn1 = document.getElementById("btn1");
@@ -40,11 +40,11 @@
     const search = document.getElementById("search");
     const btn4 = document.getElementById("btn4");
 
-    // Arrow navigation in outer and inner focusgroups.
-    await focusAndKeyPress(btn1, kArrowDown);
+    // Directional navigation in outer and inner focusgroups.
+    await focusAndSendDirectionalInput(btn1, kDown);
     assert_equals(document.activeElement, btn4);
-    await focusAndKeyPress(btn2, kArrowRight);
+    await focusAndSendDirectionalInput(btn2, kRight);
     assert_equals(document.activeElement, search);
-  }, "Arrow navigation works in both outer and inner nested focusgroups");
+  }, "Directional navigation works in both outer and inner nested focusgroups");
 
 </script>
