@@ -343,6 +343,7 @@ std::unique_ptr<URLRequestContext> URLRequestContextBuilder::Build() {
     // QUIC connection migration should not be enabled when binding a context
     // to a network.
     quic_params->migrate_sessions_on_network_change_v2 = false;
+    quic_params->migrate_sessions_early_v2 = false;
 
     // Objects used by network sessions for this context shouldn't listen to
     // network changes.
