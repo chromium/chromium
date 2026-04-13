@@ -10,6 +10,7 @@
 #import <memory>
 
 #import "ios/chrome/browser/cobrowse/ui/assistant_aim_consumer.h"
+#import "ios/chrome/browser/cobrowse/ui/assistant_aim_mutator.h"
 #import "ios/chrome/browser/composebox/coordinator/composebox_url_loader.h"
 
 @protocol AssistantContainerCommands;
@@ -34,7 +35,8 @@ class WebState;
 @end
 
 // Mediator that manages the business logic and data for the AI mode Assistant.
-@interface AssistantAIMMediator : NSObject <ComposeboxURLLoader>
+@interface AssistantAIMMediator
+    : NSObject <ComposeboxURLLoader, AssistantAIMMutator>
 
 // The consumer for this mediator.
 @property(nonatomic, weak) id<AssistantAIMConsumer> consumer;

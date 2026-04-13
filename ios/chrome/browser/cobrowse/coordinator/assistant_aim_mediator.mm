@@ -157,4 +157,18 @@ const CGFloat kSheetDetentAnimationDuration = 0.3;
   // NO-OP
 }
 
+#pragma mark - AssistantAIMMutator
+
+- (void)didTapHistory {
+  __weak AssistantAIMMediator* weakSelf = self;
+  [self fetchHistoryItemsWithCompletion:^(
+            const std::vector<AssistantAIMHistoryItem>& items) {
+    [weakSelf.consumer displayHistoryWithItems:items];
+  }];
+}
+
+- (void)didSelectHistoryTaskWithId:(NSString*)taskId {
+  [self loadHistoryThreadWithTaskId:taskId];
+}
+
 @end

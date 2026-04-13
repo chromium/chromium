@@ -8,6 +8,9 @@ source_set("ui") {
     "assistant_aim_header_view.h",
     "assistant_aim_header_view.mm",
     "assistant_aim_history_item.h",
+    "assistant_aim_history_view_controller.h",
+    "assistant_aim_history_view_controller.mm",
+    "assistant_aim_mutator.h",
     "assistant_aim_view_controller.h",
     "assistant_aim_view_controller.mm",
   ]

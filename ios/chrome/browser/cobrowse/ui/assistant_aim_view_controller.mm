@@ -7,6 +7,8 @@
 
 #import "ios/chrome/browser/cobrowse/ui/assistant_aim_header_view.h"
 #import "ios/chrome/browser/cobrowse/ui/assistant_aim_history_item.h"
+#import "ios/chrome/browser/cobrowse/ui/assistant_aim_history_view_controller.h"
+#import "ios/chrome/browser/cobrowse/ui/assistant_aim_mutator.h"
 #import "ios/chrome/browser/composebox/ui/composebox_input_plate_view_controller.h"
 #import "ios/chrome/browser/shared/public/features/system_flags.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
@@ -27,7 +29,9 @@ constexpr CGFloat kThresholdForCompleteVisibility = 0.3;
 
 }  // namespace
 
-@interface AssistantAIMViewController () <AssistantAIMHeaderViewDelegate>
+@interface AssistantAIMViewController () <
+    AssistantAIMHeaderViewDelegate,
+    AssistantAIMHistoryViewControllerDelegate>
 @end
 
 @implementation AssistantAIMViewController {
@@ -41,9 +45,15 @@ constexpr CGFloat kThresholdForCompleteVisibility = 0.3;
   NSLayoutConstraint* _headerTopMargin;
   NSLayoutConstraint* _inputPlateBottomMargin;
   CGRect _keyboardFrameInWindow;
+  AssistantAIMHistoryViewController* _historyViewController;
 }
 
 @synthesize delegate = _delegate;
+
+- (void)setMutator:(id<AssistantAIMMutator>)mutator {
+  _mutator = mutator;
+  _headerView.actionHandler = mutator;
+}
 
 - (void)viewDidLoad {
   [super viewDidLoad];
@@ -222,7 +232,49 @@ constexpr CGFloat kThresholdForCompleteVisibility = 0.3;
 
 - (void)displayHistoryWithItems:
     (const std::vector<AssistantAIMHistoryItem>&)items {
-  // TODO(crbug.com/499241086): Implement this when introducing the history UI.
+  if (!_historyViewController) {
+    _historyViewController = [[AssistantAIMHistoryViewController alloc] init];
+    _historyViewController.delegate = self;
+
+    [self addChildViewController:_historyViewController];
+
+    _webStateView.hidden = YES;
+    _inputViewController.view.hidden = YES;
+    [_headerView setMode:AssistantAIMHeaderViewMode::kHistory];
+    self.view.backgroundColor = [UIColor colorNamed:kSecondaryBackgroundColor];
+
+    [self.view addSubview:_historyViewController.view];
+    _historyViewController.view.translatesAutoresizingMaskIntoConstraints = NO;
+
+    [NSLayoutConstraint activateConstraints:@[
+      [_historyViewController.view.topAnchor
+          constraintEqualToAnchor:_headerView.bottomAnchor],
+      [_historyViewController.view.leadingAnchor
+          constraintEqualToAnchor:self.view.leadingAnchor],
+      [_historyViewController.view.trailingAnchor
+          constraintEqualToAnchor:self.view.trailingAnchor],
+      [_historyViewController.view.bottomAnchor
+          constraintEqualToAnchor:self.view.bottomAnchor],
+    ]];
+
+    [_historyViewController didMoveToParentViewController:self];
+  }
+
+  [_historyViewController updateHistoryItems:items];
+}
+
+#pragma mark - AssistantAIMHistoryViewControllerDelegate
+
+- (void)assistantAIMHistoryViewControllerDidTapDismiss:
+    (AssistantAIMHistoryViewController*)viewController {
+  [self hideHistory];
+}
+
+- (void)assistantAIMHistoryViewController:
+            (AssistantAIMHistoryViewController*)viewController
+                      didSelectTaskWithId:(NSString*)taskId {
+  [self.mutator didSelectHistoryTaskWithId:taskId];
+  [self hideHistory];
 }
 
 #pragma mark - Private
@@ -253,6 +305,21 @@ constexpr CGFloat kThresholdForCompleteVisibility = 0.3;
 - (BOOL)gestureDidScrollHorizontally:(UIPanGestureRecognizer*)panRecognizer {
   CGPoint translation = [panRecognizer translationInView:panRecognizer.view];
   return fabs(translation.y) <= 3 * fabs(translation.x);
+}
+
+- (void)hideHistory {
+  if (!_historyViewController) {
+    return;
+  }
+  [_historyViewController willMoveToParentViewController:nil];
+  [_historyViewController.view removeFromSuperview];
+  [_historyViewController removeFromParentViewController];
+  _historyViewController = nil;
+
+  _webStateView.hidden = NO;
+  _inputViewController.view.hidden = NO;
+  [_headerView setMode:AssistantAIMHeaderViewMode::kChat];
+  self.view.backgroundColor = [UIColor clearColor];
 }
 
 // Creates a fade effect behind the input plate.
@@ -364,7 +431,7 @@ constexpr CGFloat kThresholdForCompleteVisibility = 0.3;
   [NSLayoutConstraint activateConstraints:_webStateViewConstraints];
 }
 
-// Sets up the title.
+// Sets up the header view.
 - (void)setUpHeader {
   _headerView = [[AssistantAIMHeaderView alloc] init];
   _headerView.translatesAutoresizingMaskIntoConstraints = NO;
@@ -390,6 +457,10 @@ constexpr CGFloat kThresholdForCompleteVisibility = 0.3;
 - (void)assistantAIMHeaderViewDidPressClose:
     (AssistantAIMHeaderView*)headerView {
   [self.delegate assistantAIMViewControllerDidTapClose:self];
+}
+
+- (void)assistantAIMHeaderViewDidTapBack:(AssistantAIMHeaderView*)headerView {
+  [self hideHistory];
 }
 
 #pragma mark - Private

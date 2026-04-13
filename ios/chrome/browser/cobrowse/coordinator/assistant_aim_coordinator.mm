@@ -77,6 +77,7 @@
                                  self.browser->GetProfile())];
   _mediator.delegate = self;
   _mediator.consumer = _viewController;
+  _viewController.mutator = _mediator;
 
   _modeHolder = [[ComposeboxModeHolder alloc] init];
   ComposeboxTheme* theme = [[ComposeboxTheme alloc]

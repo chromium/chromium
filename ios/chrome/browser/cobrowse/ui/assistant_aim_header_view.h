@@ -8,12 +8,22 @@
 #import <UIKit/UIKit.h>
 
 @class AssistantAIMHeaderView;
+@protocol AssistantAIMMutator;
+
+// The possible modes for the header view.
+enum class AssistantAIMHeaderViewMode {
+  kChat,
+  kHistory,
+};
 
 // Represents the possible interactions with the header view.
 @protocol AssistantAIMHeaderViewDelegate <NSObject>
 
 // Called when the close button in the header view is closed.
 - (void)assistantAIMHeaderViewDidPressClose:(AssistantAIMHeaderView*)headerView;
+
+// Called when the back button in the header view is tapped.
+- (void)assistantAIMHeaderViewDidTapBack:(AssistantAIMHeaderView*)headerView;
 
 @end
 
@@ -23,8 +33,14 @@
 // The delegate for this header view.
 @property(nonatomic, weak) id<AssistantAIMHeaderViewDelegate> delegate;
 
+// The action handler for this header view.
+@property(nonatomic, weak) id<AssistantAIMMutator> actionHandler;
+
 // Sets the title text of this header.
 - (void)setTitle:(NSString*)title;
+
+// Sets the mode of the header view.
+- (void)setMode:(AssistantAIMHeaderViewMode)mode;
 
 // Proportionally adjusts the header based on the given percentage.
 - (void)adjustForPercentage:(CGFloat)percentage;

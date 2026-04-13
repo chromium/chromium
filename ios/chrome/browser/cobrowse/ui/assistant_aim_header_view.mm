@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/cobrowse/ui/assistant_aim_header_view.h"
 
+#import "ios/chrome/browser/cobrowse/ui/assistant_aim_mutator.h"
 #import "ios/chrome/browser/cobrowse/ui/assistant_aim_ui_constants.h"
 #import "ios/chrome/browser/shared/public/features/system_flags.h"
 #import "ios/chrome/browser/shared/ui/elements/extended_touch_target_button.h"
@@ -46,15 +47,19 @@ const CGFloat kSymbolsPointSize = 24.0;
 
   // The view holding the actions.
   UIView* _headerActionsView;
+
+  // The back button for history.
+  UIButton* _backButton;
 }
 
 - (instancetype)init {
   self = [super init];
   if (self) {
-    [self setupLogoView];
+    [self setUpLogoView];
     [self setUpTitleLabel];
     [self setUpCloseButton];
-    [self setupHeaderActionsView];
+    [self setUpBackButton];
+    [self setUpHeaderActionsView];
   }
 
   return self;
@@ -67,6 +72,27 @@ const CGFloat kSymbolsPointSize = 24.0;
 - (void)adjustForPercentage:(CGFloat)percentage {
   _titleLabel.alpha = 1 - percentage;
   _headerActionsView.alpha = percentage;
+}
+
+- (void)setMode:(AssistantAIMHeaderViewMode)mode {
+  switch (mode) {
+    case AssistantAIMHeaderViewMode::kChat:
+      _logoView.hidden = NO;
+      _headerActionsView.hidden = NO;
+      _backButton.hidden = YES;
+      _titleLabel.text = @"";
+
+      self.backgroundColor = [UIColor clearColor];
+      break;
+    case AssistantAIMHeaderViewMode::kHistory:
+      _logoView.hidden = YES;
+      _headerActionsView.hidden = YES;
+      _backButton.hidden = NO;
+      _titleLabel.text = l10n_util::GetNSString(IDS_IOS_AIM_HISTORY);
+
+      self.backgroundColor = [UIColor colorNamed:kSecondaryBackgroundColor];
+      break;
+  }
 }
 
 #pragma mark - Private
@@ -133,7 +159,48 @@ const CGFloat kSymbolsPointSize = 24.0;
   AddSizeConstraints(_closeButton, CGSizeMake(kButtonSize, kButtonSize));
 }
 
-- (void)setupLogoView {
+- (void)setUpBackButton {
+  UIButtonConfiguration* buttonConfiguration;
+  if (@available(iOS 26, *)) {
+    if ([UIButtonConfiguration
+            respondsToSelector:@selector(prominentGlassButtonConfiguration)]) {
+      buttonConfiguration =
+          [UIButtonConfiguration prominentGlassButtonConfiguration];
+    } else {
+      buttonConfiguration = [UIButtonConfiguration glassButtonConfiguration];
+    }
+  } else {
+    buttonConfiguration = [UIButtonConfiguration plainButtonConfiguration];
+  }
+
+  buttonConfiguration.image = DefaultSymbolWithPointSize(
+      kChevronBackwardSymbol, kCloseButtonSymbolPointSize);
+  buttonConfiguration.baseForegroundColor =
+      [UIColor colorNamed:kTextPrimaryColor];
+  buttonConfiguration.background.backgroundColor =
+      [UIColor colorNamed:kPrimaryBackgroundColor];
+  buttonConfiguration.cornerStyle = UIButtonConfigurationCornerStyleCapsule;
+
+  _backButton = [UIButton buttonWithConfiguration:buttonConfiguration
+                                    primaryAction:nil];
+  [_backButton addTarget:self
+                  action:@selector(didTapBackButton)
+        forControlEvents:UIControlEventTouchUpInside];
+  _backButton.translatesAutoresizingMaskIntoConstraints = NO;
+  _backButton.hidden = YES;
+
+  [self addSubview:_backButton];
+
+  [NSLayoutConstraint activateConstraints:@[
+    [_backButton.centerYAnchor constraintEqualToAnchor:self.centerYAnchor],
+    [_backButton.leadingAnchor constraintEqualToAnchor:self.leadingAnchor
+                                              constant:kHorizontalPadding.left],
+  ]];
+
+  AddSizeConstraints(_backButton, CGSizeMake(kButtonSize, kButtonSize));
+}
+
+- (void)setUpLogoView {
   _logoView = [[UIImageView alloc] initWithImage:[self iconImage]];
   _logoView.translatesAutoresizingMaskIntoConstraints = NO;
   [self addSubview:_logoView];
@@ -177,21 +244,17 @@ const CGFloat kSymbolsPointSize = 24.0;
                                          primaryAction:nil];
   button.translatesAutoresizingMaskIntoConstraints = NO;
 
+  __weak __typeof(self) weakSelf = self;
   UIAction* historyAction = [UIAction
       actionWithTitle:l10n_util::GetNSString(IDS_IOS_AIM_HISTORY)
                 image:CustomSymbolWithPointSize(kLineThreeSparkSymbol,
                                                 kHeaderActionSymbolPointSize)
            identifier:nil
-              handler:^(UIAction* action){
-                  // TODO(crbug.com/499241086): Implement showing conversation
-                  // history.
+              handler:^(UIAction* action) {
+                [weakSelf didTapHistoryButton];
               }];
 
-  button.menu = [UIMenu menuWithTitle:@""
-                                image:nil
-                           identifier:nil
-                              options:UIMenuOptionsDisplayInline
-                             children:@[ historyAction ]];
+  button.menu = [UIMenu menuWithTitle:@"" children:@[ historyAction ]];
 
   button.showsMenuAsPrimaryAction = YES;
 
@@ -219,7 +282,7 @@ const CGFloat kSymbolsPointSize = 24.0;
 }
 
 // Sets up the view containing the header actions.
-- (void)setupHeaderActionsView {
+- (void)setUpHeaderActionsView {
   UIStackView* stackView = [self createHeaderActionsStackView];
 
   if (@available(iOS 26, *)) {
@@ -269,6 +332,14 @@ const CGFloat kSymbolsPointSize = 24.0;
 
 - (void)didTapCloseButton {
   [self.delegate assistantAIMHeaderViewDidPressClose:self];
+}
+
+- (void)didTapHistoryButton {
+  [self.actionHandler didTapHistory];
+}
+
+- (void)didTapBackButton {
+  [self.delegate assistantAIMHeaderViewDidTapBack:self];
 }
 
 @end
