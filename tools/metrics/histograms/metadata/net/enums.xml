@@ -2880,15 +2880,6 @@ Called by update_net_trust_anchors.py.-->
   <int value="2" label="SCT_FROM_OCSP_RESPONSE"/>
 </enum>
 
-<enum name="SCTVerifyStatus">
-  <int value="0" label="SCT_STATUS_NONE"/>
-  <int value="1" label="SCT_STATUS_LOG_UNKNOWN"/>
-  <int value="2" label="DEPRECATED: SCT_STATUS_INVALID"/>
-  <int value="3" label="SCT_STATUS_OK"/>
-  <int value="4" label="SCT_STATUS_INVALID_SIGNATURE"/>
-  <int value="5" label="SCT_STATUS_INVALID_TIMESTAMP"/>
-</enum>
-
 <!-- LINT.IfChange(SecureDnsModeDetails) -->
 
 <enum name="SecureDnsModeDetails">

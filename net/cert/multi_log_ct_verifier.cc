@@ -30,30 +30,12 @@ namespace {
 // Allow SCTs future-dated by this grace period to account for clock skew.
 constexpr base::TimeDelta kFutureTimestampGracePeriod = base::Seconds(60);
 
-// Record SCT verification status. This metric would help detecting presence
-// of unknown CT logs as well as bad deployments (invalid SCTs).
-void LogSCTStatusToUMA(ct::SCTVerifyStatus status) {
-  // Note SCT_STATUS_MAX + 1 is passed to the UMA_HISTOGRAM_ENUMERATION as that
-  // macro requires the values to be strictly less than the boundary value,
-  // and SCT_STATUS_MAX is the last valid value of the SCTVerifyStatus enum
-  // (since that enum is used for IPC as well).
-  UMA_HISTOGRAM_ENUMERATION("Net.CertificateTransparency.SCTStatus", status,
-                            ct::SCT_STATUS_MAX + 1);
-}
-
 // Record SCT origin enum. This metric measure the popularity
 // of the various channels of providing SCTs for a certificate.
 void LogSCTOriginToUMA(ct::SignedCertificateTimestamp::Origin origin) {
   UMA_HISTOGRAM_ENUMERATION("Net.CertificateTransparency.SCTOrigin",
                             origin,
                             ct::SignedCertificateTimestamp::SCT_ORIGIN_MAX);
-}
-
-void AddSCTAndLogStatus(scoped_refptr<ct::SignedCertificateTimestamp> sct,
-                        ct::SCTVerifyStatus status,
-                        SignedCertificateTimestampAndStatusList* sct_list) {
-  LogSCTStatusToUMA(status);
-  sct_list->push_back(SignedCertificateTimestampAndStatus(sct, status));
 }
 
 std::map<std::string, scoped_refptr<const CTLogVerifier>> CreateLogsMap(
@@ -154,7 +136,6 @@ void MultiLogCTVerifier::VerifySCTs(
 
     scoped_refptr<ct::SignedCertificateTimestamp> decoded_sct;
     if (!DecodeSignedCertificateTimestamp(&encoded_sct, &decoded_sct)) {
-      LogSCTStatusToUMA(ct::SCT_STATUS_NONE);
       continue;
     }
     decoded_sct->origin = origin;
@@ -173,24 +154,24 @@ bool MultiLogCTVerifier::VerifySingleSCT(
   // Assume this SCT is untrusted until proven otherwise.
   const auto& it = logs_.find(sct->log_id);
   if (it == logs_.end()) {
-    AddSCTAndLogStatus(sct, ct::SCT_STATUS_LOG_UNKNOWN, output_scts);
+    output_scts->emplace_back(sct, ct::SCT_STATUS_LOG_UNKNOWN);
     return false;
   }
 
   sct->log_description = it->second->description();
 
   if (!it->second->Verify(expected_entry, *sct.get())) {
-    AddSCTAndLogStatus(sct, ct::SCT_STATUS_INVALID_SIGNATURE, output_scts);
+    output_scts->emplace_back(sct, ct::SCT_STATUS_INVALID_SIGNATURE);
     return false;
   }
 
   // SCT verified ok, just make sure the timestamp is legitimate.
   if (sct->timestamp > current_time + kFutureTimestampGracePeriod) {
-    AddSCTAndLogStatus(sct, ct::SCT_STATUS_INVALID_TIMESTAMP, output_scts);
+    output_scts->emplace_back(sct, ct::SCT_STATUS_INVALID_TIMESTAMP);
     return false;
   }
 
-  AddSCTAndLogStatus(sct, ct::SCT_STATUS_OK, output_scts);
+  output_scts->emplace_back(sct, ct::SCT_STATUS_OK);
   return true;
 }
 

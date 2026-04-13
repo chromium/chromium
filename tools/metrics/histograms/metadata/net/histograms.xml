@@ -1730,17 +1730,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Net.CertificateTransparency.SCTStatus" enum="SCTVerifyStatus"
-    expires_after="M85">
-  <owner>estark@chromium.org</owner>
-  <owner>rsleevi@chromium.org</owner>
-  <summary>
-    Breakdown of Signed Certificate Timestamps (SCTs) validation status. Emitted
-    once for every SCT when first validated, which means 0 or more times during
-    every SSL connection establishment.
-  </summary>
-</histogram>
-
 <histogram name="Net.CertVerifier.AndroidTrustStoreInit" units="ms"
     expires_after="2024-04-28">
   <owner>hchao@chromium.org</owner>
