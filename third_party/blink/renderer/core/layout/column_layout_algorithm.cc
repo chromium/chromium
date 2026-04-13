@@ -27,7 +27,6 @@
 #include "third_party/blink/renderer/core/layout/simplified_oof_layout_algorithm.h"
 #include "third_party/blink/renderer/core/layout/space_utils.h"
 #include "third_party/blink/renderer/core/layout/table/table_layout_utils.h"
-#include "third_party/blink/renderer/core/layout/text_autosizer.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 
@@ -994,8 +993,6 @@ const LayoutResult* ColumnLayoutAlgorithm::LayoutLine(
           min_break_appeal.value_or(kBreakAppealLastResort),
           &container_builder_);
 
-      TextAutosizer::ForceInlineSizeForColumn(Node(), column_size.inline_size);
-
       FragmentGeometry fragment_geometry = CalculateInitialFragmentGeometry(
           child_space, Node(), GetBreakToken());
 
@@ -1794,7 +1791,6 @@ LayoutUnit ColumnLayoutAlgorithm::ResolveColumnAutoBlockSizeInternal(
   bool consider_all_columns = ColumnsOverflowInInlineDirection(
       /*column_known_to_fit_in_outer_fragmentainer=*/false);
   do {
-    TextAutosizer::ForceInlineSizeForColumn(Node(), column_size.inline_size);
     LayoutAlgorithmParams params(Node(), fragment_geometry, space);
     params.break_token = break_token;
     params.column_spanner_path = spanner_path_;

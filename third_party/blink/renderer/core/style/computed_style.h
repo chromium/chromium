@@ -3594,9 +3594,6 @@ class ComputedStyleBuilder final : public ComputedStyleBuilderBase {
     MutablePaintImagesInternal()->Images().push_back(image);
   }
 
-  // TextAutosizingMultiplier
-  CORE_EXPORT void SetTextAutosizingMultiplier(float);
-
   // ColorScheme and ForcedColors
   bool ShouldPreserveParentColor() const {
     return InForcedColorsMode() &&

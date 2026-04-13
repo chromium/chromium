@@ -39,7 +39,6 @@ interface InternalSettings : InternalSettingsGenerated {
     void setCursiveFontFamily(DOMString family, DOMString script);
     void setFantasyFontFamily(DOMString family, DOMString script);
     void setMathFontFamily(DOMString family, DOMString script);
-    void setTextAutosizingWindowSizeOverride(long width, long height);
     [RaisesException] void setTextTrackKindUserPreference(DOMString preference);
     [RaisesException] void setDisplayModeOverride(DOMString displayModeOverride);
     [RaisesException] void setEditingBehavior(DOMString behavior);

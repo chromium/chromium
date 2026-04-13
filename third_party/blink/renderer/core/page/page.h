@@ -37,7 +37,6 @@
 #include "third_party/blink/public/common/page/color_provider_color_maps.h"
 #include "third_party/blink/public/mojom/devtools/inspector_issue.mojom-blink-forward.h"
 #include "third_party/blink/public/mojom/frame/color_scheme.mojom-blink-forward.h"
-#include "third_party/blink/public/mojom/frame/text_autosizer_page_info.mojom-blink.h"
 #include "third_party/blink/public/mojom/page/page.mojom-blink-forward.h"
 #include "third_party/blink/public/mojom/page/page_visibility_state.mojom-blink.h"
 #include "third_party/blink/public/platform/scheduler/web_agent_group_scheduler.h"
@@ -434,14 +433,6 @@ class CORE_EXPORT Page final : public GarbageCollected<Page>,
     return should_pause_javascript_execution_on_prerender_;
   }
 
-  void SetTextAutosizerPageInfo(
-      const mojom::blink::TextAutosizerPageInfo& page_info) {
-    web_text_autosizer_page_info_ = page_info;
-  }
-  const mojom::blink::TextAutosizerPageInfo& TextAutosizerPageInfo() const {
-    return web_text_autosizer_page_info_;
-  }
-
   void SetMediaFeatureOverride(const AtomicString& media_feature,
                                const String& value);
   const MediaFeatureOverrides* GetMediaFeatureOverrides() const {
@@ -711,8 +702,6 @@ class CORE_EXPORT Page final : public GarbageCollected<Page>,
   // This tracks the mode that the fenced frame is set to.
   blink::FencedFrame::DeprecatedFencedFrameMode fenced_frame_mode_ =
       blink::FencedFrame::DeprecatedFencedFrameMode::kDefault;
-
-  mojom::blink::TextAutosizerPageInfo web_text_autosizer_page_info_;
 
   WebScopedVirtualTimePauser history_navigation_virtual_time_pauser_;
 

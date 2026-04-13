@@ -4562,26 +4562,6 @@
     "expires": "never"
   },
   {
-    "prefix": "text-autosizing",
-    "owners": [
-      "dgrogan@chromium.org"
-    ],
-    "platforms": [
-      "Linux"
-    ],
-    "bases": [
-      "fast/text-autosizing",
-      "http/tests/devtools/text-autosizing-override.js",
-      "http/tests/text-autosizing/narrow-iframe.html",
-      "http/tests/text-autosizing/wide-iframe.html"
-    ],
-    "args": [
-      "--disable-features=ForceOffTextAutosizing"
-    ],
-    "exclusive_tests": "ALL",
-    "expires": "June 1, 2026"
-  },
-  {
     "prefix": "text-contrast-gamma",
     "owners": [
       "kschmi@microsoft.com"
@@ -4643,7 +4623,7 @@
     "args": [
       "--enable-threaded-compositing",
       "--enable-viewport",
-      "--blink-settings=textAutosizingEnabled=true,textSizeAdjustEnabled=true,accessibilityFontScaleFactor=2,deviceScaleAdjustment=3,viewportMetaEnabled=true"
+      "--blink-settings=textSizeAdjustEnabled=true,accessibilityFontScaleFactor=2,viewportMetaEnabled=true"
     ],
     "expires": "never"
   },

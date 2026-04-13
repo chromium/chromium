@@ -41,9 +41,6 @@ class MobileFriendlinessCheckerTest : public testing::Test,
     helper->Resize(gfx::Size(kDeviceWidth, kDeviceHeight));
     helper->GetWebView()->GetPage()->SetDefaultPageScaleLimits(kMinimumZoom,
                                                                kMaximumZoom);
-    // Model Chrome text auto-sizing more accurately.
-    helper->GetWebView()->GetPage()->GetSettings().SetTextAutosizingEnabled(
-        true);
     helper->GetWebView()
         ->GetPage()
         ->GetSettings()

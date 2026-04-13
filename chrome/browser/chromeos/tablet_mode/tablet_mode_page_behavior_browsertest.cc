@@ -44,13 +44,11 @@ class TabletModePageBehaviorTest : public ChromeOSBrowserUITest {
     EXPECT_FALSE(web_prefs.double_tap_to_zoom_enabled);
 
     if (tablet_mode_enabled) {
-      EXPECT_TRUE(web_prefs.text_autosizing_enabled);
       EXPECT_TRUE(web_prefs.shrinks_viewport_contents_to_fit);
       EXPECT_TRUE(web_prefs.main_frame_resizes_are_orientation_changes);
       EXPECT_FLOAT_EQ(web_prefs.default_minimum_page_scale_factor, 0.25f);
       EXPECT_FLOAT_EQ(web_prefs.default_maximum_page_scale_factor, 5.0f);
     } else {
-      EXPECT_FALSE(web_prefs.text_autosizing_enabled);
       EXPECT_FALSE(web_prefs.shrinks_viewport_contents_to_fit);
       EXPECT_FALSE(web_prefs.main_frame_resizes_are_orientation_changes);
       EXPECT_FLOAT_EQ(web_prefs.default_minimum_page_scale_factor, 1.0f);

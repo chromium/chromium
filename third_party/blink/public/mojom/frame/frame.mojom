@@ -52,7 +52,6 @@ import "third_party/blink/public/mojom/frame/media_player_action.mojom";
 import "third_party/blink/public/mojom/frame/remote_frame.mojom";
 import "third_party/blink/public/mojom/frame/reporting_observer.mojom";
 import "third_party/blink/public/mojom/frame/sudden_termination_disabler_type.mojom";
-import "third_party/blink/public/mojom/frame/text_autosizer_page_info.mojom";
 import "third_party/blink/public/mojom/frame/user_activation_notification_type.mojom";
 import "third_party/blink/public/mojom/frame/user_activation_update_types.mojom";
 import "third_party/blink/public/mojom/frame/view_transition_state.mojom";
@@ -1362,12 +1361,6 @@ interface LocalMainFrameHost {
 
   // Notifies that the preferred size of the view has changed.
   ContentsPreferredSizeChanged(gfx.mojom.Size pref_size);
-
-  // Informs the browser that page metrics relevant to Blink's TextAutosizer
-  // have changed, so that they can be shared with other renderers. The
-  // browser will share this information with other renderers that have frames
-  // in the page.
-  TextAutosizerPageInfoChanged(TextAutosizerPageInfo page_info);
 
   // Asks the browser process to activate the page associated to the main frame.
   FocusPage();

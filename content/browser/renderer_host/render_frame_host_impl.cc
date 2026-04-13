@@ -301,7 +301,6 @@
 #include "third_party/blink/public/mojom/frame/frame_owner_properties.mojom.h"
 #include "third_party/blink/public/mojom/frame/fullscreen.mojom.h"
 #include "third_party/blink/public/mojom/frame/media_player_action.mojom.h"
-#include "third_party/blink/public/mojom/frame/text_autosizer_page_info.mojom.h"
 #include "third_party/blink/public/mojom/loader/local_resource_loader_config.mojom.h"
 #include "third_party/blink/public/mojom/loader/resource_load_info.mojom.h"
 #include "third_party/blink/public/mojom/loader/transferrable_url_loader.mojom.h"
@@ -7557,10 +7556,6 @@ void RenderFrameHostImpl::ContentsPreferredSizeChanged(
   delegate_->UpdateWindowPreferredSize(this, pref_size);
 }
 
-void RenderFrameHostImpl::TextAutosizerPageInfoChanged(
-    blink::mojom::TextAutosizerPageInfoPtr page_info) {
-  GetPage().OnTextAutosizerPageInfoChanged(std::move(page_info));
-}
 
 void RenderFrameHostImpl::FocusPage() {
   render_view_host_->OnFocus();

@@ -677,8 +677,6 @@ BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(
 // WebGL contexts.
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kForceHighPerformanceGPUForWebGL);
 
-BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kForceOffTextAutosizing);
-
 // When enabled, forces ICC profile parsing to use skcms instead of the Rust
 // moxcms parser. Acts as a kill-switch for the Rust ICC parser.
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kForceSkcmsICCParsing);

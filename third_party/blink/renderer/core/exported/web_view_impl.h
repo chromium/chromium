@@ -105,12 +105,6 @@ class WebFrameWidgetImpl;
 
 enum class FullscreenRequestType;
 
-namespace mojom {
-namespace blink {
-class TextAutosizerPageInfo;
-}
-}  // namespace mojom
-
 using PaintHoldingCommitTrigger = cc::PaintHoldingCommitTrigger;
 
 class CORE_EXPORT WebViewImpl final : public WebView,
@@ -422,9 +416,6 @@ class CORE_EXPORT WebViewImpl final : public WebView,
   void DidChangeContentsSize();
   void PageScaleFactorChanged();
   void OutermostMainFrameScrollOffsetChanged();
-  void TextAutosizerPageInfoChanged(
-      const mojom::blink::TextAutosizerPageInfo& page_info);
-
   bool ShouldAutoResize() const { return should_auto_resize_; }
 
   gfx::Size MinAutoSize() const { return min_auto_size_; }

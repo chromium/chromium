@@ -119,12 +119,6 @@ struct FrameLoadRequest;
 struct ViewportDescription;
 struct WebWindowFeatures;
 
-namespace mojom {
-namespace blink {
-class TextAutosizerPageInfo;
-}
-}  // namespace mojom
-
 using CompositorElementId = cc::ElementId;
 
 class CORE_EXPORT ChromeClient : public GarbageCollected<ChromeClient> {
@@ -597,10 +591,6 @@ class CORE_EXPORT ChromeClient : public GarbageCollected<ChromeClient> {
   virtual int GetLayerTreeId(LocalFrame& frame) = 0;
 
   virtual void Trace(Visitor*) const;
-
-  virtual void DidUpdateTextAutosizerPageInfo(
-      const mojom::blink::TextAutosizerPageInfo&) {}
-
   virtual void DocumentDetached(Document&) {}
 
   // Return the user's zoom factor which is different from the typical usage

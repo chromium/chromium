@@ -193,7 +193,6 @@
 #include "third_party/blink/renderer/core/layout/hit_test_result.h"
 #include "third_party/blink/renderer/core/layout/layout_object_inlines.h"
 #include "third_party/blink/renderer/core/layout/layout_view.h"
-#include "third_party/blink/renderer/core/layout/text_autosizer.h"
 #include "third_party/blink/renderer/core/lcp_critical_path_predictor/lcp_critical_path_predictor.h"
 #include "third_party/blink/renderer/core/loader/document_loader.h"
 #include "third_party/blink/renderer/core/loader/frame_load_request.h"
@@ -1537,10 +1536,6 @@ void LocalFrame::SetPrinting(bool printing, float maximum_shrink_ratio) {
   GetDocument()->SetPrinting(printing ? Document::kPrinting
                                       : Document::kFinishingPrinting);
   View()->AdjustMediaTypeForPrinting(printing);
-
-  if (TextAutosizer* text_autosizer = GetDocument()->GetTextAutosizer())
-    text_autosizer->UpdatePageInfo();
-
   if (ShouldUsePaginatedLayout()) {
     View()->ForceLayoutForPagination(maximum_shrink_ratio);
   } else {

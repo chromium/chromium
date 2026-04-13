@@ -1304,7 +1304,6 @@ mojom("mojom_core") {
     "frame/remote_frame.mojom",
     "frame/reporting_observer.mojom",
     "frame/sudden_termination_disabler_type.mojom",
-    "frame/text_autosizer_page_info.mojom",
     "frame/tree_scope_type.mojom",
     "frame/triggering_event_info.mojom",
     "frame/user_activation_notification_type.mojom",

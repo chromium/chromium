@@ -34,8 +34,6 @@ class CORE_EXPORT DevToolsEmulator final
   void Trace(Visitor*) const;
 
   // Settings overrides.
-  void SetTextAutosizingEnabled(bool);
-  void SetDeviceScaleAdjustment(float);
   void SetLCDTextPreference(LCDTextPreference);
   void SetViewportStyle(mojom::blink::ViewportStyle);
   void SetScriptEnabled(bool);
@@ -134,8 +132,6 @@ class CORE_EXPORT DevToolsEmulator final
   bool is_overlay_scrollbars_enabled_;
   bool is_orientation_event_enabled_;
   bool is_mobile_layout_theme_enabled_;
-  bool embedder_text_autosizing_enabled_;
-  float embedder_device_scale_adjustment_;
   LCDTextPreference embedder_lcd_text_preference_;
   mojom::blink::ViewportStyle embedder_viewport_style_;
   int embedder_available_pointer_types_;

@@ -78,7 +78,6 @@
 #include "third_party/blink/public/mojom/choosers/popup_menu.mojom-forward.h"
 #include "third_party/blink/public/mojom/frame/blocked_navigation_types.mojom-shared.h"
 #include "third_party/blink/public/mojom/frame/frame.mojom-forward.h"
-#include "third_party/blink/public/mojom/frame/text_autosizer_page_info.mojom.h"
 #include "third_party/blink/public/mojom/input/input_handler.mojom-shared.h"
 #include "third_party/blink/public/mojom/loader/resource_load_info.mojom-forward.h"
 #include "third_party/blink/public/mojom/media/capture_handle_config.mojom.h"
@@ -1690,7 +1689,6 @@ class CONTENT_EXPORT WebContentsImpl
   FRIEND_TEST_ALL_PREFIXES(SitePerProcessBrowserTest, CrossSiteIframe);
   FRIEND_TEST_ALL_PREFIXES(SitePerProcessBrowserTest,
                            TwoSubframesCreatePopupsSimultaneously);
-  FRIEND_TEST_ALL_PREFIXES(SitePerProcessBrowserTest, TextAutosizerPageInfo);
   FRIEND_TEST_ALL_PREFIXES(SitePerProcessBrowserTest,
                            TwoSubframesCreatePopupMenuWidgetsSimultaneously);
   FRIEND_TEST_ALL_PREFIXES(SitePerProcessAccessibilityBrowserTest,

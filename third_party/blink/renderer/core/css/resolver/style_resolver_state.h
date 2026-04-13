@@ -269,15 +269,6 @@ class CORE_EXPORT StyleResolverState {
     css_to_length_conversion_data_dirty_ = true;
   }
 
-  float TextAutosizingMultiplier() const {
-    const ComputedStyle* old_style = GetElement().GetComputedStyle();
-    if (!IsForPseudoElement() && old_style) {
-      return old_style->TextAutosizingMultiplier();
-    } else {
-      return 1.0f;
-    }
-  }
-
   void SetHasTreeScopedReference() { has_tree_scoped_reference_ = true; }
   bool HasTreeScopedReference() const { return has_tree_scoped_reference_; }
 

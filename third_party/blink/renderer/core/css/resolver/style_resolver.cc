@@ -395,15 +395,6 @@ void MaybeResetCascade(StyleCascade& cascade) {
 #endif  // DCHECK_IS_ON()
 }
 
-bool TextAutosizingMultiplierChanged(const StyleResolverState& state,
-                                     const ComputedStyle& base_computed_style) {
-  // Note that |old_style| can be a style replaced by
-  // TextAutosizer::ApplyMultiplier.
-  const ComputedStyle* old_style = state.GetElement().GetComputedStyle();
-  return old_style && (old_style->TextAutosizingMultiplier() !=
-                       base_computed_style.TextAutosizingMultiplier());
-}
-
 PseudoId GetPseudoId(const Element& element, ElementRuleCollector* collector) {
   if (element.IsPseudoElement()) {
     return element.GetPseudoIdForStyling();
@@ -1534,17 +1525,6 @@ void StyleResolver::InitStyle(Element& element,
 
   if (!style_request.IsPseudoStyleRequest() && element.IsLink()) {
     state.StyleBuilder().SetIsLink();
-  }
-
-  if (!IsForPseudoElement(element, style_request)) {
-    // Preserve the text autosizing multiplier on style recalc. Autosizer will
-    // update it during layout if needed.
-    // NOTE: This must occur before CascadeAndApplyMatchedProperties for correct
-    // computation of font-relative lengths.
-    // NOTE: This can never be overwritten by a MPC hit, since we don't use the
-    // MPC if TextAutosizingMultiplier() is different from 1.
-    state.StyleBuilder().SetTextAutosizingMultiplier(
-        state.TextAutosizingMultiplier());
   }
 }
 
@@ -2890,10 +2870,6 @@ bool StyleResolver::CanReuseBaseComputedStyle(const StyleResolverState& state) {
   if (CSSAnimations::IsAnimatingStandardProperties(
           element_animations, base_data->GetBaseImportantSet(),
           KeyframeEffect::kDefaultPriority)) {
-    return false;
-  }
-
-  if (TextAutosizingMultiplierChanged(state, *base_style)) {
     return false;
   }
 

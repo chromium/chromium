@@ -80,7 +80,6 @@ class CORE_EXPORT WebSettingsImpl final : public WebSettings {
   void SetDefaultFontSize(int) override;
   void SetDefaultTextEncodingName(const WebString&) override;
   void SetDefaultVideoPosterURL(const WebString&) override;
-  void SetDeviceScaleAdjustment(float) override;
 
   void SetDisableReadingFromCanvas(bool) override;
   void SetDontSendKeyEventsToJavascript(bool) override;
@@ -172,7 +171,6 @@ class CORE_EXPORT WebSettingsImpl final : public WebSettings {
   void SetTargetBlankImpliesNoOpenerEnabledWillBeRemoved(bool) override;
   void SetIgnorePermissionForDeviceChangedEvent(bool) override;
   void SetTextAreasAreResizable(bool) override;
-  void SetTextAutosizingEnabled(bool) override;
   void SetAccessibilityFontScaleFactor(float) override;
   void SetAccessibilityTextSizeContrastFactor(int) override;
   void SetAccessibilityAlwaysShowFocus(bool) override;

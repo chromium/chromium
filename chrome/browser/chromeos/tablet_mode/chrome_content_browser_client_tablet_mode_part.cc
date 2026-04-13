@@ -73,7 +73,6 @@ void OverrideWebPreferencesForTabletMode(
   }
 
   web_prefs->double_tap_to_zoom_enabled = false;
-  web_prefs->text_autosizing_enabled = true;
   web_prefs->shrinks_viewport_contents_to_fit = true;
   web_prefs->main_frame_resizes_are_orientation_changes = true;
   web_prefs->default_minimum_page_scale_factor = 0.25f;

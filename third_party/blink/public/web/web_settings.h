@@ -124,7 +124,6 @@ class WebSettings {
   virtual void SetDefaultTextEncodingName(const WebString&) = 0;
   virtual void SetDefaultVideoPosterURL(const WebString&) = 0;
   void SetDeferred2dCanvasEnabled(bool) {}  // temporary stub
-  virtual void SetDeviceScaleAdjustment(float) = 0;
   virtual void SetDisableReadingFromCanvas(bool) = 0;
   virtual void SetDontSendKeyEventsToJavascript(bool) = 0;
   virtual void SetDoubleTapToZoomEnabled(bool) = 0;
@@ -226,7 +225,6 @@ class WebSettings {
   // TODO(https://crbug.com/404106817): Remove once Chrome Apps are deprecated.
   virtual void SetIgnorePermissionForDeviceChangedEvent(bool) = 0;
   virtual void SetTextAreasAreResizable(bool) = 0;
-  virtual void SetTextAutosizingEnabled(bool) = 0;
   virtual void SetAccessibilityFontScaleFactor(float) = 0;
   virtual void SetAccessibilityTextSizeContrastFactor(int) = 0;
   virtual void SetAccessibilityAlwaysShowFocus(bool) = 0;

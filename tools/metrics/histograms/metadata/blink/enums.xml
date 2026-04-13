@@ -5531,7 +5531,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="4971" label="DocumentPolicyIncludeJSCallStacksInCrashReports"/>
   <int value="4972" label="MaximumHTMLParserDOMTreeDepthHit"/>
   <int value="4973" label="V8ModelGenericSession_Destroy_Method"/>
-  <int value="4974" label="UsedDeviceScaleAdjustment"/>
+  <int value="4974" label="OBSOLETE_UsedDeviceScaleAdjustment"/>
   <int value="4975" label="OBSOLETE_DisableThirdPartyStoragePartitioning2"/>
   <int value="4976" label="LinkRelFacilitatedPayment"/>
   <int value="4977" label="OBSOLETE_V8GPUAdapter_RequestAdapterInfo_Method"/>

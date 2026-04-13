@@ -28,7 +28,6 @@
 #include "third_party/blink/renderer/core/layout/table/table_fragment_data.h"
 #include "third_party/blink/renderer/core/layout/table/table_layout_utils.h"
 #include "third_party/blink/renderer/core/layout/table/table_node.h"
-#include "third_party/blink/renderer/core/layout/text_autosizer.h"
 #include "third_party/blink/renderer/core/mathml/mathml_element.h"
 #include "third_party/blink/renderer/core/mathml_names.h"
 
@@ -500,10 +499,6 @@ LayoutUnit TableLayoutAlgorithm::ComputeTableInlineSize(
     const ConstraintSpace& space,
     const BoxStrut& table_border_padding) {
   const bool is_fixed_layout = table.Style().IsFixedTableLayout();
-  // Tables need autosizer.
-  std::optional<TextAutosizer::TableLayoutScope> text_autosizer;
-  if (!is_fixed_layout)
-    text_autosizer.emplace(To<LayoutTable>(table.GetLayoutBox()));
 
   const LogicalSize border_spacing = table.Style().TableBorderSpacing();
   TableGroupedChildren grouped_children(table);
@@ -706,10 +701,6 @@ const LayoutResult* TableLayoutAlgorithm::Layout() {
 MinMaxSizesResult TableLayoutAlgorithm::ComputeMinMaxSizes(
     const MinMaxSizesFloatInput&) {
   const bool is_fixed_layout = Style().IsFixedTableLayout();
-  // Tables need autosizer.
-  std::optional<TextAutosizer::TableLayoutScope> text_autosizer;
-  if (!is_fixed_layout)
-    text_autosizer.emplace(To<LayoutTable>(Node().GetLayoutBox()));
 
   const LogicalSize border_spacing = Style().TableBorderSpacing();
   const BoxStrut border_padding = container_builder_.BorderPadding();

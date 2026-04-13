@@ -243,11 +243,6 @@ class CORE_EXPORT RemoteFrame final : public Frame,
 
   // blink::mojom::RemoteMainFrame overrides:
   //
-  // Use to transfer TextAutosizer state from the local main frame renderer to
-  // remote main frame renderers.
-  void UpdateTextAutosizerPageInfo(
-      mojom::blink::TextAutosizerPageInfoPtr page_info) override;
-
   // Indicate that this frame was attached as a MainFrame.
   void WasAttachedAsRemoteMainFrame(
       mojo::PendingAssociatedReceiver<mojom::blink::RemoteMainFrame>

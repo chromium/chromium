@@ -30,7 +30,6 @@
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/settings.h"
-#include "third_party/blink/renderer/core/layout/text_autosizer.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
 #include "third_party/blink/renderer/platform/font_family_names.h"
 #include "third_party/blink/renderer/platform/fonts/font_description.h"
@@ -416,9 +415,6 @@ void FontBuilder::UpdateComputedSize(FontDescription& font_description,
                                      const ComputedStyleBuilder& builder) {
   float computed_size = GetComputedSizeFromSpecifiedSize(
       font_description, builder, font_description.SpecifiedSize());
-  computed_size = TextAutosizer::ComputeAutosizedFontSize(
-      computed_size, builder.TextAutosizingMultiplier(),
-      builder.EffectiveZoom());
   font_description.SetComputedSize(computed_size);
 }
 

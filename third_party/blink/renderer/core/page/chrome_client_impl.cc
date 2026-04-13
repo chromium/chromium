@@ -1468,11 +1468,6 @@ WebRecordReplayClient* ChromeClientImpl::RecordReplayClientFromFrame(
   return WebLocalFrameImpl::FromFrame(frame)->RecordReplayClient();
 }
 
-void ChromeClientImpl::DidUpdateTextAutosizerPageInfo(
-    const mojom::blink::TextAutosizerPageInfo& page_info) {
-  DCHECK(web_view_);
-  web_view_->TextAutosizerPageInfoChanged(page_info);
-}
 
 void ChromeClientImpl::DocumentDetached(Document& document) {
   for (auto& it : file_chooser_queue_) {

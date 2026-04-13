@@ -57,7 +57,6 @@ class CORE_EXPORT SettingsDelegate {
     kViewportPaintProperties,
     kDNSPrefetching,
     kImageLoading,
-    kTextAutosizing,
     kFontFamily,
     kAcceleratedCompositing,
     kMediaQuery,

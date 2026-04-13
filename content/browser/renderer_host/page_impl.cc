@@ -36,9 +36,7 @@
 namespace content {
 
 PageImpl::PageImpl(RenderFrameHostImpl& rfh, PageDelegate& delegate)
-    : main_document_(rfh),
-      delegate_(delegate),
-      text_autosizer_page_info_({0, 0, 1.f}) {
+    : main_document_(rfh), delegate_(delegate) {
   if (base::FeatureList::IsEnabled(features::kSharedStorageSelectURLLimit)) {
     select_url_overall_budget_ =
         features::kSharedStorageSelectURLBitBudgetPerPageLoad.Get();
@@ -166,38 +164,6 @@ void PageImpl::NotifyPageBecameCurrent() {
 
 void PageImpl::SetContentsMimeType(std::string mime_type) {
   contents_mime_type_ = std::move(mime_type);
-}
-
-void PageImpl::OnTextAutosizerPageInfoChanged(
-    blink::mojom::TextAutosizerPageInfoPtr page_info) {
-  OPTIONAL_TRACE_EVENT0("content", "PageImpl::OnTextAutosizerPageInfoChanged");
-
-  // Keep a copy of `page_info` in case we create a new `blink::WebView` before
-  // the next update, so that the PageImpl can tell the newly created
-  // `blink::WebView` about the autosizer info.
-  text_autosizer_page_info_.main_frame_width = page_info->main_frame_width;
-  text_autosizer_page_info_.main_frame_layout_width =
-      page_info->main_frame_layout_width;
-  text_autosizer_page_info_.device_scale_adjustment =
-      page_info->device_scale_adjustment;
-
-  auto remote_frames_broadcast_callback =
-      [this](RenderFrameProxyHost* proxy_host) {
-        DCHECK(proxy_host);
-        proxy_host->GetAssociatedRemoteMainFrame()->UpdateTextAutosizerPageInfo(
-            text_autosizer_page_info_.Clone());
-      };
-
-  {
-    TRACE_EVENT("navigation",
-                "PageImpl::OnTextAutosizerPageInfoChanged broadcast");
-    main_document_->frame_tree()
-        ->root()
-        ->render_manager()
-        ->ExecuteRemoteFramesBroadcastMethod(
-            std::move(remote_frames_broadcast_callback),
-            main_document_->GetSiteInstance()->group());
-  }
 }
 
 void PageImpl::SetActivationStartTime(base::TimeTicks activation_start) {

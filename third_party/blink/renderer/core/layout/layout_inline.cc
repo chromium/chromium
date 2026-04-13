@@ -42,7 +42,6 @@
 #include "third_party/blink/renderer/core/layout/layout_view.h"
 #include "third_party/blink/renderer/core/layout/outline_utils.h"
 #include "third_party/blink/renderer/core/layout/physical_box_fragment.h"
-#include "third_party/blink/renderer/core/layout/text_autosizer.h"
 #include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/core/paint/box_fragment_painter.h"
 #include "third_party/blink/renderer/core/paint/box_painter.h"
@@ -113,10 +112,6 @@ LayoutInline* LayoutInline::CreateAnonymous(Document* document) {
 
 void LayoutInline::WillBeDestroyed() {
   NOT_DESTROYED();
-
-  if (TextAutosizer* text_autosizer = GetDocument().GetTextAutosizer())
-    text_autosizer->Destroy(this);
-
   if (FirstInlineFragmentItemIndex()) {
     FragmentItems::LayoutObjectWillBeDestroyed(*this);
     ClearFirstInlineFragmentItemIndex();

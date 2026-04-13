@@ -57,8 +57,6 @@ class TapFriendlinessCheckerTest : public testing::Test {
     helper_->Resize(gfx::Size(kDeviceWidth, kDeviceHeight));
     helper_->GetWebView()->GetPage()->SetDefaultPageScaleLimits(kMinimumZoom,
                                                                 kMaximumZoom);
-    helper_->GetWebView()->GetPage()->GetSettings().SetTextAutosizingEnabled(
-        true);
     helper_->GetWebView()
         ->GetPage()
         ->GetSettings()

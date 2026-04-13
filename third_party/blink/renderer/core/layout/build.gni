@@ -20,8 +20,6 @@ blink_core_hot_sources_layout = [
   "layout_box_hot.cc",
   "layout_object_hot.cc",
   "layout_object_inl.h",
-  "text_autosizer.cc",
-  "text_autosizer.h",
 ]
 
 blink_core_sources_layout = [
@@ -845,6 +843,5 @@ blink_core_tests_layout = [
   "table/layout_table_section_test.cc",
   "table/layout_table_test.cc",
   "table/table_layout_utils_test.cc",
-  "text_autosizer_test.cc",
   "visual_rect_mapping_test.cc",
 ]

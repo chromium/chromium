@@ -101,11 +101,6 @@ MatchedPropertiesCache::Key::Key(const MatchResult& result, unsigned hash)
 const CachedMatchedProperties::Entry* MatchedPropertiesCache::Find(
     const Key& key,
     const StyleResolverState& style_resolver_state) {
-  // Matches the corresponding test in IsStyleCacheable().
-  if (style_resolver_state.TextAutosizingMultiplier() != 1.0f) {
-    return nullptr;
-  }
-
   Cache::iterator it = cache_.find(key.hash_);
   if (it == cache_.end()) {
     return nullptr;
@@ -319,9 +314,6 @@ bool MatchedPropertiesCache::IsStyleCacheable(
     return false;
   }
   if (builder.Zoom() != ComputedStyleInitialValues::InitialZoom()) {
-    return false;
-  }
-  if (builder.TextAutosizingMultiplier() != 1) {
     return false;
   }
   if (builder.HasContainerRelativeValue()) {

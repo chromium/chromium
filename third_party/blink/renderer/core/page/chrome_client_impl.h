@@ -317,10 +317,6 @@ class CORE_EXPORT ChromeClientImpl final : public ChromeClient {
 
   void NotifyPresentationTime(LocalFrame& frame,
                               ReportTimeCallback callback) override;
-
-  void DidUpdateTextAutosizerPageInfo(
-      const mojom::blink::TextAutosizerPageInfo& page_info) override;
-
   int GetLayerTreeId(LocalFrame& frame) override;
 
   void DocumentDetached(Document&) override;

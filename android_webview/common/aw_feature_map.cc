@@ -33,7 +33,6 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     // keep-sorted start allow_yaml_lists=yes by_regex=['\w+,']
     &features::kAndroidMetricsAsyncMetricLogging,
     &::features::kEnablePerfettoSystemTracing,
-    &blink::features::kForceOffTextAutosizing,
     &safe_browsing::kHashPrefixRealTimeLookups,
     &base::features::kPostGetMyMemoryStateToBackground,
     &sensitive_content::features::kSensitiveContent,

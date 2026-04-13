@@ -849,14 +849,6 @@ void ChromeContentBrowserClientExtensionsPart::OverrideWebPreferences(
     WebPreferences* web_prefs) {
   OverrideWebPreferencesAfterNavigation(web_contents, main_frame_site,
                                         web_prefs);
-
-  // Ensure to disable text autosizing for extension popups since it is
-  // fundamentally incompatible with frame autoresizing.
-  // See: https://crbug.com/422896512
-  mojom::ViewType view_type = GetViewType(web_contents->GetPrimaryMainFrame());
-  if (view_type == mojom::ViewType::kExtensionPopup) {
-    web_prefs->text_autosizing_enabled = false;
-  }
 }
 
 void ChromeContentBrowserClientExtensionsPart::BrowserURLHandlerCreated(

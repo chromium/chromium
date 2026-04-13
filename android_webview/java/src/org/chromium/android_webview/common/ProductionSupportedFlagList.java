@@ -200,9 +200,6 @@ public final class ProductionSupportedFlagList {
                 "Enables using the new ALPS codepoint to negotiate application settings for"
                         + " HTTP2."),
         Flag.baseFeature(
-                BlinkFeatures.FORCE_OFF_TEXT_AUTOSIZING,
-                "Disable text inflation with setLayoutAlgorithm(TEXT_AUTOSIZING)"),
-        Flag.baseFeature(
                 NetFeatures.SIMDUTF_BASE64_SUPPORT,
                 "Use the simdutf library to base64 decode data: URLs."),
         Flag.baseFeature(

@@ -42,7 +42,6 @@ TEST_F(WebViewImplTest, MaximumLegiblePageScale) {
   WebViewImpl* web_view = WebView();
   web_view->EnableFakePageScaleAnimationForTesting(true);
   web_view->GetSettings()->SetAccessibilityFontScaleFactor(2.0f);
-  web_view->GetSettings()->SetTextAutosizingEnabled(false);
 
   // Set up a page with text-scale meta tag.
   frame_test_helpers::LoadHTMLString(
@@ -80,7 +79,6 @@ TEST_F(WebViewImplTest, MaximumLegiblePageScaleWithoutMetaTag) {
   web_view->GetSettings()->SetWideViewportQuirkEnabled(
       true);  // Simulate WebView quirk
   web_view->GetSettings()->SetAccessibilityFontScaleFactor(2.0f);
-  web_view->GetSettings()->SetTextAutosizingEnabled(false);
 
   // Set up a page WITHOUT text-scale meta tag.
   frame_test_helpers::LoadHTMLString(

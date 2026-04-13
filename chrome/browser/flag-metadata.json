@@ -4769,11 +4769,6 @@
     "expiry_milestone": -1
   },
   {
-    "name": "force-off-text-autosizing",
-    "owners": [ "dgrogan@chromium.org", "pdr@chromium.org", "layout-dev@chromium.org" ],
-    "expiry_milestone": 155
-  },
-  {
     "name": "force-show-update-menu-badge",
     "owners": [ "//chrome/android/java/src/org/chromium/chrome/browser/omaha/OWNERS" ],
     // This is required by test teams to verify functionality on devices which

@@ -1739,36 +1739,6 @@ TEST_F(WebFrameTest, PostMessageEvent_CannotDeserialize) {
 
 namespace {
 
-// Helper function to set autosizing multipliers on a document.
-bool SetTextAutosizingMultiplier(Document* document, float multiplier) {
-  bool multiplier_set = false;
-  for (LayoutObject* layout_object = document->GetLayoutView(); layout_object;
-       layout_object = layout_object->NextInPreOrder()) {
-    if (layout_object->Style()) {
-      ComputedStyleBuilder builder(layout_object->StyleRef());
-      builder.SetTextAutosizingMultiplier(multiplier);
-      layout_object->SetStyle(builder.TakeStyle(),
-                              LayoutObject::ApplyStyleChanges::kNo);
-      multiplier_set = true;
-    }
-  }
-  return multiplier_set;
-}
-
-// Helper function to check autosizing multipliers on a document.
-bool CheckTextAutosizingMultiplier(Document* document, float multiplier) {
-  bool multiplier_checked = false;
-  for (LayoutObject* layout_object = document->GetLayoutView(); layout_object;
-       layout_object = layout_object->NextInPreOrder()) {
-    if (layout_object->Style() && layout_object->IsText()) {
-      EXPECT_EQ(multiplier,
-                layout_object->StyleRef().TextAutosizingMultiplier());
-      multiplier_checked = true;
-    }
-  }
-  return multiplier_checked;
-}
-
 void UpdateScreenInfoAndResizeView(
     frame_test_helpers::WebViewHelper* web_view_helper,
     const display::ScreenInfo& screen_info) {
@@ -1789,111 +1759,6 @@ void UpdateScreenInfoAndResizeView(
 }
 
 }  // namespace
-
-TEST_F(WebFrameTest, ChangeInFixedLayoutResetsTextAutosizingMultipliers) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndDisableFeature(blink::features::kForceOffTextAutosizing);
-  RegisterMockedHttpURLLoad("fixed_layout.html");
-
-  int viewport_width = 640;
-  int viewport_height = 480;
-
-  frame_test_helpers::WebViewHelper web_view_helper;
-  web_view_helper.InitializeAndLoad(base_url_ + "fixed_layout.html", nullptr,
-                                    nullptr, ConfigureAndroid);
-
-  Document* document =
-      To<LocalFrame>(web_view_helper.GetWebView()->GetPage()->MainFrame())
-          ->GetDocument();
-  document->GetSettings()->SetTextAutosizingEnabled(true);
-  EXPECT_TRUE(document->GetSettings()->GetTextAutosizingEnabled());
-  web_view_helper.Resize(gfx::Size(viewport_width, viewport_height));
-
-  EXPECT_TRUE(SetTextAutosizingMultiplier(document, 2));
-
-  ViewportDescription description =
-      document->GetViewportData().GetViewportDescription();
-  // Choose a width that's not going match the viewport width of the loaded
-  // document.
-  description.min_width = ViewportLength::Fixed(100);
-  description.max_width = ViewportLength::Fixed(100);
-  web_view_helper.GetWebView()->UpdatePageDefinedViewportConstraints(
-      description);
-
-  EXPECT_TRUE(CheckTextAutosizingMultiplier(document, 1));
-}
-
-TEST_F(WebFrameTest, WorkingTextAutosizingMultipliers_VirtualViewport) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndDisableFeature(blink::features::kForceOffTextAutosizing);
-  const std::string html_file = "fixed_layout.html";
-  RegisterMockedHttpURLLoad(html_file);
-
-  frame_test_helpers::WebViewHelper web_view_helper;
-  web_view_helper.InitializeAndLoad(base_url_ + html_file, nullptr, nullptr,
-                                    ConfigureAndroid);
-
-  Document* document =
-      To<LocalFrame>(web_view_helper.GetWebView()->GetPage()->MainFrame())
-          ->GetDocument();
-  document->GetSettings()->SetTextAutosizingEnabled(true);
-  EXPECT_TRUE(document->GetSettings()->GetTextAutosizingEnabled());
-
-  web_view_helper.Resize(gfx::Size(490, 800));
-
-  // Multiplier: 980 / 490 = 2.0
-  EXPECT_TRUE(CheckTextAutosizingMultiplier(document, 2.0));
-}
-
-TEST_F(WebFrameTest,
-       VisualViewportSetSizeInvalidatesTextAutosizingMultipliers) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndDisableFeature(blink::features::kForceOffTextAutosizing);
-  RegisterMockedHttpURLLoad("iframe_reload.html");
-  RegisterMockedHttpURLLoad("visible_iframe.html");
-
-  int viewport_width = 640;
-  int viewport_height = 480;
-
-  frame_test_helpers::WebViewHelper web_view_helper;
-  web_view_helper.InitializeAndLoad(base_url_ + "iframe_reload.html", nullptr,
-                                    nullptr, ConfigureAndroid);
-
-  auto* main_frame =
-      To<LocalFrame>(web_view_helper.GetWebView()->GetPage()->MainFrame());
-  Document* document = main_frame->GetDocument();
-  LocalFrameView* frame_view = web_view_helper.LocalMainFrame()->GetFrameView();
-  document->GetSettings()->SetTextAutosizingEnabled(true);
-  EXPECT_TRUE(document->GetSettings()->GetTextAutosizingEnabled());
-  web_view_helper.Resize(gfx::Size(viewport_width, viewport_height));
-
-  for (Frame* frame = main_frame; frame; frame = frame->Tree().TraverseNext()) {
-    auto* local_frame = DynamicTo<LocalFrame>(frame);
-    if (!local_frame)
-      continue;
-    EXPECT_TRUE(SetTextAutosizingMultiplier(local_frame->GetDocument(), 2));
-    for (LayoutObject* layout_object =
-             local_frame->GetDocument()->GetLayoutView();
-         layout_object; layout_object = layout_object->NextInPreOrder()) {
-      if (layout_object->IsText())
-        EXPECT_FALSE(layout_object->NeedsLayout());
-    }
-  }
-
-  frame_view->GetPage()->GetVisualViewport().SetSize(gfx::Size(200, 200));
-
-  for (Frame* frame = main_frame; frame; frame = frame->Tree().TraverseNext()) {
-    auto* local_frame = DynamicTo<LocalFrame>(frame);
-    if (!local_frame)
-      continue;
-    for (LayoutObject* layout_object =
-             local_frame->GetDocument()->GetLayoutView();
-         !layout_object; layout_object = layout_object->NextInPreOrder()) {
-      if (layout_object->IsText())
-        EXPECT_TRUE(layout_object->NeedsLayout());
-    }
-  }
-}
 
 TEST_F(WebFrameTest, ZeroHeightPositiveWidthNotIgnored) {
   int viewport_width = 1280;
@@ -3951,11 +3816,6 @@ TEST_F(WebFrameTest, DivAutoZoomScaleLegibleScaleTest) {
   UpdateAllLifecyclePhases(web_view_helper.GetWebView());
 
   web_view_helper.GetWebView()->EnableFakePageScaleAnimationForTesting(true);
-  web_view_helper.GetWebView()
-      ->GetPage()
-      ->GetSettings()
-      .SetTextAutosizingEnabled(true);
-
   gfx::Rect div(200, 100, 200, 150);
   gfx::Point double_tap_point(div.x() + 50, div.y() + 50);
   float scale;
@@ -4073,10 +3933,6 @@ TEST_F(WebFrameTest, DivAutoZoomScaleFontScaleFactorTest) {
   UpdateAllLifecyclePhases(web_view_helper.GetWebView());
 
   web_view_helper.GetWebView()->EnableFakePageScaleAnimationForTesting(true);
-  web_view_helper.GetWebView()
-      ->GetPage()
-      ->GetSettings()
-      .SetTextAutosizingEnabled(true);
   web_view_helper.GetWebView()
       ->GetPage()
       ->GetSettings()
@@ -4236,10 +4092,6 @@ TEST_F(WebFrameTest, DontZoomInOnFocusedInTouchAction) {
   web_view_helper.GetWebView()->SetDefaultPageScaleLimits(0.25f, 4);
   web_view_helper.GetWebView()->EnableFakePageScaleAnimationForTesting(true);
   web_view_helper.GetWebView()
-      ->GetPage()
-      ->GetSettings()
-      .SetTextAutosizingEnabled(false);
-  web_view_helper.GetWebView()
       ->GetSettings()
       ->SetAutoZoomFocusedEditableToLegibleScale(true);
   web_view_helper.Resize(gfx::Size(viewport_width, viewport_height));
@@ -4302,10 +4154,6 @@ TEST_F(WebFrameTest, DivScrollIntoEditableTest) {
   frame_test_helpers::WebViewHelper web_view_helper;
   web_view_helper.InitializeAndLoad(
       base_url_ + "get_scale_for_zoom_into_editable_test.html");
-  web_view_helper.GetWebView()
-      ->GetPage()
-      ->GetSettings()
-      .SetTextAutosizingEnabled(false);
   web_view_helper.Resize(gfx::Size(viewport_width, viewport_height));
   web_view_helper.GetWebView()->SetDefaultPageScaleLimits(0.25f, 4);
 
@@ -4417,10 +4265,6 @@ TEST_F(WebFrameTest, DivScrollIntoEditablePreservePageScaleTest) {
   frame_test_helpers::WebViewHelper web_view_helper;
   web_view_helper.InitializeAndLoad(
       base_url_ + "get_scale_for_zoom_into_editable_test.html");
-  web_view_helper.GetWebView()
-      ->GetPage()
-      ->GetSettings()
-      .SetTextAutosizingEnabled(false);
   web_view_helper.Resize(gfx::Size(kViewportWidth, kViewportHeight));
   web_view_helper.GetWebView()->EnableFakePageScaleAnimationForTesting(true);
 
@@ -4496,10 +4340,6 @@ TEST_F(WebFrameTest, DivScrollIntoEditableTestZoomToLegibleScaleDisabled) {
   frame_test_helpers::WebViewHelper web_view_helper;
   web_view_helper.InitializeAndLoad(
       base_url_ + "get_scale_for_zoom_into_editable_test.html");
-  web_view_helper.GetWebView()
-      ->GetPage()
-      ->GetSettings()
-      .SetTextAutosizingEnabled(false);
   web_view_helper.Resize(gfx::Size(viewport_width, viewport_height));
   web_view_helper.GetWebView()->SetDefaultPageScaleLimits(0.25f, 4);
 
@@ -4575,10 +4415,6 @@ TEST_F(WebFrameTest, DivScrollIntoEditableTestWithDeviceScaleFactor) {
   web_view_helper.InitializeAndLoad(
       base_url_ + "get_scale_for_zoom_into_editable_test.html", nullptr,
       nullptr, ConfigureAndroid);
-  web_view_helper.GetWebView()
-      ->GetPage()
-      ->GetSettings()
-      .SetTextAutosizingEnabled(false);
   web_view_helper.Resize(gfx::Size(viewport_width, viewport_height));
   web_view_helper.GetWebView()->SetZoomFactorForDeviceScaleFactor(
       kDeviceScaleFactor);
@@ -7293,8 +7129,6 @@ class FakeMainLocalFrameHost : public mojom::blink::LocalMainFrameHost {
   // LocalMainFrameHost:
   void ScaleFactorChanged(float scale) override {}
   void ContentsPreferredSizeChanged(const ::gfx::Size& pref_size) override {}
-  void TextAutosizerPageInfoChanged(
-      ::blink::mojom::blink::TextAutosizerPageInfoPtr page_info) override {}
   void FocusPage() override {}
   void TakeFocus(bool reverse) override {}
   void UpdateTargetURL(const ::blink::KURL& url,
@@ -12410,7 +12244,6 @@ class WebFrameSimTest : public SimTest {
 
 TEST_F(WebFrameSimTest, HitTestWithIgnoreClippingAtNegativeOffset) {
   WebView().MainFrameViewWidget()->Resize(gfx::Size(500, 300));
-  WebView().GetPage()->GetSettings().SetTextAutosizingEnabled(false);
 
   SimRequest r("https://example.com/test.html", "text/html");
   LoadURL("https://example.com/test.html");
@@ -12463,7 +12296,6 @@ TEST_F(WebFrameSimTest, HitTestWithIgnoreClippingAtNegativeOffset) {
 
 TEST_F(WebFrameSimTest, TickmarksDocumentRelative) {
   WebView().MainFrameViewWidget()->Resize(gfx::Size(500, 300));
-  WebView().GetPage()->GetSettings().SetTextAutosizingEnabled(false);
 
   SimRequest request("https://example.com/test.html", "text/html");
   LoadURL("https://example.com/test.html");
@@ -12514,7 +12346,6 @@ TEST_F(WebFrameSimTest, TickmarksDocumentRelative) {
 #if BUILDFLAG(IS_ANDROID)
 TEST_F(WebFrameSimTest, FindInPageSelectNextMatch) {
   WebView().MainFrameViewWidget()->Resize(gfx::Size(500, 300));
-  WebView().GetPage()->GetSettings().SetTextAutosizingEnabled(false);
 
   SimRequest request("https://example.com/test.html", "text/html");
   LoadURL("https://example.com/test.html");
@@ -12737,7 +12568,6 @@ TEST_F(WebFrameSimTest, TestFocusPreventScrollNotScrollElementIntoView) {
   UseAndroidSettings();
   WebView().MainFrameViewWidget()->Resize(gfx::Size(400, 400));
   WebView().EnableFakePageScaleAnimationForTesting(true);
-  WebView().GetPage()->GetSettings().SetTextAutosizingEnabled(false);
 
   SimRequest request("https://example.com/test.html", "text/html");
   LoadURL("https://example.com/test.html");
@@ -12811,7 +12641,6 @@ TEST_F(WebFrameSimTest, TestScrollFocusedEditableElementIntoView) {
   WebView().MainFrameViewWidget()->Resize(gfx::Size(500, 300));
   WebView().SetDefaultPageScaleLimits(1.f, 4);
   WebView().EnableFakePageScaleAnimationForTesting(true);
-  WebView().GetPage()->GetSettings().SetTextAutosizingEnabled(false);
   WebView().GetPage()->GetSettings().SetViewportEnabled(false);
   WebView().GetSettings()->SetAutoZoomFocusedEditableToLegibleScale(true);
 
@@ -12923,7 +12752,6 @@ TEST_F(WebFrameSimTest, TestScrollFocusedEditableInRootScroller) {
   WebView().MainFrameViewWidget()->Resize(gfx::Size(500, 300));
   WebView().SetDefaultPageScaleLimits(1.f, 4);
   WebView().EnableFakePageScaleAnimationForTesting(true);
-  WebView().GetPage()->GetSettings().SetTextAutosizingEnabled(false);
   WebView().GetPage()->GetSettings().SetViewportEnabled(false);
   WebView().GetSettings()->SetAutoZoomFocusedEditableToLegibleScale(true);
 
@@ -13022,7 +12850,6 @@ TEST_F(WebFrameSimTest, ScrollFocusedIntoViewClipped) {
   UseAndroidSettings();
   WebView().MainFrameViewWidget()->Resize(gfx::Size(400, 600));
   WebView().EnableFakePageScaleAnimationForTesting(true);
-  WebView().GetPage()->GetSettings().SetTextAutosizingEnabled(false);
 
   SimRequest request("https://example.com/test.html", "text/html");
   LoadURL("https://example.com/test.html");
@@ -13116,7 +12943,6 @@ TEST_F(WebFrameSimTest, ScrollFocusedSelectionIntoView) {
   UseAndroidSettings();
   WebView().MainFrameViewWidget()->Resize(gfx::Size(400, 600));
   WebView().EnableFakePageScaleAnimationForTesting(true);
-  WebView().GetPage()->GetSettings().SetTextAutosizingEnabled(false);
 
   SimRequest request("https://example.com/test.html", "text/html");
   LoadURL("https://example.com/test.html");
@@ -13166,7 +12992,6 @@ TEST_F(WebFrameSimTest, DoubleTapZoomWhileScrolled) {
   UseAndroidSettings();
   WebView().MainFrameViewWidget()->Resize(gfx::Size(490, 500));
   WebView().EnableFakePageScaleAnimationForTesting(true);
-  WebView().GetSettings()->SetTextAutosizingEnabled(false);
   WebView().SetDefaultPageScaleLimits(0.5f, 4);
 
   SimRequest request("https://example.com/test.html", "text/html");
@@ -13279,7 +13104,6 @@ TEST_F(WebFrameSimTest, ChangeBackgroundColor) {
 // element which doesn't have a LayoutObject.
 TEST_F(WebFrameSimTest, ScrollFocusedEditableIntoViewNoLayoutObject) {
   WebView().MainFrameViewWidget()->Resize(gfx::Size(500, 600));
-  WebView().GetPage()->GetSettings().SetTextAutosizingEnabled(false);
 
   SimRequest r("https://example.com/test.html", "text/html");
   LoadURL("https://example.com/test.html");
@@ -13333,7 +13157,6 @@ TEST_F(WebFrameSimTest, ScrollFocusedEditableIntoViewNoLayoutObject) {
 
 TEST_F(WebFrameSimTest, ScrollEditContextIntoView) {
   WebView().MainFrameViewWidget()->Resize(gfx::Size(500, 600));
-  WebView().GetPage()->GetSettings().SetTextAutosizingEnabled(false);
   WebView().SetZoomFactorForDeviceScaleFactor(2.0f);
 
   SimRequest r("https://example.com/test.html", "text/html");
@@ -14023,7 +13846,6 @@ TEST_F(WebFrameSimTest, EnterFullscreenResetScrollAndScaleState) {
   UseAndroidSettings();
   WebView().MainFrameViewWidget()->Resize(gfx::Size(490, 500));
   WebView().EnableFakePageScaleAnimationForTesting(true);
-  WebView().GetSettings()->SetTextAutosizingEnabled(false);
   WebView().SetDefaultPageScaleLimits(0.5f, 4);
 
   SimRequest request("https://example.com/test.html", "text/html");

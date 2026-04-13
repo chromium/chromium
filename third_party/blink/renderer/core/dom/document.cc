@@ -290,7 +290,6 @@
 #include "third_party/blink/renderer/core/layout/layout_embedded_content.h"
 #include "third_party/blink/renderer/core/layout/layout_view.h"
 #include "third_party/blink/renderer/core/layout/pagination_utils.h"
-#include "third_party/blink/renderer/core/layout/text_autosizer.h"
 #include "third_party/blink/renderer/core/lcp_critical_path_predictor/lcp_critical_path_predictor.h"
 #include "third_party/blink/renderer/core/loader/anchor_element_interaction_tracker.h"
 #include "third_party/blink/renderer/core/loader/cookie_jar.h"
@@ -3238,11 +3237,6 @@ void Document::Initialize() {
 
   AttachContext context;
   AttachLayoutTree(context);
-
-  // The TextAutosizer can't update layout view info while the Document is
-  // detached, so update now in case anything changed.
-  if (TextAutosizer* autosizer = GetTextAutosizer())
-    autosizer->UpdatePageInfo();
 
   GetFrame()->DidAttachDocument();
   lifecycle_.AdvanceTo(DocumentLifecycle::kStyleClean);
@@ -8291,7 +8285,7 @@ void Document::SetTextScaleMetaTagPresent(bool present) {
       // SetTextZoomFactor will do the right thing if we give it the original
       // font scale factor here.
       if (settings->GetScaleAllFontsIfNoMetaTextScaleTag() &&
-          !settings->GetTextAutosizingEnabled()) {
+          !settings->GetTextSizeAdjustEnabled()) {
         frame->SetTextZoomFactor(settings->GetAccessibilityFontScaleFactor());
       }
     }
@@ -9067,12 +9061,6 @@ float Document::DevicePixelRatio() const {
   return GetFrame() ? GetFrame()->DevicePixelRatio() : 1.0;
 }
 
-TextAutosizer* Document::GetTextAutosizer() {
-  if (!text_autosizer_)
-    text_autosizer_ = MakeGarbageCollected<TextAutosizer>(this);
-  return text_autosizer_.Get();
-}
-
 bool Document::SetPseudoStateForTesting(Element& element,
                                         const String& pseudo,
                                         bool matches) {
@@ -9487,7 +9475,6 @@ void Document::Trace(Visitor* visitor) const {
   visitor->Trace(document_timing_);
   visitor->Trace(media_query_matcher_);
   visitor->Trace(scripted_animation_controller_);
-  visitor->Trace(text_autosizer_);
   visitor->Trace(element_data_cache_clear_timer_);
   visitor->Trace(element_data_cache_);
   visitor->Trace(use_elements_needing_update_);

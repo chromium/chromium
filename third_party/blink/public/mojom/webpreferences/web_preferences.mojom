@@ -275,7 +275,6 @@ struct WebPreferences {
 
   bool fullscreen_supported;
 
-  bool text_autosizing_enabled;
   bool text_size_adjust_enabled;
 
   // Representation of the Web App Manifest scope if any.
@@ -293,9 +292,6 @@ struct WebPreferences {
 
   [EnableIf=is_android]
   int32 text_size_contrast_factor;
-
-  [EnableIf=is_android]
-  float device_scale_adjustment;
 
   [EnableIf=is_android]
   bool force_enable_zoom;

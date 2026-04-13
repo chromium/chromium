@@ -410,16 +410,6 @@
       invalidate: ["reshape"],
     },
     {
-      name: "TextAutosizingMultiplier",
-      inherited: true,
-      field_template: "primitive",
-      type_name: "float",
-      field_group: "inherited",
-      default_value: "1.0",
-      computed_style_custom_functions: ["setter"],
-      invalidate: ["layout", "paint"],
-    },
-    {
       name: "CursorData",
       inherited: true,
       field_template: "external",

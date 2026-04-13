@@ -161,13 +161,11 @@ bool StructTraits<blink::mojom::WebPreferencesDataView,
       data.immersive_video_playback_enabled();
   out->double_tap_to_zoom_enabled = data.double_tap_to_zoom_enabled();
   out->fullscreen_supported = data.fullscreen_supported();
-  out->text_autosizing_enabled = data.text_autosizing_enabled();
   out->is_initial_profile = data.is_initial_profile();
 #if BUILDFLAG(IS_ANDROID)
   out->font_scale_factor = data.font_scale_factor();
   out->font_weight_adjustment = data.font_weight_adjustment();
   out->text_size_contrast_factor = data.text_size_contrast_factor();
-  out->device_scale_adjustment = data.device_scale_adjustment();
   out->force_enable_zoom = data.force_enable_zoom();
   out->support_deprecated_target_density_dpi =
       data.support_deprecated_target_density_dpi();

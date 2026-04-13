@@ -60,7 +60,6 @@
 #include "third_party/blink/renderer/core/layout/layout_view.h"
 #include "third_party/blink/renderer/core/layout/physical_box_fragment.h"
 #include "third_party/blink/renderer/core/layout/svg/layout_svg_inline_text.h"
-#include "third_party/blink/renderer/core/layout/text_autosizer.h"
 #include "third_party/blink/renderer/core/paint/object_paint_invalidator.h"
 #include "third_party/blink/renderer/platform/fonts/character_range.h"
 #include "third_party/blink/renderer/platform/heap/disallow_new_wrapper.h"
@@ -233,10 +232,6 @@ void LayoutText::StyleDidChange(
   if (!TransformedText().ContainsOnlyWhitespaceOrEmpty()) {
     new_style.GetFont()->WillUseFontData(TransformedText());
   }
-
-  TextAutosizer* text_autosizer = GetDocument().GetTextAutosizer();
-  if (!old_style && text_autosizer)
-    text_autosizer->Record(this);
 
   if (diff.needs_reshape) {
     valid_ng_items_ = false;
@@ -1070,10 +1065,6 @@ void LayoutText::TextDidChangeWithoutInvalidation() {
 
   if (AXObjectCache* cache = GetDocument().ExistingAXObjectCache())
     cache->TextChanged(this);
-
-  TextAutosizer* text_autosizer = GetDocument().GetTextAutosizer();
-  if (text_autosizer)
-    text_autosizer->Record(this);
 
   if (HasNodeId()) {
     if (auto* content_capture_manager = GetOrResetContentCaptureManager())

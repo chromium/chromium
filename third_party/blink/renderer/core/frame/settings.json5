@@ -542,7 +542,7 @@
     {
       name: "accessibilityFontScaleFactor",
       initial: "1.0",
-      invalidate: ["TextAutosizing", "FontScaleFactor"],
+      invalidate: ["FontScaleFactor"],
       type: "double",
     },
 
@@ -702,16 +702,6 @@
     {
       name: "forceTouchEventFeatureDetectionForInspector",
       initial: false,
-    },
-
-    // Compensates for poor text legibility on mobile devices. This value is
-    // multiplied by the font scale factor when performing text autosizing of
-    // websites that do not set an explicit viewport description.
-    {
-      name: "deviceScaleAdjustment",
-      initial: "1.0",
-      invalidate: ["TextAutosizing"],
-      type: "double",
     },
 
     // This value is set to false if the platform does not support fullscreen.
@@ -1251,25 +1241,11 @@
       name: "bypassCSP",
       initial: false,
     },
-    // Enables automatic adjustments of text size on mobile. This enables the
-    // text autosizer, and controls whether text-size-adjust can apply.
-    {
-      name: "textAutosizingEnabled",
-      initial: false,
-      invalidate: ["TextAutosizing"],
-    },
     // Enables the text-size-adjust CSS property.
     {
       name: "textSizeAdjustEnabled",
       initial: false,
       invalidate: ["Style"],
-    },
-    // Only set by web tests, and only used if textAutosizingEnabled is true.
-    {
-      name: "textAutosizingWindowSizeOverride",
-      invalidate: ["TextAutosizing"],
-      type: "gfx::Size",
-      include_paths: ["ui/gfx/geometry/size.h"],
     },
     {
       name: "WebXRImmersiveArAllowed",

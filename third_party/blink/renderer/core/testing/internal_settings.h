@@ -56,7 +56,6 @@ class InternalSettings final : public InternalSettingsGenerated {
   void setCursiveFontFamily(const AtomicString& family, const String& script);
   void setFantasyFontFamily(const AtomicString& family, const String& script);
   void setMathFontFamily(const AtomicString& family, const String& script);
-  void setTextAutosizingWindowSizeOverride(int width, int height);
   void setEditingBehavior(const String&, ExceptionState&);
   void setDisplayModeOverride(const String& display_mode, ExceptionState&);
   void setTextTrackKindUserPreference(const String& preference,

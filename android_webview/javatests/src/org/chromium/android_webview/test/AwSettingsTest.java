@@ -28,7 +28,6 @@ import org.junit.runner.RunWith;
 
 import org.chromium.android_webview.AwContents;
 import org.chromium.android_webview.AwSettings;
-import org.chromium.android_webview.AwSettings.LayoutAlgorithm;
 import org.chromium.android_webview.AwWebResourceRequest;
 import org.chromium.android_webview.common.AwFeatureMap;
 import org.chromium.android_webview.common.AwFeatures;
@@ -914,13 +913,10 @@ public class AwSettingsTest {
         protected static final float PARAGRAPH_FONT_SIZE = 14.0f;
 
         AwSettingsTextAutosizingTestHelper(
-                AwTestContainerView containerView,
-                TestAwContentsClient contentViewClient,
-                boolean isAutosizingEnabled)
+                AwTestContainerView containerView, TestAwContentsClient contentViewClient)
                 throws Throwable {
             super(containerView, contentViewClient, true);
             mNeedToWaitForFontSizeChange = false;
-            mAutosizingEnabled = isAutosizingEnabled;
             loadDataSync(getData());
         }
 
@@ -983,65 +979,7 @@ public class AwSettingsTest {
         }
 
         protected boolean mNeedToWaitForFontSizeChange;
-        protected boolean mAutosizingEnabled;
         private float mOldFontSize;
-    }
-
-    class AwSettingsLayoutAlgorithmTestHelper extends AwSettingsTextAutosizingTestHelper<Integer> {
-        AwSettingsLayoutAlgorithmTestHelper(
-                AwTestContainerView containerView,
-                TestAwContentsClient contentViewClient,
-                boolean isAutosizingEnabled)
-                throws Throwable {
-            super(containerView, contentViewClient, isAutosizingEnabled);
-            // Font autosizing doesn't step in for narrow layout widths.
-            mAwSettings.setUseWideViewPort(true);
-        }
-
-        @LayoutAlgorithm
-        @Override
-        protected Integer getAlteredValue() {
-            return AwSettings.LAYOUT_ALGORITHM_TEXT_AUTOSIZING;
-        }
-
-        @LayoutAlgorithm
-        @Override
-        protected Integer getInitialValue() {
-            return AwSettings.LAYOUT_ALGORITHM_NARROW_COLUMNS;
-        }
-
-        @LayoutAlgorithm
-        @Override
-        protected Integer getCurrentValue() {
-            return mAwSettings.getLayoutAlgorithm();
-        }
-
-        @Override
-        protected void setCurrentValue(@LayoutAlgorithm Integer value) throws Throwable {
-            super.setCurrentValue(value);
-            mAwSettings.setLayoutAlgorithm(value);
-            if (!mAutosizingEnabled) {
-                mNeedToWaitForFontSizeChange = false;
-            }
-        }
-
-        @Override
-        protected void doEnsureSettingHasValue(@LayoutAlgorithm Integer value) throws Throwable {
-            final float actualFontSize = getActualFontSize();
-            if (value == AwSettings.LAYOUT_ALGORITHM_TEXT_AUTOSIZING && mAutosizingEnabled) {
-                Assert.assertNotEquals(
-                        "Actual font size: " + actualFontSize,
-                        actualFontSize,
-                        PARAGRAPH_FONT_SIZE,
-                        0.1);
-            } else {
-                Assert.assertEquals(
-                        "Actual font size: " + actualFontSize,
-                        actualFontSize,
-                        PARAGRAPH_FONT_SIZE,
-                        0.1);
-            }
-        }
     }
 
     class AwSettingsTextZoomTestHelper extends AwSettingsTextAutosizingTestHelper<Integer> {
@@ -1049,73 +987,9 @@ public class AwSettingsTest {
         private final float mInitialActualFontSize;
 
         AwSettingsTextZoomTestHelper(
-                AwTestContainerView containerView,
-                TestAwContentsClient contentViewClient,
-                boolean isAutosizingEnabled)
+                AwTestContainerView containerView, TestAwContentsClient contentViewClient)
                 throws Throwable {
-            super(containerView, contentViewClient, isAutosizingEnabled);
-            mInitialActualFontSize = getActualFontSize();
-        }
-
-        @Override
-        protected Integer getAlteredValue() {
-            return INITIAL_TEXT_ZOOM * 2;
-        }
-
-        @Override
-        protected Integer getInitialValue() {
-            return INITIAL_TEXT_ZOOM;
-        }
-
-        @Override
-        protected Integer getCurrentValue() {
-            return mAwSettings.getTextZoom();
-        }
-
-        @Override
-        protected void setCurrentValue(Integer value) throws Throwable {
-            super.setCurrentValue(value);
-            mAwSettings.setTextZoom(value);
-        }
-
-        @Override
-        protected void doEnsureSettingHasValue(Integer value) throws Throwable {
-            final float actualFontSize = getActualFontSize();
-            // Ensure that actual vs. initial font size ratio is similar to actual vs. initial
-            // text zoom values ratio.
-            final float ratiosDelta =
-                    Math.abs(
-                            (actualFontSize / mInitialActualFontSize)
-                                    - (value / (float) INITIAL_TEXT_ZOOM));
-            Assert.assertTrue(
-                    "|("
-                            + actualFontSize
-                            + " / "
-                            + mInitialActualFontSize
-                            + ") - ("
-                            + value
-                            + " / "
-                            + INITIAL_TEXT_ZOOM
-                            + ")| = "
-                            + ratiosDelta,
-                    ratiosDelta <= 0.2f);
-        }
-    }
-
-    class AwSettingsTextZoomAutosizingTestHelper
-            extends AwSettingsTextAutosizingTestHelper<Integer> {
-        private static final int INITIAL_TEXT_ZOOM = 100;
-        private final float mInitialActualFontSize;
-
-        AwSettingsTextZoomAutosizingTestHelper(
-                AwTestContainerView containerView,
-                TestAwContentsClient contentViewClient,
-                boolean isAutosizingEnabled)
-                throws Throwable {
-            super(containerView, contentViewClient, isAutosizingEnabled);
-            mAwSettings.setLayoutAlgorithm(AwSettings.LAYOUT_ALGORITHM_TEXT_AUTOSIZING);
-            // The initial font size can be adjusted by font autosizer depending on the page's
-            // viewport width.
+            super(containerView, contentViewClient);
             mInitialActualFontSize = getActualFontSize();
         }
 
@@ -2915,76 +2789,12 @@ public class AwSettingsTest {
 
     @Test
     @SmallTest
-    @EnableFeatures(BlinkFeatures.FORCE_OFF_TEXT_AUTOSIZING)
-    @Feature({"AndroidWebView", "Preferences"})
-    public void testLayoutAlgorithmWithTwoViewsWithTextAutosizingDisabled() throws Throwable {
-        ViewPair views = createViews();
-        runPerViewSettingsTest(
-                new AwSettingsLayoutAlgorithmTestHelper(
-                        views.getContainer0(), views.getClient0(), false),
-                new AwSettingsLayoutAlgorithmTestHelper(
-                        views.getContainer1(), views.getClient1(), false));
-    }
-
-    @Test
-    @SmallTest
-    @DisableFeatures(BlinkFeatures.FORCE_OFF_TEXT_AUTOSIZING)
-    @Feature({"AndroidWebView", "Preferences"})
-    public void testLayoutAlgorithmWithTwoViewsWithTextAutosizingEnabled() throws Throwable {
-        ViewPair views = createViews();
-        runPerViewSettingsTest(
-                new AwSettingsLayoutAlgorithmTestHelper(
-                        views.getContainer0(), views.getClient0(), true),
-                new AwSettingsLayoutAlgorithmTestHelper(
-                        views.getContainer1(), views.getClient1(), true));
-    }
-
-    @Test
-    @SmallTest
-    @EnableFeatures(BlinkFeatures.FORCE_OFF_TEXT_AUTOSIZING)
     @Feature({"AndroidWebView", "Preferences"})
     public void testTextZoomWithTwoViewsWithTextAutosizingDisabled() throws Throwable {
         ViewPair views = createViews();
         runPerViewSettingsTest(
-                new AwSettingsTextZoomTestHelper(views.getContainer0(), views.getClient0(), false),
-                new AwSettingsTextZoomTestHelper(views.getContainer1(), views.getClient1(), false));
-    }
-
-    @Test
-    @SmallTest
-    @DisableFeatures(BlinkFeatures.FORCE_OFF_TEXT_AUTOSIZING)
-    @Feature({"AndroidWebView", "Preferences"})
-    public void testTextZoomWithTwoViewsWithTextAutosizingEnabled() throws Throwable {
-        ViewPair views = createViews();
-        runPerViewSettingsTest(
-                new AwSettingsTextZoomTestHelper(views.getContainer0(), views.getClient0(), true),
-                new AwSettingsTextZoomTestHelper(views.getContainer1(), views.getClient1(), true));
-    }
-
-    @Test
-    @SmallTest
-    @EnableFeatures(BlinkFeatures.FORCE_OFF_TEXT_AUTOSIZING)
-    @Feature({"AndroidWebView", "Preferences"})
-    public void testTextZoomAutosizingWithTwoViewsWithTextAutosizingDisabled() throws Throwable {
-        ViewPair views = createViews();
-        runPerViewSettingsTest(
-                new AwSettingsTextZoomAutosizingTestHelper(
-                        views.getContainer0(), views.getClient0(), false),
-                new AwSettingsTextZoomAutosizingTestHelper(
-                        views.getContainer1(), views.getClient1(), false));
-    }
-
-    @Test
-    @SmallTest
-    @DisableFeatures(BlinkFeatures.FORCE_OFF_TEXT_AUTOSIZING)
-    @Feature({"AndroidWebView", "Preferences"})
-    public void testTextZoomAutosizingWithTwoViewsWithTextAutosizingEnabled() throws Throwable {
-        ViewPair views = createViews();
-        runPerViewSettingsTest(
-                new AwSettingsTextZoomAutosizingTestHelper(
-                        views.getContainer0(), views.getClient0(), true),
-                new AwSettingsTextZoomAutosizingTestHelper(
-                        views.getContainer1(), views.getClient1(), true));
+                new AwSettingsTextZoomTestHelper(views.getContainer0(), views.getClient0()),
+                new AwSettingsTextZoomTestHelper(views.getContainer1(), views.getClient1()));
     }
 
     @Test
@@ -4084,10 +3894,7 @@ public class AwSettingsTest {
         AwSettingsTextScaleMetaTagTestHelper(
                 AwTestContainerView containerView, TestAwContentsClient contentViewClient)
                 throws Throwable {
-            super(
-                    containerView,
-                    contentViewClient,
-                    !AwFeatureMap.isEnabled(BlinkFeatures.FORCE_OFF_TEXT_AUTOSIZING));
+            super(containerView, contentViewClient);
             // Enable JavaScript for reading font size.
             mAwSettings.setJavaScriptEnabled(true);
             // Always set autosizing here, but we control it via flags later.
@@ -4135,11 +3942,6 @@ public class AwSettingsTest {
         protected void setCurrentValue(Integer value) throws Throwable {
             super.setCurrentValue(value);
             mAwSettings.setTextZoom(value);
-            // If the meta tag is disabled but autosizing is enabled, the font size will not change
-            // at all in this scenario, so we skip the wait to avoid timeouts.
-            if (!AwFeatureMap.isEnabled(BlinkFeatures.TEXT_SCALE_META_TAG) && mAutosizingEnabled) {
-                mNeedToWaitForFontSizeChange = false;
-            }
         }
 
         @Override
@@ -4148,9 +3950,6 @@ public class AwSettingsTest {
             // With OR without the meta tag, setTextZoom should scale the default font size of
             // medium.
             float expectedRatio = value / (float) INITIAL_TEXT_ZOOM;
-            if (!AwFeatureMap.isEnabled(BlinkFeatures.TEXT_SCALE_META_TAG) && mAutosizingEnabled) {
-                expectedRatio = 1.0f;
-            }
 
             final float ratiosDelta =
                     Math.abs((actualFontSize / mInitialActualFontSize) - expectedRatio);
@@ -4190,26 +3989,14 @@ public class AwSettingsTest {
             } else {
                 // TextScaleMetaTag Disabled: Fixed font size SHOULD scale (legacy behavior).
                 float expectedFixedSize = 20.0f * (value / (float) INITIAL_TEXT_ZOOM);
-                if (mAutosizingEnabled) {
-                    expectedFixedSize = 20.0f;
-                }
                 Assert.assertEquals(
                         "Fixed font size should scale", expectedFixedSize, fixedSize, 2.0f);
 
-                if (mAutosizingEnabled) {
-                    float expectedWidth = value;
-                    Assert.assertEquals(
-                            "env() should track scale when autosizing on",
-                            expectedWidth,
-                            envWidth,
-                            1.0f);
-                } else {
-                    Assert.assertEquals(
-                            "no meta & no autosizing? env(preferred-text-scale) should be 1 ",
-                            100.0f,
-                            envWidth,
-                            1.0f);
-                }
+                Assert.assertEquals(
+                        "no meta & no autosizing? env(preferred-text-scale) should be 1 ",
+                        100.0f,
+                        envWidth,
+                        1.0f);
             }
         }
     }
@@ -4228,34 +4015,9 @@ public class AwSettingsTest {
 
     @Test
     @SmallTest
-    @EnableFeatures(BlinkFeatures.TEXT_SCALE_META_TAG)
-    @DisableFeatures(BlinkFeatures.FORCE_OFF_TEXT_AUTOSIZING)
-    @Feature({"AndroidWebView", "Preferences"})
-    public void testTextScaleMetaTagWithTwoViewsWithAutosizingEnabled() throws Throwable {
-        ViewPair views = createViews();
-        runPerViewSettingsTest(
-                new AwSettingsTextScaleMetaTagTestHelper(views.getContainer0(), views.getClient0()),
-                new AwSettingsTextScaleMetaTagTestHelper(
-                        views.getContainer1(), views.getClient1()));
-    }
-
-    @Test
-    @SmallTest
     @DisableFeatures(BlinkFeatures.TEXT_SCALE_META_TAG)
     @Feature({"AndroidWebView", "Preferences"})
     public void testTextScaleMetaTagWithTwoViewsDisabled() throws Throwable {
-        ViewPair views = createViews();
-        runPerViewSettingsTest(
-                new AwSettingsTextScaleMetaTagTestHelper(views.getContainer0(), views.getClient0()),
-                new AwSettingsTextScaleMetaTagTestHelper(
-                        views.getContainer1(), views.getClient1()));
-    }
-
-    @Test
-    @SmallTest
-    @DisableFeatures({BlinkFeatures.TEXT_SCALE_META_TAG, BlinkFeatures.FORCE_OFF_TEXT_AUTOSIZING})
-    @Feature({"AndroidWebView", "Preferences"})
-    public void testTextScaleMetaTagWithTwoViewsWithAutosizingEnabledDisabled() throws Throwable {
         ViewPair views = createViews();
         runPerViewSettingsTest(
                 new AwSettingsTextScaleMetaTagTestHelper(views.getContainer0(), views.getClient0()),

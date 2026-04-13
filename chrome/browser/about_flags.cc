@@ -5551,13 +5551,6 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(mirroring::features::kCastEnableStreamingWithHiDPI)},
 #endif  // !BUILDFLAG(IS_ANDROID)
 
-#if BUILDFLAG(IS_ANDROID)
-    {"force-off-text-autosizing",
-     flag_descriptions::kForceOffTextAutosizingName,
-     flag_descriptions::kForceOffTextAutosizingDescription, kOsAndroid,
-     FEATURE_VALUE_TYPE(blink::features::kForceOffTextAutosizing)},
-#endif  // BUILDFLAG(IS_ANDROID)
-
 #if BUILDFLAG(IS_MAC)
     {"mac-catap-loopback-audio-for-cast",
      flag_descriptions::kMacCatapLoopbackAudioForCastName,

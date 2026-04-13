@@ -60,7 +60,6 @@
 #include "third_party/blink/renderer/core/layout/mathml/layout_mathml_block.h"
 #include "third_party/blink/renderer/core/layout/physical_box_fragment.h"
 #include "third_party/blink/renderer/core/layout/svg/layout_svg_text.h"
-#include "third_party/blink/renderer/core/layout/text_autosizer.h"
 #include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/core/page/scrolling/root_scroller_controller.h"
 #include "third_party/blink/renderer/core/paint/block_paint_invalidator.h"
@@ -97,10 +96,6 @@ void LayoutBlock::WillBeDestroyed() {
     frame->Selection().LayoutBlockWillBeDestroyed(*this);
     frame->GetPage()->GetDragCaret().LayoutBlockWillBeDestroyed(*this);
   }
-
-  if (TextAutosizer* text_autosizer = GetDocument().GetTextAutosizer())
-    text_autosizer->Destroy(this);
-
   LayoutBox::WillBeDestroyed();
 }
 
@@ -146,9 +141,6 @@ void LayoutBlock::StyleDidChange(
       }
     }
   }
-
-  if (TextAutosizer* text_autosizer = GetDocument().GetTextAutosizer())
-    text_autosizer->Record(this);
 
   PropagateStyleToAnonymousChildren();
 

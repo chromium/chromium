@@ -5689,12 +5689,6 @@ inline constexpr char kFeedSignedOutViewDemotionName[] =
 inline constexpr char kFeedSignedOutViewDemotionDescription[] =
     "Enables signed-out view demotion for the Discover Feed.";
 
-inline constexpr char kForceOffTextAutosizingName[] =
-    "Force off heuristics for inflating text sizes on devices with small "
-    "screens.";
-inline constexpr char kForceOffTextAutosizingDescription[] =
-    "Disable text autosizing.";
-
 inline constexpr char kFullscreenInsetsApiMigrationName[] =
     "Migrate to the new fullscreen insets APIs";
 inline constexpr char kFullscreenInsetsApiMigrationDescription[] =

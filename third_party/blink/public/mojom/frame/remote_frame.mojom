@@ -24,7 +24,6 @@ import "third_party/blink/public/mojom/frame/fullscreen.mojom";
 import "third_party/blink/public/mojom/frame/intrinsic_sizing_info.mojom";
 import "third_party/blink/public/mojom/frame/lifecycle.mojom";
 import "third_party/blink/public/mojom/frame/policy_container.mojom";
-import "third_party/blink/public/mojom/frame/text_autosizer_page_info.mojom";
 import "third_party/blink/public/mojom/frame/tree_scope_type.mojom";
 import "third_party/blink/public/mojom/frame/triggering_event_info.mojom";
 import "third_party/blink/public/mojom/frame/user_activation_notification_type.mojom";
@@ -510,9 +509,6 @@ interface RemoteFrame {
 //
 // This interface will only be provided when the RemoteFrame is a main frame.
 interface RemoteMainFrame {
-  // Makes the TextAutosizerPageInfo received from a local main frame available
-  // to remote main frame renderers.
-  UpdateTextAutosizerPageInfo(blink.mojom.TextAutosizerPageInfo page_info);
 };
 
 // Implemented in Browser, this interface defines remote-main-frame-specific

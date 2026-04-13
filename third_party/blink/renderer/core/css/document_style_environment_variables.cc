@@ -122,8 +122,7 @@ void DocumentStyleEnvironmentVariables::UpdatePreferredTextScaleFromDocument() {
                    (settings->GetDefaultFontSize() / 16.0);
   } else {
     const bool should_hide_env_to_prevent_double_scaling =
-        settings->GetScaleAllFontsIfNoMetaTextScaleTag() &&
-        !settings->GetTextAutosizingEnabled();
+        settings->GetScaleAllFontsIfNoMetaTextScaleTag();
 
     scale_factor = should_hide_env_to_prevent_double_scaling
                        ? 1.0

@@ -262,7 +262,6 @@ class StyleEngine;
 class StylePropertyMapReadOnly;
 class StyleResolver;
 class Text;
-class TextAutosizer;
 class TransformSource;
 class TreeWalker;
 class TrustedHTML;
@@ -1660,9 +1659,6 @@ class CORE_EXPORT Document : public ContainerNode,
   void InitDNSPrefetch();
 
   bool IsInDocumentWrite() const { return write_recursion_depth_ > 0; }
-
-  TextAutosizer* GetTextAutosizer();
-
   ScriptValue registerElement(ScriptState*,
                               const AtomicString& name,
                               const ElementRegistrationOptions*,
@@ -3031,8 +3027,6 @@ class CORE_EXPORT Document : public ContainerNode,
   unsigned write_recursion_depth_ = 0;
 
   Member<ScriptedAnimationController> scripted_animation_controller_;
-  Member<TextAutosizer> text_autosizer_;
-
   void ElementDataCacheClearTimerFired(TimerBase*);
   HeapTaskRunnerTimer<Document> element_data_cache_clear_timer_;
 

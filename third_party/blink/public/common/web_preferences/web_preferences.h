@@ -248,7 +248,6 @@ struct BLINK_COMMON_EXPORT WebPreferences {
 
   bool fullscreen_supported = true;
 
-  bool text_autosizing_enabled = BUILDFLAG(IS_ANDROID);
   bool text_size_adjust_enabled = BUILDFLAG(IS_ANDROID);
 
   // Representation of the Web App Manifest scope if any.
@@ -262,7 +261,6 @@ struct BLINK_COMMON_EXPORT WebPreferences {
   float font_scale_factor = 1.0f;
   int font_weight_adjustment = 0;
   int text_size_contrast_factor = 0;
-  float device_scale_adjustment = 1.0f;
   bool force_enable_zoom = false;
   bool enable_touchpad_overscroll_history_navigation = true;
   GURL default_video_poster_url;

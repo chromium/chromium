@@ -78,8 +78,6 @@ void PopulateFixedWebPreferences(WebPreferences* web_prefs) {
   web_prefs->viewport_meta_enabled = true;
   web_prefs->picture_in_picture_enabled = false;
   web_prefs->disable_accelerated_small_canvases = true;
-  // WebView has historically not adjusted font scale for text autosizing.
-  web_prefs->device_scale_adjustment = 1.0;
   web_prefs->scale_all_fonts_if_no_meta_text_scale_tag = true;
 }
 
@@ -602,20 +600,13 @@ void AwSettings::PopulateWebPreferencesLocked(JNIEnv* env,
   WebPreferences* web_prefs = reinterpret_cast<WebPreferences*>(web_prefs_ptr);
   PopulateFixedWebPreferences(web_prefs);
 
-  web_prefs->text_autosizing_enabled =
-      Java_AwSettings_getTextAutosizingEnabledLocked(env, obj) &&
-      !base::FeatureList::IsEnabled(blink::features::kForceOffTextAutosizing);
-
-  int text_size_percent = Java_AwSettings_getTextSizePercentLocked(env, obj);
-  web_prefs->font_scale_factor = text_size_percent / 100.0f;
-  if (web_prefs->text_autosizing_enabled) {
-    web_prefs->force_enable_zoom = text_size_percent >= 130;
-    // Use the default zoom factor value when Text Autosizer is turned on.
-    render_view_host_ext->SetTextZoomFactor(1);
-  } else {
-    web_prefs->force_enable_zoom = false;
-    render_view_host_ext->SetTextZoomFactor(text_size_percent / 100.0f);
-  }
+  const float font_scale_factor =
+      Java_AwSettings_getTextSizePercentLocked(env, obj) / 100.0f;
+  web_prefs->font_scale_factor = font_scale_factor;
+  // By default, WebView scales all fonts by the user's Android font preference,
+  // and has for many years.
+  render_view_host_ext->SetTextZoomFactor(font_scale_factor);
+  web_prefs->force_enable_zoom = false;
 
   web_prefs->standard_font_family_map[blink::web_pref::kCommonScript] =
       ConvertJavaStringToUTF16(

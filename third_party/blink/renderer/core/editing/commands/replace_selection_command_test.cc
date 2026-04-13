@@ -88,54 +88,6 @@ TEST_F(ReplaceSelectionCommandTest, pasteSpanInText) {
       << "'bar' should have been inserted";
 }
 
-// Helper function to set autosizing multipliers on a document.
-bool SetTextAutosizingMultiplier(Document* document, float multiplier) {
-  bool multiplier_set = false;
-  for (LayoutObject* layout_object = document->GetLayoutView(); layout_object;
-       layout_object = layout_object->NextInPreOrder()) {
-    if (layout_object->Style()) {
-      ComputedStyleBuilder builder(layout_object->StyleRef());
-      builder.SetTextAutosizingMultiplier(multiplier);
-      layout_object->SetStyle(builder.TakeStyle(),
-                              LayoutObject::ApplyStyleChanges::kNo);
-      multiplier_set = true;
-    }
-  }
-  return multiplier_set;
-}
-
-// This is a regression test for https://crbug.com/768261
-TEST_F(ReplaceSelectionCommandTest, TextAutosizingDoesntInflateText) {
-  GetDocument().GetSettings()->SetTextAutosizingEnabled(true);
-  GetDocument().setDesignMode("on");
-  SetBodyContent("<div><span style='font-size: 12px;'>foo bar</span></div>");
-  SetTextAutosizingMultiplier(&GetDocument(), 2.0);
-
-  Element* div = QuerySelector("div");
-  Element* span = QuerySelector("span");
-
-  // Select "bar".
-  GetDocument().GetFrame()->Selection().SetSelection(
-      SelectionInDOMTree::Builder()
-          .Collapse(Position(span->firstChild(), 4))
-          .Extend(Position(span->firstChild(), 7))
-          .Build(),
-      SetSelectionOptions());
-
-  DocumentFragment* fragment = GetDocument().createDocumentFragment();
-  fragment->ParseHTML("baz", span, /*registry*/ nullptr);
-
-  ReplaceSelectionCommand::CommandOptions options =
-      ReplaceSelectionCommand::kMatchStyle;
-
-  auto* command = MakeGarbageCollected<ReplaceSelectionCommand>(
-      GetDocument(), fragment, options,
-      EditCommand::PasswordEchoBehavior::kDoNotEcho);
-
-  EXPECT_TRUE(command->Apply()) << "the replace command should have succeeded";
-  // The span element should not have been split to increase the font size.
-  EXPECT_EQ(1u, div->CountChildren());
-}
 
 // This is a regression test for https://crbug.com/781282
 TEST_F(ReplaceSelectionCommandTest, TrailingNonVisibleTextCrash) {

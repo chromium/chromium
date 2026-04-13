@@ -124,11 +124,6 @@ void InternalSettings::setMathFontFamily(const AtomicString& family,
   SetFontFamily(family, script, &GenericFontFamilySettings::UpdateMath);
 }
 
-void InternalSettings::setTextAutosizingWindowSizeOverride(int width,
-                                                           int height) {
-  GetSettings().SetTextAutosizingWindowSizeOverride(gfx::Size(width, height));
-}
-
 void InternalSettings::setTextTrackKindUserPreference(
     const String& preference,
     ExceptionState& exception_state) {

@@ -2678,8 +2678,6 @@ class CONTENT_EXPORT RenderFrameHostImpl
   // blink::LocalMainFrameHost overrides:
   void ScaleFactorChanged(float scale) override;
   void ContentsPreferredSizeChanged(const gfx::Size& pref_size) override;
-  void TextAutosizerPageInfoChanged(
-      blink::mojom::TextAutosizerPageInfoPtr page_info) override;
   void FocusPage() override;
   void TakeFocus(bool reverse) override;
   void UpdateTargetURL(const GURL& url,

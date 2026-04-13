@@ -6551,9 +6551,6 @@ crbug.com/1159463 crbug.com/1278570 [ Mac12 Release ] virtual/gpu-rasterization/
 # Sheriff 2021-12-21
 crbug.com/1281792 external/wpt/event-timing/min-duration-threshold.html [ Failure Pass ]
 
-# Sheriff 2021-12-22
-crbug.com/1283295 [ Mac ] fast/text-autosizing/hackernews-comments.html [ Failure Pass ]
-
 # These virtual suites enable text autosizing and should pass.
 crbug.com/340389272 virtual/text-size-adjust/wpt_internal/css/css-size-adjust/* [ Pass ]
 crbug.com/340389272 virtual/text-size-adjust-with-os-font-scale/wpt_internal/css/css-size-adjust/* [ Pass ]
@@ -8930,9 +8927,6 @@ crbug.com/363353213 [ Mac13-arm64 ] external/wpt/webrtc-encoded-transform/RTCRtp
 crbug.com/363353213 [ Mac14-arm64 ] external/wpt/webrtc-encoded-transform/RTCRtpScriptTransform-encoded-transform.https.html [ Failure Pass ]
 crbug.com/363353213 [ Mac15 ] external/wpt/webrtc-encoded-transform/RTCRtpScriptTransform-encoded-transform.https.html [ Failure Pass ]
 crbug.com/363353213 [ Mac15-arm64 ] external/wpt/webrtc-encoded-transform/RTCRtpScriptTransform-encoded-transform.https.html [ Failure Pass ]
-
-# TODO(crbug.com/362797911): Re-enable this test
-crbug.com/362797911 [ Linux ] fast/text-autosizing/textarea-fontsize-change.html [ Failure Pass ]
 
 # Gardener 2024-09-09
 crbug.com/363342597 [ Mac13 ] shadow-dom/focus-navigation/focus-scroller-activeElement-on-event.html [ Failure Pass Timeout ]

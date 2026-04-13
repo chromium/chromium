@@ -26,7 +26,6 @@
 #include "third_party/blink/renderer/core/frame/visual_viewport.h"
 #include "third_party/blink/renderer/core/frame/web_local_frame_impl.h"
 #include "third_party/blink/renderer/core/html/html_element.h"
-#include "third_party/blink/renderer/core/layout/text_autosizer.h"
 #include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/core/script/classic_script.h"
 #include "third_party/blink/renderer/core/testing/sim/sim_request.h"
@@ -175,51 +174,6 @@ TEST_F(TextFinderTest, FindTextSimple) {
   EXPECT_EQ(14u, active_match->startOffset());
   EXPECT_EQ(text_node, active_match->endContainer());
   EXPECT_EQ(20u, active_match->endOffset());
-}
-
-TEST_F(TextFinderTest, FindTextAutosizing) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndDisableFeature(blink::features::kForceOffTextAutosizing);
-  GetDocument().body()->SetInnerHTMLWithoutTrustedTypes(
-      "XXXXFindMeYYYYfindmeZZZZ");
-  GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kTest);
-
-  int identifier = 0;
-  WebString search_text(String("FindMe"));
-  auto find_options =
-      mojom::blink::FindOptions::New();  // Default + add testing flag.
-  find_options->run_synchronously_for_testing = true;
-  bool wrap_within_frame = true;
-
-  // Set viewport scale to 20 in order to simulate zoom-in
-  GetDocument().GetPage()->SetDefaultPageScaleLimits(1, 20);
-  GetDocument().GetPage()->SetPageScaleFactor(20);
-  VisualViewport& visual_viewport =
-      GetDocument().GetPage()->GetVisualViewport();
-
-  // Enforce autosizing
-  GetDocument().GetSettings()->SetTextAutosizingEnabled(true);
-  GetDocument().GetSettings()->SetTextAutosizingWindowSizeOverride(
-      gfx::Size(20, 20));
-  GetDocument().GetTextAutosizer()->UpdatePageInfo();
-  GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kTest);
-
-  // In case of autosizing, scale _should_ change
-  ASSERT_TRUE(GetTextFinder().Find(identifier, search_text, *find_options,
-                                   wrap_within_frame));
-  ASSERT_TRUE(GetTextFinder().ActiveMatch());
-  ASSERT_EQ(1, visual_viewport.Scale());  // in this case to 1
-
-  // Disable autosizing and reset scale to 20
-  visual_viewport.SetScale(20);
-  GetDocument().GetSettings()->SetTextAutosizingEnabled(false);
-  GetDocument().GetTextAutosizer()->UpdatePageInfo();
-  GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kTest);
-
-  ASSERT_TRUE(GetTextFinder().Find(identifier, search_text, *find_options,
-                                   wrap_within_frame));
-  ASSERT_TRUE(GetTextFinder().ActiveMatch());
-  ASSERT_EQ(20, visual_viewport.Scale());
 }
 
 TEST_F(TextFinderTest, FindTextNotFound) {

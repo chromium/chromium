@@ -465,27 +465,6 @@ base::flat_set<raw_ptr<WebContentsImpl>> GetAllOpeningWebContents(
   return result;
 }
 
-#if BUILDFLAG(IS_ANDROID)
-float GetDeviceScaleAdjustment(int min_width) {
-  static const float kMinFSM = 1.05f;
-  static const int kWidthForMinFSM = 320;
-  static const float kMaxFSM = 1.3f;
-  static const int kWidthForMaxFSM = 800;
-
-  if (min_width <= kWidthForMinFSM) {
-    return kMinFSM;
-  }
-  if (min_width >= kWidthForMaxFSM) {
-    return kMaxFSM;
-  }
-
-  // The font scale multiplier varies linearly between kMinFSM and kMaxFSM.
-  float ratio = static_cast<float>(min_width - kWidthForMinFSM) /
-                (kWidthForMaxFSM - kWidthForMinFSM);
-  return ratio * (kMaxFSM - kMinFSM) + kMinFSM;
-}
-#endif
-
 // Store a set of fullscreen WebContents and metadata for the browser context.
 // Storing this information on the browser context is done for two reasons. One,
 // related WebContentses must necessarily share a browser context, so this saves
@@ -3933,10 +3912,6 @@ const blink::web_pref::WebPreferences WebContentsImpl::ComputeWebPreferences(
     prefs.media_controls_enabled = false;
   }
 
-#if BUILDFLAG(IS_ANDROID)
-  prefs.device_scale_adjustment = GetDeviceScaleAdjustment(min_width_in_dp);
-#endif  // BUILDFLAG(IS_ANDROID)
-
   // GuestViews in the same StoragePartition need to find each other's frames.
   prefs.renderer_wide_named_frame_lookup =
       IsGuest() || main_frame->frame_tree()->is_guest();
@@ -3999,8 +3974,6 @@ const blink::web_pref::WebPreferences WebContentsImpl::ComputeWebPreferences(
 
       // Ensure no further viewport scaling
       prefs.shrinks_viewport_contents_to_fit = false;
-      // Not needed for larger form factors
-      prefs.text_autosizing_enabled = false;
     }
   }
 
@@ -10815,19 +10788,6 @@ bool WebContentsImpl::CreateRenderViewForRenderManager(
                                   opened_by_another_window_,
                                   navigation_metrics_token)) {
     return false;
-  }
-
-  // Set the TextAutosizer state from the main frame's renderer on the new view,
-  // but only if it's not for the main frame. Main frame renderers should create
-  // this state themselves from up-to-date values, so we shouldn't override it
-  // with the cached values.
-  if (!rvh_impl->GetMainRenderFrameHost() && proxy_host) {
-    proxy_host->GetAssociatedRemoteMainFrame()->UpdateTextAutosizerPageInfo(
-        proxy_host->frame_tree_node()
-            ->current_frame_host()
-            ->GetPage()
-            .text_autosizer_page_info()
-            .Clone());
   }
 
   // If `render_view_host` is for an inner WebContents, ensure that its

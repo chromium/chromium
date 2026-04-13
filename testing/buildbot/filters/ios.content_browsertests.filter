@@ -22,8 +22,6 @@
 -All/ScrollingIntegrationTest.ScrollAfterCrossOriginNavigation/1
 -All/SitePerProcessBrowserTest.FrameOwnerPropertiesPropagationScrolling/0
 -All/SitePerProcessBrowserTest.FrameOwnerPropertiesPropagationScrolling/1
--All/SitePerProcessBrowserTest.TextAutosizerPageInfo/0
--All/SitePerProcessBrowserTest.TextAutosizerPageInfo/1
 -All/SitePerProcessBrowserTest.TwoSubframesCreatePopupMenuWidgetsSimultaneously/0
 -All/SitePerProcessBrowserTest.TwoSubframesCreatePopupMenuWidgetsSimultaneously/1
 -All/TouchpadPinchBrowserTest.TouchpadPinchChangesPageScale/0

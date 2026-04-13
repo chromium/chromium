@@ -4268,7 +4268,7 @@ enum WebFeature {
   kMaximumHTMLParserDOMTreeDepthHit = 4972,
   // The items above roughly this point are available in the M126 branch.
   kV8ModelGenericSession_Destroy_Method = 4973,
-  kUsedDeviceScaleAdjustment = 4974,
+  kOBSOLETE_UsedDeviceScaleAdjustment = 4974,
   kOBSOLETE_DisableThirdPartyStoragePartitioning2 = 4975,
   kLinkRelFacilitatedPayment = 4976,
   kOBSOLETE_V8GPUAdapter_RequestAdapterInfo_Method = 4977,
