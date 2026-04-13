@@ -2,16 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "remoting/host/installer/mac/uninstaller/remoting_uninstaller.h"
 
 #import <Cocoa/Cocoa.h>
 #include <sys/stat.h>
 
+#include "base/compiler_specific.h"
 #include "base/mac/authorization_util.h"
 #include "base/mac/scoped_authorizationref.h"
 #include "base/strings/stringprintf.h"
@@ -20,10 +16,11 @@
 void logOutput(FILE* pipe) {
   char readBuffer[128];
   for (;;) {
-    long bytesRead = read(fileno(pipe), readBuffer, sizeof(readBuffer) - 1);
+    long bytesRead =
+        UNSAFE_TODO(read(fileno(pipe), readBuffer, sizeof(readBuffer) - 1));
     if (bytesRead < 1)
       break;
-    readBuffer[bytesRead] = '\0';
+    UNSAFE_TODO(readBuffer[bytesRead]) = '\0';
     NSLog(@"%s", readBuffer);
   }
 }
@@ -31,10 +28,10 @@ void logOutput(FILE* pipe) {
 NSArray<NSString*>* convertToNSArray(const char** array) {
   NSMutableArray<NSString*>* ns_array = [[NSMutableArray alloc] init];
   int i = 0;
-  const char* element = array[i++];
+  const char* element = UNSAFE_TODO(array[i++]);
   while (element != nullptr) {
     [ns_array addObject:@(element)];
-    element = array[i++];
+    element = UNSAFE_TODO(array[i++]);
   }
   return ns_array;
 }

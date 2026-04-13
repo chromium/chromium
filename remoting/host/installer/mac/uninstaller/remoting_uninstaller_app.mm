@@ -2,15 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "remoting/host/installer/mac/uninstaller/remoting_uninstaller_app.h"
 
 #import <Cocoa/Cocoa.h>
 
+#include "base/compiler_specific.h"
 #include "remoting/base/string_resources.h"
 #include "remoting/host/installer/mac/uninstaller/remoting_uninstaller.h"
 #include "ui/base/l10n/l10n_util_mac.h"
@@ -161,7 +157,7 @@ int main(int argc, char* argv[]) {
   // a convenience for our automated testing.
   // There will still be an elevation prompt unless the command is run as root.
   @autoreleasepool {
-    if (argc == 2 && !strcmp(argv[1], "--no-ui")) {
+    if (argc == 2 && !UNSAFE_TODO(strcmp(argv[1], "--no-ui"))) {
       NSLog(@"Chrome Remote Desktop uninstall starting.");
       NSLog(@"--no-ui : Suppressing UI");
 
