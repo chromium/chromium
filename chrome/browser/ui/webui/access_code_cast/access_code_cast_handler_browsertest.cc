@@ -106,7 +106,8 @@ IN_PROC_BROWSER_TEST_F(AccessCodeCastHandlerBrowserTest,
   signin::UpdatePersistentErrorOfRefreshTokenForAccount(
       identity_manager,
       identity_manager->GetPrimaryAccountId(signin::ConsentLevel::kSignin),
-      GoogleServiceAuthError(GoogleServiceAuthError::INVALID_GAIA_CREDENTIALS));
+      GoogleServiceAuthError::FromInvalidGaiaCredentialsReason(
+          GoogleServiceAuthError::InvalidGaiaCredentialsReason::UNKNOWN));
 
   auto* dialog_contents = ShowDialog();
   SetAccessCode("abcdef", dialog_contents);
