@@ -18,6 +18,8 @@ import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CallbackHelper;
+import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorObserverTestRule.TabModelSelectorTestTabModel;
@@ -81,6 +83,11 @@ public class TabModelSelectorTabModelObserverTest {
                             @TabLaunchType int type,
                             Tab parent,
                             boolean incognito) {
+                        return null;
+                    }
+
+                    @Override
+                    public @Nullable Profile getProfile(boolean offTheRecord) {
                         return null;
                     }
                 };

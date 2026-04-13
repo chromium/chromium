@@ -390,5 +390,10 @@ public class TabModelSelectorTabRegistrationObserverUnitTest {
         public boolean isTabModelRestored() {
             return true;
         }
+
+        @Override
+        public @Nullable Profile getProfile(boolean offTheRecord) {
+            return null;
+        }
     }
 }

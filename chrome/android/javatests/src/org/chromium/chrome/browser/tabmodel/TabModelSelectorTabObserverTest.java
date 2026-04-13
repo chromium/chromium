@@ -25,6 +25,7 @@ import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.price_tracking.PriceTrackingFeatures;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
@@ -159,6 +160,11 @@ public class TabModelSelectorTabObserverTest {
                                         @TabLaunchType int type,
                                         Tab parent,
                                         boolean incognito) {
+                                    return null;
+                                }
+
+                                @Override
+                                public @Nullable Profile getProfile(boolean offTheRecord) {
                                     return null;
                                 }
                             };

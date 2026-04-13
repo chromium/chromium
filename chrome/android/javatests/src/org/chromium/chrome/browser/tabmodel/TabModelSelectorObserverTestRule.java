@@ -93,6 +93,11 @@ public class TabModelSelectorObserverTestRule extends ChromeBrowserTestRule {
                             boolean incognito) {
                         return null;
                     }
+
+                    @Override
+                    public @Nullable Profile getProfile(boolean offTheRecord) {
+                        return null;
+                    }
                 };
 
         TabModelOrderController orderController = new TabModelOrderControllerImpl(mSelector);

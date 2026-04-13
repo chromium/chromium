@@ -168,6 +168,12 @@ public class ArchivedTabModelSelectorImpl extends TabModelSelectorBase implement
         return isTabStateInitialized();
     }
 
+    @Override
+    public @Nullable Profile getProfile(boolean offTheRecord) {
+        if (mProfile.isOffTheRecord() != offTheRecord) return null;
+        return mProfile;
+    }
+
     private static TabUngrouper createTabUngrouper(
             boolean isIncognitoBranded, Supplier<TabGroupModelFilter> tabGroupModelFilterSupplier) {
         return new PassthroughTabUngrouper(tabGroupModelFilterSupplier);

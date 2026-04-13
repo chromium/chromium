@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.test.util.browser.tabmodel;
 
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.MockTab;
 import org.chromium.chrome.browser.tab.Tab;
@@ -27,6 +28,9 @@ public class MockTabModelSelector extends TabModelSelectorBase {
     private static int sCurTabOffset;
     private final int mTabCount;
 
+    private final Profile mProfile;
+    private final Profile mIncognitoProfile;
+
     public MockTabModelSelector(
             Profile profile,
             Profile incognitoProfile,
@@ -35,6 +39,8 @@ public class MockTabModelSelector extends TabModelSelectorBase {
             MockTabModel.MockTabModelDelegate delegate) {
         super(new MockTabCreatorManager(), false);
         ((MockTabCreatorManager) getTabCreatorManager()).initialize(this);
+        mProfile = profile;
+        mIncognitoProfile = incognitoProfile;
         initialize(
                 TabModelHolderFactory.createTabModelHolderForTesting(
                         new MockTabModel(profile, delegate)),
@@ -103,5 +109,10 @@ public class MockTabModelSelector extends TabModelSelectorBase {
     @Override
     public MockTab getCurrentTab() {
         return (MockTab) super.getCurrentTab();
+    }
+
+    @Override
+    public @Nullable Profile getProfile(boolean offTheRecord) {
+        return offTheRecord ? mIncognitoProfile : mProfile;
     }
 }
