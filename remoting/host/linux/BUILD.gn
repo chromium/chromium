@@ -6,6 +6,7 @@ import("//build/config/c++/c++.gni")
 import("//build/config/linux/pkg_config.gni")
 import("//remoting/build/config/remoting_build.gni")
 import("//third_party/webrtc/webrtc.gni")
+import("//tools/generate_library_loader/generate_library_loader.gni")
 import("//tools/generate_stubs/rules.gni")
 
 group("all_tests") {
@@ -92,34 +93,48 @@ source_set("gvariant") {
     "//remoting/host/base",
   ]
 }
-
-group("pipewire") {
-  public_configs = [ ":pipewire_config" ]
-  deps = []
-  if (!rtc_link_pipewire) {
-    deps += [ ":pipewire_stubs" ]
-  }
-}
-
 pkg_config("pipewire_config") {
   packages = [ "libpipewire-0.3" ]
-  if (!rtc_link_pipewire) {
-    # Dynamically loading the library.
-    ignore_libs = true
-    defines = [ "REMOTING_DLOPEN_PIPEWIRE" ]
-  }
+
+  # Don't link against libpipewire since it's loaded at runtime.
+  ignore_libs = true
 }
 
-if (!rtc_link_pipewire) {
-  generate_stubs("pipewire_stubs") {
-    configs = [ ":pipewire_config" ]
-    extra_header = "pipewire_stub_header.fragment"
-    logging_function = "VLOG(1)"
-    logging_include = "base/logging.h"
-    output_name = "pipewire_stubs"
-    path_from_source = "remoting/host/linux"
-    sigs = [ "pipewire.sigs" ]
-  }
+generate_library_loader("pipewire_loader") {
+  # The generated class will not be in any namespace, so we need to prefix the
+  # name to avoid name conflicts with other generated library loaders.
+  name = "RemotingPipewireLoader"
+
+  # The output files will be in gen/library_loaders, so we need to add the
+  # `remoting_` prefix to avoid name conflicts with other generated library
+  # loaders.
+  output_h = "remoting_libpipewire.h"
+  output_cc = "remoting_libpipewire.cc"
+  header = "<pipewire/pipewire.h>"
+  config = ":pipewire_config"
+  functions = [
+    "pw_init",
+    "pw_deinit",
+    "pw_thread_loop_new",
+    "pw_thread_loop_destroy",
+    "pw_thread_loop_stop",
+    "pw_thread_loop_start",
+    "pw_thread_loop_lock",
+    "pw_thread_loop_unlock",
+    "pw_thread_loop_get_loop",
+    "pw_context_new",
+    "pw_context_destroy",
+    "pw_context_connect",
+    "pw_core_disconnect",
+    "pw_properties_new",
+    "pw_stream_new",
+    "pw_stream_destroy",
+    "pw_stream_add_listener",
+    "pw_stream_connect",
+    "pw_stream_state_as_string",
+    "pw_stream_dequeue_buffer",
+    "pw_stream_queue_buffer",
+  ]
 }
 
 source_set("utils") {
@@ -255,7 +270,7 @@ source_set("platform_impls") {
   ]
   deps = [
     ":gvariant",
-    ":pipewire",
+    ":pipewire_loader",
     ":remote_session_info_main_headers",
     ":utils",
     ":x11",
