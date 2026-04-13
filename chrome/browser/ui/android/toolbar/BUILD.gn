@@ -8,6 +8,16 @@ import("//chrome/browser/buildflags.gni")
 import("//extensions/buildflags/buildflags.gni")
 import("//third_party/jni_zero/jni_zero.gni")
 
+android_library("variation_utils_java") {
+  sources = [
+    "java/src/org/chromium/chrome/browser/toolbar/ToolbarVariationUtils.java",
+  ]
+  deps = [
+    "//chrome/browser/flags:java",
+    "//third_party/androidx:androidx_annotation_annotation_java",
+  ]
+}
+
 android_library("core_java") {
   sources = [
     "java/src/org/chromium/chrome/browser/toolbar/ConstraintsChecker.java",
@@ -39,7 +49,6 @@ android_library("core_java") {
     "java/src/org/chromium/chrome/browser/toolbar/ToolbarResourceUtils.java",
     "java/src/org/chromium/chrome/browser/toolbar/ToolbarTabController.java",
     "java/src/org/chromium/chrome/browser/toolbar/ToolbarTabControllerImpl.java",
-    "java/src/org/chromium/chrome/browser/toolbar/ToolbarVariationUtils.java",
     "java/src/org/chromium/chrome/browser/toolbar/VoiceToolbarButtonController.java",
     "java/src/org/chromium/chrome/browser/toolbar/adaptive/AdaptiveButtonActionMenuCoordinator.java",
     "java/src/org/chromium/chrome/browser/toolbar/adaptive/AdaptiveToolbarBehavior.java",
@@ -409,6 +418,7 @@ robolectric_library("junit") {
   deps = [
     ":java",
     ":java_resources",
+    ":variation_utils_java",
     "//base:base_java",
     "//base:base_java_test_support",
     "//base:base_junit_test_support",

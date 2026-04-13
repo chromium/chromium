@@ -47,6 +47,7 @@ public class LocationBarLayout extends ConstraintLayout {
     protected ImageButton mLensButton;
     protected ImageButton mZoomButton;
     protected ImageButton mInstallButton;
+    protected @Nullable ImageButton mBackButton;
     protected final @Nullable View mNavigateButton;
     protected UrlBar mUrlBar;
 
@@ -96,6 +97,7 @@ public class LocationBarLayout extends ConstraintLayout {
         mLensButton = findViewById(R.id.lens_camera_button);
         mZoomButton = findViewById(R.id.zoom_button);
         mInstallButton = findViewById(R.id.install_button);
+        mBackButton = findViewById(R.id.omnibox_back_button);
         mNavigateButton = findViewById(R.id.navigate_button);
         mMarginSpacer = findViewById(R.id.margin_spacer);
         mStatusIconAndUrlBarOffset =
@@ -128,10 +130,7 @@ public class LocationBarLayout extends ConstraintLayout {
         statusView.setCompositeTouchDelegate(mCompositeTouchDelegate);
         statusView
                 .getIsVisibleSupplier()
-                .addSyncObserverAndCallIfNonNull(
-                        (visible) ->
-                                setLocationBarStartPadding(
-                                        visible ? 0 : mLocationBarIconStartingPadding));
+                .addSyncObserverAndCallIfNonNull((visible) -> updateStartPadding());
     }
 
     @Override
@@ -270,6 +269,27 @@ public class LocationBarLayout extends ConstraintLayout {
     /* package */ void setDeleteButtonVisibility(boolean shouldShow) {
         mShowDeleteButton = shouldShow;
         setButtonVisibility(mDeleteButton, shouldShow);
+    }
+
+    /* package */ void setBackButtonVisibility(boolean shouldShow) {
+        if (mBackButton != null) {
+            mBackButton.setVisibility(shouldShow ? VISIBLE : GONE);
+            updateStartPadding();
+        }
+    }
+
+    /* package */ void setBackButtonEnabled(boolean enabled) {
+        if (mBackButton != null) {
+            mBackButton.setEnabled(enabled);
+        }
+    }
+
+    private void updateStartPadding() {
+        View statusView = findViewById(R.id.location_bar_status);
+        boolean statusVisible = statusView != null && statusView.getVisibility() == VISIBLE;
+        boolean backButtonVisible = mBackButton != null && mBackButton.getVisibility() == VISIBLE;
+        setLocationBarStartPadding(
+                (statusVisible || backButtonVisible) ? 0 : mLocationBarIconStartingPadding);
     }
 
     /** Sets the visibility of the Navigate. */

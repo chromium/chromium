@@ -9,6 +9,7 @@ Layout for the control group representing ChromeTabbedActivity's URL bar on
 small devices.
 -->
 <merge xmlns:android="http://schemas.android.com/apk/res/android">
+    <include layout="@layout/omnibox_back_button"/>
     <include layout="@layout/location_status"/>
     <include layout="@layout/fusebox_layout"/>
     <include

@@ -138,6 +138,7 @@ public class LocationBarCoordinator
     private View mUrlBar;
     private View mZoomButton;
     private @Nullable View mDeleteButton;
+    private @Nullable View mBackButton;
     private @Nullable View mNavigateButton;
     private @Nullable View mMicButton;
     private @Nullable View mLensButton;
@@ -323,6 +324,10 @@ public class LocationBarCoordinator
                         mFuseboxCoordinator,
                         locationBarEmbedder,
                         omniboxChipManager);
+        mBackButton = mLocationBarLayout.findViewById(R.id.omnibox_back_button);
+        if (mBackButton != null) {
+            mBackButton.setOnClickListener(v -> mLocationBarMediator.onBackButtonClicked());
+        }
         if (backPressManager != null) {
             backPressManager.addHandler(mLocationBarMediator, BackPressHandler.Type.LOCATION_BAR);
         }
@@ -478,6 +483,11 @@ public class LocationBarCoordinator
 
         mDeleteButton.setOnClickListener(null);
         mDeleteButton = null;
+
+        if (mBackButton != null) {
+            mBackButton.setOnClickListener(null);
+            mBackButton = null;
+        }
 
         mMicButton.setOnClickListener(null);
         mMicButton = null;

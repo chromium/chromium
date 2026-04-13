@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2026 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+<org.chromium.ui.widget.ChromeImageButton
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/omnibox_back_button"
+    android:layout_width="wrap_content"
+    android:layout_height="match_parent"
+    android:src="@drawable/btn_back"
+    android:contentDescription="@string/accessibility_toolbar_btn_back"
+    android:tooltipText="@string/accessibility_toolbar_btn_back"
+    app:tint="@color/default_icon_color_tint_list"
+    android:padding="0dp"
+    android:background="@null"
+    android:layout_marginStart="8dp"
+    app:layout_constraintStart_toStartOf="parent"
+    app:layout_constraintEnd_toStartOf="@id/location_bar_status"
+    app:layout_constraintTop_toTopOf="parent"
+    app:layout_constraintBottom_toBottomOf="parent"
+    android:visibility="gone" />

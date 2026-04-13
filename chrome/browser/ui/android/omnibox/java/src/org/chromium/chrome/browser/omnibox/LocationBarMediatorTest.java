@@ -2284,6 +2284,54 @@ public class LocationBarMediatorTest {
         ExtensionUi.setBackendForTesting(null);
     }
 
+    @Test
+    public void testOnBackButtonClicked() {
+        doReturn(true).when(mTab).canGoBack();
+        mMediator.onBackButtonClicked();
+        verify(mTab).goBack();
+    }
+
+    @Test
+    public void testBackButtonClicked_cannotGoBack() {
+        doReturn(false).when(mTab).canGoBack();
+        mMediator.onBackButtonClicked();
+        verify(mTab, never()).goBack();
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.ANDROID_BOTTOM_BAR)
+    public void testUpdateBackButtonVisibility_visible() {
+        org.mockito.Mockito.clearInvocations(mLocationBarLayout);
+        mMediator.updateBackButtonVisibility();
+        verify(mLocationBarLayout).setBackButtonVisibility(true);
+    }
+
+    @Test
+    @DisableFeatures(ChromeFeatureList.ANDROID_BOTTOM_BAR)
+    public void testUpdateBackButtonVisibility_hidden() {
+        org.mockito.Mockito.clearInvocations(mLocationBarLayout);
+        mMediator.updateBackButtonVisibility();
+        verify(mLocationBarLayout).setBackButtonVisibility(false);
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.ANDROID_BOTTOM_BAR)
+    public void testUpdateBackButtonVisibility_hiddenWhenFocused() {
+        mMediator.onUrlFocusChange(true);
+        org.mockito.Mockito.clearInvocations(mLocationBarLayout);
+        mMediator.updateBackButtonVisibility();
+        verify(mLocationBarLayout).setBackButtonVisibility(false);
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.ANDROID_BOTTOM_BAR)
+    public void testUpdateBackButtonVisibility_hiddenOnNtp() {
+        doReturn(new GURL("chrome://newtab/")).when(mTab).getUrl();
+        org.mockito.Mockito.clearInvocations(mLocationBarLayout);
+        mMediator.updateBackButtonVisibility();
+        verify(mLocationBarLayout).setBackButtonVisibility(false);
+    }
+
     private FuseboxSessionState getSession() {
         return FuseboxSessionState.from(mLocationBarDataProvider);
     }

@@ -6,6 +6,9 @@ package org.chromium.chrome.browser.omnibox;
 
 import static org.chromium.build.NullUtil.assertNonNull;
 import static org.chromium.build.NullUtil.assumeNonNull;
+import static org.chromium.chrome.browser.toolbar.ToolbarVariationUtils.isNewToolbarUiEnabled;
+import static org.chromium.chrome.browser.toolbar.ToolbarVariationUtils.shouldBackButtonBeInOmnibox;
+import static org.chromium.components.embedder_support.util.UrlUtilities.isNtpUrl;
 
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
@@ -98,7 +101,6 @@ import org.chromium.components.browser_ui.styles.ChromeColors;
 import org.chromium.components.browser_ui.widget.animation.CancelAwareAnimatorListener;
 import org.chromium.components.browser_ui.widget.gesture.BackPressHandler;
 import org.chromium.components.embedder_support.util.UrlConstants;
-import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.components.omnibox.AutocompleteInput;
 import org.chromium.components.omnibox.AutocompleteMatch;
 import org.chromium.components.omnibox.AutocompleteRequestType;
@@ -563,7 +565,7 @@ class LocationBarMediator
         if (!DeviceFormFactor.isNonMultiDisplayContextOnTablet(mContext)) return;
         Tab tab = mLocationBarDataProvider.getTab();
         if (tab == null) return;
-        boolean onNtp = UrlUtilities.isNtpUrl(tab.getUrl());
+        boolean onNtp = isNtpUrl(tab.getUrl());
 
         if (ChromeAccessibilityUtil.get().isAccessibilityEnabled()
                 && mLocationBarDataProvider.getNewTabPageDelegate().isCurrentlyVisible()) {
@@ -798,7 +800,7 @@ class LocationBarMediator
             }
 
             if (currentTab != null) {
-                boolean isCurrentTabNtpUrl = UrlUtilities.isNtpUrl(currentTab.getUrl());
+                boolean isCurrentTabNtpUrl = isNtpUrl(currentTab.getUrl());
                 if (currentTab.isNativePage() || isCurrentTabNtpUrl) {
                     mOmniboxUma.recordNavigationOnNtp(
                             omniboxLoadUrlParams.url,
@@ -924,6 +926,7 @@ class LocationBarMediator
     /** Recalculates the visibility of the buttons inside the location bar. */
     /* package */ void updateButtonVisibility() {
         updateDeleteButtonVisibility();
+        updateBackButtonVisibility();
         updateNavigateButtonVisibility();
         updateInstallButtonVisibility(/* notifyEmbedder= */ false);
         updateMicButtonVisibility(/* notifyEmbedder= */ false);
@@ -1625,6 +1628,27 @@ class LocationBarMediator
         mLocationBarLayout.setDeleteButtonVisibility(showDeleteButton);
     }
 
+    /* package */ void updateBackButtonVisibility() {
+        Tab tab = mLocationBarDataProvider.getTab();
+        if (tab == null) {
+            mLocationBarLayout.setBackButtonVisibility(false);
+            return;
+        }
+        boolean isNtp = (tab.getUrl() != null) && isNtpUrl(tab.getUrl());
+
+        boolean showBackButton =
+                isNewToolbarUiEnabled() && shouldBackButtonBeInOmnibox() && !mUrlHasFocus && !isNtp;
+        mLocationBarLayout.setBackButtonVisibility(showBackButton);
+        mLocationBarLayout.setBackButtonEnabled(tab.canGoBack());
+    }
+
+    /* package */ void onBackButtonClicked() {
+        Tab tab = mLocationBarDataProvider.getTab();
+        if (tab != null && tab.canGoBack()) {
+            tab.goBack();
+        }
+    }
+
     /**
      * @see FuseboxAttachmentChangeListener#onAttachmentsListChanged()
      */
@@ -2065,6 +2089,15 @@ class LocationBarMediator
 
         updateOmniboxPrerender();
         updateButtonVisibility();
+    }
+
+    @Override
+    public void onPageLoadStopped() {
+        // Update back button visibility and enabled state when page stops loading.
+        // When navigating from NTP, onUrlChanged might be called before tab.canGoBack()
+        // returns true. Updating here ensures the button state is corrected when the page
+        // finishes loading.
+        updateBackButtonVisibility();
     }
 
     @Override

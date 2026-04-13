@@ -8,6 +8,18 @@ found in the LICENSE file.
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
     <!--
+    Barrier to handle the conditional presence of omnibox_back_button.
+    On tablets, the back button is not inflated, so referencing it directly in
+    constraints fails. This barrier will ignore the missing ID and default to
+    the start of the parent, ensuring correct layout on both form factors.
+    -->
+    <androidx.constraintlayout.widget.Barrier
+        android:id="@+id/back_button_barrier"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:barrierDirection="end"
+        app:constraint_referenced_ids="omnibox_back_button" />
+    <!--
     StatusView acts as a single focusable group. This improves accessibility
     screen reading behavior.
     -->
@@ -17,7 +29,7 @@ found in the LICENSE file.
         android:layout_height="@dimen/location_bar_height"
         android:focusable="true"
         android:screenReaderFocusable="true"
-        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintStart_toEndOf="@id/back_button_barrier"
         app:layout_constraintEnd_toStartOf="@id/url_bar"
         app:layout_constraintTop_toBottomOf="@id/location_bar_attachments"
         app:layout_constraintHorizontal_chainStyle="spread_inside"
