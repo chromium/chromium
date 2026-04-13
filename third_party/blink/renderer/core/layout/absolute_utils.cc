@@ -544,6 +544,26 @@ LogicalAlignment ComputeAlignment(
     DCHECK(!position_area.IsNone());
     std::tie(align_normal_behavior, justify_normal_behavior) =
         position_area.AlignJustifySelfFromPhysical(container_writing_direction);
+
+    // If we have a single inset specified, force a start/end unsafe alignment
+    // which mimics just having a single inset set. See:
+    // https://drafts.csswg.org/css-anchor-position-1/#position-area-alignment
+    const PhysicalToLogical<bool> is_auto(
+        container_writing_direction, style.Top().IsAuto(),
+        style.Right().IsAuto(), style.Bottom().IsAuto(), style.Left().IsAuto());
+    if (!is_auto.BlockStart() && is_auto.BlockEnd()) {
+      align_normal_behavior = {ItemPosition::kStart,
+                               OverflowAlignment::kUnsafe};
+    } else if (is_auto.BlockStart() && !is_auto.BlockEnd()) {
+      align_normal_behavior = {ItemPosition::kEnd, OverflowAlignment::kUnsafe};
+    }
+    if (!is_auto.InlineStart() && is_auto.InlineEnd()) {
+      justify_normal_behavior = {ItemPosition::kStart,
+                                 OverflowAlignment::kUnsafe};
+    } else if (is_auto.InlineStart() && !is_auto.InlineEnd()) {
+      justify_normal_behavior = {ItemPosition::kEnd,
+                                 OverflowAlignment::kUnsafe};
+    }
   }
   const bool is_parallel =
       IsParallelWritingMode(container_writing_direction.GetWritingMode(),
