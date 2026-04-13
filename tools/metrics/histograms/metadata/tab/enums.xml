@@ -140,12 +140,6 @@ chromium-metrics-reviews@google.com.
   <int value="1" label="Open"/>
 </enum>
 
-<enum name="FileStorageRequestType">
-  <int value="0" label="Save Request"/>
-  <int value="1" label="Restore Request"/>
-  <int value="2" label="Delete Request"/>
-</enum>
-
 <enum name="FoundBuyableProductAnnotation">
   <summary>
     Whether a buyable product annotation was found in the response from an
@@ -427,19 +421,6 @@ chromium-metrics-reviews@google.com.
   <int value="3" label="Failed to restore"/>
   <int value="4" label="Skipped (NTP)"/>
   <int value="5" label="Skipped (Empty URL)"/>
-</enum>
-
-<enum name="TabScreenshotAction">
-  <int value="0" label="User took no actions">
-    User made a screenshot, but did not take any actions with it before
-    navigating away or closing the tab.
-  </int>
-  <int value="1" label="Opened sharing">
-    User took a screenshot then tried to share.
-  </int>
-  <int value="2" label="Download IPH provided">
-    User was provided in product help for Downloads after taking a screenshot.
-  </int>
 </enum>
 
 <enum name="TabSearchCloseActions">

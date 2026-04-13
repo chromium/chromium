@@ -276,22 +276,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Discarding.LargestTabFootprint" units="MiB"
-    expires_after="2021-02-28">
-  <owner>chrisha@chromium.org</owner>
-  <owner>catan-team@chromium.org</owner>
-  <summary>
-    The largest tab's resident set among all the urgent discarding candidates.
-  </summary>
-</histogram>
-
-<histogram name="Discarding.OldestTabFootprint" units="MiB"
-    expires_after="2021-02-28">
-  <owner>chrisha@chromium.org</owner>
-  <owner>catan-team@chromium.org</owner>
-  <summary>The resident set of the oldest urgent discarding candidate.</summary>
-</histogram>
-
 <histogram name="Discarding.ReclaimArrivalLatency" units="ms"
     expires_after="2026-09-06">
   <owner>kalutes@chromium.org</owner>
@@ -677,40 +661,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Tab.RestoreClosedTab" enum="Boolean"
-    expires_after="2024-09-01">
-  <owner>sreejakshetty@chromium.org</owner>
-  <owner>chrome-brapp-loading@google.com</owner>
-  <summary>
-    [Desktop] This metric is recorded whenever a tab is restored by the user.
-    Set to true if the tab is restored from ClosedTabCache and false indicates
-    the tab is restored normally. This accounts for all types of tab restores
-    i.e., in a closed window, closed group also on startup tab restores.
-  </summary>
-</histogram>
-
-<histogram name="Tab.Screenshot.Action" enum="TabScreenshotAction"
-    expires_after="2023-12-10">
-  <owner>skare@chromium.org</owner>
-  <summary>
-    Records actions taken after one or more screenshots of a page were taken.
-    This will not be recorded if Chromium is killed before leaving the page. If
-    several types of action (IPH and Sharing) occur, only the last is recorded.
-    We think that both IPH and Sharing happening at the same time is rare, so we
-    do not expect to lose much data this way.
-  </summary>
-</histogram>
-
-<histogram name="Tab.Screenshot.ScreenshotsPerPage" units="screenshots"
-    expires_after="2022-12-18">
-  <owner>skare@chromium.org</owner>
-  <summary>
-    Records the number of screenshots taken of a specific page. It is recorded
-    when the user navigates away from this page or the tab is destroyed. This
-    will not be recorded if Chromium is killed before leaving the page.
-  </summary>
-</histogram>
-
 <histogram name="Tab.StateAtRendererTermination" enum="TabForegroundState"
     expires_after="2026-09-06">
   <owner>gambard@chromium.org</owner>
@@ -868,31 +818,11 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="TabGroups.CollapsedTabCount" units="tabs"
-    expires_after="2021-09-12">
-  <owner>dpenning@chromium.org</owner>
-  <owner>top-chrome-desktop-ui@google.com</owner>
-  <summary>
-    The number of tabs in a collapsed tab group in all browsers, reported every
-    5 minutes. Desktop only.
-  </summary>
-</histogram>
-
 <histogram name="TabGroups.CountAtStartup" units="groups"
     expires_after="2027-04-01">
   <owner>huitingyu@google.com</owner>
   <owner>bling-pandamonium@google.com</owner>
   <summary>[iOS] The number of tab groups opened at cold launch.</summary>
-</histogram>
-
-<histogram name="TabGroups.NonZeroUserGroupCountPerLoad" units="groups"
-    expires_after="2021-09-12">
-  <owner>dpenning@chromium.org</owner>
-  <owner>top-chrome-desktop-ui@google.com</owner>
-  <summary>
-    The number of (non-zero) tabs groups open in all browsers (counting app-mode
-    windows) when a load completes.
-  </summary>
 </histogram>
 
 <histogram
@@ -1766,26 +1696,6 @@ chromium-metrics-reviews@google.com.
   <summary>[iOS] The number of tabs per group at cold launch.</summary>
 </histogram>
 
-<histogram name="TabGroups.TimeSpentCollapsed2" units="seconds"
-    expires_after="2021-09-12">
-  <owner>dpenning@chromium.org</owner>
-  <owner>top-chrome-desktop-ui@google.com</owner>
-  <summary>
-    The time a tab group spends in the collapsed state before the group is
-    either expanded or closed.
-  </summary>
-</histogram>
-
-<histogram name="TabGroups.TimeSpentExpanded2" units="seconds"
-    expires_after="2021-09-12">
-  <owner>dpenning@chromium.org</owner>
-  <owner>top-chrome-desktop-ui@google.com</owner>
-  <summary>
-    The time a tab group spends in the expanded state before the group is either
-    collapsed or closed.
-  </summary>
-</histogram>
-
 <histogram name="TabGroups.UnsavedTabGroupCount" units="groups"
     expires_after="2026-07-19">
   <owner>dljames@chromium.org</owner>
@@ -2387,60 +2297,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Tabs.PersistedTabData.Critical.Map.Success"
-    enum="BooleanSuccess" expires_after="2025-01-01">
-  <owner>davidjm@chromium.org</owner>
-  <owner>dtrainor@chromium.org</owner>
-  <owner>nyquist@chromium.org</owner>
-  <summary>
-    CriticalPersistedTabData persists core Tab metadata (tab id, web contents
-    etc.) across restarts. This metric records if the Tab metadata is
-    successfully mapped from raw storage into an object which can be consumed in
-    Tab restoration.
-  </summary>
-</histogram>
-
-<histogram name="Tabs.PersistedTabData.Deserialize.Critical"
-    enum="BooleanSuccess" expires_after="2024-05-14">
-<!-- P2 project which hasn't launched yet -->
-
-  <owner>yusufo@chromium.org</owner>
-  <owner>nyquist@chromium.org</owner>
-  <owner>dtrainor@chromium.org</owner>
-  <owner>davidjm@chromium.org</owner>
-  <summary>
-    CriticalPersistedTabData stores data pertinent to the running of the app
-    such as tab id, parent id, web contents. This data is serialized and stored
-    across restarts. This records if the deserialization succeeds or fails.
-  </summary>
-</histogram>
-
-<histogram name="Tabs.PersistedTabData.Serialize.Critical"
-    enum="BooleanSuccess" expires_after="2025-01-01">
-  <owner>yusufo@chromium.org</owner>
-  <owner>nyquist@chromium.org</owner>
-  <owner>dtrainor@chromium.org</owner>
-  <owner>davidjm@chromium.org</owner>
-  <summary>
-    CriticalPersistedTabData stores data pertinent to the running of the app
-    such as tab id, parent id, web contents. This data is serialized and stored
-    across restarts. This records if the serialization succeeds or fails.
-  </summary>
-</histogram>
-
-<histogram name="Tabs.PersistedTabData.Storage.Delete.File"
-    enum="BooleanSuccess" expires_after="2023-06-20">
-  <owner>yusufo@chromium.org</owner>
-  <owner>nyquist@chromium.org</owner>
-  <owner>dtrainor@chromium.org</owner>
-  <owner>davidjm@chromium.org</owner>
-  <summary>
-    FilePersistedTabData storage stores serialized PersistedTabData (metadata
-    persisted across restarts) in a file. This metric records if a delete was
-    successful or unsuccessful.
-  </summary>
-</histogram>
-
 <histogram name="Tabs.PersistedTabData.Storage.Exists.File"
     enum="BooleanSuccess" expires_after="2025-04-12">
   <owner>yusufo@chromium.org</owner>
@@ -2466,101 +2322,6 @@ chromium-metrics-reviews@google.com.
     a Tab is closed and before the cleanup is complete. This metric is recorded
     in the first callback, OnPerformMaintenance, whereby orphaned keys are
     identified and before they are deleted.
-  </summary>
-</histogram>
-
-<histogram name="Tabs.PersistedTabData.Storage.LoadAndMapTime.File" units="ms"
-    expires_after="2025-01-01">
-  <owner>davidjm@chromium.org</owner>
-  <owner>dtrainor@chromium.org</owner>
-  <owner>nyquist@chromium.org</owner>
-  <summary>
-    PersistedTabData stores Tab related data across restarts in a number of
-    storage options. This metric stores the time to load Tab data from file
-    storage and map it into an object available for consumption on Tab
-    restoration. The only client currently using File storage is
-    CriticalPersistedTabData which persists core Tab metadata (tab id, web
-    contents etc.) across restarts.
-  </summary>
-</histogram>
-
-<histogram name="Tabs.PersistedTabData.Storage.LoadTime.File" units="ms"
-    expires_after="2025-01-01">
-  <owner>yusufo@chromium.org</owner>
-  <owner>nyquist@chromium.org</owner>
-  <owner>dtrainor@chromium.org</owner>
-  <owner>davidjm@chromium.org</owner>
-  <summary>
-    FilePersistedTabData storage stores serialized PersistedTabData (metadata
-    persisted across restarts) in a file. This metric records how long it took
-    to load the file in the event the file exists. .
-  </summary>
-</histogram>
-
-<histogram name="Tabs.PersistedTabData.Storage.MapTime.File" units="ms"
-    expires_after="2025-01-01">
-  <owner>davidjm@chromium.org</owner>
-  <owner>dtrainor@chromium.org</owner>
-  <owner>nyquist@chromium.org</owner>
-  <summary>
-    PersistedTabData stores Tab related data across restarts in a number of
-    storage options. This metric stores the time to map data acquired from raw
-    file storage into an object which can be consumed on Tab restoration. The
-    only client currently using File storage is CriticalPersistedTabData which
-    persists core Tab metadata (tab id, web contents etc.) across restarts.
-  </summary>
-</histogram>
-
-<histogram name="Tabs.PersistedTabData.Storage.Restore.File"
-    enum="BooleanSuccess" expires_after="2024-12-10">
-  <owner>yusufo@chromium.org</owner>
-  <owner>nyquist@chromium.org</owner>
-  <owner>dtrainor@chromium.org</owner>
-  <owner>davidjm@chromium.org</owner>
-  <summary>
-    FilePersistedTabData storage stores serialized PersistedTabData (metadata
-    persisted across restarts) in a file. This metric records if a restore was
-    successful or unsuccessful.
-  </summary>
-</histogram>
-
-<histogram name="Tabs.PersistedTabData.Storage.Save.File" enum="BooleanSuccess"
-    expires_after="2025-01-01">
-  <owner>yusufo@chromium.org</owner>
-  <owner>nyquist@chromium.org</owner>
-  <owner>dtrainor@chromium.org</owner>
-  <owner>davidjm@chromium.org</owner>
-  <summary>
-    FilePersistedTabData storage stores serialized PersistedTabData (metadata
-    persisted across restarts) in a file. This metric records if a save was
-    successful or unsuccessful.
-  </summary>
-</histogram>
-
-<histogram
-    name="Tabs.PersistedTabData.Storage.Save.File.FirstStorageRequestType"
-    enum="FileStorageRequestType" expires_after="2023-08-20">
-  <owner>yusufo@chromium.org</owner>
-  <owner>nyquist@chromium.org</owner>
-  <owner>dtrainor@chromium.org</owner>
-  <owner>davidjm@chromium.org</owner>
-  <summary>
-    First storage request type in FilePersistedTabData. It would be expected
-    that the first storage request will be a restore (as restoring the active
-    tab) is pivotal for startup performance.
-  </summary>
-</histogram>
-
-<histogram name="Tabs.PersistedTabData.Storage.SaveTime.File" units="ms"
-    expires_after="2025-01-01">
-  <owner>yusufo@chromium.org</owner>
-  <owner>nyquist@chromium.org</owner>
-  <owner>dtrainor@chromium.org</owner>
-  <owner>davidjm@chromium.org</owner>
-  <summary>
-    FilePersistedTabData storage stores serialized PersistedTabData (metadata
-    persisted across restarts) in a file. This metric records how long it took
-    to save the file in the event of a successful save.
   </summary>
 </histogram>
 
@@ -2701,20 +2462,6 @@ chromium-metrics-reviews@google.com.
   <summary>
     Counts of events from the style of sad tab which has a reload button as its
     primary action. Compare to Tabs.SadTab.Feedback.Event.
-  </summary>
-</histogram>
-
-<histogram name="Tabs.SadTab.ReloadCount" units="tabs"
-    expires_after="2021-06-01">
-  <owner>sonnyrao@chromium.org</owner>
-  <owner>jamescook@chromium.org</owner>
-  <summary>
-    The number of times a tab was reloaded because it was killed (usually by the
-    kernel OOM killer) and the user clicked on it later, recorded once per
-    reload event. For example, a user who clicks on 3 discarded tabs will record
-    a count in the 1 bin, 2 bin, and 3 bin. Thus each bin N is the number of
-    sessions where users experienced N or more reload events. Compare to
-    Tabs.Discard.DiscardCount.
   </summary>
 </histogram>
 
