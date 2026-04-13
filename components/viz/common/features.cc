@@ -48,6 +48,11 @@ BASE_FEATURE(kAndroidDumpForBadCompositedUiState,
 BASE_FEATURE(kBackForwardTransitionsSameDocSharedImage,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// If enabled, each render pass eligible for scanout gets its own BufferQueue.
+// This allows for BufferQueue to be used in scenarios like partial delegated
+// compositing, where no root render pass is present.
+BASE_FEATURE(kBufferQueuePerRenderPass, base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kUseDrmBlackFullscreenOptimization,
 #if BUILDFLAG(IS_CHROMEOS)
              base::FEATURE_ENABLED_BY_DEFAULT
