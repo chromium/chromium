@@ -45,14 +45,9 @@ import androidx.preference.PreferenceGroup.PreferencePositionCallback;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.slidingpanelayout.widget.SlidingPaneLayout;
 
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-
 import org.chromium.base.Callback;
 import org.chromium.base.Log;
 import org.chromium.base.metrics.RecordHistogram;
-import org.chromium.base.shared_preferences.SharedPreferencesManager;
 import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.base.ui.KeyboardUtils;
 import org.chromium.build.annotations.EnsuresNonNull;
@@ -64,8 +59,6 @@ import org.chromium.chrome.browser.accessibility.settings.ChromeAccessibilitySet
 import org.chromium.chrome.browser.crash.ChromePureJavaExceptionReporter;
 import org.chromium.chrome.browser.feedback.HelpAndFeedbackLauncherImpl;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
-import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
-import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.settings.MainSettings;
 import org.chromium.chrome.browser.settings.MultiColumnSettings;
@@ -94,7 +87,6 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -218,23 +210,6 @@ public class SettingsSearchCoordinator
             this.params = params;
         }
     }
-
-    // Keeps the latest preference settings chosen by users from search results. Duplicated
-    // entries are removed, and the entries are ordered as they are inserted.
-    private static class RecentSearchQueue extends LinkedHashMap<String, SettingsIndexData.Entry> {
-        private static final int MAX_SIZE = 3;
-
-        private void add(SettingsIndexData.Entry entry) {
-            put(entry.key, entry);
-        }
-
-        @Override
-        protected boolean removeEldestEntry(Map.Entry<String, SettingsIndexData.Entry> eldest) {
-            return size() > MAX_SIZE;
-        }
-    }
-
-    private final RecentSearchQueue mRecentSearches = new RecentSearchQueue();
 
     /**
      * @param activity {@link SettingsActivity} object
@@ -426,7 +401,7 @@ public class SettingsSearchCoordinator
         }
         queryEdit.setText("");
         updateClearTextButton(queryEdit.getText());
-        if (mRecentSearches.isEmpty()) {
+        if (RecentSearchQueue.getInstance().isEmpty()) {
             clearFragment(
                     R.drawable.settings_zero_state, /* addToBackStack= */ false, emptyRunnable());
         } else {
@@ -895,7 +870,7 @@ public class SettingsSearchCoordinator
     private void clearFragmentWithCallback(
             int imageId, boolean addToBackStack, Runnable openHelpCenter, Runnable callback) {
         Fragment fragment;
-        if (mRecentSearches.isEmpty()) {
+        if (RecentSearchQueue.getInstance().isEmpty()) {
             fragment = clearFragment(imageId, addToBackStack, openHelpCenter);
         } else {
             fragment = displayRecentSearches();
@@ -952,7 +927,7 @@ public class SettingsSearchCoordinator
 
     private Fragment displayRecentSearches() {
         var fragment = new RecentSearchesFragment();
-        fragment.setPreferenceData(new ArrayList<>(mRecentSearches.values()));
+        fragment.setPreferenceData(new ArrayList<>(RecentSearchQueue.getInstance().values()));
         fragment.setDeleteCallback(this::deleteRecentSearches);
         fragment.setSelectedCallback(this::onResultSelected);
 
@@ -967,9 +942,8 @@ public class SettingsSearchCoordinator
         return fragment;
     }
 
-    private void deleteRecentSearches() {
-        // TODO(crbug.com/444475553): Support deletion via 'Clear Browsing Data' settings as well.
-        mRecentSearches.clear();
+    public void deleteRecentSearches() {
+        RecentSearchQueue.getInstance().clear();
         clearFragment(R.drawable.settings_zero_state, /* addToBackStack= */ false, emptyRunnable());
     }
 
@@ -1377,8 +1351,7 @@ public class SettingsSearchCoordinator
         RecordHistogram.recordEnumeratedHistogram(
                 "Settings.Search.ExitReason", ExitReason.CLICKED_RESULT, ExitReason.COUNT);
         mExitReasonLogged = true; // Avoid double-logging when search is exited
-
-        mRecentSearches.add(entry);
+        RecentSearchQueue.getInstance().add(entry);
         EditText queryEdit = mActivity.findViewById(R.id.search_query);
         KeyboardUtils.hideAndroidSoftKeyboard(queryEdit);
         if (preferenceFragment == null) {
@@ -1638,50 +1611,21 @@ public class SettingsSearchCoordinator
         mHandler.removeCallbacksAndMessages(null);
         mContainmentController = null;
 
-        persistRecentSearches();
+        RecentSearchQueue.getInstance().persistToDiskAndReset();
         if (mFragmentState != FS_SETTINGS) {
             logExitReason();
         }
     }
 
-    private void persistRecentSearches() {
-        SharedPreferencesManager preferencesManager = ChromeSharedPreferences.getInstance();
-        JSONArray jsonArray = new JSONArray();
-        for (SettingsIndexData.Entry entry : mRecentSearches.values()) {
-            var obj = entry.toJsonObject();
-            if (obj != null) jsonArray.put(obj);
-        }
-        preferencesManager.writeString(
-                ChromePreferenceKeys.SETTINGS_RECENT_SEARCH_ENTRIES, jsonArray.toString());
-    }
-
-    @VisibleForTesting(otherwise = PRIVATE)
-    void restoreRecentSearches() {
-        SharedPreferencesManager preferencesManager = ChromeSharedPreferences.getInstance();
-        String data =
-                preferencesManager.readString(
-                        ChromePreferenceKeys.SETTINGS_RECENT_SEARCH_ENTRIES, "");
-        JSONArray jsonArray;
+    private void restoreRecentSearches() {
         try {
-            jsonArray = new JSONArray(data);
-        } catch (JSONException e) {
-            Log.e(TAG, "Error restoring recent search from a disk file");
-            return;
-        }
-        for (int i = 0; i < jsonArray.length(); i++) {
-            try {
-                JSONObject obj = jsonArray.getJSONObject(i);
-                var entry = SettingsIndexData.Entry.fromJson(obj);
-                if (entry != null) mRecentSearches.add(entry);
-            } catch (JSONException e) {
-                Log.e(TAG, "Error restoring Entry from JSON object");
-            } catch (IllegalArgumentException e) {
-                ChromePureJavaExceptionReporter.reportJavaException(e);
-            }
+            RecentSearchQueue.getInstance().restoreFromDisk();
+        } catch (IllegalArgumentException e) {
+            ChromePureJavaExceptionReporter.reportJavaException(e);
         }
     }
 
     boolean hasRecentSearchEntriesForTesting() {
-        return !mRecentSearches.isEmpty();
+        return !RecentSearchQueue.getInstance().isEmpty();
     }
 }

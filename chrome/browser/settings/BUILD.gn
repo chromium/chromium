@@ -4,6 +4,7 @@
 
 import("//build/config/android/rules.gni")
 import("//chrome/android/features/android_library_factory_tmpl.gni")
+import("//third_party/jni_zero/jni_zero.gni")
 
 android_library_factory("factory_java") {
   deps = [ "//components/browser_ui/settings/android:java" ]
@@ -12,19 +13,30 @@ android_library_factory("factory_java") {
 }
 
 android_library("search_java") {
+  srcjar_deps = [ ":jni_headers" ]
   sources = [
     "search/java/src/org/chromium/chrome/browser/settings/search/ChromeBaseSearchIndexProvider.java",
     "search/java/src/org/chromium/chrome/browser/settings/search/ChromeSearchIndexProvider.java",
+    "search/java/src/org/chromium/chrome/browser/settings/search/RecentSearchQueue.java",
   ]
 
   deps = [
     "//base:base_java",
+    "//base:base_shared_preferences_java",
+    "//chrome/browser/flags:java",
+    "//chrome/browser/preferences:java",
     "//chrome/browser/profiles/android:java",
     "//components/browser_ui/settings/android:java",
+    "//components/cached_flags:java",
     "//content/public/android:content_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
     "//third_party/androidx:androidx_preference_preference_java",
+    "//third_party/jni_zero:jni_zero_java",
   ]
+}
+
+generate_jni("jni_headers") {
+  sources = [ "search/java/src/org/chromium/chrome/browser/settings/search/RecentSearchQueue.java" ]
 }
 
 android_library("internal_java") {

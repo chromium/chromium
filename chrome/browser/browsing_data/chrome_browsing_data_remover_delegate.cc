@@ -175,6 +175,7 @@
 #include "chrome/browser/feed/feed_service_factory.h"
 #include "chrome/browser/offline_pages/offline_page_model_factory.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/settings/jni_headers/RecentSearchQueue_jni.h"
 #include "chrome/browser/ui/android/tab_model/tab_model.h"
 #include "chrome/browser/ui/android/tab_model/tab_model_list.h"
 #include "components/cdm/browser/media_drm_storage_impl.h"  // nogncheck crbug.com/40147906
@@ -1139,6 +1140,10 @@ void ChromeBrowsingDataRemoverDelegate::RemoveEmbedderData(
             filter,
             base::IgnoreArgs<offline_pages::OfflinePageModel::DeletePageResult>(
                 CreateTaskCompletionClosure(TracingDataType::kOfflinePages)));
+
+      // Deletes the recent search entries for Android Settings.
+      Java_RecentSearchQueue_deleteDiskData(
+          base::android::AttachCurrentThread());
     }
 #endif
 
@@ -1751,4 +1756,5 @@ void ChromeBrowsingDataRemoverDelegate::DisablePasswordsAutoSignin(
 
 #if BUILDFLAG(IS_ANDROID)
 DEFINE_JNI(PackageHash)
+DEFINE_JNI(RecentSearchQueue)
 #endif

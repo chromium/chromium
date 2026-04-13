@@ -113,6 +113,7 @@ include_rules = [
   "+chrome/browser/sessions/session_service.h",
   "+chrome/browser/sessions/session_service_factory.h",
   "+chrome/browser/sessions/tab_restore_service_factory.h",
+  "+chrome/browser/settings/jni_headers/RecentSearchQueue_jni.h",
   "+chrome/browser/share/share_history.h",
   "+chrome/browser/share/share_ranking.h",
   "+chrome/browser/signin/account_consistency_mode_manager.h",

@@ -188,6 +188,7 @@ source_set("impl") {
       "//chrome/browser/android:tabs_public",
       "//chrome/browser/commerce/merchant_viewer:merchant_viewer_data_manager",
       "//chrome/browser/feed",
+      "//chrome/browser/settings:jni_headers",
       "//chrome/browser/ui/android/tab_model",
       "//components/installedapp/android:jni_headers",
     ]
