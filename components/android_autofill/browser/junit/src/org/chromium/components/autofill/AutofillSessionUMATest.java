@@ -7,52 +7,45 @@ package org.chromium.components.autofill;
 import android.content.Context;
 
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mockito;
+import org.robolectric.ParameterizedRobolectricTestRunner;
+import org.robolectric.ParameterizedRobolectricTestRunner.Parameter;
+import org.robolectric.ParameterizedRobolectricTestRunner.Parameters;
 import org.robolectric.annotation.Config;
 
 import org.chromium.autofill.mojom.SubmissionSource;
-import org.chromium.base.test.params.BlockJUnit4RunnerDelegate;
-import org.chromium.base.test.params.ParameterAnnotations.UseMethodParameter;
-import org.chromium.base.test.params.ParameterAnnotations.UseRunnerDelegate;
-import org.chromium.base.test.params.ParameterProvider;
-import org.chromium.base.test.params.ParameterSet;
-import org.chromium.base.test.params.ParameterizedRunner;
+import org.chromium.base.test.BaseRobolectricTestRule;
 import org.chromium.base.test.util.HistogramWatcher;
 
 import java.util.Arrays;
-import java.util.List;
+import java.util.Collection;
 
 /**
  * Tests that the "Autofill.WebView.AutofillSession(WithBottomSheet)" histograms are recorded
  * correctly inside `AutofillProviderUMA`.
  */
-@RunWith(ParameterizedRunner.class)
-@UseRunnerDelegate(BlockJUnit4RunnerDelegate.class)
+@RunWith(ParameterizedRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 public class AutofillSessionUMATest {
     private static final String NO_SUGGESTION = "NO_SUGGESTION";
     private static final String USER_SELECT_SUGGESTION = "USER_SELECT_SUGGESTION";
     private static final String USER_NOT_SELECT_SUGGESTION = "USER_NOT_SELECT_SUGGESTION";
 
-    /** Testing parameters. */
-    public static class AutofillSessionParams implements ParameterProvider {
-        private static final List<ParameterSet> sParams =
-                Arrays.asList(
-                        new ParameterSet().value(NO_SUGGESTION).name(NO_SUGGESTION),
-                        new ParameterSet()
-                                .value(USER_SELECT_SUGGESTION)
-                                .name(USER_SELECT_SUGGESTION),
-                        new ParameterSet()
-                                .value(USER_NOT_SELECT_SUGGESTION)
-                                .name(USER_NOT_SELECT_SUGGESTION));
-
-        @Override
-        public List<ParameterSet> getParameters() {
-            return sParams;
-        }
+    @Parameters(name = "{0}")
+    public static Collection<Object[]> data() {
+        return Arrays.asList(
+                new Object[][] {
+                    {NO_SUGGESTION}, {USER_SELECT_SUGGESTION}, {USER_NOT_SELECT_SUGGESTION}
+                });
     }
+
+    @Parameter(0)
+    public String mSuggestionInteractionType;
+
+    @Rule public BaseRobolectricTestRule mBaseRule = new BaseRobolectricTestRule();
 
     private AutofillProviderUMA mAutofillUMA;
     private Context mContext;
@@ -67,13 +60,12 @@ public class AutofillSessionUMATest {
 
     /** Tests that the "*_USER_CHANGE_FORM_FORM_SUBMITTED" buckets are emitted. */
     @Test
-    @UseMethodParameter(AutofillSessionParams.class)
-    public void testUserChangeFormFormSubmitted(String suggestionInteractionType) {
+    public void testUserChangeFormFormSubmitted() {
         mAutofillUMA.onSessionStarted(/* autofillDisabled= */ false);
         mAutofillUMA.onBottomSheetShown();
 
         int histogramBucket = 0;
-        switch (suggestionInteractionType) {
+        switch (mSuggestionInteractionType) {
             case NO_SUGGESTION:
                 histogramBucket = AutofillProviderUMA.NO_SUGGESTION_USER_CHANGE_FORM_FORM_SUBMITTED;
                 break;
@@ -108,13 +100,12 @@ public class AutofillSessionUMATest {
 
     /** Tests that the "*_USER_CHANGE_FORM_NO_FORM_SUBMITTED" buckets are emitted. */
     @Test
-    @UseMethodParameter(AutofillSessionParams.class)
-    public void testUserChangeFormNoFormSubmitted(String suggestionInteractionType) {
+    public void testUserChangeFormNoFormSubmitted() {
         mAutofillUMA.onSessionStarted(/* autofillDisabled= */ false);
         mAutofillUMA.onBottomSheetShown();
 
         int histogramBucket = 0;
-        switch (suggestionInteractionType) {
+        switch (mSuggestionInteractionType) {
             case NO_SUGGESTION:
                 histogramBucket =
                         AutofillProviderUMA.NO_SUGGESTION_USER_CHANGE_FORM_NO_FORM_SUBMITTED;
@@ -151,13 +142,12 @@ public class AutofillSessionUMATest {
 
     /** Tests that the "*_USER_NOT_CHANGE_FORM_FORM_SUBMITTED" buckets are emitted. */
     @Test
-    @UseMethodParameter(AutofillSessionParams.class)
-    public void testUserNotChangeFormFormSubmitted(String suggestionInteractionType) {
+    public void testUserNotChangeFormFormSubmitted() {
         mAutofillUMA.onSessionStarted(/* autofillDisabled= */ false);
         mAutofillUMA.onBottomSheetShown();
 
         int histogramBucket = 0;
-        switch (suggestionInteractionType) {
+        switch (mSuggestionInteractionType) {
             case NO_SUGGESTION:
                 histogramBucket =
                         AutofillProviderUMA.NO_SUGGESTION_USER_NOT_CHANGE_FORM_FORM_SUBMITTED;
@@ -193,13 +183,12 @@ public class AutofillSessionUMATest {
 
     /** Tests that the "*_USER_NOT_CHANGE_FORM_NO_FORM_SUBMITTED" buckets are emitted. */
     @Test
-    @UseMethodParameter(AutofillSessionParams.class)
-    public void testUserNotChangeFormNoFormSubmitted(String suggestionInteractionType) {
+    public void testUserNotChangeFormNoFormSubmitted() {
         mAutofillUMA.onSessionStarted(/* autofillDisabled= */ false);
         mAutofillUMA.onBottomSheetShown();
 
         int histogramBucket = 0;
-        switch (suggestionInteractionType) {
+        switch (mSuggestionInteractionType) {
             case NO_SUGGESTION:
                 histogramBucket =
                         AutofillProviderUMA.NO_SUGGESTION_USER_NOT_CHANGE_FORM_NO_FORM_SUBMITTED;
