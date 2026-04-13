@@ -5,8 +5,8 @@ This project contains a Chrome extension and a test page designed to trigger spe
 ## 1. Load the Extension
 1. Open Google Chrome and navigate to `chrome://extensions/`.
 2. Enable **Developer mode** in the top right corner.
-3. Click **Load unpacked** and select the `telemetry-test/extension` directory here:
-   `/usr/local/google/home/anunoy/proj/dom-activity/crx-dom-activity/telemetry-test/extension`
+3. Click **Load unpacked** and select the path to the test extension.
+   `<path-to-chromium-src>/chrome/test/data/safe_browsing/extension_telemetry/dom_activity/extension`
 4. **Important**: Once loaded, find the "DOM Activity Telemetry Tester" card, click **Details**, and toggle **Allow access to file URLs** to `ON`. This is required for the extension to interact with a local `index.html` file.
 
 ## 2. Load the Test Page
@@ -14,13 +14,13 @@ You can load the test page either by directly opening the local file, or by host
 
 **Option A: Local File Path (Requires "Allow access to file URLs")**
 1. Paste the following path into your Chrome URL bar:
-   `file:///usr/local/google/home/anunoy/proj/dom-activity/crx-dom-activity/telemetry-test/test-page/index.html`
+   `file:///<path-to-chromium-src>/chrome/test/data/safe_browsing/extension_telemetry/dom_activity/test-page/index.html`
 
 **Option B: Python HTTP Server (Recommended)**
 If you do not want to enable "Allow access to file URLs", you can host the page locally.
 1. Open a terminal and run the following commands:
    ```bash
-   cd /usr/local/google/home/anunoy/proj/dom-activity/crx-dom-activity/telemetry-test/test-page/
+   cd <path-to-chromium-src>/chrome/test/data/safe_browsing/extension_telemetry/dom_activity/test-page
    python3 -m http.server 8000
    ```
 2. In Chrome, navigate to `http://localhost:8000`.
