@@ -798,6 +798,9 @@ std::string WaylandWindow::WindowStates::ToString() const {
   if (is_suspended) {
     states += "suspended ";
   }
+  if (is_minimized) {
+    states += "minimized ";
+  }
   if (states.empty()) {
     states = "<default>";
   } else {

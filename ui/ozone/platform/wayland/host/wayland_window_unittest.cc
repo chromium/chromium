@@ -1040,7 +1040,7 @@ TEST_P(WaylandWindowTest, ServerInitiatedRestoreFromMinimizedState) {
   EXPECT_CALL(delegate_, OnWindowStateChanged(_, _)).Times(1);
   {
     WaylandWindow::WindowStates window_states;
-    window_states.is_suspended = true;
+    window_states.is_minimized = true;
     window_->HandleToplevelConfigureWithOrigin(0, 0, 0, 0, window_states);
   }
   window_->HandleSurfaceConfigure(3);
