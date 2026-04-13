@@ -339,6 +339,11 @@ void AutofillExternalDelegate::AttemptToDisplayAutofillSuggestions(
     AutofillSuggestionsIgnoreFocusLoss ignore_focus_loss) {
   CHECK(!*ignore_focus_loss || is_update)
       << "Ignoring focus loss is only supported for updates";
+
+  if (!query_field_.is_focusable() || !manager_->driver().CanShowAutofillUi()) {
+    return;
+  }
+
   PossiblyRemoveAutofillWarnings(suggestions);
   // If anything else is added to modify the values after inserting the data
   // list, AutofillPopupControllerImpl::UpdateDataListValues will need to be
@@ -365,10 +370,6 @@ void AutofillExternalDelegate::AttemptToDisplayAutofillSuggestions(
           SuggestionHidingReason::kNoSuggestions);
       return;
     }
-  }
-
-  if (!query_field_.is_focusable() || !manager_->driver().CanShowAutofillUi()) {
-    return;
   }
 
   if (shortcut_test_suggestion_index_ >= 0) {
