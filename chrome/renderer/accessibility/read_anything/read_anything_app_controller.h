@@ -536,7 +536,7 @@ class ReadAnythingAppController
   // between the training protos and the screenshot if it runs more than once.
   void DistillAndScreenshot();
 
-  bool IsHidden();
+  bool IsHidden() const;
 
   std::unique_ptr<AXTreeDistiller> distiller_;
   mojo::Remote<read_anything::mojom::UntrustedPageHandlerFactory>
