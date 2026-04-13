@@ -33,7 +33,7 @@ BASE_FEATURE_PARAM(size_t,
                    /*default_value=*/kDefaultMaxParallelActiveRequests);
 
 // Controls whether encrypted file upload is enabled.
-BASE_FEATURE(kEnableEncryptedFileUpload, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kEnableEncryptedFileUpload, base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enables scanning of pasted images for DLP.
 BASE_FEATURE(kDlpScanPastedImages, base::FEATURE_ENABLED_BY_DEFAULT);
