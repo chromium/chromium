@@ -7,6 +7,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "third_party/blink/renderer/platform/peerconnection/rtc_stats.h"
+#include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
 
 namespace blink {
 
@@ -16,7 +17,8 @@ TestWebRTCStatsReportObtainer::~TestWebRTCStatsReportObtainer() {}
 
 RTCStatsReportCallback
 TestWebRTCStatsReportObtainer::GetStatsCallbackWrapper() {
-  return base::BindOnce(&TestWebRTCStatsReportObtainer::OnStatsDelivered, this);
+  return CrossThreadBindOnce(&TestWebRTCStatsReportObtainer::OnStatsDelivered,
+                             base::RetainedRef(this));
 }
 
 RTCStatsReportPlatform* TestWebRTCStatsReportObtainer::report() const {

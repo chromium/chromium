@@ -18,8 +18,8 @@ namespace blink {
 
 class ExecutionContext;
 
-using RTCCertificateCallback =
-    base::OnceCallback<void(webrtc::scoped_refptr<webrtc::RTCCertificate>)>;
+using RTCCertificateCallback = CrossThreadOnceFunction<void(
+    webrtc::scoped_refptr<webrtc::RTCCertificate>)>;
 
 // Chromium's WebRTCCertificateGenerator implementation; uses the
 // PeerConnectionIdentityStore/SSLIdentity::Generate to generate the identity,

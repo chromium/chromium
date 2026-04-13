@@ -362,14 +362,11 @@ class RTCRtpSenderImpl::RTCRtpSenderInternal
     std::move(callback).Run(result);
   }
 
-  using RTCStatsReportCallbackInternal =
-      CrossThreadOnceFunction<void(std::unique_ptr<RTCStatsReportPlatform>)>;
-
-  void GetStatsOnSignalingThread(RTCStatsReportCallbackInternal callback) {
+  void GetStatsOnSignalingThread(RTCStatsReportCallback callback) {
     native_peer_connection_->GetStats(
         webrtc::scoped_refptr<webrtc::RtpSenderInterface>(webrtc_sender_.get()),
-        CreateRTCStatsCollectorCallback(
-            main_task_runner_, ConvertToBaseOnceCallback(std::move(callback))));
+        CreateRTCStatsCollectorCallback(main_task_runner_,
+                                        std::move(callback)));
   }
 
   void SetParametersOnSignalingThread(

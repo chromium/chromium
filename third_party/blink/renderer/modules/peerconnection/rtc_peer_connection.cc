@@ -123,6 +123,7 @@
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
 #include "third_party/blink/renderer/platform/bindings/v8_throw_exception.h"
+#include "third_party/blink/renderer/platform/heap/cross_thread_persistent.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/persistent.h"
 #include "third_party/blink/renderer/platform/instrumentation/instance_counters.h"
@@ -1472,8 +1473,8 @@ ScriptPromise<RTCCertificate> RTCPeerConnection::generateCertificate(
 
   // Helper closure callback for RTCPeerConnection::generateCertificate.
   auto completion_callback =
-      BindOnce(RTCPeerConnection::GenerateCertificateCompleted,
-               WrapPersistent(resolver));
+      CrossThreadBindOnce(RTCPeerConnection::GenerateCertificateCompleted,
+                          WrapCrossThreadPersistent(resolver));
 
   // Generate certificate. The |certificateObserver| will resolve the promise
   // asynchronously upon completion. The observer will manage its own
@@ -1766,8 +1767,9 @@ ScriptPromise<RTCStatsReport> RTCPeerConnection::getStats(
       // while leaving the associated promise pending as specified.
       resolver->Detach();
     } else {
-      peer_handler_->GetStats(BindOnce(WebRTCStatsReportCallbackResolver,
-                                       WrapPersistent(resolver)));
+      peer_handler_->GetStats(
+          CrossThreadBindOnce(WebRTCStatsReportCallbackResolver,
+                              WrapCrossThreadPersistent(resolver)));
     }
     return promise;
   }

@@ -47,6 +47,7 @@
 #include "third_party/blink/renderer/modules/peerconnection/rtc_stats_report.h"
 #include "third_party/blink/renderer/modules/peerconnection/web_rtc_stats_report_callback_resolver.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
+#include "third_party/blink/renderer/platform/heap/cross_thread_persistent.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/persistent.h"
 #include "third_party/blink/renderer/platform/peerconnection/rtc_dtmf_sender_handler.h"
@@ -882,8 +883,8 @@ ScriptPromise<RTCStatsReport> RTCRtpSender::getStats(
   auto* resolver =
       MakeGarbageCollected<ScriptPromiseResolver<RTCStatsReport>>(script_state);
   auto promise = resolver->Promise();
-  sender_->GetStats(
-      BindOnce(WebRTCStatsReportCallbackResolver, WrapPersistent(resolver)));
+  sender_->GetStats(CrossThreadBindOnce(WebRTCStatsReportCallbackResolver,
+                                        WrapCrossThreadPersistent(resolver)));
   return promise;
 }
 

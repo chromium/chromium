@@ -233,19 +233,14 @@ class CreateSessionDescriptionRequest
   PeerConnectionTracker::Action action_;
 };
 
-using RTCStatsReportCallbackInternal =
-    CrossThreadOnceFunction<void(std::unique_ptr<RTCStatsReportPlatform>)>;
-
 void GetRTCStatsOnSignalingThread(
     const scoped_refptr<base::SingleThreadTaskRunner>& main_thread,
     webrtc::scoped_refptr<webrtc::PeerConnectionInterface>
         native_peer_connection,
-    RTCStatsReportCallbackInternal callback) {
+    RTCStatsReportCallback callback) {
   TRACE_EVENT0("webrtc", "GetRTCStatsOnSignalingThread");
   native_peer_connection->GetStats(
-      CreateRTCStatsCollectorCallback(
-          main_thread, ConvertToBaseOnceCallback(std::move(callback)))
-          .get());
+      CreateRTCStatsCollectorCallback(main_thread, std::move(callback)).get());
 }
 
 std::set<RTCPeerConnectionHandler*>* GetPeerConnectionHandlers() {
