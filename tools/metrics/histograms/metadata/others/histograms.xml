@@ -6319,20 +6319,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="ReadingList.BookmarkBarState.On{Frequency}AddToReadingList"
-    enum="BookmarkBarState" expires_after="2022-11-20">
-  <owner>corising@chromium.org</owner>
-  <owner>top-chrome-desktop-ui@google.com</owner>
-  <summary>
-    The state of the bookmark bar recorded {Frequency} a user adds to the
-    reading list. (Desktop only).
-  </summary>
-  <token key="Frequency">
-    <variant name="Every" summary="every time"/>
-    <variant name="First" summary="the first time"/>
-  </token>
-</histogram>
-
 <histogram name="ReadingList.Download.Failures" units="count"
     expires_after="2027-03-11">
   <owner>gambard@chromium.org</owner>
@@ -6398,17 +6384,6 @@ chromium-metrics-reviews@google.com.
   <summary>Number of unread entries in reading list.</summary>
 </histogram>
 
-<histogram name="ReadingList.WebUI.InitialEntriesRenderTime" units="ms"
-    expires_after="2022-11-20">
-  <owner>corising@chromium.org</owner>
-  <owner>top-chrome-desktop-ui@google.com</owner>
-  <summary>
-    Records the time taken to load the Read Later WebUI and render (at least)
-    the initial list of entries. This is roughly equivalent to 'time to first
-    meaningful paint' for the Read Later UI.
-  </summary>
-</histogram>
-
 <histogram name="ReadingList.WebUI.LoadCompletedTime" units="ms"
     expires_after="2026-08-30">
   <owner>corising@chromium.org</owner>
@@ -6427,18 +6402,6 @@ chromium-metrics-reviews@google.com.
   <summary>
     The amount of time between the RenderFrameHost StartProvisionalLoad and
     DidFinishDocumentLoad events for the Read Later WebUI page.
-  </summary>
-</histogram>
-
-<histogram name="ReadingList.WindowDisplayedDuration" units="ms"
-    expires_after="2022-11-21">
-  <owner>corising@chromium.org</owner>
-  <owner>top-chrome-desktop-ui@google.com</owner>
-  <summary>
-    Records the amount of time between when a reading list bubble is opened and
-    when it is closed. It does so by recording the difference in time between
-    when the the hosting WebUIBubbleDialogView's Widget is first created and
-    when the widget is destroyed. This is logged on Desktop only.
   </summary>
 </histogram>
 

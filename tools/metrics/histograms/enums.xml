@@ -1095,11 +1095,6 @@ uploading your change for review.  These are checked by presubmit scripts.
   <int value="3" label="AnimationTimerExpired"/>
 </enum>
 
-<enum name="BookmarkBarState">
-  <int value="0" label="Bookmark bar hidden"/>
-  <int value="1" label="Bookmark bar shown"/>
-</enum>
-
 <enum name="Boolean">
   <int value="0" label="False"/>
   <int value="1" label="True"/>
