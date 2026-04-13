@@ -882,6 +882,7 @@ void ContextualTasksUI::OnInnerWebContentsCreated(
 }
 
 void ContextualTasksUI::OnContextRetrievedForActiveTab(
+    base::WeakPtr<BrowserWindowInterface> browser,
     int32_t tab_id,
     const GURL& last_committed_url,
     std::unique_ptr<contextual_tasks::ContextualTaskContext> context) {
@@ -890,10 +891,17 @@ void ContextualTasksUI::OnContextRetrievedForActiveTab(
     return;
   }
 
+  if (!browser) {
+    return;
+  }
+  TabListInterface* tab_list = TabListInterface::From(browser.get());
+  if (!tab_list) {
+    return;
+  }
+  tabs::TabInterface* tab = tab_list->GetActiveTab();
+
   // If active tab or tab URL changed since the GetContextForTask() call, do
   // nothing.
-  tabs::TabInterface* tab =
-      TabListInterface::From(GetBrowser())->GetActiveTab();
   if (!tab || tab->GetHandle().raw_value() != tab_id ||
       tab->GetContents()->GetLastCommittedURL() != last_committed_url) {
     return;
@@ -1013,9 +1021,10 @@ void ContextualTasksUI::OnActiveTabContextStatusChanged() {
     page_->HideErrorPage();
   }
 
-  tabs::TabInterface* tab =
-      GetBrowser() ? TabListInterface::From(GetBrowser())->GetActiveTab()
-                   : nullptr;
+  BrowserWindowInterface* browser = GetBrowser();
+  TabListInterface* tab_list =
+      browser ? TabListInterface::From(browser) : nullptr;
+  tabs::TabInterface* tab = tab_list ? tab_list->GetActiveTab() : nullptr;
   GURL last_committed_url =
       tab ? tab->GetContents()->GetLastCommittedURL() : GURL::EmptyGURL();
 
@@ -1039,7 +1048,7 @@ void ContextualTasksUI::OnActiveTabContextStatusChanged() {
            kSubmittedContextDecorator},
       std::move(context_decoration_params),
       base::BindOnce(&ContextualTasksUI::OnContextRetrievedForActiveTab,
-                     weak_ptr_factory_.GetWeakPtr(),
+                     weak_ptr_factory_.GetWeakPtr(), browser->GetWeakPtr(),
                      tab->GetHandle().raw_value(), last_committed_url));
 }
 
