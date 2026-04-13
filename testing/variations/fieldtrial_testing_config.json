@@ -19607,58 +19607,6 @@
             ]
         }
     ],
-    "RenderDocumentWithNavigationQueueing": [
-        {
-            "platforms": [
-                "android",
-                "chromeos",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "EnabledAllFramesWithQueueing",
-                    "params": {
-                        "level": "all-frames",
-                        "queueing_level": "full"
-                    },
-                    "enable_features": [
-                        "DelayLayerTreeViewDeletionOnLocalSwap",
-                        "RenderDocument",
-                        "SkipRendererCancellationThrottle"
-                    ],
-                    "disable_features": [
-                        "RendererCancellationThrottleImprovements"
-                    ]
-                }
-            ]
-        }
-    ],
-    "RenderDocument_WebView": [
-        {
-            "platforms": [
-                "android_webview"
-            ],
-            "experiments": [
-                {
-                    "name": "EnabledAllFrames_SkipThrottle_20251216",
-                    "params": {
-                        "level": "all-frames"
-                    },
-                    "enable_features": [
-                        "RenderDocument",
-                        "SkipRendererCancellationThrottle",
-                        "WebViewAsyncDrawOnly",
-                        "WebViewRenderDocument"
-                    ],
-                    "disable_features": [
-                        "RendererCancellationThrottleImprovements"
-                    ]
-                }
-            ]
-        }
-    ],
     "RendererProcessLimitOnAndroid": [
         {
             "platforms": [
