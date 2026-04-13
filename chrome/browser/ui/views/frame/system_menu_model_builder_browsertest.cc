@@ -2,12 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/test/scoped_feature_list.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/glic/glic_pref_names.h"
 #include "chrome/browser/glic/test_support/glic_test_environment.h"
 #include "chrome/browser/glic/test_support/glic_test_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/tabs/features.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/common/pref_names.h"
@@ -38,13 +40,38 @@ bool ContainsCommand(const ui::MenuModel* menu,
 }  // namespace
 
 class SystemMenuModelBuilderGlicTest : public InProcessBrowserTest {
+ protected:
+  void SetUp() override {
+    scoped_feature_list_.InitWithFeatures(
+        {tabs::kHorizontalTabStripComboButton}, {});
+    InProcessBrowserTest::SetUp();
+  }
+
  private:
   glic::GlicTestEnvironment glic_test_env_;
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
+
+// Check if the toggle tab search pinning option exists and has the right label
+// based on relevant prefs.
+IN_PROC_BROWSER_TEST_F(SystemMenuModelBuilderGlicTest, ToggleTabSearchPinning) {
+  PrefService* profile_prefs = browser()->profile()->GetPrefs();
+  ui::MenuModel* menu = BrowserView::GetBrowserViewForBrowser(browser())
+                            ->browser_widget()
+                            ->GetSystemMenuModel();
+
+  profile_prefs->SetBoolean(prefs::kTabSearchPinnedToTabstrip, false);
+  EXPECT_TRUE(ContainsCommand(menu, IDC_TAB_SEARCH_TOGGLE_PIN,
+                              IDS_TAB_STRIP_PIN_TAB_SEARCH));
+
+  profile_prefs->SetBoolean(prefs::kTabSearchPinnedToTabstrip, true);
+  EXPECT_TRUE(ContainsCommand(menu, IDC_TAB_SEARCH_TOGGLE_PIN,
+                              IDS_TAB_STRIP_UNPIN_TAB_SEARCH));
+}
 
 // Check if the toggle glic pinning option exists and has the right label based
 // on relevant prefs.
-IN_PROC_BROWSER_TEST_F(SystemMenuModelBuilderGlicTest, TogglePinning) {
+IN_PROC_BROWSER_TEST_F(SystemMenuModelBuilderGlicTest, ToggleGlicPinning) {
   PrefService* profile_prefs = browser()->profile()->GetPrefs();
   ui::MenuModel* menu = BrowserView::GetBrowserViewForBrowser(browser())
                             ->browser_widget()
@@ -66,4 +93,26 @@ IN_PROC_BROWSER_TEST_F(SystemMenuModelBuilderGlicTest, TogglePinning) {
       static_cast<int>(glic::prefs::SettingsPolicyState::kEnabled));
   profile_prefs->SetBoolean(glic::prefs::kGlicPinnedToTabstrip, true);
   EXPECT_TRUE(ContainsCommand(menu, IDC_GLIC_TOGGLE_PIN, IDS_GLIC_UNPIN));
+}
+
+class SystemMenuModelBuilderTabSearchDisabledTest
+    : public InProcessBrowserTest {
+ protected:
+  void SetUp() override {
+    scoped_feature_list_.InitWithFeatures(
+        {}, {tabs::kHorizontalTabStripComboButton});
+    InProcessBrowserTest::SetUp();
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(SystemMenuModelBuilderTabSearchDisabledTest,
+                       TabSearchPinningHidden) {
+  ui::MenuModel* menu = BrowserView::GetBrowserViewForBrowser(browser())
+                            ->browser_widget()
+                            ->GetSystemMenuModel();
+
+  EXPECT_FALSE(ContainsCommand(menu, IDC_TAB_SEARCH_TOGGLE_PIN, std::nullopt));
 }
