@@ -42,7 +42,9 @@ class ContextualTasksPanelHostAndroid
   void SetWebContents(content::WebContents* web_contents) override;
 
   // context_sharing::TabBottomSheetBridge::Observer:
-  void OnClose() override;
+  void OnClosed() override;
+  void OnSuppressed() override;
+  void OnOpened(bool is_expanded) override;
 
  private:
   // Helper method to get the bridge, creating it if necessary. This is because

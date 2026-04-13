@@ -45,6 +45,7 @@ import org.robolectric.annotation.Config;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.tab_bottom_sheet.TabBottomSheetCoordinator.SheetEventsCallback;
 import org.chromium.chrome.browser.tab_bottom_sheet.TabBottomSheetProperties.ResizingState;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
@@ -79,6 +80,15 @@ public class TabBottomSheetCoordinatorTest {
 
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
+    private final SheetEventsCallback mSheetEventsCallback =
+            new SheetEventsCallback() {
+                @Override
+                public void onBottomSheetClosed() {}
+
+                @Override
+                public void onBottomSheetOpened(boolean isExpanded) {}
+            };
+
     @Mock private BottomSheetController mMockBottomSheetController;
     @Mock private TouchEventProvider mMockTouchEventProvider;
     @Mock private CoBrowseViews mCoBrowseViews;
@@ -108,7 +118,7 @@ public class TabBottomSheetCoordinatorTest {
                         mMockBottomSheetController,
                         mMockTouchEventProvider,
                         mCoBrowseViews,
-                        null);
+                        mSheetEventsCallback);
 
         mCoordinatorModel = mCoordinator.getModelForTesting();
     }
@@ -135,6 +145,8 @@ public class TabBottomSheetCoordinatorTest {
                             return true;
                         });
         mCoordinator.tryToShowBottomSheet(/* animate= */ true, /* startsExpanded= */ true);
+        when(mMockBottomSheetController.getCurrentSheetContent())
+                .thenReturn(mCoordinator.getSheetContentForTesting());
         verify(mMockBottomSheetController)
                 .addObserver(mBottomSheetObserverArgumentCaptor.capture());
         BottomSheetObserver coordinatorObserver = mBottomSheetObserverArgumentCaptor.getValue();

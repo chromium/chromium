@@ -50,6 +50,18 @@ public class TabBottomSheetManagerTest {
             ChromeTransitTestRules.freshChromeTabbedActivityRule();
 
     private WebPageStation mInitialStation;
+    private final NativeInterfaceDelegate mDelegate =
+            new NativeInterfaceDelegate() {
+                @Override
+                public void onBottomSheetClosed() {}
+
+                @Override
+                public void onBottomSheetOpened(boolean isExpanded) {}
+
+                @Override
+                public void onBottomSheetSuppressed() {}
+            };
+
     private CoBrowseViews mCoBrowseViews;
     private ChromeTabbedActivity mActivity;
     private WindowAndroid mWindowAndroid;
@@ -87,14 +99,12 @@ public class TabBottomSheetManagerTest {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mManager.tryToShowBottomSheet(
-                            NativeInterfaceDelegate.getInstance(),
+                            mDelegate,
                             mCoBrowseViews,
                             /* animate= */ true,
                             /* startsExpanded= */ true);
                 });
-        assertEquals(
-                mManager.getNativeInterfaceDelegateForTesting(),
-                NativeInterfaceDelegate.getInstance());
+        assertEquals(mManager.getNativeInterfaceDelegateForTesting(), mDelegate);
     }
 
     @Test
@@ -117,7 +127,7 @@ public class TabBottomSheetManagerTest {
                     webContents.getNavigationController().loadUrl(new LoadUrlParams(url));
 
                     mManager.tryToShowBottomSheet(
-                            NativeInterfaceDelegate.getInstance(),
+                            mDelegate,
                             coBrowseViews,
                             /* animate= */ false,
                             /* startsExpanded= */ true);
@@ -143,7 +153,7 @@ public class TabBottomSheetManagerTest {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mManager.tryToShowBottomSheet(
-                            NativeInterfaceDelegate.getInstance(),
+                            mDelegate,
                             mCoBrowseViews,
                             /* animate= */ false,
                             /* startsExpanded= */ true);
@@ -175,7 +185,7 @@ public class TabBottomSheetManagerTest {
                 () -> {
                     mManager.setReadAloudActivePlaybackTabSupplierForTesting(readAloudTabSupplier);
                     mManager.tryToShowBottomSheet(
-                            NativeInterfaceDelegate.getInstance(),
+                            mDelegate,
                             mCoBrowseViews,
                             /* animate= */ false,
                             /* startsExpanded= */ true);

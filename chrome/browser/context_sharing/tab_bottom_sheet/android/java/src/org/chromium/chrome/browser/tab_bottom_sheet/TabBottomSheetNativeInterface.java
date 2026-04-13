@@ -20,8 +20,8 @@ import org.chromium.content_public.browser.WebContents;
 @NullMarked
 public class TabBottomSheetNativeInterface implements NativeInterfaceDelegate {
 
-    private final long mNativeTabBottomSheetBridge;
     private final Tab mTab;
+    private long mNativeTabBottomSheetBridge;
 
     /** Constructor. */
     @CalledByNative
@@ -32,6 +32,7 @@ public class TabBottomSheetNativeInterface implements NativeInterfaceDelegate {
 
     @CalledByNative
     private void destroy() {
+        mNativeTabBottomSheetBridge = 0;
         TabBottomSheetManager tabBottomSheetManager = getTabBottomSheetManager(mTab);
         if (tabBottomSheetManager != null) {
             tabBottomSheetManager.detachNativeInterfaceDelegate(this);
@@ -72,11 +73,28 @@ public class TabBottomSheetNativeInterface implements NativeInterfaceDelegate {
     // Delegate methods.
     @Override
     public void onBottomSheetClosed() {
-        TabBottomSheetNativeInterfaceJni.get().onClose(mNativeTabBottomSheetBridge);
+        if (mNativeTabBottomSheetBridge == 0) return;
+        TabBottomSheetNativeInterfaceJni.get().onClosed(mNativeTabBottomSheetBridge);
+    }
+
+    @Override
+    public void onBottomSheetSuppressed() {
+        if (mNativeTabBottomSheetBridge == 0) return;
+        TabBottomSheetNativeInterfaceJni.get().onSuppressed(mNativeTabBottomSheetBridge);
+    }
+
+    @Override
+    public void onBottomSheetOpened(boolean isExpanded) {
+        if (mNativeTabBottomSheetBridge == 0) return;
+        TabBottomSheetNativeInterfaceJni.get().onOpened(mNativeTabBottomSheetBridge, isExpanded);
     }
 
     @NativeMethods
     interface Natives {
-        void onClose(long nativeTabBottomSheetBridge);
+        void onClosed(long nativeTabBottomSheetBridge);
+
+        void onSuppressed(long nativeTabBottomSheetBridge);
+
+        void onOpened(long nativeTabBottomSheetBridge, boolean isExpanded);
     }
 }
