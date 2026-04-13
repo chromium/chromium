@@ -59,6 +59,7 @@ class PerformanceScriptTiming final : public PerformanceEntry {
   Member<ScriptTimingInfo> info_;
   V8ScriptWindowAttribution::Enum window_attribution_;
   DOMHighResTimeStamp execution_start_;
+  bool cross_origin_isolated_capability_;
 };
 
 }  // namespace blink

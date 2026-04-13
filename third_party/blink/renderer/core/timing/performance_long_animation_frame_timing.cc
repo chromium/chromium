@@ -73,9 +73,15 @@ PerformanceLongAnimationFrameTiming::PerformanceLongAnimationFrameTiming(
           info->FirstUIEventTime(),
           /*allow_negative_value=*/false,
           cross_origin_isolated_capability)),
-      blocking_duration_(info->TotalBlockingDuration().InMillisecondsF()),
-      style_duration_(info->StyleDuration().InMillisecondsF()),
-      layout_duration_(info->LayoutDuration().InMillisecondsF()) {
+      blocking_duration_(
+          Performance::ClampTimeResolution(info->TotalBlockingDuration(),
+                                           cross_origin_isolated_capability)),
+      style_duration_(
+          Performance::ClampTimeResolution(info->StyleDuration(),
+                                           cross_origin_isolated_capability)),
+      layout_duration_(
+          Performance::ClampTimeResolution(info->LayoutDuration(),
+                                           cross_origin_isolated_capability)) {
   CHECK(source->ToLocalDOMWindow());
   const SecurityOrigin* security_origin =
       source->ToLocalDOMWindow()->GetSecurityOrigin();

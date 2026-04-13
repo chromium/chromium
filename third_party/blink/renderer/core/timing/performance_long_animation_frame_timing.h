@@ -61,9 +61,9 @@ class PerformanceLongAnimationFrameTiming final : public PerformanceEntry {
   DOMHighResTimeStamp render_start_;
   DOMHighResTimeStamp style_and_layout_start_;
   DOMHighResTimeStamp first_ui_event_timestamp_;
-  double blocking_duration_;
-  double style_duration_;
-  double layout_duration_;
+  DOMHighResTimeStamp blocking_duration_;
+  DOMHighResTimeStamp style_duration_;
+  DOMHighResTimeStamp layout_duration_;
   PerformanceScriptVector scripts_;
 };
 
