@@ -21,10 +21,15 @@ public class JsonListener extends RunListener {
         mJsonLogger = jsonLogger;
     }
 
-    /** Called after all tests run.
-     */
+    /** Called after all tests run. */
     @Override
     public void testRunFinished(Result r) throws Exception {
+        for (Failure f : r.getFailures()) {
+            Description d = f.getDescription();
+            if (d.isTest()) continue; // Already handled by testFinished
+
+            mJsonLogger.addTestResultInfo(d, "CRASH", 0);
+        }
         mJsonLogger.writeJsonToFile();
     }
 

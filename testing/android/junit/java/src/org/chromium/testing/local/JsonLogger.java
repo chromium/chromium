@@ -41,10 +41,15 @@ public class JsonLogger {
 
     /** Add the results of a test run to the json output. */
     public void addTestResultInfo(Description test, boolean passed, long elapsedTimeMillis) {
+        addTestResultInfo(test, passed ? "SUCCESS" : "FAILURE", elapsedTimeMillis);
+    }
+
+    /** Add the results of a test run to the json output. */
+    public void addTestResultInfo(Description test, String status, long elapsedTimeMillis) {
         JSONObject testInfoJsonObject = new JSONObject();
 
         try {
-            testInfoJsonObject.put("status", (passed ? "SUCCESS" : "FAILURE"));
+            testInfoJsonObject.put("status", status);
             testInfoJsonObject.put("elapsed_time_ms", elapsedTimeMillis);
             testInfoJsonObject.put("output_snippet", "");
             testInfoJsonObject.put("output_snippet_base64", "");
@@ -68,6 +73,9 @@ public class JsonLogger {
     }
 
     private String testName(Description test) {
+        if (test.getMethodName() == null) {
+            return test.getClassName();
+        }
         return test.getClassName() + "#" + test.getMethodName();
     }
 }

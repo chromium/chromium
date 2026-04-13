@@ -29,6 +29,11 @@ public class BaseRobolectricTestListener extends RunListener
     @Override
     public void testSuiteStarted(Description description) throws Exception {
         if (description.getTestClass() != null) {
+            // Can happen for parameterized tests.
+            if (mActiveSuite != null
+                    && description.getTestClass().equals(mActiveSuite.getTestClass())) {
+                return;
+            }
             assert mActiveSuite == null
                     : String.format("\nFound: %s\nPrevious: %s", description, mActiveSuite);
             mActiveSuite = description;
