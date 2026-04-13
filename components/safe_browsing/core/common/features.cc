@@ -334,8 +334,6 @@ BASE_FEATURE(kMigrateEnhancedSbUserToEnhancedBundle,
 BASE_FEATURE(kMigrateToBlockV8OptimizerOnUnfamiliarSites,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kModifiedESBFetchErrorHandling, base::FEATURE_ENABLED_BY_DEFAULT);
-
 BASE_FEATURE(kMovePasswordLeakDetectionToggleIos,
              base::FEATURE_ENABLED_BY_DEFAULT);
 

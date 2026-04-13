@@ -642,9 +642,6 @@ TEST_F(TailoredSecurityServiceTest, CanQueryTailoredSecurityForUrl) {
 
 struct TailoredSecurityServiceCallbackTestParams {
   const char* test_name;
-  // This controls whether kModifiedESBFetchErrorHandling is enabled or
-  // disabled for the test case.
-  bool fix_enabled;
   // The state of tailored security on the remote server at the start of the
   // test.
   bool initial_bit_state;
@@ -661,81 +658,42 @@ struct TailoredSecurityServiceCallbackTestParams {
 };
 
 const TailoredSecurityServiceCallbackTestParams kCallbackTestParams[] = {
-    {"FixDisabled_RequestSucceeds_ReturnsTrue",
-     /*fix_enabled=*/false,
+    {"RequestSucceeds_InitialFalse_ValueTrue",
      /*initial_bit_state=*/false, net::HTTP_OK,
      /*response_body=*/"{\"history_recording_enabled\": true}",
      /*expect_callback_called=*/true,
      /*expected_callback_value=*/true},
-    {"FixDisabled_RequestSucceeds_ReturnsFalse",
-     /*fix_enabled=*/false,
+    {"RequestSucceeds_InitialFalse_ValueFalse",
      /*initial_bit_state=*/false, net::HTTP_OK,
      /*response_body=*/"{\"history_recording_enabled\": false}",
      /*expect_callback_called=*/true,
      /*expected_callback_value=*/false},
-    {"FixDisabled_RequestSucceeds_NoKey",
-     /*fix_enabled=*/false,
-     /*initial_bit_state=*/false, net::HTTP_OK,
-     /*response_body=*/"{}",
-     /*expect_callback_called=*/true,
-     /*expected_callback_value=*/false},
-    {"FixDisabled_RequestFails_InitialTrue",
-     /*fix_enabled=*/false,
-     /*initial_bit_state=*/true, net::HTTP_UNAUTHORIZED,
-     /*response_body=*/"{}",
-     /*expect_callback_called=*/true,
-     /*expected_callback_value=*/false},
-    {"FixDisabled_RequestFails_InitialFalse",
-     /*fix_enabled=*/false,
-     /*initial_bit_state=*/false, net::HTTP_UNAUTHORIZED,
-     /*response_body=*/"{}",
-     /*expect_callback_called=*/true,
-     /*expected_callback_value=*/false},
-    // New comprehensive set for when the fix is enabled.
-    {"FixEnabled_RequestSucceeds_InitialFalse_ValueTrue",
-     /*fix_enabled=*/true,
-     /*initial_bit_state=*/false, net::HTTP_OK,
-     /*response_body=*/"{\"history_recording_enabled\": true}",
-     /*expect_callback_called=*/true,
-     /*expected_callback_value=*/true},
-    {"FixEnabled_RequestSucceeds_InitialFalse_ValueFalse",
-     /*fix_enabled=*/true,
-     /*initial_bit_state=*/false, net::HTTP_OK,
-     /*response_body=*/"{\"history_recording_enabled\": false}",
-     /*expect_callback_called=*/true,
-     /*expected_callback_value=*/false},
-    {"FixEnabled_RequestSucceeds_InitialFalse_NoKey",
-     /*fix_enabled=*/true,
+    {"RequestSucceeds_InitialFalse_NoKey",
      /*initial_bit_state=*/false, net::HTTP_OK,
      /*response_body=*/"{}",
      /*expect_callback_called=*/false,
      /*expected_callback_value=*/false},
-    {"FixEnabled_RequestSucceeds_InitialTrue_ValueTrue",
-     /*fix_enabled=*/true,
+    {"RequestSucceeds_InitialTrue_ValueTrue",
      /*initial_bit_state=*/true, net::HTTP_OK,
      /*response_body=*/"{\"history_recording_enabled\": true}",
      /*expect_callback_called=*/true,
      /*expected_callback_value=*/true},
-    {"FixEnabled_RequestSucceeds_InitialTrue_ValueFalse",
-     /*fix_enabled=*/true,
+    {"RequestSucceeds_InitialTrue_ValueFalse",
      /*initial_bit_state=*/true, net::HTTP_OK,
      /*response_body=*/"{\"history_recording_enabled\": false}",
      /*expect_callback_called=*/true,
      /*expected_callback_value=*/false},
-    {"FixEnabled_RequestSucceeds_InitialTrue_NoKey",
-     /*fix_enabled=*/true,
+    {"RequestSucceeds_InitialTrue_NoKey",
      /*initial_bit_state=*/true, net::HTTP_OK,
      /*response_body=*/"{}",
      /*expect_callback_called=*/false,
      /*expected_callback_value=*/false},
-    {"FixEnabled_RequestFails_InitialFalse",
-     /*fix_enabled=*/true,
+    {"RequestFails_InitialFalse",
      /*initial_bit_state=*/false, net::HTTP_UNAUTHORIZED,
      /*response_body=*/"{}",
      /*expect_callback_called=*/false,
      /*expected_callback_value=*/false},
-    {"FixEnabled_RequestFails_InitialTrue",
-     /*fix_enabled=*/true,
+    {"RequestFails_InitialTrue",
      /*initial_bit_state=*/true, net::HTTP_UNAUTHORIZED,
      /*response_body=*/"{}",
      /*expect_callback_called=*/false,
@@ -748,13 +706,10 @@ class TailoredSecurityServiceCallbackTest
           TailoredSecurityServiceCallbackTestParams> {
  public:
   TailoredSecurityServiceCallbackTest() = default;
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 TEST_P(TailoredSecurityServiceCallbackTest, RunsCallbackWithCorrectValue) {
   const auto& params = GetParam();
-  scoped_feature_list_.InitWithFeatureState(kModifiedESBFetchErrorHandling,
-                                            params.fix_enabled);
 
   if (params.initial_bit_state) {
     SetInitialTailoredSecurityBit(params.initial_bit_state);
