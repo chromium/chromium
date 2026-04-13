@@ -711,7 +711,9 @@ bool BrowserAccessibilityManager::OnAccessibilityEvents(
     ax_tree()->language_detection_manager->RegisterLanguageDetectionObserver();
   }
 
-  // Allow derived classes to do event post-processing.
+  // Allow derived classes to do event post-processing. This must run after
+  // all generated and source events so that finalized UIA events (e.g.
+  // Text_TextChanged, TestComplete) are raised in the correct order.
   FinalizeAccessibilityEvents();
 
   if (!is_post_load_) {

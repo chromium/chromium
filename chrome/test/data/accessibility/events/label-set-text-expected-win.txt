@@ -1,0 +1,2 @@
+IA2_EVENT_TEXT_INSERTED on class=View role=ROLE_SYSTEM_PANE new_text={'Updated Text' start=0 end=12}
+IA2_EVENT_TEXT_REMOVED on class=View role=ROLE_SYSTEM_PANE old_text={'Initial Text' start=0 end=12}
