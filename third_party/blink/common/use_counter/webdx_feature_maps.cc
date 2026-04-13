@@ -479,6 +479,10 @@ GetWebFeatureToWebDXFeatureMap() {
            WebDXFeature::kNavigatorModelcontext},
           {WebFeature::kModelContextRegisterDeclarativeTool,
            WebDXFeature::kDeclarativeWebmcp},
+          {WebFeature::kIdentityDigitalCredentials,
+           WebDXFeature::kDigitalCredentials},
+          {WebFeature::kIdentityDigitalCredentialsCreation,
+           WebDXFeature::kDigitalCredentials},
           // Add new features above this line.
       }};
 
