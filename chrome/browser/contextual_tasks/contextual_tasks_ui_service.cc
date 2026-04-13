@@ -1104,6 +1104,7 @@ std::optional<GURL> ContextualTasksUiService::GetInitialUrlForTask(
     // source traffic for AIM pages that were directly navigated to by the user,
     // as opposed to threads created by Chrome.
     url = net::AppendOrReplaceQueryParameter(url, "sourceid", "chrome");
+    url = net::AppendOrReplaceQueryParameter(url, "ccb", "1");
     task_id_to_creation_url_.erase(it);
     omnibox::ChromeAimEntryPoint entry_point =
         GetInitialEntryPointForTask(uuid);

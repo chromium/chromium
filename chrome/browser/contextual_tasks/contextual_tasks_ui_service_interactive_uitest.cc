@@ -546,7 +546,8 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksUiServiceInteractiveUiTest,
         std::optional<ContextualTask> task =
             contextual_tasks_service->GetContextualTaskForTab(tab_id);
         EXPECT_TRUE(task.has_value());
-        const GURL expected_url("https://google.com/search?sourceid=chrome");
+        const GURL expected_url(
+            "https://google.com/search?sourceid=chrome&ccb=1");
         EXPECT_EQ(service->GetInitialUrlForTask(task->GetTaskId()),
                   expected_url);
       }));

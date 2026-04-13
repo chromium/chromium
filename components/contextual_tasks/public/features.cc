@@ -158,7 +158,7 @@ const base::FeatureParam<bool> kContextualTasksTabAutoSuggestionChipEnabled(
 // The base URL for the AI page.
 const base::FeatureParam<std::string> kContextualTasksAiPageUrl{
     &kContextualTasks, "contextual-tasks-ai-page-url",
-    "https://www.google.com/search?udm=50&sourceid=chrome"};
+    "https://www.google.com/search?udm=50&sourceid=chrome&ccb=1"};
 
 const base::FeatureParam<std::string> kContextualTasksGeminiBaseUrl{
     &kContextualTasks, "contextual-tasks-gemini-base-url",
