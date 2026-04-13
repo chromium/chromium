@@ -8,6 +8,9 @@ romanarora@chromium.org
 rtatum@google.com
 tiborg@chromium.org
 
+# For merges only
+jdonnelly@chromium.org
+
 # TODO(crbug.com/493909140): Remove these per-file entries and the
 # EXTENDED_OWNERS file.
 per-file *.css=file:EXTENDED_OWNERS
