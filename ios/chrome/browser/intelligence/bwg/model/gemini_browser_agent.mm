@@ -27,6 +27,7 @@
 #import "ios/chrome/browser/intelligence/bwg/model/bwg_link_opening_handler.h"
 #import "ios/chrome/browser/intelligence/bwg/model/bwg_session_handler.h"
 #import "ios/chrome/browser/intelligence/bwg/model/bwg_tab_helper.h"
+#import "ios/chrome/browser/intelligence/bwg/model/gemini_actuation_handler.h"
 #import "ios/chrome/browser/intelligence/bwg/model/gemini_camera_handler.h"
 #import "ios/chrome/browser/intelligence/bwg/model/gemini_configuration.h"
 #import "ios/chrome/browser/intelligence/bwg/model/gemini_page_context.h"
@@ -189,6 +190,13 @@ GeminiBrowserAgent::GeminiBrowserAgent(Browser* browser)
       bwg_gateway_.cameraHandler = gemini_camera_handler_;
     }
 
+    if (IsGeminiActorEnabled() && IsActorEnabled()) {
+      gemini_actuation_handler_ = [[GeminiActuationHandler alloc]
+          initWithActorService:actor::ActorServiceFactory::GetForProfile(
+                                   browser_->GetProfile())];
+      bwg_gateway_.actuationHandler = gemini_actuation_handler_;
+    }
+
     ConfigureGemini();
   }
 
@@ -242,6 +250,8 @@ GeminiBrowserAgent::~GeminiBrowserAgent() {
   [bwg_link_opening_handler_ disconnect];
   bwg_link_opening_handler_ = nil;
 
+  gemini_actuation_handler_ = nil;
+
   if (keyboard_show_observer_) {
     [[NSNotificationCenter defaultCenter]
         removeObserver:keyboard_show_observer_];
@@ -276,6 +286,8 @@ GeminiBrowserAgent::~GeminiBrowserAgent() {
 void GeminiBrowserAgent::BrowserDestroyed(Browser* browser) {
   [bwg_link_opening_handler_ disconnect];
   bwg_link_opening_handler_ = nil;
+
+  gemini_actuation_handler_ = nil;
 
   if (identity_manager_) {
     identity_manager_->RemoveObserver(this);

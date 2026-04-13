@@ -46,6 +46,7 @@ class ScopedFullscreenDisabler;
 @class GeminiViewStateChangeHandler;
 @class GeminiScrollObserver;
 @class GeminiSuggestionHandler;
+@class GeminiActuationHandler;
 
 @protocol BWGGatewayProtocol;
 
@@ -292,6 +293,9 @@ class GeminiBrowserAgent : public BrowserUserData<GeminiBrowserAgent>,
 
   // Handler for Gemini suggestion chips.
   __strong GeminiSuggestionHandler* gemini_suggestion_handler_ = nullptr;
+
+  // Handler for Gemini actor.
+  __strong GeminiActuationHandler* gemini_actuation_handler_ = nullptr;
 
   // Delegate implementation for BWGSessionHandler.
   __strong GeminiViewStateChangeHandler* gemini_view_state_handler_ = nullptr;
