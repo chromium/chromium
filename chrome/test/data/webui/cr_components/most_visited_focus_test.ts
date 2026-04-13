@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import {MostVisitedBrowserProxy} from 'chrome://resources/cr_components/most_visited/browser_proxy.js';
-import {MAX_TILES_DEFAULT, MAX_TILES_FOR_CUSTOM_LINKS, MostVisitedElement} from 'chrome://resources/cr_components/most_visited/most_visited.js';
+import {MostVisitedElement} from 'chrome://resources/cr_components/most_visited/most_visited.js';
 import type {MostVisitedPageRemote} from 'chrome://resources/cr_components/most_visited/most_visited.mojom-webui.js';
 import {MostVisitedPageCallbackRouter, MostVisitedPageHandlerRemote} from 'chrome://resources/cr_components/most_visited/most_visited.mojom-webui.js';
 import {TextDirection} from 'chrome://resources/mojo/mojo/public/mojom/base/text_direction.mojom-webui.js';
@@ -12,11 +12,12 @@ import {microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 import {assertFocus, keydown} from './most_visited_test_support.js';
 
-const MAX_TILES_BEFORE_SHOW_MORE = 5;
-
 interface SetUpTestOptions {
   expandableTilesEnabled: boolean;
-  maxTilesBeforeShowMore: number;
+  maxTilesInCollapsedState: number;
+  maxShortcutsInExpandedState: number;
+  maxMostVisitedTilesInExpandedState: number;
+  maxEnterpriseShortcuts: number;
 }
 
 suite('CrComponentsMostVisitedFocusTest', () => {
@@ -26,7 +27,10 @@ suite('CrComponentsMostVisitedFocusTest', () => {
   function setupTest(providedOptions: Partial<SetUpTestOptions> = {}) {
     const defaultOptions = {
       expandableTilesEnabled: false,
-      maxTilesBeforeShowMore: MAX_TILES_BEFORE_SHOW_MORE,
+      maxTilesInCollapsedState: 6,
+      maxShortcutsInExpandedState: 10,
+      maxMostVisitedTilesInExpandedState: 8,
+      maxEnterpriseShortcuts: 10,
     };
     const options = {...defaultOptions, ...providedOptions};
 
@@ -43,10 +47,18 @@ suite('CrComponentsMostVisitedFocusTest', () => {
     mostVisited = new MostVisitedElement();
     if (options.expandableTilesEnabled) {
       mostVisited.setAttribute('expandable-tiles-enabled', '');
-      mostVisited.setAttribute(
-          'max-tiles-before-show-more',
-          options.maxTilesBeforeShowMore.toString());
     }
+    mostVisited.setAttribute(
+        'max-tiles-in-collapsed-state',
+        options.maxTilesInCollapsedState.toString());
+    mostVisited.setAttribute(
+        'max-shortcuts-in-expanded-state',
+        options.maxShortcutsInExpandedState.toString());
+    mostVisited.setAttribute(
+        'max-most-visited-tiles-in-expanded-state',
+        options.maxMostVisitedTilesInExpandedState.toString());
+    mostVisited.setAttribute(
+        'max-enterprise-shortcuts', options.maxEnterpriseShortcuts.toString());
     document.body.appendChild(mostVisited);
   }
 
@@ -168,8 +180,8 @@ suite('CrComponentsMostVisitedFocusTest', () => {
 
   test('down/right focuses showMore from last visible shortcut', async () => {
     setupTest({expandableTilesEnabled: true});
-    await addTiles(MAX_TILES_BEFORE_SHOW_MORE + 1);
-    const tile = queryTiles()[MAX_TILES_BEFORE_SHOW_MORE]!;
+    await addTiles(mostVisited.maxTilesInCollapsedState);
+    const tile = queryTiles()[mostVisited.maxTilesInCollapsedState - 1]!;
     for (const key of ['ArrowRight', 'ArrowDown']) {
       // Focus on the clickable link within the shortcut.
       tile.querySelector('a')!.focus();
@@ -180,8 +192,8 @@ suite('CrComponentsMostVisitedFocusTest', () => {
 
   test('up/left focuses last visible shortcut from showMore', async () => {
     setupTest({expandableTilesEnabled: true});
-    await addTiles(MAX_TILES_BEFORE_SHOW_MORE + 1);
-    const tile = queryTiles()[MAX_TILES_BEFORE_SHOW_MORE]!;
+    await addTiles(mostVisited.maxTilesInCollapsedState);
+    const tile = queryTiles()[mostVisited.maxTilesInCollapsedState - 1]!;
     for (const key of ['ArrowLeft', 'ArrowUp']) {
       mostVisited.$.showMore.focus();
       keydown(mostVisited.$.showMore, key);
@@ -193,11 +205,11 @@ suite('CrComponentsMostVisitedFocusTest', () => {
   test('down/right focuses showLess from last shortcut', async () => {
     setupTest({expandableTilesEnabled: true});
     // Add max number of tiles so "Add shortcut" button is hidden.
-    await addTiles(MAX_TILES_FOR_CUSTOM_LINKS);
+    await addTiles(mostVisited.maxShortcutsInExpandedState);
     keydown(mostVisited.$.showMore, 'Enter');
     await microtasksFinished();
 
-    const tile = queryTiles()[MAX_TILES_FOR_CUSTOM_LINKS - 1]!;
+    const tile = queryTiles()[mostVisited.maxShortcutsInExpandedState - 1]!;
     for (const key of ['ArrowRight', 'ArrowDown']) {
       // Focus on the clickable link within the last shortcut.
       tile.querySelector('a')!.focus();
@@ -210,11 +222,11 @@ suite('CrComponentsMostVisitedFocusTest', () => {
   test('up/left focuses last shortcut from showLess', async () => {
     setupTest({expandableTilesEnabled: true});
     // Add max number of tiles so "Add shortcut" button is hidden.
-    await addTiles(MAX_TILES_FOR_CUSTOM_LINKS);
+    await addTiles(mostVisited.maxShortcutsInExpandedState);
     keydown(mostVisited.$.showMore, 'Enter');
     await microtasksFinished();
 
-    const tile = queryTiles()[MAX_TILES_FOR_CUSTOM_LINKS - 1]!;
+    const tile = queryTiles()[mostVisited.maxShortcutsInExpandedState - 1]!;
     for (const key of ['ArrowLeft', 'ArrowUp']) {
       mostVisited.$.showLess.focus();
       keydown(mostVisited.$.showLess, key);
@@ -225,7 +237,7 @@ suite('CrComponentsMostVisitedFocusTest', () => {
 
   test('down/right focuses showLess from addShortcut', async () => {
     setupTest({expandableTilesEnabled: true});
-    await addTiles(MAX_TILES_BEFORE_SHOW_MORE + 1);
+    await addTiles(mostVisited.maxTilesInCollapsedState);
     keydown(mostVisited.$.showMore, 'Enter');
     await microtasksFinished();
 
@@ -238,7 +250,7 @@ suite('CrComponentsMostVisitedFocusTest', () => {
 
   test('up/left focuses addShortcut from showLess', async () => {
     setupTest({expandableTilesEnabled: true});
-    await addTiles(MAX_TILES_BEFORE_SHOW_MORE + 1);
+    await addTiles(mostVisited.maxTilesInCollapsedState);
     keydown(mostVisited.$.showMore, 'Enter');
     await microtasksFinished();
 
@@ -251,10 +263,12 @@ suite('CrComponentsMostVisitedFocusTest', () => {
 
   test('down/right focuses showMore from last visible MV tile', async () => {
     setupTest({expandableTilesEnabled: true});
-    await addTiles(MAX_TILES_DEFAULT, /* customLinksEnabled= */ false);
+    await addTiles(
+        mostVisited.maxMostVisitedTilesInExpandedState,
+        /* customLinksEnabled= */ false);
     await microtasksFinished();
 
-    const tile = queryTiles()[MAX_TILES_BEFORE_SHOW_MORE]!;
+    const tile = queryTiles()[mostVisited.maxTilesInCollapsedState - 1]!;
     for (const key of ['ArrowRight', 'ArrowDown']) {
       // Focus on the clickable link within the last visible tile.
       tile.querySelector('a')!.focus();
@@ -265,10 +279,12 @@ suite('CrComponentsMostVisitedFocusTest', () => {
 
   test('up/left focuses last visible MV tile from showMore', async () => {
     setupTest({expandableTilesEnabled: true});
-    await addTiles(MAX_TILES_DEFAULT, /* customLinksEnabled= */ false);
+    await addTiles(
+        mostVisited.maxMostVisitedTilesInExpandedState,
+        /* customLinksEnabled= */ false);
     await microtasksFinished();
 
-    const tile = queryTiles()[MAX_TILES_BEFORE_SHOW_MORE]!;
+    const tile = queryTiles()[mostVisited.maxTilesInCollapsedState - 1]!;
     for (const key of ['ArrowLeft', 'ArrowUp']) {
       mostVisited.$.showMore.focus();
       keydown(mostVisited.$.showMore, key);
@@ -279,11 +295,14 @@ suite('CrComponentsMostVisitedFocusTest', () => {
 
   test('down/right focuses showLess from last MV tile', async () => {
     setupTest({expandableTilesEnabled: true});
-    await addTiles(MAX_TILES_DEFAULT, /* customLinksEnabled= */ false);
+    await addTiles(
+        mostVisited.maxMostVisitedTilesInExpandedState,
+        /* customLinksEnabled= */ false);
     keydown(mostVisited.$.showMore, 'Enter');
     await microtasksFinished();
 
-    const tile = queryTiles()[MAX_TILES_DEFAULT - 1]!;
+    const tile =
+        queryTiles()[mostVisited.maxMostVisitedTilesInExpandedState - 1]!;
     for (const key of ['ArrowRight', 'ArrowDown']) {
       // Focus on the clickable link within the last tile.
       tile.querySelector('a')!.focus();
@@ -294,11 +313,14 @@ suite('CrComponentsMostVisitedFocusTest', () => {
 
   test('up/left focuses the last MV tile from showLess', async () => {
     setupTest({expandableTilesEnabled: true});
-    await addTiles(MAX_TILES_DEFAULT, /* customLinksEnabled= */ false);
+    await addTiles(
+        mostVisited.maxMostVisitedTilesInExpandedState,
+        /* customLinksEnabled= */ false);
     keydown(mostVisited.$.showMore, 'Enter');
     await microtasksFinished();
 
-    const tile = queryTiles()[MAX_TILES_DEFAULT - 1]!;
+    const tile =
+        queryTiles()[mostVisited.maxMostVisitedTilesInExpandedState - 1]!;
     for (const key of ['ArrowLeft', 'ArrowUp']) {
       mostVisited.$.showLess.focus();
       keydown(mostVisited.$.showLess, key);

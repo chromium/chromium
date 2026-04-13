@@ -239,8 +239,14 @@ content::WebUIDataSource* CreateAndAddNewTabPageUiHtmlSource(
       "prerenderOnPressEnabled",
       base::FeatureList::IsEnabled(features::kNewTabPageTriggerForPrerender2));
 
-  source->AddInteger("maxTilesBeforeShowMore",
-                     ntp_features::GetMaxTilesBeforeShowMore());
+  source->AddInteger("maxTilesInCollapsedState",
+                     ntp_features::GetMaxTilesInCollapsedState());
+  source->AddInteger("maxShortcutsInExpandedState",
+                     ntp_features::GetMaxShortcutsInExpandedState());
+  source->AddInteger("maxMostVisitedTilesInExpandedState",
+                     ntp_features::GetMaxMostVisitedTilesInExpandedState());
+  source->AddInteger("maxEnterpriseShortcuts",
+                     ntp_features::GetMaxEnterpriseShortcuts());
 
   source->AddBoolean(
       "ntpNextFeaturesEnabled",
