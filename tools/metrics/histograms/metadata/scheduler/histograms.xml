@@ -460,27 +460,6 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
-<histogram
-    name="Scheduling.{CompositorTimingHistoryProcess}BeginImplFrameLatency2"
-    units="microseconds" expires_after="M85">
-  <owner>stanisc@chromium.org</owner>
-  <summary>
-    The time from v-sync to when the main side actually starts the
-    BeginImplFrame.
-
-    Warning: This metric may include reports from clients with low-resolution
-    clocks (i.e. on Windows, ref. |TimeTicks::IsHighResolution()|). Such reports
-    will cause this metric to have an abnormal distribution. When considering
-    revising this histogram, see UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES for the
-    solution. {CompositorTimingHistoryProcess}
-  </summary>
-  <token key="CompositorTimingHistoryProcess">
-    <variant name=""/>
-    <variant name="Browser." summary=""/>
-    <variant name="Renderer." summary=""/>
-  </token>
-</histogram>
-
 <histogram name="ThreadPool.UnnecessaryWakeup.{ThreadPoolName}.{WorkerGroup}"
     enum="BooleanHit" expires_after="2026-08-30">
   <owner>spvm@chromium.org</owner>
