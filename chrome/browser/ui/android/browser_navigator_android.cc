@@ -59,6 +59,15 @@ bool ValidNavigateParams(NavigateParams* params) {
     params->disposition = WindowOpenDisposition::NEW_FOREGROUND_TAB;
   }
 
+  TabListInterface* tab_list = TabListInterface::From(params->browser);
+  bool empty_tab_list = tab_list && tab_list->GetTabCount() == 0;
+
+  if (empty_tab_list &&
+      (params->disposition == WindowOpenDisposition::NEW_BACKGROUND_TAB ||
+       params->disposition == WindowOpenDisposition::CURRENT_TAB)) {
+    params->disposition = WindowOpenDisposition::NEW_FOREGROUND_TAB;
+  }
+
   return true;
 }
 
