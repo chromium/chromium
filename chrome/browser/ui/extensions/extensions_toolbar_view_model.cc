@@ -13,6 +13,7 @@
 #include "chrome/grit/generated_resources.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/web_contents.h"
+#include "extensions/browser/extension_registry.h"
 #include "extensions/browser/permissions/site_permissions_helper.h"
 #include "extensions/buildflags/buildflags.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -165,6 +166,25 @@ void ExtensionsToolbarViewModel::ExecuteUserAction(
     const ToolbarActionsModel::ActionId& action_id,
     ToolbarActionViewModel::InvocationSource source) {
   GetActionModelForId(action_id)->ExecuteUserAction(source);
+}
+
+void ExtensionsToolbarViewModel::GrantSiteAccess(
+    content::WebContents* web_contents,
+    const std::vector<extensions::ExtensionId>& extension_ids) {
+  Profile* profile = browser_->GetProfile();
+  auto* registry = extensions::ExtensionRegistry::Get(profile);
+  std::vector<const extensions::Extension*> extensions_to_run;
+  for (const auto& id : extension_ids) {
+    const extensions::Extension* extension =
+        registry->enabled_extensions().GetByID(id);
+    if (extension) {
+      extensions_to_run.push_back(extension);
+    }
+  }
+
+  extensions::SitePermissionsHelper(profile).UpdateSiteAccess(
+      extensions_to_run, web_contents,
+      extensions::PermissionsManager::UserSiteAccess::kOnSite);
 }
 
 // Extensions are included in the request access button only when:

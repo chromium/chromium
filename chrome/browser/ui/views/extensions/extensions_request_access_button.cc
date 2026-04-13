@@ -39,30 +39,19 @@ namespace {
 // shared location.
 constexpr auto kConfirmationDisplayDuration = base::Seconds(4);
 
-std::vector<const extensions::Extension*> GetExtensions(
-    Profile* profile,
-    std::vector<extensions::ExtensionId>& extension_ids) {
-  const extensions::ExtensionSet& enabled_extensions =
-      extensions::ExtensionRegistry::Get(profile)->enabled_extensions();
-  std::vector<const extensions::Extension*> extensions;
-  for (const auto& extension_id : extension_ids) {
-    extensions.push_back(enabled_extensions.GetByID(extension_id));
-  }
-  return extensions;
-}
 
 }  // namespace
 
 ExtensionsRequestAccessButton::ExtensionsRequestAccessButton(
     BrowserWindowInterface* browser,
-    ExtensionsContainer* extensions_container,
+    ExtensionsToolbarViewModel* extensions_toolbar_view_model,
     ExtensionsContainerViews* extensions_container_views)
     : ToolbarChipButton(
           base::BindRepeating(&ExtensionsRequestAccessButton::OnButtonPressed,
                               base::Unretained(this)),
           ToolbarChipButton::Edge::kRight),
       browser_(browser),
-      extensions_container_(extensions_container),
+      extensions_toolbar_view_model_(extensions_toolbar_view_model),
       extensions_container_views_(extensions_container_views),
       hover_card_coordinator_(
           std::make_unique<ExtensionsRequestAccessHoverCardCoordinator>()) {
@@ -104,7 +93,8 @@ void ExtensionsRequestAccessButton::MaybeShowHoverCard() {
   }
 
   hover_card_coordinator_->ShowBubble(GetActiveWebContents(), this,
-                                      extensions_container_, extension_ids_);
+                                      extensions_toolbar_view_model_,
+                                      extension_ids_);
 }
 
 void ExtensionsRequestAccessButton::ResetConfirmation() {
@@ -160,12 +150,7 @@ void ExtensionsRequestAccessButton::OnButtonPressed() {
 
   // Always grant access to this site to all extensions.
   DCHECK_GT(extension_ids_.size(), 0u);
-  Profile* profile = browser_->GetProfile();
-  std::vector<const extensions::Extension*> extensions_to_run =
-      GetExtensions(profile, extension_ids_);
-  extensions::SitePermissionsHelper(profile).UpdateSiteAccess(
-      extensions_to_run, web_contents,
-      extensions::PermissionsManager::UserSiteAccess::kOnSite);
+  extensions_toolbar_view_model_->GrantSiteAccess(web_contents, extension_ids_);
 
   // Show confirmation message, and disable the button, for a specific duration.
   std::optional<SkColor> color;
@@ -178,7 +163,7 @@ void ExtensionsRequestAccessButton::OnButtonPressed() {
                                           ? base::Seconds(0)
                                           : kConfirmationDisplayDuration;
   // base::Unretained() below is safe because this view is tied to the
-  // lifetime of `extensions_container_`.
+  // lifetime of `extensions_toolbar_view_model_`.
   collapse_timer_.Start(
       FROM_HERE, collapse_duration,
       base::BindOnce(&ExtensionsContainerViews::CollapseConfirmation,

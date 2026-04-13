@@ -165,6 +165,11 @@ class ExtensionsToolbarViewModel
   RequestAccessButtonParams GetRequestAccessButtonParams(
       content::WebContents* web_contents) const;
 
+  // Grants site access to the given `extension_ids` for the `web_contents`.
+  void GrantSiteAccess(
+      content::WebContents* web_contents,
+      const std::vector<extensions::ExtensionId>& extension_ids);
+
   // ExtensionsContainer:
   ToolbarActionViewModel* GetActionForId(const std::string& action_id) override;
   void HideActivePopup() override;

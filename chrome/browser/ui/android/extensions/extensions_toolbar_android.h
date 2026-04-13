@@ -97,9 +97,6 @@ class ExtensionsToolbarAndroid : public ExtensionsToolbarViewModel::Delegate,
 
   void OnActionIconUpdated(const ToolbarActionsModel::ActionId& action_id);
 
-  // TODO(crbug.com/499007513): Move this logic to ExtensionsToolbarViewModel.
-  void GrantSiteAccess(content::WebContents* web_contents,
-                       const std::vector<std::string>& extension_ids);
 
   const raw_ptr<BrowserWindowInterface> browser_;
 

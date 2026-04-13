@@ -261,34 +261,13 @@ void ExtensionsToolbarAndroid::OnRequestAccessButtonClicked(
   ExtensionsToolbarViewModel::RequestAccessButtonParams params =
       toolbar_view_model_->GetRequestAccessButtonParams(web_contents);
 
-  GrantSiteAccess(web_contents, params.extension_ids);
+  toolbar_view_model_->GrantSiteAccess(web_contents, params.extension_ids);
 }
 
 void ExtensionsToolbarAndroid::ExecuteUserAction(
     const ToolbarActionsModel::ActionId& action_id,
     ToolbarActionViewModel::InvocationSource source) {
   toolbar_view_model_->ExecuteUserAction(action_id, source);
-}
-
-// TODO(crbug.com/499007513): Move this logic to ExtensionsToolbarViewModel so
-// it can be shared and used by all delegates.
-void ExtensionsToolbarAndroid::GrantSiteAccess(
-    content::WebContents* web_contents,
-    const std::vector<std::string>& extension_ids) {
-  Profile* profile = browser_->GetProfile();
-  auto* registry = extensions::ExtensionRegistry::Get(profile);
-  std::vector<const extensions::Extension*> extensions_to_run;
-  for (const auto& id : extension_ids) {
-    const extensions::Extension* extension =
-        registry->enabled_extensions().GetByID(id);
-    if (extension) {
-      extensions_to_run.push_back(extension);
-    }
-  }
-
-  extensions::SitePermissionsHelper(profile).UpdateSiteAccess(
-      extensions_to_run, web_contents,
-      extensions::PermissionsManager::UserSiteAccess::kOnSite);
 }
 
 void ExtensionsToolbarAndroid::RegisterIconObserverForAction(

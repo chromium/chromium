@@ -32,7 +32,7 @@ class ExtensionsRequestAccessButton : public ToolbarChipButton {
  public:
   explicit ExtensionsRequestAccessButton(
       BrowserWindowInterface* browser,
-      ExtensionsContainer* extensions_container,
+      ExtensionsToolbarViewModel* extensions_toolbar_view_model,
       ExtensionsContainerViews* extensions_container_views);
   ExtensionsRequestAccessButton(const ExtensionsRequestAccessButton&) = delete;
   const ExtensionsRequestAccessButton& operator=(
@@ -82,7 +82,7 @@ class ExtensionsRequestAccessButton : public ToolbarChipButton {
   content::WebContents* GetActiveWebContents() const;
 
   raw_ptr<BrowserWindowInterface> browser_;
-  raw_ptr<ExtensionsContainer> extensions_container_;
+  raw_ptr<ExtensionsToolbarViewModel> extensions_toolbar_view_model_;
   raw_ptr<ExtensionsContainerViews> extensions_container_views_;
 
   std::unique_ptr<ExtensionsRequestAccessHoverCardCoordinator>
