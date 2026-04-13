@@ -2035,10 +2035,6 @@
                   '|chrome/android/features/stack_unwinder/'\
                   '|chrome/android/modules/stack_unwinder/',
     },
-    'scanning': {
-      'filepath': 'ash/webui/scanning/'\
-                  '|chrome/browser/ash/scanning/',
-    },
     'screen_ai': {
       'filepath': 'screen_ai',
     },
@@ -2619,8 +2615,7 @@
                 'hugobenichi+watch-arc-net@google.com',
                 'jasongustaman+watch-arc-net@chromium.org'],
     'arc_power': ['ejcaruso+watch@chromium.org'],
-    'ash_webui_common': ['gavinwill+watch-ash-webui-common@chromium.org',
-                         'jimmyxgong+watch-ash-webui-common@chromium.org'],
+    'ash_webui_common': ['jimmyxgong+watch-ash-webui-common@chromium.org'],
     'ash_wm_desks': ['dandersson@chromium.org',
                      'bicioglu@google.com'],
     'assistive': ['croissant-eng+reviews@chromium.org'],
@@ -3259,7 +3254,6 @@
                       'xinghuilu+watch@chromium.org',
                       'zackhan+watch@chromium.org'],
     'sampling_profiler': ['thiabaud@google.com', 'spvm@chromium.org'],
-    'scanning': ['gavinwill+scanning-watch@chromium.org'],
     'screen_ai': ['rhalavati+watch@chromium.org'],
     'search_engine_choice_screen': ['chrome-regionalcapabilities+watch@google.com'],
     'search_prefetch': ['lingqi+watch@chromium.org'],
