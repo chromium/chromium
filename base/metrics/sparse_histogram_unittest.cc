@@ -83,7 +83,8 @@ class SparseHistogramTest : public testing::TestWithParam<bool> {
     // std::make_unique can't access protected ctor so do it manually. This
     // test class is a friend so can access it.
     return std::unique_ptr<SparseHistogram>(
-        new SparseHistogram(DurableStringView(std::string_view(name, N - 1))));
+        new SparseHistogram(DurableStringView(std::string_view(name, N - 1)),
+                            HashMetricName(name)));
   }
 
   CountAndBucketData GetCountAndBucketData(SparseHistogram* histogram) {

@@ -134,7 +134,8 @@ class StatisticsRecorderTest : public testing::TestWithParam<bool> {
     Histogram::InitializeBucketRanges(min, max, ranges);
     const BucketRanges* registered_ranges =
         StatisticsRecorder::RegisterOrDeleteDuplicateRanges(ranges);
-    return new Histogram(durable_name, registered_ranges);
+    return new Histogram(durable_name, HashMetricName(durable_name.value()),
+                         registered_ranges);
   }
 
   template <size_t N>

@@ -68,11 +68,8 @@ class BASE_EXPORT SparseHistogram : public HistogramBase {
 
  private:
   // Clients should always use FactoryGet to create SparseHistogram.
-  explicit SparseHistogram(DurableStringView name);
 
-  // Same as above, but takes a pre-computed `name_hash`. This function is more
-  // efficient as it avoids recomputing the hash if it's already known. The
-  // `name_hash` must be the hash of `name`, this is enforced with a DCHECK.
+  // The `name_hash` must be the hash of `name`, this is enforced with a DCHECK.
   SparseHistogram(DurableStringView name, uint64_t name_hash);
 
   SparseHistogram(PersistentHistogramAllocator* allocator,

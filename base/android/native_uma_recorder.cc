@@ -63,7 +63,8 @@ void CheckHistogramArgs(JNIEnv* env,
                         size_t expected_bucket_count,
                         HistogramBase* histogram) {
   const auto validity = Histogram::InspectConstructionArguments(
-      histogram_name, &expected_min, &expected_max, &expected_bucket_count);
+      histogram_name, histogram->name_hash(), &expected_min, &expected_max,
+      &expected_bucket_count);
   DCHECK_EQ(validity, Histogram::kOK);
   DCHECK(histogram->HasConstructionArguments(expected_min, expected_max,
                                              expected_bucket_count))

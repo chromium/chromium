@@ -177,6 +177,7 @@ class BASE_EXPORT Histogram : public HistogramBase {
   // Create a histogram using data in persistent storage.
   static std::unique_ptr<HistogramBase> PersistentCreate(
       DurableStringView durable_name,
+      uint64_t name_hash,
       const BucketRanges* ranges,
       const DelayedPersistentAllocation& counts,
       const DelayedPersistentAllocation& logged_counts,
@@ -229,6 +230,7 @@ class BASE_EXPORT Histogram : public HistogramBase {
   // converting it to 1.
   static ConstructionArgumentsValidity InspectConstructionArguments(
       std::string_view name,
+      uint64_t name_hash,
       Sample32* minimum,
       Sample32* maximum,
       size_t* bucket_count);
@@ -260,7 +262,9 @@ class BASE_EXPORT Histogram : public HistogramBase {
 
   // |ranges| should contain the underflow and overflow buckets. See top
   // comments for example.
-  Histogram(DurableStringView durable_name, const BucketRanges* ranges);
+  Histogram(DurableStringView durable_name,
+            uint64_t name_hash,
+            const BucketRanges* ranges);
 
   // Traditionally, histograms allocate their own memory for the bucket
   // vector but "shared" histograms use memory regions allocated from a
@@ -269,6 +273,7 @@ class BASE_EXPORT Histogram : public HistogramBase {
   // of this object. Practically, this memory is never released until the
   // process exits and the OS cleans it up.
   Histogram(DurableStringView durable_name,
+            uint64_t name_hash,
             const BucketRanges* ranges,
             const DelayedPersistentAllocation& counts,
             const DelayedPersistentAllocation& logged_counts,
@@ -391,6 +396,7 @@ class BASE_EXPORT LinearHistogram : public Histogram {
   // Create a histogram using data in persistent storage.
   static std::unique_ptr<HistogramBase> PersistentCreate(
       DurableStringView durable_name,
+      uint64_t name_hash,
       const BucketRanges* ranges,
       const DelayedPersistentAllocation& counts,
       const DelayedPersistentAllocation& logged_counts,
@@ -412,9 +418,12 @@ class BASE_EXPORT LinearHistogram : public Histogram {
  protected:
   class Factory;
 
-  LinearHistogram(DurableStringView durable_name, const BucketRanges* ranges);
+  LinearHistogram(DurableStringView durable_name,
+                  uint64_t name_hash,
+                  const BucketRanges* ranges);
 
   LinearHistogram(DurableStringView durable_name,
+                  uint64_t name_hash,
                   const BucketRanges* ranges,
                   const DelayedPersistentAllocation& counts,
                   const DelayedPersistentAllocation& logged_counts,
@@ -527,6 +536,7 @@ class BASE_EXPORT BooleanHistogram : public LinearHistogram {
   // Create a histogram using data in persistent storage.
   static std::unique_ptr<HistogramBase> PersistentCreate(
       DurableStringView durable_name,
+      uint64_t name_hash,
       const BucketRanges* ranges,
       const DelayedPersistentAllocation& counts,
       const DelayedPersistentAllocation& logged_counts,
@@ -542,8 +552,11 @@ class BASE_EXPORT BooleanHistogram : public LinearHistogram {
   static HistogramBase* FactoryGetInternal(std::string_view name,
                                            int32_t flags);
 
-  BooleanHistogram(DurableStringView durable_name, const BucketRanges* ranges);
   BooleanHistogram(DurableStringView durable_name,
+                   uint64_t name_hash,
+                   const BucketRanges* ranges);
+  BooleanHistogram(DurableStringView durable_name,
+                   uint64_t name_hash,
                    const BucketRanges* ranges,
                    const DelayedPersistentAllocation& counts,
                    const DelayedPersistentAllocation& logged_counts,
@@ -586,6 +599,7 @@ class BASE_EXPORT CustomHistogram : public Histogram {
   // Create a histogram using data in persistent storage.
   static std::unique_ptr<HistogramBase> PersistentCreate(
       DurableStringView durable_name,
+      uint64_t name_hash,
       const BucketRanges* ranges,
       const DelayedPersistentAllocation& counts,
       const DelayedPersistentAllocation& logged_counts,
@@ -606,9 +620,12 @@ class BASE_EXPORT CustomHistogram : public Histogram {
  protected:
   class Factory;
 
-  CustomHistogram(DurableStringView durable_name, const BucketRanges* ranges);
+  CustomHistogram(DurableStringView durable_name,
+                  uint64_t name_hash,
+                  const BucketRanges* ranges);
 
   CustomHistogram(DurableStringView durable_name,
+                  uint64_t name_hash,
                   const BucketRanges* ranges,
                   const DelayedPersistentAllocation& counts,
                   const DelayedPersistentAllocation& logged_counts,

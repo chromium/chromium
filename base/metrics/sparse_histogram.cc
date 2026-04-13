@@ -206,9 +206,6 @@ void SparseHistogram::SerializeInfoImpl(Pickle* pickle) const {
   pickle->WriteInt(flags());
 }
 
-SparseHistogram::SparseHistogram(DurableStringView durable_name)
-    : SparseHistogram(durable_name, HashMetricName(*durable_name)) {}
-
 SparseHistogram::SparseHistogram(DurableStringView durable_name,
                                  uint64_t name_hash)
     : HistogramBase(durable_name),
