@@ -473,12 +473,14 @@ void RecordPersistanceHistograms(const CanonicalCookie& cookie,
 CookieMonster::CookieMonster(scoped_refptr<PersistentCookieStore> store,
                              NetLog* net_log,
                              std::unique_ptr<PrefDelegate> pref_delegate)
-    : CookieMonster(std::move(store),
+    : CookieMonster(base::PassKey<CookieMonster>(),
+                    std::move(store),
                     base::Seconds(kDefaultAccessUpdateThresholdSeconds),
                     net_log,
                     std::move(pref_delegate)) {}
 
-CookieMonster::CookieMonster(scoped_refptr<PersistentCookieStore> store,
+CookieMonster::CookieMonster(base::PassKey<CookieMonster>,
+                             scoped_refptr<PersistentCookieStore> store,
                              base::TimeDelta last_access_threshold,
                              NetLog* net_log,
                              std::unique_ptr<PrefDelegate> pref_delegate)
@@ -492,6 +494,17 @@ CookieMonster::CookieMonster(scoped_refptr<PersistentCookieStore> store,
   net_log_.BeginEvent(NetLogEventType::COOKIE_STORE_ALIVE, [&] {
     return NetLogCookieMonsterConstructorParams(store_ != nullptr);
   });
+}
+
+// static
+std::unique_ptr<CookieMonster> CookieMonster::CreateForTesting(
+    scoped_refptr<PersistentCookieStore> store,
+    base::TimeDelta last_access_threshold,
+    NetLog* net_log,
+    std::unique_ptr<PrefDelegate> pref_delegate) {
+  return std::make_unique<CookieMonster>(
+      base::PassKey<CookieMonster>(), std::move(store), last_access_threshold,
+      net_log, std::move(pref_delegate));
 }
 
 // Asynchronous CookieMonster API

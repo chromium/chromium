@@ -1809,7 +1809,7 @@ static const base::TimeDelta kAccessDelay =
     kLastAccessThreshold + base::Milliseconds(20);
 
 TEST_F(CookieMonsterTest, TestLastAccess) {
-  auto cm = std::make_unique<CookieMonster>(
+  std::unique_ptr<CookieMonster> cm = CookieMonster::CreateForTesting(
       /*store=*/nullptr, kLastAccessThreshold, net::NetLog::Get(),
       /*pref_delegate=*/nullptr);
 
@@ -2309,7 +2309,7 @@ TEST_F(CookieMonsterTest, SetCookieableSchemes_StoreInitialized) {
 }
 
 TEST_F(CookieMonsterTest, GetAllCookiesForURL) {
-  auto cm = std::make_unique<CookieMonster>(
+  std::unique_ptr<CookieMonster> cm = CookieMonster::CreateForTesting(
       /*store=*/nullptr, kLastAccessThreshold, net::NetLog::Get(),
       /*pref_delegate=*/nullptr);
 
@@ -2418,7 +2418,7 @@ TEST_F(CookieMonsterTest, GetAllCookiesForURL) {
 }
 
 TEST_F(CookieMonsterTest, GetExcludedCookiesForURL) {
-  auto cm = std::make_unique<CookieMonster>(
+  std::unique_ptr<CookieMonster> cm = CookieMonster::CreateForTesting(
       /*store=*/nullptr, kLastAccessThreshold, net::NetLog::Get(),
       /*pref_delegate=*/nullptr);
 
