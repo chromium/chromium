@@ -38,6 +38,7 @@
 #import "ios/chrome/browser/shared/public/commands/bookmarks_commands.h"
 #import "ios/chrome/browser/shared/public/commands/browser_coordinator_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
+#import "ios/chrome/browser/shared/public/commands/scene_commands.h"
 #import "ios/chrome/browser/shared/public/commands/settings_commands.h"
 #import "ios/chrome/browser/url_loading/model/url_loading_params.h"
 #import "ios/chrome/common/intents/AddBookmarkToChromeIntent.h"
@@ -277,6 +278,15 @@ void OpenPasswordSearchWithBrowser(base::WeakPtr<Browser> weak_browser) {
   }
 }
 
+// Navigates to the settings UI.
+void OpenSettingsWithBrowser(base::WeakPtr<Browser> weak_browser) {
+  if (Browser* browser = weak_browser.get()) {
+    id<SceneCommands> handler =
+        HandlerForProtocol(browser->GetCommandDispatcher(), SceneCommands);
+    [handler maybeShowSettingsFromViewController];
+  }
+}
+
 // Adds bookmarks to Chrome.
 void AddBookmarkToChromeWithIntent(INIntent* intent,
                                    base::WeakPtr<Browser> weak_browser) {
@@ -467,7 +477,9 @@ std::vector<GURL> GetURLsFromOpenInChromeIntent(INIntent* intent) {
       webpageGURLs.push_back(GURL(kChromeUINewTabURL));
       break;
     case UserActivityType::kManageSettings:
-      // TODO(crbug.com/492115056): Add implementation.
+      completion = base::CallbackToBlock(
+          base::BindRepeating(&OpenSettingsWithBrowser, browser->AsWeakPtr()));
+      webpageGURLs.push_back(GURL(kChromeUINewTabURL));
       break;
     case UserActivityType::kOpenLensFromIntents:
       // TODO(crbug.com/492115056): Add implementation.
