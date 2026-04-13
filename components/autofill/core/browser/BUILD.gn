@@ -1866,6 +1866,7 @@ source_set("unit_tests") {
     "//base/test:test_support",
     "//base/version_info",
     "//components/accessibility_annotator/core",
+    "//components/accessibility_annotator/core:test_support",
     "//components/accessibility_annotator/core/annotation_reducer",
     "//components/autofill/core/common:autofill_regex",
     "//components/autofill/core/common:credit_card_number_validation",

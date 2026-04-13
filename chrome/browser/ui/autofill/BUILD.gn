@@ -507,8 +507,6 @@ source_set("test_support_unit") {
   sources = [
     "autofill_suggestion_controller_test_base.cc",
     "autofill_suggestion_controller_test_base.h",
-    "mock_accessibility_query_service.cc",
-    "mock_accessibility_query_service.h",
     "mock_autofill_popup_view.cc",
     "mock_autofill_popup_view.h",
   ]
@@ -520,6 +518,7 @@ source_set("test_support_unit") {
     "//chrome/browser/autofill",
     "//chrome/browser/ui",
     "//chrome/test:test_support",
+    "//components/accessibility_annotator/core:test_support",
     "//components/autofill/content/browser:test_support",
     "//components/autofill/core/common:test_support",
     "//testing/gmock",

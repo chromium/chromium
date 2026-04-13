@@ -562,6 +562,7 @@ bool IsExpandableSuggestionType(SuggestionType type) {
     case SuggestionType::kFillAutofillAi:
     case SuggestionType::kLoyaltyCardEntry:
     case SuggestionType::kPasswordEntry:
+    case SuggestionType::kAtMemorySearchResult:
       return true;
     case SuggestionType::kAccountStoragePasswordEntry:
     case SuggestionType::kAddressEntryOnTyping:
@@ -607,7 +608,6 @@ bool IsExpandableSuggestionType(SuggestionType type) {
     case SuggestionType::kWebauthnCredential:
     case SuggestionType::kWebauthnSignInWithAnotherDevice:
     case SuggestionType::kPendingStateSignin:
-    case SuggestionType::kAtMemorySearchResult:
     case SuggestionType::kOneTimePasswordEntry:
     case SuggestionType::kLoadingThrobber:
     case SuggestionType::kBnplFootnote:

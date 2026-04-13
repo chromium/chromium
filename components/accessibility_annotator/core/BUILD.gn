@@ -50,6 +50,19 @@ source_set("features") {
   deps = [ "//base" ]
 }
 
+source_set("test_support") {
+  testonly = true
+  sources = [
+    "mock_accessibility_query_service.cc",
+    "mock_accessibility_query_service.h",
+  ]
+  deps = [
+    ":core",
+    "//base",
+    "//testing/gmock",
+  ]
+}
+
 source_set("unit_tests") {
   testonly = true
 

@@ -12,14 +12,16 @@
 #include "chrome/browser/ui/autofill/autofill_popup_controller_impl_test_api.h"
 #include "chrome/browser/ui/autofill/autofill_suggestion_controller.h"
 #include "chrome/browser/ui/autofill/autofill_suggestion_controller_test_base.h"
-#include "chrome/browser/ui/autofill/mock_accessibility_query_service.h"
 #include "chrome/browser/ui/autofill/mock_autofill_popup_view.h"
 #include "components/accessibility_annotator/core/accessibility_query_service.h"
+#include "components/accessibility_annotator/core/mock_accessibility_query_service.h"
 #include "components/autofill/content/browser/test_content_autofill_client.h"
 #include "components/autofill/core/browser/foundations/autofill_manager.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
 namespace autofill {
+
+using accessibility_annotator::MockAccessibilityQueryService;
 
 // A modified `TestContentAutofillClient` that simulates the production behavior
 // of the popup controller and popup view lifetimes on Desktop platforms.

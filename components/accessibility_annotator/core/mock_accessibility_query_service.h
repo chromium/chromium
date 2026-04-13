@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_AUTOFILL_MOCK_ACCESSIBILITY_QUERY_SERVICE_H_
-#define CHROME_BROWSER_UI_AUTOFILL_MOCK_ACCESSIBILITY_QUERY_SERVICE_H_
+#ifndef COMPONENTS_ACCESSIBILITY_ANNOTATOR_CORE_MOCK_ACCESSIBILITY_QUERY_SERVICE_H_
+#define COMPONENTS_ACCESSIBILITY_ANNOTATOR_CORE_MOCK_ACCESSIBILITY_QUERY_SERVICE_H_
 
 #include <vector>
 
@@ -11,7 +11,7 @@
 #include "components/accessibility_annotator/core/annotation_reducer/memory_search_result.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
-namespace autofill {
+namespace accessibility_annotator {
 
 class MockAccessibilityQueryService
     : public accessibility_annotator::AccessibilityQueryService {
@@ -29,6 +29,6 @@ class MockAccessibilityQueryService
       (override));
 };
 
-}  // namespace autofill
+}  // namespace accessibility_annotator
 
-#endif  // CHROME_BROWSER_UI_AUTOFILL_MOCK_ACCESSIBILITY_QUERY_SERVICE_H_
+#endif  // COMPONENTS_ACCESSIBILITY_ANNOTATOR_CORE_MOCK_ACCESSIBILITY_QUERY_SERVICE_H_

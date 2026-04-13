@@ -2,14 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/autofill/mock_accessibility_query_service.h"
+#include "components/accessibility_annotator/core/mock_accessibility_query_service.h"
 
 #include <memory>
 
 #include "components/accessibility_annotator/core/accessibility_query_service_delegate.h"
 #include "components/accessibility_annotator/core/annotation_reducer/memory_data_provider.h"
 
-namespace autofill {
+namespace accessibility_annotator {
 
 namespace {
 
@@ -35,4 +35,4 @@ MockAccessibilityQueryService::MockAccessibilityQueryService()
 
 MockAccessibilityQueryService::~MockAccessibilityQueryService() = default;
 
-}  // namespace autofill
+}  // namespace accessibility_annotator
