@@ -5872,36 +5872,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="P2P.Server.ClientCount" units="count"
-    expires_after="2021-12-29">
-  <owner>ahassani@chromium.org</owner>
-  <owner>chromeos-core-services@google.com</owner>
-  <summary>
-    The number of currently connected HTTP clients. This is reported every time
-    a HTTP client connects.
-  </summary>
-</histogram>
-
-<histogram name="P2P.Server.ContentServedInterruptedMB" units="MB"
-    expires_after="2021-12-29">
-  <owner>ahassani@chromium.org</owner>
-  <owner>chromeos-core-services@google.com</owner>
-  <summary>
-    Number of megabytes (1,000,000 bytes) served from the device (via HTTP)
-    where the client disconnects prematurely. This is reported every time a file
-    is served and the client disconnects before receiving all data.
-  </summary>
-</histogram>
-
-<histogram name="P2P.Server.FileCount" units="count" expires_after="2021-12-29">
-  <owner>ahassani@chromium.org</owner>
-  <owner>chromeos-core-services@google.com</owner>
-  <summary>
-    The number of files available via p2p. This is reported every time a file is
-    added or removed to the /var/cache/p2p directory.
-  </summary>
-</histogram>
-
 <histogram name="PageImageService.Android.SalientImageUrlFetchResult{ClientId}"
     enum="SalientImageUrlFetchResult" expires_after="2026-06-10">
   <owner>hanxi@google.com</owner>
