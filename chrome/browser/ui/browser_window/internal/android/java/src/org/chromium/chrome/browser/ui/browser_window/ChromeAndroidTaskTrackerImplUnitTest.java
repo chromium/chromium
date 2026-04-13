@@ -39,6 +39,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
+import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
@@ -50,6 +51,7 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.lifecycle.TopResumedActivityChangedWithNativeObserver;
+import org.chromium.chrome.browser.multiwindow.MultiInstanceManager.NewWindowAppSource;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceOrchestrator;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceOrchestratorFactory;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -64,6 +66,8 @@ public class ChromeAndroidTaskTrackerImplUnitTest {
 
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Rule public FakeTimeTestRule mFakeTime = new FakeTimeTestRule();
+
+    @Mock private MultiInstanceOrchestrator mMultiInstanceOrchestrator;
 
     private Context mContext;
 
@@ -81,8 +85,7 @@ public class ChromeAndroidTaskTrackerImplUnitTest {
 
         ChromeAndroidTaskUnitTestSupport.createMockAndroidBrowserWindowNatives();
 
-        var mockOrchestrator = mock(MultiInstanceOrchestrator.class);
-        MultiInstanceOrchestratorFactory.setInstanceForTesting(mockOrchestrator);
+        MultiInstanceOrchestratorFactory.setInstanceForTesting(mMultiInstanceOrchestrator);
     }
 
     @After
@@ -224,7 +227,7 @@ public class ChromeAndroidTaskTrackerImplUnitTest {
     }
 
     @Test
-    public void createPendingTask_startsActivityWithIntent() {
+    public void createPendingTask_createsNormalBrowserWindow() {
         // Arrange.
         var mockParams =
                 ChromeAndroidTaskUnitTestSupport.createMockAndroidBrowserWindowCreateParams();
@@ -235,9 +238,19 @@ public class ChromeAndroidTaskTrackerImplUnitTest {
         // Assert.
         assertNotNull(pendingTask);
 
-        var intentCaptor = ArgumentCaptor.forClass(Intent.class);
-        verify(mContext).startActivity(intentCaptor.capture());
-        assertTrue(intentCaptor.getValue().hasExtra(EXTRA_PENDING_BROWSER_WINDOW_TASK_ID));
+        var intentExtrasBundleCaptor = ArgumentCaptor.forClass(Bundle.class);
+        verify(mMultiInstanceOrchestrator)
+                .createNewWindow(
+                        any(),
+                        eq(false),
+                        intentExtrasBundleCaptor.capture(),
+                        any(),
+                        eq(NewWindowAppSource.BROWSER_WINDOW_CREATOR));
+        assertNonNull(intentExtrasBundleCaptor.getValue());
+        assertTrue(
+                intentExtrasBundleCaptor
+                        .getValue()
+                        .containsKey(EXTRA_PENDING_BROWSER_WINDOW_TASK_ID));
     }
 
     @Test
@@ -254,7 +267,13 @@ public class ChromeAndroidTaskTrackerImplUnitTest {
 
         // Assert.
         var bundleCaptor = ArgumentCaptor.forClass(Bundle.class);
-        verify(mContext).startActivity(any(Intent.class), bundleCaptor.capture());
+        verify(mMultiInstanceOrchestrator)
+                .createNewWindow(
+                        any(),
+                        eq(false),
+                        any(),
+                        bundleCaptor.capture(),
+                        eq(NewWindowAppSource.BROWSER_WINDOW_CREATOR));
         Rect capturedBounds =
                 bundleCaptor.getValue().getParcelable(ActivityOptions.KEY_LAUNCH_BOUNDS);
         assertEquals(mockParams.getInitialBoundsInDp(), capturedBounds);
@@ -280,7 +299,13 @@ public class ChromeAndroidTaskTrackerImplUnitTest {
 
         // Assert.
         var bundleCaptor = ArgumentCaptor.forClass(Bundle.class);
-        verify(mContext).startActivity(any(Intent.class), bundleCaptor.capture());
+        verify(mMultiInstanceOrchestrator)
+                .createNewWindow(
+                        any(),
+                        eq(false),
+                        any(),
+                        bundleCaptor.capture(),
+                        eq(NewWindowAppSource.BROWSER_WINDOW_CREATOR));
         Rect capturedBounds =
                 bundleCaptor.getValue().getParcelable(ActivityOptions.KEY_LAUNCH_BOUNDS);
 

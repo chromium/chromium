@@ -11,6 +11,7 @@ import org.jni_zero.CalledByNative;
 import org.chromium.base.JniOnceCallback;
 import org.chromium.base.Log;
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.chrome.browser.incognito.IncognitoUtils;
 import org.chromium.ui.mojom.WindowShowState;
 
 import java.util.Locale;
@@ -70,6 +71,9 @@ final class BrowserWindowCreatorBridge {
             return false;
         }
 
-        return true;
+        var profile = createParams.getProfile();
+        boolean isIncognito = profile.isIncognitoBranded();
+        // If incognito mode is disabled, it is disallowed to create an incognito window.
+        return !isIncognito || IncognitoUtils.isIncognitoModeEnabled(profile);
     }
 }

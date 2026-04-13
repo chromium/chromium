@@ -171,6 +171,23 @@ class MultiInstanceManagerApi31 extends MultiInstanceManagerImpl
             assert tracker.isInitialized();
             tracker.notifyEvent(EventConstants.INSTANCE_SWITCHER_IPH_USED);
             return true;
+        } else if (id == R.id.new_incognito_window_menu_id) {
+            int appSource =
+                    fromMenu ? NewWindowAppSource.MENU : NewWindowAppSource.KEYBOARD_SHORTCUT;
+            TabModelOrchestrator tabModelOrchestrator = mTabModelOrchestratorSupplier.get();
+            if (tabModelOrchestrator == null) return true;
+            TabModelSelector tabModelSelector = tabModelOrchestrator.getTabModelSelector();
+            if (tabModelSelector == null) return true;
+            Profile profile = tabModelSelector.getCurrentModel().getProfile();
+            if (profile != null && IncognitoUtils.isIncognitoModeEnabled(profile)) {
+                mMultiInstanceOrchestrator.createNewWindow(
+                        mActivity,
+                        /* isIncognito= */ true,
+                        /* additionalIntentExtras= */ null,
+                        /* startActivityOptions= */ null,
+                        appSource);
+            }
+            return true;
         }
         return super.handleMenuOrKeyboardAction(id, fromMenu);
     }
@@ -213,12 +230,12 @@ class MultiInstanceManagerApi31 extends MultiInstanceManagerImpl
     @Override
     public void openNewWindow(boolean isIncognito) {
         RecordUserAction.record("Android.WindowManager.NewWindow");
-        Intent intent =
-                mMultiInstanceOrchestrator.createNewWindowIntent(
-                        mActivity, isIncognito, NewWindowAppSource.WINDOW_MANAGER);
-        assert intent != null : "The Intent to open a new window must not be null";
-
-        mActivity.startActivity(intent);
+        mMultiInstanceOrchestrator.createNewWindow(
+                mActivity,
+                isIncognito,
+                /* additionalIntentExtras= */ null,
+                /* startActivityOptions= */ null,
+                NewWindowAppSource.WINDOW_MANAGER);
     }
 
     /* package */ void showTargetSelectorDialog(

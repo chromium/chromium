@@ -99,12 +99,6 @@ public interface ChromeAndroidTask {
         final AndroidBrowserWindowCreateParams mCreateParams;
 
         /**
-         * Intent used to launch the root {@code Activity} for the pending {@link
-         * ChromeAndroidTask}.
-         */
-        final Intent mIntent;
-
-        /**
          * Callback to notify native callers when a native {@code AndroidBrowserWindow} is created
          * and fully initialized.
          *
@@ -117,11 +111,9 @@ public interface ChromeAndroidTask {
         PendingTaskInfo(
                 int pendingTaskId,
                 AndroidBrowserWindowCreateParams createParams,
-                Intent intent,
                 @Nullable JniOnceCallback<Long> callback) {
             mPendingTaskId = pendingTaskId;
             mCreateParams = createParams;
-            mIntent = intent;
             mTaskCreationCallbackForNative = callback;
         }
 

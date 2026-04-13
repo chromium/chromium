@@ -8,8 +8,10 @@ import static org.chromium.chrome.browser.multiwindow.MultiInstanceManager.INVAL
 
 import android.app.Activity;
 import android.content.Intent;
+import android.os.Bundle;
 
 import androidx.annotation.StringRes;
+import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.ActivityState;
 import org.chromium.base.ApiCompatibilityUtils;
@@ -76,7 +78,29 @@ import java.util.Set;
     }
 
     @Override
-    public @Nullable Intent createNewWindowIntent(
+    public void createNewWindow(
+            Activity sourceActivity,
+            boolean isIncognito,
+            @Nullable Bundle additionalIntentExtras,
+            @Nullable Bundle startActivityOptions,
+            @NewWindowAppSource int source) {
+        Intent intent = createNewWindowIntent(sourceActivity, isIncognito, source);
+        if (intent == null) return;
+
+        if (additionalIntentExtras != null) {
+            intent.putExtras(additionalIntentExtras);
+        }
+
+        MultiInstanceManager.onMultiInstanceModeStarted();
+        if (startActivityOptions == null) {
+            sourceActivity.startActivity(intent);
+        } else {
+            sourceActivity.startActivity(intent, startActivityOptions);
+        }
+    }
+
+    @VisibleForTesting
+    /* package */ static @Nullable Intent createNewWindowIntent(
             Activity sourceActivity, boolean isIncognito, @NewWindowAppSource int source) {
         boolean isInMultiWindowMode =
                 MultiWindowUtils.getInstance().isInMultiWindowMode(sourceActivity);

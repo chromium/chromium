@@ -10,7 +10,6 @@ import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.ActivityManager;
 import android.content.Context;
-import android.content.Intent;
 import android.content.res.Configuration;
 import android.hardware.display.DisplayManager;
 import android.hardware.display.DisplayManager.DisplayListener;
@@ -30,9 +29,7 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
-import org.chromium.chrome.browser.app.tab_activity_glue.ReparentingTabsTask;
 import org.chromium.chrome.browser.app.tabmodel.TabModelOrchestrator;
-import org.chromium.chrome.browser.incognito.IncognitoUtils;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.lifecycle.ConfigurationChangedObserver;
 import org.chromium.chrome.browser.lifecycle.DestroyObserver;
@@ -357,17 +354,12 @@ public class MultiInstanceManagerImpl extends MultiInstanceManager
             }
             return true;
         } else if (id == R.id.new_window_menu_id) {
-            openNewWindow(/* incognito= */ false, appSource);
-            return true;
-        } else if (id == R.id.new_incognito_window_menu_id) {
-            TabModelOrchestrator tabModelOrchestrator = mTabModelOrchestratorSupplier.get();
-            if (tabModelOrchestrator == null) return true;
-            TabModelSelector tabModelSelector = tabModelOrchestrator.getTabModelSelector();
-            if (tabModelSelector == null) return true;
-            Profile profile = tabModelSelector.getCurrentModel().getProfile();
-            if (profile != null && IncognitoUtils.isIncognitoModeEnabled(profile)) {
-                openNewWindow(/* incognito= */ true, appSource);
-            }
+            mMultiInstanceOrchestrator.createNewWindow(
+                    mActivity,
+                    /* isIncognito= */ false,
+                    /* additionalIntentExtras= */ null,
+                    /* startActivityOptions= */ null,
+                    appSource);
             return true;
         }
 
@@ -456,31 +448,6 @@ public class MultiInstanceManagerImpl extends MultiInstanceManager
             if (info.id == sMergedInstanceTaskId) return true;
         }
         return false;
-    }
-
-    public void moveTabsToOtherWindow(List<Tab> tabs, @NewWindowAppSource int source) {
-        Intent intent = mMultiWindowModeStateDispatcher.getOpenInOtherWindowIntent();
-        if (intent == null) return;
-
-        onMultiInstanceModeStarted();
-        ReparentingTabsTask.from(tabs)
-                .begin(
-                        mActivity,
-                        intent,
-                        /* startActivityOptions= */ null,
-                        /* finalizeCallback= */ null);
-        RecordUserAction.record("MobileMenuMoveToOtherWindow");
-    }
-
-    private void openNewWindow(boolean incognito, @NewWindowAppSource int source) {
-        Intent intent =
-                mMultiInstanceOrchestrator.createNewWindowIntent(mActivity, incognito, source);
-        if (intent == null) {
-            return;
-        }
-
-        onMultiInstanceModeStarted();
-        mActivity.startActivity(intent);
     }
 
     @Override

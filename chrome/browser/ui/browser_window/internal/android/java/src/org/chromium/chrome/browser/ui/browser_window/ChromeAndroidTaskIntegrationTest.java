@@ -1113,9 +1113,10 @@ public class ChromeAndroidTaskIntegrationTest {
                 ThreadUtils.runOnUiThreadBlocking(
                         () -> {
                             var taskTracker =
-                                    assumeNonNull(ChromeAndroidTaskTrackerFactory.getInstance());
-                            ChromeAndroidTaskTrackerImpl
-                                    .pausePendingTaskActivityCreationForTesting();
+                                    assumeNonNull(
+                                            (ChromeAndroidTaskTrackerImpl)
+                                                    ChromeAndroidTaskTrackerFactory.getInstance());
+                            taskTracker.pausePendingTaskActivityCreationForTesting();
                             return taskTracker;
                         });
 
@@ -1136,9 +1137,8 @@ public class ChromeAndroidTaskIntegrationTest {
                             task.maximize();
                             task.deactivate();
 
-                            ChromeAndroidTaskTrackerImpl
-                                    .resumePendingTaskActivityCreationForTesting(
-                                            pendingTaskInfo.mPendingTaskId);
+                            chromeAndroidTaskTracker.resumePendingTaskActivityCreationForTesting(
+                                    pendingTaskInfo.mPendingTaskId);
 
                             return task;
                         });
@@ -1181,9 +1181,10 @@ public class ChromeAndroidTaskIntegrationTest {
                 ThreadUtils.runOnUiThreadBlocking(
                         () -> {
                             var taskTracker =
-                                    assumeNonNull(ChromeAndroidTaskTrackerFactory.getInstance());
-                            ChromeAndroidTaskTrackerImpl
-                                    .pausePendingTaskActivityCreationForTesting();
+                                    assumeNonNull(
+                                            (ChromeAndroidTaskTrackerImpl)
+                                                    ChromeAndroidTaskTrackerFactory.getInstance());
+                            taskTracker.pausePendingTaskActivityCreationForTesting();
                             return taskTracker;
                         });
 
@@ -1203,9 +1204,8 @@ public class ChromeAndroidTaskIntegrationTest {
 
                             task.showInactive();
 
-                            ChromeAndroidTaskTrackerImpl
-                                    .resumePendingTaskActivityCreationForTesting(
-                                            pendingTaskInfo.mPendingTaskId);
+                            chromeAndroidTaskTracker.resumePendingTaskActivityCreationForTesting(
+                                    pendingTaskInfo.mPendingTaskId);
 
                             return task;
                         });
@@ -1243,9 +1243,10 @@ public class ChromeAndroidTaskIntegrationTest {
                 ThreadUtils.runOnUiThreadBlocking(
                         () -> {
                             var taskTracker =
-                                    assumeNonNull(ChromeAndroidTaskTrackerFactory.getInstance());
-                            ChromeAndroidTaskTrackerImpl
-                                    .pausePendingTaskActivityCreationForTesting();
+                                    assumeNonNull(
+                                            (ChromeAndroidTaskTrackerImpl)
+                                                    ChromeAndroidTaskTrackerFactory.getInstance());
+                            taskTracker.pausePendingTaskActivityCreationForTesting();
                             return taskTracker;
                         });
         Set<Integer> currentTaskIds = getTabbedActivityTaskIds();
@@ -1266,7 +1267,7 @@ public class ChromeAndroidTaskIntegrationTest {
                     task.minimize();
 
                     ChromeTabbedActivity.interceptMoveTaskToBackForTesting();
-                    ChromeAndroidTaskTrackerImpl.resumePendingTaskActivityCreationForTesting(
+                    chromeAndroidTaskTracker.resumePendingTaskActivityCreationForTesting(
                             pendingTaskInfo.mPendingTaskId);
                 });
 
@@ -1294,9 +1295,10 @@ public class ChromeAndroidTaskIntegrationTest {
                 ThreadUtils.runOnUiThreadBlocking(
                         () -> {
                             var taskTracker =
-                                    assumeNonNull(ChromeAndroidTaskTrackerFactory.getInstance());
-                            ChromeAndroidTaskTrackerImpl
-                                    .pausePendingTaskActivityCreationForTesting();
+                                    assumeNonNull(
+                                            (ChromeAndroidTaskTrackerImpl)
+                                                    ChromeAndroidTaskTrackerFactory.getInstance());
+                            taskTracker.pausePendingTaskActivityCreationForTesting();
                             return taskTracker;
                         });
         Set<Integer> currentTaskIds = getTabbedActivityTaskIds();
@@ -1315,7 +1317,7 @@ public class ChromeAndroidTaskIntegrationTest {
                     task.close();
                     task.show();
 
-                    ChromeAndroidTaskTrackerImpl.resumePendingTaskActivityCreationForTesting(
+                    chromeAndroidTaskTracker.resumePendingTaskActivityCreationForTesting(
                             pendingTaskInfo.mPendingTaskId);
                 });
 
