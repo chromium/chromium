@@ -115,8 +115,10 @@ class ChromeFilterNavigationObserverTest
     base::WeakPtr<MultistepFilterUiDelegate> captured_delegate;
     EXPECT_CALL(*mock_service(), GenerateFilterSuggestions(url, _))
         .WillOnce(testing::SaveArg<1>(&captured_delegate));
-    content::NavigationSimulator::NavigateAndCommitFromBrowser(web_contents(),
-                                                               url);
+    auto simulator =
+        content::NavigationSimulator::CreateRendererInitiated(url, main_rfh());
+    simulator->SetHasUserGesture(true);
+    simulator->Commit();
     return captured_delegate;
   }
 
@@ -158,6 +160,22 @@ TEST_F(ChromeFilterNavigationObserverTest,
 TEST_F(ChromeFilterNavigationObserverTest, WebContentsDestruction) {
   DeleteContents();
   EXPECT_TRUE(chrome_observer_);
+}
+
+TEST_F(ChromeFilterNavigationObserverTest, SameDocumentNavigation) {
+  auto mock_controller =
+      std::make_unique<testing::NiceMock<MockFilterUiController>>(*mock_tab_);
+
+  const GURL url("https://www.example.com");
+  NavigateAndGetDelegate(url);
+
+  // Subsequent same-document navigation should NOT clear the suggestion in the
+  // controller.
+  const GURL same_doc_url("https://www.example.com/#test");
+  EXPECT_CALL(*mock_controller, ClearSuggestion()).Times(0);
+  auto navigation = content::NavigationSimulator::CreateRendererInitiated(
+      same_doc_url, main_rfh());
+  navigation->CommitSameDocument();
 }
 
 TEST_F(ChromeFilterNavigationObserverTest, DelegateClearSuggestion) {

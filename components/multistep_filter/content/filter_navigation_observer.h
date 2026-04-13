@@ -44,8 +44,10 @@ class FilterNavigationObserver : public content::WebContentsObserver {
       base::TerminationStatus status) override;
 
  private:
-  // The MultistepFilterService to use for generating suggestions.
-  // This service must outlive this observer.
+  // The MultistepFilterService to use for generating
+  // suggestions. This service must outlive this observer.
+  // TODO (crbug.com/498901792): Use raw_ref for service when the feature is
+  // completely launched.
   raw_ptr<MultistepFilterService> service_;
 
   // Delegate to provide contextual information and interact with the UI.

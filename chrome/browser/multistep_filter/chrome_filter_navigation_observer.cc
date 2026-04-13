@@ -63,7 +63,7 @@ class UiDelegateImpl : public MultistepFilterUiDelegate {
     return FilterUiController::From(&tab_.get());
   }
 
-  const raw_ref<tabs::TabInterface> tab_;
+  raw_ref<tabs::TabInterface> tab_;
   base::WeakPtrFactory<UiDelegateImpl> weak_ptr_factory_{this};
 };
 
