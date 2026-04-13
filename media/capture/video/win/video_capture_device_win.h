@@ -130,8 +130,14 @@ class VideoCaptureDeviceWin : public VideoCaptureDevice,
                      HRESULT hr);
 
   const VideoCaptureDeviceDescriptor device_descriptor_;
-  InternalState state_;
-  std::unique_ptr<VideoCaptureDevice::Client> client_;
+
+  // Used to guard between race checking capture state between the thread used
+  // in |thread_checker_| and a thread used in
+  // |SinkFilterObserver::SinkFilterObserver| callbacks.
+  base::Lock lock_;
+
+  InternalState state_ GUARDED_BY(lock_);
+  std::unique_ptr<VideoCaptureDevice::Client> client_ GUARDED_BY(lock_);
 
   Microsoft::WRL::ComPtr<IBaseFilter> capture_filter_;
 
@@ -158,14 +164,9 @@ class VideoCaptureDeviceWin : public VideoCaptureDevice,
 
   base::TimeTicks first_ref_time_;
 
-  base::queue<TakePhotoCallback> take_photo_callbacks_;
+  base::queue<TakePhotoCallback> take_photo_callbacks_ GUARDED_BY(lock_);
 
   base::ThreadChecker thread_checker_;
-
-  // Used to guard between race checking capture state between the thread used
-  // in |thread_checker_| and a thread used in
-  // |SinkFilterObserver::SinkFilterObserver| callbacks.
-  base::Lock lock_;
 
   bool enable_get_photo_state_;
 
