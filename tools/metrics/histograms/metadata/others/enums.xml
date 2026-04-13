@@ -277,12 +277,16 @@ chromium-metrics-reviews@google.com.
   <int value="3" label="Succeessfully got salient image url from local cache."/>
 </enum>
 
+<!-- LINT.IfChange(SilentPushEvent) -->
+
 <enum name="SilentPushEvent">
   <int value="0" label="New Silent Push request"/>
   <int value="1" label="Notification enforcement skipped"/>
   <int value="2" label="Silent push without notification"/>
   <int value="3" label="Silent push with generic notification"/>
 </enum>
+
+<!-- LINT.ThenChange(//chrome/browser/push_messaging/push_messaging_notification_manager.h:SilentPushEvent) -->
 
 <enum name="SubscriptionEligibilityAiSubscriptionTierStatus">
   <int value="0" label="Value not set"/>

@@ -21,6 +21,7 @@ class Profile;
 
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
+// LINT.IfChange(SilentPushEvent)
 enum class SilentPushEvent {
   kSilentRequest = 0,
   kNotificationEnforcementSkipped = 1,
@@ -28,6 +29,7 @@ enum class SilentPushEvent {
   kAllowedWithGenericNotification = 3,
   kMaxValue = kAllowedWithGenericNotification,
 };
+// LINT.ThenChange(//tools/metrics/histograms/metadata/others/enums.xml:SilentPushEvent)
 
 namespace content {
 class WebContents;
