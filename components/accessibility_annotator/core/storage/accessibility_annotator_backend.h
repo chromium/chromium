@@ -65,7 +65,7 @@ class AccessibilityAnnotatorBackend : public KeyedService {
         content_annotation;
     base::DictValue classifier_results;
     base::Time navigation_timestamp;
-    history::VisitID visit_id;
+    history::VisitID visit_id = history::kInvalidVisitID;
     // TODO(crbug.com/501092664): Add URL field to prepare for keying cache by
     // visit_id and pass to observers for data ingestion.
   };
