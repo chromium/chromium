@@ -916,6 +916,11 @@ Chromium is unable to recover your settings.
         <message name="IDS_EXTENSION_INSTALLED_HEADING" desc="Title of the extension-installed bubble. Instructs that the extension was installed.">
           <ph name="EXTENSION_NAME">$1<ex>Gmail Checker</ex></ph> has been added to Chromium
         </message>
+        <if expr="is_android">
+          <message name="IDS_EXTENSION_INSTALLED_MANAGE_INFO_IN_MAIN_MENU" desc="Text displayed in the post install dialog when the extensions menu is unpinned on Android informing them they can manage their extensions in the main menu.">
+            Manage your extensions by clicking Extensions in the Chromium main menu.
+          </message>
+        </if>
 
         <!-- Extension uninstall prompt -->
         <message name="IDS_EXTENSION_UNINSTALL_PROMPT_REMOVE_DATA_CHECKBOX" desc="Checkbox text to ask the user whether they want to remove associated data at uninstall time. Only used when uninstalling an app associated with a particular website.">

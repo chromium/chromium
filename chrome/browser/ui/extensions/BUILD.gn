@@ -121,6 +121,9 @@ if (enable_extensions_core) {
       "//ui/base",
       "//ui/strings",
     ]
+    if (is_android) {
+      deps += [ "//components/prefs" ]
+    }
     if (toolkit_views) {
       deps += [ "//chrome/browser/ui/views/extensions:extension_post_install_dialog_view_utils" ]
     }

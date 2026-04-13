@@ -31,6 +31,11 @@
 #include "ui/base/models/dialog_model.h"
 #include "ui/base/window_open_disposition.h"
 
+#if BUILDFLAG(IS_ANDROID)
+#include "chrome/common/pref_names.h"
+#include "components/prefs/pref_service.h"
+#endif
+
 #if !BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/ui/views/extensions/extension_post_install_dialog_view_utils.h"
 #endif
@@ -41,6 +46,7 @@ namespace {
 constexpr gfx::Size kMaxIconSize{43, 43};
 
 void ConfigurePostInstallDialogModel(
+    Profile* profile,
     ui::DialogModel::Builder& dialog_model_builder,
     ExtensionPostInstallDialogModel* model,
     base::RepeatingClosure manage_shortcuts_callback) {
@@ -67,8 +73,14 @@ void ConfigurePostInstallDialogModel(
                 manage_shortcuts_callback)));
   }
   if (model->show_how_to_manage()) {
-    dialog_model_builder.AddParagraph(ui::DialogModelLabel(
-        l10n_util::GetStringUTF16(IDS_EXTENSION_INSTALLED_MANAGE_INFO)));
+    int manage_info_string_id = IDS_EXTENSION_INSTALLED_MANAGE_INFO;
+#if BUILDFLAG(IS_ANDROID)
+    if (!profile->GetPrefs()->GetBoolean(prefs::kPinExtensionsMenuButton)) {
+      manage_info_string_id = IDS_EXTENSION_INSTALLED_MANAGE_INFO_IN_MAIN_MENU;
+    }
+#endif
+    dialog_model_builder.AddParagraph(
+        ui::DialogModelLabel(l10n_util::GetStringUTF16(manage_info_string_id)));
   }
 
 #if BUILDFLAG(IS_ANDROID)
@@ -149,7 +161,8 @@ void ShowExtensionPostInstallDialog(
       base::BindRepeating(&ExtensionPostInstallDialog::LinkClicked,
                           base::Unretained(weak_delegate));
 
-  ConfigurePostInstallDialogModel(dialog_model_builder, weak_delegate->model(),
+  ConfigurePostInstallDialogModel(profile, dialog_model_builder,
+                                  weak_delegate->model(),
                                   manage_shortcuts_callback);
 
 #if !BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(IS_ANDROID)
