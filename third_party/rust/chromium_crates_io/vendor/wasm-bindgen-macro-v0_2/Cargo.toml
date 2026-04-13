@@ -6,13 +6,13 @@
 # by `tools/crates/run_gnrt.py vendor`. Do not edit!
 #
 # This is an empty placeholder that has replaced the
-# `wasm-bindgen-macro-0.2.117` crate.
+# `wasm-bindgen-macro-0.2.118` crate.
 #
 # See `//tools/crates/gnrt/removed_crate.md` to learn more.
 
 [package]
 name = "wasm-bindgen-macro"
-version = "0.2.117"
+version = "0.2.118"
 
 [package.metadata.gnrt]
 is_placeholder = true
@@ -24,5 +24,5 @@ is_placeholder = true
 version = "^1.0"
 default_features = false
 [dependencies.wasm-bindgen-macro-support]
-version = "=0.2.117"
+version = "=0.2.118"
 default_features = false

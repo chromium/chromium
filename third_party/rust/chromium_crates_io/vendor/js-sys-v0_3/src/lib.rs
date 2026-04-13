@@ -6,6 +6,6 @@
 // by `tools/crates/run_gnrt.py vendor`. Do not edit!
 //
 // This is an empty placeholder that has replaced the
-// `js-sys-0.3.94` crate.
+// `js-sys-0.3.95` crate.
 //
 // See `//tools/crates/gnrt/removed_crate.md` to learn more.
