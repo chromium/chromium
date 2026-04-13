@@ -7000,7 +7000,9 @@ void RenderFrameHostImpl::ProcessBeforeUnloadCompletedFromFrame(
       // supply `send_before_unload_start_time_` as the value for
       // `renderer_before_unload_start_time`, which means
       // `browser_to_renderer_ipc_time_delta` should be 0.
-      CHECK(browser_to_renderer_ipc_time_delta.is_zero());
+      // TODO(https://crbug.com/497761255): CHECK-exclusion: Convert to CHECK
+      // once we are sure this isn't hit.
+      DCHECK(browser_to_renderer_ipc_time_delta.is_zero());
     }
 
     base::TimeDelta on_before_unload_overhead_time =
@@ -11858,7 +11860,9 @@ void RenderFrameHostImpl::HandleAXEvents(
     // This is the first update after the tree id changed. AXTree must be sent
     // a new root id, otherwise crashes are likely to result.
     CHECK(!updates_and_events.updates.empty());
-    CHECK_NE(ui::kInvalidAXNodeID, updates_and_events.updates[0].root_id);
+    // TODO(https://crbug.com/497761255): CHECK-exclusion: Convert to CHECK once
+    // we are sure this isn't hit.
+    DCHECK_NE(ui::kInvalidAXNodeID, updates_and_events.updates[0].root_id);
     needs_ax_root_id_ = false;
   }
 
@@ -12749,9 +12753,11 @@ bool RenderFrameHostImpl::ShouldDispatchPagehideAndVisibilitychangeDuringCommit(
   if (!old_frame_host->IsNavigationSameSite(dest_url_info)) {
     return false;
   }
-  CHECK(is_main_frame());
-  CHECK_NE(old_frame_host, this);
-  CHECK_NE(old_frame_host->GetSiteInstance(), GetSiteInstance());
+  // TODO(https://crbug.com/497761255): CHECK-exclusion: Convert to CHECK once
+  // we are sure this isn't hit.
+  DCHECK(is_main_frame());
+  DCHECK_NE(old_frame_host, this);
+  DCHECK_NE(old_frame_host->GetSiteInstance(), GetSiteInstance());
   return GetContentClient()->browser()->ShouldDispatchPagehideDuringCommit(
       GetSiteInstance()->GetBrowserContext(), dest_url_info.url);
 }
@@ -15492,7 +15498,9 @@ RenderFrameHostImpl::BuildClientSecurityState() const {
   // avoid crashes, this returns a maximally-restrictive value instead.
   if (!policy_container_host_) {
     // Prevent other code paths from depending on this bandaid.
-    CHECK_EQ(lifecycle_state_, LifecycleStateImpl::kSpeculative);
+    // TODO(https://crbug.com/497761255): CHECK-exclusion: Convert to CHECK once
+    // we are sure this isn't hit.
+    DCHECK_EQ(lifecycle_state_, LifecycleStateImpl::kSpeculative);
 
     // Omitted: reporting endpoint, report-only value and reporting endpoint.
     network::CrossOriginEmbedderPolicy coep;
@@ -16769,7 +16777,9 @@ void RenderFrameHostImpl::OnSameDocumentCommitProcessed(
     // OnSameDocumentCommitProcessed will be called after DidCommitNavigation on
     // successful same-document commits, so |request| should already be deleted
     // by the time we got here.
-    CHECK_EQ(result, blink::mojom::CommitResult::Ok);
+    // TODO(https://crbug.com/497761255): CHECK-exclusion: Convert to CHECK once
+    // we are sure this isn't hit.
+    DCHECK_EQ(result, blink::mojom::CommitResult::Ok);
     return;
   }
 
@@ -17586,7 +17596,9 @@ void RenderFrameHostImpl::PostMessageEvent(
     const url::Origin* source_origin,
     const url::Origin* target_origin,
     blink::TransferableMessage message) {
-  CHECK(is_render_frame_created());
+  // TODO(https://crbug.com/497761255): CHECK-exclusion: Convert to CHECK once
+  // we are sure this isn't hit.
+  DCHECK(is_render_frame_created());
 
   if (message.delegated_capability !=
       blink::mojom::DelegatedCapability::kNone) {
@@ -19667,7 +19679,9 @@ std::ostream& operator<<(std::ostream& o,
 net::CookieSettingOverrides RenderFrameHostImpl::GetCookieSettingOverrides() {
   // This shouldn't be called before committing the document.
   CHECK_NE(lifecycle_state(), LifecycleStateImpl::kSpeculative);
-  CHECK_NE(lifecycle_state(), LifecycleStateImpl::kPendingCommit);
+  // TODO(https://crbug.com/497761255): CHECK-exclusion: Convert to CHECK once
+  // we are sure this isn't hit.
+  DCHECK_NE(lifecycle_state(), LifecycleStateImpl::kPendingCommit);
   auto subresource_loader_factories_config =
       SubresourceLoaderFactoriesConfig::ForLastCommittedNavigation(*this);
   return subresource_loader_factories_config.cookie_setting_overrides();
