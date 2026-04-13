@@ -1489,6 +1489,11 @@ void NewSplitTab(BrowserWindowInterface* browser,
       tab_strip_model->IsTabPinned(active_index));
   tab_strip_model->AddToNewSplit({active_index},
                                  split_tabs::SplitTabVisualData(), source);
+
+  if (content::WebContents* active_contents =
+          tab_strip_model->GetActiveWebContents()) {
+    active_contents->Focus();
+  }
 }
 
 void AddNewTabToGroup(BrowserWindowInterface* browser) {
