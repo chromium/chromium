@@ -448,11 +448,18 @@ void PrintViewManager::OnRequestPrintPreviewCallback(
   // Double-check that the RenderFrameHost is still alive and has a live
   // RenderFrame, since the DLP check is potentially asynchronous.
   auto* render_frame_host = content::RenderFrameHost::FromID(rfh_id);
-  if (!render_frame_host || !render_frame_host->IsRenderFrameLive())
+  if (!render_frame_host || !render_frame_host->IsRenderFrameLive()) {
     return;
+  }
 
-  if (params->webnode_only)
+  // Also check it is active. Only active RFHs should show UI elements.
+  if (!render_frame_host->IsActive()) {
+    return;
+  }
+
+  if (params->webnode_only) {
     PrintPreviewForWebNode(render_frame_host);
+  }
 
   auto* dialog_controller = PrintPreviewDialogController::GetInstance();
   CHECK(dialog_controller);
