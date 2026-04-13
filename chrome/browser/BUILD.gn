@@ -2727,8 +2727,6 @@ static_library("browser") {
       "supervised_user/child_accounts/child_account_service_android.cc",
       "supervised_user/child_accounts/child_account_service_android.h",
       "tab_group_suggestion/group_suggestion_service_factory_android.cc",
-      "translate/android/translate_bridge.cc",
-      "translate/android/translate_bridge.h",
       "webauthn/android/cable_module_android.cc",
       "webauthn/android/cable_registration_state.cc",
       "webauthn/android/cable_registration_state.h",
@@ -2872,6 +2870,7 @@ static_library("browser") {
       "//chrome/browser/touch_to_fill/password_manager/password_generation/android:public",
       "//chrome/browser/translate",
       "//chrome/browser/translate/android",
+      "//chrome/browser/translate/android:android_impl",
       "//chrome/browser/translate/android:jni_headers",
       "//chrome/browser/ui/android/hats:impl",
       "//chrome/browser/ui/android/layouts:android",
@@ -3053,6 +3052,10 @@ static_library("browser") {
       # grouped_affiliations headers get componentized.
       "//chrome/browser/touch_to_fill/autofill/android:impl",
       "//chrome/browser/touch_to_fill/password_manager:impl",
+
+      # TODO(crbug.com/353332589): Remove this circular dependency when
+      # c/b/language/language_model_manager_factory.h gets componentized.
+      "//chrome/browser/translate/android:android_impl",
 
       # TODO(crbug.com/353332589): Remove this circular dependency when
       # c/b/net/qwac_web_contents_observer.h gets modularized.
@@ -7192,8 +7195,6 @@ static_library("test_support") {
     "ssl/ssl_browsertest_util.h",
     "ssl/ssl_client_auth_requestor_mock.cc",
     "ssl/ssl_client_auth_requestor_mock.h",
-    "translate/translate_test_utils.cc",
-    "translate/translate_test_utils.h",
     "webauthn/fake_password_credential_fetcher.cc",
     "webauthn/fake_password_credential_fetcher.h",
   ]
@@ -7212,6 +7213,7 @@ static_library("test_support") {
     "//chrome/browser/resource_coordinator",
     "//chrome/browser/safe_browsing:test_support",
     "//chrome/browser/sessions",
+    "//chrome/browser/translate:test_support",
     "//chrome/browser/ui:test_support",
   ]
   deps = [

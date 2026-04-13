@@ -90,3 +90,102 @@ source_set("impl") {
     ]
   }
 }
+
+source_set("test_support") {
+  testonly = true
+
+  sources = [
+    "translate_test_utils.cc",
+    "translate_test_utils.h",
+  ]
+
+  deps = [
+    ":translate",
+    "//base",
+    "//components/translate/content/browser",
+    "//components/translate/content/browser:test_support",
+    "//components/translate/core/common",
+    "//content/public/browser",
+  ]
+}
+
+if (!is_android) {
+  source_set("browser_tests") {
+    testonly = true
+    defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+
+    sources = [
+      "translate_frame_binder_browsertest.cc",
+      "translate_manager_browsertest.cc",
+    ]
+
+    deps = [
+      ":test_support",
+      ":translate",
+      "//base",
+      "//base/test:test_support",
+      "//chrome/browser",
+      "//chrome/browser/language",
+      "//chrome/browser/prefs:util",
+      "//chrome/browser/search_engines",
+      "//chrome/browser/ui/toasts",
+      "//chrome/browser/ui/toasts/api:toasts",
+      "//chrome/test:test_support",
+      "//components/translate/content/browser",
+      "//components/translate/core/browser",
+      "//components/translate/core/common",
+      "//content/public/browser",
+      "//content/test:test_support",
+      "//net:test_support",
+      "//testing/gmock",
+      "//testing/gtest",
+      "//url",
+    ]
+  }
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [
+    "fake_translate_agent.cc",
+    "fake_translate_agent.h",
+    "translate_service_unittest.cc",
+  ]
+
+  deps = [
+    ":translate",
+    "//base",
+    "//base/test:test_support",
+    "//chrome/browser",
+    "//chrome/test:test_support",
+    "//components/infobars/content",
+    "//components/translate/content/browser",
+    "//components/translate/core/browser",
+    "//components/translate/core/common",
+    "//content/public/browser",
+    "//content/test:test_support",
+    "//testing/gmock",
+    "//testing/gtest",
+    "//url",
+  ]
+
+  if (!is_android) {
+    sources += [ "translate_manager_render_view_host_unittest.cc" ]
+    deps += [
+      "//chrome/app:command_ids",
+      "//chrome/browser/ui/translate",
+      "//chrome/common",
+      "//components/language/core/browser",
+    ]
+  }
+
+  if (is_android) {
+    sources += [ "translate_manager_render_view_host_android_unittest.cc" ]
+    deps += [ "//components/translate/content/android" ]
+  }
+
+  if (is_chromeos_ash) {
+    deps += [ "//chromeos/ash/components/file_manager:constants" ]
+  }
+}

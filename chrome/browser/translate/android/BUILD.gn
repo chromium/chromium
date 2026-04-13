@@ -27,6 +27,7 @@ static_library("android") {
   sources = [
     "auto_translate_snackbar_controller.cc",
     "auto_translate_snackbar_controller.h",
+    "translate_bridge.h",
   ]
 
   deps = [
@@ -34,6 +35,30 @@ static_library("android") {
     "//base",
     "//components/translate/core/browser",
     "//components/translate/core/common",
+    "//content/public/browser",
+  ]
+}
+
+source_set("android_impl") {
+  sources = [ "translate_bridge.cc" ]
+
+  public_deps = [
+    ":android",
+    "//chrome/browser:browser_public_dependencies",
+  ]
+
+  deps = [
+    "//base",
+    "//chrome/browser:browser_process",
+    "//chrome/browser/language",
+    "//chrome/browser/language/android:jni_headers",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/translate",
+    "//components/language/core/browser",
+    "//components/language/core/common",
+    "//components/prefs",
+    "//components/strings",
+    "//components/translate/core/browser",
     "//content/public/browser",
   ]
 }
@@ -93,7 +118,10 @@ android_library("javatests") {
 
 source_set("unit_tests") {
   testonly = true
-  sources = [ "auto_translate_snackbar_controller_unittest.cc" ]
+  sources = [
+    "auto_translate_snackbar_controller_unittest.cc",
+    "translate_bridge_unittest.cc",
+  ]
   deps = [
     ":android",
     "//base",
