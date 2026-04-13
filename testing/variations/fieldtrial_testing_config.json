@@ -15279,7 +15279,7 @@
                 {
                     "name": "Enabled",
                     "params": {
-                        "execution_rate": "1"
+                        "execution_rate": "10"
                     },
                     "enable_features": [
                         "ModelBasedPageClassification"
