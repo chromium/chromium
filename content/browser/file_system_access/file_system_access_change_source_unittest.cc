@@ -31,13 +31,13 @@ class MockRawChangeObserver
               (const storage::FileSystemURL& changed_url,
                bool error,
                const FileSystemAccessChangeSource::ChangeInfo& change_info,
-               const FileSystemAccessWatchScope& scope),
+               FileSystemAccessWatchScope scope),
               (override));
   MOCK_METHOD(void,
               OnUsageChange,
               (size_t old_usage,
                size_t new_usage,
-               const FileSystemAccessWatchScope& scope),
+               FileSystemAccessWatchScope scope),
               (override));
   MOCK_METHOD(void,
               OnSourceBeingDestroyed,
