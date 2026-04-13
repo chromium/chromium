@@ -1653,9 +1653,7 @@ void AppListControllerImpl::UpdateSearchBoxUiVisibilities() {
 
 int64_t AppListControllerImpl::GetDisplayIdToShowAppListOn() {
   if (IsInTabletMode() && !Shell::Get()->display_manager()->IsInUnifiedMode()) {
-    return display::HasInternalDisplay()
-               ? display::Display::InternalDisplayId()
-               : display::Screen::Get()->GetPrimaryDisplay().id();
+    return display::Screen::Get()->GetPrimaryDisplay().id();
   }
 
   return display::Screen::Get()

@@ -62,6 +62,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
 #include "components/services/app_service/public/cpp/app.h"
 #include "components/services/app_service/public/cpp/app_registry_cache.h"
@@ -71,6 +72,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/test/layer_animation_stopped_waiter.h"
+#include "ui/display/manager/display_manager.h"
 #include "ui/display/screen.h"
 #include "ui/events/event_constants.h"
 #include "ui/events/keycodes/keyboard_codes_posix.h"
@@ -957,6 +959,51 @@ TEST_F(AppListControllerImplTest, HideContinueSectionUpdatesPref) {
   controller->SetHideContinueSection(false);
   EXPECT_FALSE(controller->ShouldHideContinueSection());
   EXPECT_FALSE(prefs->GetBoolean(prefs::kLauncherContinueSectionHidden));
+}
+
+TEST_F(AppListControllerImplTest, ShowAppListOnPrimaryDisplay) {
+  UpdateDisplay("600x500,600x500");
+
+  const display::Display first_display = GetPrimaryDisplay();
+  const display::Display second_display = GetSecondaryDisplay();
+  auto* controller = Shell::Get()->app_list_controller();
+
+  // Enter Tablet Mode:
+  TabletModeControllerTestApi().EnterTabletMode();
+
+  ASSERT_TRUE(base::test::RunUntil(
+      [&] { return display_manager()->IsInMirrorMode(); }));
+  EXPECT_TRUE(display::Screen::Get()->InTabletMode());
+
+  // First display is primary by default.
+  EXPECT_EQ(controller->GetDisplayIdToShowAppListOn(), first_display.id());
+
+  // Exit Tablet Mode:
+  TabletModeControllerTestApi().LeaveTabletMode();
+  ASSERT_TRUE(base::test::RunUntil(
+      [&] { return !display_manager()->IsInMirrorMode(); }));
+  EXPECT_FALSE(display::Screen::Get()->InTabletMode());
+
+  // Set second display as primary:
+  Shell::Get()->window_tree_host_manager()->SetPrimaryDisplayId(
+      second_display.id());
+  EXPECT_EQ(second_display.id(), GetPrimaryDisplay().id());
+
+  // Enter Tablet Mode:
+  TabletModeControllerTestApi().EnterTabletMode();
+
+  ASSERT_TRUE(base::test::RunUntil(
+      [&] { return display_manager()->IsInMirrorMode(); }));
+  EXPECT_TRUE(display::Screen::Get()->InTabletMode());
+
+  // The second display should now be returned.
+  EXPECT_EQ(controller->GetDisplayIdToShowAppListOn(), second_display.id());
+
+  // Exit Tablet Mode:
+  TabletModeControllerTestApi().LeaveTabletMode();
+  ASSERT_TRUE(base::test::RunUntil(
+      [&] { return !display_manager()->IsInMirrorMode(); }));
+  EXPECT_FALSE(display::Screen::Get()->InTabletMode());
 }
 
 // AppListControllerImpl test that start in inactive session.
