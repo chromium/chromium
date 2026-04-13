@@ -991,7 +991,9 @@ IN_PROC_BROWSER_TEST_F(SavePageBrowserTest, SaveUnauthorizedResource) {
 
 #if BUILDFLAG(IS_WIN)
 // Save a file and confirm that the file is correctly quarantined.
-IN_PROC_BROWSER_TEST_F(SavePageBrowserTest, SaveURLQuarantine) {
+// TODO(https://crbug.com/502209268): Test has started failing on win11-arm64,
+// likely after an OS update, because the file does not report as quarantined.
+IN_PROC_BROWSER_TEST_F(SavePageBrowserTest, DISABLED_SaveURLQuarantine) {
   GURL url = embedded_test_server()->GetURL("/save_page/text.txt");
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
 
