@@ -488,7 +488,8 @@ void XMLDocumentParserRs::StartElementNs(
 
   SetAttributes(new_element, prefixed_attributes, GetParserContentPolicy());
 
-  if (parsing_fragment_ && encountered_namespace_reset) {
+  if (parsing_fragment_ && encountered_namespace_reset &&
+      !ancestor_resetting_namespace_) {
     ancestor_resetting_namespace_ = new_element;
   }
 
