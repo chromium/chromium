@@ -26,12 +26,14 @@ namespace {
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
+// LINT.IfChange(OptionalBoolRecord)
 enum class OptionalBoolRecord {
   kUnknown = 0,
   kFalse = 1,
   kTrue = 2,
   kMaxValue = kTrue,
 };
+// LINT.ThenChange(//tools/metrics/histograms/metadata/uma/enums.xml:OptionalBoolRecord)
 
 void RecordTriStateMetric(const char* name, std::optional<bool> sample) {
   base::UmaHistogramEnumeration(

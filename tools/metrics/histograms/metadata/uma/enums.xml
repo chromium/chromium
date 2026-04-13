@@ -335,11 +335,15 @@ chromium-metrics-reviews@google.com.
       label="Histogram active sample wrapped 2^31 during accumulation."/>
 </enum>
 
+<!-- LINT.IfChange(OptionalBoolRecord) -->
+
 <enum name="OptionalBoolRecord">
   <int value="0" label="Unknown"/>
   <int value="1" label="False"/>
   <int value="2" label="True"/>
 </enum>
+
+<!-- LINT.ThenChange(//components/metrics/drive_metrics_provider.cc:OptionalBoolRecord) -->
 
 <enum name="PersistentHistogramsInitResult">
   <int value="0" label="Local-Memory Success"/>
