@@ -1137,14 +1137,6 @@ void StyleAdjuster::AdjustComputedStyle(StyleResolverState& state,
     AdjustStyleForHTMLElement(builder, *html_element);
   }
 
-  bool is_transition_scope = false;
-  if (element) {
-    if (const ViewTransition* view_transition =
-            ViewTransitionUtils::GetTransition(*element)) {
-      is_transition_scope = (view_transition->Scope() == element);
-    }
-  }
-
   bool is_document_element =
       element && element->GetDocument().documentElement() == element;
   bool is_in_top_layer = false;
@@ -1234,11 +1226,7 @@ void StyleAdjuster::AdjustComputedStyle(StyleResolverState& state,
         element->GetDocument().IsInMainFrame()) {
       builder.SetBackdropFilter(FilterOperations());
     }
-    if (is_transition_scope && !is_document_element) {
-      builder.SetContain(builder.Contain() | kContainsLayout);
-      builder.SetViewTransitionScope(EViewTransitionScope::kAll);
-    } else if (builder.InternalOverscrollArea() !=
-               EInternalOverscrollArea::kNone) {
+    if (builder.InternalOverscrollArea() != EInternalOverscrollArea::kNone) {
       // TODO(crbug.com/467112943): Layout containment is currently forced to
       // ensure that the container of the overscroll areas actually contains
       // the overscroll areas. However, requiring layout containment is
@@ -1277,7 +1265,7 @@ void StyleAdjuster::AdjustComputedStyle(StyleResolverState& state,
       (element && IsA<SVGForeignObjectElement>(*element)) || is_in_top_layer ||
       builder.StyleType() == kPseudoIdBackdrop ||
       builder.StyleType() == kPseudoIdViewTransition ||
-      IsCanvasWithDrawElements(element) || is_transition_scope) {
+      IsCanvasWithDrawElements(element)) {
     builder.SetForcesStackingContext(true);
   }
 
@@ -1394,6 +1382,18 @@ void StyleAdjuster::AdjustComputedStyle(StyleResolverState& state,
         // https://crbug.com/814954
         builder.SetTextOverflow(text_control->ValueForTextOverflow());
       }
+    }
+  }
+
+  if (element) {
+    if (const ViewTransition* view_transition =
+            ViewTransitionUtils::GetTransition(*element);
+        view_transition && view_transition->Scope() == element) {
+      if (!is_document_element) {
+        builder.SetContain(builder.Contain() | kContainsLayout);
+        builder.SetViewTransitionScope(EViewTransitionScope::kAll);
+      }
+      builder.SetForcesStackingContext(true);
     }
   }
 
