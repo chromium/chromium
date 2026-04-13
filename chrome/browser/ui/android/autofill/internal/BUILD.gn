@@ -68,6 +68,7 @@ robolectric_library("junit") {
     "java/src/org/chromium/chrome/browser/ui/autofill/AuthenticatorSelectionDialogTest.java",
     "java/src/org/chromium/chrome/browser/ui/autofill/AutofillErrorDialogBridgeTest.java",
     "java/src/org/chromium/chrome/browser/ui/autofill/AutofillProgressDialogBridgeTest.java",
+    "java/src/org/chromium/chrome/browser/ui/autofill/OtpVerificationDialogBridgeTest.java",
     "java/src/org/chromium/chrome/browser/ui/autofill/OtpVerificationDialogTest.java",
     "java/src/org/chromium/chrome/browser/ui/autofill/ephemeraltab/PaymentsWindowBridgeTest.java",
     "java/src/org/chromium/chrome/browser/ui/autofill/ephemeraltab/PaymentsWindowCoordinatorTest.java",

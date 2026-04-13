@@ -22,7 +22,7 @@ import org.chromium.ui.modaldialog.ModalDialogManager;
 @JNINamespace("autofill")
 @NullMarked
 class OtpVerificationDialogBridge implements OtpVerificationDialogCoordinator.Delegate {
-    private final long mNativeOtpVerificationDialogView;
+    private long mNativeOtpVerificationDialogView;
     private final OtpVerificationDialogCoordinator mDialogCoordinator;
 
     OtpVerificationDialogBridge(
@@ -55,17 +55,21 @@ class OtpVerificationDialogBridge implements OtpVerificationDialogCoordinator.De
 
     @Override
     public void onConfirm(String otp) {
+        if (mNativeOtpVerificationDialogView == 0) return;
         OtpVerificationDialogBridgeJni.get().onConfirm(mNativeOtpVerificationDialogView, otp);
     }
 
     @Override
     public void onNewOtpRequested() {
+        if (mNativeOtpVerificationDialogView == 0) return;
         OtpVerificationDialogBridgeJni.get().onNewOtpRequested(mNativeOtpVerificationDialogView);
     }
 
     @Override
     public void onDialogDismissed() {
+        if (mNativeOtpVerificationDialogView == 0) return;
         OtpVerificationDialogBridgeJni.get().onDialogDismissed(mNativeOtpVerificationDialogView);
+        mNativeOtpVerificationDialogView = 0;
     }
 
     /**
