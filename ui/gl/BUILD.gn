@@ -552,6 +552,7 @@ test("gl_unittests") {
   if (is_win) {
     sources += [
       "dcomp_presenter_unittest.cc",
+      "dcomp_surface_registry_unittest.cc",
       "delegated_ink_point_renderer_gpu_unittest.cc",
       "gl_fence_win_unittest.cc",
       "hdr_metadata_helper_win_unittest.cc",
