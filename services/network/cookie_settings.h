@@ -86,10 +86,6 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) CookieSettings
   void set_content_settings(ContentSettingsType type,
                             const ContentSettingsForOneType& settings);
 
-  void set_mitigations_enabled_for_3pcd(bool enable) {
-    mitigations_enabled_for_3pcd_ = enable;
-  }
-
   // Returns a predicate that takes the domain of a cookie and a bool whether
   // the cookie is secure and returns true if the cookie should be deleted on
   // exit.
@@ -167,7 +163,6 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) CookieSettings
   bool ShouldBlockThirdPartyCookies(
       base::optional_ref<const url::Origin> top_frame_origin,
       net::CookieSettingOverrides overrides) const override;
-  bool MitigationsEnabledFor3pcd() const override;
 
   // Returns true iff any of the ways of enabling third-party cookies
   // restrictions are enabled.
@@ -225,7 +220,6 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) CookieSettings
   // Returns true if user blocks 3PC or 3PCD is on.
   bool block_third_party_cookies_ =
       net::cookie_util::IsForceThirdPartyCookieBlockingEnabled();
-  bool mitigations_enabled_for_3pcd_ = false;
 
   std::set<std::string, std::less<>> secure_origin_cookies_allowed_schemes_;
   absl::flat_hash_set<url::Origin> secure_origin_cookies_allowed_origins_;

@@ -63,7 +63,6 @@ class TestCookieManager : public network::mojom::CookieManager {
       SetContentSettingsCallback callback) override {}
   void SetForceKeepSessionState() override {}
   void BlockThirdPartyCookies(bool block) override {}
-  void SetMitigationsEnabledFor3pcd(bool enable) override {}
   void SetPreCommitCallbackDelayForTesting(base::TimeDelta delay) override {}
 
   virtual void DispatchCookieChange(const net::CookieChangeInfo& change);

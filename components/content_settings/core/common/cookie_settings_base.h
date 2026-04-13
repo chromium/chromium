@@ -464,11 +464,6 @@ class CookieSettingsBase {
       base::optional_ref<const url::Origin> top_frame_origin,
       net::CookieSettingOverrides overrides) const = 0;
 
-  // Returns whether Third Party Cookie Deprecation mitigations are enabled,
-  // which requires that we are not blocking or allowing all 3PC and that either
-  // 3PCD is enabled or that ForceThirdPartyCookieBlocking is enabled.
-  virtual bool MitigationsEnabledFor3pcd() const = 0;
-
   // Returns whether |scheme| is always allowed to access 3p cookies.
   virtual bool IsThirdPartyCookiesAllowedScheme(
       std::string_view scheme) const = 0;

@@ -50,7 +50,6 @@ class MockCookieSettings : public content_settings::CookieSettingsBase {
       net::CookieSettingOverrides overrides) const override {
     return true;
   }
-  bool MitigationsEnabledFor3pcd() const override { return false; }
   bool IsThirdPartyCookiesAllowedScheme(
       std::string_view scheme) const override {
     return true;

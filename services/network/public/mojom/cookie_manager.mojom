@@ -19,10 +19,6 @@ struct CookieManagerParams {
   // Whether or not third party cookies should be blocked.
   bool block_third_party_cookies = false;
 
-  // Whether Third Party Cookie Deprecation mitigations efforts such as Third
-  // Party Cookie Deprecation Metadata grants are permitted.
-  bool mitigations_enabled_for_3pcd = false;
-
   // Content settings for CookieManager.
   map<content_settings.mojom.ContentSettingsType,
     array<content_settings.mojom.ContentSettingPatternSource>> content_settings;
@@ -534,9 +530,6 @@ interface CookieManager {
 
   // Enables/Disables blocking of third-party cookies.
   BlockThirdPartyCookies(bool block);
-
-  // Enables/Disables mitigations for third-party cookies deprecation.
-  SetMitigationsEnabledFor3pcd(bool enable);
 
   // Adds a pre-commit delay to the cookie database sqlite persistent store.
   // This delay occurs before every commit and blocks the background task

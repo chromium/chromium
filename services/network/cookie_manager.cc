@@ -365,11 +365,6 @@ void CookieManager::BlockThirdPartyCookies(bool block) {
   cookie_settings_.set_block_third_party_cookies(block);
 }
 
-void CookieManager::SetMitigationsEnabledFor3pcd(bool enable) {
-  OnSettingsWillChange();
-  cookie_settings_.set_mitigations_enabled_for_3pcd(enable);
-}
-
 void CookieManager::OnSettingsWillChange() {
   if (settings_will_change_callback_) {
     settings_will_change_callback_.Run();
@@ -381,7 +376,6 @@ void CookieManager::ConfigureCookieSettings(
     const network::mojom::CookieManagerParams& params,
     CookieSettings* out) {
   out->set_block_third_party_cookies(params.block_third_party_cookies);
-  out->set_mitigations_enabled_for_3pcd(params.mitigations_enabled_for_3pcd);
   out->set_secure_origin_cookies_allowed_schemes(
       params.secure_origin_cookies_allowed_schemes);
   std::vector<url::Origin> filtered_origins;

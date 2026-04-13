@@ -361,8 +361,6 @@ class TpcBlockingBrowserClient : public ContentBrowserClient,
       base::optional_ref<const url::Origin> top_frame_origin,
       net::CookieSettingOverrides overrides) const override;
 
-  bool MitigationsEnabledFor3pcd() const override;
-
   bool IsThirdPartyCookiesAllowedScheme(std::string_view scheme) const override;
 
  private:

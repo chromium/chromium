@@ -391,10 +391,6 @@ bool CookieSettings::IsThirdPartyPhaseoutEnabled(
   }
 }
 
-bool CookieSettings::MitigationsEnabledFor3pcd() const {
-  return mitigations_enabled_for_3pcd_;
-}
-
 void CookieSettings::AugmentInclusionStatus(
     const net::CanonicalCookie& cookie,
     base::optional_ref<const url::Origin> top_frame_origin,

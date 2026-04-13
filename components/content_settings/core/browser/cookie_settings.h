@@ -61,7 +61,6 @@ class CookieSettings
    public:
     virtual void OnThirdPartyCookieBlockingChanged(
         bool block_third_party_cookies) {}
-    virtual void OnMitigationsEnabledFor3pcdChanged(bool enable) {}
     virtual void OnCookieSettingChanged() {}
   };
 
@@ -150,15 +149,6 @@ class CookieSettings
   // This method may be called on any thread. Virtual for testing.
   bool ShouldBlockThirdPartyCookies() const;
 
-  // Returns true iff third party cookies deprecation mitigations should be
-  // allowed.
-  //
-  // NOTE: Most mitigations will also be individually gated behind dedicated
-  // feature flags.
-  //
-  // This method may be called on any thread. Virtual for testing.
-  bool MitigationsEnabledFor3pcd() const override;
-
   // Returns true if there is an active storage access exception with
   // |first_party_url| as the secondary pattern.
   bool HasAnyFrameRequestedStorageAccess(const GURL& first_party_url) const;
@@ -193,14 +183,7 @@ class CookieSettings
   // when the preference changes to update the internal state.
   bool ShouldBlockThirdPartyCookiesInternal() const;
 
-  // Evaluates whether third party cookies deprecation mitigations should be
-  // enabled.
-  bool MitigationsEnabledFor3pcdInternal() const;
-
   void OnCookiePreferencesChanged();
-
-  // Updates the status of cookies deprecation mitigations.
-  void OnMitigationsEnabledChanged();
 
   // content_settings::CookieSettingsBase:
   bool ShouldAlwaysAllowCookies(const GURL& url,
@@ -242,7 +225,6 @@ class CookieSettings
 
   mutable base::Lock lock_;
   bool block_third_party_cookies_ GUARDED_BY(lock_);
-  bool mitigations_enabled_for_3pcd_ GUARDED_BY(lock_);
 
   mutable base::Lock fedcm_sharing_permissions_lock_;
   HostIndexedContentSettings fedcm_sharing_permissions_

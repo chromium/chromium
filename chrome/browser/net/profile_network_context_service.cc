@@ -692,15 +692,6 @@ void ProfileNetworkContextService::OnThirdPartyCookieBlockingChanged(
       });
 }
 
-void ProfileNetworkContextService::OnMitigationsEnabledFor3pcdChanged(
-    bool enable) {
-  profile_->ForEachLoadedStoragePartition(
-      [&](content::StoragePartition* storage_partition) {
-        storage_partition->GetCookieManagerForBrowserProcess()
-            ->SetMitigationsEnabledFor3pcd(enable);
-      });
-}
-
 std::string ProfileNetworkContextService::ComputeAcceptLanguage() const {
   // TODO:(https://crbug.com/40224802) Return only single language without
   // expanding the language list if the DisableReduceAcceptLanguage deprecation
@@ -1165,9 +1156,6 @@ ProfileNetworkContextService::CreateCookieManagerParams(
 
   out->cookie_access_delegate_type =
       network::mojom::CookieAccessDelegateType::USE_CONTENT_SETTINGS;
-
-  out->mitigations_enabled_for_3pcd =
-      cookie_settings.MitigationsEnabledFor3pcd();
 
   return out;
 }

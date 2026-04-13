@@ -503,10 +503,6 @@ bool TpcBlockingBrowserClient::ShouldBlockThirdPartyCookies(
   return block_3pcs_;
 }
 
-bool TpcBlockingBrowserClient::MitigationsEnabledFor3pcd() const {
-  return false;
-}
-
 bool TpcBlockingBrowserClient::IsThirdPartyCookiesAllowedScheme(
     std::string_view scheme) const {
   return false;
