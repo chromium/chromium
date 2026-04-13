@@ -2,14 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_SETTINGS_UI_BUNDLED_GOOGLE_SERVICES_MANAGE_SYNC_SETTINGS_CONSUMER_H_
-#define IOS_CHROME_BROWSER_SETTINGS_UI_BUNDLED_GOOGLE_SERVICES_MANAGE_SYNC_SETTINGS_CONSUMER_H_
+#ifndef IOS_CHROME_BROWSER_SETTINGS_GOOGLE_SERVICES_MANAGE_SYNC_UI_MANAGE_SYNC_SETTINGS_CONSUMER_H_
+#define IOS_CHROME_BROWSER_SETTINGS_GOOGLE_SERVICES_MANAGE_SYNC_UI_MANAGE_SYNC_SETTINGS_CONSUMER_H_
 
 #import <UIKit/UIKit.h>
 
 #import "ios/chrome/browser/shared/ui/table_view/table_view_model.h"
-
-struct ManagementState;
 
 // Consumer protocol for manage sync settings.
 @protocol ManageSyncSettingsConsumer <NSObject>
@@ -45,4 +43,4 @@ struct ManagementState;
 
 @end
 
-#endif  // IOS_CHROME_BROWSER_SETTINGS_UI_BUNDLED_GOOGLE_SERVICES_MANAGE_SYNC_SETTINGS_CONSUMER_H_
+#endif  // IOS_CHROME_BROWSER_SETTINGS_GOOGLE_SERVICES_MANAGE_SYNC_UI_MANAGE_SYNC_SETTINGS_CONSUMER_H_

@@ -11,8 +11,8 @@ source_set("ui") {
   deps = [
     "//base",
     "//ios/chrome/app/strings",
+    "//ios/chrome/browser/settings/google_services/manage_sync/public",
     "//ios/chrome/browser/settings/ui_bundled:settings_root",
-    "//ios/chrome/browser/settings/ui_bundled/google_services:constants",
     "//ios/chrome/browser/shared/model/application_context",
     "//ios/chrome/browser/shared/model/profile",
     "//ios/chrome/browser/shared/ui/list_model",
@@ -33,7 +33,6 @@ source_set("unit_tests") {
   deps = [
     ":ui",
     "//base/test:test_support",
-    "//ios/chrome/browser/settings/ui_bundled/google_services:constants",
     "//ios/chrome/browser/shared/model/application_context",
     "//ios/chrome/browser/shared/model/profile/test",
     "//ios/chrome/browser/shared/ui/table_view:test_support",

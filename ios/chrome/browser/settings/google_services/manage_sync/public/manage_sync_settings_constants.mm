@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/settings/ui_bundled/google_services/manage_sync_settings_constants.h"
+#import "ios/chrome/browser/settings/google_services/manage_sync/public/manage_sync_settings_constants.h"
 
 NSString* const kDataFromChromeSyncAccessibilityIdentifier =
     @"DataFromChromeSyncAccessibilityIdentifier";

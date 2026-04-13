@@ -88,6 +88,7 @@ source_set("eg_test_support+eg2") {
     "//ios/chrome/browser/ntp/ui_bundled:constants",
     "//ios/chrome/browser/recent_tabs/public:ui_constants",
     "//ios/chrome/browser/settings/google_services/manage_accounts/public",
+    "//ios/chrome/browser/settings/google_services/manage_sync/public",
     "//ios/chrome/browser/settings/ui_bundled:constants",
     "//ios/chrome/browser/settings/ui_bundled/google_services:constants",
     "//ios/chrome/browser/shared/public/snackbar:constants",

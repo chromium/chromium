@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/settings/ui_bundled/google_services/manage_sync_settings_mediator.h"
+#import "ios/chrome/browser/settings/google_services/manage_sync/coordinator/manage_sync_settings_mediator.h"
 
 #import <UIKit/UIKit.h>
 
@@ -18,13 +18,13 @@
 #import "components/sync/test/test_sync_service.h"
 #import "components/sync/test/test_sync_user_settings.h"
 #import "ios/chrome/browser/authentication/ui_bundled/cells/central_account_view.h"
+#import "ios/chrome/browser/settings/google_services/manage_sync/coordinator/manage_sync_settings_command_handler.h"
+#import "ios/chrome/browser/settings/google_services/manage_sync/public/manage_sync_settings_constants.h"
+#import "ios/chrome/browser/settings/google_services/manage_sync/public/sync_error_settings_command_handler.h"
+#import "ios/chrome/browser/settings/google_services/manage_sync/ui/manage_sync_settings_consumer.h"
+#import "ios/chrome/browser/settings/google_services/manage_sync/ui/manage_sync_settings_table_view_controller.h"
 #import "ios/chrome/browser/settings/ui_bundled/cells/settings_image_detail_text_item.h"
 #import "ios/chrome/browser/settings/ui_bundled/cells/sync_switch_item.h"
-#import "ios/chrome/browser/settings/ui_bundled/google_services/manage_sync_settings_command_handler.h"
-#import "ios/chrome/browser/settings/ui_bundled/google_services/manage_sync_settings_constants.h"
-#import "ios/chrome/browser/settings/ui_bundled/google_services/manage_sync_settings_consumer.h"
-#import "ios/chrome/browser/settings/ui_bundled/google_services/manage_sync_settings_table_view_controller.h"
-#import "ios/chrome/browser/settings/ui_bundled/google_services/sync_error_settings_command_handler.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
 #import "ios/chrome/browser/shared/model/profile/features.h"

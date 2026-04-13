@@ -42,7 +42,7 @@
 #import "ios/chrome/browser/push_notification/model/push_notification_service.h"
 #import "ios/chrome/browser/settings/google_services/manage_accounts/coordinator/manage_accounts_coordinator.h"
 #import "ios/chrome/browser/settings/google_services/manage_accounts/coordinator/manage_accounts_coordinator_delegate.h"
-#import "ios/chrome/browser/settings/ui_bundled/google_services/sync_error_settings_command_handler.h"
+#import "ios/chrome/browser/settings/google_services/manage_sync/public/sync_error_settings_command_handler.h"
 #import "ios/chrome/browser/settings/ui_bundled/settings_controller_protocol.h"
 #import "ios/chrome/browser/settings/ui_bundled/settings_navigation_controller.h"
 #import "ios/chrome/browser/settings/ui_bundled/settings_root_view_controlling.h"

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/settings/ui_bundled/google_services/manage_sync_settings_coordinator.h"
+#import "ios/chrome/browser/settings/google_services/manage_sync/coordinator/manage_sync_settings_coordinator.h"
 
 #import <UIKit/UIKit.h>
 
@@ -10,7 +10,7 @@
 #import "base/test/task_environment.h"
 #import "components/sync/test/mock_sync_service.h"
 #import "ios/chrome/browser/authentication/signin/reauth/coordinator/signin_reauth_coordinator.h"
-#import "ios/chrome/browser/settings/ui_bundled/google_services/sync_error_settings_command_handler.h"
+#import "ios/chrome/browser/settings/google_services/manage_sync/public/sync_error_settings_command_handler.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"

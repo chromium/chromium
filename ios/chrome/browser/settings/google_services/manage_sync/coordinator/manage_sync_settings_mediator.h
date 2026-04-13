@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_SETTINGS_UI_BUNDLED_GOOGLE_SERVICES_MANAGE_SYNC_SETTINGS_MEDIATOR_H_
-#define IOS_CHROME_BROWSER_SETTINGS_UI_BUNDLED_GOOGLE_SERVICES_MANAGE_SYNC_SETTINGS_MEDIATOR_H_
+#ifndef IOS_CHROME_BROWSER_SETTINGS_GOOGLE_SERVICES_MANAGE_SYNC_COORDINATOR_MANAGE_SYNC_SETTINGS_MEDIATOR_H_
+#define IOS_CHROME_BROWSER_SETTINGS_GOOGLE_SERVICES_MANAGE_SYNC_COORDINATOR_MANAGE_SYNC_SETTINGS_MEDIATOR_H_
 
 #import <UIKit/UIKit.h>
 
-#import "ios/chrome/browser/settings/ui_bundled/google_services/manage_sync_settings_service_delegate.h"
-#import "ios/chrome/browser/settings/ui_bundled/google_services/manage_sync_settings_table_view_controller_model_delegate.h"
+#import "ios/chrome/browser/settings/google_services/manage_sync/ui/manage_sync_settings_service_delegate.h"
+#import "ios/chrome/browser/settings/google_services/manage_sync/ui/manage_sync_settings_table_view_controller_model_delegate.h"
 #import "ios/chrome/browser/sync/model/sync_observer_bridge.h"
 
 class AuthenticationService;
@@ -59,8 +59,7 @@ class SyncService;
           identityManager:(signin::IdentityManager*)identityManager
     authenticationService:(AuthenticationService*)authenticationService
     accountManagerService:(ChromeAccountManagerService*)accountManagerService
-              prefService:(PrefService*)prefService
-    NS_DESIGNATED_INITIALIZER;
+              prefService:(PrefService*)prefService NS_DESIGNATED_INITIALIZER;
 - (instancetype)init NS_UNAVAILABLE;
 
 // Disconnects the mediator to all observers and services.
@@ -71,4 +70,4 @@ class SyncService;
 
 @end
 
-#endif  // IOS_CHROME_BROWSER_SETTINGS_UI_BUNDLED_GOOGLE_SERVICES_MANAGE_SYNC_SETTINGS_MEDIATOR_H_
+#endif  // IOS_CHROME_BROWSER_SETTINGS_GOOGLE_SERVICES_MANAGE_SYNC_COORDINATOR_MANAGE_SYNC_SETTINGS_MEDIATOR_H_

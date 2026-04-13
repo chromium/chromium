@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/settings/ui_bundled/google_services/manage_sync_settings_coordinator.h"
+#import "ios/chrome/browser/settings/google_services/manage_sync/coordinator/manage_sync_settings_coordinator.h"
 
 #import "base/check_op.h"
 #import "base/feature_list.h"
@@ -41,13 +41,13 @@
 #import "ios/chrome/browser/settings/google_services/bulk_upload/coordinator/bulk_upload_coordinator_delegate.h"
 #import "ios/chrome/browser/settings/google_services/manage_accounts/coordinator/manage_accounts_coordinator.h"
 #import "ios/chrome/browser/settings/google_services/manage_accounts/coordinator/manage_accounts_coordinator_delegate.h"
+#import "ios/chrome/browser/settings/google_services/manage_sync/coordinator/manage_sync_settings_command_handler.h"
+#import "ios/chrome/browser/settings/google_services/manage_sync/coordinator/manage_sync_settings_mediator.h"
+#import "ios/chrome/browser/settings/google_services/manage_sync/public/manage_sync_settings_constants.h"
+#import "ios/chrome/browser/settings/google_services/manage_sync/public/sync_error_settings_command_handler.h"
+#import "ios/chrome/browser/settings/google_services/manage_sync/ui/manage_sync_settings_table_view_controller.h"
 #import "ios/chrome/browser/settings/google_services/personalize_google_services/coordinator/personalize_google_services_coordinator.h"
 #import "ios/chrome/browser/settings/model/sync/utils/sync_util.h"
-#import "ios/chrome/browser/settings/ui_bundled/google_services/manage_sync_settings_command_handler.h"
-#import "ios/chrome/browser/settings/ui_bundled/google_services/manage_sync_settings_constants.h"
-#import "ios/chrome/browser/settings/ui_bundled/google_services/manage_sync_settings_mediator.h"
-#import "ios/chrome/browser/settings/ui_bundled/google_services/manage_sync_settings_table_view_controller.h"
-#import "ios/chrome/browser/settings/ui_bundled/google_services/sync_error_settings_command_handler.h"
 #import "ios/chrome/browser/settings/ui_bundled/settings_controller_protocol.h"
 #import "ios/chrome/browser/settings/ui_bundled/settings_navigation_controller.h"
 #import "ios/chrome/browser/settings/ui_bundled/sync/sync_encryption_passphrase_table_view_controller.h"

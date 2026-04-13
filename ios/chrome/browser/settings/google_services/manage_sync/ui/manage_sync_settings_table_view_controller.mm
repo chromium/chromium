@@ -2,17 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/settings/ui_bundled/google_services/manage_sync_settings_table_view_controller.h"
+#import "ios/chrome/browser/settings/google_services/manage_sync/ui/manage_sync_settings_table_view_controller.h"
 
 #import "base/apple/foundation_util.h"
 #import "ios/chrome/browser/authentication/ui_bundled/cells/central_account_view.h"
 #import "ios/chrome/browser/net/model/crurl.h"
 #import "ios/chrome/browser/policy/model/management_state.h"
+#import "ios/chrome/browser/settings/google_services/manage_sync/public/manage_sync_settings_constants.h"
+#import "ios/chrome/browser/settings/google_services/manage_sync/ui/manage_sync_settings_service_delegate.h"
+#import "ios/chrome/browser/settings/google_services/manage_sync/ui/manage_sync_settings_table_view_controller_model_delegate.h"
 #import "ios/chrome/browser/settings/ui_bundled/cells/sync_switch_item.h"
 #import "ios/chrome/browser/settings/ui_bundled/elements/enterprise_info_popover_view_controller.h"
-#import "ios/chrome/browser/settings/ui_bundled/google_services/manage_sync_settings_constants.h"
-#import "ios/chrome/browser/settings/ui_bundled/google_services/manage_sync_settings_service_delegate.h"
-#import "ios/chrome/browser/settings/ui_bundled/google_services/manage_sync_settings_table_view_controller_model_delegate.h"
 #import "ios/chrome/browser/shared/model/profile/features.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/shared/ui/table_view/table_view_utils.h"

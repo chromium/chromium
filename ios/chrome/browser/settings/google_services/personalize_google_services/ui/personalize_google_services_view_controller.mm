@@ -6,8 +6,8 @@
 
 #import <UIKit/UIKit.h>
 
+#import "ios/chrome/browser/settings/google_services/manage_sync/public/manage_sync_settings_constants.h"
 #import "ios/chrome/browser/settings/google_services/personalize_google_services/ui/personalize_google_services_command_handler.h"
-#import "ios/chrome/browser/settings/ui_bundled/google_services/manage_sync_settings_constants.h"
 #import "ios/chrome/browser/shared/ui/list_model/list_model.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_image_item.h"
