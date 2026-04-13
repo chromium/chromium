@@ -263,7 +263,7 @@ typedef base::OnceCallback<void(
 //                        ResourceAvailableCB for detailed reference.
 MEDIA_EXPORT void GenerateResourceFromSharedImageVideoFrame(
     scoped_refptr<VideoFrame> frame,
-    bool use_same_device,
+    Microsoft::WRL::ComPtr<ID3D11Device> encoder_device,
     scoped_refptr<CommandBufferHelper> command_buffer_helper,
     ResourceAvailableCB sample_available_cb);
 

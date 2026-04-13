@@ -827,9 +827,6 @@ void MediaFoundationVideoEncodeAccelerator::QueueInput(
     result.shared_image_token = frame->shared_image()->mailbox();
     pending_input_queue_.push_back(result);
     auto d3d_device = dxgi_device_manager_->GetDevice();
-    auto shared_d3d_device = command_buffer_helper_->GetSharedImageStub()
-                                 ->shared_context_state()
-                                 ->GetD3D11Device();
     if (!d3d_device) {
       NotifyErrorStatus({EncoderStatus::Codes::kSystemAPICallError,
                          "Failed to get D3D device manager"});
@@ -839,8 +836,8 @@ void MediaFoundationVideoEncodeAccelerator::QueueInput(
     gpu_task_runner_->PostTask(
         FROM_HERE,
         base::BindOnce(
-            &GenerateResourceFromSharedImageVideoFrame, frame,
-            d3d_device.Get() == shared_d3d_device.Get(), command_buffer_helper_,
+            &GenerateResourceFromSharedImageVideoFrame, std::move(frame),
+            std::move(d3d_device), command_buffer_helper_,
             base::BindPostTask(
                 task_runner_,
                 base::BindOnce(&MediaFoundationVideoEncodeAccelerator::
