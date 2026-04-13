@@ -10,6 +10,7 @@
 #import "ios/chrome/browser/intelligence/actor/tools/model/click_tool.h"
 #import "ios/chrome/browser/intelligence/actor/tools/model/history_tool.h"
 #import "ios/chrome/browser/intelligence/actor/tools/model/navigate_tool.h"
+#import "ios/chrome/browser/intelligence/actor/tools/model/scroll_to_tool.h"
 #import "ios/chrome/browser/intelligence/actor/tools/model/scroll_tool.h"
 #import "ios/chrome/browser/intelligence/actor/tools/model/type_tool.h"
 #import "ios/chrome/browser/intelligence/actor/tools/model/wait_tool.h"
@@ -39,6 +40,8 @@ ActorToolFactory::CreateTool(const optimization_guide::proto::Action& action,
       return WaitTool::Create(action.wait(), profile);
     case optimization_guide::proto::Action::kScroll:
       return ScrollTool::Create(action.scroll(), profile);
+    case optimization_guide::proto::Action::kScrollTo:
+      return ScrollToTool::Create(action.scroll_to(), profile);
     default:
       return base::unexpected(
           ActorToolError{ActorToolErrorCode::kUnsupportedAction});
@@ -57,6 +60,7 @@ ActorToolFactory::GetSupportedCapabilities() const {
       optimization_guide::proto::Action::kType,
       optimization_guide::proto::Action::kWait,
       optimization_guide::proto::Action::kScroll,
+      optimization_guide::proto::Action::kScrollTo,
   };
   // LINT.ThenChange(//ios/chrome/browser/intelligence/actor/tools/model/actor_tool_factory.mm:CreateTool)
 

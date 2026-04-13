@@ -652,5 +652,122 @@ FindNodeResult FindNodeWithText(
   GREYAssertEqualObjects(base::SysUTF8ToNSString(scrollTop.GetString()), @"123",
                          @"Viewport was not scrolled");
 }
+// Tests that the ScrollToTool can successfully scroll an element into view
+// when given its coordinates.
+- (void)testScrollToTool_scrollsByCoordinates {
+  // Make the target div nearly hidden, with only its top-left corner in view.
+  const std::string scrollableHTML =
+      R"(
+      <style>body { margin: 0; }</style>
+      <div id="outer" style="width: 200px; height: 200px; overflow: auto;">
+        <div id="target" style="position: relative; left: 190px; top: 190px;
+                                width: 50px; height: 50px; background: red;">
+        </div>
+        <div id="spacer" style="height: 500px;width: 500px"></div>
+      </div>
+      )";
+  [ChromeEarlGrey loadURL:[self URLForHTML:scrollableHTML]];
+  [ChromeEarlGrey
+      waitForWebStateContainingElement:[ElementSelector
+                                           selectorWithCSSSelector:"#target"]];
+  NSString* getCoordinates = base::SysUTF8ToNSString(R"(
+        (function() {
+          const rect = document.querySelector('#target')
+                               .getBoundingClientRect();
+          return {x: rect.left, y: rect.top};
+        })();
+      )");
+  base::Value coordinates = [ChromeEarlGrey evaluateJavaScript:getCoordinates];
+  GREYAssertTrue(coordinates.is_dict(), @"Result is not a dict");
+
+  optimization_guide::proto::Action action;
+  optimization_guide::proto::ScrollToAction* scrollToAction =
+      action.mutable_scroll_to();
+  scrollToAction->set_tab_id([ChromeEarlGrey currentTabID].intValue);
+  optimization_guide::proto::ActionTarget* target =
+      scrollToAction->mutable_target();
+  target->mutable_coordinate()->set_x(
+      static_cast<int>(coordinates.GetDict().FindDouble("x").value()));
+  target->mutable_coordinate()->set_y(
+      coordinates.GetDict().FindDouble("y").value());
+
+  [self executeAction:action];
+
+  // Verify that the target is now fully within view of the outer container.
+  std::string checkScroll = R"(
+    (function() {
+      const outer = document.getElementById('outer').getBoundingClientRect();
+      const target = document.getElementById('target').getBoundingClientRect();
+      const visibleX = target.left >= outer.left && target.right <= outer.right;
+      const visibleY = target.top >= outer.top && target.bottom <= outer.bottom;
+      return visibleX && visibleY;
+    })()
+    )";
+  base::Value scrolled =
+      [ChromeEarlGrey evaluateJavaScript:base::SysUTF8ToNSString(checkScroll)];
+  GREYAssertTrue(
+      scrolled.GetBool(),
+      @"The target element is not fully within view of its container.");
+}
+
+// Tests that the ScrollToTool can successfully scroll an element into view
+// given its document and node identifiers.
+- (void)testScrollToTool_scrollsByIdentifiers {
+  const std::string scrollableHTML =
+      R"(
+      <style>body { margin: 0; }</style>
+      <div id="outer" style="width: 200px; height: 200px; overflow: auto;">
+        <button id="target" style="position:relative; left:300px; width: 50px;
+                                  height: 50px;">Target</button>
+        <div id="spacer" style="height: 500px;width: 500px"></div>
+      </div>
+      )";
+  [ChromeEarlGrey loadURL:[self URLForHTML:scrollableHTML]];
+  [ChromeEarlGrey waitForWebStateContainingText:"Target"];
+
+  NSData* apcData = [ActorAppInterface fetchLatestAPC];
+  optimization_guide::proto::PageContext pageContext;
+  GREYAssertTrue(pageContext.ParseFromArray([apcData bytes], [apcData length]),
+                 @"Failed to parse PageContext");
+  std::string mainFrameToken = pageContext.annotated_page_content()
+                                   .main_frame_data()
+                                   .document_identifier()
+                                   .serialized_token();
+  FindNodeResult result =
+      FindNodeWithText(pageContext.annotated_page_content().root_node(),
+                       "Target", mainFrameToken);
+  GREYAssertTrue(result.node != nullptr,
+                 @"Failed to find text node with \"Target\"");
+  GREYAssertTrue(result.parent != nullptr, @"Failed to find parent node");
+
+  int nodeId =
+      result.parent->content_attributes().common_ancestor_dom_node_id();
+  optimization_guide::proto::Action action;
+  optimization_guide::proto::ScrollToAction* scrollToAction =
+      action.mutable_scroll_to();
+  scrollToAction->set_tab_id([ChromeEarlGrey currentTabID].intValue);
+  optimization_guide::proto::ActionTarget* target =
+      scrollToAction->mutable_target();
+  target->set_content_node_id(nodeId);
+  target->mutable_document_identifier()->set_serialized_token(
+      result.frame_token);
+
+  [self executeAction:action];
+
+  // Verify that the target is now fully within view of the outer container.
+  std::string checkScroll = R"(
+    (function() {
+      const outer = document.getElementById('outer').getBoundingClientRect();
+      const target = document.getElementById('target').getBoundingClientRect();
+      const visibleX = target.left >= outer.left && target.right <= outer.right;
+      const visibleY = target.top >= outer.top && target.bottom <= outer.bottom;
+      return visibleX && visibleY;
+    })()
+    )";
+  base::Value scrolled =
+      [ChromeEarlGrey evaluateJavaScript:base::SysUTF8ToNSString(checkScroll)];
+  GREYAssertTrue(scrolled.GetBool(),
+                 @"The target element is not within view of its container.");
+}
 
 @end
