@@ -177,6 +177,11 @@ class COMPONENT_EXPORT(AX_PLATFORM) BrowserAccessibilityManagerWin
   // the map is cleared in |FinalizeAccessibilityEvents|.
   SelectionEventsMap ia2_selection_events_;
   SelectionEventsMap uia_selection_events_;
+
+  // Deferred kEndOfTest node. The TestComplete UIA event is fired at the end
+  // of FinalizeAccessibilityEvents, after all other finalized events, so that
+  // the UIA event recorder doesn't shut down before receiving them.
+  raw_ptr<BrowserAccessibility> end_of_test_node_ = nullptr;
 };
 
 }  // namespace ui
