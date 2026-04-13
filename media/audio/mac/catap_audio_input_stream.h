@@ -51,6 +51,8 @@ class MEDIA_EXPORT API_AVAILABLE(macos(14.2)) CatapAudioInputStreamSource {
     Config(const AudioParameters& params,
            const std::string& device_id,
            bool force_mono_capture);
+    Config(const Config& other);
+    ~Config();
 
     int catap_channels;
     int output_channels;
@@ -59,7 +61,7 @@ class MEDIA_EXPORT API_AVAILABLE(macos(14.2)) CatapAudioInputStreamSource {
     bool capture_default_device;
     bool mute_local_device;
     bool exclude_chrome;
-    std::optional<pid_t> capture_application_process_id;
+    std::optional<std::string> capture_application;
 
     // Returns a human-readable string describing |*this|.  For debugging & test
     // output only.
@@ -143,6 +145,11 @@ class MEDIA_EXPORT API_AVAILABLE(macos(14.2)) CatapAudioInputStreamSource {
   // Returns all CoreAudio process audio device IDs that belong to the specified
   // process ID.
   NSArray<NSNumber*>* GetProcessAudioDeviceIds(pid_t chrome_process_id);
+
+  // Returns all CoreAudio process audio device IDs that belong to the specified
+  // Bundle ID.
+  NSArray<NSNumber*>* GetProcessAudioDeviceIds(
+      const std::string& main_bundle_id);
 
   // Configure the sample rate of the aggregate device according to `params_`.
   bool ConfigureSampleRateOfAggregateDevice();

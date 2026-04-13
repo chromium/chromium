@@ -112,10 +112,17 @@ TEST(AudioDeviceDescriptionTest, IsLoopbackDevice) {
 TEST(AudioDeviceDescriptionTest, IsApplicationLoopbackDevice) {
   EXPECT_TRUE(AudioDeviceDescription::IsApplicationLoopbackDevice(
       AudioDeviceDescription::kApplicationLoopbackDeviceId));
+#if BUILDFLAG(IS_WIN)
   EXPECT_TRUE(AudioDeviceDescription::IsApplicationLoopbackDevice(
       CreateApplicationLoopbackDeviceId(12345)));
   EXPECT_TRUE(AudioDeviceDescription::IsApplicationLoopbackDevice(
       CreateRestrictOwnAudioBrowserLoopbackDeviceId()));
+#elif BUILDFLAG(IS_MAC)
+  EXPECT_TRUE(AudioDeviceDescription::IsApplicationLoopbackDevice(
+      CreateApplicationLoopbackDeviceId("org.chromium.Chromium")));
+  EXPECT_TRUE(AudioDeviceDescription::IsApplicationLoopbackDevice(
+      CreateRestrictOwnAudioBrowserLoopbackDeviceId("org.chromium.Chromium")));
+#endif
   EXPECT_FALSE(AudioDeviceDescription::IsApplicationLoopbackDevice(
       AudioDeviceDescription::kLoopbackInputDeviceId));
   EXPECT_FALSE(AudioDeviceDescription::IsApplicationLoopbackDevice(

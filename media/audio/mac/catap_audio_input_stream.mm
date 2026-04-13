@@ -28,6 +28,7 @@
 #include "base/synchronization/lock.h"
 #include "base/timer/elapsed_timer.h"
 #include "base/trace_event/trace_event.h"
+#include "base/types/expected.h"
 #include "media/audio/application_loopback_device_helper.h"
 #include "media/audio/audio_features.h"
 #include "media/audio/mac/audio_loopback_input_mac.h"
@@ -96,6 +97,10 @@ const AudioObjectPropertyAddress kAudioProcessPidAddress = {
     kAudioProcessPropertyPID, kAudioObjectPropertyScopeGlobal,
     kAudioObjectPropertyElementMain};
 
+const AudioObjectPropertyAddress kAudioProcessBundleIdAddress = {
+    kAudioProcessPropertyBundleID, kAudioObjectPropertyScopeGlobal,
+    kAudioObjectPropertyElementMain};
+
 const AudioObjectPropertyAddress kAudioTapPropertyDescriptionAddress = {
     kAudioTapPropertyDescription, kAudioObjectPropertyScopeGlobal,
     kAudioObjectPropertyElementMain};
@@ -109,6 +114,8 @@ const char kHistogramStopSuffix[] = "Stop";
 const char kHistogramCloseSuffix[] = "Close";
 const char kHistogramGetProcessAudioDeviceIdsSuffix[] =
     "GetProcessAudioDeviceIds";
+const char kHistogramGetProcessAudioDeviceIdsFromBundleIdSuffix[] =
+    "GetProcessAudioDeviceIdsFromBundleId";
 const char kHistogramSuccessSuffix[] = "Success";
 const char kHistogramFailureSuffix[] = "Failure";
 const char kHostTimeStatusName[] = "HostTimeStatus";
@@ -236,6 +243,17 @@ void ReportGetProcessAudioDeviceIdsDuration(bool success,
       duration);
 }
 
+void ReportGetProcessAudioDeviceIdsFromBundleIdDuration(
+    bool success,
+    base::TimeDelta duration) {
+  base::UmaHistogramTimes(
+      GetHistogramName(
+          kHistogramOperationDurationPrefix,
+          kHistogramGetProcessAudioDeviceIdsFromBundleIdSuffix,
+          success ? kHistogramSuccessSuffix : kHistogramFailureSuffix),
+      duration);
+}
+
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
 enum class HostTimeStatus {
@@ -335,6 +353,76 @@ OSStatus SetTapDescription(CatapApi* catap_api,
   return catap_api->AudioObjectSetPropertyData(
       tap, &kAudioTapPropertyDescriptionAddress, /*in_qualifier_data_size=*/0,
       /*in_qualifier_data=*/nullptr, propertySize, &set_description_ptr);
+}
+
+// Define the possible failure points in GetAllProcessAudioDeviceIds()
+enum class AudioPropertyError {
+  kSizeFetchFailed,
+  kDataFetchFailed,
+};
+
+// A simple struct to carry the full error context from
+// GetAllProcessAudioDeviceIds()
+struct AudioFetchError {
+  AudioPropertyError stage;
+  OSStatus status;
+};
+
+// Returns all CoreAudio process audio device IDs in the system.
+base::expected<std::vector<AudioDeviceID>, AudioFetchError>
+GetAllProcessAudioDeviceIds(CatapApi* catap_api) {
+  UInt32 property_size;
+
+  // Retrieve the size of the process audio device id list.
+  OSStatus result = catap_api->AudioObjectGetPropertyDataSize(
+      kAudioObjectSystemObject, &kAudioProcessListAddress,
+      /*in_qualifier_data_size=*/0,
+      /*in_qualifier_data=*/nullptr, &property_size);
+  if (result != noErr) {
+    return base::unexpected(
+        AudioFetchError{AudioPropertyError::kSizeFetchFailed, result});
+  }
+
+  // Get all CoreAudio process audio device IDs (which are UInt32).
+  UInt32 num_devices = property_size / sizeof(AudioDeviceID);
+  auto device_ids = std::vector<AudioDeviceID>(num_devices);
+  result = catap_api->AudioObjectGetPropertyData(
+      kAudioObjectSystemObject, &kAudioProcessListAddress,
+      /*in_qualifier_data_size=*/0,
+      /*in_qualifier_data=*/nullptr, &property_size, device_ids.data());
+  if (result != noErr) {
+    return base::unexpected(
+        AudioFetchError{AudioPropertyError::kDataFetchFailed, result});
+  }
+
+  return device_ids;
+}
+
+// Returns true if `process_bundle_id` matches `main_bundle_id` exactly, or if
+// `process_bundle_id` is a sub-component (e.g., a helper process) of the
+// `main_bundle_id`.
+// Example: {process_bundle_id: "org.chromium.Chromium.helper"} matches
+// {main_bundle_id: "org.chromium.Chromium"}.
+bool IsSameOrSubBundle(std::string_view process_bundle_id,
+                       std::string_view main_bundle_id) {
+  if (process_bundle_id == main_bundle_id) {
+    return true;
+  }
+
+  // Match sub-bundles by checking for the main bundle ID followed by a
+  // separator. This prevents "com.example.app-other" from matching
+  // "com.example.app".
+  std::string main_with_dot = std::string(main_bundle_id) + ".";
+  return base::StartsWith(process_bundle_id, main_with_dot,
+                          base::CompareCase::SENSITIVE);
+}
+
+// Returns the Bundle ID from an application loopback device ID.
+std::optional<std::string> GetCaptureApplication(std::string_view device_id) {
+  if (!AudioDeviceDescription::IsApplicationLoopbackDevice(device_id)) {
+    return std::nullopt;
+  }
+  return GetBundleIdFromApplicationLoopbackDeviceId(device_id);
 }
 
 bool operator==(const AudioObjectPropertyAddress& x,
@@ -469,11 +557,11 @@ CatapAudioInputStreamSource::Config::Config(const AudioParameters& params,
       capture_default_device(IsDefaultOutputDeviceLoopback(device_id)),
       mute_local_device(MuteLocalPlaybackLoopback(device_id)),
       exclude_chrome(ExcludeChromeLoopback(device_id)),
-      capture_application_process_id(
-          AudioDeviceDescription::IsApplicationLoopbackDevice(device_id)
-              ? std::make_optional(
-                    GetApplicationIdFromApplicationLoopbackDeviceId(device_id))
-              : std::nullopt) {}
+      capture_application(GetCaptureApplication(device_id)) {}
+
+CatapAudioInputStreamSource::Config::Config(
+    const CatapAudioInputStreamSource::Config& other) = default;
+CatapAudioInputStreamSource::Config::~Config() = default;
 
 std::string CatapAudioInputStreamSource::Config::AsHumanReadableString() const {
   std::ostringstream s;
@@ -484,9 +572,8 @@ std::string CatapAudioInputStreamSource::Config::AsHumanReadableString() const {
     << ", mute_local_device: " << mute_local_device
     << ", exclude_chrome: " << exclude_chrome
     << ", catap_channels: " << catap_channels;
-  if (capture_application_process_id) {
-    s << ", capture_application_process_id: "
-      << *capture_application_process_id;
+  if (capture_application) {
+    s << ", capture_application: " << *capture_application;
   }
   return s.str();
 }
@@ -542,12 +629,11 @@ AudioInputStream::OpenOutcome CatapAudioInputStreamSource::Open(
     return AudioInputStream::OpenOutcome::kAlreadyOpen;
   }
 
-  if (config_.capture_application_process_id) {
+  if (config_.capture_application) {
     // Get a list of all CoreAudio process device IDs that belong to the
-    // specified application process.
-    pid_t application_pid = *config_.capture_application_process_id;
+    // specified application.
     NSArray<NSNumber*>* process_audio_device_ids_to_include =
-        GetProcessAudioDeviceIds(application_pid);
+        GetProcessAudioDeviceIds(*config_.capture_application);
     if (![process_audio_device_ids_to_include count]) {
       SendLogMessage("%s => Could not determine audio objects that belong to "
                      "the application process.",
@@ -717,8 +803,8 @@ AudioInputStream::OpenOutcome CatapAudioInputStreamSource::Open(
   }
 
   property_listener_ = std::make_unique<PropertyListenerHelper>(
-      config_.capture_default_device,
-      config_.capture_application_process_id.has_value(), aggregate_device_id_,
+      config_.capture_default_device, config_.capture_application.has_value(),
+      aggregate_device_id_,
       base::BindRepeating(&CatapAudioInputStreamSource::ProcessPropertyChange,
                           weak_ptr_factory_.GetWeakPtr()),
       catap_api_);
@@ -970,42 +1056,31 @@ NSArray<NSNumber*>* CatapAudioInputStreamSource::GetProcessAudioDeviceIds(
   // Returns all CoreAudio process audio device IDs that belong to the specified
   // process ID.
   base::ElapsedTimer timer;
-  UInt32 property_size;
 
-  // Get all CoreAudio process audio device IDs (which are UInt32).
-  OSStatus result = catap_api_->AudioObjectGetPropertyDataSize(
-      kAudioObjectSystemObject, &kAudioProcessListAddress,
-      /*in_qualifier_data_size=*/0,
-      /*in_qualifier_data=*/nullptr, &property_size);
-  if (result != noErr) {
+  auto get_device_ids_result = GetAllProcessAudioDeviceIds(catap_api_.get());
+  if (!get_device_ids_result.has_value()) {
+    const AudioFetchError& err = get_device_ids_result.error();
+    const char* message =
+        (err.stage == AudioPropertyError::kSizeFetchFailed)
+            ? "Could not get number of process audio device IDs"
+            : "Could not get process audio device IDs";
+
     ReportGetProcessAudioDeviceIdsDuration(false, timer.Elapsed());
-    SendLogMessage(
-        "%s => Could not get number of process audio device IDs. Status: %d",
-        __func__, result);
+    SendLogMessage("%s => %s. Status: %d", __func__, message, err.status);
     return @[];
   }
 
-  UInt32 num_devices = property_size / sizeof(AudioDeviceID);
-  auto device_ids = std::vector<AudioDeviceID>(num_devices);
-  result = catap_api_->AudioObjectGetPropertyData(
-      kAudioObjectSystemObject, &kAudioProcessListAddress,
-      /*in_qualifier_data_size=*/0,
-      /*in_qualifier_data=*/nullptr, &property_size, device_ids.data());
-  if (result != noErr) {
-    ReportGetProcessAudioDeviceIdsDuration(false, timer.Elapsed());
-    SendLogMessage("%s => Could not get process audio device IDs. Status: %d",
-                   __func__, result);
-    return @[];
-  }
+  std::vector<AudioDeviceID> device_ids =
+      std::move(get_device_ids_result.value());
 
   NSMutableArray<NSNumber*>* process_audio_device_ids_array =
-      [NSMutableArray arrayWithCapacity:num_devices];
+      [NSMutableArray arrayWithCapacity:device_ids.size()];
 
   for (AudioDeviceID device_id : device_ids) {
     // Get the process ID and add the device to the list if there's a match.
     int32_t process_id;
-    property_size = sizeof(int32_t);
-    result = catap_api_->AudioObjectGetPropertyData(
+    UInt32 property_size = sizeof(int32_t);
+    OSStatus result = catap_api_->AudioObjectGetPropertyData(
         device_id, &kAudioProcessPidAddress, /*in_qualifier_data_size=*/0,
         /*in_qualifier_data=*/nullptr, &property_size, &process_id);
     if (result != noErr) {
@@ -1021,6 +1096,55 @@ NSArray<NSNumber*>* CatapAudioInputStreamSource::GetProcessAudioDeviceIds(
   }
 
   ReportGetProcessAudioDeviceIdsDuration(true, timer.Elapsed());
+  return process_audio_device_ids_array;
+}
+
+NSArray<NSNumber*>* CatapAudioInputStreamSource::GetProcessAudioDeviceIds(
+    const std::string& main_bundle_id) {
+  base::ElapsedTimer timer;
+
+  auto get_device_ids_result = GetAllProcessAudioDeviceIds(catap_api_.get());
+  if (!get_device_ids_result.has_value()) {
+    const AudioFetchError& err = get_device_ids_result.error();
+    const char* message =
+        (err.stage == AudioPropertyError::kSizeFetchFailed)
+            ? "Could not get number of process audio device IDs"
+            : "Could not get process audio device IDs";
+
+    ReportGetProcessAudioDeviceIdsDuration(false, timer.Elapsed());
+    SendLogMessage("%s => %s. Status: %d", __func__, message, err.status);
+    return @[];
+  }
+
+  std::vector<AudioDeviceID> device_ids =
+      std::move(get_device_ids_result.value());
+  NSMutableArray<NSNumber*>* process_audio_device_ids_array =
+      [NSMutableArray arrayWithCapacity:device_ids.size()];
+
+  for (AudioDeviceID device_id : device_ids) {
+    base::apple::ScopedCFTypeRef<CFStringRef> cf_process_bundle_id;
+    UInt32 str_size = sizeof(CFStringRef);
+    OSStatus result = catap_api_->AudioObjectGetPropertyData(
+        device_id, &kAudioProcessBundleIdAddress, /*in_qualifier_data_size=*/0,
+        /*in_qualifier_data=*/nullptr, &str_size,
+        cf_process_bundle_id.InitializeInto());
+
+    if (result != noErr) {
+      SendLogMessage("%s => Could not determine bundle ID of process audio "
+                     "device ID. Status: %d",
+                     __func__, result);
+      continue;  // Skip this device and continue to the next.
+    }
+
+    std::string process_bundle_id =
+        base::SysCFStringRefToUTF8(cf_process_bundle_id.get());
+
+    if (IsSameOrSubBundle(process_bundle_id, main_bundle_id)) {
+      [process_audio_device_ids_array addObject:@(device_id)];
+    }
+  }
+
+  ReportGetProcessAudioDeviceIdsFromBundleIdDuration(true, timer.Elapsed());
   return process_audio_device_ids_array;
 }
 
@@ -1159,10 +1283,10 @@ void CatapAudioInputStreamSource::ProcessPropertyChange(
     } else if (property_address == kAudioProcessListAddress) {
       // We only listen on `kAudioProcessListAddress` changes if we capture
       // application audio, i.e., we have a
-      // `config_.capture_application_process_id`.
-      CHECK(config_.capture_application_process_id);
+      // `config_.capture_application`.
+      CHECK(config_.capture_application.has_value());
       NSArray<NSNumber*>* process_audio_device_ids_to_include =
-          GetProcessAudioDeviceIds(*config_.capture_application_process_id);
+          GetProcessAudioDeviceIds(*config_.capture_application);
       NSSet* new_tap_objects =
           [NSSet setWithArray:process_audio_device_ids_to_include];
       NSSet* current_tap_objects =
@@ -1262,12 +1386,6 @@ AudioInputStream::OpenOutcome CatapAudioInputStream::Open() {
 
   CatapAudioInputStreamSource::Config config(params_, device_id_,
                                              force_mono_capture);
-
-  if (AudioDeviceDescription::IsApplicationLoopbackDevice(device_id_) &&
-      !config.capture_application_process_id) {
-    SendLogMessage("%s => No valid Application PID to capture.", __func__);
-    return AudioInputStream::OpenOutcome::kFailed;
-  }
 
   source_ = std::make_unique<CatapAudioInputStreamSource>(
       catap_api_.get(), config, log_callback_, this);

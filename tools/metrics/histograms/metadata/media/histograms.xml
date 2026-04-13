@@ -1542,6 +1542,7 @@ chromium-metrics-reviews@google.com.
   <token key="Operation">
     <variant name="Close"/>
     <variant name="GetProcessAudioDeviceIds"/>
+    <variant name="GetProcessAudioDeviceIdsFromBundleId"/>
     <variant name="Open"/>
     <variant name="Start"/>
     <variant name="Stop"/>

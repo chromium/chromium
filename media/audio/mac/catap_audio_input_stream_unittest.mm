@@ -106,6 +106,10 @@ const AudioObjectPropertyAddress kProcessPidAddress = {
     kAudioProcessPropertyPID, kAudioObjectPropertyScopeGlobal,
     kAudioObjectPropertyElementMain};
 
+const AudioObjectPropertyAddress kProcessBundleIdAddress = {
+    kAudioProcessPropertyBundleID, kAudioObjectPropertyScopeGlobal,
+    kAudioObjectPropertyElementMain};
+
 const AudioObjectPropertyAddress kTapDescriptionAddress = {
     kAudioTapPropertyDescription, kAudioObjectPropertyScopeGlobal,
     kAudioObjectPropertyElementMain};
@@ -223,6 +227,16 @@ class FakeCatapApi : public CatapApi {
       if (it != process_pids.end()) {
         *reinterpret_cast<pid_t*>(outData) = it->second;
         *ioDataSize = sizeof(pid_t);
+        return noErr;
+      }
+      return -1;
+    }
+    if (*in_address == kProcessBundleIdAddress) {
+      auto it = bundle_ids.find(in_object_id);
+      if (it != bundle_ids.end()) {
+        *reinterpret_cast<CFStringRef*>(outData) = CFStringCreateWithCString(
+            nullptr, it->second.c_str(), kCFStringEncodingUTF8);
+        *ioDataSize = sizeof(CFStringRef);
         return noErr;
       }
       return -1;
@@ -369,6 +383,9 @@ class FakeCatapApi : public CatapApi {
   // The key is the device ID and the value is the process ID. This is used to
   // map device IDs to process IDs.
   std::map<AudioDeviceID, pid_t> process_pids;
+  // The key is the device ID and the value is the bundle ID. This is used to
+  // map device IDs to bundle IDs.
+  std::map<AudioDeviceID, std::string> bundle_ids;
 
   // Variables that can be inspected by the tests.
   // The following variables are set when the corresponding `CatapApi` function
@@ -713,10 +730,12 @@ TEST_F(CatapAudioInputStreamTest, LoopbackWithoutChromeId) {
 
 TEST_F(CatapAudioInputStreamTest, ApplicationLoopback) {
   if (@available(macOS 14.2, *)) {
-    base::ProcessId process_id = getpid();
+    std::string bundle_id = "org.chromium";
+    std::string bundle_id_helper = "org.chromium.helper";
+    std::string other_bundle_id = "com.apple";
     CreateStream(
         /*with_permissions=*/true,
-        /*device_id=*/media::CreateApplicationLoopbackDeviceId(process_id));
+        /*device_id=*/media::CreateApplicationLoopbackDeviceId(bundle_id));
 
     // Arbitrary number of CoreAudio process audio device IDs to be returned by
     // GetProcessAudioDeviceIds.
@@ -725,9 +744,10 @@ TEST_F(CatapAudioInputStreamTest, ApplicationLoopback) {
     constexpr AudioDeviceID kOtherProcessDeviceId = 3;
     fake_catap_api()->process_audio_devices = {
         kProcessFirstDeviceId, kProcessSecondDeviceId, kOtherProcessDeviceId};
-    fake_catap_api()->process_pids[kProcessFirstDeviceId] = process_id;
-    fake_catap_api()->process_pids[kProcessSecondDeviceId] = process_id;
-    fake_catap_api()->process_pids[kOtherProcessDeviceId] = process_id + 1;
+
+    fake_catap_api()->bundle_ids[kProcessFirstDeviceId] = bundle_id;
+    fake_catap_api()->bundle_ids[kProcessSecondDeviceId] = bundle_id_helper;
+    fake_catap_api()->bundle_ids[kOtherProcessDeviceId] = other_bundle_id;
 
     // Initialize the stream.
     EXPECT_EQ(stream_->Open(), AudioInputStream::OpenOutcome::kSuccess);
@@ -755,10 +775,11 @@ TEST_F(CatapAudioInputStreamTest, ApplicationLoopback) {
 TEST_F(CatapAudioInputStreamTest,
        ApplicationLoopbackSucceedWithoutAudioDevices) {
   if (@available(macOS 14.2, *)) {
-    base::ProcessId process_id = getpid();
+    std::string bundle_id = "org.chromium";
+    std::string other_bundle_id = "com.apple";
     CreateStream(
         /*with_permissions=*/true,
-        /*device_id=*/media::CreateApplicationLoopbackDeviceId(process_id));
+        /*device_id=*/media::CreateApplicationLoopbackDeviceId(bundle_id));
 
     // Arbitrary number of CoreAudio process audio device IDs to be returned by
     // GetProcessAudioDeviceIds.
@@ -767,9 +788,10 @@ TEST_F(CatapAudioInputStreamTest,
     constexpr AudioDeviceID kOtherProcessDeviceId = 3;
     fake_catap_api()->process_audio_devices = {
         kProcessFirstDeviceId, kProcessSecondDeviceId, kOtherProcessDeviceId};
-    fake_catap_api()->process_pids[kProcessFirstDeviceId] = process_id + 1;
-    fake_catap_api()->process_pids[kProcessSecondDeviceId] = process_id + 1;
-    fake_catap_api()->process_pids[kOtherProcessDeviceId] = process_id + 1;
+
+    fake_catap_api()->bundle_ids[kProcessFirstDeviceId] = other_bundle_id;
+    fake_catap_api()->bundle_ids[kProcessSecondDeviceId] = other_bundle_id;
+    fake_catap_api()->bundle_ids[kOtherProcessDeviceId] = other_bundle_id;
 
     // Initialize the stream.
     EXPECT_EQ(stream_->Open(), AudioInputStream::OpenOutcome::kSuccess);
@@ -789,19 +811,22 @@ TEST_F(CatapAudioInputStreamTest,
 
 TEST_F(CatapAudioInputStreamTest, UpdateStreamOnNewAudioID) {
   if (@available(macOS 14.2, *)) {
-    base::ProcessId process_id = getpid();
+    std::string bundle_id = "org.chromium";
+    std::string bundle_id_helper = "org.chromium.helper";
+    std::string other_bundle_id = "com.apple";
     int expected_set_tap_description_count = 1;
     CreateStream(
         /*with_permissions=*/true,
-        /*device_id=*/media::CreateApplicationLoopbackDeviceId(process_id));
+        /*device_id=*/media::CreateApplicationLoopbackDeviceId(bundle_id));
     // Arbitrary number of CoreAudio process audio device IDs to be returned by
     // GetProcessAudioDeviceIds.
     constexpr AudioDeviceID kProcessFirstDeviceId = 1;
     constexpr AudioDeviceID kProcessSecondDeviceId = 2;
     constexpr AudioDeviceID kOtherProcessDeviceId = 3;
-    fake_catap_api()->process_pids[kProcessFirstDeviceId] = process_id;
-    fake_catap_api()->process_pids[kProcessSecondDeviceId] = process_id;
-    fake_catap_api()->process_pids[kOtherProcessDeviceId] = process_id + 1;
+
+    fake_catap_api()->bundle_ids[kProcessFirstDeviceId] = bundle_id;
+    fake_catap_api()->bundle_ids[kProcessSecondDeviceId] = bundle_id_helper;
+    fake_catap_api()->bundle_ids[kOtherProcessDeviceId] = other_bundle_id;
 
     // Initialize the stream.
     fake_catap_api()->process_audio_devices = {kOtherProcessDeviceId};

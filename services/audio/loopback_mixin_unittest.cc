@@ -130,12 +130,20 @@ TEST_F(LoopbackMixinTest,
   }
 }
 
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+
 TEST_F(LoopbackMixinTest,
        MaybeCreate_SucceedsWithRestrictOwnAudioBrowserLoopbackIdAndFeature) {
   feature_list_.InitAndEnableFeature(kRestrictOwnAudioAddChromiumBack);
+#if BUILDFLAG(IS_MAC)
+  std::string device_id = media::CreateRestrictOwnAudioBrowserLoopbackDeviceId(
+      "org.chromium.Chromium");
+#else
+  std::string device_id =
+      media::CreateRestrictOwnAudioBrowserLoopbackDeviceId();
+#endif
   auto mixin = LoopbackMixin::MaybeCreateRestrictOwnAudioLoopbackMixin(
-      &coordinator_, base::UnguessableToken::Create(),
-      media::CreateRestrictOwnAudioBrowserLoopbackDeviceId(), params_,
+      &coordinator_, base::UnguessableToken::Create(), device_id, params_,
       on_data_callback_.Get());
 
   if (media::IsRestrictOwnAudioSupported()) {
@@ -145,6 +153,8 @@ TEST_F(LoopbackMixinTest,
     EXPECT_EQ(mixin, nullptr);
   }
 }
+
+#endif
 
 // --- Behavior Tests ---
 

@@ -9,6 +9,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 namespace media {
 
+#if BUILDFLAG(IS_WIN)
 TEST(ApplicationLoopbackDeviceHelperTest, EncodeDecode) {
   uint32_t application_id = 12345;
   std::string device_id = CreateApplicationLoopbackDeviceId(application_id);
@@ -28,5 +29,29 @@ TEST(ApplicationLoopbackDeviceHelperTest, RestrictOwnAudio) {
   EXPECT_EQ(static_cast<uint32_t>(base::GetCurrentProcId()),
             decoded_application_id);
 }
+
+#elif BUILDFLAG(IS_MAC)
+
+TEST(ApplicationLoopbackDeviceHelperTest, AddAndExtractBundleId) {
+  std::string bundle_id = "org.chromium";
+  std::string device_id = CreateApplicationLoopbackDeviceId(bundle_id);
+  EXPECT_TRUE(AudioDeviceDescription::IsApplicationLoopbackDevice(device_id));
+  EXPECT_FALSE(IsRestrictOwnAudioBrowserLoopbackDeviceId(device_id));
+  std::string extracted_bundle_id =
+      GetBundleIdFromApplicationLoopbackDeviceId(device_id);
+  EXPECT_EQ(bundle_id, extracted_bundle_id);
+}
+
+TEST(ApplicationLoopbackDeviceHelperTest, RestrictOwnAudioWithBundleId) {
+  std::string bundle_id = "org.chromium";
+  std::string device_id =
+      CreateRestrictOwnAudioBrowserLoopbackDeviceId(bundle_id);
+  EXPECT_TRUE(AudioDeviceDescription::IsApplicationLoopbackDevice(device_id));
+  EXPECT_TRUE(IsRestrictOwnAudioBrowserLoopbackDeviceId(device_id));
+  std::string extracted_bundle_id =
+      GetBundleIdFromApplicationLoopbackDeviceId(device_id);
+  EXPECT_EQ(bundle_id, extracted_bundle_id);
+}
+#endif  // BUILDFLAG(IS_WIN)
 
 }  // namespace media

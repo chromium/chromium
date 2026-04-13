@@ -1054,11 +1054,19 @@ TEST_F(MediaStreamManagerTest,
       }));
 }
 
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+
 TEST_F(MediaStreamManagerTest,
        GetDisplayMediaRequestApplicationAudioShareIsHashed) {
+#if BUILDFLAG(IS_MAC)
+  std::string device_id =
+      media::CreateApplicationLoopbackDeviceId("org.chromium.Chromium");
+#else
+  std::string device_id = media::CreateApplicationLoopbackDeviceId(12345);
+#endif
   blink::MediaStreamDevice application_loopback_device(
-      blink::mojom::MediaStreamType::DISPLAY_AUDIO_CAPTURE,
-      media::CreateApplicationLoopbackDeviceId(12345), "Application Capture");
+      blink::mojom::MediaStreamType::DISPLAY_AUDIO_CAPTURE, device_id,
+      "Application Capture");
 
   auto salt_and_origin = MediaDeviceSaltAndOrigin::Empty();
   const std::string hashed_application_loopback_device_id =
@@ -1083,6 +1091,8 @@ TEST_F(MediaStreamManagerTest,
           },
           hashed_application_loopback_device_id));
 }
+
+#endif
 
 TEST_F(MediaStreamManagerTest, GetDisplayMediaRequestCallsUIProxy) {
   media_stream_manager_->UseFakeUIFactoryForTests(base::BindRepeating(
