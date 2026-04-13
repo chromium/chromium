@@ -293,7 +293,6 @@ class LocalMachineJunitTestRun(test_run.TestRun):
       except (subprocess.CalledProcessError, IOError):
         results.append(_MakeUnknownFailureResult('Filter matched no tests'))
         return
-    json_config = self._ApplyExternalSharding(json_config)
 
     # Disabled tests are nested in a top-level "disabled" key.
     # Merge them into the main "configs".
@@ -304,6 +303,7 @@ class LocalMachineJunitTestRun(test_run.TestRun):
           target_methods = target_classes.setdefault(class_name, [])
           target_methods.extend(methods)
 
+    json_config = self._ApplyExternalSharding(json_config)
     test_groups = GroupTests(json_config, _MAX_TESTS_PER_JOB)
 
     shard_list = list(range(len(test_groups)))
