@@ -885,7 +885,7 @@ libfuzzer_linux_asan_builder(
     build_config = builder_config.build_config.RELEASE,
     target_bits = 64,
     console_short_name = "linux",
-    execution_timeout = 4 * time.hour,
+    execution_timeout = 5 * time.hour,
     gn_extra_configs = [
         "mojo_fuzzer",
     ],
