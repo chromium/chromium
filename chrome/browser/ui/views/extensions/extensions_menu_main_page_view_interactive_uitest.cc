@@ -321,7 +321,21 @@ IN_PROC_BROWSER_TEST_F(ExtensionsMenuMainPageViewInteractiveUITest,
   //   - reload section is hidden.
   //   - requests section is hidden
   //   - request access button, in the toolbar, does not include extension.
+  //
+  // `WaitForActiveTabPermissionGranted` because `ActiveTabPermissionGranter` is
+  // responsible for granting the requested host permissions - see
+  // https://source.chromium.org/chromium/chromium/src/+/main:extensions/browser/permissions/active_tab_permission_granter.cc;l=148-178;drc=409b77a78792667eb4583c52aa9faf7fa321f4b8
+  extensions::PermissionsManagerWaiter waiter(
+      extensions::PermissionsManager::Get(browser()->profile()));
   ClickButton(menu_entry->action_button_for_testing());
+  waiter.WaitForActiveTabPermissionGranted(extension_id);
+
+  // The menu might have closed after clicking the button. Re-open it.
+  ClickButton(extensions_button());
+  menu_entry = GetOnlyMenuEntry();
+  reload_section = main_page()->reload_section();
+  requests_section = main_page()->requests_section();
+
   EXPECT_TRUE(menu_entry->site_access_toggle_for_testing()->GetVisible());
   EXPECT_TRUE(menu_entry->site_access_toggle_for_testing()->GetIsOn());
   EXPECT_FALSE(reload_section->GetVisible());
@@ -1200,6 +1214,8 @@ IN_PROC_BROWSER_TEST_F(ExtensionsMenuMainPageViewInteractiveTest,
   extensions::ScriptingPermissionsModifier(profile(), extension)
       .SetWithholdHostPermissions(true);
 
+  extensions::PermissionsManagerWaiter waiter(
+      PermissionsManager::Get(profile()));
   RunTestSequence(
       InstrumentTab(kTab),
       NavigateWebContents(kTab, embedded_test_server()->GetURL("/simple.html")),
@@ -1216,9 +1232,16 @@ IN_PROC_BROWSER_TEST_F(ExtensionsMenuMainPageViewInteractiveTest,
       WaitForShow(extensions::kReloadPageDialogCancelButtonElementId),
       PressButton(extensions::kReloadPageDialogCancelButtonElementId),
 
-      // The extension permission should have been applied at this point, but
-      // the extension's script and blocked actions should not run since a
-      // reload is needed.
+      // Wait until the extension permissions have been applied.
+      //
+      // `WaitForActiveTabPermissionGranted` because
+      // `ActiveTabPermissionGranter` is responsible for granting the requested
+      // host permissions - see
+      // https://source.chromium.org/chromium/chromium/src/+/main:extensions/browser/permissions/active_tab_permission_granter.cc;l=148-178;drc=409b77a78792667eb4583c52aa9faf7fa321f4b8
+      Do([&]() { waiter.WaitForActiveTabPermissionGranted(extension->id()); }),
+
+      // Despite new extension permissions, the extension's script and blocked
+      // actions should not run since a reload is needed.
       CheckResult(
           [&]() {
             return extensions::browsertest_util::DidChangeTitle(

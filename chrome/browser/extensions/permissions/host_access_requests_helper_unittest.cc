@@ -403,7 +403,9 @@ TEST_F(HostAccessRequestsHelperUnittest,
       ActiveTabPermissionGranter::FromWebContents(
           browser()->tab_strip_model()->GetActiveWebContents());
   ASSERT_TRUE(active_tab_permission_granter);
+  PermissionsManagerWaiter waiter(PermissionsManager::Get(profile()));
   active_tab_permission_granter->GrantIfRequested(extension.get());
+  waiter.WaitForActiveTabPermissionGranted(extension->id());
 
   // Request should be removed since extension has granted host access.
   // Even though the extension was only granted activeTab (and not persistent

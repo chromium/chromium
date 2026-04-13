@@ -735,7 +735,12 @@ TEST_F(ExtensionsMenuMainPageViewUnitTest,
   //   site access.
   //   - site access toggle is visible and on.
   //   - site permissions button is visible, enabled, and has "on click" text.
-  action_runner->GrantTabPermissions({extension.get()});
+  {
+    extensions::PermissionsManagerWaiter waiter(
+        extensions::PermissionsManager::Get(browser()->profile()));
+    action_runner->GrantTabPermissions({extension.get()});
+    waiter.WaitForActiveTabPermissionGranted(extension->id());
+  }
   EXPECT_EQ(GetSiteInteraction(*extension, web_contents),
             SitePermissionsHelper::SiteInteraction::kGranted);
   EXPECT_EQ(GetUserSiteAccess(*extension, url),

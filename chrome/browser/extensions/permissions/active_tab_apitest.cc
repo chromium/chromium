@@ -8,10 +8,10 @@
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/chromeos_buildflags.h"
+#include "chrome/browser/extensions/extension_action_runner.h"
 #include "chrome/browser/extensions/extension_apitest.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/extension_util.h"
-#include "chrome/browser/extensions/extension_action_runner.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
@@ -25,6 +25,7 @@
 #include "extensions/common/constants.h"
 #include "extensions/common/extension.h"
 #include "extensions/test/extension_test_message_listener.h"
+#include "extensions/test/permissions_manager_waiter.h"
 #include "extensions/test/result_catcher.h"
 #include "net/base/filename_util.h"
 #include "net/dns/mock_host_resolver.h"
@@ -87,8 +88,12 @@ IN_PROC_BROWSER_TEST_F(ExtensionActiveTabTest, DISABLED_ActiveTab) {
   // Granting to the extension should give it access to page.html.
   {
     ResultCatcher catcher;
-    ExtensionActionRunner::GetForWebContents(web_contents)
-        ->RunAction(extension, true);
+    {
+      PermissionsManagerWaiter waiter(PermissionsManager::Get(profile()));
+      ExtensionActionRunner::GetForWebContents(web_contents)
+          ->RunAction(extension, true);
+      waiter.WaitForActiveTabPermissionGranted(extension->id());
+    }
     EXPECT_TRUE(catcher.GetNextResult()) << message_;
   }
 
@@ -143,8 +148,12 @@ IN_PROC_BROWSER_TEST_F(ExtensionActiveTabTest, ActiveTabCors) {
     // The injected content script has an access to page's origin without
     // explicit permissions other than "activeTab".
     ResultCatcher catcher;
-    ExtensionActionRunner::GetForWebContents(web_contents)
-        ->RunAction(extension, true);
+    {
+      PermissionsManagerWaiter waiter(PermissionsManager::Get(profile()));
+      ExtensionActionRunner::GetForWebContents(web_contents)
+          ->RunAction(extension, true);
+      waiter.WaitForActiveTabPermissionGranted(extension->id());
+    }
     EXPECT_TRUE(catcher.GetNextResult()) << message_;
   }
 }
@@ -307,8 +316,12 @@ IN_PROC_BROWSER_TEST_F(ExtensionApiTest, FileURLs) {
   // Now grant the tab permission. Ensure the extension can now xhr file urls ,
   // script the active tab and embed file iframes. It should still not be able
   // to script the background tab.
-  ExtensionActionRunner::GetForWebContents(web_contents)
-      ->RunAction(extension.get(), true /*grant_tab_permissions*/);
+  {
+    PermissionsManagerWaiter waiter(PermissionsManager::Get(profile()));
+    ExtensionActionRunner::GetForWebContents(web_contents)
+        ->RunAction(extension.get(), true /*grant_tab_permissions*/);
+    waiter.WaitForActiveTabPermissionGranted(extension->id());
+  }
   EXPECT_TRUE(can_xhr_file_urls());
   EXPECT_TRUE(can_script_tab(active_tab_id));
   EXPECT_TRUE(can_load_file_iframe());
@@ -330,8 +343,12 @@ IN_PROC_BROWSER_TEST_F(ExtensionApiTest, FileURLs) {
   // Grant the tab permission for the active url to the extension. Ensure it
   // still can't xhr file urls, script the active tab or embed file iframes
   // (since it does not have file access).
-  ExtensionActionRunner::GetForWebContents(web_contents)
-      ->RunAction(extension.get(), true /*grant_tab_permissions*/);
+  {
+    PermissionsManagerWaiter waiter(PermissionsManager::Get(profile()));
+    ExtensionActionRunner::GetForWebContents(web_contents)
+        ->RunAction(extension.get(), true /*grant_tab_permissions*/);
+    waiter.WaitForActiveTabPermissionGranted(extension->id());
+  }
   EXPECT_FALSE(can_xhr_file_urls());
   EXPECT_FALSE(can_script_tab(active_tab_id));
   EXPECT_FALSE(can_script_tab(inactive_tab_id));

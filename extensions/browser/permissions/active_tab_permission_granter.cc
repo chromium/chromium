@@ -132,7 +132,7 @@ ActiveTabPermissionGranter::ActiveTabPermissionGranter(
 ActiveTabPermissionGranter::~ActiveTabPermissionGranter() = default;
 
 void ActiveTabPermissionGranter::GrantIfRequested(const Extension* extension) {
-  if (granted_extensions_.Contains(extension->id())) {
+  if (IsGranted(extension)) {
     return;
   }
 
@@ -186,39 +186,59 @@ void ActiveTabPermissionGranter::GrantIfRequested(const Extension* extension) {
     PermissionSet new_permissions(std::move(new_apis), ManifestPermissionSet(),
                                   new_hosts.Clone(), new_hosts.Clone());
     permissions_data->UpdateTabSpecificPermissions(tab_id_, new_permissions);
-    SetCorsOriginAccessList(browser_context, *extension, base::DoNothing());
 
-    if (web_contents()->GetController().GetVisibleEntry()) {
-      ProcessManager* process_manager = ProcessManager::Get(browser_context);
-      content::RenderProcessHost* process =
-          web_contents()->GetPrimaryMainFrame()->GetProcess();
-
-      // Notify ScriptInjectionTracker that scripts may be executed after
-      // granting active tab.
-      ScriptInjectionTracker::WillGrantActiveTab(
-          base::PassKey<ActiveTabPermissionGranter>(), *extension, *process);
-
-      // Update all extension render views with the new tab permissions, and
-      // also the tab itself.
-      RendererMessageFunction update_message =
-          base::BindRepeating(&UpdateTabSpecificPermissions, extension->id(),
-                              new_hosts.Clone(), tab_id_);
-      SendRendererMessageToProcesses(
-          process_manager->GetRenderFrameHostsForExtension(extension->id()),
-          process, update_message);
-
-      // It's important that this comes after the Mojo message is sent to the
-      // renderer, so that any tasks executing in the renderer occur after it
-      // has the updated permissions.
-      ExtensionsBrowserClient::Get()->OnActiveTabPermissionGranted(
-          extension, web_contents());
-
-      auto* permissions_manager =
-          PermissionsManager::Get(web_contents()->GetBrowserContext());
-      permissions_manager->NotifyActiveTabPermisssionGranted(
-          web_contents(), tab_id_, *extension);
-    }
+    SetCorsOriginAccessList(
+        browser_context, *extension,
+        base::BindOnce(&ActiveTabPermissionGranter::NotifyGranted,
+                       weak_factory_.GetWeakPtr(),
+                       base::WrapRefCounted(extension), new_hosts.Clone()));
   }
+}
+
+bool ActiveTabPermissionGranter::IsGranted(const Extension* extension) const {
+  return granted_extensions_.Contains(extension->id());
+}
+
+void ActiveTabPermissionGranter::NotifyGranted(
+    scoped_refptr<const Extension> extension,
+    URLPatternSet new_hosts) {
+  content::BrowserContext* browser_context =
+      web_contents()->GetBrowserContext();
+  if (!ExtensionRegistry::Get(browser_context)
+           ->enabled_extensions()
+           .Contains(extension->id()) ||
+      !web_contents()->GetController().GetVisibleEntry()) {
+    return;
+  }
+
+  ProcessManager* process_manager = ProcessManager::Get(browser_context);
+  content::RenderProcessHost* process =
+      web_contents()->GetPrimaryMainFrame()->GetProcess();
+
+  // Notify ScriptInjectionTracker that scripts may be executed after
+  // granting active tab.
+  ScriptInjectionTracker::WillGrantActiveTab(
+      base::PassKey<ActiveTabPermissionGranter>(), *extension, *process);
+
+  // Update all extension render views with the new tab permissions, and
+  // also the tab itself.
+  RendererMessageFunction update_message =
+      base::BindRepeating(&UpdateTabSpecificPermissions, extension->id(),
+                          new_hosts.Clone(), tab_id_);
+  SendRendererMessageToProcesses(
+      process_manager->GetRenderFrameHostsForExtension(extension->id()),
+      process, update_message);
+
+  // It's important that this comes after the Mojo message is sent to the
+  // renderer, so that any tasks executing in the renderer occur after it
+  // has the updated permissions.
+  ExtensionsBrowserClient::Get()->OnActiveTabPermissionGranted(extension.get(),
+                                                               web_contents());
+
+  auto* permissions_manager =
+      PermissionsManager::Get(web_contents()->GetBrowserContext());
+  permissions_manager->NotifyActiveTabPermisssionGranted(web_contents(),
+                                                         tab_id_, *extension);
 }
 
 void ActiveTabPermissionGranter::RevokeForTesting() {

@@ -48,6 +48,7 @@
 #include "extensions/common/features/feature_channel.h"
 #include "extensions/common/manifest_handlers/permissions_parser.h"
 #include "extensions/test/extension_test_message_listener.h"
+#include "extensions/test/permissions_manager_waiter.h"
 #include "extensions/test/result_catcher.h"
 #include "extensions/test/test_content_script_load_waiter.h"
 #include "extensions/test/test_extension_dir.h"
@@ -1702,8 +1703,11 @@ IN_PROC_BROWSER_TEST_F(DynamicScriptsTrackerBrowserTest, ActiveTabGranted) {
       *web_contents->GetPrimaryMainFrame()->GetProcess(), extension->id()));
 
   // Step 3: Grant activeTab and verify tracker runs the content script.
+  PermissionsManagerWaiter waiter(PermissionsManager::Get(profile()));
   ActiveTabPermissionGranter::FromWebContents(web_contents)
       ->GrantIfRequested(extension);
+  waiter.WaitForActiveTabPermissionGranted(extension->id());
+
   EXPECT_TRUE(ScriptInjectionTracker::DidProcessRunContentScriptFromExtension(
       *web_contents->GetPrimaryMainFrame()->GetProcess(), extension->id()));
 

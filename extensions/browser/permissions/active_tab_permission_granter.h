@@ -42,6 +42,9 @@ class ActiveTabPermissionGranter
   // tab-specific permissions to it until the next page navigation or refresh.
   void GrantIfRequested(const Extension* extension);
 
+  // Returns true if `extension` has been granted tab-specific permissions.
+  bool IsGranted(const Extension* extension) const;
+
   // Clears any tab-specific permissions for an extension with `id` if it has
   // been granted (otherwise does nothing) on `tab_id_` and notifies renderers.
   void ClearActiveExtensionAndNotify(const ExtensionId& id);
@@ -78,6 +81,11 @@ class ActiveTabPermissionGranter
   void ClearGrantedExtensionsAndNotify(
       const ExtensionSet& granted_extensions_to_remove);
 
+  // Notifies the renderer and other observers that the permission has been
+  // granted.
+  void NotifyGranted(scoped_refptr<const Extension> extension,
+                     URLPatternSet new_hosts);
+
   // The tab ID for this tab.
   const int tab_id_;
 
@@ -88,6 +96,8 @@ class ActiveTabPermissionGranter
   // Listen to extension unloaded notifications.
   base::ScopedObservation<ExtensionRegistry, ExtensionRegistryObserver>
       extension_registry_observation_{this};
+
+  base::WeakPtrFactory<ActiveTabPermissionGranter> weak_factory_{this};
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();
 };

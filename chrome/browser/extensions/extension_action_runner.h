@@ -216,9 +216,9 @@ class ExtensionActionRunner : public content::WebContentsObserver,
   // should incorporate more fully with ActiveTab.
   std::set<ExtensionId> permitted_extensions_;
 
-  // If true, ignore active tab being granted rather than running pending
-  // actions.
-  bool ignore_active_tab_granted_ = false;
+  // A set of ids for which the next active tab grant should be ignored (rather
+  // than running pending actions).
+  std::set<ExtensionId> extensions_to_ignore_active_tab_granted_;
 
   // TODO(crbug.com/424012380): reload page dialog ownership should be moved to
   // each caller.

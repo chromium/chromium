@@ -701,6 +701,8 @@ IN_PROC_BROWSER_TEST_P(ActivateWithReloadExtensionsMenuInteractiveUITest,
   EXPECT_TRUE(permissions_helper.PageNeedsRefreshToRun(
       action_runner->GetBlockedActions(extension->id())));
 
+  extensions::PermissionsManagerWaiter waiter(
+      extensions::PermissionsManager::Get(browser()->profile()));
   TriggerSingleExtensionButton();
 
   auto* const action_bubble =
@@ -724,6 +726,14 @@ IN_PROC_BROWSER_TEST_P(ActivateWithReloadExtensionsMenuInteractiveUITest,
     EXPECT_FALSE(action_runner->WantsToRun(extension.get()));
   } else {
     action_bubble->CancelDialog();
+
+    // We use `WaitForActiveTabPermissionGranted` even though the extension
+    // manifest doesn't ask for "active tab" permission.  This is because
+    // `ActiveTabPermissionGranter` is responsible for granting the requested
+    // host permissions - see
+    // https://source.chromium.org/chromium/chromium/src/+/main:extensions/browser/permissions/active_tab_permission_granter.cc;l=148-178;drc=409b77a78792667eb4583c52aa9faf7fa321f4b8
+    waiter.WaitForActiveTabPermissionGranted(extension->id());
+
     EXPECT_FALSE(web_contents->IsLoading());
     // The extension permission should have been applied at this point, but the
     // extension's script and blocked actions should not inject/run since a

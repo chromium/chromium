@@ -61,6 +61,7 @@
 #include "extensions/browser/extension_host.h"
 #include "extensions/browser/extension_registrar.h"
 #include "extensions/browser/extension_util.h"
+#include "extensions/browser/permissions/active_tab_permission_granter.h"
 #include "extensions/browser/permissions_manager.h"
 #include "extensions/browser/service_worker/service_worker_test_utils.h"
 #include "extensions/browser/url_loader_factory_manager.h"
@@ -217,6 +218,7 @@ class OrbAndCorsExtensionBrowserTest : public OrbAndCorsExtensionTestBase {
           "version": "1.0",
           "manifest_version": 2,
           "permissions": [
+              "activeTab",
               "tabs",
               "*://fetch-initiator.com/*",
               "*://127.0.0.1/*",
@@ -304,6 +306,7 @@ class OrbAndCorsExtensionBrowserTest : public OrbAndCorsExtensionTestBase {
     // The test must setup resource_load_observer_ for the appropriate web
     // contents before calling this method.
     EXPECT_TRUE(resource_load_observer_);
+    resource_load_observer_->WaitForResourceCompletion(url);
     EXPECT_TRUE(resource_load_observer_->GetResource(url));
 
     // Non-cors requests may return an opaque response. The ResourceLoadObserver
@@ -3024,6 +3027,77 @@ IN_PROC_BROWSER_TEST_F(OrbAndCorsExtensionBrowserTest,
 
     // There is no separate incognito background page in "spanning" mode.
   }
+}
+
+// Test that "active tab" permission allows bypassing ORB, but only for granted
+// origins.
+IN_PROC_BROWSER_TEST_F(OrbAndCorsExtensionBrowserTest,
+                       ActiveTabPersmissionVsOrb) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  ASSERT_TRUE(InstallExtension());
+
+  // 1. Navigate a tab to an http origin
+  GURL tab_url = embedded_test_server()->GetURL("bar.com", "/title1.html");
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), tab_url));
+
+  // 2. Grant active tab permission to that tab.
+  // This is now asynchronous (it waits for Network Service to be updated).
+  PermissionsManagerWaiter waiter(
+      PermissionsManager::Get(browser()->profile()));
+  ActiveTabPermissionGranter* granter =
+      ActiveTabPermissionGranter::FromWebContents(active_web_contents());
+  ASSERT_TRUE(granter);
+  granter->GrantIfRequested(extension());
+  waiter.WaitForActiveTabPermissionGranted(extension()->id());
+
+  // 3. Navigate a separate, new tab to an extension origin.
+  GURL extension_resource = GetExtensionResource("page.html");
+  content::WebContents* extension_web_contents = nullptr;
+  {
+    NavigateParams nav_params(
+        browser(), extension_resource,
+        ui::PageTransitionFromInt(ui::PAGE_TRANSITION_GENERATED));
+    nav_params.disposition = WindowOpenDisposition::NEW_FOREGROUND_TAB;
+    content::WebContentsAddedObserver new_web_contents_observer;
+    Navigate(&nav_params);
+    extension_web_contents = new_web_contents_observer.GetWebContents();
+    content::TestNavigationObserver navigation_observer(extension_web_contents,
+                                                        1);
+    navigation_observer.Wait();
+  }
+
+  // 4. Monitor resource loads in the extension page.
+  ObserveResourceLoads(extension_web_contents);
+
+  // 5. In the extension page do a no-cors fetch (via `img` tag) of a resource
+  // for which the extension has gained access via ActiveTab permission.
+  const char kScript[] = R"(
+      var img = document.createElement('img');
+      img.src = $1;
+      new Promise(resolve => {
+        img.onload = () => resolve('LOADED');
+        img.onerror = e => resolve('ERROR: ' + e);
+      });
+  )";
+  GURL active_tab_origin_url =
+      embedded_test_server()->GetURL("bar.com", "/nosniff.xml");
+  std::ignore =
+      content::EvalJs(extension_web_contents,
+                      content::JsReplace(kScript, active_tab_origin_url));
+
+  // 5b. Verify that ORB didn't block the response.
+  VerifyFetchWasAllowedByOrb(active_tab_origin_url);
+
+  // 6. Same as step 5, but for an origin that hasn't been granted ActiveTab
+  // permission.  Using `<img>` element is even more important than in step 5,
+  // because CORS blocks `fetch`-based requests (in step 5 we could have passed
+  // `"mode" = "no-cors"` option to `fetch`, but it wouldn't work here).
+  GURL other_url = embedded_test_server()->GetURL("other.com", "/nosniff.xml");
+  std::ignore = content::EvalJs(extension_web_contents,
+                                content::JsReplace(kScript, other_url));
+
+  // 6b. Verify that ORB blocked the last response.
+  VerifyFetchWasBlockedByOrb(other_url);
 }
 
 }  // namespace extensions

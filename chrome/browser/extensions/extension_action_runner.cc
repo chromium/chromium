@@ -157,12 +157,13 @@ void ExtensionActionRunner::GrantTabPermissions(
 
   // If a refresh is required this prevents blocked actions (that wouldn't run
   // at the right time) from running until the user refreshes the page.
-  base::AutoReset<bool> ignore_active_tab(&ignore_active_tab_granted_,
-                                          refresh_required);
   // Immediately grant permissions to every extension.
+  auto* granter = ActiveTabPermissionGranter::FromWebContents(web_contents());
   for (auto* extension : extensions) {
-    ActiveTabPermissionGranter::FromWebContents(web_contents())
-        ->GrantIfRequested(extension);
+    if (refresh_required && !granter->IsGranted(extension)) {
+      extensions_to_ignore_active_tab_granted_.insert(extension->id());
+    }
+    granter->GrantIfRequested(extension);
   }
 
   if (!refresh_required) {
@@ -185,7 +186,7 @@ void ExtensionActionRunner::GrantTabPermissions(
 
 void ExtensionActionRunner::OnActiveTabPermissionGranted(
     const Extension* extension) {
-  if (ignore_active_tab_granted_) {
+  if (extensions_to_ignore_active_tab_granted_.erase(extension->id())) {
     return;
   }
 
@@ -422,6 +423,7 @@ void ExtensionActionRunner::DidFinishNavigation(
   }
   pending_scripts_.clear();
   web_request_blocked_.clear();
+  extensions_to_ignore_active_tab_granted_.clear();
 
   // Note: This needs to be called *after* the maps have been updated, so that
   // when the UI updates, this object returns the proper result for "wants to
