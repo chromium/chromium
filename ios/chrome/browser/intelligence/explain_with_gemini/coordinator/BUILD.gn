@@ -28,3 +28,34 @@ source_set("coordinator") {
     "//ios/web/public",
   ]
 }
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "explain_with_gemini_mediator_unittest.mm" ]
+  deps = [
+    ":coordinator",
+    "//base",
+    "//base/test:test_support",
+    "//components/signin/public/identity_manager:test_support",
+    "//components/sync:test_support",
+    "//ios/chrome/browser/intelligence/bwg/model:bwg_service",
+    "//ios/chrome/browser/intelligence/bwg/model:gemini_service_factory",
+    "//ios/chrome/browser/intelligence/bwg/model:tab_helper",
+    "//ios/chrome/browser/intelligence/bwg/model:test_support",
+    "//ios/chrome/browser/intelligence/bwg/utils:constants",
+    "//ios/chrome/browser/intelligence/features",
+    "//ios/chrome/browser/shared/model/profile/test",
+    "//ios/chrome/browser/shared/public/commands",
+    "//ios/chrome/browser/signin/model",
+    "//ios/chrome/browser/signin/model:authentication_service",
+    "//ios/chrome/browser/signin/model:authentication_service_factory",
+    "//ios/chrome/browser/signin/model:test_support",
+    "//ios/chrome/browser/sync/model",
+    "//ios/chrome/browser/web_selection/model",
+    "//ios/chrome/test:test_support",
+    "//ios/web/public/test",
+    "//ios/web/public/test/fakes",
+    "//testing/gtest",
+    "//third_party/ocmock",
+  ]
+}
