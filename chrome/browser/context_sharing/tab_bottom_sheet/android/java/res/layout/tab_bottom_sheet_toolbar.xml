@@ -10,6 +10,6 @@ found in the LICENSE file.
     android:id="@+id/tab_bottom_sheet_toolbar_text"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:textAppearance="@style/TextAppearance.Headline"
+    android:textAppearance="@style/TextAppearance.Headline.Primary"
     android:gravity="center_horizontal|top"
     android:text="Header" />

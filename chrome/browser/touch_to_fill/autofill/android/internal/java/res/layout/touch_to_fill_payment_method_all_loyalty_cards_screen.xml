@@ -43,7 +43,7 @@ found in the LICENSE file.
             android:text="@string/autofill_bottom_sheet_all_loyalty_cards_screen_title"
             android:textAlignment="viewStart"
             android:focusable="true"
-            style="@style/TextAppearance.Headline"/>
+            style="@style/TextAppearance.Headline.Primary"/>
 
     </LinearLayout>
 

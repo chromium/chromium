@@ -54,7 +54,7 @@ found in the LICENSE file.
             android:paddingEnd="0dp"
             android:gravity="top|center"
             android:textDirection="locale"
-            android:textAppearance="@style/TextAppearance.Headline2"/>
+            android:textAppearance="@style/TextAppearance.Headline2.Primary"/>
 
     </LinearLayout>
 

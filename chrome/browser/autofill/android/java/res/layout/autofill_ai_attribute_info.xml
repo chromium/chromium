@@ -18,7 +18,7 @@ found in the LICENSE file.
         android:layout_gravity="center_vertical"
         android:layout_marginTop="@dimen/autofill_entity_attribute_top_padding"
         android:layout_marginEnd="@dimen/dialog_padding_sides"
-        android:textAppearance="@style/TextAppearance.TextSmall"/>
+        android:textAppearance="@style/TextAppearance.TextSmall.Primary"/>
 
     <org.chromium.ui.widget.TextViewWithLeading
         android:id="@+id/attribute_value"
@@ -26,7 +26,7 @@ found in the LICENSE file.
         android:layout_height="wrap_content"
         android:layout_gravity="center_vertical"
         android:layout_marginEnd="@dimen/dialog_padding_sides"
-        android:textAppearance="@style/TextAppearance.TextLarge"/>
+        android:textAppearance="@style/TextAppearance.TextLarge.Primary"/>
 
     <org.chromium.ui.widget.TextViewWithLeading
         android:id="@+id/old_attribute_value"

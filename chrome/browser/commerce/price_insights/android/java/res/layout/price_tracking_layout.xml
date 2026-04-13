@@ -29,7 +29,7 @@ found in the LICENSE file.
             android:focusable="true"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textAppearance="@style/TextAppearance.TextMediumThick"
+            android:textAppearance="@style/TextAppearance.TextMediumThick.Primary"
             android:textAlignment="viewStart"
             android:maxLines="1"
             android:ellipsize="end"/>
@@ -49,7 +49,7 @@ found in the LICENSE file.
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:drawablePadding="@dimen/price_insights_price_tracking_button_drawable_padding"
-        android:textAppearance="@style/TextAppearance.TextMediumThick"
+        android:textAppearance="@style/TextAppearance.TextMediumThick.Primary"
         android:paddingStart="@dimen/price_tracking_button_padding_start"
         android:paddingEnd="@dimen/price_tracking_button_padding_end"/>
 </LinearLayout>

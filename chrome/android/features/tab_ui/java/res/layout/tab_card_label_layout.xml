@@ -40,5 +40,5 @@ found in the LICENSE file.
     android:layout_marginHorizontal="4dp"
     android:singleLine="true"
     android:ellipsize="end"
-    style="@style/TextAppearance.TextSmall"/>
+    style="@style/TextAppearance.TextSmall.Primary"/>
 </org.chromium.chrome.browser.tasks.tab_management.TabCardLabelView>

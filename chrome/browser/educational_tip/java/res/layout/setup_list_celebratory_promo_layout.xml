@@ -37,7 +37,7 @@ found in the LICENSE file.
         android:ellipsize="end"
         android:gravity="center"
         android:maxLines="1"
-        android:textAppearance="@style/TextAppearance.Headline2Thick"/>
+        android:textAppearance="@style/TextAppearance.Headline2Thick.Primary"/>
 
     <TextView
         android:id="@+id/educational_tip_module_content_description"
@@ -49,7 +49,7 @@ found in the LICENSE file.
         android:ellipsize="end"
         android:gravity="center"
         android:maxLines="2"
-        android:textAppearance="@style/TextAppearance.TextSmall" />
+        android:textAppearance="@style/TextAppearance.TextSmall.Primary" />
 
     <!-- Hidden button to satisfy the EducationalTipModuleView binding -->
     <org.chromium.ui.widget.ButtonCompat

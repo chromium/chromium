@@ -43,7 +43,7 @@ found in the LICENSE file.
             android:paddingRight="14dp"
             android:ellipsize="end"
             android:singleLine="true"
-            style="@style/TextAppearance.Headline"/>
+            style="@style/TextAppearance.Headline.Primary"/>
     </LinearLayout>
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/restore_tabs_detail_screen_recycler_view"

@@ -18,7 +18,7 @@ found in the LICENSE file.
         android:screenReaderFocusable="true"
         android:accessibilityHeading="true"
         android:layout_marginBottom="@dimen/content_item_title_bottom_margin"
-        android:textAppearance="@style/TextAppearance.TextAccentMediumThick" />
+        android:textAppearance="@style/TextAppearance.TextAccentMediumThick.Primary" />
     <FrameLayout
         android:id="@+id/content_view_container"
         android:layout_width="match_parent"

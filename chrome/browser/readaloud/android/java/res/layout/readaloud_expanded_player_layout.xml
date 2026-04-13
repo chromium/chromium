@@ -64,7 +64,7 @@ found in the LICENSE file.
                         android:layout_height="wrap_content"
                         android:paddingVertical="4dp"
                         android:text="@string/readaloud_expanded_playback_error"
-                        android:textAppearance="@style/TextAppearance.Headline2"
+                        android:textAppearance="@style/TextAppearance.Headline2.Primary"
                         android:textAlignment="center"
                         android:clickable="false"
                         android:focusable="false"
@@ -74,7 +74,7 @@ found in the LICENSE file.
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:text="@string/readaloud_expanded_playback_error_description"
-                        android:textAppearance="@style/TextAppearance.TextMedium"
+                        android:textAppearance="@style/TextAppearance.TextMedium.Primary"
                         android:paddingVertical="4dp"
                         android:textAlignment="center"
                         android:clickable="false"
@@ -259,7 +259,7 @@ found in the LICENSE file.
                                   android:layout_height="@dimen/readaloud_menu_buttons_width"
                                   android:layout_gravity="center_vertical"
                                   android:gravity="center_vertical"
-                                  android:textAppearance="@style/TextAppearance.TextAccentMediumThick"
+                                  android:textAppearance="@style/TextAppearance.TextAccentMediumThick.Primary"
                                   tools:ignore="ContentDescription"
                                   android:accessibilityTraversalAfter="@+id/readaloud_mode_selector"/>
                             </FrameLayout>
@@ -315,7 +315,7 @@ found in the LICENSE file.
                 android:gravity="center_vertical"
                 android:layout_height="@dimen/readaloud_menu_buttons_width"
                 android:text="@string/readaloud_playback_loading"
-                android:textAppearance="@style/TextAppearance.TextAccentMediumThick" />
+                android:textAppearance="@style/TextAppearance.TextAccentMediumThick.Primary" />
 
             <!-- Loading layout -->
             <LinearLayout

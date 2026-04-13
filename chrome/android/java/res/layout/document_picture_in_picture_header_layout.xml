@@ -45,7 +45,7 @@ by DocumentPictureInPictureHeaderViewBinder.
         android:scrollHorizontally="false"
         android:gravity="center_vertical"
         android:focusable="false"
-        style="@style/TextAppearance.TextSmallThick" />
+        style="@style/TextAppearance.TextSmallThick.Primary" />
 
     <org.chromium.ui.widget.ChromeImageButton
         android:id="@+id/document_picture_in_picture_header_back_to_tab"

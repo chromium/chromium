@@ -54,7 +54,7 @@ found in the LICENSE file.
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/cm_browser_margin_top"
             android:text="@string/management_browser_reporting"
-            android:textAppearance="@style/TextAppearance.Headline2" />
+            android:textAppearance="@style/TextAppearance.Headline2.Primary" />
 
         <TextView
             android:id="@+id/browser_reporting_explanation"
@@ -113,7 +113,7 @@ found in the LICENSE file.
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/cm_title_margin_top"
             android:text="@string/management_threat_protection"
-            android:textAppearance="@style/TextAppearance.Headline2" />
+            android:textAppearance="@style/TextAppearance.Headline2.Primary" />
 
         <TextView
             android:id="@+id/threat_protection_description"

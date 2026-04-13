@@ -35,6 +35,6 @@ found in the LICENSE file.
         android:ellipsize="end"
         android:singleLine="true"
         android:focusable="true"
-        style="@style/TextAppearance.Headline" />
+        style="@style/TextAppearance.Headline.Primary" />
 
 </RelativeLayout>

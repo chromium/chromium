@@ -221,6 +221,10 @@ found in the LICENSE file.
         <item name="android:textColor">@color/default_text_color_list</item>
     </style>
 
+    <style name="TextAppearance.Headline2.Primary">
+        <item name="android:textColor">@color/default_text_color_list</item>
+    </style>
+
     <style name="TextAppearance.TextLarge.OnAccent1Container" parent="TextAppearance.TextLarge" tools:ignore="UnusedResources">
         <item name="android:textColor">@color/default_text_color_on_accent1_container_list</item>
     </style>

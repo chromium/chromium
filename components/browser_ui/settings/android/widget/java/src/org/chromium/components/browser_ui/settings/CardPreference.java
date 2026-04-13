@@ -81,7 +81,7 @@ public class CardPreference extends TextMessagePreference {
         mCloseIcon.setOnClickListener(mOnCloseClickListener);
 
         TextView titleView = (TextView) holder.findViewById(android.R.id.title);
-        titleView.setTextAppearance(R.style.TextAppearance_Headline2Thick);
+        titleView.setTextAppearance(R.style.TextAppearance_Headline2Thick_Primary);
     }
 
     /**

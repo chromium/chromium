@@ -28,7 +28,7 @@ found in the LICENSE file.
             android:layout_marginStart="16dp"
             android:layout_marginEnd="16dp"
             android:text="@string/menu_history"
-            android:textAppearance="@style/TextAppearance.Headline"/>
+            android:textAppearance="@style/TextAppearance.Headline.Primary"/>
 
         <org.chromium.ui.widget.ChromeImageButton
             android:id="@+id/close_history_placeholder_button"
@@ -68,7 +68,7 @@ found in the LICENSE file.
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
                 android:gravity="center_horizontal"
-                android:textAppearance="@style/TextAppearance.Headline"
+                android:textAppearance="@style/TextAppearance.Headline.Primary"
                 android:text="@string/incognito_history_placeholder_title"
                 app:leading="@dimen/text_size_large_leading" />
 
@@ -77,7 +77,7 @@ found in the LICENSE file.
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
                 android:gravity="center_horizontal"
-                android:textAppearance="@style/TextAppearance.TextMedium"
+                android:textAppearance="@style/TextAppearance.TextMedium.Primary"
                 android:text="@string/incognito_history_placeholder_description"
                 app:leading="@dimen/text_size_medium_leading" />
 

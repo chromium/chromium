@@ -32,7 +32,7 @@ found in the LICENSE file.
             android:layout_marginTop="@dimen/autofill_entity_attribute_top_padding"
             android:layout_marginStart="@dimen/dialog_padding_sides"
             android:layout_below="@id/autofill_ai_attribute_infos"
-            android:textAppearance="@style/TextAppearance.TextSmall"
+            android:textAppearance="@style/TextAppearance.TextSmall.Primary"
             android:breakStrategy="balanced" />
 
     </RelativeLayout>

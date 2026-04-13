@@ -65,7 +65,7 @@ found in the LICENSE file.
                     android:layout_gravity="center_vertical"
                     android:paddingEnd="@dimen/readaloud_mini_player_text_padding_end"
                     android:text="@string/readaloud_playback_loading"
-                    android:textAppearance="@style/TextAppearance.TextMediumThick"
+                    android:textAppearance="@style/TextAppearance.TextMediumThick.Primary"
                     android:ellipsize="end"
                     android:maxLines="1"
                     android:clickable="false"
@@ -104,7 +104,7 @@ found in the LICENSE file.
                     android:layout_gravity="center_vertical"
                     android:paddingEnd="@dimen/readaloud_mini_player_text_padding_end"
                     android:text="@string/readaloud_playback_error"
-                    android:textAppearance="@style/TextAppearance.TextMediumThick"
+                    android:textAppearance="@style/TextAppearance.TextMediumThick.Primary"
                     android:ellipsize="end"
                     android:maxLines="1"
                     android:clickable="false"
@@ -150,14 +150,14 @@ found in the LICENSE file.
                         android:id="@+id/title"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:textAppearance="@style/TextAppearance.TextMediumThick"
+                        android:textAppearance="@style/TextAppearance.TextMediumThick.Primary"
                         android:ellipsize="end"
                         android:maxLines="1"/>
                     <TextView
                         android:id="@+id/subtitle"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:textAppearance="@style/TextAppearance.TextSmall"
+                        android:textAppearance="@style/TextAppearance.TextSmall.Primary"
                         android:ellipsize="end"
                         android:maxLines="1"/>
                 </LinearLayout>

@@ -54,7 +54,7 @@ found in the LICENSE file.
         android:layout_height="wrap_content"
         android:layout_toEndOf="@id/actor_icon"
         android:layout_toStartOf="@id/actor_control_status_button"
-        android:textAppearance="@style/TextAppearance.TextMediumThick"
+        android:textAppearance="@style/TextAppearance.TextMediumThick.Primary"
         android:ellipsize="end"
         android:singleLine="true" />
 

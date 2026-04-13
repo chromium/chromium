@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Copyright 2023 The Chromium Authors.
+Copyright 2023 The Chromium Authors
 Use of this source code is governed by a BSD-style license that can be
 found in the LICENSE file.
 -->
@@ -59,7 +59,7 @@ found in the LICENSE file.
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:gravity="center_horizontal"
-                    android:textAppearance="@style/TextAppearance.Headline"
+                    android:textAppearance="@style/TextAppearance.Headline.Primary"
                     android:text="@string/restore_tabs_promo_sheet_title"/>
                 <TextView
                     android:id="@+id/restore_tabs_promo_sheet_subtitle"

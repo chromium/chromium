@@ -101,7 +101,7 @@ public class SharedImageTilesConfig {
             this.mTextColor = SemanticColorUtils.getDefaultIconColorOnAccent1Container(context);
             this.mBorderColor = SemanticColorUtils.getDefaultBgColor(context);
             this.mBackgroundColor = SemanticColorUtils.getColorPrimaryContainer(context);
-            this.mTextStyle = R.style.TextAppearance_TextAccentMediumThick;
+            this.mTextStyle = R.style.TextAppearance_TextAccentMediumThick_Primary;
         }
 
         /**

@@ -30,7 +30,7 @@ found in the LICENSE file.
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:accessibilityHeading="true"
-            android:textAppearance="@style/TextAppearance.TextMediumThick"
+            android:textAppearance="@style/TextAppearance.TextMediumThick.Primary"
             android:textAlignment="viewStart"
             android:maxLines="1"
             android:ellipsize="end"/>
@@ -66,6 +66,6 @@ found in the LICENSE file.
             android:id="@+id/price_tracking_button_text"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textAppearance="@style/TextAppearance.TextMediumThick"/>
+            android:textAppearance="@style/TextAppearance.TextMediumThick.Primary"/>
     </LinearLayout>
 </LinearLayout>

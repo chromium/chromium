@@ -20,5 +20,5 @@ found in the LICENSE file.
     android:gravity="center_vertical"
     android:text="@string/signin_add_account_to_device"
     android:textDirection="locale"
-    android:textAppearance="@style/TextAppearance.TextLarge"
+    android:textAppearance="@style/TextAppearance.TextLarge.Primary"
     app:drawableStartCompat="@drawable/ic_person_add_40dp" />

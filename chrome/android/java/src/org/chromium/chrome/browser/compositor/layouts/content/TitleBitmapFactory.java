@@ -107,7 +107,7 @@ public class TitleBitmapFactory {
         StyleUtils.applyTextAppearanceToTextPaint(
                 context,
                 mGroupTextPaint,
-                R.style.TextAppearance_TextSmall,
+                R.style.TextAppearance_TextSmall_Primary,
                 /* applyFontFamily */ true,
                 /* applyTextSize= */ true,
                 /* applyTextColor= */ false);

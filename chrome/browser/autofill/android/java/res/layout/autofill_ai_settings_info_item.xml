@@ -22,7 +22,7 @@ found in the LICENSE file.
         android:paddingBottom="16dp"
         android:singleLine="true"
         android:ellipsize="end"
-        android:textAppearance="@style/TextAppearance.TextMediumThick" />
+        android:textAppearance="@style/TextAppearance.TextMediumThick.Primary" />
 
     <TextView
         android:id="@+id/info_item_summary"
@@ -30,7 +30,7 @@ found in the LICENSE file.
         android:layout_height="wrap_content"
         android:gravity="start|center_vertical"
         android:textAlignment="viewStart"
-        android:textAppearance="@style/TextAppearance.TextSmall" />
+        android:textAppearance="@style/TextAppearance.TextSmall.Primary" />
 
     <TextView
         android:id="@+id/info_item_summary_2"
@@ -38,7 +38,7 @@ found in the LICENSE file.
         android:layout_height="wrap_content"
         android:gravity="start|center_vertical"
         android:textAlignment="viewStart"
-        android:textAppearance="@style/TextAppearance.TextSmall"
+        android:textAppearance="@style/TextAppearance.TextSmall.Primary"
         android:visibility="gone" />
 
 </LinearLayout>
