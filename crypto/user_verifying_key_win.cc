@@ -11,7 +11,6 @@
 #include <windows.security.cryptography.core.h>
 #include <windows.storage.streams.h>
 
-#include <atomic>
 #include <functional>
 #include <utility>
 
@@ -199,12 +198,6 @@ class HelloDialogForegrounder
 
   State state_ = State::kNotStarted;
   base::AtomicFlag stopping_;
-};
-
-enum KeyCredentialManagerAvailability {
-  kUnknown = 0,
-  kAvailable = 1,
-  kUnavailable = 2,
 };
 
 std::string FormatError(std::string message, HRESULT hr) {
@@ -671,18 +664,6 @@ class UserVerifyingKeyProviderWin : public UserVerifyingKeyProvider {
 void IsKeyCredentialManagerAvailableInternal(
     base::OnceCallback<void(bool)> callback) {
   SCOPED_MAY_LOAD_LIBRARY_AT_BACKGROUND_PRIORITY();
-  // Lookup requires an asynchronous system API call, so cache the value.
-  static std::atomic<KeyCredentialManagerAvailability> availability =
-      KeyCredentialManagerAvailability::kUnknown;
-
-  // Read once to ensure consistency.
-  const KeyCredentialManagerAvailability current_availability = availability;
-  if (current_availability != KeyCredentialManagerAvailability::kUnknown) {
-    std::move(callback).Run(current_availability ==
-                            KeyCredentialManagerAvailability::kAvailable);
-    return;
-  }
-
   ComPtr<IKeyCredentialManagerStatics> factory;
   HRESULT hr = base::win::GetActivationFactory<
       IKeyCredentialManagerStatics,
@@ -704,16 +685,9 @@ void IsKeyCredentialManagerAvailableInternal(
   auto callback_splits = SplitOnceCallbackIntoThree(std::move(callback));
   hr = base::win::PostAsyncHandlers(
       is_supported_operation.Get(),
-      base::BindOnce(
-          [](base::OnceCallback<void(bool)> callback,
-             std::atomic<KeyCredentialManagerAvailability>& availability,
-             boolean result) {
-            availability = result
-                               ? KeyCredentialManagerAvailability::kAvailable
-                               : KeyCredentialManagerAvailability::kUnavailable;
-            std::move(callback).Run(result);
-          },
-          std::move(std::get<0>(callback_splits)), std::ref(availability)),
+      base::BindOnce([](base::OnceCallback<void(bool)> callback,
+                        boolean result) { std::move(callback).Run(result); },
+                     std::move(std::get<0>(callback_splits))),
       base::BindOnce([](base::OnceCallback<void(bool)> callback,
                         HRESULT) { std::move(callback).Run(false); },
                      std::move(std::get<1>(callback_splits))));
