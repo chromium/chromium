@@ -12,6 +12,7 @@ per-file AwNetworkConfigurationTest.java=file://android_webview/browser/network_
 per-file SslPreferencesTest.java=file://android_webview/browser/network_service/OWNERS
 per-file OnDiskFileTest.java=file://android_webview/browser/network_service/OWNERS
 per-file CookieManager*=file://android_webview/browser/network_service/OWNERS
+per-file CookieManager*=bewise@chromium.org
 
 # Prerendering
 per-file AwPrerenderTest.java=file://content/browser/preloading/prerender/OWNERS

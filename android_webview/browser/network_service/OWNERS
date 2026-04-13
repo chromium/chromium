@@ -1,1 +1,4 @@
 ntfschr@chromium.org
+
+# Cookie manager owners:
+per-file aw_proxying_restricted_cookie_manager.*=bewise@chromium.org

@@ -10,3 +10,6 @@ per-file *.md=file://android_webview/docs/OWNERS
 
 # Translation artifacts:
 per-file ....xtb=file://tools/translation/TRANSLATION_OWNERS
+
+# Cookie manager owners:
+per-file java/src/org/chromium/android_webview/AwCookieManager.java=bewise@chromium.org
