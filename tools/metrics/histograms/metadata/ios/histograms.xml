@@ -5611,7 +5611,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.PushNotification.IncomingNotificationProcessingTime"
-    units="ms" expires_after="2026-05-24">
+    units="ms" expires_after="2027-05-24">
   <owner>danieltwhite@google.com</owner>
   <owner>scottyoder@google.com</owner>
   <summary>
