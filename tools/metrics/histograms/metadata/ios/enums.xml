@@ -1278,15 +1278,6 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(/ios/chrome/browser/omnibox/public/omnibox_metrics_helper.h:OmniboxCopyType) -->
 
-<enum name="IOSOpenExtensionOutcome">
-  <int value="0" label="Open Extension Success"/>
-  <int value="1" label="Open Extension Invalid outcome"/>
-  <int value="2" label="Open Extension Invalid URL"/>
-  <int value="3" label="Open Extension URL not found"/>
-  <int value="4" label="Open Extension Method not found"/>
-  <int value="5" label="Open Extension Unsupported scheme"/>
-</enum>
-
 <enum name="IOSOpenInDownloadResult">
   <int value="0" label="Download Succeeded"/>
   <int value="1" label="Download Canceled">
@@ -1711,16 +1702,6 @@ chromium-metrics-reviews@google.com.
   <int value="1" label="Normal Mode, Other Search engine"/>
   <int value="2" label="Incognito Mode, Google Search engine"/>
   <int value="3" label="Incognito Mode, Other Search engine"/>
-</enum>
-
-<enum name="IOSSessionMigration">
-  <int value="0" label="No Migration"/>
-  <int value="1" label="Migration Failed"/>
-  <int value="2" label="No Session To Migrate"/>
-  <int value="3" label="Migrated Pre-MW to Multi Scenes"/>
-  <int value="4" label="Migrated Pre-MW to Single Scene"/>
-  <int value="5" label="Migrated Single Scene to Multi Scenes"/>
-  <int value="6" label="Migrated Multi Scenes to Single Scene"/>
 </enum>
 
 <enum name="IOSSetUpListItemType">
