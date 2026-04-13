@@ -29,6 +29,9 @@ namespace omnibox {
 
 namespace internal {
 
+// If enabled, shows the omnibox suggestions in the popup in WebUI.
+BASE_FEATURE(kWebUIOmniboxPopup, DISABLED);
+
 // If enabled, Omnibox popup will transition to AI-Mode with the compose-box
 // panel taking up the whole of the popup, covering the location bar completely.
 BASE_FEATURE(kWebUIOmniboxAimPopup, DISABLED);
@@ -44,7 +47,8 @@ constexpr base::FeatureParam<AddContextButtonVariant>::Option
 const base::FeatureParam<AddContextButtonVariant>
     kWebUIOmniboxAimPopupAddContextButtonVariantParam{
         &internal::kWebUIOmniboxAimPopup, "Omnibox_AddContextButtonVariant",
-        AddContextButtonVariant::kBelowResults, &kAddContextButtonVariantOptions};
+        AddContextButtonVariant::kBelowResults,
+        &kAddContextButtonVariantOptions};
 // If true, hides the "Add Context" button in the "classic" popup.
 const base::FeatureParam<bool> kHideClassicContextButton{
     &internal::kWebUIOmniboxAimPopup, "Omnibox_HideClassicContextButton",
@@ -62,8 +66,6 @@ BASE_FEATURE(kWebUIOmniboxAimPopupDisableAnimation, DISABLED);
 // If enabled, removes the cutout for the location bar and fills the entire
 // popup content with the WebUI WebView.
 BASE_FEATURE(kWebUIOmniboxFullPopup, DISABLED);
-// If enabled, shows the omnibox suggestions in the popup in WebUI.
-BASE_FEATURE(kWebUIOmniboxPopup, DISABLED);
 // Enables the WebUI for omnibox suggestions without modifying the popup UI.
 BASE_FEATURE(kWebUIOmniboxPopupDebug, DISABLED);
 // Enables side-by-side comparison omnibox suggestions in WebUI and Views.
@@ -189,6 +191,10 @@ bool ShouldShowAimContextMenuOption(Profile* profile) {
       omnibox::IsAimPopupEnabled(profile);
 
   return is_aim_context_entrypoint_enabled;
+}
+
+bool IsWebUIOmniboxPopupEnabled() {
+  return base::FeatureList::IsEnabled(internal::kWebUIOmniboxPopup);
 }
 
 bool IsAimPopupFeatureEnabled() {

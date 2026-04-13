@@ -467,7 +467,7 @@ class ContextMenuBrowserTest : public ContextMenuBrowserTestBase {
     scoped_feature_list_.InitWithFeatures(
         {features::kGlic, media::kContextMenuSaveVideoFrameAs,
          media::kContextMenuSearchForVideoFrame},
-        {omnibox::kWebUIOmniboxPopup});
+        {omnibox::internal::kWebUIOmniboxPopup});
   }
 
  private:

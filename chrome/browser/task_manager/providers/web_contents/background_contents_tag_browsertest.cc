@@ -34,7 +34,7 @@ class BackgroundContentsTagTest : public extensions::ExtensionBrowserTest {
  public:
   BackgroundContentsTagTest() {
     scoped_feature_list_.InitWithFeatures(
-        /*enabled_features*/ {omnibox::kWebUIOmniboxPopup,
+        /*enabled_features*/ {omnibox::internal::kWebUIOmniboxPopup,
                               omnibox::internal::kWebUIOmniboxAimPopup},
         /*disabled_features*/ {});
   }

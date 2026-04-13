@@ -181,7 +181,7 @@ void OmniboxPopupViewWebUITest::UseDefaultTheme() {
 }
 
 void OmniboxPopupViewWebUITest::SetUp() {
-  feature_list_.InitAndEnableFeature(omnibox::kWebUIOmniboxPopup);
+  feature_list_.InitAndEnableFeature(omnibox::internal::kWebUIOmniboxPopup);
   InProcessBrowserTest::SetUp();
 }
 

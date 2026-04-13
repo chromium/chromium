@@ -67,7 +67,7 @@ class OmniboxContextMenuControllerBrowserTest : public InProcessBrowserTest {
           {{omnibox::kWebUIOmniboxAimPopupAddContextButtonVariantParam.name,
             "inline"},
            {omnibox::kShowToolsAndModels.name, "true"}}},
-         {omnibox::kWebUIOmniboxPopup, {}}},
+         {omnibox::internal::kWebUIOmniboxPopup, {}}},
         /*disabled_features=*/{omnibox::kAimServerEligibilityEnabled,
                                omnibox::kAimFuseboxEligibilityCheckEnabled,
                                omnibox::kAimUsePecApi});
@@ -274,7 +274,7 @@ class OmniboxContextMenuControllerPecBrowserTest : public InProcessBrowserTest {
           {{omnibox::kWebUIOmniboxAimPopupAddContextButtonVariantParam.name,
             "inline"},
            {omnibox::kShowToolsAndModels.name, "true"}}},
-         {omnibox::kWebUIOmniboxPopup, {}},
+         {omnibox::internal::kWebUIOmniboxPopup, {}},
          {omnibox::kAimUsePecApi, {}}},
         /*disabled_features=*/{omnibox::kAimServerEligibilityEnabled,
                                omnibox::kAimFuseboxEligibilityCheckEnabled});

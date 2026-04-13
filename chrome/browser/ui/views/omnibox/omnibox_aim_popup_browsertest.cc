@@ -40,9 +40,9 @@ std::unique_ptr<KeyedService> BuildMockAimEligibilityService(
 class OmniboxAimPopupBrowserTest : public InProcessBrowserTest {
  public:
   OmniboxAimPopupBrowserTest() {
-    feature_list_.InitWithFeatures(
-        {omnibox::internal::kWebUIOmniboxAimPopup, omnibox::kWebUIOmniboxPopup},
-        {});
+    feature_list_.InitWithFeatures({omnibox::internal::kWebUIOmniboxAimPopup,
+                                    omnibox::internal::kWebUIOmniboxPopup},
+                                   {});
   }
 
   void SetUpInProcessBrowserTestFixture() override {

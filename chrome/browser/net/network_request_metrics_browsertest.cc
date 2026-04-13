@@ -118,7 +118,8 @@ class NetworkRequestMetricsBrowserTest
     // fieldtrial_testing_config.json or tip of tree.
     scoped_feature_list_.InitWithFeatures(
         {features::kInitialWebUI, features::kWebUIReloadButton,
-         omnibox::kWebUIOmniboxPopup, omnibox::internal::kWebUIOmniboxAimPopup},
+         omnibox::internal::kWebUIOmniboxPopup,
+         omnibox::internal::kWebUIOmniboxAimPopup},
         {});
   }
   ~NetworkRequestMetricsBrowserTest() override = default;
