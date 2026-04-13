@@ -49,6 +49,8 @@ found in the LICENSE file.
     <declare-styleable name="RadioButtonWithDescription">
         <attr name="primaryText" format="string" />
         <attr name="descriptionText" format="string" />
+        <attr name="primaryTextAppearance" format="reference" />
+        <attr name="descriptionTextAppearance" format="reference" />
         <attr name="iconSrc" format="reference" />
     </declare-styleable>
 

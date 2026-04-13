@@ -8,6 +8,7 @@ found in the LICENSE file.
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/extensions_menu_site_permissions_page"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
@@ -19,6 +20,56 @@ found in the LICENSE file.
         layout="@layout/extensions_menu_site_permissions_page_header"
         android:layout_width="match_parent"
         android:layout_height="wrap_content" />
+
+    <!-- Site permissions section -->
+    <View
+        style="@style/ExtensionsMenuDivider" />
+    <TextView
+        android:id="@+id/extensions_menu_site_permissions_title"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Site Permissions"
+        android:textAppearance="@style/TextAppearance.TextMedium.Primary"
+        android:paddingHorizontal="@dimen/extensions_menu_horizontal_padding"
+        android:paddingVertical="@dimen/extensions_menu_toggle_vertical_padding"
+        tools:ignore="HardcodedText" />
+
+    <org.chromium.components.browser_ui.widget.RadioButtonWithDescriptionLayout
+        android:id="@+id/extensions_menu_site_permissions_radio_group"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <org.chromium.components.browser_ui.widget.RadioButtonWithDescription
+            android:id="@+id/extensions_menu_site_permissions_on_click"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:primaryText="Ask on every visit"
+            app:descriptionText="Runs only after you click the extension"
+            app:primaryTextAppearance="@style/TextAppearance.TextMedium.Primary.Baseline"
+            app:descriptionTextAppearance="@style/TextAppearance.TextSmall.Secondary.Baseline"
+            tools:ignore="HardcodedText" />
+
+        <org.chromium.components.browser_ui.widget.RadioButtonWithDescription
+            android:id="@+id/extensions_menu_site_permissions_on_site"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:primaryText="Always on"
+            app:descriptionText="Runs automatically every time you visit this site"
+            app:primaryTextAppearance="@style/TextAppearance.TextMedium.Primary.Baseline"
+            app:descriptionTextAppearance="@style/TextAppearance.TextSmall.Secondary.Baseline"
+            tools:ignore="HardcodedText" />
+
+        <org.chromium.components.browser_ui.widget.RadioButtonWithDescription
+            android:id="@+id/extensions_menu_site_permissions_on_all_sites"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:primaryText="Always on all sites"
+            app:descriptionText="Runs automatically on all sites you visit"
+            app:primaryTextAppearance="@style/TextAppearance.TextMedium.Primary.Baseline"
+            app:descriptionTextAppearance="@style/TextAppearance.TextSmall.Secondary.Baseline"
+            tools:ignore="HardcodedText" />
+
+    </org.chromium.components.browser_ui.widget.RadioButtonWithDescriptionLayout>
 
     <!-- Show access requests toggle -->
     <View

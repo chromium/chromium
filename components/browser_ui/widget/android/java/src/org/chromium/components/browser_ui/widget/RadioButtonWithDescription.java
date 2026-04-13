@@ -7,6 +7,7 @@ package org.chromium.components.browser_ui.widget;
 import static org.chromium.components.browser_ui.widget.containment.ContainmentUiUtils.parseContainmentAttributes;
 
 import android.content.Context;
+import android.content.res.Resources;
 import android.content.res.TypedArray;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
@@ -22,6 +23,9 @@ import android.view.ViewStub;
 import android.widget.RadioButton;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+
+import androidx.annotation.StyleRes;
+import androidx.core.widget.TextViewCompat;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -254,6 +258,15 @@ public class RadioButtonWithDescription extends RelativeLayout
         String primaryText = a.getString(R.styleable.RadioButtonWithDescription_primaryText);
         if (primaryText != null) mPrimary.setText(primaryText);
 
+        @StyleRes
+        int primaryTextAppearance =
+                a.getResourceId(
+                        R.styleable.RadioButtonWithDescription_primaryTextAppearance,
+                        Resources.ID_NULL);
+        if (primaryTextAppearance != Resources.ID_NULL) {
+            TextViewCompat.setTextAppearance(mPrimary, primaryTextAppearance);
+        }
+
         String descriptionText =
                 a.getString(R.styleable.RadioButtonWithDescription_descriptionText);
         if (descriptionText != null) {
@@ -261,6 +274,15 @@ public class RadioButtonWithDescription extends RelativeLayout
             mDescription.setVisibility(View.VISIBLE);
         } else {
             ((LayoutParams) mPrimary.getLayoutParams()).addRule(RelativeLayout.CENTER_VERTICAL);
+        }
+
+        @StyleRes
+        int descriptionTextAppearance =
+                a.getResourceId(
+                        R.styleable.RadioButtonWithDescription_descriptionTextAppearance,
+                        Resources.ID_NULL);
+        if (descriptionTextAppearance != Resources.ID_NULL) {
+            TextViewCompat.setTextAppearance(mDescription, descriptionTextAppearance);
         }
 
         a.recycle();
