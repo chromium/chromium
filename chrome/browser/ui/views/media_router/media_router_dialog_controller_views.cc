@@ -10,6 +10,8 @@
 #include "chrome/browser/media/router/media_router_feature.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/exclusive_access/exclusive_access_manager.h"
+#include "chrome/browser/ui/exclusive_access/fullscreen_controller.h"
 #include "chrome/browser/ui/global_media_controls/media_notification_service.h"
 #include "chrome/browser/ui/global_media_controls/media_notification_service_factory.h"
 #include "chrome/browser/ui/global_media_controls/media_toolbar_button_controller.h"
@@ -64,6 +66,21 @@ void MediaRouterDialogControllerViews::CreateMediaRouterDialog(
 
   InitializeMediaRouterUI();
   BrowserWindowInterface* browser = chrome::FindBrowserWithTab(initiator());
+
+  // Block tab fullscreen. There is no toolbar to anchor the cast dialog to in
+  // tab fullscreen mode. It is unsafe to show the dialog entirely within the
+  // content area, as this would make it susceptible to spoofing attacks.
+  if (browser) {
+    ExclusiveAccessManager* exclusive_access_manager =
+        browser->GetExclusiveAccessManager();
+    FullscreenController* fullscreen_controller =
+        exclusive_access_manager->fullscreen_controller();
+    if (fullscreen_controller->IsTabFullscreen()) {
+      fullscreen_blocker_ =
+          initiator()->ForSecurityDropFullscreen(display::kInvalidDisplayId);
+    }
+  }
+
   BrowserView* browser_view =
       browser ? BrowserView::GetBrowserViewForBrowser(browser) : nullptr;
   if (browser_view) {
@@ -112,6 +129,7 @@ void MediaRouterDialogControllerViews::Reset() {
       GetActionController()->OnDialogHidden();
     }
     ui_.reset();
+    fullscreen_blocker_.RunAndReset();
     MediaRouterDialogController::Reset();
   }
 }
