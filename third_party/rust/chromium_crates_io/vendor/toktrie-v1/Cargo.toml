@@ -13,7 +13,7 @@
 edition = "2021"
 rust-version = "1.87"
 name = "toktrie"
-version = "1.7.0"
+version = "1.7.2"
 build = false
 autolib = false
 autobins = false
@@ -28,6 +28,10 @@ repository = "https://github.com/guidance-ai/llguidance"
 [lib]
 name = "toktrie"
 path = "src/lib.rs"
+
+[[test]]
+name = "test_recognizer"
+path = "tests/test_recognizer.rs"
 
 [[test]]
 name = "test_svob"

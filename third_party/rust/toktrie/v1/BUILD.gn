@@ -18,7 +18,6 @@ cargo_crate("lib") {
     "//third_party/rust/chromium_crates_io/vendor/toktrie-v1/src/bytes.rs",
     "//third_party/rust/chromium_crates_io/vendor/toktrie-v1/src/lib.rs",
     "//third_party/rust/chromium_crates_io/vendor/toktrie-v1/src/recognizer.rs",
-    "//third_party/rust/chromium_crates_io/vendor/toktrie-v1/src/rng.rs",
     "//third_party/rust/chromium_crates_io/vendor/toktrie-v1/src/svob.rs",
     "//third_party/rust/chromium_crates_io/vendor/toktrie-v1/src/tokenv.rs",
     "//third_party/rust/chromium_crates_io/vendor/toktrie-v1/src/toktree.rs",
@@ -30,7 +29,7 @@ cargo_crate("lib") {
   cargo_pkg_name = "toktrie"
   cargo_pkg_description = "LLM Token Trie library"
   cargo_pkg_repository = "https://github.com/guidance-ai/llguidance"
-  cargo_pkg_version = "1.7.0"
+  cargo_pkg_version = "1.7.2"
 
   allow_unsafe = true
 

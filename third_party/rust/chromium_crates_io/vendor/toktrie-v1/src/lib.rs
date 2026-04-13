@@ -26,7 +26,6 @@ use serde::{Deserialize, Serialize};
 
 pub mod bytes;
 pub mod recognizer;
-pub mod rng;
 mod svob;
 mod tokenv;
 mod toktree;
