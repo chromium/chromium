@@ -31,7 +31,7 @@ found in the LICENSE file.
         android:layout_height="@dimen/fusebox_button_size"
         android:visibility="gone"
         android:padding="@dimen/fusebox_button_padding"
-        android:contentDescription="@string/accessibility_omnibox_open_or_close_context_popup"
+        android:contentDescription="@string/accessibility_omnibox_open_context_popup"
         android:src="@drawable/ic_add_round_20dp"
         android:scaleType="centerInside"
         android:clickable="true"
