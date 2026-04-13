@@ -2,17 +2,50 @@
 <AutoVisualizer
     xmlns="http://schemas.microsoft.com/vstudio/debugger/natvis/2010">
   <!--
-   !== USE_V8_OILPAN version of Member
-   !== Note: We need type cast to |raw_| because |raw_| is in base class
-   !== |cppgc::internal::MemberBase| instead of |BasicMember|.
-   !== See "v8/include/cppgc/member.h"
+   !== BasicMember<T> with CompressedPointer storage (component build).
+   !== Decompression: sign-extend uint32 to int64, shift left by 3, AND with
+   !== cage base.  The cage base lives in v8.dll in component builds.
+   !== See "v8/include/cppgc/internal/member-storage.h"
    !-->
-  <Type Name="cppgc::internal::BasicMember&lt;*&gt;">
+  <Type Name="cppgc::internal::BasicMember&lt;*,*,*,*,cppgc::internal::CompressedPointer&gt;">
+    <Intrinsic Name="compressed" Expression="raw_.value_" />
+    <Intrinsic Name="cage_base"
+        Expression="v8.dll!cppgc::internal::CageBaseGlobal::g_base_.base" />
+    <Intrinsic Name="decompressed"
+        Expression="($T1*)(((__int64)(int)compressed() &lt;&lt; 3) &amp; cage_base())" />
+    <SmartPointer Usage="Minimal">decompressed()</SmartPointer>
+    <DisplayString Condition="compressed() == 0">null</DisplayString>
+    <DisplayString Condition="compressed() == 1">&lt;sentinel&gt;</DisplayString>
+    <DisplayString>{*decompressed()}</DisplayString>
+    <Expand>
+      <Item Name="Ptr">decompressed()</Item>
+      <ExpandedItem Condition="compressed() &gt; 1">decompressed()</ExpandedItem>
+    </Expand>
+  </Type>
+  <!-- CompressedPointer storage, non-component build (cage base in same binary). -->
+  <Type Name="cppgc::internal::BasicMember&lt;*,*,*,*,cppgc::internal::CompressedPointer&gt;"
+        Priority="Low">
+    <Intrinsic Name="compressed" Expression="raw_.value_" />
+    <Intrinsic Name="cage_base"
+        Expression="cppgc::internal::CageBaseGlobal::g_base_.base" />
+    <Intrinsic Name="decompressed"
+        Expression="($T1*)(((__int64)(int)compressed() &lt;&lt; 3) &amp; cage_base())" />
+    <SmartPointer Usage="Minimal">decompressed()</SmartPointer>
+    <DisplayString Condition="compressed() == 0">null</DisplayString>
+    <DisplayString Condition="compressed() == 1">&lt;sentinel&gt;</DisplayString>
+    <DisplayString>{*decompressed()}</DisplayString>
+    <Expand>
+      <Item Name="Ptr">decompressed()</Item>
+      <ExpandedItem Condition="compressed() &gt; 1">decompressed()</ExpandedItem>
+    </Expand>
+  </Type>
+  <!-- RawPointer storage (pointer compression disabled). -->
+  <Type Name="cppgc::internal::BasicMember&lt;*&gt;" Priority="Low">
     <SmartPointer Usage="Minimal">($T1*)raw_.ptr_</SmartPointer>
     <DisplayString Condition="raw_.ptr_ == 0">null</DisplayString>
     <DisplayString>{*($T1*)raw_.ptr_}</DisplayString>
     <Expand>
-      <Item Name="Raw">($T1*)raw_.ptr_</Item>
+      <Item Name="Ptr">($T1*)raw_.ptr_</Item>
       <ExpandedItem Condition="raw_.ptr_ != 0">($T1*)raw_.ptr_</ExpandedItem>
     </Expand>
   </Type>
@@ -182,7 +215,21 @@
   <Type Name="blink::CharacterData">
     <DisplayString>{data_,view(bare)}</DisplayString>
   </Type>
+  <!-- Compressed pointer version -->
   <Type Name="blink::ContainerNode">
+    <Intrinsic Name="Decompress" Expression="(void*)((unsigned __int64)((__int64)(__int32)$arg1 * 8) &amp; cppgc::internal::CageBaseGlobal::g_base_.base)">
+      <Parameter Name="$arg1" Type="unsigned int" />
+    </Intrinsic>
+    <Expand>
+      <LinkedListItems>
+        <HeadPointer>(blink::Node*)Decompress(first_child_.raw_.value_)</HeadPointer>
+        <NextPointer>(blink::Node*)Decompress(next_.raw_.value_)</NextPointer>
+        <ValueNode>this</ValueNode>
+      </LinkedListItems>
+    </Expand>
+  </Type>
+  <!-- Uncompressed pointer fallback -->
+  <Type Name="blink::ContainerNode" Priority="MediumLow">
     <Expand>
       <LinkedListItems>
         <HeadPointer>(blink::Node*)first_child_.raw_.ptr_</HeadPointer>
@@ -191,7 +238,13 @@
       </LinkedListItems>
     </Expand>
   </Type>
+  <!-- Compressed pointer version -->
   <Type Name="blink::Element">
+    <DisplayString Condition="first_child_.raw_.value_ != 0">&lt;{tag_name_}>{first_child_}</DisplayString>
+    <DisplayString>&lt;{tag_name_}></DisplayString>
+  </Type>
+  <!-- Uncompressed pointer fallback -->
+  <Type Name="blink::Element" Priority="MediumLow">
     <DisplayString Condition="first_child_.raw_.ptr_ != 0">&lt;{tag_name_}>{first_child_}</DisplayString>
     <DisplayString>&lt;{tag_name_}></DisplayString>
   </Type>
@@ -200,7 +253,21 @@
     <DisplayString Condition="bitfields_.is_anonymous_">Anonymous</DisplayString>
     <DisplayString>{node_}</DisplayString>
   </Type>
+  <!-- Compressed pointer version -->
   <Type Name="blink::LayoutObjectChildList">
+    <Intrinsic Name="Decompress" Expression="(void*)((unsigned __int64)((__int64)(__int32)$arg1 * 8) &amp; cppgc::internal::CageBaseGlobal::g_base_.base)">
+      <Parameter Name="$arg1" Type="unsigned int" />
+    </Intrinsic>
+    <Expand>
+      <LinkedListItems>
+        <HeadPointer>(blink::LayoutObject*)Decompress(first_child_.raw_.value_)</HeadPointer>
+        <NextPointer>(blink::LayoutObject*)Decompress(next_.raw_.value_)</NextPointer>
+        <ValueNode>this</ValueNode>
+      </LinkedListItems>
+    </Expand>
+  </Type>
+  <!-- Uncompressed pointer fallback -->
+  <Type Name="blink::LayoutObjectChildList" Priority="MediumLow">
     <Expand>
       <LinkedListItems>
         <HeadPointer>(blink::LayoutObject*)first_child_.raw_.ptr_</HeadPointer>
@@ -213,7 +280,21 @@
   <Type Name="blink::InlineBox">
     <DisplayString>{line_layout_item_}</DisplayString>
   </Type>
+  <!-- Compressed pointer version -->
   <Type Name="blink::InlineFlowBox">
+    <Intrinsic Name="Decompress" Expression="(void*)((unsigned __int64)((__int64)(__int32)$arg1 * 8) &amp; cppgc::internal::CageBaseGlobal::g_base_.base)">
+      <Parameter Name="$arg1" Type="unsigned int" />
+    </Intrinsic>
+    <Expand>
+      <LinkedListItems>
+        <HeadPointer>(blink::InlineFlowBox*)Decompress(first_child_.raw_.value_)</HeadPointer>
+        <NextPointer>(blink::InlineFlowBox*)Decompress(next_.raw_.value_)</NextPointer>
+        <ValueNode>this</ValueNode>
+      </LinkedListItems>
+    </Expand>
+  </Type>
+  <!-- Uncompressed pointer fallback -->
+  <Type Name="blink::InlineFlowBox" Priority="MediumLow">
     <Expand>
       <LinkedListItems>
         <HeadPointer>(blink::InlineFlowBox*)first_child_.raw_.ptr_</HeadPointer>
@@ -222,7 +303,21 @@
       </LinkedListItems>
     </Expand>
   </Type>
+  <!-- Compressed pointer version -->
   <Type Name="blink::InlineBoxList&lt;blink::InlineFlowBox&gt;">
+    <Intrinsic Name="Decompress" Expression="(void*)((unsigned __int64)((__int64)(__int32)$arg1 * 8) &amp; cppgc::internal::CageBaseGlobal::g_base_.base)">
+      <Parameter Name="$arg1" Type="unsigned int" />
+    </Intrinsic>
+    <Expand>
+      <LinkedListItems>
+        <HeadPointer>(blink::InlineFlowBox*)Decompress(first_.raw_.value_)</HeadPointer>
+        <NextPointer>(blink::InlineFlowBox*)Decompress(next_.raw_.value_)</NextPointer>
+        <ValueNode>this</ValueNode>
+      </LinkedListItems>
+    </Expand>
+  </Type>
+  <!-- Uncompressed pointer fallback -->
+  <Type Name="blink::InlineBoxList&lt;blink::InlineFlowBox&gt;" Priority="MediumLow">
     <Expand>
       <LinkedListItems>
         <HeadPointer>(blink::InlineFlowBox*)first_.raw_.ptr_</HeadPointer>
