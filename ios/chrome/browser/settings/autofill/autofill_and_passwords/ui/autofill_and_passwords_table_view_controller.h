@@ -17,7 +17,7 @@
 
 // Called when the view controller is removed from its parent.
 - (void)autofillAndPasswordsTableViewControllerDidRemove:
-    (UIViewController*)controller;
+    (AutofillAndPasswordsTableViewController*)controller;
 
 // Called when the user taps on the passwords item.
 - (void)autofillAndPasswordsTableViewControllerDidSelectPasswords:
@@ -41,6 +41,8 @@
 // Presentation delegate.
 @property(nonatomic, weak) id<AutofillAndPasswordsTableViewControllerDelegate>
     delegate;
+
+- (instancetype)initWithStyle:(UITableViewStyle)style NS_DESIGNATED_INITIALIZER;
 
 @end
 

@@ -8,13 +8,9 @@ source_set("autofill_and_passwords_item_utils") {
     "autofill_and_passwords_item_utils.mm",
   ]
   deps = [
-    "//components/autofill/core/common",
-    "//components/password_manager/core/common",
-    "//components/prefs",
     "//components/strings",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/settings/ui_bundled:constants",
-    "//ios/chrome/browser/settings/ui_bundled:settings_root_constants",
     "//ios/chrome/browser/shared/ui/symbols",
     "//ios/chrome/browser/shared/ui/table_view/cells",
     "//ios/chrome/common/ui/colors",

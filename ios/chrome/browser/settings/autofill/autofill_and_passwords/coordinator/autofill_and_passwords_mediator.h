@@ -6,11 +6,17 @@
 #define IOS_CHROME_BROWSER_SETTINGS_AUTOFILL_AUTOFILL_AND_PASSWORDS_COORDINATOR_AUTOFILL_AND_PASSWORDS_MEDIATOR_H_
 
 #import <Foundation/Foundation.h>
+class PrefService;
 
 @protocol AutofillAndPasswordsConsumer;
 
 // Mediator for the Autofill and Passwords settings page.
 @interface AutofillAndPasswordsMediator : NSObject
+
+- (instancetype)initWithUserPrefService:(PrefService*)userPrefService
+    NS_DESIGNATED_INITIALIZER;
+
+- (instancetype)init NS_UNAVAILABLE;
 
 // Consumer for this mediator.
 @property(nonatomic, weak) id<AutofillAndPasswordsConsumer> consumer;
