@@ -106,6 +106,8 @@ enum InputType {
   kLensFile = 2,
   // Input is a browser tab.
   kBrowserTab = 3,
+  // Input is from Google Drive.
+  kDrive = 4,
 };
 // LINT.ThenChange(//third_party/omnibox_proto/input_type.proto:InputType)
 

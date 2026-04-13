@@ -64,10 +64,18 @@ export function getHtml(this: ContextualActionMenuElement) {
       <cr-icon icon="composebox:fileUpload"></cr-icon>
       ${this.getInputTypeLabel_(InputType.kLensFile)}
     </button>`: ''}
+    ${this.isDriveUploadAllowed_() ? html`
+      <button id="driveUpload" class="dropdown-item" role="menuitem"
+          @click="${this.onDriveUploadClick_}"
+          ?disabled="${this.isDriveUploadDisabled_()}">
+        <cr-icon icon="composebox:driveUpload"></cr-icon>
+        ${this.getInputTypeLabel_(InputType.kDrive)}
+      </button>` : ''}
 
     <!-- Show a separator if there are tools AND (something above is visible) -->
     ${(this.inputState?.allowedTools.length ?? 0) > 0 &&
-        (this.isImageUploadAllowed_() || this.isFileUploadAllowed_()) ?
+        (this.isImageUploadAllowed_() || this.isFileUploadAllowed_() ||
+         this.isDriveUploadAllowed_()) ?
         html`<hr/>` : ''}
 
     ${(this.inputState?.allowedTools.length ?? 0) > 0 ? html`
@@ -90,7 +98,8 @@ export function getHtml(this: ContextualActionMenuElement) {
     <!-- Show a separator if there are models AND (something above is visible) -->
     ${(this.inputState?.allowedModels.length ?? 0) > 0 &&
       ((this.inputState?.allowedTools.length ?? 0) > 0 ||
-       this.isImageUploadAllowed_() || this.isFileUploadAllowed_()) ? html`<hr/>` : ''}
+       this.isImageUploadAllowed_() || this.isFileUploadAllowed_() ||
+       this.isDriveUploadAllowed_()) ? html`<hr/>` : ''}
 
     ${(this.inputState?.allowedModels.length ?? 0) > 0 ? html`
         ${this.showContextMenuHeaders_ && this.getModelHeader_() ? html`

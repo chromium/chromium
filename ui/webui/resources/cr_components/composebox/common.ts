@@ -41,7 +41,8 @@ export enum ContextType {
   REGULAR_MODEL = 8,
   PRO_NO_GEN_UI_MODEL = 9,
   UNKNOWN = 10,
-  MAX_VALUE = UNKNOWN,
+  DRIVE = 11,
+  MAX_VALUE = DRIVE,
 }
 
 // LINT.ThenChange(//components/omnibox/common/omnibox_metrics_utils.h:ContextType,
