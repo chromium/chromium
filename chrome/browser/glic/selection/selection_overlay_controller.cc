@@ -382,6 +382,10 @@ void SelectionOverlayController::AdjustRegion(
 void SelectionOverlayController::DeleteRegion(
     const base::UnguessableToken& id) {
   if (selected_regions_.erase(id)) {
+    if (selected_regions_.empty()) {
+      CloseUI();
+      return;
+    }
     RenderRegions();
   }
 }
