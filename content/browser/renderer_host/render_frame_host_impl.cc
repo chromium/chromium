@@ -2674,9 +2674,12 @@ RenderFrameHostImpl::RenderFrameHostImpl(
               frame_token_,
               is_main_frame(),
               agent_scheduling_group_->GetProcess()->GetID()))),
-      memory_pressure_listener_registration_(
-          base::MemoryPressureListenerTag::kRenderFrameHostImpl,
-          this) {
+      memory_consumer_registration_(
+          /*consumer_name=*/"RenderFrameHostImpl",
+          /*traits=*/std::nullopt,  // TODO(crbug.com/489671163): Fill traits.
+          this,
+          base::MemoryConsumerRegistration::CheckUnregister::kDisabled,
+          base::MemoryConsumerRegistration::CheckRegistryExists::kDisabled) {
   TRACE_EVENT("navigation", "RenderFrameHostImpl::RenderFrameHostImpl",
               perfetto::Flow::FromPointer(this));
   TRACE_EVENT_BEGIN("navigation", "RenderFrameHostImpl", tracing_track_,
@@ -4753,7 +4756,7 @@ void RenderFrameHostImpl::DeleteRenderFrame(
           frame_tree_->IsBeingDestroyed()
               ? base::TimeDelta()
               : GetSubframeProcessShutdownDelay(
-                    GetSiteInstance()->GetBrowserContext(), GetMemoryLimit());
+                    GetSiteInstance()->GetBrowserContext(), memory_limit());
       // If this document has unload handlers (and is active), ensure that they
       // have a chance to execute by delaying process cleanup. This will prevent
       // the process from shutting down immediately in the case where this is

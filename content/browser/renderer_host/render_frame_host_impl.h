@@ -30,11 +30,11 @@
 #include "base/functional/callback.h"
 #include "base/functional/function_ref.h"
 #include "base/gtest_prod_util.h"
-#include "base/memory/memory_pressure_listener.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ref.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/memory_coordinator/memory_consumer.h"
 #include "base/numerics/checked_math.h"
 #include "base/process/kill.h"
 #include "base/supports_user_data.h"
@@ -339,7 +339,7 @@ class CONTENT_EXPORT RenderFrameHostImpl
       public network::mojom::DeviceBoundSessionAccessObserver,
       public LockManager<storage::BucketId>::Observer,
       public BucketContext,
-      public base::MemoryPressureListener {
+      public base::PassiveMemoryConsumer {
  public:
   using BeforeUnloadExecutionMode = NavigationHandle::BeforeUnloadExecutionMode;
   using JavaScriptDialogCallback =
@@ -3106,9 +3106,6 @@ class CONTENT_EXPORT RenderFrameHostImpl
       blink::mojom::BucketHost::GetDirectoryCallback callback) override;
   storage::BucketClientInfo GetBucketClientInfo() const override;
 
-  // base::MemoryPressureListener:
-  void OnMemoryPressure(base::MemoryPressureLevel level) override {}
-
   // Returns false if this document not the initial empty document, or if the
   // current document's input stream has been opened with document.open(),
   // causing the document to lose its "initial empty document" status. For more
@@ -5630,8 +5627,7 @@ class CONTENT_EXPORT RenderFrameHostImpl
   // Tracing track used to emit async event related to lifecycle.
   const perfetto::NamedTrack tracing_track_;
 
-  base::MemoryPressureListenerRegistration
-      memory_pressure_listener_registration_;
+  base::MemoryConsumerRegistration memory_consumer_registration_;
 
   // Token used to deterministically generate the opaque origin for the initial
   // empty document of a sandboxed popup (e.g.,
