@@ -11091,6 +11091,27 @@
             ]
         }
     ],
+    "GlicContextMenuEntrypoint": [
+        {
+            "platforms": [
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_Arm1_20260413",
+                    "params": {
+                        "variant": "arm1"
+                    },
+                    "enable_features": [
+                        "GlicContextMenu"
+                    ]
+                }
+            ]
+        }
+    ],
     "GlicDogfood": [
         {
             "platforms": [
