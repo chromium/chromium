@@ -14,7 +14,7 @@
 #include <stddef.h>
 #include <stdint.h>
 
-#include <bitset>
+#include <bit>
 
 #include "base/command_line.h"
 #include "base/compiler_specific.h"
@@ -23,7 +23,9 @@
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/no_destructor.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/strings/utf_string_conversions.h"
@@ -147,6 +149,30 @@ const char* WaveFormatTagToString(WORD format_tag) {
   }
 }
 
+constexpr struct {
+  DWORD mask;
+  const char* name;
+} kSpeakerMappings[] = {
+    {SPEAKER_FRONT_LEFT, "FRONT_LEFT"},
+    {SPEAKER_FRONT_RIGHT, "FRONT_RIGHT"},
+    {SPEAKER_FRONT_CENTER, "FRONT_CENTER"},
+    {SPEAKER_LOW_FREQUENCY, "LOW_FREQUENCY"},
+    {SPEAKER_BACK_LEFT, "BACK_LEFT"},
+    {SPEAKER_BACK_RIGHT, "BACK_RIGHT"},
+    {SPEAKER_FRONT_LEFT_OF_CENTER, "FRONT_LEFT_OF_CENTER"},
+    {SPEAKER_FRONT_RIGHT_OF_CENTER, "RIGHT_OF_CENTER"},
+    {SPEAKER_BACK_CENTER, "BACK_CENTER"},
+    {SPEAKER_SIDE_LEFT, "SIDE_LEFT"},
+    {SPEAKER_SIDE_RIGHT, "SIDE_RIGHT"},
+    {SPEAKER_TOP_CENTER, "TOP_CENTER"},
+    {SPEAKER_TOP_FRONT_LEFT, "TOP_FRONT_LEFT"},
+    {SPEAKER_TOP_FRONT_CENTER, "TOP_FRONT_CENTER"},
+    {SPEAKER_TOP_FRONT_RIGHT, "TOP_FRONT_RIGHT"},
+    {SPEAKER_TOP_BACK_LEFT, "TOP_BACK_LEFT"},
+    {SPEAKER_TOP_BACK_CENTER, "TOP_BACK_CENTER"},
+    {SPEAKER_TOP_BACK_RIGHT, "TOP_BACK_RIGHT"},
+};
+
 // Converts from channel mask to list of included channels.
 // Each audio data format contains channels for one or more of the positions
 // listed below. The number of channels simply equals the number of nonzero
@@ -158,67 +184,32 @@ const char* WaveFormatTagToString(WORD format_tag) {
 // and back-right speakers, respectively. The channel data should be interleaved
 // in that order within each block.
 std::string ChannelMaskToString(DWORD channel_mask) {
-  std::string ss;
-  if (channel_mask == KSAUDIO_SPEAKER_DIRECTOUT)
+  if (channel_mask == KSAUDIO_SPEAKER_DIRECTOUT) {
     // A very rare channel mask where speaker orientation is "hard coded".
     // In direct-out mode, the audio device renders the first channel to the
     // first output connector on the device, the second channel to the second
     // output on the device, and so on.
-    ss += "DIRECT_OUT";
-  else {
-    if (channel_mask & SPEAKER_FRONT_LEFT)
-      ss += "FRONT_LEFT | ";
-    if (channel_mask & SPEAKER_FRONT_RIGHT)
-      ss += "FRONT_RIGHT | ";
-    if (channel_mask & SPEAKER_FRONT_CENTER)
-      ss += "FRONT_CENTER | ";
-    if (channel_mask & SPEAKER_LOW_FREQUENCY)
-      ss += "LOW_FREQUENCY | ";
-    if (channel_mask & SPEAKER_BACK_LEFT)
-      ss += "BACK_LEFT | ";
-    if (channel_mask & SPEAKER_BACK_RIGHT)
-      ss += "BACK_RIGHT | ";
-    if (channel_mask & SPEAKER_FRONT_LEFT_OF_CENTER)
-      ss += "FRONT_LEFT_OF_CENTER | ";
-    if (channel_mask & SPEAKER_FRONT_RIGHT_OF_CENTER)
-      ss += "RIGHT_OF_CENTER | ";
-    if (channel_mask & SPEAKER_BACK_CENTER)
-      ss += "BACK_CENTER | ";
-    if (channel_mask & SPEAKER_SIDE_LEFT)
-      ss += "SIDE_LEFT | ";
-    if (channel_mask & SPEAKER_SIDE_RIGHT)
-      ss += "SIDE_RIGHT | ";
-    if (channel_mask & SPEAKER_TOP_CENTER)
-      ss += "TOP_CENTER | ";
-    if (channel_mask & SPEAKER_TOP_FRONT_LEFT)
-      ss += "TOP_FRONT_LEFT | ";
-    if (channel_mask & SPEAKER_TOP_FRONT_CENTER)
-      ss += "TOP_FRONT_CENTER | ";
-    if (channel_mask & SPEAKER_TOP_FRONT_RIGHT)
-      ss += "TOP_FRONT_RIGHT | ";
-    if (channel_mask & SPEAKER_TOP_BACK_LEFT)
-      ss += "TOP_BACK_LEFT | ";
-    if (channel_mask & SPEAKER_TOP_BACK_CENTER)
-      ss += "TOP_BACK_CENTER | ";
-    if (channel_mask & SPEAKER_TOP_BACK_RIGHT)
-      ss += "TOP_BACK_RIGHT | ";
+    return "DIRECT_OUT";
+  }
 
-    if (!ss.empty()) {
-      // Delete last appended " | " substring.
-      ss.erase(ss.end() - 3, ss.end());
+  std::vector<std::string_view> pieces;
+  for (const auto& mapping : kSpeakerMappings) {
+    if (channel_mask & mapping.mask) {
+      pieces.push_back(mapping.name);
     }
   }
 
-  // Add number of utilized channels, e.g. "(2)" but exclude this part for
-  // direct output mode since the number of ones in the channel mask does not
-  // reflect the number of channels for this case.
-  if (channel_mask != KSAUDIO_SPEAKER_DIRECTOUT) {
-    std::bitset<8 * sizeof(DWORD)> mask(channel_mask);
-    ss += " (";
-    ss += base::NumberToString(mask.count());
-    ss += ")";
+  const size_t total_bits = std::popcount(channel_mask);
+  if (pieces.size() < total_bits) {
+    pieces.push_back("UNKNOWN_BITS");
   }
-  return ss;
+
+  std::string result = base::JoinString(pieces, " | ");
+  // Append (KnownCount/TotalCount)
+  base::StrAppend(&result, {" (", base::NumberToString(pieces.size()), "/",
+                            base::NumberToString(total_bits), ")"});
+
+  return result;
 }
 
 // Converts a channel count into a channel configuration.
