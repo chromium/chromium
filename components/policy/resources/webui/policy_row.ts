@@ -95,138 +95,146 @@ export class PolicyRowElement extends CustomElement {
     }
 
     // Populate the remaining columns with policy scope, level and value if a
-    // value has been set. Otherwise, leave them blank.
-    if (!this.unset_) {
-      const scopeDisplay = this.shadowRoot!.querySelector('.scope');
-      let scope = 'scopeDevice';
-      if (policy.scope === 'user') {
-        scope = 'scopeUser';
-      } else if (policy.scope === 'allUsers') {
-        scope = 'scopeAllUsers';
-      }
-      scopeDisplay!.textContent = loadTimeData.getString(scope);
+    // value has been set. Otherwise, leave them blank and fill only the status
+    // value with the "unset" notice.
 
-      const levelDisplay = this.shadowRoot!.querySelector('.level');
-      levelDisplay!.textContent = loadTimeData.getString(
-          policy.level === 'recommended' ? 'levelRecommended' :
-                                           'levelMandatory');
-
-      const sourceDisplay = this.shadowRoot!.querySelector('.source');
-      sourceDisplay!.textContent = loadTimeData.getString(policy.source);
-      // Reduces load on the DOM for long values;
-
-      const convertValue = (value: string, format?: boolean) => {
-        // Skip 'string' policy to avoid unnecessary conversions.
-        if (typeof value === 'string') {
-          return value;
-        }
-        if (format) {
-          return JSON.stringify(value, null, 2);
-        } else {
-          return JSON.stringify(value, null);
-        }
-      };
-
-      // If value is longer than 256 characters, truncate and add ellipsis.
-      const policyValueStr = convertValue(policy.value);
-      const truncatedValue = policyValueStr.length > 256 ?
-          `${policyValueStr.substring(0, 256)}\u2026` :
-          policyValueStr;
-
-      const valueDisplay = this.shadowRoot!.querySelector('.value');
-      valueDisplay!.textContent = truncatedValue;
-
-      const copyLink = this.getRequiredElement('.copy .link');
-      copyLink.title = loadTimeData.getStringF('policyCopyValue', policy.name);
-
-      const valueRowContentDisplay =
-          this.shadowRoot!.querySelector('.value.row .value');
-      // Expanded policy value is formatted.
-      valueRowContentDisplay!.textContent =
-          convertValue(policy.value, /*format=*/ true);
-
-      const errorRowContentDisplay =
-          this.shadowRoot!.querySelector('.errors.row .value');
-      errorRowContentDisplay!.textContent = policy.error;
-      const warningRowContentDisplay =
-          this.shadowRoot!.querySelector('.warnings.row .value');
-      warningRowContentDisplay!.textContent = policy.warning;
-      const infoRowContentDisplay =
-          this.shadowRoot!.querySelector('.infos.row .value');
-      infoRowContentDisplay!.textContent = policy.info;
-
+    if (this.unset_) {
+      const notice = loadTimeData.getString('unset');
       const messagesDisplay = this.shadowRoot!.querySelector('.messages');
-      const errorsNotice =
-          this.hasErrors_ ? loadTimeData.getString('error') : '';
-      const deprecationNotice =
-          this.deprecated_ ? loadTimeData.getString('deprecated') : '';
-      const futureNotice = this.future_ ? loadTimeData.getString('future') : '';
-      const warningsNotice =
-          this.hasWarnings_ ? loadTimeData.getString('warning') : '';
-      const conflictsNotice = this.hasConflicts_ && !this.isMergedValue_ ?
-          loadTimeData.getString('conflict') :
-          '';
-      const ignoredNotice = this.policy.ignored ?
-          (this.policy.isExtension ?
-               loadTimeData.getString('ignoredByExtension') :
-               loadTimeData.getString('ignored')) :
-          '';
-      let notice =
-          [
-            errorsNotice,
-            deprecationNotice,
-            futureNotice,
-            warningsNotice,
-            ignoredNotice,
-            conflictsNotice,
-          ].filter(x => !!x)
-              .join(', ') ||
-          loadTimeData.getString('ok');
-      const supersededNotice = this.hasSuperseded_ && !this.isMergedValue_ ?
-          loadTimeData.getString('superseding') :
-          '';
-      if (supersededNotice) {
-        // Include superseded notice regardless of other notices
-        notice += `, ${supersededNotice}`;
-      }
       messagesDisplay!.textContent = notice;
-      policy.status = notice;
 
-      // Display scope, level and status as rows instead of columns on space
-      // constraint devices.
+      // On space constraint devices, status is displayed as a row.
       // <if expr="is_android or is_ios">
-      const scopeRowContentDisplay =
-          this.shadowRoot!.querySelector('.scope.row .value');
-      scopeRowContentDisplay!.textContent = loadTimeData.getString(scope);
-      const levelRowContentDisplay =
-          this.shadowRoot!.querySelector('.level.row .value');
-      levelRowContentDisplay!.textContent = loadTimeData.getString(
-          policy.level === 'recommended' ? 'levelRecommended' :
-                                           'levelMandatory');
       const messagesRowContentDisplay =
           this.shadowRoot!.querySelector('.messages.row .value');
       messagesRowContentDisplay!.textContent = notice;
       // </if>
+      return;
+    }
 
-      if (policy.conflicts) {
-        policy.conflicts.forEach(conflict => {
-          const row = document.createElement('policy-conflict');
-          row.initialize(conflict, 'conflictValue');
-          row.classList.add('policy-conflict-data');
-          this.shadowRoot!.appendChild(row);
-        });
+    const scopeDisplay = this.shadowRoot!.querySelector('.scope');
+    let scope = 'scopeDevice';
+    if (policy.scope === 'user') {
+      scope = 'scopeUser';
+    } else if (policy.scope === 'allUsers') {
+      scope = 'scopeAllUsers';
+    }
+    scopeDisplay!.textContent = loadTimeData.getString(scope);
+
+    const levelDisplay = this.shadowRoot!.querySelector('.level');
+    levelDisplay!.textContent = loadTimeData.getString(
+        policy.level === 'recommended' ? 'levelRecommended' : 'levelMandatory');
+
+    const sourceDisplay = this.shadowRoot!.querySelector('.source');
+    sourceDisplay!.textContent = loadTimeData.getString(policy.source);
+    // Reduces load on the DOM for long values;
+
+    const convertValue = (value: string, format?: boolean) => {
+      // Skip 'string' policy to avoid unnecessary conversions.
+      if (typeof value === 'string') {
+        return value;
       }
-      if (policy.superseded) {
-        policy.superseded.forEach(superseded => {
-          const row = document.createElement('policy-conflict');
-          row.initialize(superseded, 'supersededValue');
-          row.classList.add('policy-superseded-data');
-          this.shadowRoot!.appendChild(row);
-        });
+      if (format) {
+        return JSON.stringify(value, null, 2);
+      } else {
+        return JSON.stringify(value, null);
       }
-    } else {
-      const messagesDisplay = this.shadowRoot!.querySelector('.messages');
-      messagesDisplay!.textContent = loadTimeData.getString('unset');
+    };
+
+    // If value is longer than 256 characters, truncate and add ellipsis.
+    const policyValueStr = convertValue(policy.value);
+    const truncatedValue = policyValueStr.length > 256 ?
+        `${policyValueStr.substring(0, 256)}\u2026` :
+        policyValueStr;
+
+    const valueDisplay = this.shadowRoot!.querySelector('.value');
+    valueDisplay!.textContent = truncatedValue;
+
+    const copyLink = this.getRequiredElement('.copy .link');
+    copyLink.title = loadTimeData.getStringF('policyCopyValue', policy.name);
+
+    const valueRowContentDisplay =
+        this.shadowRoot!.querySelector('.value.row .value');
+    // Expanded policy value is formatted.
+    valueRowContentDisplay!.textContent =
+        convertValue(policy.value, /*format=*/ true);
+
+    const errorRowContentDisplay =
+        this.shadowRoot!.querySelector('.errors.row .value');
+    errorRowContentDisplay!.textContent = policy.error;
+    const warningRowContentDisplay =
+        this.shadowRoot!.querySelector('.warnings.row .value');
+    warningRowContentDisplay!.textContent = policy.warning;
+    const infoRowContentDisplay =
+        this.shadowRoot!.querySelector('.infos.row .value');
+    infoRowContentDisplay!.textContent = policy.info;
+
+    const messagesDisplay = this.shadowRoot!.querySelector('.messages');
+    const errorsNotice = this.hasErrors_ ? loadTimeData.getString('error') : '';
+    const deprecationNotice =
+        this.deprecated_ ? loadTimeData.getString('deprecated') : '';
+    const futureNotice = this.future_ ? loadTimeData.getString('future') : '';
+    const warningsNotice =
+        this.hasWarnings_ ? loadTimeData.getString('warning') : '';
+    const conflictsNotice = this.hasConflicts_ && !this.isMergedValue_ ?
+        loadTimeData.getString('conflict') :
+        '';
+    const ignoredNotice = this.policy.ignored ?
+        (this.policy.isExtension ?
+             loadTimeData.getString('ignoredByExtension') :
+             loadTimeData.getString('ignored')) :
+        '';
+    let notice =
+        [
+          errorsNotice,
+          deprecationNotice,
+          futureNotice,
+          warningsNotice,
+          ignoredNotice,
+          conflictsNotice,
+        ].filter(x => !!x)
+            .join(', ') ||
+        loadTimeData.getString('ok');
+    const supersededNotice = this.hasSuperseded_ && !this.isMergedValue_ ?
+        loadTimeData.getString('superseding') :
+        '';
+    if (supersededNotice) {
+      // Include superseded notice regardless of other notices
+      notice += `, ${supersededNotice}`;
+    }
+    messagesDisplay!.textContent = notice;
+    policy.status = notice;
+
+    // Display scope, level and status as rows instead of columns on space
+    // constraint devices.
+    // <if expr="is_android or is_ios">
+    const scopeRowContentDisplay =
+        this.shadowRoot!.querySelector('.scope.row .value');
+    scopeRowContentDisplay!.textContent = loadTimeData.getString(scope);
+    const levelRowContentDisplay =
+        this.shadowRoot!.querySelector('.level.row .value');
+    levelRowContentDisplay!.textContent = loadTimeData.getString(
+        policy.level === 'recommended' ? 'levelRecommended' : 'levelMandatory');
+    const messagesRowContentDisplay =
+        this.shadowRoot!.querySelector('.messages.row .value');
+    messagesRowContentDisplay!.textContent = notice;
+    // </if>
+
+    if (policy.conflicts) {
+      policy.conflicts.forEach(conflict => {
+        const row = document.createElement('policy-conflict');
+        row.initialize(conflict, 'conflictValue');
+        row.classList.add('policy-conflict-data');
+        this.shadowRoot!.appendChild(row);
+      });
+    }
+    if (policy.superseded) {
+      policy.superseded.forEach(superseded => {
+        const row = document.createElement('policy-conflict');
+        row.initialize(superseded, 'supersededValue');
+        row.classList.add('policy-superseded-data');
+        this.shadowRoot!.appendChild(row);
+      });
     }
   }
 
