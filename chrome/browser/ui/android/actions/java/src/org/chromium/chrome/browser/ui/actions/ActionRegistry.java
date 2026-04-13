@@ -10,54 +10,49 @@ import org.chromium.base.supplier.NullableObservableSupplier;
 import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.SettableNullableObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
-import org.chromium.chrome.browser.ui.actions.button.ActionButtonData;
+import org.chromium.ui.modelutil.PropertyModel;
 
 /**
- * A central registry for {@link ActionButtonData}, to register actions that components (like the
- * toolbar, bottom bar, etc.) can render as buttons.
+ * A central registry for {@link ActionId}, to register actions that components (like the toolbar,
+ * bottom bar, etc.) can render as buttons.
  */
 @NullMarked
 public class ActionRegistry {
-    private final SparseArray<SettableNullableObservableSupplier<ActionButtonData>> mSuppliers =
+    private final SparseArray<SettableNullableObservableSupplier<PropertyModel>> mSuppliers =
             new SparseArray<>();
 
     /**
-     * Returns a supplier that consumers can observe to get the action data for a given action ID.
-     *
-     * @param actionId The ID of the action.
+     * Returns an ObservableSupplier for the PropertyModel that consumers can observe for changes to
+     * the given ActionId.
      */
-    public NullableObservableSupplier<ActionButtonData> get(@ActionId int actionId) {
-        return getOrCreateSupplier(actionId);
+    public NullableObservableSupplier<PropertyModel> get(@ActionId int id) {
+        return getSupplierForId(id);
     }
 
     /**
-     * Registers or updates the button data for an action.
-     *
-     * @param actionId The ID of the action.
-     * @param data The button data to register or update.
+     * Registers a PropertyModel for a specific ActionId, broadcasting it to any surfaces that are
+     * already listening for this ID.
      */
-    public void register(@ActionId int actionId, ActionButtonData data) {
-        getOrCreateSupplier(actionId).set(data);
+    public void register(@ActionId int id, PropertyModel model) {
+        getSupplierForId(id).set(model);
     }
 
     /**
-     * Unregisters an action, notifying consumers that it is no longer available.
-     *
-     * @param actionId The ID of the action to unregister.
+     * Unregisters a PropertyModel for a specific ActionId, notifying consumers that it is no longer
+     * available.
      */
-    public void unregister(@ActionId int actionId) {
-        SettableNullableObservableSupplier<ActionButtonData> supplier = mSuppliers.get(actionId);
+    public void unregister(@ActionId int id) {
+        SettableNullableObservableSupplier<PropertyModel> supplier = mSuppliers.get(id);
         if (supplier != null) {
             supplier.set(null);
         }
     }
 
-    private SettableNullableObservableSupplier<ActionButtonData> getOrCreateSupplier(
-            @ActionId int actionId) {
-        SettableNullableObservableSupplier<ActionButtonData> supplier = mSuppliers.get(actionId);
+    private SettableNullableObservableSupplier<PropertyModel> getSupplierForId(@ActionId int id) {
+        SettableNullableObservableSupplier<PropertyModel> supplier = mSuppliers.get(id);
         if (supplier == null) {
             supplier = ObservableSuppliers.createNullable();
-            mSuppliers.put(actionId, supplier);
+            mSuppliers.put(id, supplier);
         }
         return supplier;
     }

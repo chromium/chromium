@@ -20,16 +20,16 @@ import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.Callback;
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.chrome.browser.ui.actions.button.ActionButtonData;
+import org.chromium.ui.modelutil.PropertyModel;
 
 /** Unit tests for {@link ActionRegistry}. */
 @RunWith(BaseRobolectricTestRunner.class)
 public class ActionRegistryUnitTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
-    @Mock private ActionButtonData mButtonData1;
-    @Mock private ActionButtonData mButtonData2;
-    @Mock private Callback<ActionButtonData> mButtonDataObserver;
+    @Mock private PropertyModel mModel1;
+    @Mock private PropertyModel mModel2;
+    @Mock private Callback<PropertyModel> mModelObserver;
 
     private ActionRegistry mActionRegistry;
 
@@ -41,17 +41,17 @@ public class ActionRegistryUnitTest {
     @Test
     @SmallTest
     public void testUpdateActionAndGet() {
-        mActionRegistry.register(ActionId.HOME_BUTTON, mButtonData1);
-        mActionRegistry.register(ActionId.TAB_SWITCHER, mButtonData2);
+        mActionRegistry.register(ActionId.HOME_BUTTON, mModel1);
+        mActionRegistry.register(ActionId.TAB_SWITCHER, mModel2);
 
-        assertEquals(mButtonData1, mActionRegistry.get(ActionId.HOME_BUTTON).get());
-        assertEquals(mButtonData2, mActionRegistry.get(ActionId.TAB_SWITCHER).get());
+        assertEquals(mModel1, mActionRegistry.get(ActionId.HOME_BUTTON).get());
+        assertEquals(mModel2, mActionRegistry.get(ActionId.TAB_SWITCHER).get());
     }
 
     @Test
     @SmallTest
     public void testUnregister() {
-        mActionRegistry.register(ActionId.HOME_BUTTON, mButtonData1);
+        mActionRegistry.register(ActionId.HOME_BUTTON, mModel1);
         mActionRegistry.unregister(ActionId.HOME_BUTTON);
 
         assertNull(mActionRegistry.get(ActionId.HOME_BUTTON).get());
@@ -66,9 +66,9 @@ public class ActionRegistryUnitTest {
     @Test
     @SmallTest
     public void testObserverNotifiedOnUpdate() {
-        mActionRegistry.get(ActionId.HOME_BUTTON).addSyncObserver(mButtonDataObserver);
+        mActionRegistry.get(ActionId.HOME_BUTTON).addSyncObserver(mModelObserver);
 
-        mActionRegistry.register(ActionId.HOME_BUTTON, mButtonData1);
-        verify(mButtonDataObserver).onResult(mButtonData1);
+        mActionRegistry.register(ActionId.HOME_BUTTON, mModel1);
+        verify(mModelObserver).onResult(mModel1);
     }
 }

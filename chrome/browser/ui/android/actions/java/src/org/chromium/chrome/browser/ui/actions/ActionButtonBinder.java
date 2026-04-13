@@ -1,0 +1,42 @@
+// Copyright 2026 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+package org.chromium.chrome.browser.ui.actions;
+
+import android.view.View;
+import android.view.View.OnLongClickListener;
+import android.widget.ImageView;
+
+import org.chromium.base.Callback;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.ui.modelutil.PropertyKey;
+import org.chromium.ui.modelutil.PropertyModel;
+
+/** Binder for {@link ActionProperties}. */
+@NullMarked
+public class ActionButtonBinder {
+    public static void bind(PropertyModel model, View view, PropertyKey propertyKey) {
+        if (ActionProperties.ICON == propertyKey) {
+            if (view instanceof ImageView v) v.setImageDrawable(model.get(ActionProperties.ICON));
+        } else if (ActionProperties.CONTENT_DESCRIPTION == propertyKey) {
+            view.setContentDescription(model.get(ActionProperties.CONTENT_DESCRIPTION));
+        } else if (ActionProperties.ON_PRESS_CALLBACK == propertyKey) {
+            Callback<View> callback = model.get(ActionProperties.ON_PRESS_CALLBACK);
+            boolean hasPressCallback = callback != null;
+            view.setOnClickListener(hasPressCallback ? callback::onResult : null);
+            view.setEnabled(hasPressCallback);
+        } else if (ActionProperties.ON_LONG_PRESS_CALLBACK == propertyKey) {
+            Callback<View> callback = model.get(ActionProperties.ON_LONG_PRESS_CALLBACK);
+            OnLongClickListener listener = null;
+            if (callback != null) {
+                listener =
+                        v -> {
+                            callback.onResult(v);
+                            return true;
+                        };
+            }
+            view.setOnLongClickListener(listener);
+        }
+    }
+}
