@@ -16,7 +16,6 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace ntp_realbox {
 namespace {
 
 std::unique_ptr<KeyedService> BuildMockAimEligibilityService(
@@ -29,7 +28,8 @@ std::unique_ptr<KeyedService> BuildMockAimEligibilityService(
       /*identity_manager=*/nullptr);
 }
 
-class IsNtpRealboxNextEnabledTest : public testing::Test {
+// Shared test fixture for IsNtpComposeboxEnabled and IsNtpRealboxNextEnabled.
+class NtpFieldTrialEnabledTest : public testing::Test {
  public:
   void SetUp() override {
     TestingProfile::Builder builder;
@@ -62,54 +62,98 @@ class IsNtpRealboxNextEnabledTest : public testing::Test {
       nullptr;
 };
 
-TEST_F(IsNtpRealboxNextEnabledTest, ReturnsFalseForNullProfile) {
-  EXPECT_FALSE(IsNtpRealboxNextEnabled(nullptr));
+// --- IsNtpComposeboxEnabled tests ---
+
+using IsNtpComposeboxEnabledTest = NtpFieldTrialEnabledTest;
+
+TEST_F(IsNtpComposeboxEnabledTest, ReturnsFalseForNullProfile) {
+  EXPECT_FALSE(ntp_composebox::IsNtpComposeboxEnabled(nullptr));
 }
 
-TEST_F(IsNtpRealboxNextEnabledTest, ReturnsFalseWhenFeatureDisabledByDefault) {
-  // Both kNtpComposebox and kNtpRealboxNext are FEATURE_DISABLED_BY_DEFAULT.
+TEST_F(IsNtpComposeboxEnabledTest, ReturnsFalseWhenFeatureDisabledByDefault) {
+  // kNtpComposebox is FEATURE_DISABLED_BY_DEFAULT.
   SetAllEligible(true);
-  EXPECT_FALSE(IsNtpRealboxNextEnabled(profile_.get()));
+  EXPECT_FALSE(ntp_composebox::IsNtpComposeboxEnabled(profile_.get()));
 }
 
-TEST_F(IsNtpRealboxNextEnabledTest,
-       ReturnsFalseWhenOnlyRealboxNextEnabled) {
+TEST_F(IsNtpComposeboxEnabledTest, ReturnsFalseWhenNotEligible) {
   base::test::ScopedFeatureList features;
-  features.InitWithFeatures({kNtpRealboxNext}, {});
-  SetAllEligible(true);
-  // kNtpComposebox is still disabled by default.
-  EXPECT_FALSE(IsNtpRealboxNextEnabled(profile_.get()));
+  features.InitAndEnableFeature(ntp_composebox::kNtpComposebox);
+  SetAllEligible(false);
+  EXPECT_FALSE(ntp_composebox::IsNtpComposeboxEnabled(profile_.get()));
 }
 
-TEST_F(IsNtpRealboxNextEnabledTest, ReturnsFalseWhenNotEligible) {
+TEST_F(IsNtpComposeboxEnabledTest, ReturnsTrueWhenEnabledAndEligible) {
   base::test::ScopedFeatureList features;
-  features.InitWithFeatures(
-      {ntp_composebox::kNtpComposebox, kNtpRealboxNext}, {});
+  features.InitAndEnableFeature(ntp_composebox::kNtpComposebox);
   SetAllEligible(true);
-  EXPECT_TRUE(IsNtpRealboxNextEnabled(profile_.get()));
+  EXPECT_TRUE(ntp_composebox::IsNtpComposeboxEnabled(profile_.get()));
 }
 
-TEST_F(IsNtpRealboxNextEnabledTest, ReturnsTrueWhenEnabledAndEligible) {
-  base::test::ScopedFeatureList features;
-  features.InitWithFeatures(
-      {ntp_composebox::kNtpComposebox, kNtpRealboxNext}, {});
-  SetAllEligible(true);
-  EXPECT_TRUE(IsNtpRealboxNextEnabled(profile_.get()));
-}
-
-TEST_F(IsNtpRealboxNextEnabledTest,
+TEST_F(IsNtpComposeboxEnabledTest,
        ReturnsFalseWhenAimEligibleButNotFuseboxEligible) {
   base::test::ScopedFeatureList features;
-  features.InitWithFeatures(
-      {ntp_composebox::kNtpComposebox, kNtpRealboxNext}, {});
+  features.InitAndEnableFeature(ntp_composebox::kNtpComposebox);
   ON_CALL(*mock_service_, IsAimLocallyEligible())
       .WillByDefault(testing::Return(true));
   ON_CALL(*mock_service_, IsAimEligible())
       .WillByDefault(testing::Return(true));
   ON_CALL(*mock_service_, IsFuseboxEligible())
       .WillByDefault(testing::Return(false));
-  EXPECT_FALSE(IsNtpRealboxNextEnabled(profile_.get()));
+  EXPECT_FALSE(ntp_composebox::IsNtpComposeboxEnabled(profile_.get()));
+}
+
+// --- IsNtpRealboxNextEnabled tests ---
+
+using IsNtpRealboxNextEnabledTest = NtpFieldTrialEnabledTest;
+
+TEST_F(IsNtpRealboxNextEnabledTest, ReturnsFalseForNullProfile) {
+  EXPECT_FALSE(ntp_realbox::IsNtpRealboxNextEnabled(nullptr));
+}
+
+TEST_F(IsNtpRealboxNextEnabledTest, ReturnsFalseWhenFeatureDisabledByDefault) {
+  // Both kNtpComposebox and kNtpRealboxNext are FEATURE_DISABLED_BY_DEFAULT.
+  SetAllEligible(true);
+  EXPECT_FALSE(ntp_realbox::IsNtpRealboxNextEnabled(profile_.get()));
+}
+
+TEST_F(IsNtpRealboxNextEnabledTest,
+       ReturnsFalseWhenOnlyRealboxNextEnabled) {
+  base::test::ScopedFeatureList features;
+  features.InitWithFeatures({ntp_realbox::kNtpRealboxNext}, {});
+  SetAllEligible(true);
+  // kNtpComposebox is still disabled by default.
+  EXPECT_FALSE(ntp_realbox::IsNtpRealboxNextEnabled(profile_.get()));
+}
+
+TEST_F(IsNtpRealboxNextEnabledTest, ReturnsFalseWhenNotEligible) {
+  base::test::ScopedFeatureList features;
+  features.InitWithFeatures(
+      {ntp_composebox::kNtpComposebox, ntp_realbox::kNtpRealboxNext}, {});
+  SetAllEligible(false);
+  EXPECT_FALSE(ntp_realbox::IsNtpRealboxNextEnabled(profile_.get()));
+}
+
+TEST_F(IsNtpRealboxNextEnabledTest, ReturnsTrueWhenEnabledAndEligible) {
+  base::test::ScopedFeatureList features;
+  features.InitWithFeatures(
+      {ntp_composebox::kNtpComposebox, ntp_realbox::kNtpRealboxNext}, {});
+  SetAllEligible(true);
+  EXPECT_TRUE(ntp_realbox::IsNtpRealboxNextEnabled(profile_.get()));
+}
+
+TEST_F(IsNtpRealboxNextEnabledTest,
+       ReturnsFalseWhenAimEligibleButNotFuseboxEligible) {
+  base::test::ScopedFeatureList features;
+  features.InitWithFeatures(
+      {ntp_composebox::kNtpComposebox, ntp_realbox::kNtpRealboxNext}, {});
+  ON_CALL(*mock_service_, IsAimLocallyEligible())
+      .WillByDefault(testing::Return(true));
+  ON_CALL(*mock_service_, IsAimEligible())
+      .WillByDefault(testing::Return(true));
+  ON_CALL(*mock_service_, IsFuseboxEligible())
+      .WillByDefault(testing::Return(false));
+  EXPECT_FALSE(ntp_realbox::IsNtpRealboxNextEnabled(profile_.get()));
 }
 
 }  // namespace
-}  // namespace ntp_realbox

@@ -39,17 +39,3 @@ source_set("unit_tests") {
     "//content/test:test_support",
   ]
 }
-
-source_set("browser_tests") {
-  testonly = true
-  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
-  sources = [ "composebox_fieldtrial_browsertest.cc" ]
-  deps = [
-    ":variations",
-    "//chrome/browser:browser_process",
-    "//chrome/browser/autocomplete:aim_eligibility_service",
-    "//chrome/browser/search_engines",
-    "//chrome/test:test_support",
-    "//components/variations/service",
-  ]
-}
