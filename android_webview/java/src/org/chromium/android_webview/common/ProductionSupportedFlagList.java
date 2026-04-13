@@ -335,9 +335,6 @@ public final class ProductionSupportedFlagList {
                 "When enabled, Autofill enables querying the server for predictions before the form"
                         + " has been parsed locally."),
         Flag.baseFeature(
-                AutofillFeatures.AUTOFILL_SUPPORT_LAST_NAME_PREFIX,
-                "When enabled, Autofill uses a custom name hierarchy for parsing last names."),
-        Flag.baseFeature(
                 AutofillFeatures.AUTOFILL_SUPPORT_SPLIT_ZIP_CODE,
                 "When enabled, two-part zip codes are splitted into two fields while filling and"
                         + " imported from two adjacent fields."),

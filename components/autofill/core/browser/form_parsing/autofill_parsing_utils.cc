@@ -22,8 +22,6 @@ const base::Feature* GetFeatureOfRegexFeature(RegexFeature feature) {
       return &features::kAutofillGreekRegexes;
     case RegexFeature::kAutofillSupportPhoneticNameForJP:
       return &features::kAutofillSupportPhoneticNameForJP;
-    case RegexFeature::kAutofillSupportLastNamePrefix:
-      return &features::kAutofillSupportLastNamePrefix;
     case RegexFeature::kAutofillSupportSplitZipCode:
       return &features::kAutofillSupportSplitZipCode;
     case RegexFeature::kAutofillDisallowMoreHyphenLikeLabels:

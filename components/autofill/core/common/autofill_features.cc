@@ -942,9 +942,6 @@ BASE_FEATURE(kAutofillStructuredFieldsDisableAddressLines,
 BASE_FEATURE(kAutofillSupportCombinedZipAndCityFR,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Enables using custom name model with last name prefixes support.
-BASE_FEATURE(kAutofillSupportLastNamePrefix, base::FEATURE_DISABLED_BY_DEFAULT);
-
 // Enables using a custom address model for Japan, overriding the legacy one.
 // TODO(crbug.com/359768803): Remove in M151.
 BASE_FEATURE(kAutofillSupportPhoneticNameForJP,
