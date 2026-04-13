@@ -69,8 +69,8 @@ public final class CronetStatsLog {
      * time_to_establish_dns_millis, long time_to_establish_ssl_millis, long time_to_connect_millis,
      * long time_to_send_first_byte_millis, long time_to_establish_dns_micros, long
      * time_to_establish_ssl_micros, long time_to_connect_micros, long
-     * time_to_send_first_byte_micros, long time_to_receive_header_last_byte_micros, int
-     * is_proxied);<br>
+     * time_to_send_first_byte_micros, long time_to_receive_header_last_byte_micros, int is_proxied,
+     * int can_use_adaptive_network_selection);<br>
      */
     public static final int CRONET_TRAFFIC_REPORTED = 704;
 
@@ -92,6 +92,22 @@ public final class CronetStatsLog {
      * http_flags_values, java.lang.String cronet_version, int source, int uid);<br>
      */
     public static final int CRONET_INITIALIZED = 764;
+
+    /**
+     * CronetAdaptiveTrafficAlternateNetworkComputation
+     * cronet_adaptive_traffic_alternate_network_computation<br>
+     * Usage: StatsLog.write(StatsLog.CRONET_ADAPTIVE_TRAFFIC_ALTERNATE_NETWORK_COMPUTATION, int
+     * uid, int source, long number_of_available_networks, boolean default_network_is_known, boolean
+     * fallback_network_cache_hit);<br>
+     */
+    public static final int CRONET_ADAPTIVE_TRAFFIC_ALTERNATE_NETWORK_COMPUTATION = 215000;
+
+    /**
+     * CronetAdaptiveTrafficTerminated cronet_adaptive_traffic_terminated<br>
+     * Usage: StatsLog.write(StatsLog.CRONET_ADAPTIVE_TRAFFIC_TERMINATED, int uid, int source, int
+     * winner, int main_stream_state, int fallback_stream_state);<br>
+     */
+    public static final int CRONET_ADAPTIVE_TRAFFIC_TERMINATED = 215001;
 
     // Constants for enum values.
 
@@ -394,6 +410,14 @@ public final class CronetStatsLog {
     public static final int CRONET_TRAFFIC_REPORTED__IS_PROXIED__OPTIONAL_BOOLEAN_TRUE = 1;
     public static final int CRONET_TRAFFIC_REPORTED__IS_PROXIED__OPTIONAL_BOOLEAN_FALSE = 2;
 
+    // Values for CronetTrafficReported.can_use_adaptive_network_selection
+    public static final int
+            CRONET_TRAFFIC_REPORTED__CAN_USE_ADAPTIVE_NETWORK_SELECTION__OPTIONAL_BOOLEAN_UNSET = 0;
+    public static final int
+            CRONET_TRAFFIC_REPORTED__CAN_USE_ADAPTIVE_NETWORK_SELECTION__OPTIONAL_BOOLEAN_TRUE = 1;
+    public static final int
+            CRONET_TRAFFIC_REPORTED__CAN_USE_ADAPTIVE_NETWORK_SELECTION__OPTIONAL_BOOLEAN_FALSE = 2;
+
     // Values for CronetEngineBuilderInitialized.author
     public static final int CRONET_ENGINE_BUILDER_INITIALIZED__AUTHOR__AUTHOR_UNSPECIFIED = 0;
     public static final int CRONET_ENGINE_BUILDER_INITIALIZED__AUTHOR__AUTHOR_API = 1;
@@ -431,6 +455,80 @@ public final class CronetStatsLog {
     public static final int CRONET_INITIALIZED__SOURCE__CRONET_SOURCE_EMBEDDED_JAVA = 3;
     public static final int CRONET_INITIALIZED__SOURCE__CRONET_SOURCE_HTTPENGINE_NATIVE = 4;
 
+    // Values for CronetAdaptiveTrafficAlternateNetworkComputation.source
+    public static final int
+            CRONET_ADAPTIVE_TRAFFIC_ALTERNATE_NETWORK_COMPUTATION__SOURCE__CRONET_SOURCE_UNSPECIFIED =
+                    0;
+    public static final int
+            CRONET_ADAPTIVE_TRAFFIC_ALTERNATE_NETWORK_COMPUTATION__SOURCE__CRONET_SOURCE_EMBEDDED_NATIVE =
+                    1;
+    public static final int
+            CRONET_ADAPTIVE_TRAFFIC_ALTERNATE_NETWORK_COMPUTATION__SOURCE__CRONET_SOURCE_GMSCORE_NATIVE =
+                    2;
+    public static final int
+            CRONET_ADAPTIVE_TRAFFIC_ALTERNATE_NETWORK_COMPUTATION__SOURCE__CRONET_SOURCE_EMBEDDED_JAVA =
+                    3;
+    public static final int
+            CRONET_ADAPTIVE_TRAFFIC_ALTERNATE_NETWORK_COMPUTATION__SOURCE__CRONET_SOURCE_HTTPENGINE_NATIVE =
+                    4;
+
+    // Values for CronetAdaptiveTrafficTerminated.source
+    public static final int CRONET_ADAPTIVE_TRAFFIC_TERMINATED__SOURCE__CRONET_SOURCE_UNSPECIFIED =
+            0;
+    public static final int
+            CRONET_ADAPTIVE_TRAFFIC_TERMINATED__SOURCE__CRONET_SOURCE_EMBEDDED_NATIVE = 1;
+    public static final int
+            CRONET_ADAPTIVE_TRAFFIC_TERMINATED__SOURCE__CRONET_SOURCE_GMSCORE_NATIVE = 2;
+    public static final int
+            CRONET_ADAPTIVE_TRAFFIC_TERMINATED__SOURCE__CRONET_SOURCE_EMBEDDED_JAVA = 3;
+    public static final int
+            CRONET_ADAPTIVE_TRAFFIC_TERMINATED__SOURCE__CRONET_SOURCE_HTTPENGINE_NATIVE = 4;
+
+    // Values for CronetAdaptiveTrafficTerminated.winner
+    public static final int
+            CRONET_ADAPTIVE_TRAFFIC_TERMINATED__WINNER__CRONET_ADAPTIVE_TRAFFIC_WINNER_UNKNOWN = 0;
+    public static final int
+            CRONET_ADAPTIVE_TRAFFIC_TERMINATED__WINNER__CRONET_ADAPTIVE_TRAFFIC_WINNER_MAIN = 1;
+    public static final int
+            CRONET_ADAPTIVE_TRAFFIC_TERMINATED__WINNER__CRONET_ADAPTIVE_TRAFFIC_WINNER_FALLBACK = 2;
+
+    // Values for CronetAdaptiveTrafficTerminated.main_stream_state
+    public static final int
+            CRONET_ADAPTIVE_TRAFFIC_TERMINATED__MAIN_STREAM_STATE__CRONET_REQUEST_STATE_UNKNOWN = 0;
+    public static final int
+            CRONET_ADAPTIVE_TRAFFIC_TERMINATED__MAIN_STREAM_STATE__CRONET_REQUEST_STATE_NOT_STARTED =
+                    1;
+    public static final int
+            CRONET_ADAPTIVE_TRAFFIC_TERMINATED__MAIN_STREAM_STATE__CRONET_REQUEST_STATE_STARTED = 2;
+    public static final int
+            CRONET_ADAPTIVE_TRAFFIC_TERMINATED__MAIN_STREAM_STATE__CRONET_REQUEST_STATE_SUCCEEDED =
+                    3;
+    public static final int
+            CRONET_ADAPTIVE_TRAFFIC_TERMINATED__MAIN_STREAM_STATE__CRONET_REQUEST_STATE_FAILED = 4;
+    public static final int
+            CRONET_ADAPTIVE_TRAFFIC_TERMINATED__MAIN_STREAM_STATE__CRONET_REQUEST_STATE_CANCELLED =
+                    5;
+
+    // Values for CronetAdaptiveTrafficTerminated.fallback_stream_state
+    public static final int
+            CRONET_ADAPTIVE_TRAFFIC_TERMINATED__FALLBACK_STREAM_STATE__CRONET_REQUEST_STATE_UNKNOWN =
+                    0;
+    public static final int
+            CRONET_ADAPTIVE_TRAFFIC_TERMINATED__FALLBACK_STREAM_STATE__CRONET_REQUEST_STATE_NOT_STARTED =
+                    1;
+    public static final int
+            CRONET_ADAPTIVE_TRAFFIC_TERMINATED__FALLBACK_STREAM_STATE__CRONET_REQUEST_STATE_STARTED =
+                    2;
+    public static final int
+            CRONET_ADAPTIVE_TRAFFIC_TERMINATED__FALLBACK_STREAM_STATE__CRONET_REQUEST_STATE_SUCCEEDED =
+                    3;
+    public static final int
+            CRONET_ADAPTIVE_TRAFFIC_TERMINATED__FALLBACK_STREAM_STATE__CRONET_REQUEST_STATE_FAILED =
+                    4;
+    public static final int
+            CRONET_ADAPTIVE_TRAFFIC_TERMINATED__FALLBACK_STREAM_STATE__CRONET_REQUEST_STATE_CANCELLED =
+                    5;
+
     // Annotation constants.
     @android.annotation.SuppressLint("InlinedApi")
     public static final byte ANNOTATION_ID_IS_UID = StatsLog.ANNOTATION_ID_IS_UID;
@@ -460,6 +558,38 @@ public final class CronetStatsLog {
     public static final byte ANNOTATION_ID_STATE_NESTED = StatsLog.ANNOTATION_ID_STATE_NESTED;
 
     // Write methods
+    public static void write(int code, int arg1, int arg2, int arg3, int arg4, int arg5) {
+        final StatsEvent.Builder builder = StatsEvent.newBuilder();
+        builder.setAtomId(code);
+        builder.writeInt(arg1);
+        if (CRONET_ADAPTIVE_TRAFFIC_TERMINATED == code) {
+            builder.addBooleanAnnotation(ANNOTATION_ID_IS_UID, true);
+        }
+        builder.writeInt(arg2);
+        builder.writeInt(arg3);
+        builder.writeInt(arg4);
+        builder.writeInt(arg5);
+
+        builder.usePooledBuffer();
+        StatsLog.write(builder.build());
+    }
+
+    public static void write(int code, int arg1, int arg2, long arg3, boolean arg4, boolean arg5) {
+        final StatsEvent.Builder builder = StatsEvent.newBuilder();
+        builder.setAtomId(code);
+        builder.writeInt(arg1);
+        if (CRONET_ADAPTIVE_TRAFFIC_ALTERNATE_NETWORK_COMPUTATION == code) {
+            builder.addBooleanAnnotation(ANNOTATION_ID_IS_UID, true);
+        }
+        builder.writeInt(arg2);
+        builder.writeLong(arg3);
+        builder.writeBoolean(arg4);
+        builder.writeBoolean(arg5);
+
+        builder.usePooledBuffer();
+        StatsLog.write(builder.build());
+    }
+
     public static void write(
             int code,
             long arg1,
@@ -625,7 +755,8 @@ public final class CronetStatsLog {
             long arg35,
             long arg36,
             long arg37,
-            int arg38) {
+            int arg38,
+            int arg39) {
         final StatsEvent.Builder builder = StatsEvent.newBuilder();
         builder.setAtomId(code);
         builder.writeLong(arg1);
@@ -669,6 +800,7 @@ public final class CronetStatsLog {
         builder.writeLong(arg36);
         builder.writeLong(arg37);
         builder.writeInt(arg38);
+        builder.writeInt(arg39);
 
         builder.usePooledBuffer();
         StatsLog.write(builder.build());

@@ -11,6 +11,7 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 import android.os.Build;
 import android.os.ConditionVariable;
@@ -30,6 +31,8 @@ import org.chromium.net.impl.CronetLogger.CronetEngineBuilderInfo;
 import org.chromium.net.impl.CronetLogger.CronetSource;
 import org.chromium.net.impl.CronetLogger.CronetTrafficInfo;
 import org.chromium.net.impl.CronetLogger.CronetVersion;
+
+import java.time.Duration;
 
 @RunWith(AndroidJUnit4.class)
 @Batch(Batch.UNIT_TESTS)
@@ -53,6 +56,13 @@ public final class CronetLoggerImplTest {
     @Before
     public void setUp() {
         mCronetLoggerImpl = spy(new CronetLoggerImpl(1));
+        when(mTrafficInfo.getNegotiatedProtocol()).thenReturn("");
+        when(mTrafficInfo.getTotalLatency()).thenReturn(Duration.ofMillis(0));
+        when(mTrafficInfo.getTerminalState())
+                .thenReturn(CronetTrafficInfo.RequestTerminalState.SUCCEEDED);
+        when(mTrafficInfo.getFailureReason())
+                .thenReturn(CronetTrafficInfo.RequestFailureReason.UNKNOWN);
+        when(mTrafficInfo.getCronetSource()).thenReturn(CronetSource.CRONET_SOURCE_UNSPECIFIED);
     }
 
     @Test

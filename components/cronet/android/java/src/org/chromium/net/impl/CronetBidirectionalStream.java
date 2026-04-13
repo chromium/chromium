@@ -144,6 +144,7 @@ public class CronetBidirectionalStream extends ExperimentalBidirectionalStream {
     private final boolean mTrafficStatsUidSet;
     private final int mTrafficStatsUid;
     private final long mNetworkHandle;
+    private final boolean mIsAdaptiveNetworkStream;
     private final CronetLogger mLogger;
     private RefCountDelegate mInflightDoneCallbackCount;
     private CronetException mException;
@@ -302,7 +303,8 @@ public class CronetBidirectionalStream extends ExperimentalBidirectionalStream {
             int trafficStatsTag,
             boolean trafficStatsUidSet,
             int trafficStatsUid,
-            long networkHandle) {
+            long networkHandle,
+            boolean isAdaptiveNetworkStream) {
         mRequestContext = requestContext;
         mInitialUrl = url;
         mInitialPriority = convertStreamPriority(priority);
@@ -320,6 +322,7 @@ public class CronetBidirectionalStream extends ExperimentalBidirectionalStream {
         mTrafficStatsUid = trafficStatsUid;
         mNetworkHandle = networkHandle;
         mLogger = requestContext.getCronetLogger();
+        mIsAdaptiveNetworkStream = isAdaptiveNetworkStream;
     }
 
     @Override
@@ -1068,7 +1071,8 @@ public class CronetBidirectionalStream extends ExperimentalBidirectionalStream {
                 mMetrics.getConnectDurationInMicroseconds(),
                 mMetrics.getTimeToWriteFirstByteInMicroseconds(),
                 mMetrics.getTimeToReceiveHeaderLastByteMicroseconds(),
-                isProxied);
+                isProxied,
+                mIsAdaptiveNetworkStream);
     }
 
     public void setOnDestroyedCallbackForTesting(Runnable onDestroyedCallbackForTesting) {

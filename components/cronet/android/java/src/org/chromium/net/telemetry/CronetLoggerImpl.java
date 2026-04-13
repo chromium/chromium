@@ -122,6 +122,40 @@ public class CronetLoggerImpl extends CronetLogger {
         writeCronetTrafficReported(cronetEngineId, trafficInfo, mSamplesRateLimited.getAndSet(0));
     }
 
+    @Override
+    public void logCronetAdaptiveTrafficAlternateNetworkComputation(
+            CronetSource cronetSource,
+            long numberOfAvailableNetworks,
+            boolean defaultNetworkIsKnown,
+            boolean fallbackNetworkCacheHit) {
+        try (var traceEvent =
+                ScopedSysTraceEvent.scoped(
+                        "CronetLoggerImpl#logCronetAdaptiveTrafficAlternateNetworkComputation")) {
+            CronetStatsLog.write(
+                    CronetStatsLog.CRONET_ADAPTIVE_TRAFFIC_ALTERNATE_NETWORK_COMPUTATION,
+                    Process.myUid(),
+                    convertToProtoCronetEngineBuilderInitializedSource(cronetSource),
+                    numberOfAvailableNetworks,
+                    defaultNetworkIsKnown,
+                    fallbackNetworkCacheHit);
+        }
+    }
+
+    @Override
+    public void logCronetAdaptiveTrafficTerminated(CronetAdaptiveTrafficTerminatedInfo info) {
+        try (var traceEvent =
+                ScopedSysTraceEvent.scoped("CronetLoggerImpl#logCronetAdaptiveTraffic")) {
+            CronetStatsLog.write(
+                    CronetStatsLog.CRONET_ADAPTIVE_TRAFFIC_TERMINATED,
+                    Process.myUid(),
+                    convertToProtoCronetEngineBuilderInitializedSource(info.getCronetSource()),
+                    convertToProtoCronetAdaptiveTrafficWinner(info.getWinner()),
+                    convertToProtoCronetAdaptiveTrafficRequestState(info.getMainRequestState()),
+                    convertToProtoCronetAdaptiveTrafficRequestState(
+                            info.getFallbackRequestState()));
+        }
+    }
+
     @SuppressWarnings("CatchingUnchecked")
     public void writeCronetEngineCreation(
             long cronetEngineId,
@@ -251,17 +285,8 @@ public class CronetLoggerImpl extends CronetLogger {
                     trafficInfo.getTimeToConnectMicros(),
                     trafficInfo.getTimeToSendFirstByteMicros(),
                     trafficInfo.getTimeToReceiveHeaderLastByteMicros(),
-                    OptionalBoolean.fromBoolean(trafficInfo.isProxied()).getValue());
-        } catch (Exception e) {
-            // using addAndGet because another thread might have modified samplesRateLimited's value
-            mSamplesRateLimited.addAndGet(samplesRateLimitedCount);
-            if (Log.isLoggable(TAG, Log.DEBUG)) {
-                Log.d(
-                        TAG,
-                        String.format(
-                                "Failed to log cronet traffic sample for CronetEngine %s: %s",
-                                cronetEngineId, e.getMessage()));
-            }
+                    OptionalBoolean.fromBoolean(trafficInfo.isProxied()).getValue(),
+                    OptionalBoolean.fromBoolean(trafficInfo.isAdaptiveNetworkStream()).getValue());
         }
     }
 
@@ -369,5 +394,48 @@ public class CronetLoggerImpl extends CronetLogger {
             default:
                 throw new IllegalArgumentException("Expected httpCacheMode to range from 0 to 3");
         }
+    }
+
+    private static int convertToProtoCronetAdaptiveTrafficWinner(
+            CronetAdaptiveTrafficWinner winner) {
+        switch (winner) {
+            case CRONET_ADAPTIVE_TRAFFIC_WINNER_MAIN:
+                return CronetStatsLog
+                        .CRONET_ADAPTIVE_TRAFFIC_TERMINATED__WINNER__CRONET_ADAPTIVE_TRAFFIC_WINNER_MAIN;
+            case CRONET_ADAPTIVE_TRAFFIC_WINNER_FALLBACK:
+                return CronetStatsLog
+                        .CRONET_ADAPTIVE_TRAFFIC_TERMINATED__WINNER__CRONET_ADAPTIVE_TRAFFIC_WINNER_FALLBACK;
+            case CRONET_ADAPTIVE_TRAFFIC_WINNER_UNKNOWN:
+                return CronetStatsLog
+                        .CRONET_ADAPTIVE_TRAFFIC_TERMINATED__WINNER__CRONET_ADAPTIVE_TRAFFIC_WINNER_UNKNOWN;
+        }
+        return CronetStatsLog
+                .CRONET_ADAPTIVE_TRAFFIC_TERMINATED__WINNER__CRONET_ADAPTIVE_TRAFFIC_WINNER_UNKNOWN;
+    }
+
+    private static int convertToProtoCronetAdaptiveTrafficRequestState(
+            CronetAdaptiveTrafficRequestState state) {
+        switch (state) {
+            case CRONET_ADAPTIVE_TRAFFIC_REQUEST_STATE_NOT_STARTED:
+                return CronetStatsLog
+                        .CRONET_ADAPTIVE_TRAFFIC_TERMINATED__MAIN_STREAM_STATE__CRONET_REQUEST_STATE_NOT_STARTED;
+            case CRONET_ADAPTIVE_TRAFFIC_REQUEST_STATE_STARTED:
+                return CronetStatsLog
+                        .CRONET_ADAPTIVE_TRAFFIC_TERMINATED__MAIN_STREAM_STATE__CRONET_REQUEST_STATE_STARTED;
+            case CRONET_ADAPTIVE_TRAFFIC_REQUEST_STATE_SUCCEEDED:
+                return CronetStatsLog
+                        .CRONET_ADAPTIVE_TRAFFIC_TERMINATED__MAIN_STREAM_STATE__CRONET_REQUEST_STATE_SUCCEEDED;
+            case CRONET_ADAPTIVE_TRAFFIC_REQUEST_STATE_FAILED:
+                return CronetStatsLog
+                        .CRONET_ADAPTIVE_TRAFFIC_TERMINATED__MAIN_STREAM_STATE__CRONET_REQUEST_STATE_FAILED;
+            case CRONET_ADAPTIVE_TRAFFIC_REQUEST_STATE_CANCELLED:
+                return CronetStatsLog
+                        .CRONET_ADAPTIVE_TRAFFIC_TERMINATED__MAIN_STREAM_STATE__CRONET_REQUEST_STATE_CANCELLED;
+            case CRONET_ADAPTIVE_TRAFFIC_REQUEST_STATE_UNKNOWN:
+                return CronetStatsLog
+                        .CRONET_ADAPTIVE_TRAFFIC_TERMINATED__MAIN_STREAM_STATE__CRONET_REQUEST_STATE_UNKNOWN;
+        }
+        return CronetStatsLog
+                .CRONET_ADAPTIVE_TRAFFIC_TERMINATED__MAIN_STREAM_STATE__CRONET_REQUEST_STATE_UNKNOWN;
     }
 }

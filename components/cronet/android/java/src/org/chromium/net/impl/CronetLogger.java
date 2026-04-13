@@ -12,6 +12,7 @@ import org.chromium.net.ConnectionCloseSource;
 
 import java.time.Duration;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicReference;
 
 /** Base class for implementing a CronetLogger. */
 public abstract class CronetLogger {
@@ -65,6 +66,90 @@ public abstract class CronetLogger {
      * @param trafficInfo the associated traffic information. See {@link CronetTrafficInfo}
      */
     public abstract void logCronetTrafficInfo(long cronetEngineId, CronetTrafficInfo trafficInfo);
+
+    /** See {@link CronetAdaptiveRequestContext}'s documentation. */
+    public abstract void logCronetAdaptiveTrafficAlternateNetworkComputation(
+            CronetSource cronetSource,
+            long numberOfAvailableNetworks,
+            boolean defaultNetworkIsKnown,
+            boolean fallbackNetworkCacheHit);
+
+    /** See {@link CronetAdaptiveNetworkBidirectionalStream}'s documentation. */
+    public enum CronetAdaptiveTrafficWinner {
+        CRONET_ADAPTIVE_TRAFFIC_WINNER_UNKNOWN,
+        CRONET_ADAPTIVE_TRAFFIC_WINNER_MAIN,
+        CRONET_ADAPTIVE_TRAFFIC_WINNER_FALLBACK
+    }
+
+    /** See {@link CronetAdaptiveNetworkBidirectionalStream}'s documentation. */
+    public enum CronetAdaptiveTrafficRequestState {
+        CRONET_ADAPTIVE_TRAFFIC_REQUEST_STATE_UNKNOWN,
+        CRONET_ADAPTIVE_TRAFFIC_REQUEST_STATE_NOT_STARTED,
+        CRONET_ADAPTIVE_TRAFFIC_REQUEST_STATE_STARTED,
+        CRONET_ADAPTIVE_TRAFFIC_REQUEST_STATE_SUCCEEDED,
+        CRONET_ADAPTIVE_TRAFFIC_REQUEST_STATE_FAILED,
+        CRONET_ADAPTIVE_TRAFFIC_REQUEST_STATE_CANCELLED,
+    }
+
+    /** See {@link CronetAdaptiveNetworkBidirectionalStream}'s documentation. */
+    public static final class CronetAdaptiveTrafficTerminatedInfo {
+        private final AtomicReference<CronetLogger.CronetAdaptiveTrafficRequestState>
+                mMainRequestState =
+                        new AtomicReference<>(
+                                CronetLogger.CronetAdaptiveTrafficRequestState
+                                        .CRONET_ADAPTIVE_TRAFFIC_REQUEST_STATE_UNKNOWN);
+        private final AtomicReference<CronetLogger.CronetAdaptiveTrafficRequestState>
+                mFallbackRequestState =
+                        new AtomicReference<>(
+                                CronetLogger.CronetAdaptiveTrafficRequestState
+                                        .CRONET_ADAPTIVE_TRAFFIC_REQUEST_STATE_UNKNOWN);
+        private final AtomicReference<CronetLogger.CronetAdaptiveTrafficWinner> mWinner =
+                new AtomicReference<>(
+                        CronetLogger.CronetAdaptiveTrafficWinner
+                                .CRONET_ADAPTIVE_TRAFFIC_WINNER_UNKNOWN);
+
+        private final CronetSource mCronetSource;
+
+        public CronetAdaptiveTrafficTerminatedInfo(CronetSource cronetSource) {
+            mCronetSource = cronetSource;
+        }
+
+        public CronetSource getCronetSource() {
+            return mCronetSource;
+        }
+
+        public CronetLogger.CronetAdaptiveTrafficRequestState getMainRequestState() {
+            return mMainRequestState.get();
+        }
+
+        public void setMainRequestState(CronetLogger.CronetAdaptiveTrafficRequestState state) {
+            mMainRequestState.set(state);
+        }
+
+        public CronetLogger.CronetAdaptiveTrafficRequestState getFallbackRequestState() {
+            return mFallbackRequestState.get();
+        }
+
+        public void setFallbackRequestState(CronetLogger.CronetAdaptiveTrafficRequestState state) {
+            mFallbackRequestState.set(state);
+        }
+
+        public CronetLogger.CronetAdaptiveTrafficWinner getWinner() {
+            return mWinner.get();
+        }
+
+        public void setWinner(CronetLogger.CronetAdaptiveTrafficWinner winner) {
+            if (mWinner.getAndSet(winner)
+                    != CronetLogger.CronetAdaptiveTrafficWinner
+                            .CRONET_ADAPTIVE_TRAFFIC_WINNER_UNKNOWN) {
+                throw new IllegalStateException("Winner is already set");
+            }
+        }
+    }
+
+    /** See {@link CronetAdaptiveNetworkBidirectionalStream}'s documentation. */
+    public abstract void logCronetAdaptiveTrafficTerminated(
+            CronetAdaptiveTrafficTerminatedInfo info);
 
     // TODO(crbug.com/41494309): consider using AutoValue for this.
     public static final class CronetEngineBuilderInitializedInfo {
@@ -241,6 +326,7 @@ public abstract class CronetLogger {
         private final long mTimeToSendFirstByteMicros;
         private final long mTimeToReceiveHeaderLastByteMicros;
         private final Boolean mIsProxied;
+        private final boolean mIsAdaptiveNetworkStream;
 
         public CronetTrafficInfo(
                 long requestHeaderSizeInBytes,
@@ -271,7 +357,8 @@ public abstract class CronetLogger {
                 long timeToConnectMicros,
                 long timeToSendFirstByteMicros,
                 long timeToReceiveHeaderLastByteMicros,
-                Boolean isProxied) {
+                Boolean isProxied,
+                boolean isAdaptiveNetworkStream) {
             mRequestHeaderSizeInBytes = requestHeaderSizeInBytes;
             mRequestBodySizeInBytes = requestBodySizeInBytes;
             mResponseHeaderSizeInBytes = responseHeaderSizeInBytes;
@@ -301,6 +388,7 @@ public abstract class CronetLogger {
             mTimeToSendFirstByteMicros = timeToSendFirstByteMicros;
             mTimeToReceiveHeaderLastByteMicros = timeToReceiveHeaderLastByteMicros;
             mIsProxied = isProxied;
+            mIsAdaptiveNetworkStream = isAdaptiveNetworkStream;
         }
 
         /**
@@ -432,6 +520,10 @@ public abstract class CronetLogger {
 
         public Boolean isProxied() {
             return mIsProxied;
+        }
+
+        public boolean isAdaptiveNetworkStream() {
+            return mIsAdaptiveNetworkStream;
         }
     }
 

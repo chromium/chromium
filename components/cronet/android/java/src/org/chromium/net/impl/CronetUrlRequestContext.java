@@ -358,7 +358,7 @@ public class CronetUrlRequestContext extends CronetEngineBase {
                 cronetInitializedInfoLogger.onUserThreadDone();
             }
         }
-        mAdaptiveRequestContext = new CronetAdaptiveRequestContext(builder.getContext());
+        mAdaptiveRequestContext = new CronetAdaptiveRequestContext(builder.getContext(), mLogger);
     }
 
     @VisibleForTesting
@@ -536,17 +536,21 @@ public class CronetUrlRequestContext extends CronetEngineBase {
         }
         synchronized (mLock) {
             checkHaveAdapter();
-            CronetAdaptiveRequestContext.AdaptiveStreamNetworkHandles adaptiveHandles =
-                    mAdaptiveRequestContext.computeStreamNetworkHandles(url, networkHandle);
 
-            // Only use adaptive stream if we got AdaptiveStreamNetworkHandles
+            final boolean isAdaptiveNetworkUrl = mAdaptiveRequestContext.isAdaptiveNetworkUrl(url);
+            CronetAdaptiveRequestContext.AdaptiveStreamNetworkHandles adaptiveHandles =
+                    isAdaptiveNetworkUrl
+                            ? mAdaptiveRequestContext.computeStreamNetworkHandles(
+                                    url, networkHandle)
+                            : null;
             CronetAdaptiveNetworkBidirectionalStream adaptiveStream =
                     adaptiveHandles != null
                             ? new CronetAdaptiveNetworkBidirectionalStream(
                                     callback,
                                     mAdaptiveRequestContext.getOrCreateScheduledExecutor(),
                                     mAdaptiveRequestContext,
-                                    url)
+                                    url,
+                                    mLogger)
                             : null;
 
             CronetBidirectionalStream stream =
@@ -566,7 +570,8 @@ public class CronetUrlRequestContext extends CronetEngineBase {
                             trafficStatsUid,
                             adaptiveHandles != null
                                     ? adaptiveHandles.mPrimaryNetworkHandle
-                                    : networkHandle);
+                                    : networkHandle,
+                            isAdaptiveNetworkUrl);
             // Just return the single stream.
             if (adaptiveStream == null) {
                 return stream;
@@ -587,7 +592,8 @@ public class CronetUrlRequestContext extends CronetEngineBase {
                             trafficStatsTag,
                             trafficStatsUidSet,
                             trafficStatsUid,
-                            adaptiveHandles.mFallbackNetworkHandle);
+                            adaptiveHandles.mFallbackNetworkHandle,
+                            isAdaptiveNetworkUrl);
             adaptiveStream.setFallbackStream(fallbackStream);
             adaptiveStream.setPrimaryStream(stream);
             return adaptiveStream;

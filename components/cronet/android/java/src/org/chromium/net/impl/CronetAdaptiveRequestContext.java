@@ -29,16 +29,24 @@ import java.util.concurrent.atomic.AtomicReference;
 
 /** Context and state management for {@link CronetAdaptiveNetworkBidirectionalStream}. */
 class CronetAdaptiveRequestContext {
+
+    // Name of the flag that controls which hosts are eligible for adaptive network selection.
     @VisibleForTesting
     public static final String ENABLE_ADAPTIVE_NETWORK_HOSTS_FLAG_NAME =
             "Cronet_enable_adaptive_network_hosts";
 
+    // Name of the flag that controls which network paths are eligible for adaptive network
+    // selection.
     @VisibleForTesting
     public static final String ENABLE_ADAPTIVE_NETWORK_PATHS_FLAG_NAME =
             "Cronet_enable_adaptive_network_paths";
 
+    // Name of the flag that controls how long we wait until we start the failover stream.
     @VisibleForTesting
     public static final String READY_FAILOVER_MS_FLAG_NAME = "Cronet_adaptive_failover_ms";
+
+    // Name of the flag that controls whether Cronet adaptive network selection is enabled.
+    public static final String ENABLE_ADAPTIVE_NETWORK_NAME = "Cronet_enable_adaptive_network";
 
     /**
      * The time we wait until we start the backup stream. This value is 3x the initial retransmit
@@ -63,9 +71,11 @@ class CronetAdaptiveRequestContext {
     }
 
     private final Clock mClock;
+    private final CronetLogger mLogger;
     private final String[] mAdaptiveNetworkHosts;
     private final Set<String> mAdaptiveNetworkPaths;
     private final long mReadyFailoverMs;
+    private final boolean mEnableAdaptiveNetwork;
 
     /** Information about a fallback network for a given host. */
     private static class FallbackInfo {
@@ -99,12 +109,13 @@ class CronetAdaptiveRequestContext {
     private final AtomicReference<ScheduledExecutorService> mExecutor = new AtomicReference<>(null);
     private ConnectivityManagerWrapper mConnectivityManagerWrapper;
 
-    public CronetAdaptiveRequestContext(Context context) {
-        this(context, new DefaultClock());
+    public CronetAdaptiveRequestContext(Context context, CronetLogger logger) {
+        this(context, logger, new DefaultClock());
     }
 
     @VisibleForTesting
-    CronetAdaptiveRequestContext(Context context, Clock clock) {
+    CronetAdaptiveRequestContext(Context context, CronetLogger logger, Clock clock) {
+        mLogger = logger;
         mClock = clock;
         mConnectivityManagerWrapper = new ConnectivityManagerWrapper(context);
         Map<String, ResolvedFlags.Value> flags =
@@ -140,6 +151,12 @@ class CronetAdaptiveRequestContext {
         } else {
             mReadyFailoverMs = DEFAULT_READY_FAILOVER_MS;
         }
+
+        if (flags.containsKey(ENABLE_ADAPTIVE_NETWORK_NAME)) {
+            mEnableAdaptiveNetwork = flags.get(ENABLE_ADAPTIVE_NETWORK_NAME).getBoolValue();
+        } else {
+            mEnableAdaptiveNetwork = false;
+        }
     }
 
     /**
@@ -152,31 +169,34 @@ class CronetAdaptiveRequestContext {
     @Nullable
     public AdaptiveStreamNetworkHandles computeStreamNetworkHandles(
             String url, long streamDefaultNetworkHandle) {
+        if (!mEnableAdaptiveNetwork) {
+            return null;
+        }
+
         try (var traceEvent =
                 ScopedSysTraceEvent.scoped(
                         "CronetAdaptiveRequestContext#computeStreamNetworkHandles")) {
-            // 1. Check if we should try using adaptive streams for this url.
-            if (!isAdaptiveNetworkHost(url)) {
-                return null;
-            }
-            URI parsedUri = URI.create(url);
-            if (!mAdaptiveNetworkPaths.contains(parsedUri.getPath())) {
-                return null;
-            }
-
             // Get available networks.
             Network[] networks = getAllNetworks();
+            Network defaultNetwork = mConnectivityManagerWrapper.getDefaultNetwork();
 
-            // 2. Check if we have data from previous streams to indicate
-            // what network works for this host.
-            Long memorizedFallback = getMemorizedFallbackNetworkHandle(parsedUri, networks);
-            if (memorizedFallback != null && memorizedFallback != streamDefaultNetworkHandle) {
+            // If we have data, from previous streams, that indicates what network works for
+            // this host, use that.
+            Long memorizedFallback = getMemorizedFallbackNetworkHandle(URI.create(url), networks);
+            boolean useMemorizedFallback =
+                    memorizedFallback != null && memorizedFallback != streamDefaultNetworkHandle;
+            mLogger.logCronetAdaptiveTrafficAlternateNetworkComputation(
+                    NativeCronetEngineBuilderImpl.getCronetSource(),
+                    networks.length,
+                    defaultNetwork != null,
+                    useMemorizedFallback);
+            if (useMemorizedFallback) {
                 return new AdaptiveStreamNetworkHandles(
                         memorizedFallback, streamDefaultNetworkHandle);
             }
 
-            // 3. Continue with business as usual, but see if we can find a fallback network.
-            Long fallbackNetworkHandle = computeAlternativeNetworkHandle(networks);
+            // Otherwise, try to find a fallback network from scratch.
+            Long fallbackNetworkHandle = computeAlternativeNetworkHandle(networks, defaultNetwork);
             if (fallbackNetworkHandle != null
                     && fallbackNetworkHandle == streamDefaultNetworkHandle) {
                 fallbackNetworkHandle = null;
@@ -232,13 +252,18 @@ class CronetAdaptiveRequestContext {
         return null;
     }
 
-    private boolean isAdaptiveNetworkHost(String url) {
-        for (String host : mAdaptiveNetworkHosts) {
-            if (!host.isEmpty() && url.startsWith(host)) {
-                return true;
+    /** Returns true if the given URL is configured as an adaptive network URL. */
+    boolean isAdaptiveNetworkUrl(String url) {
+        try (var traceEvent =
+                ScopedSysTraceEvent.scoped("CronetAdaptiveRequestContext#isAdaptiveNetworkUrl")) {
+            for (String host : mAdaptiveNetworkHosts) {
+                if (!host.isEmpty() && url.startsWith(host)) {
+                    URI parsedUri = URI.create(url);
+                    return mAdaptiveNetworkPaths.contains(parsedUri.getPath());
+                }
             }
+            return false;
         }
-        return false;
     }
 
     ScheduledExecutorService getOrCreateScheduledExecutor() {
@@ -261,8 +286,7 @@ class CronetAdaptiveRequestContext {
 
     /** Returns an alternative network handle, or {@code null} if none is available. */
     @VisibleForTesting
-    Long computeAlternativeNetworkHandle(Network[] networks) {
-        Network defaultNetwork = mConnectivityManagerWrapper.getDefaultNetwork();
+    Long computeAlternativeNetworkHandle(Network[] networks, Network defaultNetwork) {
         for (Network network : networks) {
             if (network != null && !network.equals(defaultNetwork)) {
                 return network.getNetworkHandle();
