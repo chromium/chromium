@@ -159,6 +159,20 @@ tab_groups::TabGroupSyncService* GetTabGroupSyncService(Profile* profile) {
         // BUILDFLAG(IS_WIN)
 }
 
+// Returns TemplateURLService or nullptr if the feature is disabled. Currently,
+// only on Android we have a separate feature flag for template url sync.
+TemplateURLService* GetTemplateURLService(Profile* profile) {
+  CHECK(profile);
+#if BUILDFLAG(IS_ANDROID)
+  if (base::FeatureList::IsEnabled(syncer::kSyncSearchEnginesAndroid)) {
+    return TemplateURLServiceFactory::GetForProfile(profile);
+  }
+  return nullptr;
+#else
+  return TemplateURLServiceFactory::GetForProfile(profile);
+#endif  // BUILDFLAG(IS_ANDROID)
+}
+
 autofill::AddressDataManager* GetAddressDataManager(Profile* profile) {
   auto* pdm =
       autofill::PersonalDataManagerFactory::GetForBrowserContext(profile);
@@ -250,13 +264,7 @@ syncer::DataTypeController::TypeVector CreateCommonControllers(
   builder.SetPrefService(profile->GetPrefs());
   builder.SetPrefServiceSyncable(PrefServiceSyncableFromProfile(profile));
   builder.SetTabGroupSyncService(GetTabGroupSyncService(profile));
-  builder.SetTemplateURLService(
-#if BUILDFLAG(IS_ANDROID)
-      nullptr
-#else   // BUILDFLAG(IS_ANDROID)
-      TemplateURLServiceFactory::GetForProfile(profile)
-#endif  // BUILDFLAG(IS_ANDROID)
-  );
+  builder.SetTemplateURLService(GetTemplateURLService(profile));
   builder.SetSendTabToSelfSyncService(
       SendTabToSelfSyncServiceFactory::GetForProfile(profile));
   builder.SetSessionSyncService(

@@ -8804,6 +8804,15 @@
     "expiry_milestone": 155
   },
   {
+    "name": "sync-search-engines-android",
+    "owners": [
+      "ender@google.com",
+      "kaiyilin@google.com",
+      "oka@google.com"
+    ],
+    "expiry_milestone": 160
+  },
+  {
     "name": "sync-themes-ios",
     "owners": [ "bwwilliams@google.com", "jhimawan@google.com", "bling-pandamonium@google.com" ],
     "expiry_milestone": 150

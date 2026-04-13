@@ -12963,6 +12963,14 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kEnableAndroidSidePanelLogsDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(chrome::android::kEnableAndroidSidePanelLogs)},
 #endif
+
+#if BUILDFLAG(IS_ANDROID)
+    {"sync-search-engines-android",
+     flag_descriptions::kSyncSearchEnginesAndroidName,
+     flag_descriptions::kSyncSearchEnginesAndroidDescription, kOsAndroid,
+     FEATURE_VALUE_TYPE(syncer::kSyncSearchEnginesAndroid)},
+#endif
+
     // Add new entries above this line.
     // NOTE: Adding a new flag requires adding a corresponding entry to enum
     // "LoginCustomFlags" in tools/metrics/histograms/enums.xml. See "Flag

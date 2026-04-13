@@ -133,8 +133,15 @@ class SyncServiceFactoryTest : public testing::Test {
 
 #if !BUILDFLAG(IS_ANDROID)
     datatypes.Put(syncer::THEMES);
-    datatypes.Put(syncer::SEARCH_ENGINES);
 #endif  // !BUILDFLAG(IS_ANDROID)
+
+#if BUILDFLAG(IS_ANDROID)
+    if (base::FeatureList::IsEnabled(syncer::kSyncSearchEnginesAndroid)) {
+      datatypes.Put(syncer::SEARCH_ENGINES);
+    }
+#else
+    datatypes.Put(syncer::SEARCH_ENGINES);
+#endif  // BUILDFLAG(IS_ANDROID)
 
     datatypes.Put(syncer::SAVED_TAB_GROUP);
 

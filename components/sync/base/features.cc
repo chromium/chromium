@@ -210,4 +210,8 @@ BASE_FEATURE(kSyncValidateAccessToken, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kSyncInvalidationsBypassScheduler,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+#if BUILDFLAG(IS_ANDROID)
+BASE_FEATURE(kSyncSearchEnginesAndroid, base::FEATURE_DISABLED_BY_DEFAULT);
+#endif  // BUILDFLAG(IS_ANDROID)
+
 }  // namespace syncer

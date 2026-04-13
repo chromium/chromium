@@ -154,7 +154,6 @@ source_set("sync_integration_tests_impl") {
       "single_client_passwords_sync_test.cc",
       "single_client_polling_sync_test.cc",
       "single_client_saved_tab_groups_sync_test.cc",
-      "single_client_search_engines_sync_test.cc",
       "single_client_send_tab_to_self_sync_test.cc",
       "single_client_sessions_sync_test.cc",
       "single_client_sharing_message_sync_test.cc",
@@ -171,6 +170,9 @@ source_set("sync_integration_tests_impl") {
       "sync_errors_test.cc",
       "web_apps/single_client_web_apps_sync_generated_icon_fix_sync_test.cc",
       "web_apps/single_client_web_apps_sync_test.cc",
+
+      # TODO(crbug.com/502050495): Enable search engines sync tests on Android.
+      "single_client_search_engines_sync_test.cc",
 
       # Tests with two clients can't run on Android because Android doesn't
       # support multiple profiles.

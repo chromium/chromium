@@ -12827,6 +12827,7 @@ from previous Chrome versions.
   <int value="-416660617" label="EnforceTLS13Downgrade:disabled"/>
   <int value="-415762341" label="ElementCapture:disabled"/>
   <int value="-415186532" label="AndroidSiteSettingsUIRefresh:enabled"/>
+  <int value="-414909336" label="SyncSearchEnginesAndroid:enabled"/>
   <int value="-414900505" label="ScrollCapture:enabled"/>
   <int value="-414477658" label="DefaultBucketUsesRelaxedDurability:disabled"/>
   <int value="-414398582" label="UpcomingFollowFeatures:disabled"/>
@@ -15585,6 +15586,7 @@ from previous Chrome versions.
   <int value="506005649" label="WelcomeExperience:disabled"/>
   <int value="506015849" label="OmniboxFuzzyUrlSuggestions:disabled"/>
   <int value="506153966" label="WebAppSyncGeneratedIconUpdateFix:disabled"/>
+  <int value="506854125" label="SyncSearchEnginesAndroid:disabled"/>
   <int value="507206806" label="OmniboxExpandedLayout:enabled"/>
   <int value="507847553" label="AndroidTipsNotifications:enabled"/>
   <int value="508272289" label="SharedHighlightingAmp:disabled"/>

@@ -238,6 +238,11 @@ BASE_DECLARE_FEATURE(kSyncValidateAccessToken);
 // If enabled, Sync invalidations will bypass the scheduler on Android.
 BASE_DECLARE_FEATURE(kSyncInvalidationsBypassScheduler);
 
+#if BUILDFLAG(IS_ANDROID)
+// If enabled, search engines and site search will be synced on Android.
+BASE_DECLARE_FEATURE(kSyncSearchEnginesAndroid);
+#endif  // BUILDFLAG(IS_ANDROID)
+
 }  // namespace syncer
 
 #endif  // COMPONENTS_SYNC_BASE_FEATURES_H_
