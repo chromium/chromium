@@ -17,17 +17,15 @@ namespace blink {
 MailboxTextureBacking::MailboxTextureBacking(
     scoped_refptr<gpu::ClientSharedImage> shared_image,
     scoped_refptr<MailboxRef> mailbox_ref,
-    const gfx::Size& size,
-    const viz::SharedImageFormat& format,
     SkAlphaType alpha_type,
-    const gfx::ColorSpace& color_space,
     scoped_refptr<viz::RasterContextProvider> context_provider)
     : shared_image_(std::move(shared_image)),
       mailbox_ref_(std::move(mailbox_ref)),
-      sk_image_info_(SkImageInfo::Make(gfx::SizeToSkISize(size),
-                                       ToClosestSkColorType(format),
-                                       alpha_type,
-                                       color_space.ToSkColorSpace())),
+      sk_image_info_(
+          SkImageInfo::Make(gfx::SizeToSkISize(shared_image_->size()),
+                            ToClosestSkColorType(shared_image_->format()),
+                            alpha_type,
+                            shared_image_->color_space().ToSkColorSpace())),
       context_provider_(std::move(context_provider)) {
   CHECK(context_provider_);
   gpu::raster::RasterInterface* ri = context_provider_->RasterInterface();

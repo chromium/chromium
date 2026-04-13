@@ -30,10 +30,7 @@ class MailboxTextureBacking : public TextureBacking {
   explicit MailboxTextureBacking(
       scoped_refptr<gpu::ClientSharedImage> shared_image,
       scoped_refptr<MailboxRef> mailbox_ref,
-      const gfx::Size& size,
-      const viz::SharedImageFormat& format,
       SkAlphaType alpha_type,
-      const gfx::ColorSpace& color_space,
       scoped_refptr<viz::RasterContextProvider> context_provider);
   ~MailboxTextureBacking() override;
   const SkImageInfo& GetSkImageInfo() override;
