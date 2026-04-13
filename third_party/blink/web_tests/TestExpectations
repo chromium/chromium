@@ -2634,7 +2634,6 @@ crbug.com/445726874 external/wpt/html/semantics/embedded-content/the-iframe-elem
 crbug.com/445726874 external/wpt/html/semantics/embedded-content/the-iframe-element/iframe_top_navigation_without_user_gesture_same_site.tentative.html [ Crash Failure ]
 
 external/wpt/css/css-text/text-autospace/text-autospace-elements-007.html [ Failure ]
-external/wpt/navigation-api/navigation-methods/return-value/navigate-javascript-url.html [ Timeout ]
 
 # Flaky UUID in assertion failure
 external/wpt/webdriver/tests/bidi/browsing_context/download_will_begin/download_will_begin.py [ Failure ]

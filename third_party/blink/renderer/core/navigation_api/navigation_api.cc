@@ -479,6 +479,8 @@ NavigationResult* NavigationApi::navigate(ScriptState* script_state,
 
   if (completed_url.ProtocolIsJavaScript()) {
     UseCounter::Count(window_, WebFeature::kNavigationNavigateJavaScriptURL);
+    return EarlyErrorResult(script_state, DOMExceptionCode::kNotSupportedError,
+                            "The javascript: protocol is not supported");
   }
 
   scoped_refptr<SerializedScriptValue> serialized_state = nullptr;
