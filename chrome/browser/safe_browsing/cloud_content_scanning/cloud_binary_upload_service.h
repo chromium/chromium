@@ -15,6 +15,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/task/sequenced_task_runner.h"
 #include "components/enterprise/connectors/core/cloud_content_scanning/binary_upload_service.h"
+#include "components/enterprise/connectors/core/cloud_content_scanning/cloud_binary_upload_service_base.h"
 #include "components/enterprise/connectors/core/cloud_content_scanning/connector_upload_request.h"
 #include "components/enterprise/connectors/core/cloud_content_scanning/resumable_uploader.h"
 #include "components/enterprise/connectors/core/common.h"
@@ -27,10 +28,9 @@ namespace safe_browsing {
 // This class encapsulates the process of uploading a file for deep scanning,
 // and asynchronously retrieving a verdict.
 class CloudBinaryUploadService
-    : public enterprise_connectors::BinaryUploadService {
+    : public enterprise_connectors::BinaryUploadService,
+      public enterprise_connectors::CloudBinaryUploadServiceBase {
  public:
-  // The maximum number of uploads that can happen in parallel.
-  static size_t GetParallelActiveRequestsMax();
 
   explicit CloudBinaryUploadService(Profile* profile);
 
@@ -80,11 +80,6 @@ class CloudBinaryUploadService
   void SetTokenFetcherForTesting(
       std::unique_ptr<SafeBrowsingTokenFetcher> token_fetcher);
 
-  // Returns the URL that requests are uploaded to. Scans for enterprise go to a
-  // different URL than scans for Advanced Protection users and Enhanced
-  // Protection users.
-  static GURL GetUploadUrl(bool is_consumer_scan_eligible);
-
  protected:
   void FinishRequest(enterprise_connectors::BinaryUploadRequest* request,
                      enterprise_connectors::ScanRequestUploadResult result,
@@ -101,9 +96,6 @@ class CloudBinaryUploadService
       enterprise_connectors::BinaryUploadRequest::Id request_id,
       enterprise_connectors::ScanRequestUploadResult result,
       enterprise_connectors::BinaryUploadRequest::Data data);
-
-  enterprise_connectors::BinaryUploadRequest* GetRequest(
-      enterprise_connectors::BinaryUploadRequest::Id request_id);
 
   scoped_refptr<base::SequencedTaskRunner> ui_task_runner_;
 
@@ -199,14 +191,6 @@ class CloudBinaryUploadService
       enterprise_connectors::ScanRequestUploadResult result,
       enterprise_connectors::ContentAnalysisResponse response);
 
-  void RecordRequestMetrics(
-      enterprise_connectors::BinaryUploadRequest::Id request_id,
-      enterprise_connectors::ScanRequestUploadResult result);
-  void RecordRequestMetrics(
-      enterprise_connectors::BinaryUploadRequest::Id request_id,
-      enterprise_connectors::ScanRequestUploadResult result,
-      const enterprise_connectors::ContentAnalysisResponse& response);
-
   // Clears request and associated data from memory and starts the next queued
   // request, if present.
   void CleanupRequest(enterprise_connectors::BinaryUploadRequest* request);
@@ -219,9 +203,6 @@ class CloudBinaryUploadService
 
   // Prepares auth and non-auth requests for uploading to the server.
   void PrepareRequestForUpload(
-      enterprise_connectors::BinaryUploadRequest::Id request_id);
-
-  bool ResponseIsComplete(
       enterprise_connectors::BinaryUploadRequest::Id request_id);
 
   bool ShouldTerminateRequestEarly(
@@ -263,12 +244,6 @@ class CloudBinaryUploadService
 
   // Resources associated with an in-progress request.
   base::flat_map<enterprise_connectors::BinaryUploadRequest::Id,
-                 std::unique_ptr<enterprise_connectors::BinaryUploadRequest>>
-      active_requests_;
-  base::flat_map<enterprise_connectors::BinaryUploadRequest::Id,
-                 base::TimeTicks>
-      start_times_;
-  base::flat_map<enterprise_connectors::BinaryUploadRequest::Id,
                  std::unique_ptr<base::OneShotTimer>>
       active_timers_;
   base::flat_map<enterprise_connectors::BinaryUploadRequest::Id,
@@ -276,13 +251,6 @@ class CloudBinaryUploadService
       active_uploads_;
   base::flat_map<enterprise_connectors::BinaryUploadRequest::Id, std::string>
       active_tokens_;
-
-  // Maps requests to each corresponding tag-result pairs.
-  base::flat_map<
-      enterprise_connectors::BinaryUploadRequest::Id,
-      base::flat_map<std::string,
-                     enterprise_connectors::ContentAnalysisResponse::Result>>
-      received_connector_results_;
 
   // Indicates whether this DM token + Connector combination can be used to
   // upload data for enterprise requests. Advanced Protection scans are

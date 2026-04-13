@@ -117,6 +117,8 @@ source_set("cloud_content_scanning") {
     "cloud_content_scanning/binary_upload_request.cc",
     "cloud_content_scanning/binary_upload_request.h",
     "cloud_content_scanning/binary_upload_service.h",
+    "cloud_content_scanning/cloud_binary_upload_service_base.cc",
+    "cloud_content_scanning/cloud_binary_upload_service_base.h",
     "cloud_content_scanning/common.cc",
     "cloud_content_scanning/common.h",
     "cloud_content_scanning/connector_data_pipe_getter.cc",
@@ -274,6 +276,7 @@ source_set("cloud_content_scanning_unittests") {
   testonly = true
 
   sources = [
+    "cloud_content_scanning/cloud_binary_upload_service_base_unittest.cc",
     "cloud_content_scanning/connector_data_pipe_getter_unittest.cc",
     "cloud_content_scanning/deep_scanning_utils_unittest.cc",
     "cloud_content_scanning/file_analysis_request_base_unittest.cc",
