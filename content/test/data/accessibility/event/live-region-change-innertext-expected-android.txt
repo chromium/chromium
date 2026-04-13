@@ -1,2 +1,2 @@
-TYPE_WINDOW_CONTENT_CHANGED - [contentTypes=1]
+TYPE_WINDOW_CONTENT_CHANGED - [contentTypes=SUBTREE] [Text after]
 TYPE_ANNOUNCEMENT - [Text after]

@@ -683,6 +683,7 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProviderCompa
         mHistogramRecorder.updateTimeOfFirstShown();
         var oldValue = mTracker;
         mTracker = tracker;
+        mTracker.setWebContentsAccessibilityImpl(this);
         ResettersForTesting.register(() -> mTracker = oldValue);
     }
 
@@ -2486,7 +2487,7 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProviderCompa
                 // Android system to know about every single node that was affected. Therefore, we
                 // do not queue these events, but instead send them right away.
                 requestSendAccessibilityEvent(
-                        event, WindowContentChangedSubtype.LIVE_REGION_NODE_CHANGED);
+                        event, WindowContentChangedSubtype.LIVE_REGION_NODE_CHANGED, id);
             }
         }
     }
@@ -2540,14 +2541,19 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProviderCompa
                         mNativeObj, virtualViewId, positionInfoStartIndex, positionInfoLength);
     }
 
-    // Most calls to requestSendAccessibilityEvent() do not require a WindowContentChangedSubtype to
-    // be specified. This information is only used for testing.
+    // Most calls to requestSendAccessibilityEvent() do not require a WindowContentChangedSubtype or
+    // the virtualViewId to be specified. This information is only used for testing.
     protected void requestSendAccessibilityEvent(AccessibilityEvent event) {
         requestSendAccessibilityEvent(event, WindowContentChangedSubtype.NONE);
     }
 
     protected void requestSendAccessibilityEvent(
             AccessibilityEvent event, @WindowContentChangedSubtype int subtype) {
+        requestSendAccessibilityEvent(event, subtype, View.NO_ID);
+    }
+
+    protected void requestSendAccessibilityEvent(
+            AccessibilityEvent event, @WindowContentChangedSubtype int subtype, int virtualViewId) {
         // If there is no parent, then the event can be ignored. In general the parent is only
         // transiently null (such as during teardown, switching tabs...). Also ensure that
         // accessibility is still enabled, throttling may result in events sent late.
@@ -2556,7 +2562,7 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProviderCompa
             if (event.getEventType() == AccessibilityEvent.TYPE_VIEW_ACCESSIBILITY_FOCUSED) {
                 mHistogramRecorder.recordTimeToFirstAccessibilityFocus();
             }
-            if (mTracker != null) mTracker.addEvent(event, subtype);
+            if (mTracker != null) mTracker.addEvent(event, subtype, virtualViewId);
             try {
                 mView.getParent().requestSendAccessibilityEvent(mView, event);
                 mDidSendAnyEvent = true;
