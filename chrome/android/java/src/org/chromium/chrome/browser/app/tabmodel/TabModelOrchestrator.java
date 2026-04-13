@@ -19,6 +19,7 @@ import org.chromium.build.annotations.MonotonicNonNull;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutHelperManager.TabModelStartupInfo;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab_ui.TabContentManager;
 import org.chromium.chrome.browser.tabmodel.MismatchedIndicesHandler;
@@ -256,7 +257,12 @@ public class TabModelOrchestrator {
                 mShadowTabPersistentStore.clearState();
             }
             if (mMigrationManager != null) mMigrationManager.onAllStoresRazed();
-            PersistentStoreCleaner.cleanAllWindowsForUnavailableStores(this);
+            if (mTabModelSelector != null) {
+                Profile profile = mTabModelSelector.getProfile(/* offTheRecord= */ false);
+                if (profile != null) {
+                    PersistentStoreCleanerFactory.getForProfile(profile).clearState(this);
+                }
+            }
         }
     }
 

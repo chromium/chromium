@@ -126,6 +126,7 @@ chrome_java_sources = [
   "java/src/org/chromium/chrome/browser/app/tabmodel/HeadlessTabModelOrchestrator.java",
   "java/src/org/chromium/chrome/browser/app/tabmodel/ModelTrackingOrchestrator.java",
   "java/src/org/chromium/chrome/browser/app/tabmodel/PersistentStoreCleaner.java",
+  "java/src/org/chromium/chrome/browser/app/tabmodel/PersistentStoreCleanerFactory.java",
   "java/src/org/chromium/chrome/browser/app/tabmodel/PersistentStoreMigrationManagerImpl.java",
   "java/src/org/chromium/chrome/browser/app/tabmodel/ShadowTabStoreValidator.java",
   "java/src/org/chromium/chrome/browser/app/tabmodel/TabCountTracker.java",
