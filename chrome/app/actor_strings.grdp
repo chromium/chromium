@@ -133,4 +133,7 @@
   <message name="IDS_PEEK_STATE_WAITING" desc="Status message indicating that Gemini requires user input or attention to continue the current task." formatter_data="android_java">
     Needs your attention
   </message>
+  <message name="IDS_PEEK_STATE_VIEW_BUTTON_LABEL" desc="Button text for the actor control button in the waiting state." formatter_data="android_java">
+    View
+  </message>
 </grit-part>

@@ -15,6 +15,8 @@ import static org.mockito.Mockito.when;
 import android.app.Activity;
 import android.view.View;
 
+import com.google.android.material.button.MaterialButton;
+
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -60,7 +62,7 @@ public class ActorControlCoordinatorTest {
 
     @Mock private ActorUiTabController mActorUiTabController;
     @Mock private TabBottomSheetManager mTabBottomSheetManager;
-    @Mock private View.OnClickListener mPlayPauseListener;
+    @Mock private View.OnClickListener mActorControlListener;
     @Mock private View.OnClickListener mCloseListener;
     @Mock private Tab mTab;
     @Mock private Profile mProfile;
@@ -102,7 +104,7 @@ public class ActorControlCoordinatorTest {
         mCoordinator =
                 new ActorControlCoordinator(
                         mActivity,
-                        mPlayPauseListener,
+                        mActorControlListener,
                         mCloseListener,
                         mTabSupplier,
                         mTabBottomSheetManager,
@@ -112,7 +114,7 @@ public class ActorControlCoordinatorTest {
         mMediator = mCoordinator.getMediatorForTesting();
 
         ShadowLooper.idleMainLooper();
-        reset(mTabBottomSheetManager, mActorUiTabController, mPlayPauseListener, mCloseListener);
+        reset(mTabBottomSheetManager, mActorUiTabController, mActorControlListener, mCloseListener);
     }
 
     private void expectValidProfile() {
@@ -129,19 +131,20 @@ public class ActorControlCoordinatorTest {
     @Test
     public void testInitialization() {
         assertNotNull(mModel);
-        assertEquals(mPlayPauseListener, mModel.get(ActorControlProperties.ON_PLAY_PAUSE_CLICKED));
+        assertEquals(
+                mActorControlListener, mModel.get(ActorControlProperties.ON_ACTOR_CONTROL_CLICKED));
         assertEquals(mCloseListener, mModel.get(ActorControlProperties.ON_CLOSE_CLICKED));
     }
 
     @Test
-    public void testPlayPauseClickTriggered() {
+    public void testActorControlClickTriggered() {
         when(mTabBottomSheetManager.isSheetInitialized()).thenReturn(true);
         mCoordinator.attachPeekView();
         ActorControlView view = (ActorControlView) mCoordinator.getPeekViewForTesting();
-        ChromeImageButton playPauseButton = view.findViewById(R.id.actor_control_status_button);
+        MaterialButton actorControlButton = view.findViewById(R.id.actor_control_button);
 
-        playPauseButton.performClick();
-        verify(mPlayPauseListener).onClick(playPauseButton);
+        actorControlButton.performClick();
+        verify(mActorControlListener).onClick(actorControlButton);
     }
 
     @Test
@@ -228,36 +231,76 @@ public class ActorControlCoordinatorTest {
 
     @Test
     public void testSetContent_ActingState() {
+        expectValidProfile();
+        expectValidActorTask();
+        when(mTabBottomSheetManager.isSheetInitialized()).thenReturn(true);
+        mCoordinator.attachPeekView();
+        mProfileSupplier.set(mProfile);
+
         mMediator.setContent(TASK_TITLE, PeekViewUiState.ACTING);
+        ActorControlView view = (ActorControlView) mCoordinator.getPeekViewForTesting();
 
         assertEquals(TASK_TITLE, mModel.get(ActorControlProperties.TASK_TITLE));
         assertEquals(PeekViewUiState.ACTING, mModel.get(ActorControlProperties.PEEK_VIEW_UI_STATE));
+        assertEquals(
+                view.getStepDescriptionForTesting(),
+                PeekViewUiState.ACTING.getDescription(view.getContext()));
     }
 
     @Test
     public void testSetContent_PausedState() {
+        expectValidProfile();
+        expectValidActorTask();
+        when(mTabBottomSheetManager.isSheetInitialized()).thenReturn(true);
+        mCoordinator.attachPeekView();
+        mProfileSupplier.set(mProfile);
+
         mMediator.setContent(TASK_TITLE, PeekViewUiState.PAUSED);
+        ActorControlView view = (ActorControlView) mCoordinator.getPeekViewForTesting();
 
         assertEquals(TASK_TITLE, mModel.get(ActorControlProperties.TASK_TITLE));
         assertEquals(PeekViewUiState.PAUSED, mModel.get(ActorControlProperties.PEEK_VIEW_UI_STATE));
+        assertEquals(
+                view.getStepDescriptionForTesting(),
+                PeekViewUiState.PAUSED.getDescription(view.getContext()));
     }
 
     @Test
     public void testSetContent_WaitingState() {
+        expectValidProfile();
+        expectValidActorTask();
+        when(mTabBottomSheetManager.isSheetInitialized()).thenReturn(true);
+        mCoordinator.attachPeekView();
+        mProfileSupplier.set(mProfile);
+
         mMediator.setContent(TASK_TITLE, PeekViewUiState.WAITING);
+        ActorControlView view = (ActorControlView) mCoordinator.getPeekViewForTesting();
 
         assertEquals(TASK_TITLE, mModel.get(ActorControlProperties.TASK_TITLE));
         assertEquals(
                 PeekViewUiState.WAITING, mModel.get(ActorControlProperties.PEEK_VIEW_UI_STATE));
+        assertEquals(
+                view.getStepDescriptionForTesting(),
+                PeekViewUiState.WAITING.getDescription(view.getContext()));
     }
 
     @Test
     public void testSetContent_DefaultState() {
+        expectValidProfile();
+        expectValidActorTask();
+        when(mTabBottomSheetManager.isSheetInitialized()).thenReturn(true);
+        mCoordinator.attachPeekView();
+        mProfileSupplier.set(mProfile);
+
         mMediator.setContent(TASK_TITLE, PeekViewUiState.DEFAULT);
+        ActorControlView view = (ActorControlView) mCoordinator.getPeekViewForTesting();
 
         assertEquals(TASK_TITLE, mModel.get(ActorControlProperties.TASK_TITLE));
         assertEquals(
                 PeekViewUiState.DEFAULT, mModel.get(ActorControlProperties.PEEK_VIEW_UI_STATE));
+        assertEquals(
+                view.getStepDescriptionForTesting(),
+                PeekViewUiState.DEFAULT.getDescription(view.getContext()));
     }
 
     @Test

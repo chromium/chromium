@@ -51,7 +51,7 @@ public class ActorControlCoordinator
      * Constructs a new {@link ActorControlCoordinator}.
      *
      * @param context The {@link Context} used to inflate the layout.
-     * @param playPauseListener The {@link View.OnClickListener} for the status button.
+     * @param actorControlListener The {@link View.OnClickListener} for the status button.
      * @param closeListener The {@link View.OnClickListener} for the close button.
      * @param tabSupplier The {@link ObservableSupplier<Tab>} for the activity.
      * @param tabBottomSheetManager The {@link TabBottomSheetManager} for the tab bottom sheet.
@@ -60,7 +60,7 @@ public class ActorControlCoordinator
     // TODO(crbug.com/491895203): Add render test for peek view.
     public ActorControlCoordinator(
             Context context,
-            View.OnClickListener playPauseListener,
+            View.OnClickListener actorControlListener,
             View.OnClickListener closeListener,
             NullableObservableSupplier<Tab> tabSupplier,
             TabBottomSheetManager tabBottomSheetManager,
@@ -72,7 +72,7 @@ public class ActorControlCoordinator
                 new PropertyModel.Builder(ActorControlProperties.ALL_KEYS)
                         .with(ActorControlProperties.TASK_TITLE, "")
                         .with(ActorControlProperties.PEEK_VIEW_UI_STATE, PeekViewUiState.DEFAULT)
-                        .with(ActorControlProperties.ON_PLAY_PAUSE_CLICKED, playPauseListener)
+                        .with(ActorControlProperties.ON_ACTOR_CONTROL_CLICKED, actorControlListener)
                         .with(ActorControlProperties.ON_CLOSE_CLICKED, closeListener)
                         .build();
 

@@ -9,6 +9,8 @@ import android.util.AttributeSet;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import com.google.android.material.button.MaterialButton;
+
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.ui.widget.ChromeImageButton;
 
@@ -17,7 +19,7 @@ import org.chromium.ui.widget.ChromeImageButton;
 public class ActorControlView extends RelativeLayout {
     private TextView mTitleView;
     private TextView mDescriptionView;
-    private ChromeImageButton mStatusIcon;
+    private MaterialButton mActorControlButton;
     private ChromeImageButton mCloseIcon;
 
     public ActorControlView(Context context, AttributeSet attrs) {
@@ -29,7 +31,7 @@ public class ActorControlView extends RelativeLayout {
         super.onFinishInflate();
         mTitleView = findViewById(R.id.actor_control_title);
         mDescriptionView = findViewById(R.id.actor_control_description);
-        mStatusIcon = findViewById(R.id.actor_control_status_button);
+        mActorControlButton = findViewById(R.id.actor_control_button);
         mCloseIcon = findViewById(R.id.actor_control_close_button);
     }
 
@@ -52,12 +54,12 @@ public class ActorControlView extends RelativeLayout {
     }
 
     /**
-     * Sets the click listener for the status (play/pause) button.
+     * Sets the click listener for the actor control button.
      *
-     * @param listener The callback to be invoked when the status icon is clicked.
+     * @param listener The callback to be invoked when the actor control button is clicked.
      */
-    void setPlayPauseListener(OnClickListener listener) {
-        mStatusIcon.setOnClickListener(listener);
+    void setActorControlClickListener(OnClickListener listener) {
+        mActorControlButton.setOnClickListener(listener);
     }
 
     /**
@@ -70,11 +72,24 @@ public class ActorControlView extends RelativeLayout {
     }
 
     /**
-     * Sets the image resource for the status (play/pause) icon.
+     * Configures the actor control button for the given state.
      *
-     * @param resId The drawable resource ID to display.
+     * @param state The state of the peek view UI.
      */
-    void setStatusIconResource(int resId) {
-        mStatusIcon.setImageResource(resId);
+    void configurePeekViewForState(PeekViewUiState state) {
+        Context context = getContext();
+        setStepDescription(state.getDescription(context));
+        mActorControlButton.setVisibility(state.getButtonVisibility());
+        mActorControlButton.setText(state.getButtonText(context));
+        mActorControlButton.setIconResource(state.buttonIconResId);
+        mActorControlButton.setBackgroundTintList(state.getButtonBackgroundTint(context));
+        mActorControlButton.setCornerRadius(state.getButtonCornerRadius(context));
+        mActorControlButton.setIconTint(state.getIconTint(context));
+        int horizontalPadding = state.getButtonHorizontalPadding(context);
+        mActorControlButton.setPadding(horizontalPadding, 0, horizontalPadding, 0);
+    }
+
+    String getStepDescriptionForTesting() {
+        return mDescriptionView.getText().toString();
     }
 }
