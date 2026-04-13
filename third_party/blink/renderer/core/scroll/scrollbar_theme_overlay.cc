@@ -25,7 +25,10 @@
 
 #include "third_party/blink/renderer/core/scroll/scrollbar_theme_overlay.h"
 
+#include <algorithm>
+
 #include "third_party/blink/public/platform/web_theme_engine.h"
+#include "third_party/blink/renderer/core/paint/paint_info.h"
 #include "third_party/blink/renderer/core/scroll/scrollable_area.h"
 #include "third_party/blink/renderer/core/scroll/scrollbar.h"
 #include "third_party/blink/renderer/platform/graphics/graphics_context.h"
@@ -33,8 +36,6 @@
 #include "third_party/blink/renderer/platform/theme/web_theme_engine_helper.h"
 #include "third_party/blink/renderer/platform/wtf/math_extras.h"
 #include "ui/gfx/geometry/transform.h"
-
-#include <algorithm>
 
 namespace blink {
 
@@ -157,9 +158,10 @@ gfx::Rect ScrollbarThemeOverlay::ThumbRect(const Scrollbar& scrollbar) const {
   return rect;
 }
 
-void ScrollbarThemeOverlay::PaintThumb(GraphicsContext& context,
+void ScrollbarThemeOverlay::PaintThumb(const PaintInfo& paint_info,
                                        const Scrollbar& scrollbar,
                                        const gfx::Rect& rect) {
+  GraphicsContext& context = paint_info.context;
   if (DrawingRecorder::UseCachedDrawingIfPossible(
           context, scrollbar, DisplayItem::kScrollbarThumb)) {
     return;

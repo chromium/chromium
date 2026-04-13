@@ -35,9 +35,9 @@
 #include "third_party/blink/renderer/platform/wtf/casting.h"
 
 namespace blink {
+struct PaintInfo;
 
 class ComputedStyle;
-class GraphicsContext;
 class LayoutObject;
 class LayoutCustomScrollbarPart;
 
@@ -98,7 +98,7 @@ class CORE_EXPORT CustomScrollbar final : public Scrollbar {
   void InvalidateDisplayItemClientsOfScrollbarParts();
   void ClearPaintFlags();
 
-  void Paint(GraphicsContext&, const PhysicalOffset& paint_offset) const;
+  void Paint(const PaintInfo&, const PhysicalOffset& paint_offset) const;
 
   void Trace(Visitor*) const override;
 

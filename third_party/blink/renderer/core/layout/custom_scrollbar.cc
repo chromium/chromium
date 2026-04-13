@@ -34,6 +34,7 @@
 #include "third_party/blink/renderer/core/layout/layout_view.h"
 #include "third_party/blink/renderer/core/paint/custom_scrollbar_theme.h"
 #include "third_party/blink/renderer/core/paint/object_paint_invalidator.h"
+#include "third_party/blink/renderer/core/paint/paint_info.h"
 #include "third_party/blink/renderer/core/scroll/scroll_types.h"
 #include "third_party/blink/renderer/platform/graphics/graphics_context.h"
 
@@ -460,15 +461,15 @@ void CustomScrollbar::ClearPaintFlags() {
     part.value->ClearPaintFlags();
 }
 
-void CustomScrollbar::Paint(GraphicsContext& context,
+void CustomScrollbar::Paint(const PaintInfo& paint_info,
                             const PhysicalOffset& paint_offset) const {
   auto& theme = GetTheme();
   // TODO(crbug.com/40105990): We should not round paint_offset but should
   // consider subpixel accumulation when painting scrollbars.
   gfx::Vector2d offset = ToRoundedVector2d(paint_offset);
-  theme.PaintTrackAndButtons(context, *this, FrameRect() + offset);
+  theme.PaintTrackAndButtons(paint_info, *this, FrameRect() + offset);
   if (theme.HasThumb(*this)) {
-    theme.PaintThumb(context, *this, theme.ThumbRect(*this) + offset);
+    theme.PaintThumb(paint_info, *this, theme.ThumbRect(*this) + offset);
   }
 }
 

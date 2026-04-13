@@ -35,7 +35,7 @@ class ScrollableAreaPainter {
   bool PaintOverflowControls(const PaintInfo&,
                              const PhysicalOffset& paint_offset,
                              const FragmentData*);
-  void PaintResizer(GraphicsContext&,
+  void PaintResizer(const PaintInfo&,
                     const PhysicalOffset& paint_offset,
                     const CullRect&);
 
@@ -45,18 +45,18 @@ class ScrollableAreaPainter {
                                       const PhysicalOffset& paint_offset);
 
  private:
-  void PaintScrollbar(GraphicsContext&,
+  void PaintScrollbar(const PaintInfo&,
                       Scrollbar&,
                       const PhysicalOffset& paint_offset,
                       const CullRect&);
-  void PaintScrollCorner(GraphicsContext&,
+  void PaintScrollCorner(const PaintInfo&,
                          const PhysicalOffset& paint_offset,
                          const CullRect&);
 
   void DrawPlatformResizerImage(GraphicsContext&,
                                 const gfx::Rect& resizer_corner_rect);
 
-  void PaintNativeScrollbar(GraphicsContext& context,
+  void PaintNativeScrollbar(const PaintInfo&,
                             Scrollbar& scrollbar,
                             gfx::Rect visual_rect);
 

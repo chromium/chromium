@@ -136,10 +136,11 @@ gfx::Rect CustomScrollbarTheme::ConstrainTrackRectToTrackPieces(
 }
 
 void CustomScrollbarTheme::PaintScrollCorner(
-    GraphicsContext& context,
+    const PaintInfo& paint_info,
     const ScrollableArea&,
     const DisplayItemClient& display_item_client,
     const gfx::Rect& corner_rect) {
+  GraphicsContext& context = paint_info.context;
   if (DrawingRecorder::UseCachedDrawingIfPossible(context, display_item_client,
                                                   DisplayItem::kScrollCorner))
     return;
@@ -151,26 +152,27 @@ void CustomScrollbarTheme::PaintScrollCorner(
 }
 
 void CustomScrollbarTheme::PaintTrackBackgroundAndButtons(
-    GraphicsContext& context,
+    const PaintInfo& paint_info,
     const Scrollbar& scrollbar,
     const gfx::Rect& rect) {
-  PaintPart(context, scrollbar, rect, kScrollbarBGPart);
+  PaintPart(paint_info, scrollbar, rect, kScrollbarBGPart);
 
   if (HasButtons(scrollbar)) {
-    PaintButton(context, scrollbar, ButtonRect(scrollbar, kBackButtonStartPart),
+    PaintButton(paint_info, scrollbar,
+                ButtonRect(scrollbar, kBackButtonStartPart),
                 kBackButtonStartPart);
-    PaintButton(context, scrollbar, ButtonRect(scrollbar, kBackButtonEndPart),
-                kBackButtonEndPart);
-    PaintButton(context, scrollbar,
+    PaintButton(paint_info, scrollbar,
+                ButtonRect(scrollbar, kBackButtonEndPart), kBackButtonEndPart);
+    PaintButton(paint_info, scrollbar,
                 ButtonRect(scrollbar, kForwardButtonStartPart),
                 kForwardButtonStartPart);
-    PaintButton(context, scrollbar,
+    PaintButton(paint_info, scrollbar,
                 ButtonRect(scrollbar, kForwardButtonEndPart),
                 kForwardButtonEndPart);
   }
 
   gfx::Rect track_rect = TrackRect(scrollbar);
-  PaintPart(context, scrollbar, track_rect, kTrackBGPart);
+  PaintPart(paint_info, scrollbar, track_rect, kTrackBGPart);
 
   if (HasThumb(scrollbar)) {
     gfx::Rect start_track_rect;
@@ -178,38 +180,40 @@ void CustomScrollbarTheme::PaintTrackBackgroundAndButtons(
     gfx::Rect end_track_rect;
     SplitTrack(scrollbar, track_rect, start_track_rect, thumb_rect,
                end_track_rect);
-    PaintPart(context, scrollbar, start_track_rect, kBackTrackPart);
-    PaintPart(context, scrollbar, end_track_rect, kForwardTrackPart);
+    PaintPart(paint_info, scrollbar, start_track_rect, kBackTrackPart);
+    PaintPart(paint_info, scrollbar, end_track_rect, kForwardTrackPart);
   }
 }
 
-void CustomScrollbarTheme::PaintButton(GraphicsContext& context,
+void CustomScrollbarTheme::PaintButton(const PaintInfo& paint_info,
                                        const Scrollbar& scrollbar,
                                        const gfx::Rect& rect,
                                        ScrollbarPart part) {
-  PaintPart(context, scrollbar, rect, part);
+  PaintPart(paint_info, scrollbar, rect, part);
 }
 
-void CustomScrollbarTheme::PaintThumb(GraphicsContext& context,
+void CustomScrollbarTheme::PaintThumb(const PaintInfo& paint_info,
                                       const Scrollbar& scrollbar,
                                       const gfx::Rect& rect) {
-  PaintPart(context, scrollbar, rect, kThumbPart);
+  PaintPart(paint_info, scrollbar, rect, kThumbPart);
 }
 
-void CustomScrollbarTheme::PaintTickmarks(GraphicsContext& context,
+void CustomScrollbarTheme::PaintTickmarks(const PaintInfo& paint_info,
                                           const Scrollbar& scrollbar,
                                           const gfx::Rect& rect) {
-  GetTheme().PaintTickmarks(context, scrollbar, rect);
+  GetTheme().PaintTickmarks(paint_info, scrollbar, rect);
 }
 
 void CustomScrollbarTheme::PaintIntoRect(
     const LayoutCustomScrollbarPart& layout_custom_scrollbar_part,
-    GraphicsContext& graphics_context,
+    const PaintInfo& parent_paint_info,
     const PhysicalRect& rect) {
   PaintInfo paint_info(
-      graphics_context, CullRect(ToPixelSnappedRect(rect)),
+      parent_paint_info.context, CullRect(ToPixelSnappedRect(rect)),
       PaintPhase::kForeground,
-      layout_custom_scrollbar_part.ChildPaintBlockedByDisplayLock());
+      layout_custom_scrollbar_part.ChildPaintBlockedByDisplayLock(),
+      parent_paint_info.GetPaintFlags(),
+      parent_paint_info.GetSvgContextPaints());
 
   // LayoutBox-derived objects normally paint via BoxFragmentPainter, which
   // determines which FragmentData to use, but that won't work for
@@ -222,7 +226,7 @@ void CustomScrollbarTheme::PaintIntoRect(
       .PaintAllPhasesAtomically(paint_info);
 }
 
-void CustomScrollbarTheme::PaintPart(GraphicsContext& context,
+void CustomScrollbarTheme::PaintPart(const PaintInfo& paint_info,
                                      const Scrollbar& scrollbar,
                                      const gfx::Rect& rect,
                                      ScrollbarPart part) {
@@ -230,7 +234,7 @@ void CustomScrollbarTheme::PaintPart(GraphicsContext& context,
   const auto* part_layout_object = custom_scrollbar.GetPart(part);
   if (!part_layout_object)
     return;
-  PaintIntoRect(*part_layout_object, context, PhysicalRect(rect));
+  PaintIntoRect(*part_layout_object, paint_info, PhysicalRect(rect));
 }
 
 }  // namespace blink

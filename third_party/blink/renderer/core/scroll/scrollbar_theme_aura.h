@@ -37,6 +37,7 @@
 #include "third_party/blink/renderer/core/scroll/scrollbar_theme.h"
 
 namespace blink {
+struct PaintInfo;
 
 class CORE_EXPORT ScrollbarThemeAura : public ScrollbarTheme {
  public:
@@ -52,17 +53,17 @@ class CORE_EXPORT ScrollbarThemeAura : public ScrollbarTheme {
   gfx::Rect TrackRect(const Scrollbar&) const override;
   int MinimumThumbLength(const Scrollbar&) const override;
 
-  void PaintTrackBackgroundAndButtons(GraphicsContext& context,
+  void PaintTrackBackgroundAndButtons(const PaintInfo&,
                                       const Scrollbar&,
                                       const gfx::Rect&) override;
-  void PaintTrackBackground(GraphicsContext&,
+  void PaintTrackBackground(const PaintInfo&,
                             const Scrollbar&,
                             const gfx::Rect&) override;
-  void PaintButton(GraphicsContext&,
+  void PaintButton(const PaintInfo&,
                    const Scrollbar&,
                    const gfx::Rect&,
                    ScrollbarPart) override;
-  void PaintThumb(GraphicsContext&,
+  void PaintThumb(const PaintInfo&,
                   const Scrollbar&,
                   const gfx::Rect&) override;
   virtual WebThemeEngine::ScrollbarThumbExtraParams

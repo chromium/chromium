@@ -31,6 +31,7 @@
 #include "third_party/blink/renderer/core/scroll/scrollbar_theme.h"
 
 namespace blink {
+struct PaintInfo;
 
 // This scrollbar theme is used to get overlay scrollbar for platforms other
 // than Mac. Mac's overlay scrollbars are in ScrollbarThemeMac*.
@@ -66,7 +67,7 @@ class CORE_EXPORT ScrollbarThemeOverlay : public ScrollbarTheme {
   gfx::Rect TrackRect(const Scrollbar&) const override;
   gfx::Rect ThumbRect(const Scrollbar&) const override;
 
-  void PaintThumb(GraphicsContext&,
+  void PaintThumb(const PaintInfo&,
                   const Scrollbar&,
                   const gfx::Rect&) override;
 

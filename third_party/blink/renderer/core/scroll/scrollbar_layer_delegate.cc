@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/core/scroll/scrollbar_layer_delegate.h"
 
 #include "cc/paint/paint_canvas.h"
+#include "third_party/blink/renderer/core/paint/paint_info.h"
 #include "third_party/blink/renderer/core/scroll/scroll_types.h"
 #include "third_party/blink/renderer/core/scroll/scrollable_area.h"
 #include "third_party/blink/renderer/core/scroll/scrollbar.h"
@@ -208,7 +209,9 @@ void ScrollbarLayerDelegate::PaintThumb(cc::PaintCanvas& canvas,
   }
   auto& theme = scrollbar_->GetTheme();
   ScopedScrollbarPainter painter(canvas);
-  theme.PaintThumb(painter.Context(), *scrollbar_, rect);
+  PaintInfo paint_info(painter.Context(), CullRect(rect),
+                       PaintPhase::kForeground, false);
+  theme.PaintThumb(paint_info, *scrollbar_, rect);
   scrollbar_->ClearThumbNeedsRepaint();
 }
 
@@ -219,7 +222,9 @@ void ScrollbarLayerDelegate::PaintTrackAndButtons(cc::PaintCanvas& canvas,
   }
   auto& theme = scrollbar_->GetTheme();
   ScopedScrollbarPainter painter(canvas);
-  theme.PaintTrackAndButtons(painter.Context(), *scrollbar_, rect);
+  PaintInfo paint_info(painter.Context(), CullRect(rect),
+                       PaintPhase::kForeground, false);
+  theme.PaintTrackAndButtons(paint_info, *scrollbar_, rect);
   scrollbar_->ClearTrackAndButtonsNeedRepaint();
 }
 

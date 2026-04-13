@@ -11,6 +11,7 @@
 #include "third_party/blink/renderer/core/scroll/scrollbar_theme_aura.h"
 
 namespace blink {
+struct PaintInfo;
 
 // This scrollbar theme is only used for Fluent scrollbars.
 // Please see the visual spec and the design document for more details:
@@ -44,10 +45,10 @@ class CORE_EXPORT ScrollbarThemeFluent : public ScrollbarThemeAura {
   gfx::Rect ThumbRect(const Scrollbar&) const override;
   gfx::Size ButtonSize(const Scrollbar&) const override;
 
-  void PaintTrackBackground(GraphicsContext&,
+  void PaintTrackBackground(const PaintInfo&,
                             const Scrollbar&,
                             const gfx::Rect&) override;
-  void PaintButton(GraphicsContext& context,
+  void PaintButton(const PaintInfo&,
                    const Scrollbar& scrollbar,
                    const gfx::Rect& rect,
                    ScrollbarPart part) override;

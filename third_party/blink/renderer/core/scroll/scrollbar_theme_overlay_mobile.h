@@ -11,12 +11,13 @@
 #include "third_party/blink/renderer/platform/graphics/color.h"
 
 namespace blink {
+struct PaintInfo;
 
 class CORE_EXPORT ScrollbarThemeOverlayMobile : public ScrollbarThemeOverlay {
  public:
   static ScrollbarThemeOverlayMobile& GetInstance();
 
-  void PaintThumb(GraphicsContext&,
+  void PaintThumb(const PaintInfo&,
                   const Scrollbar&,
                   const gfx::Rect&) override;
   bool AllowsHitTest() const override;

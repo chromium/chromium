@@ -37,8 +37,8 @@
 #include "ui/gfx/geometry/rect.h"
 
 namespace blink {
+struct PaintInfo;
 
-class GraphicsContext;
 class ScrollableArea;
 class WebMouseEvent;
 class WebViewImpl;
@@ -104,11 +104,11 @@ class CORE_EXPORT ScrollbarTheme {
     return kAllParts;
   }
 
-  virtual void PaintScrollCorner(GraphicsContext&,
+  virtual void PaintScrollCorner(const PaintInfo&,
                                  const ScrollableArea&,
                                  const DisplayItemClient&,
                                  const gfx::Rect& corner_rect);
-  virtual void PaintTickmarks(GraphicsContext&,
+  virtual void PaintTickmarks(const PaintInfo&,
                               const Scrollbar&,
                               const gfx::Rect&);
   virtual SkColor4f ThumbColor(const Scrollbar&) const { NOTREACHED(); }
@@ -172,12 +172,12 @@ class CORE_EXPORT ScrollbarTheme {
                           gfx::Rect& thumb,
                           gfx::Rect& end_track) const;
 
-  virtual void PaintThumb(GraphicsContext&,
+  virtual void PaintThumb(const PaintInfo&,
                           const Scrollbar&,
                           const gfx::Rect&) {}
 
   // Paints the track (including tickmarks if present) and the buttons.
-  void PaintTrackAndButtons(GraphicsContext&,
+  void PaintTrackAndButtons(const PaintInfo&,
                             const Scrollbar&,
                             const gfx::Rect&);
 
@@ -249,15 +249,15 @@ class CORE_EXPORT ScrollbarTheme {
 
   virtual int TickmarkBorderWidth() const { return 0; }
   // Paints the background of the track, not including tickmarks.
-  virtual void PaintTrackBackground(GraphicsContext&,
+  virtual void PaintTrackBackground(const PaintInfo&,
                                     const Scrollbar&,
                                     const gfx::Rect&) {}
-  virtual void PaintButton(GraphicsContext&,
+  virtual void PaintButton(const PaintInfo&,
                            const Scrollbar&,
                            const gfx::Rect&,
                            ScrollbarPart) {}
 
-  virtual void PaintTrackBackgroundAndButtons(GraphicsContext& context,
+  virtual void PaintTrackBackgroundAndButtons(const PaintInfo&,
                                               const Scrollbar&,
                                               const gfx::Rect&);
 
