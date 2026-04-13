@@ -25,9 +25,7 @@
 #include "chrome/browser/metrics/testing/metrics_reporting_pref_helper.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/profiles/profile_test_util.h"
-#include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/sync/sync_service_factory.h"
-#include "chrome/browser/sync/test/integration/secondary_account_helper.h"
 #include "chrome/browser/sync/test/integration/sync_service_impl_harness.h"
 #include "chrome/browser/sync/test/integration/sync_test.h"
 #include "chrome/browser/unified_consent/unified_consent_service_factory.h"
@@ -291,28 +289,6 @@ class UkmBrowserTest : public UkmBrowserTestBase {
 #if BUILDFLAG(IS_ANDROID)
   raw_ptr<TabModel> initial_tab_model_;
 #endif  // !BUILDFLAG(IS_ANDROID)
-};
-
-class UkmBrowserTestWithSyncTransport : public UkmBrowserTestBase {
- public:
-  UkmBrowserTestWithSyncTransport() = default;
-
-  UkmBrowserTestWithSyncTransport(const UkmBrowserTestWithSyncTransport&) =
-      delete;
-  UkmBrowserTestWithSyncTransport& operator=(
-      const UkmBrowserTestWithSyncTransport&) = delete;
-
-  void SetUpInProcessBrowserTestFixture() override {
-    // This is required to support (fake) secondary-account-signin (based on
-    // cookies) in tests. Without this, the real GaiaCookieManagerService would
-    // try talking to Google servers which of course wouldn't work in tests.
-    test_signin_client_subscription_ =
-        secondary_account_helper::SetUpSigninClient(&test_url_loader_factory_);
-    UkmBrowserTestBase::SetUpInProcessBrowserTestFixture();
-  }
-
- private:
-  base::CallbackListSubscription test_signin_client_subscription_;
 };
 
 // This tests if UKM service is enabled/disabled appropriately based on an
@@ -1177,8 +1153,7 @@ IN_PROC_BROWSER_TEST_F(UkmBrowserTest, MAYBE_HistoryDeleteCheck) {
 // On ChromeOS, the test profile starts with a primary account already set, so
 // this test doesn't apply.
 #if !BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(IS_ANDROID)
-IN_PROC_BROWSER_TEST_F(UkmBrowserTestWithSyncTransport,
-                       NotEnabledForSecondaryAccountSync) {
+IN_PROC_BROWSER_TEST_F(UkmBrowserTest, NotEnabledForNonSyncingAccountSync) {
   ukm::UkmTestHelper ukm_test_helper(GetUkmService());
   test::MetricsConsentOverride metrics_consent(true);
 
@@ -1191,8 +1166,7 @@ IN_PROC_BROWSER_TEST_F(UkmBrowserTestWithSyncTransport,
   syncer::SyncService* sync_service =
       SyncServiceFactory::GetForProfile(profile);
 
-  secondary_account_helper::SignInUnconsentedAccount(
-      profile, &test_url_loader_factory_, "secondary_user@email.com");
+  ASSERT_TRUE(harness->SignInPrimaryAccount());
   ASSERT_NE(syncer::SyncService::TransportState::DISABLED,
             sync_service->GetTransportState());
   ASSERT_TRUE(harness->AwaitSyncTransportActive());

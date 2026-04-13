@@ -443,8 +443,6 @@ source_set("sync_integration_test_support") {
     "reading_list_helper.h",
     "saved_tab_groups_helper.cc",
     "saved_tab_groups_helper.h",
-    "secondary_account_helper.cc",
-    "secondary_account_helper.h",
     "send_tab_to_self_helper.cc",
     "send_tab_to_self_helper.h",
     "session_hierarchy_match_checker.cc",

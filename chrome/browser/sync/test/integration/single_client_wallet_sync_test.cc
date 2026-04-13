@@ -5,13 +5,12 @@
 #include "base/command_line.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/test_future.h"
 #include "build/build_config.h"
-#include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/sync/test/integration/autofill_helper.h"
 #include "chrome/browser/sync/test/integration/bookmarks_helper.h"
-#include "chrome/browser/sync/test/integration/secondary_account_helper.h"
 #include "chrome/browser/sync/test/integration/single_client_status_change_checker.h"
 #include "chrome/browser/sync/test/integration/sync_integration_test_util.h"
 #include "chrome/browser/sync/test/integration/sync_service_impl_harness.h"
@@ -32,7 +31,6 @@
 #include "components/autofill/core/common/autofill_switches.h"
 #include "components/prefs/pref_service.h"
 #include "components/signin/public/base/signin_switches.h"
-#include "components/signin/public/identity_manager/identity_test_utils.h"
 #include "components/sync/base/data_type.h"
 #include "components/sync/base/features.h"
 #include "components/sync/protocol/autofill_specifics.pb.h"
@@ -888,38 +886,7 @@ IN_PROC_BROWSER_TEST_P(SingleClientWalletSyncTest,
 // ChromeOS doesn't support changes to the primary account after startup, so
 // these tests don't apply.
 #if !BUILDFLAG(IS_CHROMEOS)
-class SingleClientWalletSecondaryAccountSyncTest
-    : public SingleClientWalletSyncTest {
- public:
-  SingleClientWalletSecondaryAccountSyncTest() = default;
-
-  SingleClientWalletSecondaryAccountSyncTest(
-      const SingleClientWalletSecondaryAccountSyncTest&) = delete;
-  SingleClientWalletSecondaryAccountSyncTest& operator=(
-      const SingleClientWalletSecondaryAccountSyncTest&) = delete;
-
-  ~SingleClientWalletSecondaryAccountSyncTest() override = default;
-
-  void SetUpInProcessBrowserTestFixture() override {
-    SingleClientWalletSyncTest::SetUpInProcessBrowserTestFixture();
-
-    test_signin_client_subscription_ =
-        secondary_account_helper::SetUpSigninClient(&test_url_loader_factory_);
-  }
-
-  Profile* profile() { return GetProfile(0); }
-
- private:
-  base::CallbackListSubscription test_signin_client_subscription_;
-};
-
-INSTANTIATE_TEST_SUITE_P(
-    /* no prefix */,
-    SingleClientWalletSecondaryAccountSyncTest,
-    GetSyncTestModes(),
-    testing::PrintToStringParamName());
-
-IN_PROC_BROWSER_TEST_P(SingleClientWalletSecondaryAccountSyncTest,
+IN_PROC_BROWSER_TEST_P(SingleClientWalletSyncTest,
                        SwitchesFromAccountToProfileStorageOnSyncOptIn) {
   ASSERT_TRUE(SetupClients());
 
@@ -927,9 +894,9 @@ IN_PROC_BROWSER_TEST_P(SingleClientWalletSecondaryAccountSyncTest,
                                   CreateDefaultSyncPaymentsCustomerData(),
                                   CreateDefaultSyncCreditCardCloudTokenData()});
 
-  // Set up Sync in transport mode for an unconsented account.
-  secondary_account_helper::SignInUnconsentedAccount(
-      profile(), &test_url_loader_factory_, "user@email.com");
+  // Set up Sync in transport mode.
+  ASSERT_TRUE(GetClient(0)->SignInPrimaryAccount());
+
   ASSERT_TRUE(GetClient(0)->AwaitSyncTransportActive());
   ASSERT_FALSE(GetSyncService(0)->IsSyncFeatureEnabled());
   ASSERT_FALSE(GetSyncService(0)->IsSyncFeatureActive());
@@ -958,15 +925,8 @@ IN_PROC_BROWSER_TEST_P(SingleClientWalletSecondaryAccountSyncTest,
   EXPECT_EQ(1U, GetCreditCardCloudTokenData(account_data).size());
   EXPECT_EQ(0U, GetCreditCardCloudTokenData(profile_data).size());
 
-  // Simulate the user opting in to full Sync, and set first-time setup to
-  // complete.
-  secondary_account_helper::GrantSyncConsent(profile(), "user@email.com");
-#if !BUILDFLAG(IS_CHROMEOS)
-  GetSyncService(0)->GetUserSettings()->SetInitialSyncFeatureSetupComplete();
-#endif  // !BUILDFLAG(IS_CHROMEOS)
-
-  // Wait for Sync to get reconfigured into feature mode.
-  ASSERT_TRUE(GetClient(0)->AwaitSyncTransportActive());
+  // Simulate the user opting in to full Sync.
+  ASSERT_TRUE(GetClient(0)->SetupSync());
   ASSERT_TRUE(GetSyncService(0)->IsSyncFeatureEnabled());
   ASSERT_TRUE(GetSyncService(0)->IsSyncFeatureActive());
   ASSERT_TRUE(GetSyncService(0)->GetActiveDataTypes().Has(
@@ -988,16 +948,16 @@ IN_PROC_BROWSER_TEST_P(SingleClientWalletSecondaryAccountSyncTest,
 }
 
 IN_PROC_BROWSER_TEST_P(
-    SingleClientWalletSecondaryAccountSyncTest,
+    SingleClientWalletSyncTest,
     SwitchesFromAccountToProfileStorageOnSyncOptInWithAdvancedSetup) {
   ASSERT_TRUE(SetupClients());
 
   GetFakeServer()->SetWalletData({CreateDefaultSyncWalletCard(),
                                   CreateDefaultSyncCreditCardCloudTokenData()});
 
-  // Set up Sync in transport mode for an unconsented account.
-  secondary_account_helper::SignInUnconsentedAccount(
-      profile(), &test_url_loader_factory_, "user@email.com");
+  // Set up Sync in transport mode.
+  ASSERT_TRUE(GetClient(0)->SignInPrimaryAccount());
+
   ASSERT_TRUE(GetClient(0)->AwaitSyncTransportActive());
   ASSERT_FALSE(GetSyncService(0)->IsSyncFeatureEnabled());
   ASSERT_FALSE(GetSyncService(0)->IsSyncFeatureActive());
@@ -1025,27 +985,14 @@ IN_PROC_BROWSER_TEST_P(
   EXPECT_EQ(0U, GetCreditCardCloudTokenData(profile_data).size());
 
   // Simulate the user opting in to full Sync.
-  secondary_account_helper::GrantSyncConsent(profile(), "user@email.com");
+  ASSERT_TRUE(GetClient(0)->SetupSyncWithCustomSettings(
+      base::BindLambdaForTesting([](syncer::SyncUserSettings* user_settings) {
+        user_settings->SetSelectedTypes(
+            /*sync_everything=*/false, {syncer::UserSelectableType::kPayments});
+        user_settings->SetInitialSyncFeatureSetupComplete();
+      })));
 
-  // Now start actually configuring Sync.
-  std::unique_ptr<syncer::SyncSetupInProgressHandle> setup_handle =
-      GetSyncService(0)->GetSetupInProgressHandle();
-
-  GetSyncService(0)->GetUserSettings()->SetSelectedTypes(
-      /*sync_everything=*/false, {syncer::UserSelectableType::kPayments});
-
-  // Once the user finishes the setup, the newly selected data types will
-  // actually get configured.
-  setup_handle.reset();
-  ASSERT_EQ(syncer::SyncService::TransportState::CONFIGURING,
-            GetSyncService(0)->GetTransportState());
-
-#if !BUILDFLAG(IS_CHROMEOS)
-  GetSyncService(0)->GetUserSettings()->SetInitialSyncFeatureSetupComplete();
-#endif  // !BUILDFLAG(IS_CHROMEOS)
-
-  // Wait for Sync to get reconfigured into feature mode.
-  ASSERT_TRUE(GetClient(0)->AwaitSyncTransportActive());
+  // Verify Sync was reconfigured into feature mode.
   ASSERT_TRUE(GetSyncService(0)->IsSyncFeatureEnabled());
   ASSERT_TRUE(GetSyncService(0)->IsSyncFeatureActive());
   ASSERT_TRUE(GetSyncService(0)->GetActiveDataTypes().Has(

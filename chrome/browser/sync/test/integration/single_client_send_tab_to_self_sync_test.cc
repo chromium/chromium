@@ -18,7 +18,6 @@
 #include "chrome/browser/send_tab_to_self/send_tab_to_self_scroll_observer.h"
 #include "chrome/browser/send_tab_to_self/send_tab_to_self_util.h"
 #include "chrome/browser/sync/send_tab_to_self_sync_service_factory.h"
-#include "chrome/browser/sync/test/integration/secondary_account_helper.h"
 #include "chrome/browser/sync/test/integration/send_tab_to_self_helper.h"
 #include "chrome/browser/sync/test/integration/sync_integration_test_util.h"
 #include "chrome/browser/sync/test/integration/sync_service_impl_harness.h"
@@ -95,15 +94,8 @@ class SingleClientSendTabToSelfSyncTest
     return GetParam();
   }
 
-  void SetUpInProcessBrowserTestFixture() override {
-    SyncTest::SetUpInProcessBrowserTestFixture();
-    test_signin_client_subscription_ =
-        secondary_account_helper::SetUpSigninClient(&test_url_loader_factory_);
-  }
-
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
-  base::CallbackListSubscription test_signin_client_subscription_;
 };
 
 INSTANTIATE_TEST_SUITE_P(,
@@ -362,8 +354,7 @@ IN_PROC_BROWSER_TEST_P(SingleClientSendTabToSelfSyncTest,
   const std::string kTargetDeviceSyncCacheGuid("target");
 
   ASSERT_TRUE(SetupClients());
-  secondary_account_helper::SignInUnconsentedAccount(
-      GetProfile(0), &test_url_loader_factory_, "user@gmail.com");
+  ASSERT_TRUE(GetClient(0)->SignInPrimaryAccount());
   ASSERT_TRUE(GetClient(0)->AwaitSyncTransportActive());
 
   send_tab_to_self::SendTabToSelfModel* model =
@@ -374,7 +365,7 @@ IN_PROC_BROWSER_TEST_P(SingleClientSendTabToSelfSyncTest,
                               send_tab_to_self::PageContext(),
                               send_tab_to_self::NavigationHistory()));
 
-  secondary_account_helper::SignOut(GetProfile(0), &test_url_loader_factory_);
+  GetClient(0)->SignOutPrimaryAccount();
 
   EXPECT_TRUE(send_tab_to_self_helper::SendTabToSelfUrlDeletedChecker(
                   SendTabToSelfSyncServiceFactory::GetForProfile(GetProfile(0)),

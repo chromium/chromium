@@ -21,7 +21,6 @@
 #include "chrome/browser/autofill/personal_data_manager_factory.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/sync/sync_service_factory.h"
-#include "chrome/browser/sync/test/integration/secondary_account_helper.h"
 #include "chrome/browser/sync/test/integration/sync_service_impl_harness.h"
 #include "chrome/browser/sync/test/integration/sync_test.h"
 #include "chrome/browser/ui/actions/chrome_action_id.h"
@@ -214,6 +213,20 @@ class SaveCardBubbleViewsFullFormBrowserTest
         *this,
         {AutofillManagerEvent::kFormsSeen}};
   };
+
+  // Sets up Chrome with Sync-the-transport mode enabled, with the Wallet
+  // datatype as enabled type. Signing in (without granting sync consent or
+  // explicitly setting up Sync) should trigger starting the Sync machinery in
+  // standalone transport mode.
+  void SignIn() {
+    ASSERT_TRUE(GetClient(0)->SignInPrimaryAccount());
+    ASSERT_NE(syncer::SyncService::TransportState::DISABLED,
+              GetSyncService(0)->GetTransportState());
+
+    ASSERT_TRUE(GetClient(0)->AwaitSyncTransportActive());
+    ASSERT_EQ(syncer::SyncService::TransportState::ACTIVE,
+              GetSyncService(0)->GetTransportState());
+  }
 
   // Various events that can be waited on by the DialogEventWaiter.
   enum DialogEvent : int {
@@ -1052,13 +1065,14 @@ IN_PROC_BROWSER_TEST_P(SaveCardBubbleViewsFullFormBrowserTest,
   EXPECT_EQ(FindViewInBubbleById(DialogViewId::CANCEL_BUTTON), nullptr);
 }
 
+// Sets up Chrome with the AutofillUpstream feature flag enabled.
 class SaveCardBubbleViewsFullFormBrowserTestWithAutofillUpstream
     : public SaveCardBubbleViewsFullFormBrowserTest {
  public:
   SaveCardBubbleViewsFullFormBrowserTestWithAutofillUpstream() = default;
 
  private:
-  base::test::ScopedFeatureList feature_list_;
+  base::test::ScopedFeatureList feature_list_{features::kAutofillUpstream};
 };
 
 IN_PROC_BROWSER_TEST_P(SaveCardBubbleViewsFullFormBrowserTest,
@@ -1210,56 +1224,12 @@ IN_PROC_BROWSER_TEST_P(
       autofill_metrics::LegacySaveCardPromptResult::kAccepted, 1);
 }
 
-// On Chrome OS, the test profile starts with a primary account already set, so
-// sync-the-transport tests don't apply.
-#if !BUILDFLAG(IS_CHROMEOS)
-
-// Sets up Chrome with Sync-the-transport mode enabled, with the Wallet datatype
-// as enabled type.
-class SaveCardBubbleViewsSyncTransportFullFormBrowserTest
-    : public SaveCardBubbleViewsFullFormBrowserTest {
- protected:
-  SaveCardBubbleViewsSyncTransportFullFormBrowserTest() {
-    feature_list_.InitAndEnableFeature(features::kAutofillUpstream);
-  }
-
- public:
-  SaveCardBubbleViewsSyncTransportFullFormBrowserTest(
-      const SaveCardBubbleViewsSyncTransportFullFormBrowserTest&) = delete;
-  SaveCardBubbleViewsSyncTransportFullFormBrowserTest& operator=(
-      const SaveCardBubbleViewsSyncTransportFullFormBrowserTest&) = delete;
-
- protected:
-  void SetUpInProcessBrowserTestFixture() override {
-    test_signin_client_subscription_ =
-        secondary_account_helper::SetUpSigninClient(test_url_loader_factory());
-
-    SaveCardBubbleViewsFullFormBrowserTest::SetUpInProcessBrowserTestFixture();
-  }
-
-  void SetUpForSyncTransportModeTest() {
-    // Signing in (without granting sync consent or explicitly setting up Sync)
-    // should trigger starting the Sync machinery in standalone transport mode.
-    secondary_account_helper::SignInUnconsentedAccount(
-        GetProfile(0), test_url_loader_factory(), "user1@gmail.com");
-    ASSERT_NE(syncer::SyncService::TransportState::DISABLED,
-              GetSyncService(0)->GetTransportState());
-
-    ASSERT_TRUE(GetClient(0)->AwaitSyncTransportActive());
-    ASSERT_EQ(syncer::SyncService::TransportState::ACTIVE,
-              GetSyncService(0)->GetTransportState());
-  }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
-  base::CallbackListSubscription test_signin_client_subscription_;
-};
-
 // Tests the implicit sync state. Ensures that the (i) info icon appears for
 // upload save offers.
-IN_PROC_BROWSER_TEST_P(SaveCardBubbleViewsSyncTransportFullFormBrowserTest,
-                       Upload_TransportMode_InfoTextIconExists) {
-  SetUpForSyncTransportModeTest();
+IN_PROC_BROWSER_TEST_P(
+    SaveCardBubbleViewsFullFormBrowserTestWithAutofillUpstream,
+    Upload_TransportMode_InfoTextIconExists) {
+  SignIn();
   FillForm();
   SubmitFormAndWaitForCardUploadSaveBubble();
 
@@ -1270,9 +1240,12 @@ IN_PROC_BROWSER_TEST_P(SaveCardBubbleViewsSyncTransportFullFormBrowserTest,
 
 // Tests the implicit sync state. Ensures that the (i) info icon does not appear
 // for local save offers.
-IN_PROC_BROWSER_TEST_P(SaveCardBubbleViewsSyncTransportFullFormBrowserTest,
-                       Local_TransportMode_InfoTextIconDoesNotExist) {
-  SetUpForSyncTransportModeTest();
+IN_PROC_BROWSER_TEST_P(
+    SaveCardBubbleViewsFullFormBrowserTestWithAutofillUpstream,
+    Local_TransportMode_InfoTextIconDoesNotExist) {
+  SignIn();
+  HideAccountNameEmailProfile();
+
   FillForm();
 
   // Declining upload save will fall back to local save.
@@ -1298,21 +1271,13 @@ IN_PROC_BROWSER_TEST_P(SaveCardBubbleViewsSyncTransportFullFormBrowserTest,
 // Ensures that if cardholder name is explicitly requested, it is prefilled with
 // the name from the user's Google Account.
 IN_PROC_BROWSER_TEST_P(
-    SaveCardBubbleViewsSyncTransportFullFormBrowserTest,
+    SaveCardBubbleViewsFullFormBrowserTestWithAutofillUpstream,
     Upload_TransportMode_RequestedCardholderNameTextfieldIsPrefilledWithFocusName) {
   // Signing in (without granting sync consent or explicitly setting up Sync)
   // should trigger starting the Sync machinery in standalone transport mode.
-  secondary_account_helper::SignInUnconsentedAccount(
-      GetProfile(0), test_url_loader_factory(), "user1@gmail.com");
+  SignIn();
   SetAccountFullName("John Smith");
   HideAccountNameEmailProfile();
-
-  ASSERT_NE(syncer::SyncService::TransportState::DISABLED,
-            GetSyncService(0)->GetTransportState());
-
-  ASSERT_TRUE(GetClient(0)->AwaitSyncTransportActive());
-  ASSERT_EQ(syncer::SyncService::TransportState::ACTIVE,
-            GetSyncService(0)->GetTransportState());
 
   FillFormWithoutName();
   SubmitFormAndWaitForCardUploadSaveBubble();
@@ -1328,9 +1293,10 @@ IN_PROC_BROWSER_TEST_P(
 // Tests the upload save bubble. Ensures that clicking the "Save" button
 // successfully accepts the bubble and sends an UploadCardRequest RPC to
 // Google Payments.
-IN_PROC_BROWSER_TEST_P(SaveCardBubbleViewsSyncTransportFullFormBrowserTest,
-                       Upload_TransportMode_ClickingSaveAcceptsBubble) {
-  SetUpForSyncTransportModeTest();
+IN_PROC_BROWSER_TEST_P(
+    SaveCardBubbleViewsFullFormBrowserTestWithAutofillUpstream,
+    Upload_TransportMode_ClickingSaveAcceptsBubble) {
+  SignIn();
   FillForm();
   SubmitFormAndWaitForCardUploadSaveBubble();
 
@@ -1346,8 +1312,6 @@ IN_PROC_BROWSER_TEST_P(SaveCardBubbleViewsSyncTransportFullFormBrowserTest,
       "Autofill.SaveCreditCardPromptResult.Upload.FirstShow",
       autofill_metrics::LegacySaveCardPromptResult::kAccepted, 1);
 }
-
-#endif  // !BUILDFLAG(IS_CHROMEOS)
 
 // Tests the fully-syncing state. Ensures that the Butter (i) info icon does not
 // appear for fully-syncing users.
@@ -2632,26 +2596,6 @@ INSTANTIATE_TEST_SUITE_P(
                                                       : "OldPageAction",
       });
     });
-
-#if !BUILDFLAG(IS_CHROMEOS)
-INSTANTIATE_TEST_SUITE_P(
-    ,
-    SaveCardBubbleViewsSyncTransportFullFormBrowserTest,
-    ::testing::ConvertGenerator(::testing::Bool(),
-                                [](bool migration_enabled) {
-                                  return SaveCardBubbleViewsBrowserTestParams{
-                                      .is_page_action_migration_enabled =
-                                          migration_enabled,
-                                  };
-                                }),
-    [](const ::testing::TestParamInfo<
-        SaveCardBubbleViewsFullFormBrowserTestSettings::ParamType>& info) {
-      return base::StrCat({
-          info.param.is_page_action_migration_enabled ? "NewPageAction"
-                                                      : "OldPageAction",
-      });
-    });
-#endif  // !BUILDFLAG(IS_CHROMEOS)
 
 INSTANTIATE_TEST_SUITE_P(
     ,

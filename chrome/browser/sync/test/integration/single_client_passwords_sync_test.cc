@@ -9,7 +9,6 @@
 #include "chrome/browser/sync/test/integration/committed_all_nudged_changes_checker.h"
 #include "chrome/browser/sync/test/integration/encryption_helper.h"
 #include "chrome/browser/sync/test/integration/passwords_helper.h"
-#include "chrome/browser/sync/test/integration/secondary_account_helper.h"
 #include "chrome/browser/sync/test/integration/sync_integration_test_util.h"
 #include "chrome/browser/sync/test/integration/sync_service_impl_harness.h"
 #include "chrome/browser/sync/test/integration/sync_test.h"
@@ -416,6 +415,8 @@ IN_PROC_BROWSER_TEST_F(SingleClientPasswordsWithAccountStorageSyncTest,
 
 // The unconsented primary account isn't supported on ChromeOS.
 #if !BUILDFLAG(IS_CHROMEOS)
+// This test verifies that account storage is used when an account is signed in
+// but Sync-the-feature is not enabled.
 IN_PROC_BROWSER_TEST_F(SingleClientPasswordsWithAccountStorageSyncTest,
                        StoresDataForSecondaryAccountInAccountDB) {
   AddTestPasswordToFakeServer();
@@ -477,7 +478,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientPasswordsWithAccountStorageSyncTest,
   ASSERT_EQ(passwords_helper::GetAllLogins(account_store).size(), 1u);
 
   // Sign out again.
-  secondary_account_helper::SignOut(GetProfile(0), &test_url_loader_factory_);
+  GetClient(0)->SignOutPrimaryAccount();
 
   // Make sure the password is gone from the store.
   ASSERT_EQ(passwords_helper::GetAllLogins(account_store).size(), 0u);
@@ -497,11 +498,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientPasswordsWithAccountStorageSyncTest,
   ASSERT_EQ(passwords_helper::GetAllLogins(account_store).size(), 1u);
 
   // Turn on Sync-the-feature.
-  secondary_account_helper::GrantSyncConsent(
-      GetProfile(0),
-      GetClient(0)->GetEmailForAccount(SyncTestAccount::kDefaultAccount));
-  GetSyncService(0)->GetUserSettings()->SetInitialSyncFeatureSetupComplete();
-  ASSERT_TRUE(GetClient(0)->AwaitSyncTransportActive());
+  ASSERT_TRUE(GetClient(0)->SetupSync());
   ASSERT_TRUE(GetSyncService(0)->IsSyncFeatureEnabled());
 
   // Make sure the password is now in the profile store, but *not* in the
