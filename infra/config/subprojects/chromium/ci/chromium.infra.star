@@ -408,41 +408,23 @@ ci.builder(
     notifies = ["chromium-android-device-flasher"],
     properties = {
         "flash_criteria": [
-            # Used by ci/Android Release (Nexus 5X)
+            # Used by ci/android-14-arm64-rel
             # This is mirrored by the CQ builder android-arm64-rel
             {
                 "pool": "chromium.tests",
-                "device_type": "bullhead",
-                "device_os": "N2G48C",
+                "device_type": "panther",
+                "device_os": "AP2A.240705.004",
                 "max_uid_threshold": 18000,
+                "min_disk_free_threshold": 10,
             },
-            {
-                "pool": "chromium.tests",
-                "device_type": "walleye",
-                "device_os": "OPM4.171019.021.P2",
-                "max_uid_threshold": 18000,
-            },
-            # Used by ci/android-pie-arm64-rel
+            # Used by ci/Android Release (Pixel 2)
             # This is mirrored by the CQ builder android-arm64-rel
-            {
-                "pool": "chromium.tests",
-                "device_type": "walleye",
-                "device_os": "PQ3A.190801.002",
-                "max_uid_threshold": 18000,
-            },
-            # Used by ci/android-pie-arm64-rel
-            # This is mirrored by the CQ builder android-arm64-rel
-            {
-                "pool": "chromium.tests",
-                "device_type": "sailfish",
-                "device_os": "PQ3A.190801.002",
-                "max_uid_threshold": 18000,
-            },
             {
                 "pool": "chromium.tests",
                 "device_type": "walleye",
                 "device_os": "QQ1A.191205.008",
                 "max_uid_threshold": 18000,
+                "min_disk_free_threshold": 10,
             },
             # Used by GPU team
             {
@@ -450,6 +432,7 @@ ci.builder(
                 "device_type": "oriole",
                 "device_os": "TP1A.220624.021",
                 "max_uid_threshold": 18000,
+                "min_disk_free_threshold": 10,
             },
         ],
     },
