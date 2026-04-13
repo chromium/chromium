@@ -50,6 +50,7 @@ struct ResolvedDecoration {
 
  public:
   TextDecorationLine lines = TextDecorationLine::kNone;
+  float resolved_thickness = 0.f;
   bool has_underline = false;
   bool has_overline = false;
 
@@ -109,7 +110,8 @@ class CORE_EXPORT TextDecorationInfo {
   // Creates a DecorationGeometry for one of the text decoration lines: over,
   // under, line-through, or spelling/grammar error. It's necessary to paint
   // or compute bounds for a line.
-  DecorationGeometry ComputeLineData(TextDecorationLine line,
+  DecorationGeometry ComputeLineData(const ResolvedDecoration& decoration,
+                                     TextDecorationLine line,
                                      float line_offset) const;
   DecorationGeometry ComputeUnderlineLineData(
       const ResolvedDecoration& decoration,
@@ -159,7 +161,6 @@ class CORE_EXPORT TextDecorationInfo {
   ResolvedUnderlinePosition OriginalUnderlinePosition() const {
     return original_underline_position_;
   }
-  float ResolvedThickness() const { return resolved_thickness_; }
 
   // The |ComputedStyle| of the target text/box to paint decorations for.
   const ComputedStyle& target_style_;
@@ -193,7 +194,6 @@ class CORE_EXPORT TextDecorationInfo {
   // Cached properties for the current |decoration_index_|.
   float ascent_ = 0.f;
   float computed_font_size_ = 0.f;
-  float resolved_thickness_ = 0.f;
 
   wtf_size_t decoration_index_ = 0;
 

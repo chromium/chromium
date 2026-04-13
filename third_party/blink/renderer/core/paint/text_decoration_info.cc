@@ -270,14 +270,16 @@ const ResolvedDecoration TextDecorationInfo::UpdateForDecorationIndex() {
     }
   }
 
-  resolved_thickness_ = ComputeThickness(decoration);
+  decoration.resolved_thickness = ComputeThickness(decoration);
   return decoration;
 }
 
 DecorationGeometry TextDecorationInfo::ComputeLineData(
+    const ResolvedDecoration& decoration,
     TextDecorationLine line,
     float line_offset) const {
-  const float double_offset_from_thickness = ResolvedThickness() + 1.0f;
+  const float double_offset_from_thickness =
+      decoration.resolved_thickness + 1.0f;
   float double_offset;
   float wavy_offset;
   switch (line) {
@@ -335,7 +337,9 @@ DecorationGeometry TextDecorationInfo::ComputeLineData(
   const gfx::PointF start_point =
       gfx::PointF(local_origin_) + gfx::Vector2dF(0, line_offset);
   DecorationGeometry geometry = DecorationGeometry::Make(
-      style, gfx::RectF(start_point, gfx::SizeF(width_, ResolvedThickness())),
+      style,
+      gfx::RectF(start_point,
+                 gfx::SizeF(width_, decoration.resolved_thickness)),
       double_offset, wavy_offset, base::OptionalToPtr(spelling_wave));
   geometry.antialias = antialias;
   return geometry;
@@ -368,12 +372,12 @@ DecorationGeometry TextDecorationInfo::ComputeUnderlineLineData(
   }
   float paint_underline_offset = decoration_offset.ComputeUnderlineOffset(
       FlippedUnderlinePosition(), ComputedFontSize(), FontData(), line_offset,
-      ResolvedThickness());
+      decoration.resolved_thickness);
   if (use_decorating_box_) {
     // The offset is for the decorating box. Convert it for the target text/box.
     paint_underline_offset += OffsetFromDecoratingBox();
   }
-  return ComputeLineData(TextDecorationLine::kUnderline,
+  return ComputeLineData(decoration, TextDecorationLine::kUnderline,
                          paint_underline_offset);
 }
 
@@ -394,8 +398,9 @@ DecorationGeometry TextDecorationInfo::ComputeOverlineLineData(
   const int paint_overline_offset =
       decoration_offset.ComputeUnderlineOffsetForUnder(
           line_offset, TargetStyle().ComputedFontSize(), FontData(),
-          ResolvedThickness(), position);
-  return ComputeLineData(TextDecorationLine::kOverline, paint_overline_offset);
+          decoration.resolved_thickness, position);
+  return ComputeLineData(decoration, TextDecorationLine::kOverline,
+                         paint_overline_offset);
 }
 
 DecorationGeometry TextDecorationInfo::ComputeLineThroughLineData(
@@ -404,8 +409,10 @@ DecorationGeometry TextDecorationInfo::ComputeLineThroughLineData(
   // For increased line thickness, the line-through decoration needs to grow
   // in both directions from its origin, subtract half the thickness to keep
   // it centered at the same origin.
-  const float line_through_offset = 2 * Ascent() / 3 - ResolvedThickness() / 2;
-  return ComputeLineData(TextDecorationLine::kLineThrough, line_through_offset);
+  const float line_through_offset =
+      2 * Ascent() / 3 - decoration.resolved_thickness / 2;
+  return ComputeLineData(decoration, TextDecorationLine::kLineThrough,
+                         line_through_offset);
 }
 
 DecorationGeometry TextDecorationInfo::ComputeSpellingOrGrammarErrorLineData(
@@ -418,8 +425,9 @@ DecorationGeometry TextDecorationInfo::ComputeSpellingOrGrammarErrorLineData(
   DCHECK(applied_text_decoration_);
   const int paint_underline_offset = decoration_offset.ComputeUnderlineOffset(
       FlippedUnderlinePosition(), TargetStyle().ComputedFontSize(), FontData(),
-      Length(), ResolvedThickness());
-  return ComputeLineData(decoration.HasSpellingError()
+      Length(), decoration.resolved_thickness);
+  return ComputeLineData(decoration,
+                         decoration.HasSpellingError()
                              ? TextDecorationLine::kSpellingError
                              : TextDecorationLine::kGrammarError,
                          paint_underline_offset);
