@@ -2301,11 +2301,6 @@ void LayerContextImpl::UpdateDisplayTiling(mojom::TilingPtr tiling) {
   }
 }
 
-void LayerContextImpl::SetTargetLocalSurfaceId(
-    const LocalSurfaceId& target_local_surface_id) {
-  host_impl_->SetTargetLocalSurfaceId(target_local_surface_id);
-}
-
 base::expected<void, std::string> LayerContextImpl::DoUpdateDisplayTiling(
     mojom::TilingPtr tiling) {
   cc::LayerTreeImpl& layers = *host_impl_->active_tree();
@@ -2321,12 +2316,21 @@ base::expected<void, std::string> LayerContextImpl::DoUpdateDisplayTiling(
   return base::ok();
 }
 
+void LayerContextImpl::SetTargetLocalSurfaceId(
+    const LocalSurfaceId& target_local_surface_id) {
+  CHECK(receiver_);
+  auto result = DoSetTargetLocalSurfaceId(target_local_surface_id);
+  if (!result.has_value()) {
+    HandleBadMojoMessage("SetTargetLocalSurfaceId", result.error());
+  }
+}
+
 base::expected<void, std::string> LayerContextImpl::DoSetTargetLocalSurfaceId(
     const LocalSurfaceId& target_local_surface_id) {
   if (!target_local_surface_id.is_valid()) {
     return base::unexpected("Invalid target_local_surface_id");
   }
-  SetTargetLocalSurfaceId(target_local_surface_id);
+  host_impl_->SetTargetLocalSurfaceId(target_local_surface_id);
   return base::ok();
 }
 
