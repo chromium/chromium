@@ -2036,11 +2036,11 @@ WebGLRenderingContextBase::PaintRenderingResultsToSnapshot(
             kPremul_SkAlphaType, kBottomLeft_GrSurfaceOrigin);
     if (image && image->PaintImageForCurrentFrame()) {
       gfx::Rect dest_rect(resource_provider->Size());
-      snapshot = resource_provider->DoExternalDrawAndSnapshot(
+      snapshot = resource_provider->DoExternalOverdrawAndSnapshot(
           [&image, dest_rect](cc::PaintCanvas& canvas) {
             DrawImageToCanvas(image.get(), canvas, dest_rect);
           },
-          ImageOrientationEnum::kDefault, /*is_overwrite=*/true);
+          ImageOrientationEnum::kDefault);
       copy_succeeded = true;
     }
   }

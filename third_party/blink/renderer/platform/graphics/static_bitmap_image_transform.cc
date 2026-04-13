@@ -276,12 +276,12 @@ scoped_refptr<StaticBitmapImage> StaticBitmapImageTransform::ApplyWithBlit(
 
     if (resource_provider) {
       // Perform the blit and return the drawn resource.
-      return resource_provider->DoExternalDrawAndSnapshot(
+      return resource_provider->DoExternalOverdrawAndSnapshot(
           [&](cc::PaintCanvas& canvas) {
             BlitToCanvas(canvas, source_paint_image, source_orientation,
                          SkRect::Make(source_rect), dest_size, options);
           },
-          source_orientation, /*is_overwrite=*/true);
+          source_orientation);
     }
   }
 

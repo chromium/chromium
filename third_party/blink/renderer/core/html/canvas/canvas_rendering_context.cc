@@ -221,9 +221,9 @@ scoped_refptr<StaticBitmapImage> CanvasRenderingContext::GetElementImage(
           gfx::ColorSpace::CreateSRGB(), wrapper,
           gpu::SHARED_IMAGE_USAGE_RASTER_WRITE | usage);
 
-      return resource_provider->DoExternalDrawAndSnapshot(
+      return resource_provider->DoExternalOverdrawAndSnapshot(
           [&](cc::PaintCanvas& canvas) { draw_to_canvas(canvas); },
-          ImageOrientation(), /*is_overwrite=*/true);
+          ImageOrientation());
     }
   }
 

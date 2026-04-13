@@ -261,9 +261,9 @@ GPUCanvasContext::PaintRenderingResultsToSnapshot(
     SkColor4f color = alpha_mode_ == V8GPUCanvasAlphaMode::Enum::kOpaque
                           ? SkColors::kBlack
                           : SkColors::kTransparent;
-    return resource_provider->DoExternalDrawAndSnapshot(
+    return resource_provider->DoExternalOverdrawAndSnapshot(
         [color](cc::PaintCanvas& canvas) { canvas.clear(color); },
-        ImageOrientationEnum::kDefault, /*is_overwrite=*/true);
+        ImageOrientationEnum::kDefault);
   }
 
   wgpu::Texture texture;

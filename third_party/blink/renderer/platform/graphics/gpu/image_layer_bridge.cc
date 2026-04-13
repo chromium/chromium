@@ -67,13 +67,13 @@ scoped_refptr<StaticBitmapImage> MakeAccelerated(
   }
 
   const auto paint_image = source->PaintImageForCurrentFrame();
-  return provider->DoExternalDrawAndSnapshot(
+  return provider->DoExternalOverdrawAndSnapshot(
       [paint_image](cc::PaintCanvas& canvas) {
         cc::PaintFlags paint;
         paint.setBlendMode(SkBlendMode::kSrc);
         canvas.drawImage(paint_image, 0, 0, SkSamplingOptions(), &paint);
       },
-      ImageOrientationEnum::kDefault, /*is_overwrite=*/true);
+      ImageOrientationEnum::kDefault);
 }
 
 }  // namespace
