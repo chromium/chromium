@@ -120,9 +120,7 @@ class MerchantPromoCodeManagerTest : public testing::Test {
   base::test::TaskEnvironment task_environment_;
   test::AutofillUnitTestEnvironment autofill_test_environment_;
   TestAutofillClient autofill_client_;
-  MerchantPromoCodeManager merchant_promo_code_manager_{
-      &payments_data_manager(),
-      /*is_off_the_record=*/false};
+  MerchantPromoCodeManager merchant_promo_code_manager_;
   std::unique_ptr<FormStructure> form_structure_;
   // Owned by `form_structure_`.
   raw_ptr<AutofillField> autofill_field_ = nullptr;
@@ -205,7 +203,6 @@ TEST_F(MerchantPromoCodeManagerTest,
 TEST_F(MerchantPromoCodeManagerTest,
        DoesNotShowPromoCodeOffersIfPaymentsDataManagerDoesNotExist) {
   base::HistogramTester histogram_tester;
-  promo_manager().payments_data_manager_ = nullptr;
 
   // Setting up mock to verify that suggestions returning is not triggered if
   // personal data manager does not exist.

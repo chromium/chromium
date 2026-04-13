@@ -5,7 +5,6 @@
 #include "components/autofill/core/browser/single_field_fillers/payments/merchant_promo_code_manager.h"
 
 #include "base/strings/utf_string_conversions.h"
-#include "components/autofill/core/browser/data_manager/payments/payments_data_manager.h"
 #include "components/autofill/core/browser/data_manager/personal_data_manager.h"
 #include "components/autofill/core/browser/data_model/payments/autofill_offer_data.h"
 #include "components/autofill/core/browser/foundations/browser_autofill_manager.h"
@@ -15,11 +14,7 @@
 
 namespace autofill {
 
-MerchantPromoCodeManager::MerchantPromoCodeManager(
-    PaymentsDataManager* payments_data_manager,
-    bool is_off_the_record)
-    : payments_data_manager_(payments_data_manager),
-      is_off_the_record_(is_off_the_record) {}
+MerchantPromoCodeManager::MerchantPromoCodeManager() = default;
 
 MerchantPromoCodeManager::~MerchantPromoCodeManager() = default;
 

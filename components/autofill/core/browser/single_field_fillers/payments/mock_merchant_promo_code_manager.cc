@@ -8,10 +8,7 @@
 
 namespace autofill {
 
-MockMerchantPromoCodeManager::MockMerchantPromoCodeManager(
-    PaymentsDataManager* payments_data_manager)
-    : MerchantPromoCodeManager(payments_data_manager,
-                               /*is_off_the_record=*/false) {}
+MockMerchantPromoCodeManager::MockMerchantPromoCodeManager() = default;
 
 MockMerchantPromoCodeManager::~MockMerchantPromoCodeManager() = default;
 

@@ -8,8 +8,7 @@
 #include <string>
 #include <vector>
 
-#include "base/gtest_prod_util.h"
-#include "components/autofill/core/browser/data_manager/payments/payments_data_manager.h"
+#include "components/autofill/core/browser/autofill_field.h"
 #include "components/autofill/core/browser/single_field_fillers/single_field_fill_router.h"
 #include "components/autofill/core/browser/suggestions/suggestion_type.h"
 #include "components/autofill/core/common/unique_ids.h"
@@ -20,7 +19,6 @@ namespace autofill {
 
 class AutofillClient;
 class AutofillOfferData;
-class PaymentsDataManager;
 
 // Per-profile Merchant Promo Code Manager. This class handles promo code
 // related functionality such as retrieving promo code offer data, managing
@@ -28,12 +26,7 @@ class PaymentsDataManager;
 // submission data when there is a merchant promo code field present.
 class MerchantPromoCodeManager : public KeyedService {
  public:
-  // `payments_data_manager` is a profile-scope data manager used to retrieve
-  // promo code offers from the local autofill table. `is_off_the_record`
-  // indicates whether the user is currently operating in an off-the-record
-  // context (i.e. incognito).
-  MerchantPromoCodeManager(PaymentsDataManager* payments_data_manager,
-                           bool is_off_the_record);
+  MerchantPromoCodeManager();
 
   MerchantPromoCodeManager(const MerchantPromoCodeManager&) = delete;
   MerchantPromoCodeManager& operator=(const MerchantPromoCodeManager&) = delete;
@@ -60,18 +53,6 @@ class MerchantPromoCodeManager : public KeyedService {
   void OnOffersSuggestionsShown(
     const FieldGlobalId& field_global_id,
     const std::vector<const AutofillOfferData*>& offers);
-
- private:
-  friend class MerchantPromoCodeManagerTest;
-  friend class MerchantPromoCodeManagerTestApi;
-  FRIEND_TEST_ALL_PREFIXES(MerchantPromoCodeManagerTest,
-                           DoesNotShowPromoCodeOffersForOffTheRecord);
-  FRIEND_TEST_ALL_PREFIXES(
-      MerchantPromoCodeManagerTest,
-      DoesNotShowPromoCodeOffersIfPaymentsDataManagerDoesNotExist);
-
-  raw_ptr<PaymentsDataManager> payments_data_manager_;
-  bool is_off_the_record_;
 };
 
 }  // namespace autofill

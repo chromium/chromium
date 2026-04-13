@@ -433,7 +433,7 @@ class TestPaymentsAutofillClient : public PaymentsAutofillClient {
   bool credit_card_name_fix_flow_bubble_was_shown_ = false;
 #endif
 
-  ::testing::NiceMock<MockMerchantPromoCodeManager>
+  testing::NiceMock<MockMerchantPromoCodeManager>
       mock_merchant_promo_code_manager_;
   std::unique_ptr<AutofillOfferManager> autofill_offer_manager_;
   std::unique_ptr<MockMandatoryReauthManager>

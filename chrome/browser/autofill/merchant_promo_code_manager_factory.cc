@@ -38,7 +38,6 @@ MerchantPromoCodeManagerFactory::MerchantPromoCodeManagerFactory()
               // Ash Internals.
               .WithAshInternals(ProfileSelection::kOwnInstance)
               .Build()) {
-  DependsOn(PersonalDataManagerFactory::GetInstance());
 }
 
 MerchantPromoCodeManagerFactory::~MerchantPromoCodeManagerFactory() = default;
@@ -46,11 +45,7 @@ MerchantPromoCodeManagerFactory::~MerchantPromoCodeManagerFactory() = default;
 std::unique_ptr<KeyedService>
 MerchantPromoCodeManagerFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
-  Profile* profile = Profile::FromBrowserContext(context);
-  PersonalDataManager* pdm =
-      PersonalDataManagerFactory::GetForBrowserContext(context);
-  return std::make_unique<MerchantPromoCodeManager>(
-      pdm ? &pdm->payments_data_manager() : nullptr, profile->IsOffTheRecord());
+  return std::make_unique<MerchantPromoCodeManager>();
 }
 
 }  // namespace autofill

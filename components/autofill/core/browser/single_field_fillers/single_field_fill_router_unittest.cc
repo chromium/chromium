@@ -81,8 +81,7 @@ class SingleFieldFillRouterTest : public testing::Test {
   std::unique_ptr<PrefService> prefs_;
   MockAutocompleteHistoryManager autocomplete_history_manager_;
   MockIbanManager iban_manager_;
-  MockMerchantPromoCodeManager merchant_promo_code_manager_{
-      &personal_data_manager().payments_data_manager()};
+  MockMerchantPromoCodeManager merchant_promo_code_manager_;
   SingleFieldFillRouter single_field_fill_router_;
   std::unique_ptr<FormStructure> form_structure_;
 };
