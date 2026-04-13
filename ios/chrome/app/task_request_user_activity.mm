@@ -442,7 +442,8 @@ std::vector<GURL> GetURLsFromOpenInChromeIntent(INIntent* intent) {
       // TODO(crbug.com/492115056): Add implementation.
       break;
     case UserActivityType::kOpenNewIncognitoTab:
-      // TODO(crbug.com/492115056): Add implementation.
+      webpageGURLs.push_back(GURL(kChromeUINewTabURL));
+      _targetMode = ApplicationModeForTabOpening::INCOGNITO;
       break;
     case UserActivityType::kManagePaymentMethods:
       // TODO(crbug.com/492115056): Add implementation.
