@@ -34,6 +34,7 @@ bool CanUseItemForNeedsPaint(const InlineItem& item) {
     case InlineItem::kFloating:
     case InlineItem::kOutOfFlowPositioned:
     case InlineItem::kListMarker:
+    case InlineItem::kOpenTag:
     case InlineItem::kBidiControl:
     case InlineItem::kOpenRubyColumn:
     case InlineItem::kCloseRubyColumn:
@@ -48,7 +49,6 @@ bool CanUseItemForNeedsPaint(const InlineItem& item) {
       break;
 
     case InlineItem::kAtomicInline:
-    case InlineItem::kOpenTag:
     case InlineItem::kInitialLetterBox:
       break;
   }
