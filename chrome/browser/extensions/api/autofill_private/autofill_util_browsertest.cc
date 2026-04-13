@@ -15,7 +15,6 @@
 #include "components/autofill/core/common/autofill_test_utils.h"
 #include "components/autofill/core/common/dense_set.h"
 #include "components/device_reauth/mock_device_authenticator.h"
-#include "content/public/test/browser_task_environment.h"
 #include "content/public/test/browser_test.h"
 
 namespace extensions::autofill_util {
