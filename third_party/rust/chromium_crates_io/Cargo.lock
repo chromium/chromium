@@ -237,6 +237,7 @@ dependencies = [
  "crc32fast",
  "cxx",
  "cxxbridge-cmd",
+ "erased-serde",
  "fend-core",
  "font-types",
  "hex",
@@ -501,6 +502,16 @@ dependencies = [
 name = "equivalent"
 version = "1.0.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
+
+[[package]]
+name = "erased-serde"
+version = "0.4.10"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+dependencies = [
+ "serde",
+ "serde_core",
+ "typeid",
+]
 
 [[package]]
 name = "fdeflate"
@@ -1664,6 +1675,11 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 [[package]]
 name = "typed-path"
 version = "0.12.3"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+
+[[package]]
+name = "typeid"
+version = "1.0.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 
 [[package]]

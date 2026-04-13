@@ -1,0 +1,11 @@
+Name: erased-serde
+URL: https://crates.io/crates/erased-serde
+Version: 0.4.10
+Revision: 4bea873f4c8437826792a4ed802ebd016569c4bc
+Update Mechanism: Manual (https://crbug.com/449898466)
+License: Apache-2.0
+License File: //third_party/rust/chromium_crates_io/vendor/erased-serde-v0_4/LICENSE-APACHE
+Shipped: no
+Security Critical: no
+
+Description: Type-erased Serialize and Serializer traits

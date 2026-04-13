@@ -1,0 +1,11 @@
+Name: typeid
+URL: https://crates.io/crates/typeid
+Version: 1.0.3
+Revision: b06a3c08a0eaccc7df6091ade1ae4e3fb53609d5
+Update Mechanism: Manual (https://crbug.com/449898466)
+License: Apache-2.0
+License File: //third_party/rust/chromium_crates_io/vendor/typeid-v1/LICENSE-APACHE
+Shipped: no
+Security Critical: no
+
+Description: Const TypeId and non-'static TypeId
