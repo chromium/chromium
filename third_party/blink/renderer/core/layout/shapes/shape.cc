@@ -204,11 +204,11 @@ std::unique_ptr<Shape> Shape::CreateShape(const BasicShape* basic_shape,
         const gfx::Size raster_size(std::max(path_rect.right(), 0),
                                     std::max(path_rect.bottom(), 0));
         if (!IsValidRasterShapeSize(raster_size)) {
-          return CreateEmptyRasterShape(writing_mode, margin);
+          return CreateEmptyRasterShape(margin);
         }
         ArrayBufferContents contents;
         if (!ExtractPathData(physical_path, raster_size, contents)) {
-          return CreateEmptyRasterShape(writing_mode, margin);
+          return CreateEmptyRasterShape(margin);
         }
         std::unique_ptr<RasterShapeIntervals> intervals =
             ExtractIntervalsFromImageData(contents.ByteSpan(), /*threshold=*/0,
@@ -269,8 +269,7 @@ std::unique_ptr<Shape> Shape::CreateShape(const BasicShape* basic_shape,
   return shape;
 }
 
-std::unique_ptr<Shape> Shape::CreateEmptyRasterShape(WritingMode writing_mode,
-                                                     float margin) {
+std::unique_ptr<Shape> Shape::CreateEmptyRasterShape(float margin) {
   std::unique_ptr<RasterShapeIntervals> intervals =
       std::make_unique<RasterShapeIntervals>(0, 0);
   std::unique_ptr<RasterShape> raster_shape =
@@ -444,7 +443,7 @@ std::unique_ptr<Shape> Shape::CreateRasterShape(
   gfx::Size margin_box_size = margin_logical_rect.size();
   if (!IsValidRasterShapeSize(margin_box_size) ||
       !IsValidRasterShapeSize(image_logical_rect.size())) {
-    return CreateEmptyRasterShape(writing_mode, margin);
+    return CreateEmptyRasterShape(margin);
   }
 
   gfx::Size image_physical_size = image_logical_rect.size();
@@ -454,7 +453,7 @@ std::unique_ptr<Shape> Shape::CreateRasterShape(
   ArrayBufferContents contents;
   if (!ExtractImageData(image, image_physical_size, contents,
                         respect_orientation)) {
-    return CreateEmptyRasterShape(writing_mode, margin);
+    return CreateEmptyRasterShape(margin);
   }
 
   std::unique_ptr<RasterShapeIntervals> intervals =
