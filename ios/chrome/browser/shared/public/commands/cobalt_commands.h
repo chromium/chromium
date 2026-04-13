@@ -6,6 +6,7 @@
 #define IOS_CHROME_BROWSER_SHARED_PUBLIC_COMMANDS_COBALT_COMMANDS_H_
 
 #import <Foundation/Foundation.h>
+#import <UIKit/UIKit.h>
 
 // Commands relating to Cobalt.
 @protocol CobaltCommands <NSObject>
@@ -24,6 +25,12 @@
 // Hides the cobalt alert.
 - (void)hideCobaltAlert;
 
+// Shows a cobalt popup.
+- (void)showCobaltPopupViewController:(UIViewController*)popupViewController
+                           completion:(void (^)(NSError*))completion;
+
+// Hides the cobalt popup
+- (void)hideCobaltPopup;
 @end
 
 #endif  // IOS_CHROME_BROWSER_SHARED_PUBLIC_COMMANDS_COBALT_COMMANDS_H_
