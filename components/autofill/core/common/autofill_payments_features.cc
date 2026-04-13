@@ -264,7 +264,7 @@ BASE_FEATURE(kAutofillEnableVirtualCardJavaPaymentsDataManager,
 
 // When enabled, certain strings and logos referencing Google Account, Google
 // Payments, and Google Pay will instead reference Google Wallet.
-BASE_FEATURE(kAutofillEnableWalletBranding, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kAutofillEnableWalletBranding, base::FEATURE_ENABLED_BY_DEFAULT);
 
 // When enabled, further brings certain strings and images referencing Google
 // Pay and Google Wallet into consistency with branding requirements.
