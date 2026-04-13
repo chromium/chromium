@@ -1609,7 +1609,6 @@ export class ComposeboxElement extends ComposeboxEmbedderMixin
         this.submitQuery_(e);
       }
     }
-    this.finalizeMatchSelection_(e);
   }
 
   private handleEscape_(e: KeyboardEvent) {
