@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef MEDIA_RENDERERS_SHARED_IMAGE_VIDEO_FRAME_TEST_UTILS_H_
-#define MEDIA_RENDERERS_SHARED_IMAGE_VIDEO_FRAME_TEST_UTILS_H_
+#ifndef MEDIA_RENDERERS_VIDEO_FRAME_TEST_UTILS_H_
+#define MEDIA_RENDERERS_VIDEO_FRAME_TEST_UTILS_H_
 
 #include <GLES3/gl3.h>
 #include <stdint.h>
@@ -46,4 +46,4 @@ scoped_refptr<VideoFrame> CreateSharedImageNV12Frame(
 
 }  // namespace media
 
-#endif  // MEDIA_RENDERERS_SHARED_IMAGE_VIDEO_FRAME_TEST_UTILS_H_
+#endif  // MEDIA_RENDERERS_VIDEO_FRAME_TEST_UTILS_H_

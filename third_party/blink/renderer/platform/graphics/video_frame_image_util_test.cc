@@ -13,7 +13,7 @@
 #include "gpu/command_buffer/client/test_shared_image_interface.h"
 #include "gpu/command_buffer/common/capabilities.h"
 #include "media/base/video_frame.h"
-#include "media/renderers/shared_image_video_frame_test_utils.h"
+#include "media/renderers/video_frame_test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/platform/graphics/canvas_resource_provider.h"
 #include "third_party/blink/renderer/platform/graphics/gpu/shared_gpu_context.h"

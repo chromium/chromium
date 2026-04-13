@@ -102,8 +102,8 @@ static_library("test_support") {
   visibility = [ "//media:test_support" ]
   testonly = true
   sources = [
-    "shared_image_video_frame_test_utils.cc",
-    "shared_image_video_frame_test_utils.h",
+    "video_frame_test_utils.cc",
+    "video_frame_test_utils.h",
   ]
   configs += [ "//media:media_config" ]
   deps = [

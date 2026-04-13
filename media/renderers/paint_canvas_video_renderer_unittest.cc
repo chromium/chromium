@@ -39,7 +39,7 @@
 #include "media/base/timestamp_constants.h"
 #include "media/base/video_frame.h"
 #include "media/base/video_util.h"
-#include "media/renderers/shared_image_video_frame_test_utils.h"
+#include "media/renderers/video_frame_test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/fp16/src/include/fp16.h"
 #include "third_party/libyuv/include/libyuv/convert.h"

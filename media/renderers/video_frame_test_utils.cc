@@ -2,8 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-
-#include "media/renderers/shared_image_video_frame_test_utils.h"
+#include "media/renderers/video_frame_test_utils.h"
 
 #include "base/compiler_specific.h"
 #include "base/logging.h"
