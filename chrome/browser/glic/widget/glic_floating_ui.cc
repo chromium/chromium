@@ -222,6 +222,9 @@ void GlicFloatingUi::CloseSelectionOverlay() {
   auto* selection_overlay_controller =
       SelectionOverlayController::FromTabWebContents(
           focused_tab->GetContents());
+  if (!selection_overlay_controller) {
+    return;
+  }
   selection_overlay_controller->Close();
 }
 #endif
@@ -332,6 +335,7 @@ void GlicFloatingUi::Close(const CloseOptions& options) {
         &web_modal::ModalDialogHostObserver::OnHostDestroying);
   }
   ClearWebContentsDelegate();
+  CloseSelectionOverlay();
   if (screenshot_capturer_) {
     screenshot_capturer_->CloseScreenPicker();
   }
