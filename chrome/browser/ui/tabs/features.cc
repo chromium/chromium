@@ -34,6 +34,12 @@ BASE_FEATURE_PARAM(base::TimeDelta,
                    "expand_on_hover_delay",
                    base::Milliseconds(500));
 
+BASE_FEATURE_PARAM(base::TimeDelta,
+                   kVerticalTabsExpandOnHoverClickDelay,
+                   &kVerticalTabsExpandOnHover,
+                   "expand_on_hover_click_delay",
+                   base::Milliseconds(500));
+
 BASE_FEATURE(kTabSelectionByPointer, base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kHorizontalTabStripComboButton, base::FEATURE_DISABLED_BY_DEFAULT);
@@ -56,6 +62,10 @@ bool IsVerticalTabsFeatureEnabled() {
 bool IsVerticalTabsExpandOnHoverFeatureEnabled() {
   return IsVerticalTabsFeatureEnabled() &&
          base::FeatureList::IsEnabled(kVerticalTabsExpandOnHover);
+}
+
+bool IsExpandOnHoverClickDelayEnabled() {
+  return !kVerticalTabsExpandOnHoverClickDelay.Get().is_zero();
 }
 
 }  // namespace tabs

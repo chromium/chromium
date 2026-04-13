@@ -23,6 +23,7 @@
 #include "chrome/browser/ui/views/tabs/vertical/vertical_tab_strip_view.h"
 #include "ui/base/interaction/element_tracker.h"
 #include "ui/base/metadata/metadata_header_macros.h"
+#include "ui/events/event_handler.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/views/accessible_pane_view.h"
 #include "ui/views/controls/resize_area_delegate.h"
@@ -203,7 +204,25 @@ class VerticalTabStripRegionView final
    private:
     raw_ptr<VerticalTabStripRegionView> region_view_;
   };
-  friend class RegionViewFocusListener;
+
+  // To avoid extra motion during expand on hover when the user doesn't need the
+  // expanded state, we reset the expand on hover timer when the user clicks on
+  // a tab to give them time to exit the tab strip before triggering the expand
+  // on hover state. This class listens for those click events to restart the
+  // timer.
+  class ClickEventHandler : public ui::EventHandler {
+   public:
+    explicit ClickEventHandler(VerticalTabStripRegionView* region_view);
+    ClickEventHandler(const ClickEventHandler&) = delete;
+    ClickEventHandler& operator=(const ClickEventHandler&) = delete;
+    ~ClickEventHandler() override = default;
+
+    // ui::EventHandler:
+    void OnMouseEvent(ui::MouseEvent* event) override;
+
+   private:
+    raw_ptr<VerticalTabStripRegionView> region_view_;
+  };
 
   // Used to create and destroy locks for the expand on hover state.
   friend class VerticalTabStripExpandOnHoverLock;
@@ -235,6 +254,7 @@ class VerticalTabStripRegionView final
 
   void OnExpandOnHoverEnabledChanged(bool enabled);
   void UpdateExpandOnHoverState(std::optional<bool> hovered = std::nullopt);
+  void RestartExpandOnHoverTimer(const base::TimeDelta& delay);
   void AnimateExpandOnHover(bool expand);
 
   void RegisterExpandOnHoverLock(VerticalTabStripExpandOnHoverLock* lock);
@@ -341,6 +361,7 @@ class VerticalTabStripRegionView final
   std::optional<base::TimeTicks> new_tab_button_pressed_start_time_;
 
   RegionViewFocusListener focus_listener_{this};
+  ClickEventHandler click_handler_{this};
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_FRAME_VERTICAL_TAB_STRIP_REGION_VIEW_H_

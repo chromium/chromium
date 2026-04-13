@@ -34,6 +34,9 @@ BASE_DECLARE_FEATURE(kVerticalTabsNewBadge);
 
 BASE_DECLARE_FEATURE(kVerticalTabsExpandOnHover);
 BASE_DECLARE_FEATURE_PARAM(base::TimeDelta, kVerticalTabsExpandOnHoverDelay);
+// If this value is 0, no click delay is applied.
+BASE_DECLARE_FEATURE_PARAM(base::TimeDelta,
+                           kVerticalTabsExpandOnHoverClickDelay);
 
 BASE_DECLARE_FEATURE(kTabSelectionByPointer);
 
@@ -45,6 +48,8 @@ BASE_DECLARE_FEATURE_PARAM(bool, kHorizontalTabStripComboButtonShowStartOnly);
 bool IsVerticalTabsFeatureEnabled();
 
 bool IsVerticalTabsExpandOnHoverFeatureEnabled();
+
+bool IsExpandOnHoverClickDelayEnabled();
 
 }  // namespace tabs
 
