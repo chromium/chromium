@@ -89,8 +89,8 @@ source_set("impl") {
     sources += [
       "android/contextual_tasks_bridge.cc",
       "android/contextual_tasks_bridge.h",
-      "contextual_tasks_ui_service_delegate_android.cc",
-      "contextual_tasks_ui_service_delegate_android.h",
+      "android/contextual_tasks_ui_service_delegate_android.cc",
+      "android/contextual_tasks_ui_service_delegate_android.h",
     ]
   }
 
@@ -433,6 +433,10 @@ source_set("unit_tests") {
     "contextual_tasks_tab_visit_tracker_unittest.cc",
   ]
 
+  if (is_android) {
+    sources += [ "android/contextual_tasks_bridge_unittest.cc" ]
+  }
+
   if (!is_android) {
     sources += [
       "contextual_tasks_composebox_handler_unittest.cc",
@@ -476,6 +480,7 @@ source_set("unit_tests") {
     "//testing/gmock",
     "//testing/gtest",
     "//third_party/lens_server_proto:lens_overlay_proto",
+    "//ui/base/unowned_user_data",
   ]
 
   if (!is_android) {
@@ -591,12 +596,22 @@ if (is_android) {
   }
 
   robolectric_library("junit") {
-    sources = [ "android/junit/src/org/chromium/chrome/browser/contextual_tasks/ContextualTasksUtilsUnitTest.java" ]
+    sources = [
+      "android/junit/src/org/chromium/chrome/browser/contextual_tasks/ContextualTasksUiServiceDelegateUnitTest.java",
+      "android/junit/src/org/chromium/chrome/browser/contextual_tasks/ContextualTasksUtilsUnitTest.java",
+    ]
     deps = [
       ":java",
       "//base:base_java",
+      "//base:base_java_test_support",
       "//base:base_junit_test_support",
+      "//chrome/browser/feedback/android:factory_java",
+      "//chrome/browser/feedback/android:java",
+      "//chrome/browser/profiles/android:java",
+      "//chrome/browser/ui/messages/android:java",
       "//third_party/junit",
+      "//third_party/mockito:mockito_java",
+      "//ui/android:ui_java",
     ]
   }
 }

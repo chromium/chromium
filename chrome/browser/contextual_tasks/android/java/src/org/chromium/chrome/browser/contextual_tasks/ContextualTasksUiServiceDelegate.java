@@ -7,6 +7,8 @@ package org.chromium.chrome.browser.contextual_tasks;
 import android.app.Activity;
 import android.content.Context;
 
+import androidx.annotation.VisibleForTesting;
+
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
 import org.jni_zero.JniType;
@@ -52,7 +54,8 @@ public class ContextualTasksUiServiceDelegate {
     }
 
     @CalledByNative
-    private static ContextualTasksUiServiceDelegate create(
+    @VisibleForTesting
+    static ContextualTasksUiServiceDelegate create(
             long nativePtr, @JniType("Profile*") Profile profile) {
         return new ContextualTasksUiServiceDelegate(nativePtr, profile);
     }
@@ -63,7 +66,8 @@ public class ContextualTasksUiServiceDelegate {
     }
 
     @CalledByNative
-    private void clearNativePtr() {
+    @VisibleForTesting
+    void clearNativePtr() {
         mNativePtr = 0;
         if (mSnackbarManager != null) {
             mSnackbarManager.dismissSnackbars(mSnackbarController);
@@ -72,7 +76,8 @@ public class ContextualTasksUiServiceDelegate {
     }
 
     @CalledByNative
-    private void openFeedbackUi(WindowAndroid windowAndroid, String pageUrl) {
+    @VisibleForTesting
+    void openFeedbackUi(WindowAndroid windowAndroid, String pageUrl) {
         Activity activity = windowAndroid.getActivity().get();
         assert activity != null : "ActivityWindowAndroid should have an Activity.";
         if (activity == null) {
@@ -84,7 +89,8 @@ public class ContextualTasksUiServiceDelegate {
     }
 
     @CalledByNative
-    private void showUndoSnackbar(
+    @VisibleForTesting
+    void showUndoSnackbar(
             @JniType("ui::WindowAndroid*") WindowAndroid windowAndroid, long browserWindowPtr) {
         mSnackbarManager = SnackbarManagerProvider.from(windowAndroid);
         if (mSnackbarManager == null) return;

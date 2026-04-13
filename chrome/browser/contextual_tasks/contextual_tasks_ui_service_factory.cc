@@ -15,7 +15,7 @@
 #include "components/pref_registry/pref_registry_syncable.h"
 
 #if BUILDFLAG(IS_ANDROID)
-#include "chrome/browser/contextual_tasks/contextual_tasks_ui_service_delegate_android.h"
+#include "chrome/browser/contextual_tasks/android/contextual_tasks_ui_service_delegate_android.h"
 #else
 #include "chrome/browser/contextual_tasks/contextual_tasks_ui_service_delegate_desktop.h"
 #endif

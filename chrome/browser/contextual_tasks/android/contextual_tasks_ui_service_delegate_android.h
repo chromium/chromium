@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_CONTEXTUAL_TASKS_CONTEXTUAL_TASKS_UI_SERVICE_DELEGATE_ANDROID_H_
-#define CHROME_BROWSER_CONTEXTUAL_TASKS_CONTEXTUAL_TASKS_UI_SERVICE_DELEGATE_ANDROID_H_
+#ifndef CHROME_BROWSER_CONTEXTUAL_TASKS_ANDROID_CONTEXTUAL_TASKS_UI_SERVICE_DELEGATE_ANDROID_H_
+#define CHROME_BROWSER_CONTEXTUAL_TASKS_ANDROID_CONTEXTUAL_TASKS_UI_SERVICE_DELEGATE_ANDROID_H_
 
 #include "base/android/scoped_java_ref.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_ui_service_delegate.h"
@@ -43,4 +43,4 @@ class ContextualTasksUiServiceDelegateAndroid
 
 }  // namespace contextual_tasks
 
-#endif  // CHROME_BROWSER_CONTEXTUAL_TASKS_CONTEXTUAL_TASKS_UI_SERVICE_DELEGATE_ANDROID_H_
+#endif  // CHROME_BROWSER_CONTEXTUAL_TASKS_ANDROID_CONTEXTUAL_TASKS_UI_SERVICE_DELEGATE_ANDROID_H_

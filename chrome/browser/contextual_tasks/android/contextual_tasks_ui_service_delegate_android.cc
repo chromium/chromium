@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/contextual_tasks/contextual_tasks_ui_service_delegate_android.h"
+#include "chrome/browser/contextual_tasks/android/contextual_tasks_ui_service_delegate_android.h"
 
 #include "base/android/jni_android.h"
 #include "base/android/jni_string.h"
