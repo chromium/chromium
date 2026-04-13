@@ -118,9 +118,6 @@ MetricsServiceClient::GetStructuredMetricsService() {
   return nullptr;
 }
 
-bool MetricsServiceClient::ShouldUploadMetricsForUserId(uint64_t user_id) {
-  return true;
-}
 
 GURL MetricsServiceClient::GetMetricsServerUrl() {
   base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
@@ -256,6 +253,11 @@ bool MetricsServiceClient::IsMetricsReportingForceEnabled() const {
   return ::metrics::IsMetricsReportingForceEnabled();
 }
 
+#if BUILDFLAG(IS_CHROMEOS)
+bool MetricsServiceClient::ShouldUploadMetricsForUserId(uint64_t user_id) {
+  return true;
+}
+
 std::optional<bool> MetricsServiceClient::GetCurrentUserMetricsConsent() const {
   return std::nullopt;
 }
@@ -263,6 +265,7 @@ std::optional<bool> MetricsServiceClient::GetCurrentUserMetricsConsent() const {
 std::optional<std::string> MetricsServiceClient::GetCurrentUserId() const {
   return std::nullopt;
 }
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 std::optional<regional_capabilities::CountryIdHolder>
 MetricsServiceClient::GetProfileCountryIdForPrivateMetricsReporting() {

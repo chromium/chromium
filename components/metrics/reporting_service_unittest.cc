@@ -178,6 +178,7 @@ TEST_F(ReportingServiceTest, BasicTest) {
   EXPECT_FALSE(client_.uploader()->is_uploading());
 }
 
+#if BUILDFLAG(IS_CHROMEOS)
 TEST_F(ReportingServiceTest, UserIdLogsUploadedIfUserConsented) {
   uint64_t user_id = 12345;
 
@@ -218,6 +219,7 @@ TEST_F(ReportingServiceTest, UserIdLogsNotUploadedIfUserNotConsented) {
       base::Seconds(MetricsScheduler::GetInitialIntervalSeconds()));
   EXPECT_EQ(client_.uploader(), nullptr);
 }
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 TEST_F(ReportingServiceTest, ForceDiscard) {
   TestReportingService service(&client_, GetLocalState());

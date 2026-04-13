@@ -35,9 +35,11 @@ void TestMetricsServiceClient::SetMetricsClientId(
   client_id_ = client_id;
 }
 
+#if BUILDFLAG(IS_CHROMEOS)
 bool TestMetricsServiceClient::ShouldUploadMetricsForUserId(uint64_t user_id) {
   return allowed_user_ids_.contains(user_id);
 }
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 int32_t TestMetricsServiceClient::GetProduct() {
   return product_;

@@ -246,6 +246,7 @@ void ReportingService::SendNextLogImpl(base::OnceClosure done_callback) {
     log_store()->StageNextLog();
   }
 
+#if BUILDFLAG(IS_CHROMEOS)
   // Check whether the log should be uploaded based on user id. If it should not
   // be sent, then discard the log from the store and notify the scheduler.
   auto staged_user_id = log_store()->staged_log_user_id();
@@ -264,6 +265,7 @@ void ReportingService::SendNextLogImpl(base::OnceClosure done_callback) {
     upload_scheduler_->UploadFinished(true);
     return;
   }
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
   // Proceed to stage the log for upload if log size satisfies cellular log
   // upload constrains.

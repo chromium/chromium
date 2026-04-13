@@ -88,9 +88,6 @@ class MetricsServiceClient {
   // associated with.
   virtual structured::StructuredMetricsService* GetStructuredMetricsService();
 
-  // Returns true if metrics should be uploaded for the given |user_id|, which
-  // corresponds to the |user_id| field in ChromeUserMetricsExtension.
-  virtual bool ShouldUploadMetricsForUserId(uint64_t user_id);
 
   // Registers the client id with other services (e.g. crash reporting), called
   // when metrics recording gets enabled.
@@ -235,19 +232,22 @@ class MetricsServiceClient {
   // Checks if the user has forced metrics collection on via the override flag.
   bool IsMetricsReportingForceEnabled() const;
 
+// If expanding user-level metrics to other platforms, then, in addition to
+// implementing the functions below, remember to modify the callers of the
+// functions. Currently the callers have #if blocks that make them not call
+// these functions on other platforms.
+#if BUILDFLAG(IS_CHROMEOS)
+  // Returns true if metrics should be uploaded for the given |user_id|, which
+  // corresponds to the |user_id| field in ChromeUserMetricsExtension.
+  virtual bool ShouldUploadMetricsForUserId(uint64_t user_id);
+
   // Initializes per-user metrics collection. For more details what per-user
   // metrics collection is, refer to MetricsService::InitPerUserMetrics.
-  //
-  // Since the concept of a user is only applicable in Ash Chrome, this function
-  // should no-op for other platforms.
   virtual void InitPerUserMetrics() {}
 
   // Updates the current user's metrics consent. This allows embedders to update
   // the user consent. If there is no current user, then this function will
   // no-op.
-  //
-  // Since the concept of a user is only applicable on Ash Chrome, this function
-  // should no-op for other platforms.
   virtual void UpdateCurrentUserMetricsConsent(bool user_metrics_consent) {}
 
   // Returns the current user metrics consent if it should be applied to decide
@@ -257,19 +257,14 @@ class MetricsServiceClient {
   //
   // Will return std::nullopt if there is no current user or current user
   // metrics consent should not be applied to determine metrics reporting state.
-  //
-  // Not all platforms support per-user consent. If per-user consent is not
-  // supported, this function should return std::nullopt.
   virtual std::optional<bool> GetCurrentUserMetricsConsent() const;
 
   // Returns the current user id.
   //
   // Will return std::nullopt if there is no current user, metrics reporting is
   // disabled, or current user should not have a user id.
-  //
-  // Not all platforms support per-user consent. If per-user consent is not
-  // supported, this function should return std::nullopt.
   virtual std::optional<std::string> GetCurrentUserId() const;
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
   // Returns the country ID associated with the profile used for metrics.
   // Returns std::nullopt if it's not available.
