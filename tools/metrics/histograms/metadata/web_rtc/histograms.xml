@@ -1635,7 +1635,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebRTC.PeerConnection.RtcpMux" enum="PeerConnectionRtcpMux"
-    expires_after="2024-11-03">
+    expires_after="2027-03-01">
   <owner>hta@chromium.org</owner>
   <owner>webrtc-dev@chromium.org</owner>
   <summary>
@@ -1643,19 +1643,21 @@ chromium-metrics-reviews@google.com.
     description enable RTCP-mux). Recorded after SetLocalDescription and
     SetRemoteDescription are called, once per PeerConnection.
 
-    Warning: This histogram was expired from 2020-02-23 to 2022-10-10. Data may
-    be missing.
+    Warning: This histogram was expired from 2020-02-23 to 2022-10-10 and from
+    2024-11-03 to 2026-03-06. Data may be missing.
   </summary>
 </histogram>
 
 <histogram name="WebRTC.PeerConnection.RtcpMuxPolicy"
-    enum="PeerConnectionRtcpMux" expires_after="2024-12-01">
+    enum="PeerConnectionRtcpMux" expires_after="2027-03-01">
   <owner>hta@chromium.org</owner>
   <owner>webrtc-dev@chromium.org</owner>
-  <owner>phancke@microsoft.com</owner>
   <summary>
     Which RTCPMuxPolicy was requested for the PeerConnection. Recorded during
     the first DTLS connection establishment.
+
+    Warning: This histogram was expired from 2024-12-01 to 2026-03-06. Data may
+    be missing.
   </summary>
 </histogram>
 

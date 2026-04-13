@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>RTCPeerConnection without rtc-mux</title>
+    <script src="../../resources/testharness.js"></script>
+    <script src="../../resources/testharnessreport.js"></script>
+    <script src="resources/RTCPeerConnection-helper.js"></script>
+  </head>
+  <body>
+    <script>
+promise_test(async t => {
+  const pc = new RTCPeerConnection({rtcpMuxPolicy: 'negotiate'});
+  assert_equals(pc.getConfiguration().rtcpMuxPolicy, 'negotiate');
+}, 'getConfiguration returns rtcpMuxPolicy');
+
+promise_test(async t => {
+  // Create PeerConnections with non-standard 'negotiate' rtcpMuxPolicy,
+  // then munge rtcp-mux and BUNDLE during signaling.
+  const pc1 = new RTCPeerConnection({rtcpMuxPolicy: 'negotiate'});
+  t.add_cleanup(() => pc1.close());
+  const pc2 = new RTCPeerConnection({rtcpMuxPolicy: 'negotiate'});
+  t.add_cleanup(() => pc2.close());
+  pc1.onicecandidate = (e) => pc2.addIceCandidate(e.candidate);
+  pc2.onicecandidate = (e) => pc1.addIceCandidate(e.candidate);
+
+  const stream = await navigator.mediaDevices.getUserMedia({audio:true})
+  t.add_cleanup(() => stream.getTracks().forEach(track => track.stop()));
+
+  const sender = pc1.addTrack(stream.getAudioTracks()[0], stream);
+  await pc1.setLocalDescription();
+  await pc2.setRemoteDescription({type: 'offer', sdp: pc1.localDescription.sdp
+        .replaceAll('BUNDLE', 'NOT-BUNDLE')
+        .replaceAll('rtcp-mux', 'not-mux'),
+  });
+  const answer = await pc2.createAnswer();
+  await pc2.setLocalDescription();
+  await pc1.setRemoteDescription(pc2.localDescription);
+
+  await listenToConnected(pc1);
+
+  const stats = await pc1.getStats();
+  console.log([...stats.values()]);
+  const transports = [...stats.values()].filter(({type}) => type === 'transport');
+  assert_equals(transports.length, 2);
+  const rtpTransport = transports.find(stat => stat.rtcpTransportStatsId !== undefined);
+  assert_not_equals(rtpTransport, undefined);
+  const rtcpTransport = stats.get(rtpTransport.rtcpTransportStatsId);
+  assert_not_equals(rtcpTransport, undefined);
+  assert_not_equals(rtpTransport.selectedCandidatePairId,
+                    rtcpTransport.selectedCandidatePairId);
+}, `Connection without rtcp-mux`);
+    </script>
+  </body>
+</html>
+

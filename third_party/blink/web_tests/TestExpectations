@@ -8410,6 +8410,7 @@ crbug.com/356930166 [ Mac15-arm64 ] external/wpt/webrtc/simplecall-no-ssrcs.http
 crbug.com/356930166 [ Mac15-arm64 ] external/wpt/webrtc/simplecall.https.html [ Crash Timeout ]
 crbug.com/356930166 [ Mac15-arm64 ] external/wpt/webcodecs/videoFrame-metadata-rtpTimestamp.https.html [ Timeout ]
 crbug.com/356930166 [ Mac ] external/wpt/webrtc/RTCPeerConnection-remote-track-mute.https.html [ Skip Timeout ]
+crbug.com/356930166 [ Mac ] fast/peerconnection/RTCPeerConnection-without-rtcpmux.html [ Skip Timeout ]
 
 # Mac15/arm64 - Other timeouts
 [ Mac15 ] external/wpt/fetch/api/abort/serviceworker-intercepted.https.html [ Timeout ]
