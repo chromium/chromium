@@ -2233,22 +2233,6 @@ targets.mixin(
 )
 
 targets.mixin(
-    name = "xcode_15_beta",
-    args = [
-        "--xcode-build-version",
-        "15f31d",
-    ],
-    swarming = targets.swarming(
-        named_caches = [
-            swarming.cache(
-                name = "xcode_ios_15f31d",
-                path = "Xcode.app",
-            ),
-        ],
-    ),
-)
-
-targets.mixin(
     name = "xcode_16_main",
     args = [
         "--xcode-build-version",
@@ -2258,22 +2242,6 @@ targets.mixin(
         named_caches = [
             swarming.cache(
                 name = "xcode_ios_16c5032a",
-                path = "Xcode.app",
-            ),
-        ],
-    ),
-)
-
-targets.mixin(
-    name = "xcode_16_beta",
-    args = [
-        "--xcode-build-version",
-        "16f6",
-    ],
-    swarming = targets.swarming(
-        named_caches = [
-            swarming.cache(
-                name = "xcode_ios_16f6",
                 path = "Xcode.app",
             ),
         ],
