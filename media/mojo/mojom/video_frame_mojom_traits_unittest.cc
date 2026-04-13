@@ -377,7 +377,7 @@ TEST_F(VideoFrameStructTraitsTest, SharedImageVideoFrame) {
       gpu::ClientSharedImage::CreateForTesting(metadata);
   scoped_refptr<VideoFrame> frame = VideoFrame::WrapSharedImage(
       PIXEL_FORMAT_ARGB, shared_image, gpu::SyncToken(),
-      VideoFrame::ReleaseMailboxCB(), si_size, gfx::Rect(10, 10, 80, 80),
+      VideoFrame::ReleaseMailboxCB(), gfx::Rect(10, 10, 80, 80),
       gfx::Size(200, 100), base::Seconds(100));
   frame->set_color_space(shared_image->color_space());
   ASSERT_TRUE(RoundTrip(&frame));
@@ -415,7 +415,7 @@ TEST_F(VideoFrameStructTraitsTest, SharedImageVideoFrameMismatchedSize) {
 
   scoped_refptr<VideoFrame> frame = VideoFrame::WrapSharedImage(
       kFormat, shared_image, gpu::SyncToken(), VideoFrame::ReleaseMailboxCB(),
-      kSize, kVisibleRect, kNaturalSize, kTimestamp);
+      kVisibleRect, kNaturalSize, kTimestamp);
 
   auto message = mojom::VideoFrame::SerializeAsMessage(&frame);
 

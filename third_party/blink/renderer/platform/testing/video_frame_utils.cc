@@ -82,7 +82,7 @@ scoped_refptr<media::VideoFrame> CreateTestFrame(
           gpu::ClientSharedImage::CreateForTesting(metadata);
       auto frame = media::VideoFrame::WrapSharedImage(
           pixel_format, shared_image, gpu::SyncToken(), base::NullCallback(),
-          coded_size, visible_rect, natural_size, timestamp);
+          visible_rect, natural_size, timestamp);
       frame->set_color_space(color_space);
       return frame;
     }

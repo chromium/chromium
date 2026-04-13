@@ -45,7 +45,6 @@ scoped_refptr<VideoFrame> CreateSharedImageFrame(
     scoped_refptr<gpu::ClientSharedImage> shared_image,
     const gpu::SyncToken& sync_token,
     GLenum texture_target,
-    const gfx::Size& coded_size,
     const gfx::Rect& visible_rect,
     const gfx::Size& natural_size,
     base::TimeDelta timestamp,
@@ -54,7 +53,7 @@ scoped_refptr<VideoFrame> CreateSharedImageFrame(
                                  std::move(destroyed_callback));
   auto frame = VideoFrame::WrapSharedImage(
       format, std::move(shared_image), sync_token, std::move(callback),
-      coded_size, visible_rect, natural_size, timestamp);
+      visible_rect, natural_size, timestamp);
   return frame;
 }
 
@@ -97,10 +96,10 @@ scoped_refptr<VideoFrame> CreateSharedImageRGBAFrame(
                               gfx::ColorSpace(), kUsages, "RGBAVideoFrame"},
                              pixels);
 
-  return CreateSharedImageFrame(
-      VideoPixelFormat::PIXEL_FORMAT_ABGR, shared_image, {}, GL_TEXTURE_2D,
-      coded_size, visible_rect, visible_rect.size(), base::Seconds(1),
-      std::move(destroyed_callback));
+  return CreateSharedImageFrame(VideoPixelFormat::PIXEL_FORMAT_ABGR,
+                                shared_image, {}, GL_TEXTURE_2D, visible_rect,
+                                visible_rect.size(), base::Seconds(1),
+                                std::move(destroyed_callback));
 }
 
 scoped_refptr<VideoFrame> CreateSharedImageI420Frame(
@@ -182,8 +181,8 @@ scoped_refptr<VideoFrame> CreateSharedImageI420Frame(
 
   return CreateSharedImageFrame(
       VideoPixelFormat::PIXEL_FORMAT_I420, shared_image, sync_token,
-      GL_TEXTURE_2D, coded_size, visible_rect, visible_rect.size(),
-      base::Seconds(1), std::move(destroyed_callback));
+      GL_TEXTURE_2D, visible_rect, visible_rect.size(), base::Seconds(1),
+      std::move(destroyed_callback));
 }
 
 scoped_refptr<VideoFrame> CreateSharedImageNV12Frame(
@@ -264,8 +263,8 @@ scoped_refptr<VideoFrame> CreateSharedImageNV12Frame(
 
   return CreateSharedImageFrame(
       VideoPixelFormat::PIXEL_FORMAT_NV12, shared_image, sync_token,
-      GL_TEXTURE_2D, coded_size, visible_rect, visible_rect.size(),
-      base::Seconds(1), std::move(destroyed_callback));
+      GL_TEXTURE_2D, visible_rect, visible_rect.size(), base::Seconds(1),
+      std::move(destroyed_callback));
 }
 
 }  // namespace media
