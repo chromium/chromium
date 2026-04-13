@@ -141,6 +141,8 @@ generated_dictionary_sources_in_modules = [
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_auction_ad_interest_group.cc",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_auction_ad_interest_group.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_auction_ad_interest_group_key.cc",
+  "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_crypto_key_pair.cc",
+  "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_crypto_key_pair.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_encapsulated_bits.cc",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_encapsulated_bits.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_encapsulated_key.cc",

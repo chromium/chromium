@@ -41,6 +41,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_object_builder.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_throw_dom_exception.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_crypto_key.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_crypto_key_pair.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_encapsulated_bits.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_encapsulated_key.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
@@ -195,18 +196,17 @@ void CryptoResultImpl::CompleteWithKeyPair(const WebCryptoKey& public_key,
   if (!resolver_)
     return;
 
-  ScriptState* script_state = resolver_->GetScriptState();
-  ScriptState::Scope scope(script_state);
+  auto* result = CryptoKeyPair::Create();
+  result->setPublicKey(MakeGarbageCollected<CryptoKey>(public_key));
+  result->setPrivateKey(MakeGarbageCollected<CryptoKey>(private_key));
 
-  // TODO(crbug.com/501108080): add CryptoKeyPair to IDL files to allow usage
-  // of generated V8 classes as opposed to using V8ObjectBuilder
-  V8ObjectBuilder key_pair(script_state);
-
-  key_pair.Add("publicKey", MakeGarbageCollected<CryptoKey>(public_key));
-  key_pair.Add("privateKey", MakeGarbageCollected<CryptoKey>(private_key));
-
-  CHECK_EQ(type_, ResolverType::kAny);
-  resolver_->DowncastTo<IDLAny>()->Resolve(key_pair.V8Object());
+  if (type_ == ResolverType::kTyped) {
+    resolver_->DowncastTo<CryptoKeyPair>()->Resolve(result);
+  } else {
+    ScriptState* script_state = resolver_->GetScriptState();
+    ScriptState::Scope scope(script_state);
+    resolver_->DowncastTo<IDLAny>()->Resolve(result->ToV8(script_state));
+  }
   ClearResolver();
 }
 

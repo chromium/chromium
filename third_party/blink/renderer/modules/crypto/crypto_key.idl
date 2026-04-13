@@ -39,3 +39,9 @@
     [CallWith=ScriptState] readonly attribute object algorithm;
     [CallWith=ScriptState] readonly attribute object usages;
 };
+
+// https://w3c.github.io/webcrypto/#keypair
+dictionary CryptoKeyPair {
+  CryptoKey publicKey;
+  CryptoKey privateKey;
+};
