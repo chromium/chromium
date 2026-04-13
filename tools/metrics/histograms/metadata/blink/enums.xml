@@ -6506,6 +6506,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="5864" label="LanguageModel_Create_Temperature"/>
   <int value="5865" label="LanguageModel_Create_TopK"/>
   <int value="5866" label="HTMLInCanvas"/>
+  <int value="5867" label="ConnectionAllowlist"/>
 </enum>
 
 <!-- LINT.ThenChange(//third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom:WebFeature) -->

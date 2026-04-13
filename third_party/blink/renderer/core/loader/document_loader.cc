@@ -3640,6 +3640,17 @@ void DocumentLoader::RecordUseCountersForCommit() {
     case network::mojom::DeviceBoundSessionUsage::kUnknown:
       break;
   }
+
+  // At this point, the policy_container_ member has already been moved into the
+  // window, so we need to retrieve it from its new location.
+  PolicyContainer* policy_container = frame_->DomWindow()->GetPolicyContainer();
+  if (policy_container &&
+      (policy_container->GetPolicies()
+           .connection_allowlists.enforced.has_value() ||
+       policy_container->GetPolicies()
+           .connection_allowlists.report_only.has_value())) {
+    CountUse(WebFeature::kConnectionAllowlist);
+  }
 }
 
 void DocumentLoader::RecordConsoleMessagesForCommit() {

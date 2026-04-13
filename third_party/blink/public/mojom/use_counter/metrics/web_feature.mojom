@@ -5181,6 +5181,7 @@ enum WebFeature {
   kLanguageModel_Create_Temperature = 5864,
   kLanguageModel_Create_TopK = 5865,
   kHTMLInCanvas = 5866,
+  kConnectionAllowlist = 5867,
 
   // Add new features immediately above this line. Don't change the existing
   // numbers of any item, and don't reuse removed slots. Also don't add extra

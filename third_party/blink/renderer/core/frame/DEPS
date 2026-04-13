@@ -31,8 +31,10 @@ specific_include_rules = {
   "frame_view\.cc": [
     "+ui/gfx/transform.h"
   ],
-  "frame_test_helpers\.h": [
-    "+components/viz/common/surfaces/frame_sink_id.h"
+  "frame_test_helpers(\.cc|\.h)": [
+    "+components/viz/common/surfaces/frame_sink_id.h",
+    "+net/http/http_response_headers.h",
+    "+services/network/public/cpp/connection_allowlist_parser.h",
   ],
   "history_util\.cc": [
     "+url/url_util.h"
