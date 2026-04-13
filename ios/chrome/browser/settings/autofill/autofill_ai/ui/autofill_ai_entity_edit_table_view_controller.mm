@@ -444,9 +444,14 @@ typedef NS_ENUM(NSInteger, ItemType) {
     AutofillAIEntityEditItem* editItem =
         base::apple::ObjCCastStrict<AutofillAIEntityEditItem>(
             tableViewTextEditItem);
-    BOOL isEmpty = editItem.textFieldValue.length == 0;
-    BOOL isRequired = [self.mutator isFieldRequired:editItem.attributeType];
-    BOOL isValid = !(isRequired && isEmpty);
+
+    const autofill::DenseSet<autofill::AttributeType> presentAttributes =
+        [self presentAttributes];
+    const autofill::DenseSet<autofill::AttributeType> missingFields =
+        [self.mutator getMissingRequiredFieldsFor:presentAttributes];
+
+    BOOL isValid = !missingFields.contains(
+        autofill::AttributeType(editItem.attributeType));
     if (editItem.hasValidValueStatus != isValid) {
       editItem.hasValidValueStatus = isValid;
       [self reconfigureCellsForItems:@[ editItem ]];
@@ -462,44 +467,59 @@ typedef NS_ENUM(NSInteger, ItemType) {
 
 #pragma mark - Private
 
+- (autofill::DenseSet<autofill::AttributeType>)presentAttributes {
+  autofill::DenseSet<autofill::AttributeType> present;
+  for (TableViewItem* item in _editItems) {
+    if ([item isKindOfClass:[AutofillAIEntityEditItem class]]) {
+      AutofillAIEntityEditItem* editItem =
+          base::apple::ObjCCastStrict<AutofillAIEntityEditItem>(item);
+      if (editItem.textFieldValue.length > 0) {
+        present.insert(autofill::AttributeType(editItem.attributeType));
+      }
+    } else if ([item isKindOfClass:[AutofillAIEntityCountryItem class]]) {
+      AutofillAIEntityCountryItem* countryItem =
+          base::apple::ObjCCastStrict<AutofillAIEntityCountryItem>(item);
+      if (countryItem.detailText.length > 1) {
+        present.insert(autofill::AttributeType(countryItem.attributeType));
+      }
+    }
+  }
+  return present;
+}
+
 - (BOOL)validateFields {
-  BOOL isValid = YES;
+  const autofill::DenseSet<autofill::AttributeType> presentAttributes =
+      [self presentAttributes];
+  const autofill::DenseSet<autofill::AttributeType> missingFields =
+      [self.mutator getMissingRequiredFieldsFor:presentAttributes];
+
   NSMutableArray<TableViewItem*>* itemsToReconfigure =
       [[NSMutableArray alloc] init];
   for (TableViewItem* item in _editItems) {
     if ([item isKindOfClass:[AutofillAIEntityEditItem class]]) {
       AutofillAIEntityEditItem* editItem =
           base::apple::ObjCCastStrict<AutofillAIEntityEditItem>(item);
-      BOOL isEmpty = editItem.textFieldValue.length == 0;
-      BOOL isRequired = [self.mutator isFieldRequired:editItem.attributeType];
-      BOOL itemIsValid = !(isRequired && isEmpty);
+      BOOL itemIsValid = !missingFields.contains(
+          autofill::AttributeType(editItem.attributeType));
       if (editItem.hasValidValueStatus != itemIsValid) {
         editItem.hasValidValueStatus = itemIsValid;
         [itemsToReconfigure addObject:editItem];
       }
-      if (!itemIsValid) {
-        isValid = NO;
-      }
     } else if ([item isKindOfClass:[AutofillAIEntityCountryItem class]]) {
       AutofillAIEntityCountryItem* countryItem =
           base::apple::ObjCCastStrict<AutofillAIEntityCountryItem>(item);
-      BOOL isEmpty = countryItem.detailText.length <= 1;
-      BOOL isRequired =
-          [self.mutator isFieldRequired:countryItem.attributeType];
-      BOOL itemIsValid = !(isRequired && isEmpty);
+      BOOL itemIsValid = !missingFields.contains(
+          autofill::AttributeType(countryItem.attributeType));
       if (countryItem.hasValidValueStatus != itemIsValid) {
         countryItem.hasValidValueStatus = itemIsValid;
         [itemsToReconfigure addObject:countryItem];
-      }
-      if (!itemIsValid) {
-        isValid = NO;
       }
     }
   }
   if (itemsToReconfigure.count > 0) {
     [self reconfigureCellsForItems:itemsToReconfigure];
   }
-  return isValid;
+  return missingFields.empty();
 }
 
 - (void)updateAccessoryAndSelectionStyleForCountryItem:
