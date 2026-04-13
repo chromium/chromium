@@ -6,6 +6,7 @@
 #import "base/strings/sys_string_conversions.h"
 #import "base/test/ios/wait_util.h"
 #import "components/data_sharing/public/features.h"
+#import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/authentication/test/signin_earl_grey.h"
 #import "ios/chrome/browser/incognito_reauth/ui_bundled/incognito_reauth_util.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
@@ -32,6 +33,7 @@
 #import "ios/testing/earl_grey/matchers.h"
 #import "net/test/embedded_test_server/embedded_test_server.h"
 #import "ui/base/l10n/l10n_util.h"
+#import "ui/base/l10n/l10n_util_mac.h"
 
 using chrome_test_util::AddTabToGroupSubMenuButton;
 using chrome_test_util::AddTabToNewGroupButton;
@@ -71,6 +73,8 @@ using chrome_test_util::TabGroupViewTitle;
 using chrome_test_util::UngroupButton;
 using chrome_test_util::UngroupConfirmationButton;
 using chrome_test_util::WindowWithNumber;
+using l10n_util::GetNSStringF;
+using l10n_util::GetStringUTF16;
 using testing::NavigationBarBackButton;
 
 namespace {
@@ -290,6 +294,32 @@ void TapTabGridEditButton() {
   }
 }
 
+// Taps the purple color pill from the CreateTabGroupView.
+void TapPurpleButton() {
+  [[EarlGrey selectElementWithMatcher:
+                 grey_accessibilityLabel(GetNSStringF(
+                     IDS_IOS_TAB_GROUP_CREATION_ACCESSIBILITY_COLOR_SELECTION,
+                     GetStringUTF16(IDS_TAB_GROUP_COLOR_PURPLE)))]
+      performAction:grey_tap()];
+}
+
+// Checks that the purple color pill from the CreateTabGroupView is selected.
+void CheckPurpleButtonIsSelected() {
+  [[EarlGrey selectElementWithMatcher:
+                 grey_accessibilityLabel(GetNSStringF(
+                     IDS_IOS_TAB_GROUP_CREATION_ACCESSIBILITY_COLOR_SELECTION,
+                     GetStringUTF16(IDS_TAB_GROUP_COLOR_PURPLE)))]
+      assertWithMatcher:grey_selected()];
+}
+
+// Taps the title in the TabGroupView.
+void TapTabGroupTitle() {
+  [[EarlGrey
+      selectElementWithMatcher:grey_accessibilityID(
+                                   kTabGroupTitleButtonToEditGroupIdentifier)]
+      performAction:grey_tap()];
+}
+
 }  // namespace
 
 // Test Tab Groups feature.
@@ -322,6 +352,9 @@ void TapTabGridEditButton() {
     config.features_disabled.push_back(kTabSwitcherOverflowMenu);
   } else {
     config.features_enabled.push_back(kTabSwitcherOverflowMenu);
+  }
+  if ([self isRunningTest:@selector(testUpdateGroupByTappingTitle)]) {
+    config.features_enabled.push_back(kOpenEditGroupViewByTappingTitle);
   }
   return config;
 }
@@ -1944,6 +1977,39 @@ void TapTabGridEditButton() {
   [[EarlGrey
       selectElementWithMatcher:grey_accessibilityID(kTabGroupViewIdentifier)]
       assertWithMatcher:grey_notVisible()];
+}
+
+// Tests that tapping the title displays the edit group view, and the update
+// is performed correctly.
+- (void)testUpdateGroupByTappingTitle {
+  // Create a tab cell with `Tab 1` as its title.
+  [ChromeEarlGrey loadURL:GetQueryTitleURL(self.testServer, kTab1Title)];
+  [ChromeEarlGreyUI openTabGrid];
+
+  CreateDefaultFirstGroupFromTabCellAtIndex(0);
+
+  // Open the group view.
+  OpenTabGroupAtIndex(0);
+
+  // Tap the title.
+  TapTabGroupTitle();
+
+  // Assert that the create button from the CreateTabGroup view is visible.
+  [[EarlGrey selectElementWithMatcher:CreateTabGroupCreateButton()]
+      assertWithMatcher:grey_sufficientlyVisible()];
+
+  // Select purple color.
+  TapPurpleButton();
+
+  // Tap the create button from the CreateTabGroup view.
+  [[EarlGrey selectElementWithMatcher:CreateTabGroupCreateButton()]
+      performAction:grey_tap()];
+
+  // Tap the title.
+  TapTabGroupTitle();
+
+  // Check the purple color is selected.
+  CheckPurpleButtonIsSelected();
 }
 
 @end
