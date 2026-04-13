@@ -5,7 +5,7 @@
 #include "chrome/browser/subscription_eligibility/subscription_eligibility_service_factory.h"
 
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/subscription_eligibility/subscription_eligibility_service.h"
+#include "components/subscription_eligibility/subscription_eligibility_service.h"
 
 namespace subscription_eligibility {
 

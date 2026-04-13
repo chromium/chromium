@@ -6,10 +6,6 @@ source_set("subscription_eligibility") {
   sources = [
     "subscription_eligibility_metrics_provider.cc",
     "subscription_eligibility_metrics_provider.h",
-    "subscription_eligibility_prefs.cc",
-    "subscription_eligibility_prefs.h",
-    "subscription_eligibility_service.cc",
-    "subscription_eligibility_service.h",
     "subscription_eligibility_service_factory.cc",
     "subscription_eligibility_service_factory.h",
   ]
@@ -19,6 +15,7 @@ source_set("subscription_eligibility") {
     "//chrome/browser/profiles:profile",
     "//chrome/browser/profiles:profile_manager",
     "//components/keyed_service/core",
+    "//components/subscription_eligibility",
   ]
 
   deps = [

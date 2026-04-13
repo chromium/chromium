@@ -11,8 +11,8 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
-#include "chrome/browser/subscription_eligibility/subscription_eligibility_service.h"
 #include "chrome/browser/subscription_eligibility/subscription_eligibility_service_factory.h"
+#include "components/subscription_eligibility/subscription_eligibility_service.h"
 #include "third_party/metrics_proto/chrome_user_metrics_extension.pb.h"
 
 namespace subscription_eligibility {

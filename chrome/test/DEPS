@@ -107,6 +107,7 @@ include_rules = [
   "+components/spellcheck",
   "+components/startup_metric_utils/common",
   "+components/storage_monitor",
+  "+components/subscription_eligibility",
   "+components/subresource_filter/content/browser",
   "+components/sync/base",
   "+components/federated_learning",
