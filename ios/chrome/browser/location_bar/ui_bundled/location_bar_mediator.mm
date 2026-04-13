@@ -260,6 +260,9 @@ const CGFloat kIconPointSize = 16.0;
   //  available. User state (signed-out, ineligible) is handled dynamically in
   //  the menu.
   if (IsPageActionMenuAuthFlowEnabled()) {
+    if (_isIncognito) {
+      return NO;
+    }
     if (IsDirectBWGEntryPoint()) {
       // Direct entry point retains existing Gemini-gated behavior.
       return [self isGeminiEligibleForActiveWebState];
