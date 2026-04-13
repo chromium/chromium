@@ -75,14 +75,14 @@ ProxyingURLLoaderFactory::ProxyingURLLoaderFactory(
 // static
 void ProxyingURLLoaderFactory::MaybeProxyRequest(
     const url::Origin& request_initiator,
-    ChromeContentBrowserClient::URLLoaderFactoryType type,
+    content::ContentBrowserClient::URLLoaderFactoryType type,
     content::BrowserContext* context,
     network::URLLoaderFactoryBuilder& factory_builder) {
   if (context->IsOffTheRecord() ||
       !enterprise_auth::PlatformAuthProviderManager::GetInstance()
            .IsEnabled() ||
       request_initiator.scheme() != url::kHttpsScheme ||
-      type != ChromeContentBrowserClient::URLLoaderFactoryType::
+      type != content::ContentBrowserClient::URLLoaderFactoryType::
                   kDocumentSubResource ||
       !g_browser_process->local_state()
            ->GetList(prefs::kExtensibleEnterpriseSSOEnabledIdps)

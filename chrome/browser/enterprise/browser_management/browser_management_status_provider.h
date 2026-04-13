@@ -10,7 +10,7 @@
 #include "components/policy/core/common/management/management_service.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
-#include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
+#include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"  // nogncheck crbug.com/40147906
 #endif
 
 using EnterpriseManagementAuthority = policy::EnterpriseManagementAuthority;

@@ -249,62 +249,6 @@ static_library("browser") {
     "command_updater_impl.h",
     "defaults.cc",
     "defaults.h",
-    "enterprise/browser_management/browser_management_service.cc",
-    "enterprise/browser_management/browser_management_service.h",
-    "enterprise/browser_management/browser_management_status_provider.cc",
-    "enterprise/browser_management/browser_management_status_provider.h",
-    "enterprise/browser_management/management_service_factory.cc",
-    "enterprise/browser_management/management_service_factory.h",
-    "enterprise/chrome_browser_main_extra_parts_enterprise.cc",
-    "enterprise/chrome_browser_main_extra_parts_enterprise.h",
-    "enterprise/connectors/analysis/analysis_service_settings.cc",
-    "enterprise/connectors/analysis/analysis_service_settings.h",
-    "enterprise/connectors/connectors_manager.cc",
-    "enterprise/connectors/connectors_manager.h",
-    "enterprise/connectors/connectors_service.cc",
-    "enterprise/connectors/connectors_service.h",
-    "enterprise/connectors/interstitials/enterprise_block_controller_client.cc",
-    "enterprise/connectors/interstitials/enterprise_block_controller_client.h",
-    "enterprise/connectors/interstitials/enterprise_block_page.cc",
-    "enterprise/connectors/interstitials/enterprise_block_page.h",
-    "enterprise/connectors/interstitials/enterprise_warn_controller_client.cc",
-    "enterprise/connectors/interstitials/enterprise_warn_controller_client.h",
-    "enterprise/connectors/interstitials/enterprise_warn_page.cc",
-    "enterprise/connectors/interstitials/enterprise_warn_page.h",
-    "enterprise/connectors/referrer_cache_utils.cc",
-    "enterprise/connectors/referrer_cache_utils.h",
-    "enterprise/core/dependency_factory_impl.cc",
-    "enterprise/core/dependency_factory_impl.h",
-    "enterprise/data_protection/view_source_navigation_throttle.cc",
-    "enterprise/data_protection/view_source_navigation_throttle.h",
-    "enterprise/encryption/cache_encryption_provider_impl.cc",
-    "enterprise/encryption/cache_encryption_provider_impl.h",
-    "enterprise/identifiers/profile_id_delegate_impl.cc",
-    "enterprise/identifiers/profile_id_delegate_impl.h",
-    "enterprise/identifiers/profile_id_service_factory.cc",
-    "enterprise/identifiers/profile_id_service_factory.h",
-    "enterprise/profile_management/saml_response_parser.cc",
-    "enterprise/profile_management/saml_response_parser.h",
-    "enterprise/reporting/legacy_tech/legacy_tech_report_generator.cc",
-    "enterprise/reporting/legacy_tech/legacy_tech_report_generator.h",
-    "enterprise/reporting/legacy_tech/legacy_tech_report_policy_handler.cc",
-    "enterprise/reporting/legacy_tech/legacy_tech_report_policy_handler.h",
-    "enterprise/reporting/legacy_tech/legacy_tech_service.cc",
-    "enterprise/reporting/legacy_tech/legacy_tech_service.h",
-    "enterprise/reporting/prefs.cc",
-    "enterprise/reporting/prefs.h",
-    "enterprise/reporting/profile_report_generator_delegate_base.cc",
-    "enterprise/reporting/profile_report_generator_delegate_base.h",
-    "enterprise/signals/profile_signals_collector.cc",
-    "enterprise/signals/profile_signals_collector.h",
-    "enterprise/signin/interstitials/managed_profile_required_controller_client.cc",
-    "enterprise/signin/interstitials/managed_profile_required_controller_client.h",
-    "enterprise/signin/interstitials/managed_profile_required_page.cc",
-    "enterprise/signin/interstitials/managed_profile_required_page.h",
-    "enterprise/util/affiliation.cc",
-    "enterprise/util/affiliation.h",
-    "enterprise/util/managed_browser_utils.cc",
-    "enterprise/util/managed_browser_utils.h",
     "expired_flags_list.h",
     "file_select_helper.cc",
     "file_select_helper.h",
@@ -935,6 +879,10 @@ static_library("browser") {
   # "browser_public_dependencies".
   allow_circular_includes_from = [
     "//chrome/browser/browsing_data:impl",
+
+    # enterprise:impl includes headers from //chrome/browser that can't be
+    # split out yet.
+    "//chrome/browser/enterprise:impl",
     "//chrome/browser/ntp_tiles:impl",
     "//chrome/browser/memory:impl",
     "//chrome/browser/preloading/search_preload:search_preload",
@@ -1338,6 +1286,8 @@ static_library("browser") {
     "//chrome/browser/download:impl",
     "//chrome/browser/download:status_text_builder_utils",
     "//chrome/browser/engagement",
+    "//chrome/browser/enterprise",
+    "//chrome/browser/enterprise:impl",
     "//chrome/browser/enterprise/browser_management:management_identity",
     "//chrome/browser/enterprise/browser_management:management_identity_impl",
     "//chrome/browser/enterprise/platform_auth:features",
@@ -2618,21 +2568,6 @@ static_library("browser") {
       "download/android/service/download_task_scheduler.cc",
       "download/android/service/download_task_scheduler.h",
       "download/android/string_utils.cc",
-      "enterprise/platform_auth/entra_provider_android.cc",
-      "enterprise/platform_auth/entra_provider_android.h",
-      "enterprise/reporting/browser_report_generator_android.cc",
-      "enterprise/reporting/browser_report_generator_android.h",
-      "enterprise/reporting/profile_report_generator_android.cc",
-      "enterprise/reporting/profile_report_generator_android.h",
-      "enterprise/reporting/real_time_report_controller_android.cc",
-      "enterprise/reporting/real_time_report_controller_android.h",
-      "enterprise/reporting/report_scheduler_android.cc",
-      "enterprise/reporting/report_scheduler_android.h",
-      "enterprise/reporting/reporting_delegate_factory_android.cc",
-      "enterprise/reporting/reporting_delegate_factory_android.h",
-      "enterprise/util/android_enterprise_info.cc",
-      "enterprise/util/android_enterprise_info.h",
-      "enterprise/util/data_protection_bridge.cc",
       "first_run/android/first_run_prefs.cc",
       "first_run/android/first_run_prefs.h",
       "first_run/android/first_run_utils.cc",
@@ -3214,48 +3149,6 @@ static_library("browser") {
       "chrome_browser_interface_binders_webui_parts_desktop.cc",
       "chrome_process_singleton.cc",
       "chrome_process_singleton.h",
-      "enterprise/data_protection/data_protection_features.cc",
-      "enterprise/data_protection/data_protection_features.h",
-      "enterprise/data_protection/data_protection_navigation_controller.cc",
-      "enterprise/data_protection/data_protection_navigation_controller.h",
-      "enterprise/data_protection/data_protection_navigation_observer.cc",
-      "enterprise/data_protection/data_protection_navigation_observer.h",
-      "enterprise/data_protection/data_protection_page_user_data.cc",
-      "enterprise/data_protection/data_protection_page_user_data.h",
-      "enterprise/data_protection/data_protection_ui_controller.cc",
-      "enterprise/data_protection/data_protection_ui_controller.h",
-      "enterprise/data_protection/data_protection_url_lookup_service_factory.cc",
-      "enterprise/data_protection/data_protection_url_lookup_service_factory.h",
-      "enterprise/reporting/browser_report_generator_desktop.cc",
-      "enterprise/reporting/browser_report_generator_desktop.h",
-      "enterprise/reporting/extension_request/extension_request_notification.cc",
-      "enterprise/reporting/extension_request/extension_request_notification.h",
-      "enterprise/reporting/extension_request/extension_request_observer.cc",
-      "enterprise/reporting/extension_request/extension_request_observer.h",
-      "enterprise/reporting/extension_request/extension_request_observer_factory.cc",
-      "enterprise/reporting/extension_request/extension_request_observer_factory.h",
-      "enterprise/reporting/extension_request/extension_request_policy_handler.cc",
-      "enterprise/reporting/extension_request/extension_request_policy_handler.h",
-      "enterprise/reporting/extension_request/extension_request_report_generator.cc",
-      "enterprise/reporting/extension_request/extension_request_report_generator.h",
-      "enterprise/reporting/profile_report_generator_desktop.cc",
-      "enterprise/reporting/profile_report_generator_desktop.h",
-      "enterprise/reporting/real_time_report_controller_desktop.cc",
-      "enterprise/reporting/real_time_report_controller_desktop.h",
-      "enterprise/reporting/real_time_report_generator_desktop.cc",
-      "enterprise/reporting/real_time_report_generator_desktop.h",
-      "enterprise/reporting/report_generator_desktop.cc",
-      "enterprise/reporting/report_generator_desktop.h",
-      "enterprise/reporting/report_scheduler_desktop.cc",
-      "enterprise/reporting/report_scheduler_desktop.h",
-      "enterprise/reporting/reporting_delegate_factory_desktop.cc",
-      "enterprise/reporting/reporting_delegate_factory_desktop.h",
-      "enterprise/signals/client_certificate_fetcher.cc",
-      "enterprise/signals/client_certificate_fetcher.h",
-      "enterprise/signals/context_info_fetcher.cc",
-      "enterprise/signals/context_info_fetcher.h",
-      "enterprise/signals/device_info_fetcher.cc",
-      "enterprise/signals/device_info_fetcher.h",
       "first_run/bookmark_importer.cc",
       "first_run/bookmark_importer.h",
       "first_run/first_run.cc",
@@ -4012,8 +3905,6 @@ static_library("browser") {
         "download/bubble/download_bubble_utils.h",
         "download/bubble/download_display_controller.cc",
         "download/bubble/download_display_controller.h",
-        "enterprise/remote_commands/cbcm_remote_commands_factory.cc",
-        "enterprise/remote_commands/cbcm_remote_commands_factory.h",
         "first_run/upgrade_util.cc",
         "first_run/upgrade_util.h",
         "hid/hid_status_icon.cc",
@@ -4147,20 +4038,6 @@ static_library("browser") {
       "device_reauth/chromeos/authenticator_chromeos.h",
       "device_reauth/chromeos/device_authenticator_chromeos.cc",
       "device_reauth/chromeos/device_authenticator_chromeos.h",
-      "enterprise/connectors/analysis/file_transfer_analysis_delegate.cc",
-      "enterprise/connectors/analysis/file_transfer_analysis_delegate.h",
-      "enterprise/connectors/analysis/source_destination_matcher_ash.cc",
-      "enterprise/connectors/analysis/source_destination_matcher_ash.h",
-      "enterprise/connectors/device_trust/ash/ash_attestation_policy_observer.cc",
-      "enterprise/connectors/device_trust/ash/ash_attestation_policy_observer.h",
-      "enterprise/connectors/device_trust/attestation/ash/flex_attester.cc",
-      "enterprise/connectors/device_trust/attestation/ash/flex_attester.h",
-      "enterprise/connectors/device_trust/signals/ash/ash_signals_filterer.cc",
-      "enterprise/connectors/device_trust/signals/ash/ash_signals_filterer.h",
-      "enterprise/connectors/device_trust/signals/decorators/ash/ash_signals_decorator.cc",
-      "enterprise/connectors/device_trust/signals/decorators/ash/ash_signals_decorator.h",
-      "enterprise/reporting/android_app_info_generator.cc",
-      "enterprise/reporting/android_app_info_generator.h",
       "exo_parts.cc",
       "exo_parts.h",
       "file_system_access/cloud_identifier/cloud_identifier_util_ash.cc",
@@ -5335,20 +5212,6 @@ static_library("browser") {
     }
   } else {  # !is_chromeos
     sources += [
-      "enterprise/remote_commands/clear_browsing_data_job.cc",
-      "enterprise/remote_commands/clear_browsing_data_job.h",
-      "enterprise/remote_commands/job_profile_picker.cc",
-      "enterprise/remote_commands/job_profile_picker.h",
-      "enterprise/remote_commands/user_remote_commands_factory.cc",
-      "enterprise/remote_commands/user_remote_commands_factory.h",
-      "enterprise/remote_commands/user_remote_commands_service.cc",
-      "enterprise/remote_commands/user_remote_commands_service.h",
-      "enterprise/remote_commands/user_remote_commands_service_factory.cc",
-      "enterprise/remote_commands/user_remote_commands_service_factory.h",
-      "enterprise/reporting/cloud_profile_reporting_service.cc",
-      "enterprise/reporting/cloud_profile_reporting_service.h",
-      "enterprise/reporting/cloud_profile_reporting_service_factory.cc",
-      "enterprise/reporting/cloud_profile_reporting_service_factory.h",
       "fullscreen.h",
       "metrics/family_link_user_metrics_provider.cc",
       "metrics/family_link_user_metrics_provider.h",
@@ -5392,15 +5255,7 @@ static_library("browser") {
   }
 
   if (is_mac || is_win || is_android) {
-    sources += [
-      "enterprise/platform_auth/platform_auth_navigation_throttle.cc",
-      "enterprise/platform_auth/platform_auth_navigation_throttle.h",
-      "enterprise/platform_auth/platform_auth_policy_observer.cc",
-      "enterprise/platform_auth/platform_auth_policy_observer.h",
-      "enterprise/platform_auth/platform_auth_provider.h",
-      "enterprise/platform_auth/platform_auth_provider_manager.cc",
-      "enterprise/platform_auth/platform_auth_provider_manager.h",
-    ]
+    sources += []
   }
 
   if (is_mac || is_win) {
@@ -5438,12 +5293,6 @@ static_library("browser") {
       "device_reauth/win/authenticator_win.h",
       "device_reauth/win/device_authenticator_win.cc",
       "device_reauth/win/device_authenticator_win.h",
-      "enterprise/platform_auth/cloud_ap_provider_win.cc",
-      "enterprise/platform_auth/cloud_ap_provider_win.h",
-      "enterprise/platform_auth/cloud_ap_utils_win.cc",
-      "enterprise/platform_auth/cloud_ap_utils_win.h",
-      "enterprise/signals/device_info_fetcher_win.cc",
-      "enterprise/signals/device_info_fetcher_win.h",
       "first_run/first_run_internal_win.cc",
       "first_run/upgrade_util_win.cc",
       "first_run/upgrade_util_win.h",
@@ -5595,18 +5444,6 @@ static_library("browser") {
       "device_reauth/mac/authenticator_mac.mm",
       "device_reauth/mac/device_authenticator_mac.h",
       "device_reauth/mac/device_authenticator_mac.mm",
-      "enterprise/platform_auth/extensible_enterprise_sso_entra.h",
-      "enterprise/platform_auth/extensible_enterprise_sso_entra.mm",
-      "enterprise/platform_auth/extensible_enterprise_sso_policy_handler.cc",
-      "enterprise/platform_auth/extensible_enterprise_sso_policy_handler.h",
-      "enterprise/platform_auth/extensible_enterprise_sso_prefs_handler.cc",
-      "enterprise/platform_auth/extensible_enterprise_sso_prefs_handler.h",
-      "enterprise/platform_auth/extensible_enterprise_sso_provider_mac.h",
-      "enterprise/platform_auth/extensible_enterprise_sso_provider_mac.mm",
-      "enterprise/platform_auth/platform_auth_proxying_url_loader_factory.h",
-      "enterprise/platform_auth/platform_auth_proxying_url_loader_factory.mm",
-      "enterprise/signals/device_info_fetcher_mac.h",
-      "enterprise/signals/device_info_fetcher_mac.mm",
       "file_select_helper_mac.mm",
       "first_run/first_run_internal_mac.mm",
       "first_run/upgrade_util_mac.cc",
@@ -5703,10 +5540,7 @@ static_library("browser") {
   }
 
   if (enterprise_watermark) {
-    sources += [
-      "enterprise/watermark/settings.cc",
-      "enterprise/watermark/settings.h",
-    ]
+    sources += []
     deps += [
       "//chrome/browser/enterprise/watermark:watermark_view_lib",
       "//chrome/browser/ui/webui/watermark",
@@ -5716,37 +5550,18 @@ static_library("browser") {
   }
 
   if (enterprise_data_controls) {
-    sources += [
-      "//chrome/browser/enterprise/data_controls/chrome_clipboard_context.cc",
-      "//chrome/browser/enterprise/data_controls/chrome_clipboard_context.h",
-      "//chrome/browser/enterprise/data_protection/data_protection_clipboard_utils.cc",
-      "//chrome/browser/enterprise/data_protection/data_protection_clipboard_utils.h",
-    ]
+    sources += []
 
     # TODO(b/352728209): Update the logic for which file compiles on Android
     # when the proper methods have been migrated to components/.
     if (!is_android) {
-      sources += [
-        "//chrome/browser/enterprise/data_protection/paste_allowed_request.cc",
-        "//chrome/browser/enterprise/data_protection/paste_allowed_request.h",
-      ]
+      sources += []
     }
     deps += [ "//chrome/browser/enterprise/data_controls" ]
   }
 
   if (enterprise_client_certificates) {
-    sources += [
-      "enterprise/client_certificates/browser_context_delegate.cc",
-      "enterprise/client_certificates/browser_context_delegate.h",
-      "enterprise/client_certificates/cert_utils.cc",
-      "enterprise/client_certificates/cert_utils.h",
-      "enterprise/client_certificates/certificate_provisioning_service_factory.cc",
-      "enterprise/client_certificates/certificate_provisioning_service_factory.h",
-      "enterprise/client_certificates/certificate_store_factory.cc",
-      "enterprise/client_certificates/certificate_store_factory.h",
-      "enterprise/client_certificates/profile_context_delegate.cc",
-      "enterprise/client_certificates/profile_context_delegate.h",
-    ]
+    sources += []
     deps += [
       "//chrome/browser/enterprise/connectors/device_trust/key_management/core/network",
       "//components/enterprise/client_certificates/core",
@@ -5758,48 +5573,12 @@ static_library("browser") {
   }
 
   if (is_linux || is_win || is_mac || is_chromeos || is_android) {
-    sources += [
-      "enterprise/signals/user_delegate_impl.cc",
-      "enterprise/signals/user_delegate_impl.h",
-      "enterprise/signals/user_permission_service_factory.cc",
-      "enterprise/signals/user_permission_service_factory.h",
-    ]
+    sources += []
     deps += [ "//chrome/browser/enterprise/connectors/device_trust/common" ]
   }
 
   if (is_linux || is_win || is_mac || is_chromeos) {
     sources += [
-      "enterprise/connectors/device_trust/attestation/browser/attestation_switches.cc",
-      "enterprise/connectors/device_trust/attestation/browser/attestation_switches.h",
-      "enterprise/connectors/device_trust/attestation/browser/attester.h",
-      "enterprise/connectors/device_trust/attestation/browser/browser_attestation_service.cc",
-      "enterprise/connectors/device_trust/attestation/browser/browser_attestation_service.h",
-      "enterprise/connectors/device_trust/attestation/browser/crypto_utility.cc",
-      "enterprise/connectors/device_trust/attestation/browser/crypto_utility.h",
-      "enterprise/connectors/device_trust/attestation/browser/device_attester.cc",
-      "enterprise/connectors/device_trust/attestation/browser/device_attester.h",
-      "enterprise/connectors/device_trust/attestation/browser/google_keys.cc",
-      "enterprise/connectors/device_trust/attestation/browser/google_keys.h",
-      "enterprise/connectors/device_trust/attestation/browser/profile_attester.cc",
-      "enterprise/connectors/device_trust/attestation/browser/profile_attester.h",
-      "enterprise/connectors/device_trust/device_trust_connector_service.cc",
-      "enterprise/connectors/device_trust/device_trust_connector_service.h",
-      "enterprise/connectors/device_trust/device_trust_connector_service_factory.cc",
-      "enterprise/connectors/device_trust/device_trust_connector_service_factory.h",
-      "enterprise/connectors/device_trust/device_trust_service.cc",
-      "enterprise/connectors/device_trust/device_trust_service.h",
-      "enterprise/connectors/device_trust/device_trust_service_factory.cc",
-      "enterprise/connectors/device_trust/device_trust_service_factory.h",
-      "enterprise/connectors/device_trust/navigation_throttle.cc",
-      "enterprise/connectors/device_trust/navigation_throttle.h",
-      "enterprise/connectors/device_trust/signals/decorators/common/context_signals_decorator.cc",
-      "enterprise/connectors/device_trust/signals/decorators/common/context_signals_decorator.h",
-      "enterprise/connectors/device_trust/signals/signals_filterer.cc",
-      "enterprise/connectors/device_trust/signals/signals_filterer.h",
-      "enterprise/connectors/device_trust/signals/signals_service_factory.cc",
-      "enterprise/connectors/device_trust/signals/signals_service_factory.h",
-      "enterprise/connectors/device_trust/signals/signals_service_impl.cc",
-      "enterprise/connectors/device_trust/signals/signals_service_impl.h",
       "metrics/structured/chrome_structured_metrics_delegate.cc",
       "metrics/structured/chrome_structured_metrics_delegate.h",
 
@@ -5833,29 +5612,13 @@ static_library("browser") {
   }
 
   if (is_linux || is_win || is_mac || is_android) {
-    sources += [
-      "enterprise/idle/action.cc",
-      "enterprise/idle/action.h",
-      "enterprise/idle/action_runner.cc",
-      "enterprise/idle/action_runner.h",
-      "enterprise/idle/idle_service.cc",
-      "enterprise/idle/idle_service.h",
-      "enterprise/idle/idle_service_factory.cc",
-      "enterprise/idle/idle_service_factory.h",
-      "enterprise/signals/signals_aggregator_factory.cc",
-      "enterprise/signals/signals_aggregator_factory.h",
-    ]
+    sources += []
     deps += [ "//components/enterprise/idle" ]
   }
 
   if (enterprise_cloud_content_analysis || is_android ||
       safe_browsing_mode == 1) {
-    sources += [
-      "enterprise/connectors/analysis/content_analysis_info.cc",
-      "enterprise/connectors/analysis/content_analysis_info.h",
-      "enterprise/connectors/common.cc",
-      "enterprise/connectors/common.h",
-    ]
+    sources += []
     deps += [
       "//components/enterprise/common/proto:chrome_reporting_entity",
       "//components/enterprise/connectors/core",
@@ -5865,28 +5628,7 @@ static_library("browser") {
   }
 
   if (enterprise_cloud_content_analysis) {
-    sources += [
-      "enterprise/connectors/analysis/clipboard_analysis_request.cc",
-      "enterprise/connectors/analysis/clipboard_analysis_request.h",
-      "enterprise/connectors/analysis/clipboard_request_handler.cc",
-      "enterprise/connectors/analysis/clipboard_request_handler.h",
-      "enterprise/connectors/analysis/content_analysis_delegate.cc",
-      "enterprise/connectors/analysis/content_analysis_delegate.h",
-      "enterprise/connectors/analysis/content_analysis_dialog_controller.cc",
-      "enterprise/connectors/analysis/content_analysis_dialog_controller.h",
-      "enterprise/connectors/analysis/content_analysis_dialog_delegate.cc",
-      "enterprise/connectors/analysis/content_analysis_dialog_delegate.h",
-      "enterprise/connectors/analysis/content_analysis_downloads_delegate.cc",
-      "enterprise/connectors/analysis/content_analysis_downloads_delegate.h",
-      "enterprise/connectors/analysis/content_analysis_views.cc",
-      "enterprise/connectors/analysis/content_analysis_views.h",
-      "enterprise/connectors/analysis/files_request_handler.cc",
-      "enterprise/connectors/analysis/files_request_handler.h",
-      "enterprise/connectors/analysis/page_print_analysis_request.cc",
-      "enterprise/connectors/analysis/page_print_analysis_request.h",
-      "enterprise/connectors/analysis/page_print_request_handler.cc",
-      "enterprise/connectors/analysis/page_print_request_handler.h",
-    ]
+    sources += []
     deps += [
       "//components/enterprise/common/proto:chrome_reporting_entity",
       "//components/enterprise/connectors/core:cloud_content_scanning",
@@ -5896,86 +5638,13 @@ static_library("browser") {
   }
 
   if (enterprise_local_content_analysis) {
-    sources += [
-      "enterprise/connectors/analysis/local_binary_upload_service.cc",
-      "enterprise/connectors/analysis/local_binary_upload_service.h",
-      "enterprise/connectors/analysis/local_binary_upload_service_factory.cc",
-      "enterprise/connectors/analysis/local_binary_upload_service_factory.h",
-    ]
+    sources += []
     public_deps +=
         [ "//chrome/browser/enterprise/connectors/analysis:sdk_manager" ]
   }
 
   if (is_linux || is_win || is_mac) {
     sources += [
-      "enterprise/connectors/device_trust/browser/signing_key_policy_observer.cc",
-      "enterprise/connectors/device_trust/browser/signing_key_policy_observer.h",
-      "enterprise/connectors/device_trust/signals/decorators/browser/browser_signals_decorator.cc",
-      "enterprise/connectors/device_trust/signals/decorators/browser/browser_signals_decorator.h",
-      "enterprise/idle/dialog_manager.cc",
-      "enterprise/idle/dialog_manager.h",
-      "enterprise/profile_management/oidc_auth_response_capture_navigation_throttle.cc",
-      "enterprise/profile_management/oidc_auth_response_capture_navigation_throttle.h",
-      "enterprise/profile_management/profile_management_features.cc",
-      "enterprise/profile_management/profile_management_features.h",
-      "enterprise/profile_management/profile_management_navigation_throttle.cc",
-      "enterprise/profile_management/profile_management_navigation_throttle.h",
-      "enterprise/remote_commands/rotate_attestation_credential_job.cc",
-      "enterprise/remote_commands/rotate_attestation_credential_job.h",
-      "enterprise/reporting/saas_usage/navigation_handle_data_delegate.cc",
-      "enterprise/reporting/saas_usage/navigation_handle_data_delegate.h",
-      "enterprise/reporting/saas_usage/saas_usage_navigation_observer.cc",
-      "enterprise/reporting/saas_usage/saas_usage_navigation_observer.h",
-      "enterprise/reporting/saas_usage/saas_usage_report_factory_desktop.cc",
-      "enterprise/reporting/saas_usage/saas_usage_report_factory_desktop.h",
-      "enterprise/reporting/saas_usage/saas_usage_report_scheduler_delegate_desktop.cc",
-      "enterprise/reporting/saas_usage/saas_usage_report_scheduler_delegate_desktop.h",
-      "enterprise/reporting/saas_usage/saas_usage_report_uploader_desktop.cc",
-      "enterprise/reporting/saas_usage/saas_usage_report_uploader_desktop.h",
-      "enterprise/reporting/saas_usage/saas_usage_reporting_controller_factory.cc",
-      "enterprise/reporting/saas_usage/saas_usage_reporting_controller_factory.h",
-      "enterprise/reporting/saas_usage/saas_usage_reporting_delegate_factory_desktop.cc",
-      "enterprise/reporting/saas_usage/saas_usage_reporting_delegate_factory_desktop.h",
-      "enterprise/signals/system_signals_service_host_factory.cc",
-      "enterprise/signals/system_signals_service_host_factory.h",
-      "enterprise/signin/enterprise_signin_prefs.cc",
-      "enterprise/signin/enterprise_signin_prefs.h",
-      "enterprise/signin/enterprise_signin_service.cc",
-      "enterprise/signin/enterprise_signin_service.h",
-      "enterprise/signin/enterprise_signin_service_factory.cc",
-      "enterprise/signin/enterprise_signin_service_factory.h",
-      "enterprise/signin/managed_profile_creation_controller.cc",
-      "enterprise/signin/managed_profile_creation_controller.h",
-      "enterprise/signin/managed_profile_creator.cc",
-      "enterprise/signin/managed_profile_creator.h",
-      "enterprise/signin/managed_profile_required_navigation_throttle.cc",
-      "enterprise/signin/managed_profile_required_navigation_throttle.h",
-      "enterprise/signin/oidc_authentication_signin_interceptor.cc",
-      "enterprise/signin/oidc_authentication_signin_interceptor.h",
-      "enterprise/signin/oidc_authentication_signin_interceptor_factory.cc",
-      "enterprise/signin/oidc_authentication_signin_interceptor_factory.h",
-      "enterprise/signin/oidc_managed_profile_creation_delegate.cc",
-      "enterprise/signin/oidc_managed_profile_creation_delegate.h",
-      "enterprise/signin/oidc_metrics_utils.cc",
-      "enterprise/signin/oidc_metrics_utils.h",
-      "enterprise/signin/profile_management_disclaimer_service.cc",
-      "enterprise/signin/profile_management_disclaimer_service.h",
-      "enterprise/signin/profile_management_disclaimer_service_factory.cc",
-      "enterprise/signin/profile_management_disclaimer_service_factory.h",
-      "enterprise/signin/profile_token_web_signin_interceptor.cc",
-      "enterprise/signin/profile_token_web_signin_interceptor.h",
-      "enterprise/signin/profile_token_web_signin_interceptor_factory.cc",
-      "enterprise/signin/profile_token_web_signin_interceptor_factory.h",
-      "enterprise/signin/token_managed_profile_creation_delegate.cc",
-      "enterprise/signin/token_managed_profile_creation_delegate.h",
-      "enterprise/signin/user_policy_oidc_signin_service.cc",
-      "enterprise/signin/user_policy_oidc_signin_service.h",
-      "enterprise/signin/user_policy_oidc_signin_service_factory.cc",
-      "enterprise/signin/user_policy_oidc_signin_service_factory.h",
-      "enterprise/webstore/chrome_web_store_navigation_throttle.cc",
-      "enterprise/webstore/chrome_web_store_navigation_throttle.h",
-      "enterprise/webstore/features.cc",
-      "enterprise/webstore/features.h",
       "policy/cloud/profile_token_policy_web_signin_service.cc",
       "policy/cloud/profile_token_policy_web_signin_service.h",
       "policy/cloud/profile_token_policy_web_signin_service_factory.cc",
@@ -6030,8 +5699,6 @@ static_library("browser") {
     sources += [
       "chrome_browser_main_linux.cc",
       "chrome_browser_main_linux.h",
-      "enterprise/signals/device_info_fetcher_linux.cc",
-      "enterprise/signals/device_info_fetcher_linux.h",
       "memory_details_linux.cc",
       "metrics/bluetooth_metrics_provider.cc",
       "metrics/bluetooth_metrics_provider.h",
@@ -6247,10 +5914,7 @@ static_library("browser") {
   }
 
   if (enterprise_content_analysis) {
-    sources += [
-      "enterprise/data_protection/print_utils.cc",
-      "enterprise/data_protection/print_utils.h",
-    ]
+    sources += []
   }
 
   if (enable_captive_portal_detection) {
@@ -6399,10 +6063,7 @@ static_library("browser") {
   }
 
   if (enable_extensions_core) {
-    sources += [
-      "enterprise/reporting/extension_info.cc",
-      "enterprise/reporting/extension_info.h",
-    ]
+    sources += []
     if (enable_guest_view) {
       deps += [
         "//chrome/browser/guest_view",
@@ -6967,6 +6628,7 @@ group("browser_public_dependencies") {
     "//base",
     "//chrome/app/vector_icons",
     "//chrome/browser/browsing_topics",
+    "//chrome/browser/enterprise",
     "//chrome/browser/optimization_guide:optimization_guide_on_device_model_installer",
     "//chrome/browser/plugins",
     "//chrome/browser/ui:ui_public_dependencies",

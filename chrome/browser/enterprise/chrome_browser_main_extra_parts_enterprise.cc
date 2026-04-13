@@ -4,6 +4,7 @@
 
 #include "chrome/browser/enterprise/chrome_browser_main_extra_parts_enterprise.h"
 
+#include "chrome/browser/policy/messaging_layer/public/report_client.h"
 #include "components/enterprise/buildflags/buildflags.h"
 #include "content/public/browser/browser_thread.h"
 

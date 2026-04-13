@@ -302,6 +302,8 @@ static_library("ui") {
     "//chrome/browser/data_sharing",
     "//chrome/browser/devtools",
     "//chrome/browser/engagement",
+    "//chrome/browser/enterprise",
+    "//chrome/browser/enterprise:impl",
     "//chrome/browser/enterprise/browser_management:management_identity",
     "//chrome/browser/external_protocol",
     "//chrome/browser/favicon",
@@ -758,6 +760,11 @@ static_library("ui") {
   }
 
   allow_circular_includes_from += [
+    # enterprise headers include from //chrome/browser/ui (e.g. idle_dialog.h).
+    # enterprise:impl includes headers from //chrome/browser/ui that can't be
+    # split out yet.
+    "//chrome/browser/enterprise",
+    "//chrome/browser/enterprise:impl",
     "//chrome/browser/ui/autofill/payments",
     "//chrome/browser/ui/autofill/payments:impl",
 

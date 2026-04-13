@@ -9,7 +9,6 @@
 
 #include "base/functional/callback_forward.h"
 #include "base/supports_user_data.h"
-#include "chrome/browser/policy/chrome_browser_policy_connector.h"
 #include "components/enterprise/buildflags/buildflags.h"
 #include "components/enterprise/connectors/core/analysis_settings.h"
 #include "components/enterprise/connectors/core/common.h"
@@ -18,15 +17,19 @@
 #include "extensions/buildflags/buildflags.h"
 
 #if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
-#include "chrome/browser/safe_browsing/cloud_content_scanning/deep_scanning_utils.h"
+#include "chrome/browser/safe_browsing/cloud_content_scanning/deep_scanning_utils.h"  // nogncheck crbug.com/40147906
 #include "components/enterprise/connectors/core/cloud_content_scanning/binary_upload_service.h"
 #endif  // BUILDFLAG(SAFE_BROWSING_AVAILABLE)
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
-#include "chrome/common/extensions/api/enterprise_reporting_private.h"
+#include "chrome/common/extensions/api/enterprise_reporting_private.h"  // nogncheck crbug.com/40147906
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
 class Profile;
+
+namespace policy {
+class BrowserPolicyConnector;
+}  // namespace policy
 
 namespace content {
 class WebContents;

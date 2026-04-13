@@ -31,6 +31,7 @@
 #include "components/policy/policy_constants.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/testing_pref_service.h"
+#include "content/public/browser/content_browser_client.h"
 #include "content/public/test/browser_task_environment.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -234,7 +235,7 @@ TEST_F(PlatformAuthProxyingURLLoaderFactoryTest,
 
   ProxyingURLLoaderFactory::MaybeProxyRequest(
       url::Origin::Create(GURL("https://foobar.example.com/")),
-      ChromeContentBrowserClient::URLLoaderFactoryType::kDocumentSubResource,
+      content::ContentBrowserClient::URLLoaderFactoryType::kDocumentSubResource,
       &testing_profile_, factory_builder);
 
   scoped_refptr<network::SharedURLLoaderFactory> resulting_factory =
@@ -253,7 +254,7 @@ TEST_F(PlatformAuthProxyingURLLoaderFactoryTest, MaybeProxyRequest_NoHTTPS) {
 
   ProxyingURLLoaderFactory::MaybeProxyRequest(
       url::Origin::Create(GURL("file://foobar.example.com/")),
-      ChromeContentBrowserClient::URLLoaderFactoryType::kDocumentSubResource,
+      content::ContentBrowserClient::URLLoaderFactoryType::kDocumentSubResource,
       &testing_profile_, factory_builder);
 
   scoped_refptr<network::SharedURLLoaderFactory> resulting_factory =
@@ -273,7 +274,7 @@ TEST_F(PlatformAuthProxyingURLLoaderFactoryTest,
 
   ProxyingURLLoaderFactory::MaybeProxyRequest(
       url::Origin::Create(GURL("https://foobar.example.com/")),
-      ChromeContentBrowserClient::URLLoaderFactoryType::kNavigation,
+      content::ContentBrowserClient::URLLoaderFactoryType::kNavigation,
       &testing_profile_, factory_builder);
 
   scoped_refptr<network::SharedURLLoaderFactory> resulting_factory =
@@ -295,7 +296,7 @@ TEST_F(PlatformAuthProxyingURLLoaderFactoryTest,
 
   ProxyingURLLoaderFactory::MaybeProxyRequest(
       url::Origin::Create(GURL("https://foobar.example.com/")),
-      ChromeContentBrowserClient::URLLoaderFactoryType::kDocumentSubResource,
+      content::ContentBrowserClient::URLLoaderFactoryType::kDocumentSubResource,
       &testing_profile_, factory_builder);
 
   scoped_refptr<network::SharedURLLoaderFactory> resulting_factory =
@@ -319,7 +320,7 @@ TEST_F(PlatformAuthProxyingURLLoaderFactoryTest,
 
   ProxyingURLLoaderFactory::MaybeProxyRequest(
       url::Origin::Create(GURL("https://foobar.example.com/")),
-      ChromeContentBrowserClient::URLLoaderFactoryType::kDocumentSubResource,
+      content::ContentBrowserClient::URLLoaderFactoryType::kDocumentSubResource,
       &testing_profile_, factory_builder);
 
   scoped_refptr<network::SharedURLLoaderFactory> resulting_factory =

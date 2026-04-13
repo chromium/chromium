@@ -24,13 +24,17 @@ static_library("safe_browsing") {
     "//chrome/browser/notifications",
   ]
 
-  allow_circular_includes_from = []
+  allow_circular_includes_from = [
+    # enterprise headers include deep_scanning_utils.h.
+    "//chrome/browser/enterprise",
+  ]
 
   deps = [
     "//build:branding_buildflags",
     "//chrome/app:generated_resources",
     "//chrome/browser:browser_features",
     "//chrome/browser:browser_process",
+    "//chrome/browser/enterprise",
     "//chrome/browser/enterprise/connectors/reporting",
     "//chrome/browser/google",
     "//chrome/browser/history",

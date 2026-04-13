@@ -42,8 +42,8 @@
 #include "google_apis/gaia/gaia_auth_util.h"
 
 #if BUILDFLAG(ENTERPRISE_CONTENT_ANALYSIS)
-#include "chrome/browser/extensions/chrome_content_browser_client_extensions_part.h"
-#include "extensions/browser/extension_registry_factory.h"
+#include "chrome/browser/extensions/chrome_content_browser_client_extensions_part.h"  // nogncheck crbug.com/40147906
+#include "extensions/browser/extension_registry_factory.h"  // nogncheck crbug.com/40147906
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS)

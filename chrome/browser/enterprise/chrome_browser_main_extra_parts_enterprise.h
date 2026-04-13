@@ -7,8 +7,12 @@
 
 #include "base/task/sequenced_task_runner.h"
 #include "chrome/browser/chrome_browser_main_extra_parts.h"
-#include "chrome/browser/policy/messaging_layer/public/report_client.h"
 #include "components/enterprise/buildflags/buildflags.h"
+#include "components/reporting/client/report_queue_provider.h"
+
+namespace reporting {
+class ReportingClient;
+}  // namespace reporting
 
 namespace enterprise_util {
 

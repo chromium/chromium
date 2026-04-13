@@ -18,7 +18,7 @@
 #include "content/public/browser/browsing_data_remover.h"
 
 #if !BUILDFLAG(IS_ANDROID)
-#include "chrome/browser/ui/idle_dialog.h"
+#include "chrome/browser/ui/idle_dialog.h"  // nogncheck crbug.com/40147906
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 class Profile;

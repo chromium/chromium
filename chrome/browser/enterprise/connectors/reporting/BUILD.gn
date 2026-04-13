@@ -96,6 +96,7 @@ source_set("impl") {
 
   deps = [
     "//chrome/browser:browser_process",
+    "//chrome/browser/enterprise",
     "//chrome/browser/profiles:profile_util",
     "//chrome/browser/safe_browsing",
     "//chrome/browser/signin",

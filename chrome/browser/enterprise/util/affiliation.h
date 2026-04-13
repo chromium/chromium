@@ -5,9 +5,11 @@
 #ifndef CHROME_BROWSER_ENTERPRISE_UTIL_AFFILIATION_H_
 #define CHROME_BROWSER_ENTERPRISE_UTIL_AFFILIATION_H_
 
-#include "chrome/browser/policy/profile_policy_connector.h"
-
 class Profile;
+
+namespace policy {
+class ProfilePolicyConnector;
+}  // namespace policy
 
 namespace enterprise_util {
 

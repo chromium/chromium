@@ -136,6 +136,7 @@ if (enable_printing) {
       "//chrome/app:command_ids",
       "//chrome/app:generated_resources",
       "//chrome/browser:browser_process",
+      "//chrome/browser/enterprise",
       "//chrome/browser/headless",
       "//chrome/browser/profiles:profile",
       "//chrome/browser/ui/browser_window",

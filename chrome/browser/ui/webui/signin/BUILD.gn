@@ -93,6 +93,7 @@ source_set("signin") {
   public_deps = [
     ":login_ui_service",
     "//base",
+    "//chrome/browser/enterprise",
     "//chrome/browser/signin",
     "//chrome/browser/ui/browser_window",
     "//chrome/common",
@@ -101,6 +102,9 @@ source_set("signin") {
     "//content/public/browser",
     "//ui/web_dialogs",
   ]
+
+  # enterprise headers include turn_sync_on_helper_policy_fetch_tracker.h.
+  allow_circular_includes_from = [ "//chrome/browser/enterprise" ]
 
   if (enable_dice_support) {
     sources += [

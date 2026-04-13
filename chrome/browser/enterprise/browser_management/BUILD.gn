@@ -21,6 +21,7 @@ source_set("management_identity_impl") {
   deps = [
     ":management_identity",
     "//chrome/browser:browser_process",
+    "//chrome/browser/enterprise",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/profiles:profile_util",
     "//chrome/browser/ui:ui_features",
