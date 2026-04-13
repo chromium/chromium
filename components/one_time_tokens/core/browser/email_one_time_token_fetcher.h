@@ -24,6 +24,11 @@ struct AccessTokenInfo;
 
 namespace one_time_tokens {
 
+// Header name and value for user-facing criticality.
+inline constexpr char kOneTimeTokenServiceCriticalityHeaderName[] =
+    "x-goog-ext-174067345-bin";
+inline constexpr char kOneTimeTokenServiceCriticalityHeaderValue[] = "CgIIAg==";
+
 // A holder object for all the necessary state to make a single request to the
 // Gmail OTP endpoint.
 class EmailOneTimeTokenFetcher {

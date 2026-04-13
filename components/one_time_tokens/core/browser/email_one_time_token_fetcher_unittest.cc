@@ -114,6 +114,12 @@ TEST_F(EmailOneTimeTokenFetcherTest, Success) {
   ASSERT_TRUE(header_value.has_value());
   EXPECT_EQ(*header_value, "Bearer access_token");
 
+  const std::optional<std::string> qos_header =
+      pending_request->headers.GetHeader(
+          kOneTimeTokenServiceCriticalityHeaderName);
+  ASSERT_TRUE(qos_header.has_value());
+  EXPECT_EQ(*qos_header, kOneTimeTokenServiceCriticalityHeaderValue);
+
   EXPECT_EQ(pending_request->url.spec(), GetExpectedUrl());
 
   test_url_loader_factory_->AddResponse(pending_request->url.spec(),
@@ -207,6 +213,37 @@ TEST_F(EmailOneTimeTokenFetcherTest, ResponseWithoutToken) {
   EXPECT_EQ(result.error(),
             OneTimeTokenRetrievalError::kGmailOtpBackendInvalidResponse);
   auto unused = future.Get();
+}
+
+// Tests that the fetcher retries on transient errors (like HTTP 500) and
+// eventually succeeds if a subsequent attempt is successful.
+TEST_F(EmailOneTimeTokenFetcherTest, RetriesOnTransientError) {
+  std::unique_ptr<EmailOneTimeTokenFetcher> fetcher = CreateFetcher();
+  base::test::TestFuture<
+      base::expected<OneTimeToken, OneTimeTokenRetrievalError>>
+      future;
+
+  fetcher->Start(future.GetCallback());
+  WaitForAccessTokenRequestAndRespondWithSuccess();
+
+  ASSERT_TRUE(test_url_loader_factory_->IsPending(GetExpectedUrl()));
+
+  // Add a 500 error response first.
+  test_url_loader_factory_->AddResponse(GetExpectedUrl(), "",
+                                        net::HTTP_INTERNAL_SERVER_ERROR);
+
+  // SimpleURLLoader should automatically retry.
+  // TestURLLoaderFactory will consume the first response and wait for the next
+  // request for the same URL.
+  // We provide a successful response for the retry attempt.
+  test_url_loader_factory_->AddResponse(GetExpectedUrl(),
+                                        CreateValidResponseString());
+
+  const base::expected<OneTimeToken, OneTimeTokenRetrievalError>& result =
+      future.Get();
+  ASSERT_TRUE(result.has_value());
+  EXPECT_EQ(result->value(), kOneTimeToken);
+  EXPECT_EQ(test_url_loader_factory_->total_requests(), 2u);
 }
 
 }  // namespace one_time_tokens

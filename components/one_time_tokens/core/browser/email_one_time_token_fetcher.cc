@@ -77,6 +77,10 @@ void EmailOneTimeTokenFetcher::StartOneTimeTokenServiceCall(
   resource_request->credentials_mode = network::mojom::CredentialsMode::kOmit;
   resource_request->headers.SetHeader(net::HttpRequestHeaders::kAuthorization,
                                       "Bearer " + info.token);
+  // Set user-facing criticality header.
+  resource_request->headers.SetHeader(
+      kOneTimeTokenServiceCriticalityHeaderName,
+      kOneTimeTokenServiceCriticalityHeaderValue);
 
   // TODO(crbug.com/486136247): Update the traffic annotation to include the
   // enterprise policy.
@@ -117,6 +121,12 @@ void EmailOneTimeTokenFetcher::StartOneTimeTokenServiceCall(
 
   simple_url_loader_ = network::SimpleURLLoader::Create(
       std::move(resource_request), traffic_annotation);
+
+  // Set timeout and retry options for user-facing traffic.
+  simple_url_loader_->SetTimeoutDuration(base::Seconds(60));
+  simple_url_loader_->SetRetryOptions(
+      2, network::SimpleURLLoader::RETRY_ON_NETWORK_CHANGE |
+             network::SimpleURLLoader::RETRY_ON_5XX);
 
   simple_url_loader_->DownloadToString(
       url_loader_factory_.get(),
