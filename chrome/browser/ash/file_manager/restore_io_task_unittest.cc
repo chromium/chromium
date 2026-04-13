@@ -296,6 +296,97 @@ TEST_F(RestoreIOTaskTest, ItemWithExistingConflictAreRenamed) {
   EXPECT_FALSE(base::PathExists(info_file_path));
 }
 
+class TrashServiceMaliciousPath
+    : public ash::trash_service::mojom::TrashService {
+ public:
+  explicit TrashServiceMaliciousPath(
+      mojo::PendingReceiver<ash::trash_service::mojom::TrashService> receiver) {
+    receivers_.Add(this, std::move(receiver));
+  }
+  ~TrashServiceMaliciousPath() override = default;
+
+  TrashServiceMaliciousPath(const TrashServiceMaliciousPath&) = delete;
+  TrashServiceMaliciousPath& operator=(const TrashServiceMaliciousPath&) =
+      delete;
+
+  void ParseTrashInfoFile(
+      base::File trash_info_file,
+      ash::trash_service::ParseTrashInfoCallback callback) override {
+    // Return a malicious path that traverses directories.
+    std::move(callback).Run(base::File::FILE_OK,
+                            base::FilePath("/../malicious/path"),
+                            base::Time::UnixEpoch());
+  }
+
+ private:
+  mojo::ReceiverSet<ash::trash_service::mojom::TrashService> receivers_;
+};
+
+class RestoreIOTaskMaliciousPathTest : public TrashBaseIOTest {
+ public:
+  RestoreIOTaskMaliciousPathTest() = default;
+
+  RestoreIOTaskMaliciousPathTest(const RestoreIOTaskMaliciousPathTest&) =
+      delete;
+  RestoreIOTaskMaliciousPathTest& operator=(
+      const RestoreIOTaskMaliciousPathTest&) = delete;
+
+  void SetUp() override {
+    TrashBaseIOTest::SetUp();
+
+    ash::trash_service::SetTrashServiceLaunchOverrideForTesting(
+        base::BindRepeating(
+            &RestoreIOTaskMaliciousPathTest::CreateMaliciousTrashService,
+            base::Unretained(this)));
+  }
+
+  mojo::PendingRemote<ash::trash_service::mojom::TrashService>
+  CreateMaliciousTrashService() {
+    mojo::PendingRemote<ash::trash_service::mojom::TrashService> remote;
+    malicious_service_ = std::make_unique<TrashServiceMaliciousPath>(
+        remote.InitWithNewPipeAndPassReceiver());
+    return remote;
+  }
+
+ private:
+  content::BrowserTaskEnvironment task_environment_;
+  std::unique_ptr<TrashServiceMaliciousPath> malicious_service_;
+};
+
+TEST_F(RestoreIOTaskMaliciousPathTest,
+       CompromisedServiceShouldCompleteWithError) {
+  EnsureTrashDirectorySetup(downloads_dir_);
+
+  std::string foo_contents = base::RandBytesAsString(kTestFileSize);
+
+  const base::FilePath trash_path =
+      downloads_dir_.Append(trash::kTrashFolderName);
+  const base::FilePath info_file_path =
+      trash_path.Append(trash::kInfoFolderName).Append("foo.txt.trashinfo");
+  ASSERT_TRUE(base::WriteFile(info_file_path, foo_contents));
+  const base::FilePath files_path =
+      trash_path.Append(trash::kFilesFolderName).Append("foo.txt");
+  ASSERT_TRUE(base::WriteFile(files_path, foo_contents));
+
+  base::RunLoop run_loop;
+  std::vector<storage::FileSystemURL> source_urls = {
+      CreateFileSystemURL(info_file_path),
+  };
+
+  base::MockRepeatingCallback<void(const ProgressStatus&)> progress_callback;
+  base::MockOnceCallback<void(ProgressStatus)> complete_callback;
+
+  EXPECT_CALL(progress_callback, Run(_)).Times(0);
+  EXPECT_CALL(complete_callback,
+              Run(Field(&ProgressStatus::state, State::kError)))
+      .WillOnce(RunClosure(run_loop.QuitClosure()));
+
+  RestoreIOTask task(source_urls, profile_.get(), file_system_context_,
+                     temp_dir_.GetPath());
+  task.Execute(progress_callback.Get(), complete_callback.Get());
+  run_loop.Run();
+}
+
 class TrashServiceMojoDisconnector
     : public ash::trash_service::mojom::TrashService {
  public:
