@@ -383,6 +383,7 @@ void AddAdditionalRequestHeaders(
     return;
 
   bool is_reload = NavigationTypeUtils::IsReload(navigation_type);
+  bool is_history = NavigationTypeUtils::IsHistory(navigation_type);
   RenderViewHostImpl* render_view_host =
       frame_tree_node->current_frame_host()->render_view_host();
   const blink::RendererPreferences& render_prefs =
@@ -417,7 +418,7 @@ void AddAdditionalRequestHeaders(
         url, origin_header_value, referrer->policy);
     std::string serialized_origin = origin_header_value.Serialize();
     if (existing_origin && existing_origin != serialized_origin &&
-        !is_browser_initiated &&
+        !is_browser_initiated && !is_history &&
         base::FeatureList::IsEnabled(features::kDumpOnOriginHeaderMismatch)) {
       // TODO(https://crbug.com/487795397): this should
       // be a `bad_message::ReceivedBadMessage` and return `false` once
@@ -432,7 +433,7 @@ void AddAdditionalRequestHeaders(
       base::debug::DumpWithoutCrashing();
     }
     headers->SetHeader(net::HttpRequestHeaders::kOrigin, serialized_origin);
-  } else if (existing_origin && !is_browser_initiated &&
+  } else if (existing_origin && !is_browser_initiated && !is_history &&
              base::FeatureList::IsEnabled(
                  features::kDumpOnUnexpectedOriginHeader)) {
     // TODO(https://crbug.com/40093290): this should
