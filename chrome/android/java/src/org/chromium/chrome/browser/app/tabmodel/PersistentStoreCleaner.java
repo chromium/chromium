@@ -5,9 +5,9 @@
 package org.chromium.chrome.browser.app.tabmodel;
 
 import static org.chromium.base.ThreadUtils.assertOnUiThread;
-import static org.chromium.build.NullUtil.assumeNonNull;
 import static org.chromium.chrome.browser.tabwindow.TabWindowManager.ARCHIVED_WINDOW_TAG;
 
+import org.chromium.base.ResettersForTesting;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.SequencedTaskRunner;
 import org.chromium.base.task.TaskTraits;
@@ -33,44 +33,44 @@ import org.chromium.chrome.browser.tabmodel.TabbedModeTabPersistencePolicy;
 import org.chromium.chrome.browser.tabwindow.TabWindowManager;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
+import java.util.function.Supplier;
 
 /** Cleaner that allows a window to clean up persisted state for another window. */
 @NullMarked
 public class PersistentStoreCleaner {
     /** Dependencies for cleaning unused data for a specific profile. */
-    private static class UnusedDataDeps {
+    private static class ProfileScopedUnusedDataDeps {
+        public final Profile mProfile;
         public final Set<TabContentManager> mTabContentManagers = new HashSet<>();
+
         public @Nullable Runnable mCleanupRunnable;
+
+        public ProfileScopedUnusedDataDeps(Profile profile) {
+            mProfile = profile;
+        }
     }
 
-    private final Profile mProfile;
+    private static final Map<Profile, ProfileScopedUnusedDataDeps> sProfileScopedUnusedDataDeps =
+            new HashMap<>();
+
+    private static Supplier<TabStateStoreCleaner> sTabStateStoreCleaner = TabStateStoreCleaner::new;
+    private static Supplier<TabPersistentStoreImplCleaner> sLegacyCleaner =
+            TabPersistentStoreImplCleaner::new;
+
+    private final TabModelOrchestrator mTabModelOrchestrator;
     private final boolean mTabStorageEnabled;
     private final SequencedTaskRunner mSequencedTaskRunner;
     private final TabbedModeTabPersistencePolicy mPersistencePolicy;
-    private final TabStateStoreCleaner mTabStateStoreCleaner;
-    private final TabPersistentStoreImplCleaner mLegacyCleaner;
 
-    private @Nullable UnusedDataDeps mUnusedDataDeps;
-
-    /**
-     * @param profile The original profile used for dependencies.
-     * @param tabStateStoreCleaner The cleaner for {@link TabStateStore}.
-     * @param legacyCleaner The cleaner for {@link TabPersistentStoreImpl}.
-     */
-    public PersistentStoreCleaner(
-            Profile profile,
-            TabStateStoreCleaner tabStateStoreCleaner,
-            TabPersistentStoreImplCleaner legacyCleaner) {
-        assert !profile.isOffTheRecord();
-
-        mProfile = profile;
+    private PersistentStoreCleaner(TabModelOrchestrator tabModelOrchestrator) {
+        mTabModelOrchestrator = tabModelOrchestrator;
         mTabStorageEnabled = TabStateStorageFlagHelper.isTabStorageEnabled();
-        mTabStateStoreCleaner = tabStateStoreCleaner;
-        mLegacyCleaner = legacyCleaner;
 
         @TaskTraits int taskTraits = TaskTraits.USER_BLOCKING_MAY_BLOCK;
         mSequencedTaskRunner = PostTask.createSequencedTaskRunner(taskTraits);
@@ -90,14 +90,8 @@ public class PersistentStoreCleaner {
      * @param orchestrator Used to determine the active store types and provide access to the
      *     profile.
      */
-    public void clearState(TabModelOrchestrator orchestrator) {
-        if (storeDoesNotExist(orchestrator, StoreType.LEGACY)) {
-            mLegacyCleaner.clearState(mPersistencePolicy, mSequencedTaskRunner);
-        }
-
-        if (storeDoesNotExist(orchestrator, StoreType.TAB_STATE_STORE)) {
-            maybeClearTabStateStore(orchestrator);
-        }
+    public static void cleanAllWindowsForUnavailableStores(TabModelOrchestrator orchestrator) {
+        new PersistentStoreCleaner(orchestrator).clearState();
     }
 
     /**
@@ -108,14 +102,18 @@ public class PersistentStoreCleaner {
      * @param orchestrator Used to determine the active store types and provide access to the
      *     profile.
      */
-    public void cleanWindowForUnavailableStores(
+    public static void cleanWindowForUnavailableStores(
             int windowIdToClean, TabModelOrchestrator orchestrator) {
-        if (storeDoesNotExist(orchestrator, StoreType.LEGACY)) {
+        new PersistentStoreCleaner(orchestrator).cleanWindowForUnavailableStores(windowIdToClean);
+    }
+
+    private void cleanWindowForUnavailableStores(int windowIdToClean) {
+        if (storeDoesNotExist(StoreType.LEGACY)) {
             cleanPersistentStoreImpl(windowIdToClean);
         }
 
-        if (storeDoesNotExist(orchestrator, StoreType.TAB_STATE_STORE)) {
-            maybeCleanTabStateStore(windowIdToClean, orchestrator);
+        if (storeDoesNotExist(StoreType.TAB_STATE_STORE)) {
+            maybeCleanTabStateStore(windowIdToClean);
         }
     }
 
@@ -123,56 +121,94 @@ public class PersistentStoreCleaner {
         // We will not have merged if an instance is not present, so this set will remain empty.
         Set<String> mergedFileNames = new HashSet<>();
 
-        mLegacyCleaner.cleanupStateFile(
-                windowIdToClean, mPersistencePolicy, mSequencedTaskRunner, mergedFileNames);
+        sLegacyCleaner
+                .get()
+                .cleanupStateFile(
+                        windowIdToClean, mPersistencePolicy, mSequencedTaskRunner, mergedFileNames);
     }
 
-    private void maybeCleanTabStateStore(int windowIdToClean, TabModelOrchestrator orchestrator) {
+    private void maybeCleanTabStateStore(int windowIdToClean) {
         if (!mTabStorageEnabled) return;
 
-        TabModelSelectorBase selector = orchestrator.getTabModelSelector();
+        TabModelSelectorBase selector = mTabModelOrchestrator.getTabModelSelector();
         assert selector != null;
 
-        mTabStateStoreCleaner.cleanupStateFile(windowIdToClean, mProfile);
+        // TODO(crbug.com/479532655): The tab model may have become an {@link EmptyTabModel} at this
+        // point. Find a more long-lived source for {@link Profile}s.
+        Profile profile = selector.getModel(/* incognito= */ false).getProfile();
+        if (profile == null) return;
+
+        sTabStateStoreCleaner.get().cleanupStateFile(windowIdToClean, profile);
     }
 
-    private boolean storeDoesNotExist(TabModelOrchestrator orchestrator, @StoreType int type) {
-        @StoreType Integer authoritativeStoreType = orchestrator.getAuthoritativeStoreType();
-        @StoreType Integer shadowStoreType = orchestrator.getShadowStoreType();
+    private boolean storeDoesNotExist(@StoreType int type) {
+        @StoreType
+        Integer authoritativeStoreType = mTabModelOrchestrator.getAuthoritativeStoreType();
+        @StoreType Integer shadowStoreType = mTabModelOrchestrator.getShadowStoreType();
         return !Objects.equals(authoritativeStoreType, type)
                 && !Objects.equals(shadowStoreType, type);
     }
 
-    private void maybeClearTabStateStore(TabModelOrchestrator orchestrator) {
+    private void clearState() {
+        if (storeDoesNotExist(StoreType.LEGACY)) {
+            sLegacyCleaner.get().clearState(mPersistencePolicy, mSequencedTaskRunner);
+        }
+
+        if (storeDoesNotExist(StoreType.TAB_STATE_STORE)) {
+            maybeClearTabStateStore();
+        }
+    }
+
+    private void maybeClearTabStateStore() {
         if (!mTabStorageEnabled) return;
 
-        TabModelSelectorBase selector = orchestrator.getTabModelSelector();
+        TabModelSelectorBase selector = mTabModelOrchestrator.getTabModelSelector();
         assert selector != null;
 
-        mTabStateStoreCleaner.clearState(mProfile);
+        Profile profile = selector.getModel(/* incognito= */ false).getProfile();
+        assert profile != null;
+
+        sTabStateStoreCleaner.get().clearState(profile);
+    }
+
+    public static void setTabStateStoreCleanerForTesting(
+            Supplier<TabStateStoreCleaner> cleanerFactory) {
+        sTabStateStoreCleaner = cleanerFactory;
+        ResettersForTesting.register(() -> sTabStateStoreCleaner = TabStateStoreCleaner::new);
+    }
+
+    public static void setTabPersistentStoreImplCleanerForTesting(
+            Supplier<TabPersistentStoreImplCleaner> cleanerFactory) {
+        sLegacyCleaner = cleanerFactory;
+        ResettersForTesting.register(() -> sLegacyCleaner = TabPersistentStoreImplCleaner::new);
     }
 
     /**
      * Schedules the cleaning of unused windows and tab data.
      *
+     * @param profile The original profile to which the tabs belong to.
      * @param manager Manages tab thumbnails.
      */
-    public void scheduleCleanUnusedData(TabContentManager manager) {
+    public static void scheduleCleanUnusedData(Profile profile, TabContentManager manager) {
         if (!ChromeFeatureList.sScheduleWindowCleaning.isEnabled()) return;
-        if (mUnusedDataDeps == null) {
-            mUnusedDataDeps = new UnusedDataDeps();
+        assert !profile.isOffTheRecord();
+
+        ProfileScopedUnusedDataDeps deps = sProfileScopedUnusedDataDeps.get(profile);
+        if (deps == null) {
+            deps = new ProfileScopedUnusedDataDeps(profile);
+            sProfileScopedUnusedDataDeps.put(profile, deps);
         }
-        mUnusedDataDeps.mTabContentManagers.add(manager);
+        deps.mTabContentManagers.add(manager);
 
         TabWindowManager tabWindowManager = TabWindowManagerSingleton.getInstance();
         if (tabWindowManager.isAllTabStateInitialized()) {
-            maybeCleanUnusedWindows();
+            maybeCleanUnusedWindows(profile);
         } else {
             tabWindowManager.addObserver(
                     new TabWindowManager.Observer() {
                         @Override
                         public void onAllTabModelStateInitialized() {
-                            maybeCleanUnusedWindows();
+                            maybeCleanUnusedWindows(profile);
                             tabWindowManager.removeObserver(this);
                         }
                     });
@@ -180,16 +216,19 @@ public class PersistentStoreCleaner {
     }
 
     /** Schedules the cleaning of unused windows if a cleanup task is not already scheduled. */
-    private void maybeCleanUnusedWindows() {
+    private static void maybeCleanUnusedWindows(Profile profile) {
         assertOnUiThread();
 
-        if (mUnusedDataDeps == null || mUnusedDataDeps.mCleanupRunnable != null) return;
-        mUnusedDataDeps.mCleanupRunnable = () -> cleanUnusedWindows(assumeNonNull(mUnusedDataDeps));
+        ProfileScopedUnusedDataDeps deps = sProfileScopedUnusedDataDeps.get(profile);
+        if (deps == null || deps.mCleanupRunnable != null) return;
 
-        PostTask.postTask(TaskTraits.UI_DEFAULT, mUnusedDataDeps.mCleanupRunnable);
+        deps.mCleanupRunnable = () -> cleanUnusedWindows(deps);
+
+        PostTask.postTask(TaskTraits.UI_DEFAULT, deps.mCleanupRunnable);
     }
 
-    private void cleanUnusedWindows(UnusedDataDeps deps) {
+    private static void cleanUnusedWindows(ProfileScopedUnusedDataDeps deps) {
+        deps.mCleanupRunnable = null;
         TabContentManager validManager = null;
         for (TabContentManager manager : deps.mTabContentManagers) {
             if (!manager.isDestroyed()) {
@@ -200,7 +239,7 @@ public class PersistentStoreCleaner {
 
         if (validManager == null) {
             deps.mTabContentManagers.clear();
-            mUnusedDataDeps = null;
+            sProfileScopedUnusedDataDeps.remove(deps.mProfile);
             return;
         }
 
@@ -230,7 +269,7 @@ public class PersistentStoreCleaner {
         for (TabModelSelector selector : selectors) {
             if (!selector.isTabStateInitialized()) {
                 TabModelUtils.runOnTabStateInitialized(
-                        () -> maybeCleanUnusedWindows(),
+                        () -> maybeCleanUnusedWindows(deps.mProfile),
                         selectors.toArray(new TabModelSelector[0]));
                 return;
             }
@@ -246,12 +285,12 @@ public class PersistentStoreCleaner {
         }
 
         deleteAllTabDataExceptFor(validManager, tabIds);
-        deleteAllWindowsExceptFor(windowTags);
+        deleteAllWindowsExceptFor(deps.mProfile, windowTags);
 
-        mUnusedDataDeps = null;
+        sProfileScopedUnusedDataDeps.remove(deps.mProfile);
     }
 
-    private void deleteAllTabDataExceptFor(TabContentManager manager, List<Integer> tabIds) {
+    private static void deleteAllTabDataExceptFor(TabContentManager manager, List<Integer> tabIds) {
         int[] tabIdsArray = new int[tabIds.size()];
         for (int i = 0; i < tabIds.size(); i++) {
             tabIdsArray[i] = tabIds.get(i);
@@ -259,7 +298,7 @@ public class PersistentStoreCleaner {
         manager.removeAllTabThumbnailsExceptForIds(tabIdsArray);
     }
 
-    private void deleteAllWindowsExceptFor(List<String> windowTags) {
+    private static void deleteAllWindowsExceptFor(Profile profile, List<String> windowTags) {
         SequencedTaskRunner sequencedTaskRunner =
                 PostTask.createSequencedTaskRunner(TaskTraits.USER_BLOCKING_MAY_BLOCK);
 
@@ -273,7 +312,7 @@ public class PersistentStoreCleaner {
         policy.clearAllWindowsExceptFor(windowTags);
 
         if (TabStateStorageFlagHelper.isTabStorageEnabled()) {
-            TabStateStorageService service = TabStateStorageServiceFactory.getForProfile(mProfile);
+            TabStateStorageService service = TabStateStorageServiceFactory.getForProfile(profile);
             if (service != null) service.clearAllWindowsExcept(windowTags);
         }
     }

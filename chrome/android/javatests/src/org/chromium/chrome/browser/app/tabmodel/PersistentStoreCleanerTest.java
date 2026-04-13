@@ -165,9 +165,7 @@ public class PersistentStoreCleanerTest {
         assertTrue(nonExistingTabFile.exists());
 
         runOnUiThreadBlocking(
-                () ->
-                        PersistentStoreCleanerFactory.getForProfile(mProfile)
-                                .scheduleCleanUnusedData(tabContentManager));
+                () -> PersistentStoreCleaner.scheduleCleanUnusedData(mProfile, tabContentManager));
         CriteriaHelper.pollInstrumentationThread(() -> !nonExistingTabFile.exists());
 
         // Retrieve the cached thumbnail for the existing tab to ensure it wasn't deleted.
@@ -257,9 +255,7 @@ public class PersistentStoreCleanerTest {
         assertTrue(tabWindowManager.isAllTabStateInitialized());
 
         runOnUiThreadBlocking(
-                () ->
-                        PersistentStoreCleanerFactory.getForProfile(mProfile)
-                                .scheduleCleanUnusedData(tabContentManager));
+                () -> PersistentStoreCleaner.scheduleCleanUnusedData(mProfile, tabContentManager));
 
         CriteriaHelper.pollUiThread(() -> !unusedMetadataFile.exists());
 

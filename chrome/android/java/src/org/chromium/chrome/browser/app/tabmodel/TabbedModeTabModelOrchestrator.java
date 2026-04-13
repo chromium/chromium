@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.app.tabmodel;
 
 import static org.chromium.build.NullUtil.assumeNonNull;
+import static org.chromium.chrome.browser.app.tabmodel.PersistentStoreCleaner.cleanWindowForUnavailableStores;
 import static org.chromium.chrome.browser.app.tabmodel.ShadowTabStoreValidator.TABBED_TAG;
 import static org.chromium.chrome.browser.app.tabmodel.TabPersistentStoreFactory.buildAuthoritativeStore;
 import static org.chromium.chrome.browser.app.tabmodel.TabPersistentStoreFactory.buildShadowStore;
@@ -247,11 +248,7 @@ public class TabbedModeTabModelOrchestrator extends TabModelOrchestrator {
         if (mShadowTabPersistentStore != null) {
             mShadowTabPersistentStore.cleanupStateFile(instanceId);
         }
-        Profile profile = getOriginalProfile();
-        if (profile != null) {
-            PersistentStoreCleanerFactory.getForProfile(profile)
-                    .cleanWindowForUnavailableStores(instanceId, this);
-        }
+        cleanWindowForUnavailableStores(instanceId, this);
     }
 
     @Override
@@ -305,11 +302,12 @@ public class TabbedModeTabModelOrchestrator extends TabModelOrchestrator {
         if (mActivityLifecycleDispatcher.isActivityFinishingOrDestroyed()) return;
         ThreadUtils.assertOnUiThread();
         assertCreated();
-
+        // The profile will be available because native is initialized.
+        assert mProfileProviderSupplier.get() != null;
         assert tabContentManager != null;
 
-        // The profile will be available because native is initialized.
-        Profile profile = getOriginalProfile();
+        Profile profile = mProfileProviderSupplier.get().getOriginalProfile();
+        assert profile != null;
 
         mArchivedTabModelOrchestrator = ArchivedTabModelOrchestrator.getForProfile(profile);
         mArchivedTabModelOrchestrator.maybeCreateAndInitTabModels(
@@ -326,15 +324,5 @@ public class TabbedModeTabModelOrchestrator extends TabModelOrchestrator {
     public TabPersistentStoreImpl getTabPersistentStoreForTesting() {
         assertCreated();
         return (TabPersistentStoreImpl) mTabPersistentStore;
-    }
-
-    /* Should only be called after native is initialized. */
-    private Profile getOriginalProfile() {
-        assert mProfileProviderSupplier != null;
-        ProfileProvider profileProvider = mProfileProviderSupplier.get();
-        assert profileProvider != null;
-        Profile profile = profileProvider.getOriginalProfile();
-        assert profile != null;
-        return profile;
     }
 }
