@@ -743,7 +743,7 @@ void WebUIToolbarWebView::PushNavigationState(uint64_t state_generation) {
   // PushNavigationState() tasks have been run before performing any update.
   if (state_generation == current_state_generation_) {
     if (WebUIToolbarUI* web_ui = GetWebUIToolbarUI()) {
-      web_ui->OnNavigationControlsStateChanged(last_queued_state_.Clone());
+      web_ui->OnNavigationControlsStateChanged(last_queued_state_);
     }
   }
 }

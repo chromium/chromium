@@ -63,7 +63,7 @@ class ToolbarUIService : public toolbar_ui_api::mojom::ToolbarUIService {
   void SetDelegate(ToolbarUIServiceDelegate* delegate);
 
   void OnNavigationControlsStateChanged(
-      const mojom::NavigationControlsStatePtr& state);
+      const mojom::NavigationControlsState& state);
 
   // toolbar_ui_api::mojom::ToolbarUIService:
   void Bind(BindCallback callback) override;

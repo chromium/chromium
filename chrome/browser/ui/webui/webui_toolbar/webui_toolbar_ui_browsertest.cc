@@ -257,7 +257,7 @@ IN_PROC_BROWSER_TEST_F(WebUIToolbarUIBrowserTest, SetReloadButtonState) {
               &toolbar_ui_api::mojom::ReloadControlState::is_navigation_loading,
               true))))))
       .Times(1);
-  ui()->OnNavigationControlsStateChanged(std::move(state));
+  ui()->OnNavigationControlsStateChanged(*state);
   connection.mock_observer().FlushForTesting();
 }
 

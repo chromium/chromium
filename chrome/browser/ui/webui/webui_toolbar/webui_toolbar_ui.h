@@ -70,7 +70,7 @@ class WebUIToolbarUI : public TopChromeWebUIController {
           receiver);
 
   void OnNavigationControlsStateChanged(
-      toolbar_ui_api::mojom::NavigationControlsStatePtr state);
+      const toolbar_ui_api::mojom::NavigationControlsState& state);
 
   // The |depdency_provider| is expected to outlive this class.
   void Init(DependencyProvider* dependency_provider);

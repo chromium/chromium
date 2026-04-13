@@ -49,8 +49,8 @@ void ToolbarUIService::SetDelegate(ToolbarUIServiceDelegate* delegate) {
 }
 
 void ToolbarUIService::OnNavigationControlsStateChanged(
-    const mojom::NavigationControlsStatePtr& state) {
-  auto* mark = state->reload_control_state->is_navigation_loading
+    const mojom::NavigationControlsState& state) {
+  auto* mark = state.reload_control_state->is_navigation_loading
                    ? kChangeVisibleModeToLoadingStartMark
                    : kChangeVisibleModeToNotLoadingStartMark;
   metrics_reporter_->Mark(mark);

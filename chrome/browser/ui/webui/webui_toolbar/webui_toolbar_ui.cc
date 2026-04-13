@@ -148,9 +148,9 @@ void WebUIToolbarUI::BindInterface(
 }
 
 void WebUIToolbarUI::OnNavigationControlsStateChanged(
-    toolbar_ui_api::mojom::NavigationControlsStatePtr state) {
+    const toolbar_ui_api::mojom::NavigationControlsState& state) {
   if (toolbar_ui_service_) {
-    toolbar_ui_service_->OnNavigationControlsStateChanged(std::move(state));
+    toolbar_ui_service_->OnNavigationControlsStateChanged(state);
   }
 }
 

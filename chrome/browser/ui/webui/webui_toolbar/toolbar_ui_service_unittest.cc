@@ -107,8 +107,7 @@ class ToolbarUIServiceTest : public ::testing::Test {
 
   // Updates the service with the current navigation control state.
   void PushNavigationControlsStateUpdate() {
-    service_->OnNavigationControlsStateChanged(
-        navigation_controls_state_.Clone());
+    service_->OnNavigationControlsStateChanged(*navigation_controls_state_);
     observer()->FlushForTesting();
   }
 
