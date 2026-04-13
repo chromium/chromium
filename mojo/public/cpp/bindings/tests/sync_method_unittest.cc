@@ -1417,41 +1417,84 @@ class PongerImpl : public mojom::Ponger {
 
 class SyncInterruptTest : public BindingsTestBase {
  public:
-  SyncInterruptTest() {
+  SyncInterruptTest() = default;
+
+  ~SyncInterruptTest() override = default;
+
+  void SetUp() override {
+    receiver_thread_ = std::make_unique<base::Thread>("Pinger Receiver Thread");
+    shared_pinger_thread_ = std::make_unique<base::Thread>("Shared Pinger IO");
+
     PendingRemote<mojom::Pinger> shared_remote;
     // Note that we cannot test [NoInterrupt] properly if the caller and
     // receiver live on the same thread, because the caller's own message is
     // unable to wake up the receiver during a [NoInterrupt] wait. Hence we run
     // the Pinger implementation on a background thread.
-    receiver_thread_.Start();
-    receiver_thread_.task_runner()->PostTask(
-        FROM_HERE, base::BindOnce(
-                       [](PendingReceiver<mojom::Pinger> receiver,
-                          PendingReceiver<mojom::SimplePinger> simple_receiver,
-                          PendingReceiver<mojom::Pinger> shared_receiver) {
-                         MakeSelfOwnedReceiver(std::make_unique<PingerImpl>(),
-                                               std::move(receiver));
-                         MakeSelfOwnedReceiver(std::make_unique<PingerImpl>(),
-                                               std::move(simple_receiver));
-                         MakeSelfOwnedReceiver(std::make_unique<PingerImpl>(),
-                                               std::move(shared_receiver));
-                       },
-                       pinger_.BindNewPipeAndPassReceiver(),
-                       simple_pinger_.BindNewPipeAndPassReceiver(),
-                       shared_remote.InitWithNewPipeAndPassReceiver()));
+    receiver_thread_->Start();
+    receiver_thread_->task_runner()->PostTask(
+        FROM_HERE,
+        base::BindOnce(
+            [](PendingReceiver<mojom::Pinger> receiver,
+               PendingReceiver<mojom::SimplePinger> simple_receiver,
+               PendingReceiver<mojom::Pinger> shared_receiver,
+               base::OnceClosure receiver_quit_closure,
+               base::OnceClosure simple_receiver_quit_closure,
+               base::OnceClosure shared_receiver_quit_closure) {
+              auto self_owned_receiver = MakeSelfOwnedReceiver(
+                  std::make_unique<PingerImpl>(), std::move(receiver));
+              self_owned_receiver->set_connection_error_handler(
+                  std::move(receiver_quit_closure));
+              auto self_owned_simple_receiver = MakeSelfOwnedReceiver(
+                  std::make_unique<PingerImpl>(), std::move(simple_receiver));
+              self_owned_simple_receiver->set_connection_error_handler(
+                  std::move(simple_receiver_quit_closure));
+              auto self_owned_shared_receiver = MakeSelfOwnedReceiver(
+                  std::make_unique<PingerImpl>(), std::move(shared_receiver));
+              self_owned_shared_receiver->set_connection_error_handler(
+                  std::move(shared_receiver_quit_closure));
+            },
+            pinger_.BindNewPipeAndPassReceiver(),
+            simple_pinger_.BindNewPipeAndPassReceiver(),
+            shared_remote.InitWithNewPipeAndPassReceiver(),
+            receiver_quit_loop_.QuitClosure(),
+            simple_receiver_quit_loop_.QuitClosure(),
+            shared_receiver_quit_loop_.QuitClosure()));
 
-    shared_pinger_thread_.Start();
+    shared_pinger_thread_->Start();
     shared_pinger_ = SharedRemote<mojom::Pinger>(
-        std::move(shared_remote), shared_pinger_thread_.task_runner());
+        std::move(shared_remote), shared_pinger_thread_->task_runner());
 
     PendingAssociatedRemote<mojom::Pinger> associated_remote;
     CHECK(shared_pinger_->BindAssociated(
         associated_remote.InitWithNewEndpointAndPassReceiver()));
     shared_associated_pinger_ = SharedAssociatedRemote<mojom::Pinger>(
-        std::move(associated_remote), shared_pinger_thread_.task_runner());
+        std::move(associated_remote), shared_pinger_thread_->task_runner());
+    BindingsTestBase::SetUp();
   }
 
-  ~SyncInterruptTest() override = default;
+  // This tear down ensures deterministic clean-up by resetting the remotes
+  // and then waiting for the RunLoops to ensure the receivers are destroyed
+  // before ending the test.
+  void TearDown() override {
+    // Reset the remotes first to disconnect from self-owned receivers.
+    pinger_.reset();
+    simple_pinger_.reset();
+    shared_pinger_.reset();
+    shared_associated_pinger_.reset();
+
+    // Wait for the receivers to be destroyed on the receiver thread.
+    shared_receiver_quit_loop_.Run();
+    simple_receiver_quit_loop_.Run();
+    receiver_quit_loop_.Run();
+
+    // Close the threads.
+    receiver_thread_->Stop();
+    shared_pinger_thread_->Stop();
+    receiver_thread_.reset();
+    shared_pinger_thread_.reset();
+
+    BindingsTestBase::TearDown();
+  }
 
   mojom::Pinger& pinger() { return *pinger_.get(); }
   mojom::SimplePinger& simple_pinger() { return *simple_pinger_.get(); }
@@ -1476,14 +1519,18 @@ class SyncInterruptTest : public BindingsTestBase {
   }
 
  private:
-  base::Thread receiver_thread_{"Pinger Receiver Thread"};
-  base::Thread shared_pinger_thread_{"Shared Pinger IO"};
+  std::unique_ptr<base::Thread> receiver_thread_;
+  std::unique_ptr<base::Thread> shared_pinger_thread_;
   Remote<mojom::Pinger> pinger_;
   Remote<mojom::SimplePinger> simple_pinger_;
   SharedRemote<mojom::Pinger> shared_pinger_;
   SharedAssociatedRemote<mojom::Pinger> shared_associated_pinger_;
   PongerImpl ponger_;
   PongerImpl same_pipe_ponger_;
+
+  base::RunLoop receiver_quit_loop_;
+  base::RunLoop simple_receiver_quit_loop_;
+  base::RunLoop shared_receiver_quit_loop_;
 };
 
 TEST_P(SyncInterruptTest, AsyncCannotInterruptSync) {
