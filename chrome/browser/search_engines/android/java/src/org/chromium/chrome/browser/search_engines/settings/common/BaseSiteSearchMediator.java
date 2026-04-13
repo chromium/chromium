@@ -105,19 +105,19 @@ public abstract class BaseSiteSearchMediator
     /**
      * Fetches the favicon for the search engine asynchronously and updates the PropertyModel.
      *
-     * @param url The TemplateUrl containing the favicon URL.
-     * @param model The PropertyModel to update once the icon is fetched.
+     * @param templateUrl The TemplateUrl representing the search engine.
+     * @param model The PropertyModel to update once the favicon is fetched.
      */
-    protected void fetchFavicon(TemplateUrl url, PropertyModel model) {
-        GURL faviconUrl = url.getFaviconURL();
-        if (faviconUrl == null) return;
-
+    protected void fetchFavicon(TemplateUrl templateUrl, PropertyModel model) {
+        // Since we're fetching the favicon from Google server, we're using the origin as the page
+        // URL rather than using {@link TemplateUrl#getFaviconURL()}
+        GURL pageUrl = new GURL(templateUrl.getURL()).getOrigin();
         executeIconUpdate(
                 mContext,
                 model,
                 SiteSearchProperties.ICON,
-                url,
-                faviconUrl,
+                templateUrl,
+                pageUrl,
                 mLargeIconBridge,
                 mIconCache);
     }
@@ -129,11 +129,11 @@ public abstract class BaseSiteSearchMediator
             PropertyModel model,
             PropertyModel.WritableObjectPropertyKey<Bitmap> propertyKey,
             TemplateUrl templateUrl,
-            GURL faviconUrl,
+            GURL pageUrl,
             LargeIconBridge largeIconBridge,
             Map<GURL, Bitmap> iconCache) {
         SearchEngineIconUtils.updateIcon(
-                context, model, propertyKey, templateUrl, faviconUrl, largeIconBridge, iconCache);
+                context, model, propertyKey, templateUrl, pageUrl, largeIconBridge, iconCache);
     }
 
     /**

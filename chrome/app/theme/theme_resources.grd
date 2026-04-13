@@ -81,8 +81,8 @@
       </if>
       <if expr="not is_android">
         <structure type="chrome_scaled_image" name="IDR_BOOKMARK_BAR_APPS_SHORTCUT" file="common/apps_bookmark_bar_icon.png" />
-        <structure type="chrome_scaled_image" name="IDR_BOOKMARKS_FAVICON" file="common/favicon_bookmarks.png" />
       </if>
+      <structure type="chrome_scaled_image" name="IDR_BOOKMARKS_FAVICON" file="common/favicon_bookmarks.png" />
       <if expr="not is_android">
         <structure type="chrome_scaled_image" name="IDR_CLOSE_BUTTON_MASK" file="common/close_button_mask.png" />
       </if>

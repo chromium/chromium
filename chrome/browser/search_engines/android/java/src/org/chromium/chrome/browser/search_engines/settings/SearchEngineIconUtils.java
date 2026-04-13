@@ -66,7 +66,8 @@ public class SearchEngineIconUtils {
      * @param context Context for resources.
      * @param logoView The ImageView to update.
      * @param templateUrl The search engine template.
-     * @param faviconUrl The specific GURL for the favicon.
+     * @param pageUrl The web page URL associated with the search engine. This is used to query the
+     *     local database or Google Favicon Server for the site's icon.
      * @param largeIconBridge The bridge to fetch icons.
      * @param iconCache Optional: A map to store/retrieve fetched bitmaps.
      */
@@ -74,11 +75,10 @@ public class SearchEngineIconUtils {
             Context context,
             ImageView logoView,
             TemplateUrl templateUrl,
-            GURL faviconUrl,
+            GURL pageUrl,
             LargeIconBridge largeIconBridge,
             @Nullable Map<GURL, Bitmap> iconCache) {
-        if (getIconFromCacheOrBuiltIn(
-                templateUrl, faviconUrl, iconCache, logoView::setImageBitmap)) {
+        if (getIconFromCacheOrBuiltIn(templateUrl, pageUrl, iconCache, logoView::setImageBitmap)) {
             return;
         }
 
@@ -89,7 +89,7 @@ public class SearchEngineIconUtils {
                 FaviconUtils.createGenericFaviconBitmap(context, uiElementSizeInPx, null));
 
         fetchIconFromGoogleServer(
-                context, faviconUrl, largeIconBridge, iconCache, logoView::setImageBitmap);
+                context, pageUrl, largeIconBridge, iconCache, logoView::setImageBitmap);
     }
 
     /**
@@ -100,7 +100,8 @@ public class SearchEngineIconUtils {
      * @param model The PropertyModel to update.
      * @param propertyKey The key for the icon property in the model.
      * @param templateUrl The search engine template.
-     * @param faviconUrl The specific GURL for the favicon.
+     * @param pageUrl The web page URL associated with the search engine. This is used to query the
+     *     local database or Google Favicon Server for the site's icon.
      * @param largeIconBridge The bridge to fetch icons.
      * @param iconCache Optional: A map to store/retrieve fetched bitmaps.
      */
@@ -109,11 +110,11 @@ public class SearchEngineIconUtils {
             PropertyModel model,
             WritableObjectPropertyKey<Bitmap> propertyKey,
             TemplateUrl templateUrl,
-            GURL faviconUrl,
+            GURL pageUrl,
             LargeIconBridge largeIconBridge,
             @Nullable Map<GURL, Bitmap> iconCache) {
         if (getIconFromCacheOrBuiltIn(
-                templateUrl, faviconUrl, iconCache, (bitmap) -> model.set(propertyKey, bitmap))) {
+                templateUrl, pageUrl, iconCache, (bitmap) -> model.set(propertyKey, bitmap))) {
             return;
         }
 
@@ -126,7 +127,7 @@ public class SearchEngineIconUtils {
 
         fetchIconFromGoogleServer(
                 context,
-                faviconUrl,
+                pageUrl,
                 largeIconBridge,
                 iconCache,
                 (bitmap) -> model.set(propertyKey, bitmap));
@@ -134,18 +135,18 @@ public class SearchEngineIconUtils {
 
     private static boolean getIconFromCacheOrBuiltIn(
             TemplateUrl templateUrl,
-            GURL faviconUrl,
+            GURL pageUrl,
             @Nullable Map<GURL, Bitmap> iconCache,
             Callback<Bitmap> callback) {
-        if (iconCache != null && iconCache.containsKey(faviconUrl)) {
-            callback.onResult(iconCache.get(faviconUrl));
+        if (iconCache != null && iconCache.containsKey(pageUrl)) {
+            callback.onResult(iconCache.get(pageUrl));
             return true;
         }
 
         @Nullable Bitmap bitmap = templateUrl.getBuiltInSearchEngineIcon();
         if (bitmap != null) {
             if (iconCache != null) {
-                iconCache.put(faviconUrl, bitmap);
+                iconCache.put(pageUrl, bitmap);
             }
             callback.onResult(bitmap);
             return true;
@@ -158,7 +159,7 @@ public class SearchEngineIconUtils {
     // icons.
     private static void fetchIconFromGoogleServer(
             Context context,
-            GURL faviconUrl,
+            GURL pageUrl,
             LargeIconBridge largeIconBridge,
             @Nullable Map<GURL, Bitmap> iconCache,
             Callback<Bitmap> callback) {
@@ -170,7 +171,7 @@ public class SearchEngineIconUtils {
                     if (icon != null) {
                         callback.onResult(icon);
                         if (iconCache != null) {
-                            iconCache.put(faviconUrl, icon);
+                            iconCache.put(pageUrl, icon);
                         }
                     }
                 };
@@ -179,12 +180,12 @@ public class SearchEngineIconUtils {
                 (status) -> {
                     // Update the time the icon was last requested to avoid automatic eviction
                     // from cache.
-                    largeIconBridge.touchIconFromGoogleServer(faviconUrl);
+                    largeIconBridge.touchIconFromGoogleServer(pageUrl);
                     // The search engine logo will be fetched from google servers, so the actual
                     // size of the image is controlled by LargeIconService configuration.
                     // minSizePx=1 is used to accept logo of any size.
                     largeIconBridge.getLargeIconForUrl(
-                            faviconUrl,
+                            pageUrl,
                             /* minSizePx= */ 1,
                             /* desiredSizePx= */ uiElementSizeInPx,
                             onFaviconAvailable);
@@ -192,7 +193,7 @@ public class SearchEngineIconUtils {
         // If the icon already exists in the cache no network request will be made, but the
         // callback will be triggered nonetheless.
         largeIconBridge.getLargeIconOrFallbackStyleFromGoogleServerSkippingLocalCache(
-                faviconUrl,
+                pageUrl,
                 /* shouldTrimPageUrlPath= */ true,
                 TRAFFIC_ANNOTATION,
                 googleServerCallback);

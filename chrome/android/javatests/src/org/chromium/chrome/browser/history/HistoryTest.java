@@ -20,7 +20,6 @@ import static org.hamcrest.Matchers.not;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 import static org.chromium.base.test.transit.ViewFinder.waitForNoView;
@@ -135,9 +134,13 @@ public class HistoryTest {
         mActivityTestRule.startOnBlankPage();
 
         FaviconHelper helper = ThreadUtils.runOnUiThreadBlocking(FaviconHelper::new);
-        // If the returned favicons are non-null Bitmap#sameAs() should be used.
-        assertNull(getFavicon(helper, new GURL(getOriginalNonNativeHistoryUrl())));
-        assertNull(getFavicon(helper, new GURL(getOriginalNativeHistoryUrl())));
+
+        Bitmap nonNativeFavicon = getFavicon(helper, new GURL(getOriginalNonNativeHistoryUrl()));
+        Bitmap nativeFavicon = getFavicon(helper, new GURL(getOriginalNativeHistoryUrl()));
+
+        assertNotNull(nonNativeFavicon);
+        assertNotNull(nativeFavicon);
+        assertTrue(nonNativeFavicon.sameAs(nativeFavicon));
     }
 
     public Bitmap getFavicon(FaviconHelper helper, GURL pageUrl) throws TimeoutException {

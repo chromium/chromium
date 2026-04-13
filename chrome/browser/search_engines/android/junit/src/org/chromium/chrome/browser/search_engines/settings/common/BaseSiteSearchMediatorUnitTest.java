@@ -11,7 +11,6 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.withSettings;
 
@@ -127,21 +126,9 @@ public class BaseSiteSearchMediatorUnitTest {
     }
 
     @Test
-    public void testFetchFavicon_NullUrl_DoesNothing() {
-        doReturn(null).when(mTemplateUrl).getFaviconURL();
-        PropertyModel model = new PropertyModel(SiteSearchProperties.ALL_KEYS);
-
-        mMediator.fetchFavicon(mTemplateUrl, model);
-
-        verify(mTemplateUrl).getFaviconURL();
-        verify(mMediator, never())
-                .executeIconUpdate(any(), any(), any(), any(), any(), any(), any());
-    }
-
-    @Test
     public void testFetchFavicon_WithValidUrl() {
-        GURL faviconUrl = new GURL("test_url");
-        doReturn(faviconUrl).when(mTemplateUrl).getFaviconURL();
+        GURL templateUrlHost = new GURL("https://example.com");
+        doReturn(templateUrlHost.getSpec()).when(mTemplateUrl).getURL();
         PropertyModel model = new PropertyModel(SiteSearchProperties.ALL_KEYS);
         doNothing()
                 .when(mMediator)
@@ -149,15 +136,13 @@ public class BaseSiteSearchMediatorUnitTest {
 
         mMediator.fetchFavicon(mTemplateUrl, model);
 
-        verify(mTemplateUrl).getFaviconURL();
-
         verify(mMediator)
                 .executeIconUpdate(
                         any(Context.class),
                         eq(model),
                         eq(SiteSearchProperties.ICON),
                         eq(mTemplateUrl),
-                        eq(faviconUrl),
+                        eq(templateUrlHost),
                         any(LargeIconBridge.class),
                         any(Map.class));
     }
