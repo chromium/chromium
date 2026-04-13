@@ -190,6 +190,26 @@ public class ExtensionTestUtils {
     }
 
     /**
+     * Helper to create a {@link ExtensionsMenuTypes.ExtensionSitePermissionsState}. Default values
+     * are set for the show requests toggle: status is set to ENABLED, text and accessible name are
+     * empty, and it is toggled ON.
+     */
+    public static ExtensionsMenuTypes.ExtensionSitePermissionsState
+            createExtensionSitePermissionsState(
+                    String extensionName, @Nullable Bitmap extensionIcon) {
+        ExtensionsMenuTypes.ControlState toggleState =
+                new ExtensionsMenuTypes.ControlState(
+                        ExtensionsMenuTypes.ControlState.Status.ENABLED,
+                        /* text= */ "",
+                        /* accessibleName= */ "",
+                        /* tooltipText= */ "",
+                        /* isOn= */ true,
+                        /* icon= */ null);
+        return new ExtensionsMenuTypes.ExtensionSitePermissionsState(
+                extensionName, extensionIcon, toggleState);
+    }
+
+    /**
      * Helper to create a {@link ExtensionsMenuTypes.MenuEntryState} for a simple extension without
      * host permissions. The entry will have a disabled action button, and hidden site access toggle
      * and site permissions button.

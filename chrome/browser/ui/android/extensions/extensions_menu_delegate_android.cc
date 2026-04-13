@@ -97,7 +97,8 @@ ExtensionsMenuDelegateAndroid::GetExtensionSitePermissionsState(
       CreateJavaControlState(env, state.show_requests_toggle);
 
   return extensions::Java_ExtensionSitePermissionsState_Constructor(
-      env, j_show_requests_toggle);
+      env, state.extension_name, ConvertToJavaBitmap(state.extension_icon),
+      j_show_requests_toggle);
 }
 
 base::android::ScopedJavaLocalRef<jobject>

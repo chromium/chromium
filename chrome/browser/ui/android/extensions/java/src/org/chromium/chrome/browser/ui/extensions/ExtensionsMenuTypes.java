@@ -131,13 +131,20 @@ public class ExtensionsMenuTypes {
 
     /** Mirrors {@code ExtensionsMenuViewModel::ExtensionSitePermissionsState} */
     public static class ExtensionSitePermissionsState {
+        public final String extensionName;
+        public final @Nullable Bitmap extensionIcon;
         public final ControlState showRequestsToggle;
 
         // TODO(crbug.com/471016915): Add the other fields from
         // ExtensionsMenuViewModel::ExtensionSitePermissionsState.
 
         @CalledByNative
-        public ExtensionSitePermissionsState(ControlState showRequestsToggle) {
+        public ExtensionSitePermissionsState(
+                @JniType("std::u16string") String extensionName,
+                @Nullable Bitmap extensionIcon,
+                ControlState showRequestsToggle) {
+            this.extensionName = extensionName;
+            this.extensionIcon = extensionIcon;
             this.showRequestsToggle = showRequestsToggle;
         }
     }
