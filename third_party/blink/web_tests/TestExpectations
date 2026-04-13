@@ -4101,7 +4101,6 @@ crbug.com/356428750 virtual/threaded/external/wpt/css/css-backgrounds/background
 crbug.com/41385122 external/wpt/css/css-backgrounds/background-clip/clip-text-relative-child.html [ Failure ]
 crbug.com/41385122 external/wpt/css/css-backgrounds/background-clip/clip-text-stacking-context-child.html [ Failure ]
 crbug.com/356436618 [ Mac12 ] virtual/threaded/external/wpt/css/css-backgrounds/border-image-slice-005.htm [ Failure ]
-crbug.com/355683658 external/wpt/css/css-align/self-alignment/block-justify-self.html [ Failure ]
 crbug.com/353583104 [ Win11-arm64 ] external/wpt/html/semantics/embedded-content/media-elements/preserves-pitch.html [ Timeout ]
 crbug.com/353583105 [ Win11-arm64 ] virtual/fenced-frame-mparch/external/wpt/fenced-frame/config-cross-origin-apis.https.html [ Timeout ]
 crbug.com/353228155 [ Mac ] external/wpt/svg/text/reftests/textpath-letter-spacing-01.svg [ Failure ]
