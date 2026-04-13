@@ -33,9 +33,6 @@ const char kGoogleUserInfoEmail[] =
 const char kGoogleUserInfoProfile[] =
     "https://www.googleapis.com/auth/userinfo.profile";
 
-// OAuth2 scope for read-write access to contacts.
-const char kContactsOAuth2Scope[] = "https://www.googleapis.com/auth/contacts";
-
 // OAuth2 scope for FCM, the Firebase Cloud Messaging service.
 const char kFCMOAuthScope[] =
     "https://www.googleapis.com/auth/firebase.messaging";
@@ -47,10 +44,6 @@ extern const char kSecureConnectOAuth2Scope[] =
 // OAuth2 scope for access to Drive.
 const char kDriveOAuth2Scope[] = "https://www.googleapis.com/auth/drive";
 
-// The scope required for an access token in order to query ItemSuggest.
-const char kDriveReadOnlyOAuth2Scope[] =
-    "https://www.googleapis.com/auth/drive.readonly";
-
 // OAuth2 scope for access to Account Capabilities API.
 const char kAccountCapabilitiesOAuth2Scope[] =
     "https://www.googleapis.com/auth/account.capabilities";
@@ -58,9 +51,6 @@ const char kAccountCapabilitiesOAuth2Scope[] =
 // OAuth2 scope for support content API.
 const char kSupportContentOAuth2Scope[] =
     "https://www.googleapis.com/auth/supportcontent";
-
-// OAuth2 scopes for Lens.
-const char kLensOAuth2Scope[] = "https://www.googleapis.com/auth/lens";
 
 // Used to build ClientOAuth requests.  These are the names of keys used when
 // building base::DictionaryValue that represent the json data that makes up

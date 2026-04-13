@@ -18,7 +18,7 @@ namespace google_apis::people {
 
 struct Person;
 
-// Requires `GaiaConstants::kContactsOAuth2Scope`.
+// Uses `OAuthConsumerId::kAshScannerKeyedService`.
 //
 // From the People API reference:
 //
