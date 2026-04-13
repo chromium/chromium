@@ -58,6 +58,8 @@ class StyleAdjuster {
       ComputedStyleBuilder& builder,
       const ComputedStyle& layout_parent_style);
   static void AdjustStyleForHTMLElement(ComputedStyleBuilder&, HTMLElement&);
+  static void AdjustSliderContainerStyle(const Element& element,
+                                         ComputedStyleBuilder& builder);
 
   static bool IsEditableElement(Element*, const ComputedStyleBuilder&);
   static bool IsPasswordFieldWithUnrevealedPassword(Element*);

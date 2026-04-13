@@ -77,6 +77,7 @@
 #include "third_party/blink/renderer/core/html/media/html_media_element.h"
 #include "third_party/blink/renderer/core/html/media/html_video_element.h"
 #include "third_party/blink/renderer/core/html/shadow/shadow_element_names.h"
+#include "third_party/blink/renderer/core/html/shadow/shadow_element_utils.h"
 #include "third_party/blink/renderer/core/html_names.h"
 #include "third_party/blink/renderer/core/input_type_names.h"
 #include "third_party/blink/renderer/core/inspector/console_message.h"
@@ -506,6 +507,27 @@ static void AdjustStyleForMarker(ComputedStyleBuilder& builder,
     // TODO(kojii): absolute position looks more reasonable, and maybe required
     // in some cases, but this is currently blocked by crbug.com/734554
     // builder.SetPosition(EPosition::kAbsolute);
+  }
+}
+
+void StyleAdjuster::AdjustSliderContainerStyle(const Element& element,
+                                               ComputedStyleBuilder& builder) {
+  if (!IsHorizontalWritingMode(builder.GetWritingMode())) {
+    builder.SetTouchAction(TouchAction::kPanX);
+  } else if (RuntimeEnabledFeatures::
+                 NonStandardAppearanceValueSliderVerticalEnabled() &&
+             builder.Appearance() == AppearanceValue::kSliderVertical) {
+    builder.SetTouchAction(TouchAction::kPanX);
+    builder.SetWritingMode(WritingMode::kVerticalRl);
+    // It's always in RTL because the slider value increases up even in LTR.
+    builder.SetDirection(TextDirection::kRtl);
+  } else {
+    builder.SetTouchAction(TouchAction::kPanY);
+    builder.SetWritingMode(WritingMode::kHorizontalTb);
+    if (To<HTMLInputElement>(element.OwnerShadowHost())->DataList()) {
+      builder.SetAlignSelf(StyleSelfAlignmentData(ItemPosition::kCenter,
+                                                  OverflowAlignment::kUnsafe));
+    }
   }
 }
 
@@ -1297,6 +1319,11 @@ void StyleAdjuster::AdjustComputedStyle(StyleResolverState& state,
   // https://drafts.csswg.org/css-color-adjust-1/#forced-colors-properties.
   AdjustForForcedColorsMode(builder, state.GetDocument());
 
+  if (element && IsSliderContainer(*element)) {
+    // NOTE: This needs to come before AdjustEffectiveTouchAction().
+    AdjustSliderContainerStyle(*element, builder);
+  }
+
   // The layout theme has its own style adjustment, mostly related to
   // the appearance property (although it can also modify display,
   // seemingly for historical reasons).
@@ -1307,7 +1334,6 @@ void StyleAdjuster::AdjustComputedStyle(StyleResolverState& state,
     LayoutTheme::GetTheme().AdjustStyle(
         element ? *element : *state.GetPseudoElement(), builder);
   }
-
   AdjustStyleForEditing(builder, element);
 
   if (auto* svg_element = DynamicTo<SVGElement>(element); svg_element) {

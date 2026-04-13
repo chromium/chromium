@@ -237,8 +237,6 @@ class CORE_EXPORT LayoutTheme : public RefCounted<LayoutTheme> {
 
   virtual void AdjustMenuListStyle(ComputedStyleBuilder&) const;
   virtual void AdjustMenuListButtonStyle(ComputedStyleBuilder&) const;
-  virtual void AdjustSliderContainerStyle(const Element&,
-                                          ComputedStyleBuilder&) const;
   virtual void AdjustSliderThumbStyle(ComputedStyleBuilder&) const;
   virtual void AdjustSearchFieldCancelButtonStyle(ComputedStyleBuilder&) const;
 

@@ -316,7 +316,7 @@ void LayoutTheme::AdjustStyle(const Element& element,
   }
 
   if (IsSliderContainer(element)) {
-    AdjustSliderContainerStyle(element, builder);
+    builder.SetEffectiveAppearance(AppearanceValue::kNone);
   }
 }
 
@@ -509,32 +509,6 @@ void LayoutTheme::AdjustMenuListStyle(ComputedStyleBuilder& builder) const {
 }
 
 void LayoutTheme::AdjustMenuListButtonStyle(ComputedStyleBuilder&) const {}
-
-void LayoutTheme::AdjustSliderContainerStyle(
-    const Element& element,
-    ComputedStyleBuilder& builder) const {
-  DCHECK(IsSliderContainer(element));
-
-  if (!IsHorizontalWritingMode(builder.GetWritingMode())) {
-    builder.SetTouchAction(TouchAction::kPanX);
-  } else if (RuntimeEnabledFeatures::
-                 NonStandardAppearanceValueSliderVerticalEnabled() &&
-             builder.EffectiveAppearance() ==
-                 AppearanceValue::kSliderVertical) {
-    builder.SetTouchAction(TouchAction::kPanX);
-    builder.SetWritingMode(WritingMode::kVerticalRl);
-    // It's always in RTL because the slider value increases up even in LTR.
-    builder.SetDirection(TextDirection::kRtl);
-  } else {
-    builder.SetTouchAction(TouchAction::kPanY);
-    builder.SetWritingMode(WritingMode::kHorizontalTb);
-    if (To<HTMLInputElement>(element.OwnerShadowHost())->DataList()) {
-      builder.SetAlignSelf(StyleSelfAlignmentData(ItemPosition::kCenter,
-                                                  OverflowAlignment::kUnsafe));
-    }
-  }
-  builder.SetEffectiveAppearance(AppearanceValue::kNone);
-}
 
 void LayoutTheme::AdjustSliderThumbStyle(ComputedStyleBuilder& builder) const {
   AdjustSliderThumbSize(builder);
