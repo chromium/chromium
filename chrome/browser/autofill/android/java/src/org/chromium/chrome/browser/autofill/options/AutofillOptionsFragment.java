@@ -21,7 +21,9 @@ import org.chromium.base.supplier.SettableMonotonicObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.autofill.R;
+import org.chromium.chrome.browser.autofill.autofill_ai.EntityDataManager;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.settings.ChromeBaseSettingsFragment;
 import org.chromium.chrome.browser.settings.search.ChromeBaseSearchIndexProvider;
 import org.chromium.components.browser_ui.settings.ChromeSwitchPreference;
@@ -231,22 +233,6 @@ public class AutofillOptionsFragment extends ChromeBaseSettingsFragment {
         return ChromeFeatureList.isEnabled(ChromeFeatureList.AUTOFILL_AI_REAUTH_REQUIRED);
     }
 
-    private static @Nullable Boolean sAutofillAiAccessibilityAnnotatorEnabledForTesting;
-
-    // TODO(b/493906853): Connect to accessibility annotator visibility.
-    static boolean isAutofillAiAccessibilityAnnotatorEnabled() {
-        if (sAutofillAiAccessibilityAnnotatorEnabledForTesting != null) {
-            return sAutofillAiAccessibilityAnnotatorEnabledForTesting;
-        }
-        return false;
-    }
-
-    public static void setAutofillAiAccessibilityAnnotatorEnabledForTesting(boolean enabled) {
-        sAutofillAiAccessibilityAnnotatorEnabledForTesting = enabled;
-        ResettersForTesting.register(
-                () -> sAutofillAiAccessibilityAnnotatorEnabledForTesting = null);
-    }
-
     public static final ChromeBaseSearchIndexProvider SEARCH_INDEX_DATA_PROVIDER =
             new ChromeBaseSearchIndexProvider(
                     AutofillOptionsFragment.class.getName(), R.xml.autofill_options_preferences) {
@@ -256,7 +242,8 @@ public class AutofillOptionsFragment extends ChromeBaseSettingsFragment {
                 }
 
                 @Override
-                public void updateDynamicPreferences(Context context, SettingsIndexData indexData) {
+                public void updateDynamicPreferences(
+                        Context context, SettingsIndexData indexData, Profile profile) {
                     indexData.removeEntry(getUniqueId(PREF_THIRD_PARTY_TOGGLE_HINT));
                     if (!isAutofillAiEnabled()) {
                         indexData.removeEntry(
@@ -265,7 +252,7 @@ public class AutofillOptionsFragment extends ChromeBaseSettingsFragment {
                         indexData.removeEntry(getUniqueId(PREF_AUTOFILL_AI_AUTHENTICATION_SWITCH));
                         indexData.removeEntry(getUniqueId(PREF_AUTOFILL_SERVICE_PROVIDER_CETEGORY));
                     } else {
-                        if (!isAutofillAiAccessibilityAnnotatorEnabled()) {
+                        if (!EntityDataManager.isAccessibilityAnnotatorSettingVisible(profile)) {
                             indexData.removeEntry(
                                     getUniqueId(PREF_AUTOFILL_AI_ACCESSIBILITY_ANNOTATOR));
                         }

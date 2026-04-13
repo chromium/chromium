@@ -11,6 +11,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
@@ -73,6 +74,7 @@ import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.autofill.autofill_ai.EntityDataManager;
 import org.chromium.chrome.browser.autofill.autofill_ai.EntityDataManagerFactory;
+import org.chromium.chrome.browser.autofill.autofill_ai.EntityDataManagerJni;
 import org.chromium.chrome.browser.autofill.options.AutofillOptionsFragment.AutofillOptionsReferrer;
 import org.chromium.chrome.browser.device_reauth.ReauthenticatorBridge;
 import org.chromium.chrome.browser.feedback.HelpAndFeedbackLauncher;
@@ -130,6 +132,7 @@ public class AutofillOptionsTest {
     @Mock private ModalDialogManager mDialogManager;
     @Mock private AutofillManager mAutofillManager;
     @Mock private EntityDataManager mMockEntityDataManager;
+    @Mock private EntityDataManager.Natives mMockEntityDataManagerJni;
     @Mock private ReauthenticatorBridge mMockReauthenticatorBridge;
 
     @Captor ArgumentCaptor<PropertyModel> mRestartConfirmationDialogModelCaptor;
@@ -141,6 +144,7 @@ public class AutofillOptionsTest {
     public void setUp() {
         ReauthenticatorBridge.setInstanceForTesting(mMockReauthenticatorBridge);
         EntityDataManagerFactory.setInstanceForTesting(mMockEntityDataManager);
+        EntityDataManagerJni.setInstanceForTesting(mMockEntityDataManagerJni);
         UserPrefsJni.setInstanceForTesting(mMockUserPrefsJni);
         doReturn(mPrefs).when(mMockUserPrefsJni).get(mProfile);
         doReturn(mProfile).when(mProfile).getOriginalProfile();
@@ -918,7 +922,9 @@ public class AutofillOptionsTest {
     @SmallTest
     @EnableFeatures(ChromeFeatureList.AUTOFILL_AI_WITH_DATA_SCHEMA)
     public void testAccessibilityAnnotatorSettingsLinkRowVisible() {
-        AutofillOptionsFragment.setAutofillAiAccessibilityAnnotatorEnabledForTesting(true);
+        doReturn(true)
+                .when(mMockEntityDataManagerJni)
+                .isAccessibilityAnnotatorSettingVisible(any());
 
         new AutofillOptionsCoordinator(mFragment, this::assertModalNotUsed, Assert::fail)
                 .initializeNow();
@@ -930,7 +936,9 @@ public class AutofillOptionsTest {
     @SmallTest
     @EnableFeatures(ChromeFeatureList.AUTOFILL_AI_WITH_DATA_SCHEMA)
     public void testAccessibilityAnnotatorSettingsLinkRowNotVisible() {
-        AutofillOptionsFragment.setAutofillAiAccessibilityAnnotatorEnabledForTesting(false);
+        doReturn(false)
+                .when(mMockEntityDataManagerJni)
+                .isAccessibilityAnnotatorSettingVisible(any());
 
         new AutofillOptionsCoordinator(mFragment, this::assertModalNotUsed, Assert::fail)
                 .initializeNow();
@@ -942,7 +950,9 @@ public class AutofillOptionsTest {
     @SmallTest
     @EnableFeatures(ChromeFeatureList.AUTOFILL_AI_WITH_DATA_SCHEMA)
     public void testAccessibilityAnnotatorSettingsLinkRowClick() {
-        AutofillOptionsFragment.setAutofillAiAccessibilityAnnotatorEnabledForTesting(true);
+        doReturn(true)
+                .when(mMockEntityDataManagerJni)
+                .isAccessibilityAnnotatorSettingVisible(any());
 
         new AutofillOptionsCoordinator(mFragment, this::assertModalNotUsed, Assert::fail)
                 .initializeNow();

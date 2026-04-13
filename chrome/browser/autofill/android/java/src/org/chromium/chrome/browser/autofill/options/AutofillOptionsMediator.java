@@ -194,7 +194,7 @@ public class AutofillOptionsMediator implements ModalDialogProperties.Controller
 
     private boolean isAutofillAiAccessibilityAnnotatorVisible(int referrer) {
         return isAutofillAiVisible(referrer)
-                && AutofillOptionsFragment.isAutofillAiAccessibilityAnnotatorEnabled();
+                && EntityDataManager.isAccessibilityAnnotatorSettingVisible(mProfile);
     }
 
     private void onAutofillAiAccessibilityAnnotatorClicked() {

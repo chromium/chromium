@@ -15,6 +15,7 @@
 #include "base/containers/to_vector.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/types/zip.h"
+#include "chrome/browser/accessibility_annotator/accessibility_annotator_enablement_service_factory.h"
 #include "chrome/browser/account_settings/account_setting_service_factory.h"
 #include "chrome/browser/autofill/android/entity_instance_android.h"
 #include "chrome/browser/autofill/android/entity_instance_with_labels.h"
@@ -26,6 +27,9 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/sync/sync_service_factory.h"
+#include "components/accessibility_annotator/core/accessibility_annotator_enablement_service.h"
+#include "components/accessibility_annotator/core/accessibility_annotator_features.h"
+#include "components/accessibility_annotator/core/accessibility_annotator_types.h"
 #include "components/account_settings/account_setting_service.h"
 #include "components/autofill/core/browser/autofill_field.h"
 #include "components/autofill/core/browser/data_manager/autofill_ai/entity_data_manager.h"
@@ -70,6 +74,25 @@ EntityDataManagerAndroid::EntityDataManagerAndroid(
 }
 
 EntityDataManagerAndroid::~EntityDataManagerAndroid() = default;
+
+static jboolean JNI_EntityDataManager_IsAccessibilityAnnotatorSettingVisible(
+    JNIEnv* env,
+    Profile* profile) {
+  CHECK(profile);
+
+  if (!base::FeatureList::IsEnabled(
+          accessibility_annotator::features::kAccessibilityAnnotator)) {
+    return false;
+  }
+
+  accessibility_annotator::AccessibilityAnnotatorEnablementService*
+      enablement_service =
+          AccessibilityAnnotatorEnablementServiceFactory::GetForProfile(
+              profile);
+  return enablement_service &&
+         enablement_service->GetEnablementState() ==
+             accessibility_annotator::RemoteAnnotatorEnablementState::kEnabled;
+}
 
 static int64_t JNI_EntityDataManager_Init(JNIEnv* env,
                                           const jni_zero::JavaRef<jobject>& obj,
