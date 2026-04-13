@@ -24,22 +24,18 @@
 
 namespace send_tab_to_self {
 
-void OpenEntryInNewTab(Profile* profile, const SendTabToSelfEntry& entry) {
-  OpenEntryInNewTabWithNavigationCallback(
-      profile, entry,
-      base::BindOnce([](NavigateParams* params) { return Navigate(params); }));
-}
+namespace {
 
-void OpenEntryInNewTabWithNavigationCallback(
-    Profile* profile,
-    const SendTabToSelfEntry& entry,
-    base::OnceCallback<base::WeakPtr<content::NavigationHandle>(
-        NavigateParams*)> navigate_callback) {
+// Opens the given `entry` in a new tab with the given `disposition` for the
+// given `profile`.
+void OpenEntryInNewTabWithDisposition(Profile* profile,
+                                      const SendTabToSelfEntry& entry,
+                                      WindowOpenDisposition disposition) {
   RecordHasScrollPositionOnOpened(
       !entry.GetPageContext().scroll_position.IsEmpty());
 
   NavigateParams params(profile, entry.GetURL(), ui::PAGE_TRANSITION_LINK);
-  params.disposition = WindowOpenDisposition::NEW_FOREGROUND_TAB;
+  params.disposition = disposition;
   params.window_action = NavigateParams::WindowAction::kShowWindow;
 
   std::optional<std::string> scroll_to_text_fragment =
@@ -48,8 +44,7 @@ void OpenEntryInNewTabWithNavigationCallback(
     params.internal_scroll_to_text_fragment = *scroll_to_text_fragment;
   }
 
-  base::WeakPtr<content::NavigationHandle> handle =
-      std::move(navigate_callback).Run(&params);
+  base::WeakPtr<content::NavigationHandle> handle = Navigate(&params);
 
   if (params.navigated_or_inserted_contents) {
     SendTabToSelfScrollObserver::CreateForWebContents(
@@ -67,6 +62,20 @@ void OpenEntryInNewTabWithNavigationCallback(
   SendTabToSelfSyncServiceFactory::GetForProfile(profile)
       ->GetSendTabToSelfModel()
       ->MarkEntryOpened(entry.GetGUID());
+}
+
+}  // namespace
+
+void OpenEntryInNewForegroundTab(Profile* profile,
+                                 const SendTabToSelfEntry& entry) {
+  OpenEntryInNewTabWithDisposition(profile, entry,
+                                   WindowOpenDisposition::NEW_FOREGROUND_TAB);
+}
+
+void OpenEntryInNewBackgroundTab(Profile* profile,
+                                 const SendTabToSelfEntry& entry) {
+  OpenEntryInNewTabWithDisposition(profile, entry,
+                                   WindowOpenDisposition::NEW_BACKGROUND_TAB);
 }
 
 }  // namespace send_tab_to_self

@@ -155,15 +155,22 @@ IN_PROC_BROWSER_TEST_F(SendTabToSelfToolbarIconControllerTest,
 
 class SendTabToSelfToolbarIconControllerAutoOpenTest
     : public SendTabToSelfToolbarIconControllerTest {
+ public:
+  void SetUpOnMainThread() override {
+    SendTabToSelfToolbarIconControllerTest::SetUpOnMainThread();
+    browser_view()->Activate();
+    WaitUntilBrowserBecomeActiveOrLastActive(browser());
+  }
+
+ private:
   base::test::ScopedFeatureList feature_list_{kSendTabToSelfAutoOpen};
 };
 
 IN_PROC_BROWSER_TEST_F(SendTabToSelfToolbarIconControllerAutoOpenTest,
-                       AutoOpenNewEntryIfActive) {
-  base::HistogramTester histogram_tester;
-
-  WaitUntilBrowserBecomeActiveOrLastActive(browser());
+                       AutoOpenNewEntryInForegroundTabIfActive) {
   ASSERT_TRUE(browser()->IsActive());
+
+  base::HistogramTester histogram_tester;
 
   GURL url("https://www.example-a.com");
   SendTabToSelfEntry entry("new_entry", url, "a site", base::Time::Now(),
@@ -193,8 +200,12 @@ IN_PROC_BROWSER_TEST_F(SendTabToSelfToolbarIconControllerAutoOpenTest,
 // to position top level windows, activate them, and set focus.
 #if !BUILDFLAG(SUPPORTS_OZONE_WAYLAND)
 IN_PROC_BROWSER_TEST_F(SendTabToSelfToolbarIconControllerAutoOpenTest,
-                       AutoOpenPendingEntryOnActivation) {
+                       AutoOpenPendingEntryInBackgroundTabOnActivation) {
+  ASSERT_TRUE(browser()->IsActive());
+
   base::HistogramTester histogram_tester;
+
+  ASSERT_EQ(0, browser()->tab_strip_model()->active_index());
 
   // Create an incognito browser and remove the current browser from focus.
   Browser* incognito_browser = CreateIncognitoBrowser();
@@ -221,8 +232,10 @@ IN_PROC_BROWSER_TEST_F(SendTabToSelfToolbarIconControllerAutoOpenTest,
 
   EXPECT_FALSE(bubble_controller()->IsBubbleShowing());
   EXPECT_EQ(tab_count + 1, browser()->tab_strip_model()->count());
-  EXPECT_EQ(url,
-            browser()->tab_strip_model()->GetActiveWebContents()->GetURL());
+  // The new tab is opened in the background (index 1), and the active index
+  // remains 0.
+  EXPECT_EQ(url, browser()->tab_strip_model()->GetWebContentsAt(1)->GetURL());
+  EXPECT_EQ(0, browser()->tab_strip_model()->active_index());
 
   histogram_tester.ExpectBucketCount("Sharing.SendTabToSelf.AutoOpenOutcome",
                                      AutoOpenOutcome::kOpenedPending, 1);

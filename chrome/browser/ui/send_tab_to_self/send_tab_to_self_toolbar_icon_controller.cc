@@ -62,7 +62,7 @@ void SendTabToSelfToolbarIconController::DisplayNewEntries(
     // TODO(crbug.com/488072250): Move this logic into a separate notification
     // handler class.
     if (base::FeatureList::IsEnabled(kSendTabToSelfAutoOpen)) {
-      OpenEntryInNewTab(profile_, *new_entry);
+      OpenEntryInNewForegroundTab(profile_, *new_entry);
       // Show a toast.
       ToastParams params(ToastId::kSendTabToSelfTabOpened);
       params.body_string_replacement_params = {
@@ -124,7 +124,7 @@ void SendTabToSelfToolbarIconController::OnBrowserActivated(
 
   if (CanShowOnBrowser(browser)) {
     if (base::FeatureList::IsEnabled(kSendTabToSelfAutoOpen)) {
-      OpenEntryInNewTab(profile_, *entry);
+      OpenEntryInNewBackgroundTab(profile_, *entry);
       // TODO(crbug.com/488072250): Show a toast.
       RecordAutoOpenOutcome(AutoOpenOutcome::kOpenedPending);
     } else {
