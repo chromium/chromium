@@ -32,6 +32,7 @@
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/tab_insertion/model/tab_insertion_browser_agent.h"
 #import "ios/chrome/browser/url_loading/model/scene_url_loading_service.h"
+#import "ios/chrome/browser/url_loading/model/url_interceptor.h"
 #import "ios/chrome/browser/url_loading/model/url_loading_notifier_browser_agent.h"
 #import "ios/chrome/browser/url_loading/model/url_loading_params.h"
 #import "ios/chrome/browser/url_loading/model/url_loading_util.h"
@@ -154,7 +155,29 @@ void UrlLoadingBrowserAgent::SetIncognitoLoader(
   incognito_loader_ = loader;
 }
 
+void UrlLoadingBrowserAgent::AddInterceptor(
+    const GURL& url,
+    std::unique_ptr<URLInterceptor> interceptor) {
+  if (!scene_service_) {
+    return;
+  }
+  scene_service_->AddInterceptor(url, std::move(interceptor));
+}
+
+void UrlLoadingBrowserAgent::RemoveInterceptor(const GURL& url) {
+  if (!scene_service_) {
+    return;
+  }
+  scene_service_->RemoveInterceptor(url);
+}
+
 void UrlLoadingBrowserAgent::Load(const UrlLoadParams& params) {
+  if (scene_service_) {
+    if (scene_service_->OnIntercept(params)) {
+      return;
+    }
+  }
+
   // Apply any override load strategy and dispatch.
   switch (params.load_strategy) {
     case UrlLoadStrategy::ALWAYS_NEW_FOREGROUND_TAB: {

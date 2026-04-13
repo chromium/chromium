@@ -7,9 +7,14 @@
 
 #import <Foundation/Foundation.h>
 
+#import <memory>
+#import <string>
+#import <unordered_map>
+
 #import "base/memory/raw_ptr.h"
 #import "base/memory/weak_ptr.h"
 #import "ios/chrome/browser/shared/model/browser/browser_user_data.h"
+#import "url/gurl.h"
 
 class SceneUrlLoadingService;
 class Browser;
@@ -19,6 +24,8 @@ namespace web {
 class WebState;
 class WebStateID;
 }  // namespace web
+
+class URLInterceptor;
 
 // A delegate for URL loading that can handle UI animations that are needed at
 // specific points in the loading cycle.
@@ -42,6 +49,14 @@ class UrlLoadingBrowserAgent : public BrowserUserData<UrlLoadingBrowserAgent> {
   void SetSceneService(SceneUrlLoadingService* app_service);
   void SetIncognitoLoader(UrlLoadingBrowserAgent* loader);
   void SetDelegate(id<URLLoadingDelegate> delegate);
+
+  // Adds an interceptor for the given URL.
+  // Requires that no interceptor is already registered for `url`.
+  void AddInterceptor(const GURL& url,
+                      std::unique_ptr<URLInterceptor> interceptor);
+
+  // Removes the interceptor for the given URL.
+  void RemoveInterceptor(const GURL& url);
 
   // Applies load strategy then calls `Dispatch`.
   void Load(const UrlLoadParams& params);

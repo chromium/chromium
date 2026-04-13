@@ -11,6 +11,7 @@
 
 #import "base/memory/raw_ptr.h"
 #import "base/strings/sys_string_conversions.h"
+#import "base/test/gtest_util.h"
 #import "ios/chrome/browser/ntp/model/new_tab_page_tab_helper.h"
 #import "ios/chrome/browser/ntp/model/new_tab_page_tab_helper_delegate.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
@@ -21,6 +22,7 @@
 #import "ios/chrome/browser/url_loading/model/fake_url_loading_delegate.h"
 #import "ios/chrome/browser/url_loading/model/scene_url_loading_service.h"
 #import "ios/chrome/browser/url_loading/model/test_scene_url_loading_service.h"
+#import "ios/chrome/browser/url_loading/model/url_interceptor.h"
 #import "ios/chrome/browser/url_loading/model/url_loading_notifier_browser_agent.h"
 #import "ios/chrome/browser/url_loading/model/url_loading_params.h"
 #import "ios/chrome/browser/web_state_list/model/web_usage_enabler/web_usage_enabler_browser_agent.h"
@@ -30,9 +32,22 @@
 #import "ios/web/public/test/fakes/fake_navigation_manager.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
 #import "ios/web/public/test/web_task_environment.h"
+#import "testing/gtest/include/gtest/gtest.h"
 #import "third_party/ocmock/gtest_support.h"
 
 namespace {
+
+class TestInterceptor : public URLInterceptor {
+ public:
+  TestInterceptor() { set_active(true); }
+
+  void OnIntercept(const UrlLoadParams& params) override {
+    intercepted_ = true;
+  }
+
+  bool intercepted_ = false;
+};
+
 class URLLoadingBrowserAgentTest : public BlockCleanupTest {
  public:
   URLLoadingBrowserAgentTest() {
@@ -445,6 +460,128 @@ TEST_F(URLLoadingBrowserAgentTest, TestOpenIncognitoInNewTabWithNormalService) {
 
   // Check that we had one app level redirection.
   EXPECT_EQ(1, scene_loader_->load_new_tab_call_count_);
+}
+
+// Tests that the interceptor is called when a matching URL is loaded.
+TEST_F(URLLoadingBrowserAgentTest, TestInterceptorCalled) {
+  GURL url("http://test/1");
+  auto interceptor = std::make_unique<TestInterceptor>();
+
+  TestInterceptor* interceptor_ptr = interceptor.get();
+  loader_->AddInterceptor(url, std::move(interceptor));
+
+  loader_->Load(UrlLoadParams::InCurrentTab(url));
+
+  // Verify that the interceptor was called.
+  EXPECT_TRUE(interceptor_ptr->intercepted_);
+}
+
+// Tests that an inactive interceptor is not called.
+TEST_F(URLLoadingBrowserAgentTest, TestInterceptorInactive) {
+  GURL url("http://test/1");
+  auto interceptor = std::make_unique<TestInterceptor>();
+  interceptor->set_active(false);
+  TestInterceptor* interceptor_ptr = interceptor.get();
+  loader_->AddInterceptor(url, std::move(interceptor));
+
+  loader_->Load(UrlLoadParams::InCurrentTab(url));
+
+  // Verify that the inactive interceptor was not called.
+  EXPECT_FALSE(interceptor_ptr->intercepted_);
+}
+
+// Tests that an interceptor can prevent the normal URL loading flow.
+TEST_F(URLLoadingBrowserAgentTest, TestInterceptorPreventsLoad) {
+  GURL url("http://test/1");
+  auto interceptor = std::make_unique<TestInterceptor>();
+  TestInterceptor* interceptor_ptr = interceptor.get();
+
+  interceptor->set_prevent_normal_flow(true);
+  loader_->AddInterceptor(url, std::move(interceptor));
+
+  WebStateList* web_state_list = browser_->GetWebStateList();
+  ASSERT_EQ(0, web_state_list->count());
+
+  loader_->Load(UrlLoadParams::InCurrentTab(url));
+
+  // Load should be prevented, so no tab created or loaded.
+  EXPECT_EQ(0, web_state_list->count());
+  EXPECT_TRUE(interceptor_ptr->intercepted_);
+}
+
+// Tests that an interceptor does not prevent the normal URL loading flow if
+// configured not to.
+TEST_F(URLLoadingBrowserAgentTest, TestInterceptorDoesNotPreventLoad) {
+  GURL url("http://test/1");
+  auto interceptor = std::make_unique<TestInterceptor>();
+  TestInterceptor* interceptor_ptr = interceptor.get();
+  interceptor->set_prevent_normal_flow(false);
+
+  loader_->AddInterceptor(url, std::move(interceptor));
+
+  WebStateList* web_state_list = browser_->GetWebStateList();
+  ASSERT_EQ(0, web_state_list->count());
+
+  loader_->Load(UrlLoadParams::InNewTab(url));
+
+  // Load should NOT be prevented, so a tab should be created.
+  EXPECT_EQ(1, web_state_list->count());
+  EXPECT_TRUE(interceptor_ptr->intercepted_);
+}
+
+// Tests that an interceptor can deactivate itself after a successful match.
+TEST_F(URLLoadingBrowserAgentTest, TestInterceptorDeactivatesOnMatch) {
+  GURL url("http://test/1");
+  auto interceptor = std::make_unique<TestInterceptor>();
+  interceptor->set_deactivates_on_match(true);
+
+  TestInterceptor* interceptor_ptr = interceptor.get();
+  loader_->AddInterceptor(url, std::move(interceptor));
+
+  loader_->Load(UrlLoadParams::InCurrentTab(url));
+
+  // The interceptor should deactivate itself after a successful match.
+  EXPECT_FALSE(interceptor_ptr->active());
+  EXPECT_TRUE(interceptor_ptr->intercepted_);
+}
+
+// Tests that interception works correctly when multiple interceptors are
+// configured for different URLs.
+TEST_F(URLLoadingBrowserAgentTest, TestMultipleInterceptors) {
+  GURL url1("http://test/1");
+  GURL url2("http://test/2");
+
+  auto interceptor1 = std::make_unique<TestInterceptor>();
+  auto interceptor2 = std::make_unique<TestInterceptor>();
+
+  TestInterceptor* interceptor1_ptr = interceptor1.get();
+  TestInterceptor* interceptor2_ptr = interceptor2.get();
+
+  loader_->AddInterceptor(url1, std::move(interceptor1));
+  loader_->AddInterceptor(url2, std::move(interceptor2));
+
+  loader_->Load(UrlLoadParams::InCurrentTab(url1));
+  EXPECT_TRUE(interceptor1_ptr->intercepted_);
+  EXPECT_FALSE(interceptor2_ptr->intercepted_);
+
+  loader_->Load(UrlLoadParams::InCurrentTab(url2));
+  EXPECT_TRUE(interceptor2_ptr->intercepted_);
+}
+
+// Tests that loading a URL without a registered interceptor does not
+// trigger unrelated interceptors.
+TEST_F(URLLoadingBrowserAgentTest, TestNoInterceptor) {
+  GURL url("http://test/1");
+  GURL other_url("http://test/2");
+
+  auto interceptor = std::make_unique<TestInterceptor>();
+  TestInterceptor* interceptor_ptr = interceptor.get();
+
+  loader_->AddInterceptor(other_url, std::move(interceptor));
+
+  loader_->Load(UrlLoadParams::InCurrentTab(url));
+
+  EXPECT_FALSE(interceptor_ptr->intercepted_);
 }
 
 }  // namespace

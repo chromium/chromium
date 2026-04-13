@@ -8,6 +8,7 @@ source_set("model") {
     "image_search_param_generator.mm",
     "scene_url_loading_service.h",
     "scene_url_loading_service.mm",
+    "url_interceptor.h",
     "url_loading_browser_agent.h",
     "url_loading_browser_agent.mm",
     "url_loading_notifier_browser_agent.h",

@@ -8,10 +8,16 @@
 #import <Foundation/Foundation.h>
 #import <UIKit/UIKit.h>
 
-#include "base/ios/block_types.h"
+#import <memory>
+#import <string>
+#import <unordered_map>
+
+#import "base/ios/block_types.h"
 #import "ios/chrome/app/application_delegate/tab_opening.h"
-#include "ios/chrome/app/application_mode.h"
-#include "ui/base/page_transition_types.h"
+#import "ios/chrome/app/application_mode.h"
+#import "ios/chrome/browser/url_loading/model/url_interceptor.h"
+#import "ui/base/page_transition_types.h"
+#import "url/gurl.h"
 
 class Browser;
 struct UrlLoadParams;
@@ -57,7 +63,7 @@ class UrlLoadingBrowserAgent;
 class SceneUrlLoadingService {
  public:
   SceneUrlLoadingService();
-  virtual ~SceneUrlLoadingService() = default;
+  virtual ~SceneUrlLoadingService();
 
   void SetDelegate(id<SceneURLLoadingServiceDelegate> delegate);
 
@@ -70,8 +76,23 @@ class SceneUrlLoadingService {
   // Returns the URL Loading browser agent to load a tab in `incognito` or not.
   virtual UrlLoadingBrowserAgent* GetBrowserAgent(bool incognito);
 
+  // Adds an interceptor for the given URL.
+  // Requires that no interceptor is already registered for `url`.
+  void AddInterceptor(const GURL& url,
+                      std::unique_ptr<URLInterceptor> interceptor);
+
+  // Removes the interceptor for the given URL.
+  void RemoveInterceptor(const GURL& url);
+
+  // Checks if any interceptor matches the URL in `params`. Returns true if
+  // interception happened and normal flow should be prevented.
+  bool OnIntercept(const UrlLoadParams& params);
+
  private:
   __weak id<SceneURLLoadingServiceDelegate> delegate_;
+
+  std::unordered_map<std::string, std::unique_ptr<URLInterceptor>>
+      interceptors_;
 };
 
 #endif  // IOS_CHROME_BROWSER_URL_LOADING_MODEL_SCENE_URL_LOADING_SERVICE_H_

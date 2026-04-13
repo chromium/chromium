@@ -16,6 +16,8 @@
 
 SceneUrlLoadingService::SceneUrlLoadingService() {}
 
+SceneUrlLoadingService::~SceneUrlLoadingService() = default;
+
 void SceneUrlLoadingService::SetDelegate(
     id<SceneURLLoadingServiceDelegate> delegate) {
   delegate_ = delegate;
@@ -104,4 +106,33 @@ Browser* SceneUrlLoadingService::GetCurrentBrowser() {
 UrlLoadingBrowserAgent* SceneUrlLoadingService::GetBrowserAgent(
     bool incognito) {
   return [delegate_ browserAgentForIncognito:incognito];
+}
+
+void SceneUrlLoadingService::AddInterceptor(
+    const GURL& url,
+    std::unique_ptr<URLInterceptor> interceptor) {
+  CHECK(interceptors_.find(url.spec()) == interceptors_.end())
+      << "Interceptor already exists for URL: " << url.spec();
+  interceptors_.insert({url.spec(), std::move(interceptor)});
+}
+
+void SceneUrlLoadingService::RemoveInterceptor(const GURL& url) {
+  interceptors_.erase(url.spec());
+}
+
+bool SceneUrlLoadingService::OnIntercept(const UrlLoadParams& params) {
+  auto it = interceptors_.find(params.web_params.url.spec());
+  if (it != interceptors_.end()) {
+    auto& interceptor = it->second;
+    if (interceptor->active()) {
+      interceptor->OnIntercept(params);
+      if (interceptor->deactivates_on_match()) {
+        interceptor->set_active(false);
+      }
+      if (interceptor->prevent_normal_flow()) {
+        return true;
+      }
+    }
+  }
+  return false;
 }
