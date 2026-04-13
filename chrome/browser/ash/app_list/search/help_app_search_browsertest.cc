@@ -245,7 +245,7 @@ IN_PROC_BROWSER_TEST_F(HelpAppSearchBrowserTest,
 
   EXPECT_EQ(num_browsers + 1, chrome::GetTotalBrowserCount());
   EXPECT_EQ(expected_url, chrome::FindLastActive()
-                              ->tab_strip_model()
+                              ->GetTabStripModel()
                               ->GetActiveWebContents()
                               ->GetVisibleURL());
 
@@ -320,7 +320,7 @@ IN_PROC_BROWSER_TEST_F(HelpAppSearchBrowserTest,
 
   EXPECT_EQ(num_browsers + 1, chrome::GetTotalBrowserCount());
   EXPECT_EQ(expected_url, chrome::FindLastActive()
-                              ->tab_strip_model()
+                              ->GetTabStripModel()
                               ->GetActiveWebContents()
                               ->GetVisibleURL());
   // -20424143 is the hash of the content id. This hash value can be found in

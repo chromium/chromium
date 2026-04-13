@@ -32,6 +32,7 @@
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_navigator.h"
 #include "chrome/browser/ui/browser_navigator_params.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/webui_browser/webui_browser.h"
 #include "chrome/browser/web_applications/proto/web_app_install_state.pb.h"
 #include "chrome/browser/web_applications/web_app.h"
@@ -471,8 +472,10 @@ void ChromeDevToolsManagerDelegate::AcceptDebugging(AcceptCallback callback) {
         std::move(inner_callback).Run(result);
       },
       std::move(callback));
-  DevToolsConnectionDialog::Show(chrome::FindLastActive(),
-                                 std::move(wrapped_callback));
+  BrowserWindowInterface* last_active = chrome::FindLastActive();
+  DevToolsConnectionDialog::Show(
+      last_active ? last_active->GetBrowserForMigrationOnly() : nullptr,
+      std::move(wrapped_callback));
 }
 
 void ChromeDevToolsManagerDelegate::SetActiveWebSocketConnections(
@@ -484,8 +487,10 @@ void ChromeDevToolsManagerDelegate::SetActiveWebSocketConnections(
     infobar_ = nullptr;
     infobar->Close();
   } else if (count > 0 && !infobar_) {
+    BrowserWindowInterface* last_active_browser = chrome::FindLastActive();
     auto delegate = std::make_unique<DevToolsRemoteServerInfobarDelegate>(
-        chrome::FindLastActive());
+        last_active_browser ? last_active_browser->GetBrowserForMigrationOnly()
+                            : nullptr);
     delegate->AddObserver(this);
     infobar_ = GlobalConfirmInfoBar::Show(std::move(delegate));
   }

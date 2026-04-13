@@ -337,7 +337,7 @@ void PerformanceInterventionButtonController::MaybeShowUi(
 
 bool PerformanceInterventionButtonController::ContainsNonLastActiveProfile(
     const PerformanceDetectionManager::ActionableTabsResult& result) {
-  Profile* const profile = chrome::FindLastActive()->profile();
+  Profile* const profile = chrome::FindLastActive()->GetProfile();
   for (const resource_attribution::PageContext& context : result) {
     content::WebContents* const web_content = context.GetWebContents();
     if (!web_content) {

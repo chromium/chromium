@@ -121,7 +121,7 @@ class HelpAppIntegrationTest : public SystemWebAppIntegrationTest {
 using HelpAppAllProfilesIntegrationTest = HelpAppIntegrationTest;
 
 content::WebContents* GetActiveWebContents() {
-  return chrome::FindLastActive()->tab_strip_model()->GetActiveWebContents();
+  return chrome::FindLastActive()->GetTabStripModel()->GetActiveWebContents();
 }
 
 class HelpAppIntegrationTestWithAutoTriggerDisabled

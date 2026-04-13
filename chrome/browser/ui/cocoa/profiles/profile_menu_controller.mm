@@ -61,7 +61,11 @@ class Observer : public BrowserCollectionObserver, public AvatarMenuObserver {
 
   // BrowserCollectionObserver:
   void OnBrowserClosed(BrowserWindowInterface* browser) override {
-    [controller_ activeBrowserChangedTo:chrome::FindLastActive()];
+    BrowserWindowInterface* last_active = chrome::FindLastActive();
+    [controller_
+        activeBrowserChangedTo:last_active
+                                   ? last_active->GetBrowserForMigrationOnly()
+                                   : nullptr];
   }
   void OnBrowserActivated(BrowserWindowInterface* browser) override {
     [controller_ activeBrowserChangedTo:browser->GetBrowserForMigrationOnly()];

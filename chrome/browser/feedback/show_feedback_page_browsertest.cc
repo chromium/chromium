@@ -96,7 +96,7 @@ IN_PROC_BROWSER_TEST_F(ShowFeedbackPageBrowserTest,
   histogram_tester.ExpectTotalCount("Feedback.RequestSource", 1);
   EXPECT_EQ(2u, chrome::GetTotalBrowserCount());
   const GURL visible_url = chrome::FindLastActive()
-                               ->tab_strip_model()
+                               ->GetTabStripModel()
                                ->GetActiveWebContents()
                                ->GetVisibleURL();
   EXPECT_TRUE(visible_url.has_query());
@@ -152,7 +152,7 @@ IN_PROC_BROWSER_TEST_F(ShowFeedbackPageBrowserTest,
   navigation_observer.Wait();
 
   const GURL visible_url = chrome::FindLastActive()
-                               ->tab_strip_model()
+                               ->GetTabStripModel()
                                ->GetActiveWebContents()
                                ->GetVisibleURL();
   EXPECT_TRUE(visible_url.has_query());
@@ -210,7 +210,7 @@ IN_PROC_BROWSER_TEST_F(
   navigation_observer.Wait();
 
   const GURL visible_url = chrome::FindLastActive()
-                               ->tab_strip_model()
+                               ->GetTabStripModel()
                                ->GetActiveWebContents()
                                ->GetVisibleURL();
   EXPECT_TRUE(visible_url.has_query());
@@ -268,7 +268,7 @@ IN_PROC_BROWSER_TEST_F(
   navigation_observer.Wait();
 
   const GURL visible_url = chrome::FindLastActive()
-                               ->tab_strip_model()
+                               ->GetTabStripModel()
                                ->GetActiveWebContents()
                                ->GetVisibleURL();
   EXPECT_TRUE(visible_url.has_query());
@@ -334,7 +334,7 @@ IN_PROC_BROWSER_TEST_F(ShowFeedbackPageBrowserTest,
   navigation_observer.Wait();
 
   const GURL visible_url = chrome::FindLastActive()
-                               ->tab_strip_model()
+                               ->GetTabStripModel()
                                ->GetActiveWebContents()
                                ->GetVisibleURL();
   EXPECT_TRUE(visible_url.has_query());

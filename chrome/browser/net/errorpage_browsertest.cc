@@ -1156,7 +1156,7 @@ IN_PROC_BROWSER_TEST_F(ErrorPageOfflineAppLaunchTest, DiagnosticsConnectivity) {
 
   // The active screen should be Connectivity Diagnostics app.
   content::WebContents* contents =
-      ::chrome::FindLastActive()->tab_strip_model()->GetActiveWebContents();
+      ::chrome::FindLastActive()->GetTabStripModel()->GetActiveWebContents();
   EXPECT_EQ(expected_url, contents->GetVisibleURL());
 }
 #endif  // BUILDFLAG(IS_CHROMEOS)

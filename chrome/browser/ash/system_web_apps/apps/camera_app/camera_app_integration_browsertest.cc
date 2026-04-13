@@ -30,7 +30,7 @@ IN_PROC_BROWSER_TEST_P(CameraAppIntegrationTest, MainUrlNavigation) {
   // app.
   EXPECT_EQ(2u, chrome::GetTotalBrowserCount());
   EXPECT_EQ(main_camera_app_url, chrome::FindLastActive()
-                                     ->tab_strip_model()
+                                     ->GetTabStripModel()
                                      ->GetActiveWebContents()
                                      ->GetVisibleURL());
 }

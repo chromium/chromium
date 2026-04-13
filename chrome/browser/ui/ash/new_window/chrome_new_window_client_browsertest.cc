@@ -14,6 +14,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "components/account_id/account_id.h"
@@ -54,7 +55,8 @@ void CreateAndStartUserSession(const AccountId& account_id) {
 
 // Give the underlying function a clearer name.
 Browser* GetLastActiveBrowser() {
-  return chrome::FindLastActive();
+  BrowserWindowInterface* bwi = chrome::FindLastActive();
+  return bwi ? bwi->GetBrowserForMigrationOnly() : nullptr;
 }
 
 }  // namespace

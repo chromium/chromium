@@ -1055,7 +1055,7 @@ IN_PROC_BROWSER_TEST_F(
   // the browser's backing ui::BaseWindow.
   const auto activate_browser = [](BrowserWindowInterface* browser) {
     // We must fake deactivation the previously activated browser first.
-    chrome::FindLastActive()->DidBecomeInactive();
+    chrome::FindLastActive()->GetBrowserForMigrationOnly()->DidBecomeInactive();
 
     // Simulate activation of `browser`.
     browser->GetBrowserForMigrationOnly()->DidBecomeActive();

@@ -444,10 +444,8 @@ Browser* FindLastActiveWithProfile(Profile* profile) {
   return browser ? browser->GetBrowserForMigrationOnly() : nullptr;
 }
 
-Browser* FindLastActive() {
-  BrowserWindowInterface* last_active =
-      GetLastActiveBrowserWindowInterfaceWithAnyProfile();
-  return last_active ? last_active->GetBrowserForMigrationOnly() : nullptr;
+BrowserWindowInterface* FindLastActive() {
+  return GetLastActiveBrowserWindowInterfaceWithAnyProfile();
 }
 
 size_t GetTotalBrowserCount() {

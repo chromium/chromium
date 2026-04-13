@@ -497,7 +497,7 @@ IN_PROC_BROWSER_TEST_P(HostedOrWebAppTest,
   }
 
   CheckWebContentsHasAppPrefs(
-      chrome::FindLastActive()->tab_strip_model()->GetActiveWebContents());
+      chrome::FindLastActive()->GetTabStripModel()->GetActiveWebContents());
 }
 
 // Tests that the WebContents of a regular browser window launched using

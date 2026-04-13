@@ -19,6 +19,7 @@ class FilePath;
 }
 
 class Browser;
+class BrowserWindowInterface;
 class Profile;
 class SessionID;
 
@@ -180,7 +181,7 @@ Browser* FindLastActiveWithProfile(Profile* profile);
 // returns nullptr.
 //
 // WARNING #2: This will always return nullptr in unit tests run on the bots.
-Browser* FindLastActive();
+BrowserWindowInterface* FindLastActive();
 
 // Returns the number of browsers across all profiles. This does not include
 // pending delete browsers.

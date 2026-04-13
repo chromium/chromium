@@ -198,7 +198,7 @@ class PWAProtocolTest : public PWAProtocolTestWithoutApp {
   void AssertActiveWebContentsBelongToApp(const GURL& url,
                                           const webapps::AppId& app_id) {
     content::WebContents* contents =
-        chrome::FindLastActive()->tab_strip_model()->GetActiveWebContents();
+        chrome::FindLastActive()->GetTabStripModel()->GetActiveWebContents();
     EXPECT_TRUE(contents);
     EXPECT_TRUE(content::WaitForLoadStop(contents));
     EXPECT_EQ(contents->GetLastCommittedURL(), url);

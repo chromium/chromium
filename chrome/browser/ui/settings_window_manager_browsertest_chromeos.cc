@@ -191,7 +191,7 @@ IN_PROC_BROWSER_TEST_F(SettingsWindowManagerTest, OpenSettings) {
 
   // The opened Settings window should be the active browser.
   content::WebContents* web_contents =
-      chrome::FindLastActive()->tab_strip_model()->GetWebContentsAt(0);
+      chrome::FindLastActive()->GetTabStripModel()->GetWebContentsAt(0);
   EXPECT_EQ(ash::kChromeUIOSSettingsHost, web_contents->GetURL().GetHost());
 
   // Showing an OS sub-page reuses the OS settings window.
