@@ -51,14 +51,10 @@ HTMLBodyElement::~HTMLBodyElement() = default;
 bool HTMLBodyElement::IsPresentationAttribute(const QualifiedName& name) const {
   if (name == html_names::kBackgroundAttr ||
       name == html_names::kMarginwidthAttr ||
-      name == html_names::kMarginheightAttr ||
       name == html_names::kLeftmarginAttr ||
-      (RuntimeEnabledFeatures::BodyMarginAttributePrecedenceEnabled() &&
-       name == html_names::kRightmarginAttr) ||
-      name == html_names::kTopmarginAttr ||
-      (RuntimeEnabledFeatures::BodyMarginAttributePrecedenceEnabled() &&
-       name == html_names::kBottommarginAttr) ||
-      name == html_names::kBgcolorAttr || name == html_names::kTextAttr) {
+      name == html_names::kMarginheightAttr ||
+      name == html_names::kTopmarginAttr || name == html_names::kBgcolorAttr ||
+      name == html_names::kTextAttr) {
     return true;
   }
   return HTMLElement::IsPresentationAttribute(name);
@@ -70,30 +66,14 @@ void HTMLBodyElement::CollectStyleForPresentationAttribute(
     HeapVector<CSSPropertyValue, 8>& style) {
   if (name == html_names::kBackgroundAttr) {
     AddHTMLBackgroundImageToStyle(style, value, localName());
-  } else if (name == html_names::kMarginwidthAttr) {
-    AddHTMLLengthToStyle(style, CSSPropertyID::kMarginLeft, value);
+  } else if (name == html_names::kMarginwidthAttr ||
+             name == html_names::kLeftmarginAttr) {
     AddHTMLLengthToStyle(style, CSSPropertyID::kMarginRight, value);
-  } else if (name == html_names::kMarginheightAttr) {
-    AddHTMLLengthToStyle(style, CSSPropertyID::kMarginTop, value);
-    AddHTMLLengthToStyle(style, CSSPropertyID::kMarginBottom, value);
-  } else if (name == html_names::kLeftmarginAttr ||
-             (RuntimeEnabledFeatures::BodyMarginAttributePrecedenceEnabled() &&
-              name == html_names::kRightmarginAttr)) {
-    if (RuntimeEnabledFeatures::BodyMarginAttributePrecedenceEnabled() &&
-        FastHasAttribute(html_names::kMarginwidthAttr)) {
-      return;
-    }
     AddHTMLLengthToStyle(style, CSSPropertyID::kMarginLeft, value);
-    AddHTMLLengthToStyle(style, CSSPropertyID::kMarginRight, value);
-  } else if (name == html_names::kTopmarginAttr ||
-             (RuntimeEnabledFeatures::BodyMarginAttributePrecedenceEnabled() &&
-              name == html_names::kBottommarginAttr)) {
-    if (RuntimeEnabledFeatures::BodyMarginAttributePrecedenceEnabled() &&
-        FastHasAttribute(html_names::kMarginheightAttr)) {
-      return;
-    }
-    AddHTMLLengthToStyle(style, CSSPropertyID::kMarginTop, value);
+  } else if (name == html_names::kMarginheightAttr ||
+             name == html_names::kTopmarginAttr) {
     AddHTMLLengthToStyle(style, CSSPropertyID::kMarginBottom, value);
+    AddHTMLLengthToStyle(style, CSSPropertyID::kMarginTop, value);
   } else if (name == html_names::kBgcolorAttr) {
     AddHTMLColorToStyle(style, CSSPropertyID::kBackgroundColor, value);
   } else if (name == html_names::kTextAttr) {
@@ -281,26 +261,11 @@ void HTMLBodyElement::DidNotifySubtreeInsertionsToDocument() {
   if (GetDocument().GetFrame() && GetDocument().GetFrame()->Owner()) {
     int margin_width = GetDocument().GetFrame()->Owner()->MarginWidth();
     int margin_height = GetDocument().GetFrame()->Owner()->MarginHeight();
-    if (RuntimeEnabledFeatures::BodyMarginAttributePrecedenceEnabled()) {
-      if (margin_width != -1 &&
-          !FastHasAttribute(html_names::kMarginwidthAttr) &&
-          !FastHasAttribute(html_names::kLeftmarginAttr) &&
-          !FastHasAttribute(html_names::kRightmarginAttr)) {
-        SetIntegralAttribute(html_names::kMarginwidthAttr, margin_width);
-      }
-      if (margin_height != -1 &&
-          !FastHasAttribute(html_names::kMarginheightAttr) &&
-          !FastHasAttribute(html_names::kTopmarginAttr) &&
-          !FastHasAttribute(html_names::kBottommarginAttr)) {
-        SetIntegralAttribute(html_names::kMarginheightAttr, margin_height);
-      }
-    } else {
-      if (margin_width != -1) {
-        SetIntegralAttribute(html_names::kMarginwidthAttr, margin_width);
-      }
-      if (margin_height != -1) {
-        SetIntegralAttribute(html_names::kMarginheightAttr, margin_height);
-      }
+    if (margin_width != -1) {
+      SetIntegralAttribute(html_names::kMarginwidthAttr, margin_width);
+    }
+    if (margin_height != -1) {
+      SetIntegralAttribute(html_names::kMarginheightAttr, margin_height);
     }
   }
 }

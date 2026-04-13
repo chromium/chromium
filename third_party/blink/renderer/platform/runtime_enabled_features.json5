@@ -859,14 +859,6 @@
       name: "BlockSelectPopupUnfocusedWindow",
       status: "stable",
     },
-    // Makes <body> marginwidth/marginheight take precedence over
-    // left/right/top/bottom presentational margin attributes, and prevents
-    // iframe marginwidth/marginheight injection when body margin attrs exist.
-    // Added in M147, remove in M149. See crbug.com/41310601.
-    {
-      name: "BodyMarginAttributePrecedence",
-      status: "stable",
-    },
     // https://crbug.com/415304289: Mouse and Pointer boundary event dispatch
     // (i.e. dispatch of enter, leave, over, out events) tracks DOM node removal
     // to fix event pairing on ancestor nodes.

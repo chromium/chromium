@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 96 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 108 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] <iframe marginwidth="+-200"> mapping to marginLeft
   assert_equals: expected "8px" but got "0px"
 [FAIL] <iframe marginwidth="-+200"> mapping to marginLeft
@@ -92,26 +92,38 @@ Found 96 FAIL, 0 TIMEOUT, 0 NOTRUN.
   assert_equals: expected "200px" but got "600px"
 [FAIL] <body leftmargin="200.25%"> mapping to marginLeft
   assert_equals: expected "200px" but got "600.75px"
+[FAIL] <body rightmargin="200"> mapping to marginRight
+  assert_equals: expected "200px" but got "8px"
+[FAIL] <body rightmargin="1007"> mapping to marginRight
+  assert_equals: expected "1007px" but got "8px"
+[FAIL] <body rightmargin="   00523   "> mapping to marginRight
+  assert_equals: expected "523px" but got "8px"
+[FAIL] <body rightmargin="200."> mapping to marginRight
+  assert_equals: expected "200px" but got "8px"
 [FAIL] <body rightmargin="200.25"> mapping to marginRight
-  assert_equals: expected "200px" but got "200.25px"
+  assert_equals: expected "200px" but got "8px"
 [FAIL] <body rightmargin="200.7"> mapping to marginRight
-  assert_equals: expected "200px" but got "200.7px"
+  assert_equals: expected "200px" but got "8px"
+[FAIL] <body rightmargin="0"> mapping to marginRight
+  assert_equals: expected "0px" but got "8px"
 [FAIL] <body rightmargin="-0"> mapping to marginRight
   assert_equals: expected "0px" but got "8px"
 [FAIL] <body rightmargin="+0"> mapping to marginRight
   assert_equals: expected "0px" but got "8px"
 [FAIL] <body rightmargin="+200"> mapping to marginRight
   assert_equals: expected "200px" but got "8px"
+[FAIL] <body rightmargin="200in"> mapping to marginRight
+  assert_equals: expected "200px" but got "8px"
 [FAIL] <body rightmargin="200.25in"> mapping to marginRight
-  assert_equals: expected "200px" but got "200.25px"
+  assert_equals: expected "200px" but got "8px"
 [FAIL] <body rightmargin="   +200in    "> mapping to marginRight
   assert_equals: expected "200px" but got "8px"
 [FAIL] <body rightmargin="200%"> mapping to marginRight
-  assert_equals: expected "200px" but got "600px"
+  assert_equals: expected "200px" but got "8px"
 [FAIL] <body rightmargin="200.%"> mapping to marginRight
-  assert_equals: expected "200px" but got "600px"
+  assert_equals: expected "200px" but got "8px"
 [FAIL] <body rightmargin="200.25%"> mapping to marginRight
-  assert_equals: expected "200px" but got "600.75px"
+  assert_equals: expected "200px" but got "8px"
 [FAIL] <body marginheight="200.25"> mapping to marginTop
   assert_equals: expected "200px" but got "200.25px"
 [FAIL] <body marginheight="200.7"> mapping to marginTop
@@ -172,25 +184,37 @@ Found 96 FAIL, 0 TIMEOUT, 0 NOTRUN.
   assert_equals: expected "200px" but got "570px"
 [FAIL] <body topmargin="200.25%"> mapping to marginTop
   assert_equals: expected "200px" but got "570.703px"
+[FAIL] <body bottommargin="200"> mapping to marginBottom
+  assert_equals: expected "200px" but got "8px"
+[FAIL] <body bottommargin="1007"> mapping to marginBottom
+  assert_equals: expected "1007px" but got "8px"
+[FAIL] <body bottommargin="   00523   "> mapping to marginBottom
+  assert_equals: expected "523px" but got "8px"
+[FAIL] <body bottommargin="200."> mapping to marginBottom
+  assert_equals: expected "200px" but got "8px"
 [FAIL] <body bottommargin="200.25"> mapping to marginBottom
-  assert_equals: expected "200px" but got "200.25px"
+  assert_equals: expected "200px" but got "8px"
 [FAIL] <body bottommargin="200.7"> mapping to marginBottom
-  assert_equals: expected "200px" but got "200.7px"
+  assert_equals: expected "200px" but got "8px"
+[FAIL] <body bottommargin="0"> mapping to marginBottom
+  assert_equals: expected "0px" but got "8px"
 [FAIL] <body bottommargin="-0"> mapping to marginBottom
   assert_equals: expected "0px" but got "8px"
 [FAIL] <body bottommargin="+0"> mapping to marginBottom
   assert_equals: expected "0px" but got "8px"
 [FAIL] <body bottommargin="+200"> mapping to marginBottom
   assert_equals: expected "200px" but got "8px"
+[FAIL] <body bottommargin="200in"> mapping to marginBottom
+  assert_equals: expected "200px" but got "8px"
 [FAIL] <body bottommargin="200.25in"> mapping to marginBottom
-  assert_equals: expected "200px" but got "200.25px"
+  assert_equals: expected "200px" but got "8px"
 [FAIL] <body bottommargin="   +200in    "> mapping to marginBottom
   assert_equals: expected "200px" but got "8px"
 [FAIL] <body bottommargin="200%"> mapping to marginBottom
-  assert_equals: expected "200px" but got "570px"
+  assert_equals: expected "200px" but got "8px"
 [FAIL] <body bottommargin="200.%"> mapping to marginBottom
-  assert_equals: expected "200px" but got "570px"
+  assert_equals: expected "200px" but got "8px"
 [FAIL] <body bottommargin="200.25%"> mapping to marginBottom
-  assert_equals: expected "200px" but got "570.703px"
+  assert_equals: expected "200px" but got "8px"
 Harness: the test ran to completion.
 
