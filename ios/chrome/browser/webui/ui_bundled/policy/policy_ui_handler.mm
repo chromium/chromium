@@ -464,7 +464,6 @@ base::DictValue PolicyUIHandler::GetPolicyValues() const {
   base::DictValue policy_values =
       policy::PolicyConversions(std::make_unique<PolicyConversionsClientIOS>(
                                     ProfileIOS::FromWebUIIOS(web_ui())))
-          .EnableConvertValues(true)
           .UseChromePolicyConversions()
           .ToValueDict();
 
