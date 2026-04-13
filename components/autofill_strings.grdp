@@ -1019,6 +1019,57 @@
     Delete redress number
   </message>
 
+  <!-- Attributes of the order entity -->
+  <!-- TODO(crbug.com/485269384): Make Order entity translatable. -->
+  <message name="IDS_AUTOFILL_AI_ORDER_ID_ATTRIBUTE_NAME" desc="Used as a general label for the order id attribute." translateable="false">
+    Id
+  </message>
+  <message name="IDS_AUTOFILL_AI_ORDER_ACCOUNT_ATTRIBUTE_NAME" desc="Used as a general label for the order account attribute." translateable="false">
+    Account
+  </message>
+  <message name="IDS_AUTOFILL_AI_ORDER_DATE_ATTRIBUTE_NAME" desc="Used as a general label for the order date attribute." translateable="false">
+    Date
+  </message>
+  <message name="IDS_AUTOFILL_AI_ORDER_MERCHANT_NAME_ATTRIBUTE_NAME" desc="Used as a general label for the order merchant name attribute." translateable="false">
+    Merchant name
+  </message>
+  <message name="IDS_AUTOFILL_AI_ORDER_MERCHANT_DOMAIN_ATTRIBUTE_NAME" desc="Used as a general label for the order merchant domain attribute." translateable="false">
+    Merchant domain
+  </message>
+  <message name="IDS_AUTOFILL_AI_ORDER_PRODUCT_NAMES_ATTRIBUTE_NAME" desc="Used as a general label for the order product names attribute." translateable="false">
+    Product names
+  </message>
+
+  <!-- Attributes of the shipment entity -->
+  <!-- TODO(crbug.com/485363832): Make Shipment entity translatable. -->
+  <message name="IDS_AUTOFILL_AI_SHIPMENT_TRACKING_NUMBER_ATTRIBUTE_NAME" desc="Used as a general label for the shipment tracking number attribute." translateable="false">
+    Tracking number
+  </message>
+  <message name="IDS_AUTOFILL_AI_SHIPMENT_DELIVERY_ZIP_CODE_ATTRIBUTE_NAME" desc="Used as a general label for the shipment delivery zip code attribute." translateable="false">
+    Delivery zip code
+  </message>
+  <message name="IDS_AUTOFILL_AI_SHIPMENT_CARRIER_NAME_ATTRIBUTE_NAME" desc="Used as a general label for the shipment carrier name attribute." translateable="false">
+    Carrier name
+  </message>
+  <message name="IDS_AUTOFILL_AI_SHIPMENT_CARRIER_DOMAIN_ATTRIBUTE_NAME" desc="Used as a general label for the shipment carrier domain attribute." translateable="false">
+    Carrier domain
+  </message>
+  <message name="IDS_AUTOFILL_AI_SHIPMENT_ESTIMATED_DELIVERY_DATE_ATTRIBUTE_NAME" desc="Used as a general label for the shipment estimated delivery date attribute." translateable="false">
+    Estimated delivery date
+  </message>
+  <message name="IDS_AUTOFILL_AI_SHIPMENT_ORDER_IDS_ATTRIBUTE_NAME" desc="Used as a general label for the shipment order ids attribute." translateable="false">
+    Order ids
+  </message>
+  <message name="IDS_AUTOFILL_AI_SHIPMENT_ORDER_DATES_ATTRIBUTE_NAME" desc="Used as a general label for the shipment order dates attribute." translateable="false">
+    Order dates
+  </message>
+  <message name="IDS_AUTOFILL_AI_SHIPMENT_MERCHANT_NAME_ATTRIBUTE_NAME" desc="Used as a general label for the shipment merchant name attribute." translateable="false">
+    Merchant name
+  </message>
+  <message name="IDS_AUTOFILL_AI_SHIPMENT_PRODUCT_NAMES_ATTRIBUTE_NAME" desc="Used as a general label for the shipment product names attribute." translateable="false">
+    Product names
+  </message>
+
   <!-- Attributes of the driver's license entity -->
   <message name="IDS_AUTOFILL_AI_DRIVERS_LICENSE_NAME_ATTRIBUTE_NAME" desc="Used as a general label for the driver's license name attribute.">
     Name

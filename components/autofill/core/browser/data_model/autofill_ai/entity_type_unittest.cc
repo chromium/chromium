@@ -165,8 +165,12 @@ TEST(AutofillEntityTypeTest, EntityGetNameForI18n) {
   using enum EntityTypeName;
   EntityType a = EntityType(kPassport);
   EntityType b = EntityType(kDriversLicense);
+  EntityType c = EntityType(kOrder);
+  EntityType d = EntityType(kShipment);
   EXPECT_EQ(a.GetNameForI18n(), u"Passport");
   EXPECT_EQ(b.GetNameForI18n(), u"Driver's license");
+  EXPECT_EQ(c.GetNameForI18n(), u"Order");
+  EXPECT_EQ(d.GetNameForI18n(), u"Shipment");
 }
 
 TEST(AutofillEntityTypeTest, AttributeGetNameForI18n) {
@@ -174,9 +178,44 @@ TEST(AutofillEntityTypeTest, AttributeGetNameForI18n) {
   AttributeType a = AttributeType(kPassportCountry);
   AttributeType b = AttributeType(kVehiclePlateNumber);
   AttributeType c = AttributeType(kDriversLicenseExpirationDate);
+
+  AttributeType d = AttributeType(kOrderDate);
+  AttributeType e = AttributeType(kOrderAccount);
+  AttributeType f = AttributeType(kOrderId);
+  AttributeType g = AttributeType(kOrderMerchantDomain);
+  AttributeType h = AttributeType(kOrderMerchantName);
+  AttributeType i = AttributeType(kOrderProductNames);
+
+  AttributeType j = AttributeType(kShipmentTrackingNumber);
+  AttributeType k = AttributeType(kShipmentCarrierName);
+  AttributeType l = AttributeType(kShipmentCarrierDomain);
+  AttributeType m = AttributeType(kShipmentDeliveryZipCode);
+  AttributeType n = AttributeType(kShipmentEstimatedDeliveryDate);
+  AttributeType o = AttributeType(kShipmentOrderIds);
+  AttributeType p = AttributeType(kShipmentOrderDates);
+  AttributeType q = AttributeType(kShipmentMerchantName);
+  AttributeType r = AttributeType(kShipmentProductNames);
+
   EXPECT_EQ(a.GetNameForI18n(), u"Country");
   EXPECT_EQ(b.GetNameForI18n(), u"License plate");
   EXPECT_EQ(c.GetNameForI18n(), u"Expiration date");
+
+  EXPECT_EQ(d.GetNameForI18n(), u"Date");
+  EXPECT_EQ(e.GetNameForI18n(), u"Account");
+  EXPECT_EQ(f.GetNameForI18n(), u"Id");
+  EXPECT_EQ(g.GetNameForI18n(), u"Merchant domain");
+  EXPECT_EQ(h.GetNameForI18n(), u"Merchant name");
+  EXPECT_EQ(i.GetNameForI18n(), u"Product names");
+
+  EXPECT_EQ(j.GetNameForI18n(), u"Tracking number");
+  EXPECT_EQ(k.GetNameForI18n(), u"Carrier name");
+  EXPECT_EQ(l.GetNameForI18n(), u"Carrier domain");
+  EXPECT_EQ(m.GetNameForI18n(), u"Delivery zip code");
+  EXPECT_EQ(n.GetNameForI18n(), u"Estimated delivery date");
+  EXPECT_EQ(o.GetNameForI18n(), u"Order ids");
+  EXPECT_EQ(p.GetNameForI18n(), u"Order dates");
+  EXPECT_EQ(q.GetNameForI18n(), u"Merchant name");
+  EXPECT_EQ(r.GetNameForI18n(), u"Product names");
 }
 
 TEST(AutofillEntityTypeTest, DataType) {

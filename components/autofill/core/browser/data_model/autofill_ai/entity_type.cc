@@ -50,27 +50,54 @@ std::u16string AttributeType::GetNameForI18n() const {
     case AttributeTypeName::kFlightReservationDepartureAirport:
     case AttributeTypeName::kFlightReservationArrivalAirport:
     case AttributeTypeName::kFlightReservationDepartureDate:
+      // TODO(crbug.com/501351119): Add attribute strings for flight
+      // reservations.
       // Flight reservations are read-only and do not use attribute strings.
       return u"";
     case AttributeTypeName::kOrderDate:
+      return l10n_util::GetStringUTF16(
+          IDS_AUTOFILL_AI_ORDER_DATE_ATTRIBUTE_NAME);
     case AttributeTypeName::kOrderAccount:
+      return l10n_util::GetStringUTF16(
+          IDS_AUTOFILL_AI_ORDER_ACCOUNT_ATTRIBUTE_NAME);
     case AttributeTypeName::kOrderId:
+      return l10n_util::GetStringUTF16(IDS_AUTOFILL_AI_ORDER_ID_ATTRIBUTE_NAME);
     case AttributeTypeName::kOrderMerchantDomain:
+      return l10n_util::GetStringUTF16(
+          IDS_AUTOFILL_AI_ORDER_MERCHANT_DOMAIN_ATTRIBUTE_NAME);
     case AttributeTypeName::kOrderMerchantName:
+      return l10n_util::GetStringUTF16(
+          IDS_AUTOFILL_AI_ORDER_MERCHANT_NAME_ATTRIBUTE_NAME);
     case AttributeTypeName::kOrderProductNames:
-      // Orders are read-only and do not use attribute strings.
-      return u"";
+      return l10n_util::GetStringUTF16(
+          IDS_AUTOFILL_AI_ORDER_PRODUCT_NAMES_ATTRIBUTE_NAME);
     case AttributeTypeName::kShipmentCarrierName:
+      return l10n_util::GetStringUTF16(
+          IDS_AUTOFILL_AI_SHIPMENT_CARRIER_NAME_ATTRIBUTE_NAME);
     case AttributeTypeName::kShipmentCarrierDomain:
+      return l10n_util::GetStringUTF16(
+          IDS_AUTOFILL_AI_SHIPMENT_CARRIER_DOMAIN_ATTRIBUTE_NAME);
     case AttributeTypeName::kShipmentTrackingNumber:
+      return l10n_util::GetStringUTF16(
+          IDS_AUTOFILL_AI_SHIPMENT_TRACKING_NUMBER_ATTRIBUTE_NAME);
     case AttributeTypeName::kShipmentDeliveryZipCode:
+      return l10n_util::GetStringUTF16(
+          IDS_AUTOFILL_AI_SHIPMENT_DELIVERY_ZIP_CODE_ATTRIBUTE_NAME);
     case AttributeTypeName::kShipmentEstimatedDeliveryDate:
+      return l10n_util::GetStringUTF16(
+          IDS_AUTOFILL_AI_SHIPMENT_ESTIMATED_DELIVERY_DATE_ATTRIBUTE_NAME);
     case AttributeTypeName::kShipmentOrderIds:
+      return l10n_util::GetStringUTF16(
+          IDS_AUTOFILL_AI_SHIPMENT_ORDER_IDS_ATTRIBUTE_NAME);
     case AttributeTypeName::kShipmentOrderDates:
+      return l10n_util::GetStringUTF16(
+          IDS_AUTOFILL_AI_SHIPMENT_ORDER_DATES_ATTRIBUTE_NAME);
     case AttributeTypeName::kShipmentMerchantName:
+      return l10n_util::GetStringUTF16(
+          IDS_AUTOFILL_AI_SHIPMENT_MERCHANT_NAME_ATTRIBUTE_NAME);
     case AttributeTypeName::kShipmentProductNames:
-      // Shipments are read-only and do not use attribute strings.
-      return u"";
+      return l10n_util::GetStringUTF16(
+          IDS_AUTOFILL_AI_SHIPMENT_PRODUCT_NAMES_ATTRIBUTE_NAME);
     case AttributeTypeName::kKnownTravelerNumberName:
       return l10n_util::GetStringUTF16(
           IDS_AUTOFILL_AI_KNOWN_TRAVELER_NUMBER_NAME_ATTRIBUTE_NAME);
