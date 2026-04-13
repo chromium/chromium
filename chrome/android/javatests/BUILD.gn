@@ -1872,7 +1872,10 @@ android_library(
     "src/org/chromium/chrome/browser/contextmenu/ContextMenuRenderTest.java",
   ]
 
-  deps = [ ":common_unit_test_deps_java" ]
+  deps = [
+    ":common_unit_test_deps_java",
+    "//chrome/browser/ui/android/signin:java",
+  ]
 }
 
 android_library(

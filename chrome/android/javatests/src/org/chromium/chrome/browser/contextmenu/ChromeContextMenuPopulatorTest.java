@@ -58,7 +58,12 @@ import org.chromium.base.ContextUtils;
 import org.chromium.base.DeviceInfo;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.supplier.SupplierUtils;
-import org.chromium.base.test.BaseJUnit4ClassRunner;
+import org.chromium.base.test.params.BaseJUnit4RunnerDelegate;
+import org.chromium.base.test.params.ParameterAnnotations.UseMethodParameter;
+import org.chromium.base.test.params.ParameterAnnotations.UseRunnerDelegate;
+import org.chromium.base.test.params.ParameterProvider;
+import org.chromium.base.test.params.ParameterSet;
+import org.chromium.base.test.params.ParameterizedRunner;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
@@ -81,6 +86,7 @@ import org.chromium.chrome.browser.profiles.ProfileJni;
 import org.chromium.chrome.browser.share.ShareDelegate;
 import org.chromium.chrome.browser.share.link_to_text.LinkToTextHelper;
 import org.chromium.chrome.browser.tab.TabContextMenuItemDelegate;
+import org.chromium.chrome.browser.ui.signin.ForcedSigninStatusProvider;
 import org.chromium.chrome.test.OverrideContextWrapperTestRule;
 import org.chromium.components.embedder_support.contextmenu.ContextMenuImageFormat;
 import org.chromium.components.embedder_support.contextmenu.ContextMenuNativeDelegate;
@@ -104,7 +110,8 @@ import java.util.Arrays;
 import java.util.List;
 
 /** Unit tests for the context menu logic of Chrome. */
-@RunWith(BaseJUnit4ClassRunner.class)
+@RunWith(ParameterizedRunner.class)
+@UseRunnerDelegate(BaseJUnit4RunnerDelegate.class)
 @Batch(Batch.UNIT_TESTS)
 @DisableFeatures(ChromeFeatureList.CONTEXT_MENU_TRANSLATE_WITH_GOOGLE_LENS)
 public class ChromeContextMenuPopulatorTest {
@@ -117,6 +124,18 @@ public class ChromeContextMenuPopulatorTest {
     private static final String RETRIEVED_IMAGE_URL = "http://www.blah.com/retrieved_image.jpg";
     private static final Uri RETRIEVED_IMAGE_URI =
             Uri.parse("content://com.my.app.testing/mock/image.png");
+
+    public static class ContextMenuPopulatorTestParams implements ParameterProvider {
+        private static final List<ParameterSet> sMethodParams =
+                Arrays.asList(
+                        new ParameterSet().value(false).name("FirstRunExperience"),
+                        new ParameterSet().value(true).name("ForcedSigninScreen"));
+
+        @Override
+        public List<ParameterSet> getParameters() {
+            return sMethodParams;
+        }
+    }
 
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
 
@@ -134,6 +153,7 @@ public class ChromeContextMenuPopulatorTest {
     @Mock private Profile.Natives mProfileNatives;
     @Mock private MenuModelBridge mMenuModelBridge;
     @Mock private ChromeContextMenuPopulator.PendingIntentSender mMockPendingIntentSender;
+    @Mock private ForcedSigninStatusProvider mMockForcedSigninStatusProvider;
 
     private ChromeContextMenuPopulator mPopulator;
 
@@ -164,6 +184,7 @@ public class ChromeContextMenuPopulatorTest {
                 () -> {
                     ApplicationStatus.onStateChangeForTesting(mActivity, ActivityState.CREATED);
                 });
+        ForcedSigninStatusProvider.setInstanceForTesting(mMockForcedSigninStatusProvider);
     }
 
     @After
@@ -369,8 +390,9 @@ public class ChromeContextMenuPopulatorTest {
     @SmallTest
     @UiThreadTest
     @DisableFeatures(ChromeFeatureList.ANDROID_OPEN_INCOGNITO_AS_WINDOW)
-    public void testHttpLink() {
-        FirstRunStatus.setFirstRunFlowComplete(false);
+    @UseMethodParameter(ContextMenuPopulatorTestParams.class)
+    public void testHttpLink(boolean isForcedSigninShowing) {
+        setMandatoryFlowCompleted(isForcedSigninShowing, /* isCompleted= */ false);
         ContextMenuParams params = getHttpLinkParams();
 
         int[] expected = {R.id.contextmenu_copy_link_address, R.id.contextmenu_copy_link_text};
@@ -390,7 +412,7 @@ public class ChromeContextMenuPopulatorTest {
         initializePopulator(ChromeContextMenuPopulator.ContextMenuMode.THIN_WEB_VIEW, params);
         checkMenuOptions(expected);
 
-        FirstRunStatus.setFirstRunFlowComplete(true);
+        setMandatoryFlowCompleted(isForcedSigninShowing, /* isCompleted= */ true);
 
         initializePopulator(ChromeContextMenuPopulator.ContextMenuMode.NORMAL, params);
         int[] expected2 = {
@@ -484,7 +506,7 @@ public class ChromeContextMenuPopulatorTest {
     @UiThreadTest
     @DisableFeatures(ChromeFeatureList.ANDROID_OPEN_INCOGNITO_AS_WINDOW)
     public void testShowInterestInElement() {
-        FirstRunStatus.setFirstRunFlowComplete(true);
+        setAllMandatoryFlowsComplete();
         ContextMenuParams params = getInterestForLinkParams();
 
         initializePopulator(ChromeContextMenuPopulator.ContextMenuMode.NORMAL, params);
@@ -514,7 +536,7 @@ public class ChromeContextMenuPopulatorTest {
     @UiThreadTest
     @DisableFeatures(ChromeFeatureList.ANDROID_OPEN_INCOGNITO_AS_WINDOW)
     public void testHttpLinkWithDownloadBlockedByPolicy() {
-        FirstRunStatus.setFirstRunFlowComplete(true);
+        setAllMandatoryFlowsComplete();
         DownloadUtils.setIsDownloadRestrictedByPolicyForTesting(true);
         ContextMenuParams params =
                 new ContextMenuParams(
@@ -628,7 +650,7 @@ public class ChromeContextMenuPopulatorTest {
                         /* interestForNodeID= */ 0,
                         /* additionalNavigationParams= */ null);
 
-        FirstRunStatus.setFirstRunFlowComplete(true);
+        setAllMandatoryFlowsComplete();
 
         initializePopulator(ChromeContextMenuPopulator.ContextMenuMode.NORMAL, params);
         int[] expected1 = {
@@ -721,7 +743,7 @@ public class ChromeContextMenuPopulatorTest {
                         /* interestForNodeID= */ 0,
                         /* additionalNavigationParams= */ null);
 
-        FirstRunStatus.setFirstRunFlowComplete(true);
+        setAllMandatoryFlowsComplete();
 
         initializePopulator(ChromeContextMenuPopulator.ContextMenuMode.NORMAL, params);
         int[] expected1 = {
@@ -783,8 +805,9 @@ public class ChromeContextMenuPopulatorTest {
     @Test
     @SmallTest
     @UiThreadTest
-    public void testMailLink() {
-        FirstRunStatus.setFirstRunFlowComplete(false);
+    @UseMethodParameter(ContextMenuPopulatorTestParams.class)
+    public void testMailLink(boolean isForcedSigninShowing) {
+        setMandatoryFlowCompleted(isForcedSigninShowing, /* isCompleted= */ false);
         GURL mailto = new GURL("mailto:fake@email.com");
         ContextMenuParams params =
                 new ContextMenuParams(
@@ -825,7 +848,7 @@ public class ChromeContextMenuPopulatorTest {
         initializePopulator(ChromeContextMenuPopulator.ContextMenuMode.THIN_WEB_VIEW, params);
         checkMenuOptions(expected);
 
-        FirstRunStatus.setFirstRunFlowComplete(true);
+        setMandatoryFlowCompleted(isForcedSigninShowing, /* isCompleted= */ true);
 
         initializePopulator(ChromeContextMenuPopulator.ContextMenuMode.NORMAL, params);
         int[] expected2 = {
@@ -876,8 +899,9 @@ public class ChromeContextMenuPopulatorTest {
     @Test
     @SmallTest
     @UiThreadTest
-    public void testTelLink() {
-        FirstRunStatus.setFirstRunFlowComplete(false);
+    @UseMethodParameter(ContextMenuPopulatorTestParams.class)
+    public void testTelLink(boolean isForcedSigninShowing) {
+        setMandatoryFlowCompleted(isForcedSigninShowing, /* isCompleted= */ false);
         GURL tel = new GURL("tel:0048221234567");
         ContextMenuParams params =
                 new ContextMenuParams(
@@ -918,7 +942,7 @@ public class ChromeContextMenuPopulatorTest {
         initializePopulator(ChromeContextMenuPopulator.ContextMenuMode.THIN_WEB_VIEW, params);
         checkMenuOptions(expected);
 
-        FirstRunStatus.setFirstRunFlowComplete(true);
+        setMandatoryFlowCompleted(isForcedSigninShowing, /* isCompleted= */ true);
 
         initializePopulator(ChromeContextMenuPopulator.ContextMenuMode.NORMAL, params);
         int[] expected2 = {
@@ -978,8 +1002,9 @@ public class ChromeContextMenuPopulatorTest {
         ChromeFeatureList.ANDROID_OPEN_INCOGNITO_AS_WINDOW,
         ChromeFeatureList.CONTEXT_MENU_PICTURE_IN_PICTURE_ANDROID
     })
-    public void testVideoLink() {
-        FirstRunStatus.setFirstRunFlowComplete(false);
+    @UseMethodParameter(ContextMenuPopulatorTestParams.class)
+    public void testVideoLink(boolean isForcedSigninShowing) {
+        setMandatoryFlowCompleted(isForcedSigninShowing, /* isCompleted= */ false);
         GURL sourceUrl = new GURL("http://www.blah.com/");
         GURL url = new GURL(sourceUrl.getSpec() + "I_love_mouse_video.avi");
         ContextMenuParams params =
@@ -1021,7 +1046,7 @@ public class ChromeContextMenuPopulatorTest {
         initializePopulator(ChromeContextMenuPopulator.ContextMenuMode.THIN_WEB_VIEW, params);
         checkMenuOptions(expectedTab1);
 
-        FirstRunStatus.setFirstRunFlowComplete(true);
+        setMandatoryFlowCompleted(isForcedSigninShowing, /* isCompleted= */ true);
 
         initializePopulator(ChromeContextMenuPopulator.ContextMenuMode.NORMAL, params);
         int[] expected2Tab1 = {
@@ -1119,7 +1144,7 @@ public class ChromeContextMenuPopulatorTest {
         ChromeFeatureList.CONTEXT_MENU_PICTURE_IN_PICTURE_ANDROID
     })
     public void testVideoLinkWithDownloadBlockedByPolicy() {
-        FirstRunStatus.setFirstRunFlowComplete(true);
+        setAllMandatoryFlowsComplete();
         DownloadUtils.setIsDownloadRestrictedByPolicyForTesting(true);
         GURL sourceUrl = new GURL("http://www.blah.com/");
         GURL url = new GURL(sourceUrl.getSpec() + "I_love_mouse_video.avi");
@@ -1230,7 +1255,7 @@ public class ChromeContextMenuPopulatorTest {
     @UiThreadTest
     @EnableFeatures(ChromeFeatureList.CONTEXT_MENU_PICTURE_IN_PICTURE_ANDROID)
     public void testVideoPictureInPicture_Enter() {
-        FirstRunStatus.setFirstRunFlowComplete(true);
+        setAllMandatoryFlowsComplete();
         final String enterPip =
                 ContextUtils.getApplicationContext()
                         .getString(R.string.contextmenu_picture_in_picture);
@@ -1262,7 +1287,7 @@ public class ChromeContextMenuPopulatorTest {
     @UiThreadTest
     @EnableFeatures(ChromeFeatureList.CONTEXT_MENU_PICTURE_IN_PICTURE_ANDROID)
     public void testVideoPictureInPicture_Exit() {
-        FirstRunStatus.setFirstRunFlowComplete(true);
+        setAllMandatoryFlowsComplete();
         final String enterPip =
                 ContextUtils.getApplicationContext()
                         .getString(R.string.contextmenu_picture_in_picture);
@@ -1294,8 +1319,9 @@ public class ChromeContextMenuPopulatorTest {
     @Test
     @SmallTest
     @UiThreadTest
-    public void testImageHiFi() {
-        FirstRunStatus.setFirstRunFlowComplete(false);
+    @UseMethodParameter(ContextMenuPopulatorTestParams.class)
+    public void testImageHiFi(boolean isForcedSigninShowing) {
+        setMandatoryFlowCompleted(isForcedSigninShowing, /* isCompleted= */ false);
         ContextMenuParams params =
                 new ContextMenuParams(
                         0,
@@ -1325,7 +1351,7 @@ public class ChromeContextMenuPopulatorTest {
         initializePopulator(ChromeContextMenuPopulator.ContextMenuMode.WEB_APP, params);
         checkMenuOptions(expected);
 
-        FirstRunStatus.setFirstRunFlowComplete(true);
+        setMandatoryFlowCompleted(isForcedSigninShowing, /* isCompleted= */ true);
 
         initializePopulator(ChromeContextMenuPopulator.ContextMenuMode.NORMAL, params);
         int[] expected2 = {
@@ -1391,8 +1417,9 @@ public class ChromeContextMenuPopulatorTest {
     @SmallTest
     @UiThreadTest
     @DisableFeatures(ChromeFeatureList.ANDROID_OPEN_INCOGNITO_AS_WINDOW)
-    public void testHttpLinkWithImageHiFi() {
-        FirstRunStatus.setFirstRunFlowComplete(false);
+    @UseMethodParameter(ContextMenuPopulatorTestParams.class)
+    public void testHttpLinkWithImageHiFi(boolean isForcedSigninShowing) {
+        setMandatoryFlowCompleted(isForcedSigninShowing, /* isCompleted= */ false);
         ContextMenuParams params =
                 new ContextMenuParams(
                         0,
@@ -1432,7 +1459,7 @@ public class ChromeContextMenuPopulatorTest {
         initializePopulator(ChromeContextMenuPopulator.ContextMenuMode.THIN_WEB_VIEW, params);
         checkMenuOptions(expected);
 
-        FirstRunStatus.setFirstRunFlowComplete(true);
+        setMandatoryFlowCompleted(isForcedSigninShowing, /* isCompleted= */ true);
 
         initializePopulator(ChromeContextMenuPopulator.ContextMenuMode.NORMAL, params);
         int[] expected2Tab1 = {
@@ -1520,7 +1547,7 @@ public class ChromeContextMenuPopulatorTest {
     @SmallTest
     @UiThreadTest
     public void testImageWithDownloadBlockedByPolicy() {
-        FirstRunStatus.setFirstRunFlowComplete(true);
+        setAllMandatoryFlowsComplete();
         DownloadUtils.setIsDownloadRestrictedByPolicyForTesting(true);
         ContextMenuParams params =
                 new ContextMenuParams(
@@ -1595,7 +1622,7 @@ public class ChromeContextMenuPopulatorTest {
     @UiThreadTest
     @DisableFeatures(ChromeFeatureList.ANDROID_OPEN_INCOGNITO_AS_WINDOW)
     public void testReadLater() {
-        FirstRunStatus.setFirstRunFlowComplete(true);
+        setAllMandatoryFlowsComplete();
 
         ContextMenuParams params =
                 new ContextMenuParams(
@@ -1729,7 +1756,7 @@ public class ChromeContextMenuPopulatorTest {
     @SmallTest
     @UiThreadTest
     public void testIncognito() {
-        FirstRunStatus.setFirstRunFlowComplete(true);
+        setAllMandatoryFlowsComplete();
 
         ContextMenuParams params =
                 new ContextMenuParams(
@@ -1787,7 +1814,7 @@ public class ChromeContextMenuPopulatorTest {
     @UiThreadTest
     @DisableFeatures(ChromeFeatureList.ANDROID_OPEN_INCOGNITO_AS_WINDOW)
     public void testOpenInOtherWindow() {
-        FirstRunStatus.setFirstRunFlowComplete(true);
+        setAllMandatoryFlowsComplete();
 
         ContextMenuParams params =
                 new ContextMenuParams(
@@ -1843,7 +1870,7 @@ public class ChromeContextMenuPopulatorTest {
     @SmallTest
     @UiThreadTest
     public void testOpenInIncognitoWindow() {
-        FirstRunStatus.setFirstRunFlowComplete(true);
+        setAllMandatoryFlowsComplete();
         ContextMenuParams params = getHttpLinkParams();
 
         when(mItemDelegate.isIncognito()).thenReturn(false);
@@ -1933,7 +1960,7 @@ public class ChromeContextMenuPopulatorTest {
     @SmallTest
     @UiThreadTest
     public void testOpenFromHighlight() {
-        FirstRunStatus.setFirstRunFlowComplete(true);
+        setAllMandatoryFlowsComplete();
 
         // The setup requires only the openedFromHighlight param.
         ContextMenuParams params =
@@ -1985,7 +2012,7 @@ public class ChromeContextMenuPopulatorTest {
     @UiThreadTest
     public void testSharingLinkWithCctAutomotive() {
         mAutomotiveRule.setIsAutomotive(true);
-        FirstRunStatus.setFirstRunFlowComplete(true);
+        setAllMandatoryFlowsComplete();
 
         ContextMenuParams linkParams =
                 new ContextMenuParams(
@@ -2072,7 +2099,7 @@ public class ChromeContextMenuPopulatorTest {
     @SmallTest
     @UiThreadTest
     public void testPage() {
-        FirstRunStatus.setFirstRunFlowComplete(true);
+        setAllMandatoryFlowsComplete();
         ContextMenuParams params =
                 new ContextMenuParams(
                         0,
@@ -2119,7 +2146,7 @@ public class ChromeContextMenuPopulatorTest {
     @SmallTest
     @UiThreadTest
     public void testPageWithDevMenu() {
-        FirstRunStatus.setFirstRunFlowComplete(true);
+        setAllMandatoryFlowsComplete();
         ContextMenuParams params =
                 new ContextMenuParams(
                         0,
@@ -2176,7 +2203,7 @@ public class ChromeContextMenuPopulatorTest {
     @SmallTest
     @UiThreadTest
     public void testPageDownloadRestricted() {
-        FirstRunStatus.setFirstRunFlowComplete(true);
+        setAllMandatoryFlowsComplete();
         ContextMenuParams params =
                 new ContextMenuParams(
                         0,
@@ -2225,7 +2252,7 @@ public class ChromeContextMenuPopulatorTest {
     @SmallTest
     @UiThreadTest
     public void testPagePrintNotSupported() {
-        FirstRunStatus.setFirstRunFlowComplete(true);
+        setAllMandatoryFlowsComplete();
         ContextMenuParams params =
                 new ContextMenuParams(
                         0,
@@ -2350,7 +2377,7 @@ public class ChromeContextMenuPopulatorTest {
                                 ChromeContextMenuPopulator.ContextualCustomActionType.LINK)
                         .build();
 
-        FirstRunStatus.setFirstRunFlowComplete(true);
+        setAllMandatoryFlowsComplete();
         final int linkActionId = 101;
         final String linkDescription = "Custom Link Action";
         PendingIntent mockPendingIntent =
@@ -2438,7 +2465,7 @@ public class ChromeContextMenuPopulatorTest {
                                 ChromeContextMenuPopulator.ContextualCustomActionType.IMAGE)
                         .build();
 
-        FirstRunStatus.setFirstRunFlowComplete(true);
+        setAllMandatoryFlowsComplete();
         final int imageActionId = 202;
         final String imageDescription = "Custom Image Action";
         PendingIntent mockPendingIntent =
@@ -2569,7 +2596,7 @@ public class ChromeContextMenuPopulatorTest {
                                 ChromeContextMenuPopulator.ContextualCustomActionType.IMAGE)
                         .build();
 
-        FirstRunStatus.setFirstRunFlowComplete(true);
+        setAllMandatoryFlowsComplete();
         final int imageActionId = 202;
         final String imageDescription = "Custom Image Action";
         PendingIntent mockPendingIntent =
@@ -2659,7 +2686,7 @@ public class ChromeContextMenuPopulatorTest {
     @UiThreadTest
     @EnableFeatures(ChromeFeatureList.CCT_CONTEXTUAL_MENU_ITEMS)
     public void testCustomContentActions_enforcesLimitWithMixedActionTypes() {
-        FirstRunStatus.setFirstRunFlowComplete(true);
+        setAllMandatoryFlowsComplete();
 
         List<CustomContentAction> oversizedActionList = new ArrayList<>();
         // Action 0 (Link) - Expected to be included
@@ -2790,7 +2817,7 @@ public class ChromeContextMenuPopulatorTest {
     @UiThreadTest
     @EnableFeatures(ChromeFeatureList.CCT_CONTEXTUAL_MENU_ITEMS)
     public void testHasCustomContextItems_DoesHaveWithFlagEnabled() {
-        FirstRunStatus.setFirstRunFlowComplete(true);
+        setAllMandatoryFlowsComplete();
         List<CustomContentAction> customActions =
                 List.of(
                         createSimpleContentAction(
@@ -2810,7 +2837,7 @@ public class ChromeContextMenuPopulatorTest {
     @UiThreadTest
     @EnableFeatures(ChromeFeatureList.CCT_CONTEXTUAL_MENU_ITEMS)
     public void testHasCustomContextItems_HasNoneWithFlagEnabled() {
-        FirstRunStatus.setFirstRunFlowComplete(true);
+        setAllMandatoryFlowsComplete();
         initializePopulator(
                 ChromeContextMenuPopulator.ContextMenuMode.CUSTOM_TAB,
                 getHttpLinkParams(),
@@ -2825,7 +2852,7 @@ public class ChromeContextMenuPopulatorTest {
     @UiThreadTest
     @DisableFeatures(ChromeFeatureList.CCT_CONTEXTUAL_MENU_ITEMS)
     public void testHasCustomContextItems_ShouldNotHaveWithFlagDisabled() {
-        FirstRunStatus.setFirstRunFlowComplete(true);
+        setAllMandatoryFlowsComplete();
         List<CustomContentAction> customActions =
                 List.of(
                         createSimpleContentAction(
@@ -3007,6 +3034,21 @@ public class ChromeContextMenuPopulatorTest {
                         params.getReferrer(),
                         /* navigateToTab= */ true,
                         /* additionalNavigationParams= */ null);
+    }
+
+    private void setMandatoryFlowCompleted(boolean isForcedSigninShowing, boolean isCompleted) {
+        if (isForcedSigninShowing) {
+            when(mMockForcedSigninStatusProvider.isForcedSigninShowing()).thenReturn(!isCompleted);
+            FirstRunStatus.setFirstRunFlowComplete(true);
+        } else {
+            FirstRunStatus.setFirstRunFlowComplete(isCompleted);
+            when(mMockForcedSigninStatusProvider.isForcedSigninShowing()).thenReturn(false);
+        }
+    }
+
+    private void setAllMandatoryFlowsComplete() {
+        FirstRunStatus.setFirstRunFlowComplete(true);
+        when(mMockForcedSigninStatusProvider.isForcedSigninShowing()).thenReturn(false);
     }
 
     private CustomContentAction createSimpleContentAction(int actionId) {

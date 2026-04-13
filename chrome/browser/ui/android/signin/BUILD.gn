@@ -67,6 +67,7 @@ android_library("java") {
     "java/src/org/chromium/chrome/browser/ui/signin/DelegateContext.java",
     "java/src/org/chromium/chrome/browser/ui/signin/DialogWhenLargeContentLayout.java",
     "java/src/org/chromium/chrome/browser/ui/signin/ForcedSigninController.java",
+    "java/src/org/chromium/chrome/browser/ui/signin/ForcedSigninStatusProvider.java",
     "java/src/org/chromium/chrome/browser/ui/signin/FullscreenSigninAndHistorySyncConfig.java",
     "java/src/org/chromium/chrome/browser/ui/signin/FullscreenSigninAndHistorySyncCoordinator.java",
     "java/src/org/chromium/chrome/browser/ui/signin/FullscreenSigninPromoLauncher.java",

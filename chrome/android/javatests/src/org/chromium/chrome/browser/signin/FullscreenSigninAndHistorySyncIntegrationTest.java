@@ -64,6 +64,8 @@ import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.device_lock.DeviceLockActivityLauncherImpl;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
+import org.chromium.chrome.browser.profiles.ProfileManager;
+import org.chromium.chrome.browser.ui.signin.ForcedSigninStatusProvider;
 import org.chromium.chrome.browser.ui.signin.FullscreenSigninAndHistorySyncConfig;
 import org.chromium.chrome.browser.ui.signin.SigninUtils;
 import org.chromium.chrome.browser.ui.signin.fullscreen_signin.FullscreenSigninMediator;
@@ -676,6 +678,61 @@ public class FullscreenSigninAndHistorySyncIntegrationTest {
         // Management notice shouldn't be shown in the upgrade promo.
         onView(withId(R.id.fre_browser_managed_by)).check(matches(not(isDisplayed())));
         policyLoadedHistogram.assertExpected();
+    }
+
+    @Test
+    @LargeTest
+    @Policies.Add({@Policies.Item(key = "BrowserSignin", string = "2")})
+    @EnableFeatures(SigninFeatures.SUPPORT_FORCED_SIGNIN_POLICY)
+    @Restriction({DeviceRestriction.RESTRICTION_TYPE_NON_AUTO})
+    public void testSigninForcedByPolicy() {
+        HistogramWatcher policyLoadedHistogram =
+                HistogramWatcher.newSingleRecordWatcher(
+                        "Signin.Timestamps.Android.Fullscreen.PoliciesLoaded");
+        mSigninAccessPoint = SigninAccessPoint.FORCED_SIGNIN;
+        launchActivity();
+
+        // Verify that the fullscreen sign-in promo is shown.
+        onView(withId(R.id.fullscreen_signin)).check(matches(isDisplayed()));
+
+        ViewUtils.waitForVisibleView(withId(R.id.signin_fre_selected_account));
+        onView(withId(R.id.signin_fre_selected_account_expand_icon)).check(matches(isDisplayed()));
+        onView(
+                        allOf(
+                                withId(R.id.title),
+                                withText(R.string.signin_fre_title_signin_forced_by_policy)))
+                .check(matches(isDisplayed()));
+        onView(
+                        allOf(
+                                withId(R.id.subtitle),
+                                withText(R.string.signin_fre_subtitle_signin_forced_by_policy)))
+                .check(matches(isDisplayed()));
+        onView(withId(R.id.signin_fre_continue_button)).check(matches(isDisplayed()));
+        onView(withId(R.id.signin_fre_dismiss_button)).check(matches(not(isDisplayed())));
+        onView(withId(R.id.signin_fre_footer)).check(matches(not(isDisplayed())));
+        onView(withId(R.id.fre_browser_managed_by)).check(matches(isDisplayed()));
+        onView(withId(R.id.privacy_disclaimer)).check(matches(isDisplayed()));
+
+        ThreadUtils.runOnUiThread(
+                () -> {
+                    Assert.assertTrue(
+                            ForcedSigninStatusProvider.getForProfile(
+                                            ProfileManager.getLastUsedRegularProfile())
+                                    .isForcedSigninShowing());
+                });
+        policyLoadedHistogram.assertExpected();
+
+        //
+        onView(withId(R.id.signin_fre_continue_button)).perform(click());
+        SigninTestUtil.completeDeviceLockIfOnAutomotive(mDeviceLockActivityLauncher);
+        mSigninTestRule.waitForSignin(TestAccounts.AADC_ADULT_ACCOUNT);
+        ThreadUtils.runOnUiThread(
+                () -> {
+                    Assert.assertFalse(
+                            ForcedSigninStatusProvider.getForProfile(
+                                            ProfileManager.getLastUsedRegularProfile())
+                                    .isForcedSigninShowing());
+                });
     }
 
     @Test
