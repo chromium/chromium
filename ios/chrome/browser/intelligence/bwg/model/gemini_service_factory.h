@@ -8,13 +8,13 @@
 #import "base/no_destructor.h"
 #import "ios/chrome/browser/shared/model/profile/profile_keyed_service_factory_ios.h"
 
-class BwgService;
+class GeminiService;
 class ProfileIOS;
 
 // Singleton that owns all GeminiServices and associates them with a Profile.
 class GeminiServiceFactory : public ProfileKeyedServiceFactoryIOS {
  public:
-  static BwgService* GetForProfile(ProfileIOS* profile);
+  static GeminiService* GetForProfile(ProfileIOS* profile);
   static GeminiServiceFactory* GetInstance();
 
   // Returns the default factory used to build GeminiService. Can be registered

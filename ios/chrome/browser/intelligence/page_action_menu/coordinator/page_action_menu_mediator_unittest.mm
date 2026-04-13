@@ -17,14 +17,15 @@
 #import "components/sync_preferences/pref_service_mock_factory.h"
 #import "components/sync_preferences/pref_service_syncable.h"
 #import "ios/chrome/browser/content_settings/model/host_content_settings_map_factory.h"
+#import "ios/chrome/browser/feature_engagement/model/tracker_factory.h"
 #import "ios/chrome/browser/intelligence/bwg/metrics/gemini_metrics.h"
-#import "ios/chrome/browser/intelligence/bwg/model/bwg_service.h"
 #import "ios/chrome/browser/intelligence/bwg/model/bwg_tab_helper.h"
 #import "ios/chrome/browser/intelligence/bwg/model/fake_bwg_service.h"
 #import "ios/chrome/browser/intelligence/features/features.h"
 #import "ios/chrome/browser/intelligence/page_action_menu/ui/page_action_menu_consumer.h"
 #import "ios/chrome/browser/intelligence/page_action_menu/ui/page_action_menu_content_entry_point.h"
 #import "ios/chrome/browser/intelligence/page_action_menu/ui/page_action_menu_feature.h"
+#import "ios/chrome/browser/optimization_guide/model/optimization_guide_service_factory.h"
 #import "ios/chrome/browser/search_engines/model/template_url_service_factory.h"
 #import "ios/chrome/browser/shared/model/prefs/browser_prefs.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
@@ -59,6 +60,16 @@ class PageActionMenuMediatorTest : public PlatformTest {
     // Prepare profile components and configure necessary test factories.
     TestProfileIOS::Builder builder;
     builder.AddTestingFactory(
+        feature_engagement::TrackerFactory::GetInstance(),
+        feature_engagement::TrackerFactory::GetDefaultFactory());
+    builder.AddTestingFactory(
+        OptimizationGuideServiceFactory::GetInstance(),
+        OptimizationGuideServiceFactory::GetDefaultFactory());
+    builder.AddTestingFactory(
+        IdentityManagerFactory::GetInstance(),
+        base::BindRepeating(IdentityTestEnvironmentBrowserStateAdaptor::
+                                BuildIdentityManagerForTests));
+    builder.AddTestingFactory(
         AuthenticationServiceFactory::GetInstance(),
         AuthenticationServiceFactory::GetFactoryWithDelegateFactory(
             base::BindOnce(
@@ -66,6 +77,10 @@ class PageActionMenuMediatorTest : public PlatformTest {
                     -> std::unique_ptr<AuthenticationServiceDelegate> {
                   return std::make_unique<FakeAuthenticationServiceDelegate>();
                 })));
+    builder.AddTestingFactory(
+        ios::TemplateURLServiceFactory::GetInstance(),
+        ios::TemplateURLServiceFactory::GetDefaultFactory());
+
     browser_state_ = std::move(builder).Build();
 
     // Fetch required services from the profile.
@@ -73,8 +88,9 @@ class PageActionMenuMediatorTest : public PlatformTest {
         AuthenticationServiceFactory::GetForProfile(browser_state_.get());
     pref_service_ = browser_state_->GetPrefs();
     ASSERT_TRUE(pref_service_);
-    fake_bwg_service_ = std::make_unique<FakeBwgService>();
+    fake_gemini_service_ = std::make_unique<FakeBwgService>();
     web_state_ = std::make_unique<web::FakeWebState>();
+    web_state_->SetBrowserState(browser_state_.get());
 
     // Set up search engines environment and content settings map.
     TemplateURLService* template_url_service =
@@ -88,15 +104,15 @@ class PageActionMenuMediatorTest : public PlatformTest {
     bwg_tab_helper_ = BwgTabHelper::FromWebState(web_state_.get());
 
     // Initialize the default mediator with the fake web state and services.
-    mediator_ =
-        [[PageActionMenuMediator alloc] initWithWebState:web_state_.get()
-                                   authenticationService:auth_service_
-                                      profilePrefService:pref_service_
-                                      templateURLService:template_url_service
-                                           geminiService:fake_bwg_service_.get()
-                                         geminiTabHelper:bwg_tab_helper_
-                                     readerModeTabHelper:nil
-                                  hostContentSettingsMap:settings_map_];
+    mediator_ = [[PageActionMenuMediator alloc]
+              initWithWebState:web_state_.get()
+         authenticationService:auth_service_
+            profilePrefService:pref_service_
+            templateURLService:template_url_service
+                 geminiService:fake_gemini_service_.get()
+               geminiTabHelper:bwg_tab_helper_
+           readerModeTabHelper:nil
+        hostContentSettingsMap:settings_map_];
     fake_consumer_ = [[FakePageActionMenuConsumer alloc] init];
     mediator_.consumer = fake_consumer_;
   }
@@ -106,7 +122,7 @@ class PageActionMenuMediatorTest : public PlatformTest {
     fake_consumer_ = nil;
     bwg_tab_helper_ = nullptr;
     web_state_.reset();
-    fake_bwg_service_.reset();
+    fake_gemini_service_.reset();
     settings_map_ = nullptr;
     pref_service_ = nullptr;
     auth_service_ = nullptr;
@@ -123,7 +139,7 @@ class PageActionMenuMediatorTest : public PlatformTest {
   raw_ptr<PrefService> pref_service_ = nullptr;
   raw_ptr<HostContentSettingsMap> settings_map_ = nullptr;
   std::unique_ptr<web::FakeWebState> web_state_;
-  std::unique_ptr<FakeBwgService> fake_bwg_service_;
+  std::unique_ptr<FakeBwgService> fake_gemini_service_;
   raw_ptr<BwgTabHelper> bwg_tab_helper_;
   PageActionMenuMediator* mediator_;
   FakePageActionMenuConsumer* fake_consumer_;
@@ -138,18 +154,18 @@ TEST_F(PageActionMenuMediatorTest, IsGeminiAvailable) {
       {kPageActionMenu, kGeminiFloatyAllPages}, {});
 
   // Happy Path: Profile is eligible AND WebState has an eligible URL.
-  fake_bwg_service_->SetIsEligible(true);
+  fake_gemini_service_->SetIsEligible(true);
   web_state_->SetVisibleURL(GURL("https://example.com"));
 
   EXPECT_TRUE([mediator_ geminiEntryPoint].enabled);
 
   // Failure state 1: Profile is explicitly not eligible.
-  fake_bwg_service_->SetIsEligible(false);
+  fake_gemini_service_->SetIsEligible(false);
   EXPECT_FALSE([mediator_ geminiEntryPoint].enabled);
 
   // Failure state 2: Gemini is not available for the current WebState
   // (e.g. invalid URL).
-  fake_bwg_service_->SetIsEligible(true);
+  fake_gemini_service_->SetIsEligible(true);
   web_state_->SetVisibleURL(GURL("chrome://newtab"));  // Ineligible URL
   EXPECT_FALSE([mediator_ geminiEntryPoint].enabled);
 }
@@ -235,7 +251,7 @@ TEST_F(PageActionMenuMediatorTest, PopupBlocker) {
        authenticationService:auth_service_
           profilePrefService:pref_service_
           templateURLService:template_url_service
-               geminiService:fake_bwg_service_.get()
+               geminiService:fake_gemini_service_.get()
              geminiTabHelper:BwgTabHelper::FromWebState(real_web_state.get())
          readerModeTabHelper:nil
       hostContentSettingsMap:settings_map_];

@@ -1,9 +1,9 @@
-// Copyright 2025 The Chromium Authors
+// Copyright 2026 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_INTELLIGENCE_BWG_MODEL_BWG_SERVICE_H_
-#define IOS_CHROME_BROWSER_INTELLIGENCE_BWG_MODEL_BWG_SERVICE_H_
+#ifndef IOS_CHROME_BROWSER_INTELLIGENCE_BWG_MODEL_GEMINI_SERVICE_H_
+#define IOS_CHROME_BROWSER_INTELLIGENCE_BWG_MODEL_GEMINI_SERVICE_H_
 
 #import <optional>
 
@@ -13,10 +13,10 @@ namespace gemini {
 struct IneligibilityReasons;
 }  // namespace gemini
 
-// Interface for BwgService.
-class BwgService : public KeyedService {
+// Interface for GeminiService.
+class GeminiService : public KeyedService {
  public:
-  ~BwgService() override = default;
+  ~GeminiService() override = default;
 
   // Returns whether the current profile is eligible for Gemini.
   virtual bool IsProfileEligibleForGemini() = 0;
@@ -28,4 +28,4 @@ class BwgService : public KeyedService {
   GeminiIneligibilityForProfile() = 0;
 };
 
-#endif  // IOS_CHROME_BROWSER_INTELLIGENCE_BWG_MODEL_BWG_SERVICE_H_
+#endif  // IOS_CHROME_BROWSER_INTELLIGENCE_BWG_MODEL_GEMINI_SERVICE_H_

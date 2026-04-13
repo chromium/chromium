@@ -21,8 +21,8 @@
 #import "ios/chrome/browser/fullscreen/model/fullscreen_browser_agent.h"
 #import "ios/chrome/browser/fullscreen/model/fullscreen_browser_agent_observer_bridge.h"
 #import "ios/chrome/browser/fullscreen/ui_bundled/test/test_fullscreen_controller.h"
-#import "ios/chrome/browser/intelligence/bwg/model/bwg_service_impl.h"
 #import "ios/chrome/browser/intelligence/bwg/model/gemini_service_factory.h"
+#import "ios/chrome/browser/intelligence/bwg/model/gemini_service_impl.h"
 #import "ios/chrome/browser/intelligence/bwg/utils/gemini_constants.h"
 #import "ios/chrome/browser/intelligence/bwg/utils/gemini_prefs.h"
 #import "ios/chrome/browser/intelligence/features/features.h"
@@ -124,7 +124,7 @@ class AppBarMediatorTest : public PlatformTest {
 
     auth_service_ =
         AuthenticationServiceFactory::GetForProfile(regular_profile_.get());
-    gemini_service_ptr_ = std::make_unique<BwgServiceImpl>(
+    gemini_service_ptr_ = std::make_unique<GeminiServiceImpl>(
         regular_profile_.get(), auth_service_,
         IdentityManagerFactory::GetForProfile(regular_profile_.get()),
         regular_profile_->GetTestingPrefService(),
@@ -294,7 +294,7 @@ class AppBarMediatorTest : public PlatformTest {
   TabGridState* tab_grid_state_;
   IncognitoState* incognito_state_;
   raw_ptr<AuthenticationService> auth_service_;
-  std::unique_ptr<BwgService> gemini_service_ptr_;
+  std::unique_ptr<GeminiService> gemini_service_ptr_;
   raw_ptr<ChromeAccountManagerService> account_manager_service_;
   id<TestAppBarConsumer> consumer_;
   id mock_scene_handler_;

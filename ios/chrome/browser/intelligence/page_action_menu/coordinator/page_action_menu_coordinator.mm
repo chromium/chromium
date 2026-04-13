@@ -57,7 +57,7 @@
 #pragma mark - ChromeCoordinator
 
 - (void)start {
-  raw_ptr<BwgService> geminiService =
+  raw_ptr<GeminiService> geminiService =
       GeminiServiceFactory::GetForProfile(self.profile);
   web::WebState* activeWebState =
       self.browser->GetWebStateList()->GetActiveWebState();

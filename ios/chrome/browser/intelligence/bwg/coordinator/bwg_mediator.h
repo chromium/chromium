@@ -11,7 +11,7 @@
 #import "ios/chrome/browser/intelligence/bwg/ui/gemini_consent_mutator.h"
 
 class GeminiBrowserAgent;
-class BwgService;
+class GeminiService;
 class PrefService;
 @protocol SceneCommands;
 class WebStateList;
@@ -33,7 +33,7 @@ class IdentityManager;
                        webStateList:(WebStateList*)webStateList
                  baseViewController:(UIViewController*)baseViewController
                          entryPoint:(gemini::EntryPoint)entryPoint
-                      geminiService:(BwgService*)geminiService
+                      geminiService:(GeminiService*)geminiService
                  geminiBrowserAgent:(GeminiBrowserAgent*)geminiBrowserAgent
                     identityManager:(signin::IdentityManager*)identityManager
                             tracker:(feature_engagement::Tracker*)tracker;

@@ -9,7 +9,7 @@
 #import "components/dom_distiller/core/mojom/distilled_page_prefs.mojom.h"
 #import "ios/chrome/browser/dom_distiller/model/distiller_service.h"
 #import "ios/chrome/browser/dom_distiller/model/distiller_service_factory.h"
-#import "ios/chrome/browser/intelligence/bwg/model/bwg_service.h"
+#import "ios/chrome/browser/intelligence/bwg/model/gemini_service.h"
 #import "ios/chrome/browser/intelligence/bwg/model/gemini_service_factory.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
@@ -26,7 +26,7 @@ class ReaderModeMediatorTest : public PlatformTest {
         DistillerServiceFactory::GetForProfile(profile_.get());
     mediator_ = [[ReaderModeMediator alloc]
         initWithWebStateList:browser_->GetWebStateList()
-                  BWGService:GeminiServiceFactory::GetForProfile(profile_.get())
+               geminiService:GeminiServiceFactory::GetForProfile(profile_.get())
           distilledPagePrefs:distiller_service->GetDistilledPagePrefs()];
   }
 

@@ -11,7 +11,7 @@
 #import "ios/chrome/browser/intelligence/page_action_menu/ui/page_action_menu_mutator.h"
 
 class AuthenticationService;
-class BwgService;
+class GeminiService;
 class BwgTabHelper;
 class PrefService;
 class ReaderModeTabHelper;
@@ -33,7 +33,7 @@ class WebState;
            authenticationService:(AuthenticationService*)authenticationService
               profilePrefService:(PrefService*)profilePrefs
               templateURLService:(TemplateURLService*)templateURLService
-                   geminiService:(BwgService*)geminiService
+                   geminiService:(GeminiService*)geminiService
                  geminiTabHelper:(BwgTabHelper*)geminiTabHelper
              readerModeTabHelper:(ReaderModeTabHelper*)readerModeTabHelper
           hostContentSettingsMap:(HostContentSettingsMap*)hostContentSettingsMap

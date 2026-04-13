@@ -28,8 +28,8 @@
 #import "components/search_engines/util.h"
 #import "ios/chrome/browser/feature_engagement/model/tracker_factory.h"
 #import "ios/chrome/browser/intelligence/bwg/metrics/gemini_metrics.h"
-#import "ios/chrome/browser/intelligence/bwg/model/bwg_service.h"
 #import "ios/chrome/browser/intelligence/bwg/model/gemini_page_context.h"
+#import "ios/chrome/browser/intelligence/bwg/model/gemini_service.h"
 #import "ios/chrome/browser/intelligence/bwg/model/gemini_service_factory.h"
 #import "ios/chrome/browser/intelligence/bwg/ui/gemini_ui_utils.h"
 #import "ios/chrome/browser/intelligence/bwg/utils/gemini_constants.h"
@@ -409,7 +409,7 @@ void BwgTabHelper::DidStartNavigation(
 
   ProfileIOS* profile =
       ProfileIOS::FromBrowserState(web_state_->GetBrowserState());
-  BwgService* gemini_service = GeminiServiceFactory::GetForProfile(profile);
+  GeminiService* gemini_service = GeminiServiceFactory::GetForProfile(profile);
   const bool gemini_available = IsGeminiAvailableForWebState() &&
                                 gemini_service &&
                                 gemini_service->IsProfileEligibleForGemini();

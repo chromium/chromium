@@ -14,8 +14,8 @@
 #import "ios/chrome/browser/feature_engagement/model/tracker_factory.h"
 #import "ios/chrome/browser/fullscreen/model/fullscreen_browser_agent_observer_bridge.h"
 #import "ios/chrome/browser/intelligence/bwg/metrics/gemini_metrics.h"
-#import "ios/chrome/browser/intelligence/bwg/model/bwg_service.h"
 #import "ios/chrome/browser/intelligence/bwg/model/bwg_tab_helper.h"
+#import "ios/chrome/browser/intelligence/bwg/model/gemini_service.h"
 #import "ios/chrome/browser/intelligence/bwg/model/gemini_service_factory.h"
 #import "ios/chrome/browser/intelligence/bwg/utils/gemini_constants.h"
 #import "ios/chrome/browser/intelligence/features/features.h"
@@ -306,7 +306,7 @@ const CGFloat kIconPointSize = 16.0;
 
   ProfileIOS* profile =
       ProfileIOS::FromBrowserState(webState->GetBrowserState());
-  BwgService* geminiService = GeminiServiceFactory::GetForProfile(profile);
+  GeminiService* geminiService = GeminiServiceFactory::GetForProfile(profile);
   if (!geminiService) {
     return NO;
   }
@@ -328,7 +328,7 @@ const CGFloat kIconPointSize = 16.0;
   }
   ProfileIOS* profile =
       ProfileIOS::FromBrowserState(webState->GetBrowserState());
-  BwgService* geminiService = GeminiServiceFactory::GetForProfile(profile);
+  GeminiService* geminiService = GeminiServiceFactory::GetForProfile(profile);
   if (!geminiService) {
     return NO;
   }

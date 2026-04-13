@@ -21,7 +21,7 @@
 #import "ios/chrome/browser/fullscreen/public/fullscreen_metrics.h"
 #import "ios/chrome/browser/fullscreen/ui_bundled/fullscreen_ui_element.h"
 #import "ios/chrome/browser/fullscreen/ui_bundled/fullscreen_ui_updater.h"
-#import "ios/chrome/browser/intelligence/bwg/model/bwg_service.h"
+#import "ios/chrome/browser/intelligence/bwg/model/gemini_service.h"
 #import "ios/chrome/browser/intelligence/bwg/utils/gemini_constants.h"
 #import "ios/chrome/browser/intelligence/features/features.h"
 #import "ios/chrome/browser/intents/model/intents_donation_helper.h"
@@ -86,7 +86,7 @@
       _incognitoFullscreenObserver;
   raw_ptr<PrefService> _prefService;
   raw_ptr<AuthenticationService> _authenticationService;
-  raw_ptr<BwgService> _geminiService;
+  raw_ptr<GeminiService> _geminiService;
   raw_ptr<ChromeAccountManagerService> _accountManagerService;
   raw_ptr<signin::IdentityManager> _identityManager;
   raw_ptr<UrlLoadingBrowserAgent> _URLLoader;
@@ -116,7 +116,7 @@
                  templateURLService:(TemplateURLService*)templateURLService
               authenticationService:
                   (AuthenticationService*)authenticationService
-                      geminiService:(BwgService*)geminiService
+                      geminiService:(GeminiService*)geminiService
               accountManagerService:
                   (ChromeAccountManagerService*)accountManagerService
                     identityManager:(signin::IdentityManager*)identityManager

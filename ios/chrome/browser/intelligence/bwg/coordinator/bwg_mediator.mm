@@ -17,9 +17,9 @@
 #import "ios/chrome/browser/feature_engagement/model/tracker_factory.h"
 #import "ios/chrome/browser/intelligence/bwg/coordinator/bwg_mediator_delegate.h"
 #import "ios/chrome/browser/intelligence/bwg/metrics/gemini_metrics.h"
-#import "ios/chrome/browser/intelligence/bwg/model/bwg_service.h"
 #import "ios/chrome/browser/intelligence/bwg/model/bwg_tab_helper.h"
 #import "ios/chrome/browser/intelligence/bwg/model/gemini_browser_agent.h"
+#import "ios/chrome/browser/intelligence/bwg/model/gemini_service.h"
 #import "ios/chrome/browser/intelligence/bwg/utils/gemini_constants.h"
 #import "ios/chrome/browser/intelligence/bwg/utils/gemini_feature_availability.h"
 #import "ios/chrome/browser/intelligence/bwg/utils/gemini_prefs.h"
@@ -55,7 +55,7 @@ class IdentityManager;
   raw_ptr<GeminiBrowserAgent> _geminiBrowserAgent;
 
   // The profile-scoped Gemini service.
-  raw_ptr<BwgService> _geminiService;
+  raw_ptr<GeminiService> _geminiService;
 
   // Start time for the preparation of the presentation of BWG overlay.
   base::TimeTicks _BWGOverlayPreparationStartTime;
@@ -77,7 +77,7 @@ class IdentityManager;
                        webStateList:(WebStateList*)webStateList
                  baseViewController:(UIViewController*)baseViewController
                          entryPoint:(gemini::EntryPoint)entryPoint
-                      geminiService:(BwgService*)geminiService
+                      geminiService:(GeminiService*)geminiService
                  geminiBrowserAgent:(GeminiBrowserAgent*)geminiBrowserAgent
                     identityManager:(signin::IdentityManager*)identityManager
                             tracker:(feature_engagement::Tracker*)tracker {

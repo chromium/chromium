@@ -20,8 +20,8 @@
 #import "ios/chrome/browser/contextual_panel/model/contextual_panel_tab_helper_observer_bridge.h"
 #import "ios/chrome/browser/infobars/model/infobar_badge_tab_helper.h"
 #import "ios/chrome/browser/infobars/model/infobar_badge_tab_helper_observer_bridge.h"
-#import "ios/chrome/browser/intelligence/bwg/model/bwg_service.h"
 #import "ios/chrome/browser/intelligence/bwg/model/bwg_tab_helper.h"
+#import "ios/chrome/browser/intelligence/bwg/model/gemini_service.h"
 #import "ios/chrome/browser/intelligence/bwg/utils/gemini_constants.h"
 #import "ios/chrome/browser/intelligence/features/features.h"
 #import "ios/chrome/browser/location_bar/badge/coordinator/location_bar_badge_mediator_delegate.h"
@@ -78,7 +78,7 @@ constexpr base::TimeDelta kStartCollapseTransitionTime = base::Seconds(5);
   // Pref service.
   raw_ptr<PrefService> _prefService;
   // Gemini service
-  raw_ptr<BwgService> _geminiService;
+  raw_ptr<GeminiService> _geminiService;
   // Bridge for the InfobarBadgeTabHelper observation.
   std::unique_ptr<InfobarBadgeTabHelperObserverBridge>
       _infobarBadgeObserverBridge;
@@ -98,7 +98,7 @@ constexpr base::TimeDelta kStartCollapseTransitionTime = base::Seconds(5);
 - (instancetype)initWithWebStateList:(WebStateList*)webStateList
                              tracker:(feature_engagement::Tracker*)tracker
                          prefService:(PrefService*)prefService
-                       geminiService:(BwgService*)geminiService {
+                       geminiService:(GeminiService*)geminiService {
   self = [super init];
   if (self) {
     _webStateList = webStateList;

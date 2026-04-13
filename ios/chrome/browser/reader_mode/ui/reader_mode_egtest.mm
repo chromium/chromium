@@ -190,7 +190,7 @@ id<GREYMatcher> ContextualPanelEntrypointImageViewMatcher() {
     // Force an app restart before any tests that require the Gemini kill
     // switch. This is required to ensure that
     // GeminiServiceFactory::BuildGeminiService is re-evaluated for the new flag
-    // configuration, otherwise a cached BWGService instance may be used.
+    // configuration, otherwise a cached GeminiService instance may be used.
     config.relaunch_policy = ForceRelaunchByCleanShutdown;
     config.features_disabled.push_back(kPageActionMenu);
     config.features_enabled.push_back(kGeminiKillSwitch);

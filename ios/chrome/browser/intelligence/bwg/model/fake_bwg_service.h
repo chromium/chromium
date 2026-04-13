@@ -8,10 +8,11 @@
 #import <optional>
 
 #import "ios/chrome/browser/intelligence/bwg/metrics/gemini_metrics.h"
-#import "ios/chrome/browser/intelligence/bwg/model/bwg_service.h"
+#import "ios/chrome/browser/intelligence/bwg/model/gemini_service.h"
 
+// TODO(crbug.com/501076026): Rename to FakeGeminiService
 // Fake BwgService for testing.
-class FakeBwgService : public BwgService {
+class FakeBwgService : public GeminiService {
  public:
   FakeBwgService() = default;
   ~FakeBwgService() override = default;

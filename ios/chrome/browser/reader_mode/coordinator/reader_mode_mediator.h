@@ -11,7 +11,7 @@
 #import "ios/chrome/browser/reader_mode/ui/reader_mode_mutator.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 
-class BwgService;
+class GeminiService;
 @protocol ReaderModeConsumer;
 namespace dom_distiller {
 class DistilledPagePrefs;
@@ -26,14 +26,14 @@ class DistilledPagePrefs;
 
 // Designated initializer. `webStateList` must not be null.
 - (instancetype)initWithWebStateList:(WebStateList*)webStateList
-                          BWGService:(BwgService*)BWGService
+                       geminiService:(GeminiService*)geminiService
                   distilledPagePrefs:
                       (dom_distiller::DistilledPagePrefs*)distilledPagePrefs
     NS_DESIGNATED_INITIALIZER;
 - (instancetype)init NS_UNAVAILABLE;
 
-// Returns whether BWG is available for the profile.
-- (BOOL)BWGAvailableForProfile;
+// Returns whether Gemini is available for the profile.
+- (BOOL)GeminiAvailableForProfile;
 
 // Disconnects the mediator from the model layer.
 - (void)disconnect;

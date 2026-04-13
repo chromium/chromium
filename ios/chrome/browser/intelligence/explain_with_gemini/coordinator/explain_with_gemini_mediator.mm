@@ -13,8 +13,8 @@
 #import "components/signin/public/identity_manager/identity_manager.h"
 #import "ios/chrome/browser/browser_content/ui_bundled/browser_edit_menu_utils.h"
 #import "ios/chrome/browser/intelligence/bwg/metrics/gemini_metrics.h"
-#import "ios/chrome/browser/intelligence/bwg/model/bwg_service.h"
 #import "ios/chrome/browser/intelligence/bwg/model/bwg_tab_helper.h"
+#import "ios/chrome/browser/intelligence/bwg/model/gemini_service.h"
 #import "ios/chrome/browser/intelligence/bwg/model/gemini_service_factory.h"
 #import "ios/chrome/browser/intelligence/bwg/utils/gemini_constants.h"
 #import "ios/chrome/browser/intelligence/features/features.h"
@@ -58,7 +58,7 @@ typedef void (^ProceduralBlockWithBlockWithItemArray)(
 - (BOOL)canPerformExplainWithGeminiInWebState:(web::WebState*)webState {
   ProfileIOS* profile =
       ProfileIOS::FromBrowserState(webState->GetBrowserState());
-  raw_ptr<BwgService> geminiService =
+  raw_ptr<GeminiService> geminiService =
       GeminiServiceFactory::GetForProfile(profile);
   BwgTabHelper* geminiTabHelper = BwgTabHelper::FromWebState(webState);
   const BOOL geminiAvailable =

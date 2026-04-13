@@ -143,9 +143,9 @@
 #import "ios/chrome/browser/infobars/model/infobar_manager_impl.h"
 #import "ios/chrome/browser/intelligence/bwg/coordinator/bwg_coordinator.h"
 #import "ios/chrome/browser/intelligence/bwg/coordinator/gemini_first_run_coordinator.h"
-#import "ios/chrome/browser/intelligence/bwg/model/bwg_service.h"
 #import "ios/chrome/browser/intelligence/bwg/model/bwg_tab_helper.h"
 #import "ios/chrome/browser/intelligence/bwg/model/gemini_browser_agent.h"
+#import "ios/chrome/browser/intelligence/bwg/model/gemini_service.h"
 #import "ios/chrome/browser/intelligence/bwg/model/gemini_service_factory.h"
 #import "ios/chrome/browser/intelligence/bwg/utils/gemini_constants.h"
 #import "ios/chrome/browser/intelligence/enhanced_calendar/coordinator/enhanced_calendar_coordinator.h"
@@ -3669,7 +3669,8 @@ const char kChromeAppStoreUrl[] =
 }
 
 - (void)showBWGPromoIfPageIsEligible {
-  BwgService* geminiService = GeminiServiceFactory::GetForProfile(self.profile);
+  GeminiService* geminiService =
+      GeminiServiceFactory::GetForProfile(self.profile);
   BwgTabHelper* geminiTabHelper =
       BwgTabHelper::FromWebState(self.activeWebState);
   if (geminiTabHelper && geminiTabHelper->IsGeminiAvailableForWebState() &&
@@ -3731,7 +3732,8 @@ const char kChromeAppStoreUrl[] =
 
   GeminiBrowserAgent* geminiBrowserAgent =
       GeminiBrowserAgent::FromBrowser(self.browser);
-  BwgService* geminiService = GeminiServiceFactory::GetForProfile(self.profile);
+  GeminiService* geminiService =
+      GeminiServiceFactory::GetForProfile(self.profile);
   BwgTabHelper* geminiTabHelper =
       BwgTabHelper::FromWebState(self.activeWebState);
   if (!IsGeminiCopresenceEnabled() || !geminiBrowserAgent || !geminiTabHelper ||

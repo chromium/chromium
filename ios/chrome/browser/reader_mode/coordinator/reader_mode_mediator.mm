@@ -5,8 +5,8 @@
 #import "ios/chrome/browser/reader_mode/coordinator/reader_mode_mediator.h"
 
 #import "components/dom_distiller/core/distilled_page_prefs.h"
-#import "ios/chrome/browser/intelligence/bwg/model/bwg_service.h"
 #import "ios/chrome/browser/intelligence/bwg/model/bwg_tab_helper.h"
+#import "ios/chrome/browser/intelligence/bwg/model/gemini_service.h"
 #import "ios/chrome/browser/reader_mode/model/reader_mode_tab_helper.h"
 #import "ios/chrome/browser/reader_mode/ui/reader_mode_consumer.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
@@ -20,7 +20,7 @@
 
 @implementation ReaderModeMediator {
   raw_ptr<WebStateList> _webStateList;
-  raw_ptr<BwgService> _BWGService;
+  raw_ptr<GeminiService> _geminiService;
   raw_ptr<dom_distiller::DistilledPagePrefs> _distilledPagePrefs;
   std::unique_ptr<WebStateListObserverBridge> _webStateListObserverBridge;
   // WebState whose view is currently being shown in the consumer. It is
@@ -33,14 +33,14 @@
 #pragma mark - Initialization
 
 - (instancetype)initWithWebStateList:(WebStateList*)webStateList
-                          BWGService:(BwgService*)BWGService
+                       geminiService:(GeminiService*)geminiService
                   distilledPagePrefs:
                       (dom_distiller::DistilledPagePrefs*)distilledPagePrefs {
   self = [super init];
   if (self) {
     CHECK(webStateList);
     _webStateList = webStateList;
-    _BWGService = BWGService;
+    _geminiService = geminiService;
     _distilledPagePrefs = distilledPagePrefs;
     _webStateListObserverBridge =
         std::make_unique<WebStateListObserverBridge>(self);
@@ -87,8 +87,8 @@
 
 #pragma mark - Public
 
-- (BOOL)BWGAvailableForProfile {
-  return _BWGService && _BWGService->IsProfileEligibleForGemini();
+- (BOOL)GeminiAvailableForProfile {
+  return _geminiService && _geminiService->IsProfileEligibleForGemini();
 }
 
 - (void)disconnect {
@@ -102,7 +102,7 @@
     _webStateListObserverBridge.reset();
     _webStateList = nullptr;
   }
-  _BWGService = nullptr;
+  _geminiService = nullptr;
 }
 
 #pragma mark - CRWWebStateObserver

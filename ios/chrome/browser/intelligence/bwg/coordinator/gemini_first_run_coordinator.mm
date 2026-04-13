@@ -110,7 +110,7 @@
       initWithPrefService:_prefService
              webStateList:self.browser->GetWebStateList()
        baseViewController:self.baseViewController
-               BWGService:GeminiServiceFactory::GetForProfile(self.profile)
+            geminiService:GeminiServiceFactory::GetForProfile(self.profile)
        geminiBrowserAgent:GeminiBrowserAgent::FromBrowser(self.browser)
           identityManager:IdentityManagerFactory::GetForProfile(self.profile)
                   tracker:_tracker

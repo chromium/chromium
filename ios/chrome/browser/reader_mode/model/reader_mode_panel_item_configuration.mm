@@ -9,7 +9,7 @@
 #import "ios/chrome/browser/contextual_panel/model/contextual_panel_item_type.h"
 #import "ios/chrome/browser/contextual_panel/model/contextual_panel_tab_helper.h"
 #import "ios/chrome/browser/feature_engagement/model/tracker_factory.h"
-#import "ios/chrome/browser/intelligence/bwg/model/bwg_service.h"
+#import "ios/chrome/browser/intelligence/bwg/model/gemini_service.h"
 #import "ios/chrome/browser/intelligence/bwg/model/gemini_service_factory.h"
 #import "ios/chrome/browser/intelligence/features/features.h"
 #import "ios/chrome/browser/reader_mode/model/constants.h"
@@ -138,8 +138,8 @@ bool ReaderModePanelItemConfiguration::IsProfileEligibleForGemini() {
   }
   ProfileIOS* profile =
       ProfileIOS::FromBrowserState(web_state->GetBrowserState());
-  BwgService* bwg_service = GeminiServiceFactory::GetForProfile(profile);
-  return bwg_service && bwg_service->IsProfileEligibleForGemini();
+  GeminiService* gemini_service = GeminiServiceFactory::GetForProfile(profile);
+  return gemini_service && gemini_service->IsProfileEligibleForGemini();
 }
 
 bool ReaderModePanelItemConfiguration::CanShowLargeEntrypointMessage() {

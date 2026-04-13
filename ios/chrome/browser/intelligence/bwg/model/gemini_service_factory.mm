@@ -5,7 +5,7 @@
 #import "ios/chrome/browser/intelligence/bwg/model/gemini_service_factory.h"
 
 #import "components/signin/public/identity_manager/identity_manager.h"
-#import "ios/chrome/browser/intelligence/bwg/model/bwg_service_impl.h"
+#import "ios/chrome/browser/intelligence/bwg/model/gemini_service_impl.h"
 #import "ios/chrome/browser/intelligence/features/features.h"
 #import "ios/chrome/browser/optimization_guide/model/optimization_guide_service.h"
 #import "ios/chrome/browser/optimization_guide/model/optimization_guide_service_factory.h"
@@ -13,7 +13,7 @@
 #import "ios/chrome/browser/signin/model/authentication_service_factory.h"
 #import "ios/chrome/browser/signin/model/identity_manager_factory.h"
 
-class BwgService;
+class GeminiService;
 
 namespace {
 
@@ -21,7 +21,7 @@ std::unique_ptr<KeyedService> BuildGeminiService(ProfileIOS* profile) {
   if (!IsPageActionMenuEnabled()) {
     return nullptr;
   }
-  return std::make_unique<BwgServiceImpl>(
+  return std::make_unique<GeminiServiceImpl>(
       profile, AuthenticationServiceFactory::GetForProfile(profile),
       IdentityManagerFactory::GetForProfile(profile), profile->GetPrefs(),
       OptimizationGuideServiceFactory::GetForProfile(profile));
@@ -30,9 +30,9 @@ std::unique_ptr<KeyedService> BuildGeminiService(ProfileIOS* profile) {
 }  // namespace
 
 // static
-BwgService* GeminiServiceFactory::GetForProfile(ProfileIOS* profile) {
-  return GetInstance()->GetServiceForProfileAs<BwgService>(profile,
-                                                           /*create=*/true);
+GeminiService* GeminiServiceFactory::GetForProfile(ProfileIOS* profile) {
+  return GetInstance()->GetServiceForProfileAs<GeminiService>(profile,
+                                                              /*create=*/true);
 }
 
 // static

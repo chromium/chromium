@@ -22,8 +22,8 @@
 #import "ios/chrome/browser/infobars/model/overlays/default_infobar_overlay_request_factory.h"
 #import "ios/chrome/browser/infobars/model/overlays/infobar_overlay_request_inserter.h"
 #import "ios/chrome/browser/intelligence/bwg/metrics/gemini_metrics.h"
-#import "ios/chrome/browser/intelligence/bwg/model/bwg_service.h"
 #import "ios/chrome/browser/intelligence/bwg/model/bwg_tab_helper.h"
+#import "ios/chrome/browser/intelligence/bwg/model/gemini_service.h"
 #import "ios/chrome/browser/intelligence/features/features.h"
 #import "ios/chrome/browser/intelligence/page_action_menu/ui/page_action_menu_consumer.h"
 #import "ios/chrome/browser/intelligence/page_action_menu/ui/page_action_menu_content_entry_point.h"
@@ -76,7 +76,7 @@ const CGFloat kFeatureRowIconSize = 20;
   raw_ptr<TemplateURLService> _templateURLService;
 
   // The service for the Gemini floaty.
-  raw_ptr<BwgService> _geminiService;
+  raw_ptr<GeminiService> _geminiService;
 
   // The tab helper for the Gemini floaty.
   raw_ptr<BwgTabHelper> _geminiTabHelper;
@@ -92,7 +92,7 @@ const CGFloat kFeatureRowIconSize = 20;
            authenticationService:(AuthenticationService*)authenticationService
               profilePrefService:(PrefService*)profilePrefs
               templateURLService:(TemplateURLService*)templateURLService
-                   geminiService:(BwgService*)geminiService
+                   geminiService:(GeminiService*)geminiService
                  geminiTabHelper:(BwgTabHelper*)geminiTabHelper
              readerModeTabHelper:(ReaderModeTabHelper*)readerModeTabHelper
           hostContentSettingsMap:

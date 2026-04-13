@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/intelligence/bwg/model/bwg_service_impl.h"
+#import "ios/chrome/browser/intelligence/bwg/model/gemini_service_impl.h"
 
 #import <optional>
 
@@ -25,11 +25,12 @@
 #import "ios/web/public/web_state.h"
 #import "ios/web/util/content_type_util.h"
 
-BwgServiceImpl::BwgServiceImpl(ProfileIOS* profile,
-                               AuthenticationService* auth_service,
-                               signin::IdentityManager* identity_manager,
-                               PrefService* pref_service,
-                               OptimizationGuideService* optimization_guide) {
+GeminiServiceImpl::GeminiServiceImpl(
+    ProfileIOS* profile,
+    AuthenticationService* auth_service,
+    signin::IdentityManager* identity_manager,
+    PrefService* pref_service,
+    OptimizationGuideService* optimization_guide) {
   profile_ = profile;
   auth_service_ = auth_service;
   identity_manager_ = identity_manager;
@@ -51,20 +52,20 @@ BwgServiceImpl::BwgServiceImpl(ProfileIOS* profile,
   CheckGeminiEnterpriseEligibility();
 }
 
-BwgServiceImpl::~BwgServiceImpl() = default;
+GeminiServiceImpl::~GeminiServiceImpl() = default;
 
-void BwgServiceImpl::Shutdown() {
+void GeminiServiceImpl::Shutdown() {
   identity_manager_observation_.Reset();
 }
 
 #pragma mark - Public
 
-bool BwgServiceImpl::IsProfileEligibleForGemini() {
+bool GeminiServiceImpl::IsProfileEligibleForGemini() {
   return !GeminiIneligibilityForProfile().has_value();
 }
 
 std::optional<gemini::IneligibilityReasons>
-BwgServiceImpl::GeminiIneligibilityForProfile() {
+GeminiServiceImpl::GeminiIneligibilityForProfile() {
   AccountInfo account_info = identity_manager_->FindExtendedAccountInfo(
       identity_manager_->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin));
   const bool can_use_model_execution = CanUseGeminiModelExecution(account_info);
@@ -107,30 +108,30 @@ BwgServiceImpl::GeminiIneligibilityForProfile() {
 
 #pragma mark - signin::IdentityManager::Observer
 
-void BwgServiceImpl::OnPrimaryAccountChanged(
+void GeminiServiceImpl::OnPrimaryAccountChanged(
     const signin::PrimaryAccountChangeEvent& event) {
   CheckGeminiEnterpriseEligibility();
   if (ShouldDeleteGeminiConsentPref()) {
     // Clear the profile pref since it's syncable and should be account-scoped.
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE, base::BindOnce(&BwgServiceImpl::ClearConsentPref,
+        FROM_HERE, base::BindOnce(&GeminiServiceImpl::ClearConsentPref,
                                   weak_ptr_factory_.GetWeakPtr()));
   }
 }
 
-void BwgServiceImpl::OnIdentityManagerShutdown(
+void GeminiServiceImpl::OnIdentityManagerShutdown(
     signin::IdentityManager* identity_manager) {
   identity_manager_observation_.Reset();
 }
 
-void BwgServiceImpl::OnRefreshTokenUpdatedForAccount(
+void GeminiServiceImpl::OnRefreshTokenUpdatedForAccount(
     const CoreAccountInfo& account_info) {
   CheckGeminiEnterpriseEligibility();
 }
 
 #pragma mark - Private
 
-void BwgServiceImpl::CheckGeminiEnterpriseEligibility() {
+void GeminiServiceImpl::CheckGeminiEnterpriseEligibility() {
   if (tests_hook::DisableGeminiEligibilityCheck()) {
     is_disabled_by_gemini_policy_ = false;
     return;
@@ -151,11 +152,11 @@ void BwgServiceImpl::CheckGeminiEnterpriseEligibility() {
 
   ios::provider::CheckGeminiEligibility(
       auth_service_, base::CallbackToBlock(base::BindOnce(
-                         &BwgServiceImpl::OnGeminiEligibilityResult,
+                         &GeminiServiceImpl::OnGeminiEligibilityResult,
                          eligibility_weak_ptr_factory_.GetWeakPtr())));
 }
 
-bool BwgServiceImpl::CanUseGeminiModelExecution(
+bool GeminiServiceImpl::CanUseGeminiModelExecution(
     const AccountInfo& account_info) {
   // If the account info was not found, the user is likely not authenticated.
   if (account_info.IsEmpty()) {
@@ -175,11 +176,11 @@ bool BwgServiceImpl::CanUseGeminiModelExecution(
          signin::Tribool::kTrue;
 }
 
-void BwgServiceImpl::ClearConsentPref() {
+void GeminiServiceImpl::ClearConsentPref() {
   pref_service_->ClearPref(prefs::kIOSBwgConsent);
 }
 
-void BwgServiceImpl::LogFREState() {
+void GeminiServiceImpl::LogFREState() {
   gemini::FREState state = gemini::CurrentFREState(pref_service_);
   if (!last_logged_fre_state_.has_value() ||
       last_logged_fre_state_.value() != state) {
@@ -188,6 +189,6 @@ void BwgServiceImpl::LogFREState() {
   }
 }
 
-void BwgServiceImpl::OnGeminiEligibilityResult(bool eligible) {
+void GeminiServiceImpl::OnGeminiEligibilityResult(bool eligible) {
   is_disabled_by_gemini_policy_ = !eligible;
 }

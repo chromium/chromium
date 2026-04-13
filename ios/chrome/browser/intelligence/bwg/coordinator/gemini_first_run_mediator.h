@@ -12,7 +12,7 @@
 #import "ios/chrome/browser/intelligence/bwg/utils/gemini_constants.h"
 
 @protocol SceneCommands;
-class BwgService;
+class GeminiService;
 class GeminiBrowserAgent;
 class PrefService;
 class WebStateList;
@@ -29,7 +29,7 @@ class IdentityManager;
 - (instancetype)initWithPrefService:(PrefService*)prefService
                        webStateList:(WebStateList*)webStateList
                  baseViewController:(UIViewController*)baseViewController
-                         BWGService:(BwgService*)geminiService
+                      geminiService:(GeminiService*)geminiService
                  geminiBrowserAgent:(GeminiBrowserAgent*)geminiBrowserAgent
                     identityManager:(signin::IdentityManager*)identityManager
                             tracker:(feature_engagement::Tracker*)tracker
@@ -42,7 +42,7 @@ class IdentityManager;
 // The handler for sending scene commands.
 @property(nonatomic, weak) id<SceneCommands> sceneHandler;
 
-// Returns YES if the BWG promo should be shown.
+// Returns YES if the Gemini promo should be shown.
 @property(nonatomic, readonly) BOOL shouldShowPromo;
 
 // Returns YES if the AI Hub IPH should be shown.

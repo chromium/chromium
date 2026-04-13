@@ -17,7 +17,7 @@
 @protocol LocationBarBadgeMediatorDelegate;
 class PrefService;
 class WebStateList;
-class BwgService;
+class GeminiService;
 
 namespace feature_engagement {
 class Tracker;
@@ -30,7 +30,7 @@ class Tracker;
 - (instancetype)initWithWebStateList:(WebStateList*)webStateList
                              tracker:(feature_engagement::Tracker*)tracker
                          prefService:(PrefService*)prefService
-                       geminiService:(BwgService*)geminiService
+                       geminiService:(GeminiService*)geminiService
 
     NS_DESIGNATED_INITIALIZER;
 

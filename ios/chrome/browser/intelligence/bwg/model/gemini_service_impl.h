@@ -2,15 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_INTELLIGENCE_BWG_MODEL_BWG_SERVICE_IMPL_H_
-#define IOS_CHROME_BROWSER_INTELLIGENCE_BWG_MODEL_BWG_SERVICE_IMPL_H_
+#ifndef IOS_CHROME_BROWSER_INTELLIGENCE_BWG_MODEL_GEMINI_SERVICE_IMPL_H_
+#define IOS_CHROME_BROWSER_INTELLIGENCE_BWG_MODEL_GEMINI_SERVICE_IMPL_H_
 
 #import <optional>
 
 #import "base/memory/raw_ptr.h"
 #import "base/scoped_observation.h"
 #import "components/signin/public/identity_manager/identity_manager.h"
-#import "ios/chrome/browser/intelligence/bwg/model/bwg_service.h"
+#import "ios/chrome/browser/intelligence/bwg/model/gemini_service.h"
 
 class AuthenticationService;
 struct CoreAccountInfo;
@@ -25,19 +25,19 @@ class OptimizationGuideService;
 class PrefService;
 class ProfileIOS;
 
-// Implementation of BwgService.
-class BwgServiceImpl : public BwgService,
-                       public signin::IdentityManager::Observer {
+// Implementation of GeminiService.
+class GeminiServiceImpl : public GeminiService,
+                          public signin::IdentityManager::Observer {
  public:
-  BwgServiceImpl(ProfileIOS* profile,
-                 AuthenticationService* auth_service,
-                 signin::IdentityManager* identity_manager,
-                 PrefService* pref_service,
-                 OptimizationGuideService* optimization_guide);
-  ~BwgServiceImpl() override;
+  GeminiServiceImpl(ProfileIOS* profile,
+                    AuthenticationService* auth_service,
+                    signin::IdentityManager* identity_manager,
+                    PrefService* pref_service,
+                    OptimizationGuideService* optimization_guide);
+  ~GeminiServiceImpl() override;
   void Shutdown() override;
 
-  // BwgService:
+  // GeminiService:
   bool IsProfileEligibleForGemini() override;
   std::optional<gemini::IneligibilityReasons> GeminiIneligibilityForProfile()
       override;
@@ -51,7 +51,7 @@ class BwgServiceImpl : public BwgService,
       signin::IdentityManager* identity_manager) override;
 
  private:
-  friend class BwgServiceImplTest;
+  friend class GeminiServiceImplTest;
 
   // The associated profile.
   raw_ptr<ProfileIOS> profile_;
@@ -96,10 +96,10 @@ class BwgServiceImpl : public BwgService,
       identity_manager_observation_{this};
 
   // Weak pointer factory for Gemini eligibility checks.
-  base::WeakPtrFactory<BwgServiceImpl> eligibility_weak_ptr_factory_{this};
+  base::WeakPtrFactory<GeminiServiceImpl> eligibility_weak_ptr_factory_{this};
 
   // Generic weak pointer factory.
-  base::WeakPtrFactory<BwgServiceImpl> weak_ptr_factory_{this};
+  base::WeakPtrFactory<GeminiServiceImpl> weak_ptr_factory_{this};
 };
 
-#endif  // IOS_CHROME_BROWSER_INTELLIGENCE_BWG_MODEL_BWG_SERVICE_IMPL_H_
+#endif  // IOS_CHROME_BROWSER_INTELLIGENCE_BWG_MODEL_GEMINI_SERVICE_IMPL_H_

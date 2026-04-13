@@ -11,7 +11,7 @@
 
 @protocol AppBarConsumer;
 class AuthenticationService;
-class BwgService;
+class GeminiService;
 class ChromeAccountManagerService;
 @class BrowserActionFactory;
 @protocol FullscreenBrowserAgentObserving;
@@ -88,7 +88,7 @@ class WebStateList;
                  templateURLService:(TemplateURLService*)templateURLService
               authenticationService:
                   (AuthenticationService*)authenticationService
-                      geminiService:(BwgService*)geminiService
+                      geminiService:(GeminiService*)geminiService
               accountManagerService:
                   (ChromeAccountManagerService*)accountManagerService
                     identityManager:(signin::IdentityManager*)identityManager
