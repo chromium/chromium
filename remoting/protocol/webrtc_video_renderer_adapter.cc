@@ -71,31 +71,30 @@ WebrtcVideoRendererAdapter::~WebrtcVideoRendererAdapter() {
   // Needed for ConnectionTest unittests which set up a fake connection without
   // starting any video. This video adapter is instantiated when the incoming
   // video-stats data channel is created.
-  if (!media_stream_) {
-    return;
+  if (video_track_) {
+    video_track_->RemoveSink(this);
   }
-
-  webrtc::VideoTrackVector video_tracks = media_stream_->GetVideoTracks();
-  DCHECK(!video_tracks.empty());
-  video_tracks[0]->RemoveSink(this);
 }
 
 void WebrtcVideoRendererAdapter::SetMediaStream(
     webrtc::scoped_refptr<webrtc::MediaStreamInterface> media_stream) {
   DCHECK_EQ(media_stream->id(), label());
 
-  media_stream_ = std::move(media_stream);
+  if (video_track_) {
+    video_track_->RemoveSink(this);
+  }
 
-  webrtc::VideoTrackVector video_tracks = media_stream_->GetVideoTracks();
+  webrtc::VideoTrackVector video_tracks = media_stream->GetVideoTracks();
 
   // Caller must verify that the media stream contains video tracks.
-  DCHECK(!video_tracks.empty());
+  CHECK(!video_tracks.empty());
 
   if (video_tracks.size() > 1U) {
     LOG(WARNING) << "Received media stream with multiple video tracks.";
   }
 
-  video_tracks[0]->AddOrUpdateSink(this, webrtc::VideoSinkWants());
+  video_track_ = video_tracks[0];
+  video_track_->AddOrUpdateSink(this, webrtc::VideoSinkWants());
 }
 
 void WebrtcVideoRendererAdapter::SetVideoStatsChannel(
