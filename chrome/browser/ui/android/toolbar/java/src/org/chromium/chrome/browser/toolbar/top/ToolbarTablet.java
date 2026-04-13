@@ -68,7 +68,6 @@ import org.chromium.components.browser_ui.styles.ChromeColors;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.components.browser_ui.widget.animation.CancelAwareAnimatorListener;
 import org.chromium.components.feature_engagement.Tracker;
-import org.chromium.ui.base.DeviceFormFactor;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -503,17 +502,9 @@ public class ToolbarTablet extends ToolbarLayout {
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
         int width = MeasureSpec.getSize(widthMeasureSpec);
-        if (isToolbarTabletResizeRefactorEnabled()) {
-            allocateAvailableToolbarWidth(
-                    mToolbarWidthConsumers, width, widthMeasureSpec, heightMeasureSpec);
-        } else {
-            // Hide or show toolbar buttons if needed. With the introduction of multi-window on
-            // Android N, the Activity can be < 600dp, in which case the toolbar buttons need to be
-            // moved into the menu so that the location bar is usable. The buttons must be shown
-            // in onMeasure() so that the location bar is usable.
-            setToolbarButtonsVisible(
-                    width >= DeviceFormFactor.getNonMultiDisplayMinimumTabletWidthPx(getContext()));
-        }
+        allocateAvailableToolbarWidth(
+                mToolbarWidthConsumers, width, widthMeasureSpec, heightMeasureSpec);
+
         super.onMeasure(widthMeasureSpec, heightMeasureSpec);
     }
 
@@ -721,6 +712,8 @@ public class ToolbarTablet extends ToolbarLayout {
         // behavior is fixed.
     }
 
+    @SuppressWarnings("UnusedMethod")
+    // TODO(crbug.com/501137241): Clean up this method and related logic.
     private void setToolbarButtonsVisible(boolean visible) {
         if (mToolbarButtonsVisible == visible) return;
 
