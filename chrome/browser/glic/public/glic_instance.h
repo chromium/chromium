@@ -24,7 +24,6 @@ class TabInterface;
 namespace glic {
 
 class Host;
-class GlicInstanceMetrics;
 
 // Instance IDs are created in the form `<index>-<64-bit-random-int>`.
 // The index is an indicator of how many instances have been created by the
@@ -119,8 +118,6 @@ class GlicInstance : public glic_instance_internal::UiDelegate {
   // Returns the duration since the instance was last active.
   // Returns base::TimeDelta() if the instance is currently active.
   virtual base::TimeDelta GetTimeSinceLastActive() const = 0;
-
-  virtual GlicInstanceMetrics* instance_metrics() = 0;
 
   // Metrics springboard for selection area changed.
   // TODO(b/500385503): Figure out what to do here. This is exposed for now

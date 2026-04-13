@@ -213,13 +213,13 @@ void GlicInstanceImpl::MaybeDaisyChainToTab(tabs::TabInterface* source_tab,
     side_panel_options.suppress_opening_animation = true;
     side_panel_options.pin_trigger = GlicPinTrigger::kDaisyChain;
     auto show_options = ShowOptions{side_panel_options};
-    metrics()->OnDaisyChain(DaisyChainSource::kTabContents,
-                            /*success=*/true, target_tab, source_tab);
+    instance_metrics()->OnDaisyChain(DaisyChainSource::kTabContents,
+                                     /*success=*/true, target_tab, source_tab);
     Show(show_options);
   } else {
     // Record the failure.
-    metrics()->OnDaisyChain(DaisyChainSource::kTabContents,
-                            /*success=*/false, target_tab, source_tab);
+    instance_metrics()->OnDaisyChain(DaisyChainSource::kTabContents,
+                                     /*success=*/false, target_tab, source_tab);
   }
 }
 

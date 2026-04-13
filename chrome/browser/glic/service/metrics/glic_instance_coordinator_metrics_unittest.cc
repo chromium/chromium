@@ -41,7 +41,6 @@ class MockGlicInstance : public GlicInstance {
               (const, override));
   MOCK_METHOD(base::Time, GetLastActivationTimestamp, (), (const, override));
   MOCK_METHOD(base::TimeDelta, GetTimeSinceLastActive, (), (const, override));
-  MOCK_METHOD(GlicInstanceMetrics*, instance_metrics, (), (override));
   MOCK_METHOD(void, OnSelectionAreasChanged, (int count), (override));
   MOCK_METHOD(void, BindTabForTesting, (tabs::TabInterface * tab), (override));
 };

@@ -259,8 +259,6 @@ class GlicInstanceImpl : public GlicInstance,
   void WebUiStateChanged(mojom::WebUiState state) override;
   void ContextAccessIndicatorChanged(bool enabled) override;
 
-  glic::GlicInstanceMetrics* metrics() { return &instance_metrics_; }
-
   // Test support.
 #if !BUILDFLAG(IS_ANDROID)
   views::View* GetActiveEmbedderGlicViewForTesting();
