@@ -29,7 +29,10 @@ source_set("lens") {
     "lens_string_utils.h",
     "overlay_base_controller.h",
   ]
-  friend = [ ":*" ]
+  friend = [
+    ":*",
+    "//chrome/browser/glic/selection:interactive_ui_tests",
+  ]
   sources = [
     "lens_composebox_handler.h",
     "lens_help_menu_utils.h",

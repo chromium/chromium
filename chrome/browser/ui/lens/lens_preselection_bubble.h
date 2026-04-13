@@ -8,6 +8,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "components/tabs/public/tab_interface.h"
+#include "ui/base/interaction/element_identifier.h"
 #include "ui/color/color_id.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 #include "ui/views/controls/label.h"
@@ -31,6 +32,9 @@ class LensPreselectionBubble : public views::BubbleDialogDelegateView,
   METADATA_HEADER(LensPreselectionBubble, views::BubbleDialogDelegateView)
 
  public:
+  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kExitButtonElementId);
+  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kCancelButtonElementId);
+
   using ExitClickedCallback = views::Button::PressedCallback;
   explicit LensPreselectionBubble(tabs::TabHandle tab_handle,
                                   views::View* anchor_view,
