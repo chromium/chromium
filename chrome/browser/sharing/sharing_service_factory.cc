@@ -32,7 +32,6 @@
 #include "components/send_tab_to_self/features.h"
 #include "components/send_tab_to_self/send_tab_to_self_model.h"
 #include "components/send_tab_to_self/send_tab_to_self_sync_service.h"
-#include "components/sharing_message/buildflags.h"
 #include "components/sharing_message/ios_push/sharing_ios_push_sender.h"
 #include "components/sharing_message/sharing_constants.h"
 #include "components/sharing_message/sharing_device_registration.h"
@@ -119,9 +118,7 @@ SharingServiceFactory::BuildServiceInstanceForBrowserContext(
     return nullptr;
   }
 
-#if BUILDFLAG(ENABLE_CLICK_TO_CALL)
   PrecompilePhoneNumberRegexesAsync();
-#endif  // BUILDFLAG(ENABLE_CLICK_TO_CALL)
 
   syncer::DeviceInfoSyncService* device_info_sync_service =
       DeviceInfoSyncServiceFactory::GetForProfile(profile);

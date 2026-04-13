@@ -2,14 +2,15 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//components/sharing_message/buildflags.gni")
-
 source_set("click_to_call") {
-  public = []
-  public_deps = []
+  public = [
+    "click_to_call_utils.h",
+    "phone_number_regex.h",
+  ]
+  public_deps = [ "//url" ]
 
   if (is_android) {
-    public = [ "click_to_call_message_handler_android.h" ]
+    public += [ "click_to_call_message_handler_android.h" ]
     public_deps += [ "//components/sharing_message" ]
   } else {
     public += [
@@ -17,7 +18,7 @@ source_set("click_to_call") {
       "click_to_call_metrics.h",
       "click_to_call_ui_controller.h",
     ]
-    public_deps = [
+    public_deps += [
       "//chrome/browser/sharing",
       "//chrome/browser/ui/page_action:icon_type",
       "//components/renderer_context_menu",
@@ -26,19 +27,21 @@ source_set("click_to_call") {
       "//ui/menus",
     ]
   }
-
-  if (enable_click_to_call) {
-    public += [
-      "click_to_call_utils.h",
-      "phone_number_regex.h",
-    ]
-    public_deps += [ "//url" ]
-  }
 }
 
 source_set("impl") {
-  sources = []
-  deps = [ ":click_to_call" ]
+  sources = [
+    "click_to_call_utils.cc",
+    "phone_number_regex.cc",
+  ]
+  deps = [
+    ":click_to_call",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/sharing",
+    "//components/prefs",
+    "//content/public/browser",
+    "//third_party/re2",
+  ]
 
   if (is_android) {
     sources += [ "click_to_call_message_handler_android.cc" ]
@@ -69,20 +72,6 @@ source_set("impl") {
       "//services/metrics/public/cpp:ukm_builders",
     ]
   }
-
-  if (enable_click_to_call) {
-    sources += [
-      "click_to_call_utils.cc",
-      "phone_number_regex.cc",
-    ]
-    deps += [
-      "//chrome/browser/profiles:profile",
-      "//chrome/browser/sharing",
-      "//components/prefs",
-      "//content/public/browser",
-      "//third_party/re2",
-    ]
-  }
 }
 
 source_set("unit_tests") {
@@ -96,9 +85,7 @@ source_set("unit_tests") {
       "//components/sharing_message/proto",
       "//testing/gtest",
     ]
-  }
-
-  if (enable_click_to_call && !is_android) {
+  } else {
     sources += [
       "click_to_call_context_menu_observer_unittest.cc",
       "click_to_call_ui_controller_unittest.cc",

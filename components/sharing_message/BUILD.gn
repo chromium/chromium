@@ -11,10 +11,7 @@ if (is_android) {
 
 buildflag_header("buildflags") {
   header = "buildflags.h"
-  flags = [
-    "ENABLE_DISCOVERY=$enable_discovery",
-    "ENABLE_CLICK_TO_CALL=$enable_click_to_call",
-  ]
+  flags = [ "ENABLE_DISCOVERY=$enable_discovery" ]
 }
 
 if (is_android) {

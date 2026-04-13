@@ -3814,6 +3814,7 @@ if (!is_android) {
       "../browser/ui/views/passwords/password_change/password_change_toast_browsertest.cc",
       "../browser/ui/views/passwords/password_change/password_change_ui_browsertest.cc",
       "../browser/ui/views/profiles/avatar_toolbar_button_browsertest.cc",
+      "../browser/ui/views/sharing/click_to_call_browsertest.cc",
       "../browser/ui/views/sharing/remote_copy_browsertest.cc",
       "../browser/ui/views/sharing/shared_clipboard_browsertest.cc",
       "../browser/ui/views/sharing/sharing_browsertest.cc",
@@ -4114,6 +4115,7 @@ if (!is_android) {
       "//chrome/browser/search_provider_logos",
       "//chrome/browser/sessions",
       "//chrome/browser/sharing",
+      "//chrome/browser/sharing/click_to_call",
       "//chrome/browser/signin:signin_promo",
       "//chrome/browser/subscription_eligibility",
       "//chrome/browser/supervised_user",
@@ -4169,6 +4171,7 @@ if (!is_android) {
       "//components/push_messaging",
       "//components/push_messaging:test_support",
       "//components/safe_browsing/content/common/proto:download_file_types_proto",
+      "//components/sharing_message",
       "//components/sync_bookmarks",
       "//third_party/federated_compute:confidential_compute",
       "//third_party/federated_compute:confidential_compute_crypto_test_util",
@@ -4233,14 +4236,6 @@ if (!is_android) {
     # files will probably not be applicable.
     sources += [ "../browser/speech/speech_recognition_browsertest.cc" ]
     deps += [ "//chrome/browser/speech" ]
-
-    if (enable_click_to_call) {
-      sources += [ "../browser/ui/views/sharing/click_to_call_browsertest.cc" ]
-      deps += [
-        "//chrome/browser/sharing/click_to_call",
-        "//components/sharing_message",
-      ]
-    }
 
     if (enable_on_device_translation) {
       sources += [ "//chrome/browser/on_device_translation/on_device_translation_browsertest.cc" ]
