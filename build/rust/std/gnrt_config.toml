@@ -41,6 +41,9 @@ build_file_template = "BUILD.gn.hbs"
 
 extra_kv = { include_coverage = true }
 
+[crate.alloc.extra_kv]
+cpp_api_from_rust = { deps = [] }
+
 [crate.compiler_builtins]
 # Dependencies of profiler_builtins must have instrumentation disabled.
 #
@@ -55,9 +58,13 @@ extra_src_roots = [
 ]
 
 [crate.core]
-# Dependencies of profiler_builtins must have instrumentation disabled
-extra_kv = { include_coverage = false, immediate_abort = true }
 extra_src_roots = ['../../portable-simd/crates/core_simd', '../../stdarch/crates/core_arch']
+
+[crate.core.extra_kv]
+# Dependencies of profiler_builtins must have instrumentation disabled
+include_coverage = false
+immediate_abort = true
+cpp_api_from_rust = { deps = [ "alloc" ] }
 
 [crate.hashbrown]
 # Workaround for Cargo issue: hashbrown's Cargo.toml uses an unstable Cargo
@@ -95,7 +102,9 @@ extra_input_roots = [ '../../portable-simd/crates/core_simd/src', '../../stdarch
 # Remove this from std. It will be depended on directly when needed.
 exclude_deps_in_gn = ['profiler_builtins']
 
-extra_kv = { immediate_abort = true }
+[crate.std.extra_kv]
+immediate_abort = true
+cpp_api_from_rust = { deps = [ "alloc", "core" ] }
 
 [crate.test]
 # test only depends on proc_macro as an internal detail of the Rust build, so

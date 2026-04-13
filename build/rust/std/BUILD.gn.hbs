@@ -34,6 +34,18 @@ cargo_crate("{{../name}}") {
   ]
   no_std = true
 
+  {{#if_key_present "cpp_api_from_rust" extra_kv}}
+    cpp_api_from_rust = {
+      target_name = "{{../name}}_bindings"
+      cpp_namespace = "rs::{{../name}}"
+      deps = [
+        {{#each extra_kv.cpp_api_from_rust.deps}}
+        ":{{this}}_bindings",
+        {{/each}}
+      ]
+    }
+  {{/if_key_present}}
+
   # Unit tests skipped. Generate with --with-tests to include them.
   build_native_rust_unit_tests = false
   edition = "{{edition}}"
@@ -169,28 +181,6 @@ cargo_crate("{{../name}}") {
     {{/if}}
   ]
   output_dir = "$root_out_dir/local_rustc_sysroot/lib/rustlib/$rust_abi_target/lib/"
-  cpp_api_from_rust = {
-    target_name = "{{../name}}_bindings"
-    cpp_namespace = "rs::{{../name}}"
-    deps = []
-    {{#each deps}}
-      {{#if @first}}
-        deps += [
-          {{#each this.packages}}
-          ":{{this.name}}_bindings",
-          {{/each}}
-        ]
-      {{else}}
-        if ({{this.cond}}) {
-          deps += [
-            {{#each this.packages}}
-            ":{{this.name}}_bindings",
-            {{/each}}
-          ]
-        }
-      {{/if}}
-    {{/each}}
-  }
 }
 {{/with}}
 {{/each}}

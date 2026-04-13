@@ -232,10 +232,11 @@ if (toolchain_has_rust) {
     if (enable_cpp_api_from_rust) {
       group("std_bindings") {
         deps = [ ":std" ]
-        public_deps = []
-        foreach(libname, stdlib_files + skip_stdlib_files) {
-          public_deps += [ "rules:${libname}_bindings" ]
-        }
+        public_deps = [
+          "rules:alloc_bindings",
+          "rules:core_bindings",
+          "rules:std_bindings",
+        ]
       }
     }
   } else {
