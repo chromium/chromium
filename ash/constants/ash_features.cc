@@ -2024,10 +2024,6 @@ BASE_FEATURE(kWifiSyncUploadProxyConfigs, base::FEATURE_DISABLED_BY_DEFAULT);
 // Wi-Fi networks that are received from Chrome Sync.
 BASE_FEATURE(kWifiSyncApplyProxyConfigs, base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Controls whether to apply incoming Wi-Fi configuration delete events from
-// the Chrome Sync server.
-BASE_FEATURE(kWifiSyncApplyDeletes, base::FEATURE_DISABLED_BY_DEFAULT);
-
 // Enables an experimental feature that splits windows by dragging one window
 // over another window.
 BASE_FEATURE(kWindowSplitting, base::FEATURE_DISABLED_BY_DEFAULT);

@@ -10,7 +10,6 @@
 #include <set>
 #include <utility>
 
-#include "ash/constants/ash_features.h"
 #include "base/containers/flat_map.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
@@ -368,10 +367,7 @@ TEST_F(WifiConfigurationBridgeTest, ApplyIncrementalSyncChangesOneAdd) {
   EXPECT_TRUE(VectorContainsProto(networks, entry));
 }
 
-TEST_F(WifiConfigurationBridgeTest,
-       ApplyIncrementalSyncChangesOneDeletion_DeletesDisabled) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndDisableFeature(features::kWifiSyncApplyDeletes);
+TEST_F(WifiConfigurationBridgeTest, ApplyIncrementalSyncChangesOneDeletion) {
   InitializeSyncStore();
 
   WifiConfigurationSpecifics entry =
@@ -405,46 +401,6 @@ TEST_F(WifiConfigurationBridgeTest,
   const std::vector<NetworkIdentifier>& removed_networks =
       synced_network_updater()->remove_calls();
   EXPECT_TRUE(removed_networks.empty());
-}
-
-TEST_F(WifiConfigurationBridgeTest,
-       ApplyIncrementalSyncChangesOneDeletion_DeletesEnabled) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(features::kWifiSyncApplyDeletes);
-  InitializeSyncStore();
-
-  WifiConfigurationSpecifics entry =
-      GenerateTestWifiSpecifics(meow_network_id());
-  NetworkIdentifier id = NetworkIdentifier::FromProto(entry);
-
-  syncer::EntityChangeList add_changes;
-
-  add_changes.push_back(syncer::EntityChange::CreateAdd(
-      id.SerializeToString(), GenerateWifiEntityData(entry)));
-
-  bridge()->ApplyIncrementalSyncChanges(bridge()->CreateMetadataChangeList(),
-                                        std::move(add_changes));
-  std::vector<NetworkIdentifier> ids = bridge()->GetAllIdsForTesting();
-  EXPECT_EQ(1u, ids.size());
-  EXPECT_TRUE(std::ranges::contains(ids, meow_network_id()));
-
-  const std::vector<sync_pb::WifiConfigurationSpecifics>& networks =
-      synced_network_updater()->add_or_update_calls();
-  EXPECT_EQ(1u, networks.size());
-  EXPECT_TRUE(VectorContainsProto(networks, entry));
-
-  syncer::EntityChangeList delete_changes;
-  delete_changes.push_back(syncer::EntityChange::CreateDelete(
-      id.SerializeToString(), syncer::EntityData()));
-
-  bridge()->ApplyIncrementalSyncChanges(bridge()->CreateMetadataChangeList(),
-                                        std::move(delete_changes));
-  EXPECT_TRUE(bridge()->GetAllIdsForTesting().empty());
-
-  const std::vector<NetworkIdentifier>& removed_networks =
-      synced_network_updater()->remove_calls();
-  EXPECT_EQ(1u, removed_networks.size());
-  EXPECT_EQ(removed_networks[0], id);
 }
 
 TEST_F(WifiConfigurationBridgeTest, MergeFullSyncData) {

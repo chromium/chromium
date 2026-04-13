@@ -220,13 +220,7 @@ WifiConfigurationBridge::ApplyIncrementalSyncChanges(
       if (it != entries_.end()) {
         entries_.erase(it);
         batch->DeleteData(change->storage_key());
-        if (!base::FeatureList::IsEnabled(features::kWifiSyncApplyDeletes)) {
-          // Don't apply deletes to the local device.
-          NET_LOG(EVENT) << "Ignoring delete request from sync server.";
-          continue;
-        }
-        synced_network_updater_->RemoveNetwork(
-            NetworkIdentifier::DeserializeFromString(change->storage_key()));
+        NET_LOG(EVENT) << "Ignoring delete request from sync server.";
       } else {
         NET_LOG(EVENT) << "Received delete request for network which is not "
                           "tracked by sync.";
