@@ -545,9 +545,6 @@ TESTONLY_AND_VISIBILITY = [
 # Variables
 #   use_libcxx_modules: If true, libc++'s modules are added to deps.
 #       This is true by default.
-#   layering_check: If false, the layering check will be disabled even when the
-#       feature is enabled in args.gn.
-#       This is true by default.
 foreach(_target_type,
         [
           "source_set",
@@ -599,11 +596,6 @@ foreach(_target_type,
       if (use_libcxx_modules) {
         # Add a dependency needed for Clang modules builds.
         deps += [ "//buildtools/third_party/libc++:all_modules" ]
-
-        # Layering check requires libcxx modules.
-        if (!defined(layering_check) || layering_check) {
-          configs += [ "//build/modules:layering_check" ]
-        }
       }
 
       # Consumed by the unsafe-buffers plugin during compile.
@@ -636,9 +628,6 @@ foreach(_target_type,
 #       "//build/config/compiler:runtime_library" from configs (to remove
 #       its subconfig "//build/config/c++:runtime_library").
 #   use_libcxx_modules: If true, libc++'s modules are added to deps.
-#       This is true by default.
-#   layering_check: If false, the layering check will be disabled even when the
-#       feature is enabled in args.gn.
 #       This is true by default.
 foreach(_target_type,
         [
@@ -725,11 +714,6 @@ foreach(_target_type,
       if (use_libcxx_modules) {
         # Add a dependency needed for Clang modules builds.
         deps += [ "//buildtools/third_party/libc++:all_modules" ]
-
-        # Layering check requires libcxx modules.
-        if (!defined(layering_check) || layering_check) {
-          configs += [ "//build/modules:layering_check" ]
-        }
       }
 
       # On Android, write shared library output file to metadata. We will use
