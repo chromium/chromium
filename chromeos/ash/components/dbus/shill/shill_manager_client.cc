@@ -365,6 +365,31 @@ class ShillManagerClientImpl : public ShillManagerClient {
         &method_call, std::move(callback), std::move(error_callback));
   }
 
+  void TestHostsConnectivity(
+      const std::vector<std::string>& hosts,
+      const base::flat_map<std::string, std::string>& options,
+      TestHostsConnectivityCallback callback,
+      ErrorCallback error_callback,
+      std::optional<int> timeout_ms = std::nullopt) override {
+    dbus::MethodCall method_call(shill::kFlimflamManagerInterface,
+                                 shill::kTestHostsConnectivityFunction);
+    dbus::MessageWriter writer(&method_call);
+    writer.AppendArrayOfStrings(hosts);
+    dbus::MessageWriter array_writer(nullptr);
+    writer.OpenArray("{ss}", &array_writer);
+    for (const auto& [key, value] : options) {
+      dbus::MessageWriter entry_writer(nullptr);
+      array_writer.OpenDictEntry(&entry_writer);
+      entry_writer.AppendString(key);
+      entry_writer.AppendString(value);
+      array_writer.CloseContainer(&entry_writer);
+    }
+    writer.CloseContainer(&array_writer);
+    helper_->CallBytesMethodWithErrorCallback(&method_call, std::move(callback),
+                                              std::move(error_callback),
+                                              timeout_ms);
+  }
+
   TestInterface* GetTestInterface() override { return nullptr; }
 
   void Init(dbus::Bus* bus) {

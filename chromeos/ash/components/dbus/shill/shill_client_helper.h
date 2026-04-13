@@ -6,6 +6,7 @@
 #define CHROMEOS_ASH_COMPONENTS_DBUS_SHILL_SHILL_CLIENT_HELPER_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -47,6 +48,9 @@ class ShillClientHelper {
 
   // A callback that handles responses for methods with boolean results.
   using BooleanCallback = base::OnceCallback<void(bool result)>;
+
+  // A callback that handles responses for methods with byte array results.
+  using BytesCallback = base::OnceCallback<void(const std::vector<uint8_t>&)>;
 
   // Callback used to notify owner when this can be safely released.
   using ReleasedCallback = base::OnceCallback<void(ShillClientHelper* helper)>;
@@ -117,6 +121,14 @@ class ShillClientHelper {
   void CallListValueMethodWithErrorCallback(dbus::MethodCall* method_call,
                                             ListValueCallback callback,
                                             ErrorCallback error_callback);
+
+  // Calls a method with a byte array (`ay`) result with error callback.
+  // `timeout_ms` overrides the default D-Bus timeout when provided.
+  void CallBytesMethodWithErrorCallback(
+      dbus::MethodCall* method_call,
+      BytesCallback callback,
+      ErrorCallback error_callback,
+      std::optional<int> timeout_ms = std::nullopt);
 
   const dbus::ObjectProxy* object_proxy() const { return proxy_; }
 

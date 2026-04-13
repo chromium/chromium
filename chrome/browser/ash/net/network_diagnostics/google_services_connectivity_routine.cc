@@ -9,24 +9,18 @@
 #include <string_view>
 
 #include "ash/constants/ash_features.h"
-#include "base/check.h"
 #include "base/check_deref.h"
 #include "base/containers/flat_map.h"
 #include "base/feature_list.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/net/network_diagnostics/google_services_connectivity_routine_util.h"
 #include "chrome/browser/ash/net/network_diagnostics/hosts_connectivity_diagnostics.pb.h"
-#include "chromeos/ash/components/dbus/debug_daemon/debug_daemon_client.h"
+#include "chromeos/ash/components/dbus/shill/shill_manager_client.h"
 #include "chromeos/services/network_health/public/mojom/network_diagnostics.mojom.h"
 
 namespace ash::network_diagnostics {
 
 namespace {
-
-// Debugd constants used by the connectivity tool when parsing options.
-constexpr char kDebugdTimeoutStr[] = "timeout";
-constexpr char kDebugdMaxErrorsStr[] = "max_errors";
-constexpr char kDebugdProxyStr[] = "proxy";
 
 // Maximum time in seconds per hostname connection. The connectivity tool
 // applies this timeout to each individual host test, not the entire routine.
@@ -34,9 +28,11 @@ constexpr char kTimeoutSecNum[] = "10";
 // Maximum number of errors the tool is allowed to identify after which it must
 // return the result.
 constexpr char kMaxErrorsNum[] = "5";
-// Sets up the connectivity tool to automatically determine proxy for each
-// hostname (eg. from a PAC file).
-constexpr char kSystemProxy[] = "system";
+
+// D-Bus call timeout. Shill tests hosts sequentially, so the worst case is
+// kGoogleHosts.size() * kTimeoutSecNum. Add margin for proxy resolution and
+// D-Bus overhead.
+constexpr int kDbusTimeoutMs = 70'000;
 
 namespace mojom = ::chromeos::network_diagnostics::mojom;
 
@@ -128,9 +124,9 @@ CreateTestConnectivityRequestFailedError(std::string_view error_message) {
 
 GoogleServicesConnectivityRoutine::GoogleServicesConnectivityRoutine(
     mojom::RoutineCallSource source,
-    DebugDaemonClient* debug_daemon_client)
+    ShillManagerClient* shill_manager_client)
     : NetworkDiagnosticsRoutine(source),
-      debug_daemon_client_(CHECK_DEREF(debug_daemon_client)) {
+      shill_manager_client_(CHECK_DEREF(shill_manager_client)) {
   set_verdict(mojom::RoutineVerdict::kNotRun);
 }
 
@@ -155,16 +151,21 @@ void GoogleServicesConnectivityRoutine::Run() {
        "clients4.google.com", "clients5.google.com"});
 
   const base::flat_map<std::string, std::string> options = {
-      {kDebugdTimeoutStr, kTimeoutSecNum},
-      {kDebugdMaxErrorsStr, kMaxErrorsNum},
-      {kDebugdProxyStr, kSystemProxy},
+      {shill::kTestHostsConnectivityTimeoutKey, kTimeoutSecNum},
+      {shill::kTestHostsConnectivityMaxErrorsKey, kMaxErrorsNum},
+      {shill::kTestHostsConnectivityProxyKey,
+       shill::kTestHostsConnectivityProxySystem},
   };
-  debug_daemon_client_->TestHostsConnectivity(
+  shill_manager_client_->TestHostsConnectivity(
       std::vector<std::string>(kGoogleHosts.begin(), kGoogleHosts.end()),
       options,
       base::BindOnce(
           &GoogleServicesConnectivityRoutine::OnGetHostsConnectivityResult,
-          weak_factory_.GetWeakPtr()));
+          weak_factory_.GetWeakPtr()),
+      base::BindOnce(
+          &GoogleServicesConnectivityRoutine::OnGetHostsConnectivityError,
+          weak_factory_.GetWeakPtr()),
+      kDbusTimeoutMs);
 }
 
 void GoogleServicesConnectivityRoutine::OnGetHostsConnectivityResult(
@@ -175,6 +176,14 @@ void GoogleServicesConnectivityRoutine::OnGetHostsConnectivityResult(
   } else {
     ParseConnectivityResponse(response);
   }
+  AnalyzeResultsAndExecuteCallback();
+}
+
+void GoogleServicesConnectivityRoutine::OnGetHostsConnectivityError(
+    const std::string& error_name,
+    const std::string& error_message) {
+  problems_.push_back(CreateTestConnectivityRequestFailedError(
+      kGoogleServicesConnectivityFailedToExecuteError));
   AnalyzeResultsAndExecuteCallback();
 }
 

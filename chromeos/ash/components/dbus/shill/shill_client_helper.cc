@@ -8,6 +8,7 @@
 
 #include <utility>
 
+#include "base/containers/to_vector.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/location.h"
@@ -252,6 +253,27 @@ void OnListValueMethodWithErrorResponse(
   std::move(callback).Run(value.GetList());
 }
 
+// Handles responses for methods with byte array (`ay`) results.
+void OnBytesMethodWithErrorResponse(
+    ShillClientHelper::RefHolder* ref_holder,
+    ShillClientHelper::BytesCallback callback,
+    ShillClientHelper::ErrorCallback error_callback,
+    dbus::Response* response,
+    dbus::ErrorResponse* error_response) {
+  if (!response) {
+    OnError(std::move(error_callback), error_response);
+    return;
+  }
+  dbus::MessageReader reader(response);
+  base::span<const uint8_t> bytes;
+  if (!reader.PopArrayOfBytes(&bytes)) {
+    std::move(error_callback)
+        .Run(kInvalidResponseErrorName, kInvalidResponseErrorMessage);
+    return;
+  }
+  std::move(callback).Run(base::ToVector(bytes));
+}
+
 }  // namespace
 
 ShillClientHelper::ShillClientHelper(dbus::ObjectProxy* proxy)
@@ -419,6 +441,20 @@ void ShillClientHelper::CallListValueMethodWithErrorCallback(
   proxy_->CallMethodWithErrorResponse(
       method_call, dbus::ObjectProxy::TIMEOUT_USE_DEFAULT,
       base::BindOnce(&OnListValueMethodWithErrorResponse,
+                     base::Owned(new RefHolder(weak_ptr_factory_.GetWeakPtr())),
+                     std::move(callback), std::move(error_callback)));
+}
+
+void ShillClientHelper::CallBytesMethodWithErrorCallback(
+    dbus::MethodCall* method_call,
+    BytesCallback callback,
+    ErrorCallback error_callback,
+    std::optional<int> timeout_ms) {
+  DCHECK(!callback.is_null());
+  DCHECK(!error_callback.is_null());
+  proxy_->CallMethodWithErrorResponse(
+      method_call, timeout_ms.value_or(dbus::ObjectProxy::TIMEOUT_USE_DEFAULT),
+      base::BindOnce(&OnBytesMethodWithErrorResponse,
                      base::Owned(new RefHolder(weak_ptr_factory_.GetWeakPtr())),
                      std::move(callback), std::move(error_callback)));
 }

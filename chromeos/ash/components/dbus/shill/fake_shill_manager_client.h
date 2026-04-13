@@ -110,6 +110,12 @@ class COMPONENT_EXPORT(SHILL_CLIENT) FakeShillManagerClient
       const int shill_id,
       base::OnceCallback<void(base::DictValue result)> callback,
       ErrorCallback error_callback) override;
+  void TestHostsConnectivity(
+      const std::vector<std::string>& hosts,
+      const base::flat_map<std::string, std::string>& options,
+      TestHostsConnectivityCallback callback,
+      ErrorCallback error_callback,
+      std::optional<int> timeout_ms = std::nullopt) override;
 
   ShillManagerClient::TestInterface* GetTestInterface() override;
 
@@ -181,6 +187,10 @@ class COMPONENT_EXPORT(SHILL_CLIENT) FakeShillManagerClient
   int GetRecentlyDisconnectedP2PGroupId() override;
   void SetAutoCompleteScan(bool auto_complete_scan) override;
   void TriggerScanCompleted(const std::string& device_path) override;
+  void SetTestHostsConnectivityResponse(
+      const std::vector<uint8_t>& response) override;
+  void SetSimulateTestHostsConnectivityResult(
+      FakeShillSimulatedResult result) override;
 
   // Constants used for testing.
   static const char kFakeEthernetNetworkGuid[];
@@ -298,6 +308,13 @@ class COMPONENT_EXPORT(SHILL_CLIENT) FakeShillManagerClient
   // Caches the last-passed callbacks for ScanAndConnectToBestServices.
   std::optional<ConnectToBestServicesCallbacks>
       connect_to_best_services_callbacks_;
+
+  // Canned response for TestHostsConnectivity.
+  std::vector<uint8_t> test_hosts_connectivity_response_;
+
+  // Controls whether TestHostsConnectivity succeeds, fails, or times out.
+  FakeShillSimulatedResult simulate_test_hosts_connectivity_result_ =
+      FakeShillSimulatedResult::kSuccess;
 
   // Note: This should remain the last member so it'll be destroyed and
   // invalidate its weak pointers before any other members are destroyed.

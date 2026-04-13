@@ -14,7 +14,6 @@
 #include <vector>
 
 #include "base/compiler_specific.h"
-#include "base/containers/flat_map.h"
 #include "base/observer_list.h"
 #include "chromeos/ash/components/dbus/debug_daemon/debug_daemon_client.h"
 #include "chromeos/dbus/common/dbus_callback.h"
@@ -81,10 +80,6 @@ class COMPONENT_EXPORT(DEBUG_DAEMON) FakeDebugDaemonClient
   void TestICMPWithOptions(const std::string& ip_address,
                            const std::map<std::string, std::string>& options,
                            TestICMPCallback callback) override;
-  void TestHostsConnectivity(
-      const std::vector<std::string>& hosts,
-      const base::flat_map<std::string, std::string>& options,
-      TestHostsConnectivityCallback callback) override;
   void UploadCrashes(UploadCrashesCallback callback) override;
   void EnableDebuggingFeatures(const std::string& password,
                                EnableDebuggingCallback callback) override;

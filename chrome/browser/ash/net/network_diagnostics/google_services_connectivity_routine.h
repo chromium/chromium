@@ -13,7 +13,7 @@
 #include "chrome/browser/ash/net/network_diagnostics/network_diagnostics_routine.h"
 
 namespace ash {
-class DebugDaemonClient;
+class ShillManagerClient;
 }  // namespace ash
 
 namespace ash::network_diagnostics {
@@ -22,10 +22,10 @@ namespace ash::network_diagnostics {
 // Google endpoints.
 class GoogleServicesConnectivityRoutine : public NetworkDiagnosticsRoutine {
  public:
-  // `debug_daemon_client` must outlive this object.
+  // `shill_manager_client` must outlive this object.
   GoogleServicesConnectivityRoutine(
       chromeos::network_diagnostics::mojom::RoutineCallSource source,
-      DebugDaemonClient* debug_daemon_client);
+      ShillManagerClient* shill_manager_client);
   GoogleServicesConnectivityRoutine(const GoogleServicesConnectivityRoutine&) =
       delete;
   GoogleServicesConnectivityRoutine& operator=(
@@ -40,9 +40,11 @@ class GoogleServicesConnectivityRoutine : public NetworkDiagnosticsRoutine {
 
  private:
   void OnGetHostsConnectivityResult(const std::vector<uint8_t>& response);
+  void OnGetHostsConnectivityError(const std::string& error_name,
+                                   const std::string& error_message);
   void ParseConnectivityResponse(const std::vector<uint8_t>& proto_response);
 
-  const raw_ref<DebugDaemonClient> debug_daemon_client_;
+  const raw_ref<ShillManagerClient> shill_manager_client_;
   std::vector<chromeos::network_diagnostics::mojom::
                   GoogleServicesConnectivityProblemPtr>
       problems_;

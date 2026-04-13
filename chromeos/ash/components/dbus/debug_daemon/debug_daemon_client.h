@@ -14,7 +14,6 @@
 #include <vector>
 
 #include "base/component_export.h"
-#include "base/containers/flat_map.h"
 #include "base/files/file.h"
 #include "base/functional/callback.h"
 #include "base/memory/ref_counted_memory.h"
@@ -199,21 +198,6 @@ class COMPONENT_EXPORT(DEBUG_DAEMON) DebugDaemonClient
       const std::string& ip_address,
       const std::map<std::string, std::string>& options,
       TestICMPCallback callback) = 0;
-
-  // A callback to handle the result of TestHostsConnectivity. Contains result
-  // encapsulated as protobuf.
-  using TestHostsConnectivityCallback =
-      base::OnceCallback<void(const std::vector<uint8_t>& connectivity_result)>;
-
-  // Tests connectivity to multiple hosts. The `hosts` parameter contains
-  // hostnames or URLs to test. The `options` parameter contains optional
-  // configuration passed to debugd's TestConnectivity method; see
-  // platform2/debugd for supported keys. On error, callback receives an empty
-  // vector.
-  virtual void TestHostsConnectivity(
-      const std::vector<std::string>& hosts,
-      const base::flat_map<std::string, std::string>& options,
-      TestHostsConnectivityCallback callback) = 0;
 
   // Called once EnableDebuggingFeatures() is complete. |succeeded| will be true
   // if debugging features have been successfully enabled.

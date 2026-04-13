@@ -454,14 +454,6 @@ class DebugDaemonClientImpl : public DebugDaemonClient {
                        weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
   }
 
-  void TestHostsConnectivity(
-      const std::vector<std::string>& hosts,
-      const base::flat_map<std::string, std::string>& options,
-      TestHostsConnectivityCallback callback) override {
-    NOTIMPLEMENTED_LOG_ONCE();
-    OnBytesResponse(std::move(callback), nullptr);
-  }
-
   void UploadCrashes(UploadCrashesCallback callback) override {
     dbus::MethodCall method_call(debugd::kDebugdInterface,
                                  debugd::kUploadCrashes);

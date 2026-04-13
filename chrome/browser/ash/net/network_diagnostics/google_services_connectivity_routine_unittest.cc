@@ -12,7 +12,9 @@
 #include "base/test/test_future.h"
 #include "chrome/browser/ash/net/network_diagnostics/google_services_connectivity_routine_util.h"
 #include "chrome/browser/ash/net/network_diagnostics/hosts_connectivity_diagnostics.pb.h"
-#include "chromeos/ash/components/dbus/debug_daemon/fake_debug_daemon_client.h"
+#include "chromeos/ash/components/dbus/shill/fake_shill_manager_client.h"
+#include "chromeos/ash/components/dbus/shill/fake_shill_simulated_result.h"
+#include "chromeos/ash/components/dbus/shill/shill_manager_client.h"
 #include "chromeos/services/network_health/public/mojom/network_diagnostics.mojom.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -267,32 +269,6 @@ CreateSuccessfulConnectivityResponse() {
   return response;
 }
 
-class FakeGoogleServicesDebugDaemonClient : public ash::FakeDebugDaemonClient {
- public:
-  FakeGoogleServicesDebugDaemonClient() = default;
-
-  explicit FakeGoogleServicesDebugDaemonClient(
-      const std::vector<uint8_t>& connectivity_response)
-      : connectivity_response_(connectivity_response) {}
-
-  FakeGoogleServicesDebugDaemonClient(
-      const FakeGoogleServicesDebugDaemonClient&) = delete;
-  FakeGoogleServicesDebugDaemonClient& operator=(
-      const FakeGoogleServicesDebugDaemonClient&) = delete;
-
-  ~FakeGoogleServicesDebugDaemonClient() override = default;
-
-  void TestHostsConnectivity(
-      const std::vector<std::string>& hosts,
-      const base::flat_map<std::string, std::string>& options,
-      TestHostsConnectivityCallback callback) override {
-    std::move(callback).Run(connectivity_response_);
-  }
-
- private:
-  std::vector<uint8_t> connectivity_response_;
-};
-
 }  // namespace
 
 class GoogleServicesConnectivityRoutineTest : public testing::Test {
@@ -300,22 +276,26 @@ class GoogleServicesConnectivityRoutineTest : public testing::Test {
   GoogleServicesConnectivityRoutineTest() {
     scoped_feature_list_.InitAndEnableFeature(
         ash::features::kGoogleServicesConnectivityRoutine);
+    ShillManagerClient::InitializeFake();
   }
   GoogleServicesConnectivityRoutineTest(
       const GoogleServicesConnectivityRoutineTest&) = delete;
   GoogleServicesConnectivityRoutineTest& operator=(
       const GoogleServicesConnectivityRoutineTest&) = delete;
-  ~GoogleServicesConnectivityRoutineTest() override = default;
+  ~GoogleServicesConnectivityRoutineTest() override {
+    google_services_connectivity_routine_.reset();
+    ShillManagerClient::Shutdown();
+  }
 
   void SetUpRoutineWithSerializedResponse(
       const std::vector<uint8_t>& serialized_response) {
-    debug_daemon_client_ =
-        std::make_unique<FakeGoogleServicesDebugDaemonClient>(
-            serialized_response);
+    static_cast<FakeShillManagerClient*>(ShillManagerClient::Get())
+        ->GetTestInterface()
+        ->SetTestHostsConnectivityResponse(serialized_response);
     google_services_connectivity_routine_ =
         std::make_unique<GoogleServicesConnectivityRoutine>(
             mojom::RoutineCallSource::kDiagnosticsUI,
-            debug_daemon_client_.get());
+            ShillManagerClient::Get());
   }
 
   void SetUpRoutine(
@@ -374,7 +354,6 @@ class GoogleServicesConnectivityRoutineTest : public testing::Test {
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
   content::BrowserTaskEnvironment task_environment_;
-  std::unique_ptr<FakeGoogleServicesDebugDaemonClient> debug_daemon_client_;
   std::unique_ptr<GoogleServicesConnectivityRoutine>
       google_services_connectivity_routine_;
 };
@@ -559,12 +538,26 @@ TEST_F(GoogleServicesConnectivityRoutineTest,
   RunAndExpect(response, mojom::RoutineVerdict::kProblem);
 }
 
+TEST_F(GoogleServicesConnectivityRoutineTest, TestDbusError) {
+  auto response = CreateSuccessfulConnectivityResponse();
+  SetUpRoutine(response);
+  ShillManagerClient::Get()
+      ->GetTestInterface()
+      ->SetSimulateTestHostsConnectivityResult(
+          FakeShillSimulatedResult::kFailure);
+  RunAndExpectInternalError(kGoogleServicesConnectivityFailedToExecuteError);
+}
+
 // Test fixture with the feature flag disabled.
 class GoogleServicesConnectivityRoutineDisabledTest : public testing::Test {
  public:
   GoogleServicesConnectivityRoutineDisabledTest() {
     scoped_feature_list_.InitAndDisableFeature(
         ash::features::kGoogleServicesConnectivityRoutine);
+    ShillManagerClient::InitializeFake();
+  }
+  ~GoogleServicesConnectivityRoutineDisabledTest() override {
+    ShillManagerClient::Shutdown();
   }
 
  private:
@@ -574,9 +567,8 @@ class GoogleServicesConnectivityRoutineDisabledTest : public testing::Test {
 
 TEST_F(GoogleServicesConnectivityRoutineDisabledTest,
        CanNotRunFeatureDisabled) {
-  FakeGoogleServicesDebugDaemonClient debug_daemon_client;
   GoogleServicesConnectivityRoutine routine(
-      mojom::RoutineCallSource::kDiagnosticsUI, &debug_daemon_client);
+      mojom::RoutineCallSource::kDiagnosticsUI, ShillManagerClient::Get());
   ASSERT_FALSE(routine.CanRun());
 
   base::test::TestFuture<mojom::RoutineResultPtr> future;
