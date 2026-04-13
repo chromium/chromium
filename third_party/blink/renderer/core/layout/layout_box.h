@@ -1233,7 +1233,7 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
   // https://drafts.csswg.org/css-anchor-position-1/#ref-for-valdef-anchor-implicit
   const LayoutObject* AcceptableImplicitAnchor() const;
 
-  const HeapVector<NonOverflowingScrollRange>* NonOverflowingScrollRanges()
+  const GCedHeapVector<NonOverflowingScrollRange>* NonOverflowingScrollRanges()
       const;
 
   const BoxStrut& OutOfFlowInsetsForGetComputedStyle() const;

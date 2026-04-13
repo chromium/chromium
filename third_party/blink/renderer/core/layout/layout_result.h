@@ -147,11 +147,8 @@ class CORE_EXPORT LayoutResult final : public GarbageCollected<LayoutResult> {
   // Return the adjustment baked into the fragment's block-offset that's caused
   // by ruby annotations.
   LayoutUnit AnnotationBlockOffsetAdjustment() const {
-    if (!rare_data_) {
-      return LayoutUnit();
-    }
-    const RareData::LineData* data = rare_data_->GetLineData();
-    return data ? data->annotation_block_offset_adjustment : LayoutUnit();
+    return rare_data_ ? rare_data_->annotation_block_offset_adjustment_
+                      : LayoutUnit();
   }
 
   // How much an annotation box overflow from this box.
@@ -192,7 +189,7 @@ class CORE_EXPORT LayoutResult final : public GarbageCollected<LayoutResult> {
   // positioned nodes are set.
   void CopyMutableOutOfFlowData(const LayoutResult& previous_result) const;
 
-  const HeapVector<NonOverflowingScrollRange>* NonOverflowingScrollRanges()
+  const GCedHeapVector<NonOverflowingScrollRange>* NonOverflowingScrollRanges()
       const {
     return rare_data_ ? rare_data_->NonOverflowingScrollRanges() : nullptr;
   }
@@ -399,11 +396,7 @@ class CORE_EXPORT LayoutResult final : public GarbageCollected<LayoutResult> {
   }
 
   wtf_size_t TableColumnCount() const {
-    if (!rare_data_) {
-      return 0;
-    }
-    const RareData::TableData* data = rare_data_->GetTableData();
-    return data ? data->table_column_count : 0;
+    return rare_data_ ? rare_data_->table_column_count_ : 0;
   }
 
   const GridLayoutData* GetGridLayoutData() const {
@@ -411,19 +404,11 @@ class CORE_EXPORT LayoutResult final : public GarbageCollected<LayoutResult> {
   }
 
   const DevtoolsFlexInfo* FlexLayoutData() const {
-    if (!rare_data_) {
-      return nullptr;
-    }
-    const RareData::FlexData* data = rare_data_->GetFlexData();
-    return data ? data->flex_layout_data.get() : nullptr;
+    return rare_data_ ? rare_data_->flex_layout_data_.Get() : nullptr;
   }
 
   LayoutUnit MathItalicCorrection() const {
-    if (!rare_data_) {
-      return LayoutUnit();
-    }
-    const RareData::MathData* data = rare_data_->GetMathData();
-    return data ? data->italic_correction : LayoutUnit();
+    return rare_data_ ? rare_data_->math_italic_correction_ : LayoutUnit();
   }
 
   // The break-before value on the first child needs to be propagated to the
@@ -636,21 +621,6 @@ class CORE_EXPORT LayoutResult final : public GarbageCollected<LayoutResult> {
 
   struct RareData final : public GarbageCollected<RareData> {
    public:
-    // RareData has fields which are mutually exclusive. They are grouped into
-    // unions.
-    //
-    // NOTE: Make sure that data_union_type has enough bits to express all these
-    // enum values.
-    enum DataUnionType {
-      kNone,
-      kFlexData,
-      kGridData,
-      kLineSmallData,
-      kLineData,
-      kMathData,
-      kTableData,
-    };
-
     using BitField = ConcurrentlyReadBitField<uint16_t>;
     using LineBoxBfcBlockOffsetIsSetFlag = BitField::DefineFirstValue<bool, 1>;
     using OutOfFlowPositionedOffsetIsSetFlag =
@@ -659,58 +629,10 @@ class CORE_EXPORT LayoutResult final : public GarbageCollected<LayoutResult> {
         OutOfFlowPositionedOffsetIsSetFlag::DefineNextValue<bool, 1>;
     using NeedsAnchorPositionScrollAdjustmentInYFlag =
         NeedsAnchorPositionScrollAdjustmentInXFlag::DefineNextValue<bool, 1>;
-    using DataUnionTypeValue =
-        NeedsAnchorPositionScrollAdjustmentInYFlag::DefineNextValue<uint8_t, 3>;
     using IsBlockEndTrimmableLineFlag =
-        DataUnionTypeValue::DefineNextValue<bool, 1>;
+        NeedsAnchorPositionScrollAdjustmentInYFlag::DefineNextValue<bool, 1>;
     using WouldBeLastLineIfNotForEllipsis =
         IsBlockEndTrimmableLineFlag::DefineNextValue<bool, 1>;
-
-    struct FlexData {
-      FlexData() = default;
-      FlexData(const FlexData& other) {
-        flex_layout_data =
-            std::make_unique<DevtoolsFlexInfo>(*other.flex_layout_data);
-      }
-
-      std::unique_ptr<const DevtoolsFlexInfo> flex_layout_data;
-    };
-
-    // `LineSmallData` can save allocations When only fields in it are needed.
-    struct LineSmallData {
-      std::optional<LayoutUnit> ClearanceAfterLine() const {
-        return clearance_after_line.NullOptIfMin();
-      }
-      std::optional<LayoutUnit> TrimBlockEndBy() const {
-        return trim_block_end_by.NullOptIfMin();
-      }
-
-      LayoutUnit clearance_after_line = LayoutUnit::Min();
-      LayoutUnit trim_block_end_by = LayoutUnit::Min();
-    };
-
-    // `LineData` is allocated separately as it's larger than data unions.
-    struct LineData : public LineSmallData {
-      LayoutUnit annotation_block_offset_adjustment;
-    };
-
-    struct LineDataPtr {
-      LineDataPtr() = default;
-      LineDataPtr(const LineDataPtr& other) {
-        line_data = std::make_unique<LineData>(*other.line_data);
-      }
-
-      std::unique_ptr<LineData> line_data = std::make_unique<LineData>();
-    };
-
-    struct MathData {
-      // See https://w3c.github.io/mathml-core/#box-model
-      LayoutUnit italic_correction;
-    };
-
-    struct TableData {
-      wtf_size_t table_column_count = 0;
-    };
 
     bool line_box_bfc_block_offset_is_set() const {
       return bit_field.get<LineBoxBfcBlockOffsetIsSetFlag>();
@@ -744,15 +666,6 @@ class CORE_EXPORT LayoutResult final : public GarbageCollected<LayoutResult> {
       return bit_field.set<NeedsAnchorPositionScrollAdjustmentInYFlag>(flag);
     }
 
-    DataUnionType data_union_type() const {
-      return static_cast<DataUnionType>(
-          bit_field.get_concurrently<DataUnionTypeValue>());
-    }
-
-    void set_data_union_type(DataUnionType data_type) {
-      return bit_field.set<DataUnionTypeValue>(static_cast<uint8_t>(data_type));
-    }
-
     bool is_block_end_trimmable_line() const {
       return bit_field.get<IsBlockEndTrimmableLineFlag>();
     }
@@ -767,135 +680,7 @@ class CORE_EXPORT LayoutResult final : public GarbageCollected<LayoutResult> {
       bit_field.set<WouldBeLastLineIfNotForEllipsis>(true);
     }
 
-    template <typename DataType>
-    DataType* EnsureData(DataType* address, DataUnionType data_type) {
-      DataUnionType old_data_type = data_union_type();
-      DCHECK(old_data_type == kNone || old_data_type == data_type);
-      if (old_data_type != data_type) {
-        set_data_union_type(data_type);
-        new (address) DataType();
-      }
-      return address;
-    }
-    bool HasData(DataUnionType data_type) const {
-      return data_union_type() == data_type;
-    }
-    template <typename DataType>
-    const DataType* GetData(const DataType* address,
-                            DataUnionType data_type) const {
-      return data_union_type() == data_type ? address : nullptr;
-    }
-
-    FlexData* EnsureFlexData() {
-      return EnsureData<FlexData>(&flex_data, kFlexData);
-    }
-    const FlexData* GetFlexData() const {
-      return GetData<FlexData>(&flex_data, kFlexData);
-    }
-    // When both `EnsureLineData()` and `EnsureLineSmallData()` are needed,
-    // `EnsureLineData()` must be done first. Upgrading `kLineSmallData` to
-    // `kLineData` isn't supported due to the lack of the needs.
-    LineData* EnsureLineData() {
-      return EnsureData(&line_data, kLineData)->line_data.get();
-    }
-    const LineData* GetLineData() const {
-      const LineDataPtr* data = GetData(&line_data, kLineData);
-      return data ? data->line_data.get() : nullptr;
-    }
-    LineSmallData* EnsureLineSmallData() {
-      if (HasData(kLineData)) [[unlikely]] {
-        return EnsureLineData();
-      }
-      return EnsureData(&line_small_data, kLineSmallData);
-    }
-    const LineSmallData* GetLineSmallData() const {
-      if (HasData(kLineData)) [[unlikely]] {
-        return GetLineData();
-      }
-      return GetData(&line_small_data, kLineSmallData);
-    }
-    MathData* EnsureMathData() {
-      return EnsureData<MathData>(&math_data, kMathData);
-    }
-    const MathData* GetMathData() const {
-      return GetData<MathData>(&math_data, kMathData);
-    }
-    TableData* EnsureTableData() {
-      return EnsureData<TableData>(&table_data, kTableData);
-    }
-    const TableData* GetTableData() const {
-      return GetData<TableData>(&table_data, kTableData);
-    }
-
-    RareData() : bit_field(DataUnionTypeValue::encode(kNone)) {}
-
-    RareData(const RareData& rare_data)
-        : early_break(rare_data.early_break),
-          column_spanner_path(rare_data.column_spanner_path),
-          grid_layout_data(rare_data.grid_layout_data),
-          end_margin_strut(rare_data.end_margin_strut),
-          // This will initialize "both" members of the union.
-          tallest_unbreakable_block_size(
-              rare_data.tallest_unbreakable_block_size),
-          block_size_for_fragmentation(rare_data.block_size_for_fragmentation),
-          exclusion_space(rare_data.exclusion_space),
-          custom_layout_data(rare_data.custom_layout_data),
-          annotation_overflow(rare_data.annotation_overflow),
-          block_end_annotation_space(rare_data.block_end_annotation_space),
-          lines_until_clamp(rare_data.lines_until_clamp),
-          line_clamp_after_layout_object(
-              rare_data.line_clamp_after_layout_object),
-          line_box_bfc_block_offset(rare_data.line_box_bfc_block_offset),
-          non_overflowing_scroll_ranges(
-              rare_data.non_overflowing_scroll_ranges),
-          oof_positioned_offset(rare_data.oof_positioned_offset),
-          bit_field(rare_data.bit_field) {
-      switch (data_union_type()) {
-        case kNone:
-          break;
-        case kFlexData:
-          new (&flex_data) FlexData(rare_data.flex_data);
-          break;
-        case kLineSmallData:
-          new (&line_small_data) LineSmallData(rare_data.line_small_data);
-          break;
-        case kLineData:
-          new (&line_data) LineDataPtr(rare_data.line_data);
-          break;
-        case kMathData:
-          new (&math_data) MathData(rare_data.math_data);
-          break;
-        case kTableData:
-          new (&table_data) TableData(rare_data.table_data);
-          break;
-        default:
-          NOTREACHED();
-      }
-    }
-
-    ~RareData() {
-      switch (data_union_type()) {
-        case kNone:
-          break;
-        case kFlexData:
-          flex_data.~FlexData();
-          break;
-        case kLineSmallData:
-          line_small_data.~LineSmallData();
-          break;
-        case kLineData:
-          line_data.~LineDataPtr();
-          break;
-        case kMathData:
-          math_data.~MathData();
-          break;
-        case kTableData:
-          table_data.~TableData();
-          break;
-        default:
-          NOTREACHED();
-      }
-    }
+    RareData() : bit_field(0) {}
 
     void SetLineBoxBfcBlockOffset(LayoutUnit offset) {
       line_box_bfc_block_offset = offset;
@@ -908,25 +693,26 @@ class CORE_EXPORT LayoutResult final : public GarbageCollected<LayoutResult> {
     }
 
     std::optional<LayoutUnit> ClearanceAfterLine() const {
-      const RareData::LineSmallData* data = GetLineSmallData();
-      return data ? data->ClearanceAfterLine() : std::nullopt;
+      return clearance_after_line_.NullOptIfMin();
     }
 
     std::optional<LayoutUnit> TrimBlockEndBy() const {
-      const RareData::LineSmallData* data = GetLineSmallData();
-      return data ? data->TrimBlockEndBy() : std::nullopt;
+      return trim_block_end_by_.NullOptIfMin();
     }
 
     void SetNonOverflowingScrollRanges(
         const HeapVector<NonOverflowingScrollRange>& non_overflowing_ranges) {
-      non_overflowing_scroll_ranges = non_overflowing_ranges;
-    }
-    const HeapVector<NonOverflowingScrollRange>* NonOverflowingScrollRanges()
-        const {
-      if (non_overflowing_scroll_ranges.empty()) {
-        return nullptr;
+      if (non_overflowing_ranges.empty()) {
+        non_overflowing_scroll_ranges = nullptr;
+      } else {
+        non_overflowing_scroll_ranges =
+            MakeGarbageCollected<GCedHeapVector<NonOverflowingScrollRange>>(
+                non_overflowing_ranges);
       }
-      return &non_overflowing_scroll_ranges;
+    }
+    const GCedHeapVector<NonOverflowingScrollRange>*
+    NonOverflowingScrollRanges() const {
+      return non_overflowing_scroll_ranges.Get();
     }
 
     void SetOutOfFlowPositionedOffset(const LogicalOffset& offset) {
@@ -963,29 +749,28 @@ class CORE_EXPORT LayoutResult final : public GarbageCollected<LayoutResult> {
 
     LayoutUnit annotation_overflow;
     LayoutUnit block_end_annotation_space;
-    int lines_until_clamp;
+    int lines_until_clamp = 0;
     WeakMember<const LayoutObject> line_clamp_after_layout_object;
     Member<Element> accessibility_anchor;
     Member<GCedHeapHashSet<Member<Element>>> display_locks_affected_by_anchors;
+    Member<const DevtoolsFlexInfo> flex_layout_data_;
+    LayoutUnit clearance_after_line_ = LayoutUnit::Min();
+    LayoutUnit trim_block_end_by_ = LayoutUnit::Min();
+    LayoutUnit annotation_block_offset_adjustment_;
+    LayoutUnit math_italic_correction_;
+    wtf_size_t table_column_count_ = 0;
 
    private:
     // Only valid if line_box_bfc_block_offset_is_set
     LayoutUnit line_box_bfc_block_offset;
 
-    HeapVector<NonOverflowingScrollRange> non_overflowing_scroll_ranges;
+    Member<GCedHeapVector<NonOverflowingScrollRange>>
+        non_overflowing_scroll_ranges;
 
     // Only valid if oof_positioned_offset_is_set
     LogicalOffset oof_positioned_offset;
 
     BitField bit_field;
-
-    union {
-      FlexData flex_data;
-      LineSmallData line_small_data;
-      LineDataPtr line_data;
-      MathData math_data;
-      TableData table_data;
-    };
   };
   RareData* EnsureRareData();
 

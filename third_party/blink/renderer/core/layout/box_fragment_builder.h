@@ -693,9 +693,8 @@ class CORE_EXPORT BoxFragmentBuilder final : public FragmentBuilder {
   void SetGridLayoutData(const GridLayoutData* grid_layout_data) {
     grid_layout_data_ = grid_layout_data;
   }
-  void TransferFlexLayoutData(
-      std::unique_ptr<DevtoolsFlexInfo> flex_layout_data) {
-    flex_layout_data_ = std::move(flex_layout_data);
+  void SetFlexLayoutData(const DevtoolsFlexInfo* flex_layout_data) {
+    flex_layout_data_ = flex_layout_data;
   }
   void TransferFrameSetLayoutData(std::unique_ptr<FrameSetLayoutData> data) {
     frame_set_layout_data_ = std::move(data);
@@ -855,7 +854,7 @@ class CORE_EXPORT BoxFragmentBuilder final : public FragmentBuilder {
   BreakTokenAlgorithmData* break_token_data_ = nullptr;
   const GridLayoutData* grid_layout_data_ = nullptr;
 
-  std::unique_ptr<DevtoolsFlexInfo> flex_layout_data_;
+  const DevtoolsFlexInfo* flex_layout_data_ = nullptr;
   std::unique_ptr<FrameSetLayoutData> frame_set_layout_data_;
 
   HeapVector<Member<blink::Node>> reading_flow_nodes_;

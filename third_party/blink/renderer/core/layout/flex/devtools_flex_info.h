@@ -7,10 +7,11 @@
 
 #include "third_party/blink/renderer/core/layout/geometry/physical_rect.h"
 #include "third_party/blink/renderer/platform/geometry/layout_unit.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 
 namespace blink {
-struct DevtoolsFlexInfo {
+struct DevtoolsFlexInfo : public GarbageCollected<DevtoolsFlexInfo> {
   struct Item {
     Item(PhysicalRect rect, LayoutUnit baseline)
         : rect(rect), baseline(baseline) {}
@@ -21,6 +22,8 @@ struct DevtoolsFlexInfo {
     Vector<Item> items;
   };
   Vector<Line> lines;
+
+  void Trace(Visitor*) const {}
 };
 
 }  // namespace blink

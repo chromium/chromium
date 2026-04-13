@@ -1295,18 +1295,18 @@ bool IsHorizontalFlex(LayoutObject* layout_flex) {
          layout_flex->StyleRef().ResolvedIsColumnFlexDirection();
 }
 
-DevtoolsFlexInfo GetFlexLinesAndItems(LayoutBox* layout_box,
-                                      bool is_horizontal,
-                                      bool is_reverse) {
+const DevtoolsFlexInfo* GetFlexLinesAndItems(LayoutBox* layout_box,
+                                             bool is_horizontal,
+                                             bool is_reverse) {
   if (auto* layout_ng_flex = DynamicTo<LayoutFlexibleBox>(layout_box)) {
     const DevtoolsFlexInfo* flex_info_from_layout =
         layout_ng_flex->FlexLayoutData();
     if (flex_info_from_layout)
-      return *flex_info_from_layout;
+      return flex_info_from_layout;
   }
 
-  DevtoolsFlexInfo flex_info;
-  Vector<DevtoolsFlexInfo::Line>& flex_lines = flex_info.lines;
+  auto* flex_info = MakeGarbageCollected<DevtoolsFlexInfo>();
+  Vector<DevtoolsFlexInfo::Line>& flex_lines = flex_info->lines;
   // Flex containers can't get fragmented yet, but this may change in the
   // future.
   for (const auto& fragment : layout_box->PhysicalFragments()) {
@@ -1379,14 +1379,14 @@ std::unique_ptr<protocol::DictionaryValue> BuildFlexContainerInfo(
   container_builder.AppendPath(QuadToPath(content_quad), scale);
 
   // Gather all flex items, sorted by flex line.
-  DevtoolsFlexInfo flex_lines =
+  const DevtoolsFlexInfo* flex_lines =
       GetFlexLinesAndItems(layout_box, is_horizontal, is_reverse);
 
   // We send a list of flex lines, each containing a list of flex items, with
   // their baselines, to the frontend.
   std::unique_ptr<protocol::ListValue> lines_info =
       protocol::ListValue::create();
-  for (auto line : flex_lines.lines) {
+  for (auto line : flex_lines->lines) {
     std::unique_ptr<protocol::ListValue> items_info =
         protocol::ListValue::create();
     for (auto item_data : line.items) {

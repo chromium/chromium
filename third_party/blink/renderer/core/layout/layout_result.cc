@@ -95,19 +95,17 @@ LayoutResult::LayoutResult(BoxFragmentBuilderPassKey passkey,
   }
 
   if (builder->table_column_count_) {
-    EnsureRareData()->EnsureTableData()->table_column_count =
-        *builder->table_column_count_;
+    EnsureRareData()->table_column_count_ = *builder->table_column_count_;
   }
   if (builder->math_italic_correction_) {
-    EnsureRareData()->EnsureMathData()->italic_correction =
+    EnsureRareData()->math_italic_correction_ =
         builder->math_italic_correction_;
   }
   if (builder->grid_layout_data_) {
     EnsureRareData()->grid_layout_data = builder->grid_layout_data_;
   }
   if (builder->flex_layout_data_) {
-    EnsureRareData()->EnsureFlexData()->flex_layout_data =
-        std::move(builder->flex_layout_data_);
+    EnsureRareData()->flex_layout_data_ = builder->flex_layout_data_;
   }
 }
 
@@ -123,19 +121,15 @@ LayoutResult::LayoutResult(LineBoxFragmentBuilderPassKey passkey,
         *builder->line_box_bfc_block_offset_);
   }
 
-  // `EnsureLineData()` must be done before `EnsureLineSmallData()`.
-  DCHECK(!rare_data_ || !rare_data_->HasData(RareData::kLineSmallData));
   if (builder->annotation_block_offset_adjustment_) {
-    EnsureRareData()->EnsureLineData()->annotation_block_offset_adjustment =
+    EnsureRareData()->annotation_block_offset_adjustment_ =
         builder->annotation_block_offset_adjustment_;
   }
   if (builder->clearance_after_line_) {
-    EnsureRareData()->EnsureLineSmallData()->clearance_after_line =
-        *builder->clearance_after_line_;
+    EnsureRareData()->clearance_after_line_ = *builder->clearance_after_line_;
   }
   if (builder->trim_block_end_by_) {
-    EnsureRareData()->EnsureLineSmallData()->trim_block_end_by =
-        *builder->trim_block_end_by_;
+    EnsureRareData()->trim_block_end_by_ = *builder->trim_block_end_by_;
   }
 }
 
@@ -420,6 +414,7 @@ void LayoutResult::RareData::Trace(Visitor* visitor) const {
   visitor->Trace(line_clamp_after_layout_object);
   visitor->Trace(accessibility_anchor);
   visitor->Trace(display_locks_affected_by_anchors);
+  visitor->Trace(flex_layout_data_);
 }
 
 }  // namespace blink

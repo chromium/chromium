@@ -192,7 +192,7 @@ FlexLayoutAlgorithm::FlexLayoutAlgorithm(
   // TODO(layout-dev): Devtools support when there are multiple fragments.
   if (Node().GetLayoutBox()->NeedsDevtoolsInfo() &&
       !InvolvedInBlockFragmentation(container_builder_))
-    layout_info_for_devtools_ = std::make_unique<DevtoolsFlexInfo>();
+    layout_info_for_devtools_ = MakeGarbageCollected<DevtoolsFlexInfo>();
 }
 
 void FlexLayoutAlgorithm::SetupRelayoutData(const FlexLayoutAlgorithm& previous,
@@ -1333,8 +1333,7 @@ const LayoutResult* FlexLayoutAlgorithm::LayoutInternal() {
   if (has_column_percent_flex_basis_)
     container_builder_.SetHasDescendantThatDependsOnPercentageBlockSize(true);
   if (layout_info_for_devtools_) [[unlikely]] {
-    container_builder_.TransferFlexLayoutData(
-        std::move(layout_info_for_devtools_));
+    container_builder_.SetFlexLayoutData(layout_info_for_devtools_);
   }
 
   if (InvolvedInBlockFragmentation(container_builder_)) [[unlikely]] {
