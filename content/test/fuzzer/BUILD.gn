@@ -138,7 +138,6 @@ fuzzer_test("merkle_integrity_source_stream_fuzzer") {
     "//net:test_support",
   ]
   dict = "//content/test/data/fuzzer_dictionaries/merkle_integrity_source_stream_fuzzer.dict"
-  environment_variables = [ "AFL_DRIVER_DONT_DEFER=1" ]
 }
 
 if (enable_mojom_fuzzer) {

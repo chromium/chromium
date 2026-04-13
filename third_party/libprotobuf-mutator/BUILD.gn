@@ -38,8 +38,8 @@ source_set("libprotobuf-mutator") {
   public_deps = [ "//third_party/protobuf:protobuf_full" ]
 
   # Let ClusterFuzz builders know to not build targets that depend on
-  # libprotobuf-mutator for AFL or Chrome OS.
-  if (use_afl || current_toolchain == "//build/toolchain/cros:target") {
+  # libprotobuf-mutator for Chrome OS.
+  if (current_toolchain == "//build/toolchain/cros:target") {
     all_dependent_configs = [ "//testing/libfuzzer:no_clusterfuzz" ]
   }
 }

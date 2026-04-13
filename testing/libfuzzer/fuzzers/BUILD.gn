@@ -143,7 +143,6 @@ template("v8_fuzzer") {
       "handle_sigtrap=1",
       "handle_segv=1",
     ]
-    environment_variables = [ "AFL_DRIVER_DONT_DEFER=1" ]
   }
 }
 

@@ -237,10 +237,6 @@ group("common_deps_without_libcxx") {
     public_deps += [ "//build/config/sanitizers:dlclose_shim" ]
   }
 
-  if (use_afl) {
-    public_deps += [ "//third_party/afl" ]
-  }
-
   if (is_android && use_order_profiling) {
     public_deps += [ "//base/android/orderfile:orderfile_instrumentation" ]
   }

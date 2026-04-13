@@ -42,16 +42,11 @@ def main():
   parser.add_argument('--msan_options', nargs='+', default=[])
   parser.add_argument('--ubsan_options', nargs='+', default=[])
   parser.add_argument('--grammar_options', nargs='+', default=[])
-  parser.add_argument('--environment_variables',
-                      nargs='+',
-                      default=[],
-                      choices=['AFL_DRIVER_DONT_DEFER=1'])
   args = parser.parse_args()
 
   # Script shouldn't be invoked without any arguments, but just in case.
-  if not (args.dict or args.libfuzzer_options or args.environment_variables
-          or args.asan_options or args.msan_options or args.ubsan_options
-          or args.grammar_options):
+  if not (args.dict or args.libfuzzer_options or args.asan_options
+          or args.msan_options or args.ubsan_options or args.grammar_options):
     return
 
   config = ConfigParser()
@@ -81,10 +76,6 @@ def main():
 
   AddSectionOptions(config, 'grammar',
                     [option.split('=') for option in args.grammar_options])
-
-  AddSectionOptions(
-      config, 'env',
-      [option.split('=') for option in args.environment_variables])
 
   # Generate .options file.
   config_path = args.config

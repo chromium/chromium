@@ -73,13 +73,3 @@ source_set("libfuzzer_main") {
     sources += [ "src/FuzzerMain.cpp" ]
   }
 }
-
-if (use_afl) {
-  source_set("afl_driver") {
-    sources = [ "src/afl/afl_driver.cpp" ]
-
-    configs -= fuzzing_engine_remove_configs
-    configs += fuzzing_engine_add_configs
-    configs += [ ":warnings" ]
-  }
-}
