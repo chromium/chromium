@@ -369,11 +369,13 @@ void GlicSelectionObserver::UpdateSelectionState(
     }
 
     if (has_sent_selection_context_ && glic_keyed_service_) {
-      auto context = mojom::AdditionalContext::New();
-      context->source = mojom::AdditionalContextSource::kTextSelection;
-      context->parts = std::vector<mojom::AdditionalContextPartPtr>();
-      glic_keyed_service_->SendAdditionalContext(tab_interface->GetHandle(),
-                                                 std::move(context));
+      if (glic_keyed_service_->GetInstanceForTab(tab_interface)) {
+        auto context = mojom::AdditionalContext::New();
+        context->source = mojom::AdditionalContextSource::kTextSelection;
+        context->parts = std::vector<mojom::AdditionalContextPartPtr>();
+        glic_keyed_service_->SendAdditionalContext(tab_interface->GetHandle(),
+                                                   std::move(context));
+      }
       has_sent_selection_context_ = false;
     }
 
@@ -381,7 +383,8 @@ void GlicSelectionObserver::UpdateSelectionState(
   }
 
   bool panel_showing = false;
-  if (glic_keyed_service_) {
+  if (glic_keyed_service_ &&
+      glic_keyed_service_->GetInstanceForTab(tab_interface)) {
     panel_showing = glic_keyed_service_->IsPanelShowingForBrowser(*bwi);
   }
 
