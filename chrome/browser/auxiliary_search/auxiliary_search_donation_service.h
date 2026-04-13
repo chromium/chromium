@@ -18,7 +18,7 @@
 #include "base/timer/timer.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/page_content_annotations/core/page_content_annotations_service.h"
-#include "third_party/jni_zero/jni_zero.h"
+#include "components/visited_url_ranking/public/visited_url_ranking_service.h"
 
 class PrefService;
 class PrefRegistrySimple;
@@ -28,6 +28,7 @@ class PageContentAnnotationsResult;
 namespace visited_url_ranking {
 class VisitedURLRankingService;
 struct URLVisitsMetadata;
+struct URLVisitAggregate;
 }
 
 // AuxiliarySearchDonationService manages donation of Chrome data to AppSearch.
@@ -39,7 +40,7 @@ class AuxiliarySearchDonationService
           PageContentAnnotationsObserver {
  public:
   using DonateCallback = base::RepeatingCallback<void(
-      std::vector<jni_zero::ScopedJavaLocalRef<jobject>>)>;
+      std::vector<visited_url_ranking::URLVisitAggregate::HistoryData>)>;
   explicit AuxiliarySearchDonationService(
       page_content_annotations::PageContentAnnotationsService*
           page_content_annotations_service,
@@ -67,8 +68,12 @@ class AuxiliarySearchDonationService
 
  private:
   void FetchHistoryAndDonate();
+  void OnHistoryFetched(
+      visited_url_ranking::ResultStatus status,
+      visited_url_ranking::URLVisitsMetadata url_visits_metadata,
+      std::vector<visited_url_ranking::URLVisitAggregate> aggregates);
   void DonateHistoryEntries(
-      std::vector<jni_zero::ScopedJavaLocalRef<jobject>> entries,
+      std::vector<visited_url_ranking::URLVisitAggregate::HistoryData> entries,
       const visited_url_ranking::URLVisitsMetadata& metadata);
   void OnApplicationStateChanged(base::android::ApplicationState state);
 

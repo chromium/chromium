@@ -29,7 +29,6 @@
 #include "components/visited_url_ranking/public/visited_url_ranking_service.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/jni_zero/jni_zero.h"
 
 namespace {
 
@@ -242,18 +241,23 @@ TEST_F(AuxiliarySearchDonationServiceTest, FetchDoesNotUpdateBeginTimeOnError) {
       page_content_annotations_service(), mock_ranking_service(),
       test_pref_service(), base::DoNothing());
 
-  // First fetch returns the fake visit time as metadata. The second fetch
-  // returns an error. The third fetch should still use the fake visit time
-  // from the first fetch (plus 1us).
-  const base::Time fake_visit_time = base::Time::Now() - base::Hours(1);
+  // First fetch returns a fake visit time as metadata. The second fetch
+  // returns an error, but includes a different fake visit time. The third fetch
+  // should still use the fake visit time from the first fetch (plus 1us).
+  const base::Time fake_visit_time_1 = base::Time::Now() - base::Hours(2);
+  const base::Time fake_visit_time_2 = base::Time::Now() - base::Hours(1);
   base::Time begin_time;
   EXPECT_CALL(*mock_ranking_service(), FetchURLVisitAggregates(_, _))
       .WillOnce(RunOnceCallback<1>(
           ResultStatus::kSuccess,
-          URLVisitsMetadata{.most_recent_timestamp = fake_visit_time},
+          URLVisitsMetadata{.most_recent_timestamp = fake_visit_time_1},
           CreateVisitAggregates()))
-      .WillOnce(RunOnceCallback<1>(ResultStatus::kError, URLVisitsMetadata{},
-                                   CreateVisitAggregates()))
+      .WillOnce(
+          RunOnceCallback<1>(ResultStatus::kError,
+                             URLVisitsMetadata{
+                                 .most_recent_timestamp = fake_visit_time_2,
+                             },
+                             CreateVisitAggregates()))
       .WillOnce(WithArg<0>(SaveBeginTime(&begin_time)));
 
   service.OnPageContentAnnotated(CreateLocalVisit(), CreateAnnotationsResult());
@@ -263,7 +267,7 @@ TEST_F(AuxiliarySearchDonationServiceTest, FetchDoesNotUpdateBeginTimeOnError) {
   service.OnPageContentAnnotated(CreateLocalVisit(), CreateAnnotationsResult());
   task_environment().FastForwardBy(service.GetDonationDelay());
 
-  EXPECT_EQ(begin_time, fake_visit_time + base::Microseconds(1));
+  EXPECT_EQ(begin_time, fake_visit_time_1 + base::Microseconds(1));
 }
 
 TEST_F(AuxiliarySearchDonationServiceTest, LastFetchTimePersistsInPrefs) {
@@ -346,7 +350,8 @@ TEST_F(AuxiliarySearchDonationServiceTest, DonatesHistoryEntries) {
             URLVisitsMetadata{.most_recent_timestamp = fake_visit_time},
             std::move(aggregates)));
   }
-  base::test::TestFuture<std::vector<jni_zero::ScopedJavaLocalRef<jobject>>>
+  base::test::TestFuture<
+      std::vector<visited_url_ranking::URLVisitAggregate::HistoryData>>
       future;
   AuxiliarySearchDonationService service(
       page_content_annotations_service(), mock_ranking_service(),
@@ -355,13 +360,10 @@ TEST_F(AuxiliarySearchDonationServiceTest, DonatesHistoryEntries) {
   service.OnPageContentAnnotated(CreateLocalVisit(), CreateAnnotationsResult());
   task_environment().FastForwardBy(service.GetDonationDelay());
 
-  // We incorrectly filter out legitimate history entries because
-  // `FetchAndRankHelper` assumes that we are only fetching active tabs or
-  // custom tabs.
-  // TODO: crbug.com/432359106 - Either update `FetchAndRankHelper` to support
-  // this, or use `VisitedURLRankingService` / `HistoryURLVisitDataFetcher`
-  // directly.
-  EXPECT_FALSE(future.IsReady());
+  EXPECT_TRUE(future.IsReady());
+  std::vector<visited_url_ranking::URLVisitAggregate::HistoryData> entries =
+      future.Take();
+  EXPECT_EQ(entries.size(), 1u);
 }
 
 }  // namespace

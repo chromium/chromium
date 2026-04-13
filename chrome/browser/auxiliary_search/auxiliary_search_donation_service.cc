@@ -7,30 +7,78 @@
 #include <jni.h>
 
 #include <algorithm>
+#include <map>
 #include <optional>
 #include <utility>
+#include <variant>
 #include <vector>
 
 #include "base/android/application_status_listener.h"
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/memory/raw_ref.h"
-#include "base/memory/scoped_refptr.h"
 #include "base/time/time.h"
-#include "chrome/browser/auxiliary_search/fetch_and_rank_helper.h"
+#include "chrome/browser/auxiliary_search/auxiliary_search_provider.h"
 #include "chrome/browser/flags/android/chrome_feature_list.h"
+#include "chrome/browser/visited_url_ranking/visited_url_ranking_service_factory.h"
 #include "chrome/common/pref_names.h"
 #include "components/page_content_annotations/core/page_content_annotation_type.h"
 #include "components/page_content_annotations/core/page_content_annotations_common.h"
 #include "components/page_content_annotations/core/page_content_annotations_service.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
-#include "third_party/jni_zero/jni_zero.h"
+#include "components/visited_url_ranking/public/features.h"
+#include "components/visited_url_ranking/public/fetch_options.h"
+#include "components/visited_url_ranking/public/url_visit.h"
+#include "components/visited_url_ranking/public/visited_url_ranking_service.h"
 
 namespace {
 
 // The maximum time before "now" to fetch history from.
 constexpr base::TimeDelta kHistoryAgeThreshold = base::Hours(24);
+
+// Returns the maximum count of entries to donate.
+int GetMaxDonationCount() {
+  return chrome::android::kAppIntegrationMaxDonationCountParam.Get();
+}
+
+visited_url_ranking::FetchOptions CreateFetchOptionsForHistoryDonation(
+    base::Time begin_time) {
+  std::vector<visited_url_ranking::URLVisitAggregatesTransformType> transforms{
+      // `kRecencyFilter` (i.e. `RecencyFilterTransformer`) is only useful if we
+      // want have different age limits for different URL types, or if we want
+      // additional signals from visits older than `begin_time`.
+      // Neither of these are currently needed, so omit it here.
+
+      // Filter out links commonly opened by default apps.
+      visited_url_ranking::URLVisitAggregatesTransformType::
+          kDefaultAppUrlFilter,
+
+      // Filter out visits from AuthView.
+      visited_url_ranking::URLVisitAggregatesTransformType::
+          kHistoryBrowserTypeFilter,
+
+      // Filter out URLs that may be sensitive to display on surfaces.
+      visited_url_ranking::URLVisitAggregatesTransformType::
+          kHistoryVisibilityScoreFilter,
+  };
+
+  return visited_url_ranking::FetchOptions(
+      /*result_sources_arg=*/
+      {{visited_url_ranking::URLVisitAggregate::URLType::kLocalVisit,
+        visited_url_ranking::FetchOptions::ResultOption{
+            // Only used in the `kRecencyFilter` transform which we don't use
+            // (see above).
+            .age_limit = kHistoryAgeThreshold,
+            .visit_duration_limit = std::nullopt}}},
+      /*fetcher_sources_arg=*/
+      {{visited_url_ranking::Fetcher::kHistory,
+        // Don't fetch from remote sources - their only use would be signals or
+        // ranking which we don't use.
+        {visited_url_ranking::FetchOptions::Source::kLocal}}},
+      begin_time, std::move(transforms), GetMaxDonationCount());
+}
 
 }  // namespace
 
@@ -101,27 +149,64 @@ void AuxiliarySearchDonationService::FetchHistoryAndDonate() {
   // the previous fetch. If that is too old (more than `kHistoryAgeThreshold`
   // ago), then start from `kHistoryAgeThreshold`.
   const base::Time threshold_time = base::Time::Now() - kHistoryAgeThreshold;
-  // `FetchAndRankHelper` treats `begin_time` as inclusive, so add the smallest
-  // possible time unit (1us) to the previous donation time to ensure we don't
-  // fetch the same entry twice.
+  // `VisitedURLRankingService` (specifically `HistoryURLVisitDataFetcher`,
+  // which sets `history::QueryOptions`'s `visit_order` to `RECENT_FIRST`)
+  // treats `begin_time` as inclusive, so add the smallest possible time unit
+  // (1us) to the previous donation time to ensure we don't fetch the same entry
+  // twice.
   const base::Time begin_time =
       std::max(pref_service_->GetTime(
                    prefs::kAuxiliarySearchLastDonatedHistoryEntryVisitTime) +
                    base::Microseconds(1),
                threshold_time);
 
-  scoped_refptr<FetchAndRankHelper> helper =
-      base::MakeRefCounted<FetchAndRankHelper>(
-          &ranking_service_.get(),
-          base::BindOnce(&AuxiliarySearchDonationService::DonateHistoryEntries,
-                         weak_factory_.GetWeakPtr()),
-          /*custom_tab_url=*/std::nullopt, begin_time);
+  ranking_service_->FetchURLVisitAggregates(
+      CreateFetchOptionsForHistoryDonation(begin_time),
+      base::BindOnce(&AuxiliarySearchDonationService::OnHistoryFetched,
+                     weak_factory_.GetWeakPtr()));
+}
 
-  helper->StartFetching();
+void AuxiliarySearchDonationService::OnHistoryFetched(
+    visited_url_ranking::ResultStatus status,
+    visited_url_ranking::URLVisitsMetadata url_visits_metadata,
+    std::vector<visited_url_ranking::URLVisitAggregate> aggregates) {
+  if (status != visited_url_ranking::ResultStatus::kSuccess) {
+    // Halt if we fail to avoid erroneously updating the last donation time.
+    return;
+  }
+
+  std::vector<visited_url_ranking::URLVisitAggregate::HistoryData> entries;
+  entries.reserve(aggregates.size());
+  for (visited_url_ranking::URLVisitAggregate& aggregate : aggregates) {
+    // In theory, we only use one `visited_url_ranking::Fetcher` which should
+    // only return history data. Gracefully handle any unexpected data by taking
+    // the "first" relevant fetcher data map entry.
+    // Prioritise history data, then fall back to other sources.
+    static constexpr visited_url_ranking::Fetcher kPriorityOrder[] = {
+        visited_url_ranking::Fetcher::kHistory,
+        visited_url_ranking::Fetcher::kSession,
+        visited_url_ranking::Fetcher::kTabModel};
+
+    for (visited_url_ranking::Fetcher fetcher : kPriorityOrder) {
+      auto it = aggregate.fetcher_data_map.find(fetcher);
+      if (it == aggregate.fetcher_data_map.end()) {
+        continue;
+      }
+
+      if (auto* history_data =
+              std::get_if<visited_url_ranking::URLVisitAggregate::HistoryData>(
+                  &it->second)) {
+        entries.push_back(std::move(*history_data));
+        break;
+      }
+    }
+  }
+
+  DonateHistoryEntries(std::move(entries), url_visits_metadata);
 }
 
 void AuxiliarySearchDonationService::DonateHistoryEntries(
-    std::vector<jni_zero::ScopedJavaLocalRef<jobject>> entries,
+    std::vector<visited_url_ranking::URLVisitAggregate::HistoryData> entries,
     const visited_url_ranking::URLVisitsMetadata& metadata) {
   if (!entries.empty()) {
     donate_callback_.Run(std::move(entries));
