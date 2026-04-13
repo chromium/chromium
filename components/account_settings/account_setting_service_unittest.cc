@@ -2,12 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/account_settings/account_setting_service.h"
-
 #include <vector>
 
 #include "base/functional/callback_helpers.h"
 #include "base/test/scoped_feature_list.h"
+#include "components/account_settings/account_setting_service_impl.h"
 #include "components/account_settings/account_setting_sync_bridge.h"
 #include "components/account_settings/account_setting_sync_util.h"
 #include "components/sync/base/features.h"
@@ -50,7 +49,7 @@ class AccountSettingServiceTest : public testing::Test {
             mock_processor_.CreateForwardingProcessor(),
             /*store_factory=*/base::DoNothing());
     bridge_ = static_cast<MockAccountSettingSyncBridge*>(bridge.get());
-    service_ = std::make_unique<AccountSettingService>(std::move(bridge));
+    service_ = std::make_unique<AccountSettingServiceImpl>(std::move(bridge));
   }
 
   AccountSettingService& service() { return *service_; }
@@ -59,7 +58,7 @@ class AccountSettingServiceTest : public testing::Test {
  private:
   base::test::ScopedFeatureList feature_{syncer::kSyncAccountSettings};
   testing::NiceMock<syncer::MockDataTypeLocalChangeProcessor> mock_processor_;
-  std::unique_ptr<AccountSettingService> service_;
+  std::unique_ptr<AccountSettingServiceImpl> service_;
   raw_ptr<MockAccountSettingSyncBridge> bridge_;  // Owned by the `service_`
 };
 

@@ -5,7 +5,7 @@
 #import "ios/chrome/browser/account_settings/model/ios_account_setting_service_factory.h"
 
 #import "base/functional/callback_helpers.h"
-#import "components/account_settings/account_setting_service.h"
+#import "components/account_settings/account_setting_service_impl.h"
 #import "components/account_settings/account_setting_sync_bridge.h"
 #import "components/sync/base/features.h"
 #import "components/sync/model/client_tag_based_data_type_processor.h"
@@ -42,7 +42,7 @@ IOSAccountSettingServiceFactory::BuildServiceInstanceFor(
     return nullptr;
   }
 
-  return std::make_unique<account_settings::AccountSettingService>(
+  return std::make_unique<account_settings::AccountSettingServiceImpl>(
       std::make_unique<account_settings::AccountSettingSyncBridge>(
           std::make_unique<syncer::ClientTagBasedDataTypeProcessor>(
               syncer::ACCOUNT_SETTING,

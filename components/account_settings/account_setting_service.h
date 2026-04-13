@@ -6,12 +6,10 @@
 #define COMPONENTS_ACCOUNT_SETTINGS_ACCOUNT_SETTING_SERVICE_H_
 
 #include <memory>
-#include <string_view>
+#include <optional>
+#include <string>
 
-#include "base/observer_list.h"
 #include "base/observer_list_types.h"
-#include "base/scoped_observation.h"
-#include "components/account_settings/account_setting_sync_bridge.h"
 #include "components/account_settings/account_settings.h"
 #include "components/keyed_service/core/keyed_service.h"
 
@@ -24,8 +22,7 @@ namespace account_settings {
 // Manages settings stored in your Google account. These settings differ from
 // regular prefs, since they originate from the user's account and are available
 // beyond Chrome.
-class AccountSettingService : public KeyedService,
-                              public AccountSettingSyncBridge::Observer {
+class AccountSettingService : public KeyedService {
  public:
   class Observer : public base::CheckedObserver {
    public:
@@ -34,35 +31,23 @@ class AccountSettingService : public KeyedService,
         const std::string& setting_name) = 0;
   };
 
-  explicit AccountSettingService(
-      std::unique_ptr<AccountSettingSyncBridge> bridge);
-  ~AccountSettingService() override;
+  ~AccountSettingService() override = default;
 
-  void AddObserver(Observer* observer);
-  void RemoveObserver(Observer* observer);
+  virtual void AddObserver(Observer* observer) = 0;
+  virtual void RemoveObserver(Observer* observer) = 0;
 
   // Returns a value for the specified `setting` and type if exists, otherwise
   // returns `nullopt`.
-  std::optional<bool> GetBoolean(const AccountSetting& setting) const;
-  std::optional<int> GetInteger(const AccountSetting& setting) const;
-  std::optional<std::string> GetString(const AccountSetting& setting) const;
+  virtual std::optional<bool> GetBoolean(
+      const AccountSetting& setting) const = 0;
+  virtual std::optional<int> GetInteger(
+      const AccountSetting& setting) const = 0;
+  virtual std::optional<std::string> GetString(
+      const AccountSetting& setting) const = 0;
 
-  // Returns a controller delegate for the `sync_bridge_` owned by this service.
-  std::unique_ptr<syncer::DataTypeControllerDelegate>
-  GetSyncControllerDelegate();
-
- private:
-  // AccountSettingSyncBridge::Observer:
-  void OnDataLoadedFromDisk() override;
-  void OnDataUpdated(const std::string& setting_name) override;
-
-  base::ObserverList<AccountSettingService::Observer> observers_;
-
-  std::unique_ptr<AccountSettingSyncBridge> sync_bridge_;
-
-  base::ScopedObservation<AccountSettingSyncBridge,
-                          AccountSettingSyncBridge::Observer>
-      scoped_observation_{this};
+  // Returns a controller delegate for the sync bridge owned by this service.
+  virtual std::unique_ptr<syncer::DataTypeControllerDelegate>
+  GetSyncControllerDelegate() = 0;
 };
 
 }  // namespace account_settings

@@ -4,8 +4,9 @@
 
 static_library("account_settings") {
   sources = [
-    "account_setting_service.cc",
     "account_setting_service.h",
+    "account_setting_service_impl.cc",
+    "account_setting_service_impl.h",
     "account_setting_sync_bridge.cc",
     "account_setting_sync_bridge.h",
     "account_setting_sync_util.cc",
@@ -24,6 +25,19 @@ static_library("account_settings") {
   deps = [
     "//components/sync/base",
     "//components/sync/protocol",
+  ]
+}
+
+static_library("test_support") {
+  testonly = true
+  sources = [
+    "mock_account_setting_service.cc",
+    "mock_account_setting_service.h",
+  ]
+
+  public_deps = [
+    ":account_settings",
+    "//testing/gmock",
   ]
 }
 

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/account_settings/account_setting_service.h"
+#include "components/account_settings/account_setting_service_impl.h"
 
 #include <memory>
 
@@ -31,7 +31,7 @@ bool CheckFeatureRequirements(const AccountSetting& setting) {
 }
 }  // namespace
 
-AccountSettingService::AccountSettingService(
+AccountSettingServiceImpl::AccountSettingServiceImpl(
     std::unique_ptr<AccountSettingSyncBridge> sync_bridge)
     : sync_bridge_(std::move(sync_bridge)) {
   // TODO(crbug.com/436547684): Remove this check once `sync_bridge` is
@@ -42,19 +42,19 @@ AccountSettingService::AccountSettingService(
   }
 }
 
-AccountSettingService::~AccountSettingService() = default;
+AccountSettingServiceImpl::~AccountSettingServiceImpl() = default;
 
-void AccountSettingService::AddObserver(
+void AccountSettingServiceImpl::AddObserver(
     AccountSettingService::Observer* observer) {
   observers_.AddObserver(observer);
 }
 
-void AccountSettingService::RemoveObserver(
+void AccountSettingServiceImpl::RemoveObserver(
     AccountSettingService::Observer* observer) {
   observers_.RemoveObserver(observer);
 }
 
-std::optional<bool> AccountSettingService::GetBoolean(
+std::optional<bool> AccountSettingServiceImpl::GetBoolean(
     const AccountSetting& setting) const {
   CHECK(setting.type == base::Value::Type::BOOLEAN);
   if (!CheckFeatureRequirements(setting)) {
@@ -63,7 +63,7 @@ std::optional<bool> AccountSettingService::GetBoolean(
   return sync_bridge_->GetBooleanSetting(setting.name);
 }
 
-std::optional<int> AccountSettingService::GetInteger(
+std::optional<int> AccountSettingServiceImpl::GetInteger(
     const AccountSetting& setting) const {
   CHECK(setting.type == base::Value::Type::INTEGER);
   if (!CheckFeatureRequirements(setting)) {
@@ -72,7 +72,7 @@ std::optional<int> AccountSettingService::GetInteger(
   return sync_bridge_->GetIntSetting(setting.name);
 }
 
-std::optional<std::string> AccountSettingService::GetString(
+std::optional<std::string> AccountSettingServiceImpl::GetString(
     const AccountSetting& setting) const {
   CHECK(setting.type == base::Value::Type::STRING);
   if (!CheckFeatureRequirements(setting)) {
@@ -82,20 +82,22 @@ std::optional<std::string> AccountSettingService::GetString(
 }
 
 std::unique_ptr<syncer::DataTypeControllerDelegate>
-AccountSettingService::GetSyncControllerDelegate() {
+AccountSettingServiceImpl::GetSyncControllerDelegate() {
   CHECK(base::FeatureList::IsEnabled(syncer::kSyncAccountSettings));
   return std::make_unique<syncer::ForwardingDataTypeControllerDelegate>(
       sync_bridge_->change_processor()->GetControllerDelegate().get());
 }
 
-void AccountSettingService::OnDataLoadedFromDisk() {
+void AccountSettingServiceImpl::OnDataLoadedFromDisk() {
   base::UmaHistogramBoolean(
       "Autofill.Ai.WalletContextualSurfacingEnabled",
       GetBoolean(kWalletPrivacyContextualSurfacing).value_or(false));
 }
 
-void AccountSettingService::OnDataUpdated(const std::string& setting_name) {
-  observers_.Notify(&Observer::OnAccountSettingDataUpdated, setting_name);
+void AccountSettingServiceImpl::OnDataUpdated(const std::string& setting_name) {
+  observers_.Notify(
+      &AccountSettingService::Observer::OnAccountSettingDataUpdated,
+      setting_name);
 }
 
 }  // namespace account_settings
