@@ -25,7 +25,9 @@
 #include "base/trace_event/trace_event.h"
 #include "content/browser/loader/navigation_url_loader.h"
 #include "content/browser/loader/response_head_update_params.h"
+#include "content/browser/renderer_host/policy_container_host.h"
 #include "content/browser/service_worker/service_worker_client.h"
+#include "content/browser/service_worker/service_worker_container_host.h"
 #include "content/browser/service_worker/service_worker_context_core.h"
 #include "content/browser/service_worker/service_worker_context_wrapper.h"
 #include "content/browser/service_worker/service_worker_loader_helpers.h"
@@ -44,6 +46,8 @@
 #include "net/base/load_timing_info.h"
 #include "net/http/http_request_headers.h"
 #include "net/http/http_status_code.h"
+#include "services/network/public/cpp/cross_origin_embedder_policy.h"
+#include "services/network/public/cpp/document_isolation_policy.h"
 #include "services/network/public/cpp/features.h"
 #include "services/network/public/cpp/timing_allow_origin_parser.h"
 #include "services/network/public/mojom/fetch_api.mojom.h"
@@ -912,11 +916,23 @@ void ServiceWorkerMainResourceLoader::DidDispatchFetchEvent(
     // Block invalid responses from the static router.
     if (response_head_->service_worker_router_info->matched_source_type ==
         network::mojom::ServiceWorkerRouterSourceType::kCache) {
-      if (!IsValidStaticRouterResponse(resource_request_, response) &&
-          base::FeatureList::IsEnabled(
-              features::kServiceWorkerStaticRouterOpaqueCheck)) {
-        CommitCompleted(net::ERR_FAILED, "Invalid response from static router");
-        return;
+      if (service_worker_client_ && service_worker_client_->container_host()) {
+        ServiceWorkerContainerHostForClient* container_host =
+            service_worker_client_->container_host();
+        if (!IsValidStaticRouterResponse(
+                resource_request_, response,
+                container_host->policy_container_policies()
+                    .cross_origin_embedder_policy,
+                container_host->cross_origin_embedder_policy_reporter().get(),
+                container_host->policy_container_policies()
+                    .document_isolation_policy,
+                container_host->document_isolation_policy_reporter().get()) &&
+            base::FeatureList::IsEnabled(
+                features::kServiceWorkerStaticRouterOpaqueCheck)) {
+          CommitCompleted(net::ERR_FAILED,
+                          "Invalid response from static router");
+          return;
+        }
       }
     }
   }

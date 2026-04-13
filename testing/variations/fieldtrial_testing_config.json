@@ -20947,6 +20947,25 @@
             ]
         }
     ],
+    "ServiceWorkerStaticRouterCORPCheck": [
+        {
+            "platforms": [
+                "android",
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "ServiceWorkerStaticRouterCORPCheck"
+                    ]
+                }
+            ]
+        }
+    ],
     "ServiceWorkerSyntheticResponse": [
         {
             "platforms": [

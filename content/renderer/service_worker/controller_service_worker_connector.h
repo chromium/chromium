@@ -14,6 +14,10 @@
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "services/network/public/cpp/cross_origin_embedder_policy.h"
+#include "services/network/public/cpp/document_isolation_policy.h"
+#include "services/network/public/mojom/cross_origin_embedder_policy.mojom.h"
+#include "services/network/public/mojom/document_isolation_policy.mojom.h"
 #include "third_party/blink/public/common/service_worker/embedded_worker_status.h"
 #include "third_party/blink/public/mojom/cache_storage/cache_storage.mojom.h"
 #include "third_party/blink/public/mojom/service_worker/controller_service_worker.mojom.h"
@@ -83,6 +87,12 @@ class CONTENT_EXPORT ControllerServiceWorkerConnector
       blink::mojom::ServiceWorkerFetchHandlerBypassOption
           fetch_handler_bypass_option,
       std::optional<blink::ServiceWorkerRouterRules> router_rules,
+      const network::CrossOriginEmbedderPolicy& cross_origin_embedder_policy,
+      mojo::PendingRemote<network::mojom::CrossOriginEmbedderPolicyReporter>
+          cross_origin_embedder_policy_reporter,
+      const network::DocumentIsolationPolicy& document_isolation_policy,
+      mojo::PendingRemote<network::mojom::DocumentIsolationPolicyReporter>
+          document_isolation_policy_reporter,
       std::optional<blink::EmbeddedWorkerStatus> initial_running_status,
       mojo::PendingReceiver<blink::mojom::ServiceWorkerRunningStatusCallback>
           running_status_receiver);
@@ -131,6 +141,29 @@ class CONTENT_EXPORT ControllerServiceWorkerConnector
     return router_evaluator_.get();
   }
 
+  const network::CrossOriginEmbedderPolicy& cross_origin_embedder_policy()
+      const {
+    return cross_origin_embedder_policy_;
+  }
+
+  const network::DocumentIsolationPolicy& document_isolation_policy() const {
+    return document_isolation_policy_;
+  }
+
+  network::mojom::CrossOriginEmbedderPolicyReporter*
+  cross_origin_embedder_policy_reporter() const {
+    return cross_origin_embedder_policy_reporter_
+               ? cross_origin_embedder_policy_reporter_.get()
+               : nullptr;
+  }
+
+  network::mojom::DocumentIsolationPolicyReporter*
+  document_isolation_policy_reporter() const {
+    return document_isolation_policy_reporter_
+               ? document_isolation_policy_reporter_.get()
+               : nullptr;
+  }
+
   // Returns recent ServiceWorker's running status.
   //
   // The ServiceWorkerVersion status change callback will send an IPC to update
@@ -166,6 +199,13 @@ class CONTENT_EXPORT ControllerServiceWorkerConnector
 
   // Connection to the cache storage.
   mojo::Remote<blink::mojom::CacheStorage> cache_storage_;
+
+  network::CrossOriginEmbedderPolicy cross_origin_embedder_policy_;
+  mojo::Remote<network::mojom::CrossOriginEmbedderPolicyReporter>
+      cross_origin_embedder_policy_reporter_;
+  network::DocumentIsolationPolicy document_isolation_policy_;
+  mojo::Remote<network::mojom::DocumentIsolationPolicyReporter>
+      document_isolation_policy_reporter_;
 
   base::ObserverList<Observer>::Unchecked observer_list_;
 

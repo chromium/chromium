@@ -10,6 +10,10 @@
 #include "base/check_op.h"
 #include "content/common/content_export.h"
 #include "mojo/public/cpp/base/big_buffer.h"
+#include "services/network/public/cpp/cross_origin_embedder_policy.h"
+#include "services/network/public/cpp/document_isolation_policy.h"
+#include "services/network/public/mojom/cross_origin_embedder_policy.mojom-forward.h"
+#include "services/network/public/mojom/document_isolation_policy.mojom-forward.h"
 #include "services/network/public/mojom/service_worker_router_info.mojom-shared.h"
 #include "services/network/public/mojom/url_loader.mojom.h"
 #include "third_party/blink/public/common/service_worker/service_worker_router_rule.h"
@@ -80,6 +84,16 @@ class CONTENT_EXPORT ServiceWorkerResourceLoader {
     kAutoPreload,
   };
 
+  // Results of the CORP check for the static router's cache source.
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused.
+  enum class CORPCheckResult {
+    kSuccess = 0,    // Not blocked by policy.
+    kBlocked = 1,    // Blocked by policy, and feature flag enabled.
+    kViolation = 2,  // Blocked by policy, but feature flag disabled.
+    kMaxValue = kViolation,
+  };
+
   // Static helper to validate the response from the Service Worker according
   // to the Fetch spec (4.4 HTTP fetch, Step 3.5.6).
   static bool IsValidServiceWorkerResponse(
@@ -91,7 +105,13 @@ class CONTENT_EXPORT ServiceWorkerResourceLoader {
   // the result to UMA. Returns true if the response is valid.
   bool IsValidStaticRouterResponse(
       const network::ResourceRequest& resource_request,
-      const blink::mojom::FetchAPIResponsePtr& response);
+      const blink::mojom::FetchAPIResponsePtr& response,
+      const network::CrossOriginEmbedderPolicy& cross_origin_embedder_policy,
+      network::mojom::CrossOriginEmbedderPolicyReporter*
+          cross_origin_embedder_policy_reporter,
+      const network::DocumentIsolationPolicy& document_isolation_policy,
+      network::mojom::DocumentIsolationPolicyReporter*
+          document_isolation_policy_reporter);
 
   ServiceWorkerResourceLoader();
   virtual ~ServiceWorkerResourceLoader();

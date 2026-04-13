@@ -453,14 +453,10 @@ class MODULES_EXPORT ServiceWorkerGlobalScope final
       DispatchFetchEventForSubresourceCallback callback) override;
   void Clone(
       mojo::PendingReceiver<mojom::blink::ControllerServiceWorker> receiver,
-      const network::CrossOriginEmbedderPolicy& cross_origin_embedder_policy,
-      mojo::PendingRemote<
-          network::mojom::blink::CrossOriginEmbedderPolicyReporter>
-          coep_reporter,
-      const network::DocumentIsolationPolicy& document_isolation_policy,
-      mojo::PendingRemote<
-          network::mojom::blink::DocumentIsolationPolicyReporter> dip_reporter)
-      override;
+      mojom::blink::CrossOriginEmbedderPolicyInfoPtr
+          cross_origin_embedder_policy_info,
+      mojom::blink::DocumentIsolationPolicyInfoPtr
+          document_isolation_policy_info) override;
 
   // Implements mojom::blink::ServiceWorker.
   void InitializeGlobalScope(
