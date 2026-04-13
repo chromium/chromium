@@ -1562,8 +1562,12 @@ void EffectTree::ResetChangeTracking() {
   for (int id = kContentsRootPropertyNodeId; id < static_cast<int>(size());
        ++id) {
     Node(id)->effect_changed = false;
-    if (render_surfaces_[id])
+    // During a flush-only sync (TreesInViz), we skip expensive render surface
+    // recomputations, so |render_surfaces_| might be smaller than |size()|.
+    if (static_cast<size_t>(id) < render_surfaces_.size() &&
+        render_surfaces_[id]) {
       render_surfaces_[id]->ResetPropertyChangedFlags();
+    }
   }
 }
 

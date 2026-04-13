@@ -98,10 +98,15 @@ struct LayerTreeUpdate {
   gfx.mojom.DisplayColorSpaces display_color_spaces;
 
   // If a new LocalSurfaceId is assigned by the parent, it's included here.
+  // This is optional because an invalid LocalSurfaceId (specifically one with
+  // an empty UnguessableToken) cannot be serialized.
   LocalSurfaceId? local_surface_id_from_parent;
 
-  // The current LocalSurfaceId from client process.
-  LocalSurfaceId current_local_surface_id;
+  // The current LocalSurfaceId from client process. This is optional because
+  // in some cases (like backgrounding) the renderer might not have a valid
+  // LocalSurfaceId to provide, and an invalid LocalSurfaceId cannot be
+  // serialized due to the UnguessableToken constraint.
+  LocalSurfaceId? current_local_surface_id;
 
   // Pass the frame_token generated on the client side to viz. Without this,
   // viz needs to generate the token on its own, but GPU process could
@@ -240,6 +245,13 @@ struct LayerTreeUpdate {
 
   // Equivalent to hud_layer() && hud_layer()->IsANimatingHUDContents().
   bool is_animating_hud_contents;
+
+  // If true, this update is only for synchronization purposes (e.g. to flush
+  // resource deletions) and should not trigger a draw or any expensive
+  // post-sync recomputations. This is used when the renderer is backgrounded
+  // to ensure Viz releases tile memory immediately without the overhead of
+  // a full frame commit.
+  bool is_flush;
 
   // Latency info for the current update.
   array<ui.mojom.LatencyInfo> latency_info;

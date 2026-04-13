@@ -1836,9 +1836,18 @@ void LayerContextImpl::UpdateDisplayTree(mojom::LayerTreeUpdatePtr update) {
   const BeginFrameArgs begin_frame_args = update->begin_frame_args;
   auto start_update_display_tree = base::TimeTicks::Now();
   const bool frame_has_damage = update->frame_has_damage;
+  const bool is_flush = update->is_flush;
   auto result = DoUpdateDisplayTree(std::move(update));
   if (!result.has_value()) {
     HandleBadMojoMessage("UpdateDisplayTree", result.error());
+    return;
+  }
+
+  // If this is a flush-only update, we only want to synchronize the state
+  // and return any resources that were released. We skip the draw and
+  // expensive post-sync recomputations.
+  if (is_flush) {
+    DoReturnResources();
     return;
   }
 
@@ -1966,8 +1975,19 @@ base::expected<void, std::string> LayerContextImpl::DoUpdateDisplayTree(
   if (update->local_surface_id_from_parent) {
     layers.SetLocalSurfaceIdFromParent(*update->local_surface_id_from_parent);
   }
-  host_impl_->set_current_local_surface_id_from_client(
-      update->current_local_surface_id);
+
+  // Regular updates (non-flush) must provide a valid current LocalSurfaceId.
+  // During backgrounding (flush updates), this may be omitted if the renderer
+  // no longer has a valid ID.
+  if (!update->is_flush) {
+    RETURN_IF_FALSE(update->current_local_surface_id,
+                    "Missing current_local_surface_id in non-flush update");
+  }
+
+  if (update->current_local_surface_id) {
+    host_impl_->set_current_local_surface_id_from_client(
+        *update->current_local_surface_id);
+  }
 
   RETURN_IF_FALSE(update->next_frame_token > 0, "invalid frame token");
   host_impl_->set_next_frame_token_from_client(update->next_frame_token);

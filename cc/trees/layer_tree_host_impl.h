@@ -443,7 +443,11 @@ class CC_EXPORT LayerTreeHostImpl : public TileManagerClient,
 
   // Pushes differential updates to the display tree via a LayerContext.
   base::TimeTicks UpdateDisplayTree(FrameData& frame,
-                                    std::vector<ui::LatencyInfo> latency_info);
+                                    std::vector<ui::LatencyInfo> latency_info,
+                                    bool is_flush = false);
+
+  // Synchronizes the current tree state to Viz without triggering a draw.
+  void FlushDisplayTree();
 
   const LayerTreeSettings& settings() const { return settings_; }
 

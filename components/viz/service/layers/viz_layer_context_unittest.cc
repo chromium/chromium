@@ -135,8 +135,9 @@ void VizLayerContextTest::UpdateDisplayTreeAndWait() {
 
   viz_layer_context_->UpdateDisplayTreeFrom(
       *host_impl_->active_tree(), *host_impl_->resource_provider(),
-      /*shared_image_interface=*/nullptr, viewport_damage_rect,
-      frame_has_damage, std::move(latency_info));
+      /*shared_image_interface=*/nullptr, host_impl_->CurrentBeginFrameArgs(),
+      viewport_damage_rect, frame_has_damage, /*is_flush=*/false,
+      std::move(latency_info));
 
   base::RunLoop run_loop;
   fake_layer_context_.on_update_display_tree_ = run_loop.QuitClosure();
@@ -270,6 +271,34 @@ TEST_F(VizLayerContextTest, SyncViewportContainerBoundsDeltas) {
             gfx::Vector2dF(10.f, 20.f));
   EXPECT_EQ(update->outer_viewport_container_bounds_delta,
             gfx::Vector2dF(30.f, 40.f));
+}
+
+TEST_F(VizLayerContextTest, FlushOnlyUpdate) {
+  SetupRootLayer();
+
+  // Perform a regular update first.
+  UpdateDisplayTreeAndWait();
+  ASSERT_TRUE(fake_layer_context_.last_update_);
+  EXPECT_FALSE(fake_layer_context_.last_update_->is_flush);
+
+  // Now trigger a flush-only update manually.
+  const gfx::Rect& viewport_damage_rect =
+      VizLayerContextTest::kDefaultDamageRect;
+  bool frame_has_damage = false;
+  std::vector<ui::LatencyInfo> latency_info = {};
+
+  viz_layer_context_->UpdateDisplayTreeFrom(
+      *host_impl_->active_tree(), *host_impl_->resource_provider(),
+      /*shared_image_interface=*/nullptr, host_impl_->CurrentBeginFrameArgs(),
+      viewport_damage_rect, frame_has_damage, /*is_flush=*/true,
+      std::move(latency_info));
+
+  base::RunLoop run_loop;
+  fake_layer_context_.on_update_display_tree_ = run_loop.QuitClosure();
+  run_loop.Run();
+
+  ASSERT_TRUE(fake_layer_context_.last_update_);
+  EXPECT_TRUE(fake_layer_context_.last_update_->is_flush);
 }
 
 }  // namespace viz

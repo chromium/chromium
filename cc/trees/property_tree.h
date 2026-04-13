@@ -499,6 +499,8 @@ class CC_EXPORT EffectTree final : public PropertyTree<EffectNode> {
   // surface.
   int LowestCommonAncestorWithRenderSurface(int id_1, int id_2) const;
 
+  size_t num_render_surfaces() const { return render_surfaces_.size(); }
+
   RenderSurfaceImpl* GetRenderSurface(int id) {
     return render_surfaces_[static_cast<size_t>(id)].get();
   }

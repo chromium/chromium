@@ -1376,14 +1376,16 @@ base::TimeTicks VizLayerContext::UpdateDisplayTreeFrom(
     LayerTreeImpl& tree,
     viz::ClientResourceProvider& resource_provider,
     gpu::SharedImageInterface* shared_image_interface,
+    const viz::BeginFrameArgs& begin_frame_args,
     const gfx::Rect& viewport_damage_rect,
     bool frame_has_damage,
+    bool is_flush,
     std::vector<ui::LatencyInfo> latency_info) {
   TRACE_EVENT0("viz", "VizLayerContext::UpdateDisplayTreeFrom");
 
   auto& property_trees = *tree.property_trees();
   auto update = viz::mojom::LayerTreeUpdate::New();
-  update->begin_frame_args = tree.CurrentBeginFrameArgs();
+  update->begin_frame_args = begin_frame_args;
   update->source_frame_number = tree.source_frame_number();
   update->trace_id = tree.trace_id().value();
   update->primary_main_frame_item_sequence_number =
@@ -1404,6 +1406,11 @@ base::TimeTicks VizLayerContext::UpdateDisplayTreeFrom(
   DUMP_WILL_BE_CHECK_GT(update->external_page_scale_factor, 0.f);
   DUMP_WILL_BE_CHECK(std::isfinite(update->external_page_scale_factor));
   update->frame_has_damage = frame_has_damage;
+
+  // The is_flush flag is propagated to Viz to indicate whether this is a
+  // synchronization-only update.
+  update->is_flush = is_flush;
+
   update->latency_info = std::move(latency_info);
   update->device_viewport = tree.GetDeviceViewport();
   update->device_scale_factor = tree.device_scale_factor();
@@ -1416,7 +1423,14 @@ base::TimeTicks VizLayerContext::UpdateDisplayTreeFrom(
   if (tree.local_surface_id_from_parent().is_valid()) {
     update->local_surface_id_from_parent = tree.local_surface_id_from_parent();
   }
-  update->current_local_surface_id = host_impl_->GetCurrentLocalSurfaceId();
+
+  // The current LocalSurfaceId is optional because an invalid LocalSurfaceId
+  // (specifically one with an empty UnguessableToken) cannot be serialized.
+  // We omit it here if invalid, and the service will verify its presence
+  // for non-flush updates.
+  if (host_impl_->GetCurrentLocalSurfaceId().is_valid()) {
+    update->current_local_surface_id = host_impl_->GetCurrentLocalSurfaceId();
+  }
   DCHECK_NE(host_impl_->next_frame_token(), viz::kInvalidFrameToken);
   update->next_frame_token = host_impl_->next_frame_token();
   update->send_frame_token_to_embedder =
@@ -1457,8 +1471,23 @@ base::TimeTicks VizLayerContext::UpdateDisplayTreeFrom(
   update->outer_viewport_container_bounds_delta =
       property_trees.outer_viewport_container_bounds_delta();
 
-  update->viewport_damage_rect = viewport_damage_rect;
-  if (tree.RootRenderSurface()) {
+  // During a flush update, we don't want to propagate any damage to Viz,
+  // as the update is for synchronization only and won't trigger a draw.
+  update->viewport_damage_rect = is_flush ? gfx::Rect() : viewport_damage_rect;
+
+  // We only compute root layer damage if the tree is not empty and property
+  // trees are initialized. This prevents crashes or invalid damage reports
+  // during initialization or backgrounding.
+  // The property tree must have a size greater than kContentsRootPropertyNodeId
+  // (which is index 1) to ensure the content root node exists. An "empty" tree
+  // has a size of 1 (containing only the root node at index 0).
+  // The content root node at index 1 is the owner of the root render surface;
+  // if it doesn't exist, there is no root damage to compute.
+  // We also skip this for flushes, as Viz will ignore damage during a
+  // synchronization-only update.
+  if (!is_flush && !tree.LayerListIsEmpty() &&
+      property_trees.effect_tree().size() > cc::kContentsRootPropertyNodeId &&
+      tree.RootRenderSurface()) {
     // Store the damage rect of the root render surface in the update.  This
     // allows us to verify that it matches the viz service calculation.
     // Note: The client might report damage outside the root surface content

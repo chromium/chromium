@@ -1519,14 +1519,14 @@ class UIResourceLostEviction : public UIResourceLostTestSimple {
         break;
       case 3:
         // When renderer's visibility is set to false, it evicts all the UI
-        // resources. In TreesInViz mode, renderer does not delete the UI
-        // resource until it gets ack back from the viz on the deletion request
-        // it has sent.
-        if (TreesInViz()) {
-          ASSERT_EQ(4u, sii_->shared_image_count());
-        } else {
-          ASSERT_EQ(2u, sii_->shared_image_count());
-        }
+        // resources. In TreesInViz mode, the renderer now immediately flushes
+        // these deletions to Viz (via a synchronization-only update) to ensure
+        // memory is reclaimed immediately upon backgrounding.
+        //
+        // Thus, by the time we reach this step (after visibility is restored),
+        // the old resources should have already been returned and deleted,
+        // leaving only the 2 newly recreated resources.
+        ASSERT_EQ(2u, sii_->shared_image_count());
 
         // The first resource should have been recreated after visibility was
         // restored.
