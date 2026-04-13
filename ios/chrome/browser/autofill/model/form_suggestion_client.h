@@ -7,6 +7,8 @@
 
 #import <Foundation/Foundation.h>
 
+#import "base/ios/block_types.h"
+
 namespace autofill {
 struct FormActivityParams;
 }  // namespace autofill
@@ -20,9 +22,11 @@ struct FormActivityParams;
 // selected suggestion among the available suggestions. The client needs to get
 // the form activity params from somewhere, so if the client is stateless the
 // params need to be set in the `suggestion` itself, otherwise the client needs
-// to provide the params by tracking them.
+// to provide the params by tracking them. `completion` is called when the
+// operation completes (e.g. after reauth or early return).
 - (void)didSelectSuggestion:(FormSuggestion*)suggestion
-                    atIndex:(NSInteger)index;
+                    atIndex:(NSInteger)index
+                 completion:(ProceduralBlock)completion;
 
 // Called when a suggestion is selected. Provides the parameters required to
 // fill the form, so this version of 'didSelectSuggestion' can be used without
@@ -30,9 +34,12 @@ struct FormActivityParams;
 // If the parameters have already been provided by a previous call, then the
 // 'didSelectSuggestion' overload above should be used. `index` indicates the
 // position of the selected suggestion among the available suggestions.
+// `completion` is called when the operation completes (e.g. after reauth or
+// early return).
 - (void)didSelectSuggestion:(FormSuggestion*)suggestion
                     atIndex:(NSInteger)index
-                     params:(const autofill::FormActivityParams&)params;
+                     params:(const autofill::FormActivityParams&)params
+                 completion:(ProceduralBlock)completion;
 
 @end
 
