@@ -2381,55 +2381,6 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
   EXPECT_EQ(1u, rwh_b->GetPriority().frame_depth);
 }
 
-IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest, PageshowMetrics) {
-  // TODO(crbug.com/40702446): Do not check for unexpected messages
-  // because the input task queue is not currently frozen, causing flakes in
-  // this test.
-  DoNotFailForUnexpectedMessagesWhileCached();
-  ASSERT_TRUE(embedded_test_server()->Start());
-
-  const char kHistogramName[] =
-      "BackForwardCache.MainFrameHasPageshowListenersOnRestore";
-
-  const GURL url1(embedded_test_server()->GetURL("a.com", "/title1.html"));
-  const GURL url2(embedded_test_server()->GetURL("b.com", "/title1.html"));
-
-  // 1) Navigate to the page.
-  EXPECT_TRUE(NavigateToURL(shell(), url1));
-  EXPECT_TRUE(ExecJs(current_frame_host(), R"(
-    window.foo = 42;
-  )"));
-
-  // 2) Navigate away and back.
-  EXPECT_TRUE(NavigateToURL(shell(), url2));
-  ASSERT_TRUE(HistoryGoBack(web_contents()));
-
-  // As we don't get an explicit ACK when the page is restored (yet), force
-  // a round-trip to the renderer to effectively flush the queue.
-  EXPECT_EQ(42, EvalJs(current_frame_host(), "window.foo"));
-
-  // Expect the back-forward restore without pageshow to be detected.
-  content::FetchHistogramsFromChildProcesses();
-  EXPECT_THAT(histogram_tester().GetAllSamples(kHistogramName),
-              ElementsAre(base::Bucket(0, 1)));
-
-  EXPECT_TRUE(ExecJs(current_frame_host(), R"(
-    window.addEventListener("pageshow", () => {});
-  )"));
-
-  // 3) Navigate away and back (again).
-  EXPECT_TRUE(NavigateToURL(shell(), url2));
-  ASSERT_TRUE(HistoryGoBack(web_contents()));
-
-  // As we don't get an explicit ACK when the page is restored (yet), force
-  // a round-trip to the renderer to effectively flush the queue.
-  EXPECT_EQ(42, EvalJs(current_frame_host(), "window.foo"));
-
-  // Expect the back-forward restore with pageshow to be detected.
-  content::FetchHistogramsFromChildProcesses();
-  EXPECT_THAT(histogram_tester().GetAllSamples(kHistogramName),
-              ElementsAre(base::Bucket(0, 1), base::Bucket(1, 1)));
-}
 
 // Navigate from A(B) to C and check IsActive status for RenderFrameHost A
 // and B before and after entering back-forward cache.

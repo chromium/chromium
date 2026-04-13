@@ -2770,11 +2770,6 @@ void WebViewImpl::DispatchPersistedPageshow(base::TimeTicks navigation_start) {
         performance->AddBackForwardCacheRestoration(
             navigation_start, pageshow_start_time, pageshow_end_time);
       }
-      if (frame->IsOutermostMainFrame()) {
-        UMA_HISTOGRAM_BOOLEAN(
-            "BackForwardCache.MainFrameHasPageshowListenersOnRestore",
-            window->HasEventListeners(event_type_names::kPageshow));
-      }
     }
   }
 }
