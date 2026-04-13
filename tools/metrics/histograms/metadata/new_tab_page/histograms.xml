@@ -1109,7 +1109,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="NewTabPage.Incognito.OmniboxAutofocus.OnFocus.NtpTextContentWithTopPaddingHeightPercentage"
-    units="Percents" expires_after="2026-05-01">
+    units="Percents" expires_after="2026-09-06">
   <owner>kalinino@google.com</owner>
   <owner>polonium@google.com</owner>
   <summary>
@@ -1130,7 +1130,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="NewTabPage.Incognito.OmniboxAutofocus.OnFocus.TabHeightChange"
-    enum="OmniboxAutofocusTabHeightChange" expires_after="2026-08-30">
+    enum="OmniboxAutofocusTabHeightChange" expires_after="2026-09-06">
   <owner>kalinino@google.com</owner>
   <owner>polonium@google.com</owner>
   <summary>
@@ -1151,7 +1151,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="NewTabPage.Incognito.OmniboxAutofocus.OnFocus.ZeroSuggestSuppressed"
-    enum="Boolean" expires_after="2026-08-09">
+    enum="Boolean" expires_after="2026-09-06">
   <owner>kalinino@google.com</owner>
   <owner>polonium@google.com</owner>
   <summary>
