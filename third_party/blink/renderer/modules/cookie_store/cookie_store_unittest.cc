@@ -85,7 +85,7 @@ class CookieStoreTest : public testing::Test {
             url, cookie_line, base::Time::Now(), net::CookieSourceType::kOther);
     cookie_monster_.SetCanonicalCookieAsync(
         std::move(cookie), url, net::CookieOptions::MakeAllInclusive(),
-        future.GetCallback());
+        future.GetCallback(), /*cookie_access_result=*/std::nullopt);
     net::CookieAccessResult result = future.Take();
     EXPECT_TRUE(result.status.IsInclude());
   }

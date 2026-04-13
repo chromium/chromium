@@ -99,7 +99,8 @@ TEST_F(CookieManagerTest, DeferredProvisionalStoreCloseInInvokeQueue) {
               // Call the actual OnProvisionalStoreOperationComplete() -- the
               // method under test.
               cookie_manager_->OnProvisionalStoreOperationComplete();
-            }));
+            }),
+            /*cookie_access_result=*/std::nullopt);
 
         // Set up the state as if CloseProvisionalStoreAndSignalReady() was
         // called and deferred because pending_provisional_store_operations_ >

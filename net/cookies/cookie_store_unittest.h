@@ -236,7 +236,8 @@ class CookieStoreTest : public testing::Test {
     DCHECK(cs);
     ResultSavingCookieCallback<CookieAccessResult> callback;
     cs->SetCanonicalCookieAsync(std::move(cookie), url, options,
-                                callback.MakeCallback());
+                                callback.MakeCallback(),
+                                /*cookie_access_result=*/std::nullopt);
     callback.WaitUntilDone();
     return callback.result().status.IsInclude();
   }
@@ -253,7 +254,8 @@ class CookieStoreTest : public testing::Test {
     options.set_same_site_cookie_context(
         net::CookieOptions::SameSiteCookieContext::MakeInclusive());
     cs->SetCanonicalCookieAsync(std::move(cookie), source_url, options,
-                                callback.MakeCallback());
+                                callback.MakeCallback(),
+                                /*cookie_access_result=*/std::nullopt);
     callback.WaitUntilDone();
     return callback.result().status.IsInclude();
   }
@@ -321,7 +323,8 @@ class CookieStoreTest : public testing::Test {
     DCHECK(cs);
     ResultSavingCookieCallback<CookieAccessResult> callback;
     cs->SetCanonicalCookieAsync(std::move(cookie), url, options,
-                                callback.MakeCallback());
+                                callback.MakeCallback(),
+                                /*cookie_access_result=*/std::nullopt);
     callback.WaitUntilDone();
     return callback.result().status;
   }
@@ -339,7 +342,8 @@ class CookieStoreTest : public testing::Test {
     options.set_same_site_cookie_context(
         net::CookieOptions::SameSiteCookieContext::MakeInclusive());
     cs->SetCanonicalCookieAsync(std::move(cookie), source_url, options,
-                                callback.MakeCallback());
+                                callback.MakeCallback(),
+                                /*cookie_access_result=*/std::nullopt);
     callback.WaitUntilDone();
     return callback.result();
   }

@@ -103,7 +103,8 @@ class SetCookieCallback : public CookieTestCallback {
         gurl, cookie_line, base::Time::Now(), CookieSourceType::kOther);
     cm->SetCanonicalCookieAsync(
         std::move(cookie), gurl, options_,
-        base::BindOnce(&SetCookieCallback::Run, base::Unretained(this)));
+        base::BindOnce(&SetCookieCallback::Run, base::Unretained(this)),
+        /*cookie_access_result=*/std::nullopt);
     WaitForCallback();
   }
 

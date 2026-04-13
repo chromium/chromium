@@ -341,7 +341,8 @@ TEST_F(CookieStoreIOSTest, GetAllCookies) {
   cookie_store->SetCanonicalCookieAsync(std::move(canonical_cookie),
                                         kTestCookieURLFooBar,
                                         net::CookieOptions::MakeAllInclusive(),
-                                        net::CookieStore::SetCookiesCallback());
+                                        net::CookieStore::SetCookiesCallback(),
+                                        /*cookie_access_result=*/std::nullopt);
   // Check we can get the cookie.
   GetAllCookiesHelperCallback callback;
   cookie_store->GetCookieListWithOptionsAsync(

@@ -2382,9 +2382,9 @@ bool CreateAndSetCookie(CookieStore* cs,
   }
   DCHECK(cs);
   ResultSavingCookieCallback<CookieAccessResult> callback;
-  cs->SetCanonicalCookieAsync(std::move(cookie), url,
-                              CookieOptions::MakeAllInclusive(),
-                              callback.MakeCallback());
+  cs->SetCanonicalCookieAsync(
+      std::move(cookie), url, CookieOptions::MakeAllInclusive(),
+      callback.MakeCallback(), /*cookie_access_result=*/std::nullopt);
   callback.WaitUntilDone();
   return callback.result().status.IsInclude();
 }

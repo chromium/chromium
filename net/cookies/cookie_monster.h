@@ -212,8 +212,7 @@ class NET_EXPORT CookieMonster : public CookieStore {
       const GURL& source_url,
       const CookieOptions& options,
       SetCookiesCallback callback,
-      std::optional<CookieAccessResult> cookie_access_result =
-          std::nullopt) override;
+      std::optional<CookieAccessResult> cookie_access_result) override;
   void SetUnsafeCanonicalCookieForTestAsync(
       std::unique_ptr<CanonicalCookie> cookie,
       SetCookiesCallback callback) override;

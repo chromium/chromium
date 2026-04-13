@@ -1304,9 +1304,10 @@ TEST_F(SQLitePersistentCookieStoreTest, KeyInconsistency) {
   auto cookie = CanonicalCookie::CreateForTesting(ftp_url, "A=B; max-age=3600",
                                                   base::Time::Now(),
                                                   CookieSourceType::kOther);
-  cookie_monster->SetCanonicalCookieAsync(std::move(cookie), ftp_url,
-                                          CookieOptions::MakeAllInclusive(),
-                                          set_cookie_callback.MakeCallback());
+  cookie_monster->SetCanonicalCookieAsync(
+      std::move(cookie), ftp_url, CookieOptions::MakeAllInclusive(),
+      set_cookie_callback.MakeCallback(),
+      /*cookie_access_result=*/std::nullopt);
   set_cookie_callback.WaitUntilDone();
   EXPECT_TRUE(set_cookie_callback.result().status.IsInclude());
 
@@ -1319,7 +1320,8 @@ TEST_F(SQLitePersistentCookieStoreTest, KeyInconsistency) {
         url, "A=B; max-age=3600", base::Time::Now(), CookieSourceType::kOther);
     cookie_monster->SetCanonicalCookieAsync(
         std::move(canonical_cookie), url, CookieOptions::MakeAllInclusive(),
-        set_cookie_callback2.MakeCallback());
+        set_cookie_callback2.MakeCallback(),
+        /*cookie_access_result=*/std::nullopt);
     set_cookie_callback2.WaitUntilDone();
     EXPECT_TRUE(set_cookie_callback2.result().status.IsInclude());
   }
@@ -1374,9 +1376,10 @@ TEST_F(SQLitePersistentCookieStoreTest, OpsIfInitFailed) {
   GURL url("http://www.example.com/");
   auto cookie = CanonicalCookie::CreateForTesting(
       url, "A=B; max-age=3600", base::Time::Now(), CookieSourceType::kOther);
-  cookie_monster->SetCanonicalCookieAsync(std::move(cookie), url,
-                                          CookieOptions::MakeAllInclusive(),
-                                          set_cookie_callback.MakeCallback());
+  cookie_monster->SetCanonicalCookieAsync(
+      std::move(cookie), url, CookieOptions::MakeAllInclusive(),
+      set_cookie_callback.MakeCallback(),
+      /*cookie_access_result=*/std::nullopt);
   set_cookie_callback.WaitUntilDone();
   EXPECT_TRUE(set_cookie_callback.result().status.IsInclude());
 

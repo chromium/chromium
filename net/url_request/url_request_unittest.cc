@@ -1940,9 +1940,9 @@ TEST_F(URLRequestTest, DelayedCookieCallbackAsync) {
       url, "AlreadySetCookie=1;Secure", base::Time::Now(),
       CookieSourceType::kOther);
   auto delayed_cm = std::make_unique<DelayedCookieMonster>();
-  delayed_cm->SetCanonicalCookieAsync(std::move(cookie1), url,
-                                      net::CookieOptions::MakeAllInclusive(),
-                                      CookieStore::SetCookiesCallback());
+  delayed_cm->SetCanonicalCookieAsync(
+      std::move(cookie1), url, net::CookieOptions::MakeAllInclusive(),
+      CookieStore::SetCookiesCallback(), /*cookie_access_result=*/std::nullopt);
 
   auto cookie2 = CanonicalCookie::CreateForTesting(
       url, "AlreadySetCookie=1;Secure", base::Time::Now(),
@@ -1950,7 +1950,8 @@ TEST_F(URLRequestTest, DelayedCookieCallbackAsync) {
   auto cm = std::make_unique<CookieMonster>(nullptr, nullptr);
   cm->SetCanonicalCookieAsync(std::move(cookie2), url,
                               net::CookieOptions::MakeAllInclusive(),
-                              CookieStore::SetCookiesCallback());
+                              CookieStore::SetCookiesCallback(),
+                              /*cookie_access_result=*/std::nullopt);
 
   auto async_context_builder = CreateTestURLRequestContextBuilder();
   async_context_builder->SetCookieStore(std::move(delayed_cm));
@@ -3465,7 +3466,8 @@ TEST_F(URLRequestTest, PartitionedCookiesRedirect) {
     base::test::TestFuture<CookieAccessResult> future;
     cm.SetCanonicalCookieAsync(
         std::move(same_site_partitioned_cookie), create_cookie_url,
-        CookieOptions::MakeAllInclusive(), future.GetCallback());
+        CookieOptions::MakeAllInclusive(), future.GetCallback(),
+        /*cookie_access_result=*/std::nullopt);
     ASSERT_TRUE(future.Get().status.IsInclude());
   }
 
@@ -3483,7 +3485,8 @@ TEST_F(URLRequestTest, PartitionedCookiesRedirect) {
     base::test::TestFuture<CookieAccessResult> future;
     cm.SetCanonicalCookieAsync(
         std::move(cross_site_partitioned_cookie), create_cookie_url,
-        CookieOptions::MakeAllInclusive(), future.GetCallback());
+        CookieOptions::MakeAllInclusive(), future.GetCallback(),
+        /*cookie_access_result=*/std::nullopt);
     ASSERT_TRUE(future.Get().status.IsInclude());
   }
 
@@ -7879,7 +7882,8 @@ TEST_F(URLRequestTest, NoCookieInclusionStatusWarningIfWouldBeExcludedAnyway) {
         base::BindLambdaForTesting([&](CookieAccessResult result) {
           access_result = result;
           run_loop.Quit();
-        }));
+        }),
+        /*cookie_access_result=*/std::nullopt);
     run_loop.Run();
     EXPECT_TRUE(access_result.status.IsInclude());
 
@@ -7924,7 +7928,8 @@ TEST_F(URLRequestTest, NoCookieInclusionStatusWarningIfWouldBeExcludedAnyway) {
         base::BindLambdaForTesting([&](CookieAccessResult result) {
           access_result = result;
           run_loop.Quit();
-        }));
+        }),
+        /*cookie_access_result=*/std::nullopt);
     run_loop.Run();
     EXPECT_TRUE(access_result.status.IsInclude());
 
@@ -8067,7 +8072,8 @@ TEST_F(URLRequestTestHTTP, AuthChallengeWithFilteredCookies) {
     cm->SetCanonicalCookieAsync(std::move(another_cookie),
                                 url_requiring_auth_wo_cookies,
                                 net::CookieOptions::MakeAllInclusive(),
-                                CookieStore::SetCookiesCallback());
+                                CookieStore::SetCookiesCallback(),
+                                /*cookie_access_result=*/std::nullopt);
 
     TestDelegate delegate;
 
@@ -8096,7 +8102,8 @@ TEST_F(URLRequestTestHTTP, AuthChallengeWithFilteredCookies) {
     cm->SetCanonicalCookieAsync(std::move(one_more_cookie),
                                 url_requiring_auth_wo_cookies,
                                 net::CookieOptions::MakeAllInclusive(),
-                                CookieStore::SetCookiesCallback());
+                                CookieStore::SetCookiesCallback(),
+                                /*cookie_access_result=*/std::nullopt);
 
     request->SetAuth(AuthCredentials(kUser, kSecret));
     delegate.RunUntilComplete();
@@ -8485,7 +8492,8 @@ TEST_F(URLRequestTestHTTP, RedirectWithFilteredCookies) {
         CookieSourceType::kOther);
     cm->SetCanonicalCookieAsync(std::move(another_cookie), original_url,
                                 net::CookieOptions::MakeAllInclusive(),
-                                CookieStore::SetCookiesCallback());
+                                CookieStore::SetCookiesCallback(),
+                                /*cookie_access_result=*/std::nullopt);
 
     TestDelegate delegate;
     std::unique_ptr<URLRequest> request =
@@ -8512,7 +8520,8 @@ TEST_F(URLRequestTestHTTP, RedirectWithFilteredCookies) {
     cm->SetCanonicalCookieAsync(std::move(one_more_cookie),
                                 original_url_wo_cookie,
                                 net::CookieOptions::MakeAllInclusive(),
-                                CookieStore::SetCookiesCallback());
+                                CookieStore::SetCookiesCallback(),
+                                /*cookie_access_result=*/std::nullopt);
 
     request->FollowDeferredRedirect(std::nullopt, std::nullopt);
     delegate.RunUntilComplete();

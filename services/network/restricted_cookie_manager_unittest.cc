@@ -376,7 +376,7 @@ class RestrictedCookieManagerTest
     cookie_monster_.SetCanonicalCookieAsync(
         std::make_unique<net::CanonicalCookie>(cookie),
         net::cookie_util::SimulatedCookieSource(cookie, source_scheme), options,
-        callback.MakeCallback());
+        callback.MakeCallback(), /*cookie_access_result=*/std::nullopt);
     callback.WaitUntilDone();
     return callback.result().status.IsInclude();
   }
@@ -1786,7 +1786,7 @@ TEST_P(RestrictedCookieManagerTest, ChangeNotificationIncludesAccessSemantics) {
   net::ResultSavingCookieCallback<net::CookieAccessResult> callback;
   cookie_monster_.SetCanonicalCookieAsync(
       std::move(cookie), kDefaultUrl, net::CookieOptions::MakeAllInclusive(),
-      callback.MakeCallback());
+      callback.MakeCallback(), /*cookie_access_result=*/std::nullopt);
   callback.WaitUntilDone();
   ASSERT_TRUE(callback.result().status.IsInclude());
 
@@ -1827,7 +1827,8 @@ TEST_P(RestrictedCookieManagerTest, NoChangeNotificationForNonlegacyCookie) {
   net::ResultSavingCookieCallback<net::CookieAccessResult> callback1;
   cookie_monster_.SetCanonicalCookieAsync(
       std::move(unspecified_cookie), kDefaultUrl,
-      net::CookieOptions::MakeAllInclusive(), callback1.MakeCallback());
+      net::CookieOptions::MakeAllInclusive(), callback1.MakeCallback(),
+      /*cookie_access_result=*/std::nullopt);
   callback1.WaitUntilDone();
   ASSERT_TRUE(callback1.result().status.IsInclude());
 
@@ -1839,7 +1840,8 @@ TEST_P(RestrictedCookieManagerTest, NoChangeNotificationForNonlegacyCookie) {
   net::ResultSavingCookieCallback<net::CookieAccessResult> callback2;
   cookie_monster_.SetCanonicalCookieAsync(
       std::move(samesite_none_cookie), kDefaultUrl,
-      net::CookieOptions::MakeAllInclusive(), callback2.MakeCallback());
+      net::CookieOptions::MakeAllInclusive(), callback2.MakeCallback(),
+      /*cookie_access_result=*/std::nullopt);
   callback2.WaitUntilDone();
   ASSERT_TRUE(callback2.result().status.IsInclude());
 

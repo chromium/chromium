@@ -267,7 +267,7 @@ class CookieManagerTest : public testing::Test {
     cookie_store()->SetCanonicalCookieAsync(
         std::make_unique<net::CanonicalCookie>(cookie),
         net::cookie_util::SimulatedCookieSource(cookie, source_scheme), options,
-        callback.MakeCallback());
+        callback.MakeCallback(), /*cookie_access_result=*/std::nullopt);
     callback.WaitUntilDone();
     return callback.result().status.IsInclude();
   }

@@ -164,7 +164,8 @@ TEST_P(WebSocketStreamClientUseCookieTest, ClientUseCookie) {
       std::move(cookie), cookie_url, net::CookieOptions::MakeAllInclusive(),
       base::BindOnce(&SetCookieHelperFunction, run_loop.QuitClosure(),
                      weak_is_called.GetWeakPtr(),
-                     weak_set_cookie_result.GetWeakPtr()));
+                     weak_set_cookie_result.GetWeakPtr()),
+      /*cookie_access_result=*/std::nullopt);
   run_loop.Run();
   ASSERT_TRUE(is_called);
   ASSERT_TRUE(set_cookie_result);

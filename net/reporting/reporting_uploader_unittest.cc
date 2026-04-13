@@ -536,7 +536,7 @@ TEST_F(ReportingUploaderTest, DontSendCookies) {
       url, "foo=bar", base::Time::Now(), CookieSourceType::kOther);
   context_->cookie_store()->SetCanonicalCookieAsync(
       std::move(cookie), url, CookieOptions::MakeAllInclusive(),
-      cookie_callback.MakeCallback());
+      cookie_callback.MakeCallback(), /*cookie_access_result=*/std::nullopt);
   cookie_callback.WaitUntilDone();
   ASSERT_TRUE(cookie_callback.result().status.IsInclude());
 

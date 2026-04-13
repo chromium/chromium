@@ -652,7 +652,7 @@ void CookieManager::SetCookieHelper(const GURL& host,
                 base::Unretained(this)));
     GetCookieStore()->SetCanonicalCookieAsync(
         std::move(cc), new_host, net::CookieOptions::MakeAllInclusive(),
-        std::move(wrapped_callback));
+        std::move(wrapped_callback), /*cookie_access_result=*/std::nullopt);
   }
 }
 

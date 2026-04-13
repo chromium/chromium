@@ -2497,7 +2497,8 @@ TEST_F(DnsTransactionTest, HttpsPostTestNoCookies) {
   request_context_->cookie_store()->SetCanonicalCookieAsync(
       std::move(cookie), cookie_url, CookieOptions(),
       base::BindOnce(&CookieCallback::SetCookieCallback,
-                     base::Unretained(&callback)));
+                     base::Unretained(&callback)),
+      /*cookie_access_result=*/std::nullopt);
   helper1.StartTransaction(transaction_factory_.get(), kT0HostName, kT0Qtype,
                            DnsTransactionFactory::AttemptMode::kHttp, resolve_context_.get());
   helper1.RunUntilComplete();

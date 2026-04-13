@@ -5655,7 +5655,8 @@ TEST_F(ExtensionServiceTest, ClearExtensionData) {
   cookie_store->SetCanonicalCookieAsync(
       std::move(cookie), ext_url, net::CookieOptions::MakeAllInclusive(),
       base::BindOnce(&ExtensionCookieCallback::SetCookieCallback,
-                     base::Unretained(&callback)));
+                     base::Unretained(&callback)),
+      /*cookie_access_result=*/std::nullopt);
   task_environment()->RunUntilIdle();
   EXPECT_TRUE(callback.result_);
 

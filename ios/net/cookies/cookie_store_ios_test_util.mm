@@ -137,7 +137,8 @@ void SetCookie(const std::string& cookie_line,
       url, cookie_line, base::Time::Now(), net::CookieSourceType::kOther);
   ASSERT_TRUE(canonical_cookie);
   store->SetCanonicalCookieAsync(std::move(canonical_cookie), url, options,
-                                 base::DoNothing());
+                                 base::DoNothing(),
+                                 /*cookie_access_result=*/std::nullopt);
   net::CookieStoreIOS::NotifySystemCookiesChanged();
   // Wait until the flush is posted.
   base::RunLoop().RunUntilIdle();

@@ -161,7 +161,8 @@ void CookieManager::SetCanonicalCookie(const net::CanonicalCookie& cookie,
     DCHECK(result) << result;
   }
   cookie_store_->SetCanonicalCookieAsync(std::move(cookie_ptr), source_url,
-                                         cookie_options, std::move(callback));
+                                         cookie_options, std::move(callback),
+                                         /*cookie_access_result=*/std::nullopt);
 }
 
 void CookieManager::DeleteCanonicalCookie(

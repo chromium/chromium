@@ -6188,7 +6188,7 @@ TEST_F(URLLoaderTest, RawRequestCookies) {
         cookie_url, "a=b", base::Time::Now(), net::CookieSourceType::kOther);
     url_request_context()->cookie_store()->SetCanonicalCookieAsync(
         std::move(cookie), cookie_url, net::CookieOptions::MakeAllInclusive(),
-        base::DoNothing());
+        base::DoNothing(), /*cookie_access_result=*/std::nullopt);
 
     base::RunLoop delete_run_loop;
     mojo::PendingRemote<mojom::URLLoader> loader;
@@ -6232,7 +6232,7 @@ TEST_F(URLLoaderTest, RawRequestCookiesFlagged) {
         net::CookieSourceType::kOther);
     url_request_context()->cookie_store()->SetCanonicalCookieAsync(
         std::move(cookie), cookie_url, net::CookieOptions::MakeAllInclusive(),
-        base::DoNothing());
+        base::DoNothing(), /*cookie_access_result=*/std::nullopt);
 
     base::RunLoop delete_run_loop;
     mojo::PendingRemote<mojom::URLLoader> loader;
