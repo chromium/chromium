@@ -41,25 +41,33 @@ SVGParsingError SVGPointList::Parse(base::span<const CharType> span) {
     return SVGParseStatus::kNoError;
   }
 
-  for (;;) {
-    float x = 0;
-    float y = 0;
-    if (!ParseNumber(span, x) || !ParseNumber(span, y, kDisallowWhitespace)) {
+  size_t number_count = 0;
+  std::array<float, 2> number_pair;
+  bool seen_comma = false;
+  while (!span.empty()) {
+    float& current_number = number_pair[number_count % 2];
+    if (!ParseNumber(span, current_number, kDisallowWhitespace)) {
       return SVGParsingError(SVGParseStatus::kExpectedNumber,
                              list_start_size - span.size());
     }
+    ++number_count;
 
-    Append(MakeGarbageCollected<SVGPoint>(gfx::PointF(x, y)));
-
-    if (!SkipOptionalSVGSpaces(span)) {
-      break;
+    // Emit a point for every complete pair of numbers.
+    if (number_count % 2 == 0) {
+      Append(MakeGarbageCollected<SVGPoint>(
+          gfx::PointF(number_pair[0], number_pair[1])));
     }
 
-    if (SkipExactly<CharType>(span, ',')) {
+    SkipOptionalSVGSpaces(span);
+    seen_comma = SkipExactly<CharType>(span, ',');
+    if (seen_comma) {
       SkipOptionalSVGSpaces(span);
-      // ',' requires the list to be continued
-      continue;
     }
+  }
+  // We parsed an uneven number of numbers or had a trailing comma.
+  if (number_count % 2 == 1 || seen_comma) {
+    return SVGParsingError(SVGParseStatus::kExpectedNumber,
+                           list_start_size - span.size());
   }
   return SVGParseStatus::kNoError;
 }
