@@ -49954,6 +49954,7 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="SystemBack">
+  <obsolete>Unused as of Oct 29, 2024</obsolete>
   <owner>lazzzis@google.com</owner>
   <description>
     The user triggered system back **after** Native is initialized. This action
