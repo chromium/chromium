@@ -321,3 +321,46 @@ IN_PROC_BROWSER_TEST_F(PasswordChangeFromCheckupDelegateBrowserTest,
   actor_service->StopTask(task_id,
                           actor::ActorTask::StoppedReason::kTaskComplete);
 }
+
+IN_PROC_BROWSER_TEST_F(PasswordChangeFromCheckupDelegateBrowserTest,
+                       OnFindFormTaskStateChangedTracksTaskCorrectly) {
+  Profile* profile = browser()->profile();
+  auto* actor_service =
+      actor::ActorKeyedServiceFactory::GetActorKeyedService(profile);
+
+  content::WebContents* originator_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+
+  auto delegate = std::make_unique<PasswordChangeFromCheckupDelegate>();
+  const GURL origin_url = embedded_test_server()->GetURL("example.com", "/");
+
+  delegate->StartPasswordChangeFlow(CreateCredentialUIEntry(origin_url),
+                                    originator_contents->GetWeakPtr());
+  auto* actuation_tab = browser()->tab_strip_model()->GetActiveTab();
+
+  actor::TaskId task_id = actor_service->CreateTask(
+      actor::TestTaskSourceInfo(), actor::NoEnterprisePolicyChecker());
+  actor::ActorTask* task = actor_service->GetTask(task_id);
+
+  // Fire a state change before the tab is attached to verify that the delegate
+  // is not tracking the task yet. This simulates the kCreated notification
+  // where HasTab() is false.
+  actor_service->NotifyTaskStateChanged(*task);
+  EXPECT_FALSE(delegate->GetFindFormTaskState().has_value());
+
+  // Attach the tab to the task to verify that the delegate is tracking the
+  // task now.
+  base::test::TestFuture<actor::mojom::ActionResultPtr> add_tab_future;
+  task->AddTab(actuation_tab->GetHandle(), add_tab_future.GetCallback());
+  ASSERT_TRUE(add_tab_future.Wait());
+  // Fire a state change after the tab is attached to verify that the delegate
+  // is tracking the task now. This simulates the kActing notification where
+  // HasTab() is true.
+  actor_service->NotifyTaskStateChanged(*task);
+
+  EXPECT_TRUE(delegate->GetFindFormTaskState().has_value());
+  EXPECT_EQ(delegate->GetFindFormTaskState().value(), task->GetState());
+
+  actor_service->StopTask(task_id,
+                          actor::ActorTask::StoppedReason::kTaskComplete);
+}

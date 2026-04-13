@@ -75,14 +75,13 @@ class PasswordChangeFromCheckupDelegate {
   std::u16string current_password_;
   GURL credential_url_;
 
-  std::optional<actor::TaskId> actor_task_id_;
+  std::optional<actor::TaskId> find_form_task_id_;
 
   base::CallbackListSubscription actor_task_state_subscription_;
 
   std::unique_ptr<ChangePasswordFormFillingSubmissionHelper> submission_helper_;
   std::unique_ptr<ChangePasswordFormWaiter> form_waiter_;
 
-  std::optional<actor::TaskId> find_form_task_id_;
   std::optional<actor::ActorTask::State> find_form_task_state_ = std::nullopt;
 
   std::optional<actor::TaskId> verification_task_id_;

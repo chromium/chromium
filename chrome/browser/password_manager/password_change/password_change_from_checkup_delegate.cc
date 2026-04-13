@@ -274,31 +274,30 @@ glic::GlicKeyedService* PasswordChangeFromCheckupDelegate::GetGlicService() {
 
 void PasswordChangeFromCheckupDelegate::OnFindFormTaskStateChanged(
     actor::ActorTask& task) {
-  const actor::ActorTask::State new_state = task.GetState();
-  if (!find_form_task_id_) {
-    actor::ActorKeyedService* actor_service =
-        actor::ActorKeyedService::Get(Profile::FromBrowserContext(
-            actuation_web_contents_->GetBrowserContext()));
-    CHECK(actor_service);
+  tabs::TabInterface* actuation_tab =
+      tabs::TabInterface::MaybeGetFromContents(actuation_web_contents_.get());
+  if (!actuation_tab) {
+    return;
+  }
 
-    actor::ActorTask* actor_task_for_actuation =
-        actor_service->GetTaskFromTab(*tabs::TabInterface::MaybeGetFromContents(
-            actuation_web_contents_.get()));
-    if (!actor_task_for_actuation) {
+  if (!find_form_task_id_) {
+    if (task.GetTabs().contains(actuation_tab->GetHandle())) {
+      find_form_task_id_ = task.id();
+      task.GetExecutionEngine().PreHandleCredentialSelectionDialog(
+          base::BindOnce(
+              &PasswordChangeFromCheckupDelegate::AutoSelectCredential,
+              weak_ptr_factory_.GetWeakPtr()));
+    } else {
       return;
     }
-
-    find_form_task_id_ = actor_task_for_actuation->id();
-    actor_task_for_actuation->GetExecutionEngine()
-        .PreHandleCredentialSelectionDialog(base::BindOnce(
-            &PasswordChangeFromCheckupDelegate::AutoSelectCredential,
-            weak_ptr_factory_.GetWeakPtr()));
   }
 
-  if (find_form_task_id_ && *find_form_task_id_ != task.id()) {
-    return;  // Ignore unrelated tasks
+  if (task.id() != *find_form_task_id_) {
+    // Ignore unrelated tasks.
+    return;
   }
 
+  const actor::ActorTask::State new_state = task.GetState();
   if (IsTaskInterrupted(new_state)) {
     task.Stop(actor::ActorTask::StoppedReason::kShutdown);
     actor_task_state_subscription_ = {};
