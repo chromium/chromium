@@ -32,7 +32,7 @@ class DedicatedWorkerDevToolsAgentHost final
       const GURL& url,
       const std::string& name,
       const base::UnguessableToken& devtools_worker_token,
-      const std::string& parent_id,
+      const std::string& parent_frame_id,
       base::OnceCallback<void(DevToolsAgentHostImpl*)> destroyed_callback);
 
   std::optional<blink::StorageKey> GetStorageKey();
@@ -55,6 +55,7 @@ class DedicatedWorkerDevToolsAgentHost final
 
   // DevToolsAgentHost overrides
   std::string GetType() override;
+  std::string GetParentFrameId() override;
 
   // DevToolsAgentHostImpl overrides
   bool AttachSession(DevToolsSession* session) override;
@@ -66,6 +67,7 @@ class DedicatedWorkerDevToolsAgentHost final
 
   std::unique_ptr<protocol::TargetAutoAttacher> const auto_attacher_;
   bool child_worker_created_ = false;
+  const std::string parent_frame_id_;
 };
 
 }  // namespace content

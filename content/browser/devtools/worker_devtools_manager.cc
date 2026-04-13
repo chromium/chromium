@@ -7,6 +7,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "content/browser/devtools/dedicated_worker_devtools_agent_host.h"
 #include "content/browser/devtools/devtools_instrumentation.h"
+#include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/worker_host/dedicated_worker_host.h"
 #include "content/public/browser/browser_thread.h"
 
@@ -51,9 +52,12 @@ void WorkerDevToolsManager::WorkerCreated(
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   DCHECK(!hosts_.contains(host));
 
+  auto* rfh = RenderFrameHostImpl::FromID(ancestor_render_frame_host_id);
+  std::string parent_frame_id =
+      rfh ? rfh->GetDevToolsFrameToken().ToString() : std::string();
   hosts_[host] = base::MakeRefCounted<DedicatedWorkerDevToolsAgentHost>(
       process_id,
-      /*url=*/GURL(), /*name=*/"", host->GetToken().value(), /*parent_id=*/"",
+      /*url=*/GURL(), /*name=*/"", host->GetToken().value(), parent_frame_id,
       /*destroyed_callback=*/base::DoNothing());
   base::UmaHistogramCounts1000("Worker.DevTools.AgentHost.Size", hosts_.size());
 
