@@ -625,14 +625,6 @@ void ContentPasswordManagerDriver::ShowPasswordSuggestions(
           render_frame_host_))
     return;
 
-  if ((request.username_field_index > request.form_data.fields().size()) ||
-      (request.password_field_index > request.form_data.fields().size())) {
-    password_manager_receiver_.ReportBadMessage(
-        "username_field_index or password_field_index cannot be greater than "
-        "form.fields.size()!");
-    return;
-  }
-
 #if !BUILDFLAG(IS_ANDROID)
   GetPasswordAutofillManager()->ShowSuggestions(request.field);
 #else

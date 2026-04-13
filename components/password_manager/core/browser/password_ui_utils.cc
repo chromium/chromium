@@ -165,27 +165,27 @@ bool CalculateTriggerSubmission(SubmissionReadinessState submission_readiness) {
   }
 }
 
-// TODO(crbug.com/40274966): This is a replication of the logic in
-// password_autofill_agent.cc. Remove the logic in the agent when
-// PasswordSuggestionBottomSheetV2 is launched.
+// Returns a prediction whether the form that contains |username_element| and
+// |password_element| will be ready for submission after filling these two
+// elements.
 SubmissionReadinessState CalculateSubmissionReadiness(
     const autofill::FormData& form_data,
-    uint64_t username_index,
-    uint64_t password_index) {
-  size_t number_of_elements = form_data.fields().size();
-  CHECK(username_index <= number_of_elements &&
-        password_index <= number_of_elements);
-  if (form_data.fields().empty() || ((username_index == number_of_elements) &&
-                                     (password_index == number_of_elements))) {
-    // This is unexpected. |form| is supposed to contain username or
-    // password elements.
+    const autofill::FieldRendererId username_field_id,
+    const autofill::FieldRendererId password_field_id) {
+  const std::vector<autofill::FormFieldData>& fields = form_data.fields();
+  auto username_it = std::ranges::find(fields, username_field_id,
+                                       &autofill::FormFieldData::renderer_id);
+  auto password_it = std::ranges::find(fields, password_field_id,
+                                       &autofill::FormFieldData::renderer_id);
+  if (username_it == fields.end() && password_it == fields.end()) {
+    // This is unexpected. `form` is supposed to contain username or password
+    // elements.
     return SubmissionReadinessState::kError;
   }
-  if ((username_index == number_of_elements) &&
-      (password_index != number_of_elements)) {
+  if (username_it == fields.end() && password_it != fields.end()) {
     return SubmissionReadinessState::kNoUsernameField;
   }
-  if (password_index == number_of_elements) {
+  if (password_it == fields.end()) {
     return SubmissionReadinessState::kNoPasswordField;
   }
 
@@ -194,21 +194,23 @@ SubmissionReadinessState CalculateSubmissionReadiness(
       return true;
     }
     // Don't treat a checkbox (e.g. "remember me") as an input field that may
-    // block a form submission. Note: Don't use |check_status !=
-    // kNotCheckable|, a radio button is considered a "checkable" element too,
-    // but it should block a submission.
+    // block a form submission. Note: Don't use `check_status != kNotCheckable`,
+    // a radio button is considered a "checkable" element too, but it should
+    // block a submission.
     return field.form_control_type() ==
            autofill::FormControlType::kInputCheckbox;
   };
 
-  for (size_t i = username_index + 1; i < password_index; ++i) {
-    if (!ShouldIgnoreField(form_data.fields()[i])) {
-      return SubmissionReadinessState::kFieldBetweenUsernameAndPassword;
+  if (username_it < password_it) {
+    for (auto it = username_it + 1; it != password_it; ++it) {
+      if (!ShouldIgnoreField(*it)) {
+        return SubmissionReadinessState::kFieldBetweenUsernameAndPassword;
+      }
     }
   }
 
-  for (size_t i = password_index + 1; i < number_of_elements; ++i) {
-    if (!ShouldIgnoreField(form_data.fields()[i])) {
+  for (auto it = password_it + 1; it != fields.end(); ++it) {
+    if (!ShouldIgnoreField(*it)) {
       return SubmissionReadinessState::kFieldAfterPasswordField;
     }
   }
@@ -219,13 +221,12 @@ SubmissionReadinessState CalculateSubmissionReadiness(
   }
 
   size_t number_of_visible_elements = 0;
-  for (size_t i = 0; i < number_of_elements; ++i) {
-    if (ShouldIgnoreField(form_data.fields()[i])) {
+  for (auto it = fields.begin(); it != fields.end(); ++it) {
+    if (ShouldIgnoreField(*it)) {
       continue;
     }
 
-    if (username_index != i && password_index != i &&
-        form_data.fields()[i].value().empty()) {
+    if (username_it != it && password_it != it && it->value().empty()) {
       return SubmissionReadinessState::kEmptyFields;
     }
     number_of_visible_elements++;

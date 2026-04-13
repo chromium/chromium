@@ -4193,8 +4193,8 @@ class MockPrerenderPasswordManagerDriver
             [this](const autofill::PasswordSuggestionRequest& request) {
               autofill::PasswordSuggestionRequest copy = request;
               copy.form_data = autofill::FormData();
-              copy.username_field_index = 0;
-              copy.password_field_index = 0;
+              copy.username_field_id = {};
+              copy.password_field_id = {};
               impl_->ShowPasswordSuggestions(copy);
             });
     ON_CALL(*this, CheckSafeBrowsingReputation)

@@ -470,8 +470,8 @@ struct TriggeringField {
 struct PasswordSuggestionRequest {
   TriggeringField field;
   FormData form_data;
-  uint64 username_field_index;
-  uint64 password_field_index;
+  FieldRendererId username_field_id;
+  FieldRendererId password_field_id;
 };
 
 // autofill::ParsingResult

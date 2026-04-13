@@ -717,14 +717,14 @@ struct StructTraits<autofill::mojom::PasswordSuggestionRequestDataView,
     return r.form_data;
   }
 
-  static uint64_t username_field_index(
+  static autofill::FieldRendererId username_field_id(
       const autofill::PasswordSuggestionRequest& r) {
-    return r.username_field_index;
+    return r.username_field_id;
   }
 
-  static uint64_t password_field_index(
+  static autofill::FieldRendererId password_field_id(
       const autofill::PasswordSuggestionRequest& r) {
-    return r.password_field_index;
+    return r.password_field_id;
   }
 
   static bool Read(autofill::mojom::PasswordSuggestionRequestDataView data,

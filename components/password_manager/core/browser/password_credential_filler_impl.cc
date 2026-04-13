@@ -15,7 +15,6 @@
 #include "components/password_manager/core/browser/password_ui_utils.h"
 #include "components/password_manager/core/common/password_manager_features.h"
 
-
 namespace password_manager {
 
 PasswordCredentialFillerImpl::PasswordCredentialFillerImpl(
@@ -24,8 +23,8 @@ PasswordCredentialFillerImpl::PasswordCredentialFillerImpl(
     : driver_(driver),
       submission_readiness_(
           CalculateSubmissionReadiness(request.form_data,
-                                       request.username_field_index,
-                                       request.password_field_index)),
+                                       request.username_field_id,
+                                       request.password_field_id)),
       trigger_submission_(CalculateTriggerSubmission(submission_readiness_)) {}
 
 PasswordCredentialFillerImpl::~PasswordCredentialFillerImpl() = default;

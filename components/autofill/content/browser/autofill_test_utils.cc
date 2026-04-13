@@ -24,6 +24,9 @@ FormData CreateFormDataForRenderFrameHost(content::RenderFrameHost& rfh,
   form.set_renderer_id(MakeFormRendererId());
   for (FormFieldData& field : fields) {
     field.set_host_frame(form.host_frame());
+    if (!field.renderer_id()) {
+      field.set_renderer_id(MakeFieldRendererId());
+    }
   }
   form.set_fields(std::move(fields));
   return form;

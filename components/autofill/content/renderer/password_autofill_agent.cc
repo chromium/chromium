@@ -493,20 +493,6 @@ bool HasDocumentWithValidFrame(const WebInputElement& element) {
   return fields;
 }
 
-size_t GetIndexOfElement(const FormData& form_data,
-                         const WebInputElement& element) {
-  if (!element) {
-    return form_data.fields().size();
-  }
-  for (size_t i = 0; i < form_data.fields().size(); ++i) {
-    if (form_data.fields()[i].renderer_id() ==
-        form_util::GetFieldRendererId(element)) {
-      return i;
-    }
-  }
-  return form_data.fields().size();
-}
-
 bool HasTextInputs(const FormData& form_data) {
   return std::ranges::any_of(form_data.fields(),
                              &FormFieldData::IsTextInputElement);
@@ -1187,18 +1173,15 @@ PasswordAutofillAgent::CreateSuggestionRequest(
                              &username_element, &password_element,
                              &password_info);
 
-  // These could be form.field.size() when the request is for fallback data.
-  const size_t username_field_index =
-      GetIndexOfElement(form_and_field->first, username_element);
-  const size_t password_field_index =
-      GetIndexOfElement(form_and_field->first, password_element);
-
   return PasswordSuggestionRequest(
       TriggeringField(*form_and_field->second, trigger_source, typed_username,
                       gfx::RectF(render_frame()->ConvertViewportToWindow(
                           user_input.BoundsInWidget()))),
-      std::move(form_and_field->first), username_field_index,
-      password_field_index);
+      std::move(form_and_field->first),
+      username_element ? GetFieldRendererId(username_element)
+                       : FieldRendererId(),
+      password_element ? GetFieldRendererId(password_element)
+                       : FieldRendererId());
 }
 
 bool PasswordAutofillAgent::FindPasswordInfoForElement(

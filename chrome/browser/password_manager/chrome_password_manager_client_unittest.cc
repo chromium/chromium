@@ -127,39 +127,38 @@
 #include "chrome/browser/ui/passwords/password_cross_domain_confirmation_popup_view.h"
 #endif  // BUILDFLAG(IS_ANDROID)
 
-using autofill::CalculateFormSignature;
-using autofill::ContentAutofillClient;
-using autofill::ContentAutofillDriver;
-using autofill::FieldRendererId;
-using autofill::FormControlType;
-using autofill::FormData;
-using autofill::FormFieldData;
-using autofill::mojom::FocusedFieldType;
-using autofill::test::CreateFormDataForRenderFrameHost;
-using autofill::test::CreateTestFormField;
-using content::BrowserContext;
-using content::WebContents;
-
-using password_manager::ContentPasswordManagerDriver;
-using password_manager::PasswordForm;
-using password_manager::PasswordManagerClient;
-using password_manager::PasswordManagerSetting;
-using password_manager::PasswordStoreConsumer;
-using sessions::GetPasswordStateFromNavigation;
-using sessions::SerializedNavigationEntry;
-using testing::_;
-using testing::Eq;
-using testing::Key;
-using testing::NiceMock;
-using testing::Return;
-using testing::SaveArg;
-using testing::StrictMock;
-using testing::UnorderedElementsAre;
+using ::autofill::CalculateFormSignature;
+using ::autofill::ContentAutofillClient;
+using ::autofill::ContentAutofillDriver;
+using ::autofill::FieldRendererId;
+using ::autofill::FormControlType;
+using ::autofill::FormData;
+using ::autofill::FormFieldData;
+using ::autofill::mojom::FocusedFieldType;
+using ::autofill::test::CreateFormDataForRenderFrameHost;
+using ::autofill::test::CreateTestFormField;
+using ::content::BrowserContext;
+using ::content::WebContents;
+using ::password_manager::ContentPasswordManagerDriver;
+using ::password_manager::PasswordForm;
+using ::password_manager::PasswordManagerClient;
+using ::password_manager::PasswordManagerSetting;
+using ::password_manager::PasswordStoreConsumer;
+using ::sessions::GetPasswordStateFromNavigation;
+using ::sessions::SerializedNavigationEntry;
+using ::testing::_;
+using ::testing::Eq;
+using ::testing::Key;
+using ::testing::NiceMock;
+using ::testing::Return;
+using ::testing::SaveArg;
+using ::testing::StrictMock;
+using ::testing::UnorderedElementsAre;
 
 #if BUILDFLAG(IS_ANDROID)
-using device_reauth::BiometricStatus;
-using password_manager::CredentialCache;
-using password_manager::MockPasswordStoreInterface;
+using ::device_reauth::BiometricStatus;
+using ::password_manager::CredentialCache;
+using ::password_manager::MockPasswordStoreInterface;
 #endif
 
 namespace {
@@ -1488,7 +1487,13 @@ class ChromePasswordManagerClientAndroidTest
                                   /*show_webauthn_credentials=*/true,
                                   /*show_identity_credentials=*/false,
                                   gfx::RectF()),
-        form, /*username_field_index=*/0, /*password_field_index=*/1);
+        form,
+        /*username_field_id=*/form.fields().size() > 0
+            ? form.fields()[0].renderer_id()
+            : FieldRendererId(),
+        /*password_field_id=*/form.fields().size() > 1
+            ? form.fields()[1].renderer_id()
+            : FieldRendererId());
   }
 
  private:

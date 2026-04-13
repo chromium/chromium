@@ -98,8 +98,8 @@ void CreateTriggeringField(TriggeringField* data) {
 void CreatePasswordSuggestionRequest(PasswordSuggestionRequest* data) {
   CreateTriggeringField(&data->field);
   data->form_data = test::CreateTestAddressFormData();
-  data->username_field_index = 0ul;
-  data->password_field_index = 1ul;
+  data->username_field_id = data->form_data.fields()[0].renderer_id();
+  data->password_field_id = data->form_data.fields()[1].renderer_id();
 }
 
 void CheckEqualPasswordFormFillData(const PasswordFormFillData& expected,
@@ -146,8 +146,8 @@ void CheckEqualPasswordSuggestionRequest(
   CheckEqualTriggeringField(expected.field, actual.field);
   EXPECT_EQ(test::WithoutUnserializedData(expected.form_data),
             test::WithoutUnserializedData(actual.form_data));
-  EXPECT_EQ(expected.username_field_index, actual.username_field_index);
-  EXPECT_EQ(expected.password_field_index, actual.password_field_index);
+  EXPECT_EQ(expected.username_field_id, actual.username_field_id);
+  EXPECT_EQ(expected.password_field_id, actual.password_field_id);
 }
 
 class AutofillTypeTraitsTestImpl : public testing::Test,

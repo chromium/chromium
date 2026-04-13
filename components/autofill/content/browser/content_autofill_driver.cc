@@ -118,13 +118,6 @@ FieldGlobalId Lift(ContentAutofillDriver& source, FieldRendererId id) {
 
 PasswordSuggestionRequest Lift(ContentAutofillDriver& source,
                                PasswordSuggestionRequest request) {
-  // These indices are equal to fields().size() for manual requests.
-  if (request.username_field_index > request.form_data.fields().size() ||
-      request.password_field_index > request.form_data.fields().size()) {
-    mojo::ReportBadMessage(
-        "username_field_index or password_field_index cannot be greater than "
-        "form.fields.size()!");
-  }
   request.form_data = Lift(source, std::move(request.form_data));
   request.field.bounds = Lift(source, std::move(request.field.bounds));
   return request;

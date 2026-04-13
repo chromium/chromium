@@ -12,6 +12,7 @@
 
 #include "build/branding_buildflags.h"
 #include "components/autofill/core/common/mojom/autofill_types.mojom-shared.h"
+#include "components/autofill/core/common/unique_ids.h"
 #include "url/origin.h"
 
 namespace autofill {
@@ -122,8 +123,8 @@ bool CalculateTriggerSubmission(SubmissionReadinessState submission_readiness);
 // filling.
 SubmissionReadinessState CalculateSubmissionReadiness(
     const autofill::FormData& form_data,
-    uint64_t username_field_index,
-    uint64_t password_field_index);
+    const autofill::FieldRendererId username_field_id,
+    const autofill::FieldRendererId password_field_id);
 
 // Returns whether to use Google Chrome branded strings.
 constexpr bool UsesPasswordManagerGoogleBranding() {

@@ -4246,20 +4246,11 @@ TEST_F(PasswordAutofillAgentTest, SuggestPasswordWhenUsernameFieldDisabled) {
   SimulateElementClick(password_element_);
   fake_driver_.Flush();
 
-  const FormData& form = *form_data_parsed_->begin();
-  uint64_t username_index = std::distance(
-      form.fields().begin(),
-      std::ranges::find(form.fields(),
-                        form_util::GetFieldRendererId(username_element_),
-                        &autofill::FormFieldData::renderer_id));
-  uint64_t password_index = std::distance(
-      form.fields().begin(),
-      std::ranges::find(form.fields(),
-                        form_util::GetFieldRendererId(password_element_),
-                        &autofill::FormFieldData::renderer_id));
   ASSERT_TRUE(suggestion_request);
-  EXPECT_EQ(suggestion_request->username_field_index, username_index);
-  EXPECT_EQ(suggestion_request->password_field_index, password_index);
+  EXPECT_EQ(suggestion_request->username_field_id,
+            form_util::GetFieldRendererId(username_element_));
+  EXPECT_EQ(suggestion_request->password_field_id,
+            form_util::GetFieldRendererId(password_element_));
 }
 
 // TODO(crbug.com/40819370): Amend the test to port it on Android if possible.

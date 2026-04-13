@@ -61,12 +61,12 @@ TriggeringField::~TriggeringField() = default;
 PasswordSuggestionRequest::PasswordSuggestionRequest(
     TriggeringField field,
     const FormData& form_data,
-    uint64_t username_field_index,
-    uint64_t password_field_index)
+    FieldRendererId username_field_id,
+    FieldRendererId password_field_id)
     : field(field),
       form_data(form_data),
-      username_field_index(username_field_index),
-      password_field_index(password_field_index) {}
+      username_field_id(username_field_id),
+      password_field_id(password_field_id) {}
 
 PasswordSuggestionRequest::PasswordSuggestionRequest() = default;
 PasswordSuggestionRequest::PasswordSuggestionRequest(

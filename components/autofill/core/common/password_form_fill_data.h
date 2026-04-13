@@ -86,8 +86,8 @@ struct TriggeringField {
 struct PasswordSuggestionRequest {
   PasswordSuggestionRequest(TriggeringField field,
                             const FormData& form_data,
-                            uint64_t username_field_index,
-                            uint64_t password_field_index);
+                            FieldRendererId username_field_id,
+                            FieldRendererId password_field_id);
 
   PasswordSuggestionRequest();
   PasswordSuggestionRequest(const PasswordSuggestionRequest&);
@@ -100,16 +100,14 @@ struct PasswordSuggestionRequest {
   TriggeringField field;
   // A web form extracted from the DOM that contains the triggering field.
   FormData form_data;
-  // The index of the username field in the `form_data.fields`. If the password
-  // form doesn't contain the username field, this value will be equal to
-  // `form_data.fields.size()`. Either this or `password_field_index` should be
-  // available.
-  uint64_t username_field_index = 0;
-  // The index of the password field in the `form_data.fields`. If the password
-  // form doesn't contain the password field, this value will be equal to
-  // `form_data.fields.size()`. Either this or `username_field_index` should be
-  // available.
-  uint64_t password_field_index = 0;
+  // The username field in the `form_data.fields`. If the password form doesn't
+  // contain the username field, this value is the null FieldRendererId. Either
+  // this or `password_field_index` should be non-null.
+  FieldRendererId username_field_id;
+  // The password field in the `form_data.fields`. If the password form doesn't
+  // contain the password field, this value is the null FieldRendererId. Either
+  // this or `username_field_index` should be non-null.
+  FieldRendererId password_field_id;
 };
 
 // Structure used for autofilling password forms. Note that the realms in this

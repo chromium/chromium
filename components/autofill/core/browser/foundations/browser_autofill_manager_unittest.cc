@@ -9675,8 +9675,8 @@ TEST_F(BrowserAutofillManagerTest, QueriesDelegateWhenGeneratingSuggestions) {
   OnAskForValuesToFill(form, form.fields()[0],
                        AutofillSuggestionTriggerSource::kTextFieldValueChanged,
                        PasswordSuggestionRequest({}, form,
-                                                 /*username_field_index=*/0,
-                                                 /*password_field_index=*/0));
+                                                 /*username_field_id=*/{},
+                                                 /*password_field_id=*/{}));
 }
 
 class BrowserAutofillManagerOtpSuggestionsTest
