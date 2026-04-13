@@ -5,11 +5,11 @@
 import '//resources/cr_components/searchbox/searchbox_input.js';
 
 import type {SearchboxElement} from '//resources/cr_components/searchbox/searchbox.js';
-import {getHtml as getContextualEntrypointHtml} from '//resources/cr_components/searchbox/searchbox_contextual_entrypoint.html.js';
 import {getHtml as getDropdownHtml} from '//resources/cr_components/searchbox/searchbox_searchbox_dropdown.html.js';
 import {html} from '//resources/lit/v3_0/lit.rollup.js';
 
 import type {NtpSearchboxElement} from './ntp_searchbox.js';
+import {getHtml as getContextualEntrypointHtml} from './ntp_searchbox_contextual_entrypoint.html.js';
 
 export function getHtml(this: NtpSearchboxElement) {
   // clang-format off
@@ -42,7 +42,7 @@ export function getHtml(this: NtpSearchboxElement) {
       @input-focus-changed="${this.onInputFocusChanged}">
     ${this.ntpRealboxNextEnabled ? html`
       <div class="contextualEntrypointContainer contextualEntrypointContainerCompact" slot="contextual-entrypoint">
-        ${getContextualEntrypointHtml.bind(this as SearchboxElement)()}
+        ${getContextualEntrypointHtml.bind(this)()}
       </div>
     ` : ''}
     ${this.shouldShowVoiceLens_(this.searchboxVoiceSearchEnabled_) ? html`

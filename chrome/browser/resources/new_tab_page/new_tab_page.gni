@@ -20,6 +20,7 @@ all_ts_files = [
                  "new_tab_page.ts",
                  "ntp_searchbox.html.ts",
                  "ntp_searchbox.ts",
+                 "ntp_searchbox_contextual_entrypoint.html.ts",
                  "transparency.ts",
                  "utils.ts",
                  "window_proxy.ts",

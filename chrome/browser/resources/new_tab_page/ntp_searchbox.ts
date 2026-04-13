@@ -2,11 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import '//resources/cr_components/composebox/composebox_file_inputs.js';
+import '//resources/cr_components/composebox/contextual_entrypoint_and_menu.js';
 import '//resources/cr_components/searchbox/searchbox_compose_button.js';
 import '//resources/cr_components/search/animated_glow.js';
 import '//resources/cr_components/searchbox/searchbox_input.js';
 
-import type {ContextualUpload} from '//resources/cr_components/composebox/common.js';
+import type {ContextualUpload, TabUpload, TabUploadOrigin} from '//resources/cr_components/composebox/common.js';
+import {ContextType, recordContextualElementClickedMetric} from '//resources/cr_components/composebox/common.js';
 import type {ContextualEntrypointAndMenuElement} from '//resources/cr_components/composebox/contextual_entrypoint_and_menu.js';
 import {ComposeboxContextAddedMethod} from '//resources/cr_components/search/constants.js';
 import {DragAndDropHandler} from '//resources/cr_components/search/drag_drop_handler.js';
@@ -18,7 +21,10 @@ import {waitForLazyRender} from '//resources/cr_components/searchbox/utils.js';
 import {assert} from '//resources/js/assert.js';
 import {loadTimeData} from '//resources/js/load_time_data.js';
 import type {PropertyValues} from '//resources/lit/v3_0/lit.rollup.js';
+import type {TabInfo} from '//resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
+import type {InputState} from '//resources/mojo/components/omnibox/composebox/composebox_query.mojom-webui.js';
 import {ModelMode, ToolMode} from '//resources/mojo/components/omnibox/composebox/composebox_query.mojom-webui.js';
+import type {Url} from '//resources/mojo/url/mojom/url.mojom-webui.js';
 
 import {getCss} from './ntp_searchbox.css.js';
 import {getHtml} from './ntp_searchbox.html.js';
@@ -70,6 +76,12 @@ export class NtpSearchboxElement extends SearchboxElement implements
         reflect: true,
         type: Boolean,
       },
+
+      //========================================================================
+      // Protected properties
+      //========================================================================
+      tabSuggestions_: {type: Array},
+      inputState_: {type: Object},
     };
   }
 
@@ -77,11 +89,15 @@ export class NtpSearchboxElement extends SearchboxElement implements
   accessor composeboxEnabled: boolean = false;
   accessor composeButtonEnabled: boolean = false;
   accessor cyclingPlaceholders: boolean = false;
-  private accessor placeholderCycler_: PlaceholderTextCycler | null = null;
   accessor isDraggingFile: boolean = false;
+  protected accessor tabSuggestions_: TabInfo[] = [];
+  protected accessor inputState_: InputState|null = null;
   protected dragAndDropHandler: DragAndDropHandler|null = null;
+  private placeholderCycler_: PlaceholderTextCycler | null = null;
   private dragAndDropEnabled_: boolean =
       loadTimeData.getBoolean('composeboxContextDragAndDropEnabled');
+  private onTabStripChangedListenerId_: number|null = null;
+  private contextMenuOpened_: boolean = false;
 
   override async connectedCallback() {
     super.connectedCallback();
@@ -90,12 +106,20 @@ export class NtpSearchboxElement extends SearchboxElement implements
       this.dragAndDropHandler =
           new DragAndDropHandler(this, this.dragAndDropEnabled_);
     }
-    await Promise.resolve();
+    this.onTabStripChangedListenerId_ =
+        this.callbackRouter_.onTabStripChanged.addListener(
+            this.refreshTabSuggestions_.bind(this));
+    this.inputState_ = (await this.pageHandler().getInputState()).state;
+    if (this.inputState_) {
+      this.inputState_.activeModel = ModelMode.kUnspecified;
+    }
   }
 
   override disconnectedCallback() {
     super.disconnectedCallback();
     this.placeholderCycler_?.stop();
+    assert(this.onTabStripChangedListenerId_);
+    this.callbackRouter_.removeListener(this.onTabStripChangedListenerId_);
   }
 
   override firstUpdated() {
@@ -180,6 +204,79 @@ export class NtpSearchboxElement extends SearchboxElement implements
   //============================================================================
   // Event handlers
   //============================================================================
+
+  protected onFileChange_(e: CustomEvent<{files: FileList}>) {
+    this.processFiles_(
+        e.detail.files, ComposeboxContextAddedMethod.CONTEXT_MENU);
+  }
+
+  protected onAddTabContext_(e: CustomEvent<{
+    id: number,
+    title: string,
+    url: Url,
+    delayUpload: boolean,
+    origin: TabUploadOrigin,
+  }>) {
+    const attachment: TabUpload = {
+      tabId: e.detail.id,
+      url: e.detail.url,
+      title: e.detail.title,
+      delayUpload: e.detail.delayUpload,
+      origin: e.detail.origin,
+    };
+    recordContextualElementClickedMetric(
+        this.composeboxSource, 'ClassicPopup', ContextType.TAB);
+    this.openComposebox_([attachment]);
+  }
+
+  protected async refreshTabSuggestions_(forceRefresh: boolean = false) {
+    // Only refresh tab suggestions if the context menu is opened.
+    const requiresRefresh = forceRefresh || this.contextMenuOpened_;
+    if (!requiresRefresh) {
+      return;
+    }
+    const {tabs} = await this.pageHandler().getRecentTabs();
+    this.tabSuggestions_ = [...tabs];
+  }
+
+  protected async onGetTabPreview_(e: CustomEvent<{
+    tabId: number,
+    onPreviewFetched: (previewDataUrl: string) => void,
+  }>) {
+    const {previewDataUrl} =
+        await this.pageHandler().getTabPreview(e.detail.tabId);
+    e.detail.onPreviewFetched(previewDataUrl || '');
+  }
+
+  protected onContextMenuClosed_() {
+    this.contextMenuOpened_ = false;
+    this.blur();
+  }
+
+  protected onContextMenuOpened_() {
+    this.contextMenuOpened_ = true;
+    this.refreshTabSuggestions_(/*forceRefresh=*/ true);
+  }
+
+  protected onContextMenuEntrypointClick_() {
+    this.pageHandler().activateMetricsFunnel('PlusButton');
+  }
+
+  protected onToolClick_(e: CustomEvent<{toolMode: ToolMode}>) {
+    this.openComposebox_([], e.detail.toolMode);
+  }
+
+  protected onDeepSearchClick_() {
+    this.openComposebox_([], ToolMode.kDeepSearch);
+  }
+
+  protected onCreateImageClick_() {
+    this.openComposebox_([], ToolMode.kImageGen);
+  }
+
+  protected onModelClick_(e: CustomEvent<{model: ModelMode}>) {
+    this.openComposebox_([], ToolMode.kUnspecified, e.detail.model);
+  }
 
   protected onComposeClick_(e: CustomEvent<ClickEventDetail>) {
     // TODO(crbug.com/463667769): Call submitQuery here since RealboxHandler is
