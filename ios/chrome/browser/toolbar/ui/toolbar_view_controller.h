@@ -16,6 +16,7 @@
 @class LayoutGuideCenter;
 @protocol PopupMenuCommands;
 @protocol SceneCommands;
+@class TabGroupIndicatorView;
 @class ToolbarButtonFactory;
 @protocol ToolbarHeightDelegate;
 @protocol ToolbarMutator;
@@ -73,6 +74,9 @@
 // Returns a copy of the location bar container, with its frame in the same
 // coordinates as the real in window coordinates.
 - (UIView*)locationBarContainerCopy;
+
+// Sets the tab group indicator view.
+- (void)setTabGroupIndicatorView:(TabGroupIndicatorView*)view;
 
 @end
 

@@ -16,6 +16,9 @@
 #import "ios/chrome/browser/shared/ui/util/layout_guide_names.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/shared/ui/util/util_swift.h"
+#import "ios/chrome/browser/toolbar/legacy/ui_bundled/public/toolbar_constants.h"
+#import "ios/chrome/browser/toolbar/tab_group/ui/tab_group_indicator_constants.h"
+#import "ios/chrome/browser/toolbar/tab_group/ui/tab_group_indicator_view.h"
 #import "ios/chrome/browser/toolbar/ui/buttons/toolbar_button.h"
 #import "ios/chrome/browser/toolbar/ui/buttons/toolbar_button_constants.h"
 #import "ios/chrome/browser/toolbar/ui/buttons/toolbar_button_factory.h"
@@ -38,6 +41,8 @@ constexpr CGFloat kButtonMinScale = 0.2;
 
 constexpr CGFloat kAnimationDuration = 0.2f;
 
+constexpr CGFloat kLocationBarToTabGroupMargin = 6;
+
 // The margin for the leading/trailing edges of the stack view.
 constexpr CGFloat kStackViewMarginRegularRegular = 16;
 constexpr CGFloat kStackViewMarginLandscape = 46;
@@ -52,6 +57,9 @@ constexpr CGFloat kLocationBarStackViewMarginLandscape = 18;
 constexpr CGFloat kLocationBarMaxWidth = 600;
 
 }  // namespace
+
+@interface ToolbarViewController () <TabGroupIndicatorViewDelegate>
+@end
 
 @implementation ToolbarViewController {
   ToolbarButton* _backButton;
@@ -82,10 +90,17 @@ constexpr CGFloat kLocationBarMaxWidth = 600;
   // The stack views that hold the buttons on the trailing side.
   UIStackView* _trailingStackView;
 
+  // The tab group indicator view.
+  TabGroupIndicatorView* _tabGroupIndicatorView;
+
   // The location bar height constraint.
   NSLayoutConstraint* _locationBarHeightConstraint;
   // The constraint for the bottom padding of the toolbar.
   NSLayoutConstraint* _locationBarBottomPaddingConstraint;
+
+  // Constraints for the tabGroupIndicator.
+  NSLayoutConstraint* _tabGroupIndicatorActiveToolbarConstraint;
+  NSLayoutConstraint* _tabGroupIndicatorInactiveToolbarConstraint;
 
   // Constraints for different modes.
   NSArray<NSLayoutConstraint*>* _portraitOrientationConstraints;
@@ -120,6 +135,41 @@ constexpr CGFloat kLocationBarMaxWidth = 600;
 }
 
 #pragma mark - Public
+
+- (void)setTabGroupIndicatorView:(TabGroupIndicatorView*)view {
+  if (_tabGroupIndicatorView == view) {
+    return;
+  }
+  _tabGroupIndicatorView = view;
+  if (!_tabGroupIndicatorView) {
+    return;
+  }
+  _tabGroupIndicatorView.hidden = YES;
+  _tabGroupIndicatorView.delegate = self;
+  _tabGroupIndicatorView.translatesAutoresizingMaskIntoConstraints = NO;
+  [self.view addSubview:_tabGroupIndicatorView];
+
+  _tabGroupIndicatorActiveToolbarConstraint =
+      [_tabGroupIndicatorView.bottomAnchor
+          constraintEqualToAnchor:_locationBarContainer.topAnchor
+                         constant:-kLocationBarToTabGroupMargin];
+
+  _tabGroupIndicatorInactiveToolbarConstraint =
+      [_tabGroupIndicatorView.bottomAnchor
+          constraintEqualToAnchor:self.view.bottomAnchor];
+
+  [self updateTabGroupIndicatorAvailability];
+
+  id<LayoutGuideProvider> safeArea = self.view.safeAreaLayoutGuide;
+  [NSLayoutConstraint activateConstraints:@[
+    [_tabGroupIndicatorView.leadingAnchor
+        constraintEqualToAnchor:safeArea.leadingAnchor],
+    [_tabGroupIndicatorView.trailingAnchor
+        constraintEqualToAnchor:safeArea.trailingAnchor],
+    [_tabGroupIndicatorView.heightAnchor
+        constraintEqualToConstant:kTabGroupIndicatorHeight],
+  ]];
+}
 
 - (void)setLocationBarHidden:(BOOL)hidden {
   _locationBarContainer.hidden = hidden || !_visible;
@@ -213,6 +263,7 @@ constexpr CGFloat kLocationBarMaxWidth = 600;
 
   [self updateToolbarElementsVisibility];
   [self updateToolbarVisibility];
+  [self updateTabGroupIndicatorAvailability];
 
   [self
       registerForTraitChanges:
@@ -287,6 +338,7 @@ constexpr CGFloat kLocationBarMaxWidth = 600;
   _visible = visible;
   [self loadViewIfNeeded];
   [self updateToolbarElementsVisibility];
+  [self updateTabGroupIndicatorAvailability];
 }
 
 - (void)setNTPVisible:(BOOL)NTPVisible {
@@ -395,6 +447,9 @@ constexpr CGFloat kLocationBarMaxWidth = 600;
   [self updateButtons:_trailingStackView.arrangedSubviews
       forFullscreenProgress:progress];
 
+  CGFloat alphaValue = fmax(progress * 2 - 1, 0);
+  _tabGroupIndicatorView.alpha = alphaValue;
+
   CGFloat offset = 0;
   if (!IsRegularXRegularSizeClass(self.traitCollection) &&
       !IsIPhoneLandscape(self.traitCollection)) {
@@ -414,7 +469,30 @@ constexpr CGFloat kLocationBarMaxWidth = 600;
   _trailingStackView.transform = translationTransform;
 }
 
+#pragma mark - TabGroupIndicatorViewDelegate
+
+- (void)tabGroupIndicatorViewVisibilityUpdated:(BOOL)visible {
+  _tabGroupIndicatorView.hidden = !visible;
+  [self.toolbarHeightDelegate toolbarsHeightChanged];
+}
+
 #pragma mark - Private
+
+// Updates the availability of the tab group indicator and its constraints.
+- (void)updateTabGroupIndicatorAvailability {
+  if (_visible) {
+    _tabGroupIndicatorInactiveToolbarConstraint.active = NO;
+    _tabGroupIndicatorActiveToolbarConstraint.active = YES;
+  } else {
+    _tabGroupIndicatorActiveToolbarConstraint.active = NO;
+    _tabGroupIndicatorInactiveToolbarConstraint.active = YES;
+  }
+  _tabGroupIndicatorView.showSeparator = !_visible;
+
+  BOOL canShowTabStrip = CanShowTabStrip(self);
+  BOOL isAvailable = !IsCompactHeight(self) && !canShowTabStrip;
+  _tabGroupIndicatorView.available = isAvailable;
+}
 
 // Updates all the `buttons` according to the fullscreen `progress`.
 - (void)updateButtons:(NSArray<UIView*>*)buttons
@@ -794,6 +872,7 @@ constexpr CGFloat kLocationBarMaxWidth = 600;
   [self updateForFullscreenProgress:_fullscreenProgress];
   [self updateLayoutConstraints];
   [self updateToolbarVisibility];
+  [self updateTabGroupIndicatorAvailability];
 }
 
 @end

@@ -48,6 +48,8 @@ source_set("coordinator") {
     "//ios/chrome/browser/toolbar/legacy/ui_bundled:ui",
     "//ios/chrome/browser/toolbar/legacy/ui_bundled/public",
     "//ios/chrome/browser/toolbar/legacy/ui_bundled/public:constants",
+    "//ios/chrome/browser/toolbar/tab_group/coordinator",
+    "//ios/chrome/browser/toolbar/tab_group/ui:constants",
     "//ios/chrome/browser/toolbar/ui",
     "//ios/chrome/browser/toolbar/ui:constants",
     "//ios/chrome/browser/toolbar/ui:height_delegate",
