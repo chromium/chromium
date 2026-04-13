@@ -181,6 +181,9 @@ constexpr char kSchoolToolsAuthScope[] =
     "https://www.googleapis.com/auth/chromeosschooltools";
 constexpr char kSearchResultsOAuth2Scope[] =
     "https://www.googleapis.com/auth/searchresults";
+// OAuth2 scope for Site Automation Index.
+constexpr char kSiteAutomationIndexOAuth2Scope[] =
+    "https://www.googleapis.com/auth/siteautomationindex";
 // OAuth2 scope for access to Tachyon api.
 constexpr char kTachyonOAuthScope[] = "https://www.googleapis.com/auth/tachyon";
 // OAuth 2 scopes for Google Tasks API.
@@ -317,6 +320,7 @@ constexpr char kActorLoginPermissionServiceName[] =
     "actor_login_permission_service";
 constexpr char kGapisServiceName[] = "gapis_service";
 constexpr char kOneTimeTokenServiceName[] = "one_time_token_service";
+constexpr char kMultistepFilterName[] = "multistep_filter";
 }  // namespace
 
 namespace signin {
@@ -759,6 +763,10 @@ OAuthConsumer OAuthConsumerRegistry::GetOAuthConsumerFromId(
       return OAuthConsumer(
           /*name=*/kOneTimeTokenServiceName,
           /*scopes=*/{kOneTimeTokenOAuth2Scope});
+    case OAuthConsumerId::kMultistepFilter:
+      return OAuthConsumer(
+          /*name=*/kMultistepFilterName,
+          /*scopes=*/{kSiteAutomationIndexOAuth2Scope});
   }
 }
 
