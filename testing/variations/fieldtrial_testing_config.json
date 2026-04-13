@@ -3499,24 +3499,6 @@
             ]
         }
     ],
-    "AutomatedPasswordChangeStudyModelUsage": [
-        {
-            "platforms": [
-                "chromeos",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "ProactivelyDownloadModelForPasswordChange"
-                    ]
-                }
-            ]
-        }
-    ],
     "AutomatedPasswordChangeWithInterruptionDetection": [
         {
             "platforms": [

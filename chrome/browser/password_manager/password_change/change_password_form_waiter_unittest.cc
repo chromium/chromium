@@ -129,6 +129,7 @@ class ChangePasswordFormWaiterTest : public ChromeRenderViewHostTestHarness {
     ON_CALL(client_, GetPasswordManager).WillByDefault(Return(&mock_manager_));
     ON_CALL(mock_manager_, GetPasswordFormCache)
         .WillByDefault(Return(&mock_cache_));
+    model_handler()->SetModelAvailability(true);
   }
 
   std::unique_ptr<password_manager::PasswordFormManager> CreateFormManager(
