@@ -36,7 +36,6 @@
 #include "chrome/browser/ash/policy/enrollment/enrollment_requisition_manager.h"
 #include "chrome/browser/ash/policy/enrollment/enrollment_status.h"
 #include "chrome/browser/ash/policy/remote_commands/crd/fake_start_crd_session_job_delegate.h"
-#include "chrome/browser/ash/policy/uploading/heartbeat_scheduler.h"
 #include "chrome/browser/ash/settings/device_settings_test_helper.h"
 #include "chrome/browser/device_identity/device_oauth2_token_service.h"
 #include "chrome/browser/device_identity/device_oauth2_token_service_factory.h"
@@ -1004,23 +1003,6 @@ class DeviceCloudPolicyManagerAshEnrollmentTest
 TEST_P(DeviceCloudPolicyManagerAshEnrollmentTest, Success) {
   RunTest();
   ExpectSuccessfulEnrollment();
-}
-
-TEST_P(DeviceCloudPolicyManagerAshEnrollmentTest,
-       EnabledKioskHeartbeatsViaERP) {
-  RunTest();
-  EXPECT_FALSE(manager_->GetHeartbeatSchedulerForTesting());
-}
-
-TEST_P(DeviceCloudPolicyManagerAshEnrollmentTest,
-       DisabledKioskHeartbeatsViaERP) {
-    base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndDisableFeature(
-      chromeos::features::kKioskHeartbeatsViaERP);
-
-  RunTest();
-  EXPECT_EQ(manager_->GetHeartbeatSchedulerForTesting()->last_heartbeat(),
-            base::Time());
 }
 
 TEST_P(DeviceCloudPolicyManagerAshEnrollmentTest, Reenrollment) {

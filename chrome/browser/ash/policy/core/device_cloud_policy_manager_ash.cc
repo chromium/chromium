@@ -40,7 +40,6 @@
 #include "chrome/browser/ash/policy/server_backed_state/server_backed_state_keys_broker.h"
 #include "chrome/browser/ash/policy/status_collector/device_status_collector.h"
 #include "chrome/browser/ash/policy/status_collector/managed_session_service.h"
-#include "chrome/browser/ash/policy/uploading/heartbeat_scheduler.h"
 #include "chrome/browser/ash/policy/uploading/status_uploader.h"
 #include "chrome/browser/ash/policy/uploading/system_log_uploader.h"
 #include "chrome/browser/browser_process.h"
@@ -148,7 +147,6 @@ void DeviceCloudPolicyManagerAsh::Shutdown() {
   lock_unlock_reporter_.reset();
   login_logout_reporter_.reset();
   user_added_removed_reporter_.reset();
-  heartbeat_scheduler_.reset();
   syslog_uploader_.reset();
   status_uploader_.reset();
   crd_delegate_ = nullptr;
@@ -255,15 +253,6 @@ void DeviceCloudPolicyManagerAsh::StartConnection(
     CreateStatusUploader(managed_session_service_.get());
     syslog_uploader_ =
         std::make_unique<SystemLogUploader>(nullptr, task_runner_);
-    if (base::FeatureList::IsEnabled(
-            chromeos::features::kKioskHeartbeatsViaERP)) {
-      // Do nothing as heartbeats go over ERP.
-    } else {
-      // Initialize legacy GCM heartbeat (default behaviour)
-      heartbeat_scheduler_ = std::make_unique<HeartbeatScheduler>(
-          g_browser_process->gcm_driver(), client(), device_store_.get(),
-          install_attributes->GetDeviceId(), task_runner_);
-    }
     metric_reporting_manager_ = reporting::MetricReportingManager::Create(
         managed_session_service_.get());
     os_updates_reporter_ = reporting::OsUpdatesReporter::Create();
@@ -434,11 +423,6 @@ void DeviceCloudPolicyManagerAsh::CreateManagedSessionServiceAndReporters() {
         reporting::UserSessionActivityReporter::Create(
             managed_session_service_.get(), user_manager);
   }
-}
-
-HeartbeatScheduler*
-DeviceCloudPolicyManagerAsh::GetHeartbeatSchedulerForTesting() const {
-  return heartbeat_scheduler_.get();
 }
 
 reporting::OsUpdatesReporter*

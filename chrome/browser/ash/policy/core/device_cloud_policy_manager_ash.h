@@ -54,7 +54,6 @@ class StartCrdSessionJobDelegate;
 class DeviceCloudPolicyStoreAsh;
 class EuiccStatusUploader;
 class ForwardingSchemaRegistry;
-class HeartbeatScheduler;
 class LookupKeyUploader;
 class ManagedSessionService;
 class ReportingUserTracker;
@@ -167,8 +166,6 @@ class DeviceCloudPolicyManagerAsh : public CloudPolicyManager,
   void OnUserRemoved(const AccountId& account_id,
                      user_manager::UserRemovalReason reason) override;
 
-  HeartbeatScheduler* GetHeartbeatSchedulerForTesting() const;
-
   reporting::OsUpdatesReporter* GetOsUpdatesReporter() const;
 
   reporting::MetricReportingManager* GetMetricReportingManager();
@@ -237,10 +234,6 @@ class DeviceCloudPolicyManagerAsh : public CloudPolicyManager,
 
   // Helper object that handles uploading system logs to the server.
   std::unique_ptr<SystemLogUploader> syslog_uploader_;
-
-  // Helper object that handles sending heartbeats over the GCM channel to
-  // the server, to monitor connectivity.
-  std::unique_ptr<HeartbeatScheduler> heartbeat_scheduler_;
 
   // Object that initiates device metrics collection and reporting.
   std::unique_ptr<reporting::MetricReportingManager> metric_reporting_manager_;

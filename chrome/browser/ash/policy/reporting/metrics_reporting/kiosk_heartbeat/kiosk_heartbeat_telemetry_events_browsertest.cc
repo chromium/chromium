@@ -4,7 +4,6 @@
 
 #include "base/check.h"
 #include "base/functional/bind.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
 #include "base/time/time_override.h"
 #include "chrome/browser/ash/login/test/cryptohome_mixin.h"
@@ -70,9 +69,6 @@ class KioskHeartbeatEventsBrowserTest
     : public ::policy::DevicePolicyCrosBrowserTest {
  protected:
   KioskHeartbeatEventsBrowserTest() {
-    scoped_feature_list_.InitAndEnableFeature(
-        chromeos::features::kKioskHeartbeatsViaERP);
-
     // Initialize the MockClock.
     test::MockClock::Get();
   }
@@ -113,7 +109,6 @@ class KioskHeartbeatEventsBrowserTest
         {ash::kHeartbeatEnabled});
   }
 
-  ::base::test::ScopedFeatureList scoped_feature_list_;
   ::policy::AffiliationMixin affiliation_mixin_{&mixin_host_, policy_helper()};
   ::ash::CryptohomeMixin crypto_home_mixin_{&mixin_host_};
 };

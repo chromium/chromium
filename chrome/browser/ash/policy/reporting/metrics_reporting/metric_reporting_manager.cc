@@ -14,7 +14,6 @@
 
 #include "base/check.h"
 #include "base/check_op.h"
-#include "base/feature_list.h"
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
@@ -189,16 +188,12 @@ void MetricReportingManager::OnLogin(Profile* profile) {
   website_event_report_queue_ = delegate_->CreateMetricReportQueue(
       EventType::kUser, Destination::EVENT_METRIC, Priority::SLOW_BATCH,
       std::move(website_event_rate_limiter), source_info);
-  if (base::FeatureList::IsEnabled(
-          chromeos::features::kKioskHeartbeatsViaERP)) {
-    kiosk_heartbeat_telemetry_report_queue_ =
-        delegate_->CreatePeriodicUploadReportQueue(
-            EventType::kUser, Destination::KIOSK_HEARTBEAT_EVENTS,
-            Priority::IMMEDIATE, &reporting_settings_,
-            ::ash::kHeartbeatFrequency,
-            metrics::GetDefaultKioskHeartbeatUploadFrequency(),
-            /*rate_unit_to_ms=*/1, source_info);
-  }
+  kiosk_heartbeat_telemetry_report_queue_ =
+      delegate_->CreatePeriodicUploadReportQueue(
+          EventType::kUser, Destination::KIOSK_HEARTBEAT_EVENTS,
+          Priority::IMMEDIATE, &reporting_settings_, ::ash::kHeartbeatFrequency,
+          metrics::GetDefaultKioskHeartbeatUploadFrequency(),
+          /*rate_unit_to_ms=*/1, source_info);
   user_peripheral_events_and_telemetry_report_queue_ =
       delegate_->CreateMetricReportQueue(
           EventType::kUser, Destination::PERIPHERAL_EVENTS, Priority::SECURITY,

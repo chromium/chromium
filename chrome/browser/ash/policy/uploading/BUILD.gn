@@ -8,8 +8,6 @@ assert(is_chromeos)
 
 static_library("uploading") {
   sources = [
-    "heartbeat_scheduler.cc",
-    "heartbeat_scheduler.h",
     "status_uploader.cc",
     "status_uploader.h",
     "system_log_uploader.cc",
@@ -28,11 +26,9 @@ static_library("uploading") {
     "//chrome/browser/device_identity",
     "//chrome/browser/profiles:profile_manager",
     "//chrome/common",
-    "//chrome/common:chrome_features",
     "//chrome/common:non_code_constants",
     "//chromeos/ash/components/settings",
     "//components/feedback/redaction_tool",
-    "//components/gcm_driver",
     "//components/policy/core/browser",
     "//components/policy/core/common",
     "//components/policy/core/common:common_constants",
@@ -59,7 +55,6 @@ source_set("unit_tests") {
   testonly = true
 
   sources = [
-    "heartbeat_scheduler_unittest.cc",
     "status_uploader_unittest.cc",
     "system_log_uploader_unittest.cc",
     "upload_job_unittest.cc",
@@ -75,13 +70,10 @@ source_set("unit_tests") {
     "//chrome/browser/ash/settings",
     "//chrome/browser/ash/settings:test_support",
     "//chrome/browser/prefs",
-    "//chrome/common:chrome_features",
     "//chrome/test:test_support",
     "//chromeos/ash/components/settings",
     "//chromeos/dbus/power",
     "//chromeos/dbus/tpm_manager",
-    "//components/gcm_driver:test_support",
-    "//components/gcm_driver/common",
     "//components/policy/core/common",
     "//components/policy/core/common:test_support",
     "//components/prefs:test_support",

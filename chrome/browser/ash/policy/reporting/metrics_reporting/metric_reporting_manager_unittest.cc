@@ -937,40 +937,6 @@ class KioskHeartbeatTelemetryTest : public MetricReportingManagerTest {
   int collector_count_;
 };
 
-TEST_F(KioskHeartbeatTelemetryTest, Disabled) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndDisableFeature(
-      chromeos::features::kKioskHeartbeatsViaERP);
-
-  // PeriodicCollector should be not be created as disabled.
-  EXPECT_CALL(*mock_delegate_,
-              CreatePeriodicCollector(
-                  /*sampler=*/_,
-                  /*metric_report_queue=*/_,
-                  /*reporting_settings=*/_,
-                  /*enable_setting_path=*/StrEq(::ash::kHeartbeatEnabled),
-                  /*setting_enabled_default_value=*/
-                  metrics::kHeartbeatTelemetryDefaultValue,
-                  /*rate_setting_path=*/::ash::kHeartbeatFrequency, _, 1,
-                  /*init_delay=*/base::TimeDelta()))
-      .Times(0);
-
-  // Ignore any other call to CreatePeriodicCollector because it's irrelevant to
-  // this test.
-  EXPECT_CALL(*mock_delegate_,
-              CreatePeriodicCollector(_, _, _, StrNe(::ash::kHeartbeatEnabled),
-                                      _, _, _, _, _))
-      .Times(AnyNumber());
-
-  // Create a metric reporting manager.
-  const auto metric_reporting_manager =
-      test::MetricReportingManagerForTest::Create(std::move(mock_delegate_),
-                                                  nullptr);
-
-  metric_reporting_manager->OnLogin(profile());
-  EXPECT_FALSE(metric_reporting_manager->kiosk_heartbeat_telemetry_queue());
-}
-
 TEST_F(KioskHeartbeatTelemetryTest, Init) {
   const auto upload_delay = mock_delegate_->GetInitialUploadDelay();
 

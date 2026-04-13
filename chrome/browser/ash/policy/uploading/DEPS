@@ -23,7 +23,6 @@ include_rules = [
   "+chrome/browser/policy",
   "+chrome/browser/prefs",
   "+chrome/browser/profiles",
-  "+chrome/common/chrome_features.h",
   "+chrome/common/chrome_switches.h",
   "+chrome/common/extensions",
   "+chrome/test/base",

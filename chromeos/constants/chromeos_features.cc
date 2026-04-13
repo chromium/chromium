@@ -62,9 +62,6 @@ BASE_FEATURE(kExternalDisplayEventTelemetry, base::FEATURE_ENABLED_BY_DEFAULT);
 // Feature flag used to gate preinstallation of the Gemini app.
 BASE_FEATURE(kGeminiAppPreinstall, base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Enables Kiosk Heartbeats to be sent via Encrypted Reporting Pipeline
-BASE_FEATURE(kKioskHeartbeatsViaERP, base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Enables the Badge Authentication flow on the lock screen.
 BASE_FEATURE(kLockScreenBadgeAuth, base::FEATURE_ENABLED_BY_DEFAULT);
 
