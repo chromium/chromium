@@ -57,6 +57,7 @@ LensPreselectionBubble::LensPreselectionBubble(
     views::View* anchor_view,
     bool offline,
     bool show_cancel_button,
+    ui::ColorId bubble_background_color,
     ExitClickedCallback exit_clicked_callback,
     base::OnceClosure on_cancel_callback)
     : BubbleDialogDelegateView(anchor_view,
@@ -65,12 +66,13 @@ LensPreselectionBubble::LensPreselectionBubble(
       tab_handle_(tab_handle),
       show_cancel_button_(show_cancel_button),
       offline_(offline),
+      bubble_background_color_(bubble_background_color),
       exit_clicked_callback_(std::move(exit_clicked_callback)) {
   SetShowCloseButton(false);
   set_close_on_deactivate(false);
   DialogDelegate::SetButtons(static_cast<int>(ui::mojom::DialogButton::kNone));
   set_corner_radius(48);
-  SetBackgroundColor(kColorLensOverlayToastBackground);
+  SetBackgroundColor(bubble_background_color_);
   SetProperty(views::kElementIdentifierKey, kLensPreselectionBubbleElementId);
   SetAccessibleWindowRole(ax::mojom::Role::kAlertDialog);
   SetCancelCallback(std::move(on_cancel_callback));
@@ -220,7 +222,7 @@ void LensPreselectionBubble::OnThemeChanged() {
         color_provider->GetColor(kColorLensOverlayToastForeground));
     exit_button_->SetBorder(views::CreateRoundedRectBorder(
         1, 48, color_provider->GetColor(kColorLensOverlayToastButtonBorder)));
-    exit_button_->SetBgColorIdOverride(kColorLensOverlayToastBackground);
+    exit_button_->SetBgColorIdOverride(bubble_background_color_);
   }
 
   if (show_cancel_button_) {
@@ -229,7 +231,7 @@ void LensPreselectionBubble::OnThemeChanged() {
         color_provider->GetColor(kColorLensOverlayToastForeground));
     cancel_button_->SetBorder(views::CreateRoundedRectBorder(
         1, 48, color_provider->GetColor(kColorLensOverlayToastButtonBorder)));
-    cancel_button_->SetBgColorIdOverride(kColorLensOverlayToastBackground);
+    cancel_button_->SetBgColorIdOverride(bubble_background_color_);
   }
 }
 
