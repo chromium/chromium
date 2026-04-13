@@ -1956,11 +1956,15 @@ chromium-metrics-reviews@google.com.
   <int value="5" label="Client-side model prediction"/>
 </enum>
 
+<!-- LINT.IfChange(WellKnownChangePasswordResult) -->
+
 <enum name="WellKnownChangePasswordResult">
   <int value="0" label="Fallback to Origin"/>
   <int value="1" label="Fallback to Url Override"/>
   <int value="2" label="Well-Known supported"/>
 </enum>
+
+<!-- LINT.ThenChange(//components/password_manager/core/browser/well_known_change_password/well_known_change_password_util.h:WellKnownChangePasswordResult) -->
 
 </enums>
 

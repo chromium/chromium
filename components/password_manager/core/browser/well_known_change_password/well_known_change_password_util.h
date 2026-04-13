@@ -14,6 +14,7 @@ namespace password_manager {
 // Used to report UMAs and UKMs about the support for
 // .well-known/change-password. These values are persisted to logs. Entries
 // should not be renumbered and numeric values should never be reused.
+// LINT.IfChange(WellKnownChangePasswordResult)
 enum class WellKnownChangePasswordResult {
   kFallbackToOriginUrl = 0,
   kFallbackToOverrideUrl = 1,
@@ -21,6 +22,7 @@ enum class WellKnownChangePasswordResult {
 
   kMaxValue = kUsedWellKnownChangePassword,
 };
+// LINT.ThenChange(//tools/metrics/histograms/metadata/password/enums.xml:WellKnownChangePasswordResult)
 
 // Path for Well-Known change password url
 // Spec: https://wicg.github.io/change-password-url/
