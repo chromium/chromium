@@ -5,7 +5,9 @@
 #include "chrome/browser/navigation_predictor/preloading_model_keyed_service_factory.h"
 
 #include "chrome/browser/navigation_predictor/preloading_model_keyed_service.h"
-#include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
+#include "chrome/browser/optimization_guide/model_execution/optimization_guide_global_state.h"
+#include "chrome/browser/optimization_guide/optimization_guide_global_state_holder_keyed_service.h"
+#include "chrome/browser/optimization_guide/optimization_guide_global_state_holder_keyed_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "third_party/blink/public/common/features.h"
 
@@ -29,7 +31,8 @@ PreloadingModelKeyedServiceFactory::PreloadingModelKeyedServiceFactory()
               .WithGuest(ProfileSelection::kNone)
               .WithAshInternals(ProfileSelection::kNone)
               .Build()) {
-  DependsOn(OptimizationGuideKeyedServiceFactory::GetInstance());
+  DependsOn(
+      OptimizationGuideGlobalStateHolderKeyedServiceFactory::GetInstance());
 }
 
 PreloadingModelKeyedServiceFactory::~PreloadingModelKeyedServiceFactory() =
@@ -43,6 +46,11 @@ std::unique_ptr<KeyedService>
     return nullptr;
   }
   auto* profile = Profile::FromBrowserContext(context);
+  auto* global_state_holder =
+      OptimizationGuideGlobalStateHolderKeyedServiceFactory::GetForProfile(
+          profile);
   return std::make_unique<PreloadingModelKeyedService>(
-      OptimizationGuideKeyedServiceFactory::GetForProfile(profile));
+      global_state_holder
+          ? &global_state_holder->GetGlobalState().prediction_manager()
+          : nullptr);
 }

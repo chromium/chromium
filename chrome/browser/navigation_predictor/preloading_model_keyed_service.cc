@@ -4,8 +4,8 @@
 
 #include "chrome/browser/navigation_predictor/preloading_model_keyed_service.h"
 
-#include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
 #include "chrome/browser/navigation_predictor/preloading_model_handler.h"
+#include "components/optimization_guide/core/delivery/optimization_guide_model_provider.h"
 
 namespace {
 
@@ -31,11 +31,7 @@ PreloadingModelKeyedService::Inputs&
 PreloadingModelKeyedService::Inputs::operator=(const Inputs& other) = default;
 
 PreloadingModelKeyedService::PreloadingModelKeyedService(
-    OptimizationGuideKeyedService* optimization_guide_keyed_service) {
-  auto* model_provider =
-      static_cast<optimization_guide::OptimizationGuideModelProvider*>(
-          optimization_guide_keyed_service);
-
+    optimization_guide::OptimizationGuideModelProvider* model_provider) {
   if (model_provider) {
     preloading_model_handler_ =
         std::make_unique<PreloadingModelHandler>(model_provider);

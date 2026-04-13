@@ -15,7 +15,9 @@ namespace base {
 class CancelableTaskTracker;
 }
 
-class OptimizationGuideKeyedService;
+namespace optimization_guide {
+class OptimizationGuideModelProvider;
+}
 class PreloadingModelHandler;
 
 class PreloadingModelKeyedService : public KeyedService {
@@ -54,7 +56,7 @@ class PreloadingModelKeyedService : public KeyedService {
 
   PreloadingModelKeyedService(const PreloadingModelKeyedService&) = delete;
   explicit PreloadingModelKeyedService(
-      OptimizationGuideKeyedService* optimization_guide_keyed_service);
+      optimization_guide::OptimizationGuideModelProvider* model_provider);
   ~PreloadingModelKeyedService() override;
 
   void Score(base::CancelableTaskTracker* tracker,
