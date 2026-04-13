@@ -21,14 +21,13 @@
   --subtitle-font-size: 1rem;
   --text-max-width: 21.875rem;
   --title-font-size: 1.5rem;
-  --title-height: 4rem;
   color: var(--cr-primary-text-color);
   display: flex;
   flex-direction: column;
   height: 100%;
 }
 
-@media screen and ((max-width: 870px) or (max-height: 630px)) {
+@media screen and ((max-width: 870px) or (max-height: 680px)) {
   .background-shape {
     display: none;
   }
@@ -104,7 +103,6 @@
 
 .title {
   font-weight: 500;
-  height: var(--title-height);
   letter-spacing: 0;
   line-height: 2rem;
   font-size: var(--title-font-size);
@@ -161,10 +159,10 @@
   content: var(--bg-bottom-url);
   left: 75%;
   position: fixed;
-  /* Same as above, but start point is 10% as we have more space vertically */
+  /* Same as above, but start point is 40% as we have more space vertically */
   transform: translate(
     -50%,
-    max(0px, calc(10% - (50vh - (var(--child-max-height) / 2
+    max(0px, calc(40% - (50vh - (var(--child-max-height) / 2
       + var(--header-height))) / 2)));
   width: 17%;
   z-index: -1;
@@ -184,7 +182,7 @@
   right: 75%;
   transform: scaleX(-1) translate(
     -50%,
-    max(0px, calc(10% - (50vh - (var(--child-max-height) / 2
+    max(0px, calc(40% - (50vh - (var(--child-max-height) / 2
       + var(--header-height))) / 2)));
 }
 
