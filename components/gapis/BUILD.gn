@@ -23,6 +23,7 @@ static_library("gapis") {
     "//components/signin/public/identity_manager",
     "//components/sync/base",
     "//components/version_info",
+    "//content/public/browser",
     "//google_apis",
     "//services/network/public/cpp",
     "//url",

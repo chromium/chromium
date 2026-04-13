@@ -6,6 +6,7 @@
 #define COMPONENTS_GAPIS_GAPIS_SERVICE_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 
 #include "base/memory/raw_ref.h"
@@ -13,6 +14,7 @@
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/signin/public/identity_manager/access_token_info.h"
 #include "components/version_info/channel.h"
+#include "content/public/browser/cdm_helper.h"
 #include "google_apis/gaia/google_service_auth_error.h"
 #include "url/gurl.h"
 
@@ -41,7 +43,23 @@ class GapisService : public KeyedService {
   void FetchAppTokenIfNeeded();
 
  private:
-  void OnAccessTokenFetched(GoogleServiceAuthError error,
+  enum class CdmInitializationState {
+    kNotInitialized,
+    kInitializedSuccessfully,
+    kFailedToInitialize,
+  };
+
+  void InitializeCdm();
+  void OnCdmInitialized(content::CdmHelper::InitializeResult result);
+
+  void FetchChallenge();
+  void OnChallengeFetched(const std::string& challenge_init_data_hex);
+  void SignChallenge(const std::string& challenge);
+  void OnChallengeSigned(const std::string& signed_challenge,
+                         content::CdmHelper::SignChallengeResult result);
+
+  void OnAccessTokenFetched(const std::string& challenge_init_data_hex,
+                            GoogleServiceAuthError error,
                             signin::AccessTokenInfo access_token_info);
 
   void OnAppTokenFetched(const std::string& app_token);
@@ -49,6 +67,10 @@ class GapisService : public KeyedService {
   const raw_ref<signin::IdentityManager> identity_manager_;
   const scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
   const GURL service_url_;
+
+  std::unique_ptr<content::CdmHelper> cdm_helper_;
+  CdmInitializationState cdm_initialization_state_ =
+      CdmInitializationState::kNotInitialized;
 
   // Pending request for an access token. Non-null iff there is a request
   // ongoing.
