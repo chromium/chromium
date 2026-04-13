@@ -383,7 +383,7 @@ vars = {
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling CrossBench
   # and whatever else without interference from each other.
-  'crossbench_web_tests_revision': 'f0d8391b5e7d41c252a6a366c1d6a993b2e60e5f',
+  'crossbench_web_tests_revision': 'cf82ea87dcd5daef5b120d66bc982465e92da81f',
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling libFuzzer
   # and whatever else without interference from each other.
