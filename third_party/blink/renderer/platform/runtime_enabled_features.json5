@@ -2805,6 +2805,12 @@
       name: "FixStrikethroughToggleInEmptyContentEditable",
       status: "stable",
     },
+    // Fix LayoutView viewport mapping in the GeometryMapper fast path for
+    // OOPIFs.
+    {
+      name: "FixVisualRectRemoteViewportTransform",
+      status: "stable",
+    },
     {
       name: "Fledge",
       status: "stable",

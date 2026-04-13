@@ -1365,6 +1365,33 @@ IN_PROC_BROWSER_TEST_P(PageContentProtoProviderBrowserTestMultiProcess,
               IsEmpty());
 }
 
+IN_PROC_BROWSER_TEST_P(PageContentProtoProviderBrowserTestMultiProcess,
+                       CrossOriginIframeRootGeometry) {
+  LoadPage(https_server()->GetURL(
+      "a.com", "/open_popup_iframe.html?domain=/cross-site/b.com/"));
+
+  {
+    auto* sub_frame = ChildFrameAt(web_contents()->GetPrimaryMainFrame(), 0);
+    ASSERT_TRUE(sub_frame);
+
+    base::test::TestFuture<bool> future;
+    sub_frame->GetRenderWidgetHost()->InsertVisualStateCallback(
+        future.GetCallback());
+    ASSERT_TRUE(future.Wait())
+        << "Timeout waiting for subframe syncing with renderer";
+  }
+
+  LoadData(GetActionableAIPageContentOptions());
+
+  const auto& iframe_node = ActionableContentRootNode().children_nodes()[0];
+  const auto& geometry =
+      iframe_node.children_nodes()[0].content_attributes().geometry();
+  AssertRectsEqual(geometry.visible_bounding_box(),
+                   gfx::Rect(100, 100, 200, 300));
+  AssertRectsEqual(geometry.outer_bounding_box(),
+                   gfx::Rect(100, 100, 200, 300));
+}
+
 INSTANTIATE_TEST_SUITE_P(All,
                          PageContentProtoProviderBrowserTestMultiProcess,
                          testing::Bool());
@@ -2871,6 +2898,20 @@ IN_PROC_BROWSER_TEST_F(PageContentProtoProviderBrowserTest,
   // The div should have no children because it is display-locked and returns
   // early in WalkChildren.
   EXPECT_EQ(div.children_nodes().size(), 0);
+}
+
+IN_PROC_BROWSER_TEST_F(PageContentProtoProviderBrowserTest,
+                       LocalIframeRootGeometry) {
+  LoadPage(https_server()->GetURL("a.com", "/open_popup_iframe.html"),
+           GetActionableAIPageContentOptions());
+
+  const auto& iframe_node = ActionableContentRootNode().children_nodes()[0];
+  const auto& geometry =
+      iframe_node.children_nodes()[0].content_attributes().geometry();
+  AssertRectsEqual(geometry.visible_bounding_box(),
+                   gfx::Rect(100, 100, 200, 300));
+  AssertRectsEqual(geometry.outer_bounding_box(),
+                   gfx::Rect(100, 100, 200, 300));
 }
 
 }  // namespace
