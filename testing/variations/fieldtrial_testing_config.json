@@ -5866,6 +5866,7 @@
     "ClientSideDetectionCreditCardForm": [
         {
             "platforms": [
+                "android",
                 "chromeos",
                 "linux",
                 "mac",
@@ -5875,7 +5876,9 @@
                 {
                     "name": "Enabled",
                     "params": {
+                        "EnableDetectionTrigger": "true",
                         "EnableHeuristicFilter": "true",
+                        "EnableInteractionTrigger": "true",
                         "EnableNewSiteFilter": "true",
                         "EnableReferringAppFilter": "true",
                         "HCAcceptanceRate": "1.0",

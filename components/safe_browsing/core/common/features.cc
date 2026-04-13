@@ -118,6 +118,12 @@ const base::FeatureParam<bool> kCsdCreditCardFormEnableHeuristicFilter{
 const base::FeatureParam<bool> kCsdCreditCardFormEnableReferringAppFilter{
     &kClientSideDetectionCreditCardForm, "EnableReferringAppFilter",
     /*default_value=*/false};
+const base::FeatureParam<bool> kCsdCreditCardFormEnableInteractionTrigger{
+    &kClientSideDetectionCreditCardForm, "EnableInteractionTrigger",
+    /*default_value=*/false};
+const base::FeatureParam<bool> kCsdCreditCardFormEnableDetectionTrigger{
+    &kClientSideDetectionCreditCardForm, "EnableDetectionTrigger",
+    /*default_value=*/false};
 
 BASE_FEATURE(kClientSideDetectionDeprecateDOMModel,
              base::FEATURE_ENABLED_BY_DEFAULT);

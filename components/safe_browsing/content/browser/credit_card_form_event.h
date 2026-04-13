@@ -5,6 +5,8 @@
 #ifndef COMPONENTS_SAFE_BROWSING_CONTENT_BROWSER_CREDIT_CARD_FORM_EVENT_H_
 #define COMPONENTS_SAFE_BROWSING_CONTENT_BROWSER_CREDIT_CARD_FORM_EVENT_H_
 
+#include <string_view>
+
 #include "build/build_config.h"
 
 #if BUILDFLAG(IS_ANDROID)
@@ -116,11 +118,13 @@ ReferringApp FromReferringAppInfo(internal::ReferringAppInfo info);
 
 void LogEvent(SiteVisit site_visit,
               ReferringApp referring_app,
-              FieldDetectionHeuristic field_heuristic);
+              FieldDetectionHeuristic field_heuristic,
+              std::string_view event_name);
 
 void LogDedupedEvent(SiteVisit site_visit,
                      ReferringApp referring_app,
-                     FieldDetectionHeuristic field_heuristic);
+                     FieldDetectionHeuristic field_heuristic,
+                     std::string_view event_name);
 
 }  // namespace safe_browsing::credit_card_form
 

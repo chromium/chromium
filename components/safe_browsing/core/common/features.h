@@ -94,6 +94,12 @@ extern const base::FeatureParam<bool> kCsdCreditCardFormEnableHeuristicFilter;
 // Specifies whether to filter credit card CSD pings based on the referring app.
 extern const base::FeatureParam<bool>
     kCsdCreditCardFormEnableReferringAppFilter;
+// Specifies whether to enable triggering on interaction with a credit card
+// form field.
+extern const base::FeatureParam<bool>
+    kCsdCreditCardFormEnableInteractionTrigger;
+// Specifies whether to enable triggering on detection of a credit card form.
+extern const base::FeatureParam<bool> kCsdCreditCardFormEnableDetectionTrigger;
 
 // Deprecate the DOM model and do not onboard to renderer.
 BASE_DECLARE_FEATURE(kClientSideDetectionDeprecateDOMModel);

@@ -212,6 +212,7 @@ struct LogEventTestCase {
   SiteVisit site_visit;
   ReferringApp referring_app;
   FieldDetectionHeuristic field_heuristic;
+  std::string event_name;
   CreditCardFormEvent expected_event;
 
   static std::string GetTestName(
@@ -222,6 +223,8 @@ struct LogEventTestCase {
         ToString(test_case.param.referring_app),
         "_",
         ToString(test_case.param.field_heuristic),
+        "_",
+        test_case.param.event_name,
     });
   }
 };
@@ -239,9 +242,10 @@ std::vector<LogEventTestCase> GetLogEventTestCases() {
             static_cast<FieldDetectionHeuristic>(fdh);
         CreditCardFormEvent event =
             GetCreditCardFormEvent(site_visit, referring_app, field_heuristic);
-        LogEventTestCase test_case{site_visit, referring_app, field_heuristic,
-                                   event};
-        cases.emplace_back(test_case);
+        cases.push_back({site_visit, referring_app, field_heuristic,
+                         "OnAfterFocusOnFormField", event});
+        cases.push_back({site_visit, referring_app, field_heuristic,
+                         "OnFieldTypesDetermined", event});
       }
     }
   }
@@ -258,12 +262,21 @@ TEST_P(LogEventTest, LogEventLogsExpectedHistogram) {
   SiteVisit site_visit = test_case.site_visit;
   ReferringApp referring_app = test_case.referring_app;
   FieldDetectionHeuristic field_heuristic = test_case.field_heuristic;
+  std::string_view event_name = test_case.event_name;
   CreditCardFormEvent expected_event = test_case.expected_event;
   base::HistogramTester histogram_tester;
-  histogram_tester.ExpectTotalCount("SBClientPhishing.CreditCardFormEvent", 0);
-  LogEvent(site_visit, referring_app, field_heuristic);
-  histogram_tester.ExpectBucketCount("SBClientPhishing.CreditCardFormEvent",
+
+  std::string suffixed_histogram =
+      base::StrCat({"SBClientPhishing.CreditCardFormEvent3.", event_name});
+
+  histogram_tester.ExpectTotalCount("SBClientPhishing.CreditCardFormEvent3", 0);
+  histogram_tester.ExpectTotalCount(suffixed_histogram, 0);
+
+  LogEvent(site_visit, referring_app, field_heuristic, event_name);
+
+  histogram_tester.ExpectBucketCount("SBClientPhishing.CreditCardFormEvent3",
                                      expected_event, 1);
+  histogram_tester.ExpectBucketCount(suffixed_histogram, expected_event, 1);
 }
 
 TEST_P(LogEventTest, LogDedupedEventLogsExpectedHistogram) {
@@ -271,13 +284,22 @@ TEST_P(LogEventTest, LogDedupedEventLogsExpectedHistogram) {
   SiteVisit site_visit = test_case.site_visit;
   ReferringApp referring_app = test_case.referring_app;
   FieldDetectionHeuristic field_heuristic = test_case.field_heuristic;
+  std::string_view event_name = test_case.event_name;
   CreditCardFormEvent expected_event = test_case.expected_event;
   base::HistogramTester histogram_tester;
+
+  std::string suffixed_histogram = base::StrCat(
+      {"SBClientPhishing.CreditCardFormDedupedEvent.", event_name});
+
   histogram_tester.ExpectTotalCount(
       "SBClientPhishing.CreditCardFormDedupedEvent", 0);
-  LogDedupedEvent(site_visit, referring_app, field_heuristic);
+  histogram_tester.ExpectTotalCount(suffixed_histogram, 0);
+
+  LogDedupedEvent(site_visit, referring_app, field_heuristic, event_name);
+
   histogram_tester.ExpectBucketCount(
       "SBClientPhishing.CreditCardFormDedupedEvent", expected_event, 1);
+  histogram_tester.ExpectBucketCount(suffixed_histogram, expected_event, 1);
 }
 
 }  // namespace safe_browsing::credit_card_form

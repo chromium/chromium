@@ -209,6 +209,10 @@ class ClientSideDetectionHost
   void OnAfterFocusOnFormField(autofill::AutofillManager& manager,
                                autofill::FormGlobalId form_id,
                                autofill::FieldGlobalId field_id) override;
+  void OnFieldTypesDetermined(autofill::AutofillManager& manager,
+                              autofill::FormGlobalId form,
+                              FieldTypeSource source,
+                              bool small_forms_were_parsed) override;
 
   // history::HistoryServiceObserver method:
   void HistoryServiceBeingDeleted(
@@ -344,6 +348,18 @@ class ClientSideDetectionHost
                            NavigateTo404PageLogsErrorDocument);
   FRIEND_TEST_ALL_PREFIXES(ClientSideDetectionHostGeminiAntiscamProtectionTest,
                            GeminiAntiscamProtectionServiceCalledWithInnerText);
+  FRIEND_TEST_ALL_PREFIXES(
+      ClientSideDetectionHostCreditCardFormTriggerDisabledTest,
+      InteractionTriggerDisabledDoesNotTrigger);
+  FRIEND_TEST_ALL_PREFIXES(
+      ClientSideDetectionHostCreditCardFormDetectionOnlyTest,
+      CreditCardFormTriggersDetectionCheckWithoutInteraction);
+  FRIEND_TEST_ALL_PREFIXES(
+      ClientSideDetectionHostCreditCardFormDetectionTriggerDisabledTest,
+      DetectionTriggerDisabledDoesNotTrigger);
+  FRIEND_TEST_ALL_PREFIXES(
+      ClientSideDetectionHostCreditCardFormDetectionAndInteractionTest,
+      DetectionAndInteractionTriggersOnlyTriggerOnce);
 
   // Extracts suspicious tokens from a copied clipboard payload into a
   // structured object.
@@ -556,7 +572,20 @@ class ClientSideDetectionHost
   void OnCreditCardFormVisitCount(
       std::optional<base::TimeTicks> start_time,
       credit_card_form::FieldDetectionHeuristic field_heuristic,
+      std::string event_name,
+      bool should_trigger,
       history::DailyVisitsResult history_result);
+
+  // MaybeTriggerCreditCardFormPing is a helper that determines whether
+  // a credit card form event should trigger a CSD ping. It takes
+  // an optional field_id to specify whether it is an interaction
+  // or a detection trigger.
+  void MaybeTriggerCreditCardFormPing(
+      autofill::AutofillManager& manager,
+      autofill::FormGlobalId form_id,
+      std::optional<autofill::FieldGlobalId> field_id,
+      std::string event_name,
+      bool should_trigger);
 
   // Fills in the screenshot data for the given `request`. Only fill if the
   // report type is USER_REPORT.

@@ -8,6 +8,7 @@
 
 #include "base/containers/fixed_flat_set.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/strings/strcat.h"
 
 namespace safe_browsing::credit_card_form {
 
@@ -51,20 +52,29 @@ ReferringApp FromReferringAppInfo(internal::ReferringAppInfo info) {
 
 void LogEvent(SiteVisit site_visit,
               ReferringApp referring_app,
-              FieldDetectionHeuristic field_heuristic) {
+              FieldDetectionHeuristic field_heuristic,
+              std::string_view event_name) {
   CreditCardFormEvent event =
       GetCreditCardFormEvent(site_visit, referring_app, field_heuristic);
-  base::UmaHistogramSparse("SBClientPhishing.CreditCardFormEvent",
+  base::UmaHistogramSparse("SBClientPhishing.CreditCardFormEvent3",
                            static_cast<int>(event));
+  base::UmaHistogramSparse(
+      base::StrCat({"SBClientPhishing.CreditCardFormEvent3.", event_name}),
+      static_cast<int>(event));
 }
 
 void LogDedupedEvent(SiteVisit site_visit,
                      ReferringApp referring_app,
-                     FieldDetectionHeuristic field_heuristic) {
+                     FieldDetectionHeuristic field_heuristic,
+                     std::string_view event_name) {
   CreditCardFormEvent event =
       GetCreditCardFormEvent(site_visit, referring_app, field_heuristic);
   base::UmaHistogramSparse("SBClientPhishing.CreditCardFormDedupedEvent",
                            static_cast<int>(event));
+  base::UmaHistogramSparse(
+      base::StrCat(
+          {"SBClientPhishing.CreditCardFormDedupedEvent.", event_name}),
+      static_cast<int>(event));
 }
 
 }  // namespace safe_browsing::credit_card_form
