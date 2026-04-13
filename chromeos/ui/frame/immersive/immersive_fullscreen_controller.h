@@ -88,7 +88,10 @@ class COMPONENT_EXPORT(CHROMEOS_UI_FRAME) ImmersiveFullscreenController
   // top-of-window views revealed. |widget| is the widget to make fullscreen.
   void Init(ImmersiveFullscreenControllerDelegate* delegate,
             views::Widget* widget,
-            views::View* top_container);
+            views::View* top_container,
+            views::View* tab_strip = nullptr);
+
+  void UpdateTabStrip(views::View* tab_strip);
 
   // Returns true if in immersive fullscreen.
   bool IsEnabled() const;
@@ -272,7 +275,8 @@ class COMPONENT_EXPORT(CHROMEOS_UI_FRAME) ImmersiveFullscreenController
   // Not owned.
   raw_ptr<ImmersiveFullscreenControllerDelegate, DanglingUntriaged> delegate_ =
       nullptr;
-  raw_ptr<views::View, DanglingUntriaged> top_container_ = nullptr;
+  raw_ptr<views::View> top_container_ = nullptr;
+  raw_ptr<views::View> tab_strip_ = nullptr;
   raw_ptr<views::Widget, DanglingUntriaged> widget_ = nullptr;
 
   base::ScopedObservation<views::Widget, views::WidgetObserver>

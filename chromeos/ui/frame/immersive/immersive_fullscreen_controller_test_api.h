@@ -43,6 +43,8 @@ class COMPONENT_EXPORT(CHROMEOS_UI_FRAME) ImmersiveFullscreenControllerTestApi {
 
   bool IsTopEdgeHoverTimerRunning() const;
 
+  bool IsRevealLocked() const;
+
   void EndAnimation();
 
  private:

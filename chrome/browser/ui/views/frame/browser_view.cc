@@ -354,6 +354,7 @@
 #include "ash/wm/window_properties.h"
 #include "chrome/browser/ash/boca/on_task/on_task_locked_controller.h"
 #include "chrome/browser/ui/views/frame/browser_frame_view_chromeos.h"
+#include "chrome/browser/ui/views/frame/immersive_mode_controller_chromeos.h"
 #include "chrome/browser/ui/views/frame/top_controls_slide_controller_chromeos.h"
 #include "chrome/grit/chrome_unscaled_resources.h"
 #include "chromeos/components/mgs/managed_guest_session_utils.h"
@@ -1556,6 +1557,12 @@ void BrowserView::OnVerticalTabStripModeChanged(
   }
 
   GetFrameView()->OnTabStripStateChanged();
+
+  auto* const immersive_mode_controller =
+      ImmersiveModeController::From(browser());
+  if (immersive_mode_controller) {
+    immersive_mode_controller->OnTabStripLayoutChanged();
+  }
 
   UpdateTabSearchBubbleHost();
   InvalidateLayout();

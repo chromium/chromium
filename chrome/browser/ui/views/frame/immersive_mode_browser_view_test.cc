@@ -5,12 +5,16 @@
 #include <cmath>
 #include <memory>
 
+#include "base/test/run_until.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/ui/ash/test_util.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_context.h"
+#include "chrome/browser/ui/tabs/features.h"
+#include "chrome/browser/ui/tabs/vertical_tab_strip_state_controller.h"
+#include "chrome/browser/ui/views/bubble/webui_bubble_manager.h"
 #include "chrome/browser/ui/views/frame/browser_frame_view_chromeos.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/immersive_mode_controller.h"
@@ -18,6 +22,7 @@
 #include "chrome/browser/ui/views/frame/immersive_mode_tester.h"
 #include "chrome/browser/ui/views/frame/tab_strip_region_view.h"
 #include "chrome/browser/ui/views/fullscreen_control/fullscreen_control_host.h"
+#include "chrome/browser/ui/views/tab_search_bubble_host.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "chromeos/ui/frame/caption_buttons/frame_caption_button_container_view.h"
@@ -27,10 +32,13 @@
 #include "ui/aura/window.h"
 #include "ui/base/page_transition_types.h"
 #include "ui/base/ui_base_types.h"
+#include "ui/display/display.h"
+#include "ui/display/screen.h"
 #include "ui/events/test/event_generator.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
+#include "ui/views/test/widget_test.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/window/caption_button_layout_constants.h"
 #include "url/gurl.h"
@@ -329,8 +337,150 @@ IN_PROC_BROWSER_TEST_P(ImmersiveModeBrowserViewTest, TabAndBrowserFullscreen) {
   EXPECT_TRUE(IsShelfVisible());
 }
 
+IN_PROC_BROWSER_TEST_P(ImmersiveModeBrowserViewTest,
+                       BubbleAnchoredToTabStripKeepsRevealed) {
+  BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser());
+  auto* const immersive_mode_controller =
+      ImmersiveModeController::From(browser());
+
+  EXPECT_TRUE(browser_view->GetSupportsTabStrip());
+
+  EXPECT_FALSE(browser()->window()->IsFullscreen());
+  EXPECT_FALSE(immersive_mode_controller->IsEnabled());
+  EXPECT_FALSE(immersive_mode_controller->IsRevealed());
+
+  aura::Window* window = browser()->window()->GetNativeWindow();
+
+  ui::test::EventGenerator event_generator(window->GetRootWindow(), window);
+  event_generator.PressAndReleaseKeyAndModifierKeys(
+      ui::VKEY_A, ui::EF_SHIFT_DOWN | ui::EF_PLATFORM_ACCELERATOR);
+
+  auto* tab_search_host = browser_view->GetTabSearchBubbleHost();
+  ASSERT_TRUE(tab_search_host);
+  auto* bubble_manager = tab_search_host->webui_bubble_manager_for_testing();
+  ASSERT_TRUE(bubble_manager);
+
+  EXPECT_TRUE(bubble_manager->GetBubbleWidget());
+  views::test::WidgetVisibleWaiter(bubble_manager->GetBubbleWidget()).Wait();
+
+  views::View* anchor_view =
+      bubble_manager->bubble_view_for_testing()->GetAnchorView();
+  EXPECT_TRUE(browser_view->tab_strip_view()->Contains(anchor_view));
+
+  display::Screen* screen = display::Screen::Get();
+  display::Display display = screen->GetDisplayNearestWindow(window);
+  gfx::Rect bubble_rect_normal =
+      bubble_manager->GetBubbleWidget()->GetWindowBoundsInScreen();
+  gfx::Rect anchor_rect_normal = anchor_view->GetBoundsInScreen();
+
+  // The bubble's top edge should be close to the bottom of the anchor view
+  // (adjusting for potential shadow or inset). We can check if it's placed
+  // generally below the anchor view's top.
+  EXPECT_GE(bubble_rect_normal.y(), anchor_rect_normal.y());
+  EXPECT_TRUE(display.work_area().Contains(bubble_rect_normal));
+
+  EnterImmersiveFullscreenMode(browser());
+
+  EXPECT_TRUE(chromeos::ImmersiveFullscreenControllerTestApi(
+                  static_cast<ImmersiveModeControllerChromeos*>(
+                      immersive_mode_controller)
+                      ->controller())
+                  .IsRevealLocked());
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return immersive_mode_controller->IsRevealed(); }));
+
+  EXPECT_EQ(anchor_view,
+            bubble_manager->bubble_view_for_testing()->GetAnchorView());
+
+  gfx::Rect bubble_rect_immersive =
+      bubble_manager->GetBubbleWidget()->GetWindowBoundsInScreen();
+  gfx::Rect anchor_rect_immersive = anchor_view->GetBoundsInScreen();
+
+  EXPECT_GE(bubble_rect_immersive.y(), anchor_rect_immersive.y());
+  EXPECT_TRUE(display.bounds().Contains(bubble_rect_immersive));
+
+  event_generator.PressAndReleaseKey(ui::VKEY_ESCAPE);
+
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return !bubble_manager->GetBubbleWidget(); }));
+}
+
+class ImmersiveModeBrowserViewVerticalTabsTest
+    : public ImmersiveModeBrowserViewTest {
+ public:
+  ImmersiveModeBrowserViewVerticalTabsTest() {
+    scoped_feature_list_.InitAndEnableFeature(tabs::kVerticalTabs);
+  }
+
+  void SetUpOnMainThread() override {
+    ImmersiveModeBrowserViewTest::SetUpOnMainThread();
+    tabs::VerticalTabStripStateController::From(browser())
+        ->SetVerticalTabsEnabled(true);
+    RunScheduledLayouts();
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_P(ImmersiveModeBrowserViewVerticalTabsTest,
+                       BubbleAnchoredToTabStripDoesNotReveal) {
+  auto verify_no_reveal = [&](Browser* test_browser,
+                              std::string_view trace_name) {
+    SCOPED_TRACE(trace_name);
+    BrowserView* browser_view =
+        BrowserView::GetBrowserViewForBrowser(test_browser);
+    auto* const immersive_mode_controller =
+        ImmersiveModeController::From(test_browser);
+
+    EXPECT_TRUE(browser_view->GetSupportsTabStrip());
+
+    EXPECT_FALSE(test_browser->window()->IsFullscreen());
+    EXPECT_FALSE(immersive_mode_controller->IsEnabled());
+    EXPECT_FALSE(immersive_mode_controller->IsRevealed());
+
+    aura::Window* window = test_browser->window()->GetNativeWindow();
+
+    ui::test::EventGenerator event_generator(window->GetRootWindow(), window);
+    event_generator.PressAndReleaseKeyAndModifierKeys(
+        ui::VKEY_A, ui::EF_SHIFT_DOWN | ui::EF_PLATFORM_ACCELERATOR);
+
+    auto* tab_search_host = browser_view->GetTabSearchBubbleHost();
+    ASSERT_TRUE(tab_search_host);
+    auto* bubble_manager = tab_search_host->webui_bubble_manager_for_testing();
+    ASSERT_TRUE(bubble_manager);
+
+    EXPECT_TRUE(bubble_manager->GetBubbleWidget());
+    views::test::WidgetVisibleWaiter(bubble_manager->GetBubbleWidget()).Wait();
+
+    EnterImmersiveFullscreenMode(test_browser);
+
+    EXPECT_FALSE(chromeos::ImmersiveFullscreenControllerTestApi(
+                     static_cast<ImmersiveModeControllerChromeos*>(
+                         immersive_mode_controller)
+                         ->controller())
+                     .IsRevealLocked());
+
+    ASSERT_TRUE(base::test::RunUntil(
+        [&]() { return !immersive_mode_controller->IsRevealed(); }));
+
+    event_generator.PressAndReleaseKey(ui::VKEY_ESCAPE);
+
+    ASSERT_TRUE(base::test::RunUntil(
+        [&]() { return !bubble_manager->GetBubbleWidget(); }));
+  };
+
+  // Test the initial browser
+  verify_no_reveal(browser(), "1st browser");
+
+  // Create a new browser with VT on, and test it
+  Browser* new_browser = CreateBrowser(browser()->profile());
+  verify_no_reveal(new_browser, "2nd browser");
+}
+
 #define INSTANTIATE_TEST_SUITE(name) \
   INSTANTIATE_TEST_SUITE_P(All, name, ::testing::Values(false, true))
 
 INSTANTIATE_TEST_SUITE(ImmersiveModeBrowserViewTest);
 INSTANTIATE_TEST_SUITE(ImmersiveModeBrowserViewTestNoWebUiTabStrip);
+INSTANTIATE_TEST_SUITE(ImmersiveModeBrowserViewVerticalTabsTest);

@@ -189,6 +189,7 @@ void ImmersiveFocusWatcher::UpdateFocusRevealedLock() {
   if (widget->IsActive()) {
     views::View* focused_view = widget->GetFocusManager()->GetFocusedView();
     should_acquire_lock =
+        focused_view &&
         immersive_fullscreen_controller_->ShouldRevealTopChrome(focused_view);
   } else {
     aura::Window* native_window = GetWidgetWindow();
@@ -251,8 +252,7 @@ void ImmersiveFocusWatcher::RecreateBubbleObserver() {
   for (const auto& transient_child : transient_children) {
     views::View* anchor_view = GetAnchorView(transient_child);
     if (anchor_view &&
-        immersive_fullscreen_controller_->top_container()->Contains(
-            anchor_view)) {
+        immersive_fullscreen_controller_->ShouldRevealTopChrome(anchor_view)) {
       bubble_observer_->StartObserving(transient_child);
     }
   }

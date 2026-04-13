@@ -40,6 +40,10 @@ bool ImmersiveFullscreenControllerTestApi::IsTopEdgeHoverTimerRunning() const {
   return immersive_fullscreen_controller_->top_edge_hover_timer_.IsRunning();
 }
 
+bool ImmersiveFullscreenControllerTestApi::IsRevealLocked() const {
+  return immersive_fullscreen_controller_->revealed_lock_count_ > 0;
+}
+
 void ImmersiveFullscreenControllerTestApi::EndAnimation() {
   immersive_fullscreen_controller_->animation_->End();
 }

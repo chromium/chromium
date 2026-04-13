@@ -108,7 +108,8 @@ ImmersiveFullscreenController::~ImmersiveFullscreenController() {
 void ImmersiveFullscreenController::Init(
     ImmersiveFullscreenControllerDelegate* delegate,
     views::Widget* widget,
-    views::View* top_container) {
+    views::View* top_container,
+    views::View* tab_strip) {
   // This function may be called more than once (e.g. by
   // ClientControlledShellSurface).
   EnableWindowObservers(false);
@@ -117,6 +118,7 @@ void ImmersiveFullscreenController::Init(
 
   delegate_ = delegate;
   top_container_ = top_container;
+  tab_strip_ = tab_strip;
   animation_notifier_ = std::make_unique<
       gfx::AnimationDelegateNotifier<views::AnimationDelegateViews>>(
       this, top_container);
@@ -133,6 +135,16 @@ void ImmersiveFullscreenController::Init(
   }
 
   EnableWindowObservers(true);
+}
+
+void ImmersiveFullscreenController::UpdateTabStrip(views::View* tab_strip) {
+  if (tab_strip_) {
+    tab_strip_->RemoveObserver(this);
+  }
+  tab_strip_ = tab_strip;
+  if (tab_strip_) {
+    tab_strip_->AddObserver(this);
+  }
 }
 
 bool ImmersiveFullscreenController::IsEnabled() const {
@@ -228,16 +240,20 @@ void ImmersiveFullscreenController::OnWindowDestroying(aura::Window* window) {
 
 void ImmersiveFullscreenController::OnViewBoundsChanged(
     views::View* observed_view) {
-  DCHECK_EQ(top_container_, observed_view);
-  widget()->GetNativeWindow()->SetProperty(
-      kImmersiveTopContainerBoundsInScreen,
-      new gfx::Rect(top_container_->GetBoundsInScreen()));
+  if (observed_view == top_container_) {
+    widget()->GetNativeWindow()->SetProperty(
+        kImmersiveTopContainerBoundsInScreen,
+        new gfx::Rect(top_container_->GetBoundsInScreen()));
+  }
 }
 
 void ImmersiveFullscreenController::OnViewIsDeleting(
     views::View* observed_view) {
-  DCHECK_EQ(observed_view, top_container_);
-  top_container_ = nullptr;
+  if (observed_view == top_container_) {
+    top_container_ = nullptr;
+  } else if (observed_view == tab_strip_) {
+    tab_strip_ = nullptr;
+  }
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -288,7 +304,9 @@ void ImmersiveFullscreenController::UnlockRevealedState() {
 // public:
 
 bool ImmersiveFullscreenController::ShouldRevealTopChrome(views::View* view) {
-  if (top_container_->Contains(view)) {
+  DCHECK(view);
+  if (top_container_->Contains(view) ||
+      (tab_strip_ && tab_strip_->Contains(view))) {
     return true;
   }
 
@@ -337,11 +355,18 @@ ImmersiveFullscreenController* ImmersiveFullscreenController::Get(
 void ImmersiveFullscreenController::EnableWindowObservers(bool enable) {
   if (enable) {
     top_container_->AddObserver(this);
+    if (tab_strip_) {
+      tab_strip_->AddObserver(this);
+    }
     widget_->GetNativeWindow()->AddObserver(this);
   } else {
     if (top_container_) {
       top_container_->RemoveObserver(this);
       top_container_ = nullptr;
+    }
+    if (tab_strip_) {
+      tab_strip_->RemoveObserver(this);
+      tab_strip_ = nullptr;
     }
     if (widget_) {
       widget_->GetNativeWindow()->RemoveObserver(this);
