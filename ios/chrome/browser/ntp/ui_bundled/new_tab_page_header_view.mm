@@ -976,8 +976,7 @@ CGFloat MIAAnimationOpacityForScrollProgress(CGFloat percent) {
 }
 
 - (BOOL)shouldShowPlusButton {
-  return IsComposeboxIOSEnabled() && IsPlusButtonInFakeboxEnabled() &&
-         _isAIMAllowed;
+  return IsPlusButtonInFakeboxEnabled() && _isAIMAllowed;
 }
 
 #pragma mark - Property accessors

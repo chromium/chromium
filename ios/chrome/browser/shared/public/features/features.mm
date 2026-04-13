@@ -1183,7 +1183,11 @@ bool IsSyncedGroupColorEnabled() {
 // Enables the plus button in NTP fakebox.
 BASE_FEATURE(kPlusButtonInFakebox, base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Returns true if the plus button in NTP fakebox is enabled
+// Returns true if the plus button in NTP fakebox is enabled.
 bool IsPlusButtonInFakeboxEnabled() {
+  if (IsComposeboxAIMDisabled() || !IsComposeboxIOSEnabled()) {
+    return false;
+  }
+
   return base::FeatureList::IsEnabled(kPlusButtonInFakebox);
 }
