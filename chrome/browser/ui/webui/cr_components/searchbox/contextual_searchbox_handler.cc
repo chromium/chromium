@@ -45,6 +45,7 @@
 #include "components/contextual_search/contextual_search_session_handle.h"
 #include "components/contextual_tasks/public/contextual_tasks_service.h"
 #include "components/contextual_tasks/public/features.h"
+#include "components/contextual_tasks/public/prefs.h"
 #include "components/contextual_tasks/public/query_contextualizer.h"
 #include "components/google/core/common/google_util.h"
 #include "components/lens/contextual_input.h"
@@ -407,6 +408,14 @@ omnibox::InputState ContextualSearchboxHandler::GetInputState() const {
     return input_state_model_->GetInputState();
   }
   return omnibox::InputState();
+}
+
+bool ContextualSearchboxHandler::IsSmartTabSharingActive() const {
+  if (profile_) {
+    return profile_->GetPrefs()->GetBoolean(
+        contextual_tasks::kContextualTasksShareOpenTabsEveryThread);
+  }
+  return false;
 }
 
 void ContextualSearchboxHandler::NotifySessionStarted() {
@@ -815,7 +824,8 @@ void ContextualSearchboxHandler::ContextualizeQueryAndOpenUrl(
         }
       }
     }
-    if (contextual_tasks::GetIsSmartTabSharingEnabled()) {
+    if (contextual_tasks::GetIsSmartTabSharingEnabled() &&
+        IsSmartTabSharingActive()) {
       contextual_tasks::TabSelectionOptions tab_selection_options;
       tab_selection_options.tab_selection_timeout =
           contextual_tasks::GetSmartTabSharingTabSelectionTimeout();
