@@ -401,7 +401,7 @@ class TestPrintManagerHost
     is_setup_scripted_print_preview_ = true;
     std::move(callback).Run();
   }
-  void ShowScriptedPrintPreview(bool source_is_modifiable) override {}
+  void ShowScriptedPrintPreview() override {}
   void RequestPrintPreview(
       mojom::RequestPrintPreviewParamsPtr params) override {}
   void CheckForCancel(int32_t preview_ui_id,

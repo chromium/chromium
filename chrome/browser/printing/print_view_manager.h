@@ -72,7 +72,7 @@ class PrintViewManager : public PrintViewManagerBase,
   void DidShowPrintDialog() override;
   void SetupScriptedPrintPreview(
       SetupScriptedPrintPreviewCallback callback) override;
-  void ShowScriptedPrintPreview(bool source_is_modifiable) override;
+  void ShowScriptedPrintPreview() override;
   void RequestPrintPreview(mojom::RequestPrintPreviewParamsPtr params) override;
   void CheckForCancel(int32_t preview_ui_id,
                       int32_t request_id,
@@ -117,8 +117,7 @@ class PrintViewManager : public PrintViewManagerBase,
   // Helper method for ShowScriptedPrintPreview(), called from
   // RejectPrintPreviewRequestIfRestricted(). Based on value of
   // `should_proceed`, continues to show the print preview or cancels it.
-  void OnScriptedPrintPreviewCallback(bool source_is_modifiable,
-                                      content::GlobalRenderFrameHostId rfh_id,
+  void OnScriptedPrintPreviewCallback(content::GlobalRenderFrameHostId rfh_id,
                                       bool should_proceed);
 
   // Helper method for RequestPrintPreview(), called from
