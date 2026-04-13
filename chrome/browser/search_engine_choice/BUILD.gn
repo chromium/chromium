@@ -77,6 +77,10 @@ source_set("impl") {
         "//chromeos/components/mgs",
       ]
     }
+
+    if (is_chrome_for_testing) {
+      deps += [ "//chrome/browser/chrome_for_testing:browser" ]
+    }
   }
 }
 

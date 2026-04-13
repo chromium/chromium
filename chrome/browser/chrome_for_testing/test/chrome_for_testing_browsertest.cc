@@ -11,7 +11,10 @@
 #include "chrome/browser/chrome_for_testing/switches.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profiles_state.h"
+#include "chrome/browser/search_engine_choice/search_engine_choice_dialog_service_factory.h"
 #include "components/headless/clipboard/headless_clipboard.h"
+#include "components/regional_capabilities/regional_capabilities_switches.h"
+#include "components/search_engines/search_engines_switches.h"
 #include "ui/base/clipboard/clipboard.h"
 #include "ui/base/clipboard/clipboard_buffer.h"
 #include "ui/base/clipboard/clipboard_non_backed.h"
@@ -58,6 +61,11 @@ void ChromeForTestingBrowserTest::AppendConfigSwitch(
 
 namespace {
 
+// Provides enabled/disabled test name suffix for the boolean option tests.
+auto BooleanParamStringProvider = [](const testing::TestParamInfo<bool>& info) {
+  return info.param ? "enabled" : "disabled";
+};
+
 // Miscellaneous tests --------------------------------------------------------
 
 class ChromeForTestingNoOptionsBrowserTest
@@ -70,6 +78,49 @@ IN_PROC_BROWSER_TEST_F(ChromeForTestingNoOptionsBrowserTest, DefaultState) {
   EXPECT_FALSE(IsEnableUserEducationUI());
   EXPECT_FALSE(IsEnableSearchEngineChoiceDialog());
   EXPECT_FALSE(IsEnableVirtualClipboard());
+}
+
+// Search engine choice dialog tests ------------------------------------------
+
+class ChromeForTestingSearchEngineChoiceDialogBrowserTest
+    : public ChromeForTestingBrowserTest,
+      public testing::WithParamInterface<bool> {
+ protected:
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    ChromeForTestingBrowserTest::SetUpCommandLine(command_line);
+
+    command_line->AppendSwitch(
+        switches::kIgnoreNoFirstRunForSearchEngineChoiceScreen);
+    command_line->AppendSwitchASCII(switches::kSearchEngineChoiceCountry,
+                                    switches::kEeaListCountryOverride);
+  }
+
+  bool EnableSearchEngineChoiceDialog() { return GetParam(); }
+
+  std::string GetConfigJson() override {
+    return FormatConfigJsonBoolean("enableSearchEngineChoiceDialog",
+                                   EnableSearchEngineChoiceDialog());
+  }
+
+  bool IsSearchEngineChoiceDialogEnabled() {
+    Profile* profile = browser()->profile();
+    return !!SearchEngineChoiceDialogServiceFactory::GetForProfile(profile);
+  }
+};
+
+INSTANTIATE_TEST_SUITE_P(
+    /* no prefix */,
+    ChromeForTestingSearchEngineChoiceDialogBrowserTest,
+    testing::Bool(),
+    BooleanParamStringProvider);
+
+IN_PROC_BROWSER_TEST_P(ChromeForTestingSearchEngineChoiceDialogBrowserTest,
+                       SearchEngineChoiceDialogOption) {
+  EXPECT_EQ(EnableSearchEngineChoiceDialog(),
+            IsEnableSearchEngineChoiceDialog());
+
+  EXPECT_EQ(EnableSearchEngineChoiceDialog(),
+            IsSearchEngineChoiceDialogEnabled());
 }
 
 // Virtual clipboard tests ----------------------------------------------------

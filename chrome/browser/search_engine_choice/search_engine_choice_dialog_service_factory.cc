@@ -28,12 +28,17 @@
 #include "chromeos/components/kiosk/kiosk_utils.h"
 #endif
 
+#if BUILDFLAG(CHROME_FOR_TESTING)
+#include "chrome/browser/chrome_for_testing/config.h"
+#endif
+
 namespace {
 using ::regional_capabilities::SearchEngineChoiceScreenConditions;
 
 // Stores whether this is a Google Chrome-branded build.
 bool g_is_chrome_build =
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING) || \
+    BUILDFLAG(GOOGLE_CHROME_FOR_TESTING_BRANDING)
     true;
 #else
     false;
@@ -122,9 +127,15 @@ SearchEngineChoiceDialogServiceFactory::ComputeProfileEligibilityForTesting(
 std::unique_ptr<KeyedService>
 SearchEngineChoiceDialogServiceFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
-#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(CHROME_FOR_TESTING)
+#if BUILDFLAG(IS_ANDROID)
   return nullptr;
 #else
+
+#if BUILDFLAG(CHROME_FOR_TESTING)
+  if (!chrome_for_testing::IsEnableSearchEngineChoiceDialog()) {
+    return nullptr;
+  }
+#endif
 
   base::CommandLine* const command_line =
       base::CommandLine::ForCurrentProcess();
@@ -158,5 +169,5 @@ SearchEngineChoiceDialogServiceFactory::BuildServiceInstanceForBrowserContext(
       CHECK_DEREF(TemplateURLServiceFactory::GetForProfile(&profile));
   return std::make_unique<SearchEngineChoiceDialogService>(
       profile, search_engine_choice_service, template_url_service);
-#endif
+#endif  // BUILDFLAG(IS_ANDROID)
 }
