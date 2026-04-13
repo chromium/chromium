@@ -13,6 +13,7 @@
 #import "base/task/thread_pool.h"
 #import "base/timer/timer.h"
 #import "ios/chrome/browser/context_menu/ui_bundled/constants.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/shared/ui/util/image/image_util.h"
 #import "ios/chrome/browser/web/model/image_fetch/image_fetch_tab_helper.h"
@@ -25,6 +26,10 @@
 namespace {
 // Default time interval to wait before showing a spinner.
 constexpr base::TimeDelta kShowSpinnerDelay = base::Seconds(1);
+// Scale for downsampled preview images. Capped at 2x since all devices
+// supporting iOS 17+ are at least 2x, and the visual difference between
+// 2x and 3x is negligible for a context menu preview.
+constexpr CGFloat kPreviewImageScale = 2.0;
 }  // namespace
 
 @interface ImagePreviewViewController ()
@@ -115,27 +120,31 @@ constexpr base::TimeDelta kShowSpinnerDelay = base::Seconds(1);
 
   base::UmaHistogramBoolean("IOS.ContextMenu.ImagePreviewDisplayed", !error);
   if (!error) {
-    CGSize originalPixelSize = ImageSizeFromData(safeImageData);
-    // Cap scale to 2x to reduce memory — the visual difference between
-    // 2x and 3x is negligible for a context menu preview.
-    CGFloat scale = UIScreen.mainScreen.scale == 1.0 ? 1.0 : 2.0;
-    CGFloat screenWidth = UIScreen.mainScreen.bounds.size.width;
-    CGFloat pointWidth = originalPixelSize.width / scale;
-    CGFloat aspect = originalPixelSize.height / originalPixelSize.width;
-    CGFloat fitWidth = std::min(pointWidth, screenWidth);
-    CGSize targetPointSize = CGSizeMake(fitWidth, fitWidth * aspect);
+    if (base::FeatureList::IsEnabled(kContextMenuPreviewDownsampleImage)) {
+      CGSize originalPixelSize = ImageSizeFromData(safeImageData);
+      CGFloat screenWidth = UIScreen.mainScreen.bounds.size.width;
+      CGFloat pointWidth = originalPixelSize.width / kPreviewImageScale;
+      CGFloat aspect = originalPixelSize.height / originalPixelSize.width;
+      CGFloat fitWidth = std::min(pointWidth, screenWidth);
+      CGSize targetPointSize = CGSizeMake(fitWidth, fitWidth * aspect);
 
-    __weak ImagePreviewViewController* weakSelf = self;
-    base::ThreadPool::PostTaskAndReplyWithResult(
-        FROM_HERE, {base::MayBlock(), base::TaskPriority::USER_VISIBLE},
-        base::BindOnce(^{
-          return DownsampledImageFromData(safeImageData, targetPointSize,
-                                          scale);
-        }),
-        base::BindOnce(^(UIImage* image) {
-          [weakSelf downsampledImageReady:image
-                        originalPixelSize:originalPixelSize];
-        }));
+      __weak ImagePreviewViewController* weakSelf = self;
+      base::ThreadPool::PostTaskAndReplyWithResult(
+          FROM_HERE, {base::MayBlock(), base::TaskPriority::USER_VISIBLE},
+          base::BindOnce(^{
+            return DownsampledImageFromData(safeImageData, targetPointSize,
+                                            kPreviewImageScale);
+          }),
+          base::BindOnce(^(UIImage* image) {
+            [weakSelf downsampledImageReady:image
+                          originalPixelSize:originalPixelSize];
+          }));
+    } else {
+      UIImage* image = [UIImage imageWithData:safeImageData];
+      _imageView.image = image;
+      _imageView.hidden = NO;
+      self.preferredContentSize = image.size;
+    }
     return;
   }
 

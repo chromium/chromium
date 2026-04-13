@@ -742,6 +742,10 @@ BASE_DECLARE_FEATURE(kComposeboxIOS);
 // Returns true if the Composebox feature is enabled.
 bool IsComposeboxIOSEnabled();
 
+// Feature flag to enable downsampling images in context menu preview to reduce
+// memory. When disabled, images are decoded at full resolution.
+BASE_DECLARE_FEATURE(kContextMenuPreviewDownsampleImage);
+
 // The feature to enable or disable the group color on the tab group and tab
 // grid surfaces.
 BASE_DECLARE_FEATURE(kTabGroupColorOnSurface);

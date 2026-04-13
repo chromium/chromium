@@ -80,6 +80,7 @@ source_set("ui") {
     ":constants",
     "//base",
     "//components/url_formatter",
+    "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/browser/shared/ui/symbols",
     "//ios/chrome/browser/shared/ui/util/image",
     "//ios/chrome/browser/web/model/image_fetch",
