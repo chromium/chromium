@@ -13,46 +13,46 @@
 
 <!-- Shift+Tab from input at end goes to second-to-last item, not first -->
 <div focusgroup="toolbar inline">
-  <button id="end_A" type="button">A</button>
-  <button id="end_B" type="button">B</button>
+  <button tabindex=0 id="end_A" type="button">A</button>
+  <button tabindex=0 id="end_B" type="button">B</button>
   <input id="end_input" type="text" value="text">
 </div>
 
 <!-- Shift+Tab from select in middle goes to adjacent item, not first -->
 <div focusgroup="toolbar inline">
-  <button id="mid_A" type="button">A</button>
-  <button id="mid_B" type="button">B</button>
+  <button tabindex=0 id="mid_A" type="button">A</button>
+  <button tabindex=0 id="mid_B" type="button">B</button>
   <select id="mid_select">
     <option>12px</option>
     <option>14px</option>
   </select>
-  <button id="mid_C" type="button">C</button>
+  <button tabindex=0 id="mid_C" type="button">C</button>
 </div>
 
 <!-- Tab from handler does not skip focusable opted-out content -->
 <div focusgroup="toolbar inline">
-  <button id="fwd_A" type="button">A</button>
+  <button tabindex=0 id="fwd_A" type="button">A</button>
   <select id="fwd_select">
     <option>12px</option>
     <option>14px</option>
   </select>
   <div focusgroup="none">
-    <button id="fwd_optedout" type="button">Opted Out</button>
+    <button tabindex=0 id="fwd_optedout" type="button">Opted Out</button>
   </div>
-  <button id="fwd_B" type="button">B</button>
+  <button tabindex=0 id="fwd_B" type="button">B</button>
 </div>
 
 <!-- Shift+Tab from handler does not skip focusable opted-out content before it -->
 <div focusgroup="toolbar inline">
-  <button id="back_A" type="button">A</button>
+  <button tabindex=0 id="back_A" type="button">A</button>
   <div focusgroup="none">
-    <button id="back_optedout" type="button">Opted Out</button>
+    <button tabindex=0 id="back_optedout" type="button">Opted Out</button>
   </div>
   <select id="back_select">
     <option>12px</option>
     <option>14px</option>
   </select>
-  <button id="back_B" type="button">B</button>
+  <button tabindex=0 id="back_B" type="button">B</button>
 </div>
 
 <script>

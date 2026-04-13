@@ -13,18 +13,18 @@
 
 <!-- Video element inside focusgroup: Tab/Shift+Tab escape from video -->
 <div focusgroup="toolbar inline">
-  <button id="vid_A" type="button">A</button>
+  <button tabindex=0 id="vid_A" type="button">A</button>
   <video id="vid" controls></video>
-  <button id="vid_B" type="button">B</button>
+  <button tabindex=0 id="vid_B" type="button">B</button>
 </div>
 
 <!-- Standalone video outside any focusgroup — Tab through controls works normally -->
-<button id="standalone_before" type="button">Before</button>
+<button tabindex=0 id="standalone_before" type="button">Before</button>
 <div focusgroup="toolbar inline">
-  <button id="standalone_X" type="button">X</button>
+  <button tabindex=0 id="standalone_X" type="button">X</button>
 </div>
 <video id="standalone_vid" controls></video>
-<button id="standalone_after" type="button">After</button>
+<button tabindex=0 id="standalone_after" type="button">After</button>
 
 <script>
   promise_test(async t => {
