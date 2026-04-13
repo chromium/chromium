@@ -391,7 +391,7 @@ class WebStateImpl final : public WebState {
  private:
   // A list of WebStatePolicyDecider.
   using WebStatePolicyDeciderList =
-      base::ObserverList<WebStatePolicyDecider, true>;
+      base::ReentrantObserverList<WebStatePolicyDecider, true>;
 
   // Force the WebState to become realized (if in "unrealized" state) and
   // then return a pointer to the RealizedWebState. Safe to call if the

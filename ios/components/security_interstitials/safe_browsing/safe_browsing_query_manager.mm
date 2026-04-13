@@ -34,7 +34,8 @@ SafeBrowsingQueryManager::SafeBrowsingQueryManager(web::WebState* web_state,
 }
 
 SafeBrowsingQueryManager::~SafeBrowsingQueryManager() {
-  for (auto& observer : observers_) {
+  // SafeBrowsingQueryManager may be deteted while handling `UrlCheckFinished`.
+  for (auto& observer : observers_.GetReentrantRange()) {
     observer.SafeBrowsingQueryManagerDestroyed(this);
   }
 }
