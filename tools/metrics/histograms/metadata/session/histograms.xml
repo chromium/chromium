@@ -808,7 +808,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Session.TotalDurationMax1Day.{IdentityState}{Profile}"
-    units="ms" expires_after="2027-04-01">
+    units="ms" expires_after="never">
+<!-- expires-never: powers go/chromesync-dash (internal) -->
+
   <owner>bsazonov@chromium.org</owner>
   <owner>droger@chromium.org</owner>
   <owner>msarda@chromium.org</owner>
