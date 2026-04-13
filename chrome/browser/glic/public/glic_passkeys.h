@@ -8,6 +8,7 @@
 #include "base/types/pass_key.h"
 
 class RenderViewContextMenu;
+class TabStripActionContainer;
 
 namespace extensions {
 class PdfViewerPrivateGlicSummarizeFunction;
@@ -30,6 +31,7 @@ class InvokeWithAutoSubmitPasskeyProvider {
   // friend class SomeClassThatNeedsAutoSubmit;
   // friend void SomeClass::SomeFunctionThatNeedsAutoSubmit();
   friend class ::RenderViewContextMenu;
+  friend class ::TabStripActionContainer;
   friend class extensions::PdfViewerPrivateGlicSummarizeFunction;
   friend class ::PasswordChangeFromCheckupDelegate;
   friend class GlicInstanceCoordinatorBrowserTest;

@@ -20,8 +20,10 @@
 #include "chrome/browser/glic/host/host.h"
 #include "chrome/browser/glic/public/glic_enabling.h"
 #include "chrome/browser/glic/public/glic_instance.h"
+#include "chrome/browser/glic/public/glic_invoke_options.h"
 #include "chrome/browser/glic/public/glic_keyed_service.h"
 #include "chrome/browser/glic/public/glic_keyed_service_factory.h"
+#include "chrome/browser/glic/public/glic_passkeys.h"
 #include "chrome/browser/glic/resources/grit/glic_browser_resources.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_window.h"
@@ -399,9 +401,16 @@ void TabStripActionContainer::OnTriggerAnchoredMessage(
         }
         if (auto* glic_service =
                 glic::GlicKeyedService::Get(bwi->GetProfile())) {
-          glic_service->ToggleUI(
-              bwi.get(), /*prevent_close=*/false,
-              glic::mojom::InvocationSource::kAnchoredContextualCue, prompt);
+          if (tabs::TabInterface* tab = bwi->GetActiveTabInterface()) {
+            glic::GlicInvokeOptions options(
+                glic::mojom::InvocationSource::kAnchoredContextualCue);
+            if (prompt.has_value()) {
+              options.prompts.push_back(prompt.value());
+            }
+            glic_service->InvokeWithAutoSubmit(
+                glic::InvokeWithAutoSubmitPasskeyProvider::GetPassKey(), tab,
+                std::move(options));
+          }
         }
       },
       browser_window_interface_->GetWeakPtr(), std::move(prompt_suggestion)));
