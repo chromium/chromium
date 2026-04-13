@@ -98,6 +98,10 @@ class ManifestBuilder {
   ManifestBuilder& Add(const DeviceUseCase& use_case,
                        proto::SolutionRecipe recipe);
 
+  ManifestBuilder& SetFeatureConfig(DeviceCategory device,
+                                    const std::string& name,
+                                    proto::Any config);
+
   proto::Manifest Build();
 
  private:

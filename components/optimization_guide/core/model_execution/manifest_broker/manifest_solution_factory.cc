@@ -297,10 +297,10 @@ void ManifestSolutionFactory::UpdateAssetState(const std::string& asset_id,
 
 void ManifestSolutionFactory::UpdateSolutions() {
   TRACE_EVENT("optimization_guide", "ManifestSolutionFactory::UpdateSolutions");
-  // TODO(holte): Provide non-feature use case solutions.
-  for (auto feature : OnDeviceFeatureSet::All()) {
-    broker_impl_->GetSolutionProvider(feature).Update(
-        CreateSolutionForUseCase(ToUseCaseName(feature)));
+  for (const auto& [use_case_name, _] :
+       manifest_.GetDeviceCategoryConfig().use_cases()) {
+    broker_impl_->GetSolutionProvider(use_case_name)
+        .Update(CreateSolutionForUseCase(use_case_name));
   }
 }
 

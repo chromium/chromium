@@ -185,4 +185,72 @@ TEST_F(ManifestBrokerStateTest, ExecuteTestFeature) {
   EXPECT_EQ(*response.value(), expected_response);
 }
 
+TEST_F(ManifestBrokerStateTest, PropagatesFeatureConfig) {
+  proto::Any config;
+  config.set_type_url("type.googleapis.com/test.Config");
+  config.set_value("test_value");
+
+  ScenarioBuilder scenario(component_state_);
+  scenario.builder.SetFeatureConfig(DeviceCategory::kGpuHighTier,
+                                    "summarizer_api", config);
+  scenario.builder.Add(
+      {DeviceCategory::kGpuHighTier, "test"},
+      SolutionRecipe("model", "", FileReference("manifest", "config.pb")));
+  scenario.builder.Add(
+      "model",
+      BaseModelRecipe(
+          FileReference("asset", "weights"),
+          BaseModelRecipeArgs(
+              proto::BaseModelRecipe::BACKEND_TYPE_GPU,
+              proto::BaseModelRecipe::PERFORMANCE_HINT_UNSPECIFIED, {}, 100)));
+  scenario.builder.Add("asset", OnDemandComponent("key", "1.0"));
+
+  scenario.Finish();
+
+  manifest_broker_state_ = std::make_unique<ManifestBrokerState>(
+      local_state_.local_state(), component_state_.CreateDelegate(),
+      fake_launcher_.LaunchFn());
+  model_broker_client_ = std::make_unique<ModelBrokerClient>(
+      manifest_broker_state_->BindAndPassRemoteBroker(), nullptr);
+
+  task_environment_.RunUntilIdle();
+
+  base::test::TestFuture<std::optional<mojo_base::ProtoWrapper>> future;
+  model_broker_client_->GetConfig(mojom::OnDeviceFeature::kSummarize,
+                                  future.GetCallback());
+
+  auto result = future.Take();
+  ASSERT_TRUE(result.has_value());
+  EXPECT_EQ(result->As<proto::Any>()->value(), "test_value");
+}
+
+TEST_F(ManifestBrokerStateTest, SupportsArbitraryUseCases) {
+  ScenarioBuilder scenario(component_state_);
+  scenario.builder.Add(
+      {DeviceCategory::kGpuHighTier, "custom_use_case"},
+      SolutionRecipe("model", "", FileReference("manifest", "config.pb")));
+  scenario.builder.Add(
+      "model",
+      BaseModelRecipe(
+          FileReference("asset", "weights"),
+          BaseModelRecipeArgs(
+              proto::BaseModelRecipe::BACKEND_TYPE_GPU,
+              proto::BaseModelRecipe::PERFORMANCE_HINT_UNSPECIFIED, {}, 100)));
+  scenario.builder.Add("asset", OnDemandComponent("key", "1.0"));
+
+  scenario.Finish();
+
+  manifest_broker_state_ = std::make_unique<ManifestBrokerState>(
+      local_state_.local_state(), component_state_.CreateDelegate(),
+      fake_launcher_.LaunchFn());
+  model_broker_client_ = std::make_unique<ModelBrokerClient>(
+      manifest_broker_state_->BindAndPassRemoteBroker(), nullptr);
+
+  task_environment_.RunUntilIdle();
+
+  auto& subscriber = model_broker_client_->GetSubscriber("custom_use_case");
+  EXPECT_TRUE(model_broker_client_->HasSubscriber("custom_use_case"));
+  EXPECT_EQ(subscriber.unavailable_reason(), std::nullopt);
+}
+
 }  // namespace optimization_guide

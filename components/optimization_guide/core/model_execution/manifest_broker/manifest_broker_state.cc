@@ -32,6 +32,18 @@ void LogEligibilityReason(mojom::OnDeviceFeature feature,
       reason);
 }
 
+base::flat_map<mojom::OnDeviceFeature, proto::Any> GetFeatureConfigs(
+    const Manifest& manifest) {
+  base::flat_map<mojom::OnDeviceFeature, proto::Any> feature_configs;
+  for (const auto& [name, config] :
+       manifest.GetDeviceCategoryConfig().feature_configs()) {
+    if (auto feature = GetFeatureForUseCase(name)) {
+      feature_configs[*feature] = config;
+    }
+  }
+  return feature_configs;
+}
+
 }  // namespace
 
 ManifestBrokerState::ManifestBrokerState(
@@ -155,6 +167,9 @@ void ManifestBrokerState::EnsureInitialization(
 void ManifestBrokerState::OnManifestUpdated() {
   TRACE_EVENT("optimization_guide", "ManifestBrokerState::OnManifestUpdated");
   CHECK(manifest_monitor_.manifest().has_value());
+
+  model_broker_impl_.SetFeatureConfigs(
+      GetFeatureConfigs(*manifest_monitor_.manifest()));
 
   // Init will complete the first time we finish loading all available assets
   // for a manifest.

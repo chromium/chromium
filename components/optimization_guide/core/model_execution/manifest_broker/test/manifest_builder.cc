@@ -149,6 +149,15 @@ ManifestBuilder& ManifestBuilder::Add(const DeviceUseCase& use_case,
   return *this;
 }
 
+ManifestBuilder& ManifestBuilder::SetFeatureConfig(DeviceCategory device,
+                                                   const std::string& name,
+                                                   proto::Any config) {
+  proto::DeviceCategoryConfig& category_config =
+      (*manifest_.mutable_category_configs())[base::ToString(device)];
+  (*category_config.mutable_feature_configs())[name] = std::move(config);
+  return *this;
+}
+
 proto::Manifest ManifestBuilder::Build() {
   return manifest_;
 }
