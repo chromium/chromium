@@ -259,14 +259,6 @@ class SigninManagerImpl implements SigninManager, AccountsChangeObserver {
                 .isGooglePlayServicesMissing(ContextUtils.getApplicationContext());
     }
 
-    /**
-     * @return Whether force sign-in is enabled by policy.
-     */
-    @Override
-    public boolean isForceSigninEnabled() {
-        return SigninManagerImplJni.get().isForceSigninEnabled(mNativeSigninManagerAndroid);
-    }
-
     /** Registers a SignInStateObserver to be notified when the user signs in or out of Chrome. */
     @Override
     public void addSignInStateObserver(SignInStateObserver observer) {
@@ -804,8 +796,6 @@ class SigninManagerImpl implements SigninManager, AccountsChangeObserver {
 
     @NativeMethods
     interface Natives {
-        boolean isForceSigninEnabled(long nativeSigninManagerAndroid);
-
         @JniType("std::string")
         String extractDomainName(@JniType("std::string") String email);
 

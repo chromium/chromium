@@ -9,8 +9,12 @@ import static org.chromium.build.NullUtil.assumeNonNull;
 import android.content.Context;
 
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.chrome.browser.preferences.Pref;
+import org.chromium.chrome.browser.prefs.LocalStatePrefs;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
+import org.chromium.components.signin.SigninFeatureMap;
+import org.chromium.components.signin.SigninFeatures;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.components.signin.identitymanager.PrimaryAccountChangeEvent;
@@ -35,6 +39,22 @@ public class ForcedSigninController implements IdentityManager.Observer {
 
     public void destroy() {
         mIdentityManager.removeObserver(this);
+    }
+
+    /** Whether the forced sign-in policy is enabled. */
+    public static boolean isForcedSigninPolicyEnabled() {
+        boolean isPolicyEnabled =
+                assumeNonNull(LocalStatePrefs.get()).getBoolean(Pref.FORCE_BROWSER_SIGNIN);
+        return SigninFeatureMap.isEnabled(SigninFeatures.SUPPORT_FORCED_SIGNIN_POLICY)
+                && isPolicyEnabled;
+    }
+
+    /** Whether the forced sign-in screen should be displayed for the given profile. */
+    public static boolean shouldDisplayForcedSignin(Profile profile) {
+        boolean isSignedIn =
+                assumeNonNull(IdentityServicesProvider.get().getIdentityManager(profile))
+                        .hasPrimaryAccount(ConsentLevel.SIGNIN);
+        return isForcedSigninPolicyEnabled() && !isSignedIn;
     }
 
     @Override

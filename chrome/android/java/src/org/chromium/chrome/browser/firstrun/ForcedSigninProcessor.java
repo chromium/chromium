@@ -9,9 +9,8 @@ import static org.chromium.build.NullUtil.assumeNonNull;
 import android.app.Activity;
 
 import org.chromium.build.annotations.NullMarked;
-import org.chromium.chrome.browser.profiles.Profile;
-import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
-import org.chromium.chrome.browser.signin.services.SigninManager;
+import org.chromium.chrome.browser.preferences.Pref;
+import org.chromium.chrome.browser.prefs.LocalStatePrefs;
 import org.chromium.components.externalauth.ExternalAuthUtils;
 import org.chromium.components.externalauth.UserRecoverableErrorHandler;
 
@@ -28,14 +27,14 @@ public final class ForcedSigninProcessor {
      * show a non-cancelable dialog otherwise.
      *
      * @param activity The activity for which to show the dialog.
-     * @param profile The currently used Profile.
      */
     // TODO(bauerb): Once external dependencies reliably use policy to force sign-in,
     // consider removing the child account.
-    public static void checkCanSignIn(final Activity activity, Profile profile) {
-        SigninManager signinManager =
-                assumeNonNull(IdentityServicesProvider.get().getSigninManager(profile));
-        if (signinManager.isForceSigninEnabled()) {
+    public static void checkCanSignIn(final Activity activity) {
+        // TODO(crbug.com/467707243): Replace this with {@link
+        // ForcedSigninController.isForcedSigninPolicyEnabled()} once the feature flag is enabled by
+        // default.
+        if (assumeNonNull(LocalStatePrefs.get()).getBoolean(Pref.FORCE_BROWSER_SIGNIN)) {
             ExternalAuthUtils.getInstance()
                     .canUseGooglePlayServices(
                             new UserRecoverableErrorHandler.ModalDialog(activity, false));

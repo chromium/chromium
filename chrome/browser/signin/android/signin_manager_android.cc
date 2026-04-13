@@ -172,9 +172,6 @@ SigninManagerAndroid::SigninManagerAndroid(
   DCHECK(user_cloud_policy_manager_);
   DCHECK(user_policy_signin_service_);
 
-  force_browser_signin_.Init(prefs::kForceBrowserSignin,
-                             g_browser_process->local_state());
-
   java_signin_manager_ = Java_SigninManagerImpl_create(
       base::android::AttachCurrentThread(), reinterpret_cast<intptr_t>(this),
       profile_->GetPrefs(), identity_manager_,
@@ -202,10 +199,6 @@ SigninManagerAndroid::ManagementCredentials::ManagementCredentials(
       user_affiliation_ids(user_affiliation_ids) {}
 
 SigninManagerAndroid::ManagementCredentials::~ManagementCredentials() = default;
-
-bool SigninManagerAndroid::IsForceSigninEnabled(JNIEnv* env) {
-  return force_browser_signin_.GetValue();
-}
 
 // static
 bool SigninManagerAndroid::MatchesCachedIsAccountManagedEntry(

@@ -42,6 +42,7 @@ import org.chromium.chrome.browser.signin.services.SigninManager.SignOutCallback
 import org.chromium.chrome.browser.signin.services.SigninMetricsUtils;
 import org.chromium.chrome.browser.signin.services.SigninPreferencesManager;
 import org.chromium.chrome.browser.sync.SyncServiceFactory;
+import org.chromium.chrome.browser.ui.signin.ForcedSigninController;
 import org.chromium.chrome.browser.ui.signin.ForcedSigninStatusProvider;
 import org.chromium.chrome.browser.ui.signin.R;
 import org.chromium.chrome.browser.ui.signin.SigninSurveyController;
@@ -53,8 +54,6 @@ import org.chromium.components.signin.AccountManagerFacade;
 import org.chromium.components.signin.AccountManagerFacadeProvider;
 import org.chromium.components.signin.AccountUtils;
 import org.chromium.components.signin.AccountsChangeObserver;
-import org.chromium.components.signin.SigninFeatureMap;
-import org.chromium.components.signin.SigninFeatures;
 import org.chromium.components.signin.base.AccountInfo;
 import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
@@ -285,9 +284,7 @@ public class FullscreenSigninMediator
         if (hasPolicies) {
             mAllowMetricsAndCrashUploading =
                     mPrivacyPreferencesManager.isUsageAndCrashReportingPermittedByPolicy();
-            mIsSigninForcedByPolicy =
-                    SigninFeatureMap.isEnabled(SigninFeatures.SUPPORT_FORCED_SIGNIN_POLICY)
-                            && mSigninManager.isForceSigninEnabled();
+            mIsSigninForcedByPolicy = ForcedSigninController.isForcedSigninPolicyEnabled();
             mForcedSigninToken =
                     mIsSigninForcedByPolicy
                             ? mForcedSigninStatusProvider.showForcedSigninScreen()

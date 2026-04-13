@@ -1624,9 +1624,7 @@ public abstract class ChromeActivity extends AsyncInitializationActivity
                 .addDeferredTask(
                         () -> {
                             if (isActivityFinishingOrDestroyed()) return;
-                            ForcedSigninProcessor.checkCanSignIn(
-                                    ChromeActivity.this,
-                                    getProfileProviderSupplier().get().getOriginalProfile());
+                            ForcedSigninProcessor.checkCanSignIn(ChromeActivity.this);
                         });
 
         DeferredStartupHandler.getInstance()

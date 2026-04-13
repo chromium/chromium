@@ -63,8 +63,6 @@ class SigninManagerAndroid : public KeyedService {
 
   base::android::ScopedJavaLocalRef<jobject> GetJavaObject();
 
-  bool IsForceSigninEnabled(JNIEnv* env);
-
   // Registers a CloudPolicyClient for fetching policy for a user and fetches
   // the policy if necessary.
   void FetchAndApplyCloudPolicy(JNIEnv* env,
@@ -138,10 +136,6 @@ class SigninManagerAndroid : public KeyedService {
                        base::OnceClosure callback);
 
   const raw_ptr<Profile> profile_ = nullptr;
-
-  // Handler for prefs::kForceBrowserSignin. This preference is set in Local
-  // State, not in user prefs.
-  BooleanPrefMember force_browser_signin_;
 
   const raw_ptr<signin::IdentityManager> identity_manager_ = nullptr;
   const raw_ptr<policy::UserCloudPolicyManager> user_cloud_policy_manager_ =

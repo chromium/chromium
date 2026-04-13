@@ -31,6 +31,8 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.preferences.Pref;
+import org.chromium.chrome.browser.prefs.LocalStatePrefs;
+import org.chromium.chrome.browser.prefs.LocalStatePrefsJni;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.signin.services.SigninManager;
@@ -77,10 +79,13 @@ public class FullscreenSigninPromoLauncherTest {
 
     @Mock private PrefService mPrefServiceMock;
 
+    @Mock private LocalStatePrefs.Natives mLocalStatePrefsNativeMock;
+
+    @Mock private PrefService mLocalPrefsServiceMock;
+
     @Mock private IdentityManager mIdentityManagerMock;
 
     @Mock private SigninManager mSigninManagerMock;
-
     @Mock private SigninAndHistorySyncActivityLauncher mFullscreenSigninLauncherMock;
 
     @Mock private Profile mProfile;
@@ -97,6 +102,11 @@ public class FullscreenSigninPromoLauncherTest {
     public void setUp() {
         mTimeInPast = TimeUtils.currentTimeMillis();
         mFakeTimeTestRule.advanceMillis(1000);
+
+        LocalStatePrefsJni.setInstanceForTesting(mLocalStatePrefsNativeMock);
+        LocalStatePrefs.setNativePrefsLoadedForTesting(true);
+        when(mLocalStatePrefsNativeMock.getPrefService()).thenReturn(mLocalPrefsServiceMock);
+        when(mLocalPrefsServiceMock.getBoolean(Pref.FORCE_BROWSER_SIGNIN)).thenReturn(false);
 
         UserPrefsJni.setInstanceForTesting(mUserPrefsNativeMock);
         IdentityServicesProvider.setIdentityManagerForTesting(mIdentityManagerMock);
@@ -201,7 +211,7 @@ public class FullscreenSigninPromoLauncherTest {
     @EnableFeatures(SigninFeatures.SUPPORT_FORCED_SIGNIN_POLICY)
     public void promoShownWhenSigninForcedByPolicy() {
         mAccountManagerTestRule.addAccount(TestAccounts.ACCOUNT1);
-        when(mSigninManagerMock.isForceSigninEnabled()).thenReturn(true);
+        when(mLocalPrefsServiceMock.getBoolean(Pref.FORCE_BROWSER_SIGNIN)).thenReturn(true);
         when(mFullscreenSigninLauncherMock.createFullscreenSigninIntent(
                         eq(mContext), eq(mProfile), any(), eq(SigninAccessPoint.FORCED_SIGNIN)))
                 .thenReturn(mSigninIntent);

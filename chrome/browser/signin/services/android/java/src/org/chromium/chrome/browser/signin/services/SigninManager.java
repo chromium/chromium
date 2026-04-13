@@ -108,11 +108,6 @@ public interface SigninManager {
     boolean isSigninSupported(boolean requireUpdatedPlayServices);
 
     /**
-     * @return Whether force sign-in is enabled by policy.
-     */
-    boolean isForceSigninEnabled();
-
-    /**
      * Adds a {@link SignInStateObserver} to be notified when the user signs in or out of Chrome.
      */
     void addSignInStateObserver(SignInStateObserver observer);
