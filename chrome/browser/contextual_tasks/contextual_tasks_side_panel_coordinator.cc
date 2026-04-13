@@ -85,37 +85,33 @@ namespace {
 std::string GetContextualTasksArmShortName() {
   using contextual_tasks::ExpandButtonOption;
   ExpandButtonOption expand_button = contextual_tasks::GetExpandButtonOption();
-  bool open_on_link = contextual_tasks::kOpenSidePanelOnLinkClicked.Get();
   bool lens_enabled = contextual_tasks::GetEnableLensInContextualTasks();
   bool tab_auto_chip = contextual_tasks::GetIsTabAutoSuggestionChipEnabled();
   const auto entrypoint = contextual_tasks::kShowEntryPoint.Get();
 
   if (expand_button == ExpandButtonOption::kSidePanelExpandButton) {
-    if (open_on_link && lens_enabled && tab_auto_chip) {
+    if (lens_enabled && tab_auto_chip) {
       return "Arm 1";
     }
-    if (!open_on_link && lens_enabled && tab_auto_chip) {
-      return "Arm 2";
-    }
-    if (open_on_link && !lens_enabled && tab_auto_chip) {
+    if (!lens_enabled && tab_auto_chip) {
       return "Arm 3";
     }
-    if (open_on_link && lens_enabled && !tab_auto_chip) {
+    if (lens_enabled && !tab_auto_chip) {
       return "Arm 4";
     }
   } else if (expand_button == ExpandButtonOption::kToolbarCloseButton) {
-    if (open_on_link && lens_enabled && tab_auto_chip &&
+    if (lens_enabled && tab_auto_chip &&
         entrypoint !=
             contextual_tasks::EntryPointOption::kToolbarEphemeralBranded) {
       return "Arm 5";
     }
-    if (open_on_link && !lens_enabled && tab_auto_chip) {
+    if (!lens_enabled && tab_auto_chip) {
       return "Arm 6";
     }
-    if (open_on_link && lens_enabled && !tab_auto_chip) {
+    if (lens_enabled && !tab_auto_chip) {
       return "Arm 7";
     }
-    if (open_on_link && lens_enabled && tab_auto_chip &&
+    if (lens_enabled && tab_auto_chip &&
         entrypoint ==
             contextual_tasks::EntryPointOption::kToolbarEphemeralBranded) {
       return "Arm 8";
@@ -124,7 +120,7 @@ std::string GetContextualTasksArmShortName() {
 
   return "Default";
 }
-// LINT.ThenChange(chrome/browser/about_flags.cc)
+// LINT.ThenChange(//chrome/browser/about_flags.cc)
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 std::unique_ptr<content::WebContents> CreateWebContents(
@@ -268,8 +264,6 @@ void ContextualTasksSidePanelCoordinator::Show(
                     ExpandButtonOption::kSidePanelExpandButton
                 ? "side-panel-expand-button"
                 : "toolbar-close-button"},
-           {"ContextualTasksOpenSidePanelOnLinkClicked",
-            kOpenSidePanelOnLinkClicked.Get() ? "true" : "false"},
            {"ContextualTasksEnableLensInContextualTasks",
             GetEnableLensInContextualTasks() ? "true" : "false"},
            {"ContextualTasksTabAutoSuggestionChipEnabled",
