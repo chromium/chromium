@@ -134,6 +134,7 @@ group("tests") {
     "checks/mojom_attributes_check_unittest.py",
     "checks/mojom_interface_feature_check_unittest.py",
     "checks/mojom_restrictions_checks_unittest.py",
+    "generators/mojom_rust_generator_unittest.py",
     "mojom_bindings_generator_unittest.py",
     "//third_party/markupsafe/",
   ]

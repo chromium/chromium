@@ -1,0 +1,21 @@
+// Copyright 2026 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module nested_enums.mojom;
+
+struct OuterStruct {
+  enum InnerEnum {
+    kValue1,
+    kValue2,
+  };
+  InnerEnum inner_field;
+};
+
+interface TestNested {
+  enum InterfaceEnum {
+    kInterfaceValue1,
+    kInterfaceValue2,
+  };
+  Test(OuterStruct s, InterfaceEnum e) => (OuterStruct s, InterfaceEnum e);
+};

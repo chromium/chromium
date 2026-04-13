@@ -24,6 +24,8 @@ mojom("crate1") {
     "imports_a_b.test-mojom",
     "leaf_a.test-mojom",
     "leaf_b.test-mojom",
+    "nested_enums.test-mojom",
+    "nested_enums_import.test-mojom",
   ]
 }
 

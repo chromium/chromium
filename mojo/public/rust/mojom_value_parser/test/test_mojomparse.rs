@@ -2562,3 +2562,42 @@ fn test_handles() {
         },
     );
 }
+
+const STRUCT_WITH_NESTED_ENUM_TYPE_PRED: Predicate<i32> = Predicate::new::<StructWithNestedEnum_Type>(
+    &(StructWithNestedEnum_Type::is_valid as fn(i32) -> bool),
+);
+
+static STRUCT_WITH_NESTED_ENUM_TY: LazyLock<TestType> = LazyLock::new(|| TestType {
+    type_name: "StructWithNestedEnum",
+    base_type: wrap_struct_fields_type(vec![(
+        "even_or_odd".to_string(),
+        MojomType::Enum { is_valid: STRUCT_WITH_NESTED_ENUM_TYPE_PRED },
+    )]),
+    packed_type: wrap_packed_struct_fields(
+        vec![(
+            "even_or_odd".to_string(),
+            struct_leaf!(0, PackedLeafType::Enum { is_valid: STRUCT_WITH_NESTED_ENUM_TYPE_PRED }),
+        )],
+        1,
+    ),
+});
+
+fn struct_with_nested_enums_mojom(even_or_odd: i32) -> MojomValue {
+    wrap_struct_fields_value(vec![("even_or_odd".to_string(), MojomValue::Enum(even_or_odd))])
+}
+
+#[gtest(RustTestMojomParsingAttr, TestNestedEnums)]
+fn test_nested_enums() {
+    STRUCT_WITH_NESTED_ENUM_TY.validate_mojomparse(
+        StructWithNestedEnum { even_or_odd: StructWithNestedEnum_Type::ODD },
+        struct_with_nested_enums_mojom(1),
+    );
+
+    STRUCT_WITH_NESTED_ENUM_TY.validate_mojomparse(
+        StructWithNestedEnum { even_or_odd: StructWithNestedEnum_Type::EVEN },
+        struct_with_nested_enums_mojom(2),
+    );
+
+    expect_true!(StructWithNestedEnum_Type::try_from(0).is_err());
+    expect_true!(StructWithNestedEnum_Type::try_from(3).is_err());
+}

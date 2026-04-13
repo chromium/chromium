@@ -24,18 +24,34 @@ use std::collections::HashMap;
 use ordered_float::OrderedFloat;
 
 use mojom_value_parser::*;
+
 {% for enum in module.enums %}
-{{ declare_enum(enum.name, enum)}}
+{{ declare_enum(enum.name, enum) }}
 {% endfor -%}
 
+{# Comment for whitespace purposes #}
+{% for struct in module.structs %}
+{%- for enum in struct.enums %}
+{{- declare_enum(struct.name ~ "_" ~ enum.name, enum) }}
+{# Comment for whitespace purposes #}
+{% endfor %}
+{%- endfor -%}
+
+{% for interface in module.interfaces %}
+{%- for enum in interface.enums %}
+{{- declare_enum(interface.name ~ "_" ~ enum.name, enum) }}
+{# Comment for whitespace purposes #}
+{% endfor %}
+{%- endfor -%}
+
 {% for union in module.unions %}
-{{ declare_union(union.name, union)}}
+{{ declare_union(union.name, union) }}
 {% endfor -%}
 
 {% for struct in module.structs %}
-{{ declare_struct(struct.name, struct, true)}}
+{{ declare_struct(struct.name, struct, true) }}
 {% endfor -%}
 
 {% for interface in module.interfaces %}
-{{ declare_interface(interface)}}
+{{ declare_interface(interface) }}
 {%- endfor -%}

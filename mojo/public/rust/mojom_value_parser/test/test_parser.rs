@@ -1279,3 +1279,20 @@ fn test_handle_parsing() -> anyhow::Result<()> {
 
     Ok(())
 }
+
+#[gtest(RustTestMojomParsing, TestNestedEnumParsing)]
+fn test_nested_enums() -> anyhow::Result<()> {
+    validate_parsing(
+        StructWithNestedEnum { even_or_odd: StructWithNestedEnum_Type::ODD },
+        "[u4]16 [u4]0 [u4]1 [u4]0",
+    )?;
+
+    validate_parsing(
+        StructWithNestedEnum { even_or_odd: StructWithNestedEnum_Type::EVEN },
+        "[u4]16 [u4]0 [u4]2 [u4]0",
+    )?;
+
+    validate_parsing_failure::<StructWithNestedEnum>("[u4]16 [u4]0 [u4]3 [u4]0")?;
+
+    Ok(())
+}

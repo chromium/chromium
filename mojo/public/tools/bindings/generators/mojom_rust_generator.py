@@ -54,13 +54,26 @@ def _SameGNTarget(mod1: mojom.Module, mod2: mojom.Module,
 # Therefore, we _completely ignore_ the `module` keyword when generating Rust
 # code from a mojom file, and name things using _only_ the file system and GN
 # structure.
+def _GetLocalName(ty: mojom.Kind) -> str:
+  # If the type is nested inside another (like an enum in a struct), we prefix
+  # it with the parent's name to avoid collisions and match generated
+  # definitions.
+  #
+  # Note: ty.qualified_name also includes the parent name (e.g. Parent.Child),
+  # but it also includes the module namespace, and it's not stylized.
+  # Since we want a stylized name joined with underscores, we recurse here.
+  if hasattr(ty, 'parent_kind') and ty.parent_kind:
+    return f"{_GetLocalName(ty.parent_kind)}_{ty.name}"
+  return ty.name
+
+
 def _GetQualifiedName(ty: mojom.Kind, current_module: mojom.Module,
                       source_to_target_map: dict) -> str:
-  # This is the last part of the name in the mojom file, e.g. foo.bar.T -> T
-  base_name = ty.qualified_name.split('.')[-1]
+  local_name = _GetLocalName(ty)
+
   # If the type was defined in this file, we can use its name unqualified
   if ty.module.path == current_module.path:
-    return base_name
+    return local_name
 
   # The module has the same name as the file that defined it, sans extension
   # Map foo/bar/baz.mojom -> baz
@@ -69,14 +82,14 @@ def _GetQualifiedName(ty: mojom.Kind, current_module: mojom.Module,
   # If the type was defined as part of the same GN target as this file, then
   # it's in the same crate.
   if _SameGNTarget(ty.module, current_module, source_to_target_map):
-    return f"crate::{ty_module_name}::{base_name}"
+    return f"crate::{ty_module_name}::{local_name}"
 
   # Otherwise, it was defined in a different crate, which has the same name as
   # as the GN target that defined it.
   extern_target_name = source_to_target_map[ty.module.path]
   # Map //foo/bar:baz -> baz, and //foo/bar -> bar
   extern_crate = extern_target_name.split(':')[-1].split('/')[-1]
-  return f"{extern_crate}::{ty_module_name}::{base_name}"
+  return f"{extern_crate}::{ty_module_name}::{local_name}"
 
 
 def _MojomTypeToRustType(ty: mojom.Kind, current_module: mojom.Module,
@@ -87,7 +100,6 @@ def _MojomTypeToRustType(ty: mojom.Kind, current_module: mojom.Module,
                                     source_to_target_map)
     return f"Option<{inner_ty}>"
 
-  # FOR_RELEASE: We don't support nested enums yet
   if mojom.IsStructKind(ty) or mojom.IsEnumKind(ty) or mojom.IsUnionKind(ty):
     return _GetQualifiedName(ty, current_module, source_to_target_map)
 

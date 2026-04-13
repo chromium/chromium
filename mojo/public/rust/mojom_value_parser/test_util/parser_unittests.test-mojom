@@ -200,6 +200,15 @@ struct ComplexUnionHolder {
   HoldsComplexTypes u;
 };
 
+struct StructWithNestedEnum {
+  enum Type {
+    ODD = 1,
+    EVEN = 2,
+  };
+  Type even_or_odd = Type.ODD;
+};
+
+
 ////// TESTS FOR NULLABLES //////
 
 // Packing: [b, nullable tags] n2 n1 e empty fourints f1 [pad 32] f2
