@@ -2180,64 +2180,22 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, AccessibilityButtonNameCalc) {
 }
 
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, AccessibilityCanvas) {
-  // No UKM logs initially.
-  auto entries =
-      recorder().GetEntriesByName("Accessibility.CanvasHasNonTrivialFallback");
-  EXPECT_EQ(entries.size(), 0ul);
-
   RunHtmlTest(FILE_PATH_LITERAL("canvas.html"));
-
-  // And still none because only a single text child.
-  entries =
-      recorder().GetEntriesByName("Accessibility.CanvasHasNonTrivialFallback");
-  EXPECT_EQ(entries.size(), 0ul);
 }
 
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
                        AccessibilityCanvasInteractiveFallback) {
-  // No UKM logs initially.
-  auto entries =
-      recorder().GetEntriesByName("Accessibility.CanvasHasNonTrivialFallback");
-  EXPECT_EQ(entries.size(), 0ul);
-
   RunHtmlTest(FILE_PATH_LITERAL("canvas-interactive-fallback.html"));
-
-  // The child is not a text element, so report.
-  entries =
-      recorder().GetEntriesByName("Accessibility.CanvasHasNonTrivialFallback");
-  EXPECT_EQ(entries.size(), 1ul);
 }
 
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
                        AccessibilityCanvasComplexFallback) {
-  // No UKM logs initially.
-  auto entries =
-      recorder().GetEntriesByName("Accessibility.CanvasHasNonTrivialFallback");
-  EXPECT_EQ(entries.size(), 0ul);
-
   RunHtmlTest(FILE_PATH_LITERAL("canvas-complex-fallback.html"));
-
-  entries =
-      recorder().GetEntriesByName("Accessibility.CanvasHasNonTrivialFallback");
-  EXPECT_EQ(entries.size(), 1ul);
-  EXPECT_TRUE(ukm::TestUkmRecorder::EntryHasMetric(entries[0], "Seen"));
-  EXPECT_GT(*ukm::TestUkmRecorder::GetEntryMetric(entries[0], "Seen"), 0l);
 }
 
 IN_PROC_BROWSER_TEST_P(YieldingParserDumpAccessibilityTreeTest,
                        AccessibilityCanvasComplexFallback) {
-  // No UKM logs initially.
-  auto entries =
-      recorder().GetEntriesByName("Accessibility.CanvasHasNonTrivialFallback");
-  EXPECT_EQ(entries.size(), 0ul);
-
   RunHtmlTest(FILE_PATH_LITERAL("canvas-complex-fallback.html"));
-
-  entries =
-      recorder().GetEntriesByName("Accessibility.CanvasHasNonTrivialFallback");
-  EXPECT_EQ(entries.size(), 1ul);
-  EXPECT_TRUE(ukm::TestUkmRecorder::EntryHasMetric(entries[0], "Seen"));
-  EXPECT_GT(*ukm::TestUkmRecorder::GetEntryMetric(entries[0], "Seen"), 0l);
 }
 
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, AccessibilityCanvasFallback) {
