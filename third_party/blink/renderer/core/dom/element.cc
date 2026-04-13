@@ -7599,7 +7599,8 @@ bool Element::AttachDeclarativeShadowRoot(
     shadow_root.SetKeepCustomElementRegistryNull(true);
   }
   // 10.8.NEW. Process shadowrootadoptedstylesheets attribute.
-  if (RuntimeEnabledFeatures::ShadowRootAdoptedStyleSheetEnabled()) {
+  if (RuntimeEnabledFeatures::ShadowRootAdoptedStyleSheetEnabled(
+          GetDocument().GetExecutionContext())) {
     shadow_root.ProcessAdoptedStylesheetAttribute(adopted_stylesheets);
   }
   return true;
