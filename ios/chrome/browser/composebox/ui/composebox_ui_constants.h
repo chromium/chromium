@@ -53,13 +53,6 @@ extern NSString* const kComposeboxAttachCurrentTabActionAccessibilityIdentifier;
 // Accessibility identifier for the Select Tabs button in the plus menu.
 extern NSString* const kComposeboxSelectTabsActionAccessibilityIdentifier;
 
-// Accessibility identifier for the tab picker's collection view.
-extern NSString* const
-    kComposeboxTabPickerCollectionViewAccessibilityIdentifier;
-// Accessibility identifier for the empty state view in the tab picker.
-extern NSString* const
-    kComposeboxTabPickerEmptyStateViewAccessibilityIdentifier;
-
 // Accessibility identifier for the carousel in the composebox.
 extern NSString* const kComposeboxCarouselAccessibilityIdentifier;
 // Accessibility identifier for an item in the carousel.

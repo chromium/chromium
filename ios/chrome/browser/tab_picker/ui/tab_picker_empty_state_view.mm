@@ -4,8 +4,8 @@
 
 #import "ios/chrome/browser/tab_picker/ui/tab_picker_empty_state_view.h"
 
-#import "ios/chrome/browser/composebox/ui/composebox_ui_constants.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
+#import "ios/chrome/browser/tab_picker/ui/tab_picker_ui_constants.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/tab_grid_constants.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
@@ -41,7 +41,7 @@ const CGFloat kImageWidth = 190.0;
 // and centering it when it fits the screen.
 - (void)setupViews {
   self.accessibilityIdentifier =
-      kComposeboxTabPickerEmptyStateViewAccessibilityIdentifier;
+      kTabPickerEmptyStateViewAccessibilityIdentifier;
   UIScrollView* scrollView = [[UIScrollView alloc] init];
   scrollView.translatesAutoresizingMaskIntoConstraints = NO;
 
@@ -67,7 +67,7 @@ const CGFloat kImageWidth = 190.0;
   subtitleLabel.textAlignment = NSTextAlignmentCenter;
 
   UIImageView* imageView = [[UIImageView alloc]
-      initWithImage:[UIImage imageNamed:@"composebox_tab_picker_empty"]];
+      initWithImage:[UIImage imageNamed:@"tab_picker_empty"]];
   imageView.translatesAutoresizingMaskIntoConstraints = NO;
 
   UIStackView* container = [[UIStackView alloc]

@@ -13,7 +13,6 @@
 
 @protocol TabPickerCommands;
 @protocol ComposeboxDebuggerLogger;
-@class ComposeboxTheme;
 
 // Responsible for processing the selection of tab picker.
 @protocol TabPickerSelectionDelegate
@@ -40,10 +39,6 @@
 
 // The tab picker coordinator.
 @interface TabPickerCoordinator : ChromeCoordinator <TabsAttachmentDelegate>
-
-- (instancetype)initWithBaseViewController:(UIViewController*)viewController
-                                   browser:(Browser*)browser
-                                     theme:(ComposeboxTheme*)theme;
 
 // Returns `YES` if the coordinator is started.
 @property(nonatomic, readonly) BOOL started;
