@@ -117,6 +117,12 @@ void GesturePropertiesService::SetProperty(
     std::move(reply).Run(ozone::mojom::SetGesturePropErrorCode::READ_ONLY);
     return;
   }
+  // Block modification of sensitive properties via D-Bus.
+  // See b/485918079.
+  if (name == "Log Path") {
+    std::move(reply).Run(ozone::mojom::SetGesturePropErrorCode::READ_ONLY);
+    return;
+  }
   if (!PropertyTypeMatchesValues(property->type(), values->which())) {
     std::move(reply).Run(ozone::mojom::SetGesturePropErrorCode::TYPE_MISMATCH);
     return;
