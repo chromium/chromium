@@ -4,6 +4,7 @@
 
 #include "content/browser/media/capture/native_screen_capture_picker_mac.h"
 
+#import <AppKit/AppKit.h>
 #import <ScreenCaptureKit/ScreenCaptureKit.h>
 
 #include <unordered_map>
@@ -16,6 +17,7 @@
 #include "base/notreached.h"
 #include "base/task/bind_post_task.h"
 #include "base/timer/timer.h"
+#include "content/browser/media/capture/capture_util_mac.h"
 #include "content/browser/media/capture/native_screen_capture_picker.h"
 #include "content/browser/media/capture/screen_capture_kit_device_mac.h"
 #include "content/public/browser/desktop_media_id.h"
@@ -146,8 +148,11 @@ class API_AVAILABLE(macos(14.0)) NativeScreenCapturePickerMac
             base::OnceCallback<void(DesktopMediaID::Id)> created_callback,
             base::OnceCallback<void(Source)> picker_callback,
             base::OnceClosure cancel_callback,
-            base::OnceClosure error_callback) override;
+            base::OnceClosure error_callback,
+            base::OnceClosure stop_audio_callback) override;
   void Close(DesktopMediaID device_id) override;
+  void GetMainBundleId(DesktopMediaID::Id session_id,
+                       GetMainBundleIdCallback callback) override;
   std::unique_ptr<media::VideoCaptureDevice> CreateDevice(
       const DesktopMediaID& source) override;
 
@@ -164,12 +169,19 @@ class API_AVAILABLE(macos(14.0)) NativeScreenCapturePickerMac
     bool received_first_response = false;
     // Timer to cleanup the session state after the device is closed.
     base::OneShotTimer cleanup_timer;
+
+    std::optional<std::string> primary_bundle_id;
+    base::OnceClosure stop_audio_callback;
   };
 
   // Callbacks called by PickerObserver when it receives an event from the OS.
   void OnPickerObserverUpdated(SCContentFilter* filter, SCStream* stream);
   void OnPickerObserverCancelled(SCStream* stream);
   void OnPickerObserverEncounteredError(NSError* error);
+
+  void UpdateAudioStatusForSession(CaptureSession& session,
+                                   DesktopMediaID::Id session_id,
+                                   SCContentFilter* filter);
 
   void ScheduleCleanup(DesktopMediaID::Id id);
   void CleanupContentFilter(DesktopMediaID::Id id);
@@ -219,7 +231,8 @@ void NativeScreenCapturePickerMac::Open(
     base::OnceCallback<void(DesktopMediaID::Id)> created_callback,
     base::OnceCallback<void(Source)> picker_callback,
     base::OnceClosure cancel_callback,
-    base::OnceClosure error_callback) {
+    base::OnceClosure error_callback,
+    base::OnceClosure stop_audio_callback) {
   DCHECK(device_task_runner_->RunsTasksInCurrentSequence());
   CHECK(type == DesktopMediaID::Type::TYPE_SCREEN ||
         type == DesktopMediaID::Type::TYPE_WINDOW);
@@ -230,8 +243,10 @@ void NativeScreenCapturePickerMac::Open(
     cancel_callback_ = std::move(cancel_callback);
     error_callback_ = std::move(error_callback);
 
-    // Ensure the session entry exists.
-    GetOrCreateCaptureSession(active_picker_source_id_);
+    // Ensure the session entry exists and store the stop_audio_callback.
+    auto& session = GetOrCreateCaptureSession(active_picker_source_id_);
+    session.stop_audio_callback = std::move(stop_audio_callback);
+    session.primary_bundle_id.reset();
 
     PickerUpdateCallback observer_update_callback = base::BindPostTask(
         device_task_runner_,
@@ -290,42 +305,96 @@ void NativeScreenCapturePickerMac::Open(
   }
 }
 
+void NativeScreenCapturePickerMac::UpdateAudioStatusForSession(
+    CaptureSession& session,
+    DesktopMediaID::Id session_id,
+    SCContentFilter* filter) {
+  if (@available(macOS 15.2, *)) {
+    // At the initial update, set `primary_bundle_id` to the main
+    // bundle id of the application that owns the first of the
+    // selected windows. Since the picker is run in single-window
+    // mode, this list should typically only contain one window.
+    if (!session.primary_bundle_id && filter.includedWindows.count > 0) {
+      SCWindow* first_window = filter.includedWindows.firstObject;
+      session.primary_bundle_id =
+          GetMainBundleIdForNativeWindowId(first_window.windowID);
+      if (session.primary_bundle_id) {
+        VLOG(1) << "NSCPM::UpdateAudioStatus: session " << session_id
+                << " Set primary_bundle_id = " << *session.primary_bundle_id;
+      }
+    }
+
+    // If no window owned by the primary application remains in the
+    // selection, the `stop_audio_callback` is called to signal that
+    // audio capture should stop.
+    if (session.primary_bundle_id && session.stop_audio_callback) {
+      bool primary_app_present = false;
+      for (SCWindow* window in filter.includedWindows) {
+        if (GetMainBundleIdForNativeWindowId(window.windowID) ==
+            session.primary_bundle_id) {
+          primary_app_present = true;
+          break;
+        }
+      }
+
+      if (!primary_app_present) {
+        VLOG(1) << "NSCPM::UpdateAudioStatus: session " << session_id
+                << " Primary application no longer present. Triggering "
+                   "stop_audio_callback.";
+        std::move(session.stop_audio_callback).Run();
+      }
+    }
+  }
+}
+
 void NativeScreenCapturePickerMac::OnPickerObserverUpdated(
     SCContentFilter* filter,
     SCStream* stream) {
   DCHECK(device_task_runner_->RunsTasksInCurrentSequence());
 
+  DesktopMediaID::Id session_id = 0;
   if (stream) {
     auto it = stream_to_id_map_.find(stream);
     if (it != stream_to_id_map_.end()) {
-      int source_id = it->second;
-      GetOrCreateCaptureSession(source_id).filter = filter;
-      VLOG(1) << "NSCPM::OnPickerObserverUpdated: "
-                 "stream found in stream_to_id_map_ for source id "
-              << source_id;
-    } else {
-      VLOG(1) << "NSCPM::OnPickerObserverUpdated: "
-                 "stream not found in stream_to_id_map_";
+      session_id = it->second;
     }
+  } else {
+    session_id = active_picker_source_id_;
+  }
+
+  if (session_id == 0) {
+    VLOG(1) << "NSCPM::OnPickerObserverUpdated: session_id is 0";
     return;
   }
+
+  auto& session = GetOrCreateCaptureSession(session_id);
+  session.filter = filter;
+
+  UpdateAudioStatusForSession(session, session_id, filter);
+
+  if (stream) {
+    VLOG(1) << "NSCPM::OnPickerObserverUpdated: "
+               "stream found in stream_to_id_map_ for source id "
+            << session_id;
+    return;
+  }
+
   if (!picker_callback_) {
     VLOG(1) << "NSCPM::OnPickerObserverUpdated: "
                "picker_callback_ is null for source id = "
-            << active_picker_source_id_;
+            << session_id;
     return;
   }
-  VLOG(1) << "NSCPM::OnPickerObserverUpdated: for source id = "
-          << active_picker_source_id_;
-  auto& session = GetOrCreateCaptureSession(active_picker_source_id_);
+
+  VLOG(1) << "NSCPM::OnPickerObserverUpdated: for source id = " << session_id;
+
   if (!session.received_first_response) {
     session.received_first_response = true;
     LogUpdateToUma(active_picker_type_);
   }
-  session.filter = filter;
 
   Source source;
-  source.id = active_picker_source_id_;
+  source.id = session_id;
   std::move(picker_callback_).Run(source);
 }
 
@@ -403,6 +472,20 @@ void NativeScreenCapturePickerMac::Close(DesktopMediaID device_id) {
   } else {
     NOTREACHED();
   }
+}
+
+void NativeScreenCapturePickerMac::GetMainBundleId(
+    DesktopMediaID::Id session_id,
+    GetMainBundleIdCallback callback) {
+  DCHECK(device_task_runner_->RunsTasksInCurrentSequence());
+  std::optional<std::string> bundle_id;
+
+  auto it = sessions_.find(session_id);
+  if (it != sessions_.end()) {
+    bundle_id = it->second->primary_bundle_id;
+  }
+
+  std::move(callback).Run(bundle_id);
 }
 
 std::unique_ptr<media::VideoCaptureDevice>

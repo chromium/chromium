@@ -59,7 +59,8 @@ void InProcessVideoCaptureProvider::OpenNativeScreenCapturePicker(
       base::BindOnce(&NativeScreenCapturePicker::Open,
                      native_screen_capture_picker_->GetWeakPtr(), type,
                      std::move(created_callback), std::move(picker_callback),
-                     std::move(cancel_callback), std::move(error_callback)));
+                     std::move(cancel_callback), std::move(error_callback),
+                     base::DoNothing()));
 }
 
 void InProcessVideoCaptureProvider::CloseNativeScreenCapturePicker(

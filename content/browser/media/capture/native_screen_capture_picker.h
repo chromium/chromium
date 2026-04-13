@@ -9,6 +9,7 @@
 
 #include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
+#include "content/public/browser/desktop_capture.h"
 #include "content/public/browser/desktop_media_id.h"
 #include "third_party/webrtc/modules/desktop_capture/desktop_capturer.h"
 
@@ -21,6 +22,9 @@ namespace content {
 class NativeScreenCapturePicker {
  public:
   virtual ~NativeScreenCapturePicker() = default;
+
+  using GetMainBundleIdCallback =
+      base::OnceCallback<void(const std::optional<std::string>&)>;
 
   // Opens the picker dialog.
   // `type` is the type of the content capture (window/screen).
@@ -36,10 +40,15 @@ class NativeScreenCapturePicker {
       base::OnceCallback<void(DesktopMediaID::Id)> created_callback,
       base::OnceCallback<void(webrtc::DesktopCapturer::Source)> picker_callback,
       base::OnceClosure cancel_callback,
-      base::OnceClosure error_callback) = 0;
+      base::OnceClosure error_callback,
+      base::OnceClosure stop_audio_callback) = 0;
 
   // Closes the picker.
   virtual void Close(DesktopMediaID device_id) = 0;
+
+  // Resolves a picker session handle into its main application bundle ID.
+  virtual void GetMainBundleId(DesktopMediaID::Id session_id,
+                               GetMainBundleIdCallback callback) = 0;
 
   // Creates a video capture device for a surface selected during a previous
   // call to Open.
