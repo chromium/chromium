@@ -60,7 +60,7 @@ PASS event.clientY is 15
 PASS event.pageX is 15
 PASS event.pageY is 15
 PASS event.target.nodeName is "BODY"
-Target element is at (0,0,500,500)
+Target element is at (0,0,50,50)
 PASS targetRect.right is >= event.clientX
 PASS event.clientX is >= targetRect.left
 PASS targetRect.bottom is >= event.clientY

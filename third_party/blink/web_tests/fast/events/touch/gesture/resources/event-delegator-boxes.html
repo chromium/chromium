@@ -1,7 +1,7 @@
 <style>
 body {
-  height: 500px;
-  width: 500px;
+  height: 50px;
+  width: 50px;
   margin: 0;
 }
 .box {
@@ -13,14 +13,19 @@ body {
 <body>
 </body>
 <script>
-var eventTypes = ['mousemove', 'mousedown', 'mouseup', 'click'];
-for (var i = 0; i < eventTypes.length; i++)
+"use strict";
+
+let eventTypes = ['mousemove', 'mousedown', 'mouseup', 'click'];
+for (let i = 0; i < eventTypes.length; i++)
     document.addEventListener(eventTypes[i], parent.onEventInFrame);
 
 // Fill the viewport with boxes for verifying the target of hit testing.
-for (var i = 0; i < 100*100; i++) {
-    var div = document.createElement("div");
+for (let i = 0; i < 10*10; i++) {
+    let div = document.createElement("div");
     div.className = "box";
     document.body.appendChild(div);
 }
+
+// Notify parent frame when ready to receive input.
+parent.postMessage("subframe-loaded", "*");
 </script>
