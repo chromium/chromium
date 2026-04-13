@@ -117,14 +117,26 @@ def InitializeFiltersFromArgs(args):
     args: an argparse.Namespace instance resulting from a using parser
       to which the filter options above were added.
   """
-  test_filters = []
+  # Convert isolated_script_test_filters into test_filters.
   if args.isolated_script_test_filters:
-    args.test_filters = [
+    isolated_filters = [
         isolated_script_test_filter.replace('::', ':')
         for isolated_script_test_filter in args.isolated_script_test_filters
     ]
+    if args.test_filters:
+      if isinstance(args.test_filters, list):
+        args.test_filters.extend(isolated_filters)
+      else:
+        args.test_filters = [args.test_filters] + isolated_filters
+    else:
+      args.test_filters = isolated_filters
+
+  test_filters = []
   if args.test_filters:
-    for filt in args.test_filters:
+    # In case args.test_filters is a string (e.g. from default)
+    all_filters = (args.test_filters if isinstance(args.test_filters, list) else
+                   [args.test_filters])
+    for filt in all_filters:
       test_filters.append(
           _CMDLINE_NAME_SEGMENT_RE.sub('', filt.replace('#', '.')))
 
