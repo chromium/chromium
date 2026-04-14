@@ -1038,7 +1038,6 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
                             mBrowserControlsManager,
                             mTabObscuringHandlerSupplier.get(),
                             assumeNonNull(mSnackbarManagerSupplier.get()),
-                            mBackPressManager,
                             mLayoutManagerSupplier);
         }
 

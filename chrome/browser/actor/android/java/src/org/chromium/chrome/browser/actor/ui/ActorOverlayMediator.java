@@ -6,10 +6,7 @@ package org.chromium.chrome.browser.actor.ui;
 
 import org.chromium.base.Callback;
 import org.chromium.base.supplier.MonotonicObservableSupplier;
-import org.chromium.base.supplier.NonNullObservableSupplier;
 import org.chromium.base.supplier.NullableObservableSupplier;
-import org.chromium.base.supplier.ObservableSuppliers;
-import org.chromium.base.supplier.SettableNonNullObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
@@ -22,15 +19,12 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabObscuringHandler;
 import org.chromium.chrome.browser.tab.TabObserver;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
-import org.chromium.components.browser_ui.widget.gesture.BackPressHandler;
 import org.chromium.ui.modelutil.PropertyModel;
 
 /** Mediator for the Actor Overlay. */
 @NullMarked
 class ActorOverlayMediator
-        implements ActorUiTabController.Observer,
-                LayoutStateProvider.LayoutStateObserver,
-                BackPressHandler {
+        implements ActorUiTabController.Observer, LayoutStateProvider.LayoutStateObserver {
     private final PropertyModel mModel;
     private final NullableObservableSupplier<Tab> mCurrentTabSupplier;
     private final TabObserver mTabObserver;
@@ -40,9 +34,6 @@ class ActorOverlayMediator
     private final TabObscuringHandler mTabObscuringHandler;
     private final MonotonicObservableSupplier<LayoutManager> mLayoutManagerSupplier;
     private final Callback<LayoutManager> mLayoutManagerAvailableCallback;
-    private final SettableNonNullObservableSupplier<Boolean> mBackPressChangedSupplier =
-            ObservableSuppliers.createNonNull(false);
-    private final Runnable mBackPressCallback;
 
     private @Nullable Tab mCurrentTab;
     private @Nullable ActorUiTabController mTabController;
@@ -55,21 +46,18 @@ class ActorOverlayMediator
      * @param browserControlsVisibilityManager The BrowserControlsVisibilityManager to observe.
      * @param tabObscuringHandler The TabObscuringHandler to obscure the web content.
      * @param layoutManagerSupplier The LayoutManager supplier to observe layout changes.
-     * @param backPressCallback The callback to show the snackbar.
      */
     public ActorOverlayMediator(
             PropertyModel model,
             TabModelSelector tabModelSelector,
             BrowserControlsVisibilityManager browserControlsVisibilityManager,
             TabObscuringHandler tabObscuringHandler,
-            MonotonicObservableSupplier<LayoutManager> layoutManagerSupplier,
-            Runnable backPressCallback) {
+            MonotonicObservableSupplier<LayoutManager> layoutManagerSupplier) {
         mModel = model;
         mCurrentTabSupplier = tabModelSelector.getCurrentTabSupplier();
         mBrowserControlsVisibilityManager = browserControlsVisibilityManager;
         mTabObscuringHandler = tabObscuringHandler;
         mLayoutManagerSupplier = layoutManagerSupplier;
-        mBackPressCallback = backPressCallback;
 
         mTabObserver =
                 new EmptyTabObserver() {
@@ -204,25 +192,12 @@ class ActorOverlayMediator
                 mModel.get(ActorOverlayProperties.VISIBLE)
                         && mModel.get(ActorOverlayProperties.CAN_SHOW);
 
-        mBackPressChangedSupplier.set(isVisible);
-
         if (isVisible && mTabObscuringToken == null) {
             mTabObscuringToken = mTabObscuringHandler.obscure(TabObscuringHandler.Target.TAB_CONTENT);
         } else if (mTabObscuringToken != null) {
             mTabObscuringHandler.unobscure(mTabObscuringToken);
             mTabObscuringToken = null;
         }
-    }
-
-    @Override
-    public int handleBackPress() {
-        mBackPressCallback.run();
-        return BackPressResult.SUCCESS;
-    }
-
-    @Override
-    public NonNullObservableSupplier<Boolean> getHandleBackPressChangedSupplier() {
-        return mBackPressChangedSupplier;
     }
 
     /** Cleans up the mediator. */
