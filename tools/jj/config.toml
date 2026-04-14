@@ -79,6 +79,7 @@ patterns = ["glob:'**/*.rs'"]
 
 [fix.tools.clang-format]
 command = ["third_party/depot_tools/clang_format.py", "--assume-filename=$path"]
+line-range-arg = "--lines=$first:$last"
 patterns = [
     "glob:'**/*.cc'",
     "glob:'**/*.cpp'",
