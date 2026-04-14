@@ -33,7 +33,7 @@ class CONTENT_EXPORT PreloadPipelineInfoImpl final
   PreloadPipelineInfoImpl(const PreloadPipelineInfoImpl&) = delete;
   PreloadPipelineInfoImpl& operator=(const PreloadPipelineInfoImpl&) = delete;
 
-  const perfetto::Track& GetTrack() const;
+  const perfetto::NamedTrack& GetTrack() const;
   perfetto::Flow GetFlow() const;
 
   const base::UnguessableToken& id() const { return id_; }
@@ -65,7 +65,7 @@ class CONTENT_EXPORT PreloadPipelineInfoImpl final
 
   const PreloadingType planned_max_preloading_type_;
 
-  const perfetto::Track track_;
+  const perfetto::NamedTrack track_;
 
   PreloadingEligibility prefetch_eligibility_ =
       PreloadingEligibility::kUnspecified;

@@ -35,13 +35,11 @@ PreloadPipelineInfoImpl::PreloadPipelineInfoImpl(
       // We use `low` of `Token` because `perfetto::Track::FromPointer()`
       // crashes by a `DCHECK`. It looks `Tracing::Initialize()` to be not
       // called.
-      track_(perfetto::Track::Global(id_.GetLowForSerialization())) {
-  TRACE_EVENT_BEGIN("loading", "Navigational preload", track_);
-}
+      track_("Navigational preload", id_.GetLowForSerialization()) {}
 
 PreloadPipelineInfoImpl::~PreloadPipelineInfoImpl() = default;
 
-const perfetto::Track& PreloadPipelineInfoImpl::GetTrack() const {
+const perfetto::NamedTrack& PreloadPipelineInfoImpl::GetTrack() const {
   return track_;
 }
 
@@ -49,8 +47,7 @@ perfetto::Flow PreloadPipelineInfoImpl::GetFlow() const {
   // Returns consistent flows in its lifecycle as `PreloadPipelineInfo` is
   // refcounted and not movable.
 
-  return perfetto::Flow::FromPointer(
-      const_cast<PreloadPipelineInfoImpl*>(this));
+  return perfetto::Flow::FromPointer(this, "Navigational preload");
 }
 
 void PreloadPipelineInfoImpl::SetPrefetchEligibility(

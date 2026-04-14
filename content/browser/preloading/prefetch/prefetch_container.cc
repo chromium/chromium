@@ -265,8 +265,6 @@ PrefetchContainer::PrefetchContainer(
       is_constructed_from_pre_prefetch_(pre_prefetch_container != nullptr),
       container_id_for_testing_(base::UnguessableToken::Create().ToString()) {
   CHECK(request_);
-
-  TRACE_EVENT_END("loading", request().preload_pipeline_info().GetTrack());
   TRACE_EVENT_BEGIN("loading", "PrefetchContainer::LoadState::kNotStarted",
                     request().preload_pipeline_info().GetTrack());
 
