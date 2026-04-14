@@ -227,6 +227,13 @@ class SecurityStyleTestObserver : public content::WebContentsObserver {
 // PageInfoBubbleViewBrowserTestCookiesSubpage.
 class PageInfoBubbleViewBrowserTest : public InProcessBrowserTest {
  public:
+  PageInfoBubbleViewBrowserTest() {
+    feature_list_.InitWithFeatures(
+        {/*enabled_features=*/features::kFileSystemAccessPersistentPermissions},
+        {/*disabled_features=*/privacy_sandbox::
+             kPrivacySandboxAdPrivacyUxDeprecation});
+  }
+
   void SetUp() override {
     ASSERT_TRUE(embedded_test_server()->Start());
     InProcessBrowserTest::SetUp();
@@ -351,8 +358,7 @@ class PageInfoBubbleViewBrowserTest : public InProcessBrowserTest {
  private:
   std::vector<PageInfoViewFactory::PageInfoViewID> expected_identifiers_;
 
-  base::test::ScopedFeatureList feature_list_{
-      features::kFileSystemAccessPersistentPermissions};
+  base::test::ScopedFeatureList feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_F(PageInfoBubbleViewBrowserTest, ShowBubble) {

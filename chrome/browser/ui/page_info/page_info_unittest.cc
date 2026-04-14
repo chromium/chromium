@@ -46,6 +46,7 @@
 #include "components/permissions/features.h"
 #include "components/permissions/permission_decision_auto_blocker.h"
 #include "components/permissions/permission_recovery_success_rate_tracker.h"
+#include "components/privacy_sandbox/privacy_sandbox_features.h"
 #include "components/privacy_sandbox/privacy_sandbox_prefs.h"
 #include "components/safe_browsing/buildflags.h"
 #include "components/safe_browsing/core/browser/safe_browsing_metrics_collector.h"
@@ -155,11 +156,13 @@ class PageInfoTest : public ChromeRenderViewHostTestHarness {
     // TODO(crbug.com/40231917): Fix tests and enable the feature.
     scoped_feature_list_.InitWithFeatures(
         {
+    // Enabled features
 #if !BUILDFLAG(IS_ANDROID)
             features::kFileSystemAccessPersistentPermissions,
 #endif
         },
-        {});
+        {// Disabled features
+         privacy_sandbox::kPrivacySandboxAdPrivacyUxDeprecation});
 
     ChromeRenderViewHostTestHarness::SetUp();
 
@@ -2884,4 +2887,34 @@ TEST_F(PageInfoTest, ResetPermissionClearsEmbargo) {
 
   EXPECT_FALSE(
       autoblocker->IsEmbargoed(target_url, ContentSettingsType::GEOLOCATION));
+}
+
+class PageInfoAdPrivacyDeprecationTest : public PageInfoTest {
+ public:
+  void SetUp() override {
+    PageInfoTest::SetUp();
+    feature_list_.InitAndEnableFeature(
+        privacy_sandbox::kPrivacySandboxAdPrivacyUxDeprecation);
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+TEST_F(PageInfoAdPrivacyDeprecationTest, AdPersonalizationButtonRemoved) {
+  constexpr int kTaxonomyVersion = 1;
+  privacy_sandbox::CanonicalTopic kFirstTopic(
+      browsing_topics::Topic(24),  // "Blues"
+      kTaxonomyVersion);
+
+  EXPECT_CALL(*mock_ui(), SetAdPersonalizationInfo(testing::_)).Times(0);
+
+  content_settings::PageSpecificContentSettings* pscs =
+      content_settings::PageSpecificContentSettings::GetForFrame(
+          web_contents()->GetPrimaryMainFrame());
+
+  pscs->OnTopicAccessed(url::Origin::Create(GURL("https://foo.com")), false,
+                        kFirstTopic);
+
+  page_info();
 }

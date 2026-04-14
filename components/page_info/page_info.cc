@@ -1738,6 +1738,12 @@ void PageInfo::PresentPageFeatureInfo() {
 }
 
 void PageInfo::PresentAdPersonalizationData() {
+  // If the Ad Privacy UX Deprecation feature is enabled, do not set or show the
+  // ad personalization data.
+  if (base::FeatureList::IsEnabled(
+          privacy_sandbox::kPrivacySandboxAdPrivacyUxDeprecation)) {
+    return;
+  }
   PageInfoUI::AdPersonalizationInfo info;
   auto* settings = GetPageSpecificContentSettings();
   if (!settings) {

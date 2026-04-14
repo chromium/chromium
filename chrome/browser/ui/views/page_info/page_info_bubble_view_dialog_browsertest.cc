@@ -632,25 +632,20 @@ IN_PROC_BROWSER_TEST_F(PageInfoBubbleViewAboutThisSiteDialogBrowserTest,
   ShowAndVerifyUi();
 }
 
-class PageInfoBubbleViewPrivacySandboxDialogBrowserTest
-    : public DialogBrowserTest {
+class PageInfoBubbleViewPrivacySandboxTestBase : public DialogBrowserTest {
  public:
   void SetUpOnMainThread() override {
     https_server_.SetSSLConfig(net::EmbeddedTestServer::CERT_TEST_NAMES);
     https_server_.ServeFilesFromSourceDirectory(GetChromeTestDataDir());
     ASSERT_TRUE(https_server_.Start());
-
     host_resolver()->AddRule("*", "127.0.0.1");
   }
 
-  // DialogBrowserTest:
-  void ShowUi(const std::string& name_with_param_suffix) override {
+ protected:
+  void SetupAndOpenBubble() {
     // Bubble dialogs' bounds may exceed the display's work area.
     // https://crbug.com/893292.
     set_should_verify_dialog_bounds(false);
-
-    const std::string& name =
-        name_with_param_suffix.substr(0, name_with_param_suffix.find("/"));
 
     ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GetUrl("a.test")));
 
@@ -670,6 +665,29 @@ class PageInfoBubbleViewPrivacySandboxDialogBrowserTest
     OpenPageInfoBubble(browser());
     // Set static site name to prevent flakes caused by changing port.
     SetStaticSiteName(u"Example site");
+  }
+
+  GURL GetUrl(const std::string& host) {
+    return https_server_.GetURL(host, "/title1.html");
+  }
+
+ private:
+  net::EmbeddedTestServer https_server_{net::EmbeddedTestServer::TYPE_HTTPS};
+};
+
+class PageInfoBubbleViewPrivacySandboxDialogBrowserTest
+    : public PageInfoBubbleViewPrivacySandboxTestBase {
+ public:
+  PageInfoBubbleViewPrivacySandboxDialogBrowserTest() {
+    feature_list_.InitAndDisableFeature(
+        privacy_sandbox::kPrivacySandboxAdPrivacyUxDeprecation);
+  }
+
+  // DialogBrowserTest:
+  void ShowUi(const std::string& name_with_param_suffix) override {
+    const std::string& name =
+        name_with_param_suffix.substr(0, name_with_param_suffix.find("/"));
+    SetupAndOpenBubble();
 
     if (name == "PrivacySandboxMain") {
       // No further action needed, default case.
@@ -681,13 +699,8 @@ class PageInfoBubbleViewPrivacySandboxDialogBrowserTest
     }
   }
 
-  GURL GetUrl(const std::string& host) {
-    return https_server_.GetURL(host, "/title1.html");
-  }
-
  private:
   base::test::ScopedFeatureList feature_list_;
-  net::EmbeddedTestServer https_server_{net::EmbeddedTestServer::TYPE_HTTPS};
 };
 
 IN_PROC_BROWSER_TEST_F(PageInfoBubbleViewPrivacySandboxDialogBrowserTest,
@@ -697,6 +710,34 @@ IN_PROC_BROWSER_TEST_F(PageInfoBubbleViewPrivacySandboxDialogBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(PageInfoBubbleViewPrivacySandboxDialogBrowserTest,
                        InvokeUi_PrivacySandboxSubpage) {
+  ShowAndVerifyUi();
+}
+
+class PageInfoBubbleViewPrivacySandboxDeprecationBrowserTest
+    : public PageInfoBubbleViewPrivacySandboxTestBase {
+ public:
+  PageInfoBubbleViewPrivacySandboxDeprecationBrowserTest() {
+    feature_list_.InitAndEnableFeature(
+        privacy_sandbox::kPrivacySandboxAdPrivacyUxDeprecation);
+  }
+
+  // DialogBrowserTest:
+  void ShowUi(const std::string& name) override {
+    SetupAndOpenBubble();
+
+    auto* bubble_view = static_cast<PageInfoBubbleView*>(
+        PageInfoBubbleView::GetPageInfoBubbleForTesting());
+    views::View* ad_privacy_button = bubble_view->GetViewByID(
+        PageInfoViewFactory::VIEW_ID_PAGE_INFO_AD_PERSONALIZATION_BUTTON);
+    EXPECT_FALSE(ad_privacy_button);
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(PageInfoBubbleViewPrivacySandboxDeprecationBrowserTest,
+                       InvokeUi_AdPrivacyButtonRemoved) {
   ShowAndVerifyUi();
 }
 
