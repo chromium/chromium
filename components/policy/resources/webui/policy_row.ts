@@ -10,6 +10,7 @@ import {CustomElement} from 'chrome://resources/js/custom_element.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 
 import type {Conflict} from './policy_conflict.js';
+import {copyValue} from './policy_conflict.js';
 import {getTemplate} from './policy_row.html.js';
 
 export interface Policy {
@@ -223,7 +224,7 @@ export class PolicyRowElement extends CustomElement {
     if (policy.conflicts) {
       policy.conflicts.forEach(conflict => {
         const row = document.createElement('policy-conflict');
-        row.initialize(conflict, 'conflictValue');
+        row.initialize(conflict, 'conflictValue', this.policy.name);
         row.classList.add('policy-conflict-data');
         this.shadowRoot!.appendChild(row);
       });
@@ -231,7 +232,7 @@ export class PolicyRowElement extends CustomElement {
     if (policy.superseded) {
       policy.superseded.forEach(superseded => {
         const row = document.createElement('policy-conflict');
-        row.initialize(superseded, 'supersededValue');
+        row.initialize(superseded, 'supersededValue', this.policy.name);
         row.classList.add('policy-superseded-data');
         this.shadowRoot!.appendChild(row);
       });
@@ -242,20 +243,9 @@ export class PolicyRowElement extends CustomElement {
   private copyValue_() {
     const policyValueDisplay =
         this.shadowRoot!.querySelector('.value.row .value');
-
-    // Select the text that will be copied.
-    const selection = window.getSelection();
-    const range = window.document.createRange();
-    range.selectNodeContents(policyValueDisplay as Node);
-    selection!.removeAllRanges();
-    selection!.addRange(range);
-
-    // Copy the policy value to the clipboard.
-    navigator.clipboard
-        .writeText((policyValueDisplay as CustomElement).innerText)
-        .catch(error => {
-          console.error('Unable to copy policy value to clipboard:', error);
-        });
+    if (policyValueDisplay) {
+      copyValue(policyValueDisplay as CustomElement);
+    }
   }
 
   // Toggle the visibility of an additional row containing the complete text.

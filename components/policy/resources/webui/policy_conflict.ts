@@ -16,6 +16,19 @@ export interface Conflict {
   value: any;
 }
 
+// Copies the text content of an element to the clipboard.
+export function copyValue(element: CustomElement) {
+  const selection = window.getSelection();
+  const range = window.document.createRange();
+  range.selectNodeContents(element);
+  selection!.removeAllRanges();
+  selection!.addRange(range);
+
+  navigator.clipboard.writeText(element.innerText).catch(error => {
+    console.error('Unable to copy value to clipboard:', error);
+  });
+}
+
 export class PolicyConflictElement extends CustomElement {
   static override get template() {
     return getTemplate();
@@ -24,9 +37,14 @@ export class PolicyConflictElement extends CustomElement {
   connectedCallback() {
     this.toggleAttribute('hidden', true);
     this.setAttribute('role', 'rowgroup');
+
+    const copyLink = this.shadowRoot!.querySelector('.value.row .copy-value');
+    if (copyLink) {
+      copyLink.addEventListener('click', () => this.copyValue_());
+    }
   }
 
-  initialize(conflict: Conflict, rowLabel: string) {
+  initialize(conflict: Conflict, rowLabel: string, _policyName: string) {
     const scopeText = loadTimeData.getString(
         conflict.scope === 'user' ? 'scopeUser' : 'scopeDevice');
     const levelText = loadTimeData.getString(
@@ -56,7 +74,23 @@ export class PolicyConflictElement extends CustomElement {
     setText('.source.row .value', sourceText);
     setText('.scope.row .value', scopeText);
     setText('.level.row .value', levelText);
+
+    // Set the label for the copy link.
+    const copyLink = this.shadowRoot!.querySelector('.value.row .copy-value');
+    if (copyLink) {
+      const copyLabel = loadTimeData.getStringF('policyCopyValue', _policyName);
+      copyLink.setAttribute('title', copyLabel);
+      copyLink.setAttribute('aria-label', copyLabel);
+    }
     // </if>
+  }
+
+  // Copies the policy's conflicting/superseded value to the clipboard.
+  private copyValue_() {
+    const valueDisplay = this.shadowRoot!.querySelector('.value.row .value');
+    if (valueDisplay) {
+      copyValue(valueDisplay as CustomElement);
+    }
   }
 }
 

@@ -72,6 +72,15 @@
   display: block;
   flex: 1;
 }
+
+.link img {
+  height: 12px;
+  width: 12px;
+}
+
+.copy {
+  flex: 0 0 auto;
+}
 </if>
 </style>
 <div class="policy conflict row" role="row">
@@ -88,6 +97,11 @@
     <div class="value row" role="row">
       <div class="name" role="rowheader">$i18n{conflictValue}</div>
       <div class="value" role="cell"></div>
+      <div class="copy" role="cell">
+        <a is="action-link" class="copy-value link" role="cell">
+          <img src="chrome://resources/images/icon_copy_content.svg">
+        </a>
+      </div>
     </div>
     <div class="source row" role="row">
       <div class="name" role="rowheader">$i18n{headerSource}</div>
