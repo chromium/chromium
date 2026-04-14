@@ -80,6 +80,19 @@ class ContentToVisibleTimeReporterTest
     ExpectHistogramsEmptyExcept({});
   }
 
+  VisibleTimeEvent CreateTabSwitchEvent(base::TimeTicks start_time) {
+    return VisibleTimeEvent{
+        .event_start_time = start_time,
+        .reason = VisibleTimeEvent::TabSwitchReason{
+            .destination_is_loaded = tab_state_.destination_is_loaded,
+            .had_saved_frame_at_start = tab_state_.has_saved_frames}};
+  }
+
+  VisibleTimeEvent CreateBFCacheRestoreEvent(base::TimeTicks start_time) {
+    return VisibleTimeEvent{.event_start_time = start_time,
+                            .reason = VisibleTimeEvent::BFCacheRestoreReason{}};
+  }
+
   void ExpectHistogramsEmptyExcept(
       const std::vector<std::string>& histograms_with_values) {
     constexpr const char* kAllHistograms[] = {
@@ -156,13 +169,7 @@ INSTANTIATE_TEST_SUITE_P(All,
 TEST_P(ContentToVisibleTimeReporterTest, TimeIsRecorded) {
   const auto start = base::TimeTicks::Now();
   auto callback = tab_switch_time_recorder_.TabWasShown(
-      tab_state_.has_saved_frames,
-      RecordContentToVisibleTimeRequest{
-          .events = {
-              VisibleTimeEvent{.event_start_time = start,
-                               .reason = VisibleTimeEvent::TabSwitchReason{
-                                   .destination_is_loaded =
-                                       tab_state_.destination_is_loaded}}}});
+      RecordContentToVisibleTimeRequest({CreateTabSwitchEvent(start)}));
   const auto end = start + kDuration;
   viz::FrameTimingDetails details;
   details.presentation_feedback.timestamp = end;
@@ -189,13 +196,7 @@ TEST_P(ContentToVisibleTimeReporterTest, TimeIsRecorded) {
 TEST_P(ContentToVisibleTimeReporterTest, HideBeforePresentFrame) {
   const auto start1 = base::TimeTicks::Now();
   auto callback1 = tab_switch_time_recorder_.TabWasShown(
-      tab_state_.has_saved_frames,
-      RecordContentToVisibleTimeRequest{
-          .events = {
-              VisibleTimeEvent{.event_start_time = start1,
-                               .reason = VisibleTimeEvent::TabSwitchReason{
-                                   .destination_is_loaded =
-                                       tab_state_.destination_is_loaded}}}});
+      RecordContentToVisibleTimeRequest({CreateTabSwitchEvent(start1)}));
 
   task_environment_.FastForwardBy(kDuration);
   tab_switch_time_recorder_.TabWasHidden();
@@ -217,13 +218,7 @@ TEST_P(ContentToVisibleTimeReporterTest, HideBeforePresentFrame) {
 
   const auto start2 = base::TimeTicks::Now();
   auto callback2 = tab_switch_time_recorder_.TabWasShown(
-      tab_state_.has_saved_frames,
-      RecordContentToVisibleTimeRequest{
-          .events = {
-              VisibleTimeEvent{.event_start_time = start2,
-                               .reason = VisibleTimeEvent::TabSwitchReason{
-                                   .destination_is_loaded =
-                                       tab_state_.destination_is_loaded}}}});
+      RecordContentToVisibleTimeRequest({CreateTabSwitchEvent(start2)}));
 
   // Now the tab switch completes, and adds a duration histogram.
   const auto end2 = start2 + kOtherDuration;
@@ -257,13 +252,7 @@ TEST_P(ContentToVisibleTimeReporterTest, HideBeforePresentFrame) {
 TEST_P(ContentToVisibleTimeReporterTest, MissingTabWasHidden) {
   const auto start1 = base::TimeTicks::Now();
   auto callback1 = tab_switch_time_recorder_.TabWasShown(
-      tab_state_.has_saved_frames,
-      RecordContentToVisibleTimeRequest{
-          .events = {
-              VisibleTimeEvent{.event_start_time = start1,
-                               .reason = VisibleTimeEvent::TabSwitchReason{
-                                   .destination_is_loaded =
-                                       tab_state_.destination_is_loaded}}}});
+      RecordContentToVisibleTimeRequest({CreateTabSwitchEvent(start1)}));
 
   task_environment_.FastForwardBy(kDuration);
 
@@ -271,13 +260,7 @@ TEST_P(ContentToVisibleTimeReporterTest, MissingTabWasHidden) {
 
   const auto start2 = base::TimeTicks::Now();
   auto callback2 = tab_switch_time_recorder_.TabWasShown(
-      tab_state_.has_saved_frames,
-      RecordContentToVisibleTimeRequest{
-          .events = {
-              VisibleTimeEvent{.event_start_time = start2,
-                               .reason = VisibleTimeEvent::TabSwitchReason{
-                                   .destination_is_loaded =
-                                       tab_state_.destination_is_loaded}}}});
+      RecordContentToVisibleTimeRequest({CreateTabSwitchEvent(start2)}));
   const auto end2 = start2 + kOtherDuration;
   viz::FrameTimingDetails details;
   details.presentation_feedback.timestamp = end2;
@@ -312,11 +295,7 @@ TEST_P(ContentToVisibleTimeReporterTest, MissingTabWasHidden) {
 TEST_P(ContentToVisibleTimeReporterTest, BfcacheRestoreTimeIsRecorded) {
   const auto start = base::TimeTicks::Now();
   auto callback = tab_switch_time_recorder_.TabWasShown(
-      tab_state_.has_saved_frames,
-      RecordContentToVisibleTimeRequest{
-          .events = {VisibleTimeEvent{
-              .event_start_time = start,
-              .reason = VisibleTimeEvent::BFCacheRestoreReason{}}}});
+      RecordContentToVisibleTimeRequest({CreateBFCacheRestoreEvent(start)}));
   const auto end = start + kDuration;
   viz::FrameTimingDetails details;
   details.presentation_feedback.timestamp = end;
@@ -339,18 +318,9 @@ TEST_P(ContentToVisibleTimeReporterTest, MultipleEvents) {
   const auto start2 = start + kDuration;
   const auto end = start + kDuration + kOtherDuration;
 
-  auto callback = tab_switch_time_recorder_.TabWasShown(
-      tab_state_.has_saved_frames,
-      RecordContentToVisibleTimeRequest{
-          .events = {
-              VisibleTimeEvent{.event_start_time = start,
-                               .reason =
-                                   VisibleTimeEvent::TabSwitchReason{
-                                       .destination_is_loaded =
-                                           tab_state_.destination_is_loaded}},
-              VisibleTimeEvent{
-                  .event_start_time = start2,
-                  .reason = VisibleTimeEvent::BFCacheRestoreReason{}}}});
+  auto callback =
+      tab_switch_time_recorder_.TabWasShown(RecordContentToVisibleTimeRequest(
+          {CreateTabSwitchEvent(start), CreateBFCacheRestoreEvent(start2)}));
 
   viz::FrameTimingDetails details;
   details.presentation_feedback.timestamp = end;
@@ -380,18 +350,9 @@ TEST_P(ContentToVisibleTimeReporterTest, MultipleEvents) {
 // unoccluded event and some other events too.
 TEST_P(ContentToVisibleTimeReporterTest, MultipleEventsHideBeforePresentFrame) {
   const auto start = base::TimeTicks::Now();
-  auto callback1 = tab_switch_time_recorder_.TabWasShown(
-      tab_state_.has_saved_frames,
-      RecordContentToVisibleTimeRequest{
-          .events = {
-              VisibleTimeEvent{.event_start_time = start,
-                               .reason =
-                                   VisibleTimeEvent::TabSwitchReason{
-                                       .destination_is_loaded =
-                                           tab_state_.destination_is_loaded}},
-              VisibleTimeEvent{
-                  .event_start_time = start,
-                  .reason = VisibleTimeEvent::BFCacheRestoreReason{}}}});
+  auto callback1 =
+      tab_switch_time_recorder_.TabWasShown(RecordContentToVisibleTimeRequest(
+          {CreateTabSwitchEvent(start), CreateBFCacheRestoreEvent(start)}));
 
   task_environment_.FastForwardBy(kDuration);
   tab_switch_time_recorder_.TabWasHidden();
@@ -412,18 +373,9 @@ TEST_P(ContentToVisibleTimeReporterTest, MultipleEventsHideBeforePresentFrame) {
       ContentToVisibleTimeReporter::TabSwitchResult::kIncomplete, 1);
 
   const auto start2 = base::TimeTicks::Now();
-  auto callback2 = tab_switch_time_recorder_.TabWasShown(
-      tab_state_.has_saved_frames,
-      RecordContentToVisibleTimeRequest{
-          .events = {
-              VisibleTimeEvent{.event_start_time = start2,
-                               .reason =
-                                   VisibleTimeEvent::TabSwitchReason{
-                                       .destination_is_loaded =
-                                           tab_state_.destination_is_loaded}},
-              VisibleTimeEvent{
-                  .event_start_time = start2,
-                  .reason = VisibleTimeEvent::BFCacheRestoreReason{}}}});
+  auto callback2 =
+      tab_switch_time_recorder_.TabWasShown(RecordContentToVisibleTimeRequest(
+          {CreateTabSwitchEvent(start2), CreateBFCacheRestoreEvent(start2)}));
 
   // Now the tab switch completes, and adds a duration histogram.
   const auto end2 = start2 + kOtherDuration;
@@ -462,36 +414,18 @@ TEST_P(ContentToVisibleTimeReporterTest, MultipleEventsHideBeforePresentFrame) {
 // called.
 TEST_P(ContentToVisibleTimeReporterTest, MultipleEventsMissingTabWasHidden) {
   const auto start1 = base::TimeTicks::Now();
-  auto callback1 = tab_switch_time_recorder_.TabWasShown(
-      tab_state_.has_saved_frames,
-      RecordContentToVisibleTimeRequest{
-          .events = {
-              VisibleTimeEvent{.event_start_time = start1,
-                               .reason =
-                                   VisibleTimeEvent::TabSwitchReason{
-                                       .destination_is_loaded =
-                                           tab_state_.destination_is_loaded}},
-              VisibleTimeEvent{
-                  .event_start_time = start1,
-                  .reason = VisibleTimeEvent::BFCacheRestoreReason{}}}});
+  auto callback1 =
+      tab_switch_time_recorder_.TabWasShown(RecordContentToVisibleTimeRequest(
+          {CreateTabSwitchEvent(start1), CreateBFCacheRestoreEvent(start1)}));
 
   task_environment_.FastForwardBy(kDuration);
 
   ExpectHistogramsEmptyExcept({});
 
   const auto start2 = base::TimeTicks::Now();
-  auto callback2 = tab_switch_time_recorder_.TabWasShown(
-      tab_state_.has_saved_frames,
-      RecordContentToVisibleTimeRequest{
-          .events = {
-              VisibleTimeEvent{.event_start_time = start2,
-                               .reason =
-                                   VisibleTimeEvent::TabSwitchReason{
-                                       .destination_is_loaded =
-                                           tab_state_.destination_is_loaded}},
-              VisibleTimeEvent{
-                  .event_start_time = start2,
-                  .reason = VisibleTimeEvent::BFCacheRestoreReason{}}}});
+  auto callback2 =
+      tab_switch_time_recorder_.TabWasShown(RecordContentToVisibleTimeRequest(
+          {CreateTabSwitchEvent(start2), CreateBFCacheRestoreEvent(start2)}));
   const auto end2 = start2 + kOtherDuration;
   viz::FrameTimingDetails details;
   details.presentation_feedback.timestamp = end2;
@@ -530,46 +464,36 @@ TEST_P(ContentToVisibleTimeReporterTest, MultipleEventsMissingTabWasHidden) {
 TEST_P(ContentToVisibleTimeReporterTest, BothReasonsMetric) {
   {
     base::HistogramTester tester;
-    tab_switch_time_recorder_.TabWasShown(
-        tab_state_.has_saved_frames,
-        RecordContentToVisibleTimeRequest{
-            .events = {
-                VisibleTimeEvent{.event_start_time = base::TimeTicks::Now(),
-                                 .reason = VisibleTimeEvent::TabSwitchReason{}},
-                VisibleTimeEvent{
-                    .event_start_time = base::TimeTicks::Now(),
-                    .reason = VisibleTimeEvent::BFCacheRestoreReason{}},
-            }});
+    tab_switch_time_recorder_.TabWasShown(RecordContentToVisibleTimeRequest({
+        VisibleTimeEvent{.event_start_time = base::TimeTicks::Now(),
+                         .reason = VisibleTimeEvent::TabSwitchReason{}},
+        VisibleTimeEvent{.event_start_time = base::TimeTicks::Now(),
+                         .reason = VisibleTimeEvent::BFCacheRestoreReason{}},
+    }));
     tester.ExpectUniqueSample(kBothReasonsHistogram, true, 1);
   }
 
   {
     base::HistogramTester tester;
-    tab_switch_time_recorder_.TabWasShown(
-        tab_state_.has_saved_frames,
-        RecordContentToVisibleTimeRequest{
-            .events = {VisibleTimeEvent{
-                .event_start_time = base::TimeTicks::Now(),
-                .reason = VisibleTimeEvent::TabSwitchReason{}}}});
+    tab_switch_time_recorder_.TabWasShown(RecordContentToVisibleTimeRequest(
+        {VisibleTimeEvent{.event_start_time = base::TimeTicks::Now(),
+                          .reason = VisibleTimeEvent::TabSwitchReason{}}}));
     tester.ExpectUniqueSample(kBothReasonsHistogram, false, 1);
   }
 
   {
     base::HistogramTester tester;
     tab_switch_time_recorder_.TabWasShown(
-        tab_state_.has_saved_frames,
-        RecordContentToVisibleTimeRequest{
-            .events = {VisibleTimeEvent{
-                .event_start_time = base::TimeTicks::Now(),
-                .reason = VisibleTimeEvent::BFCacheRestoreReason{}}}});
+        RecordContentToVisibleTimeRequest({VisibleTimeEvent{
+            .event_start_time = base::TimeTicks::Now(),
+            .reason = VisibleTimeEvent::BFCacheRestoreReason{}}}));
     tester.ExpectUniqueSample(kBothReasonsHistogram, false, 1);
   }
 
   {
     base::HistogramTester tester;
     tab_switch_time_recorder_.TabWasShown(
-        tab_state_.has_saved_frames,
-        RecordContentToVisibleTimeRequest{.events = {}});
+        RecordContentToVisibleTimeRequest({}));
     tester.ExpectUniqueSample(kBothReasonsHistogram, false, 1);
   }
 }

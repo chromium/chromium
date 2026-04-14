@@ -8,6 +8,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/check.h"
 #include "base/command_line.h"
 #include "base/debug/crash_logging.h"
 #include "base/debug/dump_without_crashing.h"
@@ -30,6 +31,7 @@
 #include "content/browser/gpu/compositor_util.h"
 #include "content/public/browser/render_widget_host_view.h"
 #include "content/public/common/content_switches.h"
+#include "third_party/blink/public/common/page/content_to_visible_time_request.h"
 #include "third_party/khronos/GLES2/gl2.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/gfx/geometry/dip_util.h"
@@ -98,9 +100,11 @@ void DelegatedFrameHost::WasShown(
 
   frame_evictor_->SetVisible(true);
   if (record_tab_switch_time_request && compositor_) {
+    // Only requests with saved frames should be sent to the DelegatedFrameHost.
+    CHECK(record_tab_switch_time_request
+              ->AllEventsAreTabSwitchesWithSavedFrame());
     compositor_->RequestSuccessfulPresentationTimeForNextFrame(
         tab_switch_time_recorder_.TabWasShown(
-            true /* has_saved_frames */,
             std::move(*record_tab_switch_time_request)));
   }
 
@@ -120,11 +124,14 @@ void DelegatedFrameHost::RequestSuccessfulPresentationTimeForNextFrame(
     blink::RecordContentToVisibleTimeRequest visible_time_request) {
   if (!compositor_)
     return;
+
+  // Only requests with saved frames should be sent to the DelegatedFrameHost.
+  CHECK(visible_time_request.AllEventsAreTabSwitchesWithSavedFrame());
+
   // Tab was shown while widget was already painting, eg. due to being
   // captured.
   compositor_->RequestSuccessfulPresentationTimeForNextFrame(
-      tab_switch_time_recorder_.TabWasShown(true /* has_saved_frames */,
-                                            std::move(visible_time_request)));
+      tab_switch_time_recorder_.TabWasShown(std::move(visible_time_request)));
 }
 
 void DelegatedFrameHost::CancelSuccessfulPresentationTimeRequest() {

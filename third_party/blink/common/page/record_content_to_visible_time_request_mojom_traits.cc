@@ -18,6 +18,7 @@ bool StructTraits<blink::mojom::VisibleTimeTabSwitchReasonDataView,
     Read(blink::mojom::VisibleTimeTabSwitchReasonDataView data,
          blink::VisibleTimeEvent::TabSwitchReason* out) {
   out->destination_is_loaded = data.destination_is_loaded();
+  out->had_saved_frame_at_start = data.had_saved_frame_at_start();
   return true;
 }
 

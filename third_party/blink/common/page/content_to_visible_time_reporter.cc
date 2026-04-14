@@ -30,10 +30,10 @@ namespace {
 using TabSwitchResult = ContentToVisibleTimeReporter::TabSwitchResult;
 
 const char* GetHistogramSuffix(
-    bool has_saved_frames,
     const VisibleTimeEvent::TabSwitchReason& start_state) {
-  if (has_saved_frames)
+  if (start_state.had_saved_frame_at_start) {
     return "WithSavedFrames";
+  }
 
   if (start_state.destination_is_loaded) {
     return "NoSavedFrames_Loaded";
@@ -59,12 +59,12 @@ bool IsLatencyTraceCategoryEnabled() {
   return TRACE_EVENT_CATEGORY_ENABLED("latency");
 }
 
-void RecordTabSwitchTraceEvent(base::TimeTicks start_time,
-                               base::TimeTicks end_time,
-                               TabSwitchResult result,
-                               bool has_saved_frames,
-                               bool destination_is_loaded,
-                               uint64_t flow_id) {
+void RecordTabSwitchTraceEvent(
+    base::TimeTicks start_time,
+    base::TimeTicks end_time,
+    TabSwitchResult result,
+    const VisibleTimeEvent::TabSwitchReason& start_state,
+    uint64_t flow_id) {
   if (!IsLatencyTraceCategoryEnabled()) {
     return;
   }
@@ -92,10 +92,10 @@ void RecordTabSwitchTraceEvent(base::TimeTicks start_time,
                 TabSwitchMeasurement::RESULT_MISSED_TAB_HIDE);
             break;
         }
-        if (has_saved_frames) {
+        if (start_state.had_saved_frame_at_start) {
           measurement->set_tab_state(
               TabSwitchMeasurement::STATE_WITH_SAVED_FRAMES);
-        } else if (destination_is_loaded) {
+        } else if (start_state.destination_is_loaded) {
           measurement->set_tab_state(
               TabSwitchMeasurement::STATE_LOADED_NO_SAVED_FRAMES);
         } else {
@@ -110,16 +110,14 @@ void RecordTabSwitchHistogramsAndTraceEvent(
     TabSwitchResult tab_switch_result,
     base::TimeTicks start_time,
     base::TimeTicks presentation_timestamp,
-    bool has_saved_frames,
     const VisibleTimeEvent::TabSwitchReason& start_state) {
   uint64_t event_id = base::trace_event::GetNextGlobalTraceId();
   RecordTabSwitchTraceEvent(start_time, presentation_timestamp,
-                            tab_switch_result, has_saved_frames,
-                            start_state.destination_is_loaded, event_id);
+                            tab_switch_result, start_state, event_id);
 
   const auto tab_switch_duration = presentation_timestamp - start_time;
 
-  const char* suffix = GetHistogramSuffix(has_saved_frames, start_state);
+  const char* suffix = GetHistogramSuffix(start_state);
   base::trace_event::HistogramScope scoped_event(event_id);
 
   // Record result histogram.
@@ -158,7 +156,6 @@ ContentToVisibleTimeReporter::~ContentToVisibleTimeReporter() = default;
 
 ContentToVisibleTimeReporter::SuccessfulPresentationTimeCallback
 ContentToVisibleTimeReporter::TabWasShown(
-    bool has_saved_frames,
     RecordContentToVisibleTimeRequest start_state) {
 #if DCHECK_IS_ON()
   for (const auto& event : start_state.events) {
@@ -198,7 +195,7 @@ ContentToVisibleTimeReporter::TabWasShown(
         // still visible.
         RecordTabSwitchHistogramsAndTraceEvent(
             TabSwitchResult::kMissedTabHide, event.event_start_time,
-            base::TimeTicks::Now(), has_saved_frames_,
+            base::TimeTicks::Now(),
             std::get<VisibleTimeEvent::TabSwitchReason>(event.reason));
       }
     }
@@ -209,7 +206,7 @@ ContentToVisibleTimeReporter::TabWasShown(
   // between (which is supposed to be impossible).
   // DCHECK(tab_switch_start_state_.empty());
 
-  OverwriteTabSwitchStartState(std::move(start_state), has_saved_frames);
+  OverwriteTabSwitchStartState(std::move(start_state));
 
   // |tab_switch_start_state_| is only reset by ResetTabSwitchStartState once
   // the metrics have been emitted.
@@ -225,7 +222,7 @@ void ContentToVisibleTimeReporter::TabWasHidden() {
               event.reason)) {
         RecordTabSwitchHistogramsAndTraceEvent(
             TabSwitchResult::kIncomplete, event.event_start_time,
-            base::TimeTicks::Now(), has_saved_frames_,
+            base::TimeTicks::Now(),
             std::get<VisibleTimeEvent::TabSwitchReason>(event.reason));
       }
     }
@@ -249,7 +246,7 @@ void ContentToVisibleTimeReporter::RecordHistogramsAndTraceEvents(
                    [&](const VisibleTimeEvent::TabSwitchReason& tab_switch) {
                      RecordTabSwitchHistogramsAndTraceEvent(
                          tab_switch_result, event.event_start_time,
-                         presentation_timestamp, has_saved_frames_, tab_switch);
+                         presentation_timestamp, tab_switch);
                    },
                    [&](const VisibleTimeEvent::BFCacheRestoreReason&) {
                      RecordBackForwardCacheRestoreMetric(
@@ -263,8 +260,7 @@ void ContentToVisibleTimeReporter::RecordHistogramsAndTraceEvents(
 }
 
 void ContentToVisibleTimeReporter::OverwriteTabSwitchStartState(
-    std::optional<RecordContentToVisibleTimeRequest> state,
-    bool has_saved_frames) {
+    std::optional<RecordContentToVisibleTimeRequest> state) {
   if (tab_switch_start_state_) {
     // Invalidate previously issued callbacks, to avoid accessing
     // `tab_switch_start_state_` which is about to be deleted.
@@ -275,7 +271,6 @@ void ContentToVisibleTimeReporter::OverwriteTabSwitchStartState(
     weak_ptr_factory_.InvalidateWeakPtrs();
   }
   tab_switch_start_state_ = std::move(state);
-  has_saved_frames_ = has_saved_frames;
 }
 
 }  // namespace blink

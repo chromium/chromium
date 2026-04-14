@@ -10,6 +10,7 @@ import "mojo/public/mojom/base/time.mojom";
 struct VisibleTimeTabSwitchReason {
   // Indicates if the destination tab is loaded when initiating the tab switch.
   bool destination_is_loaded;
+  bool had_saved_frame_at_start;
 };
 
 // Any event that can start a RecordContentToVisibleTimeRequest. The member that's set

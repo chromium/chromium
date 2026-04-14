@@ -663,8 +663,8 @@ class CONTENT_EXPORT WebContentsImpl
   void SetSupportsDraggableRegions(bool supports_draggable_regions) override;
   void SetV8CompileHints(base::ReadOnlySharedMemoryRegion data) override;
   void SetTabSwitchStartTime(base::TimeTicks start_time,
-                             bool destination_is_loaded) override;
-
+                             bool destination_is_loaded,
+                             bool had_saved_frame_at_start) override;
   WindowOpenDisposition GetOriginalWindowOpenDisposition() const override;
 
   // Implementation of PageNavigator.

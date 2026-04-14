@@ -77,7 +77,8 @@ class TestWebContents : public WebContentsImpl, public WebContentsTester {
   // Override to cache the tab switch start time without going through
   // VisibleTimeRequestTrigger.
   void SetTabSwitchStartTime(base::TimeTicks start_time,
-                             bool destination_is_loaded) final;
+                             bool destination_is_loaded,
+                             bool had_saved_frame_at_start) final;
 
   // WebContentsTester implementation.
   void CommitPendingNavigation() override;

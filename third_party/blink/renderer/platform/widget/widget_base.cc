@@ -6,6 +6,7 @@
 
 #include <algorithm>
 
+#include "base/check.h"
 #include "base/command_line.h"
 #include "base/debug/dump_without_crashing.h"
 #include "base/feature_list.h"
@@ -34,9 +35,9 @@
 #include "services/viz/public/mojom/compositing/compositor_frame_sink.mojom-blink.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/input/web_input_event_attribution.h"
+#include "third_party/blink/public/common/page/content_to_visible_time_request.h"
 #include "third_party/blink/public/common/switches.h"
 #include "third_party/blink/public/mojom/input/pointer_lock_context.mojom-blink.h"
-#include "third_party/blink/public/mojom/widget/record_content_to_visible_time_request.mojom-blink.h"
 #include "third_party/blink/public/mojom/widget/visual_properties.mojom-blink.h"
 #include "third_party/blink/public/platform/cross_variant_mojo_util.h"
 #include "third_party/blink/public/platform/platform.h"
@@ -591,9 +592,11 @@ void WidgetBase::WasShown(
   SetHidden(false);
 
   if (record_tab_switch_time_request) {
+    // Requests with saved frames should be sent to the DelegatedFrameHost.
+    CHECK(!record_tab_switch_time_request
+               ->AllEventsAreTabSwitchesWithSavedFrame());
     LayerTreeHost()->RequestSuccessfulPresentationTimeForNextFrame(
-        tab_switch_time_recorder_.TabWasShown(false /* has_saved_frames */,
-                                              *record_tab_switch_time_request));
+        tab_switch_time_recorder_.TabWasShown(*record_tab_switch_time_request));
   }
 
   client_->WasShown(was_evicted);
@@ -607,11 +610,13 @@ void WidgetBase::RequestSuccessfulPresentationTimeForNextFrame(
   TRACE_EVENT0("renderer",
                "WidgetBase::RequestSuccessfulPresentationTimeForNextFrame");
 
+  // Requests with saved frames should be sent to the DelegatedFrameHost.
+  CHECK(!visible_time_request.AllEventsAreTabSwitchesWithSavedFrame());
+
   // Tab was shown while widget was already painting, eg. due to being
   // captured.
   LayerTreeHost()->RequestSuccessfulPresentationTimeForNextFrame(
-      tab_switch_time_recorder_.TabWasShown(false /* has_saved_frames */,
-                                            visible_time_request));
+      tab_switch_time_recorder_.TabWasShown(visible_time_request));
 }
 
 void WidgetBase::CancelSuccessfulPresentationTimeRequest() {

@@ -409,11 +409,12 @@ IN_PROC_BROWSER_TEST_F(RenderWidgetHostViewChildFrameBrowserTest,
     // Hide the frame and make it visible again, to force it to record the
     // tab-switch time, which is generated from presentation-feedback.
     child_rwh_impl->WasHidden();
-    child_rwh_impl->WasShown(blink::RecordContentToVisibleTimeRequest{
-        .events = {blink::VisibleTimeEvent{
+    child_rwh_impl->WasShown(
+        blink::RecordContentToVisibleTimeRequest({blink::VisibleTimeEvent{
             .event_start_time = base::TimeTicks::Now(),
             .reason = blink::VisibleTimeEvent::TabSwitchReason{
-                .destination_is_loaded = true}}}});
+                .destination_is_loaded = true,
+                .had_saved_frame_at_start = false}}}));
     // Force the child to submit a new frame.
     return ExecJs(root->child_at(0)->current_frame_host(),
                   "document.write('Force a new frame.');");

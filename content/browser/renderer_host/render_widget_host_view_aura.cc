@@ -683,9 +683,9 @@ void RenderWidgetHostViewAura::NotifyHostAndDelegateOnWasShown(
   // time is the presentation time for the browser-compositor.
   std::optional<blink::RecordContentToVisibleTimeRequest>
       delegated_visible_time_request;
-  if (tab_switch_start_state && delegated_frame_host_->HasSavedFrame()) {
+  if (tab_switch_start_state) {
     delegated_visible_time_request =
-        tab_switch_start_state->ExtractTabSwitchEvents();
+        tab_switch_start_state->ExtractTabSwitchEventsWithSavedFrame();
   }
 
   host()->WasShown(std::move(tab_switch_start_state));
@@ -760,13 +760,11 @@ void RenderWidgetHostViewAura::
 
   // If the frame for the renderer is already available, then the tab-switching
   // time is the presentation time for the browser-compositor.
-  if (delegated_frame_host_->HasSavedFrame()) {
-    if (std::optional<blink::RecordContentToVisibleTimeRequest>
-            delegated_visible_time_request =
-                visible_time_request.ExtractTabSwitchEvents()) {
-      delegated_frame_host_->RequestSuccessfulPresentationTimeForNextFrame(
-          std::move(*delegated_visible_time_request));
-    }
+  if (std::optional<blink::RecordContentToVisibleTimeRequest>
+          delegated_visible_time_request =
+              visible_time_request.ExtractTabSwitchEventsWithSavedFrame()) {
+    delegated_frame_host_->RequestSuccessfulPresentationTimeForNextFrame(
+        std::move(*delegated_visible_time_request));
   }
 
   if (!visible_time_request.events.empty()) {

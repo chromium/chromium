@@ -1621,6 +1621,8 @@ class RenderWidgetHostViewPresentationFeedbackBrowserTest
           .event_start_time = base::TimeTicks::Now(),
           .reason = blink::VisibleTimeEvent::TabSwitchReason{
               .destination_is_loaded = true,
+              .had_saved_frame_at_start =
+                  GetRenderWidgetHostView()->HasSavedCompositorFrame(),
           }});
     }
     if (show_reason_bfcache_restore) {

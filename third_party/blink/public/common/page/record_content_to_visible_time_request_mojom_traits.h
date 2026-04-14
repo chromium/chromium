@@ -25,6 +25,11 @@ struct BLINK_COMMON_EXPORT StructTraits<
     return reason.destination_is_loaded;
   }
 
+  static bool had_saved_frame_at_start(
+      const blink::VisibleTimeEvent::TabSwitchReason& reason) {
+    return reason.had_saved_frame_at_start;
+  }
+
   static bool Read(blink::mojom::VisibleTimeTabSwitchReasonDataView data,
                    blink::VisibleTimeEvent::TabSwitchReason* out);
 };

@@ -48,7 +48,6 @@ class BLINK_COMMON_EXPORT ContentToVisibleTimeReporter {
   // Invoked when the tab associated with this recorder is shown. Returns a
   // callback to invoke the next time a frame is presented for this tab.
   SuccessfulPresentationTimeCallback TabWasShown(
-      bool has_saved_frames,
       RecordContentToVisibleTimeRequest start_state);
 
   // Indicates that the tab associated with this recorder was hidden. If no
@@ -64,17 +63,13 @@ class BLINK_COMMON_EXPORT ContentToVisibleTimeReporter {
   // Saves the given `state` and `has_saved_frames`, and invalidates all
   // existing callbacks that might reference the old state.
   void OverwriteTabSwitchStartState(
-      std::optional<RecordContentToVisibleTimeRequest> state,
-      bool has_saved_frames);
+      std::optional<RecordContentToVisibleTimeRequest> state);
 
   // Clears state and invalidates all existing callbacks that might reference
   // the old state.
   void ResetTabSwitchStartState() {
-    OverwriteTabSwitchStartState(std::nullopt, false);
+    OverwriteTabSwitchStartState(std::nullopt);
   }
-
-  // Whether there was a saved frame for the last tab switch.
-  bool has_saved_frames_;
 
   // The information about the last tab switch request, or nullopt if there is
   // no incomplete tab switch.

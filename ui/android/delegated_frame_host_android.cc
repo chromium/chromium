@@ -36,6 +36,7 @@
 #include "gpu/command_buffer/client/shared_image_interface.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
 #include "gpu/command_buffer/common/sync_token.h"
+#include "third_party/blink/public/common/page/content_to_visible_time_request.h"
 #include "ui/android/browser_controls_offset_tag_constraints.h"
 #include "ui/android/browser_controls_offset_tag_definitions.h"
 #include "ui/android/ui_android_features.h"
@@ -409,10 +410,12 @@ void DelegatedFrameHostAndroid::AttachToCompositor(
   compositor->AddChildFrameSink(frame_sink_id_);
   registered_parent_compositor_ = compositor;
   if (content_to_visible_time_request_) {
+    // Only requests with saved frames should be sent to the DelegatedFrameHost.
+    CHECK(content_to_visible_time_request_
+              ->AllEventsAreTabSwitchesWithSavedFrame());
     registered_parent_compositor_
         ->PostRequestSuccessfulPresentationTimeForNextFrame(
             content_to_visible_time_recorder_.TabWasShown(
-                /*has_saved_frames=*/true,
                 std::move(*content_to_visible_time_request_)));
   }
   // If we are visible and embedded, then update the surface keep alive for
@@ -696,6 +699,10 @@ void DelegatedFrameHostAndroid::
     PostRequestSuccessfulPresentationTimeForNextFrame(
         blink::RecordContentToVisibleTimeRequest
             content_to_visible_time_request) {
+  // Only requests with saved frames should be sent to the DelegatedFrameHost.
+  CHECK(
+      content_to_visible_time_request.AllEventsAreTabSwitchesWithSavedFrame());
+
   // Since we could receive multiple requests while awaiting
   // `registered_parent_compositor_` we merge them.
   if (content_to_visible_time_request_) {
@@ -713,7 +720,6 @@ void DelegatedFrameHostAndroid::
   registered_parent_compositor_
       ->PostRequestSuccessfulPresentationTimeForNextFrame(
           content_to_visible_time_recorder_.TabWasShown(
-              /*has_saved_frames=*/true,
               std::move(content_to_visible_time_request)));
 }
 

@@ -70,6 +70,7 @@
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/render_view_host.h"
+#include "content/public/browser/render_widget_host_view.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_user_data.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
@@ -391,7 +392,8 @@ void TabAndroid::InitWebContents(
   web_contents_->SetTabSwitchStartTime(
       base::TimeTicks::Now(),
       resource_coordinator::ResourceCoordinatorTabHelper::IsLoaded(
-          web_contents_.get()));
+          web_contents_.get()),
+      /*had_saved_frame_at_start=*/false);
 
   const SessionID session_id =
       sessions::SessionTabHelper::IdForTab(web_contents_.get());
@@ -608,7 +610,10 @@ void TabAndroid::OnShow() {
       resource_coordinator::TabLoadTracker::Get()->GetLoadingState(
           web_contents_.get()) != mojom::LifecycleUnitLoadingState::UNLOADED &&
       !web_contents_->IsLoading();
-  web_contents_->SetTabSwitchStartTime(base::TimeTicks::Now(), loaded);
+  const content::RenderWidgetHostView* view =
+      web_contents_->GetRenderWidgetHostView();
+  web_contents_->SetTabSwitchStartTime(base::TimeTicks::Now(), loaded,
+                                       view && view->HasSavedCompositorFrame());
 }
 
 void TabAndroid::NotifyPinnedStateChanged(bool is_pinned) {
