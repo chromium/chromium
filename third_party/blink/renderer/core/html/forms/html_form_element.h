@@ -52,6 +52,7 @@ class CORE_EXPORT HTMLFormElement final : public HTMLElement {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
+  void ScheduleWebMCPSchemaUpdate();
   enum RelAttribute {
     kNone = 0,
     kNoReferrer = 1 << 0,

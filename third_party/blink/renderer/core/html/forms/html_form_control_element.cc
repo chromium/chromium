@@ -139,6 +139,11 @@ void HTMLFormControlElement::DetachLayoutTree(bool performing_reattach) {
 
 void HTMLFormControlElement::AttributeChanged(
     const AttributeModificationParams& params) {
+  if (RuntimeEnabledFeatures::WebMCPEnabled(GetExecutionContext())) {
+    if (HTMLFormElement* form = Form()) {
+      form->ScheduleWebMCPSchemaUpdate();
+    }
+  }
   HTMLElement::AttributeChanged(params);
   if (params.name == html_names::kDisabledAttr &&
       params.old_value.IsNull() != params.new_value.IsNull()) {

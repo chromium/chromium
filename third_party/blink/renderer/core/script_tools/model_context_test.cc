@@ -29,6 +29,7 @@
 #include "third_party/blink/renderer/platform/bindings/source_location.h"
 #include "third_party/blink/renderer/platform/heap/thread_state.h"
 #include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
+#include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
 
 namespace blink {
 
@@ -57,10 +58,8 @@ class MockScriptToolHost : public mojom::blink::ScriptToolHost {
   base::RunLoop* run_loop_ = nullptr;
 };
 
-class ModelContextTest : public SimTest {
+class ModelContextTestBase : public SimTest {
  public:
-  ModelContextTest() = default;
-
   bool EvalJsBoolean(const char* script) {
     return MainFrame()
         .ExecuteScriptAndReturnValue(
@@ -75,6 +74,19 @@ class ModelContextTest : public SimTest {
         MainFrame().ExecuteScriptAndReturnValue(
             WebScriptSource(WebString::FromUtf8(script))));
   }
+
+  int EvalJsInteger(const char* script) {
+    return MainFrame()
+        .ExecuteScriptAndReturnValue(
+            WebScriptSource(WebString::FromUTF8(script)))
+        .As<v8::Integer>()
+        ->Value();
+  }
+};
+
+class ModelContextTest : public ModelContextTestBase {
+ public:
+  ModelContextTest() = default;
 
  private:
   ScopedWebMCPForTest scoped_webmcp_{true};
@@ -614,24 +626,10 @@ TEST_F(ModelContextTest, ExecuteDeclarativeFormTool_PseudoClasses) {
       "document.querySelector('button').matches(':tool-submit-active')"));
 }
 
-class ModelContextOriginTrialTest : public SimTest {
+class ModelContextOriginTrialTest : public ModelContextTestBase {
  public:
   ModelContextOriginTrialTest() = default;
 
-  bool EvalJsBoolean(const char* script) {
-    return MainFrame()
-        .ExecuteScriptAndReturnValue(
-            WebScriptSource(WebString::FromUtf8(script)))
-        .As<v8::Boolean>()
-        ->Value();
-  }
-
-  String EvalJsString(const char* script) {
-    return ToCoreStringWithUndefinedOrNullCheck(
-        Window().GetIsolate(),
-        MainFrame().ExecuteScriptAndReturnValue(
-            WebScriptSource(WebString::FromUtf8(script))));
-  }
 
  private:
   ScopedWebMCPForTest scoped_webmcp_{false};
@@ -1420,6 +1418,176 @@ TEST_F(ModelContextMetricsTest, RecordToolCountHistogram) {
   task_environment().FastForwardBy(base::Seconds(8));
   histogram_tester.ExpectUniqueSample("Blink.ModelContext.DelayedToolCount", 6,
                                       1);
+}
+
+TEST_F(ModelContextTest, ExecuteDeclarativeFormTool_ToolChangeOnNameChange) {
+  SimRequest main_resource("https://example.com/", "text/html");
+  LoadURL("https://example.com/");
+  v8::HandleScope handle_scope(Window().GetIsolate());
+  ScriptState::Scope script_scope(
+      ToScriptStateForMainWorld(Window().GetFrame()));
+  main_resource.Complete(R"(
+    <body>
+      <form toolname="my_tool" tooldescription="desc">
+        <input id="input1" type="text" name="input_name">
+        <input id="input2" type="checkbox" name="checkbox_name">
+        <select id="select1" name="select_name">
+          <option value="a">A</option>
+          <option value="b">B</option>
+        </select>
+        <textarea id="textarea1" name="textarea_name"></textarea>
+      </form>
+      <script>
+        window.toolchangeCount = 0;
+        navigator.modelContextTesting.addEventListener('toolchange', () => {
+          window.toolchangeCount++;
+        });
+
+        window.testMutations = [
+          // input1 (text)
+          { id: 'input1', script: "el.setAttribute('name', 'new_input_name');" },
+          { id: 'input1', script: "el.type = 'number';" },
+          { id: 'input1', script: "el.required = true;" },
+          { id: 'input1', script: "el.setAttribute('toolparamdescription', 'new desc');" },
+
+          // input2 (checkbox)
+          { id: 'input2', script: "el.setAttribute('name', 'new_checkbox_name');" },
+          { id: 'input2', script: "el.type = 'radio';" },
+          { id: 'input2', script: "el.required = true;" },
+          { id: 'input2', script: "el.setAttribute('toolparamdescription', 'new desc');" },
+
+          // select1
+          { id: 'select1', script: "el.setAttribute('name', 'new_select_name');" },
+          { id: 'select1', script: "el.multiple = true;" },
+          { id: 'select1', script: "el.required = true;" },
+          { id: 'select1', script: "el.setAttribute('toolparamdescription', 'new desc');" },
+
+          // textarea1
+          { id: 'textarea1', script: "el.setAttribute('name', 'new_textarea_name');" },
+          { id: 'textarea1', script: "el.required = true;" },
+          { id: 'textarea1', script: "el.setAttribute('toolparamdescription', 'new desc');" }
+        ];
+      </script>
+    </body>
+  )");
+
+  int mutation_count = EvalJsInteger("window.testMutations.length");
+  for (int i = 0; i < mutation_count; ++i) {
+    String script = String::Format(
+        "window.toolchangeCount = 0;"
+        "var m = window.testMutations[%d];"
+        "var el = document.getElementById(m.id);"
+        "eval(m.script);",
+        i);
+    MainFrame().ExecuteScript(WebScriptSource(WebString(script)));
+
+    EXPECT_TRUE(base::test::RunUntil([&]() {
+      return EvalJsInteger("window.toolchangeCount") == 1;
+    })) << "Failed on mutation "
+        << i << ": "
+        << EvalJsString(String::Format("window.testMutations[%d].script", i)
+                            .Utf8()
+                            .c_str());
+  }
+}
+
+TEST_F(ModelContextTest,
+       ExecuteDeclarativeFormTool_ToolChangeOnControlAddRemove) {
+  SimRequest main_resource("https://example.com/", "text/html");
+  LoadURL("https://example.com/");
+  v8::HandleScope handle_scope(Window().GetIsolate());
+  ScriptState::Scope script_scope(
+      ToScriptStateForMainWorld(Window().GetFrame()));
+  main_resource.Complete(R"(
+    <form id="f1" toolname="my_tool" tooldescription="desc">
+      <input id="input1" type="text" name="input_name">
+    </form>
+    <script>
+      window.toolchangeCount = 0;
+      navigator.modelContextTesting.addEventListener('toolchange', () => {
+        window.toolchangeCount++;
+      });
+    </script>
+  )");
+  blink::test::RunPendingTasks();
+
+  // Test adding an input
+  MainFrame().ExecuteScript(
+      WebScriptSource("window.toolchangeCount = 0;"
+                      "var i = document.createElement('input');"
+                      "i.type = 'text';"
+                      "i.name = 'new_input';"
+                      "i.id = 'new_input';"
+                      "document.getElementById('f1').appendChild(i);"));
+
+  EXPECT_TRUE(base::test::RunUntil([&]() {
+    return EvalJsInteger("window.toolchangeCount") == 1;
+  })) << "Failed on adding input";
+
+  // Test removing an input
+  MainFrame().ExecuteScript(
+      WebScriptSource("window.toolchangeCount = 0;"
+                      "document.getElementById('f1').removeChild(document."
+                      "getElementById('new_input'));"));
+
+  EXPECT_TRUE(base::test::RunUntil([&]() {
+    return EvalJsInteger("window.toolchangeCount") == 1;
+  })) << "Failed on removing input";
+}
+
+TEST_F(ModelContextTest,
+       ExecuteDeclarativeFormTool_NoToolChangeOnUnrelatedAttribute) {
+  SimRequest main_resource("https://example.com/", "text/html");
+  LoadURL("https://example.com/");
+  v8::HandleScope handle_scope(Window().GetIsolate());
+  ScriptState::Scope script_scope(
+      ToScriptStateForMainWorld(Window().GetFrame()));
+  main_resource.Complete(R"(
+    <form toolname="my_tool" tooldescription="desc">
+      <input id="input1" type="text" name="input_name">
+    </form>
+  )");
+  blink::test::RunPendingTasks();
+
+  MainFrame().ExecuteScript(WebScriptSource(
+      "window.toolchangeCount = 0;"
+      "navigator.modelContextTesting.addEventListener('toolchange', () => {"
+      "  window.toolchangeCount++;"
+      "});"
+      "document.getElementById('input1').setAttribute('data-unrelated', "
+      "'value');"));
+
+  blink::test::RunPendingTasks();
+  EXPECT_EQ(0, EvalJsInteger("window.toolchangeCount"));
+}
+
+TEST_F(ModelContextTest,
+       ExecuteDeclarativeFormTool_NoToolChangeOnRedundantSchemaAttribute) {
+  SimRequest main_resource("https://example.com/", "text/html");
+  LoadURL("https://example.com/");
+  v8::HandleScope handle_scope(Window().GetIsolate());
+  ScriptState::Scope script_scope(
+      ToScriptStateForMainWorld(Window().GetFrame()));
+  main_resource.Complete(R"(
+    <body>
+      <form id="f1" toolname="my_tool" tooldescription="desc">
+        <input id="input1" type="text" name="input_name">
+      </form>
+    </body>
+  )");
+  blink::test::RunPendingTasks();
+
+  MainFrame().ExecuteScript(WebScriptSource(
+      "window.toolchangeCount = 0;"
+      "navigator.modelContextTesting.addEventListener('toolchange', () => {"
+      "  window.toolchangeCount++;"
+      "});"
+      "const input = document.getElementById('input1');"
+      "// Remove and immediately re-add input, which shouldn't change the tool:"
+      "input.remove();"
+      "document.getElementById('f1').appendChild(input);"));
+  blink::test::RunPendingTasks();
+  EXPECT_EQ(0, EvalJsInteger("window.toolchangeCount"));
 }
 
 }  // namespace blink

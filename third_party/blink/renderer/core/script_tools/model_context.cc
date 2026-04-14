@@ -299,7 +299,7 @@ void ModelContext::registerTool(ScriptState* script_state,
   tool_map_.insert(tool->name(), tool_data);
   probe::WebMCPToolAdded(document_, *tool_data);
   MaybeRecordToolCount();
-  OnToolChange();
+  OnToolChange(/*force=*/true);
 }
 
 void ModelContext::UnregisterTool(const String& name) {
@@ -310,7 +310,7 @@ void ModelContext::UnregisterTool(const String& name) {
 
   probe::WebMCPToolRemoved(document_, *it->value);
   tool_map_.erase(it);
-  OnToolChange();
+  OnToolChange(/*force=*/true);
 }
 
 std::optional<ScriptToolDeclaration> ModelContext::GetScriptToolDeclaration(
@@ -565,7 +565,7 @@ void ModelContext::RegisterDeclarativeTool(
   tool_map_.insert(name, tool_data);
   probe::WebMCPToolAdded(document_, *tool_data);
   MaybeRecordToolCount();
-  OnToolChange();
+  OnToolChange(/*force=*/true);
 }
 
 void ModelContext::OnToolExecuted(
@@ -587,9 +587,30 @@ void ModelContext::OnToolExecuted(
   pending_executions_.erase(it);
 }
 
-void ModelContext::OnToolChange() {
-  if (tool_change_closure_) {
-    task_runner_->PostTask(FROM_HERE, *tool_change_closure_);
+void ModelContext::MaybeNotifyToolChanged() {
+  OnToolChange(/*force=*/false);
+}
+
+void ModelContext::OnToolChange(bool force) {
+  if (!tool_change_task_pending_) {
+    tool_change_task_pending_ = true;
+    task_runner_->PostTask(
+        FROM_HERE, blink::BindOnce(&ModelContext::InvokeToolChangeClosure,
+                                   WrapWeakPersistent(this), force));
+  }
+}
+
+void ModelContext::InvokeToolChangeClosure(bool force) {
+  tool_change_task_pending_ = false;
+
+  bool should_fire = force;
+  for (auto& it : tool_map_) {
+    if (it.value->RefreshDeclarativeInputSchema()) {
+      should_fire = true;
+    }
+  }
+  if (should_fire && tool_change_closure_) {
+    (*tool_change_closure_).Run();
   }
 }
 
@@ -670,10 +691,15 @@ void ToolData::Trace(Visitor* visitor) const {
   visitor->Trace(abort_algorithm_handle_);
 }
 
-void ToolData::RefreshDeclarativeInputSchema() {
+bool ToolData::RefreshDeclarativeInputSchema() {
   if (declarative_tool_) {
-    script_tool_->input_schema = declarative_tool_->ComputeInputSchema();
+    String new_schema = declarative_tool_->ComputeInputSchema();
+    if (new_schema != script_tool_->input_schema) {
+      script_tool_->input_schema = new_schema;
+      return true;
+    }
   }
+  return false;
 }
 
 }  // namespace blink
