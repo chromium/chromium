@@ -315,9 +315,6 @@ class CONTENT_EXPORT BucketContext
                        Status status,
                        const std::string& message);
 
-  // Called when the backing store has been corrupted.
-  void HandleBackingStoreCorruption(const std::string& error_message);
-
   // base::trace_event::MemoryDumpProvider:
   bool OnMemoryDump(const base::trace_event::MemoryDumpArgs& args,
                     base::trace_event::ProcessMemoryDump* pmd) override;
@@ -423,6 +420,9 @@ class CONTENT_EXPORT BucketContext
   void RecordInternalsSnapshot();
 
   std::string SanitizeErrorMessage(const std::string& message);
+
+  // Called when the backing store has been corrupted.
+  void HandleBackingStoreCorruption(const std::string& error_message);
 
   // Called when a Web Blob is being read from SQLite. `final_result` will hold
   // a value IFF the read operation has completed.
