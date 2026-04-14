@@ -107,9 +107,14 @@ const char kWebViewUseStartupTasksLogicP2[] =
 const char kWebViewStartupTasksYieldToNative[] =
     "webview-startup-tasks-yield-to-native";
 
-// asynchronous.
+// Enables non-blocking WebView constructor.
 const char kStartupNonBlockingWebViewConstructor[] =
     "startup-non-blocking-webview-constructor";
+
+// Post Chromium startup in the WebView constructor. Only has any effect
+// when kStartupNonBlockingWebViewConstructor is enabled.
+const char kPostChromiumStartupInWebViewConstructor[] =
+    "post-chromium-startup-in-webview-constructor";
 
 // Defers GMS calls during startup.
 const char kWebViewDeferStartupGmsCalls[] = "webview-defer-startup-gms-calls";

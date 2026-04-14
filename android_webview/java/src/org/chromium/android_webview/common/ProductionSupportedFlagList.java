@@ -1064,6 +1064,12 @@ public final class ProductionSupportedFlagList {
                 AwSwitches.STARTUP_NON_BLOCKING_WEBVIEW_CONSTRUCTOR,
                 "When enabled, WebView constructor will not block on WebView process global"
                         + " startup"),
+        Flag.commandLine(
+                AwSwitches.POST_CHROMIUM_STARTUP_IN_WEBVIEW_CONSTRUCTOR,
+                "When enabled, post Chromium startup in the WebView constructor. Only has any"
+                        + " effect when "
+                        + AwSwitches.STARTUP_NON_BLOCKING_WEBVIEW_CONSTRUCTOR
+                        + " is enabled."),
         Flag.baseFeature(
                 AccessibilityFeatures.ACCESSIBILITY_MAGNIFICATION_FOLLOWS_FOCUS,
                 "Enables Magnification and other views to keep the text cursor onscreen."),

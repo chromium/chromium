@@ -30,7 +30,7 @@ import java.nio.channels.OverlappingFileLockException;
  * Handles locking the WebView's data directory, to prevent concurrent use from more than one
  * process.
  */
-abstract class AwDataDirLock {
+public abstract class AwDataDirLock {
     private static final String TAG = "AwDataDirLock";
 
     private static final String EXCLUSIVE_LOCK_FILE = "webview_data.lock";
@@ -73,17 +73,14 @@ abstract class AwDataDirLock {
                 "Android.WebView.Startup.LockRetryResult", result, LockRetryResult.COUNT);
     }
 
-    static void lock(final Context appContext) {
+    public static void lock(final Context appContext) {
         try (DualTraceEvent e1 = DualTraceEvent.scoped("AwDataDirLock.lock");
                 StrictModeContext ignored = StrictModeContext.allowDiskWrites()) {
             if (sExclusiveFileLock != null) {
                 // We have already called lock() and successfully acquired the lock in this process.
-                // This shouldn't happen, but is likely to be the result of an app catching an
-                // exception thrown during initialization and discarding it, causing us to later
-                // attempt to initialize WebView again. There's no real advantage to failing the
-                // locking code when this happens; we may as well count this as the lock being
-                // acquired and let init continue (though the app may experience other problems
-                // later).
+                // This can happen if our own code calls lock() multiple times or it could be the
+                // result of an app catching an exception thrown during initialization and
+                // discarding it, causing us to later attempt to initialize WebView again.
                 return;
             }
 

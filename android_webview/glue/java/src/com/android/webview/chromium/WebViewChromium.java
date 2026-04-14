@@ -65,6 +65,7 @@ import org.chromium.android_webview.AwBrowserContext;
 import org.chromium.android_webview.AwBrowserContextStore;
 import org.chromium.android_webview.AwContents;
 import org.chromium.android_webview.AwContentsStatics;
+import org.chromium.android_webview.AwDataDirLock;
 import org.chromium.android_webview.AwLayoutSizer;
 import org.chromium.android_webview.AwPrintDocumentAdapter;
 import org.chromium.android_webview.AwSettings;
@@ -78,6 +79,7 @@ import org.chromium.android_webview.common.Lifetime;
 import org.chromium.android_webview.common.WebViewCachedFlags;
 import org.chromium.android_webview.renderer_priority.RendererPriority;
 import org.chromium.base.CommandLine;
+import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.TraceEvent;
@@ -1310,62 +1312,24 @@ class WebViewChromium
             mWebView.setDefaultFocusHighlightEnabled(false);
             if (CommandLine.getInstance()
                     .hasSwitch(AwSwitches.STARTUP_NON_BLOCKING_WEBVIEW_CONSTRUCTOR)) {
-                mAwInit.postChromiumStartupIfNeeded(CallSite.WEBVIEW_INSTANCE_INIT);
+                // We call `lock()` during Chromium startup, but if we are going to not
+                // synchronously run Chromium startup as part of WebView construction, then attempt
+                // to lock here as well to maintain the same locking behavior as before.
+                AwDataDirLock.lock(ContextUtils.getApplicationContext());
+                if (CommandLine.getInstance()
+                        .hasSwitch(AwSwitches.POST_CHROMIUM_STARTUP_IN_WEBVIEW_CONSTRUCTOR)) {
+                    mAwInit.postChromiumStartupIfNeeded(CallSite.WEBVIEW_INSTANCE_INIT);
+                }
             } else {
                 mAwInit.triggerAndWaitForChromiumStarted(CallSite.WEBVIEW_INSTANCE_INIT);
             }
-
             if (mAppTargetSdkVersion >= Build.VERSION_CODES.JELLY_BEAN_MR2) {
                 // Check that the current thread is the UI thread, which will throw if it was
                 // already started using a different thread as the UI thread.
                 checkThread();
             }
-
-            // At this point it is guaranteed that global Chromium init has completed on the UI
-            // thread, as all paths have called `triggerAndWaitForChromiumStarted`.
-            // However, this function itself is *not* necessarily running on the UI thread in
-            // pre-JBMR2.
-
-            final boolean isAccessFromFileUrlsGrantedByDefault =
-                    mAppTargetSdkVersion < Build.VERSION_CODES.JELLY_BEAN;
-            final boolean areLegacyQuirksEnabled =
-                    mAppTargetSdkVersion < Build.VERSION_CODES.KITKAT;
-            final boolean allowEmptyDocumentPersistence =
-                    mAppTargetSdkVersion <= Build.VERSION_CODES.M;
-            final boolean allowGeolocationOnInsecureOrigins =
-                    mAppTargetSdkVersion <= Build.VERSION_CODES.M;
-
-            // https://crbug.com/698752
-            final boolean doNotUpdateSelectionOnMutatingSelectionRange =
-                    mAppTargetSdkVersion <= Build.VERSION_CODES.M;
-
             mContentsClientAdapter =
                     mFactory.createWebViewContentsClientAdapter(mWebView, mContext);
-            try (ScopedSysTraceEvent e2 =
-                    ScopedSysTraceEvent.scoped("WebViewChromium.ContentSettingsAdapter")) {
-                mWebSettings =
-                        mFactory.createContentSettingsAdapter(
-                                new AwSettings(
-                                        mContext,
-                                        isAccessFromFileUrlsGrantedByDefault,
-                                        areLegacyQuirksEnabled,
-                                        allowEmptyDocumentPersistence,
-                                        allowGeolocationOnInsecureOrigins,
-                                        doNotUpdateSelectionOnMutatingSelectionRange));
-            }
-
-            if (mAppTargetSdkVersion < Build.VERSION_CODES.LOLLIPOP) {
-                // Prior to Lollipop we always allowed third party cookies and mixed content.
-                mWebSettings.setMixedContentMode(WebSettings.MIXED_CONTENT_ALWAYS_ALLOW);
-                mWebSettings.setAcceptThirdPartyCookies(true);
-                mWebSettings.getAwSettings().setZeroLayoutHeightDisablesViewportQuirk(true);
-            }
-
-            if (mAppTargetSdkVersion >= Build.VERSION_CODES.P) {
-                mWebSettings.getAwSettings().setCssHexAlphaColorEnabled(true);
-                mWebSettings.getAwSettings().setScrollTopLeftInteropEnabled(true);
-            }
-
             mSharedWebViewChromium.init(mContentsClientAdapter);
 
             // In the normal case where we are currently on the UI thread, this will run initForReal
@@ -1424,6 +1388,44 @@ class WebViewChromium
             recordWebViewApiCall(
                     ApiCall.WEBVIEW_CHROMIUM_INIT_FOR_REAL,
                     ApiCallUserAction.WEBVIEW_INSTANCE_WEBVIEW_CHROMIUM_INIT_FOR_REAL);
+            final boolean isAccessFromFileUrlsGrantedByDefault =
+                    mAppTargetSdkVersion < Build.VERSION_CODES.JELLY_BEAN;
+            final boolean areLegacyQuirksEnabled =
+                    mAppTargetSdkVersion < Build.VERSION_CODES.KITKAT;
+            final boolean allowEmptyDocumentPersistence =
+                    mAppTargetSdkVersion <= Build.VERSION_CODES.M;
+            final boolean allowGeolocationOnInsecureOrigins =
+                    mAppTargetSdkVersion <= Build.VERSION_CODES.M;
+
+            // https://crbug.com/698752
+            final boolean doNotUpdateSelectionOnMutatingSelectionRange =
+                    mAppTargetSdkVersion <= Build.VERSION_CODES.M;
+
+            try (ScopedSysTraceEvent e2 =
+                    ScopedSysTraceEvent.scoped("WebViewChromium.ContentSettingsAdapter")) {
+                mWebSettings =
+                        mFactory.createContentSettingsAdapter(
+                                new AwSettings(
+                                        mContext,
+                                        isAccessFromFileUrlsGrantedByDefault,
+                                        areLegacyQuirksEnabled,
+                                        allowEmptyDocumentPersistence,
+                                        allowGeolocationOnInsecureOrigins,
+                                        doNotUpdateSelectionOnMutatingSelectionRange));
+            }
+
+            if (mAppTargetSdkVersion < Build.VERSION_CODES.LOLLIPOP) {
+                // Prior to Lollipop we always allowed third party cookies and mixed content.
+                mWebSettings.setMixedContentMode(WebSettings.MIXED_CONTENT_ALWAYS_ALLOW);
+                mWebSettings.setAcceptThirdPartyCookies(true);
+                mWebSettings.getAwSettings().setZeroLayoutHeightDisablesViewportQuirk(true);
+            }
+
+            if (mAppTargetSdkVersion >= Build.VERSION_CODES.P) {
+                mWebSettings.getAwSettings().setCssHexAlphaColorEnabled(true);
+                mWebSettings.getAwSettings().setScrollTopLeftInteropEnabled(true);
+            }
+
             AwContentsStatics.setRecordFullDocument(
                     sRecordWholeDocumentEnabledByApi
                             || mAppTargetSdkVersion < Build.VERSION_CODES.LOLLIPOP);
@@ -3181,6 +3183,7 @@ class WebViewChromium
     @Override
     public WebSettings getSettings() {
         forbidBuilderConfiguration();
+        mAwInit.triggerAndWaitForChromiumStarted(CallSite.WEBVIEW_INSTANCE_GET_SETTINGS);
         try (TraceEvent event = TraceEvent.scoped("WebView.APICall.Framework.GET_SETTINGS")) {
             recordWebViewApiCall(
                     ApiCall.GET_SETTINGS, ApiCallUserAction.WEBVIEW_INSTANCE_GET_SETTINGS);
@@ -4288,8 +4291,10 @@ class WebViewChromium
 
     @Override
     public WindowInsets onApplyWindowInsets(WindowInsets insets) {
-        mAwInit.triggerAndWaitForChromiumStarted(CallSite.WEBVIEW_INSTANCE_ON_APPLY_WINDOW_INSETS);
-        return mAwContents.onApplyWindowInsets(insets);
+        if (mAwInit.isChromiumInitialized()) {
+            return mAwContents.onApplyWindowInsets(insets);
+        }
+        return insets;
     }
 
     // TODO(crbug.com/40280893): Add override annotation when SDK includes this method.

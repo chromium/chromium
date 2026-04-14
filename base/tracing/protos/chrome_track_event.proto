@@ -2277,6 +2277,7 @@ message WebViewStartup {
     STATIC_GET_RENDERER_LIBRARY_PREFETCH_MODE = 106;
     GET_DEFAULT_COOKIE_MANAGER = 107;
     GET_PROFILE_STORE = 108;
+    WEBVIEW_INSTANCE_GET_SETTINGS = 109;
     // Remember to update WebViewStartupCallSite in enums.xml when adding new
     // values here.
   }
