@@ -471,6 +471,7 @@ config("cfi_icall_disable") {
 
 config("coverage_flags") {
   cflags = []
+  inputs = []
   if (use_sanitizer_coverage) {
     # Used by sandboxing code to allow coverage dump to be written on the disk.
     defines = [ "SANITIZER_COVERAGE" ]
@@ -495,10 +496,12 @@ config("coverage_flags") {
     if (sanitizer_coverage_allowlist != "") {
       cflags += [ "-fsanitize-coverage-allowlist=" +
                   rebase_path(sanitizer_coverage_allowlist, root_build_dir) ]
+      inputs += [ sanitizer_coverage_allowlist ]
     }
     if (sanitizer_coverage_ignorelist != "") {
       cflags += [ "-fsanitize-coverage-ignorelist=" +
                   rebase_path(sanitizer_coverage_ignorelist, root_build_dir) ]
+      inputs += [ sanitizer_coverage_ignorelist ]
     }
   }
 
