@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {ArrayBufferUtil} from '/common/array_buffer_util.js';
 import type {FaceLandmarkerOptions, FaceLandmarkerResult} from '/third_party/mediapipe/vision.js';
 import {FaceLandmarker} from 'chrome-extension://egfdjlfmgnehecnclamagfafdccgfndp/accessibility_common/third_party/mediapipe_task_vision/vision_bundle.mjs';
 
@@ -201,8 +202,8 @@ class OffscreenWebCam {
     const reply =
         await Messenger.send(OffscreenCommandType.FACEGAZE_SW_INSTALL_ASSETS);
     const assets = {
-      wasm: await Messenger.base64ToArrayBuffer(reply.wasm),
-      model: await Messenger.base64ToArrayBuffer(reply.model)
+      wasm: await ArrayBufferUtil.base64ToArrayBuffer(reply.wasm),
+      model: await ArrayBufferUtil.base64ToArrayBuffer(reply.model)
     };
 
     // Create a blob to hold the wasm contents.

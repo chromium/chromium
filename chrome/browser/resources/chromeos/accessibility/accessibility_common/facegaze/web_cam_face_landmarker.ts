@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {ArrayBufferUtil} from '/common/array_buffer_util.js';
 import {TestImportManager} from '/common/testing/test_import_manager.js';
 import type {FaceLandmarkerResult} from '/third_party/mediapipe/vision.js';
 
@@ -139,8 +140,8 @@ export class WebCamFaceLandmarker {
       return;
     }
     return {
-      wasm: await Messenger.arrayBufferToBase64(assets.wasm),
-      model: await Messenger.arrayBufferToBase64(assets.model)
+      wasm: await ArrayBufferUtil.arrayBufferToBase64(assets.wasm),
+      model: await ArrayBufferUtil.arrayBufferToBase64(assets.model)
     };
   }
 

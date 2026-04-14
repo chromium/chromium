@@ -20,6 +20,7 @@ import {SmartInsertBeforeMacro} from '/common/action_fulfillment/macros/smart_in
 import {SmartReplacePhraseMacro} from '/common/action_fulfillment/macros/smart_replace_phrase_macro.js';
 import {SmartSelectBetweenMacro} from '/common/action_fulfillment/macros/smart_select_between_macro.js';
 import {ToggleDictationMacro} from '/common/action_fulfillment/macros/toggle_dictation_macro.js';
+import {ArrayBufferUtil} from '/common/array_buffer_util.js';
 
 import {Messenger} from '../../messenger.js';
 import {OffscreenCommandType} from '../../offscreen_command_type.js';
@@ -139,10 +140,11 @@ export class PumpkinParseStrategy extends ParseStrategy {
     // 2. Construct a new object with the same keys but serialized values.
     const pumpkinData = toPumpkinTagger.pumpkinData ?
         Object.fromEntries(await Promise.all(
-            Object.entries(toPumpkinTagger.pumpkinData)
-                .map(async ([key, buffer]) => {
-                  return [key, await Messenger.arrayBufferToBase64(buffer)];
-                }))) :
+            Object.entries(toPumpkinTagger.pumpkinData).map(async ([
+                                                              key, buffer
+                                                            ]) => {
+              return [key, await ArrayBufferUtil.arrayBufferToBase64(buffer)];
+            }))) :
         null;
 
     this.sendToOffscreen_(

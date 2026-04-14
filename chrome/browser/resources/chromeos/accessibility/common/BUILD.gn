@@ -62,6 +62,7 @@ ts_modules = [
   "action_fulfillment/macros/smart_replace_phrase_macro.ts",
   "action_fulfillment/macros/smart_select_between_macro.ts",
   "action_fulfillment/macros/toggle_dictation_macro.ts",
+  "array_buffer_util.ts",
   "array_util.ts",
   "async_util.ts",
   "automation_predicate.ts",

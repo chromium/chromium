@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {ArrayBufferUtil} from '/common/array_buffer_util.js';
+
 import {Messenger} from '../messenger.js';
 import {OffscreenCommandType} from '../offscreen_command_type.js';
 
@@ -44,10 +46,11 @@ class OffscreenPumpkinWorker {
     // values.
     const pumpkinData = toPumpkinTagger.pumpkinData ?
         Object.fromEntries(await Promise.all(
-            Object.entries(toPumpkinTagger.pumpkinData)
-                .map(async ([key, array]) => {
-                  return [key, await Messenger.base64ToArrayBuffer(array)];
-                }))) :
+            Object.entries(toPumpkinTagger.pumpkinData).map(async ([
+                                                              key, array
+                                                            ]) => {
+              return [key, await ArrayBufferUtil.base64ToArrayBuffer(array)];
+            }))) :
         null;
 
     this.sandbox_.contentWindow!.postMessage(
