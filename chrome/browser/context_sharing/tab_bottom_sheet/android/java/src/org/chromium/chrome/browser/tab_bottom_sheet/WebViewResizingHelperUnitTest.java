@@ -8,7 +8,9 @@ import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.when;
 
 import android.content.Context;
+import android.view.Gravity;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.FrameLayout;
 
 import androidx.test.core.app.ApplicationProvider;
@@ -59,6 +61,9 @@ public class WebViewResizingHelperUnitTest {
         FrameLayout container = (FrameLayout) mHelper.getResizingContainer();
         assertEquals(1, container.getChildCount());
         assertEquals(mView, container.getChildAt(0));
+
+        FrameLayout.LayoutParams layoutParams = (FrameLayout.LayoutParams) mView.getLayoutParams();
+        assertEquals(Gravity.BOTTOM, layoutParams.gravity);
     }
 
     @Test
@@ -68,6 +73,19 @@ public class WebViewResizingHelperUnitTest {
 
         FrameLayout container = (FrameLayout) mHelper.getResizingContainer();
         assertEquals(0, container.getChildCount());
+    }
+
+    @Test
+    public void testSetIsResizing() {
+        mHelper.setThinWebView(mMockThinWebView);
+        mView.layout(0, 0, 100, 200);
+
+        mHelper.setIsResizing(true);
+        FrameLayout.LayoutParams layoutParams = (FrameLayout.LayoutParams) mView.getLayoutParams();
+        assertEquals(200, layoutParams.height);
+
+        mHelper.setIsResizing(false);
+        assertEquals(ViewGroup.LayoutParams.MATCH_PARENT, layoutParams.height);
     }
 
     @Test
