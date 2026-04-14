@@ -2786,7 +2786,8 @@ void LocalFrame::UpdateAdHighlight() {
 
   // TODO(bokan): Fenced frames may need some work to propagate the ad
   // highlighting setting to the inner tree.
-  if (IsAdRoot() && GetPage()->GetSettings().GetHighlightAds()) {
+  if (IsAdRoot() && (GetPage()->GetSettings().GetHighlightAds() ||
+                     GetPage()->GetSettings().GetInspectorHighlightAds())) {
     SetFrameColorOverlay(SkColorSetARGB(128, 255, 0, 0));
   } else {
     SetFrameColorOverlay(SK_ColorTRANSPARENT);

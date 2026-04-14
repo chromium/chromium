@@ -177,6 +177,14 @@
       name: "shouldClearDocumentBackground",
       initial: true,
     },
+    // Toggled via DevTools. Final highlighting is active if either this
+    // or the global `HighlightAds` (toggled via the internals page) is true.
+    // Both share the "HighlightAds" invalidation type for convenience.
+    {
+      name: "InspectorHighlightAds",
+      initial: false,
+      invalidate: ["HighlightAds"],
+    },
     {
       name: "HighlightAds",
       initial: false,

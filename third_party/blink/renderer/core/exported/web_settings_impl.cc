@@ -521,6 +521,10 @@ void WebSettingsImpl::SetHighlightAds(bool enabled) {
   settings_->SetHighlightAds(enabled);
 }
 
+void WebSettingsImpl::SetInspectorHighlightAds(bool enabled) {
+  settings_->SetInspectorHighlightAds(enabled);
+}
+
 void WebSettingsImpl::SetHyperlinkAuditingEnabled(bool enabled) {
   settings_->SetHyperlinkAuditingEnabled(enabled);
 }

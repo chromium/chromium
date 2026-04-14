@@ -1822,6 +1822,8 @@ void WebView::ApplyWebPreferences(const web_pref::WebPreferences& prefs,
 
   settings->SetMediaControlsEnabled(prefs.media_controls_enabled);
 
+  settings->SetHighlightAds(prefs.highlight_ads);
+
   settings->SetLowPriorityIframesThreshold(
       static_cast<blink::WebEffectiveConnectionType>(
           prefs.low_priority_iframes_threshold));

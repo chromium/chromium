@@ -106,6 +106,7 @@ class CORE_EXPORT WebSettingsImpl final : public WebSettings {
   void SetHideDownloadUI(bool) override;
   void SetPresentationReceiver(bool) override;
   void SetHighlightAds(bool) override;
+  void SetInspectorHighlightAds(bool) override;
   void SetHyperlinkAuditingEnabled(bool) override;
   void SetIgnoreMainFrameOverflowHiddenQuirk(bool) override;
   void SetImageAnimationPolicy(mojom::blink::ImageAnimationPolicy) override;

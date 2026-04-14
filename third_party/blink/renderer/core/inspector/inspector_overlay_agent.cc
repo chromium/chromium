@@ -541,7 +541,8 @@ protocol::Response InspectorOverlayAgent::disable() {
 
 protocol::Response InspectorOverlayAgent::setShowAdHighlights(bool show) {
   show_ad_highlights_.Set(show);
-  frame_impl_->ViewImpl()->GetPage()->GetSettings().SetHighlightAds(show);
+  frame_impl_->ViewImpl()->GetPage()->GetSettings().SetInspectorHighlightAds(
+      show);
   return protocol::Response::Success();
 }
 

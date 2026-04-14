@@ -1279,13 +1279,13 @@ void Page::DidCommitLoad(LocalFrame* frame) {
         ScrollOffset(), mojom::blink::ScrollType::kProgrammatic,
         cc::ScrollSourceType::kNone, mojom::blink::ScrollBehavior::kInstant);
   }
-  // crbug/1312107: If DevTools has "Highlight ad frames" checked when the
-  // main frame is refreshed or the ad frame is navigated to a different
-  // process, DevTools calls `Settings::SetHighlightAds` so early that the
-  // local frame is still in provisional state (not swapped in). Explicitly
-  // invalidate the settings here as `Page::DidCommitLoad` is only fired after
-  // the navigation is committed, at which point the local frame must already
-  // be swapped-in.
+  // crbug.com/1312107: If DevTools has "Highlight ads" checked when the main
+  // frame is refreshed or the ad frame is navigated to a different process,
+  // DevTools calls `Settings::SetInspectorHighlightAds` so early that the local
+  // frame is still in provisional state (not swapped in). Explicitly invalidate
+  // the settings here as `Page::DidCommitLoad` is only fired after the
+  // navigation is committed, at which point the local frame must already be
+  // swapped-in.
   //
   // This explicit update is placed outside the above if-block to accommodate
   // iframes. The iframes share the same Page (frame tree) as the main frame,
