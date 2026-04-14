@@ -18,9 +18,11 @@
 #include "ui/base/interaction/element_tracker_mac.h"
 #include "ui/base/l10n/l10n_util_mac.h"
 #include "ui/base/models/image_model.h"
+#include "ui/base/themed_vector_icon.h"
 #import "ui/events/event_utils.h"
 #include "ui/gfx/font_list.h"
 #include "ui/gfx/image/image.h"
+#include "ui/gfx/image/image_skia.h"
 #include "ui/menus/simple_menu_model.h"
 #include "ui/strings/grit/ui_strings.h"
 
@@ -192,6 +194,12 @@ bool MenuHasVisibleItems(const ui::MenuModel* model) {
   ui::ImageModel icon = model->GetIconAt(index);
   if (icon.IsImage()) {
     item.image = icon.GetImage().ToNSImage();
+  } else if (icon.IsVectorIcon()) {
+    ui::ThemedVectorIcon themed_icon(icon.GetVectorIcon());
+    NSImage* ns_image =
+        gfx::Image(themed_icon.GetImageSkia(SK_ColorBLACK)).ToNSImage();
+    [ns_image setTemplate:YES];
+    item.image = ns_image;
   }
 
   ui::MenuModel::ItemType type = model->GetTypeAt(index);
@@ -271,7 +279,17 @@ bool MenuHasVisibleItems(const ui::MenuModel* model) {
     menuItem.title = label;
 
     ui::ImageModel icon = model->GetIconAt(modelIndex);
-    menuItem.image = icon.IsImage() ? icon.GetImage().ToNSImage() : nil;
+    if (icon.IsImage()) {
+      menuItem.image = icon.GetImage().ToNSImage();
+    } else if (icon.IsVectorIcon()) {
+      ui::ThemedVectorIcon themed_icon(icon.GetVectorIcon());
+      NSImage* ns_image =
+          gfx::Image(themed_icon.GetImageSkia(SK_ColorBLACK)).ToNSImage();
+      [ns_image setTemplate:YES];
+      menuItem.image = ns_image;
+    } else {
+      menuItem.image = nil;
+    }
   }
   const gfx::FontList* font_list = model->GetLabelFontListAt(modelIndex);
   if (font_list) {

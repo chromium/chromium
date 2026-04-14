@@ -151,6 +151,7 @@
 #include "components/autofill/core/common/unique_ids.h"
 #include "components/compose/buildflags.h"
 #include "components/compose/core/browser/compose_features.h"
+#include "components/contextual_tasks/public/features.h"
 #include "components/custom_handlers/protocol_handler.h"
 #include "components/download/public/common/download_url_parameters.h"
 #include "components/google/core/common/google_util.h"
@@ -254,6 +255,7 @@
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/point_conversions.h"
 #include "ui/gfx/image/image.h"
+#include "ui/gfx/image/image_skia.h"
 #include "ui/gfx/image/image_skia_operations.h"
 #include "ui/gfx/text_elider.h"
 #include "ui/strings/grit/ui_strings.h"
@@ -401,6 +403,23 @@ std::string GetGlicWebContentsContextToken(
     return "TextSelectionWithLink";
   }
   return "TextSelection";
+}
+
+ui::ImageModel GetLensContextMenuIcon() {
+#if BUILDFLAG(IS_MAC)
+  if (!base::FeatureList::IsEnabled(
+          lens::features::kShowContextualTasksMenuIcon)) {
+    return ui::ImageModel();
+  }
+#endif
+
+  return ui::ImageModel::FromVectorIcon(
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+      vector_icons::kGoogleLensMonochromeLogoIcon
+#else
+      vector_icons::kSearchChromeRefreshIcon
+#endif
+  );
 }
 
 enum class UmaEnumIdLookupType {
@@ -2073,28 +2092,24 @@ void RenderViewContextMenu::AppendSearchWebForImageItems() {
   auto* entry_point_controller =
       GetBrowser() ? lens::LensOverlayEntryPointController::From(GetBrowser())
                    : nullptr;
+  ui::ImageModel icon = GetLensContextMenuIcon();
   if (entry_point_controller && entry_point_controller->IsEnabled() &&
       lens::features::UseLensOverlayForImageSearch()) {
     // If the entrypoint is ephermally hidden, don't add the item.
     if (!entry_point_controller->AreVisible()) {
       return;
     }
-    const gfx::VectorIcon& icon =
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-        vector_icons::kGoogleLensMonochromeLogoIcon;
-#else
-        vector_icons::kSearchChromeRefreshIcon;
-#endif
     menu_model_.AddItemWithStringIdAndIcon(
         search_for_image_idc,
         lens::GetLensOverlayImageEntrypointLabelAltIds(
             IDS_CONTENT_CONTEXT_LENS_OVERLAY),
-        ui::ImageModel::FromVectorIcon(icon));
+        icon);
   } else {
-    menu_model_.AddItem(
+    menu_model_.AddItemWithIcon(
         search_for_image_idc,
         l10n_util::GetStringFUTF16(IDS_CONTENT_CONTEXT_SEARCHLENSFORIMAGE,
-                                   provider->short_name()));
+                                   provider->short_name()),
+        icon);
   }
   const int command_index =
       menu_model_.GetIndexOfCommandId(search_for_image_idc).value();
@@ -2207,32 +2222,28 @@ void RenderViewContextMenu::AppendVideoItems() {
     auto* entry_point_controller =
         GetBrowser() ? lens::LensOverlayEntryPointController::From(GetBrowser())
                      : nullptr;
-
     bool item_added = false;
+    ui::ImageModel icon = GetLensContextMenuIcon();
+
     if (entry_point_controller && entry_point_controller->IsEnabled() &&
         lens::features::UseLensOverlayForVideoFrameSearch()) {
       // Add the item only if the entrypoint is visible.
       if (entry_point_controller->AreVisible()) {
-        const gfx::VectorIcon& icon =
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-            vector_icons::kGoogleLensMonochromeLogoIcon;
-#else
-            vector_icons::kSearchChromeRefreshIcon;
-#endif
         target_model->AddItemWithStringIdAndIcon(
             search_for_video_frame_idc,
             lens::GetLensOverlayVideoEntrypointLabelAltIds(
                 IDS_CONTENT_CONTEXT_LENS_OVERLAY),
-            ui::ImageModel::FromVectorIcon(icon));
+            icon);
         item_added = true;
       }
     } else {
       const auto* provider = GetImageSearchProvider();
       if (provider) {
-        target_model->AddItem(
+        target_model->AddItemWithIcon(
             search_for_video_frame_idc,
             l10n_util::GetStringFUTF16(IDS_CONTENT_CONTEXT_SEARCHFORVIDEOFRAME,
-                                       GetImageSearchProviderName(provider)));
+                                       GetImageSearchProviderName(provider)),
+            icon);
         item_added = true;
       }
     }
@@ -2795,23 +2806,19 @@ void RenderViewContextMenu::AppendRegionSearchItem() {
   auto* entry_point_controller =
       GetBrowser() ? lens::LensOverlayEntryPointController::From(GetBrowser())
                    : nullptr;
+  ui::ImageModel icon = GetLensContextMenuIcon();
+
   if (entry_point_controller && entry_point_controller->IsEnabled()) {
     // If the entrypoint is ephermally hidden, exit early so the item is not
     // added.
     if (!entry_point_controller->AreVisible()) {
       return;
     }
-    const gfx::VectorIcon& icon =
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-        vector_icons::kGoogleLensMonochromeLogoIcon;
-#else
-        vector_icons::kSearchChromeRefreshIcon;
-#endif
     menu_model_.AddItemWithStringIdAndIcon(
         IDC_CONTENT_CONTEXT_LENS_REGION_SEARCH,
         lens::GetLensOverlayEntrypointLabelAltIds(
             IDS_CONTENT_CONTEXT_LENS_OVERLAY),
-        ui::ImageModel::FromVectorIcon(icon));
+        icon);
     const int command_index =
         menu_model_.GetIndexOfCommandId(IDC_CONTENT_CONTEXT_LENS_REGION_SEARCH)
             .value();
@@ -2826,9 +2833,18 @@ void RenderViewContextMenu::AppendRegionSearchItem() {
   if (provider) {
     const int region_search_idc = GetRegionSearchIdc();
     const int resource_id = IDS_CONTENT_CONTEXT_LENS_REGION_SEARCH;
-    menu_model_.AddItem(region_search_idc,
-                        l10n_util::GetStringFUTF16(
-                            resource_id, GetImageSearchProviderName(provider)));
+
+    ui::ImageModel fallback_icon = icon;
+    if (!search::DefaultSearchProviderIsGoogle(GetProfile())) {
+      fallback_icon = ui::ImageModel();
+    }
+
+    menu_model_.AddItemWithIcon(
+        region_search_idc,
+        l10n_util::GetStringFUTF16(resource_id,
+                                   GetImageSearchProviderName(provider)),
+        fallback_icon);
+
     menu_model_.SetElementIdentifierAt(
         menu_model_.GetIndexOfCommandId(region_search_idc).value(),
         kRegionSearchItem);
