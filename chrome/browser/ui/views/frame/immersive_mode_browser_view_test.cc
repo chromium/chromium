@@ -71,9 +71,6 @@ class ImmersiveModeBrowserViewTest
 
 }  // namespace
 
-using ImmersiveModeBrowserViewTestNoWebUiTabStrip =
-    WebUiTabStripOverrideTest<false, ImmersiveModeBrowserViewTest>;
-
 // Tests IDC_SELECT_TAB_0, IDC_SELECT_NEXT_TAB, IDC_SELECT_PREVIOUS_TAB and
 // IDC_SELECT_LAST_TAB when the browser is in immersive fullscreen mode.
 IN_PROC_BROWSER_TEST_P(ImmersiveModeBrowserViewTest,
@@ -158,9 +155,7 @@ IN_PROC_BROWSER_TEST_P(ImmersiveModeBrowserViewTest,
   }
 }
 
-// This test does not make sense for the webUI tabstrip, since the window layout
-// is different in that case.
-IN_PROC_BROWSER_TEST_P(ImmersiveModeBrowserViewTestNoWebUiTabStrip,
+IN_PROC_BROWSER_TEST_P(ImmersiveModeBrowserViewTest,
                        TestCaptionButtonsReceiveEventsInBrowserImmersiveMode) {
   auto* const immersive_mode_controller =
       ImmersiveModeController::From(browser());
@@ -482,5 +477,4 @@ IN_PROC_BROWSER_TEST_P(ImmersiveModeBrowserViewVerticalTabsTest,
   INSTANTIATE_TEST_SUITE_P(All, name, ::testing::Values(false, true))
 
 INSTANTIATE_TEST_SUITE(ImmersiveModeBrowserViewTest);
-INSTANTIATE_TEST_SUITE(ImmersiveModeBrowserViewTestNoWebUiTabStrip);
 INSTANTIATE_TEST_SUITE(ImmersiveModeBrowserViewVerticalTabsTest);

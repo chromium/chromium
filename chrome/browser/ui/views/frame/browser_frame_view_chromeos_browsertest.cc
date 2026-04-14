@@ -64,7 +64,6 @@
 #include "chrome/browser/ui/views/frame/immersive_mode_controller.h"
 #include "chrome/browser/ui/views/frame/immersive_mode_controller_chromeos.h"
 #include "chrome/browser/ui/views/frame/immersive_mode_tester.h"
-#include "chrome/browser/ui/views/frame/webui_tab_strip_container_view.h"
 #include "chrome/browser/ui/views/location_bar/content_setting_image_view.h"
 #include "chrome/browser/ui/views/location_bar/custom_tab_bar_view.h"
 #include "chrome/browser/ui/views/location_bar/icon_label_bubble_view.h"
@@ -168,10 +167,6 @@ bool WaitForPaintAsActive(bool expected, views::FrameCaptionButton* button) {
 using BrowserFrameViewChromeOSTest =
     TopChromeMdParamTest<ChromeOSBrowserUITest>;
 
-using BrowserFrameViewChromeOSTestNoWebUiTabStrip =
-    WebUiTabStripOverrideTest<false, BrowserFrameViewChromeOSTest>;
-using BrowserFrameViewChromeOSTestWithWebUiTabStrip =
-    WebUiTabStripOverrideTest<true, BrowserFrameViewChromeOSTest>;
 
 class BrowserFrameViewChromeOSTestApi {
  public:
@@ -197,10 +192,7 @@ class BrowserFrameViewChromeOSTestApi {
   const raw_ptr<BrowserFrameViewChromeOS> frame_view_;
 };
 
-// This test does not make sense for the webUI tabstrip, since the window layout
-// is different in that case.
-IN_PROC_BROWSER_TEST_P(BrowserFrameViewChromeOSTestNoWebUiTabStrip,
-                       NonClientHitTest) {
+IN_PROC_BROWSER_TEST_P(BrowserFrameViewChromeOSTest, NonClientHitTest) {
   BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser());
   views::Widget* widget = browser_view->GetWidget();
   BrowserFrameViewChromeOS* frame_view = GetFrameViewChromeOS(browser_view);
@@ -237,7 +229,7 @@ IN_PROC_BROWSER_TEST_P(BrowserFrameViewChromeOSTestNoWebUiTabStrip,
 // Regression test for crbug.com/40945061. Asserts that the content window
 // accepts input from the edge of the browser frame when the browser is
 // maximized.
-IN_PROC_BROWSER_TEST_P(BrowserFrameViewChromeOSTestNoWebUiTabStrip,
+IN_PROC_BROWSER_TEST_P(BrowserFrameViewChromeOSTest,
                        ContentWindowAcceptsEdgeInputsWhenMaximized) {
   BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser());
   content::WebContents* web_contents = browser_view->GetActiveWebContents();
@@ -272,61 +264,10 @@ IN_PROC_BROWSER_TEST_P(BrowserFrameViewChromeOSTestNoWebUiTabStrip,
 using BrowserFrameViewChromeOSTouchTest =
     TopChromeTouchTest<ChromeOSBrowserUITest>;
 
-using BrowserFrameViewChromeOSTouchTestWithWebUiTabStrip =
-    WebUiTabStripOverrideTest<true, BrowserFrameViewChromeOSTouchTest>;
-
-IN_PROC_BROWSER_TEST_F(BrowserFrameViewChromeOSTouchTestWithWebUiTabStrip,
-                       TabletSplitViewNonClientHitTest) {
-  BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser());
-  BrowserFrameViewChromeOS* frame_view = GetFrameViewChromeOS(browser_view);
-  views::Widget* widget = browser_view->GetWidget();
-  aura::Window* window = widget->GetNativeWindow();
-
-  const int expect_y =
-      frame_view->GetBorder() ? frame_view->GetBorder()->GetInsets().top() : 0;
-  EXPECT_EQ(expect_y, frame_view->GetBoundsForClientView().y());
-
-  EnterTabletMode();
-  SnapWindow(window, ash::SnapPosition::kPrimary);
-
-  // Touch on the top of the window is interpreted as client hit.
-  gfx::Point top_point(widget->GetWindowBoundsInScreen().width() / 2, 0);
-  EXPECT_EQ(HTCLIENT, frame_view->NonClientHitTest(top_point));
-}
-
-IN_PROC_BROWSER_TEST_F(BrowserFrameViewChromeOSTouchTestWithWebUiTabStrip,
-                       TabletSplitViewSwipeDownFromEdgeOpensWebUiTabStrip) {
-  BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser());
-  BrowserFrameViewChromeOS* frame_view = GetFrameViewChromeOS(browser_view);
-  const int expect_y =
-      frame_view->GetBorder() ? frame_view->GetBorder()->GetInsets().top() : 0;
-  EXPECT_EQ(expect_y, frame_view->GetBoundsForClientView().y());
-  views::Widget* widget = browser_view->GetWidget();
-
-  EnterTabletMode();
-  SnapWindow(widget->GetNativeWindow(), ash::SnapPosition::kPrimary);
-
-  // A point at the top of the window, but not in the center horizontally, as a
-  // swipe down from the top center will show the chromeos tablet mode multitask
-  // menu.
-  gfx::Point edge_point(100, 0);
-
-  ASSERT_FALSE(browser_view->webui_tab_strip()->GetVisible());
-  aura::Window* window = widget->GetNativeWindow();
-  ui::test::EventGenerator event_generator(window->GetRootWindow());
-  event_generator.SetTouchRadius(10, 5);
-  event_generator.PressTouch(edge_point);
-  event_generator.MoveTouchBy(0, 100);
-  event_generator.ReleaseTouch();
-  ASSERT_TRUE(WaitForVisible(true, browser_view->webui_tab_strip()));
-}
 
 // Test that the frame view does not do any painting in non-immersive
 // fullscreen.
-// This test does not make sense for the webUI tabstrip, since the frame is not
-// painted in that case.
-IN_PROC_BROWSER_TEST_P(BrowserFrameViewChromeOSTestNoWebUiTabStrip,
-                       NonImmersiveFullscreen) {
+IN_PROC_BROWSER_TEST_P(BrowserFrameViewChromeOSTest, NonImmersiveFullscreen) {
   BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser());
   content::WebContents* web_contents = browser_view->GetActiveWebContents();
   BrowserFrameViewChromeOS* frame_view = GetFrameViewChromeOS(browser_view);
@@ -354,7 +295,7 @@ IN_PROC_BROWSER_TEST_P(BrowserFrameViewChromeOSTestNoWebUiTabStrip,
 }
 
 // Tests that caption buttons are hidden when entering tab fullscreen.
-IN_PROC_BROWSER_TEST_P(BrowserFrameViewChromeOSTestNoWebUiTabStrip,
+IN_PROC_BROWSER_TEST_P(BrowserFrameViewChromeOSTest,
                        CaptionButtonsHiddenNonImmersiveFullscreen) {
   BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser());
   content::WebContents* web_contents = browser_view->GetActiveWebContents();
@@ -375,42 +316,6 @@ IN_PROC_BROWSER_TEST_P(BrowserFrameViewChromeOSTestNoWebUiTabStrip,
   EXPECT_FALSE(browser_view->IsFullscreen());
   // Caption button container visible again.
   EXPECT_TRUE(frame_view->caption_button_container()->GetVisible());
-}
-
-// There should be no top inset when using the WebUI tab strip since the frame
-// is invisible. Regression test for crbug.com/1076675
-IN_PROC_BROWSER_TEST_P(BrowserFrameViewChromeOSTestWithWebUiTabStrip,
-                       TopInset) {
-  // This test doesn't make sense in non-touch mode since it expects the WebUI
-  // tab strip to be active. This test is instantiated with and without touch
-  // mode.
-  if (!ui::TouchUiController::Get()->touch_ui()) {
-    return;
-  }
-
-  BrowserView* const browser_view =
-      BrowserView::GetBrowserViewForBrowser(browser());
-
-  EXPECT_EQ(0, GetFrameViewChromeOS(browser_view)->GetTopInset(false));
-  EnterOverviewMode();
-  EXPECT_EQ(0, GetFrameViewChromeOS(browser_view)->GetTopInset(false));
-  ExitOverviewMode();
-  EXPECT_EQ(0, GetFrameViewChromeOS(browser_view)->GetTopInset(false));
-}
-
-// Tests to ensure caption buttons are not painted when the WebUI tab strip is
-// present for the browser window (crbug.com/1362731).
-IN_PROC_BROWSER_TEST_P(BrowserFrameViewChromeOSTestWithWebUiTabStrip,
-                       CaptionButtonsHiddenWhenUsingWebUITabStrip) {
-  auto* browser_view = BrowserView::GetBrowserViewForBrowser(browser());
-  auto* frame_view = GetFrameViewChromeOS(browser_view);
-  if (ui::TouchUiController::Get()->touch_ui()) {
-    EXPECT_TRUE(browser_view->webui_tab_strip());
-    EXPECT_FALSE(frame_view->caption_button_container()->GetVisible());
-  } else {
-    EXPECT_FALSE(browser_view->webui_tab_strip());
-    EXPECT_TRUE(frame_view->caption_button_container()->GetVisible());
-  }
 }
 
 IN_PROC_BROWSER_TEST_P(BrowserFrameViewChromeOSTest,
@@ -1073,12 +978,7 @@ IN_PROC_BROWSER_TEST_P(BrowserFrameViewChromeOSTest,
       aura::client::kResizeBehaviorCanMaximize |
           aura::client::kResizeBehaviorCanResize);
 
-  // Caption buttons are not supported when using the WebUI tab strip.
-  if (browser_view->webui_tab_strip()) {
-    EXPECT_FALSE(frame_view->caption_button_container()->GetVisible());
-  } else {
-    EXPECT_TRUE(frame_view->caption_button_container()->GetVisible());
-  }
+  EXPECT_TRUE(frame_view->caption_button_container()->GetVisible());
 
   // Ensure the current layout is finished before entering overview mode.
   views::test::RunScheduledLayout(browser_view);
@@ -1096,12 +996,7 @@ IN_PROC_BROWSER_TEST_P(BrowserFrameViewChromeOSTest,
 
   ExitOverviewMode();
 
-  // Caption buttons are not supported when using the WebUI tab strip.
-  if (browser_view->webui_tab_strip()) {
-    EXPECT_FALSE(frame_view->caption_button_container()->GetVisible());
-  } else {
-    EXPECT_TRUE(frame_view->caption_button_container()->GetVisible());
-  }
+  EXPECT_TRUE(frame_view->caption_button_container()->GetVisible());
 
   EnterTabletMode();
   EXPECT_FALSE(frame_view->caption_button_container()->GetVisible());
@@ -1344,8 +1239,6 @@ IN_PROC_BROWSER_TEST_P(BrowserFrameViewChromeOSTest,
   EnterImmersiveFullscreenMode(browser());
 }
 
-// TODO(b/270175923): Consider using WebUiTabStripOverrideTest, since it
-// makes sense for it to always be enabled.
 using FloatBrowserFrameViewChromeOSTest =
     TopChromeMdParamTest<ChromeOSBrowserUITest>;
 
@@ -1380,11 +1273,6 @@ IN_PROC_BROWSER_TEST_P(FloatBrowserFrameViewChromeOSTest,
           .tablet_mode_window_manager()
           ->tablet_mode_multitask_menu_controller();
   EXPECT_TRUE(multitask_menu_event_handler->multitask_menu());
-
-  if (browser_view->webui_tab_strip()) {
-    // The tab strip doesn't get shown if the menu is.
-    ASSERT_FALSE(browser_view->webui_tab_strip()->GetVisible());
-  }
 
   // Tap on the omnibox outside the menu takes focus and closes the menu.
   ASSERT_NO_FATAL_FAILURE(
@@ -1529,12 +1417,7 @@ IN_PROC_BROWSER_TEST_P(HomeLauncherBrowserFrameViewChromeOSTest,
   BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser());
   BrowserFrameViewChromeOS* frame_view = GetFrameViewChromeOS(browser_view);
 
-  // Caption buttons are not supported when using the WebUI tab strip.
-  if (browser_view->webui_tab_strip()) {
-    EXPECT_FALSE(frame_view->caption_button_container()->GetVisible());
-  } else {
-    EXPECT_TRUE(frame_view->caption_button_container()->GetVisible());
-  }
+  EXPECT_TRUE(frame_view->caption_button_container()->GetVisible());
 
   EnterTabletMode();
   EXPECT_FALSE(frame_view->caption_button_container()->GetVisible());
@@ -1546,12 +1429,7 @@ IN_PROC_BROWSER_TEST_P(HomeLauncherBrowserFrameViewChromeOSTest,
 
   ExitTabletMode();
 
-  // Caption buttons are not supported when using the WebUI tab strip.
-  if (browser_view->webui_tab_strip()) {
-    EXPECT_FALSE(frame_view->caption_button_container()->GetVisible());
-  } else {
-    EXPECT_TRUE(frame_view->caption_button_container()->GetVisible());
-  }
+  EXPECT_TRUE(frame_view->caption_button_container()->GetVisible());
 }
 
 // TODO(crbug.com/40640473): When the test flake has been addressed, improve
@@ -1687,8 +1565,7 @@ IN_PROC_BROWSER_TEST_P(LockedFullscreenBrowserFrameViewChromeOSTest,
   EXPECT_TRUE(frame_view->caption_button_container()->GetVisible());
 }
 
-class BrowserFrameViewAshTestNoWebUiTabStrip
-    : public BrowserFrameViewChromeOSTestNoWebUiTabStrip {
+class BrowserFrameViewAshAvatarTest : public BrowserFrameViewChromeOSTest {
  public:
   static constexpr inline auto kPrimaryAccountId =
       AccountId::Literal::FromUserEmailGaiaId("primary@test",
@@ -1702,11 +1579,11 @@ class BrowserFrameViewAshTestNoWebUiTabStrip
     set_exit_when_last_browser_closes(false);
     signin::AccountManagedStatusFinder::SetNonEnterpriseDomainForTesting(
         "test");
-    BrowserFrameViewChromeOSTestNoWebUiTabStrip::SetUp();
+    BrowserFrameViewChromeOSTest::SetUp();
   }
 
   void TearDown() override {
-    BrowserFrameViewChromeOSTestNoWebUiTabStrip::TearDown();
+    BrowserFrameViewChromeOSTest::TearDown();
     signin::AccountManagedStatusFinder::SetNonEnterpriseDomainForTesting(
         nullptr);
   }
@@ -1741,9 +1618,7 @@ class BrowserFrameViewAshTestNoWebUiTabStrip
 
 // Tests that Avatar icon should show on the top left corner of the teleported
 // browser window on ChromeOS.
-// TODO(http://crbug.com/1059514): This test should be made to work with the
-// webUI tabstrip.
-IN_PROC_BROWSER_TEST_P(BrowserFrameViewAshTestNoWebUiTabStrip,
+IN_PROC_BROWSER_TEST_P(BrowserFrameViewAshAvatarTest,
                        AvatarDisplayOnTeleportedWindow) {
   LogIn(kPrimaryAccountId);
   Profile* primary_user_profile = Profile::FromBrowserContext(
@@ -2031,11 +1906,9 @@ IN_PROC_BROWSER_TEST_P(BrowserFrameViewAshThemeChangeTest, ThemeChange) {
   INSTANTIATE_TEST_SUITE_P(All, name, ::testing::Values(false, true))
 
 INSTANTIATE_TEST_SUITE(BrowserFrameViewChromeOSTest);
-INSTANTIATE_TEST_SUITE(BrowserFrameViewChromeOSTestNoWebUiTabStrip);
-INSTANTIATE_TEST_SUITE(BrowserFrameViewChromeOSTestWithWebUiTabStrip);
 INSTANTIATE_TEST_SUITE(FloatBrowserFrameViewChromeOSTest);
 INSTANTIATE_TEST_SUITE(HomeLauncherBrowserFrameViewChromeOSTest);
 INSTANTIATE_TEST_SUITE(LockedFullscreenBrowserFrameViewChromeOSTest);
 INSTANTIATE_TEST_SUITE(WebAppFrameViewChromeOSTest);
-INSTANTIATE_TEST_SUITE(BrowserFrameViewAshTestNoWebUiTabStrip);
 INSTANTIATE_TEST_SUITE(BrowserFrameViewAshTest);
+INSTANTIATE_TEST_SUITE(BrowserFrameViewAshAvatarTest);

@@ -43,23 +43,6 @@ class TopChromeTouchTest : public BaseTest {
   ui::TouchUiController::TouchUiScoperForTesting touch_ui_scoper_;
 };
 
-// Template to be used when a test does not work with the webUI tabstrip.
-template <bool kEnabled, class BaseTest>
-class WebUiTabStripOverrideTest : public BaseTest {
- public:
-  WebUiTabStripOverrideTest() {
-    if (kEnabled) {
-      feature_override_.InitAndEnableFeature(features::kWebUITabStrip);
-    } else {
-      feature_override_.InitAndDisableFeature(features::kWebUITabStrip);
-    }
-  }
-  ~WebUiTabStripOverrideTest() override = default;
-
- private:
-  base::test::ScopedFeatureList feature_override_;
-};
-
 // A helper class for immersive mode tests.
 class ImmersiveModeTester : public ImmersiveModeController::Observer {
  public:

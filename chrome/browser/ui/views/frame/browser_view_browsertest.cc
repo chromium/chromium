@@ -162,8 +162,6 @@ class BrowserViewTest : public InProcessBrowserTest {
 
 #if BUILDFLAG(IS_CHROMEOS)
 using BrowserViewChromeOSTest = ChromeOSBrowserUITest;
-using BrowserViewChromeOSTestNoWebUiTabStrip =
-    WebUiTabStripOverrideTest<false, BrowserViewChromeOSTest>;
 #endif
 
 namespace {
@@ -1138,8 +1136,7 @@ IN_PROC_BROWSER_TEST_F(BrowserViewDataProtectionTest, DC_Screenshot) {
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
 
 #if BUILDFLAG(IS_CHROMEOS)
-IN_PROC_BROWSER_TEST_F(BrowserViewChromeOSTestNoWebUiTabStrip,
-                       EnsureViewTreeOrder) {
+IN_PROC_BROWSER_TEST_F(BrowserViewChromeOSTest, EnsureViewTreeOrder) {
   BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser());
   auto* const immersive_mode_controller =
       ImmersiveModeController::From(browser());
@@ -1184,7 +1181,7 @@ IN_PROC_BROWSER_TEST_F(BrowserViewChromeOSTestNoWebUiTabStrip,
   EXPECT_EQ(children_before, children_after);
 }
 
-IN_PROC_BROWSER_TEST_F(BrowserViewChromeOSTestNoWebUiTabStrip,
+IN_PROC_BROWSER_TEST_F(BrowserViewChromeOSTest,
                        TabStripParentedToTopContainer) {
   BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser());
   EXPECT_EQ(browser_view->tab_strip_view()->parent(), browser_view);
