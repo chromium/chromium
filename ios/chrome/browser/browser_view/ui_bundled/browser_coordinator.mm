@@ -3146,10 +3146,11 @@ const char kChromeAppStoreUrl[] =
 - (void)showCobaltAlertWithTitle:(NSString*)title
                          message:(NSString*)message
                       completion:(void (^)(bool))completion {
+  // If `_cobaltAlertCoordinator` is present hide it first.
   if (_cobaltAlertCoordinator) {
-    completion(false);
-    return;
+    [self hideCobaltAlert];
   }
+
   // If `_cobaltCoordinator` is present hide it first.
   if (_cobaltCoordinator) {
     [self hideCobalt];
@@ -3167,8 +3168,9 @@ const char kChromeAppStoreUrl[] =
 
 - (void)showCobaltPopupViewController:(UIViewController*)popupViewController
                            completion:(void (^)(NSError*))completion {
+  // If `_cobaltPopupCoordinator` is present hide it first.
   if (_cobaltPopupCoordinator) {
-    return;
+    [self hideCobaltPopup];
   }
 
   // If `_cobaltCoordinator` is present hide it first.
