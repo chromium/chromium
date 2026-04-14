@@ -1126,6 +1126,7 @@ ItemType ItemTypeForEntitySectionHeader(SectionIdentifier section_identifier) {
       base::apple::ObjCCastStrict<TableViewSwitchItem>(
           [model itemAtIndexPath:switchPath]);
   switchItem.on = on;
+  [self reconfigureCellsForItems:@[ switchItem ]];
 }
 
 // Sets switchItem's enabled status to `enabled` and reconfigures the
