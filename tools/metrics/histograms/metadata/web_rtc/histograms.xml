@@ -1107,8 +1107,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebRTC.DesktopCapture.Win.DirectXCapturerResult"
-    enum="WebRtcDirectXCapturerResult" expires_after="2026-05-24">
-  <owner>henrika@chromium.org</owner>
+    enum="WebRtcDirectXCapturerResult" expires_after="2027-05-24">
+  <owner>ilnik@chromium.org</owner>
   <owner>webrtc-dev@chromium.org</owner>
   <summary>
     This records high level errors, or success, encountered across the entire
