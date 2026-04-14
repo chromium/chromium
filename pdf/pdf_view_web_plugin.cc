@@ -1281,18 +1281,18 @@ void PdfViewWebPlugin::Beep() {
 }
 
 void PdfViewWebPlugin::Alert(const std::string& message) {
-  client_->Alert(blink::WebString::FromUTF8(message));
+  client_->Alert(blink::WebString::FromUtf8(message));
 }
 
 bool PdfViewWebPlugin::Confirm(const std::string& message) {
-  return client_->Confirm(blink::WebString::FromUTF8(message));
+  return client_->Confirm(blink::WebString::FromUtf8(message));
 }
 
 std::string PdfViewWebPlugin::Prompt(const std::string& question,
                                      const std::string& default_answer) {
   return client_
-      ->Prompt(blink::WebString::FromUTF8(question),
-               blink::WebString::FromUTF8(default_answer))
+      ->Prompt(blink::WebString::FromUtf8(question),
+               blink::WebString::FromUtf8(default_answer))
       .Utf8();
 }
 
@@ -1620,7 +1620,7 @@ void PdfViewWebPlugin::SetSelectedText(const std::string& selected_text) {
     return;
   }
 #endif  // BUILDFLAG(ENABLE_PDF_INK2)
-  selected_text_ = blink::WebString::FromUTF8(selected_text);
+  selected_text_ = blink::WebString::FromUtf8(selected_text);
   client_->TextSelectionChanged(selected_text_, /*offset=*/0,
                                 gfx::Range(0, selected_text_.length()));
 }

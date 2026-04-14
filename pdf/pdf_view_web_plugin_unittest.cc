@@ -409,8 +409,8 @@ class PdfViewWebPluginWithoutInitializeTest : public testing::Test {
   static void AddToPluginParams(std::string_view name,
                                 std::string_view value,
                                 blink::WebPluginParams& params) {
-    params.attribute_names.push_back(blink::WebString::FromUTF8(name));
-    params.attribute_values.push_back(blink::WebString::FromUTF8(value));
+    params.attribute_names.push_back(blink::WebString::FromUtf8(name));
+    params.attribute_values.push_back(blink::WebString::FromUtf8(value));
   }
 
   void SetUpPlugin(std::string_view document_url,
@@ -1713,7 +1713,7 @@ TEST_F(PdfViewWebPluginTest, ChangeTextSelection) {
 
   static constexpr char kSelectedText[] = "1234";
   EXPECT_CALL(*client_ptr_,
-              TextSelectionChanged(blink::WebString::FromUTF8(kSelectedText), 0,
+              TextSelectionChanged(blink::WebString(kSelectedText), 0,
                                    gfx::Range(0, 4)));
 
   plugin_->SetSelectedText(kSelectedText);
@@ -1722,9 +1722,8 @@ TEST_F(PdfViewWebPluginTest, ChangeTextSelection) {
   EXPECT_EQ(kSelectedText, plugin_->SelectionAsMarkup().Utf8());
 
   static constexpr char kEmptyText[] = "";
-  EXPECT_CALL(*client_ptr_,
-              TextSelectionChanged(blink::WebString::FromUTF8(kEmptyText), 0,
-                                   gfx::Range(0, 0)));
+  EXPECT_CALL(*client_ptr_, TextSelectionChanged(blink::WebString(kEmptyText),
+                                                 0, gfx::Range(0, 0)));
   plugin_->SetSelectedText(kEmptyText);
   EXPECT_FALSE(plugin_->HasSelection());
   EXPECT_TRUE(plugin_->SelectionAsText().IsEmpty());
