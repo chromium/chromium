@@ -25,6 +25,7 @@
 #include "content/public/test/browser_test.h"
 #include "ui/base/test/ui_controls.h"
 #include "ui/events/base_event_utils.h"
+#include "ui/views/interaction/element_tracker_views.h"
 #include "ui/views/test/button_test_api.h"
 #include "ui/views/test/views_test_utils.h"
 #include "ui/views/test/widget_activation_waiter.h"
@@ -124,7 +125,11 @@ class PermissionBubbleInteractiveUITest : public InProcessBrowserTest {
     LocationBar* lb = browser_view->toolbar()->location_bar();
     if (lb->GetChipController()->IsPermissionPromptChipVisible() &&
         !lb->GetChipController()->IsBubbleShowing()) {
-      views::test::ButtonTestApi(lb->GetChipController()->chip())
+      views::test::ButtonTestApi(
+          views::AsViewClass<views::Button>(
+              views::ElementTrackerViews::GetInstance()->GetFirstMatchingView(
+                  PermissionChipView::kPermissionRequestChipElementId,
+                  views::ElementTrackerViews::GetContextForView(browser_view))))
           .NotifyClick(ui::MouseEvent(
               ui::EventType::kMousePressed, gfx::Point(), gfx::Point(),
               ui::EventTimeForNow(), ui::EF_LEFT_MOUSE_BUTTON, 0));

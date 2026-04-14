@@ -11,6 +11,7 @@
 #include "base/scoped_observation.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/ui/views/location_bar/content_setting_image_view.h"
+#include "chrome/browser/ui/views/permissions/chip/permission_chip_interface.h"
 #include "chrome/browser/ui/views/permissions/chip/permission_chip_view.h"
 #include "chrome/browser/ui/views/permissions/chip/permission_dashboard_view.h"
 #include "content/public/browser/global_routing_id.h"
@@ -20,7 +21,7 @@ class LocationBar;
 class ChipController;
 class ContentSettingImageModel;
 
-class PermissionDashboardController : public PermissionChipView::Observer {
+class PermissionDashboardController : public PermissionChipInterface::Observer {
  public:
   PermissionDashboardController(
       LocationBar* location_bar,
@@ -47,7 +48,7 @@ class PermissionDashboardController : public PermissionChipView::Observer {
   // appropriate to use with `indicator_model`.
   bool Update(ContentSettingImageModel* indicator_model);
 
-  // PermissionChipView::Observer
+  // PermissionChipInterface::Observer
   void OnChipVisibilityChanged(bool is_visible) override;
   void OnExpandAnimationEnded() override;
   void OnCollapseAnimationEnded() override;
@@ -115,7 +116,8 @@ class PermissionDashboardController : public PermissionChipView::Observer {
   // button handles the mouse release event.
   bool should_suppress_reopening_page_info_ = false;
 
-  base::ScopedObservation<PermissionChipView, PermissionChipView::Observer>
+  base::ScopedObservation<PermissionChipInterface,
+                          PermissionChipInterface::Observer>
       observation_{this};
   base::WeakPtrFactory<PermissionDashboardController> weak_factory_{this};
 };

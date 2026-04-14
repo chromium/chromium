@@ -141,7 +141,7 @@ class ModalWidgetDelegate : public views::WidgetDelegate {
   ui::mojom::ModalType modal_type_;
 };
 
-class ChipAnimationObserver : PermissionChipView::Observer {
+class ChipAnimationObserver : PermissionChipInterface::Observer {
  public:
   enum class QuitOnEvent {
     kExpand,
@@ -150,7 +150,7 @@ class ChipAnimationObserver : PermissionChipView::Observer {
     kVisibilityFalse,
   };
 
-  explicit ChipAnimationObserver(PermissionChipView* chip) {
+  explicit ChipAnimationObserver(PermissionChipInterface* chip) {
     observation_.Observe(chip);
   }
 
@@ -180,7 +180,8 @@ class ChipAnimationObserver : PermissionChipView::Observer {
     }
   }
 
-  base::ScopedObservation<PermissionChipView, PermissionChipView::Observer>
+  base::ScopedObservation<PermissionChipInterface,
+                          PermissionChipInterface::Observer>
       observation_{this};
   base::RunLoop loop_;
   QuitOnEvent quit_on_event = QuitOnEvent::kExpand;

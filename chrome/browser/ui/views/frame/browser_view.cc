@@ -4684,7 +4684,13 @@ void BrowserView::GetAccessiblePanes(std::vector<views::View*>* panes) {
              toolbar_->location_bar()
                  ->GetChipController()
                  ->IsPermissionPromptChipVisible()) {
-    panes->push_back(toolbar_->location_bar()->GetChipController()->chip());
+    // TODO(crbug.com/495419742): For WebUI, chip_view() will return nullptr
+    // and individual chips won't be added here. Instead, the WebUI container
+    // itself will act as the pane, and DOM focus management will handle
+    // traversing the internal chips.
+    if (views::View* view = GetLocationBarView()->chip_view()) {
+      panes->push_back(view);
+    }
   }
 
   panes->push_back(toolbar_button_provider_->GetAsAccessiblePaneView());
@@ -5245,13 +5251,12 @@ void BrowserView::AddedToWidget() {
   // view, so it needs to be made aware of any changes.
   if (toolbar_ && toolbar_->location_bar() &&
       toolbar_->location_bar()->GetChipController()) {
-    chip_visibility_subscription_ =
-        toolbar_->location_bar()
-            ->GetChipController()
-            ->chip()
-            ->AddVisibleChangedCallback(base::BindRepeating(
-                &BrowserView::UpdateAccessibleNameForAllTabs,
-                weak_ptr_factory_.GetWeakPtr()));
+    if (PermissionChipInterface* chip =
+            toolbar_->location_bar()->GetChipController()->chip()) {
+      chip_visibility_subscription_ = chip->AddVisibilityCallback(
+          base::BindRepeating(&BrowserView::UpdateAccessibleNameForAllTabs,
+                              weak_ptr_factory_.GetWeakPtr()));
+    }
   }
 
   if (auto* const vertical_tab_strip_state_controller =

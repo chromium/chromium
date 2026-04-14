@@ -15,10 +15,11 @@
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
 #include "base/timer/timer.h"
-#include "chrome/browser/ui/views/permissions/chip/permission_chip_view.h"
+#include "chrome/browser/ui/views/permissions/chip/permission_chip_interface.h"
 #include "components/permissions/permission_prompt.h"
 #include "components/permissions/permission_request_manager.h"
 #include "components/permissions/permission_util.h"
+#include "ui/views/view_tracker.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_observer.h"
 
@@ -30,26 +31,16 @@ class PermissionDashboardView;
 class PermissionPromptBubbleBaseView;
 class PermissionPromptChipModel;
 
-// ButtonController that NotifyClick from being called when the
-// BubbleOwnerDelegate's bubble is showing. Otherwise the bubble will show again
-// immediately after being closed via losing focus.
-class BubbleOwnerDelegate {
- public:
-  virtual bool IsBubbleShowing() = 0;
-  virtual bool IsAnimating() const = 0;
-  virtual void RestartTimersOnMouseHover() = 0;
-};
-
-// This class controls a chip UI view to surface permission related information
+// This class controls a chip UI to surface permission related information
 // and prompts. For its creation, the controller expects an object of type
-// PermissionChipView which should be a child view of another view. No ownership
-// is transferred through the creation, and the controller will never destruct
-// the PermissionChipView object. The controller and it's view are intended to
-// be long-lived.
+// PermissionChipInterface which should be a child of another UI component. No
+// ownership is transferred through the creation, and the controller will never
+// destruct the PermissionChipInterface object. The controller and its chip are
+// intended to be long-lived.
 class ChipController : public permissions::PermissionRequestManager::Observer,
                        public views::WidgetObserver,
-                       public BubbleOwnerDelegate,
-                       public PermissionChipView::Observer {
+                       public PermissionChipInterface::BubbleOwnerDelegate,
+                       public PermissionChipInterface::Observer {
  public:
   class Observer : public base::CheckedObserver {
    public:
@@ -63,7 +54,7 @@ class ChipController : public permissions::PermissionRequestManager::Observer,
   ChipController(
       LocationBar* location_bar,
       ContentSettingImageViewDelegate* content_settings_image_delegate,
-      PermissionChipView* chip_view,
+      PermissionChipInterface* chip,
       PermissionDashboardView* permission_dashboard_view = nullptr,
       PermissionDashboardController* permission_dashboard_controller = nullptr);
 
@@ -90,7 +81,7 @@ class ChipController : public permissions::PermissionRequestManager::Observer,
   // Called when there is a decision for a permission request.
   void OnRequestDecided(permissions::PermissionAction permissions) override;
 
-  // BubbleOwnerDelegate:
+  // PermissionChipInterface::BubbleOwnerDelegate:
   bool IsBubbleShowing() override;
   bool IsAnimating() const override;
   void RestartTimersOnMouseHover() override;
@@ -100,7 +91,7 @@ class ChipController : public permissions::PermissionRequestManager::Observer,
   void OnWidgetDestroyed(views::Widget* widget) override;
   void OnWidgetActivationChanged(views::Widget* widget, bool active) override;
 
-  // PermissionChipView::Observer
+  // PermissionChipInterface::Observer
   void OnChipVisibilityChanged(bool is_visible) override;
   void OnExpandAnimationEnded() override;
   void OnCollapseAnimationEnded() override;
@@ -123,8 +114,9 @@ class ChipController : public permissions::PermissionRequestManager::Observer,
   void ShowPermissionPrompt(
       base::WeakPtr<permissions::PermissionPrompt::Delegate> delegate);
 
-  // Chip View.
-  PermissionChipView* chip() { return chip_; }
+  // Returns the PermissionChipInterface (e.g. PermissionChipView or
+  // WebUIPermissionChip) controlled by this class.
+  PermissionChipInterface* chip() { return chip_; }
 
   // Hide and clean up the chip.
   void ResetPermissionPromptChip();
@@ -170,12 +162,6 @@ class ChipController : public permissions::PermissionRequestManager::Observer,
   bool is_dismiss_timer_running_for_testing() const {
     CHECK_IS_TEST();
     return dismiss_timer_.IsRunning();
-  }
-
-  void stop_animation_for_test() {
-    CHECK_IS_TEST();
-    chip_->animation_for_testing()->Stop();
-    OnExpandAnimationEnded();
   }
 
   views::View* get_prompt_bubble_view_for_testing() {
@@ -266,10 +252,10 @@ class ChipController : public permissions::PermissionRequestManager::Observer,
   raw_ptr<ContentSettingImageViewDelegate> content_settings_image_delegate_ =
       nullptr;
 
-  // The chip view this controller modifies.
-  raw_ptr<PermissionChipView> chip_;
+  // The chip this controller modifies.
+  raw_ptr<PermissionChipInterface> chip_;
 
-  // `PermissionDashboardView` is an owner of PermissionChipView.
+  // `PermissionDashboardView` is an owner of PermissionChipInterface.
   raw_ptr<PermissionDashboardView> permission_dashboard_view_;
   // `PermissionDashboardController` is an owner of this.
   raw_ptr<PermissionDashboardController> permission_dashboard_controller_;
@@ -303,7 +289,8 @@ class ChipController : public permissions::PermissionRequestManager::Observer,
 
   base::ScopedClosureRunner disallowed_custom_cursors_scope_;
 
-  base::ScopedObservation<PermissionChipView, PermissionChipView::Observer>
+  base::ScopedObservation<PermissionChipInterface,
+                          PermissionChipInterface::Observer>
       observation_{this};
 
   base::ObserverList<Observer> permission_prompt_observers_;

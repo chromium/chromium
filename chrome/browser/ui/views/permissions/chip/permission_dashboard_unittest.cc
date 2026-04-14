@@ -25,14 +25,14 @@
 #include "ui/views/test/ax_event_counter.h"
 #include "ui/views/test/button_test_api.h"
 
-class AnimationObserver : public PermissionChipView::Observer {
+class AnimationObserver : public PermissionChipInterface::Observer {
  public:
   explicit AnimationObserver(base::OnceClosure quit_closure)
       : animation_complete_callback_(std::move(quit_closure)) {}
 
   void OnAnimationEnded() { std::move(animation_complete_callback_).Run(); }
 
-  // PermissionChipView::Observer
+  // PermissionChipInterface::Observer
   void OnChipVisibilityChanged(bool is_visible) override {}
   void OnExpandAnimationEnded() override { OnAnimationEnded(); }
   void OnCollapseAnimationEnded() override { OnAnimationEnded(); }
@@ -201,16 +201,16 @@ TEST_F(PermissionDashboardUnitTest, DisplayLHSIndicatorForCamera) {
 
   EXPECT_TRUE(
       dashboard_controller->get_collapse_timer_for_testing().IsRunning());
-  EXPECT_FALSE(indicator_chip->is_animating());
+  EXPECT_FALSE(indicator_chip->IsAnimating());
   // Wait longer than 4 seconds for collapse timer to fire and the collapse
   // animation to finish.
   task_environment()->AdvanceClock(base::Milliseconds(4100));
   base::RunLoop().RunUntilIdle();
-  EXPECT_TRUE(indicator_chip->is_animating());
+  EXPECT_TRUE(indicator_chip->IsAnimating());
 
   WaitForAnimationCompletion();
 
-  EXPECT_FALSE(indicator_chip->is_animating());
+  EXPECT_FALSE(indicator_chip->IsAnimating());
 
   EXPECT_TRUE(indicator_chip->GetVisible());
   EXPECT_FALSE(
@@ -337,7 +337,7 @@ TEST_F(PermissionDashboardUnitTest, DisplayLHSIndicatorForCameraAndThenMic) {
   pscs->OnCapturingStateChanged(ContentSettingsType::MEDIASTREAM_MIC, true);
 
   EXPECT_TRUE(indicator_chip->GetVisible());
-  EXPECT_FALSE(indicator_chip->is_animating());
+  EXPECT_FALSE(indicator_chip->IsAnimating());
   // The indicator stays collapsed.
   EXPECT_FALSE(dashboard_controller->is_verbose());
 
@@ -352,7 +352,7 @@ TEST_F(PermissionDashboardUnitTest, DisplayLHSIndicatorForCameraAndThenMic) {
   pscs->OnCapturingStateChanged(ContentSettingsType::MEDIASTREAM_CAMERA, false);
 
   EXPECT_TRUE(indicator_chip->GetVisible());
-  EXPECT_FALSE(indicator_chip->is_animating());
+  EXPECT_FALSE(indicator_chip->IsAnimating());
   // The indicator stays collapsed.
   EXPECT_FALSE(dashboard_controller->is_verbose());
 

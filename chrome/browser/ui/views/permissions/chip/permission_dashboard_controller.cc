@@ -152,7 +152,7 @@ PermissionDashboardController::PermissionDashboardController(
       this);
   observation_.Observe(permission_dashboard_view_->GetIndicatorChip());
 
-  permission_dashboard_view->GetIndicatorChip()->SetCallback(
+  permission_dashboard_view->GetIndicatorChip()->SetPressedCallback(
       base::BindRepeating(
           &PermissionDashboardController::OnIndicatorsChipButtonPressed,
           weak_factory_.GetWeakPtr()));
@@ -258,7 +258,8 @@ bool PermissionDashboardController::Update(
           permission_indicators_tab_data->IsVerboseIndicatorAllowed(
               permissions::PermissionIndicatorsTabData::IndicatorsType::
                   kMediaStream)) {
-        indicator_chip->ResetAnimation();
+        indicator_chip->ResetAnimation(
+            PermissionChipInterface::AnimationState::kCollapsed);
         indicator_chip->AnimateExpand(
             gfx::Animation::RichAnimationDuration(base::Milliseconds(350)));
       }
@@ -275,12 +276,11 @@ bool PermissionDashboardController::Update(
           location_bar_->GetWebContents())) {
     std::u16string name = l10n_util::GetStringUTF16(
         indicator_model->AccessibilityAnnouncementStringId());
-    permission_dashboard_view_->GetViewAccessibility().SetName(name);
+    indicator_chip->SetAccessibilityName(name);
 
-    permission_dashboard_view_->GetViewAccessibility().AnnounceAlert(
-        l10n_util::GetStringFUTF16(
-            IDS_A11Y_INDICATORS_ANNOUNCEMENT, name,
-            l10n_util::GetStringUTF16(IDS_A11Y_OMNIBOX_CHIP_HINT)));
+    indicator_chip->AnnounceAlert(l10n_util::GetStringFUTF16(
+        IDS_A11Y_INDICATORS_ANNOUNCEMENT, name,
+        l10n_util::GetStringUTF16(IDS_A11Y_OMNIBOX_CHIP_HINT)));
 
     RecordIndicators(indicator_model, content_settings, /*clicked=*/false);
 
@@ -372,7 +372,7 @@ void PermissionDashboardController::Collapse(bool hide) {
   if (hide) {
     UpdateIndicatorsVisibilityFlags(location_bar_);
   }
-  if (!permission_dashboard_view_->GetIndicatorChip()->is_animating()) {
+  if (!permission_dashboard_view_->GetIndicatorChip()->IsAnimating()) {
     permission_dashboard_view_->GetIndicatorChip()->AnimateCollapse(
         gfx::Animation::RichAnimationDuration(base::Milliseconds(250)));
   }
@@ -380,20 +380,18 @@ void PermissionDashboardController::Collapse(bool hide) {
 
 void PermissionDashboardController::HideIndicators() {
   collapse_timer_.Stop();
-  permission_dashboard_view_->GetIndicatorChip()->ResetAnimation();
+  permission_dashboard_view_->GetIndicatorChip()->ResetAnimation(
+      PermissionChipInterface::AnimationState::kCollapsed);
   is_verbose_ = false;
-  permission_dashboard_view_->GetIndicatorChip()
-      ->GetViewAccessibility()
-      .SetIsIgnored(true);
+  permission_dashboard_view_->GetIndicatorChip()->SetAccessibilityIgnored(true);
   permission_dashboard_view_->GetIndicatorChip()->SetVisible(false);
   content_setting_image_model_ = nullptr;
-  permission_dashboard_view_->GetDividerView()->SetVisible(false);
-  if (permission_dashboard_view_->GetRequestChip()->GetVisible()) {
-    // After the indicator view is gone, remove the divider padding if the
-    // request chip is visible.
-    permission_dashboard_view_->GetRequestChip()->UpdateForDividerVisibility(
-        false);
-  } else {
+
+  permission_dashboard_view_->UpdateDividerViewVisibility();
+
+  // This method hides the indicator chip. If the request chip is not visible,
+  // then hide the parent permission_dashboard_view_ view as well.
+  if (!permission_dashboard_view_->GetRequestChip()->GetVisible()) {
     permission_dashboard_view_->SetVisible(false);
   }
 

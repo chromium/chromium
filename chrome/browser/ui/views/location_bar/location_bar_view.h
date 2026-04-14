@@ -68,6 +68,7 @@ class OmniboxViewViews;
 class OmniboxChipButton;
 class PageActionIconController;
 class PageActionIconContainerView;
+class PermissionChipView;
 class PermissionDashboardView;
 class Profile;
 class SelectedKeywordView;
@@ -201,6 +202,8 @@ class LocationBarView
   PermissionDashboardController* permission_dashboard_controller() {
     return permission_dashboard_controller_.get();
   }
+
+  PermissionChipView* chip_view() { return chip_view_; }
 
   IntentChipButton* intent_chip() { return intent_chip_; }
 
@@ -551,6 +554,11 @@ class LocationBarView
   // A controller for a view that contains a chip button which is used for
   // permission information and requests.
   std::unique_ptr<ChipController> chip_controller_ = nullptr;
+
+  // The concrete native view used for the permission chip. Stored separately
+  // from the controller to allow layout calculations to bypass the UI-agnostic
+  // PermissionChipInterface.
+  raw_ptr<PermissionChipView> chip_view_ = nullptr;
 
   std::unique_ptr<PermissionDashboardController>
       permission_dashboard_controller_;

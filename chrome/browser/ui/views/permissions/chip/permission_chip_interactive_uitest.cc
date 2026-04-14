@@ -27,6 +27,7 @@
 #include "chrome/browser/ui/views/page_info/page_info_view_factory.h"
 #include "chrome/browser/ui/views/permissions/chip/chip_controller.h"
 #include "chrome/browser/ui/views/permissions/chip/permission_chip_theme.h"
+#include "chrome/browser/ui/views/permissions/chip/permission_chip_view.h"
 #include "chrome/browser/ui/views/permissions/permission_prompt_chip.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
 #include "chrome/common/chrome_features.h"
@@ -62,9 +63,11 @@
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 #include "ui/views/controls/button/button.h"
 #include "ui/views/controls/button/toggle_button.h"
+#include "ui/views/interaction/element_tracker_views.h"
 #include "ui/views/test/ax_event_counter.h"
 #include "ui/views/test/button_test_api.h"
 #include "ui/views/test/views_test_utils.h"
+#include "ui/views/view_utils.h"
 
 namespace {
 
@@ -93,9 +96,9 @@ constexpr char kRequestNotifications[] = R"(
       })
       )";
 
-class ChipExpansionObserver : PermissionChipView::Observer {
+class ChipExpansionObserver : public PermissionChipInterface::Observer {
  public:
-  explicit ChipExpansionObserver(PermissionChipView* chip) {
+  explicit ChipExpansionObserver(PermissionChipInterface* chip) {
     observation_.Observe(chip);
   }
 
@@ -103,7 +106,8 @@ class ChipExpansionObserver : PermissionChipView::Observer {
 
   void OnExpandAnimationEnded() override { loop_.Quit(); }
 
-  base::ScopedObservation<PermissionChipView, PermissionChipView::Observer>
+  base::ScopedObservation<PermissionChipInterface,
+                          PermissionChipInterface::Observer>
       observation_{this};
   base::RunLoop loop_;
 };
@@ -172,16 +176,20 @@ class PermissionChipInteractiveUITest : public InProcessBrowserTest {
     return browser_view->toolbar()->location_bar_view();
   }
 
-  PermissionChipView* GetChip() {
-    return GetLocationBarView()->GetChipController()->chip();
-  }
-
   ChipController* GetChipController() {
     BrowserView* browser_view =
         BrowserView::GetBrowserViewForBrowser(browser());
     LocationBar* lb = browser_view->toolbar()->location_bar();
 
     return lb->GetChipController();
+  }
+
+  PermissionChipView* GetChip() {
+    return views::AsViewClass<PermissionChipView>(
+        views::ElementTrackerViews::GetInstance()->GetFirstMatchingView(
+            PermissionChipView::kPermissionRequestChipElementId,
+            views::ElementTrackerViews::GetContextForView(
+                BrowserView::GetBrowserViewForBrowser(browser()))));
   }
 
   void ClickOnChip(PermissionChipView* chip) {

@@ -22,9 +22,12 @@
 #include "ui/base/ui_base_features.h"
 #include "ui/color/color_id.h"
 #include "ui/color/color_provider.h"
+#include "ui/gfx/animation/animation.h"
 #include "ui/gfx/color_utils.h"
 #include "ui/gfx/vector_icon_types.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/background.h"
+#include "ui/views/controls/button/button_controller.h"
 #include "ui/views/controls/highlight_path_generator.h"
 #include "ui/views/painter.h"
 #include "ui/views/view_class_properties.h"
@@ -62,7 +65,8 @@ PermissionChipView::~PermissionChipView() = default;
 
 void PermissionChipView::VisibilityChanged(views::View* starting_from,
                                            bool is_visible) {
-  observers_.Notify(&Observer::OnChipVisibilityChanged, is_visible);
+  observers_.Notify(&PermissionChipInterface::Observer::OnChipVisibilityChanged,
+                    is_visible);
 }
 
 void PermissionChipView::AnimateCollapse(base::TimeDelta duration) {
@@ -97,15 +101,24 @@ void PermissionChipView::AnimateToFit(base::TimeDelta duration) {
   }
 }
 
-void PermissionChipView::ResetAnimation(double value) {
+void PermissionChipView::ResetAnimation(AnimationState state) {
+  double value = (state == AnimationState::kExpanded) ? 1.0 : 0.0;
   // `base_width_` is used regardless of the animation value. When animation is
   // reset, e.g. on a tab switch, `base_width_` may hold obsolete values that
   // should be reset as well.
-  if (value == 0.0) {
+  if (state == AnimationState::kCollapsed) {
     base_width_ = 0;
   }
   animation_->Reset(value);
   OnAnimationValueMaybeChanged();
+}
+
+bool PermissionChipView::IsFullyCollapsed() const {
+  return fully_collapsed_;
+}
+
+bool PermissionChipView::IsAnimating() const {
+  return animation_->is_animating();
 }
 
 gfx::Size PermissionChipView::CalculatePreferredSize(
@@ -128,7 +141,7 @@ gfx::Size PermissionChipView::CalculatePreferredSize(
 }
 
 bool PermissionChipView::OnMousePressed(const ui::MouseEvent& event) {
-  observers_.Notify(&Observer::OnMousePressed);
+  observers_.Notify(&PermissionChipInterface::Observer::OnMousePressed);
   return MdTextButton::OnMousePressed(event);
 }
 
@@ -152,9 +165,11 @@ void PermissionChipView::AnimationEnded(const gfx::Animation* animation) {
 
   const double value = animation_->GetCurrentValue();
   if (value == 1.0) {
-    observers_.Notify(&Observer::OnExpandAnimationEnded);
+    observers_.Notify(
+        &PermissionChipInterface::Observer::OnExpandAnimationEnded);
   } else if (value == 0.0) {
-    observers_.Notify(&Observer::OnCollapseAnimationEnded);
+    observers_.Notify(
+        &PermissionChipInterface::Observer::OnCollapseAnimationEnded);
   }
 }
 
@@ -307,12 +322,12 @@ void PermissionChipView::UpdateIconAndColors() {
 }
 
 void PermissionChipView::ForceAnimateExpand() {
-  ResetAnimation(0.0);
+  ResetAnimation(AnimationState::kCollapsed);
   animation_->Show();
 }
 
 void PermissionChipView::ForceAnimateCollapse() {
-  ResetAnimation(1.0);
+  ResetAnimation(AnimationState::kExpanded);
   animation_->Hide();
 }
 
@@ -367,12 +382,102 @@ bool PermissionChipView::GetIsRequestForTesting() const {
   }
 }
 
-void PermissionChipView::AddObserver(Observer* observer) {
+void PermissionChipView::StopAnimationForTesting() {
+  animation_->Stop();
+}
+
+void PermissionChipView::AddObserver(
+    PermissionChipInterface::Observer* observer) {
   observers_.AddObserver(observer);
 }
 
-void PermissionChipView::RemoveObserver(Observer* observer) {
+void PermissionChipView::RemoveObserver(
+    PermissionChipInterface::Observer* observer) {
   observers_.RemoveObserver(observer);
+}
+
+base::CallbackListSubscription PermissionChipView::AddVisibilityCallback(
+    base::RepeatingClosure callback) {
+  return AddVisibleChangedCallback(std::move(callback));
+}
+
+void PermissionChipView::SetVisible(bool visible) {
+  views::View::SetVisible(visible);
+}
+
+void PermissionChipView::SetTooltipText(const std::u16string& tooltip) {
+  views::View::SetTooltipText(tooltip);
+}
+
+bool PermissionChipView::GetVisible() const {
+  return views::View::GetVisible();
+}
+
+views::BubbleAnchor PermissionChipView::GetAnchor() {
+  return views::BubbleAnchor(this);
+}
+
+namespace {
+class BubbleButtonController : public views::ButtonController {
+ public:
+  BubbleButtonController(
+      views::Button* button,
+      PermissionChipInterface::BubbleOwnerDelegate* bubble_owner,
+      std::unique_ptr<views::ButtonControllerDelegate> delegate)
+      : views::ButtonController(button, std::move(delegate)),
+        bubble_owner_(bubble_owner) {}
+
+  void OnMouseEntered(const ui::MouseEvent& event) override {
+    if (bubble_owner_ &&
+        (bubble_owner_->IsBubbleShowing() || bubble_owner_->IsAnimating())) {
+      return;
+    }
+    if (bubble_owner_) {
+      bubble_owner_->RestartTimersOnMouseHover();
+    }
+  }
+
+ private:
+  raw_ptr<PermissionChipInterface::BubbleOwnerDelegate, DanglingUntriaged>
+      bubble_owner_ = nullptr;
+};
+}  // namespace
+
+void PermissionChipView::SetBubbleOwner(
+    PermissionChipInterface::BubbleOwnerDelegate* owner) {
+  views::Button::SetButtonController(std::make_unique<BubbleButtonController>(
+      this, owner,
+      std::make_unique<views::Button::DefaultButtonControllerDelegate>(this)));
+}
+
+void PermissionChipView::SetAccessibilityIgnored(bool is_ignored) {
+  GetViewAccessibility().SetIsIgnored(is_ignored);
+}
+
+void PermissionChipView::SetAccessibilityName(const std::u16string& name) {
+  GetViewAccessibility().SetName(name);
+}
+
+void PermissionChipView::AnnounceText(const std::u16string& text) {
+  GetViewAccessibility().AnnounceText(text);
+}
+
+void PermissionChipView::AnnounceAlert(const std::u16string& text) {
+  GetViewAccessibility().AnnounceAlert(text);
+}
+
+bool PermissionChipView::IsMouseHovered() const {
+  return views::View::IsMouseHovered();
+}
+
+void PermissionChipView::SetPressedCallback(base::RepeatingClosure callback) {
+  if (callback.is_null()) {
+    views::Button::SetCallback(views::Button::PressedCallback());
+  } else {
+    views::Button::SetCallback(base::BindRepeating(
+        [](base::RepeatingClosure cb, const ui::Event&) { cb.Run(); },
+        std::move(callback)));
+  }
 }
 
 void PermissionChipView::UpdateForDividerVisibility(bool is_divider_visible,

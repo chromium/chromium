@@ -12,6 +12,7 @@
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/test_with_browser_view.h"
 #include "chrome/browser/ui/views/permissions/chip/chip_controller.h"
+#include "chrome/browser/ui/views/permissions/chip/permission_chip_view.h"
 #include "chrome/browser/ui/views/permissions/permission_prompt_chip.h"
 #include "chrome/browser/ui/views/tabs/tab_strip.h"
 #include "chrome/grit/generated_resources.h"
@@ -29,8 +30,10 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/events/base_event_utils.h"
 #include "ui/gfx/animation/animation_test_api.h"
+#include "ui/views/interaction/element_tracker_views.h"
 #include "ui/views/test/ax_event_counter.h"
 #include "ui/views/test/button_test_api.h"
+#include "ui/views/view_utils.h"
 
 namespace {
 using ::content::RenderFrameHost;
@@ -246,7 +249,11 @@ class PermissionChipUnitTest : public TestWithBrowserView {
   }
 
   void ClickOnChip(ChipController* controller) {
-    views::test::ButtonTestApi(controller->chip())
+    views::test::ButtonTestApi(
+        views::AsViewClass<views::Button>(
+            views::ElementTrackerViews::GetInstance()->GetFirstMatchingView(
+                PermissionChipView::kPermissionRequestChipElementId,
+                views::ElementTrackerViews::GetContextForView(browser_view()))))
         .NotifyClick(ui::MouseEvent(ui::EventType::kMousePressed, gfx::Point(),
                                     gfx::Point(), ui::EventTimeForNow(),
                                     ui::EF_LEFT_MOUSE_BUTTON, 0));
@@ -366,9 +373,14 @@ TEST_F(PermissionChipUnitTest, ClickOnRequestChipTest) {
   EXPECT_FALSE(chip_controller->is_dismiss_timer_running_for_testing());
 
   // Animation does not work. Most probably it is unit tests limitations.
-  // `chip.is_fully_collapsed()` will not work as well.
+  // `chip.IsFullyCollapsed()` will not work as well.
   EXPECT_TRUE(chip_controller->IsAnimating());
-  chip_controller->stop_animation_for_test();
+  views::AsViewClass<PermissionChipView>(
+      views::ElementTrackerViews::GetInstance()->GetFirstMatchingView(
+          PermissionChipView::kPermissionRequestChipElementId,
+          views::ElementTrackerViews::GetContextForView(browser_view())))
+      ->StopAnimationForTesting();
+  chip_controller->OnExpandAnimationEnded();
   EXPECT_FALSE(chip_controller->IsAnimating());
 
   EXPECT_FALSE(chip_controller->is_collapse_timer_running_for_testing());
@@ -411,9 +423,14 @@ TEST_F(PermissionChipUnitTest, DisplayQuietChipNoAbusiveTest) {
   EXPECT_FALSE(chip_controller->is_dismiss_timer_running_for_testing());
 
   // Animation does not work. Most probably it is unit tests limitations.
-  // `chip.is_fully_collapsed()` will not work as well.
+  // `chip.IsFullyCollapsed()` will not work as well.
   EXPECT_TRUE(chip_controller->IsAnimating());
-  chip_controller->stop_animation_for_test();
+  views::AsViewClass<PermissionChipView>(
+      views::ElementTrackerViews::GetInstance()->GetFirstMatchingView(
+          PermissionChipView::kPermissionRequestChipElementId,
+          views::ElementTrackerViews::GetContextForView(browser_view())))
+      ->StopAnimationForTesting();
+  chip_controller->OnExpandAnimationEnded();
   EXPECT_FALSE(chip_controller->IsAnimating());
 
   EXPECT_TRUE(chip_controller->is_collapse_timer_running_for_testing());
@@ -458,7 +475,12 @@ TEST_F(PermissionChipUnitTest, ClickOnQuietChipNoAbusiveTest) {
   ChipController* chip_controller =
       chip_prompt.get_chip_controller_for_testing();
 
-  chip_controller->stop_animation_for_test();
+  views::AsViewClass<PermissionChipView>(
+      views::ElementTrackerViews::GetInstance()->GetFirstMatchingView(
+          PermissionChipView::kPermissionRequestChipElementId,
+          views::ElementTrackerViews::GetContextForView(browser_view())))
+      ->StopAnimationForTesting();
+  chip_controller->OnExpandAnimationEnded();
 
   // Open a permission popup bubble.
   ClickOnChip(chip_controller);

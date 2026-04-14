@@ -142,6 +142,13 @@ void PermissionDashboardView::SetDividerBackgroundColor(
 }
 
 void PermissionDashboardView::UpdateDividerViewVisibility() {
+  // This method can be called even if both chips are hidden. Exit early to
+  // avoid unnecessary computations.
+  if (!anchored_chip_->GetVisible() && !secondary_chip_->GetVisible()) {
+    chip_divider_view_->SetVisible(false);
+    return;
+  }
+
   const bool is_visible =
       anchored_chip_->GetVisible() && secondary_chip_->GetVisible();
 

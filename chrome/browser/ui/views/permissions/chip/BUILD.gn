@@ -5,6 +5,7 @@
 source_set("chip") {
   public = [
     "chip_controller.h",
+    "permission_chip_interface.h",
     "permission_chip_theme.h",
     "permission_chip_view.h",
   ]

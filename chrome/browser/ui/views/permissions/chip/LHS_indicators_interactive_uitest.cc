@@ -42,47 +42,48 @@
 #include "url/gurl.h"
 
 namespace {
-class ChipAnimationObserver : PermissionChipView::Observer {
+class ChipAnimationObserver : PermissionChipInterface::Observer {
  public:
   enum class QuitOnEvent {
     kExpand,
     kCollapse,
-    kVisibiltyTrue,
-    kVisibiltyFalse,
+    kVisibilityTrue,
+    kVisibilityFalse,
   };
 
-  explicit ChipAnimationObserver(PermissionChipView* chip) {
+  explicit ChipAnimationObserver(PermissionChipInterface* chip) {
     observation_.Observe(chip);
   }
 
   void WaitForChip() { loop_.Run(); }
 
   void OnExpandAnimationEnded() override {
-    if (quiet_on_event == QuitOnEvent::kExpand) {
+    if (quit_on_event == QuitOnEvent::kExpand) {
       loop_.Quit();
     }
   }
   void OnCollapseAnimationEnded() override {
-    if (quiet_on_event == QuitOnEvent::kCollapse) {
+    if (quit_on_event == QuitOnEvent::kCollapse) {
       loop_.Quit();
     }
   }
 
   void OnChipVisibilityChanged(bool is_visible) override {
-    if (quiet_on_event == QuitOnEvent::kVisibiltyTrue && is_visible) {
+    if (quit_on_event == QuitOnEvent::kVisibilityTrue && is_visible) {
       loop_.Quit();
       return;
     }
 
-    if (quiet_on_event == QuitOnEvent::kVisibiltyFalse && !is_visible) {
+    if (quit_on_event == QuitOnEvent::kVisibilityFalse && !is_visible) {
       loop_.Quit();
     }
   }
 
-  base::ScopedObservation<PermissionChipView, PermissionChipView::Observer>
+  base::ScopedObservation<PermissionChipInterface,
+                          PermissionChipInterface::Observer>
       observation_{this};
   base::RunLoop loop_;
-  QuitOnEvent quiet_on_event = QuitOnEvent::kExpand;
+  QuitOnEvent quit_on_event = QuitOnEvent::kExpand;
 };
 }  // namespace
 
@@ -228,7 +229,7 @@ class LHSIndicatorsInteractiveUITest : public UiBrowserTest {
 
   void ExpandIndicator(std::string js) {
     ChipAnimationObserver chip_animation_observer(GetIndicatorChip());
-    chip_animation_observer.quiet_on_event =
+    chip_animation_observer.quit_on_event =
         ChipAnimationObserver::QuitOnEvent::kExpand;
 
     EXPECT_TRUE(content::ExecJs(web_contents(), js));
@@ -242,7 +243,7 @@ class LHSIndicatorsInteractiveUITest : public UiBrowserTest {
 
   void CollapseIndicator() {
     ChipAnimationObserver chip_animation_observer(GetIndicatorChip());
-    chip_animation_observer.quiet_on_event =
+    chip_animation_observer.quit_on_event =
         ChipAnimationObserver::QuitOnEvent::kCollapse;
     // Wait until chip collapses.
     chip_animation_observer.WaitForChip();
@@ -253,8 +254,8 @@ class LHSIndicatorsInteractiveUITest : public UiBrowserTest {
 
   void HideIndicator(std::string js) {
     ChipAnimationObserver chip_animation_observer(GetIndicatorChip());
-    chip_animation_observer.quiet_on_event =
-        ChipAnimationObserver::QuitOnEvent::kVisibiltyFalse;
+    chip_animation_observer.quit_on_event =
+        ChipAnimationObserver::QuitOnEvent::kVisibilityFalse;
 
     EXPECT_TRUE(content::ExecJs(web_contents(), js));
 
@@ -467,8 +468,8 @@ IN_PROC_BROWSER_TEST_F(LHSIndicatorsInteractiveUITest, InvokeUi_Camera_twice) {
 
   // Request Camera for the second time.
   ChipAnimationObserver chip_animation_observer(GetIndicatorChip());
-  chip_animation_observer.quiet_on_event =
-      ChipAnimationObserver::QuitOnEvent::kVisibiltyTrue;
+  chip_animation_observer.quit_on_event =
+      ChipAnimationObserver::QuitOnEvent::kVisibilityTrue;
 
   EXPECT_TRUE(content::ExecJs(web_contents(), "requestCamera()"));
 

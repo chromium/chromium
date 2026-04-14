@@ -17,6 +17,7 @@
 #include "chrome/browser/ui/views/chrome_typography.h"
 #include "chrome/common/webui_url_constants.h"
 #include "ui/base/pointer/touch_ui_controller.h"
+#include "ui/gfx/animation/animation.h"
 #include "ui/views/style/typography_provider.h"
 
 namespace {
@@ -182,6 +183,12 @@ std::string WebUIToolbarLayoutCssHelper::GenerateLayoutConstantsCss() {
     css_string.append("--touch-mode: 1;");
   } else {
     css_string.append("--touch-mode: 0;");
+  }
+
+  if (gfx::Animation::ShouldRenderRichAnimation()) {
+    css_string.append("--animations-enabled: 1;");
+  } else {
+    css_string.append("--animations-enabled: 0;");
   }
 
   for (int layout_constant_num = 0;

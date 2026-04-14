@@ -17,6 +17,8 @@
 #include "chrome/browser/ui/views/location_bar/webui_content_setting_image_control.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_popup_view_webui.h"
 #include "chrome/browser/ui/views/omnibox/webui_readonly_omnibox.h"
+#include "chrome/browser/ui/views/permissions/chip/chip_controller.h"
+#include "chrome/browser/ui/views/permissions/chip/permission_chip_view.h"
 #include "chrome/browser/ui/views/permissions/chip/permission_dashboard_controller.h"
 #include "chrome/browser/ui/views/permissions/chip/permission_dashboard_view.h"
 #include "chrome/browser/ui/views/toolbar/webui_toolbar_web_view.h"
@@ -176,8 +178,14 @@ LocationBarModel* WebUILocationBar::GetLocationBarModel() {
 
 std::optional<bubble_anchor_util::AnchorConfiguration>
 WebUILocationBar::GetChipAnchor() {
-  NOTIMPLEMENTED();
-  return {{views::BubbleAnchor(), std::nullopt, views::BubbleBorder::TOP_LEFT}};
+  if (auto* chip_controller = GetChipController()) {
+    if (auto* chip = chip_controller->chip(); chip && chip->GetVisible()) {
+      return {{chip->GetAnchor(),
+               PermissionChipView::kPermissionRequestChipElementId,
+               views::BubbleBorder::TOP_LEFT}};
+    }
+  }
+  return std::nullopt;
 }
 
 ui::TrackedElement* WebUILocationBar::GetAnchorOrNull() {

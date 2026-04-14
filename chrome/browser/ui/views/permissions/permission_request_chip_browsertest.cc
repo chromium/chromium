@@ -18,6 +18,7 @@
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/location_bar/location_bar_view.h"
 #include "chrome/browser/ui/views/permissions/chip/chip_controller.h"
+#include "chrome/browser/ui/views/permissions/chip/permission_chip_view.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "chrome/test/permissions/permission_request_manager_test_api.h"
@@ -30,7 +31,9 @@
 #include "content/public/test/browser_test_utils.h"
 #include "ui/gfx/animation/animation.h"
 #include "ui/gfx/animation/animation_test_api.h"
+#include "ui/views/interaction/element_tracker_views.h"
 #include "ui/views/test/views_test_utils.h"
+#include "ui/views/view_utils.h"
 
 namespace {
 
@@ -60,7 +63,13 @@ IN_PROC_BROWSER_TEST_F(PermissionRequestChipGestureSensitiveBrowserTest,
                        ChipFinalizedWhenInteractingWithOmnibox) {
   RequestPermission(browser());
   LocationBar* lb = GetLocationBar(browser());
-  auto* animation = lb->GetChipController()->chip()->animation_for_testing();
+  auto* animation =
+      views::AsViewClass<PermissionChipView>(
+          views::ElementTrackerViews::GetInstance()->GetFirstMatchingView(
+              PermissionChipView::kPermissionRequestChipElementId,
+              views::ElementTrackerViews::GetContextForView(
+                  BrowserView::GetBrowserViewForBrowser(browser()))))
+          ->animation_for_testing();
 
   // Animate the chip expand.
   gfx::AnimationTestApi animation_api(animation);
@@ -292,7 +301,13 @@ IN_PROC_BROWSER_TEST_F(PermissionRequestChipGestureInsensitiveBrowserTest,
                        CallbacksResetWhenInteractingWithOmnibox) {
   RequestPermission(browser());
   LocationBar* lb = GetLocationBar(browser());
-  auto* animation = lb->GetChipController()->chip()->animation_for_testing();
+  auto* animation =
+      views::AsViewClass<PermissionChipView>(
+          views::ElementTrackerViews::GetInstance()->GetFirstMatchingView(
+              PermissionChipView::kPermissionRequestChipElementId,
+              views::ElementTrackerViews::GetContextForView(
+                  BrowserView::GetBrowserViewForBrowser(browser()))))
+          ->animation_for_testing();
 
   // Animate the chip expand.
   gfx::AnimationTestApi animation_api(animation);
@@ -334,8 +349,9 @@ class PermissionRequestChipBrowserUiTest : public UiBrowserTest {
   bool VerifyUi() override {
     LocationBarView* const location_bar =
         BrowserView::GetBrowserViewForBrowser(browser())->GetLocationBarView();
-    PermissionChipView* const chip = location_bar->GetChipController()->chip();
-    if (!chip || !chip->GetVisible() || chip->is_fully_collapsed()) {
+    PermissionChipInterface* const chip =
+        location_bar->GetChipController()->chip();
+    if (!chip->GetVisible() || chip->IsFullyCollapsed()) {
       return false;
     }
 
