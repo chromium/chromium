@@ -11,13 +11,10 @@
 #include "base/scoped_observation.h"
 #include "components/accessibility_annotator/core/accessibility_annotator_enablement_service.h"
 #include "components/accessibility_annotator/core/country_type.h"
+#include "components/account_settings/account_setting_service.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/subscription_eligibility/subscription_eligibility_service.h"
-
-namespace account_settings {
-class AccountSettingService;
-}  // namespace account_settings
 
 class PrefService;
 
@@ -26,8 +23,8 @@ namespace accessibility_annotator {
 class AccessibilityAnnotatorEnablementServiceImpl
     : public AccessibilityAnnotatorEnablementService,
       public signin::IdentityManager::Observer,
-      public subscription_eligibility::SubscriptionEligibilityService::
-          Observer {
+      public subscription_eligibility::SubscriptionEligibilityService::Observer,
+      public account_settings::AccountSettingService::Observer {
  public:
   explicit AccessibilityAnnotatorEnablementServiceImpl(
       account_settings::AccountSettingService* account_settings_service,
@@ -59,6 +56,9 @@ class AccessibilityAnnotatorEnablementServiceImpl
   // subscription_eligibility::SubscriptionEligibilityService::Observer:
   void OnAiSubscriptionTierUpdated(int32_t new_subscription_tier) override;
 
+  // account_settings::AccountSettingService::Observer:
+  void OnAccountSettingDataUpdated(const std::string& setting_name) override;
+
  private:
   friend class AccessibilityAnnotatorEnablementServiceImplTestApi;
 
@@ -81,6 +81,9 @@ class AccessibilityAnnotatorEnablementServiceImpl
       subscription_eligibility::SubscriptionEligibilityService,
       subscription_eligibility::SubscriptionEligibilityService::Observer>
       subscription_eligibility_observer_{this};
+  base::ScopedObservation<account_settings::AccountSettingService,
+                          account_settings::AccountSettingService::Observer>
+      account_settings_observation_{this};
   PrefChangeRegistrar pref_registrar_;
   // Cached last enablement state.
   RemoteAnnotatorEnablementState enablement_state_ =

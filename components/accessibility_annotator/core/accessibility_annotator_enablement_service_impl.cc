@@ -201,6 +201,9 @@ AccessibilityAnnotatorEnablementServiceImpl::
       subscription_eligibility_service_(subscription_eligibility_service),
       pref_service_(pref_service),
       country_code_(std::move(country_code)) {
+  if (account_settings_service_) {
+    account_settings_observation_.Observe(account_settings_service_);
+  }
   if (identity_manager) {
     identity_manager_observer_.Observe(identity_manager);
   }
@@ -301,6 +304,11 @@ void AccessibilityAnnotatorEnablementServiceImpl::OnExtendedAccountInfoUpdated(
 
 void AccessibilityAnnotatorEnablementServiceImpl::OnAiSubscriptionTierUpdated(
     int32_t new_subscription_tier) {
+  UpdateEnablementState();
+}
+
+void AccessibilityAnnotatorEnablementServiceImpl::OnAccountSettingDataUpdated(
+    const std::string& setting_name) {
   UpdateEnablementState();
 }
 

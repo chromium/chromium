@@ -246,8 +246,8 @@ TEST_F(AccessibilityAnnotatorEnablementServiceImplTest,
                   account_settings::kAccountSettingContext.name)))
       .WillOnce(Return(false));
 
-  // TODO(b/494149753): Remove after observing account setting changes.
-  test_api(&service()).RecomputeEnablementState();
+  service().OnAccountSettingDataUpdated(
+      account_settings::kAccountSettingContext.name);
   EXPECT_EQ(service().GetEnablementState(),
             RemoteAnnotatorEnablementState::kDisabledNotEligible);
 }
@@ -267,8 +267,8 @@ TEST_F(AccessibilityAnnotatorEnablementServiceImplTest,
                   account_settings::kAccountSettingContextPhotos.name)))
       .WillOnce(Return(false));
 
-  // TODO(b/494149753): Remove after observing account setting changes.
-  test_api(&service()).RecomputeEnablementState();
+  service().OnAccountSettingDataUpdated(
+      account_settings::kAccountSettingContext.name);
   EXPECT_EQ(service().GetEnablementState(),
             RemoteAnnotatorEnablementState::kDisabledNotEligible);
 }
@@ -290,8 +290,8 @@ TEST_F(AccessibilityAnnotatorEnablementServiceImplTest,
                     account_settings::kAccountSettingContextPhotos.name)))
         .Times(0);
 
-    // TODO(b/494149753): Remove after observing account setting changes.
-    test_api(&service()).RecomputeEnablementState();
+    service().OnAccountSettingDataUpdated(
+        account_settings::kAccountSettingContext.name);
     EXPECT_EQ(service().GetEnablementState(),
               RemoteAnnotatorEnablementState::kEnabled);
   }
@@ -306,8 +306,8 @@ TEST_F(AccessibilityAnnotatorEnablementServiceImplTest,
                     account_settings::kAccountSettingContextPhotos.name)))
         .WillOnce(Return(true));
 
-    // TODO(b/494149753): Remove after observing account setting changes.
-    test_api(&service()).RecomputeEnablementState();
+    service().OnAccountSettingDataUpdated(
+        account_settings::kAccountSettingContext.name);
     EXPECT_EQ(service().GetEnablementState(),
               RemoteAnnotatorEnablementState::kEnabled);
   }
@@ -338,6 +338,49 @@ TEST_F(AccessibilityAnnotatorEnablementServiceImplTest,
       false);
 
   service().RemoveObserver(&observer);
+}
+
+TEST_F(AccessibilityAnnotatorEnablementServiceImplTest,
+       CacheUpdatedOnAccountSettingChanged) {
+  // Initial state is kEnabled.
+  ASSERT_EQ(service().GetEnablementState(),
+            RemoteAnnotatorEnablementState::kEnabled);
+
+  // Opt out of context in account settings.
+  EXPECT_CALL(mock_account_settings_service_,
+              GetBoolean(AccountSettingWithName(
+                  account_settings::kAccountSettingContext.name)))
+      .WillRepeatedly(Return(false));
+
+  // Notify the service that an account setting has changed.
+  service().OnAccountSettingDataUpdated(
+      account_settings::kAccountSettingContext.name);
+
+  // The cache should be updated to kDisabledNotEligible.
+  EXPECT_EQ(service().GetEnablementState(),
+            RemoteAnnotatorEnablementState::kDisabledNotEligible);
+
+  // Opt back in.
+  EXPECT_CALL(mock_account_settings_service_,
+              GetBoolean(AccountSettingWithName(
+                  account_settings::kAccountSettingContext.name)))
+      .WillRepeatedly(Return(true));
+  EXPECT_CALL(mock_account_settings_service_,
+              GetBoolean(AccountSettingWithName(
+                  account_settings::kAccountSettingContextWorkspace.name)))
+      .WillRepeatedly(Return(true));
+  EXPECT_CALL(mock_account_settings_service_,
+              GetBoolean(AccountSettingWithName(
+                  account_settings::kAccountSettingContextPhotos.name)))
+      .WillRepeatedly(Return(false));
+
+  // Notify again.
+  service().OnAccountSettingDataUpdated(
+      account_settings::kAccountSettingContext.name);
+
+  // The cache should be updated back to kEnabled.
+  EXPECT_EQ(service().GetEnablementState(),
+            RemoteAnnotatorEnablementState::kEnabled);
 }
 
 class AccessibilityAnnotatorEnablementServiceImplGeolocationTest
