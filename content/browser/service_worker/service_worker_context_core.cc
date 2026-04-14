@@ -951,11 +951,6 @@ void ServiceWorkerContextCore::RemoveLiveVersion(int64_t id) {
   CHECK(it != live_versions_.end());
   ServiceWorkerVersion* version = it->second;
 
-  // Protect `wrapper_` (and `sync_observer_list_`) from being destroyed
-  // during the synchronous observer loop.
-  scoped_refptr<ServiceWorkerContextWrapper> protect_wrapper =
-      base::WrapRefCounted(wrapper_.get());
-
   if (version->running_status() != blink::EmbeddedWorkerStatus::kStopped) {
     // Notify all observers that this live version is stopped, as it will
     // be removed from |live_versions_|.
@@ -1257,19 +1252,24 @@ void ServiceWorkerContextCore::OnRunningStateChanged(
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   DCHECK_EQ(this, version->context().get());
 
-  // Protect `wrapper_` (and `sync_observer_list_`) from being destroyed
-  // during the synchronous observer loop.
-  scoped_refptr<ServiceWorkerContextWrapper> protect_wrapper =
-      base::WrapRefCounted(wrapper_.get());
+  // Protect `sync_observer_list_` and `version` from being destroyed during the
+  // synchronous observer loop.
+  scoped_refptr<ServiceWorkerContextSynchronousObserverList>
+      safe_sync_observer_list = sync_observer_list_;
+  scoped_refptr<ServiceWorkerVersion> protect_version =
+      base::WrapRefCounted(version);
+  std::optional<blink::ServiceWorkerToken> start_worker_token =
+      version->start_worker_token();
 
   switch (version->running_status()) {
     case blink::EmbeddedWorkerStatus::kStopped:
       observer_list_->Notify(FROM_HERE,
                              &ServiceWorkerContextCoreObserver::OnStopped,
                              version->version_id());
-      for (auto& observer : sync_observer_list_->observers) {
+      CHECK(start_worker_token.has_value());
+      for (auto& observer : safe_sync_observer_list->observers) {
         observer.OnStoppedSync(version->version_id(), version->scope(),
-                               *version->start_worker_token());
+                               *start_worker_token);
       }
       break;
     case blink::EmbeddedWorkerStatus::kStarting:
@@ -1288,10 +1288,10 @@ void ServiceWorkerContextCore::OnRunningStateChanged(
       observer_list_->Notify(FROM_HERE,
                              &ServiceWorkerContextCoreObserver::OnStopping,
                              version->version_id());
-      for (auto& observer : sync_observer_list_->observers) {
-        CHECK(version->start_worker_token());
+      CHECK(start_worker_token.has_value());
+      for (auto& observer : safe_sync_observer_list->observers) {
         observer.OnStoppingSync(version->version_id(), version->scope(),
-                                *version->start_worker_token());
+                                *start_worker_token);
       }
       break;
   }
