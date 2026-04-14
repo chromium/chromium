@@ -19,6 +19,7 @@ specific_include_rules = {
    # allowlist.
   r"(contextual_tasks_ui_service"
   r"|search_ai_mode_promo_tab_helper_browsertest"
+  r"|contextual_tasks_side_panel_coordinator_unittest"
   r").*\.(cc|h)": [
      "+chrome/browser/ui/tabs/tab_strip_model.h",
   ],
