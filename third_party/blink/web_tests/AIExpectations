@@ -9,6 +9,9 @@
 crbug.com/414403946 external/wpt/ai/language_detection/detector-iframe.https.html [ Skip ]
 crbug.com/414403946 external/wpt/ai/language_detection/detector-locale.https.window.html [ Skip ]
 
+#Temporarily disable classifier classify test until a model is available to download.
+crbug.com/502312847 external/wpt/ai/classifier/classifier-classify.tentative.https.window.html [ Skip ]
+
 # These tests fail a 'downloadable' availability precondition, per sideloading.
 crbug.com/390246212 external/wpt/ai/rewriter/rewriter-create-user-activation.tentative.https.window.html [ Failure Pass ]
 crbug.com/390246212 external/wpt/ai/summarizer/summarizer-create-user-activation.tentative.https.window.html [ Failure Pass ]
@@ -48,5 +51,3 @@ crbug.com/460799715 external/wpt/ai/summarizer/summarizer-summarize-streaming.te
 crbug.com/460799715 external/wpt/ai/writer/writer-abort.tentative.https.window.html [ Timeout Pass ]
 crbug.com/460799715 external/wpt/ai/writer/writer-create-available.tentative.https.window.html [ Timeout Pass ]
 crbug.com/460799715 external/wpt/ai/writer/writer-write-streaming.tentative.https.window.html [ Timeout Pass ]
-
-
