@@ -75,6 +75,7 @@ class HotspotDetailedViewTest : public AshTestBase {
 
   void TearDown() override {
     normal_duration_.reset();
+    hotspot_detailed_view_ = nullptr;
     widget_.reset();
 
     AshTestBase::TearDown();
@@ -157,8 +158,7 @@ class HotspotDetailedViewTest : public AshTestBase {
   std::unique_ptr<views::Widget> widget_;
   FakeHotspotDetailedViewDelegate hotspot_detailed_view_delegate_;
   FakeDetailedViewDelegate detailed_view_delegate_;
-  raw_ptr<HotspotDetailedView, DanglingUntriaged> hotspot_detailed_view_ =
-      nullptr;
+  raw_ptr<HotspotDetailedView> hotspot_detailed_view_ = nullptr;
   std::optional<gfx::ScopedAnimationDurationScaleMode> normal_duration_;
 };
 
