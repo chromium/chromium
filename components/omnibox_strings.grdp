@@ -342,6 +342,13 @@
     </else>
   </if>
 
+  <!-- Accessibility for Grouped Omnibox Suggestions -->
+  <message name="IDS_ACC_OMNIBOX_SUGGESTION_IN_GROUP" desc="Accessibility text for an omnibox suggestion that may be in a specific group, with the group's header text, along with its list position. Speaks the suggestion title, followed by its position within the group and the group's header." formatter_data="android_java">
+    <ph name="SUGGESTION_TITLE">$1<ex>Google</ex></ph>, <ph name="MATCH_POSITION">$2<ex>2</ex></ph> of <ph name="NUM_MATCHES_IN_GROUP">$3<ex>5</ex></ph> in the group <ph name="GROUP_HEADER">$4<ex>Trending Searches</ex></ph>.
+  </message>
+  <message name="IDS_ACC_OMNIBOX_SUGGESTION_IN_GROUP_WITH_DESCRIPTION" desc="Accessibility text for an omnibox suggestion that may be in a specific group, with the group's header text, along with its list position. Speaks the suggestion title and description, followed by its position within the group and the group's header." formatter_data="android_java">
+    <ph name="SUGGESTION_TITLE">$1<ex>Google</ex></ph>, <ph name="SUGGESTION_DESCRIPTION">$2<ex>Search result</ex></ph>, <ph name="MATCH_POSITION">$3<ex>2</ex></ph> of <ph name="NUM_MATCHES_IN_GROUP">$4<ex>5</ex></ph> in the group <ph name="GROUP_HEADER">$5<ex>Trending Searches</ex></ph>.
+  </message>
 
   <!-- History Clusters Actions. -->
   <message name="IDS_OMNIBOX_HISTORY_CLUSTERS_SEARCH_HINT" desc="The button text for the History Clusters omnibox suggestion in sentence case. Clicking this button takes users to a view of their browsing history related to the suggestion.">

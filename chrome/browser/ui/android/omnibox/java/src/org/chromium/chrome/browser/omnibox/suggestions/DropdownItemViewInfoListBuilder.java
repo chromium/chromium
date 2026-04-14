@@ -297,6 +297,8 @@ class DropdownItemViewInfoListBuilder {
                     showGroupSeparatorDecoration && isFirstItem);
             model.set(SuggestionCommonProperties.HEADER_TITLE, isFirstItem ? headerText : null);
 
+            model.set(SuggestionCommonProperties.INDEX_IN_GROUP, indexInList);
+            model.set(SuggestionCommonProperties.TOTAL_IN_GROUP, numGroupMatches);
             processor.populateModel(input, match, model, indexOnList);
             result.add(new DropdownItemViewInfo(processor, model, groupDetails));
         }

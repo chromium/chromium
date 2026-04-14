@@ -51,6 +51,12 @@ public @interface SuggestionCommonProperties {
     /** The title text of the header above this item. */
     WritableObjectPropertyKey<String> HEADER_TITLE = new WritableObjectPropertyKey<>();
 
+    /** The 0-based index of this suggestion in the group. */
+    WritableIntPropertyKey INDEX_IN_GROUP = new WritableIntPropertyKey();
+
+    /** The total number of visible suggestions in the group. */
+    WritableIntPropertyKey TOTAL_IN_GROUP = new WritableIntPropertyKey();
+
     PropertyKey[] ALL_KEYS =
             new PropertyKey[] {
                 COLOR_SCHEME,
@@ -60,6 +66,8 @@ public @interface SuggestionCommonProperties {
                 BG_BOTTOM_CORNER_ROUNDED,
                 SHOW_DIVIDER,
                 SHOW_GROUP_SEPARATOR,
-                HEADER_TITLE
+                HEADER_TITLE,
+                INDEX_IN_GROUP,
+                TOTAL_IN_GROUP
             };
 }

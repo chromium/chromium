@@ -22,6 +22,7 @@ import android.widget.FrameLayout;
 
 import androidx.annotation.StringRes;
 import androidx.annotation.VisibleForTesting;
+import androidx.core.view.accessibility.AccessibilityNodeInfoCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -109,6 +110,20 @@ public class OmniboxSuggestionsDropdown extends RecyclerView {
             mToolbarOnTop = isToolbarOnTop;
             setStackFromEnd(!isToolbarOnTop);
             setReverseLayout(!isToolbarOnTop);
+        }
+
+        @Override
+        public void onInitializeAccessibilityNodeInfoForItem(
+                RecyclerView.Recycler recycler,
+                RecyclerView.State state,
+                View host,
+                AccessibilityNodeInfoCompat info) {
+            super.onInitializeAccessibilityNodeInfoForItem(recycler, state, host, info);
+            // Suppress the default "X of Y" announcement for the entire list for TalkBack to
+            // avoid verbosity. Announcement of position within its group is already provided.
+            if (OmniboxFeatures.sOmniboxItemDecoration.isEnabled()) {
+                info.setCollectionItemInfo(null);
+            }
         }
 
         @Override

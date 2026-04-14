@@ -32,12 +32,14 @@ import org.chromium.base.Callback;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider.ControlsPosition;
 import org.chromium.chrome.browser.omnibox.UrlBarData;
 import org.chromium.chrome.browser.omnibox.styles.OmniboxDrawableState;
 import org.chromium.chrome.browser.omnibox.styles.OmniboxImageSupplier;
 import org.chromium.chrome.browser.omnibox.styles.OmniboxResourceProvider;
 import org.chromium.chrome.browser.omnibox.suggestions.AutocompleteUIContext;
+import org.chromium.chrome.browser.omnibox.suggestions.SuggestionCommonProperties;
 import org.chromium.chrome.browser.omnibox.suggestions.SuggestionHost;
 import org.chromium.chrome.browser.omnibox.suggestions.action.OmniboxActionInSuggest;
 import org.chromium.chrome.browser.omnibox.suggestions.base.BaseSuggestionViewProperties;
@@ -48,6 +50,7 @@ import org.chromium.components.metrics.OmniboxEventProtos.OmniboxEventProto.Page
 import org.chromium.components.omnibox.AutocompleteInput;
 import org.chromium.components.omnibox.AutocompleteMatch;
 import org.chromium.components.omnibox.AutocompleteMatchBuilder;
+import org.chromium.components.omnibox.OmniboxFeatureList;
 import org.chromium.components.omnibox.OmniboxSuggestionType;
 import org.chromium.components.omnibox.SuggestTemplateInfoProto.SuggestTemplateInfo;
 import org.chromium.components.omnibox.action.ActionPresentationMode;
@@ -501,5 +504,30 @@ public class BasicSuggestionProcessorUnitTest {
     public void topPaddingDefaultZero() {
         createUrlSuggestion(OmniboxSuggestionType.URL_WHAT_YOU_TYPED, "");
         Assert.assertEquals(0, mModel.get(BaseSuggestionViewProperties.TOP_PADDING));
+    }
+
+    @Test
+    @SmallTest
+    @EnableFeatures(OmniboxFeatureList.OMNIBOX_ITEM_DECORATION)
+    public void accessibilityAnnouncements_groupedSuggestions() {
+        mProcessor.onNativeInitialized();
+        mSuggestion =
+                createSuggestionBuilder(OmniboxSuggestionType.SEARCH_SUGGEST, "Google")
+                        .setIsSearch(true)
+                        .setDescription("Technology corporation")
+                        .build();
+        mModel = mProcessor.createModel();
+        mProcessor.populateModel(mInput, mSuggestion, mModel, 0);
+
+        mModel.set(SuggestionCommonProperties.HEADER_TITLE, "Trending Searches");
+        mModel.set(SuggestionCommonProperties.INDEX_IN_GROUP, 1);
+        mModel.set(SuggestionCommonProperties.TOTAL_IN_GROUP, 5);
+
+        mProcessor.populateModel(mInput, mSuggestion, mModel, 0);
+
+        String expectedAnnouncement =
+                "Google, Technology corporation, 2 of 5 in the group Trending Searches.";
+        Assert.assertEquals(
+                expectedAnnouncement, mModel.get(SuggestionViewProperties.CONTENT_DESCRIPTION));
     }
 }

@@ -15,11 +15,14 @@ import org.chromium.chrome.browser.omnibox.MatchClassificationStyle;
 import org.chromium.chrome.browser.omnibox.R;
 import org.chromium.chrome.browser.omnibox.UrlBarData;
 import org.chromium.chrome.browser.omnibox.styles.OmniboxDrawableState;
+import org.chromium.chrome.browser.omnibox.styles.OmniboxResourceProvider;
 import org.chromium.chrome.browser.omnibox.styles.SuggestionSpannable;
 import org.chromium.chrome.browser.omnibox.suggestions.AutocompleteUIContext;
+import org.chromium.chrome.browser.omnibox.suggestions.SuggestionCommonProperties;
 import org.chromium.chrome.browser.omnibox.suggestions.base.BaseSuggestionViewProcessor;
 import org.chromium.components.omnibox.AutocompleteInput;
 import org.chromium.components.omnibox.AutocompleteMatch;
+import org.chromium.components.omnibox.OmniboxFeatures;
 import org.chromium.components.omnibox.OmniboxSuggestionType;
 import org.chromium.components.omnibox.SuggestTemplateInfoProto.SuggestTemplateInfo;
 import org.chromium.components.omnibox.suggestions.OmniboxSuggestionUiType;
@@ -184,6 +187,39 @@ public class BasicSuggestionProcessor extends BaseSuggestionViewProcessor {
         model.set(SuggestionViewProperties.ALLOW_WRAP_AROUND, isSearchSuggestion);
         model.set(SuggestionViewProperties.TEXT_LINE_1_TEXT, textLine1);
         model.set(SuggestionViewProperties.TEXT_LINE_2_TEXT, textLine2);
+
+        if (OmniboxFeatures.sOmniboxItemDecoration.isEnabled()) {
+            String header = model.get(SuggestionCommonProperties.HEADER_TITLE);
+            // 1-based index for human-readable announcements.
+            int indexInGroup = model.get(SuggestionCommonProperties.INDEX_IN_GROUP) + 1;
+            int totalInGroup = model.get(SuggestionCommonProperties.TOTAL_IN_GROUP);
+
+            if (totalInGroup > 0) {
+                String announcement;
+                if (textLine2 != null && !TextUtils.isEmpty(textLine2.toString())) {
+                    announcement =
+                            OmniboxResourceProvider.getString(
+                                    mContext,
+                                    R.string.acc_omnibox_suggestion_in_group_with_description,
+                                    textLine1.toString(),
+                                    textLine2.toString(),
+                                    String.valueOf(indexInGroup),
+                                    String.valueOf(totalInGroup),
+                                    header != null ? header : "");
+                } else {
+                    announcement =
+                            OmniboxResourceProvider.getString(
+                                    mContext,
+                                    R.string.acc_omnibox_suggestion_in_group,
+                                    textLine1.toString(),
+                                    String.valueOf(indexInGroup),
+                                    String.valueOf(totalInGroup),
+                                    header != null ? header : "");
+                }
+                model.set(SuggestionViewProperties.CONTENT_DESCRIPTION, announcement);
+            }
+        }
+
         if (!isSearchSuggestion && !mBookmarkState.isBookmarked(suggestion.getUrl())) {
             fetchSuggestionFavicon(model, suggestion.getUrl());
         }
