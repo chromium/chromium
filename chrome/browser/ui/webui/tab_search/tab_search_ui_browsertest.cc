@@ -218,6 +218,14 @@ class TabSearchUIBundledCodeCacheBrowserTest
     return std::get<1>(GetParam());
   }
 
+ protected:
+  void FetchAndMergeHistograms() {
+    content::FetchHistogramsFromChildProcesses();
+    metrics::SubprocessMetricsProvider::MergeHistogramDeltasForTesting();
+  }
+
+  base::HistogramTester histogram_tester_;
+
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
 };
@@ -227,37 +235,38 @@ IN_PROC_BROWSER_TEST_P(TabSearchUIBundledCodeCacheBrowserTest,
   // Assert the bundled code-cache map is non-empty.
   EXPECT_FALSE(webui::GetWebUIResourceUrlToCodeCacheMap().empty());
 
-  base::HistogramTester histogram_tester;
-  EXPECT_EQ(histogram_tester.GetBucketCount(
-                "Blink.ResourceRequest.WebUIBundledCodeCacheFetcher."
-                "DidReceiveCachedCode",
-                true),
-            0);
-  EXPECT_EQ(histogram_tester.GetBucketCount(
-                "Blink.ResourceRequest.WebUIBundledCachedMetadataHandler."
-                "ConsumeCache",
-                true),
-            0);
+  // Fetch initial histogram counts. We cannot assume these are 0 since other
+  // WebUIs (e.g. InitialWebUI) might have loaded during browser startup and
+  // fetched shared resources from the bundled cache. We instead verify that
+  // the counts strictly increase after navigating to Tab Search.
+  FetchAndMergeHistograms();
+
+  const int initial_received_success_count = histogram_tester_.GetBucketCount(
+      "Blink.ResourceRequest.WebUIBundledCodeCacheFetcher.DidReceiveCachedCode",
+      true);
+  const int initial_consumed_success_count = histogram_tester_.GetBucketCount(
+      "Blink.ResourceRequest.WebUIBundledCachedMetadataHandler.ConsumeCache",
+      true);
 
   // Load tab search and collect all renderer metrics.
   content::WaitForLoadStop(chrome::AddAndReturnTabAt(
       browser(), GURL(chrome::kChromeUITabSearchURL), -1, /*foreground=*/true));
-  content::FetchHistogramsFromChildProcesses();
-  metrics::SubprocessMetricsProvider::MergeHistogramDeltasForTesting();
+  FetchAndMergeHistograms();
 
   // Assert code cache resources were successfully fetched and loaded by blink.
-  const int received_success_count = histogram_tester.GetBucketCount(
+  const int received_success_count = histogram_tester_.GetBucketCount(
       "Blink.ResourceRequest.WebUIBundledCodeCacheFetcher.DidReceiveCachedCode",
       true);
-  const int consumed_success_count = histogram_tester.GetBucketCount(
+  const int consumed_success_count = histogram_tester_.GetBucketCount(
       "Blink.ResourceRequest.WebUIBundledCachedMetadataHandler.ConsumeCache",
       true);
+
   if (WebUIBundledCodeCacheEnabled()) {
-    EXPECT_GT(received_success_count, 0);
-    EXPECT_GT(consumed_success_count, 0);
+    EXPECT_GT(received_success_count, initial_received_success_count);
+    EXPECT_GT(consumed_success_count, initial_consumed_success_count);
   } else {
-    EXPECT_EQ(received_success_count, 0);
-    EXPECT_EQ(consumed_success_count, 0);
+    EXPECT_EQ(received_success_count, initial_received_success_count);
+    EXPECT_EQ(consumed_success_count, initial_consumed_success_count);
   }
 }
 
