@@ -95,7 +95,9 @@ public class DisableIfSkipCheck extends SkipCheck {
     }
 
     protected boolean deviceTypeApplies(String type) {
-        return false;
+        throw new UnsupportedOperationException(
+                "BaseJUnit4ClassRunner does not support checking device type restrictions. "
+                        + "Use ChromeJUnit4ClassRunner instead.");
     }
 
     private List<DisableIf.Build> gatherBuildAnnotations(FrameworkMethod method) {

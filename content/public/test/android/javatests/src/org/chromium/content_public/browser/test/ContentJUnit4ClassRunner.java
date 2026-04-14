@@ -10,6 +10,7 @@ import androidx.test.InstrumentationRegistry;
 import org.junit.runners.model.InitializationError;
 
 import org.chromium.base.test.BaseJUnit4ClassRunner;
+import org.chromium.base.test.util.DisableIfSkipCheck;
 import org.chromium.base.test.util.SkipCheck;
 import org.chromium.net.test.EmbeddedTestServer;
 import org.chromium.ui.display.DisplayUtil;
@@ -18,6 +19,7 @@ import org.chromium.ui.test.util.GmsCoreVersionRestriction;
 import org.chromium.ui.test.util.UiDisableIfSkipCheck;
 import org.chromium.ui.test.util.UiRestriction;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /** A custom runner for //content JUnit4 tests. */
@@ -45,9 +47,14 @@ public class ContentJUnit4ClassRunner extends BaseJUnit4ClassRunner {
     @CallSuper
     @Override
     protected List<SkipCheck> getSkipChecks() {
-        return addToList(
-                super.getSkipChecks(),
-                new UiDisableIfSkipCheck(InstrumentationRegistry.getTargetContext()));
+        List<SkipCheck> checks = new ArrayList<>();
+        for (SkipCheck check : super.getSkipChecks()) {
+            if (check.getClass() != DisableIfSkipCheck.class) {
+                checks.add(check);
+            }
+        }
+        checks.add(new UiDisableIfSkipCheck(InstrumentationRegistry.getTargetContext()));
+        return checks;
     }
 
     @CallSuper
