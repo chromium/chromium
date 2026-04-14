@@ -139,6 +139,14 @@ export function getHtml(this: GlicInternalsAppElement) {
             <option value="2">TrustFirstClick</option>
             <option value="3">TrustFirstInline</option>
           </select>
+          <label for="invokeFeatureModeSelect">Feature Mode</label>
+          <select id="invokeFeatureModeSelect"
+              .value="${this.invokeFeatureMode_.toString()}"
+              @change="${this.onInvokeFeatureModeChange_}">
+            ${this.featureModeEnumValues_.map(item => html`
+              <option value="${item.value}">${item.name}</option>
+            `)}
+          </select>
           <cr-button @click="${this.onTriggerInvokeClick_}">
             Trigger Invoke
           </cr-button>
