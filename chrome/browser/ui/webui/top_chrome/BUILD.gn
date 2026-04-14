@@ -57,6 +57,7 @@ source_set("impl") {
     ":top_chrome",
     "//base",
     "//chrome/app:generated_resources",
+    "//chrome/browser/page_load_metrics",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/task_manager",
     "//chrome/browser/ui:ui_features",

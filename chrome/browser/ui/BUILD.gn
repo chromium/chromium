@@ -342,6 +342,8 @@ static_library("ui") {
     "//chrome/browser/page_content_annotations:fetcher",
     "//chrome/browser/page_image_service",
     "//chrome/browser/page_info",
+    "//chrome/browser/page_load_metrics",
+    "//chrome/browser/page_load_metrics:impl",
     "//chrome/browser/performance_manager",
     "//chrome/browser/performance_manager:impl",
     "//chrome/browser/permissions",
@@ -719,7 +721,9 @@ static_library("ui") {
     "//v8:v8_version",
   ]
 
-  allow_circular_includes_from = []
+  # page_load_metrics's :impl includes headers from //chrome/browser/ui that
+  # can't be split out yet.
+  allow_circular_includes_from = [ "//chrome/browser/page_load_metrics:impl" ]
 
   if (is_android) {
     sources += [ "//chrome/browser/ui/android/browser_navigator_android.cc" ]

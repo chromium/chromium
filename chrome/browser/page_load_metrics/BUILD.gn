@@ -2,20 +2,216 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/config/android/rules.gni")
-import("//third_party/jni_zero/jni_zero.gni")
+import("//build/config/chromeos/ui_mode.gni")
+import("//extensions/buildflags/buildflags.gni")
 
-android_library("java") {
-  srcjar_deps = [ ":jni_headers" ]
-  sources = [ "java/src/org/chromium/chrome/browser/page_load_metrics/PageLoadMetrics.java" ]
-
-  deps = [
-    "//base:base_java",
-    "//content/public/android:content_java",
-    "//third_party/jni_zero:jni_zero_java",
-  ]
+if (is_android) {
+  import("//build/config/android/rules.gni")
+  import("//third_party/jni_zero/jni_zero.gni")
 }
 
-generate_jni("jni_headers") {
-  sources = [ "java/src/org/chromium/chrome/browser/page_load_metrics/PageLoadMetrics.java" ]
+source_set("page_load_metrics") {
+  public = [
+    "observers/bookmark_bar_page_load_metrics_observer.h",
+    "observers/captcha_metrics_observer.h",
+    "observers/captcha_provider_manager.h",
+    "observers/chrome_gws_abandoned_page_load_metrics_observer.h",
+    "observers/chrome_gws_page_load_metrics_observer.h",
+    "observers/core/amp_page_load_metrics_observer.h",
+    "observers/core/ukm_page_load_metrics_observer.h",
+    "observers/document_write_page_load_metrics_observer.h",
+    "observers/foreground_duration_ukm_observer.h",
+    "observers/from_gws_page_load_metrics_observer.h",
+    "observers/gws_hp_page_load_metrics_observer.h",
+    "observers/histogram_suffixes.h",
+    "observers/https_engagement_metrics/https_engagement_page_load_metrics_observer.h",
+    "observers/https_engagement_metrics/https_engagement_service.h",
+    "observers/https_engagement_metrics/https_engagement_service_factory.h",
+    "observers/javascript_frameworks_ukm_observer.h",
+    "observers/lcp_critical_path_predictor_page_load_metrics_observer.h",
+    "observers/loading_predictor_page_load_metrics_observer.h",
+    "observers/multi_tab_loading_page_load_metrics_observer.h",
+    "observers/new_tab_page_initiated_page_load_metrics_observer.h",
+    "observers/new_tab_page_page_load_metrics_observer.h",
+    "observers/omnibox_suggestion_used_page_load_metrics_observer.h",
+    "observers/page_anchors_metrics_observer.h",
+    "observers/prefetch_page_load_metrics_observer.h",
+    "observers/preload_serving_metrics_page_load_metrics_observer.h",
+    "observers/protocol_page_load_metrics_observer.h",
+    "observers/scheme_page_load_metrics_observer.h",
+    "observers/security_state_page_load_metrics_observer.h",
+    "observers/signed_exchange_page_load_metrics_observer.h",
+    "observers/tab_strip_page_load_metrics_observer.h",
+    "observers/translate_page_load_metrics_observer.h",
+    "observers/webui_page_load_metrics_observer.h",
+    "page_load_metrics_initialize.h",
+  ]
+
+  public_deps = [
+    "//base",
+    "//chrome/browser/predictors/lcp_critical_path_predictor:headers",
+    "//chrome/browser/profiles:profile",
+    "//components/google/core/common",
+    "//components/history/core/browser",
+    "//components/keyed_service/core",
+    "//components/metrics",
+    "//components/page_load_metrics/browser",
+    "//components/page_load_metrics/common",
+    "//components/page_load_metrics/common:page_load_metrics_mojom",
+    "//components/page_load_metrics/google/browser",
+    "//components/security_state/core",
+    "//content/public/browser",
+    "//net",
+    "//services/metrics/public/cpp:ukm_builders",
+    "//services/network/public/mojom",
+    "//third_party/blink/public/common:headers",
+    "//ui/base",
+    "//url",
+  ]
+
+  if (is_android) {
+    public += [ "observers/android_page_load_metrics_observer.h" ]
+  }
+
+  if (!is_android) {
+    public += [
+      "observers/initial_webui_page_load_metrics_observer.h",
+      "observers/non_tab_webui_page_load_metrics_observer.h",
+      "observers/top_chrome_webui_metrics_observer.h",
+    ]
+  }
+
+  if (is_chromeos) {
+    public += [ "observers/ash_session_restore_page_load_metrics_observer.h" ]
+  }
+
+  if (enable_extensions_core) {
+    public += [ "observers/serp_page_load_metrics_observer.h" ]
+  }
+}
+
+source_set("impl") {
+  sources = [
+    "observers/bookmark_bar_page_load_metrics_observer.cc",
+    "observers/captcha_metrics_observer.cc",
+    "observers/captcha_provider_manager.cc",
+    "observers/chrome_gws_abandoned_page_load_metrics_observer.cc",
+    "observers/chrome_gws_page_load_metrics_observer.cc",
+    "observers/core/amp_page_load_metrics_observer.cc",
+    "observers/core/ukm_page_load_metrics_observer.cc",
+    "observers/document_write_page_load_metrics_observer.cc",
+    "observers/foreground_duration_ukm_observer.cc",
+    "observers/from_gws_page_load_metrics_observer.cc",
+    "observers/gws_hp_page_load_metrics_observer.cc",
+    "observers/histogram_suffixes.cc",
+    "observers/https_engagement_metrics/https_engagement_page_load_metrics_observer.cc",
+    "observers/https_engagement_metrics/https_engagement_service.cc",
+    "observers/https_engagement_metrics/https_engagement_service_factory.cc",
+    "observers/javascript_frameworks_ukm_observer.cc",
+    "observers/lcp_critical_path_predictor_page_load_metrics_observer.cc",
+    "observers/loading_predictor_page_load_metrics_observer.cc",
+    "observers/multi_tab_loading_page_load_metrics_observer.cc",
+    "observers/new_tab_page_initiated_page_load_metrics_observer.cc",
+    "observers/new_tab_page_page_load_metrics_observer.cc",
+    "observers/omnibox_suggestion_used_page_load_metrics_observer.cc",
+    "observers/optimization_guide_page_load_metrics_observer.cc",
+    "observers/optimization_guide_page_load_metrics_observer.h",
+    "observers/page_anchors_metrics_observer.cc",
+    "observers/prefetch_page_load_metrics_observer.cc",
+    "observers/preload_serving_metrics_page_load_metrics_observer.cc",
+    "observers/protocol_page_load_metrics_observer.cc",
+    "observers/scheme_page_load_metrics_observer.cc",
+    "observers/security_state_page_load_metrics_observer.cc",
+    "observers/signed_exchange_page_load_metrics_observer.cc",
+    "observers/tab_strip_page_load_metrics_observer.cc",
+    "observers/translate_page_load_metrics_observer.cc",
+    "observers/webui_page_load_metrics_observer.cc",
+    "page_load_metrics_initialize.cc",
+  ]
+
+  public_deps = [
+    ":page_load_metrics",
+    "//chrome/browser:browser_public_dependencies",
+  ]
+
+  deps = [
+    "//chrome/browser/actor",
+    "//chrome/browser/bookmarks",
+    "//chrome/browser/content_settings",
+    "//chrome/browser/content_settings:content_settings_factory",
+    "//chrome/browser/engagement",
+    "//chrome/browser/heavy_ad_intervention",
+    "//chrome/browser/history",
+    "//chrome/browser/history_clusters",
+    "//chrome/browser/optimization_guide",
+    "//chrome/browser/predictors",
+    "//chrome/browser/preloading/prefetch/no_state_prefetch",
+    "//chrome/browser/search",
+    "//chrome/browser/search_engines",
+    "//chrome/browser/signin",
+    "//chrome/browser/translate",
+    "//chrome/browser/ui/browser_window",
+    "//chrome/common",
+    "//components/content_settings/core/browser",
+    "//components/page_load_metrics/browser/observers/ad_metrics",
+    "//components/security_state/content",
+    "//components/site_engagement/content",
+    "//components/ukm",
+    "//services/metrics/public/cpp:metrics_cpp",
+    "//third_party/blink/public/common",
+  ]
+
+  if (is_android) {
+    sources += [ "observers/android_page_load_metrics_observer.cc" ]
+    deps += [
+      ":jni_headers",
+      "//chrome/browser/offline_pages",
+      "//chrome/browser/ui/android/tab_model",
+    ]
+  }
+
+  if (!is_android) {
+    sources += [
+      "observers/initial_webui_page_load_metrics_observer.cc",
+      "observers/non_tab_webui_page_load_metrics_observer.cc",
+      "observers/top_chrome_webui_metrics_observer.cc",
+    ]
+    deps += [
+      "//chrome/browser/performance_manager/public/user_tuning",
+      "//chrome/browser/ui/read_anything",
+      "//chrome/browser/ui/waap",
+      "//chrome/browser/ui/waap:waap_utils",
+      "//chrome/browser/ui/waap:window_metrics_manager",
+      "//chrome/browser/ui/webui/metrics_reporter",
+      "//chrome/browser/ui/webui/top_chrome",
+      "//components/webapps/isolated_web_apps:scheme",
+    ]
+  }
+
+  if (is_chromeos) {
+    sources += [ "observers/ash_session_restore_page_load_metrics_observer.cc" ]
+    deps += [ "//ash" ]
+  }
+
+  if (enable_extensions_core) {
+    sources += [ "observers/serp_page_load_metrics_observer.cc" ]
+    deps += [ "//chrome/browser/safe_browsing" ]
+  }
+}
+
+if (is_android) {
+  android_library("java") {
+    srcjar_deps = [ ":jni_headers" ]
+    sources = [ "java/src/org/chromium/chrome/browser/page_load_metrics/PageLoadMetrics.java" ]
+
+    deps = [
+      "//base:base_java",
+      "//content/public/android:content_java",
+      "//third_party/jni_zero:jni_zero_java",
+    ]
+  }
+
+  generate_jni("jni_headers") {
+    sources = [ "java/src/org/chromium/chrome/browser/page_load_metrics/PageLoadMetrics.java" ]
+  }
 }
