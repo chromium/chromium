@@ -13283,21 +13283,6 @@
             ]
         }
     ],
-    "IOSSaveToDriveSignedOut": [
-        {
-            "platforms": [
-                "ios"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "IOSSaveToDriveSignedOut"
-                    ]
-                }
-            ]
-        }
-    ],
     "IOSScopedCriticalActionSkipOnShutdown": [
         {
             "platforms": [
