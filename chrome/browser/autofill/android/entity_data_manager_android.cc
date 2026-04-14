@@ -237,7 +237,8 @@ EntityDataManagerAndroid::GetEntitiesWithLabels(JNIEnv* env) {
           EntityTypeAndroid(
               type,
               type.enabled(entity_data_manager_->GetVariationCountryCode()),
-              IsEligibleForWalletStorage(type)),
+              IsEligibleForWalletStorage(type),
+              IsMaskedStorageSupported(type, entity->record_type())),
           entity->type().GetNameForI18n(),
           base::JoinString(label, kLabelSeparator),
           entity->record_type() == EntityInstance::RecordType::kServerWallet);
@@ -254,7 +255,9 @@ std::vector<EntityTypeAndroid> EntityDataManagerAndroid::GetWritableEntityTypes(
     entity_types.emplace_back(
         entity_type,
         entity_type.enabled(entity_data_manager_->GetVariationCountryCode()),
-        IsEligibleForWalletStorage(entity_type));
+        IsEligibleForWalletStorage(entity_type),
+        IsMaskedStorageSupported(entity_type,
+                                 EntityInstance::RecordType::kServerWallet));
   }
   return entity_types;
 }
@@ -268,7 +271,9 @@ EntityDataManagerAndroid::GetSortedEntityTypesForListDisplay(
   return base::ToVector(all_types, [this](const EntityType& type) {
     return EntityTypeAndroid(
         type, type.enabled(entity_data_manager_->GetVariationCountryCode()),
-        IsEligibleForWalletStorage(type));
+        IsEligibleForWalletStorage(type),
+        IsMaskedStorageSupported(type,
+                                 EntityInstance::RecordType::kServerWallet));
   });
 }
 

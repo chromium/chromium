@@ -17,6 +17,10 @@ void ShowManagePlusAddressesPage(content::WebContents& web_contents);
 // Opens the Google Wallet passes management UI web page in a Chrome Custom Tab.
 void ShowGoogleWalletPassesPage(content::WebContents& web_contents);
 
+// Opens the Google Wallet private passes help center page in Cct.
+void ShowGoogleWallePrivatePassesHelpCenterPageInCct(
+    content::WebContents& web_contents);
+
 }  // namespace autofill
 
 #endif  // CHROME_BROWSER_AUTOFILL_ANDROID_AUTOFILL_FALLBACK_SURFACE_LAUNCHER_H_

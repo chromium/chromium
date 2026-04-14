@@ -7,6 +7,7 @@
 #include "base/android/jni_android.h"
 #include "base/android/jni_string.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/common/url_constants.h"
 #include "components/plus_addresses/core/common/features.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/android/view_android.h"
@@ -32,6 +33,16 @@ void ShowGoogleWalletPassesPage(content::WebContents& web_contents) {
   if (web_contents.GetNativeView() &&
       web_contents.GetNativeView()->GetWindowAndroid()) {
     Java_AutofillFallbackSurfaceLauncher_openGoogleWalletPassesPage(
+        base::android::AttachCurrentThread(),
+        web_contents.GetNativeView()->GetWindowAndroid()->GetJavaObject());
+  }
+}
+
+void ShowGoogleWallePrivatePassesHelpCenterPageInCct(
+    content::WebContents& web_contents) {
+  if (web_contents.GetNativeView() &&
+      web_contents.GetNativeView()->GetWindowAndroid()) {
+    Java_AutofillFallbackSurfaceLauncher_openGoogleWalletPrivatePassHelpCenterPageInCct(
         base::android::AttachCurrentThread(),
         web_contents.GetNativeView()->GetWindowAndroid()->GetJavaObject());
   }

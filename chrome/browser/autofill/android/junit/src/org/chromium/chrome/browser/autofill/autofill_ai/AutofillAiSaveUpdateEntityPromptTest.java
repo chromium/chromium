@@ -133,7 +133,7 @@ public class AutofillAiSaveUpdateEntityPromptTest {
     @Test
     @SmallTest
     public void localSourceNotice() {
-        mPrompt.setSourceNotice("Entity will be saved locally", /* insertWalletLink= */ false);
+        mPrompt.setSourceNotice("Entity will be saved locally", /* insertManageInfoLink= */ false);
         mPrompt.show();
 
         View dialogView = mPrompt.getDialogViewForTesting();
@@ -144,7 +144,7 @@ public class AutofillAiSaveUpdateEntityPromptTest {
     @Test
     @SmallTest
     public void emptyWalletNotice() {
-        mPrompt.setSourceNotice("", /* insertWalletLink= */ true);
+        mPrompt.setSourceNotice("", /* insertManageInfoLink= */ true);
         mPrompt.show();
 
         View dialogView = mPrompt.getDialogViewForTesting();
@@ -155,14 +155,26 @@ public class AutofillAiSaveUpdateEntityPromptTest {
     @Test
     @SmallTest
     public void walletNotice() {
-        mPrompt.setSourceNotice(
-                "Entity will be <link>saved</link> to Wallet", /* insertWalletLink= */ true);
+        String walletTitle =
+                RuntimeEnvironment.application.getString(R.string.autofill_google_wallet_title);
+        String email = "alexpark@gmail.com";
+        String sourceNotice =
+                RuntimeEnvironment.application
+                        .getString(
+                                R.string.autofill_ai_save_or_update_entity_in_wallet_source_notice)
+                        .replace("$1", walletTitle)
+                        .replace("$2", walletTitle)
+                        .replace("$3", email);
+
+        mPrompt.setSourceNotice(sourceNotice, /* insertManageInfoLink= */ true);
         mPrompt.show();
 
         View dialogView = mPrompt.getDialogViewForTesting();
         TextView sourceNoticeView = dialogView.findViewById(R.id.autofill_ai_entity_source_notice);
         assertEquals(View.VISIBLE, sourceNoticeView.getVisibility());
-        assertEquals("Entity will be saved to Wallet", sourceNoticeView.getText().toString());
+        assertEquals(
+                sourceNotice.replace("<link>", "").replace("</link>", ""),
+                sourceNoticeView.getText().toString());
 
         SpannableString spannableString = (SpannableString) sourceNoticeView.getText();
         ClickableSpan[] spans =
@@ -170,7 +182,7 @@ public class AutofillAiSaveUpdateEntityPromptTest {
         assertThat(spans.length, is(1));
         spans[0].onClick(sourceNoticeView);
         verify(mPromptControllerJni)
-                .openManagePasses(eq(NATIVE_AUTOFILL_AI_SAVE_UPDATE_ENTITY_PROMPT_CONTROLLER));
+                .onWalletLinkClicked(eq(NATIVE_AUTOFILL_AI_SAVE_UPDATE_ENTITY_PROMPT_CONTROLLER));
     }
 
     @Test

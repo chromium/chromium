@@ -209,9 +209,19 @@ public class AutofillAiSaveUpdateEntityPrompt {
         oldAttributeValue.setText(updateDetails.getOldAttributeValue());
     }
 
+    /**
+     * Sets the source notice message in the prompt.
+     *
+     * @param sourceNotice the full source notice string.
+     * @param insertManageInfoLink whether to insert a link to manage info. This value will be false
+     *     for local entities and true for entities stored in wallet. In the case it is true,
+     *     `sourceNotice` is expected to have a `R.string.autofill_manage_your_info_link` substring,
+     *     which will be turned into a clickable link.
+     */
     @CalledByNative
     @VisibleForTesting
-    void setSourceNotice(@JniType("std::u16string") String sourceNotice, boolean insertWalletLink) {
+    void setSourceNotice(
+            @JniType("std::u16string") String sourceNotice, boolean insertManageInfoLink) {
         TextView sourceNoticeView = mDialogView.findViewById(R.id.autofill_ai_entity_source_notice);
         if (TextUtils.isEmpty(sourceNotice)) {
             // The source notice can be empty if the C++ controller fails to retrieve the email
@@ -220,7 +230,7 @@ public class AutofillAiSaveUpdateEntityPrompt {
             return;
         }
 
-        if (!insertWalletLink) {
+        if (!insertManageInfoLink) {
             // Local entity source notice doesn't need a link.
             sourceNoticeView.setText(sourceNotice);
             return;
@@ -235,7 +245,7 @@ public class AutofillAiSaveUpdateEntityPrompt {
                                 new ChromeClickableSpan(
                                         mContext,
                                         view -> {
-                                            mController.openManagePasses();
+                                            mController.onWalletLinkClicked();
                                         })));
         sourceNoticeView.setText(sourceNoticeWithLink, TextView.BufferType.SPANNABLE);
         sourceNoticeView.setMovementMethod(LinkMovementMethod.getInstance());

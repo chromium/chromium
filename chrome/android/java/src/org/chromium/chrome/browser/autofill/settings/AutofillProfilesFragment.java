@@ -171,6 +171,20 @@ public class AutofillProfilesFragment extends ChromeBaseSettingsFragment
                     entityDataManager.addOrUpdateEntityInstance(
                             entityInstance, () -> onLocalSaveFallback());
                 }
+
+                @Override
+                public void onOpenGoogleWallet(boolean isPrivateEntity) {
+                    Context context = getContext();
+                    if (context == null) {
+                        return;
+                    }
+
+                    if (isPrivateEntity) {
+                        GoogleWalletLauncher.openGoogleWalletPrivatePassHelpCenterPage(context);
+                    } else {
+                        GoogleWalletLauncher.openGoogleWallet(context, context.getPackageManager());
+                    }
+                }
             };
 
     private static @Nullable EditorObserverForTest sObserverForTest;
@@ -471,6 +485,7 @@ public class AutofillProfilesFragment extends ChromeBaseSettingsFragment
                                                             .RecordType.SERVER_WALLET
                                                     : org.chromium.components.autofill.autofill_ai
                                                             .RecordType.LOCAL)
+                                    .setIsMaskedServerEntity(entityType.isMaskedStorageSupported())
                                     .build());
                     return true;
                 });
@@ -629,6 +644,10 @@ public class AutofillProfilesFragment extends ChromeBaseSettingsFragment
         sObserverForTest = observerForTest;
         EditorDialogView.setEditorObserverForTest(sObserverForTest);
         ResettersForTesting.register(() -> sObserverForTest = null);
+    }
+
+    void onOpenGoogleWalletForTesting(boolean isPrivateEntity) {
+        mEntityEditorDelegate.onOpenGoogleWallet(isPrivateEntity);
     }
 
     @Override

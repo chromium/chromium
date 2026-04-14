@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.autofill.autofill_ai;
 
 import static org.chromium.base.ThreadUtils.runOnUiThreadBlocking;
 
+import android.content.Context;
 import android.view.View;
 
 import androidx.test.filters.MediumTest;
@@ -26,6 +27,7 @@ import org.chromium.base.test.params.ParameterizedRunner;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.Feature;
+import org.chromium.chrome.browser.autofill.R;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.night_mode.ChromeNightModeTestUtils;
 import org.chromium.chrome.test.ChromeJUnit4RunnerDelegate;
@@ -141,7 +143,8 @@ public class AutofillAiSaveUpdateEntityPromptRenderTest {
                                                     EntityAttributeUpdateType
                                                             .NEW_ENTITY_ATTRIBUTE_UNCHANGED)),
                                     /* isUpdatePrompt= */ false);
-                            mPrompt.setSourceNotice("Saved to this device", false);
+                            mPrompt.setSourceNotice(
+                                    "Saved to this device", /* insertManageInfoLink= */ false);
                             mPrompt.show();
                             return mPrompt.getDialogViewForTesting();
                         });
@@ -192,10 +195,18 @@ public class AutofillAiSaveUpdateEntityPromptRenderTest {
                                                     EntityAttributeUpdateType
                                                             .NEW_ENTITY_ATTRIBUTE_UNCHANGED)),
                                     /* isUpdatePrompt= */ true);
-                            mPrompt.setSourceNotice(
-                                    "Saved to your account. You can <link>manage passes</link> in"
-                                            + " Google Wallet",
-                                    true);
+                            Context context = mActivityTestRule.getActivity();
+                            String walletTitle =
+                                    context.getString(R.string.autofill_google_wallet_title);
+                            String email = "alexpark@gmail.com";
+                            String sourceNotice =
+                                    context.getString(
+                                                    R.string
+                                                            .autofill_ai_save_or_update_entity_in_wallet_source_notice)
+                                            .replace("$1", walletTitle)
+                                            .replace("$2", walletTitle)
+                                            .replace("$3", email);
+                            mPrompt.setSourceNotice(sourceNotice, /* insertManageInfoLink= */ true);
                             mPrompt.show();
                             return mPrompt.getDialogViewForTesting();
                         });

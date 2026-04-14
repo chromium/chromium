@@ -28,7 +28,8 @@ struct EntityTypeAndroid {
 
   explicit EntityTypeAndroid(const EntityType& entity_type,
                              bool is_enabled,
-                             bool is_eligible_for_wallet_storage);
+                             bool is_eligible_for_wallet_storage,
+                             bool is_masked_storage_supported);
   EntityTypeAndroid(const EntityTypeAndroid&);
   EntityTypeAndroid& operator=(const EntityTypeAndroid&);
   EntityTypeAndroid(EntityTypeAndroid&&);
@@ -41,6 +42,7 @@ struct EntityTypeAndroid {
   bool is_read_only;
   bool is_enabled;
   bool is_eligible_for_wallet_storage;
+  bool is_masked_storage_supported;
   std::u16string type_name_as_string;
   std::string type_name_as_metrics_string;
   std::string add_entity_type_string;
