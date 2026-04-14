@@ -4528,10 +4528,8 @@ useful for Chirp alerts (go/crca-alerts). -->
 </histogram>
 
 <histogram name="PasswordManager.{Store}TotalAccountsHiRes3.WithScheme{Scheme}"
-    units="accounts" expires_after="2026-05-24">
-  <owner>battre@chromium.org</owner>
+    units="accounts" expires_after="2026-08-24">
   <owner>mamir@chromium.org</owner>
-  <owner>treib@chromium.org</owner>
   <owner>vasilii@chromium.org</owner>
   <summary>
     The number of accounts stored in the password manager's {Store} (across all
