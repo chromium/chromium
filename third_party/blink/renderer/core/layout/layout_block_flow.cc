@@ -385,35 +385,6 @@ void LayoutBlockFlow::CollapseAnonymousBlockChild(LayoutBlockFlow* child) {
   child->Destroy();
 }
 
-bool LayoutBlockFlow::MergeSiblingContiguousAnonymousBlock(
-    LayoutBlockFlow* sibling_that_may_be_deleted) {
-  NOT_DESTROYED();
-  // Note: |this| and |siblingThatMayBeDeleted| may not be adjacent siblings at
-  // this point. There may be an object between them which is about to be
-  // removed.
-
-  if (!IsMergeableAnonymousBlock(this) ||
-      !IsMergeableAnonymousBlock(sibling_that_may_be_deleted))
-    return false;
-
-  SetNeedsLayoutAndIntrinsicWidthsRecalcAndFullPaintInvalidation(
-      layout_invalidation_reason::kAnonymousBlockChange);
-
-  // If the inlineness of children of the two block don't match, we'd need
-  // special code here (but there should be no need for it).
-  DCHECK_EQ(sibling_that_may_be_deleted->ChildrenInline(), ChildrenInline());
-
-  // Take all the children out of the |next| block and put them in the |prev|
-  // block. If there are paint layers involved, or if we're part of a multicol
-  // container, we need to notify the layout tree about the movement.
-  bool full_remove_insert = sibling_that_may_be_deleted->HasLayer() ||
-                            HasLayer() ||
-                            sibling_that_may_be_deleted->IsInsideMulticol();
-  sibling_that_may_be_deleted->MoveAllChildrenTo(this, full_remove_insert);
-  sibling_that_may_be_deleted->Destroy();
-  return true;
-}
-
 void LayoutBlockFlow::ReparentSubsequentFloatingOrOutOfFlowSiblings() {
   NOT_DESTROYED();
   auto* parent_block_flow = DynamicTo<LayoutBlockFlow>(Parent());
@@ -427,12 +398,6 @@ void LayoutBlockFlow::ReparentSubsequentFloatingOrOutOfFlowSiblings() {
     LayoutObject* sibling = child->NextSibling();
     parent_block_flow->MoveChildTo(this, child, nullptr, false);
     child = sibling;
-  }
-
-  if (LayoutObject* next = NextSibling()) {
-    auto* next_block_flow = DynamicTo<LayoutBlockFlow>(next);
-    if (next_block_flow)
-      MergeSiblingContiguousAnonymousBlock(next_block_flow);
   }
 }
 
