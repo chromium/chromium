@@ -5,8 +5,11 @@
 #include <string>
 #include <vector>
 
+#include "base/android/callback_android.h"
 #include "base/android/jni_android.h"
 #include "base/android/jni_string.h"
+#include "base/android/scoped_java_ref.h"
+#include "base/functional/bind.h"
 #include "chrome/browser/android/send_tab_to_self/android_notification_handler.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/send_tab_to_self/send_tab_to_self_client_service.h"
@@ -61,7 +64,8 @@ static void JNI_SendTabToSelfAndroidBridge_SendTabToDevice(
     const JavaRef<jobject>& j_web_contents,
     const JavaRef<jstring>& j_target_device_sync_cache_guid,
     const JavaRef<jstring>& j_url,
-    const JavaRef<jstring>& j_title) {
+    const JavaRef<jstring>& j_title,
+    const JavaRef<jobject>& j_callback) {
   content::WebContents* web_contents =
       content::WebContents::FromJavaWebContents(j_web_contents);
   if (!web_contents) {
@@ -73,8 +77,24 @@ static void JNI_SendTabToSelfAndroidBridge_SendTabToDevice(
   const std::string url = ConvertJavaStringToUTF8(env, j_url);
   const std::string title = ConvertJavaStringToUTF8(env, j_title);
 
+  // TODO(crbug.com/492072882) Consider adding a `CHECK` once Android is updated
+  // to always provide the callback.
+  base::OnceCallback<void(SendTabToSelfResult)> commit_confirmation =
+      base::DoNothing();
+  if (j_callback) {
+    commit_confirmation = base::BindOnce(
+        [](const base::android::ScopedJavaGlobalRef<jobject>& j_callback,
+           SendTabToSelfResult result) {
+          JNIEnv* env = base::android::AttachCurrentThread();
+          Java_CommitConfirmationCallback_onResult(env, j_callback,
+                                                   static_cast<int>(result));
+        },
+        base::android::ScopedJavaGlobalRef<jobject>(j_callback));
+  }
+
   SendTabToSelfPageHandler::GetOrCreateForWebContents(web_contents)
-      ->SendTabToDevice(target_device_sync_cache_guid, GURL(url), title);
+      ->SendTabToDevice(target_device_sync_cache_guid, GURL(url), title,
+                        std::move(commit_confirmation));
 }
 
 // Deletes the entry associated with the passed in GUID.

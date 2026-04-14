@@ -5,6 +5,7 @@
 #include <memory>
 
 #include "base/callback_list.h"
+#include "base/functional/callback_helpers.h"
 #include "base/run_loop.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/run_until.h"
@@ -249,7 +250,7 @@ IN_PROC_BROWSER_TEST_P(SingleClientSendTabToSelfSyncTest,
   SendTabToSelfSyncServiceFactory::GetForProfile(GetProfile(0))
       ->GetSendTabToSelfModel()
       ->AddEntry(kUrl, "example", target_guid, context,
-                 send_tab_to_self::NavigationHistory());
+                 send_tab_to_self::NavigationHistory(), base::DoNothing());
 
   // Wait for the entry to be committed to the server.
   ASSERT_TRUE(
@@ -359,9 +360,9 @@ IN_PROC_BROWSER_TEST_P(SingleClientSendTabToSelfSyncTest,
       SendTabToSelfSyncServiceFactory::GetForProfile(GetProfile(0))
           ->GetSendTabToSelfModel();
 
-  ASSERT_TRUE(model->AddEntry(kUrl, kTitle, kTargetDeviceSyncCacheGuid,
-                              send_tab_to_self::PageContext(),
-                              send_tab_to_self::NavigationHistory()));
+  ASSERT_TRUE(model->AddEntry(
+      kUrl, kTitle, kTargetDeviceSyncCacheGuid, send_tab_to_self::PageContext(),
+      send_tab_to_self::NavigationHistory(), base::DoNothing()));
 
   GetClient(0)->SignOutPrimaryAccount();
 
@@ -392,9 +393,9 @@ IN_PROC_BROWSER_TEST_P(SingleClientSendTabToSelfSyncTest,
       SendTabToSelfSyncServiceFactory::GetForProfile(GetProfile(0))
           ->GetSendTabToSelfModel();
 
-  ASSERT_FALSE(model->AddEntry(kUrl, kTitle, kTargetDeviceSyncCacheGuid,
-                               send_tab_to_self::PageContext(),
-                               send_tab_to_self::NavigationHistory()));
+  ASSERT_FALSE(model->AddEntry(
+      kUrl, kTitle, kTargetDeviceSyncCacheGuid, send_tab_to_self::PageContext(),
+      send_tab_to_self::NavigationHistory(), base::DoNothing()));
 
   EXPECT_FALSE(send_tab_to_self::ShouldDisplayEntryPoint(
       GetBrowser(0)->tab_strip_model()->GetActiveWebContents()));

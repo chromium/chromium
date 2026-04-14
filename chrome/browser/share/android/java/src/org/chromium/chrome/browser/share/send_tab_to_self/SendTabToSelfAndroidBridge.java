@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.share.send_tab_to_self;
 
+import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
 import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
@@ -23,6 +24,13 @@ import java.util.List;
 @JNINamespace("send_tab_to_self")
 @NullMarked
 public class SendTabToSelfAndroidBridge {
+    /** Interface for a callback to receive the result of a send tab to self operation. */
+    @FunctionalInterface
+    public interface CommitConfirmationCallback {
+        @CalledByNative("CommitConfirmationCallback")
+        void onResult(@SendTabToSelfResult int result);
+    }
+
     // TODO(crbug.com/40618597): Add logic back in to track whether model is loaded.
     // private boolean mIsNativeSendTabToSelfModelLoaded;
 
@@ -38,9 +46,11 @@ public class SendTabToSelfAndroidBridge {
             @Nullable WebContents webContents,
             String targetDeviceSyncCacheGuid,
             String url,
-            String title) {
+            String title,
+            CommitConfirmationCallback commitConfirmation) {
         SendTabToSelfAndroidBridgeJni.get()
-                .sendTabToDevice(webContents, targetDeviceSyncCacheGuid, url, title);
+                .sendTabToDevice(
+                        webContents, targetDeviceSyncCacheGuid, url, title, commitConfirmation);
     }
 
     /**
@@ -92,7 +102,8 @@ public class SendTabToSelfAndroidBridge {
                 @Nullable WebContents webContents,
                 String targetDeviceSyncCacheGuid,
                 String url,
-                String title);
+                String title,
+                CommitConfirmationCallback commitConfirmation);
 
         void deleteEntry(@JniType("Profile*") Profile profile, String guid);
 

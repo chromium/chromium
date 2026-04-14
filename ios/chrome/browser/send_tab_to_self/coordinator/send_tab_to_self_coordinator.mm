@@ -397,7 +397,7 @@ void OpenManageDevicesTab(CommandDispatcher* dispatcher) {
       ->GetSendTabToSelfModel()
       ->AddEntry(self.url, base::SysNSStringToUTF8(self.title),
                  base::SysNSStringToUTF8(cacheGUID), pageContext,
-                 send_tab_to_self::NavigationHistory());
+                 send_tab_to_self::NavigationHistory(), base::DoNothing());
 
   // ShowSendingMessage() opens UI, so wait for the dialog to be dismissed.
   self.dismissedCompletion = base::CallbackToBlock(base::BindRepeating(

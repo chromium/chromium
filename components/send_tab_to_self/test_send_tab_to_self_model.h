@@ -30,7 +30,10 @@ class TestSendTabToSelfModel : public SendTabToSelfModel {
       const std::string& title,
       const std::string& device_id,
       const PageContext& context,
-      NavigationHistory navigation_history) override;
+      NavigationHistory navigation_history,
+      base::OnceCallback<void(SendTabToSelfResult)> commit_confirmation)
+      override;
+
   void DeleteEntry(const std::string& guid) override;
   void DismissEntry(const std::string& guid) override;
   void MarkEntryOpened(const std::string& guid) override;

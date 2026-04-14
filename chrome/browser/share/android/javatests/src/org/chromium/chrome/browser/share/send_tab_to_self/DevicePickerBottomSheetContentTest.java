@@ -104,7 +104,11 @@ public class DevicePickerBottomSheetContentTest {
 
         verify(mNativeMock)
                 .sendTabToDevice(
-                        eq(mWebContents), eq("guid"), eq("https://example.com/"), eq("Title"));
+                        eq(mWebContents),
+                        eq("guid"),
+                        eq("https://example.com/"),
+                        eq("Title"),
+                        any());
         verify(mBottomSheetController).hideContent(content, true);
     }
 }

@@ -37,9 +37,9 @@ void SendTabToSelfPageHandler::SendTabToDevice(
     const std::string& target_device_guid,
     const GURL& url,
     const std::string& title,
-    base::OnceCallback<void(SendTabToSelfResult)> result_callback) {
+    base::OnceCallback<void(SendTabToSelfResult)> commit_confirmation) {
   PendingRequest request(target_device_guid, url, title,
-                         std::move(result_callback));
+                         std::move(commit_confirmation));
 
   MaybeExtractFormFields(request);
   MaybeExtractNavigationHistory(request);
@@ -91,12 +91,12 @@ SendTabToSelfPageHandler::PendingRequest::PendingRequest(
     const std::string& target_device_guid,
     const GURL& url,
     const std::string& title,
-    base::OnceCallback<void(SendTabToSelfResult)> result_callback)
+    base::OnceCallback<void(SendTabToSelfResult)> commit_confirmation)
     : target_device_guid(target_device_guid),
       url(url),
       title(title),
       start_time(base::TimeTicks::Now()),
-      result_callback(std::move(result_callback)) {}
+      commit_confirmation(std::move(commit_confirmation)) {}
 
 SendTabToSelfPageHandler::PendingRequest::PendingRequest(PendingRequest&&) =
     default;
@@ -264,19 +264,14 @@ void SendTabToSelfPageHandler::SendFinalizedRequest(
       SendTabToSelfSyncServiceFactory::GetForProfile(profile)
           ->GetSendTabToSelfModel();
   if (!model->IsReady()) {
-    if (request.result_callback) {
-      std::move(request.result_callback).Run(SendTabToSelfResult::kFailure);
-    }
+    std::move(request.commit_confirmation).Run(SendTabToSelfResult::kFailure);
     return;
   }
 
   model->AddEntry(request.url, request.title, request.target_device_guid,
                   std::move(request.page_context),
-                  std::move(request.navigation_history));
-
-  if (request.result_callback) {
-    std::move(request.result_callback).Run(SendTabToSelfResult::kSuccess);
-  }
+                  std::move(request.navigation_history),
+                  std::move(request.commit_confirmation));
 }
 
 base::TimeDelta SendTabToSelfPageHandler::GetSelectorGenerationTimeout() const {

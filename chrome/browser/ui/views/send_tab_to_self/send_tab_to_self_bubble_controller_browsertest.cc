@@ -47,7 +47,9 @@ class FakeSendTabToSelfModel : public TestSendTabToSelfModel {
       const std::string& title,
       const std::string& device_id,
       const send_tab_to_self::PageContext& context,
-      send_tab_to_self::NavigationHistory navigation_history) override {
+      send_tab_to_self::NavigationHistory navigation_history,
+      base::OnceCallback<void(send_tab_to_self::SendTabToSelfResult)>
+          commit_confirmation) override {
     auto entry = std::make_unique<SendTabToSelfEntry>(
         "guid", url, title, base::Time::Now(), "device", device_id, context,
         std::move(navigation_history));
@@ -57,6 +59,8 @@ class FakeSendTabToSelfModel : public TestSendTabToSelfModel {
     for (auto& observer : observers_) {
       observer.EntryAddedLocally(entry_ptr);
     }
+    std::move(commit_confirmation)
+        .Run(send_tab_to_self::SendTabToSelfResult::kSuccess);
     return entry_ptr;
   }
 

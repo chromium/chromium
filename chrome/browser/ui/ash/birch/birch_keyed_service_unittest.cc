@@ -19,6 +19,7 @@
 #include "base/containers/flat_map.h"
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
+#include "base/functional/callback_helpers.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
 #include "base/version_info/version_info.h"
@@ -238,7 +239,9 @@ class SendTabToSelfModelMock : public send_tab_to_self::TestSendTabToSelfModel {
       const std::string& title,
       const std::string& target_device_cache_guid,
       const send_tab_to_self::PageContext& context,
-      send_tab_to_self::NavigationHistory navigation_history) override {
+      send_tab_to_self::NavigationHistory navigation_history,
+      base::OnceCallback<void(send_tab_to_self::SendTabToSelfResult)>
+          commit_confirmation) override {
     auto entry = std::make_unique<send_tab_to_self::SendTabToSelfEntry>(
         kChromeSyncGuid, url, title, base::Time::Now(), kChromeSyncDeviceName,
         target_device_cache_guid, context, std::move(navigation_history));
@@ -246,6 +249,9 @@ class SendTabToSelfModelMock : public send_tab_to_self::TestSendTabToSelfModel {
     auto* result = entry.get();
 
     entries_.emplace(kChromeSyncGuid, std::move(entry));
+
+    std::move(commit_confirmation)
+        .Run(send_tab_to_self::SendTabToSelfResult::kSuccess);
 
     return result;
   }
@@ -487,7 +493,8 @@ class BirchKeyedServiceTest : public BrowserWithTestWindowTest {
     const std::string kTargetDeviceSyncCacheGuid(kTargetDeviceCacheGuid);
     send_tab_to_self_model_->AddEntry(kUrl, kTitle, kTargetDeviceSyncCacheGuid,
                                       send_tab_to_self::PageContext(),
-                                      send_tab_to_self::NavigationHistory());
+                                      send_tab_to_self::NavigationHistory(),
+                                      base::DoNothing());
   }
 
   void SimulateMediaMetadataInit() {

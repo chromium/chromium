@@ -13,6 +13,7 @@
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/mock_callback.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/simple_test_clock.h"
 #include "base/test/task_environment.h"
@@ -249,13 +250,13 @@ class SendTabToSelfBridgeTest : public testing::Test {
   void AddSampleEntries() {
     // Adds timer to avoid having two entries with the same shared timestamp.
     bridge_->AddEntry(GURL("http://a.com"), "a", kLocalDeviceCacheGuid,
-                      PageContext(), NavigationHistory());
+                      PageContext(), NavigationHistory(), base::DoNothing());
     bridge_->AddEntry(GURL("http://b.com"), "b", kLocalDeviceCacheGuid,
-                      PageContext(), NavigationHistory());
+                      PageContext(), NavigationHistory(), base::DoNothing());
     bridge_->AddEntry(GURL("http://c.com"), "c", kLocalDeviceCacheGuid,
-                      PageContext(), NavigationHistory());
+                      PageContext(), NavigationHistory(), base::DoNothing());
     bridge_->AddEntry(GURL("http://d.com"), "d", kLocalDeviceCacheGuid,
-                      PageContext(), NavigationHistory());
+                      PageContext(), NavigationHistory(), base::DoNothing());
   }
 
   void SetLocalDeviceCacheGuid(const std::string& cache_guid) {
@@ -667,20 +668,38 @@ TEST_F(SendTabToSelfBridgeTest, AddInvalidEntries) {
 
   // Add Entry should succeed in this case.
   EXPECT_CALL(*processor(), Put(_, _, _));
+  base::MockCallback<base::OnceCallback<void(SendTabToSelfResult)>>
+      mock_callback_success;
+  EXPECT_CALL(mock_callback_success, Run(SendTabToSelfResult::kSuccess));
   EXPECT_NE(nullptr, bridge()->AddEntry(GURL("http://www.example.com/"), "d",
                                         kLocalDeviceCacheGuid, PageContext(),
-                                        NavigationHistory()));
+                                        NavigationHistory(),
+                                        mock_callback_success.Get()));
 
   // Add Entry should fail on invalid URLs.
   EXPECT_CALL(*processor(), Put(_, _, _)).Times(0);
+  base::MockCallback<base::OnceCallback<void(SendTabToSelfResult)>>
+      mock_callback_fail_1;
+  EXPECT_CALL(mock_callback_fail_1, Run(SendTabToSelfResult::kFailure));
   EXPECT_EQ(nullptr, bridge()->AddEntry(GURL(), "d", kLocalDeviceCacheGuid,
-                                        PageContext(), NavigationHistory()));
+                                        PageContext(), NavigationHistory(),
+                                        mock_callback_fail_1.Get()));
+
+  base::MockCallback<base::OnceCallback<void(SendTabToSelfResult)>>
+      mock_callback_fail_2;
+  EXPECT_CALL(mock_callback_fail_2, Run(SendTabToSelfResult::kFailure));
   EXPECT_EQ(nullptr,
             bridge()->AddEntry(GURL("http://?k=v"), "d", kLocalDeviceCacheGuid,
-                               PageContext(), NavigationHistory()));
+                               PageContext(), NavigationHistory(),
+                               mock_callback_fail_2.Get()));
+
+  base::MockCallback<base::OnceCallback<void(SendTabToSelfResult)>>
+      mock_callback_fail_3;
+  EXPECT_CALL(mock_callback_fail_3, Run(SendTabToSelfResult::kFailure));
   EXPECT_EQ(nullptr, bridge()->AddEntry(GURL("http//google.com"), "d",
                                         kLocalDeviceCacheGuid, PageContext(),
-                                        NavigationHistory()));
+                                        NavigationHistory(),
+                                        mock_callback_fail_3.Get()));
 }
 
 TEST_F(SendTabToSelfBridgeTest, IsBridgeReady) {
@@ -714,9 +733,9 @@ TEST_F(SendTabToSelfBridgeTest, AddDuplicateEntries) {
   // So they are intentionally different here.
   EXPECT_CALL(*processor(), Put(_, _, _)).Times(1);
   bridge()->AddEntry(GURL("http://a.com"), "a", kLocalDeviceCacheGuid,
-                     PageContext(), NavigationHistory());
+                     PageContext(), NavigationHistory(), base::DoNothing());
   bridge()->AddEntry(GURL("http://a.com"), "b", kLocalDeviceCacheGuid,
-                     PageContext(), NavigationHistory());
+                     PageContext(), NavigationHistory(), base::DoNothing());
   EXPECT_EQ(1ul, bridge()->GetAllGuids().size());
 
   // Wait for more than the current dedupe time (5 seconds).
@@ -724,9 +743,9 @@ TEST_F(SendTabToSelfBridgeTest, AddDuplicateEntries) {
 
   EXPECT_CALL(*processor(), Put(_, _, _)).Times(2);
   bridge()->AddEntry(GURL("http://a.com"), "a", kLocalDeviceCacheGuid,
-                     PageContext(), NavigationHistory());
+                     PageContext(), NavigationHistory(), base::DoNothing());
   bridge()->AddEntry(GURL("http://b.com"), "b", kLocalDeviceCacheGuid,
-                     PageContext(), NavigationHistory());
+                     PageContext(), NavigationHistory(), base::DoNothing());
   EXPECT_EQ(3ul, bridge()->GetAllGuids().size());
 }
 
@@ -1075,11 +1094,12 @@ TEST_F(SendTabToSelfBridgeTest, CollapseWhitespacesOfEntryTitle) {
 
   const SendTabToSelfEntry* result =
       bridge()->AddEntry(GURL("http://a.com"), " a  b ", kLocalDeviceCacheGuid,
-                         PageContext(), NavigationHistory());
+                         PageContext(), NavigationHistory(), base::DoNothing());
   EXPECT_EQ("a b", result->GetTitle());
 
-  result = bridge()->AddEntry(GURL("http://b.com"), "입", kLocalDeviceCacheGuid,
-                              PageContext(), NavigationHistory());
+  result =
+      bridge()->AddEntry(GURL("http://b.com"), "입", kLocalDeviceCacheGuid,
+                         PageContext(), NavigationHistory(), base::DoNothing());
   EXPECT_EQ("입", result->GetTitle());
 }
 
@@ -1413,7 +1433,7 @@ TEST_F(SendTabToSelfBridgeTest, AddEntry_UsesFullName) {
 
   const SendTabToSelfEntry* result =
       bridge()->AddEntry(GURL("http://www.example.com/"), "title", "target",
-                         PageContext(), NavigationHistory());
+                         PageContext(), NavigationHistory(), base::DoNothing());
 
   ASSERT_NE(nullptr, result);
   EXPECT_EQ(full_name, result->GetDeviceName());
@@ -1428,7 +1448,8 @@ TEST_F(SendTabToSelfBridgeTest, AddEntry_RecordsPageContextSize) {
   context.scroll_position.text_fragment.text_start = "fragment";
 
   bridge()->AddEntry(GURL("http://www.example.com/"), "title",
-                     kLocalDeviceCacheGuid, context, NavigationHistory());
+                     kLocalDeviceCacheGuid, context, NavigationHistory(),
+                     base::DoNothing());
 
   histogram_tester.ExpectUniqueSample(
       "Sharing.SendTabToSelf.PageContextSize",
@@ -1448,7 +1469,8 @@ TEST_F(SendTabToSelfBridgeTest, AddEntry_RecordsPageContextSize_ExceedsLimit) {
       std::string(kLargeSize, 'a');
 
   bridge()->AddEntry(GURL("http://www.example.com/"), "title",
-                     kLocalDeviceCacheGuid, context, NavigationHistory());
+                     kLocalDeviceCacheGuid, context, NavigationHistory(),
+                     base::DoNothing());
 
   size_t size = PageContextToProto(context).ByteSizeLong();
   ASSERT_GT(size, kMaxPageContextSizeBytes);
@@ -1479,7 +1501,8 @@ TEST_F(SendTabToSelfBridgeTest, AddEntryWithHistory) {
   const SendTabToSelfEntry* result = bridge()->AddEntry(
       GURL("https://www.example.com/"), "title", kLocalDeviceCacheGuid,
       PageContext(),
-      NavigationHistory(std::move(navigations), kCurrentNavigationIndex));
+      NavigationHistory(std::move(navigations), kCurrentNavigationIndex),
+      base::DoNothing());
 
   ASSERT_NE(nullptr, result);
   EXPECT_EQ(2u, result->GetNavigationHistory().navigations.size());
@@ -1611,6 +1634,45 @@ TEST_F(SendTabToSelfBridgeTest, ReceivedTimePropagatesFromRemoteUpdate) {
   entry = bridge()->GetEntryByGUID(specifics.guid());
   ASSERT_NE(nullptr, entry);
   EXPECT_TRUE(entry->IsReceived());
+}
+
+// Verifies that AddEntry invokes the callback with kFailure
+// when the sync metadata is not being tracked (e.g. sync disabled).
+TEST_F(SendTabToSelfBridgeTest,
+       InvokesCallbackWithFailureForNotTrackingMetadata) {
+  InitializeBridgeWithoutDevice();
+  DisableBridge();
+
+  base::MockCallback<base::OnceCallback<void(SendTabToSelfResult)>>
+      mock_callback;
+  EXPECT_CALL(mock_callback, Run(SendTabToSelfResult::kFailure));
+
+  bridge()->AddEntry(GURL("https://www.example.com"), "dummy title",
+                     kLocalDeviceCacheGuid, PageContext(), NavigationHistory(),
+                     mock_callback.Get());
+}
+
+// Verifies that AddEntry invokes the callback with kSuccess even when the
+// entry is throttled due to deduplication.
+TEST_F(SendTabToSelfBridgeTest, InvokesCallbackWithSuccessForThrottledEntry) {
+  InitializeBridge();
+
+  const GURL kUrl("https://www.example.com");
+  const std::string kTitle("dummy title");
+
+  // Add the first entry.
+  EXPECT_CALL(*processor(), Put(_, _, _));
+  bridge()->AddEntry(kUrl, kTitle, kLocalDeviceCacheGuid, PageContext(),
+                     NavigationHistory(), base::DoNothing());
+
+  // Attempt to add an identical entry immediately. It should be throttled.
+  EXPECT_CALL(*processor(), Put(_, _, _)).Times(0);
+  base::MockCallback<base::OnceCallback<void(SendTabToSelfResult)>>
+      mock_callback;
+  EXPECT_CALL(mock_callback, Run(SendTabToSelfResult::kSuccess));
+
+  bridge()->AddEntry(kUrl, kTitle, kLocalDeviceCacheGuid, PageContext(),
+                     NavigationHistory(), mock_callback.Get());
 }
 
 }  // namespace

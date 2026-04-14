@@ -132,7 +132,8 @@ class MockSendTabToSelfModel : public TestSendTabToSelfModel {
                const std::string&,
                const std::string&,
                const PageContext&,
-               NavigationHistory),
+               NavigationHistory,
+               base::OnceCallback<void(SendTabToSelfResult)>),
               (override));
   bool IsReady() override { return is_ready_; }
   void set_is_ready(bool is_ready) { is_ready_ = is_ready; }
@@ -224,10 +225,12 @@ TEST_F(SendTabToSelfPageHandlerTest,
   // Prepare the model to capture the finalized entry once the generation
   // process completes.
   TestFuture<PageContext> future;
-  EXPECT_CALL(model_, AddEntry(Eq(url), Eq(title), Eq(device_id), _, _))
+  EXPECT_CALL(model_, AddEntry(Eq(url), Eq(title), Eq(device_id), _, _, _))
       .WillOnce([&future](const GURL&, const std::string&, const std::string&,
                           const PageContext& context,
-                          NavigationHistory navigation_history) {
+                          NavigationHistory navigation_history,
+                          base::OnceCallback<void(SendTabToSelfResult)>
+                              commit_confirmation) {
         future.SetValue(context);
         return nullptr;
       });
@@ -258,10 +261,12 @@ TEST_F(SendTabToSelfPageHandlerTest,
 
   // Prepare the model to capture the entry when the handler falls back.
   TestFuture<PageContext> future;
-  EXPECT_CALL(model_, AddEntry(Eq(url), Eq(title), Eq(device_id), _, _))
+  EXPECT_CALL(model_, AddEntry(Eq(url), Eq(title), Eq(device_id), _, _, _))
       .WillOnce([&future](const GURL&, const std::string&, const std::string&,
                           const PageContext& context,
-                          NavigationHistory navigation_history) {
+                          NavigationHistory navigation_history,
+                          base::OnceCallback<void(SendTabToSelfResult)>
+                              commit_confirmation) {
         future.SetValue(context);
         return nullptr;
       });
@@ -296,10 +301,12 @@ TEST_F(SendTabToSelfPageHandlerTest,
 
   // Prepare the model to capture the finalized entry.
   TestFuture<PageContext> future;
-  EXPECT_CALL(model_, AddEntry(Eq(url), Eq(title), Eq(device_id), _, _))
+  EXPECT_CALL(model_, AddEntry(Eq(url), Eq(title), Eq(device_id), _, _, _))
       .WillOnce([&future](const GURL&, const std::string&, const std::string&,
                           const PageContext& context,
-                          NavigationHistory navigation_history) {
+                          NavigationHistory navigation_history,
+                          base::OnceCallback<void(SendTabToSelfResult)>
+                              commit_confirmation) {
         future.SetValue(context);
         return nullptr;
       });
@@ -331,10 +338,12 @@ TEST_F(SendTabToSelfPageHandlerTest,
 
   // Prepare the model to capture the entry when the fallback is triggered.
   TestFuture<PageContext> future;
-  EXPECT_CALL(model_, AddEntry(Eq(url), Eq(title), Eq(device_id), _, _))
+  EXPECT_CALL(model_, AddEntry(Eq(url), Eq(title), Eq(device_id), _, _, _))
       .WillOnce([&future](const GURL&, const std::string&, const std::string&,
                           const PageContext& context,
-                          NavigationHistory navigation_history) {
+                          NavigationHistory navigation_history,
+                          base::OnceCallback<void(SendTabToSelfResult)>
+                              commit_confirmation) {
         future.SetValue(context);
         return nullptr;
       });
@@ -370,10 +379,12 @@ TEST_F(SendTabToSelfPageHandlerTest,
   // Prepare the model to capture the entry when the fallback is triggered by
   // the tab closure.
   TestFuture<PageContext> future;
-  EXPECT_CALL(model_, AddEntry(Eq(url), Eq(title), Eq(device_id), _, _))
+  EXPECT_CALL(model_, AddEntry(Eq(url), Eq(title), Eq(device_id), _, _, _))
       .WillOnce([&future](const GURL&, const std::string&, const std::string&,
                           const PageContext& context,
-                          NavigationHistory navigation_history) {
+                          NavigationHistory navigation_history,
+                          base::OnceCallback<void(SendTabToSelfResult)>
+                              commit_confirmation) {
         future.SetValue(context);
         return nullptr;
       });
@@ -414,7 +425,7 @@ TEST_F(SendTabToSelfPageHandlerWithNavigationHistoryTest,
 
   // Navigation history should have at least the current page.
   EXPECT_CALL(model_, AddEntry(Eq(url), Eq(title), Eq(device_id), _,
-                               IsValidNavigationHistory()))
+                               IsValidNavigationHistory(), _))
       .WillOnce(testing::Return(nullptr));
 
   handler->SendTabToDevice(device_id, url, title);
@@ -451,7 +462,14 @@ TEST_F(SendTabToSelfPageHandlerTest, ShouldInvokeCallbackOnSuccess) {
       SendTabToSelfPageHandler::GetOrCreateForWebContents(web_contents());
 
   // Prepare the model to accept the entry.
-  EXPECT_CALL(model_, AddEntry(Eq(url), Eq(title), Eq(device_id), _, _));
+  EXPECT_CALL(model_, AddEntry(Eq(url), Eq(title), Eq(device_id), _, _, _))
+      .WillOnce([](const GURL&, const std::string&, const std::string&,
+                   const PageContext&, NavigationHistory,
+                   base::OnceCallback<void(SendTabToSelfResult)>
+                       commit_confirmation) {
+        std::move(commit_confirmation).Run(SendTabToSelfResult::kSuccess);
+        return nullptr;
+      });
 
   // Initiate the send to device action, providing a result callback.
   TestFuture<SendTabToSelfResult> future;
@@ -478,10 +496,12 @@ TEST_F(SendTabToSelfPageHandlerTest,
 
   // Prepare the model to capture the entry.
   TestFuture<PageContext> future;
-  EXPECT_CALL(model_, AddEntry(Eq(link_url), Eq(title), Eq(device_id), _, _))
+  EXPECT_CALL(model_, AddEntry(Eq(link_url), Eq(title), Eq(device_id), _, _, _))
       .WillOnce([&future](const GURL&, const std::string&, const std::string&,
                           const PageContext& context,
-                          NavigationHistory navigation_history) {
+                          NavigationHistory navigation_history,
+                          base::OnceCallback<void(SendTabToSelfResult)>
+                              commit_confirmation) {
         future.SetValue(context);
         return nullptr;
       });

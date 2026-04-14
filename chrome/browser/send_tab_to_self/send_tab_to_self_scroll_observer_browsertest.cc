@@ -7,6 +7,7 @@
 #include <map>
 #include <memory>
 
+#include "base/functional/callback_helpers.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
@@ -72,7 +73,9 @@ class FakeSendTabToSelfModel : public TestSendTabToSelfModel {
       const std::string& title,
       const std::string& device_id,
       const PageContext& context,
-      NavigationHistory navigation_history) override {
+      NavigationHistory navigation_history,
+      base::OnceCallback<void(SendTabToSelfResult)> commit_confirmation)
+      override {
     // For testing purposes, we hardcode the guid as "guid" so we can reference
     // it in the Navigate call.
     auto entry = std::make_unique<SendTabToSelfEntry>(
@@ -80,6 +83,7 @@ class FakeSendTabToSelfModel : public TestSendTabToSelfModel {
         std::move(navigation_history));
     const SendTabToSelfEntry* raw_ptr = entry.get();
     entries_[raw_ptr->GetGUID()] = std::move(entry);
+    std::move(commit_confirmation).Run(SendTabToSelfResult::kSuccess);
     return raw_ptr;
   }
 
@@ -152,7 +156,7 @@ IN_PROC_BROWSER_TEST_F(SendTabToSelfScrollObserverBrowserTest,
       TextFragmentData("Some text", "", "", "");
 
   model_fake_->AddEntry(test_url, "title", "device", page_context,
-                        NavigationHistory());
+                        NavigationHistory(), base::DoNothing());
 
   content::TestNavigationObserver navigation_observer{test_url};
   navigation_observer.StartWatchingNewWebContents();
@@ -195,7 +199,7 @@ IN_PROC_BROWSER_TEST_F(SendTabToSelfScrollObserverBrowserTest,
   PageContext page_context;
 
   model_fake_->AddEntry(test_url, "title", "device", page_context,
-                        NavigationHistory());
+                        NavigationHistory(), base::DoNothing());
 
   content::TestNavigationObserver navigation_observer{test_url};
   navigation_observer.StartWatchingNewWebContents();

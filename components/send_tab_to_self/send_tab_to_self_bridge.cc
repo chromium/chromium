@@ -371,13 +371,20 @@ const SendTabToSelfEntry* SendTabToSelfBridge::AddEntry(
     const std::string& title,
     const std::string& target_device_cache_guid,
     const PageContext& context,
-    NavigationHistory navigation_history) {
+    NavigationHistory navigation_history,
+    base::OnceCallback<void(SendTabToSelfResult)> commit_confirmation) {
+  CHECK(commit_confirmation);
   if (!change_processor()->IsTrackingMetadata()) {
-    // TODO(crbug.com/40617641) handle failure case.
+    // TODO(crbug.com/492072882): Add a dedicated enum value for this case and
+    // log it in a histogram.
+    std::move(commit_confirmation).Run(SendTabToSelfResult::kFailure);
     return nullptr;
   }
 
   if (!url.is_valid()) {
+    // TODO(crbug.com/492072882): Add a dedicated enum value for this case and
+    // log it in a histogram.
+    std::move(commit_confirmation).Run(SendTabToSelfResult::kFailure);
     return nullptr;
   }
 
@@ -390,6 +397,9 @@ const SendTabToSelfEntry* SendTabToSelfBridge::AddEntry(
       target_device_cache_guid == mru_entry_->GetTargetDeviceSyncCacheGuid() &&
       shared_time - mru_entry_->GetSharedTime() < kDedupeTime) {
     send_tab_to_self::RecordNotificationThrottled();
+    // TODO(crbug.com/492072882): Add a dedicated enum value for this case and
+    // log it in a histogram.
+    std::move(commit_confirmation).Run(SendTabToSelfResult::kSuccess);
     return mru_entry_;
   }
 
@@ -421,6 +431,8 @@ const SendTabToSelfEntry* SendTabToSelfBridge::AddEntry(
 
   change_processor()->Put(guid, std::move(entity_data),
                           batch->GetMetadataChangeList());
+
+  std::move(commit_confirmation).Run(SendTabToSelfResult::kSuccess);
 
   for (SendTabToSelfModelObserver& observer : observers_) {
     observer.EntryAddedLocally(entry.get());

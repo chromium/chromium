@@ -55,10 +55,13 @@ class StubSendTabToSelfModel : public TestSendTabToSelfModel {
       const std::string& title,
       const std::string& device_id,
       const PageContext& context,
-      NavigationHistory navigation_history) override {
+      NavigationHistory navigation_history,
+      base::OnceCallback<void(SendTabToSelfResult)> commit_confirmation)
+      override {
     last_sent_guid_ = device_id;
     last_sent_url_ = url;
     last_sent_title_ = title;
+    std::move(commit_confirmation).Run(SendTabToSelfResult::kSuccess);
     return nullptr;
   }
 

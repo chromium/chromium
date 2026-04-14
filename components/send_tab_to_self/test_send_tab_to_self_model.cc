@@ -22,7 +22,9 @@ const SendTabToSelfEntry* TestSendTabToSelfModel::AddEntry(
     const std::string& title,
     const std::string& device_id,
     const PageContext& context,
-    NavigationHistory navigation_history) {
+    NavigationHistory navigation_history,
+    base::OnceCallback<void(SendTabToSelfResult)> commit_confirmation) {
+  std::move(commit_confirmation).Run(SendTabToSelfResult::kFailure);
   return nullptr;
 }
 

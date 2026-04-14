@@ -90,6 +90,7 @@ if (is_android) {
     sources = [
       "entry_point_display_reason.h",
       "metrics_util.h",
+      "send_tab_to_self_model.h",
     ]
   }
 

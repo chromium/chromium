@@ -44,7 +44,9 @@ class FakeSendTabToSelfModel : public send_tab_to_self::TestSendTabToSelfModel {
       const std::string& title,
       const std::string& target_device_cache_guid,
       const send_tab_to_self::PageContext& context,
-      send_tab_to_self::NavigationHistory navigation_history) override {
+      send_tab_to_self::NavigationHistory navigation_history,
+      base::OnceCallback<void(send_tab_to_self::SendTabToSelfResult)>
+          commit_confirmation) override {
     last_entry_ = SendTabToSelfEntry::FromRequiredFields(
         "test-guid", url, target_device_cache_guid);
     return last_entry_.get();
