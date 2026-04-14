@@ -17,8 +17,6 @@ import org.chromium.ui.modelutil.PropertyModel;
 
 @NullMarked
 public class SiteSearchViewBinder {
-    // TODO: Add unit tests for this class.
-
     public static class ViewHolder {
         final TextView mTitle;
         final TextView mShortcut;
