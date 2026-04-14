@@ -762,11 +762,7 @@ GeoIpCountryCode ChromeAutofillClient::GetVariationConfigCountryCode() const {
 
 profile_metrics::BrowserProfileType ChromeAutofillClient::GetProfileType()
     const {
-  Profile* profile = GetProfile();
-  // Profile can only be null in tests, therefore it is safe to always return
-  // |kRegular| when it does not exist.
-  return profile ? profile_metrics::GetBrowserProfileType(profile)
-                 : profile_metrics::BrowserProfileType::kRegular;
+  return profile_metrics::GetBrowserProfileType(GetProfile());
 }
 
 void ChromeAutofillClient::ShowAutofillSettings(
@@ -1292,10 +1288,11 @@ ChromeAutofillClient::ChromeAutofillClient(content::WebContents* web_contents)
 }
 
 Profile* ChromeAutofillClient::GetProfile() const {
-  if (!web_contents()) {
-    return nullptr;
-  }
-  return Profile::FromBrowserContext(web_contents()->GetBrowserContext());
+  CHECK(web_contents());
+  Profile* profile =
+      Profile::FromBrowserContext(web_contents()->GetBrowserContext());
+  CHECK(profile);
+  return profile;
 }
 
 tabs::TabInterface* ChromeAutofillClient::GetTabInterface() {
