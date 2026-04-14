@@ -4,6 +4,7 @@
 
 #include "remoting/host/linux/linux_process_launcher_delegate.h"
 
+#include <grp.h>
 #include <sys/prctl.h>
 #include <sys/types.h>
 #include <unistd.h>
@@ -59,6 +60,11 @@ class RunAsUserPreExecDelegate : public base::LaunchOptions::PreExecDelegate {
       pid_t new_sid = setsid();
       if (new_sid == -1) {
         RAW_LOG(FATAL, "Failed to create a new session.");
+      }
+    }
+    if (uid_ >= 0 || gid_ >= 0) {
+      if (setgroups(0, nullptr) != 0) {
+        RAW_LOG(FATAL, "Failed to clear supplementary groups");
       }
     }
     if (gid_ >= 0 && setgid(gid_) != 0) {
