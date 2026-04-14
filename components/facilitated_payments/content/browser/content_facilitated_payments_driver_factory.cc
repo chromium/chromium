@@ -111,6 +111,14 @@ void ContentFacilitatedPaymentsDriverFactory::OnTextCopiedToClipboard(
     } else {
       LogPixIframeUrlType(PixIframeUrlType::kOtherNonEmptyUrl);
     }
+
+    if (iframe_url->is_empty() || iframe_url->IsAboutBlank() ||
+        iframe_url->IsAboutSrcdoc()) {
+      const bool is_same_origin =
+          render_frame_host->GetLastCommittedOrigin().IsSameOriginWith(
+              main_frame->GetLastCommittedOrigin());
+      LogPixIframeIsSameOriginAsMainFrame(is_same_origin);
+    }
   }
 
   auto& driver = GetOrCreateForFrame(render_frame_host);

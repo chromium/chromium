@@ -257,6 +257,10 @@ void LogPixCodeCopiedInIframe();
 // Log the URL type of the iframe when a Pix code is copied in an iframe.
 void LogPixIframeUrlType(PixIframeUrlType url_type);
 
+// Log if the iframe is same-origin with the main frame when a Pix code is
+// copied in an iframe.
+void LogPixIframeIsSameOriginAsMainFrame(bool is_same_origin);
+
 // Log when a given payment link in a certain page for an eWallet push payment
 // flow is detected.
 void LogPaymentLinkDetected(ukm::SourceId ukm_source_id);
