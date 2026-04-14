@@ -25,6 +25,8 @@ chromium-metrics-reviews@google.com.
 
 <enums>
 
+<!-- LINT.IfChange(AmbientSearchEntryPoint) -->
+
 <enum name="AmbientSearchEntryPoint">
   <summary>
     The entry point that initiated an ambient search query. (e.g. Context Menu
@@ -83,6 +85,8 @@ chromium-metrics-reviews@google.com.
   <int value="29" label="Composebox"/>
 </enum>
 
+<!-- LINT.ThenChange(//components/lens/lens_metrics.h:AmbientSearchEntryPoint) -->
+
 <enum name="AuxiliarySearchRequestStatus">
   <int value="0" label="Sent (overall number of requests issued)"/>
   <int value="1" label="Processed, Successful (data accepted by recipient)"/>
@@ -99,6 +103,8 @@ chromium-metrics-reviews@google.com.
   <int value="0" label="Not Top Level"/>
   <int value="1" label="Top Level"/>
 </enum>
+
+<!-- LINT.IfChange(CameraOpenEntryPoint) -->
 
 <enum name="CameraOpenEntryPoint">
   <int value="0" label="Omnibox"/>
@@ -117,12 +123,18 @@ chromium-metrics-reviews@google.com.
   <int value="13" label="Composebox"/>
 </enum>
 
+<!-- LINT.ThenChange(//components/lens/lens_metrics.h:CameraOpenEntryPoint) -->
+
+<!-- LINT.IfChange(CameraResult) -->
+
 <enum name="CameraResult">
   <int value="0" label="Success (Camera)"/>
   <int value="1" label="Success (Gallery Image)"/>
   <int value="2" label="Success (QR/Bar Code)"/>
   <int value="3" label="Dismissed"/>
 </enum>
+
+<!-- LINT.ThenChange(//components/lens/lens_metrics.h:CameraResult) -->
 
 <enum name="ClickInfo">
   <summary>
@@ -242,6 +254,8 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange() -->
 
+<!-- LINT.IfChange(LensRegionSearchAspectRatio) -->
+
 <enum name="LensRegionSearchAspectRatio">
   <summary>
     Enum describing the aspect ratio of the captured region. The aspect ratios
@@ -256,6 +270,10 @@ chromium-metrics-reviews@google.com.
   <int value="5" label="Very Tall Aspect Ratio"/>
 </enum>
 
+<!-- LINT.ThenChange(//components/lens/lens_metrics.h:LensRegionSearchAspectRatio) -->
+
+<!-- LINT.IfChange(LensRegionSearchCaptureResult) -->
+
 <enum name="LensRegionSearchCaptureResult">
   <summary>Result of Lens Region Search feature.</summary>
   <int value="0" label="Success"/>
@@ -269,6 +287,8 @@ chromium-metrics-reviews@google.com.
       label="User navigated away from the page while capture mode was open,
              closing the capture mode."/>
 </enum>
+
+<!-- LINT.ThenChange(//components/lens/lens_metrics.h:LensRegionSearchCaptureResult) -->
 
 <!-- LINT.IfChange(OsDefaultsChoiceDialogStatus) -->
 
