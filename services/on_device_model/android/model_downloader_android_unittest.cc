@@ -180,11 +180,11 @@ TEST_F(ModelDownloaderAndroidTest, CheckStatusAllModelStatusEnums) {
       ModelStatus::kAvailable};
 
   for (ModelStatus expected_status_enum : model_status_enums) {
+    java_helper_.SetDefaultStatusCheckResult(expected_status_enum);
     base::test::TestFuture<ModelStatus> future;
     auto downloader = std::make_unique<ModelDownloaderAndroid>(
         kFeature, MakeDownloaderParams(/*require_persistent_mode=*/false));
     downloader->CheckStatus(future.GetCallback());
-    java_helper_.TriggerDownloaderOnStatusCheckResult(expected_status_enum);
     EXPECT_EQ(future.Get(), expected_status_enum);
   }
 }
