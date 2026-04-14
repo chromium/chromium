@@ -20,6 +20,7 @@
 #include "services/tracing/perfetto/consumer_host.h"
 #include "services/tracing/perfetto/producer_host.h"
 #include "services/tracing/public/cpp/perfetto/custom_event_recorder.h"
+#include "services/tracing/public/cpp/perfetto/perfetto_data_source_names.h"
 #include "services/tracing/public/cpp/perfetto/shared_memory.h"
 #include "third_party/perfetto/include/perfetto/ext/tracing/core/tracing_service.h"
 
@@ -45,14 +46,13 @@ bool ParseProcessId(const std::string& pid_as_string, base::ProcessId* pid) {
 // static
 bool PerfettoService::ParsePidFromProducerName(const std::string& producer_name,
                                                base::ProcessId* pid) {
-  if (!base::StartsWith(producer_name, mojom::kPerfettoProducerNamePrefix,
+  if (!base::StartsWith(producer_name, kPerfettoProducerNamePrefix,
                         base::CompareCase::SENSITIVE)) {
     LOG(DFATAL) << "Unexpected producer name: " << producer_name;
     return false;
   }
 
-  static const size_t kPrefixLength =
-      strlen(mojom::kPerfettoProducerNamePrefix);
+  static const size_t kPrefixLength = strlen(kPerfettoProducerNamePrefix);
   if (!ParseProcessId(producer_name.substr(kPrefixLength), pid)) {
     LOG(DFATAL) << "Unexpected producer name: " << producer_name;
     return false;
@@ -115,8 +115,8 @@ void PerfettoService::ConnectToProducerHost(
   uint32_t producer_pid = receivers_.current_context();
   ProducerHost::InitializationResult result = new_producer->Initialize(
       std::move(producer_client), service_.get(),
-      base::StrCat({mojom::kPerfettoProducerNamePrefix,
-                    base::NumberToString(producer_pid)}),
+      base::StrCat(
+          {kPerfettoProducerNamePrefix, base::NumberToString(producer_pid)}),
       std::move(shared_memory), shared_memory_buffer_page_size_bytes);
 
   // There used to be a histogram that recorded failures, but as of 2022

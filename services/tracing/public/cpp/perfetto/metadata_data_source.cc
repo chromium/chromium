@@ -14,7 +14,7 @@
 #include "base/trace_event/common/trace_event_common.h"
 #include "base/tracing/trace_time.h"
 #include "components/variations/active_field_trials.h"
-#include "services/tracing/public/mojom/perfetto_service.mojom.h"
+#include "services/tracing/public/cpp/perfetto/perfetto_data_source_names.h"
 #include "third_party/icu/source/i18n/unicode/timezone.h"
 #include "third_party/perfetto/protos/perfetto/common/data_source_descriptor.gen.h"
 #include "third_party/perfetto/protos/perfetto/config/chrome/chrome_config.gen.h"
@@ -76,7 +76,7 @@ void MetadataDataSource::Register(
     std::vector<BundleRecorder> bundle_recorders,
     std::vector<PacketRecorder> packet_recorders) {
   perfetto::DataSourceDescriptor desc;
-  desc.set_name(tracing::mojom::kMetaData2SourceName);
+  desc.set_name(kMetaData2SourceName);
   perfetto::DataSource<MetadataDataSource, MetadataDataSourceTraits>::Register(
       desc, std::move(task_runner), std::move(bundle_recorders),
       std::move(packet_recorders));

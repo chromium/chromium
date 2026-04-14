@@ -30,6 +30,7 @@
 #include "base/trace_event/typed_macros.h"
 #include "build/build_config.h"
 #include "services/tracing/public/cpp/buildflags.h"
+#include "services/tracing/public/cpp/perfetto/perfetto_data_source_names.h"
 #include "services/tracing/public/cpp/perfetto/perfetto_traced_process.h"
 #include "third_party/perfetto/protos/perfetto/trace/interned_data/interned_data.pbzero.h"
 #include "third_party/perfetto/protos/perfetto/trace/profiling/profile_common.pbzero.h"
@@ -643,7 +644,7 @@ void TracingSamplerProfiler::DeleteOnChildThreadForTesting() {
 // static
 void TracingSamplerProfiler::RegisterDataSource() {
   perfetto::DataSourceDescriptor dsd;
-  dsd.set_name(mojom::kSamplerProfilerSourceName);
+  dsd.set_name(kSamplerProfilerSourceName);
   perfetto::DataSource<TracingSamplerProfiler::DataSource>::Register(dsd);
 }
 

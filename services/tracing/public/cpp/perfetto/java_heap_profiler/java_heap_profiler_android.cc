@@ -10,12 +10,13 @@
 #include "base/logging.h"
 #include "base/no_destructor.h"
 #include "services/tracing/public/cpp/perfetto/java_heap_profiler/hprof_parser_android.h"
+#include "services/tracing/public/cpp/perfetto/perfetto_data_source_names.h"
 #include "services/tracing/public/cpp/perfetto/perfetto_traced_process.h"
 
 namespace tracing {
 
 JavaHeapProfiler::JavaHeapProfiler()
-    : DataSourceBase(mojom::kJavaHeapProfilerSourceName) {}
+    : DataSourceBase(kJavaHeapProfilerSourceName) {}
 
 // static
 JavaHeapProfiler* JavaHeapProfiler::GetInstance() {

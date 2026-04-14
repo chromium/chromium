@@ -51,6 +51,7 @@
 #include "services/resource_coordinator/public/cpp/memory_instrumentation/memory_instrumentation.h"
 #include "services/resource_coordinator/public/mojom/memory_instrumentation/memory_instrumentation.mojom-shared.h"
 #include "services/tracing/public/cpp/perfetto/perfetto_config.h"
+#include "services/tracing/public/cpp/perfetto/perfetto_data_source_names.h"
 #include "services/tracing/public/cpp/perfetto/perfetto_session.h"
 #include "services/tracing/public/cpp/perfetto/trace_packet_tokenizer.h"
 #include "services/tracing/public/cpp/trace_startup_config.h"
@@ -245,7 +246,7 @@ void AddPidsToProcessFilter(
     if (source_config->name() == kDataSourceName) {
       for (auto& enabled_pid : included_process_ids) {
         *data_source.add_producer_name_filter() = base::StrCat(
-            {tracing::mojom::kPerfettoProducerNamePrefix,
+            {tracing::kPerfettoProducerNamePrefix,
              base::NumberToString(static_cast<uint32_t>(enabled_pid))});
       }
       break;
@@ -289,8 +290,7 @@ void ConvertToTrackEventConfigIfNeeded(perfetto::TraceConfig& trace_config) {
     }
   }
   for (auto& data_source : *trace_config.mutable_data_sources()) {
-    if (data_source.config().name() ==
-            tracing::mojom::kTraceEventDataSourceName &&
+    if (data_source.config().name() == tracing::kTraceEventDataSourceName &&
         data_source.config().has_chrome_config()) {
       data_source.mutable_config()->set_name(kTrackEventDataSourceName);
       base::trace_event::TraceConfig base_config(

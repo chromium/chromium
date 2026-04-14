@@ -24,10 +24,10 @@
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "mojo/public/cpp/system/platform_handle.h"
+#include "services/tracing/public/cpp/perfetto/perfetto_data_source_names.h"
 #include "services/tracing/public/cpp/perfetto/perfetto_traced_process.h"
 #include "services/tracing/public/cpp/perfetto/system_trace_writer.h"
 #include "services/tracing/public/mojom/constants.mojom.h"
-#include "services/tracing/public/mojom/perfetto_service.mojom.h"
 
 namespace arc {
 
@@ -107,11 +107,11 @@ class ArcTracingDataSource
       tracing::SystemTraceWriter<std::string, DataSourceProxy>;
 
   ArcTracingDataSource()
-      : DataSourceBase(tracing::mojom::kArcTraceDataSourceName),
+      : DataSourceBase(tracing::kArcTraceDataSourceName),
         perfetto_task_runner_(
             tracing::PerfettoTracedProcess::DataSourceBase::GetTaskRunner()) {
     perfetto::DataSourceDescriptor dsd;
-    dsd.set_name(tracing::mojom::kArcTraceDataSourceName);
+    dsd.set_name(tracing::kArcTraceDataSourceName);
     DataSourceProxy::Register(dsd, this);
   }
 

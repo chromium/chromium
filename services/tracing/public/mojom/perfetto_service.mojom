@@ -10,27 +10,6 @@ import "mojo/public/mojom/base/shared_memory.mojom";
 import "mojo/public/mojom/base/token.mojom";
 import "mojo/public/mojom/base/unguessable_token.mojom";
 
-// Producer processes register with the format
-// "kPerfettoProducerNamePrefix-PID" when connecting to Chrome's internal
-// tracing service. Note that system producers use a different but similar
-// naming scheme to disambiguate between different apps on the same system,
-// see SystemProducer::ConnectToSystemService() implementations. Of
-// particular interest is PosixSystemProducer::ConnectSocket().
-const string kPerfettoProducerNamePrefix = "org.chromium-";
-const string kTraceEventDataSourceName = "org.chromium.trace_event";
-const string kMemoryInstrumentationDataSourceName = "org.chromium.memory_instrumentation";
-const string kMetaData2SourceName = "org.chromium.trace_metadata2";
-const string kSystemTraceDataSourceName = "org.chromium.trace_system";
-const string kArcTraceDataSourceName = "org.chromium.trace_arc";
-const string kSamplerProfilerSourceName = "org.chromium.sampler_profiler";
-const string kJavaHeapProfilerSourceName = "org.chromium.java_heap_profiler";
-const string kNativeHeapProfilerSourceName =
-    "org.chromium.native_heap_profiler";
-const string kSystemMetricsSourceName =
-    "org.chromium.system_metrics";
-const string kHistogramSampleSourceName =
-    "org.chromium.histogram_sample";
-
 // Brief description of the flow: There's a per-process ProducerClient which
 // connects to the central PerfettoService and establishes a two-way connection
 // with a ProducerHost. The latter will then pass a SharedMemoryBuffer to the

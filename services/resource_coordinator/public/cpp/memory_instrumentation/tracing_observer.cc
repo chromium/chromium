@@ -9,6 +9,7 @@
 #include "base/trace_event/memory_dump_manager.h"
 #include "base/trace_event/traced_value.h"
 #include "build/build_config.h"
+#include "services/tracing/public/cpp/perfetto/perfetto_data_source_names.h"
 
 namespace memory_instrumentation {
 
@@ -21,7 +22,7 @@ namespace {
 
 TracingObserver::TracingObserver()
     : tracing::PerfettoTracedProcess::DataSourceBase(
-          tracing::mojom::kMemoryInstrumentationDataSourceName) {
+          tracing::kMemoryInstrumentationDataSourceName) {
   perfetto::DataSourceDescriptor dsd;
   dsd.set_name(name());
   DataSourceProxy::Register(dsd, this);

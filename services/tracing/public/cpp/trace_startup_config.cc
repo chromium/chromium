@@ -24,7 +24,7 @@
 #include "build/build_config.h"
 #include "components/tracing/common/tracing_switches.h"
 #include "services/tracing/public/cpp/perfetto/perfetto_config.h"
-#include "services/tracing/public/mojom/perfetto_service.mojom.h"
+#include "services/tracing/public/cpp/perfetto/perfetto_data_source_names.h"
 #include "third_party/perfetto/protos/perfetto/config/track_event/track_event_config.gen.h"
 #include "third_party/snappy/src/snappy.h"
 
@@ -112,13 +112,13 @@ perfetto::TraceConfig TraceStartupConfig::GetDefaultBackgroundStartupConfig() {
   track_event_data_source->set_name("track_event");
   {
     auto* source_config = config.add_data_sources()->mutable_config();
-    source_config->set_name(tracing::mojom::kMetaData2SourceName);
+    source_config->set_name(kMetaData2SourceName);
     source_config->set_target_buffer(1);
   }
 
 #if BUILDFLAG(IS_ANDROID)
   config.add_data_sources()->mutable_config()->set_name(
-      tracing::mojom::kSamplerProfilerSourceName);
+      kSamplerProfilerSourceName);
 #endif
   tracing::AdaptPerfettoConfigForChrome(&config, true, true);
   return config;

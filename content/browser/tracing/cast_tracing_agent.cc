@@ -20,10 +20,10 @@
 #include "chromecast/tracing/system_tracer.h"
 #include "chromecast/tracing/system_tracing_common.h"
 #include "content/public/browser/browser_thread.h"
+#include "services/tracing/public/cpp/perfetto/perfetto_data_source_names.h"
 #include "services/tracing/public/cpp/perfetto/perfetto_traced_process.h"
 #include "services/tracing/public/cpp/perfetto/system_trace_writer.h"
 #include "services/tracing/public/mojom/constants.mojom.h"
-#include "services/tracing/public/mojom/perfetto_service.mojom.h"
 
 namespace content {
 namespace {
@@ -210,13 +210,13 @@ class CastDataSource : public tracing::PerfettoTracedProcess::DataSourceBase {
       tracing::SystemTraceWriter<std::string, DataSourceProxy>;
 
   CastDataSource()
-      : DataSourceBase(tracing::mojom::kSystemTraceDataSourceName),
+      : DataSourceBase(tracing::kSystemTraceDataSourceName),
         worker_task_runner_(base::ThreadPool::CreateSequencedTaskRunner(
             {base::MayBlock(), base::TaskPriority::BEST_EFFORT,
              base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN})) {
     DETACH_FROM_SEQUENCE(perfetto_sequence_checker_);
     perfetto::DataSourceDescriptor dsd;
-    dsd.set_name(tracing::mojom::kSystemTraceDataSourceName);
+    dsd.set_name(tracing::kSystemTraceDataSourceName);
     DataSourceProxy::Register(dsd, this);
   }
 

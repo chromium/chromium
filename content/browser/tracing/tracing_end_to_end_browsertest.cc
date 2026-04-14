@@ -22,9 +22,9 @@
 #include "content/public/test/content_browser_test_utils.h"
 #include "services/resource_coordinator/public/cpp/memory_instrumentation/tracing_observer_proto.h"
 #include "services/tracing/public/cpp/perfetto/metadata_data_source.h"
+#include "services/tracing/public/cpp/perfetto/perfetto_data_source_names.h"
 #include "services/tracing/public/cpp/perfetto/track_name_recorder.h"
 #include "services/tracing/public/cpp/stack_sampling/tracing_sampler_profiler.h"
-#include "services/tracing/public/mojom/perfetto_service.mojom.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "third_party/perfetto/protos/perfetto/config/chrome/chrome_config.gen.h"
 #include "third_party/perfetto/protos/perfetto/config/chrome/histogram_samples.gen.h"
@@ -70,7 +70,7 @@ perfetto::protos::gen::TraceConfig TraceConfigWithHistograms(
 
   auto* histogram_data_source = perfetto_config.add_data_sources();
   auto* histogram_source_config = histogram_data_source->mutable_config();
-  histogram_source_config->set_name(tracing::mojom::kHistogramSampleSourceName);
+  histogram_source_config->set_name(tracing::kHistogramSampleSourceName);
   histogram_source_config->set_target_buffer(0);
 
   if (!histograms.empty()) {

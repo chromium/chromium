@@ -31,10 +31,10 @@
 #include "services/tracing/perfetto/perfetto_service.h"
 #include "services/tracing/perfetto/test_utils.h"
 #include "services/tracing/public/cpp/buildflags.h"
+#include "services/tracing/public/cpp/perfetto/perfetto_data_source_names.h"
 #include "services/tracing/public/cpp/perfetto/perfetto_traced_process.h"
 #include "services/tracing/public/cpp/perfetto/producer_test_utils.h"
 #include "services/tracing/public/cpp/traced_process_impl.h"
-#include "services/tracing/public/mojom/traced_process.mojom.h"
 #include "services/tracing/tracing_service.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -132,7 +132,7 @@ class TracingSampleProfilerTest : public testing::Test {
     perfetto::TraceConfig trace_config;
     trace_config.add_buffers()->set_size_kb(1024);
     auto* ds_cfg = trace_config.add_data_sources()->mutable_config();
-    ds_cfg->set_name(mojom::kSamplerProfilerSourceName);
+    ds_cfg->set_name(kSamplerProfilerSourceName);
     ds_cfg = trace_config.add_data_sources()->mutable_config();
     ds_cfg->set_name("track_event");
 

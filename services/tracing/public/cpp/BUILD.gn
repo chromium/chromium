@@ -43,6 +43,7 @@ target(tracing_lib_type, "cpp") {
     "perfetto/flow_event_utils.cc",
     "perfetto/flow_event_utils.h",
     "perfetto/macros.h",
+    "perfetto/perfetto_data_source_names.h",
   ]
 
   defines = [ "IS_TRACING_CPP_IMPL" ]
