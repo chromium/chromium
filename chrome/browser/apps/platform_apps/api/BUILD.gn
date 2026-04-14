@@ -80,6 +80,7 @@ source_set("api") {
       "//chrome/browser/ash/app_list/arc",
       "//chrome/browser/ash/login/demo_mode",
       "//chrome/browser/ash/remote_apps",
+      "//chrome/browser/media_galleries",
       "//chrome/services/media_gallery_util/public/cpp",
       "//chromeos/components/remote_apps/mojom",
       "//components/storage_monitor",

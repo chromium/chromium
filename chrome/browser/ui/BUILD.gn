@@ -2430,6 +2430,7 @@ static_library("ui") {
       "//chrome/browser/chromeos/upload_office_to_cloud",
       "//chrome/browser/enterprise/connectors/device_trust/attestation/ash",
       "//chrome/browser/media/router/discovery/access_code:access_code_cast_feature",
+      "//chrome/browser/media_galleries",
       "//chrome/browser/nearby_sharing",
       "//chrome/browser/nearby_sharing:impl",
       "//chrome/browser/nearby_sharing/common",

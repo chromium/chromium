@@ -230,7 +230,7 @@ void OnLocalStatePrefsLoaded();
 #include "chrome/browser/apps/platform_apps/chrome_apps_browser_api_provider.h"
 #include "chrome/browser/ui/apps/chrome_app_window_client.h"
 #include "chrome/common/extensions/chrome_extensions_client.h"
-#include "components/storage_monitor/storage_monitor.h"
+#include "components/storage_monitor/storage_monitor.h"  // nogncheck crbug.com/40147906
 #include "extensions/common/context_data.h"
 #include "extensions/common/extension_l10n_util.h"
 #endif

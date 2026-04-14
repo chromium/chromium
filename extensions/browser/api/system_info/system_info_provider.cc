@@ -12,8 +12,8 @@
 
 // TODO(crbug.com/371321982): port system.storage api on desktop android.
 #if !BUILDFLAG(IS_ANDROID)
-#include "components/storage_monitor/storage_info.h"
-#include "components/storage_monitor/storage_monitor.h"
+#include "components/storage_monitor/storage_info.h"  // nogncheck crbug.com/40147906
+#include "components/storage_monitor/storage_monitor.h"  // nogncheck crbug.com/40147906
 #include "extensions/common/api/system_storage.h"
 
 using storage_monitor::StorageInfo;

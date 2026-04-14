@@ -305,6 +305,7 @@ static_library("test_support") {
       "//chrome/browser/apps/app_service/publishers",
       "//chrome/common/record_replay",
       "//chrome/renderer/record_replay",
+      "//components/storage_monitor:test_support",
     ]
   }
 
@@ -313,7 +314,10 @@ static_library("test_support") {
   }
 
   if (is_chromeos) {
-    deps += [ "//ash/webui/common:trusted_types_util" ]
+    deps += [
+      "//ash/webui/common:trusted_types_util",
+      "//chrome/browser/media_galleries",
+    ]
   }
 
   if (is_chromeos && is_chromeos_device) {
@@ -5698,6 +5702,7 @@ if (!is_android) {
         "//chrome/browser/image_decoder",
         "//chrome/browser/invalidation:browser_tests",
         "//chrome/browser/media/router:test_support",
+        "//chrome/browser/media_galleries",
         "//chrome/browser/media_galleries/fileapi:browser_tests",
         "//chrome/browser/nearby_sharing/common",
         "//chrome/browser/new_tab_page/chrome_colors",
@@ -8960,16 +8965,7 @@ test("unit_tests") {
       "../browser/media/platform_verification_chromeos_unittest.cc",
       "../browser/media/webrtc/chrome_screen_enumerator_ash_unittest.cc",
       "../browser/media/webrtc/desktop_media_list_ash_unittest.cc",
-      "../browser/media_galleries/gallery_watch_manager_unittest.cc",
-      "../browser/media_galleries/media_file_system_registry_unittest.cc",
-      "../browser/media_galleries/media_galleries_dialog_controller_mock.cc",
-      "../browser/media_galleries/media_galleries_dialog_controller_mock.h",
-      "../browser/media_galleries/media_galleries_dialog_controller_test_util.cc",
-      "../browser/media_galleries/media_galleries_dialog_controller_test_util.h",
-      "../browser/media_galleries/media_galleries_permission_controller_unittest.cc",
       "../browser/media_galleries/media_galleries_permissions_unittest.cc",
-      "../browser/media_galleries/media_galleries_preferences_unittest.cc",
-      "../browser/media_galleries/mtp_device_object_enumerator_unittest.cc",
       "../browser/metrics/chrome_metrics_service_client_ash_unittest.cc",
       "../browser/metrics/chromeos_metrics_provider_unittest.cc",
       "../browser/metrics/per_user_state_manager_chromeos_unittest.cc",
@@ -9176,6 +9172,9 @@ test("unit_tests") {
       "//chrome/browser/chromeos/reporting",
       "//chrome/browser/enterprise/connectors/device_trust/attestation/ash",
       "//chrome/browser/extensions/api/terminal:startup_status",
+      "//chrome/browser/media_galleries",
+      "//chrome/browser/media_galleries:test_support",
+      "//chrome/browser/media_galleries:unit_tests",
       "//chrome/browser/media_galleries/fileapi:unit_tests",
       "//chrome/browser/nearby_sharing",
       "//chrome/browser/nearby_sharing:impl",

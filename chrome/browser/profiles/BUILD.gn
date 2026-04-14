@@ -586,6 +586,7 @@ source_set("profiles_extra_parts_impl") {
       "//chrome/browser/chromeos/enterprise/cloud_storage",
       "//chrome/browser/chromeos/extensions/telemetry/api:keyed_service_factory",
       "//chrome/browser/chromeos/policy/dlp",
+      "//chrome/browser/media_galleries",
       "//chrome/browser/nearby_sharing",
       "//chrome/browser/policy:onc",
       "//chrome/browser/push_notification",

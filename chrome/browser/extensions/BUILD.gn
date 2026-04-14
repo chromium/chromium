@@ -1022,7 +1022,6 @@ source_set("extensions") {
       "//components/services/unzip/public/cpp",
       "//components/sessions",
       "//components/signin/public/identity_manager",
-      "//components/storage_monitor",
       "//components/strings",
       "//components/sync",
       "//components/sync_preferences",

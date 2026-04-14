@@ -46,6 +46,7 @@ source_set("impl") {
     "//base",
     "//chrome/browser:browser_process",
     "//chrome/browser/image_decoder",
+    "//chrome/browser/media_galleries",
     "//chrome/services/media_gallery_util/public/cpp",
     "//content/public/browser",
     "//storage/browser",
