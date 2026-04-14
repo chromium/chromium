@@ -25,7 +25,6 @@ import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
-import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tabmodel.TabCreator;
 import org.chromium.chrome.browser.theme.ThemeColorProvider;
 import org.chromium.chrome.browser.toolbar.MenuBuilderHelper;
@@ -36,12 +35,9 @@ import org.chromium.chrome.browser.ui.extensions.R;
 import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
 import org.chromium.chrome.browser.user_education.IphCommandBuilder;
 import org.chromium.chrome.browser.user_education.UserEducationHelper;
-import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.feature_engagement.EventConstants;
 import org.chromium.components.feature_engagement.FeatureConstants;
-import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.browser.WebContents;
-import org.chromium.ui.base.PageTransition;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.listmenu.ListMenu;
 import org.chromium.ui.listmenu.ListMenuButton;
@@ -230,9 +226,11 @@ public class ExtensionsMenuCoordinator
                         mTask,
                         mProfile,
                         mCurrentTabSupplier,
+                        mTabCreator,
                         mExtensionModels,
                         mMainPageModel,
                         mSitePermissionsPageModel,
+                        /* onDismissMenu= */ mExtensionsMenuButton::dismiss,
                         /* onReady= */ () -> {
                             mExtensionsMenuButton.showMenu();
                         });
@@ -248,14 +246,6 @@ public class ExtensionsMenuCoordinator
             mMediator.destroy();
             mMediator = null;
         }
-    }
-
-    private void openUrlFromMenu(String url) {
-        mExtensionsMenuButton.dismiss();
-
-        LoadUrlParams params = new LoadUrlParams(url, PageTransition.AUTO_TOPLEVEL);
-
-        mTabCreator.createNewTab(params, TabLaunchType.FROM_CHROME_UI, null);
     }
 
     public void onTintChanged(
@@ -285,10 +275,18 @@ public class ExtensionsMenuCoordinator
                 (view) -> mExtensionsMenuButton.dismiss());
         mMainPageModel.set(
                 ExtensionsMenuProperties.DISCOVER_EXTENSIONS_CLICK_LISTENER,
-                (view) -> openUrlFromMenu(UrlConstants.CHROME_WEBSTORE_URL));
+                (view) -> {
+                    if (mMediator != null) {
+                        mMediator.onDiscoverExtensionsClicked();
+                    }
+                });
         mMainPageModel.set(
                 ExtensionsMenuProperties.MANAGE_EXTENSIONS_CLICK_LISTENER,
-                (view) -> openUrlFromMenu(UrlConstants.CHROME_EXTENSIONS_URL));
+                (view) -> {
+                    if (mMediator != null) {
+                        mMediator.onManageExtensionsClicked();
+                    }
+                });
         mMainPageModel.set(
                 ExtensionsMenuProperties.MENU_BUTTON_PINNING_CLICK_LISTENER,
                 (view) -> {
@@ -383,7 +381,7 @@ public class ExtensionsMenuCoordinator
                 SitePermissionsPageProperties.MANAGE_EXTENSION_CLICK_LISTENER,
                 (view) -> {
                     if (mMediator != null) {
-                        mMediator.onManageThisExtensionClicked(this::openUrlFromMenu);
+                        mMediator.onManageThisExtensionClicked();
                     }
                 });
     }

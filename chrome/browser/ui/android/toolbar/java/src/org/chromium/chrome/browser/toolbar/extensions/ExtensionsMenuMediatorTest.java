@@ -11,7 +11,6 @@ import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.anyInt;
-import static org.mockito.Mockito.anyLong;
 import static org.mockito.Mockito.clearInvocations;
 import static org.mockito.Mockito.eq;
 import static org.mockito.Mockito.mock;
@@ -35,7 +34,6 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
-import org.chromium.base.Callback;
 import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.SettableNullableObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
@@ -44,6 +42,7 @@ import org.chromium.chrome.browser.extensions.ContextMenuSource;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.MockTab;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tabmodel.TabCreator;
 import org.chromium.chrome.browser.ui.browser_window.ChromeAndroidTask;
 import org.chromium.chrome.browser.ui.extensions.ExtensionActionContextMenuBridge;
 import org.chromium.chrome.browser.ui.extensions.ExtensionActionContextMenuBridgeJni;
@@ -55,6 +54,7 @@ import org.chromium.chrome.browser.ui.extensions.FakeExtensionActionsBridgeRule;
 import org.chromium.chrome.browser.ui.extensions.FakeExtensionUiBackendRule;
 import org.chromium.chrome.browser.ui.extensions.R;
 import org.chromium.components.embedder_support.util.UrlConstants;
+import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.hierarchicalmenu.HierarchicalMenuController;
 import org.chromium.ui.listmenu.ListMenuButton;
@@ -96,10 +96,13 @@ public class ExtensionsMenuMediatorTest {
     @Mock private MenuModelBridge mActionContextMenuModelBridge;
     @Mock private PropertyModel mMenuPropertyModel;
     @Mock private PropertyModel mSitePermissionsPropertyModel;
+    @Mock private TabCreator mTabCreator;
+    @Mock private Runnable mOnDismissMenu;
     @Mock private Runnable mOnReadyRunnable;
 
     @Captor private ArgumentCaptor<ExtensionsMenuBridge> mBridgeCaptor;
     @Captor private ArgumentCaptor<ListMenuHost.PopupMenuShownListener> mPopupListenerCaptor;
+    @Captor private ArgumentCaptor<LoadUrlParams> mLoadUrlParamsCaptor;
 
     private final SettableNullableObservableSupplier<Tab> mCurrentTabSupplier =
             ObservableSuppliers.createNullable();
@@ -149,9 +152,11 @@ public class ExtensionsMenuMediatorTest {
                         mTask,
                         mProfile,
                         mCurrentTabSupplier,
+                        mTabCreator,
                         mActionModels,
                         mMenuPropertyModel,
                         mSitePermissionsPropertyModel,
+                        mOnDismissMenu,
                         mOnReadyRunnable);
 
         // Capture the bridge instance created inside the constructor
@@ -226,9 +231,11 @@ public class ExtensionsMenuMediatorTest {
                         mTask,
                         mProfile,
                         mCurrentTabSupplier,
+                        mTabCreator,
                         mActionModels,
                         mMenuPropertyModel,
                         mSitePermissionsPropertyModel,
+                        mOnDismissMenu,
                         mOnReadyRunnable);
 
         // Verify it should have populated immediately without needing a callback.
@@ -1153,11 +1160,38 @@ public class ExtensionsMenuMediatorTest {
                 .thenReturn("id_a");
 
         // Click on 'manage this extension'.
-        Callback<String> openUrlCallback = mock(Callback.class);
-        mMenuMediator.onManageThisExtensionClicked(openUrlCallback);
+        mMenuMediator.onManageThisExtensionClicked();
+
+        // Verify dismiss runnable was called.
+        verify(mOnDismissMenu).run();
 
         // Verify extension page was opened for the extension.
-        verify(openUrlCallback).onResult(UrlConstants.CHROME_EXTENSIONS_ID_URL + "id_a");
+        verify(mTabCreator).createNewTab(mLoadUrlParamsCaptor.capture(), anyInt(), any());
+        assertEquals(
+                UrlConstants.CHROME_EXTENSIONS_URL + "?id=id_a",
+                mLoadUrlParamsCaptor.getValue().getUrl());
+    }
+
+    /** Tests that clicking on the 'discover extensions' button opens the web store page. */
+    @Test
+    public void testOnDiscoverExtensionsClicked() {
+        mMenuMediator.onDiscoverExtensionsClicked();
+
+        verify(mOnDismissMenu).run();
+        verify(mTabCreator).createNewTab(mLoadUrlParamsCaptor.capture(), anyInt(), any());
+        assertEquals(UrlConstants.CHROME_WEBSTORE_URL, mLoadUrlParamsCaptor.getValue().getUrl());
+    }
+
+    /**
+     * Tests that clicking on the 'manage extensions' button opens the extensions management page.
+     */
+    @Test
+    public void testOnManageExtensionsClicked() {
+        mMenuMediator.onManageExtensionsClicked();
+
+        verify(mOnDismissMenu).run();
+        verify(mTabCreator).createNewTab(mLoadUrlParamsCaptor.capture(), anyInt(), any());
+        assertEquals(UrlConstants.CHROME_EXTENSIONS_URL, mLoadUrlParamsCaptor.getValue().getUrl());
     }
 
     /**
