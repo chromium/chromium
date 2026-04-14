@@ -643,7 +643,7 @@ TEST_F(MultiBufferTest, BlockIdOverflowCrashes) {
   provider_ptr->set_available(true);
 
   // This call is expected to hit a CHECK_GE(pos, 0) in multi_buffer.cc.
-  EXPECT_DEATH(multibuffer_.OnDataProviderEvent(provider_ptr), "");
+  EXPECT_DEATH_IF_SUPPORTED(multibuffer_.OnDataProviderEvent(provider_ptr), "");
 }
 
 TEST_F(MultiBufferTest, BlockIdOverflow) {
@@ -655,7 +655,7 @@ TEST_F(MultiBufferTest, BlockIdOverflow) {
                            base::NullCallback(), task_runner_);
 
   // This should crash due to base::checked_cast in MultiBufferReader::block.
-  EXPECT_DEATH(reader.Seek(huge_pos), "");
+  EXPECT_DEATH_IF_SUPPORTED(reader.Seek(huge_pos), "");
 }
 
 }  // namespace blink
