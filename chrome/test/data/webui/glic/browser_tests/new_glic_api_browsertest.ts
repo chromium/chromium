@@ -2,10 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {ClientCapabilities} from '/glic/glic_api/glic_api.js';
-import type {GlicWebClient, InvokeOptions, Observable, OpenPanelInfo, PanelOpeningData, PanelState, TabData} from '/glic/glic_api/glic_api.js';
+import {ClientCapabilities, SkillSource} from '/glic/glic_api/glic_api.js';
+import type {GlicWebClient, InvokeOptions, Observable, OpenPanelInfo, PageMetadata, PanelOpeningData, PanelState, TabData} from '/glic/glic_api/glic_api.js';
 
-import {ApiTestError, ApiTestFixtureBase, assertDefined, assertEquals, assertUndefined, mapObservable, observeSequence, runUntil, sleep, testMain, WebClient} from './browser_test_base.js';
+import {ApiTestError, ApiTestFixtureBase, assertDefined, assertEquals, assertTrue, assertUndefined, checkDefined, mapObservable, observeSequence, runUntil, sleep, testMain, waitFor, WebClient} from './browser_test_base.js';
 
 class ApiTests extends ApiTestFixtureBase {
   override async setUpTest() {
@@ -31,6 +31,214 @@ class ApiTests extends ApiTestFixtureBase {
 
   async testLoadWhileWindowClosed() {
     await observeSequence(this.host.panelActive()).waitForValue(false);
+  }
+
+  async testGetPageMetadata() {
+    assertDefined(this.host.getPageMetadata);
+    assertDefined(this.host.getFocusedTabStateV2);
+
+    const focus =
+        await observeSequence(this.host.getFocusedTabStateV2()).next();
+    const tabId = checkDefined(focus.hasFocus?.tabData.tabId);
+
+    const metadataObservable = this.host.getPageMetadata(tabId, ['author']);
+    assertDefined(metadataObservable);
+    const metadataSequence = observeSequence(metadataObservable);
+
+    const metadata: PageMetadata = await metadataSequence.next();
+
+    assertEquals(1, metadata.frameMetadata.length);
+    const authorTag =
+        metadata.frameMetadata[0]!.metaTags.find(tag => tag.name === 'author');
+    assertDefined(authorTag);
+    assertEquals('George', authorTag.content);
+  }
+
+  async testGetPageMetadataInvalidTabId() {
+    assertDefined(this.host.getPageMetadata);
+
+    const metadataObservable =
+        this.host.getPageMetadata('invalid-tab-id', ['author']);
+    assertDefined(metadataObservable);
+    const metadataSequence = observeSequence(metadataObservable);
+
+    // The observable should not emit any values, and should complete.
+    await waitFor(metadataSequence.completed);
+    assertTrue(metadataSequence.isEmpty());
+  }
+
+  async testGetPageMetadataEmptyNames() {
+    assertDefined(this.host.getPageMetadata);
+    assertDefined(this.host.getFocusedTabStateV2);
+
+    const focus =
+        await observeSequence(this.host.getFocusedTabStateV2()).next();
+    const tabId = checkDefined(focus.hasFocus?.tabData.tabId);
+
+    try {
+      this.host.getPageMetadata(tabId, []);
+      assertTrue(false, 'Should have thrown an error');
+    } catch (e) {
+      assertEquals('names must not be empty', (e as Error).message);
+    }
+  }
+
+  async testGetPageMetadataMultipleSubscriptions() {
+    assertDefined(this.host.getPageMetadata);
+    assertDefined(this.host.getFocusedTabStateV2);
+
+    const focus =
+        await observeSequence(this.host.getFocusedTabStateV2()).next();
+    const tabId = checkDefined(focus.hasFocus?.tabData.tabId);
+
+    const metadataObservable1 = this.host.getPageMetadata(tabId, ['author']);
+    assertDefined(metadataObservable1);
+
+    const metadataObservable2 =
+        this.host.getPageMetadata(tabId, ['description']);
+    assertDefined(metadataObservable2);
+
+    assertTrue(metadataObservable1 === metadataObservable2);
+  }
+
+  async testGetPageMetadataUpdates() {
+    assertDefined(this.host.getPageMetadata);
+    assertDefined(this.host.getFocusedTabStateV2);
+
+    const focus =
+        await observeSequence(this.host.getFocusedTabStateV2()).next();
+    const tabId = checkDefined(focus.hasFocus?.tabData.tabId);
+
+    const metadataObservable = this.host.getPageMetadata(tabId, ['author']);
+    assertDefined(metadataObservable);
+    const metadataSequence = observeSequence(metadataObservable);
+
+    const metadata: PageMetadata = await metadataSequence.next();
+    assertEquals(1, metadata.frameMetadata.length);
+    const authorTag =
+        metadata.frameMetadata[0]!.metaTags.find(tag => tag.name === 'author');
+    assertDefined(authorTag);
+    assertEquals('George', authorTag.content);
+
+    // Wait for C++ to modify the page.
+    await this.advanceToNextStep();
+
+    const metadata2: PageMetadata = await metadataSequence.next();
+    assertEquals(1, metadata2.frameMetadata.length);
+    const authorTag2 =
+        metadata2.frameMetadata[0]!.metaTags.find(tag => tag.name === 'author');
+    assertDefined(authorTag2);
+    assertEquals('Ruth', authorTag2.content);
+  }
+
+  async testGetPageMetadataTabDestroyed() {
+    assertDefined(this.host.getPageMetadata);
+    assertDefined(this.host.getFocusedTabStateV2);
+    assertDefined(this.host.getPinnedTabs);
+
+    await observeSequence(this.host.getPinnedTabs())
+        .waitFor(t => t.length === 2);
+    const focus = await observeSequence(this.host.getFocusedTabStateV2())
+                      .waitFor(f => !!f?.hasFocus?.tabData.tabId);
+    const focusedTabId = checkDefined(focus.hasFocus?.tabData.tabId);
+
+    let tabs = checkDefined(this.host.getPinnedTabs().getCurrentValue());
+    tabs = tabs.filter(t => t.tabId !== focusedTabId);
+    const otherTabId = checkDefined(tabs[0]?.tabId);
+
+    const metadataObservable =
+        this.host.getPageMetadata(otherTabId, ['author']);
+    assertDefined(metadataObservable);
+    const metadataSequence = observeSequence(metadataObservable);
+
+    const metadata: PageMetadata = await metadataSequence.next();
+    assertDefined(metadata);
+    assertEquals(1, metadata.frameMetadata[0]!.metaTags.length);
+
+    // Close the tab.
+    await this.advanceToNextStep();
+
+    // The observable should not emit any more values, and should complete.
+    await waitFor(metadataSequence.completed);
+    assertTrue(metadataSequence.isEmpty());
+  }
+
+  async testAdditionalContext() {
+    const additionalContextPromise = new Promise<void>(resolve => {
+      this.host.getAdditionalContext!().subscribe(async context => {
+        assertEquals(context.name, 'part with everything');
+        assertDefined(context.tabId);
+        assertTrue(context.tabId!.length > 0);
+        assertDefined(context.frameUrl);
+        assertTrue(context.frameUrl!.length > 0);
+        assertEquals(context.parts.length, 7);
+
+        const part1 = context.parts[0]!;
+        assertDefined(part1.data);
+        assertEquals(part1.data!.type, 'text/plain');
+        const data1 = new Uint8Array(await part1.data!.arrayBuffer());
+        assertEquals(data1.length, 4);
+        assertEquals(data1[0], 't'.charCodeAt(0));
+
+        const part2 = context.parts[1]!;
+        assertUndefined(part2.data);
+        assertDefined(part2.screenshot);
+        assertEquals(part2.screenshot!.widthPixels, 10);
+        assertEquals(part2.screenshot!.heightPixels, 20);
+        assertEquals(part2.screenshot!.mimeType, 'image/png');
+        const data2 = new Uint8Array(part2.screenshot!.data);
+        assertEquals(data2.length, 4);
+        assertEquals(data2[0], 1);
+
+        const part3 = context.parts[2]!;
+        assertDefined(part3.webPageData);
+        assertEquals(
+            part3.webPageData!.mainDocument.innerText, 'some inner text');
+
+        const part4 = context.parts[3]!;
+        assertDefined(part4.annotatedPageData);
+
+        const part5 = context.parts[4]!;
+        assertDefined(part5.pdf);
+        assertDefined(part5.pdf!.pdfData);
+        const pdfText = await new Response(part5.pdf!.pdfData!).text();
+        assertEquals(pdfText, 'pdf');
+
+        const part6 = context.parts[5]!;
+        assertDefined(part6.tabContext);
+        assertDefined(part6.tabContext!.tabData);
+        assertEquals(part6.tabContext!.tabData!.tabId, '1');
+        assertEquals(part6.tabContext!.tabData!.windowId, '2');
+
+        const part7 = context.parts[6]!;
+        assertDefined(part7.region);
+        assertDefined(part7.region!.rect);
+        assertEquals(part7.region!.rect!.x, 10);
+        assertEquals(part7.region!.rect!.y, 20);
+        assertEquals(part7.region!.rect!.width, 30);
+        assertEquals(part7.region!.rect!.height, 40);
+
+        resolve();
+      });
+    });
+    await this.advanceToNextStep();
+    await additionalContextPromise;
+  }
+
+  async testCancelActions() {
+    assertDefined(this.host.cancelActions);
+    const taskId: number = this.testParams;
+    const result = await this.host.cancelActions(taskId);
+    await this.advanceToNextStep(result);
+  }
+
+  async testNotifyActOnWebCapabilityChanged() {
+    assertDefined(this.host.getActOnWebCapability);
+    const actOnWebCapabilitySequence =
+        observeSequence(this.host.getActOnWebCapability());
+    await actOnWebCapabilitySequence.waitForValue(true);
+    await this.advanceToNextStep();
+    await actOnWebCapabilitySequence.waitForValue(false);
   }
 }
 
@@ -282,6 +490,114 @@ class ApiTestFailsToInitialize extends ApiTestFixtureBase {
   }
 }
 
+class SkillsApiTests extends ApiTests {
+  async testGetSkillSuccess() {
+    assertDefined(this.host.getSkillPreviews);
+    assertDefined(this.host.getSkill);
+    const skillPreviewsSequence = observeSequence(this.host.getSkillPreviews());
+    const skills = await skillPreviewsSequence.waitFor(s => s.length === 2);
+    const targetSkill = skills.find(s => s.name === 'test_skill_1');
+    assertDefined(targetSkill);
+    const actualSkill = await this.host.getSkill(targetSkill.id);
+    assertDefined(actualSkill);
+    assertEquals(actualSkill.preview.id, targetSkill.id);
+    assertEquals(actualSkill.preview.name, 'test_skill_1');
+    assertEquals(actualSkill.preview.icon, 'test_icon_1');
+    assertEquals(actualSkill.prompt, 'test_prompt_1');
+    assertEquals(actualSkill.sourceSkillId, 'source_id_1');
+  }
+
+  async testGetSkillPreviewsSuccess() {
+    assertDefined(this.host.getSkillPreviews);
+    assertDefined(this.host.getSkill);
+    const skillPreviewsSequence = observeSequence(this.host.getSkillPreviews());
+    const skills = await skillPreviewsSequence.waitFor(s => s.length === 2);
+    const skill1 = skills.find(s => s.name === 'test_skill_1');
+    assertDefined(skill1);
+    assertEquals('test_icon_1', skill1.icon);
+    const actualSkill1 = await this.host.getSkill(skill1.id);
+    assertDefined(actualSkill1);
+    assertEquals(actualSkill1.sourceSkillId, 'source_id_1');
+    const skill2 = skills.find(s => s.name === 'test_skill_2');
+    assertDefined(skill2);
+    assertEquals('test_icon_2', skill2.icon);
+    const actualSkill2 = await this.host.getSkill(skill2.id);
+    assertDefined(actualSkill2);
+    assertEquals(actualSkill2.sourceSkillId, 'source_id_2');
+  }
+
+  async testShowManageSkillsUi() {
+    assertDefined(this.host.showManageSkillsUi);
+    this.host.showManageSkillsUi();
+  }
+
+  async testDisplaySkillInDialogSuccess() {
+    assertDefined(this.host.createSkill);
+    const request = {
+      id: 'id',
+      name: 'name',
+      icon: 'icon',
+      prompt: 'prompt',
+      source: SkillSource.FIRST_PARTY,
+    };
+    this.host.createSkill(request);
+  }
+
+  async testSendingContextualSkillsToGlic() {
+    assertDefined(this.host.getSkillPreviews);
+    const skillPreviewsSequence = observeSequence(this.host.getSkillPreviews());
+    let skills = await skillPreviewsSequence.waitFor(s => s.length === 2);
+    let user_skill_1 = skills.find(s => s.name === 'user_skill_1');
+    assertDefined(user_skill_1);
+    let user_skill_2 = skills.find(s => s.name === 'user_skill_2');
+    assertDefined(user_skill_2);
+    await this.advanceToNextStep();
+
+    skills = await skillPreviewsSequence.waitFor(s => s.length === 4);
+    const contextual_skill_1 =
+        skills.find(s => s.id === 'contextual_skill_id_1');
+    assertDefined(contextual_skill_1);
+    assertEquals('contextual_skill_1', contextual_skill_1.name);
+    assertEquals(
+        'contextual_skill_description_1', contextual_skill_1.description);
+    const contextual_skill_2 =
+        skills.find(s => s.id === 'contextual_skill_id_2');
+    assertDefined(contextual_skill_2);
+    assertEquals('contextual_skill_2', contextual_skill_2.name);
+    assertEquals(
+        'contextual_skill_description_2', contextual_skill_2.description);
+    user_skill_1 = skills.find(s => s.name === 'user_skill_1');
+    assertDefined(user_skill_1);
+    user_skill_2 = skills.find(s => s.name === 'user_skill_2');
+    assertDefined(user_skill_2);
+    assertEquals(true, contextual_skill_1.isContextual);
+    assertEquals(true, contextual_skill_2.isContextual);
+    assertEquals(false, user_skill_1.isContextual);
+    assertEquals(false, user_skill_2.isContextual);
+    await this.advanceToNextStep();
+
+    skills = await skillPreviewsSequence.waitFor(s => s.length === 3);
+    const contextual_skill_3 =
+        skills.find(s => s.id === 'contextual_skill_id_3');
+    assertDefined(contextual_skill_3);
+    assertEquals('contextual_skill_3', contextual_skill_3.name);
+    assertEquals(
+        'contextual_skill_description_3', contextual_skill_3.description);
+    user_skill_1 = skills.find(s => s.name === 'user_skill_1');
+    assertDefined(user_skill_1);
+    user_skill_2 = skills.find(s => s.name === 'user_skill_2');
+    assertDefined(user_skill_2);
+    assertEquals(true, contextual_skill_3.isContextual);
+    assertEquals(false, user_skill_1.isContextual);
+    assertEquals(false, user_skill_2.isContextual);
+  }
+
+  async testShowManageSkillsUiNoWindow() {
+    assertDefined(this.host.showManageSkillsUi);
+    this.host.showManageSkillsUi();
+  }
+}
+
 const TEST_FIXTURES = [
   ApiTests,
   FaviconTest,
@@ -289,5 +605,9 @@ const TEST_FIXTURES = [
   InvokeTest,
   ApiTestFailsToInitialize,
 ];
+
+if (!navigator.userAgent.includes('Android')) {
+  TEST_FIXTURES.push(SkillsApiTests);
+}
 
 testMain(TEST_FIXTURES);

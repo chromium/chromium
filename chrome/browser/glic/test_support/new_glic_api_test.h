@@ -5,11 +5,13 @@
 #ifndef CHROME_BROWSER_GLIC_TEST_SUPPORT_NEW_GLIC_API_TEST_H_
 #define CHROME_BROWSER_GLIC_TEST_SUPPORT_NEW_GLIC_API_TEST_H_
 
+#include "base/memory/raw_ptr.h"
 #include "base/test/gmock_expected_support.h"
 #include "base/test/test_timeouts.h"
 #include "chrome/browser/glic/host/host.h"
 #include "chrome/browser/glic/test_support/glic_browser_test.h"
 #include "chrome/common/chrome_switches.h"
+#include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/test/browser_test_utils.h"
@@ -37,6 +39,9 @@ struct ExecuteTestOptions {
   //   chrome/test/base/testing_profile.h or you need to subclass your test
   //   class from Profile, not from BrowserContext.
   bool wait_for_guest = true;
+
+  // Explicit instance to use. If null, uses GetOnlyGlicInstance().
+  raw_ptr<GlicInstanceImpl> instance = nullptr;
 
   // Expect that the JS execution should return a failure. Used for internal
   // test harness testing.
@@ -133,8 +138,11 @@ class GlicApiBrowserTestMixin : public GlicBrowserTestMixin<T> {
 #endif
   }
 
-  content::RenderFrameHost* FindGlicGuestMainFrame() {
-    auto* instance = this->GetOnlyGlicInstance();
+  content::RenderFrameHost* FindGlicGuestMainFrame(
+      GlicInstanceImpl* instance = nullptr) {
+    if (!instance) {
+      instance = this->GetOnlyGlicInstance();
+    }
     if (!instance) {
       return nullptr;
     }
@@ -147,9 +155,10 @@ class GlicApiBrowserTestMixin : public GlicBrowserTestMixin<T> {
   // called later.
   void ExecuteJsTest(ExecuteTestOptions options = {}) {
     if (options.wait_for_guest) {
-      WaitForGuest();
+      WaitForGuest(options.instance);
     }
-    content::RenderFrameHost* glic_guest_frame = FindGlicGuestMainFrame();
+    content::RenderFrameHost* glic_guest_frame =
+        FindGlicGuestMainFrame(options.instance);
     ASSERT_TRUE(glic_guest_frame);
     std::string param_json = base::WriteJson(options.params).value_or("");
     ProcessTestResult(
@@ -166,7 +175,8 @@ class GlicApiBrowserTestMixin : public GlicBrowserTestMixin<T> {
   // Continues test execution if `advanceToNextStep()` was used to return
   // control to C++.
   void ContinueJsTest(ExecuteTestOptions options = {}) {
-    content::RenderFrameHost* glic_guest_frame = FindGlicGuestMainFrame();
+    content::RenderFrameHost* glic_guest_frame =
+        FindGlicGuestMainFrame(options.instance);
     ASSERT_TRUE(glic_guest_frame);
     ASSERT_TRUE(next_step_required_.contains(glic_guest_frame->GetGlobalId()));
     next_step_required_.erase(glic_guest_frame->GetGlobalId());
@@ -177,7 +187,7 @@ class GlicApiBrowserTestMixin : public GlicBrowserTestMixin<T> {
                         base::StrCat({"continueApiTest(", param_json, ")"})));
   }
 
-  void WaitForGuest() {
+  void WaitForGuest(GlicInstanceImpl* instance = nullptr) {
     auto end_time = base::TimeTicks::Now() + base::Seconds(30);
     auto next_message_time = base::TimeTicks::Now() + base::Seconds(2);
     auto sleep_time = base::Milliseconds(200);
@@ -186,7 +196,7 @@ class GlicApiBrowserTestMixin : public GlicBrowserTestMixin<T> {
     while (base::TimeTicks::Now() < end_time) {
       // Note: Sometimes the previous guest frame is still around, but it won't
       // have the runApiTest function. Loop until both conditions are met.
-      frame = FindGlicGuestMainFrame();
+      frame = FindGlicGuestMainFrame(instance);
       if (frame) {
 #if !BUILDFLAG(IS_ANDROID)
         if (frame != last_frame) {

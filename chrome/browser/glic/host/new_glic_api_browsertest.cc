@@ -2,27 +2,59 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/test/gmock_expected_support.h"
 #include "base/test/scoped_logging_settings.h"
 #include "base/values.h"
+#include "chrome/browser/enterprise/browser_management/management_service_factory.h"
 #include "chrome/browser/glic/host/glic_features.mojom-features.h"
 #include "chrome/browser/glic/host/glic_web_contents_warming_pool.h"
 #include "chrome/browser/glic/host/host.h"
 #include "chrome/browser/glic/host/webui_contents_container.h"
+#include "chrome/browser/glic/public/glic_enabling.h"
 #include "chrome/browser/glic/public/glic_keyed_service.h"
+#include "chrome/browser/glic/public/glic_keyed_service_factory.h"
 #include "chrome/browser/glic/service/glic_instance_impl.h"
 #include "chrome/browser/glic/suggestions/contextual_cueing_features.h"
 #include "chrome/browser/glic/test_support/glic_browser_test.h"
 #include "chrome/browser/glic/test_support/new_glic_api_test.h"
+#include "chrome/browser/policy/chrome_browser_policy_connector.h"
+#include "chrome/browser/policy/profile_policy_connector.h"
+#include "chrome/browser/signin/chrome_signin_client_factory.h"
+#include "chrome/browser/signin/chrome_signin_client_test_util.h"
+#include "chrome/browser/signin/identity_manager_factory.h"
+#include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
+#include "chrome/browser/skills/skills_ui_tab_controller_interface.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
 #include "chrome/common/chrome_features.h"
+#include "chrome/common/webui_url_constants.h"
 #include "components/favicon/content/content_favicon_driver.h"
 #include "components/favicon/core/favicon_driver.h"
 #include "components/favicon/core/favicon_driver_observer.h"
+#include "components/policy/core/common/management/scoped_management_service_override_for_testing.h"
+#include "components/policy/core/common/mock_configuration_policy_provider.h"
+#include "components/policy/core/common/policy_map.h"
+#include "components/policy/core/common/policy_types.h"
+#include "components/policy/policy_constants.h"
+#include "components/signin/public/base/consent_level.h"
+#include "components/signin/public/identity_manager/account_capabilities_test_mutator.h"
+#include "components/signin/public/identity_manager/account_info.h"
+#include "components/skills/features.h"
+#include "components/skills/public/skills_service.h"
 #include "content/public/browser/favicon_status.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/common/content_features.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
+#include "mojo/public/cpp/base/big_buffer.h"
+#include "services/network/test/test_url_loader_factory.h"
+#include "url/origin.h"
+
+#if !BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/skills/skills_service_factory.h"
+#include "chrome/browser/skills/skills_ui_tab_controller.h"
+#include "chrome/test/base/ui_test_utils.h"
+#endif
 
 #if BUILDFLAG(IS_ANDROID)
 #include "base/android/device_info.h"
@@ -43,11 +75,17 @@ namespace glic {
 namespace {
 
 std::vector<std::string> GetTestSuiteNames() {
-  return {
+  std::vector<std::string> names = {
       "NewGlicApiTest",
       "NewGlicApiTestWithWebContentsWarming",
       "NewGlicApiTestWithPixelOutput",
+      "NewGlicApiTestWithGeminiActOnWebPolicy",
+#if !BUILDFLAG(IS_ANDROID)
+      "NewGlicApiTestWithSkills",
+#endif
   };
+
+  return names;
 }
 
 }  // namespace
@@ -145,6 +183,13 @@ class NewGlicApiTest : public GlicApiBrowserTest,
         GetTabListInterface()->GetActiveTab()->GetContents(),
         GetTestUrl("page.html")));
   }
+
+#if !BUILDFLAG(IS_ANDROID)
+  void CloseMainBrowserWithIncognitoKeepAlive() {
+    CreateIncognitoBrowser();
+    CloseBrowserAsynchronously(browser());
+  }
+#endif
 
  private:
   logging::ScopedVmoduleSwitches scoped_vmodule_switches_;
@@ -434,6 +479,425 @@ IN_PROC_BROWSER_TEST_P(NewGlicApiTestWithWebContentsWarming,
   ASSERT_OK(WaitForWebUiState(mojom::WebUiState::kReady));
 }
 
+IN_PROC_BROWSER_TEST_P(NewGlicApiTest, testGetPageMetadata) {
+  ASSERT_TRUE(content::NavigateToURL(
+      GetTabListInterface()->GetActiveTab()->GetContents(),
+      embedded_test_server()->GetURL("/glic/browser_tests/test.html")));
+  ASSERT_OK(OpenGlicForActiveTab());
+  ExecuteJsTest();
+}
+
+IN_PROC_BROWSER_TEST_P(NewGlicApiTest, testGetPageMetadataInvalidTabId) {
+  ASSERT_TRUE(content::NavigateToURL(
+      GetTabListInterface()->GetActiveTab()->GetContents(),
+      embedded_test_server()->GetURL("/glic/browser_tests/test.html")));
+  ASSERT_OK(OpenGlicForActiveTab());
+  ExecuteJsTest();
+}
+
+IN_PROC_BROWSER_TEST_P(NewGlicApiTest, testGetPageMetadataEmptyNames) {
+  ASSERT_TRUE(content::NavigateToURL(
+      GetTabListInterface()->GetActiveTab()->GetContents(),
+      embedded_test_server()->GetURL("/glic/browser_tests/test.html")));
+  ASSERT_OK(OpenGlicForActiveTab());
+  ExecuteJsTest();
+}
+
+IN_PROC_BROWSER_TEST_P(NewGlicApiTest,
+                       testGetPageMetadataMultipleSubscriptions) {
+  ASSERT_TRUE(content::NavigateToURL(
+      GetTabListInterface()->GetActiveTab()->GetContents(),
+      embedded_test_server()->GetURL("/glic/browser_tests/test.html")));
+  ASSERT_OK(OpenGlicForActiveTab());
+  ExecuteJsTest();
+}
+
+IN_PROC_BROWSER_TEST_P(NewGlicApiTest, testGetPageMetadataUpdates) {
+  ASSERT_TRUE(content::NavigateToURL(
+      GetTabListInterface()->GetActiveTab()->GetContents(),
+      embedded_test_server()->GetURL("/glic/browser_tests/test.html")));
+  ASSERT_OK(OpenGlicForActiveTab());
+  ExecuteJsTest();
+
+  // The JS test is now paused. We can now modify the page.
+  content::WebContents* web_contents =
+      GetTabListInterface()->GetActiveTab()->GetContents();
+  ASSERT_TRUE(web_contents);
+
+  // Change the content of the 'author' meta tag from "George" to "Ruth".
+  const char* script =
+      "document.querySelector('meta[name=\"author\"]').setAttribute('content', "
+      "'Ruth')";
+  ASSERT_TRUE(content::ExecJs(web_contents, script));
+
+  // Continue the JS test to verify the metadata update.
+  ContinueJsTest();
+}
+
+// TODO(harringtond): Times out on Android.
+#if BUILDFLAG(IS_ANDROID)
+#define MAYBE_testGetPageMetadataTabDestroyed \
+  DISABLED_testGetPageMetadataTabDestroyed
+#else
+#define MAYBE_testGetPageMetadataTabDestroyed testGetPageMetadataTabDestroyed
+#endif
+IN_PROC_BROWSER_TEST_P(NewGlicApiTest, MAYBE_testGetPageMetadataTabDestroyed) {
+  // Open a second tab and open glic.
+  GetTabListInterface()->OpenTab(
+      embedded_test_server()->GetURL("/glic/browser_tests/test.html"), -1);
+  GetTabListInterface()->ActivateTab(
+      GetTabListInterface()->GetTab(0)->GetHandle());
+  ASSERT_OK(OpenGlicForActiveTab());
+
+  // Pin both tabs.
+  GetOnlyGlicInstance()->sharing_manager().PinTabs(
+      {GetTabListInterface()->GetTab(0)->GetHandle(),
+       GetTabListInterface()->GetTab(1)->GetHandle()});
+
+  ExecuteJsTest();
+  GetTabListInterface()->CloseTab(
+      GetTabListInterface()->GetTab(1)->GetHandle());
+  ContinueJsTest();
+}
+
+IN_PROC_BROWSER_TEST_P(NewGlicApiTest, testAdditionalContext) {
+  ASSERT_TRUE(content::NavigateToURL(
+      GetTabListInterface()->GetActiveTab()->GetContents(),
+      embedded_test_server()->GetURL("/glic/browser_tests/test.html")));
+  ASSERT_OK(OpenGlicForActiveTab());
+  ExecuteJsTest();
+
+  // The JS test is now paused.
+  glic::mojom::AdditionalContextPtr additional_context =
+      glic::mojom::AdditionalContext::New();
+  additional_context->name = "part with everything";
+  additional_context->tab_id = 1;
+  additional_context->frameUrl = GURL("http://example.com");
+
+  // Add a part with data.
+  std::vector<uint8_t> data = {'t', 'e', 's', 't'};
+  additional_context->parts.push_back(
+      glic::mojom::AdditionalContextPart::NewData(glic::mojom::ContextData::New(
+          "text/plain", mojo_base::BigBuffer(data))));
+
+  // Add a part with a screenshot.
+  std::vector<uint8_t> screenshot_data = {1, 2, 3, 4};
+  additional_context->parts.push_back(
+      glic::mojom::AdditionalContextPart::NewScreenshot(
+          glic::mojom::Screenshot::New(
+              10, 20, screenshot_data, "image/png",
+              glic::mojom::ImageOriginAnnotations::New())));
+
+  // Add a part with web page data.
+  additional_context->parts.push_back(
+      glic::mojom::AdditionalContextPart::NewWebPageData(
+          glic::mojom::WebPageData::New(glic::mojom::DocumentData::New(
+              url::Origin(), "some inner text", false))));
+
+  // Add a part with annotated page data.
+  additional_context->parts.push_back(
+      glic::mojom::AdditionalContextPart::NewAnnotatedPageData(
+          glic::mojom::AnnotatedPageData::New()));
+
+  // Add a part with pdf document data.
+  std::vector<uint8_t> pdf_data = {'p', 'd', 'f'};
+  additional_context->parts.push_back(
+      glic::mojom::AdditionalContextPart::NewPdfDocumentData(
+          glic::mojom::PdfDocumentData::New(url::Origin(), pdf_data, false)));
+
+  // Add a part with tab context.
+  auto tab_data = glic::mojom::TabData::New();
+  tab_data->tab_id = 1;
+  tab_data->window_id = 2;
+  tab_data->url = GURL("http://example.com");
+  tab_data->document_mime_type = "text/html";
+
+  auto tab_context = glic::mojom::TabContext::New();
+  tab_context->tab_data = std::move(tab_data);
+  additional_context->parts.push_back(
+      glic::mojom::AdditionalContextPart::NewTabContext(
+          std::move(tab_context)));
+
+  additional_context->parts.push_back(
+      glic::mojom::AdditionalContextPart::NewRegion(
+          glic::mojom::CapturedRegion::NewRect(gfx::Rect(10, 20, 30, 40))));
+
+  service()->SendAdditionalContext(
+      GetTabListInterface()->GetActiveTab()->GetHandle(),
+      std::move(additional_context));
+
+  ContinueJsTest();
+}
+
+IN_PROC_BROWSER_TEST_P(NewGlicApiTest, testCancelActions) {
+  ASSERT_OK(OpenGlicForActiveTab());
+  // Task with id 12345 does not exist.
+  ExecuteJsTest({.params = base::Value(12345)});
+  EXPECT_EQ(std::to_underlying(glic::mojom::CancelActionsResult::kTaskNotFound),
+            step_data()->GetInt());
+  ContinueJsTest();
+}
+
+class NewGlicApiTestWithGeminiActOnWebPolicy : public NewGlicApiTest {
+ public:
+  NewGlicApiTestWithGeminiActOnWebPolicy() {
+    scoped_feature_list_.InitAndEnableFeatureWithParameters(
+        features::kGlicActor,
+        {{features::kGlicActorEnterprisePrefDefault.name,
+          features::kGlicActorEnterprisePrefDefault.GetName(
+              features::GlicActorEnterprisePrefDefault::kDisabledByDefault)},
+         {features::kGlicActorPolicyControlExemption.name, "false"}});
+  }
+  ~NewGlicApiTestWithGeminiActOnWebPolicy() override = default;
+
+  void SetUpInProcessBrowserTestFixture() override {
+    NewGlicApiTest::SetUpInProcessBrowserTestFixture();
+    policy_provider_.SetDefaultReturns(
+        /*is_initialization_complete_return=*/true,
+        /*is_first_policy_load_complete_return=*/true);
+    policy::BrowserPolicyConnector::SetPolicyProviderForTesting(
+        &policy_provider_);
+  }
+
+  void SetUpBrowserContextKeyedServices(
+      content::BrowserContext* context) override {
+    IdentityTestEnvironmentProfileAdaptor::
+        SetIdentityTestEnvironmentFactoriesOnBrowserContext(context);
+    ChromeSigninClientFactory::GetInstance()->SetTestingFactory(
+        context, base::BindRepeating(&BuildChromeSigninClientWithURLLoader,
+                                     &test_url_loader_factory_));
+
+    NewGlicApiTest::SetUpBrowserContextKeyedServices(context);
+  }
+
+  void SetUpOnMainThread() override {
+    NewGlicApiTest::SetUpOnMainThread();
+
+    GlicEnabling::SetBypassEnablementChecksForTesting(true);
+
+    adaptor_ =
+        std::make_unique<IdentityTestEnvironmentProfileAdaptor>(GetProfile());
+    identity_test_env_ = adaptor_->identity_test_env();
+    identity_test_env_->SetTestURLLoaderFactory(&test_url_loader_factory_);
+    identity_manager_ = IdentityManagerFactory::GetForProfile(GetProfile());
+
+    // Simulate sign-in.
+    AccountInfo account_info = identity_test_env_->MakePrimaryAccountAvailable(
+        "foo@bar.com", signin::ConsentLevel::kSync);
+
+    AccountCapabilitiesTestMutator mutator(&account_info.capabilities);
+    mutator.set_can_use_model_execution_features(true);
+    identity_test_env_->UpdateAccountInfoForAccount(account_info);
+    identity_test_env_->SimulateSuccessfulFetchOfAccountInfo(
+        account_info.account_id, account_info.email, account_info.gaia,
+        "bar.com", "Full Name", "Given Name", "Locale", "Picture URL");
+
+    policy_provider_.SetupPolicyServiceForPolicyUpdates(
+        GetProfile()->GetProfilePolicyConnector()->policy_service());
+  }
+
+  void TearDownOnMainThread() override {
+    GlicEnabling::SetBypassEnablementChecksForTesting(false);
+    identity_manager_ = nullptr;
+    identity_test_env_ = nullptr;
+    adaptor_.reset();
+    policy_provider_.SetupPolicyServiceForPolicyUpdates(nullptr);
+    NewGlicApiTest::TearDownOnMainThread();
+  }
+
+  void UpdateGeminiActOnWebPolicy(
+      glic::prefs::GlicActuationOnWebPolicyState value) {
+    policy::PolicyMap policies;
+    policies.Set(policy::key::kGeminiActOnWebSettings,
+                 policy::POLICY_LEVEL_MANDATORY, policy::POLICY_SCOPE_USER,
+                 policy::POLICY_SOURCE_ENTERPRISE_DEFAULT,
+                 base::Value(std::to_underlying(value)), nullptr);
+    policy_provider_.UpdateChromePolicy(policies);
+  }
+
+ protected:
+  testing::NiceMock<policy::MockConfigurationPolicyProvider> policy_provider_;
+  base::test::ScopedFeatureList scoped_feature_list_;
+  std::unique_ptr<IdentityTestEnvironmentProfileAdaptor> adaptor_;
+  raw_ptr<signin::IdentityManager> identity_manager_;
+  raw_ptr<signin::IdentityTestEnvironment> identity_test_env_;
+  network::TestURLLoaderFactory test_url_loader_factory_;
+};
+
+IN_PROC_BROWSER_TEST_P(NewGlicApiTestWithGeminiActOnWebPolicy,
+                       testNotifyActOnWebCapabilityChanged) {
+  policy::ScopedManagementServiceOverrideForTesting
+      scoped_management_service_override(
+          policy::ManagementServiceFactory::GetForProfile(GetProfile()),
+          policy::EnterpriseManagementAuthority::CLOUD);
+
+  UpdateGeminiActOnWebPolicy(
+      glic::prefs::GlicActuationOnWebPolicyState::kEnabled);
+
+  ASSERT_OK(OpenGlicForActiveTab());
+  ExecuteJsTest();
+
+  // Disable the capability.
+  UpdateGeminiActOnWebPolicy(
+      glic::prefs::GlicActuationOnWebPolicyState::kDisabled);
+  ContinueJsTest();
+}
+
+#if !BUILDFLAG(IS_ANDROID)
+class NewGlicApiTestWithSkills : public NewGlicApiTest {
+ public:
+  NewGlicApiTestWithSkills() {
+    scoped_feature_list_.InitAndEnableFeature(::features::kSkillsEnabled);
+  }
+
+  void SetUpOnMainThread() override {
+    NewGlicApiTest::SetUpOnMainThread();
+#if !BUILDFLAG(IS_ANDROID)
+    service_ = skills::SkillsServiceFactory::GetForProfile(GetProfile());
+    ASSERT_TRUE(service_);
+    service_->SetServiceStatusForTesting(
+        skills::SkillsService::ServiceStatus::kReady);
+#else
+    NOTREACHED();
+#endif
+    ASSERT_OK(OpenGlicForActiveTab());
+  }
+
+  void TearDownOnMainThread() override {
+    service_ = nullptr;
+    NewGlicApiTest::TearDownOnMainThread();
+  }
+
+  skills::SkillsService* SkillsService() { return service_; }
+
+ private:
+  raw_ptr<skills::SkillsService> service_ = nullptr;
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_P(NewGlicApiTestWithSkills, testGetSkillSuccess) {
+  SkillsService()->AddSkill(/*source_skill_id=*/"source_id_1",
+                            /*name=*/"test_skill_1",
+                            /*icon=*/"test_icon_1",
+                            /*prompt=*/"test_prompt_1");
+  SkillsService()->AddSkill(/*source_skill_id=*/"source_id_2",
+                            /*name=*/"test_skill_2",
+                            /*icon=*/"test_icon_2",
+                            /*prompt=*/"test_prompt_2");
+  ExecuteJsTest();
+}
+
+IN_PROC_BROWSER_TEST_P(NewGlicApiTestWithSkills, testGetSkillPreviewsSuccess) {
+  SkillsService()->AddSkill(/*source_skill_id=*/"source_id_1",
+                            /*name=*/"test_skill_1",
+                            /*icon=*/"test_icon_1",
+                            /*prompt=*/"test_prompt_1");
+  SkillsService()->AddSkill(/*source_skill_id=*/"source_id_2",
+                            /*name=*/"test_skill_2",
+                            /*icon=*/"test_icon_2",
+                            /*prompt=*/"test_prompt_2");
+  ExecuteJsTest();
+}
+
+IN_PROC_BROWSER_TEST_P(NewGlicApiTestWithSkills,
+                       testDisplaySkillInDialogSuccess) {
+#if !BUILDFLAG(IS_ANDROID)  // TODO(harringtond): Enable skills on Android.
+  ExecuteJsTest();
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    tabs::TabInterface* tab = GetTabListInterface()->GetActiveTab();
+    auto* controller = static_cast<skills::SkillsUiTabController*>(
+        skills::SkillsUiTabControllerInterface::From(tab));
+    if (controller && controller->IsShowing()) {
+      const auto& skill = controller->GetCurrentSkillForTesting();
+      return skill.has_value() && skill->id == "id" && skill->name == "name" &&
+             skill->icon == "icon" && skill->prompt == "prompt" &&
+             skill->source == sync_pb::SkillSource::SKILL_SOURCE_FIRST_PARTY;
+    }
+    return false;
+  }));
+#endif
+}
+
+IN_PROC_BROWSER_TEST_P(NewGlicApiTestWithSkills, testShowManageSkillsUi) {
+  ExecuteJsTest();
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    tabs::TabInterface* tab = GetTabListInterface()->GetActiveTab();
+    return tab &&
+           base::StartsWith(tab->GetContents()->GetLastCommittedURL().spec(),
+                            chrome::kChromeUISkillsURL);
+  }));
+}
+
+IN_PROC_BROWSER_TEST_P(NewGlicApiTestWithSkills,
+                       testSendingContextualSkillsToGlic) {
+#if !BUILDFLAG(IS_ANDROID)  // TODO(harringtond): Enable skills on Android.
+  SkillsService()->AddSkill(/*source_skill_id=*/"", /*name=*/"user_skill_1",
+                            /*icon=*/"user_icon_1",
+                            /*prompt=*/"test_prompt_1");
+  SkillsService()->AddSkill(/*source_skill_id=*/"", /*name=*/"user_skill_2",
+                            /*icon=*/"user_icon_2",
+                            /*prompt=*/"user_prompt_2");
+
+  ExecuteJsTest();
+
+  std::vector<mojom::SkillPreviewPtr> skills_batch_1;
+  skills_batch_1.push_back(mojom::SkillPreview::New(
+      "contextual_skill_id_1", "contextual_skill_1", "contextual_skill_icon_1",
+      mojom::SkillSource::kFirstParty, "contextual_skill_description_1",
+      /*image_url=*/GURL("https://example.com")));
+  skills_batch_1.push_back(mojom::SkillPreview::New(
+      "contextual_skill_id_2", "contextual_skill_2", "contextual_skill_icon_2",
+      mojom::SkillSource::kFirstParty, "contextual_skill_description_2",
+      /*image_url=*/GURL("https://example.com")));
+
+  GlicInstance* instance =
+      GlicKeyedServiceFactory::GetGlicKeyedService(GetProfile())
+          ->instance_coordinator()
+          .GetActiveInstance();
+  ASSERT_TRUE(instance);
+  instance->host().NotifyContextualSkillsChanged(std::move(skills_batch_1));
+
+  ContinueJsTest();
+
+  std::vector<mojom::SkillPreviewPtr> skills_batch_2;
+  skills_batch_2.push_back(mojom::SkillPreview::New(
+      "contextual_skill_id_3", "contextual_skill_3", "contextual_skill_icon_3",
+      mojom::SkillSource::kFirstParty, "contextual_skill_description_3",
+      /*image_url=*/GURL("https://example.com")));
+  instance->host().NotifyContextualSkillsChanged(std::move(skills_batch_2));
+
+  ContinueJsTest();
+#endif
+}
+
+IN_PROC_BROWSER_TEST_P(NewGlicApiTestWithSkills,
+                       testShowManageSkillsUiNoWindow) {
+#if !BUILDFLAG(IS_ANDROID)  // TODO(harringtond): Enable skills on Android.
+  ASSERT_OK_AND_ASSIGN(auto* instance, OpenGlicForActiveTabAndDetach());
+  BrowserWindowInterface* browser_to_close = GetBrowserWindowInterface();
+  CreateIncognitoBrowser();
+  CloseBrowserAsynchronously(browser_to_close);
+
+  ui_test_utils::WaitForBrowserToClose(browser_to_close);
+
+  ExecuteJsTest({.instance = instance});
+
+  ASSERT_TRUE(base::test::RunUntil([&]() -> bool {
+    auto all_bwis = GetAllBrowserWindowInterfaces();
+    for (auto* bwi : all_bwis) {
+      for (auto* tab : TabListInterface::From(bwi)->GetAllTabs()) {
+        if (tab->GetContents()->GetLastCommittedURL().spec().starts_with(
+                chrome::kChromeUISkillsURL)) {
+          return true;
+        }
+      }
+    }
+    return false;
+  }));
+#endif
+}
+#endif
+
 auto DefaultTestParamSet() {
   return testing::Values(TestParams{});
 }
@@ -453,10 +917,29 @@ INSTANTIATE_TEST_SUITE_P(,
                          NewGlicApiTestWithPixelOutput,
                          DefaultTestParamSet(),
                          &WithTestParams::PrintTestVariant);
+
+INSTANTIATE_TEST_SUITE_P(,
+                         NewGlicApiTestWithGeminiActOnWebPolicy,
+                         DefaultTestParamSet(),
+                         &WithTestParams::PrintTestVariant);
+
+// Skills are not supported yet on Android.
+#if !BUILDFLAG(IS_ANDROID)
+INSTANTIATE_TEST_SUITE_P(,
+                         NewGlicApiTestWithSkills,
+                         DefaultTestParamSet(),
+                         &WithTestParams::PrintTestVariant);
+#endif
+
 #else
 GTEST_ALLOW_UNINSTANTIATED_PARAMETERIZED_TEST(NewGlicApiTest);
 GTEST_ALLOW_UNINSTANTIATED_PARAMETERIZED_TEST(
     NewGlicApiTestWithWebContentsWarming);
 GTEST_ALLOW_UNINSTANTIATED_PARAMETERIZED_TEST(NewGlicApiTestWithPixelOutput);
+GTEST_ALLOW_UNINSTANTIATED_PARAMETERIZED_TEST(
+    NewGlicApiTestWithGeminiActOnWebPolicy);
+#if !BUILDFLAG(IS_ANDROID)
+GTEST_ALLOW_UNINSTANTIATED_PARAMETERIZED_TEST(NewGlicApiTestWithSkills);
+#endif
 #endif
 }  // namespace glic

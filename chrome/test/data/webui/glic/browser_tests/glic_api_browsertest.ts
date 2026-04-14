@@ -1,7 +1,7 @@
 // Copyright 2025 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
-import {CaptureRegionErrorReason, FormFactor, HostCapability, InvocationSource, MetricUserInputReactionType, PanelStateKind, Platform, ResponseStopCause, ScrollToErrorReason, SkillSource, WebClientMode} from '/glic/glic_api/glic_api.js';
+import {CaptureRegionErrorReason, FormFactor, HostCapability, InvocationSource, MetricUserInputReactionType, PanelStateKind, Platform, ResponseStopCause, ScrollToErrorReason, WebClientMode} from '/glic/glic_api/glic_api.js';
 import type {CancelActionsResult, CaptureRegionResult, FocusedTabData, GetPinCandidatesOptions, GlicBrowserHost, OpenPanelInfo, PageMetadata, PanelOpeningData, ScrollToError, TabData, UserConfirmationDialogRequest, UserProfileInfo, ZeroStateSuggestionsV2} from '/glic/glic_api/glic_api.js';
 
 import {ApiTestError, ApiTestFixtureBase, assertDefined, assertEquals, assertFalse, assertNotEquals, assertRejects, assertTrue, assertUndefined, checkDefined, mapObservable, observeSequence, readStream, runUntil, sleep, testMain, waitFor, WebClient} from './browser_test_base.js';
@@ -206,10 +206,7 @@ class ApiTests extends ApiTestFixtureBase {
     this.host.openPasswordManagerSettingsPage();
   }
 
-  async testShowManageSkillsUiNoWindow() {
-    assertDefined(this.host.showManageSkillsUi);
-    this.host.showManageSkillsUi();
-  }
+
 
   async testCanAttachPanelToFallbackEmbedder() {
     assertDefined(this.host.getFocusedTabStateV2);
@@ -2230,34 +2227,6 @@ class ApiTests extends ApiTestFixtureBase {
   }
 
   /**
-   * Checks that the `ObservableValue` stops emitting updates after the
-   * associated tab is closed.
-   */
-  async testGetPageMetadataTabDestroyed() {
-    assertDefined(this.host.getPageMetadata);
-    assertDefined(this.host.getFocusedTabStateV2);
-
-    const focus =
-        await observeSequence(this.host.getFocusedTabStateV2()).next();
-    const tabId = checkDefined(focus.hasFocus?.tabData.tabId);
-
-    const metadataObservable = this.host.getPageMetadata(tabId, ['author']);
-    assertDefined(metadataObservable);
-    const metadataSequence = observeSequence(metadataObservable);
-
-    const metadata: PageMetadata = await metadataSequence.next();
-    assertDefined(metadata);
-    assertEquals(1, metadata.frameMetadata[0]!.metaTags.length);
-
-    // Close the tab.
-    await this.advanceToNextStep();
-
-    // The observable should not emit any more values, and should complete.
-    await metadataSequence.completed;
-    assertTrue(metadataSequence.isEmpty());
-  }
-
-  /**
    * Verifies that metadata updates are still received after a tab's
    * WebContents has been discarded and recreated.
    */
@@ -2805,113 +2774,7 @@ class ApiTestWithoutOpen extends ApiTestFixtureBase {
     });
   }
 
-  async testGetSkillSuccess() {
-    assertDefined(this.host.getSkillPreviews);
-    assertDefined(this.host.getSkill);
-    const skillPreviewsSequence = observeSequence(this.host.getSkillPreviews());
-    const skills = await skillPreviewsSequence.waitFor(s => s.length === 2);
-    const targetSkill = skills.find(s => s.name === 'test_skill_1');
-    assertDefined(targetSkill);
-    const actualSkill = await this.host.getSkill(targetSkill.id);
-    assertDefined(actualSkill);
-    assertEquals(actualSkill.preview.id, targetSkill.id);
-    assertEquals(actualSkill.preview.name, 'test_skill_1');
-    assertEquals(actualSkill.preview.icon, 'test_icon_1');
-    assertEquals(actualSkill.prompt, 'test_prompt_1');
-    assertEquals(actualSkill.sourceSkillId, 'source_id_1');
-  }
 
-  async testGetSkillPreviewsSuccess() {
-    assertDefined(this.host.getSkillPreviews);
-    assertDefined(this.host.getSkill);
-    const skillPreviewsSequence = observeSequence(this.host.getSkillPreviews());
-    const skills = await skillPreviewsSequence.waitFor(s => s.length === 2);
-    const skill1 = skills.find(s => s.name === 'test_skill_1');
-    assertDefined(skill1);
-    assertEquals('test_icon_1', skill1.icon);
-    const actualSkill1 = await this.host.getSkill(skill1.id);
-    assertDefined(actualSkill1);
-    assertEquals(actualSkill1.sourceSkillId, 'source_id_1');
-    const skill2 = skills.find(s => s.name === 'test_skill_2');
-    assertDefined(skill2);
-    assertEquals('test_icon_2', skill2.icon);
-    const actualSkill2 = await this.host.getSkill(skill2.id);
-    assertDefined(actualSkill2);
-    assertEquals(actualSkill2.sourceSkillId, 'source_id_2');
-  }
-
-  async testShowManageSkillsUi() {
-    assertDefined(this.host.showManageSkillsUi);
-    this.host.showManageSkillsUi();
-  }
-
-  async testDisplaySkillInDialogSuccess() {
-    assertDefined(this.host.createSkill);
-    const request = {
-      id: 'id',
-      name: 'name',
-      icon: 'icon',
-      prompt: 'prompt',
-      source: SkillSource.FIRST_PARTY,
-    };
-    this.host.createSkill(request);
-  }
-
-  async testSendingContextualSkillsToGlic() {
-    assertDefined(this.host.getSkillPreviews);
-    const skillPreviewsSequence = observeSequence(this.host.getSkillPreviews());
-    let skills = await skillPreviewsSequence.waitFor(s => s.length === 2);
-    let user_skill_1 = skills.find(s => s.name === 'user_skill_1');
-    assertDefined(user_skill_1);
-    let user_skill_2 = skills.find(s => s.name === 'user_skill_2');
-    assertDefined(user_skill_2);
-    await this.advanceToNextStep();
-
-    // Verify that the skills cache is updated with both the user owned skills
-    // and the contextual skills.
-    skills = await skillPreviewsSequence.waitFor(s => s.length === 4);
-    const contextual_skill_1 =
-        skills.find(s => s.id === 'contextual_skill_id_1');
-    assertDefined(contextual_skill_1);
-    assertEquals('contextual_skill_1', contextual_skill_1.name);
-    assertEquals(
-        'contextual_skill_description_1', contextual_skill_1.description);
-    const contextual_skill_2 =
-        skills.find(s => s.id === 'contextual_skill_id_2');
-    assertDefined(contextual_skill_2);
-    assertEquals('contextual_skill_2', contextual_skill_2.name);
-    assertEquals(
-        'contextual_skill_description_2', contextual_skill_2.description);
-    user_skill_1 = skills.find(s => s.name === 'user_skill_1');
-    assertDefined(user_skill_1);
-    user_skill_2 = skills.find(s => s.name === 'user_skill_2');
-    assertDefined(user_skill_2);
-    // Verify that only the contextual skills are marked as contextual.
-    assertEquals(true, contextual_skill_1.isContextual);
-    assertEquals(true, contextual_skill_2.isContextual);
-    assertEquals(false, user_skill_1.isContextual);
-    assertEquals(false, user_skill_2.isContextual);
-    await this.advanceToNextStep();
-
-    // Verify that after a contextual skills update, the skills cache is updated
-    // with the new list of contextual skills and the user owned skills are
-    // still present.
-    skills = await skillPreviewsSequence.waitFor(s => s.length === 3);
-    const contextual_skill_3 =
-        skills.find(s => s.id === 'contextual_skill_id_3');
-    assertDefined(contextual_skill_3);
-    assertEquals('contextual_skill_3', contextual_skill_3.name);
-    assertEquals(
-        'contextual_skill_description_3', contextual_skill_3.description);
-    user_skill_1 = skills.find(s => s.name === 'user_skill_1');
-    assertDefined(user_skill_1);
-    user_skill_2 = skills.find(s => s.name === 'user_skill_2');
-    assertDefined(user_skill_2);
-    // Verify that only the contextual skills are marked as contextual.
-    assertEquals(true, contextual_skill_3.isContextual);
-    assertEquals(false, user_skill_1.isContextual);
-    assertEquals(false, user_skill_2.isContextual);
-  }
 }
 
 type InitFailureType = 'error'|'timeout'|'none'|'reloadAfterInitialize'|
