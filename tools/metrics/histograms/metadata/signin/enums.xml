@@ -1508,6 +1508,11 @@ chromium-metrics-reviews@google.com.
   <int value="3" label="The user has recently seen the mismatch notice"/>
   <int value="4" label="The user recently went through the FRE"/>
   <int value="5" label="The displayed CCT is off-the-record"/>
+  <int value="6"
+      label="The app is not allowlisted for the account mismatch notification"/>
+  <int value="7" label="Signin is not allowed"/>
+  <int value="8" label="The account mismatch type is not the right one"/>
+  <int value="9" label="The notification is not suppressed"/>
 </enum>
 
 <!-- LINT.ThenChange(//chrome/android/java/src/org/chromium/chrome/browser/customtabs/MismatchNotificationController.java:SuppressedReason) -->

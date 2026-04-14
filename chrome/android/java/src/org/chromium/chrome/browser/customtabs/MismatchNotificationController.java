@@ -61,6 +61,10 @@ public class MismatchNotificationController
         SuppressedReason.NOTICE_DISPLAYED_RECENTLY,
         SuppressedReason.FRE_COMPLETED_RECENTLY,
         SuppressedReason.CCT_IS_OFF_THE_RECORD,
+        SuppressedReason.APP_IS_NOT_ALLOWED,
+        SuppressedReason.SIGNIN_NOT_ALLOWED,
+        SuppressedReason.WRONG_MISMATCH_TYPE,
+        SuppressedReason.NOT_SUPPRESSED,
         SuppressedReason.MAX
     })
     @Retention(RetentionPolicy.SOURCE)
@@ -71,7 +75,11 @@ public class MismatchNotificationController
         int NOTICE_DISPLAYED_RECENTLY = 3;
         int FRE_COMPLETED_RECENTLY = 4;
         int CCT_IS_OFF_THE_RECORD = 5;
-        int MAX = 6;
+        int APP_IS_NOT_ALLOWED = 6;
+        int SIGNIN_NOT_ALLOWED = 7;
+        int WRONG_MISMATCH_TYPE = 8;
+        int NOT_SUPPRESSED = 9;
+        int MAX = 10;
     }
 
     // LINT.ThenChange(//tools/metrics/histograms/metadata/signin/enums.xml:SuppressedReason)
