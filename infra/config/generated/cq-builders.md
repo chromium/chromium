@@ -952,6 +952,15 @@ as required builders.
 * [android-internal-desktop-x64-rel](https://ci.chromium.org/p/chrome/builders/try/android-internal-desktop-x64-rel) ([definition](https://source.corp.google.com/search?q=+file:/try/.*\.star$+""android-internal-desktop-x64-rel""))
   * Experiment percentage: 5.0
 
+* [chromeos-betty-chrome-gtest-and-cqtast](https://ci.chromium.org/p/chrome/builders/try/chromeos-betty-chrome-gtest-and-cqtast) ([definition](https://source.corp.google.com/search?q=+file:/try/.*\.star$+""chromeos-betty-chrome-gtest-and-cqtast""))
+  * Experiment percentage: 100.0
+
+  This builder is only run when the CL owner is in the group:
+  * [`google/chromeos-pa@google.com`](https://chrome-infra-auth.appspot.com/auth/lookup?p=google/chromeos-pa@google.com)
+
+* [chromeos-betty-compile-chrome](https://ci.chromium.org/p/chrome/builders/try/chromeos-betty-compile-chrome) ([definition](https://source.corp.google.com/search?q=+file:/try/.*\.star$+""chromeos-betty-compile-chrome""))
+  * Experiment percentage: 5.0
+
 * [linux-perf-trigger](https://ci.chromium.org/p/chrome/builders/try/linux-perf-trigger) ([definition](https://source.corp.google.com/search?q=+file:/try/.*\.star$+""linux-perf-trigger""))
   * Experiment percentage: 100.0
 
