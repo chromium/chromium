@@ -13,6 +13,7 @@
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/test/bind.h"
+#include "base/test/run_until.h"
 #include "base/test/task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -81,8 +82,8 @@ TEST_F(SerialDeviceEnumeratorAndroidTest, OpenPath_NotFound) {
   enumerator->OpenPath(base::FilePath("serial:/not_found"), std::move(callback),
                        std::move(error_callback));
 
+  EXPECT_TRUE(base::test::RunUntil([&]() { return error_opt.has_value(); }));
   EXPECT_FALSE(fd_opt.has_value());
-  EXPECT_TRUE(error_opt.has_value());
 }
 
 TEST_F(SerialDeviceEnumeratorAndroidTest, OpenPath_Error) {
@@ -102,8 +103,8 @@ TEST_F(SerialDeviceEnumeratorAndroidTest, OpenPath_Error) {
                        std::move(error_callback));
   Java_CppTestHelper_invokeErrorCallback(env, "ttyS9", "open_error");
 
+  EXPECT_TRUE(base::test::RunUntil([&]() { return error_opt.has_value(); }));
   EXPECT_FALSE(fd_opt.has_value());
-  EXPECT_TRUE(error_opt.has_value());
 }
 
 TEST_F(SerialDeviceEnumeratorAndroidTest, OpenPath_Success) {
@@ -124,7 +125,7 @@ TEST_F(SerialDeviceEnumeratorAndroidTest, OpenPath_Success) {
                        std::move(error_callback));
   Java_CppTestHelper_invokeOpenPathCallback(env, "ttyS9", fd);
 
-  EXPECT_TRUE(fd_opt.has_value());
+  EXPECT_TRUE(base::test::RunUntil([&]() { return fd_opt.has_value(); }));
   EXPECT_EQ(fd_opt.value(), fd);
   EXPECT_FALSE(error_opt.has_value());
 }
