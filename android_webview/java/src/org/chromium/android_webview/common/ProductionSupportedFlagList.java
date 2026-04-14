@@ -1058,14 +1058,6 @@ public final class ProductionSupportedFlagList {
                     + " developer preferences via the AndroidX API or manifest metadata supersedes"
                     + " this flag."),
         Flag.commandLine(
-                AwSwitches.WEBVIEW_STARTUP_TASKS_PLUS_MULTI_PROCESS,
-                "Enables running native startup tasks asynchronously if WebView startup is"
-                        + " asynchronous, in addition to stopping multiprocess enabled checks from"
-                        + " starting chromium."),
-        Flag.commandLine(
-                AwSwitches.WEBVIEW_STOP_BROWSER_STARTUP_IN_IS_MULTI_PROCESS_ENABLED,
-                "Stop browser startup in isMultiProcessEnabled."),
-        Flag.commandLine(
                 AwSwitches.STARTUP_NON_BLOCKING_WEBVIEW_CONSTRUCTOR,
                 "When enabled, WebView constructor will not block on WebView process global"
                         + " startup"),

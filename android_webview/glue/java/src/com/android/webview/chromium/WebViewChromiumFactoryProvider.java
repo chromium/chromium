@@ -250,7 +250,6 @@ public class WebViewChromiumFactoryProvider implements WebViewFactoryProvider {
 
     private boolean mIsSafeModeEnabled;
     private boolean mIsMultiProcessEnabled;
-    private boolean mIsAsyncStartupWithMultiProcessExperimentEnabled;
 
     public static class InitInfo {
         // Timestamp of init start and duration, used in the
@@ -387,15 +386,6 @@ public class WebViewChromiumFactoryProvider implements WebViewFactoryProvider {
 
         return WebViewCachedFlags.get()
                 .isCachedFeatureEnabled(AwFeatures.WEBVIEW_STARTUP_TASKS_YIELD_TO_NATIVE);
-    }
-
-    boolean isAsyncStartupWithMultiProcessExperimentEnabled() {
-        if (CommandLine.getInstance()
-                .hasSwitch(AwSwitches.WEBVIEW_STARTUP_TASKS_PLUS_MULTI_PROCESS)) {
-            return true;
-        }
-
-        return mIsAsyncStartupWithMultiProcessExperimentEnabled;
     }
 
     @SuppressWarnings({"NoContextGetApplicationContext"})
@@ -807,7 +797,6 @@ public class WebViewChromiumFactoryProvider implements WebViewFactoryProvider {
                         /* enablePhase1= */ false,
                         /* enablePhase2= */ false,
                         /* enableYieldToNative= */ true);
-                mIsAsyncStartupWithMultiProcessExperimentEnabled = true;
                 return;
             default:
                 throw new RuntimeException(

@@ -1127,10 +1127,6 @@ public class WebViewChromiumAwInit {
         return mFactory.isMultiProcessEnabled();
     }
 
-    boolean isAsyncStartupWithMultiProcessExperimentEnabled() {
-        return mFactory.isAsyncStartupWithMultiProcessExperimentEnabled();
-    }
-
     public AwTracingController getAwTracingController() {
         triggerAndWaitForChromiumStarted(CallSite.GET_AW_TRACING_CONTROLLER);
         return mChromiumStartedGlobals.mAwTracingController;

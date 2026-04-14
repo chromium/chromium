@@ -194,15 +194,11 @@ BASE_FEATURE(kWebViewConnectToComponentProviderInBackground,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enables phase 2 of using startup tasks logic for webview chromium
-// initialization which starts browser process asynchronously, when starting
-// webview asynchronously.
+// initialization which also starts browser process asynchronously, when
+// starting webview asynchronously.
 // Note: This also enables the same behaviour as WebViewUseStartupTasksLogic and
 // WebViewStartupTasksYieldToNative with minor differences.
 BASE_FEATURE(kWebViewUseStartupTasksLogicP2, base::FEATURE_DISABLED_BY_DEFAULT);
-
-// Stop browser startup in isMultiProcessEnabled.
-BASE_FEATURE(kWebViewStopBrowserStartupInIsMultiProcessEnabled,
-             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enables running native startup tasks asynchronously if WebView startup is
 // asynchronous.
