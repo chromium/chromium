@@ -28,6 +28,7 @@
 #include "chrome/browser/android/selection/chrome_selection_dropdown_menu_delegate.h"
 #include "chrome/browser/android/tab_features.h"
 #include "chrome/browser/android/tab_web_contents_delegate_android.h"
+#include "chrome/browser/android/web_contents_theme_client.h"
 #include "chrome/browser/browser_about_handler.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/flags/android/chrome_feature_list.h"
@@ -184,6 +185,7 @@ std::unique_ptr<TabAndroid> TabAndroid::CreateForTesting(
     Profile* profile,
     int tab_id,
     std::unique_ptr<content::WebContents> web_contents) {
+  night_mode::WebContentsThemeClient::CreateForWebContents(web_contents.get());
   std::unique_ptr<TabAndroid> tab(new TabAndroid(profile, tab_id));
   tab->web_contents_ = std::move(web_contents);
   return tab;
@@ -361,6 +363,8 @@ void TabAndroid::InitWebContents(
     const JavaRef<jobject>& jcontext_menu_populator_factory) {
   web_contents_.reset(content::WebContents::FromJavaWebContents(jweb_contents));
   DCHECK(web_contents_.get());
+
+  night_mode::WebContentsThemeClient::CreateForWebContents(web_contents_.get());
 
   renderer_preferences_util::UpdateFromSystemSettings(
       web_contents_->GetMutableRendererPrefs(),

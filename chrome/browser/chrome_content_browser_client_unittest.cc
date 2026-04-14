@@ -135,6 +135,7 @@
 #if BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/android/tab_android.h"
 #include "chrome/browser/android/tab_web_contents_delegate_android.h"
+#include "chrome/browser/android/web_contents_theme_client.h"
 
 #if BUILDFLAG(ENABLE_GUEST_VIEW) && !BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 #include "chrome/browser/android/guest_view/chrome_guest_view_manager_delegate.h"
@@ -1927,18 +1928,6 @@ TEST_F(WillComputeSiteForNavigationTest,
 
 #if BUILDFLAG(IS_ANDROID)
 
-class MockTabWebContentsDelegateAndroid
-    : public android::TabWebContentsDelegateAndroid {
- public:
-  MockTabWebContentsDelegateAndroid()
-      : android::TabWebContentsDelegateAndroid(
-            base::android::AttachCurrentThread(),
-            base::android::ScopedJavaLocalRef<jobject>()) {}
-  ~MockTabWebContentsDelegateAndroid() override = default;
-
-  MOCK_METHOD(bool, IsNightModeEnabled, (), (const, override));
-};
-
 class ChromeContentBrowserClientPreferredColorSchemeAndroidTest
     : public ChromeRenderViewHostTestHarness,
       public testing::WithParamInterface<bool> {
@@ -1962,10 +1951,8 @@ TEST_P(ChromeContentBrowserClientPreferredColorSchemeAndroidTest,
                                                         tab.get());
 
   bool is_dark_mode = IsDarkMode();
-  auto delegate = std::make_unique<MockTabWebContentsDelegateAndroid>();
-  EXPECT_CALL(*delegate, IsNightModeEnabled())
-      .WillRepeatedly(testing::Return(is_dark_mode));
-  web_contents->SetDelegate(delegate.get());
+  night_mode::WebContentsThemeClient::SetIsNightModeEnabledForTesting(
+      web_contents, is_dark_mode);
 
   blink::web_pref::WebPreferences web_preferences;
   content::SiteInstance* site_instance = web_contents->GetSiteInstance();
@@ -1999,10 +1986,8 @@ TEST_P(ChromeContentBrowserClientPreferredColorSchemeAndroidTest,
 
   // Set Color Scheme in Owner
   bool is_dark_mode = IsDarkMode();
-  auto delegate = std::make_unique<MockTabWebContentsDelegateAndroid>();
-  EXPECT_CALL(*delegate, IsNightModeEnabled())
-      .WillRepeatedly(testing::Return(is_dark_mode));
-  owner_contents->SetDelegate(delegate.get());
+  night_mode::WebContentsThemeClient::SetIsNightModeEnabledForTesting(
+      owner_contents, is_dark_mode);
 
   // Create Guest WebContents
   std::unique_ptr<content::WebContents> guest_contents =

@@ -42,10 +42,8 @@ import org.chromium.chrome.browser.fullscreen.FullscreenOptions;
 import org.chromium.chrome.browser.init.ChromeActivityNativeDelegate;
 import org.chromium.chrome.browser.media.PictureInPicture;
 import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
-import org.chromium.chrome.browser.night_mode.WebContentsDarkModeController;
 import org.chromium.chrome.browser.policy.PolicyAuditor;
 import org.chromium.chrome.browser.policy.PolicyAuditor.AuditEvent;
-import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.InterceptNavigationDelegateTabHelper;
 import org.chromium.chrome.browser.tab.Tab;
@@ -76,7 +74,6 @@ import org.chromium.ui.modaldialog.ModalDialogProperties;
 import org.chromium.ui.modaldialog.SimpleModalDialogController;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.mojom.WindowOpenDisposition;
-import org.chromium.ui.util.ColorUtils;
 import org.chromium.url.GURL;
 
 import java.util.Arrays;
@@ -651,30 +648,6 @@ public class ActivityTabWebContentsDelegateAndroid extends TabWebContentsDelegat
         }
 
         return isPictureInPictureEnabled() && delegate.isRequestPinnedWindowingLayerSupported();
-    }
-
-    @Override
-    protected boolean isNightModeEnabled() {
-        return mActivity != null ? ColorUtils.inNightMode(mActivity) : false;
-    }
-
-    @Override
-    protected boolean isForceDarkWebContentEnabled() {
-        if (ChromeFeatureList.isEnabled(ChromeFeatureList.FORCE_WEB_CONTENTS_DARK_MODE)) {
-            return true;
-        }
-        if (!ChromeFeatureList.isEnabled(
-                ChromeFeatureList.DARKEN_WEBSITES_CHECKBOX_IN_THEMES_SETTING)) {
-            return false;
-        }
-        WebContents webContents = mTab.getWebContents();
-        if (webContents == null) {
-            return false;
-        }
-        Profile profile = mTab.getProfile();
-        return isNightModeEnabled()
-                && WebContentsDarkModeController.isEnabledForUrl(
-                        profile, webContents.getVisibleUrl());
     }
 
     @Override

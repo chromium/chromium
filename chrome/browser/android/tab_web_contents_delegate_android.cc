@@ -589,23 +589,6 @@ bool TabWebContentsDelegateAndroid::IsPictureInPictureEnabled() const {
                                                                           obj);
 }
 
-bool TabWebContentsDelegateAndroid::IsNightModeEnabled() const {
-  JNIEnv* env = base::android::AttachCurrentThread();
-  ScopedJavaLocalRef<jobject> obj = GetJavaDelegate(env);
-  if (obj.is_null())
-    return false;
-  return Java_TabWebContentsDelegateAndroidImpl_isNightModeEnabled(env, obj);
-}
-
-bool TabWebContentsDelegateAndroid::IsForceDarkWebContentEnabled() const {
-  JNIEnv* env = base::android::AttachCurrentThread();
-  ScopedJavaLocalRef<jobject> obj = GetJavaDelegate(env);
-  if (obj.is_null())
-    return false;
-  return Java_TabWebContentsDelegateAndroidImpl_isForceDarkWebContentEnabled(
-      env, obj);
-}
-
 bool TabWebContentsDelegateAndroid::CanShowAppBanners() const {
   JNIEnv* env = base::android::AttachCurrentThread();
   ScopedJavaLocalRef<jobject> obj = GetJavaDelegate(env);

@@ -507,6 +507,7 @@
 #include "chrome/browser/android/service_tab_launcher.h"
 #include "chrome/browser/android/tab_android.h"
 #include "chrome/browser/android/tab_web_contents_delegate_android.h"
+#include "chrome/browser/android/web_contents_theme_client.h"
 #include "chrome/browser/chrome_content_browser_client_android.h"
 #include "chrome/browser/digital_credentials/digital_identity_provider_android.h"
 #include "chrome/browser/flags/android/chrome_feature_list.h"
@@ -4073,14 +4074,11 @@ GetPreferredColorScheme(const WebPreferences& web_prefs,
   preferred_root_scrollbar_color_scheme =
       web_prefs.preferred_root_scrollbar_color_scheme;
 
-  if (TabAndroid::FromWebContents(web_contents)) {
-    if (auto* delegate = static_cast<android::TabWebContentsDelegateAndroid*>(
-            web_contents->GetDelegate())) {
-      preferred_color_scheme = delegate->IsNightModeEnabled()
-                                   ? blink::mojom::PreferredColorScheme::kDark
-                                   : blink::mojom::PreferredColorScheme::kLight;
-      preferred_root_scrollbar_color_scheme = preferred_color_scheme;
-    }
+  if (auto* theme_client = night_mode::WebContentsThemeClient::FromWebContents(web_contents)) {
+    preferred_color_scheme = theme_client->IsNightModeEnabled()
+            ? blink::mojom::PreferredColorScheme::kDark
+            : blink::mojom::PreferredColorScheme::kLight;
+    preferred_root_scrollbar_color_scheme = preferred_color_scheme;
   }
 #else  // !BUILDFLAG(IS_ANDROID)
   if (Profile::FromBrowserContext(web_contents->GetBrowserContext())
@@ -4739,13 +4737,13 @@ void ChromeContentBrowserClient::OverrideWebPreferences(
       web_prefs->picture_in_picture_enabled =
           delegate->IsPictureInPictureEnabled();
 
-      web_prefs->force_dark_mode_enabled =
-          delegate->IsForceDarkWebContentEnabled();
-
       web_prefs->modal_context_menu = delegate->IsModalContextMenu();
 
       web_prefs->dynamic_safe_area_insets_enabled =
           delegate->IsDynamicSafeAreaInsetsEnabled();
+    }
+    if (auto* theme_client = night_mode::WebContentsThemeClient::FromWebContents(web_contents)) {
+      web_prefs->force_dark_mode_enabled = theme_client->IsForceDarkWebContentEnabled();
     }
 #endif  // BUILDFLAG(IS_ANDROID)
 
@@ -4980,12 +4978,8 @@ bool ChromeContentBrowserClient::OverrideWebPreferencesAfterNavigation(
           old_preferred_root_scrollbar_color_scheme;
 
 #if BUILDFLAG(IS_ANDROID)
-  auto* delegate = TabAndroid::FromWebContents(web_contents)
-                       ? static_cast<android::TabWebContentsDelegateAndroid*>(
-                             web_contents->GetDelegate())
-                       : nullptr;
-  if (delegate) {
-    bool force_dark_mode_new_state = delegate->IsForceDarkWebContentEnabled();
+  if (auto* theme_client = night_mode::WebContentsThemeClient::FromWebContents(web_contents)) {
+    bool force_dark_mode_new_state = theme_client->IsForceDarkWebContentEnabled();
     prefs_changed |=
         (web_prefs->force_dark_mode_enabled != force_dark_mode_new_state);
     web_prefs->force_dark_mode_enabled = force_dark_mode_new_state;

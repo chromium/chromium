@@ -72,21 +72,6 @@ public abstract class TabWebContentsDelegateAndroid extends WebContentsDelegateA
     }
 
     /**
-     * @return Night mode enabled/disabled for this Tab. To be used to propagate
-     *         the preferred color scheme to the renderer.
-     */
-    protected boolean isNightModeEnabled() {
-        return false;
-    }
-
-    /**
-     * @return True if auto-darkening may be applied to web contents per Chrome browser settings.
-     */
-    protected boolean isForceDarkWebContentEnabled() {
-        return false;
-    }
-
-    /**
      * Return true if app banners are to be permitted in this tab. May need to be overridden.
      * @return true if app banners are permitted, and false otherwise.
      */

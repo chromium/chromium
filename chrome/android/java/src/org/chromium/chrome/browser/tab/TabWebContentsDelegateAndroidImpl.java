@@ -467,25 +467,6 @@ final class TabWebContentsDelegateAndroidImpl extends TabWebContentsDelegateAndr
     }
 
     /**
-     * @return Night mode enabled/disabled for this Tab. To be used to propagate the preferred color
-     *     scheme to the renderer.
-     */
-    @CalledByNative
-    @Override
-    protected boolean isNightModeEnabled() {
-        return mDelegate.isNightModeEnabled();
-    }
-
-    /**
-     * @return web preference for force dark mode.
-     */
-    @CalledByNative
-    @Override
-    protected boolean isForceDarkWebContentEnabled() {
-        return mDelegate.isForceDarkWebContentEnabled();
-    }
-
-    /**
      * Return true if app banners are to be permitted in this tab. May need to be overridden.
      *
      * @return true if app banners are permitted, and false otherwise.

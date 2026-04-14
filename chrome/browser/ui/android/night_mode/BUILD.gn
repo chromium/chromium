@@ -5,6 +5,7 @@
 import("//build/config/android/config.gni")
 import("//build/config/android/rules.gni")
 import("//chrome/browser/buildflags.gni")
+import("//third_party/jni_zero/jni_zero.gni")
 
 android_library("java") {
   sources = [
@@ -19,6 +20,7 @@ android_library("java") {
     "java/src/org/chromium/chrome/browser/night_mode/ThemeType.java",
     "java/src/org/chromium/chrome/browser/night_mode/WebContentsDarkModeController.java",
     "java/src/org/chromium/chrome/browser/night_mode/WebContentsDarkModeMessageController.java",
+    "java/src/org/chromium/chrome/browser/night_mode/WebContentsThemeClient.java",
     "java/src/org/chromium/chrome/browser/night_mode/settings/RadioButtonGroupThemePreference.java",
     "java/src/org/chromium/chrome/browser/night_mode/settings/ThemeSettingsFragment.java",
   ]
@@ -49,11 +51,16 @@ android_library("java") {
     "//third_party/androidx:androidx_appcompat_appcompat_resources_java",
     "//third_party/androidx:androidx_fragment_fragment_java",
     "//third_party/androidx:androidx_preference_preference_java",
+    "//third_party/jni_zero:jni_zero_java",
     "//ui/android:ui_no_recycler_view_java",
     "//ui/android:ui_utils_java",
     "//url:gurl_java",
   ]
   resources_package = "org.chromium.chrome.browser.night_mode"
+}
+
+generate_jni("jni_headers") {
+  sources = [ "java/src/org/chromium/chrome/browser/night_mode/WebContentsThemeClient.java" ]
 }
 
 android_resources("java_resources") {
@@ -117,6 +124,7 @@ robolectric_library("junit") {
     "java/src/org/chromium/chrome/browser/night_mode/AutoDarkFeedbackSourceUnitTest.java",
     "java/src/org/chromium/chrome/browser/night_mode/WebContentsDarkModeControllerUnitTest.java",
     "java/src/org/chromium/chrome/browser/night_mode/WebContentsDarkModeMessageControllerUnitTest.java",
+    "java/src/org/chromium/chrome/browser/night_mode/WebContentsThemeClientUnitTest.java",
   ]
 
   deps = [
@@ -152,6 +160,7 @@ robolectric_library("junit") {
     "//ui/android:ui_junit_test_support",
     "//ui/android:ui_no_recycler_view_java",
     "//url:gurl_java",
+    "//url:gurl_junit_test_support",
   ]
 
   resources_package = "org.chromium.chrome.browser.night_mode"
