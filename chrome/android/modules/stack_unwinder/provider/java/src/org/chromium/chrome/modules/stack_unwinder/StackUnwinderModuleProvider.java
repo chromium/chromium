@@ -37,9 +37,4 @@ public class StackUnwinderModuleProvider {
     public static void ensureNativeLoaded() {
         StackUnwinderModule.ensureNativeLoaded();
     }
-
-    @CalledByNative
-    public static long getDoNothingFunction() {
-        return StackUnwinderModule.getImpl().getDoNothingFunction();
-    }
 }

@@ -35,9 +35,7 @@ class Module {
   void DoNothing();
 
  private:
-  explicit Module(DoNothingFunction do_nothing);
-
-  const DoNothingFunction do_nothing_;
+  Module() = default;
 };
 
 }  // namespace stack_unwinder

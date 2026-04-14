@@ -14,7 +14,4 @@ import org.chromium.components.module_installer.builder.ModuleInterface;
         module = "stack_unwinder",
         impl = "org.chromium.chrome.modules.stack_unwinder.StackUnwinderModuleContentsImpl")
 @NullMarked
-public interface StackUnwinderModuleContents {
-
-    long getDoNothingFunction();
-}
+public interface StackUnwinderModuleContents {}
