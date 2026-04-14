@@ -132,15 +132,12 @@ class ShowPromoInPageImpl : public ShowPromoInPage {
       delete this;
       return;
     }
-    help_bubble_closed_subscription_ = help_bubble_->AddOnCloseCallback(
+    help_bubble_closed_subscription_ = help_bubble_->AddOnClosedCallback(
         base::BindOnce(&ShowPromoInPageImpl::OnBubbleClosed, GetWeakPtr()));
     std::move(callback_).Run(this, true);
   }
 
-  void OnBubbleClosed(user_education::HelpBubble*,
-                      user_education::HelpBubble::CloseReason) {
-    delete this;
-  }
+  void OnBubbleClosed(user_education::HelpBubble::CloseReason) { delete this; }
 
   void OnTimeout() {
     DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);

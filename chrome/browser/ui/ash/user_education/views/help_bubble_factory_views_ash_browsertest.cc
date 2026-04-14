@@ -33,7 +33,6 @@ namespace {
 // Aliases.
 using ::ash::HelpBubbleContext;
 using ::ash::HelpBubbleViewAsh;
-using ::ash::HelpBubbleViewsAsh;
 using ::ash::kHelpBubbleContextKey;
 using ::user_education::HelpBubbleParams;
 using ::user_education::HelpBubbleView;
@@ -111,6 +110,7 @@ IN_PROC_BROWSER_TEST_P(HelpBubbleFactoryViewsAshBrowserTest, CreateBubble) {
 
   // The help `bubble` should be Ash-specific depending on `context`.
   bool is_ash_context = context == HelpBubbleContext::kAsh;
-  ASSERT_EQ(bubble->IsA<HelpBubbleViewsAsh>(), is_ash_context);
-  ASSERT_NE(bubble->IsA<HelpBubbleViews>(), is_ash_context);
+  auto* const bubble_view =
+      bubble->AsA<HelpBubbleViews>()->bubble_view_for_testing();
+  ASSERT_EQ(views::IsViewClass<HelpBubbleViewAsh>(bubble_view), is_ash_context);
 }

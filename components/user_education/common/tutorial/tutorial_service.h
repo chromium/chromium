@@ -118,7 +118,7 @@ class TutorialService {
 
   // Called when a non-final bubble is closed. Used to trigger the broken
   // tutorial timeout.
-  void OnNonFinalBubbleClosed(HelpBubble* bubble,
+  void OnNonFinalBubbleClosed(base::WeakPtr<HelpBubble> bubble,
                               HelpBubble::CloseReason reason);
 
   // Calls the completion code for the running tutorial.

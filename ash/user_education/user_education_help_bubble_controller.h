@@ -16,11 +16,6 @@
 #include "base/memory/raw_ptr.h"
 #include "base/types/pass_key.h"
 
-namespace ui {
-class ElementContext;
-class ElementIdentifier;
-}  // namespace ui
-
 namespace user_education {
 class HelpBubble;
 }  // namespace user_education
@@ -45,15 +40,6 @@ class ASH_EXPORT UserEducationHelpBubbleController {
   // Returns the singleton instance owned by the `UserEducationController`.
   // NOTE: Exists if and only if user education features are enabled.
   static UserEducationHelpBubbleController* Get();
-
-  // Returns the unique identifier for the help bubble currently being shown for
-  // the tracked element associated with the specified `element_id` in the
-  // specified `element_context`. If no help bubble is currently being shown for
-  // the tracked element or if the tracked element does not exist, an absent
-  // value is returned.
-  std::optional<HelpBubbleId> GetHelpBubbleId(
-      ui::ElementIdentifier element_id,
-      ui::ElementContext element_context) const;
 
   // Adds a `callback` to be invoked whenever a help bubble's anchor bounds
   // change until the returned subscription is destroyed.

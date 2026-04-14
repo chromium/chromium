@@ -8,6 +8,8 @@
 #include "base/callback_list.h"
 #include "base/compiler_specific.h"
 #include "base/functional/callback.h"
+#include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/interaction/element_tracker.h"
 #include "ui/base/interaction/framework_specific_implementation.h"
@@ -33,11 +35,6 @@ class HelpBubble : public ui::FrameworkSpecificImplementation {
     kBubbleDestroyed,
   };
 
-  // Callback to be notified when the help bubble is closed. Note that the
-  // pointer passed in is entirely for reference and should not be dereferenced
-  // as another callback may have deleted the bubble itself.
-  using ClosedCallback = base::OnceCallback<void(HelpBubble*, CloseReason)>;
-
   HelpBubble();
   ~HelpBubble() override;
 
@@ -45,8 +42,12 @@ class HelpBubble : public ui::FrameworkSpecificImplementation {
   virtual bool ToggleFocusForAccessibility() = 0;
 
   // Closes the bubble if it is not already closed. Returns whether the bubble
-  // was open.
-  bool Close(CloseReason close_reason = CloseReason::kProgrammaticallyClosed);
+  // was open. Usual pattern is to call `BeginClose()` at the top and return the
+  // result of `ScopedNotifyOnClose::is_valid()`.
+  //
+  // `Close()` should return true at most once and return false (and be a no-op)
+  // on any subsequent call.
+  virtual bool Close(CloseReason close_reason) = 0;
 
   // Notify that the element the help bubble is anchored to may have moved.
   // Default is no-op.
@@ -60,23 +61,67 @@ class HelpBubble : public ui::FrameworkSpecificImplementation {
   // Returns the context of this help bubble (if there is one).
   virtual ui::ElementContext GetContext() const = 0;
 
-  // Add a callback to know when a bubble is going away.
-  [[nodiscard]] base::CallbackListSubscription AddOnCloseCallback(
+  // Add a callback to know when a help bubble is about to close. The help
+  // bubble will still be valid during this call.
+  using ClosingCallback =
+      base::OnceCallback<void(const HelpBubble*, CloseReason)>;
+  [[nodiscard]] base::CallbackListSubscription AddOnClosingCallback(
+      ClosingCallback callback);
+
+  // Add a callback for when the help bubble has been fully torn down.
+  //
+  // The caller can release the help bubble and other resources at this point if
+  // that hasn't already been done (but note that the help bubble may no longer
+  // exist at this point).
+  using ClosedCallback = base::OnceCallback<void(CloseReason)>;
+  [[nodiscard]] base::CallbackListSubscription AddOnClosedCallback(
       ClosedCallback callback);
 
   bool is_open() const { return !is_closed(); }
 
+  base::WeakPtr<HelpBubble> GetWeakPtr() {
+    return weak_ptr_factory_.GetWeakPtr();
+  }
+
  protected:
-  // Actually close the bubble.
-  virtual void CloseBubbleImpl() = 0;
+  using ClosingCallbackList = base::OnceCallbackList<ClosingCallback::RunType>;
+  using ClosedCallbackList = base::OnceCallbackList<ClosedCallback::RunType>;
+
+  // Created from `this` with the contents of `on_close_callbacks_`, calls
+  // the callbacks (if any) when it goes out of scope.
+  class [[nodiscard]] ScopedNotifyOnClosed {
+   public:
+    ScopedNotifyOnClosed();
+    ScopedNotifyOnClosed(const HelpBubble* bubble,
+                         CloseReason reason,
+                         std::unique_ptr<ClosedCallbackList> callbacks);
+    ScopedNotifyOnClosed(ScopedNotifyOnClosed&&) noexcept;
+    ScopedNotifyOnClosed& operator=(ScopedNotifyOnClosed&&) noexcept;
+    ~ScopedNotifyOnClosed();
+
+    bool is_valid() const { return callbacks_ != nullptr; }
+
+   private:
+    CloseReason reason_ = CloseReason::kProgrammaticallyClosed;
+    std::unique_ptr<ClosedCallbackList> callbacks_;
+  };
+
+  // Call when you are tearing down the bubble; the resulting object will ensure
+  // that - if the bubble was not previously closed - the proper close callbacks
+  // will be triggered when the resulting object goes out of scope.
+  //
+  // If called a second time, `ScopedNotifyOnClose::is_valid()` will be false
+  // and the call and destructor are a no-op.
+  ScopedNotifyOnClosed BeginClose(CloseReason reason);
 
  private:
   // Closed callbacks are cleared out on close, so this keeps us from having to
   // store extra data about closed status that could become out of sync.
-  bool is_closed() const { return !on_close_callbacks_; }
+  bool is_closed() const { return !on_closed_callbacks_; }
 
-  using CallbackList = base::OnceCallbackList<ClosedCallback::RunType>;
-  std::unique_ptr<CallbackList> on_close_callbacks_;
+  ClosingCallbackList on_closing_callbacks_;
+  std::unique_ptr<ClosedCallbackList> on_closed_callbacks_;
+  base::WeakPtrFactory<HelpBubble> weak_ptr_factory_{this};
 };
 
 }  // namespace user_education

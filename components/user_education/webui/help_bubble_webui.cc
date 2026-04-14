@@ -37,8 +37,12 @@ ui::ElementContext HelpBubbleWebUI::GetContext() const {
   return handler_->context();
 }
 
-void HelpBubbleWebUI::CloseBubbleImpl() {
-  handler_->OnHelpBubbleClosing(anchor_id_);
+bool HelpBubbleWebUI::Close(CloseReason reason) {
+  auto on_close = BeginClose(reason);
+  if (on_close.is_valid()) {
+    handler_->OnHelpBubbleClosing(anchor_id_);
+  }
+  return on_close.is_valid();
 }
 
 DEFINE_FRAMEWORK_SPECIFIC_METADATA(HelpBubbleWebUI)

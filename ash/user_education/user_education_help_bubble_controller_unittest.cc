@@ -20,6 +20,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "components/user_education/common/help_bubble/help_bubble.h"
 #include "components/user_education/common/help_bubble/help_bubble_params.h"
+#include "components/user_education/views/help_bubble_views.h"
 #include "components/user_education/views/help_bubble_views_test_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/aura/window.h"
@@ -62,8 +63,10 @@ gfx::Rect GetBoundsInScreen(const views::Widget* widget) {
 }
 
 HelpBubbleViewAsh* GetHelpBubbleView(HelpBubble* help_bubble) {
-  return help_bubble->IsA<HelpBubbleViewsAsh>()
-             ? help_bubble->AsA<HelpBubbleViewsAsh>()->bubble_view()
+  return help_bubble->IsA<user_education::HelpBubbleViews>()
+             ? views::AsViewClass<HelpBubbleViewAsh>(
+                   help_bubble->AsA<user_education::HelpBubbleViews>()
+                       ->bubble_view_for_testing())
              : nullptr;
 }
 
@@ -234,7 +237,8 @@ TEST_F(UserEducationHelpBubbleControllerTest, Metadata) {
 
   // Destroy `help_bubble`.
   views::test::WidgetDestroyedWaiter waiter(help_bubble_view->GetWidget());
-  help_bubble->Close();
+  help_bubble->Close(
+      user_education::HelpBubble::CloseReason::kProgrammaticallyClosed);
   waiter.Wait();
   help_bubble = nullptr;
   help_bubble_view = nullptr;
@@ -284,7 +288,8 @@ TEST_F(UserEducationHelpBubbleControllerTest, Subscriptions) {
 
     // Close the `help_bubble`.
     ASSERT_TRUE(help_bubble);
-    help_bubble->Close();
+    help_bubble->Close(
+        user_education::HelpBubble::CloseReason::kProgrammaticallyClosed);
     help_bubble = nullptr;
 
     // Verify expectations.

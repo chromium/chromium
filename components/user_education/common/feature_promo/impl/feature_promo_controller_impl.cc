@@ -1081,9 +1081,9 @@ std::unique_ptr<HelpBubble> FeaturePromoControllerImpl::ShowPromoBubbleImpl(
     }
 
     // Listen for the bubble being closed.
-    bubble_closed_subscription_ = help_bubble->AddOnCloseCallback(
+    bubble_closed_subscription_ = help_bubble->AddOnClosedCallback(
         base::BindOnce(&FeaturePromoControllerImpl::OnHelpBubbleClosed,
-                       base::Unretained(this)));
+                       base::Unretained(this), help_bubble->GetWeakPtr()));
   }
 
   return help_bubble;
@@ -1099,14 +1099,14 @@ void FeaturePromoControllerImpl::FinishContinuedPromo(
 }
 
 void FeaturePromoControllerImpl::OnHelpBubbleClosed(
-    HelpBubble* bubble,
+    base::WeakPtr<HelpBubble> bubble,
     HelpBubble::CloseReason reason) {
   // Since we're in the middle of processing callbacks we can't reset our
   // subscription but since it's a weak pointer (internally) and since we should
   // should only get called here once, it's not a big deal if we don't reset
   // it.
   bool closed_unexpectedly = false;
-  if (bubble == promo_bubble()) {
+  if (bubble && bubble.get() == promo_bubble()) {
     if (current_promo_->OnPromoBubbleClosed(reason)) {
       current_promo_.reset();
       closed_unexpectedly = true;

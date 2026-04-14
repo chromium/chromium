@@ -142,7 +142,7 @@ class HelpBubbleHandlerBase
   void OnFloatingHelpBubbleCreated(ui::ElementIdentifier anchor_id,
                                    HelpBubble* help_bubble);
   void OnFloatingHelpBubbleClosed(ui::ElementIdentifier anchor_id,
-                                  HelpBubble* help_bubble,
+                                  const HelpBubble* help_bubble,
                                   HelpBubble::CloseReason);
   void OnWebContentsVisibilityChanged(std::optional<bool> visibility);
 
