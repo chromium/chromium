@@ -43,18 +43,7 @@ class CreateProfilePrefsTestBase : public PlatformTest {
   scoped_refptr<user_prefs::PrefRegistrySyncable> pref_registry_;
 };
 
-class CreateProfilePrefsTestWithMigrateAccountPrefsEnabled
-    : public CreateProfilePrefsTestBase {
- public:
-  CreateProfilePrefsTestWithMigrateAccountPrefsEnabled()
-      : feature_list_(syncer::kMigrateAccountPrefs) {}
-
- private:
-  base::test::ScopedFeatureList feature_list_;
-};
-
-TEST_F(CreateProfilePrefsTestWithMigrateAccountPrefsEnabled,
-       ShouldRemoveAccountPrefsFile) {
+TEST_F(CreateProfilePrefsTestBase, ShouldRemoveAccountPrefsFile) {
   // Simulate a pre-existing account preferences file.
   ASSERT_TRUE(base::WriteFile(AccountPreferencesFilePath(), ""));
 

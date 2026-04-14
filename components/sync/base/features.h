@@ -144,12 +144,6 @@ constexpr bool IsReadingListAccountStorageEnabled() {
 // sync metadata isn't available (i.e. initial sync never completed).
 BASE_DECLARE_FEATURE(kSyncAlwaysForceImmediateStartIfTransportDataMissing);
 
-#if BUILDFLAG(IS_IOS) || BUILDFLAG(IS_ANDROID)
-// If enabled, holds the account preference values under a dictionary in the
-// main preferences file.
-BASE_DECLARE_FEATURE(kMigrateAccountPrefs);
-#endif  // BUILDFLAG(IS_IOS) || BUILDFLAG(IS_ANDROID)
-
 // If enabled, support displaying and uploading individual Reading List items in
 // the Batch Upload UI.
 //

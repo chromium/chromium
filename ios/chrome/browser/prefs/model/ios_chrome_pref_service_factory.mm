@@ -102,18 +102,13 @@ std::unique_ptr<sync_preferences::PrefServiceSyncable> CreateProfilePrefs(
           switches::kEnablePreferencesAccountStorage)) {
     base::FilePath account_prefs_filepath =
         profile_path.Append(kAccountPreferencesFilename);
-    if (base::FeatureList::IsEnabled(syncer::kMigrateAccountPrefs)) {
-      // Post task to remove the account preferences file. This is done on the
-      // IO thread.
-      pref_io_task_runner->PostTask(
-          FROM_HERE, base::BindOnce(IgnoreResult(&base::DeleteFile),
-                                    account_prefs_filepath));
-      factory.SetAccountPrefStore(base::MakeRefCounted<WrapWithPrefixPrefStore>(
-          local_pref_store, kAccountPreferencesPrefix));
-    } else {
-      factory.SetAccountPrefStore(base::MakeRefCounted<JsonPrefStore>(
-          account_prefs_filepath, nullptr, pref_io_task_runner));
-    }
+    // Post task to remove the account preferences file. This is done on the
+    // IO thread.
+    pref_io_task_runner->PostTask(
+        FROM_HERE, base::BindOnce(IgnoreResult(&base::DeleteFile),
+                                  account_prefs_filepath));
+    factory.SetAccountPrefStore(base::MakeRefCounted<WrapWithPrefixPrefStore>(
+        local_pref_store, kAccountPreferencesPrefix));
   }
   factory.set_async(async);
   std::unique_ptr<sync_preferences::PrefServiceSyncable> pref_service =

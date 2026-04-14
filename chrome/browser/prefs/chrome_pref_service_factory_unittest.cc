@@ -98,44 +98,7 @@ TEST_F(ChromePrefServiceFactoryTamperedPrefTest,
 
 #if BUILDFLAG(IS_ANDROID)
 
-class ChromePrefServiceFactoryTestWithMigrateAccountPrefsDisabled
-    : public ChromePrefServiceFactoryTestBase {
- public:
-  ChromePrefServiceFactoryTestWithMigrateAccountPrefsDisabled() {
-    feature_list_.InitAndDisableFeature(syncer::kMigrateAccountPrefs);
-  }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
-};
-
-TEST_F(ChromePrefServiceFactoryTestWithMigrateAccountPrefsDisabled,
-       ShouldNotRemoveAccountPrefsFile) {
-  // Simulate a pre-existing account preferences file.
-  ASSERT_TRUE(base::WriteFile(AccountPreferencesFilePath(), "{}"));
-
-  BuildPrefService();
-  // Wait for any tasks posted to the IO to finish.
-  base::RunLoop run_loop;
-  content::GetIOThreadTaskRunner()->PostTask(FROM_HERE, run_loop.QuitClosure());
-  run_loop.Run();
-
-  // Account prefs file should not be removed.
-  EXPECT_TRUE(base::PathExists(AccountPreferencesFilePath()));
-}
-
-class ChromePrefServiceFactoryTestWithMigrateAccountPrefsEnabled
-    : public ChromePrefServiceFactoryTestBase {
- public:
-  ChromePrefServiceFactoryTestWithMigrateAccountPrefsEnabled()
-      : feature_list_(syncer::kMigrateAccountPrefs) {}
-
- private:
-  base::test::ScopedFeatureList feature_list_;
-};
-
-TEST_F(ChromePrefServiceFactoryTestWithMigrateAccountPrefsEnabled,
-       ShouldRemoveAccountPrefsFile) {
+TEST_F(ChromePrefServiceFactoryTestBase, ShouldRemoveAccountPrefsFile) {
   // Simulate a pre-existing account preferences file.
   ASSERT_TRUE(base::WriteFile(AccountPreferencesFilePath(), "{}"));
 
