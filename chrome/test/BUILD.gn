@@ -12979,6 +12979,7 @@ source_set("xr_browser_tests_common") {
 
   deps = [
     "//base",
+    "//chrome/browser/ui/browser_window",
     "//chrome/test:browser_tests_runner",
     "//sandbox/policy",
   ]

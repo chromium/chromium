@@ -44,10 +44,10 @@
 #include "chrome/browser/glic/suggestions/contextual_cueing_service_factory.h"
 #include "chrome/browser/tab_list/tab_list_interface.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
-#include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
 #include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
+#include "chrome/browser/ui/browser_window/public/profile_browser_collection.h"
 #include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/browser/ui/user_education/browser_user_education_interface.h"
 #include "chrome/common/actor_webui.mojom.h"
@@ -1035,7 +1035,8 @@ void GlicInstanceImpl::MaybeShowShortcutToastPromo() {
   }
 // TODO(b/483455896): implement hotkey promo for android
 #if !BUILDFLAG(IS_ANDROID)
-  BrowserWindowInterface* browser = chrome::FindTabbedBrowser(profile_, false);
+  BrowserWindowInterface* browser =
+      ProfileBrowserCollection::GetForProfile(profile_)->FindTabbedBrowser();
   if (!browser) {
     // If there is no browser window open for the profile, skip the promo.
     return;
@@ -1062,7 +1063,8 @@ void GlicInstanceImpl::MaybeShowShortcutSnoozePromo() {
 
   // TODO(b/483455896): implement hotkey promo for android.
 #if !BUILDFLAG(IS_ANDROID)
-  BrowserWindowInterface* browser = chrome::FindTabbedBrowser(profile_, false);
+  BrowserWindowInterface* browser =
+      ProfileBrowserCollection::GetForProfile(profile_)->FindTabbedBrowser();
   if (!browser) {
     // If there is no browser window open for the profile, skip the promo.
     return;

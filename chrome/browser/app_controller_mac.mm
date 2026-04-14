@@ -78,6 +78,7 @@
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
 #include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
+#include "chrome/browser/ui/browser_window/public/profile_browser_collection.h"
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/cocoa/apps/quit_with_apps_controller_mac.h"
 #import "chrome/browser/ui/cocoa/bookmarks/bookmark_menu_bridge.h"
@@ -2450,22 +2451,22 @@ void OpenUrlsInBrowserWithProfile(const std::vector<GURL>& urls,
     profile = ProfileManager::MaybeForceOffTheRecordMode(
         profile->GetOriginalProfile());
   }
-  // Use FindTabbedBrowser to ensure URLs open in a normal tabbed browser
+  // Use FindTabbedBrowser() to ensure URLs open in a normal tabbed browser
   // window, not in PWA/app windows which cannot accept new tabs.
-  Browser* browser =
-      chrome::FindTabbedBrowser(profile, /*match_original_profiles=*/false);
+  BrowserWindowInterface* browser =
+      ProfileBrowserCollection::GetForProfile(profile)->FindTabbedBrowser();
   int startupIndex = TabStripModel::kNoTab;
   content::WebContents* startupContent = nullptr;
-  if (browser && browser->tab_strip_model()->count() == 1) {
+  if (browser && browser->GetTabStripModel()->count() == 1) {
     // If there's only 1 tab and the tab is NTP, close this NTP tab and open all
     // startup urls in new tabs, because the omnibox will stay focused if we
     // load url in NTP tab.
-    startupIndex = browser->tab_strip_model()->active_index();
-    startupContent = browser->tab_strip_model()->GetActiveWebContents();
+    startupIndex = browser->GetTabStripModel()->active_index();
+    startupContent = browser->GetTabStripModel()->GetActiveWebContents();
   } else if (!browser) {
     // if no browser window exists then create one with no tabs to be filled in.
     browser = Browser::Create(Browser::CreateParams(profile, true));
-    browser->window()->Show();
+    browser->GetWindow()->Show();
   }
 
   // Various methods to open URLs that we get in a native fashion. We use
@@ -2477,15 +2478,15 @@ void OpenUrlsInBrowserWithProfile(const std::vector<GURL>& urls,
       first_run::IsChromeFirstRun() ? chrome::startup::IsFirstRun::kYes
                                     : chrome::startup::IsFirstRun::kNo;
   StartupBrowserCreatorImpl launch(base::FilePath(), dummy, first_run);
-  launch.OpenURLsInBrowser(browser, chrome::startup::IsProcessStartup::kNo,
-                           urls);
+  launch.OpenURLsInBrowser(browser->GetBrowserForMigrationOnly(),
+                           chrome::startup::IsProcessStartup::kNo, urls);
 
   // This NTP check should be replaced once https://crbug.com/624410 is fixed.
   if (startupIndex != TabStripModel::kNoTab &&
       (startupContent->GetVisibleURL() == chrome::kChromeUINewTabURL ||
        startupContent->GetVisibleURL() == chrome::kChromeUINewTabPageURL)) {
-    browser->tab_strip_model()->CloseWebContentsAt(startupIndex,
-                                                   TabCloseTypes::CLOSE_NONE);
+    browser->GetTabStripModel()->CloseWebContentsAt(startupIndex,
+                                                    TabCloseTypes::CLOSE_NONE);
   }
 }
 
@@ -2605,7 +2606,8 @@ void TabRestorer::DoRestoreTab(Profile* profile, SessionID session_id) {
   auto* service = TabRestoreServiceFactory::GetForProfile(profile);
   if (!service)
     return;
-  Browser* browser = chrome::FindTabbedBrowser(profile, false);
+  BrowserWindowInterface* browser =
+      ProfileBrowserCollection::GetForProfile(profile)->FindTabbedBrowser();
   BrowserLiveTabContext* context =
       browser ? browser->GetFeatures().live_tab_context() : nullptr;
   if (session_id.is_valid()) {

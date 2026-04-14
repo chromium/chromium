@@ -30,8 +30,8 @@
 #include "chrome/browser/extensions/external_install_manager.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/browser_window/public/profile_browser_collection.h"
 #include "chrome/browser/ui/global_error/global_error.h"
 #include "chrome/browser/ui/global_error/global_error_service.h"
 #include "chrome/browser/ui/global_error/global_error_service_factory.h"
@@ -485,8 +485,10 @@ void ExternalInstallErrorDesktop::OnDialogReady(
       // DidChangeInstallAlertVisibility() regardless because we depend on this
       // in unit tests.
       manager_->DidChangeInstallAlertVisibility(this, true);
-      BrowserWindowInterface* browser = chrome::FindTabbedBrowser(
-          Profile::FromBrowserContext(browser_context_), true);
+      BrowserWindowInterface* browser =
+          ProfileBrowserCollection::GetForProfile(
+              Profile::FromBrowserContext(browser_context_))
+              ->FindTabbedBrowser(/*match_original_profiles=*/true);
       if (browser) {
         global_error_->ShowBubbleView(browser->GetBrowserForMigrationOnly());
       }

@@ -14,11 +14,12 @@
 #include "build/build_config.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/infobars/confirm_infobar_creator.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/themes/theme_service.h"
 #include "chrome/browser/themes/theme_service_factory.h"
 #include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/browser_window/public/profile_browser_collection.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/infobars/content/content_infobar_manager.h"
@@ -32,11 +33,12 @@ void ThemeInstalledInfoBarDelegate::CreateForLastActiveTab(
     const std::string& theme_name,
     const std::string& theme_id,
     std::unique_ptr<ThemeService::ThemeReinstaller> prev_theme_reinstaller) {
-  // FindTabbedBrowser() is called with |match_original_profiles| true because
-  // a theme install in either a normal or incognito window for a profile
-  // affects all normal and incognito windows for that profile.
+  // A theme install in either a normal or incognito window for a profile
+  // affects all windows for that profile, so search the original profile's
+  // browser collection.
   BrowserWindowInterface* browser =
-      chrome::FindTabbedBrowser(profile, /*match_original_profiles=*/true);
+      ProfileBrowserCollection::GetForProfile(profile)->FindTabbedBrowser(
+          /*match_original_profiles=*/true);
   if (browser) {
     content::WebContents* web_contents =
         browser->GetTabStripModel()->GetActiveWebContents();

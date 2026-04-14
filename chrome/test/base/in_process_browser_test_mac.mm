@@ -8,7 +8,8 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
-#include "chrome/browser/ui/browser_finder.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/browser_window/public/profile_browser_collection.h"
 #import "chrome/browser/ui/cocoa/chrome_command_dispatcher_delegate.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "content/public/test/test_navigation_observer.h"
@@ -31,12 +32,14 @@ Browser* InProcessBrowserTest::OpenURLOffTheRecord(Profile* profile,
   // autorelease pool. Flush the pool when this function returns.
   @autoreleasepool {
     chrome::OpenURLOffTheRecord(profile, url);
-    Browser* browser = chrome::FindTabbedBrowser(
-        profile->GetPrimaryOTRProfile(/*create_if_needed=*/true), false);
+    BrowserWindowInterface* browser_window =
+        ProfileBrowserCollection::GetForProfile(
+            profile->GetPrimaryOTRProfile(/*create_if_needed=*/true))
+            ->FindTabbedBrowser();
     content::TestNavigationObserver observer(
-        browser->tab_strip_model()->GetActiveWebContents());
+        browser_window->GetTabStripModel()->GetActiveWebContents());
     observer.Wait();
-    return browser;
+    return browser_window->GetBrowserForMigrationOnly();
   }
 }
 

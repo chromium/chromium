@@ -38,6 +38,7 @@
 #include "chrome/browser/ui/browser_navigator_params.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/browser_window/public/profile_browser_collection.h"
 #include "chrome/browser/ui/tab_contents/tab_contents_iterator.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
@@ -3148,8 +3149,11 @@ IN_PROC_BROWSER_TEST_F(CaptivePortalBrowserTest, DISABLED_TwoWindows) {
   // original browser window lost focus before creating the new one, such as
   // when running multiple tests at once, the original browser window may
   // remain the profile's active window.
+  BrowserWindowInterface* active_bwi =
+      ProfileBrowserCollection::GetForProfile(browser()->profile())
+          ->FindTabbedBrowser(/*match_original_profiles=*/true);
   Browser* active_browser =
-      chrome::FindTabbedBrowser(browser()->profile(), true);
+      active_bwi ? active_bwi->GetBrowserForMigrationOnly() : nullptr;
   Browser* inactive_browser;
   if (active_browser == browser2) {
     // When only one test is running at a time, the new browser will probably be
@@ -3175,8 +3179,9 @@ IN_PROC_BROWSER_TEST_F(CaptivePortalBrowserTest, DISABLED_TwoWindows) {
 
   // Make sure the active window hasn't changed, and its new tab is
   // active.
-  ASSERT_EQ(active_browser,
-            chrome::FindTabbedBrowser(browser()->profile(), true));
+  ASSERT_EQ(active_bwi,
+            ProfileBrowserCollection::GetForProfile(browser()->profile())
+                ->FindTabbedBrowser(/*match_original_profiles=*/true));
   ASSERT_EQ(1, active_browser->tab_strip_model()->active_index());
 
   // Check that the only two navigated tabs were the new error tab in the

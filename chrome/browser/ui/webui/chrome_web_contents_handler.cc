@@ -9,11 +9,11 @@
 #include "chrome/browser/file_select_helper.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_navigator.h"
 #include "chrome/browser/ui/browser_navigator_params.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/browser_window/public/profile_browser_collection.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "content/public/browser/file_select_listener.h"
 #include "content/public/browser/web_contents.h"
@@ -43,7 +43,8 @@ WebContents* ChromeWebContentsHandler::OpenURLFromTab(
 
   Profile* profile = Profile::FromBrowserContext(context);
 
-  BrowserWindowInterface* browser = chrome::FindTabbedBrowser(profile, false);
+  BrowserWindowInterface* browser =
+      ProfileBrowserCollection::GetForProfile(profile)->FindTabbedBrowser();
   const bool browser_created = !browser;
   if (!browser) {
     if (Browser::GetCreationStatusForProfile(profile) !=
@@ -100,7 +101,8 @@ void ChromeWebContentsHandler::AddNewContents(
 
   Profile* profile = Profile::FromBrowserContext(context);
 
-  BrowserWindowInterface* browser = chrome::FindTabbedBrowser(profile, false);
+  BrowserWindowInterface* browser =
+      ProfileBrowserCollection::GetForProfile(profile)->FindTabbedBrowser();
   const bool browser_created = !browser;
   if (!browser) {
     // The request can be triggered by Captive portal when browser is not ready

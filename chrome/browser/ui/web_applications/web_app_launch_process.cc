@@ -333,8 +333,7 @@ BrowserWindowInterface* WebAppLaunchProcess::MaybeFindBrowserForLaunch() const {
       display_id = display::Screen::Get()->GetDisplayForNewWindows().id();
     }
 #endif
-    return chrome::FindTabbedBrowser(
-        &profile_.get(), /*match_original_profiles=*/false, display_id);
+    return chrome::FindTabbedBrowser(&profile_.get(), false, display_id);
   }
 
   if (params_->disposition == WindowOpenDisposition::NEW_WINDOW) {

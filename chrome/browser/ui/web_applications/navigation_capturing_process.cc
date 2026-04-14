@@ -24,6 +24,7 @@
 #include "chrome/browser/ui/browser_navigator_params.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
+#include "chrome/browser/ui/browser_window/public/profile_browser_collection.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "chrome/browser/ui/web_applications/navigation_handle_user_data_forwarder.h"
 #include "chrome/browser/ui/web_applications/web_app_browser_controller.h"
@@ -200,8 +201,9 @@ void ReparentWebContentsToTabbedBrowser(content::WebContents* old_web_contents,
       navigate_params_browser &&
               !AppBrowserController::IsWebApp(navigate_params_browser)
           ? navigate_params_browser
-          : chrome::FindTabbedBrowser(source_browser->GetProfile(),
-                                      /*match_original_profiles=*/false);
+          : ProfileBrowserCollection::GetForProfile(
+                source_browser->GetProfile())
+                ->FindTabbedBrowser();
 
   // Create a new browser window if the navigation was triggered via a
   // shift-click, or if there are no open tabbed browser windows at the moment.

@@ -10,7 +10,9 @@
 #include "chrome/browser/extensions/test_extension_system.h"
 #include "chrome/browser/signin/account_consistency_mode_manager.h"
 #include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/browser_finder.h"
+#include "chrome/browser/ui/browser_list.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/browser_window/public/profile_browser_collection.h"
 #include "chrome/browser/ui/signin/promos/bubble_signin_promo_delegate.h"
 #include "chrome/browser/ui/singleton_tabs.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
@@ -105,11 +107,12 @@ IN_PROC_BROWSER_TEST_F(BubbleSignInPromoDelegateTest,
   SignInBrowser(incognito_browser);
 
   // Signing in fom incognito should create a new non-incognito browser.
-  Browser* new_regular_browser = chrome::FindTabbedBrowser(
-      incognito_browser->profile()->GetOriginalProfile(), false);
+  BrowserWindowInterface* new_regular_browser =
+      ProfileBrowserCollection::GetForProfile(incognito_browser->profile())
+          ->FindTabbedBrowser(/*match_original_profiles=*/true);
 
   // The full-tab sign-in page should be shown in the newly created browser.
-  EXPECT_EQ(1, new_regular_browser->tab_strip_model()->count());
+  EXPECT_EQ(1, new_regular_browser->GetTabStripModel()->count());
 
   // No effect is expected on the incognito browser.
   int tab_count_incognito = incognito_browser->tab_strip_model()->count();

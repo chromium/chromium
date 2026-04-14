@@ -23,6 +23,16 @@ class ProfileBrowserCollection : public BrowserCollection {
 
   static ProfileBrowserCollection* GetForProfile(Profile* profile);
 
+  // Returns the most recently activated tabbed browser (TYPE_NORMAL) matching
+  // this profile, or nullptr if no such browser exists. Browsers scheduled for
+  // deletion are excluded.
+  //
+  // If `match_original_profiles` is true, the search includes all browsers
+  // whose original profile matches this profile's original profile. This
+  // covers both regular and incognito browsers for the same user.
+  BrowserWindowInterface* FindTabbedBrowser(
+      bool match_original_profiles = false);
+
  protected:
   const raw_ref<Profile> profile_;
 

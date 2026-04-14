@@ -61,6 +61,7 @@
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
 #include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
+#include "chrome/browser/ui/browser_window/public/profile_browser_collection.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/toolbar_controller_util.h"
 #include "chrome/browser/ui/views/toolbar/webui_test_utils.h"
@@ -758,12 +759,14 @@ void InProcessBrowserTest::OpenDevToolsWindow(
 Browser* InProcessBrowserTest::OpenURLOffTheRecord(Profile* profile,
                                                    const GURL& url) {
   chrome::OpenURLOffTheRecord(profile, url);
-  Browser* browser = chrome::FindTabbedBrowser(
-      profile->GetPrimaryOTRProfile(/*create_if_needed=*/true), false);
+  BrowserWindowInterface* browser_window_interface =
+      ProfileBrowserCollection::GetForProfile(
+          profile->GetPrimaryOTRProfile(/*create_if_needed=*/true))
+          ->FindTabbedBrowser();
   content::TestNavigationObserver observer(
-      browser->tab_strip_model()->GetActiveWebContents());
+      browser_window_interface->GetTabStripModel()->GetActiveWebContents());
   observer.Wait();
-  return browser;
+  return browser_window_interface->GetBrowserForMigrationOnly();
 }
 
 // Creates a browser with a single tab (about:blank), waits for the tab to

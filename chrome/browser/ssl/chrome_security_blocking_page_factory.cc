@@ -57,6 +57,7 @@
 #include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/browser_window/public/profile_browser_collection.h"
 #include "chrome/browser/ui/tab_contents/tab_contents_iterator.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "components/captive_portal/content/captive_portal_tab_helper.h"
@@ -460,7 +461,8 @@ void ChromeSecurityBlockingPageFactory::
     OpenLoginPageInAnyTabbedBrowserOrCreateOne(Profile* profile,
                                                bool focus_tab) {
   auto lambda = [&profile]() -> BrowserWindowInterface* {
-    BrowserWindowInterface* browser = chrome::FindTabbedBrowser(profile, false);
+    BrowserWindowInterface* browser =
+        ProfileBrowserCollection::GetForProfile(profile)->FindTabbedBrowser();
     // Create browser if not exists.
     if (!browser && Browser::GetCreationStatusForProfile(profile) ==
                         Browser::CreationStatus::kOk) {

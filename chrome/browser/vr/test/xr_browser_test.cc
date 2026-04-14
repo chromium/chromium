@@ -36,8 +36,9 @@
 #include "chrome/browser/ui/android/tab_model/tab_model_list.h"
 #else
 #include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/browser_window/public/profile_browser_collection.h"
 #endif
 
 #if BUILDFLAG(ENABLE_VR)
@@ -226,10 +227,12 @@ content::WebContents* XrBrowserTestBase::GetCurrentWebContents() {
   // returned by the base class, which doesn't get overridden by the incognito
   // browser.
   if (incognito_) {
-    Browser* incognito_browser = chrome::FindTabbedBrowser(
-        browser()->profile()->GetPrimaryOTRProfile(/*create_if_needed=*/false),
-        /*match_original_profiles=*/false);
-    return incognito_browser->tab_strip_model()->GetActiveWebContents();
+    BrowserWindowInterface* incognito_browser =
+        ProfileBrowserCollection::GetForProfile(
+            browser()->profile()->GetPrimaryOTRProfile(
+                /*create_if_needed=*/false))
+            ->FindTabbedBrowser();
+    return incognito_browser->GetTabStripModel()->GetActiveWebContents();
   }
 #endif
   return chrome_test_utils::GetActiveWebContents(this);

@@ -21,7 +21,8 @@
 #include "chrome/browser/ui/bookmarks/bookmark_utils.h"
 #include "chrome/browser/ui/bookmarks/bookmark_utils_desktop.h"
 #include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/browser_finder.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/browser_window/public/profile_browser_collection.h"
 #import "chrome/browser/ui/cocoa/bookmarks/bookmark_menu_bridge.h"
 #import "chrome/browser/ui/cocoa/l10n_util.h"
 #include "components/bookmarks/browser/bookmark_model.h"
@@ -67,7 +68,13 @@ void DoOpenBookmark(Profile* profile,
                     WindowOpenDisposition disposition,
                     const BookmarkNode* node) {
   DCHECK(profile);
-  Browser* browser = chrome::FindTabbedBrowser(profile, true);
+  BrowserWindowInterface* browser_window_interface =
+      ProfileBrowserCollection::GetForProfile(profile)->FindTabbedBrowser(
+          /*match_original_profiles=*/true);
+  Browser* browser =
+      browser_window_interface
+          ? browser_window_interface->GetBrowserForMigrationOnly()
+          : nullptr;
   if (!browser) {
     browser = Browser::Create(Browser::CreateParams(profile, true));
   }

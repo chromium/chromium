@@ -84,8 +84,8 @@
 #include "ash/constants/ash_switches.h"
 #include "chrome/browser/ash/sync/sync_error_notifier.h"
 #include "chrome/browser/ash/sync/sync_error_notifier_factory.h"
-#include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/browser_window/public/profile_browser_collection.h"
 #include "components/trusted_vault/features.h"
 #include "ui/views/test/widget_test.h"
 #include "ui/views/widget/any_widget_observer.h"
@@ -1442,8 +1442,10 @@ class SingleClientNigoriWithWebApiAndDialogUIParamTest
   ~SingleClientNigoriWithWebApiAndDialogUIParamTest() override = default;
 
   bool WaitForTrustedVaultReauthCompletion() {
-    auto* browser = chrome::FindTabbedBrowser(GetProfile(0), false);
-    return TabClosedChecker(browser->tab_strip_model()->GetActiveWebContents())
+    BrowserWindowInterface* browser =
+        ProfileBrowserCollection::GetForProfile(GetProfile(0))
+            ->FindTabbedBrowser();
+    return TabClosedChecker(browser->GetTabStripModel()->GetActiveWebContents())
         .Wait();
   }
 };

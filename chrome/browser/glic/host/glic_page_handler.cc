@@ -76,12 +76,12 @@
 #include "chrome/browser/skills/skills_glic_mojom_util.h"
 #include "chrome/browser/skills/skills_service_factory.h"
 #include "chrome/browser/skills/skills_ui_tab_controller_interface.h"
-#include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_navigator_params.h"
 #include "chrome/browser/ui/browser_window/public/browser_collection_observer.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
 #include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
+#include "chrome/browser/ui/browser_window/public/profile_browser_collection.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
 #include "chrome/browser/ui/user_education/browser_user_education_interface.h"
 #include "chrome/common/actor/journal_details_builder.h"
@@ -1784,7 +1784,7 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
     GlicLauncherConfiguration::CheckDefaultBrowserToEnableLauncher();
 
     BrowserWindowInterface* browser =
-        chrome::FindTabbedBrowser(profile_, false);
+        ProfileBrowserCollection::GetForProfile(profile_)->FindTabbedBrowser();
     if (auto* interface = BrowserUserEducationInterface::From(browser)) {
       interface->NotifyAdditionalConditionEvent(
           feature_engagement::events::kGlicOnboardingCompleted);

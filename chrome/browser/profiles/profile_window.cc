@@ -54,6 +54,7 @@
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
+#include "chrome/browser/ui/browser_window/public/profile_browser_collection.h"
 #include "chrome/browser/ui/startup/startup_browser_creator.h"
 #endif  // !defined (OS_ANDROID)
 
@@ -93,7 +94,8 @@ void FindOrCreateNewWindowForProfile(
                profile->GetPath());
 
   if (!always_create) {
-    BrowserWindowInterface* browser = chrome::FindTabbedBrowser(profile, false);
+    BrowserWindowInterface* browser =
+        ProfileBrowserCollection::GetForProfile(profile)->FindTabbedBrowser();
     if (browser) {
       browser->GetWindow()->Activate();
       return;
@@ -171,7 +173,8 @@ void OpenBrowserWindowForProfile(base::OnceCallback<void(Browser*)> callback,
   // case, as you could manually activate an incorrect browser and trigger
   // a false positive.
   if (!always_create) {
-    BrowserWindowInterface* browser = chrome::FindTabbedBrowser(profile, false);
+    BrowserWindowInterface* browser =
+        ProfileBrowserCollection::GetForProfile(profile)->FindTabbedBrowser();
     if (browser) {
       browser->GetWindow()->Activate();
       if (callback) {

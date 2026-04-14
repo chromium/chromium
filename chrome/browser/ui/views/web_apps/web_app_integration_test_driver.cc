@@ -56,12 +56,14 @@
 #include "chrome/browser/ui/browser_actions.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_finder.h"
+#include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_window/public/browser_collection_observer.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
 #include "chrome/browser/ui/browser_window/public/desktop_browser_window_capabilities.h"
 #include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
+#include "chrome/browser/ui/browser_window/public/profile_browser_collection.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_manager.h"
 #include "chrome/browser/ui/intent_picker_tab_helper.h"
 #include "chrome/browser/ui/page_action/page_action_icon_type.h"
@@ -2640,8 +2642,8 @@ void WebAppIntegrationTestDriver::SwitchActiveProfile(
   active_profile_ = GetOrCreateProfile(profile_name);
   // Make sure the profile has at least one browser by creating one if one
   // doesn't exist already.
-  if (!chrome::FindTabbedBrowser(active_profile_,
-                                 /*match_original_profiles=*/false)) {
+  if (!ProfileBrowserCollection::GetForProfile(active_profile_)
+           ->FindTabbedBrowser()) {
     delegate_->CreateBrowser(active_profile_);
   }
   AfterStateChangeAction();
@@ -4894,11 +4896,11 @@ bool WebAppIntegrationTestDriver::LaunchFromAppShim(
 #endif
 
 Browser* WebAppIntegrationTestDriver::browser() {
-  Browser* browser =
-      chrome::FindTabbedBrowser(profile(), /*match_original_profiles=*/false);
-  CHECK(browser);
-  CHECK(browser->tab_strip_model()->count());
-  return browser;
+  BrowserWindowInterface* browser_window_interface =
+      ProfileBrowserCollection::GetForProfile(profile())->FindTabbedBrowser();
+  CHECK(browser_window_interface);
+  CHECK(browser_window_interface->GetTabStripModel()->count());
+  return browser_window_interface->GetBrowserForMigrationOnly();
 }
 
 Profile* WebAppIntegrationTestDriver::profile() {

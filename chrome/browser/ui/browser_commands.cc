@@ -74,6 +74,7 @@
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/create_browser_window.h"
+#include "chrome/browser/ui/browser_window/public/profile_browser_collection.h"
 #include "chrome/browser/ui/dialogs/browser_dialogs.h"
 #include "chrome/browser/ui/dialogs/outdated_upgrade_bubble.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_manager.h"
@@ -2529,7 +2530,8 @@ BrowserWindowInterface* OpenInChrome(
     BrowserWindowInterface* hosted_app_browser) {
   // Find a non-incognito browser.
   BrowserWindowInterface* target_browser =
-      chrome::FindTabbedBrowser(hosted_app_browser->GetProfile(), false);
+      ProfileBrowserCollection::GetForProfile(hosted_app_browser->GetProfile())
+          ->FindTabbedBrowser();
 
   if (!target_browser) {
     target_browser = Browser::Create(

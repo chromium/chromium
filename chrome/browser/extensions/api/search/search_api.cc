@@ -25,6 +25,7 @@
 #else
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
+#include "chrome/browser/ui/browser_window/public/profile_browser_collection.h"
 #endif
 
 static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
@@ -113,9 +114,13 @@ ExtensionFunction::ResponseAction SearchQueryFunction::Run() {
     // Otherwise (e.g. when the extension calls the API from the background
     // page or service worker), fall back to the last active browser.
     if (!browser) {
-      browser = chrome::FindTabbedBrowser(
-          profile,
-          /*match_original_profiles=*/include_incognito_information());
+      if (!profile) {
+        return RespondNow(Error("No active browser."));
+      }
+      browser =
+          ProfileBrowserCollection::GetForProfile(profile)->FindTabbedBrowser(
+              /*match_original_profiles=*/
+              include_incognito_information());
       if (!browser) {
         return RespondNow(Error("No active browser."));
       }

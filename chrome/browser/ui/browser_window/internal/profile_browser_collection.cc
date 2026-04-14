@@ -6,6 +6,9 @@
 
 #include "base/check_deref.h"
 #include "build/build_config.h"
+#include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 
 #if BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/ui/android/android_profile_browser_collection_service.h"
@@ -19,6 +22,32 @@ ProfileBrowserCollection::ProfileBrowserCollection(Profile* profile)
     : profile_(CHECK_DEREF(profile)) {}
 
 ProfileBrowserCollection::~ProfileBrowserCollection() = default;
+
+BrowserWindowInterface* ProfileBrowserCollection::FindTabbedBrowser(
+    bool match_original_profiles) {
+  Profile* original =
+      match_original_profiles ? profile_->GetOriginalProfile() : nullptr;
+  BrowserWindowInterface* match = nullptr;
+
+  auto find = [&match, original](BrowserWindowInterface* browser) {
+    if (browser->GetType() != BrowserWindowInterface::TYPE_NORMAL ||
+        browser->IsDeleteScheduled()) {
+      return true;
+    }
+    if (original && browser->GetProfile()->GetOriginalProfile() != original) {
+      return true;
+    }
+    match = browser;
+    return false;  // stop iterating
+  };
+
+  if (match_original_profiles) {
+    GlobalBrowserCollection::GetInstance()->ForEach(find, Order::kActivation);
+  } else {
+    ForEach(find, Order::kActivation);
+  }
+  return match;
+}
 
 // static
 ProfileBrowserCollection* ProfileBrowserCollection::GetForProfile(

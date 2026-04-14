@@ -82,16 +82,14 @@ BrowserWindowInterface* BrowserCollection::FindBrowserWithWindow(
     return nullptr;
   }
   BrowserWindowInterface* found = nullptr;
-  ForEach(
-      [&found, &window](BrowserWindowInterface* browser) {
-        if (browser->GetWindow() &&
-            browser->GetWindow()->GetNativeWindow() == window) {
-          found = browser;
-          return false;
-        }
-        return true;
-      },
-      Order::kActivation);
+  ForEach([&found, &window](BrowserWindowInterface* browser) {
+    if (browser->GetWindow() &&
+        browser->GetWindow()->GetNativeWindow() == window) {
+      found = browser;
+      return false;
+    }
+    return true;
+  });
   return found;
 }
 

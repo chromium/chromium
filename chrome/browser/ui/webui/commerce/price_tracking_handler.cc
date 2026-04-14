@@ -14,6 +14,7 @@
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/browser_window/public/profile_browser_collection.h"
 #include "components/bookmarks/browser/bookmark_node.h"
 #include "components/bookmarks/browser/bookmark_utils.h"
 #include "components/commerce/core/account_checker.h"
@@ -312,7 +313,8 @@ void PriceTrackingHandler::HandleSubscriptionChange(
 
 std::optional<GURL> PriceTrackingHandler::GetCurrentTabUrl() {
   auto* profile = Profile::FromWebUI(web_ui_);
-  BrowserWindowInterface* browser = chrome::FindTabbedBrowser(profile, false);
+  BrowserWindowInterface* browser =
+      ProfileBrowserCollection::GetForProfile(profile)->FindTabbedBrowser();
   if (!browser) {
     return std::nullopt;
   }
@@ -328,7 +330,8 @@ std::optional<GURL> PriceTrackingHandler::GetCurrentTabUrl() {
 
 ukm::SourceId PriceTrackingHandler::GetCurrentTabUkmSourceId() {
   BrowserWindowInterface* browser =
-      chrome::FindTabbedBrowser(Profile::FromWebUI(web_ui_), false);
+      ProfileBrowserCollection::GetForProfile(Profile::FromWebUI(web_ui_))
+          ->FindTabbedBrowser();
   if (!browser) {
     return ukm::kInvalidSourceId;
   }
