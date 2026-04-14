@@ -86,6 +86,9 @@ class TestDohServer {
   // and thus can only be used with POST.
   std::string GetPostOnlyTemplate();
 
+  // Adds a custom header to all successful HTTP responses from this server.
+  void AddCustomResponseHeader(std::string_view name, std::string_view value);
+
  private:
   std::unique_ptr<test_server::HttpResponse> HandleRequest(
       const test_server::HttpRequest& request);
@@ -98,6 +101,7 @@ class TestDohServer {
   // Maps from query name and query type to a record set.
   std::multimap<std::pair<std::string, uint16_t>, DnsResourceRecord> records_
       GUARDED_BY(lock_);
+  std::map<std::string, std::string> custom_headers_ GUARDED_BY(lock_);
   int queries_served_ GUARDED_BY(lock_) = 0;
   // Contains qnames parsed from queries.
   std::vector<std::string> query_qnames_ GUARDED_BY(lock_);

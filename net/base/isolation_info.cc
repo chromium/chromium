@@ -245,7 +245,8 @@ IsolationInfo IsolationInfo::Create(
 IsolationInfo IsolationInfo::DoNotUseCreatePartialFromNak(
     const net::NetworkAnonymizationKey& network_anonymization_key) {
   if (network_anonymization_key.IsEmpty()) {
-    return IsolationInfo();
+    return IsolationInfo::CreateEmptyWithPartition(
+        network_anonymization_key.network_isolation_partition());
   }
 
   url::Origin top_frame_origin =
@@ -268,7 +269,8 @@ IsolationInfo IsolationInfo::DoNotUseCreatePartialFromNak(
 
   auto isolation_info = IsolationInfo::Create(
       IsolationInfo::RequestType::kOther, top_frame_origin,
-      frame_origin.value(), SiteForCookies(), nonce);
+      frame_origin.value(), SiteForCookies(), nonce,
+      network_anonymization_key.network_isolation_partition());
   // TODO(crbug.com/40852603): DCHECK isolation info is not empty.
   return isolation_info;
 }

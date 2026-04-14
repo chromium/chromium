@@ -11,12 +11,20 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/synchronization/lock.h"
+#include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/test_future.h"
+#include "base/thread_annotations.h"
 #include "net/base/features.h"
+#include "net/base/host_port_pair.h"
+#include "net/base/ip_address.h"
+#include "net/base/ip_endpoint.h"
 #include "net/base/isolation_info.h"
 #include "net/base/network_change_notifier.h"
 #include "net/base/privacy_mode.h"
 #include "net/base/proxy_server.h"
+#include "net/cert/mock_cert_verifier.h"
 #include "net/cookies/site_for_cookies.h"
 #include "net/dns/context_host_resolver.h"
 #include "net/dns/dns_client.h"
@@ -37,6 +45,12 @@
 #include "net/http/http_stream_pool_group.h"
 #include "net/http/http_stream_pool_test_util.h"
 #include "net/log/net_log.h"
+#include "net/reporting/reporting_cache.h"
+#include "net/reporting/reporting_cache_observer.h"
+#include "net/reporting/reporting_context.h"
+#include "net/reporting/reporting_policy.h"
+#include "net/reporting/reporting_service.h"
+#include "net/reporting/reporting_target_type.h"
 #include "net/socket/transport_client_socket_pool.h"
 #include "net/ssl/ssl_config_service.h"
 #include "net/ssl/test_ssl_config_service.h"
@@ -132,21 +146,14 @@ class DohProber : public NetworkChangeNotifier::DNSObserver {
 class DnsOverHttpsIntegrationTest : public TestWithTaskEnvironment {
  public:
   DnsOverHttpsIntegrationTest()
-      : host_resolver_proc_(base::MakeRefCounted<TestHostResolverProc>()) {
-    doh_server_.SetHostname(kDohHostname);
-    EXPECT_TRUE(doh_server_.Start());
-
-    // In `kAutomatic` mode, DoH support depends on a probe for
-    // `kDohProbeHostname`.
-    doh_server_.AddAddressRecord(kDohProbeHostname, IPAddress::IPv4Localhost());
-
-    ResetContext();
-  }
+      : DnsOverHttpsIntegrationTest(/*start_server=*/true) {}
 
   URLRequestContext* context() { return request_context_.get(); }
 
   void ResetContext(SecureDnsMode mode = SecureDnsMode::kSecure,
-                    bool require_network_anonymization_key = false) {
+                    bool require_network_anonymization_key = false,
+                    bool use_post_only_template = true,
+                    bool enable_reporting = false) {
     // TODO(crbug.com/40198637): Simplify this.
     HostResolver::ManagerOptions manager_options;
     // Without a DnsConfig, HostResolverManager will not use DoH, even in
@@ -158,10 +165,12 @@ class DnsOverHttpsIntegrationTest : public TestWithTaskEnvironment {
         DnsConfigOverrides::CreateOverridingEverythingWithDefaults();
     manager_options.dns_config_overrides.secure_dns_mode = mode;
     manager_options.dns_config_overrides.dns_over_https_config =
-        *DnsOverHttpsConfig::FromString(doh_server_.GetPostOnlyTemplate());
+        *DnsOverHttpsConfig::FromString(use_post_only_template
+                                            ? doh_server_.GetPostOnlyTemplate()
+                                            : doh_server_.GetTemplate());
     manager_options.dns_config_overrides.use_local_ipv6 = true;
     auto resolver = HostResolver::CreateStandaloneContextResolver(
-        /*net_log=*/nullptr, manager_options);
+        NetLog::Get(), manager_options);
 
     // Configure `resolver_` to use `host_resolver_proc_` to resolve
     // `doh_server_` itself. Additionally, without an explicit HostResolverProc,
@@ -175,6 +184,19 @@ class DnsOverHttpsIntegrationTest : public TestWithTaskEnvironment {
     context_builder->set_require_network_anonymization_key(
         require_network_anonymization_key);
     context_builder->set_host_resolver(std::move(resolver));
+
+    if (enable_reporting) {
+      context_builder->set_network_error_logging_enabled(true);
+
+      auto cert_verifier = std::make_unique<MockCertVerifier>();
+      cert_verifier->set_default_result(OK);
+      context_builder->SetCertVerifier(std::move(cert_verifier));
+
+      auto reporting_policy = std::make_unique<ReportingPolicy>();
+      reporting_policy->delivery_interval = base::Milliseconds(1);
+      context_builder->set_reporting_policy(std::move(reporting_policy));
+    }
+
     auto ssl_config_service =
         std::make_unique<TestSSLConfigService>(SSLContextConfig());
     ssl_config_service_ = ssl_config_service.get();
@@ -198,6 +220,21 @@ class DnsOverHttpsIntegrationTest : public TestWithTaskEnvironment {
   }
 
  protected:
+  explicit DnsOverHttpsIntegrationTest(bool start_server)
+      : host_resolver_proc_(base::MakeRefCounted<TestHostResolverProc>()) {
+    if (start_server) {
+      doh_server_.SetHostname(kDohHostname);
+      EXPECT_TRUE(doh_server_.Start());
+
+      // In `kAutomatic` mode, DoH support depends on a probe for
+      // `kDohProbeHostname`.
+      doh_server_.AddAddressRecord(kDohProbeHostname,
+                                   IPAddress::IPv4Localhost());
+
+      ResetContext();
+    }
+  }
+
   TestDohServer doh_server_;
   scoped_refptr<net::TestHostResolverProc> host_resolver_proc_;
   std::unique_ptr<URLRequestContext> request_context_;
@@ -793,5 +830,172 @@ TEST_F(DnsOverHttpsIntegrationTest, EncryptedClientHelloFallbackTLS12) {
   }
 }
 
+class DnsOverHttpsReportingTest : public DnsOverHttpsIntegrationTest {
+ public:
+  DnsOverHttpsReportingTest()
+      : DnsOverHttpsIntegrationTest(/*start_server=*/false) {
+    feature_list_.InitWithFeatures(
+        {features::kPartitionConnectionsByNetworkIsolationKey},
+        // Disable HTTPS record lookups to simplify what requests we expect.
+        {features::kUseDnsHttpsSvcb});
+
+    EmbeddedTestServer::ServerCertificateConfig cert_config;
+    cert_config.dns_names = {kHostname};
+    cert_config.ip_addresses = {IPAddress::IPv4Localhost()};
+    https_server_.SetSSLConfig(cert_config);
+    https_server_.RegisterRequestHandler(
+        base::BindRepeating(&DnsOverHttpsReportingTest::HandleReportingRequest,
+                            base::Unretained(this)));
+    https_server_.RegisterRequestHandler(
+        base::BindRepeating(&DnsOverHttpsReportingTest::HandleDefaultRequest));
+    EXPECT_TRUE(https_server_.Start());
+
+    doh_server_.SetHostname(kDohHostname);
+    doh_server_.AddAddressRecord(kHostname, IPAddress::IPv4Localhost());
+
+    // Use the HTTPS server IP address as the report destination so we don't
+    // have to worry about DNS resolution while the test DoH server is
+    // potentially configured to respond with errors instead of addresses.
+    std::string report_to =
+        "{\"group\":\"group\",\"max_age\":86400,\"endpoints\":[{\"url\":\"" +
+        https_server_.GetURL("/upload").spec() + "\"}]}";
+    doh_server_.AddCustomResponseHeader("Report-To", report_to);
+    doh_server_.AddCustomResponseHeader(
+        "NEL",
+        "{\"report_to\":\"group\",\"max_age\":86400, "
+        "\"success_fraction\":0.0, "
+        "\"failure_fraction\":1.0}");
+
+    EXPECT_TRUE(doh_server_.Start());
+
+    ResetContext(SecureDnsMode::kSecure,
+                 /*require_network_anonymization_key=*/false,
+                 /*use_post_only_template=*/false,
+                 /*enable_reporting=*/true);
+  }
+
+  ~DnsOverHttpsReportingTest() override {
+    EXPECT_TRUE(https_server_.ShutdownAndWaitUntilComplete());
+  }
+
+  std::unique_ptr<test_server::HttpResponse> HandleReportingRequest(
+      const test_server::HttpRequest& request) {
+    // Handle the preflight that occurs to check whether sending reports is
+    // allowed.
+    if (request.method == test_server::METHOD_OPTIONS) {
+      auto http_response = std::make_unique<test_server::BasicHttpResponse>();
+      http_response->set_code(HTTP_OK);
+      http_response->AddCustomHeader("Access-Control-Allow-Origin", "*");
+      http_response->AddCustomHeader("Access-Control-Allow-Headers",
+                                     "content-type");
+      return http_response;
+    }
+
+    // Handle reports being sent.
+    if (request.method == test_server::METHOD_POST &&
+        request.relative_url == "/upload") {
+      auto http_response = std::make_unique<test_server::BasicHttpResponse>();
+      http_response->set_code(HTTP_OK);
+      // Note that failing DoH queries can get retried and possibly cause
+      // multiple reports to be generated, but for our purposes we only care
+      // whether at least one report was uploaded. Thus, we won't make any
+      // assumptions here about the previous value of `report_uploaded_`.
+      set_report_uploaded(true);
+      return http_response;
+    }
+    return nullptr;
+  }
+
+  static std::unique_ptr<test_server::HttpResponse> HandleDefaultRequest(
+      const test_server::HttpRequest& request) {
+    auto http_response = std::make_unique<test_server::BasicHttpResponse>();
+    http_response->set_code(HTTP_OK);
+    http_response->set_content(kTestBody);
+    http_response->set_content_type("text/html");
+    return http_response;
+  }
+
+  bool report_uploaded() {
+    base::AutoLock lock(report_uploaded_lock_);
+    return report_uploaded_;
+  }
+
+  void set_report_uploaded(bool report_uploaded) {
+    base::AutoLock lock(report_uploaded_lock_);
+    report_uploaded_ = report_uploaded;
+  }
+
+ protected:
+  base::test::ScopedFeatureList feature_list_;
+  EmbeddedTestServer https_server_{EmbeddedTestServer::Type::TYPE_HTTPS};
+  base::Lock report_uploaded_lock_;
+  bool report_uploaded_ GUARDED_BY(report_uploaded_lock_) = false;
+};
+
+// Regression test for crbug.com/500671397. Ensures that if a DoH query
+// results in a reporting API upload it doesn't trigger a CHECK.
+TEST_F(DnsOverHttpsReportingTest, ReportingApi) {
+  class TestObserver : public ReportingCacheObserver {
+   public:
+    void OnReportAdded(const ReportingReport* report) override {
+      EXPECT_EQ(
+          report->network_anonymization_key,
+          DnsHTTPAttempt::GetDohIsolationInfo().network_anonymization_key());
+      // Note that failing DoH queries can get retried and possibly cause
+      // multiple reports to be generated, but for our purposes we only care
+      // whether at least one report was added. Thus, we won't make any
+      // assumptions here about the previous value of `report_added_`.
+      report_added_ = true;
+    }
+    bool report_added() const { return report_added_; }
+
+   private:
+    bool report_added_ = false;
+  };
+  TestObserver observer;
+  context()->reporting_service()->GetContextForTesting()->AddCacheObserver(
+      &observer);
+
+  // 1. Perform a DoH query to get a NEL policy.
+  {
+    GURL url = https_server_.GetURL(kHostname, "/foo");
+    TestDelegate delegate;
+    std::unique_ptr<URLRequest> request = context()->CreateRequest(
+        url, DEFAULT_PRIORITY, &delegate, TRAFFIC_ANNOTATION_FOR_TESTS);
+    request->Start();
+    delegate.RunUntilComplete();
+    ASSERT_THAT(delegate.request_status(), IsOk());
+  }
+
+  // 2. Perform a failing DoH query to trigger one or more NEL reports (the DoH
+  // query may be retried several times, resulting in multiple reports possibly
+  // being generated).
+  doh_server_.SetFailRequests(true);
+  {
+    GURL url = https_server_.GetURL("fail.com", "/foo");
+    TestDelegate delegate;
+    std::unique_ptr<URLRequest> request = context()->CreateRequest(
+        url, DEFAULT_PRIORITY, &delegate, TRAFFIC_ANNOTATION_FOR_TESTS);
+    request->Start();
+    delegate.RunUntilComplete();
+    EXPECT_THAT(delegate.request_status(), IsError(ERR_NAME_NOT_RESOLVED));
+  }
+
+  ReportingService* reporting_service = context()->reporting_service();
+  ReportingCache* cache = reporting_service->GetContextForTesting()->cache();
+
+  // 3. Wait for the report to be queued.
+  EXPECT_TRUE(base::test::RunUntil([&]() { return observer.report_added(); }));
+
+  // 4. Wait for the report to be delivered (and thus removed from the cache).
+  EXPECT_TRUE(base::test::RunUntil(
+      [&]() { return cache->GetFullReportCountForTesting() == 0; }));
+  EXPECT_TRUE(report_uploaded());
+
+  // 5. The test passes if no CHECKs were encountered at this point.
+
+  context()->reporting_service()->GetContextForTesting()->RemoveCacheObserver(
+      &observer);
+}
 }  // namespace
 }  // namespace net

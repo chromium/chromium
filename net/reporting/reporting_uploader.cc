@@ -194,10 +194,15 @@ class ReportingUploaderImpl : public ReportingUploader, URLRequest::Delegate {
     // the site generating the report (this will be set to false either by the
     // delivery agent determining that this is a V0 report, or by `StartUpload`
     // determining that this is a cross-origin case, and taking the CORS
-    // preflight path).
-    if (!eligible_for_credentials) {
+    // preflight path). An exception to this are reports associated with a
+    // non-general NetworkIsolationPartition, since credentials should never be
+    // sent with these requests.
+    if (!eligible_for_credentials ||
+        upload->isolation_info.GetNetworkIsolationPartition() !=
+            NetworkIsolationPartition::kGeneral) {
       upload->request->set_disallow_credentials();
     }
+
     // The site for cookies is taken from the reporting source's IsolationInfo,
     // in the case of V1 reporting endpoints, and will be null for V0 reports.
     upload->request->set_site_for_cookies(
@@ -237,7 +242,9 @@ class ReportingUploaderImpl : public ReportingUploader, URLRequest::Delegate {
     //    frame origin will be created from the top-level site, losing full host
     //    and port information.
     if (upload->isolation_info.IsEmpty()) {
-      CHECK(!NetworkAnonymizationKey::IsPartitioningEnabled());
+      CHECK(!NetworkAnonymizationKey::IsPartitioningEnabled() ||
+            NetworkIsolationPartitionAlwaysAllowEmptyPartition(
+                upload->isolation_info.GetNetworkIsolationPartition()));
     }
     upload->request->set_isolation_info(upload->isolation_info);
 
