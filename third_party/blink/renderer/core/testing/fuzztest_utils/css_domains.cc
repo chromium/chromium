@@ -21,6 +21,8 @@
 
 namespace blink {
 
+fuzztest::Domain<std::string> AnyCSSLengthValue();
+
 namespace {
 
 template <typename E>
@@ -29,47 +31,52 @@ std::string CSSEnumToString(int val) {
   return base::ToString(enum_val);
 }
 
-fuzztest::Domain<std::string> AnyCSSTransformLengthValue() {
+fuzztest::Domain<std::string> AnyCSSPercentageValue() {
   return fuzztest::Map(
-      [](int val) { return base::StrCat({base::NumberToString(val), "px"}); },
-      fuzztest::Arbitrary<int>());
+      [](float val) { return base::StrCat({base::NumberToString(val), "%"}); },
+      fuzztest::Finite<float>());
 }
 
-fuzztest::Domain<std::string> AnyCSSTransformPercentageValue() {
-  return fuzztest::Map(
-      [](int val) { return base::StrCat({base::NumberToString(val), "%"}); },
-      fuzztest::Arbitrary<int>());
+fuzztest::Domain<std::string> AnyCSSLengthPercentageValue() {
+  auto numeric = fuzztest::Map(
+      [](float val, const std::string& unit) {
+        return base::StrCat({base::NumberToString(val), unit});
+      },
+      fuzztest::Finite<float>(),
+      fuzztest::ElementOf<std::string>({"px", "%", "em", "vh", "vw"}));
+  auto calc = fuzztest::Map(
+      [](const std::string& a, const std::string& b) {
+        return base::StrCat({"calc(", a, " + ", b, ")"});
+      },
+      AnyCSSLengthValue(), AnyCSSPercentageValue());
+  return fuzztest::OneOf(numeric, calc);
 }
 
-fuzztest::Domain<std::string> AnyCSSTransformLengthOrPercentageValue() {
-  return fuzztest::OneOf(AnyCSSTransformLengthValue(),
-                         AnyCSSTransformPercentageValue());
-}
-
-fuzztest::Domain<std::string> AnyCSSTransformAngleValue() {
+fuzztest::Domain<std::string> AnyCSSAngleValueIncludingUnitlessZero() {
   return fuzztest::OneOf(
       fuzztest::Just(std::string("0")),
       fuzztest::Map(
-          [](int val) {
-            return base::StrCat({base::NumberToString(val), "deg"});
+          [](float val, const std::string& unit) {
+            return base::StrCat({base::NumberToString(val), unit});
           },
-          fuzztest::Arbitrary<int>()));
+          fuzztest::Finite<float>(),
+          fuzztest::ElementOf<std::string>({"deg", "rad"})));
 }
 
 fuzztest::Domain<std::string> AnyCSSTransformScaleFactorValue() {
   return fuzztest::OneOf(
-      fuzztest::Map([](int val) { return base::NumberToString(val * 0.01); },
-                    fuzztest::Arbitrary<int>()),
+      fuzztest::Map([](float val) { return base::NumberToString(val); },
+                    fuzztest::Finite<float>()),
       fuzztest::Map(
-          [](int val) {
+          [](float val) {
             return base::StrCat({base::NumberToString(val), "%"});
           },
-          fuzztest::Arbitrary<int>()));
+          fuzztest::Finite<float>()));
 }
 
 fuzztest::Domain<std::string> AnyCSSTranslateValue() {
-  auto length = AnyCSSTransformLengthValue();
-  auto length_or_percentage = AnyCSSTransformLengthOrPercentageValue();
+  auto length = AnyCSSLengthValue();
+  auto length_or_percentage = AnyCSSLengthPercentageValue();
   // translateX() = translateX( <length-percentage> )
   // translateY() = translateY( <length-percentage> )
   auto translate_1arg = fuzztest::Map(
@@ -135,7 +142,7 @@ fuzztest::Domain<std::string> AnyCSSScaleValue() {
 }
 
 fuzztest::Domain<std::string> AnyCSSRotateValue() {
-  auto angle = AnyCSSTransformAngleValue();
+  auto angle = AnyCSSAngleValueIncludingUnitlessZero();
   // rotate() = rotate( [ <angle> | <zero> ] )
   // rotateX() = rotateX( [ <angle> | <zero> ] )
   // rotateY() = rotateY( [ <angle> | <zero> ] )
@@ -161,7 +168,7 @@ fuzztest::Domain<std::string> AnyCSSRotateValue() {
 }
 
 fuzztest::Domain<std::string> AnyCSSSkewValue() {
-  auto angle = AnyCSSTransformAngleValue();
+  auto angle = AnyCSSAngleValueIncludingUnitlessZero();
   // skew() = skew( [ <angle> | <zero> ] , [ <angle> | <zero> ]? )
   // skewX() = skewX( [ <angle> | <zero> ] )
   // skewY() = skewY( [ <angle> | <zero> ] )
@@ -182,10 +189,10 @@ fuzztest::Domain<std::string> AnyCSSSkewValue() {
 fuzztest::Domain<std::string> AnyCSSPerspectiveValue() {
   // perspective() = perspective( [ <length [0,∞]> | none ] )
   auto perspective = fuzztest::Map(
-      [](int val) {
+      [](float val) {
         return base::StrCat({"perspective(", base::NumberToString(val), "px)"});
       },
-      fuzztest::InRange(1, 10000));
+      fuzztest::Positive<float>());
   return fuzztest::OneOf(fuzztest::Just(std::string("perspective(none)")),
                          fuzztest::Just(std::string("perspective(0)")),
                          perspective);
@@ -517,20 +524,26 @@ fuzztest::Domain<std::string> AnyCSSOpacityValue() {
 
 fuzztest::Domain<std::string> AnyCSSLengthValue() {
   return fuzztest::Map(
-      [](int val, const std::string& unit) {
+      [](float val, const std::string& unit) {
         return base::StrCat({base::NumberToString(val), unit});
       },
-      fuzztest::Arbitrary<int>(),
-      fuzztest::ElementOf<std::string>({"px", "%", "em", "vh", "vw"}));
+      fuzztest::Finite<float>(),
+      fuzztest::ElementOf<std::string>({"px", "em", "vh", "vw"}));
 }
 
-fuzztest::Domain<std::string> AnyCSSNonNegativeLengthValue() {
-  return fuzztest::Map(
-      [](int val, const std::string& unit) {
+fuzztest::Domain<std::string> AnyCSSNonNegativeLengthPercentageValue() {
+  auto numeric = fuzztest::Map(
+      [](float val, const std::string& unit) {
         return base::StrCat({base::NumberToString(val), unit});
       },
-      fuzztest::InRange(0, 10000),
+      fuzztest::Positive<float>(),
       fuzztest::ElementOf<std::string>({"px", "%", "em", "vh", "vw"}));
+  auto calc = fuzztest::Map(
+      [](const std::string& expr) {
+        return base::StrCat({"calc(", expr, ")"});
+      },
+      AnyCSSCalcSumValue());
+  return fuzztest::OneOf(numeric, calc);
 }
 
 fuzztest::Domain<std::string> AnyCSSSizeValue() {
@@ -551,7 +564,8 @@ fuzztest::Domain<std::string> AnyCSSSizeValue() {
                              base::NumberToString(delta), "px)"});
       },
       calc_size_basis, fuzztest::InRange(0, 10000));
-  return fuzztest::OneOf(AnyCSSNonNegativeLengthValue(), keyword, calc_size);
+  return fuzztest::OneOf(AnyCSSNonNegativeLengthPercentageValue(), keyword,
+                         calc_size);
 }
 
 fuzztest::Domain<std::string> AnyCSSMaxSizeValue() {
@@ -572,7 +586,8 @@ fuzztest::Domain<std::string> AnyCSSMaxSizeValue() {
                              base::NumberToString(delta), "px)"});
       },
       calc_size_basis, fuzztest::InRange(0, 10000));
-  return fuzztest::OneOf(AnyCSSNonNegativeLengthValue(), keyword, calc_size);
+  return fuzztest::OneOf(AnyCSSNonNegativeLengthPercentageValue(), keyword,
+                         calc_size);
 }
 
 fuzztest::Domain<std::string> AnyCSSTransformValue() {
@@ -701,13 +716,13 @@ fuzztest::Domain<std::string> AnyPlausibleValueForCSSProperty(
       property == CSSPropertyID::kMarginRight ||
       property == CSSPropertyID::kMarginBottom ||
       property == CSSPropertyID::kMarginLeft) {
-    return AnyCSSLengthValue();
+    return AnyCSSLengthPercentageValue();
   }
   if (property == CSSPropertyID::kPaddingTop ||
       property == CSSPropertyID::kPaddingRight ||
       property == CSSPropertyID::kPaddingBottom ||
       property == CSSPropertyID::kPaddingLeft) {
-    return AnyCSSNonNegativeLengthValue();
+    return AnyCSSNonNegativeLengthPercentageValue();
   }
 
   // Colors.

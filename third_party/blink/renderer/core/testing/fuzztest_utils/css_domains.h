@@ -103,7 +103,7 @@ fuzztest::Domain<std::string> AnyCSSScrollSnapTypeValue();
 // Generates CSS opacity values as decimal strings.
 fuzztest::Domain<std::string> AnyCSSOpacityValue();
 
-// Generates CSS length values: numeric with units (px, %, em, vh, vw).
+// Generates CSS <length> values: numeric with units (px, em, vh, vw).
 fuzztest::Domain<std::string> AnyCSSLengthValue();
 
 // Generates CSS size values for width/height: lengths, sizing keywords
