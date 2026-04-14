@@ -116,9 +116,6 @@ Browser* FindBrowserWithProfile(const Profile* profile);
 // vector if no such browsers currently exist.
 std::vector<Browser*> FindAllTabbedBrowsersWithProfile(const Profile* profile);
 
-// Returns all browsers of any type with the provided profile. Returns an empty
-// vector if no such browsers currently exist.
-std::vector<Browser*> FindAllBrowsersWithProfile(const Profile* profile);
 
 // Returns an existing browser with the provided ID. Returns nullptr if no such
 // browser currently exists.

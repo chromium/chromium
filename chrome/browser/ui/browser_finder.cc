@@ -347,20 +347,6 @@ std::vector<Browser*> FindAllTabbedBrowsersWithProfile(const Profile* profile) {
   return browsers;
 }
 
-std::vector<Browser*> FindAllBrowsersWithProfile(const Profile* profile) {
-  std::vector<Browser*> browsers;
-  ForEachCurrentBrowserWindowInterfaceOrderedByActivation(
-      [&](BrowserWindowInterface* browser) {
-        if (BrowserMatches(browser, profile,
-                           Browser::WindowFeature::kFeatureNone, kMatchAny,
-                           display::kInvalidDisplayId)) {
-          browsers.emplace_back(browser->GetBrowserForMigrationOnly());
-        }
-        return true;
-      });
-  return browsers;
-}
-
 Browser* FindBrowserWithID(SessionID desired_id) {
   Browser* found = nullptr;
   ForEachCurrentBrowserWindowInterfaceOrderedByActivation(
