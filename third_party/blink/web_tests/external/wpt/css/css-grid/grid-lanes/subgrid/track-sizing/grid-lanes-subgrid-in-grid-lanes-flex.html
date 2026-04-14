@@ -9,9 +9,9 @@
   <title>Verify correct sizing of flex tracks when using subgrid in CSS Grid Lanes</title>
   <link rel="author" title="Brandon Stewart" href="mailto:brandonstewart@apple.com">
   <link rel="help" href="https://drafts.csswg.org/css-grid-3/#subgrids">
-  <link rel="match" href="grid-lanes-subgrid-flex-ref.html">
+  <link rel="match" href="grid-lanes-subgrid-in-grid-lanes-flex-ref.html">
   <style>
-    grid {
+    grid-lanes {
       display: inline grid-lanes;
       grid-template-columns: 1fr 2fr 3fr;
       border: 1px solid;
@@ -28,52 +28,9 @@
 </head>
 
 <body>
-<!-- Verify basic subgrid -->
-<grid>
-  <item>1</item>
-  <subgrid>
-    <item>2</item>
-    <item>3</item>
-    <item>4</item>
-  </subgrid>
-  <item>5</item>
-</grid>
-
-<!-- Verify subgrid with first item in subgrid set to 2ch -->
-<grid>
-  <item>1</item>
-  <subgrid>
-    <item style="width: 2ch">2</item>
-    <item>3</item>
-    <item>4</item>
-  </subgrid>
-  <item>5</item>
-</grid>
-
-<!-- Verify subgrid with second item in subgrid set to 3ch -->
-<grid>
-  <item>1</item>
-  <subgrid>
-    <item>2</item>
-    <item style="width: 3ch">3</item>
-    <item>4</item>
-  </subgrid>
-  <item>5</item>
-</grid>
-
-<!-- Verify subgrid with final item in subgrid set to 4ch -->
-<grid>
-  <item>1</item>
-  <subgrid>
-    <item>2</item>
-    <item>3</item>
-    <item style="width: 4ch">4</item>
-  </subgrid>
-  <item>5</item>
-</grid>
 
 <!-- Verify behavior when subgrid is set to grid-lanes too -->
-<grid>
+<grid-lanes>
   <item>1</item>
   <subgrid style="display: grid-lanes;">
     <item>2</item>
@@ -81,6 +38,6 @@
     <item>4</item>
   </subgrid>
   <item>5</item>
-</grid>
+</grid-lanes>
 </body>
 </html>

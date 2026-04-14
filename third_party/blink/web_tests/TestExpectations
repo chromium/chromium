@@ -1019,13 +1019,6 @@ crbug.com/1360067 external/wpt/css/css-text-decor/text-decoration-skip-spaces-00
 
 # CSS Grid Lanes failing tests
 crbug.com/1076027 external/wpt/css/css-grid/grid-lanes/fragmentation/* [ Failure Skip ]
-# Subgrid failures
-crbug.com/1076027 external/wpt/css/css-grid/grid-lanes/subgrid/track-sizing/column-subgrid-extra-margin-006.html [ Failure ]
-crbug.com/1076027 external/wpt/css/css-grid/grid-lanes/subgrid/track-sizing/grid-lanes-subgrid-display-grid-intrinsic-sizing.html [ Failure ]
-crbug.com/1076027 external/wpt/css/css-grid/grid-lanes/subgrid/track-sizing/grid-lanes-subgrid-flex.html [ Failure ]
-crbug.com/1076027 external/wpt/css/css-grid/grid-lanes/subgrid/track-sizing/grid-lanes-subgrid-intrinsic-sizing.html [ Failure ]
-crbug.com/1076027 external/wpt/css/css-grid/grid-lanes/subgrid/track-sizing/grid-lanes-subgridded-to-grid-lanes.html [ Failure ]
-crbug.com/1076027 external/wpt/css/css-grid/grid-lanes/subgrid/track-sizing/row-subgrid-extra-margin-006.html [ Failure ]
 # Failing because we don't properly handle auto placed subgrids yet
 crbug.com/1076027 external/wpt/css/css-grid/grid-lanes/subgrid/column/grid-lanes-subgrid-002b.html [ Failure ]
 crbug.com/1076027 external/wpt/css/css-grid/grid-lanes/subgrid/column/grid-lanes-subgrid-002e.html [ Failure ]
@@ -1033,6 +1026,18 @@ crbug.com/1076027 external/wpt/css/css-grid/grid-lanes/subgrid/column/grid-lanes
 crbug.com/1076027 external/wpt/css/css-grid/grid-lanes/subgrid/row/grid-lanes-subgrid-002b.html [ Failure ]
 # Subgrid is wider than expected, perhaps incorrect min-content calculation on the grid lanes container?
 crbug.com/1076027 external/wpt/css/css-grid/grid-lanes/subgrid/row/grid-lanes-subgrid-001d.html [ Failure ]
+# Subgrids with extra margins end up being larger than expected. May be a track sizing bug.
+crbug.com/1076027 external/wpt/css/css-grid/grid-lanes/subgrid/track-sizing/column-subgrid-extra-margin-006.html [ Failure ]
+crbug.com/1076027 external/wpt/css/css-grid/grid-lanes/subgrid/track-sizing/row-subgrid-extra-margin-006.html [ Failure ]
+# Virtual items in explicit subgrids are not yet scoped to only contributing to those tracks.
+crbug.com/1076027 external/wpt/css/css-grid/grid-lanes/subgrid/track-sizing/grid-lanes-subgrid-display-grid-intrinsic-sizing.html [ Failure ]
+# Incorrect subgrid flex track sizing.
+crbug.com/1076027 external/wpt/css/css-grid/grid-lanes/subgrid/track-sizing/grid-subgrid-in-grid-lanes-flex.html [ Failure ]
+# Grid Lanes subgrids not yet supported.
+crbug.com/1076027 external/wpt/css/css-grid/grid-lanes/subgrid/track-sizing/grid-lanes-subgrid-in-grid-lanes-flex.html [ Failure ]
+crbug.com/1076027 external/wpt/css/css-grid/grid-lanes/subgrid/track-sizing/grid-lanes-subgridded-to-grid-lanes.html [ Failure ]
+crbug.com/1076027 external/wpt/css/css-grid/grid-lanes/subgrid/track-sizing/grid-lanes-subgrid-in-grid-lanes-intrinsic-sizing.html [ Failure ]
+
 
 # external/wpt/css/css-fonts/... tests triaged away from the default WPT bug ID
 crbug.com/641861 [ Mac ] external/wpt/css/css-fonts/font-family-name-025.html [ Failure Timeout ]
