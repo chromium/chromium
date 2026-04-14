@@ -28,6 +28,7 @@ found in the LICENSE file.
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
             android:layout_marginTop="7dp"
+            android:layout_marginBottom="7dp"
             android:src="@drawable/drag_handlebar"
             app:tint="@macro/drag_handle_color"
             android:importantForAccessibility="no"/>
@@ -43,15 +44,13 @@ found in the LICENSE file.
             android:id="@+id/web_ui_container"
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            android:layout_weight="1"
-            android:padding="5dp" />
+            android:layout_weight="1" />
 
         <!-- Fusebox Container -->
         <FrameLayout
             android:id="@+id/fusebox_container"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:padding="5dp" />
+            android:layout_height="wrap_content" />
     </LinearLayout>
 
     <!-- Actor Control View: Appears when BottomSheet is collapsed -->
