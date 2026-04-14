@@ -1,22 +1,16 @@
-// Copyright 2026 The Chromium Authors
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef SERVICES_NETWORK_PUBLIC_CPP_SIGNED_CERTIFICATE_TIMESTAMP_MOJOM_TRAITS_H_
-#define SERVICES_NETWORK_PUBLIC_CPP_SIGNED_CERTIFICATE_TIMESTAMP_MOJOM_TRAITS_H_
-
-#include <stdint.h>
-
-#include <string>
+#ifndef SERVICES_NETWORK_PUBLIC_CPP_DIGITALLY_SIGNED_MOJOM_TRAITS_H_
+#define SERVICES_NETWORK_PUBLIC_CPP_DIGITALLY_SIGNED_MOJOM_TRAITS_H_
 
 #include "base/containers/span.h"
-#include "base/memory/scoped_refptr.h"
 #include "base/notreached.h"
-#include "base/time/time.h"
 #include "mojo/public/cpp/bindings/enum_traits.h"
 #include "mojo/public/cpp/bindings/struct_traits.h"
 #include "net/cert/signed_certificate_timestamp.h"
-#include "services/network/public/mojom/signed_certificate_timestamp.mojom-shared.h"
+#include "services/network/public/mojom/digitally_signed.mojom.h"
 
 namespace mojo {
 
@@ -101,9 +95,8 @@ struct EnumTraits<network::mojom::SignatureAlgorithm,
 };
 
 template <>
-struct COMPONENT_EXPORT(NETWORK_CPP_NETWORK_PARAM)
-    StructTraits<network::mojom::DigitallySignedDataView,
-                 net::ct::DigitallySigned> {
+struct StructTraits<network::mojom::DigitallySignedDataView,
+                    net::ct::DigitallySigned> {
   static net::ct::DigitallySigned::HashAlgorithm hash_algorithm(
       const net::ct::DigitallySigned& obj) {
     return obj.hash_algorithm;
@@ -121,71 +114,6 @@ struct COMPONENT_EXPORT(NETWORK_CPP_NETWORK_PARAM)
                    net::ct::DigitallySigned* out);
 };
 
-template <>
-struct COMPONENT_EXPORT(NETWORK_CPP_NETWORK_PARAM)
-    EnumTraits<network::mojom::SCTVersion,
-               net::ct::SignedCertificateTimestamp::Version> {
-  static network::mojom::SCTVersion ToMojom(
-      net::ct::SignedCertificateTimestamp::Version type);
-  static net::ct::SignedCertificateTimestamp::Version FromMojom(
-      network::mojom::SCTVersion input);
-};
-
-template <>
-struct COMPONENT_EXPORT(NETWORK_CPP_NETWORK_PARAM)
-    EnumTraits<network::mojom::SCTOrigin,
-               net::ct::SignedCertificateTimestamp::Origin> {
-  static network::mojom::SCTOrigin ToMojom(
-      net::ct::SignedCertificateTimestamp::Origin type);
-  static net::ct::SignedCertificateTimestamp::Origin FromMojom(
-      network::mojom::SCTOrigin input);
-};
-
-template <>
-class COMPONENT_EXPORT(NETWORK_CPP_NETWORK_PARAM)
-    StructTraits<network::mojom::SignedCertificateTimestampDataView,
-                 scoped_refptr<net::ct::SignedCertificateTimestamp>> {
- public:
-  static bool IsNull(
-      const scoped_refptr<net::ct::SignedCertificateTimestamp>& sct) {
-    return !sct;
-  }
-  static void SetToNull(
-      scoped_refptr<net::ct::SignedCertificateTimestamp>* output) {
-    *output = nullptr;
-  }
-  static net::ct::SignedCertificateTimestamp::Version version(
-      const scoped_refptr<net::ct::SignedCertificateTimestamp>& sct) {
-    return sct->version;
-  }
-  static const std::string& log_id(
-      const scoped_refptr<net::ct::SignedCertificateTimestamp>& sct) {
-    return sct->log_id;
-  }
-  static base::Time timestamp(
-      const scoped_refptr<net::ct::SignedCertificateTimestamp>& sct) {
-    return sct->timestamp;
-  }
-  static base::span<const uint8_t> extensions(
-      const scoped_refptr<net::ct::SignedCertificateTimestamp>& sct) {
-    return base::as_byte_span(sct->extensions);
-  }
-  static const net::ct::DigitallySigned& signature(
-      const scoped_refptr<net::ct::SignedCertificateTimestamp>& sct) {
-    return sct->signature;
-  }
-  static net::ct::SignedCertificateTimestamp::Origin origin(
-      const scoped_refptr<net::ct::SignedCertificateTimestamp>& sct) {
-    return sct->origin;
-  }
-  static const std::string& log_description(
-      const scoped_refptr<net::ct::SignedCertificateTimestamp>& sct) {
-    return sct->log_description;
-  }
-
-  static bool Read(network::mojom::SignedCertificateTimestampDataView data,
-                   scoped_refptr<net::ct::SignedCertificateTimestamp>* out);
-};
-
 }  // namespace mojo
-#endif  // SERVICES_NETWORK_PUBLIC_CPP_SIGNED_CERTIFICATE_TIMESTAMP_MOJOM_TRAITS_H_
+
+#endif  // SERVICES_NETWORK_PUBLIC_CPP_DIGITALLY_SIGNED_MOJOM_TRAITS_H_

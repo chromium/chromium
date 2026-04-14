@@ -378,13 +378,6 @@ _CONFIG = [
             'base::WritableSharedMemoryMapping',
             'base::subtle::SharedAtomic',
 
-            # Helpers for response headers and associated support code that
-            # are OK to use anywhere; raw headers contain internal NUL
-            # delimiters, so it's easier/safer to work with a helper built for
-            # that convention.
-            'net::HttpVersion',
-            'net::HttpResponseHeaders',
-
             # tracing
             'perfetto::.+',
         ]
@@ -2704,6 +2697,7 @@ _CONFIG = [
         ],
         'allowed': [
             'net::ERR_.+',
+            'net::HttpResponseHeaders',
             'net::OK',
             'net::RedirectInfo',
         ],

@@ -1,5 +1,0 @@
-include_rules = [
-    # net/ includes should be allowed only in a limited set of directories,
-    # so we have separate DEPS from platform's one.
-    "+net/http",
-]

@@ -12,9 +12,8 @@
 namespace mojo {
 
 template <>
-struct COMPONENT_EXPORT(NETWORK_CPP_NETWORK_PARAM)
-    StructTraits<network::mojom::SHA256HashValueDataView,
-                 net::SHA256HashValue> {
+struct StructTraits<network::mojom::SHA256HashValueDataView,
+                    net::SHA256HashValue> {
   static base::span<const uint8_t, 32> data(const net::SHA256HashValue& value) {
     return value;
   }
