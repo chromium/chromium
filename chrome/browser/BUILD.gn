@@ -1498,6 +1498,7 @@ static_library("browser") {
     "//chrome/browser/ui/search_engines",
     "//chrome/browser/ui/select_file_policy",
     "//chrome/browser/ui/side_panel",
+    "//chrome/browser/ui/side_panel:side_panel_ui_provider",
     "//chrome/browser/ui/side_panel/internal",
     "//chrome/browser/ui/side_search",
     "//chrome/browser/ui/startup",
