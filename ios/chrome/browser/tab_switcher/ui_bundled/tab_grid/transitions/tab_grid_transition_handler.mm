@@ -236,6 +236,11 @@ enum class TabGridTransitionType {
     sourceView = appContentGuide;
   }
   UIViewController* rootViewController = tabGrid.view.window.rootViewController;
+  if (IsFullscreenRefactoringEnabled()) {
+    // Temporarily re-enable autoresizing so that the frame can be manually set
+    // for the snapshot.
+    browserLayout.view.translatesAutoresizingMaskIntoConstraints = YES;
+  }
   browserLayout.view.frame = [sourceView convertRect:browserLayoutOriginalFrame
                                               toView:rootViewController.view];
   [rootViewController addChildViewController:browserLayout];
@@ -247,12 +252,14 @@ enum class TabGridTransitionType {
     [tabGrid addChildViewController:browserLayout];
     [appContentGuide addSubview:browserLayout.view];
     if (IsFullscreenRefactoringEnabled()) {
+      browserLayout.view.translatesAutoresizingMaskIntoConstraints = NO;
       AddSameConstraints(browserLayout.view, appContentGuide);
     }
   } else {
     [tabGrid addChildViewController:browserLayout];
     [tabGrid.view addSubview:browserLayout.view];
     if (IsFullscreenRefactoringEnabled()) {
+      browserLayout.view.translatesAutoresizingMaskIntoConstraints = NO;
       AddSameConstraints(browserLayout.view, tabGrid.view);
     }
   }
