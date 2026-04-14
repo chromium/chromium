@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/core/navigation_api/navigate_event.h"
 
 #include "base/functional/bind.h"
+#include "cc/trees/scroll_source_type.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "third_party/blink/public/mojom/devtools/console_message.mojom-shared.h"
 #include "third_party/blink/public/mojom/frame/frame.mojom-blink.h"
@@ -43,8 +44,10 @@
 #include "third_party/blink/renderer/core/navigation_api/navigation_destination.h"
 #include "third_party/blink/renderer/core/navigation_api/navigation_precommit_controller.h"
 #include "third_party/blink/renderer/core/navigation_api/navigation_type_util.h"
+#include "third_party/blink/renderer/core/page/scrolling/fragment_anchor.h"
 #include "third_party/blink/renderer/core/scheduler/task_attribution_top_level_override_scope.h"
 #include "third_party/blink/renderer/core/scheduler/task_attribution_util.h"
+#include "third_party/blink/renderer/core/scroll/scrollable_area.h"
 #include "third_party/blink/renderer/core/timing/dom_window_performance.h"
 #include "third_party/blink/renderer/core/timing/responsiveness_metrics.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
@@ -745,6 +748,14 @@ void NavigateEvent::ProcessScrollBehavior() {
   auto scroll_behavior = has_ua_visual_transition_
                              ? mojom::blink::ScrollBehavior::kInstant
                              : mojom::blink::ScrollBehavior::kAuto;
+
+  if (!FragmentAnchor::TryCreate(dispatch_params_->url,
+                                 *DomWindow()->GetFrame(), false)) {
+    DomWindow()->GetFrame()->View()->GetScrollableArea()->SetScrollOffset(
+        ScrollOffset(0, 0), mojom::blink::ScrollType::kProgrammatic,
+        cc::ScrollSourceType::kNone, mojom::blink::ScrollBehavior::kAuto);
+  }
+
   // Use mojom::blink::ScrollRestorationType::kAuto unconditionally here
   // because we are certain that we want to actually scroll if we reach this
   // point. Using mojom::blink::ScrollRestorationType::kManual would block the
