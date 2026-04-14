@@ -12,6 +12,7 @@
 #include "base/json/json_writer.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_path_override.h"
+#include "base/win/scoped_bstr.h"
 #include "chrome/credential_provider/extension/user_device_context.h"
 #include "chrome/credential_provider/gaiacp/gcpw_strings.h"
 #include "chrome/credential_provider/gaiacp/mdm_utils.h"
@@ -58,12 +59,12 @@ TEST_P(GemDeviceDetailsExtensionTest, WithUserDeviceContext) {
   std::wstring domain_name = L"company.com";
   if (has_valid_sid) {
     // Create a fake user associated to a gaia id.
-    CComBSTR sid_str;
-    ASSERT_EQ(S_OK,
-              fake_os_user_manager()->CreateTestOSUser(
-                  kDefaultUsername, L"password", L"Full Name", L"comment",
-                  kDefaultGaiaId, L"user@company.com", domain_name, &sid_str));
-    user_sid = OLE2W(sid_str);
+    base::win::ScopedBstr sid_str;
+    ASSERT_EQ(S_OK, fake_os_user_manager()->CreateTestOSUser(
+                        kDefaultUsername, L"password", L"Full Name", L"comment",
+                        kDefaultGaiaId, L"user@company.com", domain_name,
+                        sid_str.Receive()));
+    user_sid = sid_str.Get();
   }
 
   if (fail_sid_lookup) {

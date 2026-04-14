@@ -30,6 +30,7 @@
 #include "base/test/test_reg_util_win.h"
 #include "base/win/atl.h"
 #include "base/win/registry.h"
+#include "base/win/scoped_bstr.h"
 #include "base/win/scoped_com_initializer.h"
 #include "base/win/win_util.h"
 #include "build/build_config.h"
@@ -703,11 +704,11 @@ TEST_F(GcpSetupTest, ValidLsaWithNoExistingUser) {
   logging::ResetEventSourceForTesting();
 
   // Create the default user so that name is not taken when the user is created.
-  CComBSTR sid;
+  base::win::ScopedBstr sid;
   DWORD error;
   EXPECT_EQ(S_OK, fake_os_user_manager()->AddUser(
                       kDefaultGaiaAccountName, L"password", L"fullname",
-                      L"comment", true, &sid, &error));
+                      L"comment", true, sid.Receive(), &error));
   // Even if the LSA information is correct, if no actual user exists, a new
   // user needs to be created.
   fake_scoped_lsa_policy_factory()->private_data()[kLsaKeyGaiaUsername] =
@@ -891,20 +892,21 @@ class GcpGaiaUserCreationTest
       public testing::WithParamInterface<std::tuple<int, bool>> {};
 
 TEST_P(GcpGaiaUserCreationTest, ExistingGaiaUserTest) {
-  CComBSTR sid;
+  base::win::ScopedBstr sid;
   DWORD error;
   EXPECT_EQ(S_OK, fake_os_user_manager()->AddUser(
                       kDefaultGaiaAccountName, L"password", L"fullname",
-                      L"comment", true, &sid, &error));
+                      L"comment", true, sid.Receive(), &error));
 
   int last_user_index = std::get<0>(GetParam());
   for (int i = 0; i < last_user_index; ++i) {
     std::wstring existing_gaia_username = kDefaultGaiaAccountName;
     existing_gaia_username +=
         base::NumberToWString(i + kInitialDuplicateUsernameIndex);
+    sid.Reset();
     EXPECT_EQ(S_OK, fake_os_user_manager()->AddUser(
                         existing_gaia_username.c_str(), L"password",
-                        L"fullname", L"comment", true, &sid, &error));
+                        L"fullname", L"comment", true, sid.Receive(), &error));
   }
   logging::ResetEventSourceForTesting();
 

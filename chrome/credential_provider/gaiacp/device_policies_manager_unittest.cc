@@ -13,6 +13,7 @@
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/win/scoped_bstr.h"
 #include "chrome/credential_provider/gaiacp/gcpw_strings.h"
 #include "chrome/credential_provider/gaiacp/reg_utils.h"
 #include "chrome/credential_provider/test/gls_runner_test_base.h"
@@ -52,15 +53,15 @@ TEST_F(GcpDevicePoliciesBaseTest, NewUserAssociationWithNoUserPoliciesPresent) {
   std::vector<std::wstring> sids;
   const size_t num_users_needed = 3;
   for (size_t i = 0; i < num_users_needed; ++i) {
-    CComBSTR sid_str;
+    base::win::ScopedBstr sid_str;
     const std::wstring i_str = base::NumberToWString(i);
     std::wstring username = L"new-user-" + i_str;
     GaiaId gaia_id("gaia-id-" + base::NumberToString(i));
     std::wstring email = base::StrCat({L"user_", i_str, L"@company.com"});
     ASSERT_EQ(S_OK, fake_os_user_manager()->CreateTestOSUser(
                         username, L"password", L"Full Name", L"comment",
-                        gaia_id, email, &sid_str));
-    sids.push_back(OLE2W(sid_str));
+                        gaia_id, email, sid_str.Receive()));
+    sids.push_back(sid_str.Get());
   }
 
   // Create an existing user association in registry but with an invalid sid.
@@ -269,17 +270,17 @@ TEST_P(GcpDevicePoliciesAllowedDomainsTest, OmahaPolicyTest) {
   UserPolicies user_policy;
 
   if (has_existing_user) {
-    CComBSTR sid;
+    base::win::ScopedBstr sid;
     ASSERT_EQ(S_OK, fake_os_user_manager()->CreateTestOSUser(
                         kDefaultUsername, L"password", L"Full Name", L"comment",
-                        kDefaultGaiaId, std::wstring(), &sid));
+                        kDefaultGaiaId, std::wstring(), sid.Receive()));
     // Add a random user policy.
     user_policy.enable_dm_enrollment = false;
     user_policy.enable_gcpw_auto_update = false;
     user_policy.enable_multi_user_login = false;
     user_policy.gcpw_pinned_version = GcpwVersion("100.1.2.3");
 
-    fake_user_policies_manager.SetUserPolicies(OLE2W(sid), user_policy);
+    fake_user_policies_manager.SetUserPolicies(sid.Get(), user_policy);
   }
 
   DevicePolicies device_policies;

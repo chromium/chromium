@@ -16,6 +16,7 @@
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "base/uuid.h"
+#include "base/win/scoped_bstr.h"
 #include "chrome/credential_provider/extension/extension_utils.h"
 #include "chrome/credential_provider/extension/task.h"
 #include "chrome/credential_provider/gaiacp/gcp_utils.h"
@@ -176,14 +177,14 @@ TEST_F(TaskManagerTest, TaskExecuted) {
   SetMachineGuidForTesting(machine_guid);
 
   // Create a fake user associated to a gaia id.
-  CComBSTR sid1;
-  ASSERT_EQ(S_OK,
-            fake_os_user_manager()->CreateTestOSUser(
-                L"foo@gmail.com", L"password", L"Full Name", L"comment",
-                GaiaId("test-gaia-id"), std::wstring(), L"domain", &sid1));
+  base::win::ScopedBstr sid1;
+  ASSERT_EQ(S_OK, fake_os_user_manager()->CreateTestOSUser(
+                      L"foo@gmail.com", L"password", L"Full Name", L"comment",
+                      GaiaId("test-gaia-id"), std::wstring(), L"domain",
+                      sid1.Receive()));
 
   std::wstring device_resource_id1 = L"foo_resource_id";
-  ASSERT_EQ(S_OK, SetUserProperty(OLE2W(sid1), L"device_resource_id",
+  ASSERT_EQ(S_OK, SetUserProperty(sid1.Get(), L"device_resource_id",
                                   device_resource_id1));
 
   FakeTokenGenerator fake_token_generator;
@@ -191,10 +192,10 @@ TEST_F(TaskManagerTest, TaskExecuted) {
       {base::Uuid::GenerateRandomV4().AsLowercaseString(),
        base::Uuid::GenerateRandomV4().AsLowercaseString()});
 
-  ASSERT_EQ(S_OK, GenerateGCPWDmToken((BSTR)sid1));
+  ASSERT_EQ(S_OK, GenerateGCPWDmToken(sid1.Get()));
 
   std::wstring dm_token1;
-  ASSERT_EQ(S_OK, GetGCPWDmToken((BSTR)sid1, &dm_token1));
+  ASSERT_EQ(S_OK, GetGCPWDmToken(sid1.Get(), &dm_token1));
 
   std::string fake_task_name = "fake_task";
 
@@ -208,7 +209,7 @@ TEST_F(TaskManagerTest, TaskExecuted) {
 
   ASSERT_EQ(FakeTask::user_device_context_.size(), (size_t)1);
   extension::UserDeviceContext c1 = {device_resource_id1, serial_number,
-                                     machine_guid, OLE2W(sid1), dm_token1};
+                                     machine_guid, sid1.Get(), dm_token1};
   ASSERT_TRUE(FakeTask::user_device_context_[0] == c1);
 
   std::wstring fake_task_reg_name =
@@ -216,19 +217,19 @@ TEST_F(TaskManagerTest, TaskExecuted) {
   ASSERT_NE(GetGlobalFlagOrDefault(fake_task_reg_name, L""), L"");
 
   // Create another user associated to a gaia id.
-  CComBSTR sid2;
-  ASSERT_EQ(S_OK,
-            fake_os_user_manager()->CreateTestOSUser(
-                L"bar@gmail.com", L"password", L"Full Name", L"comment",
-                GaiaId("test-gaia-id2"), std::wstring(), L"domain", &sid2));
+  base::win::ScopedBstr sid2;
+  ASSERT_EQ(S_OK, fake_os_user_manager()->CreateTestOSUser(
+                      L"bar@gmail.com", L"password", L"Full Name", L"comment",
+                      GaiaId("test-gaia-id2"), std::wstring(), L"domain",
+                      sid2.Receive()));
   std::wstring device_resource_id2 = L"foo_resource_id";
-  ASSERT_EQ(S_OK, SetUserProperty(OLE2W(sid2), L"device_resource_id",
+  ASSERT_EQ(S_OK, SetUserProperty(sid2.Get(), L"device_resource_id",
                                   device_resource_id2));
 
-  ASSERT_EQ(S_OK, GenerateGCPWDmToken((BSTR)sid2));
+  ASSERT_EQ(S_OK, GenerateGCPWDmToken(sid2.Get()));
 
   std::wstring dm_token2;
-  ASSERT_EQ(S_OK, GetGCPWDmToken((BSTR)sid2, &dm_token2));
+  ASSERT_EQ(S_OK, GetGCPWDmToken(sid2.Get(), &dm_token2));
 
   task_environment()->FastForwardBy(base::Hours(2));
 
@@ -236,7 +237,7 @@ TEST_F(TaskManagerTest, TaskExecuted) {
   ASSERT_EQ(FakeTask::user_device_context_.size(), (size_t)2);
 
   extension::UserDeviceContext c2 = {device_resource_id2, serial_number,
-                                     machine_guid, OLE2W(sid2), dm_token2};
+                                     machine_guid, sid2.Get(), dm_token2};
   ASSERT_TRUE(FakeTask::user_device_context_[0] == c1);
   ASSERT_TRUE(FakeTask::user_device_context_[1] == c2);
 }
@@ -279,14 +280,14 @@ TEST_F(TaskManagerTest, BackOff) {
   SetMachineGuidForTesting(machine_guid);
 
   // Create a fake user associated to a gaia id.
-  CComBSTR sid1;
-  ASSERT_EQ(S_OK,
-            fake_os_user_manager()->CreateTestOSUser(
-                L"foo@gmail.com", L"password", L"Full Name", L"comment",
-                GaiaId("test-gaia-id"), std::wstring(), L"domain", &sid1));
+  base::win::ScopedBstr sid1;
+  ASSERT_EQ(S_OK, fake_os_user_manager()->CreateTestOSUser(
+                      L"foo@gmail.com", L"password", L"Full Name", L"comment",
+                      GaiaId("test-gaia-id"), std::wstring(), L"domain",
+                      sid1.Receive()));
 
   std::wstring device_resource_id1 = L"foo_resource_id";
-  ASSERT_EQ(S_OK, SetUserProperty(OLE2W(sid1), L"device_resource_id",
+  ASSERT_EQ(S_OK, SetUserProperty(sid1.Get(), L"device_resource_id",
                                   device_resource_id1));
 
   FakeTokenGenerator fake_token_generator;
@@ -294,7 +295,7 @@ TEST_F(TaskManagerTest, BackOff) {
       {base::Uuid::GenerateRandomV4().AsLowercaseString(),
        base::Uuid::GenerateRandomV4().AsLowercaseString()});
 
-  ASSERT_EQ(S_OK, GenerateGCPWDmToken((BSTR)sid1));
+  ASSERT_EQ(S_OK, GenerateGCPWDmToken(sid1.Get()));
 
   std::string fake_task_name = "fake_task";
 

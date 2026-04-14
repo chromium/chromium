@@ -6,6 +6,7 @@
 
 #include "base/win/atl.h"
 #include "base/win/ntsecapi_shim.h"
+#include "base/win/scoped_bstr.h"
 #include "chrome/credential_provider/common/gcp_strings.h"
 #include "chrome/credential_provider/gaiacp/gcp_utils.h"
 #include "chrome/credential_provider/test/gcp_fakes.h"
@@ -81,11 +82,11 @@ TEST_F(GcpOSGaiaUserManagerTest, ChangeGaiaUserPasswordIfNeededNoStoredSid) {
   hr = policy->StorePrivateData(kLsaKeyGaiaPassword, password.c_str());
   ASSERT_EQ(S_OK, hr);
 
-  CComBSTR local_sid;
+  base::win::ScopedBstr local_sid;
   DWORD error;
-  hr = fake_os_user_manager()->AddUser(kDefaultGaiaAccountName,
-                                       password.c_str(), L"fullname",
-                                       L"comment", true, &local_sid, &error);
+  hr = fake_os_user_manager()->AddUser(
+      kDefaultGaiaAccountName, password.c_str(), L"fullname", L"comment", true,
+      local_sid.Receive(), &error);
   ASSERT_EQ(S_OK, hr);
   ASSERT_EQ(0u, error);
 
@@ -105,7 +106,7 @@ TEST_F(GcpOSGaiaUserManagerTest, ChangeGaiaUserPasswordIfNeededNoStoredSid) {
                                    std::size(stored_gaia_sid));
   ASSERT_EQ(S_OK, hr);
 
-  std::wstring current_sid = OLE2CW(local_sid);
+  std::wstring current_sid = local_sid.Get();
   EXPECT_STREQ(stored_gaia_sid, current_sid.c_str());
 }
 

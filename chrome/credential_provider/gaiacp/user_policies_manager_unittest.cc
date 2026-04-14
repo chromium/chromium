@@ -12,6 +12,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_path_override.h"
+#include "base/win/scoped_bstr.h"
 #include "chrome/credential_provider/extension/user_device_context.h"
 #include "chrome/credential_provider/gaiacp/gcpw_strings.h"
 #include "chrome/credential_provider/gaiacp/reg_utils.h"
@@ -41,11 +42,11 @@ void GcpUserPoliciesBaseTest::SetUp() {
 
 std::wstring GcpUserPoliciesBaseTest::CreateUser() {
   // Create a fake user associated to a gaia id.
-  CComBSTR sid_str;
+  base::win::ScopedBstr sid_str;
   EXPECT_EQ(S_OK, fake_os_user_manager()->CreateTestOSUser(
                       kDefaultUsername, L"password", L"Full Name", L"comment",
-                      kDefaultGaiaId, L"user@company.com", &sid_str));
-  return OLE2W(sid_str);
+                      kDefaultGaiaId, L"user@company.com", sid_str.Receive()));
+  return sid_str.Get();
 }
 
 TEST_F(GcpUserPoliciesBaseTest, NonExistentUser) {
@@ -278,11 +279,12 @@ TEST_P(GcpUserPoliciesExtensionTest, WithUserDeviceContext) {
   std::wstring user_sid = L"invalid-user-sid";
   if (has_valid_sid) {
     // Create a fake user associated to a gaia id.
-    CComBSTR sid_str;
-    ASSERT_EQ(S_OK, fake_os_user_manager()->CreateTestOSUser(
-                        kDefaultUsername, L"password", L"Full Name", L"comment",
-                        kDefaultGaiaId, L"user@company.com", &sid_str));
-    user_sid = OLE2W(sid_str);
+    base::win::ScopedBstr sid_str;
+    ASSERT_EQ(S_OK,
+              fake_os_user_manager()->CreateTestOSUser(
+                  kDefaultUsername, L"password", L"Full Name", L"comment",
+                  kDefaultGaiaId, L"user@company.com", sid_str.Receive()));
+    user_sid = sid_str.Get();
   }
 
   UserPolicies policies;

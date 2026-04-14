@@ -5,6 +5,7 @@
 #include "chrome/credential_provider/gaiacp/experiments_manager.h"
 
 #include "base/strings/utf_string_conversions.h"
+#include "base/win/scoped_bstr.h"
 #include "chrome/credential_provider/extension/task.h"
 #include "chrome/credential_provider/gaiacp/experiments_fetcher.h"
 #include "chrome/credential_provider/gaiacp/gcp_utils.h"
@@ -68,13 +69,13 @@ TEST_P(ExperimentsManagerGcpwE2ETest, FetchingExperiments) {
   int experiment_fetch_status = GetParam();
 
   // Create a fake user that has the same gaia id as the test gaia id.
-  CComBSTR sid;
+  base::win::ScopedBstr sid;
   ASSERT_EQ(S_OK, fake_os_user_manager()->CreateTestOSUser(
                       L"foo", L"password", L"Full Name", L"comment",
-                      kDefaultGaiaId, L"user@company.com", &sid));
+                      kDefaultGaiaId, L"user@company.com", sid.Receive()));
 
   std::wstring device_resource_id = L"foo_resource_id";
-  ASSERT_EQ(S_OK, SetUserProperty(OLE2W(sid), L"device_resource_id",
+  ASSERT_EQ(S_OK, SetUserProperty(sid.Get(), L"device_resource_id",
                                   device_resource_id));
 
   // Re-registering effectively clears the experiment values from the previous
@@ -122,12 +123,12 @@ TEST_P(ExperimentsManagerGcpwE2ETest, FetchingExperiments) {
 
   EXPECT_EQ(experiment1_value,
             ExperimentsManager::Get()->GetExperimentForUser(
-                base::WideToUTF8(OLE2W(sid)), Experiment::TEST_CLIENT_FLAG));
+                base::WideToUTF8(sid.Get()), Experiment::TEST_CLIENT_FLAG));
   EXPECT_EQ(experiment2_value,
             ExperimentsManager::Get()->GetExperimentForUser(
-                base::WideToUTF8(OLE2W(sid)), Experiment::TEST_CLIENT_FLAG2));
+                base::WideToUTF8(sid.Get()), Experiment::TEST_CLIENT_FLAG2));
   EXPECT_EQ(experiment3_value, ExperimentsManager::Get()->GetExperimentForUser(
-                                   base::WideToUTF8(OLE2W(sid)),
+                                   base::WideToUTF8(sid.Get()),
                                    Experiment::ENABLE_SECURITY_KEY_LOGIN));
 }
 
@@ -147,15 +148,15 @@ TEST_P(ExperimentsManagerESAE2ETest, FetchingExperiments) {
   int experiment_fetch_status = GetParam();
 
   // Create a fake user that has the same gaia id as the test gaia id.
-  CComBSTR sid;
+  base::win::ScopedBstr sid;
   ASSERT_EQ(S_OK, fake_os_user_manager()->CreateTestOSUser(
                       L"foo", L"password", L"Full Name", L"comment",
-                      kDefaultGaiaId, L"user@company.com", &sid));
+                      kDefaultGaiaId, L"user@company.com", sid.Receive()));
 
-  ASSERT_EQ(S_OK, GenerateGCPWDmToken((BSTR)sid));
+  ASSERT_EQ(S_OK, GenerateGCPWDmToken(sid.Get()));
 
   std::wstring device_resource_id = L"foo_resource_id";
-  ASSERT_EQ(S_OK, SetUserProperty(OLE2W(sid), L"device_resource_id",
+  ASSERT_EQ(S_OK, SetUserProperty(sid.Get(), L"device_resource_id",
                                   device_resource_id));
 
   // Re-registering effectively clears the experiment values from the previous
@@ -179,11 +180,11 @@ TEST_P(ExperimentsManagerESAE2ETest, FetchingExperiments) {
   }
 
   std::wstring dm_token;
-  ASSERT_EQ(S_OK, GetGCPWDmToken((BSTR)sid, &dm_token));
+  ASSERT_EQ(S_OK, GetGCPWDmToken(sid.Get(), &dm_token));
 
   std::unique_ptr<extension::Task> task(
       ExperimentsFetcher::GetFetchExperimentsTaskCreator().Run());
-  task->SetContext({{device_resource_id, L"", L"", OLE2W(sid), dm_token}});
+  task->SetContext({{device_resource_id, L"", L"", sid.Get(), dm_token}});
   task->Execute();
 
   std::string experiment1_value = "false";
@@ -198,12 +199,12 @@ TEST_P(ExperimentsManagerESAE2ETest, FetchingExperiments) {
 
   EXPECT_EQ(experiment1_value,
             ExperimentsManager::Get()->GetExperimentForUser(
-                base::WideToUTF8(OLE2W(sid)), Experiment::TEST_CLIENT_FLAG));
+                base::WideToUTF8(sid.Get()), Experiment::TEST_CLIENT_FLAG));
   EXPECT_EQ(experiment2_value,
             ExperimentsManager::Get()->GetExperimentForUser(
-                base::WideToUTF8(OLE2W(sid)), Experiment::TEST_CLIENT_FLAG2));
+                base::WideToUTF8(sid.Get()), Experiment::TEST_CLIENT_FLAG2));
   EXPECT_EQ(experiment3_value, ExperimentsManager::Get()->GetExperimentForUser(
-                                   base::WideToUTF8(OLE2W(sid)),
+                                   base::WideToUTF8(sid.Get()),
                                    Experiment::ENABLE_SECURITY_KEY_LOGIN));
 }
 
