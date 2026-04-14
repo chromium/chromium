@@ -383,4 +383,16 @@ IN_PROC_BROWSER_TEST_F(SelectionOverlayInteractiveTest,
       WaitForState(kGlicHasFocus, true));
 }
 
+IN_PROC_BROWSER_TEST_F(SelectionOverlayInteractiveTest, BubbleUICancelClicked) {
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kActiveTab);
+
+  RunTestSequence(InstrumentTab(kActiveTab), OpenGlic(),
+                  ClickMockGlicElement({"#captureRegionBtn"}),
+                  WaitForShow(OverlayBaseController::kOverlayId),
+                  WaitForShow(kLensPreselectionBubbleElementId),
+                  WaitForShow(kLensPreselectionBubbleCancelButtonElementId),
+                  PressButton(kLensPreselectionBubbleCancelButtonElementId),
+                  WaitForHide(OverlayBaseController::kOverlayId));
+}
+
 }  // namespace glic

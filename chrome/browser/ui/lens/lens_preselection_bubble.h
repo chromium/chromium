@@ -34,6 +34,7 @@ class LensPreselectionBubble : public views::BubbleDialogDelegateView,
   explicit LensPreselectionBubble(tabs::TabHandle tab_handle,
                                   views::View* anchor_view,
                                   bool offline,
+                                  bool show_cancel_button,
                                   ExitClickedCallback exit_clicked_callback,
                                   base::OnceClosure on_cancel_callback);
   ~LensPreselectionBubble() override;
@@ -74,6 +75,10 @@ class LensPreselectionBubble : public views::BubbleDialogDelegateView,
   raw_ptr<views::ImageButton> more_info_button_ = nullptr;
   // Button shown in bubble to close lens overlay. Only shown in offline state.
   raw_ptr<views::MdTextButton> exit_button_ = nullptr;
+  // Whether to show cancel button.
+  bool show_cancel_button_ = false;
+  // Button shown in bubble to cancel selection.
+  raw_ptr<views::MdTextButton> cancel_button_ = nullptr;
   // Whether user is offline.
   bool offline_ = false;
   // Callback for exit button which closes the lens overlay.

@@ -1509,8 +1509,8 @@ void LensOverlayController::NotifyTabWillEnterBackground() {
   }
 }
 
-OverlayBaseController::PreselectionBubbleResources
-LensOverlayController::GetPreselectionBubbleResources() {
+OverlayBaseController::PreselectionUIConfig
+LensOverlayController::GetPreselectionBubbleConfig() {
   return {.message_string_id =
               IDS_LENS_OVERLAY_INITIAL_TOAST_MESSAGE_SIMPLIFIED};
 }

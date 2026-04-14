@@ -613,7 +613,7 @@ class LensOverlayController : public OverlayBaseController,
   void NotifyOverlayClosing() override;
   void NotifyTabForegrounded() override;
   void NotifyTabWillEnterBackground() override;
-  PreselectionBubbleResources GetPreselectionBubbleResources() override;
+  PreselectionUIConfig GetPreselectionBubbleConfig() override;
   bool IsOverlayViewShared() const override;
 
   // content::WebContentsDelegate:
