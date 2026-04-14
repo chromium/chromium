@@ -2141,7 +2141,8 @@ CanvasNon2DResourceProviderSharedImage::CanvasNon2DResourceProviderSharedImage(
                                         shared_image_usage_flags,
                                         delegate),
       recorder_for_external_draws_(
-          std::make_unique<MemoryManagedPaintRecorder>(Size(), this)) {
+          std::make_unique<MemoryManagedPaintRecorder>(Size(),
+                                                       /*client=*/nullptr)) {
   if (context_provider_wrapper_) {
     // Graphite can handle a large buffer size.
     if (context_provider_wrapper_->ContextProvider()
@@ -2167,7 +2168,8 @@ CanvasNon2DResourceProviderSharedImage::CanvasNon2DResourceProviderSharedImage(
                                         shared_image_interface_provider,
                                         delegate),
       recorder_for_external_draws_(
-          std::make_unique<MemoryManagedPaintRecorder>(Size(), this)) {}
+          std::make_unique<MemoryManagedPaintRecorder>(Size(),
+                                                       /*client=*/nullptr)) {}
 
 CanvasNon2DResourceProviderSharedImage::
     ~CanvasNon2DResourceProviderSharedImage() = default;
