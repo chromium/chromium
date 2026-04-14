@@ -113,8 +113,11 @@ AppearanceValue AutoAppearanceFor(const Element& element) {
     if (id_value == shadow_element_names::kIdSliderThumb)
       return AppearanceValue::kSliderThumbHorizontal;
     if (id_value == shadow_element_names::kIdSearchClearButton ||
-        id_value == shadow_element_names::kIdClearButton)
+        (!RuntimeEnabledFeatures::
+             HTMLInputElementDropWebkitClearButtonEnabled() &&
+         id_value == shadow_element_names::kIdClearButton)) {
       return AppearanceValue::kSearchFieldCancelButton;
+    }
 
     // Slider container elements and -webkit-meter-inner-element don't have IDs.
     if (IsSliderContainer(element))

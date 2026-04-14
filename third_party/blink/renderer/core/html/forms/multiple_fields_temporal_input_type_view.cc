@@ -687,15 +687,21 @@ void MultipleFieldsTemporalInputTypeView::ShowPickerIndicator() {
 }
 
 void MultipleFieldsTemporalInputTypeView::FocusAndSelectClearButtonOwner() {
+  CHECK(
+      !RuntimeEnabledFeatures::HTMLInputElementDropWebkitClearButtonEnabled());
   GetElement().Focus(FocusParams(FocusTrigger::kUserGesture));
 }
 
 bool MultipleFieldsTemporalInputTypeView::
     ShouldClearButtonRespondToMouseEvents() {
+  CHECK(
+      !RuntimeEnabledFeatures::HTMLInputElementDropWebkitClearButtonEnabled());
   return !GetElement().IsDisabledOrReadOnly() && !GetElement().IsRequired();
 }
 
 void MultipleFieldsTemporalInputTypeView::ClearValue() {
+  CHECK(
+      !RuntimeEnabledFeatures::HTMLInputElementDropWebkitClearButtonEnabled());
   GetElement().SetValue("",
                         TextFieldEventBehavior::kDispatchInputAndChangeEvent);
   GetElement().UpdateClearButtonVisibility();
@@ -705,6 +711,8 @@ void MultipleFieldsTemporalInputTypeView::UpdateClearButtonVisibility() {
   ClearButtonElement* clear_button = GetClearButtonElement();
   if (!clear_button)
     return;
+  CHECK(
+      !RuntimeEnabledFeatures::HTMLInputElementDropWebkitClearButtonEnabled());
 
   if (GetElement().IsRequired() ||
       !GetDateTimeEditElement()->AnyEditableFieldsHaveValues()) {

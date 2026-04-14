@@ -552,20 +552,22 @@ input::-webkit-textfield-decoration-container {
     writing-mode: inherit !important;
 }
 
-input::-webkit-clear-button {
-    appearance: auto;
-    display: inline-block;
-    cursor: default;
-    flex: none;
-    -webkit-user-modify: read-only !important;
-    margin-inline-start: 2px;
-    opacity: 0;
-    pointer-events: none;
-}
+@supports not blink-feature(HTMLInputElementDropWebkitClearButton) {
+    input::-webkit-clear-button {
+        appearance: auto;
+        display: inline-block;
+        cursor: default;
+        flex: none;
+        -webkit-user-modify: read-only !important;
+        margin-inline-start: 2px;
+        opacity: 0;
+        pointer-events: none;
+    }
 
-input:enabled:read-write:-webkit-any(:focus,:hover)::-webkit-clear-button {
-    opacity: 1;
-    pointer-events: auto;
+    input:enabled:read-write:-webkit-any(:focus,:hover)::-webkit-clear-button {
+        opacity: 1;
+        pointer-events: auto;
+    }
 }
 
 input[type="search" i]::-webkit-search-cancel-button {
@@ -1139,25 +1141,30 @@ input::-webkit-calendar-picker-indicator:focus {
     pointer-events: auto;
 }
 
-input[type="date" i]:disabled::-webkit-clear-button,
 input[type="date" i]:disabled::-webkit-inner-spin-button,
-input[type="datetime-local" i]:disabled::-webkit-clear-button,
 input[type="datetime-local" i]:disabled::-webkit-inner-spin-button,
-input[type="month" i]:disabled::-webkit-clear-button,
 input[type="month" i]:disabled::-webkit-inner-spin-button,
-input[type="week" i]:disabled::-webkit-clear-button,
 input[type="week" i]:disabled::-webkit-inner-spin-button,
 input:disabled::-webkit-calendar-picker-indicator,
-input[type="date" i][readonly]::-webkit-clear-button,
 input[type="date" i][readonly]::-webkit-inner-spin-button,
-input[type="datetime-local" i][readonly]::-webkit-clear-button,
 input[type="datetime-local" i][readonly]::-webkit-inner-spin-button,
-input[type="month" i][readonly]::-webkit-clear-button,
 input[type="month" i][readonly]::-webkit-inner-spin-button,
-input[type="week" i][readonly]::-webkit-clear-button,
 input[type="week" i][readonly]::-webkit-inner-spin-button,
 input[readonly]::-webkit-calendar-picker-indicator {
     visibility: hidden;
+}
+
+@supports not blink-feature(HTMLInputElementDropWebkitClearButton) {
+    input[type="date" i]:disabled::-webkit-clear-button,
+    input[type="datetime-local" i]:disabled::-webkit-clear-button,
+    input[type="month" i]:disabled::-webkit-clear-button,
+    input[type="week" i]:disabled::-webkit-clear-button,
+    input[type="date" i][readonly]::-webkit-clear-button,
+    input[type="datetime-local" i][readonly]::-webkit-clear-button,
+    input[type="month" i][readonly]::-webkit-clear-button,
+    input[type="week" i][readonly]::-webkit-clear-button {
+        visibility: hidden;
+    }
 }
 
 /* Form controls that measure the inline size without doing actual layout
