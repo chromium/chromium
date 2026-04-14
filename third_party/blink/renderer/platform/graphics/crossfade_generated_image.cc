@@ -55,11 +55,6 @@ void CrossfadeGeneratedImage::DrawCrossfade(
   for (unsigned image_idx = 0; image_idx < images_.size(); ++image_idx) {
     ImageDrawOptions image_draw_options(draw_options);
     if (image_idx == 0) {
-      // TODO(junov): This code should probably be propagating the
-      // RespectImageOrientationEnum from CrossfadeGeneratedImage::draw(). Code
-      // was written this way during refactoring to avoid modifying existing
-      // behavior, but this warrants further investigation. crbug.com/472634
-      image_draw_options.respect_orientation = kDoNotRespectImageOrientation;
       image_flags.setBlendMode(SkBlendMode::kSrcOver);
     } else {
       image_flags.setBlendMode(SkBlendMode::kPlus);
