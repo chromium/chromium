@@ -20,8 +20,11 @@ import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
+import org.chromium.base.test.util.Features.DisableFeatures;
+import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.compositor.layouts.LayoutManagerChrome;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.layouts.LayoutTestUtils;
 import org.chromium.chrome.browser.layouts.LayoutType;
@@ -44,10 +47,16 @@ public class TabObserverTest {
     /** A {@Link TabObserver} that has callback helpers for each event. */
     private static class TestTabObserver extends EmptyTabObserver {
         private final CallbackHelper mInteractabilityHelper = new CallbackHelper();
+        private final CallbackHelper mUrlUpdatedHelper = new CallbackHelper();
 
         @Override
         public void onInteractabilityChanged(Tab tab, boolean isInteractable) {
             mInteractabilityHelper.notifyCalled();
+        }
+
+        @Override
+        public void onUrlUpdated(Tab tab) {
+            mUrlUpdatedHelper.notifyCalled();
         }
     }
 
@@ -128,5 +137,33 @@ public class TabObserverTest {
                     sTab.updateAttachment(null, null);
                     assertFalse(sTab.hasObserver(sTabObserver));
                 });
+    }
+
+    private void doTestNavigationStateChanged() throws TimeoutException {
+        CallbackHelper urlUpdatedHelper = sTabObserver.mUrlUpdatedHelper;
+        int callCount = urlUpdatedHelper.getCallCount();
+
+        final String url = "about:blank";
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    sTab.loadUrl(new org.chromium.content_public.browser.LoadUrlParams(url));
+                });
+
+        urlUpdatedHelper.waitForCallback(callCount);
+        org.junit.Assert.assertEquals(url, sTab.getUrl().getSpec());
+    }
+
+    @Test
+    @SmallTest
+    @EnableFeatures(ChromeFeatureList.DEFER_NAVIGATION_STATE_CHANGED)
+    public void testNavigationStateChanged_DeferEnabled() throws TimeoutException {
+        doTestNavigationStateChanged();
+    }
+
+    @Test
+    @SmallTest
+    @DisableFeatures(ChromeFeatureList.DEFER_NAVIGATION_STATE_CHANGED)
+    public void testNavigationStateChanged_DeferDisabled() throws TimeoutException {
+        doTestNavigationStateChanged();
     }
 }

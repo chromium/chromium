@@ -21,6 +21,7 @@
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/rand_util.h"
+#include "base/task/single_thread_task_runner.h"
 #include "chrome/browser/android/customtabs/client_data_header_web_contents_observer.h"
 #include "chrome/browser/android/framebust_intervention/framebust_blocked_delegate_android.h"
 #include "chrome/browser/android/tab_android.h"
@@ -195,6 +196,27 @@ bool TabWebContentsDelegateAndroid::ShouldFocusLocationBarByDefault(
     }
   }
   return false;
+}
+
+void TabWebContentsDelegateAndroid::NavigationStateChanged(
+    WebContents* source,
+    content::InvalidateTypes changed_flags) {
+  if (base::FeatureList::IsEnabled(
+          chrome::android::kDeferNavigationStateChanged)) {
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE,
+        base::BindOnce(
+            &TabWebContentsDelegateAndroid::NavigationStateChangedDeferred,
+            weak_ptr_factory_.GetWeakPtr(), source, changed_flags));
+    return;
+  }
+  NavigationStateChangedDeferred(source, changed_flags);
+}
+
+void TabWebContentsDelegateAndroid::NavigationStateChangedDeferred(
+    WebContents* source,
+    content::InvalidateTypes changed_flags) {
+  WebContentsDelegateAndroid::NavigationStateChanged(source, changed_flags);
 }
 
 void TabWebContentsDelegateAndroid::FindReply(
