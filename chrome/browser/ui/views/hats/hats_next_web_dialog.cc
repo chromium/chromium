@@ -31,6 +31,7 @@
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/toolbar_button_provider.h"
 #include "chrome/browser/ui/views/frame/top_container_view.h"
+#include "chrome/browser/ui/views/toolbar/app_menu_control.h"
 #include "chrome/browser/ui/webui/chrome_web_contents_handler.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_isolated_world_ids.h"
@@ -80,6 +81,17 @@ void LogUmaHistogramSparse(
     HatsNextWebDialog::SurveyHistogramEnumeration enumeration) {
   return LogUmaHistogramSparse(hats_histogram_name,
                                static_cast<int>(enumeration));
+}
+
+views::BubbleAnchor GetBubbleAnchor(BrowserWindowInterface* browser) {
+  if (browser->GetType() == BrowserWindowInterface::Type::TYPE_DEVTOOLS) {
+    return views::BubbleAnchor(
+        BrowserView::GetBrowserViewForBrowser(browser)->top_container());
+  }
+  auto* control = BrowserView::GetBrowserViewForBrowser(browser)
+                      ->toolbar_button_provider()
+                      ->GetAppMenuControl();
+  return control ? control->GetAnchor() : views::BubbleAnchor();
 }
 
 // WebView which contains the WebContents displaying the HaTS Next survey.
@@ -360,17 +372,10 @@ HatsNextWebDialog::HatsNextWebDialog(
     base::OnceClosure failure_callback,
     const SurveyBitsData& product_specific_bits_data,
     const SurveyStringData& product_specific_string_data)
-    : BubbleDialogDelegateView(
-          browser->GetType() == BrowserWindowInterface::Type::TYPE_DEVTOOLS
-              ? static_cast<views::View*>(
-                    BrowserView::GetBrowserViewForBrowser(browser)
-                        ->top_container())
-              : BrowserView::GetBrowserViewForBrowser(browser)
-                    ->toolbar_button_provider()
-                    ->GetAppMenuButton(),
-          views::BubbleBorder::TOP_RIGHT,
-          views::BubbleBorder::DIALOG_SHADOW,
-          /*autosize=*/true),
+    : BubbleDialogDelegateView(GetBubbleAnchor(browser),
+                               views::BubbleBorder::TOP_RIGHT,
+                               views::BubbleBorder::DIALOG_SHADOW,
+                               /*autosize=*/true),
       otr_profile_(browser->GetProfile()->GetOffTheRecordProfile(
           Profile::OTRProfileID::CreateUnique("HaTSNext:WebDialog"),
           /*create_if_needed=*/true)),

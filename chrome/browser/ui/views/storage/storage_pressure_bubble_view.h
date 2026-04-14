@@ -20,7 +20,7 @@ class StoragePressureBubbleView : public views::BubbleDialogDelegateView {
   static void ShowBubble(const url::Origin& origin);
 
  private:
-  StoragePressureBubbleView(views::View* anchor_view,
+  StoragePressureBubbleView(views::BubbleAnchor anchor,
                             BrowserWindowInterface* browser,
                             const url::Origin& origin);
   ~StoragePressureBubbleView() override;

@@ -17,6 +17,7 @@
 #include "chrome/browser/ui/views/frame/app_menu_button.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/toolbar_button_provider.h"
+#include "chrome/browser/ui/views/toolbar/app_menu_control.h"
 #include "ui/views/widget/widget.h"
 
 DefaultBrowserBubbleDialogManager::DefaultBrowserBubbleDialogManager() =
@@ -36,11 +37,12 @@ void DefaultBrowserBubbleDialogManager::ShowForBrowser(
     return;
   }
 
-  auto* anchor_view =
-      browser_view->toolbar_button_provider()->GetAppMenuButton();
+  auto* control = browser_view->toolbar_button_provider()->GetAppMenuControl();
+  views::BubbleAnchor anchor =
+      control ? control->GetAnchor() : views::BubbleAnchor();
 
   dialog_widgets_[browser] = default_browser::ShowDefaultBrowserBubbleDialog(
-      anchor_view, can_pin_to_taskbar(),
+      anchor, can_pin_to_taskbar(),
       base::BindOnce(&DefaultBrowserBubbleDialogManager::OnAccept,
                      base::Unretained(this)),
       base::BindOnce(&DefaultBrowserBubbleDialogManager::OnDismiss,

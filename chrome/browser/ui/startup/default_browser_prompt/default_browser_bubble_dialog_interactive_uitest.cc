@@ -17,6 +17,7 @@
 #include "chrome/browser/ui/views/frame/app_menu_button.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/toolbar_button_provider.h"
+#include "chrome/browser/ui/views/toolbar/app_menu_control.h"
 #include "chrome/test/interaction/interactive_browser_test.h"
 #include "content/public/test/browser_test.h"
 #include "ui/base/interaction/element_identifier.h"
@@ -37,10 +38,11 @@ class DefaultBrowserBubbleDialogInteractiveTest
   void ShowUi(bool can_pin_to_taskbar = false) {
     BrowserView* browser_view =
         BrowserView::GetBrowserViewForBrowser(browser());
-    views::View* anchor_view =
-        browser_view->toolbar_button_provider()->GetAppMenuButton();
+    views::BubbleAnchor anchor = browser_view->toolbar_button_provider()
+                                     ->GetAppMenuControl()
+                                     ->GetAnchor();
     dialog_widget_ = default_browser::ShowDefaultBrowserBubbleDialog(
-        anchor_view, can_pin_to_taskbar, on_accept_.GetCallback(),
+        anchor, can_pin_to_taskbar, on_accept_.GetCallback(),
         on_dismiss_.GetCallback());
   }
 

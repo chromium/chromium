@@ -7,6 +7,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/network_profile_bubble.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
+#include "chrome/browser/ui/views/toolbar/app_menu_control.h"
 #include "chrome/browser/ui/views/toolbar/browser_app_menu_button.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
 #include "chrome/common/pref_names.h"
@@ -28,7 +29,7 @@ class NetworkProfileBubbleView : public views::BubbleDialogDelegateView {
   METADATA_HEADER(NetworkProfileBubbleView, views::BubbleDialogDelegateView)
 
  public:
-  NetworkProfileBubbleView(views::View* anchor,
+  NetworkProfileBubbleView(views::BubbleAnchor anchor,
                            content::PageNavigator* navigator,
                            Profile* profile);
   NetworkProfileBubbleView(const NetworkProfileBubbleView&) = delete;
@@ -52,7 +53,7 @@ class NetworkProfileBubbleView : public views::BubbleDialogDelegateView {
 // NetworkProfileBubbleView, public:
 
 NetworkProfileBubbleView::NetworkProfileBubbleView(
-    views::View* anchor,
+    views::BubbleAnchor anchor,
     content::PageNavigator* navigator,
     Profile* profile)
     : BubbleDialogDelegateView(anchor, views::BubbleBorder::TOP_RIGHT),
@@ -112,10 +113,12 @@ END_METADATA
 
 // static
 void NetworkProfileBubble::ShowNotification(BrowserWindowInterface* browser) {
-  views::View* anchor = NULL;
+  views::BubbleAnchor anchor;
   BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser);
   if (browser_view && browser_view->toolbar()) {
-    anchor = browser_view->toolbar_button_provider()->GetAppMenuButton();
+    auto* control =
+        browser_view->toolbar_button_provider()->GetAppMenuControl();
+    anchor = control ? control->GetAnchor() : views::BubbleAnchor();
   }
   NetworkProfileBubbleView* bubble =
       new NetworkProfileBubbleView(anchor, browser, browser->GetProfile());

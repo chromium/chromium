@@ -77,6 +77,7 @@
 #include "chrome/browser/ui/views/tabs/tab.h"
 #include "chrome/browser/ui/views/tabs/tab_strip.h"
 #include "chrome/browser/ui/views/toolbar/app_menu.h"
+#include "chrome/browser/ui/views/toolbar/app_menu_control.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
 #include "chrome/browser/ui/views/web_apps/frame_toolbar/web_app_frame_toolbar_view.h"
 #include "chrome/browser/ui/views/web_apps/frame_toolbar/web_app_menu_button.h"
@@ -140,6 +141,7 @@
 #include "ui/native_theme/native_theme.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/focus/focus_manager.h"
+#include "ui/views/interaction/element_tracker_views.h"
 #include "ui/views/test/views_test_utils.h"
 #include "ui/views/test/widget_test.h"
 #include "ui/views/widget/widget.h"
@@ -564,7 +566,10 @@ class WebAppFrameViewChromeOSTest
 
     content_setting_views_ =
         &web_app_frame_toolbar_->GetContentSettingViewsForTesting();
-    web_app_menu_button_ = web_app_frame_toolbar_->GetAppMenuButton();
+    web_app_menu_button_ = views::AsViewClass<AppMenuButton>(
+        views::ElementTrackerViews::GetInstance()->GetFirstMatchingView(
+            kToolbarAppMenuButtonElementId,
+            views::ElementTrackerViews::GetContextForView(browser_view_)));
   }
 
   AppMenu* GetAppMenu() { return web_app_menu_button_->app_menu(); }

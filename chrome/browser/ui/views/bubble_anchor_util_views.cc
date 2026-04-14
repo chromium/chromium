@@ -12,6 +12,7 @@
 #include "chrome/browser/ui/views/frame/picture_in_picture_browser_frame_view.h"
 #include "chrome/browser/ui/views/location_bar/location_bar_view.h"
 #include "chrome/browser/ui/views/permissions/chip/permission_chip_view.h"
+#include "chrome/browser/ui/views/toolbar/app_menu_control.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
 #include "components/content_settings/core/common/features.h"
 #include "ui/base/interaction/element_highlighter.h"
@@ -75,9 +76,21 @@ AnchorConfiguration GetPageInfoAnchorConfiguration(Browser* browser,
   }
 
   // Fall back to menu button.
-  views::Button* app_menu_button =
-      browser_view->toolbar_button_provider()->GetAppMenuButton();
-  if (!app_menu_button || !app_menu_button->IsDrawn()) {
+  auto* app_menu_control =
+      browser_view->toolbar_button_provider()->GetAppMenuControl();
+
+  // If the anchor is a physical View (like the button), it must be visible on
+  // screen. If it's hidden (e.g. during fullscreen), return empty so the
+  // bubble falls back to a default corner position instead of floating at
+  // (0,0).
+  if (!app_menu_control || !app_menu_control->IsDrawn()) {
+    return {};
+  }
+
+  views::BubbleAnchor app_menu_anchor = app_menu_control->GetAnchor();
+
+  // If the anchor is explicitly null, we can't anchor to it.
+  if (app_menu_anchor.IsNull()) {
     return {};
   }
 
@@ -88,7 +101,7 @@ AnchorConfiguration GetPageInfoAnchorConfiguration(Browser* browser,
     return {};
   }
 
-  return {views::BubbleAnchor(app_menu_button), kToolbarAppMenuButtonElementId,
+  return {app_menu_anchor, kToolbarAppMenuButtonElementId,
           views::BubbleBorder::TOP_RIGHT};
 }
 

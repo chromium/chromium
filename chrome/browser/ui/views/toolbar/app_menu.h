@@ -9,6 +9,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
@@ -38,7 +39,10 @@ class AppMenu final : public views::MenuDelegate,
                       public BookmarkMergedSurfaceServiceObserver,
                       public GlobalErrorObserver {
  public:
-  AppMenu(Browser* browser, ui::MenuModel* model, int run_types);
+  AppMenu(Browser* browser,
+          ui::MenuModel* model,
+          int run_types,
+          base::RepeatingClosure on_menu_closed_callback);
   AppMenu(const AppMenu&) = delete;
   AppMenu& operator=(const AppMenu&) = delete;
   ~AppMenu() override;
@@ -225,6 +229,8 @@ class AppMenu final : public views::MenuDelegate,
 
   // Records the time from when menu opens to when the user selects a menu item.
   base::ElapsedTimer menu_opened_timer_;
+
+  base::RepeatingClosure on_menu_closed_callback_;
 
   base::WeakPtrFactory<AppMenu> weak_ptr_factory_{this};
 };

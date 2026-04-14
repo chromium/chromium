@@ -91,6 +91,7 @@
 #include "chrome/browser/ui/views/tabs/tab_strip.h"
 #include "chrome/browser/ui/views/tabs/tab_strip_controller.h"
 #include "chrome/browser/ui/views/toolbar/app_menu.h"
+#include "chrome/browser/ui/views/toolbar/app_menu_control.h"
 #include "chrome/browser/ui/views/toolbar/back_forward_button.h"
 #include "chrome/browser/ui/views/toolbar/browser_app_menu_button.h"
 #include "chrome/browser/ui/views/toolbar/chrome_labs/chrome_labs_coordinator.h"
@@ -1644,11 +1645,12 @@ gfx::Size ToolbarView::GetToolbarButtonSize() const {
   return gfx::Size(size, size);
 }
 
-views::View* ToolbarView::GetDefaultExtensionDialogAnchorView() {
+views::BubbleAnchor ToolbarView::GetDefaultExtensionDialogAnchor() {
   if (extensions_container_ && extensions_container_->GetVisible()) {
-    return extensions_container_->GetExtensionsButton();
+    return views::BubbleAnchor(extensions_container_->GetExtensionsButton());
   }
-  return GetAppMenuButton();
+  auto* control = GetAppMenuControl();
+  return control ? control->GetAnchor() : views::BubbleAnchor();
 }
 
 PageActionIconView* ToolbarView::GetPageActionIconView(
@@ -1674,7 +1676,7 @@ IconLabelBubbleView* ToolbarView::GetPageActionView(
   return GetPageActionIconView(properties.type);
 }
 
-AppMenuButton* ToolbarView::GetAppMenuButton() {
+AppMenuControl* ToolbarView::GetAppMenuControl() {
   return app_menu_button_;
 }
 

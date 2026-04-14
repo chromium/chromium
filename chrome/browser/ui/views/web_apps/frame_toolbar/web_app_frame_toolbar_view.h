@@ -78,14 +78,13 @@ class WebAppFrameToolbarView : public views::AccessiblePaneView,
   ExtensionsToolbarDesktop* GetExtensionsToolbarDesktop() override;
   PinnedToolbarActions* GetPinnedToolbarActions() override;
   gfx::Size GetToolbarButtonSize() const override;
-  views::View* GetDefaultExtensionDialogAnchorView() override;
+  views::BubbleAnchor GetDefaultExtensionDialogAnchor() override;
   PageActionIconView* GetPageActionIconView(PageActionIconType type) override;
   IconLabelBubbleView* GetPageActionView(actions::ActionId action_id) override;
-  AppMenuButton* GetAppMenuButton() override;
+  AppMenuControl* GetAppMenuControl() override;
   gfx::Rect GetFindBarBoundingBox(int contents_bottom) override;
   void FocusToolbar() override;
   views::AccessiblePaneView* GetAsAccessiblePaneView() override;
-  views::View* GetAnchorView(std::optional<actions::ActionId> action_id);
   views::BubbleAnchor GetBubbleAnchor(
       std::optional<actions::ActionId> action_id) override;
   void ZoomChangedForActiveTab(bool can_show_bubble) override;

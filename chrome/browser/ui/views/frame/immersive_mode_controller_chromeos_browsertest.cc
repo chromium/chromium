@@ -12,6 +12,7 @@
 #include "chrome/browser/profiles/profile_io_data.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
+#include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_manager.h"
@@ -22,6 +23,7 @@
 #include "chrome/browser/ui/views/frame/immersive_mode_controller.h"
 #include "chrome/browser/ui/views/frame/top_container_view.h"
 #include "chrome/browser/ui/views/tabs/tab_strip.h"
+#include "chrome/browser/ui/views/toolbar/app_menu_control.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
 #include "chrome/browser/ui/views/web_apps/frame_toolbar/web_app_frame_toolbar_view.h"
 #include "chrome/browser/ui/views/web_apps/frame_toolbar/web_app_menu_button.h"
@@ -39,6 +41,7 @@
 #include "ui/events/base_event_utils.h"
 #include "ui/views/animation/ink_drop.h"
 #include "ui/views/animation/test/ink_drop_host_test_api.h"
+#include "ui/views/interaction/element_tracker_views.h"
 #include "ui/views/test/button_test_api.h"
 #include "ui/views/window/frame_caption_button.h"
 
@@ -108,8 +111,10 @@ class ImmersiveModeControllerChromeosWebAppBrowserTest
   void VerifyButtonsInImmersiveMode(BrowserView* browser_view) {
     WebAppFrameToolbarView* container =
         browser_view->web_app_frame_toolbar_for_testing();
-    views::test::InkDropHostTestApi ink_drop_api(
-        views::InkDrop::Get(container->GetAppMenuButton()));
+    views::test::InkDropHostTestApi ink_drop_api(views::InkDrop::Get(
+        views::ElementTrackerViews::GetInstance()->GetFirstMatchingView(
+            kToolbarAppMenuButtonElementId,
+            views::ElementTrackerViews::GetContextForView(browser_view))));
     EXPECT_TRUE(container->GetContentSettingContainerForTesting()->layer());
     EXPECT_EQ(views::InkDropHost::InkDropMode::ON,
               ink_drop_api.ink_drop_mode());

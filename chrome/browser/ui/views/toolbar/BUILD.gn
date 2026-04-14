@@ -11,6 +11,7 @@ source_set("toolbar") {
   public = [
     "ai_overlay_toolbar_button.h",
     "app_menu.h",
+    "app_menu_control.h",
     "back_forward_button.h",
     "browser_app_menu_button.h",
     "chrome_labs/chrome_labs_bubble_view.h",

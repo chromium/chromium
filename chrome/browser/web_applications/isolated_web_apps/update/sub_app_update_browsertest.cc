@@ -14,9 +14,11 @@
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
+#include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/toolbar_button_provider.h"
+#include "chrome/browser/ui/views/toolbar/app_menu_control.h"
 #include "chrome/browser/ui/views/web_apps/frame_toolbar/web_app_menu_button.h"
 #include "chrome/browser/ui/views/web_apps/sub_apps_install_dialog_controller.h"
 #include "chrome/browser/ui/web_applications/test/isolated_web_app_test_utils.h"
@@ -54,6 +56,7 @@
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/switches.h"
 #include "ui/gfx/geometry/size.h"
+#include "ui/views/interaction/element_tracker_views.h"
 #include "ui/views/test/dialog_test.h"
 #include "ui/views/test/widget_test.h"
 #include "ui/views/widget/any_widget_observer.h"
@@ -224,7 +227,9 @@ class SubAppUpdateBrowserTest : public IsolatedWebAppBrowserTestHarness {
     }
 
     return views::AsViewClass<WebAppMenuButton>(
-        app_browser_view->toolbar_button_provider()->GetAppMenuButton());
+        views::ElementTrackerViews::GetInstance()->GetFirstMatchingView(
+            kToolbarAppMenuButtonElementId,
+            views::ElementTrackerViews::GetContextForView(app_browser_view)));
   }
 
   void VerifyAppUpdateButtonExists(Browser* sub_app_browser) {

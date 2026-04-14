@@ -56,6 +56,7 @@ class WebAppMenuButton : public AppMenuButton,
 
   // Shows the app menu. |run_types| denotes the MenuRunner::RunTypes associated
   // with the menu.
+  using AppMenuButton::ShowMenu;
   void ShowMenu(int run_types);
 
   // Safely waits for the label text to be updated, as per the contracts of

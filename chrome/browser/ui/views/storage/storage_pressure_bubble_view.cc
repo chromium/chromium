@@ -11,9 +11,9 @@
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
-#include "chrome/browser/ui/views/frame/app_menu_button.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/toolbar_button_provider.h"
+#include "chrome/browser/ui/views/toolbar/app_menu_control.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/url_formatter/url_formatter.h"
 #include "content/public/common/content_features.h"
@@ -54,21 +54,23 @@ void StoragePressureBubbleView::ShowBubble(const url::Origin& origin) {
     return;
   }
 
+  auto* browser_view =
+      BrowserView::GetBrowserViewForBrowser(bwi->GetBrowserForMigrationOnly());
+  auto* control = browser_view->toolbar_button_provider()->GetAppMenuControl();
+  views::BubbleAnchor anchor =
+      control ? control->GetAnchor() : views::BubbleAnchor();
   StoragePressureBubbleView* bubble =
-      new StoragePressureBubbleView(BrowserView::GetBrowserViewForBrowser(bwi)
-                                        ->toolbar_button_provider()
-                                        ->GetAppMenuButton(),
-                                    bwi, origin);
+      new StoragePressureBubbleView(anchor, bwi, origin);
   views::BubbleDialogDelegateView::CreateBubble(bubble)->Show();
 
   RecordBubbleHistogramValue(StoragePressureBubbleHistogramValue::kShown);
 }
 
 StoragePressureBubbleView::StoragePressureBubbleView(
-    views::View* anchor_view,
+    views::BubbleAnchor anchor,
     BrowserWindowInterface* bwi,
     const url::Origin& origin)
-    : BubbleDialogDelegateView(anchor_view, views::BubbleBorder::TOP_RIGHT),
+    : BubbleDialogDelegateView(anchor, views::BubbleBorder::TOP_RIGHT),
       bwi_(bwi),
       origin_(origin),
       ignored_(true) {

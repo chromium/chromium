@@ -38,12 +38,20 @@ AppMenuButton::AppMenuButton(PressedCallback callback)
 
 AppMenuButton::~AppMenuButton() = default;
 
-void AppMenuButton::AddObserver(AppMenuButtonObserver* observer) {
-  observer_list_.AddObserver(observer);
+views::BubbleAnchor AppMenuButton::GetAnchor() {
+  return views::BubbleAnchor(this);
 }
 
-void AppMenuButton::RemoveObserver(AppMenuButtonObserver* observer) {
-  observer_list_.RemoveObserver(observer);
+bool AppMenuButton::IsDrawn() const {
+  return views::View::IsDrawn();
+}
+
+bool AppMenuButton::IsMenuShowing() const {
+  return menu_ && menu_->IsShowing();
+}
+
+views::DialogDelegate* AppMenuButton::GetDialogDelegate() {
+  return GetProperty(views::kAnchoredDialogKey);
 }
 
 void AppMenuButton::CloseMenu() {
@@ -53,12 +61,20 @@ void AppMenuButton::CloseMenu() {
   menu_.reset();
 }
 
-void AppMenuButton::OnMenuClosed() {
-  observer_list_.Notify(&AppMenuButtonObserver::AppMenuClosed);
+void AppMenuButton::ShowMenu() {
+  menu_button_controller_->Activate(nullptr);
 }
 
-bool AppMenuButton::IsMenuShowing() const {
-  return menu_ && menu_->IsShowing();
+void AppMenuButton::AddObserver(AppMenuButtonObserver* observer) {
+  observer_list_.AddObserver(observer);
+}
+
+void AppMenuButton::RemoveObserver(AppMenuButtonObserver* observer) {
+  observer_list_.RemoveObserver(observer);
+}
+
+void AppMenuButton::OnMenuClosed() {
+  observer_list_.Notify(&AppMenuButtonObserver::AppMenuClosed);
 }
 
 void AppMenuButton::RunMenu(std::unique_ptr<AppMenuModel> menu_model,
@@ -71,7 +87,10 @@ void AppMenuButton::RunMenu(std::unique_ptr<AppMenuModel> menu_model,
   highlighter_.MaybeHighlight(browser, this, menu_model_.get());
   menu_model_->Init();
 
-  menu_ = std::make_unique<AppMenu>(browser, menu_model_.get(), run_flags);
+  menu_ = std::make_unique<AppMenu>(
+      browser, menu_model_.get(), run_flags,
+      base::BindRepeating(&AppMenuButton::OnMenuClosed,
+                          weak_ptr_factory_.GetWeakPtr()));
   menu_->RunMenu(menu_button_controller_);
 
   observer_list_.Notify(&AppMenuButtonObserver::AppMenuShown);

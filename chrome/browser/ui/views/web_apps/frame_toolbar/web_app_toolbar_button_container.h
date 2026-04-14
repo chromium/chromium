@@ -10,6 +10,7 @@
 #include "base/scoped_observation.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/views/frame/app_menu_button.h"
 #include "chrome/browser/ui/views/frame/immersive_mode_controller.h"
 #include "chrome/browser/ui/views/location_bar/content_setting_image_view.h"
 #include "chrome/browser/ui/views/location_bar/icon_label_bubble_view.h"
@@ -17,6 +18,7 @@
 #include "chrome/browser/ui/views/page_action/page_action_icon_container.h"
 #include "chrome/browser/ui/views/page_action/page_action_icon_view.h"
 #include "chrome/browser/ui/views/profiles/avatar_toolbar_button.h"
+#include "chrome/browser/ui/views/web_apps/frame_toolbar/web_app_menu_button.h"
 #include "chrome/browser/ui/web_applications/web_app_menu_model.h"
 #include "components/webapps/common/web_app_id.h"
 #include "third_party/skia/include/core/SkColor.h"
@@ -29,7 +31,6 @@ class BrowserView;
 class ToolbarButtonProvider;
 class PinnedToolbarActionsContainer;
 class ExtensionsToolbarDesktop;
-class WebAppMenuButton;
 class WebAppOriginText;
 class WindowControlsOverlayToggleButton;
 class SystemAppAccessibleName;

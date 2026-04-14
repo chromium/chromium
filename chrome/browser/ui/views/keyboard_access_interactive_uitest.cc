@@ -11,11 +11,14 @@
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/browser/ui/views/frame/app_menu_button.h"
 #include "chrome/browser/ui/views/frame/app_menu_button_observer.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/toolbar/app_menu.h"
+#include "chrome/browser/ui/views/toolbar/app_menu_control.h"
 #include "chrome/browser/ui/views/toolbar/browser_app_menu_button.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
 #include "chrome/test/base/in_process_browser_test.h"
@@ -27,8 +30,10 @@
 #include "ui/events/event_constants.h"
 #include "ui/events/keycodes/keyboard_codes.h"
 #include "ui/views/focus/focus_manager.h"
+#include "ui/views/interaction/element_tracker_views.h"
 #include "ui/views/style/platform_style.h"
 #include "ui/views/view.h"
+#include "ui/views/view_utils.h"
 #include "ui/views/widget/widget.h"
 
 namespace {
@@ -207,8 +212,11 @@ void KeyboardAccessTest::TestMenuKeyboardAccess(bool alternate_key_sequence,
 
   BrowserView* browser_view = static_cast<BrowserView*>(browser()->window());
   SendKeysMenuListener menu_listener(
-      browser_view->toolbar_button_provider()->GetAppMenuButton(), browser(),
-      false);
+      views::AsViewClass<AppMenuButton>(
+          views::ElementTrackerViews::GetInstance()->GetFirstMatchingView(
+              kToolbarAppMenuButtonElementId,
+              views::ElementTrackerViews::GetContextForView(browser_view))),
+      browser(), false);
 
   if (focus_omnibox) {
     browser()->window()->GetLocationBar()->FocusLocation(
@@ -383,8 +391,11 @@ void KeyboardAccessTest::TestMenuKeyboardAccessAndDismiss() {
 
   BrowserView* browser_view = static_cast<BrowserView*>(browser()->window());
   SendKeysMenuListener menu_listener(
-      browser_view->toolbar_button_provider()->GetAppMenuButton(), browser(),
-      true);
+      views::AsViewClass<AppMenuButton>(
+          views::ElementTrackerViews::GetInstance()->GetFirstMatchingView(
+              kToolbarAppMenuButtonElementId,
+              views::ElementTrackerViews::GetContextForView(browser_view))),
+      browser(), true);
   browser()->window()->GetLocationBar()->FocusLocation(
       /*is_user_initiated=*/false, /*clear_focus_if_failed=*/false);
 

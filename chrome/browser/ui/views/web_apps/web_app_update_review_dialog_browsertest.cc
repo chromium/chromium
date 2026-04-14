@@ -23,12 +23,14 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/shortcuts/shortcut_icon_generator.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/test/test_browser_dialog.h"
 #include "chrome/browser/ui/toolbar/app_menu_model.h"
 #include "chrome/browser/ui/view_ids.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/toolbar_button_provider.h"
+#include "chrome/browser/ui/views/toolbar/app_menu_control.h"
 #include "chrome/browser/ui/views/web_apps/frame_toolbar/web_app_menu_button.h"
 #include "chrome/browser/ui/views/web_apps/web_app_update_identity_view.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
@@ -492,7 +494,9 @@ IN_PROC_BROWSER_TEST_F(WebAppUpdateDialogBrowserTests, Accept) {
   // is present and expanded.
   EXPECT_TRUE(app_browser_view->GetProperty(kIsPwaUpdateDialogShowingKey));
   WebAppMenuButton* const menu_button = views::AsViewClass<WebAppMenuButton>(
-      app_browser_view->toolbar_button_provider()->GetAppMenuButton());
+      views::ElementTrackerViews::GetInstance()->GetFirstMatchingView(
+          kToolbarAppMenuButtonElementId,
+          views::ElementTrackerViews::GetContextForView(app_browser_view)));
   EXPECT_TRUE(menu_button->IsLabelPresentAndVisible());
 
   // Accept the dialog, and verify name was updated as part of updating from
@@ -559,7 +563,9 @@ IN_PROC_BROWSER_TEST_F(WebAppUpdateDialogBrowserTests, IgnoreRemovesMenuLabel) {
   // is present and expanded.
   EXPECT_TRUE(app_browser_view->GetProperty(kIsPwaUpdateDialogShowingKey));
   WebAppMenuButton* const menu_button = views::AsViewClass<WebAppMenuButton>(
-      app_browser_view->toolbar_button_provider()->GetAppMenuButton());
+      views::ElementTrackerViews::GetInstance()->GetFirstMatchingView(
+          kToolbarAppMenuButtonElementId,
+          views::ElementTrackerViews::GetContextForView(app_browser_view)));
   EXPECT_TRUE(menu_button->IsLabelPresentAndVisible());
 
   // Trigger the ignore button and verify that the expanded label disappears.
@@ -595,7 +601,9 @@ IN_PROC_BROWSER_TEST_F(WebAppUpdateDialogBrowserTests,
   // is present and expanded.
   EXPECT_TRUE(app_browser_view->GetProperty(kIsPwaUpdateDialogShowingKey));
   WebAppMenuButton* const menu_button = views::AsViewClass<WebAppMenuButton>(
-      app_browser_view->toolbar_button_provider()->GetAppMenuButton());
+      views::ElementTrackerViews::GetInstance()->GetFirstMatchingView(
+          kToolbarAppMenuButtonElementId,
+          views::ElementTrackerViews::GetContextForView(app_browser_view)));
   EXPECT_TRUE(menu_button->IsLabelPresentAndVisible());
 
   // Trigger the ignore button and verify that the expanded label disappears.

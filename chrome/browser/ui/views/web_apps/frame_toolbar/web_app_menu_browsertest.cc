@@ -5,11 +5,13 @@
 #include "base/test/gmock_expected_support.h"
 #include "base/test/gtest_util.h"
 #include "base/test/scoped_feature_list.h"
+#include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/test/test_browser_ui.h"
 #include "chrome/browser/ui/views/frame/app_menu_button_observer.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/toolbar_button_provider.h"
 #include "chrome/browser/ui/views/toolbar/app_menu.h"
+#include "chrome/browser/ui/views/toolbar/app_menu_control.h"
 #include "chrome/browser/ui/views/web_apps/frame_toolbar/web_app_menu_button.h"
 #include "chrome/browser/ui/web_applications/test/isolated_web_app_test_utils.h"
 #include "chrome/browser/ui/web_applications/web_app_browsertest_base.h"
@@ -25,6 +27,7 @@
 #include "third_party/blink/public/common/features.h"
 #include "ui/views/controls/menu/menu_runner.h"
 #include "ui/views/controls/menu/menu_scroll_view_container.h"
+#include "ui/views/interaction/element_tracker_views.h"
 #include "ui/views/test/widget_test.h"
 
 namespace web_app {
@@ -104,10 +107,11 @@ class WebAppMenuBrowserTest
 
  protected:
   WebAppMenuButton* menu_button() {
-    return static_cast<WebAppMenuButton*>(
-        BrowserView::GetBrowserViewForBrowser(app_browser_)
-            ->toolbar_button_provider()
-            ->GetAppMenuButton());
+    return views::AsViewClass<WebAppMenuButton>(
+        views::ElementTrackerViews::GetInstance()->GetFirstMatchingView(
+            kToolbarAppMenuButtonElementId,
+            views::ElementTrackerViews::GetContextForView(
+                BrowserView::GetBrowserViewForBrowser(app_browser_))));
   }
 
   const webapps::AppId& app_id() const { return app_id_; }

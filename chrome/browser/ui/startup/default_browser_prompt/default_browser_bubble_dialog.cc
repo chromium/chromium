@@ -162,7 +162,7 @@ DEFINE_ELEMENT_IDENTIFIER_VALUE(kBubbleDialogId);
 
 // Static.
 std::unique_ptr<views::Widget> ShowDefaultBrowserBubbleDialog(
-    views::View* anchor_view,
+    views::BubbleAnchor anchor,
     bool can_pin_to_taskbar,
     base::OnceClosure on_accept,
     base::OnceClosure on_dismiss) {
@@ -186,7 +186,7 @@ std::unique_ptr<views::Widget> ShowDefaultBrowserBubbleDialog(
           .Build();
 
   auto bubble = std::make_unique<views::BubbleDialogModelHost>(
-      std::move(dialog_model), anchor_view, views::BubbleBorder::TOP_RIGHT);
+      std::move(dialog_model), anchor, views::BubbleBorder::TOP_RIGHT);
 
   auto widget = base::WrapUnique(views::BubbleDialogDelegate::CreateBubble(
       std::move(bubble), views::Widget::InitParams::CLIENT_OWNS_WIDGET));

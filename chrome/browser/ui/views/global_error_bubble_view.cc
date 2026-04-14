@@ -22,6 +22,7 @@
 #include "chrome/browser/ui/views/elevation_icon_setter.h"
 #include "chrome/browser/ui/views/frame/app_menu_button.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
+#include "chrome/browser/ui/views/toolbar/app_menu_control.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
 #include "ui/base/buildflags.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
@@ -41,11 +42,13 @@
 GlobalErrorBubbleViewBase* GlobalErrorBubbleViewBase::ShowStandardBubbleView(
     Browser* browser,
     const base::WeakPtr<GlobalErrorWithStandardBubble>& error) {
-  views::View* anchor_view = BrowserView::GetBrowserViewForBrowser(browser)
-                                 ->toolbar_button_provider()
-                                 ->GetAppMenuButton();
+  auto* control = BrowserView::GetBrowserViewForBrowser(browser)
+                      ->toolbar_button_provider()
+                      ->GetAppMenuControl();
+  views::BubbleAnchor anchor =
+      control ? control->GetAnchor() : views::BubbleAnchor();
   GlobalErrorBubbleView* bubble_view = new GlobalErrorBubbleView(
-      anchor_view, views::BubbleBorder::TOP_RIGHT, browser, error);
+      anchor, views::BubbleBorder::TOP_RIGHT, browser, error);
   views::BubbleDialogDelegateView::CreateBubble(bubble_view);
   bubble_view->GetWidget()->Show();
   return bubble_view;
@@ -54,11 +57,11 @@ GlobalErrorBubbleViewBase* GlobalErrorBubbleViewBase::ShowStandardBubbleView(
 // GlobalErrorBubbleView -------------------------------------------------------
 
 GlobalErrorBubbleView::GlobalErrorBubbleView(
-    views::View* anchor_view,
+    views::BubbleAnchor anchor,
     views::BubbleBorder::Arrow arrow,
     Browser* browser,
     const base::WeakPtr<GlobalErrorWithStandardBubble>& error)
-    : BubbleDialogDelegateView(anchor_view,
+    : BubbleDialogDelegateView(anchor,
                                arrow,
                                views::BubbleBorder::DIALOG_SHADOW,
                                /*autosize=*/true),

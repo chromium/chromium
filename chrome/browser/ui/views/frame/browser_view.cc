@@ -211,6 +211,7 @@
 #include "chrome/browser/ui/views/tabs/tab_strip.h"
 #include "chrome/browser/ui/views/tabs/vertical/vertical_tab_strip_top_container.h"
 #include "chrome/browser/ui/views/theme_copying_widget.h"
+#include "chrome/browser/ui/views/toolbar/app_menu_control.h"
 #include "chrome/browser/ui/views/toolbar/avatar_toolbar_button_interface.h"
 #include "chrome/browser/ui/views/toolbar/browser_app_menu_button.h"
 #include "chrome/browser/ui/views/toolbar/chrome_labs/chrome_labs_coordinator.h"
@@ -2150,9 +2151,8 @@ void BrowserView::OnTabDetached(content::WebContents* contents,
 }
 
 void BrowserView::ZoomChangedForActiveTab(bool can_show_bubble) {
-  const AppMenuButton* app_menu_button =
-      toolbar_button_provider()->GetAppMenuButton();
-  bool app_menu_showing = app_menu_button && app_menu_button->IsMenuShowing();
+  auto* app_menu_control = toolbar_button_provider()->GetAppMenuControl();
+  bool app_menu_showing = app_menu_control && app_menu_control->IsMenuShowing();
   toolbar_button_provider()->ZoomChangedForActiveTab(can_show_bubble &&
                                                      !app_menu_showing);
 }
@@ -2872,19 +2872,27 @@ bool BrowserView::ActivateFirstInactiveBubbleForAccessibility() {
   // anchored in the views hierarchy.
   if (toolbar_) {
     views::DialogDelegate* bubble = nullptr;
-    for (auto* view : std::initializer_list<views::View*>{
-             toolbar_->app_menu_button(), GetLocationBarView(),
-             toolbar_button_provider_->GetAvatarToolbarButton(),
-             toolbar_button_provider_->GetDownloadButton(), top_container_}) {
-      if (view) {
-        if (auto* dialog = view->GetProperty(views::kAnchoredDialogKey);
-            dialog && !user_education::HelpBubbleView::IsHelpBubble(dialog)) {
-          bubble = dialog;
-          break;
-        }
+    if (auto* control = toolbar_button_provider_->GetAppMenuControl()) {
+      auto* dialog = control->GetDialogDelegate();
+      if (dialog && !user_education::HelpBubbleView::IsHelpBubble(dialog)) {
+        bubble = dialog;
       }
     }
 
+    if (!bubble) {
+      for (auto* view : std::initializer_list<views::View*>{
+               GetLocationBarView(),
+               toolbar_button_provider_->GetAvatarToolbarButton(),
+               toolbar_button_provider_->GetDownloadButton(), top_container_}) {
+        if (view) {
+          if (auto* dialog = view->GetProperty(views::kAnchoredDialogKey);
+              dialog && !user_education::HelpBubbleView::IsHelpBubble(dialog)) {
+            bubble = dialog;
+            break;
+          }
+        }
+      }
+    }
     if (bubble) {
       CHECK(!user_education::HelpBubbleView::IsHelpBubble(bubble));
       View* focusable = bubble->GetInitiallyFocusedView();
@@ -3361,7 +3369,8 @@ void BrowserView::UserChangedTheme(BrowserThemeChangeType theme_change_type) {
 }
 
 void BrowserView::ShowAppMenu() {
-  if (!toolbar_button_provider_->GetAppMenuButton()) {
+  auto* control = toolbar_button_provider_->GetAppMenuControl();
+  if (!control) {
     return;
   }
 
@@ -3370,9 +3379,7 @@ void BrowserView::ShowAppMenu() {
       ImmersiveModeController::From(browser())->GetRevealedLock(
           ImmersiveModeController::ANIMATE_REVEAL_NO);
 
-  toolbar_button_provider_->GetAppMenuButton()
-      ->menu_button_controller()
-      ->Activate(nullptr);
+  control->ShowMenu();
 }
 
 content::KeyboardEventProcessingResult BrowserView::PreHandleKeyboardEvent(
@@ -6146,10 +6153,8 @@ void BrowserView::OnImmersiveFullscreenEntered() {
     vertical_tabs_enable_state_lock_ = controller->GetEnableStateLock();
   }
 
-  AppMenuButton* app_menu_button =
-      toolbar_button_provider()->GetAppMenuButton();
-  if (app_menu_button) {
-    app_menu_button->CloseMenu();
+  if (auto* control = toolbar_button_provider()->GetAppMenuControl()) {
+    control->CloseMenu();
   }
 
   ReparentTopContainerForStartOfImmersive();

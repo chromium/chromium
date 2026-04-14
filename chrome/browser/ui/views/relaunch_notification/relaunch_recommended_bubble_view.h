@@ -9,11 +9,11 @@
 #include "base/time/time.h"
 #include "chrome/browser/ui/views/location_bar/location_bar_bubble_delegate_view.h"
 #include "chrome/browser/ui/views/relaunch_notification/relaunch_recommended_timer.h"
+#include "ui/views/bubble/bubble_dialog_delegate_view.h"
 
 class BrowserWindowInterface;
 
 namespace views {
-class Button;
 class Widget;
 }  // namespace views
 
@@ -47,7 +47,7 @@ class RelaunchRecommendedBubbleView : public LocationBarBubbleDelegateView {
   void VisibilityChanged(views::View* starting_from, bool is_visible) override;
 
  private:
-  RelaunchRecommendedBubbleView(views::Button* anchor_button,
+  RelaunchRecommendedBubbleView(views::BubbleAnchor anchor,
                                 base::Time detection_time,
                                 base::RepeatingClosure on_accept);
 

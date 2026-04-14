@@ -46,7 +46,6 @@
 #include "chromeos/ash/experiences/arc/mojom/intent_helper.mojom-forward.h"  // nogncheck https://crbug.com/784179
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
-class AppMenuButton;
 class AvatarToolbarButton;
 class AvatarToolbarButtonInterface;
 class BatterySaverButton;
@@ -283,10 +282,10 @@ class ToolbarView : public views::AccessiblePaneView,
   ExtensionsToolbarDesktop* GetExtensionsToolbarDesktop() override;
   PinnedToolbarActions* GetPinnedToolbarActions() override;
   gfx::Size GetToolbarButtonSize() const override;
-  views::View* GetDefaultExtensionDialogAnchorView() override;
+  views::BubbleAnchor GetDefaultExtensionDialogAnchor() override;
   PageActionIconView* GetPageActionIconView(PageActionIconType type) override;
   IconLabelBubbleView* GetPageActionView(actions::ActionId action_id) override;
-  AppMenuButton* GetAppMenuButton() override;
+  AppMenuControl* GetAppMenuControl() override;
   gfx::Rect GetFindBarBoundingBox(int contents_bottom) override;
   void FocusToolbar() override;
   views::AccessiblePaneView* GetAsAccessiblePaneView() override;

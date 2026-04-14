@@ -39,6 +39,7 @@ class BrowserAppMenuButton : public AppMenuButton {
 
   // Shows the app menu. |run_types| denotes the MenuRunner::RunTypes associated
   // with the menu.
+  using AppMenuButton::ShowMenu;
   void ShowMenu(int run_types);
 
   // Opens the app menu immediately during a drag-and-drop operation.

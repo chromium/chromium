@@ -15,6 +15,7 @@
 #include "chrome/browser/ui/views/frame/app_menu_button.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/toolbar_button_provider.h"
+#include "chrome/browser/ui/views/toolbar/app_menu_control.h"
 #include "chrome/grit/branded_strings.h"
 #include "components/prefs/pref_service.h"
 #include "components/search_engines/default_search_manager.h"
@@ -90,8 +91,9 @@ void ShowSearchEngineResetNotification(
   }
   base::UmaHistogramBoolean(kDefaultSearchEngineResetNotificationShown, true);
 
-  views::View* anchor_view =
-      browser_view->toolbar_button_provider()->GetAppMenuButton();
+  auto* control = browser_view->toolbar_button_provider()->GetAppMenuControl();
+  views::BubbleAnchor anchor =
+      control ? control->GetAnchor() : views::BubbleAnchor();
 
   auto bubble_delegate_unique = std::make_unique<ui::DialogModelDelegate>();
 
@@ -121,7 +123,7 @@ void ShowSearchEngineResetNotification(
       .SetIsAlertDialog();
 
   auto bubble = std::make_unique<views::BubbleDialogModelHost>(
-      dialog_builder.Build(), anchor_view, views::BubbleBorder::TOP_RIGHT);
+      dialog_builder.Build(), anchor, views::BubbleBorder::TOP_RIGHT);
 
   views::BubbleDialogDelegate::CreateBubble(std::move(bubble))->Show();
 

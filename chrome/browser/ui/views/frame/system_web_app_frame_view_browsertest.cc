@@ -9,6 +9,7 @@
 #include "chrome/browser/ui/views/frame/browser_frame_view.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/page_action/page_action_view.h"
+#include "chrome/browser/ui/views/toolbar/app_menu_control.h"
 #include "chrome/browser/ui/views/web_apps/frame_toolbar/web_app_frame_toolbar_view.h"
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
 #include "chrome/test/base/in_process_browser_test.h"
@@ -84,7 +85,7 @@ IN_PROC_BROWSER_TEST_P(SystemWebAppFrameViewBrowserNoMigrationTest,
   LaunchApp(ash::SystemWebAppType::SETTINGS, &app_browser);
   EXPECT_EQ(nullptr, BrowserView::GetBrowserViewForBrowser(app_browser)
                          ->web_app_frame_toolbar_for_testing()
-                         ->GetAppMenuButton());
+                         ->GetAppMenuControl());
 }
 
 // Regression test for https://crbug.com/1090169.

@@ -12,6 +12,7 @@
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/toolbar_button_provider.h"
 #include "chrome/browser/ui/views/interaction/browser_elements_views.h"
+#include "chrome/browser/ui/views/toolbar/app_menu_control.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
 #include "chrome/grit/branded_strings.h"
 #include "chrome/grit/generated_resources.h"
@@ -62,9 +63,11 @@ void ShowIdleBubble(BrowserWindowInterface* bwi,
     return;
   }
 
-  views::View* anchor_view = BrowserView::GetBrowserViewForBrowser(bwi)
-                                 ->toolbar_button_provider()
-                                 ->GetAppMenuButton();
+  auto* control = BrowserView::GetBrowserViewForBrowser(bwi)
+                      ->toolbar_button_provider()
+                      ->GetAppMenuControl();
+  views::BubbleAnchor anchor =
+      control ? control->GetAnchor() : views::BubbleAnchor();
 
   int bubble_title_id =
       actions.close ? IDS_IDLE_BUBBLE_TITLE_CLOSE : IDS_IDLE_BUBBLE_TITLE_CLEAR;
@@ -87,8 +90,7 @@ void ShowIdleBubble(BrowserWindowInterface* bwi,
       .SetCloseActionCallback(std::move(on_close));
 
   auto bubble = std::make_unique<IdleBubbleDialogDelegate>(
-      dialog_builder.Build(), views::BubbleAnchor(anchor_view),
-      views::BubbleBorder::TOP_RIGHT);
+      dialog_builder.Build(), anchor, views::BubbleBorder::TOP_RIGHT);
   bubble->set_close_on_deactivate(false);
 
   views::BubbleDialogDelegate::CreateBubble(std::move(bubble))->ShowInactive();

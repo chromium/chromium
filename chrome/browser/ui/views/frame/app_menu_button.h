@@ -10,6 +10,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
 #include "base/timer/elapsed_timer.h"
+#include "chrome/browser/ui/views/toolbar/app_menu_control.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_button.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_button_menu_highlighter.h"
 #include "ui/base/metadata/metadata_header_macros.h"
@@ -26,7 +27,7 @@ class MenuButtonController;
 // The app menu button lives in the top right of browser windows. It shows three
 // dots and adds a status badge when there's a need to alert the user. Clicking
 // displays the app menu.
-class AppMenuButton : public ToolbarButton {
+class AppMenuButton : public ToolbarButton, public AppMenuControl {
   METADATA_HEADER(AppMenuButton, ToolbarButton)
 
  public:
@@ -37,21 +38,22 @@ class AppMenuButton : public ToolbarButton {
 
   ~AppMenuButton() override;
 
+  // AppMenuControl overrides:
+  views::BubbleAnchor GetAnchor() override;
+  bool IsDrawn() const override;
+  bool IsMenuShowing() const override;
+  views::DialogDelegate* GetDialogDelegate() override;
+  void CloseMenu() override;
+  void ShowMenu() override;
+  void AddObserver(AppMenuButtonObserver* observer) override;
+  void RemoveObserver(AppMenuButtonObserver* observer) override;
+
   views::MenuButtonController* menu_button_controller() const {
     return menu_button_controller_;
   }
 
-  void AddObserver(AppMenuButtonObserver* observer);
-  void RemoveObserver(AppMenuButtonObserver* observer);
-
-  // Closes the app menu, if it's open.
-  void CloseMenu();
-
   // Called by the app menu when it closes.
   virtual void OnMenuClosed();
-
-  // Whether the app menu is currently showing.
-  bool IsMenuShowing() const;
 
   void SetMenuTimerForTesting(base::ElapsedTimer timer);
 
@@ -78,6 +80,8 @@ class AppMenuButton : public ToolbarButton {
 
   raw_ptr<views::MenuButtonController> menu_button_controller_;
   ToolbarButtonMenuHighlighter highlighter_;
+
+  base::WeakPtrFactory<AppMenuButton> weak_ptr_factory_{this};
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_FRAME_APP_MENU_BUTTON_H_

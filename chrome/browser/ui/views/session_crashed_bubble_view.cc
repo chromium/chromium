@@ -31,6 +31,7 @@
 #include "chrome/browser/ui/views/frame/app_menu_button.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/toolbar_button_provider.h"
+#include "chrome/browser/ui/views/toolbar/app_menu_control.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
 #include "chrome/grit/branded_strings.h"
 #include "chrome/grit/generated_resources.h"
@@ -229,8 +230,9 @@ views::BubbleDialogDelegate* SessionCrashedBubbleView::ShowBubble(
     return nullptr;
   }
 
-  views::View* anchor_view =
-      browser_view->toolbar_button_provider()->GetAppMenuButton();
+  auto* control = browser_view->toolbar_button_provider()->GetAppMenuControl();
+  views::BubbleAnchor anchor =
+      control ? control->GetAnchor() : views::BubbleAnchor();
 
   auto bubble_delegate_unique =
       std::make_unique<SessionCrashedBubbleDelegate>(browser->GetProfile());
@@ -271,7 +273,7 @@ views::BubbleDialogDelegate* SessionCrashedBubbleView::ShowBubble(
           l10n_util::GetStringUTF16(IDS_SESSION_CRASHED_VIEW_RESTORE_BUTTON)));
 
   auto bubble = std::make_unique<views::BubbleDialogModelHost>(
-      dialog_builder.Build(), anchor_view, views::BubbleBorder::TOP_RIGHT);
+      dialog_builder.Build(), anchor, views::BubbleBorder::TOP_RIGHT);
 
   views::BubbleDialogDelegate* bubble_ptr = bubble.get();
   g_instance_for_test = bubble_ptr;

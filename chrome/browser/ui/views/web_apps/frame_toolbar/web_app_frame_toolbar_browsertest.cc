@@ -34,6 +34,7 @@
 #include "chrome/browser/themes/custom_theme_supplier.h"
 #include "chrome/browser/themes/theme_properties.h"
 #include "chrome/browser/ui/browser_commands.h"
+#include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/download/download_display.h"
 #include "chrome/browser/ui/page_action/page_action_icon_type.h"
@@ -54,6 +55,7 @@
 #include "chrome/browser/ui/views/page_action/page_action_icon_controller.h"
 #include "chrome/browser/ui/views/page_action/page_action_properties_provider.h"
 #include "chrome/browser/ui/views/page_action/page_action_view.h"
+#include "chrome/browser/ui/views/toolbar/app_menu_control.h"
 #include "chrome/browser/ui/views/toolbar/pinned_toolbar_actions_container.h"
 #include "chrome/browser/ui/views/web_apps/frame_toolbar/web_app_frame_toolbar_test_helper.h"
 #include "chrome/browser/ui/views/web_apps/frame_toolbar/web_app_frame_toolbar_view.h"
@@ -124,6 +126,7 @@
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/animation/ink_drop.h"
 #include "ui/views/controls/label.h"
+#include "ui/views/interaction/element_tracker_views.h"
 #include "ui/views/layout/animating_layout_manager_test_util.h"
 #include "ui/views/test/views_test_utils.h"
 #include "ui/views/test/widget_activation_waiter.h"
@@ -343,7 +346,10 @@ IN_PROC_BROWSER_TEST_F(WebAppFrameToolbarBrowserTest, SpaceConstrained) {
   }
 
   views::View* const menu_button =
-      helper()->browser_view()->toolbar_button_provider()->GetAppMenuButton();
+      views::ElementTrackerViews::GetInstance()->GetFirstMatchingView(
+          kToolbarAppMenuButtonElementId,
+          views::ElementTrackerViews::GetContextForView(
+              helper()->browser_view()));
   EXPECT_EQ(menu_button->parent(), toolbar_right_container);
 
   // Ensure we initially have abundant space. Set the size from the root view
@@ -429,10 +435,11 @@ IN_PROC_BROWSER_TEST_F(WebAppFrameToolbarBrowserTest, ThemeChange) {
 #if !BUILDFLAG(IS_LINUX)
   // Avoid dependence on Linux GTK+ Themes appearance setting.
 
-  ToolbarButtonProvider* const toolbar_button_provider =
-      helper()->browser_view()->toolbar_button_provider();
-  AppMenuButton* const app_menu_button =
-      toolbar_button_provider->GetAppMenuButton();
+  AppMenuButton* const app_menu_button = views::AsViewClass<AppMenuButton>(
+      views::ElementTrackerViews::GetInstance()->GetFirstMatchingView(
+          kToolbarAppMenuButtonElementId,
+          views::ElementTrackerViews::GetContextForView(
+              helper()->browser_view())));
 
   auto get_ink_drop_color = [app_menu_button]() -> SkColor {
     return SkColorSetA(views::InkDrop::Get(app_menu_button)->GetBaseColor(),
@@ -542,7 +549,10 @@ IN_PROC_BROWSER_TEST_F(WebAppFrameToolbarBrowserTest,
   helper()->InstallAndLaunchWebApp(browser(), app_url);
 
   views::View* const menu_button =
-      helper()->browser_view()->toolbar_button_provider()->GetAppMenuButton();
+      views::ElementTrackerViews::GetInstance()->GetFirstMatchingView(
+          kToolbarAppMenuButtonElementId,
+          views::ElementTrackerViews::GetContextForView(
+              helper()->browser_view()));
 
   EXPECT_EQ(menu_button->GetViewAccessibility().GetCachedName(),
             u"Customize and control A minimal-ui app");
@@ -553,9 +563,11 @@ IN_PROC_BROWSER_TEST_F(WebAppFrameToolbarBrowserTest,
 IN_PROC_BROWSER_TEST_F(WebAppFrameToolbarBrowserTest, MenuButtonUpdatePending) {
   const GURL app_url("https://test.org");
   webapps::AppId app_id = helper()->InstallAndLaunchWebApp(browser(), app_url);
-
-  WebAppMenuButton* const menu_button = static_cast<WebAppMenuButton*>(
-      helper()->browser_view()->toolbar_button_provider()->GetAppMenuButton());
+  WebAppMenuButton* const menu_button = views::AsViewClass<WebAppMenuButton>(
+      views::ElementTrackerViews::GetInstance()->GetFirstMatchingView(
+          kToolbarAppMenuButtonElementId,
+          views::ElementTrackerViews::GetContextForView(
+              helper()->browser_view())));
   EXPECT_FALSE(menu_button->IsLabelPresentAndVisible());
 
   // Set that the `update_info` was not ignored by the user.
@@ -613,9 +625,11 @@ IN_PROC_BROWSER_TEST_F(WebAppFrameToolbarBrowserTest,
       "/web_apps/migration/migrate_from/no_migration_info.html");
   webapps::AppId app_id = web_app::InstallWebAppFromPage(browser(), app_url);
   helper()->LaunchWebAppBrowserAndWait(browser()->profile(), app_id);
-
-  WebAppMenuButton* const menu_button = static_cast<WebAppMenuButton*>(
-      helper()->browser_view()->toolbar_button_provider()->GetAppMenuButton());
+  WebAppMenuButton* const menu_button = views::AsViewClass<WebAppMenuButton>(
+      views::ElementTrackerViews::GetInstance()->GetFirstMatchingView(
+          kToolbarAppMenuButtonElementId,
+          views::ElementTrackerViews::GetContextForView(
+              helper()->browser_view())));
   EXPECT_FALSE(menu_button->IsLabelPresentAndVisible());
 
   // Set pending migration info by visiting a site with migration info pointing
@@ -649,9 +663,11 @@ IN_PROC_BROWSER_TEST_F(WebAppFrameToolbarBrowserTest,
       web_app::ForceInstallWebApp(browser()->profile(), app_url).value();
   helper()->LaunchWebAppBrowserAndWait(browser()->profile(), app_id);
   provider().command_manager().AwaitAllCommandsCompleteForTesting();
-
-  WebAppMenuButton* const menu_button = static_cast<WebAppMenuButton*>(
-      helper()->browser_view()->toolbar_button_provider()->GetAppMenuButton());
+  WebAppMenuButton* const menu_button = views::AsViewClass<WebAppMenuButton>(
+      views::ElementTrackerViews::GetInstance()->GetFirstMatchingView(
+          kToolbarAppMenuButtonElementId,
+          views::ElementTrackerViews::GetContextForView(
+              helper()->browser_view())));
   EXPECT_FALSE(menu_button->IsLabelPresentAndVisible());
 }
 

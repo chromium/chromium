@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "base/memory/raw_ptr.h"
+#include "base/notreached.h"
 #include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/view_ids.h"
@@ -19,6 +20,7 @@
 #include "chrome/browser/ui/views/page_action/page_action_icon_controller.h"
 #include "chrome/browser/ui/views/page_action/page_action_properties_provider.h"
 #include "chrome/browser/ui/views/page_action/page_action_view.h"
+#include "chrome/browser/ui/views/toolbar/app_menu_control.h"
 #include "chrome/browser/ui/views/toolbar/avatar_toolbar_button_interface.h"
 #include "chrome/browser/ui/views/toolbar/back_forward_button.h"
 #include "chrome/browser/ui/views/toolbar/pinned_toolbar_actions_container.h"
@@ -278,15 +280,15 @@ gfx::Size WebAppFrameToolbarView::GetToolbarButtonSize() const {
   return gfx::Size(size, size);
 }
 
-views::View* WebAppFrameToolbarView::GetDefaultExtensionDialogAnchorView() {
+views::BubbleAnchor WebAppFrameToolbarView::GetDefaultExtensionDialogAnchor() {
   ExtensionsToolbarDesktop* extensions_container =
       GetExtensionsToolbarDesktop();
   if (extensions_container && extensions_container->GetVisible()) {
-    return extensions_container->GetExtensionsButton();
+    return views::BubbleAnchor(extensions_container->GetExtensionsButton());
   }
-  return GetAppMenuButton();
+  auto* control = GetAppMenuControl();
+  return control ? control->GetAnchor() : views::BubbleAnchor();
 }
-
 PageActionIconView* WebAppFrameToolbarView::GetPageActionIconView(
     PageActionIconType type) {
   return right_container_->page_action_icon_controller()->GetIconView(type);
@@ -306,7 +308,7 @@ IconLabelBubbleView* WebAppFrameToolbarView::GetPageActionView(
   return GetPageActionIconView(properties.type);
 }
 
-AppMenuButton* WebAppFrameToolbarView::GetAppMenuButton() {
+AppMenuControl* WebAppFrameToolbarView::GetAppMenuControl() {
   return right_container_->web_app_menu_button();
 }
 
@@ -318,9 +320,16 @@ gfx::Rect WebAppFrameToolbarView::GetFindBarBoundingBox(int contents_bottom) {
   // If LTR find bar will be right aligned so align to right edge of app menu
   // button. Otherwise it will be left aligned so align to the left edge of the
   // app menu button.
-  views::View* anchor_view = GetAnchorView(std::nullopt);
-  gfx::Rect anchor_bounds =
-      anchor_view->ConvertRectToWidget(anchor_view->GetLocalBounds());
+  views::BubbleAnchor anchor = GetBubbleAnchor(std::nullopt);
+  gfx::Rect anchor_bounds;
+  if (auto* view = anchor.GetIfView()) {
+    anchor_bounds = view->ConvertRectToWidget(view->GetLocalBounds());
+  } else if (auto* element = anchor.GetIfElement()) {
+    anchor_bounds = views::View::ConvertRectFromScreen(
+        GetWidget()->GetRootView(), element->GetScreenBounds());
+  } else {
+    NOTREACHED();
+  }
   int x_pos = 0;
   int width = anchor_bounds.right();
   if (base::i18n::IsRTL()) {
@@ -339,15 +348,13 @@ views::AccessiblePaneView* WebAppFrameToolbarView::GetAsAccessiblePaneView() {
   return this;
 }
 
-views::View* WebAppFrameToolbarView::GetAnchorView(
-    std::optional<actions::ActionId> action_id) {
-  views::View* anchor = GetAppMenuButton();
-  return anchor ? anchor : this;
-}
-
 views::BubbleAnchor WebAppFrameToolbarView::GetBubbleAnchor(
     std::optional<actions::ActionId> action_id) {
-  return views::BubbleAnchor(GetAnchorView(action_id));
+  auto* control = GetAppMenuControl();
+  if (control) {
+    return control->GetAnchor();
+  }
+  return views::BubbleAnchor(this);
 }
 
 void WebAppFrameToolbarView::ZoomChangedForActiveTab(bool can_show_bubble) {

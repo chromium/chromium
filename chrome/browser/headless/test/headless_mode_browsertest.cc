@@ -32,6 +32,7 @@
 #include "chrome/browser/ui/views/frame/app_menu_button.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/toolbar_button_provider.h"
+#include "chrome/browser/ui/views/toolbar/app_menu_control.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/chrome_switches.h"
 #include "components/headless/clipboard/headless_clipboard.h"
@@ -396,9 +397,10 @@ class TestBubbleDelegate : public ui::DialogModelDelegate {
 };
 
 Widget* ShowTestBubble(Browser* browser) {
-  views::View* anchor_view = BrowserView::GetBrowserViewForBrowser(browser)
-                                 ->toolbar_button_provider()
-                                 ->GetAppMenuButton();
+  views::BubbleAnchor anchor = BrowserView::GetBrowserViewForBrowser(browser)
+                                   ->toolbar_button_provider()
+                                   ->GetAppMenuControl()
+                                   ->GetAnchor();
 
   auto bubble_delegate = std::make_unique<TestBubbleDelegate>();
   TestBubbleDelegate* bubble_delegate_ptr = bubble_delegate.get();
@@ -411,7 +413,7 @@ Widget* ShowTestBubble(Browser* browser) {
                    ui::DialogModel::Button::Params().SetLabel(u"OK"));
 
   auto bubble = std::make_unique<views::BubbleDialogModelHost>(
-      dialog_builder.Build(), anchor_view, views::BubbleBorder::TOP_RIGHT);
+      dialog_builder.Build(), anchor, views::BubbleBorder::TOP_RIGHT);
 
   Widget* widget = views::BubbleDialogDelegate::CreateBubble(std::move(bubble));
   widget->Show();

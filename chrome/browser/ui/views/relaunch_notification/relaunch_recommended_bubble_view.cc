@@ -13,11 +13,12 @@
 #include "base/metrics/user_metrics_action.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
+#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
-#include "chrome/browser/ui/views/toolbar/browser_app_menu_button.h"
+#include "chrome/browser/ui/views/toolbar/app_menu_control.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
 #include "chrome/grit/branded_strings.h"
 #include "chrome/grit/generated_resources.h"
@@ -53,12 +54,13 @@ views::Widget* RelaunchRecommendedBubbleView::ShowBubble(
   DCHECK(browser);
 
   // Anchor the popup to the browser's app menu.
-  auto* anchor_button = BrowserView::GetBrowserViewForBrowser(
-                            browser->GetBrowserForMigrationOnly())
-                            ->toolbar_button_provider()
-                            ->GetAppMenuButton();
-  auto* bubble_view = new RelaunchRecommendedBubbleView(
-      anchor_button, detection_time, std::move(on_accept));
+  auto* browser_view = BrowserView::GetBrowserViewForBrowser(
+      browser->GetBrowserForMigrationOnly());
+  auto* control = browser_view->toolbar_button_provider()->GetAppMenuControl();
+  views::BubbleAnchor anchor =
+      control ? control->GetAnchor() : views::BubbleAnchor();
+  auto* bubble_view = new RelaunchRecommendedBubbleView(anchor, detection_time,
+                                                        std::move(on_accept));
   bubble_view->SetArrow(views::BubbleBorder::TOP_RIGHT);
 
   views::Widget* bubble_widget =
@@ -134,10 +136,10 @@ void RelaunchRecommendedBubbleView::VisibilityChanged(
 // |relaunch_recommended_timer_| automatically starts for the next time the
 // title needs to be updated (e.g., from "2 days" to "3 days").
 RelaunchRecommendedBubbleView::RelaunchRecommendedBubbleView(
-    views::Button* anchor_button,
+    views::BubbleAnchor anchor,
     base::Time detection_time,
     base::RepeatingClosure on_accept)
-    : LocationBarBubbleDelegateView(anchor_button, nullptr, /*autosize=*/true),
+    : LocationBarBubbleDelegateView(anchor, nullptr),
       on_accept_(std::move(on_accept)),
       relaunch_recommended_timer_(
           detection_time,

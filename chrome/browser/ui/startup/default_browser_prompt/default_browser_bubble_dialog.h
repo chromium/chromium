@@ -9,9 +9,9 @@
 
 #include "base/functional/callback_forward.h"
 #include "ui/base/interaction/element_identifier.h"
+#include "ui/views/bubble/bubble_dialog_delegate_view.h"
 
 namespace views {
-class View;
 class Widget;
 }  // namespace views
 
@@ -23,7 +23,7 @@ DECLARE_ELEMENT_IDENTIFIER_VALUE(kBubbleDialogId);
 
 // Factory method to create and show the bubble.
 std::unique_ptr<views::Widget> ShowDefaultBrowserBubbleDialog(
-    views::View* anchor_view,
+    views::BubbleAnchor anchor,
     bool can_pin_to_taskbar,
     base::OnceClosure on_accept,
     base::OnceClosure on_dismiss);
