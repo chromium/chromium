@@ -113,7 +113,8 @@ LensOverlaySidePanelNavigationThrottle::HandleSidePanelRequest() {
   // the side panel coordinator should handle the navigation and open it either
   // in a new tab or highlight the text in the current tab if the URL is already
   // open.
-  if (lens_overlay_side_panel_coordinator->MaybeHandleTextDirectives(url)) {
+  if (lens_overlay_side_panel_coordinator->MaybeHandleTextDirectives(
+          navigation_handle())) {
     return content::NavigationThrottle::CANCEL;
   }
 

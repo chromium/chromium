@@ -146,9 +146,9 @@ class LensOverlaySidePanelCoordinator
 
   // Handles rendering text highlights on the main browser window based on
   // navigations from the side panel. Returns true if handled, false otherwise.
-  // `nav_url` refers to the URL that the side panel was set to navigate to. It
-  // is compared to the URL of the current open tab.
-  bool MaybeHandleTextDirectives(const GURL& nav_url);
+  // The URL is extracted from the `navigation_handle` and compared to the URL
+  // of the current open tab.
+  bool MaybeHandleTextDirectives(content::NavigationHandle* navigation_handle);
 
   // Handles seeking videos on the main browser window based on navigations from
   // the side panel. Returns true if handled, false otherwise. `nav_url` refers
@@ -345,9 +345,9 @@ class LensOverlaySidePanelCoordinator
   // Callback for when the `text_finder` identifies the provided text directives
   // on the page. If all the directives were found, then this function will
   // create highlights on the page for each. Otherwise, it will open the
-  // `nav_url` in a new tab.
+  // URL in `params` in a new tab.
   void OnTextFinderLookupComplete(
-      const GURL& nav_url,
+      const content::OpenURLParams& params,
       const std::vector<std::pair<std::string, bool>>& lookup_results);
 
   // Opens the provided url params in the main browser as a new tab.
