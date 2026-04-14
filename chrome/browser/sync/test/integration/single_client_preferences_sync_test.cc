@@ -210,8 +210,6 @@ IN_PROC_BROWSER_TEST_P(SingleClientPreferencesSyncTest,
                 syncer::DataTypeEntityChange::kRemoteInitialUpdate));
 }
 
-// TODO(crbug.com/40200835): PRE_ tests are not supported on Android.
-#if !BUILDFLAG(IS_ANDROID)
 IN_PROC_BROWSER_TEST_P(SingleClientPreferencesSyncTest,
                        PRE_PersistProgressMarkerOnRestart) {
   sync_pb::EntitySpecifics specifics;
@@ -257,7 +255,6 @@ IN_PROC_BROWSER_TEST_P(SingleClientPreferencesSyncTest,
                    "Sync.DataTypeEntityChange.PREFERENCE",
                    syncer::DataTypeEntityChange::kRemoteInitialUpdate));
 }
-#endif  // !BUILDFLAG(IS_ANDROID)
 
 // Verifies that priority synced preferences and regular synced preferences are
 // kept separate. Tests that incoming priority preference change does not have
