@@ -271,6 +271,7 @@ class WaylandWindow : public PlatformWindow,
     bool is_maximized = false;
     bool is_fullscreen = false;
     bool is_activated = false;
+    bool is_minimized = false;
     bool is_suspended = false;
     WindowTiledEdges tiled_edges;
 
