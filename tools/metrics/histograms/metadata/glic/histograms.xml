@@ -784,7 +784,7 @@ chromium-metrics-reviews@google.com.
     <variant name="OnCommit" summary="Recorded before commit on the webview."/>
     <variant name="OnDestroy"
         summary="Recorded before the webview is destroyed."/>
-    <variant name="OnLoadTimeout" summary="Recorded when loading times out."/>
+    <variant name="OnLoadTimeOut" summary="Recorded when loading times out."/>
   </token>
 </histogram>
 
