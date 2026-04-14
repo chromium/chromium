@@ -8,6 +8,7 @@
 #import <Foundation/Foundation.h>
 
 #import "components/autofill/core/browser/payments/payments_autofill_client.h"
+#import "ios/chrome/browser/autofill/ui_bundled/autofill_credit_card_ui_type.h"
 
 // Delegate to handle user actions from the save card bottomsheet view
 // controller.
@@ -19,11 +20,11 @@
 // Handles user dismissing the save card bottomsheet through the cancel button.
 - (void)didCancel;
 
-// Triggered when the user confirms the "Scan and Save" flow with edited
-// details.
-- (void)onUpdatedAndAcceptedForSaveAndFill:
-    (autofill::payments::PaymentsAutofillClient::
-         UserProvidedCardSaveAndFillDetails)details;
+// Notifies the mutator that the value for a field has changed.
+- (void)didUpdateValue:(NSString*)value forField:(AutofillCreditCardUIType)type;
+
+// Handles user tapping the save button in the editable flow.
+- (void)didTapSave;
 
 @end
 

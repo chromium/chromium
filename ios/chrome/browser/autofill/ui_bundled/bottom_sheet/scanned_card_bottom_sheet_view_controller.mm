@@ -8,14 +8,18 @@
 #import "base/feature_list.h"
 #import "base/strings/sys_string_conversions.h"
 #import "build/branding_buildflags.h"
+#import "components/application_locale_storage/application_locale_storage.h"
 #import "components/autofill/core/browser/payments/payments_autofill_client.h"
 #import "components/autofill/core/common/autofill_features.h"
 #import "components/grit/components_scaled_resources.h"
 #import "components/strings/grit/components_strings.h"
+#import "ios/chrome/browser/autofill/ui_bundled/autofill_credit_card_ui_type.h"
 #import "ios/chrome/browser/autofill/ui_bundled/bottom_sheet/save_card_bottom_sheet_delegate.h"
 #import "ios/chrome/browser/autofill/ui_bundled/bottom_sheet/save_card_bottom_sheet_mutator.h"
 #import "ios/chrome/browser/autofill/ui_bundled/util/autofill_credit_card_util.h"
+#import "ios/chrome/browser/autofill/ui_bundled/util/autofill_settings_util.h"
 #import "ios/chrome/browser/net/model/crurl.h"
+#import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_text_edit_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_text_edit_item_delegate.h"
@@ -28,15 +32,21 @@
 #import "ui/base/l10n/l10n_util.h"
 
 namespace {
+// Constant for section 0.
+const NSInteger kSectionIdentifierEnumZero = 0;
+
+// Point size for the lock symbol in confirmation state.
+const CGFloat kLockSymbolPointSize = 18.0;
+
 // Identifiers for sections in the table view.
 typedef NS_ENUM(NSInteger, SectionIdentifier) {
-  SectionIdentifierCardDetails = 0,
+  SectionIdentifierCardDetails = kSectionIdentifierEnumZero,
   SectionIdentifierNickname,
 };
 
 // Identifiers for items (rows) in the table view.
 typedef NS_ENUM(NSInteger, ItemType) {
-  ItemTypeCardNumber = 0,
+  ItemTypeCardNumber = kSectionIdentifierEnumZero,
   ItemTypeCardExpireDate,
   ItemTypeCardHolderName,
   ItemTypeCardCVC,
@@ -47,7 +57,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
 const CGFloat kFooterSpacing = 16.0;
 
 // Margins for the footer view (top, left, bottom, right).
-const UIEdgeInsets kFooterMargins = {8.0, 16.0, 16.0, 16.0};
+const UIEdgeInsets kFooterMargins = {8.0, 0.0, 16.0, 0.0};
 
 // Estimated height of the footer view.
 const CGFloat kEstimatedFooterHeight = 50.0;
@@ -61,7 +71,9 @@ const CGFloat kGoogleWalletLogoHeight = 32.0;
 #endif
 }  // namespace
 
-@interface ScannedCardBottomSheetViewController () <UITextViewDelegate>
+@interface ScannedCardBottomSheetViewController () <
+    TableViewTextEditItemDelegate,
+    UITextViewDelegate>
 @end
 
 @implementation ScannedCardBottomSheetViewController {
@@ -84,6 +96,9 @@ const CGFloat kGoogleWalletLogoHeight = 32.0;
 
   // Data source.
   UITableViewDiffableDataSource<NSNumber*, TableViewItem*>* _diffableDataSource;
+
+  // The save and fill button.
+  ChromeButton* _saveButton;
 }
 
 #pragma mark - Initialization
@@ -107,6 +122,13 @@ const CGFloat kGoogleWalletLogoHeight = 32.0;
   self.tableView.tableHeaderView = [self createHeaderView];
   self.tableView.sectionFooterHeight = UITableViewAutomaticDimension;
   self.tableView.estimatedSectionFooterHeight = kEstimatedFooterHeight;
+
+  _saveButton = [[ChromeButton alloc] initWithStyle:ChromeButtonStylePrimary];
+  _saveButton.title =
+      l10n_util::GetNSString(IDS_IOS_AUTOFILL_SAVE_AND_AUTOFILL);
+  [_saveButton addTarget:self
+                  action:@selector(didTapSave)
+        forControlEvents:UIControlEventTouchUpInside];
 
   RegisterTableViewCell<TableViewTextEditCell>(self.tableView);
 
@@ -230,13 +252,7 @@ const CGFloat kGoogleWalletLogoHeight = 32.0;
   }
 
   // Add save button.
-  ChromeButton* saveButton =
-      [[ChromeButton alloc] initWithStyle:ChromeButtonStylePrimary];
-  saveButton.title = l10n_util::GetNSString(IDS_IOS_AUTOFILL_SAVE_AND_AUTOFILL);
-  [saveButton addTarget:self
-                 action:@selector(didTapSave)
-       forControlEvents:UIControlEventTouchUpInside];
-  [footerView addArrangedSubview:saveButton];
+  [footerView addArrangedSubview:_saveButton];
 
   // Adjust footer frame to fit contents.
   CGSize size =
@@ -252,7 +268,8 @@ const CGFloat kGoogleWalletLogoHeight = 32.0;
 
 // Triggered when the user taps the save button.
 - (void)didTapSave {
-  // TODO(crbug.com/484102792): Save and fill logic.
+  _saveButton.enabled = NO;
+  [self.mutator didTapSave];
 }
 
 // Triggered when the user taps the cancel button.
@@ -276,19 +293,54 @@ const CGFloat kGoogleWalletLogoHeight = 32.0;
     _cardNumberItem.textFieldValue = _cardNumber;
     _expirationDateItem.textFieldValue = _expirationDate;
 
-    NSDiffableDataSourceSnapshot* snapshot = [_diffableDataSource snapshot];
-
-    [snapshot reconfigureItemsWithIdentifiers:@[
-      _cardNumberItem, _expirationDateItem
-    ]];
-
-    [_diffableDataSource applySnapshot:snapshot animatingDifferences:YES];
+    [self
+        validateAndReconfigureItems:@[ _cardNumberItem, _expirationDateItem ]];
   }
 }
 
 #pragma mark - SaveCardBottomSheetConsumer
 
 - (void)showConfirmationState {
+  _saveButton.enabled = NO;
+  _saveButton.title = nil;
+  UIButtonConfiguration* config = _saveButton.configuration;
+  config.image = DefaultSymbolWithPointSize(kLockSymbol, kLockSymbolPointSize);
+  _saveButton.configuration = config;
+  _saveButton.primaryButtonImage = PrimaryButtonImageCustom;
+}
+
+- (void)setField:(AutofillCreditCardUIType)type
+         isValid:(BOOL)isValid
+    errorMessage:(NSString*)errorMessage {
+  TableViewTextEditItem* item = nil;
+  switch (type) {
+    case AutofillCreditCardUIType::kNumber:
+      item = _cardNumberItem;
+      break;
+    case AutofillCreditCardUIType::kExpMonth:
+      item = _expirationDateItem;
+      break;
+    case AutofillCreditCardUIType::kSecurityCode:
+      item = _cardCVCItem;
+      break;
+    case AutofillCreditCardUIType::kNickname:
+      item = _nicknameItem;
+      break;
+    default:
+      break;
+  }
+
+  if (item) {
+    [item setHasValidText:isValid];
+    [AutofillSettingsUtil updateAccessibilityLabelForItem:item
+                                             isInputValid:isValid
+                                             errorMessage:errorMessage];
+    [self reconfigureCellsForItems:@[ item ]];
+  }
+}
+
+- (void)setSaveButtonEnabled:(BOOL)enabled {
+  _saveButton.enabled = enabled;
 }
 
 - (void)setCardNameAndLastFourDigits:(NSString*)cardNameAndLastFourDigits
@@ -339,6 +391,24 @@ const CGFloat kGoogleWalletLogoHeight = 32.0;
   return [super tableView:tableView viewForFooterInSection:section];
 }
 
+#pragma mark - TableViewTextEditItemDelegate
+
+- (void)tableViewItemDidBeginEditing:(TableViewTextEditItem*)item {
+}
+
+- (void)tableViewItemDidChange:(TableViewTextEditItem*)item {
+  [self validateAndReconfigureItems:@[ item ]];
+}
+
+- (void)tableViewItemDidEndEditing:(TableViewTextEditItem*)item {
+  [self validateAndReconfigureItems:@[ item ]];
+}
+
+- (BOOL)tableView:(UITableView*)tableView
+    shouldHighlightRowAtIndexPath:(NSIndexPath*)indexPath {
+  return NO;
+}
+
 #pragma mark - UITextViewDelegate
 
 - (UIAction*)textView:(UITextView*)textView
@@ -352,6 +422,69 @@ const CGFloat kGoogleWalletLogoHeight = 32.0;
 }
 
 #pragma mark - Private
+
+// Helper to validate and reconfigure the cells and save button for multiple
+// items.
+- (void)validateAndReconfigureItems:(NSArray<TableViewItem*>*)items {
+  for (TableViewItem* item in items) {
+    TableViewTextEditItem* cardItem =
+        base::apple::ObjCCast<TableViewTextEditItem>(item);
+    if (cardItem) {
+      [self pushValueUpdateForItem:cardItem];
+    }
+  }
+  [self reconfigureCellsForItems:items];
+}
+
+// Helper to get the localized error message.
+- (NSString*)errorMessageForItem:(TableViewTextEditItem*)item {
+  AutofillCreditCardUIType uiType = AutofillCreditCardUIType::kUnknown;
+  switch (item.type) {
+    case ItemTypeCardNumber:
+      uiType = AutofillCreditCardUIType::kNumber;
+      break;
+    case ItemTypeCardExpireDate:
+      uiType = AutofillCreditCardUIType::kExpMonth;
+      break;
+    case ItemTypeCardHolderName:
+      uiType = AutofillCreditCardUIType::kFullName;
+      break;
+    case ItemTypeCardCVC:
+      uiType = AutofillCreditCardUIType::kSecurityCode;
+      break;
+    case ItemTypeCardNickname:
+      uiType = AutofillCreditCardUIType::kNickname;
+      break;
+  }
+  return [AutofillSettingsUtil errorMessageForUIType:uiType];
+}
+
+// Helper to validate item and update its state.
+- (void)pushValueUpdateForItem:(TableViewTextEditItem*)item {
+  AutofillCreditCardUIType uiType = AutofillCreditCardUIType::kUnknown;
+
+  switch (item.type) {
+    case ItemTypeCardNumber:
+      uiType = AutofillCreditCardUIType::kNumber;
+      break;
+    case ItemTypeCardExpireDate:
+      uiType = AutofillCreditCardUIType::kExpMonth;
+      break;
+    case ItemTypeCardCVC:
+      uiType = AutofillCreditCardUIType::kSecurityCode;
+      break;
+    case ItemTypeCardNickname:
+      uiType = AutofillCreditCardUIType::kNickname;
+      break;
+    case ItemTypeCardHolderName:
+      uiType = AutofillCreditCardUIType::kFullName;
+      break;
+    default:
+      break;
+  }
+
+  [self.mutator didUpdateValue:item.textFieldValue forField:uiType];
+}
 
 // Returns the image to be used above the title of the bottomsheet.
 - (UIImage*)aboveTitleImage {
@@ -388,10 +521,10 @@ const CGFloat kGoogleWalletLogoHeight = 32.0;
                                 (NSString*)textFieldPlaceholder {
   TableViewTextEditItem* item =
       [[TableViewTextEditItem alloc] initWithType:itemType];
+  item.delegate = self;
   item.fieldNameLabelText = fieldNameLabelText;
   item.textFieldValue = textFieldValue ?: @"";
   item.textFieldEnabled = YES;
-  item.hideIcon = YES;
   item.keyboardType = keyboardType;
   if (textFieldPlaceholder) {
     item.textFieldPlaceholder = textFieldPlaceholder;
@@ -425,6 +558,18 @@ const CGFloat kGoogleWalletLogoHeight = 32.0;
              intoSectionWithIdentifier:@(SectionIdentifierNickname)];
 
   [_diffableDataSource applySnapshot:snapshot animatingDifferences:NO];
+
+  [self pushValueUpdateForItem:_cardNumberItem];
+  [self pushValueUpdateForItem:_expirationDateItem];
+  [self pushValueUpdateForItem:_cardCVCItem];
+  [self pushValueUpdateForItem:_nicknameItem];
+}
+
+// Reconfigures the cells for the specified items to apply UI state changes
+- (void)reconfigureCellsForItems:(NSArray<TableViewItem*>*)items {
+  NSDiffableDataSourceSnapshot* snapshot = [_diffableDataSource snapshot];
+  [snapshot reconfigureItemsWithIdentifiers:items];
+  [_diffableDataSource applySnapshot:snapshot animatingDifferences:YES];
 }
 
 @end

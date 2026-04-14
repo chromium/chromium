@@ -12,6 +12,7 @@
 #import "base/strings/sys_string_conversions.h"
 #import "base/time/time.h"
 #import "base/timer/timer.h"
+#import "components/application_locale_storage/application_locale_storage.h"
 #import "components/autofill/core/browser/metrics/payments/credit_card_save_metrics.h"
 #import "components/autofill/core/common/autofill_payments_features.h"
 #import "components/autofill/ios/browser/credit_card_save_metrics_ios.h"
@@ -20,6 +21,9 @@
 #import "ios/chrome/browser/autofill/model/message/save_card_message_with_links.h"
 #import "ios/chrome/browser/autofill/ui_bundled/bottom_sheet/bottom_sheet_constants.h"
 #import "ios/chrome/browser/autofill/ui_bundled/bottom_sheet/save_card_bottom_sheet_consumer.h"
+#import "ios/chrome/browser/autofill/ui_bundled/util/autofill_credit_card_util.h"
+#import "ios/chrome/browser/autofill/ui_bundled/util/autofill_settings_util.h"
+#import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/public/commands/autofill_commands.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ui/base/l10n/l10n_util.h"
@@ -62,6 +66,20 @@ class ModelObserverBridge
 static constexpr base::TimeDelta kConfirmationDismissDelayIfVoiceOverRunning =
     base::Seconds(5);
 
+std::pair<NSString*, NSString*> ParseExpirationDate(NSString* expirationDate) {
+  NSString* cleanExpDate = [[expirationDate
+      componentsSeparatedByCharactersInSet:[[NSCharacterSet
+                                               decimalDigitCharacterSet]
+                                               invertedSet]]
+      componentsJoinedByString:@""];
+  if (cleanExpDate.length >= 4) {
+    NSString* month = [cleanExpDate substringToIndex:2];
+    NSString* year = [cleanExpDate substringFromIndex:2];
+    return {month, year};
+  }
+  return {@"", @""};
+}
+
 }  // namespace
 
 // TODO(crbug.com/402511942): Implement SaveCardBottomSheetMediator.
@@ -81,6 +99,19 @@ static constexpr base::TimeDelta kConfirmationDismissDelayIfVoiceOverRunning =
 
   // Indicates whether bottom sheet is already in the process of dismissing.
   BOOL _dismissing;
+
+  // Stored values for the editable flow.
+  NSString* _cardNumber;
+  NSString* _expirationDate;
+  NSString* _cardholderName;
+  NSString* _cvc;
+  NSString* _nickname;
+
+  // Validity flags for the editable flow.
+  BOOL _cardNumberValid;
+  BOOL _expirationDateValid;
+  BOOL _cardCVCValid;
+  BOOL _nicknameValid;
 }
 
 - (instancetype)initWithUIModel:
@@ -211,6 +242,7 @@ static constexpr base::TimeDelta kConfirmationDismissDelayIfVoiceOverRunning =
       _saveCardBottomSheetModel->save_card_delegate()
           ->GetSaveCreditCardOptions(),
       SaveCreditCardPromptOverlayType::kBottomSheet);
+  [self updateSaveButtonStatus];
 }
 
 - (SaveCardActionType)actionType {
@@ -280,12 +312,113 @@ static constexpr base::TimeDelta kConfirmationDismissDelayIfVoiceOverRunning =
   [_autofillCommandsHandler dismissSaveCardBottomSheet];
 }
 
-- (void)onUpdatedAndAcceptedForSaveAndFill:
-    (autofill::payments::PaymentsAutofillClient::
-         UserProvidedCardSaveAndFillDetails)details {
-  // Pass the details from the View Controller down to the Model.
+- (void)didUpdateValue:(NSString*)value
+              forField:(AutofillCreditCardUIType)type {
+  BOOL isValid = [self isValidValue:value forField:type];
+
+  switch (type) {
+    case AutofillCreditCardUIType::kNumber:
+      _cardNumber = value;
+      _cardNumberValid = isValid;
+      break;
+    case AutofillCreditCardUIType::kExpMonth:
+      _expirationDate = value;
+      _expirationDateValid = isValid;
+      break;
+    case AutofillCreditCardUIType::kSecurityCode:
+      _cvc = value;
+      _cardCVCValid = isValid;
+      break;
+    case AutofillCreditCardUIType::kNickname:
+      _nickname = value;
+      _nicknameValid = isValid;
+      break;
+    case AutofillCreditCardUIType::kFullName:
+      _cardholderName = value;
+      break;
+    default:
+      NOTREACHED();
+  }
+
+  NSString* errorMessage =
+      isValid ? nil : [AutofillSettingsUtil errorMessageForUIType:type];
+  if ([self.consumer respondsToSelector:@selector(setField:
+                                                   isValid:errorMessage:)]) {
+    [self.consumer setField:type isValid:isValid errorMessage:errorMessage];
+  }
+  [self updateSaveButtonStatus];
+}
+
+- (void)updateSaveButtonStatus {
+  BOOL enableSave = _cardNumberValid && _expirationDateValid && _cardCVCValid &&
+                    _nicknameValid;
+  if ([self.consumer respondsToSelector:@selector(setSaveButtonEnabled:)]) {
+    [self.consumer setSaveButtonEnabled:enableSave];
+  }
+}
+
+- (void)didTapSave {
+  autofill::payments::PaymentsAutofillClient::UserProvidedCardSaveAndFillDetails
+      details;
+  details.card_number = base::SysNSStringToUTF16(_cardNumber);
+  details.cardholder_name = base::SysNSStringToUTF16(_cardholderName);
+  details.cvc = base::SysNSStringToUTF16(_cvc);
+  if (_cvc.length > 0) {
+    details.security_code = base::SysNSStringToUTF16(_cvc);
+  }
+  if (_nickname.length > 0) {
+    details.nickname = base::SysNSStringToUTF16(_nickname);
+  }
+
+  // Parse expiration date.
+  std::pair<NSString*, NSString*> parsedDate =
+      ParseExpirationDate(_expirationDate);
+  NSString* parsedMonth = parsedDate.first;
+  NSString* parsedYear = parsedDate.second;
+  details.expiration_date_month = base::SysNSStringToUTF16(parsedMonth);
+  details.expiration_date_year = base::SysNSStringToUTF16(parsedYear);
+
   _saveCardBottomSheetModel->OnUpdatedAndAcceptedForSaveAndFill(
       std::move(details));
+}
+
+- (BOOL)isValidValue:(NSString*)value forField:(AutofillCreditCardUIType)type {
+  switch (type) {
+    case AutofillCreditCardUIType::kNumber:
+      return [AutofillCreditCardUtil
+          isValidCreditCardNumber:value
+                         appLocal:GetApplicationContext()
+                                      ->GetApplicationLocaleStorage()
+                                      ->Get()];
+    case AutofillCreditCardUIType::kExpMonth: {
+      std::pair<NSString*, NSString*> parsedDate = ParseExpirationDate(value);
+      NSString* expMonth = parsedDate.first;
+      NSString* expYear = parsedDate.second;
+
+      if (expMonth.length > 0 && expYear.length > 0) {
+        return
+            [AutofillCreditCardUtil
+                isValidCreditCardExpirationMonth:expMonth] &&
+            [AutofillCreditCardUtil
+                isValidCreditCardExpirationYear:expYear
+                                       appLocal:
+                                           GetApplicationContext()
+                                               ->GetApplicationLocaleStorage()
+                                               ->Get()];
+      }
+      return NO;
+    }
+    case AutofillCreditCardUIType::kNickname:
+      return [AutofillCreditCardUtil
+          isValidCardNickname:[value
+                                  stringByTrimmingCharactersInSet:
+                                      [NSCharacterSet
+                                          whitespaceAndNewlineCharacterSet]]];
+    case AutofillCreditCardUIType::kSecurityCode:
+      return [AutofillCreditCardUtil isValidCardCvc:value];
+    default:
+      return YES;
+  }
 }
 
 #pragma mark - SaveCardBottomSheetModel Observer

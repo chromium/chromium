@@ -235,13 +235,19 @@ source_set("save_card_bottom_sheet_coordinator_unittest") {
 
 source_set("save_card_bottom_sheet_consumer") {
   sources = [ "save_card_bottom_sheet_consumer.h" ]
-  deps = [ "//ios/chrome/browser/autofill/model/message" ]
+  deps = [
+    "//ios/chrome/browser/autofill/model/message",
+    "//ios/chrome/browser/autofill/ui_bundled:ui_type",
+  ]
   frameworks = [ "UIKit.framework" ]
 }
 
 source_set("save_card_bottom_sheet_mutator") {
   sources = [ "save_card_bottom_sheet_mutator.h" ]
-  deps = [ "//components/autofill/core/browser" ]
+  deps = [
+    "//components/autofill/core/browser",
+    "//ios/chrome/browser/autofill/ui_bundled:ui_type",
+  ]
   frameworks = [ "UIKit.framework" ]
 }
 
@@ -307,10 +313,13 @@ source_set("save_card_bottom_sheet_mediator") {
     ":save_card_bottom_sheet_consumer",
     ":save_card_bottom_sheet_mutator",
     "//base",
+    "//components/application_locale_storage",
     "//components/autofill/ios/browser",
     "//components/strings:components_strings_grit",
     "//ios/chrome/browser/autofill/model/bottom_sheet:save_card_bottom_sheet_model",
     "//ios/chrome/browser/autofill/model/message",
+    "//ios/chrome/browser/autofill/ui_bundled/util",
+    "//ios/chrome/browser/shared/model/application_context",
     "//ios/chrome/browser/shared/public/commands",
     "//ios/chrome/browser/shared/ui/util",
     "//ui/base",
@@ -334,6 +343,7 @@ source_set("save_card_bottom_sheet_mediator_unittest") {
     "//components/strings:components_strings_grit",
     "//ios/chrome/browser/autofill/model/bottom_sheet:save_card_bottom_sheet_model",
     "//ios/chrome/browser/autofill/model/message",
+    "//ios/chrome/browser/autofill/ui_bundled:ui_type",
     "//ios/chrome/browser/shared/public/commands",
     "//ios/web/public/test",
     "//testing/gmock",
@@ -524,6 +534,7 @@ source_set("scanned_card_bottom_sheet_view_controller") {
     ":save_card_bottom_sheet_mutator",
     "//base",
     "//build:branding_buildflags",
+    "//components/application_locale_storage",
     "//components/autofill/core/browser",
     "//components/strings",
     "//ios/chrome/app/strings",
@@ -532,6 +543,7 @@ source_set("scanned_card_bottom_sheet_view_controller") {
     "//ios/chrome/browser/autofill/ui_bundled/util",
     "//ios/chrome/browser/net/model:crurl",
     "//ios/chrome/browser/settings/ui_bundled/credit_card_scanner",
+    "//ios/chrome/browser/shared/model/application_context",
     "//ios/chrome/browser/shared/ui/bottom_sheet:table_view_bottom_sheet_view_controller",
     "//ios/chrome/browser/shared/ui/symbols",
     "//ios/chrome/browser/shared/ui/table_view",
@@ -556,9 +568,12 @@ source_set("scanned_card_bottom_sheet_view_controller_unittest") {
     ":save_card_bottom_sheet_mutator",
     ":scanned_card_bottom_sheet_view_controller",
     "//base",
+    "//components/application_locale_storage",
     "//components/autofill/core/browser",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/autofill/ui_bundled:ui_type",
+    "//ios/chrome/browser/autofill/ui_bundled/util",
+    "//ios/chrome/browser/shared/model/application_context",
     "//ios/chrome/browser/shared/ui/table_view:test_support",
     "//ios/chrome/browser/shared/ui/table_view/cells",
     "//testing/gtest",
