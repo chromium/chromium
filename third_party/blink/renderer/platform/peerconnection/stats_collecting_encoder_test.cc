@@ -139,7 +139,6 @@ class FakeEncodedImageCallback : public webrtc::EncodedImageCallback {
     ++frame_counter_;
     return {Result::OK, encoded_image.RtpTimestamp()};
   }
-  void OnDroppedFrame(DropReason reason) override {}
   void OnFrameDropped(uint32_t rtp_timestamp,
                       int spatial_id,
                       bool is_end_of_temporal_unit) override {}

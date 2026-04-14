@@ -141,13 +141,6 @@ InstrumentedVideoEncoderWrapper::OnEncodedImage(
   return result;
 }
 
-void InstrumentedVideoEncoderWrapper::OnDroppedFrame(
-    webrtc::EncodedImageCallback::DropReason reason) {
-  if (callback_) {
-    callback_->OnDroppedFrame(reason);
-  }
-}
-
 void InstrumentedVideoEncoderWrapper::OnFrameDropped(
     uint32_t rtp_timestamp,
     int spatial_id,

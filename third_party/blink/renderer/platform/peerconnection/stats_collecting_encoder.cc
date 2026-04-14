@@ -219,11 +219,6 @@ webrtc::EncodedImageCallback::Result StatsCollectingEncoder::OnEncodedImage(
   return result;
 }
 
-void StatsCollectingEncoder::OnDroppedFrame(DropReason reason) {
-  DCHECK(encoded_callback_);
-  encoded_callback_->OnDroppedFrame(reason);
-}
-
 void StatsCollectingEncoder::OnFrameDropped(uint32_t rtp_timestamp,
                                             int spatial_id,
                                             bool is_end_of_temporal_unit) {

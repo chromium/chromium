@@ -44,10 +44,6 @@ class MockEncodedImageCallback : public webrtc::EncodedImageCallback {
               (const webrtc::EncodedImage&, const webrtc::CodecSpecificInfo*),
               (override));
   MOCK_METHOD(void,
-              OnDroppedFrame,
-              (webrtc::EncodedImageCallback::DropReason),
-              (override));
-  MOCK_METHOD(void,
               OnFrameDropped,
               (uint32_t rtp_timestamp,
                int spatial_id,
