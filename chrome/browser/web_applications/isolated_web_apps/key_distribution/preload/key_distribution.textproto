@@ -174,7 +174,12 @@ iwa_access_control {
     key: "nk3e4k42gj6p5caxu3dfdympbzps7yt4kbk63ykyexaveteyuqfqaaic"
     value: {}
   }
-  # Test entry: blocks Web Bundle ID derived from testing_keys/ed25519_blocked.pem
+   # Test entry: Blocks the test app for the user install launch.
+  blocklist: {
+    key: "an6p6e2jxx4n6oxaygead345pextud2w2y5m3qubh3lyuuyuy5p7kaacai"
+    value: {}
+  }
+  # Test entry: Blocks Web Bundle ID derived from testing_keys/ed25519_blocked.pem
   blocklist: {
     key: "kc27yfbm2ipu5iqqdvgstfrn3jvt5y26zaqtvbh24xl76hantsiqaaic"
     value: {}
