@@ -4,6 +4,7 @@
 
 #include "crypto/keypair.h"
 
+#include "base/containers/to_vector.h"
 #include "base/logging.h"
 #include "crypto/openssl_util.h"
 #include "third_party/boringssl/src/include/openssl/bn.h"
@@ -53,23 +54,23 @@ bool IsSupportedEvpId(int evp_id) {
          evp_id == EVP_PKEY_ED25519 || evp_id == EVP_PKEY_X25519;
 }
 
+std::vector<uint8_t> CBBToVector(CBB* cbb) {
+  uint8_t* data;
+  size_t len;
+  CHECK(CBB_finish(cbb, &data, &len));
+  std::vector<uint8_t> result =
+      base::ToVector(UNSAFE_BUFFERS(base::span(data, len)));
+  OPENSSL_free(data);
+  return result;
+}
+
 std::vector<uint8_t> ExportEVPPublicKey(EVP_PKEY* pkey) {
   OpenSSLErrStackTracer err_tracer(FROM_HERE);
   bssl::ScopedCBB cbb;
 
   CHECK(CBB_init(cbb.get(), 0));
   CHECK(EVP_marshal_public_key(cbb.get(), pkey));
-
-  uint8_t* data;
-  size_t len;
-  CHECK(CBB_finish(cbb.get(), &data, &len));
-
-  std::vector<uint8_t> result(len);
-  // SAFETY: OpenSSL freshly allocated data for us and ensured it pointed to at
-  // least len bytes.
-  UNSAFE_BUFFERS(result.assign(data, data + len));
-  OPENSSL_free(data);
-  return result;
+  return CBBToVector(cbb.get());
 }
 
 bssl::UniquePtr<EVP_PKEY> EVP_PKEYFromEcPoint(const EC_GROUP* group,
@@ -193,6 +194,26 @@ std::optional<PrivateKey> PrivateKey::FromPrivateKeyInfo(
 }
 
 // static
+std::optional<PrivateKey> PrivateKey::FromRSAPrivateKey(
+    base::span<const uint8_t> key) {
+  OpenSSLErrStackTracer err_tracer(FROM_HERE);
+
+  CBS cbs(key);
+  bssl::UniquePtr<RSA> rsa(RSA_parse_private_key(&cbs));
+  if (!rsa || CBS_len(&cbs) != 0) {
+    return std::nullopt;
+  }
+
+  bssl::UniquePtr<EVP_PKEY> pkey(EVP_PKEY_new());
+  CHECK(pkey);
+  if (!EVP_PKEY_set1_RSA(pkey.get(), rsa.get())) {
+    return std::nullopt;
+  }
+
+  return PrivateKey(std::move(pkey));
+}
+
+// static
 PrivateKey PrivateKey::FromEd25519PrivateKey(
     base::span<const uint8_t, 32> key) {
   bssl::UniquePtr<EVP_PKEY> pkey(EVP_PKEY_from_raw_private_key(
@@ -215,17 +236,19 @@ std::vector<uint8_t> PrivateKey::ToPrivateKeyInfo() const {
 
   CHECK(CBB_init(cbb.get(), 0));
   CHECK(EVP_marshal_private_key(cbb.get(), key_.get()));
+  return CBBToVector(cbb.get());
+}
 
-  uint8_t* data;
-  size_t len;
-  CHECK(CBB_finish(cbb.get(), &data, &len));
+std::vector<uint8_t> PrivateKey::ToRSAPrivateKey() const {
+  CHECK(IsRsa());
+  OpenSSLErrStackTracer err_tracer(FROM_HERE);
+  bssl::ScopedCBB cbb;
 
-  std::vector<uint8_t> result(len);
-  // SAFETY: OpenSSL freshly allocated data for us and ensured it pointed to at
-  // least len bytes.
-  UNSAFE_BUFFERS(result.assign(data, data + len));
-  OPENSSL_free(data);
-  return result;
+  CHECK(CBB_init(cbb.get(), 0));
+  RSA* rsa = EVP_PKEY_get0_RSA(key_.get());
+  CHECK(rsa);
+  CHECK(RSA_marshal_private_key(cbb.get(), rsa));
+  return CBBToVector(cbb.get());
 }
 
 std::array<uint8_t, 32> PrivateKey::ToEd25519PrivateKey() const {

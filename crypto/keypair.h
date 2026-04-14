@@ -57,6 +57,11 @@ class CRYPTO_EXPORT PrivateKey {
   static std::optional<PrivateKey> FromPrivateKeyInfo(
       base::span<const uint8_t> pki);
 
+  // Imports an RFC 8017-encoded RSA private key. Returns nullopt if the
+  // passed-in buffer is not a valid RSA private key.
+  static std::optional<PrivateKey> FromRSAPrivateKey(
+      base::span<const uint8_t> key);
+
   // Imports an RFC 8032-encoded Ed25519 private key.
   //
   // The encoding used doesn't allow for importing to fail (all input bit
@@ -73,6 +78,10 @@ class CRYPTO_EXPORT PrivateKey {
 
   // Exports a PKCS#8 PrivateKeyInfo block.
   std::vector<uint8_t> ToPrivateKeyInfo() const;
+
+  // Exports an RFC 8017-encoded RSA private key. It is illegal to call this if
+  // !IsRsa().
+  std::vector<uint8_t> ToRSAPrivateKey() const;
 
   // Exports an Ed25519 private key in RFC 8032 format. It is illegal to call
   // this if !IsEd25519().
