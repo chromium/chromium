@@ -118,10 +118,6 @@ const CGFloat kCustomizationNewBadgeOffset = 14.0;
 NSString* const kMIACircleAnimationLightMode = @"mia_circle_animation_no_glow";
 NSString* const kMIACircleAnimationDarkMode = @"mia_glowing_circle_animation";
 
-// The value of the sides of the MIA circle animation for the normal size of the
-// fakebox.
-const CGFloat kMIACircleAnimationSizeNormal = 40.0;
-
 // Returns the top color of the Fakebox's gradient background.
 UIColor* FakeboxTopColor() {
   return UIAccessibilityIsReduceTransparencyEnabled()
@@ -165,18 +161,6 @@ CGFloat Interpolate(CGFloat from, CGFloat to, CGFloat percent) {
   return from + (to - from) * percent;
 }
 
-// Computes the opacity of the MIA animation given the scroll percent of the
-// view.
-CGFloat MIAAnimationOpacityForScrollProgress(CGFloat percent) {
-  // The progress is inversely proportional with the scroll percentage, meaning
-  // that a scroll percent of 0 corresponds to full opacity.
-  //
-  // To avoid showing a mostly faded animation view for intermediary scrolls,
-  // follow a scaled exponential curve that will ease in the animation.
-  CGFloat unboundOpacity = 1 - 6 * pow(percent, 4);
-  return MIN(MAX(unboundOpacity, 0), 1);
-}
-
 }  // namespace
 
 // `UIStackView` that allows the extended tap area of it's arranged subviews to
@@ -210,8 +194,6 @@ CGFloat MIAAnimationOpacityForScrollProgress(CGFloat percent) {
 
 // The Lens button. May be null if Lens is not available.
 @property(nonatomic, strong, readwrite) ExtendedTouchTargetButton* lensButton;
-// The MIA button. May be null if MIA is not available.
-@property(nonatomic, strong, readwrite) ExtendedTouchTargetButton* miaButton;
 // The button that opens multiodal actions in Composebox. May be nil if
 // Composebox or multimodal actions are not enabled.
 @property(nonatomic, strong, readwrite) ExtendedTouchTargetButton* plusButton;
@@ -267,9 +249,6 @@ CGFloat MIAAnimationOpacityForScrollProgress(CGFloat percent) {
   NSLayoutConstraint* _toolbarNoTabGroupIndicartorConstraint;
   NSLayoutConstraint* _toolbarTabGroupIndicartorConstraint;
 
-  // Maintains the MIA circle animation.
-  id<LottieAnimation> _miaAnimation;
-  UIView* _miaAnimationView;
   // Whether AIM is allowed.
   BOOL _isAIMAllowed;
 
@@ -566,10 +545,6 @@ CGFloat MIAAnimationOpacityForScrollProgress(CGFloat percent) {
           self.lensButton, 1 - _lastAnimationPercent);
     }
   }
-
-  if (self.miaButton) {
-    content_suggestions::ConfigureMIAButton(self.miaButton, useColorIcon);
-  }
 }
 
 - (void)addSeparatorToSearchField:(UIView*)searchField {
@@ -626,8 +601,6 @@ CGFloat MIAAnimationOpacityForScrollProgress(CGFloat percent) {
       content_suggestions::SearchFieldWidth(contentWidth, self.traitCollection);
 
   CGFloat percent = [self searchFieldProgressForOffset:offset];
-
-  _miaAnimationView.alpha = MIAAnimationOpacityForScrollProgress(percent);
 
   [self updateTabGroupIndicatorAvailabilityWithOffset:offset];
 
@@ -1082,24 +1055,11 @@ CGFloat MIAAnimationOpacityForScrollProgress(CGFloat percent) {
   if (hasBlurredBackground) {
     _fakeLocationBarGradientView.hidden = YES;
     _fakeLocationBarBlurEffectView.hidden = NO;
-    _miaAnimationView.hidden = YES;
     return;
   }
 
   _fakeLocationBarGradientView.hidden = NO;
   _fakeLocationBarBlurEffectView.hidden = YES;
-
-  NewTabPageColorPalette* colorPalette =
-      [self.traitCollection objectForNewTabPageTrait];
-
-  if (colorPalette) {
-    _miaAnimationView.hidden = YES;
-    return;
-  }
-
-  _miaAnimationView.hidden = NO;
-  _miaAnimationView.alpha =
-      MIAAnimationOpacityForScrollProgress(_lastAnimationPercent);
 }
 
 // Empties the fakebox buttons stack.
@@ -1149,9 +1109,6 @@ CGFloat MIAAnimationOpacityForScrollProgress(CGFloat percent) {
   [self.lensButton addTarget:self
                       action:@selector(openLensViewFinder)
             forControlEvents:UIControlEventTouchUpInside];
-  [self.miaButton addTarget:self
-                     action:@selector(openMIA)
-           forControlEvents:UIControlEventTouchUpInside];
 }
 
 // Updates the trailing constraint of the label to the nearest button stack
@@ -1278,7 +1235,6 @@ CGFloat MIAAnimationOpacityForScrollProgress(CGFloat percent) {
       colorPalette ? BlendColors(colorPalette.omniboxIconDividerColor,
                                  defaultDividerColor, progress)
                    : defaultDividerColor;
-  _miaButton.tintColor = tintColor;
   _voiceSearchButton.tintColor = tintColor;
   _lensButton.tintColor = tintColor;
   _plusButton.tintColor = tintColor;
@@ -1307,13 +1263,6 @@ CGFloat MIAAnimationOpacityForScrollProgress(CGFloat percent) {
 - (void)addVoiceAndLensDivider {
   UIView* divider = [self createDivider];
   self.voiceAndLensDivider = divider;
-  [_buttonStack addArrangedSubview:divider];
-}
-
-// Adds a short vertical line between the MIA and Voice icons in the fakebox.
-- (void)addMIAAndVoiceDivider {
-  UIView* divider = [self createDivider];
-  self.miaAndVoiceDivider = divider;
   [_buttonStack addArrangedSubview:divider];
 }
 
@@ -1364,62 +1313,6 @@ CGFloat MIAAnimationOpacityForScrollProgress(CGFloat percent) {
   }
 }
 
-#pragma mark - MIA
-
-// Creates an animation view for the MIA entry point.
-- (UIView*)createMIAAnimationView {
-  if (!_miaAnimation) {
-    _miaAnimation = [self createMIAAnimation];
-  }
-
-  UIView* animationView = _miaAnimation.animationView;
-  animationView.translatesAutoresizingMaskIntoConstraints = NO;
-  animationView.contentMode = UIViewContentModeScaleAspectFit;
-
-  return animationView;
-}
-
-// Creates and returns the LottieAnimation for the MIA button.
-- (id<LottieAnimation>)createMIAAnimation {
-  LottieAnimationConfiguration* config =
-      [[LottieAnimationConfiguration alloc] init];
-  config.animationName =
-      self.traitCollection.userInterfaceStyle == UIUserInterfaceStyleDark
-          ? kMIACircleAnimationDarkMode
-          : kMIACircleAnimationLightMode;
-  config.shouldLoop = YES;
-  return ios::provider::GenerateLottieAnimation(config);
-}
-
-- (void)updateAnimationOnMIAButton {
-  if (!self.miaButton) {
-    return;
-  }
-
-  if (UIAccessibilityIsReduceMotionEnabled()) {
-    return;
-  }
-
-  _miaAnimationView = [self createMIAAnimationView];
-  _miaAnimationView.userInteractionEnabled = NO;
-  // Hide the view when there is a color palette or image background.
-  _miaAnimationView.hidden =
-      [self.traitCollection objectForNewTabPageTrait] != nil ||
-      [self.traitCollection boolForNewTabPageImageBackgroundTrait];
-  _miaAnimationView.alpha =
-      MIAAnimationOpacityForScrollProgress(_lastAnimationPercent);
-  [_miaAnimation play];
-  [self.miaButton addSubview:_miaAnimationView];
-  AddSameCenterConstraints(_miaAnimationView, self.miaButton);
-  AddSizeConstraints(_miaAnimationView, [self miaAnimationSize]);
-}
-
-// The size for the animation view dependant on the fakebox size.
-- (CGSize)miaAnimationSize {
-  return CGSizeMake(kMIACircleAnimationSizeNormal,
-                    kMIACircleAnimationSizeNormal);
-}
-
 #pragma mark - helpers
 
 - (CGFloat)hintLabelFakeboxLeadingSpace {
@@ -1446,8 +1339,8 @@ CGFloat MIAAnimationOpacityForScrollProgress(CGFloat percent) {
 
 #pragma mark - Action handling
 
-- (void)openMIA {
-  [self.NTPShortcutsHandler openMIA];
+- (void)openAIM {
+  [self.NTPShortcutsHandler openAIM];
 }
 
 - (void)openLensViewFinder {

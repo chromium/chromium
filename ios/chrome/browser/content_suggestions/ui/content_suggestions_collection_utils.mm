@@ -373,28 +373,6 @@ void ConfigureLensButtonAppearance(UIButton* lens_button,
   }
 }
 
-void ConfigureMIAButton(UIButton* mia_button, BOOL use_color_icon) {
-  [mia_button setTranslatesAutoresizingMaskIntoConstraints:NO];
-
-  UIButtonConfiguration* buttonConfig =
-      [UIButtonConfiguration plainButtonConfiguration];
-  buttonConfig.contentInsets = NSDirectionalEdgeInsetsMake(0, 0, 0, 0);
-  buttonConfig.background.backgroundColor = [UIColor clearColor];
-  mia_button.configuration = buttonConfig;
-
-  UIImage* magnifier_icon = CustomSymbolWithPointSize(
-      kMagnifyingglassSparkSymbol, kSymbolContentSuggestionsPointSize);
-
-  magnifier_icon = use_color_icon ? MakeSymbolMulticolor(magnifier_icon)
-                                  : MakeSymbolMonochrome(magnifier_icon);
-  [mia_button setImage:magnifier_icon forState:UIControlStateNormal];
-
-  mia_button.pointerInteractionEnabled = YES;
-  // Make the pointer shape fit the location bar's semi-circle end shape.
-  mia_button.pointerStyleProvider =
-      CreateLiftEffectCirclePointerStyleProvider();
-}
-
 void ConfigureLensButtonWithNewBadgeAlpha(UIButton* lens_button,
                                           CGFloat new_badge_alpha) {
   // Fade button background.

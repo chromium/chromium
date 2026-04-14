@@ -162,7 +162,7 @@ UIColor* ButtonBackgroundColor(NewTabPageColorPalette* colorPalette) {
 }
 
 - (void)openAIM {
-  [self.NTPShortcutsHandler openMIA];
+  [self.NTPShortcutsHandler openAIM];
 }
 
 @end

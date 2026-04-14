@@ -1923,8 +1923,8 @@
   [lensHandler openLensInputSelection:command];
 }
 
-- (void)openMIA {
-  [self.NTPMetricsRecorder recordMIATapped];
+- (void)openAIM {
+  [self.NTPMetricsRecorder recordAIMButtonTapped];
   if (!IsDisableComposeboxFromAIMNTPEnabled() && !IsComposeboxAIMDisabled() &&
       _aimEligibilityService->IsFuseboxEligible() &&
       MaybeShowComposebox(self.browser, ComposeboxEntrypoint::kNTPAIMButton)) {
