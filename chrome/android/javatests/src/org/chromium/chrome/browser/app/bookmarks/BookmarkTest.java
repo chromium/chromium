@@ -390,6 +390,49 @@ public class BookmarkTest {
 
     @Test
     @SmallTest
+    @Restriction({DeviceFormFactor.ONLY_TABLET})
+    public void testShowBookmarkManager_Tablet() throws Exception {
+        BookmarkTestUtil.loadEmptyPartnerBookmarksForTesting(mBookmarkModel);
+        BookmarkTestUtil.waitForBookmarkModelLoaded();
+
+        int initialTabCount =
+                ThreadUtils.runOnUiThreadBlocking(
+                        mActivityTestRule.getActivity().getTabModelSelector()::getTotalTabCount);
+
+        ThreadUtils.runOnUiThreadBlocking(
+                () ->
+                        mBookmarkManagerOpener.showBookmarkManager(
+                                mActivityTestRule.getActivity(),
+                                mActivityTestRule.getActivityTab(),
+                                mActivityTestRule.getProfile(false),
+                                mBookmarkModel.getMobileFolderId()));
+
+        // Verify that a new tab was opened.
+        CriteriaHelper.pollUiThread(
+                () ->
+                        Criteria.checkThat(
+                                "Tab count should increase by 1",
+                                mActivityTestRule
+                                        .getActivity()
+                                        .getTabModelSelector()
+                                        .getTotalTabCount(),
+                                Matchers.is(initialTabCount + 1)));
+
+        // Verify the URL of the active tab is the bookmark URL.
+        CriteriaHelper.pollUiThread(
+                () ->
+                        Criteria.checkThat(
+                                "URL should be bookmarks URL",
+                                mActivityTestRule
+                                        .getActivityTab()
+                                        .getUrl()
+                                        .getSpec()
+                                        .contains("chrome-native://bookmarks/"),
+                                Matchers.is(true)));
+    }
+
+    @Test
+    @SmallTest
     @DisableIf.Build(sdk_equals = Build.VERSION_CODES.S_V2, message = "https://crbug.com/41484383")
     public void testOpenBookmarkManagerFolder() throws InterruptedException {
         openBookmarkManager();
