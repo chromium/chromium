@@ -8,6 +8,7 @@
 #import "base/strings/utf_string_conversions.h"
 #import "base/test/ios/wait_util.h"
 #import "base/test/metrics/user_action_tester.h"
+#import "base/test/scoped_feature_list.h"
 #import "base/uuid.h"
 #import "components/autofill/core/browser/data_manager/addresses/address_data_manager.h"
 #import "components/autofill/core/browser/data_manager/payments/payments_data_manager.h"
@@ -25,6 +26,7 @@
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_text_edit_item_delegate.h"
 #import "ios/chrome/browser/shared/ui/table_view/legacy_chrome_table_view_controller_test.h"
 #import "ios/chrome/browser/webdata_services/model/web_data_service_factory.h"
@@ -33,6 +35,7 @@
 #import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
 #import "ios/web/public/test/web_task_environment.h"
 #import "testing/gtest/include/gtest/gtest.h"
+#import "testing/gtest_mac.h"
 #import "third_party/ocmock/OCMock/OCMock.h"
 #import "third_party/ocmock/gtest_support.h"
 #import "ui/base/l10n/l10n_util.h"
@@ -118,6 +121,31 @@ class AutofillCreditCardTableViewControllerTest
   std::unique_ptr<TestProfileIOS> profile_;
   std::unique_ptr<Browser> browser_;
 };
+
+TEST_F(AutofillCreditCardTableViewControllerTest,
+       TestTitleWithYourSavedInfoPageEnabled) {
+  base::test::ScopedFeatureList feature_list{kYourSavedInfoSettingsPageIos};
+
+  CreateController();
+  CheckController();
+
+  EXPECT_NSEQ(controller().title,
+              l10n_util::GetNSString(IDS_AUTOFILL_PAYMENTS_TITLE));
+}
+
+// TODO(crbug.com/496456595): Remove this test once
+// kYourSavedInfoSettingsPageIos is fully rolled out.
+TEST_F(AutofillCreditCardTableViewControllerTest,
+       TestTitleWithYourSavedInfoPageDisabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(kYourSavedInfoSettingsPageIos);
+
+  CreateController();
+  CheckController();
+
+  EXPECT_NSEQ(controller().title,
+              l10n_util::GetNSString(IDS_AUTOFILL_PAYMENT_METHODS));
+}
 
 // Default test case of no credit cards.
 TEST_F(AutofillCreditCardTableViewControllerTest, TestInitialization) {

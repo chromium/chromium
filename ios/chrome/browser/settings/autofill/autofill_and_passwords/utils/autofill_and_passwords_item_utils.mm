@@ -6,6 +6,7 @@
 
 #import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/settings/ui_bundled/settings_table_view_controller_constants.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_detail_icon_item.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
@@ -69,12 +70,15 @@ TableViewDetailIconItem* PasswordsItem(BOOL enabled) {
 }
 
 TableViewDetailIconItem* AutofillCreditCardItem(BOOL enabled) {
-  return DetailItemWithType(
-      SettingsItemTypeAutofillCreditCard,
-      l10n_util::GetNSString(IDS_AUTOFILL_PAYMENT_METHODS),
-      AutofillCreditCardItemDetailText(enabled),
-      DefaultSettingsRootSymbol(kCreditCardSymbol),
-      [UIColor colorNamed:kYellow500Color], kSettingsPaymentMethodsCellId);
+  NSString* title = l10n_util::GetNSString(
+      IsYourSavedInfoSettingsPageIosEnabled() ? IDS_AUTOFILL_PAYMENTS_TITLE
+                                              : IDS_AUTOFILL_PAYMENT_METHODS);
+
+  return DetailItemWithType(SettingsItemTypeAutofillCreditCard, title,
+                            AutofillCreditCardItemDetailText(enabled),
+                            DefaultSettingsRootSymbol(kCreditCardSymbol),
+                            [UIColor colorNamed:kYellow500Color],
+                            kSettingsPaymentMethodsCellId);
 }
 
 TableViewDetailIconItem* AutofillProfileItem(BOOL enabled) {

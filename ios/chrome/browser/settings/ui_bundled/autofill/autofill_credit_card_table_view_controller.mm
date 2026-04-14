@@ -135,7 +135,9 @@ using autofill::autofill_metrics::MandatoryReauthOptInOrOutSource;
 
   self = [super initWithStyle:ChromeTableViewStyle()];
   if (self) {
-    self.title = l10n_util::GetNSString(IDS_AUTOFILL_PAYMENT_METHODS);
+    self.title = l10n_util::GetNSString(IsYourSavedInfoSettingsPageIosEnabled()
+                                            ? IDS_AUTOFILL_PAYMENTS_TITLE
+                                            : IDS_AUTOFILL_PAYMENT_METHODS);
     self.shouldDisableDoneButtonOnEdit = YES;
     _browser = browser;
     _personalDataManager = autofill::PersonalDataManagerFactory::GetForProfile(

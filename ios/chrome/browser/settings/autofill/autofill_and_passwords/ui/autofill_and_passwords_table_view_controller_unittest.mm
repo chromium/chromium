@@ -5,8 +5,10 @@
 #import "ios/chrome/browser/settings/autofill/autofill_and_passwords/ui/autofill_and_passwords_table_view_controller.h"
 
 #import "base/apple/foundation_util.h"
+#import "base/test/scoped_feature_list.h"
 #import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/settings/ui_bundled/settings_table_view_controller_constants.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_detail_icon_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/legacy_chrome_table_view_controller_test.h"
 #import "ios/chrome/grit/ios_strings.h"
@@ -19,6 +21,10 @@ namespace {
 class AutofillAndPasswordsTableViewControllerTest
     : public LegacyChromeTableViewControllerTest {
  protected:
+  AutofillAndPasswordsTableViewControllerTest() {
+    feature_list_.InitAndEnableFeature(kYourSavedInfoSettingsPageIos);
+  }
+
   void SetUp() override {
     LegacyChromeTableViewControllerTest::SetUp();
     CreateController();
@@ -28,25 +34,28 @@ class AutofillAndPasswordsTableViewControllerTest
     return [[AutofillAndPasswordsTableViewController alloc]
         initWithStyle:UITableViewStylePlain];
   }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
 };
 
 TEST_F(AutofillAndPasswordsTableViewControllerTest, TestModel) {
-  AutofillAndPasswordsTableViewController* controller =
+  AutofillAndPasswordsTableViewController* view_controller =
       base::apple::ObjCCastStrict<AutofillAndPasswordsTableViewController>(
-          this->controller());
+          controller());
 
-  [controller setPasswordsEnabled:YES];
-  [controller setAutofillCreditCardEnabled:NO];
-  [controller setAutofillProfileEnabled:YES];
+  [view_controller setPasswordsEnabled:YES];
+  [view_controller setAutofillCreditCardEnabled:NO];
+  [view_controller setAutofillProfileEnabled:YES];
 
-  [controller loadModel];
+  [view_controller loadModel];
 
   EXPECT_EQ(1, NumberOfSections());
   EXPECT_EQ(3, NumberOfItemsInSection(0));
 
   CheckDetailItemTextWithIds(IDS_IOS_PASSWORD_MANAGER, IDS_IOS_SETTING_ON, 0,
                              0);
-  CheckDetailItemTextWithIds(IDS_AUTOFILL_PAYMENT_METHODS, IDS_IOS_SETTING_OFF,
+  CheckDetailItemTextWithIds(IDS_AUTOFILL_PAYMENTS_TITLE, IDS_IOS_SETTING_OFF,
                              0, 1);
   CheckDetailItemTextWithIds(IDS_AUTOFILL_ADDRESSES_SETTINGS_TITLE,
                              IDS_IOS_SETTING_ON, 0, 2);
