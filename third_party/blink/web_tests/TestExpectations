@@ -3544,6 +3544,7 @@ crbug.com/415666471 [ Mac ] external/wpt/speech-api/SpeechRecognition-installOnD
 crbug.com/415666471 [ Mac ] virtual/speech-with-unified-autoplay/external/wpt/speech-api/SpeechRecognition-installOnDevice.https.html [ Failure Timeout ]
 crbug.com/417576322 [ Mac14 ] external/wpt/scroll-animations/css/animation-timeline-view-functional-notation.tentative.html [ Timeout ]
 crbug.com/40275016 [ Mac ] external/wpt/long-animation-frame/loaf-iframe-self.html [ Skip Timeout ]
+crbug.com/40275016 [ Win11-arm64 ] external/wpt/long-animation-frame/loaf-iframe-self.html [ Skip Timeout ]
 crbug.com/40275016 [ Mac ] virtual/threaded/external/wpt/long-animation-frame/loaf-iframe-self.html [ Skip Timeout ]
 [ Win11 ] external/wpt/css/css-display/display-contents-inline-002.html [ Failure ]
 [ Win11-arm64 ] external/wpt/css/css-display/display-contents-inline-002.html [ Failure ]
