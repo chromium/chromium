@@ -15,6 +15,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/path_service.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/test/gtest_util.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
@@ -29,6 +30,7 @@
 #include "content/public/renderer/render_frame.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "services/strings/grit/services_strings.h"
+#include "third_party/blink/public/platform/scheduler/web_agent_group_scheduler.h"
 #include "third_party/blink/public/web/web_local_frame.h"
 #include "ui/accessibility/accessibility_features.h"
 #include "ui/accessibility/ax_enums.mojom-shared.h"
@@ -40,6 +42,7 @@
 #include "ui/accessibility/ax_tree_id.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "url/gurl.h"
+#include "v8/include/v8-context.h"
 
 namespace {
 
@@ -2430,6 +2433,71 @@ TEST_F(ReadAnythingAppControllerTest, OnLinkClicked) {
   controller().OnLinkClicked(ax_node_id);
   page_handler_.FlushForTesting();
   Mock::VerifyAndClearExpectations(distiller_);
+}
+
+TEST_F(ReadAnythingAppControllerTest,
+       GetImageBitmap_InvalidNode_ReturnsUndefined) {
+  // Download image for a node that doesn't exist.
+  // Although OnImageDataDownloaded wouldn't normally be called for a
+  // non-existent node, the node could have been deleted between the time the
+  // image was downloaded and when the UI requested the bitmap.
+  SkBitmap bitmap;
+  bitmap.allocN32Pixels(10, 10);
+
+  // We need to use a valid node ID to get OnImageDataDownloaded to add the
+  // image to the downloaded_images_ map, and then we'll delete the node
+  // to simulate it being removed before GetImageBitmap is called.
+  ui::AXNodeData node;
+  node.id = 2;
+  node.role = ax::mojom::Role::kImage;
+  node.relative_bounds.bounds = gfx::RectF(0, 0, 100, 100);
+  SendUpdateWithNodes({std::move(node)});
+
+  controller().OnImageDataDownloaded(tree_id_, 2, bitmap);
+
+  // Now delete the node to simulate it disappearing from the tree.
+  ui::AXTreeUpdate clear_update;
+  test::SetUpdateTreeID(&clear_update, tree_id_);
+  clear_update.root_id = 1;
+  clear_update.node_id_to_clear = 2;
+  ui::AXNodeData clear_node;
+  clear_node.id = 1;
+  clear_update.nodes = {std::move(clear_node)};
+  AccessibilityEventReceived({std::move(clear_update)});
+
+  v8::Isolate* isolate = GetMainFrame()->GetAgentGroupScheduler()->Isolate();
+  v8::HandleScope handle_scope(isolate);
+  v8::Local<v8::Context> context = GetMainFrame()->MainWorldScriptContext();
+  v8::Context::Scope context_scope(context);
+
+  // There should be a crash only if DCHECK is enabled.
+  EXPECT_DCHECK_DEATH({ controller().GetImageBitmap(2); });
+
+#if !DCHECK_IS_ON()
+  v8::Local<v8::Value> result = controller().GetImageBitmap(2);
+  EXPECT_TRUE(result->IsUndefined());
+#endif
+}
+
+TEST_F(ReadAnythingAppControllerTest, GetImageBitmap_ValidNode) {
+  ui::AXNodeData node;
+  node.id = 2;
+  node.role = ax::mojom::Role::kImage;
+  node.relative_bounds.bounds = gfx::RectF(0, 0, 100, 100);
+  SendUpdateWithNodes({std::move(node)});
+
+  SkBitmap bitmap;
+  bitmap.allocN32Pixels(10, 10);
+  controller().OnImageDataDownloaded(tree_id_, 2, bitmap);
+
+  v8::Isolate* isolate = GetMainFrame()->GetAgentGroupScheduler()->Isolate();
+  v8::HandleScope handle_scope(isolate);
+  v8::Local<v8::Context> context = GetMainFrame()->MainWorldScriptContext();
+  v8::Context::Scope context_scope(context);
+
+  v8::Local<v8::Value> result = controller().GetImageBitmap(2);
+  EXPECT_FALSE(result->IsUndefined());
+  EXPECT_TRUE(result->IsObject());
 }
 
 TEST_F(ReadAnythingAppControllerTest, RequestImageData) {

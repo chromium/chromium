@@ -2028,6 +2028,11 @@ void ReadAnythingAppController::OnImageDataDownloaded(
   if (tree_id != model_.active_tree_id()) {
     return;
   }
+  // If the image no longer exists on the tree, do nothing with the downloaded
+  // image.
+  if (!model_.GetAXNode(node_id)) {
+    return;
+  }
   // Temporarily store the image so that javascript can fetch it.
   downloaded_images_[node_id] = image;
   // Notify javascript to fetch the image.
@@ -2068,7 +2073,10 @@ v8::Local<v8::Value> ReadAnythingAppController::GetImageBitmap(
     // Create an object with the image data and height, as well as a scale
     // factor.
     ui::AXNode* node = model_.GetAXNode(node_id);
-    CHECK(node);
+    DUMP_WILL_BE_CHECK(node);
+    if (!node) {
+      return v8::Undefined(isolate);
+    }
     int width = bitmap.width();
     int height = bitmap.height();
     float scale = (node->data().relative_bounds.bounds.width()) / width;
