@@ -908,8 +908,10 @@ void ChromeMetricsServiceClient::RegisterMetricsServiceProviders() {
       std::make_unique<TPMMetricsProvider>());
   metrics_service_->RegisterMetricsProvider(
       std::make_unique<SystemMemoryListMetricsProvider>());
-  metrics_service_->RegisterMetricsProvider(
-      std::make_unique<SystemPdhMetricsProvider>());
+  if (base::FeatureList::IsEnabled(features::kSystemPdhMetrics)) {
+    metrics_service_->RegisterMetricsProvider(
+        std::make_unique<SystemPdhMetricsProvider>());
+  }
 #endif  // BUILDFLAG(IS_WIN)
 
 #if BUILDFLAG(IS_MAC)

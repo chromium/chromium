@@ -137,6 +137,51 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="Windows.Experimental.Pdh.ProcessV2.{Counter}.{ProcessType}"
+    units="counter value" expires_after="2026-06-28">
+  <owner>spvm@chromium.org</owner>
+  <owner>catan-team@chromium.org</owner>
+  <summary>
+    Records the value of the &quot;\\Process V2(chrome:PID)\\{Counter}&quot; PDH
+    counter in the {ProcessType} process. For more information on this PDH
+    counter, see PerfMon.exe's documentation.
+
+    Recorded once every five seconds for the browser, GPU, and network
+    processes, and once every five seconds for every 1/20th process on
+    Canary/Dev/Beta, and once every five seconds for every 1/100th process on
+    Stable.
+  </summary>
+  <token key="Counter">
+    <variant name="HandleCount" summary="Handle Count"/>
+    <variant name="IODataBytesPerSec" summary="IO Data Bytes/sec"/>
+    <variant name="IODataOperationsPerSec" summary="IO Data Operations/sec"/>
+    <variant name="IOOtherBytesPerSec" summary="IO Other Bytes/sec"/>
+    <variant name="IOReadBytesPerSec" summary="IO Read Bytes/sec"/>
+    <variant name="IOReadOperationsPerSec" summary="IO Read Operations/sec"/>
+    <variant name="IOWriteBytesPerSec" summary="IO Write Bytes/sec"/>
+    <variant name="IOWriteOperationsPerSec" summary="IO Write Operations/sec"/>
+    <variant name="PageFaultsPerSec" summary="Page Faults/sec"/>
+    <variant name="PageFileBytes" summary="Page File Bytes"/>
+    <variant name="PageFileBytesPeak" summary="Page File Bytes Peak"/>
+    <variant name="PrivateBytes" summary="Private Bytes"/>
+    <variant name="PrivilegedTime" summary="% Privileged Time"/>
+    <variant name="ThreadCount" summary="Thread Count"/>
+    <variant name="UserTime" summary="% User Time"/>
+    <variant name="WorkingSet" summary="Working Set"/>
+    <variant name="WorkingSetPeak" summary="Working Set Peak"/>
+    <variant name="WorkingSetPrivate" summary="Working Set - Private"/>
+  </token>
+  <token key="ProcessType">
+    <variant name="Browser" summary="Browser"/>
+    <variant name="Extension" summary="Extension Renderer"/>
+    <variant name="Gpu" summary="GPU"/>
+    <variant name="NetworkService" summary="Network Service"/>
+    <variant name="Other" summary="Other"/>
+    <variant name="Renderer" summary="Renderer"/>
+    <variant name="Utility" summary="Non-network utility"/>
+  </token>
+</histogram>
+
 <histogram name="Windows.FeatureNotificationsSettingChange"
     enum="BooleanEnabled" expires_after="2026-07-14">
   <owner>davidbienvenu@chromium.org</owner>

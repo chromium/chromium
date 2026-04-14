@@ -44,6 +44,8 @@
 #if BUILDFLAG(IS_CHROMEOS)
 #include "chromeos/ash/components/login/login_state/login_state.h"
 #include "chromeos/dbus/power/power_manager_client.h"
+#elif BUILDFLAG(IS_WIN)
+#include "chrome/browser/metrics/system_pdh_metrics_provider_win.h"
 #endif
 
 class TestChromeMetricsServiceClient : public ChromeMetricsServiceClient {
@@ -105,6 +107,11 @@ class ChromeMetricsServiceClientTest : public testing::Test {
     // initialized before they can be instantiated.
     chromeos::PowerManagerClient::InitializeFake();
     ash::LoginState::Initialize();
+#elif BUILDFLAG(IS_WIN)
+    scoped_feature_list_.InitWithFeatures(
+        {metrics::dwa::kDwaFeature, switches::kDynamicProfileCountry,
+         features::kSystemPdhMetrics},
+        {});
 #else
     scoped_feature_list_.InitWithFeatures(
         {metrics::dwa::kDwaFeature, switches::kDynamicProfileCountry}, {});
