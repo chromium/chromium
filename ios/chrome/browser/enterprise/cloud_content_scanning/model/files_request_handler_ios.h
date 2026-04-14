@@ -36,7 +36,9 @@ class FilesRequestHandlerIOS : public FilesRequestHandlerBase::Delegate {
       size_t index,
       const AnalysisSettings& settings,
       base::OnceCallback<void(ScanRequestUploadResult, ContentAnalysisResponse)>
-          callback) override;
+          callback,
+      base::OnceCallback<void(const BinaryUploadRequest&)>
+          request_start_callback) override;
   void ReportWarningBypass(std::optional<std::u16string> user_justification,
                            const ContentAnalysisInfoBase& info,
                            const std::string& trigger,
@@ -49,6 +51,8 @@ class FilesRequestHandlerIOS : public FilesRequestHandlerBase::Delegate {
   const base::FilePath& GetPath(size_t index) const override;
   const FilesRequestHandlerBase::FileInfo& GetFileInfo(size_t index) override;
   size_t GetFileCount() const override;
+  void SetFileScanStartTime(size_t index) override;
+  const base::TimeTicks GetFileScanStartTime(size_t index) override;
   ReportingEventRouter* GetReportingEventRouter() override;
   void MaybeCompleteScanRequest() override;
   std::string GetSource() override;
@@ -61,6 +65,8 @@ class FilesRequestHandlerIOS : public FilesRequestHandlerBase::Delegate {
   base::FilePath path_;
   FilesRequestHandlerBase::FileInfo file_info_;
   CompletionCallback callback_;
+
+  base::TimeTicks start_time_ = base::TimeTicks::Min();
 
   RequestHandlerResult result_;
   ContentAnalysisResponse response_;

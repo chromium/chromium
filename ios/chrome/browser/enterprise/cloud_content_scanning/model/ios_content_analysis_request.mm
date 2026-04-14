@@ -21,7 +21,8 @@ IOSContentAnalysisRequest::IOSContentAnalysisRequest(
     base::FilePath file_name,
     std::string mime_type,
     bool delay_opening_file,
-    BinaryUploadRequest::ContentAnalysisCallback callback)
+    BinaryUploadRequest::ContentAnalysisCallback callback,
+    BinaryUploadRequest::RequestStartCallback start_callback)
     : FileAnalysisRequestBase(
           analysis_settings,
           std::move(path),
@@ -32,7 +33,8 @@ IOSContentAnalysisRequest::IOSContentAnalysisRequest(
           base::BindRepeating([]() -> policy::BrowserPolicyConnector* {
             return GetApplicationContext()->GetBrowserPolicyConnector();
           }),
-          web::GetUIThreadTaskRunner({})) {}
+          web::GetUIThreadTaskRunner({}),
+          std::move(start_callback)) {}
 
 IOSContentAnalysisRequest::~IOSContentAnalysisRequest() = default;
 

@@ -22,7 +22,8 @@ class IOSContentAnalysisRequest : public FileAnalysisRequestBase {
       base::FilePath file_name,
       std::string mime_type,
       bool delay_opening_file,
-      BinaryUploadRequest::ContentAnalysisCallback callback);
+      BinaryUploadRequest::ContentAnalysisCallback callback,
+      BinaryUploadRequest::RequestStartCallback start_callback);
 
   IOSContentAnalysisRequest(const IOSContentAnalysisRequest&) = delete;
   IOSContentAnalysisRequest& operator=(const IOSContentAnalysisRequest&) =

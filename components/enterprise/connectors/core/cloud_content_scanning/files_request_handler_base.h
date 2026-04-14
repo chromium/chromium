@@ -53,7 +53,9 @@ class FilesRequestHandlerBase : public RequestHandlerBase {
         size_t index,
         const AnalysisSettings& settings,
         base::OnceCallback<void(ScanRequestUploadResult,
-                                ContentAnalysisResponse)> callback) = 0;
+                                ContentAnalysisResponse)> callback,
+        base::OnceCallback<void(const BinaryUploadRequest&)>
+            request_start_callback) = 0;
 
     // Called when a user bypasses a scanning warning.
     virtual void ReportWarningBypass(
@@ -86,6 +88,12 @@ class FilesRequestHandlerBase : public RequestHandlerBase {
 
     // Returns the number of files to be scanned.
     virtual size_t GetFileCount() const = 0;
+
+    // Set the scan start time of the file for the given index.
+    virtual void SetFileScanStartTime(size_t index) = 0;
+
+    // Returns the start time of the file scan for the given index.
+    virtual const base::TimeTicks GetFileScanStartTime(size_t index) = 0;
 
     // Returns the reporting event router.
     virtual ReportingEventRouter* GetReportingEventRouter() = 0;
@@ -161,6 +169,9 @@ class FilesRequestHandlerBase : public RequestHandlerBase {
       size_t index,
       ScanRequestUploadResult upload_result,
       enterprise_connectors::ContentAnalysisResponse response);
+
+  void FileRequestStartCallback(size_t index,
+                                const BinaryUploadRequest& request);
 
   // This is set to true as soon as a TOO_MANY_REQUESTS response is obtained. No
   // more data should be upload for `this` at that point.

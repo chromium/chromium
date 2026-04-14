@@ -26,7 +26,7 @@ class IOSContentAnalysisRequestTest : public PlatformTest {
     AnalysisSettings settings;
     return std::make_unique<IOSContentAnalysisRequest>(
         settings, path, file_name, mime_type, delay_opening_file,
-        base::DoNothing());
+        base::DoNothing(), base::DoNothing());
   }
 
   web::WebTaskEnvironment task_environment_;

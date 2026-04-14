@@ -30,10 +30,13 @@ FilesRequestHandlerIOS::CreateFileRequest(
     size_t index,
     const AnalysisSettings& settings,
     base::OnceCallback<void(ScanRequestUploadResult, ContentAnalysisResponse)>
-        callback) {
+        callback,
+    base::OnceCallback<void(const BinaryUploadRequest&)>
+        request_start_callback) {
   return std::make_unique<IOSContentAnalysisRequest>(
       settings, path_, path_.BaseName(),
-      /*mime_type*/ "", /*delay_opening_file*/ false, std::move(callback));
+      /*mime_type*/ "", /*delay_opening_file*/ false, std::move(callback),
+      std::move(request_start_callback));
 }
 
 void FilesRequestHandlerIOS::ReportWarningBypass(
@@ -92,6 +95,11 @@ size_t FilesRequestHandlerIOS::GetFileCount() const {
   return path_.empty() ? 0 : 1;
 }
 
+const base::TimeTicks FilesRequestHandlerIOS::GetFileScanStartTime(
+    size_t index) {
+  return start_time_;
+}
+
 ReportingEventRouter* FilesRequestHandlerIOS::GetReportingEventRouter() {
   return IOSReportingEventRouterFactory::GetForProfile(profile_);
 }
@@ -111,6 +119,10 @@ std::string FilesRequestHandlerIOS::GetDestination() {
   // For ios, we don't have the destination concept, so we return an empty
   // string here.
   return "";
+}
+
+void FilesRequestHandlerIOS::SetFileScanStartTime(size_t index) {
+  start_time_ = base::TimeTicks::Now();
 }
 
 }  // namespace enterprise_connectors

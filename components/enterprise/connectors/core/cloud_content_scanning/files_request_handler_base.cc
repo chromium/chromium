@@ -101,6 +101,11 @@ base::WeakPtr<FilesRequestHandlerBase> FilesRequestHandlerBase::GetWeakPtr() {
 }
 
 bool FilesRequestHandlerBase::UploadDataImpl() {
+  size_t file_count = delegate_->GetFileCount();
+  IncrementCrashKey(ScanningCrashKey::PENDING_FILE_UPLOADS, file_count);
+  if (file_count != 0) {
+    IncrementCrashKey(ScanningCrashKey::TOTAL_FILE_UPLOADS, file_count);
+  }
   return delegate_->UploadDataImpl();
 }
 
@@ -109,6 +114,8 @@ FileAnalysisRequestBase* FilesRequestHandlerBase::PrepareFileRequest(
   auto request = delegate_->CreateFileRequest(
       index, content_analysis_info_->settings(),
       base::BindOnce(&FilesRequestHandlerBase::FileRequestCallback,
+                     GetWeakPtr(), index),
+      base::BindOnce(&FilesRequestHandlerBase::FileRequestStartCallback,
                      GetWeakPtr(), index));
 
   FileAnalysisRequestBase* request_raw = request.get();
@@ -219,7 +226,6 @@ void FilesRequestHandlerBase::FileRequestCallback(
     throttled_ = true;
   }
 
-  // TODO(crbug.com/498649243): Add UMA recording once the refactoring is done.
   const auto& analysis_settings = content_analysis_info_->settings();
   RequestHandlerResult request_handler_result =
       CalculateRequestHandlerResult(analysis_settings, upload_result, response);
@@ -230,6 +236,17 @@ void FilesRequestHandlerBase::FileRequestCallback(
   bool result_is_warning = request_handler_result.final_result ==
                            FinalContentAnalysisResult::WARNING;
   const FileInfo& file_info = delegate_->GetFileInfo(index);
+  base::TimeTicks start_timestamp = delegate_->GetFileScanStartTime(index);
+
+  if (start_timestamp == base::TimeTicks::Min()) {
+    start_timestamp = upload_start_time_;
+  }
+
+  RecordDeepScanMetrics(
+      analysis_settings.cloud_or_local_settings.is_cloud_analysis(),
+      access_point_, base::TimeTicks::Now() - start_timestamp, file_info.size,
+      upload_result, response);
+
   MaybeReportDeepScanningVerdict(
       delegate_->GetReportingEventRouter(), content_analysis_info_.get(),
       delegate_->GetSource(), delegate_->GetDestination(),
@@ -241,9 +258,15 @@ void FilesRequestHandlerBase::FileRequestCallback(
       CalculateEventResult(analysis_settings, request_handler_result.complies,
                            result_is_warning));
 
-  // TODO(crbug.com/498649243): Decrement the crash key once related free
-  // functions are moved from //chrome to //components.
+  DecrementCrashKey(ScanningCrashKey::PENDING_FILE_UPLOADS);
+
   delegate_->MaybeCompleteScanRequest();
+}
+
+void FilesRequestHandlerBase::FileRequestStartCallback(
+    size_t index,
+    const BinaryUploadRequest& request) {
+  delegate_->SetFileScanStartTime(index);
 }
 
 }  // namespace enterprise_connectors

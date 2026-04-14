@@ -30,7 +30,9 @@ class MockFilesRequestHandlerBaseDelegate
               (size_t index,
                const AnalysisSettings& settings,
                base::OnceCallback<void(ScanRequestUploadResult,
-                                       ContentAnalysisResponse)> callback),
+                                       ContentAnalysisResponse)> callback,
+               base::OnceCallback<void(const BinaryUploadRequest&)>
+                   request_start_callback),
               (override));
   MOCK_METHOD(void,
               ReportWarningBypass,
@@ -57,6 +59,11 @@ class MockFilesRequestHandlerBaseDelegate
               (const, override));
   MOCK_METHOD(const FilesRequestHandlerBase::FileInfo&,
               GetFileInfo,
+              (size_t index),
+              (override));
+  MOCK_METHOD(void, SetFileScanStartTime, (size_t index), (override));
+  MOCK_METHOD(const base::TimeTicks,
+              GetFileScanStartTime,
               (size_t index),
               (override));
   MOCK_METHOD(ReportingEventRouter*, GetReportingEventRouter, (), (override));
