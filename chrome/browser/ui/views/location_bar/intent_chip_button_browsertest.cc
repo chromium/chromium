@@ -344,7 +344,7 @@ class IntentChipButtonBrowserUiTest
     // Verify against the Skia gold result baseline from crrev.com/c/6092068.
     // TODO(crbug.com/384567062): Support set_baseline() in UiBrowserTest.
     const std::string screenshot_name = base::StrCat(
-        {test_info->test_suite_name(), "_", test_info->name(), "_7757280"});
+        {test_info->test_suite_name(), "_", test_info->name(), "_6092068"});
     return VerifyPixelUi(browser_view->GetWidget(),
                          test_info->test_suite_name(),
                          screenshot_name) != ui::test::ActionResult::kFailed;

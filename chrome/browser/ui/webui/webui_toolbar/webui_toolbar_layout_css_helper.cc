@@ -140,8 +140,6 @@ std::string_view LayoutConstantToCssVarName(LayoutConstant layout_constant) {
       return "--vertical-tab-strip-collapsed-vertical-padding";
     case kVerticalTabStripCollapsedSeparatorPadding:
       return "--vertical-tab-strip-collapsed-separator-padding";
-    case kVerticalTabStripComboButtonIconSize:
-      return "--vertical-tab-strip-combo-button-icon-size";
     case kVerticalTabStripButtonIconSize:
       return "--vertical-tab-strip-button-icon-size";
     case kVerticalTabStripTopButtonPadding:

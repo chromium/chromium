@@ -219,10 +219,7 @@ enum class LayoutConstant {
   // in the vertical tab strip when collapsed.
   kVerticalTabStripCollapsedSeparatorPadding,
 
-  // The icon size of the combo buttons in the vertical tab strip.
-  kVerticalTabStripComboButtonIconSize,
-
-  // The icon size of the collapse and new tab button in the vertical tab strip.
+  // The icon size of buttons in the vertical tab strip.
   kVerticalTabStripButtonIconSize,
 
   // The padding between the buttons in the top container of the vertical tab
