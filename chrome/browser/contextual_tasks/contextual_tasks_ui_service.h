@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_CONTEXTUAL_TASKS_CONTEXTUAL_TASKS_UI_SERVICE_H_
 
 #include <map>
+#include <set>
 #include <utility>
 #include <vector>
 
@@ -53,6 +54,8 @@ class LensMediaLinkHandler;
 }  // namespace lens
 
 namespace contextual_tasks {
+inline constexpr char kTaskQueryParam[] = "chrome_task_id";
+
 class ContextualTasksService;
 class ContextualTasksUIInterface;
 
@@ -141,6 +144,10 @@ class ContextualTasksUiService : public KeyedService {
   // Returns the URL that a task was created for. Once this is retrieved, the
   // entry is removed from the cache.
   virtual std::optional<GURL> GetInitialUrlForTask(const base::Uuid& uuid);
+
+  // Returns the URL that a task should be created for. This function does
+  // not clear the entry from the cache.
+  virtual std::optional<GURL> GetCreationUrlForTask(const base::Uuid& task_id);
 
   // Adds a callback to be run when the URL for a task becomes available.
   // This is only used in cases where the side panel is "warmed up" (i.e. using

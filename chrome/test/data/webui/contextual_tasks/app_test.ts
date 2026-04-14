@@ -43,6 +43,8 @@ suite('ContextualTasksAppTest', function() {
     loadTimeData.overrideValues({
       enableBasicModeZOrder: true,
       enableComposeboxJumpFix: false,
+      isGhostLoaderVisible: false,
+      isAiPage: true,
     });
     metrics = fakeMetricsPrivate();
     const proxy = new TestContextualTasksBrowserProxy('http://example.com');
@@ -107,6 +109,21 @@ suite('ContextualTasksAppTest', function() {
 
     assertEquals('AI Mode', document.title);
   });
+
+  test('properties initialized from loadTimeData', async () => {
+    loadTimeData.overrideValues({
+      isAiPage: false,
+      isZeroState: false,
+    });
+
+    const appElement = document.createElement('contextual-tasks-app');
+    document.body.appendChild(appElement);
+    await microtasksFinished();
+
+    assertFalse(appElement.hasAttribute('is-ai-page_'));
+    assertFalse(appElement.hasAttribute('is-zero-state_'));
+  });
+
 
   test('restores thread if task param set', async () => {
     window.history.replaceState({}, '', '?chrome_task_id=123');
@@ -838,6 +855,7 @@ suite('ContextualTasksAppTest', function() {
         appElement.setForcedComposeboxBoundsForTesting(initialBounds);
 
         // Wait for any composebox height updates to process.
+        await appElement.updateComplete;
         await microtasksFinished();
         const boundsBeforeNav = appElement.getForcedComposeboxBoundsForTesting();
 

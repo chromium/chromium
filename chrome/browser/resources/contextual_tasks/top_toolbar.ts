@@ -76,7 +76,7 @@ export class TopToolbarElement extends CrLitElement {
   override accessor title: string = '';
   accessor contextInfos: ContextInfo[] = [];
   accessor darkMode: boolean = false;
-  accessor isAiPage: boolean = false;
+  accessor isAiPage: boolean = loadTimeData.getBoolean('isAiPage');
   accessor enableOpenInNewTabButton: boolean = false;
   accessor showReopenTabs_: boolean = false;
   private browserProxy_: BrowserProxy = BrowserProxyImpl.getInstance();
@@ -85,7 +85,8 @@ export class TopToolbarElement extends CrLitElement {
       loadTimeData.getBoolean('expandButtonEnabled');
   private hideMenuOnAiPageEnabled_: boolean =
       loadTimeData.getBoolean('hideMenuOnAiPageEnabled');
-  accessor hideMenuButton_: boolean = this.hideMenuOnAiPageEnabled_;
+  accessor hideMenuButton_: boolean =
+      this.hideMenuOnAiPageEnabled_ && this.isAiPage;
 
   override connectedCallback() {
     super.connectedCallback();
