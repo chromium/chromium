@@ -38,7 +38,7 @@ class SearchEnginesHandler : public SettingsPageUIHandler,
   void OnEditedKeyword(TemplateURL* template_url,
                        const std::u16string& title,
                        const std::u16string& keyword,
-                       const std::string& url) override;
+                       const std::string& fixed_up_url) override;
 
   // SettingsPageUIHandler implementation.
   void RegisterMessages() override;

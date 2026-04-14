@@ -453,12 +453,13 @@ void SearchEnginesHandler::HandleSearchEngineEditStarted(
 void SearchEnginesHandler::OnEditedKeyword(TemplateURL* template_url,
                                            const std::u16string& title,
                                            const std::u16string& keyword,
-                                           const std::string& url) {
-  DCHECK(!url.empty());
+                                           const std::string& fixed_up_url) {
+  CHECK(!fixed_up_url.empty());
   if (template_url) {
-    list_controller_.ModifyTemplateURL(template_url, title, keyword, url);
+    list_controller_.ModifyTemplateURL(template_url, title, keyword,
+                                       fixed_up_url);
   } else {
-    list_controller_.AddTemplateURL(title, keyword, url);
+    list_controller_.AddTemplateURL(title, keyword, fixed_up_url);
   }
 
   edit_controller_.reset();

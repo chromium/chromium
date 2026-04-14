@@ -53,9 +53,9 @@ void EditSearchEngineController::AcceptAddOrEdit(
   DCHECK(!keyword_input.empty());
   TemplateURLService* template_url_service =
       TemplateURLServiceFactory::GetForProfile(profile_);
-  std::string url_string = GetFixedUpSearchEngineUrl(
+  std::string fixed_up_url = GetFixedUpSearchEngineUrl(
       url_input, template_url_service->search_terms_data());
-  DCHECK(!url_string.empty());
+  CHECK(!fixed_up_url.empty());
 
   const TemplateURL* existing =
       template_url_service->GetTemplateURLForKeyword(keyword_input);
@@ -76,12 +76,12 @@ void EditSearchEngineController::AcceptAddOrEdit(
     DCHECK(template_url_);
     template_url_service->AddWithOverrides(
         base::WrapUnique(template_url_.get()), title_input, keyword_input,
-        url_string);
+        fixed_up_url);
     base::RecordAction(UserMetricsAction("KeywordEditor_AddKeywordJS"));
   } else {
     // Adding or modifying an entry via the Delegate.
     edit_keyword_delegate_->OnEditedKeyword(template_url_, title_input,
-                                            keyword_input, url_string);
+                                            keyword_input, fixed_up_url);
   }
 }
 
