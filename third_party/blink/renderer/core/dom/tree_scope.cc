@@ -631,10 +631,10 @@ void TreeScope::AdoptIfNeeded(Node& node) {
 // This retargets |target| against the root of |this|.
 // The steps are different with the spec for performance reasons,
 // but the results should be the same.
-Element& TreeScope::Retarget(const Element& target) const {
+Node& TreeScope::Retarget(const Node& target) const {
   const TreeScope& target_scope = target.GetTreeScope();
   if (!target_scope.RootNode().IsShadowRoot())
-    return const_cast<Element&>(target);
+    return const_cast<Node&>(target);
 
   HeapVector<Member<const TreeScope>> target_ancestor_scopes;
   HeapVector<Member<const TreeScope>> context_ancestor_scopes;
@@ -655,10 +655,16 @@ Element& TreeScope::Retarget(const Element& target) const {
   }
 
   if (target_ancestor_riterator == target_ancestor_scopes.rend())
-    return const_cast<Element&>(target);
+    return const_cast<Node&>(target);
   Node& first_different_scope_root =
       (*target_ancestor_riterator).Get()->RootNode();
   return To<ShadowRoot>(first_different_scope_root).host();
+}
+
+// The result of retargeting an Element is always an Element, since the
+// retarget algorithm either returns the target itself or a shadow host.
+Element& TreeScope::Retarget(const Element& target) const {
+  return To<Element>(Retarget(static_cast<const Node&>(target)));
 }
 
 Element* TreeScope::AdjustedFocusedElementInternal(

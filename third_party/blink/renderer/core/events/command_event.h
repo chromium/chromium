@@ -44,6 +44,7 @@ class CommandEvent final : public Event {
 
   Element* source() const;
   void SetSource(Element* source) { source_ = source; }
+  Element* SourceElement() const override { return source_; }
 
  private:
   Member<Element> source_;

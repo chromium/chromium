@@ -129,6 +129,7 @@ class CORE_EXPORT TreeScope : public GarbageCollectedMixin {
 
   DOMSelection* GetSelection() const;
 
+  Node& Retarget(const Node& target) const;
   Element& Retarget(const Element& target) const;
 
   Element* AdjustedFocusedElementInternal(const Element& target) const;
