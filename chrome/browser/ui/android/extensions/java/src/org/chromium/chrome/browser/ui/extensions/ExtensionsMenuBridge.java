@@ -79,6 +79,19 @@ public class ExtensionsMenuBridge implements Destroyable {
     }
 
     /**
+     * Called when a site access option for an extension is selected in the UI.
+     *
+     * @param extensionId The ID of the extension.
+     * @param siteAccess The selected site access option.
+     */
+    public void onExtensionSiteAccessSelected(
+            String extensionId, @ExtensionsMenuTypes.UserSiteAccess int siteAccess) {
+        ExtensionsMenuBridgeJni.get()
+                .onSiteAccessSelected(
+                        mNativeExtensionsMenuDelegateAndroid, extensionId, siteAccess);
+    }
+
+    /**
      * Called when the site access toggle for an extension is changed in the UI.
      *
      * @param extensionId The ID of the extension.
@@ -295,6 +308,12 @@ public class ExtensionsMenuBridge implements Destroyable {
 
         /** Returns the optional section to display in the menu. */
         int getOptionalSection(long nativeExtensionsMenuDelegateAndroid);
+
+        /** Called when a site access option for an extension is selected in the UI. */
+        void onSiteAccessSelected(
+                long nativeExtensionsMenuDelegateAndroid,
+                @JniType("std::string") String extensionId,
+                @JniType("extensions::PermissionsManager::UserSiteAccess") int siteAccess);
 
         /** Called when the site access toggle for an extension is changed in the UI. */
         void onExtensionToggleSelected(
