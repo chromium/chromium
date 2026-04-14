@@ -1171,8 +1171,6 @@ void ExtensionDownloader::CreateExtensionLoader() {
   extension_loader_resource_request_ =
       std::make_unique<network::ResourceRequest>();
   extension_loader_resource_request_->url = fetch->url;
-  extension_loader_resource_request_->redirect_mode =
-      network::mojom::RedirectMode::kError;
 
   int load_flags = net::LOAD_DISABLE_CACHE;
   bool is_secure = fetch->url.SchemeIsCryptographic();
