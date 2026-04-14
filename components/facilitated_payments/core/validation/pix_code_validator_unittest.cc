@@ -220,6 +220,20 @@ TEST_P(PixCodeValidatorTest, LengthWithLeadingPlus) {
                            PixQrCodeResult::InvalidMerchantPresentedCode));
 }
 
+TEST_P(PixCodeValidatorTest, NonNumericSectionId) {
+  // Code is invalid since it contains a top-level non-numeric section ID
+  // ("A1").
+  EXPECT_TRUE(CheckPixQrCodeResult(
+      "00020126270014br.gov.bcb.pix0105ABCDEA102AB63041D3D",
+      PixQrCodeResult::InvalidMerchantPresentedCode));
+
+  // Code is invalid since the merchant account information section contains a
+  // nested non-numeric section ID ("A1").
+  EXPECT_TRUE(CheckPixQrCodeResult(
+      "00020126330014br.gov.bcb.pix0105ABCDEA102AB63041D3D",
+      PixQrCodeResult::InvalidMerchantPresentedCode));
+}
+
 TEST(PixCodeValidatorCxxTest, ContainsPixCodeIdentifier) {
   constexpr char kPixCodeIndicatorLowercase[] = "0014br.gov.bcb.pix";
   EXPECT_TRUE(PixCodeValidator::ContainsPixIdentifier(

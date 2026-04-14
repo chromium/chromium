@@ -120,6 +120,9 @@ fn parse_next_data_object(input: &str) -> Option<(Section<'_>, &str)> {
     // - The value field has a minimum length of one character and maximum length of
     //   99 characters.
     let (id, rest) = input.split_at_checked(2)?;
+    if id.chars().any(|c| !c.is_ascii_digit()) {
+        return None;
+    }
     let (length, rest) = rest.split_at_checked(2)?;
     if length.starts_with('+') {
         return None;
