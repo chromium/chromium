@@ -31,6 +31,7 @@ import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarButtonControl
 import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarButtonVariant;
 import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarFeatures;
 import org.chromium.chrome.browser.toolbar.adaptive.OptionalNewTabButtonController;
+import org.chromium.chrome.browser.ui.browser_window.ChromeAndroidTask;
 import org.chromium.components.feature_engagement.Tracker;
 import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.modaldialog.ModalDialogManager;
@@ -55,6 +56,7 @@ public class TabbedAdaptiveToolbarBehavior implements AdaptiveToolbarBehavior {
     private final MonotonicObservableSupplier<@StripVisibilityState Integer>
             mTabStripVisibilitySupplier;
     private final GlicToolbarButtonController.GlicButtonDelegate mToggleGlicCallback;
+    private final Supplier<ChromeAndroidTask> mChromeAndroidTaskSupplier;
 
     /**
      * @param context The Android context.
@@ -82,7 +84,8 @@ public class TabbedAdaptiveToolbarBehavior implements AdaptiveToolbarBehavior {
             Supplier<TabModelSelector> tabModelSelectorSupplier,
             Supplier<ModalDialogManager> modalDialogManagerSupplier,
             MonotonicObservableSupplier<@StripVisibilityState Integer> tabStripVisibilitySupplier,
-            GlicToolbarButtonController.GlicButtonDelegate toggleGlicCallback) {
+            GlicToolbarButtonController.GlicButtonDelegate toggleGlicCallback,
+            Supplier<ChromeAndroidTask> chromeAndroidTaskSupplier) {
         mContext = context;
         mActivityLifecycleDispatcher = activityLifecycleDispatcher;
         mTabCreatorManagerSupplier = tabCreatorManagerSupplier;
@@ -95,6 +98,7 @@ public class TabbedAdaptiveToolbarBehavior implements AdaptiveToolbarBehavior {
         mModalDialogManagerSupplier = modalDialogManagerSupplier;
         mTabStripVisibilitySupplier = tabStripVisibilitySupplier;
         mToggleGlicCallback = toggleGlicCallback;
+        mChromeAndroidTaskSupplier = chromeAndroidTaskSupplier;
     }
 
     @Override
@@ -143,7 +147,11 @@ public class TabbedAdaptiveToolbarBehavior implements AdaptiveToolbarBehavior {
             controller.addButtonVariant(
                     AdaptiveToolbarButtonVariant.GLIC,
                     new GlicToolbarButtonController(
-                            mContext, mActivityTabProvider, mToggleGlicCallback, trackerSupplier));
+                            mContext,
+                            mActivityTabProvider,
+                            mToggleGlicCallback,
+                            trackerSupplier,
+                            mChromeAndroidTaskSupplier));
         }
 
         mRegisterVoiceSearchRunnable.run();

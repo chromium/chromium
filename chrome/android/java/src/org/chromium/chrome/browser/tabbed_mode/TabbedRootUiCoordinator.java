@@ -1233,7 +1233,8 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
                 mModalDialogManagerSupplier,
                 // TODO(agrieve): See if this can be changed to a NonNullObservableSupplier.
                 (MonotonicObservableSupplier<Integer>) mTabStripVisibilitySupplier,
-                (preventClose) -> toggleGlic(preventClose));
+                (preventClose) -> toggleGlic(preventClose),
+                mChromeAndroidTaskSupplier);
     }
 
     @Override

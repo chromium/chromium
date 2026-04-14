@@ -37,6 +37,7 @@ import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarFeatures;
 import org.chromium.chrome.browser.toolbar.optional_button.BaseButtonDataProvider;
 import org.chromium.chrome.browser.toolbar.optional_button.ButtonData;
 import org.chromium.chrome.browser.toolbar.optional_button.ButtonData.ButtonSpec;
+import org.chromium.chrome.browser.ui.browser_window.ChromeAndroidTask;
 import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.components.feature_engagement.EventConstants;
 import org.chromium.components.feature_engagement.Tracker;
@@ -48,7 +49,7 @@ import java.util.function.Supplier;
 /** Defines a toolbar button to open the Glic bottom sheet. */
 @NullMarked
 public class GlicToolbarButtonController extends BaseButtonDataProvider
-        implements ActorKeyedService.Observer {
+        implements ActorKeyedService.Observer, GlicKeyedService.GlobalShowHideObserver {
     @IntDef({ButtonState.DEFAULT, ButtonState.WORKING, ButtonState.NEEDS_REVIEW, ButtonState.DONE})
     @Retention(RetentionPolicy.SOURCE)
     private @interface ButtonState {
@@ -71,8 +72,10 @@ public class GlicToolbarButtonController extends BaseButtonDataProvider
 
     private final GlicButtonDelegate mToggleGlicCallback;
     private final Supplier<@Nullable Tracker> mTrackerSupplier;
+    private final Supplier<ChromeAndroidTask> mTaskSupplier;
     private @Nullable Profile mCurrentProfile;
     private @Nullable ActorKeyedService mCurrentActorService;
+    private @Nullable GlicKeyedService mCurrentGlicService;
     private final ButtonSpec mDefaultSpec;
     private final ButtonSpec mWorkingSpec;
     private final ButtonSpec mReviewSpec;
@@ -80,18 +83,21 @@ public class GlicToolbarButtonController extends BaseButtonDataProvider
 
     private @ButtonState int mButtonState = ButtonState.DEFAULT;
     private boolean mPersistDoneState;
+    private boolean mIsPanelOpen;
 
     /**
      * @param context The Android context.
      * @param activeTabSupplier The currently active tab.
      * @param toggleGlicCallback Callback to run when the button is clicked to open Glic.
      * @param trackerSupplier Supplier for the current profile tracker.
+     * @param taskSupplier Supplier for the ChromeAndroidTask.
      */
     public GlicToolbarButtonController(
             Context context,
             Supplier<@Nullable Tab> activeTabSupplier,
             GlicButtonDelegate toggleGlicCallback,
-            Supplier<@Nullable Tracker> trackerSupplier) {
+            Supplier<@Nullable Tracker> trackerSupplier,
+            Supplier<ChromeAndroidTask> taskSupplier) {
         // TODO(crbug.com/482372270): Add correct styling to button including Nudge state text,
         // active state shape change, and appropriate colors.
         super(
@@ -106,6 +112,7 @@ public class GlicToolbarButtonController extends BaseButtonDataProvider
                 /* tooltipTextResId= */ Resources.ID_NULL);
         mToggleGlicCallback = toggleGlicCallback;
         mTrackerSupplier = trackerSupplier;
+        mTaskSupplier = taskSupplier;
         mDefaultSpec = mButtonData.getButtonSpec();
         mWorkingSpec = createWorkingSpec(context);
         mReviewSpec = createReviewSpec();
@@ -211,7 +218,7 @@ public class GlicToolbarButtonController extends BaseButtonDataProvider
 
         // This can be assumed because shouldShowButton hides the entrypoint if there's no tab.
         assumeNonNull(tab);
-        updateActorServiceObservation(tab.getProfile());
+        updateObservations(tab.getProfile());
         updateButtonState();
 
         ButtonSpec desiredSpec = mDefaultSpec;
@@ -229,63 +236,86 @@ public class GlicToolbarButtonController extends BaseButtonDataProvider
             default:
                 desiredSpec = mDefaultSpec;
         }
-        mButtonData.setButtonSpec(desiredSpec);
+        mButtonData.setButtonSpec(
+                new ButtonSpec.Builder(desiredSpec).setIsChecked(mIsPanelOpen).build());
 
         mButtonData.setEnabled(true);
         return buttonData;
     }
 
     private void updateButtonState() {
-        mButtonState = ButtonState.DEFAULT;
+        if (mCurrentActorService == null) {
+            mButtonState = ButtonState.DEFAULT;
+            return;
+        }
 
-        if (mCurrentActorService != null) {
-            ActorTask task = mCurrentActorService.getCurrentActiveTask();
-            if (task != null) {
-                @ActorTaskState int state = task.getState();
-                mPersistDoneState = false;
-                switch (state) {
-                    case ActorTaskState.WAITING_ON_USER:
-                    case ActorTaskState.FAILED:
-                        mButtonState = ButtonState.NEEDS_REVIEW;
-                        break;
-                    case ActorTaskState.FINISHED:
-                        mButtonState = ButtonState.DONE;
-                        mPersistDoneState = true;
-                        break;
-                    case ActorTaskState.ACTING:
-                    case ActorTaskState.REFLECTING:
-                        mButtonState = ButtonState.WORKING;
-                        break;
-                    case ActorTaskState.PAUSED_BY_USER:
-                    case ActorTaskState.PAUSED_BY_ACTOR:
-                        mButtonState = ButtonState.WORKING;
-                        break;
-                    case ActorTaskState.CANCELLED:
-                    case ActorTaskState.CREATED:
-                        // Show the default button for these states.
-                        break;
-                    default:
-                        throw new AssertionError("Unexpected task state: " + state);
-                }
-            } else if (mPersistDoneState) {
+        ActorTask task = mCurrentActorService.getCurrentActiveTask();
+        if (task == null) {
+            // Fallback to DONE state if it was persisted, otherwise DEFAULT.
+            mButtonState = mPersistDoneState ? ButtonState.DONE : ButtonState.DEFAULT;
+            return;
+        }
+
+        mPersistDoneState = false;
+        @ActorTaskState int state = task.getState();
+        switch (state) {
+            case ActorTaskState.WAITING_ON_USER:
+            case ActorTaskState.FAILED:
+                mButtonState = ButtonState.NEEDS_REVIEW;
+                break;
+            case ActorTaskState.FINISHED:
                 mButtonState = ButtonState.DONE;
-            }
+                mPersistDoneState = true;
+                break;
+            case ActorTaskState.ACTING:
+            case ActorTaskState.REFLECTING:
+            case ActorTaskState.PAUSED_BY_USER:
+            case ActorTaskState.PAUSED_BY_ACTOR:
+                mButtonState = ButtonState.WORKING;
+                break;
+            case ActorTaskState.CANCELLED:
+            case ActorTaskState.CREATED:
+                mButtonState = ButtonState.DEFAULT;
+                break;
+            default:
+                throw new AssertionError("Unexpected task state: " + state);
         }
     }
 
-    private void updateActorServiceObservation(Profile profile) {
+    private void updateIsPanelOpen() {
+        if (mCurrentGlicService == null || mCurrentProfile == null) return;
+        ChromeAndroidTask task = mTaskSupplier.get();
+        if (task == null) return;
+
+        long browserWindowPtr = task.getOrCreateNativeBrowserWindowPtr(mCurrentProfile);
+        boolean isOpen = mCurrentGlicService.isPanelShowingForBrowser(browserWindowPtr);
+        if (mIsPanelOpen != isOpen) {
+            mIsPanelOpen = isOpen;
+            notifyObservers(true);
+        }
+    }
+
+    private void updateObservations(Profile profile) {
         assert !profile.isOffTheRecord();
         if (profile.equals(mCurrentProfile)) return;
 
         if (mCurrentActorService != null) {
             mCurrentActorService.removeObserver(this);
         }
+        if (mCurrentGlicService != null) {
+            mCurrentGlicService.removeGlobalShowHideObserver(this);
+        }
 
         mCurrentProfile = profile;
         mCurrentActorService = ActorKeyedServiceFactory.getForProfile(profile);
+        mCurrentGlicService = GlicKeyedServiceFactory.getForProfile(profile);
 
         if (mCurrentActorService != null) {
             mCurrentActorService.addObserver(this);
+        }
+        if (mCurrentGlicService != null) {
+            mCurrentGlicService.addGlobalShowHideObserver(this);
+            updateIsPanelOpen();
         }
     }
 
@@ -294,6 +324,10 @@ public class GlicToolbarButtonController extends BaseButtonDataProvider
         if (mCurrentActorService != null) {
             mCurrentActorService.removeObserver(this);
             mCurrentActorService = null;
+        }
+        if (mCurrentGlicService != null) {
+            mCurrentGlicService.removeGlobalShowHideObserver(this);
+            mCurrentGlicService = null;
         }
         mCurrentProfile = null;
         super.destroy();
@@ -318,5 +352,17 @@ public class GlicToolbarButtonController extends BaseButtonDataProvider
         if (mButtonState != oldButtonState) {
             notifyObservers(true);
         }
+    }
+
+    @Override
+    public void onGlobalShowHide(boolean isOpened) {
+        if (!isOpened) {
+            if (mIsPanelOpen) {
+                mIsPanelOpen = false;
+                notifyObservers(true);
+            }
+            return;
+        }
+        updateIsPanelOpen();
     }
 }
