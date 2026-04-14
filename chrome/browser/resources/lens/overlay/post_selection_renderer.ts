@@ -295,6 +295,9 @@ export class PostSelectionRendererElement extends
         this.shouldDarkenScrim = true;
       }
     });
+    this.eventTracker_.add(this, 'pointermove', (e: PointerEvent) => {
+      this.handlePointerMoveForFocus(e);
+    });
     this.resizeObserver.observe(this);
     // Set up listener to listen to events from C++.
     this.listenerIds = [
@@ -321,11 +324,53 @@ export class PostSelectionRendererElement extends
     this.listenerIds = [];
   }
 
-  private onStaticRegionPointerEnter(event: PointerEvent) {
-    const id = (event.currentTarget as HTMLElement).dataset['id'];
-    if (id) {
-      this.dispatchEvent(new CustomEvent(
-          'activate-region', {bubbles: true, composed: true, detail: {id}}));
+  private handlePointerMoveForFocus(event: PointerEvent) {
+    // Don't switch focus if the user is currently dragging/resizing.
+    if (this.currentDragTarget !== DragTarget.NONE) {
+      return;
+    }
+
+    const elements =
+        this.shadowRoot!.elementsFromPoint(event.clientX, event.clientY) as
+        HTMLElement[];
+
+    // If we're hovering over the active region's controls (close button, corners),
+    // don't switch focus.
+    if (elements.some(
+            el => el.classList.contains('close-button') ||
+                el.classList.contains('corner-hit-box'))) {
+      return;
+    }
+
+    // Filter for elements that represent a selection region and map them to
+    // their corresponding region ID and normalized area.
+    const smallestRegion =
+        elements
+            .filter(
+                el => el.classList.contains('static-region') ||
+                    el.id === 'postSelection')
+            .map(el => {
+              const id = el.id === 'postSelection' ? this.activeRegionId :
+                                                     el.dataset['id'];
+              const region = this.selectedRegions.find(r => r.id === id);
+              return {
+                id,
+                area: region ? region.region.width * region.region.height :
+                               Infinity,
+              };
+            })
+            .reduce(
+                (prev, curr) => (curr.area < prev.area ? curr : prev),
+                {id: '', area: Infinity});
+
+    // If the smallest region at this point isn't already the active one,
+    // request a focus switch.
+    if (smallestRegion.id && smallestRegion.id !== this.activeRegionId) {
+      this.dispatchEvent(new CustomEvent('activate-region', {
+        bubbles: true,
+        composed: true,
+        detail: {id: smallestRegion.id},
+      }));
     }
   }
 
