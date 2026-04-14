@@ -135,6 +135,7 @@ class ServiceWorkerDevToolsAgentHost : public DevToolsAgentHostImpl,
   // DevToolsAgentHostImpl overrides.
   bool AttachSession(DevToolsSession* session) override;
   void DetachSession(DevToolsSession* session) override;
+  void UpdateRendererChannel(bool force) override;
   protocol::TargetAutoAttacher* auto_attacher() override;
 
   // RenderProcessHostObserver implementation.
@@ -181,6 +182,10 @@ class ServiceWorkerDevToolsAgentHost : public DevToolsAgentHostImpl,
 
   base::ScopedObservation<RenderProcessHost, RenderProcessHostObserver>
       process_observation_{this};
+
+  mojo::PendingRemote<blink::mojom::DevToolsAgent> pending_agent_remote_;
+  mojo::PendingReceiver<blink::mojom::DevToolsAgentHost>
+      pending_agent_host_receiver_;
 };
 
 }  // namespace content

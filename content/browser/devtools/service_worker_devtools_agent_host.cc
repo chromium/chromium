@@ -24,6 +24,7 @@
 #include "content/browser/service_worker/service_worker_version.h"
 #include "content/browser/storage_partition_impl.h"
 #include "content/browser/url_loader_factory_params_helper.h"
+#include "content/common/features.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/common/child_process_id_util.h"
@@ -290,6 +291,26 @@ void ServiceWorkerDevToolsAgentHost::DetachSession(DevToolsSession* session) {
   }
 }
 
+void ServiceWorkerDevToolsAgentHost::UpdateRendererChannel(bool force) {
+  if (state_ != WORKER_READY) {
+    return;
+  }
+
+  // This function can be called multiple times for each DevTools attachment/
+  // detachment. We only want to bind the renderer-provided pipes during the
+  // very first attachment. Since the pipes are consumed (moved) during binding,
+  // we use `pending_agent_remote_.is_valid()` to detect if this is the first
+  // attachment. Subsequent calls will see an invalid remote and correctly skip
+  // this block.
+  if (force && pending_agent_remote_.is_valid()) {
+    // Both pipes are provided as a pair and we only bind them once.
+    CHECK(pending_agent_host_receiver_.is_valid());
+    GetRendererChannel()->SetRenderer(std::move(pending_agent_remote_),
+                                      std::move(pending_agent_host_receiver_),
+                                      worker_process_id_.GetUnsafeValue());
+  }
+}
+
 protocol::TargetAutoAttacher* ServiceWorkerDevToolsAgentHost::auto_attacher() {
   return auto_attacher_.get();
 }
@@ -299,10 +320,11 @@ void ServiceWorkerDevToolsAgentHost::WorkerReadyForInspection(
     mojo::PendingReceiver<blink::mojom::DevToolsAgentHost> host_receiver) {
   DCHECK_EQ(WORKER_NOT_READY, state_);
   state_ = WORKER_READY;
-  // TODO(crbug.com/379869738) Remove GetUnsafeValue.
-  GetRendererChannel()->SetRenderer(std::move(agent_remote),
-                                    std::move(host_receiver),
-                                    worker_process_id_.GetUnsafeValue());
+  pending_agent_remote_ = std::move(agent_remote);
+  pending_agent_host_receiver_ = std::move(host_receiver);
+  UpdateRendererChannel(
+      IsAttached() || !base::FeatureList::IsEnabled(
+                          ::features::kServiceWorkerDevToolsWorkerReadyCheck));
   for (auto* inspector : protocol::InspectorHandler::ForAgentHost(this)) {
     inspector->TargetReloadedAfterCrash();
   }
@@ -338,6 +360,8 @@ void ServiceWorkerDevToolsAgentHost::WorkerStopped() {
   state_ = WORKER_TERMINATED;
   worker_process_id_ = ChildProcessId();
   worker_route_id_ = IPC::mojom::kRoutingIdNone;
+  pending_agent_remote_.reset();
+  pending_agent_host_receiver_.reset();
   for (auto* inspector : protocol::InspectorHandler::ForAgentHost(this)) {
     inspector->TargetCrashed();
   }

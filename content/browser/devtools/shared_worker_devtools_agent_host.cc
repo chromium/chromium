@@ -172,7 +172,15 @@ void SharedWorkerDevToolsAgentHost::UpdateRendererChannel(bool force) {
     return;
   }
 
+  // This function can be called multiple times for each DevTools attachment/
+  // detachment. We only want to bind the renderer-provided pipes during the
+  // very first attachment. Since the pipes are consumed (moved) during binding,
+  // we use `pending_agent_remote_.is_valid()` to detect if this is the first
+  // attachment. Subsequent calls will see an invalid remote and correctly skip
+  // this block.
   if (force && pending_agent_remote_.is_valid()) {
+    // Both pipes are provided as a pair and we only bind them once.
+    CHECK(pending_agent_host_receiver_.is_valid());
     GetRendererChannel()->SetRenderer(
         std::move(pending_agent_remote_),
         std::move(pending_agent_host_receiver_),
