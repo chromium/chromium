@@ -29,6 +29,7 @@ source_set("performance_manager") {
     "public/chrome_browser_main_extra_parts_performance_manager.h",
     "public/chrome_content_browser_client_performance_manager_part.h",
     "user_tuning/profile_discard_opt_out_list_helper.h",
+    "user_tuning/profile_force_foreground_priority_list_helper.h",
   ]
 
   public_deps = [
@@ -92,12 +93,12 @@ source_set("performance_manager") {
       "policies/working_set_trimmer_policy_chromeos.h",
     ]
     public_deps += [
-      "//chrome/browser/ash/arc/session:session",
+      "//chrome/browser/ash/arc/session",
       "//chromeos/ash/experiences/arc",
       "//chromeos/ash/experiences/arc/mojom",
+      "//chromeos/ash/experiences/arc/process",
       "//chromeos/ash/experiences/arc/session",
       "//chromeos/ash/experiences/arc/session:connection_holder",
-      "//chromeos/ash/experiences/arc/process",
       "//chromeos/dbus/power",
       "//ui/wm/public",
     ]
@@ -116,9 +117,7 @@ source_set("performance_manager") {
 
   if (enable_extensions_core) {
     public += [ "extension_watcher.h" ]
-    public_deps += [
-      "//extensions/browser",
-    ]
+    public_deps += [ "//extensions/browser" ]
   }
 }
 
@@ -145,6 +144,7 @@ source_set("impl") {
     "policies/transient_keep_alive_policy.cc",
     "policies/working_set_trimmer_policy.cc",
     "user_tuning/profile_discard_opt_out_list_helper.cc",
+    "user_tuning/profile_force_foreground_priority_list_helper.cc",
     "user_tuning/user_tuning_utils.cc",
   ]
 
@@ -160,13 +160,13 @@ source_set("impl") {
     "//chrome/browser/history",
     "//chrome/browser/memory",
     "//chrome/browser/preloading/prefetch/no_state_prefetch",
+    "//chrome/browser/profiles",
     "//chrome/browser/profiles:profile_manager",
-    "//chrome/browser/profiles:profiles",
     "//chrome/browser/resource_coordinator",
     "//chrome/browser/resource_coordinator:mojo_bindings",
     "//chrome/browser/search_engines",
     "//chrome/browser/sessions",
-    "//chrome/browser/ui/browser_window:browser_window",
+    "//chrome/browser/ui/browser_window",
     "//chrome/common:buildflags",
     "//chrome/common:chrome_features",
     "//components/favicon/content",
@@ -240,7 +240,7 @@ source_set("impl") {
       "//ash/public/cpp",
       "//chrome/browser/ash/arc",
       "//chrome/browser/ash/arc:arc_util",
-      "//chrome/browser/ash/arc/session:session",
+      "//chrome/browser/ash/arc/session",
       "//chrome/browser/ash/arc/vmm",
       "//chromeos/ash/components/dbus/resourced",
       "//chromeos/ash/components/memory",

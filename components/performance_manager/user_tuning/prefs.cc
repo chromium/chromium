@@ -12,11 +12,19 @@
 
 #include "base/json/values_util.h"
 #include "base/values.h"
+#include "components/performance_manager/public/features.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 
 namespace performance_manager::user_tuning::prefs {
+
+bool IsForceForegroundPriorityForAllTabsEnabled(PrefService* pref_service) {
+  return base::FeatureList::IsEnabled(
+             features::kForceForegroundPriorityForAllTabs) ||
+         (pref_service &&
+          pref_service->GetBoolean(kForceForegroundPriorityForAllTabs));
+}
 
 void RegisterLocalStatePrefs(PrefRegistrySimple* registry) {
   registry->RegisterBooleanPref(kMemorySaverModeEnabled, false);
@@ -48,6 +56,7 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {
       kTabDiscardingExceptionsWithTime,
       user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
   registry->RegisterListPref(kManagedTabDiscardingExceptions);
+  registry->RegisterListPref(kForceForegroundPriorityForOrigins);
 }
 
 MemorySaverModeState GetCurrentMemorySaverModeState(PrefService* pref_service) {

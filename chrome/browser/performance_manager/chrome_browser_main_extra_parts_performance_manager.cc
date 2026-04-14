@@ -33,6 +33,7 @@
 #include "chrome/browser/performance_manager/policies/transient_keep_alive_policy.h"
 #include "chrome/browser/performance_manager/policies/working_set_trimmer_policy.h"
 #include "chrome/browser/performance_manager/user_tuning/profile_discard_opt_out_list_helper.h"
+#include "chrome/browser/performance_manager/user_tuning/profile_force_foreground_priority_list_helper.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/sessions/session_restore.h"
 #include "chrome/common/chrome_features.h"
@@ -369,6 +370,18 @@ void ChromeBrowserMainExtraPartsPerformanceManager::PostCreateThreads() {
 #else
   profile_discard_opt_out_list_helper_ = std::make_unique<
       performance_manager::user_tuning::ProfileDiscardOptOutListHelper>();
+
+  // Only create the per-origin force foreground priority list helper if the
+  // policy to force foreground priority for all tabs is disabled. If that
+  // policy is enabled, the per-origin list is redundant.
+  if (!performance_manager::user_tuning::prefs::
+          IsForceForegroundPriorityForAllTabsEnabled(
+              g_browser_process->local_state())) {
+    profile_force_foreground_priority_list_helper_ =
+        std::make_unique<performance_manager::user_tuning::
+                             ProfileForceForegroundPriorityListHelper>();
+  }
+
   // Create the UserPerformanceTuningManager and BatterySaverMode here so that
   // early UI code can register observers, but only start them in
   // PreMainMessageLoopRun because they require other systems like the
@@ -480,6 +493,7 @@ void ChromeBrowserMainExtraPartsPerformanceManager::PostMainMessageLoopRun() {
   user_performance_tuning_manager_.reset();
   performance_detection_manager_.reset();
   profile_discard_opt_out_list_helper_.reset();
+  profile_force_foreground_priority_list_helper_.reset();
 
   if (battery_state_sampler_)
     battery_state_sampler_->Shutdown();
@@ -503,6 +517,9 @@ void ChromeBrowserMainExtraPartsPerformanceManager::OnProfileAdded(
 #else
   profile_discard_opt_out_list_helper_->OnProfileAdded(profile);
 #endif
+  if (profile_force_foreground_priority_list_helper_) {
+    profile_force_foreground_priority_list_helper_->OnProfileAdded(profile);
+  }
 }
 
 void ChromeBrowserMainExtraPartsPerformanceManager::
@@ -523,4 +540,8 @@ void ChromeBrowserMainExtraPartsPerformanceManager::OnProfileWillBeDestroyed(
 #else
   profile_discard_opt_out_list_helper_->OnProfileWillBeRemoved(profile);
 #endif
+  if (profile_force_foreground_priority_list_helper_) {
+    profile_force_foreground_priority_list_helper_->OnProfileWillBeRemoved(
+        profile);
+  }
 }

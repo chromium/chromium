@@ -48,6 +48,7 @@ namespace user_tuning {
 class BatterySaverModeManager;
 class PerformanceDetectionManager;
 class ProfileDiscardOptOutListHelper;
+class ProfileForceForegroundPriorityListHelper;
 class UserPerformanceTuningManager;
 }  // namespace user_tuning
 
@@ -128,6 +129,10 @@ class ChromeBrowserMainExtraPartsPerformanceManager
   std::unique_ptr<
       performance_manager::user_tuning::ProfileDiscardOptOutListHelper>
       profile_discard_opt_out_list_helper_;
+
+  std::unique_ptr<performance_manager::user_tuning::
+                      ProfileForceForegroundPriorityListHelper>
+      profile_force_foreground_priority_list_helper_;
 
 #if !BUILDFLAG(IS_ANDROID)
   std::unique_ptr<performance_manager::user_tuning::BatterySaverModeManager>

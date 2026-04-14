@@ -7,6 +7,7 @@
 #include "base/functional/bind.h"
 #include "base/no_destructor.h"
 #include "base/notreached.h"
+#include "base/values.h"
 #include "components/performance_manager/decorators/frame_visibility_decorator.h"
 #include "components/performance_manager/decorators/page_load_tracker_decorator.h"
 #include "components/performance_manager/embedder/graph_features.h"
@@ -14,6 +15,7 @@
 #include "components/performance_manager/execution_context_priority/closing_page_voter.h"
 #include "components/performance_manager/execution_context_priority/extension_service_worker_voter.h"
 #include "components/performance_manager/execution_context_priority/force_foreground_voter.h"
+#include "components/performance_manager/execution_context_priority/force_foreground_voter_for_origins.h"
 #include "components/performance_manager/execution_context_priority/frame_audible_voter.h"
 #include "components/performance_manager/execution_context_priority/frame_capturing_media_stream_voter.h"
 #include "components/performance_manager/execution_context_priority/frame_visibility_voter.h"
@@ -44,6 +46,24 @@ GraphCreatedCallback* GetAdditionalGraphCreatedCallback() {
   static base::NoDestructor<GraphCreatedCallback>
       additional_graph_created_callback;
   return additional_graph_created_callback.get();
+}
+
+// Adds the ForceForegroundVoter to the graph if the corresponding feature or
+// policy is enabled.
+void AddForceForegroundVoter(
+    execution_context_priority::PriorityVotingSystem* priority_voting_system,
+    PrefService* pref_service) {
+#if !BUILDFLAG(IS_ANDROID)
+  if (user_tuning::prefs::IsForceForegroundPriorityForAllTabsEnabled(
+          pref_service)) {
+    // Casts a USER_BLOCKING vote for all frames and workers.
+    priority_voting_system
+        ->AddPriorityVoter<execution_context_priority::ForceForegroundVoter>();
+  } else {
+    priority_voting_system->AddPriorityVoter<
+        execution_context_priority::ForceForegroundVoterForOrigins>();
+  }
+#endif  // BUILDFLAG(IS_ANDROID)
 }
 
 // Adds the default set of execution context voters.
@@ -86,22 +106,7 @@ void AddVoters(GraphImpl* graph, PrefService* pref_service) {
           ->AddPriorityVoter<execution_context_priority::ClosingPageVoter>();
     }
 
-#if !BUILDFLAG(IS_ANDROID)
-    bool force_foreground_priority_policy_enabled =
-        pref_service &&
-        pref_service->GetBoolean(performance_manager::user_tuning::prefs::
-                                     kForceForegroundPriorityForAllTabs);
-#else
-    // User tuning local state prefs are not registered on Android.
-    bool force_foreground_priority_policy_enabled = false;
-#endif  // !BUILDFLAG(IS_ANDROID)
-    // Casts a USER_BLOCKING vote for all frames and workers.
-    if (base::FeatureList::IsEnabled(
-            features::kForceForegroundPriorityForAllTabs) ||
-        force_foreground_priority_policy_enabled) {
-      priority_voting_system->AddPriorityVoter<
-          execution_context_priority::ForceForegroundVoter>();
-    }
+    AddForceForegroundVoter(priority_voting_system, pref_service);
 
 #if BUILDFLAG(IS_MAC)
     // Casts a vote for each child frame with the parent's priority.

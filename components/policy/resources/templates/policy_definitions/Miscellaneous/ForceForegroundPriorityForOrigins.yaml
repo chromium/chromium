@@ -1,0 +1,34 @@
+caption: Force foreground priority for specific origins
+desc: |-
+  This policy allows you to specify a list of URL patterns. Background web content matching these patterns will be forced to run at foreground priority.
+
+  If the <ph name="FORCE_FOREGROUND_PRIORITY_FOR_ALL_TABS_POLICY_NAME">ForceForegroundPriorityForAllTabs</ph> policy is enabled, this list is ignored as all tabs will be forced to foreground priority.
+
+  If <ph name="FORCE_FOREGROUND_PRIORITY_FOR_ALL_TABS_POLICY_NAME">ForceForegroundPriorityForAllTabs</ph> is disabled or unset, only content matching the patterns in this list will be forced.
+
+  For detailed information on valid <ph name="URL_LABEL">URL</ph> patterns, please see https://support.google.com/chrome/a?p=url_blocklist_filter_format.
+
+  This policy only matches based on origin, so any path or query parameter in the pattern is ignored. Scheme, host, and port are supported.
+
+  If this list is empty or not set, no background content is forced to foreground priority.
+example_value:
+- https://www.example.com
+- '[*.]example.edu'
+- https://example.com:8080
+- '*://example.org:*/'
+features:
+  dynamic_refresh: true
+  per_profile: true
+owners:
+- pmonette@chromium.org
+- zmin@chromium.org
+- file://components/performance_manager/OWNERS
+schema:
+  items:
+    type: string
+  type: array
+supported_on:
+- chrome.*:149-
+- chrome_os:149-
+tags: []
+type: list

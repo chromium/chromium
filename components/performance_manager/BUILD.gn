@@ -60,6 +60,8 @@ static_library("performance_manager") {
     "execution_context_priority/extension_service_worker_voter.h",
     "execution_context_priority/force_foreground_voter.cc",
     "execution_context_priority/force_foreground_voter.h",
+    "execution_context_priority/force_foreground_voter_for_origins.cc",
+    "execution_context_priority/force_foreground_voter_for_origins.h",
     "execution_context_priority/frame_audible_voter.cc",
     "execution_context_priority/frame_audible_voter.h",
     "execution_context_priority/frame_capturing_media_stream_voter.cc",
@@ -317,6 +319,7 @@ static_library("performance_manager") {
     "//components/pref_registry",
     "//components/prefs",
     "//components/system_cpu",
+    "//components/url_matcher",
     "//third_party/blink/public/common:headers",
   ]
 
@@ -382,6 +385,7 @@ source_set("unit_tests") {
     "execution_context_priority/closing_page_voter_unittest.cc",
     "execution_context_priority/execution_context_priority_unittest.cc",
     "execution_context_priority/extension_service_worker_voter_unittest.cc",
+    "execution_context_priority/force_foreground_voter_for_origins_unittest.cc",
     "execution_context_priority/force_foreground_voter_unittest.cc",
     "execution_context_priority/frame_audible_voter_unittest.cc",
     "execution_context_priority/frame_capturing_media_stream_voter_unittest.cc",
@@ -458,6 +462,7 @@ source_set("unit_tests") {
     "//components/prefs:test_support",
     "//components/services/storage/public/cpp",
     "//components/ukm:test_support",
+    "//components/url_matcher",
     "//content/test:test_support",
     "//testing/gmock",
     "//testing/gtest",

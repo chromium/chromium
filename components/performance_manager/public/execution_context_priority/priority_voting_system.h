@@ -49,7 +49,7 @@ class PriorityVotingSystem
   // Adds a new PriorityVoter to the graph.
   template <class T, class... Args>
   void AddPriorityVoter(Args&&... args) {
-    AddPriorityVoter(std::make_unique<T>(std::forward(args)...));
+    AddPriorityVoter(std::make_unique<T>(std::forward<Args>(args)...));
   }
 
   // GraphOwned:

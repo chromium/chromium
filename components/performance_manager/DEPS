@@ -11,6 +11,7 @@ include_rules = [
   "+components/services/storage/public/cpp",
   "+components/system_cpu",
   "+components/ukm",
+  "+components/url_matcher",
   "+content/public/common",
   "+content/public/browser",
   "+content/public/test",
