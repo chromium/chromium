@@ -1902,6 +1902,10 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
 #pragma mark - TabGroupPositioner
 
 - (UIView*)viewAboveTabGroup {
+  if (IsChromeNextIaEnabled() && !IsFullscreenRefactoringEnabled()) {
+    return [LayoutGuideCenterForBrowser(nil)
+        referencedViewUnderName:kAppContentGuide];
+  }
   return self.browserLayoutViewController.view;
 }
 
