@@ -8,6 +8,7 @@
 #include "base/functional/callback.h"
 #include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
+#include "base/observer_list.h"
 #include "third_party/blink/public/platform/scheduler/web_scoped_virtual_time_pauser.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/scheduler/public/feature_and_js_location_blocking_bfcache.h"
@@ -16,7 +17,6 @@
 #include "third_party/blink/renderer/platform/scheduler/public/web_scheduling_priority.h"
 #include "third_party/blink/renderer/platform/scheduler/public/web_scheduling_queue_type.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
-#include "third_party/blink/renderer/platform/wtf/hash_map.h"
 
 namespace {
 
@@ -47,17 +47,24 @@ class PLATFORM_EXPORT FrameOrWorkerScheduler {
   using OnLifecycleStateChangedCallback =
       base::RepeatingCallback<void(scheduler::SchedulingLifecycleState)>;
 
-  class PLATFORM_EXPORT LifecycleObserverHandle {
+  class PLATFORM_EXPORT LifecycleObserverHandle : public base::CheckedObserver {
     USING_FAST_MALLOC(LifecycleObserverHandle);
 
    public:
-    explicit LifecycleObserverHandle(FrameOrWorkerScheduler* scheduler);
     LifecycleObserverHandle(const LifecycleObserverHandle&) = delete;
     LifecycleObserverHandle& operator=(const LifecycleObserverHandle&) = delete;
-    ~LifecycleObserverHandle();
+    ~LifecycleObserverHandle() override;
 
    private:
+    friend class FrameOrWorkerScheduler;
+
+    LifecycleObserverHandle(FrameOrWorkerScheduler* scheduler,
+                            ObserverType type,
+                            OnLifecycleStateChangedCallback callback);
+
     base::WeakPtr<FrameOrWorkerScheduler> scheduler_;
+    ObserverType observer_type_;
+    OnLifecycleStateChangedCallback callback_;
   };
 
   // RAII handle which should be kept alive as long as the feature is active
@@ -254,25 +261,13 @@ class PLATFORM_EXPORT FrameOrWorkerScheduler {
   GetFrameOrWorkerSchedulerWeakPtr() = 0;
 
  private:
-  class ObserverState {
-   public:
-    ObserverState(ObserverType, OnLifecycleStateChangedCallback);
-    ObserverState(const ObserverState&) = delete;
-    ObserverState& operator=(const ObserverState&) = delete;
-    ~ObserverState();
+  void RemoveLifecycleObserver(LifecycleObserverHandle*);
 
-    ObserverType GetObserverType() const { return observer_type_; }
-    OnLifecycleStateChangedCallback& GetCallback() { return callback_; }
+  base::ObserverList<LifecycleObserverHandle,
+                     /*check_empty=*/false,
+                     base::ObserverListReentrancyPolicy::kDisallowReentrancy>
+      lifecycle_observers_{base::ObserverListPolicy::EXISTING_ONLY};
 
-   private:
-    ObserverType observer_type_;
-    OnLifecycleStateChangedCallback callback_;
-  };
-
-  void RemoveLifecycleObserver(LifecycleObserverHandle* handle);
-
-  HashMap<LifecycleObserverHandle*, std::unique_ptr<ObserverState>>
-      lifecycle_observers_;
   base::WeakPtrFactory<FrameOrWorkerScheduler> weak_factory_{this};
 };
 
