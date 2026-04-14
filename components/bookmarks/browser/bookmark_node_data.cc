@@ -75,6 +75,7 @@ void OnReadDataFromClipboardComplete(
 
 #if !BUILDFLAG(IS_APPLE)
 namespace {
+constexpr size_t kMaxBookmarkNestingDepth = 500;
 constexpr size_t kMaxVectorPreallocateSize = 10000;
 }  // namespace
 #endif
@@ -121,7 +122,8 @@ void BookmarkNodeData::Element::WriteToLegacyPickle(
 }
 
 bool BookmarkNodeData::Element::ReadFromLegacyPickle(
-    base::PickleIterator* iterator) {
+    base::PickleIterator* iterator,
+    size_t depth) {
   std::string url_spec;
   if (!iterator->ReadBool(&is_url) || !iterator->ReadString(&url_spec) ||
       !iterator->ReadString16(&title) || !iterator->ReadInt64(&id_)) {
@@ -145,6 +147,10 @@ bool BookmarkNodeData::Element::ReadFromLegacyPickle(
   }
   children.clear();
   if (!is_url) {
+    if (depth >= kMaxBookmarkNestingDepth) {
+      return false;
+    }
+
     uint32_t children_count_tmp;
     if (!iterator->ReadUInt32(&children_count_tmp)) {
       return false;
@@ -163,7 +169,7 @@ bool BookmarkNodeData::Element::ReadFromLegacyPickle(
         base::checked_cast<size_t>(children_count_tmp);
     for (size_t i = 0; i < children_count; ++i) {
       children.emplace_back();
-      if (!children.back().ReadFromLegacyPickle(iterator)) {
+      if (!children.back().ReadFromLegacyPickle(iterator, depth + 1)) {
         return false;
       }
     }
@@ -193,7 +199,8 @@ base::Pickle BookmarkNodeData::Element::ToPickle() const {
   return pickle;
 }
 
-bool BookmarkNodeData::Element::FromPickle(base::PickleIterator iterator) {
+bool BookmarkNodeData::Element::FromPickle(base::PickleIterator iterator,
+                                           size_t depth) {
   std::string url_spec;
   if (!iterator.ReadBool(&is_url) || !iterator.ReadString(&url_spec) ||
       !iterator.ReadString16(&title) || !iterator.ReadInt64(&id_)) {
@@ -221,6 +228,10 @@ bool BookmarkNodeData::Element::FromPickle(base::PickleIterator iterator) {
 
   children.clear();
   if (!is_url) {
+    if (depth >= kMaxBookmarkNestingDepth) {
+      return false;
+    }
+
     uint32_t children_count_tmp = 0;
     if (!iterator.ReadUInt32(&children_count_tmp)) {
       return false;
@@ -245,7 +256,7 @@ bool BookmarkNodeData::Element::FromPickle(base::PickleIterator iterator) {
         return false;
       }
       if (!children.back().FromPickle(
-              base::PickleIterator::WithData(span.value()))) {
+              base::PickleIterator::WithData(span.value()), depth + 1)) {
         return false;
       }
     }

@@ -29,6 +29,56 @@ using base::ASCIIToUTF16;
 
 namespace bookmarks {
 
+#if !BUILDFLAG(IS_APPLE)
+// Builds a legacy-format Pickle with `depth` levels of nested folders.
+namespace {
+
+base::Pickle BuildDeeplyNestedLegacyPickle(size_t depth) {
+  base::Pickle pickle;
+  base::FilePath(FILE_PATH_LITERAL("Default")).WriteToPickle(&pickle);
+  pickle.WriteUInt32(1);
+
+  for (size_t i = 0; i < depth; ++i) {
+    pickle.WriteBool(false);
+    pickle.WriteString(std::string());
+    pickle.WriteString16(u"Folder");
+    pickle.WriteInt64(static_cast<int64_t>(i + 1));
+    pickle.WriteUInt32(0);
+    pickle.WriteUInt32(i < depth - 1 ? 1 : 0);
+  }
+  return pickle;
+}
+
+// Builds a new-format Pickle with `depth` levels of nested folders.
+// Each child element is wrapped via WriteData (length-prefixed blob).
+base::Pickle BuildNestedElementPickle(size_t depth, size_t current) {
+  base::Pickle pickle;
+  pickle.WriteBool(false);
+  pickle.WriteString(std::string());
+  pickle.WriteString16(u"Folder");
+  pickle.WriteInt64(static_cast<int64_t>(current + 1));
+  pickle.WriteUInt32(0);
+  if (current < depth - 1) {
+    pickle.WriteUInt32(1);
+    pickle.WriteData(BuildNestedElementPickle(depth, current + 1));
+  } else {
+    pickle.WriteUInt32(0);
+  }
+  return pickle;
+}
+
+base::Pickle BuildDeeplyNestedNewFormatPickle(size_t depth) {
+  base::Pickle pickle;
+  base::FilePath(FILE_PATH_LITERAL("Default")).WriteToPickle(&pickle);
+  pickle.WriteUInt32(0);  // Sentinel for new format.
+  pickle.WriteUInt32(1);
+  pickle.WriteData(BuildNestedElementPickle(depth, 0));
+  return pickle;
+}
+
+}  // namespace
+#endif
+
 class BookmarkNodeDataTest : public testing::Test {
  public:
   BookmarkNodeDataTest()
@@ -684,6 +734,88 @@ TEST_F(BookmarkNodeDataTest, ReadFromPickleNewFormat) {
   EXPECT_EQ(2u, meta_info_map->size());
   EXPECT_EQ("somevalue", meta_info_map->at("somekey"));
   EXPECT_EQ("someothervalue", meta_info_map->at("someotherkey"));
+}
+#endif
+
+#if !BUILDFLAG(IS_APPLE)
+TEST_F(BookmarkNodeDataTest, ReadFromPickle_Legacy_DeeplyNested_Rejected) {
+  constexpr size_t kDepth = 600;
+  base::Pickle pickle = BuildDeeplyNestedLegacyPickle(kDepth);
+
+  BookmarkNodeData bookmark_node_data;
+  EXPECT_FALSE(bookmark_node_data.ReadFromPickle(base::PickleIterator(pickle)));
+}
+
+TEST_F(BookmarkNodeDataTest, ReadFromPickle_Legacy_ModerateNesting_Accepted) {
+  constexpr size_t kDepth = 50;
+  base::Pickle pickle = BuildDeeplyNestedLegacyPickle(kDepth);
+
+  BookmarkNodeData bookmark_node_data;
+  EXPECT_TRUE(bookmark_node_data.ReadFromPickle(base::PickleIterator(pickle)));
+
+  // Verify the structure: single element with nested children.
+  ASSERT_EQ(1u, bookmark_node_data.elements.size());
+  const BookmarkNodeData::Element* node = &bookmark_node_data.elements[0];
+  size_t actual_depth = 0;
+  while (!node->children.empty()) {
+    ASSERT_EQ(1u, node->children.size());
+    node = &node->children[0];
+    actual_depth++;
+  }
+  EXPECT_EQ(kDepth - 1, actual_depth);
+}
+
+TEST_F(BookmarkNodeDataTest, ReadFromPickle_Legacy_ExactlyAtLimit_Accepted) {
+  // 500 folders: deepest is at depth 499 (< kMaxBookmarkNestingDepth).
+  constexpr size_t kDepth = 500;
+  base::Pickle pickle = BuildDeeplyNestedLegacyPickle(kDepth);
+
+  BookmarkNodeData bookmark_node_data;
+  EXPECT_TRUE(bookmark_node_data.ReadFromPickle(base::PickleIterator(pickle)));
+}
+
+TEST_F(BookmarkNodeDataTest, ReadFromPickle_Legacy_OneOverLimit_Rejected) {
+  // 501 folders: deepest is at depth 500 (== kMaxBookmarkNestingDepth).
+  constexpr size_t kDepth = 501;
+  base::Pickle pickle = BuildDeeplyNestedLegacyPickle(kDepth);
+
+  BookmarkNodeData bookmark_node_data;
+  EXPECT_FALSE(bookmark_node_data.ReadFromPickle(base::PickleIterator(pickle)));
+}
+
+TEST_F(BookmarkNodeDataTest, ReadFromPickle_NewFormat_DeeplyNested_Rejected) {
+  constexpr size_t kDepth = 600;
+  base::Pickle pickle = BuildDeeplyNestedNewFormatPickle(kDepth);
+
+  BookmarkNodeData bookmark_node_data;
+  EXPECT_FALSE(bookmark_node_data.ReadFromPickle(base::PickleIterator(pickle)));
+}
+
+TEST_F(BookmarkNodeDataTest,
+       ReadFromPickle_NewFormat_ModerateNesting_Accepted) {
+  constexpr size_t kDepth = 50;
+  base::Pickle pickle = BuildDeeplyNestedNewFormatPickle(kDepth);
+
+  BookmarkNodeData bookmark_node_data;
+  EXPECT_TRUE(bookmark_node_data.ReadFromPickle(base::PickleIterator(pickle)));
+
+  ASSERT_EQ(1u, bookmark_node_data.elements.size());
+  const BookmarkNodeData::Element* node = &bookmark_node_data.elements[0];
+  size_t actual_depth = 0;
+  while (!node->children.empty()) {
+    ASSERT_EQ(1u, node->children.size());
+    node = &node->children[0];
+    actual_depth++;
+  }
+  EXPECT_EQ(kDepth - 1, actual_depth);
+}
+
+TEST_F(BookmarkNodeDataTest, ReadFromPickle_NewFormat_OneOverLimit_Rejected) {
+  constexpr size_t kDepth = 501;
+  base::Pickle pickle = BuildDeeplyNestedNewFormatPickle(kDepth);
+
+  BookmarkNodeData bookmark_node_data;
+  EXPECT_FALSE(bookmark_node_data.ReadFromPickle(base::PickleIterator(pickle)));
 }
 #endif
 

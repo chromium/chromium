@@ -93,13 +93,13 @@ struct BookmarkNodeData {
 #if !BUILDFLAG(IS_APPLE)
     // For reading/writing this Element.
     void WriteToLegacyPickle(base::Pickle* pickle) const;
-    bool ReadFromLegacyPickle(base::PickleIterator* iterator);
+    bool ReadFromLegacyPickle(base::PickleIterator* iterator, size_t depth = 0);
 
     // Serializes this Element to a pickle.
     base::Pickle ToPickle() const;
     // Deserializes this Element from an iterator. Returns true if the
     // operation succeeds.
-    bool FromPickle(base::PickleIterator iterator);
+    bool FromPickle(base::PickleIterator iterator, size_t depth = 0);
 #endif
 
     // ID of the node.
