@@ -10,7 +10,6 @@ import static androidx.test.platform.app.InstrumentationRegistry.getInstrumentat
 
 import static org.junit.Assert.assertEquals;
 
-import static org.chromium.base.test.util.Restriction.RESTRICTION_TYPE_NON_LOW_END_DEVICE;
 import static org.chromium.chrome.browser.customtabs.CustomTabsIntentTestUtils.createMinimalCustomTabIntent;
 import static org.chromium.ui.test.util.DeviceRestriction.RESTRICTION_TYPE_NON_AUTO;
 import static org.chromium.ui.test.util.ViewUtils.onViewWaiting;
@@ -44,7 +43,7 @@ import org.chromium.net.test.EmbeddedTestServer;
 @DoNotBatch(
         reason =
                 "Activity needs to restart after tests because we can't exit PiP programmatically.")
-@Restriction({RESTRICTION_TYPE_NON_LOW_END_DEVICE, RESTRICTION_TYPE_NON_AUTO})
+@Restriction(RESTRICTION_TYPE_NON_AUTO)
 public class MinimizedCustomTabsIntegrationTest {
     @Rule
     public CustomTabActivityTestRule mCustomTabActivityTestRule = new CustomTabActivityTestRule();

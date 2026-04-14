@@ -4,8 +4,6 @@
 
 package org.chromium.chrome.browser.media.ui;
 
-import static org.chromium.base.test.util.Restriction.RESTRICTION_TYPE_NON_LOW_END_DEVICE;
-
 import androidx.test.filters.MediumTest;
 import androidx.test.platform.app.InstrumentationRegistry;
 
@@ -55,10 +53,7 @@ import org.chromium.ui.test.util.DeviceRestriction;
     ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE,
     MediaSwitches.AUTOPLAY_NO_GESTURE_REQUIRED_POLICY
 })
-@Restriction({
-    RESTRICTION_TYPE_NON_LOW_END_DEVICE,
-    DeviceRestriction.RESTRICTION_TYPE_NON_AUTO // PiP not supported on AAOS.
-})
+@Restriction(DeviceRestriction.RESTRICTION_TYPE_NON_AUTO) // PiP not supported on AAOS.
 @DisableIf.Device(DeviceFormFactor.DESKTOP) // https://crbug.com/481444525
 @EnableFeatures(ChromeFeatureList.FULLSCREEN_VIDEO_PICTURE_IN_PICTURE)
 public class FullscreenVideoPictureInPictureControllerTest {

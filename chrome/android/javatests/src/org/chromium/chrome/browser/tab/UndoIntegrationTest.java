@@ -4,8 +4,6 @@
 
 package org.chromium.chrome.browser.tab;
 
-import static org.chromium.base.test.util.Restriction.RESTRICTION_TYPE_NON_LOW_END_DEVICE;
-
 import android.os.SystemClock;
 
 import androidx.test.filters.LargeTest;
@@ -75,7 +73,6 @@ public class UndoIntegrationTest {
     /** Test that a tab that is closing can't open other windows. */
     @Test
     @LargeTest
-    @Restriction(RESTRICTION_TYPE_NON_LOW_END_DEVICE)
     @DisabledTest(message = "https://crbug.com/373950522")
     public void testAddNewContentsFromClosingTab() throws TimeoutException {
         // Load in a new tab as Chrome will close if the last tab is closed.

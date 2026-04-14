@@ -315,7 +315,6 @@ public class AddToHomescreenAddShortcutTest {
     @Test
     @SmallTest
     @Feature("{Webapp}")
-    @Restriction(Restriction.RESTRICTION_TYPE_NON_LOW_END_DEVICE)
     @CommandLineFlags.Add(ContentSwitches.DISABLE_POPUP_BLOCKING)
     public void testAddWebappShortcutWithEmptyPage() {
         Tab spawnedPopup = spawnPopupInBackground("");

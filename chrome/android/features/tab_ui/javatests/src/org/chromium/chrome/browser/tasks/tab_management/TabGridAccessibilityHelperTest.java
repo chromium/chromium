@@ -13,7 +13,6 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
-import static org.chromium.base.test.util.Restriction.RESTRICTION_TYPE_NON_LOW_END_DEVICE;
 import static org.chromium.chrome.browser.tasks.tab_management.TabUiTestHelper.createTabs;
 import static org.chromium.chrome.browser.tasks.tab_management.TabUiTestHelper.enterTabSwitcher;
 import static org.chromium.chrome.browser.tasks.tab_management.TabUiTestHelper.leaveTabSwitcher;
@@ -111,7 +110,6 @@ public class TabGridAccessibilityHelperTest {
     @Test
     @MediumTest
     // Low-end uses list mode.
-    @Restriction(RESTRICTION_TYPE_NON_LOW_END_DEVICE)
     // Fails to rotate on some ARM devices.
     // TODO(crbug.com/40917078): fix and re-enable on ARM devices.
     @DisableIf.Build(supported_abis_includes = "armeabi-v7a")
@@ -262,7 +260,6 @@ public class TabGridAccessibilityHelperTest {
     @Test
     @MediumTest
     // Low-end uses list mode.
-    @Restriction(RESTRICTION_TYPE_NON_LOW_END_DEVICE)
     // Fails to rotate on some ARM devices.
     // TODO(crbug.com/40917078): fix and re-enable on ARM devices.
     @DisableIf.Build(supported_abis_includes = "armeabi-v7a")

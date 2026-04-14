@@ -4,8 +4,6 @@
 
 package org.chromium.chrome.browser.contextualsearch;
 
-import static org.chromium.base.test.util.Restriction.RESTRICTION_TYPE_NON_LOW_END_DEVICE;
-
 import androidx.test.filters.SmallTest;
 
 import org.junit.Assert;
@@ -20,7 +18,6 @@ import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Features;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
-import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.compositor.overlay_panel.contextualsearch.RelatedSearchesControl;
 import org.chromium.chrome.browser.contextualsearch.ContextualSearchFakeServer.FakeResolveSearch;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -36,7 +33,6 @@ import org.chromium.content_public.common.ContentFeatures;
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 @EnableFeatures(ChromeFeatureList.CONTEXTUAL_SEARCH_DISABLE_ONLINE_DETECTION)
 @Features.DisableFeatures({ContentFeatures.ANDROID_DESKTOP_ZOOM_SCALING})
-@Restriction(RESTRICTION_TYPE_NON_LOW_END_DEVICE)
 @Batch(Batch.PER_CLASS)
 public class ContextualSearchHistogramTest extends ContextualSearchInstrumentationBase {
     private HistogramWatcher mResultsSeenHistogramWatcher;
