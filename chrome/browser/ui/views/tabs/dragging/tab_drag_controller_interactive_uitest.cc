@@ -3524,7 +3524,9 @@ IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTest,
   EXPECT_EQ(tab_strip2->GetGroupColorId(group), group_color);
 }
 
-#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+// TODO(crbug.com/500937645): Re-enable the test
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
+    (BUILDFLAG(IS_WIN) && defined(ARCH_CPU_ARM64))
 // Bulk-disabled for arm64 bot stabilization: https://crbug.com/1154345
 // Flaky on Mac10.14 and Linux: https://crbug.com/1213345
 #define MAYBE_DragGroupHeaderWithSplitToSeparateWindow \
