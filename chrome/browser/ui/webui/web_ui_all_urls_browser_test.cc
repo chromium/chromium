@@ -63,6 +63,8 @@ WebUIAllUrlsBrowserTest::WebUIAllUrlsBrowserTest() {
   enabled_features.push_back(features::kTabsFromOtherDevicesSidePanel);
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
+  enabled_features.push_back(switches::kFirstRunDesktopRefresh);
+  enabled_features.push_back(switches::kFirstRunDesktopChoiceScreenRefresh);
   enabled_features.push_back(switches::kFirstRunDesktopRevamp);
 #endif
 

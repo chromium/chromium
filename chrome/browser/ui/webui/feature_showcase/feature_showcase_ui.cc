@@ -4,11 +4,15 @@
 
 #include "chrome/browser/ui/webui/feature_showcase/feature_showcase_ui.h"
 
+#include "base/check.h"
+#include "base/check_deref.h"
 #include "base/feature_list.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/regional_capabilities/regional_capabilities_service_factory.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/feature_showcase_resources.h"
 #include "chrome/grit/feature_showcase_resources_map.h"
+#include "components/regional_capabilities/regional_capabilities_service.h"
 #include "components/signin/public/base/signin_switches.h"
 #include "content/public/browser/web_ui.h"
 #include "content/public/browser/web_ui_data_source.h"
@@ -21,7 +25,13 @@ FeatureShowcaseUIConfig::FeatureShowcaseUIConfig()
 
 bool FeatureShowcaseUIConfig::IsWebUIEnabled(
     content::BrowserContext* browser_context) {
-  return base::FeatureList::IsEnabled(switches::kFirstRunDesktopRevamp);
+  const bool is_in_search_engine_choice_region =
+      CHECK_DEREF(
+          regional_capabilities::RegionalCapabilitiesServiceFactory::
+              GetForProfile(Profile::FromBrowserContext(browser_context)))
+          .IsInSearchEngineChoiceScreenRegion();
+  return switches::IsFirstRunDesktopRevampEnabled(
+      is_in_search_engine_choice_region);
 }
 
 FeatureShowcaseUI::FeatureShowcaseUI(content::WebUI* web_ui)
