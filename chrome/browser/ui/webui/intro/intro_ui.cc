@@ -160,6 +160,13 @@ IntroUI::IntroUI(content::WebUI* web_ui) : content::WebUIController(web_ui) {
           ? IDR_INTRO_DEFAULT_BROWSER_DEFAULT_BROWSER_REFRESH_HTML
           : IDR_INTRO_DEFAULT_BROWSER_DEFAULT_BROWSER_HTML);
 
+  if (switches::IsFirstRunDesktopRevampEnabled(
+          is_in_search_engine_choice_region)) {
+    source->AddResourcePath(
+        chrome::kChromeUIIntroSignInCelebrationSubPage,
+        IDR_INTRO_SIGN_IN_CELEBRATION_SIGN_IN_CELEBRATION_HTML);
+  }
+
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
   source->AddResourcePath("images/refresh_showcase_illustration.png",
                           IDR_DEFAULT_BROWSER_SHOWCASE_CHROME);
