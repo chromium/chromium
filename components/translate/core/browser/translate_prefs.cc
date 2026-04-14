@@ -152,11 +152,11 @@ TranslatePrefs::TranslatePrefs(PrefService* user_prefs)
 TranslatePrefs::~TranslatePrefs() = default;
 
 // static
-std::string TranslatePrefs::MapPreferenceName(const std::string& pref_name) {
+std::string TranslatePrefs::MapPreferenceName(std::string_view pref_name) {
   if (pref_name == kPrefNeverPromptSitesDeprecated) {
     return "translate_site_blocklist";
   }
-  return pref_name;
+  return std::string(pref_name);
 }
 
 bool TranslatePrefs::IsOfferTranslateEnabled() const {
@@ -172,8 +172,8 @@ bool TranslatePrefs::IsTranslateAllowedByPolicy() const {
   return pref->GetValue()->GetBool() || !pref->IsManaged();
 }
 
-void TranslatePrefs::SetCountry(const std::string& country) {
-  country_ = country;
+void TranslatePrefs::SetCountry(std::string_view country) {
+  country_ = std::string(country);
 }
 
 std::string TranslatePrefs::GetCountry() const {
@@ -850,8 +850,7 @@ bool TranslatePrefs::ShouldAutoTranslate(std::string_view source_language,
   return true;
 }
 
-void TranslatePrefs::SetRecentTargetLanguage(
-    const std::string& target_language) {
+void TranslatePrefs::SetRecentTargetLanguage(std::string_view target_language) {
   // Get translate version of language code.
   std::string translate_target_language(target_language);
   language::ToTranslateLanguageSynonym(&translate_target_language);

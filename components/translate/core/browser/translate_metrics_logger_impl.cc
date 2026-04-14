@@ -424,25 +424,25 @@ void TranslateMetricsLoggerImpl::LogOmniboxIconChange(
 }
 
 void TranslateMetricsLoggerImpl::LogInitialSourceLanguage(
-    const std::string& source_language_code,
+    std::string_view source_language_code,
     bool is_in_users_content_languages) {
-  initial_source_language_ = source_language_code;
+  initial_source_language_ = std::string(source_language_code);
   is_initial_source_language_in_users_content_languages_ =
       is_in_users_content_languages;
 
-  current_source_language_ = source_language_code;
+  current_source_language_ = std::string(source_language_code);
 }
 
 void TranslateMetricsLoggerImpl::LogSourceLanguage(
-    const std::string& source_language_code) {
-  current_source_language_ = source_language_code;
+    std::string_view source_language_code) {
+  current_source_language_ = std::string(source_language_code);
 }
 
 void TranslateMetricsLoggerImpl::LogTargetLanguage(
-    const std::string& target_language_code,
+    std::string_view target_language_code,
     TranslateBrowserMetrics::TargetLanguageOrigin target_language_origin) {
   if (initial_target_language_ == "") {
-    initial_target_language_ = target_language_code;
+    initial_target_language_ = std::string(target_language_code);
     initial_target_language_origin_ = target_language_origin;
   }
 
@@ -452,7 +452,7 @@ void TranslateMetricsLoggerImpl::LogTargetLanguage(
       current_target_language_ != target_language_code)
     num_target_language_changes_++;
 
-  current_target_language_ = target_language_code;
+  current_target_language_ = std::string(target_language_code);
   current_target_language_origin_ = target_language_origin;
 }
 
@@ -635,17 +635,17 @@ void TranslateMetricsLoggerImpl::SetInternalClockForTesting(
 }
 
 void TranslateMetricsLoggerImpl::LogHTMLDocumentLanguage(
-    const std::string& html_doc_language) {
-  html_doc_language_ = html_doc_language;
+    std::string_view html_doc_language) {
+  html_doc_language_ = std::string(html_doc_language);
 }
 
 void TranslateMetricsLoggerImpl::LogHTMLContentLanguage(
-    const std::string& html_content_language) {
-  html_content_language_ = html_content_language;
+    std::string_view html_content_language) {
+  html_content_language_ = std::string(html_content_language);
 }
 void TranslateMetricsLoggerImpl::LogDetectedLanguage(
-    const std::string& model_detected_language) {
-  model_detected_language_ = model_detected_language;
+    std::string_view model_detected_language) {
+  model_detected_language_ = std::string(model_detected_language);
 }
 
 void TranslateMetricsLoggerImpl::LogDetectionReliabilityScore(

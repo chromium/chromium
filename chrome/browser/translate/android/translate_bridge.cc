@@ -67,12 +67,12 @@ class TranslationObserver
                                                        jsource_contents);
   }
 
-  void OnPageTranslated(const std::string& source_lang,
-                        const std::string& translated_lang,
+  void OnPageTranslated(std::string_view source_lang,
+                        std::string_view translated_lang,
                         translate::TranslateErrors error_type) override {
-    Java_TranslationObserver_onPageTranslated(env_, j_observer_, source_lang,
-                                              translated_lang,
-                                              static_cast<int>(error_type));
+    Java_TranslationObserver_onPageTranslated(
+        env_, j_observer_, std::string(source_lang),
+        std::string(translated_lang), static_cast<int>(error_type));
   }
 
  private:

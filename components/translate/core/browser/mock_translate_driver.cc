@@ -5,6 +5,7 @@
 #include "components/translate/core/browser/mock_translate_driver.h"
 
 #include <string>
+#include <string_view>
 
 namespace translate {
 
@@ -20,9 +21,9 @@ MockTranslateDriver::MockTranslateDriver()
 MockTranslateDriver::~MockTranslateDriver() = default;
 
 void MockTranslateDriver::TranslatePage(int page_seq_no,
-                                        const std::string& translate_script,
-                                        const std::string& source_lang,
-                                        const std::string& target_lang) {
+                                        std::string_view translate_script,
+                                        std::string_view source_lang,
+                                        std::string_view target_lang) {
   translate_page_is_called_ = true;
 }
 

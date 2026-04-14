@@ -122,15 +122,16 @@ void ContentTranslateDriver::OnIsPageTranslatedChanged() {
 }
 
 void ContentTranslateDriver::TranslatePage(int page_seq_no,
-                                           const std::string& translate_script,
-                                           const std::string& source_lang,
-                                           const std::string& target_lang) {
+                                           std::string_view translate_script,
+                                           std::string_view source_lang,
+                                           std::string_view target_lang) {
   auto it = translate_agents_.find(page_seq_no);
   if (it == translate_agents_.end())
     return;  // This page has navigated away.
 
   it->second->TranslateFrame(
-      translate_script, source_lang, target_lang,
+      std::string(translate_script), std::string(source_lang),
+      std::string(target_lang),
       base::BindOnce(&ContentTranslateDriver::OnPageTranslated,
                      base::Unretained(this)));
 }

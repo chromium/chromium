@@ -146,7 +146,7 @@ class TranslatePrefs {
   // preference names cannot be renamed since values are saved client side.
   // Map these to inclusive alternatives to reduce references to those names in
   // the rest of the code.
-  static std::string MapPreferenceName(const std::string& pref_name);
+  static std::string MapPreferenceName(std::string_view pref_name);
 
   // Returns true if the "offer translate" pref is enabled (i.e. allowing for
   // automatic Full Page Translate bubbles).
@@ -157,7 +157,7 @@ class TranslatePrefs {
 
   // Sets the country that the application is run in. Determined by the
   // VariationsService, can be left empty. Used by the TranslateRanker.
-  void SetCountry(const std::string& country);
+  void SetCountry(std::string_view country);
   std::string GetCountry() const;
 
   // Resets the blocked languages list, the never-translate site list, the
@@ -320,7 +320,7 @@ class TranslatePrefs {
   // Stores and retrieves the last-observed translate target language. Used to
   // determine which target language to offer in future. The translate target
   // is converted to a translate synonym before it is set.
-  void SetRecentTargetLanguage(const std::string& target_language);
+  void SetRecentTargetLanguage(std::string_view target_language);
   void ResetRecentTargetLanguage();
   std::string GetRecentTargetLanguage() const;
 

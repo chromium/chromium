@@ -7,6 +7,7 @@
 
 #include <memory>
 #include <string>
+#include <string_view>
 
 #include "components/translate/core/browser/language_state.h"
 #include "components/translate/core/browser/translate_driver.h"
@@ -29,9 +30,9 @@ class MockTranslateDriver : public TranslateDriver {
   void OnTranslateEnabledChanged() override;
   bool IsLinkNavigation() override;
   void TranslatePage(int page_seq_no,
-                     const std::string& translate_script,
-                     const std::string& source_lang,
-                     const std::string& target_lang) override;
+                     std::string_view translate_script,
+                     std::string_view source_lang,
+                     std::string_view target_lang) override;
   void RevertTranslation(int page_seq_no) override {}
   bool IsIncognito() const override;
   const std::string& GetContentsMimeType() override;

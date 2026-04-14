@@ -6,6 +6,7 @@
 #define COMPONENTS_TRANSLATE_CORE_BROWSER_TRANSLATE_DRIVER_H_
 
 #include <string>
+#include <string_view>
 
 #include "base/observer_list.h"
 #include "base/scoped_observation_traits.h"
@@ -56,15 +57,15 @@ class TranslateDriver {
   // Called when a translation starts. The driver can do preparation work by
   // overriding this method.
   virtual void PrepareToTranslatePage(int page_seq_no,
-                                      const std::string& original_source_lang,
-                                      const std::string& target_lang,
+                                      std::string_view original_source_lang,
+                                      std::string_view target_lang,
                                       bool triggered_from_menu) {}
 
   // Translates the page contents from |source_lang| to |target_lang|.
   virtual void TranslatePage(int page_seq_no,
-                             const std::string& translate_script,
-                             const std::string& source_lang,
-                             const std::string& target_lang) = 0;
+                             std::string_view translate_script,
+                             std::string_view source_lang,
+                             std::string_view target_lang) = 0;
 
   // Reverts the contents of the page to its original language.
   virtual void RevertTranslation(int page_seq_no) = 0;

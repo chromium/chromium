@@ -7,6 +7,7 @@
 
 #include <map>
 #include <string>
+#include <string_view>
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
@@ -50,8 +51,8 @@ class ContentTranslateDriver : public TranslateDriver,
     virtual void OnTranslateEnabledChanged(content::WebContents* source) {}
 
     // Called when the page has been translated.
-    virtual void OnPageTranslated(const std::string& source_lang,
-                                  const std::string& translated_lang,
+    virtual void OnPageTranslated(std::string_view source_lang,
+                                  std::string_view translated_lang,
                                   translate::TranslateErrors error_type) {}
   };
 
@@ -86,9 +87,9 @@ class ContentTranslateDriver : public TranslateDriver,
   void OnTranslateEnabledChanged() override;
   bool IsLinkNavigation() override;
   void TranslatePage(int page_seq_no,
-                     const std::string& translate_script,
-                     const std::string& source_lang,
-                     const std::string& target_lang) override;
+                     std::string_view translate_script,
+                     std::string_view source_lang,
+                     std::string_view target_lang) override;
   void RevertTranslation(int page_seq_no) override;
   bool IsIncognito() const override;
   const std::string& GetContentsMimeType() override;

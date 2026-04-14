@@ -87,18 +87,18 @@ class MockTranslateMetricsLoggerContainer
     mock_translate_metrics_logger_->LogOmniboxIconChange(is_omnibox_icon_shown);
   }
 
-  void LogInitialSourceLanguage(const std::string& source_language_code,
+  void LogInitialSourceLanguage(std::string_view source_language_code,
                                 bool is_in_users_content_languages) override {
     mock_translate_metrics_logger_->LogInitialSourceLanguage(
         source_language_code, is_in_users_content_languages);
   }
 
-  void LogSourceLanguage(const std::string& source_language_code) override {
+  void LogSourceLanguage(std::string_view source_language_code) override {
     mock_translate_metrics_logger_->LogSourceLanguage(source_language_code);
   }
 
   void LogTargetLanguage(
-      const std::string& target_language_code,
+      std::string_view target_language_code,
       translate::TranslateBrowserMetrics::TargetLanguageOrigin
           target_language_origin) override {
     mock_translate_metrics_logger_->LogTargetLanguage(target_language_code,
@@ -120,17 +120,16 @@ class MockTranslateMetricsLoggerContainer
         has_href_translate_target);
   }
 
-  void LogHTMLDocumentLanguage(const std::string& html_doc_language) override {
+  void LogHTMLDocumentLanguage(std::string_view html_doc_language) override {
     mock_translate_metrics_logger_->LogHTMLDocumentLanguage(html_doc_language);
   }
 
-  void LogHTMLContentLanguage(
-      const std::string& html_content_language) override {
+  void LogHTMLContentLanguage(std::string_view html_content_language) override {
     mock_translate_metrics_logger_->LogHTMLDocumentLanguage(
         html_content_language);
   }
 
-  void LogDetectedLanguage(const std::string& detected_language) override {
+  void LogDetectedLanguage(std::string_view detected_language) override {
     mock_translate_metrics_logger_->LogDetectedLanguage(detected_language);
   }
 

@@ -6,6 +6,7 @@
 #define COMPONENTS_TRANSLATE_CONTENT_BROWSER_TRANSLATE_WAITER_H_
 
 #include <memory>
+#include <string_view>
 
 #include "base/run_loop.h"
 #include "base/scoped_observation.h"
@@ -42,8 +43,8 @@ class TranslateWaiter : TranslateDriver::LanguageDetectionObserver,
   void OnLanguageDetermined(const LanguageDetectionDetails& details) override;
 
   // ContentTranslateDriver::TranslationObserver:
-  void OnPageTranslated(const std::string& source_lang,
-                        const std::string& translated_lang,
+  void OnPageTranslated(std::string_view source_lang,
+                        std::string_view translated_lang,
                         TranslateErrors error_type) override;
   void OnIsPageTranslatedChanged(content::WebContents* source) override;
 

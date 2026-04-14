@@ -6,7 +6,9 @@
 #define COMPONENTS_TRANSLATE_CORE_BROWSER_TRANSLATE_METRICS_LOGGER_H_
 
 #include <stdint.h>
+
 #include <string>
+#include <string_view>
 
 #include "components/translate/core/browser/translate_browser_metrics.h"
 #include "components/translate/core/common/translate_errors.h"
@@ -198,23 +200,22 @@ class TranslateMetricsLogger {
 
   // Used to record the source language and target language both initially and
   // if the user changes these values.
-  virtual void LogInitialSourceLanguage(const std::string& source_language_code,
+  virtual void LogInitialSourceLanguage(std::string_view source_language_code,
                                         bool is_in_users_content_language) = 0;
-  virtual void LogSourceLanguage(const std::string& source_language_code) = 0;
+  virtual void LogSourceLanguage(std::string_view source_language_code) = 0;
   virtual void LogTargetLanguage(
-      const std::string& target_language_code,
+      std::string_view target_language_code,
       TranslateBrowserMetrics::TargetLanguageOrigin target_language_origin) = 0;
 
   // Used to record the language attributes specified by the HTML document.
   // Recorded for each language detection.
-  virtual void LogHTMLDocumentLanguage(
-      const std::string& html_doc_language) = 0;
+  virtual void LogHTMLDocumentLanguage(std::string_view html_doc_language) = 0;
   virtual void LogHTMLContentLanguage(
-      const std::string& html_content_language) = 0;
+      std::string_view html_content_language) = 0;
 
   // Used to record the language detection model's prediction and reliability
   // based on the page content's text. Recorded for each language detection.
-  virtual void LogDetectedLanguage(const std::string& detected_language) = 0;
+  virtual void LogDetectedLanguage(std::string_view detected_language) = 0;
   virtual void LogDetectionReliabilityScore(
       const float& model_detection_reliability_score) = 0;
 
