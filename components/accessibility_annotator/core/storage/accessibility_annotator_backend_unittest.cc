@@ -7,11 +7,13 @@
 
 #include "base/files/scoped_temp_dir.h"
 #include "base/i18n/time_formatting.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/icu_test_util.h"
 #include "base/test/task_environment.h"
 #include "base/test/values_test_util.h"
 #include "base/types/optional_ref.h"
+#include "components/accessibility_annotator/core/accessibility_annotator_features.h"
 #include "components/accessibility_annotator/core/storage/accessibility_annotator_backend_impl.h"
 #include "components/history/core/browser/history_types.h"
 #include "components/optimization_guide/proto/features/content_annotation.pb.h"
@@ -311,6 +313,154 @@ TEST_F(AccessibilityAnnotatorBackendTest, ObserverNotified) {
   testing::Mock::VerifyAndClearExpectations(&observer);
 
   backend_->RemoveObserver(&observer);
+}
+
+TEST_F(AccessibilityAnnotatorBackendTest,
+       ProcessConfirmedStatusLookback_TimestampSorting) {
+  GURL url1("https://example.com/1");
+  GURL url2("https://example.com/2");
+
+  AccessibilityAnnotatorBackend::ContentAnnotationsData data1;
+  data1.tab_id = 123;
+  data1.navigation_timestamp = base::Time::Now() - base::Minutes(10);
+  data1.url = url1;
+  optimization_guide::proto::ContentAnnotation ca1;
+  ca1.set_description("Older");
+  ca1.set_status(optimization_guide::proto::ContentAnnotation::CONFIRMED);
+  data1.content_annotation = ca1;
+  backend_->SetContentAnnotationsCacheData(static_cast<history::VisitID>(1),
+                                           std::move(data1));
+
+  AccessibilityAnnotatorBackend::ContentAnnotationsData data2;
+  data2.tab_id = 123;
+  data2.navigation_timestamp = base::Time::Now();
+  data2.url = url2;
+  optimization_guide::proto::ContentAnnotation ca2;
+  ca2.set_description("Newer");
+  ca2.set_status(optimization_guide::proto::ContentAnnotation::CONFIRMED);
+  data2.content_annotation = ca2;
+  backend_->SetContentAnnotationsCacheData(static_cast<history::VisitID>(2),
+                                           std::move(data2));
+
+  const auto& merged = backend_->GetMergedMultipageAnnotationsForTesting();
+  ASSERT_EQ(merged.size(), 2u);
+  EXPECT_EQ(merged[0].description(), "Older");
+  EXPECT_EQ(merged[1].description(), "Newer");
+}
+
+TEST_F(AccessibilityAnnotatorBackendTest,
+       ProcessConfirmedStatusLookback_EtldPlusOneMatching) {
+  GURL url1("https://example.com/1");
+  GURL url2("https://different.com/2");
+
+  AccessibilityAnnotatorBackend::ContentAnnotationsData data1;
+  data1.tab_id = 123;
+  data1.navigation_timestamp = base::Time::Now() - base::Minutes(10);
+  data1.url = url1;
+  optimization_guide::proto::ContentAnnotation ca1;
+  ca1.set_description("Other Domain");
+  data1.content_annotation = ca1;
+  backend_->SetContentAnnotationsCacheData(static_cast<history::VisitID>(1),
+                                           std::move(data1));
+
+  AccessibilityAnnotatorBackend::ContentAnnotationsData data2;
+  data2.tab_id = 123;
+  data2.navigation_timestamp = base::Time::Now();
+  data2.url = url2;
+  optimization_guide::proto::ContentAnnotation ca2;
+  ca2.set_description("Target Domain");
+  ca2.set_status(optimization_guide::proto::ContentAnnotation::CONFIRMED);
+  data2.content_annotation = ca2;
+  backend_->SetContentAnnotationsCacheData(static_cast<history::VisitID>(2),
+                                           std::move(data2));
+
+  const auto& merged = backend_->GetMergedMultipageAnnotationsForTesting();
+  ASSERT_EQ(merged.size(), 1u);
+  EXPECT_EQ(merged[0].description(), "Target Domain");
+}
+
+TEST_F(AccessibilityAnnotatorBackendTest,
+       ProcessConfirmedStatusLookback_IgnoresNewerEntries) {
+  GURL url1("https://example.com/1");
+  GURL url2("https://example.com/2");
+
+  // Add a newer entry that is PENDING.
+  AccessibilityAnnotatorBackend::ContentAnnotationsData data2;
+  data2.tab_id = 123;
+  data2.navigation_timestamp = base::Time::Now() + base::Minutes(1);
+  data2.url = url2;
+  optimization_guide::proto::ContentAnnotation ca2;
+  ca2.set_description("Newer Pending");
+  data2.content_annotation = ca2;
+  backend_->SetContentAnnotationsCacheData(static_cast<history::VisitID>(2),
+                                           std::move(data2));
+
+  // Add an older entry that becomes CONFIRMED (this triggers lookback).
+  AccessibilityAnnotatorBackend::ContentAnnotationsData data1;
+  data1.tab_id = 123;
+  data1.navigation_timestamp = base::Time::Now();
+  data1.url = url1;
+  optimization_guide::proto::ContentAnnotation ca1;
+  ca1.set_description("Older Confirmed");
+  ca1.set_status(optimization_guide::proto::ContentAnnotation::CONFIRMED);
+  data1.content_annotation = ca1;
+  backend_->SetContentAnnotationsCacheData(static_cast<history::VisitID>(1),
+                                           std::move(data1));
+
+  const auto& merged = backend_->GetMergedMultipageAnnotationsForTesting();
+  ASSERT_EQ(merged.size(), 1u);
+  EXPECT_EQ(merged[0].description(), "Older Confirmed");
+}
+
+TEST_F(AccessibilityAnnotatorBackendTest,
+       ProcessConfirmedStatusLookback_TimeRangeCheck) {
+  GURL url1("https://example.com/1");
+  GURL url2("https://example.com/2");
+
+  AccessibilityAnnotatorBackend::ContentAnnotationsData data1;
+  data1.tab_id = 123;
+  data1.navigation_timestamp = base::Time::Now() - base::Minutes(25);
+  data1.url = url1;
+  optimization_guide::proto::ContentAnnotation ca1;
+  ca1.set_description("Too Old");
+  data1.content_annotation = ca1;
+  backend_->SetContentAnnotationsCacheData(static_cast<history::VisitID>(1),
+                                           std::move(data1));
+
+  AccessibilityAnnotatorBackend::ContentAnnotationsData data2;
+  data2.tab_id = 123;
+  data2.navigation_timestamp = base::Time::Now();
+  data2.url = url2;
+  optimization_guide::proto::ContentAnnotation ca2;
+  ca2.set_description("Newer");
+  ca2.set_status(optimization_guide::proto::ContentAnnotation::CONFIRMED);
+  data2.content_annotation = ca2;
+  backend_->SetContentAnnotationsCacheData(static_cast<history::VisitID>(2),
+                                           std::move(data2));
+
+  const auto& merged = backend_->GetMergedMultipageAnnotationsForTesting();
+  ASSERT_EQ(merged.size(), 1u);
+  EXPECT_EQ(merged[0].description(), "Newer");
+}
+
+TEST_F(AccessibilityAnnotatorBackendTest,
+       ProcessConfirmedStatusLookback_MaxSizeEnforced) {
+  int max_size = features::kContentAnnotatorMaxCacheAnnotations.Get();
+  for (int i = 0; i < max_size + 10; ++i) {
+    GURL url("https://example.com/" + base::NumberToString(i));
+    AccessibilityAnnotatorBackend::ContentAnnotationsData data;
+    data.tab_id = 123;
+    data.navigation_timestamp = base::Time::Now();
+    data.url = url;
+    optimization_guide::proto::ContentAnnotation ca;
+    ca.set_status(optimization_guide::proto::ContentAnnotation::CONFIRMED);
+    data.content_annotation = ca;
+    backend_->SetContentAnnotationsCacheData(
+        static_cast<history::VisitID>(i + 1), std::move(data));
+  }
+
+  const auto& merged = backend_->GetMergedMultipageAnnotationsForTesting();
+  EXPECT_EQ(merged.size(), static_cast<size_t>(max_size));
 }
 
 }  // namespace

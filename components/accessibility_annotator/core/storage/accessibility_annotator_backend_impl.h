@@ -8,6 +8,7 @@
 #include <memory>
 #include <string>
 
+#include "base/containers/circular_deque.h"
 #include "base/containers/lru_cache.h"
 #include "base/files/file_path.h"
 #include "base/functional/callback_forward.h"
@@ -74,6 +75,12 @@ class AccessibilityAnnotatorBackendImpl
       base::span<const history::VisitID> visit_ids) override;
   void ClearContentAnnotationsCache() override;
   base::Value GetDebugUICacheData() const override;
+
+  const base::circular_deque<optimization_guide::proto::ContentAnnotation>&
+  GetMergedMultipageAnnotationsForTesting() const {
+    return merged_multipage_annotations_;
+  }
+
   void GetSyncAnnotationsByTypes(
       EntityTypeEnumSet types,
       base::OnceCallback<void(
@@ -100,6 +107,20 @@ class AccessibilityAnnotatorBackendImpl
       override;
 
  private:
+  // Performs a lookback through recent pages with the same tab and eTLD+1 to
+  // join annotations that span across multiple pages. The function merges
+  // structured data from recent entries in reverse chronological order and
+  // writes to `merged_multipage_annotations_`. This function is called only
+  // when a confirmed status is detected in `data`.
+  void ProcessConfirmedStatusLookback(const ContentAnnotationsData& data);
+
+  // Deep merges `source_structured_data` into `target_structured_data`. For any
+  // field that is set in both, the existing value in `target_structured_data`
+  // takes precedence.
+  void MergeContentAnnotationStructuredData(
+      optimization_guide::proto::StructuredData* target_structured_data,
+      const optimization_guide::proto::StructuredData& source_structured_data);
+
   const base::FilePath db_path_;
   base::SequenceBound<AccessibilityAnnotatorDatabase> db_;
   std::unique_ptr<AccessibilityAnnotationSyncBridge>
@@ -119,6 +140,10 @@ class AccessibilityAnnotatorBackendImpl
       history_service_observation_{this};
 
   base::ObserverList<AccessibilityAnnotatorBackend::Observer> observers_;
+
+  // Holds multi-page merged annotations during confirmed status lookback.
+  base::circular_deque<optimization_guide::proto::ContentAnnotation>
+      merged_multipage_annotations_;
 };
 
 }  // namespace accessibility_annotator

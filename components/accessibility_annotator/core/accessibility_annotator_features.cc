@@ -57,6 +57,11 @@ BASE_FEATURE_PARAM(int,
                    &kContentAnnotator,
                    "content_annotator_max_cache_annotations",
                    10);
+BASE_FEATURE_PARAM(base::TimeDelta,
+                   kContentAnnotatorConfirmedStatusLookbackWindow,
+                   &kContentAnnotator,
+                   "content_annotator_confirmed_status_lookback_window",
+                   base::Minutes(20));
 BASE_FEATURE_PARAM(std::string,
                    kContentAnnotatorClassifierSemanticMatchRules,
                    &kContentAnnotator,

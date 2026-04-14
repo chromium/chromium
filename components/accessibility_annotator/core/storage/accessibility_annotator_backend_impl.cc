@@ -4,6 +4,9 @@
 
 #include "components/accessibility_annotator/core/storage/accessibility_annotator_backend_impl.h"
 
+#include <algorithm>
+#include <vector>
+
 #include "base/containers/lru_cache.h"
 #include "base/containers/map_util.h"
 #include "base/files/file_path.h"
@@ -24,8 +27,18 @@
 #include "components/optimization_guide/proto/features/content_annotation.to_value.h"
 #include "components/sync/base/data_type.h"
 #include "components/sync/model/client_tag_based_data_type_processor.h"
+#include "net/base/registry_controlled_domains/registry_controlled_domain.h"
 
 namespace accessibility_annotator {
+
+namespace {
+
+std::string GetEtldPlusOne(const GURL& url) {
+  return net::registry_controlled_domains::GetDomainAndRegistry(
+      url, net::registry_controlled_domains::INCLUDE_PRIVATE_REGISTRIES);
+}
+
+}  // namespace
 
 AccessibilityAnnotatorBackendImpl::AccessibilityAnnotatorBackendImpl(
     history::HistoryService* history_service,
@@ -127,12 +140,108 @@ AccessibilityAnnotatorBackendImpl::GetContentAnnotationsCacheData(
 void AccessibilityAnnotatorBackendImpl::SetContentAnnotationsCacheData(
     history::VisitID visit_id,
     ContentAnnotationsData data) {
+  bool is_confirmed = false;
+
+  if (data.content_annotation.has_value()) {
+    is_confirmed = data.content_annotation->status() ==
+                   optimization_guide::proto::ContentAnnotation::CONFIRMED;
+  }
+
+  if (is_confirmed && data.tab_id) {
+    ProcessConfirmedStatusLookback(data);
+  }
+
+  // This automatically handles eviction of the oldest entries if full.
   base::LRUCache<history::VisitID, ContentAnnotationsData>::iterator it =
       content_annotations_cache_.Put(visit_id, std::move(data));
-
   observers_.Notify(
       &AccessibilityAnnotatorBackend::Observer::OnContentAnnotationsAdded,
       visit_id, it->second);
+}
+
+void AccessibilityAnnotatorBackendImpl::ProcessConfirmedStatusLookback(
+    const ContentAnnotationsData& data) {
+  if (data.navigation_timestamp.is_null() ||
+      !data.content_annotation.has_value()) {
+    return;
+  }
+
+  base::Time time_range_cutoff =
+      base::Time::Now() -
+      features::kContentAnnotatorConfirmedStatusLookbackWindow.Get();
+
+  std::vector<const ContentAnnotationsData*> multipage_entries;
+
+  // Iterate through `content_annotations_cache_` and determine other entries
+  // with the same `tab_id` and eTLD+1.
+  for (const auto& [cached_visit_id, cached_data] :
+       content_annotations_cache_) {
+    if (!cached_data.tab_id.has_value() ||
+        *cached_data.tab_id != *data.tab_id ||
+        GetEtldPlusOne(cached_data.url) != GetEtldPlusOne(data.url)) {
+      continue;
+    }
+
+    // Only consider entries that happened at or before the triggering entry,
+    // and within the lookback window.
+    if (!cached_data.navigation_timestamp.is_null() &&
+        cached_data.navigation_timestamp <= data.navigation_timestamp &&
+        cached_data.navigation_timestamp >= time_range_cutoff) {
+      multipage_entries.push_back(&cached_data);
+    }
+  }
+
+  // Sort the entries by timestamp in descending order (most recent first).
+  std::sort(
+      multipage_entries.begin(), multipage_entries.end(),
+      [](const ContentAnnotationsData* a, const ContentAnnotationsData* b) {
+        if (a->navigation_timestamp.is_null() ||
+            b->navigation_timestamp.is_null()) {
+          return false;
+        }
+        return a->navigation_timestamp > b->navigation_timestamp;
+      });
+
+  // Initialize with the triggering data (the most recent one).
+  optimization_guide::proto::ContentAnnotation merged_annotation =
+      *data.content_annotation;
+
+  // Perform the lookback over multiple pages in descending chronological order
+  // (most recent first), merging annotations into `merged_annotation`.
+  // When we hit the next CONFIRMED entry, that is our cutoff since it
+  // represents a separate event that has been processed by
+  // `ProcessConfirmedStatusLookback()` already.
+  for (const ContentAnnotationsData* entry : multipage_entries) {
+    if (!entry->content_annotation) {
+      continue;
+    }
+
+    const optimization_guide::proto::ContentAnnotation& src =
+        *entry->content_annotation;
+
+    if (src.status() ==
+        optimization_guide::proto::ContentAnnotation::CONFIRMED) {
+      break;
+    }
+
+    if (src.has_structured_data()) {
+      MergeContentAnnotationStructuredData(
+          merged_annotation.mutable_structured_data(), src.structured_data());
+    }
+  }
+
+  merged_multipage_annotations_.push_back(std::move(merged_annotation));
+  if (merged_multipage_annotations_.size() >
+      static_cast<size_t>(
+          features::kContentAnnotatorMaxCacheAnnotations.Get())) {
+    merged_multipage_annotations_.pop_front();
+  }
+}
+
+void AccessibilityAnnotatorBackendImpl::MergeContentAnnotationStructuredData(
+    optimization_guide::proto::StructuredData* target_structured_data,
+    const optimization_guide::proto::StructuredData& source_structured_data) {
+  // TODO(crbug.com/492303942): Implement logic to merge structured data.
 }
 
 void AccessibilityAnnotatorBackendImpl::RemoveContentAnnotationsCacheData(
