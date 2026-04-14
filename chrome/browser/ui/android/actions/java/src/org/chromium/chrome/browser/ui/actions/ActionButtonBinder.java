@@ -10,6 +10,7 @@ import android.widget.ImageView;
 
 import org.chromium.base.Callback;
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.chrome.browser.user_education.UserEducationHelper;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 
@@ -37,6 +38,17 @@ public class ActionButtonBinder {
                         };
             }
             view.setOnLongClickListener(listener);
+        } else if (ActionProperties.IPH_INTENT == propertyKey) {
+            IphIntent iphIntent = model.get(ActionProperties.IPH_INTENT);
+            if (iphIntent == null) return;
+            UserEducationHelper userEducationHelper =
+                    model.get(ActionProperties.USER_EDUCATION_HELPER);
+            assert userEducationHelper != null;
+            if (view.isLaidOut()) {
+                iphIntent.tryShow(view, userEducationHelper);
+            } else {
+                view.post(() -> iphIntent.tryShow(view, userEducationHelper));
+            }
         }
     }
 }
