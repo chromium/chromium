@@ -25,6 +25,7 @@ import org.chromium.components.browser_ui.widget.scrim.ScrimManager;
 import org.chromium.components.browser_ui.widget.scrim.ScrimProperties;
 import org.chromium.components.feature_engagement.FeatureConstants;
 import org.chromium.ui.UiUtils;
+import org.chromium.ui.base.LocalizationUtils;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.interpolators.Interpolators;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -47,6 +48,7 @@ public class GestureUserEducationIphController {
     private @Nullable View mGestureUserEducationIphLayout;
     private @Nullable LottieAnimationView mBackArrowAnimation;
     private @Nullable ViewPropertyAnimator mTextBubbleAnimation;
+    private boolean mIsIphShowing;
     private boolean mIsGestureNavModeForTesting;
 
     /**
@@ -74,7 +76,9 @@ public class GestureUserEducationIphController {
                     @Override
                     protected void onObservingDifferentTab(@Nullable Tab tab) {
                         // Hide IPH if tab is switched.
-                        hideIph();
+                        if (mIsIphShowing) {
+                            hideIph();
+                        }
                         super.onObservingDifferentTab(tab);
                     }
                 };
@@ -90,7 +94,7 @@ public class GestureUserEducationIphController {
 
     private void maybeShowIph(Tab tab) {
         if (shouldShowIph(tab)) {
-            unregisterTabObserver();
+            mIsIphShowing = true;
 
             // Inflate layout
             mGestureUserEducationIphLayout =
@@ -111,17 +115,21 @@ public class GestureUserEducationIphController {
 
             mScrimManager.showScrim(mScrimPropertyModel);
 
+            // Adjust animation direction based on RTL.
+            float rtlSign = LocalizationUtils.isLayoutRtl() ? -1.0f : 1.0f;
+
             // Set and display animations
             mBackArrowAnimation =
                     mGestureUserEducationIphLayout.findViewById(R.id.back_gesture_arrow_animation);
             mBackArrowAnimation.setAnimation(R.raw.back_gesture_arrow_animation);
+            mBackArrowAnimation.setScaleX(rtlSign);
 
             View iphBubble = mGestureUserEducationIphLayout.findViewById(R.id.iph_bubble);
             float density = iphBubble.getResources().getDisplayMetrics().density;
             mTextBubbleAnimation =
                     iphBubble
                             .animate()
-                            .translationX(ANIMATION_X_TRANSLATION * density)
+                            .translationX(rtlSign * ANIMATION_X_TRANSLATION * density)
                             .setInterpolator(Interpolators.STANDARD_INTERPOLATOR)
                             .setDuration(SLIDE_ANIMATION_DURATION_MS)
                             .withEndAction(
@@ -135,7 +143,6 @@ public class GestureUserEducationIphController {
                                                         Interpolators.STANDARD_INTERPOLATOR)
                                                 .start();
                                     });
-
             mTextBubbleAnimation.start();
             mBackArrowAnimation.playAnimation();
         }
@@ -156,6 +163,8 @@ public class GestureUserEducationIphController {
         }
 
         mAnchorView.removeView(mGestureUserEducationIphLayout);
+        unregisterTabObserver();
+        mIsIphShowing = false;
     }
 
     private boolean shouldShowIph(Tab tab) {
