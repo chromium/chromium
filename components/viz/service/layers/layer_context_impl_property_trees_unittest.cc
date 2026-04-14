@@ -2834,5 +2834,56 @@ TEST_F(LayerContextImplViewportPropertyIdsTest,
             "Cannot set outer_clip or outer_scroll without valid inner_scroll");
 }
 
+TEST_F(LayerContextImplPropertyTreesTestBase,
+       EffectSizeChangedDoesNotTriggerRedrawUnlessRenderSurfacesChanged) {
+  // 1. Initial setup: Add an effect node WITHOUT a render surface.
+  auto update1 = CreateDefaultUpdate();
+  int node_id = AddEffectNode(update1.get(), cc::kSecondaryRootPropertyNodeId);
+  // Default render_surface_reason is kNone.
+  EXPECT_TRUE(
+      layer_context_impl_->DoUpdateDisplayTree(std::move(update1)).has_value());
+
+  auto* active_tree = layer_context_impl_->host_impl()->active_tree();
+  EXPECT_TRUE(active_tree->needs_update_draw_properties());
+  active_tree->clear_needs_update_draw_properties_for_testing();
+  EXPECT_FALSE(active_tree->needs_update_draw_properties());
+
+  // 2. Remove the effect node. effect_size_changed will be true.
+  auto update2 = CreateDefaultUpdate();
+  update2->num_effect_nodes = node_id;  // Assuming node_id is the last node
+  update2->effect_nodes.clear();
+
+  EXPECT_TRUE(
+      layer_context_impl_->DoUpdateDisplayTree(std::move(update2)).has_value());
+
+  // Verify that needs_update_draw_properties is NOT set (the goal of the TODO).
+  EXPECT_FALSE(active_tree->needs_update_draw_properties());
+
+  // 3. Add an effect node WITH a render surface.
+  auto update3 = CreateDefaultUpdate();
+  int node_id2 = AddEffectNode(update3.get(), cc::kSecondaryRootPropertyNodeId);
+  update3->effect_nodes.back()->render_surface_reason =
+      cc::RenderSurfaceReason::kTest;
+  update3->effect_nodes.back()->element_id = cc::ElementId(1234);
+  EXPECT_TRUE(
+      layer_context_impl_->DoUpdateDisplayTree(std::move(update3)).has_value());
+
+  EXPECT_TRUE(active_tree->needs_update_draw_properties());
+  active_tree->clear_needs_update_draw_properties_for_testing();
+  EXPECT_FALSE(active_tree->needs_update_draw_properties());
+
+  // 4. Remove the effect node with a render surface.
+  auto update4 = CreateDefaultUpdate();
+  update4->num_effect_nodes = node_id2;
+  update4->effect_nodes.clear();
+
+  EXPECT_TRUE(
+      layer_context_impl_->DoUpdateDisplayTree(std::move(update4)).has_value());
+
+  // Verify that needs_update_draw_properties IS set because a render surface
+  // was removed.
+  EXPECT_TRUE(active_tree->needs_update_draw_properties());
+}
+
 }  // namespace
 }  // namespace viz

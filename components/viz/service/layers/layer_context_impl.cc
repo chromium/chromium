@@ -1862,16 +1862,21 @@ base::expected<void, std::string> LayerContextImpl::DoUpdateDisplayTree(
     mojom::LayerTreeUpdatePtr update) {
   TRACE_EVENT0("viz", "LayerContextImpl::DoUpdateDisplayTree");
   cc::LayerTreeImpl& layers = *host_impl_->active_tree();
+  cc::PropertyTrees& property_trees = *layers.property_trees();
+
+  std::vector<std::unique_ptr<cc::RenderSurfaceImpl>> old_render_surfaces;
+  property_trees.effect_tree_mutable().TakeRenderSurfaces(&old_render_surfaces);
 
   // We resize all property trees first, as layers and property tree nodes
   // themselves may index one or more other property tree nodes. These indices
   // need to be validated, and the dependency can be cyclic (e.g. scroll nodes
   // may index transform nodes and transform nodes may index scroll nodes).
-  cc::PropertyTrees& property_trees = *layers.property_trees();
   const bool transform_size_changed = ResizePropertyTree(
       property_trees.transform_tree_mutable(), update->num_transform_nodes);
   const bool clip_size_changed = ResizePropertyTree(
       property_trees.clip_tree_mutable(), update->num_clip_nodes);
+  const bool effect_size_increased =
+      update->num_effect_nodes > property_trees.effect_tree().nodes().size();
   const bool effect_size_changed = ResizePropertyTree(
       property_trees.effect_tree_mutable(), update->num_effect_nodes);
   const bool scroll_size_changed = ResizePropertyTree(
@@ -2171,26 +2176,29 @@ base::expected<void, std::string> LayerContextImpl::DoUpdateDisplayTree(
       effect_size_changed || effect_nodes_changed ||
       property_trees.effect_tree().needs_update());
 
-  const bool any_tree_changed =
+  const bool any_tree_except_effect_size_changed =
       viewport_deltas_changed || transform_size_changed ||
       transform_nodes_changed || clip_size_changed || clip_nodes_changed ||
-      effect_size_changed || effect_nodes_changed || scroll_size_changed ||
-      scroll_nodes_changed;
+      effect_nodes_changed || scroll_size_changed || scroll_nodes_changed;
+  const bool any_tree_changed =
+      any_tree_except_effect_size_changed || effect_size_changed;
   property_trees.set_changed(any_tree_changed);
   if (any_tree_changed) {
     property_trees.ResetCachedData();
-    layers.set_needs_update_draw_properties();
+
+    // Any property tree change normally requires a draw property update.
+    // However, if the only change is that some effect nodes were removed, we
+    // can defer the update until we determine if any render surfaces were
+    // removed. This is handled below.
+    if (any_tree_except_effect_size_changed || effect_size_increased) {
+      layers.set_needs_update_draw_properties();
+    }
   }
 
-  std::vector<std::unique_ptr<cc::RenderSurfaceImpl>> old_render_surfaces;
-  property_trees.effect_tree_mutable().TakeRenderSurfaces(&old_render_surfaces);
   const bool render_surfaces_changed =
       property_trees.effect_tree_mutable().CreateOrReuseRenderSurfaces(
           &old_render_surfaces, &layers);
-  if (effect_size_changed || render_surfaces_changed) {
-    // TODO(rockot): Forcing draw property updates here isn't strictly necessary
-    // when `effect_size_changed` is true unless it's because we've removed at
-    // least one EffectNode that was inducing a render surface.
+  if (render_surfaces_changed) {
     layers.set_needs_update_draw_properties();
   }
   // Set this last, making sure renderer side state isn't overwritten by other
