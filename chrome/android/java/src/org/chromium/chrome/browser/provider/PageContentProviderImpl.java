@@ -35,7 +35,6 @@ import org.chromium.build.annotations.EnsuresNonNull;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.build.annotations.UsedByReflection;
-import org.chromium.chrome.browser.ActivityTabProvider;
 import org.chromium.chrome.browser.base.SplitCompatContentProvider;
 import org.chromium.chrome.browser.content_extraction.InnerTextBridge;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -56,6 +55,7 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
+import java.util.function.Supplier;
 
 /**
  * ContentProvider that returns the InnerText of the current web page. It generates a URI for the
@@ -70,22 +70,28 @@ public class PageContentProviderImpl extends SplitCompatContentProvider.Impl {
 
     private static final String TAG = "PageContentProvider";
 
+    // JSON keys for the data returned by the content provider.
+    static final String JSON_KEY_PAGE_METADATA = "page_metadata";
+    static final String JSON_KEY_PROTO_CONTENT_URI = "proto_content_uri";
+    static final String JSON_KEY_IS_WORK_PROFILE = "is_work_profile";
+    static final String JSON_KEY_CONTENT_URI = "content_uri";
+
     private static final int INVALIDATE_URI_DELAY_MS = 60_000;
     private static final int PAGE_EXTRACTION_TIMEOUT_MS = 10_000;
 
     static final class PageContentInvocationState {
 
         PageContentInvocationState(
-                String invocationId, String invokedUrl, ActivityTabProvider activityTabProvider) {
+                String invocationId, String invokedUrl, Supplier<@Nullable Tab> tabSupplier) {
             mInvocationId = invocationId;
             mInvokedUrl = invokedUrl;
-            mActivityTabProvider = activityTabProvider;
+            mTabSupplier = tabSupplier;
             mInvocationStartTimestampMs = TimeUtils.elapsedRealtimeMillis();
         }
 
         private final String mInvocationId;
         private final String mInvokedUrl;
-        private final ActivityTabProvider mActivityTabProvider;
+        private final Supplier<@Nullable Tab> mTabSupplier;
 
         private long mInvocationStartTimestampMs;
         private long mExtractionStartTimestampMs;
@@ -342,7 +348,7 @@ public class PageContentProviderImpl extends SplitCompatContentProvider.Impl {
                 return future;
             }
 
-            ActivityTabProvider tabProvider = sInvocationState.mActivityTabProvider;
+            Supplier<@Nullable Tab> tabProvider = sInvocationState.mTabSupplier;
             Pair<String, WebContents> currentTabUrlAndWebContents =
                     ThreadUtils.runOnUiThreadBlocking(
                             () -> {
@@ -436,7 +442,7 @@ public class PageContentProviderImpl extends SplitCompatContentProvider.Impl {
 
     private static @Nullable String getIdForUrl(
             String url,
-            ActivityTabProvider activityTabProvider,
+            Supplier<@Nullable Tab> tabSupplier,
             @Nullable String targetPackage,
             boolean addTextUri,
             boolean addProtoUri) {
@@ -454,7 +460,7 @@ public class PageContentProviderImpl extends SplitCompatContentProvider.Impl {
 
                 sInvocationState =
                         new PageContentInvocationState(
-                                UUID.randomUUID().toString(), url, activityTabProvider);
+                                UUID.randomUUID().toString(), url, tabSupplier);
 
                 grantAccessToId(
                         sInvocationState.mInvocationId, targetPackage, addTextUri, addProtoUri);
@@ -491,21 +497,55 @@ public class PageContentProviderImpl extends SplitCompatContentProvider.Impl {
      *
      * @param url The URL of the currently active page, the returned URI will only work for this
      *     URL.
-     * @param activityTabProvider Provider used to ensure that {@code url} is still active on all
-     *     calls to {@code query()}
+     * @param tabSupplier Supplier used to ensure that {@code url} is still active on all calls to
+     *     {@code query()}
      * @param isManagedProfile Whether the current profile has an enterprise owner.
      * @return A JSON string containing a URI to be used with the {@code query()} method to extract
      *     the text of {@code url}.
      */
     public static @Nullable String getAssistContentStructuredDataForUrl(
-            String url, ActivityTabProvider activityTabProvider, boolean isManagedProfile) {
+            String url, Supplier<@Nullable Tab> tabSupplier, boolean isManagedProfile) {
         return getAssistContentStructuredDataForUrl(
                 url,
-                activityTabProvider,
+                tabSupplier,
                 isManagedProfile,
                 /* addTextUri= */ true,
                 /* addProtoUri= */ true,
                 /* targetPackage= */ null);
+    }
+
+    /**
+     * Generates a URI for the proto format to be shared with the specified package.
+     *
+     * @param url The URL of the currently active page, the returned URI will only work for this
+     *     URL.
+     * @param tabSupplier Supplier used to ensure that {@code url} is still active on all calls to
+     *     {@code query()}
+     * @param targetPackage The package to grant access to. If null, the default assistant package
+     *     will be used.
+     * @return A URI to be used with the {@code query()} method to extract the text of {@code url}.
+     */
+    public static @Nullable Uri getProtoContentUriForUrl(
+            String url, Supplier<@Nullable Tab> tabSupplier, @Nullable String targetPackage) {
+        RecordHistogram.recordBooleanHistogram(
+                "Android.AssistContent.WebPageContentProvider.TargetPackageProvided",
+                targetPackage != null);
+        String invocationId =
+                getIdForUrl(
+                        url,
+                        tabSupplier,
+                        targetPackage,
+                        /* addTextUri= */ false,
+                        /* addProtoUri= */ true);
+        if (invocationId == null) {
+            PageContentProviderMetrics.recordPageProviderEvent(
+                    PageContentProviderEvent.GET_CONTENT_URI_FAILED);
+            return null;
+        }
+
+        PageContentProviderMetrics.recordPageProviderEvent(
+                PageContentProviderEvent.GET_CONTENT_URI_SUCCESS);
+        return buildProtoFormatUri(invocationId);
     }
 
     /**
@@ -514,8 +554,8 @@ public class PageContentProviderImpl extends SplitCompatContentProvider.Impl {
      *
      * @param url The URL of the currently active page, the returned URI will only work for this
      *     URL.
-     * @param activityTabProvider Provider used to ensure that {@code url} is still active on all
-     *     calls to {@code query()}
+     * @param tabSupplier Supplier used to ensure that {@code url} is still active on all calls to
+     *     {@code query()}
      * @param isManagedProfile Whether the current profile has an enterprise owner.
      * @param addTextUri Whether to include a URI for the text format.
      * @param addProtoUri Whether to include a URI for the proto format.
@@ -526,7 +566,7 @@ public class PageContentProviderImpl extends SplitCompatContentProvider.Impl {
      */
     public static @Nullable String getAssistContentStructuredDataForUrl(
             String url,
-            ActivityTabProvider activityTabProvider,
+            Supplier<@Nullable Tab> tabSupplier,
             boolean isManagedProfile,
             boolean addTextUri,
             boolean addProtoUri,
@@ -537,8 +577,7 @@ public class PageContentProviderImpl extends SplitCompatContentProvider.Impl {
         if (!addTextUri && !addProtoUri) {
             return null;
         }
-        String invocationId =
-                getIdForUrl(url, activityTabProvider, targetPackage, addTextUri, addProtoUri);
+        String invocationId = getIdForUrl(url, tabSupplier, targetPackage, addTextUri, addProtoUri);
         if (invocationId == null) {
             PageContentProviderMetrics.recordPageProviderEvent(
                     PageContentProviderEvent.GET_CONTENT_URI_FAILED);
@@ -548,14 +587,14 @@ public class PageContentProviderImpl extends SplitCompatContentProvider.Impl {
         String structuredData;
 
         try {
-            JSONObject metadata = new JSONObject().put("is_work_profile", isManagedProfile);
+            JSONObject metadata = new JSONObject().put(JSON_KEY_IS_WORK_PROFILE, isManagedProfile);
             if (addTextUri) {
-                metadata.put("content_uri", buildTextFormatUri(invocationId));
+                metadata.put(JSON_KEY_CONTENT_URI, buildTextFormatUri(invocationId));
             }
             if (addProtoUri) {
-                metadata.put("proto_content_uri", buildProtoFormatUri(invocationId));
+                metadata.put(JSON_KEY_PROTO_CONTENT_URI, buildProtoFormatUri(invocationId));
             }
-            structuredData = new JSONObject().put("page_metadata", metadata).toString();
+            structuredData = new JSONObject().put(JSON_KEY_PAGE_METADATA, metadata).toString();
         } catch (JSONException e) {
             PageContentProviderMetrics.recordPageProviderEvent(
                     PageContentProviderEvent.GET_CONTENT_URI_FAILED);
