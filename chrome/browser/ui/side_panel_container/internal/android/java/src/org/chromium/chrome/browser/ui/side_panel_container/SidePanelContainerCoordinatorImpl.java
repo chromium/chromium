@@ -15,6 +15,7 @@ import android.widget.FrameLayout;
 import androidx.annotation.Px;
 import androidx.annotation.VisibleForTesting;
 
+import org.chromium.base.Callback;
 import org.chromium.base.ThreadUtils;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -86,7 +87,7 @@ final class SidePanelContainerCoordinatorImpl
     }
 
     @Override
-    public void removeContent() {
+    public void removeContent(Callback<@Nullable Void> onAnimationFinishedCallback) {
         log(TAG, "removeContent");
         ThreadUtils.assertOnUiThread();
         mContainerView.removeAllViews();
@@ -94,6 +95,7 @@ final class SidePanelContainerCoordinatorImpl
                 new SideUiContainerProperties(SIDE_PANEL_DEFAULT_ANCHOR_SIDE, /* width= */ 0));
 
         mCurrentContent = null;
+        onAnimationFinishedCallback.onResult(null);
     }
 
     @Override

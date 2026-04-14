@@ -25,6 +25,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.Callback;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
@@ -32,6 +33,7 @@ import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.tabbed_mode.TabbedRootUiCoordinator;
@@ -51,6 +53,8 @@ import org.chromium.ui.base.ViewUtils;
 public class SidePanelContainerCoordinatorIntegrationTest {
     private static final @ColorInt int SIDE_PANEL_CONTENT_BACKGROUND_COLOR = Color.GREEN;
 
+    private Callback<@Nullable Void> mOnAnimationFinishedCallbackMock;
+
     @Rule
     public final FreshCtaTransitTestRule mFreshCtaTransitTestRule =
             ChromeTransitTestRules.freshChromeTabbedActivityRule();
@@ -58,6 +62,7 @@ public class SidePanelContainerCoordinatorIntegrationTest {
     @Before
     public void setUp() {
         mFreshCtaTransitTestRule.startOnBlankPage();
+        mOnAnimationFinishedCallbackMock = result -> {};
     }
 
     @Test
@@ -125,7 +130,8 @@ public class SidePanelContainerCoordinatorIntegrationTest {
         FrameLayout containerView = waitForContainerViewWithValidWidth(coordinator);
 
         // Act.
-        ThreadUtils.runOnUiThreadBlocking(coordinator::removeContent);
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> coordinator.removeContent(mOnAnimationFinishedCallbackMock));
 
         // Assert.
         assertEquals(0, containerView.getChildCount());
@@ -180,7 +186,8 @@ public class SidePanelContainerCoordinatorIntegrationTest {
         var sidePanelContent = createSidePanelContent("Side Panel Content To Remove");
         ThreadUtils.runOnUiThreadBlocking(() -> coordinator.populateContent(sidePanelContent));
         waitForContainerViewWithValidWidth(coordinator);
-        ThreadUtils.runOnUiThreadBlocking(coordinator::removeContent);
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> coordinator.removeContent(mOnAnimationFinishedCallbackMock));
 
         // Assert.
         assertFalse(

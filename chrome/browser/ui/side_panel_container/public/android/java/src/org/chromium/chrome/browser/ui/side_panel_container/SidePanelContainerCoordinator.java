@@ -4,7 +4,9 @@
 
 package org.chromium.chrome.browser.ui.side_panel_container;
 
+import org.chromium.base.Callback;
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.ui.side_panel.SidePanelType;
 
 /** Coordinator of the side panel container UI. */
@@ -40,8 +42,10 @@ public interface SidePanelContainerCoordinator {
      * Removes {@link SidePanelContent} from this side panel container.
      *
      * <p>This method is for a side panel feature. Calling it will also close the container.
+     *
+     * @param onAnimationFinishedCallback Callback to invoke after content is removed.
      */
-    void removeContent();
+    void removeContent(Callback<@Nullable Void> onAnimationFinishedCallback);
 
     /** Returns whether the given {@link SidePanelContent} is shown in this side panel container. */
     boolean isShowing(SidePanelContent sidePanelContent);

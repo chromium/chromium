@@ -13,6 +13,7 @@ android_library("java") {
     "android/java/src/org/chromium/chrome/browser/ui/side_panel_container/dev/SidePanelDevFeature.java",
   ]
   deps = [
+    "//base:callback_java",
     "//build/android:build_java",
     "//chrome/browser/ui/side_panel/android:java",
   ]

@@ -100,7 +100,7 @@ public final class SidePanelDevFeatureImpl implements SidePanelDevFeature {
         if (!mSidePanelContainerCoordinator.isShowing(sidePanelContent)) {
             mSidePanelContainerCoordinator.populateContent(sidePanelContent);
         } else {
-            mSidePanelContainerCoordinator.removeContent();
+            mSidePanelContainerCoordinator.removeContent(result -> {});
         }
     }
 

@@ -14,6 +14,7 @@ import org.jni_zero.CalledByNative;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.ui.side_panel_container.SidePanelContainerCoordinator;
 import org.chromium.chrome.browser.ui.side_panel_container.SidePanelContent;
 
@@ -84,7 +85,11 @@ public final class SidePanelCoordinatorAndroidImpl implements SidePanelCoordinat
     @CalledByNative
     private void removeContent() {
         log(TAG, "removeContent");
-        mSidePanelContainerCoordinator.removeContent();
+        mSidePanelContainerCoordinator.removeContent(result -> notifyAnimationsFinished(null));
+    }
+
+    private void notifyAnimationsFinished(@Nullable Void unused) {
+        log(TAG, "notifyAnimationsFinished", mSidePanelContainerCoordinator.getPanelType());
     }
 
     @NativeMethods
