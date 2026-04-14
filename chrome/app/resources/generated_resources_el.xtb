@@ -2116,6 +2116,7 @@
 <translation id="2434915728183570229">Μπορείτε πλέον να βλέπετε τις εφαρμογές του τηλεφώνου σας</translation>
 <translation id="2435248616906486374">Η σύνδεση δικτύου διακόπηκε</translation>
 <translation id="2435457462613246316">Εμφάνιση κωδικού πρόσβασης</translation>
+<translation id="2435670725585845785">Καρφίτσωμα Αναζήτησης καρτελών</translation>
 <translation id="2436385001956947090">Αντιγραφή &amp;συνδέσμου</translation>
 <translation id="2437105255211187922">{NUM_TABS,plural, =1{Με την κοινή χρήση της επιλεγμένης καρτέλας θα υπερβείτε το όριο κοινής χρήσης}other{Με την κοινή χρήση # καρτελών θα υπερβείτε το όριο κοινής χρήσης}}</translation>
 <translation id="2437561292559037753">Κοινοποίηση δεδομένων</translation>
@@ -3174,6 +3175,7 @@
 <translation id="3157387275655328056">Προσθήκη στη λίστα ανάγνωσης</translation>
 <translation id="3157931365184549694">Επαναφορά</translation>
 <translation id="3158033540161634471">Ρύθμιση του δακτυλικού αποτυπώματός σας</translation>
+<translation id="3158203338449343164">Ξεκαρφίτσωμα Αναζήτησης καρτελών</translation>
 <translation id="3158732900546890991">Ο κωδικός πρόσβασης πρέπει να αποτελείται από τουλάχιστον 8 χαρακτήρες και να περιλαμβάνει τουλάχιστον δύο από τα παρακάτω: κεφαλαία γράμματα, πεζά γράμματα, αριθμούς ή σύμβολα</translation>
 <translation id="3158770568048368350">Αυτό μπορεί να προκαλέσει την προσωρινή αποσύνδεση του δικτύου κινητής τηλεφωνίας σας</translation>
 <translation id="3159335509547415276">Μάθετε σχετικά με τους λογαριασμούς που έχουν αποκλειστεί</translation>
@@ -7636,6 +7638,7 @@
 <translation id="6291741848715722067">Κωδικός επιβεβαίωσης</translation>
 <translation id="6291953229176937411">&amp;Εμφάνιση στο Finder</translation>
 <translation id="6293862149782163840">Η συσκευή <ph name="DEVICE_NAME" /> απενεργοποιήθηκε</translation>
+<translation id="629405221789675953">Ξεκαρφίτσωμα Αναζήτησης καρτελών</translation>
 <translation id="6294759976468837022">Ταχύτητα αυτόματης σάρωσης</translation>
 <translation id="6295158916970320988">Όλοι οι ιστότοποι</translation>
 <translation id="6295855836753816081">Αποθήκευση…</translation>
@@ -8652,6 +8655,7 @@
 <translation id="7003844668372540529">Άγνωστο προϊόν <ph name="PRODUCT_ID" /> από <ph name="VENDOR_NAME" /></translation>
 <translation id="7004402701596653846">Ο ιστότοπος μπορεί να χρησιμοποιήσει MIDI.</translation>
 <translation id="7004499039102548441">Πρόσφατες καρτέλες</translation>
+<translation id="7004923218520748660">Καρφίτσωμα Αναζήτησης καρτελών</translation>
 <translation id="7004969808832734860">Έως <ph name="DISCOUNT_UP_TO_AMOUNT" /> έκπτωση</translation>
 <translation id="7005496624875927304">Πρόσθετες άδειες</translation>
 <translation id="7005812687360380971">Αποτυχία</translation>

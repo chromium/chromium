@@ -2115,6 +2115,7 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="2434915728183570229">Anda kini dapat melihat aplikasi ponsel Anda</translation>
 <translation id="2435248616906486374">Jaringan terputus</translation>
 <translation id="2435457462613246316">Tampilkan sandi</translation>
+<translation id="2435670725585845785">Sematkan penelusuran tab</translation>
 <translation id="2436385001956947090">Salin &amp;link</translation>
 <translation id="2437105255211187922">{NUM_TABS,plural, =1{Membagikan Tab yang Dipilih Akan Melebihi Batas Berbagi}other{Membagikan # Tab Akan Melebihi Batas Berbagi}}</translation>
 <translation id="2437561292559037753">Berbagi Data</translation>
@@ -3173,6 +3174,7 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="3157387275655328056">Tambahkan ke Daftar Bacaan</translation>
 <translation id="3157931365184549694">Pulihkan</translation>
 <translation id="3158033540161634471">Siapkan sidik jari Anda</translation>
+<translation id="3158203338449343164">Lepaskan Sematan Penelusuran Tab</translation>
 <translation id="3158732900546890991">Sandi harus minimal 8 karakter dan menyertakan setidaknya dua dari hal berikut: huruf besar, huruf kecil, angka, atau simbol</translation>
 <translation id="3158770568048368350">Tindakan ini dapat menyebabkan jaringan seluler Anda terputus sesaat</translation>
 <translation id="3159335509547415276">Pelajari artikel tentang akun yang diblokir</translation>
@@ -7634,6 +7636,7 @@ Anda dapat menetapkan beberapa tombol akses untuk tindakan ini.</translation>
 <translation id="6291741848715722067">Kode konfirmasi</translation>
 <translation id="6291953229176937411">&amp;Tampilkan di Penemu</translation>
 <translation id="6293862149782163840"><ph name="DEVICE_NAME" /> dinonaktifkan</translation>
+<translation id="629405221789675953">Lepaskan sematan penelusuran tab</translation>
 <translation id="6294759976468837022">Kecepatan pemindaian otomatis</translation>
 <translation id="6295158916970320988">Semua situs</translation>
 <translation id="6295855836753816081">Menyimpan...</translation>
@@ -8650,6 +8653,7 @@ Anda memiliki # sandi lainnya yang telah dibobol. Pengelola Sandi Google merekom
 <translation id="7003844668372540529">Produk <ph name="PRODUCT_ID" /> tak dikenal dari <ph name="VENDOR_NAME" /></translation>
 <translation id="7004402701596653846">Situs dapat menggunakan MIDI</translation>
 <translation id="7004499039102548441">Tab Terbaru</translation>
+<translation id="7004923218520748660">Sematkan Penelusuran Tab</translation>
 <translation id="7004969808832734860">Diskon hingga <ph name="DISCOUNT_UP_TO_AMOUNT" /></translation>
 <translation id="7005496624875927304">Izin tambahan</translation>
 <translation id="7005812687360380971">Kegagalan</translation>

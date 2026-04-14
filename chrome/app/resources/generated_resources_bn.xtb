@@ -2117,6 +2117,7 @@
 <translation id="2434915728183570229">আপনি এখন আপনার ফোনের অ্যাপ দেখতে পারেন</translation>
 <translation id="2435248616906486374">নেটওয়ার্ক সংযোগ বিচ্ছিন্ন হয়েছে</translation>
 <translation id="2435457462613246316">পাসওয়ার্ড দেখান</translation>
+<translation id="2435670725585845785">ট্যাব সার্চ করার বিকল্প পিন করুন</translation>
 <translation id="2436385001956947090">&amp;লিঙ্ক কপি করুন</translation>
 <translation id="2437105255211187922">{NUM_TABS,plural, =1{বেছে নেওয়া ট্যাব শেয়ার করা হলে, শেয়ার করার সীমা পেরিয়ে যাবে}one{#টি ট্যাব শেয়ার করা হলে, শেয়ার করার সীমা পেরিয়ে যাবে}other{#টি ট্যাব শেয়ার করা হলে, শেয়ার করার সীমা পেরিয়ে যাবে}}</translation>
 <translation id="2437561292559037753">ডেটা শেয়ারিং</translation>
@@ -3175,6 +3176,7 @@
 <translation id="3157387275655328056">পড়ার তালিকায় যোগ করুন</translation>
 <translation id="3157931365184549694">পুনরুদ্ধার করুন</translation>
 <translation id="3158033540161634471">আপনার আঙ্গুলের ছাপ সেট-আপ করুন</translation>
+<translation id="3158203338449343164">ট্যাব সার্চ করার বিকল্প আনপিন করুন</translation>
 <translation id="3158732900546890991">পাসওয়ার্ডে অবশ্যই কমপক্ষে ৮টি অক্ষর থাকতে হবে এবং নিম্নলিখিতগুলির মধ্যে অন্তত দুটি থাকতে হবে: বড় হাতের অক্ষর, ছোট হাতের অক্ষর, সংখ্যা বা চিহ্ন</translation>
 <translation id="3158770568048368350">এজন্য সাময়িকভাবে আপনার মোবাইল নেটওয়ার্ক ডিসকানেক্ট হয়ে যেতে পারে</translation>
 <translation id="3159335509547415276">ব্লক করা অ্যাকাউন্ট সম্পর্কে জানুন</translation>
@@ -7637,6 +7639,7 @@
 <translation id="6291741848715722067">কনফার্মেশন কোড</translation>
 <translation id="6291953229176937411">ফাইন্ডারে &amp;দেখান</translation>
 <translation id="6293862149782163840"><ph name="DEVICE_NAME" /> বন্ধ আছে</translation>
+<translation id="629405221789675953">ট্যাব সার্চ করার বিকল্প আনপিন করুন</translation>
 <translation id="6294759976468837022">অটো-স্ক্যানের স্পিড</translation>
 <translation id="6295158916970320988">সমস্ত সাইট</translation>
 <translation id="6295855836753816081">সংরক্ষণ করা হচ্ছে...</translation>
@@ -8655,6 +8658,7 @@
 <translation id="7003844668372540529"><ph name="VENDOR_NAME" /> এর থেকে অজানা পণ্য <ph name="PRODUCT_ID" /></translation>
 <translation id="7004402701596653846">সাইট MIDI ব্যবহার করতে পারে</translation>
 <translation id="7004499039102548441">সাম্প্রতিক ট্যাবগুলি</translation>
+<translation id="7004923218520748660">ট্যাব সার্চ করার বিকল্প পিন করুন</translation>
 <translation id="7004969808832734860"><ph name="DISCOUNT_UP_TO_AMOUNT" /> পর্যন্ত ছাড়</translation>
 <translation id="7005496624875927304">অতিরিক্ত অনুমতি</translation>
 <translation id="7005812687360380971">ব্যর্থ</translation>

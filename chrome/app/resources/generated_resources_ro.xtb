@@ -2104,6 +2104,7 @@ Poți gestiona setările contului dacă instalezi aplicația Family Link pe disp
 <translation id="2434915728183570229">Acum poți vedea aplicațiile de pe telefon</translation>
 <translation id="2435248616906486374">Rețea deconectată</translation>
 <translation id="2435457462613246316">Afișați parola</translation>
+<translation id="2435670725585845785">Fixează căutarea filelor</translation>
 <translation id="2436385001956947090">Copiază &amp;linkul</translation>
 <translation id="2437105255211187922">{NUM_TABS,plural, =1{Dacă trimiți fila selectată, vei depăși limita de trimitere}few{Dacă trimiți # file, vei depăși limita de trimitere}other{Dacă trimiți # de file, vei depăși limita de trimitere}}</translation>
 <translation id="2437561292559037753">Trimiterea datelor</translation>
@@ -3162,6 +3163,7 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="3157387275655328056">Adaugă în lista de lectură</translation>
 <translation id="3157931365184549694">Restabilește</translation>
 <translation id="3158033540161634471">Adaugă amprenta</translation>
+<translation id="3158203338449343164">Anulează fixarea Căutării filelor</translation>
 <translation id="3158732900546890991">Parola trebuie să aibă cel puțin opt caractere și să includă cel puțin două dintre următoarele: majuscule, minuscule, cifre sau simboluri.</translation>
 <translation id="3158770568048368350">Poate cauza deconectarea temporară de la rețeaua mobilă</translation>
 <translation id="3159335509547415276">Află despre conturile blocate</translation>
@@ -7620,6 +7622,7 @@ Poți atribui mai multe comutatoare acestei acțiuni.</translation>
 <translation id="6291741848715722067">Cod de confirmare</translation>
 <translation id="6291953229176937411">&amp;Afișează în Finder</translation>
 <translation id="6293862149782163840"><ph name="DEVICE_NAME" /> este dezactivată</translation>
+<translation id="629405221789675953">Anulează fixarea căutării filelor</translation>
 <translation id="6294759976468837022">Viteza de scanare automată</translation>
 <translation id="6295158916970320988">Toate site-urile</translation>
 <translation id="6295855836753816081">Se salvează...</translation>
@@ -8638,6 +8641,7 @@ Mai ai # de parole compromise. Managerul de parole Google recomandă să verific
 <translation id="7003844668372540529">Produs necunoscut <ph name="PRODUCT_ID" /> de la <ph name="VENDOR_NAME" /></translation>
 <translation id="7004402701596653846">Este posibil ca site-ul să folosească dispozitive MIDI</translation>
 <translation id="7004499039102548441">File recente</translation>
+<translation id="7004923218520748660">Fixează Căutarea filelor</translation>
 <translation id="7004969808832734860">Până la <ph name="DISCOUNT_UP_TO_AMOUNT" /> reducere</translation>
 <translation id="7005496624875927304">Permisiuni suplimentare</translation>
 <translation id="7005812687360380971">Eroare</translation>

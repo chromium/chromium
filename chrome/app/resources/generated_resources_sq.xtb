@@ -2100,6 +2100,7 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="2434915728183570229">Tani mund të shikosh aplikacionet e telefonit</translation>
 <translation id="2435248616906486374">Rrjeti u shkëput</translation>
 <translation id="2435457462613246316">Shfaq fjalëkalimin</translation>
+<translation id="2435670725585845785">Gozhdo "Kërkimin e skedës"</translation>
 <translation id="2436385001956947090">Kopjo &amp;lidhjen</translation>
 <translation id="2437105255211187922">{NUM_TABS,plural, =1{Ndarja e skedës së zgjedhur do të tejkalojë kufirin e ndarjes}other{Ndarja e # skedave do të tejkalojë kufirin e ndarjes}}</translation>
 <translation id="2437561292559037753">Ndarja e të dhënave</translation>
@@ -3158,6 +3159,7 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="3157387275655328056">Shto te lista e leximit</translation>
 <translation id="3157931365184549694">Restauro</translation>
 <translation id="3158033540161634471">Konfiguro gjurmën e gishtit</translation>
+<translation id="3158203338449343164">Zhgozhdo "Kërkimin e skedës"</translation>
 <translation id="3158732900546890991">Fjalëkalimi duhet të ketë të paktën 8 karaktere dhe të përfshijë të paktën dy nga sa më poshtë: shkronja të mëdha, shkronja të vogla, numra ose simbole</translation>
 <translation id="3158770568048368350">Kjo mund të shkaktojë shkëputjen e shkurtër të rrjetit tënd celular</translation>
 <translation id="3159335509547415276">Mëso rreth llogarive të bllokuara</translation>
@@ -7617,6 +7619,7 @@ Mund të caktosh shumë çelësa për këtë veprim.</translation>
 <translation id="6291741848715722067">Kodi i konfirmimit</translation>
 <translation id="6291953229176937411">Shfaqe te "Gjetësi"</translation>
 <translation id="6293862149782163840"><ph name="DEVICE_NAME" /> është çaktivizuar</translation>
+<translation id="629405221789675953">Zhgozhdo "Kërkimin e skedës"</translation>
 <translation id="6294759976468837022">Shpejtësia e skanimit automatik</translation>
 <translation id="6295158916970320988">Të gjitha sajtet</translation>
 <translation id="6295855836753816081">Po ruan...</translation>
@@ -8633,6 +8636,7 @@ Ke edhe # fjalëkalime të tjera të komprometuara. "Menaxheri i fjalëkalimeve 
 <translation id="7003844668372540529">Produkt i panjohur <ph name="PRODUCT_ID" /> nga <ph name="VENDOR_NAME" /></translation>
 <translation id="7004402701596653846">Sajti mund të përdorë MIDI</translation>
 <translation id="7004499039102548441">Skedat e fundit</translation>
+<translation id="7004923218520748660">Gozhdo "Kërkimin e skedës"</translation>
 <translation id="7004969808832734860">Deri në <ph name="DISCOUNT_UP_TO_AMOUNT" /> ulje</translation>
 <translation id="7005496624875927304">Lejet shtesë</translation>
 <translation id="7005812687360380971">Dështim</translation>

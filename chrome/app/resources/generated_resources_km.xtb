@@ -2116,6 +2116,7 @@
 <translation id="2434915728183570229">ឥឡូវនេះ អ្នក​អាច​មើល​កម្មវិធី​លើ​ទូរសព្ទ​របស់អ្នក​បាន​ហើយ</translation>
 <translation id="2435248616906486374">បណ្តាញត្រូវបានផ្តាច់</translation>
 <translation id="2435457462613246316">បង្ហាញពាក្យសម្ងាត់</translation>
+<translation id="2435670725585845785">ខ្ទាស់​ការស្វែងរកផ្ទាំង</translation>
 <translation id="2436385001956947090">ចម្លង&amp;តំណ</translation>
 <translation id="2437105255211187922">{NUM_TABS,plural, =1{ការចែករំលែក​ផ្ទាំង​ដែលបាន​ជ្រើសរើស​នឹង​ធ្វើឱ្យលើស​ដែនកំណត់​នៃការចែករំលែក}other{ការចែករំលែក # ផ្ទាំង​នឹងធ្វើឱ្យលើស​ដែនកំណត់​នៃការចែករំលែក}}</translation>
 <translation id="2437561292559037753">ការចែករំលែក​ទិន្នន័យ</translation>
@@ -3174,6 +3175,7 @@
 <translation id="3157387275655328056">បន្ថែមទៅបញ្ជីអាន</translation>
 <translation id="3157931365184549694">ស្តារ</translation>
 <translation id="3158033540161634471">រៀបចំស្នាម​ម្រាមដៃរបស់អ្នក</translation>
+<translation id="3158203338449343164">ដកខ្ទាស់​ការស្វែងរកផ្ទាំង</translation>
 <translation id="3158732900546890991">ពាក្យសម្ងាត់​ត្រូវតែមាន​យ៉ាងតិច 8 តួ និងរួមបញ្ចូល​យ៉ាងតិចពីរ​នៃចំណុច​ខាងក្រោម៖ អក្សរធំ អក្សរតូច លេខ ឬ​និមិត្តសញ្ញា</translation>
 <translation id="3158770568048368350">សកម្មភាពនេះអាចបណ្ដាលឱ្យបណ្ដាញ​ទូរសព្ទ​ចល័តរបស់អ្នកផ្ដាច់មួយភ្លែត</translation>
 <translation id="3159335509547415276">ស្វែងយល់អំពីគណនីដែលត្រូវបានទប់ស្កាត់</translation>
@@ -7632,6 +7634,7 @@
 <translation id="6291741848715722067">លេខ​កូដ​បញ្ជាក់​</translation>
 <translation id="6291953229176937411">បង្ហាញនៅក្នុងប្រអប់ស្វែងរក</translation>
 <translation id="6293862149782163840"><ph name="DEVICE_NAME" /> ត្រូវបានបិទ</translation>
+<translation id="629405221789675953">ដកខ្ទាស់​ការស្វែងរកផ្ទាំង</translation>
 <translation id="6294759976468837022">ល្បឿនស្កេនស្វ័យប្រវត្តិ</translation>
 <translation id="6295158916970320988">គេហទំព័រទាំងអស់</translation>
 <translation id="6295855836753816081">កំពុងរក្សាទុក…</translation>
@@ -8648,6 +8651,7 @@
 <translation id="7003844668372540529">មិនស្គាល់ផលិតផល <ph name="PRODUCT_ID" /> ពី <ph name="VENDOR_NAME" /></translation>
 <translation id="7004402701596653846">គេហទំព័រ​អាចប្រើ MIDI</translation>
 <translation id="7004499039102548441">ផ្ទាំងថ្មីៗ</translation>
+<translation id="7004923218520748660">ខ្ទាស់​ការស្វែងរកផ្ទាំង</translation>
 <translation id="7004969808832734860">បញ្ចុះតម្លៃ​រហូតដល់ <ph name="DISCOUNT_UP_TO_AMOUNT" /></translation>
 <translation id="7005496624875927304">ការអនុញ្ញាតបន្ថែម</translation>
 <translation id="7005812687360380971">ការបរាជ័យ</translation>

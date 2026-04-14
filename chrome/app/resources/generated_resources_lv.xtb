@@ -2105,6 +2105,7 @@ Varat pārvaldīt šī konta iestatījumus, savā ierīcē instalējot lietotni 
 <translation id="2434915728183570229">Tagad varat skatīt tālruņa lietotnes.</translation>
 <translation id="2435248616906486374">Tika pārtraukts tīkla savienojums.</translation>
 <translation id="2435457462613246316">Rādīt paroli</translation>
+<translation id="2435670725585845785">Piespraust meklēšanu cilnēs</translation>
 <translation id="2436385001956947090">Kopēt &amp;saiti</translation>
 <translation id="2437105255211187922">{NUM_TABS,plural, =1{Kopīgojot atlasīto cilni, tiktu pārsniegts kopīgošanas ierobežojums}zero{Kopīgojot # cilnes, tiktu pārsniegts kopīgošanas ierobežojums}one{Kopīgojot # cilni, tiktu pārsniegts kopīgošanas ierobežojums}other{Kopīgojot # cilnes, tiktu pārsniegts kopīgošanas ierobežojums}}</translation>
 <translation id="2437561292559037753">Datu kopīgošana</translation>
@@ -3163,6 +3164,7 @@ Saskaņā ar domēna <ph name="DOMAIN" /> prasībām viedkartei ir jābūt ievie
 <translation id="3157387275655328056">Pievienot lasīšanas sarakstam</translation>
 <translation id="3157931365184549694">Atjaunot</translation>
 <translation id="3158033540161634471">Iestatiet pirksta nospiedumu</translation>
+<translation id="3158203338449343164">Atspraust meklēšanu cilnēs</translation>
 <translation id="3158732900546890991">Parolē ir jābūt vismaz astoņām rakstzīmēm, kā arī tajā ir jābūt vismaz divām no šādām rakstzīmēm: lielajiem burtiem, mazajiem burtiem, cipariem vai simboliem.</translation>
 <translation id="3158770568048368350">Tādējādi īslaicīgi var tikt pārtraukts savienojums ar mobilo tīklu</translation>
 <translation id="3159335509547415276">Uzziniet vairāk par bloķētiem kontiem.</translation>
@@ -7618,6 +7620,7 @@ Saskaņā ar domēna <ph name="DOMAIN" /> prasībām viedkartei ir jābūt ievie
 <translation id="6291741848715722067">Apstiprinājuma kods</translation>
 <translation id="6291953229176937411">Rādīt lietojumprogrammā &amp;Finder</translation>
 <translation id="6293862149782163840">Ierīce (<ph name="DEVICE_NAME" />) ir izslēgta.</translation>
+<translation id="629405221789675953">Atspraust meklēšanu cilnēs</translation>
 <translation id="6294759976468837022">Automātiskās pārlūkošanas ātrums</translation>
 <translation id="6295158916970320988">Visas vietnes</translation>
 <translation id="6295855836753816081">Notiek saglabāšana...</translation>
@@ -8638,6 +8641,7 @@ Jums ir vēl # uzlauztas paroles. Google paroļu pārvaldnieks iesaka nekavējot
 <translation id="7003844668372540529">Nezināms produkts (ID: <ph name="PRODUCT_ID" />), ko piedāvā <ph name="VENDOR_NAME" /></translation>
 <translation id="7004402701596653846">Vietnē var izmantot MIDI ierīci</translation>
 <translation id="7004499039102548441">Nesen atvērtas cilnes</translation>
+<translation id="7004923218520748660">Piespraust meklēšanu cilnēs</translation>
 <translation id="7004969808832734860">Atlaide līdz <ph name="DISCOUNT_UP_TO_AMOUNT" /></translation>
 <translation id="7005496624875927304">Papildu atļaujas</translation>
 <translation id="7005812687360380971">Kļūme</translation>

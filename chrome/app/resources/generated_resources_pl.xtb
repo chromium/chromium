@@ -2092,6 +2092,7 @@ Możesz zarządzać ustawieniami konta, korzystając z aplikacji Family Link na
 <translation id="2434915728183570229">Możesz teraz wyświetlać aplikacje z telefonu</translation>
 <translation id="2435248616906486374">Sieć odłączona</translation>
 <translation id="2435457462613246316">Pokaż hasło</translation>
+<translation id="2435670725585845785">Przypnij Wyszukiwanie kart</translation>
 <translation id="2436385001956947090">Kopiuj &amp;link</translation>
 <translation id="2437105255211187922">{NUM_TABS,plural, =1{Udostępnienie wybranej karty spowoduje przekroczenie limitu udostępniania}few{Udostępnienie # kart spowoduje przekroczenie limitu udostępniania}many{Udostępnienie # kart spowoduje przekroczenie limitu udostępniania}other{Udostępnienie # karty spowoduje przekroczenie limitu udostępniania}}</translation>
 <translation id="2437561292559037753">Udostępnianie danych</translation>
@@ -3146,6 +3147,7 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="3157387275655328056">Dodaj do listy Do przeczytania</translation>
 <translation id="3157931365184549694">Przywróć</translation>
 <translation id="3158033540161634471">Skonfiguruj swój odcisk palca</translation>
+<translation id="3158203338449343164">Odepnij Wyszukiwanie kart</translation>
 <translation id="3158732900546890991">Hasło musi mieć co najmniej 8 znaków oraz zawierać co najmniej 2 z tych elementów: wielkie litery, małe litery, cyfry i symbole</translation>
 <translation id="3158770568048368350">To może spowodować chwilowe rozłączenie sieci komórkowej</translation>
 <translation id="3159335509547415276">Więcej informacji o zablokowanych kontach</translation>
@@ -7598,6 +7600,7 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="6291741848715722067">Kod potwierdzenia</translation>
 <translation id="6291953229176937411">&amp;Pokaż w Finderze</translation>
 <translation id="6293862149782163840"><ph name="DEVICE_NAME" /> jest wyłączona</translation>
+<translation id="629405221789675953">Odepnij Wyszukiwanie kart</translation>
 <translation id="6294759976468837022">Szybkość automatycznego skanowania</translation>
 <translation id="6295158916970320988">Wszystkie witryny</translation>
 <translation id="6295855836753816081">Zapisuję…</translation>
@@ -8616,6 +8619,7 @@ Masz jeszcze # przejętego hasła. Menedżer haseł Google zaleca, aby jak najs
 <translation id="7003844668372540529">Nieznany produkt <ph name="PRODUCT_ID" /> firmy <ph name="VENDOR_NAME" /></translation>
 <translation id="7004402701596653846">Strona może używać MIDI</translation>
 <translation id="7004499039102548441">Ostatnie karty</translation>
+<translation id="7004923218520748660">Przypnij Wyszukiwanie kart</translation>
 <translation id="7004969808832734860">Do <ph name="DISCOUNT_UP_TO_AMOUNT" /> zniżki</translation>
 <translation id="7005496624875927304">Dodatkowe uprawnienia</translation>
 <translation id="7005812687360380971">Niepowodzenie</translation>

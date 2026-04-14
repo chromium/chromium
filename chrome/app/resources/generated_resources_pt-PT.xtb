@@ -2103,6 +2103,7 @@ Pode gerir as definições desta conta ao instalar a aplicação Family Link no 
 <translation id="2434915728183570229">Agora, pode ver as apps do seu telemóvel</translation>
 <translation id="2435248616906486374">Rede desligada</translation>
 <translation id="2435457462613246316">Mostrar palavra-passe</translation>
+<translation id="2435670725585845785">Fixar Pesquisa de separadores</translation>
 <translation id="2436385001956947090">Copiar &amp;link</translation>
 <translation id="2437105255211187922">{NUM_TABS,plural, =1{A partilha do separador selecionado excederia o limite de partilha}other{A partilha de # separadores excederia o limite de partilha}}</translation>
 <translation id="2437561292559037753">Partilha de dados</translation>
@@ -3162,6 +3163,7 @@ Quer pará-lo?</translation>
 <translation id="3157387275655328056">Adicionar à lista de leitura</translation>
 <translation id="3157931365184549694">Restaurar</translation>
 <translation id="3158033540161634471">Configurar a sua impressão digital</translation>
+<translation id="3158203338449343164">Desafixar Pesquisa de separadores</translation>
 <translation id="3158732900546890991">A palavra-passe tem de ter, pelo menos, 8 carateres e incluir, pelo menos, dois dos seguintes elementos: letras maiúsculas, letras minúsculas, números ou símbolos</translation>
 <translation id="3158770568048368350">Isto pode fazer com que a sua rede móvel se desligue momentaneamente</translation>
 <translation id="3159335509547415276">Saiba mais sobre contas bloqueadas</translation>
@@ -7624,6 +7626,7 @@ Certifique-se de que não revela informações confidenciais.</translation>
 <translation id="6291741848715722067">Código de validação</translation>
 <translation id="6291953229176937411">Mo&amp;strar no Finder</translation>
 <translation id="6293862149782163840">A rede da <ph name="DEVICE_NAME" /> está desativada</translation>
+<translation id="629405221789675953">Desafixar Pesquisa de separadores</translation>
 <translation id="6294759976468837022">Velocidade da análise automática</translation>
 <translation id="6295158916970320988">Todos os sites</translation>
 <translation id="6295855836753816081">A guardar...</translation>
@@ -8640,6 +8643,7 @@ Tem mais # palavras-passe comprometidas. O Gestor de Palavras-passe da Google re
 <translation id="7003844668372540529">Produto desconhecido <ph name="PRODUCT_ID" /> de <ph name="VENDOR_NAME" /></translation>
 <translation id="7004402701596653846">O site pode utilizar MIDI</translation>
 <translation id="7004499039102548441">Separadores recentes</translation>
+<translation id="7004923218520748660">Fixar Pesquisa de separadores</translation>
 <translation id="7004969808832734860">Até <ph name="DISCOUNT_UP_TO_AMOUNT" /> de desconto</translation>
 <translation id="7005496624875927304">Autorizações adicionais</translation>
 <translation id="7005812687360380971">Falha</translation>

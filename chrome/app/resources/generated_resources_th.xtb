@@ -2103,6 +2103,7 @@
 <translation id="2434915728183570229">ตอนนี้คุณดูแอปในโทรศัพท์ได้แล้ว</translation>
 <translation id="2435248616906486374">เครือข่ายถูกตัดการเชื่อมต่อ</translation>
 <translation id="2435457462613246316">แสดงรหัสผ่าน</translation>
+<translation id="2435670725585845785">ปักหมุดการค้นหาแท็บ</translation>
 <translation id="2436385001956947090">คัดลอกลิงก์</translation>
 <translation id="2437105255211187922">{NUM_TABS,plural, =1{การแชร์แท็บที่เลือกจะเกินขีดจำกัดการแชร์}other{การแชร์ # แท็บจะเกินขีดจำกัดการแชร์}}</translation>
 <translation id="2437561292559037753">การแชร์ข้อมูล</translation>
@@ -3161,6 +3162,7 @@
 <translation id="3157387275655328056">เพิ่มไปยังเรื่องรออ่าน</translation>
 <translation id="3157931365184549694">คืนค่า</translation>
 <translation id="3158033540161634471">ตั้งค่าลายนิ้วมือ</translation>
+<translation id="3158203338449343164">เลิกปักหมุดการค้นหาแท็บ</translation>
 <translation id="3158732900546890991">รหัสผ่านต้องมีอักขระอย่างน้อย 8 ตัว และต้องมีอักขระต่อไปนี้อย่างน้อย 2 ประเภท ได้แก่ ตัวอักษรพิมพ์ใหญ่ ตัวอักษรพิมพ์เล็ก ตัวเลข หรือสัญลักษณ์</translation>
 <translation id="3158770568048368350">การดำเนินการนี้อาจทำให้เครือข่ายมือถือขาดการเชื่อมต่อเป็นระยะเวลาสั้นๆ</translation>
 <translation id="3159335509547415276">ดูข้อมูลเกี่ยวกับบัญชีที่ถูกบล็อก</translation>
@@ -7615,6 +7617,7 @@
 <translation id="6291741848715722067">รหัสยืนยัน</translation>
 <translation id="6291953229176937411">&amp;แสดงใน Finder</translation>
 <translation id="6293862149782163840">"<ph name="DEVICE_NAME" />" ปิดอยู่</translation>
+<translation id="629405221789675953">เลิกปักหมุดการค้นหาแท็บ</translation>
 <translation id="6294759976468837022">ความเร็วของการสแกนอัตโนมัติ</translation>
 <translation id="6295158916970320988">เว็บไซต์ทั้งหมด</translation>
 <translation id="6295855836753816081">กำลังบันทึก...</translation>
@@ -8631,6 +8634,7 @@
 <translation id="7003844668372540529">ผลิตภัณฑ์ที่ไม่รู้จัก <ph name="PRODUCT_ID" /> จาก <ph name="VENDOR_NAME" /></translation>
 <translation id="7004402701596653846">เว็บไซต์ใช้ MIDI ได้</translation>
 <translation id="7004499039102548441">แท็บล่าสุด</translation>
+<translation id="7004923218520748660">ปักหมุดการค้นหาแท็บ</translation>
 <translation id="7004969808832734860">ลดสูงสุด <ph name="DISCOUNT_UP_TO_AMOUNT" /></translation>
 <translation id="7005496624875927304">สิทธิ์เพิ่มเติม</translation>
 <translation id="7005812687360380971">การทำงานล้มเหลว</translation>

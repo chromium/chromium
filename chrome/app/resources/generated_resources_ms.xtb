@@ -2116,6 +2116,7 @@ Anda boleh mengurus tetapan akaun ini dengan memasang apl Family Link pada peran
 <translation id="2434915728183570229">Kini anda dapat melihat apl telefon anda</translation>
 <translation id="2435248616906486374">Rangkaian diputuskan</translation>
 <translation id="2435457462613246316">Paparkan kata laluan</translation>
+<translation id="2435670725585845785">Sematkan carian tab</translation>
 <translation id="2436385001956947090">Salin &amp;pautan</translation>
 <translation id="2437105255211187922">{NUM_TABS,plural, =1{Perkongsian Tab yang Dipilih Akan Melebihi Had Perkongsian}other{Perkongsian # Tab Akan Melebihi Had Perkongsian}}</translation>
 <translation id="2437561292559037753">Perkongsian Data</translation>
@@ -3174,6 +3175,7 @@ Anda boleh mengurus tetapan akaun ini dengan memasang apl Family Link pada peran
 <translation id="3157387275655328056">Tambahkan pada Senarai Bacaan</translation>
 <translation id="3157931365184549694">Pulihkan</translation>
 <translation id="3158033540161634471">Sediakan cap jari anda</translation>
+<translation id="3158203338449343164">Nyahsematkan Carian Tab</translation>
 <translation id="3158732900546890991">Kata laluan mestilah sekurang-kurangnya 8 aksara dan menyertakan sekurang-kurangnya dua daripada yang berikut: huruf besar, huruf kecil, nombor atau simbol</translation>
 <translation id="3158770568048368350">Persediaan ini boleh menyebabkan rangkaian mudah alih anda terputus sambungan sebentar</translation>
 <translation id="3159335509547415276">Ketahui akaun yang disekat</translation>
@@ -7635,6 +7637,7 @@ Anda boleh menetapkan berbilang suis kepada tindakan ini.</translation>
 <translation id="6291741848715722067">Kod pengesahan</translation>
 <translation id="6291953229176937411">&amp;Paparkan dalam Pencari</translation>
 <translation id="6293862149782163840"><ph name="DEVICE_NAME" /> telah dimatikan</translation>
+<translation id="629405221789675953">Nyahsematkan carian tab</translation>
 <translation id="6294759976468837022">Kelajuan autoimbas</translation>
 <translation id="6295158916970320988">Semua tapak</translation>
 <translation id="6295855836753816081">Menyimpan...</translation>
@@ -8651,6 +8654,7 @@ Anda mempunyai # lagi kata laluan yang terjejas. Google Password Manager mengesy
 <translation id="7003844668372540529">Produk <ph name="PRODUCT_ID" /> daripada <ph name="VENDOR_NAME" /> tidak diketahui</translation>
 <translation id="7004402701596653846">Tapak boleh menggunakan MIDI</translation>
 <translation id="7004499039102548441">Tab Terbaharu</translation>
+<translation id="7004923218520748660">Sematkan Carian Tab</translation>
 <translation id="7004969808832734860">Diskaun sehingga <ph name="DISCOUNT_UP_TO_AMOUNT" /></translation>
 <translation id="7005496624875927304">Kebenaran tambahan</translation>
 <translation id="7005812687360380971">Gagal</translation>

@@ -2101,6 +2101,7 @@ Možete da upravljate podešavanjima ovog naloga ako instalirate aplikaciju Fami
 <translation id="2434915728183570229">Sada možete da pregledate aplikacije na telefonu</translation>
 <translation id="2435248616906486374">Veza sa mrežom je prekinuta</translation>
 <translation id="2435457462613246316">Prikaži lozinku</translation>
+<translation id="2435670725585845785">Zakači pretragu kartica</translation>
 <translation id="2436385001956947090">Kopiraj link</translation>
 <translation id="2437105255211187922">{NUM_TABS,plural, =1{Deljenje izabrane kartice bi premašilo ograničenje za deljenje}one{Deljenje # kartice bi premašilo ograničenje za deljenje}few{Deljenje # kartice bi premašilo ograničenje za deljenje}other{Deljenje # kartica bi premašilo ograničenje za deljenje}}</translation>
 <translation id="2437561292559037753">Deljenje podataka</translation>
@@ -3159,6 +3160,7 @@ Možete da upravljate podešavanjima ovog naloga ako instalirate aplikaciju Fami
 <translation id="3157387275655328056">Dodaj na listu za čitanje</translation>
 <translation id="3157931365184549694">Ponovo otvori</translation>
 <translation id="3158033540161634471">Podesite otisak prsta</translation>
+<translation id="3158203338449343164">Otkači pretragu kartica</translation>
 <translation id="3158732900546890991">Lozinka mora da ima najmanje 8 znakova i da sadrži najmanje dve od sledećih vrsta znakova: velika slova, mala slova, brojeve ili simbole</translation>
 <translation id="3158770568048368350">Zbog ovoga će veza sa mobilnom mrežom možda nakratko biti prekinuta</translation>
 <translation id="3159335509547415276">Saznajte više o blokiranim nalozima</translation>
@@ -7619,6 +7621,7 @@ Vodite računa da ne otkrijete nikakve osetljive informacije.</translation>
 <translation id="6291741848715722067">Kôd za potvrdu</translation>
 <translation id="6291953229176937411">&amp;Prikaži u Finder-u</translation>
 <translation id="6293862149782163840"><ph name="DEVICE_NAME" /> je isključena</translation>
+<translation id="629405221789675953">Otkači pretragu kartica</translation>
 <translation id="6294759976468837022">Brzina automatskog skeniranja</translation>
 <translation id="6295158916970320988">Svi sajtovi</translation>
 <translation id="6295855836753816081">Čuva se…</translation>
@@ -8639,6 +8642,7 @@ Imate još # ugroženih lozinki. Google menadžer lozinki preporučuje da odmah 
 <translation id="7003844668372540529">Nepoznati proizvod <ph name="PRODUCT_ID" /> prodavca <ph name="VENDOR_NAME" /></translation>
 <translation id="7004402701596653846">Sajt može da koristi MIDI</translation>
 <translation id="7004499039102548441">Nedavne kartice</translation>
+<translation id="7004923218520748660">Zakači pretragu kartica</translation>
 <translation id="7004969808832734860">Do <ph name="DISCOUNT_UP_TO_AMOUNT" /> popusta</translation>
 <translation id="7005496624875927304">Dodatne dozvole</translation>
 <translation id="7005812687360380971">Greška</translation>

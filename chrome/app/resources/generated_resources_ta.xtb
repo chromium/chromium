@@ -2116,6 +2116,7 @@
 <translation id="2434915728183570229">இப்போது, உங்கள் மொபைலில் உள்ள ஆப்ஸைப் பார்க்கலாம்</translation>
 <translation id="2435248616906486374">நெட்வொர்க் துண்டிக்கப்பட்டது</translation>
 <translation id="2435457462613246316">கடவுச்சொல்லைக் காண்பி</translation>
+<translation id="2435670725585845785">உலாவிப்பக்கத் தேடலைப் பின் செய்</translation>
 <translation id="2436385001956947090">&amp;இணைப்பை நகலெடு</translation>
 <translation id="2437105255211187922">{NUM_TABS,plural, =1{தேர்ந்தெடுக்கப்பட்ட பக்கத்தைப் பகிர்ந்தால் பகிர்வதற்கான வரம்பு மீறப்படும்}other{# பக்கங்களைப் பகிர்ந்தால் பகிர்வதற்கான வரம்பு மீறப்படும்}}</translation>
 <translation id="2437561292559037753">தரவுப் பகிர்வு</translation>
@@ -3174,6 +3175,7 @@
 <translation id="3157387275655328056">வாசிப்புப் பட்டியலில் சேர்</translation>
 <translation id="3157931365184549694">மீட்டமை</translation>
 <translation id="3158033540161634471">உங்கள் கைரேகையை அமைக்கவும்</translation>
+<translation id="3158203338449343164">உலாவிப்பக்கத் தேடலைப் பிரித்தெடு</translation>
 <translation id="3158732900546890991">கடவுச்சொல்லில் குறைந்தது 8 எழுத்துகள் இருக்க வேண்டும். குறைந்தது பின்வரும் இரண்டு விஷயங்கள் அதில் இருக்க வேண்டும்: பேரெழுத்துகள், சிற்றெழுத்துகள், எண்கள் அல்லது குறியீடுகள்.</translation>
 <translation id="3158770568048368350">இதனால் உங்கள் மொபைல் நெட்வொர்க் இணைப்பு சற்று நேரம் துண்டிக்கப்படலாம்</translation>
 <translation id="3159335509547415276">தடுக்கப்பட்ட கணக்குகள் பற்றித் தெரிந்துகொள்ளுங்கள்</translation>
@@ -7636,6 +7638,7 @@
 <translation id="6291741848715722067">உறுதிப்படுத்தல் குறியீடு</translation>
 <translation id="6291953229176937411">&amp;கண்டுபிடிப்பானில் காண்பி</translation>
 <translation id="6293862149782163840"><ph name="DEVICE_NAME" /> முடக்கப்பட்டுள்ளது</translation>
+<translation id="629405221789675953">உலாவிப்பக்கத் தேடலைப் பிரித்தெடு</translation>
 <translation id="6294759976468837022">தானியங்கு ஸ்கேனின் வேகம்</translation>
 <translation id="6295158916970320988">எல்லா தளங்களும்</translation>
 <translation id="6295855836753816081">சேமிக்கிறது...</translation>
@@ -8652,6 +8655,7 @@
 <translation id="7003844668372540529"><ph name="VENDOR_NAME" /> அனுப்பிய <ph name="PRODUCT_ID" /> தயாரிப்பை அறிய முடியவில்லை</translation>
 <translation id="7004402701596653846">தளத்தால் MIDIயைப் பயன்படுத்த முடியும்</translation>
 <translation id="7004499039102548441">சமீபத்திய தாவல்கள்</translation>
+<translation id="7004923218520748660">உலாவிப்பக்கத் தேடலைப் பின் செய்</translation>
 <translation id="7004969808832734860"><ph name="DISCOUNT_UP_TO_AMOUNT" /> வரை தள்ளுபடி</translation>
 <translation id="7005496624875927304">கூடுதல் அனுமதிகள்</translation>
 <translation id="7005812687360380971">தோல்வியடைந்தது</translation>

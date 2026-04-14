@@ -2119,6 +2119,7 @@ Gallwch reoli gosodiadau'r cyfrif hwn drwy osod yr ap Family Link ar eich dyfais
 <translation id="2434915728183570229">Gallwch bellach weld apiau eich ffôn</translation>
 <translation id="2435248616906486374">Mae'r rhwydwaith wedi'i ddatgysylltu</translation>
 <translation id="2435457462613246316">Dangos y cyfrinair</translation>
+<translation id="2435670725585845785">Pinio chwilio tabiau</translation>
 <translation id="2436385001956947090">Copïo &amp;dolen</translation>
 <translation id="2437105255211187922">{NUM_TABS,plural, =1{Byddai Rhannu'r Tab a Ddewiswyd yn Mynd Y Tu Hwnt i'r Terfyn Rhannu}zero{Byddai Rhannu # Tab yn Mynd Y Tu Hwnt i'r Terfyn Rhannu}two{Byddai Rhannu # Dab yn Mynd Y Tu Hwnt i'r Terfyn Rhannu}few{Byddai Rhannu # Thab yn Mynd Y Tu Hwnt i'r Terfyn Rhannu}many{Byddai Rhannu # Thab yn Mynd Y Tu Hwnt i'r Terfyn Rhannu}other{Byddai Rhannu # Tab yn Mynd Y Tu Hwnt i'r Terfyn Rhannu}}</translation>
 <translation id="2437561292559037753">Rhannu Data</translation>
@@ -3177,6 +3178,7 @@ Mae <ph name="DOMAIN" /> yn gofyn i chi gadw'ch cerdyn smart wedi'i fewnosod.</t
 <translation id="3157387275655328056">Ychwanegu at y Rhestr Ddarllen</translation>
 <translation id="3157931365184549694">Adfer</translation>
 <translation id="3158033540161634471">Gosod eich ôl bys</translation>
+<translation id="3158203338449343164">Dad-binio Chwilio Tabiau</translation>
 <translation id="3158732900546890991">Rhaid i'r cyfrinair fod o leiaf 8 nod o hyd a chynnwys o leiaf ddau o'r canlynol: priflythrennau, llythrennau bach, rhifau neu symbolau</translation>
 <translation id="3158770568048368350">Mae'n bosib y bydd hyn yn achosi i'ch rhwydwaith symudol ddatgysylltu am gyfnod byr</translation>
 <translation id="3159335509547415276">Dysgu am gyfrifon sydd wedi'u rhwystro</translation>
@@ -7638,6 +7640,7 @@ Mae <ph name="DOMAIN" /> yn gofyn i chi gadw'ch cerdyn smart wedi'i fewnosod.</t
 <translation id="6291741848715722067">Cod cadarnhad</translation>
 <translation id="6291953229176937411">&amp;Dangos yn Finder</translation>
 <translation id="6293862149782163840">Mae <ph name="DEVICE_NAME" /> wedi'i ddiffodd</translation>
+<translation id="629405221789675953">Dad-binio chwilio tabiau</translation>
 <translation id="6294759976468837022">Cyflymder awtosganio</translation>
 <translation id="6295158916970320988">Pob gwefan</translation>
 <translation id="6295855836753816081">Wrthi'n cadw...</translation>
@@ -8662,6 +8665,7 @@ Mae gennych # cyfrinair arall sydd wedi'u darganfod. Mae Rheolwr Cyfrineiriau Go
 <translation id="7003844668372540529">Cynnyrch anhysbys <ph name="PRODUCT_ID" /> gan <ph name="VENDOR_NAME" /></translation>
 <translation id="7004402701596653846">Gall y wefan ddefnyddio MIDI</translation>
 <translation id="7004499039102548441">Tabiau Diweddar</translation>
+<translation id="7004923218520748660">Pinio Chwilio Tabiau</translation>
 <translation id="7004969808832734860">Hyd at <ph name="DISCOUNT_UP_TO_AMOUNT" /> i ffwrdd</translation>
 <translation id="7005496624875927304">Caniatadau Ychwanegol</translation>
 <translation id="7005812687360380971">Methiant</translation>

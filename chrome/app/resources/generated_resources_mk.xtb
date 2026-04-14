@@ -2117,6 +2117,7 @@
 <translation id="2434915728183570229">Сега можете да ги прегледувате апликациите од телефонот</translation>
 <translation id="2435248616906486374">Мрежата е исклучена</translation>
 <translation id="2435457462613246316">Прикажи ја лозинката</translation>
+<translation id="2435670725585845785">Закачи го пребарувањето картички</translation>
 <translation id="2436385001956947090">Копирај го линкот</translation>
 <translation id="2437105255211187922">{NUM_TABS,plural, =1{Споделувањето на избраната картичка ќе го надмине ограничувањето за споделување}one{Споделувањето # картичка ќе го надмине ограничувањето за споделување}other{Споделувањето # картички ќе го надмине ограничувањето за споделување}}</translation>
 <translation id="2437561292559037753">Споделување податоци</translation>
@@ -3175,6 +3176,7 @@
 <translation id="3157387275655328056">Додај во „Списокот за читање“</translation>
 <translation id="3157931365184549694">Обнови</translation>
 <translation id="3158033540161634471">Поставете го отпечатокот</translation>
+<translation id="3158203338449343164">Откачи го пребарувањето картички</translation>
 <translation id="3158732900546890991">Лозинката мора да има најмалку 8 знака и да опфаќа најмалку две од следниве: големи букви, мали букви, бројки или симболи</translation>
 <translation id="3158770568048368350">Ова може да предизвика краток прекин на врската на вашата мобилна мрежа</translation>
 <translation id="3159335509547415276">Дознајте повеќе за блокираните сметки</translation>
@@ -7636,6 +7638,7 @@
 <translation id="6291741848715722067">Код за потврда</translation>
 <translation id="6291953229176937411">&amp;Прикажи во Наоѓач</translation>
 <translation id="6293862149782163840"><ph name="DEVICE_NAME" /> е исклучена</translation>
+<translation id="629405221789675953">Откачи го пребарувањето картички</translation>
 <translation id="6294759976468837022">Брзина на автоматско скенирање</translation>
 <translation id="6295158916970320988">Сите локации</translation>
 <translation id="6295855836753816081">Се зачувува…</translation>
@@ -8654,6 +8657,7 @@
 <translation id="7003844668372540529">Непознат производ <ph name="PRODUCT_ID" /> од <ph name="VENDOR_NAME" /></translation>
 <translation id="7004402701596653846">Сајтот може да користи MIDI</translation>
 <translation id="7004499039102548441">Неодамнешни картички</translation>
+<translation id="7004923218520748660">Закачи го пребарувањето картички</translation>
 <translation id="7004969808832734860">До <ph name="DISCOUNT_UP_TO_AMOUNT" /> попуст</translation>
 <translation id="7005496624875927304">Дополнителни дозволи</translation>
 <translation id="7005812687360380971">Неуспех</translation>

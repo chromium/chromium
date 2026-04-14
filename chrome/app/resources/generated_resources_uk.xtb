@@ -2119,6 +2119,7 @@
 <translation id="2434915728183570229">Тепер ви можете переглядати додатки з телефона</translation>
 <translation id="2435248616906486374">Немає з’єднання з мережею</translation>
 <translation id="2435457462613246316">Показати пароль</translation>
+<translation id="2435670725585845785">Закріпити пошук на вкладках</translation>
 <translation id="2436385001956947090">Копіювати &amp;посилання</translation>
 <translation id="2437105255211187922">{NUM_TABS,plural, =1{Якщо надати доступ до вибраної вкладки, ліміт буде перевищено}one{Якщо надати доступ до # вкладки, ліміт буде перевищено}few{Якщо надати доступ до # вкладок, ліміт буде перевищено}many{Якщо надати доступ до # вкладок, ліміт буде перевищено}other{Якщо надати доступ до # вкладки, ліміт буде перевищено}}</translation>
 <translation id="2437561292559037753">Передавання даних</translation>
@@ -3177,6 +3178,7 @@
 <translation id="3157387275655328056">Додати в список читання</translation>
 <translation id="3157931365184549694">Відновити</translation>
 <translation id="3158033540161634471">Налаштуйте відбиток</translation>
+<translation id="3158203338449343164">Відкріпити пошук на вкладках</translation>
 <translation id="3158732900546890991">Пароль має містити щонайменше 8 символів і включати щонайменше два з таких елементів: великі літери, малі літери, цифри або символи</translation>
 <translation id="3158770568048368350">Можливо, пристрій ненадовго від’єднається від мобільної мережі</translation>
 <translation id="3159335509547415276">Докладніше про заблоковані облікові записи</translation>
@@ -7633,6 +7635,7 @@
 <translation id="6291741848715722067">Код підтвердження</translation>
 <translation id="6291953229176937411">&amp;Показати в програмі Finder</translation>
 <translation id="6293862149782163840"><ph name="DEVICE_NAME" /> вимкнено</translation>
+<translation id="629405221789675953">Відкріпити пошук на вкладках</translation>
 <translation id="6294759976468837022">Швидкість автоматичного сканування</translation>
 <translation id="6295158916970320988">Усі сайти</translation>
 <translation id="6295855836753816081">Зберігання…</translation>
@@ -8655,6 +8658,7 @@
 <translation id="7003844668372540529">Невідомий продукт <ph name="PRODUCT_ID" /> від постачальника <ph name="VENDOR_NAME" /></translation>
 <translation id="7004402701596653846">Сайт може використовувати MIDI</translation>
 <translation id="7004499039102548441">Останні вкладки</translation>
+<translation id="7004923218520748660">Закріпити пошук на вкладках</translation>
 <translation id="7004969808832734860">Знижка до <ph name="DISCOUNT_UP_TO_AMOUNT" /></translation>
 <translation id="7005496624875927304">Додаткові дозволи</translation>
 <translation id="7005812687360380971">Помилка</translation>

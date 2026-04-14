@@ -2102,6 +2102,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="2434915728183570229">Xa podes acceder ás aplicacións do teu teléfono</translation>
 <translation id="2435248616906486374">Rede desconectada</translation>
 <translation id="2435457462613246316">Mostrar contrasinal</translation>
+<translation id="2435670725585845785">Fixar Busca de pestanas</translation>
 <translation id="2436385001956947090">Copiar &amp;ligazón</translation>
 <translation id="2437105255211187922">{NUM_TABS,plural, =1{Se compartes a pestana seleccionada, superarase o límite de elementos compartidos}other{Se compartes # pestanas, superarase o límite de elementos compartidos}}</translation>
 <translation id="2437561292559037753">Uso compartido de datos</translation>
@@ -3160,6 +3161,7 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="3157387275655328056">Engadir á lista de lectura</translation>
 <translation id="3157931365184549694">Restaurar</translation>
 <translation id="3158033540161634471">Configurar a túa impresión dixital</translation>
+<translation id="3158203338449343164">Deixar de fixar Busca de pestanas</translation>
 <translation id="3158732900546890991">O contrasinal debe ter polo menos 8 caracteres e incluír, como mínimo, dúas das seguintes opcións: letras maiúsculas, letras minúsculas, números ou símbolos</translation>
 <translation id="3158770568048368350">Esta acción pode provocar que se desconecte a rede de telefonía móbil durante uns instantes</translation>
 <translation id="3159335509547415276">Máis información acerca das contas bloqueadas</translation>
@@ -7621,6 +7623,7 @@ Podes asignarlles esta acción a varios interruptores.</translation>
 <translation id="6291741848715722067">Código de confirmación</translation>
 <translation id="6291953229176937411">&amp;Mostrar en Finder</translation>
 <translation id="6293862149782163840">Desactivouse o dispositivo <ph name="DEVICE_NAME" /></translation>
+<translation id="629405221789675953">Deixar de fixar Busca de pestanas</translation>
 <translation id="6294759976468837022">Velocidade da exploración automática</translation>
 <translation id="6295158916970320988">Todos os sitios</translation>
 <translation id="6295855836753816081">Gardando...</translation>
@@ -8637,6 +8640,7 @@ Quédanche # máis. O xestor de contrasinais de Google recomenda que comprobes e
 <translation id="7003844668372540529">Produto descoñecido <ph name="PRODUCT_ID" /> de <ph name="VENDOR_NAME" /></translation>
 <translation id="7004402701596653846">O sitio pode utilizar MIDI</translation>
 <translation id="7004499039102548441">Pestanas recentes</translation>
+<translation id="7004923218520748660">Fixar Busca de pestanas</translation>
 <translation id="7004969808832734860">Desconto máximo: <ph name="DISCOUNT_UP_TO_AMOUNT" /></translation>
 <translation id="7005496624875927304">Permisos adicionais</translation>
 <translation id="7005812687360380971">Fallo</translation>

@@ -2117,6 +2117,7 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="2434915728183570229">Agora, você pode ver os apps do seu smartphone</translation>
 <translation id="2435248616906486374">Rede desconectada</translation>
 <translation id="2435457462613246316">Mostrar senha</translation>
+<translation id="2435670725585845785">Fixar a pesquisa em todas as guias</translation>
 <translation id="2436385001956947090">Copiar link</translation>
 <translation id="2437105255211187922">{NUM_TABS,plural, =1{Compartilhar a guia selecionada excederia o limite de compartilhamento}one{O compartilhamento de # guia excederia o limite de compartilhamento}other{O compartilhamento de # guias excederia o limite de compartilhamento}}</translation>
 <translation id="2437561292559037753">Compartilhamento de dados pessoais</translation>
@@ -3174,6 +3175,7 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="3157387275655328056">Adicionar à lista de leitura</translation>
 <translation id="3157931365184549694">Restaurar</translation>
 <translation id="3158033540161634471">Configurar impressão digital</translation>
+<translation id="3158203338449343164">Liberar A Pesquisa Em Todas As Guias</translation>
 <translation id="3158732900546890991">A senha precisa ter pelo menos oito caracteres e incluir pelo menos dois destes: letras maiúsculas, letras minúsculas, números ou símbolos</translation>
 <translation id="3158770568048368350">Isso pode fazer com que a rede móvel seja momentaneamente desconectada</translation>
 <translation id="3159335509547415276">Saiba mais sobre contas bloqueadas.</translation>
@@ -7637,6 +7639,7 @@ Não exponha nenhuma informação confidencial.</translation>
 <translation id="6291741848715722067">Código de confirmação</translation>
 <translation id="6291953229176937411">&amp;Mostrar no Finder</translation>
 <translation id="6293862149782163840">O dispositivo <ph name="DEVICE_NAME" /> está desativado</translation>
+<translation id="629405221789675953">Liberar a pesquisa em todas as guias</translation>
 <translation id="6294759976468837022">Velocidade da leitura automática</translation>
 <translation id="6295158916970320988">Todos os sites</translation>
 <translation id="6295855836753816081">Salvando...</translation>
@@ -8655,6 +8658,7 @@ Há # outras senhas comprometidas. O Gerenciador de senhas do Google recomenda q
 <translation id="7003844668372540529">Produto <ph name="PRODUCT_ID" /> desconhecido de <ph name="VENDOR_NAME" /></translation>
 <translation id="7004402701596653846">O site pode usar um dispositivo MIDI</translation>
 <translation id="7004499039102548441">Guias recentes</translation>
+<translation id="7004923218520748660">Fixar A Pesquisa Em Todas As Guias</translation>
 <translation id="7004969808832734860">Até <ph name="DISCOUNT_UP_TO_AMOUNT" /> de desconto</translation>
 <translation id="7005496624875927304">Outras permissões</translation>
 <translation id="7005812687360380971">Falha</translation>

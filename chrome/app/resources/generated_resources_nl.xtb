@@ -2103,6 +2103,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="2434915728183570229">Je kunt nu de apps van je telefoon bekijken</translation>
 <translation id="2435248616906486374">Geen verbinding met netwerk</translation>
 <translation id="2435457462613246316">Wachtwoord bekijken</translation>
+<translation id="2435670725585845785">Tabbladen doorzoeken vastzetten</translation>
 <translation id="2436385001956947090">&amp;Link kopiëren</translation>
 <translation id="2437105255211187922">{NUM_TABS,plural, =1{Als je het geselecteerde tabblad deelt, overschrijd je de limiet voor delen}other{Als je # tabbladen deelt, overschrijd je de limiet voor delen}}</translation>
 <translation id="2437561292559037753">Gegevens delen</translation>
@@ -3161,6 +3162,7 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="3157387275655328056">Toevoegen aan leeslijst</translation>
 <translation id="3157931365184549694">Herstellen</translation>
 <translation id="3158033540161634471">Je vingerafdruk instellen</translation>
+<translation id="3158203338449343164">Tabbladen doorzoeken losmaken</translation>
 <translation id="3158732900546890991">Het wachtwoord moet minstens 8 tekens lang zijn en minstens 2 van de volgende elementen bevatten: hoofdletters, kleine letters, cijfers of symbolen</translation>
 <translation id="3158770568048368350">Hierdoor kan de verbinding met het mobiele netwerk kort worden verbroken</translation>
 <translation id="3159335509547415276">Meer informatie over geblokkeerde accounts</translation>
@@ -7614,6 +7616,7 @@ Je kunt meerdere schakelaars toewijzen aan deze actie.</translation>
 <translation id="6291741848715722067">Bevestigingscode</translation>
 <translation id="6291953229176937411">&amp;Toon in Finder</translation>
 <translation id="6293862149782163840"><ph name="DEVICE_NAME" /> is uitgezet</translation>
+<translation id="629405221789675953">Tabbladen doorzoeken losmaken</translation>
 <translation id="6294759976468837022">Snelheid voor automatisch scannen</translation>
 <translation id="6295158916970320988">Alle sites</translation>
 <translation id="6295855836753816081">Opslaan...</translation>
@@ -8630,6 +8633,7 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="7003844668372540529">Onbekend product <ph name="PRODUCT_ID" /> van <ph name="VENDOR_NAME" /></translation>
 <translation id="7004402701596653846">De site kan MIDI gebruiken.</translation>
 <translation id="7004499039102548441">Recente tabbladen</translation>
+<translation id="7004923218520748660">Tabbladen doorzoeken vastzetten</translation>
 <translation id="7004969808832734860">Tot <ph name="DISCOUNT_UP_TO_AMOUNT" /> korting</translation>
 <translation id="7005496624875927304">Aanvullende rechten</translation>
 <translation id="7005812687360380971">Mislukt</translation>

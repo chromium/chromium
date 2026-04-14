@@ -2106,6 +2106,7 @@ Postavkama računa možete upravljati tako da instalirate aplikaciju Family Link
 <translation id="2434915728183570229">Sada možete pregledati aplikacije telefona</translation>
 <translation id="2435248616906486374">Mreža je isključena</translation>
 <translation id="2435457462613246316">Pokaži zaporku</translation>
+<translation id="2435670725585845785">Prikvači pretraživanje kartica</translation>
 <translation id="2436385001956947090">Kopiraj &amp;vezu</translation>
 <translation id="2437105255211187922">{NUM_TABS,plural, =1{Dijeljenjem odabrane kartice premašilo bi se ograničenje dijeljenja}one{Dijeljenjem # kartice premašilo bi se ograničenje dijeljenja}few{Dijeljenjem # kartice premašilo bi se ograničenje dijeljenja}other{Dijeljenjem # kartica premašilo bi se ograničenje dijeljenja}}</translation>
 <translation id="2437561292559037753">Dijeljenje podataka</translation>
@@ -3164,6 +3165,7 @@ Postavkama računa možete upravljati tako da instalirate aplikaciju Family Link
 <translation id="3157387275655328056">Dodaj na popis za čitanje</translation>
 <translation id="3157931365184549694">Vrati</translation>
 <translation id="3158033540161634471">Postavljanje otiska prsta</translation>
+<translation id="3158203338449343164">Otkvači pretraživanje kartica</translation>
 <translation id="3158732900546890991">Zaporka mora imati najmanje osam znakova i uključivati najmanje dvije od sljedećih vrsta znakova: velika slova, mala slova, brojeve ili simbole</translation>
 <translation id="3158770568048368350">Veza s mobilnom mrežom može se nakratko prekinuti</translation>
 <translation id="3159335509547415276">Saznajte više o blokiranim računima</translation>
@@ -7619,6 +7621,7 @@ Toj radnji možete dodijeliti više prekidača.</translation>
 <translation id="6291741848715722067">Potvrdni kôd</translation>
 <translation id="6291953229176937411">&amp;Prikaži u programu Finder</translation>
 <translation id="6293862149782163840">Uređaj <ph name="DEVICE_NAME" /> se isključuje</translation>
+<translation id="629405221789675953">Otkvači pretraživanje kartica</translation>
 <translation id="6294759976468837022">Brzina automatskog traženja</translation>
 <translation id="6295158916970320988">Sve web-lokacije</translation>
 <translation id="6295855836753816081">Spremanje...</translation>
@@ -8639,6 +8642,7 @@ Imate još # ugroženih zaporki. Google upravitelj zaporki preporučuje da odmah
 <translation id="7003844668372540529">Nepoznati proizvod <ph name="PRODUCT_ID" />, <ph name="VENDOR_NAME" /></translation>
 <translation id="7004402701596653846">Web-lokacija može upotrebljavati MIDI</translation>
 <translation id="7004499039102548441">Nedavne kartice</translation>
+<translation id="7004923218520748660">Prikvači pretraživanje kartica</translation>
 <translation id="7004969808832734860">Do <ph name="DISCOUNT_UP_TO_AMOUNT" /> popusta</translation>
 <translation id="7005496624875927304">Dodatna dopuštenja</translation>
 <translation id="7005812687360380971">Neuspjeh</translation>

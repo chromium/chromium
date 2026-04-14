@@ -2102,6 +2102,7 @@
 <translation id="2434915728183570229">ଆପଣ ବର୍ତ୍ତମାନ ଆପଣଙ୍କ ଫୋନରେ ଥିବା ଆପ୍ସକୁ ଦେଖିପାରିବେ</translation>
 <translation id="2435248616906486374">ନେଟ୍‍ୱର୍କ ବିଚ୍ଛିନ୍ନ ହୋ‍ଇଯାଇଛି।</translation>
 <translation id="2435457462613246316">ପାସୱାର୍ଡ ଦେଖାନ୍ତୁ</translation>
+<translation id="2435670725585845785">ଟାବ ସର୍ଚ୍ଚକୁ ପିନ କରନ୍ତୁ</translation>
 <translation id="2436385001956947090">&amp;ଲିଙ୍କ କପି କରନ୍ତୁ</translation>
 <translation id="2437105255211187922">{NUM_TABS,plural, =1{ଚୟନିତ ଟାବ ସେୟାର କରିବା ଫଳରେ ଏହା ସେୟାରିଂ ସୀମାକୁ ଅତିକ୍ରମ କରିବ}other{# ଟାବ ସେୟାର କରିବା ଫଳରେ ଏହା ସେୟାରିଂ ସୀମାକୁ ଅତିକ୍ରମ କରିବ}}</translation>
 <translation id="2437561292559037753">ଡାଟା ସେୟାରିଂ</translation>
@@ -3160,6 +3161,7 @@
 <translation id="3157387275655328056">ପଢ଼ିବା ତାଲିକାରେ ଯୋଗ କରନ୍ତୁ</translation>
 <translation id="3157931365184549694">ପୁନଃସଂରକ୍ଷଣ କରନ୍ତୁ</translation>
 <translation id="3158033540161634471">ଆପଣଙ୍କର ଟିପଚିହ୍ନ ସେଟ୍ ଅପ୍ କରନ୍ତୁ</translation>
+<translation id="3158203338449343164">ଟାବ ସର୍ଚ୍ଚକୁ ଅନପିନ କରନ୍ତୁ</translation>
 <translation id="3158732900546890991">ପାସୱାର୍ଡ ଅତି କମରେ 8 କେରେକ୍ଟରର ହେବା ଆବଶ୍ୟକ ଏବଂ ଏଥିରେ ନିମ୍ନୋକ୍ତଗୁଡ଼ିକ ମଧ୍ୟରୁ ଅତି କମରେ ଦୁଇଟି ଅନ୍ତର୍ଭୁକ୍ତ ହେବା ଆବଶ୍ୟକ: ବଡ଼ ଅକ୍ଷର, ଛୋଟ ଅକ୍ଷର, ସଂଖ୍ୟା କିମ୍ବା ଚିହ୍ନ</translation>
 <translation id="3158770568048368350">ଏହା ଯୋଗୁଁ ଆପଣଙ୍କ ମୋବାଇଲ ନେଟୱାର୍କ ଅଳ୍ପ ସମୟ ପାଇଁ ବିଚ୍ଛିନ୍ନ ହୋଇପାରେ</translation>
 <translation id="3159335509547415276">ବ୍ଲକ କରାଯାଇଥିବା ଆକାଉଣ୍ଟଗୁଡ଼ିକ ବିଷୟରେ ଜାଣନ୍ତୁ</translation>
@@ -7616,6 +7618,7 @@
 <translation id="6291741848715722067">ସୁନିଶ୍ଚିତକରଣ କୋଡ୍</translation>
 <translation id="6291953229176937411">&amp;ଫାଇଣ୍ଡର୍‌ରେ ଦେଖାନ୍ତୁ</translation>
 <translation id="6293862149782163840"><ph name="DEVICE_NAME" />କୁ ବନ୍ଦ କରାଯାଇଛି</translation>
+<translation id="629405221789675953">ଟାବ ସର୍ଚ୍ଚକୁ ଅନପିନ କରନ୍ତୁ</translation>
 <translation id="6294759976468837022">ସ୍ୱତଃ-ସ୍କାନର ସ୍ପିଡ୍</translation>
 <translation id="6295158916970320988">ସମସ୍ତ ସାଇଟ୍‍ଗୁଡ଼ିକ</translation>
 <translation id="6295855836753816081">ସେଭ୍ ହେଉଛି…</translation>
@@ -8634,6 +8637,7 @@ Google Chrome ଆପଣଙ୍କ ମୋବାଇଲ୍ ଡାଟା ବ୍ୟବ
 <translation id="7003844668372540529"><ph name="VENDOR_NAME" />ରୁ <ph name="PRODUCT_ID" /> ଅଜଣା ପ୍ରଡକ୍ଟ</translation>
 <translation id="7004402701596653846">ସାଇଟ୍ MIDI ବ୍ୟବହାର କରିପାରିବ</translation>
 <translation id="7004499039102548441">ସାମ୍ପ୍ରତିକ ଟାବ୍‌</translation>
+<translation id="7004923218520748660">ଟାବ ସର୍ଚ୍ଚକୁ ପିନ କରନ୍ତୁ</translation>
 <translation id="7004969808832734860"><ph name="DISCOUNT_UP_TO_AMOUNT" /> ପର୍ଯ୍ୟନ୍ତ ରିହାତି</translation>
 <translation id="7005496624875927304">ଅତିରିକ୍ତ ଅନୁମତିଗୁଡ଼ିକ</translation>
 <translation id="7005812687360380971">ବିଫଳ ହୋଇଛି</translation>

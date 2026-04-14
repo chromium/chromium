@@ -2118,6 +2118,7 @@ Nastavitve tega računa je mogoče upravljati z namestitvijo aplikacije Family L
 <translation id="2434915728183570229">Zdaj si lahko ogledate aplikacije telefona</translation>
 <translation id="2435248616906486374">Povezava z omrežjem je prekinjena</translation>
 <translation id="2435457462613246316">Pokaži geslo</translation>
+<translation id="2435670725585845785">Pripni iskanje zavihkov</translation>
 <translation id="2436385001956947090">Kopiraj &amp;povezavo</translation>
 <translation id="2437105255211187922">{NUM_TABS,plural, =1{Če boste delili izbrani zavihek, boste presegli omejitev deljenja}one{Če boste delili # zavihek, boste presegli omejitev deljenja}two{Če boste delili # zavihka, boste presegli omejitev deljenja}few{Če boste delili # zavihke, boste presegli omejitev deljenja}other{Če boste delili # zavihkov, boste presegli omejitev deljenja}}</translation>
 <translation id="2437561292559037753">Deljenje podatkov</translation>
@@ -3176,6 +3177,7 @@ Domena <ph name="DOMAIN" /> zahteva, da je pametna kartica vstavljena.</translat
 <translation id="3157387275655328056">Dodaj na bralni seznam</translation>
 <translation id="3157931365184549694">Obnovi</translation>
 <translation id="3158033540161634471">Nastavite prstni odtis</translation>
+<translation id="3158203338449343164">Odpni iskanje zavihkov</translation>
 <translation id="3158732900546890991">Geslo mora imeti najmanj 8 znakov in vsebovati vsaj dve od naslednjih vrst znakov: velike črke, male črke, številke ali simbole</translation>
 <translation id="3158770568048368350">Zaradi tega bo mobilno omrežje za kratek čas prekinilo povezavo.</translation>
 <translation id="3159335509547415276">Preberite več o blokiranih računih</translation>
@@ -7638,6 +7640,7 @@ Domena <ph name="DOMAIN" /> zahteva, da je pametna kartica vstavljena.</translat
 <translation id="6291741848715722067">Potrditvena koda</translation>
 <translation id="6291953229176937411">&amp;Pokaži v Finderju</translation>
 <translation id="6293862149782163840">Naprava <ph name="DEVICE_NAME" /> je izklopljena</translation>
+<translation id="629405221789675953">Odpni iskanje zavihkov</translation>
 <translation id="6294759976468837022">Hitrost samodejnega iskanja</translation>
 <translation id="6295158916970320988">Vsa spletna mesta</translation>
 <translation id="6295855836753816081">Shranjevanje ...</translation>
@@ -8660,6 +8663,7 @@ Imate še # ogroženih gesel. Googlov upravitelj gesel priporoča, da takoj prev
 <translation id="7003844668372540529">Neznan izdelek <ph name="PRODUCT_ID" /> dobavitelja <ph name="VENDOR_NAME" /></translation>
 <translation id="7004402701596653846">Spletno mesto lahko uporablja MIDI</translation>
 <translation id="7004499039102548441">Nedavni zavihki</translation>
+<translation id="7004923218520748660">Pripni iskanje zavihkov</translation>
 <translation id="7004969808832734860">Do <ph name="DISCOUNT_UP_TO_AMOUNT" /> popusta</translation>
 <translation id="7005496624875927304">Dodatna dovoljenja</translation>
 <translation id="7005812687360380971">Napaka</translation>

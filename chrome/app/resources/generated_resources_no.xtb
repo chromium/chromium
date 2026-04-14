@@ -2110,6 +2110,7 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="2434915728183570229">Nå kan du se appene på telefonen din</translation>
 <translation id="2435248616906486374">Nettverket mistet tilkoblingen</translation>
 <translation id="2435457462613246316">Vis passord</translation>
+<translation id="2435670725585845785">Fest fanesøk</translation>
 <translation id="2436385001956947090">Kopier &amp;linken</translation>
 <translation id="2437105255211187922">{NUM_TABS,plural, =1{Hvis du deler den valgte fanen, overskrider du delingsgrensen}other{Hvis du deler # faner, overskrider du delingsgrensen}}</translation>
 <translation id="2437561292559037753">Datadeling</translation>
@@ -3168,6 +3169,7 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="3157387275655328056">Legg til i leselisten</translation>
 <translation id="3157931365184549694">Gjenopprett</translation>
 <translation id="3158033540161634471">Konfigurer fingeravtrykket ditt</translation>
+<translation id="3158203338449343164">Løsne fanesøk</translation>
 <translation id="3158732900546890991">Passordet må bestå av minst 8 tegn og inneholde minst to av følgende: store bokstaver, små bokstaver, tall eller symboler</translation>
 <translation id="3158770568048368350">Dette kan medføre at du blir koblet fra mobilnettverket et lite øyeblikk</translation>
 <translation id="3159335509547415276">Få informasjon om blokkerte kontoer</translation>
@@ -7624,6 +7626,7 @@ Bruk Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="6291741848715722067">Bekreftelseskode</translation>
 <translation id="6291953229176937411">&amp;Vis i Finder</translation>
 <translation id="6293862149782163840"><ph name="DEVICE_NAME" /> er slått av</translation>
+<translation id="629405221789675953">Løsne fanesøk</translation>
 <translation id="6294759976468837022">Hastighet for automatisk skanning</translation>
 <translation id="6295158916970320988">Alle nettsteder</translation>
 <translation id="6295855836753816081">Lagrer …</translation>
@@ -8640,6 +8643,7 @@ Du har # passord til som er utsatt for sikkerhetsbrudd. Google Passordlagring an
 <translation id="7003844668372540529">Ukjent produkt, <ph name="PRODUCT_ID" />, fra <ph name="VENDOR_NAME" /></translation>
 <translation id="7004402701596653846">Nettstedet kan bruke MIDI</translation>
 <translation id="7004499039102548441">Nylige faner</translation>
+<translation id="7004923218520748660">Fest Fanesøk</translation>
 <translation id="7004969808832734860">Opptil <ph name="DISCOUNT_UP_TO_AMOUNT" /> rabatt</translation>
 <translation id="7005496624875927304">Flere tillatelser</translation>
 <translation id="7005812687360380971">Mislyktes</translation>

@@ -2102,6 +2102,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="2434915728183570229">Ora puoi visualizzare le app del tuo telefono</translation>
 <translation id="2435248616906486374">Rete scollegata</translation>
 <translation id="2435457462613246316">Mostra password</translation>
+<translation id="2435670725585845785">Fissa ricerca di schede</translation>
 <translation id="2436385001956947090">Copia &amp;link</translation>
 <translation id="2437105255211187922">{NUM_TABS,plural, =1{La condivisione della scheda selezionata supererebbe il limite di condivisione}other{La condivisione di # schede supererebbe il limite di condivisione}}</translation>
 <translation id="2437561292559037753">Condivisione dei dati</translation>
@@ -3160,6 +3161,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="3157387275655328056">Aggiungi all'elenco di lettura</translation>
 <translation id="3157931365184549694">Ripristina</translation>
 <translation id="3158033540161634471">Imposta la tua impronta</translation>
+<translation id="3158203338449343164">Stacca ricerca di schede</translation>
 <translation id="3158732900546890991">La password deve contenere almeno 8 caratteri e includere almeno due dei seguenti elementi: lettere maiuscole, lettere minuscole, numeri o simboli</translation>
 <translation id="3158770568048368350">La tua rete mobile potrebbe scollegarsi per qualche istante</translation>
 <translation id="3159335509547415276">Scopri di più sugli account bloccati</translation>
@@ -7617,6 +7619,7 @@ Puoi assegnare più sensori a questa azione.</translation>
 <translation id="6291741848715722067">Codice di conferma</translation>
 <translation id="6291953229176937411">Mo&amp;stra nel Finder</translation>
 <translation id="6293862149782163840">La <ph name="DEVICE_NAME" /> è disattiva</translation>
+<translation id="629405221789675953">Stacca ricerca di schede</translation>
 <translation id="6294759976468837022">Velocità della scansione automatica</translation>
 <translation id="6295158916970320988">Tutti i siti</translation>
 <translation id="6295855836753816081">Salvataggio in corso...</translation>
@@ -8633,6 +8636,7 @@ Hai altre # password compromesse. Gestore delle password di Google consiglia di 
 <translation id="7003844668372540529">Prodotto sconosciuto <ph name="PRODUCT_ID" /> di <ph name="VENDOR_NAME" /></translation>
 <translation id="7004402701596653846">Il sito può utilizzare MIDI</translation>
 <translation id="7004499039102548441">Schede recenti</translation>
+<translation id="7004923218520748660">Fissa ricerca di schede</translation>
 <translation id="7004969808832734860">Fino a <ph name="DISCOUNT_UP_TO_AMOUNT" /> di sconto</translation>
 <translation id="7005496624875927304">Altre autorizzazioni</translation>
 <translation id="7005812687360380971">Errore</translation>

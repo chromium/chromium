@@ -2113,6 +2113,7 @@
 <translation id="2434915728183570229">اکنون می‌توانید برنامه‌های تلفنتان را مشاهده کنید</translation>
 <translation id="2435248616906486374">شبکه قطع شد</translation>
 <translation id="2435457462613246316">نشان دادن گذرواژه</translation>
+<translation id="2435670725585845785">سنجاق کردن جستجوی زبانه‌ها</translation>
 <translation id="2436385001956947090">کپی کردن پیوند</translation>
 <translation id="2437105255211187922">{NUM_TABS,plural, =1{هم‌رسانی زبانه انتخاب‌شده از حد مجاز هم‌رسانی فراتر می‌رود}one{هم‌رسانی # زبانه از حد مجاز هم‌رسانی فراتر می‌رود}other{هم‌رسانی # زبانه از حد مجاز هم‌رسانی فراتر می‌رود}}</translation>
 <translation id="2437561292559037753">هم‌رسانی داده</translation>
@@ -3171,6 +3172,7 @@
 <translation id="3157387275655328056">افزودن به فهرست خواندن</translation>
 <translation id="3157931365184549694">بازگرداندن</translation>
 <translation id="3158033540161634471">ثبت اثرانگشت</translation>
+<translation id="3158203338449343164">برداشتن سنجاق «جستجوی زبانه‌ها»</translation>
 <translation id="3158732900546890991">گذرواژه باید حداقل ۸ نویسه داشته باشد و حداقل دو مورد از موارد زیر را دربرگیرد: حروف بزرگ، حروف کوچک، اعداد، یا نمادها</translation>
 <translation id="3158770568048368350">با این کار ممکن است شبکه تلفن همراهتان برای مدت کوتاهی قطع شود</translation>
 <translation id="3159335509547415276">آشنایی با حساب‌های مسدودشده</translation>
@@ -7632,6 +7634,7 @@
 <translation id="6291741848715722067">کد تأیید</translation>
 <translation id="6291953229176937411">‏&amp;نمایش در Finder</translation>
 <translation id="6293862149782163840"><ph name="DEVICE_NAME" /> خاموش است</translation>
+<translation id="629405221789675953">برداشتن سنجاق جستجوی زبانه‌ها</translation>
 <translation id="6294759976468837022">سرعت اسکن خودکار</translation>
 <translation id="6295158916970320988">همه سایت‌ها</translation>
 <translation id="6295855836753816081">درحال ذخیره کردن…</translation>
@@ -8650,6 +8653,7 @@
 <translation id="7003844668372540529">محصول نامشخص <ph name="PRODUCT_ID" /> از <ph name="VENDOR_NAME" /></translation>
 <translation id="7004402701596653846">‏سایت می‌تواند از MIDI استفاده کند</translation>
 <translation id="7004499039102548441">زبانه‌های جدید</translation>
+<translation id="7004923218520748660">سنجاق کردن «جستجوی زبانه‌ها»</translation>
 <translation id="7004969808832734860">تا <ph name="DISCOUNT_UP_TO_AMOUNT" /> تخفیف</translation>
 <translation id="7005496624875927304">اجازه‌های اضافی</translation>
 <translation id="7005812687360380971">عدم موفقیت</translation>

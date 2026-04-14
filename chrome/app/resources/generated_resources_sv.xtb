@@ -2116,6 +2116,7 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="2434915728183570229">Nu kan du se telefonens appar</translation>
 <translation id="2435248616906486374">Anslutningen till nätverket har avbrutits</translation>
 <translation id="2435457462613246316">Visa lösenord</translation>
+<translation id="2435670725585845785">Fäst Sök bland flikar</translation>
 <translation id="2436385001956947090">Kopiera &amp;länk</translation>
 <translation id="2437105255211187922">{NUM_TABS,plural, =1{Om du delar den valda fliken överskrids delningsgränsen}other{Om du delar # flikar överskrids delningsgränsen}}</translation>
 <translation id="2437561292559037753">Datadelning</translation>
@@ -3174,6 +3175,7 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="3157387275655328056">Lägg till i läslistan</translation>
 <translation id="3157931365184549694">Återställ</translation>
 <translation id="3158033540161634471">Konfigurera fingeravtryck</translation>
+<translation id="3158203338449343164">Lossa Sök bland flikar</translation>
 <translation id="3158732900546890991">Lösenordet måste bestå av minst åtta tecken och innehålla minst två av följande: versaler, gemener, siffror eller symboler</translation>
 <translation id="3158770568048368350">Mobilnätverket kan kopplas från tillfälligt</translation>
 <translation id="3159335509547415276">Läs mer om blockerade konton</translation>
@@ -7635,6 +7637,7 @@ Du kan tilldela flera brytare denna åtgärd.</translation>
 <translation id="6291741848715722067">Bekräftelsekod</translation>
 <translation id="6291953229176937411">&amp;Visa i Finder</translation>
 <translation id="6293862149782163840"><ph name="DEVICE_NAME" /> är inaktiverad</translation>
+<translation id="629405221789675953">Lossa Sök bland flikar</translation>
 <translation id="6294759976468837022">Hastighet för automatisk genomsökning</translation>
 <translation id="6295158916970320988">Alla webbplatser</translation>
 <translation id="6295855836753816081">Sparar ...</translation>
@@ -8651,6 +8654,7 @@ Det finns # utsatta lösenord till. Du rekommenderas av Google Lösenordshanteri
 <translation id="7003844668372540529">Okänd produkt (<ph name="PRODUCT_ID" />) från <ph name="VENDOR_NAME" /></translation>
 <translation id="7004402701596653846">MIDI kan användas på webbplatsen</translation>
 <translation id="7004499039102548441">Senaste flikarna</translation>
+<translation id="7004923218520748660">Fäst Sök bland flikar</translation>
 <translation id="7004969808832734860">Upp till <ph name="DISCOUNT_UP_TO_AMOUNT" /> i rabatt</translation>
 <translation id="7005496624875927304">Ytterligare behörigheter</translation>
 <translation id="7005812687360380971">Fel</translation>

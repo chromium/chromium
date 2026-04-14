@@ -2103,6 +2103,7 @@
 <translation id="2434915728183570229">ამიერიდან შეგიძლიათ ნახოთ თქვენი ტელეფონის აპები</translation>
 <translation id="2435248616906486374">ქსელი გათიშულია</translation>
 <translation id="2435457462613246316">პაროლის ჩვენება</translation>
+<translation id="2435670725585845785">ჩანართებში ძიების ჩამაგრება</translation>
 <translation id="2436385001956947090">ბმუ&amp;ლის კოპირება</translation>
 <translation id="2437105255211187922">{NUM_TABS,plural, =1{არჩეული ჩანართის გაზიარება გადააჭარბებს გაზიარების ლიმიტს}other{# ჩანართის გაზიარება გადააჭარბებს გაზიარების ლიმიტს}}</translation>
 <translation id="2437561292559037753">მონაცემთა გაზიარება</translation>
@@ -3161,6 +3162,7 @@
 <translation id="3157387275655328056">საკითხავ სიაში დამატება</translation>
 <translation id="3157931365184549694">აღდგენა</translation>
 <translation id="3158033540161634471">თითის ანაბეჭდის დაყენება</translation>
+<translation id="3158203338449343164">ჩანართებში ძიების ჩამაგრების მოხსნა</translation>
 <translation id="3158732900546890991">პაროლი უნდა შედგებოდეს მინიმუმ 8 სიმბოლოსგან და შეიცავდეს ჩამოთვლილთაგან მინიმუმ ორს: ზედა რეგისტრის ასოები, ქვედა რეგისტრის ასოები, ციფრები ან სიმბოლოები</translation>
 <translation id="3158770568048368350">ამან შეიძლება გამოიწვიოს თქვენი მობილური ქსელის კავშირის წამიერი გაწყვეტა</translation>
 <translation id="3159335509547415276">ვრცლად დაბლოკილი ანგარიშების შესახებ</translation>
@@ -7622,6 +7624,7 @@
 <translation id="6291741848715722067">დადასტურების კოდი</translation>
 <translation id="6291953229176937411">ჩ&amp;ვენება მაძიებელში</translation>
 <translation id="6293862149782163840"><ph name="DEVICE_NAME" /> გამორთულია</translation>
+<translation id="629405221789675953">ჩანართებში ძიების ჩამაგრების მოხსნა</translation>
 <translation id="6294759976468837022">ავტომატური სკანირების სიჩქარე</translation>
 <translation id="6295158916970320988">ყველა საიტი</translation>
 <translation id="6295855836753816081">მიმდინარეობს შენახვა…</translation>
@@ -8638,6 +8641,7 @@
 <translation id="7003844668372540529">უცნობი პროდუქტი – <ph name="PRODUCT_ID" /> მომწოდებლისგან: <ph name="VENDOR_NAME" /></translation>
 <translation id="7004402701596653846">საიტს შეუძლია MIDI-ს გამოყენება</translation>
 <translation id="7004499039102548441">ბოლო ჩანართები</translation>
+<translation id="7004923218520748660">ჩანართებში ძიების ჩამაგრება</translation>
 <translation id="7004969808832734860"><ph name="DISCOUNT_UP_TO_AMOUNT" />-მდე ფასდაკლება</translation>
 <translation id="7005496624875927304">დამატებითი ნებართვები</translation>
 <translation id="7005812687360380971">შეცდომა</translation>

@@ -2104,6 +2104,7 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="2434915728183570229">Vous pouvez désormais afficher les applis de votre téléphone</translation>
 <translation id="2435248616906486374">Réseau déconnecté.</translation>
 <translation id="2435457462613246316">Afficher le mot de passe</translation>
+<translation id="2435670725585845785">Épingler la recherche dans les onglets</translation>
 <translation id="2436385001956947090">Copier le &amp;lien</translation>
 <translation id="2437105255211187922">{NUM_TABS,plural, =1{Le partage de l'onglet sélectionné dépasserait la limite de partage}one{Le partage de # onglet dépasserait la limite de partage}other{Le partage de # onglets dépasserait la limite de partage}}</translation>
 <translation id="2437561292559037753">Partage des données</translation>
@@ -3162,6 +3163,7 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="3157387275655328056">Ajouter à la liste de lecture</translation>
 <translation id="3157931365184549694">Restaurer</translation>
 <translation id="3158033540161634471">Configurer votre empreinte digitale</translation>
+<translation id="3158203338449343164">Retirer la recherche dans les onglets</translation>
 <translation id="3158732900546890991">Le mot de passe doit comporter au moins huit caractères, dont au moins deux majuscules, minuscules, chiffres ou symboles</translation>
 <translation id="3158770568048368350">Votre réseau mobile risque d'être déconnecté brièvement</translation>
 <translation id="3159335509547415276">En savoir plus sur les comptes bloqués</translation>
@@ -7620,6 +7622,7 @@ Assurez-vous de ne pas dévoiler d'informations sensibles.</translation>
 <translation id="6291741848715722067">Code de confirmation</translation>
 <translation id="6291953229176937411">&amp;Afficher dans le Finder</translation>
 <translation id="6293862149782163840">La <ph name="DEVICE_NAME" /> est désactivée</translation>
+<translation id="629405221789675953">Retirer la recherche dans les onglets</translation>
 <translation id="6294759976468837022">Vitesse de la recherche automatique</translation>
 <translation id="6295158916970320988">Tous les sites</translation>
 <translation id="6295855836753816081">Enregistrement…</translation>
@@ -8638,6 +8641,7 @@ Vous avez # autres mots de passe compromis. Le Gestionnaire de mots de passe Go
 <translation id="7003844668372540529">Produit inconnu <ph name="PRODUCT_ID" /> fourni par <ph name="VENDOR_NAME" /></translation>
 <translation id="7004402701596653846">Le site peut utiliser un appareil MIDI</translation>
 <translation id="7004499039102548441">Onglets récents</translation>
+<translation id="7004923218520748660">Épingler la recherche dans les onglets</translation>
 <translation id="7004969808832734860">Jusqu'à - <ph name="DISCOUNT_UP_TO_AMOUNT" /></translation>
 <translation id="7005496624875927304">Autorisations supplémentaires</translation>
 <translation id="7005812687360380971">Échec</translation>

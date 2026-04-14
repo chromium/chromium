@@ -2116,6 +2116,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="2434915728183570229">You can now view your phone's apps</translation>
 <translation id="2435248616906486374">Network disconnected</translation>
 <translation id="2435457462613246316">Show password</translation>
+<translation id="2435670725585845785">Pin tab search</translation>
 <translation id="2436385001956947090">Copy &amp;link</translation>
 <translation id="2437105255211187922">{NUM_TABS,plural, =1{Sharing selected tab would exceed the sharing limit}other{Sharing # tabs would exceed the sharing limit}}</translation>
 <translation id="2437561292559037753">Data sharing</translation>
@@ -3174,6 +3175,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="3157387275655328056">Add to reading list</translation>
 <translation id="3157931365184549694">Restore</translation>
 <translation id="3158033540161634471">Set up your fingerprint</translation>
+<translation id="3158203338449343164">Unpin tab search</translation>
 <translation id="3158732900546890991">Password must be at least eight characters and include at least two of the following: uppercase letters, lowercase letters, numbers or symbols</translation>
 <translation id="3158770568048368350">This may cause your mobile network to briefly disconnect</translation>
 <translation id="3159335509547415276">Learn about blocked accounts</translation>
@@ -7635,6 +7637,7 @@ You can assign multiple switches to this action.</translation>
 <translation id="6291741848715722067">Confirmation code</translation>
 <translation id="6291953229176937411">&amp;Show in Finder</translation>
 <translation id="6293862149782163840"><ph name="DEVICE_NAME" /> is turned off</translation>
+<translation id="629405221789675953">Unpin tab search</translation>
 <translation id="6294759976468837022">Auto-scan speed</translation>
 <translation id="6295158916970320988">All sites</translation>
 <translation id="6295855836753816081">Saving...</translation>
@@ -8651,6 +8654,7 @@ You have # more compromised passwords. Google Password Manager recommends checki
 <translation id="7003844668372540529">Unknown product <ph name="PRODUCT_ID" /> from <ph name="VENDOR_NAME" /></translation>
 <translation id="7004402701596653846">Site can use MIDI</translation>
 <translation id="7004499039102548441">Recent tabs</translation>
+<translation id="7004923218520748660">Pin tab search</translation>
 <translation id="7004969808832734860">Up to <ph name="DISCOUNT_UP_TO_AMOUNT" /> off</translation>
 <translation id="7005496624875927304">Additional permissions</translation>
 <translation id="7005812687360380971">Failure</translation>

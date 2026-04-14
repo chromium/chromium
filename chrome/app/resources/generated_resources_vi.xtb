@@ -2116,6 +2116,7 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="2434915728183570229">Giờ đây, bạn có thể xem các ứng dụng có trên điện thoại của mình</translation>
 <translation id="2435248616906486374">Mạng đã bị ngắt kết nối</translation>
 <translation id="2435457462613246316">Hiện mật khẩu</translation>
+<translation id="2435670725585845785">Ghim tính năng tìm thẻ</translation>
 <translation id="2436385001956947090">Sao chép &amp;đường liên kết</translation>
 <translation id="2437105255211187922">{NUM_TABS,plural, =1{Việc chia sẻ thẻ đã chọn sẽ vượt quá giới hạn chia sẻ}other{Việc chia sẻ # thẻ sẽ vượt quá giới hạn chia sẻ}}</translation>
 <translation id="2437561292559037753">Chia sẻ dữ liệu</translation>
@@ -3174,6 +3175,7 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="3157387275655328056">Thêm vào Danh sách đọc</translation>
 <translation id="3157931365184549694">Khôi phục</translation>
 <translation id="3158033540161634471">Thiết lập vân tay</translation>
+<translation id="3158203338449343164">Bỏ ghim tính năng tìm thẻ</translation>
 <translation id="3158732900546890991">Mật khẩu phải có ít nhất 8 ký tự và bao gồm ít nhất 2 trong số các loại ký tự sau: chữ cái viết hoa, chữ cái viết thường, số hoặc ký hiệu</translation>
 <translation id="3158770568048368350">Quy trình này có thể khiến mạng di động bị ngắt kết nối trong chốc lát</translation>
 <translation id="3159335509547415276">Tìm hiểu về tài khoản bị chặn</translation>
@@ -7635,6 +7637,7 @@ Bạn có thể gán nhiều công tắc cho thao tác này.</translation>
 <translation id="6291741848715722067">Mã xác nhận</translation>
 <translation id="6291953229176937411">&amp;Hiển thị trong Trình tìm kiếm</translation>
 <translation id="6293862149782163840">Đã tắt <ph name="DEVICE_NAME" /></translation>
+<translation id="629405221789675953">Bỏ ghim tính năng tìm thẻ</translation>
 <translation id="6294759976468837022">Tốc độ tự động quét</translation>
 <translation id="6295158916970320988">Tất cả các trang web</translation>
 <translation id="6295855836753816081">Đang lưu...</translation>
@@ -8653,6 +8656,7 @@ Bạn còn # mật khẩu bị lộ nữa. Trình quản lý mật khẩu của 
 <translation id="7003844668372540529">Sản phẩm không xác định <ph name="PRODUCT_ID" /> từ <ph name="VENDOR_NAME" /></translation>
 <translation id="7004402701596653846">Trang web có thể sử dụng MIDI</translation>
 <translation id="7004499039102548441">Các thẻ gần đây</translation>
+<translation id="7004923218520748660">Ghim tính năng tìm thẻ</translation>
 <translation id="7004969808832734860">Giảm giá lên đến <ph name="DISCOUNT_UP_TO_AMOUNT" /></translation>
 <translation id="7005496624875927304">Quyền bổ sung</translation>
 <translation id="7005812687360380971">Lỗi</translation>

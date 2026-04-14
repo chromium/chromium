@@ -2098,6 +2098,7 @@
 <translation id="2434915728183570229">スマートフォンのアプリを表示できるようになりました</translation>
 <translation id="2435248616906486374">ネットワークが切断されました</translation>
 <translation id="2435457462613246316">パスワードを表示</translation>
+<translation id="2435670725585845785">タブ検索を固定</translation>
 <translation id="2436385001956947090">リンクをコピー(&amp;L)</translation>
 <translation id="2437105255211187922">{NUM_TABS,plural, =1{選択したタブを共有すると、共有の上限を超えます}other{# 個のタブを共有すると、共有の上限を超えます}}</translation>
 <translation id="2437561292559037753">データ共有</translation>
@@ -3155,6 +3156,7 @@
 <translation id="3157387275655328056">リーディング リストに追加</translation>
 <translation id="3157931365184549694">復元</translation>
 <translation id="3158033540161634471">指紋の設定</translation>
+<translation id="3158203338449343164">タブ検索の固定を解除</translation>
 <translation id="3158732900546890991">パスワードは英字（大文字と小文字）、数字、または記号の少なくとも 2 種類を使用して、8 文字以上で指定してください</translation>
 <translation id="3158770568048368350">モバイル ネットワークが一時的に切断される可能性があります</translation>
 <translation id="3159335509547415276">アカウントのブロックに関する詳細</translation>
@@ -7606,6 +7608,7 @@
 <translation id="6291741848715722067">確認コード</translation>
 <translation id="6291953229176937411">Finder で表示(&amp;S)</translation>
 <translation id="6293862149782163840"><ph name="DEVICE_NAME" /> はオフになっています</translation>
+<translation id="629405221789675953">タブ検索の固定を解除</translation>
 <translation id="6294759976468837022">自動スキャンの速度</translation>
 <translation id="6295158916970320988">すべてのサイト</translation>
 <translation id="6295855836753816081">保存しています...</translation>
@@ -8620,6 +8623,7 @@
 <translation id="7003844668372540529">不明な商品（<ph name="PRODUCT_ID" />、ベンダー: <ph name="VENDOR_NAME" />）</translation>
 <translation id="7004402701596653846">サイトに MIDI の使用が許可されています</translation>
 <translation id="7004499039102548441">最近使ったタブ</translation>
+<translation id="7004923218520748660">タブ検索を固定</translation>
 <translation id="7004969808832734860">最大 <ph name="DISCOUNT_UP_TO_AMOUNT" /> オフ</translation>
 <translation id="7005496624875927304">その他の権限</translation>
 <translation id="7005812687360380971">エラー</translation>

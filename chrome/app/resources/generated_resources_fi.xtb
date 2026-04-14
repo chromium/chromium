@@ -2115,6 +2115,7 @@ Voit ylläpitää tilin asetuksia asentamalla laitteellesi Family Link ‑sovell
 <translation id="2434915728183570229">Voit nyt nähdä puhelimen sovellukset</translation>
 <translation id="2435248616906486374">Verkkoyhteys katkaistu</translation>
 <translation id="2435457462613246316">Näytä salasana</translation>
+<translation id="2435670725585845785">Kiinnitä välilehtihaku</translation>
 <translation id="2436385001956947090">Kopioi &amp;linkki</translation>
 <translation id="2437105255211187922">{NUM_TABS,plural, =1{Valitun välilehden jakaminen ylittää jakamisrajan}other{# välilehden jakaminen ylittää jakamisrajan}}</translation>
 <translation id="2437561292559037753">Datan jakaminen</translation>
@@ -3173,6 +3174,7 @@ Voit ylläpitää tilin asetuksia asentamalla laitteellesi Family Link ‑sovell
 <translation id="3157387275655328056">Lisää lukulistalle</translation>
 <translation id="3157931365184549694">Palauta</translation>
 <translation id="3158033540161634471">Määritä sormenjälki</translation>
+<translation id="3158203338449343164">Irrota välilehtihaku</translation>
 <translation id="3158732900546890991">Salasanassa on oltava vähintään kahdeksan merkkiä, ja siinä on oltava vähintään kaksi isoa kirjainta, pientä kirjainta, numeroa tai symbolia</translation>
 <translation id="3158770568048368350">Tämä voi saada mobiiliverkkoyhteyden katkeamaan hetkeksi</translation>
 <translation id="3159335509547415276">Lue lisää estetyistä tileistä</translation>
@@ -7631,6 +7633,7 @@ Julkinen eksponentti (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bittiä):
 <translation id="6291741848715722067">Vahvistuskoodi</translation>
 <translation id="6291953229176937411">Näytä Finderi&amp;ssä</translation>
 <translation id="6293862149782163840"><ph name="DEVICE_NAME" /> on laitettu pois päältä</translation>
+<translation id="629405221789675953">Irrota välilehtihaku</translation>
 <translation id="6294759976468837022">Automaattisen skannauksen nopeus</translation>
 <translation id="6295158916970320988">Kaikki sivustot</translation>
 <translation id="6295855836753816081">Tallennetaan…</translation>
@@ -8647,6 +8650,7 @@ Sinulla on vielä # vaarantunutta salasanaa. Google Salasanat suosittelee, että
 <translation id="7003844668372540529">Tuntematon tuote <ph name="PRODUCT_ID" /> toimittajalta <ph name="VENDOR_NAME" /></translation>
 <translation id="7004402701596653846">Sivusto voi käyttää MIDIä</translation>
 <translation id="7004499039102548441">Hiljattain suljetut välilehdet</translation>
+<translation id="7004923218520748660">Kiinnitä välilehtihaku</translation>
 <translation id="7004969808832734860">Jopa <ph name="DISCOUNT_UP_TO_AMOUNT" /> alennusta</translation>
 <translation id="7005496624875927304">Lisäluvat</translation>
 <translation id="7005812687360380971">Virhe</translation>

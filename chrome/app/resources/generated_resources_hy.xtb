@@ -2105,6 +2105,7 @@
 <translation id="2434915728183570229">Այժմ դուք կարող եք դիտել ձեր հեռախոսի հավելվածները</translation>
 <translation id="2435248616906486374">Ցանցն անջատված է</translation>
 <translation id="2435457462613246316">Ցույց տալ գաղտնաբառը</translation>
+<translation id="2435670725585845785">Ամրացնել ներդիրների որոնումը</translation>
 <translation id="2436385001956947090">Պատճենել &amp;հղումը</translation>
 <translation id="2437105255211187922">{NUM_TABS,plural, =1{Եթե հասանելի դարձնեք ընտրված ներդիրը, սահմանաչափը կգերազանցվի}one{Եթե հասանելի դարձնեք # ներդիր, սահմանաչափը կգերազանցվի}other{Եթե հասանելի դարձնեք # ներդիր, սահմանաչափը կգերազանցվի}}</translation>
 <translation id="2437561292559037753">Տվյալների փոխանցում</translation>
@@ -3161,6 +3162,7 @@
 <translation id="3157387275655328056">Ավելացնել ընթերցանության ցանկում</translation>
 <translation id="3157931365184549694">Վերականգնել</translation>
 <translation id="3158033540161634471">Մատնահետքի կարգավորում</translation>
+<translation id="3158203338449343164">Ապամրացնել ներդիրների որոնումը</translation>
 <translation id="3158732900546890991">Գաղտնաբառը պետք է առնվազն 8 նիշ պարունակի և ներառի հետևյալներից առնվազն երկուսը՝ մեծատառեր, փոքրատառեր, թվեր կամ նշաններ</translation>
 <translation id="3158770568048368350">Բջջային կապը կարող է կարճ ժամանակով անջատվել</translation>
 <translation id="3159335509547415276">Իմանալ ավելին արգելափակված հաշիվների մասին</translation>
@@ -7616,6 +7618,7 @@
 <translation id="6291741848715722067">Հաստատման կոդ</translation>
 <translation id="6291953229176937411">&amp;Ցույց տալ Finder-ում</translation>
 <translation id="6293862149782163840"><ph name="DEVICE_NAME" />ն անջատված է</translation>
+<translation id="629405221789675953">Ապամրացնել ներդիրների որոնումը</translation>
 <translation id="6294759976468837022">Ավտոմատ սկանավորման արագությունը</translation>
 <translation id="6295158916970320988">Բոլոր կայքերը</translation>
 <translation id="6295855836753816081">Պահում...</translation>
@@ -8634,6 +8637,7 @@
 <translation id="7003844668372540529">Անհայտ <ph name="PRODUCT_ID" /> արտադրանք <ph name="VENDOR_NAME" />-ի կողմից</translation>
 <translation id="7004402701596653846">Կայքը կարող է MIDI սարք օգտագործել</translation>
 <translation id="7004499039102548441">Վերջին բացած ներդիրները</translation>
+<translation id="7004923218520748660">Ամրացնել ներդիրների որոնումը</translation>
 <translation id="7004969808832734860">Մինչև <ph name="DISCOUNT_UP_TO_AMOUNT" /> զեղչ</translation>
 <translation id="7005496624875927304">Լրացուցիչ թույլտվություններ</translation>
 <translation id="7005812687360380971">Սխալ</translation>

@@ -2104,6 +2104,7 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="2434915728183570229">Vous pouvez maintenant afficher les applications de votre téléphone</translation>
 <translation id="2435248616906486374">Réseau déconnecté</translation>
 <translation id="2435457462613246316">Affich. mot de passe</translation>
+<translation id="2435670725585845785">Épingler la Recherche d'onglets</translation>
 <translation id="2436385001956947090">Copier le lien</translation>
 <translation id="2437105255211187922">{NUM_TABS,plural, =1{Le partage de l'onglet sélectionné entraînerait un dépassement de la limite de partage}one{Le partage de # onglet entraînerait un dépassement de la limite de partage}other{Le partage de # onglets entraînerait un dépassement de la limite de partage}}</translation>
 <translation id="2437561292559037753">Partage de données</translation>
@@ -3164,6 +3165,7 @@ Par exemple, certains sites Web peuvent répondre à cette demande en diffusant 
 <translation id="3157387275655328056">Ajouter à la liste de lecture</translation>
 <translation id="3157931365184549694">Restaurer</translation>
 <translation id="3158033540161634471">Configurer votre empreinte digitale</translation>
+<translation id="3158203338449343164">Annuler l'épinglage de la Recherche d'onglets</translation>
 <translation id="3158732900546890991">Le mot de passe doit comporter au moins huit caractères et inclure au moins deux des éléments suivants : lettres majuscules, lettres minuscules, chiffres ou symboles</translation>
 <translation id="3158770568048368350">Cette étape pourrait vous déconnecter brièvement de votre réseau cellulaire</translation>
 <translation id="3159335509547415276">En savoir plus sur les comptes bloqués</translation>
@@ -7623,6 +7625,7 @@ Vous pouvez attribuer plusieurs commutateurs à cette action.</translation>
 <translation id="6291741848715722067">Code de confirmation</translation>
 <translation id="6291953229176937411">&amp;Afficher dans le Finder</translation>
 <translation id="6293862149782163840"><ph name="DEVICE_NAME" /> est désactivé</translation>
+<translation id="629405221789675953">Annuler l'épinglage de la Recherche d'onglets</translation>
 <translation id="6294759976468837022">Vitesse du balayage automatique</translation>
 <translation id="6295158916970320988">Tous les sites</translation>
 <translation id="6295855836753816081">Enregistrement en cours...</translation>
@@ -8641,6 +8644,7 @@ Vous pouvez gérer les paramètres à partir du menu de la carte ou afficher plu
 <translation id="7003844668372540529">Produit inconnu <ph name="PRODUCT_ID" /> de <ph name="VENDOR_NAME" /></translation>
 <translation id="7004402701596653846">Le site peut utiliser un appareil MIDI</translation>
 <translation id="7004499039102548441">Onglets récents</translation>
+<translation id="7004923218520748660">Épingler la Recherche d'onglets</translation>
 <translation id="7004969808832734860">Jusqu'à <ph name="DISCOUNT_UP_TO_AMOUNT" /> de rabais</translation>
 <translation id="7005496624875927304">Autorisations supplémentaires</translation>
 <translation id="7005812687360380971">Échec</translation>

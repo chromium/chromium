@@ -2112,6 +2112,7 @@
 <translation id="2434915728183570229">አሁን የስልክዎን መተግበሪያዎች መመልከት ይችላሉ</translation>
 <translation id="2435248616906486374">የአውታረ መረብ ግንኙነት ተቋርጧል</translation>
 <translation id="2435457462613246316">የይለፍ ቃል አሳይ</translation>
+<translation id="2435670725585845785">የትር ፍለጋን ይሰኩ</translation>
 <translation id="2436385001956947090">አገናኝ ይቅዱ</translation>
 <translation id="2437105255211187922">{NUM_TABS,plural, =1{የተመረጠውን ትር ማጋራት የማጋራት ገደቡን ያልፋል}one{# ትርን ማጋራት የማጋራት ገደቡን ያልፋል}other{# ትሮችን ማጋራት የማጋራት ገደቡን ያልፋል}}</translation>
 <translation id="2437561292559037753">ውሂብ ማጋራት</translation>
@@ -3170,6 +3171,7 @@
 <translation id="3157387275655328056">ወደ የንባብ ዝርዝር አክል</translation>
 <translation id="3157931365184549694">እነበረበት መልስ</translation>
 <translation id="3158033540161634471">የጣት አሻራዎን ያዋቅሩ</translation>
+<translation id="3158203338449343164">የትር ፍለጋን ይንቀሉ</translation>
 <translation id="3158732900546890991">የይለፍ ቃል ቢያንስ 8 ቁምፊዎች መሆን እና ከሚከተሉት ውስጥ ቢያንስ ሁለቱን ማካተት አለበት፦ ዓቢይ ሆሄ ፊደላት፣ ንዑስ ሆሄ ፊደላት፣ ቁጥሮች ወይም ምልክቶች</translation>
 <translation id="3158770568048368350">ይህ የተንቀሳቃሽ ስልክ አውታረ መረብዎ ለአጭር ጊዜ እንዲቋረጥ ሊያደርግ ይችላል</translation>
 <translation id="3159335509547415276">ስለ የታገዱ መለያዎች የበለጠ ይወቁ</translation>
@@ -7629,6 +7631,7 @@
 <translation id="6291741848715722067">የማረጋገጫ ኮድ</translation>
 <translation id="6291953229176937411">በፈላጊ ውስጥ &amp;አሳይ</translation>
 <translation id="6293862149782163840"><ph name="DEVICE_NAME" /> ጠፍቷል</translation>
+<translation id="629405221789675953">የትር ፍለጋን ይንቀሉ</translation>
 <translation id="6294759976468837022">የራስ-ቅኝት ፍጥነት</translation>
 <translation id="6295158916970320988">ሁሉም ጣቢያዎች</translation>
 <translation id="6295855836753816081">በማስቀመጥ ላይ...</translation>
@@ -8647,6 +8650,7 @@
 <translation id="7003844668372540529">ያልታወቀ ምርት <ph name="PRODUCT_ID" /> ከ<ph name="VENDOR_NAME" /></translation>
 <translation id="7004402701596653846">ጣቢያ midiን መጠቀም ይችላል</translation>
 <translation id="7004499039102548441">የቅርብ ጊዜ ትሮች</translation>
+<translation id="7004923218520748660">የትር ፍለጋን ይሰኩ</translation>
 <translation id="7004969808832734860">እስከ <ph name="DISCOUNT_UP_TO_AMOUNT" /> የሚደርስ ቅናሽ</translation>
 <translation id="7005496624875927304">ተጨማሪ ፈቃዶች</translation>
 <translation id="7005812687360380971">አለመሳካት</translation>

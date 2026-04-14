@@ -2118,6 +2118,7 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="2434915728183570229">Du kan nu se din telefons apps</translation>
 <translation id="2435248616906486374">Forbindelsen til netværket blev afbrudt</translation>
 <translation id="2435457462613246316">Vis adgangskode</translation>
+<translation id="2435670725585845785">Fastgør fanesøgning</translation>
 <translation id="2436385001956947090">Kopiér &amp;link</translation>
 <translation id="2437105255211187922">{NUM_TABS,plural, =1{Hvis du deler den valgte fane, overskrides grænsen for deling}one{Hvis du deler # fane, overskrides grænsen for deling}other{Hvis du deler # faner, overskrides grænsen for deling}}</translation>
 <translation id="2437561292559037753">Datadeling</translation>
@@ -3176,6 +3177,7 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="3157387275655328056">Føj til læseliste</translation>
 <translation id="3157931365184549694">Gendan</translation>
 <translation id="3158033540161634471">Konfigurer dit fingeraftryk</translation>
+<translation id="3158203338449343164">Frigør Fanesøgning</translation>
 <translation id="3158732900546890991">Adgangskoden skal være på mindst 8 tegn og indeholde mindst to af følgende: Store bogstaver, små bogstaver, tal eller symboler</translation>
 <translation id="3158770568048368350">Dette kan kortvarigt afbryde dit mobilnetværk</translation>
 <translation id="3159335509547415276">Få flere oplysninger om blokerede konti</translation>
@@ -7637,6 +7639,7 @@ Flere kontakter kan tildeles denne handling.</translation>
 <translation id="6291741848715722067">Bekræftelseskode</translation>
 <translation id="6291953229176937411">&amp;Vis i Finder</translation>
 <translation id="6293862149782163840"><ph name="DEVICE_NAME" /> er slået fra</translation>
+<translation id="629405221789675953">Frigør fanesøgning</translation>
 <translation id="6294759976468837022">Hastighed for automatisk scanning</translation>
 <translation id="6295158916970320988">Alle websites</translation>
 <translation id="6295855836753816081">Gemmer...</translation>
@@ -8655,6 +8658,7 @@ Du har # andre kompromitterede adgangskoder. Google Adgangs­kode­admin­istrat
 <translation id="7003844668372540529">Ukendt produkt, <ph name="PRODUCT_ID" />, fra <ph name="VENDOR_NAME" /></translation>
 <translation id="7004402701596653846">Websitet kan anvende MIDI</translation>
 <translation id="7004499039102548441">Seneste faner</translation>
+<translation id="7004923218520748660">Fastgør Fanesøgning</translation>
 <translation id="7004969808832734860">Op til <ph name="DISCOUNT_UP_TO_AMOUNT" /> i rabat</translation>
 <translation id="7005496624875927304">Yderligere tilladelser</translation>
 <translation id="7005812687360380971">Fejl</translation>

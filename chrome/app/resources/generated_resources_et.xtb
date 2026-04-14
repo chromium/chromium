@@ -2107,6 +2107,7 @@ Selle konto seadete haldamiseks installige oma seadmesse Family Link.  Saatsime 
 <translation id="2434915728183570229">Saate nüüd vaadata oma telefoni rakendusi</translation>
 <translation id="2435248616906486374">Võrguühendus puudub</translation>
 <translation id="2435457462613246316">Kuva parool</translation>
+<translation id="2435670725585845785">Kinnita vaheleheotsing</translation>
 <translation id="2436385001956947090">Lingi &amp;kopeerimine</translation>
 <translation id="2437105255211187922">{NUM_TABS,plural, =1{Valitud vahelehe jagamine ületab jagamislimiiti}other{# vahelehe jagamine ületab jagamislimiiti}}</translation>
 <translation id="2437561292559037753">Andmete jagamine</translation>
@@ -3165,6 +3166,7 @@ Selle konto seadete haldamiseks installige oma seadmesse Family Link.  Saatsime 
 <translation id="3157387275655328056">Lisa lugemisloendisse</translation>
 <translation id="3157931365184549694">Taasta</translation>
 <translation id="3158033540161634471">Sõrmejälje seadistamine</translation>
+<translation id="3158203338449343164">Vabasta vaheleheotsing</translation>
 <translation id="3158732900546890991">Parool peab olema vähemalt kaheksa tähemärki pikk ning sisaldama vähemalt kahte järgmistest: suurtähed, väiketähed, numbrid või sümbolid.</translation>
 <translation id="3158770568048368350">Selle tõttu võib teie mobiilsidevõrgu ühendus hetkeks katkeda</translation>
 <translation id="3159335509547415276">Teave blokeeritud kontode kohta</translation>
@@ -7626,6 +7628,7 @@ Saate sellele toimingule määrata mitu lülitit.</translation>
 <translation id="6291741848715722067">Kinnituskood</translation>
 <translation id="6291953229176937411">&amp;Näita otsijas</translation>
 <translation id="6293862149782163840"><ph name="DEVICE_NAME" /> on välja lülitatud</translation>
+<translation id="629405221789675953">Vabasta vaheleheotsing</translation>
 <translation id="6294759976468837022">Automaatse skannimise kiirus</translation>
 <translation id="6295158916970320988">Kõik saidid</translation>
 <translation id="6295855836753816081">Salvestamine ...</translation>
@@ -8642,6 +8645,7 @@ Teil on veel # ohustatud parooli. Google'i paroolihaldur soovitab kohe neid paro
 <translation id="7003844668372540529">Tundmatu toode <ph name="PRODUCT_ID" /> teenusepakkujalt <ph name="VENDOR_NAME" /></translation>
 <translation id="7004402701596653846">Sait saab kasutada MIDI-t</translation>
 <translation id="7004499039102548441">Hiljutised vahelehed</translation>
+<translation id="7004923218520748660">Kinnita vaheleheotsing</translation>
 <translation id="7004969808832734860">Kuni <ph name="DISCOUNT_UP_TO_AMOUNT" /> odavamalt</translation>
 <translation id="7005496624875927304">Lisaload</translation>
 <translation id="7005812687360380971">Rike</translation>

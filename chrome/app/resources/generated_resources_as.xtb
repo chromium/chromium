@@ -2114,6 +2114,7 @@
 <translation id="2434915728183570229">এতিয়া আপুনি আপোনাৰ ফ’নৰ এপ্‌সমূহ চাব পাৰে</translation>
 <translation id="2435248616906486374">নেটৱৰ্ক সংযোগ বিচ্ছিন্ন হৈ আছে</translation>
 <translation id="2435457462613246316">পাছৱৰ্ড দেখুৱাওক</translation>
+<translation id="2435670725585845785">টেবত কৰা সন্ধান পিন কৰক</translation>
 <translation id="2436385001956947090">লিংক প্ৰতিলিপি কৰক</translation>
 <translation id="2437105255211187922">{NUM_TABS,plural, =1{বাছনি কৰা টেব শ্বেয়াৰ কৰাটোৱে শ্বেয়াৰ কৰাৰ সীমা অতিক্ৰম কৰিব}one{# টা টেব শ্বেয়াৰ কৰাটোৱে শ্বেয়াৰ কৰাৰ সীমা অতিক্ৰম কৰিব}other{# টা টেব শ্বেয়াৰ কৰাটোৱে শ্বেয়াৰ কৰাৰ সীমা অতিক্ৰম কৰিব}}</translation>
 <translation id="2437561292559037753">ডেটা শ্বেয়াৰিং</translation>
@@ -3172,6 +3173,7 @@
 <translation id="3157387275655328056">পঢ়াৰ সূচীত যোগ দিয়ক</translation>
 <translation id="3157931365184549694">পুনঃস্থাপন কৰক</translation>
 <translation id="3158033540161634471">আপোনাৰ ফিংগাৰপ্ৰিণ্ট ছেট আপ কৰক</translation>
+<translation id="3158203338449343164">টেবত কৰা সন্ধান আনপিন কৰক</translation>
 <translation id="3158732900546890991">পাছৱৰ্ডটোত কমেও ৮ টা বৰ্ণসংখ্যা থাকিবই লাগিব আৰু তাত তলত উল্লেখিতসমূহৰ কমেও দুটা থাকিবই লাগিব: বৰফলা আখৰ, সৰুফলা আখৰ, সংখ্যা বা চিহ্ন</translation>
 <translation id="3158770568048368350">ই আপোনাৰ ম’বাইলৰ নেটৱৰ্কৰ সংযোগ ক্ষন্তেকৰ বাবে বিচ্ছিন্ন কৰিব পাৰে</translation>
 <translation id="3159335509547415276">অৱৰোধ কৰা একাউণ্টৰ বিষয়ে জানক</translation>
@@ -7632,6 +7634,7 @@
 <translation id="6291741848715722067">নিশ্চিতকৰণ ক’ড</translation>
 <translation id="6291953229176937411">&amp;Finderত দেখুৱাওক</translation>
 <translation id="6293862149782163840"><ph name="DEVICE_NAME" /> অফ কৰা আছে</translation>
+<translation id="629405221789675953">টেবত কৰা সন্ধান আনপিন কৰক</translation>
 <translation id="6294759976468837022">স্বয়ংক্ৰিয়ভাৱে স্কেন কৰাৰ বেগ</translation>
 <translation id="6295158916970320988">সকলো ছাইট</translation>
 <translation id="6295855836753816081">ছেভ কৰি থকা হৈছে...</translation>
@@ -8650,6 +8653,7 @@
 <translation id="7003844668372540529"><ph name="VENDOR_NAME" />ৰ অজ্ঞাত প্ৰ’ডাক্ট <ph name="PRODUCT_ID" /></translation>
 <translation id="7004402701596653846">ছাইটে MIDI ব্যৱহাৰ কৰিব পাৰে</translation>
 <translation id="7004499039102548441">শেহতীয়া টেব</translation>
+<translation id="7004923218520748660">টেবত কৰা সন্ধান পিন কৰক</translation>
 <translation id="7004969808832734860"><ph name="DISCOUNT_UP_TO_AMOUNT" /> পৰ্যন্ত ৰেহাই</translation>
 <translation id="7005496624875927304">অতিৰিক্ত অনুমতিসমূহ</translation>
 <translation id="7005812687360380971">বিফল হ'ল</translation>

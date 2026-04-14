@@ -2101,6 +2101,7 @@
 <translation id="2434915728183570229">Сада можете да прегледате апликације на телефону</translation>
 <translation id="2435248616906486374">Веза са мрежом је прекинута</translation>
 <translation id="2435457462613246316">Прикажи лозинку</translation>
+<translation id="2435670725585845785">Закачи претрагу картица</translation>
 <translation id="2436385001956947090">Копирај линк</translation>
 <translation id="2437105255211187922">{NUM_TABS,plural, =1{Дељење изабране картице би премашило ограничење за дељење}one{Дељење # картице би премашило ограничење за дељење}few{Дељење # картице би премашило ограничење за дељење}other{Дељење # картица би премашило ограничење за дељење}}</translation>
 <translation id="2437561292559037753">Дељење података</translation>
@@ -3159,6 +3160,7 @@
 <translation id="3157387275655328056">Додај на листу за читање</translation>
 <translation id="3157931365184549694">Поново отвори</translation>
 <translation id="3158033540161634471">Подесите отисак прста</translation>
+<translation id="3158203338449343164">Откачи претрагу картица</translation>
 <translation id="3158732900546890991">Лозинка мора да има најмање 8 знакова и да садржи најмање две од следећих врста знакова: велика слова, мала слова, бројеве или симболе</translation>
 <translation id="3158770568048368350">Због овога ће веза са мобилном мрежом можда накратко бити прекинута</translation>
 <translation id="3159335509547415276">Сазнајте више о блокираним налозима</translation>
@@ -7619,6 +7621,7 @@
 <translation id="6291741848715722067">Кôд за потврду</translation>
 <translation id="6291953229176937411">&amp;Прикажи у Finder-у</translation>
 <translation id="6293862149782163840"><ph name="DEVICE_NAME" /> је искључена</translation>
+<translation id="629405221789675953">Откачи претрагу картица</translation>
 <translation id="6294759976468837022">Брзина аутоматског скенирања</translation>
 <translation id="6295158916970320988">Сви сајтови</translation>
 <translation id="6295855836753816081">Чува се…</translation>
@@ -8639,6 +8642,7 @@
 <translation id="7003844668372540529">Непознати производ <ph name="PRODUCT_ID" /> продавца <ph name="VENDOR_NAME" /></translation>
 <translation id="7004402701596653846">Сајт може да користи MIDI</translation>
 <translation id="7004499039102548441">Недавне картице</translation>
+<translation id="7004923218520748660">Закачи претрагу картица</translation>
 <translation id="7004969808832734860">До <ph name="DISCOUNT_UP_TO_AMOUNT" /> попуста</translation>
 <translation id="7005496624875927304">Додатне дозволе</translation>
 <translation id="7005812687360380971">Грешка</translation>

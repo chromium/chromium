@@ -2103,6 +2103,7 @@
 <translation id="2434915728183570229">你現在可以查看手機的應用程式</translation>
 <translation id="2435248616906486374">網路已中斷連線</translation>
 <translation id="2435457462613246316">顯示密碼</translation>
+<translation id="2435670725585845785">固定「分頁搜尋」</translation>
 <translation id="2436385001956947090">複製連結(&amp;L)</translation>
 <translation id="2437105255211187922">{NUM_TABS,plural, =1{分享所選分頁會超過分享數量上限}other{分享 # 個分頁會超過分享數量上限}}</translation>
 <translation id="2437561292559037753">資料共用</translation>
@@ -3161,6 +3162,7 @@
 <translation id="3157387275655328056">加入閱讀清單</translation>
 <translation id="3157931365184549694">還原</translation>
 <translation id="3158033540161634471">設定指紋</translation>
+<translation id="3158203338449343164">取消固定「分頁搜尋」</translation>
 <translation id="3158732900546890991">密碼至少要有 8 個字元，且必須包含下列至少兩項元素：大寫字母、小寫字母、數字或符號</translation>
 <translation id="3158770568048368350">這可能導致行動網路暫時中斷連線</translation>
 <translation id="3159335509547415276">瞭解封鎖的帳戶</translation>
@@ -7609,6 +7611,7 @@
 <translation id="6291741848715722067">確認碼</translation>
 <translation id="6291953229176937411">在 Finder 中顯示(&amp;S)</translation>
 <translation id="6293862149782163840"><ph name="DEVICE_NAME" />已關閉</translation>
+<translation id="629405221789675953">取消固定「分頁搜尋」</translation>
 <translation id="6294759976468837022">自動掃描速度</translation>
 <translation id="6295158916970320988">所有網站</translation>
 <translation id="6295855836753816081">儲存中...</translation>
@@ -8625,6 +8628,7 @@
 <translation id="7003844668372540529"><ph name="VENDOR_NAME" /> 提供的不明產品 <ph name="PRODUCT_ID" /></translation>
 <translation id="7004402701596653846">網站可以使用 MIDI 裝置</translation>
 <translation id="7004499039102548441">最近開啟的分頁</translation>
+<translation id="7004923218520748660">固定「分頁搜尋」</translation>
 <translation id="7004969808832734860">最多可優惠 <ph name="DISCOUNT_UP_TO_AMOUNT" /></translation>
 <translation id="7005496624875927304">其他權限</translation>
 <translation id="7005812687360380971">失敗</translation>

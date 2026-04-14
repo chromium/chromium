@@ -2113,6 +2113,7 @@
 <translation id="2434915728183570229">మీరు ఇప్పుడు మీ ఫోన్ యాప్‌లను చూడవచ్చు</translation>
 <translation id="2435248616906486374">నెట్‌వర్క్ డిస్‌కనెక్ట్ అయింది</translation>
 <translation id="2435457462613246316">పాస్‌వర్డ్‌ను చూపించు</translation>
+<translation id="2435670725585845785">ట్యాబ్ సెర్చ్‌ను పిన్ చేయండి</translation>
 <translation id="2436385001956947090">లింక్‌ను కాపీ చేయండి</translation>
 <translation id="2437105255211187922">{NUM_TABS,plural, =1{ఎంచుకున్న ట్యాబ్‌ను షేర్ చేయడం వలన షేరింగ్ పరిమితిని మించిపోతుంది}other{# ట్యాబ్‌లను షేర్ చేయడం వలన షేరింగ్ పరిమితిని మించిపోతుంది}}</translation>
 <translation id="2437561292559037753">డేటా షేరింగ్</translation>
@@ -3171,6 +3172,7 @@
 <translation id="3157387275655328056">పఠన లిస్ట్‌కు జోడించండి</translation>
 <translation id="3157931365184549694">పునరుద్ధరించు</translation>
 <translation id="3158033540161634471">మీ వేలిముద్రను సెటప్ చేయండి</translation>
+<translation id="3158203338449343164">ట్యాబ్ సెర్చ్‌ను అన్‌పిన్ చేయండి</translation>
 <translation id="3158732900546890991">పాస్‌వర్డ్ తప్పనిసరిగా కనీసం 8 క్యారెక్టర్‌లు ఉండాలి, కింది వాటిలో కనీసం రెండింటిని కలిగి ఉండాలి: అప్పర్‌కేస్ అక్షరాలు, లోయర్‌కేస్ అక్షరాలు, సంఖ్యలు లేదా చిహ్నాలు</translation>
 <translation id="3158770568048368350">ఇది మీ మొబైల్ నెట్‌వర్క్ కొంతసేపు డిస్‌కనెక్ట్ కావడానికి కారణం కావచ్చు</translation>
 <translation id="3159335509547415276">బ్లాక్ చేయబడిన ఖాతాల గురించి తెలుసుకోండి</translation>
@@ -7631,6 +7633,7 @@
 <translation id="6291741848715722067">నిర్ధారణ కోడ్</translation>
 <translation id="6291953229176937411">శోధినిలో &amp;చూపించు</translation>
 <translation id="6293862149782163840"><ph name="DEVICE_NAME" /> ఆఫ్ చేయబడింది</translation>
+<translation id="629405221789675953">ట్యాబ్ సెర్చ్‌ను అన్‌పిన్ చేయండి</translation>
 <translation id="6294759976468837022">ఆటో-స్కాన్ వేగం</translation>
 <translation id="6295158916970320988">అన్ని సైట్‌లు</translation>
 <translation id="6295855836753816081">సేవ్ చేస్తోంది...</translation>
@@ -8647,6 +8650,7 @@
 <translation id="7003844668372540529"><ph name="VENDOR_NAME" /> నుండి తెలియని ఉత్పత్తి <ph name="PRODUCT_ID" /></translation>
 <translation id="7004402701596653846">సైట్ MIDIని ఉపయోగించగలదు</translation>
 <translation id="7004499039102548441">ఇటీవలి ట్యాబ్‌లు</translation>
+<translation id="7004923218520748660">ట్యాబ్ సెర్చ్‌ను పిన్ చేయండి</translation>
 <translation id="7004969808832734860"><ph name="DISCOUNT_UP_TO_AMOUNT" /> వరకు తగ్గింపు</translation>
 <translation id="7005496624875927304">అదనపు అనుమతులు</translation>
 <translation id="7005812687360380971">వైఫల్యం</translation>

@@ -2096,6 +2096,7 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="2434915728183570229">Ara pots consultar les aplicacions del telèfon</translation>
 <translation id="2435248616906486374">S'ha desconnectat la xarxa</translation>
 <translation id="2435457462613246316">Mostra la contrasenya</translation>
+<translation id="2435670725585845785">Fixa la cerca de pestanyes</translation>
 <translation id="2436385001956947090">Copia l'&amp;enllaç</translation>
 <translation id="2437105255211187922">{NUM_TABS,plural, =1{Si es comparteix la pestanya seleccionada, se superarà el límit de compartició}other{Si es comparteixen # pestanyes, se superarà el límit de compartició}}</translation>
 <translation id="2437561292559037753">Compartició de dades</translation>
@@ -3152,6 +3153,7 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="3157387275655328056">Afegeix a la llista de lectura</translation>
 <translation id="3157931365184549694">Restaura</translation>
 <translation id="3158033540161634471">Configura l'empremta digital</translation>
+<translation id="3158203338449343164">Deixa de fixar la cerca de pestanyes</translation>
 <translation id="3158732900546890991">La contrasenya ha de tenir com a mínim 8 caràcters i incloure almenys dos dels elements següents: lletres majúscules, lletres minúscules, números o símbols</translation>
 <translation id="3158770568048368350">Això pot fer que la xarxa mòbil es desconnecti breument</translation>
 <translation id="3159335509547415276">Informació sobre els comptes bloquejats</translation>
@@ -7594,6 +7596,7 @@ Assegureu-vos que no es pugui accedir a informació sensible.</translation>
 <translation id="6291741848715722067">Codi de confirmació</translation>
 <translation id="6291953229176937411">&amp;Mostra a Finder</translation>
 <translation id="6293862149782163840"><ph name="DEVICE_NAME" /> està desactivada</translation>
+<translation id="629405221789675953">Deixa de fixar la cerca de pestanyes</translation>
 <translation id="6294759976468837022">Velocitat de cerca automàtica</translation>
 <translation id="6295158916970320988">Tots els llocs web</translation>
 <translation id="6295855836753816081">S'està desant…</translation>
@@ -8605,6 +8608,7 @@ Tens # contrasenyes més en perill. El gestor de contrasenyes de Google recomana
 <translation id="7003844668372540529">Producte desconegut <ph name="PRODUCT_ID" /> de: <ph name="VENDOR_NAME" /></translation>
 <translation id="7004402701596653846">El lloc web pot fer servir MIDI</translation>
 <translation id="7004499039102548441">Pestanyes recents</translation>
+<translation id="7004923218520748660">Fixa la cerca de pestanyes</translation>
 <translation id="7004969808832734860">Fins a un <ph name="DISCOUNT_UP_TO_AMOUNT" /> de descompte</translation>
 <translation id="7005496624875927304">Permisos addicionals</translation>
 <translation id="7005812687360380971">Error</translation>

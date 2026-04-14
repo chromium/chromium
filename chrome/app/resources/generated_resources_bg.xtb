@@ -2112,6 +2112,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="2434915728183570229">Вече можете да преглеждате приложенията, които имате на телефона си</translation>
 <translation id="2435248616906486374">Няма връзка с мрежата</translation>
 <translation id="2435457462613246316">Показване на паролата</translation>
+<translation id="2435670725585845785">Фиксиране на функцията за търсене на раздели</translation>
 <translation id="2436385001956947090">Копиране на &amp;връзката</translation>
 <translation id="2437105255211187922">{NUM_TABS,plural, =1{Ако споделите избрания раздел, ще надхвърлите лимита за споделяне}other{Ако споделите # раздела, ще надхвърлите лимита за споделяне}}</translation>
 <translation id="2437561292559037753">Споделяне на данни</translation>
@@ -3170,6 +3171,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="3157387275655328056">Добавяне към списъка за четене</translation>
 <translation id="3157931365184549694">Възстановяване</translation>
 <translation id="3158033540161634471">Настройте отпечатъка си</translation>
+<translation id="3158203338449343164">Освобождаване на функцията за търсене на раздели</translation>
 <translation id="3158732900546890991">Паролата трябва да е с дължина най-малко 8 знака и да включва поне две от следните: главни букви, малки букви, цифри или символи</translation>
 <translation id="3158770568048368350">Това може да доведе до кратко прекъсване на връзката с мобилната ви мрежа</translation>
 <translation id="3159335509547415276">Научете за блокираните профили</translation>
@@ -7633,6 +7635,7 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="6291741848715722067">Код за потвърждение</translation>
 <translation id="6291953229176937411">&amp;Показване във Finder</translation>
 <translation id="6293862149782163840">Устройството <ph name="DEVICE_NAME" /> е изключено</translation>
+<translation id="629405221789675953">Освобождаване на функцията за търсене на раздели</translation>
 <translation id="6294759976468837022">Скорост на автоматичното сканиране</translation>
 <translation id="6295158916970320988">Всички сайтове</translation>
 <translation id="6295855836753816081">Запазва се...</translation>
@@ -8649,6 +8652,7 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="7003844668372540529">Неизвестен продукт <ph name="PRODUCT_ID" /> от <ph name="VENDOR_NAME" /></translation>
 <translation id="7004402701596653846">Сайтът може да използва MIDI</translation>
 <translation id="7004499039102548441">Скорошни раздели</translation>
+<translation id="7004923218520748660">Фиксиране на функцията за търсене на раздели</translation>
 <translation id="7004969808832734860">До <ph name="DISCOUNT_UP_TO_AMOUNT" /> отстъпка</translation>
 <translation id="7005496624875927304">Допълнителни разрешения</translation>
 <translation id="7005812687360380971">Неуспех</translation>

@@ -2117,6 +2117,7 @@
 <translation id="2434915728183570229">अब आपके पास अपने फ़ोन में मौजूद ऐप्लिकेशन देखने का विकल्प है</translation>
 <translation id="2435248616906486374">नेटवर्क डिस्‍कनेक्‍ट है</translation>
 <translation id="2435457462613246316">पासवर्ड दिखाएं</translation>
+<translation id="2435670725585845785">टैब सर्च को पिन करें</translation>
 <translation id="2436385001956947090">&amp;लिंक कॉपी करें</translation>
 <translation id="2437105255211187922">{NUM_TABS,plural, =1{चुना गया टैब शेयर करने पर, शेयर करने की तय सीमा पार हो जाएगी}one{# टैब शेयर करने पर, शेयर करने की तय सीमा पार हो जाएगी}other{# टैब शेयर करने पर, शेयर करने की तय सीमा पार हो जाएगी}}</translation>
 <translation id="2437561292559037753">डेटा शेयर करने के लिए</translation>
@@ -3175,6 +3176,7 @@
 <translation id="3157387275655328056">रीडिंग लिस्ट में जोड़ें</translation>
 <translation id="3157931365184549694">वापस लाएं</translation>
 <translation id="3158033540161634471">अपना फ़िंगरप्रिंट सेट अप करें</translation>
+<translation id="3158203338449343164">टैब सर्च को अनपिन करें</translation>
 <translation id="3158732900546890991">पासवर्ड में कम से कम आठ वर्ण होने चाहिए. साथ ही, इसमें इनमें से कम से कम दो चीज़ें होनी चाहिए: बड़े अक्षर, छोटे अक्षर, अंक या सिंबल</translation>
 <translation id="3158770568048368350">इससे, आपका मोबाइल नेटवर्क थोड़ी देर के लिए डिसकनेक्ट हो सकता है</translation>
 <translation id="3159335509547415276">ब्लॉक किए गए खातों के बारे में जानें</translation>
@@ -7633,6 +7635,7 @@
 <translation id="6291741848715722067">पुष्टि करने वाला कोड</translation>
 <translation id="6291953229176937411">खोजकर्ता में &amp;दिखाएं</translation>
 <translation id="6293862149782163840"><ph name="DEVICE_NAME" /> बंद हो गया है</translation>
+<translation id="629405221789675953">टैब सर्च को अनपिन करें</translation>
 <translation id="6294759976468837022">अपने-आप स्कैन होने की रफ़्तार</translation>
 <translation id="6295158916970320988">सभी साइटें</translation>
 <translation id="6295855836753816081">सहेज रहा है...</translation>
@@ -8651,6 +8654,7 @@
 <translation id="7003844668372540529"><ph name="VENDOR_NAME" /> की ओर से अज्ञात <ph name="PRODUCT_ID" /> प्रॉडक्ट</translation>
 <translation id="7004402701596653846">साइट 'मिडी' का इस्तेमाल कर सकती है</translation>
 <translation id="7004499039102548441">हाल के टैब</translation>
+<translation id="7004923218520748660">टैब सर्च को पिन करें</translation>
 <translation id="7004969808832734860"><ph name="DISCOUNT_UP_TO_AMOUNT" /> तक की छूट है</translation>
 <translation id="7005496624875927304">अन्य अनुमतियां</translation>
 <translation id="7005812687360380971">विफलता</translation>

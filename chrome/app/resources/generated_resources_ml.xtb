@@ -2099,6 +2099,7 @@
 <translation id="2434915728183570229">നിങ്ങളുടെ ഫോണിലെ ആപ്പുകൾ ഇപ്പോൾ കാണാനാകും</translation>
 <translation id="2435248616906486374">നെറ്റ്‌വർക്ക് വിച്‌ഛേദിച്ചു</translation>
 <translation id="2435457462613246316">പാസ്‌വേഡ് കാണിക്കുക</translation>
+<translation id="2435670725585845785">ടാബ് തിരയൽ പിൻ ചെയ്യുക</translation>
 <translation id="2436385001956947090">ലിങ്ക് &amp;പകർത്തുക</translation>
 <translation id="2437105255211187922">{NUM_TABS,plural, =1{തിരഞ്ഞെടുത്ത ടാബ് പങ്കിടുന്നത് പങ്കിടൽ പരിധി കവിയുന്നതിന് കാരണമാകും}other{# ടാബുകൾ പങ്കിടുന്നത് പങ്കിടൽ പരിധി കവിയുന്നതിന് കാരണമാകും}}</translation>
 <translation id="2437561292559037753">ഡാറ്റാ പങ്കിടൽ</translation>
@@ -3157,6 +3158,7 @@
 <translation id="3157387275655328056">വായന ലിസ്റ്റിൽ ചേർക്കുക</translation>
 <translation id="3157931365184549694">പുനഃസ്ഥാപിക്കുക</translation>
 <translation id="3158033540161634471">നിങ്ങളുടെ ഫിംഗർപ്രിന്റ് സജ്ജമാക്കുക</translation>
+<translation id="3158203338449343164">ടാബ് തിരയൽ അൺപിൻ ചെയ്യുക</translation>
 <translation id="3158732900546890991">പാസ്‌വേഡിൽ 8 പ്രതീകങ്ങളെങ്കിലും ഉണ്ടായിരിക്കണം, ഇനിപ്പറയുന്നവയിൽ രണ്ടെണ്ണമെങ്കിലും ഉൾപ്പെടുത്തുകയും വേണം: വലിയക്ഷരങ്ങൾ, ചെറിയക്ഷരങ്ങൾ, അക്കങ്ങൾ അല്ലെങ്കിൽ ചിഹ്നങ്ങൾ</translation>
 <translation id="3158770568048368350">ഇത് നിങ്ങളുടെ മൊബൈൽ നെറ്റ്‌വർക്ക് അൽപ്പ സമയത്തേക്ക് വിച്ഛേദിച്ചേക്കാം</translation>
 <translation id="3159335509547415276">ബ്ലോക്ക് ചെയ്ത അക്കൗണ്ടുകളെ കുറിച്ച് അറിയുക</translation>
@@ -7617,6 +7619,7 @@
 <translation id="6291741848715722067">സ്ഥിരീകരണ കോഡ്</translation>
 <translation id="6291953229176937411">&amp;ഫൈന്‍‌ഡറില്‍ കാണിക്കുക</translation>
 <translation id="6293862149782163840"><ph name="DEVICE_NAME" /> ഓഫാക്കി</translation>
+<translation id="629405221789675953">ടാബ് തിരയൽ അൺപിൻ ചെയ്യുക</translation>
 <translation id="6294759976468837022">സ്വയമേവയുള്ള സ്‌കാൻ ചെയ്യൽ വേഗത</translation>
 <translation id="6295158916970320988">എല്ലാ സൈറ്റുകളും</translation>
 <translation id="6295855836753816081">സംരക്ഷിക്കുന്നു...</translation>
@@ -8633,6 +8636,7 @@
 <translation id="7003844668372540529"><ph name="VENDOR_NAME" /> എന്നതിൽ നിന്നുള്ള അജ്ഞാത ഉൽപ്പന്നം <ph name="PRODUCT_ID" /></translation>
 <translation id="7004402701596653846">സൈറ്റിന് MIDI ഉപയോഗിക്കാനാകും</translation>
 <translation id="7004499039102548441">സമീപകാല ടാബുകൾ</translation>
+<translation id="7004923218520748660">ടാബ് തിരയൽ പിൻ ചെയ്യുക</translation>
 <translation id="7004969808832734860"><ph name="DISCOUNT_UP_TO_AMOUNT" /> വരെ കിഴിവ്</translation>
 <translation id="7005496624875927304">അധിക അനുമതികൾ</translation>
 <translation id="7005812687360380971">പരാജയം</translation>

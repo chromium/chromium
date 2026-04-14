@@ -2102,6 +2102,7 @@
 <translation id="2434915728183570229">હવે તમે તમારા ફોનની ઍપ જોઈ શકો છો</translation>
 <translation id="2435248616906486374">નેટવર્ક ડિસ્કનેક્ટ થયું</translation>
 <translation id="2435457462613246316">પાસવર્ડ બતાવો</translation>
+<translation id="2435670725585845785">ટૅબની શોધને પિન કરો</translation>
 <translation id="2436385001956947090">&amp;લિંક કૉપિ કરો</translation>
 <translation id="2437105255211187922">{NUM_TABS,plural, =1{પસંદ કરેલું ટૅબ શેર કરવાથી શેર કરવાની મર્યાદા વટાવી જવાશે}one{# ટૅબ શેર કરવાથી શેર કરવાની મર્યાદા વટાવી જવાશે}other{# ટૅબ શેર કરવાથી શેર કરવાની મર્યાદા વટાવી જવાશે}}</translation>
 <translation id="2437561292559037753">ડેટા શેરિંગ</translation>
@@ -3160,6 +3161,7 @@
 <translation id="3157387275655328056">વાંચન સૂચિમાં ઉમેરો</translation>
 <translation id="3157931365184549694">રિસ્ટોર કરો</translation>
 <translation id="3158033540161634471">તમારી ફિંગરપ્રિન્ટ સેટઅપ કરો</translation>
+<translation id="3158203338449343164">ટૅબની શોધને અનપિન કરો</translation>
 <translation id="3158732900546890991">પાસવર્ડ ઓછામાં ઓછો 8 અક્ષરનો હોવો જોઈએ અને તેમાં નીચેનામાંથી ઓછામાં ઓછા બેનો સમાવેશ થવો જોઈએ: અપરકેસ અક્ષરો, લોઅરકેસ અક્ષરો, અંકો અથવા પ્રતીકો</translation>
 <translation id="3158770568048368350">આને કારણે તમારું મોબાઇલ નેટવર્ક થોડી વાર માટે ડિસ્કનેક્ટ થઈ શકે છે</translation>
 <translation id="3159335509547415276">બ્લૉક કરેલા એકાઉન્ટ વિશે જાણો</translation>
@@ -7623,6 +7625,7 @@ USB ડિવાઇસ</translation>
 <translation id="6291741848715722067">કન્ફર્મેશન કોડ</translation>
 <translation id="6291953229176937411">ફાઇન્ડર માં &amp;બતાવો</translation>
 <translation id="6293862149782163840"><ph name="DEVICE_NAME" /> બંધ કરવામાં આવ્યો</translation>
+<translation id="629405221789675953">ટૅબની શોધને અનપિન કરો</translation>
 <translation id="6294759976468837022">ઑટો-સ્કૅનની ઝડપ</translation>
 <translation id="6295158916970320988">બધી સાઇટ</translation>
 <translation id="6295855836753816081">સાચવી રહ્યું છે...</translation>
@@ -8641,6 +8644,7 @@ USB ડિવાઇસ</translation>
 <translation id="7003844668372540529"><ph name="VENDOR_NAME" /> નું અજાણ્યું ઉત્પાદન <ph name="PRODUCT_ID" /></translation>
 <translation id="7004402701596653846">સાઇટ MIDIનો ઉપયોગ કરી શકે છે</translation>
 <translation id="7004499039102548441">તાજેતરના ટૅબ્સ</translation>
+<translation id="7004923218520748660">ટૅબની શોધને પિન કરો</translation>
 <translation id="7004969808832734860"><ph name="DISCOUNT_UP_TO_AMOUNT" /> સુધીની છૂટ</translation>
 <translation id="7005496624875927304">વધારાની પરવાનગીઓ</translation>
 <translation id="7005812687360380971">નિષ્ફળતા</translation>

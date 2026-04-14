@@ -2109,6 +2109,7 @@
 <translation id="2434915728183570229">ನೀವು ಈಗ ನಿಮ್ಮ ಫೋನ್‌ನ ಆ್ಯಪ್‌ಗಳನ್ನು ವೀಕ್ಷಿಸಬಹುದು</translation>
 <translation id="2435248616906486374">ನೆಟ್‌ವರ್ಕ್ ಸಂಪರ್ಕ ಕಡಿತಗೊಳಿಸಲಾಗಿದೆ</translation>
 <translation id="2435457462613246316">ಪಾಸ್‌ವರ್ಡ್ ಅನ್ನು ತೋರಿಸಿ</translation>
+<translation id="2435670725585845785">ಟ್ಯಾಬ್ ಹುಡುಕಾಟವನ್ನು ಪಿನ್ ಮಾಡಿ</translation>
 <translation id="2436385001956947090">&amp;ಲಿಂಕ್ ಕಾಪಿ ಮಾಡಿ</translation>
 <translation id="2437105255211187922">{NUM_TABS,plural, =1{ಆಯ್ಕೆಮಾಡಿದ ಟ್ಯಾಬ್ ಅನ್ನು ಹಂಚಿಕೊಳ್ಳುವುದರಿಂದ ಹಂಚಿಕೊಳ್ಳುವಿಕೆಯ ಮಿತಿಯನ್ನು ಮೀರುತ್ತದೆ}one{# ಟ್ಯಾಬ್‌ಗಳನ್ನು ಹಂಚಿಕೊಳ್ಳುವುದರಿಂದ ಹಂಚಿಕೊಳ್ಳುವಿಕೆಯ ಮಿತಿಯನ್ನು ಮೀರುತ್ತದೆ}other{# ಟ್ಯಾಬ್‌ಗಳನ್ನು ಹಂಚಿಕೊಳ್ಳುವುದರಿಂದ ಹಂಚಿಕೊಳ್ಳುವಿಕೆಯ ಮಿತಿಯನ್ನು ಮೀರುತ್ತದೆ}}</translation>
 <translation id="2437561292559037753">ಡೇಟಾ ಹಂಚಿಕೊಳ್ಳುವಿಕೆ</translation>
@@ -3167,6 +3168,7 @@
 <translation id="3157387275655328056">ಓದುವ ಪಟ್ಟಿಗೆ ಸೇರಿಸಿ</translation>
 <translation id="3157931365184549694">ಮರುಸ್ಥಾಪನೆ</translation>
 <translation id="3158033540161634471">ನಿಮ್ಮ ಫಿಂಗರ್‌ಪ್ರಿಂಟ್ ಅನ್ನು ಸೆಟಪ್‌ ಮಾಡಿ</translation>
+<translation id="3158203338449343164">ಟ್ಯಾಬ್ ಹುಡುಕಾಟವನ್ನು ಅನ್‌ಪಿನ್ ಮಾಡಿ</translation>
 <translation id="3158732900546890991">ಪಾಸ್‌ವರ್ಡ್ ಕನಿಷ್ಠ 8 ಅಕ್ಷರಗಳನ್ನು ಹೊಂದಿರಬೇಕು ಮತ್ತು ಈ ಕೆಳಗಿನವುಗಳಲ್ಲಿ ಕನಿಷ್ಠ ಎರಡನ್ನು ಒಳಗೊಂಡಿರಬೇಕು: ದೊಡ್ಡಕ್ಷರಗಳು, ಸಣ್ಣಕ್ಷರಗಳು, ಸಂಖ್ಯೆಗಳು ಅಥವಾ ಚಿಹ್ನೆಗಳು</translation>
 <translation id="3158770568048368350">ಇದು ನಿಮ್ಮ ಮೊಬೈಲ್ ನೆಟ್‌ವರ್ಕ್ ಅನ್ನು ತಾತ್ಕಾಲಿಕವಾಗಿ ಡಿಸ್‌ಕನೆಕ್ಟ್ ಮಾಡಲು ಕಾರಣವಾಗಬಹುದು</translation>
 <translation id="3159335509547415276">ನಿರ್ಬಂಧಿಸಲಾದ ಖಾತೆಗಳ ಕುರಿತು ತಿಳಿಯಿರಿ</translation>
@@ -7627,6 +7629,7 @@
 <translation id="6291741848715722067">ದೃಢೀಕರಣ ಕೋಡ್</translation>
 <translation id="6291953229176937411">ಫೈಂಡರ್‌ನಲ್ಲಿ &amp;ತೋರಿಸಿ</translation>
 <translation id="6293862149782163840"><ph name="DEVICE_NAME" /> ಅನ್ನು ಆಫ್ ಮಾಡಲಾಗಿದೆ</translation>
+<translation id="629405221789675953">ಟ್ಯಾಬ್ ಹುಡುಕಾಟವನ್ನು ಅನ್‌ಪಿನ್ ಮಾಡಿ</translation>
 <translation id="6294759976468837022">ಸ್ವಯಂ-ಸ್ಕ್ಯಾನ್ ವೇಗ</translation>
 <translation id="6295158916970320988">ಎಲ್ಲಾ ಸೈಟ್‌ಗಳು</translation>
 <translation id="6295855836753816081">ಸೇವ್ ಮಾಡಲಾಗುತ್ತಿದೆ...</translation>
@@ -8645,6 +8648,7 @@
 <translation id="7003844668372540529"><ph name="VENDOR_NAME" /> ಅವರಿಂದ <ph name="PRODUCT_ID" /> ಅಪರಿಚಿತ ಉತ್ಪನ್ನ</translation>
 <translation id="7004402701596653846">ಸೈಟ್, MIDI ಅನ್ನು ಬಳಸಬಹುದು</translation>
 <translation id="7004499039102548441">ಇತ್ತೀಚಿನ ಟ್ಯಾಬ್‌ಗಳು</translation>
+<translation id="7004923218520748660">ಟ್ಯಾಬ್ ಹುಡುಕಾಟವನ್ನು ಪಿನ್ ಮಾಡಿ</translation>
 <translation id="7004969808832734860"><ph name="DISCOUNT_UP_TO_AMOUNT" /> ವರೆಗೆ ರಿಯಾಯಿತಿ</translation>
 <translation id="7005496624875927304">ಹೆಚ್ಚುವರಿ ಅನುಮತಿಗಳು</translation>
 <translation id="7005812687360380971">ವೈಫಲ್ಯ</translation>
