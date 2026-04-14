@@ -179,6 +179,7 @@ struct WebPreferences {
   // Disallow user opt-in for blockable mixed content.
   bool strictly_block_blockable_mixed_content;
   bool block_mixed_plugin_content;
+  bool highlight_ads;
   bool password_echo_enabled_physical;
   bool password_echo_enabled_touch;
   bool should_clear_document_background;

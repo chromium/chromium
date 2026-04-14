@@ -3449,6 +3449,12 @@ inline constexpr char kReadAloudSyntheticTrials[] =
     "readaloud.synthetic_trials";
 #endif  // BUILDFLAG(IS_ANDROID)
 
+// A boolean pref indicating whether elements detected as ads should be visually
+// highlighted across all web pages. This is a global diagnostic setting managed
+// via chrome://subresource-filter-internals.
+inline constexpr char kSubresourceFilterHighlightAds[] =
+    "subresource_filter.highlight_ads";
+
 // A list of base64 encoded certificates that are to be trusted as root certs.
 // Only specifiable as an enterprise policy.
 inline constexpr char kCACertificates[] = "certificates.ca_certificates";

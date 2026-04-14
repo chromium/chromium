@@ -408,6 +408,9 @@ struct BLINK_COMMON_EXPORT WebPreferences {
   // See https://github.com/dtapuska/html-translate
   bool translate_service_available = false;
 
+  // Whether to highlight ads on the page.
+  bool highlight_ads = false;
+
   // A value other than
   // mojom::EffectiveConnectionType::kEffectiveConnectionUnknownType implies
   // that the network quality estimate related Web APIs are in the holdback

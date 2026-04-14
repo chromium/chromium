@@ -1,0 +1,31 @@
+// Copyright 2026 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module subresource_filter.mojom;
+
+// Contains global settings managed by chrome://subresource-filter-internals.
+struct SubresourceFilterInternalsPageSettings {
+  // Whether elements detected as ads should be visually highlighted across
+  // all pages.
+  bool should_highlight_ads = false;
+};
+
+// Browser-side handler for requests from the WebUI.
+interface SubresourceFilterInternalsHandler {
+  // Returns the current state of the internals page settings.
+  GetInternalsPageSettings() => (SubresourceFilterInternalsPageSettings settings);
+
+  // Updates the internals page settings.
+  SetInternalsPageSettings(SubresourceFilterInternalsPageSettings settings);
+
+  // Registers an observer to be notified whenever the settings change.
+  ObserveInternalsPageSettings(pending_remote<SubresourceFilterInternalsObserver> observer);
+};
+
+// WebUI-side observer that receives updates when internals page settings change.
+interface SubresourceFilterInternalsObserver {
+  // Called when the internals page settings are updated, broadcasting the new
+  // state to all open internals pages.
+  OnInternalsPageSettingsChanged(SubresourceFilterInternalsPageSettings settings);
+};

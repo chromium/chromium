@@ -27,6 +27,7 @@
 #include "chrome/browser/ui/webui/omnibox/omnibox_internals.mojom.h"
 #include "chrome/browser/ui/webui/omnibox/omnibox_ui.h"
 #include "chrome/browser/ui/webui/policy/policy_ui.h"
+#include "chrome/browser/ui/webui/subresource_filter/subresource_filter_internals_ui.h"
 #include "components/contextual_tasks/public/features.h"
 #include "components/enterprise/connectors/connectors_internals.mojom.h"
 #include "components/policy/core/common/features.h"
@@ -154,6 +155,10 @@ void PopulateChromeWebUIFrameBindersPartsAllPlatforms(
     RegisterWebUIControllerInterfaceBinder<
         contextual_tasks::mojom::PageHandlerFactory, ContextualTasksUI>(map);
   }
+
+  RegisterWebUIControllerInterfaceBinder<
+      subresource_filter::mojom::SubresourceFilterInternalsHandler,
+      subresource_filter::SubresourceFilterInternalsUI>(map);
 
   // End of PopulateChromeWebUIFrameBindersPartsAllPlatforms().
   // Please do not add platform-specific logic to this function.

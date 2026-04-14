@@ -174,6 +174,7 @@ base::span<const base::cstring_view> ChromeURLHosts() {
       kChromeUISignInInternalsHost,
       kChromeUISiteEngagementHost,
       kChromeUISkillsHost,
+      kChromeUISubresourceFilterInternalsHost,
 #if !BUILDFLAG(IS_ANDROID)
       kChromeUISuggestInternalsHost,
 #endif

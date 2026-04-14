@@ -271,6 +271,10 @@ struct BLINK_COMMON_EXPORT StructTraits<blink::mojom::WebPreferencesDataView,
     return r.block_mixed_plugin_content;
   }
 
+  static bool highlight_ads(const blink::web_pref::WebPreferences& r) {
+    return r.highlight_ads;
+  }
+
   static bool password_echo_enabled_physical(
       const blink::web_pref::WebPreferences& r) {
     return r.password_echo_enabled_physical;

@@ -1,0 +1,41 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//mojo/public/tools/bindings/mojom.gni")
+
+mojom("mojo_bindings") {
+  sources = [ "subresource_filter_internals.mojom" ]
+  webui_module_path = "/"
+  deps = [ "//components/subresource_filter/core/mojom" ]
+}
+
+static_library("subresource_filter") {
+  sources = [
+    "subresource_filter_internals_handler.cc",
+    "subresource_filter_internals_handler.h",
+    "subresource_filter_internals_ui.cc",
+    "subresource_filter_internals_ui.h",
+  ]
+
+  public_deps = [
+    ":mojo_bindings",
+    "//chrome/browser:browser_public_dependencies",
+    "//content/public/browser",
+  ]
+
+  deps = [
+    "//base",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/resources/subresource_filter:resources",
+    "//chrome/common",
+    "//components/prefs",
+    "//components/subresource_filter/content/browser",
+    "//components/subresource_filter/content/mojom",
+    "//content/public/common",
+    "//mojo/public/cpp/bindings",
+    "//services/network/public/mojom",
+    "//ui/webui",
+    "//url",
+  ]
+}

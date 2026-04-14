@@ -52,6 +52,7 @@ const char* const kWebPrefsToObserve[] = {
     prefs::kDefaultCharset,
     prefs::kDisable3DAPIs,
     prefs::kEnableHyperlinkAuditing,
+    prefs::kSubresourceFilterHighlightAds,
     prefs::kWebKitAllowRunningInsecureContent,
     prefs::kWebKitDefaultFixedFontSize,
     prefs::kWebKitDefaultFontSize,

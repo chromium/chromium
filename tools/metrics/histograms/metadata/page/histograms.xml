@@ -498,6 +498,7 @@ chromium-metrics-reviews@google.com.
   <variant name=".smb-credentials-dialog"/>
   <variant name=".smb-share-dialog"/>
   <variant name=".status-area-internals"/>
+  <variant name=".subresource-filter-internals"/>
   <variant name=".suggest-internals"/>
   <variant name=".support-tool"/>
   <variant name=".sync-confirmation"/>

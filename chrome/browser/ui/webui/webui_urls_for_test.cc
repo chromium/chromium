@@ -144,6 +144,7 @@ base::span<const std::string_view> GetChromeUrlsForTest() {
       "chrome://shopping-insights-side-panel.top-chrome",
       "chrome://signin-internals",
       "chrome://site-engagement",
+      "chrome://subresource-filter-internals",
       "chrome://suggest-internals",
       "chrome://support-tool",
       "chrome://sync-internals",

@@ -381,6 +381,7 @@ void PrefsTabHelper::RegisterProfilePrefs(
                                 pref_defaults.tabs_to_links);
   registry->RegisterBooleanPref(prefs::kWebKitAllowRunningInsecureContent,
                                 false);
+  registry->RegisterBooleanPref(prefs::kSubresourceFilterHighlightAds, false);
   registry->RegisterBooleanPref(
       prefs::kEnableReferrers,
       !base::FeatureList::IsEnabled(features::kNoReferrers));
