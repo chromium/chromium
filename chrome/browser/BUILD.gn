@@ -37,7 +37,6 @@ import("//printing/buildflags/buildflags.gni")
 import("//rlz/buildflags/buildflags.gni")
 import("//sandbox/features.gni")
 import("//services/screen_ai/buildflags/features.gni")
-import("//testing/libfuzzer/fuzzer_test.gni")
 import("//third_party/blink/public/public_features.gni")
 import("//third_party/protobuf/proto_library.gni")
 import("//third_party/webrtc/webrtc.gni")
@@ -5118,10 +5117,6 @@ static_library("browser") {
       "//chrome/browser/ash/certificate_provider:impl",
     ]
 
-    if (is_chrome_branded) {
-      deps += [ "//chrome/browser/nearby_sharing/internal/icons:vector_icons" ]
-    }
-
     if (!is_official_build) {
       deps += [
         "//ash/webui/sample_system_web_app_ui",
@@ -7367,18 +7362,5 @@ if (is_android) {
   }
   java_cpp_enum("screenshot_mode_enum") {
     sources = [ "android/feedback/screenshot_mode.h" ]
-  }
-}
-
-if (is_chromeos) {
-  fuzzer_test("nearby_sharing_instantmessaging_stream_parser_fuzzer") {
-    sources = [ "nearby_sharing/instantmessaging/stream_parser_fuzzer.cc" ]
-    deps = [
-      ":browser",
-      "//base",
-      "//chrome/browser/nearby_sharing",
-      "//components/exo/wayland:ui_controls_protocol_stub",
-      "//third_party/protobuf:protobuf_lite",
-    ]
   }
 }
