@@ -813,17 +813,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Security.SafetyTips.GetReputationStatusWithEngagedSitesTime"
-    units="ms" expires_after="2024-08-11">
-  <owner>jdeblasio@chromium.org</owner>
-  <owner>estark@chromium.org</owner>
-  <owner>blundell@chromium.org</owner>
-  <summary>
-    Records the time duration of a check for the reputation status of a site on
-    the main thread. Recorded on every check.
-  </summary>
-</histogram>
-
 <histogram name="Security.SafetyTips.Interaction{SafetyTip}"
     enum="SafetyTipInteraction" expires_after="2023-06-18">
   <owner>jdeblasio@chromium.org</owner>

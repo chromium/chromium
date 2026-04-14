@@ -11,7 +11,6 @@
 #include "base/functional/callback.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/metrics/field_trial_params.h"
-#include "base/metrics/histogram_macros.h"
 #include "base/time/default_clock.h"
 #include "base/trace_event/trace_event.h"
 #include "chrome/browser/safe_browsing/user_interaction_observer.h"
@@ -71,12 +70,6 @@ std::vector<DomainInfo> UpdateEngagedSitesOnWorkerThread(
 std::string GetETLDPlusOneWithPrivateRegistries(const std::string& hostname) {
   return net::registry_controlled_domains::GetDomainAndRegistry(
       hostname, net::registry_controlled_domains::INCLUDE_PRIVATE_REGISTRIES);
-}
-
-void RecordReputationStatusWithEngagedSitesTime(base::TimeTicks start) {
-  UMA_HISTOGRAM_TIMES(
-      "Security.SafetyTips.GetReputationStatusWithEngagedSitesTime",
-      base::TimeTicks::Now() - start);
 }
 
 }  // namespace
@@ -269,8 +262,6 @@ void LookalikeUrlService::CheckSafetyTipStatusWithEngagedSites(
     const GURL& url,
     SafetyTipCheckCallback callback,
     const std::vector<DomainInfo>& engaged_sites) {
-  base::TimeTicks start = base::TimeTicks::Now();
-
   LookalikeUrlCheckResult lookalike_result =
       CheckUrlForLookalikes(url, engaged_sites,
                             /*stop_checking_on_allowlist_or_ignore=*/false);
@@ -280,7 +271,6 @@ void LookalikeUrlService::CheckSafetyTipStatusWithEngagedSites(
 
   if (lookalike_result.action_type != LookalikeActionType::kShowSafetyTip) {
     std::move(callback).Run(result);
-    RecordReputationStatusWithEngagedSitesTime(start);
     return;
   }
 
@@ -293,7 +283,6 @@ void LookalikeUrlService::CheckSafetyTipStatusWithEngagedSites(
     // This will record a UKM but it won't show a warning.
     result.safety_tip_status = SafetyTipStatus::kNone;
     std::move(callback).Run(result);
-    RecordReputationStatusWithEngagedSitesTime(start);
     return;
   }
 
@@ -306,7 +295,6 @@ void LookalikeUrlService::CheckSafetyTipStatusWithEngagedSites(
     // there's no additional action required.
   }
   std::move(callback).Run(result);
-  RecordReputationStatusWithEngagedSitesTime(start);
 }
 
 bool LookalikeUrlService::IsIgnored(const GURL& url) const {
