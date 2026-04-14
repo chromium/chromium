@@ -71,11 +71,7 @@ bundle_data("blink_platform_unittests_filters_bundle_data") {
 source_set("blink_unittests_filters") {
   testonly = true
 
-  data = [
-    "//testing/buildbot/filters/android.emulator.blink_unittests.filter",
-    "//testing/buildbot/filters/fuchsia.debug.blink_unittests.filter",
-    "//testing/buildbot/filters/trees_in_viz.blink_unittests.filter",
-  ]
+  data = [ "//testing/buildbot/filters/trees_in_viz.blink_unittests.filter" ]
 }
 
 source_set("blink_web_tests_filter") {

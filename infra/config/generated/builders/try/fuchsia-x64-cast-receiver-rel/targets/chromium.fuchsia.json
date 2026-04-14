@@ -221,8 +221,7 @@
       },
       {
         "args": [
-          "--device-spec=x64-emu-large",
-          "--test-launcher-filter-file=../../testing/buildbot/filters/fuchsia.debug.blink_unittests.filter"
+          "--device-spec=x64-emu-large"
         ],
         "isolate_profile_data": true,
         "merge": {

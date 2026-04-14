@@ -120,11 +120,6 @@ ci.builder(
             "hardware_accelerated_feature_tests": targets.remove(
                 reason = "crbug.com/42050042, crbug.com/42050537 this test does not work on swiftshader on arm64",
             ),
-            "blink_unittests": targets.mixin(
-                args = [
-                    "--test-launcher-filter-file=../../testing/buildbot/filters/fuchsia.debug.blink_unittests.filter",
-                ],
-            ),
             "media_unittests": targets.mixin(
                 args = [
                     "--test-launcher-filter-file=../../testing/buildbot/filters/fuchsia.debug.media_unittests.filter",

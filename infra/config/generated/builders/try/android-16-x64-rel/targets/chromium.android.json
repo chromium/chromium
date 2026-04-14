@@ -540,7 +540,6 @@
       {
         "args": [
           "--avd-config=../../tools/android/avd/proto/android_36_google_apis_x64.textpb",
-          "--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator.blink_unittests.filter",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
