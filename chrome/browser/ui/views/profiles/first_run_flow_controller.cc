@@ -30,7 +30,6 @@
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/signin/signin_hats_util.h"
 #include "chrome/browser/ui/hats/survey_config.h"
-#include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/profiles/profile_management_flow_controller.h"
 #include "chrome/browser/ui/views/profiles/profile_management_flow_controller_impl.h"
@@ -324,18 +323,15 @@ class DefaultBrowserStepController : public ProfileManagementStepController {
       // Check if Chrome can pin to the taskbar, which is an async call. When it
       // finishes, the result will be recorded and
       // `show_default_browser_screen_callback_` will be run.
-      if (base::FeatureList::IsEnabled(
-              features::kOfferPinToTaskbarInFirstRunExperience)) {
-        browser_util::ShouldOfferToPin(
-            ShellUtil::GetBrowserModelId(InstallUtil::IsPerUserInstall()),
-            browser_util::PinAppToTaskbarChannel::kFirstRunExperience,
-            base::BindOnce(
-                &DefaultBrowserStepController::OnCanPinToTaskbarResult,
-                weak_ptr_factory_.GetWeakPtr()));
-        return;
-      }
-#endif  // BUILDFLAG(IS_WIN)
+      browser_util::ShouldOfferToPin(
+          ShellUtil::GetBrowserModelId(InstallUtil::IsPerUserInstall()),
+          browser_util::PinAppToTaskbarChannel::kFirstRunExperience,
+          base::BindOnce(&DefaultBrowserStepController::OnCanPinToTaskbarResult,
+                         weak_ptr_factory_.GetWeakPtr()));
+      return;
+#else
       std::move(show_default_browser_screen_callback_).Run();
+#endif  // BUILDFLAG(IS_WIN)
     } else {
       // Mark that this step was skipped and proceed with the next one.
       std::move(step_shown_callback_.value()).Run(false);

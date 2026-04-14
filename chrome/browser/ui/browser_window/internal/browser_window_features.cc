@@ -449,12 +449,10 @@ void BrowserWindowFeatures::Init(BrowserWindowInterface* browser) {
         GetUserDataFactory().CreateInstance<pdf::infobar::PdfInfoBarController>(
             *browser, browser);
   }
-  if (base::FeatureList::IsEnabled(features::kOfferPinToTaskbarInfoBar)) {
-    pin_infobar_controller_ =
-        GetUserDataFactory()
-            .CreateInstance<default_browser::PinInfoBarController>(*browser,
-                                                                   browser);
-  }
+  pin_infobar_controller_ =
+      GetUserDataFactory()
+          .CreateInstance<default_browser::PinInfoBarController>(*browser,
+                                                                 browser);
 #endif
 
   data_sharing_bubble_controller_ =

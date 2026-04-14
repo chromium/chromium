@@ -7,7 +7,6 @@
 #include <memory>
 
 #include "base/test/bind.h"
-#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/shell_integration.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/test/mock_browser_window_interface.h"
@@ -75,7 +74,6 @@ class PinInfoBarControllerTest : public testing::Test {
             std::make_unique<TabStripModel>(delegate_.get(), profile())),
         browser_window_interface_(
             std::make_unique<MockBrowserWindowInterface>()) {
-    feature_list_.InitAndEnableFeature(features::kOfferPinToTaskbarInfoBar);
 
     ON_CALL(*browser_window_interface_, GetTabStripModel())
         .WillByDefault(::testing::Return(tab_strip_model()));
@@ -123,8 +121,6 @@ class PinInfoBarControllerTest : public testing::Test {
   // Must be the first member.
   content::BrowserTaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
-
-  base::test::ScopedFeatureList feature_list_;
 
   // `ChromeLayoutProvider::Get()` is called when an infobar is created.
   ChromeLayoutProvider layout_provider_;

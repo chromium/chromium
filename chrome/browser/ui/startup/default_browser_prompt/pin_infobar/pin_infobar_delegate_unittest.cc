@@ -5,8 +5,6 @@
 #include "chrome/browser/ui/startup/default_browser_prompt/pin_infobar/pin_infobar_delegate.h"
 
 #include "base/test/metrics/histogram_tester.h"
-#include "base/test/scoped_feature_list.h"
-#include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/infobars/content/content_infobar_manager.h"
@@ -20,9 +18,7 @@ namespace default_browser {
 
 class PinInfoBarDelegateTest : public testing::Test {
  protected:
-  PinInfoBarDelegateTest() {
-    feature_list_.InitAndEnableFeature(features::kOfferPinToTaskbarInfoBar);
-  }
+  PinInfoBarDelegateTest() = default;
 
   void SetUp() override {
     infobar_manager_ =
@@ -39,7 +35,6 @@ class PinInfoBarDelegateTest : public testing::Test {
   // Must be the first member.
   content::BrowserTaskEnvironment task_environment_;
 
-  base::test::ScopedFeatureList feature_list_;
   base::HistogramTester histogram_tester_;
 
   std::unique_ptr<infobars::ContentInfoBarManager> infobar_manager_;

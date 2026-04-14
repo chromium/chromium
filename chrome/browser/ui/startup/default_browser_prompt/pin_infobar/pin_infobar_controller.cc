@@ -45,7 +45,6 @@ DEFINE_USER_DATA(PinInfoBarController);
 PinInfoBarController::PinInfoBarController(BrowserWindowInterface* browser)
     : browser_(browser),
       scoped_unowned_user_data_(browser->GetUnownedUserDataHost(), *this) {
-  CHECK(base::FeatureList::IsEnabled(features::kOfferPinToTaskbarInfoBar));
   browser_subscriptions_.push_back(
       browser_->RegisterBrowserDidClose(base::BindRepeating(
           &PinInfoBarController::OnBrowserClosed, base::Unretained(this))));

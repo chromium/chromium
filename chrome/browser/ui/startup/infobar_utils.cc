@@ -231,11 +231,7 @@ void AddInfoBarsIfNecessary(BrowserWindowInterface* browser,
   // The default browser prompt should only be shown after the first run.
   if (is_first_run == chrome::startup::IsFirstRun::kNo) {
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
-    const bool pin_feature_enabled =
-        base::FeatureList::IsEnabled(features::kOfferPinToTaskbarInfoBar);
-
-    if (pin_feature_enabled &&
-        base::FeatureList::IsEnabled(features::kSeparateDefaultAndPinPrompt)) {
+    if (base::FeatureList::IsEnabled(features::kSeparateDefaultAndPinPrompt)) {
       const int seed = features::kSeparateDefaultAndPinPromptRandSeed.Get();
       const int choice = (seed > 0) ? (seed % 2) : base::RandIntInclusive(0, 1);
 
@@ -264,11 +260,9 @@ void AddInfoBarsIfNecessary(BrowserWindowInterface* browser,
             &pdf::infobar::PdfInfoBarController::MaybeShowInfoBarAtStartup,
             browser->GetWeakPtr());
       }
-      if (pin_feature_enabled) {
-        callback = base::BindOnce(
-            &default_browser::PinInfoBarController::MaybeShowInfoBarForBrowser,
-            browser->GetWeakPtr(), std::move(callback));
-      }
+      callback = base::BindOnce(
+          &default_browser::PinInfoBarController::MaybeShowInfoBarForBrowser,
+          browser->GetWeakPtr(), std::move(callback));
       ShowDefaultBrowserPrompt(profile, std::move(callback));
     }
 #else

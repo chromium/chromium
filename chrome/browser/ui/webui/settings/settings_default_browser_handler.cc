@@ -18,7 +18,6 @@
 #include "chrome/browser/ui/startup/default_browser_prompt/default_browser_prompt.h"
 #include "chrome/browser/ui/startup/default_browser_prompt/default_browser_prompt_manager.h"
 #include "chrome/browser/ui/startup/default_browser_prompt/default_browser_prompt_prefs.h"
-#include "chrome/browser/ui/ui_features.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/pref_names.h"
 #include "components/prefs/pref_service.h"
@@ -179,15 +178,12 @@ void DefaultBrowserHandler::OnDefaultBrowserWorkerFinished(
         Profile::FromWebUI(web_ui()));
   } else {
 #if BUILDFLAG(IS_WIN)
-    if (base::FeatureList::IsEnabled(features::kOfferPinToTaskbarInSettings)) {
-      browser_util::ShouldOfferToPin(
-          ShellUtil::GetBrowserModelId(InstallUtil::IsPerUserInstall()),
-          browser_util::PinAppToTaskbarChannel::kSettingsPage,
-          base::BindOnce(&DefaultBrowserHandler::OnCanPinToTaskbarResult,
-                         weak_ptr_factory_.GetWeakPtr(), js_callback_id,
-                         state));
-      return;
-    }
+    browser_util::ShouldOfferToPin(
+        ShellUtil::GetBrowserModelId(InstallUtil::IsPerUserInstall()),
+        browser_util::PinAppToTaskbarChannel::kSettingsPage,
+        base::BindOnce(&DefaultBrowserHandler::OnCanPinToTaskbarResult,
+                       weak_ptr_factory_.GetWeakPtr(), js_callback_id, state));
+    return;
 #endif  // BUILDFLAG(IS_WIN)
   }
   OnDefaultCheckFinished(js_callback_id, /*can_pin=*/false, state);
