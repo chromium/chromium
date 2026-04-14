@@ -4,6 +4,10 @@
 
 #import <LocalAuthentication/LocalAuthentication.h>
 
+#import "base/functional/callback_helpers.h"
+#import "base/run_loop.h"
+#import "base/test/simple_test_clock.h"
+#import "base/test/task_environment.h"
 #import "ios/chrome/common/ui/reauthentication/reauthentication_module_for_testing.h"
 #import "testing/gmock/include/gmock/gmock.h"
 #import "testing/gtest/include/gtest/gtest.h"
@@ -11,32 +15,13 @@
 #import "third_party/ocmock/OCMock/OCMock.h"
 #import "third_party/ocmock/gtest_support.h"
 
-@interface TestingSuccessfulReauthTimeAccessor
-    : NSObject <SuccessfulReauthTimeAccessor> {
-  // Object storing the time of a fake previous successful re-authentication
-  // to be used by the `ReauthenticationModule`.
-  NSDate* _successfulReauthTime;
-}
-
-@end
-
-@implementation TestingSuccessfulReauthTimeAccessor
-
-- (void)updateSuccessfulReauthTime {
-  _successfulReauthTime = [[NSDate alloc] init];
-}
-
-- (void)updateSuccessfulReauthTime:(NSDate*)time {
-  _successfulReauthTime = time;
-}
-
-- (NSDate*)lastSuccessfulReauthTime {
-  return _successfulReauthTime;
-}
-
-@end
-
 namespace {
+
+// Returns a ReauthenticationResultBlock that call QuitClosure on `run_loop`.
+ReauthenticationResultBlock CallQuitClosure(base::RunLoop& run_loop) {
+  return base::CallbackToBlock(
+      base::IgnoreArgs<ReauthenticationResult>(run_loop.QuitClosure()));
+}
 
 class ReauthenticationModuleTest : public PlatformTest {
  protected:
@@ -44,47 +29,52 @@ class ReauthenticationModuleTest : public PlatformTest {
 
   void SetUp() override {
     auth_context_ = [OCMockObject niceMockForClass:[LAContext class]];
-    time_accessor_ = [[TestingSuccessfulReauthTimeAccessor alloc] init];
-    reauthentication_module_ = [[ReauthenticationModule alloc]
-        initWithSuccessfulReauthTimeAccessor:time_accessor_];
-    [reauthentication_module_ setCreateLAContext:^LAContext*() {
+    reauth_module_ = [[ReauthenticationModule alloc] initWithClock:&clock_];
+    [reauth_module_ setCreateLAContext:^LAContext*() {
       return auth_context_;
     }];
   }
 
+  void TearDown() override {
+    @autoreleasepool {
+      reauth_module_ = nil;
+      auth_context_ = nil;
+    }
+  }
+
+  base::test::TaskEnvironment env_;
+  base::SimpleTestClock clock_;
   id auth_context_;
-  TestingSuccessfulReauthTimeAccessor* time_accessor_;
-  ReauthenticationModule* reauthentication_module_;
+  ReauthenticationModule* reauth_module_;
 };
 
 // Tests that reauthentication is not reused when reuse is not permitted
 // even if the time interval since the previous reauthentication is less
 // than 60 seconds.
-// TODO(crbug.com/40167264): The test fails on device.
-#if TARGET_OS_SIMULATOR
-#define MAYBE_ReauthReuseNotPermitted ReauthReuseNotPermitted
-#else
-#define MAYBE_ReauthReuseNotPermitted DISABLED_ReauthReuseNotPermitted
-#endif
-TEST_F(ReauthenticationModuleTest, MAYBE_ReauthReuseNotPermitted) {
-  const int kIntervalFromFakePreviousAuthInSeconds = 20;
-  NSDate* lastReauthTime = [NSDate date];
-  [time_accessor_ updateSuccessfulReauthTime:lastReauthTime];
-  NSDate* newReauthTime =
-      [NSDate dateWithTimeInterval:kIntervalFromFakePreviousAuthInSeconds
-                         sinceDate:lastReauthTime];
-
-  id nsDateMock = OCMClassMock([NSDate class]);
-  OCMStub([nsDateMock date]).andReturn(newReauthTime);
+TEST_F(ReauthenticationModuleTest, ReauthReuseNotPermitted) {
+  // Pretends authentication was successful 20 seconds ago.
+  [reauth_module_ setLastSuccessfulReauthTime:clock_.Now()];
+  clock_.Advance(base::Seconds(20));
 
   OCMExpect([auth_context_ evaluatePolicy:LAPolicyDeviceOwnerAuthentication
                           localizedReason:[OCMArg any]
-                                    reply:[OCMArg any]]);
-  [reauthentication_module_
-      attemptReauthWithLocalizedReason:@"Test"
-                  canReusePreviousAuth:NO
-                               handler:^(ReauthenticationResult success){
-                               }];
+                                    reply:[OCMArg any]])
+      .andDo(^(NSInvocation* invocation) {
+        // Use -getArgument:atIndex: to access the block passed by the
+        // implementation of ReauthenticationModule and invoke it. The
+        // first two arguments are `self` and `cmd` so the index needs
+        // to start at 2, thus 4 for the `reply` parameter.
+        __unsafe_unretained void (^block)(BOOL, NSError*) = nil;
+        [invocation getArgument:&block atIndex:4];
+        block(YES, nil);
+      });
+
+  base::RunLoop run_loop;
+  [reauth_module_ attemptReauthWithLocalizedReason:@"Test"
+                              canReusePreviousAuth:NO
+                                           handler:CallQuitClosure(run_loop)];
+
+  run_loop.Run();
 
   EXPECT_OCMOCK_VERIFY(auth_context_);
 }
@@ -92,36 +82,24 @@ TEST_F(ReauthenticationModuleTest, MAYBE_ReauthReuseNotPermitted) {
 // Tests that the previous reauthentication is reused when reuse is permitted
 // and the last successful reauthentication occurred less than 60 seconds
 // before the current attempt.
-// TODO(crbug.com/40167264): The test fails on device.
-#if TARGET_OS_SIMULATOR
-#define MAYBE_ReauthReusePermittedLessThanSixtySeconds \
-  ReauthReusePermittedLessThanSixtySeconds
-#else
-#define MAYBE_ReauthReusePermittedLessThanSixtySeconds \
-  DISABLED_ReauthReusePermittedLessThanSixtySeconds
-#endif
-TEST_F(ReauthenticationModuleTest,
-       MAYBE_ReauthReusePermittedLessThanSixtySeconds) {
-  const int kIntervalFromFakePreviousAuthInSeconds = 20;
-  NSDate* lastReauthTime = [NSDate date];
-  [time_accessor_ updateSuccessfulReauthTime:lastReauthTime];
-  NSDate* newReauthTime =
-      [NSDate dateWithTimeInterval:kIntervalFromFakePreviousAuthInSeconds
-                         sinceDate:lastReauthTime];
+TEST_F(ReauthenticationModuleTest, ReauthReusePermittedLessThanSixtySeconds) {
+  // Pretends authentication was successful 20 seconds ago.
+  [reauth_module_ setLastSuccessfulReauthTime:clock_.Now()];
+  clock_.Advance(base::Seconds(20));
 
-  id nsDateMock = OCMClassMock([NSDate class]);
-  OCMStub([nsDateMock date]).andReturn(newReauthTime);
   [[auth_context_ reject] evaluatePolicy:LAPolicyDeviceOwnerAuthentication
                          localizedReason:[OCMArg any]
                                    reply:[OCMArg any]];
 
   // Use @try/@catch as -reject raises an exception.
   @try {
-    [reauthentication_module_
-        attemptReauthWithLocalizedReason:@"Test"
-                    canReusePreviousAuth:YES
-                                 handler:^(ReauthenticationResult success){
-                                 }];
+    base::RunLoop run_loop;
+    [reauth_module_ attemptReauthWithLocalizedReason:@"Test"
+                                canReusePreviousAuth:YES
+                                             handler:CallQuitClosure(run_loop)];
+
+    run_loop.Run();
+
     EXPECT_OCMOCK_VERIFY(auth_context_);
   } @catch (NSException* exception) {
     // The exception is raised when
@@ -134,34 +112,29 @@ TEST_F(ReauthenticationModuleTest,
 // Tests that the previous reauthentication is not reused when reuse is
 // permitted, but the last successful reauthentication occurred more than 60
 // seconds before the current attempt.
-// TODO(crbug.com/40167264): The test fails on device.
-#if TARGET_OS_SIMULATOR
-#define MAYBE_ReauthReusePermittedMoreThanSixtySeconds \
-  ReauthReusePermittedMoreThanSixtySeconds
-#else
-#define MAYBE_ReauthReusePermittedMoreThanSixtySeconds \
-  DISABLED_ReauthReusePermittedMoreThanSixtySeconds
-#endif
-TEST_F(ReauthenticationModuleTest,
-       MAYBE_ReauthReusePermittedMoreThanSixtySeconds) {
-  const int kIntervalFromFakePreviousAuthInSeconds = 70;
-  NSDate* lastReauthTime = [NSDate date];
-  [time_accessor_ updateSuccessfulReauthTime:lastReauthTime];
-  NSDate* newReauthTime =
-      [NSDate dateWithTimeInterval:kIntervalFromFakePreviousAuthInSeconds
-                         sinceDate:lastReauthTime];
-
-  id nsDateMock = OCMClassMock([NSDate class]);
-  OCMStub([nsDateMock date]).andReturn(newReauthTime);
+TEST_F(ReauthenticationModuleTest, ReauthReusePermittedMoreThanSixtySeconds) {
+  // Pretends authentication was successful 70 seconds ago.
+  [reauth_module_ setLastSuccessfulReauthTime:clock_.Now()];
+  clock_.Advance(base::Seconds(70));
 
   OCMExpect([auth_context_ evaluatePolicy:LAPolicyDeviceOwnerAuthentication
                           localizedReason:[OCMArg any]
-                                    reply:[OCMArg any]]);
-  [reauthentication_module_
-      attemptReauthWithLocalizedReason:@"Test"
-                  canReusePreviousAuth:YES
-                               handler:^(ReauthenticationResult success){
-                               }];
+                                    reply:[OCMArg any]])
+      .andDo(^(NSInvocation* invocation) {
+        // Use -getArgument:atIndex: to access the block passed by the
+        // implementation of ReauthenticationModule and invoke it. The
+        // first two arguments are `self` and `cmd` so the index needs
+        // to start at 2, thus 4 for the `reply` parameter.
+        __unsafe_unretained void (^block)(BOOL, NSError*) = nil;
+        [invocation getArgument:&block atIndex:4];
+        block(YES, nil);
+      });
+
+  base::RunLoop run_loop;
+  [reauth_module_ attemptReauthWithLocalizedReason:@"Test"
+                              canReusePreviousAuth:YES
+                                           handler:CallQuitClosure(run_loop)];
+  run_loop.Run();
 
   EXPECT_OCMOCK_VERIFY(auth_context_);
 }

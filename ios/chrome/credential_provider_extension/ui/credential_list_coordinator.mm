@@ -223,8 +223,7 @@
 // or an access to passwords (when `NO`).
 - (void)reauthenticateIfNeededToAccessPasskeys:(BOOL)forPasskeys
                          withCompletionHandler:
-                             (void (^)(ReauthenticationResult))
-                                 completionHandler {
+                             (ReauthenticationResultBlock)completionHandler {
   [self.reauthenticationHandler verifyUserToAccessPasskeys:forPasskeys
                                      withCompletionHandler:completionHandler
                            presentReminderOnViewController:self.viewController];

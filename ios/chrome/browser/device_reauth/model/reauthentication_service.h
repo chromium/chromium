@@ -10,20 +10,20 @@
 #import "components/keyed_service/core/keyed_service.h"
 
 @protocol ReauthenticationProtocol;
-@protocol SuccessfulReauthTimeAccessor;
 
 // Owns the reauthentication module that should be reused for a profile.
 class ReauthenticationService : public KeyedService {
  public:
-  explicit ReauthenticationService(
-      id<ReauthenticationProtocol> reauth_module = nil);
+  explicit ReauthenticationService(id<ReauthenticationProtocol> reauth_module);
   ~ReauthenticationService() override;
+
+  // KeyedService implementation.
+  void Shutdown() override;
 
   id<ReauthenticationProtocol> GetReauthModule();
 
  private:
   id<ReauthenticationProtocol> reauth_module_ = nil;
-  id<SuccessfulReauthTimeAccessor> reauth_time_accessor_ = nil;
 };
 
 #endif  // IOS_CHROME_BROWSER_DEVICE_REAUTH_MODEL_REAUTHENTICATION_SERVICE_H_

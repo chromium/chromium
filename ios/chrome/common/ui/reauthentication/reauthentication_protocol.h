@@ -15,6 +15,9 @@ enum class ReauthenticationResult {
   kMaxValue = kSkipped,
 };
 
+// Block taking a ReauthenticationResult as parameter.
+using ReauthenticationResultBlock = void (^)(ReauthenticationResult);
+
 // Protocol for implementor of hardware reauthentication check.
 @protocol ReauthenticationProtocol <NSObject>
 
@@ -31,9 +34,10 @@ enum class ReauthenticationResult {
 // result of the reauth attempt.
 - (void)attemptReauthWithLocalizedReason:(NSString*)localizedReason
                     canReusePreviousAuth:(BOOL)canReusePreviousAuth
-                                 handler:
-                                     (void (^)(ReauthenticationResult success))
-                                         handler;
+                                 handler:(ReauthenticationResultBlock)handler;
+
+// Clears the cached authentication validity.
+- (void)clearAuthValidity;
 
 @end
 

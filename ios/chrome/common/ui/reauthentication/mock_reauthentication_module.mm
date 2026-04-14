@@ -8,16 +8,13 @@
 #import "base/task/sequenced_task_runner.h"
 #import "base/test/ios/wait_util.h"
 
-// Type of the block used for delivering mocked reauth results.
-typedef void (^ReauthenticationResultHandler)(ReauthenticationResult success);
-
 @interface MockReauthenticationModule ()
 
 // Last handler passed to attemptReauthWithLocalizedReason.
 // Used for letting tests control the timing of emitting mock reauth results.
 // This allows test to validate states before/after mocked reauth result is
 // emitted.
-@property(nonatomic) ReauthenticationResultHandler reauthResultHandler;
+@property(nonatomic) ReauthenticationResultBlock reauthResultHandler;
 
 @end
 
@@ -53,20 +50,19 @@ typedef void (^ReauthenticationResultHandler)(ReauthenticationResult success);
 
 - (void)attemptReauthWithLocalizedReason:(NSString*)localizedReason
                     canReusePreviousAuth:(BOOL)canReusePreviousAuth
-                                 handler:(ReauthenticationResultHandler)
-                                             reauthResultHandler {
+                                 handler:(ReauthenticationResultBlock)handler {
   self.localizedReasonForAuthentication = localizedReason;
 
   if (self.shouldSkipReAuth) {
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE, base::BindOnce(reauthResultHandler, _expectedResult));
+        FROM_HERE, base::BindOnce(handler, _expectedResult));
   } else {
     if (self.reauthResultHandler) {
       // When multiple reauth requests are done without waiting for the result,
       // mimic native behavior and make the oldest request fail.
       self.reauthResultHandler(ReauthenticationResult::kFailure);
     }
-    self.reauthResultHandler = reauthResultHandler;
+    self.reauthResultHandler = handler;
   }
 }
 
@@ -83,6 +79,9 @@ typedef void (^ReauthenticationResultHandler)(ReauthenticationResult success);
 
   self.reauthResultHandler(_expectedResult);
   self.reauthResultHandler = nil;
+}
+
+- (void)clearAuthValidity {
 }
 
 @end

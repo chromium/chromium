@@ -9,6 +9,7 @@
 #import "ios/chrome/browser/device_reauth/model/reauthentication_service.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/model/profile/profile_keyed_service_traits.h"
+#import "ios/chrome/common/ui/reauthentication/reauthentication_module.h"
 
 // static
 ReauthenticationServiceFactory* ReauthenticationServiceFactory::GetInstance() {
@@ -32,11 +33,7 @@ ReauthenticationServiceFactory::~ReauthenticationServiceFactory() = default;
 std::unique_ptr<KeyedService>
 ReauthenticationServiceFactory::BuildServiceInstanceFor(
     ProfileIOS* profile) const {
-  id<ReauthenticationProtocol> fake_reauth_module =
-      tests_hook::GetFakeReauthenticationModule();
-  if (fake_reauth_module) {
-    return std::make_unique<ReauthenticationService>(fake_reauth_module);
-  }
-
-  return std::make_unique<ReauthenticationService>();
+  return std::make_unique<ReauthenticationService>(
+      tests_hook::GetFakeReauthenticationModule()
+          ?: [[ReauthenticationModule alloc] init]);
 }

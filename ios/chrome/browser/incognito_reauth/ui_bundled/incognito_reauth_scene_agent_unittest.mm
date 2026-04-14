@@ -46,10 +46,11 @@
 
 - (void)attemptReauthWithLocalizedReason:(NSString*)localizedReason
                     canReusePreviousAuth:(BOOL)canReusePreviousAuth
-                                 handler:
-                                     (void (^)(ReauthenticationResult success))
-                                         handler {
+                                 handler:(ReauthenticationResultBlock)handler {
   handler(self.returnedResult);
+}
+
+- (void)clearAuthValidity {
 }
 
 @end

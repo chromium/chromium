@@ -15,6 +15,9 @@
 // `ReauthenticationModule` with a mock to facilitate testing.
 - (void)setCreateLAContext:(LAContext* (^)(void))createLAContext;
 
+// Allows overriding the last authentication date.
+- (void)setLastSuccessfulReauthTime:(base::Time)time;
+
 @end
 
 #endif  // IOS_CHROME_COMMON_UI_REAUTHENTICATION_REAUTHENTICATION_MODULE_FOR_TESTING_H_

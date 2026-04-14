@@ -28,7 +28,7 @@
 
 - (void)verifyUserToAccessPasskeys:(BOOL)forPasskeys
               withCompletionHandler:
-                  (void (^)(ReauthenticationResult))completionHandler
+                  (ReauthenticationResultBlock)completionHandler
     presentReminderOnViewController:(UIViewController*)viewController {
   NSString* localizedReason =
       forPasskeys ? CredentialProviderScreenlockReasonPasskeysString()
@@ -45,8 +45,8 @@
 }
 
 - (void)showSetPasscodeDialogOnViewController:(UIViewController*)viewController
-                            completionHandler:(void (^)(ReauthenticationResult))
-                                                  completionHandler {
+                            completionHandler:
+                                (ReauthenticationResultBlock)completionHandler {
   UIAlertController* alertController = [UIAlertController
       alertControllerWithTitle:CredentialProviderSetUpScreenlockTitleString()
                        message:CredentialProviderSetUpScreenlockContentString()

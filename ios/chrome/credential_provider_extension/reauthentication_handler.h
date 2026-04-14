@@ -25,7 +25,7 @@
 // or an access to passwords (when `NO`).
 - (void)verifyUserToAccessPasskeys:(BOOL)forPasskeys
               withCompletionHandler:
-                  (void (^)(ReauthenticationResult))completionHandler
+                  (ReauthenticationResultBlock)completionHandler
     presentReminderOnViewController:(UIViewController*)viewController;
 
 // Checks whether biometric authentication is enabled for the device.

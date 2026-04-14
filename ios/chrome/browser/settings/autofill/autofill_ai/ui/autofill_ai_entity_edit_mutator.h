@@ -30,8 +30,7 @@
 
 // Requests authentication before entering edit mode.
 // `completion` is called with the result of the authentication attempt.
-- (void)requestEditingWithCompletion:
-    (void (^)(ReauthenticationResult result))completion;
+- (void)requestEditingWithCompletion:(ReauthenticationResultBlock)completion;
 
 @end
 

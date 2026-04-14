@@ -261,8 +261,7 @@ NSDateFormatter* CreateDateFormatterForLocale(const std::string& locale) {
   return missingTypes;
 }
 
-- (void)requestEditingWithCompletion:
-    (void (^)(ReauthenticationResult result))completion {
+- (void)requestEditingWithCompletion:(ReauthenticationResultBlock)completion {
   CHECK(completion);
 
   bool isMasked = autofill::IsMaskedStorageSupported(

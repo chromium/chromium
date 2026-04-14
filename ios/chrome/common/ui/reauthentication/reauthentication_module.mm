@@ -5,46 +5,52 @@
 
 #import <LocalAuthentication/LocalAuthentication.h>
 
+#import <optional>
+
 #import "base/check.h"
+#import "base/memory/raw_ptr.h"
+#import "base/time/clock.h"
+#import "base/time/default_clock.h"
+#import "base/time/time.h"
 
 constexpr char kPasscodeArticleURL[] = "https://support.apple.com/HT204060";
 
-@interface ReauthenticationModule () <SuccessfulReauthTimeAccessor>
+namespace {
 
-// Date kept to decide if last auth can be reused when
-// `lastSuccessfulReauthTime` is `self`.
-@property(nonatomic, strong) NSDate* lastSuccessfulReauthTime;
+// Duration of authentication validity.
+constexpr base::TimeDelta kIntervalForValidAuth = base::Minutes(1);
 
-@end
+}  // namespace
 
 @implementation ReauthenticationModule {
+  // The clock used.
+  raw_ptr<base::Clock> _clock;
+
   // Block that creates a new `LAContext` object everytime one is required,
   // meant to make testing with a mock object possible.
   LAContext* (^_createLAContext)(void);
 
-  // Accessor allowing the module to request the update of the time when the
-  // successful re-authentication was performed and to get the time of the last
-  // successful re-authentication.
-  __weak id<SuccessfulReauthTimeAccessor> _successfulReauthTimeAccessor;
+  // Last succcessful authentication time.
+  std::optional<base::Time> _lastSuccessfulReauthTime;
 }
 
 - (instancetype)init {
-  self = [self initWithSuccessfulReauthTimeAccessor:self];
-  return self;
+  return [self initWithClock:base::DefaultClock::GetInstance()];
 }
 
-- (instancetype)initWithSuccessfulReauthTimeAccessor:
-    (id<SuccessfulReauthTimeAccessor>)successfulReauthTimeAccessor {
-  DCHECK(successfulReauthTimeAccessor);
+- (instancetype)initWithClock:(base::Clock*)clock {
+  CHECK(clock);
   self = [super init];
   if (self) {
+    _clock = clock;
     _createLAContext = ^{
       return [[LAContext alloc] init];
     };
-    _successfulReauthTimeAccessor = successfulReauthTimeAccessor;
   }
   return self;
 }
+
+#pragma mark - ReauthenticationProtocol
 
 - (BOOL)canAttemptReauthWithBiometrics {
   LAContext* context = _createLAContext();
@@ -63,28 +69,24 @@ constexpr char kPasscodeArticleURL[] = "https://support.apple.com/HT204060";
 
 - (void)attemptReauthWithLocalizedReason:(NSString*)localizedReason
                     canReusePreviousAuth:(BOOL)canReusePreviousAuth
-                                 handler:
-                                     (void (^)(ReauthenticationResult success))
-                                         handler {
-  if (canReusePreviousAuth && [self isPreviousAuthValid]) {
-    handler(ReauthenticationResult::kSkipped);
-    return;
+                                 handler:(ReauthenticationResultBlock)handler {
+  if (canReusePreviousAuth && _lastSuccessfulReauthTime) {
+    if ((_clock->Now() - *_lastSuccessfulReauthTime) < kIntervalForValidAuth) {
+      // Previous successfull authentication is still valid, reuse it.
+      handler(ReauthenticationResult::kSkipped);
+      return;
+    }
   }
 
   LAContext* context = _createLAContext();
 
-  __weak ReauthenticationModule* weakSelf = self;
-  void (^replyBlock)(BOOL, NSError*) = ^(BOOL success, NSError* error) {
+  // This code is shared by the extension and thus cannot use base::PostTask
+  // as there won't be any installed base::SequencedTaskRunner. Instead use
+  // dispatch_async(...) to post to the main queue.
+  __weak __typeof(self) weakSelf = self;
+  auto replyBlock = ^(BOOL success, NSError* error) {
     dispatch_async(dispatch_get_main_queue(), ^{
-      ReauthenticationModule* strongSelf = weakSelf;
-      if (!strongSelf) {
-        return;
-      }
-      if (success) {
-        [strongSelf->_successfulReauthTimeAccessor updateSuccessfulReauthTime];
-      }
-      handler(success ? ReauthenticationResult::kSuccess
-                      : ReauthenticationResult::kFailure);
+      [weakSelf reauthCompletedWithSuccess:success handler:handler];
     });
   };
 
@@ -93,32 +95,34 @@ constexpr char kPasscodeArticleURL[] = "https://support.apple.com/HT204060";
                     reply:replyBlock];
 }
 
-- (BOOL)isPreviousAuthValid {
-  BOOL previousAuthValid = NO;
-  const int kIntervalForValidAuthInSeconds = 60;
-  NSDate* lastSuccessfulReauthTime =
-      [_successfulReauthTimeAccessor lastSuccessfulReauthTime];
-  if (lastSuccessfulReauthTime) {
-    NSDate* currentTime = [NSDate date];
-    NSTimeInterval timeSincePreviousSuccessfulAuth =
-        [currentTime timeIntervalSinceDate:lastSuccessfulReauthTime];
-    if (timeSincePreviousSuccessfulAuth < kIntervalForValidAuthInSeconds) {
-      previousAuthValid = YES;
-    }
-  }
-  return previousAuthValid;
+- (void)clearAuthValidity {
+  _lastSuccessfulReauthTime = std::nullopt;
 }
 
-#pragma mark - SuccessfulReauthTimeAccessor
+#pragma mark - Private
 
-- (void)updateSuccessfulReauthTime {
-  self.lastSuccessfulReauthTime = [[NSDate alloc] init];
+- (void)reauthCompletedWithSuccess:(BOOL)success
+                           handler:(ReauthenticationResultBlock)handler {
+  ReauthenticationResult result = ReauthenticationResult::kFailure;
+  if (success) {
+    _lastSuccessfulReauthTime = _clock->Now();
+    result = ReauthenticationResult::kSuccess;
+  } else {
+    _lastSuccessfulReauthTime = std::nullopt;
+    result = ReauthenticationResult::kFailure;
+  }
+
+  handler(result);
 }
 
 #pragma mark - ForTesting
 
 - (void)setCreateLAContext:(LAContext* (^)(void))createLAContext {
   _createLAContext = createLAContext;
+}
+
+- (void)setLastSuccessfulReauthTime:(base::Time)time {
+  _lastSuccessfulReauthTime = time;
 }
 
 @end

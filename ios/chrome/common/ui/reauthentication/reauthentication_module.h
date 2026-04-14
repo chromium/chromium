@@ -9,35 +9,22 @@
 
 #import "ios/chrome/common/ui/reauthentication/reauthentication_protocol.h"
 
+namespace base {
+class Clock;
+}  // namespace base
+
 // A help article on how to set up a passcode.
 extern const char kPasscodeArticleURL[];
 
-@protocol SuccessfulReauthTimeAccessor <NSObject>
-
-// Method meant to be called by the `ReauthenticationModule` to update
-// the time of the last successful re-authentication.
-- (void)updateSuccessfulReauthTime;
-
-// Returns the time of the last successful re-authentication.
-- (NSDate*)lastSuccessfulReauthTime;
-
-@end
-
-/**
- * This is used by `PasswordsDetailsCollectionViewController` and
- * `PasswordExporter|to re-authenticate the user before displaying the password
- * in plain text, allowing it to be copied, or exporting passwords.
- * TODO(crbug.com/40144947): Convert reauthentication module to model object
- * (keyed service or browser agent).
- */
+// This is used before accessing sensitive data or performing sensitive
+// operations.
 @interface ReauthenticationModule : NSObject <ReauthenticationProtocol>
 
-// The designated initializer. `successfulReauthTimeAccessor` must not be nil.
-// Use `init` to have ReauthenticationModule be it's own
-// `SuccessfulReauthTimeAccessor`.
-- (instancetype)initWithSuccessfulReauthTimeAccessor:
-    (id<SuccessfulReauthTimeAccessor>)successfulReauthTimeAccessor
-    NS_DESIGNATED_INITIALIZER;
+// The designated initializer. `clock` must not be null.
+- (instancetype)initWithClock:(base::Clock*)clock NS_DESIGNATED_INITIALIZER;
+
+// Convenience initializer using base::DefaultClock() as `clock`.
+- (instancetype)init;
 
 @end
 
