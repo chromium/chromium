@@ -1441,6 +1441,9 @@ class ComputedStyle final : public ComputedStyleBase {
     return HasBorder() || BorderImage().HasImage() || HasBorderShape();
   }
   bool HasBorderRadius() const {
+    if (HasBorderShape()) {
+      return false;
+    }
     if (!BorderTopLeftRadius().Width().IsZero()) {
       return true;
     }
