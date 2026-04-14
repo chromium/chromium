@@ -134,31 +134,14 @@ TEST_F(StylePropertyMapTest, CSSKeywordValuesTest) {
         // The properties skipped below have existing CSS Typed OM crash bugs.
         //
         // *** DO NOT ADD ADDITIONAL PROPERTIES BELOW ***
-        case CSSPropertyID::kAnimationDirection:
-        case CSSPropertyID::kAnimationFillMode:
-        case CSSPropertyID::kAnimationIterationCount:
-        case CSSPropertyID::kAnimationName:
-        case CSSPropertyID::kAnimationPlayState:
-        case CSSPropertyID::kAnimationTimeline:
         case CSSPropertyID::kAnimationTimingFunction:
         case CSSPropertyID::kBackgroundImage:
         case CSSPropertyID::kContain:
-        case CSSPropertyID::kContainerType:
         case CSSPropertyID::kFontSizeAdjust:
-        case CSSPropertyID::kFontVariantEastAsian:
-        case CSSPropertyID::kFontVariantLigatures:
-        case CSSPropertyID::kFontVariantNumeric:
-        case CSSPropertyID::kOffsetRotate:
         case CSSPropertyID::kScrollSnapType:
         case CSSPropertyID::kScrollbarGutter:
           // scrollbar-gutter:both-edges DCHECK fails for other reasons. Needs
           // investigation.
-        case CSSPropertyID::kTextDecorationLine:
-        case CSSPropertyID::kTextTransform:
-        case CSSPropertyID::kTimelineTriggerSource:
-        case CSSPropertyID::kTouchAction:
-        case CSSPropertyID::kTransitionBehavior:
-        case CSSPropertyID::kTransitionProperty:
         case CSSPropertyID::kTransitionTimingFunction:
           continue;
         default:
