@@ -204,6 +204,10 @@ AccessibilityAnnotatorEnablementServiceImpl::
   if (identity_manager) {
     identity_manager_observer_.Observe(identity_manager);
   }
+  if (subscription_eligibility_service_) {
+    subscription_eligibility_observer_.Observe(
+        subscription_eligibility_service_);
+  }
   UpdateEnablementState();
 }
 
@@ -284,6 +288,11 @@ void AccessibilityAnnotatorEnablementServiceImpl::OnIdentityManagerShutdown(
 
 void AccessibilityAnnotatorEnablementServiceImpl::OnExtendedAccountInfoUpdated(
     const AccountInfo& info) {
+  UpdateEnablementState();
+}
+
+void AccessibilityAnnotatorEnablementServiceImpl::OnAiSubscriptionTierUpdated(
+    int32_t new_subscription_tier) {
   UpdateEnablementState();
 }
 

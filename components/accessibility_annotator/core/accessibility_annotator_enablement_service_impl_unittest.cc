@@ -226,8 +226,6 @@ TEST_F(AccessibilityAnnotatorEnablementServiceImplTest,
   pref_service_.SetInteger(subscription_eligibility::prefs::kAiSubscriptionTier,
                            3);
 
-  // TODO(b/494149753): Remove after observing tier changes.
-  test_api(&service()).RecomputeEnablementState();
   EXPECT_EQ(service().GetEnablementState(),
             RemoteAnnotatorEnablementState::kDisabledNotEligible);
 }

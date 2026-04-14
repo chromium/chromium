@@ -12,18 +12,11 @@
 #include "components/accessibility_annotator/core/accessibility_annotator_enablement_service.h"
 #include "components/accessibility_annotator/core/country_type.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
+#include "components/subscription_eligibility/subscription_eligibility_service.h"
 
 namespace account_settings {
 class AccountSettingService;
 }  // namespace account_settings
-
-namespace signin {
-class IdentityManager;
-}  // namespace signin
-
-namespace subscription_eligibility {
-class SubscriptionEligibilityService;
-}  // namespace subscription_eligibility
 
 class PrefService;
 
@@ -31,7 +24,9 @@ namespace accessibility_annotator {
 
 class AccessibilityAnnotatorEnablementServiceImpl
     : public AccessibilityAnnotatorEnablementService,
-      public signin::IdentityManager::Observer {
+      public signin::IdentityManager::Observer,
+      public subscription_eligibility::SubscriptionEligibilityService::
+          Observer {
  public:
   explicit AccessibilityAnnotatorEnablementServiceImpl(
       account_settings::AccountSettingService* account_settings_service,
@@ -60,6 +55,9 @@ class AccessibilityAnnotatorEnablementServiceImpl
       signin::IdentityManager* identity_manager) override;
   void OnExtendedAccountInfoUpdated(const AccountInfo& info) override;
 
+  // subscription_eligibility::SubscriptionEligibilityService::Observer:
+  void OnAiSubscriptionTierUpdated(int32_t new_subscription_tier) override;
+
  private:
   friend class AccessibilityAnnotatorEnablementServiceImplTestApi;
 
@@ -78,6 +76,10 @@ class AccessibilityAnnotatorEnablementServiceImpl
   base::ScopedObservation<signin::IdentityManager,
                           signin::IdentityManager::Observer>
       identity_manager_observer_{this};
+  base::ScopedObservation<
+      subscription_eligibility::SubscriptionEligibilityService,
+      subscription_eligibility::SubscriptionEligibilityService::Observer>
+      subscription_eligibility_observer_{this};
   // Cached last enablement state.
   RemoteAnnotatorEnablementState enablement_state_ =
       RemoteAnnotatorEnablementState::kDisabledNotEligible;
