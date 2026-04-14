@@ -66,6 +66,11 @@ GlicTabRestoreData* GetTabRestoreData(const TabCreationEvent& creation_event) {
   if (!creation_event.new_tab) {
     return nullptr;
   }
+  // TODO(b/448420873): Remove this once android guarantees non-null
+  // `WebContents`.
+  if (!creation_event.new_tab->GetContents()) {
+    return nullptr;
+  }
   return GlicTabRestoreData::FromWebContents(
       creation_event.new_tab->GetContents());
 }
