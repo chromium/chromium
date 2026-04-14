@@ -4287,4 +4287,58 @@ TEST_F(AdTrackerSimTest, AdScriptAncestry_InitialHTMLAttributeScriptInAdFrame) {
   EXPECT_TRUE(ad_tracker_->RequestWithUrlTaggedAsAd(image_url));
 }
 
+// Test that when a script ID from one AdTracker is used in
+// another AdTracker (e.g. if a node is moved between frames), the tracker
+// correctly handles the case where it doesn't recognize the script ID.
+TEST(AdTrackerTest, AdScriptAncestry_ScriptIdFromDifferentTracker) {
+  test::TaskEnvironment task_environment;
+  auto page_holder_a = std::make_unique<DummyPageHolder>();
+  auto page_holder_b = std::make_unique<DummyPageHolder>();
+
+  AdTracker* ad_tracker_a = MakeGarbageCollected<AdTracker>(
+      &page_holder_a->GetFrame().LocalFrameRoot());
+  AdTracker* ad_tracker_b = MakeGarbageCollected<AdTracker>(
+      &page_holder_b->GetFrame().LocalFrameRoot());
+
+  V8ScriptId script_id_a(1001);
+  v8::Isolate* isolate = v8::Isolate::GetCurrent();
+  v8::HandleScope scope(isolate);
+
+  // Register `script_id_a` in `ad_tracker_a`, which is the only tracker to
+  // learn about this script id.
+  ad_tracker_a->RegisterAdScript(
+      page_holder_a->GetFrame().DomWindow()->GetIsolate()->GetCurrentContext(),
+      script_id_a, std::nullopt);
+
+  // Get the `script_a` identifier.
+  AdScriptIdentifier id_a(v8_inspector::V8DebuggerId(), script_id_a,
+                          "script_a");
+
+  // In `ad_tracker_b`, register `script_id_b` with `id_a` as parent.
+  // `ad_tracker_b` doesn't actually know about `id_a` though.
+  V8ScriptId script_id_b(2001);
+  ad_tracker_b->RegisterAdScript(
+      page_holder_b->GetFrame().DomWindow()->GetIsolate()->GetCurrentContext(),
+      script_id_b, id_a);
+
+  // Register `script_id_c` with `script_id_b` as parent in `ad_tracker_b`.
+  V8ScriptId script_id_c(3001);
+  AdScriptIdentifier id_b(v8_inspector::V8DebuggerId(), script_id_b,
+                          "script_b");
+  ad_tracker_b->RegisterAdScript(
+      page_holder_b->GetFrame().DomWindow()->GetIsolate()->GetCurrentContext(),
+      script_id_c, id_b);
+
+  // `ad_tracker_b` knows `script_id_c` and `script_id_b`, but not
+  // `script_id_a`. `GetAncestry(script_id_c)` should return a chain of length 2
+  // (c and b).
+  AdTracker::AdScriptAncestry ancestry = ad_tracker_b->GetAncestry(script_id_c);
+  EXPECT_EQ(ancestry.ancestry_chain.size(), 2u);
+  EXPECT_EQ(ancestry.ancestry_chain[0].id, script_id_c);
+  EXPECT_EQ(ancestry.ancestry_chain[1].id, script_id_b);
+
+  ad_tracker_a->Shutdown();
+  ad_tracker_b->Shutdown();
+}
+
 }  // namespace blink
