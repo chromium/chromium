@@ -376,7 +376,7 @@ message ContentAttributes {
 }
 
 // The geometry of the content, in the page coordinate system.
-// Next ID: 7
+// Next ID: 8
 // NOTE: If `visual_bounding_box` is empty, i.e., the content is offscreen and
 // it's in an iframe, the `outer_bounding_box` may be incorrect. See crbug.com/384996050
 // for details.
@@ -400,6 +400,14 @@ message Geometry {
   // ancestor clipping. These are the element bounds visible to the user and
   // hit-testable in the DOM.
   BoundingRect visible_bounding_box = 2 [features = { field_presence: EXPLICIT }];
+
+  // The bounding box of the content node relative to the viewport including all
+  // ancestor clipping. This is conceptually the same as `visible_bounding_box`,
+  // but with coordinates calculated by the compositor on the client side. This
+  // geometry should be more in sync with the browser screenshot, and should be
+  // used for screenshot redaction when present. See crbug.com/441532128 for more
+  // details.
+  BoundingRect compositor_bounding_box = 7 [features = { field_presence: EXPLICIT }];
 
   // Multiple boxes are used when there are multiple rectangles belonging to
   // the same node, e.g.: across multiple lines, columns or pages. In layout

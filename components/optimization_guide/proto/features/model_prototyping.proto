@@ -106,6 +106,8 @@ message ModelPrototypingRequest {
 
         MODEL_ENUM_EVERGREEN_GEMINI_V4_XS = 9;
 
+        MODEL_ENUM_EVERGREEN_GEMINI_V3P1_S = 10;
+
         reserved 2;
       }
     }
