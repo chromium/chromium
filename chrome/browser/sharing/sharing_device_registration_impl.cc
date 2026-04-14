@@ -18,7 +18,6 @@
 #include "components/gcm_driver/instance_id/instance_id_driver.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
 #include "components/prefs/pref_service.h"
-#include "components/sharing_message/buildflags.h"
 #include "components/sharing_message/features.h"
 #include "components/sharing_message/pref_names.h"
 #include "components/sharing_message/sharing_constants.h"
@@ -218,9 +217,6 @@ std::set<SharingFeature> SharingDeviceRegistrationImpl::GetEnabledFeatures()
   if (IsOptimizationGuidePushNotificationSupported()) {
     enabled_features.insert(SharingFeature::kOptimizationGuidePushNotification);
   }
-#if BUILDFLAG(ENABLE_DISCOVERY)
-  enabled_features.insert(SharingFeature::kDiscovery);
-#endif
   if (IsOneTimeTokenBackendNotificationSupported()) {
     enabled_features.insert(SharingFeature::kOneTimeTokenBackendNotification);
   }

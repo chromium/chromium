@@ -146,11 +146,12 @@ message SharingSpecificFields {
     reserved "CLICK_TO_CALL_VAPID";
     reserved 2;
     reserved "SHARED_CLIPBOARD_VAPID";
+    reserved 6;
+    reserved "DISCOVERY";
 
     UNKNOWN = 0;
     SMS_FETCHER = 3;
     REMOTE_COPY = 4;
-    DISCOVERY = 6;
     // Supports Click to Call via sender ID.
     CLICK_TO_CALL_V2 = 7;
     // Supports Shared Clipboard via sender ID.

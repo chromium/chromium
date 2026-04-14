@@ -60,7 +60,6 @@ class DeviceInfo {
     kUnknown = 0,
     kSmsFetcher = 3,
     kRemoteCopy = 4,
-    kDiscovery = 6,
     kClickToCallV2 = 7,
     kSharedClipboardV2 = 8,
     kOptimizationGuidePushNotification = 9,

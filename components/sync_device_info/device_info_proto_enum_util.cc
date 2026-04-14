@@ -222,8 +222,6 @@ DeviceInfo::SharingFeature ToDeviceInfoSharingFeature(
       return DeviceInfo::SharingFeature::kSmsFetcher;
     case sync_pb::SharingSpecificFields::REMOTE_COPY:
       return DeviceInfo::SharingFeature::kRemoteCopy;
-    case sync_pb::SharingSpecificFields::DISCOVERY:
-      return DeviceInfo::SharingFeature::kDiscovery;
     case sync_pb::SharingSpecificFields::CLICK_TO_CALL_V2:
       return DeviceInfo::SharingFeature::kClickToCallV2;
     case sync_pb::SharingSpecificFields::SHARED_CLIPBOARD_V2:
@@ -245,8 +243,6 @@ sync_pb::SharingSpecificFields_EnabledFeatures ToSharingFeatureProto(
       return sync_pb::SharingSpecificFields::SMS_FETCHER;
     case DeviceInfo::SharingFeature::kRemoteCopy:
       return sync_pb::SharingSpecificFields::REMOTE_COPY;
-    case DeviceInfo::SharingFeature::kDiscovery:
-      return sync_pb::SharingSpecificFields::DISCOVERY;
     case DeviceInfo::SharingFeature::kClickToCallV2:
       return sync_pb::SharingSpecificFields::CLICK_TO_CALL_V2;
     case DeviceInfo::SharingFeature::kSharedClipboardV2:

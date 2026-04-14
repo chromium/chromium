@@ -2,16 +2,8 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/buildflag_header.gni")
-import("//components/sharing_message/buildflags.gni")
-
 if (is_android) {
   import("//build/config/android/rules.gni")
-}
-
-buildflag_header("buildflags") {
-  header = "buildflags.h"
-  flags = [ "ENABLE_DISCOVERY=$enable_discovery" ]
 }
 
 if (is_android) {
@@ -71,7 +63,6 @@ source_set("sharing_message") {
     "sharing_utils.h",
   ]
   deps = [
-    ":buildflags",
     "//base",
     "//components/favicon/core",
     "//components/favicon_base",

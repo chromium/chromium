@@ -18,7 +18,6 @@
 #import "components/gcm_driver/instance_id/instance_id_driver.h"
 #import "components/optimization_guide/core/optimization_guide_features.h"
 #import "components/prefs/pref_service.h"
-#import "components/sharing_message/buildflags.h"
 #import "components/sharing_message/pref_names.h"
 #import "components/sharing_message/sharing_constants.h"
 #import "components/sharing_message/sharing_device_registration_result.h"

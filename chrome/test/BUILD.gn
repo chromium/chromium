@@ -7421,7 +7421,6 @@ test("unit_tests") {
     "//components/services/patch/content",
     "//components/services/unzip/content",
     "//components/session_proto_db",
-    "//components/sharing_message:buildflags",
     "//components/sharing_message:test_support",
     "//components/sharing_message:unit_tests",
     "//components/sharing_message/proto",
