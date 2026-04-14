@@ -105,7 +105,6 @@ import org.chromium.components.sync.SyncService;
 import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.components.user_prefs.UserPrefsJni;
 import org.chromium.ui.base.ActivityResultTracker;
-import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.base.DeviceInput;
 import org.chromium.ui.base.PageTransition;
 import org.chromium.ui.base.TestActivity;
@@ -263,12 +262,7 @@ public class HistoryUiTest {
         layoutRecyclerView();
 
         // App-specific history always enables the privacy disclaimer header item.
-        // Large form factor device enables an inline search box header item.
-        int screenSize = mActivity.getResources().getConfiguration().smallestScreenWidthDp;
-        boolean isLargeFormFactorDevice =
-                DeviceFormFactor.isNonMultiDisplayContextOnTablet(mActivity);
-        int expectedItemCount =
-                4 + (isAppSpecificHistoryEnabled ? 1 : 0) + (isLargeFormFactorDevice ? 1 : 0);
+        int expectedItemCount = 4 + (isAppSpecificHistoryEnabled ? 1 : 0);
 
         Assert.assertEquals(expectedItemCount, mAdapter.getItemCount());
 
@@ -890,7 +884,7 @@ public class HistoryUiTest {
         DateDividedAdapter.ItemGroup firstGroup = mAdapter.getFirstGroupForTests();
         Assert.assertNull(toolbar.getItemById(R.id.search_menu_id));
         Assert.assertTrue(mAdapter.hasListHeader());
-        Assert.assertEquals(3, firstGroup.size());
+        Assert.assertEquals(2, firstGroup.size());
     }
 
     @Test

@@ -51,8 +51,6 @@ public class InlineSearchBox {
 
     private final KeyboardVisibilityDelegate mKeyboardVisibilityDelegate;
 
-    private final int mInlineStartPadding;
-
     public InlineSearchBox(
             Context context,
             SearchDelegate searchDelegate,
@@ -61,10 +59,6 @@ public class InlineSearchBox {
         mSearchDelegate = searchDelegate;
         mHasSearchTextSupplier = hasSearchTextSupplier;
         mKeyboardVisibilityDelegate = keyboardVisibilityDelegate;
-        mInlineStartPadding =
-                context.getResources()
-                        .getDimensionPixelSize(
-                                R.dimen.selectable_list_inline_search_bar_start_padding);
     }
 
     /**
@@ -130,16 +124,6 @@ public class InlineSearchBox {
                         mSearchDelegate.onSearchTextChanged(s.toString());
                     }
                 });
-        mInlineSearchEditText.addOnAttachStateChangeListener(
-                new View.OnAttachStateChangeListener() {
-                    @Override
-                    public void onViewAttachedToWindow(View v) {
-                        v.requestFocus();
-                    }
-
-                    @Override
-                    public void onViewDetachedFromWindow(View v) {}
-                });
         requestSearchFocus(true);
     }
 
@@ -155,36 +139,20 @@ public class InlineSearchBox {
     }
 
     /**
-     * In SelectableListToolbar, the padding/margin of the original search box is dynamically
-     * calculated(in onDisplayStyleChanged()), so dynamical adjustment is needed for the inline
-     * search box too.
-     */
-    private void setInlinePadding(int left, int top, int right, int bottom) {
-        if (mInlineSearchBoxContainer == null) return;
-        mInlineSearchBoxContainer.post(
-                () -> {
-                    int[] appLocation = new int[2];
-                    int[] location = new int[2];
-                    View contentView =
-                            mInlineSearchBoxContainer
-                                    .getRootView()
-                                    .findViewById(android.R.id.content);
-                    if (contentView == null) return;
-                    contentView.getLocationOnScreen(appLocation);
-                    mInlineSearchBoxContainer.getLocationOnScreen(location);
-                    mInlineSearchBoxContainer.setPaddingRelative(
-                            left - (location[0] - appLocation[0]), top, right, bottom);
-                });
-    }
-
-    /**
-     * Updates the padding of the inline search box based on the current display style.
+     * Updates the lateral margins of the inline search box based on the current display style.
      *
-     * @param paddingStart The base padding derived from the display style.
-     * @param paddingTop The top padding to apply.
+     * @param padding The lateral padding calculated for the current display style.
+     * @param paddingTop The top padding to apply (currently unused for margins).
      */
-    public void updatePadding(int paddingStart, int paddingTop) {
-        setInlinePadding(paddingStart + mInlineStartPadding, paddingTop, 0, 0);
+    public void updatePadding(int padding, int paddingTop) {
+        if (mInlineSearchBoxContainer == null) return;
+        ViewGroup.MarginLayoutParams params =
+                (ViewGroup.MarginLayoutParams) mInlineSearchBoxContainer.getLayoutParams();
+        if (params != null) {
+            params.setMarginStart(padding);
+            params.setMarginEnd(padding);
+            mInlineSearchBoxContainer.setLayoutParams(params);
+        }
     }
 
     /**

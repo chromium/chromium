@@ -10,6 +10,7 @@ import android.content.res.Resources;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.ViewStub;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
@@ -633,5 +634,39 @@ public class SelectableListLayout<E> extends FrameLayout
 
     public RecyclerView getRecyclerViewForTesting() {
         return mRecyclerView;
+    }
+
+    /**
+     * Adds an inline search box to the layout, adjusting the margins of the list content and shadow
+     * to accommodate its height.
+     */
+    public void addInlineSearchBox(View searchBoxContainer) {
+        int toolbarHeight =
+                getResources().getDimensionPixelSize(R.dimen.selectable_list_toolbar_height);
+        FrameLayout.LayoutParams searchBoxParams =
+                new FrameLayout.LayoutParams(
+                        (ViewGroup.MarginLayoutParams) searchBoxContainer.getLayoutParams());
+        searchBoxParams.topMargin = toolbarHeight;
+        addView(searchBoxContainer, searchBoxParams);
+
+        searchBoxContainer.addOnLayoutChangeListener(
+                (v, left, top, right, bottom, oldLeft, oldTop, oldRight, oldBottom) -> {
+                    int height = bottom - top;
+                    int oldHeight = oldBottom - oldTop;
+                    if (height != oldHeight) {
+                        View listContent = findViewById(R.id.list_content);
+                        FrameLayout.LayoutParams listParams =
+                                (FrameLayout.LayoutParams) listContent.getLayoutParams();
+                        listParams.topMargin = toolbarHeight + height;
+                        listContent.setLayoutParams(listParams);
+
+                        if (mToolbarShadow != null) {
+                            FrameLayout.LayoutParams shadowParams =
+                                    (FrameLayout.LayoutParams) mToolbarShadow.getLayoutParams();
+                            shadowParams.topMargin = toolbarHeight + height;
+                            mToolbarShadow.setLayoutParams(shadowParams);
+                        }
+                    }
+                });
     }
 }
