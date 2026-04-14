@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/env vpython3
 # Copyright 2026 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
@@ -13,135 +13,258 @@ import json
 import os
 import pathlib
 import select
+import shutil
+import socket
+import struct
 import subprocess
 import sys
+import tempfile
+import threading
 import time
 
+
+class SimpleWebSocket:
+    """A minimal WebSocket client implementation for CDP."""
+
+    def __init__(self, url):
+        # url: ws://127.0.0.1:PORT/devtools/browser/GUID
+        parts = url[5:].split('/', 1)
+        host_port = parts[0].split(':')
+        self.host = host_port[0]
+        self.port = int(host_port[1])
+        self.path = '/' + parts[1]
+
+        self.sock = socket.create_connection((self.host, self.port))
+        self._buffer = b""
+        self._handshake()
+
+    def _handshake(self):
+        key = base64.b64encode(os.urandom(16)).decode()
+        handshake = (f"GET {self.path} HTTP/1.1\r\n"
+                     f"Host: {self.host}:{self.port}\r\n"
+                     f"Upgrade: websocket\r\n"
+                     f"Connection: Upgrade\r\n"
+                     f"Sec-WebSocket-Key: {key}\r\n"
+                     f"Sec-WebSocket-Version: 13\r\n\r\n")
+        self.sock.sendall(handshake.encode())
+
+        # Read until end of HTTP headers (\r\n\r\n)
+        res = b""
+        while b"\r\n\r\n" not in res:
+            chunk = self.sock.recv(4096)
+            if not chunk:
+                raise Exception(
+                    "WebSocket handshake failed: connection closed")
+            res += chunk
+
+        headers, self._buffer = res.split(b"\r\n\r\n", 1)
+        if b"101" not in headers:
+            raise Exception(f"WebSocket handshake failed: {headers.decode()}")
+
+    def _recv_all(self, n, deadline=None):
+        """Helper to receive exactly n bytes, respecting the deadline."""
+        data = b''
+        # First consume from the buffer (data read during handshake).
+        if self._buffer:
+            consume = min(len(self._buffer), n)
+            data = self._buffer[:consume]
+            self._buffer = self._buffer[consume:]
+
+        while len(data) < n:
+            if deadline is not None:
+                current_timeout = max(0, deadline - time.time())
+                r, _, _ = select.select([self.sock], [], [], current_timeout)
+                if not r:
+                    raise TimeoutError("Timeout reading from WebSocket")
+
+            chunk = self.sock.recv(n - len(data))
+            if not chunk:
+                raise RuntimeError("WebSocket connection closed unexpectedly")
+            data += chunk
+        return data
+
+    def send(self, message):
+        data = message.encode()
+        length = len(data)
+        header = b'\x81'  # Final fragment, text frame
+        if length <= 125:
+            header += struct.pack('!B', length | 0x80)
+        elif length <= 65535:
+            header += struct.pack('!B', 126 | 0x80)
+            header += struct.pack('!H', length)
+        else:
+            header += struct.pack('!B', 127 | 0x80)
+            header += struct.pack('!Q', length)
+
+        mask = os.urandom(4)
+        header += mask
+        masked_data = bytes(b ^ mask[i % 4] for i, b in enumerate(data))
+        self.sock.sendall(header + masked_data)
+
+    def recv(self, timeout=None):
+        """Reads one full message (possibly fragmented) from the socket."""
+        full_payload = b""
+        deadline = time.time() + timeout if timeout is not None else None
+        while True:
+            head = self._recv_all(2, deadline=deadline)
+            fin = head[0] & 0x80
+            opcode = head[0] & 0x0f
+
+            if opcode == 8:  # Close frame
+                raise RuntimeError("WebSocket connection closed by server")
+
+            length = head[1] & 0x7f
+            if length == 126:
+                length = struct.unpack('!H',
+                                       self._recv_all(2, deadline=deadline))[0]
+            elif length == 127:
+                length = struct.unpack('!Q',
+                                       self._recv_all(8, deadline=deadline))[0]
+
+            full_payload += self._recv_all(length, deadline=deadline)
+
+            if fin:
+                break
+
+        return full_payload.decode('utf-8')
+
 class DevToolsClient:
-    """A simple DevTools Protocol client using pipes."""
+    """A simple DevTools Protocol client using WebSockets."""
 
     def __init__(self, chrome_path, extra_args):
-        # Chrome's FD 3 is read, FD 4 is write on POSIX.
-        # On Windows, --remote-debugging-pipe uses different mechanisms,
-        # but this tool is primarily targeted at Linux/Mac for now.
-        self.p2c_r, self.p2c_w = os.pipe()
-        self.c2p_r, self.c2p_w = os.pipe()
-
-        # Set the pipes to be inherited
-        os.set_inheritable(self.p2c_r, True)
-        os.set_inheritable(self.c2p_w, True)
+        # Use a temporary user data dir to avoid conflicts
+        self.user_data_dir = tempfile.mkdtemp(prefix="chromoting_dev_profile_")
+        self.ws_url = None
 
         args = [
             chrome_path,
             '--headless',
-            '--remote-debugging-pipe',
+            '--remote-debugging-port=0',  # Pick an ephemeral port
             '--mute-audio',
             '--no-first-run',
             '--disable-gpu',
+            f'--user-data-dir={self.user_data_dir}',
             '--allow-file-access-from-files',
         ] + extra_args
 
-        # Use a more portable way to pass FDs if possible, but for POSIX,
-        # we still need to ensure they land on 3 and 4 for Chrome.
-        if os.name == 'posix':
-            # We use preexec_fn to dup the FDs to 3 and 4 in the child.
-            # While preexec_fn is not portable to Windows, the pipe-based
-            # debugging itself requires special handling on Windows anyway.
-            def preexec():
-                os.dup2(self.p2c_r, 3)
-                os.dup2(self.c2p_w, 4)
+        self.proc = subprocess.Popen(args,
+                                     stderr=subprocess.PIPE,
+                                     stdout=subprocess.DEVNULL)
 
-            self.proc = subprocess.Popen(args,
-                                         preexec_fn=preexec,
-                                         pass_fds=(self.p2c_r, self.c2p_w))
-        else:
-            # Fallback for non-POSIX (Windows), though pipe-based CDP
-            # might not work out-of-the-box here without further adjustment.
-            self.proc = subprocess.Popen(args)
-
-        # Close child's ends in parent
-        os.close(self.p2c_r)
-        os.close(self.c2p_w)
-
-        self.next_id = 1
-        self.responses = {}
-        self.events = []
-        self.buffer = b''
-
-    def _read_messages(self, timeout=0.1):
-        """Reads messages from Chrome and dispatches them."""
         try:
+            # Start a background thread to drain stderr immediately to prevent
+            # deadlocks while waiting for the port file.
+            self._stop_draining = threading.Event()
+            self._drain_thread = threading.Thread(target=self._drain_stderr)
+            self._drain_thread.daemon = True
+            self._drain_thread.start()
+
+            # Robust discovery of DevTools URL via the user data directory.
+            port_file = os.path.join(self.user_data_dir, "DevToolsActivePort")
             start_time = time.time()
-            while True:
-                r, _, _ = select.select([self.c2p_r], [], [], timeout)
-                if not r:
+            while time.time() - start_time < 30:
+                if os.path.exists(port_file):
+                    with open(port_file, 'r') as f:
+                        lines = f.readlines()
+                        if len(lines) >= 2:
+                            port = int(lines[0].strip())
+                            path = lines[1].strip()
+                            self.ws_url = f"ws://127.0.0.1:{port}{path}"
+                            break
+                if self.proc.poll() is not None:
+                    raise Exception("Chrome process exited prematurely")
+                time.sleep(0.1)
+
+            if not self.ws_url:
+                raise Exception(
+                    "Failed to find DevTools port via DevToolsActivePort")
+
+            self.ws = SimpleWebSocket(self.ws_url)
+            self.next_id = 1
+            self.responses = {}
+            self.events = []
+        except Exception:
+            # Clean up on initialization failure.
+            self._stop_draining.set()
+            self.proc.kill()
+            self.proc.wait()
+            shutil.rmtree(self.user_data_dir, ignore_errors=True)
+            raise
+
+    def _drain_stderr(self):
+        """Continuously reads from stderr to prevent pipe buffer exhaustion."""
+        try:
+            while not self._stop_draining.is_set():
+                if not self.proc.stderr.read1(4096):
                     break
+        except Exception:
+            # We ignore errors during draining as they usually indicate the
+            # process is shutting down.
+            pass
 
-                chunk = os.read(self.c2p_r, 1024 * 1024) # 1MB chunks
-                if not chunk:
-                    break
+    def _read_messages(self, timeout=None):
+        """Reads one message from the WebSocket."""
+        msg_data = self.ws.recv(timeout=timeout)
+        if not msg_data:
+            raise RuntimeError("Empty message received from WebSocket")
+        msg = json.loads(msg_data)
+        if 'id' in msg:
+            self.responses[msg['id']] = msg
+        else:
+            self.events.append(msg)
 
-                self.buffer += chunk
-                while b'\0' in self.buffer:
-                    msg_data, self.buffer = self.buffer.split(b'\0', 1)
-                    if not msg_data:
-                        continue
-                    msg = json.loads(msg_data.decode('utf-8'))
-                    if 'id' in msg:
-                        self.responses[msg['id']] = msg
-                    else:
-                        self.events.append(msg)
-
-                # If we've been reading for a while, yield
-                if time.time() - start_time > 1.0:
-                    break
-                timeout = 0 # Subsequent reads are non-blocking
-        except Exception as e:
-            print(f"Error reading from Chrome: {e}", file=sys.stderr)
-
-    def send(self, method, params=None, session_id=None):
-        """Sends a command to Chrome."""
+    def call(self, method, params=None, session_id=None, timeout=60):
         msg_id = self.next_id
         self.next_id += 1
         msg = {'id': msg_id, 'method': method, 'params': params or {}}
         if session_id:
             msg['sessionId'] = session_id
-        os.write(self.p2c_w, json.dumps(msg).encode('utf-8') + b'\0')
-        return msg_id
 
-    def call(self, method, params=None, session_id=None, timeout=60):
-        """Sends a command and waits for the response."""
-        msg_id = self.send(method, params, session_id)
+        self.ws.send(json.dumps(msg))
+
         start_time = time.time()
         while msg_id not in self.responses:
-            if time.time() - start_time > timeout:
-                raise Exception(f"Timeout waiting for response to {method}")
-            self._read_messages()
+            elapsed = time.time() - start_time
+            if elapsed > timeout:
+                raise TimeoutError(f"Timeout waiting for response to {method}")
+            try:
+                self._read_messages(timeout=timeout - elapsed)
+            except TimeoutError:
+                raise TimeoutError(f"Timeout waiting for response to {method}")
+
         res = self.responses.pop(msg_id)
         if 'error' in res:
             raise Exception(f"Error in {method}: {res['error']}")
         return res.get('result')
 
     def wait_for_event(self, method, timeout=30):
-        """Waits for a specific event to occur."""
         start_time = time.time()
         while True:
             for i, event in enumerate(self.events):
                 if event['method'] == method:
                     return self.events.pop(i)
-            if time.time() - start_time > timeout:
-                raise Exception(f"Timeout waiting for event {method}")
-            self._read_messages()
+
+            elapsed = time.time() - start_time
+            if elapsed > timeout:
+                raise TimeoutError(f"Timeout waiting for event {method}")
+            try:
+                self._read_messages(timeout=timeout - elapsed)
+            except TimeoutError:
+                raise TimeoutError(f"Timeout waiting for event {method}")
 
     def close(self):
-        """Closes the connection and terminates Chrome."""
+        self._stop_draining.set()
+        if hasattr(self, 'ws') and self.ws:
+            self.ws.sock.close()
+
         self.proc.terminate()
         try:
             self.proc.wait(timeout=5)
         except subprocess.TimeoutExpired:
             self.proc.kill()
-        os.close(self.p2c_w)
-        os.close(self.c2p_r)
+            self.proc.wait()
+
+        shutil.rmtree(self.user_data_dir, ignore_errors=True)
 
 def main():
     script_dir = os.path.dirname(os.path.abspath(__file__))
@@ -163,8 +286,22 @@ def main():
     if not os.path.exists(args.out_dir):
         os.makedirs(args.out_dir)
 
-    if not os.path.exists(args.chrome_path):
-        print(f"Error: Chrome not found at {args.chrome_path}", file=sys.stderr)
+    chrome_path = args.chrome_path
+    if os.path.isdir(chrome_path):
+        for candidate in ['chrome', 'chromium', 'google-chrome', 'chrome.exe']:
+            candidate_path = os.path.join(chrome_path, candidate)
+            if (os.path.exists(candidate_path)
+                    and not os.path.isdir(candidate_path)):
+                chrome_path = candidate_path
+                break
+    elif not os.path.exists(chrome_path):
+        path_binary = shutil.which(chrome_path)
+        if path_binary:
+            chrome_path = path_binary
+
+    if not os.path.exists(chrome_path) or os.path.isdir(chrome_path):
+        print(f"Error: Chrome binary not found at {chrome_path}",
+              file=sys.stderr)
         sys.exit(1)
 
     scenario_file = f'{args.scenario}.html'
@@ -182,7 +319,7 @@ def main():
           f"at {args.width}x{args.height} and {args.fps} FPS...",
           file=sys.stderr)
 
-    client = DevToolsClient(args.chrome_path, [
+    client = DevToolsClient(chrome_path, [
         f'--window-size={args.width},{args.height}',
         '--force-device-scale-factor=1',
     ])
