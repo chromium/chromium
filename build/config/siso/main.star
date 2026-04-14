@@ -20,6 +20,7 @@ load("./platform.star", "platform")
 load("./reproxy.star", "reproxy")
 load("./rust.star", "rust")
 load("./simple.star", "simple")
+load("./typescript_all.star", "typescript_all")
 load("./windows.star", chromium_windows = "chromium")
 
 def __disable_remote(ctx, step_config):
@@ -59,6 +60,11 @@ def init(ctx):
         "platforms": backend.platform_properties(ctx),
         "input_deps": {},
         "rules": [],
+        # Executables sent from Windows host to Linux workers need to set executable bit explicitly.
+        # This is necessary for cross platform build actions. e.g. node binary for typescript
+        "executables": [
+            "third_party/node/linux/node-linux-x64/bin/node",
+        ],
     }
     step_config = blink_all.step_config(ctx, step_config)
     step_config = grit.step_config(ctx, step_config)
@@ -66,6 +72,7 @@ def init(ctx):
     step_config = mojo.step_config(ctx, step_config)
     step_config = rust.step_config(ctx, step_config)
     step_config = simple.step_config(ctx, step_config)
+    step_config = typescript_all.step_config(ctx, step_config)
     if reproxy.enabled(ctx):
         step_config = reproxy.step_config(ctx, step_config)
 
@@ -77,6 +84,7 @@ def init(ctx):
     filegroups.update(host.filegroups(ctx))
     filegroups.update(rust.filegroups(ctx))
     filegroups.update(simple.filegroups(ctx))
+    filegroups.update(typescript_all.filegroups(ctx))
 
     handlers = {}
     handlers.update(blink_all.handlers)
@@ -84,6 +92,7 @@ def init(ctx):
     handlers.update(rust.handlers)
     handlers.update(simple.handlers)
     handlers.update(reproxy.handlers)
+    handlers.update(typescript_all.handlers)
 
     return module(
         "config",
