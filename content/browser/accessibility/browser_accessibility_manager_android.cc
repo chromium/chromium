@@ -325,6 +325,7 @@ void BrowserAccessibilityManagerAndroid::FireDocumentSelectionChangedEvent(
   }
 
   // Send event to the focus node.
+  CHECK(selection->focus_object);
   wcax->HandleTextSelectionChanged(selection->focus_object->GetUniqueId());
 }
 
@@ -1038,9 +1039,16 @@ BrowserAccessibilityManagerAndroid::ConvertChromeSelectionPositionToAndroid(
   if (at_end_of_anchor) {
     offset++;
   }
-  return std::make_pair(static_cast<BrowserAccessibilityAndroid*>(
-                            GetFromAXNode(target_node->GetUnignoredParent())),
-                        offset);
+
+  BrowserAccessibilityAndroid* parent_node =
+      static_cast<BrowserAccessibilityAndroid*>(
+          GetFromAXNode(target_node->GetUnignoredParent()));
+  // TODO(crbug.com/498376490): Find a test case that triggers this behavior.
+  if (!parent_node) {
+    return std::nullopt;
+  }
+
+  return std::make_pair(parent_node, offset);
 }
 
 ui::BrowserAccessibility::AXPosition
