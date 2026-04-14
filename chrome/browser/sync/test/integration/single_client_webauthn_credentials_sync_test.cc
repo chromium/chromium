@@ -1191,11 +1191,8 @@ IN_PROC_BROWSER_TEST_P(SingleClientWebAuthnCredentialsSyncParamTest,
     GTEST_SKIP() << "This test only applies to transport mode.";
   }
   const std::string sync_id = InjectPasskeyToFakeServer(NewPasskey());
-  ASSERT_TRUE(SetupClients());
 
-  ASSERT_TRUE(GetClient(0)->SignInPrimaryAccount());
-  ASSERT_TRUE(GetClient(0)->AwaitSyncTransportActive());
-  ASSERT_FALSE(GetSyncService(0)->IsSyncFeatureEnabled());
+  ASSERT_TRUE(SignIn());
 
   PasskeySyncActiveChecker(GetSyncService(0)).Wait();
   EXPECT_TRUE(LocalPasskeysMatchChecker(kSingleProfile,

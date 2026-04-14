@@ -144,11 +144,9 @@ IN_PROC_BROWSER_TEST_P(TwoClientPasswordsSyncTest,
   ASSERT_TRUE(SetupClients());
 
   // Sign in on all clients without enabling Sync-the-feature.
+  ASSERT_TRUE(SignIn());
   for (int i = 0; i < num_clients(); i++) {
-    ASSERT_TRUE(GetClient(i)->SignInPrimaryAccount());
-    ASSERT_TRUE(GetClient(i)->AwaitSyncTransportActive());
     ASSERT_FALSE(GetSyncService(i)->IsSyncFeatureEnabled());
-    PasswordSyncActiveChecker(GetSyncService(i)).Wait();
   }
 
   ASSERT_TRUE(

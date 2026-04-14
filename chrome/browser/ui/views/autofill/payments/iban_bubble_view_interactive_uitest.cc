@@ -789,8 +789,7 @@ class IbanBubbleViewSyncTransportFullFormBrowserTest
   IbanBubbleViewSyncTransportFullFormBrowserTest() = default;
 
   void SetUpForSyncTransportModeTest() {
-    ASSERT_TRUE(GetClient(0)->SignInPrimaryAccount());
-    ASSERT_TRUE(GetClient(0)->AwaitSyncTransportActive());
+    ASSERT_TRUE(SignIn());
     ASSERT_EQ(syncer::SyncService::TransportState::ACTIVE,
               GetSyncService(0)->GetTransportState());
   }

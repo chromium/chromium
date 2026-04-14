@@ -364,8 +364,7 @@ IN_PROC_BROWSER_TEST_P(SingleClientCustomPassphraseSyncTest,
 #endif  // !BUILDFLAG(IS_CHROMEOS)
             })));
   } else {
-    ASSERT_TRUE(GetClient(0)->SignInPrimaryAccount());
-    ASSERT_TRUE(GetClient(0)->AwaitSyncTransportActive());
+    ASSERT_TRUE(SignIn());
     GetSyncService()->GetUserSettings()->SetEncryptionPassphrase("hunter2");
   }
 

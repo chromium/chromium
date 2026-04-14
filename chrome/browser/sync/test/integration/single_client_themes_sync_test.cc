@@ -766,8 +766,7 @@ IN_PROC_BROWSER_TEST_P(SingleClientThemesSyncTestWithAccountThemesSeparation,
   ASSERT_TRUE(CustomThemeChecker(GetProfile(0)).Wait());
 
   // Sign in and activate sync transport.
-  ASSERT_TRUE(GetClient(0)->SignInPrimaryAccount());
-  ASSERT_TRUE(GetClient(0)->AwaitSyncTransportActive());
+  ASSERT_TRUE(SignIn());
   ASSERT_TRUE(GetSyncService(0)->GetActiveDataTypes().Has(syncer::THEMES));
 
   EXPECT_THAT(GetClient(0)->GetLocalDataDescriptionAndWait(syncer::THEMES),
@@ -796,8 +795,7 @@ IN_PROC_BROWSER_TEST_P(SingleClientThemesSyncTestWithAccountThemesSeparation,
   GetFakeServer()->InjectEntity(CreateGrayscaleThemeEntity());
 
   // Sign in and activate sync transport.
-  ASSERT_TRUE(GetClient(0)->SignInPrimaryAccount());
-  ASSERT_TRUE(GetClient(0)->AwaitSyncTransportActive());
+  ASSERT_TRUE(SignIn());
   ASSERT_TRUE(GetSyncService(0)->GetActiveDataTypes().Has(syncer::THEMES));
 
   ASSERT_TRUE(GrayscaleThemeChecker(GetProfile(0)).Wait());
@@ -840,8 +838,7 @@ IN_PROC_BROWSER_TEST_P(SingleClientThemesSyncTestWithAccountThemesSeparation,
   GetFakeServer()->InjectEntity(CreateGrayscaleThemeEntity());
 
   // Sign in and activate sync transport.
-  ASSERT_TRUE(GetClient(0)->SignInPrimaryAccount());
-  ASSERT_TRUE(GetClient(0)->AwaitSyncTransportActive());
+  ASSERT_TRUE(SignIn());
   ASSERT_TRUE(GetSyncService(0)->GetActiveDataTypes().Has(syncer::THEMES));
 
   ASSERT_TRUE(GrayscaleThemeChecker(GetProfile(0)).Wait());
@@ -907,8 +904,7 @@ IN_PROC_BROWSER_TEST_P(
 
   GetFakeServer()->InjectEntity(CreateGrayscaleThemeEntity());
 
-  ASSERT_TRUE(GetClient(0)->SignInPrimaryAccount());
-  ASSERT_TRUE(GetClient(0)->AwaitSyncTransportActive());
+  ASSERT_TRUE(SignIn());
 
   // Account theme is effective.
   ASSERT_TRUE(GrayscaleThemeChecker(GetProfile(0)).Wait());
@@ -949,8 +945,7 @@ IN_PROC_BROWSER_TEST_P(
 #if BUILDFLAG(IS_CHROMEOS)
   ASSERT_TRUE(SetupSync());
 #else
-  ASSERT_TRUE(GetClient(0)->SignInPrimaryAccount());
-  ASSERT_TRUE(GetClient(0)->AwaitSyncTransportActive());
+  ASSERT_TRUE(SignIn());
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
   // Account theme is effective.
@@ -1018,8 +1013,7 @@ IN_PROC_BROWSER_TEST_P(
   ASSERT_TRUE(SetupClients());
   ASSERT_TRUE(UsingDefaultTheme(GetProfile(0)));
 
-  ASSERT_TRUE(GetClient(0)->SignInPrimaryAccount());
-  ASSERT_TRUE(GetClient(0)->AwaitSyncTransportActive());
+  ASSERT_TRUE(SignIn());
 
   themes_helper::UseGrayscaleTheme(GetProfile(0));
   ASSERT_TRUE(CommittedAllNudgedChangesChecker(GetSyncService(0)).Wait());
@@ -1051,8 +1045,7 @@ IN_PROC_BROWSER_TEST_P(
   ASSERT_TRUE(SetupClients());
   ASSERT_TRUE(UsingDefaultTheme(GetProfile(0)));
 
-  ASSERT_TRUE(GetClient(0)->SignInPrimaryAccount());
-  ASSERT_TRUE(GetClient(0)->AwaitSyncTransportActive());
+  ASSERT_TRUE(SignIn());
 
   themes_helper::UseGrayscaleTheme(GetProfile(0));
   ASSERT_TRUE(CommittedAllNudgedChangesChecker(GetSyncService(0)).Wait());
@@ -1088,8 +1081,7 @@ IN_PROC_BROWSER_TEST_P(
   ASSERT_TRUE(SetupClients());
   ASSERT_TRUE(UsingDefaultTheme(GetProfile(0)));
 
-  ASSERT_TRUE(GetClient(0)->SignInPrimaryAccount());
-  ASSERT_TRUE(GetClient(0)->AwaitSyncTransportActive());
+  ASSERT_TRUE(SignIn());
 
   themes_helper::UseGrayscaleTheme(GetProfile(0));
   ASSERT_TRUE(CommittedAllNudgedChangesChecker(GetSyncService(0)).Wait());

@@ -962,8 +962,7 @@ IN_PROC_BROWSER_TEST_P(
                                sync_preferences::kSyncablePrefForTesting,
                                base::Value("account value"));
 
-  ASSERT_TRUE(GetClient(0)->SignInPrimaryAccount());
-  ASSERT_TRUE(GetClient(0)->AwaitSyncTransportActive());
+  ASSERT_TRUE(SignIn());
 
   // Account value is effective.
   ASSERT_EQ(GetPrefs(0)->GetString(sync_preferences::kSyncablePrefForTesting),
@@ -1017,8 +1016,7 @@ IN_PROC_BROWSER_TEST_P(
 #if BUILDFLAG(IS_CHROMEOS)
   ASSERT_TRUE(SetupSync());
 #else
-  ASSERT_TRUE(GetClient(0)->SignInPrimaryAccount());
-  ASSERT_TRUE(GetClient(0)->AwaitSyncTransportActive());
+  ASSERT_TRUE(SignIn());
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
   // Account value is effective.
@@ -2051,7 +2049,7 @@ IN_PROC_BROWSER_TEST_P(SingleClientPreferencesGlicTieredRolloutTest, E2E) {
   ASSERT_TRUE(SetupClients());
 
   // Have user be eligible for Glic from an account perspective.
-  ASSERT_TRUE(GetClient(0)->SignInPrimaryAccount());
+  ASSERT_TRUE(SignIn());
   glic::SetGlicCapability(GetProfile(0), /*enabled=*/true);
 
   // Should not be enabled as profile not eligible for tiered rollout.
@@ -2136,8 +2134,7 @@ IN_PROC_BROWSER_TEST_P(
   ASSERT_TRUE(SetupClients());
   ASSERT_TRUE(GetSyncService(0)->GetActiveDataTypes().empty());
 
-  ASSERT_TRUE(GetClient(0)->SignInPrimaryAccount());
-  ASSERT_TRUE(GetClient(0)->AwaitSyncTransportActive());
+  ASSERT_TRUE(SignIn());
   ASSERT_TRUE(GetSyncService(0)->GetUserSettings()->GetSelectedTypes().Has(
       syncer::UserSelectableType::kPreferences));
   ASSERT_TRUE(GetSyncService(0)->GetActiveDataTypes().Has(syncer::PREFERENCES));
@@ -2176,8 +2173,7 @@ IN_PROC_BROWSER_TEST_P(SingleClientDecouplePriorityPreferencesSyncTest,
   ASSERT_TRUE(SetupClients());
   ASSERT_TRUE(GetSyncService(0)->GetActiveDataTypes().empty());
 
-  ASSERT_TRUE(GetClient(0)->SignInPrimaryAccount());
-  ASSERT_TRUE(GetClient(0)->AwaitSyncTransportActive());
+  ASSERT_TRUE(SignIn());
   ASSERT_TRUE(GetSyncService(0)->GetUserSettings()->GetSelectedTypes().Has(
       syncer::UserSelectableType::kPreferences));
   ASSERT_TRUE(GetSyncService(0)->GetActiveDataTypes().Has(syncer::PREFERENCES));
@@ -2217,7 +2213,7 @@ IN_PROC_BROWSER_TEST_P(SingleClientDecouplePriorityPreferencesSyncTest,
   ASSERT_FALSE(GetSyncService(0)->GetActiveDataTypes().Has(
       syncer::PRIORITY_PREFERENCES));
 
-  ASSERT_TRUE(GetClient(0)->SignInPrimaryAccount());
+  ASSERT_TRUE(SignIn());
   // Disable all user selectable types.
   GetSyncService(0)->GetUserSettings()->SetSelectedTypes(
       /*sync_everything=*/false, syncer::UserSelectableTypeSet());
@@ -2277,7 +2273,7 @@ IN_PROC_BROWSER_TEST_P(SingleClientDecouplePriorityPreferencesSyncTest,
           sync_preferences::kSyncablePriorityPrefForTesting, "",
           user_prefs::PrefRegistrySyncable::SYNCABLE_PRIORITY_PREF);
 
-  ASSERT_TRUE(GetClient(0)->SignInPrimaryAccount());
+  ASSERT_TRUE(SignIn());
   // Disable all user selectable types except preferences.
   GetSyncService(0)->GetUserSettings()->SetSelectedTypes(
       /*sync_everything=*/false,

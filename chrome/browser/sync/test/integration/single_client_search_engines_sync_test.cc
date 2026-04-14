@@ -581,8 +581,7 @@ IN_PROC_BROWSER_TEST_F(
       CreateTestTemplateURL(u"accountkeyword", "http://account.com", "guid",
                             base::Time::FromTimeT(100))));
 
-  ASSERT_TRUE(GetClient(0)->SignInPrimaryAccount());
-  ASSERT_TRUE(GetClient(0)->AwaitSyncTransportActive());
+  ASSERT_TRUE(SignIn());
 
   // Account value is effective.
   ASSERT_THAT(service->GetTemplateURLForGUID("guid"),
@@ -625,8 +624,7 @@ IN_PROC_BROWSER_TEST_F(
 #if BUILDFLAG(IS_CHROMEOS)
   ASSERT_TRUE(SetupSync());
 #else
-  ASSERT_TRUE(GetClient(0)->SignInPrimaryAccount());
-  ASSERT_TRUE(GetClient(0)->AwaitSyncTransportActive());
+  ASSERT_TRUE(SignIn());
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
   // Account value is effective.

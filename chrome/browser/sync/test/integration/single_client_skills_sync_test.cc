@@ -382,7 +382,7 @@ IN_PROC_BROWSER_TEST_P(SingleClientSkillsSyncTest,
   EXPECT_TRUE(SkillsServiceChecker(GetSkillsService(), IsEmpty()).Wait());
 
   // Sign in again to re-enable sync and verify that the data was re-synced.
-  ASSERT_TRUE(GetClient(0)->SignInPrimaryAccount());
+  ASSERT_TRUE(SignIn());
 
   EXPECT_TRUE(SkillsServiceChecker(
                   GetSkillsService(),

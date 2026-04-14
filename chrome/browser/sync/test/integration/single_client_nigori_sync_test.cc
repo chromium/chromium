@@ -1866,14 +1866,8 @@ IN_PROC_BROWSER_TEST_P(
 
   base::HistogramTester histogram_tester;
 
-  // The manual sequence below, instead of invoking SetupSync() manually,
-  // reproduces a more realistic case of the first-time turn-sync-on experience,
-  // with a temporary stage where the user is signed in without sync-the-feature
-  // being enabled. Except on Ash where the two steps happen at once.
 #if !BUILDFLAG(IS_CHROMEOS)
-  ASSERT_TRUE(SetupClients());
-  ASSERT_TRUE(GetClient(0)->SignInPrimaryAccount());
-  ASSERT_TRUE(GetClient(0)->AwaitSyncTransportActive());
+  ASSERT_TRUE(SignIn());
 #endif  // !BUILDFLAG(IS_CHROMEOS)
   // TODO(crbug.com/40914333): SetupSync(WAIT_FOR_COMMITS_TO_COMPLETE) (e.g.
   // with default argument) causes test flakiness here due to unrelated issue in

@@ -152,8 +152,6 @@ static bool ExtensionCountCheck(Profile* profile,
 // Tests the case of an uninstall from the server conflicting with a local
 // modification, which we expect to be resolved in favor of the uninstall.
 IN_PROC_BROWSER_TEST_P(SingleClientExtensionsSyncTest, UninstallWinsConflicts) {
-  ASSERT_TRUE(SetupClients());
-
   ASSERT_TRUE(SetupSync());
   std::string id0 = InstallExtension(GetProfile(0), 0);
   ASSERT_TRUE(TestServerExtensionIds({id0}).Wait());
@@ -277,7 +275,7 @@ IN_PROC_BROWSER_TEST_F(
   ASSERT_THAT(extensions_helper::GetInstalledExtensions(GetProfile(0)),
               testing::ElementsAre(0));
 
-  ASSERT_TRUE(SetupSyncWithMode(SetupSyncMode::kSyncTransportOnly));
+  ASSERT_TRUE(SignIn());
   ASSERT_THAT(GetRemoteExtensionIds(GetFakeServer()), testing::IsEmpty());
 
   ASSERT_EQ(extensions::AccountExtensionTracker::AccountExtensionType::kLocal,
@@ -370,7 +368,7 @@ class SingleClientExtensionsExplicitSigninSyncTest
 
 IN_PROC_BROWSER_TEST_P(SingleClientExtensionsExplicitSigninSyncTest,
                        PRE_ExtensionsEnabledDefaultValue) {
-  ASSERT_TRUE(SetupSyncWithMode(SetupSyncMode::kSyncTransportOnly));
+  ASSERT_TRUE(SignIn());
 
   ASSERT_FALSE(GetSyncService(0)->GetUserSettings()->GetSelectedTypes().Has(
       syncer::UserSelectableType::kExtensions));
@@ -395,8 +393,7 @@ IN_PROC_BROWSER_TEST_P(SingleClientExtensionsExplicitSigninSyncTest,
   // When the user signs in after the flags were enabled, extensions should
   // always be available. See
   // `PrimaryAccountManager::SetExplicitBrowserSigninPrefs()`.
-  ASSERT_TRUE(SetupSyncWithMode(SetupSyncMode::kSyncTransportOnly));
-  ASSERT_TRUE(GetClient(0)->AwaitSyncTransportActive());
+  ASSERT_TRUE(SignIn());
 
   EXPECT_TRUE(GetSyncService(0)->GetUserSettings()->GetSelectedTypes().Has(
       syncer::UserSelectableType::kExtensions));
@@ -438,7 +435,7 @@ class SingleClientExtensionsExplicitSigninBothFeaturesSyncTest
 
 IN_PROC_BROWSER_TEST_F(SingleClientExtensionsExplicitSigninBothFeaturesSyncTest,
                        PRE_ExtensionsEnabledDefaultValue) {
-  ASSERT_TRUE(SetupSyncWithMode(SetupSyncMode::kSyncTransportOnly));
+  ASSERT_TRUE(SignIn());
 
   ASSERT_FALSE(GetSyncService(0)->GetUserSettings()->GetSelectedTypes().Has(
       syncer::UserSelectableType::kExtensions));
@@ -497,7 +494,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientExtensionsExplicitSigninTransitionTest,
                        PRE_PRE_ExplicitSigninForExtensionsOffToOn) {
   ASSERT_FALSE(
       base::FeatureList::IsEnabled(syncer::kReplaceSyncPromosWithSignInPromos));
-  ASSERT_TRUE(SetupSyncWithMode(SetupSyncMode::kSyncTransportOnly));
+  ASSERT_TRUE(SignIn());
 
   // If `kReplaceSyncPromosWithSignInPromos` is disabled, syncing extensions is
   // turned off.

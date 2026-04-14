@@ -357,9 +357,7 @@ IN_PROC_BROWSER_TEST_P(SingleClientContactInfoPassphraseSyncTest,
 IN_PROC_BROWSER_TEST_P(SingleClientContactInfoSyncTest, TransportMode) {
   AutofillProfile profile = BuildTestAccountProfile();
   AddSpecificsToServer(AsContactInfoSpecifics(profile), GetFakeServer());
-  ASSERT_TRUE(SetupClients());
-  ASSERT_TRUE(GetClient(0)->SignInPrimaryAccount());
-  ASSERT_TRUE(GetClient(0)->AwaitSyncTransportActive());
+  ASSERT_TRUE(SignIn());
   HideAccountNameEmailProfile();
   EXPECT_TRUE(
       GetSyncService(0)->GetActiveDataTypes().Has(syncer::CONTACT_INFO));
@@ -379,9 +377,7 @@ IN_PROC_BROWSER_TEST_P(SingleClientContactInfoSyncTest,
   // Add a profile to account storage.
   AutofillProfile profile = BuildTestAccountProfile();
   AddSpecificsToServer(AsContactInfoSpecifics(profile), GetFakeServer());
-  ASSERT_TRUE(SetupClients());
-  ASSERT_TRUE(GetClient(0)->SignInPrimaryAccount());
-  ASSERT_TRUE(GetClient(0)->AwaitSyncTransportActive());
+  ASSERT_TRUE(SignIn());
   EXPECT_TRUE(
       GetSyncService(0)->GetActiveDataTypes().Has(syncer::CONTACT_INFO));
   HideAccountNameEmailProfile();
@@ -428,9 +424,7 @@ IN_PROC_BROWSER_TEST_P(SingleClientContactInfoSyncTest,
 // Account storage is not enabled when the user is in auth error.
 IN_PROC_BROWSER_TEST_P(SingleClientContactInfoSyncTest, AuthErrorState) {
   // Setup transport mode.
-  ASSERT_TRUE(SetupClients());
-  ASSERT_TRUE(GetClient(0)->SignInPrimaryAccount());
-  ASSERT_TRUE(GetClient(0)->AwaitSyncTransportActive());
+  ASSERT_TRUE(SignIn());
   EXPECT_TRUE(
       GetSyncService(0)->GetActiveDataTypes().Has(syncer::CONTACT_INFO));
 
@@ -484,9 +478,7 @@ IN_PROC_BROWSER_TEST_P(SingleClientContactInfoSyncTest, AuthErrorState) {
 IN_PROC_BROWSER_TEST_P(SingleClientContactInfoSyncTest,
                        IsAutofillSyncToggleAvailable) {
   // Setup transport mode.
-  ASSERT_TRUE(SetupClients());
-  ASSERT_TRUE(GetClient(0)->SignInPrimaryAccount());
-  ASSERT_TRUE(GetClient(0)->AwaitSyncTransportActive());
+  ASSERT_TRUE(SignIn());
   EXPECT_TRUE(
       GetSyncService(0)->GetActiveDataTypes().Has(syncer::CONTACT_INFO));
 
@@ -609,8 +601,7 @@ IN_PROC_BROWSER_TEST_P(SingleClientContactInfoSyncTest,
                                autofill::FieldType::NAME_FIRST))));
 
   // Setup transport mode.
-  ASSERT_TRUE(GetClient(0)->SignInPrimaryAccount());
-  ASSERT_TRUE(GetClient(0)->AwaitSyncTransportActive());
+  ASSERT_TRUE(SignIn());
   ASSERT_TRUE(
       GetSyncService(0)->GetActiveDataTypes().Has(syncer::CONTACT_INFO));
   HideAccountNameEmailProfile();
@@ -655,8 +646,7 @@ IN_PROC_BROWSER_TEST_P(SingleClientContactInfoSyncTest,
                                autofill::FieldType::NAME_FIRST))));
 
   // Setup transport mode.
-  ASSERT_TRUE(GetClient(0)->SignInPrimaryAccount());
-  ASSERT_TRUE(GetClient(0)->AwaitSyncTransportActive());
+  ASSERT_TRUE(SignIn());
   ASSERT_TRUE(
       GetSyncService(0)->GetActiveDataTypes().Has(syncer::CONTACT_INFO));
   HideAccountNameEmailProfile();
@@ -708,8 +698,7 @@ IN_PROC_BROWSER_TEST_P(SingleClientContactInfoSyncTest,
                                autofill::FieldType::NAME_FIRST))));
 
   // Setup transport mode.
-  ASSERT_TRUE(GetClient(0)->SignInPrimaryAccount());
-  ASSERT_TRUE(GetClient(0)->AwaitSyncTransportActive());
+  ASSERT_TRUE(SignIn());
   ASSERT_TRUE(
       GetSyncService(0)->GetActiveDataTypes().Has(syncer::CONTACT_INFO));
   HideAccountNameEmailProfile();

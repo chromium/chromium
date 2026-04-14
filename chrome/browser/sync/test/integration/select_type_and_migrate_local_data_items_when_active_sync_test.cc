@@ -98,9 +98,9 @@ class SelectTypeAndMigrateLocalDataItemsWhenActiveTest : public SyncTest {
   const AutofillProfile& address() { return *address_; }
   const PasswordForm& password() { return password_; }
 
-  // Sign in with `signin::ConsentLevel::kSignin`.
-  void SignIn() {
-    ASSERT_TRUE(GetClient(0)->SignInPrimaryAccount());
+  // Sign in with `signin::ConsentLevel::kSignin` and enable bookmarks.
+  void SignInAndEnableBookmarks() {
+    ASSERT_TRUE(SyncTest::SignIn());
     // Enable account storage for bookmarks.
     SigninPrefs(*GetProfile(0)->GetPrefs())
         .SetBookmarksExplicitBrowserSignin(
@@ -155,7 +155,7 @@ IN_PROC_BROWSER_TEST_F(SelectTypeAndMigrateLocalDataItemsWhenActiveTest,
                        ShouldSelectTypeEvenIfPreviouslyDeselected) {
   ASSERT_TRUE(SetupClients());
 
-  SignIn();
+  SignInAndEnableBookmarks();
   GetSyncService(0)->GetUserSettings()->SetSelectedType(
       syncer::UserSelectableType::kPasswords, false);
   GetSyncService(0)->GetUserSettings()->SetSelectedType(
@@ -197,7 +197,7 @@ IN_PROC_BROWSER_TEST_F(SelectTypeAndMigrateLocalDataItemsWhenActiveTest,
   SaveLocalAddress();
   ASSERT_EQ(1u, GetLocalAddresses().size());
 
-  SignIn();
+  SignInAndEnableBookmarks();
   ASSERT_EQ(
       0u, fake_server_->GetSyncEntitiesByDataType(syncer::CONTACT_INFO).size());
 
@@ -217,7 +217,7 @@ IN_PROC_BROWSER_TEST_F(SelectTypeAndMigrateLocalDataItemsWhenActiveTest,
   passwords_helper::GetProfilePasswordStoreInterface(0)->AddLogin(password());
   ASSERT_EQ(1u, GetLocalPasswords().size());
 
-  SignIn();
+  SignInAndEnableBookmarks();
   ASSERT_EQ(0u,
             fake_server_->GetSyncEntitiesByDataType(syncer::PASSWORDS).size());
 
@@ -236,7 +236,7 @@ IN_PROC_BROWSER_TEST_F(SelectTypeAndMigrateLocalDataItemsWhenActiveTest,
   const BookmarkNode* bookmark = SaveLocalBookmark();
   ASSERT_EQ(1u, bookmark_model()->bookmark_bar_node()->children().size());
 
-  SignIn();
+  SignInAndEnableBookmarks();
   ASSERT_EQ(0u,
             fake_server_->GetSyncEntitiesByDataType(syncer::BOOKMARKS).size());
 
@@ -256,7 +256,7 @@ IN_PROC_BROWSER_TEST_F(SelectTypeAndMigrateLocalDataItemsWhenActiveTest,
 
   const extensions::ExtensionId extension_id = SaveLocalExtension();
 
-  SignIn();
+  SignInAndEnableBookmarks();
   ASSERT_EQ(AccountExtensionTracker::AccountExtensionType::kLocal,
             AccountExtensionTracker::Get(GetProfile(0))
                 ->GetAccountExtensionType(extension_id));
@@ -284,7 +284,7 @@ IN_PROC_BROWSER_TEST_F(SelectTypeAndMigrateLocalDataItemsWhenActiveTest,
       second_password);
   ASSERT_EQ(2u, GetLocalPasswords().size());
 
-  SignIn();
+  SignInAndEnableBookmarks();
   ASSERT_EQ(0u,
             fake_server_->GetSyncEntitiesByDataType(syncer::PASSWORDS).size());
 
@@ -312,7 +312,7 @@ IN_PROC_BROWSER_TEST_F(SelectTypeAndMigrateLocalDataItemsWhenActiveTest,
   passwords_helper::GetProfilePasswordStoreInterface(0)->AddLogin(password());
   ASSERT_EQ(1u, GetLocalPasswords().size());
 
-  SignIn();
+  SignInAndEnableBookmarks();
   ASSERT_TRUE(PassphraseRequiredChecker(GetSyncService(0)).Wait());
   ASSERT_EQ(0u,
             fake_server_->GetSyncEntitiesByDataType(syncer::PASSWORDS).size());
@@ -349,7 +349,7 @@ IN_PROC_BROWSER_TEST_F(SelectTypeAndMigrateLocalDataItemsWhenActiveTest,
   passwords_helper::GetProfilePasswordStoreInterface(0)->AddLogin(password());
   ASSERT_EQ(1u, GetLocalPasswords().size());
 
-  SignIn();
+  SignInAndEnableBookmarks();
   ASSERT_TRUE(PassphraseRequiredChecker(GetSyncService(0)).Wait());
   ASSERT_EQ(0u,
             fake_server_->GetSyncEntitiesByDataType(syncer::PASSWORDS).size());
@@ -366,7 +366,7 @@ IN_PROC_BROWSER_TEST_F(SelectTypeAndMigrateLocalDataItemsWhenActiveTest,
   GetClient(0)->SignOutPrimaryAccount();
   ASSERT_EQ(GetSyncService(0)->GetTransportState(),
             syncer::SyncService::TransportState::DISABLED);
-  SignIn();
+  SignInAndEnableBookmarks();
   ASSERT_TRUE(PassphraseRequiredChecker(GetSyncService(0)).Wait());
   ASSERT_TRUE(GetSyncService(0)->GetUserSettings()->SetDecryptionPassphrase(
       kCustomPassphraseKeyParams.password));
@@ -421,7 +421,7 @@ IN_PROC_BROWSER_TEST_F(
                base::Value(std::move(disabled_types)), nullptr);
   policy_provider()->UpdateChromePolicy(policies);
 
-  SignIn();
+  SignInAndEnableBookmarks();
   ASSERT_EQ(
       0u, fake_server_->GetSyncEntitiesByDataType(syncer::CONTACT_INFO).size());
 
@@ -458,7 +458,7 @@ IN_PROC_BROWSER_TEST_F(
                base::Value(std::move(disabled_types)), nullptr);
   policy_provider()->UpdateChromePolicy(policies);
 
-  SignIn();
+  SignInAndEnableBookmarks();
 
   // This should not turn on account storage. The password will stay local.
   GetSyncService(0)->SelectTypeAndMigrateLocalDataItemsWhenActive(
@@ -500,7 +500,7 @@ IN_PROC_BROWSER_TEST_F(
   SaveLocalAddress();
   ASSERT_EQ(1u, GetLocalAddresses().size());
 
-  SignIn();
+  SignInAndEnableBookmarks();
   ASSERT_TRUE(PassphraseRequiredChecker(GetSyncService(0)).Wait());
   ASSERT_EQ(
       0u, fake_server_->GetSyncEntitiesByDataType(syncer::CONTACT_INFO).size());
@@ -608,7 +608,7 @@ IN_PROC_BROWSER_TEST_F(
   SaveLocalAddress();
   ASSERT_EQ(1u, GetLocalAddresses().size());
 
-  SignIn();
+  SignInAndEnableBookmarks();
   ASSERT_TRUE(PassphraseRequiredChecker(GetSyncService(0)).Wait());
   ASSERT_EQ(
       0u, fake_server_->GetSyncEntitiesByDataType(syncer::CONTACT_INFO).size());

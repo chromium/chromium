@@ -246,6 +246,11 @@ class SyncTest : public PlatformBrowserTest,
       SyncWaitCondition wait_condition = WAIT_FOR_COMMITS_TO_COMPLETE,
       SyncTestAccount account = SyncTestAccount::kDefaultAccount);
 
+  // Signs in to a primary and enables sync transport, without enabling
+  // sync-the-feature.
+  [[nodiscard]] bool SignIn(
+      SyncTestAccount account = SyncTestAccount::kDefaultAccount);
+
   // This is similar to click the reset button on chrome.google.com/data.
   // Only takes effect when running with external servers.
   // Please call this before setting anything.

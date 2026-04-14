@@ -417,12 +417,9 @@ IN_PROC_BROWSER_TEST_P(SingleClientDeviceInfoSyncTest,
 #endif  // BUILDFLAG(IS_ANDROID)
 IN_PROC_BROWSER_TEST_P(SingleClientDeviceInfoSyncTest,
                        MAYBE_CommitLocalDevice_TransportOnly) {
-  ASSERT_TRUE(SetupClients());
-
   // Setup a primary account, but don't actually enable Sync-the-feature (so
   // that Sync will start in transport mode).
-  ASSERT_TRUE(GetClient(0)->SignInPrimaryAccount());
-  ASSERT_TRUE(GetClient(0)->AwaitSyncTransportActive());
+  ASSERT_TRUE(SignIn());
 
   ASSERT_FALSE(GetSyncService(0)->IsSyncFeatureEnabled());
   ASSERT_TRUE(GetSyncService(0)->GetActiveDataTypes().Has(syncer::DEVICE_INFO));
@@ -446,12 +443,9 @@ IN_PROC_BROWSER_TEST_P(SingleClientDeviceInfoSyncTest,
   InjectDeviceInfoEntityToServer(/*suffix=*/1);
   InjectDeviceInfoEntityToServer(/*suffix=*/2);
 
-  ASSERT_TRUE(SetupClients());
-
   // Setup a primary account, but don't actually enable Sync-the-feature (so
   // that Sync will start in transport mode).
-  ASSERT_TRUE(GetClient(0)->SignInPrimaryAccount());
-  ASSERT_TRUE(GetClient(0)->AwaitSyncTransportActive());
+  ASSERT_TRUE(SignIn());
 
   ASSERT_FALSE(GetSyncService(0)->IsSyncFeatureEnabled());
   ASSERT_TRUE(GetSyncService(0)->GetActiveDataTypes().Has(syncer::DEVICE_INFO));

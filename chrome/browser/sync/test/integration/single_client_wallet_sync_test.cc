@@ -226,8 +226,7 @@ IN_PROC_BROWSER_TEST_P(SingleClientWalletSyncTest,
   GetFakeServer()->SetWalletData(
       {CreateDefaultSyncWalletCard(), CreateDefaultSyncPaymentsCustomerData()});
 
-  ASSERT_TRUE(GetClient(0)->SignInPrimaryAccount());
-  ASSERT_TRUE(GetClient(0)->AwaitSyncTransportActive());
+  ASSERT_TRUE(SignIn());
   ASSERT_TRUE(GetSyncService(0)->GetActiveDataTypes().Has(
       syncer::AUTOFILL_WALLET_DATA));
 
@@ -282,8 +281,7 @@ IN_PROC_BROWSER_TEST_P(SingleClientWalletSyncTest,
        CreateDefaultSyncPaymentsCustomerData(),
        CreateSyncCreditCardCloudTokenData(/*cloud_token_data_id=*/"data-1")});
 
-  ASSERT_TRUE(GetClient(0)->SignInPrimaryAccount());
-  ASSERT_TRUE(GetClient(0)->AwaitSyncTransportActive());
+  ASSERT_TRUE(SignIn());
 
   // Make sure the data & metadata is in the DB.
   WaitForNumberOfCards(1, paydm);
@@ -307,7 +305,7 @@ IN_PROC_BROWSER_TEST_P(SingleClientWalletSyncTest,
                             kDefaultBillingAddressID),
        CreateSyncPaymentsCustomerData(/*customer_id=*/"different"),
        CreateSyncCreditCardCloudTokenData(/*cloud_token_data_id=*/"data-2")});
-  ASSERT_TRUE(GetClient(0)->SignInPrimaryAccount());
+  ASSERT_TRUE(SignIn());
 
   WaitForNumberOfCards(1, paydm);
 
@@ -888,16 +886,12 @@ IN_PROC_BROWSER_TEST_P(SingleClientWalletSyncTest,
 #if !BUILDFLAG(IS_CHROMEOS)
 IN_PROC_BROWSER_TEST_P(SingleClientWalletSyncTest,
                        SwitchesFromAccountToProfileStorageOnSyncOptIn) {
-  ASSERT_TRUE(SetupClients());
-
   GetFakeServer()->SetWalletData({CreateDefaultSyncWalletCard(),
                                   CreateDefaultSyncPaymentsCustomerData(),
                                   CreateDefaultSyncCreditCardCloudTokenData()});
 
   // Set up Sync in transport mode.
-  ASSERT_TRUE(GetClient(0)->SignInPrimaryAccount());
-
-  ASSERT_TRUE(GetClient(0)->AwaitSyncTransportActive());
+  ASSERT_TRUE(SignIn());
   ASSERT_FALSE(GetSyncService(0)->IsSyncFeatureEnabled());
   ASSERT_FALSE(GetSyncService(0)->IsSyncFeatureActive());
   ASSERT_TRUE(GetSyncService(0)->GetActiveDataTypes().Has(
@@ -950,15 +944,11 @@ IN_PROC_BROWSER_TEST_P(SingleClientWalletSyncTest,
 IN_PROC_BROWSER_TEST_P(
     SingleClientWalletSyncTest,
     SwitchesFromAccountToProfileStorageOnSyncOptInWithAdvancedSetup) {
-  ASSERT_TRUE(SetupClients());
-
   GetFakeServer()->SetWalletData({CreateDefaultSyncWalletCard(),
                                   CreateDefaultSyncCreditCardCloudTokenData()});
 
   // Set up Sync in transport mode.
-  ASSERT_TRUE(GetClient(0)->SignInPrimaryAccount());
-
-  ASSERT_TRUE(GetClient(0)->AwaitSyncTransportActive());
+  ASSERT_TRUE(SignIn());
   ASSERT_FALSE(GetSyncService(0)->IsSyncFeatureEnabled());
   ASSERT_FALSE(GetSyncService(0)->IsSyncFeatureActive());
   ASSERT_TRUE(GetSyncService(0)->GetActiveDataTypes().Has(

@@ -398,7 +398,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientPasswordsWithAccountStorageSyncTest,
                        StoresDataForNonSyncingPrimaryAccountInAccountDB) {
   AddTestPasswordToFakeServer();
 
-  ASSERT_TRUE(SetupSyncWithMode(SetupSyncMode::kSyncTransportOnly));
+  ASSERT_TRUE(SignIn());
   ASSERT_TRUE(GetSyncService(0)->GetActiveDataTypes().Has(syncer::PASSWORDS));
 
   // Make sure the password showed up in the account store and not in the
@@ -421,7 +421,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientPasswordsWithAccountStorageSyncTest,
                        StoresDataForSecondaryAccountInAccountDB) {
   AddTestPasswordToFakeServer();
 
-  ASSERT_TRUE(SetupSyncWithMode(SetupSyncMode::kSyncTransportOnly));
+  ASSERT_TRUE(SignIn());
   ASSERT_TRUE(GetSyncService(0)->GetActiveDataTypes().Has(syncer::PASSWORDS));
 
   // Make sure the password showed up in the account store and not in the
@@ -469,7 +469,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientPasswordsWithAccountStorageSyncTest,
                        ClearsAccountDBOnSignout) {
   AddTestPasswordToFakeServer();
 
-  ASSERT_TRUE(SetupSyncWithMode(SetupSyncMode::kSyncTransportOnly));
+  ASSERT_TRUE(SignIn());
   ASSERT_TRUE(GetSyncService(0)->GetActiveDataTypes().Has(syncer::PASSWORDS));
 
   // Make sure the password showed up in the account store.
@@ -489,7 +489,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientPasswordsWithAccountStorageSyncTest,
   AddTestPasswordToFakeServer();
 
   // Setup Sync in transport mode.
-  ASSERT_TRUE(SetupSyncWithMode(SetupSyncMode::kSyncTransportOnly));
+  ASSERT_TRUE(SignIn());
   ASSERT_TRUE(GetSyncService(0)->GetActiveDataTypes().Has(syncer::PASSWORDS));
 
   // Make sure the password showed up in the account store.
@@ -531,7 +531,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientPasswordsWithAccountStorageSyncTest,
                        PendingState) {
   AddTestPasswordToFakeServer();
 
-  ASSERT_TRUE(SetupSyncWithMode(SetupSyncMode::kSyncTransportOnly));
+  ASSERT_TRUE(SignIn());
   ASSERT_TRUE(GetSyncService(0)->GetActiveDataTypes().Has(syncer::PASSWORDS));
 
   // Make sure the password showed up in the account store.
@@ -620,7 +620,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientPasswordsWithAccountStorageSyncTest,
       CreateTestPasswordForm(0, PasswordForm::Store::kProfileStore));
 
   // Set up sync in transport mode.
-  ASSERT_TRUE(SetupSyncWithMode(SetupSyncMode::kSyncTransportOnly));
+  ASSERT_TRUE(SignIn());
   ASSERT_TRUE(GetSyncService(0)->GetActiveDataTypes().Has(syncer::PASSWORDS));
 
   // Make sure the password is still in the profile store and not in the account
@@ -660,7 +660,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientPasswordsWithAccountStorageSyncTest,
   passwords_helper::GetProfilePasswordStoreInterface(0)->AddLogin(form2);
 
   // Set up sync in transport mode.
-  ASSERT_TRUE(SetupSyncWithMode(SetupSyncMode::kSyncTransportOnly));
+  ASSERT_TRUE(SignIn());
   ASSERT_TRUE(GetSyncService(0)->GetActiveDataTypes().Has(syncer::PASSWORDS));
 
   // Make sure the passwords are still in the profile store and not in the
@@ -714,7 +714,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientPasswordsWithAccountStorageSyncTest,
   passwords_helper::GetProfilePasswordStoreInterface(0)->AddLogin(form2);
 
   // Set up sync in transport mode.
-  ASSERT_TRUE(SetupSyncWithMode(SetupSyncMode::kSyncTransportOnly));
+  ASSERT_TRUE(SignIn());
   ASSERT_TRUE(GetSyncService(0)->GetActiveDataTypes().Has(syncer::PASSWORDS));
 
   // Make sure the passwords are still in the profile store and not in the

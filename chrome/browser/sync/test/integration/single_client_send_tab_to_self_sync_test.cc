@@ -353,9 +353,7 @@ IN_PROC_BROWSER_TEST_P(SingleClientSendTabToSelfSyncTest,
   const std::string kTitle("example");
   const std::string kTargetDeviceSyncCacheGuid("target");
 
-  ASSERT_TRUE(SetupClients());
-  ASSERT_TRUE(GetClient(0)->SignInPrimaryAccount());
-  ASSERT_TRUE(GetClient(0)->AwaitSyncTransportActive());
+  ASSERT_TRUE(SignIn());
 
   send_tab_to_self::SendTabToSelfModel* model =
       SendTabToSelfSyncServiceFactory::GetForProfile(GetProfile(0))

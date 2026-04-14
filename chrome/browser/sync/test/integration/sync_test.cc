@@ -880,6 +880,11 @@ bool SyncTest::SetupSyncWithMode(SetupSyncMode setup_mode,
   return true;
 }
 
+bool SyncTest::SignIn(SyncTestAccount account) {
+  return SetupSyncWithMode(SetupSyncMode::kSyncTransportOnly,
+                           WAIT_FOR_COMMITS_TO_COMPLETE, account);
+}
+
 void SyncTest::SetUpOnMainThread() {
   switch (server_type_) {
     case EXTERNAL_LIVE_SERVER:

@@ -206,11 +206,7 @@ IN_PROC_BROWSER_TEST_P(SingleClientUserConsentsSyncTest,
   if (GetSetupSyncMode() != SetupSyncMode::kSyncTransportOnly) {
     GTEST_SKIP() << "This test is for transport-only mode.";
   }
-  // We avoid calling SetupSync(), because we don't want to turn on full sync,
-  // only sign in such that the standalone transport starts.
-  ASSERT_TRUE(SetupClients());
-  ASSERT_TRUE(GetClient(0)->SignInPrimaryAccount());
-  ASSERT_TRUE(GetClient(0)->AwaitSyncTransportActive());
+  ASSERT_TRUE(SignIn());
   ASSERT_FALSE(GetSyncService(0)->IsSyncFeatureActive())
       << "Full sync should be disabled";
   ASSERT_EQ(syncer::SyncService::TransportState::ACTIVE,

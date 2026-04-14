@@ -182,9 +182,7 @@ IN_PROC_BROWSER_TEST_P(SingleClientWalletCredentialSyncTest,
   SetDefaultWalletCredentialOnFakeServer();
   GetFakeServer()->SetWalletData({CreateDefaultSyncWalletCard()});
 
-  ASSERT_TRUE(SetupClients());
-  ASSERT_TRUE(GetClient(0)->SignInPrimaryAccount());
-  ASSERT_TRUE(GetClient(0)->AwaitSyncTransportActive());
+  ASSERT_TRUE(SignIn());
   WaitForCvcOnCard(GetPaymentsDataManager(0));
 
   ASSERT_EQ(syncer::SyncService::TransportState::ACTIVE,
@@ -222,9 +220,7 @@ IN_PROC_BROWSER_TEST_P(SingleClientWalletCredentialSyncTest,
   SetDefaultWalletCredentialOnFakeServer();
   GetFakeServer()->SetWalletData({CreateDefaultSyncWalletCard()});
 
-  ASSERT_TRUE(SetupClients());
-  ASSERT_TRUE(GetClient(0)->SignInPrimaryAccount());
-  ASSERT_TRUE(GetClient(0)->AwaitSyncTransportActive());
+  ASSERT_TRUE(SignIn());
   WaitForCvcOnCard(GetPaymentsDataManager(0));
 
   ASSERT_EQ(syncer::SyncService::TransportState::ACTIVE,
@@ -291,8 +287,7 @@ IN_PROC_BROWSER_TEST_P(SingleClientWalletCredentialSyncTest,
           entity_specifics_2, /*creation_time=*/1000,
           /*last_modified_time=*/0));
 
-  ASSERT_TRUE(GetClient(0)->SignInPrimaryAccount());
-  ASSERT_TRUE(GetClient(0)->AwaitSyncTransportActive());
+  ASSERT_TRUE(SignIn());
   WaitForCvcOnCard(GetPaymentsDataManager(0));
 
   ASSERT_EQ(syncer::SyncService::TransportState::ACTIVE,
@@ -335,9 +330,7 @@ IN_PROC_BROWSER_TEST_P(SingleClientWalletCredentialSyncTest,
        CreateSyncPaymentsCustomerData(
            /*customer_id=*/"different")});
 
-  ASSERT_TRUE(SetupClients());
-  ASSERT_TRUE(GetClient(0)->SignInPrimaryAccount());
-  ASSERT_TRUE(GetClient(0)->AwaitSyncTransportActive());
+  ASSERT_TRUE(SignIn());
   WaitForCvcOnCard(GetPaymentsDataManager(0));
 
   ASSERT_EQ(syncer::SyncService::TransportState::ACTIVE,
@@ -403,9 +396,7 @@ IN_PROC_BROWSER_TEST_P(SingleClientWalletCredentialSyncTest,
   SetDefaultWalletCredentialOnFakeServer();
   GetFakeServer()->SetWalletData({CreateDefaultSyncWalletCard()});
 
-  ASSERT_TRUE(SetupClients());
-  ASSERT_TRUE(GetClient(0)->SignInPrimaryAccount());
-  ASSERT_TRUE(GetClient(0)->AwaitSyncTransportActive());
+  ASSERT_TRUE(SignIn());
   WaitForCvcOnCard(GetPaymentsDataManager(0));
 
   ASSERT_EQ(syncer::SyncService::TransportState::ACTIVE,
