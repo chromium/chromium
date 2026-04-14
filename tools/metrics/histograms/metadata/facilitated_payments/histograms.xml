@@ -511,6 +511,19 @@ reviewer.
   </summary>
 </histogram>
 
+<histogram name="FacilitatedPayments.Pix.Iframe.UrlType"
+    enum="FacilitatedPayments.Pix.IframeUrlType" expires_after="2027-02-01">
+  <owner>longsheng@google.com</owner>
+  <owner>siashah@google.com</owner>
+  <owner>payments-autofill-team@google.com</owner>
+  <summary>
+    A Pix-specific histogram. Emits the type of URL for the iframe when a likely
+    Pix code is copied to the clipboard within an iframe. [Trigger] User copies
+    a likely Pix code to the clipboard in an iframe. [Frequency] Logged at most
+    once per Pix payflow.
+  </summary>
+</histogram>
+
 <histogram
     name="FacilitatedPayments.Pix.InitiatePurchaseAction.{Result}.Latency"
     units="ms" expires_after="2026-08-02">
