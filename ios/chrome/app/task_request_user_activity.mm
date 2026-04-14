@@ -296,6 +296,15 @@ void OpenHistoryWithBrowser(base::WeakPtr<Browser> weak_browser) {
   }
 }
 
+// Navigates to the payment methods settings.
+void OpenPaymentMethodsWithBrowser(base::WeakPtr<Browser> weak_browser) {
+  if (Browser* browser = weak_browser.get()) {
+    id<SettingsCommands> handler =
+        HandlerForProtocol(browser->GetCommandDispatcher(), SettingsCommands);
+    [handler showCreditCardSettings];
+  }
+}
+
 // Adds bookmarks to Chrome.
 void AddBookmarkToChromeWithIntent(INIntent* intent,
                                    base::WeakPtr<Browser> weak_browser) {
@@ -477,7 +486,9 @@ std::vector<GURL> GetURLsFromOpenInChromeIntent(INIntent* intent) {
       _targetMode = ApplicationModeForTabOpening::INCOGNITO;
       break;
     case UserActivityType::kManagePaymentMethods:
-      // TODO(crbug.com/492115056): Add implementation.
+      completion = base::CallbackToBlock(base::BindRepeating(
+          &OpenPaymentMethodsWithBrowser, browser->AsWeakPtr()));
+      webpageGURLs.push_back(GURL(kChromeUINewTabURL));
       break;
     case UserActivityType::kRunSafetyCheck:
       // TODO(crbug.com/492115056): Add implementation.
