@@ -277,7 +277,6 @@ BASE_DECLARE_FEATURE(kStartSurfaceReturnTime);
 BASE_DECLARE_FEATURE(kSubmenusInAppMenu);
 BASE_DECLARE_FEATURE(kSubmenusTabContextMenuLffTabStrip);
 BASE_DECLARE_FEATURE(kSuppressToolbarCapturesAtGestureEnd);
-BASE_DECLARE_FEATURE(kSurfaceDestroyedRecreatesManager);
 BASE_DECLARE_FEATURE(kTabBottomSheet);
 BASE_DECLARE_FEATURE(kTabClosureMethodRefactor);
 BASE_DECLARE_FEATURE(kTabModelInitFixes);
