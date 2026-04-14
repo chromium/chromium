@@ -2488,7 +2488,9 @@ def make_no_alloc_direct_call_callback_def(cg_context, function_name,
     body.register_code_symbol(
         S(
             "kPerformDetachCheckFlag",
-            "constexpr auto kPerformDetachCheckFlag = PassAsSpanMarkerBase::Flags::kNone;"
+            # TODO(caseq): figure out if it makes sense to skip it when we can.
+            # See https://crbug.com/499365904 for details.
+            "constexpr auto kPerformDetachCheckFlag = PassAsSpanMarkerBase::Flags::kPerformDetachCheck;"
         ))
 
     bind_callback_local_vars(body, cg_context)
