@@ -337,6 +337,10 @@ public class TabBottomSheetCoordinator {
                 } else {
                     stopObservingCompositorViewInteractions();
                 }
+
+                if (ChromeFeatureList.sTabBottomSheetResizeWebview.getValue()) {
+                    mMediator.onSheetResizingStatusChanged(state == SheetState.SCROLLING);
+                }
             }
 
             @Override

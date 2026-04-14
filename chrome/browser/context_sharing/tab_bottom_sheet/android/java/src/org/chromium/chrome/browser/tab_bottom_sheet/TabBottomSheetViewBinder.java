@@ -29,7 +29,13 @@ public class TabBottomSheetViewBinder {
         if (propertyKey == TabBottomSheetProperties.RESIZING_STATE) {
             ResizingState resizingState = model.get(TabBottomSheetProperties.RESIZING_STATE);
             CoBrowseViews coBrowseViews = model.get(TabBottomSheetProperties.BOTTOM_SHEET_VIEWS);
-            coBrowseViews.setSheetHeight(resizingState.webUiContainerHeight);
+            coBrowseViews.setResizingState(resizingState);
+        } else if (propertyKey == TabBottomSheetProperties.IS_RESIZING) {
+            CoBrowseViews coBrowseViews = model.get(TabBottomSheetProperties.BOTTOM_SHEET_VIEWS);
+            ResizingState resizingState = model.get(TabBottomSheetProperties.RESIZING_STATE);
+            if (coBrowseViews != null && resizingState != null) {
+                coBrowseViews.setIsResizing(model.get(TabBottomSheetProperties.IS_RESIZING));
+            }
         } else if (PEEK_VIEW_AND_EXPANDED_CONTENT_ALPHA == propertyKey) {
             View peekContainer = view.findViewById(R.id.actor_control_container);
             peekContainer.setAlpha(model.get(PEEK_VIEW_AND_EXPANDED_CONTENT_ALPHA));

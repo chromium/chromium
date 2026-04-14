@@ -34,6 +34,8 @@ public class TabBottomSheetWebUi {
     private final Context mContext;
     private final WindowAndroid mWindowAndroid;
     private final ContextMenuPopulatorFactory mContextMenuPopulatorFactory;
+    private final WebViewResizingHelper mWebViewResizingHelper;
+
     private ThinWebView mThinWebView;
     private @Nullable WebContents mWebContents;
 
@@ -44,6 +46,7 @@ public class TabBottomSheetWebUi {
         mContext = context;
         mWindowAndroid = windowAndroid;
         mContextMenuPopulatorFactory = contextMenuPopulatorFactory;
+        mWebViewResizingHelper = new WebViewResizingHelper(context);
         resetThinWebView();
     }
 
@@ -94,6 +97,10 @@ public class TabBottomSheetWebUi {
         }
     }
 
+    void setIsResizing(boolean isResizing) {
+        mWebViewResizingHelper.setIsResizing(isResizing);
+    }
+
     @Nullable WebContents getWebContents() {
         return mWebContents;
     }
@@ -101,11 +108,12 @@ public class TabBottomSheetWebUi {
     void destroy() {
         // We expect the life cycle of webContents to be managed by native.
         mWebContents = null;
+        mWebViewResizingHelper.reset();
         mThinWebView.destroy();
     }
 
     View getWebUiView() {
-        return mThinWebView.getView();
+        return mWebViewResizingHelper.getResizingContainer();
     }
 
     private void resetThinWebView() {
@@ -117,6 +125,7 @@ public class TabBottomSheetWebUi {
                         mContext,
                         constraints,
                         assumeNonNull(mWindowAndroid.getIntentRequestTracker()));
+        mWebViewResizingHelper.setThinWebView(mThinWebView);
     }
 
     static void setInTestModeForTesting() {

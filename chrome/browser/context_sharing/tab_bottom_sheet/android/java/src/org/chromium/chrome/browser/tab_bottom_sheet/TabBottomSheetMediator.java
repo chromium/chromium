@@ -131,6 +131,10 @@ public class TabBottomSheetMediator extends GestureStateListener {
         }
     }
 
+    public void onSheetResizingStatusChanged(boolean isResizing) {
+        mModel.set(TabBottomSheetProperties.IS_RESIZING, isResizing);
+    }
+
     /**
      * Updates the state used for resizing the sheet.
      *

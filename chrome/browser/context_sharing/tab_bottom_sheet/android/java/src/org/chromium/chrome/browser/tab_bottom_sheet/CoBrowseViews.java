@@ -11,6 +11,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import androidx.annotation.Px;
 import androidx.annotation.VisibleForTesting;
 
 import org.jni_zero.CalledByNative;
@@ -20,6 +21,7 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.context_sharing.R;
 import org.chromium.chrome.browser.contextual_tasks.fusebox.ContextualTasksFusebox;
+import org.chromium.chrome.browser.tab_bottom_sheet.TabBottomSheetProperties.ResizingState;
 import org.chromium.content_public.browser.WebContents;
 
 /**
@@ -116,11 +118,18 @@ public class CoBrowseViews {
         return mWebUi != null ? mWebUi.getWebContents() : null;
     }
 
-    /** Sets the sheet's height. */
-    public void setSheetHeight(int height) {
+    /** Sets whether the sheet is resizing. */
+    public void setIsResizing(boolean isResizing) {
+        if (mWebUi != null) {
+            mWebUi.setIsResizing(isResizing);
+        }
+    }
+
+    /** Sets the resizing state of the sheet. */
+    public void setResizingState(ResizingState resizingState) {
+        @Px int height = resizingState.webUiContainerHeight;
         ViewGroup sheetContent = mView.findViewById(R.id.expanded_content_group);
         ViewGroup.LayoutParams sheetContentParams = sheetContent.getLayoutParams();
-
         if (sheetContentParams.height != height) {
             sheetContentParams.height = height;
             sheetContent.setLayoutParams(sheetContentParams);

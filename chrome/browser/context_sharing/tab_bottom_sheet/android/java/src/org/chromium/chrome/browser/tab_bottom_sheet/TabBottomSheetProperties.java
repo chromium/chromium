@@ -10,11 +10,12 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModel.ReadableObjectPropertyKey;
+import org.chromium.ui.modelutil.PropertyModel.WritableBooleanPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableFloatPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableIntPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableObjectPropertyKey;
 
-/** Properties for the "Tab Bottom Sheet" bottom sheet. */
+/** Properties for the Tab Bottom Sheet. */
 @NullMarked
 public class TabBottomSheetProperties {
     public static class ResizingState {
@@ -36,6 +37,8 @@ public class TabBottomSheetProperties {
             new ReadableObjectPropertyKey<>("bottom_sheet_views");
     public static final WritableObjectPropertyKey<ResizingState> RESIZING_STATE =
             new WritableObjectPropertyKey<>("resizing_state");
+    public static final WritableBooleanPropertyKey IS_RESIZING =
+            new WritableBooleanPropertyKey("is_resizing");
     public static final WritableFloatPropertyKey PEEK_VIEW_AND_EXPANDED_CONTENT_ALPHA =
             new WritableFloatPropertyKey("peek_view_alpha_and_expanded_content_alpha");
     public static final WritableIntPropertyKey PEEK_VIEW_AND_EXPANDED_CONTENT_VISIBILITY =
@@ -44,6 +47,7 @@ public class TabBottomSheetProperties {
     public static final PropertyKey[] ALL_KEYS = {
         BOTTOM_SHEET_VIEWS,
         RESIZING_STATE,
+        IS_RESIZING,
         PEEK_VIEW_AND_EXPANDED_CONTENT_ALPHA,
         PEEK_VIEW_AND_EXPANDED_CONTENT_VISIBILITY,
     };
@@ -55,6 +59,9 @@ public class TabBottomSheetProperties {
      * @return A new {@link PropertyModel} instance.
      */
     public static PropertyModel createDefaultModel(CoBrowseViews coBrowseViews) {
-        return new PropertyModel.Builder(ALL_KEYS).with(BOTTOM_SHEET_VIEWS, coBrowseViews).build();
+        return new PropertyModel.Builder(ALL_KEYS)
+                .with(BOTTOM_SHEET_VIEWS, coBrowseViews)
+                .with(IS_RESIZING, false)
+                .build();
     }
 }

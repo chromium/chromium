@@ -13,6 +13,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import android.content.Context;
+import android.view.View;
 
 import androidx.test.core.app.ApplicationProvider;
 
@@ -42,6 +43,7 @@ public class TabBottomSheetWebUiTest {
     @Mock private WindowAndroid mWindowAndroid;
     @Mock private WebContents mWebContents;
     @Mock private ThinWebView mThinWebView;
+    @Mock private View mView;
     @Mock private ContextMenuPopulatorFactory mContextMenuPopulatorFactory;
 
     private TabBottomSheetWebUi mWebUi;
@@ -49,6 +51,7 @@ public class TabBottomSheetWebUiTest {
     @Before
     public void setUp() {
         ThinWebViewFactory.setInstanceForTesting(mThinWebView);
+        when(mThinWebView.getView()).thenReturn(mView);
         Context context = ApplicationProvider.getApplicationContext();
         mWebUi = new TabBottomSheetWebUi(context, mWindowAndroid, mContextMenuPopulatorFactory);
         TabBottomSheetWebUi.setInTestModeForTesting();
