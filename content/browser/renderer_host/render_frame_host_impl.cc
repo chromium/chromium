@@ -1933,6 +1933,18 @@ void RecordNavigationTraceEventsAndMetrics(
   }
 
   if (ukm_builder.has_value()) {
+    if (!timeline.renderer_process_created.is_null() &&
+        timeline.renderer_process_created >= timeline.start) {
+      ukm_builder->SetRendererProcessCreated(
+          (timeline.renderer_process_created - timeline.start)
+              .InMilliseconds());
+    }
+    if (!timeline.renderer_process_launched.is_null() &&
+        timeline.renderer_process_launched >= timeline.start) {
+      ukm_builder->SetRendererProcessLaunched(
+          (timeline.renderer_process_launched - timeline.start)
+              .InMilliseconds());
+    }
     ukm_builder->Record(ukm::UkmRecorder::Get());
   }
 }

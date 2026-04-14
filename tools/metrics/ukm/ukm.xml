@@ -16944,6 +16944,16 @@ be describing additional metrics about the same event.
       renderer process sends a DidCommitNavigation reply.
     </summary>
   </metric>
+  <metric name="RendererProcessCreated">
+    <summary>
+      The time when the renderer process was created.
+    </summary>
+  </metric>
+  <metric name="RendererProcessLaunched">
+    <summary>
+      The time when the renderer process was launched.
+    </summary>
+  </metric>
   <metric name="StartToBeforeUnloadPhase1Duration">
     <summary>
       When the navigation starts, which could be in the renderer process, to

@@ -334,6 +334,20 @@ TEST_F(NavigationRequestTest, SimpleDataChecksFailure) {
             navigation->GetNavigationHandle()->GetNetErrorCode());
 }
 
+// Checks that `ShouldRecordNavigationTimelineUkm` returns true for `chrome://`
+// URLs.
+TEST_F(NavigationRequestTest, ShouldRecordNavigationTimelineUkmForChromeUI) {
+  const GURL kUrl = GURL("chrome://webui-toolbar.top-chrome/");
+  auto navigation =
+      NavigationSimulator::CreateBrowserInitiated(kUrl, web_contents());
+  navigation->Start();
+
+  NavigationRequest* request =
+      NavigationRequest::From(navigation->GetNavigationHandle());
+
+  EXPECT_TRUE(request->ShouldRecordNavigationTimelineUkm());
+}
+
 // Checks that a navigation deferred during WillStartRequest can be properly
 // cancelled.
 TEST_F(NavigationRequestTest, CancelDeferredWillStart) {

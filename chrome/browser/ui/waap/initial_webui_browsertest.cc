@@ -306,6 +306,11 @@ IN_PROC_BROWSER_TEST_F(InitialWebUINavigationBrowserTest, RecordPageLoadUKM) {
   EXPECT_FALSE(entries.empty());
 }
 
+// TODO(crbug.com/490810407): Verify that `NavigationTimeline` UKM is recorded.
+// `NavigationRequest::GetNavigationTimelineUkmBuilder()` uses a low sampling
+// rate such that it is unlikely to be recorded during a test. Adding browser
+// test coverage requires a test configuration with a 100% sampling rate.
+
 class InitialWebUIMetricsMappingBrowserTest
     : public InitialWebUIBrowserTestBase {
  public:

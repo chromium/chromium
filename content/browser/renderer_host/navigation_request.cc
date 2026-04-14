@@ -11820,7 +11820,8 @@ bool NavigationRequest::ShouldRecordNavigationTimelineUkm() const {
   return !IsSameDocument() && !IsRestore() &&
          !NavigationTypeUtils::IsHistory(common_params_->navigation_type) &&
          !NavigationTypeUtils::IsReload(common_params_->navigation_type) &&
-         common_params_->url.SchemeIsHTTPOrHTTPS() &&
+         (common_params_->url.SchemeIsHTTPOrHTTPS() ||
+          common_params_->url.SchemeIs(content::kChromeUIScheme)) &&
          !IsPrerenderedPageActivation();
 }
 
@@ -12161,6 +12162,14 @@ NavigationRequest::GenerateNavigationTimelineForMetrics(
   // `NavigationTimeline` so that it can be accessed by PageLoadMetricsObservers
   // via `NavigationRequest::GetNavigationHandleTiming()`.
   UpdateNavigationHandleTimingsFromNavigationTimeline(timeline);
+
+  // Populate the renderer process creation and launch times.
+  if (GetRenderFrameHost() && GetRenderFrameHost()->GetProcess()) {
+    timeline.renderer_process_created =
+        GetRenderFrameHost()->GetProcess()->GetLastInitTime();
+    timeline.renderer_process_launched =
+        GetRenderFrameHost()->GetProcess()->GetProcessLaunchedTime();
+  }
 
   return timeline;
 }
