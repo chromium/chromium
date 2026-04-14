@@ -69,8 +69,140 @@ if (is_android) {
 }
 
 source_set("segmentation_platform") {
-  sources = [ "segmentation_platform_service_factory.h" ]
-  public_deps = [ "//chrome/browser/profiles:profile" ]
+  sources = [
+    "segmentation_platform_service_factory.h",
+    "ukm_database_client.h",
+  ]
+  public_deps = [
+    "//chrome/browser/profiles:profile",
+    "//components/segmentation_platform/internal",
+  ]
+}
+
+source_set("impl") {
+  sources = [
+    "chrome_browser_main_extra_parts_segmentation_platform.cc",
+    "client_util/local_tab_handler.cc",
+    "client_util/local_tab_handler.h",
+    "segmentation_platform_config.cc",
+    "segmentation_platform_config.h",
+    "segmentation_platform_profile_observer.cc",
+    "segmentation_platform_profile_observer.h",
+    "segmentation_platform_service_factory.cc",
+    "ukm_database_client.cc",
+  ]
+
+  if (is_android) {
+    sources += [
+      "android/contextual_page_action_controller_android.cc",
+      "android/home_modules_ranking_helper.cc",
+      "android/segmentation_platform_service_factory_android.cc",
+    ]
+  }
+
+  public_deps = [
+    ":segmentation_platform",
+    "//chrome/browser:browser_public_dependencies",
+  ]
+
+  deps = [
+    "//chrome/browser:browser_process",
+    "//chrome/browser/bookmarks",
+    "//chrome/browser/commerce",
+    "//chrome/browser/history",
+    "//chrome/browser/optimization_guide",
+    "//chrome/browser/profiles:profile_manager",
+    "//chrome/browser/sync",
+    "//chrome/browser/ui/browser_window",
+    "//components/commerce/core:feature_list",
+    "//components/compose:buildflags",
+    "//components/metrics_services_manager",
+    "//components/search",
+    "//components/segmentation_platform/embedder",
+    "//components/segmentation_platform/embedder/default_model",
+    "//components/segmentation_platform/internal",
+    "//components/segmentation_platform/internal/proto",
+    "//components/sync_sessions",
+    "//components/ukm",
+  ]
+
+  if (is_android) {
+    deps += [
+      ":client_util_jni_headers",
+      ":jni_headers",
+      "//chrome/android:jni_headers",
+      "//chrome/browser/android:tabs_public",
+      "//chrome/browser/flags:flags_android",
+      "//chrome/browser/ui",
+      "//chrome/browser/ui/android/tab_model",
+      "//components/commerce/core:shopping_service",
+      "//components/segmentation_platform/embedder/home_modules:constants",
+    ]
+  } else {
+    deps += [
+      "//chrome/browser/ui",
+      "//chrome/browser/ui/sync",
+    ]
+  }
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [
+    "segmentation_platform_config_unittest.cc",
+    "segmentation_platform_profile_observer_unittest.cc",
+    "segmentation_platform_service_factory_unittest.cc",
+  ]
+
+  if (!is_android) {
+    sources += [ "client_util/local_tab_handler_unittest.cc" ]
+  }
+
+  deps = [
+    ":impl",
+    ":test_utils",
+    "//base/test:test_support",
+    "//chrome/browser/commerce",
+    "//chrome/browser/optimization_guide",
+    "//chrome/test:test_support",
+    "//components/commerce/core:shopping_service_test_support",
+    "//components/optimization_guide/core",
+    "//components/segmentation_platform/embedder",
+    "//components/segmentation_platform/embedder/default_model",
+    "//components/segmentation_platform/internal",
+    "//components/segmentation_platform/public",
+    "//components/segmentation_platform/public:test_support",
+    "//components/ukm:test_support",
+    "//components/visited_url_ranking/public",
+    "//components/visited_url_ranking/public:test_support",
+    "//testing/gmock",
+    "//testing/gtest",
+  ]
+}
+
+source_set("browser_tests") {
+  testonly = true
+
+  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+
+  sources = [ "service_browsertest.cc" ]
+
+  deps = [
+    ":impl",
+    ":test_utils",
+    "//base/test:test_support",
+    "//chrome/browser:browser_process",
+    "//chrome/browser/history",
+    "//chrome/browser/optimization_guide",
+    "//chrome/test:test_support",
+    "//components/optimization_guide/core:test_support",
+    "//components/segmentation_platform/embedder/default_model",
+    "//components/segmentation_platform/internal",
+    "//components/segmentation_platform/internal:test_support",
+    "//testing/gmock",
+    "//testing/gtest",
+  ]
 }
 
 static_library("test_utils") {
@@ -80,6 +212,7 @@ static_library("test_utils") {
     "ukm_data_manager_test_utils.h",
   ]
   deps = [
+    ":impl",
     ":segmentation_platform",
     "//base/test:test_support",
     "//chrome/browser",
