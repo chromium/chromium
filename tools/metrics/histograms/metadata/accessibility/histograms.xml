@@ -81,7 +81,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Accessibility.Android.AutoDisableV2.{CurrentState}Time.{CallType}"
-    units="ms" expires_after="2026-08-09">
+    units="ms" expires_after="2026-10-11">
   <owner>mschillaci@google.com</owner>
   <owner>aldietz@google.com</owner>
   <owner>dtseng@google.com</owner>
@@ -379,7 +379,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Accessibility.Android.PageZoom.AppMenuSliderOpened"
-    enum="Boolean" expires_after="2026-08-09">
+    enum="Boolean" expires_after="2026-10-11">
   <owner>mschillaci@google.com</owner>
   <owner>aldietz@google.com</owner>
   <owner>chrome-a11y-core@google.com</owner>
@@ -390,7 +390,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Accessibility.Android.PageZoom.AppMenuSliderZoomLevelChanged"
-    enum="Boolean" expires_after="2026-08-09">
+    enum="Boolean" expires_after="2026-10-11">
   <owner>mschillaci@google.com</owner>
   <owner>aldietz@google.com</owner>
   <owner>chrome-a11y-core@google.com</owner>
@@ -402,7 +402,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Accessibility.Android.PageZoom.AppMenuSliderZoomLevelValue"
-    units="%" expires_after="2026-08-09">
+    units="%" expires_after="2026-10-11">
   <owner>mschillaci@google.com</owner>
   <owner>aldietz@google.com</owner>
   <owner>chrome-a11y-core@google.com</owner>
@@ -1119,7 +1119,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Accessibility.CrosDictation.ListeningDuration.NetworkRecognition"
-    units="ms" expires_after="2026-06-01">
+    units="ms" expires_after="2026-10-11">
   <owner>katie@chromium.org</owner>
   <owner>chrome-a11y-core@google.com</owner>
   <summary>
@@ -1179,7 +1179,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Accessibility.CrosDictation.ToggleDictationMethod"
-    enum="CrosDictationToggleDictationMethod" expires_after="2026-06-01">
+    enum="CrosDictationToggleDictationMethod" expires_after="2026-10-11">
   <owner>anastasi@google.com</owner>
   <owner>dtseng@chromium.org</owner>
   <owner>chrome-a11y-core@google.com</owner>
@@ -1187,7 +1187,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Accessibility.CrosDictation.UsedOnDeviceSpeech"
-    enum="BooleanUsage" expires_after="2026-06-01">
+    enum="BooleanUsage" expires_after="2026-10-11">
   <owner>katie@chromium.org</owner>
   <owner>chrome-a11y-core@google.com</owner>
   <summary>
@@ -2345,7 +2345,7 @@ even if they fit the naming pattern. -->
 </histogram>
 
 <histogram name="Accessibility.LiveTranslate.TranslationDispatcher.LoadResult"
-    enum="TranslationDispatcherLoadResult" expires_after="2026-08-09">
+    enum="TranslationDispatcherLoadResult" expires_after="2026-10-11">
   <owner>evanliu@google.com</owner>
   <owner>chrome-accessibility-eng@google.com</owner>
   <summary>
@@ -2355,7 +2355,7 @@ even if they fit the naming pattern. -->
 </histogram>
 
 <histogram name="Accessibility.LiveTranslate.TranslationDispatcher.ParseResult"
-    enum="TranslationDispatcherParseResult" expires_after="2026-08-09">
+    enum="TranslationDispatcherParseResult" expires_after="2026-10-11">
   <owner>evanliu@google.com</owner>
   <owner>chrome-accessibility-eng@google.com</owner>
   <summary>
@@ -3252,7 +3252,7 @@ even if they fit the naming pattern. -->
 </histogram>
 
 <histogram name="Accessibility.ReadAnything.OpenedAfterOmniboxIPH"
-    enum="Boolean" expires_after="2026-08-09">
+    enum="Boolean" expires_after="2026-10-11">
   <owner>kristislee@google.com</owner>
   <owner>komo-eng@google.com</owner>
   <summary>
@@ -3280,7 +3280,7 @@ even if they fit the naming pattern. -->
 </histogram>
 
 <histogram name="Accessibility.ReadAnything.ReadAloud.EngineVersion"
-    units="yyyymmdd0" expires_after="2026-07-10">
+    units="yyyymmdd0" expires_after="2026-10-11">
   <owner>lwinston@google.com</owner>
   <owner>komo-eng@google.com</owner>
   <summary>

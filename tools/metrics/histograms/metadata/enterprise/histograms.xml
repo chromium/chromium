@@ -944,7 +944,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Enterprise.DeviceSettings.UpdatedStatus2"
-    enum="DeviceSettingsStatus2" expires_after="2026-08-09">
+    enum="DeviceSettingsStatus2" expires_after="2026-10-11">
   <owner>rbock@google.com</owner>
   <owner>chromeos-commercial-remote-management@google.com</owner>
   <owner>managed-devices@google.com</owner>
@@ -2160,7 +2160,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Enterprise.EncryptedCache.FactoryCreationSuccess"
-    enum="BooleanSuccess" expires_after="2026-08-01">
+    enum="BooleanSuccess" expires_after="2026-10-11">
   <owner>haihan@google.com</owner>
   <owner>valadkevich@google.com</owner>
   <owner>cbe-cep-eng@google.com</owner>
@@ -2171,7 +2171,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Enterprise.EncryptedCache.KeyCreationSuccess"
-    enum="BooleanSuccess" expires_after="2026-08-01">
+    enum="BooleanSuccess" expires_after="2026-10-11">
   <owner>haihan@google.com</owner>
   <owner>valadkevich@google.com</owner>
   <owner>cbe-cep-eng@google.com</owner>
@@ -2181,7 +2181,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Enterprise.EncryptedCache.KeyHasherObtainSuccess"
-    enum="BooleanSuccess" expires_after="2026-08-01">
+    enum="BooleanSuccess" expires_after="2026-10-11">
   <owner>haihan@google.com</owner>
   <owner>valadkevich@google.com</owner>
   <owner>cbe-cep-eng@google.com</owner>
@@ -2202,7 +2202,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Enterprise.EncryptedCache.KeyRetrievalFromPrefsSuccess"
-    enum="BooleanSuccess" expires_after="2026-08-01">
+    enum="BooleanSuccess" expires_after="2026-10-11">
   <owner>haihan@google.com</owner>
   <owner>valadkevich@google.com</owner>
   <owner>cbe-cep-eng@google.com</owner>
@@ -2692,7 +2692,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Enterprise.IframeDlpRulesSupport.{DeepScanAccessPoint}.UrlChainSize"
-    units="count" expires_after="2026-08-09">
+    units="count" expires_after="2026-10-11">
   <owner>haihan@google.com</owner>
   <owner>nancylanxiao@google.com</owner>
   <owner>cbe-cep-eng@google.com</owner>
@@ -3192,7 +3192,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Enterprise.PolicyUpdatePeriod.User" units="days"
-    expires_after="2026-08-09">
+    expires_after="2026-10-11">
   <owner>rbock@google.com</owner>
   <owner>igorcov@chromium.org</owner>
   <owner>chromeos-commercial-remote-management@google.com</owner>
@@ -3338,7 +3338,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Enterprise.ReportingEvent.{EventType}.{UploadResult}.Duration"
-    units="ms" expires_after="2026-08-09">
+    units="ms" expires_after="2026-10-11">
   <owner>nancylanxiao@google.com</owner>
   <owner>domfc@chromium.org</owner>
   <owner>xanth@google.com</owner>
@@ -3356,7 +3356,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Enterprise.ReportingEventUploadFailure"
-    enum="EnterpriseReportingEventType" expires_after="2026-08-09">
+    enum="EnterpriseReportingEventType" expires_after="2026-10-11">
   <owner>xanth@google.com</owner>
   <owner>alshawwa@chromium.org</owner>
   <owner>domfc@chromium.org</owner>
@@ -3368,7 +3368,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Enterprise.ReportingEventUploadSuccess"
-    enum="EnterpriseReportingEventType" expires_after="2026-08-09">
+    enum="EnterpriseReportingEventType" expires_after="2026-10-11">
   <owner>xanth@google.com</owner>
   <owner>alshawwa@chromium.org</owner>
   <owner>domfc@chromium.org</owner>
@@ -3452,7 +3452,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Enterprise.SkyVault.LocalStorage.Enabled"
-    enum="BooleanEnabled" expires_after="2026-08-09">
+    enum="BooleanEnabled" expires_after="2026-10-11">
   <owner>aidazolic@google.com</owner>
   <owner>src/chrome/browser/ash/policy/skyvault/OWNERS</owner>
   <summary>
@@ -4432,7 +4432,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="NetworkedProfile.Check" enum="NetworkedProfileCheck"
-    expires_after="2026-08-09">
+    expires_after="2026-10-11">
   <owner>pastarmovj@chromium.org</owner>
   <owner>grt@chromium.org</owner>
   <summary>

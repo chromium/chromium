@@ -490,7 +490,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ServiceWorker.FetchEvent.{Resource}.FetchResponseFrom"
-    enum="ServiceWorkerFetchResponseFrom" expires_after="2026-08-09">
+    enum="ServiceWorkerFetchResponseFrom" expires_after="2026-10-11">
   <owner>sisidovski@chromium.org</owner>
   <owner>chrome-worker@google.com</owner>
   <summary>
@@ -1460,7 +1460,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ServiceWorker.ResourceChecksumMatch" enum="Boolean"
-    expires_after="2026-08-09">
+    expires_after="2026-10-11">
   <owner>elkurin@chromium.org</owner>
   <owner>chrome-storage-team-tokyo@google.com</owner>
   <summary>
@@ -2185,7 +2185,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ServiceWorker.SyntheticResponse.WriteFallbackBodyResult"
-    enum="MojoResult" expires_after="2026-08-12">
+    enum="MojoResult" expires_after="2026-10-11">
   <owner>sisidovski@google.com</owner>
   <owner>chrome-worker@google.com</owner>
   <summary>

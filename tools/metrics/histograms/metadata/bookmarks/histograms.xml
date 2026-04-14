@@ -553,7 +553,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Bookmarks.MobileBookmarkManager.SortOptionUsed"
-    enum="MobileBookmarkManagerBookmarkRowSortOrder" expires_after="2026-08-09">
+    enum="MobileBookmarkManagerBookmarkRowSortOrder" expires_after="2026-10-11">
   <owner>wylieb@google.com</owner>
   <owner>chrome-collections@google.com</owner>
   <summary>
@@ -969,7 +969,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Bookmarks.UserFolder.OnProfileLoad.Count" units="folders"
-    expires_after="2026-08-09">
+    expires_after="2026-10-11">
   <owner>yzshen@chromium.org</owner>
   <owner>chrome-collections@google.com</owner>
   <summary>
@@ -982,7 +982,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Bookmarks.UserFolder.OnProfileLoad.TopLevelCount"
-    units="folders" expires_after="2026-08-09">
+    units="folders" expires_after="2026-10-11">
   <owner>yzshen@chromium.org</owner>
   <owner>chrome-collections@google.com</owner>
   <summary>
@@ -995,7 +995,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Bookmarks.UserFolderDepth.UrlAdded" units="folders"
-    expires_after="2026-08-09">
+    expires_after="2026-10-11">
   <owner>yzshen@chromium.org</owner>
   <owner>chrome-collections@google.com</owner>
   <summary>
@@ -1084,7 +1084,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PowerBookmarks.SidePanel.BookmarksShown" units="Bookmarks"
-    expires_after="2026-08-09">
+    expires_after="2026-10-11">
   <owner>emshack@chromium.org</owner>
   <owner>chrome-desktop-sea@google.com</owner>
   <component>1457140</component>
@@ -1096,7 +1096,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PowerBookmarks.SidePanel.Search.CTR"
-    enum="BookmarksSidePanelSearchCTREvent" expires_after="2026-08-09">
+    enum="BookmarksSidePanelSearchCTREvent" expires_after="2026-10-11">
   <owner>emshack@chromium.org</owner>
   <owner>chrome-desktop-sea@google.com</owner>
   <component>1457140</component>

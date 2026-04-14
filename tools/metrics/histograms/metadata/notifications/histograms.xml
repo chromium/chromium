@@ -748,7 +748,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Notifications.Engagement.{Type}.Volume{Volume}"
-    units="site-engagement-score*2" expires_after="2026-08-09">
+    units="site-engagement-score*2" expires_after="2026-10-11">
   <owner>antoniosartori@chromium.org</owner>
   <owner>feuunk@chromium.org</owner>
   <summary>
@@ -1081,7 +1081,7 @@ chromium-metrics-reviews@google.com.
 <histogram
     name="Notifications.Scheduler.NotificationLifeCycleEvent{NotificationSchedulerClientType}"
     enum="NotificationSchedulerNotificationLifeCycleEvent"
-    expires_after="2026-08-09">
+    expires_after="2026-10-11">
   <owner>shaktisahu@chromium.org</owner>
   <owner>nyquist@chromium.org</owner>
   <summary>
@@ -1108,7 +1108,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Notifications.Scheduler.Tips.FeatureTypeAction{NotificationTipsFeatureType}"
-    enum="NotificationSchedulerUserActionType" expires_after="2026-08-09">
+    enum="NotificationSchedulerUserActionType" expires_after="2026-10-11">
   <owner>wylieb@google.com</owner>
   <owner>bjfong@google.com</owner>
   <summary>
@@ -1131,7 +1131,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Notifications.Scheduler.Tips.FeatureTypeShown"
-    enum="TipsNotificationsFeatureType" expires_after="2026-08-09">
+    enum="TipsNotificationsFeatureType" expires_after="2026-10-11">
   <owner>wylieb@google.com</owner>
   <owner>bjfong@google.com</owner>
   <summary>
@@ -1143,7 +1143,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Notifications.Tips.FeatureTipPromo.EventType{NotificationTipsFeatureType}"
-    enum="TipsNotificationsFeatureTipPromoEventType" expires_after="2026-08-09">
+    enum="TipsNotificationsFeatureTipPromoEventType" expires_after="2026-10-11">
   <owner>wylieb@google.com</owner>
   <owner>bjfong@google.com</owner>
   <summary>
@@ -1167,7 +1167,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Notifications.Tips.OptInPromo.EventType"
-    enum="TipsNotificationsOptInPromoEventType" expires_after="2026-08-09">
+    enum="TipsNotificationsOptInPromoEventType" expires_after="2026-10-11">
   <owner>wylieb@google.com</owner>
   <owner>bjfong@google.com</owner>
   <summary>

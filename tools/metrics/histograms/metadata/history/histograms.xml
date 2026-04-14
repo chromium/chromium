@@ -1939,7 +1939,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="History.Embeddings.Embedder.EmbeddingsGenerationSucceeded"
-    enum="Boolean" expires_after="2026-08-09">
+    enum="Boolean" expires_after="2026-10-11">
   <owner>sophiechang@chromium.org</owner>
   <owner>zekunjiang@google.com</owner>
   <summary>
@@ -2689,7 +2689,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="History.MostVisitedTilesVisualDeduplication" units="tiles"
-    expires_after="2026-08-09">
+    expires_after="2026-10-11">
   <owner>hitarthkothari@google.com</owner>
   <owner>ckitagawa@chromium.org</owner>
   <summary>
@@ -3062,7 +3062,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="History.WeeklyURLCount" units="URLs"
-    expires_after="2026-08-09">
+    expires_after="2026-10-11">
   <owner>mpearson@chromium.org</owner>
   <owner>sky@chromium.org</owner>
   <component>1456716</component>

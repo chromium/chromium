@@ -3570,7 +3570,7 @@ Keep consistent with active providers. Doesn't need to include every provider in
 
 <histogram
     name="Omnibox.SearchPrefetch.TakePrefetchResponseFromMemoryCache.ResourceResponseReceived"
-    enum="Boolean" expires_after="2026-08-09">
+    enum="Boolean" expires_after="2026-10-11">
   <owner>gjc@google.com</owner>
   <owner>chrome-prerendering@google.com</owner>
   <summary>

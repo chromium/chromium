@@ -2008,7 +2008,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Bluetooth.Web.GetCharacteristic.Characteristic"
-    enum="GATTCharacteristicHash" expires_after="2026-08-09">
+    enum="GATTCharacteristicHash" expires_after="2026-10-11">
   <owner>reillyg@chromium.org</owner>
   <owner>deviceapi-team@google.com</owner>
   <summary>
@@ -2030,7 +2030,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Bluetooth.Web.GetPrimaryService.Services"
-    enum="GATTServiceHash" expires_after="2026-08-09">
+    enum="GATTServiceHash" expires_after="2026-10-11">
   <owner>mattreynolds@chromium.org</owner>
   <owner>deviceapi-team@google.com</owner>
   <summary>
@@ -2041,7 +2041,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Bluetooth.Web.GetPrimaryServices.Services"
-    enum="GATTServiceHash" expires_after="2026-08-09">
+    enum="GATTServiceHash" expires_after="2026-10-11">
   <owner>mattreynolds@chromium.org</owner>
   <owner>deviceapi-team@google.com</owner>
   <summary>

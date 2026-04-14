@@ -950,7 +950,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Session.WebStates.LoadingTimeOnMainThread" units="ms"
-    expires_after="2026-08-09">
+    expires_after="2026-10-11">
   <owner>fedegermi@google.com</owner>
   <owner>sdefresne@chromium.org</owner>
   <summary>

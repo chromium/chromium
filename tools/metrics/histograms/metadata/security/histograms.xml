@@ -82,7 +82,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="OSCrypt.AppBoundProvider.Encrypt.ResultLastError"
-    enum="WinGetLastError" expires_after="2026-08-09">
+    enum="WinGetLastError" expires_after="2026-10-11">
   <owner>wfh@chromium.org</owner>
   <owner>nparker@chromium.org</owner>
   <summary>
@@ -236,7 +236,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="OSCrypt.Mac.FindGenericPasswordError"
-    enum="MacSecurityFrameworkOSStatus" expires_after="2026-08-09">
+    enum="MacSecurityFrameworkOSStatus" expires_after="2026-10-11">
   <owner>avi@chromium.org</owner>
   <owner>lgrey@chromium.org</owner>
   <owner>markrowe@chromium.org</owner>
@@ -254,7 +254,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="OSCrypt.Mac.FindGenericPasswordResult"
-    enum="FindGenericPasswordResult" expires_after="2026-08-09">
+    enum="FindGenericPasswordResult" expires_after="2026-10-11">
   <owner>avi@chromium.org</owner>
   <owner>lgrey@chromium.org</owner>
   <owner>markrowe@chromium.org</owner>
@@ -679,7 +679,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Security.PageInfo.MerchantTrustEngagement.{Event}"
-    units="EngagementScore" expires_after="2026-08-09">
+    units="EngagementScore" expires_after="2026-10-11">
   <owner>tommasin@chromium.org</owner>
   <owner>privacy-on-the-web@google.com</owner>
   <summary>
@@ -694,7 +694,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Security.PageInfo.MerchantTrustInteraction.{SiteFamiliarity}"
-    enum="MerchantTrustInteraction" expires_after="2026-08-09">
+    enum="MerchantTrustInteraction" expires_after="2026-10-11">
   <owner>tommasin@chromium.org</owner>
   <owner>privacy-on-the-web@google.com</owner>
   <summary>
@@ -1129,7 +1129,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="SiteIsolation.IsolatableSandboxedIframes" units="processes"
-    expires_after="2026-08-09">
+    expires_after="2026-10-11">
   <owner>wjmaclean@chromium.org</owner>
   <owner>alexmos@chromium.org</owner>
   <owner>creis@chromium.org</owner>
@@ -1148,7 +1148,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="SiteIsolation.IsolatableSandboxedIframes.UniqueOrigins"
-    units="processes" expires_after="2026-08-09">
+    units="processes" expires_after="2026-10-11">
   <owner>wjmaclean@chromium.org</owner>
   <owner>alexmos@chromium.org</owner>
   <owner>creis@chromium.org</owner>

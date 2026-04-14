@@ -426,7 +426,7 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ChromeOS.Settings.Display.{DisplayType}.Orientation"
-    enum="DisplaySettingsOrientationOption" expires_after="2026-06-28">
+    enum="DisplaySettingsOrientationOption" expires_after="2026-10-11">
   <owner>zhangwenyu@google.com</owner>
   <owner>cros-device-enablement@google.com</owner>
   <summary>

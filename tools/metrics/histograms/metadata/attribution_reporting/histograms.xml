@@ -195,7 +195,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Conversions.AggregatableReport.TimeFromTriggerToReportSentSuccessfully"
-    units="ms" expires_after="2026-08-09">
+    units="ms" expires_after="2026-10-11">
   <owner>linnan@chromium.org</owner>
   <owner>measurement-api-dev+metrics@google.com</owner>
   <summary>
@@ -995,7 +995,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Conversions.TimeFromTriggerToReportSentSuccessfully"
-    units="hours" expires_after="2026-08-09">
+    units="hours" expires_after="2026-10-11">
   <owner>linnan@chromium.org</owner>
   <owner>measurement-api-dev+metrics@google.com</owner>
   <summary>

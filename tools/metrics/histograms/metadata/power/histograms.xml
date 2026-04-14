@@ -1928,7 +1928,7 @@ tools/metrics/histograms/metadata/stability/enums.xml
 </histogram>
 
 <histogram name="Power.SuspendAttempt" enum="SuspendAttempt"
-    expires_after="2026-08-09">
+    expires_after="2026-10-11">
   <owner>puthik@chromium.org</owner>
   <owner>chromeos-platform-power@google.com</owner>
   <summary>

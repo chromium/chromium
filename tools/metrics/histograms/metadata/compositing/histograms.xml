@@ -515,7 +515,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Compositing.Renderer.LayersUpdateTime" units="microseconds"
-    expires_after="2026-08-09">
+    expires_after="2026-10-11">
   <owner>pdr@chromium.org</owner>
   <owner>paint-dev@chromium.org</owner>
   <improvement direction="LOWER_IS_BETTER"/>

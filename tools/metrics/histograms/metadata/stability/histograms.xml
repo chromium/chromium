@@ -311,7 +311,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Stability.Android.KillSpareRendererAvailability.{KillType}"
-    enum="SpareRendererAvailabilityWhenKilled" expires_after="2026-08-09">
+    enum="SpareRendererAvailabilityWhenKilled" expires_after="2026-10-11">
   <owner>gjc@google.com</owner>
   <owner>chrome-loading@google.com</owner>
   <summary>

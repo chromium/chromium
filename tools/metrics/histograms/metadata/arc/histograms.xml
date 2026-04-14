@@ -667,7 +667,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Arc.ArcOnDemandV2.ActivationShouldBeDelayed" enum="Boolean"
-    expires_after="2026-06-28">
+    expires_after="2026-10-11">
   <owner>yuholong@google.com</owner>
   <owner>arcvm-eng@google.com</owner>
   <summary>
@@ -2160,7 +2160,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Arc.Runtime.Performance.JanksPerMinute2{ArcPerformanceAppCategories}"
-    units="count" expires_after="2026-08-09">
+    units="count" expires_after="2026-10-11">
   <owner>khmel@google.com</owner>
   <owner>arc-performance@google.com</owner>
   <summary>

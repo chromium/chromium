@@ -319,7 +319,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Browser.ERP.EventEnqueueResult"
-    enum="EnterpriseCloudReportingStatusCode" expires_after="2026-08-09">
+    enum="EnterpriseCloudReportingStatusCode" expires_after="2026-10-11">
   <owner>nancylanxiao@google.com</owner>
   <owner>xanth@google.com</owner>
   <owner>domfc@google.com</owner>
@@ -1300,7 +1300,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="BrowserRenderProcessHost.AvailableMemory.SpareRenderer.{ProcessType}ProcessKillWithin{Time}"
-    units="MB" expires_after="2026-08-09">
+    units="MB" expires_after="2026-10-11">
   <owner>gjc@google.com</owner>
   <owner>chrome-loading@google.com</owner>
   <summary>
@@ -1897,7 +1897,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="BrowserServices.VerificationResult"
-    enum="BrowserServicesVerificationResult" expires_after="2026-08-09">
+    enum="BrowserServicesVerificationResult" expires_after="2026-10-11">
   <owner>peconn@chromium.org</owner>
   <owner>peter@chromium.org</owner>
   <summary>
@@ -1910,7 +1910,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="BrowserServices.VerificationTime.Offline" units="ms"
-    expires_after="2026-08-09">
+    expires_after="2026-10-11">
   <owner>peconn@chromium.org</owner>
   <owner>peter@chromium.org</owner>
   <summary>
@@ -1924,7 +1924,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="BrowserServices.VerificationTime.Online" units="ms"
-    expires_after="2026-08-09">
+    expires_after="2026-10-11">
   <owner>peconn@chromium.org</owner>
   <owner>peter@chromium.org</owner>
   <summary>
@@ -2276,7 +2276,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="{SidePanelType}.ResizedWidth" units="px"
-    expires_after="2026-08-09">
+    expires_after="2026-10-11">
   <owner>emshack@chromium.org</owner>
   <owner>top-chrome-desktop-ui@google.com</owner>
   <summary>
@@ -2298,7 +2298,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="{SidePanelType}.TimeOfLongestAnimationStep" units="ms"
-    expires_after="2026-08-09">
+    expires_after="2026-10-11">
   <owner>corising@chromium.org</owner>
   <owner>top-chrome-desktop-ui@google.com</owner>
   <summary>
@@ -2322,7 +2322,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="{SidePanelType}.{SidePanelEntry}.ResizedWidth" units="px"
-    expires_after="2026-08-09">
+    expires_after="2026-10-11">
   <owner>emshack@chromium.org</owner>
   <owner>top-chrome-desktop-ui@google.com</owner>
   <summary>
@@ -2334,7 +2334,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="{SidePanelType}.{SidePanelEntry}.ResizedWidthPercentage"
-    units="% of window width" expires_after="2026-08-09">
+    units="% of window width" expires_after="2026-10-11">
   <owner>emshack@chromium.org</owner>
   <owner>top-chrome-desktop-ui@google.com</owner>
   <summary>

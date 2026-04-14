@@ -53,7 +53,7 @@ chromium-metrics-reviews@google.com.
 <!-- LINT.ThenChange(//components/sqlite_vfs/client.h:VfsClient) -->
 
 <histogram name="PersistentCache.BackendInitialize.{Mode}.{Client}"
-    units="microseconds" expires_after="2026-08-09">
+    units="microseconds" expires_after="2026-10-11">
   <owner>grt@chromium.org</owner>
   <owner>catan-team@chromium.org</owner>
   <summary>

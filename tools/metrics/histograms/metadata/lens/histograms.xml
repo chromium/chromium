@@ -830,7 +830,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Lens.Overlay.SidePanelResultStatus"
-    enum="SidePanelResultStatus" expires_after="2026-08-09">
+    enum="SidePanelResultStatus" expires_after="2026-10-11">
   <owner>juanmojica@google.com</owner>
   <owner>lens-chrome@google.com</owner>
   <summary>
@@ -841,7 +841,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Lens.Overlay.TextDirectiveResult"
-    enum="LensOverlayTextDirectiveResult" expires_after="2026-08-09">
+    enum="LensOverlayTextDirectiveResult" expires_after="2026-10-11">
   <owner>juanmojica@google.com</owner>
   <owner>lens-chrome@google.com</owner>
   <summary>

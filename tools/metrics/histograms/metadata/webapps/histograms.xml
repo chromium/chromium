@@ -1226,7 +1226,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebApp.InstalledCount.ByUser" units="count"
-    expires_after="2026-08-09">
+    expires_after="2026-10-11">
   <owner>dmurph@chromium.org</owner>
   <owner>pwa-team@google.com</owner>
   <summary>
@@ -1275,7 +1275,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebApp.InstalledCount.HasNoTrustedIcons" units="count"
-    expires_after="2026-08-07">
+    expires_after="2026-10-11">
   <owner>dibyapal@chromium.org</owner>
   <owner>pwa-team@google.com</owner>
   <summary>
@@ -1289,7 +1289,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebApp.InstalledCount.HasTrustedIcons" units="count"
-    expires_after="2026-08-07">
+    expires_after="2026-10-11">
   <owner>dibyapal@chromium.org</owner>
   <owner>pwa-team@google.com</owner>
   <summary>

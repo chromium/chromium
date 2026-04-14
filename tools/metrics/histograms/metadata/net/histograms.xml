@@ -585,7 +585,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Crypto.UnexportableKeys.BackgroundTaskResult{TaskOrigin}{TaskType}"
-    enum="UnexportableKeyServiceResult" expires_after="2026-08-09">
+    enum="UnexportableKeyServiceResult" expires_after="2026-10-11">
   <owner>alexilin@chromium.org</owner>
   <owner>drubery@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
@@ -603,7 +603,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Crypto.UnexportableKeys.BackgroundTaskRetries{TaskType}{Success}"
-    units="retries" expires_after="2026-08-09">
+    units="retries" expires_after="2026-10-11">
   <owner>alexilin@chromium.org</owner>
   <owner>drubery@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
@@ -794,7 +794,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="HttpCache.Experimental.Read.EntryContentSize" units="bytes"
-    expires_after="2026-08-09">
+    expires_after="2026-10-11">
   <owner>anthonyvd@chromium.org</owner>
   <owner>chrome-catan@google.com</owner>
   <summary>
@@ -804,7 +804,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="HttpCache.Experimental.Read.EntryResponseInfoSize"
-    units="bytes" expires_after="2026-08-09">
+    units="bytes" expires_after="2026-10-11">
   <owner>anthonyvd@chromium.org</owner>
   <owner>chrome-catan@google.com</owner>
   <summary>
@@ -814,7 +814,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="HttpCache.Experimental.Read.EntryTotalSize" units="bytes"
-    expires_after="2026-08-09">
+    expires_after="2026-10-11">
   <owner>anthonyvd@chromium.org</owner>
   <owner>chrome-catan@google.com</owner>
   <summary>
@@ -1106,7 +1106,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="HttpCache.NoVarySearch.LookupTime{HitOrMiss}{MainFrameOrNot}{BaseUrlMatchedOrNot}"
-    units="microseconds" expires_after="2026-08-09">
+    units="microseconds" expires_after="2026-10-11">
   <owner>ricea@chromium.org</owner>
   <owner>net-dev@chromium.org</owner>
   <summary>
@@ -1451,7 +1451,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Net.AcceptCHFrameInterceptor.MismatchClientHint2"
-    enum="WebClientHintsType" expires_after="2026-08-01">
+    enum="WebClientHintsType" expires_after="2026-10-11">
   <owner>yyanagisawa@chromium.org</owner>
   <owner>chrome-loading@google.com</owner>
   <summary>
@@ -1467,7 +1467,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Net.AcceptCHFrameInterceptor.NeedsObserverCheckReason"
-    enum="NeedsObserverCheckReason" expires_after="2026-08-09">
+    enum="NeedsObserverCheckReason" expires_after="2026-10-11">
   <owner>yyanagisawa@chromium.org</owner>
   <owner>chrome-loading@google.com</owner>
   <summary>
@@ -1889,7 +1889,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Net.CertVerifier.NSSCertMigrationResult"
-    enum="NetCertVerifierNSSCertMigrationResult" expires_after="2026-08-09">
+    enum="NetCertVerifierNSSCertMigrationResult" expires_after="2026-10-11">
   <owner>mattm@chromium.org</owner>
   <owner>hchao@chromium.org</owner>
   <summary>
@@ -2014,7 +2014,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Net.CountOfBrokenAlternativeServices" units="services"
-    expires_after="2026-08-12">
+    expires_after="2026-10-11">
   <owner>bashi@chromium.org</owner>
   <owner>src/net/OWNERS</owner>
   <summary>
@@ -2634,7 +2634,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Net.DNS.DnsTransaction.Insecure.{DohProviderId}FailureTime"
-    units="ms" expires_after="2026-08-09">
+    units="ms" expires_after="2026-10-11">
   <owner>awillia@chromium.org</owner>
   <owner>src/net/dns/OWNERS</owner>
   <summary>
@@ -2644,7 +2644,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Net.DNS.DnsTransaction.Insecure.{DohProviderId}SuccessTime"
-    units="ms" expires_after="2026-08-09">
+    units="ms" expires_after="2026-10-11">
   <owner>awillia@chromium.org</owner>
   <owner>src/net/dns/OWNERS</owner>
   <summary>
@@ -2655,7 +2655,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Net.DNS.DnsTransaction.SecureNotValidated.{DohProviderId}FailureError"
-    enum="NetErrorCodes" expires_after="2026-08-09">
+    enum="NetErrorCodes" expires_after="2026-10-11">
   <owner>awillia@chromium.org</owner>
   <owner>src/net/dns/OWNERS</owner>
   <summary>
@@ -2694,7 +2694,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Net.DNS.DnsTransaction.SecureValidated.{DohProviderId}SuccessTime"
-    units="ms" expires_after="2026-08-09">
+    units="ms" expires_after="2026-10-11">
   <owner>awillia@chromium.org</owner>
   <owner>src/net/dns/OWNERS</owner>
   <summary>
@@ -3145,7 +3145,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Net.DNS.ResolveContext.DohAutoupgrade.{DohProviderId}Status"
-    enum="DohServerAutoupgradeStatus" expires_after="2026-08-09">
+    enum="DohServerAutoupgradeStatus" expires_after="2026-10-11">
   <owner>awillia@chromium.org</owner>
   <owner>src/net/OWNERS</owner>
   <summary>
@@ -3224,7 +3224,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Net.Dns.ResolveTimeDiff2.{Variant}" units="ms"
-    expires_after="2026-08-09">
+    expires_after="2026-10-11">
   <owner>bashi@chromium.org</owner>
   <owner>chrome-network-stack@google.com</owner>
   <summary>
@@ -3859,7 +3859,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Net.HttpStreamPool.JobCompleteTime4.{Result}" units="ms"
-    expires_after="2026-08-09">
+    expires_after="2026-10-11">
   <owner>bashi@chromium.org</owner>
   <owner>blink-network-stack@google.com</owner>
   <summary>
@@ -3983,7 +3983,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Net.HttpStreamPool.TcpBasedAttemptDelay" units="ms"
-    expires_after="2026-08-09">
+    expires_after="2026-10-11">
   <owner>bashi@chromium.org</owner>
   <owner>blink-network-stack@google.com</owner>
   <summary>
@@ -4089,7 +4089,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Net.HttpStreamPool.TlsHandshakeTime" units="ms"
-    expires_after="2026-08-09">
+    expires_after="2026-10-11">
   <owner>bashi@chromium.org</owner>
   <owner>blink-network-stack@google.com</owner>
   <summary>
@@ -4182,7 +4182,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Net.NetworkChangeNotifier.ConnectionTypePollsWin.{NotificationType}"
-    units="polls" expires_after="2026-08-12">
+    units="polls" expires_after="2026-10-11">
   <owner>mmenke@chromium.org</owner>
   <owner>net-dev@chromium.org</owner>
   <summary>
@@ -4431,7 +4431,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Net.NetworkTransaction.{Protocol}StreamCreationTime2.{NewOrExisting}"
-    units="ms" expires_after="2026-06-28">
+    units="ms" expires_after="2026-10-11">
   <owner>bashi@chromium.org</owner>
   <owner>blink-network-stack@google.com</owner>
   <summary>
@@ -6182,7 +6182,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Net.QuicSession.NumReceivedOrigins" units="origins"
-    expires_after="2026-08-09">
+    expires_after="2026-10-11">
   <owner>fayang@chromium.org</owner>
   <owner>src/net/quic/OWNERS</owner>
   <summary>
@@ -6194,7 +6194,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Net.QuicSession.NumStreamsWaitingToWriteOnIdleTimeout{HostType}"
-    units="streams" expires_after="2026-08-09">
+    units="streams" expires_after="2026-10-11">
   <owner>renjietang@chromium.org</owner>
   <owner>suzukikeita@chromium.org</owner>
   <owner>src/net/quic/OWNERS</owner>
@@ -7460,7 +7460,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Net.RestrictedCookieManager.SetCookieFromString.Duration.Subsampled"
-    units="microseconds" expires_after="2026-08-09">
+    units="microseconds" expires_after="2026-10-11">
   <owner>acondor@chromium.org</owner>
   <owner>clank-performance-team@google.com</owner>
   <improvement direction="LOWER_IS_BETTER"/>
@@ -8097,7 +8097,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Net.SpdySession.AlpsDecoderStatus.Bypassed"
-    enum="AlpsDecoderError" expires_after="2026-08-09">
+    enum="AlpsDecoderError" expires_after="2026-10-11">
   <owner>arichiv@chromium.org</owner>
   <owner>src/net/OWNERS</owner>
   <summary>
@@ -8779,7 +8779,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Net.TCPSocket.PortReuseTimeWindows2.{IPType}.{Result}"
-    units="ms" expires_after="2026-08-09">
+    units="ms" expires_after="2026-10-11">
   <owner>arichiv@chromium.org</owner>
   <owner>awillia@chromium.org</owner>
   <owner>katabolism-finch@google.com</owner>
@@ -9004,7 +9004,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Net.URLLoader.AcceptCH.RoundTripTime" units="microseconds"
-    expires_after="2026-08-09">
+    expires_after="2026-10-11">
   <owner>yyanagisawa@chromium.org</owner>
   <owner>chrome-loading@google.com</owner>
   <summary>
@@ -9032,7 +9032,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Net.URLLoader.AcceptCH.Status" enum="NetErrorCodes"
-    expires_after="2026-08-09">
+    expires_after="2026-10-11">
   <owner>yyanagisawa@chromium.org</owner>
   <owner>chrome-loading@google.com</owner>
   <summary>
@@ -9368,7 +9368,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="SimpleCache.{CacheInstance}CacheSizeOnInit2" units="MB"
-    expires_after="2026-08-09">
+    expires_after="2026-10-11">
   <owner>jkarlin@chromium.org</owner>
   <owner>shivanisha@chromium.org</owner>
   <summary>
@@ -9378,7 +9378,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="SimpleCache.{CacheInstance}ConsistencyResult"
-    enum="SimpleCacheConsistencyResult" expires_after="2026-08-09">
+    enum="SimpleCacheConsistencyResult" expires_after="2026-10-11">
   <owner>wanderview@chromium.org</owner>
   <owner>morlovich@chromium.org</owner>
   <summary>
@@ -9470,7 +9470,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="SimpleCache.{CacheInstance}DiskOpenLatency" units="ms"
-    expires_after="2026-08-09">
+    expires_after="2026-10-11">
   <owner>morlovich@chromium.org</owner>
   <owner>wanderview@chromium.org</owner>
   <summary>
@@ -9502,7 +9502,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="SimpleCache.{CacheInstance}Eviction.EntryCount" units="units"
-    expires_after="2026-08-09">
+    expires_after="2026-10-11">
   <owner>morlovich@chromium.org</owner>
   <owner>wanderview@chromium.org</owner>
   <summary>
@@ -9511,7 +9511,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="SimpleCache.{CacheInstance}Eviction.TimeToDone" units="ms"
-    expires_after="2026-08-09">
+    expires_after="2026-10-11">
   <owner>morlovich@chromium.org</owner>
   <owner>wanderview@chromium.org</owner>
   <summary>Time spent completing an eviction. {CacheInstance}</summary>
@@ -9544,7 +9544,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="SimpleCache.{CacheInstance}IndexFileStateOnLoad"
-    enum="SimpleIndexState" expires_after="2026-08-09">
+    enum="SimpleIndexState" expires_after="2026-10-11">
   <owner>morlovich@chromium.org</owner>
   <owner>wanderview@chromium.org</owner>
   <summary>
@@ -9563,7 +9563,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="SimpleCache.{CacheInstance}IndexNumEntriesOnInit2"
-    units="entries" expires_after="2026-08-09">
+    units="entries" expires_after="2026-10-11">
   <owner>jkarlin@chromium.org</owner>
   <owner>morlovich@chromium.org</owner>
   <summary>
@@ -9583,7 +9583,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="SimpleCache.{CacheInstance}MaxCacheSizeOnInit2" units="MB"
-    expires_after="2026-08-09">
+    expires_after="2026-10-11">
   <owner>morlovich@chromium.org</owner>
   <owner>jkarlin@chromium.org</owner>
   <summary>The size limit computed for the cache. {CacheInstance}</summary>

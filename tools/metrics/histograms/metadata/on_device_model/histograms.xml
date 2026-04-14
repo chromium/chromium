@@ -186,7 +186,7 @@ histograms along with a detailed description for each histogram.
 </histogram>
 
 <histogram name="OnDeviceModel.GpuErrorReason" enum="GpuErrorReason"
-    expires_after="2026-08-09">
+    expires_after="2026-10-11">
   <owner>rmcelrath@chromium.org</owner>
   <owner>sophiechang@chromium.org</owner>
   <owner>src/services/on_device_model/OWNERS</owner>
@@ -264,7 +264,7 @@ histograms along with a detailed description for each histogram.
 </histogram>
 
 <histogram name="OnDeviceModel.TokenCount.Input{InputSource}{Type}"
-    units="tokens" expires_after="2026-08-09">
+    units="tokens" expires_after="2026-10-11">
   <owner>rmcelrath@chromium.org</owner>
   <owner>sophiechang@chromium.org</owner>
   <owner>src/services/on_device_model/OWNERS</owner>
@@ -300,7 +300,7 @@ histograms along with a detailed description for each histogram.
 </histogram>
 
 <histogram name="OnDeviceModel.TokensPerSecond.Input{InputSource}{Type}"
-    units="tk/s" expires_after="2026-08-09">
+    units="tk/s" expires_after="2026-10-11">
   <owner>rmcelrath@chromium.org</owner>
   <owner>sophiechang@chromium.org</owner>
   <owner>src/services/on_device_model/OWNERS</owner>
@@ -336,7 +336,7 @@ histograms along with a detailed description for each histogram.
 </histogram>
 
 <histogram name="OnDeviceModel.TotalTime.Input{InputSource}{Type}" units="ms"
-    expires_after="2026-08-09">
+    expires_after="2026-10-11">
   <owner>rmcelrath@chromium.org</owner>
   <owner>sophiechang@chromium.org</owner>
   <owner>src/services/on_device_model/OWNERS</owner>

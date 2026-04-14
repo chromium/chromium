@@ -147,7 +147,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Profile.DeleteProfileContext" enum="ProfileDeleteContext"
-    expires_after="2026-08-09">
+    expires_after="2026-10-11">
   <owner>alexilin@chromium.org</owner>
   <owner>droger@chromium.org</owner>
   <owner>msalama@chromium.org</owner>
@@ -780,7 +780,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ProfileChooser.HasProfilesShown" enum="BooleanShown"
-    expires_after="2026-08-09">
+    expires_after="2026-10-11">
   <owner>vasilii@chromium.org</owner>
   <owner>ewald@chromium.org</owner>
   <summary>

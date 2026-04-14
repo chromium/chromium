@@ -285,7 +285,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="BrowsingTopics.Result.RealTopicCount"
-    enum="BrowsingTopicsNumberOfTopics" expires_after="2026-08-09">
+    enum="BrowsingTopicsNumberOfTopics" expires_after="2026-10-11">
   <owner>yaoxia@chromium.org</owner>
   <owner>jkarlin@chromium.org</owner>
   <summary>

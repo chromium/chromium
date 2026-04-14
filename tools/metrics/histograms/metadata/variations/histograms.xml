@@ -834,7 +834,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Variations.VariationsStateEncryptionStatus"
-    enum="VariationsStateEncryptionStatus" expires_after="2026-08-09">
+    enum="VariationsStateEncryptionStatus" expires_after="2026-10-11">
   <owner>svenzheng@google.com</owner>
   <owner>vivianz@google.com</owner>
   <summary>

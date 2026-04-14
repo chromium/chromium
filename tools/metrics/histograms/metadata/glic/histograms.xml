@@ -2064,7 +2064,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Glic.Response.Segmentation" enum="GlicResponseSegmentation"
-    expires_after="2026-07-26">
+    expires_after="2026-10-11">
   <owner>iwells@google.com</owner>
   <owner>erikchen@chromium.org</owner>
   <summary>

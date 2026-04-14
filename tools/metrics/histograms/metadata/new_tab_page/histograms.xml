@@ -389,7 +389,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="NewTabPage.ComposeEntrypoint.Click.UserTextPresent"
-    enum="Boolean" expires_after="2026-08-09">
+    enum="Boolean" expires_after="2026-10-11">
   <owner>niharm@google.com</owner>
   <owner>ananyaseelam@google.com</owner>
   <owner>chrome-desktop-ntp@google.com</owner>
@@ -402,7 +402,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="NewTabPage.ComposeEntrypoint.Shown" enum="BooleanShown"
-    expires_after="2026-08-09">
+    expires_after="2026-10-11">
   <owner>niharm@google.com</owner>
   <owner>ananyaseelam@google.com</owner>
   <owner>chrome-desktop-ntp@google.com</owner>
@@ -414,7 +414,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="NewTabPage.Composeplate.Impression" enum="BooleanVisible"
-    expires_after="2026-08-09">
+    expires_after="2026-10-11">
   <owner>hanxi@chromium.org</owner>
   <owner>xinyiji@chromium.org</owner>
   <summary>
@@ -844,7 +844,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="NewTabPage.FakeSearchBox.ComposeplateButton.Impression2"
-    enum="BooleanVisible" expires_after="2026-08-09">
+    enum="BooleanVisible" expires_after="2026-10-11">
   <owner>hanxi@chromium.org</owner>
   <owner>xinyiji@chromium.org</owner>
   <summary>
@@ -855,7 +855,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="NewTabPage.FakeSearchBox.Impression2" enum="BooleanVisible"
-    expires_after="2026-08-09">
+    expires_after="2026-10-11">
   <owner>hanxi@chromium.org</owner>
   <owner>xinyiji@chromium.org</owner>
   <summary>
@@ -905,7 +905,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="NewTabPage.Footer.ShownTime" units="ms"
-    expires_after="2026-08-09">
+    expires_after="2026-10-11">
   <owner>pauladedeji@google.com</owner>
   <owner>tiborg@chromium.org</owner>
   <owner>chrome-desktop-ntp@google.com</owner>
@@ -916,7 +916,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="NewTabPage.Footer.ToggledVisibility{FooterToggleSource}"
-    enum="BooleanVisible" expires_after="2026-08-09">
+    enum="BooleanVisible" expires_after="2026-10-11">
   <owner>pauladedeji@google.com</owner>
   <owner>tiborg@chromium.org</owner>
   <owner>chrome-desktop-ntp@google.com</owner>
@@ -933,7 +933,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="NewTabPage.Footer.VisibleOnLoad" enum="BooleanVisible"
-    expires_after="2026-08-09">
+    expires_after="2026-10-11">
   <owner>pauladedeji@google.com</owner>
   <owner>tiborg@chromium.org</owner>
   <owner>chrome-desktop-ntp@google.com</owner>
@@ -943,7 +943,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="NewTabPage.Footer.WebUI.LoadCompletedTime" units="ms"
-    expires_after="2026-08-09">
+    expires_after="2026-10-11">
   <owner>pauladedeji@google.com</owner>
   <owner>tiborg@chromium.org</owner>
   <owner>chrome-desktop-ntp@google.com</owner>
@@ -955,7 +955,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="NewTabPage.Footer.WebUI.LoadDocumentTime" units="ms"
-    expires_after="2026-08-09">
+    expires_after="2026-10-11">
   <owner>pauladedeji@google.com</owner>
   <owner>tiborg@chromium.org</owner>
   <owner>chrome-desktop-ntp@google.com</owner>
@@ -1403,7 +1403,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="NewTabPage.LogoShown{NewTabPageLogoShownFromCache}"
-    enum="NewTabPageLogoShown" expires_after="2026-08-09">
+    enum="NewTabPageLogoShown" expires_after="2026-10-11">
   <owner>romanarora@chromium.org</owner>
   <owner>tiborg@chromium.org</owner>
   <owner>chrome-desktop-ntp@google.com</owner>
@@ -1565,7 +1565,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="NewTabPage.Module.Click" enum="ModuleTypeOnStartAndNTP"
-    expires_after="2026-08-09">
+    expires_after="2026-10-11">
   <owner>hanxi@chromium.org</owner>
   <owner>xinyiji@chromium.org</owner>
   <summary>
@@ -2270,7 +2270,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="NewTabPage.NumberOfTiles" units="units"
-    expires_after="2026-08-09">
+    expires_after="2026-10-11">
   <owner>romanarora@chromium.org</owner>
   <owner>tiborg@chromium.org</owner>
   <owner>chrome-desktop-ntp@google.com</owner>

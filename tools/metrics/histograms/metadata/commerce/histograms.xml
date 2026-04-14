@@ -168,7 +168,7 @@ https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histogra
 </histogram>
 
 <histogram name="Commerce.Discounts.DiscountBubble.TypeOnShow"
-    enum="DiscountClusterType" expires_after="2026-08-09">
+    enum="DiscountClusterType" expires_after="2026-10-11">
   <owner>meiliang@chromium.org</owner>
   <owner>chrome-shopping@google.com</owner>
   <summary>
@@ -211,7 +211,7 @@ https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histogra
 </histogram>
 
 <histogram name="Commerce.Discounts.DiscountsBubbleIsAutoShown"
-    enum="BooleanYesNo" expires_after="2026-08-09">
+    enum="BooleanYesNo" expires_after="2026-10-11">
   <owner>meiliang@chromium.org</owner>
   <owner>chrome-shopping@google.com</owner>
   <summary>
@@ -263,7 +263,7 @@ https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histogra
 </histogram>
 
 <histogram name="Commerce.Discounts.PageActionIcon.TypeOnShown"
-    enum="DiscountClusterType" expires_after="2026-08-09">
+    enum="DiscountClusterType" expires_after="2026-10-11">
   <owner>meiliang@chromium.org</owner>
   <owner>chrome-shopping@google.com</owner>
   <summary>

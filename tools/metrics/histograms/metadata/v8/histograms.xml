@@ -1281,7 +1281,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="V8.LiftoffBailoutReasons" enum="LiftoffBailoutReason"
-    expires_after="2026-08-09">
+    expires_after="2026-10-11">
   <owner>ecmziegler@chromium.org</owner>
   <owner>clemensb@chromium.org</owner>
   <owner>wasm-runtime@chromium.org</owner>

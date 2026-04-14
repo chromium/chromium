@@ -2620,7 +2620,7 @@ Called by update_autofill_enums.py. This is a manual comment.-->
 </histogram>
 
 <histogram name="Autofill.Bnpl.PopupWindowResult.{Issuer}"
-    enum="BnplPopupWindowResult" expires_after="2026-08-09">
+    enum="BnplPopupWindowResult" expires_after="2026-10-11">
   <owner>wilsonlow@google.com</owner>
   <owner>vinnypersky@google.com</owner>
   <owner>payments-autofill-team@google.com</owner>
@@ -2689,7 +2689,7 @@ Called by update_autofill_enums.py. This is a manual comment.-->
 </histogram>
 
 <histogram name="Autofill.Bnpl.TosDialogResult.{Issuer}"
-    enum="BnplTosDialogResult" expires_after="2026-08-09">
+    enum="BnplTosDialogResult" expires_after="2026-10-11">
   <owner>longsheng@google.com</owner>
   <owner>payments-autofill-team@google.com</owner>
   <summary>
@@ -2926,7 +2926,7 @@ Called by update_autofill_enums.py. This is a manual comment.-->
 </histogram>
 
 <histogram name="Autofill.CardUnmask.ScreenLockCheckBox.UserChecked"
-    enum="Boolean" expires_after="2026-06-01">
+    enum="Boolean" expires_after="2026-10-11">
   <owner>osaul@google.com</owner>
   <owner>siashah@chromium.org</owner>
   <owner>longsheng@chromium.org</owner>
@@ -3761,7 +3761,7 @@ Called by update_autofill_enums.py. This is a manual comment.-->
 </histogram>
 
 <histogram name="Autofill.EmailPredictionCorrectness.Precision"
-    enum="EmailPredictionConfusionMatrix" expires_after="2026-08-09">
+    enum="EmailPredictionConfusionMatrix" expires_after="2026-10-11">
   <owner>vizcay@chromium.org</owner>
   <owner>jkeitel@chromium.org</owner>
   <owner>src/components/autofill/OWNERS</owner>
@@ -3772,7 +3772,7 @@ Called by update_autofill_enums.py. This is a manual comment.-->
 </histogram>
 
 <histogram name="Autofill.EmailPredictionCorrectness.Recall"
-    enum="EmailPredictionConfusionMatrix" expires_after="2026-08-09">
+    enum="EmailPredictionConfusionMatrix" expires_after="2026-10-11">
   <owner>vizcay@chromium.org</owner>
   <owner>jkeitel@chromium.org</owner>
   <owner>src/components/autofill/OWNERS</owner>
@@ -4548,7 +4548,7 @@ Called by update_autofill_enums.py. This is a manual comment.-->
 
 <histogram
     name="Autofill.Funnel.NotClassifiedAsTargetFilling.FillAfterSuggestion.Password"
-    enum="BooleanAutofillFillAfterSuggestion" expires_after="2026-08-09">
+    enum="BooleanAutofillFillAfterSuggestion" expires_after="2026-10-11">
   <owner>brunobraga@google.com</owner>
   <owner>chrome-autofill-alerts@google.com</owner>
   <summary>
@@ -4770,7 +4770,7 @@ Called by update_autofill_enums.py. This is a manual comment.-->
 </histogram>
 
 <histogram name="Autofill.Iban.UnmaskIbanResult" enum="Boolean"
-    expires_after="2026-08-09">
+    expires_after="2026-10-11">
   <owner>qihuizhao@google.com</owner>
   <owner>osaul@google.com</owner>
   <owner>payments-autofill-team@google.com</owner>
@@ -6593,7 +6593,7 @@ Called by update_autofill_enums.py. This is a manual comment.-->
 <!-- LINT.ThenChange(/components/autofill/core/browser/metrics/profile_import_metrics.cc:GetImportTypeMetricsString) -->
 
 <histogram name="Autofill.ProfileImportValidCandidate.ZipCode.Length"
-    units="units" expires_after="2026-08-09">
+    units="units" expires_after="2026-10-11">
   <owner>mmaryia@google.com</owner>
   <owner>chrome-autofill-alerts@google.com</owner>
   <summary>
@@ -6604,7 +6604,7 @@ Called by update_autofill_enums.py. This is a manual comment.-->
 </histogram>
 
 <histogram name="Autofill.ProfileImportValidCandidate.ZipCode.Separator"
-    enum="AutofillZipCodeSeparators" expires_after="2026-08-09">
+    enum="AutofillZipCodeSeparators" expires_after="2026-10-11">
   <owner>mmaryia@google.com</owner>
   <owner>chrome-autofill-alerts@google.com</owner>
   <summary>
@@ -7102,7 +7102,7 @@ Called by update_autofill_enums.py. This is a manual comment.-->
 </histogram>
 
 <histogram name="Autofill.SaveCardCardholderNamePrefilled" enum="Boolean"
-    expires_after="2026-08-02">
+    expires_after="2026-10-11">
   <owner>osaul@google.com</owner>
   <owner>payments-autofill-team@google.com</owner>
   <summary>

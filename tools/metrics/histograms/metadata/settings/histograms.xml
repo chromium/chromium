@@ -1137,7 +1137,7 @@ Regular profiles start at bucket 1. Incognito profiles count towards the origina
 </histogram>
 
 <histogram name="Settings.SafetyHub.Interaction" enum="SafetyHubSurfaces"
-    expires_after="2026-08-09">
+    expires_after="2026-10-11">
   <owner>sideyilmaz@chromium.org</owner>
   <owner>tov@chromium.org</owner>
   <owner>msramek@chromium.org</owner>
@@ -1458,7 +1458,7 @@ Regular profiles start at bucket 1. Incognito profiles count towards the origina
 
 <histogram
     name="Settings.TrackedPreferenceChanged{TrackedPreferencesExternalValidators}"
-    enum="TrackedPreference" expires_after="2026-08-09">
+    enum="TrackedPreference" expires_after="2026-10-11">
 <!-- Note to owner: This histogram can be renewed 1 full year if it is still
 useful for Chirp alerts (go/crca-alerts). -->
 
@@ -1500,7 +1500,7 @@ useful for Chirp alerts (go/crca-alerts). -->
 
 <histogram
     name="Settings.TrackedPreferenceCleared{TrackedPreferencesExternalValidators}"
-    enum="TrackedPreference" expires_after="2026-08-09">
+    enum="TrackedPreference" expires_after="2026-10-11">
   <owner>anunoy@chromium.org</owner>
   <owner>junhao.huang@microsoft.com</owner>
   <summary>
@@ -1559,7 +1559,7 @@ useful for Chirp alerts (go/crca-alerts). -->
 </histogram>
 
 <histogram name="Settings.TrackedPreferenceReset" enum="TrackedPreference"
-    expires_after="2026-08-09">
+    expires_after="2026-10-11">
   <owner>anunoy@chromium.org</owner>
   <owner>junhao.huang@microsoft.com</owner>
   <summary>The id of a tracked preference which was reset by Chrome.</summary>
@@ -1666,7 +1666,7 @@ useful for Chirp alerts (go/crca-alerts). -->
 
 <histogram
     name="Settings.TrackedPreferenceUnchanged{TrackedPreferencesExternalValidators}"
-    enum="TrackedPreference" expires_after="2026-08-09">
+    enum="TrackedPreference" expires_after="2026-10-11">
   <owner>anunoy@chromium.org</owner>
   <owner>junhao.huang@microsoft.com</owner>
   <summary>
@@ -1684,7 +1684,7 @@ useful for Chirp alerts (go/crca-alerts). -->
 </histogram>
 
 <histogram name="Settings.TrackedPreferenceWantedReset"
-    enum="TrackedPreference" expires_after="2026-08-09">
+    enum="TrackedPreference" expires_after="2026-10-11">
   <owner>anunoy@chromium.org</owner>
   <owner>junhao.huang@microsoft.com</owner>
   <summary>

@@ -248,7 +248,7 @@ and mapped to the variant by `StatisticNameToMachineStatisticVariant()` -->
 </variants>
 
 <histogram name="ChromeOS.AnomalousProcCount.AttemptedMemfdExec"
-    units="processes" expires_after="2026-08-09">
+    units="processes" expires_after="2026-10-11">
   <owner>enlightened@chromium.org</owner>
   <owner>chromeos-hardening@google.com</owner>
   <summary>
@@ -1767,7 +1767,7 @@ and mapped to the variant by `StatisticNameToMachineStatisticVariant()` -->
 
 <histogram
     name="ChromeOS.Geolocation.CacheEviction.{ParameterizedEvictionStrategy}{SimilarityDegreeParameter}.{PredictionToken}"
-    units="meters" expires_after="2026-08-09">
+    units="meters" expires_after="2026-10-11">
   <owner>zauri@google.com</owner>
   <owner>chromeos-privacy-features-eng@google.com</owner>
   <summary>
@@ -2515,7 +2515,7 @@ and mapped to the variant by `StatisticNameToMachineStatisticVariant()` -->
 </histogram>
 
 <histogram name="ChromeOS.K12UserAgeClassification.LogSegment"
-    enum="K12UserAgeClassificationMatrix" expires_after="2026-08-09">
+    enum="K12UserAgeClassificationMatrix" expires_after="2026-10-11">
   <owner>zifanzhang@google.com</owner>
   <owner>cros-client-wa@google.com</owner>
   <summary>Tracks the K12 user age classification.</summary>
@@ -4955,7 +4955,7 @@ and mapped to the variant by `StatisticNameToMachineStatisticVariant()` -->
 </histogram>
 
 <histogram name="ChromeOS.WXMountCount" units="count"
-    expires_after="2026-08-09">
+    expires_after="2026-10-11">
   <owner>jorgelo@chromium.org</owner>
   <owner>chromeos-hardening@google.com</owner>
   <summary>

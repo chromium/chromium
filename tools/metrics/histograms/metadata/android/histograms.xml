@@ -436,7 +436,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.AdaptiveToolbarButton.Clicked"
-    enum="AdaptiveToolbarButtonVariant" expires_after="2026-08-09">
+    enum="AdaptiveToolbarButtonVariant" expires_after="2026-10-11">
   <owner>bttk@chromium.org</owner>
   <owner>chrome-segmentation-platform@google.com</owner>
   <summary>
@@ -445,7 +445,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.AdaptiveToolbarButton.SessionVariant"
-    enum="AdaptiveToolbarButtonVariant" expires_after="2026-08-09">
+    enum="AdaptiveToolbarButtonVariant" expires_after="2026-10-11">
   <owner>bttk@chromium.org</owner>
   <owner>chrome-segmentation-platform@google.com</owner>
   <summary>
@@ -466,7 +466,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.AdaptiveToolbarButton.Settings.Startup"
-    enum="AdaptiveToolbarRadioButtonState" expires_after="2026-07-05">
+    enum="AdaptiveToolbarRadioButtonState" expires_after="2026-10-11">
   <owner>shaktisahu@chromium.org</owner>
   <owner>chrome-segmentation-platform@google.com</owner>
   <summary>
@@ -1340,7 +1340,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.ChildProcess.JavalessStarted" enum="Boolean"
-    expires_after="2026-08-12">
+    expires_after="2026-10-11">
   <owner>smaier@chromium.org</owner>
   <summary>
     Records when a child process (specifically a renderer) is started via the
@@ -2344,7 +2344,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.EdgeToEdge.NavigationBarMandatoryGesturesMismatch"
-    enum="HasSeenNonZeroNavBarState" expires_after="2026-08-09">
+    enum="HasSeenNonZeroNavBarState" expires_after="2026-10-11">
   <owner>clhager@google.com</owner>
   <owner>wenyufu@chromium.org</owner>
   <owner>edge-to-edge@chromium.org</owner>
@@ -2646,7 +2646,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.IncognitoReauth.PrefToggledFromSettingPage"
-    enum="IncognitoReauthToggleValueType" expires_after="2026-07-26">
+    enum="IncognitoReauthToggleValueType" expires_after="2026-10-11">
   <owner>roagarwal@chromium.org</owner>
   <owner>chrome-incognito@google.com</owner>
   <summary>
@@ -2871,7 +2871,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.InputOnViz.Viz.DroppedKeyEvent.Type"
-    enum="AInputEventType" expires_after="2026-08-09">
+    enum="AInputEventType" expires_after="2026-10-11">
   <owner>kartarsingh@google.com</owner>
   <owner>woa-performance-team@google.com</owner>
   <summary>
@@ -3879,7 +3879,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.MultiWindowMode.Configuration" enum="WindowingMode"
-    expires_after="2026-08-09">
+    expires_after="2026-10-11">
   <owner>aishwaryarj@google.com</owner>
   <owner>clank-large-form-factors@google.com</owner>
   <summary>
@@ -4987,7 +4987,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.Pdf.AssistContent.IsEnterpriseInfoCached"
-    enum="Boolean" expires_after="2026-08-09">
+    enum="Boolean" expires_after="2026-10-11">
   <owner>shuyng@google.com</owner>
   <owner>clank-large-form-factors@google.com</owner>
   <summary>
@@ -5020,7 +5020,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.Pdf.DocumentLoadInterval" units="ms"
-    expires_after="2026-08-09">
+    expires_after="2026-10-11">
   <owner>shuyng@google.com</owner>
   <owner>clank-large-form-factors@google.com</owner>
   <summary>
@@ -5595,7 +5595,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.RestoreResult" enum="AndroidRestoreResult"
-    expires_after="2026-08-09">
+    expires_after="2026-10-11">
   <owner>triploblastic@chromium.org</owner>
   <owner>chrome-signin-team@google.com</owner>
   <summary>
@@ -9835,7 +9835,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="GestureNavigation.Activated2"
-    enum="GestureNavigationDirection" expires_after="2026-08-09">
+    enum="GestureNavigationDirection" expires_after="2026-10-11">
   <owner>twellington@chromium.org</owner>
   <owner>clank-app-team@google.com</owner>
   <summary>

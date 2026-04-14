@@ -225,7 +225,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="API.TopLevelStorageAccess.RequestStorageAccessFor2"
-    enum="RequestStorageResult" expires_after="2026-08-09">
+    enum="RequestStorageResult" expires_after="2026-10-11">
   <owner>cfredric@chromium.org</owner>
   <owner>mreichhoff@chromium.org</owner>
   <summary>
@@ -510,7 +510,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IndexedDB.FilePathLengthOverflow.{Engine}" units="characters"
-    expires_after="2026-08-09">
+    expires_after="2026-10-11">
   <owner>leimy@chromium.org</owner>
   <owner>evanstade@microsoft.com</owner>
   <owner>chrome-owp-storage@google.com</owner>

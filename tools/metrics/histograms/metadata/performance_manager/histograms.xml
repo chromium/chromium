@@ -106,7 +106,7 @@ each histogram.
 
 <histogram
     name="CPU.Experimental.EstimatedFrequencyAsPercentOfLimit.{CoreType}"
-    units="%" expires_after="2026-08-09">
+    units="%" expires_after="2026-10-11">
   <owner>anthonyvd@chromium.org</owner>
   <owner>catan-team@chromium.org</owner>
   <summary>
@@ -136,7 +136,7 @@ each histogram.
 </histogram>
 
 <histogram name="CPU.Experimental.Windows.UserKernelRatio" units="%"
-    expires_after="2026-08-09">
+    expires_after="2026-10-11">
   <owner>spvm@chromium.org</owner>
   <owner>catan-team@chromium.org</owner>
   <summary>
@@ -149,7 +149,7 @@ each histogram.
 </histogram>
 
 <histogram name="CPU.Experimental.Windows.{Mode}Time" units="%"
-    expires_after="2026-08-09">
+    expires_after="2026-10-11">
   <owner>spvm@chromium.org</owner>
   <owner>catan-team@chromium.org</owner>
   <summary>
@@ -276,7 +276,7 @@ each histogram.
 </histogram>
 
 <histogram name="PerformanceManager.InputScenarioChanges{InputScenario}"
-    enum="InputScenarioUpdateReason" expires_after="2026-08-09">
+    enum="InputScenarioUpdateReason" expires_after="2026-10-11">
   <owner>kraskevich@google.com</owner>
   <owner>chrome-catan@google.com</owner>
   <summary>
