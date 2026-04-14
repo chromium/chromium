@@ -52,6 +52,11 @@ const int kPreselectionBubbleMinY = 8;
 
 }  // namespace
 
+DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(LensPreselectionBubble,
+                                      kExitButtonElementId);
+DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(LensPreselectionBubble,
+                                      kCancelButtonElementId);
+
 LensPreselectionBubble::LensPreselectionBubble(
     tabs::TabHandle tab_handle,
     views::View* anchor_view,
@@ -149,7 +154,7 @@ void LensPreselectionBubble::Init() {
     exit_button_->SetPreferredSize(gfx::Size(55, 36));
     exit_button_->SetStyle(ui::ButtonStyle::kProminent);
     exit_button_->SetProperty(views::kElementIdentifierKey,
-                              kLensPreselectionBubbleExitButtonElementId);
+                              kExitButtonElementId);
   }
   if (show_cancel_button_) {
     cancel_button_ = AddChildView(std::make_unique<views::MdTextButton>(
@@ -162,7 +167,7 @@ void LensPreselectionBubble::Init() {
                                 gfx::Insets::TLBR(0, 8, 0, 0));
     cancel_button_->SetStyle(ui::ButtonStyle::kProminent);
     cancel_button_->SetProperty(views::kElementIdentifierKey,
-                                kLensPreselectionBubbleCancelButtonElementId);
+                                kCancelButtonElementId);
   }
   NotifyAccessibilityEventDeprecated(ax::mojom::Event::kAlert, true);
 }

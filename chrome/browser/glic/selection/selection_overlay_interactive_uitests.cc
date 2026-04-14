@@ -8,6 +8,7 @@
 #include "chrome/browser/glic/test_support/interactive_glic_test.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
+#include "chrome/browser/ui/lens/lens_preselection_bubble.h"
 #include "chrome/common/chrome_features.h"
 #include "content/public/test/browser_test.h"
 #include "ui/base/interaction/element_identifier.h"
@@ -393,7 +394,7 @@ IN_PROC_BROWSER_TEST_F(SelectionOverlayInteractiveTest, BubbleUIColor) {
       ClickMockGlicElement({"#captureRegionBtn"}),
       WaitForShow(OverlayBaseController::kOverlayId),
       WaitForShow(kLensPreselectionBubbleElementId),
-      WaitForShow(kLensPreselectionBubbleCancelButtonElementId),
+      WaitForShow(lens::LensPreselectionBubble::kCancelButtonElementId),
       CheckView(kLensPreselectionBubbleElementId,
                 [](views::View* view) {
                   auto* bubble =
@@ -401,7 +402,7 @@ IN_PROC_BROWSER_TEST_F(SelectionOverlayInteractiveTest, BubbleUIColor) {
                   return bubble->background_color() ==
                          kColorGlicSelectionOverlayToast;
                 }),
-      CheckView(kLensPreselectionBubbleCancelButtonElementId,
+      CheckView(lens::LensPreselectionBubble::kCancelButtonElementId,
                 [](views::View* view) {
                   auto* button = static_cast<views::MdTextButton*>(view);
                   return button->GetBgColorIdOverride() ==
@@ -412,13 +413,14 @@ IN_PROC_BROWSER_TEST_F(SelectionOverlayInteractiveTest, BubbleUIColor) {
 IN_PROC_BROWSER_TEST_F(SelectionOverlayInteractiveTest, BubbleUICancelClicked) {
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kActiveTab);
 
-  RunTestSequence(InstrumentTab(kActiveTab), OpenGlic(),
-                  ClickMockGlicElement({"#captureRegionBtn"}),
-                  WaitForShow(OverlayBaseController::kOverlayId),
-                  WaitForShow(kLensPreselectionBubbleElementId),
-                  WaitForShow(kLensPreselectionBubbleCancelButtonElementId),
-                  PressButton(kLensPreselectionBubbleCancelButtonElementId),
-                  WaitForHide(OverlayBaseController::kOverlayId));
+  RunTestSequence(
+      InstrumentTab(kActiveTab), OpenGlic(),
+      ClickMockGlicElement({"#captureRegionBtn"}),
+      WaitForShow(OverlayBaseController::kOverlayId),
+      WaitForShow(kLensPreselectionBubbleElementId),
+      WaitForShow(lens::LensPreselectionBubble::kCancelButtonElementId),
+      PressButton(lens::LensPreselectionBubble::kCancelButtonElementId),
+      WaitForHide(OverlayBaseController::kOverlayId));
 }
 
 }  // namespace glic
