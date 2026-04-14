@@ -28,6 +28,8 @@
 #include "extensions/browser/extension_system.h"
 #include "extensions/browser/extensions_browser_client.h"
 #include "extensions/browser/install/crx_install_error.h"
+#include "extensions/browser/pending_extension_info.h"
+#include "extensions/browser/pending_extension_manager.h"
 #include "extensions/browser/updater/manifest_fetch_data.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_id.h"
@@ -50,6 +52,54 @@ void PostErrorTasks(const base::FilePath& unpacked_dir,
       base::BindOnce(std::move(update_client_callback),
                      update_client::CrxInstaller::Result(
                          update_client::InstallError::GENERIC_ERROR)));
+}
+
+update_client::CrxComponent FromExtension(const Extension& extension,
+                                          const ExtensionPrefs& extension_prefs,
+                                          bool allow_dev,
+                                          bool enabled) {
+  update_client::CrxComponent crx_component;
+  if (auto pubkey = base::Base64Decode(extension.public_key())) {
+    crx_component.pk_hash = base::ToVector(crypto::hash::Sha256(*pubkey));
+  }
+  crx_component.version = extension.version();
+  crx_component.install_location =
+      ManifestFetchData::GetSimpleLocationString(extension.location());
+  crx_component.crx_format_requirement =
+      extension.from_webstore() ? GetWebstoreVerifierFormat(allow_dev)
+                                : GetPolicyVerifierFormat();
+  if (!enabled) {
+    DisableReasonSet disable_reasons =
+        extension_prefs.GetDisableReasons(extension.id());
+    if (disable_reasons.empty() ||
+        disable_reasons.contains(disable_reason::DISABLE_UNKNOWN)) {
+      // DISABLE_UNKNOWN is transcoded to 0.
+      crx_component.disabled_reasons.push_back(0);
+    }
+    disable_reasons.erase(disable_reason::DISABLE_UNKNOWN);
+    for (int reason : disable_reasons) {
+      crx_component.disabled_reasons.push_back(reason);
+    }
+  }
+  return crx_component;
+}
+
+update_client::CrxComponent FromPendingExtensionInfo(
+    const PendingExtensionInfo& pending_info,
+    bool allow_dev) {
+  update_client::CrxComponent crx_component;
+  crx_component.version = pending_info.version().IsValid()
+                              ? pending_info.version()
+                              : base::Version("0.0.0.0");
+  crx_component.install_location =
+      ManifestFetchData::GetSimpleLocationString(pending_info.install_source());
+  const bool from_webstore =
+      pending_info.update_url().is_empty() ||
+      extension_urls::IsWebstoreUpdateUrl(pending_info.update_url());
+  crx_component.crx_format_requirement =
+      from_webstore ? GetWebstoreVerifierFormat(allow_dev)
+                    : GetPolicyVerifierFormat();
+  return crx_component;
 }
 
 }  // namespace
@@ -80,61 +130,51 @@ void UpdateDataProvider::GetData(
   }
   const ExtensionRegistry* registry = ExtensionRegistry::Get(browser_context_);
   const ExtensionPrefs* extension_prefs = ExtensionPrefs::Get(browser_context_);
+  const PendingExtensionManager* pending_manager =
+      PendingExtensionManager::Get(browser_context_);
+  bool allow_dev = extension_urls::GetWebstoreUpdateUrl() !=
+                   extension_urls::GetDefaultWebstoreUpdateUrl();
+  CHECK(extension_prefs);
+
   for (const auto& id : ids) {
-    const Extension* extension = registry->GetInstalledExtension(id);
-    data.push_back(extension ? std::make_optional<update_client::CrxComponent>()
-                             : std::nullopt);
-    if (!extension) {
-      continue;
-    }
-    DCHECK_NE(0u, update_crx_component.count(id));
-    const ExtensionUpdateData& extension_data = update_crx_component.at(id);
-    auto& crx_component = data.back();
-    auto pubkey = base::Base64Decode(extension->public_key());
-    if (!pubkey) {
-      continue;
-    }
-    crx_component->pk_hash = base::ToVector(crypto::hash::Sha256(*pubkey));
-    crx_component->app_id =
-        update_client::GetCrxIdFromPublicKeyHash(crx_component->pk_hash);
-    if (extension_data.is_corrupt_reinstall) {
-      crx_component->version = base::Version("0.0.0.0");
+    // Initialize update_client::CrxComponents from the appropriate source.
+    if (const Extension* extension = registry->GetInstalledExtension(id)) {
+      data.push_back(
+          FromExtension(*extension, *extension_prefs, allow_dev,
+                        ExtensionsBrowserClient::Get()->IsExtensionEnabled(
+                            id, browser_context_)));
+    } else if (const PendingExtensionInfo* pending_info =
+                   pending_manager->GetById(id)) {
+      data.push_back(FromPendingExtensionInfo(*pending_info, allow_dev));
     } else {
-      crx_component->version =
-          extension_data.pending_version
-              ? base::Version(*extension_data.pending_version)
-              : extension->version();
+      // Extension no longer installed nor pending: abandon the update attempt.
+      data.push_back(std::nullopt);
+      continue;
     }
-    bool allow_dev = extension_urls::GetWebstoreUpdateUrl() !=
-                     extension_urls::GetDefaultWebstoreUpdateUrl();
+
+    CHECK_NE(0u, update_crx_component.count(id));
+
+    // Fill out common data.
+    auto& crx_component = data.back();
+    crx_component->app_id = id;
     crx_component->requires_network_encryption = !allow_dev;
-    crx_component->crx_format_requirement =
-        extension->from_webstore() ? GetWebstoreVerifierFormat(allow_dev)
-                                   : GetPolicyVerifierFormat();
     crx_component->installer = base::MakeRefCounted<ExtensionInstaller>(
         id, install_immediately,
         base::BindRepeating(&UpdateDataProvider::RunInstallCallback, this));
-    if (!ExtensionsBrowserClient::Get()->IsExtensionEnabled(id,
-                                                            browser_context_)) {
-      DisableReasonSet disable_reasons = extension_prefs->GetDisableReasons(id);
 
-      if (disable_reasons.empty() ||
-          disable_reasons.contains(disable_reason::DISABLE_UNKNOWN)) {
-        crx_component->disabled_reasons.push_back(0);
-      }
-
-      // We are only interested in valid disable reasons from here.
-      disable_reasons.erase(disable_reason::DISABLE_UNKNOWN);
-
-      for (int reason : disable_reasons) {
-        crx_component->disabled_reasons.push_back(reason);
-      }
+    // Overwrite some fields with data captured at the start of the update
+    // operation.
+    const ExtensionUpdateData& extension_data = update_crx_component.at(id);
+    if (extension_data.pending_version) {
+      crx_component->version = base::Version(*extension_data.pending_version);
     }
-    crx_component->install_source = extension_data.is_corrupt_reinstall
-                                        ? "reinstall"
-                                        : extension_data.install_source;
-    crx_component->install_location =
-        ManifestFetchData::GetSimpleLocationString(extension->location());
+
+    if (extension_data.is_corrupt_reinstall) {
+      crx_component->install_source = "reinstall";
+      crx_component->version = base::Version("0.0.0.0");
+    } else {
+      crx_component->install_source = extension_data.install_source;
+    }
   }
   std::move(callback).Run(data);
 }

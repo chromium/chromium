@@ -1,0 +1,27 @@
+)]}'
+{
+  "response": {
+    "protocol": "4.0",
+    "apps": [
+      {
+        "appid": "ogjcoiohnmldgjemafoockdghcjciccf",
+        "status": "ok",
+        "updatecheck": {
+          "status": "ok",
+          "nextversion": "2",
+          "pipelines": [
+            {"operations": [
+              {"type": "download",
+               "urls": [{"url": "$1"}],
+               "out": {"sha256": "$2"},
+               "size": $3},
+              {"type": "crx3",
+               "in": {"sha256": "$2"}}
+            ]}
+          ]
+        }
+      }
+    ]
+  }
+}
+

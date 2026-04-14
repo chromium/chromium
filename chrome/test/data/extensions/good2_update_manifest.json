@@ -1,0 +1,26 @@
+)]}'
+{
+  "response": {
+    "protocol": "4.0",
+    "apps": [
+      {
+        "appid": "ldnnhddmnhbkjipkidpdiheffobcpfmf",
+        "status": "ok",
+        "updatecheck": {
+          "status": "ok",
+          "nextversion": "2",
+          "pipelines": [
+            {"operations": [
+              {"type": "download",
+               "urls": [{"url": "http://update.extension/extensions/good2.crx"}],
+               "out": {"sha256": "e89e0905cd7d9b5ffd59ed6031a21056d2eb8a97d16aa931327ee56c01caf8d2"},
+               "size": 1280},
+              {"type": "crx3",
+               "in": {"sha256": "e89e0905cd7d9b5ffd59ed6031a21056d2eb8a97d16aa931327ee56c01caf8d2"}}
+            ]}
+          ]
+        }
+      }
+    ]
+  }
+}
