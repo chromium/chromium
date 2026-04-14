@@ -8,6 +8,7 @@
 #include <CoreAudio/CATapDescription.h>
 
 #include <memory>
+#include <optional>
 #include <string>
 
 #include "base/memory/advanced_memory_safety_checks.h"
@@ -31,6 +32,19 @@ class CatapIoProcProxy;
 
 class PropertyListenerHelper;
 
+struct MEDIA_EXPORT AudioDeviceIdentity {
+  AudioDeviceIdentity();
+  AudioDeviceIdentity(AudioDeviceID device_id, std::string uid);
+  AudioDeviceIdentity(const AudioDeviceIdentity& other);
+  AudioDeviceIdentity(AudioDeviceIdentity&& other);
+  AudioDeviceIdentity& operator=(const AudioDeviceIdentity& other);
+  AudioDeviceIdentity& operator=(AudioDeviceIdentity&& other);
+  ~AudioDeviceIdentity();
+
+  AudioDeviceID id;
+  std::string uid;
+};
+
 // Captures audio loopback using the CoreAudio API for macOS 14.2
 // and later. Used in a `CatapAudioInputStream` to provide the audio stream.
 // The current implementation supports mono and stereo capture.
@@ -50,15 +64,31 @@ class MEDIA_EXPORT API_AVAILABLE(macos(14.2)) CatapAudioInputStreamSource {
   struct Config {
     Config(const AudioParameters& params,
            const std::string& device_id,
+           std::optional<AudioDeviceIdentity> target_device,
+           int aggregate_device_sample_rate,
            bool force_mono_capture);
+
     Config(const Config& other);
+    Config(Config&& other);
+    Config& operator=(const Config& other);
+    Config& operator=(Config&& other);
     ~Config();
 
     int catap_channels;
     int output_channels;
     int sample_rate;
     int frames_per_buffer;
-    bool capture_default_device;
+
+    // If `target_device` is not set, `CatapAudioInputStreamSource`
+    // will attempt to capture from all output devices.
+    std::optional<AudioDeviceIdentity> target_device;
+
+    // The sample rate and frames per buffer of the aggregate capture device. If
+    // these differ from `sample_rate` and `frames_per_buffer`, Chrome must
+    // perform internal resampling and buffering.
+    int aggregate_device_sample_rate;
+    int aggregate_frames_per_buffer;
+
     bool mute_local_device;
     bool exclude_chrome;
     std::optional<std::string> capture_application;
@@ -99,7 +129,7 @@ class MEDIA_EXPORT API_AVAILABLE(macos(14.2)) CatapAudioInputStreamSource {
   // Only mono or stereo channels are supported for loopback device
   // compatibility.
   CatapAudioInputStreamSource(const raw_ptr<CatapApi> catap_api,
-                              const Config& config,
+                              Config config,
                               const AudioManager::LogCallback log_callback,
                               const raw_ptr<AudioPropertyChangeCallback>
                                   audio_property_change_callback);
@@ -119,12 +149,7 @@ class MEDIA_EXPORT API_AVAILABLE(macos(14.2)) CatapAudioInputStreamSource {
   // Implements the contract of AudioInputStream::Open() (including return
   // values). Prepares the `CatapAudioInputStreamSource` for recording and must
   // be called before Start().
-  // `default_output_device_uid` is the unique ID (UID) for the default
-  // output device. If the caller is unable to retrieve the UID, it can call
-  // Open() with nullopt. In that case Open() will fail unless
-  // the `CatapAudioInputStreamSource` captures from all output devices.
-  AudioInputStream::OpenOutcome Open(
-      std::optional<std::string> default_output_device_uid);
+  AudioInputStream::OpenOutcome Open();
 
   // Starts the capture of system audio. The OnData callback is called when
   // audio data is available.
@@ -182,8 +207,8 @@ class MEDIA_EXPORT API_AVAILABLE(macos(14.2)) CatapAudioInputStreamSource {
 
   const Config config_;
 
-  // The length of time covered by the audio data in a single audio buffer.
-  const base::TimeDelta buffer_frames_duration_;
+  // Duration of a single input buffer, used to calculate expected timestamps.
+  const base::TimeDelta input_buffer_duration_;
 
   // Used to detect and report glitches.
   GlitchHelper glitch_helper_;
@@ -285,16 +310,9 @@ class API_AVAILABLE(macos(14.2)) CatapAudioInputStream
     : public AgcAudioStream<AudioInputStream>,
       public CatapAudioInputStreamSource::AudioPropertyChangeCallback {
  public:
-  struct MEDIA_EXPORT AudioDeviceIds {
-    AudioDeviceIds();
-    AudioDeviceIds(AudioDeviceID device_id, std::string uid);
-    ~AudioDeviceIds();
-    AudioDeviceIds(const AudioDeviceIds& other);
-    std::optional<AudioDeviceID> id;
-    std::optional<std::string> uid;
-  };
   using NotifyOnCloseCallback = base::OnceCallback<void(AudioInputStream*)>;
-  using GetDefaultDeviceIdsCallback = base::RepeatingCallback<AudioDeviceIds()>;
+  using GetDefaultDeviceIdsCallback =
+      base::RepeatingCallback<std::optional<AudioDeviceIdentity>()>;
 
   CatapAudioInputStream(
       std::unique_ptr<CatapApi> catap_api,
@@ -384,7 +402,7 @@ AudioInputStream* MEDIA_EXPORT CreateCatapAudioInputStreamForTesting(
     AudioManager::LogCallback log_callback,
     base::OnceCallback<void(AudioInputStream*)> close_callback,
     std::unique_ptr<CatapApi> catap_api,
-    base::RepeatingCallback<CatapAudioInputStream::AudioDeviceIds()>
+    base::RepeatingCallback<std::optional<AudioDeviceIdentity>()>
         get_default_device_ids_callback);
 
 }  // namespace media

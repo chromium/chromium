@@ -70,13 +70,9 @@ constexpr AudioObjectID kTap = 23;
 constexpr AudioObjectID kDefaultOutputId = 29;
 constexpr std::string kDefaultOutputUID = "default_output_uid";
 
-API_AVAILABLE(macos(14.2))
-const CatapAudioInputStream::AudioDeviceIds kDefaultOutputIds(
-    kDefaultOutputId,
-    kDefaultOutputUID);
-
-API_AVAILABLE(macos(14.2))
-const CatapAudioInputStream::AudioDeviceIds kNoDefaultOutputIds;
+const AudioDeviceIdentity kDefaultOutputIds(kDefaultOutputId,
+                                            kDefaultOutputUID);
+const std::optional<AudioDeviceIdentity> kNoDefaultOutputIds = std::nullopt;
 
 const AudioObjectPropertyAddress kDeviceIsAliveAddress = {
     kAudioDevicePropertyDeviceIsAlive, kAudioObjectPropertyScopeGlobal,
@@ -460,13 +456,13 @@ class CatapAudioInputStreamTest : public testing::Test {
   void CreateStream(
       bool with_permissions,
       const std::string& device_id,
-      const CatapAudioInputStream::AudioDeviceIds default_device_ids) {
+      const std::optional<AudioDeviceIdentity> default_device_ids) {
     auto fake_catap_api_object = std::make_unique<FakeCatapApi>();
     fake_catap_api_object->with_permissions = with_permissions;
     fake_catap_api_ = fake_catap_api_object.get();
 
-    auto returning_lambda = [](const CatapAudioInputStream::AudioDeviceIds& ids)
-        -> CatapAudioInputStream::AudioDeviceIds { return ids; };
+    auto returning_lambda = [](const std::optional<AudioDeviceIdentity> ids)
+        -> std::optional<AudioDeviceIdentity> { return ids; };
     auto device_id_callback =
         base::BindRepeating(returning_lambda, default_device_ids);
 
