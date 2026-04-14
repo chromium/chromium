@@ -130,6 +130,14 @@ export function getHtml(this: GlicInternalsAppElement) {
               Wait for Panel Open
             </label>
           </div>
+          <label for="invokeInvocationSourceSelect">Invocation Source</label>
+          <select id="invokeInvocationSourceSelect"
+              .value="${this.invokeInvocationSource_.toString()}"
+              @change="${this.onInvokeInvocationSourceChange_}">
+            ${this.getInvocationSourceOptions_().map(option => html`
+              <option value="${option.value}">${option.name}</option>
+            `)}
+          </select>
           <label for="invokeFreOverrideSelect">FRE Override</label>
           <select id="invokeFreOverrideSelect"
               .value="${this.invokeFreOverride_.toString()}"

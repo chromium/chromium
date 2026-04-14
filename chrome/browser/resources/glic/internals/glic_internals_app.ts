@@ -34,6 +34,7 @@ export class GlicInternalsAppElement extends CrLitElement {
       invokeAutoSubmit_: {type: Boolean},
       invokeFreOverride_: {type: Number},
       invokeFeatureMode_: {type: Number},
+      invokeInvocationSource_: {type: Number},
       invokeWaitForPanelOpen_: {type: Boolean},
       invokeLogs_: {type: Array},
       selectedTabIndex_: {type: Number},
@@ -47,6 +48,8 @@ export class GlicInternalsAppElement extends CrLitElement {
   protected accessor invokeAutoSubmit_: boolean = true;
   protected accessor invokeFreOverride_: FreOverride = FreOverride.kUnspecified;
   protected accessor invokeFeatureMode_: FeatureMode = FeatureMode.kUnspecified;
+  protected accessor invokeInvocationSource_: InvocationSource =
+      InvocationSource.kOsButton;
   protected accessor invokeWaitForPanelOpen_: boolean = false;
   protected accessor invokeLogs_: string[] = [];
   protected accessor selectedTabIndex_: number = 0;
@@ -208,6 +211,12 @@ export class GlicInternalsAppElement extends CrLitElement {
     ];
   }
 
+  protected getInvocationSourceOptions_() {
+    return Object.entries(InvocationSource)
+        .filter(([_, value]) => typeof value === 'number')
+        .map(([key, value]) => ({name: key, value: value}));
+  }
+
   protected onInvokePromptInput_(e: Event) {
     this.invokePrompt_ = (e.target as HTMLInputElement).value;
   }
@@ -224,6 +233,10 @@ export class GlicInternalsAppElement extends CrLitElement {
     this.invokeFeatureMode_ = Number((e.target as HTMLSelectElement).value);
   }
 
+  protected onInvokeInvocationSourceChange_(e: Event) {
+    this.invokeInvocationSource_ =
+        Number((e.target as HTMLSelectElement).value);
+  }
   protected onInvokeWaitForPanelOpenChange_(e: Event) {
     this.invokeWaitForPanelOpen_ = (e.target as HTMLInputElement).checked;
   }
@@ -233,7 +246,7 @@ export class GlicInternalsAppElement extends CrLitElement {
     console.info(this.invokeLogs_[0]);
 
     const options = {
-      invocationSource: InvocationSource.kOsButton,
+      invocationSource: this.invokeInvocationSource_,
       prompts: this.invokePrompt_ ? [this.invokePrompt_] : [],
       additionalContext: null,
       conversation: {defaultConversation: {}},
