@@ -725,15 +725,16 @@ PooledSingleThreadTaskRunnerManager::CreateTaskRunnerImpl(
   // variable.
   ThreadType originating_thread_type = GetCurrentTaskImportance();
   WorkerThread* dedicated_worker = nullptr;
-  WorkerThread*& worker =
-      thread_mode == SingleThreadTaskRunnerThreadMode::DEDICATED
-          ? dedicated_worker
-          : GetSharedWorkerThreadForTraits<DelegateType>(
-                traits, originating_thread_type);
+  WorkerThread* worker_to_return = nullptr;
   bool new_worker = false;
   bool started;
   {
     CheckedAutoLock auto_lock(lock_);
+    WorkerThread*& worker =
+        thread_mode == SingleThreadTaskRunnerThreadMode::DEDICATED
+            ? dedicated_worker
+            : GetSharedWorkerThreadForTraits<DelegateType>(
+                  traits, originating_thread_type);
     if (!worker) {
       const auto& environment_params =
           kEnvironmentParams[GetEnvironmentIndexForTraits(
@@ -747,15 +748,16 @@ PooledSingleThreadTaskRunnerManager::CreateTaskRunnerImpl(
           worker_name, thread_mode, environment_params.thread_type_hint);
       new_worker = true;
     }
+    worker_to_return = worker;
     started = started_;
   }
 
   if (new_worker && started) {
-    worker->Start(io_thread_task_runner_, worker_thread_observer_);
+    worker_to_return->Start(io_thread_task_runner_, worker_thread_observer_);
   }
 
-  return MakeRefCounted<PooledSingleThreadTaskRunner>(this, traits, worker,
-                                                      thread_mode);
+  return MakeRefCounted<PooledSingleThreadTaskRunner>(
+      this, traits, worker_to_return, thread_mode);
 }
 
 void PooledSingleThreadTaskRunnerManager::JoinForTesting() {
@@ -836,8 +838,8 @@ WorkerThread*&
 PooledSingleThreadTaskRunnerManager::GetSharedWorkerThreadForTraits<
     WorkerThreadDelegate>(const TaskTraits& traits,
                           ThreadType originating_thread_type) {
-  return UNSAFE_TODO(shared_worker_threads_[GetEnvironmentIndexForTraits(
-      traits, originating_thread_type)])[TraitsToContinueOnShutdown(traits)];
+  return shared_worker_threads_[GetEnvironmentIndexForTraits(
+      traits, originating_thread_type)][TraitsToContinueOnShutdown(traits)];
 }
 
 #if BUILDFLAG(IS_WIN)
@@ -846,8 +848,8 @@ WorkerThread*&
 PooledSingleThreadTaskRunnerManager::GetSharedWorkerThreadForTraits<
     WorkerThreadCOMDelegate>(const TaskTraits& traits,
                              ThreadType originating_thread_type) {
-  return UNSAFE_TODO(shared_com_worker_threads_[GetEnvironmentIndexForTraits(
-      traits, originating_thread_type)])[TraitsToContinueOnShutdown(traits)];
+  return shared_com_worker_threads_[GetEnvironmentIndexForTraits(
+      traits, originating_thread_type)][TraitsToContinueOnShutdown(traits)];
 }
 #endif  // BUILDFLAG(IS_WIN)
 
@@ -878,19 +880,12 @@ void PooledSingleThreadTaskRunnerManager::ReleaseSharedWorkerThreads() {
 #endif
   {
     CheckedAutoLock auto_lock(lock_);
-    for (size_t i = 0; i < std::size(shared_worker_threads_); ++i) {
-      for (size_t j = 0; j < std::size(UNSAFE_TODO(shared_worker_threads_[i]));
-           ++j) {
-        UNSAFE_TODO(local_shared_worker_threads[i][j]) =
-            UNSAFE_TODO(shared_worker_threads_[i][j]);
-        UNSAFE_TODO(shared_worker_threads_[i][j]) = nullptr;
+    local_shared_worker_threads = std::exchange(shared_worker_threads_, {});
 #if BUILDFLAG(IS_WIN)
-        UNSAFE_TODO(local_shared_com_worker_threads[i][j]) =
-            UNSAFE_TODO(shared_com_worker_threads_[i][j]);
-        UNSAFE_TODO(shared_com_worker_threads_[i][j]) = nullptr;
+    local_shared_com_worker_threads =
+        std::exchange(shared_com_worker_threads_, {});
+
 #endif
-      }
-    }
   }
 
   for (auto& threads : local_shared_worker_threads) {
