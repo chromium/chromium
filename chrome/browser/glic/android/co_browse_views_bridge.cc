@@ -46,7 +46,7 @@ bool CoBrowseViewsBridge::CreateCoBrowseViews(
 
   JNIEnv* env = AttachCurrentThread();
   java_co_browse_views_.Reset(Java_CoBrowseViewFactory_buildCoBrowseViews(
-      env, window_android, web_contents, /*show_toolbar=*/false,
+      env, window_android, web_contents,
       /*show_fusebox=*/false));
 
   return !java_co_browse_views_.is_null();

@@ -76,14 +76,10 @@ public class CoBrowseViewFactory {
      * Builds the co-browse views.
      *
      * @param webContents The {@link WebContents} to be displayed in the thin web view.
-     * @param showToolbar Whether to show the toolbar.
      * @param showFusebox Whether to show the fusebox.
      * @return The {@link CoBrowseViews} instance.
      */
-    CoBrowseViews buildCoBrowseViews(
-            @Nullable WebContents webContents, boolean showToolbar, boolean showFusebox) {
-        TabBottomSheetToolbar toolbar =
-                showToolbar ? new TabBottomSheetSimpleToolbar(mActivity) : null;
+    CoBrowseViews buildCoBrowseViews(@Nullable WebContents webContents, boolean showFusebox) {
         TabBottomSheetWebUi webUi =
                 new TabBottomSheetWebUi(mActivity, mWindowAndroid, mContextMenuPopulatorFactory);
         ContextualTasksFusebox fusebox =
@@ -101,7 +97,7 @@ public class CoBrowseViewFactory {
 
         webUi.setWebContents(webContents);
 
-        return new CoBrowseViews(mActivity, toolbar, webUi, fusebox);
+        return new CoBrowseViews(mActivity, webUi, fusebox);
     }
 
     @CalledByNative
@@ -109,12 +105,11 @@ public class CoBrowseViewFactory {
     public static @Nullable CoBrowseViews buildCoBrowseViews(
             @JniType("ui::WindowAndroid*") WindowAndroid windowAndroid,
             @Nullable @JniType("content::WebContents*") WebContents webContents,
-            boolean showToolbar,
             boolean showFusebox) {
         CoBrowseViewFactory factory = TabBottomSheetUtils.getFactoryFromWindow(windowAndroid);
         if (factory == null) {
             return null;
         }
-        return factory.buildCoBrowseViews(webContents, showToolbar, showFusebox);
+        return factory.buildCoBrowseViews(webContents, showFusebox);
     }
 }

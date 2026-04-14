@@ -139,8 +139,7 @@ void TabBottomSheetBridge::CreateCoBrowseViews(
   JNIEnv* env = base::android::AttachCurrentThread();
   // Call Factory to get CoBrowseViews and save it
   co_browse_views_.Reset(Java_CoBrowseViewFactory_buildCoBrowseViews(
-      env, window_android, web_contents, /*show_toolbar=*/false,
-      show_fusebox_));
+      env, window_android, web_contents, show_fusebox_));
 }
 
 void TabBottomSheetBridge::DestroyCoBrowseViews() {
