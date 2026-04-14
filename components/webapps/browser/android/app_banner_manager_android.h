@@ -98,8 +98,7 @@ class AppBannerManagerAndroid
   InstallBannerConfig GetCurrentInstallBannerConfig();
 
   // Returns a reference to the Java-side AppBannerManager owned by this object.
-  const base::android::ScopedJavaLocalRef<jobject> GetJavaBannerManager(
-      JNIEnv* env) const;
+  const base::android::ScopedJavaLocalRef<jobject> GetJavaBannerManager() const;
 
   // Returns the name of the installable web app, if the name has been
   // determined (and blank if not).
@@ -122,6 +121,7 @@ class AppBannerManagerAndroid
   // Returns |false| if an icon fetch couldn't be kicked off.
   void OnAppDetailsRetrieved(JNIEnv* env,
                              int request_id,
+                             const base::android::JavaRef<jobject>& japp_data,
                              std::u16string&& app_title,
                              std::string&& app_package,
                              std::string&& icon_url);
@@ -192,8 +192,11 @@ class AppBannerManagerAndroid
 
   base::WeakPtr<AppBannerManagerAndroid> GetAndroidWeakPtr();
 
-  base::android::ScopedJavaLocalRef<jobject> GetNativeJavaAppData(
-      JNIEnv* env) const;
+  // TODO(b/323192242): Remove.
+  const base::android::ScopedJavaGlobalRef<jobject>&
+  native_java_app_data_for_testing() const {
+    return native_java_app_data_;
+  }
 
  private:
   friend class content::WebContentsUserData<AppBannerManagerAndroid>;
@@ -232,11 +235,15 @@ class AppBannerManagerAndroid
                               GURL primary_icon_url,
                               const SkBitmap& bitmap);
 
-  void ClearNativeAppData() const;
-
   std::unique_ptr<AppBannerManager> app_banner_manager_;
 
   const std::unique_ptr<ChromeDelegate> delegate_;
+
+  // The Java-side AppBannerManager.
+  base::android::ScopedJavaGlobalRef<jobject> java_banner_manager_;
+
+  // Java-side object containing data about a native app.
+  base::android::ScopedJavaGlobalRef<jobject> native_java_app_data_;
 
   int next_native_request_id_ = 0;
   std::optional<int> current_native_request_id_;
