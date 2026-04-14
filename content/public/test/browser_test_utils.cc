@@ -1889,7 +1889,7 @@ class ExecuteJavaScriptForTestsWaiter : public WebContentsObserver {
     DCHECK(!has_value_);
     has_value_ = true;
     type_ = type;
-    value_ = value.Clone();
+    value_ = std::move(value);
     run_loop_.Quit();
   }
 
