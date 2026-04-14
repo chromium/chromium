@@ -18917,23 +18917,6 @@
             ]
         }
     ],
-    "ProfileCreationDeclineSigninCTAExperiment": [
-        {
-            "platforms": [
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "ProfileCreationDeclineSigninCTAExperiment"
-                    ]
-                }
-            ]
-        }
-    ],
     "ProfileExperimentsM0": [
         {
             "platforms": [

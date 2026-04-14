@@ -504,7 +504,7 @@ const base::FeatureParam<int>
 BASE_FEATURE(kPasswordUploadUiUpdate, base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kProfileCreationDeclineSigninCTAExperiment,
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kProfileCreationFrictionReductionExperimentPrefillNameRequirement,
              base::FEATURE_DISABLED_BY_DEFAULT);
