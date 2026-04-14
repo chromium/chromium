@@ -22,6 +22,7 @@
 #include "chrome/browser/ui/views/web_apps/web_app_icon_name_and_origin_view.h"
 #include "chrome/browser/ui/views/web_apps/web_app_install_dialog_delegate.h"
 #include "chrome/browser/ui/views/web_apps/web_app_install_dialog_flow_view.h"
+#include "chrome/browser/ui/views/web_apps/web_app_install_intro_view.h"
 #include "chrome/browser/ui/web_applications/web_app_dialogs.h"
 #include "chrome/browser/ui/web_applications/web_app_info_image_source.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
@@ -38,6 +39,7 @@
 #include "components/webapps/common/constants.h"
 #include "content/public/browser/page_navigator.h"
 #include "content/public/browser/web_contents.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/models/dialog_model.h"
 #include "ui/base/mojom/dialog_button.mojom.h"
@@ -166,19 +168,51 @@ void WebAppInstallFlowDialogDelegate::Show(
 
   std::u16string title = install_info->title.value();
   GURL start_url = install_info->start_url();
-  bool is_maskable = dialog_image_info.is_maskable;
-  auto install_info_description = install_info->description.value();
-
   auto delegate = std::make_unique<WebAppInstallFlowDialogDelegate>(
       web_contents, std::move(install_info), std::move(install_tracker),
       std::move(callback), std::move(iph_state), prefs, tracker, install_type);
   auto delegate_weak_ptr = delegate->AsWeakPtr();
 
-  auto flow_view = std::make_unique<WebAppInstallFlowView>(
-      icon_image, title, start_url, is_maskable, os_type, install_type,
-      base::BindRepeating(
-          &WebAppInstallDialogDelegate::OnTextFieldChangedMaybeUpdateButton,
-          delegate_weak_ptr));
+  absl::flat_hash_map<InstallDialogStep, std::unique_ptr<views::View>>
+      install_step_to_view;
+
+  // kInstallDialog
+  install_step_to_view[InstallDialogStep::kInstallDialog] =
+      WebAppInstallIntroView::Create(
+          install_type, icon_image, title, start_url,
+          dialog_image_info.is_maskable,
+          base::BindRepeating(
+              &WebAppInstallDialogDelegate::OnTextFieldChangedMaybeUpdateButton,
+              delegate_weak_ptr));
+
+  // kInstallerOptions
+  std::u16string label;
+  switch (os_type) {
+    case InstallOsType::kMac:
+      label = u"Installer options Mac view";
+      break;
+    case InstallOsType::kWin:
+      label = u"Installer options Windows view";
+      break;
+    case InstallOsType::kCros:
+      label = u"Installer options ChromeOS view";
+      break;
+    default:
+      label = u"Installer options Other view";
+  }
+  install_step_to_view[InstallDialogStep::kInstallerOptions] =
+      views::Builder<views::Label>().SetText(label).Build();
+
+  // kProgress
+  install_step_to_view[InstallDialogStep::kProgress] =
+      views::Builder<views::Label>().SetText(u"Progress View").Build();
+
+  // kSuccessful
+  install_step_to_view[InstallDialogStep::kSuccessful] =
+      views::Builder<views::Label>().SetText(u"Successful View").Build();
+
+  auto flow_view =
+      std::make_unique<WebAppInstallFlowView>(std::move(install_step_to_view));
   auto flow_view_weak_ptr = flow_view->GetWeakPtr();
   delegate->SetFlowView(flow_view_weak_ptr);
 
