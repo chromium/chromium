@@ -243,6 +243,13 @@ void RTCDataChannel::Observer::OnBufferedAmountChange(uint64_t sent_data_size) {
                           base::checked_cast<unsigned>(sent_data_size)));
 }
 
+void RTCDataChannel::Observer::OnMaxMessageSize(int max_message_size) {
+  PostCrossThreadTask(
+      *main_thread_, FROM_HERE,
+      CrossThreadBindOnce(&RTCDataChannel::Observer::OnMaxMessageSizeImpl,
+                          scoped_refptr<Observer>(this), max_message_size));
+}
+
 void RTCDataChannel::Observer::OnMessage(const webrtc::DataBuffer& buffer) {
   PostCrossThreadTask(
       *main_thread_, FROM_HERE,
@@ -266,6 +273,13 @@ void RTCDataChannel::Observer::OnBufferedAmountChangeImpl(
   DCHECK(main_thread_->BelongsToCurrentThread());
   if (blink_channel_)
     blink_channel_->OnBufferedAmountChange(sent_data_size);
+}
+
+void RTCDataChannel::Observer::OnMaxMessageSizeImpl(int max_message_size) {
+  DCHECK(main_thread_->BelongsToCurrentThread());
+  if (blink_channel_) {
+    blink_channel_->OnMaxMessageSizeChange(max_message_size);
+  }
 }
 
 void RTCDataChannel::Observer::OnMessageImpl(webrtc::DataBuffer buffer) {
@@ -436,10 +450,20 @@ void RTCDataChannel::setBinaryType(const V8BinaryType& binary_type) {
 
 bool RTCDataChannel::ValidateSendLength(uint64_t length,
                                         ExceptionState& exception_state) {
-  // Send algorithm: https://w3c.github.io/webrtc-pc/#datachannel-send
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  // TODO(orphis): Throw TypeError if length > transport.maxMessageSize
+  // If the byte size of data exceeds the value of maxMessageSize on
+  // channel's associated RTCSctpTransport, throw a TypeError.
+  CHECK(max_message_size_.has_value());
+  if (length > max_message_size_) {
+    exception_state.ThrowTypeError(
+        "Trying to send message larger than max-message-size");
+    return false;
+  }
 
+  // Queue data for transmission on channel's underlying data transport.
+  // If queuing data is not possible because not enough buffer space is
+  // available, throw an OperationError.
   auto updated_buffered_amount =
       base::CheckedNumeric<unsigned>(buffered_amount_) + length;
   if (!updated_buffered_amount.IsValid() ||
@@ -454,8 +478,13 @@ bool RTCDataChannel::ValidateSendLength(uint64_t length,
 
 void RTCDataChannel::send(const String& data, ExceptionState& exception_state) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  // Send algorithm: https://w3c.github.io/webrtc-pc/#datachannel-send
+
+  // Set channel.[[IsTransferable]] to false.
   is_transferable_ = false;
 
+  // If channel.[[ReadyState]] is not "open", throw an InvalidStateError.
   if (state_ != webrtc::DataChannelInterface::kOpen) {
     ThrowNotOpenException(&exception_state);
     return;
@@ -466,6 +495,7 @@ void RTCDataChannel::send(const String& data, ExceptionState& exception_state) {
   if (!ValidateSendLength(data_buffer.size(), exception_state))
     return;
 
+  // Increase the value of the [[BufferedAmount]] slot by the byte size of data.
   buffered_amount_ += data_buffer.size();
   RecordMessageSent(*channel().get(), data_buffer.size());
   SendDataBuffer(std::move(data_buffer));
@@ -474,8 +504,13 @@ void RTCDataChannel::send(const String& data, ExceptionState& exception_state) {
 void RTCDataChannel::send(DOMArrayBuffer* data,
                           ExceptionState& exception_state) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  // Send algorithm: https://w3c.github.io/webrtc-pc/#datachannel-send
+
+  // Set channel.[[IsTransferable]] to false.
   is_transferable_ = false;
 
+  // If channel.[[ReadyState]] is not "open", throw an InvalidStateError.
   if (state_ != webrtc::DataChannelInterface::kOpen) {
     ThrowNotOpenException(&exception_state);
     return;
@@ -486,6 +521,7 @@ void RTCDataChannel::send(DOMArrayBuffer* data,
   if (!ValidateSendLength(data_length, exception_state))
     return;
 
+  // Increase the value of the [[BufferedAmount]] slot by the byte size of data.
   buffered_amount_ += data_length;
   SendRawData(static_cast<const char*>((data->Data())), data_length);
 }
@@ -634,10 +670,11 @@ void RTCDataChannel::Trace(Visitor* visitor) const {
   ExecutionContextLifecycleObserver::Trace(visitor);
 }
 
-void RTCDataChannel::SetStateToOpenWithoutEvent() {
+void RTCDataChannel::SetStateToOpenWithoutEvent(int max_message_size) {
   DCHECK_NE(state_, webrtc::DataChannelInterface::kOpen);
   IncrementCounter(DataChannelCounters::kOpened);
   state_ = webrtc::DataChannelInterface::kOpen;
+  max_message_size_ = max_message_size;
   CreateFeatureHandleForScheduler();
 }
 
@@ -709,6 +746,13 @@ void RTCDataChannel::OnBufferedAmountChange(unsigned sent_data_size) {
       buffered_amount_ <= buffered_amount_low_threshold_) {
     DispatchEvent(*Event::Create(event_type_names::kBufferedamountlow));
   }
+}
+
+void RTCDataChannel::OnMaxMessageSizeChange(int max_message_size) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  DVLOG(1) << "OnMaxMessageSize " << max_message_size;
+  max_message_size_ = max_message_size;
 }
 
 void RTCDataChannel::OnMessage(webrtc::DataBuffer buffer) {

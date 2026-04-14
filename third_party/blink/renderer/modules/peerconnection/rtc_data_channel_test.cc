@@ -116,6 +116,7 @@ class MockDataChannel : public webrtc::DataChannelInterface {
   void Close() override {}
 
   void RegisterObserver(webrtc::DataChannelObserver* observer) override {
+    observer->OnMaxMessageSize(256 * 1024);
     RunSynchronous(
         signaling_thread_.get(),
         CrossThreadBindOnce(&MockDataChannel::RegisterObserverOnSignalingThread,

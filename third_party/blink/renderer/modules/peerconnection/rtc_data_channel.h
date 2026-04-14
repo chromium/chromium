@@ -99,7 +99,7 @@ class MODULES_EXPORT RTCDataChannel final
   // Functions called from RTCPeerConnection's DidAddRemoteDataChannel
   // in order to make things happen in the specified order when announcing
   // a remote channel.
-  void SetStateToOpenWithoutEvent();
+  void SetStateToOpenWithoutEvent(int max_message_size);
   void DispatchOpenEvent();
 
   void send(const String&, ExceptionState&);
@@ -168,6 +168,7 @@ class MODULES_EXPORT RTCDataChannel final
     // webrtc::DataChannelObserver implementation, called from signaling thread.
     void OnStateChange() override;
     void OnBufferedAmountChange(uint64_t sent_data_size) override;
+    void OnMaxMessageSize(int max_message_size) override;
     void OnMessage(const webrtc::DataBuffer& buffer) override;
     bool IsOkToCallOnTheNetworkThread() override;
 
@@ -175,6 +176,7 @@ class MODULES_EXPORT RTCDataChannel final
     // webrtc::DataChannelObserver implementation on the main thread.
     void OnStateChangeImpl(webrtc::DataChannelInterface::DataState state);
     void OnBufferedAmountChangeImpl(unsigned sent_data_size);
+    void OnMaxMessageSizeImpl(int max_message_size);
     void OnMessageImpl(webrtc::DataBuffer buffer);
 
     const scoped_refptr<base::SingleThreadTaskRunner> main_thread_;
@@ -186,6 +188,7 @@ class MODULES_EXPORT RTCDataChannel final
 
   void OnStateChange(webrtc::DataChannelInterface::DataState state);
   void OnBufferedAmountChange(unsigned previous_amount);
+  void OnMaxMessageSizeChange(int max_message_size);
   void OnMessage(webrtc::DataBuffer buffer);
 
   void Dispose();
@@ -221,6 +224,7 @@ class MODULES_EXPORT RTCDataChannel final
   mutable std::optional<uint16_t> id_;
   unsigned buffered_amount_low_threshold_ = 0u;
   unsigned buffered_amount_ = 0u;
+  std::optional<int> max_message_size_;
   bool stopped_ = false;
   bool closed_from_owner_ = false;
 

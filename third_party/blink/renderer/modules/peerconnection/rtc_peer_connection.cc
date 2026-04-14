@@ -2615,6 +2615,7 @@ void RTCPeerConnection::DidAddRemoteDataChannel(
     webrtc::scoped_refptr<webrtc::DataChannelInterface> channel) {
   DCHECK(!closed_);
   DCHECK(GetExecutionContext()->IsContextThread());
+  DCHECK(sctp_transport_);
 
   if (signaling_state_ ==
       webrtc::PeerConnectionInterface::SignalingState::kClosed)
@@ -2622,7 +2623,8 @@ void RTCPeerConnection::DidAddRemoteDataChannel(
 
   auto* blink_channel = MakeGarbageCollected<RTCDataChannel>(
       GetExecutionContext(), std::move(channel));
-  blink_channel->SetStateToOpenWithoutEvent();
+  blink_channel->SetStateToOpenWithoutEvent(
+      static_cast<int>(sctp_transport_->maxMessageSize()));
   MaybeDispatchEvent(MakeGarbageCollected<RTCDataChannelEvent>(
       event_type_names::kDatachannel, blink_channel));
   // The event handler might have closed the channel.
