@@ -80,6 +80,7 @@ import org.chromium.chrome.browser.PlayServicesVersionInfo;
 import org.chromium.chrome.browser.TabStateThemeResourceProvider;
 import org.chromium.chrome.browser.WarmupManager;
 import org.chromium.chrome.browser.actor.ActorPictureInPictureController;
+import org.chromium.chrome.browser.actor.ActorTaskHelper;
 import org.chromium.chrome.browser.ai.AiAssistantService;
 import org.chromium.chrome.browser.app.download.DownloadMessageUiDelegate;
 import org.chromium.chrome.browser.app.metrics.LaunchCauseMetrics;
@@ -392,6 +393,8 @@ public abstract class ChromeActivity extends AsyncInitializationActivity
     private FullscreenVideoPictureInPictureController mFullscreenVideoPictureInPictureController;
 
     private ActorPictureInPictureController mActorPipController;
+
+    private ActorTaskHelper mActorTaskHelper;
 
     private final SettableMonotonicObservableSupplier<SnackbarManager> mSnackbarManagerSupplier =
             ObservableSuppliers.createMonotonic();
@@ -1692,6 +1695,10 @@ public abstract class ChromeActivity extends AsyncInitializationActivity
         CompositorViewHolder compositorViewHolder = mCompositorViewHolderSupplier.get();
         if (compositorViewHolder != null) compositorViewHolder.onStart();
 
+        if (mActorTaskHelper == null && ChromeFeatureList.sGlic.isEnabled()) {
+            mActorTaskHelper = new ActorTaskHelper(this, mTabModelProfileSupplier);
+        }
+
         mStarted = true;
     }
 
@@ -1887,6 +1894,11 @@ public abstract class ChromeActivity extends AsyncInitializationActivity
         if (mActorPipController != null) {
             mActorPipController.destroy();
             mActorPipController = null;
+        }
+
+        if (mActorTaskHelper != null) {
+            mActorTaskHelper.destroy();
+            mActorTaskHelper = null;
         }
 
         onDestroyInternal();
