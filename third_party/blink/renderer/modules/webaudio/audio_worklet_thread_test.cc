@@ -380,7 +380,7 @@ TEST_P(AudioWorkletThreadInteractionTest,
 
   // Cleaning up remaining worklet threads.
   for (auto& worklet_thread : worklet_threads) {
-    if (worklet_thread.get()) {
+    if (worklet_thread) {
       worklet_thread->Terminate();
       worklet_thread->WaitForShutdownForTesting();
     }
@@ -561,7 +561,7 @@ TEST_F(AudioWorkletRealtimePeriodTestMac, CheckRealtimePeriod) {
       realtime_buffer_durations[4], realtime_buffer_durations[3]));
 
   for (auto& worklet_thread : worklet_threads) {
-    if (worklet_thread.get()) {
+    if (worklet_thread) {
       worklet_thread->Terminate();
       worklet_thread->WaitForShutdownForTesting();
     }
