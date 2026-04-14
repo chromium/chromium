@@ -1266,10 +1266,16 @@ void ServiceWorkerContextCore::OnRunningStateChanged(
       observer_list_->Notify(FROM_HERE,
                              &ServiceWorkerContextCoreObserver::OnStopped,
                              version->version_id());
-      CHECK(start_worker_token.has_value());
-      for (auto& observer : safe_sync_observer_list->observers) {
-        observer.OnStoppedSync(version->version_id(), version->scope(),
-                               *start_worker_token);
+      // It appears `start_worker_token` can sometimes be null here, which is
+      // unexpected. That can theoretically happen due to a race between a
+      // timeout and a late IPC stop/stopping message. The first call clears the
+      // token, and the second call crashes when it tries to access it.
+      // See https://crbug.com/496389117.
+      if (start_worker_token.has_value()) {
+        for (auto& observer : sync_observer_list_->observers) {
+          observer.OnStoppedSync(version->version_id(), version->scope(),
+                                 *start_worker_token);
+        }
       }
       break;
     case blink::EmbeddedWorkerStatus::kStarting:
@@ -1288,10 +1294,11 @@ void ServiceWorkerContextCore::OnRunningStateChanged(
       observer_list_->Notify(FROM_HERE,
                              &ServiceWorkerContextCoreObserver::OnStopping,
                              version->version_id());
-      CHECK(start_worker_token.has_value());
-      for (auto& observer : safe_sync_observer_list->observers) {
-        observer.OnStoppingSync(version->version_id(), version->scope(),
-                                *start_worker_token);
+      if (start_worker_token.has_value()) {
+        for (auto& observer : sync_observer_list_->observers) {
+          observer.OnStoppingSync(version->version_id(), version->scope(),
+                                  *start_worker_token);
+        }
       }
       break;
   }
