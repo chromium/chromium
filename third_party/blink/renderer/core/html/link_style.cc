@@ -72,7 +72,7 @@ void LinkStyle::NotifyFinished(Resource* resource) {
   auto* cached_style_sheet = To<CSSStyleSheetResource>(resource);
   if ((!cached_style_sheet->ErrorOccurred() &&
        !owner_->FastGetAttribute(html_names::kIntegrityAttr).empty() &&
-       !cached_style_sheet->IntegrityMetadata().empty()) ||
+       !cached_style_sheet->GetIntegrityMetadata().empty()) ||
       resource->ForceIntegrityChecks()) {
     cached_style_sheet->IntegrityReport().SendReports(GetExecutionContext());
 

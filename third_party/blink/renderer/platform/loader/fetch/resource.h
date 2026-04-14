@@ -348,7 +348,7 @@ class PLATFORM_EXPORT Resource : public GarbageCollected<Resource>,
   bool StaleRevalidationStarted() const { return stale_revalidation_started_; }
   void SetStaleRevalidationStarted() { stale_revalidation_started_ = true; }
 
-  const IntegrityMetadataSet& IntegrityMetadata() const {
+  const IntegrityMetadataSet& GetIntegrityMetadata() const {
     return options_.integrity_metadata;
   }
   bool PassedIntegrityChecks() const {

@@ -153,7 +153,7 @@ class PLATFORM_EXPORT FetchParameters {
   // credentials mode.
   void SetCrossOriginAccessControl(const SecurityOrigin*,
                                    network::mojom::CredentialsMode);
-  const IntegrityMetadataSet IntegrityMetadata() const {
+  const IntegrityMetadataSet GetIntegrityMetadata() const {
     return options_.integrity_metadata;
   }
   void SetIntegrityMetadata(const IntegrityMetadataSet& metadata) {

@@ -221,12 +221,12 @@ void Resource::CheckResourceIntegrity() {
   if ((type_ == ResourceType::kScript) && loader_) {
     csp_hash_reports_needed = loader_->Fetcher()->Context().CSPHashesToReport();
   }
-  if (IntegrityMetadata().empty()) {
+  if (GetIntegrityMetadata().empty()) {
     // No integrity attributes to check? Then we're passing.
     integrity_disposition_ = ResourceIntegrityDisposition::kPassed;
   } else {
     if (SubresourceIntegrity::CheckSubresourceIntegrity(
-            IntegrityMetadata(), Data(), Url(), *this, feature_context,
+            GetIntegrityMetadata(), Data(), Url(), *this, feature_context,
             integrity_report_, &integrity_hashes)) {
       integrity_disposition_ = ResourceIntegrityDisposition::kPassed;
     } else {
@@ -434,10 +434,11 @@ bool Resource::ForceIntegrityChecks() const {
 
 bool Resource::MustRefetchDueToIntegrityMetadata(
     const FetchParameters& params) const {
-  if (params.IntegrityMetadata().empty())
+  if (params.GetIntegrityMetadata().empty()) {
     return false;
+  }
 
-  return IntegrityMetadata() != params.IntegrityMetadata();
+  return GetIntegrityMetadata() != params.GetIntegrityMetadata();
 }
 
 const scoped_refptr<const SecurityOrigin>& Resource::GetOrigin() const {
