@@ -9708,3 +9708,7 @@ crbug.com/431038526 external/wpt/css/css-ruby/ruby-text-combine-upright-001b.htm
 crbug.com/502119020 [ Mac ] external/wpt/css/css-ui/caret-eol-001.html [ Failure Pass ]
 crbug.com/502119020 [ Mac ] external/wpt/css/css-ui/caret-eol-002.html [ Failure Pass ]
 crbug.com/42228011 external/wpt/webrtc/RTCPeerConnection-createDataChannel.html [ Failure Pass ]
+
+# Gardener 2026-04-14
+crbug.com/502564763 [ Win11-arm64 ] virtual/dark-mode-default/dark-mode/images/crossfade.html [ Failure Pass ]
+crbug.com/502564763 [ Win11-arm64 ] virtual/dark-mode-default/dark-mode/images/none-repeat-image-as-background.html [ Failure Pass ]
