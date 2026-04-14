@@ -2953,7 +2953,7 @@ const char kChromeAppStoreUrl[] =
     return;
   }
 
-  CHECK(base::FeatureList::IsEnabled(kComposeboxIOS));
+  CHECK(IsComposeboxIOSEnabled());
   if (_composeboxCoordinator) {
     return;
   }

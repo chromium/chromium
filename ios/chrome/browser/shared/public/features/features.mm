@@ -813,7 +813,7 @@ const char kEnableFuseboxKeyboardAccessoryBoth[] =
     "kEnableFuseboxKeyboardAccessoryBoth";
 
 bool ShouldShowKeyboardAccessory() {
-  if (!base::FeatureList::IsEnabled(kComposeboxIOS)) {
+  if (!IsComposeboxIOSEnabled()) {
     // Keyboard accessory is enabled by default.
     if (!base::FeatureList::IsEnabled(kDisableKeyboardAccessory)) {
       return true;
@@ -829,7 +829,7 @@ bool ShouldShowKeyboardAccessory() {
 }
 
 bool ShouldShowKeyboardAccessorySymbols() {
-  if (base::FeatureList::IsEnabled(kComposeboxIOS)) {
+  if (IsComposeboxIOSEnabled()) {
     if (base::FeatureList::IsEnabled(kEnableFuseboxKeyboardAccessory)) {
       std::string feature_param = base::GetFieldTrialParamValueByFeature(
           kEnableFuseboxKeyboardAccessory,
@@ -848,7 +848,7 @@ bool ShouldShowKeyboardAccessorySymbols() {
 }
 
 bool ShouldShowKeyboardAccessoryFeatures() {
-  if (base::FeatureList::IsEnabled(kComposeboxIOS)) {
+  if (IsComposeboxIOSEnabled()) {
     if (base::FeatureList::IsEnabled(kEnableFuseboxKeyboardAccessory)) {
       std::string feature_param = base::GetFieldTrialParamValueByFeature(
           kEnableFuseboxKeyboardAccessory,
