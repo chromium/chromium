@@ -29,7 +29,6 @@
 #include "media/renderers/video_frame_rgba_to_yuva_converter.h"
 #include "mojo/public/cpp/bindings/callback_helpers.h"
 #include "third_party/blink/public/platform/platform.h"
-#include "third_party/blink/renderer/platform/graphics/web_graphics_context_3d_video_frame_pool.h"
 #include "third_party/blink/renderer/platform/scheduler/public/main_thread.h"
 #include "third_party/blink/renderer/platform/scheduler/public/post_cross_thread_task.h"
 #include "third_party/blink/renderer/platform/webrtc/convert_to_webrtc_video_frame_buffer.h"
@@ -53,54 +52,6 @@ bool IsApproxEquals(const gfx::Rect& a, const gfx::Rect& b) {
          IsApproxEquals(a.width(), b.width()) &&
          IsApproxEquals(a.height(), b.height());
 }
-
-class Context
-    : public media::RenderableMappableSharedImageVideoFramePool::Context {
- public:
-  explicit Context(
-      scoped_refptr<viz::RasterContextProvider> raster_context_provider)
-      : raster_context_provider_(std::move(raster_context_provider)) {}
-
-  scoped_refptr<gpu::ClientSharedImage> CreateSharedImage(
-      const gfx::Size& size,
-      gfx::BufferUsage buffer_usage,
-      const viz::SharedImageFormat& si_format,
-      const gfx::ColorSpace& color_space,
-      gpu::SharedImageUsageSet usage,
-      gpu::SyncToken& sync_token) override {
-    auto* sii = SharedImageInterface();
-    if (!sii) {
-      return nullptr;
-    }
-    auto client_shared_image = sii->CreateSharedImage(
-        {si_format, size, color_space, usage, "WebRTCVideoFramePool"},
-        gpu::kNullSurfaceHandle, buffer_usage);
-    if (!client_shared_image) {
-      return nullptr;
-    }
-    sync_token = sii->GenVerifiedSyncToken();
-    return client_shared_image;
-  }
-
-  void DestroySharedImage(
-      const gpu::SyncToken& sync_token,
-      scoped_refptr<gpu::ClientSharedImage> shared_image) override {
-    CHECK(shared_image);
-    shared_image->UpdateDestructionSyncToken(sync_token);
-  }
-
-  const gpu::SharedImageCapabilities& GetCapabilities() override {
-    return SharedImageInterface()->GetCapabilities();
-  }
-
- private:
-  gpu::SharedImageInterface* SharedImageInterface() const {
-    return raster_context_provider_->SharedImageInterface();
-  }
-
-  scoped_refptr<viz::RasterContextProvider> raster_context_provider_;
-};
-
 }  // namespace
 
 void WebRtcVideoFrameAdapter::SharedResources::SetRasterContextProvider(
@@ -155,10 +106,6 @@ WebRtcVideoFrameAdapter::SharedResources::GetRasterContextProvider() {
     } else {
       // Provider exists but is not alive. Try to fetch a new one.
       SetRasterContextProvider(nullptr);
-
-      // Since the accelerated frame pool is attached to the old provider, we
-      // need to release it here.
-      accelerated_frame_pool_.reset();
     }
   }
 
@@ -202,37 +149,6 @@ void WebRtcVideoFrameAdapter::SharedResources::RequestRasterContextProvider() {
   }
 }
 
-bool CanUseGpuMemoryBufferReadback(media::VideoPixelFormat format,
-                                   gpu::SharedImageInterface* sii,
-                                   const gpu::Capabilities& caps) {
-  // Since ConvertToWebRtcVideoFrameBuffer will always produce an opaque frame
-  // (unless the input is already I420A), we allow using GMB readback from
-  // ABGR/ARGB/NV12 to NV12.
-  if (format != media::PIXEL_FORMAT_XBGR &&
-      format != media::PIXEL_FORMAT_XRGB &&
-      format != media::PIXEL_FORMAT_ABGR &&
-      format != media::PIXEL_FORMAT_ARGB &&
-      format != media::PIXEL_FORMAT_NV12) {
-    return false;
-  }
-  if (!sii) {
-    return false;
-  }
-  if (!caps.supports_rgb_to_yuv_conversion || !caps.supports_yuv_readback) {
-    DVLOG(1) << "YUV readback not supported.";
-    return false;
-  }
-#if BUILDFLAG(IS_WIN)
-  // CopyToGpuMemoryBuffer is only supported for D3D shared images on Windows.
-  if (!sii->GetCapabilities().shared_image_d3d) {
-    DVLOG(1) << "CopyToGpuMemoryBuffer not supported.";
-    return false;
-  }
-#endif  // BUILDFLAG(IS_WIN)
-  return WebGraphicsContext3DVideoFramePool::
-      IsGpuMemoryBufferReadbackFromTextureEnabled();
-}
-
 scoped_refptr<media::VideoFrame>
 WebRtcVideoFrameAdapter::SharedResources::ConstructVideoFrameFromTexture(
     scoped_refptr<media::VideoFrame> source_frame) {
@@ -251,93 +167,6 @@ WebRtcVideoFrameAdapter::SharedResources::ConstructVideoFrameFromTexture(
 
   viz::RasterContextProvider::ScopedRasterContextLock scoped_context(
       raster_context_provider.get());
-
-  // NV12 textures shouldn't be readback via conversion to NV12.
-  if (!disable_gmb_frames_ &&
-      CanUseGpuMemoryBufferReadback(
-          source_frame->format(),
-          raster_context_provider->SharedImageInterface(),
-          raster_context_provider->ContextCapabilities()) &&
-      source_frame->format() != media::PIXEL_FORMAT_NV12) {
-    if (!accelerated_frame_pool_) {
-      accelerated_frame_pool_ =
-          media::RenderableMappableSharedImageVideoFramePool::Create(
-              std::make_unique<Context>(raster_context_provider));
-    }
-
-    scoped_refptr<media::VideoFrame> dst_frame;
-    {
-      // Blocking is necessary to create the GpuMemoryBuffer from this thread.
-      base::ScopedAllowBaseSyncPrimitivesOutsideBlockingScope allow_wait;
-      dst_frame = accelerated_frame_pool_->MaybeCreateVideoFrame(
-          source_frame->coded_size(), gfx::ColorSpace::CreateREC709());
-    }
-
-    if (dst_frame) {
-      CHECK(dst_frame->HasSharedImage());
-      std::optional<gpu::SyncToken> blit_done_sync_token =
-          media::CopyRGBATextureToVideoFrame(
-              raster_context_provider.get(), source_frame->coded_size(),
-              source_frame->shared_image(), source_frame->acquire_sync_token(),
-              dst_frame.get());
-      if (blit_done_sync_token) {
-        // CopyRGBATextureToVideoFrame() operates on mailboxes and not frames,
-        // so we must manually copy over properties relevant to the encoder.
-        // TODO(https://crbug.com/1272852): Consider bailing out of this path if
-        // visible_rect or natural_size is much smaller than coded_size, or
-        // copying only the necessary part.
-        if (dst_frame->visible_rect() != source_frame->visible_rect() ||
-            dst_frame->natural_size() != source_frame->natural_size()) {
-          const auto dst_format = dst_frame->format();
-          dst_frame = media::VideoFrame::WrapVideoFrame(
-              std::move(dst_frame), dst_format, source_frame->visible_rect(),
-              source_frame->natural_size());
-          DCHECK(dst_frame);
-        }
-        dst_frame->set_timestamp(source_frame->timestamp());
-        dst_frame->set_metadata(source_frame->metadata());
-
-        auto* ri = raster_context_provider->RasterInterface();
-        DCHECK(ri);
-
-#if BUILDFLAG(IS_WIN)
-        // For shared memory GMBs on Windows we needed to explicitly request a
-        // copy from the shared image GPU texture to the GMB.
-        CHECK(dst_frame->HasMappableSharedImage());
-        CHECK(!dst_frame->HasNativeMappableSharedImage());
-
-        auto* sii = raster_context_provider->SharedImageInterface();
-
-        const auto& mailbox = dst_frame->shared_image()->mailbox();
-        sii->CopyToGpuMemoryBuffer(*blit_done_sync_token, mailbox);
-
-        // Synchronize RasterInterface with SharedImageInterface.
-        auto copy_to_gmb_done_sync_token = sii->GenUnverifiedSyncToken();
-        ri->WaitSyncTokenCHROMIUM(copy_to_gmb_done_sync_token.GetData());
-#endif  // BUILDFLAG(IS_WIN)
-
-        // RI::Finish() makes sure that CopyRGBATextureToVideoFrame() finished
-        // texture copy before we call ConstructVideoFrameFromGpu(). It's not
-        // the best way to wait for completion, but it's the only sync way
-        // to wait, and making this function async is currently impractical.
-        ri->Finish();
-
-        // We can just clear the sync token from the video frame now that we've
-        // synchronized with the GPU.
-        gpu::SyncToken empty_sync_token;
-        media::SimpleSyncTokenClient simple_client(empty_sync_token);
-        dst_frame->UpdateAcquireSyncToken(empty_sync_token);
-        dst_frame->UpdateReleaseSyncToken(&simple_client);
-
-        auto vf = ConstructVideoFrameFromGpu(std::move(dst_frame));
-        return vf;
-      }
-    }
-
-    DLOG(WARNING) << "Disabling GpuMemoryBuffer based readback due to failure.";
-    disable_gmb_frames_ = true;
-    accelerated_frame_pool_.reset();
-  }
 
   auto* ri = scoped_context.RasterInterface();
   if (!ri) {
