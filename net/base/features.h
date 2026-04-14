@@ -857,6 +857,9 @@ NET_EXPORT BASE_DECLARE_FEATURE_PARAM(int, kTcpSocketPoolProxyLimitWebSocket);
 // for the kDnsOverHttps partition.
 NET_EXPORT BASE_DECLARE_FEATURE(kIgnoreQuicCryptoConfigMemoryPressureForDoh);
 
+// If enabled, SSLClientSessionCache will ignore memory pressure events.
+NET_EXPORT BASE_DECLARE_FEATURE(kIgnoreMemoryPressureForSslClientSessionCache);
+
 // If enabled, cookie parsing will reject a cookie line whose first
 // semicolon-separated substring looks like "=Foo=Bar", i.e. starts with an
 // equals sign and has another equals sign. Such cookies have an ambiguous

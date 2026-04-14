@@ -16,6 +16,7 @@
 #include "base/trace_event/memory_allocator_dump.h"
 #include "base/trace_event/process_memory_dump.h"
 #include "base/trace_event/trace_event.h"
+#include "net/base/features.h"
 #include "net/base/network_anonymization_key.h"
 #include "net/base/schemeful_site.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -579,6 +580,78 @@ TEST_F(SSLClientSessionCacheTest, MAYBE_MemoryPressure) {
                  MakeTestKey(base::NumberToString(i)), bssl::UpRef(session));
   }
   EXPECT_EQ(10u, cache.size());
+}
+
+// Tests that when the kIgnoreMemoryPressureForSslClientSessionCache feature is
+// enabled, memory pressure events do NOT flush or resize the SSL client session
+// cache.
+TEST_F(SSLClientSessionCacheTest, IgnoresMemoryPressureWhenFeatureEnabled) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(
+      {features::kIgnoreMemoryPressureForSslClientSessionCache,
+       base::kStatefulMemoryPressure},
+      {});
+  base::test::TaskEnvironment task_environment(
+      base::test::TaskEnvironment::MainThreadType::IO);
+
+  SSLClientSessionCache::Config config;
+  config.max_entries = 10;
+  SSLClientSessionCache cache(config);
+
+  EXPECT_EQ(10u, cache.max_size());
+
+  // Insert 10 entries.
+  for (size_t i = 0; i < 10; i++) {
+    bssl::UniquePtr<SSL_SESSION> session = NewSSLSession();
+    cache.Insert(cache.generation_number(),
+                 MakeTestKey(base::NumberToString(i)), bssl::UpRef(session));
+  }
+  EXPECT_EQ(10u, cache.size());
+
+  // Simulate critical memory pressure.
+  SimulateMemoryLimitAndRelease(task_environment,
+                                base::kCriticalMemoryPressureThreshold);
+
+  // The cache and its size limits should remain completely unaffected.
+  EXPECT_EQ(10u, cache.max_size());
+  EXPECT_EQ(10u, cache.size());
+  EXPECT_NE(nullptr, cache.Lookup(MakeTestKey("0")).get());
+}
+
+// Tests that when the kIgnoreMemoryPressureForSslClientSessionCache feature is
+// disabled (default behavior), memory pressure events flush and resize the SSL
+// client session cache.
+TEST_F(SSLClientSessionCacheTest,
+       ClearsCacheOnMemoryPressureWhenFeatureDisabled) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(
+      {base::kStatefulMemoryPressure},
+      {features::kIgnoreMemoryPressureForSslClientSessionCache});
+  base::test::TaskEnvironment task_environment(
+      base::test::TaskEnvironment::MainThreadType::IO);
+
+  SSLClientSessionCache::Config config;
+  config.max_entries = 10;
+  SSLClientSessionCache cache(config);
+
+  EXPECT_EQ(10u, cache.max_size());
+
+  // Insert 10 entries.
+  for (size_t i = 0; i < 10; i++) {
+    bssl::UniquePtr<SSL_SESSION> session = NewSSLSession();
+    cache.Insert(cache.generation_number(),
+                 MakeTestKey(base::NumberToString(i)), bssl::UpRef(session));
+  }
+  EXPECT_EQ(10u, cache.size());
+
+  // Simulate critical memory pressure.
+  SimulateMemoryLimitAndRelease(task_environment,
+                                base::kCriticalMemoryPressureThreshold);
+
+  // Eviction should have run normally.
+  EXPECT_EQ(0u, cache.max_size());
+  EXPECT_EQ(0u, cache.size());
+  EXPECT_EQ(nullptr, cache.Lookup(MakeTestKey("0")).get());
 }
 
 TEST_F(SSLClientSessionCacheTest, FlushForServer) {

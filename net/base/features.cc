@@ -836,6 +836,9 @@ BASE_FEATURE_PARAM(int,
 BASE_FEATURE(kIgnoreQuicCryptoConfigMemoryPressureForDoh,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+BASE_FEATURE(kIgnoreMemoryPressureForSslClientSessionCache,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kCookieParseRejectEmptyNameAmbiguous,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
