@@ -228,6 +228,7 @@ void ToastView::Init() {
                                 ToastCloseReason::kCloseButton)),
         vector_icons::kCloseChromeRefreshIcon,
         lp->GetDistanceMetric(DISTANCE_TOAST_BUBBLE_ICON_SIZE),
+        ui::kColorToastForeground, ui::kColorIconDisabled,
         ui::kColorToastForeground));
     // Override the image button's border with the appropriate icon border size.
     const gfx::Insets insets =
@@ -255,6 +256,7 @@ void ToastView::Init() {
         base::RepeatingClosure(), kBrowserToolsChromeRefreshIcon,
         /*dip_size=*/
         lp->GetDistanceMetric(DISTANCE_TOAST_BUBBLE_MENU_ICON_SIZE),
+        ui::kColorToastForeground, ui::kColorIconDisabled,
         ui::kColorToastForeground));
     views::InstallCircleHighlightPathGenerator(menu_button_);
     menu_button_->SetProperty(views::kElementIdentifierKey, kToastMenuButton);
