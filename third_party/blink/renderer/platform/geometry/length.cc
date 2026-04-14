@@ -31,6 +31,7 @@
 #include "third_party/blink/renderer/platform/geometry/calculation_value.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_map.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
+#include "third_party/blink/renderer/platform/wtf/hash_traits.h"
 #include "third_party/blink/renderer/platform/wtf/size_assertions.h"
 #include "third_party/blink/renderer/platform/wtf/static_constructors.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
@@ -69,58 +70,55 @@ class CalculationValueHandleMap
 
   struct MemberWithCount {
     DISALLOW_NEW();
-
    public:
+    MemberWithCount() = default;
+    MemberWithCount(const CalculationValue* value) : value(value) {}
     void Trace(Visitor* visitor) const { visitor->Trace(value); }
+
     Member<const CalculationValue> value;
     unsigned count = 1u;
   };
 
   void Trace(Visitor* visitor) const { visitor->Trace(map_); }
 
-  int insert(const CalculationValue* calc_value) {
-    DCHECK(index_);
+  unsigned insert(const CalculationValue* calc_value) {
     // FIXME calc(): https://bugs.webkit.org/show_bug.cgi?id=80489
     // This monotonically increasing handle generation scheme is potentially
     // wasteful of the handle space. Consider reusing empty handles.
-    while (map_.Contains(index_))
+    do {
       index_++;
-
-    map_.Set(index_, MemberWithCount(calc_value, 1u));
-
+    } while (IsHashTraitsEmptyOrDeletedValue<HashTraits<unsigned>>(index_) ||
+             !map_.insert(index_, calc_value).is_new_entry);
     return index_;
   }
 
-  const CalculationValue& Get(int index) const {
-    DCHECK(map_.Contains(index));
+  const CalculationValue& Get(unsigned index) const {
     return *map_.at(index).value;
   }
 
-  unsigned GetCount(int index) const {
-    DCHECK(map_.Contains(index));
-    return map_.at(index).count;
-  }
+  unsigned GetCount(unsigned index) const { return map_.at(index).count; }
 
   wtf_size_t GetMapSize() const { return map_.size(); }
 
-  void DecrementCount(int index) {
-    DCHECK(map_.Contains(index));
+  void DecrementCount(unsigned index) {
     auto iter = map_.find(index);
-    --iter->value.count;
-    if (iter->value.count == 0u) {
-      map_.erase(index);
+    CHECK(iter != map_.end());
+    unsigned count = --iter->value.count;
+    if (count == 0u) {
+      map_.erase(iter);
     }
   }
 
-  void IncrementCount(int index) {
-    DCHECK(map_.Contains(index));
+  void IncrementCount(unsigned index) {
     auto iter = map_.find(index);
-    ++iter->value.count;
+    CHECK(iter != map_.end());
+    unsigned count = ++iter->value.count;
+    CHECK_GT(count, 0u);
   }
 
  private:
-  int index_ = 1;
-  HeapHashMap<int, MemberWithCount> map_;
+  unsigned index_ = 0;
+  HeapHashMap<unsigned, MemberWithCount> map_;
 };
 
 static CalculationValueHandleMap& CalcHandles() {
