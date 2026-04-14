@@ -55,13 +55,6 @@ class PrivacyHubNotificationControllerTest : public AshTestBase {
 
   ~PrivacyHubNotificationControllerTest() override = default;
 
-  // AshTestBase:
-  void SetUp() override {
-    AshTestBase::SetUp();
-    controller_ = PrivacyHubNotificationController::Get();
-  }
-  void TearDown() override { AshTestBase::TearDown(); }
-
  protected:
   const message_center::Notification* GetCombinedNotification() const {
     return GetNotification(
@@ -90,7 +83,7 @@ class PrivacyHubNotificationControllerTest : public AshTestBase {
       FakeCrasAudioClient::Get()->SetActiveInputStreamsWithPermission(
           {{"CRAS_CLIENT_TYPE_CHROME", 1}});
     } else {
-      controller_->ShowSoftwareSwitchNotification(sensor);
+      controller()->ShowSoftwareSwitchNotification(sensor);
     }
   }
 
@@ -101,7 +94,7 @@ class PrivacyHubNotificationControllerTest : public AshTestBase {
       FakeCrasAudioClient::Get()->SetActiveInputStreamsWithPermission(
           {{"CRAS_CLIENT_TYPE_CHROME", 0}});
     } else {
-      controller_->RemoveSoftwareSwitchNotification(sensor);
+      controller()->RemoveSoftwareSwitchNotification(sensor);
     }
   }
 
@@ -134,7 +127,10 @@ class PrivacyHubNotificationControllerTest : public AshTestBase {
     return nullptr;
   }
 
-  raw_ptr<PrivacyHubNotificationController, DanglingUntriaged> controller_;
+  PrivacyHubNotificationController* controller() {
+    return PrivacyHubNotificationController::Get();
+  }
+
   const base::HistogramTester histogram_tester_;
   base::test::ScopedFeatureList scoped_feature_list_;
   MockNewWindowDelegate new_window_delegate_;
