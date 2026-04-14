@@ -8,14 +8,11 @@
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/contextual_search/desktop_query_contextualizer_delegate.h"
 #include "chrome/browser/ui/contextual_search/tab_contextualization_controller.h"
 #include "chrome/browser/ui/lens/lens_overlay_query_controller.h"
 #include "chrome/browser/ui/lens/lens_search_controller.h"
 #include "components/contextual_search/contextual_search_session_handle.h"
-#include "components/contextual_search/contextual_search_types.h"
-#include "components/lens/lens_overlay_invocation_source.h"
-#include "components/lens/lens_overlay_mime_type.h"
-#include "content/public/browser/web_contents.h"
 
 namespace lens {
 
@@ -169,6 +166,10 @@ class LensQueryFlowRouter
       const std::optional<contextual_search::ContextUploadErrorType>&
           error_type) override;
 
+  // Callbacks for DesktopQueryContextualizerDelegate:
+  contextual_search::ContextualSearchSessionHandle* GetOrCreateSessionHandle();
+  std::optional<lens::ImageEncodingOptions> GetViewportEncodingOptions();
+
   LensOverlayQueryController* lens_overlay_query_controller() const {
     return lens_search_controller_->lens_overlay_query_controller();
   }
@@ -256,6 +257,11 @@ class LensQueryFlowRouter
       base::Time query_start_time,
       lens::LensOverlayInvocationSource invocation_source);
 
+  // Called when QueryContextualizer completes contextualization.
+  void OnContextualizedComplete(
+      base::WeakPtr<contextual_search::ContextualSearchSessionHandle>
+          session_handle);
+
   // Stores a pending search request to be sent to contextual tasks after the
   // tab context is ready.
   std::unique_ptr<CreateSearchUrlRequestInfo> pending_search_url_request_;
@@ -289,6 +295,10 @@ class LensQueryFlowRouter
                           contextual_search::ContextualSearchContextController::
                               ContextUploadStatusObserver>
       context_upload_status_observation_{this};
+
+  std::unique_ptr<contextual_tasks::DesktopQueryContextualizerDelegate>
+      contextualizer_delegate_;
+  std::unique_ptr<contextual_tasks::QueryContextualizer> query_contextualizer_;
 
   base::WeakPtrFactory<LensQueryFlowRouter> weak_factory_{this};
 };
