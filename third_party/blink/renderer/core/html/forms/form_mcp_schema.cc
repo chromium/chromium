@@ -1221,6 +1221,7 @@ void FormMCPSchema::ProcessForm(HTMLFormElement& form) {
       }
     }
   }
+  DCHECK_EQ(submit_button_, form.FindDefaultButton());
 }
 
 FormMCPSchema::ControlVector& FormMCPSchema::EnsureControlVector(
