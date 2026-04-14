@@ -36,8 +36,10 @@ public class DoneFragment extends PrivacyGuideBasePage {
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        if (!getPrivacySandboxBridge().isPrivacySandboxRestricted()
-                || getPrivacySandboxBridge().isRestrictedNoticeEnabled()) {
+        if (!ChromeFeatureList.isEnabled(
+                        ChromeFeatureList.PRIVACY_SANDBOX_AD_PRIVACY_UX_DEPRECATION)
+                && (!getPrivacySandboxBridge().isPrivacySandboxRestricted()
+                        || getPrivacySandboxBridge().isRestrictedNoticeEnabled())) {
             ChromeImageButton psButton = view.findViewById(R.id.ps_button);
             psButton.setOnClickListener(this::onPsButtonClick);
 

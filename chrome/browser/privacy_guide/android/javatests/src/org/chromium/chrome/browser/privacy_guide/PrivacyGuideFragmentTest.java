@@ -95,7 +95,10 @@ import java.util.Set;
 @EnableFeatures({
     ChromeFeatureList.PRIVACY_SANDBOX_AD_TOPICS_CONTENT_PARITY,
 })
-@DisableFeatures({ChromeFeatureList.SETTINGS_MULTI_COLUMN})
+@DisableFeatures({
+    ChromeFeatureList.SETTINGS_MULTI_COLUMN,
+    ChromeFeatureList.PRIVACY_SANDBOX_AD_PRIVACY_UX_DEPRECATION
+})
 @DoNotBatch(reason = "Manages sign-in state, which is global.")
 public class PrivacyGuideFragmentTest {
     private static final String SETTINGS_STATES_HISTOGRAM = "Settings.PrivacyGuide.SettingsStates";
@@ -1280,5 +1283,24 @@ public class PrivacyGuideFragmentTest {
         mPrivacyGuideTestRule.recreateActivity();
         clickOnArrowNextToRadioButtonWithText(R.string.privacy_guide_safe_browsing_enhanced_title);
         onViewWaiting(withId(R.id.sb_enhanced_sheet)).check(matches(isDisplayed()));
+    }
+
+    @Test
+    @LargeTest
+    @Feature({"PrivacyGuide"})
+    @EnableFeatures(ChromeFeatureList.PRIVACY_SANDBOX_AD_PRIVACY_UX_DEPRECATION)
+    public void testAdTopicsCardSkippedWhenDeprecationEnabled() {
+        setCookieControlsMode(CookieControlsMode.INCOGNITO_ONLY);
+        launchPrivacyGuide();
+        goToCard(FragmentType.COOKIES);
+        // Verify that the Ad Topics card is not displayed after the cookies card when the
+        // deprecation feature is enabled, so we should be able to click the finish button to get to
+        // the DoneFragment.
+        onViewWaiting(withText(R.string.privacy_guide_finish_button)).perform(click());
+        onViewWaiting(withText(R.string.privacy_guide_done_title)).check(matches(isDisplayed()));
+        // Verify the Ad Topics settings entry point is not displayed on the DoneFragment.
+        onView(withId(R.id.ps_button)).check(matches(not(isDisplayed())));
+        onView(withId(R.id.ps_heading)).check(matches(not(isDisplayed())));
+        onView(withId(R.id.ps_explanation)).check(matches(not(isDisplayed())));
     }
 }

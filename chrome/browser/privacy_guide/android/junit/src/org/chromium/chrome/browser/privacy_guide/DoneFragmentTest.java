@@ -42,6 +42,7 @@ import org.chromium.components.signin.identitymanager.IdentityManager;
 /** Tests for {@link DoneFragment} */
 @RunWith(BaseRobolectricTestRunner.class)
 @EnableFeatures({ChromeFeatureList.PRIVACY_SANDBOX_AD_TOPICS_CONTENT_PARITY})
+@DisableFeatures({ChromeFeatureList.PRIVACY_SANDBOX_AD_PRIVACY_UX_DEPRECATION})
 public class DoneFragmentTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
@@ -140,6 +141,19 @@ public class DoneFragmentTest {
         initFragment();
 
         assertTrue(mPsButton.isShown());
+    }
+
+    @Test
+    @EnableFeatures({ChromeFeatureList.PRIVACY_SANDBOX_AD_PRIVACY_UX_DEPRECATION})
+    public void testPSSectionNotVisibleWhenDeprecationFeatureEnabled() {
+        setPrivacySandboxState(false, false);
+        initFragment();
+
+        View psHeading = mFragment.getView().findViewById(R.id.ps_heading);
+        View psExplanation = mFragment.getView().findViewById(R.id.ps_explanation);
+        assertFalse(mPsButton.isShown());
+        assertFalse(psHeading.isShown());
+        assertFalse(psExplanation.isShown());
     }
 
     @Test

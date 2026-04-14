@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.privacy_guide;
 import static org.chromium.chrome.browser.privacy_guide.PrivacyGuideUtils.canUpdateHistorySyncValue;
 
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.privacy_sandbox.PrivacySandboxBridge;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.safe_browsing.SafeBrowsingState;
@@ -43,6 +44,10 @@ class StepDisplayHandlerImpl implements StepDisplayHandler {
 
     @Override
     public boolean shouldDisplayAdTopics() {
+        if (ChromeFeatureList.isEnabled(
+                ChromeFeatureList.PRIVACY_SANDBOX_AD_PRIVACY_UX_DEPRECATION)) {
+            return false;
+        }
         return mPrivacySandboxBridge.privacySandboxPrivacyGuideShouldShowAdTopicsCard();
     }
 }

@@ -19,6 +19,9 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.Features.DisableFeatures;
+import org.chromium.base.test.util.Features.EnableFeatures;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.privacy_sandbox.PrivacySandboxBridgeJni;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.safe_browsing.SafeBrowsingBridge;
@@ -163,6 +166,7 @@ public class StepDisplayHandlerImplTest {
     }
 
     @Test
+    @DisableFeatures(ChromeFeatureList.PRIVACY_SANDBOX_AD_PRIVACY_UX_DEPRECATION)
     public void showsAdTopicsWhenShouldShowAdTopicsIsOn() {
         when(mPrivacySandboxBridgeJni.privacySandboxPrivacyGuideShouldShowAdTopicsCard(any()))
                 .thenReturn(true);
@@ -170,9 +174,18 @@ public class StepDisplayHandlerImplTest {
     }
 
     @Test
+    @DisableFeatures(ChromeFeatureList.PRIVACY_SANDBOX_AD_PRIVACY_UX_DEPRECATION)
     public void hidesAdTopicsWhenShouldShowAdTopicsIsOff() {
         when(mPrivacySandboxBridgeJni.privacySandboxPrivacyGuideShouldShowAdTopicsCard(any()))
                 .thenReturn(false);
+        assertFalse(mStepDisplayHandler.shouldDisplayAdTopics());
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.PRIVACY_SANDBOX_AD_PRIVACY_UX_DEPRECATION)
+    public void hidesAdTopicsWhenDeprecationFeatureEnabled() {
+        when(mPrivacySandboxBridgeJni.privacySandboxPrivacyGuideShouldShowAdTopicsCard(any()))
+                .thenReturn(true);
         assertFalse(mStepDisplayHandler.shouldDisplayAdTopics());
     }
 }
