@@ -105,7 +105,7 @@ constexpr CGFloat kDefaultAppBarWidth = 300;
   CGFloat offset = (containerLength - tallSideLength) / 2;
 
   CGFloat extraOffset =
-      (1 - _fullscreenProgress) * (kAppBarHeight - kAppBarHeightFullscreen);
+      (1 - self.fullscreenProgress) * (kAppBarHeight - kAppBarHeightFullscreen);
 
   _appBarVerticalPositioning.constant = -offset + extraOffset;
 }

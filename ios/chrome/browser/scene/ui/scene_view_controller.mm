@@ -173,8 +173,7 @@
 #pragma mark - FullscreenUIElement
 
 - (void)updateForFullscreenProgress:(CGFloat)progress {
-  AppBarPosition position = AppBarPositionForView(self.view);
-  if (position != AppBarPosition::kBottom) {
+  if (progress == _fullscreenProgress) {
     return;
   }
   _fullscreenProgress = progress;

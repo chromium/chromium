@@ -11,6 +11,7 @@
 #import "ios/chrome/browser/app_bar/ui/app_bar_view_controller.h"
 #import "ios/chrome/browser/fullscreen/model/fullscreen_browser_agent.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
+#import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 
 @interface AppBarContainerViewController () <AppBarContainerViewDelegate>
 @property(nonatomic, strong) AppBarContainerView* view;
@@ -70,13 +71,7 @@
 #pragma mark - FullscreenUIElement
 
 - (void)updateForFullscreenProgress:(CGFloat)progress {
-  UIWindowScene* windowScene = self.view.window.windowScene;
-  if (!windowScene) {
-    return;
-  }
-  UIInterfaceOrientation orientation =
-      windowScene.effectiveGeometry.interfaceOrientation;
-  if (orientation != UIInterfaceOrientationPortrait) {
+  if (progress == _fullscreenProgress) {
     return;
   }
   _fullscreenProgress = progress;
@@ -148,8 +143,14 @@
       break;
   }
 
+  // The App Bar should always be fully visible in landscape orientation.
+  CGFloat fullscreenProgress =
+      AppBarPositionForView(self.view) == AppBarPosition::kBottom
+          ? _fullscreenProgress
+          : 1.0;
   self.view.transform = CGAffineTransformMakeRotation(angle);
-  self.view.fullscreenProgress = _fullscreenProgress;
+  self.view.fullscreenProgress = fullscreenProgress;
+  [_appBar updateForFullscreenProgress:fullscreenProgress];
   [_appBar updateForAngle:-angle];
 }
 
