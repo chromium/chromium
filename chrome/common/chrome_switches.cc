@@ -998,6 +998,10 @@ const char kUserDataMigrated[] = "user-data-migrated";
 #endif
 
 #if BUILDFLAG(CHROME_FOR_TESTING)
+// Overrides the behavior of the sign-in dialog when creating a new profile for
+// an enterprise account.
+// Valid values are "accept-new-profile", "accept-current-profile", and
+// "cancel".
 const char kEnterpriseSigninDialogBehaviorForTesting[] =
     "enterprise-signin-dialog-behavior-for-testing";
 #endif
