@@ -155,7 +155,6 @@ source_set("unit_tests") {
     "//components/private_ai/proto_utils:unit_tests",
     "//content/test:test_support",
     "//mojo/public/cpp/system",
-    "//services/network:network_service",
     "//services/network:test_support",
     "//services/network/public/mojom",
     "//testing/gmock",

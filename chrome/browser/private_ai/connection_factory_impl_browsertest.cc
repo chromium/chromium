@@ -15,11 +15,9 @@
 #include "components/private_ai/common/private_ai_logger.h"
 #include "components/private_ai/features.h"
 #include "components/private_ai/phosphor/token_manager.h"
-#include "content/public/browser/network_service_instance.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/test/browser_test.h"
 #include "services/network/public/mojom/network_context.mojom.h"
-#include "services/network/public/mojom/network_service.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 
@@ -93,7 +91,7 @@ IN_PROC_BROWSER_TEST_F(ConnectionFactoryImplBrowserTest,
 
   ConnectionFactoryImpl factory(url, GetNetworkContext(), GetLogger());
   factory.EnableTokenAttestation(GetTokenManager());
-  factory.EnableProxy(GURL("https://proxy.com"), content::GetNetworkService());
+  factory.EnableProxy(GURL("https://proxy.com"));
 
   auto connection = factory.Create(base::DoNothing());
   EXPECT_TRUE(connection);

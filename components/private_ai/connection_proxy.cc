@@ -19,7 +19,6 @@
 #include "net/http/http_request_headers.h"
 #include "net/proxy_resolution/proxy_config.h"
 #include "services/cert_verifier/public/mojom/cert_verifier_service_factory.mojom.h"
-#include "services/network/public/mojom/network_service.mojom.h"
 #include "services/network/public/mojom/proxy_config.mojom.h"
 #include "url/origin.h"
 
@@ -85,19 +84,16 @@ ConnectionProxy::ConnectionProxy(
     const GURL& proxy_url,
     PrivateAiLogger* logger,
     phosphor::TokenManager* token_manager,
-    network::mojom::NetworkService* network_service,
     InnerConnectionFactory inner_connection_factory,
     base::OnceCallback<void(ErrorCode)> on_disconnect)
     : proxy_url_(proxy_url),
       logger_(logger),
       token_manager_(token_manager),
-      network_service_(network_service),
       inner_connection_factory_(std::move(inner_connection_factory)),
       on_disconnect_(std::move(on_disconnect)) {
   CHECK(proxy_url_.is_valid());
   CHECK(logger_);
   CHECK(token_manager_);
-  CHECK(network_service_);
   CHECK(inner_connection_factory_);
   CHECK(on_disconnect_);
 
@@ -139,7 +135,6 @@ void ConnectionProxy::OnDestroy(ErrorCode error) {
   }
 
   token_manager_ = nullptr;
-  network_service_ = nullptr;
   logger_ = nullptr;
   weak_factory_.InvalidateWeakPtrsAndDoom();
 }
@@ -180,7 +175,7 @@ void ConnectionProxy::OnProxyToken(
   logger_->LogInfo(FROM_HERE, "Got auth token for proxy. Connecting to " +
                                   proxy_url_.spec());
 
-  network_service_->CreateNetworkContext(
+  content::CreateNetworkContextInNetworkService(
       proxied_context_.BindNewPipeAndPassReceiver(), std::move(context_params));
 
   inner_connection_ =

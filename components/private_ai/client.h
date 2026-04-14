@@ -14,7 +14,6 @@
 #include "components/private_ai/error_code.h"
 #include "components/private_ai/phosphor/token_manager.h"
 #include "components/private_ai/proto/private_ai.pb.h"
-#include "services/network/public/mojom/network_service.mojom.h"
 #include "url/gurl.h"
 
 namespace network::mojom {
@@ -53,7 +52,6 @@ class Client {
   // `use_token_attestation`: Whether to use token attestation.
   // `network_context`: The network context to use for connections.
   // `token_manager`: Required if `use_token_attestation` is true.
-  // `network_service`: Required if `proxy_url_string` is not empty.
   // `logger`: The logger for the client.
   static std::unique_ptr<Client> Create(
       const std::string& url,
@@ -62,7 +60,6 @@ class Client {
       bool use_token_attestation,
       network::mojom::NetworkContext* network_context,
       phosphor::TokenManager* token_manager,
-      network::mojom::NetworkService* network_service,
       PrivateAiLogger* logger);
 
   virtual ~Client() = default;

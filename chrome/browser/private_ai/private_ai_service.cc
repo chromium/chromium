@@ -17,11 +17,9 @@
 #include "components/signin/public/base/oauth_consumer_id.h"
 #include "components/signin/public/identity_manager/access_token_info.h"
 #include "components/signin/public/identity_manager/primary_account_access_token_fetcher.h"
-#include "content/public/browser/network_service_instance.h"
 #include "content/public/browser/storage_partition.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/mojom/network_context.mojom.h"
-#include "services/network/public/mojom/network_service.mojom.h"
 
 namespace private_ai {
 
@@ -57,7 +55,7 @@ PrivateAiService::PrivateAiService(
       kPrivateAiProxyServerUrl.Get(),
       base::FeatureList::IsEnabled(kPrivateAiUseTokenAttestation),
       profile_->GetDefaultStoragePartition()->GetNetworkContext(),
-      token_manager_.get(), content::GetNetworkService(), &logger_);
+      token_manager_.get(), &logger_);
 }
 
 PrivateAiService::~PrivateAiService() {

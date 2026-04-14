@@ -29,7 +29,6 @@ std::unique_ptr<Client> Client::Create(
     bool use_token_attestation,
     network::mojom::NetworkContext* network_context,
     phosphor::TokenManager* token_manager,
-    network::mojom::NetworkService* network_service,
     PrivateAiLogger* logger) {
   CHECK(!api_key.empty());
   GURL formatted_url = Client::FormatUrl(url, api_key);
@@ -46,7 +45,7 @@ std::unique_ptr<Client> Client::Create(
     if (!proxy_url.SchemeIsHTTPOrHTTPS()) {
       proxy_url = GURL(base::StrCat({"https://", proxy_url_string}));
     }
-    connection_factory->EnableProxy(proxy_url, network_service);
+    connection_factory->EnableProxy(proxy_url);
   }
 
   return base::WrapUnique(
