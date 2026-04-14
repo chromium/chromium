@@ -547,7 +547,6 @@ crbug.com/angleproject/5038 [ android no-passthrough qualcomm renderer-skia-gl ]
 ## Pixel 2 ##
 
 crbug.com/40236526 [ android android-pixel-2 no-passthrough ] conformance/rendering/blending.html [ Failure ]
-crbug.com/361604321 [ android android-pixel-2 angle-opengles passthrough ] conformance/canvas/render-after-resize-test.html [ Failure ]
 crbug.com/40167870 [ android android-pixel-2 angle-opengles passthrough ] conformance/extensions/angle-instanced-arrays-out-of-bounds.html [ Failure ]
 
 ## Pixel 4 ##
@@ -592,7 +591,6 @@ crbug.com/446122639 [ android android-pixel-10 ] conformance/textures/webgl_canv
 ## Misc failures ##
 
 ## DrDc being re-enabled ##
-crbug.com/380250262 [ android android-pixel-4 angle-opengles passthrough ] conformance/canvas/render-after-resize-test.html [ Failure ]
 
 
 ## Samsung failures ##

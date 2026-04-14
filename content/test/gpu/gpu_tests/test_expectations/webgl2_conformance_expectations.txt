@@ -881,8 +881,6 @@ crbug.com/40167875 [ android android-pixel-4 angle-opengles passthrough ] confor
 crbug.com/angleproject/3684 [ android angle-opengles graphite-disabled qualcomm target-cpu-32 ] conformance2/renderbuffers/multisample-with-full-sample-counts.html [ Failure ]
 
 ## DrDc being re-enabled ##
-crbug.com/380250262 [ android android-pixel-2 angle-opengles passthrough ] conformance/canvas/render-after-resize-test.html [ Failure ]
-crbug.com/380250262 [ android android-pixel-4 angle-opengles passthrough ] conformance/canvas/render-after-resize-test.html [ Failure ]
 
 # On Adreno GPUs, flushes (which may happen inadvertently when the command
 # buffer is full) between draw calls would cause MaskConstancy test failures.

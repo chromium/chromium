@@ -2368,6 +2368,15 @@ void WebGLRenderingContextBase::Reshape(int width, int height) {
     height = std::max(1, static_cast<int>(height * scale_factor));
   }
 
+  // Save pending GL errors before resize, since internal GL calls during
+  // resize may consume them.
+  GLenum err;
+  while ((err = ContextGL()->GetError()) != GL_NO_ERROR) {
+    if (!synthetic_errors_.Contains(err)) {
+      synthetic_errors_.push_back(err);
+    }
+  }
+
   // We don't have to mark the canvas as dirty, since the newly created image
   // buffer will also start off clear (and this matches what reshape will do).
   GetDrawingBuffer()->Resize(gfx::Size(width, height));
