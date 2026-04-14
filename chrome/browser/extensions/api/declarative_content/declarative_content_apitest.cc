@@ -133,10 +133,8 @@ constexpr char kBackgroundHelpers[] =
          });
        };)";
 
-#if BUILDFLAG(ENABLE_EXTENSIONS)
 constexpr char kRulesExtensionName[] =
     "Declarative content persistence apitest";
-#endif
 
 using ContextType = extensions::browser_test_util::ContextType;
 
@@ -721,8 +719,6 @@ IN_PROC_BROWSER_TEST_P(DeclarativeContentApiTestWithContextType,
   EXPECT_TRUE(incognito_action->GetIsVisible(incognito_tab_id));
 }
 
-// TODO(crbug.com/40488499): Android does not support PRE_ steps.
-#if BUILDFLAG(ENABLE_EXTENSIONS)
 // TODO(crbug.com/41189874): Flaky on Windows release builds.
 #if BUILDFLAG(IS_WIN) && defined(NDEBUG)
 #define MAYBE_PRE_RulesPersistence DISABLED_PRE_RulesPersistence
@@ -759,8 +755,6 @@ IN_PROC_BROWSER_TEST_P(DeclarativeContentApiTestWithContextType,
 IN_PROC_BROWSER_TEST_P(DeclarativeContentApiTestWithContextType,
                        MAYBE_RulesPersistence) {
   const Extension* extension = GetSingleLoadedExtension();
-  // TODO(crbug.com/40200835): On desktop Android this assert fails because the
-  // extension was not loaded. It's not clear why.
   ASSERT_TRUE(extension) << message_;
   ASSERT_EQ(kRulesExtensionName, extension->name());
 
@@ -811,7 +805,6 @@ IN_PROC_BROWSER_TEST_P(DeclarativeContentApiTestWithContextType,
   incognito_test_observer.WaitForPageActionVisibilityChangeTo(incognito_tab, 0);
   EXPECT_FALSE(incognito_action->GetIsVisible(incognito_tab_id));
 }
-#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
 // http://crbug.com/40335865
 IN_PROC_BROWSER_TEST_P(DeclarativeContentApiTestWithContextType,
