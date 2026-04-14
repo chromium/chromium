@@ -55,7 +55,8 @@ class TabContextMenuController : public ui::SimpleMenuModel::Delegate {
 
   // Loads the menu model and initializes the menu runner. This must be called
   // before RunMenuAt.
-  void LoadModel(std::unique_ptr<ui::SimpleMenuModel> model);
+  void LoadModel(std::unique_ptr<ui::SimpleMenuModel> model,
+                 base::RepeatingClosure on_menu_closed = base::DoNothing());
 
   // Runs the menu model at the specified point within the given widget.
   void RunMenuAt(const gfx::Point& point,

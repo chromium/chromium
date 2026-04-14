@@ -94,7 +94,18 @@ void VerticalTabStripController::ShowContextMenuForNode(
       browser_view_->browser()->GetFeatures().tab_menu_model_delegate(), model_,
       tab_index.value());
 
-  context_menu_controller_->LoadModel(std::move(model));
+  CHECK(browser_view_->tab_strip_view());
+  expand_on_hover_lock_ = browser_view_->tab_strip_view()->GetExpandOnHoverLock(
+      ExpandOnHoverLockType::kKeepExpanded);
+
+  // `base::Unretained(this)` is safe because `context_menu_controller_` is
+  // owned by `this`, ensuring the callback cannot outlive `this`.
+  auto on_menu_closed =
+      base::BindRepeating(&VerticalTabStripController::OnTabContextMenuClosed,
+                          base::Unretained(this));
+
+  context_menu_controller_->LoadModel(std::move(model),
+                                      std::move(on_menu_closed));
 
   context_menu_controller_->RunMenuAt(point, source_type, source->GetWidget());
 }
@@ -365,14 +376,6 @@ views::Widget* VerticalTabStripController::ShowGroupEditorBubble(
       /*stop_context_menu_propagation=*/stop_context_menu_propagation);
 }
 
-std::unique_ptr<ExpandOnHoverLock>
-VerticalTabStripController::AcquireExpandOnHoverLock() {
-  CHECK(browser_view_);
-  CHECK(browser_view_->tab_strip_view());
-  return browser_view_->tab_strip_view()->GetExpandOnHoverLock(
-      ExpandOnHoverLockType::kKeepExpanded);
-}
-
 tab_groups::TabGroupSyncService*
 VerticalTabStripController::GetTabGroupSyncService() {
   return tab_groups::TabGroupSyncServiceFactory::GetForProfile(
@@ -435,6 +438,10 @@ bool VerticalTabStripController::GetContextMenuAccelerator(
   return TabStripModel::ContextMenuCommandToBrowserCommand(command_id,
                                                            &browser_cmd) &&
          browser_view_->GetWidget()->GetAccelerator(browser_cmd, accelerator);
+}
+
+void VerticalTabStripController::OnTabContextMenuClosed() {
+  expand_on_hover_lock_.reset();
 }
 
 void VerticalTabStripController::TabGroupFocusChanged(

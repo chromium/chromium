@@ -15,14 +15,15 @@ TabContextMenuController::TabContextMenuController(int index,
 TabContextMenuController::~TabContextMenuController() = default;
 
 void TabContextMenuController::LoadModel(
-    std::unique_ptr<ui::SimpleMenuModel> model) {
+    std::unique_ptr<ui::SimpleMenuModel> model,
+    base::RepeatingClosure on_menu_closed) {
   model_ = std::move(model);
 
   const int run_flags =
       views::MenuRunner::HAS_MNEMONICS | views::MenuRunner::CONTEXT_MENU;
 
   menu_runner_ = std::make_unique<views::MenuRunner>(model_.get(), run_flags,
-                                                     base::DoNothing());
+                                                     std::move(on_menu_closed));
 }
 
 void TabContextMenuController::RunMenuAt(const gfx::Point& point,

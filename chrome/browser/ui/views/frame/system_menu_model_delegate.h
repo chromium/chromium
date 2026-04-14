@@ -10,6 +10,8 @@
 #include "ui/base/accelerators/accelerator.h"
 #include "ui/menus/simple_menu_model.h"
 
+class ExpandOnHoverLock;
+
 // Provides the SimpleMenuModel::Delegate implementation for system context
 // menus.
 class SystemMenuModelDelegate : public ui::SimpleMenuModel::Delegate {
@@ -32,8 +34,12 @@ class SystemMenuModelDelegate : public ui::SimpleMenuModel::Delegate {
   bool IsItemForCommandIdDynamic(int command_id) const override;
   std::u16string GetLabelForCommandId(int command_id) const override;
   void ExecuteCommand(int command_id, int event_flags) override;
+  void OnMenuWillShow(ui::SimpleMenuModel* source) override;
+  void MenuClosed(ui::SimpleMenuModel* source) override;
 
  private:
+  std::unique_ptr<ExpandOnHoverLock> expand_on_hover_lock_;
+
   const raw_ptr<ui::AcceleratorProvider> provider_;  // weak
   const raw_ptr<Browser> browser_;                   // weak
 };

@@ -14,6 +14,7 @@
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/user_education/browser_user_education_interface.h"
 #include "chrome/browser/ui/views/bookmarks/saved_tab_groups/saved_tab_group_everything_menu.h"
+#include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/vertical_tab_strip_region_view.h"
 #include "chrome/browser/ui/views/tabs/shared/tab_strip_combo_button.h"
 #include "chrome/browser/ui/views/tabs/shared/tab_strip_flat_edge_button.h"
@@ -347,8 +348,22 @@ void VerticalTabStripTopContainer::ShowContextMenuForViewImpl(
     int32_t menu_runner_flags =
         views::MenuRunner::HAS_MNEMONICS | views::MenuRunner::CONTEXT_MENU;
 
+    BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser_);
+    CHECK(browser_view);
+    CHECK(browser_view->tab_strip_view());
+    expand_on_hover_lock_ =
+        browser_view->tab_strip_view()->GetExpandOnHoverLock(
+            ExpandOnHoverLockType::kKeepExpanded);
+
+    // `base::Unretained(this)` is safe because `context_menu_runner_` is owned
+    // by `this`, ensuring the callback cannot outlive `this`.
+    auto on_menu_closed = base::BindRepeating(
+        &VerticalTabStripTopContainer::OnCollapseButtonContextMenuClosed,
+        base::Unretained(this));
+
     context_menu_runner_ = std::make_unique<views::MenuRunner>(
-        context_menu_model_.get(), menu_runner_flags);
+        context_menu_model_.get(), menu_runner_flags,
+        std::move(on_menu_closed));
 
     context_menu_runner_->RunMenuAt(
         source->GetWidget(), nullptr, gfx::Rect(point, gfx::Size()),
@@ -393,6 +408,10 @@ void VerticalTabStripTopContainer::SetCaptionButtonWidthForLayout(
   }
   caption_button_width_ = caption_button_width;
   InvalidateLayout();
+}
+
+void VerticalTabStripTopContainer::OnCollapseButtonContextMenuClosed() {
+  expand_on_hover_lock_.reset();
 }
 
 int VerticalTabStripTopContainer::GetPreferredWidth() const {
