@@ -55,6 +55,10 @@ class ASH_EXPORT NetworkDetailedView : public TrayDetailedView,
 
   views::Button* info_button_for_testing() { return info_button_; }
 
+  base::WeakPtr<NetworkDetailedView> GetWeakPtr() {
+    return weak_ptr_factory_.GetWeakPtr();
+  }
+
  protected:
   NetworkDetailedView(DetailedViewDelegate* detailed_view_delegate,
                       Delegate* delegate,

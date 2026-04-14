@@ -60,7 +60,7 @@ class NetworkDetailedViewTest : public AshTestBase {
     ASSERT_EQ(1u, children.size());
 
     network_detailed_view_ =
-        views::AsViewClass<NetworkDetailedView>(children.front());
+        views::AsViewClass<NetworkDetailedView>(children.front())->GetWeakPtr();
     ASSERT_TRUE(network_detailed_view_);
   }
 
@@ -91,7 +91,7 @@ class NetworkDetailedViewTest : public AshTestBase {
   }
 
   NetworkDetailedView* network_detailed_view() {
-    return network_detailed_view_;
+    return network_detailed_view_.get();
   }
 
   void CheckHistogramBuckets(int count) {
@@ -108,7 +108,7 @@ class NetworkDetailedViewTest : public AshTestBase {
         network_detailed_view_->GetViewByID(static_cast<int>(id)));
   }
 
-  raw_ptr<NetworkDetailedView, DanglingUntriaged> network_detailed_view_;
+  base::WeakPtr<NetworkDetailedView> network_detailed_view_;
   base::UserActionTester user_action_tester_;
 };
 
