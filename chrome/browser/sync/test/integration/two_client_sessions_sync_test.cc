@@ -179,7 +179,13 @@ IN_PROC_BROWSER_TEST_P(TwoClientSessionsSyncTest, DeleteIdleSession) {
   EXPECT_FALSE(GetSessionData(1, &sessions1));
 }
 
-IN_PROC_BROWSER_TEST_P(TwoClientSessionsSyncTest, DeleteActiveSession) {
+// TODO(crbug.com/501729852): This test is flaky on Linux.
+#if (BUILDFLAG(IS_LINUX) && defined(MEMORY_SANITIZER))
+#define MAYBE_DeleteActiveSession DISABLED_DeleteActiveSession
+#else
+#define MAYBE_DeleteActiveSession DeleteActiveSession
+#endif
+IN_PROC_BROWSER_TEST_P(TwoClientSessionsSyncTest, MAYBE_DeleteActiveSession) {
   ASSERT_TRUE(SetupSync());
 
   ASSERT_TRUE(CheckInitialState(0));
