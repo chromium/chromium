@@ -752,11 +752,11 @@ class BookmarkBarMediator implements BookmarkBarItemsProvider.Observer {
                 (v, event) -> {
                     int action = event.getActionMasked();
 
-                    // Consume the initial press to ensure we receive subsequent motion events (like
-                    // release).
+                    // Consume the initial press for middle clicks to ensure we receive subsequent
+                    // motion events (like release).
                     if (action == MotionEvent.ACTION_DOWN
                             || action == MotionEvent.ACTION_BUTTON_PRESS) {
-                        return true;
+                        return (event.getButtonState() & MotionEvent.BUTTON_TERTIARY) != 0;
                     }
 
                     // We only act when the user lifts their finger or releases a mouse button.

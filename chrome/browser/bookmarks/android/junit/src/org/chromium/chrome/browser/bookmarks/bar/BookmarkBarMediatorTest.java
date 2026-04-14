@@ -387,6 +387,7 @@ public class BookmarkBarMediatorTest {
         // Simulate ACTION_DOWN
         MotionEvent downEvent = Mockito.mock(MotionEvent.class);
         when(downEvent.getActionMasked()).thenReturn(MotionEvent.ACTION_DOWN);
+        when(downEvent.getButtonState()).thenReturn(MotionEvent.BUTTON_TERTIARY);
         assertTrue(touchListener.onTouch(placeholderView, downEvent));
 
         // Simulate ACTION_BUTTON_RELEASE with BUTTON_TERTIARY
@@ -400,5 +401,29 @@ public class BookmarkBarMediatorTest {
                         eq(List.of(bookmarkId)),
                         eq(false),
                         eq(TabLaunchType.FROM_BOOKMARK_BAR_BACKGROUND));
+    }
+
+    @Test
+    @SmallTest
+    public void testPopupMenuItemTouchListener_PrimaryClickNotConsumed() {
+        BookmarkId desktopFolderId = mBookmarkModel.getDesktopFolderId();
+        mBookmarkModel.addBookmark(desktopFolderId, 0, "Popup Bookmark", JUnitTestGURLs.URL_1);
+
+        ModelList modelList =
+                mMediator.buildMenuModelListForFolder(mBookmarkModel, desktopFolderId);
+        ListItem listItem = modelList.get(0);
+        View.OnTouchListener touchListener =
+                listItem.model.get(ListMenuItemProperties.TOUCH_LISTENER);
+
+        View placeholderView = new View(mActivity);
+
+        // Simulate ACTION_DOWN with primary button (or touch).
+        MotionEvent downEvent = Mockito.mock(MotionEvent.class);
+        when(downEvent.getActionMasked()).thenReturn(MotionEvent.ACTION_DOWN);
+        when(downEvent.getButtonState()).thenReturn(MotionEvent.BUTTON_PRIMARY);
+
+        org.junit.Assert.assertFalse(
+                "ACTION_DOWN for primary click should not be consumed so tooltips can work",
+                touchListener.onTouch(placeholderView, downEvent));
     }
 }
