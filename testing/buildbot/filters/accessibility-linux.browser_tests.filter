@@ -235,3 +235,7 @@
 # WebUI TabStrip tests are not activated in Screen Reader mode.
 -WebUITabStripContainerViewTest.*
 -WebUITabStripDevToolsTest.*
+
+# Flaky at least on Linux: crbug.com/502373073
+-PasswordGenerationInteractiveTest.PopupShownManuallyAndPasswordErased
+-PasswordGenerationInteractiveTest.PopupShownAndPasswordSelected
