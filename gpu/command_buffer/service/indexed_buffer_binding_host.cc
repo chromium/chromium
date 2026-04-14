@@ -153,7 +153,9 @@ void IndexedBufferBindingHost::DoAdjustedBindBufferRange(
     glBindBufferBase(target, index, service_id);
     return;
   }
-  if (offset + size > full_buffer_size) {
+  GLsizeiptr range_end = 0;
+  if (!base::CheckAdd(offset, size).AssignIfValid(&range_end) ||
+      range_end > full_buffer_size) {
     adjusted_size = full_buffer_size - offset;
     // size needs to be a multiple of 4.
     adjusted_size = adjusted_size & ~3;
