@@ -422,6 +422,31 @@ public class ProfileDataCacheUnitTest {
                 TestAccounts.TEST_ACCOUNT_NO_NAME.getEmail(), profileData.getAccountEmail());
     }
 
+    @Test
+    public void testUpdateShouldPutInCacheBothPrimaryAndCoreAccounts() {
+        var updateBlocker = mAccountManagerTestRule.blockGetAccountsUpdate();
+        mAccountManagerTestRule.blockExtendedAccountInfoUpdate();
+        // Create a new ProfileDataCache to ensure that the accounts are not ready.
+        mProfileDataCache =
+                ProfileDataCache.createWithDefaultImageSizeAndNoBadge(
+                        RuntimeEnvironment.application.getApplicationContext(),
+                        mAccountManagerTestRule.getIdentityManager());
+
+        updateBlocker.close();
+        mAccountManagerTestRule.addAccount(TestAccounts.ACCOUNT1);
+        mAccountManagerTestRule.getIdentityManager().setPrimaryAccount(TestAccounts.ACCOUNT2);
+        Assert.assertFalse(mProfileDataCache.getAccounts().isFulfilled());
+
+        // getById should trigger the cache population
+        Assert.assertEquals(
+                TestAccounts.ACCOUNT1.getEmail(),
+                mProfileDataCache.getById(TestAccounts.ACCOUNT1.getId()).getAccountEmail());
+        Assert.assertEquals(
+                TestAccounts.ACCOUNT2.getEmail(),
+                mProfileDataCache.getById(TestAccounts.ACCOUNT2.getId()).getAccountEmail());
+        Assert.assertEquals(2, mProfileDataCache.getAccounts().getResult().size());
+    }
+
     // TODO(crbug.com/494569985): Remove after MakeIdentityManagerSourceOfAccounts flag cleanup
     @Test
     public void testUpdateProfileDataWithoutDisplayableInfo_Legacy() {
