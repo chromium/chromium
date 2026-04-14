@@ -14,6 +14,7 @@ import android.widget.FrameLayout;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.tab_ui.R;
+import org.chromium.components.browser_ui.util.TextResolver;
 
 /** Shared utils for {@code Tab<Type>ViewBinder} such as List, Grid, Strip, etc. */
 @NullMarked

@@ -38,6 +38,7 @@ import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.test.ChromeJUnit4RunnerDelegate;
 import org.chromium.chrome.test.R;
 import org.chromium.chrome.test.util.ChromeRenderTestRule;
+import org.chromium.components.browser_ui.util.TextResolver;
 import org.chromium.components.browser_ui.widget.async_image.AsyncImageView;
 import org.chromium.ui.base.LocalizationUtils;
 import org.chromium.ui.test.util.BlankUiTestActivity;

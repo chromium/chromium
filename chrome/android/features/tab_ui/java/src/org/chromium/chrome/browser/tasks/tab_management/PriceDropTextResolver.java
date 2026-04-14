@@ -13,6 +13,7 @@ import android.text.style.StrikethroughSpan;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.R;
+import org.chromium.components.browser_ui.util.TextResolver;
 import org.chromium.ui.base.LocalizationUtils;
 
 /** A {@link TextResolver} for the {@link TabCardLabelView} when showing a price drop. */

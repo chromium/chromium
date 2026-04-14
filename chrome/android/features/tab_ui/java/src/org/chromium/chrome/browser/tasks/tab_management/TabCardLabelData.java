@@ -8,6 +8,7 @@ import android.content.Context;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.components.browser_ui.util.TextResolver;
 import org.chromium.components.browser_ui.widget.async_image.AsyncImageView;
 
 /** Data for the {@link TabCardLabelView}. */

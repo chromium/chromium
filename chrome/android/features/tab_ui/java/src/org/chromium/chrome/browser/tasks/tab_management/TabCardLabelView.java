@@ -20,6 +20,7 @@ import com.google.android.material.color.MaterialColors;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.tab_ui.R;
+import org.chromium.components.browser_ui.util.TextResolver;
 import org.chromium.components.browser_ui.widget.async_image.AsyncImageView;
 import org.chromium.ui.UiUtils;
 

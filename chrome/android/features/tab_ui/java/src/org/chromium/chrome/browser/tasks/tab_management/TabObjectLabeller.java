@@ -9,6 +9,7 @@ import androidx.annotation.StringRes;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.components.browser_ui.util.TextResolver;
 import org.chromium.components.browser_ui.widget.async_image.AsyncImageView;
 import org.chromium.components.collaboration.messaging.PersistentMessage;
 
