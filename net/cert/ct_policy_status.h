@@ -12,7 +12,6 @@ namespace net::ct {
 // Information about the connection's compliance with the CT policy. This value
 // is histogrammed, so do not re-order or change values, and add new values at
 // the end.
-// LINT.IfChange(CTPolicyCompliance)
 enum class CTPolicyCompliance {
   // The connection complied with the certificate policy by
   // including SCTs that satisfy the policy.
@@ -31,7 +30,6 @@ enum class CTPolicyCompliance {
   // TODO(crbug.com/41392053): remove CT_POLICY_COUNT, use kMaxValue instead.
   CT_POLICY_COUNT
 };
-// LINT.ThenChange(/services/network/public/cpp/net_ipc_param_traits.h:CTPolicyCompliance)
 
 NET_EXPORT const char* CTPolicyComplianceToString(CTPolicyCompliance status);
 

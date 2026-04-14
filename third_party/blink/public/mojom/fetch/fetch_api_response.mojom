@@ -5,6 +5,7 @@
 module blink.mojom;
 
 import "mojo/public/mojom/base/time.mojom";
+import "services/network/public/mojom/auth.mojom";
 import "services/network/public/mojom/fetch_api.mojom";
 import "services/network/public/mojom/network_param.mojom";
 import "services/network/public/mojom/network_types.mojom";

@@ -1,0 +1,23 @@
+// Copyright 2026 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module network.mojom;
+
+// Typemapped to `net::CTRequirementsStatus`.
+enum CTRequirementsStatus {
+  kNotRequired,
+  kRequirementsMet,
+  kRequirementsNotMet,
+  kRequirementOverridden,
+  kRequirementOverriddenAppliesAcrossNames,
+};
+
+// Typemapped to `net::CTPolicyCompliance`.
+enum CTPolicyCompliance {
+  kCtPolicyCompliesViaScts = 0,
+  kCtPolicyNotEnoughScts = 1,
+  kCtPolicyNotDiverseScts = 2,
+  kCtPolicyBuildNotTimely = 3,
+  kCtPolicyComplianceDetailsNotAvailable = 4,
+};

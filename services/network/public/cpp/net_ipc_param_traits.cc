@@ -9,82 +9,9 @@
 #include "ipc/mojo_param_traits.h"
 #include "ipc/param_traits_utils.h"
 #include "net/base/hash_value.h"
-#include "net/cert/cert_verify_result.h"
-#include "net/http/http_response_headers.h"
 #include "net/http/http_util.h"
 
 namespace IPC {
-
-void ParamTraits<net::AuthCredentials>::Write(base::Pickle* m,
-                                              const param_type& p) {
-  WriteParam(m, p.username());
-  WriteParam(m, p.password());
-}
-
-bool ParamTraits<net::AuthCredentials>::Read(const base::Pickle* m,
-                                             base::PickleIterator* iter,
-                                             param_type* r) {
-  std::u16string username;
-  bool read_username = ReadParam(m, iter, &username);
-  std::u16string password;
-  bool read_password = ReadParam(m, iter, &password);
-
-  if (!read_username || !read_password)
-    return false;
-
-  r->Set(username, password);
-  return true;
-}
-
-// TODO(crbug.com/408018829): convert these to mojom StructTraits
-// LINT.IfChange(CertVerifyResult)
-void ParamTraits<net::CertVerifyResult>::Write(base::Pickle* m,
-                                               const param_type& p) {
-  WriteParam(m, p.verified_cert);
-  WriteParam(m, p.cert_status);
-  WriteParam(m, p.public_key_hashes);
-  WriteParam(m, p.is_issued_by_known_root);
-  WriteParam(m, p.ocsp_result);
-  WriteParam(m, p.scts);
-  WriteParam(m, p.policy_compliance);
-  WriteParam(m, p.ct_requirement_status);
-}
-
-bool ParamTraits<net::CertVerifyResult>::Read(const base::Pickle* m,
-                                              base::PickleIterator* iter,
-                                              param_type* r) {
-  return ReadParam(m, iter, &r->verified_cert) &&
-         ReadParam(m, iter, &r->cert_status) &&
-         ReadParam(m, iter, &r->public_key_hashes) &&
-         ReadParam(m, iter, &r->is_issued_by_known_root) &&
-         ReadParam(m, iter, &r->ocsp_result) && ReadParam(m, iter, &r->scts) &&
-         ReadParam(m, iter, &r->policy_compliance) &&
-         ReadParam(m, iter, &r->ct_requirement_status);
-}
-// LINT.ThenChange(/net/cert/cert_verify_result.h:CertVerifyResult)
-
-void ParamTraits<net::SHA256HashValue>::Write(base::Pickle* m,
-                                              const param_type& p) {
-  absl::InlinedVector<uint8_t, 32> bytes;
-  for (uint8_t byte : p) {
-    bytes.push_back(byte);
-  }
-  WriteParam(m, bytes);
-}
-
-bool ParamTraits<net::SHA256HashValue>::Read(const base::Pickle* m,
-                                             base::PickleIterator* iter,
-                                             param_type* r) {
-  absl::InlinedVector<uint8_t, 32> bytes;
-  if (!ReadParam(m, iter, &bytes)) {
-    return false;
-  }
-  if (bytes.size() != 32) {
-    return false;
-  }
-  base::span(*r).copy_from(bytes);
-  return true;
-}
 
 void ParamTraits<net::IPEndPoint>::Write(base::Pickle* m, const param_type& p) {
   WriteParam(m, p.address());
@@ -148,41 +75,6 @@ bool ParamTraits<net::HttpRequestHeaders>::Read(const base::Pickle* m,
   return true;
 }
 
-void ParamTraits<scoped_refptr<net::HttpResponseHeaders>>::Write(
-    base::Pickle* m,
-    const param_type& p) {
-  WriteParam(m, p.get() != nullptr);
-  if (p.get()) {
-    // Do not disclose Set-Cookie headers over IPC.
-    p->Persist(m, net::HttpResponseHeaders::PERSIST_SANS_COOKIES);
-  }
-}
-
-bool ParamTraits<scoped_refptr<net::HttpResponseHeaders>>::Read(
-    const base::Pickle* m,
-    base::PickleIterator* iter,
-    param_type* r) {
-  bool has_object;
-  if (!ReadParam(m, iter, &has_object))
-    return false;
-  if (has_object)
-    *r = base::MakeRefCounted<net::HttpResponseHeaders>(iter);
-  return true;
-}
-
-void ParamTraits<bssl::OCSPVerifyResult>::Write(base::Pickle* m,
-                                                const param_type& p) {
-  WriteParam(m, p.response_status);
-  WriteParam(m, p.revocation_status);
-}
-
-bool ParamTraits<bssl::OCSPVerifyResult>::Read(const base::Pickle* m,
-                                               base::PickleIterator* iter,
-                                               param_type* r) {
-  return ReadParam(m, iter, &r->response_status) &&
-         ReadParam(m, iter, &r->revocation_status);
-}
-
 void ParamTraits<net::ResolveErrorInfo>::Write(base::Pickle* m,
                                                const param_type& p) {
   WriteParam(m, p.error);
@@ -193,100 +85,6 @@ bool ParamTraits<net::ResolveErrorInfo>::Read(const base::Pickle* m,
                                               param_type* r) {
   return ReadParam(m, iter, &r->error) &&
          ReadParam(m, iter, &r->is_secure_network_error);
-}
-
-void ParamTraits<net::SSLInfo>::Write(base::Pickle* m, const param_type& p) {
-  WriteParam(m, p.is_valid());
-  if (!p.is_valid())
-    return;
-  WriteParam(m, p.cert);
-  WriteParam(m, p.unverified_cert);
-  WriteParam(m, p.cert_status);
-  WriteParam(m, p.key_exchange_group);
-  WriteParam(m, p.peer_signature_algorithm);
-  WriteParam(m, p.connection_status);
-  WriteParam(m, p.is_issued_by_known_root);
-  WriteParam(m, p.pkp_bypassed);
-  WriteParam(m, p.client_cert_sent);
-  WriteParam(m, p.encrypted_client_hello);
-  WriteParam(m, p.handshake_type);
-  WriteParam(m, p.public_key_hashes);
-  WriteParam(m, p.signed_certificate_timestamps);
-  WriteParam(m, p.ct_policy_compliance);
-  WriteParam(m, p.is_fatal_cert_error);
-}
-
-bool ParamTraits<net::SSLInfo>::Read(const base::Pickle* m,
-                                     base::PickleIterator* iter,
-                                     param_type* r) {
-  bool is_valid = false;
-  if (!ReadParam(m, iter, &is_valid))
-    return false;
-  if (!is_valid)
-    return true;
-  return ReadParam(m, iter, &r->cert) &&
-         ReadParam(m, iter, &r->unverified_cert) &&
-         ReadParam(m, iter, &r->cert_status) &&
-         ReadParam(m, iter, &r->key_exchange_group) &&
-         ReadParam(m, iter, &r->peer_signature_algorithm) &&
-         ReadParam(m, iter, &r->connection_status) &&
-         ReadParam(m, iter, &r->is_issued_by_known_root) &&
-         ReadParam(m, iter, &r->pkp_bypassed) &&
-         ReadParam(m, iter, &r->client_cert_sent) &&
-         ReadParam(m, iter, &r->encrypted_client_hello) &&
-         ReadParam(m, iter, &r->handshake_type) &&
-         ReadParam(m, iter, &r->public_key_hashes) &&
-         ReadParam(m, iter, &r->signed_certificate_timestamps) &&
-         ReadParam(m, iter, &r->ct_policy_compliance) &&
-         ReadParam(m, iter, &r->is_fatal_cert_error);
-}
-
-void ParamTraits<scoped_refptr<net::ct::SignedCertificateTimestamp>>::Write(
-    base::Pickle* m,
-    const param_type& p) {
-  WriteParam(m, p.get() != nullptr);
-  if (p.get())
-    p->Persist(m);
-}
-
-bool ParamTraits<scoped_refptr<net::ct::SignedCertificateTimestamp>>::Read(
-    const base::Pickle* m,
-    base::PickleIterator* iter,
-    param_type* r) {
-  bool has_object;
-  if (!ReadParam(m, iter, &has_object))
-    return false;
-  if (has_object)
-    *r = net::ct::SignedCertificateTimestamp::CreateFromPickle(iter);
-  return true;
-}
-
-void ParamTraits<scoped_refptr<net::X509Certificate>>::Write(
-    base::Pickle* m,
-    const param_type& p) {
-  WriteParam(m, !!p);
-  if (p)
-    p->Persist(m);
-}
-
-bool ParamTraits<scoped_refptr<net::X509Certificate>>::Read(
-    const base::Pickle* m,
-    base::PickleIterator* iter,
-    param_type* r) {
-  DCHECK(!*r);
-  bool has_object;
-  if (!ReadParam(m, iter, &has_object))
-    return false;
-  if (!has_object)
-    return true;
-  net::X509Certificate::UnsafeCreateOptions options;
-  // Setting the |printable_string_is_utf8| option to be true here is necessary
-  // to round-trip any X509Certificate objects that were parsed with this
-  // option in the first place.
-  // See https://crbug.com/770323 and https://crbug.com/788655.
-  options.printable_string_is_utf8 = true;
-  *r = net::X509Certificate::CreateFromPickleUnsafeOptions(iter, options);
-  return !!r->get();
 }
 
 void ParamTraits<net::LoadTimingInfo>::Write(base::Pickle* m,

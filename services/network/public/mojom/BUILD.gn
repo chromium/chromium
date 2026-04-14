@@ -975,10 +975,6 @@ mojom("url_loader_base") {
     {
       types = [
         {
-          mojom = "network.mojom.CTPolicyCompliance"
-          cpp = "::net::ct::CTPolicyCompliance"
-        },
-        {
           mojom = "network.mojom.EffectiveConnectionType"
           cpp = "::net::EffectiveConnectionType"
         },
@@ -1196,7 +1192,20 @@ mojom("mojom_schemeful_site") {
 
 mojom("mojom_network_param") {
   generate_java = true
-  sources = [ "network_param.mojom" ]
+  sources = [
+    "auth.mojom",
+    "cert_verify_result.mojom",
+    "ct_policy_status.mojom",
+    "hash_value.mojom",
+    "http_response_headers.mojom",
+    "network_param.mojom",
+    "ocsp_verify_result.mojom",
+    "sct_status_flags.mojom",
+    "signed_certificate_timestamp.mojom",
+    "signed_certificate_timestamp_and_status.mojom",
+    "ssl_info.mojom",
+    "x509_certificate.mojom",
+  ]
 
   public_deps = [
     "//mojo/public/mojom/base",
@@ -1218,6 +1227,33 @@ mojom("mojom_network_param") {
           cpp = "::net::AuthChallengeInfo"
         },
         {
+          mojom = "network.mojom.AuthCredentials"
+          cpp = "::net::AuthCredentials"
+        },
+      ]
+      traits_headers = [ "//services/network/public/cpp/auth_mojom_traits.h" ]
+      traits_public_deps =
+          [ "//services/network/public/cpp:network_param_mojom_support" ]
+    },
+    {
+      types = [
+        {
+          mojom = "network.mojom.CTPolicyCompliance"
+          cpp = "::net::ct::CTPolicyCompliance"
+        },
+        {
+          mojom = "network.mojom.CTRequirementsStatus"
+          cpp = "::net::ct::CTRequirementsStatus"
+        },
+      ]
+      traits_headers =
+          [ "//services/network/public/cpp/ct_policy_status_mojom_traits.h" ]
+      traits_public_deps =
+          [ "//services/network/public/cpp:network_param_mojom_support" ]
+    },
+    {
+      types = [
+        {
           mojom = "network.mojom.HostPortPair"
           cpp = "::net::HostPortPair"
         },
@@ -1235,24 +1271,141 @@ mojom("mojom_network_param") {
       traits_public_deps =
           [ "//services/network/public/cpp:network_param_mojom_support" ]
     },
+    {
+      types = [
+        {
+          mojom = "network.mojom.HttpResponseHeaders"
+          cpp = "::scoped_refptr<::net::HttpResponseHeaders>"
+
+          # TODO(crbug.com/499255002): Mark this copyable_pass_by_value
+          nullable_is_same_type = true
+        },
+      ]
+      traits_headers = [
+        "//services/network/public/cpp/http_response_headers_mojom_traits.h",
+      ]
+      traits_public_deps =
+          [ "//services/network/public/cpp:network_param_mojom_support" ]
+    },
+    {
+      types = [
+        {
+          mojom = "network.mojom.OCSPVerifyResultResponseStatus"
+          cpp = "::bssl::OCSPVerifyResult::ResponseStatus"
+        },
+        {
+          mojom = "network.mojom.OCSPRevocationStatus"
+          cpp = "::bssl::OCSPRevocationStatus"
+        },
+        {
+          mojom = "network.mojom.OCSPVerifyResult"
+          cpp = "::bssl::OCSPVerifyResult"
+        },
+      ]
+      traits_headers =
+          [ "//services/network/public/cpp/ocsp_verify_result_mojom_traits.h" ]
+      traits_public_deps =
+          [ "//services/network/public/cpp:network_param_mojom_support" ]
+    },
+    {
+      types = [
+        {
+          mojom = "network.mojom.SignedCertificateTimestampAndStatus"
+          cpp = "::net::SignedCertificateTimestampAndStatus"
+        },
+      ]
+      traits_headers = [ "//services/network/public/cpp/signed_certificate_timestamp_and_status_mojom_traits.h" ]
+      traits_public_deps =
+          [ "//services/network/public/cpp:network_param_mojom_support" ]
+    },
+    {
+      types = [
+        {
+          mojom = "network.mojom.DigitallySigned"
+          cpp = "::net::ct::DigitallySigned"
+        },
+        {
+          mojom = "network.mojom.HashAlgorithm"
+          cpp = "::net::ct::DigitallySigned::HashAlgorithm"
+        },
+        {
+          mojom = "network.mojom.SCTVersion"
+          cpp = "::net::ct::SignedCertificateTimestamp::Version"
+        },
+        {
+          mojom = "network.mojom.SCTOrigin"
+          cpp = "::net::ct::SignedCertificateTimestamp::Origin"
+        },
+        {
+          mojom = "network.mojom.SignatureAlgorithm"
+          cpp = "::net::ct::DigitallySigned::SignatureAlgorithm"
+        },
+        {
+          mojom = "network.mojom.SignedCertificateTimestamp"
+          cpp = "::scoped_refptr<::net::ct::SignedCertificateTimestamp>"
+          nullable_is_same_type = true
+        },
+      ]
+      traits_headers = [ "//services/network/public/cpp/signed_certificate_timestamp_mojom_traits.h" ]
+      traits_public_deps =
+          [ "//services/network/public/cpp:network_param_mojom_support" ]
+    },
+    {
+      types = [
+        {
+          mojom = "network.mojom.SCTVerifyStatus"
+          cpp = "::net::ct::SCTVerifyStatus"
+        },
+      ]
+      traits_headers =
+          [ "//services/network/public/cpp/sct_status_flags_mojom_traits.h" ]
+      traits_public_deps =
+          [ "//services/network/public/cpp:network_param_mojom_support" ]
+    },
+    {
+      types = [
+        {
+          mojom = "network.mojom.X509Certificate"
+          cpp = "::scoped_refptr<::net::X509Certificate>"
+
+          # TODO(crbug.com/499255002): Mark this copyable_pass_by_value
+          nullable_is_same_type = true
+        },
+      ]
+      traits_headers =
+          [ "//services/network/public/cpp/x509_certificate_mojom_traits.h" ]
+      traits_public_deps =
+          [ "//services/network/public/cpp:network_param_mojom_support" ]
+    },
   ]
 
   cpp_typemaps = [
     {
       types = [
         {
-          mojom = "network.mojom.AuthCredentials"
-          cpp = "::net::AuthCredentials"
-        },
-        {
           mojom = "network.mojom.CertVerifyResult"
           cpp = "::net::CertVerifyResult"
         },
+      ]
+      traits_headers =
+          [ "//services/network/public/cpp/cert_verify_result_mojom_traits.h" ]
+      traits_public_deps =
+          [ "//services/network/public/cpp:network_param_mojom_support" ]
+    },
+    {
+      types = [
         {
-          mojom = "network.mojom.HttpResponseHeaders"
-          cpp = "::scoped_refptr<::net::HttpResponseHeaders>"
-          nullable_is_same_type = true
+          mojom = "network.mojom.SHA256HashValue"
+          cpp = "::net::SHA256HashValue"
         },
+      ]
+      traits_headers =
+          [ "//services/network/public/cpp/hash_value_mojom_traits.h" ]
+      traits_public_deps =
+          [ "//services/network/public/cpp:network_param_mojom_support" ]
+    },
+    {
+      types = [
         {
           mojom = "network.mojom.HttpVersion"
           cpp = "::net::HttpVersion"
@@ -1274,25 +1427,32 @@ mojom("mojom_network_param") {
           cpp = "::scoped_refptr<::net::SSLCertRequestInfo>"
           nullable_is_same_type = true
         },
-        {
-          mojom = "network.mojom.SSLInfo"
-          cpp = "::net::SSLInfo"
-        },
-        {
-          mojom = "network.mojom.X509Certificate"
-          cpp = "::scoped_refptr<::net::X509Certificate>"
-          nullable_is_same_type = true
-        },
       ]
       traits_headers = [
         "//services/network/public/cpp/net_ipc_param_traits.h",
         "//services/network/public/cpp/network_param_mojom_traits.h",
       ]
-      traits_private_headers = [ "//net/cert/cert_verify_result.h" ]
+      traits_public_deps =
+          [ "//services/network/public/cpp:network_param_mojom_support" ]
+    },
+    {
+      types = [
+        {
+          mojom = "network.mojom.SSLInfo"
+          cpp = "::net::SSLInfo"
+        },
+        {
+          mojom = "network.mojom.SSLInfoHandshakeType"
+          cpp = "::net::SSLInfo::HandshakeType"
+        },
+      ]
+      traits_headers =
+          [ "//services/network/public/cpp/ssl_info_mojom_traits.h" ]
       traits_public_deps =
           [ "//services/network/public/cpp:network_param_mojom_support" ]
     },
   ]
+
   cpp_typemaps += shared_cpp_typemaps
   blink_cpp_typemaps = []
   blink_cpp_typemaps += shared_cpp_typemaps
@@ -1808,9 +1968,7 @@ mojom("mojom") {
     "ct_policy.mojom",
     "default_credentials.mojom",
     "dhcp_wpad_url_client.mojom",
-    "digitally_signed.mojom",
     "first_party_sets_access_delegate.mojom",
-    "hash_value.mojom",
     "http_cache_backend_file_operations.mojom",
     "key_pinning.mojom",
     "mdns_responder.mojom",
@@ -1956,27 +2114,6 @@ mojom("mojom") {
     {
       types = [
         {
-          mojom = "network.mojom.HashAlgorithm"
-          cpp = "::net::ct::DigitallySigned::HashAlgorithm"
-        },
-        {
-          mojom = "network.mojom.SignatureAlgorithm"
-          cpp = "::net::ct::DigitallySigned::SignatureAlgorithm"
-        },
-        {
-          mojom = "network.mojom.DigitallySigned"
-          cpp = "::net::ct::DigitallySigned"
-        },
-      ]
-      traits_headers =
-          [ "//services/network/public/cpp/digitally_signed_mojom_traits.h" ]
-      traits_sources =
-          [ "//services/network/public/cpp/digitally_signed_mojom_traits.cc" ]
-      traits_public_deps = [ "//net" ]
-    },
-    {
-      types = [
-        {
           mojom = "cert_verifier.mojom.RequestParams"
           cpp = "::net::CertVerifier::RequestParams"
         },
@@ -2069,19 +2206,6 @@ mojom("mojom") {
       traits_sources = [
         "//services/network/public/cpp/transferable_socket_mojom_traits.cc",
       ]
-    },
-    {
-      types = [
-        {
-          mojom = "network.mojom.SHA256HashValue"
-          cpp = "::net::SHA256HashValue"
-        },
-      ]
-      traits_headers =
-          [ "//services/network/public/cpp/hash_value_mojom_traits.h" ]
-      traits_sources =
-          [ "//services/network/public/cpp/hash_value_mojom_traits.cc" ]
-      traits_public_deps = [ "//net" ]
     },
     {
       types = [

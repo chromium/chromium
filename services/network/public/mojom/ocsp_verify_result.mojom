@@ -1,0 +1,32 @@
+// Copyright 2026 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module network.mojom;
+
+// Typemapped to `bssl::OCSPVerifyResult::ResponseStatus`.
+enum OCSPVerifyResultResponseStatus {
+  kNotChecked = 0,
+  kMissing = 1,
+  kProvided = 2,
+  kErrorResponse = 3,
+  kBadProducedAt = 4,
+  kNoMatchingResponse = 5,
+  kInvalidDate = 6,
+  kParseResponseError = 7,
+  kParseResponseDataError = 8,
+  kUnhandledCriticalExtension = 9,
+};
+
+// Typemapped to `bssl::OCSPRevocationStatus`.
+enum OCSPRevocationStatus {
+  kGood = 0,
+  kRevoked = 1,
+  kUnknown = 2,
+};
+
+// Typemapped to `bssl::OCSPVerifyResult`.
+struct OCSPVerifyResult {
+  OCSPVerifyResultResponseStatus response_status;
+  OCSPRevocationStatus revocation_status;
+};

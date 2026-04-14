@@ -22,6 +22,7 @@
 #include "net/log/net_log_source.h"
 #include "net/socket/socket_tag.h"
 #include "net/storage_access_api/status.h"
+#include "net/url_request/redirect_info.h"
 #include "net/url_request/referrer_policy.h"
 #include "services/network/public/cpp/fetch_retry_options.h"
 #include "services/network/public/cpp/optional_trust_token_params.h"

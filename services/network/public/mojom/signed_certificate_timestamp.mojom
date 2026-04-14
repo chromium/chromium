@@ -1,0 +1,58 @@
+// Copyright 2018 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module network.mojom;
+
+import "mojo/public/mojom/base/time.mojom";
+
+// Mirror of net::ct::DigitallySigned::HashAlgorithm
+enum HashAlgorithm {
+  HASH_ALGO_NONE = 0,
+  HASH_ALGO_MD5 = 1,
+  HASH_ALGO_SHA1 = 2,
+  HASH_ALGO_SHA224 = 3,
+  HASH_ALGO_SHA256 = 4,
+  HASH_ALGO_SHA384 = 5,
+  HASH_ALGO_SHA512 = 6,
+};
+
+// Mirror of net::ct::DigitallySigned::SignatureAlgorithm
+enum SignatureAlgorithm {
+  SIG_ALGO_ANONYMOUS = 0,
+  SIG_ALGO_RSA = 1,
+  SIG_ALGO_DSA = 2,
+  SIG_ALGO_ECDSA = 3,
+};
+
+// Mirror of net::ct::DigitallySigned
+struct DigitallySigned {
+  HashAlgorithm hash_algorithm;
+  SignatureAlgorithm signature_algorithm;
+  array<uint8> signature;
+};
+
+// Typemapped to `net::ct::SignedCertificateTimestamp::Version`.
+enum SCTVersion {
+  kV1 = 0,
+};
+
+// Typemapped to `net::ct::SignedCertificateTimestamp::Origin`.
+enum SCTOrigin {
+  kEmbedded = 0,
+  kFromTlsExtension = 1,
+  kFromOcspResponse = 2,
+};
+
+// Typemapped to `scoped_refptr<::net::ct::SignedCertificateTimestamp>`.
+struct SignedCertificateTimestamp {
+  SCTVersion version;
+  string log_id;
+  mojo_base.mojom.Time timestamp;
+  // Any extensions as defined in
+  // https://github.com/C2SP/C2SP/blob/main/static-ct-api.md#sct-extension.
+  array<uint8> extensions;
+  DigitallySigned signature;
+  SCTOrigin origin;
+  string log_description;
+};

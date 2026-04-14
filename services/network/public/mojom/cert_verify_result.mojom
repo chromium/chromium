@@ -1,0 +1,29 @@
+// Copyright 2026 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module network.mojom;
+
+import "services/network/public/mojom/ct_policy_status.mojom";
+import "services/network/public/mojom/hash_value.mojom";
+import "services/network/public/mojom/ocsp_verify_result.mojom";
+import "services/network/public/mojom/signed_certificate_timestamp_and_status.mojom";
+import "services/network/public/mojom/x509_certificate.mojom";
+
+// Typemapped to `net::CertVerifyResult`.
+struct CertVerifyResult {
+  // LINT.IfChange(CertVerifyResult)
+  X509Certificate? verified_cert;
+  // Bitmasks of status flags, e.g. indicating known errors and EV errors.
+  // Values are defined in cert_status_flags.h. Note that these flags apply to
+  // `verified_cert` and not the originally-supplied certificate chain.
+  uint32 cert_status;
+  array<SHA256HashValue> public_key_hashes;
+  bool is_issued_by_known_root;
+  OCSPVerifyResult ocsp_result;
+  array<SignedCertificateTimestampAndStatus> scts;
+  CTPolicyCompliance policy_compliance;
+  CTRequirementsStatus ct_requirement_status;
+
+  // LINT.ThenChange(/net/cert/cert_verify_result.h:CertVerifyResult)
+};

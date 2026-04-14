@@ -172,6 +172,10 @@ class NET_EXPORT HttpResponseHeaders
   // The options argument can be a combination of PersistOptions.
   void Persist(base::Pickle* pickle, PersistOptions options);
 
+  // Serializes this object to a byte array for Mojo serialization. Any cookie
+  // headers are stripped out of the returned string.
+  std::vector<uint8_t> SerializeForMojoIpc() const;
+
   // Performs header merging as described in 13.5.3 of RFC 2616.
   void Update(const HttpResponseHeaders& new_headers);
 
@@ -549,6 +553,10 @@ class NET_EXPORT HttpResponseHeaders
 
   // Shorthand for `std::string_view(raw_headers_).substr(begin, end - begin)`.
   std::string_view subrange(size_t begin, size_t end) const;
+
+  // Returns a representation of this object.
+  // The options argument can be a combination of PersistOptions.
+  std::vector<uint8_t> Serialize(PersistOptions options) const;
 
   // Returns the name/value using `raw_headers_` and indices from `parsed`.
   std::string_view header_name(const ParsedHeader& parsed) const;

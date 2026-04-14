@@ -8,7 +8,7 @@ import "components/remote_cocoa/common/menu.mojom";
 import "components/remote_cocoa/common/select_file_dialog.mojom";
 import "mojo/public/mojom/base/file_path.mojom";
 import "mojo/public/mojom/base/string16.mojom";
-import "services/network/public/mojom/network_param.mojom";
+import "services/network/public/mojom/x509_certificate.mojom";
 import "ui/base/cursor/mojom/cursor.mojom";
 import "ui/base/mojom/color_mode.mojom";
 import "ui/base/mojom/ui_base_types.mojom";

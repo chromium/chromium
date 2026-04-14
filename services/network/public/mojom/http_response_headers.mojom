@@ -1,0 +1,13 @@
+// Copyright 2026 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module network.mojom;
+
+// Typemapped to `net::HttpResponseHeaders`.
+struct HttpResponseHeaders {
+  // Raw headers, starting with a normalized status line; the remainder are raw
+  // header values, preserved as literally possible for fidelity. Lines are
+  // delimited by NUL characters.
+  array<uint8> headers;
+};
