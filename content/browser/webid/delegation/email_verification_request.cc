@@ -13,6 +13,7 @@
 #include "content/browser/webid/delegation/email_verifier_network_request_manager.h"
 #include "content/browser/webid/delegation/jwt_signer.h"
 #include "content/browser/webid/delegation/sd_jwt.h"
+#include "content/browser/webid/webid_utils.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/storage_partition.h"
@@ -175,6 +176,11 @@ void EmailVerificationRequest::OnWellKnownFetched(
   }
 
   if (well_known.issuance_endpoint.is_empty()) {
+    std::move(callback).Run(std::nullopt);
+    return;
+  }
+
+  if (!issuer.IsSameOriginWith(well_known.issuance_endpoint)) {
     std::move(callback).Run(std::nullopt);
     return;
   }

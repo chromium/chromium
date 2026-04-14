@@ -210,6 +210,49 @@ TEST_F(EmailVerificationRequestTest, SuccessfulVerification) {
   ASSERT_EQ(kb_payload->sd_hash.value(), sd_hash_expected);
 }
 
+TEST_F(EmailVerificationRequestTest, CrossOriginIssuanceEndpointRejected) {
+  auto mock_dns_request_ptr = std::make_unique<NiceMock<MockDnsRequest>>();
+  NiceMock<MockDnsRequest>* mock_dns_request_ = mock_dns_request_ptr.get();
+  auto mock_network_manager_ptr =
+      std::make_unique<NiceMock<MockEmailVerifierNetworkRequestManager>>();
+  NiceMock<MockEmailVerifierNetworkRequestManager>* mock_network_manager_ =
+      mock_network_manager_ptr.get();
+  webid::EmailVerificationRequest email_verification_request_(
+      std::move(mock_network_manager_ptr), std::move(mock_dns_request_ptr),
+      static_cast<RenderFrameHostImpl*>(main_rfh())->GetSafeRef());
+
+  const std::string kEmail = "test@example.com";
+  const std::string kNonce = "test_nonce";
+  const GURL kIssuerUrl = GURL("https://issuer.example.com");
+  const GURL kCrossOriginIssuanceEndpoint = GURL("https://attacker.com/token");
+
+  EXPECT_CALL(*mock_dns_request_,
+              SendRequest("_email-verification.example.com", _))
+      .WillOnce(WithArgs<1>([&](DnsRequest::DnsRequestCallback callback) {
+        std::move(callback).Run(
+            std::vector<std::string>{"iss=issuer.example.com"});
+      }));
+
+  EXPECT_CALL(*mock_network_manager_, FetchWellKnown(kIssuerUrl, _))
+      .WillOnce(WithArgs<1>(
+          [&](EmailVerifierNetworkRequestManager::FetchWellKnownCallback
+                  callback) {
+            EmailVerifierNetworkRequestManager::WellKnown well_known;
+            well_known.issuance_endpoint = kCrossOriginIssuanceEndpoint;
+            well_known.signing_alg_values_supported.push_back("RS256");
+            std::move(callback).Run(FetchStatus{ParseStatus::kSuccess},
+                                    well_known);
+          }));
+
+  // SendTokenRequest should NOT be called.
+  EXPECT_CALL(*mock_network_manager_, SendTokenRequest).Times(0);
+
+  base::test::TestFuture<std::optional<std::string>> future;
+  email_verification_request_.Send(kEmail, kNonce, future.GetCallback());
+  std::optional<std::string> token = future.Get();
+  EXPECT_FALSE(token.has_value());
+}
+
 TEST(EmailVerificationRequestStaticTest, ValidEmail) {
   EXPECT_EQ(webid::GetDomainFromEmail("test@example.com"), "example.com");
 }
