@@ -1654,6 +1654,86 @@ ci.builder(
 )
 
 ci.builder(
+    name = "linux-arm64-wayland-rel-fyi",
+    description_html = "Linux ARM64 Wayland Release FYI builder.",
+    builder_spec = builder_config.builder_spec(
+        gclient_config = builder_config.gclient_config(
+            config = "chromium",
+            apply_configs = [
+                "arm64",
+                "checkout_mutter",
+            ],
+        ),
+        chromium_config = builder_config.chromium_config(
+            config = "chromium",
+            apply_configs = ["mb"],
+            build_config = builder_config.build_config.RELEASE,
+            target_arch = builder_config.target_arch.ARM,
+            target_bits = 64,
+            target_platform = builder_config.target_platform.LINUX,
+        ),
+    ),
+    gn_args = gn_args.config(
+        configs = [
+            "gpu_tests",
+            "release_builder",
+            "remoteexec",
+            "linux_wayland",
+            "ozone_headless",
+            "arm64",
+        ],
+    ),
+    targets = targets.bundle(
+        targets = [
+            "chromium_gtests_for_linux_wayland_mutter",
+        ],
+        mixins = [
+            targets.mixin(
+                args = [
+                    "--no-xvfb",
+                    "--use-mutter",
+                    "--ozone-platform=wayland",
+                ],
+            ),
+            "linux-jammy",
+            "arm64",
+            "gce",
+            "very_limited_capacity_bot",
+        ],
+        per_test_modifications = {
+            "browser_tests": targets.mixin(
+                args = [
+                    "--mutter-display=1280x800",
+                    "--test-launcher-filter-file=../../testing/buildbot/filters/ozone-linux.browser_tests_mutter.filter",
+                ],
+                retry_only_failed_tests = True,
+                swarming = targets.swarming(
+                    shards = 20,
+                ),
+            ),
+            "content_browsertests": targets.mixin(
+                retry_only_failed_tests = True,
+            ),
+            "interactive_ui_tests": targets.mixin(
+                args = [
+                    "--test-launcher-filter-file=../../testing/buildbot/filters/ozone-linux.interactive_ui_tests_mutter.filter",
+                ],
+            ),
+        },
+    ),
+    targets_settings = targets.settings(
+        browser_config = targets.browser_config.RELEASE,
+        os_type = targets.os_type.LINUX,
+    ),
+    os = os.LINUX_DEFAULT,
+    console_view_entry = consoles.console_view_entry(
+        category = "linux|arm64",
+        short_name = "wl",
+    ),
+    contact_team_email = "chrome-linux-engprod@google.com",
+)
+
+ci.builder(
     name = "linux-upload-perfetto",
     builder_spec = builder_config.builder_spec(
         gclient_config = builder_config.gclient_config(config = "chromium"),

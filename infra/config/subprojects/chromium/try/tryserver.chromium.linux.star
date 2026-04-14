@@ -137,6 +137,18 @@ try_.builder(
 )
 
 try_.builder(
+    name = "linux-arm64-wayland-rel-fyi",
+    mirrors = ["ci/linux-arm64-wayland-rel-fyi"],
+    gn_args = gn_args.config(
+        configs = [
+            "ci/linux-arm64-wayland-rel-fyi",
+            "release_try_builder",
+        ],
+    ),
+    contact_team_email = "chrome-linux-engprod@google.com",
+)
+
+try_.builder(
     name = "linux-annotator-rel",
     mirrors = ["ci/linux-annotator-rel"],
     gn_args = gn_args.config(
