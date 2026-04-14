@@ -56,7 +56,6 @@ import org.chromium.chrome.browser.tab.TabArchiverImpl.Clock;
 import org.chromium.chrome.browser.tab.state.ArchivePersistedTabData;
 import org.chromium.chrome.browser.tabmodel.TabClosureParams;
 import org.chromium.chrome.browser.tabmodel.TabCreator;
-import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
@@ -112,10 +111,10 @@ public class TabArchiverTest {
                                                 .getProfileProviderSupplier()
                                                 .get()
                                                 .getOriginalProfile()));
-        TabGroupModelFilter archivedTabGroupModelFilter =
-                archivedTabModelOrchestrator.getTabModelSelector().getCurrentTabGroupModelFilter();
+        TabModel archivedTabModel =
+                archivedTabModelOrchestrator.getTabModelSelector().getCurrentModel();
 
-        mArchivedTabModel = archivedTabGroupModelFilter.getTabModel();
+        mArchivedTabModel = archivedTabModel;
         mArchivedTabCreator = archivedTabModelOrchestrator.getArchivedTabCreatorForTesting();
 
         mRegularTabModelSelector = mActivityTestRule.getActivity().getTabModelSelector();
@@ -137,7 +136,7 @@ public class TabArchiverTest {
                 runOnUiThreadBlocking(
                         () ->
                                 new TabArchiverImpl(
-                                        archivedTabGroupModelFilter,
+                                        archivedTabModel,
                                         mArchivedTabCreator,
                                         mTabArchiveSettings,
                                         mClock,
@@ -175,8 +174,7 @@ public class TabArchiverTest {
 
         assertEquals(
                 new ArrayList<>(),
-                mTabArchiver.getTabsToArchive(
-                        mRegularTabModelSelector.getCurrentTabGroupModelFilter()));
+                mTabArchiver.getTabsToArchive(mRegularTabModelSelector.getCurrentModel()));
     }
 
     @Test

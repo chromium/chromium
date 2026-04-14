@@ -61,7 +61,7 @@ import org.chromium.chrome.browser.readaloud.ReadAloudController;
 import org.chromium.chrome.browser.share.ShareHelper;
 import org.chromium.chrome.browser.sync.settings.SyncSettingsUtils;
 import org.chromium.chrome.browser.tab.Tab;
-import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
+import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.toolbar.ToolbarManager;
 import org.chromium.chrome.browser.translate.TranslateUtils;
@@ -1338,13 +1338,10 @@ public abstract class AppMenuPropertiesDelegateImpl implements AppMenuProperties
     }
 
     public @StringRes int getAddToGroupMenuItemString(@Nullable Token currentTabGroupId) {
-        TabGroupModelFilter filter = mTabModelSelector.getCurrentTabGroupModelFilter();
+        TabModel tabModel = mTabModelSelector.getCurrentModel();
         if (currentTabGroupId != null) return R.string.menu_move_tab_to_group;
-        if (filter != null) {
-            boolean hasGroups = filter.getTabGroupCount() != 0;
-            return hasGroups ? R.string.menu_add_tab_to_group : R.string.menu_add_tab_to_new_group;
-        }
-        return R.string.menu_add_tab_to_group;
+        boolean hasGroups = tabModel.getTabGroupCount() != 0;
+        return hasGroups ? R.string.menu_add_tab_to_group : R.string.menu_add_tab_to_new_group;
     }
 
     /** Returns whether to show the open in app menu item. */

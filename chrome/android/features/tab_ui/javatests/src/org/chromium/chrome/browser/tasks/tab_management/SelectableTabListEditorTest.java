@@ -311,13 +311,12 @@ public class SelectableTabListEditorTest {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     ArrayList<Tab> tabs = new ArrayList<>();
-                    TabModel model = mTabModelSelector.getCurrentModel();
-                    TabGroupModelFilter filter = mTabModelSelector.getCurrentTabGroupModelFilter();
-                    for (int i = model.getCount() - urls.size(); i < model.getCount(); i++) {
-                        tabs.add(model.getTabAt(i));
+                    TabModel tabModel = mTabModelSelector.getCurrentModel();
+                    for (int i = tabModel.getCount() - urls.size(); i < tabModel.getCount(); i++) {
+                        tabs.add(tabModel.getTabAt(i));
                     }
                     // Don't notify to avoid snackbar appearing.
-                    filter.mergeListOfTabsToGroup(
+                    tabModel.mergeListOfTabsToGroup(
                             tabs.subList(1, tabs.size()),
                             tabs.get(0),
                             /* notify= */ TabGroupModelFilter.MergeNotificationType.DONT_NOTIFY);
@@ -1715,9 +1714,9 @@ public class SelectableTabListEditorTest {
                 () -> {
                     List<Tab> tabs = new ArrayList<>();
 
-                    TabGroupModelFilter filter = mTabModelSelector.getCurrentTabGroupModelFilter();
-                    for (int i = 0; i < filter.getIndividualTabAndGroupCount(); i++) {
-                        tabs.add(filter.getRepresentativeTabAt(i));
+                    TabModel tabModel = mTabModelSelector.getCurrentModel();
+                    for (int i = 0; i < tabModel.getIndividualTabAndGroupCount(); i++) {
+                        tabs.add(tabModel.getRepresentativeTabAt(i));
                     }
 
                     return tabs;

@@ -136,7 +136,6 @@ public class TabModelSelectorImplTest {
 
         assertTrue(currentTabModelSupplierHasObservers());
         assertNull(mTabModelSelector.getCurrentTabModelSupplier().get());
-        assertNull(mTabModelSelector.getCurrentTabGroupModelFilter());
 
         mTabCreatorManager.initialize(mTabModelSelector);
         mTabModelSelector.onNativeLibraryReadyInternal(
@@ -150,9 +149,6 @@ public class TabModelSelectorImplTest {
         assertEquals(
                 mTabModelSelector.getCurrentModel(),
                 mTabModelSelector.getCurrentTabModelSupplier().get());
-        assertEquals(
-                mTabModelSelector.getCurrentModel(),
-                mTabModelSelector.getCurrentTabGroupModelFilter().getTabModel());
     }
 
     @After
@@ -179,9 +175,7 @@ public class TabModelSelectorImplTest {
         mTabModelSelector.getModel(false).setIndex(0, TabSelectionType.FROM_USER);
         assertEquals(normalTab, mTabModelSelector.getModel(false).getCurrentTabSupplier().get());
         assertEquals(normalTab, mTabModelSelector.getCurrentTabSupplier().get());
-        assertEquals(
-                mTabModelSelector.getModel(false),
-                mTabModelSelector.getCurrentTabGroupModelFilter().getTabModel());
+        assertEquals(mTabModelSelector.getModel(false), mTabModelSelector.getCurrentModel());
         RobolectricUtil.runAllBackgroundAndUi();
         verify(mTabSupplierObserverMock).onResult(eq(normalTab));
 
@@ -195,23 +189,17 @@ public class TabModelSelectorImplTest {
                         TabCreationState.LIVE_IN_FOREGROUND);
         mTabModelSelector.getModel(true).setIndex(0, TabSelectionType.FROM_USER);
         assertEquals(normalTab, mTabModelSelector.getCurrentTabSupplier().get());
-        assertEquals(
-                mTabModelSelector.getModel(false),
-                mTabModelSelector.getCurrentTabGroupModelFilter().getTabModel());
+        assertEquals(mTabModelSelector.getModel(false), mTabModelSelector.getCurrentModel());
 
         mTabModelSelector.selectModel(true);
         assertEquals(incognitoTab, mTabModelSelector.getCurrentTabSupplier().get());
-        assertEquals(
-                mTabModelSelector.getModel(true),
-                mTabModelSelector.getCurrentTabGroupModelFilter().getTabModel());
+        assertEquals(mTabModelSelector.getModel(true), mTabModelSelector.getCurrentModel());
         RobolectricUtil.runAllBackgroundAndUi();
         verify(mTabSupplierObserverMock).onResult(eq(incognitoTab));
 
         mTabModelSelector.selectModel(false);
         assertEquals(normalTab, mTabModelSelector.getCurrentTabSupplier().get());
-        assertEquals(
-                mTabModelSelector.getModel(false),
-                mTabModelSelector.getCurrentTabGroupModelFilter().getTabModel());
+        assertEquals(mTabModelSelector.getModel(false), mTabModelSelector.getCurrentModel());
         RobolectricUtil.runAllBackgroundAndUi();
         verify(mTabSupplierObserverMock, times(2)).onResult(eq(normalTab));
 

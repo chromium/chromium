@@ -3240,7 +3240,7 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
                 mCallbackController.makeCancelable(
                         (tabModelSelectorReturn) -> {
                             TabGroupColorUtils.assignTabGroupColorsIfApplicable(
-                                    tabModelSelectorReturn.getCurrentTabGroupModelFilter());
+                                    tabModelSelectorReturn.getCurrentModel());
                         }));
 
         mInactivityTrackerSupplier.set(
@@ -4066,11 +4066,11 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
             }
 
             Profile profile = mTabModelProfileSupplier.get();
-            TabGroupModelFilter filter = mTabModelSelector.getCurrentTabGroupModelFilter();
+            TabModel tabModel = mTabModelSelector.getCurrentModel();
             if (id == R.id.add_to_group_menu_id) {
                 TrackerFactory.getTrackerForProfile(profile)
                         .notifyEvent("menu_add_to_group_clicked");
-                if (filter.getTabGroupCount() == 0) {
+                if (tabModel.getTabGroupCount() == 0) {
                     RecordUserAction.record("MobileMenuAddToNewGroup");
                 } else {
                     RecordUserAction.record("MobileMenuAddToGroup");
@@ -4079,7 +4079,7 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
 
             new TabGroupMenuActionHandler(
                             this,
-                            filter,
+                            tabModel,
                             assertNonNull(mRootUiCoordinator.getBottomSheetController()),
                             getModalDialogManager(),
                             profile)

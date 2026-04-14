@@ -6,6 +6,8 @@ package org.chromium.chrome.browser.toolbar.top;
 
 import static android.view.ViewGroup.LayoutParams.WRAP_CONTENT;
 
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.when;
 
 import static org.chromium.base.test.util.Batch.UNIT_TESTS;
@@ -41,12 +43,12 @@ import org.chromium.chrome.browser.incognito.IncognitoUtils;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.tab.Tab;
-import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.test.ChromeJUnit4RunnerDelegate;
 import org.chromium.chrome.test.R;
 import org.chromium.chrome.test.util.ChromeRenderTestRule;
+import org.chromium.chrome.test.util.browser.tabmodel.MockTabModel;
 import org.chromium.ui.listmenu.ListMenuButton;
 import org.chromium.ui.test.util.BlankUiTestActivity;
 import org.chromium.ui.test.util.NightModeTestUtils;
@@ -79,10 +81,10 @@ public class TabSwitcherActionMenuRenderTest {
 
     @Mock private Profile mProfile;
     @Mock private TabModelSelector mTabModelSelector;
-    @Mock private TabModel mModel;
-    @Mock private TabGroupModelFilter mTabGroupModelFilter;
+    @Mock private TabModel mIncognitoModel;
     @Mock private Tab mTab;
 
+    private TabModel mCurrentModel;
     private SettableMonotonicObservableSupplier<TabModelSelector> mTabModelSelectorSupplier;
     private SettableMonotonicObservableSupplier<Tab> mCurrentTabSupplier;
     private View mView;
@@ -100,15 +102,16 @@ public class TabSwitcherActionMenuRenderTest {
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
+                    mCurrentModel = spy(new MockTabModel(mProfile, null));
                     mTabModelSelectorSupplier =
                             ObservableSuppliers.createMonotonic(mTabModelSelector);
                     mCurrentTabSupplier = ObservableSuppliers.createMonotonic(mTab);
                 });
-        when(mTabModelSelector.getModel(true)).thenReturn(mModel);
-        when(mModel.getCount()).thenReturn(0);
-        when(mTabModelSelector.getCurrentTabGroupModelFilter()).thenReturn(mTabGroupModelFilter);
+        when(mTabModelSelector.getModel(true)).thenReturn(mIncognitoModel);
+        when(mIncognitoModel.getCount()).thenReturn(0);
+        when(mTabModelSelector.getCurrentModel()).thenReturn(mCurrentModel);
         when(mTabModelSelector.isTabStateInitialized()).thenReturn(true);
-        when(mTabGroupModelFilter.isTabModelRestored()).thenReturn(true);
+        doReturn(true).when(mCurrentModel).isTabModelRestored();
         when(mTabModelSelector.getCurrentTabSupplier()).thenReturn(mCurrentTabSupplier);
     }
 
@@ -142,7 +145,7 @@ public class TabSwitcherActionMenuRenderTest {
     @Feature({"RenderTest"})
     public void testRender_TabSwitcherActionMenu_TabGroupExists()
             throws TimeoutException, IOException {
-        when(mTabGroupModelFilter.getTabGroupCount()).thenReturn(1);
+        doReturn(1).when(mCurrentModel).getTabGroupCount();
         IncognitoUtils.setEnabledForTesting(true);
         showMenu();
         mRenderTestRule.render(mView, "tab_switcher_action_menu_with_add_tab_to_group");
@@ -153,7 +156,7 @@ public class TabSwitcherActionMenuRenderTest {
     @Feature({"RenderTest"})
     public void testRender_TabSwitcherActionMenu_TabGroupExists_IncognitoDisabled()
             throws TimeoutException, IOException {
-        when(mTabGroupModelFilter.getTabGroupCount()).thenReturn(1);
+        doReturn(1).when(mCurrentModel).getTabGroupCount();
         IncognitoUtils.setEnabledForTesting(false);
         showMenu();
         mRenderTestRule.render(

@@ -105,7 +105,6 @@ import org.chromium.chrome.browser.signin.services.SigninManager;
 import org.chromium.chrome.browser.sync.SyncServiceFactory;
 import org.chromium.chrome.browser.tab.MockTab;
 import org.chromium.chrome.browser.tab.Tab;
-import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.toolbar.ToolbarManager;
@@ -234,7 +233,6 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
     @Mock private SigninManager mSigninManager;
     @Mock private IdentityManager mIdentityManager;
     @Mock private IdentityServicesProvider mIdentityService;
-    @Mock private TabGroupModelFilter mTabGroupModelFilter;
     @Mock private IncognitoUtils.Natives mIncognitoUtilsJniMock;
     @Mock public WebsitePreferenceBridge.Natives mWebsitePreferenceBridgeJniMock;
     @Mock private IncognitoReauthController mIncognitoReauthControllerMock;
@@ -306,8 +304,6 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
         when(mTabModelSelector.getModel(true)).thenReturn(mIncognitoTabModel);
         when(mTabModel.isIncognito()).thenReturn(false);
         when(mIncognitoTabModel.isIncognito()).thenReturn(true);
-        when(mTabModelSelector.getCurrentTabGroupModelFilter()).thenReturn(mTabGroupModelFilter);
-        when(mTabGroupModelFilter.getTabModel()).thenReturn(mTabModel);
         when(mTabModel.getProfile()).thenReturn(mProfile);
         ManagedBrowserUtilsJni.setInstanceForTesting(mManagedBrowserUtilsJniMock);
         ProfileManager.setLastUsedProfileForTesting(mProfile);
@@ -515,7 +511,6 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
      * which plays a part to enable group tabs.
      */
     private void prepareMocksForGroupTabsOnTabModel(TabModel tabmodel) {
-        when(mTabGroupModelFilter.getTabModel()).thenReturn(tabmodel);
         when(tabmodel.getCount()).thenReturn(2);
         Tab mockTab1 = mock(Tab.class);
         Tab mockTab2 = mock(Tab.class);

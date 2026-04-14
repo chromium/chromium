@@ -39,6 +39,7 @@ import org.chromium.chrome.browser.tab.TabDragStateData;
 import org.chromium.chrome.browser.tabmodel.TabGroupMetadata;
 import org.chromium.chrome.browser.tabmodel.TabGroupMetadataExtractor;
 import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
+import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.components.browser_ui.widget.gesture.BackPressHandler;
 import org.chromium.ui.base.MimeTypeUtils;
@@ -123,10 +124,8 @@ public abstract class TabDragHandlerBase
         return mCurrentTabGroupModelFilterSupplier;
     }
 
-    protected TabGroupModelFilter getCurrentTabGroupModelFilter() {
-        @Nullable TabGroupModelFilter filter = getCurrentTabGroupModelFilterSupplier().get();
-        assert filter != null;
-        return filter;
+    protected TabModel getCurrentModel() {
+        return getTabModelSelector().getCurrentModel();
     }
 
     protected boolean canStartTabDrag() {
@@ -185,7 +184,7 @@ public abstract class TabDragHandlerBase
         // Block drag for last tab group when homepage enabled and is set to a custom url.
         if (MultiWindowUtils.getInstance()
                 .hasAtMostOneTabGroupWithHomepageEnabled(
-                        getTabModelSelector(), getCurrentTabGroupModelFilter())) {
+                        getTabModelSelector(), getCurrentModel())) {
             return false;
         }
 
@@ -193,7 +192,7 @@ public abstract class TabDragHandlerBase
     }
 
     private boolean shouldAllowGroupDragToCreateInstance(Token groupId) {
-        int groupSize = getCurrentTabGroupModelFilter().getTabCountForGroup(groupId);
+        int groupSize = getCurrentModel().getTabCountForGroup(groupId);
         return getTabModelSelector().getTotalTabCount() > groupSize;
     }
 
@@ -254,7 +253,7 @@ public abstract class TabDragHandlerBase
     }
 
     protected ChromeDropDataAndroid prepareTabDropData(Tab tab) {
-        boolean isTabInGroup = getCurrentTabGroupModelFilter().isTabInTabGroup(tab);
+        boolean isTabInGroup = getCurrentModel().isTabInTabGroup(tab);
         int windowId = TabWindowManagerSingleton.getInstance().getIdForWindow(getActivity());
         boolean allowDragToCreateInstance =
                 shouldAllowTabDragToCreateInstance()
@@ -288,12 +287,12 @@ public abstract class TabDragHandlerBase
     }
 
     protected ChromeDropDataAndroid prepareGroupDropData(Token tabGroupId, boolean isGroupShared) {
-        TabGroupModelFilter filter = getCurrentTabGroupModelFilter();
-        List<Tab> groupedTabs = filter.getTabsInGroup(tabGroupId);
+        TabModel tabModel = getCurrentModel();
+        List<Tab> groupedTabs = tabModel.getTabsInGroup(tabGroupId);
         int windowId = TabWindowManagerSingleton.getInstance().getIdForWindow(getActivity());
         TabGroupMetadata metadata =
                 TabGroupMetadataExtractor.extractTabGroupMetadata(
-                        filter,
+                        tabModel,
                         groupedTabs,
                         windowId,
                         getTabModelSelector().getCurrentTabId(),

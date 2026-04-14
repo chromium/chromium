@@ -539,6 +539,7 @@ public abstract class TabModelSelectorBase
         }
     }
 
+    @Deprecated
     @Override
     public @Nullable TabGroupModelFilter getCurrentTabGroupModelFilter() {
         return mCurrentTabGroupModelFilterSupplier.get();

@@ -86,7 +86,6 @@ public class ArchivedTabModelSelectorImplTest {
                         realAsyncTabParamsManager);
         assertTrue(currentTabModelSupplierHasObservers());
         assertNull(mTabModelSelector.getCurrentTabModelSupplier().get());
-        assertNull(mTabModelSelector.getCurrentTabGroupModelFilter());
 
         mTabCreatorManager.initialize(mTabModelSelector);
         TabRemover regularTabRemover =
@@ -108,9 +107,6 @@ public class ArchivedTabModelSelectorImplTest {
         assertEquals(
                 mTabModelSelector.getCurrentModel(),
                 mTabModelSelector.getCurrentTabModelSupplier().get());
-        assertEquals(
-                mTabModelSelector.getCurrentModel(),
-                mTabModelSelector.getCurrentTabGroupModelFilter().getTabModel());
     }
 
     @After
@@ -137,9 +133,7 @@ public class ArchivedTabModelSelectorImplTest {
         mTabModelSelector.getModel(false).setIndex(0, TabSelectionType.FROM_USER);
         assertEquals(normalTab, mTabModelSelector.getModel(false).getCurrentTabSupplier().get());
         assertEquals(normalTab, mTabModelSelector.getCurrentTabSupplier().get());
-        assertEquals(
-                mTabModelSelector.getModel(false),
-                mTabModelSelector.getCurrentTabGroupModelFilter().getTabModel());
+        assertEquals(mTabModelSelector.getModel(false), mTabModelSelector.getCurrentModel());
         RobolectricUtil.runAllBackgroundAndUi();
         verify(mTabSupplierObserverMock).onResult(eq(normalTab));
         mTabModelSelector.getCurrentTabSupplier().removeObserver(mTabSupplierObserverMock);

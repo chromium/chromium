@@ -4,8 +4,6 @@
 
 package org.chromium.chrome.browser.hub;
 
-import static org.chromium.build.NullUtil.assumeNonNull;
-
 import org.chromium.base.Callback;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.supplier.MonotonicObservableSupplier;
@@ -14,7 +12,6 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabSelectionType;
-import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelObserver;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
@@ -82,12 +79,10 @@ public class HubTabSwitcherMetricsRecorder {
 
                 RecordUserAction.record("MobileTabReturnedToCurrentTab");
             } else {
-                TabGroupModelFilter filter = mTabModelSelector.getCurrentTabGroupModelFilter();
-                assumeNonNull(filter);
-                int previousIndex = filter.representativeIndexOf(previousTab);
-                int currentIndex = filter.representativeIndexOf(tab);
+                int previousIndex = tabModel.representativeIndexOf(previousTab);
+                int currentIndex = tabModel.representativeIndexOf(tab);
                 if (previousIndex != currentIndex) {
-                    if (!filter.isTabInTabGroup(tab)) {
+                    if (!tabModel.isTabInTabGroup(tab)) {
                         RecordUserAction.record("MobileTabSwitched.GridTabSwitcher");
                     }
                 }
@@ -103,9 +98,7 @@ public class HubTabSwitcherMetricsRecorder {
                 RecordUserAction.record("MobileTabSwitched");
             }
 
-            TabGroupModelFilter filter = mTabModelSelector.getCurrentTabGroupModelFilter();
-            assumeNonNull(filter);
-            if (!filter.isTabInTabGroup(tab)) {
+            if (!tabModel.isTabInTabGroup(tab)) {
                 RecordUserAction.record("MobileTabSwitched.GridTabSwitcher");
             }
         }

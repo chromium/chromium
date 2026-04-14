@@ -154,12 +154,11 @@ public class TabStripDragHandlerTest {
     @Mock private MultiInstanceManager mSourceMultiInstanceManager;
     @Mock private MultiInstanceManager mDestMultiInstanceManager;
     @Mock private MultiInstanceOrchestrator mMultiInstanceOrchestrator;
-    @Mock private TabGroupModelFilter mTabGroupModelFilter;
 
     private final SettableMonotonicObservableSupplier<Integer> mTabStripHeightSupplier =
             ObservableSuppliers.createMonotonic();
-    private final SettableMonotonicObservableSupplier<TabGroupModelFilter>
-            mTabGroupModelFilterSupplier = ObservableSuppliers.createMonotonic();
+    private final SettableMonotonicObservableSupplier<TabGroupModelFilter> mTabModelSupplier =
+            ObservableSuppliers.createMonotonic();
 
     private TabStripDragHandler mSourceInstance;
     private TabStripDragHandler mDestInstance;
@@ -190,7 +189,7 @@ public class TabStripDragHandlerTest {
         mTabStripHeight = mActivity.getResources().getDimensionPixelSize(R.dimen.tab_strip_height);
 
         mTabStripHeightSupplier.set(mTabStripHeight);
-        mTabGroupModelFilterSupplier.set(mTabGroupModelFilter);
+        mTabModelSupplier.set(mTabModel);
 
         mPosY = mTabStripHeight - 2 * DRAG_MOVE_DISTANCE;
         mTabStripVisible = true;
@@ -231,11 +230,12 @@ public class TabStripDragHandlerTest {
         FaviconHelperJni.setInstanceForTesting(mFaviconHelperJniMock);
 
         when(mTabModel.getProfile()).thenReturn(mProfile);
+        when(mTabModel.getTabModel()).thenReturn(mTabModel);
         when(mTabModelSelector.getCurrentTab()).thenReturn(mTabBeingDragged);
         when(mTabModelSelector.getCurrentModel()).thenReturn(mTabModel);
         when(mTabModelSelector.getModel(anyBoolean())).thenReturn(mTabModel);
         when(mTabModelSelector.getCurrentTabGroupModelFilterSupplier())
-                .thenReturn(mTabGroupModelFilterSupplier);
+                .thenReturn(mTabModelSupplier);
 
         Supplier<Activity> activitySupplier = () -> mWindowAndroid.getActivity().get();
 
@@ -803,7 +803,7 @@ public class TabStripDragHandlerTest {
         doReturn(mhtmlTabTitle).when(mGroupedTab1).getTitle();
         mTabGroupMetadata =
                 TabGroupMetadataExtractor.extractTabGroupMetadata(
-                        mTabGroupModelFilter,
+                        mTabModel,
                         mTabGroupBeingDragged,
                         /* sourceWindowIndex= */ -1,
                         mGroupedTab1.getId(),
@@ -1014,7 +1014,7 @@ public class TabStripDragHandlerTest {
     @Test
     public void testNonLastTabDroppedInStrip_RecordTabRemovedFromGroup() {
         // The tab being dragged is in a tab group.
-        when(mTabGroupModelFilter.isTabInTabGroup(mTabBeingDragged)).thenReturn(true);
+        when(mTabModel.isTabInTabGroup(mTabBeingDragged)).thenReturn(true);
 
         // Verify histograms.
         testNonLastTabDroppedInStripHistogram();
@@ -2089,16 +2089,15 @@ public class TabStripDragHandlerTest {
         mTabGroupBeingDragged.add(mGroupedTab2);
         mTabGroupMetadata =
                 TabGroupMetadataExtractor.extractTabGroupMetadata(
-                        mTabGroupModelFilter,
+                        mTabModel,
                         mTabGroupBeingDragged,
                         /* sourceWindowIndex= */ -1,
                         mGroupedTab1.getId(),
                         isGroupShared);
-        when(mTabGroupModelFilter.getTabsInGroup(TAB_GROUP_ID)).thenReturn(mTabGroupBeingDragged);
-        when(mTabGroupModelFilter.isTabModelRestored()).thenReturn(true);
-        when(mTabGroupModelFilter.getTabModel()).thenReturn(mTabModel);
-        when(mTabGroupModelFilter.isTabInTabGroup(mGroupedTab1)).thenReturn(true);
-        when(mTabGroupModelFilter.isTabInTabGroup(mGroupedTab2)).thenReturn(true);
+        when(mTabModel.getTabsInGroup(TAB_GROUP_ID)).thenReturn(mTabGroupBeingDragged);
+        when(mTabModel.isTabModelRestored()).thenReturn(true);
+        when(mTabModel.isTabInTabGroup(mGroupedTab1)).thenReturn(true);
+        when(mTabModel.isTabInTabGroup(mGroupedTab2)).thenReturn(true);
         when(mTabModel.getTabById(mGroupedTab1.getId())).thenReturn(mGroupedTab1);
         when(mTabModel.getTabById(mGroupedTab2.getId())).thenReturn(mGroupedTab2);
     }

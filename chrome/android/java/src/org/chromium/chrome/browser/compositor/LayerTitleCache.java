@@ -260,10 +260,9 @@ public class LayerTitleCache {
             title.register();
         }
 
-        TabGroupModelFilter filter = mTabModelSelector.getCurrentTabGroupModelFilter();
-        assert filter != null;
+        TabModel tabModel = mTabModelSelector.getCurrentModel();
         Bitmap titleBitmap =
-                titleBitmapFactory.getGroupTitleBitmap(filter, mContext, groupId, titleString);
+                titleBitmapFactory.getGroupTitleBitmap(tabModel, mContext, groupId, titleString);
         if (titleBitmap == null) return;
         title.set(titleBitmap);
 

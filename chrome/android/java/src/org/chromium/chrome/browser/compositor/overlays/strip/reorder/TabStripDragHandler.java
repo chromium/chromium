@@ -228,7 +228,7 @@ public class TabStripDragHandler extends TabDragHandlerBase {
         // Initialize drag shadow.
         initShadowView(dragSourceView);
         if (mShadowView != null) {
-            Tab firstTabInGroup = getCurrentTabGroupModelFilter().getTabsInGroup(tabGroupId).get(0);
+            Tab firstTabInGroup = getCurrentModel().getTabsInGroup(tabGroupId).get(0);
             mShadowView.prepareForGroupDrag(firstTabInGroup, (int) (widthDp / mPxToDp));
         }
         return startDragInternal(dropData, startPoint, positionX, dragSourceView);

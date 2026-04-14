@@ -83,7 +83,6 @@ public class TabGroupUtilsUnitTest {
 
     @Mock TabModel mTabModel;
     @Mock TabModelSelector mTabModelSelector;
-    @Mock TabGroupModelFilter mTabGroupModelFilter;
     @Mock TabGroupSyncService mTabGroupSyncService;
     @Mock TabGroupSyncFeatures.Natives mTabGroupSyncFeaturesJniMock;
     @Mock TabCreator mTabCreator;
@@ -101,7 +100,7 @@ public class TabGroupUtilsUnitTest {
         mTab2 = TabUiUnitTestUtils.prepareTab(TAB2_ID, TAB2_TITLE, GURL.emptyGURL());
         mTab3 = TabUiUnitTestUtils.prepareTab(TAB3_ID, TAB3_TITLE, GURL.emptyGURL());
 
-        doReturn(mTabGroupModelFilter).when(mTabModelSelector).getCurrentTabGroupModelFilter();
+        doReturn(mTabModel).when(mTabModelSelector).getCurrentModel();
         doReturn(POSITION1).when(mTabModel).indexOf(mTab1);
         doReturn(POSITION2).when(mTabModel).indexOf(mTab2);
         doReturn(POSITION3).when(mTabModel).indexOf(mTab3);
@@ -117,16 +116,12 @@ public class TabGroupUtilsUnitTest {
     public void testGetSelectedTabInGroupForTab() {
         List<Tab> tabs = new ArrayList<>(Arrays.asList(mTab1, mTab2));
         createTabGroup(tabs, TAB_GROUP_ID1);
-        doReturn(mTab1).when(mTabGroupModelFilter).getRepresentativeTabAt(POSITION1);
-        doReturn(POSITION1).when(mTabGroupModelFilter).representativeIndexOf(mTab1);
-        doReturn(POSITION1).when(mTabGroupModelFilter).representativeIndexOf(mTab2);
+        doReturn(mTab1).when(mTabModel).getRepresentativeTabAt(POSITION1);
+        doReturn(POSITION1).when(mTabModel).representativeIndexOf(mTab1);
+        doReturn(POSITION1).when(mTabModel).representativeIndexOf(mTab2);
 
-        assertThat(
-                TabGroupUtils.getSelectedTabInGroupForTab(mTabGroupModelFilter, mTab1),
-                equalTo(mTab1));
-        assertThat(
-                TabGroupUtils.getSelectedTabInGroupForTab(mTabGroupModelFilter, mTab2),
-                equalTo(mTab1));
+        assertThat(TabGroupUtils.getSelectedTabInGroupForTab(mTabModel, mTab1), equalTo(mTab1));
+        assertThat(TabGroupUtils.getSelectedTabInGroupForTab(mTabModel, mTab2), equalTo(mTab1));
     }
 
     @Test
@@ -145,13 +140,13 @@ public class TabGroupUtilsUnitTest {
 
     @Test
     public void testOpenUrlInGroup() {
-        when(mTabGroupModelFilter.getRelatedTabList(eq(TAB1_ID))).thenReturn(Arrays.asList(mTab1));
-        when(mTabGroupModelFilter.getTabModel()).thenReturn(mTabModel);
+        when(mTabModel.getRelatedTabList(eq(TAB1_ID))).thenReturn(Arrays.asList(mTab1));
+        when(mTabModel.getTabModel()).thenReturn(mTabModel);
         when(mTabModel.getTabCreator()).thenReturn(mTabCreator);
 
         @TabLaunchType int launchType = TabLaunchType.FROM_TAB_GROUP_UI;
         String url = JUnitTestGURLs.URL_1.getSpec();
-        TabGroupUtils.openUrlInGroup(mTabGroupModelFilter, url, TAB1_ID, launchType);
+        TabGroupUtils.openUrlInGroup(mTabModel, url, TAB1_ID, launchType);
         ArgumentMatcher<LoadUrlParams> matcher = params -> TextUtils.equals(params.getUrl(), url);
         verify(mTabCreator).createNewTab(argThat(matcher), eq(launchType), eq(mTab1));
     }
@@ -269,24 +264,21 @@ public class TabGroupUtilsUnitTest {
                         /* isGroupShared= */ false,
                         /* isIncognito= */ false);
         when(mTab1.getTabGroupId()).thenReturn(TAB_GROUP_ID1);
-        TabGroupUtils.regroupTabs(
-                mTabGroupModelFilter, tabs, tabGroupMetadata, shouldApplyCollapse);
+        TabGroupUtils.regroupTabs(mTabModel, tabs, tabGroupMetadata, shouldApplyCollapse);
 
-        verify(mTabGroupModelFilter).createTabGroupForTabGroupSync(any(), eq(TAB_GROUP_ID1));
-        verify(mTabGroupModelFilter).setTabGroupColor(eq(TAB_GROUP_ID1), eq(0));
-        verify(mTabGroupModelFilter).setTabGroupTitle(eq(TAB_GROUP_ID1), eq(TAB_GROUP_TITLE));
+        verify(mTabModel).createTabGroupForTabGroupSync(any(), eq(TAB_GROUP_ID1));
+        verify(mTabModel).setTabGroupColor(eq(TAB_GROUP_ID1), eq(0));
+        verify(mTabModel).setTabGroupTitle(eq(TAB_GROUP_ID1), eq(TAB_GROUP_TITLE));
         if (shouldApplyCollapse) {
-            verify(mTabGroupModelFilter)
-                    .setTabGroupCollapsed(eq(TAB_GROUP_ID1), eq(true), eq(false));
+            verify(mTabModel).setTabGroupCollapsed(eq(TAB_GROUP_ID1), eq(true), eq(false));
         } else {
-            verify(mTabGroupModelFilter, never())
-                    .setTabGroupCollapsed(any(), anyBoolean(), anyBoolean());
+            verify(mTabModel, never()).setTabGroupCollapsed(any(), anyBoolean(), anyBoolean());
         }
     }
 
     private void createTabGroup(List<Tab> tabs, Token tabGroupId) {
         for (Tab tab : tabs) {
-            when(mTabGroupModelFilter.getTabsInGroup(tabGroupId)).thenReturn(tabs);
+            when(mTabModel.getTabsInGroup(tabGroupId)).thenReturn(tabs);
             when(tab.getTabGroupId()).thenReturn(tabGroupId);
         }
     }

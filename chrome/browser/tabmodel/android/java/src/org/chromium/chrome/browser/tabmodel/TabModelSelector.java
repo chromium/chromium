@@ -246,7 +246,9 @@ public interface TabModelSelector {
      *
      * @return The current {@link TabGroupModelFilter}. This returns null, if this called before
      *     native library is initialized.
+     * @deprecated Use {@link #getCurrentModel()} instead.
      */
+    @Deprecated
     @Nullable TabGroupModelFilter getCurrentTabGroupModelFilter();
 
     /** Returns an observable supplier for the current tab model filter. */

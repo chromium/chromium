@@ -43,7 +43,6 @@ import org.chromium.chrome.browser.layouts.LayoutStateProvider;
 import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.tab_ui.TabModelDotInfo;
 import org.chromium.chrome.browser.tabmodel.IncognitoStateProvider;
-import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.theme.TopUiThemeColorProvider;
@@ -71,7 +70,6 @@ public class ToggleTabStackButtonCoordinatorTest {
     @Mock private OnClickListener mOnClickListener;
     @Mock private OnLongClickListener mOnLongClickListener;
     @Mock private TabModelSelector mTabModelSelector;
-    @Mock private TabGroupModelFilter mTabGroupModelFilter;
     @Mock private TabModel mStandardTabModel;
     @Mock private TabModel mIncognitoTabModel;
     @Mock private TopUiThemeColorProvider mTopUIThemeProvider;
@@ -123,8 +121,6 @@ public class ToggleTabStackButtonCoordinatorTest {
         mTabModelSelectorSupplier = ObservableSuppliers.createNonNull(mTabModelSelector);
         when(mTabModelSelector.getCurrentModel()).thenReturn(mStandardTabModel);
         when(mTabModelSelector.getModel(true)).thenReturn(mIncognitoTabModel);
-        when(mTabGroupModelFilter.getTabModel()).thenReturn(mStandardTabModel);
-        when(mTabModelSelector.getCurrentTabGroupModelFilter()).thenReturn(mTabGroupModelFilter);
         when(mStandardTabModel.isIncognitoBranded()).thenReturn(false);
         when(mIncognitoTabModel.isIncognitoBranded()).thenReturn(true);
         when(mIncognitoTabModel.getCount()).thenReturn(0);
