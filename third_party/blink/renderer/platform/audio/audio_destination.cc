@@ -176,22 +176,31 @@ int AudioDestination::Render(base::TimeDelta delay,
       if (posted_successfully) {
         TRACE_EVENT0("webaudio", "AudioDestination::Render waiting");
         base::ScopedAllowBaseSyncPrimitivesOutsideBlockingScope allow_wait;
-        // This is `Wait()`ing on the audio render thread for a `Signal()` from
-        // the `worklet_task_runner_` thread, which will come from
-        // `RequestRenderWait()`.
+        // In bypass mode with a worklet, the audio callback waits for either:
+        //   1) RequestRenderWait() to finish and signal
+        //      output_buffer_bypass_wait_event_, or
+        //   2) Stop() to signal output_buffer_bypass_stop_event_.
+        // The separate stop event avoids a shutdown race with
+        // output_buffer_bypass_wait_event_.Reset() in Render().
         //
-        // `WaitableEvent` should generally not be allowed on the real-time
+        // WaitableEvents should generally not be allowed on the real-time
         // audio threads. In particular, no other code executed on the worklet
-        // task runner thread should be using `WaitableEvent`. Additionally, the
-        // below should be the only call to `Wait()` in `AudioDestination`.
-        // Both the `Wait()` and `Signal()` should only be executed when the
-        // kWebAudioBypassOutputBuffering flag is enabled, for testing output
-        // latency differences when the output buffer is bypassed.
+        // task runner thread should be using WaitableEvent. The below should
+        // be the only blocking wait in AudioDestination, and should only be
+        // executed when the kWebAudioBypassOutputBuffering flag is enabled,
+        // for testing output latency differences when the output buffer is
+        // bypassed.
         //
-        // As long as the above is true, it is not possible to deadlock or have
-        // both threads waiting on each other. There is, however, no guarantee
-        // that the task runner will finish within the real-time budget.
-        output_buffer_bypass_wait_event_.Wait();
+        // As long as the above is true, it is not possible to deadlock or
+        // have both threads waiting on each other. There is, however, no
+        // guarantee that the task runner will finish within the real-time
+        // budget.
+        base::WaitableEvent* events[] = {&output_buffer_bypass_wait_event_,
+                                         &output_buffer_bypass_stop_event_};
+        base::WaitableEvent::WaitMany(events);
+        if (output_buffer_bypass_stop_event_.IsSignaled()) {
+          state_change_underrun_in_bypass_mode_ = true;
+        }
       } else {
         // The render request failed to post
         state_change_underrun_in_bypass_mode_ = true;
@@ -292,6 +301,13 @@ void AudioDestination::Stop() {
   if (device_state_ == DeviceState::kStopped) {
     return;
   }
+
+  // Signal before WebAudioDevice::Stop() so any Render() callback already
+  // blocked in WaitMany() can exit promptly. This uses a manual-reset event
+  // so the stop wakeup cannot be lost to a concurrent Reset() of
+  // output_buffer_bypass_wait_event_.
+  output_buffer_bypass_stop_event_.Signal();
+
   web_audio_device_->Stop();
 
   // Resetting `worklet_task_runner_` here is safe because
@@ -300,6 +316,7 @@ void AudioDestination::Stop() {
   worklet_task_runner_ = nullptr;
 
   SetDeviceState(DeviceState::kStopped);
+  output_buffer_bypass_stop_event_.Reset();
 }
 
 void AudioDestination::Pause() {

@@ -262,9 +262,18 @@ class PLATFORM_EXPORT AudioDestination final
   // Collect the device latency metric only from the initial callback.
   bool is_latency_metric_collected_ = false;
 
-  // This WaitableEvent is only for use with the kWebAudioBypassOutputBuffering
-  // flag enabled. No other WaitableEvents may be used in this class.
+  // These WaitableEvents are only for use with the kWebAudioBypassOutputBuffering
+  // flag enabled.
   base::WaitableEvent output_buffer_bypass_wait_event_;
+
+  // Signaled by Stop() to unblock any Render() callback already waiting on
+  // output_buffer_bypass_wait_event_ via WaitMany(). Uses manual reset so the
+  // stop wakeup cannot be lost to a concurrent Reset() of
+  // output_buffer_bypass_wait_event_. Reset at the end of Stop() after the
+  // device has been torn down.
+  base::WaitableEvent output_buffer_bypass_stop_event_{
+      base::WaitableEvent::ResetPolicy::MANUAL,
+      base::WaitableEvent::InitialState::NOT_SIGNALED};
 
   const bool is_output_buffer_bypassed_ = false;
   bool state_change_underrun_in_bypass_mode_ = false;
