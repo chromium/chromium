@@ -36,4 +36,9 @@ public class BottomBarConfigUtils {
     public static boolean shouldShowOnGts() {
         return ChromeFeatureList.sAndroidBottomBarShowBottomBarOnGts.getValue();
     }
+
+    /** Whether to disable the bottom bar on the regular NTP. */
+    public static boolean shouldDisableOnNtp() {
+        return ChromeFeatureList.sAndroidBottomBarDisableOnNtp.getValue();
+    }
 }

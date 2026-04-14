@@ -2408,7 +2408,8 @@ public class ToolbarManager
         BottomBarContainerCoordinator bottomBarContainerCoordinator =
                 new BottomBarContainerCoordinator(
                         bottomAppBarContainer.findViewById(R.id.bottom_container_slot),
-                        mBottomControlsStacker::requestLayerUpdate);
+                        mBottomControlsStacker::requestLayerUpdate,
+                        mCurrentTabSupplier);
         bottomBarContainerOneshotSupplier.set(bottomBarContainerCoordinator);
 
         if (mBottomBarHostManager != null) {

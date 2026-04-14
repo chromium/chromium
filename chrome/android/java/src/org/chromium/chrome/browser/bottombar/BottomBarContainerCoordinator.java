@@ -12,15 +12,21 @@ import android.widget.FrameLayout;
 import androidx.annotation.ColorInt;
 
 import org.chromium.base.Callback;
+import org.chromium.base.supplier.NullableObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.browser_controls.BottomControlsStacker.LayerScrollBehavior;
+import org.chromium.chrome.browser.tab.EmptyTabObserver;
+import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tab.TabObserver;
 import org.chromium.chrome.browser.toolbar.bottom.BottomControlsContentDelegate;
 import org.chromium.chrome.browser.toolbar.bottom.BottomControlsCoordinator.BottomControlsVisibilityController;
 import org.chromium.chrome.browser.ui.bottombar.BottomBar;
+import org.chromium.chrome.browser.ui.bottombar.BottomBarConfigUtils;
 import org.chromium.chrome.browser.ui.bottombar.BottomBarHostManager.Host;
 import org.chromium.components.browser_ui.widget.gesture.BackPressHandler;
+import org.chromium.components.embedder_support.util.UrlUtilities;
 
 /**
  * Container for the bottom bar.
@@ -31,9 +37,13 @@ import org.chromium.components.browser_ui.widget.gesture.BackPressHandler;
 public class BottomBarContainerCoordinator implements BottomControlsContentDelegate {
     private final FrameLayout mBottomBarContainer;
     private final Callback<Boolean> mRequestLayerUpdateCallback;
+    private final NullableObservableSupplier<Tab> mTabSupplier;
+    private final Callback<@Nullable Tab> mTabSupplierObserver;
+    private final TabObserver mTabObserver;
 
     // Temporary view to act as a placeholder for the bottom bar.
     private final FrameLayout mTemporaryView;
+    private @Nullable Tab mCurrentTab;
 
     // Temporary bottom bar implementation to be replaced with the real bottom bar (likely
     // constructed externally).
@@ -56,11 +66,36 @@ public class BottomBarContainerCoordinator implements BottomControlsContentDeleg
     /**
      * @param bottomBarContainer The {@link FrameLayout} for the bottom bar.
      * @param requestLayerUpdateCallback A callback to request layer updates.
+     * @param tabSupplier Supplier for the current tab.
      */
     public BottomBarContainerCoordinator(
-            FrameLayout bottomBarContainer, Callback<Boolean> requestLayerUpdateCallback) {
+            FrameLayout bottomBarContainer,
+            Callback<Boolean> requestLayerUpdateCallback,
+            NullableObservableSupplier<Tab> tabSupplier) {
         mBottomBarContainer = bottomBarContainer;
         mRequestLayerUpdateCallback = requestLayerUpdateCallback;
+        mTabSupplier = tabSupplier;
+
+        mTabObserver =
+                new EmptyTabObserver() {
+                    @Override
+                    public void onUrlUpdated(Tab tab) {
+                        updateBottomBarVisibility();
+                    }
+                };
+
+        mTabSupplierObserver =
+                (tab) -> {
+                    if (mCurrentTab != null) {
+                        mCurrentTab.removeObserver(mTabObserver);
+                    }
+                    mCurrentTab = tab;
+                    if (mCurrentTab != null) {
+                        mCurrentTab.addObserver(mTabObserver);
+                    }
+                    updateBottomBarVisibility();
+                };
+        mTabSupplier.addSyncObserverAndCallIfNonNull(mTabSupplierObserver);
 
         // Create a temporary view to act as a placeholder for the bottom bar.
         Context context = bottomBarContainer.getContext();
@@ -69,8 +104,9 @@ public class BottomBarContainerCoordinator implements BottomControlsContentDeleg
                 context.getResources().getDimensionPixelOffset(R.dimen.bottom_controls_height);
         mTemporaryView.setLayoutParams(
                 new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, bottomBarHeight));
-        mTemporaryView.setVisibility(View.VISIBLE);
         mTemporaryView.setBackgroundColor(0xFF00FF00);
+
+        updateBottomBarVisibility();
     }
 
     @Override
@@ -87,7 +123,26 @@ public class BottomBarContainerCoordinator implements BottomControlsContentDeleg
     }
 
     @Override
-    public void destroy() {}
+    public void destroy() {
+        if (mCurrentTab != null) {
+            mCurrentTab.removeObserver(mTabObserver);
+            mCurrentTab = null;
+        }
+        if (mTabSupplier != null) {
+            mTabSupplier.removeObserver(mTabSupplierObserver);
+        }
+    }
+
+    private void updateBottomBarVisibility() {
+        if (mVisibilityController == null) return;
+        boolean currentTabIsRegularNtp =
+                mCurrentTab != null
+                        && UrlUtilities.isNtpUrl(mCurrentTab.getUrl())
+                        && !mCurrentTab.isIncognito();
+        boolean visible = !(BottomBarConfigUtils.shouldDisableOnNtp() && currentTabIsRegularNtp);
+        mVisibilityController.setBottomControlsVisible(visible);
+        mTemporaryView.setVisibility(visible ? View.VISIBLE : View.GONE);
+    }
 
     @Override
     public @LayerScrollBehavior int getScrollBehavior() {
