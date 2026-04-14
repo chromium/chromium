@@ -25,4 +25,4 @@ If you're a Googler, you can alternatively email
 ## Well-lit paths
 
 * [Skia Autoroller](https://chromium.googlesource.com/chromium/src/+/HEAD/docs/managing-third-party/skia-autoroller.md)
-* (More will be added soon...)
+* [Crowbar Workflow](https://chromium.googlesource.com/chromium/src/+/HEAD/docs/managing-third-party/crowbar-workflow.md)
