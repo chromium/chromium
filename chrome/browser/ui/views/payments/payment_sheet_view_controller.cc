@@ -935,7 +935,7 @@ void PaymentSheetViewController::PossiblyIgnorePrimaryButtonPress(
     PaymentRequestSheetController::ButtonCallback callback,
     const ui::Event& event) {
   if (input_protector_->IsPossiblyUnintendedInteraction(
-          event, /*allow_key_events=*/true)) {
+          event, /*allow_key_events=*/false)) {
     return;
   }
   callback.Run(event);

@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/views/payments/payment_sheet_view_controller.h"
 
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/scoped_command_line.h"
 #include "chrome/browser/ui/views/payments/payment_request_browsertest_base.h"
 #include "chrome/browser/ui/views/payments/payment_request_dialog_view_ids.h"
 #include "chrome/test/base/ui_test_utils.h"
@@ -20,8 +21,11 @@
 #include "net/dns/mock_host_resolver.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/events/base_event_utils.h"
 #include "ui/views/controls/scroll_view.h"
+#include "ui/views/metrics.h"
 #include "ui/views/test/mock_input_event_activation_protector.h"
+#include "ui/views/views_switches.h"
 
 namespace payments {
 
@@ -61,7 +65,10 @@ IN_PROC_BROWSER_TEST_F(PaymentSheetViewControllerTest,
   // accepts all subsequent inputs.
   auto input_protector =
       std::make_unique<views::MockInputEventActivationProtector>();
-  EXPECT_CALL(*input_protector, IsPossiblyUnintendedInteraction)
+  // Expect that `allow_key_events` is set to false to protect against
+  // enter-jacking.
+  EXPECT_CALL(*input_protector, IsPossiblyUnintendedInteraction(
+                                    testing::_, /*allow_key_events=*/false))
       .WillOnce(testing::Return(true))
       .WillRepeatedly(testing::Return(false));
 
