@@ -4,7 +4,6 @@
 
 package org.chromium.chrome.browser.actor.ui;
 
-import android.view.View.OnClickListener;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.ui.modelutil.PropertyKey;
@@ -26,11 +25,11 @@ class ActorControlProperties {
      * The click listener for the play/pause button. The button's appearance and visibility are
      * dictated by the current PEEK_VIEW_UI_STATE.
      */
-    public static final ReadableObjectPropertyKey<OnClickListener> ON_ACTOR_CONTROL_CLICKED =
+    public static final ReadableObjectPropertyKey<Runnable> ON_ACTOR_CONTROL_CLICKED =
             new ReadableObjectPropertyKey<>();
 
     /** The click listener for the close button, typically used to dismiss the control. */
-    public static final ReadableObjectPropertyKey<OnClickListener> ON_CLOSE_CLICKED =
+    public static final ReadableObjectPropertyKey<Runnable> ON_CLOSE_CLICKED =
             new ReadableObjectPropertyKey<>();
 
     public static final PropertyKey[] ALL_KEYS =

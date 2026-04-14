@@ -43,7 +43,9 @@ public class TabBottomSheetManager implements Destroyable {
             new TabBottomSheetCoordinator.SheetEventsCallback() {
                 @Override
                 public void onBottomSheetClosed() {
-                    if (mNativeInterfaceDelegate == null) return;
+                    if (mNativeInterfaceDelegate == null) {
+                        return;
+                    }
                     if (mIsCloseFromNative) {
                         notifyOnClose();
                     } else {
@@ -53,7 +55,9 @@ public class TabBottomSheetManager implements Destroyable {
 
                 @Override
                 public void onBottomSheetOpened(boolean isExpanded) {
-                    if (mNativeInterfaceDelegate == null) return;
+                    if (mNativeInterfaceDelegate == null) {
+                        return;
+                    }
                     mNativeInterfaceDelegate.onBottomSheetOpened(isExpanded);
                 }
             };
@@ -196,7 +200,8 @@ public class TabBottomSheetManager implements Destroyable {
         }
     }
 
-    void tryToCloseBottomSheet() {
+    /** Attempts to close the Tab BottomSheet. */
+    public void tryToCloseBottomSheet() {
         if (mTabBottomSheetCoordinator != null) {
             if (!mTabBottomSheetCoordinator.isSheetShowing()) {
                 // The bottom sheet is already closed. just send a onClose event back to native.
@@ -221,11 +226,11 @@ public class TabBottomSheetManager implements Destroyable {
     }
 
     /**
-     * Shows the peek view from the bottom sheet.
+     * Shows the peek view from the bottom sheet and hides the expanded content.
      *
-     * @return Whether the peek view was successfully shown.
+     * @return Whether the operation was successful.
      */
-    public boolean showPeekView() {
+    public boolean showPeekViewAndHideExpandedContent() {
         if (mTabBottomSheetCoordinator != null) {
             return mTabBottomSheetCoordinator.showPeekViewAndHideExpandedContent();
         }
@@ -233,11 +238,11 @@ public class TabBottomSheetManager implements Destroyable {
     }
 
     /**
-     * Hides the peek view from the bottom sheet.
+     * Hides the peek view from the bottom sheet and shows the expanded content.
      *
-     * @return Whether the peek view was successfully hidden.
+     * @return Whether the operation was successful.
      */
-    public boolean hidePeekView() {
+    public boolean hidePeekViewAndShowExpandedContent() {
         if (mTabBottomSheetCoordinator != null) {
             return mTabBottomSheetCoordinator.hidePeekViewAndShowExpandedContent();
         }
@@ -274,8 +279,8 @@ public class TabBottomSheetManager implements Destroyable {
 
         mCallbackController.destroy();
 
-        // Destroy the coorinator in case the manager is abruptly destroyed before hiding the bottom
-        // sheet.
+        // Destroy the coordinator in case the manager is abruptly destroyed before hiding the
+        // bottom sheet.
         if (mTabBottomSheetCoordinator != null) {
             mTabBottomSheetCoordinator.destroy();
             mTabBottomSheetCoordinator = null;

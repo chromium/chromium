@@ -13,7 +13,6 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import android.app.Activity;
-import android.view.View;
 
 import com.google.android.material.button.MaterialButton;
 
@@ -62,8 +61,6 @@ public class ActorControlCoordinatorTest {
 
     @Mock private ActorUiTabController mActorUiTabController;
     @Mock private TabBottomSheetManager mTabBottomSheetManager;
-    @Mock private View.OnClickListener mActorControlListener;
-    @Mock private View.OnClickListener mCloseListener;
     @Mock private Tab mTab;
     @Mock private Profile mProfile;
     @Mock private ActorKeyedService mActorKeyedService;
@@ -104,8 +101,6 @@ public class ActorControlCoordinatorTest {
         mCoordinator =
                 new ActorControlCoordinator(
                         mActivity,
-                        mActorControlListener,
-                        mCloseListener,
                         mTabSupplier,
                         mTabBottomSheetManager,
                         mProfileSupplier);
@@ -114,7 +109,7 @@ public class ActorControlCoordinatorTest {
         mMediator = mCoordinator.getMediatorForTesting();
 
         ShadowLooper.idleMainLooper();
-        reset(mTabBottomSheetManager, mActorUiTabController, mActorControlListener, mCloseListener);
+        reset(mTabBottomSheetManager, mActorUiTabController);
     }
 
     private void expectValidProfile() {
@@ -128,34 +123,33 @@ public class ActorControlCoordinatorTest {
         when(mActorKeyedService.getCurrentActiveTask()).thenReturn(mActorTask);
     }
 
+    private void setUpProfileSupplierAndAttachPeekView() {
+        expectValidProfile();
+        when(mTabBottomSheetManager.isSheetInitialized()).thenReturn(true);
+        mCoordinator.attachPeekView();
+        mProfileSupplier.set(mProfile);
+        ShadowLooper.idleMainLooper();
+    }
+
+    private void performActorControlClick() {
+        ActorControlView view = (ActorControlView) mCoordinator.getPeekViewForTesting();
+        assertNotNull("Peek view should be attached", view);
+        MaterialButton actorControlButton = view.findViewById(R.id.actor_control_button);
+        actorControlButton.performClick();
+    }
+
+    private void performCloseClick() {
+        ActorControlView view = (ActorControlView) mCoordinator.getPeekViewForTesting();
+        assertNotNull("Peek view should be attached", view);
+        ChromeImageButton closeButton = view.findViewById(R.id.actor_control_close_button);
+        closeButton.performClick();
+    }
+
     @Test
     public void testInitialization() {
         assertNotNull(mModel);
-        assertEquals(
-                mActorControlListener, mModel.get(ActorControlProperties.ON_ACTOR_CONTROL_CLICKED));
-        assertEquals(mCloseListener, mModel.get(ActorControlProperties.ON_CLOSE_CLICKED));
-    }
-
-    @Test
-    public void testActorControlClickTriggered() {
-        when(mTabBottomSheetManager.isSheetInitialized()).thenReturn(true);
-        mCoordinator.attachPeekView();
-        ActorControlView view = (ActorControlView) mCoordinator.getPeekViewForTesting();
-        MaterialButton actorControlButton = view.findViewById(R.id.actor_control_button);
-
-        actorControlButton.performClick();
-        verify(mActorControlListener).onClick(actorControlButton);
-    }
-
-    @Test
-    public void testCloseClickTriggered() {
-        when(mTabBottomSheetManager.isSheetInitialized()).thenReturn(true);
-        mCoordinator.attachPeekView();
-        ActorControlView view = (ActorControlView) mCoordinator.getPeekViewForTesting();
-        ChromeImageButton closeButton = view.findViewById(R.id.actor_control_close_button);
-
-        closeButton.performClick();
-        verify(mCloseListener).onClick(closeButton);
+        assertNotNull(mModel.get(ActorControlProperties.ON_ACTOR_CONTROL_CLICKED));
+        assertNotNull(mModel.get(ActorControlProperties.ON_CLOSE_CLICKED));
     }
 
     @Test
@@ -194,7 +188,7 @@ public class ActorControlCoordinatorTest {
     public void testTabObserver_nullTab() {
         when(mTab.getUserDataHost()).thenReturn(mUserDataHost);
         when(mTabBottomSheetManager.isSheetInitialized()).thenReturn(true);
-        when(mTabBottomSheetManager.hidePeekView()).thenReturn(true);
+        when(mTabBottomSheetManager.hidePeekViewAndShowExpandedContent()).thenReturn(true);
         mTabSupplier.set(mTab);
         ShadowLooper.idleMainLooper();
         reset(mTabBottomSheetManager, mActorUiTabController);
@@ -210,8 +204,8 @@ public class ActorControlCoordinatorTest {
     public void testOnUiTabStateChanged_sheetNotInitialized() {
         when(mTabBottomSheetManager.isSheetInitialized()).thenReturn(false);
         mCoordinator.onUiTabStateChanged(createUiTabState(true));
-        verify(mTabBottomSheetManager, never()).showPeekView();
-        verify(mTabBottomSheetManager, never()).hidePeekView();
+        verify(mTabBottomSheetManager, never()).showPeekViewAndHideExpandedContent();
+        verify(mTabBottomSheetManager, never()).hidePeekViewAndShowExpandedContent();
     }
 
     @Test
@@ -219,14 +213,14 @@ public class ActorControlCoordinatorTest {
         when(mTabBottomSheetManager.isSheetInitialized()).thenReturn(true);
         mCoordinator.onUiTabStateChanged(createUiTabState(true));
         verify(mTabBottomSheetManager).attachPeekView(any());
-        verify(mTabBottomSheetManager).showPeekView();
+        verify(mTabBottomSheetManager).showPeekViewAndHideExpandedContent();
     }
 
     @Test
     public void testOnUiTabStateChanged_actorOverlayInactive() {
         when(mTabBottomSheetManager.isSheetInitialized()).thenReturn(true);
         mCoordinator.onUiTabStateChanged(createUiTabState(false));
-        verify(mTabBottomSheetManager).hidePeekView();
+        verify(mTabBottomSheetManager).hidePeekViewAndShowExpandedContent();
     }
 
     @Test
@@ -345,11 +339,8 @@ public class ActorControlCoordinatorTest {
     }
 
     private void setUpForOnTaskStateChanged() {
-        expectValidProfile();
+        setUpProfileSupplierAndAttachPeekView();
         expectValidActorTask();
-        when(mTabBottomSheetManager.isSheetInitialized()).thenReturn(true);
-        mCoordinator.attachPeekView();
-        mProfileSupplier.set(mProfile);
     }
 
     @Test
@@ -392,5 +383,64 @@ public class ActorControlCoordinatorTest {
         mCoordinator.onTaskStateChanged(TASK_ID, ActorTaskState.ACTING);
         mCoordinator.onTaskStateChanged(TASK_ID + 1, ActorTaskState.PAUSED_BY_USER);
         assertEquals(PeekViewUiState.ACTING, mModel.get(ActorControlProperties.PEEK_VIEW_UI_STATE));
+    }
+
+    @Test
+    public void testOnActorControlClick_taskActing_pauses() {
+        setUpProfileSupplierAndAttachPeekView();
+        expectValidActorTask();
+        when(mActorTask.getState()).thenReturn(ActorTaskState.ACTING);
+
+        performActorControlClick();
+
+        verify(mActorTask).pause();
+        verify(mActorTask, never()).resume();
+    }
+
+    @Test
+    public void testOnActorControlClick_taskPaused_resumes() {
+        setUpProfileSupplierAndAttachPeekView();
+        expectValidActorTask();
+        when(mActorTask.getState()).thenReturn(ActorTaskState.PAUSED_BY_USER);
+
+        performActorControlClick();
+
+        verify(mActorTask, never()).pause();
+        verify(mActorTask).resume();
+    }
+
+    @Test
+    public void testOnActorControlClick_taskUnhandledState() {
+        setUpProfileSupplierAndAttachPeekView();
+        expectValidActorTask();
+        when(mActorTask.getState()).thenReturn(ActorTaskState.CREATED);
+
+        performActorControlClick();
+
+        verify(mActorTask, never()).pause();
+        verify(mActorTask, never()).resume();
+    }
+
+    @Test
+    public void testOnViewClick_opensBottomSheet() {
+        setUpProfileSupplierAndAttachPeekView();
+        expectValidActorTask();
+        when(mActorTask.getState()).thenReturn(ActorTaskState.WAITING_ON_USER);
+
+        performActorControlClick();
+
+        verify(mActorTask, never()).pause();
+        verify(mActorTask, never()).resume();
+        verify(mTabBottomSheetManager).hidePeekViewAndShowExpandedContent();
+    }
+
+    @Test
+    public void testOnCloseClick_sheetInitialized_closesBottomSheet() {
+        when(mTabBottomSheetManager.isSheetInitialized()).thenReturn(true);
+        mCoordinator.attachPeekView();
+
+        performCloseClick();
+
+        verify(mTabBottomSheetManager).tryToCloseBottomSheet();
     }
 }

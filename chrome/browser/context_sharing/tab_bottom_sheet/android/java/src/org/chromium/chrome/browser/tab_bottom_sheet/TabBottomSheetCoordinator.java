@@ -87,7 +87,9 @@ public class TabBottomSheetCoordinator {
                         MotionEvent e2,
                         float distanceX,
                         float distanceY) {
-                    if (e1 == null || e2 == null) return false;
+                    if (e1 == null || e2 == null) {
+                        return false;
+                    }
                     float totalDistanceY = e2.getRawY() - e1.getRawY();
                     if (Math.abs(totalDistanceY)
                             > ViewUtils.dpToPx(mContext, SCROLL_DISTANCE_THRESHOLD_DP)) {
@@ -209,7 +211,9 @@ public class TabBottomSheetCoordinator {
             // We set it here, and if it changes later, we will update it in the observer.
             mContentView.post(
                     () -> {
-                        if (mSheetEventsCallback == null) return;
+                        if (mSheetEventsCallback == null) {
+                            return;
+                        }
                         updateResizingStateWithFixedHeight();
 
                         boolean isSheetHeightSufficient =
@@ -261,6 +265,7 @@ public class TabBottomSheetCoordinator {
             return false;
         }
         mMediator.onSheetStateChanged(SheetState.PEEK, mCoBrowseViews.hasPeekView());
+        mBottomSheetController.collapseSheet(false);
         return true;
     }
 
@@ -274,6 +279,7 @@ public class TabBottomSheetCoordinator {
             return false;
         }
         mMediator.onSheetStateChanged(SheetState.FULL, mCoBrowseViews.hasPeekView());
+        mBottomSheetController.expandSheet();
         return true;
     }
 
@@ -345,7 +351,9 @@ public class TabBottomSheetCoordinator {
 
             @Override
             public void onContainerSizeChanged(int containerWidth, int containerHeight) {
-                if (mSheetContent == null || !mIsShowingTabBottomSheet) return;
+                if (mSheetContent == null || !mIsShowingTabBottomSheet) {
+                    return;
+                }
                 if (mExpectingLayoutChange) {
                     mBottomSheetController.collapseSheet(/* animate= */ true);
                     mExpectingLayoutChange = false;
@@ -369,7 +377,9 @@ public class TabBottomSheetCoordinator {
             // Called before onSheetStateChanged.
             @Override
             public void onSheetContentChanged(@Nullable BottomSheetContent newContent) {
-                if (mSheetEventsCallback == null) return;
+                if (mSheetEventsCallback == null) {
+                    return;
+                }
                 if (newContent == mSheetContent) {
                     mIsShowingTabBottomSheet = true;
                 } else {
@@ -402,7 +412,9 @@ public class TabBottomSheetCoordinator {
 
     private boolean isKeyboardShowing() {
         KeyboardVisibilityDelegate keyboardDelegate = mWindowAndroid.getKeyboardDelegate();
-        if (keyboardDelegate == null) return false;
+        if (keyboardDelegate == null) {
+            return false;
+        }
         return keyboardDelegate.isKeyboardShowing(mCoBrowseViews.getView());
     }
 

@@ -27,9 +27,10 @@ public class ActorControlViewBinder {
             view.configurePeekViewForState(state);
         } else if (ActorControlProperties.ON_ACTOR_CONTROL_CLICKED == propertyKey) {
             view.setActorControlClickListener(
-                    model.get(ActorControlProperties.ON_ACTOR_CONTROL_CLICKED));
+                    v -> model.get(ActorControlProperties.ON_ACTOR_CONTROL_CLICKED).run());
         } else if (ActorControlProperties.ON_CLOSE_CLICKED == propertyKey) {
-            view.setCloseClickListener(model.get(ActorControlProperties.ON_CLOSE_CLICKED));
+            view.setCloseClickListener(
+                    v -> model.get(ActorControlProperties.ON_CLOSE_CLICKED).run());
         }
     }
 }

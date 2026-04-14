@@ -1195,8 +1195,6 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
             mActorControlCoordinator =
                     new ActorControlCoordinator(
                             mActivity,
-                            (v) -> {},
-                            (v) -> {},
                             mActivityTabProvider.asObservable(),
                             mTabBottomSheetManager,
                             mProfileSupplier);

@@ -51,8 +51,6 @@ public class ActorControlCoordinator
      * Constructs a new {@link ActorControlCoordinator}.
      *
      * @param context The {@link Context} used to inflate the layout.
-     * @param actorControlListener The {@link View.OnClickListener} for the status button.
-     * @param closeListener The {@link View.OnClickListener} for the close button.
      * @param tabSupplier The {@link ObservableSupplier<Tab>} for the activity.
      * @param tabBottomSheetManager The {@link TabBottomSheetManager} for the tab bottom sheet.
      * @param profileSupplier The {@link ObservableSupplier<Profile>} for the profile.
@@ -60,20 +58,21 @@ public class ActorControlCoordinator
     // TODO(crbug.com/491895203): Add render test for peek view.
     public ActorControlCoordinator(
             Context context,
-            View.OnClickListener actorControlListener,
-            View.OnClickListener closeListener,
             NullableObservableSupplier<Tab> tabSupplier,
             TabBottomSheetManager tabBottomSheetManager,
             MonotonicObservableSupplier<Profile> profileSupplier) {
         mContext = context;
         mTabBottomSheetManager = tabBottomSheetManager;
         mProfileSupplier = profileSupplier;
+
         mModel =
                 new PropertyModel.Builder(ActorControlProperties.ALL_KEYS)
                         .with(ActorControlProperties.TASK_TITLE, "")
                         .with(ActorControlProperties.PEEK_VIEW_UI_STATE, PeekViewUiState.DEFAULT)
-                        .with(ActorControlProperties.ON_ACTOR_CONTROL_CLICKED, actorControlListener)
-                        .with(ActorControlProperties.ON_CLOSE_CLICKED, closeListener)
+                        .with(
+                                ActorControlProperties.ON_ACTOR_CONTROL_CLICKED,
+                                this::onActorControlClicked)
+                        .with(ActorControlProperties.ON_CLOSE_CLICKED, this::onCloseClicked)
                         .build();
 
         mMediator = new ActorControlMediator(mModel);
@@ -134,7 +133,9 @@ public class ActorControlCoordinator
      */
     @Override
     public void onTaskStateChanged(@ActorTaskId int taskId, @ActorTaskState int newState) {
-        if (mActorKeyedService == null) return;
+        if (mActorKeyedService == null) {
+            return;
+        }
 
         ActorTask activeTask = mActorKeyedService.getCurrentActiveTask();
         if (activeTask == null) {
@@ -187,18 +188,21 @@ public class ActorControlCoordinator
      */
     @Override
     public void onUiTabStateChanged(UiTabState state) {
-        if (!mTabBottomSheetManager.isSheetInitialized()) return;
+        if (!mTabBottomSheetManager.isSheetInitialized()) {
+            return;
+        }
         if (state.actorOverlay.isActive) {
             if (mView == null) {
                 attachPeekView();
             }
-            if (!mTabBottomSheetManager.showPeekView()) {
+            if (!mTabBottomSheetManager.showPeekViewAndHideExpandedContent()) {
                 Log.d(TAG, "onUiTabStateChanged: Failed to show peek view.");
             }
             return;
-        }
-        if (!mTabBottomSheetManager.hidePeekView()) {
-            Log.d(TAG, "onUiTabStateChanged: Failed to hide peek view.");
+        } else {
+            if (!mTabBottomSheetManager.hidePeekViewAndShowExpandedContent()) {
+                Log.d(TAG, "onUiTabStateChanged: Failed to hide peek view.");
+            }
         }
     }
 
@@ -207,7 +211,9 @@ public class ActorControlCoordinator
      */
     public void attachPeekView() {
         assert mView == null;
-        if (mTabBottomSheetManager == null || !mTabBottomSheetManager.isSheetInitialized()) return;
+        if (mTabBottomSheetManager == null || !mTabBottomSheetManager.isSheetInitialized()) {
+            return;
+        }
         mView =
                 (ActorControlView)
                         LayoutInflater.from(mContext)
@@ -232,6 +238,46 @@ public class ActorControlCoordinator
             mProfileSupplier.removeObserver(mProfileObserver);
         }
         mTabObserver.destroy();
+    }
+
+    /** Called when the actor control button is clicked. */
+    /* package */ void onActorControlClicked() {
+        assert mActorKeyedService != null;
+
+        ActorTask activeTask = mActorKeyedService.getCurrentActiveTask();
+        // If there is no active task, the task has just finished.
+        if (activeTask == null) {
+            return;
+        }
+
+        @ActorTaskState int currentState = activeTask.getState();
+        switch (currentState) {
+            case ActorTaskState.ACTING:
+            case ActorTaskState.REFLECTING:
+                activeTask.pause();
+                break;
+            case ActorTaskState.PAUSED_BY_USER:
+                activeTask.resume();
+                break;
+            case ActorTaskState.PAUSED_BY_ACTOR:
+            case ActorTaskState.WAITING_ON_USER:
+                mTabBottomSheetManager.hidePeekViewAndShowExpandedContent();
+                break;
+            default:
+                Log.w(
+                        TAG,
+                        "onActorControlClicked: Unhandled state "
+                                + currentState
+                                + " for task "
+                                + activeTask.getId());
+                break;
+        }
+    }
+
+    /** Called when the close button is clicked. */
+    /* package */ void onCloseClicked() {
+        assert mTabBottomSheetManager.isSheetInitialized();
+        mTabBottomSheetManager.tryToCloseBottomSheet();
     }
 
     /**
