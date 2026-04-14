@@ -796,6 +796,37 @@ TEST_F(AndroidAutofillProviderTest, CancelSessionOnNavigation) {
   Reset(autofill_driver());
 }
 
+// Tests that OnSelectControlSelectionChanged updates the current field's origin
+// when the feature flag is enabled.
+TEST_F(AndroidAutofillProviderTest,
+       OnSelectControlSelectionChangedUpdatesOrigin) {
+  base::test::ScopedFeatureList scoped_feature_list{
+      features::kAndroidAutofillFieldsUpdatedOnSelect};
+
+  FormData form = CreateFormDataForFrame(
+      CreateTestPersonalInformationFormData(), main_frame_token());
+  android_autofill_manager().OnFormsSeen({form}, /*removed_forms=*/{});
+
+  // Start an Autofill session.
+  android_autofill_manager().SimulateOnAskForValuesToFill(form,
+                                                          form.fields()[0]);
+
+  EXPECT_EQ(test_api(autofill_provider()).last_focused_field_origin(),
+            form.fields()[0].origin());
+
+  // Create a new field with a different origin.
+  FormFieldData field = form.fields()[1];
+  url::Origin new_origin = url::Origin::Create(GURL("https://bar.com"));
+  field.set_origin(new_origin);
+
+  // Simulate OnSelectControlSelectionChanged.
+  autofill_provider().OnSelectControlSelectionChanged(
+      &android_autofill_manager(), form, field);
+
+  EXPECT_EQ(test_api(autofill_provider()).last_focused_field_origin(),
+            new_origin);
+}
+
 class AndroidAutofillProviderWithCredManTest
     : public AndroidAutofillProviderTestBase {
  public:

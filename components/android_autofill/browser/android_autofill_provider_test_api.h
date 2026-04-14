@@ -23,6 +23,11 @@ class AndroidAutofillProviderTestApi {
                ? provider_->session_state_->current_field.id
                : FieldGlobalId{};
   }
+  const url::Origin last_focused_field_origin() && {
+    return provider_->session_state_
+               ? provider_->session_state_->current_field.origin
+               : url::Origin{};
+  }
 
   TouchToFillKeyboardSuppressor& keyboard_suppressor() {
     return *provider_->keyboard_suppressor_;

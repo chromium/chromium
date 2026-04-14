@@ -183,6 +183,10 @@ class AndroidAutofillProvider : public AutofillProvider,
                        const FormData& form,
                        const FormFieldData& field);
 
+  void UpdateCurrentField(AndroidAutofillManager* manager,
+                          const FormData& form,
+                          const FormFieldData& field);
+
   void Reset();
 
   // Cancels the current Autofill session, resetting cached session data.

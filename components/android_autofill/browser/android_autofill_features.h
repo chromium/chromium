@@ -21,6 +21,8 @@ BASE_DECLARE_FEATURE(kAndroidAutofillUpdateContextForWebContents);
 
 BASE_DECLARE_FEATURE(kAndroidAutofillSupportForHttpAuth);
 
+BASE_DECLARE_FEATURE(kAndroidAutofillFieldsUpdatedOnSelect);
+
 }  // namespace autofill::features
 
 #endif  // COMPONENTS_ANDROID_AUTOFILL_BROWSER_ANDROID_AUTOFILL_FEATURES_H_
