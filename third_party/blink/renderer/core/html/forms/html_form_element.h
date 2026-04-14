@@ -298,10 +298,17 @@ class CORE_EXPORT HTMLFormElement final : public HTMLElement {
       return active_submit_button_;
     }
     void CallDoneCallback(McpToolCallbackResult result);
+    bool IsHandlingSubmit() const { return is_handling_submit_; }
+    void SetIsHandlingSubmit(bool is_handling_submit) {
+      is_handling_submit_ = is_handling_submit;
+    }
     void Trace(Visitor* visitor) const override;
 
    private:
+    friend class HTMLFormElement;
+
     bool is_currently_running_ = false;
+    bool is_handling_submit_ = false;
     String tool_name_;
     String tool_description_;
     Member<HTMLFormElement> form_;

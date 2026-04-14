@@ -1715,4 +1715,59 @@ TEST_F(ModelContextTest, ExecuteTool_RespondWith_And_Navigate) {
   EXPECT_TRUE(got_result);
 }
 
+TEST_F(ModelContextTest, ExecuteDeclarativeFormTool_UnrelatedSubmitAndRemove) {
+  SimRequest main_resource("https://example.com/", "text/html");
+  SimRequest search_resource("https://example.com/search", "text/html");
+  LoadURL("https://example.com/");
+  v8::HandleScope handle_scope(Window().GetIsolate());
+  ScriptState::Scope script_scope(
+      ToScriptStateForMainWorld(Window().GetFrame()));
+  main_resource.Complete(R"HTML(
+    <form toolname="search_tool" tooldescription="Search the web" action="/search">
+      <input type=text name=query>
+      <button type=submit>Submit</button>
+    </form>
+    <script>
+      function doUnrelatedSubmit() {
+        const form = document.querySelector('form');
+        form.addEventListener('submit', e => {
+          e.preventDefault();
+          e.respondWith(Promise.resolve("dummy"));
+        });
+        form.requestSubmit();
+        form.remove();
+      }
+    </script>
+  )HTML");
+  auto* model_context =
+      ModelContextSupplement::modelContext(*Window().navigator());
+  ASSERT_TRUE(model_context);
+  base::RunLoop run_loop;
+  bool got_callback = false;
+  model_context->ExecuteTool(
+      base::UnguessableToken::Create(), "search_tool",
+      "{\"query\": \"testing\"}",
+      /* signal= */ nullptr,
+      base::BindLambdaForTesting(
+          [&](base::expected<String, ScriptToolError> res) {
+            got_callback = true;
+            EXPECT_FALSE(res.has_value());
+            EXPECT_EQ(res.error(), ScriptToolErrorCode::kToolCancelled);
+            run_loop.Quit();
+          }));
+
+  // Run until the tool populates the form and is waiting for the user.
+  EXPECT_TRUE(base::test::RunUntil([&]() {
+    return EvalJsBoolean(
+        "document.querySelector('form').matches(':tool-form-active')");
+  }));
+
+  // Trigger the unrelated submit and remove.
+  MainFrame().ExecuteScript(
+      WebScriptSource(WebString::FromUTF8("doUnrelatedSubmit()")));
+
+  run_loop.Run();
+  EXPECT_TRUE(got_callback);
+}
+
 }  // namespace blink

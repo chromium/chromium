@@ -354,7 +354,7 @@ void HTMLFormElement::UpdateMcpDefinitionsIfNeeded() {
   if (IsValidWebMCPForm()) {
     CHECK(!is_valid_mcp_form || name_or_description_changed);
     // Unregister the tool to ensure any in-flight tool executions are aborted.
-    if (!in_user_js_submit_event_) {
+    if (!active_webmcp_tool_->IsHandlingSubmit()) {
       active_webmcp_tool_->CallDoneCallback(base::unexpected(ScriptToolError(
           ScriptToolErrorCode::kToolCancelled,
           "Tool execution cancelled, since tool definition was updated")));
@@ -616,6 +616,12 @@ void HTMLFormElement::PrepareForSubmission(const Event* event,
     executing_tool = active_webmcp_tool_;
     declarative_webmcp_call =
         IsValidWebMCPForm() && active_webmcp_tool_->CurrentlyRunning();
+    std::optional<base::AutoReset<bool>> mcp_tool_submit_scope;
+    if (declarative_webmcp_call) {
+      mcp_tool_submit_scope.emplace(&active_webmcp_tool_->is_handling_submit_,
+                                    true);
+    }
+
     if (!skip_validation && !ValidateInteractively()) {
       should_submit = false;
       if (declarative_webmcp_call) {
