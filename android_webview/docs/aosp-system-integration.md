@@ -73,12 +73,18 @@ Most AOSP devices will use this variant. The standalone WebView is a single APK
 which contains the entire WebView implementation. The prebuilt APK provided in
 AOSP is a standalone WebView APK.
 
+**Note:** We focus on `system_webview_apk` (Standalone WebView) rather than
+Trichrome because shipping WebView separately from Chrome reduces start-up
+time, and reduces ANRs.
+
 The build target is called `system_webview_apk` and the resulting output file is
 called `SystemWebView.apk`. The prebuilt APK provided in AOSP has been renamed
 to `AndroidWebview.apk` for historical reasons, and the filename used in AOSP is
 not significant; only the package name matters.
 
 #### Trichrome
+
+**Note:** This variant is no longer recommended. You should use `system_webview_apk` instead.
 
 Trichrome is only compatible with Android Q and later.
 

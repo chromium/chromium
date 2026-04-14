@@ -80,7 +80,7 @@ The bitness of the renderer process is always the "primary" bitness of the
 WebView provider package. Normally, this is selected automatically.
 To control this manually, use the GN arg `enable_android_secondary_abi = true`
 and build and install one of the targets that has an bitness in the name
-(e.g. `trichrome_webview_{32,64,32_64,64_32}_bundle`).
+(e.g. `system_webview_{32,64,32_64,64_32}_bundle`).
 The first number indicates the primary (renderer) bitness. The second number, if
 present, indicates that package _also_ supports hosts of a "secondary" bitness,
 and thus can run in mixed-bitness configurations. (A host app can't load WebView
@@ -88,9 +88,8 @@ at all if the current provider doesn't support the host's bitness.)
 
 ## Packaging variants
 
-Since Android Lollipop, WebView has been implemented by an updatable package. We
-ship WebView to users as either standalone WebView or Trichrome. See [Packaging
-Variants](webview-packaging-variants.md) for details.
+Since Android Lollipop, WebView has been implemented by an updatable package.
+See [Packaging Variants](webview-packaging-variants.md) for details.
 
 ## See also
 

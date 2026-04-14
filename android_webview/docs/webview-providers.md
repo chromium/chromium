@@ -17,7 +17,7 @@ configurations:
 | API level            | Has GMS vs. AOSP? | Allowed apps |
 | -------------------- | ----------------- | ------------ |
 | >= Q                 | AOSP    | Standalone AOSP WebView **(default, preinstalled)** |
-| >= Q                 | Has GMS | Trichrome WebView Google Stable **(default, preinstalled)**<br>Trichrome WebView Google Beta<br>Trichrome WebView Google Dev<br>Trichrome WebView Google Canary<br>Trichrome WebView Google (no channel) **(only userdebug/eng)**<br>Standalone AOSP WebView or Trichrome WebView AOSP **(only userdebug/eng)** |
+| >= Q                 | Has GMS | Standalone WebView Google Stable **(default, preinstalled)**<br>Standalone WebView Google Beta<br>Standalone WebView Google Dev<br>Standalone WebView Google Canary<br>Standalone WebView Google (no channel) **(only userdebug/eng)**<br>Standalone AOSP WebView **(only userdebug/eng)** |
 
 *** aside
 [Vendors modifying AOSP][aosp] can configure which providers are compatible with

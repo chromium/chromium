@@ -16,7 +16,7 @@ instructions][1] to get a checkout including closed-source code, which is
 necessary if:
 
 * You work on features depending on this closed-source code
-* You want to use the "downstream" targets (ex. `trichrome_webview_google_apk`),
+* You want to use the "downstream" targets (ex. `system_webview_google_apk`),
   **or**
 * You need to install on a preview Android release
 
@@ -87,16 +87,14 @@ This developer guide uses API integers and release letters interchangeably.
 Then you can build one of the following targets:
 
 ```shell
-autoninja -C out/Default trichrome_webview_apk
+autoninja -C out/Default system_webview_apk
 ```
 
-<!--
-  TODO(crbug.com/41454956): merge this and the other "Tip" when we
-  document the Trichrome target in detail.
--->
 *** promo
-**Tip:** building `trichrome_webview_apk` will automatically build its
-dependencies (i.e., `trichrome_library_apk`).
+**Note:** We focus on `system_webview_apk` rather than Trichrome because we
+ship WebView separately from Chrome for stability reasons. This reduces start
+up time and reduces ANRs. You may see references to Trichrome but this should
+be considered a historical artefact.
 ***
 
 ### Changing package name
@@ -113,14 +111,14 @@ target, you may need to change the package name to match one of the following:
 | >= Q                 | AOSP    | `com.android.webview` **(default, preinstalled)** |
 | >= Q                 | Has GMS | `com.google.android.webview` **(default, preinstalled)**<br>`com.google.android.webview.beta`<br>`com.google.android.webview.dev`<br>`com.google.android.webview.canary`<br>`com.google.android.webview.debug` **(only userdebug/eng)**<br>`com.android.webview` **(only userdebug/eng)** |
 
-`trichrome_webview_apk` uses `com.android.webview` as the package name by
+`system_webview_apk` uses `com.android.webview` as the package name by
 default. If your device allows this package name, continue to the [next
 section](#removing-preinstalled-webview). Otherwise, you can change the package
-name for either target by setting the `system_webview_package_name` GN arg (ex.
+name by setting the `system_webview_package_name` GN arg (ex.
 `system_webview_package_name = "com.google.android.webview"`).
 
 See [internal instructions][1] for the Google-internal build targets
-(`trichrome_webview_google_apk`).
+(`system_webview_google_apk`).
 
 *** note
 **Note:** TV/car devices have a bug where the release key signed WebView is
@@ -161,21 +159,11 @@ You can install a locally compiled APK like so:
 
 ```shell
 # Install the APK
-out/Default/bin/trichrome_webview_apk install
+out/Default/bin/system_webview_apk install
 
 # Tell Android platform to load a WebView implementation from this APK
-out/Default/bin/trichrome_webview_apk set-webview-provider
+out/Default/bin/system_webview_apk set-webview-provider
 ```
-
-<!--
-  TODO(crbug.com/41454956): merge this and the other "Tip" when we
-  document the Trichrome target in detail.
--->
-*** promo
-**Tip:** `out/Default/bin/trichrome_webview_apk install` will handle installing
-all its dependencies (i.e., `trichrome_library_apk`), so you can interact with
-this target the same as you would interact with any other WebView build target.
-***
 
 ## Start running an app
 

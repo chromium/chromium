@@ -19,7 +19,7 @@ autoninja -C out/Default system_webview_apk
 autoninja -C out/Default monochrome_public_apk
 
 # For Q+ (29+) devices
-autoninja -C out/Default trichrome_webview_apk
+autoninja -C out/Default system_webview_apk
 ```
 
 ## WebView package names
@@ -111,12 +111,11 @@ value) even if a stable APK from the same build is available (such as when we
 promote a beta build to stable), so that the user can receive beta-targeted
 experiments.
 
-To avoid conflicting with [Trichrome WebView's pre-release channel
-strategy](channels.md#trichrome-android-q), Standalone WebView APKs are given a
-`maxSdkVersion` value of 28, so that users who have opted into the beta program
-described above do not experience the Play Store updating their Trichrome
-WebView stable APK to Standalone WebView beta (since they share the same package
-name).
+To avoid conflicting with pre-release channel strategies on newer OS versions,
+Standalone WebView APKs for legacy OS versions are given a `maxSdkVersion` value
+of 28. This ensures users who have opted into the beta program described above do
+not experience the Play Store incorrectly updating their WebView stable APK on
+newer devices.
 
 ### Monochrome (Android N - P)
 
@@ -133,8 +132,7 @@ See [how does loading work](how-does-loading-work.md) for an full explanation.
 ## AOSP integration
 
 See [AOSP system integration](aosp-system-integration.md) for full instructions.
-Monochrome is **no longer recommended** and you should use standalone WebView or
-Trichrome instead.
+Monochrome and Trichrome are **no longer recommended** and you should use standalone WebView instead.
 
 ### Monochrome build variant
 
