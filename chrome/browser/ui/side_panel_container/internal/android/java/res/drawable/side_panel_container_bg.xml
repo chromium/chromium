@@ -5,8 +5,8 @@ Use of this source code is governed by a BSD-style license that can be
 found in the LICENSE file.
 -->
 
-<FrameLayout
+<shape
     xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_height="match_parent"
-    android:layout_width="wrap_content"
-    android:visibility="gone" />
+    android:shape="rectangle">
+  <solid android:color="@macro/default_bg_color" />
+</shape>

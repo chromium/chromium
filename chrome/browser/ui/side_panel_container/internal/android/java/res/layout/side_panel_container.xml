@@ -17,4 +17,5 @@
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/side_panel_container"
     android:layout_width="0dp"
-    android:layout_height="match_parent" />
+    android:layout_height="match_parent"
+    android:background="@drawable/side_panel_container_bg" />

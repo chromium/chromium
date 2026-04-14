@@ -161,11 +161,9 @@ final class SideUiCoordinatorImpl implements SideUiCoordinator {
      */
     private void attachSideUiContainerView(View sideUiContainerView, @AnchorSide int anchorSide) {
         if (anchorSide == AnchorSide.START) {
-            attachSideUiContainerView(
-                    sideUiContainerView, mStartAnchorContainer, mEndAnchorContainer);
+            attachSideUiContainerView(sideUiContainerView, mStartAnchorContainer);
         } else if (anchorSide == AnchorSide.END) {
-            attachSideUiContainerView(
-                    sideUiContainerView, mEndAnchorContainer, mStartAnchorContainer);
+            attachSideUiContainerView(sideUiContainerView, mEndAnchorContainer);
         } else {
             assert false : "SideUiContainer requested an unknown AnchorSide.";
         }
@@ -173,37 +171,34 @@ final class SideUiCoordinatorImpl implements SideUiCoordinator {
 
     /**
      * Attach the provided {@link SideUiContainer}'s {@link View} to the target parent {@link
-     * ViewGroup}. Detaches from the other parent {@link ViewGroup} if needed. No-op if the View was
-     * already attached. Asserts that the View was not attached to an unexpected ViewGroup.
+     * ViewGroup}. Detaches from the other parent {@link ViewGroup} if needed. Ensures the anchor
+     * container's visibility is VISIBLE.
+     *
+     * <p>No-op if the View was already attached.
      *
      * @param sideUiContainerView The {@link SideUiContainer}'s {@link View} to attach.
      * @param targetParent The target {@link ViewGroup} to attach to.
-     * @param otherParent The other {@link ViewGroup} that the View may need to be detached from.
      */
-    private void attachSideUiContainerView(
-            View sideUiContainerView, ViewGroup targetParent, ViewGroup otherParent) {
+    private void attachSideUiContainerView(View sideUiContainerView, ViewGroup targetParent) {
         ViewParent currentParent = sideUiContainerView.getParent();
 
         // No-op if already attached.
         if (currentParent == targetParent) return;
 
-        // Attempt to remove from the other parent if switching anchor sides.
-        if (currentParent == otherParent) {
-            otherParent.removeView(sideUiContainerView);
-        }
-
-        // Re-grab the parent as it may have changed. Assert that we successfully detached.
-        assert sideUiContainerView.getParent() == null
-                : "SideUiContainer was attached to an unknown group.";
+        // Detach from the current parent, if any.
+        detachSideUiContainerView(sideUiContainerView);
 
         // Attach to the target parent.
         targetParent.addView(sideUiContainerView);
+        targetParent.setVisibility(View.VISIBLE);
     }
 
     /**
      * Detaches the provided {@link SideUiContainer}'s {@link View} from its parent {@link
-     * ViewGroup}. No-op if it's already detached. Asserts that the View was not attached to an
-     * unexpected ViewGroup.
+     * ViewGroup}. Sets the anchor container's visibility to GONE if it no longer has any child
+     * Views attached. Asserts that the View was not attached to an unexpected ViewGroup.
+     *
+     * <p>No-op if the View was already detached.
      *
      * @param sideUiContainerView The {@link SideUiContainer}'s {@link View} to detach.
      */
@@ -215,8 +210,12 @@ final class SideUiCoordinatorImpl implements SideUiCoordinator {
 
         if (currentParent == mStartAnchorContainer) {
             mStartAnchorContainer.removeView(sideUiContainerView);
+            assert mStartAnchorContainer.getChildCount() == 0;
+            mStartAnchorContainer.setVisibility(View.GONE);
         } else if (currentParent == mEndAnchorContainer) {
             mEndAnchorContainer.removeView(sideUiContainerView);
+            assert mEndAnchorContainer.getChildCount() == 0;
+            mEndAnchorContainer.setVisibility(View.GONE);
         } else {
             assert false : "SideUiContainer was attached to an unknown group.";
         }

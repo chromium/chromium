@@ -28,6 +28,7 @@ android_library("java") {
 
 robolectric_library("junit") {
   testonly = true
+  resources_package = "org.chromium.chrome.browser.ui.side_ui"
   sources = [ "android/java/src/org/chromium/chrome/browser/ui/side_ui/SideUiCoordinatorImplTest.java" ]
   deps = [
     ":java",
@@ -35,6 +36,7 @@ robolectric_library("junit") {
     "//base:base_java_test_support",
     "//base:base_junit_test_support",
     "//chrome/browser/ui/side_ui/public:java",
+    "//chrome/browser/ui/side_ui/public:java_resources",
     "//chrome/browser/ui/side_ui/test/android:test_support_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
     "//third_party/junit",

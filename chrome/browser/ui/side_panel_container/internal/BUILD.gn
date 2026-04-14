@@ -44,7 +44,10 @@ android_library("java") {
 }
 
 android_resources("java_resources") {
-  sources = [ "android/java/res/layout/side_panel_container.xml" ]
+  sources = [
+    "android/java/res/drawable/side_panel_container_bg.xml",
+    "android/java/res/layout/side_panel_container.xml",
+  ]
 }
 
 android_library("javatests") {

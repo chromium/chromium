@@ -13,11 +13,11 @@ import static org.mockito.Mockito.verify;
 
 import android.app.Activity;
 import android.content.Context;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewGroup.MarginLayoutParams;
 import android.view.ViewStub;
-import android.widget.FrameLayout;
 
 import androidx.annotation.Px;
 
@@ -63,8 +63,14 @@ public class SideUiCoordinatorImplTest {
     public void setUp() {
         Context context = Robolectric.buildActivity(Activity.class).setup().get();
 
-        mStartAnchorContainer = new FrameLayout(context);
-        mEndAnchorContainer = new FrameLayout(context);
+        mStartAnchorContainer =
+                (ViewGroup)
+                        LayoutInflater.from(context)
+                                .inflate(R.layout.side_ui_anchor_container, /* root= */ null);
+        mEndAnchorContainer =
+                (ViewGroup)
+                        LayoutInflater.from(context)
+                                .inflate(R.layout.side_ui_anchor_container, /* root= */ null);
         mSideUiContainerView = new View(context);
         mSideUiContainer = new TestSideUiContainer(mSideUiContainerView);
 
@@ -180,6 +186,35 @@ public class SideUiCoordinatorImplTest {
         mCoordinator.requestUpdateContainer(
                 new SideUiContainerProperties(AnchorSide.END, /* width= */ 200));
         assertEquals(mEndAnchorContainer, mSideUiContainerView.getParent());
+    }
+
+    @Test
+    public void testAnchorContainerVisibility() {
+        String unexpectedStart = "Unexpected start container visibility.";
+        String unexpectedEnd = "Unexpected end container visibility.";
+        mCoordinator.registerSideUiContainer(mSideUiContainer);
+
+        // Verify starting visibility.
+        assertEquals(unexpectedStart, View.GONE, mStartAnchorContainer.getVisibility());
+        assertEquals(unexpectedEnd, View.GONE, mEndAnchorContainer.getVisibility());
+
+        // Start at START.
+        mCoordinator.requestUpdateContainer(
+                new SideUiContainerProperties(AnchorSide.START, /* width= */ 10));
+        assertEquals(unexpectedStart, View.VISIBLE, mStartAnchorContainer.getVisibility());
+        assertEquals(unexpectedEnd, View.GONE, mEndAnchorContainer.getVisibility());
+
+        // Switch to END.
+        mCoordinator.requestUpdateContainer(
+                new SideUiContainerProperties(AnchorSide.END, /* width= */ 90));
+        assertEquals(unexpectedStart, View.GONE, mStartAnchorContainer.getVisibility());
+        assertEquals(unexpectedEnd, View.VISIBLE, mEndAnchorContainer.getVisibility());
+
+        // Detach.
+        mCoordinator.requestUpdateContainer(
+                new SideUiContainerProperties(AnchorSide.END, /* width= */ 0));
+        assertEquals(unexpectedStart, View.GONE, mStartAnchorContainer.getVisibility());
+        assertEquals(unexpectedEnd, View.GONE, mEndAnchorContainer.getVisibility());
     }
 
     @Test
