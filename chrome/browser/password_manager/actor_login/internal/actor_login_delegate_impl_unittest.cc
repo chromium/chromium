@@ -1625,7 +1625,8 @@ TEST_F(ActorLoginDelegateImplTest,
       /*enabled_features=*/
       {password_manager::features::kActorLogin,
        password_manager::features::kActorLoginConflictingPermissionCleanup},
-      /*disabled_features=*/{});
+      /*disabled_features=*/{
+          password_manager::features::kActorLoginFederatedClickFromActor});
 
   // Setup mock cleaning service
   auto* mock_cleaning_service =
