@@ -599,10 +599,6 @@ void LayoutBox::StyleWillChange(StyleDifference diff,
     if (diff.NeedsFullLayout() && Parent()) {
       if (old_style->GetPosition() != new_style.GetPosition()) {
         MarkContainerChainForLayout();
-
-        if (old_style->GetPosition() == EPosition::kStatic) {
-          SetShouldDoFullPaintInvalidation();
-        }
       }
     }
     style_change_context.did_prevent_spanner_descendants =
