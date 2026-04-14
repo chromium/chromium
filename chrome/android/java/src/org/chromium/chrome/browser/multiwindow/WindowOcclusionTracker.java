@@ -18,8 +18,8 @@ import org.chromium.base.Log;
 import org.chromium.base.ThreadUtils;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.ui.base.ActivityWindowAndroid;
+import org.chromium.ui.base.UiAndroidFeatureList;
 import org.chromium.ui.display.DisplayAndroid;
 
 import java.util.HashMap;
@@ -40,7 +40,7 @@ public class WindowOcclusionTracker implements ViewTreeObserver.OnGlobalLayoutLi
     @VisibleForTesting
     WindowOcclusionTracker(@Nullable WindowZOrderTracker windowZOrderTracker) {
         mMinimumVisibilitySizeThreshold =
-                ChromeFeatureList.sAndroidSelfOcclusionTrackingMinimumVisibilitySizeThreshold
+                UiAndroidFeatureList.sAndroidWindowOcclusionMinimumVisibilitySizeThreshold
                         .getValue();
 
         if (windowZOrderTracker == null) {
@@ -126,10 +126,8 @@ public class WindowOcclusionTracker implements ViewTreeObserver.OnGlobalLayoutLi
             }
         }
 
-        if (ChromeFeatureList.sAndroidSelfOcclusionTrackingForwarding.getValue()) {
-            for (Map.Entry<ActivityWindowAndroid, Boolean> entry : occlusionState.entrySet()) {
-                entry.getKey().setOccluded(entry.getValue());
-            }
+        for (Map.Entry<ActivityWindowAndroid, Boolean> entry : occlusionState.entrySet()) {
+            entry.getKey().setOccluded(entry.getValue());
         }
     }
 

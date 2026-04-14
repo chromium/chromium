@@ -50,7 +50,6 @@ BASE_DECLARE_FEATURE(kAndroidPageInfoAsAppMenuItem);
 BASE_DECLARE_FEATURE(kAndroidProgressBarVisualUpdate);
 BASE_DECLARE_FEATURE(kAndroidSaveCardNonBlockingDialog);
 BASE_DECLARE_FEATURE(kAndroidSearchInSettings);
-BASE_DECLARE_FEATURE(kAndroidSelfOcclusionTracking);
 BASE_DECLARE_FEATURE(kAndroidSettingsContainment);
 BASE_DECLARE_FEATURE(kAndroidSettingsUrl);
 BASE_DECLARE_FEATURE(kAndroidSetupList);

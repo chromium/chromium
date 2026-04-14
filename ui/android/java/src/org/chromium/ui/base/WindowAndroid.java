@@ -222,6 +222,7 @@ public class WindowAndroid
     private final SettableNonNullObservableSupplier<Boolean> mOcclusionSupplier =
             ObservableSuppliers.createNonNull(false);
 
+    private boolean mIsOccluded;
     private long mOcclusionStartTimeMs;
 
     private boolean mIsTopResumedActivity;
@@ -330,7 +331,11 @@ public class WindowAndroid
         // details.
         return mOcclusionTrackingAllowed
                 && Build.VERSION.SDK_INT >= Build.VERSION_CODES.VANILLA_ICE_CREAM
-                && UiAndroidFeatureList.sAndroidWindowOcclusion.isEnabled();
+                && UiAndroidFeatureList.sAndroidWindowOcclusion.isEnabled()
+                && "trusted_presentation"
+                        .equals(
+                                UiAndroidFeatureList.sAndroidWindowOcclusionTrackingMode
+                                        .getValue());
     }
 
     private void maybeTrackOcclusionWithTrustedPresentationApi() {
@@ -391,6 +396,11 @@ public class WindowAndroid
         return mOcclusionSupplier;
     }
 
+    /** Returns whether occlusion tracking is allowed for this window. */
+    public boolean isOcclusionTrackingAllowed() {
+        return mOcclusionTrackingAllowed;
+    }
+
     /**
      * Sets whether the window is occluded.
      *
@@ -416,9 +426,14 @@ public class WindowAndroid
     }
 
     private void updateOcclusionState(boolean isOccluded) {
-        if (mOcclusionSupplier.get() == isOccluded) return;
+        if (mIsOccluded == isOccluded) return;
+        mIsOccluded = isOccluded;
 
-        mOcclusionSupplier.set(isOccluded);
+        // This feature param allows for collecting occlusion metrics without applying any
+        // optimizations to the window. Only set the supplier if the optimizations are enabled.
+        if (UiAndroidFeatureList.sAndroidWindowOcclusionOptimizations.getValue()) {
+            mOcclusionSupplier.set(isOccluded);
+        }
 
         if (isOccluded) {
             mOcclusionStartTimeMs = SystemClock.uptimeMillis();

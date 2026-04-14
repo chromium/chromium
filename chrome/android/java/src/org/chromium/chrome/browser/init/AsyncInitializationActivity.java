@@ -27,6 +27,7 @@ import org.chromium.base.library_loader.LoaderErrors;
 import org.chromium.base.library_loader.ProcessInitException;
 import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.build.BuildConfig;
+import org.chromium.build.annotations.EnsuresNonNullIf;
 import org.chromium.build.annotations.Initializer;
 import org.chromium.build.annotations.MonotonicNonNull;
 import org.chromium.build.annotations.NullMarked;
@@ -652,9 +653,20 @@ public abstract class AsyncInitializationActivity extends ChromeBaseAppCompatAct
                             + " is trying to start.");
         }
 
-        if (ChromeFeatureList.sAndroidSelfOcclusionTracking.isEnabled() && mWindowAndroid != null) {
+        if (isSelfOcclusionTrackingEnabled()) {
             WindowOcclusionTracker.getInstance().track(mWindowAndroid);
         }
+    }
+
+    @EnsuresNonNullIf("mWindowAndroid")
+    private boolean isSelfOcclusionTrackingEnabled() {
+        return mWindowAndroid != null
+                && mWindowAndroid.isOcclusionTrackingAllowed()
+                && UiAndroidFeatureList.sAndroidWindowOcclusion.isEnabled()
+                && "self_occlusion"
+                        .equals(
+                                UiAndroidFeatureList.sAndroidWindowOcclusionTrackingMode
+                                        .getValue());
     }
 
     @CallSuper
@@ -689,7 +701,7 @@ public abstract class AsyncInitializationActivity extends ChromeBaseAppCompatAct
         super.onStop();
         mNativeInitializationController.onStop();
 
-        if (ChromeFeatureList.sAndroidSelfOcclusionTracking.isEnabled() && mWindowAndroid != null) {
+        if (isSelfOcclusionTrackingEnabled()) {
             WindowOcclusionTracker.getInstance().untrack(mWindowAndroid);
         }
     }

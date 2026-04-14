@@ -5,7 +5,9 @@
 package org.chromium.ui.base;
 
 import static org.junit.Assert.assertArrayEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.anyLong;
 import static org.mockito.Mockito.doAnswer;
@@ -193,5 +195,27 @@ public class WindowAndroidTest {
         mWindowAndroid.destroy();
 
         histogramWatcher.assertExpected();
+    }
+
+    @Test
+    public void testOcclusionOptimizationsEnabled() {
+        UiAndroidFeatureList.sAndroidWindowOcclusionOptimizations.setForTesting(true);
+
+        mWindowAndroid.setOccluded(true);
+        assertTrue(mWindowAndroid.getOcclusionSupplier().get());
+
+        mWindowAndroid.setOccluded(false);
+        assertFalse(mWindowAndroid.getOcclusionSupplier().get());
+    }
+
+    @Test
+    public void testOcclusionOptimizationsDisabled() {
+        UiAndroidFeatureList.sAndroidWindowOcclusionOptimizations.setForTesting(false);
+
+        mWindowAndroid.setOccluded(true);
+        assertFalse(mWindowAndroid.getOcclusionSupplier().get());
+
+        mWindowAndroid.setOccluded(false);
+        assertFalse(mWindowAndroid.getOcclusionSupplier().get());
     }
 }

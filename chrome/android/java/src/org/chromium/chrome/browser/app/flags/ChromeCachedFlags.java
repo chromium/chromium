@@ -63,7 +63,8 @@ public class ChromeCachedFlags {
                     ChromeFeatureList.sParamsCached,
                     JavalessRenderersFeatureList.sParamsCached,
                     OmniboxFeatures.getFeatureParamsToCache(),
-                    PermissionsAndroidFeatureList.getFeatureParamsToCache());
+                    PermissionsAndroidFeatureList.getFeatureParamsToCache(),
+                    UiAndroidFeatureList.sParamsCached);
 
     /**
      * A list of feature parameters that will be cached when starting minimal browser mode. See
@@ -77,7 +78,8 @@ public class ChromeCachedFlags {
                     ChromeFeatureList.sParamsCached,
                     JavalessRenderersFeatureList.sParamsCached,
                     OmniboxFeatures.getFeatureParamsToCache(),
-                    PermissionsAndroidFeatureList.getFeatureParamsToCache());
+                    PermissionsAndroidFeatureList.getFeatureParamsToCache(),
+                    UiAndroidFeatureList.sParamsCached);
 
     private boolean mIsFinishedCachingNativeFlags;
 

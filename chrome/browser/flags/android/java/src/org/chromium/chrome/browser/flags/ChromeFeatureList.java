@@ -203,7 +203,6 @@ public abstract class ChromeFeatureList {
             "AndroidProgressBarVisualUpdate";
     public static final String ANDROID_SAVE_CARD_NON_BLOCKING_DIALOG =
             "AndroidSaveCardNonBlockingDialog";
-    public static final String ANDROID_SELF_OCCLUSION_TRACKING = "AndroidSelfOcclusionTracking";
     public static final String ANDROID_SETTINGS_CONTAINMENT = "AndroidSettingsContainment";
     public static final String ANDROID_SETTINGS_URL = "AndroidSettingsUrl";
     public static final String ANDROID_SETUP_LIST = "AndroidSetupList";
@@ -788,8 +787,6 @@ public abstract class ChromeFeatureList {
                     ANDROID_PROGRESS_BAR_VISUAL_UPDATE,
                     /* defaultValue= */ false,
                     /* defaultValueInTests= */ false);
-    public static final CachedFlag sAndroidSelfOcclusionTracking =
-            newCachedFlag(ANDROID_SELF_OCCLUSION_TRACKING, false);
     public static final CachedFlag sAndroidSettingsContainment =
             newCachedFlag(
                     ANDROID_SETTINGS_CONTAINMENT,
@@ -1242,7 +1239,6 @@ public abstract class ChromeFeatureList {
                     sAndroidOpenIncognitoAsWindow,
                     sAndroidPageInfoAsAppMenuItem,
                     sAndroidProgressBarVisualUpdate,
-                    sAndroidSelfOcclusionTracking,
                     sAndroidSettingsContainment,
                     sAndroidSetupList,
                     sAndroidSurfaceColorUpdate,
@@ -1558,17 +1554,6 @@ public abstract class ChromeFeatureList {
                     newBooleanCachedFeatureParam(
                             ANDROID_BOTTOM_TOOLBAR_V2, "reverse_order_suggestions_list", false);
 
-    public static final BooleanCachedFeatureParam sAndroidSelfOcclusionTrackingForwarding =
-            newBooleanCachedFeatureParam(
-                    ANDROID_SELF_OCCLUSION_TRACKING, "occlusion_state_forwarding", false);
-
-    public static final IntCachedFeatureParam
-            sAndroidSelfOcclusionTrackingMinimumVisibilitySizeThreshold =
-                    newIntCachedFeatureParam(
-                            ANDROID_SELF_OCCLUSION_TRACKING,
-                            "minimum_visibility_size_threshold",
-                            0);
-
     public static final IntCachedFeatureParam sBackgroundThreadPoolFieldTrialConfig =
             newIntCachedFeatureParam(BACKGROUND_THREAD_POOL_FIELD_TRIAL, "config", 4);
 
@@ -1873,8 +1858,6 @@ public abstract class ChromeFeatureList {
                     sAndroidBottomBarShowBottomBarOnGts,
                     sAndroidBottomToolbarV2ForceBottomForFocusedOmnibox,
                     sAndroidBottomToolbarV2ReverseOrderSuggestionsList,
-                    sAndroidSelfOcclusionTrackingForwarding,
-                    sAndroidSelfOcclusionTrackingMinimumVisibilitySizeThreshold,
                     sAndroidThemeModuleForceDependencies,
                     sAndroidThemeResourceProviderForceLight,
                     sAndroidTipsNotificationsAlwaysShowOptInPromo,
