@@ -3048,7 +3048,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.DeskTemplate.FloatingWorkspaceTabCount" units="tabs"
-    expires_after="2026-05-23">
+    expires_after="2027-05-23">
   <owner>andreydav@google.com</owner>
   <owner>slutskii@google.com</owner>
   <summary>
@@ -3060,7 +3060,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.DeskTemplate.FloatingWorkspaceWindowAndTabCount"
-    units="windows and tabs" expires_after="2026-05-23">
+    units="windows and tabs" expires_after="2027-05-23">
   <owner>andreydav@google.com</owner>
   <owner>slutskii@google.com</owner>
   <summary>
@@ -3073,7 +3073,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.DeskTemplate.FloatingWorkspaceWindowCount" units="windows"
-    expires_after="2026-05-23">
+    expires_after="2027-05-23">
   <owner>andreydav@google.com</owner>
   <owner>slutskii@google.com</owner>
   <summary>
@@ -3085,7 +3085,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.DeskTemplate.LaunchFloatingWorkspace" enum="BooleanHit"
-    expires_after="2026-05-23">
+    expires_after="2027-05-23">
   <owner>andreydav@google.com</owner>
   <owner>slutskii@google.com</owner>
   <summary>
@@ -3632,7 +3632,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.FloatingWorkspace.FloatingWorkspaceV2Initialized"
-    enum="BooleanHit" expires_after="2026-05-23">
+    enum="BooleanHit" expires_after="2027-05-23">
   <owner>andreydav@google.com</owner>
   <owner>slutskii@google.com</owner>
   <summary>
@@ -3645,7 +3645,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.FloatingWorkspace.StartupUiClosureReason"
-    enum="FloatingWorkspaceStartupUiClosureReason" expires_after="2026-05-23">
+    enum="FloatingWorkspaceStartupUiClosureReason" expires_after="2027-05-23">
   <owner>andreydav@google.com</owner>
   <owner>slutskii@google.com</owner>
   <summary>
@@ -3656,7 +3656,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Ash.FloatingWorkspace.TemplateLaunchFailureStatus"
     enum="FloatingWorkspaceV2LaunchTemplateFailureType"
-    expires_after="2026-05-23">
+    expires_after="2027-05-23">
   <owner>andreydav@google.com</owner>
   <owner>slutskii@google.com</owner>
   <summary>
@@ -3668,7 +3668,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.FloatingWorkspace.TemplateLoadTime" units="seconds"
-    expires_after="2026-05-23">
+    expires_after="2027-05-23">
   <owner>andreydav@google.com</owner>
   <owner>slutskii@google.com</owner>
   <summary>
@@ -3680,7 +3680,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.FloatingWorkspace.TemplateNotFound" enum="BooleanHit"
-    expires_after="2026-05-23">
+    expires_after="2027-05-23">
   <owner>andreydav@google.com</owner>
   <owner>slutskii@google.com</owner>
   <summary>
@@ -3693,7 +3693,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.FloatingWorkspace.TemplateSize" units="B"
-    expires_after="2026-05-23">
+    expires_after="2027-05-23">
   <owner>andreydav@google.com</owner>
   <owner>slutskii@google.com</owner>
   <summary>
@@ -3706,7 +3706,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Ash.FloatingWorkspace.TemplateUploadStatus"
     enum="FloatingWorkspaceV2UploadTemplateStatusType"
-    expires_after="2026-05-23">
+    expires_after="2027-05-23">
   <owner>andreydav@google.com</owner>
   <owner>slutskii@google.com</owner>
   <summary>
