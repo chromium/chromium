@@ -6,6 +6,7 @@
 
 #include <optional>
 
+#include "base/strings/string_util.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
@@ -57,10 +58,20 @@ class TestSkillsDialogHandler : public SkillsDialogHandler {
   skills::Skill fake_saved_skill_;
 
   const skills::Skill* SaveOrUpdateSkill(const skills::Skill& skill) override {
+    std::string trimmed_name(
+        base::TrimWhitespaceASCII(skill.name, base::TRIM_ALL));
+    std::string trimmed_prompt(
+        base::TrimWhitespaceASCII(skill.prompt, base::TRIM_ALL));
+
+    if (trimmed_name.empty() || trimmed_prompt.empty()) {
+      RecordSkillsSaveResult(SkillsSaveResult::kInvalidRequest);
+      return nullptr;
+    }
+
     fake_saved_skill_.id = skill.id.empty() ? "generated_fake_id" : skill.id;
-    fake_saved_skill_.name = skill.name;
+    fake_saved_skill_.name = trimmed_name;
     fake_saved_skill_.icon = skill.icon;
-    fake_saved_skill_.prompt = skill.prompt;
+    fake_saved_skill_.prompt = trimmed_prompt;
     return &fake_saved_skill_;
   }
 };
@@ -429,6 +440,7 @@ TEST_F(SkillsDialogHandlerTest, SubmitSkill_LogsUiContextLostWhenDialogClosed) {
 TEST_F(SkillsDialogHandlerTest, SubmitSkill_LogsRefinementOutcome) {
   skills::Skill skill;
   skill.name = "Test Skill";
+  skill.prompt = "Test Prompt";
   base::MockCallback<mojom::DialogHandler::SubmitSkillCallback> callback;
 
   handler_->SubmitSkill(
@@ -438,6 +450,34 @@ TEST_F(SkillsDialogHandlerTest, SubmitSkill_LogsRefinementOutcome) {
   histogram_tester_.ExpectUniqueSample(
       "Skills.Dialog.PromptRefinementOutcome",
       skills::mojom::SkillsPromptRefinementOutcome::kUsedRefinedPrompt, 1);
+}
+
+TEST_F(SkillsDialogHandlerTest, SubmitSkill_EmptyName_LogsInvalidRequest) {
+  skills::Skill skill;
+  skill.name = "   ";
+  skill.prompt = "Valid Prompt";
+  base::MockCallback<mojom::DialogHandler::SubmitSkillCallback> callback;
+
+  handler_->SubmitSkill(
+      skill, skills::mojom::SkillsPromptRefinementOutcome::kNotRefined,
+      callback.Get());
+
+  histogram_tester_.ExpectUniqueSample(
+      "Skills.Save.Result", skills::SkillsSaveResult::kInvalidRequest, 1);
+}
+
+TEST_F(SkillsDialogHandlerTest, SubmitSkill_EmptyPrompt_LogsInvalidRequest) {
+  skills::Skill skill;
+  skill.name = "Valid Name";
+  skill.prompt = "   ";
+  base::MockCallback<mojom::DialogHandler::SubmitSkillCallback> callback;
+
+  handler_->SubmitSkill(
+      skill, skills::mojom::SkillsPromptRefinementOutcome::kNotRefined,
+      callback.Get());
+
+  histogram_tester_.ExpectUniqueSample(
+      "Skills.Save.Result", skills::SkillsSaveResult::kInvalidRequest, 1);
 }
 
 TEST_F(SkillsDialogHandlerTest, DeleteSkill_LogsDeleted) {

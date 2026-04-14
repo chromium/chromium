@@ -174,9 +174,20 @@ export class SkillsDialogAppElement extends CrLitElement {
   private textareaResizeObserver_: ResizeObserver | null = null;
   private dialogResizeObserver_: ResizeObserver | null = null;
 
+  private get trimmedName_(): string {
+    return this.skill_.name ?
+        this.skill_.name.trim().substring(0, MAX_NAME_CHAR_COUNT) :
+        '';
+  }
+
+  private get trimmedPrompt_(): string {
+    return this.skill_.prompt ?
+        this.skill_.prompt.trim().substring(0, MAX_PROMPT_CHAR_COUNT) :
+        '';
+  }
+
   protected isSaveButtonDisabled() {
-    return !this.skill_.name || !this.skill_.prompt ||
-      this.skill_.name.length === 0 || this.skill_.prompt.length === 0;
+    return this.trimmedName_.length === 0 || this.trimmedPrompt_.length === 0;
   }
 
   protected isRefinementEnabled_() {
@@ -370,8 +381,7 @@ export class SkillsDialogAppElement extends CrLitElement {
   }
 
   protected isRefineDisabled_(): boolean {
-    return !this.skill_.prompt || this.skill_.prompt.length === 0 ||
-      this.isRefineLoading_;
+    return this.trimmedPrompt_.length === 0 || this.isRefineLoading_;
   }
 
   protected isUndoDisabled_(): boolean {
@@ -483,8 +493,8 @@ export class SkillsDialogAppElement extends CrLitElement {
     const skill = {
       ...this.skill_,
       icon: this.skill_.icon || DEFAULT_EMOJI,
-      name: this.skill_.name.substring(0, MAX_NAME_CHAR_COUNT),
-      prompt: this.skill_.prompt.substring(0, MAX_PROMPT_CHAR_COUNT),
+      name: this.trimmedName_,
+      prompt: this.trimmedPrompt_,
 
       // If remixing first party skill, set parent and clear ID.
       ...(isFirstParty && {

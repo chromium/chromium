@@ -135,6 +135,7 @@ chromium-metrics-reviews@google.com.
   <int value="3" label="Write Failed"/>
   <int value="4" label="Service Not Found"/>
   <int value="5" label="Service Not Ready"/>
+  <int value="6" label="Invalid Request"/>
 </enum>
 
 <!-- LINT.ThenChange(//components/skills/public/skills_metrics.h:SkillsSaveResult) -->

@@ -76,7 +76,9 @@ enum class SkillsSaveResult {
   kServiceNotFound = 4,
   // Sync hasn't finished initializing on startup
   kServiceNotReady = 5,
-  kMaxValue = kServiceNotReady,
+  // The UI sent an empty name or prompt
+  kInvalidRequest = 6,
+  kMaxValue = kInvalidRequest,
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/skills/enums.xml:SkillsSaveResult)
 
