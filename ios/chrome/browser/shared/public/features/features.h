@@ -811,8 +811,18 @@ bool IsComposeboxIpadEnabled();
 // Enables the ChromeNextIa feature.
 BASE_DECLARE_FEATURE(kChromeNextIa);
 
+// Parameters for kChromeNextIa.
+extern const base::FeatureParam<bool> kChromeNextIaLensIconVisible;
+extern const base::FeatureParam<bool> kChromeNextIaShareIconVisible;
+
 // Returns true if the ChromeNextIa feature is enabled.
 bool IsChromeNextIaEnabled();
+
+// Returns true if Lens icon should be visible in ChromeNextIa.
+bool IsChromeNextIaLensIconVisible();
+
+// Returns true if Share icon should be visible in ChromeNextIa.
+bool IsChromeNextIaShareIconVisible();
 
 // Enables the ComposeboxAIMDisabled feature.
 BASE_DECLARE_FEATURE(kComposeboxAIMDisabled);

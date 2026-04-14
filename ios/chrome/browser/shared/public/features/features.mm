@@ -967,11 +967,25 @@ bool IsComposeboxIpadEnabled() {
 
 BASE_FEATURE(kChromeNextIa, base::FEATURE_DISABLED_BY_DEFAULT);
 
+constexpr base::FeatureParam<bool> kChromeNextIaLensIconVisible{
+    &kChromeNextIa, "chrome_next_ia_lens_icon_visible", false};
+
+constexpr base::FeatureParam<bool> kChromeNextIaShareIconVisible{
+    &kChromeNextIa, "chrome_next_ia_share_icon_visible", false};
+
 bool IsChromeNextIaEnabled() {
   if (!IsComposeboxIOSEnabled()) {
     return false;
   }
   return base::FeatureList::IsEnabled(kChromeNextIa);
+}
+
+bool IsChromeNextIaLensIconVisible() {
+  return IsChromeNextIaEnabled() && kChromeNextIaLensIconVisible.Get();
+}
+
+bool IsChromeNextIaShareIconVisible() {
+  return IsChromeNextIaEnabled() && kChromeNextIaShareIconVisible.Get();
 }
 
 BASE_FEATURE(kComposeboxAIMDisabled, base::FEATURE_ENABLED_BY_DEFAULT);

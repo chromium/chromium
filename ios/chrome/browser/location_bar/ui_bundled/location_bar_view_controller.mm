@@ -772,6 +772,11 @@ const CGFloat kShareIconBalancingHeightPadding = 1;
     state = kNoButton;
   }
 
+  if (IsChromeNextIaEnabled() && !IsChromeNextIaShareIconVisible() &&
+      state == kShareButton) {
+    state = kNoButton;
+  }
+
   if (_trailingButtonState == state) {
     return;
   }

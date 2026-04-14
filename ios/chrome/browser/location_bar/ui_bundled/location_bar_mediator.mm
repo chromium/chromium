@@ -266,6 +266,10 @@ const CGFloat kIconPointSize = 16.0;
 
 /// Returns whether the Lens overlay is currently available for the web state.
 - (BOOL)isLensOverlayAvailable {
+  if (IsChromeNextIaEnabled() && !IsChromeNextIaLensIconVisible()) {
+    return NO;
+  }
+
   if (IsPageActionMenuEnabled() && IsDirectBWGEntryPoint()) {
     return NO;
   }
@@ -350,7 +354,7 @@ const CGFloat kIconPointSize = 16.0;
     // necessary.
   }
 
-  if ([self isAIHubAvailable]) {
+  if ([self isAIHubAvailable] && !IsChromeNextIaEnabled()) {
     // Gemini-specific metrics should only fire when Gemini is actually
     // eligible, not just when the PAM badge is visible.
     if ([self isGeminiEligibleForActiveWebState]) {

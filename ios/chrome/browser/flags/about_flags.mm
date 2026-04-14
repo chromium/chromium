@@ -1002,6 +1002,32 @@ const FeatureEntry::FeatureVariation kBestOfAppFREVariations[] = {
      kBestOfAppFREArm4Upload, nullptr},
 };
 
+const FeatureEntry::FeatureParam kChromeNextIaLensHiddenShareHidden[] = {
+    {"chrome_next_ia_lens_icon_visible", "false"},
+    {"chrome_next_ia_share_icon_visible", "false"}};
+
+const FeatureEntry::FeatureParam kChromeNextIaLensVisibleShareHidden[] = {
+    {"chrome_next_ia_lens_icon_visible", "true"},
+    {"chrome_next_ia_share_icon_visible", "false"}};
+
+const FeatureEntry::FeatureParam kChromeNextIaLensHiddenShareVisible[] = {
+    {"chrome_next_ia_lens_icon_visible", "false"},
+    {"chrome_next_ia_share_icon_visible", "true"}};
+
+const FeatureEntry::FeatureParam kChromeNextIaLensVisibleShareVisible[] = {
+    {"chrome_next_ia_lens_icon_visible", "true"},
+    {"chrome_next_ia_share_icon_visible", "true"}};
+
+const FeatureEntry::FeatureVariation kChromeNextIaVariations[] = {
+    {"Lens Hidden, Share Hidden", kChromeNextIaLensHiddenShareHidden, nullptr},
+    {"Lens Visible, Share Hidden", kChromeNextIaLensVisibleShareHidden,
+     nullptr},
+    {"Lens Hidden, Share Visible", kChromeNextIaLensHiddenShareVisible,
+     nullptr},
+    {"Lens Visible, Share Visible", kChromeNextIaLensVisibleShareVisible,
+     nullptr},
+};
+
 const FeatureEntry::FeatureParam
     kInvalidateChoiceOnRestoreIsRetroactiveOption[] = {
         {"is_retroactive", "true"}};
@@ -2554,7 +2580,9 @@ constexpr auto kFeatureEntries = std::to_array<flags_ui::FeatureEntry>({
      FEATURE_VALUE_TYPE(kComposeboxIpad)},
     {"chrome-next-ia", flag_descriptions::kChromeNextIaName,
      flag_descriptions::kChromeNextIaDescription, flags_ui::kOsIos,
-     FEATURE_VALUE_TYPE(kChromeNextIa)},
+     FEATURE_WITH_PARAMS_VALUE_TYPE(kChromeNextIa,
+                                    kChromeNextIaVariations,
+                                    "ChromeNextIa")},
     {"gemini-image-remix-tool", flag_descriptions::kGeminiImageRemixToolName,
      flag_descriptions::kGeminiImageRemixToolDescription, flags_ui::kOsIos,
      FEATURE_WITH_PARAMS_VALUE_TYPE(kGeminiImageRemixTool,
