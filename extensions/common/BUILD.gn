@@ -715,6 +715,7 @@ source_set("unit_tests") {
     "manifest_handlers/shared_module_manifest_unittest.cc",
     "manifest_handlers/trial_tokens_unittest.cc",
     "manifest_handlers/update_url_unittest.cc",
+    "manifest_handlers/web_urls_unittest.cc",
     "manifest_unittest.cc",
     "message_bundle_unittest.cc",
     "mojom/event_router_mojom_unittest.cc",
