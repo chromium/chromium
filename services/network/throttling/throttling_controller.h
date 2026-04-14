@@ -8,6 +8,7 @@
 #include <map>
 #include <memory>
 #include <optional>
+#include <utility>
 #include <vector>
 
 #include "base/component_export.h"
@@ -43,8 +44,9 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) ThrottlingController {
   // |NetworkConditions| to apply to requests matching that pattern. Patterns
   // are defined using the URLPattern API pattern language. An empty URL pattern
   // applies to all requests that don't match another pattern. If multiple such
-  // global conditions are passed, only the last one takes effect.
+  // global conditions are passed, only the first one takes effect.
   static void SetConditions(const base::UnguessableToken& throttling_profile_id,
+                            const base::UnguessableToken& throttling_client_id,
                             std::vector<MatchedNetworkConditions> conditions);
 
   // Returns the interceptor for the NetLog source ID and url. The |url| is
@@ -84,13 +86,19 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) ThrottlingController {
     ThrottlingProfile(ThrottlingProfile&&);
     ThrottlingProfile& operator=(ThrottlingProfile&&);
 
-    void SetNetworkConditions(std::vector<MatchedNetworkConditions> conditions);
+    void SetNetworkConditions(
+        const base::UnguessableToken& throttling_client_id,
+        std::vector<MatchedNetworkConditions> conditions);
     ThrottlingNetworkInterceptor* FindInterceptor(const GURL& url) const;
 
-    size_t matcher_count() const { return matchers_.size(); }
+    size_t GetMatcherCountForTesting() const;
+    bool is_empty() const { return client_matchers_.empty(); }
+    std::optional<NetworkConditions> GetGlobalConditions() const;
 
    private:
-    std::vector<InterceptorMatcher> matchers_;
+    std::vector<
+        std::pair<base::UnguessableToken, std::vector<InterceptorMatcher>>>
+        client_matchers_;
   };
 
   ThrottlingController();
@@ -116,6 +124,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) ThrottlingController {
 
   void SetNetworkConditions(
       const base::UnguessableToken& throttling_profile_id,
+      const base::UnguessableToken& throttling_client_id,
       std::vector<MatchedNetworkConditions> matched_conditions);
 
   ThrottlingNetworkInterceptor* FindInterceptor(uint32_t net_log_source_id,

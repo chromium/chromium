@@ -26,9 +26,14 @@ class MockCallback {
 
 class WebSocketInterceptorTest : public ::testing::Test {
  protected:
-  WebSocketInterceptorTest() {
+  WebSocketInterceptorTest() : client_id_(base::UnguessableToken::Create()) {
     interceptor_ = std::make_unique<WebSocketInterceptor>(
         kNetLogSourceId, GURL(), kThrottlingProfileId);
+  }
+
+  ~WebSocketInterceptorTest() override {
+    interceptor_.reset();
+    ThrottlingController::SetConditions(*kThrottlingProfileId, client_id_, {});
   }
 
   base::OnceClosure MakeCallback() {
@@ -40,11 +45,12 @@ class WebSocketInterceptorTest : public ::testing::Test {
   base::test::SingleThreadTaskEnvironment task_environment_{
       base::test::SingleThreadTaskEnvironment::TimeSource::MOCK_TIME};
   std::unique_ptr<WebSocketInterceptor> interceptor_;
+  base::UnguessableToken client_id_;
 };
 
 TEST_F(WebSocketInterceptorTest, DoesNotInterferWhenNoEmualatedConditions) {
   EXPECT_CALL(mock_callback_, Callback()).Times(0);
-  ThrottlingController::SetConditions(*kThrottlingProfileId, {});
+  ThrottlingController::SetConditions(*kThrottlingProfileId, client_id_, {});
   EXPECT_EQ(WebSocketInterceptor::kContinue,
             interceptor_->Intercept(WebSocketInterceptor::kOutgoing, 42,
                                     MakeCallback()));
@@ -56,7 +62,8 @@ TEST_F(WebSocketInterceptorTest, DoesNotInterferWhenNoEmualatedConditions) {
 TEST_F(WebSocketInterceptorTest, ShouldWaitWhenOffline) {
   EXPECT_CALL(mock_callback_, Callback()).Times(0);
   ThrottlingController::SetConditions(
-      *kThrottlingProfileId, {{{}, NetworkConditions(/*offline=*/true)}});
+      *kThrottlingProfileId, client_id_,
+      {{{}, NetworkConditions(/*offline=*/true)}});
   EXPECT_EQ(WebSocketInterceptor::kShouldWait,
             interceptor_->Intercept(WebSocketInterceptor::kOutgoing, 42,
                                     MakeCallback()));
@@ -64,7 +71,7 @@ TEST_F(WebSocketInterceptorTest, ShouldWaitWhenOffline) {
 
 TEST_F(WebSocketInterceptorTest, ShouldWaitWhenSlow) {
   ThrottlingController::SetConditions(
-      *kThrottlingProfileId,
+      *kThrottlingProfileId, client_id_,
       {{{},
         NetworkConditions(/*offline=*/false, /*latency=*/0,
                           /*download_throughput=*/0,
@@ -79,7 +86,7 @@ TEST_F(WebSocketInterceptorTest, ShouldWaitWhenSlow) {
 
 TEST_F(WebSocketInterceptorTest, SubsequentInterceptWhenSlow) {
   ThrottlingController::SetConditions(
-      *kThrottlingProfileId,
+      *kThrottlingProfileId, client_id_,
       {{{},
         NetworkConditions(/*offline=*/false, /*latency=*/0,
                           /*download_throughput=*/0,
@@ -98,20 +105,22 @@ TEST_F(WebSocketInterceptorTest, SubsequentInterceptWhenSlow) {
 
 TEST_F(WebSocketInterceptorTest, OfflineCallbackInvokedWhenBackOnline) {
   ThrottlingController::SetConditions(
-      *kThrottlingProfileId, {{{}, NetworkConditions(/*offline=*/true)}});
+      *kThrottlingProfileId, client_id_,
+      {{{}, NetworkConditions(/*offline=*/true)}});
   EXPECT_CALL(mock_callback_, Callback()).Times(0);
   EXPECT_EQ(WebSocketInterceptor::kShouldWait,
             interceptor_->Intercept(WebSocketInterceptor::kOutgoing, 42,
                                     MakeCallback()));
 
   EXPECT_CALL(mock_callback_, Callback()).Times(1);
-  ThrottlingController::SetConditions(*kThrottlingProfileId, {});
+  ThrottlingController::SetConditions(*kThrottlingProfileId, client_id_, {});
   interceptor_->Intercept(WebSocketInterceptor::kOutgoing, 42, MakeCallback());
 }
 
 TEST_F(WebSocketInterceptorTest, SlowAfterOffline) {
   ThrottlingController::SetConditions(
-      *kThrottlingProfileId, {{{}, NetworkConditions(/*offline=*/true)}});
+      *kThrottlingProfileId, client_id_,
+      {{{}, NetworkConditions(/*offline=*/true)}});
   EXPECT_CALL(mock_callback_, Callback()).Times(0);
   EXPECT_EQ(WebSocketInterceptor::kShouldWait,
             interceptor_->Intercept(WebSocketInterceptor::kOutgoing, 42,
@@ -119,7 +128,7 @@ TEST_F(WebSocketInterceptorTest, SlowAfterOffline) {
 
   EXPECT_CALL(mock_callback_, Callback()).Times(1);
   ThrottlingController::SetConditions(
-      *kThrottlingProfileId,
+      *kThrottlingProfileId, client_id_,
       {{{},
         NetworkConditions(/*offline=*/false, /*latency=*/0,
                           /*download_throughput=*/0,
@@ -132,7 +141,7 @@ TEST_F(WebSocketInterceptorTest, SlowAfterOffline) {
 
 TEST_F(WebSocketInterceptorTest, UsesRightDirection) {
   ThrottlingController::SetConditions(
-      *kThrottlingProfileId,
+      *kThrottlingProfileId, client_id_,
       {{{},
         NetworkConditions(/*offline=*/false, /*latency=*/0,
                           /*download_throughput=*/1,

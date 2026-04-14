@@ -1341,7 +1341,8 @@ NetworkHandler::NetworkHandler(
           std::move(update_loader_factories_callback)),
       cleanup_after_modifications_callback_(
           std::move(cleanup_after_modifications_callback)),
-      root_session_(*session->GetRootSession()) {
+      root_session_(*session->GetRootSession()),
+      throttling_client_id_(base::UnguessableToken::Create()) {
   DCHECK(io_context_);
   static bool have_configured_service_worker_context = false;
   if (have_configured_service_worker_context) {
@@ -4277,7 +4278,7 @@ void NetworkHandler::SetNetworkConditions(
       storage_partition_->GetNetworkContext();
 
   if (!devtools_token_.is_empty()) {
-    context->SetNetworkConditions(devtools_token_,
+    context->SetNetworkConditions(devtools_token_, throttling_client_id_,
                                   std::move(matched_conditions));
   }
 

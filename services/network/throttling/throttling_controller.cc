@@ -4,6 +4,7 @@
 
 #include "services/network/throttling/throttling_controller.h"
 
+#include <algorithm>
 #include <memory>
 
 #include "base/no_destructor.h"
@@ -30,8 +31,10 @@ ThrottlingController& ThrottlingController::instance() {
 // static
 void ThrottlingController::SetConditions(
     const base::UnguessableToken& throttling_profile_id,
+    const base::UnguessableToken& throttling_client_id,
     std::vector<MatchedNetworkConditions> conditions) {
-  instance().SetNetworkConditions(throttling_profile_id, std::move(conditions));
+  instance().SetNetworkConditions(throttling_profile_id, throttling_client_id,
+                                  std::move(conditions));
 }
 
 // static
@@ -112,21 +115,52 @@ ThrottlingController::ThrottlingProfile::operator=(
 ThrottlingController::ThrottlingProfile::ThrottlingProfile() = default;
 ThrottlingController::ThrottlingProfile::~ThrottlingProfile() = default;
 
+namespace {
+
 template <typename IterT>
-static IterT FindConditions(IterT begin,
-                            IterT end,
-                            const NetworkConditions& network_conditions) {
+IterT FindConditions(IterT begin,
+                     IterT end,
+                     const NetworkConditions& network_conditions) {
   return std::find_if(begin, end, [&network_conditions](auto&& matcher) {
     return matcher.conditions == network_conditions;
   });
 }
+
+}  // namespace
+
 void ThrottlingController::ThrottlingProfile::SetNetworkConditions(
+    const base::UnguessableToken& throttling_client_id,
     std::vector<MatchedNetworkConditions> conditions) {
+  auto it = std::find_if(
+      client_matchers_.begin(), client_matchers_.end(),
+      [&](const auto& pair) { return pair.first == throttling_client_id; });
+
+  if (conditions.empty()) {
+    if (it != client_matchers_.end()) {
+      client_matchers_.erase(it);
+    }
+    return;
+  }
+
+  std::vector<InterceptorMatcher>* matchers_ptr;
   std::vector<InterceptorMatcher> old_matchers;
-  std::swap(old_matchers, matchers_);
+  // client_matchers could be a map that maintains insertion order.
+  // Currently, no such map container is available in Chromium so we are using
+  // a vector to maintain the insertion order of the throttling profiles.
+  if (it != client_matchers_.end()) {
+    matchers_ptr = &it->second;
+    std::swap(old_matchers, *matchers_ptr);
+  } else {
+    client_matchers_.emplace_back(throttling_client_id,
+                                  std::vector<InterceptorMatcher>());
+    matchers_ptr = &client_matchers_.back().second;
+  }
+
+  auto& matchers_ = *matchers_ptr;
+
   // This has quadratic (#conditions * #matchers_) complexity, but we expect
   // clients to create relatively small numbers of different conditions at the
-  // same time. If this grows too large me need to build maps from the
+  // same time. If this grows too large we need to build maps from the
   // conditions here.
   for (auto& [pattern, network_conditions] : conditions) {
     std::unique_ptr<url_pattern::SimpleUrlPatternMatcher> pattern_matcher;
@@ -162,13 +196,38 @@ void ThrottlingController::ThrottlingProfile::SetNetworkConditions(
   }
 }
 
+size_t ThrottlingController::ThrottlingProfile::GetMatcherCountForTesting()
+    const {
+  size_t count = 0;
+  for (const auto& pair : client_matchers_) {
+    count += pair.second.size();
+  }
+  return count;
+}
+
+std::optional<NetworkConditions>
+ThrottlingController::ThrottlingProfile::GetGlobalConditions() const {
+  for (const auto& pair : client_matchers_) {
+    for (const auto& matcher : pair.second) {
+      for (const auto& pattern : matcher.patterns) {
+        if (pattern.first.empty()) {
+          return matcher.conditions;
+        }
+      }
+    }
+  }
+  return std::nullopt;
+}
+
 ThrottlingNetworkInterceptor*
 ThrottlingController::ThrottlingProfile::FindInterceptor(
     const GURL& url) const {
-  for (const InterceptorMatcher& matcher : matchers_) {
-    for (auto& pattern : matcher.patterns) {
-      if (pattern.first.empty() || pattern.second->Match(url)) {
-        return matcher.interceptor.get();
+  for (const auto& pair : client_matchers_) {
+    for (const InterceptorMatcher& matcher : pair.second) {
+      for (auto& pattern : matcher.patterns) {
+        if (pattern.first.empty() || pattern.second->Match(url)) {
+          return matcher.interceptor.get();
+        }
       }
     }
   }
@@ -177,6 +236,7 @@ ThrottlingController::ThrottlingProfile::FindInterceptor(
 
 void ThrottlingController::SetNetworkConditions(
     const base::UnguessableToken& throttling_profile_id,
+    const base::UnguessableToken& throttling_client_id,
     std::vector<MatchedNetworkConditions> matched_conditions) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
@@ -186,35 +246,38 @@ void ThrottlingController::SetNetworkConditions(
       return;
     }
     ThrottlingProfile new_profile;
-    new_profile.SetNetworkConditions(matched_conditions);
+    new_profile.SetNetworkConditions(throttling_client_id, matched_conditions);
     interceptors_.emplace(throttling_profile_id, std::move(new_profile));
   } else {
-    it->second.SetNetworkConditions(matched_conditions);
-    if (matched_conditions.empty()) {
+    it->second.SetNetworkConditions(throttling_client_id, matched_conditions);
+    if (it->second.is_empty()) {
       interceptors_.erase(throttling_profile_id);
     }
   }
 
 #if BUILDFLAG(IS_P2P_ENABLED)
-  auto global_conditions = std::find_if(
-      matched_conditions.begin(), matched_conditions.end(),
-      [](auto&& conditions) { return conditions.url_pattern.empty(); });
+  std::optional<NetworkConditions> global_conditions;
+  auto current_it = interceptors_.find(throttling_profile_id);
+  if (current_it != interceptors_.end()) {
+    global_conditions = current_it->second.GetGlobalConditions();
+  }
+
   auto p2p_it = p2p_interceptors_.find(throttling_profile_id);
   if (p2p_it == p2p_interceptors_.end()) {
-    if (global_conditions == matched_conditions.end()) {
+    if (!global_conditions.has_value()) {
       return;
     }
 
     std::unique_ptr<ThrottlingP2PNetworkInterceptor> new_interceptor(
         new ThrottlingP2PNetworkInterceptor());
-    new_interceptor->UpdateConditions(global_conditions->conditions);
+    new_interceptor->UpdateConditions(global_conditions.value());
     p2p_interceptors_[throttling_profile_id] = std::move(new_interceptor);
   } else {
-    if (global_conditions == matched_conditions.end()) {
+    if (!global_conditions.has_value()) {
       p2p_it->second->UpdateConditions(NetworkConditions{});
       p2p_interceptors_.erase(throttling_profile_id);
     } else {
-      p2p_it->second->UpdateConditions(global_conditions->conditions);
+      p2p_it->second->UpdateConditions(global_conditions.value());
     }
   }
 #endif

@@ -1288,6 +1288,7 @@ interface NetworkContext {
   // The throttling will be applied only to requests that have matching
   // throttling_profile_id.
   SetNetworkConditions(mojo_base.mojom.UnguessableToken throttling_profile_id,
+                       mojo_base.mojom.UnguessableToken throttling_client_id,
                        array<MatchedNetworkConditions> conditions);
 
   // Updates the Accept-Language header to be used for requests.

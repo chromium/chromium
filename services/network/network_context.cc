@@ -1856,6 +1856,7 @@ void NetworkContext::CloseIdleConnections(
 
 void NetworkContext::SetNetworkConditions(
     const base::UnguessableToken& throttling_profile_id,
+    const base::UnguessableToken& throttling_client_id,
     std::vector<mojom::MatchedNetworkConditionsPtr> conditions) {
   std::vector<MatchedNetworkConditions> network_conditions;
   for (auto& condition : conditions) {
@@ -1871,6 +1872,7 @@ void NetworkContext::SetNetworkConditions(
                           condition->conditions->rule_id});
   }
   ThrottlingController::SetConditions(throttling_profile_id,
+                                      throttling_client_id,
                                       std::move(network_conditions));
 }
 

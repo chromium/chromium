@@ -65,7 +65,8 @@ class ThrottlingControllerTestHelper {
         net_log_with_source_(
             net::NetLogWithSource::Make(net::NetLog::Get(),
                                         net::NetLogSourceType::URL_REQUEST)),
-        profile_id_(base::UnguessableToken::Create()) {
+        profile_id_(base::UnguessableToken::Create()),
+        client_id_(base::UnguessableToken::Create()) {
     mock_transaction_.test_mode = TEST_MODE_SYNC_NET_START;
 
     auto network_transaction =
@@ -75,16 +76,24 @@ class ThrottlingControllerTestHelper {
         std::move(network_transaction));
   }
   void SetNetworkState(std::vector<MatchedNetworkConditions> conditions) {
-    ThrottlingController::SetConditions(profile_id_, std::move(conditions));
+    SetNetworkState(client_id_, std::move(conditions));
+  }
+
+  void SetNetworkState(const base::UnguessableToken& client_id,
+                       std::vector<MatchedNetworkConditions> conditions) {
+    ThrottlingController::SetConditions(profile_id_, client_id,
+                                        std::move(conditions));
   }
 
   void SetNetworkState(bool offline, double download, double upload) {
     ThrottlingController::SetConditions(
-        profile_id_, {{{}, NetworkConditions{offline, 0, download, upload}}});
+        profile_id_, client_id_,
+        {{{}, NetworkConditions{offline, 0, download, upload}}});
   }
 
   void SetNetworkState(const base::UnguessableToken& id, bool offline) {
-    ThrottlingController::SetConditions(id, {{{}, NetworkConditions{offline}}});
+    ThrottlingController::SetConditions(id, client_id_,
+                                        {{{}, NetworkConditions{offline}}});
   }
 
   ThrottlingController::ThrottlingProfile* GetThrottlingProfile() {
@@ -168,6 +177,7 @@ class ThrottlingControllerTestHelper {
   std::unique_ptr<network::ScopedThrottlingToken> throttling_token_;
   const net::NetLogWithSource net_log_with_source_;
   const base::UnguessableToken profile_id_;
+  const base::UnguessableToken client_id_;
 };
 
 TEST(ThrottlingControllerTest, SingleDisableEnable) {
@@ -349,27 +359,27 @@ TEST(ThrottlingControllerTest, SetConditions) {
   helper.SetNetworkState({{std::string{}, NetworkConditions{true}}});
 
   // Test that only global conditions are set
-  EXPECT_EQ(helper.GetThrottlingProfile()->matcher_count(), 1u);
+  EXPECT_EQ(helper.GetThrottlingProfile()->GetMatcherCountForTesting(), 1u);
 
   // Set matched conditions
   helper.SetNetworkState({{"http://*/*", NetworkConditions{true}}});
 
   // Test that only one matched condition is set
-  EXPECT_EQ(helper.GetThrottlingProfile()->matcher_count(), 1u);
+  EXPECT_EQ(helper.GetThrottlingProfile()->GetMatcherCountForTesting(), 1u);
 
   // Set both global and local conditions
   helper.SetNetworkState({
       {"http://*/*", NetworkConditions{true}},
       {std::string{}, NetworkConditions{false}},
   });
-  EXPECT_EQ(helper.GetThrottlingProfile()->matcher_count(), 2u);
+  EXPECT_EQ(helper.GetThrottlingProfile()->GetMatcherCountForTesting(), 2u);
 
   // Set them the other way around
   helper.SetNetworkState({
       {std::string{}, NetworkConditions{false}},
       {"http://*/*", NetworkConditions{true}},
   });
-  EXPECT_EQ(helper.GetThrottlingProfile()->matcher_count(), 2u);
+  EXPECT_EQ(helper.GetThrottlingProfile()->GetMatcherCountForTesting(), 2u);
 
   // Try to set an invalid pattern. The parser accepts a lot of weird inputs,
   // but in some cases fails to parse:
@@ -377,7 +387,7 @@ TEST(ThrottlingControllerTest, SetConditions) {
       {"ht tp://", NetworkConditions{false}},
       {"*.css", NetworkConditions{false}},
   });
-  EXPECT_EQ(helper.GetThrottlingProfile()->matcher_count(), 0u);
+  EXPECT_EQ(helper.GetThrottlingProfile()->GetMatcherCountForTesting(), 0u);
 }
 
 TEST(ThrottlingControllerTest, MultipleGlobalConditions) {
@@ -435,17 +445,68 @@ TEST(ThrottlingControllerTest, UpdateConditions) {
 TEST(ThrottlingControllerTest, GroupingMatchedConditions) {
   ThrottlingControllerTestHelper helper;
 
-  // Multiple patterns with the same conditions get grouped into a single pipe.
+  // Multiple patterns with the same conditions are grouped.
   helper.SetNetworkState({
       {"http://*", NetworkConditions{true}},
       {"https://*", NetworkConditions{true}},
   });
 
-  EXPECT_EQ(helper.GetThrottlingProfile()->matcher_count(), 1u);
+  EXPECT_EQ(helper.GetThrottlingProfile()->GetMatcherCountForTesting(), 1u);
   EXPECT_TRUE(helper.GetThrottlingProfile()->FindInterceptor(
       GURL("http://example.com")));
   EXPECT_TRUE(helper.GetThrottlingProfile()->FindInterceptor(
       GURL("https://example.com")));
+}
+
+TEST(ThrottlingControllerTest, MultipleClients) {
+  ThrottlingControllerTestHelper helper;
+  base::UnguessableToken client1 = base::UnguessableToken::Create();
+  base::UnguessableToken client2 = base::UnguessableToken::Create();
+
+  // Set identical conditions for different clients. They should not be grouped.
+  helper.SetNetworkState(client1,
+                         {
+                             {"http://a.test*", NetworkConditions{true}},
+                         });
+  helper.SetNetworkState(client2,
+                         {
+                             {"http://b.test*", NetworkConditions{true}},
+                         });
+
+  EXPECT_EQ(helper.GetThrottlingProfile()->GetMatcherCountForTesting(), 2u);
+  EXPECT_TRUE(
+      helper.GetThrottlingProfile()->FindInterceptor(GURL("http://a.test")));
+  EXPECT_TRUE(
+      helper.GetThrottlingProfile()->FindInterceptor(GURL("http://b.test")));
+
+  // Updating client1 should not affect client2.
+  helper.SetNetworkState(client1,
+                         {
+                             {"http://a.test*", NetworkConditions{false}},
+                         });
+  EXPECT_EQ(helper.GetThrottlingProfile()->GetMatcherCountForTesting(), 2u);
+
+  // When a.test is resolved, we expect it to match client1's pattern which is
+  // false offline.
+  auto* interceptor1 =
+      helper.GetThrottlingProfile()->FindInterceptor(GURL("http://a.test"));
+  EXPECT_TRUE(interceptor1);
+  EXPECT_FALSE(interceptor1->conditions().offline());
+
+  auto* interceptor2 =
+      helper.GetThrottlingProfile()->FindInterceptor(GURL("http://b.test"));
+  EXPECT_TRUE(interceptor2);
+  EXPECT_TRUE(interceptor2->conditions().offline());
+
+  // Removing client2 should leave client1 intact.
+  helper.SetNetworkState(client2, std::vector<MatchedNetworkConditions>());
+  EXPECT_EQ(helper.GetThrottlingProfile()->GetMatcherCountForTesting(), 1u);
+  // FindInterceptor searches all patterns. http://b.test does NOT match
+  // client1's *a.test*
+  EXPECT_TRUE(
+      helper.GetThrottlingProfile()->FindInterceptor(GURL("http://a.test")));
+  EXPECT_FALSE(
+      helper.GetThrottlingProfile()->FindInterceptor(GURL("http://b.test")));
 }
 
 TEST(ThrottlingControllerTest, MultipleMatchedConditions) {

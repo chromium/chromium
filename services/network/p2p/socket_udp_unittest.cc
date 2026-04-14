@@ -1363,6 +1363,7 @@ class P2PSocketUdpWithInterceptorTest : public P2PSocketUdpTest {
  public:
   P2PSocketUdpWithInterceptorTest()
       : P2PSocketUdpTest(base::UnguessableToken::Create()),
+        throttling_client_id_(base::UnguessableToken::Create()),
         throttling_token_(
             ScopedThrottlingToken::MaybeCreate(net_log_with_source_.source().id,
                                                devtools_token_)) {}
@@ -1386,7 +1387,7 @@ class P2PSocketUdpWithInterceptorTest : public P2PSocketUdpTest {
 
   void SetNetworkState(NetworkState state) {
     ThrottlingController::SetConditions(
-        *devtools_token_,
+        *devtools_token_, throttling_client_id_,
         {{{},
           NetworkConditions{state.offline, state.latency.InMillisecondsF(), 0.0,
                             0.0, state.packet_loss, state.packet_queue_length,
@@ -1394,7 +1395,8 @@ class P2PSocketUdpWithInterceptorTest : public P2PSocketUdpTest {
   }
 
   void RemoveThrottling() {
-    ThrottlingController::SetConditions(*devtools_token_, {});
+    ThrottlingController::SetConditions(*devtools_token_, throttling_client_id_,
+                                        {});
   }
 
   void AdvanceClock(base::TimeDelta delta) {
@@ -1404,6 +1406,7 @@ class P2PSocketUdpWithInterceptorTest : public P2PSocketUdpTest {
   }
 
  protected:
+  base::UnguessableToken throttling_client_id_;
   std::unique_ptr<network::ScopedThrottlingToken> throttling_token_;
 };
 
