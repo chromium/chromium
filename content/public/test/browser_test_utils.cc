@@ -2228,8 +2228,18 @@ bool SetCookie(
     std::string_view value,
     net::CookieOptions::SameSiteCookieContext context,
     base::optional_ref<const net::CookiePartitionKey> cookie_partition_key) {
-  if (cookie_partition_key) {
-    DCHECK(base::ToLowerASCII(value).contains(";partitioned"));
+  const bool has_partition_key = cookie_partition_key.has_value();
+  const bool is_nonced =
+      net::CookiePartitionKey::HasNonce(cookie_partition_key);
+  const bool has_attribute = base::ToLowerASCII(value).contains(";partitioned");
+  if (!has_partition_key) {
+    DCHECK(!has_attribute);
+  }
+  if (has_partition_key && !is_nonced) {
+    DCHECK(has_attribute);
+  }
+  if (has_attribute) {
+    DCHECK(has_partition_key);
   }
   mojo::Remote<network::mojom::CookieManager> cookie_manager;
   browser_context->GetDefaultStoragePartition()
