@@ -2144,7 +2144,9 @@ void RenderProcessHostImpl::InitializeSharedMemoryRegionsOnceChannelIsUp() {
         base::AtomicSharedMemory<base::TimeTicks>::Create(
             priority_.is_background() ? base::TimeTicks()
                                       : base::TimeTicks::Now());
-    CHECK(last_foreground_time_region_.has_value());
+    // TODO(https://crbug.com/497761255): CHECK-exclusion: Convert to CHECK once
+    // we are sure this isn't hit.
+    DCHECK(last_foreground_time_region_.has_value());
   }
 
   // The RenderProcessHostImpl can be reused to host a new renderer process
