@@ -50,7 +50,7 @@ class VIZ_COMMON_EXPORT TextureDrawQuad : public DrawQuad {
               bool nearest,
               bool secure_output,
               gfx::ProtectedVideoType video_type,
-              bool is_tex_coords_normalized = true);
+              bool is_tex_coords_normalized);
 
   void SetAll(const SharedQuadState* shared_quad_state,
               const gfx::Rect& rect,
@@ -63,7 +63,7 @@ class VIZ_COMMON_EXPORT TextureDrawQuad : public DrawQuad {
               bool nearest,
               bool secure_output,
               gfx::ProtectedVideoType video_type,
-              bool is_tex_coords_normalized = true);
+              bool is_tex_coords_normalized);
 
   // Returns the texture coordinates in the range [0, 1].
   gfx::RectF GetNormalizedTexCoords(const gfx::Size& resource_size) const {

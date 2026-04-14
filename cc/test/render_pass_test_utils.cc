@@ -239,14 +239,16 @@ std::vector<viz::ResourceId> AddOneOfEveryQuadType(
   texture_quad->SetNew(shared_state, rect, visible_rect, needs_blending,
                        resource1, gfx::PointF(0.f, 0.f), gfx::PointF(1.f, 1.f),
                        SkColors::kTransparent, false, false,
-                       gfx::ProtectedVideoType::kClear);
+                       gfx::ProtectedVideoType::kClear,
+                       /*is_tex_coords_normalized=*/true);
 
   auto* external_resource_texture_quad =
       to_pass->CreateAndAppendDrawQuad<viz::TextureDrawQuad>();
   external_resource_texture_quad->SetNew(
       shared_state, rect, visible_rect, needs_blending, resource8,
       gfx::PointF(0.f, 0.f), gfx::PointF(1.f, 1.f), SkColors::kTransparent,
-      false, false, gfx::ProtectedVideoType::kClear);
+      false, false, gfx::ProtectedVideoType::kClear,
+      /*is_tex_coords_normalized=*/true);
 
   auto* scaled_tile_quad =
       to_pass->CreateAndAppendDrawQuad<viz::TileDrawQuad>();
