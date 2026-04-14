@@ -1,0 +1,11 @@
+Tests that DOM.setOuterHTML properly upgrades custom elements when scoped custom element registry is enabled.
+Test 1: Global registry
+tag: my-element
+content: edited
+upgraded: true
+
+Test 2: Declarative shadow root with scoped registry
+tag: scoped-el
+content: edited
+upgraded: true
+
