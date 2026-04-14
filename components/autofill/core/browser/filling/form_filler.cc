@@ -13,6 +13,7 @@
 #include "base/check_op.h"
 #include "base/containers/flat_set.h"
 #include "base/containers/map_util.h"
+#include "base/containers/to_vector.h"
 #include "base/feature_list.h"
 #include "base/hash/hash.h"
 #include "base/metrics/histogram_functions.h"
@@ -827,15 +828,18 @@ void FormFiller::UndoAutofill(mojom::ActionPersistence action_persistence,
           previous_state.autofill_source_profile_guid);
       autofill_field.set_autofilled_type(previous_state.autofilled_type);
       autofill_field.set_filling_product(previous_state.filling_product);
-
-      // The filling history is not cleared on previews as it might be used for
-      // future previews or for the filling. it is also cleared field by field
-      // because some fields in the current entry might not be used now but
-      // could still be valuable (see crbug.com/416019464).
-      form_autofill_history_.EraseFieldFillingEntry(fill_operation_it,
-                                                    field.global_id());
     }
   }
+
+  if (action_persistence == mojom::ActionPersistence::kFill) {
+    // The filling history is not cleared on previews as it might be used for
+    // future previews or for the filling. It is also cleared field by field
+    // because some fields in the current entry might not be used now but
+    // could still be valuable (see crbug.com/416019464).
+    form_autofill_history_.EraseFieldFillingEntries(
+        fill_operation_it, base::ToVector(fields, &FormFieldData::global_id));
+  }
+
   form.set_fields(std::move(fields));
 
   // Do not attempt a refill after an Undo operation.

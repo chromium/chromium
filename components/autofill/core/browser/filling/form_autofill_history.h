@@ -103,12 +103,12 @@ class FormAutofillHistory {
       FillingProduct filling_product,
       bool is_refill);
 
-  // Erases the field history information corresponding to `field_id` in
-  // `fill_operation`. If the form filling entry becomes empty afterwards, the
-  // function also removes it from `history_`.
-  void EraseFieldFillingEntry(
-      std::list<FormFillingEntry>::iterator fill_operation,
-      FieldGlobalId field_id);
+  // Erases the field history information corresponding to all `field_ids` from
+  // `filling_entry`. If `filling_entry` becomes empty afterwards, the function
+  // also removes it from `history_`.
+  void EraseFieldFillingEntries(
+      std::list<FormFillingEntry>::iterator filling_entry,
+      base::span<const FieldGlobalId> field_ids);
 
   // Returns the first entry in `history_` (corresponding to the last
   // chronological entry) that has information about the field represented by

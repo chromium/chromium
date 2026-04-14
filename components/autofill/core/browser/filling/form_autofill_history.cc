@@ -95,12 +95,14 @@ void FormAutofillHistory::AddFormFillingEntry(
   }
 }
 
-void FormAutofillHistory::EraseFieldFillingEntry(
-    std::list<FormFillingEntry>::iterator fill_operation,
-    FieldGlobalId field_id) {
-  fill_operation->erase(field_id);
-  if (fill_operation->empty()) {
-    EraseFormFillEntry(fill_operation);
+void FormAutofillHistory::EraseFieldFillingEntries(
+    std::list<FormFillingEntry>::iterator filling_entry,
+    base::span<const FieldGlobalId> field_ids) {
+  for (const FieldGlobalId& field_id : field_ids) {
+    size_ -= filling_entry->erase(field_id);
+  }
+  if (filling_entry->empty()) {
+    EraseFormFillEntry(filling_entry);
   }
 }
 
