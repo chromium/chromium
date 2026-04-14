@@ -36,6 +36,7 @@
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/desktop_to_mobile_promos/ios_promo_trigger_service.h"
 #include "chrome/browser/ui/desktop_to_mobile_promos/ios_promo_trigger_service_factory.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_manager.h"
@@ -1511,8 +1512,9 @@ void LensOverlayController::NotifyTabWillEnterBackground() {
 
 OverlayBaseController::PreselectionUIConfig
 LensOverlayController::GetPreselectionBubbleConfig() {
-  return {.message_string_id =
-              IDS_LENS_OVERLAY_INITIAL_TOAST_MESSAGE_SIMPLIFIED};
+  return {
+      .message_string_id = IDS_LENS_OVERLAY_INITIAL_TOAST_MESSAGE_SIMPLIFIED,
+      .bubble_background_color = kColorLensOverlayToastBackground};
 }
 
 bool LensOverlayController::IsOverlayViewShared() const {

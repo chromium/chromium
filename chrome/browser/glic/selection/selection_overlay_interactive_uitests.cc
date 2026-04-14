@@ -7,11 +7,13 @@
 #include "chrome/browser/glic/selection/selection_overlay_controller.h"
 #include "chrome/browser/glic/test_support/interactive_glic_test.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
+#include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/common/chrome_features.h"
 #include "content/public/test/browser_test.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/ozone_buildflags.h"
 #include "ui/gfx/geometry/point.h"
+#include "ui/views/controls/button/md_text_button.h"
 #include "ui/views/interaction/element_tracker_views.h"
 
 namespace glic {
@@ -381,6 +383,30 @@ IN_PROC_BROWSER_TEST_F(SelectionOverlayInteractiveTest,
       DragMouseTo(OverlayBaseController::kOverlayId,
                   GetPointWithOffset(100, 100)),
       WaitForState(kGlicHasFocus, true));
+}
+
+IN_PROC_BROWSER_TEST_F(SelectionOverlayInteractiveTest, BubbleUIColor) {
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kActiveTab);
+
+  RunTestSequence(
+      InstrumentTab(kActiveTab), OpenGlic(),
+      ClickMockGlicElement({"#captureRegionBtn"}),
+      WaitForShow(OverlayBaseController::kOverlayId),
+      WaitForShow(kLensPreselectionBubbleElementId),
+      WaitForShow(kLensPreselectionBubbleCancelButtonElementId),
+      CheckView(kLensPreselectionBubbleElementId,
+                [](views::View* view) {
+                  auto* bubble =
+                      static_cast<views::BubbleDialogDelegateView*>(view);
+                  return bubble->background_color() ==
+                         kColorGlicSelectionOverlayToast;
+                }),
+      CheckView(kLensPreselectionBubbleCancelButtonElementId,
+                [](views::View* view) {
+                  auto* button = static_cast<views::MdTextButton*>(view);
+                  return button->GetBgColorIdOverride() ==
+                         kColorGlicSelectionOverlayToast;
+                }));
 }
 
 IN_PROC_BROWSER_TEST_F(SelectionOverlayInteractiveTest, BubbleUICancelClicked) {
