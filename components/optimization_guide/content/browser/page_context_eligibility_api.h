@@ -7,11 +7,10 @@
 
 #include <stddef.h>
 
+#include <span>
 #include <string>
 #include <string_view>
 #include <vector>
-
-extern "C" {
 
 namespace optimization_guide {
 
@@ -42,6 +41,43 @@ struct FrameMetadata {
   std::vector<MetaTag> meta_tags;
 };
 
+// New C++ Interface. This allows us to pass C++ objects rather than requiring
+// everything to be C ABI compatible. When adding a new method to the library,
+// you can define a default implementation with `NOTIMPLEMENTED()` here first.
+class PageContextEligibilityApi {
+ public:
+  virtual ~PageContextEligibilityApi() = default;
+
+  virtual bool IsPageContextEligible(
+      const std::string& host,
+      const std::string& path,
+      const std::vector<FrameMetadata>& frame_metadata) const = 0;
+
+  virtual bool IsPageContextEligibleWithAccount(
+      const std::string& host,
+      const std::string& path,
+      const std::string& account,
+      const std::vector<FrameMetadata>& frame_metadata) const = 0;
+
+  virtual bool ShouldReextractPageContext(
+      const std::string& host,
+      const std::string& path,
+      const std::vector<std::string>& updated_meta_tags) const = 0;
+
+  virtual std::span<const std::string_view> GetMetaTagNamesAffectingEligibility(
+      const std::string& host,
+      const std::string& path,
+      const std::vector<FrameMetadata>& frame_metadata) const = 0;
+};
+
+using PageContextEligibilityApiGetter = const PageContextEligibilityApi* (*)();
+
+}  // namespace optimization_guide
+
+extern "C" {
+
+namespace optimization_guide {
+
 // Represents an span of string views. Used instead of a std::span to avoid ABI
 // issues.
 struct StringViewSpan {
@@ -49,7 +85,7 @@ struct StringViewSpan {
   size_t size;
 };
 
-// Table of C API functions defined within the library.
+// Legacy C ABI interface for PageContextEligibility.
 struct PageContextEligibilityAPI {
   // Whether the page is context eligible.
   bool (*IsPageContextEligible)(
