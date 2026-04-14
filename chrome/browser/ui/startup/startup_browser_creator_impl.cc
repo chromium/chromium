@@ -87,6 +87,10 @@
 #include "components/app_restore/full_restore_utils.h"
 #endif
 
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS)
+#include "chrome/browser/ui/browser_window/public/profile_browser_collection.h"
+#endif
+
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 #include "chrome/browser/search_integrity/search_integrity.h"
 #include "chrome/browser/search_integrity/search_integrity_factory.h"
@@ -131,6 +135,30 @@ Browser* GetExistingBrowserForOpenBehavior(
     Profile* profile,
     chrome::startup::IsProcessStartup process_startup) {
   Browser* workspace_browser = chrome::FindLastActiveWithProfile(profile);
+
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS)
+  // On Windows and ChromeOS we specifically want to select the last active
+  // window on the current workspace if possible, see crbug.com/497494119.
+  ProfileBrowserCollection::GetForProfile(profile)->ForEach(
+      [&](BrowserWindowInterface* window) {
+        Browser* const candidate = window->GetBrowserForMigrationOnly();
+        if (window->GetType() != BrowserWindowInterface::Type::TYPE_NORMAL) {
+          return true;
+        }
+
+        BrowserWindow* const browser_window = candidate->window();
+        if (!browser_window) {
+          return true;
+        }
+
+        if (browser_window->IsOnCurrentWorkspace()) {
+          workspace_browser = candidate;
+          return false;
+        }
+        return true;
+      },
+      BrowserCollection::Order::kActivation);
+#endif
 
 #if BUILDFLAG(IS_LINUX)
   const bool match_original_profiles =
