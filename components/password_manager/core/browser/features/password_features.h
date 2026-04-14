@@ -81,6 +81,11 @@ BASE_DECLARE_FEATURE(kAutofillReintroduceHybridPasskeyDropdownItem);
 // Enables Biometrics for the Touch To Fill feature. This only effects Android.
 BASE_DECLARE_FEATURE(kBiometricTouchToFill);
 
+// Kill switch for calling OnAddPasswordFillData() asynchronously to avoid
+// reentrant AutofillManager::Observer events.
+// TODO(crbug.com/500883329): Clean up after M141 BP (June 29, 2026).
+BASE_DECLARE_FEATURE(kCallOnAddPasswordFillDataAsynchronously);
+
 // Checks if submitted form is identical to an observed form before evaluating
 // login success/failure.
 BASE_DECLARE_FEATURE(kCheckIfSubmittedFormIdenticalToObserved);

@@ -6,7 +6,9 @@
 
 #include <utility>
 
+#include "base/feature_list.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/task/sequenced_task_runner.h"
 #include "components/autofill/content/browser/content_autofill_client.h"
 #include "components/autofill/content/browser/content_autofill_driver.h"
 #include "components/autofill/core/browser/logging/log_manager.h"
@@ -20,6 +22,7 @@
 #include "components/password_manager/content/browser/content_password_manager_driver_factory.h"
 #include "components/password_manager/content/browser/form_meta_data.h"
 #include "components/password_manager/core/browser/browser_save_password_progress_logger.h"
+#include "components/password_manager/core/browser/features/password_features.h"
 #include "components/password_manager/core/browser/password_manager.h"
 #include "components/password_manager/core/browser/password_manager_client.h"
 #include "components/password_manager/core/browser/password_manager_metrics_recorder.h"
@@ -190,7 +193,20 @@ gfx::RectF ContentPasswordManagerDriver::TransformToRootCoordinates(
 
 void ContentPasswordManagerDriver::PropagateFillDataOnParsingCompletion(
     const autofill::PasswordFormFillData& form_data) {
-  password_autofill_manager_.OnAddPasswordFillData(form_data);
+  if (base::FeatureList::IsEnabled(
+          features::kCallOnAddPasswordFillDataAsynchronously)) {
+    // This asynchronous call is to avoid reentrant AutofillManager::Observer
+    // calls. See crbug.com/500883329 for details.
+    // While PasswordAutofillAgent::ApplyFillDataOnParsingCompletion() may call
+    // back into the browser process, those Mojo events are processed after this
+    // posted task.
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE,
+        base::BindOnce(&PasswordAutofillManager::OnAddPasswordFillData,
+                       password_autofill_manager_.GetWeakPtr(), form_data));
+  } else {
+    password_autofill_manager_.OnAddPasswordFillData(form_data);
+  }
   if (const auto& agent = GetPasswordAutofillAgent()) {
     agent->ApplyFillDataOnParsingCompletion(
         autofill::MaybeClearPasswordValues(form_data));

@@ -60,6 +60,9 @@ BASE_FEATURE(kAutofillReintroduceHybridPasskeyDropdownItem,
 
 BASE_FEATURE(kBiometricTouchToFill, base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kCallOnAddPasswordFillDataAsynchronously,
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 BASE_FEATURE(kCheckIfSubmittedFormIdenticalToObserved,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
