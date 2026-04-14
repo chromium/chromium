@@ -507,7 +507,7 @@ TEST_F(PaymentsNetworkInterfaceTest,
 TEST_F(PaymentsNetworkInterfaceTest, OAuthError) {
   StartUnmasking(CardUnmaskOptions());
   identity_test_env_.WaitForAccessTokenRequestIfNecessaryAndRespondWithError(
-      GoogleServiceAuthError(GoogleServiceAuthError::SERVICE_UNAVAILABLE));
+      GoogleServiceAuthError::FromServiceUnavailable(""));
   EXPECT_EQ(PaymentsRpcResult::kPermanentFailure, result_);
   EXPECT_TRUE(unmask_response_details()->real_pan.empty());
 }
