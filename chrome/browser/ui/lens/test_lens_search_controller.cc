@@ -6,14 +6,18 @@
 
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/themes/theme_service.h"
+#include "chrome/browser/ui/contextual_search/tab_contextualization_controller.h"
 #include "chrome/browser/ui/lens/lens_overlay_query_controller.h"
+#include "chrome/browser/ui/lens/lens_query_flow_router.h"
 #include "chrome/browser/ui/lens/test_lens_overlay_controller.h"
 #include "chrome/browser/ui/lens/test_lens_overlay_query_controller.h"
 #include "chrome/browser/ui/lens/test_lens_search_contextualization_controller.h"
+#include "components/contextual_search/contextual_search_types.h"
+#include "components/contextual_search/mock_contextual_search_context_controller.h"
+#include "components/contextual_search/mock_contextual_search_session_handle.h"
 #include "components/prefs/pref_service.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
-#include "components/sync/service/sync_service.h"
-#include "components/tabs/public/tab_interface.h"
+#include "components/tabs/public/mock_tab_interface.h"
 #include "components/variations/variations_client.h"
 
 namespace lens {
@@ -51,6 +55,35 @@ lens::Text CreateTestText(const std::vector<std::string>& words) {
   }
   return text;
 }
+
+class FakeTabInterfaceForMocking : public tabs::MockTabInterface {
+ public:
+  FakeTabInterfaceForMocking() = default;
+  ~FakeTabInterfaceForMocking() override = default;
+
+  ui::UnownedUserDataHost& GetUnownedUserDataHost() override {
+    return unowned_user_data_host_;
+  }
+
+  content::WebContents* GetContents() const override { return nullptr; }
+
+ private:
+  ui::UnownedUserDataHost unowned_user_data_host_;
+};
+
+class MockTabContextualizationController
+    : public TabContextualizationController {
+ public:
+  explicit MockTabContextualizationController(tabs::TabInterface* tab)
+      : TabContextualizationController(tab) {}
+  ~MockTabContextualizationController() override = default;
+
+  void GetPageContext(GetPageContextCallback callback) override {
+    auto data = std::make_unique<lens::ContextualInputData>();
+    data->is_page_context_eligible = true;
+    std::move(callback).Run(std::move(data));
+  }
+};
 
 }  // namespace
 
@@ -116,12 +149,57 @@ TestLensSearchController::CreateLensQueryController(
 
 FakeLensQueryFlowRouter::FakeLensQueryFlowRouter(
     LensSearchController* lens_search_controller)
-    : LensQueryFlowRouter(lens_search_controller) {}
+    : LensQueryFlowRouter(lens_search_controller) {
+  mock_handle_ =
+      std::make_unique<contextual_search::MockContextualSearchSessionHandle>();
+  mock_context_controller_ = std::make_unique<
+      contextual_search::MockContextualSearchContextController>();
+  ON_CALL(*mock_handle_, CreateSearchUrl(::testing::_, ::testing::_))
+      .WillByDefault(
+          ::testing::WithArg<1>([](base::OnceCallback<void(GURL)> callback) {
+            std::move(callback).Run(GURL("http://dummy-search-url.com"));
+          }));
+  ON_CALL(*mock_handle_, GetController())
+      .WillByDefault(::testing::Return(mock_context_controller_.get()));
+
+  mock_file_info_ = std::make_unique<contextual_search::FileInfo>();
+
+  ON_CALL(*mock_handle_, CreateContextToken())
+      .WillByDefault(::testing::Return(base::UnguessableToken::Create()));
+
+  ON_CALL(*mock_handle_,
+          StartTabContextUploadFlow(::testing::_, ::testing::_, ::testing::_))
+      .WillByDefault(
+          ::testing::WithArgs<0>([this](const base::UnguessableToken& token) {
+            this->OnContextUploadStatusChangedForTesting(
+                token, lens::MimeType::kImage,
+                contextual_search::ContextUploadStatus::kUploadSuccessful,
+                std::nullopt);
+          }));
+
+  ON_CALL(*mock_context_controller_, GetFileInfo(::testing::_))
+      .WillByDefault(::testing::Return(mock_file_info_.get()));
+
+  fake_tab_interface_ = std::make_unique<FakeTabInterfaceForMocking>();
+  mock_tab_context_controller_ =
+      std::make_unique<MockTabContextualizationController>(
+          fake_tab_interface_.get());
+}
 
 FakeLensQueryFlowRouter::~FakeLensQueryFlowRouter() = default;
 
 bool FakeLensQueryFlowRouter::IsActiveTabContextEligible() const {
   return true;
+}
+
+TabContextualizationController*
+FakeLensQueryFlowRouter::GetTabContextualizationController() const {
+  return mock_tab_context_controller_.get();
+}
+
+contextual_search::ContextualSearchSessionHandle*
+FakeLensQueryFlowRouter::GetContextualSearchSessionHandle() const {
+  return mock_handle_.get();
 }
 
 std::unique_ptr<lens::LensQueryFlowRouter>
