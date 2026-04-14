@@ -1,0 +1,10 @@
+Name: fs2
+URL: https://crates.io/crates/fs2
+Version: 0.4.3
+Update Mechanism: Manual (https://crbug.com/449898466)
+License: Apache-2.0
+License File: //third_party/rust/chromium_crates_io/vendor/fs2-v0_4/LICENSE-APACHE
+Shipped: no
+Security Critical: no
+
+Description: Cross-platform file locks and file duplication.
