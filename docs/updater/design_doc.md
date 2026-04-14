@@ -879,20 +879,20 @@ interface ICompleteStatusSystem : IUnknown {
 
 #### COM Security
 
-The legacy COM classes in
+Both the new COM classes in
+[updater_internal_idl.template](https://source.chromium.org/chromium/chromium/src/+/main:chrome/updater/app/server/win/updater_internal_idl.template),
+[updater_idl.template](https://source.chromium.org/chromium/chromium/src/+/main:chrome/updater/app/server/win/updater_idl.template),
+and the legacy COM classes in
 [updater_legacy_idl.template](https://source.chromium.org/chromium/chromium/src/+/main:chrome/updater/app/server/win/updater_legacy_idl.template)
 such as on-demand, application commands, and process launcher, allow non-admin
 callers because the interfaces expose functionality that non-admin callers need
-to use. These interfaces therefore only provide restricted functionality.
+to use.
 
-The new COM classes in
-[updater_internal_idl.template](https://source.chromium.org/chromium/chromium/src/+/main:chrome/updater/app/server/win/updater_internal_idl.template)
-and
-[updater_idl.template](https://source.chromium.org/chromium/chromium/src/+/main:chrome/updater/app/server/win/updater_idl.template)
-require the callers to be admin (enforced in `RuntimeClassInitialize()`). This
-is because the corresponding interfaces allow for unrestricted functionality,
-such as installing any app that the updater supports. For non-admins, COM
-creation will fail with E_ACCESSDENIED.
+Certain methods in these interfaces require the callers to be admin (enforced in
+the individual methods via `IsCOMCallerAllowed`). This is because the
+corresponding methods allow for unrestricted functionality, such as installing
+any app that the updater supports. For non-admins, these COM methods will fail
+with `E_ACCESSDENIED`.
 
 #### COM System Service
 The updater installs an `internal` SxS system service for the new version
