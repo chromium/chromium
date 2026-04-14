@@ -64,13 +64,6 @@ class MEDIA_EXPORT AudioToolboxAudioDecoder : public AudioDecoder {
   // "Converter" for turning encoded samples into raw audio.
   ScopedAudioConverterRef decoder_;
 
-  // Actual channel count and layout from decoder, may be different than config.
-  uint32_t channel_count_ = 0u;
-  ChannelLayout channel_layout_ = CHANNEL_LAYOUT_UNSUPPORTED;
-
-  // Actual sample rate from the decoder, may be different than config.
-  uint32_t sample_rate_ = 0u;
-
   // Callback that delivers output frames.
   OutputCB output_cb_;
 
