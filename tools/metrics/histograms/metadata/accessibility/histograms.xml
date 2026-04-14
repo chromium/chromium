@@ -1396,20 +1396,6 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
-<histogram
-    name="Accessibility.CrosShelfNavigationButtonsInTabletModeChanged.OsSettings"
-    enum="BooleanEnabled" expires_after="2021-10-25">
-  <owner>gzadina@google.com</owner>
-  <owner>tbarzic@chromium.org</owner>
-  <summary>
-    The value for shelf navigation buttons setting set by the user in Chrome OS
-    Settings page. The metric will be reported after the setting change has been
-    stable for 10 seconds, or the settings window in which the value is set gets
-    closed (if the setting changes multiple times in quick succession, only the
-    final value will be reported).
-  </summary>
-</histogram>
-
 <histogram name="Accessibility.CrosSlowKeysDelay" units="ms"
     expires_after="2026-06-01">
   <owner>aluh@chromium.org</owner>

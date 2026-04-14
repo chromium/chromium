@@ -36,8 +36,6 @@ class AccessibilityHandler : public content::WebUIMessageHandler,
  private:
   friend class AccessibilityHandlerTest;
 
-  void HandleRecordSelectedShowShelfNavigationButtonsValue(
-      const base::ListValue& args);
   void HandleShowBrowserAppearanceSettings(const base::ListValue& args);
   void HandleShowChromeVoxTutorial(const base::ListValue& args);
   void HandleSetStartupSoundEnabled(const base::ListValue& args);
@@ -61,12 +59,6 @@ class AccessibilityHandler : public content::WebUIMessageHandler,
   std::u16string GetDictationLocaleDisplayName();
 
   raw_ptr<Profile> profile_;  // Weak pointer.
-
-  // Timer to record user changed value for the accessibility setting to turn
-  // shelf navigation buttons on in tablet mode. The metric is recorded with 10
-  // second delay to avoid overreporting when the user keeps toggling the
-  // setting value in the screen UI.
-  base::OneShotTimer a11y_nav_buttons_toggle_metrics_reporter_timer_;
 
   base::ScopedObservation<speech::SodaInstaller,
                           speech::SodaInstaller::Observer>
