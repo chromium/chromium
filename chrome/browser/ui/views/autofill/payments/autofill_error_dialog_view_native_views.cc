@@ -82,6 +82,7 @@ views::View* AutofillErrorDialogViewNativeViews::GetContentsView() {
         views::style::STYLE_SECONDARY));
     label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
     label->SetMultiLine(true);
+    label->SetFocusBehavior(views::View::FocusBehavior::ACCESSIBLE_ONLY);
 
     // Center-align the error icon vertically with the first line of the label.
     icon->SetBorder(views::CreateEmptyBorder(gfx::Insets().set_top(
@@ -99,6 +100,10 @@ void AutofillErrorDialogViewNativeViews::AddedToWidget() {
 
 std::u16string AutofillErrorDialogViewNativeViews::GetWindowTitle() const {
   return controller_ ? controller_->GetTitle() : std::u16string();
+}
+
+views::View* AutofillErrorDialogViewNativeViews::GetInitiallyFocusedView() {
+  return GetCancelButton();
 }
 
 base::WeakPtr<AutofillErrorDialogView>

@@ -32,6 +32,7 @@ class AutofillErrorDialogViewNativeViews : public AutofillErrorDialogView,
   views::View* GetContentsView() override;
   void AddedToWidget() override;
   std::u16string GetWindowTitle() const override;
+  views::View* GetInitiallyFocusedView() override;
   base::WeakPtr<AutofillErrorDialogView> GetWeakPtr() override;
 
  private:
