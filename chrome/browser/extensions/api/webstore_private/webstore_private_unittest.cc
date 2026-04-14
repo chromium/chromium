@@ -46,7 +46,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
-#include "chrome/browser/extensions/mv2_experiment_stage.h"
+#include "extensions/browser/mv2_experiment_stage.h"
 #endif
 
 #if !BUILDFLAG(IS_ANDROID)

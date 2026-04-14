@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_EXTENSIONS_MV2_EXPERIMENT_STAGE_H_
-#define CHROME_BROWSER_EXTENSIONS_MV2_EXPERIMENT_STAGE_H_
+#ifndef EXTENSIONS_BROWSER_MV2_EXPERIMENT_STAGE_H_
+#define EXTENSIONS_BROWSER_MV2_EXPERIMENT_STAGE_H_
 
 #include "extensions/buildflags/buildflags.h"
 
@@ -26,9 +26,10 @@ enum class MV2ExperimentStage {
   kUnsupported,
 
   // Continue adding more experiment stages here. For each new entry, update
-  // Mv2ExperimentStage in chrome/browser/resources/extensions/mv2_deprecation_util.ts.
+  // Mv2ExperimentStage in
+  // chrome/browser/resources/extensions/mv2_deprecation_util.ts.
 };
 
 }  // namespace extensions
 
-#endif  // CHROME_BROWSER_EXTENSIONS_MV2_EXPERIMENT_STAGE_H_
+#endif  // EXTENSIONS_BROWSER_MV2_EXPERIMENT_STAGE_H_

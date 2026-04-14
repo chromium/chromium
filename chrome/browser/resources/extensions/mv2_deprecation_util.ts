@@ -6,7 +6,7 @@ import {assertNotReached} from 'chrome://resources/js/assert.js';
 
 // The current stage of the Manifest V2 deprecation.
 // IMPORTANT: this should follow the same order as MV2ExperimentStage in
-// chrome/browser/extensions/mv2_experiment_stage.h
+// extensions/browser/mv2_experiment_stage.h
 export enum Mv2ExperimentStage {
   NONE = 0,
   WARNING = 1,
