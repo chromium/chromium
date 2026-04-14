@@ -261,9 +261,9 @@ class CC_EXPORT BrowserControlsOffsetManager {
   // gesture, then we reorder the animation until after the scroll.
   bool show_controls_when_scroll_completes_ = false;
 
-  // Used to track if the browser controls animation ran during the current
+  // Used to track if the browser controls hide animation ran during the current
   // scroll sequence.
-  bool did_animate_this_scroll_ = false;
+  bool did_hide_this_scroll_ = false;
 
   // If set to true, browser controls will snap to fully show or hide on scroll
   // instead of moving in pixel-perfect sync with the scroll.

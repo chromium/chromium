@@ -512,7 +512,12 @@ void BrowserControlsOffsetManager::ScrollBegin() {
     // If an animation is running when the scroll starts, count the current
     // scroll as having animated and let the animation complete its course.
     if (HasAnimation()) {
-      did_animate_this_scroll_ = true;
+      did_hide_this_scroll_ = (top_controls_animation_.IsInitialized() &&
+                               top_controls_animation_.Direction() ==
+                                   AnimationDirection::kHidingControls) ||
+                              (bottom_controls_animation_.IsInitialized() &&
+                               bottom_controls_animation_.Direction() ==
+                                   AnimationDirection::kHidingControls);
       return;
     }
   } else {
@@ -755,7 +760,7 @@ void BrowserControlsOffsetManager::SetupSnapAnimation(
     //  - At most once per scroll to prevent the controls from thrashing between
     //    the shown and hidden states
     if (viewport_offset_y <= SnapAnimationCanHideRegionHeight() ||
-        did_animate_this_scroll_ ||
+        did_hide_this_scroll_ ||
         accumulated_scroll_delta_ < controls_animated_height) {
       return;
     }
@@ -767,6 +772,7 @@ void BrowserControlsOffsetManager::SetupSnapAnimation(
 
     direction = AnimationDirection::kHidingControls;
     curve = gfx::Tween::FAST_OUT_LINEAR_IN;
+    did_hide_this_scroll_ = true;
   } else {
     // Animate to show the controls when the user scrolls up:
     //  - If the viewport offset is in the can-hide region
@@ -795,7 +801,6 @@ void BrowserControlsOffsetManager::SetupSnapAnimation(
       controls_animated_height,
       std::abs(scroll_velocity_tracker_.CurrentVelocity().y()));
   SetupAnimation(direction, animation_duration_ms, curve);
-  did_animate_this_scroll_ = true;
 }
 
 void BrowserControlsOffsetManager::ScrollEnd(
@@ -805,7 +810,7 @@ void BrowserControlsOffsetManager::ScrollEnd(
 
   if (use_snap_animation_) {
     scroll_velocity_tracker_.Reset();
-    did_animate_this_scroll_ = false;
+    did_hide_this_scroll_ = false;
     return;
   }
 

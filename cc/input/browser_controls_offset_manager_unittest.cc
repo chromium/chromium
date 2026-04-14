@@ -1853,6 +1853,36 @@ TEST_F(BrowserControlsOffsetManagerSnapAnimationTest,
 }
 
 TEST_F(BrowserControlsOffsetManagerSnapAnimationTest,
+       ShowAnimationTriggeredMoreThanOncePerScroll) {
+  BrowserControlsOffsetManager* manager = client_.manager();
+
+  // Start in the can-hide region.
+  client_.SetViewportScrollOffset(
+      0.f, manager->SnapAnimationCanHideRegionHeight() + 2 * kControlsHeight);
+
+  manager->ScrollBegin();
+  // Hide the browser controls.
+  EXPECT_TRUE(ScrollDidAnimate(kControlsHeight, /*animate_to_show=*/false));
+  manager->ScrollEnd();
+
+  manager->ScrollBegin();
+  // Simulate the user scrolling up and down in succession. The expected
+  // behavior is:
+  //   1. Scrolling up in the can-hide region should show the browser
+  //   controls.
+  //   2. Scrolling down so that net scroll is equal to controls height should
+  //   hide controls.
+  //   3. The controls can be shown more than once per scroll, so scrolling
+  //   up should show the controls again.
+  EXPECT_TRUE(ScrollDidAnimate(-kControlsHeight, /*animate_to_show=*/true));
+  EXPECT_TRUE(ScrollDidAnimate(2 * kControlsHeight,
+                               /*animate_to_show=*/false));
+  EXPECT_TRUE(ScrollDidAnimate(-2 * kControlsHeight,
+                               /*animate_to_show=*/true));
+  manager->ScrollEnd();
+}
+
+TEST_F(BrowserControlsOffsetManagerSnapAnimationTest,
        ControlsHideOnlyInCanHideRegion) {
   BrowserControlsOffsetManager* manager = client_.manager();
 
