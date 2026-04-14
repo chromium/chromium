@@ -1050,12 +1050,6 @@ inline constexpr char kAutofillEnableSeparatePixPreferenceItemDescription[] =
     "menu "
     "item.";
 
-inline constexpr char kAutofillEnableSupportForHomeAndWorkName[] =
-    "Support for Home and Work addresses in Autofill";
-inline constexpr char kAutofillEnableSupportForHomeAndWorkDescription[] =
-    "When enabled, Home and Work addresses from MyAccount are available for "
-    "autofilling";
-
 inline constexpr char kAutofillEnableSupportForNameAndEmailName[] =
     "Support for name and email addresses in Autofill";
 inline constexpr char kAutofillEnableSupportForNameAndEmailDescription[] =

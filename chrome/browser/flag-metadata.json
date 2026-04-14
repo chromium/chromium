@@ -969,11 +969,6 @@
     "expiry_milestone": 149
   },
   {
-    "name": "autofill-enable-support-for-home-and-work",
-    "owners": ["vidhanj@google.com", "jsobiech@google.com", "fleimgruber@google.com"],
-    "expiry_milestone": 145
-  },
-  {
     "name": "autofill-enable-support-for-name-and-email-profile",
     "owners": ["sygiet@google.com", "fleimgruber@google.com"],
     "expiry_milestone": 149

@@ -2076,12 +2076,6 @@ constexpr auto kFeatureEntries = std::to_array<flags_ui::FeatureEntry>({
      flag_descriptions::kNotificationCollisionManagementName,
      flag_descriptions::kNotificationCollisionManagementDescription,
      flags_ui::kOsIos, FEATURE_VALUE_TYPE(kNotificationCollisionManagement)},
-    {"autofill-enable-support-for-home-and-work",
-     flag_descriptions::kAutofillEnableSupportForHomeAndWorkName,
-     flag_descriptions::kAutofillEnableSupportForHomeAndWorkDescription,
-     flags_ui::kOsIos,
-     FEATURE_VALUE_TYPE(
-         autofill::features::kAutofillEnableSupportForHomeAndWork)},
     {"lens-overlay-navigation-history",
      flag_descriptions::kLensOverlayNavigationHistoryName,
      flag_descriptions::kLensOverlayNavigationHistoryDescription,

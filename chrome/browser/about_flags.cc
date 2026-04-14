@@ -11705,12 +11705,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kAutofillManualTestingDataDescription, kOsAll,
      STRING_VALUE_TYPE(autofill::kManualContentImportForTestingFlag, "")},
 
-    {"autofill-enable-support-for-home-and-work",
-     flag_descriptions::kAutofillEnableSupportForHomeAndWorkName,
-     flag_descriptions::kAutofillEnableSupportForHomeAndWorkDescription, kOsAll,
-     FEATURE_VALUE_TYPE(
-         autofill::features::kAutofillEnableSupportForHomeAndWork)},
-
 #if !BUILDFLAG(IS_ANDROID)
     {"new-tab-adds-to-active-group",
      flag_descriptions::kNewTabAddsToActiveGroupName,
