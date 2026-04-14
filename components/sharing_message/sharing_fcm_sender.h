@@ -19,6 +19,7 @@
 #include "components/sharing_message/sharing_message_sender.h"
 #include "components/sharing_message/sharing_send_message_result.h"
 #include "components/sync/model/syncable_service.h"
+#include "components/sync/protocol/sharing_message_specifics.pb.h"
 #include "components/sync/protocol/unencrypted_sharing_message.pb.h"
 #include "components/sync/service/sync_service_observer.h"
 #include "components/sync_device_info/device_info.h"
@@ -125,16 +126,12 @@ class SharingFCMSender : public SharingMessageSender::SendMessageDelegate,
                           gcm::GCMEncryptionResult result,
                           std::string message);
 
-  void DoSendMessageToSenderIdTarget(const std::string& fcm_token,
-                                     base::TimeDelta time_to_live,
-                                     const std::string& message_id,
-                                     std::string message,
-                                     SendMessageCallback callback);
-
-  void DoSendMessageToServerTarget(const std::string& server_channel,
-                                   const std::string& message_id,
-                                   std::string message,
-                                   SendMessageCallback callback);
+  void SendMessageViaSync(sync_pb::SharingMessageSpecifics::ChannelConfiguration
+                              channel_configuration,
+                          SharingChannelType channel_type,
+                          const std::string& message_id,
+                          std::string message,
+                          SendMessageCallback callback);
 
   void OnMessageSentViaSync(SendMessageCallback callback,
                             const std::string& message_id,
