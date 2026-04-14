@@ -569,10 +569,12 @@ void CanvasResourceProviderSharedImage::EndWriteAccess() {
   }
 
   if (is_accelerated_) {
-    // As a write operation has just completed on the current resource, it is
-    // now necessary to preserve that resource's contents on a subsequent
-    // CopyOnWrite.
-    must_preserve_content_on_copy_on_write_ = true;
+    if (IsCanvas2D()) {
+      // As a write operation has just completed on the current resource, it is
+      // now necessary to preserve that resource's contents on a subsequent
+      // CopyOnWrite.
+      must_preserve_content_on_copy_on_write_for_canvas_2d_ = true;
+    }
   } else {
     if (ShouldReplaceTargetBuffer()) {
       resource_ = NewOrRecycledResource();
@@ -628,7 +630,7 @@ Canvas2DResourceProviderSharedImage::WillDrawInternal() {
     resource_ = NewOrRecycledResource();
     DCHECK(IsResourceUsable(resource_.get()));
     dst_access = resource_->BeginAccess(/*readonly=*/false);
-    if (must_preserve_content_on_copy_on_write_) {
+    if (must_preserve_content_on_copy_on_write_for_canvas_2d_) {
       auto old_mailbox = old_resource_shared_image->GetSharedImage()->mailbox();
       auto mailbox = resource()->GetSharedImage()->mailbox();
       auto src_access = old_resource->BeginAccess(/*readonly=*/true);
@@ -641,11 +643,12 @@ Canvas2DResourceProviderSharedImage::WillDrawInternal() {
       is_cleared_ = false;
     }
 
-    UMA_HISTOGRAM_BOOLEAN("Blink.Canvas.ContentChangeMode",
-                          must_preserve_content_on_copy_on_write_);
+    UMA_HISTOGRAM_BOOLEAN(
+        "Blink.Canvas.ContentChangeMode",
+        must_preserve_content_on_copy_on_write_for_canvas_2d_);
     // By default, the contents of the new resource must be preserved on a
     // subsequent CopyOnWrite.
-    must_preserve_content_on_copy_on_write_ = true;
+    must_preserve_content_on_copy_on_write_for_canvas_2d_ = true;
   } else {
     dst_access = resource_->BeginAccess(/*readonly=*/false);
   }
@@ -656,17 +659,15 @@ std::unique_ptr<gpu::RasterScopedAccess>
 CanvasNon2DResourceProviderSharedImage::WillDrawInternal() {
   DCHECK(resource_);
 
-  // Since the resource will be updated, the cached snapshot is no longer
-  // valid. Note that it is important to release this reference here to not
-  // trigger copy-on-write below from the resource ref in the snapshot.
+  // Since the resource will be updated, the cached snapshot is no longer valid.
   // Note that this is valid for single buffered mode also, since while the
-  // resource/mailbox remains the same, the snapshot needs an updated sync
-  // token for these writes.
+  // resource/mailbox remains the same, the snapshot needs an updated sync token
+  // for these writes.
   cached_snapshot_.reset();
 
-  // Determine if a copy is needed for accelerated resources. Note that for
-  // unaccelerated resources, writes to the SharedImage are deferred to
-  // ProduceCanvasResource and hence copy-on-write is never needed here.
+  // Determine if a new resource is needed for accelerated resources. Note that
+  // for unaccelerated resources, writes to the SharedImage are deferred to
+  // ProduceCanvasResource.
   if (!is_accelerated_ || !ShouldReplaceTargetBuffer(cached_content_id_)) {
     return resource_->BeginAccess(/*readonly=*/false);
   }
@@ -683,11 +684,6 @@ CanvasNon2DResourceProviderSharedImage::WillDrawInternal() {
   // has stale content) is cleared on the next BeginRasterCHROMIUM.
   is_cleared_ = false;
 
-  UMA_HISTOGRAM_BOOLEAN("Blink.Canvas.ContentChangeMode",
-                        must_preserve_content_on_copy_on_write_);
-  // By default, the contents of the new resource must be preserved on a
-  // subsequent CopyOnWrite.
-  must_preserve_content_on_copy_on_write_ = true;
   return dst_access;
 }
 
@@ -732,7 +728,7 @@ bool Canvas2DResourceProviderSharedImage::WritePixelsForCanvas2D(
   // (see discussion here:
   // https://chromium-review.googlesource.com/c/chromium/src/+/7557841/comment/bb38e497_ef1efdbc/).
   // Verify that this is the case and update the code here.
-  must_preserve_content_on_copy_on_write_ = true;
+  must_preserve_content_on_copy_on_write_for_canvas_2d_ = true;
 
   auto client_si = resource()->GetSharedImage();
   RasterInterface()->WritePixels(client_si->mailbox(), x, y,
@@ -776,14 +772,6 @@ bool CanvasNon2DResourceProviderSharedImage::UploadToBackingSharedImage(
   }
 
   auto access = WillDrawInternal();
-
-  // The below  write to the resource's SharedImage will need to be preserved in
-  // the case of a subsequent CopyOnWrite.
-  // TODO(crbug.com/352263194): Logically this bool must already be true
-  // (see discussion here:
-  // https://chromium-review.googlesource.com/c/chromium/src/+/7557841/comment/bb38e497_ef1efdbc/).
-  // Verify that this is the case and update the code here.
-  must_preserve_content_on_copy_on_write_ = true;
 
   auto client_si = resource()->GetSharedImage();
   RasterInterface()->WritePixels(client_si->mailbox(), /*dst_x_offset=*/0,
@@ -1862,11 +1850,11 @@ void CanvasResourceProvider::InitializeForRecording(
 }
 
 void CanvasResourceProvider::RecordingCleared() {
-  // Since the recording has been cleared, it contains no draw commands and it
-  // is now safe to discard the old copy of canvas content on a subsequent
-  // CopyOnWrite.
-  must_preserve_content_on_copy_on_write_ = false;
   if (IsCanvas2D()) {
+    // Since the recording has been cleared, it contains no draw commands and it
+    // is now safe to discard the old copy of canvas content on a subsequent
+    // CopyOnWrite.
+    must_preserve_content_on_copy_on_write_for_canvas_2d_ = false;
     clear_frame_for_canvas2d_ = true;
   }
 }

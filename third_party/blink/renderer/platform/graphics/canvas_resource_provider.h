@@ -232,7 +232,8 @@ class PLATFORM_EXPORT CanvasResourceProvider
   // Whether the content of the current resource must be transferred to a new
   // resource on CopyOnWrite. True by default, but can be set to false as an
   // optimization if the current resource is known to have been cleared.
-  bool must_preserve_content_on_copy_on_write_ = true;
+  // This is only used for Canvas2D.
+  bool must_preserve_content_on_copy_on_write_for_canvas_2d_ = true;
 
   void OnMemoryDump(base::trace_event::ProcessMemoryDump*) override;
 
