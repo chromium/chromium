@@ -21,6 +21,7 @@ if (!is_android) {
     deps = [
       "//base",
       "//base/test:test_support",
+      "//chrome/test:in_process_browser_test_mixin",
       "//content/public/common",
       "//testing/gtest",
       "//ui/base",

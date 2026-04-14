@@ -8,7 +8,7 @@
 #include <memory>
 
 #include "base/scoped_environment_variable_override.h"
-#include "chrome/test/base/mixin_based_in_process_browser_test.h"
+#include "chrome/test/base/in_process_browser_test_mixin.h"
 
 // Mixin to automatically set up generic pixel test configurations.
 class PixelTestConfigurationMixin : public InProcessBrowserTestMixin {
