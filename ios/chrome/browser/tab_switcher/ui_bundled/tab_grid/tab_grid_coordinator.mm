@@ -1808,11 +1808,23 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
 }
 
 - (void)showPageActionMenuFromTabGrid {
+  Browser* browser = self.regularBrowser;
+  if (!browser) {
+    // The browser can be nil here, for example when switching account.
+    return;
+  }
+  web::WebState* activeWebState =
+      browser->GetWebStateList()->GetActiveWebState();
+  if (!activeWebState) {
+    // The page action menu requires an active tab. Return early if there is
+    // none.
+    return;
+  }
   // TODO(crbug.com/465505528) Propagate page action menu entry point source to
   // page action menu coordinator.
   self.pageActionMenuCoordinator = [[PageActionMenuCoordinator alloc]
       initWithBaseViewController:_viewController
-                         browser:self.regularBrowser];
+                         browser:browser];
   self.pageActionMenuCoordinator.pageActionMenuHandler = HandlerForProtocol(
       self.regularBrowser->GetCommandDispatcher(), PageActionMenuCommands);
   [self.pageActionMenuCoordinator start];

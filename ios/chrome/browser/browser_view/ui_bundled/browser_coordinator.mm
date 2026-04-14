@@ -3911,6 +3911,11 @@ const char kChromeAppStoreUrl[] =
 #pragma mark - PageActionMenuCommands
 
 - (void)showPageActionMenu {
+  if (!self.activeWebState) {
+    // The page action menu requires an active tab. Return early if there is
+    // none.
+    return;
+  }
   // TODO(crbug.com/465505528) Propagate page action menu entry point source to
   // page action menu coordinator.
   _pageActionMenuCoordinator = [[PageActionMenuCoordinator alloc]
