@@ -508,4 +508,10 @@ void ServiceWorkerMetrics::RecordFindRegistrationForClientUrlTime(
   }
 }
 
+void ServiceWorkerMetrics::RecordMainScriptRequestValidationResult(
+    ServiceWorkerMainScriptRequestValidationResult result) {
+  base::UmaHistogramEnumeration("ServiceWorker.MainScriptUrlValidationResult",
+                                result);
+}
+
 }  // namespace content

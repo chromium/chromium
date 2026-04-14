@@ -16,6 +16,15 @@
 
 namespace content {
 
+// Used for UMA. Append-only.
+enum class ServiceWorkerMainScriptRequestValidationResult {
+  kOk = 0,
+  kForgedUrl = 1,
+  kForgedDestination = 2,
+  kForgedMode = 3,
+  kMaxValue = kForgedMode,
+};
+
 class ServiceWorkerMetrics {
  public:
   // Used for UMA. Append-only.
@@ -89,6 +98,9 @@ class ServiceWorkerMetrics {
     // Add new events to record here.
     kMaxValue = STATIC_ROUTER,
   };
+
+  static void RecordMainScriptRequestValidationResult(
+      ServiceWorkerMainScriptRequestValidationResult result);
 
   // Not used for UMA.
   enum class StartSituation {

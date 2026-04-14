@@ -26,7 +26,9 @@
 #include "content/browser/service_worker/service_worker_context_core.h"
 #include "content/browser/service_worker/service_worker_context_wrapper.h"
 #include "content/browser/service_worker/service_worker_loader_helpers.h"
+#include "content/browser/service_worker/service_worker_metrics.h"
 #include "content/browser/service_worker/service_worker_version.h"
+#include "content/common/features.h"
 #include "content/public/browser/url_loader_throttles.h"
 #include "content/public/common/content_client.h"
 #include "net/base/ip_endpoint.h"
@@ -101,6 +103,11 @@ ServiceWorkerNewScriptLoader::ServiceWorkerNewScriptLoader(
                           network::mojom::RequestDestination::kServiceWorker &&
                       original_request.mode ==
                           network::mojom::RequestMode::kSameOrigin),
+      should_update_policy_container_(
+          is_main_script_ &&
+          (!base::FeatureList::IsEnabled(
+               features::kServiceWorkerVerifyMainScriptUrl) ||
+           original_request.url == version->script_url())),
       original_options_(options),
       version_(version),
       network_watcher_(FROM_HERE,
@@ -112,6 +119,10 @@ ServiceWorkerNewScriptLoader::ServiceWorkerNewScriptLoader(
                                mojo::SimpleWatcher::ArmingPolicy::MANUAL,
                                base::SequencedTaskRunner::GetCurrentDefault()),
       requesting_frame_id_(requesting_frame_id) {
+  ServiceWorkerMetrics::RecordMainScriptRequestValidationResult(
+      service_worker_loader_helpers::ValidateMainScriptRequest(original_request,
+                                                               *version));
+
   TRACE_EVENT("ServiceWorker",
               "ServiceWorkerNewScriptLoader::ServiceWorkerNewScriptLoader",
               perfetto::Flow::ProcessScoped(request_id_,
@@ -272,7 +283,7 @@ void ServiceWorkerNewScriptLoader::OnReceiveResponse(
     return;
   }
 
-  if (is_main_script_) {
+  if (should_update_policy_container_) {
     // Check the path restriction defined in the spec:
     // https://w3c.github.io/ServiceWorker/#service-worker-script-response
     std::optional<std::string_view> service_worker_allowed =

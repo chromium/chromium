@@ -9,10 +9,12 @@
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_feature_list.h"
 #include "content/browser/service_worker/embedded_worker_test_helper.h"
 #include "content/browser/service_worker/service_worker_context_core.h"
 #include "content/browser/service_worker/service_worker_registration.h"
 #include "content/browser/service_worker/service_worker_test_utils.h"
+#include "content/common/features.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/test/fake_network.h"
 #include "crypto/sha2.h"
@@ -247,6 +249,70 @@ TEST_F(ServiceWorkerScriptLoaderFactoryCopyResumeTest,
 
   // The received response has no body because kNewData is empty.
   CheckResponse(kNewData);
+}
+
+TEST_F(ServiceWorkerScriptLoaderFactoryTest, ForgeRequest_FlagDisabled) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(
+      features::kServiceWorkerVerifyMainScriptUrl);
+
+  const GURL kForgedScriptURL("https://example.com/forge.js");
+
+  network::ResourceRequest request;
+  request.url = kForgedScriptURL;
+  request.destination = network::mojom::RequestDestination::kServiceWorker;
+  request.mode = network::mojom::RequestMode::kSameOrigin;
+
+  std::unique_ptr<network::TestURLLoaderClient> client =
+      std::make_unique<network::TestURLLoaderClient>();
+  mojo::PendingRemote<network::mojom::URLLoader> loader;
+
+  // Use Mojo to call CreateLoaderAndStart so that ReportBadMessage can be
+  // tested.
+  mojo::Remote<network::mojom::URLLoaderFactory> factory_remote;
+  mojo::MakeSelfOwnedReceiver(std::move(factory_),
+                              factory_remote.BindNewPipeAndPassReceiver());
+
+  factory_remote->CreateLoaderAndStart(
+      loader.InitWithNewPipeAndPassReceiver(), 1, 0, request,
+      client->CreateRemote(),
+      net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS));
+
+  client->RunUntilComplete();
+  // It should NOT be aborted because the flag is disabled.
+  EXPECT_EQ(net::OK, client->completion_status().error_code);
+}
+
+TEST_F(ServiceWorkerScriptLoaderFactoryTest, ForgeRequest_FlagEnabled) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      features::kServiceWorkerVerifyMainScriptUrl);
+
+  const GURL kForgedScriptURL("https://example.com/forge.js");
+
+  network::ResourceRequest request;
+  request.url = kForgedScriptURL;
+  request.destination = network::mojom::RequestDestination::kServiceWorker;
+  request.mode = network::mojom::RequestMode::kSameOrigin;
+
+  std::unique_ptr<network::TestURLLoaderClient> client =
+      std::make_unique<network::TestURLLoaderClient>();
+  mojo::PendingRemote<network::mojom::URLLoader> loader;
+
+  // Use Mojo to call CreateLoaderAndStart so that ReportBadMessage can be
+  // tested.
+  mojo::Remote<network::mojom::URLLoaderFactory> factory_remote;
+  mojo::MakeSelfOwnedReceiver(std::move(factory_),
+                              factory_remote.BindNewPipeAndPassReceiver());
+
+  factory_remote->CreateLoaderAndStart(
+      loader.InitWithNewPipeAndPassReceiver(), 1, 0, request,
+      client->CreateRemote(),
+      net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS));
+
+  client->RunUntilComplete();
+  // It should be aborted by CheckIfScriptRequestIsValid.
+  EXPECT_EQ(net::ERR_ABORTED, client->completion_status().error_code);
 }
 
 }  // namespace content

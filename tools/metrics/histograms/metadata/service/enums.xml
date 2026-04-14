@@ -224,6 +224,13 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//components/services/storage/service_worker/service_worker_database.cc:ServiceWorkerIPAddressSpace) -->
 
+<enum name="ServiceWorkerMainScriptUrlValidationResult">
+  <int value="0" label="OK"/>
+  <int value="1" label="Forged URL"/>
+  <int value="2" label="Forged Destination"/>
+  <int value="3" label="Forged Mode"/>
+</enum>
+
 <enum name="ServiceWorkerMetrics.EventType">
   <int value="0" label="ACTIVATE"/>
   <int value="1" label="INSTALL"/>

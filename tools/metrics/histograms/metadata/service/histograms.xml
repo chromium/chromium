@@ -1226,6 +1226,19 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="ServiceWorker.MainScriptUrlValidationResult"
+    enum="ServiceWorkerMainScriptUrlValidationResult"
+    expires_after="2026-10-10">
+  <owner>yyanagisawa@chromium.org</owner>
+  <owner>chrome-worker@google.com</owner>
+  <summary>
+    Records the result of validating a service worker main script request in the
+    browser process. A &quot;forged&quot; result indicates that the renderer
+    process (potentially compromised) sent a request that does not match the
+    expected script URL, destination, or mode.
+  </summary>
+</histogram>
+
 <histogram name="ServiceWorker.MaybeStartWorker.Purpose"
     enum="ServiceWorkerMetrics.EventType" expires_after="2025-12-14">
   <owner>yyanagisawa@chromium.org</owner>

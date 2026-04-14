@@ -90,6 +90,12 @@ CONTENT_EXPORT bool IsPathRestrictionSatisfiedWithoutHeader(
     const GURL& script_url,
     std::string* error_message);
 
+// Validates a request for a service worker main script.
+// Returns the validation result.
+ServiceWorkerMainScriptRequestValidationResult ValidateMainScriptRequest(
+    const network::ResourceRequest& resource_request,
+    const ServiceWorkerVersion& version);
+
 // Returns the set of hash strings of fetch handlers which can be bypassed.
 const base::flat_set<std::string> FetchHandlerBypassedHashStrings();
 

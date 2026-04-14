@@ -20,7 +20,9 @@
 #include "content/browser/service_worker/service_worker_context_core.h"
 #include "content/browser/service_worker/service_worker_context_wrapper.h"
 #include "content/browser/service_worker/service_worker_loader_helpers.h"
+#include "content/browser/service_worker/service_worker_metrics.h"
 #include "content/browser/service_worker/service_worker_version.h"
+#include "content/common/features.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/content_browser_client.h"
 #include "content/public/common/content_client.h"
@@ -72,6 +74,11 @@ ServiceWorkerUpdatedScriptLoader::ServiceWorkerUpdatedScriptLoader(
                           network::mojom::RequestDestination::kServiceWorker &&
                       original_request.mode ==
                           network::mojom::RequestMode::kSameOrigin),
+      should_update_policy_container_(
+          is_main_script_ &&
+          (!base::FeatureList::IsEnabled(
+               features::kServiceWorkerVerifyMainScriptUrl) ||
+           original_request.url == version->script_url())),
       options_(options),
       version_(std::move(version)),
       network_watcher_(FROM_HERE,
@@ -82,6 +89,9 @@ ServiceWorkerUpdatedScriptLoader::ServiceWorkerUpdatedScriptLoader(
                                mojo::SimpleWatcher::ArmingPolicy::MANUAL,
                                base::SequencedTaskRunner::GetCurrentDefault()),
       request_start_time_(base::TimeTicks::Now()) {
+  ServiceWorkerMetrics::RecordMainScriptRequestValidationResult(
+      service_worker_loader_helpers::ValidateMainScriptRequest(original_request,
+                                                               *version_));
 #if DCHECK_IS_ON()
   service_worker_loader_helpers::CheckVersionStatusBeforeWorkerScriptLoad(
       version_->status(), is_main_script_, version_->script_type());
@@ -211,7 +221,7 @@ int ServiceWorkerUpdatedScriptLoader::WillWriteResponseHead(
   auto client_response = response_head.Clone();
   client_response->request_start = request_start_time_;
 
-  if (is_main_script_) {
+  if (should_update_policy_container_) {
     version_->SetMainScriptResponse(
         std::make_unique<ServiceWorkerVersion::MainScriptResponse>(
             *client_response));

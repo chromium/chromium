@@ -19,6 +19,7 @@
 #include "content/browser/devtools/devtools_instrumentation.h"
 #include "content/browser/loader/browser_initiated_resource_request.h"
 #include "content/browser/service_worker/service_worker_consts.h"
+#include "content/browser/service_worker/service_worker_metrics.h"
 #include "content/browser/service_worker/service_worker_synthetic_response_manager.h"
 #include "content/browser/storage_partition_impl.h"
 #include "content/common/features.h"
@@ -404,6 +405,34 @@ bool IsPathRestrictionSatisfiedWithoutHeader(const GURL& scope,
                                              std::string* error_message) {
   return IsPathRestrictionSatisfiedInternal(scope, script_url, false,
                                             std::nullopt, error_message);
+}
+
+ServiceWorkerMainScriptRequestValidationResult ValidateMainScriptRequest(
+    const network::ResourceRequest& resource_request,
+    const ServiceWorkerVersion& version) {
+  const bool is_url_match = (resource_request.url == version.script_url());
+  const bool is_dest_match =
+      (resource_request.destination ==
+       network::mojom::RequestDestination::kServiceWorker);
+  const bool is_mode_match =
+      (resource_request.mode == network::mojom::RequestMode::kSameOrigin);
+
+  if (is_dest_match) {
+    if (!is_mode_match) {
+      return ServiceWorkerMainScriptRequestValidationResult::kForgedMode;
+    }
+    if (!is_url_match) {
+      return ServiceWorkerMainScriptRequestValidationResult::kForgedUrl;
+    }
+    return ServiceWorkerMainScriptRequestValidationResult::kOk;
+  }
+
+  if (is_mode_match && is_url_match) {
+    return ServiceWorkerMainScriptRequestValidationResult::kForgedDestination;
+  }
+
+  // Not a main script request (or not forged in a way we track).
+  return ServiceWorkerMainScriptRequestValidationResult::kOk;
 }
 
 const base::flat_set<std::string> FetchHandlerBypassedHashStrings() {

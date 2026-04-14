@@ -164,6 +164,7 @@ class CONTENT_EXPORT ServiceWorkerUpdatedScriptLoader final
   const GURL request_url_;
 
   const bool is_main_script_;
+  const bool should_update_policy_container_;
 
   // Loader options to pass to the network loader.
   const uint32_t options_;

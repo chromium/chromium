@@ -737,6 +737,12 @@ BASE_FEATURE(kServiceWorkerOptionalTimeoutIterator,
 BASE_FEATURE(kServiceWorkerWindowClientInitiator,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// If enabled, the browser process verifies that the URL of a main script
+// request matches the service worker's script URL.
+// See https://crbug.com/497983180.
+BASE_FEATURE(kServiceWorkerVerifyMainScriptUrl,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // (crbug.com/486495094): When enabled, triggers a soft update check after
 // functional events complete (spec step 8) and on worker start failure
 // (spec step 5), per the "Fire Functional Event" spec algorithm.

@@ -19,9 +19,11 @@
 #include "content/browser/service_worker/service_worker_context_core.h"
 #include "content/browser/service_worker/service_worker_host.h"
 #include "content/browser/service_worker/service_worker_installed_script_loader.h"
+#include "content/browser/service_worker/service_worker_metrics.h"
 #include "content/browser/service_worker/service_worker_new_script_loader.h"
 #include "content/browser/service_worker/service_worker_updated_script_loader.h"
 #include "content/browser/service_worker/service_worker_version.h"
+#include "content/common/features.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "net/base/hash_value.h"
@@ -199,6 +201,17 @@ bool ServiceWorkerScriptLoaderFactory::CheckIfScriptRequestIsValid(
   }
 
   // TODO(falken): Make sure we don't handle a redirected request.
+
+  if (resource_request.destination ==
+          network::mojom::RequestDestination::kServiceWorker &&
+      resource_request.mode == network::mojom::RequestMode::kSameOrigin &&
+      resource_request.url != version->script_url()) {
+    if (base::FeatureList::IsEnabled(
+            features::kServiceWorkerVerifyMainScriptUrl)) {
+      mojo::ReportBadMessage("SWSLF_FORGED_MAIN_SCRIPT_REQUEST");
+      return false;
+    }
+  }
 
   return true;
 }
