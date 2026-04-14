@@ -24,8 +24,6 @@ const char kAppListContinueTaskOpenTypeHistogramInClamshell[] =
     "Apps.AppListContinueTaskOpenType.ClamshellMode";
 const char kAppListContinueTaskOpenTypeHistogramInTablet[] =
     "Apps.AppListContinueTaskOpenType.TabletMode";
-const char kAppListZeroStateSuggestionOpenTypeHistogram[] =
-    "Apps.AppList.ZeroStateSuggestionOpenType";
 const char kAppListDefaultSearchResultOpenTypeHistogram[] =
     "Apps.AppListDefaultSearchResultOpenType";
 // The UMA histogram that logs the length of user typed queries app list
@@ -155,11 +153,6 @@ void RecordDefaultSearchResultOpenTypeHistogram(SearchResultType type) {
     return;
   }
   UMA_HISTOGRAM_ENUMERATION(kAppListDefaultSearchResultOpenTypeHistogram, type,
-                            SEARCH_RESULT_TYPE_BOUNDARY);
-}
-
-void RecordZeroStateSuggestionOpenTypeHistogram(SearchResultType type) {
-  UMA_HISTOGRAM_ENUMERATION(kAppListZeroStateSuggestionOpenTypeHistogram, type,
                             SEARCH_RESULT_TYPE_BOUNDARY);
 }
 

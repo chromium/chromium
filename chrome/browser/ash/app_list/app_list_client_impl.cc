@@ -304,11 +304,6 @@ void AppListClientImpl::OpenSearchResult(int profile_id,
     RecordDefaultSearchResultOpenTypeHistogram(result->metrics_type());
   }
 
-  if (!last_query_length &&
-      launched_from == ash::AppListLaunchedFrom::kLaunchedFromSearchBox) {
-    RecordZeroStateSuggestionOpenTypeHistogram(result->metrics_type());
-  }
-
   if (launched_from == ash::AppListLaunchedFrom::kLaunchedFromSearchBox) {
     RecordOpenedResultFromSearchBox(result->metrics_type());
   }

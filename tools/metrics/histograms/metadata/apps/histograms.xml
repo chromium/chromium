@@ -376,24 +376,6 @@ chromium-metrics-reviews@google.com.
   <summary>Records an app launch grouped by launch source.</summary>
 </histogram>
 
-<histogram name="Apps.AppList.AggregatedMlAppRankFail" units="units"
-    expires_after="M92">
-  <owner>pdyson@chromium.org</owner>
-  <summary>
-    The number of apps the were not able to be ranked by the Aggregated ML app
-    ranker (Top Cat).
-  </summary>
-</histogram>
-
-<histogram name="Apps.AppList.AggregatedMlAppRankSuccess" units="units"
-    expires_after="M92">
-  <owner>pdyson@chromium.org</owner>
-  <summary>
-    The number of apps successfully ranked by the Aggregated ML app ranker (Top
-    Cat).
-  </summary>
-</histogram>
-
 <histogram name="Apps.AppList.AnnotationStorage.DatabaseSize" units="MB"
     expires_after="2026-12-01">
   <owner>chenjih@google.com</owner>
@@ -1526,15 +1508,6 @@ chromium-metrics-reviews@google.com.
   <owner>chromeos-launcher-search@google.com</owner>
   <summary>
     The type of item that was launched from a zero state launcher search result.
-  </summary>
-</histogram>
-
-<histogram name="Apps.AppList.ZeroStateSuggestionOpenType"
-    enum="AppListSearchResult" expires_after="2021-03-15">
-  <owner>jennyz@chromium.org</owner>
-  <owner>newcomer@chromium.org</owner>
-  <summary>
-    The type of the app list suggestion that was opened by user in zero state.
   </summary>
 </histogram>
 
