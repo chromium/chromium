@@ -797,9 +797,11 @@ TEST(VideoFrame, CreateFrame_OddSize) {
     if (plane == VideoFrame::Plane::kY || plane == VideoFrame::Plane::kA) {
       EXPECT_LT(frame->GetVisibleRowBytes(plane), frame->row_bytes(plane));
       EXPECT_LT(frame->GetVisibleRows(plane), frame->rows(plane));
+      EXPECT_LT(frame->GetVisibleColumns(plane), frame->columns(plane));
     } else {
       EXPECT_EQ(frame->GetVisibleRowBytes(plane), frame->row_bytes(plane));
       EXPECT_EQ(frame->GetVisibleRows(plane), frame->rows(plane));
+      EXPECT_EQ(frame->GetVisibleColumns(plane), frame->columns(plane));
     }
   }
 
@@ -811,10 +813,11 @@ TEST(VideoFrame, CreateFrame_OddSize) {
   for (int plane = 0; plane < 4; plane++) {
     EXPECT_EQ(frame->GetVisibleRowBytes(plane), frame->row_bytes(plane));
     EXPECT_EQ(frame->GetVisibleRows(plane), frame->rows(plane));
+    EXPECT_EQ(frame->GetVisibleColumns(plane), frame->columns(plane));
   }
 }
 
-TEST(VideoFrame, RowBytes) {
+TEST(VideoFrame, RowsColumnsAndRowBytes) {
   constexpr gfx::Size kCodedSize(16, 14);
   constexpr gfx::Rect kVisibleRect(4, 4, 8, 8);
 
@@ -831,6 +834,10 @@ TEST(VideoFrame, RowBytes) {
   ASSERT_EQ(frame->rows(VideoFrame::Plane::kU), kCodedSize.height() / 2);
   ASSERT_EQ(frame->rows(VideoFrame::Plane::kV), kCodedSize.height() / 2);
   ASSERT_EQ(frame->rows(VideoFrame::Plane::kA), kCodedSize.height());
+  ASSERT_EQ(frame->columns(VideoFrame::Plane::kY), kCodedSize.width());
+  ASSERT_EQ(frame->columns(VideoFrame::Plane::kU), kCodedSize.width() / 2);
+  ASSERT_EQ(frame->columns(VideoFrame::Plane::kV), kCodedSize.width() / 2);
+  ASSERT_EQ(frame->columns(VideoFrame::Plane::kA), kCodedSize.width());
 
   ASSERT_EQ(frame->GetVisibleRowBytes(VideoFrame::Plane::kY),
             kVisibleRect.width());
@@ -848,6 +855,14 @@ TEST(VideoFrame, RowBytes) {
             kVisibleRect.height() / 2);
   ASSERT_EQ(frame->GetVisibleRows(VideoFrame::Plane::kA),
             kVisibleRect.height());
+  ASSERT_EQ(frame->GetVisibleColumns(VideoFrame::Plane::kY),
+            kVisibleRect.width());
+  ASSERT_EQ(frame->GetVisibleColumns(VideoFrame::Plane::kU),
+            kVisibleRect.width() / 2);
+  ASSERT_EQ(frame->GetVisibleColumns(VideoFrame::Plane::kV),
+            kVisibleRect.width() / 2);
+  ASSERT_EQ(frame->GetVisibleColumns(VideoFrame::Plane::kA),
+            kVisibleRect.width());
 }
 
 TEST(VideoFrame, AllocationSize_OddSize) {

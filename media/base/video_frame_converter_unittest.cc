@@ -20,14 +20,54 @@ namespace {
 // calculate the SSIM for smaller sizes.
 constexpr gfx::Size kCodedSize(128, 128);
 constexpr gfx::Rect kVisibleRect(64, 64, 64, 64);
+constexpr gfx::Rect kOddRect(0, 0, 63, 63);
 
-gfx::Size SelectDestSize(bool scaled) {
-  return scaled ? gfx::ScaleToRoundedSize(kCodedSize, 0.5) : kCodedSize;
+enum class TestConversionType {
+  kNormal,
+  kScaled,
+  kOdd,  // Visible rect is the same as the coded size but odd.
+};
+
+gfx::Size SelectDestSize(TestConversionType conversion_type) {
+  switch (conversion_type) {
+    case TestConversionType::kNormal:
+      return kCodedSize;
+    case TestConversionType::kScaled:
+      return gfx::ScaleToRoundedSize(kCodedSize, 0.5);
+    case TestConversionType::kOdd:
+      return kOddRect.size();
+  }
 }
 
-gfx::Rect SelectDestRect(bool scaled) {
-  return scaled ? gfx::ScaleToRoundedRect(kVisibleRect, 0.5, 0.5)
-                : kVisibleRect;
+gfx::Rect SelectDestRect(TestConversionType conversion_type) {
+  switch (conversion_type) {
+    case TestConversionType::kNormal:
+      return kVisibleRect;
+    case TestConversionType::kScaled:
+      return gfx::ScaleToRoundedRect(kVisibleRect, 0.5, 0.5);
+    case TestConversionType::kOdd:
+      return kOddRect;
+  }
+}
+
+gfx::Size SelectSrcCodedSize(TestConversionType conversion_type) {
+  switch (conversion_type) {
+    case TestConversionType::kNormal:
+    case TestConversionType::kScaled:
+      return kCodedSize;
+    case TestConversionType::kOdd:
+      return kOddRect.size();
+  }
+}
+
+gfx::Rect SelectSrcRect(TestConversionType conversion_type) {
+  switch (conversion_type) {
+    case TestConversionType::kNormal:
+    case TestConversionType::kScaled:
+      return kVisibleRect;
+    case TestConversionType::kOdd:
+      return kOddRect;
+  }
 }
 
 bool IsConversionSupported(VideoPixelFormat src, VideoPixelFormat dest) {
@@ -99,7 +139,8 @@ bool IsConversionSupported(VideoPixelFormat src, VideoPixelFormat dest) {
 
 }  // namespace
 
-using TestParams = testing::tuple<VideoPixelFormat, VideoPixelFormat, bool>;
+using TestParams =
+    testing::tuple<VideoPixelFormat, VideoPixelFormat, TestConversionType>;
 class VideoFrameConverterTest
     : public testing::Test,
       public ::testing::WithParamInterface<TestParams> {
@@ -107,12 +148,16 @@ class VideoFrameConverterTest
   VideoFrameConverterTest()
       : src_format_(testing::get<0>(GetParam())),
         dest_format_(testing::get<1>(GetParam())),
+        src_coded_size_(SelectSrcCodedSize(testing::get<2>(GetParam()))),
+        src_visible_rect_(SelectSrcRect(testing::get<2>(GetParam()))),
         dest_coded_size_(SelectDestSize(testing::get<2>(GetParam()))),
         dest_visible_rect_(SelectDestRect(testing::get<2>(GetParam()))) {}
 
  protected:
   const VideoPixelFormat src_format_;
   const VideoPixelFormat dest_format_;
+  const gfx::Size src_coded_size_;
+  const gfx::Rect src_visible_rect_;
   const gfx::Size dest_coded_size_;
   const gfx::Rect dest_visible_rect_;
   VideoFrameConverter converter_;
@@ -121,7 +166,7 @@ class VideoFrameConverterTest
 TEST_P(VideoFrameConverterTest, ConvertAndScale) {
   // Zero initialize so coded size regions are all zero.
   auto src_frame = VideoFrame::CreateZeroInitializedFrame(
-      src_format_, kCodedSize, kVisibleRect, kVisibleRect.size(),
+      src_format_, src_coded_size_, src_visible_rect_, src_visible_rect_.size(),
       base::TimeDelta());
   auto dest_frame = VideoFrame::CreateZeroInitializedFrame(
       dest_format_, dest_coded_size_, dest_visible_rect_,
@@ -176,28 +221,47 @@ TEST_P(VideoFrameConverterTest, ConvertAndScale) {
   }
 }
 
-INSTANTIATE_TEST_SUITE_P(,
-                         VideoFrameConverterTest,
-                         testing::Combine(testing::Values(PIXEL_FORMAT_XBGR,
-                                                          PIXEL_FORMAT_XRGB,
-                                                          PIXEL_FORMAT_ABGR,
-                                                          PIXEL_FORMAT_ARGB,
-                                                          PIXEL_FORMAT_I420,
-                                                          PIXEL_FORMAT_I420A,
-                                                          PIXEL_FORMAT_I444,
-                                                          PIXEL_FORMAT_I444A,
-                                                          PIXEL_FORMAT_NV12,
-                                                          PIXEL_FORMAT_NV12A),
-                                          testing::Values(PIXEL_FORMAT_XBGR,
-                                                          PIXEL_FORMAT_XRGB,
-                                                          PIXEL_FORMAT_ABGR,
-                                                          PIXEL_FORMAT_ARGB,
-                                                          PIXEL_FORMAT_I420,
-                                                          PIXEL_FORMAT_I420A,
-                                                          PIXEL_FORMAT_I444,
-                                                          PIXEL_FORMAT_I444A,
-                                                          PIXEL_FORMAT_NV12,
-                                                          PIXEL_FORMAT_NV12A),
-                                          testing::Bool()));
+TEST(VideoFrameConverterRegressionTest, WeirdScaling) {
+  constexpr gfx::Size kTestSize(80, 50);
+  auto src_frame = VideoFrame::CreateZeroInitializedFrame(
+      PIXEL_FORMAT_I420, kTestSize, gfx::Rect(kTestSize), kTestSize,
+      base::TimeDelta());
+  constexpr gfx::Size kDestSize(188, 144);
+  auto dest_frame = VideoFrame::CreateZeroInitializedFrame(
+      PIXEL_FORMAT_NV12, kDestSize, gfx::Rect(kDestSize), kDestSize,
+      base::TimeDelta());
+
+  FillFourColors(*src_frame);
+
+  VideoFrameConverter converter;
+  ASSERT_TRUE(converter.ConvertAndScale(*src_frame, *dest_frame).is_ok());
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    ,
+    VideoFrameConverterTest,
+    testing::Combine(testing::Values(PIXEL_FORMAT_XBGR,
+                                     PIXEL_FORMAT_XRGB,
+                                     PIXEL_FORMAT_ABGR,
+                                     PIXEL_FORMAT_ARGB,
+                                     PIXEL_FORMAT_I420,
+                                     PIXEL_FORMAT_I420A,
+                                     PIXEL_FORMAT_I444,
+                                     PIXEL_FORMAT_I444A,
+                                     PIXEL_FORMAT_NV12,
+                                     PIXEL_FORMAT_NV12A),
+                     testing::Values(PIXEL_FORMAT_XBGR,
+                                     PIXEL_FORMAT_XRGB,
+                                     PIXEL_FORMAT_ABGR,
+                                     PIXEL_FORMAT_ARGB,
+                                     PIXEL_FORMAT_I420,
+                                     PIXEL_FORMAT_I420A,
+                                     PIXEL_FORMAT_I444,
+                                     PIXEL_FORMAT_I444A,
+                                     PIXEL_FORMAT_NV12,
+                                     PIXEL_FORMAT_NV12A),
+                     testing::Values(TestConversionType::kNormal,
+                                     TestConversionType::kScaled,
+                                     TestConversionType::kOdd)));
 
 }  // namespace media

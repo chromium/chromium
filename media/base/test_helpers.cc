@@ -134,27 +134,31 @@ void FillFourColorsFrameYUV(VideoFrame& dest_frame,
   std::tie(yellow, red, blue, green) =
       FourColors(IsOpaque(dest_frame.format()), xor_mask);
 
+  const int half_width = (visible_size.width() / 2) & ~1;
+  const int half_height = (visible_size.height() / 2) & ~1;
+  const int remaining_width = visible_size.width() - half_width;
+  const int remaining_height = visible_size.height() - half_height;
+
   uint8_t y, u, v, a;
 
   // Yellow top left.
   std::tie(y, u, v, a) = RGBToYUV(yellow);
-  I4xxxRect(output_frame, 0, 0, visible_size.width() / 2,
-            visible_size.height() / 2, y, u, v, a);
+  I4xxxRect(output_frame, 0, 0, half_width, half_height, y, u, v, a);
 
   // Red top right.
   std::tie(y, u, v, a) = RGBToYUV(red);
-  I4xxxRect(output_frame, visible_size.width() / 2, 0, visible_size.width() / 2,
-            visible_size.height() / 2, y, u, v, a);
+  I4xxxRect(output_frame, half_width, 0, remaining_width, half_height, y, u, v,
+            a);
 
   // Blue bottom left.
   std::tie(y, u, v, a) = RGBToYUV(blue);
-  I4xxxRect(output_frame, 0, visible_size.height() / 2,
-            visible_size.width() / 2, visible_size.height() / 2, y, u, v, a);
+  I4xxxRect(output_frame, 0, half_height, half_width, remaining_height, y, u, v,
+            a);
 
   // Green bottom right.
   std::tie(y, u, v, a) = RGBToYUV(green);
-  I4xxxRect(output_frame, visible_size.width() / 2, visible_size.height() / 2,
-            visible_size.width() / 2, visible_size.height() / 2, y, u, v, a);
+  I4xxxRect(output_frame, half_width, half_height, remaining_width,
+            remaining_height, y, u, v, a);
 
   if (temp_frame) {
     ASSERT_EQ(libyuv::I420ToNV12(
@@ -198,35 +202,37 @@ void FillFourColorsFrameARGB(VideoFrame& dest_frame,
   std::tie(yellow, red, blue, green) =
       FourColors(IsOpaque(dest_frame.format()), xor_mask);
 
+  const int half_width = (visible_size.width() / 2) & ~1;
+  const int half_height = (visible_size.height() / 2) & ~1;
+  const int remaining_width = visible_size.width() - half_width;
+  const int remaining_height = visible_size.height() - half_height;
+
   // Yellow top left.
   ASSERT_EQ(libyuv::ARGBRect(
                 dest_frame.GetWritableVisibleData(VideoFrame::Plane::kARGB),
-                dest_frame.stride(VideoFrame::Plane::kARGB), 0, 0,
-                visible_size.width() / 2, visible_size.height() / 2, yellow),
+                dest_frame.stride(VideoFrame::Plane::kARGB), 0, 0, half_width,
+                half_height, yellow),
             0);
 
   // Red top right.
-  ASSERT_EQ(
-      libyuv::ARGBRect(
-          dest_frame.GetWritableVisibleData(VideoFrame::Plane::kARGB),
-          dest_frame.stride(VideoFrame::Plane::kARGB), visible_size.width() / 2,
-          0, visible_size.width() / 2, visible_size.height() / 2, red),
-      0);
+  ASSERT_EQ(libyuv::ARGBRect(
+                dest_frame.GetWritableVisibleData(VideoFrame::Plane::kARGB),
+                dest_frame.stride(VideoFrame::Plane::kARGB), half_width, 0,
+                remaining_width, half_height, red),
+            0);
 
   // Blue bottom left.
   ASSERT_EQ(libyuv::ARGBRect(
                 dest_frame.GetWritableVisibleData(VideoFrame::Plane::kARGB),
-                dest_frame.stride(VideoFrame::Plane::kARGB), 0,
-                visible_size.height() / 2, visible_size.width() / 2,
-                visible_size.height() / 2, blue),
+                dest_frame.stride(VideoFrame::Plane::kARGB), 0, half_height,
+                half_width, remaining_height, blue),
             0);
 
   // Green bottom right.
   ASSERT_EQ(libyuv::ARGBRect(
                 dest_frame.GetWritableVisibleData(VideoFrame::Plane::kARGB),
-                dest_frame.stride(VideoFrame::Plane::kARGB),
-                visible_size.width() / 2, visible_size.height() / 2,
-                visible_size.width() / 2, visible_size.height() / 2, green),
+                dest_frame.stride(VideoFrame::Plane::kARGB), half_width,
+                half_height, remaining_width, remaining_height, green),
             0);
 
   if (dest_frame.format() == PIXEL_FORMAT_XBGR ||

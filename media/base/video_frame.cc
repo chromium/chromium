@@ -1267,6 +1267,10 @@ int VideoFrame::rows(size_t plane) const {
   return Rows(plane, format(), coded_size().height());
 }
 
+int VideoFrame::columns(size_t plane) const {
+  return Columns(plane, format(), coded_size().width());
+}
+
 int VideoFrame::GetVisibleRowBytes(size_t plane) const {
   return RowBytes(plane, format(), visible_rect().width());
 }
@@ -1275,8 +1279,8 @@ int VideoFrame::GetVisibleRows(size_t plane) const {
   return Rows(plane, format(), visible_rect().height());
 }
 
-int VideoFrame::columns(size_t plane) const {
-  return Columns(plane, format(), coded_size().width());
+int VideoFrame::GetVisibleColumns(size_t plane) const {
+  return Columns(plane, format(), visible_rect().width());
 }
 
 template <typename T>

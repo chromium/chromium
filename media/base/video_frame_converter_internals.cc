@@ -167,18 +167,12 @@ void I4xxxScale(const VideoFrame& src_frame, VideoFrame& dest_frame) {
           : libyuv::kFilterBox;
 
   for (size_t i = 0; i < VideoFrame::NumPlanes(dest_frame.format()); ++i) {
-    libyuv::ScalePlane(
-        src_frame.visible_data(i), src_frame.stride(i),
-        VideoFrame::Columns(i, src_frame.format(),
-                            src_frame.visible_rect().size().width()),
-        VideoFrame::Rows(i, src_frame.format(),
-                         src_frame.visible_rect().size().height()),
-        dest_frame.GetWritableVisibleData(i), dest_frame.stride(i),
-        VideoFrame::Columns(i, dest_frame.format(),
-                            dest_frame.visible_rect().size().width()),
-        VideoFrame::Rows(i, dest_frame.format(),
-                         dest_frame.visible_rect().size().height()),
-        kDefaultFiltering);
+    libyuv::ScalePlane(src_frame.visible_data(i), src_frame.stride(i),
+                       src_frame.GetVisibleColumns(i),
+                       src_frame.GetVisibleRows(i),
+                       dest_frame.GetWritableVisibleData(i),
+                       dest_frame.stride(i), dest_frame.GetVisibleColumns(i),
+                       dest_frame.GetVisibleRows(i), kDefaultFiltering);
   }
 }
 
@@ -261,8 +255,8 @@ void MergeUV(const VideoFrame& src_frame, VideoFrame& dest_frame) {
       src_frame.stride(VideoFrame::Plane::kV),
       dest_frame.GetWritableVisibleData(VideoFrame::Plane::kUV),
       dest_frame.stride(VideoFrame::Plane::kUV),
-      dest_frame.visible_rect().width() / 2,
-      dest_frame.visible_rect().height() / 2);
+      dest_frame.GetVisibleColumns(VideoFrame::Plane::kUV),
+      dest_frame.GetVisibleRows(VideoFrame::Plane::kUV));
 }
 
 void SplitUV(const VideoFrame& src_frame, VideoFrame& dest_frame) {
@@ -277,8 +271,8 @@ void SplitUV(const VideoFrame& src_frame, VideoFrame& dest_frame) {
                        dest_frame.stride(VideoFrame::Plane::kU),
                        dest_frame.GetWritableVisibleData(VideoFrame::Plane::kV),
                        dest_frame.stride(VideoFrame::Plane::kV),
-                       dest_frame.visible_rect().width() / 2,
-                       dest_frame.visible_rect().height() / 2);
+                       src_frame.GetVisibleColumns(VideoFrame::Plane::kUV),
+                       src_frame.GetVisibleRows(VideoFrame::Plane::kUV));
 }
 
 bool NV12xScale(const VideoFrame& src_frame,
