@@ -197,7 +197,9 @@ bool StoreRemoteResponse(const std::string& response_json,
           /*default_result_relevance=*/
           omnibox::kDefaultRemoteZeroSuggestRelevance,
           /*is_keyword_result=*/false,
-          {.allow_empty_suggestion = omnibox::IsOmniboxComposebox(page_class)},
+          {.allow_empty_suggestion =
+               (omnibox::IsOmniboxComposebox(page_class) ||
+                omnibox::IsNTPComposebox(page_class))},
           results)) {
     return false;
   }
@@ -262,7 +264,9 @@ bool ReadStoredResponse(const AutocompleteProviderClient* client,
           /*default_result_relevance=*/
           omnibox::kDefaultRemoteZeroSuggestRelevance,
           /*is_keyword_result=*/false,
-          {.allow_empty_suggestion = omnibox::IsOmniboxComposebox(page_class)},
+          {.allow_empty_suggestion =
+               (omnibox::IsOmniboxComposebox(page_class) ||
+                omnibox::IsNTPComposebox(page_class))},
           results)) {
     return false;
   }
