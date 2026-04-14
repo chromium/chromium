@@ -412,8 +412,8 @@
 
   ApplyAssistantSidePanelAesthetics(_appContentView, _appContentContainerView,
                                     active);
-  // TODO(crbug.com/494503434): Update the chosen background color later.
-  view.backgroundColor = active ? [UIColor colorNamed:kBlue100Color] : nil;
+  view.backgroundColor =
+      active ? [UIColor colorNamed:kSecondaryBackgroundColor] : nil;
 }
 
 // Updates the layout of the scene views depending on the active layout strategy

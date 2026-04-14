@@ -65,7 +65,7 @@ void ApplyAssistantSidePanelAesthetics(UIView* content_view,
   content_view.layer.cornerCurve = kCACornerCurveContinuous;
 
   // The view must be opaque to cast a shadow.
-  shadow_view.backgroundColor = [UIColor colorNamed:kBlue100Color];
+  shadow_view.backgroundColor = [UIColor colorNamed:kSecondaryBackgroundColor];
   shadow_view.layer.cornerRadius = kAssistantSidePanelCornerRadius;
   shadow_view.layer.cornerCurve = kCACornerCurveContinuous;
   // TODO(crbug.com/494503434): Update the shadow color to a dynamic color or
