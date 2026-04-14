@@ -73,6 +73,7 @@
 #import "ios/chrome/browser/shared/model/url/url_util.h"
 #import "ios/chrome/browser/shared/model/utils/first_run_util.h"
 #import "ios/chrome/browser/shared/model/web_state_list/browser_util.h"
+#import "ios/chrome/browser/shared/model/web_state_list/tab_group.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/public/commands/bookmarks_commands.h"
 #import "ios/chrome/browser/shared/public/commands/bring_android_tabs_commands.h"
@@ -953,6 +954,45 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
   }
 }
 
+// Activates the first tab of the currently visible tab group, if there is one
+// visible and if the current active tab is not part of the tab group.
+- (void)activateTabGroupWebStateIfNecessaryInPage:(TabGridPage)targetPage {
+  if (!IsChromeNextIaEnabled()) {
+    return;
+  }
+  TabGridState* tabGridState =
+      self.regularBrowser->GetSceneState().tabGridState;
+  const TabGroup* visibleGroup = tabGridState.visibleTabGroup;
+  if (!visibleGroup) {
+    return;
+  }
+  Browser* activeBrowser = nullptr;
+  switch (targetPage) {
+    case TabGridPageIncognitoTabs:
+      activeBrowser = self.incognitoBrowser;
+      break;
+    case TabGridPageRegularTabs:
+      activeBrowser = self.regularBrowser;
+      break;
+    case TabGridPageTabGroups:
+      break;
+  }
+
+  if (!activeBrowser) {
+    return;
+  }
+  WebStateList* webStateList = activeBrowser->GetWebStateList();
+  int activeIndex = webStateList->active_index();
+
+  if (visibleGroup->range().contains(activeIndex)) {
+    return;
+  }
+  if (visibleGroup->range().valid()) {
+    int firstTabIndex = visibleGroup->range().range_begin();
+    webStateList->ActivateWebStateAt(firstTabIndex);
+  }
+}
+
 #pragma mark - ChromeCoordinator
 
 - (void)start {
@@ -1787,6 +1827,9 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
   if (![self tabsPresentForPage:targetPage]) {
     return;
   }
+
+  [self activateTabGroupWebStateIfNecessaryInPage:targetPage];
+
   [self showActiveTabInPage:targetPage focusOmnibox:NO];
 }
 
