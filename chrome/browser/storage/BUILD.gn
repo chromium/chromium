@@ -143,7 +143,7 @@ source_set("platform_browser_tests") {
     "//url",
   ]
 
-  if (enable_extensions) {
+  if (enable_extensions_core) {
     deps += [
       "//extensions:test_support",
       "//extensions/browser",

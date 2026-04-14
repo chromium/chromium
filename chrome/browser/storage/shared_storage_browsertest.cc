@@ -82,7 +82,7 @@
 #include "chrome/browser/ui/browser.h"
 #endif
 
-#if BUILDFLAG(ENABLE_EXTENSIONS)
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 #include "chrome/browser/extensions/extension_browsertest.h"
 #include "extensions/browser/extension_registrar.h"
 #include "extensions/test/test_extension_dir.h"
@@ -4779,7 +4779,7 @@ class SharedStorageChromeNoParamsBrowserTest
   base::test::ScopedFeatureList attestation_feature_;
 };
 
-#if BUILDFLAG(ENABLE_EXTENSIONS)
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 namespace {
 
 constexpr char kBackgroundJSTemplate[] = R"(
@@ -4878,8 +4878,6 @@ class SharedStorageExtensionBrowserTest
   content::WebContents* GetActiveWebContents() {
     return chrome_test_utils::GetActiveWebContents(this);
   }
-
-  Profile* GetProfile() { return browser()->profile(); }
 
   const extensions::Extension* InstallExtension(
       std::optional<std::string> value_to_set) {
@@ -5396,6 +5394,6 @@ IN_PROC_BROWSER_TEST_F(
                         ->GetPrimaryMainFrame()
                         ->GetStoragePartition()));
 }
-#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 
 }  // namespace storage
