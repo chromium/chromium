@@ -36,7 +36,8 @@ item:nth-child(1) {
 }
 subgrid {
   display: grid;
-  grid: subgrid / subgrid;
+  grid: subgrid / auto;
+  grid-auto-flow: column;
   grid-row: 2 / span 2;
   grid-gap: 8px 20px;
   background: yellow;
@@ -48,7 +49,7 @@ subgrid {
   <item>1</item>
   <item>2</item>
   <item>3</item>
-  <subgrid style="grid:subgrid/auto; grid-auto-flow:column">
+  <subgrid>
     <item>4a</item>
     <item>4b</item>
     <item>4c</item>

@@ -13,18 +13,14 @@ html,body {
 }
 
 grid {
-  display: inline-grid;
+  display: inline grid;
   grid-template-rows: 40px 30px 20px;
+  grid-auto-flow: column;
   gap: 4px 2px;
   padding: 1px 3px 5px 7px;
   border: solid;
   border-width: 3px 5px 1px 1px;
   background: lightgrey content-box;
-  grid-auto-flow: column;
-}
-.rows {
-  grid-template-columns: 40px 30px 20px;
-  grid-auto-flow: row;
 }
 item {
   background: grey;
@@ -39,42 +35,25 @@ item:nth-child(1) {
 }
 subgrid {
   display: grid;
-  grid-row: auto/span 2;
-  grid-column: auto/span 2;
-  grid: subgrid / subgrid;
+  grid-row: auto/span 3;
+  grid: subgrid / auto;
   grid-gap: 6px 8px;
   background: yellow;
-}
-subgrid.definite {
-  grid-row-start:2;
-}
-subgrid.extent {
-  grid-row: 1/span 3;
-}
-.rows > subgrid.definite {
-  grid-column-start:2;
-  grid-row-start:auto;
-}
-.rows > subgrid.extent {
-  grid-row: auto/span 2;
-  grid-column: 1/span 3;
 }
 </style>
 </head>
 <body>
-
 <!-- auto-placed subgrid inhibits subgridding when parent is doing grid-lanes layout ... -->
-
 <grid>
   <item>1</item>
-  <item>2</item>
+  <item style="width: min-content;">2</item>
   <item>3</item>
-  <subgrid class="extent" style="grid: 39px 28px 19px">
+  <subgrid>
     <item>4a</item>
     <item>4b</item>
     <item>4c</item>
   </subgrid>
   <item>5</item>
 </grid>
-
-</body></html>
+</body>
+</html>
