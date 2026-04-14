@@ -2766,7 +2766,6 @@ crbug.com/501216031 virtual/preload-link-rel-dataurls-disabled/external/wpt/cont
 crbug.com/499073686 external/wpt/content-security-policy/connect-src/connect-src-text-import-blocked.sub.html [ Timeout ]
 crbug.com/499073688 external/wpt/css/css-transforms/animation/rotate-explicit-and-implicit-keyframes.html [ Failure ]
 crbug.com/499074022 external/wpt/html/rendering/the-details-element/details-content-pseudo-attr.html [ Failure ]
-crbug.com/499073687 [ Win ] external/wpt/svg/animations/smil-clock-value-out-of-range-minutes.html [ Pass Timeout ]
 crbug.com/499073687 external/wpt/svg/text/reftests/textpath-side-003.svg [ Failure ]
 crbug.com/499073687 external/wpt/svg/text/reftests/textpath-side-005.svg [ Failure ]
 crbug.com/499073530 external/wpt/webdriver/tests/bidi/browser/set_client_window_state/invalid.py [ Failure ]

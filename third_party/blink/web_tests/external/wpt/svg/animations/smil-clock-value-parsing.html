@@ -8,14 +8,6 @@
 const TESTS = [
   // Valid dur="00:30:01" (30 min 1 sec). At t=60s the animation should be running.
   { value: "00:30:01" },
-  // Invalid minutes in HH:MM:SS form.
-  { value: "01:99:01", error: "minutes > 59 in HH:MM:SS" },
-  // Invalid minutes in MM:SS form.
-  { value: "99:01", error: "minutes > 59 in MM:SS" },
-  // Invalid seconds in HH:MM:SS form.
-  { value: "01:30:99", error: "seconds > 59 in HH:MM:SS" },
-  // Invalid seconds in MM:SS form.
-  { value: "30:99", error: "seconds > 59 in MM:SS" },
   // Valid boundary dur="00:59:59". Should animate.
   { value: "00:59:59" },
   // Fractional seconds in HH:MM:SS form: dur="00:00:01.50" is 1.5s.
@@ -27,6 +19,31 @@ const TESTS = [
   { value: "00:00:59.50", frozen: true },
   // Fractional seconds near 60 boundary in MM:SS form: dur="00:59.50" is 59.5s.
   { value: "00:59.50", frozen: true },
+  // More than 99 hours. Should animate.
+  { value: "101:00:01" },
+
+  // Invalid minutes in HH:MM:SS form.
+  { value: "01:99:01", error: "minutes > 59 in HH:MM:SS" },
+  // Invalid minutes in MM:SS form.
+  { value: "99:01", error: "minutes > 59 in MM:SS" },
+  // Invalid seconds in HH:MM:SS form.
+  { value: "01:30:99", error: "seconds > 59 in HH:MM:SS" },
+  // Invalid seconds in MM:SS form.
+  { value: "30:99", error: "seconds > 59 in MM:SS" },
+  // Invalid fraction, no digits after full stop.
+  { value: "00:59:59.", error: "a fraction needs to have at least one digit" },
+  // Invalid seconds in HH:MM:SS.ff form. No leading zero.
+  { value: "00:59:9.9", error: "seconds < 10 should have a leading zero" },
+  // Missing seconds in HH:MM:SS.ff form.
+  { value: "00:59:.9", error: "seconds needs to be specified" },
+  // Invalid seconds in HH:MM:SS form.
+  { value: "00:59:009", error: "seconds without fraction should be two digits" },
+  // Missing hour field in HH:MM:SS form.
+  { value: ":30:01", error: "hours can't be missing in HH:MM:SS" },
+  // Missing minutes field in HH:MM:SS form.
+  { value: "01::01", error: "minutes can't be missing in HH:MM:SS" },
+  // Single digit minutes field in MM:SS form.
+  { value: "5:30", error: "minutes should always be two digits" },
 ];
 
 promise_setup(async () => {

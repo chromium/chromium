@@ -447,15 +447,17 @@ SMILTime SVGSMILElement::ParseClockValue(const StringView& data) {
   if (colon_one == StringView::npos) {
     return ParseOffsetValue(parse);
   }
+  const bool validation_fix_enabled =
+      RuntimeEnabledFeatures::SvgSmilClockValueValidationEnabled();
   // The first field can be any length, but if it's a minutes value it has to
   // be 2 digits. We're not abiding by that.
-  if (colon_one != 2) {
+  if (!validation_fix_enabled && colon_one != 2) {
     return SMILTime::Unresolved();
   }
   // Assume the format is mm:ss.ff...
   StringView hour_part;
-  StringView minute_part = parse.substr(0, 2);
-  StringView seconds_part = parse.substr(3);
+  StringView minute_part = parse.substr(0, colon_one);
+  StringView seconds_part = parse.substr(colon_one + 1);
 
   // If there's one more colon the format is hh:mm:ss.ff...
   wtf_size_t colon_two = seconds_part.find(':');
@@ -467,19 +469,42 @@ SMILTime SVGSMILElement::ParseClockValue(const StringView& data) {
     return SMILTime::Unresolved();
   }
 
-  // The seconds+fractions field needs to be at least two digits. This only
-  // checks characters.
-  if (seconds_part.length() < 2) {
-    return SMILTime::Unresolved();
+  if (!validation_fix_enabled) {
+    // The seconds+fractions field needs to be at least two digits. This only
+    // checks characters.
+    if (seconds_part.length() < 2) {
+      return SMILTime::Unresolved();
+    }
+  } else {
+    // The minutes field needs to be two digits.
+    if (minute_part.length() != 2) {
+      return SMILTime::Unresolved();
+    }
+    // Check if the seconds+fractions field contains a '.', and that it is at
+    // index 2 in that case.
+    auto dot_index = seconds_part.find('.');
+    if (dot_index == 2) {
+      // Fraction field need to be at least one digit.
+      if (seconds_part.length() < 4) {
+        return SMILTime::Unresolved();
+      }
+    } else if (dot_index == StringView::npos) {
+      // The seconds field needs to be two digits.
+      if (seconds_part.length() != 2) {
+        return SMILTime::Unresolved();
+      }
+    } else {
+      return SMILTime::Unresolved();
+    }
   }
 
   auto parsed_seconds = StringToDouble(seconds_part);
-  if (!parsed_seconds) {
+  if (!parsed_seconds || (validation_fix_enabled && *parsed_seconds >= 60)) {
     return SMILTime::Unresolved();
   }
   base::TimeDelta result = base::Seconds(*parsed_seconds);
   auto parsed_minutes = StringToUintStrict(minute_part);
-  if (!parsed_minutes) {
+  if (!parsed_minutes || (validation_fix_enabled && *parsed_minutes >= 60)) {
     return SMILTime::Unresolved();
   }
   result += base::Minutes(*parsed_minutes);

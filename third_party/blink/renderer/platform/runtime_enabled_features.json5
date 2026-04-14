@@ -5605,6 +5605,10 @@
       status: "experimental",
     },
     {
+      name: "SvgSmilClockValueValidation",
+      status: "stable",
+    },
+    {
       name: "SvgTextPathPathAttribute",
       status: "stable",
     },
