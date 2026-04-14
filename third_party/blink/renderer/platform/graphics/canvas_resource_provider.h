@@ -740,6 +740,7 @@ class PLATFORM_EXPORT CanvasNon2DResourceProviderSharedImage
 
  private:
   void FlushCanvas(bool is_overwrite);
+  void FlushRecording(cc::PaintRecord last_recording, bool is_overwrite);
 
   std::unique_ptr<gpu::RasterScopedAccess> WillDrawInternal(bool is_overwrite);
 

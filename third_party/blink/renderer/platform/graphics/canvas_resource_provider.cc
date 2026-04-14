@@ -1955,7 +1955,12 @@ void CanvasNon2DResourceProviderSharedImage::FlushCanvas(bool is_overwrite) {
     return;
   }
 
-  cc::PaintRecord last_recording = recorder_->ReleaseMainRecording();
+  FlushRecording(recorder_->ReleaseMainRecording(), is_overwrite);
+}
+
+void CanvasNon2DResourceProviderSharedImage::FlushRecording(
+    cc::PaintRecord last_recording,
+    bool is_overwrite) {
   if (!is_accelerated_) {
     if (!skia_canvas_) {
       if (!canvas_image_provider_) {
