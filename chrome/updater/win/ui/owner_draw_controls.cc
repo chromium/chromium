@@ -6,6 +6,7 @@
 
 #include <algorithm>
 #include <cstdint>
+#include <limits>
 #include <vector>
 
 #include "base/check_op.h"
@@ -44,8 +45,6 @@ void DrawParentBackground(HWND hwnd, HDC hdc, const RECT& rect) {
   ::SetWindowOrgEx(hdc, pt.x, pt.y, nullptr);
 }
 
-}  // namespace
-
 // Returns the system color corresponding to `high_contrast_color_index` if the
 // system is in high contrast mode. Otherwise, it returns `normal_color`.
 COLORREF GetColor(COLORREF normal_color, int high_contrast_color_index) {
@@ -60,6 +59,8 @@ HBRUSH GetColorBrush(const WTL::CBrush& normal_brush,
   return IsHighContrastOn() ? ::GetSysColorBrush(high_contrast_color_index)
                             : HBRUSH{normal_brush};
 }
+
+}  // namespace
 
 CaptionButton::CaptionButton() = default;
 CaptionButton::~CaptionButton() = default;
@@ -169,9 +170,22 @@ void CaptionButton::DrawItem(LPDRAWITEMSTRUCT draw_item_struct) {
                                                        : COLOR_BTNTEXT));
 
   const UINT button_state = draw_item_struct->itemState;
-  if (button_state & ODS_FOCUS && button_state & ODS_SELECTED) {
-    dc.FrameRect(&button_rect, frame_brush_);
+  if (!(button_state & ODS_FOCUS) || !(button_state & ODS_SELECTED)) {
+    return;
   }
+
+  // Draw a scaled frame for the active/focused state.
+  WTL::CPen pen;
+  pen.CreatePen(PS_INSIDEFRAME, /*thickness=*/
+                std::max(1, ::MulDiv(1, /*dpi=*/::GetDpiForWindow(m_hWnd), 96)),
+                GetColor(kCaptionFrameColor, COLOR_WINDOWFRAME));
+  const HPEN old_pen = dc.SelectPen(pen);
+  const HBRUSH old_brush = dc.SelectBrush((HBRUSH)GetStockObject(NULL_BRUSH));
+
+  dc.Rectangle(&button_rect);
+
+  dc.SelectBrush(old_brush);
+  dc.SelectPen(old_pen);
 }
 
 COLORREF CaptionButton::bk_color() const {
@@ -197,21 +211,43 @@ CloseButton::CloseButton() {
 }
 
 HRGN CloseButton::GetButtonRgn(int rgn_width, int rgn_height) {
-  // A single 4x4 rectangular center and criss-crossing 2x2 overlapping
-  // rectangles form the close button.
-  int square_side = std::min(rgn_width, rgn_height) / 2 * 2;
-  int center_point = square_side / 2;
+  // Ensure we have a valid, drawable area. `std::numeric_limits<short>::max()`
+  // is a safe UI upper bound.
+  if (rgn_width <= 0 || rgn_height <= 0 ||
+      rgn_width > std::numeric_limits<short>::max() ||
+      rgn_height > std::numeric_limits<short>::max()) {
+    return nullptr;
+  }
 
-  CRect center_rect(0, 0, 4, 4);
-  center_rect.OffsetRect(center_point - 2, center_point - 2);
+  // Scale the thickness. For instance, 2px at 100% (96 DPI) becomes 4px at 200%
+  // (192 DPI).
+  const int thickness =
+      std::max(1, ::MulDiv(2, /*dpi=*/::GetDpiForWindow(m_hWnd), 96));
+  const int center_size = thickness * 2;
+
+  const int square_side = std::min(rgn_width, rgn_height) / 2 * 2;
+  const int center_point = square_side / 2;
+
+  // Create the single rectangular center square using the scaled size.
+  CRect center_rect(0, 0, center_size, center_size);
+  center_rect.OffsetRect(center_point - thickness, center_point - thickness);
   WTL::CRgnHandle rgn(::CreateRectRgnIndirect(&center_rect));
 
-  for (int i = 0; i <= square_side - 2; i++) {
-    WTL::CRgn rgn_nw_to_se(::CreateRectRgn(i, i, i + 2, i + 2));
+  // Criss-crossing overlapping rectangles form the close button.
+  const int loop_limit = square_side - thickness;
+  if (loop_limit < 0) {
+    // Button is too small to draw the cross.
+    return rgn;
+  }
+
+  for (int i = 0; i <= loop_limit; ++i) {
+    // Top-left to bottom-right.
+    WTL::CRgn rgn_nw_to_se(::CreateRectRgn(i, i, i + thickness, i + thickness));
     rgn.CombineRgn(rgn_nw_to_se, RGN_OR);
 
-    WTL::CRgn rgn_sw_to_ne(
-        ::CreateRectRgn(i, square_side - i - 2, i + 2, square_side - i));
+    // Bottom-left to top-right.
+    WTL::CRgn rgn_sw_to_ne(::CreateRectRgn(i, square_side - i - thickness,
+                                           i + thickness, square_side - i));
     rgn.CombineRgn(rgn_sw_to_ne, RGN_OR);
   }
 
@@ -226,10 +262,29 @@ MinimizeButton::MinimizeButton() {
 }
 
 HRGN MinimizeButton::GetButtonRgn(int rgn_width, int rgn_height) {
-  // The Minimize button is a single rectangle.
-  CRect minimize_button_rect(0, 0, rgn_width, 2);
-  int center_point = rgn_height / 2;
-  minimize_button_rect.OffsetRect(0, center_point - 1);
+  // Ensure we have a valid, drawable area. `std::numeric_limits<short>::max()`
+  // is a safe UI upper bound.
+  if (rgn_width <= 0 || rgn_height <= 0 ||
+      rgn_width > std::numeric_limits<short>::max() ||
+      rgn_height > std::numeric_limits<short>::max()) {
+    return nullptr;
+  }
+
+  // Scale the bar thickness. 2px at 100% becomes 4px at 200%.
+  const int thickness =
+      std::max(1, ::MulDiv(2, /*dpi=*/::GetDpiForWindow(m_hWnd), 96));
+
+  // Prevent thickness from exceeding total height. If the bar is thicker than
+  // the area, we cap it to the area height.
+  const int safe_thickness = std::min(thickness, rgn_height);
+
+  // Calculate the vertical center.
+  const int y_offset = (rgn_height - safe_thickness) / 2;
+
+  // The Minimize button is a single rectangle. Center it vertically.
+  CRect minimize_button_rect(0, 0, rgn_width, safe_thickness);
+  minimize_button_rect.OffsetRect(0, y_offset);
+
   return ::CreateRectRgnIndirect(&minimize_button_rect);
 }
 
@@ -372,7 +427,7 @@ void OwnerDrawTitleBarWindow::CreateCaptionButtons() {
   minimize_button_.set_bk_color(bk_color_);
 
   // Get the DPI for this specific window
-  const int dpi = GetDpiForWindow(m_hWnd);
+  const int dpi = ::GetDpiForWindow(m_hWnd);
 
   // Use the DPI-aware version of system metrics.
   CRect button_rect(0, 0, ::GetSystemMetricsForDpi(SM_CXSIZE, dpi),

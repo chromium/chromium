@@ -86,7 +86,6 @@ class CaptionButton : public CWindowImpl<CaptionButton, WTL::CButton>,
 
   COLORREF bk_color_ = RGB(0, 0, 0);
   WTL::CBrush foreground_brush_ = ::CreateSolidBrush(kCaptionForegroundColor);
-  WTL::CBrush frame_brush_ = ::CreateSolidBrush(kCaptionFrameColor);
 
   WTL::CToolTipCtrl tool_tip_window_;
   CString tool_tip_text_;
