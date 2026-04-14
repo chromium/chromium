@@ -318,7 +318,10 @@ const base::FeatureParam<bool> kNtpNextDisablementContextMenuParam(
     &ntp_features::kNtpNextFeatures,
     "NtpNextDisablementContextMenuParam",
     false);
-
+const base::FeatureParam<bool> kNtpNextDisablementParam(
+    &ntp_features::kNtpNextFeatures,
+    "NtpNextDisablementParam",
+    false);
 const base::FeatureParam<bool> kAddTabUploadDelayOnActionChipClick(
     &ntp_features::kNtpNextFeatures,
     "AddTabUploadDelayOnActionChipClick",

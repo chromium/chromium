@@ -196,33 +196,34 @@ suite('AppTest', () => {
 
   // Testing Tool Chips visibility on initial flag load values.
   [true, false].forEach(
-      (aimPolicyEnabled) => [true, false].forEach(
-          (ntpNextFeaturesEnabled) => suite(
-              'Render Tool Chips with aimPolicyEnabled: ' + aimPolicyEnabled +
-                  ' and ntpNextFeaturesEnabled: ' + ntpNextFeaturesEnabled,
-              () => {
-                // Arrange
-                const expectedVisibility =
-                    ntpNextFeaturesEnabled && aimPolicyEnabled;
-                suiteSetup(() => {
-                  loadTimeData.overrideValues({
-                    'ntpNextFeaturesEnabled': ntpNextFeaturesEnabled,
-                    'aimPolicyEnabled': aimPolicyEnabled,
-                  });
-                });
+      (ntpNextDisablementEnabled) => [true, false].forEach(
+          (aimPolicyEnabled) => [true, false].forEach(
+              (ntpNextFeaturesEnabled) => suite(
+                  'Render Tool Chips with aimPolicyEnabled: ' +
+                      aimPolicyEnabled +
+                      ' and ntpNextFeaturesEnabled: ' + ntpNextFeaturesEnabled +
+                      ' and ntpNextDisablementEnabled: ' +
+                      ntpNextDisablementEnabled,
+                  () => {
+                    // Arrange
+                    suiteSetup(() => {
+                      loadTimeData.overrideValues({
+                        'ntpNextFeaturesEnabled': ntpNextFeaturesEnabled,
+                        'aimPolicyEnabled': aimPolicyEnabled,
+                        'ntpNextDisablementEnabled': ntpNextDisablementEnabled,
+                      });
+                    });
 
-                // Assert
-                test(
-                    `Expected for tool chips settings to ${
-                        expectedVisibility ? 'show' : 'not show'} in the ` +
-                        'Customize Chrome side panel',
-                    () => {
+                    // Assert
+                    test('Show tool chips settings when appropriate', () => {
+                      const expectedVisibility = ntpNextFeaturesEnabled &&
+                          aimPolicyEnabled && ntpNextDisablementEnabled;
                       assertEquals(
                           !!customizeChromeApp.shadowRoot.querySelector(
                               '#tools'),
                           expectedVisibility);
                     });
-              })));
+                  }))));
 
   suite('Tools card visibility with tab type', () => {
     suite('with flags on', () => {
@@ -230,6 +231,7 @@ suite('AppTest', () => {
         loadTimeData.overrideValues({
           'ntpNextFeaturesEnabled': true,
           'aimPolicyEnabled': true,
+          'ntpNextDisablementEnabled': true,
         });
       });
 
@@ -259,6 +261,7 @@ suite('AppTest', () => {
         loadTimeData.overrideValues({
           'ntpNextFeaturesEnabled': true,
           'aimPolicyEnabled': false,
+          'ntpNextDisablementEnabled': true,
         });
       });
 

@@ -252,6 +252,9 @@ extern const base::FeatureParam<bool> kNtpNextShowDismissalUIParam;
 // disablement context menu.
 extern const base::FeatureParam<bool> kNtpNextDisablementContextMenuParam;
 
+// Parameter determining if the disablement is enabled for NTP Next.
+extern const base::FeatureParam<bool> kNtpNextDisablementParam;
+
 // Parameter determining if the tab upload should be delayed when tab context is
 // added from an action chip.
 extern const base::FeatureParam<bool> kAddTabUploadDelayOnActionChipClick;

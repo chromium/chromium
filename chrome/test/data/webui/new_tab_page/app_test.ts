@@ -2211,6 +2211,7 @@ suite('NewTabPageAppTest', () => {
         ntpRealboxNextEnabled: true,
         actionChipsEnabled: true,
         addTabUploadDelayOnActionChipClick: true,
+        ntpNextDisablementEnabled: true,
       });
       const actionChipsCallbackRouter = new ActionChipsPageCallbackRouter();
       const actionChipshandler = installMock(
@@ -2265,28 +2266,31 @@ suite('NewTabPageAppTest', () => {
 
     // Testing Action Chips visibility on initial flag load values.
     [true, false].forEach(
-        (actionChipsEnabled) => [true, false].forEach(
-            (ntpNextFeaturesEnabled) => suite(
-                'Action Chips settings rendered with actionChipsEnabled: ' +
-                    actionChipsEnabled +
-                    ' and ntpNextFeaturesEnabled: ' + ntpNextFeaturesEnabled,
-                () => {
-                  // Arrange.
-                  const expectedVisibility =
-                      ntpNextFeaturesEnabled && actionChipsEnabled;
-                  suiteSetup(() => {
-                    loadTimeData.overrideValues({
-                      ntpNextFeaturesEnabled,
-                      actionChipsEnabled,
-                    });
-                  });
+        (ntpNextDisablementEnabled) => [true, false].forEach(
+            (actionChipsEnabled) => [true, false].forEach(
+                (ntpNextFeaturesEnabled) => suite(
+                    'Action Chips settings rendered with actionChipsEnabled: ' +
+                        actionChipsEnabled + ' and ntpNextFeaturesEnabled: ' +
+                        ntpNextFeaturesEnabled +
+                        ' and ntpNextDisablementEnabled: ' +
+                        ntpNextDisablementEnabled,
+                    () => {
+                      suiteSetup(() => {
+                        loadTimeData.overrideValues({
+                          ntpNextFeaturesEnabled,
+                          actionChipsEnabled,
+                          ntpNextDisablementEnabled,
+                        });
+                      });
 
-                  // Assert.
-                  test('Show iframe when appropriate', () => {
-                    const chips = $$<HTMLElement>(app, 'ntp-action-chips');
-                    assertEquals(!!chips, expectedVisibility);
-                  });
-                })));
+                      // Assert.
+                      test('Show action chips when appropriate', () => {
+                        const expectedVisibility = ntpNextFeaturesEnabled &&
+                            (!ntpNextDisablementEnabled || actionChipsEnabled);
+                        const chips = $$<HTMLElement>(app, 'ntp-action-chips');
+                        assertEquals(!!chips, expectedVisibility);
+                      });
+                    }))));
 
     // Testing Action Chips visibility on changing visibility prefs.
     [true, false].forEach(
@@ -2301,7 +2305,7 @@ suite('NewTabPageAppTest', () => {
               await microtasksFinished();
 
               // Assert.
-              const chips = $$(app, 'ntp-action-chips')!;
+              const chips = $$(app, 'ntp-action-chips');
               assertEquals(!!chips, isActionChipsVisible);
             }));
 
