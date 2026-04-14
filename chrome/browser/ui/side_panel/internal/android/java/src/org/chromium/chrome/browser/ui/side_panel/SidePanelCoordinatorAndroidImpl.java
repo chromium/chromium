@@ -83,9 +83,10 @@ public final class SidePanelCoordinatorAndroidImpl implements SidePanelCoordinat
     }
 
     @CalledByNative
-    private void removeContent() {
-        log(TAG, "removeContent");
-        mSidePanelContainerCoordinator.removeContent(result -> notifyAnimationsFinished(null));
+    private void removeContentAndClose(boolean suppressAnimations) {
+        log(TAG, "removeContentAndClose", suppressAnimations);
+        mSidePanelContainerCoordinator.removeContentAndClose(
+                result -> notifyAnimationsFinished(null), suppressAnimations);
     }
 
     private void notifyAnimationsFinished(@Nullable Void unused) {

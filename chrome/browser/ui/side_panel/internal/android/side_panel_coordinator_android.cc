@@ -125,8 +125,8 @@ void SidePanelCoordinatorAndroid::Close(SidePanelType panel_type,
 
   // TOOD(crbug.com/494001968): Handle suppressed animations case.
   entry->OnEntryWillHide(pending_hide_reason_);
-  Java_SidePanelCoordinatorAndroidImpl_removeContent(AttachCurrentThread(),
-                                                     java_coordinator());
+  Java_SidePanelCoordinatorAndroidImpl_removeContentAndClose(
+      AttachCurrentThread(), java_coordinator(), suppress_animations);
 }
 
 void SidePanelCoordinatorAndroid::Toggle(SidePanelEntryKey key,

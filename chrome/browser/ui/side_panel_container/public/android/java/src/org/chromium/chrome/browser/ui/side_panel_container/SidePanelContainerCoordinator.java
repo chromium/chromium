@@ -39,13 +39,15 @@ public interface SidePanelContainerCoordinator {
     void populateContent(SidePanelContent content);
 
     /**
-     * Removes {@link SidePanelContent} from this side panel container.
+     * Removes {@link SidePanelContent} from this side panel container and closes the container.
      *
      * <p>This method is for a side panel feature. Calling it will also close the container.
      *
      * @param onAnimationFinishedCallback Callback to invoke after content is removed.
+     * @param suppressAnimations Whether or not to suppress animations for this removal.
      */
-    void removeContent(Callback<@Nullable Void> onAnimationFinishedCallback);
+    void removeContentAndClose(
+            Callback<@Nullable Void> onAnimationFinishedCallback, boolean suppressAnimations);
 
     /** Returns whether the given {@link SidePanelContent} is shown in this side panel container. */
     boolean isShowing(SidePanelContent sidePanelContent);

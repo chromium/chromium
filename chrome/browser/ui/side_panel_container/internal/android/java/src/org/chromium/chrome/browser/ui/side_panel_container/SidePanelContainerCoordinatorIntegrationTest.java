@@ -122,7 +122,7 @@ public class SidePanelContainerCoordinatorIntegrationTest {
 
     @Test
     @MediumTest
-    public void removeContent_removesContentView() {
+    public void removeContent_removesContentAndCloseView() {
         // Arrange.
         var coordinator = getSidePanelContainerCoordinator();
         var sidePanelContent = createSidePanelContent("Side Panel Content To Remove");
@@ -131,7 +131,7 @@ public class SidePanelContainerCoordinatorIntegrationTest {
 
         // Act.
         ThreadUtils.runOnUiThreadBlocking(
-                () -> coordinator.removeContent(mOnAnimationFinishedCallbackMock));
+                () -> coordinator.removeContentAndClose(mOnAnimationFinishedCallbackMock, true));
 
         // Assert.
         assertEquals(0, containerView.getChildCount());
@@ -187,7 +187,7 @@ public class SidePanelContainerCoordinatorIntegrationTest {
         ThreadUtils.runOnUiThreadBlocking(() -> coordinator.populateContent(sidePanelContent));
         waitForContainerViewWithValidWidth(coordinator);
         ThreadUtils.runOnUiThreadBlocking(
-                () -> coordinator.removeContent(mOnAnimationFinishedCallbackMock));
+                () -> coordinator.removeContentAndClose(mOnAnimationFinishedCallbackMock, true));
 
         // Assert.
         assertFalse(
