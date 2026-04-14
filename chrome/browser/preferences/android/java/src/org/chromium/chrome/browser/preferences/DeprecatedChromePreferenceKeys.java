@@ -55,6 +55,7 @@ public class DeprecatedChromePreferenceKeys {
                 "Chrome.MultiWindowMode.StartTime2.*",
                 "Chrome.NtpCustomization.BackgroundImageLandscapeMatrix",
                 "Chrome.NtpCustomization.BackgroundImagePortraitMatrix",
+                "Chrome.NtpCustomization.MainBottomSheetShown",
                 "Chrome.OfflineMeasurements.HttpProbeResultsList",
                 "Chrome.OfflineMeasurements.IsAirplaneModeEnabledList",
                 "Chrome.OfflineMeasurements.IsRoaming",

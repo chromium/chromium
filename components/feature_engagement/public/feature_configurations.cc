@@ -1146,19 +1146,21 @@ std::optional<FeatureConfig> GetClientSideFeatureConfig(
 
   if (kIPHNewTabPageThemeCustomizationFeature.name == feature->name) {
     // Allows an IPH for the theme customization entry point.
-    // * Only once in its lifetime.
-    // * Only as long as the user hasn't opened the NTP customization bottom
-    // sheet.
+    // * Once per 14 days. 3 times as maximum for lifetime.
     FeatureConfig config;
     config.valid = true;
     config.availability = Comparator(ANY, 0);
     config.session_rate = Comparator(EQUAL, 0);
     config.trigger =
         EventConfig("ntp_theme_customization_iph_triggered",
-                    Comparator(EQUAL, 0), k10YearsInDays, k10YearsInDays);
+                    Comparator(LESS_THAN, 3), k10YearsInDays, k10YearsInDays);
     config.used =
         EventConfig("ntp_theme_customization_iph_used", Comparator(EQUAL, 0),
                     k10YearsInDays, k10YearsInDays);
+
+    config.event_configs.insert(
+        EventConfig("ntp_theme_customization_iph_triggered",
+                    Comparator(LESS_THAN, 1), 14, k10YearsInDays));
     return config;
   }
   if (kIPHPageSummaryWebMenuFeature.name == feature->name) {
