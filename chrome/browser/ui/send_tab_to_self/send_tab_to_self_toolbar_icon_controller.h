@@ -49,8 +49,8 @@ class SendTabToSelfToolbarIconController
   void OnBrowserActivated(BrowserWindowInterface* browser) override;
 
  private:
-  void StorePendingEntry(
-      const SendTabToSelfEntry* new_entry_pending_notification);
+  void StorePendingEntries(const std::vector<const SendTabToSelfEntry*>&
+                               new_entries_pending_notification);
 
   void ShowToolbarButton(const SendTabToSelfEntry& entry,
                          BrowserWindowInterface* browser = nullptr);
@@ -60,7 +60,7 @@ class SendTabToSelfToolbarIconController
   // In the case that we cannot immediately display a new entry
   // (e.g. the active browser is incognito or a different profile), we store it
   // here and wait until an appropriate browser becomes active to display it.
-  std::unique_ptr<SendTabToSelfEntry> pending_entry_;
+  std::vector<std::unique_ptr<SendTabToSelfEntry>> pending_entries_;
 
   base::ScopedObservation<ProfileBrowserCollection, BrowserCollectionObserver>
       browser_collection_observer_{this};

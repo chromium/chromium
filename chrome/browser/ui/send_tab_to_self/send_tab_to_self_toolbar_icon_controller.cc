@@ -48,10 +48,6 @@ void SendTabToSelfToolbarIconController::DisplayNewEntries(
     return;
   }
 
-  // Select semi-randomly the first new entry from the list because there is no
-  // UI to show multiple entries.
-  const SendTabToSelfEntry* new_entry = new_entries.front();
-
   // If the active browser matches `profile_`, show the toolbar icon.
   // Otherwise, we will store this entry and wait to show on the next active
   // appropriate browser.
@@ -62,36 +58,54 @@ void SendTabToSelfToolbarIconController::DisplayNewEntries(
     // TODO(crbug.com/488072250): Move this logic into a separate notification
     // handler class.
     if (base::FeatureList::IsEnabled(kSendTabToSelfAutoOpen)) {
-      OpenEntryInNewForegroundTab(profile_, *new_entry);
+      // Open the first tab in the foreground and all the others in the
+      // background.
+      // TODO(crbug.com/488072250): Confirm the ordering of the tabs and which
+      // tab should be made active.
+      OpenEntryInNewForegroundTab(profile_, *new_entries[0]);
+      RecordAutoOpenOutcome(AutoOpenOutcome::kSuccess);
+      for (size_t ii = 1; ii < new_entries.size(); ++ii) {
+        OpenEntryInNewBackgroundTab(profile_, *new_entries[ii]);
+        RecordAutoOpenOutcome(AutoOpenOutcome::kSuccess);
+      }
+
       // Show a toast.
       ToastParams params(ToastId::kSendTabToSelfTabOpened);
       params.body_string_replacement_params = {
-          base::UTF8ToUTF16(new_entry->GetDeviceName())};
+          base::UTF8ToUTF16(new_entries[0]->GetDeviceName())};
       browser->GetFeatures()
           .toast_service()
           ->toast_controller()
           ->MaybeShowToast(std::move(params));
-      RecordAutoOpenOutcome(AutoOpenOutcome::kSuccess);
     } else {
-      ShowToolbarButton(*new_entry, browser);
+      // Select semi-randomly the first new entry from the list because there is
+      // no UI to show multiple entries.
+      ShowToolbarButton(*new_entries[0], browser);
     }
     return;
   }
-  if (base::FeatureList::IsEnabled(kSendTabToSelfAutoOpen)) {
-    RecordAutoOpenOutcome(AutoOpenOutcome::kPending);
-  }
-  StorePendingEntry(new_entry);
+  StorePendingEntries(new_entries);
 }
 
-void SendTabToSelfToolbarIconController::StorePendingEntry(
-    const SendTabToSelfEntry* new_entry_pending_notification) {
-  const bool had_entry_pending_notification = pending_entry_ != nullptr;
+void SendTabToSelfToolbarIconController::StorePendingEntries(
+    const std::vector<const SendTabToSelfEntry*>&
+        new_entries_pending_notification) {
+  CHECK(!new_entries_pending_notification.empty());
+  const bool had_entry_pending_notification = !pending_entries_.empty();
 
-  // |pending_entry_| might already be set, but it's better to overwrite
-  // it with a fresher value.
-  // TODO(crbug.com/488072250): Allow multiple pending entries.
-  pending_entry_ =
-      std::make_unique<SendTabToSelfEntry>(*new_entry_pending_notification);
+  if (base::FeatureList::IsEnabled(kSendTabToSelfAutoOpen)) {
+    pending_entries_.reserve(pending_entries_.size() +
+                             new_entries_pending_notification.size());
+    for (const auto* entry : new_entries_pending_notification) {
+      pending_entries_.push_back(std::make_unique<SendTabToSelfEntry>(*entry));
+      RecordAutoOpenOutcome(AutoOpenOutcome::kPending);
+    }
+  } else {
+    pending_entries_.clear();
+    pending_entries_.push_back(std::make_unique<SendTabToSelfEntry>(
+        *new_entries_pending_notification.front()));
+  }
+
   // Prevent adding the observer several times. This might happen when the
   // window is inactive and this method is called more than once (i.e. the
   // server sends multiple entry batches).
@@ -114,21 +128,24 @@ void SendTabToSelfToolbarIconController::OnBrowserActivated(
     BrowserWindowInterface* browser) {
   browser_collection_observer_.Reset();
 
-  // Reset |pending_entry_| because it's used to determine if the
+  // Reset `pending_entries_` because it's used to determine if the
   // BrowserListObserver is added in `DisplayNewEntries()`.
-  std::unique_ptr<SendTabToSelfEntry> entry = std::move(pending_entry_);
+  std::vector<std::unique_ptr<SendTabToSelfEntry>> entries =
+      std::move(pending_entries_);
 
-  if (!profile_ || !entry) {
+  if (!profile_ || entries.empty()) {
     return;
   }
 
   if (CanShowOnBrowser(browser)) {
     if (base::FeatureList::IsEnabled(kSendTabToSelfAutoOpen)) {
-      OpenEntryInNewBackgroundTab(profile_, *entry);
       // TODO(crbug.com/488072250): Show a toast.
-      RecordAutoOpenOutcome(AutoOpenOutcome::kOpenedPending);
+      for (const std::unique_ptr<SendTabToSelfEntry>& entry : entries) {
+        OpenEntryInNewBackgroundTab(profile_, *entry);
+        RecordAutoOpenOutcome(AutoOpenOutcome::kOpenedPending);
+      }
     } else {
-      ShowToolbarButton(*entry, browser);
+      ShowToolbarButton(*entries.back(), browser);
     }
   }
 }
