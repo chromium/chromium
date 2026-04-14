@@ -38,7 +38,7 @@ using testing::UnorderedElementsAre;
 
 constexpr char kRecipientUserId[] = "recipient_user_id";
 constexpr char kPasswordValue[] = "password";
-constexpr char kSignonRealm[] = "signon_realm";
+constexpr char kSignonRealm[] = "http://abc.com/";
 constexpr char kOrigin[] = "http://abc.com/";
 constexpr char kUsernameElement[] = "username_element";
 constexpr char kUsernameValue[] = "username";

@@ -16,7 +16,7 @@
 namespace password_sharing_helper {
 
 namespace {
-constexpr char kSignonRealm[] = "signon_realm";
+constexpr char kSignonRealm[] = "http://abc.com/";
 constexpr char kOrigin[] = "http://abc.com/";
 constexpr char kUsernameElement[] = "username_element";
 constexpr char kPasswordElement[] = "password_element";
