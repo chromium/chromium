@@ -121,6 +121,13 @@ views::ProposedLayout VerticalTabStripTopContainer::CalculateProposedLayout(
       current_y = std::max(0, (baseline_height - first_button_height) / 2);
     }
 
+    // Because the collapsed state is set at the end of the transition, we need
+    // to ensure that the top container's button do not appear behind the
+    // caption buttons when they are leading.
+    if (caption_button_width_ > 0) {
+      current_y = std::max(current_y, toolbar_height_);
+    }
+
     if (unfocus_button_ && unfocus_button_->GetVisible()) {
       const gfx::Size pref_size = unfocus_button_->GetPreferredSize();
       int x = is_collapsed
