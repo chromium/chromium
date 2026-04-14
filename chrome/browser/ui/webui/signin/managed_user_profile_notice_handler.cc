@@ -12,6 +12,7 @@
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/utf_string_conversions.h"
+#include "build/branding_buildflags.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/enterprise/browser_management/management_identity.h"
 #include "chrome/browser/enterprise/util/managed_browser_utils.h"
@@ -30,6 +31,7 @@
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/webui/management/management_ui_handler.h"
 #include "chrome/browser/ui/webui/signin/signin_utils.h"
+#include "chrome/common/chrome_switches.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/grit/branded_strings.h"
 #include "chrome/grit/generated_resources.h"
@@ -52,6 +54,11 @@
 #if !BUILDFLAG(IS_CHROMEOS)
 #include "base/feature_list.h"
 #include "chrome/browser/enterprise/profile_management/profile_management_features.h"
+#endif
+
+#if BUILDFLAG(CHROME_FOR_TESTING)
+#include "base/command_line.h"
+#include "base/task/sequenced_task_runner.h"
 #endif
 
 namespace {
@@ -227,6 +234,13 @@ void ManagedUserProfileNoticeHandler::HandleInitialized(
   AllowJavascript();
   const base::Value& callback_id = args[0];
   ResolveJavascriptCallback(callback_id, GetProfileInfoValue());
+
+#if BUILDFLAG(CHROME_FOR_TESTING)
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE,
+      base::BindOnce(&ManagedUserProfileNoticeHandler::ProcessAutoApprove,
+                     weak_ptr_factory_.GetWeakPtr()));
+#endif
 }
 
 void ManagedUserProfileNoticeHandler::HandleInitializedWithSize(
@@ -237,6 +251,27 @@ void ManagedUserProfileNoticeHandler::HandleInitializedWithSize(
     signin::SetInitializedModalHeight(browser_, web_ui(), args);
   }
 }
+
+#if BUILDFLAG(CHROME_FOR_TESTING)
+void ManagedUserProfileNoticeHandler::ProcessAutoApprove() {
+  base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
+  if (!command_line->HasSwitch(
+          switches::kEnterpriseSigninDialogBehaviorForTesting)) {
+    return;
+  }
+  std::string behavior = command_line->GetSwitchValueASCII(
+      switches::kEnterpriseSigninDialogBehaviorForTesting);
+
+  if (behavior == "accept-new-profile") {
+    CallProceedCallbackForTesting(signin::SIGNIN_CHOICE_NEW_PROFILE);
+  } else if (behavior == "accept-link-data" ||
+             behavior == "accept-current-profile") {
+    CallProceedCallbackForTesting(signin::SIGNIN_CHOICE_CONTINUE);
+  } else if (behavior == "cancel") {
+    HandleCancel(base::ListValue());
+  }
+}
+#endif
 
 void ManagedUserProfileNoticeHandler::HandleProceed(
     const base::ListValue& args) {

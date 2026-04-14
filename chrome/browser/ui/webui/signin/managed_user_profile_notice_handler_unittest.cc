@@ -9,8 +9,11 @@
 #include "base/functional/callback_helpers.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/mock_callback.h"
+#include "base/test/scoped_command_line.h"
 #include "base/test/task_environment.h"
+#include "base/test/test_future.h"
 #include "base/values.h"
+#include "build/branding_buildflags.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/enterprise/browser_management/management_identity.h"
 #include "chrome/browser/enterprise/browser_management/management_service_factory.h"
@@ -19,6 +22,7 @@
 #include "chrome/browser/profiles/profile_test_util.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/webui/signin/signin_utils.h"
+#include "chrome/common/chrome_switches.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
@@ -603,3 +607,51 @@ TEST_F(ManagedUserProfileNoticeHandleCancelTest, HandleCancelNoUseAfterFree) {
   EXPECT_EQ(handler(), nullptr);
 }
 #endif  // !BUILDFLAG(IS_CHROMEOS)
+
+#if BUILDFLAG(CHROME_FOR_TESTING)
+class ManagedUserProfileNoticeHandlerAutoApproveTest
+    : public ManagedUserProfileNoticeHandlerTestBase,
+      public testing::WithParamInterface<const char*> {};
+
+TEST_P(ManagedUserProfileNoticeHandlerAutoApproveTest, AutoApprove) {
+  base::test::ScopedCommandLine scoped_command_line;
+  scoped_command_line.GetProcessCommandLine()->AppendSwitchASCII(
+      switches::kEnterpriseSigninDialogBehaviorForTesting, GetParam());
+
+  base::test::TestFuture<signin::SigninChoice> choice_future;
+  base::test::TestFuture<void> done_future;
+
+  InitializeHandler(
+      ManagedUserProfileNoticeUI::ScreenType::kEntepriseAccountSyncEnabled,
+      std::make_unique<signin::EnterpriseProfileCreationDialogParams>(
+          account_info(),
+          /*is_oidc_account=*/false,
+          /*user_already_signed_in=*/false,
+          /*profile_creation_required_by_policy=*/false,
+          /*show_link_data_option=*/false,
+          /*process_user_choice_callback=*/
+          choice_future.GetCallback(), done_future.GetCallback()));
+
+  signin::SigninChoice expected_choice = signin::SIGNIN_CHOICE_CANCEL;
+  if (std::string(GetParam()) == "accept-new-profile") {
+    expected_choice = signin::SIGNIN_CHOICE_NEW_PROFILE;
+  } else if (std::string(GetParam()) == "accept-link-data" ||
+             std::string(GetParam()) == "accept-current-profile") {
+    expected_choice = signin::SIGNIN_CHOICE_CONTINUE;
+  }
+
+  base::ListValue args;
+  args.Append("callback-id");
+  web_ui()->HandleReceivedMessage("initialized", args);
+
+  EXPECT_EQ(expected_choice, choice_future.Get());
+  EXPECT_TRUE(done_future.Wait());
+}
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         ManagedUserProfileNoticeHandlerAutoApproveTest,
+                         testing::Values("accept-new-profile",
+                                         "accept-link-data",
+                                         "accept-current-profile",
+                                         "cancel"));
+#endif

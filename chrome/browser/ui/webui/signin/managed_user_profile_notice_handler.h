@@ -17,6 +17,7 @@
 #include "base/scoped_observation.h"
 #include "base/timer/timer.h"
 #include "base/values.h"
+#include "build/branding_buildflags.h"
 #include "chrome/browser/profiles/profile_attributes_storage.h"
 #include "chrome/browser/ui/webui/signin/managed_user_profile_notice_ui.h"
 #include "chrome/browser/ui/webui/signin/signin_utils.h"
@@ -101,6 +102,11 @@ class ManagedUserProfileNoticeHandler
   void HandleInitializedWithSize(const base::ListValue& args);
   void HandleProceed(const base::ListValue& args);
   void HandleCancel(const base::ListValue& args);
+
+#if BUILDFLAG(CHROME_FOR_TESTING)
+  // Processes the enterprise-signin-dialog-behavior command line switch.
+  void ProcessAutoApprove();
+#endif
 
   void OnLongProcessingTime();
 

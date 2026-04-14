@@ -4,6 +4,7 @@
 
 #include "chrome/common/chrome_switches.h"
 
+#include "build/branding_buildflags.h"
 #include "build/build_config.h"
 #include "build/buildflag.h"
 #include "extensions/buildflags/buildflags.h"
@@ -994,6 +995,11 @@ const char kUseSystemDefaultPrinter[] = "use-system-default-printer";
 // Indicates that this process is the product of a relaunch following migration
 // of User Data.
 const char kUserDataMigrated[] = "user-data-migrated";
+#endif
+
+#if BUILDFLAG(CHROME_FOR_TESTING)
+const char kEnterpriseSigninDialogBehaviorForTesting[] =
+    "enterprise-signin-dialog-behavior-for-testing";
 #endif
 
 // -----------------------------------------------------------------------------
