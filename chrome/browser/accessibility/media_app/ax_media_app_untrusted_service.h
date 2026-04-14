@@ -134,7 +134,7 @@ class AXMediaAppUntrustedService
  protected:
   virtual bool IsOcrServiceEnabled() const;
   void PushDirtyPage(const std::string& dirty_page_id);
-  std::string PopDirtyPage();
+  std::optional<std::string> PopDirtyPage();
   virtual void OcrNextDirtyPageIfAny();
 
   size_t min_pages_per_batch_ = 2u;

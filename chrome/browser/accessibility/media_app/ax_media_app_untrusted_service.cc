@@ -953,6 +953,7 @@ void AXMediaAppUntrustedService::ViewportUpdated(const gfx::RectF& viewport_box,
   document_update.nodes = {document_root_data};
   if (!document_->ax_tree()->Unserialize(document_update)) {
     mojo::ReportBadMessage(document_->ax_tree()->error());
+    return;
   }
   SendAXTreeToAccessibilityService(*document_, *document_serializer_);
 }
@@ -1230,11 +1231,12 @@ void AXMediaAppUntrustedService::PushDirtyPage(
   dirty_page_ids_.push_back(dirty_page_id);
 }
 
-std::string AXMediaAppUntrustedService::PopDirtyPage() {
+std::optional<std::string> AXMediaAppUntrustedService::PopDirtyPage() {
   if (dirty_page_ids_.empty()) {
     mojo::ReportBadMessage("`PopDirtyPage()` found no more dirty pages.");
+    return std::nullopt;
   }
-  std::string dirty_page_id = dirty_page_ids_.front();
+  std::string dirty_page_id = std::move(dirty_page_ids_.front());
   dirty_page_ids_.pop_front();
   return dirty_page_id;
 }
@@ -1261,13 +1263,16 @@ void AXMediaAppUntrustedService::OcrNextDirtyPageIfAny() {
       return;
     }
   }
-  const std::string dirty_page_id = PopDirtyPage();
+  const std::optional<std::string> dirty_page_id = PopDirtyPage();
+  if (!dirty_page_id) {
+    return;
+  }
   // Note that the following code could be refactored to support things
   // happening asynchronously - i.e. `RequestBitmap` could be async.
   if (media_app_) [[unlikely]] {
     // `media_app_` is only used for testing.
     CHECK_IS_TEST();
-    SkBitmap page_bitmap = media_app_->RequestBitmap(dirty_page_id);
+    SkBitmap page_bitmap = media_app_->RequestBitmap(*dirty_page_id);
     // `screen_ai_annotator_` is only bound in builds with the
     // ENABLE_SCREEN_AI_SERVICE buildflag. Note that it may be better to mock it
     // in tests running on bots without this flag and call OnBitmapReceived()
@@ -1275,12 +1280,12 @@ void AXMediaAppUntrustedService::OcrNextDirtyPageIfAny() {
     ocr_->PerformOCR(
         page_bitmap,
         base::BindOnce(&AXMediaAppUntrustedService::OnPageOcred,
-                       weak_ptr_factory_.GetWeakPtr(), dirty_page_id));
+                       weak_ptr_factory_.GetWeakPtr(), *dirty_page_id));
   } else {
     media_app_ui::mojom::OcrUntrustedPage::RequestBitmapCallback cb =
         base::BindOnce(&AXMediaAppUntrustedService::OnBitmapReceived,
-                       weak_ptr_factory_.GetWeakPtr(), dirty_page_id);
-    media_app_page_->RequestBitmap(dirty_page_id, std::move(cb));
+                       weak_ptr_factory_.GetWeakPtr(), *dirty_page_id);
+    media_app_page_->RequestBitmap(*dirty_page_id, std::move(cb));
   }
 }
 

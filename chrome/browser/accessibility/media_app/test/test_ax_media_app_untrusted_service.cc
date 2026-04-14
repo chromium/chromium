@@ -60,7 +60,7 @@ void TestAXMediaAppUntrustedService::PushDirtyPageForTesting(
 }
 
 std::string TestAXMediaAppUntrustedService::PopDirtyPageForTesting() {
-  return AXMediaAppUntrustedService::PopDirtyPage();
+  return *AXMediaAppUntrustedService::PopDirtyPage();
 }
 
 void TestAXMediaAppUntrustedService::OcrNextDirtyPageIfAny() {
