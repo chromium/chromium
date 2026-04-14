@@ -524,7 +524,7 @@ AppsSection::AppsSection(Profile* profile,
     UpdateAndroidSearchTags();
   }
 
-  if (web_app::IsIwaUnmanagedInstallEnabled(profile)) {
+  if (web_app::IsIwaUnmanagedInstallFeatureEnabled(profile)) {
     updater.AddSearchTags(GetManageIsolatedWebAppsSearchConcepts());
     updater.AddSearchTags(GetTurnOnIsolatedWebAppsSearchConcepts());
   }
@@ -633,8 +633,9 @@ void AppsSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
 
   html_source->AddBoolean("isArcVmEnabled", arc::IsArcVmEnabled());
 
-  html_source->AddBoolean("showManageIsolatedWebAppsRow",
-                          web_app::IsIwaUnmanagedInstallEnabled(profile()));
+  html_source->AddBoolean(
+      "showManageIsolatedWebAppsRow",
+      web_app::IsIwaUnmanagedInstallFeatureEnabled(profile()));
   html_source->AddString("isolatedWebAppsDescription",
                          l10n_util::GetStringFUTF16(
                              IDS_SETTINGS_ISOLATED_WEB_APPS_DESCRIPTION,

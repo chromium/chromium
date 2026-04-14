@@ -17,6 +17,14 @@ inline constexpr std::string_view kIwaDevModeNotEnabledMessage =
 
 bool IsIwaDevModeEnabled(Profile* profile);
 
+// Checks if the base feature flag for unmanaged IWA installation is enabled.
+bool IsIwaUnmanagedInstallFeatureEnabled(Profile* profile);
+
+// Checks if unmanaged IWA installation is currently allowed for the given
+// profile. This requires the feature flag to be enabled AND the effective
+// preference value to be true. The preference value is controlled by the
+// 'IsolatedWebAppUserInstallationEnabled' enterprise policy, if set,
+// otherwise it defaults to true.
 bool IsIwaUnmanagedInstallEnabled(Profile* profile);
 
 }  // namespace web_app

@@ -33,7 +33,7 @@ InstallIsolatedWebAppVirtualTask::InstallIsolatedWebAppVirtualTask() {
 }
 
 bool InstallIsolatedWebAppVirtualTask::IsEnabled(Profile* profile) const {
-  return web_app::IsIwaUnmanagedInstallEnabled(profile);
+  return web_app::IsIwaUnmanagedInstallFeatureEnabled(profile);
 }
 
 std::string InstallIsolatedWebAppVirtualTask::id() const {

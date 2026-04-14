@@ -39,15 +39,22 @@ bool IsIwaDevModeEnabled(Profile* profile) {
   return base::FeatureList::IsEnabled(features::kIsolatedWebAppDevMode);
 }
 
-bool IsIwaUnmanagedInstallEnabled(Profile* profile) {
+bool IsIwaUnmanagedInstallFeatureEnabled(Profile* profile) {
   if (!content::AreIsolatedWebAppsEnabled(profile)) {
     return false;
   }
 
   return base::FeatureList::IsEnabled(
-             features::kIsolatedWebAppUnmanagedInstall) &&
-         profile->GetPrefs()->GetBoolean(
-             prefs::kIsolatedWebAppUserInstallationEnabled);
+      features::kIsolatedWebAppUnmanagedInstall);
+}
+
+bool IsIwaUnmanagedInstallEnabled(Profile* profile) {
+  if (!IsIwaUnmanagedInstallFeatureEnabled(profile)) {
+    return false;
+  }
+
+  return profile->GetPrefs()->GetBoolean(
+      prefs::kIsolatedWebAppUserInstallationEnabled);
 }
 
 }  // namespace web_app

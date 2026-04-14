@@ -38,6 +38,7 @@
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/browser/web_applications/web_app_ui_manager.h"
 #include "chrome/common/chrome_features.h"
+#include "chrome/common/pref_names.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
@@ -563,6 +564,33 @@ TEST_F(IsolatedWebAppInstallerViewControllerTest,
 }
 
 #if BUILDFLAG(IS_CHROMEOS)
+
+TEST_F(IsolatedWebAppInstallerViewControllerTest,
+       TransitionsToDisabledStepWhenUnmanagedInstallDisabled) {
+  base::test::ScopedFeatureList disable_feature;
+  disable_feature.InitAndDisableFeature(
+      features::kIsolatedWebAppUnmanagedInstall);
+
+  profile()->GetPrefs()->SetBoolean(
+      prefs::kIsolatedWebAppUserInstallationEnabled, false);
+
+  base::FilePath bundle_path = CreateBundlePath("test_bundle.swbn");
+  IsolatedWebAppUrlInfo url_info = CreateAndWriteTestBundle(bundle_path, "1.0");
+  MockIconAndPageState(url_info);
+
+  IsolatedWebAppInstallerModel model{IwaSourceBundleProdMode(bundle_path)};
+  IsolatedWebAppInstallerViewController controller(profile(), fake_provider(),
+                                                   &model);
+  testing::StrictMock<MockView> view;
+  controller.SetViewForTesting(&view);
+
+  EXPECT_CALL(view, ShowDisabledScreen());
+
+  controller.Start(base::DoNothing(), base::DoNothing());
+
+  TestIsolatedWebAppInstallerModelObserver(&model).WaitForStepChange(
+      Step::kDisabled);
+}
 
 TEST_F(IsolatedWebAppInstallerViewControllerTest,
        ChangingPrefToFalseDisablesInstaller) {

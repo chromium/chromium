@@ -83,7 +83,7 @@ void IsolatedWebAppInstallerCoordinator::Start(
   base::OnceClosure on_complete_callback =
       base::BindOnce(&IsolatedWebAppInstallerCoordinator::OnDialogClosed,
                      base::Unretained(this), std::move(callback));
-  if (!IsIwaUnmanagedInstallEnabled(profile_)) {
+  if (!IsIwaUnmanagedInstallFeatureEnabled(profile_)) {
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, std::move(on_complete_callback));
     return;

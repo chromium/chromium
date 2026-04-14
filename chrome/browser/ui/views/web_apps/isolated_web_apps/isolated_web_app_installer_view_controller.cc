@@ -92,6 +92,10 @@ std::string CreateRandomInstanceId() {
   return uuid.AsLowercaseString();
 }
 
+// Checks if a user is able to install Isolated Web Apps.
+// This function combines checks for the general feature
+// enablement, browser-level policy settings, and (on ChromeOS) the
+// OS-level IWA enablement setting.
 bool IsUserInstallEnabledForProfile(Profile* profile) {
   if (!web_app::IsIwaUnmanagedInstallEnabled(profile)) {
     return false;
