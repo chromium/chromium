@@ -74,6 +74,10 @@
   base::RecordAction(base::UserMetricsAction(kNTPMIAEntryPointTappedAction));
 }
 
+- (void)recordPlusButtonTapped {
+  base::RecordAction(base::UserMetricsAction(kNTPAIMPlusButtonTappedAction));
+}
+
 - (void)
     recordMagicStackCustomizationStateWithSafetyCheck:(BOOL)safetyCheckEnabled
                                         tabResumption:(BOOL)tabResumptionEnabled

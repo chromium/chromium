@@ -1966,6 +1966,7 @@
 }
 
 - (void)openMultimodalActionsMenu {
+  [self.NTPMetricsRecorder recordPlusButtonTapped];
   [self dismissCustomizationMenu];
   if (!IsComposeboxAIMDisabled() &&
       _aimEligibilityService->IsFuseboxEligible() &&

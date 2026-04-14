@@ -29332,6 +29332,15 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="MobileNTPAIMPlusButtonTapped">
+  <owner>radunitescu@google.com</owner>
+  <owner>bling-search@google.com</owner>
+  <description>
+    Recorded when the user taps on the AIM plus button in the fakebox on NTP.
+    iOS only.
+  </description>
+</action>
+
 <action name="MobileNTPBookmark">
   <obsolete>
     Deprecated as of 01/2017. Replaced with MobileBookmarkManagerEntryOpened.
