@@ -602,8 +602,6 @@ void LayoutBox::StyleWillChange(StyleDifference diff,
 
         if (old_style->GetPosition() == EPosition::kStatic) {
           SetShouldDoFullPaintInvalidation();
-        } else if (new_style.HasOutOfFlowPosition()) {
-          Parent()->SetChildNeedsLayout();
         }
       }
     }
