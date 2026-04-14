@@ -81,15 +81,15 @@ public class PersistentStoreCleanerUnitTest {
     @Captor private ArgumentCaptor<int[]> mTabIdsCaptor;
     @Captor private ArgumentCaptor<List<String>> mWindowTagsCaptor;
 
+    private PersistentStoreCleaner mCleaner;
+
     @Before
     public void setUp() {
         when(mOrchestrator.getTabModelSelector()).thenReturn(mSelector);
         when(mSelector.getModel(false)).thenReturn(mTabModel);
         when(mTabModel.getProfile()).thenReturn(mProfile);
 
-        PersistentStoreCleaner.setTabPersistentStoreImplCleanerForTesting(
-                () -> mLegacyStoreCleaner);
-        PersistentStoreCleaner.setTabStateStoreCleanerForTesting(() -> mTabStateStoreCleaner);
+        mCleaner = new PersistentStoreCleaner(mProfile, mTabStateStoreCleaner, mLegacyStoreCleaner);
 
         TabWindowManagerSingleton.setTabWindowManagerForTesting(mTabWindowManager);
 
@@ -136,7 +136,7 @@ public class PersistentStoreCleanerUnitTest {
     public void testScheduleCleanUnusedData_AllInitialized() {
         when(mTabWindowManager.isAllTabStateInitialized()).thenReturn(true);
 
-        PersistentStoreCleaner.scheduleCleanUnusedData(mProfile, mTabContentManager);
+        mCleaner.scheduleCleanUnusedData(mTabContentManager);
         ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
 
         verify(mTabContentManager).removeAllTabThumbnailsExceptForIds(mTabIdsCaptor.capture());
@@ -154,7 +154,7 @@ public class PersistentStoreCleanerUnitTest {
     public void testScheduleCleanUnusedData_NotAllInitialized() {
         when(mTabWindowManager.isAllTabStateInitialized()).thenReturn(false);
 
-        PersistentStoreCleaner.scheduleCleanUnusedData(mProfile, mTabContentManager);
+        mCleaner.scheduleCleanUnusedData(mTabContentManager);
         ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
 
         verify(mTabContentManager, never()).removeAllTabThumbnailsExceptForIds(any());
@@ -181,7 +181,7 @@ public class PersistentStoreCleanerUnitTest {
     public void testScheduleCleanUnusedData_TabStorageDisabled() {
         when(mTabWindowManager.isAllTabStateInitialized()).thenReturn(true);
 
-        PersistentStoreCleaner.scheduleCleanUnusedData(mProfile, mTabContentManager);
+        mCleaner.scheduleCleanUnusedData(mTabContentManager);
         ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
 
         verify(mTabContentManager).removeAllTabThumbnailsExceptForIds(mTabIdsCaptor.capture());
@@ -196,7 +196,7 @@ public class PersistentStoreCleanerUnitTest {
         when(mTabWindowManager.isAllTabStateInitialized()).thenReturn(true);
         when(mTabContentManager.isDestroyed()).thenReturn(true);
 
-        PersistentStoreCleaner.scheduleCleanUnusedData(mProfile, mTabContentManager);
+        mCleaner.scheduleCleanUnusedData(mTabContentManager);
         ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
 
         verify(mTabContentManager, never()).removeAllTabThumbnailsExceptForIds(any());
@@ -207,7 +207,7 @@ public class PersistentStoreCleanerUnitTest {
         when(mTabWindowManager.isAllTabStateInitialized()).thenReturn(true);
         when(mTabWindowManager.getArchivedTabModelSelector()).thenReturn(null);
 
-        PersistentStoreCleaner.scheduleCleanUnusedData(mProfile, mTabContentManager);
+        mCleaner.scheduleCleanUnusedData(mTabContentManager);
         ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
 
         verify(mTabContentManager, never()).removeAllTabThumbnailsExceptForIds(any());
@@ -218,7 +218,7 @@ public class PersistentStoreCleanerUnitTest {
         when(mTabWindowManager.isAllTabStateInitialized()).thenReturn(true);
         when(mTabModelSelector.isTabStateInitialized()).thenReturn(false);
 
-        PersistentStoreCleaner.scheduleCleanUnusedData(mProfile, mTabContentManager);
+        mCleaner.scheduleCleanUnusedData(mTabContentManager);
         ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
 
         verify(mTabContentManager, never()).removeAllTabThumbnailsExceptForIds(any());
@@ -229,7 +229,7 @@ public class PersistentStoreCleanerUnitTest {
         when(mOrchestrator.getAuthoritativeStoreType()).thenReturn(StoreType.LEGACY);
         when(mOrchestrator.getShadowStoreType()).thenReturn(StoreType.TAB_STATE_STORE);
 
-        PersistentStoreCleaner.cleanWindowForUnavailableStores(1, mOrchestrator);
+        mCleaner.cleanWindowForUnavailableStores(1, mOrchestrator);
 
         verify(mLegacyStoreCleaner, never()).cleanupStateFile(anyInt(), any(), any(), any());
         verify(mTabStateStoreCleaner, never()).cleanupStateFile(anyInt(), any());
@@ -240,7 +240,7 @@ public class PersistentStoreCleanerUnitTest {
         when(mOrchestrator.getAuthoritativeStoreType()).thenReturn(StoreType.LEGACY);
         when(mOrchestrator.getShadowStoreType()).thenReturn(StoreType.INVALID);
 
-        PersistentStoreCleaner.cleanWindowForUnavailableStores(1, mOrchestrator);
+        mCleaner.cleanWindowForUnavailableStores(1, mOrchestrator);
 
         verify(mLegacyStoreCleaner, never()).cleanupStateFile(anyInt(), any(), any(), any());
         verify(mTabStateStoreCleaner).cleanupStateFile(eq(1), eq(mProfile));
@@ -251,7 +251,7 @@ public class PersistentStoreCleanerUnitTest {
         when(mOrchestrator.getAuthoritativeStoreType()).thenReturn(StoreType.TAB_STATE_STORE);
         when(mOrchestrator.getShadowStoreType()).thenReturn(StoreType.INVALID);
 
-        PersistentStoreCleaner.cleanWindowForUnavailableStores(1, mOrchestrator);
+        mCleaner.cleanWindowForUnavailableStores(1, mOrchestrator);
 
         verify(mLegacyStoreCleaner).cleanupStateFile(eq(1), any(), any(), any());
         verify(mTabStateStoreCleaner, never()).cleanupStateFile(anyInt(), any());
@@ -262,7 +262,7 @@ public class PersistentStoreCleanerUnitTest {
         when(mOrchestrator.getAuthoritativeStoreType()).thenReturn(StoreType.LEGACY);
         when(mOrchestrator.getShadowStoreType()).thenReturn(StoreType.TAB_STATE_STORE);
 
-        PersistentStoreCleaner.cleanAllWindowsForUnavailableStores(mOrchestrator);
+        mCleaner.clearState(mOrchestrator);
 
         verify(mLegacyStoreCleaner, never()).clearState(any(), any());
         verify(mTabStateStoreCleaner, never()).clearState(any());
@@ -273,7 +273,7 @@ public class PersistentStoreCleanerUnitTest {
         when(mOrchestrator.getAuthoritativeStoreType()).thenReturn(StoreType.INVALID);
         when(mOrchestrator.getShadowStoreType()).thenReturn(StoreType.INVALID);
 
-        PersistentStoreCleaner.cleanAllWindowsForUnavailableStores(mOrchestrator);
+        mCleaner.clearState(mOrchestrator);
 
         verify(mLegacyStoreCleaner).clearState(any(), any());
         verify(mTabStateStoreCleaner).clearState(eq(mProfile));
@@ -285,7 +285,7 @@ public class PersistentStoreCleanerUnitTest {
         when(mOrchestrator.getAuthoritativeStoreType()).thenReturn(StoreType.INVALID);
         when(mOrchestrator.getShadowStoreType()).thenReturn(StoreType.INVALID);
 
-        PersistentStoreCleaner.cleanWindowForUnavailableStores(1, mOrchestrator);
+        mCleaner.cleanWindowForUnavailableStores(1, mOrchestrator);
 
         verify(mLegacyStoreCleaner).cleanupStateFile(eq(1), any(), any(), any());
         verify(mTabStateStoreCleaner, never()).cleanupStateFile(anyInt(), any());
@@ -297,7 +297,7 @@ public class PersistentStoreCleanerUnitTest {
         when(mOrchestrator.getAuthoritativeStoreType()).thenReturn(StoreType.INVALID);
         when(mOrchestrator.getShadowStoreType()).thenReturn(StoreType.INVALID);
 
-        PersistentStoreCleaner.cleanAllWindowsForUnavailableStores(mOrchestrator);
+        mCleaner.clearState(mOrchestrator);
 
         verify(mLegacyStoreCleaner).clearState(any(), any());
         verify(mTabStateStoreCleaner, never()).clearState(any());
@@ -308,7 +308,7 @@ public class PersistentStoreCleanerUnitTest {
         when(mOrchestrator.getAuthoritativeStoreType()).thenReturn(StoreType.TAB_STATE_STORE);
         when(mOrchestrator.getShadowStoreType()).thenReturn(StoreType.INVALID);
 
-        PersistentStoreCleaner.cleanAllWindowsForUnavailableStores(mOrchestrator);
+        mCleaner.clearState(mOrchestrator);
 
         verify(mLegacyStoreCleaner).clearState(any(), any());
         verify(mTabStateStoreCleaner, never()).clearState(any());
