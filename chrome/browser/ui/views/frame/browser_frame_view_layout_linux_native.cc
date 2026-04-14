@@ -6,6 +6,7 @@
 
 #include "chrome/browser/ui/views/frame/opaque_browser_frame_view_layout.h"
 #include "ui/linux/nav_button_provider.h"
+#include "ui/views/window/frame_view_utils_linux.h"
 
 BrowserFrameViewLayoutLinuxNative::BrowserFrameViewLayoutLinuxNative(
     ui::NavButtonProvider* nav_button_provider,
@@ -81,16 +82,5 @@ int BrowserFrameViewLayoutLinuxNative::GetWindowCaptionSpacing(
 ui::NavButtonProvider::FrameButtonDisplayType
 BrowserFrameViewLayoutLinuxNative::GetButtonDisplayType(
     views::FrameButton button_id) const {
-  switch (button_id) {
-    case views::FrameButton::kMinimize:
-      return ui::NavButtonProvider::FrameButtonDisplayType::kMinimize;
-    case views::FrameButton::kMaximize:
-      return delegate_->IsMaximized()
-                 ? ui::NavButtonProvider::FrameButtonDisplayType::kRestore
-                 : ui::NavButtonProvider::FrameButtonDisplayType::kMaximize;
-    case views::FrameButton::kClose:
-      return ui::NavButtonProvider::FrameButtonDisplayType::kClose;
-    default:
-      NOTREACHED();
-  }
+  return views::GetFrameButtonDisplayType(button_id, delegate_->IsMaximized());
 }

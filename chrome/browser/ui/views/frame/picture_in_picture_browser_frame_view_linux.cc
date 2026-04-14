@@ -8,15 +8,15 @@
 #include "chrome/browser/themes/theme_service_factory.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
-#include "chrome/browser/ui/views/frame/browser_frame_view_paint_utils_linux.h"
 #include "chrome/browser/ui/views/frame/browser_native_widget_aura_linux.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "third_party/skia/include/core/SkRRect.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/geometry/insets.h"
-#include "ui/gfx/geometry/skia_conversions.h"
+#include "ui/gfx/geometry/rounded_corners_f.h"
 #include "ui/linux/linux_ui.h"
 #include "ui/views/window/frame_background.h"
+#include "ui/views/window/frame_view_utils_linux.h"
 
 namespace {
 
@@ -78,12 +78,9 @@ gfx::Insets PictureInPictureBrowserFrameViewLinux::GetInputInsets() const {
 }
 
 SkRRect PictureInPictureBrowserFrameViewLinux::GetRestoredClipRegion() const {
-  gfx::RectF bounds_dip(GetLocalBounds());
-  if (ShouldDrawFrameShadow()) {
-    gfx::InsetsF border(RestoredMirroredFrameBorderInsets());
-    bounds_dip.Inset(border);
-  }
-
+  gfx::InsetsF border = ShouldDrawFrameShadow()
+                            ? gfx::InsetsF(RestoredMirroredFrameBorderInsets())
+                            : gfx::InsetsF();
   float radius_dip = 0;
   if (window_frame_provider_) {
     radius_dip = window_frame_provider_->GetTopCornerRadiusDip();
@@ -91,10 +88,9 @@ SkRRect PictureInPictureBrowserFrameViewLinux::GetRestoredClipRegion() const {
     radius_dip = ChromeLayoutProvider::Get()->GetCornerRadiusMetric(
         views::Emphasis::kHigh);
   }
-  SkVector radii[4]{{radius_dip, radius_dip}, {radius_dip, radius_dip}, {}, {}};
-  SkRRect clip;
-  clip.setRectRadii(gfx::RectFToSkRect(bounds_dip), radii);
-  return clip;
+  return views::GetRestoredClipRegion(
+      gfx::RectF(GetLocalBounds()), border,
+      gfx::RoundedCornersF(radius_dip, radius_dip, 0, 0));
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -137,7 +133,7 @@ void PictureInPictureBrowserFrameViewLinux::OnPaint(gfx::Canvas* canvas) {
         GetBrowserView()->GetThemeOffsetFromBrowserView());
     frame_background_->set_theme_overlay_image(GetFrameOverlayImage());
     frame_background_->set_top_area_height(GetTopAreaHeight());
-    PaintRestoredFrameBorderLinux(
+    views::PaintRestoredFrameBorderLinux(
         *canvas, *this, frame_background_.get(), GetRestoredClipRegion(),
         ShouldDrawFrameShadow(), ShouldPaintAsActive(),
         RestoredMirroredFrameBorderInsets(), GetShadowValues(),
@@ -170,7 +166,7 @@ gfx::Insets PictureInPictureBrowserFrameViewLinux::FrameBorderInsets() const {
     return tiled ? gfx::Insets() : insets;
   }
 
-  return GetRestoredFrameBorderInsetsLinux(
+  return views::GetRestoredFrameBorderInsetsLinux(
       ShouldDrawFrameShadow(), gfx::Insets(kFrameBorderThickness),
       GetShadowValues(),
       PictureInPictureBrowserFrameView::ResizeBorderInsets());

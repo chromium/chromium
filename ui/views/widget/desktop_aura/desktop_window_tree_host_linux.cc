@@ -24,14 +24,21 @@
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
 #include "ui/events/event.h"
+#include "ui/gfx/geometry/rect_conversions.h"
 #include "ui/linux/linux_ui.h"
+#include "ui/linux/window_frame_provider.h"
+#include "ui/native_theme/native_theme.h"
 #include "ui/platform_window/extensions/wayland_extension.h"
 #include "ui/platform_window/extensions/x11_extension.h"
 #include "ui/platform_window/platform_window.h"
 #include "ui/platform_window/platform_window_init_properties.h"
 #include "ui/platform_window/wm/wm_move_resize_handler.h"
+#include "ui/views/view_utils.h"
 #include "ui/views/views_delegate.h"
 #include "ui/views/widget/widget.h"
+#include "ui/views/window/frame_view_linux.h"
+#include "ui/views/window/frame_view_utils_linux.h"
+#include "ui/views/window/native_frame_view.h"
 
 #if BUILDFLAG(USE_ATK)
 #include "ui/accessibility/platform/atk_util_auralinux.h"
@@ -93,6 +100,19 @@ DesktopWindowTreeHostLinux::DesktopWindowTreeHostLinux(
 
 DesktopWindowTreeHostLinux::~DesktopWindowTreeHostLinux() = default;
 
+std::unique_ptr<FrameView> DesktopWindowTreeHostLinux::CreateFrameView() {
+  if (ShouldUseNativeFrame()) {
+    return std::make_unique<NativeFrameView>(GetWidget());
+  }
+
+  auto frame_view = std::make_unique<FrameViewLinux>(GetWidget());
+  frame_view->SetSupportsClientFrameShadow(
+      platform_window()->CanSetDecorationInsets() &&
+      Widget::IsWindowCompositingSupported());
+  frame_view->InitViews();
+  return frame_view;
+}
+
 gfx::Rect DesktopWindowTreeHostLinux::GetXRootWindowOuterBounds() const {
   // TODO(msisov): must be removed as soon as all X11 low-level bits are moved
   // to Ozone.
@@ -138,10 +158,112 @@ void DesktopWindowTreeHostLinux::UpdateFrameHints() {
     platform_window()->SetInputRegion(std::optional<std::vector<gfx::Rect>>(
         {ConvertRectToPixels(hit_test_rect_mouse_dp)}));
   }
+
+  // Set opaque and input regions if using FrameViewLinux with client-side
+  // decorations.
+  UpdateFrameRegions();
+}
+
+gfx::Insets DesktopWindowTreeHostLinux::CalculateInsetsInDIP(
+    ui::PlatformWindowState window_state) const {
+  if (window_state == ui::PlatformWindowState::kMaximized ||
+      window_state == ui::PlatformWindowState::kFullScreen ||
+      window_state == ui::PlatformWindowState::kMinimized) {
+    return gfx::Insets();
+  }
+
+  auto* widget = GetWidget();
+  if (!widget || !widget->non_client_view()) {
+    return DesktopWindowTreeHostPlatform::CalculateInsetsInDIP(window_state);
+  }
+
+  auto* frame_view_linux = views::AsViewClass<FrameViewLinux>(
+      widget->non_client_view()->frame_view());
+  if (!frame_view_linux) {
+    return DesktopWindowTreeHostPlatform::CalculateInsetsInDIP(window_state);
+  }
+
+  return frame_view_linux->GetRestoredFrameBorderInsets();
+}
+
+void DesktopWindowTreeHostLinux::OnWindowTiledStateChanged(
+    ui::WindowTiledEdges new_tiled_edges) {
+  auto* widget = GetWidget();
+  if (!widget || !widget->non_client_view()) {
+    return;
+  }
+
+  auto* frame_view_linux = views::AsViewClass<FrameViewLinux>(
+      widget->non_client_view()->frame_view());
+  if (!frame_view_linux) {
+    return;
+  }
+
+  frame_view_linux->SetTiled(new_tiled_edges.top || new_tiled_edges.left ||
+                             new_tiled_edges.bottom || new_tiled_edges.right);
+  UpdateFrameRegions();
+}
+
+void DesktopWindowTreeHostLinux::UpdateFrameRegions() {
+  auto* widget = GetWidget();
+  if (!widget || !widget->non_client_view()) {
+    return;
+  }
+
+  auto* frame_view_linux = views::AsViewClass<FrameViewLinux>(
+      widget->non_client_view()->frame_view());
+  if (!frame_view_linux) {
+    return;
+  }
+
+  auto* window = platform_window();
+  float scale = device_scale_factor();
+  gfx::Insets frame_insets = frame_view_linux->GetFrameBorderInsets();
+
+  if (views::Widget::IsWindowCompositingSupported()) {
+    if (frame_insets.IsEmpty()) {
+      // No frame decorations, the window is maximized or fullscreen.  The
+      // entire window is opaque except for a possibly translucent top area.
+      gfx::Size widget_size = widget->GetWindowBoundsInScreen().size();
+      gfx::Rect opaque_region_dip(widget_size);
+      gfx::Insets insets;
+      insets.set_top(frame_view_linux->GetTranslucentTopAreaHeight());
+      opaque_region_dip.Inset(insets);
+      window->SetOpaqueRegion(std::vector<gfx::Rect>(
+          {gfx::ScaleToEnclosingRect(opaque_region_dip, scale)}));
+    } else {
+      window->SetOpaqueRegion(GetRestoredOpaqueRegion(
+          frame_view_linux->GetRestoredClipRegion(), scale,
+          frame_view_linux->GetTranslucentTopAreaHeight()));
+    }
+  }
+
+  // Set the input region to exclude the outer shadow while preserving
+  // the resize band.
+  if (platform_window()->CanSetDecorationInsets() &&
+      views::Widget::IsWindowCompositingSupported()) {
+    if (frame_insets.IsEmpty()) {
+      window->SetInputRegion(std::nullopt);
+    } else {
+      const gfx::Insets input_insets = frame_view_linux->GetInputInsets();
+      gfx::Size widget_size = widget->GetWindowBoundsInScreen().size();
+      gfx::Rect input_bounds(widget_size);
+      input_bounds.Inset(frame_insets - input_insets);
+      window->SetInputRegion(std::optional<std::vector<gfx::Rect>>(
+          {gfx::ScaleToEnclosingRect(input_bounds, scale)}));
+    }
+  }
+}
+
+void DesktopWindowTreeHostLinux::OnNativeThemeUpdated(
+    ui::NativeTheme* /*observed_theme*/) {
+  UpdateFrameRegions();
 }
 
 void DesktopWindowTreeHostLinux::Init(const Widget::InitParams& params) {
   DesktopWindowTreeHostPlatform::Init(params);
+
+  theme_observation_.Observe(ui::NativeTheme::GetInstanceForNativeUi());
 
   if (GetX11Extension() && GetX11Extension()->IsSyncExtensionAvailable()) {
     compositor_observer_ = std::make_unique<SwapWithNewSizeObserverHelper>(
