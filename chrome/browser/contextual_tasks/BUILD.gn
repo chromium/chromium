@@ -427,6 +427,7 @@ source_set("unit_tests") {
     "ai_mode_context_library_converter_unittest.cc",
     "contextual_tasks_context_model_handler_unittest.cc",
     "contextual_tasks_context_scoring_utils_unittest.cc",
+    "contextual_tasks_context_service_factory_unittest.cc",
     "contextual_tasks_context_signal_utils_unittest.cc",
     "contextual_tasks_cookie_synchronizer_unittest.cc",
     "contextual_tasks_service_factory_unittest.cc",
@@ -443,7 +444,6 @@ source_set("unit_tests") {
   if (!is_android) {
     sources += [
       "contextual_tasks_composebox_handler_unittest.cc",
-      "contextual_tasks_context_service_factory_unittest.cc",
       "contextual_tasks_page_handler_unittest.cc",
       "contextual_tasks_panel_host_desktop_unittest.cc",
       "contextual_tasks_ui_unittest.cc",

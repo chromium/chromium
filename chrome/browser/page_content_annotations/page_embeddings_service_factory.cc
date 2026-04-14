@@ -48,9 +48,6 @@ PageEmbeddingsServiceFactory::~PageEmbeddingsServiceFactory() = default;
 std::unique_ptr<KeyedService>
 PageEmbeddingsServiceFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* browser_context) const {
-#if BUILDFLAG(IS_ANDROID)
-  return nullptr;
-#else
   Profile* profile = Profile::FromBrowserContext(browser_context);
 
   // Don't bother running if we don't have a model observer since we won't have
@@ -72,7 +69,6 @@ PageEmbeddingsServiceFactory::BuildServiceInstanceForBrowserContext(
       passage_embeddings::ChromePassageEmbeddingsServiceController::Get()
           ->GetEmbedder(),
       passage_embeddings::ChromePassageEmbeddingsServiceController::Get());
-#endif
 }
 
 bool PageEmbeddingsServiceFactory::ServiceIsCreatedWithBrowserContext() const {

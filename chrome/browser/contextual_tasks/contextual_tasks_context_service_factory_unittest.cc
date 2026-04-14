@@ -30,7 +30,8 @@ class ContextualTasksContextServiceFactoryTest : public testing::Test {
 // this test on ChromeOS.
 #if !BUILDFLAG(IS_CHROMEOS)
 TEST_F(ContextualTasksContextServiceFactoryTest, CreatesServiceForProfile) {
-  feature_list_.InitAndEnableFeature(kContextualTasksContext);
+  feature_list_.InitWithFeatures(
+      {kContextualTasksContext, passage_embeddings::kPassageEmbedder}, {});
   std::unique_ptr<TestingProfile> profile = TestingProfile::Builder().Build();
   ContextualTasksContextService* service =
       ContextualTasksContextServiceFactory::GetForProfile(profile.get());
@@ -40,7 +41,8 @@ TEST_F(ContextualTasksContextServiceFactoryTest, CreatesServiceForProfile) {
 
 TEST_F(ContextualTasksContextServiceFactoryTest,
        DoesNotCreateServiceIfFeatureDisabled) {
-  feature_list_.InitAndDisableFeature(kContextualTasksContext);
+  feature_list_.InitWithFeatures({passage_embeddings::kPassageEmbedder},
+                                 {kContextualTasksContext});
   std::unique_ptr<TestingProfile> profile = TestingProfile::Builder().Build();
   ContextualTasksContextService* service =
       ContextualTasksContextServiceFactory::GetForProfile(profile.get());
@@ -49,7 +51,8 @@ TEST_F(ContextualTasksContextServiceFactoryTest,
 
 TEST_F(ContextualTasksContextServiceFactoryTest,
        DoesNotCreateServiceForIncognito) {
-  feature_list_.InitAndEnableFeature(kContextualTasksContext);
+  feature_list_.InitWithFeatures(
+      {kContextualTasksContext, passage_embeddings::kPassageEmbedder}, {});
   std::unique_ptr<TestingProfile> profile = TestingProfile::Builder().Build();
   Profile* otr_profile = profile->GetOffTheRecordProfile(
       Profile::OTRProfileID::PrimaryID(), /*create_if_needed=*/true);
