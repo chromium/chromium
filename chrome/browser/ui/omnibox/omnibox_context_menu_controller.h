@@ -63,6 +63,8 @@ class OmniboxContextMenuController : public ui::SimpleMenuModel::Delegate {
  public:
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kDeepResearchIdForTesting);
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kFirstTabMenuItemIdForTesting);
+  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kImageUploadMenuItemIdForTesting);
+  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kFileUploadMenuItemIdForTesting);
   explicit OmniboxContextMenuController(OmniboxPopupFileSelector* file_selector,
                                         content::WebContents* web_contents);
   struct TabInfo {

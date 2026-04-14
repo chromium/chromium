@@ -7,6 +7,8 @@
 #include "base/base64.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
+#include "base/path_service.h"
+#include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/autocomplete/aim_eligibility_service_factory.h"
@@ -34,6 +36,7 @@
 #include "chrome/browser/ui/webui/searchbox/searchbox_test_utils.h"
 #include "chrome/browser/ui/webui/test_support/webui_interactive_test_mixin.h"
 #include "chrome/common/chrome_features.h"
+#include "chrome/common/chrome_paths.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/interaction/interactive_browser_test.h"
 #include "components/contextual_search/mock_contextual_search_service.h"
@@ -48,12 +51,14 @@
 #include "content/public/browser/browser_accessibility_state.h"
 #include "content/public/browser/scoped_accessibility_mode.h"
 #include "content/public/test/browser_test.h"
+#include "content/public/test/file_system_chooser_test_helpers.h"
 #include "net/base/url_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/omnibox_proto/aim_eligibility_response.pb.h"
 #include "ui/accessibility/ax_mode.h"
 #include "ui/base/interaction/interaction_sequence.h"
 #include "ui/events/keycodes/keyboard_codes.h"
+#include "ui/shell_dialogs/select_file_dialog.h"
 #include "ui/views/controls/textfield/textfield.h"
 #include "ui/views/controls/webview/webview.h"
 
@@ -83,6 +88,9 @@ const DeepQuery kAimSubmit = {"omnibox-aim-app", "cr-composebox",
                               "cr-composebox-submit", "#submitContainer"};
 const DeepQuery kComposeboxMatch1 = {"omnibox-aim-app", "cr-composebox",
                                      "#matches", "#match1", "#textContainer"};
+const DeepQuery kComposeboxFileThumbnail = {"omnibox-aim-app", "cr-composebox",
+                                            "cr-composebox-file-carousel",
+                                            "cr-composebox-file-thumbnail"};
 }  // namespace
 
 class OmniboxWebUiInteractiveTestBase
@@ -286,6 +294,68 @@ class OmniboxAimWebUiInteractiveTestBase
   OmniboxAimWebUiInteractiveTestBase() = default;
   ~OmniboxAimWebUiInteractiveTestBase() override = default;
 
+  // TODO(crbug.com/495823984): Move this to a shared test utils file for both
+  // Omnibox and NTP.
+  std::unique_ptr<KeyedService> CreateMockService(
+      content::BrowserContext* context) {
+    auto mock_service =
+        std::make_unique<contextual_search::MockContextualSearchService>(
+            /*identity_manager=*/nullptr,
+            /*url_loader_factory=*/nullptr,
+            /*template_url_service=*/nullptr,
+            /*variations_client=*/nullptr, version_info::Channel::UNKNOWN,
+            "en-US");
+
+    ON_CALL(*mock_service, CreateSession)
+        .WillByDefault(
+            [service_ptr = mock_service.get()](
+                std::unique_ptr<
+                    contextual_search::ContextualSearchContextController::
+                        ConfigParams> params,
+                contextual_search::ContextualSearchSource source,
+                std::optional<lens::LensOverlayInvocationSource>
+                    invocation_source) {
+              auto query_controller = std::make_unique<MockQueryController>(
+                  /*identity_manager=*/nullptr, /*url_loader_factory=*/nullptr,
+                  version_info::Channel::UNKNOWN, "en-US",
+                  /*template_url_service=*/nullptr,
+                  /*variations_client=*/nullptr, std::move(params));
+
+              ON_CALL(*query_controller, GetFileInfo)
+                  .WillByDefault(
+                      testing::Invoke(query_controller.get(),
+                                      &MockQueryController::FakeGetFileInfo));
+              ON_CALL(*query_controller, StartFileUploadFlow)
+                  .WillByDefault(testing::Invoke(
+                      query_controller.get(),
+                      &MockQueryController::FakeStartFileUploadFlow));
+              ON_CALL(*query_controller, CreateSearchUrl)
+                  .WillByDefault(testing::Invoke(
+                      query_controller.get(),
+                      &MockQueryController::FakeCreateSearchUrl));
+
+              auto metrics_recorder =
+                  std::make_unique<MockContextualSearchMetricsRecorder>();
+
+              return service_ptr->CreateSessionForTesting(
+                  std::move(query_controller), std::move(metrics_recorder));
+            });
+
+    return std::move(mock_service);
+  }
+
+  // TODO(crbug.com/495823984): Move this to a shared test utils file for both
+  // Omnibox and NTP.
+  void SetUpBrowserContextKeyedServices(
+      content::BrowserContext* context) override {
+    PageActionInteractiveTestMixin<OmniboxWebUiInteractiveTestBase>::
+        SetUpBrowserContextKeyedServices(context);
+    ContextualSearchServiceFactory::GetInstance()->SetTestingFactory(
+        context,
+        base::BindOnce(&OmniboxAimWebUiInteractiveTestBase::CreateMockService,
+                       base::Unretained(this)));
+  }
+
  protected:
   auto SetAimEligibleResponse() {
     return Do([this]() {
@@ -370,7 +440,9 @@ class OmniboxAimWebUiInteractiveTestBase
     submit_enabled.event = kAimSubmitEnabled;
     submit_enabled.where = DeepQuery{"omnibox-aim-app", "cr-composebox"};
     submit_enabled.test_function = "(el) => el && el.canSubmitFilesAndInput";
-    return WaitForStateChange(contents_id, submit_enabled);
+    return Steps(
+        WaitForElementToRender(contents_id, kAimSubmit),
+        WaitForStateChange(contents_id, submit_enabled));
   }
 
   auto InputAimPopupText(const std::string& text) {
@@ -411,63 +483,6 @@ class OmniboxAimWebUiInteractiveTest
   }
 
   std::unique_ptr<content::ScopedAccessibilityMode> scoped_accessibility_mode_;
-
-  std::unique_ptr<KeyedService> CreateMockService(
-      content::BrowserContext* context) {
-    auto mock_service =
-        std::make_unique<contextual_search::MockContextualSearchService>(
-            /*identity_manager=*/nullptr,
-            /*url_loader_factory=*/nullptr,
-            /*template_url_service=*/nullptr,
-            /*variations_client=*/nullptr, version_info::Channel::UNKNOWN,
-            "en-US");
-
-    ON_CALL(*mock_service, CreateSession)
-        .WillByDefault(
-            [service_ptr = mock_service.get()](
-                std::unique_ptr<
-                    contextual_search::ContextualSearchContextController::
-                        ConfigParams> params,
-                contextual_search::ContextualSearchSource source,
-                std::optional<lens::LensOverlayInvocationSource>
-                    invocation_source) {
-              auto query_controller = std::make_unique<MockQueryController>(
-                  /*identity_manager=*/nullptr, /*url_loader_factory=*/nullptr,
-                  version_info::Channel::UNKNOWN, "en-US",
-                  /*template_url_service=*/nullptr,
-                  /*variations_client=*/nullptr, std::move(params));
-
-              ON_CALL(*query_controller, GetFileInfo)
-                  .WillByDefault(
-                      testing::Invoke(query_controller.get(),
-                                      &MockQueryController::FakeGetFileInfo));
-              ON_CALL(*query_controller, StartFileUploadFlow)
-                  .WillByDefault(testing::Invoke(
-                      query_controller.get(),
-                      &MockQueryController::FakeStartFileUploadFlow));
-              ON_CALL(*query_controller, CreateSearchUrl)
-                  .WillByDefault(testing::Invoke(
-                      query_controller.get(),
-                      &MockQueryController::FakeCreateSearchUrl));
-
-              auto metrics_recorder =
-                  std::make_unique<MockContextualSearchMetricsRecorder>();
-
-              return service_ptr->CreateSessionForTesting(
-                  std::move(query_controller), std::move(metrics_recorder));
-            });
-
-    return std::move(mock_service);
-  }
-
-  void SetUpBrowserContextKeyedServices(
-      content::BrowserContext* context) override {
-    InteractiveBrowserTest::SetUpBrowserContextKeyedServices(context);
-    ContextualSearchServiceFactory::GetInstance()->SetTestingFactory(
-        context,
-        base::BindOnce(&OmniboxAimWebUiInteractiveTest::CreateMockService,
-                       base::Unretained(this)));
-  }
 
  protected:
   base::test::ScopedFeatureList feature_list_;
@@ -687,4 +702,103 @@ IN_PROC_BROWSER_TEST_P(OmniboxAimSearchFulfillmentTest,
                   : InSameContext(ClickElement(kAimPopupWebView, kAimSubmit)))),
       // Ensure tab navigates to a Google search results page.
       WaitForGoogleSearch(kNewTab, {{"q", query}}));
+}
+
+struct OmniboxAimUploadInteractiveTestParams {
+  ui::ElementIdentifier upload_context_menu_item_id;
+  std::string file_name;
+};
+
+class OmniboxAimUploadInteractiveTest
+    : public OmniboxAimWebUiInteractiveTestBase,
+      public testing::WithParamInterface<
+          OmniboxAimUploadInteractiveTestParams> {
+ public:
+  OmniboxAimUploadInteractiveTest() {
+    auto enabled_features = GetEnabledFeatures(/*force_enable_aim=*/true);
+    enabled_features.emplace_back(omnibox::kAimUsePecApi,
+                                  base::FieldTrialParams());
+    feature_list_.InitWithFeaturesAndParameters(
+        enabled_features, {omnibox::kAimServerEligibilityEnabled,
+                           omnibox::kAimFuseboxEligibilityCheckEnabled});
+  }
+
+  void TearDownOnMainThread() override {
+    ui::SelectFileDialog::SetFactory(nullptr);
+    OmniboxAimWebUiInteractiveTestBase::TearDownOnMainThread();
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    OmniboxAimUploadInteractiveTest,
+    testing::ValuesIn(std::vector<OmniboxAimUploadInteractiveTestParams>{
+        {
+            .upload_context_menu_item_id =
+                OmniboxContextMenuController::kImageUploadMenuItemIdForTesting,
+            .file_name = "Image1.png",
+        },
+        {
+            .upload_context_menu_item_id =
+                OmniboxContextMenuController::kFileUploadMenuItemIdForTesting,
+            .file_name = "File1.pdf",
+        },
+    }),
+    [](const testing::TestParamInfo<OmniboxAimUploadInteractiveTestParams>&
+           info) {
+      std::string name = info.param.file_name;
+      base::ReplaceChars(name, ".", "", &name);
+      std::string prefix =
+          info.param.upload_context_menu_item_id ==
+                  OmniboxContextMenuController::kImageUploadMenuItemIdForTesting
+              ? "ImageUpload"
+              : "FileUpload";
+      return prefix + name;
+    });
+
+IN_PROC_BROWSER_TEST_P(OmniboxAimUploadInteractiveTest,
+                       ClassicContextMenuUploadTriggersAimPopup) {
+  base::FilePath test_data_dir;
+  ASSERT_TRUE(base::PathService::Get(chrome::DIR_TEST_DATA, &test_data_dir));
+  base::FilePath file_path = test_data_dir.AppendASCII(GetParam().file_name);
+
+  ui::SelectFileDialog::SetFactory(
+      std::make_unique<content::FakeSelectFileDialogFactory>(
+          std::vector<base::FilePath>{file_path}));
+
+  RunTestSequence(
+      SetAimEligibleResponse(),
+      // Open the classic popup.
+      AddInstrumentedTab(kNewTab, GURL(chrome::kChromeUINewTabURL)),
+      // Seed a result to ensure the classic popup is visible.
+      SeedSearchboxResult("result"),
+      // Focus on the Omnibox and enter text to trigger the classic popup and
+      // wait for it to be ready.
+      FocusElement(kOmniboxElementId),
+      EnterText(kOmniboxElementId, u"result"), WaitForClassicPopupReady(),
+      // Wait for the context menu button to render.
+      InAnyContext(
+          WaitForElementToRender(kClassicPopupWebView, kClassicContextMenu)),
+      InAnyContext(ScrollIntoView(kClassicPopupWebView, kClassicContextMenu)),
+      MayInvolveNativeContextMenu(
+          // Open the context menu and click upload.
+          InSameContext(
+              ClickElement(kClassicPopupWebView, kClassicContextMenu)),
+          InAnyContext(WaitForShow(GetParam().upload_context_menu_item_id)),
+          InAnyContext(SelectMenuItem(GetParam().upload_context_menu_item_id)),
+          // Wait for classic popup to hide.
+          InAnyContext(WaitForHide(kClassicPopupWebView))),
+      // Wait for AIM popup to open.
+      WaitForAimPopupReady(),
+      // Wait for thumbnail to render in AIM popup.
+      InAnyContext(
+          WaitForElementToRender(kAimPopupWebView, kComposeboxFileThumbnail)),
+      // Type a query and submit.
+      InputAimPopupText("test"),
+      InAnyContext(SendKeyPress(kOmniboxElementId, ui::VKEY_RETURN)),
+      // Ensure Google search occurs.
+      WaitForGoogleSearch(kNewTab, {{"q", "test"}}));
 }
