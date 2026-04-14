@@ -76,7 +76,7 @@ static const int kMaxOutputStreams = 50;
 static const int kFallbackSampleRate = 44100;
 
 static bool GetOutputDeviceChannelsAndLayout(AudioUnit audio_unit,
-                                             int* channels,
+                                             uint32_t* channels,
                                              ChannelLayout* channel_layout);
 
 // Helper method to construct AudioObjectPropertyAddress structure given
@@ -366,7 +366,7 @@ static bool GetInputDeviceChannels(AudioDeviceID device, int* channels) {
 // `AudioChannelLayout`. If no valid channels are found, we default to zero
 // channels and `CHANNEL_LAYOUT_DISCRETE`.
 void ParseCoreAudioChannelLayout(AudioChannelLayout* device_layout,
-                                 int* channels,
+                                 uint32_t* channels,
                                  ChannelLayout* channel_layout) {
   // There is no channel info for stereo, assume so for mono as well.
   if (device_layout->mNumberChannelDescriptions == 1 ||
@@ -399,14 +399,14 @@ void ParseCoreAudioChannelLayout(AudioChannelLayout* device_layout,
     }
   }
 
-  if (*channels == 0 ||
-      *channels != static_cast<int>(channels_to_match.size())) {
+  if (*channels == 0 || *channels != channels_to_match.size()) {
     return;
   }
 
   for (int i = 0; i <= ChannelLayout::CHANNEL_LAYOUT_MAX; i++) {
     ChannelLayout layout = static_cast<ChannelLayout>(i);
-    if (ChannelLayoutToChannelCount(layout) != *channels) {
+    if (static_cast<uint32_t>(ChannelLayoutToChannelCount(layout)) !=
+        *channels) {
       continue;
     }
 
@@ -431,7 +431,7 @@ void ParseCoreAudioChannelLayout(AudioChannelLayout* device_layout,
 // `channel_layout` could be pulled from the AudioUnit successfully, otherwise
 // return false and `channels` and `channel_layout` are untouched.
 static bool GetOutputDeviceChannelsAndLayout(AudioDeviceID device,
-                                             int* channels,
+                                             uint32_t* channels,
                                              ChannelLayout* channel_layout) {
   DCHECK(AudioManager::Get()->GetTaskRunner()->BelongsToCurrentThread());
   CHECK(channels);
@@ -456,7 +456,10 @@ static bool GetOutputDeviceChannelsAndLayout(AudioDeviceID device,
     if (result == noErr) {
       ParseCoreAudioChannelLayout(preferred_layout->layout(), channels,
                                   channel_layout);
-      return true;
+      // Some devices can return noErr but 0 channels.
+      if (*channels) {
+        return true;
+      }
     }
   }
 
@@ -489,7 +492,7 @@ static bool GetOutputDeviceChannelsAndLayout(AudioDeviceID device,
 }
 
 static bool GetOutputDeviceChannelsAndLayout(AudioUnit audio_unit,
-                                             int* channels,
+                                             uint32_t* channels,
                                              ChannelLayout* channel_layout) {
   // Attempt to retrieve the channel layout from the AudioUnit.
   std::unique_ptr<ScopedAudioChannelLayout> scoped_device_layout =
@@ -990,7 +993,7 @@ AudioParameters AudioManagerMac::GetPreferredOutputStreamParameters(
     buffer_size = ChooseBufferSize(false, hardware_sample_rate);
   }
 
-  int hardware_channels;
+  uint32_t hardware_channels;
   ChannelLayout hardware_channel_layout;
   if (!GetOutputDeviceChannelsAndLayout(device, &hardware_channels,
                                         &hardware_channel_layout)) {
@@ -1011,7 +1014,8 @@ AudioParameters AudioManagerMac::GetPreferredOutputStreamParameters(
       input_params.latency_tag() == AudioLatency::Type::kPlayback;
 
   if (!has_valid_input_params ||
-      (output_channels > hardware_channels && !use_avf_streams)) {
+      (base::checked_cast<uint32_t>(output_channels) > hardware_channels &&
+       !use_avf_streams)) {
     output_channels = hardware_channels;
     output_channel_layout = hardware_channel_layout;
   }
