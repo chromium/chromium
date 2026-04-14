@@ -1018,6 +1018,16 @@ void RecordConsistencyPromoUserAction(AccountConsistencyPromoAction action,
       histogram =
           "Signin.AccountConsistencyPromoAction.ConfirmManagementAccepted";
       break;
+    case AccountConsistencyPromoAction::SIGNIN_STARTED_WITH_MANAGED_ACCOUNT:
+      histogram =
+          "Signin.AccountConsistencyPromoAction."
+          "SigninStartedWithManagedAccount";
+      break;
+    case AccountConsistencyPromoAction::SIGNIN_STARTED_WITH_NON_MANAGED_ACCOUNT:
+      histogram =
+          "Signin.AccountConsistencyPromoAction."
+          "SigninStartedWithNonManagedAccount";
+      break;
   }
 
   base::UmaHistogramEnumeration(histogram, access_point);

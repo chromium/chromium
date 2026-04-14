@@ -500,4 +500,46 @@ TEST_F(ConsistencyPromoSigninMediatorTest, SigninWithoutCookies) {
       signin_metrics::AccessPoint::kSettings, 1);
 }
 
+// Tests that the managed status metric is recorded when the hosted domain is
+// fetched.
+TEST_F(ConsistencyPromoSigninMediatorTest,
+       AuthenticationFlowDidFetchHostedDomain_Managed) {
+  base::HistogramTester histogram_tester;
+  mediator_ = BuildConsistencyPromoSigninMediator(
+      signin_metrics::AccessPoint::kWebSignin);
+
+  [(id<AuthenticationFlowDelegate>)mediator_
+      authenticationFlowDidFetchHostedDomain:@"example.com"];
+
+  histogram_tester.ExpectTotalCount(
+      "Signin.AccountConsistencyPromoAction.SigninStartedWithManagedAccount",
+      1);
+  histogram_tester.ExpectBucketCount(
+      "Signin.AccountConsistencyPromoAction.SigninStartedWithManagedAccount",
+      signin_metrics::AccessPoint::kWebSignin, 1);
+
+  [mediator_ disconnectWithResult:SigninCoordinatorResultCanceledByUser];
+}
+
+// Tests that the non-managed status metric is recorded when the hosted domain
+// is fetched.
+TEST_F(ConsistencyPromoSigninMediatorTest,
+       AuthenticationFlowDidFetchHostedDomain_NonManaged) {
+  base::HistogramTester histogram_tester;
+  mediator_ = BuildConsistencyPromoSigninMediator(
+      signin_metrics::AccessPoint::kWebSignin);
+
+  [(id<AuthenticationFlowDelegate>)mediator_
+      authenticationFlowDidFetchHostedDomain:@""];
+
+  histogram_tester.ExpectTotalCount(
+      "Signin.AccountConsistencyPromoAction.SigninStartedWithNonManagedAccount",
+      1);
+  histogram_tester.ExpectBucketCount(
+      "Signin.AccountConsistencyPromoAction.SigninStartedWithNonManagedAccount",
+      signin_metrics::AccessPoint::kWebSignin, 1);
+
+  [mediator_ disconnectWithResult:SigninCoordinatorResultCanceledByUser];
+}
+
 }  // namespace

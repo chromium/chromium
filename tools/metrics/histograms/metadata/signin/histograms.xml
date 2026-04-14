@@ -395,6 +395,12 @@ chromium-metrics-reviews@google.com.
                  in with it."/>
     <variant name="SignInFailed"
         summary="AuthenticationFlow on iOS is cancelled or failed to sign-in."/>
+    <variant name="SigninStartedWithManagedAccount"
+        summary="User started sign-in with a managed account in the
+                 consistency promo."/>
+    <variant name="SigninStartedWithNonManagedAccount"
+        summary="User started sign-in with a non-managed account in the
+                 consistency promo."/>
     <variant name="SuppressedAlreadySignedIn"
         summary="The web sign-in is not shown because the user is already
                  signed in."/>

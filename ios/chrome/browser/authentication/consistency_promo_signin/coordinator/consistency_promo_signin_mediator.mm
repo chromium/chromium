@@ -219,6 +219,20 @@ constexpr base::TimeDelta kSigninTimeout = base::Seconds(10);
 
 #pragma mark - AuthenticationFlowDelegate
 
+- (void)authenticationFlowDidFetchHostedDomain:(NSString*)hostedDomain {
+  if (hostedDomain.length > 0) {
+    RecordConsistencyPromoUserAction(
+        signin_metrics::AccountConsistencyPromoAction::
+            SIGNIN_STARTED_WITH_MANAGED_ACCOUNT,
+        _accessPoint);
+  } else {
+    RecordConsistencyPromoUserAction(
+        signin_metrics::AccountConsistencyPromoAction::
+            SIGNIN_STARTED_WITH_NON_MANAGED_ACCOUNT,
+        _accessPoint);
+  }
+}
+
 - (void)
     authenticationFlowDidSignInInSameProfileWithCancelationReason:
         (signin_ui::CancelationReason)cancelationReason
