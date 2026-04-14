@@ -1215,10 +1215,11 @@ chromium-metrics-reviews@google.com.
   <owner>birnie@google.com</owner>
   <owner>perrier@google.com</owner>
   <summary>
-    Records the source of the invocation that opened the side panel
-    GlicInstance. Recorded each time toggle is called for showing the side panel
-    and is a companion metric to Glic.Instance.SidePanel.ToggleSource which also
-    includes invocations that close the side panel.
+    Records the source of the invocation that opened the Glic instance in the
+    side panel. Recorded each time Show() is called to show the instance in the
+    side panel and it was not already showing. Note that this may be recorded
+    even if the side panel UI container was already open for a different
+    instance (e.g., when invoking a new conversation).
   </summary>
 </histogram>
 

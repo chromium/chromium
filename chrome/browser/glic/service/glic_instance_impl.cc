@@ -331,6 +331,11 @@ void GlicInstanceImpl::Show(const ShowOptions& options) {
 
   EmbedderKey new_key = GetEmbedderKey(options);
 
+  // Look up the current embedder for that tab/key.
+  auto* embedder = GetEmbedderForKey(new_key);
+  bool should_log_open =
+      !embedder || !embedder->IsShowing();
+
   GlicUiEmbedder* embedder_to_show = nullptr;
 
   if (IsActiveEmbedder(new_key)) {
@@ -353,6 +358,9 @@ void GlicInstanceImpl::Show(const ShowOptions& options) {
   MaybeShowHostUi(embedder_to_show, options.invocation_source,
                   options.prompt_suggestion, options.auto_send,
                   options.fre_override);
+  if (should_log_open) {
+    instance_metrics()->OnOpen(options.invocation_source, options);
+  }
   embedder_to_show->Show(options);
   if (options.focus_on_show) {
     embedder_to_show->Focus();

@@ -540,9 +540,6 @@ void GlicInstanceMetrics::OnOpen(glic::mojom::InvocationSource source,
 void GlicInstanceMetrics::OnToggle(glic::mojom::InvocationSource source,
                                    const ShowOptions& options,
                                    bool is_showing) {
-  if (!is_showing) {
-    OnOpen(source, options);
-  }
   base::RecordAction(base::UserMetricsAction("Glic.Instance.Toggle"));
   if (std::holds_alternative<FloatingShowOptions>(options.embedder_options)) {
     base::UmaHistogramEnumeration("Glic.Instance.Floaty.ToggleSource", source);

@@ -215,28 +215,24 @@ TEST_F(GlicInstanceMetricsTest, ValidSidePanelFlow_DoesNotLogError) {
 
 TEST_F(GlicInstanceMetricsTest, OnOpen_DoesNotOverrideInitialEntrypoint) {
   ShowOptions show_options1{FloatingShowOptions{}};
-  metrics_.OnToggle(mojom::InvocationSource::kTopChromeButton, show_options1,
-                    /*is_showing=*/false);
+  metrics_.OnOpen(mojom::InvocationSource::kTopChromeButton, show_options1);
   EXPECT_EQ(metrics_.initial_entrypoint_for_testing(),
             GlicEntrypoint::kTopChromeButton);
 
   ShowOptions show_options2{FloatingShowOptions{}};
-  metrics_.OnToggle(mojom::InvocationSource::kOsButton, show_options2,
-                    /*is_showing=*/false);
+  metrics_.OnOpen(mojom::InvocationSource::kOsButton, show_options2);
   EXPECT_EQ(metrics_.initial_entrypoint_for_testing(),
             GlicEntrypoint::kTopChromeButton);
 }
 
 TEST_F(GlicInstanceMetricsTest, InitialInvocationSource_OnlyRecordedOnce) {
   ShowOptions show_options{FloatingShowOptions{}};
-  metrics_.OnToggle(mojom::InvocationSource::kTopChromeButton, show_options,
-                    /*is_showing=*/false);
+  metrics_.OnOpen(mojom::InvocationSource::kTopChromeButton, show_options);
   histogram_tester_.ExpectUniqueSample(
       "Glic.Instance.InitialInvocationSource",
       mojom::InvocationSource::kTopChromeButton, 1);
 
-  metrics_.OnToggle(mojom::InvocationSource::kOsButton, show_options,
-                    /*is_showing=*/false);
+  metrics_.OnOpen(mojom::InvocationSource::kOsButton, show_options);
   // Should still be 1 sample of kTopChromeButton.
   histogram_tester_.ExpectUniqueSample(
       "Glic.Instance.InitialInvocationSource",
@@ -247,8 +243,7 @@ TEST_F(GlicInstanceMetricsTest, SidePanelFirstOpenDuration_LoggedOnFirstClose) {
   EXPECT_CALL(mock_tab_, GetTabHandle()).WillRepeatedly(testing::Return(1));
 
   ShowOptions show_options{SidePanelShowOptions{mock_tab_}};
-  metrics_.OnToggle(mojom::InvocationSource::kTopChromeButton, show_options,
-                    /*is_showing=*/false);
+  metrics_.OnOpen(mojom::InvocationSource::kTopChromeButton, show_options);
   metrics_.OnShowInSidePanel(&mock_tab_);
   task_environment_.FastForwardBy(base::Minutes(5));
 
@@ -266,8 +261,7 @@ TEST_F(GlicInstanceMetricsTest,
   EXPECT_CALL(mock_tab_, GetTabHandle()).WillRepeatedly(testing::Return(1));
 
   ShowOptions show_options{SidePanelShowOptions{mock_tab_}};
-  metrics_.OnToggle(mojom::InvocationSource::kTopChromeButton, show_options,
-                    /*is_showing=*/false);
+  metrics_.OnOpen(mojom::InvocationSource::kTopChromeButton, show_options);
   metrics_.OnShowInSidePanel(&mock_tab_);
 
   task_environment_.FastForwardBy(base::Minutes(5));
@@ -278,8 +272,7 @@ TEST_F(GlicInstanceMetricsTest,
   histogram_tester_.ExpectTotalCount(
       "Glic.Instance.TopChromeButton.SidePanelFirstOpenDuration", 1);
 
-  metrics_.OnToggle(mojom::InvocationSource::kOsButton, show_options,
-                    /*is_showing=*/false);
+  metrics_.OnOpen(mojom::InvocationSource::kOsButton, show_options);
   metrics_.OnShowInSidePanel(&mock_tab_);
   task_environment_.FastForwardBy(base::Minutes(2));
   metrics_.OnSidePanelClosed(
@@ -306,8 +299,7 @@ TEST_F(GlicInstanceMetricsTest,
 
 TEST_F(GlicInstanceMetricsTest, InstanceEvents_LogsEventCountsAndHadEvent) {
   ShowOptions show_options{FloatingShowOptions{}};
-  metrics_.OnToggle(mojom::InvocationSource::kTopChromeButton, show_options,
-                    /*is_showing=*/false);
+  metrics_.OnOpen(mojom::InvocationSource::kTopChromeButton, show_options);
 
   // This causes a GlicInstanceEvent::kTurnCompleted to be logged.
   metrics_.OnTurnCompleted(mojom::WebClientModel::kActor,
@@ -358,8 +350,7 @@ TEST_F(GlicInstanceMetricsTest,
 TEST_F(GlicInstanceMetricsTest, LogEvent_LogsUnderInitialEntrypointIfReopened) {
   ShowOptions show_options1{FloatingShowOptions{}};
   // First toggle open with TopChromeButton.
-  metrics_.OnToggle(mojom::InvocationSource::kTopChromeButton, show_options1,
-                    /*is_showing=*/false);
+  metrics_.OnOpen(mojom::InvocationSource::kTopChromeButton, show_options1);
 
   // A turn completed event should increment TopChromeButton.
   metrics_.OnTurnCompleted(mojom::WebClientModel::kActor,
@@ -373,8 +364,7 @@ TEST_F(GlicInstanceMetricsTest, LogEvent_LogsUnderInitialEntrypointIfReopened) {
 
   // Simulate toggling with a different source later on.
   ShowOptions show_options2{FloatingShowOptions{}};
-  metrics_.OnToggle(mojom::InvocationSource::kOsButton, show_options2,
-                    /*is_showing=*/true);
+  metrics_.OnOpen(mojom::InvocationSource::kOsButton, show_options2);
 
   // Another turn completed event.
   metrics_.OnTurnCompleted(mojom::WebClientModel::kActor,
@@ -396,8 +386,7 @@ TEST_F(GlicInstanceMetricsTest, LogEvent_LogsUnderInitialEntrypointIfReopened) {
 
 TEST_F(GlicInstanceMetricsTest, WebUiLoadTime_Visible) {
   ShowOptions show_options{FloatingShowOptions{}};
-  metrics_.OnToggle(mojom::InvocationSource::kTopChromeButton, show_options,
-                    /*is_showing=*/false);
+  metrics_.OnOpen(mojom::InvocationSource::kTopChromeButton, show_options);
   metrics_.OnVisibilityChanged(true);
 
   metrics_.OnWebUiStateChanged(mojom::WebUiState::kBeginLoad);
@@ -413,8 +402,7 @@ TEST_F(GlicInstanceMetricsTest, WebUiLoadTime_Visible) {
 
 TEST_F(GlicInstanceMetricsTest, WebUiLoadTime_Nonvisible) {
   ShowOptions show_options{FloatingShowOptions{}};
-  metrics_.OnToggle(mojom::InvocationSource::kTopChromeButton, show_options,
-                    /*is_showing=*/false);
+  metrics_.OnOpen(mojom::InvocationSource::kTopChromeButton, show_options);
   // Do not call OnVisibilityChanged(true) so it defaults to nonvisible.
 
   metrics_.OnWebUiStateChanged(mojom::WebUiState::kBeginLoad);
