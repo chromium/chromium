@@ -202,7 +202,9 @@ class CONTENT_EXPORT BucketContext
   // Closes the bucket context, i.e. closes the backing store and closes Mojo
   // connections to renderers. When `doom` is true, the directories containing
   // data will also be deleted. Normally, in-memory bucket contexts never close.
-  // If this is called with `doom` set to true, they will close.
+  // If this is called with `doom` set to true, they will close. Note that if
+  // `doom` is true, it's expected that `this` will be deleted soon after. To
+  // prevent races, `on_ready_for_destruction` is NOT called in this case.
   void ForceClose(bool doom);
 
   // Starts capturing state data for indexeddb-internals. The data will be

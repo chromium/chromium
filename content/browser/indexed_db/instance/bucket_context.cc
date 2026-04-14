@@ -356,8 +356,9 @@ void BucketContext::DoForceClose(bool doom, const std::string& message) {
     return;
   }
 
-  // Disconnecting `IDBFactory` receivers ensures `this` will be deleted when
-  // the backing store is reset.
+  // The caller will know to destroy `this` when done.
+  delegate().on_ready_for_destruction.Reset();
+  // Prevent new IDBFactory requests while waiting for `this` to be destroyed.
   receivers_.Clear();
 
   if (in_memory()) {
@@ -396,8 +397,6 @@ void BucketContext::DoForceClose(bool doom, const std::string& message) {
   base::UmaHistogramBoolean(
       base::StrCat({"IndexedDB.DeleteBucketDataSuccess", histogram_suffix}),
       delete_success);
-
-  CHECK(!delegate().on_ready_for_destruction);
 }
 
 void BucketContext::StartMetadataRecording() {
