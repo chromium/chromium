@@ -2300,6 +2300,35 @@ TEST_F(PaintLayerScrollableAreaWithWebFrameTest,
   EXPECT_TRUE(box->FirstFragment().PaintProperties()->Scroll());
 }
 
+TEST_P(PaintLayerScrollableAreaTest, SingleAxisOverflowClipScrollbar) {
+  USE_NON_OVERLAY_SCROLLBARS_OR_QUIT();
+  ScopedSingleAxisScrollContainersForTest scoped_feature(true);
+
+  SetBodyInnerHTML(R"HTML(
+    <style>
+      #scroller-y { overflow-y: scroll; overflow-x: clip; width: 100px; height: 100px; }
+      #scroller-x { overflow-x: scroll; overflow-y: clip; width: 100px; height: 100px; }
+      .content { height: 200px; width: 200px; }
+    </style>
+    <div id="scroller-y"><div class="content"></div></div>
+    <div id="scroller-x"><div class="content"></div></div>
+  )HTML");
+
+  UpdateAllLifecyclePhasesForTest();
+
+  auto* scroller_y =
+      To<LayoutBoxModelObject>(GetLayoutObjectByElementId("scroller-y"))
+          ->GetScrollableArea();
+  EXPECT_FALSE(scroller_y->HasHorizontalScrollbar());
+  EXPECT_TRUE(scroller_y->HasVerticalScrollbar());
+
+  auto* scroller_x =
+      To<LayoutBoxModelObject>(GetLayoutObjectByElementId("scroller-x"))
+          ->GetScrollableArea();
+  EXPECT_TRUE(scroller_x->HasHorizontalScrollbar());
+  EXPECT_FALSE(scroller_x->HasVerticalScrollbar());
+}
+
 TEST_P(PaintLayerScrollableAreaTest, SingleAxisScrollableAxes) {
   ScopedSingleAxisScrollContainersForTest scoped_feature(true);
   SetBodyInnerHTML(R"HTML(

@@ -1811,6 +1811,7 @@ void PaintLayerScrollableArea::ComputeScrollbarExistence(
       if (overflow_x == EOverflow::kScroll) {
         h_mode = mojom::blink::ScrollbarMode::kAlwaysOn;
       } else if (overflow_x == EOverflow::kHidden ||
+                 overflow_x == EOverflow::kClip ||
                  overflow_x == EOverflow::kVisible) {
         h_mode = mojom::blink::ScrollbarMode::kAlwaysOff;
       }
@@ -1819,6 +1820,7 @@ void PaintLayerScrollableArea::ComputeScrollbarExistence(
       if (overflow_y == EOverflow::kScroll) {
         v_mode = mojom::blink::ScrollbarMode::kAlwaysOn;
       } else if (overflow_y == EOverflow::kHidden ||
+                 overflow_y == EOverflow::kClip ||
                  overflow_y == EOverflow::kVisible) {
         v_mode = mojom::blink::ScrollbarMode::kAlwaysOff;
       }
