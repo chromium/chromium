@@ -833,8 +833,6 @@ IN_PROC_BROWSER_TEST_P(SingleClientPreferencesWithAccountStorageSyncTest,
 #endif  // !BUILDFLAG(IS_CHROMEOS)
 #endif  // !BUILDFLAG(IS_ANDROID)
 
-// TODO(crbug.com/40200835): PRE_ tests are not supported on Android.
-#if !BUILDFLAG(IS_ANDROID)
 // Adds pref values to persistent storage.
 IN_PROC_BROWSER_TEST_P(
     SingleClientPreferencesWithAccountStorageSyncTest,
@@ -937,6 +935,11 @@ IN_PROC_BROWSER_TEST_P(SingleClientPreferencesWithAccountStorageSyncTest,
       GetPrefs(0)->GetBoolean(sync_preferences::kSyncablePrefForTesting));
 }
 
+// TODO(crbug.com/40200835): PRE_ tests are now supported on Android, however
+// ShouldClearAccountDataOnStartupIfSignInAllowedBitChanged and
+// ShouldClearAccountDataOnStartupIfAccountStateChanged fail on Android
+// and it is unclear as to why they are still failing.
+#if !BUILDFLAG(IS_ANDROID)
 // ChromeOS does not support sign-in allowed flag.
 #if !BUILDFLAG(IS_CHROMEOS)
 IN_PROC_BROWSER_TEST_P(
