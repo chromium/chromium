@@ -32,7 +32,7 @@ extern std::ostream& operator<<(std::ostream& stream,
 inline constexpr std::string kManifestAssetName = "manifest";
 // File name of the manifest proto within the manifest component directory.
 inline constexpr const base::FilePath::CharType kManifestFileName[] =
-    FILE_PATH_LITERAL("manifest.pb");
+    FILE_PATH_LITERAL("manifest.binarypb");
 
 // Manifest is a C++ representation of the manifest proto. It provides APIs for
 // getting the information needed by the model broker implementation.
