@@ -3200,13 +3200,6 @@ void LayoutObject::StyleWillChange(StyleDifference diff,
       GetDocument().GetFrame()->GetInputMethodController().DidChangeVisibility(
           *this);
     }
-
-    // Clearing these bits is required to avoid leaving stale layoutObjects.
-    // FIXME: We shouldn't need that hack if our logic was totally correct.
-    if (diff.NeedsFullLayout()) {
-      SetFloating(false);
-      ClearPositionedState();
-    }
   }
 
   // Elements with non-auto touch-action will send a SetTouchAction message
