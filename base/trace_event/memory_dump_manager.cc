@@ -16,7 +16,6 @@
 #include "base/command_line.h"
 #include "base/containers/adapters.h"
 #include "base/debug/alias.h"
-#include "base/feature_list.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/scoped_refptr.h"
@@ -59,15 +58,6 @@ namespace base::trace_event {
 namespace {
 
 MemoryDumpManager* g_memory_dump_manager_for_testing = nullptr;
-
-// When enabled, MemoryDumpManager::ContinueAsyncProcessDump() runs all
-// MemoryDumpProvider bound to a TaskRunner which RunsTasksInCurrentSequence(),
-// no matter their position in the list of providers. This minimizes the number
-// of PostTasks involved in a Memory Dump by grouping providers that run on the
-// same sequence, even if they are bound to different TaskRunner instances
-// (which previously resulted in a task post).
-BASE_FEATURE(kMemoryDumpProviderGroupBySequence,
-             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Temporary (until scheduler is moved outside of here)
 // trampoline function to match the |request_dump_function| passed to Initialize
@@ -382,16 +372,14 @@ void MemoryDumpManager::ContinueAsyncProcessDump(
 
   auto& pending_providers = pmd_async_state->pending_dump_providers;
 
-  if (base::FeatureList::IsEnabled(kMemoryDumpProviderGroupBySequence)) {
-    // Move providers which can run on this sequence to the back of the list.
-    std::ranges::stable_partition(
-        pending_providers, [&](const MeasuredMemoryDumpProviderInfo& mdpinfo) {
-          // Return true for providers which can't run on this
-          // sequence, to keep them at the front.
-          return !get_effective_task_runner(mdpinfo)
-                      ->RunsTasksInCurrentSequence();
-        });
-  }
+  // Move providers which can run on this sequence to the back of the list.
+  std::ranges::stable_partition(
+      pending_providers, [&](const MeasuredMemoryDumpProviderInfo& mdpinfo) {
+        // Return true for providers which can't run on this
+        // sequence, to keep them at the front.
+        return !get_effective_task_runner(mdpinfo)
+                    ->RunsTasksInCurrentSequence();
+      });
 
   // Refresh the number of following providers, following the above sort.
   for (size_t i = 0; i < pending_providers.size(); ++i) {

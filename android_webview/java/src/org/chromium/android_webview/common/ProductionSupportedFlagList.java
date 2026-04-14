@@ -1236,10 +1236,6 @@ public final class ProductionSupportedFlagList {
                 "Report external memory held by IndexedDB connections, so it's taken into account"
                         + " in GC heuristics."),
         Flag.baseFeature(
-                "MemoryDumpProviderGroupBySequence",
-                "Group MemoryDumpProvider by sequence affinity to reduce PostTask hops when"
-                        + " collecting dumps"),
-        Flag.baseFeature(
                 "VariationsStickyNoopTest", "No-op flag for testing sticky study activation."),
         Flag.baseFeature(
                 BlinkFeatures.TEXT_SCALE_META_TAG,
