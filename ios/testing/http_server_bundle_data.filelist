@@ -7,8 +7,9 @@
 data/http_server_files/OWNERS
 data/http_server_files/actor/OWNERS
 data/http_server_files/actor/click_tool_test.html
-data/http_server_files/actor/type_tool_test.html
 data/http_server_files/actor/scroll_tool_test.html
+data/http_server_files/actor/select_tool_test.html
+data/http_server_files/actor/type_tool_test.html
 data/http_server_files/article.html
 data/http_server_files/autofill_refill_test.html
 data/http_server_files/autofill_smoke_test.html

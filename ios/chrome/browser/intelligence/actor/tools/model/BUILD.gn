@@ -146,6 +146,18 @@ optimize_ts("click_tool_ts") {
   ]
 }
 
+optimize_ts("select_tool_ts") {
+  sources = [ "resources/select_tool.ts" ]
+  output_name = "select_tool"
+
+  deps = [
+    ":actor_tool_utils_ts",
+    "//components/autofill/ios/form_util:fill_js_dependencies",
+    "//ios/chrome/browser/intelligence/proto_wrappers:dom_node_ids_ts",
+    "//ios/web/public/js_messaging:gcrweb",
+  ]
+}
+
 optimize_ts("type_tool_ts") {
   sources = [ "resources/type_tool.ts" ]
   output_name = "type_tool"
@@ -310,6 +322,7 @@ source_set("unit_tests") {
     "scroll_tool_java_script_feature_unittest.mm",
     "scroll_tool_js_unittest.mm",
     "scroll_tool_unittest.mm",
+    "select_tool_js_unittest.mm",
     "type_tool_java_script_feature_unittest.mm",
     "type_tool_js_unittest.mm",
     "type_tool_unittest.mm",
@@ -330,6 +343,7 @@ source_set("unit_tests") {
     ":scroll_to_tool",
     ":scroll_tool",
     ":scroll_tool_ts",
+    ":select_tool_ts",
     ":type_tool",
     ":type_tool_ts",
     ":wait_tool",

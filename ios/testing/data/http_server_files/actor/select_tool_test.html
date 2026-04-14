@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<!--
+Copyright 2026 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<!--
+This file is used to test select_tool.ts. It captures JavaScript events and
+exposes them via `window.capturedEvents`.
+-->
+<html>
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script>
+  window.capturedEvents = [];
+  const targetedEvents = ['input', 'change', 'focus', 'blur', 'keydown',
+                          'keypress', 'keyup'];
+  targetedEvents.forEach(type => document.addEventListener(type, e => {
+    window.capturedEvents.push({
+      type: e.type,
+      targetId: e.target.id || e.target.tagName,
+      value: e.target.value || '',
+      bubbles: e.bubbles,
+      cancelable: e.cancelable
+    });
+  }, true));
+</script>
+</head>
+<body>
+  <input id="initial_focus" type="text">
+  <select id="target_select">
+    <option value="v1">Option 1</option>
+    <option value="v2">Option 2</option>
+    <option value="v3" disabled>Option 3</option>
+    <option value="&#9;v4&#10;">Option 4</option>
+  </select>
+  <select id="disabled_select" disabled>
+    <option value="v1">Option 1</option>
+  </select>
+  <div id="not_a_select">Not a select</div>
+</body>
+</html>
