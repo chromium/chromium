@@ -81,6 +81,8 @@ using ::segmentation_platform::MockSegmentationPlatformService;
 
 const uint64_t kSessionIdHigh = 1234;
 const uint64_t kSessionIdLow = 5678;
+const segmentation_platform::TrainingRequestId kTrainingRequestId =
+    segmentation_platform::TrainingRequestId(456);
 
 class MockInnerText : public InnerTextProvider {
  public:
@@ -164,6 +166,25 @@ class ChromeComposeClientBrowserTest : public InProcessBrowserTest {
         prefs::kPrefHasCompletedComposeFRE, true);
     SetPrefsForComposeMSBBState(true);
 
+    ON_CALL(
+        GetOptimizationGuide(),
+        CanApplyOptimization(
+            testing::_, optimization_guide::proto::OptimizationType::COMPOSE,
+            testing::An<optimization_guide::OptimizationMetadata*>()))
+        .WillByDefault(
+            [](const GURL& url,
+               optimization_guide::proto::OptimizationType optimization_type,
+               optimization_guide::OptimizationMetadata* metadata)
+                -> optimization_guide::OptimizationGuideDecision {
+              *metadata = {};
+              compose::ComposeHintMetadata compose_hint_metadata;
+              compose_hint_metadata.set_decision(
+                  compose::ComposeHintDecision::COMPOSE_HINT_DECISION_ENABLED);
+              metadata->set_any_metadata(
+                  optimization_guide::AnyWrapProto(compose_hint_metadata));
+              return optimization_guide::OptimizationGuideDecision::kTrue;
+            });
+
     // Set up embedded test server for valid cross-origin or local navs
     host_resolver()->AddRule("*", "127.0.0.1");
     ASSERT_TRUE(embedded_test_server()->Start());
@@ -233,6 +254,12 @@ class ChromeComposeClientBrowserTest : public InProcessBrowserTest {
     ASSERT_TRUE(content::ExecJs(web_contents(), js));
   }
 
+  // Focuses the textarea with id 'test_field' in the DOM.
+  void FocusField() {
+    ASSERT_TRUE(content::ExecJs(
+        web_contents(), "document.getElementById('test_field').focus();"));
+  }
+
   void SetPrefsForComposeMSBBState(bool msbb_state) {
     PrefService* prefs = browser()->profile()->GetPrefs();
     prefs->SetBoolean(
@@ -242,21 +269,27 @@ class ChromeComposeClientBrowserTest : public InProcessBrowserTest {
 
   // Sets up mock model execution. `times` specifies the expected number of
   // calls. `response_output` is the output string for successful execution.
+  // If `response_output` is nullopt, an empty Any object is returned.
   // `success` specifies whether the execution should succeed or fail with a
   // generic error.
-  void SetupMockModelExecution(int times = 1,
-                               const std::string& response_output = "Cucumbers",
-                               bool success = true) {
+  void SetupMockModelExecution(
+      int times = 1,
+      std::optional<std::string> response_output = "Cucumbers",
+      bool success = true) {
     auto action = testing::WithArg<3>(
         [response_output, success](
             optimization_guide::OptimizationGuideModelExecutionResultCallback
                 callback) {
           if (success) {
-            optimization_guide::proto::ComposeResponse response;
-            response.set_output(response_output);
+            optimization_guide::proto::Any any_response;
+            if (response_output.has_value()) {
+              optimization_guide::proto::ComposeResponse response;
+              response.set_output(*response_output);
+              any_response = optimization_guide::AnyWrapProto(response);
+            }
             std::move(callback).Run(
                 OptimizationGuideModelExecutionResult(
-                    base::ok(optimization_guide::AnyWrapProto(response)),
+                    base::ok(any_response),
                     std::make_unique<
                         optimization_guide::proto::ModelExecutionInfo>()),
                 /*model_quality_log_entry=*/nullptr);
@@ -278,6 +311,24 @@ class ChromeComposeClientBrowserTest : public InProcessBrowserTest {
                 ExecuteModel(testing::_, testing::_, testing::_, testing::_))
         .Times(times)
         .WillRepeatedly(std::move(action));
+  }
+
+  void SetupMockSegmentationResult(
+      const std::string& label =
+          segmentation_platform::kComposePrmotionLabelShow) {
+    EXPECT_CALL(
+        GetSegmentationPlatformService(),
+        GetClassificationResult(testing::_, testing::_, testing::_, testing::_))
+        .WillRepeatedly(testing::WithArg<3>(
+            [label](
+                segmentation_platform::ClassificationResultCallback callback) {
+              auto result = segmentation_platform::ClassificationResult(
+                  segmentation_platform::PredictionStatus::kSucceeded);
+              result.request_id = kTrainingRequestId;
+              result.ordered_labels = {label};
+              base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+                  FROM_HERE, base::BindOnce(std::move(callback), result));
+            }));
   }
 
   MockOptimizationGuideKeyedService& GetOptimizationGuide() {
@@ -1619,4 +1670,410 @@ IN_PROC_BROWSER_TEST_F(ChromeComposeClientBrowserTest,
   EXPECT_EQ(
       base::ScopedMockElapsedTimersForTest::kMockElapsedTime.InMilliseconds(),
       uploaded_logs()[2]->compose().quality().request_latency_ms());
+}
+
+IN_PROC_BROWSER_TEST_F(ChromeComposeClientBrowserTest, TestCompose) {
+  base::HistogramTester histograms;
+  base::UserActionTester user_action_tester;
+
+  SetupMockModelExecution();
+
+  // Simulate page showing context menu.
+  auto* rfh = web_contents()->GetPrimaryMainFrame();
+  content::ContextMenuParams params;
+  params.is_content_editable_for_autofill = true;
+  params.frame_origin = rfh->GetMainFrame()->GetLastCommittedOrigin();
+  EXPECT_TRUE(client().ShouldTriggerContextMenu(rfh, params));
+
+  // Then simulate clicking the dialog.
+  ShowDialogAndBindMojo();
+
+  // Now call Compose, checking the results.
+  base::test::TestFuture<compose::mojom::ComposeResponsePtr> test_future;
+  BindComposeFutureToOnResponseReceived(test_future);
+  page_handler()->Compose("", compose::mojom::InputMode::kPolish, false);
+
+  compose::mojom::ComposeResponsePtr result = test_future.Take();
+
+  EXPECT_EQ(compose::mojom::ComposeStatus::kOk, result->status);
+  EXPECT_EQ("Cucumbers", result->result);
+  EXPECT_FALSE(result->on_device_evaluation_used);
+
+  // Check that the session entry point histogram is recorded.
+  histograms.ExpectUniqueSample(compose::kComposeStartSessionEntryPoint,
+                                compose::ComposeEntryPoint::kContextMenu, 1);
+
+  // Check that a user action for the Compose request was emitted.
+  EXPECT_EQ(1, user_action_tester.GetActionCount(
+                   "Compose.ComposeRequest.CreateClicked"));
+  histograms.ExpectUniqueSample(
+      compose::kComposeRequestReason,
+      compose::ComposeRequestReason::kFirstRequestPolishMode, 1);
+  histograms.ExpectUniqueSample(
+      "Compose.Server.Request.Reason",
+      compose::ComposeRequestReason::kFirstRequestPolishMode, 1);
+  // Check that a request result OK metric was emitted.
+  histograms.ExpectUniqueSample(compose::kComposeRequestStatus,
+                                compose::mojom::ComposeStatus::kOk, 1);
+  histograms.ExpectUniqueSample("Compose.Server.Request.Status",
+                                compose::mojom::ComposeStatus::kOk, 1);
+
+  // Check that a request duration OK metric was emitted.
+  histograms.ExpectTotalCount(
+      base::StrCat({"Compose", compose::kComposeRequestDurationOkSuffix}), 1);
+  histograms.ExpectTotalCount(
+      base::StrCat(
+          {"Compose.Server", compose::kComposeRequestDurationOkSuffix}),
+      1);
+
+  // Check that no request duration Error metrics were emitted.
+  histograms.ExpectTotalCount(
+      base::StrCat({"Compose", compose::kComposeRequestDurationErrorSuffix}),
+      0);
+  histograms.ExpectTotalCount(
+      base::StrCat(
+          {"Compose.Server", compose::kComposeRequestDurationErrorSuffix}),
+      0);
+  // Check that the request metadata had a valid node offset.
+  histograms.ExpectUniqueSample(
+      compose::kInnerTextNodeOffsetFound,
+      compose::ComposeInnerTextNodeOffset::kOffsetFound, 1);
+  // Simulate insert call from Compose dialog.
+  page_handler()->AcceptComposeResult(base::NullCallback());
+  client_page_handler()->CloseUI(compose::mojom::CloseReason::kInsertButton);
+  client_page_handler().FlushForTesting();
+
+  // Check Compose Session Event Counts.
+  histograms.ExpectBucketCount(
+      compose::kComposeSessionEventCounts,
+      compose::ComposeSessionEventTypes::kMainDialogShown, 1);
+  histograms.ExpectBucketCount(
+      "Compose.Server.Session.EventCounts",
+      compose::ComposeSessionEventTypes::kMainDialogShown, 1);
+  histograms.ExpectBucketCount(
+      "Compose.OnDevice.Session.EventCounts",
+      compose::ComposeSessionEventTypes::kMainDialogShown, 0);
+  histograms.ExpectBucketCount(
+      compose::kComposeSessionEventCounts,
+      compose::ComposeSessionEventTypes::kComposeDialogOpened, 1);
+  histograms.ExpectBucketCount(
+      "Compose.Server.Session.EventCounts",
+      compose::ComposeSessionEventTypes::kComposeDialogOpened, 1);
+  histograms.ExpectBucketCount(
+      compose::kComposeSessionEventCounts,
+      compose::ComposeSessionEventTypes::kCreateClicked, 1);
+  histograms.ExpectBucketCount(
+      compose::kComposeSessionEventCounts,
+      compose::ComposeSessionEventTypes::kInsertClicked, 1);
+
+  histograms.ExpectUniqueSample("Compose.Session.EvalLocation",
+                                compose::SessionEvalLocation::kServer, 1);
+
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL("about:blank")));
+
+  // Check page level UKM metrics.
+  auto ukm_entries = ukm_recorder().GetEntries(
+      ukm::builders::Compose_PageEvents::kEntryName,
+      {ukm::builders::Compose_PageEvents::kMenuItemShownName,
+       ukm::builders::Compose_PageEvents::kComposeTextInsertedName});
+
+  EXPECT_EQ(ukm_entries.size(), 1UL);
+
+  EXPECT_THAT(
+      ukm_entries[0].metrics,
+      testing::UnorderedElementsAre(
+          testing::Pair(ukm::builders::Compose_PageEvents::kMenuItemShownName,
+                        1),
+          testing::Pair(
+              ukm::builders::Compose_PageEvents::kComposeTextInsertedName, 1)));
+
+  // Check session level UKM metrics.
+  auto session_ukm_entries = ukm_recorder().GetEntries(
+      ukm::builders::Compose_SessionProgress::kEntryName,
+      {ukm::builders::Compose_SessionProgress::kComposeCountName,
+       ukm::builders::Compose_SessionProgress::kDialogShownCountName,
+       ukm::builders::Compose_SessionProgress::kDialogShownCountName,
+       ukm::builders::Compose_SessionProgress::kUndoCountName,
+       ukm::builders::Compose_SessionProgress::kRegenerateCountName,
+       ukm::builders::Compose_SessionProgress::kShortenCountName,
+       ukm::builders::Compose_SessionProgress::kLengthenCountName,
+       ukm::builders::Compose_SessionProgress::kFormalCountName,
+       ukm::builders::Compose_SessionProgress::kCasualCountName,
+       ukm::builders::Compose_SessionProgress::kInsertedResultsName,
+       ukm::builders::Compose_SessionProgress::kCanceledName});
+
+  EXPECT_EQ(session_ukm_entries.size(), 1UL);
+
+  EXPECT_THAT(
+      session_ukm_entries[0].metrics,
+      testing::UnorderedElementsAre(
+          testing::Pair(
+              ukm::builders::Compose_SessionProgress::kComposeCountName, 1),
+          testing::Pair(
+              ukm::builders::Compose_SessionProgress::kDialogShownCountName, 1),
+          testing::Pair(ukm::builders::Compose_SessionProgress::kUndoCountName,
+                        0),
+          testing::Pair(
+              ukm::builders::Compose_SessionProgress::kRegenerateCountName, 0),
+          testing::Pair(
+              ukm::builders::Compose_SessionProgress::kShortenCountName, 0),
+          testing::Pair(
+              ukm::builders::Compose_SessionProgress::kLengthenCountName, 0),
+          testing::Pair(
+              ukm::builders::Compose_SessionProgress::kFormalCountName, 0),
+          testing::Pair(
+              ukm::builders::Compose_SessionProgress::kCasualCountName, 0),
+          testing::Pair(
+              ukm::builders::Compose_SessionProgress::kInsertedResultsName, 1),
+          testing::Pair(ukm::builders::Compose_SessionProgress::kCanceledName,
+                        0)));
+}
+
+IN_PROC_BROWSER_TEST_F(ChromeComposeClientBrowserTest,
+                       TestProactiveNudgeEngagementIsRecorded) {
+  // Enable and trigger the proactive nudge.
+  compose::Config& config = compose::GetMutableConfigForTesting();
+  config.proactive_nudge_enabled = true;
+  config.proactive_nudge_show_probability = 1.0;
+  config.proactive_nudge_focus_delay = base::Microseconds(4);
+  config.proactive_nudge_segmentation = true;
+  config.proactive_nudge_always_collect_training_data = true;
+
+  // Mock segmentation platform to allow proactive nudge!
+  SetupMockSegmentationResult();
+
+  // Focus the field in the DOM to make it the active element!
+  FocusField();
+
+  autofill::FormFieldData field = field_data();
+  field.set_origin(
+      web_contents()->GetPrimaryMainFrame()->GetLastCommittedOrigin());
+  field.set_value(u"value0");
+  field.set_form_control_type(autofill::FormControlType::kTextArea);
+  field.set_allows_writing_suggestions(true);
+
+  autofill::FormData form_data;
+  form_data.set_url(
+      web_contents()->GetPrimaryMainFrame()->GetLastCommittedURL());
+  form_data.set_fields({field});
+
+  const autofill::AutofillSuggestionTriggerSource trigger_source =
+      autofill::AutofillSuggestionTriggerSource::kTextFieldValueChanged;
+
+  // Should trigger after delay (using RunUntil to wait for timer/tasks).
+  EXPECT_TRUE(base::test::RunUntil([&]() {
+    return client().ShouldTriggerPopup(form_data, field, trigger_source);
+  }));
+
+  // Simulate clicking on the nudge to open compose.
+  ShowDialogAndBindMojoWithFieldData(
+      field, base::NullCallback(),
+      autofill::AutofillComposeDelegate::UiEntryPoint::kAutofillPopup);
+
+  base::test::TestFuture<segmentation_platform::TrainingLabels> training_labels;
+  EXPECT_CALL(GetSegmentationPlatformService(),
+              CollectTrainingData(
+                  segmentation_platform::proto::SegmentId::
+                      OPTIMIZATION_TARGET_SEGMENTATION_COMPOSE_PROMOTION,
+                  kTrainingRequestId, testing::_, testing::_, testing::_))
+      .WillRepeatedly(testing::WithArg<3>(
+          [&](segmentation_platform::TrainingLabels labels) {
+            if (labels.output_metric.has_value() &&
+                labels.output_metric->second ==
+                    static_cast<base::HistogramBase::Sample32>(
+                        compose::ProactiveNudgeDerivedEngagement::
+                            kAcceptedComposeSuggestion)) {
+              if (!training_labels.IsReady()) {
+                training_labels.SetValue(labels);
+              }
+            }
+          }));
+
+  client().CloseUI(compose::mojom::CloseReason::kInsertButton);
+
+  // Trigger session deletion and verify that the engagement is recorded.
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL("about:blank")));
+
+  EXPECT_EQ(training_labels.Get().output_metric,
+            std::make_pair("Compose.ProactiveNudge.DerivedEngagement",
+                           static_cast<base::HistogramBase::Sample32>(
+                               compose::ProactiveNudgeDerivedEngagement::
+                                   kAcceptedComposeSuggestion)));
+}
+
+IN_PROC_BROWSER_TEST_F(ChromeComposeClientBrowserTest,
+                       TestShouldTriggerProactiveNudgeBlockedBySegmentation) {
+  base::HistogramTester histograms;
+
+  // Enable and trigger the proactive nudge.
+  compose::Config& config = compose::GetMutableConfigForTesting();
+  config.proactive_nudge_enabled = true;
+  config.proactive_nudge_show_probability = 1.0;
+  config.proactive_nudge_focus_delay = base::Microseconds(4);
+  config.proactive_nudge_segmentation = true;
+
+  // Focus the field in the DOM to make it the active element!
+  FocusField();
+
+  autofill::FormFieldData field = field_data();
+  field.set_origin(
+      web_contents()->GetPrimaryMainFrame()->GetLastCommittedOrigin());
+  field.set_value(u"value0");
+  field.set_form_control_type(autofill::FormControlType::kTextArea);
+  field.set_allows_writing_suggestions(true);
+
+  autofill::FormData form_data;
+  form_data.set_url(
+      web_contents()->GetPrimaryMainFrame()->GetLastCommittedURL());
+  form_data.set_fields({field});
+
+  SetupMockSegmentationResult(
+      segmentation_platform::kComposePrmotionLabelDontShow);
+
+  const autofill::AutofillSuggestionTriggerSource trigger_source =
+      autofill::AutofillSuggestionTriggerSource::kTextFieldValueChanged;
+
+  // Initial call returns false because of delay.
+  EXPECT_FALSE(client().ShouldTriggerPopup(form_data, field, trigger_source));
+
+  // Wait until segmentation blocks it (metrics logged).
+  EXPECT_TRUE(base::test::RunUntil([&]() {
+    return histograms.GetBucketCount(
+               compose::kComposeProactiveNudgeShowStatus,
+               compose::ComposeShowStatus::
+                   kProactiveNudgeBlockedBySegmentationPlatform) == 1;
+  }));
+
+  // Commit metrics on page navigation.
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL("about:blank")));
+
+  // Check that the proactive nudge UKM was still captured.
+  auto ukm_entries = ukm_recorder().GetEntries(
+      ukm::builders::Compose_PageEvents::kEntryName,
+      {ukm::builders::Compose_PageEvents::kMenuItemShownName,
+       ukm::builders::Compose_PageEvents::kComposeTextInsertedName,
+       ukm::builders::Compose_PageEvents::kProactiveNudgeShouldShowName,
+       ukm::builders::Compose_PageEvents::kProactiveNudgeShownName});
+
+  ASSERT_EQ(ukm_entries.size(), 1UL);
+
+  EXPECT_THAT(
+      ukm_entries[0].metrics,
+      testing::UnorderedElementsAre(
+          testing::Pair(ukm::builders::Compose_PageEvents::kMenuItemShownName,
+                        0),
+          testing::Pair(
+              ukm::builders::Compose_PageEvents::kComposeTextInsertedName, 0),
+          testing::Pair(
+              ukm::builders::Compose_PageEvents::kProactiveNudgeShouldShowName,
+              1),
+          testing::Pair(
+              ukm::builders::Compose_PageEvents::kProactiveNudgeShownName, 0)));
+
+  // Now call ShouldTriggerPopup again with delayed source and expect false!
+  const autofill::AutofillSuggestionTriggerSource delayed_trigger_source =
+      autofill::AutofillSuggestionTriggerSource::kComposeDelayedProactiveNudge;
+
+  EXPECT_FALSE(
+      client().ShouldTriggerPopup(form_data, field, delayed_trigger_source));
+
+  // Check that even after a second call only one show status UMA was recorded.
+  histograms.ExpectBucketCount(
+      compose::kComposeProactiveNudgeShowStatus,
+      compose::ComposeShowStatus::kProactiveNudgeBlockedBySegmentationPlatform,
+      1);
+}
+
+IN_PROC_BROWSER_TEST_F(ChromeComposeClientBrowserTest,
+                       TestShouldTriggerProactiveNudgeEnabled) {
+  base::HistogramTester histograms;
+
+  // Enable proactive nudge.
+  compose::Config& config = compose::GetMutableConfigForTesting();
+  config.proactive_nudge_enabled = true;
+  config.proactive_nudge_focus_delay = base::Microseconds(4);
+  config.proactive_nudge_segmentation = false;
+
+  // Focus the field in the DOM to make it the active element!
+  FocusField();
+
+  autofill::FormFieldData field = field_data();
+  field.set_origin(
+      web_contents()->GetPrimaryMainFrame()->GetLastCommittedOrigin());
+  field.set_value(u"value0");
+  field.set_form_control_type(autofill::FormControlType::kTextArea);
+  field.set_allows_writing_suggestions(true);
+
+  autofill::FormData form_data;
+  form_data.set_url(
+      web_contents()->GetPrimaryMainFrame()->GetLastCommittedURL());
+  form_data.set_fields({field});
+
+  const autofill::AutofillSuggestionTriggerSource trigger_source =
+      autofill::AutofillSuggestionTriggerSource::kTextFieldValueChanged;
+
+  // Should trigger after delay (using RunUntil to wait for timer/tasks).
+  EXPECT_TRUE(base::test::RunUntil([&]() {
+    return client().ShouldTriggerPopup(form_data, field, trigger_source);
+  }));
+
+  // Commit metrics on page navigation.
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL("about:blank")));
+
+  // Check that the proactive nudge UKM was captured.
+  auto ukm_entries = ukm_recorder().GetEntries(
+      ukm::builders::Compose_PageEvents::kEntryName,
+      {ukm::builders::Compose_PageEvents::kMenuItemShownName,
+       ukm::builders::Compose_PageEvents::kComposeTextInsertedName,
+       ukm::builders::Compose_PageEvents::kProactiveNudgeShouldShowName,
+       ukm::builders::Compose_PageEvents::kProactiveNudgeShownName});
+
+  ASSERT_EQ(ukm_entries.size(), 1UL);
+
+  EXPECT_THAT(
+      ukm_entries[0].metrics,
+      testing::UnorderedElementsAre(
+          testing::Pair(ukm::builders::Compose_PageEvents::kMenuItemShownName,
+                        0),
+          testing::Pair(
+              ukm::builders::Compose_PageEvents::kComposeTextInsertedName, 0),
+          testing::Pair(
+              ukm::builders::Compose_PageEvents::kProactiveNudgeShouldShowName,
+              1),
+          testing::Pair(
+              ukm::builders::Compose_PageEvents::kProactiveNudgeShownName, 1)));
+
+  // Check Compose.ProactiveNudge.CTR metrics.
+  histograms.ExpectBucketCount(compose::kComposeProactiveNudgeCtr,
+                               compose::ComposeNudgeCtrEvent::kNudgeDisplayed,
+                               1);
+}
+
+IN_PROC_BROWSER_TEST_F(ChromeComposeClientBrowserTest, TestComposeNoParsedAny) {
+  base::HistogramTester histograms;
+  ShowDialogAndBindMojo();
+  SetupMockModelExecution(1, std::nullopt);
+
+  base::test::TestFuture<compose::mojom::ComposeResponsePtr> test_future;
+  EXPECT_CALL(compose_dialog(), ResponseReceived(_))
+      .WillOnce([&](compose::mojom::ComposeResponsePtr response) {
+        test_future.SetValue(std::move(response));
+      });
+
+  page_handler()->Compose("a user typed this",
+                          compose::mojom::InputMode::kPolish, false);
+
+  compose::mojom::ComposeResponsePtr result = test_future.Take();
+  EXPECT_EQ(compose::mojom::ComposeStatus::kNoResponse, result->status);
+
+  // Check that a request result No Response metric was emitted.
+  histograms.ExpectUniqueSample(compose::kComposeRequestStatus,
+                                compose::mojom::ComposeStatus::kNoResponse, 1);
+  // Check that a request duration Error metric was emitted.
+  histograms.ExpectTotalCount(
+      base::StrCat({"Compose", compose::kComposeRequestDurationErrorSuffix}),
+      1);
+  // Check that no request duration OK metric was emitted.
+  histograms.ExpectTotalCount(
+      base::StrCat({"Compose", compose::kComposeRequestDurationOkSuffix}), 0);
 }
