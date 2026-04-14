@@ -3699,8 +3699,9 @@ void PaintLayerScrollableArea::EnqueueOverscrollChangingEventIfNeeded() {
     CHECK(container_data);
     CHECK_EQ(container_data->size(), 2u);
 
+    CHECK(RareData()->scrollsnapchanging_target_ids_);
     cc::TargetSnapAreaElementIds target_snap_areas =
-        container_data->GetTargetSnapAreaElementIds();
+        *RareData()->scrollsnapchanging_target_ids_;
     const auto& first_target = container_data->at(0);
 
     return target_snap_areas.x != first_target.element_id ||

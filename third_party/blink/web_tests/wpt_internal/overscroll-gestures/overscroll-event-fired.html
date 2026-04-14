@@ -5,6 +5,8 @@
 <script src="/resources/testharnessreport.js"></script>
 <script src="/resources/testdriver.js"></script>
 <script src="/resources/testdriver-vendor.js"></script>
+<script src="/resources/testdriver-actions.js"></script>
+
 
 <style>
   html, body {
@@ -18,7 +20,9 @@
   #menu {
     width: 100%;
     height: 100%;
-    right: 100%; /* Overscrolls to the left of the container. */
+    right: 100%;
+    background: green;
+    scroll-behavior: smooth;
   }
   #content {
     height: 600px;
@@ -92,4 +96,40 @@ promise_test(async () => {
   assert_false(end_event2.overscrolling, "end2: overscrolling should be false");
 
 }, "Toggle overscroll fires overscrollstart, overscrollchanging, overscrollend events with correct overscrollTarget");
+
+promise_test(async () => {
+  let event_promises = [
+    new Promise(resolve => container.addEventListener("overscrollstart", resolve, { once: true })),
+    new Promise(resolve => container.addEventListener("overscrollchanging", resolve, { once: true })),
+    new Promise(resolve => container.addEventListener("overscrollend", resolve, { once: true }))
+  ];
+
+  assert_true(document.elementsFromPoint(1, 100).includes(container), "container under pointer");
+
+  const actions = new test_driver.Actions();
+  await actions
+    .addPointer("touchPointer1", "touch")
+    .pointerMove(1, 100)
+    .pointerDown()
+    .pointerMove(200, 100, "viewport", 500)
+    .pointerUp()
+    .send();
+
+  let events = await Promise.all(event_promises);
+  let start_event = events[0];
+  let changing_event = events[1];
+  let end_event = events[2];
+
+  assert_equals(start_event.target, container, "start1: Event target should be the container");
+  assert_equals(start_event.overscrollTarget, menu, "start1: overscrollTarget should be the menu");
+  assert_false(start_event.overscrolling, "start1: overscrolling should be false");
+
+  assert_equals(changing_event.target, container, "changing1: Event target should be the container");
+  assert_equals(changing_event.overscrollTarget, menu, "changing1: overscrollTarget should be the menu");
+  assert_true(changing_event.overscrolling, "changing1: overscrolling should be true");
+
+  assert_equals(end_event.target, container, "end1: Event target should be the container");
+  assert_equals(end_event.overscrollTarget, menu, "end1: overscrollTarget should be the menu");
+  assert_true(end_event.overscrolling, "end1: overscrolling should be true");
+}, "Pointer scroll fires overscrollstart, overscrollchanging, overscrollend events with correct overscrollTarget");
 </script>
