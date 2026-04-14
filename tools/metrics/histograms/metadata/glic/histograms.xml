@@ -224,7 +224,6 @@ chromium-metrics-reviews@google.com.
     <variant name="JournalSnapshot"/>
     <variant name="JournalStart"/>
     <variant name="JournalStop"/>
-    <variant name="LoadAndExtractContent"/>
     <variant name="LogBeginAsyncEvent"/>
     <variant name="LogEndAsyncEvent"/>
     <variant name="LogInstantEvent"/>

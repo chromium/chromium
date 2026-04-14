@@ -383,7 +383,6 @@ chromium-metrics-reviews@google.com.
   <int value="76" label="ActivateTab"/>
   <int value="77" label="CreateActorTab"/>
   <int value="78" label="OpenPasswordManagerSettingsPage"/>
-  <int value="79" label="LoadAndExtractContent"/>
   <int value="80" label="SetOnboardingCompleted"/>
   <int value="81" label="SubscribeToTabData"/>
   <int value="82" label="CreateSkill"/>

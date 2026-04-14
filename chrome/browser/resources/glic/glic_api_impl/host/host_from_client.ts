@@ -919,22 +919,6 @@ export class HostMessageHandler implements HostMessageHandlerInterface {
     this.handler.setOnboardingCompleted();
   }
 
-  // TODO(crbug.com/458761731): Function parameters is prefixed with "_" to
-  // bypass compiler error on variables declared but never used. Remove once
-  // function body is implemented.
-  async glicBrowserLoadAndExtractContent(
-      _request: {
-        urls: string[],
-        options: TabContextOptions[],
-      },
-      _extras: ResponseExtras): Promise<{results: TabContextResultPrivate[]}> {
-    // TODO(crbug.com/458761731): Once `loadAndExtractContent` is defined in
-    // the handler interface, call `this.handler.loadAndExtractContent` to get
-    // the response, then return the tab context to client.
-
-    return Promise.reject(new Error('Not implemented'));
-  }
-
   glicBrowserSubscribeToTabData(
       payload: {tabId: string, observationId: number, cancel: boolean}): void {
     if (payload.cancel) {

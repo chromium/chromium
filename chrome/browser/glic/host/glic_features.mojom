@@ -31,9 +31,3 @@ feature kGlicActivateTabApi {
   const string name = "GlicActivateTabApi";
   const bool default_state = true;
 };
-
-// Allows load and extract content for shallow research feature.
-feature kGlicLoadAndExtractContent {
-  const string name = "GlicLoadAndExtractContent";
-  const bool default_state = false;
-};

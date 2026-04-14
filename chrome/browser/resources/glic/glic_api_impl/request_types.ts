@@ -596,16 +596,6 @@ export declare type HostRequestTypes = ValidateRequestMap<{
     },
     backgroundAllowed: true,
   },
-  glicBrowserLoadAndExtractContent: {
-    request: {
-      urls: string[],
-      options: TabContextOptions[],
-    },
-    response: {
-      results: TabContextResultPrivate[],
-    },
-    backgroundAllowed: true,
-  },
   glicBrowserSetOnboardingCompleted: {
     backgroundAllowed: true,
   },
@@ -1008,7 +998,6 @@ export const HOST_REQUEST_TYPES: HostRequestEnumNamesType&{MAX_VALUE: number} =
         ActivateTab: 76,
         CreateActorTab: 77,
         OpenPasswordManagerSettingsPage: 78,
-        LoadAndExtractContent: 79,
         SetOnboardingCompleted: 80,
         SubscribeToTabData: 81,
         CreateSkill: 82,
