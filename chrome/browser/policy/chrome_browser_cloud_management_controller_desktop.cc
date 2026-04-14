@@ -209,14 +209,8 @@ void ChromeBrowserCloudManagementControllerDesktop::OnServiceAccountSet(
 }
 
 void ChromeBrowserCloudManagementControllerDesktop::ShutDown() {
-  if (policy_invalidator_) {
-    policy_invalidator_->Shutdown();
-    policy_invalidator_.reset();
-  }
-  if (extension_install_invalidator_) {
-    extension_install_invalidator_->Shutdown();
-    extension_install_invalidator_.reset();
-  }
+  policy_invalidator_.reset();
+  extension_install_invalidator_.reset();
   commands_invalidator_.reset();
   fm_registration_token_uploaders_.clear();
   invalidation_listener_per_project_.clear();

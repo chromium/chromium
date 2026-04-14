@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/functional/bind.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/sequenced_task_runner.h"
 #include "components/invalidation/invalidation_listener.h"
@@ -13,6 +14,7 @@
 #include "components/policy/core/common/cloud/enterprise_metrics.h"
 #include "components/policy/core/common/cloud/policy_invalidation_util.h"
 #include "components/policy/policy_constants.h"
+
 namespace policy {
 
 namespace {
@@ -22,6 +24,23 @@ constexpr char kBrowserPolicyInvalidatorTypeName[] = "BROWSER_POLICY_FETCH";
 constexpr char kUserPolicyInvalidatorTypeName[] = "USER_POLICY_FETCH";
 constexpr char kDeviceLocalAccountPolicyInvalidatorTypeNameTemplate[] =
     "PUBLIC_ACCOUNT_POLICY_FETCH-%s";
+
+std::string GetCloudPolicyInvalidatorType(
+    PolicyInvalidationScope scope,
+    const std::string& device_local_account_id) {
+  switch (scope) {
+    case PolicyInvalidationScope::kUser:
+      return kUserPolicyInvalidatorTypeName;
+    case PolicyInvalidationScope::kDevice:
+      return kDevicePolicyInvalidatorTypeName;
+    case PolicyInvalidationScope::kCBCM:
+      return kBrowserPolicyInvalidatorTypeName;
+    case PolicyInvalidationScope::kDeviceLocalAccount:
+      return base::StringPrintf(
+          kDeviceLocalAccountPolicyInvalidatorTypeNameTemplate,
+          device_local_account_id.c_str());
+  }
+}
 
 }  // namespace
 
@@ -63,15 +82,19 @@ CloudPolicyInvalidator::CloudPolicyInvalidator(
     const base::Clock* clock,
     const std::string& device_local_account_id)
     : PolicyInvalidator(
+          GetCloudPolicyInvalidatorType(scope, device_local_account_id),
           scope,
           invalidation_listener,
           core,
           clock,
           device_local_account_id,
-          std::make_unique<CloudPolicyInvalidationHandler>(scope,
-                                                           core,
-                                                           clock,
-                                                           task_runner)) {
+          std::make_unique<PolicyInvalidationHandler>(
+              scope,
+              core,
+              clock,
+              task_runner,
+              GetPolicyRefreshMetricName(scope),
+              GetPolicyInvalidationMetricName(scope))) {
   // This needs to be in the derived class because down the line, virtual
   // functions may be called and we need them to use the derived class
   // definition and not the base class one.
@@ -82,41 +105,5 @@ CloudPolicyInvalidator::CloudPolicyInvalidator(
 }
 
 CloudPolicyInvalidator::~CloudPolicyInvalidator() = default;
-
-std::string CloudPolicyInvalidator::GetType() const {
-  switch (scope_) {
-    case PolicyInvalidationScope::kUser:
-      return kUserPolicyInvalidatorTypeName;
-    case PolicyInvalidationScope::kDevice:
-      return kDevicePolicyInvalidatorTypeName;
-    case PolicyInvalidationScope::kCBCM:
-      return kBrowserPolicyInvalidatorTypeName;
-    case PolicyInvalidationScope::kDeviceLocalAccount:
-      return base::StringPrintf(
-          kDeviceLocalAccountPolicyInvalidatorTypeNameTemplate,
-          device_local_account_id_.c_str());
-  }
-}
-
-CloudPolicyInvalidator::CloudPolicyInvalidationHandler::
-    CloudPolicyInvalidationHandler(
-        PolicyInvalidationScope scope,
-        CloudPolicyCore* core,
-        const base::Clock* clock,
-        scoped_refptr<base::SequencedTaskRunner> task_runner)
-    : PolicyInvalidationHandler(scope, core, clock, task_runner) {}
-
-CloudPolicyInvalidator::CloudPolicyInvalidationHandler::
-    ~CloudPolicyInvalidationHandler() = default;
-
-const char* CloudPolicyInvalidator::CloudPolicyInvalidationHandler::
-    GetPolicyRefreshMetricName(PolicyInvalidationScope scope) {
-  return CloudPolicyInvalidator::GetPolicyRefreshMetricName(scope);
-}
-
-const char* CloudPolicyInvalidator::CloudPolicyInvalidationHandler::
-    GetPolicyInvalidationMetricName(PolicyInvalidationScope scope) {
-  return CloudPolicyInvalidator::GetPolicyInvalidationMetricName(scope);
-}
 
 }  // namespace policy

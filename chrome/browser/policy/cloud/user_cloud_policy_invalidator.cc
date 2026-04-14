@@ -76,15 +76,9 @@ void UserCloudPolicyInvalidator::StartExtensionInstallInvalidator() {
 
 void UserCloudPolicyInvalidator::Shutdown() {
   profile_observation_.Reset();
-  if (invalidator_) {
-    invalidator_->Shutdown();
     invalidator_.reset();
-  }
 #if BUILDFLAG(ENABLE_EXTENSIONS)
-  if (extension_install_invalidator_) {
-    extension_install_invalidator_->Shutdown();
     extension_install_invalidator_.reset();
-  }
 #endif
 }
 

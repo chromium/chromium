@@ -89,13 +89,15 @@ size_t CalculatePolicyHash(const enterprise_management::PolicyData* policy) {
 }  // namespace
 
 PolicyInvalidator::PolicyInvalidator(
+    std::string type,
     PolicyInvalidationScope scope,
     invalidation::InvalidationListener* invalidation_listener,
     CloudPolicyCore* core,
     const base::Clock* clock,
     const std::string& device_local_account_id,
     std::unique_ptr<PolicyInvalidationHandler> policy_invalidation_handler)
-    : policy_invalidation_handler_(std::move(policy_invalidation_handler)),
+    : type_(std::move(type)),
+      policy_invalidation_handler_(std::move(policy_invalidation_handler)),
       scope_(scope),
       core_(core),
       invalidation_listener_(invalidation_listener),
@@ -105,15 +107,10 @@ PolicyInvalidator::PolicyInvalidator(
   CHECK(policy_invalidation_handler_);
 }
 
-void PolicyInvalidator::Shutdown() {
-  // Explicitly reset observation of `InvalidationListener` as it needs
-  // `GetType()` to remove observer and `GetType()` requires access to our
-  // state.
-  invalidation_listener_observation_.Reset();
-}
+PolicyInvalidator::~PolicyInvalidator() = default;
 
-PolicyInvalidator::~PolicyInvalidator() {
-  CHECK(!invalidation_listener_observation_.IsObserving());
+std::string PolicyInvalidator::GetType() const {
+  return type_;
 }
 
 void PolicyInvalidator::OnCoreConnected(CloudPolicyCore* core) {}
@@ -163,9 +160,15 @@ PolicyInvalidator::PolicyInvalidationHandler::PolicyInvalidationHandler(
     PolicyInvalidationScope scope,
     CloudPolicyCore* core,
     const base::Clock* clock,
-    scoped_refptr<base::SequencedTaskRunner> task_runner)
-    : scope_(scope), core_(core), clock_(clock), task_runner_(task_runner) {
-  CHECK(task_runner.get());
+    scoped_refptr<base::SequencedTaskRunner> task_runner,
+    const char* policy_refresh_metric_name,
+    const char* policy_invalidation_metric_name)
+    : core_(core),
+      clock_(clock),
+      task_runner_(std::move(task_runner)),
+      policy_refresh_metric_name_(policy_refresh_metric_name),
+      policy_invalidation_metric_name_(policy_invalidation_metric_name) {
+  CHECK(task_runner_.get());
   // |highest_handled_invalidation_version_| indicates the highest actual
   // invalidation version handled. Since actual invalidations can have only
   // positive versions, this member may be zero (no versioned invalidation
@@ -202,7 +205,7 @@ void PolicyInvalidator::PolicyInvalidationHandler::HandlePolicyRefresh(
       store_invalidation_version == in_progress_invalidation_.value().version();
 
   RecordPolicyRefreshMetric(
-      GetPolicyRefreshMetricName(scope_),
+      policy_refresh_metric_name_,
       /*invalidations_enabled=*/AreInvalidationsEnabledForAWhile(),
       /*policy_changed=*/policy_changed,
       /*invalidated=*/invalidated);
@@ -288,8 +291,8 @@ void PolicyInvalidator::PolicyInvalidationHandler::HandleInvalidation(
       IsInvalidationExpired(invalidation, last_fetch_time, current_time);
   const bool is_missing_payload = invalidation.payload().empty();
 
-  RecordPolicyInvalidationMetric(GetPolicyInvalidationMetricName(scope_),
-                                 is_expired, is_missing_payload);
+  RecordPolicyInvalidationMetric(policy_invalidation_metric_name_, is_expired,
+                                 is_missing_payload);
 
   if (is_expired) {
     return;

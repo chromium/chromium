@@ -164,9 +164,7 @@ DeviceLocalAccountPolicyBroker::DeviceLocalAccountPolicyBroker(
 }
 
 DeviceLocalAccountPolicyBroker::~DeviceLocalAccountPolicyBroker() {
-  if (invalidator_) {
-    invalidator_->Shutdown();
-  }
+  invalidator_.reset();
   store_->RemoveObserver(this);
   external_data_manager_->SetPolicyStore(nullptr);
   external_data_manager_->Disconnect();

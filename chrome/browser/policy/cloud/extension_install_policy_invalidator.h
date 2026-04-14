@@ -58,28 +58,6 @@ class ExtensionInstallPolicyInvalidator : public PolicyInvalidator {
   ExtensionInstallPolicyInvalidator& operator=(
       const ExtensionInstallPolicyInvalidator&) = delete;
   ~ExtensionInstallPolicyInvalidator() override;
-
-  std::string GetType() const override;
-
- private:
-  // Handles policy refresh depending on invalidations availability and incoming
-  // invalidations.
-  class ExtensionInstallPolicyInvalidationHandler
-      : public PolicyInvalidator::PolicyInvalidationHandler {
-   public:
-    ExtensionInstallPolicyInvalidationHandler(
-        PolicyInvalidationScope scope,
-        CloudPolicyCore* core,
-        const base::Clock* clock,
-        scoped_refptr<base::SequencedTaskRunner> task_runner);
-
-    ~ExtensionInstallPolicyInvalidationHandler() override;
-
-    const char* GetPolicyRefreshMetricName(
-        PolicyInvalidationScope scope) override;
-    const char* GetPolicyInvalidationMetricName(
-        PolicyInvalidationScope scope) override;
-  };
 };
 
 }  // namespace policy

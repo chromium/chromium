@@ -6,6 +6,8 @@
 
 #include <memory>
 
+#include "base/functional/bind.h"
+#include "base/notreached.h"
 #include "base/task/sequenced_task_runner.h"
 #include "components/invalidation/invalidation_listener.h"
 #include "components/policy/core/common/cloud/cloud_policy_refresh_scheduler.h"
@@ -23,6 +25,20 @@ constexpr char kBrowserPolicyInvalidatorTypeName[] =
     "EXTENSION_INSTALL_CLOUD_POLICY_FETCH";
 constexpr char kUserPolicyInvalidatorTypeName[] =
     "EXTENSION_INSTALL_CLOUD_POLICY_FETCH";
+
+std::string GetExtensionInstallPolicyInvalidatorType(
+    PolicyInvalidationScope scope) {
+  switch (scope) {
+    case PolicyInvalidationScope::kUser:
+      return kUserPolicyInvalidatorTypeName;
+    case PolicyInvalidationScope::kDevice:
+      return kDevicePolicyInvalidatorTypeName;
+    case PolicyInvalidationScope::kCBCM:
+      return kBrowserPolicyInvalidatorTypeName;
+    case PolicyInvalidationScope::kDeviceLocalAccount:
+      NOTREACHED();
+  }
+}
 
 }  // namespace
 
@@ -63,18 +79,19 @@ ExtensionInstallPolicyInvalidator::ExtensionInstallPolicyInvalidator(
     const scoped_refptr<base::SequencedTaskRunner>& task_runner,
     const base::Clock* clock,
     const std::string& device_local_account_id)
-    : PolicyInvalidator(
-          scope,
-          invalidation_listener,
-          core,
-          clock,
-          device_local_account_id,
-          std::make_unique<ExtensionInstallPolicyInvalidator::
-                               ExtensionInstallPolicyInvalidationHandler>(
-              scope,
-              core,
-              clock,
-              std::move(task_runner))) {
+    : PolicyInvalidator(GetExtensionInstallPolicyInvalidatorType(scope),
+                        scope,
+                        invalidation_listener,
+                        core,
+                        clock,
+                        device_local_account_id,
+                        std::make_unique<PolicyInvalidationHandler>(
+                            scope,
+                            core,
+                            clock,
+                            task_runner,
+                            GetPolicyRefreshMetricName(scope),
+                            GetPolicyInvalidationMetricName(scope))) {
   // This needs to be in the derived class because down the line, virtual
   // functions may be called and we need them to use the derived class
   // definition and not the base class one.
@@ -86,45 +103,5 @@ ExtensionInstallPolicyInvalidator::ExtensionInstallPolicyInvalidator(
 
 ExtensionInstallPolicyInvalidator::~ExtensionInstallPolicyInvalidator() =
     default;
-
-std::string ExtensionInstallPolicyInvalidator::GetType() const {
-  switch (scope_) {
-    case PolicyInvalidationScope::kUser:
-      return kUserPolicyInvalidatorTypeName;
-    case PolicyInvalidationScope::kDevice:
-      return kDevicePolicyInvalidatorTypeName;
-    case PolicyInvalidationScope::kCBCM:
-      return kBrowserPolicyInvalidatorTypeName;
-    case PolicyInvalidationScope::kDeviceLocalAccount:
-      NOTREACHED();
-  }
-}
-
-ExtensionInstallPolicyInvalidator::ExtensionInstallPolicyInvalidationHandler::
-    ExtensionInstallPolicyInvalidationHandler(
-        PolicyInvalidationScope scope,
-        CloudPolicyCore* core,
-        const base::Clock* clock,
-        scoped_refptr<base::SequencedTaskRunner> task_runner)
-    : PolicyInvalidator::PolicyInvalidationHandler(scope,
-                                                   core,
-                                                   clock,
-                                                   task_runner) {}
-
-ExtensionInstallPolicyInvalidator::ExtensionInstallPolicyInvalidationHandler::
-    ~ExtensionInstallPolicyInvalidationHandler() = default;
-
-const char* ExtensionInstallPolicyInvalidator::
-    ExtensionInstallPolicyInvalidationHandler::GetPolicyRefreshMetricName(
-        PolicyInvalidationScope scope) {
-  return ExtensionInstallPolicyInvalidator::GetPolicyRefreshMetricName(scope);
-}
-
-const char* ExtensionInstallPolicyInvalidator::
-    ExtensionInstallPolicyInvalidationHandler::GetPolicyInvalidationMetricName(
-        PolicyInvalidationScope scope) {
-  return ExtensionInstallPolicyInvalidator::GetPolicyInvalidationMetricName(
-      scope);
-}
 
 }  // namespace policy

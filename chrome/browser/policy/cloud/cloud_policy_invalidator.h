@@ -25,7 +25,7 @@
 namespace base {
 class Clock;
 class SequencedTaskRunner;
-}
+}  // namespace base
 
 namespace policy {
 
@@ -48,8 +48,6 @@ class CloudPolicyInvalidator : public PolicyInvalidator {
   // |task_runner| is used for scheduling delayed tasks. It must post tasks to
   // the main policy thread.
   // |clock| is used to get the current time.
-  // |highest_handled_invalidation_version| is the highest invalidation version
-  // that was handled already before this invalidator was created.
   // |device_local_account_id| is a unique identity for invalidator with
   // DeviceLocalAccount |scope| to have unique owner name. May be let empty
   // if scope is not DeviceLocalAccount.
@@ -63,28 +61,6 @@ class CloudPolicyInvalidator : public PolicyInvalidator {
   CloudPolicyInvalidator(const CloudPolicyInvalidator&) = delete;
   CloudPolicyInvalidator& operator=(const CloudPolicyInvalidator&) = delete;
   ~CloudPolicyInvalidator() override;
-
-  // InvalidationListener::Observer:
-  std::string GetType() const override;
-
- protected:
-  // Handles policy refresh depending on invalidations availability and incoming
-  // invalidations.
-  class CloudPolicyInvalidationHandler
-      : public PolicyInvalidator::PolicyInvalidationHandler {
-   public:
-    CloudPolicyInvalidationHandler(
-        PolicyInvalidationScope scope,
-        CloudPolicyCore* core,
-        const base::Clock* clock,
-        scoped_refptr<base::SequencedTaskRunner> task_runner);
-
-    ~CloudPolicyInvalidationHandler() override;
-    const char* GetPolicyRefreshMetricName(
-        PolicyInvalidationScope scope) override;
-    const char* GetPolicyInvalidationMetricName(
-        PolicyInvalidationScope scope) override;
-  };
 };
 
 }  // namespace policy
