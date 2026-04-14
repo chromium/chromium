@@ -698,9 +698,9 @@ CanvasNon2DResourceProviderSharedImage::WillDrawInternal(bool is_overwrite) {
                                        Size().width(), Size().height());
     old_resource_shared_image->EndAccess(std::move(src_access));
   } else {
-    // If we're not overwriting the image completely, we need to ensure that
-    // the image is cleared on the next BeginRasterCHROMIUM.
-    is_cleared_ = is_overwrite;
+    // We need to ensure that the image (which has either just been created or
+    // has stale content) is cleared on the next BeginRasterCHROMIUM.
+    is_cleared_ = false;
   }
 
   UMA_HISTOGRAM_BOOLEAN("Blink.Canvas.ContentChangeMode",
