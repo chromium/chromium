@@ -112,6 +112,7 @@ class ChromeAutofillClientIOS : public AutofillClientIOS {
   syncer::SyncService* GetSyncService() override;
   signin::IdentityManager* GetIdentityManager() override;
   const signin::IdentityManager* GetIdentityManager() const override;
+  metrics::ProfileMetricsService* GetProfileMetricsService() override;
   const GoogleGroupsManager* GetGoogleGroupsManager() const override;
   FormDataImporter* GetFormDataImporter() override;
   payments::IOSChromePaymentsAutofillClient* GetPaymentsAutofillClient()

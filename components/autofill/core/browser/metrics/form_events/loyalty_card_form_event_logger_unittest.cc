@@ -178,11 +178,19 @@ TEST_P(LoyaltyCardFormEventLoggerFunnelTest, LogKeyMetrics) {
     histogram_tester.ExpectBucketCount(
         "Autofill.KeyMetrics.FillingReadiness.LoyaltyCard", 1, 1);
     histogram_tester.ExpectBucketCount(
+        "Autofill.KeyMetrics.FillingReadiness.LoyaltyCard.Profile1", 1, 1);
+    histogram_tester.ExpectBucketCount(
         "Autofill.KeyMetrics.FillingAcceptance.LoyaltyCard", 1, 1);
+    histogram_tester.ExpectBucketCount(
+        "Autofill.KeyMetrics.FillingAcceptance.LoyaltyCard.Profile1", 1, 1);
     histogram_tester.ExpectBucketCount(
         "Autofill.KeyMetrics.FillingCorrectness.LoyaltyCard", 1, 1);
     histogram_tester.ExpectBucketCount(
+        "Autofill.KeyMetrics.FillingCorrectness.LoyaltyCard.Profile1", 1, 1);
+    histogram_tester.ExpectBucketCount(
         "Autofill.KeyMetrics.FillingAssistance.LoyaltyCard", 1, 1);
+    histogram_tester.ExpectBucketCount(
+        "Autofill.KeyMetrics.FillingAssistance.LoyaltyCard.Profile1", 1, 1);
     histogram_tester.ExpectBucketCount(
         "Autofill.Autocomplete.NotOff.FillingAcceptance.LoyaltyCard", 1, 1);
     histogram_tester.ExpectTotalCount(
@@ -211,11 +219,19 @@ TEST_P(LoyaltyCardFormEventLoggerFunnelTest, LogKeyMetrics) {
     histogram_tester.ExpectTotalCount(
         "Autofill.KeyMetrics.FillingReadiness.LoyaltyCard", 0);
     histogram_tester.ExpectTotalCount(
+        "Autofill.KeyMetrics.FillingReadiness.LoyaltyCard.Profile1", 0);
+    histogram_tester.ExpectTotalCount(
         "Autofill.KeyMetrics.FillingAcceptance.LoyaltyCard", 0);
+    histogram_tester.ExpectTotalCount(
+        "Autofill.KeyMetrics.FillingAcceptance.LoyaltyCard.Profile1", 0);
     histogram_tester.ExpectTotalCount(
         "Autofill.KeyMetrics.FillingCorrectness.LoyaltyCard", 0);
     histogram_tester.ExpectTotalCount(
+        "Autofill.KeyMetrics.FillingCorrectness.LoyaltyCard.Profile1", 0);
+    histogram_tester.ExpectTotalCount(
         "Autofill.KeyMetrics.FillingAssistance.LoyaltyCard", 0);
+    histogram_tester.ExpectTotalCount(
+        "Autofill.KeyMetrics.FillingAssistance.LoyaltyCard.Profile1", 0);
     histogram_tester.ExpectTotalCount(
         "Autofill.Autocomplete.NotOff.FillingAcceptance.LoyaltyCard", 0);
     histogram_tester.ExpectTotalCount(
@@ -293,12 +309,20 @@ TEST_F(LoyaltyCardFormEventLoggerBaseKeyMetricsTest, LogEmptyForm) {
 
   histogram_tester.ExpectBucketCount(
       "Autofill.KeyMetrics.FillingReadiness.LoyaltyCard", 1, 1);
+  histogram_tester.ExpectBucketCount(
+      "Autofill.KeyMetrics.FillingReadiness.LoyaltyCard.Profile1", 1, 1);
   histogram_tester.ExpectTotalCount(
       "Autofill.KeyMetrics.FillingAcceptance.LoyaltyCard", 0);
   histogram_tester.ExpectTotalCount(
+      "Autofill.KeyMetrics.FillingAcceptance.LoyaltyCard.Profile1", 0);
+  histogram_tester.ExpectTotalCount(
       "Autofill.KeyMetrics.FillingCorrectness.LoyaltyCard", 0);
+  histogram_tester.ExpectTotalCount(
+      "Autofill.KeyMetrics.FillingCorrectness.LoyaltyCard.Profile1", 0);
   histogram_tester.ExpectBucketCount(
       "Autofill.KeyMetrics.FillingAssistance.LoyaltyCard", 0, 1);
+  histogram_tester.ExpectBucketCount(
+      "Autofill.KeyMetrics.FillingAssistance.LoyaltyCard.Profile1", 0, 1);
   histogram_tester.ExpectTotalCount(
       "Autofill.KeyMetrics.FormSubmission.NotAutofilled.LoyaltyCard", 0);
   histogram_tester.ExpectTotalCount(
@@ -346,11 +370,19 @@ TEST_F(LoyaltyCardFormEventLoggerBaseKeyMetricsTest,
   histogram_tester.ExpectBucketCount(
       "Autofill.KeyMetrics.FillingReadiness.LoyaltyCard", 1, 1);
   histogram_tester.ExpectBucketCount(
+      "Autofill.KeyMetrics.FillingReadiness.LoyaltyCard.Profile1", 1, 1);
+  histogram_tester.ExpectBucketCount(
       "Autofill.KeyMetrics.FillingAcceptance.LoyaltyCard", 0, 1);
+  histogram_tester.ExpectBucketCount(
+      "Autofill.KeyMetrics.FillingAcceptance.LoyaltyCard.Profile1", 0, 1);
   histogram_tester.ExpectTotalCount(
       "Autofill.KeyMetrics.FillingCorrectness.LoyaltyCard", 0);
+  histogram_tester.ExpectTotalCount(
+      "Autofill.KeyMetrics.FillingCorrectness.LoyaltyCard.Profile1", 0);
   histogram_tester.ExpectBucketCount(
       "Autofill.KeyMetrics.FillingAssistance.LoyaltyCard", 0, 1);
+  histogram_tester.ExpectBucketCount(
+      "Autofill.KeyMetrics.FillingAssistance.LoyaltyCard.Profile1", 0, 1);
   histogram_tester.ExpectBucketCount(
       "Autofill.KeyMetrics.FormSubmission.NotAutofilled.LoyaltyCard", 1, 1);
   histogram_tester.ExpectUniqueSample(
@@ -401,11 +433,19 @@ TEST_F(LoyaltyCardFormEventLoggerBaseKeyMetricsTest, UserAcceptsSuggestion) {
   histogram_tester.ExpectBucketCount(
       "Autofill.KeyMetrics.FillingReadiness.LoyaltyCard", 1, 1);
   histogram_tester.ExpectBucketCount(
+      "Autofill.KeyMetrics.FillingReadiness.LoyaltyCard.Profile1", 1, 1);
+  histogram_tester.ExpectBucketCount(
       "Autofill.KeyMetrics.FillingAcceptance.LoyaltyCard", 1, 1);
+  histogram_tester.ExpectBucketCount(
+      "Autofill.KeyMetrics.FillingAcceptance.LoyaltyCard.Profile1", 1, 1);
   histogram_tester.ExpectBucketCount(
       "Autofill.KeyMetrics.FillingCorrectness.LoyaltyCard", 1, 1);
   histogram_tester.ExpectBucketCount(
+      "Autofill.KeyMetrics.FillingCorrectness.LoyaltyCard.Profile1", 1, 1);
+  histogram_tester.ExpectBucketCount(
       "Autofill.KeyMetrics.FillingAssistance.LoyaltyCard", 1, 1);
+  histogram_tester.ExpectBucketCount(
+      "Autofill.KeyMetrics.FillingAssistance.LoyaltyCard.Profile1", 1, 1);
   histogram_tester.ExpectBucketCount(
       "Autofill.KeyMetrics.FormSubmission.Autofilled.LoyaltyCard", 1, 1);
   histogram_tester.ExpectUniqueSample(
@@ -502,11 +542,19 @@ TEST_F(LoyaltyCardFormEventLoggerBaseKeyMetricsTest, LogUserFixesFilledData) {
   histogram_tester.ExpectBucketCount(
       "Autofill.KeyMetrics.FillingReadiness.LoyaltyCard", 1, 1);
   histogram_tester.ExpectBucketCount(
+      "Autofill.KeyMetrics.FillingReadiness.LoyaltyCard.Profile1", 1, 1);
+  histogram_tester.ExpectBucketCount(
       "Autofill.KeyMetrics.FillingAcceptance.LoyaltyCard", 1, 1);
+  histogram_tester.ExpectBucketCount(
+      "Autofill.KeyMetrics.FillingAcceptance.LoyaltyCard.Profile1", 1, 1);
   histogram_tester.ExpectBucketCount(
       "Autofill.KeyMetrics.FillingCorrectness.LoyaltyCard", 0, 1);
   histogram_tester.ExpectBucketCount(
+      "Autofill.KeyMetrics.FillingCorrectness.LoyaltyCard.Profile1", 0, 1);
+  histogram_tester.ExpectBucketCount(
       "Autofill.KeyMetrics.FillingAssistance.LoyaltyCard", 1, 1);
+  histogram_tester.ExpectBucketCount(
+      "Autofill.KeyMetrics.FillingAssistance.LoyaltyCard.Profile1", 1, 1);
   histogram_tester.ExpectBucketCount(
       "Autofill.KeyMetrics.FormSubmission.Autofilled.LoyaltyCard", 1, 1);
   histogram_tester.ExpectUniqueSample(
@@ -574,11 +622,19 @@ TEST_F(LoyaltyCardFormEventLoggerBaseKeyMetricsTest,
   histogram_tester.ExpectTotalCount(
       "Autofill.KeyMetrics.FillingReadiness.LoyaltyCard", 0);
   histogram_tester.ExpectTotalCount(
+      "Autofill.KeyMetrics.FillingReadiness.LoyaltyCard.Profile1", 0);
+  histogram_tester.ExpectTotalCount(
       "Autofill.KeyMetrics.FillingAcceptance.LoyaltyCard", 0);
+  histogram_tester.ExpectTotalCount(
+      "Autofill.KeyMetrics.FillingAcceptance.LoyaltyCard.Profile1", 0);
   histogram_tester.ExpectTotalCount(
       "Autofill.KeyMetrics.FillingCorrectness.LoyaltyCard", 0);
   histogram_tester.ExpectTotalCount(
+      "Autofill.KeyMetrics.FillingCorrectness.LoyaltyCard.Profile1", 0);
+  histogram_tester.ExpectTotalCount(
       "Autofill.KeyMetrics.FillingAssistance.LoyaltyCard", 0);
+  histogram_tester.ExpectTotalCount(
+      "Autofill.KeyMetrics.FillingAssistance.LoyaltyCard.Profile1", 0);
   histogram_tester.ExpectBucketCount(
       "Autofill.KeyMetrics.FormSubmission.Autofilled.LoyaltyCard", 0, 1);
   histogram_tester.ExpectTotalCount(

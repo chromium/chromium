@@ -75,6 +75,7 @@
 #import "ios/chrome/browser/infobars/model/infobar_ios.h"
 #import "ios/chrome/browser/infobars/model/infobar_utils.h"
 #import "ios/chrome/browser/metrics/model/google_groups_manager_factory.h"
+#import "ios/chrome/browser/metrics/model/ios_profile_metrics_service_factory.h"
 #import "ios/chrome/browser/optimization_guide/model/optimization_guide_service.h"
 #import "ios/chrome/browser/optimization_guide/model/optimization_guide_service_factory.h"
 #import "ios/chrome/browser/passwords/model/ios_password_field_classification_model_handler_factory.h"
@@ -312,6 +313,12 @@ signin::IdentityManager* ChromeAutofillClientIOS::GetIdentityManager() {
 const signin::IdentityManager* ChromeAutofillClientIOS::GetIdentityManager()
     const {
   return identity_manager_;
+}
+
+metrics::ProfileMetricsService*
+ChromeAutofillClientIOS::GetProfileMetricsService() {
+  CHECK(profile_);
+  return IOSProfileMetricsServiceFactory::GetForProfile(profile_);
 }
 
 FormDataImporter* ChromeAutofillClientIOS::GetFormDataImporter() {

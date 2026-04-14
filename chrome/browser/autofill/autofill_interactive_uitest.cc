@@ -3115,6 +3115,16 @@ IN_PROC_BROWSER_TEST_F(AutofillInteractiveTestDynamicForm,
   expect_count("Autofill.KeyMetrics.FillingAcceptance.CreditCard", 1, 1);
   expect_count("Autofill.KeyMetrics.FillingCorrectness.CreditCard", 1, 1);
   expect_count("Autofill.KeyMetrics.FillingAssistance.CreditCard", 1, 1);
+#if !BUILDFLAG(IS_CHROMEOS)
+  expect_count("Autofill.KeyMetrics.FillingReadiness.CreditCard.Profile0", 1,
+               1);
+  expect_count("Autofill.KeyMetrics.FillingAcceptance.CreditCard.Profile0", 1,
+               1);
+  expect_count("Autofill.KeyMetrics.FillingCorrectness.CreditCard.Profile0", 1,
+               1);
+  expect_count("Autofill.KeyMetrics.FillingAssistance.CreditCard.Profile0", 1,
+               1);
+#endif
   // Ensure that refills don't count as edits.
   expect_count("Autofill.PerfectFilling.CreditCards", 1, 1);
   // Bucket 0 = edited, 1 = accepted; 3 samples for 3 fields.

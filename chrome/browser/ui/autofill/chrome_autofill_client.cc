@@ -48,6 +48,7 @@
 #include "chrome/browser/global_features.h"
 #include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/keyboard_accessory/android/manual_filling_controller.h"
+#include "chrome/browser/metrics/profile_metrics_service_factory.h"
 #include "chrome/browser/metrics/variations/google_groups_manager_factory.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
@@ -657,6 +658,13 @@ const signin::IdentityManager* ChromeAutofillClient::GetIdentityManager()
   Profile* profile =
       Profile::FromBrowserContext(web_contents()->GetBrowserContext());
   return IdentityManagerFactory::GetForProfile(profile->GetOriginalProfile());
+}
+
+metrics::ProfileMetricsService*
+ChromeAutofillClient::GetProfileMetricsService() {
+  Profile* profile = GetProfile();
+  CHECK(profile);
+  return ProfileMetricsServiceFactory::GetForProfile(profile);
 }
 
 const GoogleGroupsManager* ChromeAutofillClient::GetGoogleGroupsManager()

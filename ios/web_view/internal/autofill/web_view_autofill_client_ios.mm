@@ -29,6 +29,7 @@
 #import "ios/web_view/internal/autofill/web_view_autofill_log_router_factory.h"
 #import "ios/web_view/internal/autofill/web_view_personal_data_manager_factory.h"
 #import "ios/web_view/internal/autofill/web_view_strike_database_factory.h"
+#import "ios/web_view/internal/metrics/web_view_profile_metrics_service_factory.h"
 #import "ios/web_view/internal/signin/web_view_identity_manager_factory.h"
 #import "ios/web_view/internal/sync/web_view_sync_service_factory.h"
 #import "services/network/public/cpp/shared_url_loader_factory.h"
@@ -167,6 +168,16 @@ signin::IdentityManager* WebViewAutofillClientIOS::GetIdentityManager() {
 const signin::IdentityManager* WebViewAutofillClientIOS::GetIdentityManager()
     const {
   return identity_manager_;
+}
+
+metrics::ProfileMetricsService*
+WebViewAutofillClientIOS::GetProfileMetricsService() {
+  ios_web_view::WebViewBrowserState* browser_state =
+      ios_web_view::WebViewBrowserState::FromBrowserState(
+          web_state()->GetBrowserState());
+  CHECK(browser_state);
+  return ios_web_view::WebViewProfileMetricsServiceFactory::GetForBrowserState(
+      browser_state);
 }
 
 FormDataImporter* WebViewAutofillClientIOS::GetFormDataImporter() {

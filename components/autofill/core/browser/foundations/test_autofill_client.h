@@ -69,6 +69,7 @@
 #include "components/autofill/core/common/autofill_prefs.h"
 #include "components/consent_auditor/fake_consent_auditor.h"
 #include "components/device_reauth/mock_device_authenticator.h"
+#include "components/metrics/profile_metrics_service.h"
 #include "components/one_time_tokens/core/browser/one_time_token_service_impl.h"
 #include "components/one_time_tokens/core/browser/sms_otp_backend.h"
 #include "components/optimization_guide/core/feature_registry/feature_registration.h"
@@ -241,6 +242,10 @@ class TestAutofillClientTemplate : public T {
 
   const signin::IdentityManager* GetIdentityManager() const override {
     return identity_test_env_.identity_manager();
+  }
+
+  metrics::ProfileMetricsService* GetProfileMetricsService() override {
+    return &test_profile_metrics_service_;
   }
 
   FormDataImporter* GetFormDataImporter() override {
@@ -685,6 +690,8 @@ class TestAutofillClientTemplate : public T {
  private:
   ukm::TestAutoSetUkmRecorder test_ukm_recorder_;
   signin::IdentityTestEnvironment identity_test_env_;
+  metrics::ProfileMetricsService test_profile_metrics_service_{
+      metrics::ProfileMetricsContext(1)};
   raw_ptr<syncer::SyncService> test_sync_service_ = nullptr;
   std::unique_ptr<OtpPhishGuardDelegate> otp_phish_guard_delegate_;
   std::unique_ptr<AutofillPlusAddressDelegate> plus_address_delegate_;

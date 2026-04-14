@@ -132,6 +132,7 @@ class AndroidAutofillClient : public autofill::ContentAutofillClient {
   bool IsContextSecure() const final;
   autofill::autofill_metrics::FormInteractionsUkmLogger&
   GetFormInteractionsUkmLogger() final;
+  metrics::ProfileMetricsService* GetProfileMetricsService() override;
 
   // ContentAutofillClient:
   std::unique_ptr<autofill::AutofillManager> CreateManager(

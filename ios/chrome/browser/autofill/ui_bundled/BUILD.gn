@@ -54,6 +54,7 @@ source_set("coordinator") {
     "//ios/chrome/browser/intelligence/proto_wrappers",
     "//ios/chrome/browser/metrics/model",
     "//ios/chrome/browser/metrics/model:google_groups_updater",
+    "//ios/chrome/browser/metrics/model:profile_metrics_service_factory",
     "//ios/chrome/browser/optimization_guide/model",
     "//ios/chrome/browser/passwords/model",
     "//ios/chrome/browser/plus_addresses/model",

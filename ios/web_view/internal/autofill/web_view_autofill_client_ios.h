@@ -112,6 +112,7 @@ class WebViewAutofillClientIOS : public AutofillClientIOS {
   syncer::SyncService* GetSyncService() override;
   signin::IdentityManager* GetIdentityManager() override;
   const signin::IdentityManager* GetIdentityManager() const override;
+  metrics::ProfileMetricsService* GetProfileMetricsService() override;
   FormDataImporter* GetFormDataImporter() override;
   payments::PaymentsAutofillClient* GetPaymentsAutofillClient() override;
   strike_database::StrikeDatabase* GetStrikeDatabase() final;

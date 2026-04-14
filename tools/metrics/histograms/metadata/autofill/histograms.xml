@@ -5048,7 +5048,7 @@ Called by update_autofill_enums.py. This is a manual comment.-->
   </summary>
 </histogram>
 
-<histogram name="Autofill.KeyMetrics.FillingAcceptance.{FormType}"
+<histogram name="Autofill.KeyMetrics.FillingAcceptance.{FormType}{Profile}"
     enum="BooleanAutofillFillingAcceptance" expires_after="2026-12-12">
   <owner>battre@chromium.org</owner>
   <owner>chrome-autofill-alerts@google.com</owner>
@@ -5057,11 +5057,14 @@ Called by update_autofill_enums.py. This is a manual comment.-->
     values. This is counted as 'yes' if the user accepted such a suggestion at
     any time, regardless whether other suggestions were ignored or whether the
     accepted suggestion was reverted afterwards. {FormType}
+
+    {Profile}
   </summary>
   <token key="FormType" variants="AutofillFormType.Fillable"/>
+  <token key="Profile" variants="ProfileIndex"/>
 </histogram>
 
-<histogram name="Autofill.KeyMetrics.FillingAssistance.{FormType}"
+<histogram name="Autofill.KeyMetrics.FillingAssistance.{FormType}{Profile}"
     enum="BooleanAutofillFillingAssistance" expires_after="2026-12-12">
   <owner>battre@chromium.org</owner>
   <owner>chrome-autofill-alerts@google.com</owner>
@@ -5073,22 +5076,28 @@ Called by update_autofill_enums.py. This is a manual comment.-->
     This metric is different from Autofill.KeyMetrics.FillingAcceptance in the
     sense that the latter is only recorded if the user has actually seen a
     prompt to fill data. {FormType}
+
+    {Profile}
   </summary>
   <token key="FormType" variants="AutofillFormType.Fillable"/>
+  <token key="Profile" variants="ProfileIndex"/>
 </histogram>
 
-<histogram name="Autofill.KeyMetrics.FillingCorrectness.{FormType}"
+<histogram name="Autofill.KeyMetrics.FillingCorrectness.{FormType}{Profile}"
     enum="BooleanAutofillFillingCorrectness" expires_after="2026-12-12">
   <owner>battre@chromium.org</owner>
   <owner>chrome-autofill-alerts@google.com</owner>
   <summary>
     Counts for submitted and autofilled forms whether users edited at least one
     filled value before submitting the form. {FormType}
+
+    {Profile}
   </summary>
   <token key="FormType" variants="AutofillFormType.Fillable"/>
+  <token key="Profile" variants="ProfileIndex"/>
 </histogram>
 
-<histogram name="Autofill.KeyMetrics.FillingReadiness.{FormType}"
+<histogram name="Autofill.KeyMetrics.FillingReadiness.{FormType}{Profile}"
     enum="BooleanAutofillFillingReadiness" expires_after="2026-12-12">
   <owner>battre@chromium.org</owner>
   <owner>chrome-autofill-alerts@google.com</owner>
@@ -5099,8 +5108,11 @@ Called by update_autofill_enums.py. This is a manual comment.-->
     It does not matter whether the user actually requested to fill the data. It
     does not matter either whether the data available for filling corresponded
     to the submitted data. {FormType}
+
+    {Profile}
   </summary>
   <token key="FormType" variants="AutofillFormType.Fillable"/>
+  <token key="Profile" variants="ProfileIndex"/>
 </histogram>
 
 <histogram name="Autofill.KeyMetrics.FormSubmission.Autofilled.{FormType}"

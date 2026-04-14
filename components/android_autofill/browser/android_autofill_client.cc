@@ -272,6 +272,10 @@ autofill::autofill_metrics::FormInteractionsUkmLogger&
 AndroidAutofillClient::GetFormInteractionsUkmLogger() {
   return form_interactions_ukm_logger_;
 }
+metrics::ProfileMetricsService*
+AndroidAutofillClient::GetProfileMetricsService() {
+  NOTREACHED();
+}
 
 content::WebContents& AndroidAutofillClient::GetWebContents() const {
   // While a const_cast is not ideal. The Autofill API uses const in various

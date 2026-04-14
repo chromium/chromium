@@ -143,11 +143,19 @@ TEST_P(FormEventLoggerBaseFunnelTest, LogFunnelMetrics) {
     histogram_tester.ExpectBucketCount(
         "Autofill.KeyMetrics.FillingReadiness.Address", 1, 1);
     histogram_tester.ExpectBucketCount(
+        "Autofill.KeyMetrics.FillingReadiness.Address.Profile1", 1, 1);
+    histogram_tester.ExpectBucketCount(
         "Autofill.KeyMetrics.FillingAcceptance.Address", 1, 1);
+    histogram_tester.ExpectBucketCount(
+        "Autofill.KeyMetrics.FillingAcceptance.Address.Profile1", 1, 1);
     histogram_tester.ExpectBucketCount(
         "Autofill.KeyMetrics.FillingCorrectness.Address", 1, 1);
     histogram_tester.ExpectBucketCount(
+        "Autofill.KeyMetrics.FillingCorrectness.Address.Profile1", 1, 1);
+    histogram_tester.ExpectBucketCount(
         "Autofill.KeyMetrics.FillingAssistance.Address", 1, 1);
+    histogram_tester.ExpectBucketCount(
+        "Autofill.KeyMetrics.FillingAssistance.Address.Profile1", 1, 1);
     histogram_tester.ExpectBucketCount(
         "Autofill.Autocomplete.NotOff.FillingAcceptance.Address", 1, 1);
     histogram_tester.ExpectTotalCount(
@@ -179,11 +187,19 @@ TEST_P(FormEventLoggerBaseFunnelTest, LogFunnelMetrics) {
     histogram_tester.ExpectTotalCount(
         "Autofill.KeyMetrics.FillingReadiness.Address", 0);
     histogram_tester.ExpectTotalCount(
+        "Autofill.KeyMetrics.FillingReadiness.Address.Profile1", 0);
+    histogram_tester.ExpectTotalCount(
         "Autofill.KeyMetrics.FillingAcceptance.Address", 0);
+    histogram_tester.ExpectTotalCount(
+        "Autofill.KeyMetrics.FillingAcceptance.Address.Profile1", 0);
     histogram_tester.ExpectTotalCount(
         "Autofill.KeyMetrics.FillingCorrectness.Address", 0);
     histogram_tester.ExpectTotalCount(
+        "Autofill.KeyMetrics.FillingCorrectness.Address.Profile1", 0);
+    histogram_tester.ExpectTotalCount(
         "Autofill.KeyMetrics.FillingAssistance.Address", 0);
+    histogram_tester.ExpectTotalCount(
+        "Autofill.KeyMetrics.FillingAssistance.Address.Profile1", 0);
     histogram_tester.ExpectTotalCount(
         "Autofill.Autocomplete.NotOff.FillingAcceptance.Address", 0);
     histogram_tester.ExpectTotalCount(
@@ -306,12 +322,20 @@ TEST_F(FormEventLoggerBaseKeyMetricsTest, LogEmptyForm) {
 
   histogram_tester.ExpectBucketCount(
       "Autofill.KeyMetrics.FillingReadiness.Address", 1, 1);
+  histogram_tester.ExpectBucketCount(
+      "Autofill.KeyMetrics.FillingReadiness.Address.Profile1", 1, 1);
   histogram_tester.ExpectTotalCount(
       "Autofill.KeyMetrics.FillingAcceptance.Address", 0);
   histogram_tester.ExpectTotalCount(
+      "Autofill.KeyMetrics.FillingAcceptance.Address.Profile1", 0);
+  histogram_tester.ExpectTotalCount(
       "Autofill.KeyMetrics.FillingCorrectness.Address", 0);
+  histogram_tester.ExpectTotalCount(
+      "Autofill.KeyMetrics.FillingCorrectness.Address.Profile1", 0);
   histogram_tester.ExpectBucketCount(
       "Autofill.KeyMetrics.FillingAssistance.Address", 0, 1);
+  histogram_tester.ExpectBucketCount(
+      "Autofill.KeyMetrics.FillingAssistance.Address.Profile1", 0, 1);
   histogram_tester.ExpectTotalCount(
       "Autofill.KeyMetrics.FormSubmission.NotAutofilled.Address", 0);
   histogram_tester.ExpectTotalCount(
@@ -352,12 +376,20 @@ TEST_F(FormEventLoggerBaseKeyMetricsTest, LogNoProfile) {
 
   histogram_tester.ExpectBucketCount(
       "Autofill.KeyMetrics.FillingReadiness.Address", 0, 1);
+  histogram_tester.ExpectBucketCount(
+      "Autofill.KeyMetrics.FillingReadiness.Address.Profile1", 0, 1);
   histogram_tester.ExpectTotalCount(
       "Autofill.KeyMetrics.FillingAcceptance.Address", 0);
   histogram_tester.ExpectTotalCount(
+      "Autofill.KeyMetrics.FillingAcceptance.Address.Profile1", 0);
+  histogram_tester.ExpectTotalCount(
       "Autofill.KeyMetrics.FillingCorrectness.Address", 0);
+  histogram_tester.ExpectTotalCount(
+      "Autofill.KeyMetrics.FillingCorrectness.Address.Profile1", 0);
   histogram_tester.ExpectBucketCount(
       "Autofill.KeyMetrics.FillingAssistance.Address", 0, 1);
+  histogram_tester.ExpectBucketCount(
+      "Autofill.KeyMetrics.FillingAssistance.Address.Profile1", 0, 1);
   histogram_tester.ExpectBucketCount(
       "Autofill.KeyMetrics.FormSubmission.NotAutofilled.Address", 1, 1);
   histogram_tester.ExpectTotalCount(
@@ -398,11 +430,19 @@ TEST_F(FormEventLoggerBaseKeyMetricsTest, LogUserDoesNotAcceptSuggestion) {
   histogram_tester.ExpectBucketCount(
       "Autofill.KeyMetrics.FillingReadiness.Address", 1, 1);
   histogram_tester.ExpectBucketCount(
+      "Autofill.KeyMetrics.FillingReadiness.Address.Profile1", 1, 1);
+  histogram_tester.ExpectBucketCount(
       "Autofill.KeyMetrics.FillingAcceptance.Address", 0, 1);
+  histogram_tester.ExpectBucketCount(
+      "Autofill.KeyMetrics.FillingAcceptance.Address.Profile1", 0, 1);
   histogram_tester.ExpectTotalCount(
       "Autofill.KeyMetrics.FillingCorrectness.Address", 0);
+  histogram_tester.ExpectTotalCount(
+      "Autofill.KeyMetrics.FillingCorrectness.Address.Profile1", 0);
   histogram_tester.ExpectBucketCount(
       "Autofill.KeyMetrics.FillingAssistance.Address", 0, 1);
+  histogram_tester.ExpectBucketCount(
+      "Autofill.KeyMetrics.FillingAssistance.Address.Profile1", 0, 1);
   histogram_tester.ExpectBucketCount(
       "Autofill.KeyMetrics.FormSubmission.NotAutofilled.Address", 1, 1);
   histogram_tester.ExpectUniqueSample(
@@ -448,11 +488,19 @@ TEST_F(FormEventLoggerBaseKeyMetricsTest, LogUserFixesFilledData) {
   histogram_tester.ExpectBucketCount(
       "Autofill.KeyMetrics.FillingReadiness.Address", 1, 1);
   histogram_tester.ExpectBucketCount(
+      "Autofill.KeyMetrics.FillingReadiness.Address.Profile1", 1, 1);
+  histogram_tester.ExpectBucketCount(
       "Autofill.KeyMetrics.FillingAcceptance.Address", 1, 1);
+  histogram_tester.ExpectBucketCount(
+      "Autofill.KeyMetrics.FillingAcceptance.Address.Profile1", 1, 1);
   histogram_tester.ExpectBucketCount(
       "Autofill.KeyMetrics.FillingCorrectness.Address", 0, 1);
   histogram_tester.ExpectBucketCount(
+      "Autofill.KeyMetrics.FillingCorrectness.Address.Profile1", 0, 1);
+  histogram_tester.ExpectBucketCount(
       "Autofill.KeyMetrics.FillingAssistance.Address", 1, 1);
+  histogram_tester.ExpectBucketCount(
+      "Autofill.KeyMetrics.FillingAssistance.Address.Profile1", 1, 1);
   histogram_tester.ExpectBucketCount(
       "Autofill.KeyMetrics.FormSubmission.Autofilled.Address", 1, 1);
   histogram_tester.ExpectUniqueSample(
@@ -502,11 +550,19 @@ TEST_F(FormEventLoggerBaseKeyMetricsTest,
   histogram_tester.ExpectTotalCount(
       "Autofill.KeyMetrics.FillingReadiness.Address", 0);
   histogram_tester.ExpectTotalCount(
+      "Autofill.KeyMetrics.FillingReadiness.Address.Profile1", 0);
+  histogram_tester.ExpectTotalCount(
       "Autofill.KeyMetrics.FillingAcceptance.Address", 0);
+  histogram_tester.ExpectTotalCount(
+      "Autofill.KeyMetrics.FillingAcceptance.Address.Profile1", 0);
   histogram_tester.ExpectTotalCount(
       "Autofill.KeyMetrics.FillingCorrectness.Address", 0);
   histogram_tester.ExpectTotalCount(
+      "Autofill.KeyMetrics.FillingCorrectness.Address.Profile1", 0);
+  histogram_tester.ExpectTotalCount(
       "Autofill.KeyMetrics.FillingAssistance.Address", 0);
+  histogram_tester.ExpectTotalCount(
+      "Autofill.KeyMetrics.FillingAssistance.Address.Profile1", 0);
   histogram_tester.ExpectBucketCount(
       "Autofill.KeyMetrics.FormSubmission.Autofilled.Address", 0, 1);
   histogram_tester.ExpectTotalCount(
