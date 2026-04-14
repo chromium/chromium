@@ -536,10 +536,13 @@ void ClipboardMap::ReadWebCustomData(JNIEnv* env) {
   std::optional<std::string> encoded_data = Java_Clipboard_getCustomClipData(
       env, clipboard_manager_, custom_type_name);
   if (!encoded_data) {
+    map_.erase(ClipboardFormatType::DataTransferCustomType());
     return;
   }
   std::string decoded_data;
-  if (!base::Base64Decode(*encoded_data, &decoded_data)) {
+  if (!base::Base64Decode(*encoded_data, &decoded_data) ||
+      decoded_data.empty()) {
+    map_.erase(ClipboardFormatType::DataTransferCustomType());
     return;
   }
   map_[ClipboardFormatType::DataTransferCustomType()] = std::move(decoded_data);
