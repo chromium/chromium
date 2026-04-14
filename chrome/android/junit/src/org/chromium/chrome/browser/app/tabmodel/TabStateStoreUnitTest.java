@@ -416,6 +416,26 @@ public class TabStateStoreUnitTest {
     }
 
     @Test
+    public void testOnAuthoritativeStateLoaded() {
+        mTabStateStore =
+                new TabStateStore(
+                        mTabModelSelector,
+                        WINDOW_TAG,
+                        mTabCreatorManager,
+                        mTabPersistencePolicy,
+                        mMigrationManager,
+                        mCipherFactory,
+                        mTabCountTracker,
+                        mModelTrackingOrchestratorFactory,
+                        mActiveTabCacheFactory,
+                        /* isAuthoritative= */ false);
+
+        mTabStateStore.onNativeLibraryReady();
+        mTabStateStore.onAuthoritativeStateLoaded();
+        verify(mModelTrackingOrchestrator).onAuthoritativeStateLoaded();
+    }
+
+    @Test
     public void testDestroy() {
         mTabStateStore.onNativeLibraryReady();
         mTabStateStore.loadState(false);

@@ -500,6 +500,13 @@ public class TabStateStore implements TabPersistentStore {
         return StoreType.TAB_STATE_STORE;
     }
 
+    /** Called when the authoritative store has finished loading state for the window. */
+    public void onAuthoritativeStateLoaded() {
+        assert !mIsAuthoritative;
+        assertInitialized();
+        mModelTrackingManager.onAuthoritativeStateLoaded();
+    }
+
     private void onTabStateDirtinessChanged(Tab tab, @DirtinessState int dirtiness) {
         if (dirtiness != DirtinessState.CLEAN && !tab.isDestroyed()) {
             saveTab(tab);

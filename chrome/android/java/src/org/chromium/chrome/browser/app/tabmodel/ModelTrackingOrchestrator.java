@@ -201,6 +201,7 @@ public class ModelTrackingOrchestrator {
     private boolean mLoadIncognitoTabsOnStart;
     private boolean mRegularModelCaughtUp;
     private boolean mIncognitoModelCaughtUp;
+    private boolean mIsAuthoritativeStateLoaded;
 
     /**
      * @param windowTag The window tag to use for the window.
@@ -233,6 +234,12 @@ public class ModelTrackingOrchestrator {
         } else {
             mIncognitoSynchronizerManager = null;
         }
+    }
+
+    /** Called when the authoritative store has finished loading state for the window. */
+    public void onAuthoritativeStateLoaded() {
+        mIsAuthoritativeStateLoaded = true;
+        maybeMarkShadowStoreCaughtUp();
     }
 
     /**
@@ -309,6 +316,7 @@ public class ModelTrackingOrchestrator {
     public void destroy() {
         mIncognitoModelCaughtUp = false;
         mRegularModelCaughtUp = false;
+        mIsAuthoritativeStateLoaded = false;
 
         TabModel incognitoModel = mTabModelSelector.getModel(true);
         if (mIncognitoSynchronizerManager != null
@@ -428,7 +436,11 @@ public class ModelTrackingOrchestrator {
             mRegularModelCaughtUp = true;
         }
 
-        if (mRegularModelCaughtUp && mIncognitoModelCaughtUp) {
+        maybeMarkShadowStoreCaughtUp();
+    }
+
+    private void maybeMarkShadowStoreCaughtUp() {
+        if (mRegularModelCaughtUp && mIncognitoModelCaughtUp && mIsAuthoritativeStateLoaded) {
             mMigrationManager.onShadowStoreCaughtUp();
         }
     }

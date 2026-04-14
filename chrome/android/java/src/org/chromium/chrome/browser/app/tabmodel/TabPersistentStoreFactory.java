@@ -158,7 +158,7 @@ public class TabPersistentStoreFactory {
             // the shadow store. In this case, the shadow store will delete incognito tab state
             // during migrations.
             assert isTabStorageEnabled();
-            shadowTabPersistentStore =
+            TabStateStore tabStateStore =
                     new TabStateStore(
                             selector,
                             windowTag,
@@ -170,6 +170,9 @@ public class TabPersistentStoreFactory {
                             ModelTrackingOrchestrator::new,
                             ActiveTabCache::new,
                             /* isAuthoritative= */ false);
+            buildShadowTabStateStoreCatchupTracker(
+                    authoritativeStore, tabStateStore, migrationManager);
+            shadowTabPersistentStore = tabStateStore;
         } else if (shadowStoreType == StoreType.LEGACY) {
             shadowTabPersistentStore =
                     new TabPersistentStoreImpl(
@@ -228,6 +231,21 @@ public class TabPersistentStoreFactory {
                     public void onStateLoaded() {
                         authoritativeStore.removeObserver(this);
                         manager.onShadowStoreCaughtUp();
+                    }
+                });
+    }
+
+    private static void buildShadowTabStateStoreCatchupTracker(
+            TabPersistentStore authoritativeStore,
+            TabStateStore shadowStore,
+            PersistentStoreMigrationManager manager) {
+        authoritativeStore.addObserver(
+                new TabPersistentStoreObserver() {
+                    @Override
+                    public void onStateLoaded() {
+                        authoritativeStore.removeObserver(this);
+                        manager.onShadowStoreCaughtUp();
+                        shadowStore.onAuthoritativeStateLoaded();
                     }
                 });
     }
