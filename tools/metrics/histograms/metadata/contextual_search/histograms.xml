@@ -893,14 +893,15 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
-    name="ContextualSearch.ZeroSuggestClick.IsContextual.{ContextualSearchSource}"
+    name="ContextualSearch.ZeroSuggestClickV2.IsContextual.{ContextualSearchSource}"
     enum="Boolean" expires_after="2026-10-11">
   <owner>niharm@google.com</owner>
   <owner>chrome-desktop-search@google.com</owner>
   <summary>
     Recorded when a user clicks on a suggestion in zero-suggest mode from
     {ContextualSearchSource}. Logs true if the suggestion was contextual, and
-    false otherwise.
+    false otherwise. A query that is submitted with a file uploaded and no text
+    is not considered a non-contextual zero suggest click.
   </summary>
   <token key="ContextualSearchSource" variants="ContextualSearchSource"/>
 </histogram>

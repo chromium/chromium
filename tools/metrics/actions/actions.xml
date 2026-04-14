@@ -11116,12 +11116,13 @@ should be able to be added at any place in this file.
 </action>
 
 <action
-    name="ContextualSearch.ZeroSuggestClick.{Type}.{ContextualSearchSource}">
+    name="ContextualSearch.ZeroSuggestClickV2.{Type}.{ContextualSearchSource}">
   <owner>niharm@google.com</owner>
   <owner>chrome-desktop-search@google.com</owner>
   <description>
     Recorded when a user clicks on a {Type} suggestion in the zero-suggest mode
-    from {ContextualSearchSource}.
+    from {ContextualSearchSource}. A query that is submitted with a file
+    uploaded and no text is considered a non-contextual zero suggest click.
   </description>
   <token key="Type">
     <variant name="Contextual" summary=""/>

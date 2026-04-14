@@ -1046,10 +1046,12 @@ TEST_F(ContextualSearchboxHandlerTest, OpenAutocompleteMatch_ZeroSuggestClick) {
                                     false, false, false);
 
     histogram_tester().ExpectBucketCount(
-        "ContextualSearch.ZeroSuggestClick.IsContextual.NewTabPage", false, 1);
-    EXPECT_EQ(user_action_tester.GetActionCount(
-                  "ContextualSearch.ZeroSuggestClick.NonContextual.NewTabPage"),
-              1);
+        "ContextualSearch.ZeroSuggestClickV2.IsContextual.NewTabPage", false,
+        1);
+    EXPECT_EQ(
+        user_action_tester.GetActionCount(
+            "ContextualSearch.ZeroSuggestClickV2.NonContextual.NewTabPage"),
+        1);
   }
 
   // 2. Test contextual zero-suggest click.
@@ -1079,9 +1081,9 @@ TEST_F(ContextualSearchboxHandlerTest, OpenAutocompleteMatch_ZeroSuggestClick) {
                                     false, false, false);
 
     histogram_tester().ExpectBucketCount(
-        "ContextualSearch.ZeroSuggestClick.IsContextual.NewTabPage", true, 1);
+        "ContextualSearch.ZeroSuggestClickV2.IsContextual.NewTabPage", true, 1);
     EXPECT_EQ(user_action_tester.GetActionCount(
-                  "ContextualSearch.ZeroSuggestClick.Contextual.NewTabPage"),
+                  "ContextualSearch.ZeroSuggestClickV2.Contextual.NewTabPage"),
               1);
   }
 }
