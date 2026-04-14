@@ -20,6 +20,7 @@ template("clang_plugin") {
                            [
                              "cflags",
                              "configs",
+                             "inputs",
                            ])
     if (!defined(cflags)) {
       cflags = []
@@ -128,6 +129,7 @@ clang_plugin("unsafe_buffers") {
         "-Wunsafe-buffer-usage",
         "-Wno-error=unsafe-buffer-usage",
       ]
+      inputs = [ clang_unsafe_buffers_paths ]
       plugin = "unsafe-buffers"
       plugin_arguments =
           [ rebase_path(clang_unsafe_buffers_paths, root_build_dir) ]
