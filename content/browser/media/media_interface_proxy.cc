@@ -63,8 +63,10 @@
 
 #if BUILDFLAG(IS_WIN)
 #include "content/browser/media/dcomp_surface_registry_broker.h"
+#include "content/public/browser/render_widget_host_view.h"
 #include "media/base/win/mf_feature_checks.h"
 #include "media/cdm/win/media_foundation_cdm.h"
+#include "ui/display/screen.h"
 #endif  // BUILDFLAG(IS_WIN)
 
 #if BUILDFLAG(IS_ANDROID)
@@ -203,6 +205,32 @@ class FrameInterfaceFactoryImpl : public media::mojom::FrameInterfaceFactory,
     return std::move(callback).Run(
         render_frame_host_->GetLastCommittedOrigin());
   }
+
+#if BUILDFLAG(IS_WIN)
+  // Returns the frame's screen rect in physical pixels.
+  // Used for Media Foundation GPU adapter selection.
+  void GetFrameScreenRect(GetFrameScreenRectCallback callback) override {
+    gfx::Rect frame_rect;
+
+    // Use the outermost main frame's view so that things like cross-origin
+    // iframes resolve to the top-level window, whose view has a native window
+    // suitable for DIP-to-physical-pixel conversion. The outermost main frame's
+    // view should always have a native window; a few scenarios where this could
+    // fail are during shutdown or in headless/test environments.
+    auto* main_rfh = render_frame_host_->GetOutermostMainFrame();
+    if (auto* view = main_rfh->GetView()) {
+      // GetViewBounds() returns DIP (Device Independent Pixels).
+      // Convert to physical screen pixels for Windows APIs like
+      // CreateWindowEx.
+      frame_rect = view->GetViewBounds();
+      if (auto* native_view = view->GetNativeView()) {
+        frame_rect = display::Screen::Get()->DIPToScreenRectInWindow(
+            native_view, frame_rect);
+      }
+    }
+    std::move(callback).Run(frame_rect);
+  }
+#endif  // BUILDFLAG(IS_WIN)
 
   void BindEmbedderReceiver(mojo::GenericPendingReceiver receiver) override {
     GetContentClient()->browser()->BindMediaServiceReceiver(

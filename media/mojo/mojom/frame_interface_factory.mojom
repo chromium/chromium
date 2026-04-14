@@ -10,6 +10,8 @@ import "mojo/public/mojom/base/generic_pending_receiver.mojom";
 import "url/mojom/origin.mojom";
 [EnableIf=is_win]
 import "media/mojo/mojom/dcomp_surface_registry.mojom";
+[EnableIf=is_win]
+import "ui/gfx/geometry/mojom/geometry.mojom";
 
 // Implemented by things like audio playback in the utility process to respond
 // to mute state changes (e.g. the user checks "Mute Site" or "Unmute Site" on a
@@ -45,6 +47,11 @@ interface FrameInterfaceFactory {
   // Gets the origin of the frame associated with the CDM.
   [Sync]
   GetCdmOrigin() => (url.mojom.Origin cdm_origin);
+
+  // Gets the screen rect of the frame in physical pixels.
+  // Used for Media Foundation GPU adapter selection.
+  [EnableIf=is_win]
+  GetFrameScreenRect() => (gfx.mojom.Rect frame_screen_rect);
 
   // Binds a generic media frame-bound interface. This is to allow //content
   // embedders to provide additional interfaces.

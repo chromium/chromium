@@ -79,6 +79,9 @@ class TestFrameInterfaceFactory : public mojom::FrameInterfaceFactory {
       mojo::PendingRemote<mojom::MuteStateObserver> observer) override {}
   void CreateDCOMPSurfaceRegistry(
       mojo::PendingReceiver<mojom::DCOMPSurfaceRegistry> receiver) override {}
+  void GetFrameScreenRect(GetFrameScreenRectCallback callback) override {
+    std::move(callback).Run(gfx::Rect());
+  }
 #endif  // BUILDFLAG(IS_WIN)
   void GetCdmOrigin(GetCdmOriginCallback callback) override {}
   void BindEmbedderReceiver(mojo::GenericPendingReceiver) override {}

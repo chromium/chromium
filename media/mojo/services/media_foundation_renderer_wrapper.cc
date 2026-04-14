@@ -6,6 +6,7 @@
 
 #include "base/functional/callback_helpers.h"
 #include "base/task/sequenced_task_runner.h"
+#include "media/base/media_switches.h"
 #include "media/base/win/mf_helpers.h"
 #include "media/mojo/mojom/renderer_extensions.mojom.h"
 #include "media/mojo/services/media_foundation_gpu_info_monitor.h"
@@ -76,6 +77,25 @@ void MediaFoundationRendererWrapper::Initialize(
         site_mute_observer_.BindNewPipeAndPassRemote());
   }
 
+  if (base::FeatureList::IsEnabled(kMediaFoundationMultiGpuAdapterSelection)) {
+    // Asynchronously fetch the frame's screen rect from the browser process
+    // for GPU adapter selection on multi-GPU systems.
+    frame_interfaces_->GetFrameScreenRect(
+        base::BindOnce(&MediaFoundationRendererWrapper::InitializeRenderer,
+                       weak_factory_.GetWeakPtr(), media_resource, client,
+                       std::move(init_cb)));
+    return;
+  }
+
+  InitializeRenderer(media_resource, client, std::move(init_cb), gfx::Rect());
+}
+
+void MediaFoundationRendererWrapper::InitializeRenderer(
+    MediaResource* media_resource,
+    RendererClient* client,
+    PipelineStatusCallback init_cb,
+    const gfx::Rect& target_window_rect) {
+  renderer_->SetTargetWindowRect(target_window_rect);
   renderer_->Initialize(media_resource, client, std::move(init_cb));
 }
 

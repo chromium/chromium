@@ -68,6 +68,10 @@ class MediaFoundationRendererWrapper final
   void OnMuteStateChange(bool muted) override;
 
  private:
+  void InitializeRenderer(MediaResource* media_resource,
+                          RendererClient* client,
+                          PipelineStatusCallback init_cb,
+                          const gfx::Rect& target_window_rect);
   void OnGpuLuidChange(const CHROME_LUID& adapter_luid);
   void OnReceiveDCOMPSurface(GetDCOMPSurfaceCallback callback,
                              base::win::ScopedHandle handle,

@@ -51,6 +51,8 @@ namespace {
 
 ATOM g_video_window_class = 0;
 
+constexpr int kVirtualWindowDefaultX = 0;
+constexpr int kVirtualWindowDefaultY = 0;
 constexpr int kVirtualWindowDefaultWidth = 1;
 constexpr int kVirtualWindowDefaultHeight = 1;
 
@@ -379,6 +381,40 @@ LUID GetDisplayGpuLuid(const std::wstring& display_device_name) {
   return {};
 }
 
+// Returns the GPU adapter whose output is connected to the monitor nearest
+// to hwnd. Returns a null adapter if it cannot be determined. This is used
+// for multi-GPU adapter selection so that the D3D11 device is created on the
+// adapter matching the display where the video is playing. The caller must
+// provide a valid factory.
+Microsoft::WRL::ComPtr<IDXGIAdapter> GetAdapterForWindow(
+    HWND hwnd,
+    IDXGIFactory1* factory) {
+  CHECK(hwnd);
+  CHECK(factory);
+
+  HMONITOR monitor = MonitorFromWindow(hwnd, MONITOR_DEFAULTTONEAREST);
+  if (!monitor) {
+    DVLOG(1) << __func__ << ": MonitorFromWindow failed.";
+    return nullptr;
+  }
+
+  Microsoft::WRL::ComPtr<IDXGIAdapter> adapter;
+  for (UINT i = 0; SUCCEEDED(factory->EnumAdapters(i, &adapter)); ++i) {
+    Microsoft::WRL::ComPtr<IDXGIOutput> output;
+    for (UINT j = 0; SUCCEEDED(adapter->EnumOutputs(j, &output)); ++j) {
+      DXGI_OUTPUT_DESC output_desc;
+      HRESULT hr = output->GetDesc(&output_desc);
+      CHECK_EQ(hr, S_OK);
+      if (output_desc.Monitor == monitor) {
+        return adapter;
+      }
+    }
+  }
+
+  DVLOG(1) << __func__ << ": No matching adapter found for window's monitor.";
+  return nullptr;
+}
+
 // Get the display device name for the nearest display to the specified window.
 std::wstring GetNearestDisplayDeviceNameFromWindow(HWND virtual_video_window) {
   DCHECK(virtual_video_window);
@@ -652,8 +688,8 @@ HRESULT MediaFoundationRenderer::CreateMediaEngine(
   for (media::DemuxerStream* stream : media_resource->GetAllStreams()) {
     if (stream->type() == media::DemuxerStream::VIDEO) {
       video_decoder_config = stream->video_decoder_config();
-      RETURN_IF_FAILED(InitializeDXGIDeviceManager());
       RETURN_IF_FAILED(InitializeVirtualVideoWindow());
+      RETURN_IF_FAILED(InitializeDXGIDeviceManager());
       break;
     } else if (stream->type() == media::DemuxerStream::AUDIO) {
       audio_decoder_config = stream->audio_decoder_config();
@@ -787,10 +823,49 @@ HRESULT MediaFoundationRenderer::SetSourceOnMediaEngine() {
   return S_OK;
 }
 
+// At initialization, `target_window_rect_` positions the virtual video window
+// on the correct monitor so that the D3D11 device is created on the matching
+// GPU adapter. After initialization, SetOutputRect() continuously repositions
+// the virtual video window via SetWindowPos() throughout playback. This is
+// driven by DCOMPTexture::SendOutputRect(), which combines the browser
+// window's screen position with the video element's compositor-transformed
+// rect (scrolling, fullscreen, CSS transforms, responsive layout, etc.).
+//
+// Mid-playback adapter changes (e.g. dragging to a monitor on a different GPU)
+// cannot be handled in-place: ResetDevice() on the singleton DXGI device
+// manager invalidates all open handles, MF Media Engine has no API for device
+// swaps, and the DRM context (PlayReady trust chain, OPM session, protection
+// manager) is bound to the original adapter with no public migration API. The
+// existing PIPELINE_ERROR_HARDWARE_CONTEXT_RESET -> ScheduleRestart() path
+// handles this by tearing down the pipeline and creating a fresh
+// MediaFoundationRenderer, which re-runs adapter selection with the updated
+// window position.
 HRESULT MediaFoundationRenderer::InitializeDXGIDeviceManager() {
   UINT device_reset_token;
   RETURN_IF_FAILED(
       MFLockDXGIDeviceManager(&device_reset_token, &dxgi_device_manager_));
+
+  Microsoft::WRL::ComPtr<IDXGIFactory1> factory;
+  RETURN_IF_FAILED(CreateDXGIFactory1(IID_PPV_ARGS(&factory)));
+
+  // Determine the target adapter. When the feature is enabled, use the
+  // adapter connected to the display where the virtual video window is
+  // located. When disabled, fall back to the GPU process adapter LUID.
+  LUID target_adapter_luid = {};
+  Microsoft::WRL::ComPtr<IDXGIAdapter> adapter_to_use;
+  if (base::FeatureList::IsEnabled(kMediaFoundationMultiGpuAdapterSelection) &&
+      virtual_video_window_) {
+    adapter_to_use = GetAdapterForWindow(virtual_video_window_, factory.Get());
+    if (adapter_to_use) {
+      DXGI_ADAPTER_DESC desc;
+      HRESULT hr = adapter_to_use->GetDesc(&desc);
+      CHECK_EQ(hr, S_OK);
+      target_adapter_luid = desc.AdapterLuid;
+    }
+  } else {
+    target_adapter_luid = gpu_process_adapter_luid_;
+  }
+
   // `dxgi_device_manager_` returned is a singleton object, thus all
   // MediaFoundationRenderer instances will all receive the
   // `dxgi_device_manager_` pointing to the same object. Therefore we only need
@@ -800,8 +875,52 @@ HRESULT MediaFoundationRenderer::InitializeDXGIDeviceManager() {
   // handle to error out.
   // https://learn.microsoft.com/en-us/windows/win32/api/mfobjects/nf-mfobjects-imfdxgidevicemanager-resetdevice
   DXGIDeviceScopedHandle dxgi_device_handle(dxgi_device_manager_.Get());
-  if (dxgi_device_handle.GetDevice()) {
-    return S_OK;
+  ComPtr<ID3D11Device> existing_device = dxgi_device_handle.GetDevice();
+  if (existing_device) {
+    // If we have no target adapter preference (empty LUID), keep the
+    // existing device rather than recreating it and invalidating all
+    // open device handles from other MediaFoundationRenderer instances.
+    if (!target_adapter_luid.LowPart && !target_adapter_luid.HighPart) {
+      return S_OK;
+    }
+
+    ComPtr<IDXGIDevice> dxgi_device;
+    ComPtr<IDXGIAdapter> existing_adapter;
+    DXGI_ADAPTER_DESC desc = {};
+    HRESULT hr = existing_device.As(&dxgi_device);
+    CHECK_EQ(hr, S_OK);
+    hr = dxgi_device->GetAdapter(&existing_adapter);
+    CHECK_EQ(hr, S_OK);
+    hr = existing_adapter->GetDesc(&desc);
+    CHECK_EQ(hr, S_OK);
+    if (desc.AdapterLuid.LowPart == target_adapter_luid.LowPart &&
+        desc.AdapterLuid.HighPart == target_adapter_luid.HighPart) {
+      return S_OK;
+    }
+    // The existing device is on the wrong adapter. Fall through to create
+    // a new device on the correct adapter. Note: this will invalidate all
+    // open device handles from other MediaFoundationRenderer instances.
+    DVLOG(1) << __func__
+             << ": Existing device adapter mismatch. Existing LUID={"
+             << desc.AdapterLuid.HighPart << "," << desc.AdapterLuid.LowPart
+             << "}, effective LUID={" << target_adapter_luid.HighPart << ","
+             << target_adapter_luid.LowPart << "}. Recreating device.";
+  }
+
+  // When the feature flag is off, find the adapter matching the GPU process
+  // LUID. When the flag is on, adapter_to_use is already set from the window.
+  if (!adapter_to_use &&
+      (target_adapter_luid.LowPart || target_adapter_luid.HighPart)) {
+    Microsoft::WRL::ComPtr<IDXGIAdapter> temp_adapter;
+    for (UINT i = 0; SUCCEEDED(factory->EnumAdapters(i, &temp_adapter)); i++) {
+      DXGI_ADAPTER_DESC desc;
+      RETURN_IF_FAILED(temp_adapter->GetDesc(&desc));
+      if (desc.AdapterLuid.LowPart == target_adapter_luid.LowPart &&
+          desc.AdapterLuid.HighPart == target_adapter_luid.HighPart) {
+        adapter_to_use = std::move(temp_adapter);
+        break;
+      }
+    }
   }
 
   ComPtr<ID3D11Device> d3d11_device;
@@ -812,26 +931,6 @@ HRESULT MediaFoundationRenderer::InitializeDXGIDeviceManager() {
       D3D_FEATURE_LEVEL_11_1, D3D_FEATURE_LEVEL_11_0, D3D_FEATURE_LEVEL_10_1,
       D3D_FEATURE_LEVEL_10_0, D3D_FEATURE_LEVEL_9_3,  D3D_FEATURE_LEVEL_9_2,
       D3D_FEATURE_LEVEL_9_1};
-
-  Microsoft::WRL::ComPtr<IDXGIFactory1> factory;
-  RETURN_IF_FAILED(CreateDXGIFactory1(IID_PPV_ARGS(&factory)));
-
-  Microsoft::WRL::ComPtr<IDXGIAdapter> adapter_to_use;
-  // TODO(crbug.com/40899242): Need to handle the case when Adapter LUID is
-  // specific per instance of the video playback. This will now allow all
-  // instances to use the default DXGI device manager.
-  if (gpu_process_adapter_luid_.LowPart || gpu_process_adapter_luid_.HighPart) {
-    Microsoft::WRL::ComPtr<IDXGIAdapter> temp_adapter;
-    for (UINT i = 0; SUCCEEDED(factory->EnumAdapters(i, &temp_adapter)); i++) {
-      DXGI_ADAPTER_DESC desc;
-      RETURN_IF_FAILED(temp_adapter->GetDesc(&desc));
-      if (desc.AdapterLuid.LowPart == gpu_process_adapter_luid_.LowPart &&
-          desc.AdapterLuid.HighPart == gpu_process_adapter_luid_.HighPart) {
-        adapter_to_use = std::move(temp_adapter);
-        break;
-      }
-    }
-  }
 
   HRESULT hr = D3D11CreateDevice(
       adapter_to_use.Get(),
@@ -866,21 +965,41 @@ HRESULT MediaFoundationRenderer::InitializeDXGIDeviceManager() {
   RETURN_IF_FAILED(d3d11_device.As(&multithreaded_device));
   multithreaded_device->SetMultithreadProtected(TRUE);
 
-  return dxgi_device_manager_->ResetDevice(d3d11_device.Get(),
-                                           device_reset_token);
+  hr =
+      dxgi_device_manager_->ResetDevice(d3d11_device.Get(), device_reset_token);
+  if (SUCCEEDED(hr)) {
+    // Update the stored LUID to reflect the adapter actually in use.
+    gpu_process_adapter_luid_ = target_adapter_luid;
+  }
+  return hr;
 }
 
 HRESULT MediaFoundationRenderer::InitializeVirtualVideoWindow() {
   if (!InitializeVideoWindowClass())
     return kErrorInitializeVideoWindowClass;
 
+  // Use target_window_rect_ to position the virtual video window at the
+  // correct screen location. This ensures Media Foundation selects the
+  // appropriate GPU adapter for HWDRM playback on multi-adapter systems.
+  // If target_window_rect_ is empty, fall back to (0, 0, 1, 1).
+  int x = kVirtualWindowDefaultX;
+  int y = kVirtualWindowDefaultY;
+  int width = kVirtualWindowDefaultWidth;
+  int height = kVirtualWindowDefaultHeight;
+  if (base::FeatureList::IsEnabled(kMediaFoundationMultiGpuAdapterSelection) &&
+      !target_window_rect_.IsEmpty()) {
+    x = target_window_rect_.x();
+    y = target_window_rect_.y();
+    width = target_window_rect_.width();
+    height = target_window_rect_.height();
+  }
+
   virtual_video_window_ =
       CreateWindowEx(WS_EX_NOPARENTNOTIFY | WS_EX_LAYERED | WS_EX_TRANSPARENT |
                          WS_EX_NOREDIRECTIONBITMAP,
                      reinterpret_cast<wchar_t*>(g_video_window_class), L"",
-                     WS_POPUP | WS_DISABLED | WS_CLIPSIBLINGS, 0, 0,
-                     kVirtualWindowDefaultWidth, kVirtualWindowDefaultHeight,
-                     nullptr, nullptr, nullptr, nullptr);
+                     WS_POPUP | WS_DISABLED | WS_CLIPSIBLINGS, x, y, width,
+                     height, nullptr, nullptr, nullptr, nullptr);
   if (!virtual_video_window_) {
     HRESULT hr = HRESULT_FROM_WIN32(GetLastError());
     DLOG(ERROR) << "Failed to create virtual window: " << PrintHr(hr);
@@ -1382,6 +1501,11 @@ void MediaFoundationRenderer::SetGpuProcessAdapterLuid(
   // process is restarted we need to recover our Frame Server or DComp
   // textures, otherwise we'll fail to present any video frames to the user.
   gpu_process_adapter_luid_ = gpu_process_adapter_luid;
+}
+
+void MediaFoundationRenderer::SetTargetWindowRect(
+    const gfx::Rect& target_window_rect) {
+  target_window_rect_ = target_window_rect;
 }
 
 MediaEngineNotifyImpl* MediaFoundationRenderer::GetMediaEngineNotifyForTesting()

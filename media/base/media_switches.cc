@@ -973,6 +973,13 @@ BASE_FEATURE(kProtectedMediaIdentifierIndicator,
 // This feature only affects MediaFoundation OS CDMs.
 BASE_FEATURE(kHardwareSecureDecryptionRequireServerCert,
              base::FEATURE_DISABLED_BY_DEFAULT);
+
+// Enables positioning the virtual video window and triggering Media
+// Foundation's GPU adapter selection based on the frame's screen rect.
+// This helps ensure the correct GPU adapter is used for HWDRM playback
+// on multi-GPU/multi-display systems.
+BASE_FEATURE(kMediaFoundationMultiGpuAdapterSelection,
+             base::FEATURE_ENABLED_BY_DEFAULT);
 #endif
 
 // Enables handling of hardware media keys for controlling media.
