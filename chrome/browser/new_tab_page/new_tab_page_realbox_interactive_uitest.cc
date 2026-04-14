@@ -77,6 +77,8 @@ static constexpr std::string_view kToolDeepSearch = "Deep search";
 // Files used for file upload tests.
 static constexpr std::string_view kImageFileName = "handbag.png";
 static constexpr std::string_view kPdfFileName = "download.pdf";
+// The host used by the Lens service for image uploads.
+static constexpr std::string_view kLensSearchURL = "lens.google.com";
 
 std::string GetModeSelector(omnibox::ToolMode mode) {
   return ".dropdown-item[data-mode='" +
@@ -147,6 +149,9 @@ const DeepQuery kScrim = {"ntp-app", "#scrim"};
 const DeepQuery kSearchboxDropdown = {"ntp-app", "ntp-searchbox",
                                       "cr-searchbox-dropdown"};
 const DeepQuery kNtpLogo = {"ntp-app", "#logo"};
+const DeepQuery kLensUploadDialog = {"ntp-app", "#lensUploadDialog", "#dialog"};
+const DeepQuery kLensUploadText = {"ntp-app", "#lensUploadDialog",
+                                   "#uploadText"};
 
 // Contains variables on which these tests may be parameterized. This approach
 // makes it easy to build sets of relevant tests, vs. the brute-force
@@ -290,6 +295,12 @@ class NtpRealboxUiTestBase
  public:
   NtpRealboxUiTestBase() = default;
   ~NtpRealboxUiTestBase() override = default;
+
+  void TearDownOnMainThread() override {
+    ui::SelectFileDialog::SetFactory(nullptr);
+    SearchboxInteractiveTestMixin<WebUiInteractiveTestMixin<
+        InteractiveBrowserTest>>::TearDownOnMainThread();
+  }
 
   MultiStep FocusAndInputText(
       const ui::ElementIdentifier& contents_id,
@@ -733,9 +744,7 @@ IN_PROC_BROWSER_TEST_P(NtpRealboxUploadInteractiveTest,
       WaitForSubmitEnabled(),
       ClickElement(kNtpElementId, kComposeboxSubmitButton),
       // Ensure google search occurs.
-      WaitForGoogleSearch(kNtpElementId, {{"q", "test"}}),
-      // Clean up.
-      Do([]() { ui::SelectFileDialog::SetFactory(nullptr); }));
+      WaitForGoogleSearch(kNtpElementId, {{"q", "test"}}));
 }
 
 class NtpRealboxSubmitInteractiveTest
@@ -1106,4 +1115,47 @@ IN_PROC_BROWSER_TEST_F(NtpRealboxDefaultExperienceInteractiveTest,
       ClickElement(kNtpElementId, kComposeButton),
       // Wait for the page to navigate to Google SRP.
       WaitForGoogleSearch(kNtpElementId, {{"q", "t"}, {"udm", "50"}}));
+}
+
+IN_PROC_BROWSER_TEST_F(NtpRealboxDefaultExperienceInteractiveTest,
+                       LensImageUploadOpensSRP) {
+  base::FilePath test_data_dir;
+  base::PathService::Get(chrome::DIR_TEST_DATA, &test_data_dir);
+  base::FilePath file_path = test_data_dir.AppendASCII(kImageFileName);
+
+  ui::SelectFileDialog::SetFactory(
+      std::make_unique<content::FakeSelectFileDialogFactory>(
+          std::vector<base::FilePath>{file_path}));
+
+  RunTestSequence(
+      // Open the New Tab Page (NTP).
+      AddInstrumentedTab(kNtpElementId, GURL(chrome::kChromeUINewTabURL)),
+      // Wait for the Realbox and Lens search button to render on the page.
+      WaitForElementToRender(kNtpElementId, kRealbox),
+      WaitForElementToRender(kNtpElementId, kLensSearchButton),
+      // Click on the Lens search button.
+      ClickElement(kNtpElementId, kLensSearchButton),
+      // Wait for the Lens upload dialog to become visible.
+      WaitForElementVisibilityChange(kLensUploadDialog,
+                                     /*expected_visible=*/true),
+      // Wait for the clickable "upload" text area within the dialog to render.
+      WaitForElementToRender(kNtpElementId, kLensUploadText),
+      // Simulate a user clicking the "upload" text to trigger the file picker.
+      ClickElement(kNtpElementId, kLensUploadText),
+      // Wait for the browser to navigate away from the NTP as a result of the
+      // upload.
+      WaitForWebContentsNavigation(kNtpElementId),
+      // Verify page navigation to the Lens URL.
+      CheckElement(
+          kNtpElementId,
+          [](ui::TrackedElement* el) {
+            return el->AsA<TrackedElementWebContents>()
+                ->owner()
+                ->web_contents()
+                ->GetLastCommittedURL()
+                .host();
+          },
+          // Assert that the extracted host matches the expected Lens service
+          // host.
+          std::string(kLensSearchURL)));
 }
