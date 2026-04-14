@@ -7,7 +7,6 @@ import argparse
 import glob
 import os
 import random
-import subprocess
 import xml.etree.ElementTree as ET
 from datetime import datetime, timedelta
 
@@ -21,27 +20,6 @@ def is_expired(exp, date_limit, m_limit):
     if m_limit > 0 and exp.startswith("M") and exp[1:].isdigit():
         return int(exp[1:]) < m_limit
     return False
-
-
-def count_recording_sites(name):
-    """Counts the number of recording sites for a histogram name."""
-    try:
-        # Search for the histogram name in C++, Java, and Obj-C files.
-        # Exclude metadata and out/ directories.
-        cmd = [
-            "rg", "-F", "-l", name, "--glob", "*.{cc,h,java,mm}", "--glob",
-            "!tools/metrics/histograms/metadata/*", "--glob", "!out/*"
-        ]
-        result = subprocess.run(cmd,
-                                capture_output=True,
-                                text=True,
-                                check=False)
-        if result.returncode == 0:
-            files = result.stdout.strip().split('\n')
-            return len([f for f in files if f])
-    except Exception:
-        pass
-    return 0
 
 
 def find_expired_histograms(date_limit, m_limit):
@@ -103,19 +81,9 @@ def main():
         summary = h["summary"][:150] + "..." if h["summary"] else "No summary."
         owners_str = ", ".join(h["owners"]) if h["owners"] else "No owners."
 
-        sites_count = count_recording_sites(h["name"])
-        if sites_count <= 2:
-            effort = "🟢 Easy"
-        elif sites_count <= 5:
-            effort = "🟡 Medium"
-        else:
-            effort = "🔴 Hard"
-
         print(f"File: {h['file']}\nName: {h['name']}")
         print(f"Owners: {owners_str}")
         print(f"Expiry: {h['expires_after']}")
-        print(f"Recording Sites: {sites_count}")
-        print(f"Effort Level: {effort}")
         print(f"Summary: {summary}\n---")
 
 
