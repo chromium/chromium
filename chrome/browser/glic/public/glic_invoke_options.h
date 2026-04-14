@@ -23,8 +23,18 @@ struct DefaultConversation {};
 // Always invoke into a new conversation.
 struct NewConversation {};
 
-// Use the conversation with the given ID.
-using ConversationId = std::string;
+// Use the conversation with the given ID and optionally a specific turn ID.
+struct ConversationId {
+  explicit ConversationId(std::string conversation_id);
+  ConversationId(std::string conversation_id,
+                 std::optional<std::string> turn_id);
+  ~ConversationId();
+  ConversationId(const ConversationId&);
+  ConversationId& operator=(const ConversationId&);
+
+  std::string conversation_id;
+  std::optional<std::string> turn_id;
+};
 
 // The level of in-flight navigation events allowed without canceling the
 // invocation.

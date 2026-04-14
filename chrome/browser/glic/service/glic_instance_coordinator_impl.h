@@ -204,7 +204,8 @@ class GlicInstanceCoordinatorImpl
   GlicInstanceImpl* GetInstanceImplForConversationId(
       const std::string& conversation_id);
   GlicInstanceImpl* GetOrCreateInstanceImplForConversationId(
-      const std::string& conversation_id);
+      const std::string& conversation_id,
+      const std::optional<std::string>& turn_id);
   GlicInstanceImpl* GetOrCreateGlicInstanceImplForTab(tabs::TabInterface* tab);
   GlicInstanceImpl* GetOrCreateInstanceImplForFloaty();
   GlicInstanceImpl* CreateGlicInstance(

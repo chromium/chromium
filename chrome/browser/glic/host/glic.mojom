@@ -1351,6 +1351,9 @@ struct ConversationInfo {
   // TODO(crbug.com/370820145): Replace ByteString with a more appropriate type
   // for opaque binary data once available.
   mojo_base.mojom.ByteString? client_data;
+  // Optional turn ID to open this conversation at. Empty or invalid turn IDs
+  // will result in the conversation being opened at the most recent turn.
+  string? turn_id;
 };
 
 // @generate glic_api

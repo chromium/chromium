@@ -49,7 +49,8 @@ enum class GeminiNavigationCaptureResult {
   kCIDTooLong = 3,
   kTargetUrlTooLong = 4,
   kNoTargetUrl = 5,
-  kMaxValue = kNoTargetUrl,
+  kTurnIdTooLong = 6,
+  kMaxValue = kTurnIdTooLong,
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/glic/enums.xml:GeminiNavigationCaptureResult)
 

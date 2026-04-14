@@ -141,15 +141,7 @@ class GlicKeyedService : public KeyedService,
                             tabs::TabInterface* tab,
                             GlicInvokeOptions options);
 
-  void Invoke(tabs::TabInterface* tab, GlicInvokeOptions options);
-
-  // Show the panel with the given conversation id. Used only by web continuity.
-  // Deprecated: See go/gic:invoke for full solution, this existing version will
-  // be removed in the future.
-  [[deprecated]] virtual void ShowUiWithConversationID(
-      BrowserWindowInterface* bwi,
-      mojom::InvocationSource source,
-      std::string conversation_id);
+  virtual void Invoke(tabs::TabInterface* tab, GlicInvokeOptions options);
 
   virtual void OpenFreDialogInNewTab(BrowserWindowInterface* bwi,
                                      mojom::InvocationSource source);

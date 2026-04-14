@@ -986,9 +986,11 @@ const base::FeatureParam<std::string> kGlicWebContinuityUrl{
 const base::FeatureParam<std::string> kGlicWebContinuityOriginatingHost{
     &kGlicWebContinuity, "glic-web-continuity-originating-host", ""};
 const base::FeatureParam<int> kGlicWebContinuityMaxCIDLength{
-    &kGlicWebContinuity, "glic-web-continuity-max-cid-length", 32};
+    &kGlicWebContinuity, "glic-web-continuity-max-cid-length", 18};
 const base::FeatureParam<int> kGlicWebContinuityMaxTargetUrlLength{
     &kGlicWebContinuity, "glic-web-continuity-max-target-url-length", 1024};
+const base::FeatureParam<int> kGlicWebContinuityMaxTurnIdLength{
+    &kGlicWebContinuity, "glic-web-continuity-max-turn-id-length", 32};
 
 BASE_FEATURE(kGlicUseToolbarHeightSidePanel, base::FEATURE_DISABLED_BY_DEFAULT);
 

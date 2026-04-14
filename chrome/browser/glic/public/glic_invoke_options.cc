@@ -6,6 +6,16 @@
 
 namespace glic {
 
+ConversationId::ConversationId(std::string conversation_id)
+    : conversation_id(std::move(conversation_id)) {}
+ConversationId::ConversationId(std::string conversation_id,
+                               std::optional<std::string> turn_id)
+    : conversation_id(std::move(conversation_id)),
+      turn_id(std::move(turn_id)) {}
+ConversationId::~ConversationId() = default;
+ConversationId::ConversationId(const ConversationId&) = default;
+ConversationId& ConversationId::operator=(const ConversationId&) = default;
+
 GlicInvokeOptions::GlicInvokeOptions(
     glic::mojom::InvocationSource invocation_source)
     : invocation_source(invocation_source) {}

@@ -1078,6 +1078,8 @@ export declare interface ConversationInfo {
    * lookup or opaque serialized data.
    */
   clientData?: string;
+  /** Optional turn ID to open this conversation at. */
+  turnId?: string;
 }
 
 /** Fields of interest from the system settings page. */

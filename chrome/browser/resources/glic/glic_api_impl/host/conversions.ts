@@ -310,6 +310,7 @@ export function conversationInfoToClient(
         new TextDecoder().decode(
             new Uint8Array(conversationInfo.clientData.data)) :
         undefined,
+    turnId: optionalToClient(conversationInfo.turnId),
   };
 }
 
@@ -322,6 +323,7 @@ export function conversationInfoFromClient(conversationInfo: ConversationInfo):
       data: Array.from(new TextEncoder().encode(conversationInfo.clientData)),
     } :
                                               null,
+    turnId: optionalFromClient(conversationInfo.turnId),
   };
 }
 
