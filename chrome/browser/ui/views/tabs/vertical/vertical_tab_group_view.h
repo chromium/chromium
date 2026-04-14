@@ -34,6 +34,8 @@ class VerticalTabGroupView
   METADATA_HEADER(VerticalTabGroupView, views::View)
 
  public:
+  static constexpr int kTabLeadingPadding = 10;
+
   explicit VerticalTabGroupView(TabCollectionNode* collection_node);
   VerticalTabGroupView(const VerticalTabGroupView&) = delete;
   VerticalTabGroupView& operator=(const VerticalTabGroupView&) = delete;

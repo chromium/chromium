@@ -41,6 +41,7 @@
 #include "chrome/browser/ui/views/tabs/vertical/tab_collection_node.h"
 #include "chrome/browser/ui/views/tabs/vertical/vertical_split_tab_view.h"
 #include "chrome/browser/ui/views/tabs/vertical/vertical_tab_drag_handler.h"
+#include "chrome/browser/ui/views/tabs/vertical/vertical_tab_group_view.h"
 #include "chrome/browser/ui/views/tabs/vertical/vertical_tab_strip_controller.h"
 #include "chrome/browser/ui/views/tabs/vertical/vertical_tab_strip_utils.h"
 #include "chrome/browser/ui/views/tabs/vertical/vertical_tab_strip_view.h"
@@ -82,7 +83,7 @@
 namespace {
 constexpr int kIconDesignWidth = 16;
 constexpr int kTitleMinWidth = 10;
-constexpr int kHorizontalInset = 7;
+constexpr int kHorizontalInset = 8;
 constexpr int kDefaultPadding = 4;
 constexpr int kFocusRingInset = 0.0f;
 
@@ -742,7 +743,12 @@ VerticalTabView::CalculateChildVisibilities(const int width) const {
 
   if (pinned_) {
     child_visibility_map[close_button_] = false;
-  } else if (IsCollapsedWidth(width)) {
+  } else if (
+      // When uncollapsing the tabstrip, intentionally start showing the close
+      // button on active non-hovered tabs a little bit sooner than reaching the
+      // uncollapsed min width, because otherwise the close buttons in a grouped
+      // split tab will visibly show up at different times due to rounding.
+      width < UncollapsedMinWidth() - 3) {
     child_visibility_map[close_button_] = active_ && hovered_;
   } else {
     child_visibility_map[close_button_] = active_ || hovered_;
@@ -1146,12 +1152,27 @@ bool VerticalTabView::IsDragging() const {
              *this);
 }
 
-bool VerticalTabView::IsCollapsedWidth(int width) const {
-  return width < VerticalTabStripRegionView::kCollapsedWidth;
+// static
+int VerticalTabView::UncollapsedMinWidth() {
+  // This is the width of a tab in a split that is in a tab group, while the
+  // tab strip is in the narrowest uncollapsed state.
+  return (VerticalTabStripRegionView::kUncollapsedMinWidth -
+          2 * GetLayoutConstant(
+                  LayoutConstant::kVerticalTabStripUncollapsedPadding) -
+          VerticalSplitTabView::kSplitViewGap -
+          VerticalTabGroupView::kTabLeadingPadding) /
+         2;
+}
+
+// static
+int VerticalTabView::CollapsedWidth() {
+  return VerticalTabStripRegionView::kCollapsedWidth -
+         2 * GetLayoutConstant(
+                 LayoutConstant::kVerticalTabStripCollapsedPadding);
 }
 
 bool VerticalTabView::IsInExpandOnHover(int width) const {
-  return collapsed_ && !IsCollapsedWidth(width);
+  return collapsed_ && width > CollapsedWidth();
 }
 
 const tabs::TabInterface* VerticalTabView::GetTabInterface() const {
