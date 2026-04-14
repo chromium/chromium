@@ -3279,8 +3279,12 @@ std::optional<SubmitInfo> LayerTreeHostImpl::DrawLayers(FrameData* frame) {
     devtools_instrumentation::DidDrawFrame(
         id_, frame->begin_frame_ack.frame_id.sequence_number);
   }
-  benchmark_instrumentation::IssueImplThreadRenderingStatsEvent(
-      rendering_stats_instrumentation_->TakeImplThreadRenderingStats());
+  if (!GetSettings().TreesInVizInClientProcess()) {
+    // In TreesInViz mode, content area data only get recorded in viz side.
+    // Therefore, only issue trace event in viz.
+    benchmark_instrumentation::IssueImplThreadRenderingStatsEvent(
+        rendering_stats_instrumentation_->TakeImplThreadRenderingStats());
+  }
 
   if (settings_.enable_compositing_based_throttling &&
       throttle_decider_.HasThrottlingChanged()) {
@@ -5839,6 +5843,14 @@ void LayerTreeHostImpl::SetDebugState(
   }
 
   debug_state_ = new_debug_state;
+  // For renderer process, we don't need to set it in LayerTreeHostImpl
+  // because LayyerTreeHost sets it directly.
+  // In TreesInViz mode, we also don't need to set it in renderer process
+  // because all its recordings happen in viz.
+  if (GetSettings().trees_in_viz_in_viz_process) {
+    rendering_stats_instrumentation_->set_record_rendering_stats(
+        debug_state_.RecordRenderingStats());
+  }
   UpdateTileManagerMemoryPolicy(ActualManagedMemoryPolicy());
   SetFullViewportDamage();
 }
