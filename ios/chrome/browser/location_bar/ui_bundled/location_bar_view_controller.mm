@@ -956,7 +956,7 @@ const CGFloat kShareIconBalancingHeightPadding = 1;
   // Show Top or Bottom Address Bar action.
   BOOL canShowMoveAddressBarAction = NO;
   if (IsChromeNextIaEnabled()) {
-    canShowMoveAddressBarAction = IsBottomOmniboxAvailable();
+    canShowMoveAddressBarAction = IsBottomOmniboxAvailable() && !_isNTP;
   } else {
     canShowMoveAddressBarAction =
         IsBottomOmniboxAvailable() && IsSplitToolbarMode(self);
