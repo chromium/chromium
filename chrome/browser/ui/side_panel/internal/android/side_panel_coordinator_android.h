@@ -13,6 +13,7 @@
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/android/tab_model/tab_model.h"
 #include "chrome/browser/ui/side_panel/internal/android/side_panel_tab_list_observer_android.h"
+#include "chrome/browser/ui/side_panel/side_panel_enums.h"
 #include "chrome/browser/ui/side_panel/side_panel_ui_base.h"
 #include "ui/base/unowned_user_data/scoped_unowned_user_data.h"
 
@@ -49,6 +50,7 @@ class SidePanelCoordinatorAndroid : public SidePanelUIBase {
   // Implements Java `SidePanelCoordinatorAndroid.Natives`. These methods are
   // called from Java via JNI, see `SidePanelCoordinatorAndroidImpl.java`.
   void Destroy(JNIEnv* env);
+  void NotifyCloseAnimationFinished(JNIEnv* env, int32_t panel_type_int);
 
   // Implements `SidePanelUI`:
   void ShowFrom(SidePanelEntryKey entry_key,
@@ -80,6 +82,13 @@ class SidePanelCoordinatorAndroid : public SidePanelUIBase {
 
  private:
   base::android::ScopedJavaLocalRef<jobject> java_coordinator() const;
+
+  // The current state of the Side Panel
+  SidePanelState state_ = SidePanelState::kClosed;
+
+  // Tracks the hide reason for the current close operation.
+  SidePanelEntryHideReason pending_hide_reason_ =
+      SidePanelEntryHideReason::kSidePanelClosed;
 
   // A weak reference to the Java `SidePanelCoordinatorAndroid`, which is
   // the sole owner of the C++ `SidePanelCoordinatorAndroid`.

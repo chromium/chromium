@@ -90,6 +90,12 @@ public final class SidePanelCoordinatorAndroidImpl implements SidePanelCoordinat
 
     private void notifyAnimationsFinished(@Nullable Void unused) {
         log(TAG, "notifyAnimationsFinished", mSidePanelContainerCoordinator.getPanelType());
+        if (mNativeSidePanelCoordinatorAndroid != 0) {
+            SidePanelCoordinatorAndroidImplJni.get()
+                    .notifyCloseAnimationFinished(
+                            mNativeSidePanelCoordinatorAndroid,
+                            mSidePanelContainerCoordinator.getPanelType());
+        }
     }
 
     @NativeMethods
@@ -110,5 +116,15 @@ public final class SidePanelCoordinatorAndroidImpl implements SidePanelCoordinat
          *     SidePanelCoordinatorAndroid}.
          */
         void destroy(long nativeSidePanelCoordinatorAndroid);
+
+        /**
+         * Notifies the underlying native object that animations for closing have finished.
+         *
+         * @param nativeSidePanelCoordinatorAndroid The address of the native {@code
+         *     SidePanelCoordinatorAndroid}.
+         * @param panelType SidePanelType of the current UI coordinator.
+         */
+        void notifyCloseAnimationFinished(
+                long nativeSidePanelCoordinatorAndroid, @SidePanelType int panelType);
     }
 }

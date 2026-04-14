@@ -27,6 +27,7 @@ source_set("android") {
     "//chrome/browser/tab_list",
     "//chrome/browser/ui/android/tab_model",
     "//chrome/browser/ui/browser_window",
+    "//chrome/browser/ui/side_panel",
     "//chrome/browser/ui/side_panel:side_panel_views_dependent",
     "//third_party/jni_zero",
     "//ui/base",

@@ -91,4 +91,11 @@ enum class SidePanelType {
 using SidePanelTypes = base::
     EnumSet<SidePanelType, SidePanelType::kMinValue, SidePanelType::kMaxValue>;
 
+enum class SidePanelState {
+  kClosed = 0,
+  kOpening = 1,
+  kShown = 2,
+  kClosing = 3,
+};
+
 #endif  // CHROME_BROWSER_UI_SIDE_PANEL_SIDE_PANEL_ENUMS_H_
