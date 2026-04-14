@@ -10,6 +10,9 @@
 #include "components/accessibility_annotator/core/accessibility_annotator_debug_features.h"
 #include "components/accessibility_annotator/core/accessibility_annotator_features.h"
 #include "components/accessibility_annotator/core/prefs.h"
+#include "components/account_settings/account_settings.h"
+#include "components/account_settings/account_settings_features.h"
+#include "components/account_settings/mock_account_setting_service.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/signin/public/identity_manager/account_capabilities_test_mutator.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
@@ -20,6 +23,13 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace accessibility_annotator {
+namespace {
+
+using testing::Return;
+
+MATCHER_P(AccountSettingWithName, name, "") {
+  return std::string(arg.name) == name;
+}
 
 class AccessibilityAnnotatorEnablementServiceImplTest : public testing::Test {
  public:
@@ -54,7 +64,7 @@ class AccessibilityAnnotatorEnablementServiceImplTest : public testing::Test {
 
   void CreateService(const std::string& country_code) {
     service_ = std::make_unique<AccessibilityAnnotatorEnablementServiceImpl>(
-        nullptr, identity_test_env_.identity_manager(),
+        &mock_account_settings_service_, identity_test_env_.identity_manager(),
         subscription_eligibility_service_.get(), &pref_service_,
         GeoIpCountryCode(base::ToUpperASCII(country_code)));
   }
@@ -72,6 +82,10 @@ class AccessibilityAnnotatorEnablementServiceImplTest : public testing::Test {
     subscription_eligibility_service_ = std::make_unique<
         subscription_eligibility::SubscriptionEligibilityService>(
         &pref_service_);
+
+    // Enable all by default to satisfy requirements.
+    ON_CALL(mock_account_settings_service_, GetBoolean(testing::_))
+        .WillByDefault(Return(true));
   }
 
   AccessibilityAnnotatorEnablementServiceImpl& service() { return *service_; }
@@ -82,6 +96,8 @@ class AccessibilityAnnotatorEnablementServiceImplTest : public testing::Test {
   sync_preferences::TestingPrefServiceSyncable pref_service_;
   std::unique_ptr<subscription_eligibility::SubscriptionEligibilityService>
       subscription_eligibility_service_;
+  testing::NiceMock<account_settings::MockAccountSettingService>
+      mock_account_settings_service_;
   std::unique_ptr<AccessibilityAnnotatorEnablementServiceImpl> service_;
 };
 
@@ -201,6 +217,83 @@ TEST_F(AccessibilityAnnotatorEnablementServiceImplTest,
             RemoteAnnotatorEnablementState::kDisabledNotEligible);
 }
 
+TEST_F(AccessibilityAnnotatorEnablementServiceImplTest,
+       DisabledWhenAccountSettingsServiceNotAvailable) {
+  service_ = std::make_unique<AccessibilityAnnotatorEnablementServiceImpl>(
+      nullptr, identity_test_env_.identity_manager(),
+      subscription_eligibility_service_.get(), &pref_service_,
+      GeoIpCountryCode("US"));
+
+  EXPECT_EQ(service().GetEnablementState(),
+            RemoteAnnotatorEnablementState::kDisabledNotEligible);
+}
+
+TEST_F(AccessibilityAnnotatorEnablementServiceImplTest,
+       DisabledWhenAccountOptedOutOfContext) {
+  EXPECT_CALL(mock_account_settings_service_,
+              GetBoolean(AccountSettingWithName(
+                  account_settings::kAccountSettingContext.name)))
+      .WillOnce(Return(false));
+
+  EXPECT_EQ(service().GetEnablementState(),
+            RemoteAnnotatorEnablementState::kDisabledNotEligible);
+}
+
+TEST_F(AccessibilityAnnotatorEnablementServiceImplTest,
+       DisabledWhenNoContextSourcesEnabled) {
+  EXPECT_CALL(mock_account_settings_service_,
+              GetBoolean(AccountSettingWithName(
+                  account_settings::kAccountSettingContext.name)))
+      .WillOnce(Return(true));
+  EXPECT_CALL(mock_account_settings_service_,
+              GetBoolean(AccountSettingWithName(
+                  account_settings::kAccountSettingContextWorkspace.name)))
+      .WillOnce(Return(false));
+  EXPECT_CALL(mock_account_settings_service_,
+              GetBoolean(AccountSettingWithName(
+                  account_settings::kAccountSettingContextPhotos.name)))
+      .WillOnce(Return(false));
+
+  EXPECT_EQ(service().GetEnablementState(),
+            RemoteAnnotatorEnablementState::kDisabledNotEligible);
+}
+
+TEST_F(AccessibilityAnnotatorEnablementServiceImplTest,
+       EnabledWhenAtLeastOneContextSourceEnabled) {
+  EXPECT_CALL(mock_account_settings_service_,
+              GetBoolean(AccountSettingWithName(
+                  account_settings::kAccountSettingContext.name)))
+      .WillRepeatedly(Return(true));
+  {
+    // Only Workspace enabled.
+    EXPECT_CALL(mock_account_settings_service_,
+                GetBoolean(AccountSettingWithName(
+                    account_settings::kAccountSettingContextWorkspace.name)))
+        .WillOnce(Return(true));
+    EXPECT_CALL(mock_account_settings_service_,
+                GetBoolean(AccountSettingWithName(
+                    account_settings::kAccountSettingContextPhotos.name)))
+        .Times(0);
+
+    EXPECT_EQ(service().GetEnablementState(),
+              RemoteAnnotatorEnablementState::kEnabled);
+  }
+  {
+    // Only Photos enabled.
+    EXPECT_CALL(mock_account_settings_service_,
+                GetBoolean(AccountSettingWithName(
+                    account_settings::kAccountSettingContextWorkspace.name)))
+        .WillOnce(Return(false));
+    EXPECT_CALL(mock_account_settings_service_,
+                GetBoolean(AccountSettingWithName(
+                    account_settings::kAccountSettingContextPhotos.name)))
+        .WillOnce(Return(true));
+
+    EXPECT_EQ(service().GetEnablementState(),
+              RemoteAnnotatorEnablementState::kEnabled);
+  }
+}
+
 class AccessibilityAnnotatorEnablementServiceImplGeolocationTest
     : public AccessibilityAnnotatorEnablementServiceImplTest,
       public testing::WithParamInterface<
@@ -223,4 +316,5 @@ TEST_P(AccessibilityAnnotatorEnablementServiceImplGeolocationTest,
   EXPECT_EQ(service().GetEnablementState(), std::get<1>(GetParam()));
 }
 
+}  // namespace
 }  // namespace accessibility_annotator

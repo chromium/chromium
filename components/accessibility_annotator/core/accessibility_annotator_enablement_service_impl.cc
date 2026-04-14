@@ -129,8 +129,28 @@ const base::flat_set<int32_t>& GetAnnotatorEligibleTiers() {
 
 // Checks whether all opt-in for `AccountSettingService` state are met.
 [[nodiscard]] bool SatisfiesOptInRequirements(
-    account_settings::AccountSettingService* account_settings) {
-  // TODO(crbug.com/494149753) Implement
+    account_settings::AccountSettingService* account_settings,
+    std::string* debug_message = nullptr) {
+  if (!account_settings) {
+    MaybeOutputReason(debug_message, "Account settings service not available.");
+    return false;
+  }
+
+  if (!account_settings->GetBoolean(account_settings::kAccountSettingContext)
+           .value_or(false)) {
+    MaybeOutputReason(debug_message, "Account is opted out of context");
+    return false;
+  }
+
+  if (!account_settings
+           ->GetBoolean(account_settings::kAccountSettingContextWorkspace)
+           .value_or(false) &&
+      !account_settings
+           ->GetBoolean(account_settings::kAccountSettingContextPhotos)
+           .value_or(false)) {
+    MaybeOutputReason(debug_message, "No context sources are enabled.");
+    return false;
+  }
   return true;
 }
 
