@@ -4303,9 +4303,12 @@ void RenderFrameHostImpl::InitializePolicyContainerHost(
   // Note 1: For normal document created from a navigation, the policy container
   // is computed from the NavigationRequest and assigned in
   // DidCommitNewDocument().
+  RenderFrameHostImpl* creator_rfh = nullptr;
   if (parent_) {
+    creator_rfh = parent_;
     SetPolicyContainerHost(parent_->policy_container_host()->Clone());
   } else if (GetParentOrOuterDocument()) {
+    creator_rfh = GetParentOrOuterDocument();
     // In the MPArch implementation of FencedFrame, this RenderFrameHost's
     // SiteInstance has been adjusted to match its parent. During navigations,
     // COOP, COEP and DIP are used to determine the SiteInstance. It means that
@@ -4343,14 +4346,12 @@ void RenderFrameHostImpl::InitializePolicyContainerHost(
             parent_policies.cross_origin_isolation_enabled_by_dip,
             parent_policies.cross_origin_isolation_key_override)));
   } else if (owner_->GetOpener()) {
+    creator_rfh = owner_->GetOpener()->current_frame_host();
     // During a `window.open(...)` without `noopener`, a new popup is created
     // and always starts from the initial empty document. The opener has
     // synchronous access toward its openee. So they must both share the same
     // policies.
-    SetPolicyContainerHost(owner_->GetOpener()
-                               ->current_frame_host()
-                               ->policy_container_host()
-                               ->Clone());
+    SetPolicyContainerHost(creator_rfh->policy_container_host()->Clone());
   } else {
     // In all the other cases, there is no environment to inherit policies
     // from. This is "probably" a new top-level about:blank document created by
@@ -4379,6 +4380,18 @@ void RenderFrameHostImpl::InitializePolicyContainerHost(
 
     SetPolicyContainerHost(
         base::MakeRefCounted<PolicyContainerHost>(std::move(policies)));
+  }
+
+  // For cases where policy container's connection allowlists is inherited,
+  // also inherit its creator's network_restrictions_id until it gets
+  // navigated at which point it will create its own id.
+  // e.g. iframes that stay at about:blank. This ensures any dns prefetch
+  // requests from the iframe also get subjected to the CA of the creator.
+  // Their fetch requests already get subjected because they use the creator's
+  // URLloader factory.
+  if (creator_rfh) {
+    document_associated_data_->set_network_restrictions_id(
+        creator_rfh->GetNetworkRestrictionsID());
   }
 
   // The initial empty documents sandbox flags is the union from:

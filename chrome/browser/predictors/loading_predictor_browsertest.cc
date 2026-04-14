@@ -3480,4 +3480,63 @@ IN_PROC_BROWSER_TEST_F(ConnectionAllowlistLoadingPredictorBrowserTest,
       denied_prefetch_url.GetHost(), network_anonymization_key));
 }
 
+// Verify that Connection-Allowlist policy is inherited by about:blank
+// iframes. When a parent document has Connection-Allowlist active, hints
+// injected into an about:blank iframe's contentDocument should be blocked
+// for non-allowlisted hosts.
+// Bug: crbug.com/496096539, crbug.com/496907108
+IN_PROC_BROWSER_TEST_F(ConnectionAllowlistLoadingPredictorBrowserTest,
+                       ConnectionAllowlistAboutBlankIframePolicyInheritance) {
+  const GURL main_url =
+      embedded_https_test_server().GetURL("a.test", "/connection-allowlist");
+  EXPECT_TRUE(ui_test_utils::NavigateToURL(browser(), main_url));
+
+  GURL dns_prefetch_url("https://c.test");
+
+  content::RenderFrameHost* main_frame_rfh = browser()
+                                                 ->tab_strip_model()
+                                                 ->GetActiveWebContents()
+                                                 ->GetPrimaryMainFrame();
+  EXPECT_TRUE(main_frame_rfh->GetNetworkRestrictionsID().has_value());
+
+  // Create an iframe and wait for it to load. The initial about:blank
+  // document should now correctly inherit policies and get a
+  // network_restrictions_id.
+  content::TestNavigationObserver observer(
+      browser()->tab_strip_model()->GetActiveWebContents());
+  EXPECT_TRUE(ExecJs(main_frame_rfh, R"(
+            var iframe = document.createElement('iframe');
+            document.body.appendChild(iframe);
+          )"));
+  observer.Wait();
+
+  content::RenderFrameHost* child_frame_rfh =
+      content::ChildFrameAt(main_frame_rfh, 0);
+  ASSERT_TRUE(child_frame_rfh);
+  EXPECT_TRUE(child_frame_rfh->GetNetworkRestrictionsID().has_value());
+
+  net::NetworkAnonymizationKey network_anonymization_key =
+      child_frame_rfh->GetIsolationInfoForSubresources()
+          .network_anonymization_key();
+
+  // Inject a dns-prefetch link into the iframe's contentDocument.
+  EXPECT_TRUE(ExecJs(child_frame_rfh, content::JsReplace(R"(
+                var link = document.createElement('link');
+                link.rel = 'dns-prefetch';
+                link.href = $1;
+                document.head.appendChild(link);
+          )",
+                                                         dns_prefetch_url)));
+
+  preconnect_manager_observer()->WaitUntilHostLookedUp(
+      dns_prefetch_url.GetHost(), network_anonymization_key);
+
+  EXPECT_TRUE(preconnect_manager_observer()->HasHostBeenLookedUp(
+      dns_prefetch_url.GetHost(), network_anonymization_key));
+  EXPECT_FALSE(preconnect_manager_observer()->HostFound(
+      dns_prefetch_url.GetHost(), network_anonymization_key))
+      << "DNS lookup via initial about:blank iframe contentWindow injection "
+         "should be blocked for non-allowlisted host.";
+}
+
 }  // namespace predictors

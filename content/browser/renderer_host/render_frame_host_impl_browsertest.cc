@@ -10220,9 +10220,9 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplConnectionAllowlistBrowserTest,
   EXPECT_TRUE(iframe->IsRenderFrameLive());
   std::optional<base::UnguessableToken> iframe_network_restrictions_id =
       iframe->GetNetworkRestrictionsID();
-  // We never navigated this frame, so it does not have a network restrictions
-  // ID set.
-  EXPECT_FALSE(iframe_network_restrictions_id.has_value());
+  // We never navigated this frame, so it inherits the network restrictions
+  // ID from its creator.
+  EXPECT_TRUE(iframe_network_restrictions_id.has_value());
 
   // Inject JavaScript into the iframe to fetch a cross-origin resource.
   GURL d_url = https_server()->GetURL("d.com", "/cors-ok.txt");
