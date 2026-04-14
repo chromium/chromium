@@ -481,7 +481,7 @@ void WaylandToplevelWindow::HandleToplevelConfigureWithOrigin(
   if ((GetLatestRequestedState().window_state ==
            PlatformWindowState::kMinimized &&
        !window_states.is_activated) ||
-      window_states.is_suspended) {
+      window_states.is_minimized) {
     window_state = PlatformWindowState::kMinimized;
   } else if (window_states.is_fullscreen) {
     window_state = PlatformWindowState::kFullScreen;
