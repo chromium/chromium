@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/platform_shared_memory_region.h"
@@ -44,6 +45,9 @@ namespace {
 // VEAs. Currently this value is selected as 40 instances are enough to pass
 // the CTS tests.
 constexpr size_t kMaxConcurrentClients = 8;
+
+BASE_FEATURE(kArcVideoEncodeUseRec709ColorSpace,
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 bool ForceL1T3Encode(const media::VideoEncodeAccelerator::Config& config) {
   if (media::VideoCodecProfileToVideoCodec(config.output_profile) !=
@@ -241,8 +245,12 @@ void GpuArcVideoEncodeAccelerator::Encode(
     return;
   }
   scoped_refptr<media::VideoFrame> frame;
+  const gfx::ColorSpace color_space =
+      base::FeatureList::IsEnabled(kArcVideoEncodeUseRec709ColorSpace)
+          ? gfx::ColorSpace::CreateREC709()
+          : gfx::ColorSpace();
   auto shared_image = sii_->CreateSharedImage(
-      {*si_format, visible_size_, gfx::ColorSpace(),
+      {*si_format, visible_size_, color_space,
        gpu::SHARED_IMAGE_USAGE_CPU_ONLY_READ_WRITE,
        "GpuArcVideoEncodeAccelerator"},
       gpu::kNullSurfaceHandle,
@@ -261,6 +269,10 @@ void GpuArcVideoEncodeAccelerator::Encode(
     DLOG(ERROR) << "Failed to create VideoFrame";
     client_->NotifyError(Error::kInvalidArgumentError);
     return;
+  }
+
+  if (base::FeatureList::IsEnabled(kArcVideoEncodeUseRec709ColorSpace)) {
+    frame->set_color_space(gfx::ColorSpace::CreateREC709());
   }
 
   // Make sure the Mojo callback is called on the same thread as where the Mojo
