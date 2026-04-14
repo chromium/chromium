@@ -11129,6 +11129,18 @@ be describing additional metrics about the same event.
       </history>
     </aggregation>
   </metric>
+  <metric name="ShouldViewInRoom" enum="Boolean">
+    <summary>
+      Is this an item to view in your room or house.
+    </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <enumeration/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
 </event>
 
 <event name="IOS.PageAddedToReadingList">
