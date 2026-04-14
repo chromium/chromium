@@ -612,8 +612,8 @@ class BaseAccountReconcilorTestTable : public AccountReconcilorTest {
       if (token.has_error) {
         signin::UpdatePersistentErrorOfRefreshTokenForAccount(
             identity_test_env()->identity_manager(), account_id,
-            GoogleServiceAuthError(
-                GoogleServiceAuthError::INVALID_GAIA_CREDENTIALS));
+            GoogleServiceAuthError::FromInvalidGaiaCredentialsReason(
+                GoogleServiceAuthError::InvalidGaiaCredentialsReason::UNKNOWN));
       }
     }
     VerifyCurrentTokens(tokens);
@@ -1151,12 +1151,12 @@ TEST_F(AccountReconcilorDiceTest, DiceReconcileNoop) {
 
 // Tests that the first Gaia account is re-used when possible.
 TEST_F(AccountReconcilorDiceTest, DiceReconcileReuseGaiaFirstAccount) {
-    // Add an invalid primary account so that the reconcilor is in a mode where
-    // it rebuilds cookies.
-    AccountInfo primary_account_info =
-        identity_test_env()->MakePrimaryAccountAvailable(
-            "primary@gmail.com", signin::ConsentLevel::kSignin);
-    identity_test_env()->SetInvalidRefreshTokenForPrimaryAccount();
+  // Add an invalid primary account so that the reconcilor is in a mode where
+  // it rebuilds cookies.
+  AccountInfo primary_account_info =
+      identity_test_env()->MakePrimaryAccountAvailable(
+          "primary@gmail.com", signin::ConsentLevel::kSignin);
+  identity_test_env()->SetInvalidRefreshTokenForPrimaryAccount();
 
   // Add account "other" to the Gaia cookie.
   signin::SetListAccountsResponseTwoAccounts(
@@ -2261,7 +2261,8 @@ TEST_F(AccountReconcilorMirrorTest, TokenErrorOnPrimary) {
   AccountInfo account_info = ConnectProfileToAccount(kFakeEmail);
   signin::UpdatePersistentErrorOfRefreshTokenForAccount(
       identity_test_env()->identity_manager(), account_info.account_id,
-      GoogleServiceAuthError(GoogleServiceAuthError::INVALID_GAIA_CREDENTIALS));
+      GoogleServiceAuthError::FromInvalidGaiaCredentialsReason(
+          GoogleServiceAuthError::InvalidGaiaCredentialsReason::UNKNOWN));
 
   AccountReconcilor* reconcilor = GetMockReconcilor();
   signin::SetListAccountsResponseTwoAccounts(
@@ -2726,7 +2727,8 @@ TEST_F(AccountReconcilorMirrorTest, WontMergeAccountsWithError) {
   // Mark the secondary account in auth error state.
   signin::UpdatePersistentErrorOfRefreshTokenForAccount(
       identity_test_env()->identity_manager(), account_id2,
-      GoogleServiceAuthError(GoogleServiceAuthError::INVALID_GAIA_CREDENTIALS));
+      GoogleServiceAuthError::FromInvalidGaiaCredentialsReason(
+          GoogleServiceAuthError::InvalidGaiaCredentialsReason::UNKNOWN));
 
   // The cookie starts empty.
   signin::SetListAccountsResponseNoAccounts(&test_url_loader_factory_);
@@ -2806,7 +2808,8 @@ TEST_F(AccountReconcilorMirrorTest,
   // the secondary account in auth error state.
   signin::UpdatePersistentErrorOfRefreshTokenForAccount(
       identity_test_env()->identity_manager(), account_id2,
-      GoogleServiceAuthError(GoogleServiceAuthError::INVALID_GAIA_CREDENTIALS));
+      GoogleServiceAuthError::FromInvalidGaiaCredentialsReason(
+          GoogleServiceAuthError::InvalidGaiaCredentialsReason::UNKNOWN));
   SimulateSetAccountsInCookieCompleted(
       reconcilor, params_with_both_accounts.accounts_to_send,
       signin::SetAccountsInCookieResult::kPersistentError);

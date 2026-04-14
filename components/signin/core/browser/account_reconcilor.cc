@@ -40,6 +40,7 @@
 #include "google_apis/gaia/gaia_auth_util.h"
 #include "google_apis/gaia/gaia_urls.h"
 #include "google_apis/gaia/google_service_auth_error.h"
+#include "net/base/net_errors.h"
 
 using signin::AccountReconcilorDelegate;
 using signin::ConsentLevel;
@@ -451,7 +452,7 @@ void AccountReconcilor::StartReconcile(Trigger trigger) {
         /*accounts_in_cookie_jar_info=*/signin::AccountsInCookieJarInfo(
             /*accounts_are_fresh=*/true,
             /*accounts=*/{}),
-        /*error=*/GoogleServiceAuthError(GoogleServiceAuthError::NONE));
+        /*error=*/GoogleServiceAuthError::AuthErrorNone());
     return;
   }
 
@@ -461,9 +462,8 @@ void AccountReconcilor::StartReconcile(Trigger trigger) {
   signin::AccountsInCookieJarInfo accounts_in_cookie_jar =
       identity_manager_->GetAccountsInCookieJar();
   if (accounts_in_cookie_jar.AreAccountsFresh()) {
-    OnAccountsInCookieUpdated(
-        accounts_in_cookie_jar,
-        GoogleServiceAuthError(GoogleServiceAuthError::NONE));
+    OnAccountsInCookieUpdated(accounts_in_cookie_jar,
+                              GoogleServiceAuthError::AuthErrorNone());
   }
 }
 
@@ -519,7 +519,7 @@ void AccountReconcilor::FinishReconcileWithMultiloginEndpoint(
       // Too many requests with the same parameters led to a backoff time
       // required between successive identical requests that has not yet passed.
       error_during_last_reconcile_ =
-          GoogleServiceAuthError(GoogleServiceAuthError::REQUEST_CANCELED);
+          GoogleServiceAuthError::CreateRequestCanceled();
       CalculateIfMultiloginReconcileIsDone();
       ScheduleStartReconcileIfChromeAccountsChanged();
       RecordReconcileOperation(trigger_, Operation::kThrottled);
@@ -765,12 +765,12 @@ void AccountReconcilor::OnSetAccountsInCookieCompleted(
     case signin::SetAccountsInCookieResult::kTransientError:
       if (!error_during_last_reconcile_.IsPersistentError()) {
         error_during_last_reconcile_ =
-            GoogleServiceAuthError(GoogleServiceAuthError::CONNECTION_FAILED);
+            GoogleServiceAuthError::FromConnectionError(net::ERR_FAILED);
       }
       break;
     case signin::SetAccountsInCookieResult::kPersistentError:
-      error_during_last_reconcile_ =
-          GoogleServiceAuthError(GoogleServiceAuthError::SERVICE_ERROR);
+      error_during_last_reconcile_ = GoogleServiceAuthError::FromServiceError(
+          "Failed to set accounts in cookies");
       break;
   }
   CalculateIfMultiloginReconcileIsDone();
@@ -899,8 +899,8 @@ void AccountReconcilor::HandleReconcileTimeout() {
   // |GoogleServiceAuthError::State::CONNECTION_FAILED|.
   if (error_during_last_reconcile_.state() ==
       GoogleServiceAuthError::State::NONE) {
-    error_during_last_reconcile_ = GoogleServiceAuthError(
-        GoogleServiceAuthError::State::CONNECTION_FAILED);
+    error_during_last_reconcile_ =
+        GoogleServiceAuthError::FromConnectionError(net::ERR_TIMED_OUT);
   }
 
   // Will stop reconciliation and inform |delegate_| about
