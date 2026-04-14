@@ -10,6 +10,8 @@
 #include "base/timer/timer.h"
 #include "components/enterprise/connectors/core/cloud_content_scanning/binary_upload_request.h"
 #include "components/enterprise/connectors/core/cloud_content_scanning/connector_upload_request.h"
+#include "components/enterprise/connectors/core/cloud_content_scanning/resumable_uploader_base.h"
+#include "services/network/public/mojom/url_loader_factory.mojom.h"
 
 namespace enterprise_connectors {
 
@@ -119,6 +121,45 @@ class CloudBinaryUploadServiceBase {
 
   void AssertCalledOnUIThread();
 
+  // Convenience callback method that calls both OnGetContentAnalysisResponse
+  // and OnContentUploaded. Since the multipart uploader does not send separate
+  // requests for metadata and content, it only needs one callback that finishes
+  // the request and performs the cleanup.
+  void OnUploadComplete(BinaryUploadRequest::Id request_id,
+                        bool success,
+                        int http_status,
+                        const std::string& response_data);
+
+  // Callback that runs when a content analysis verdict is received. Only used
+  // explicitly by the resumable uploader.
+  void OnGetContentAnalysisResponse(BinaryUploadRequest::Id request_id,
+                                    bool success,
+                                    int http_status,
+                                    const std::string& response_data);
+
+  // Callback to cleanup the request. Only used explicitly by the resumable
+  // uploader once the content is uploaded.
+  void OnContentUploaded(BinaryUploadRequest::Id request_id);
+
+  void OnGetResponse(BinaryUploadRequest::Id request_id,
+                     ContentAnalysisResponse response);
+
+  void MaybeFinishRequest(
+      enterprise_connectors::BinaryUploadRequest::Id request_id);
+
+  std::unique_ptr<ConnectorUploadRequest> CreateUploadRequest(
+      BinaryUploadRequest* request,
+      const BinaryUploadRequest::Id& request_id,
+      const GURL& url,
+      const std::string& metadata,
+      const std::string& histogram_suffix,
+      bool force_sync_upload,
+      net::NetworkTrafficAnnotationTag traffic_annotation,
+      BinaryUploadRequest::Data data,
+      ScanRequestUploadResult result,
+      ResumableUploadRequestBase::OnceRegisterOnGotHashCallback
+          register_on_got_hash_callback);
+
   // enterprise_connectors::BinaryUploadRequest queued for upload.
   base::circular_deque<
       std::unique_ptr<enterprise_connectors::BinaryUploadRequest>>
@@ -157,6 +198,8 @@ class CloudBinaryUploadServiceBase {
                      enterprise_connectors::ScanRequestUploadResult)>>>
       authorization_callbacks_;
 
+  scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
+
   // Data associated with a user action. Used to track metrics for a user
   // action.
   struct UserActionData {
@@ -170,6 +213,9 @@ class CloudBinaryUploadServiceBase {
   base::flat_map<std::string, UserActionData> user_action_data_;
 
   scoped_refptr<base::SequencedTaskRunner> ui_task_runner_;
+
+ private:
+  base::WeakPtrFactory<CloudBinaryUploadServiceBase> weakptr_factory_{this};
 };
 
 }  // namespace enterprise_connectors

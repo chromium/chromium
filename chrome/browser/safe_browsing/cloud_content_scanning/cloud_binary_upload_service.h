@@ -119,35 +119,6 @@ class CloudBinaryUploadService
       enterprise_connectors::BinaryUploadRequest::Id request_id,
       enterprise_connectors::OnGotHashCallback on_got_hash_callback);
 
-  // Convenience callback method that calls both OnGetContentAnalysisResponse
-  // and OnContentUploaded. Since the multipart uploader does not send separate
-  // requests for metadata and content, it only needs one callback that finishes
-  // the request and performs the cleanup.
-  void OnUploadComplete(
-      enterprise_connectors::BinaryUploadRequest::Id request_id,
-      bool success,
-      int http_status,
-      const std::string& response_data);
-
-  // Callback that runs when a content analysis verdict is received. Only used
-  // explicitly by the resumable uploader.
-  void OnGetContentAnalysisResponse(
-      enterprise_connectors::BinaryUploadRequest::Id request_id,
-      bool success,
-      int http_status,
-      const std::string& response_data);
-
-  // Callback to cleanup the request. Only used explicitly by the resumable
-  // uploader once the content is uploaded.
-  void OnContentUploaded(
-      enterprise_connectors::BinaryUploadRequest::Id request_id);
-
-  void OnGetResponse(enterprise_connectors::BinaryUploadRequest::Id request_id,
-                     enterprise_connectors::ContentAnalysisResponse response);
-
-  void MaybeFinishRequest(
-      enterprise_connectors::BinaryUploadRequest::Id request_id);
-
   void FinishRequestWithIncompleteResponse(
       enterprise_connectors::BinaryUploadRequest::Id request_id);
 
@@ -181,22 +152,6 @@ class CloudBinaryUploadService
       enterprise_connectors::BinaryUploadRequest* request,
       enterprise_connectors::ScanRequestUploadResult get_data_result,
       size_t data_size);
-
-  std::unique_ptr<enterprise_connectors::ConnectorUploadRequest>
-  CreateUploadRequest(
-      enterprise_connectors::BinaryUploadRequest* request,
-      const enterprise_connectors::BinaryUploadRequest::Id& request_id,
-      const GURL& url,
-      const std::string& metadata,
-      const std::string& histogram_suffix,
-      bool force_sync_upload,
-      net::NetworkTrafficAnnotationTag traffic_annotation,
-      enterprise_connectors::BinaryUploadRequest::Data data,
-      enterprise_connectors::ScanRequestUploadResult result,
-      enterprise_connectors::ResumableUploadRequestBase::
-          OnceRegisterOnGotHashCallback register_on_got_hash_callback);
-
-  scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
 
   const raw_ptr<Profile> profile_;
 
