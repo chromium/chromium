@@ -17,6 +17,8 @@ source_set("coordinator") {
     "//components/signin/public/identity_manager",
     "//components/translate/core/browser",
     "//ios/chrome/app/strings",
+    "//ios/chrome/browser/authentication/ui_bundled:continuation",
+    "//ios/chrome/browser/authentication/ui_bundled/signin",
     "//ios/chrome/browser/content_settings/model",
     "//ios/chrome/browser/contextual_panel/model:public",
     "//ios/chrome/browser/dom_distiller/model",

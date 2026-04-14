@@ -4,10 +4,13 @@
 
 #import "ios/chrome/browser/intelligence/page_action_menu/coordinator/page_action_menu_coordinator.h"
 
+#import "ios/chrome/browser/authentication/ui_bundled/continuation.h"
+#import "ios/chrome/browser/authentication/ui_bundled/signin/signin_coordinator.h"
 #import "ios/chrome/browser/content_settings/model/host_content_settings_map_factory.h"
 #import "ios/chrome/browser/dom_distiller/model/distiller_service_factory.h"
 #import "ios/chrome/browser/intelligence/bwg/model/bwg_tab_helper.h"
 #import "ios/chrome/browser/intelligence/bwg/model/gemini_service_factory.h"
+#import "ios/chrome/browser/intelligence/features/features.h"
 #import "ios/chrome/browser/intelligence/page_action_menu/coordinator/page_action_menu_mediator.h"
 #import "ios/chrome/browser/intelligence/page_action_menu/ui/page_action_menu_content_entry_point.h"
 #import "ios/chrome/browser/intelligence/page_action_menu/ui/page_action_menu_view_controller.h"
@@ -45,6 +48,8 @@
   // Reader mode view controller and mediator.
   ReaderModeOptionsViewController* _readerModeOptionsViewController;
   ReaderModeOptionsMediator* _readerModeOptionsMediator;
+  // The sign-in coordinator presented when a signed-out user taps Ask Gemini.
+  SigninCoordinator* _signinCoordinator;
 }
 
 #pragma mark - ChromeCoordinator
@@ -157,6 +162,8 @@
   _readerModeOptionsViewController = nil;
   [_readerModeOptionsMediator disconnect];
   _readerModeOptionsMediator = nil;
+  [_signinCoordinator stop];
+  _signinCoordinator = nil;
   [super stop];
 }
 
@@ -187,6 +194,34 @@
     }
     [strongSelf->_mediator openTranslateOptions];
   }];
+}
+
+- (void)viewControllerDidTapSignedOutGemini:
+    (PageActionMenuViewController*)viewController {
+  signin_metrics::PromoAction promoAction =
+      signin_metrics::PromoAction::PROMO_ACTION_NO_SIGNIN_PROMO;
+  _signinCoordinator = [SigninCoordinator
+      signinAndHistorySyncCoordinatorWithBaseViewController:
+          _navigationController
+                                                    browser:self.browser
+                                               contextStyle:SigninContextStyle::
+                                                                kDefault
+                                                accessPoint:
+                                                    signin_metrics::
+                                                        AccessPoint::
+                                                            kIosPageActionMenu
+                                                promoAction:promoAction
+                                        optionalHistorySync:YES
+                                            fullscreenPromo:NO
+                                       continuationProvider:
+                                           DoNothingContinuationProvider()];
+  __weak __typeof(self) weakSelf = self;
+  _signinCoordinator.signinCompletion =
+      ^(SigninCoordinator* coordinator, SigninCoordinatorResult result,
+        id<SystemIdentity> identity) {
+        [weakSelf signinDidFinishWithCoordinator:coordinator];
+      };
+  [_signinCoordinator start];
 }
 
 #pragma mark - UIAdaptivePresentationControllerDelegate
@@ -232,6 +267,14 @@
         resolveDetentValueForSheetPresentation:context];
   }
   return [_viewController resolveDetentValueForSheetPresentation:context];
+}
+
+// Cleans up the sign-in coordinator and dismisses the Page Action Menu.
+- (void)signinDidFinishWithCoordinator:(SigninCoordinator*)coordinator {
+  CHECK_EQ(_signinCoordinator, coordinator);
+  [_signinCoordinator stop];
+  _signinCoordinator = nil;
+  [self.pageActionMenuHandler dismissPageActionMenuWithCompletion:nil];
 }
 
 @end
