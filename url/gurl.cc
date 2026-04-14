@@ -20,6 +20,7 @@
 #include "base/trace_event/memory_usage_estimator.h"
 #include "base/trace_event/trace_event.h"
 #include "url/url_canon_stdstring.h"
+#include "url/url_features.h"
 #include "url/url_util.h"
 
 GURL::GURL() : is_valid_(false) {}
@@ -27,6 +28,7 @@ GURL::GURL() : is_valid_(false) {}
 GURL::GURL(const GURL& other)
     : spec_(other.spec_),
       is_valid_(other.is_valid_),
+      is_http_or_https_cache_(other.is_http_or_https_cache_),
       parsed_(other.parsed_) {
   if (other.inner_url_)
     inner_url_ = std::make_unique<GURL>(*other.inner_url_);
@@ -37,6 +39,7 @@ GURL::GURL(const GURL& other)
 GURL::GURL(GURL&& other) noexcept
     : spec_(std::move(other.spec_)),
       is_valid_(other.is_valid_),
+      is_http_or_https_cache_(other.is_http_or_https_cache_),
       parsed_(other.parsed_),
       inner_url_(std::move(other.inner_url_)) {
   other.is_valid_ = false;
@@ -78,6 +81,7 @@ void GURL::InitCanonical(T input_spec, bool trim_path_end) {
     inner_url_ =
         std::make_unique<GURL>(ParsedSpecView(), *parsed_.inner_parsed(), true);
   }
+  is_http_or_https_cache_.reset();
   // Valid URLs always have non-empty specs.
   DCHECK(!is_valid_ || !spec_.empty());
 }
@@ -120,6 +124,7 @@ void GURL::InitializeFromCanonicalSpec() {
     }
   }
 #endif
+  is_http_or_https_cache_.reset();
 }
 
 GURL::~GURL() = default;
@@ -127,6 +132,7 @@ GURL::~GURL() = default;
 GURL& GURL::operator=(const GURL& other) {
   spec_ = other.spec_;
   is_valid_ = other.is_valid_;
+  is_http_or_https_cache_ = other.is_http_or_https_cache_;
   parsed_ = other.parsed_;
 
   if (!other.inner_url_)
@@ -142,6 +148,7 @@ GURL& GURL::operator=(const GURL& other) {
 GURL& GURL::operator=(GURL&& other) noexcept {
   spec_ = std::move(other.spec_);
   is_valid_ = other.is_valid_;
+  is_http_or_https_cache_ = other.is_http_or_https_cache_;
   parsed_ = other.parsed_;
   inner_url_ = std::move(other.inner_url_);
 
@@ -343,6 +350,14 @@ bool GURL::SchemeIs(std::string_view lower_ascii_scheme) const {
 }
 
 bool GURL::SchemeIsHTTPOrHTTPS() const {
+  if (url::IsCacheGurlSchemeIsHttpOrHttpsResultEnabled()) {
+    if (is_http_or_https_cache_.has_value()) {
+      return *is_http_or_https_cache_;
+    }
+    bool result = SchemeIs(url::kHttpsScheme) || SchemeIs(url::kHttpScheme);
+    is_http_or_https_cache_ = result;
+    return result;
+  }
   return SchemeIs(url::kHttpsScheme) || SchemeIs(url::kHttpScheme);
 }
 
@@ -467,6 +482,7 @@ bool GURL::EqualsIgnoringRef(const GURL& other) const {
 void GURL::Swap(GURL* other) {
   spec_.swap(other->spec_);
   std::swap(is_valid_, other->is_valid_);
+  std::swap(is_http_or_https_cache_, other->is_http_or_https_cache_);
   std::swap(parsed_, other->parsed_);
   inner_url_.swap(other->inner_url_);
 }

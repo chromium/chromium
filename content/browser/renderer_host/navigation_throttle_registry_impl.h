@@ -138,7 +138,6 @@ class CONTENT_EXPORT NavigationThrottleRegistryImpl
       std::unique_ptr<NavigationThrottle> navigation_throttle) override;
   bool HasThrottle(const std::string& name) override;
   bool EraseThrottleForTesting(const std::string& name) override;
-  bool IsHTTPOrHTTPS() override;
 
   // Implements NavigationThrottleRegistryBase:
   void OnEventProcessed(
@@ -163,12 +162,6 @@ class CONTENT_EXPORT NavigationThrottleRegistryImpl
 
   // The throttles that are currently deferring the navigation.
   std::set<NavigationThrottle*> deferring_throttles_;
-
-  // This is used in an experiment to cache frequently used navigation
-  // attributes.
-  // TODO(https://424460302): Remove this once the experiment completes, and
-  // move the cache to GURL if it's successful.
-  std::optional<bool> is_http_or_https_;
 
   // A callback to be called when the navigation is deferred for the first time.
   base::OnceClosure first_deferral_callback_for_testing_;

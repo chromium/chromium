@@ -297,24 +297,6 @@ bool NavigationThrottleRegistryImpl::EraseThrottleForTesting(
   });
 }
 
-bool NavigationThrottleRegistryImpl::IsHTTPOrHTTPS() {
-  static bool is_cache_enabled = base::FeatureList::IsEnabled(
-      features::kNavigationThrottleRegistryAttributeCache);
-  // The cached properties are only safe to access at throttle registration
-  // time, and not safe afterward because the URL could change (e.g., due to
-  // redirects).
-  CHECK_LE(navigation_request_->state(),
-           NavigationRequest::NavigationState::WILL_START_REQUEST);
-
-  if (!is_cache_enabled) {
-    return GetNavigationHandle().GetURL().SchemeIsHTTPOrHTTPS();
-  }
-  if (!is_http_or_https_.has_value()) {
-    is_http_or_https_ = GetNavigationHandle().GetURL().SchemeIsHTTPOrHTTPS();
-  }
-  return *is_http_or_https_;
-}
-
 void NavigationThrottleRegistryImpl::OnEventProcessed(
     NavigationThrottleEvent event,
     NavigationThrottle::ThrottleCheckResult result) {

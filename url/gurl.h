@@ -486,6 +486,9 @@ class COMPONENT_EXPORT(URL) GURL {
   // invalid port number, invalid characters in the scheme, etc.).
   bool is_valid_;
 
+  // Cached result of SchemeIsHTTPOrHTTPS().
+  mutable std::optional<bool> is_http_or_https_cache_;
+
   // Identified components of the canonical spec.
   url::Parsed parsed_;
 

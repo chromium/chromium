@@ -326,7 +326,7 @@ void CreateAndAddChromeThrottlesForNavigation(
     // we are attempting to load a google property.
     if (ash::merge_session_throttling_utils::ShouldAttachNavigationThrottle() &&
         !ash::merge_session_throttling_utils::AreAllSessionMergedAlready() &&
-        registry.IsHTTPOrHTTPS()) {
+        registry.GetNavigationHandle().GetURL().SchemeIsHTTPOrHTTPS()) {
       ash::MergeSessionNavigationThrottle::CreateAndAdd(registry);
     }
   }

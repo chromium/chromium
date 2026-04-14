@@ -55,4 +55,17 @@ bool IsPreservingPercentEncodedDotInPath() {
   return base::FeatureList::IsEnabled(kPreservePercentEncodedDotInPath);
 }
 
+BASE_FEATURE(kCacheGurlSchemeIsHttpOrHttpsResult,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+bool IsCacheGurlSchemeIsHttpOrHttpsResultEnabled() {
+  if (!base::FeatureList::GetInstance()) {
+    return kCacheGurlSchemeIsHttpOrHttpsResult.default_state ==
+           base::FEATURE_ENABLED_BY_DEFAULT;
+  }
+  static const bool enabled =
+      base::FeatureList::IsEnabled(kCacheGurlSchemeIsHttpOrHttpsResult);
+  return enabled;
+}
+
 }  // namespace url

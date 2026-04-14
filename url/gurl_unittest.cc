@@ -1139,6 +1139,41 @@ TEST_F(GURLTest, SchemeIsHTTPOrHTTPS) {
   EXPECT_FALSE(GURL("ftp://bar/").SchemeIsHTTPOrHTTPS());
 }
 
+TEST_F(GURLTest, SchemeIsHTTPOrHTTPSAfterSwap) {
+  GURL url1("http://example.com");
+  GURL url2("ftp://example.com");
+
+  EXPECT_TRUE(url1.SchemeIsHTTPOrHTTPS());
+  EXPECT_FALSE(url2.SchemeIsHTTPOrHTTPS());
+
+  url1.Swap(&url2);
+
+  EXPECT_FALSE(url1.SchemeIsHTTPOrHTTPS());
+  EXPECT_TRUE(url2.SchemeIsHTTPOrHTTPS());
+}
+
+TEST_F(GURLTest, SchemeIsHTTPOrHTTPSAfterReplaceComponents) {
+  GURL url("http://example.com");
+  EXPECT_TRUE(url.SchemeIsHTTPOrHTTPS());
+
+  GURL::Replacements replacements;
+  replacements.SetSchemeStr("ftp");
+  GURL new_url = url.ReplaceComponents(replacements);
+
+  EXPECT_FALSE(new_url.SchemeIsHTTPOrHTTPS());
+}
+
+TEST_F(GURLTest, SchemeIsHTTPOrHTTPSAfterResolve) {
+  GURL url("http://example.com/foo");
+  EXPECT_TRUE(url.SchemeIsHTTPOrHTTPS());
+
+  GURL new_url = url.Resolve("bar");
+  EXPECT_TRUE(new_url.SchemeIsHTTPOrHTTPS());
+
+  GURL new_url2 = url.Resolve("ftp://elsewhere.com");
+  EXPECT_FALSE(new_url2.SchemeIsHTTPOrHTTPS());
+}
+
 TEST_F(GURLTest, SchemeIsWSOrWSS) {
   EXPECT_TRUE(GURL("WS://BAR/").SchemeIsWSOrWSS());
   EXPECT_TRUE(GURL("wss://bar/").SchemeIsWSOrWSS());

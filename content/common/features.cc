@@ -543,11 +543,6 @@ BASE_FEATURE_PARAM(size_t,
                    "count",
                    1u);
 
-// When enabled, NavigationThrottleRegistry will cache attribute query results
-// for the next same query. See https://crbug.com/424460302.
-BASE_FEATURE(kNavigationThrottleRegistryAttributeCache,
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // When enabled, NavigationThrottleRunner2 is used instead of the original
 // NavigationThrottleRunner. See https://crbug.com/422003056.
 BASE_FEATURE(kNavigationThrottleRunner2, base::FEATURE_DISABLED_BY_DEFAULT);

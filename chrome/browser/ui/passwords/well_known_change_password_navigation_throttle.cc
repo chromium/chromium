@@ -79,8 +79,9 @@ void WellKnownChangePasswordNavigationThrottle::MaybeCreateAndAdd(
   // Don't handle navigations in subframes or main frames that are in a nested
   // frame tree (e.g. fenced frames)
   if (handle.IsInOutermostMainFrame() &&
-      IsWellKnownChangePasswordUrl(handle.GetURL(),
-                                   registry.IsHTTPOrHTTPS()) &&
+      IsWellKnownChangePasswordUrl(
+          handle.GetURL(),
+          registry.GetNavigationHandle().GetURL().SchemeIsHTTPOrHTTPS()) &&
       IsTriggeredByGoogleOwnedUI(&handle)) {
     registry.AddThrottle(
         std::make_unique<WellKnownChangePasswordNavigationThrottle>(registry));
