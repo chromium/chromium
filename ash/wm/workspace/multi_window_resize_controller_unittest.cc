@@ -49,41 +49,33 @@ class MultiWindowResizeControllerTest : public AshTestBase {
       const MultiWindowResizeControllerTest&) = delete;
   ~MultiWindowResizeControllerTest() override = default;
 
-  // AshTestBase:
-  void SetUp() override {
-    AshTestBase::SetUp();
-    WorkspaceController* wc = ShellTestApi().workspace_controller();
-    WorkspaceEventHandler* event_handler =
-        WorkspaceControllerTestApi(wc).GetEventHandler();
-    resize_controller_ = event_handler->multi_window_resize_controller();
-  }
-
  protected:
-  void ShowNow() { resize_controller_->ShowNow(); }
+  void ShowNow() { resize_controller()->ShowNow(); }
 
-  bool IsShowing() { return resize_controller_->IsShowing(); }
+  bool IsShowing() { return resize_controller()->IsShowing(); }
 
   bool HasTarget(aura::Window* window) {
-    if (!resize_controller_->windows_.is_valid())
+    if (!resize_controller()->windows_.is_valid()) {
       return false;
-    if (resize_controller_->windows_.window1 == window ||
-        resize_controller_->windows_.window2 == window) {
+    }
+    if (resize_controller()->windows_.window1 == window ||
+        resize_controller()->windows_.window2 == window) {
       return true;
     }
-    return std::ranges::contains(resize_controller_->windows_.other_windows,
+    return std::ranges::contains(resize_controller()->windows_.other_windows,
                                  window);
   }
 
   bool IsOverWindows(const gfx::Point& loc) {
-    return resize_controller_->IsOverWindows(loc);
+    return resize_controller()->IsOverWindows(loc);
   }
 
   views::Widget* resize_widget() {
-    return resize_controller_->resize_widget_.get();
+    return resize_controller()->resize_widget_.get();
   }
 
   base::OneShotTimer* GetShowTimer() {
-    return &(resize_controller_->show_timer_);
+    return &(resize_controller()->show_timer_);
   }
 
   bool IsShowTimerRunning() {
@@ -93,8 +85,12 @@ class MultiWindowResizeControllerTest : public AshTestBase {
                MultiWindowResizeController::kShowDelay;
   }
 
-  raw_ptr<MultiWindowResizeController, DanglingUntriaged> resize_controller_ =
-      nullptr;
+  MultiWindowResizeController* resize_controller() {
+    WorkspaceController* wc = ShellTestApi().workspace_controller();
+    WorkspaceEventHandler* event_handler =
+        WorkspaceControllerTestApi(wc).GetEventHandler();
+    return event_handler->multi_window_resize_controller();
+  }
 };
 
 // Assertions around moving mouse over 2 windows.
@@ -120,7 +116,7 @@ TEST_F(MultiWindowResizeControllerTest, BasicTests) {
   EXPECT_FALSE(IsOverWindows(gfx::Point(200, 200)));
 
   // Have to explicitly invoke this as MouseWatcher listens for native events.
-  resize_controller_->MouseMovedOutOfHost();
+  resize_controller()->MouseMovedOutOfHost();
   EXPECT_FALSE(IsShowTimerRunning());
   EXPECT_FALSE(IsShowing());
 }
