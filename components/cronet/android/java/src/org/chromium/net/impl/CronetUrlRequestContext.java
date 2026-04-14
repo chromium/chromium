@@ -38,6 +38,7 @@ import org.chromium.net.impl.proto.RequestContextConfigOptions;
 import org.chromium.net.urlconnection.CronetHttpURLConnection;
 import org.chromium.net.urlconnection.CronetURLStreamHandlerFactory;
 
+import java.net.URI;
 import java.net.URL;
 import java.net.URLConnection;
 import java.net.URLStreamHandlerFactory;
@@ -537,11 +538,11 @@ public class CronetUrlRequestContext extends CronetEngineBase {
         synchronized (mLock) {
             checkHaveAdapter();
 
-            final boolean isAdaptiveNetworkUrl = mAdaptiveRequestContext.isAdaptiveNetworkUrl(url);
+            final URI adaptiveUri = mAdaptiveRequestContext.getUriIfAdaptive(url);
             CronetAdaptiveRequestContext.AdaptiveStreamNetworkHandles adaptiveHandles =
-                    isAdaptiveNetworkUrl
+                    adaptiveUri != null
                             ? mAdaptiveRequestContext.computeStreamNetworkHandles(
-                                    url, networkHandle)
+                                    adaptiveUri, networkHandle)
                             : null;
             CronetAdaptiveNetworkBidirectionalStream adaptiveStream =
                     adaptiveHandles != null
@@ -571,7 +572,7 @@ public class CronetUrlRequestContext extends CronetEngineBase {
                             adaptiveHandles != null
                                     ? adaptiveHandles.mPrimaryNetworkHandle
                                     : networkHandle,
-                            isAdaptiveNetworkUrl);
+                            adaptiveUri != null);
             // Just return the single stream.
             if (adaptiveStream == null) {
                 return stream;
@@ -593,7 +594,7 @@ public class CronetUrlRequestContext extends CronetEngineBase {
                             trafficStatsUidSet,
                             trafficStatsUid,
                             adaptiveHandles.mFallbackNetworkHandle,
-                            isAdaptiveNetworkUrl);
+                            adaptiveUri != null);
             adaptiveStream.setFallbackStream(fallbackStream);
             adaptiveStream.setPrimaryStream(stream);
             return adaptiveStream;

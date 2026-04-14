@@ -49,6 +49,7 @@ import org.chromium.net.QuicTestServer;
 import org.chromium.net.TestBidirectionalStreamCallback;
 
 import java.net.SocketAddress;
+import java.net.URI;
 
 /** Test functionality of BidirectionalStream interface. */
 @DoNotBatch(reason = "crbug.com/1459563")
@@ -257,15 +258,14 @@ public class AdaptiveBidirectionalStreamTest {
     public void adaptiveNetworkPaths() throws Exception {
         // We need java.util.stream.Stream to be available for these tests.
         assumeTrue(Build.VERSION.SDK_INT >= Build.VERSION_CODES.N);
-        assertThat(isAdaptiveNetworkUrl("https://localhost/echostream")).isTrue();
-        assertThat(isAdaptiveNetworkUrl("https://localhost2/echostream2")).isTrue();
-        assertThat(isAdaptiveNetworkUrl("https://localhost2:8080/echostream2")).isTrue();
-        assertThat(isAdaptiveNetworkUrl("https://localhost/otherstream")).isFalse();
-        assertThat(isAdaptiveNetworkUrl("https://localhost2/otherstream")).isFalse();
-        assertThat(isAdaptiveNetworkUrl("https://otherhost/echostream")).isFalse();
-        assertThat(isAdaptiveNetworkUrl("a QA engineer walks into a bar and orders -1 beer"))
-                .isFalse();
-        assertThat(isAdaptiveNetworkUrl("")).isFalse();
+        assertThat(getUriIfAdaptive("https://localhost/echostream")).isNotNull();
+        assertThat(getUriIfAdaptive("https://localhost2/echostream2")).isNotNull();
+        assertThat(getUriIfAdaptive("https://localhost2:8080/echostream2")).isNotNull();
+        assertThat(getUriIfAdaptive("https://localhost/otherstream")).isNull();
+        assertThat(getUriIfAdaptive("https://localhost2/otherstream")).isNull();
+        assertThat(getUriIfAdaptive("https://otherhost/echostream")).isNull();
+        assertThat(getUriIfAdaptive("a QA engineer walks into a bar and orders -1 beer")).isNull();
+        assertThat(getUriIfAdaptive("")).isNull();
     }
 
     // TODO(b/474048542): Move this to CronetAdaptiveRequestContextTest.
@@ -286,10 +286,10 @@ public class AdaptiveBidirectionalStreamTest {
     public void adaptiveNetworkPaths_empty() throws Exception {
         // We need java.util.stream.Stream to be available for these tests.
         assumeTrue(Build.VERSION.SDK_INT >= Build.VERSION_CODES.N);
-        assertThat(isAdaptiveNetworkUrl("https://localhost/echostream")).isFalse();
-        assertThat(isAdaptiveNetworkUrl("")).isFalse();
-        assertThat(isAdaptiveNetworkUrl("https://localhost/otherstream")).isFalse();
-        assertThat(isAdaptiveNetworkUrl("https://otherhost/echostream")).isFalse();
+        assertThat(getUriIfAdaptive("https://localhost/echostream")).isNull();
+        assertThat(getUriIfAdaptive("")).isNull();
+        assertThat(getUriIfAdaptive("https://localhost/otherstream")).isNull();
+        assertThat(getUriIfAdaptive("https://otherhost/echostream")).isNull();
     }
 
     @Flags(
@@ -436,14 +436,14 @@ public class AdaptiveBidirectionalStreamTest {
         assertThat(getFallbackNetworkHandle(url)).isNull();
     }
 
-    private boolean isAdaptiveNetworkUrl(String url) {
-        return mAdaptiveRequestContext.isAdaptiveNetworkUrl(url);
+    private URI getUriIfAdaptive(String url) {
+        return mAdaptiveRequestContext.getUriIfAdaptive(url);
     }
 
     private Long getFallbackNetworkHandle(String url) {
         CronetAdaptiveRequestContext.AdaptiveStreamNetworkHandles handles =
                 mAdaptiveRequestContext.computeStreamNetworkHandles(
-                        url, CronetEngineBase.DEFAULT_NETWORK_HANDLE);
+                        URI.create(url), CronetEngineBase.DEFAULT_NETWORK_HANDLE);
         if (handles == null) {
             return null;
         }

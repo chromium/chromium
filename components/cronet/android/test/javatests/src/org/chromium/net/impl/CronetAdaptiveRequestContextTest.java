@@ -33,6 +33,8 @@ import org.chromium.net.CronetTestRule.IgnoreFor;
 import org.chromium.net.CronetTestRule.StringFlag;
 import org.chromium.net.httpflags.HttpFlagsLoader;
 
+import java.net.URI;
+
 /** Test functionality of CronetAdaptiveRequestContext. */
 @DoNotBatch(reason = "HttpFlags are global")
 @RunWith(AndroidJUnit4.class)
@@ -250,6 +252,7 @@ public class CronetAdaptiveRequestContextTest {
 
     private CronetAdaptiveRequestContext.AdaptiveStreamNetworkHandles computeStreamNetworkHandles(
             String url) {
-        return mContext.computeStreamNetworkHandles(url, CronetEngineBase.DEFAULT_NETWORK_HANDLE);
+        return mContext.computeStreamNetworkHandles(
+                URI.create(url), CronetEngineBase.DEFAULT_NETWORK_HANDLE);
     }
 }

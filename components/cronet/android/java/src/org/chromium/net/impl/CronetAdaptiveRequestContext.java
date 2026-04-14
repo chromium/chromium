@@ -168,7 +168,7 @@ class CronetAdaptiveRequestContext {
      */
     @Nullable
     public AdaptiveStreamNetworkHandles computeStreamNetworkHandles(
-            String url, long streamDefaultNetworkHandle) {
+            URI uri, long streamDefaultNetworkHandle) {
         if (!mEnableAdaptiveNetwork) {
             return null;
         }
@@ -182,7 +182,7 @@ class CronetAdaptiveRequestContext {
 
             // If we have data, from previous streams, that indicates what network works for
             // this host, use that.
-            Long memorizedFallback = getMemorizedFallbackNetworkHandle(URI.create(url), networks);
+            Long memorizedFallback = getMemorizedFallbackNetworkHandle(uri, networks);
             boolean useMemorizedFallback =
                     memorizedFallback != null && memorizedFallback != streamDefaultNetworkHandle;
             mLogger.logCronetAdaptiveTrafficAlternateNetworkComputation(
@@ -252,17 +252,23 @@ class CronetAdaptiveRequestContext {
         return null;
     }
 
-    /** Returns true if the given URL is configured as an adaptive network URL. */
-    boolean isAdaptiveNetworkUrl(String url) {
+    /**
+     * Returns the parsed URI if the given URL is configured as an adaptive network URL, or null
+     * otherwise.
+     */
+    @Nullable
+    URI getUriIfAdaptive(String url) {
         try (var traceEvent =
-                ScopedSysTraceEvent.scoped("CronetAdaptiveRequestContext#isAdaptiveNetworkUrl")) {
+                ScopedSysTraceEvent.scoped("CronetAdaptiveRequestContext#getUriIfAdaptive")) {
             for (String host : mAdaptiveNetworkHosts) {
                 if (!host.isEmpty() && url.startsWith(host)) {
                     URI parsedUri = URI.create(url);
-                    return mAdaptiveNetworkPaths.contains(parsedUri.getPath());
+                    if (mAdaptiveNetworkPaths.contains(parsedUri.getPath())) {
+                        return parsedUri;
+                    }
                 }
             }
-            return false;
+            return null;
         }
     }
 
