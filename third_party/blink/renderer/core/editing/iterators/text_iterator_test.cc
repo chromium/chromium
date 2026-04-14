@@ -545,6 +545,21 @@ TEST_F(TextIteratorTest, RangeLengthWithFirstLetterMultipleLeadingSpaces) {
   EXPECT_EQ(3, TestRangeLength("<p>^   foo|</p>"));
 }
 
+TEST_F(TextIteratorTest, EmitsOriginalTextWithFirstLetter) {
+  InsertStyleElement("p::first-letter {font-size:200%;}");
+  SetBodyContent("<p id='target'>Axyz</p>");
+
+  Element* p = QuerySelector("p");
+  Node* text = p->firstChild();
+  Position start(text, 0);
+  Position end(text, 4);
+
+  TextIteratorBehavior behavior =
+      TextIteratorBehavior::Builder().SetEmitsOriginalText(true).Build();
+
+  EXPECT_EQ("[A][xyz]", IteratePartial<DOMTree>(start, end, behavior));
+}
+
 TEST_F(TextIteratorTest, TrainlingSpace) {
   // text_content = "ab\ncd"
   // offset mapping units:

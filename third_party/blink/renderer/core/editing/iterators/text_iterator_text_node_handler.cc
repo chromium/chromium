@@ -82,8 +82,11 @@ StringAndOffsetRange ComputeTextAndOffsetsForEmission(
   }
 
   if (behavior.EmitsOriginalText()) {
-    result.string = layout_text.OriginalText().substr(
-        unit.DOMStart(), unit.DOMEnd() - unit.DOMStart());
+    String text = layout_text.IsTextFragment()
+                      ? To<LayoutTextFragment>(layout_text).CompleteText()
+                      : layout_text.OriginalText();
+    result.string =
+        text.substr(unit.DOMStart(), unit.DOMEnd() - unit.DOMStart());
     result.start = 0;
     result.end = result.string.length();
   }
