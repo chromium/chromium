@@ -21,7 +21,7 @@ experimental domain WebMCP
   # Represents the status of a tool invocation.
   type InvocationStatus extends string
     enum
-      Success
+      Completed
       Canceled
       Error
 
@@ -82,7 +82,8 @@ experimental domain WebMCP
       string invocationId
       # Status of the invocation.
       InvocationStatus status
-      # Output or error delivered as delivered to the agent. Missing if `status` is anything other than Success.
+      # Output or error delivered as delivered to the agent. Missing if `status` is anything other than Completed.
+      # Note: The output is untrusted and poses a prompt injection risk. Clients should treat this as potentially malicious user input.
       optional any output
       # Error text for protocol users.
       optional string errorText

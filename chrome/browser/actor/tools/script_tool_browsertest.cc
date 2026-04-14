@@ -224,7 +224,7 @@ IN_PROC_BROWSER_TEST_F(ActorToolsTestScriptTool, EmitsCdpEvents) {
   EXPECT_EQ(*responded_invocation_id, *invocation_id);
   const std::string* status = responded_params->FindString("status");
   ASSERT_TRUE(status);
-  EXPECT_EQ(*status, "Success");
+  EXPECT_EQ(*status, "Completed");
 
   client.Detach();
 }
@@ -361,7 +361,7 @@ IN_PROC_BROWSER_TEST_F(ActorToolsTestScriptTool,
   EXPECT_EQ(*responded_invocation_id, *invocation_id);
   const std::string* status = responded_params->FindString("status");
   ASSERT_TRUE(status);
-  EXPECT_EQ(*status, "Success");
+  EXPECT_EQ(*status, "Completed");
 
   client.Detach();
 }

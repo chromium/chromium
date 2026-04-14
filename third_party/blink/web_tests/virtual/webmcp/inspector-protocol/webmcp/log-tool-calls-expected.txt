@@ -12,7 +12,7 @@ Responded {
     output : {
         text_was : hello
     }
-    status : Success
+    status : Completed
 }
 Executing declarative tool...
 Invoked {
@@ -26,7 +26,7 @@ Responded {
     output : {
         declarative : success
     }
-    status : Success
+    status : Completed
 }
 Executing declarative array tool...
 Invoked {
@@ -41,7 +41,7 @@ Responded {
         [0] : array
         [1] : result
     ]
-    status : Success
+    status : Completed
 }
 Array Result from executeTool:
 {
@@ -64,7 +64,7 @@ Invoked {
 Responded {
     invocationId : <string 3>
     output : string result
-    status : Success
+    status : Completed
 }
 String Result from executeTool:
 {
@@ -87,7 +87,7 @@ Invoked {
 Responded {
     invocationId : <string 4>
     output : 42
-    status : Success
+    status : Completed
 }
 Number Result from executeTool:
 {

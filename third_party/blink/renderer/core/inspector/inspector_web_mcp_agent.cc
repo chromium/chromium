@@ -168,9 +168,9 @@ void InspectorWebMCPAgent::WebMCPToolResponded(
     Document* document,
     const String& result,
     const base::UnguessableToken& execution_id) {
-  GetFrontend()->toolResponded(String(execution_id.ToString()),
-                               protocol::WebMCP::InvocationStatusEnum::Success,
-                               ParseJSON(result));
+  GetFrontend()->toolResponded(
+      String(execution_id.ToString()),
+      protocol::WebMCP::InvocationStatusEnum::Completed, ParseJSON(result));
 }
 
 void InspectorWebMCPAgent::WebMCPToolFailed(
