@@ -412,6 +412,12 @@ std::vector<MemorySearchResult> AutofillDataProviderImpl::FetchCreditCardData(
     AddMetadataToResult(entry, *credit_card,
                         EntryType::kCreditCardExpirationDate, field_type,
                         app_locale);
+    if (!credit_card->nickname().empty()) {
+      entry.metadata_list.emplace_back(
+          EntryType::kCreditCardNickname,
+          GetEntryTypeNameForI18n(EntryType::kCreditCardNickname),
+          std::u16string(credit_card->nickname()));
+    }
 
     entries.push_back(std::move(entry));
   }

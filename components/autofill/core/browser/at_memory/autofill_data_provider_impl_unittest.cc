@@ -260,6 +260,7 @@ TEST_F(AutofillDataProviderImplTest, RetrieveAll_CreditCardData) {
   CreditCard credit_card = test::WithCvc(test::GetCreditCard(), u"123");
   credit_card.SetExpirationYear(2030);
   credit_card.SetExpirationMonth(10);
+  credit_card.SetNickname(u"My Credit Card");
   client().GetPersonalDataManager().test_payments_data_manager().AddCreditCard(
       credit_card);
 
@@ -275,7 +276,8 @@ TEST_F(AutofillDataProviderImplTest, RetrieveAll_CreditCardData) {
                          credit_card.GetRawInfo(CREDIT_CARD_NAME_FULL)),
               IsMetadata(
                   EntryType::kCreditCardExpirationDate,
-                  credit_card.GetRawInfo(CREDIT_CARD_EXP_DATE_4_DIGIT_YEAR))))));
+                  credit_card.GetRawInfo(CREDIT_CARD_EXP_DATE_4_DIGIT_YEAR)),
+              IsMetadata(EntryType::kCreditCardNickname, u"My Credit Card")))));
 
   std::vector<MemorySearchResult> cvc_results = RetrieveAllHelper(
       retriever(),
@@ -290,7 +292,8 @@ TEST_F(AutofillDataProviderImplTest, RetrieveAll_CreditCardData) {
                          credit_card.GetRawInfo(CREDIT_CARD_NAME_FULL)),
               IsMetadata(
                   EntryType::kCreditCardExpirationDate,
-                  credit_card.GetRawInfo(CREDIT_CARD_EXP_DATE_4_DIGIT_YEAR))))));
+                  credit_card.GetRawInfo(CREDIT_CARD_EXP_DATE_4_DIGIT_YEAR)),
+              IsMetadata(EntryType::kCreditCardNickname, u"My Credit Card")))));
 
   std::vector<MemorySearchResult> name_results = RetrieveAllHelper(
       retriever(),
@@ -303,7 +306,8 @@ TEST_F(AutofillDataProviderImplTest, RetrieveAll_CreditCardData) {
           UnorderedElementsAre(
               IsMetadata(
                   EntryType::kCreditCardExpirationDate,
-                  credit_card.GetRawInfo(CREDIT_CARD_EXP_DATE_4_DIGIT_YEAR))))));
+                  credit_card.GetRawInfo(CREDIT_CARD_EXP_DATE_4_DIGIT_YEAR)),
+              IsMetadata(EntryType::kCreditCardNickname, u"My Credit Card")))));
 
   std::vector<MemorySearchResult> exp_results = RetrieveAllHelper(
       retriever(),
@@ -315,7 +319,8 @@ TEST_F(AutofillDataProviderImplTest, RetrieveAll_CreditCardData) {
           GetEntryTypeNameForI18n(EntryType::kCreditCardExpirationDate),
           UnorderedElementsAre(
               IsMetadata(EntryType::kCreditCardNameOnCard,
-                         credit_card.GetRawInfo(CREDIT_CARD_NAME_FULL))))));
+                         credit_card.GetRawInfo(CREDIT_CARD_NAME_FULL)),
+              IsMetadata(EntryType::kCreditCardNickname, u"My Credit Card")))));
 }
 
 // Tests that RetrieveAll correctly fetches and formats data from
