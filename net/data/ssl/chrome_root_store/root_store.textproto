@@ -8,7 +8,7 @@
 
 # Version # should always be incremented up whenever this (or any pem file that
 # it references) is changed.
-version_major: 30
+version_major: 31
 
 # CN=Actalis Authentication Root CA, O=Actalis S.p.A./03358520967, L=Milan, C=IT
 # https://ssltest-a.actalis.it:8443
@@ -92,11 +92,6 @@ trust_anchors {
   ev_policy_oids: "2.23.140.1.1"
 }
 
-# OU=certSIGN ROOT CA, O=certSIGN, C=RO
-trust_anchors {
-  sha256_hex: "eaa962c4fa4a6bafebe415196d351ccd888d4f53f3fa8ae6d7c466a94e6042bb"
-}
-
 # CN=CFCA EV ROOT, O=China Financial Certification Authority, C=CN
 # https://www.erenepu.com/
 trust_anchors {
@@ -105,7 +100,7 @@ trust_anchors {
 }
 
 # OU=ePKI Root Certification Authority, O=Chunghwa Telecom Co., Ltd., C=TW
-# Constraint date: Thu Jul 31 2025 23:59:59 GMT+0000
+# Constraint date: Thu, Jul 31, 2025 23:59:59 GMT+0000
 trust_anchors {
   sha256_hex: "c0a6f4dc63a24bfdcf54ef2a6a082a0a72de35803e2ff5ff527ae5d87206dfd5"
   constraints: {
@@ -152,11 +147,6 @@ trust_anchors {
   }
 }
 
-# CN=Certigna, O=Dhimyotis, C=FR
-trust_anchors {
-  sha256_hex: "e3b6a2db2ed7ce48842f7ac53241c7b71d54144bfb40c11f3f1d0b42f5eea12d"
-}
-
 # CN=DigiCert Global Root G3, OU=www.digicert.com, O=DigiCert Inc, C=US
 # https://global-root-g3.chain-demos.digicert.com/
 trust_anchors {
@@ -165,32 +155,12 @@ trust_anchors {
   trust_anchor_id: "\x83\x9a\x64\x8c\x9b\x2d\x01\x0a"  # 52580.200109.1.10
 }
 
-# CN=DigiCert Assured ID Root CA, OU=www.digicert.com, O=DigiCert Inc, C=US
-trust_anchors {
-  sha256_hex: "3e9099b5015e8f486c00bcea9d111ee721faba355a89bcf1df69561e3dc6325c"
-  trust_anchor_id: "\x83\x9a\x64\x8c\x9b\x2d\x01\x03"  # 52580.200109.1.3
-}
-
-# CN=DigiCert Global Root CA, OU=www.digicert.com, O=DigiCert Inc, C=US
-trust_anchors {
-  sha256_hex: "4348a0e9444c78cb265e058d5e8944b4d84f9662bd26db257f8934a443c70161"
-  trust_anchor_id: "\x83\x9a\x64\x8c\x9b\x2d\x01\x02"  # 52580.200109.1.2
-}
-
 # CN=DigiCert Trusted Root G4, OU=www.digicert.com, O=DigiCert Inc, C=US
 # https://trusted-root-g4.chain-demos.digicert.com/
 trust_anchors {
   sha256_hex: "552f7bdcf1a7af9e6ce672017f4f12abf77240c78e761ac203d1d9d20ac89988"
   ev_policy_oids: "2.23.140.1.1"
   trust_anchor_id: "\x83\x9a\x64\x8c\x9b\x2d\x01\x0b"  # 52580.200109.1.11
-}
-
-# CN=DigiCert High Assurance EV Root CA, OU=www.digicert.com, O=DigiCert Inc, C=US
-# https://www.digicert.com
-trust_anchors {
-  sha256_hex: "7431e5f4c3c1ce4690774f0b61e05440883ba9a01ed00ba6abd7806ed3b118cf"
-  ev_policy_oids: "2.23.140.1.1"
-  trust_anchor_id: "\x83\x9a\x64\x8c\x9b\x2d\x01\x01"  # 52580.200109.1.1
 }
 
 # CN=DigiCert Assured ID Root G2, OU=www.digicert.com, O=DigiCert Inc, C=US
@@ -342,9 +312,13 @@ trust_anchors {
 # These are the test sites, respectively:
 # https://servicios.izenpe.com
 # https://servicios1.izenpe.com
+# Constraint date: Tue, Apr 14, 2026 23:59:59 GMT+0000
 trust_anchors {
   sha256_hex: "2530cc8e98321502bad96f9b1fba1b099e2d299e0f4548bb914f363bc0d4531f"
   ev_policy_oids: "2.23.140.1.1"
+  constraints: {
+    sct_not_after_sec: 1776211199
+  }
 }
 
 # CN=SZAFIR ROOT CA2, O=Krajowa Izba Rozliczeniowa S.A., C=PL
@@ -374,7 +348,7 @@ trust_anchors {
 
 # CN=NetLock Arany (Class Gold) Főtanúsítvány, OU=Tanúsítványkiadók (Certification Services), O=NetLock Kft., L=Budapest, C=HU
 # https://valid.ev.tanusitvany.hu
-# Constraint date: Thu Jul 31 2025 23:59:59 GMT+0000
+# Constraint date: Thu, Jul 31, 2025 23:59:59 GMT+0000
 trust_anchors {
   sha256_hex: "6c61dac3a2def031506be036d2a6fe401994fbd13df9c8d466599274c446ec98"
   ev_policy_oids: "2.23.140.1.1"
@@ -397,14 +371,6 @@ trust_anchors {
 # CN=OISTE WISeKey Global Root GC CA, OU=OISTE Foundation Endorsed, O=WISeKey, C=CH
 trust_anchors {
   sha256_hex: "8560f91c3624daba9570b5fea0dbe36ff11a8323be9486854fb3f34a5571198d"
-}
-
-# CN=QuoVadis Root CA 2, O=QuoVadis Limited, C=BM
-# https://www.quovadis.bm/
-trust_anchors {
-  sha256_hex: "85a0dd7dd720adb7ff05f83d542b209dc7ff4528f7d677b18389fea5e5c49e86"
-  ev_policy_oids: "2.23.140.1.1"
-  trust_anchor_id: "\x83\x9a\x64\x8c\x9b\x2d\x01\x04"  # 52580.200109.1.4
 }
 
 # CN=QuoVadis Root CA 3 G3, O=QuoVadis Limited, C=BM
@@ -465,32 +431,6 @@ trust_anchors {
   ev_policy_oids: "2.23.140.1.1"
 }
 
-# CN=Trustwave Global ECC P384 Certification Authority, O=Trustwave Holdings, Inc., L=Chicago, ST=Illinois, C=US
-trust_anchors {
-  sha256_hex: "55903859c8c0c3ebb8759ece4e2557225ff5758bbd38ebd48276601e1bd58097"
-  ev_policy_oids: "2.23.140.1.1"
-}
-
-# CN=Trustwave Global ECC P256 Certification Authority, O=Trustwave Holdings, Inc., L=Chicago, ST=Illinois, C=US
-trust_anchors {
-  sha256_hex: "945bbc825ea554f489d1fd51a73ddf2ea624ac7019a05205225c22a78ccfa8b4"
-  ev_policy_oids: "2.23.140.1.1"
-}
-
-# CN=Trustwave Global Certification Authority, O=Trustwave Holdings, Inc., L=Chicago, ST=Illinois, C=US
-trust_anchors {
-  sha256_hex: "97552015f5ddfc3c8788c006944555408894450084f100867086bc1a2bb58dc8"
-  ev_policy_oids: "2.23.140.1.1"
-}
-
-# CN=SecureTrust CA, O=SecureTrust Corporation, C=US
-# https://www.securetrust.com
-# https://www.trustwave.com/
-trust_anchors {
-  sha256_hex: "f1c1b50ae5a20dd8030ec9f6bc24823dd367b5255759b4e71b61fce9f7375d73"
-  ev_policy_oids: "2.23.140.1.1"
-}
-
 # CN=UCA Global G2 Root, O=UniTrust, C=CN
 trust_anchors {
   sha256_hex: "9bea11c976fe014764c1be56a6f914b5a560317abd9988393382e5161aa0493c"
@@ -543,13 +483,6 @@ trust_anchors {
   }
 }
 
-# CN=SwissSign Gold CA - G2, O=SwissSign AG, C=CH
-# https://testevg2.swisssign.net/
-trust_anchors {
-  sha256_hex: "62dd0be9b9f50a163ea0f8e75c053b1eca57ea55c8688f647c6881f2c8357b95"
-  ev_policy_oids: "2.23.140.1.1"
-}
-
 # CN=TWCA Global Root CA, OU=Root CA, O=TAIWAN-CA, C=TW
 # https://evssldemo3.twca.com.tw/index.html
 # Constraint date: Mon, Sep 14, 2026 23:59:59 GMT+0000
@@ -559,11 +492,6 @@ trust_anchors {
   constraints: {
     sct_not_after_sec: 1789430399
   }
-}
-
-# CN=TeliaSonera Root CA v1, O=TeliaSonera
-trust_anchors {
-  sha256_hex: "dd6936fe21f8f077c123a1a521c12224f72255b73e03a7260693e8a24b0fa389"
 }
 
 # CN=Certum EC-384 CA, OU=Certum Certification Authority, O=Asseco Data Systems S.A., C=PL
@@ -617,7 +545,7 @@ trust_anchors {
 }
 
 # CN=HiPKI Root CA - G1, O=Chunghwa Telecom Co., Ltd., C=TW
-# Constraint date: Thu Jul 31 2025 23:59:59 GMT+0000
+# Constraint date: Thu, Jul 31, 2025 23:59:59 GMT+0000
 trust_anchors {
   sha256_hex: "f015ce3cc239bfef064be9f1d2c417e1a0264a0a94be1f0c8d121864eb6949cc"
   constraints: {
@@ -646,14 +574,18 @@ trust_anchors {
 }
 
 # CN=DigiCert TLS ECC P384 Root G5, O=DigiCert, Inc., C=US
+# https://digicert-tls-ecc-p384-root-g5.chain-demos.digicert.com/ 
 trust_anchors {
   sha256_hex: "018e13f0772532cf809bd1b17281867283fc48c6e13be9c69812854a490c1b05"
+  ev_policy_oids: "2.23.140.1.1"
   trust_anchor_id: "\x83\x9a\x64\x8c\x9b\x2d\x01\x13"  # 52580.200109.1.19
 }
 
 # CN=DigiCert TLS RSA4096 Root G5, O=DigiCert, Inc., C=US
+# https://digicert-tls-rsa4096-root-g5.chain-demos.digicert.com/
 trust_anchors {
   sha256_hex: "371a00dc0533b3721a7eeb40e8419e70799d2b0a0f2c1d80693165f7cec4ad75"
+  ev_policy_oids: "2.23.140.1.1"
   trust_anchor_id: "\x83\x9a\x64\x8c\x9b\x2d\x01\x12"  # 52580.200109.1.18
 }
 
@@ -761,7 +693,7 @@ trust_anchors {
 
 # CN=SwissSign RSA TLS Root CA 2022 - 1, O=SwissSign AG, C=CH
 # https://ev-rsa-tls-2022-1-valid-cert-demo.swisssign.com/
-# Constraint date: Mon Jun 14, 2027 23:59:59 GMT+0000
+# Constraint date: Mon, Jun 14, 2027 23:59:59 GMT+0000
 trust_anchors {
   sha256_hex: "193144f431e0fddb740717d4de926a571133884b4360d30e272913cbe660ce41"
   ev_policy_oids: "2.23.140.1.1"
@@ -771,7 +703,7 @@ trust_anchors {
 }
 
 # CN=D-TRUST BR Root CA 2 2023, O=D-Trust GmbH, C=DE
-# Constraint date: Mon Aug 30, 2027 23:59:59 GMT+0000
+# Constraint date: Mon, Aug 30, 2027 23:59:59 GMT+0000
 trust_anchors {
   sha256_hex: "0552e6f83fdf65e8fa9670e666df28a4e21340b510cbe52566f97c4fb94b2bd1"
   constraints: {
@@ -781,7 +713,7 @@ trust_anchors {
 
 # CN=D-TRUST EV Root CA 2 2023, O=D-Trust GmbH, C=DE
 # https://certdemo-ev-valid-rsa.tls.d-trust.net/
-# Constraint date: Mon Aug 30, 2027 23:59:59 GMT+0000
+# Constraint date: Mon, Aug 30, 2027 23:59:59 GMT+0000
 trust_anchors {
   sha256_hex: "8e8221b2e7d4007836a1672f0dcc299c33bc07d316f132fa1a206d587150f1ce"
   ev_policy_oids: "2.23.140.1.1"
@@ -791,7 +723,7 @@ trust_anchors {
 }
 
 # CN=Telekom Security TLS ECC Root 2020, O=Deutsche Telekom Security GmbH, C=DE
-# Constraint date: Mon Aug 30, 2027 23:59:59 GMT+0000
+# Constraint date: Mon, Aug 30, 2027 23:59:59 GMT+0000
 trust_anchors {
   sha256_hex: "578af4ded0853f4e5998db4aeaf9cbea8d945f60b620a38d1a3c13b2bc7ba8e1"
   constraints: {
@@ -800,12 +732,17 @@ trust_anchors {
 }
 
 # CN=Telekom Security TLS RSA Root 2023, O=Deutsche Telekom Security GmbH, C=DE
-# Constraint date: Mon Aug 30, 2027 23:59:59 GMT+0000
+# Constraint date: Mon, Aug 30, 2027 23:59:59 GMT+0000
 trust_anchors {
   sha256_hex: "efc65cadbb59adb6efe84da22311b35624b71b3b1ea0da8b6655174ec8978646"
   constraints: {
     sct_not_after_sec: 1819670399
   }
+}
+
+# CN=e-Szigno TLS Root CA 2023, organizationIdentifier=VATHU-23584497, O=Microsec Ltd., L=Budapest, C=HU
+trust_anchors {
+  sha256_hex: "b49141502d00663d740f2e7ec340c52800962666121a36d09cf7dd2b90384fb4"
 }
 
 # Cloudflare MTC experiment log shard3.
