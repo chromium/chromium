@@ -137,7 +137,7 @@ INSTANTIATE_TEST_SUITE_P(
         SsoDisableTestParams{
             .token_read_result = EntraProviderAndroid::TokenReadResult::kOk,
             .raw_json = "",
-            .should_disable = false},
+            .should_disable = true},
 
         SsoDisableTestParams{
             .token_read_result =
@@ -160,7 +160,24 @@ INSTANTIATE_TEST_SUITE_P(
             .token_read_result =
                 EntraProviderAndroid::TokenReadResult::kInvalidBundleFormat,
             .raw_json = kValidHeadersJSON,
-            .should_disable = false}));
+            .should_disable = true},
+
+        SsoDisableTestParams{
+            .token_read_result =
+                EntraProviderAndroid::TokenReadResult::kNoBundleResult,
+            .raw_json = kValidHeadersJSON,
+            .should_disable = true},
+
+        SsoDisableTestParams{
+            .token_read_result = EntraProviderAndroid::TokenReadResult::
+                kBundleResultContainsEntraError,
+            .raw_json = kValidHeadersJSON,
+            .should_disable = true},
+
+        SsoDisableTestParams{.token_read_result = EntraProviderAndroid::
+                                 TokenReadResult::kBundleResultContainsOsError,
+                             .raw_json = kValidHeadersJSON,
+                             .should_disable = true}));
 
 struct HeadersParsingTestParams {
   EntraProviderAndroid::TokenReadResult token_read_result;
@@ -211,6 +228,24 @@ INSTANTIATE_TEST_SUITE_P(
         HeadersParsingTestParams{
             .token_read_result =
                 EntraProviderAndroid::TokenReadResult::kInvalidBundleFormat,
+            .raw_json = "",
+            .expected_headers = {}},
+
+        HeadersParsingTestParams{
+            .token_read_result =
+                EntraProviderAndroid::TokenReadResult::kNoBundleResult,
+            .raw_json = "",
+            .expected_headers = {}},
+
+        HeadersParsingTestParams{
+            .token_read_result = EntraProviderAndroid::TokenReadResult::
+                kBundleResultContainsEntraError,
+            .raw_json = "",
+            .expected_headers = {}},
+
+        HeadersParsingTestParams{
+            .token_read_result = EntraProviderAndroid::TokenReadResult::
+                kBundleResultContainsOsError,
             .raw_json = "",
             .expected_headers = {}},
 

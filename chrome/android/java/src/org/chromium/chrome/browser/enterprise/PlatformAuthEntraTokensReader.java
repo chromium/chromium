@@ -127,7 +127,47 @@ public class PlatformAuthEntraTokensReader {
             Bundle bundleResult = future.getResult(TIMEOUT_SECONDS, TimeUnit.SECONDS);
 
             if (bundleResult == null) {
-                callback.onResult(TokenReadResult.INVALID_BUNDLE_FORMAT, "null bundle result");
+                callback.onResult(TokenReadResult.NO_BUNDLE_RESULT, "null bundle result");
+                return;
+            }
+
+            // The returned Bundle follows a specific contract defined by the Entra broker:
+            //
+            // 1. SUCCESS:
+            //    - "sso_header_result" (String): Contains a JSON array of SSO headers.
+            //      Note: If the user is not signed in, this will be an empty JSON array "[]".
+            //
+            // 2. EXPECTED BROKER ERRORS:
+            //    - "error_code" (String): Machine-readable identifier.
+            //      Possible values: "caller_not_allowed", "url_not_allowed",
+            //      "missing_sso_url", "invalid_token_type", "generation_failed".
+            //    - "error_message" (String): Human-readable description of the error.
+            //
+            // 3. STANDARD ACCOUNT MANAGER ERRORS:
+            //    - AccountManager.KEY_ERROR_CODE ("errorCode", int): OS-level error code.
+            //      If "error_code" is present will be set to ERROR_CODE_BAD_REQUEST (8).
+            //    - AccountManager.KEY_ERROR_MESSAGE ("errorMessage", String): Error description.
+            //      if "error_code" is present will be set to "error_message".
+            if (bundleResult.containsKey("error_code")) {
+                String errorCode = bundleResult.getString("error_code");
+                String errorMessage = bundleResult.getString("error_message", "Unknown error");
+                callback.onResult(
+                        TokenReadResult.BUNDLE_RESULT_CONTAINS_ENTRA_ERROR,
+                        "Returned bundle result reported " + errorCode + ": " + errorMessage);
+                return;
+            }
+
+            if (bundleResult.containsKey(AccountManager.KEY_ERROR_CODE)) {
+                int standardErrorCode = bundleResult.getInt(AccountManager.KEY_ERROR_CODE);
+                String standardErrorMsg = bundleResult.getString(AccountManager.KEY_ERROR_MESSAGE);
+
+                callback.onResult(
+                        TokenReadResult.BUNDLE_RESULT_CONTAINS_OS_ERROR,
+                        "Returned bundle result did not report errors but contains"
+                                + " AccountManager.KEY_ERROR_CODE "
+                                + standardErrorCode
+                                + ": "
+                                + standardErrorMsg);
                 return;
             }
 

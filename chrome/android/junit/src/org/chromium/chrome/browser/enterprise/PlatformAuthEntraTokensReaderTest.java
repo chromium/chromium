@@ -190,7 +190,7 @@ public class PlatformAuthEntraTokensReaderTest {
 
         runReadTokensOnBackgroundThread(TEST_URL, mCallback);
 
-        verify(mCallback).onResult(eq(TokenReadResult.INVALID_BUNDLE_FORMAT), anyString());
+        verify(mCallback).onResult(eq(TokenReadResult.NO_BUNDLE_RESULT), anyString());
     }
 
     @Test
@@ -227,6 +227,50 @@ public class PlatformAuthEntraTokensReaderTest {
         runReadTokensOnBackgroundThread(TEST_URL, mCallback);
 
         verify(mCallback).onResult(eq(TokenReadResult.UNEXPECTED_ERROR), anyString());
+    }
+
+    @Test
+    public void testReadTokens_bundleContainsCustomError() throws Exception {
+        Bundle errorBundle = new Bundle();
+        errorBundle.putString("error_code", "url_not_allowed");
+        errorBundle.putString("error_message", "The URL is outside the allowed SSO domain list");
+
+        when(mMockFuture.getResult(anyLong(), any(TimeUnit.class))).thenReturn(errorBundle);
+        when(mAccountManager.getAuthToken(
+                        any(Account.class),
+                        eq("sso_header"),
+                        any(Bundle.class),
+                        anyBoolean(),
+                        any(),
+                        any()))
+                .thenReturn(mMockFuture);
+
+        runReadTokensOnBackgroundThread(TEST_URL, mCallback);
+
+        verify(mCallback)
+                .onResult(eq(TokenReadResult.BUNDLE_RESULT_CONTAINS_ENTRA_ERROR), anyString());
+    }
+
+    @Test
+    public void testReadTokens_bundleContainsStandardError() throws Exception {
+        Bundle errorBundle = new Bundle();
+        errorBundle.putInt(AccountManager.KEY_ERROR_CODE, AccountManager.ERROR_CODE_BAD_REQUEST);
+        errorBundle.putString(AccountManager.KEY_ERROR_MESSAGE, "Bad Request");
+
+        when(mMockFuture.getResult(anyLong(), any(TimeUnit.class))).thenReturn(errorBundle);
+        when(mAccountManager.getAuthToken(
+                        any(Account.class),
+                        eq("sso_header"),
+                        any(Bundle.class),
+                        anyBoolean(),
+                        any(),
+                        any()))
+                .thenReturn(mMockFuture);
+
+        runReadTokensOnBackgroundThread(TEST_URL, mCallback);
+
+        verify(mCallback)
+                .onResult(eq(TokenReadResult.BUNDLE_RESULT_CONTAINS_OS_ERROR), anyString());
     }
 
     @Test

@@ -50,10 +50,16 @@ std::string TokenReadResultToString(TokenReadResult result_code) {
       return "kNoBrokerRegistered";
     case TokenReadResult::kSignatureVerificationFailed:
       return "kSignatureVerificationFailed";
-    case TokenReadResult::kUnexpectedPackageProvider:
-      return "kUnexpectedPackageProvider";
     case TokenReadResult::kInvalidBundleFormat:
       return "kInvalidBundleFormat";
+    case TokenReadResult::kNoBundleResult:
+      return "kNoBundleResult";
+    case TokenReadResult::kBundleResultContainsEntraError:
+      return "kBundleResultContainsError";
+    case TokenReadResult::kBundleResultContainsOsError:
+      return "kBundleResultContainsStandardError";
+    case TokenReadResult::kUnexpectedPackageProvider:
+      return "kUnexpectedPackageProvider";
   }
 }
 
@@ -62,61 +68,6 @@ void JsonParsingFailed(const std::string_view raw_json) {
       << kLogTag
       << " Getting authentication tokens failed! The JSON "
          "returned by the AccountManager is invalid.";
-}
-
-void ParseJsonHeaders(PlatformAuthProviderManager::GetDataCallback callback,
-                      std::string_view headers_raw_json) {
-  const std::optional<base::DictValue> headers_dict =
-      base::JSONReader::ReadDict(
-          headers_raw_json,
-          base::JSON_PARSE_RFC | base::JSON_ALLOW_TRAILING_COMMAS);
-  if (!headers_dict.has_value()) {
-    JsonParsingFailed(headers_raw_json);
-    std::move(callback).Run({});
-    return;
-  }
-
-  const base::DictValue* const headers_field =
-      headers_dict.value().FindDict("headers");
-  if (!headers_field) {
-    JsonParsingFailed(headers_raw_json);
-    std::move(callback).Run({});
-    return;
-  }
-
-  net::HttpRequestHeaders result_headers;
-  for (const auto [key, value] : *headers_field) {
-    if (!base::StartsWith(key, kHeaderNamePrefix,
-                          base::CompareCase::INSENSITIVE_ASCII)) {
-      continue;
-    }
-    if (!net::HttpUtil::IsValidHeaderName(key)) {
-      LOG_POLICY(WARNING, POLICY_AUTH)
-          << kLogTag << " Skipping invalid header name: " << key;
-      continue;
-    }
-
-    const std::string* const str_value = value.GetIfString();
-    if (!str_value) {
-      LOG_POLICY(WARNING, POLICY_AUTH)
-          << kLogTag << " Invalid header value type for key " << key << ": "
-          << value.DebugString();
-      continue;
-    }
-
-    if (net::HttpUtil::IsValidHeaderValue(*str_value)) {
-      result_headers.SetHeader(key, *str_value);
-    } else {
-      LOG_POLICY(WARNING, POLICY_AUTH)
-          << kLogTag << " Invalid header name: value pair " << key << ": "
-          << *str_value;
-    }
-  }
-
-  VLOG_POLICY(2, POLICY_AUTH)
-      << kLogTag << " Attaching this number of headers to the request: "
-      << result_headers.GetHeaderVector().size();
-  std::move(callback).Run(std::move(result_headers));
 }
 
 void InvokeJavaReadTokens(const std::string& url,
@@ -209,7 +160,7 @@ void EntraProviderAndroid::OnJavaHeadersRead(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker);
   switch (result_code) {
     case TokenReadResult::kNoBrokerRegistered:
-      VLOG_POLICY(2, POLICY_AUTH)
+      LOG_POLICY(WARNING, POLICY_AUTH)
           << kLogTag << " tokens fetching failed with "
           << TokenReadResultToString(result_code) << ": " << result;
       sso_disabled_ = true;
@@ -218,22 +169,78 @@ void EntraProviderAndroid::OnJavaHeadersRead(
     case TokenReadResult::kSignatureVerificationFailed:
     case TokenReadResult::kUnexpectedError:
     case TokenReadResult::kUnexpectedPackageProvider:
+    case TokenReadResult::kNoBundleResult:
+    case TokenReadResult::kBundleResultContainsEntraError:
+    case TokenReadResult::kBundleResultContainsOsError:
+    case TokenReadResult::kInvalidBundleFormat:
       LOG_POLICY(ERROR, POLICY_AUTH)
           << kLogTag << " tokens fetching failed with "
           << TokenReadResultToString(result_code) << ": " << result;
       sso_disabled_ = true;
       std::move(callback).Run({});
       return;
-    case TokenReadResult::kInvalidBundleFormat:
-      LOG_POLICY(WARNING, POLICY_AUTH)
-          << kLogTag << " tokens fetching failed with "
-          << TokenReadResultToString(result_code) << ": " << result;
-      std::move(callback).Run({});
-      return;
     case TokenReadResult::kOk:
       ParseJsonHeaders(std::move(callback), result);
       return;
   }
+}
+
+void EntraProviderAndroid::ParseJsonHeaders(
+    PlatformAuthProviderManager::GetDataCallback callback,
+    std::string_view headers_raw_json) {
+  const std::optional<base::DictValue> headers_dict =
+      base::JSONReader::ReadDict(
+          headers_raw_json,
+          base::JSON_PARSE_RFC | base::JSON_ALLOW_TRAILING_COMMAS);
+  if (!headers_dict.has_value()) {
+    JsonParsingFailed(headers_raw_json);
+    sso_disabled_ = true;
+    std::move(callback).Run({});
+    return;
+  }
+
+  const base::DictValue* const headers_field =
+      headers_dict.value().FindDict("headers");
+  if (!headers_field) {
+    JsonParsingFailed(headers_raw_json);
+    sso_disabled_ = true;
+    std::move(callback).Run({});
+    return;
+  }
+
+  net::HttpRequestHeaders result_headers;
+  for (const auto [key, value] : *headers_field) {
+    if (!base::StartsWith(key, kHeaderNamePrefix,
+                          base::CompareCase::INSENSITIVE_ASCII)) {
+      continue;
+    }
+    if (!net::HttpUtil::IsValidHeaderName(key)) {
+      LOG_POLICY(WARNING, POLICY_AUTH)
+          << kLogTag << " Skipping invalid header name: " << key;
+      continue;
+    }
+
+    const std::string* const str_value = value.GetIfString();
+    if (!str_value) {
+      LOG_POLICY(WARNING, POLICY_AUTH)
+          << kLogTag << " Invalid header value type for key " << key << ": "
+          << value.DebugString();
+      continue;
+    }
+
+    if (net::HttpUtil::IsValidHeaderValue(*str_value)) {
+      result_headers.SetHeader(key, *str_value);
+    } else {
+      LOG_POLICY(WARNING, POLICY_AUTH)
+          << kLogTag << " Invalid header name: value pair " << key << ": "
+          << *str_value;
+    }
+  }
+
+  VLOG_POLICY(2, POLICY_AUTH)
+      << kLogTag << " Attaching this number of headers to the request: "
+      << result_headers.GetHeaderVector().size();
+  std::move(callback).Run(std::move(result_headers));
 }
 
 }  // namespace enterprise_auth
