@@ -724,6 +724,34 @@ def fetch_binary_path(dependency_name, os_name='linux', arch='x86_64'):
   return binary_manager.FetchPath(dependency_name, os_name=os_name, arch=arch)
 
 
+def get_shard_map_settings(bot, benchmark_type, benchmark_name):
+  """Get information for a benchmark in shard map.
+
+  If the benchmark runs on multiple shards, returns the data from the
+  first shard found.
+
+  bot: Name of the bot config, e.g., 'mac-m3-pro-perf'.
+  benchmark_type: Type of the benchmark, as specified in the shard map.
+      Possible values are 'crossbench', 'executables' (gtest),
+      or 'benchmarks' (meaning Telemetry benchmarks for historical reasons).
+  benchmark_name: Name of the benchmark, e.g., 'speedometer3.crossbench'.
+  """
+  if not bot:
+    return None
+  shard_map_file_name = SHARD_MAPS_DIR / (bot + '_map.json')
+  try:
+    with open(shard_map_file_name) as f:
+      shard_map = json.load(f)
+  except FileNotFoundError:
+    logging.warning('Unable to open shard map %s', shard_map_file_name)
+    return None
+  for d in shard_map.values():
+    result = d.get(benchmark_type, {}).get(benchmark_name)
+    if result:
+      return result
+  return None
+
+
 class CrossbenchTest(object):
   """This class is for running Crossbench tests.
 
@@ -768,6 +796,7 @@ class CrossbenchTest(object):
 
   def __init__(self, options, isolated_out_dir):
     self.options = options
+    self._update_arguments()
     self._parse_arguments()
     self.isolated_out_dir = isolated_out_dir
     self.is_chrome = (not self.cb_options.official_browser
@@ -788,6 +817,12 @@ class CrossbenchTest(object):
       self._find_browser(browser_arg)
     self.env = self._create_env_arg()
     self.network = self._get_network_arg(options.passthrough_args)
+
+  def _update_arguments(self):
+    settings = get_shard_map_settings(self.options.bot, 'crossbench',
+                                      self.options.benchmark_display_name)
+    if settings:
+      self.options.passthrough_args += settings.get('arguments', [])
 
   def _parse_arguments(self):
     parser = argparse.ArgumentParser()
@@ -1244,6 +1279,11 @@ def parse_arguments(args):
                       action='store_true',
                       required=False,
                       default=False)
+  parser.add_argument('--bot',
+                      help='Name of bot config, e.g., mac-m3-pro-perf.',
+                      type=str,
+                      required=False,
+                      default=None)
   options, leftover_args = parser.parse_known_args(args)
   options.passthrough_args.extend(leftover_args)
   return options
