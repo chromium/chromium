@@ -210,7 +210,10 @@ public class SigninFirstRunFragment extends Fragment
     /** Implements {@link FullscreenSigninCoordinator.Delegate}. */
     @Override
     public void advanceToNextPage() {
-        assumeNonNull(getPageDelegate()).advanceToNextPage();
+        var pageDelegate = getPageDelegate();
+        if (pageDelegate != null) {
+            pageDelegate.advanceToNextPage();
+        }
     }
 
     /** Implements {@link FullscreenSigninCoordinator.Delegate}. */
