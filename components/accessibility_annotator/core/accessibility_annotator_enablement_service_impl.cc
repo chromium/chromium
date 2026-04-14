@@ -208,6 +208,14 @@ AccessibilityAnnotatorEnablementServiceImpl::
     subscription_eligibility_observer_.Observe(
         subscription_eligibility_service_);
   }
+  if (pref_service_) {
+    pref_registrar_.Init(pref_service_);
+    pref_registrar_.Add(
+        prefs::kShouldShowRemoteAnnotatorFirstRunInfo,
+        base::BindRepeating(
+            &AccessibilityAnnotatorEnablementServiceImpl::UpdateEnablementState,
+            base::Unretained(this)));
+  }
   UpdateEnablementState();
 }
 

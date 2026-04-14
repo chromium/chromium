@@ -185,8 +185,6 @@ TEST_F(AccessibilityAnnotatorEnablementServiceImplTest,
   pref_service_.SetBoolean(
       accessibility_annotator::prefs::kShouldShowRemoteAnnotatorFirstRunInfo,
       true);
-  // TODO(b/494149753): Remove after observing perf changes.
-  test_api(&service()).RecomputeEnablementState();
   EXPECT_EQ(service().GetEnablementState(),
             RemoteAnnotatorEnablementState::kDisabledPendingInfo);
 }
@@ -331,8 +329,6 @@ TEST_F(AccessibilityAnnotatorEnablementServiceImplTest,
   pref_service_.SetBoolean(
       accessibility_annotator::prefs::kShouldShowRemoteAnnotatorFirstRunInfo,
       true);
-  // TODO(b/494149753): Remove after observing perf changes.
-  test_api(&service()).RecomputeEnablementState();
 
   // Trigger a change back to kEnabled.
   EXPECT_CALL(observer, OnEnablementStateChanged(
@@ -340,7 +336,6 @@ TEST_F(AccessibilityAnnotatorEnablementServiceImplTest,
   pref_service_.SetBoolean(
       accessibility_annotator::prefs::kShouldShowRemoteAnnotatorFirstRunInfo,
       false);
-  test_api(&service()).RecomputeEnablementState();
 
   service().RemoveObserver(&observer);
 }

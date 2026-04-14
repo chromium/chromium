@@ -11,6 +11,7 @@
 #include "base/scoped_observation.h"
 #include "components/accessibility_annotator/core/accessibility_annotator_enablement_service.h"
 #include "components/accessibility_annotator/core/country_type.h"
+#include "components/prefs/pref_change_registrar.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/subscription_eligibility/subscription_eligibility_service.h"
 
@@ -80,6 +81,7 @@ class AccessibilityAnnotatorEnablementServiceImpl
       subscription_eligibility::SubscriptionEligibilityService,
       subscription_eligibility::SubscriptionEligibilityService::Observer>
       subscription_eligibility_observer_{this};
+  PrefChangeRegistrar pref_registrar_;
   // Cached last enablement state.
   RemoteAnnotatorEnablementState enablement_state_ =
       RemoteAnnotatorEnablementState::kDisabledNotEligible;
