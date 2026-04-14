@@ -321,6 +321,7 @@ public class LayoutManagerTest implements MockTabModelDelegate {
         initializeLayoutManagerPhone(1, 0);
     }
 
+    // TODO(crbug.com/493270994): Run on more platforms after all swipes are properly handled.
     @Test
     @SmallTest
     @Restriction({DeviceFormFactor.PHONE, RESTRICTION_TYPE_NON_LOW_END_DEVICE})
@@ -333,6 +334,7 @@ public class LayoutManagerTest implements MockTabModelDelegate {
         runToolbarSideSwipeTestOnCurrentModel(ScrollDirection.RIGHT, 0);
     }
 
+    // TODO(crbug.com/493270994): Run on more platforms after all swipes are properly handled.
     @Test
     @SmallTest
     @Restriction({DeviceFormFactor.PHONE, RESTRICTION_TYPE_NON_LOW_END_DEVICE})
@@ -345,6 +347,7 @@ public class LayoutManagerTest implements MockTabModelDelegate {
         runToolbarSideSwipeTestOnCurrentModel(ScrollDirection.RIGHT, 0);
     }
 
+    // TODO(crbug.com/493270994): Run on more platforms after all swipes are properly handled.
     @Test
     @SmallTest
     @Restriction({DeviceFormFactor.PHONE, RESTRICTION_TYPE_NON_LOW_END_DEVICE})
@@ -356,6 +359,7 @@ public class LayoutManagerTest implements MockTabModelDelegate {
         runToolbarSideSwipeTestOnCurrentModel(ScrollDirection.LEFT, 1);
     }
 
+    // TODO(crbug.com/493270994): Run on more platforms after all swipes are properly handled.
     @Test
     @SmallTest
     @Restriction({DeviceFormFactor.PHONE, RESTRICTION_TYPE_NON_LOW_END_DEVICE})
@@ -367,6 +371,7 @@ public class LayoutManagerTest implements MockTabModelDelegate {
         runToolbarSideSwipeTestOnCurrentModel(ScrollDirection.RIGHT, 0);
     }
 
+    // TODO(crbug.com/493270994): Run on more platforms after all swipes are properly handled.
     @Test
     @SmallTest
     @Restriction({DeviceFormFactor.PHONE, RESTRICTION_TYPE_NON_LOW_END_DEVICE})
@@ -378,6 +383,7 @@ public class LayoutManagerTest implements MockTabModelDelegate {
         runToolbarSideSwipeTestOnCurrentModel(ScrollDirection.LEFT, 1);
     }
 
+    // TODO(crbug.com/493270994): Run on more platforms after all swipes are properly handled.
     @Test
     @SmallTest
     @Restriction({DeviceFormFactor.PHONE, RESTRICTION_TYPE_NON_LOW_END_DEVICE})
@@ -389,6 +395,7 @@ public class LayoutManagerTest implements MockTabModelDelegate {
         runToolbarSideSwipeTestOnCurrentModel(ScrollDirection.RIGHT, 0);
     }
 
+    // TODO(crbug.com/493270994): Run on more platforms after all swipes are properly handled.
     @Test
     @SmallTest
     @Restriction({DeviceFormFactor.PHONE, RESTRICTION_TYPE_NON_LOW_END_DEVICE})
@@ -400,6 +407,7 @@ public class LayoutManagerTest implements MockTabModelDelegate {
         runToolbarSideSwipeTestOnCurrentModel(ScrollDirection.LEFT, 1);
     }
 
+    // TODO(crbug.com/493270994): Run on more platforms after all swipes are properly handled.
     @Test
     @SmallTest
     @Restriction({DeviceFormFactor.PHONE, RESTRICTION_TYPE_NON_LOW_END_DEVICE})
@@ -411,6 +419,7 @@ public class LayoutManagerTest implements MockTabModelDelegate {
         runToolbarSideSwipeTestOnCurrentModel(ScrollDirection.RIGHT, 0);
     }
 
+    // TODO(crbug.com/493270994): Run on more platforms after all swipes are properly handled.
     @Test
     @SmallTest
     @Restriction({DeviceFormFactor.PHONE, RESTRICTION_TYPE_NON_LOW_END_DEVICE})
@@ -422,6 +431,7 @@ public class LayoutManagerTest implements MockTabModelDelegate {
         runToolbarSideSwipeTestOnCurrentModel(ScrollDirection.LEFT, 1);
     }
 
+    // TODO(crbug.com/493270994): Run on more platforms after all swipes are properly handled.
     @Test
     @SmallTest
     @Restriction({DeviceFormFactor.PHONE, RESTRICTION_TYPE_NON_LOW_END_DEVICE})
@@ -519,6 +529,7 @@ public class LayoutManagerTest implements MockTabModelDelegate {
     }
 
     // TODO(crbug.com/40141330): Update the test to use assertThat for better failure message.
+    // TODO(crbug.com/493270994): Run on more platforms after all swipes are properly handled.
     @Test
     @MediumTest
     @Restriction(DeviceFormFactor.PHONE)

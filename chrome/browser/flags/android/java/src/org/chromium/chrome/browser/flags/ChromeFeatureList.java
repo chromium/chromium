@@ -444,6 +444,8 @@ public abstract class ChromeFeatureList {
     public static final String ENABLE_SWIPE_TO_SWITCH_PANE = "EnableSwipeToSwitchPane";
     public static final String ENABLE_TOOLBAR_POSITIONING_IN_RESIZE_MODE =
             "EnableToolbarPositioningInResizeMode";
+    public static final String ENABLE_TOOLBAR_SWIPE_ON_NON_DESKTOP_LFF =
+            "EnableToolbarSwipeOnNonDesktopLff";
     public static final String ENABLE_X_AXIS_ACTIVITY_TRANSITION = "EnableXAxisActivityTransition";
     public static final String ESC_CANCEL_DRAG = "EscCancelDrag";
     public static final String FACILITATED_PAYMENTS_ENABLE_A2A_PAYMENT =

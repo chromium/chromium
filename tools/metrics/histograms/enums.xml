@@ -14526,6 +14526,7 @@ from previous Chrome versions.
   <int value="10929486" label="WebNNDirectML:disabled"/>
   <int value="11390425" label="TabGroupParityBottomSheetAndroid:disabled"/>
   <int value="11698808" label="enable-dom-distiller-button-animation"/>
+  <int value="11744127" label="EnableToolbarSwipeOnNonDesktopLff:disabled"/>
   <int value="11924259"
       label="AutofillEnableUpdateVirtualCardEnrollment:enabled"/>
   <int value="12016364" label="OmniboxBubbleUrlSuggestions:enabled"/>
@@ -14845,6 +14846,7 @@ from previous Chrome versions.
   <int value="120429808" label="disable-new-profile-management"/>
   <int value="120519004" label="NavigationPredictor:disabled"/>
   <int value="120825360" label="CustomizeTabGroupColorPalette:enabled"/>
+  <int value="120877820" label="EnableToolbarSwipeOnNonDesktopLff:enabled"/>
   <int value="120880746" label="NtpPhotosModuleSoftOptOut:disabled"/>
   <int value="121684313" label="QuickUnlockPin:enabled"/>
   <int value="121692330" label="CompareManagementInterface:enabled"/>
