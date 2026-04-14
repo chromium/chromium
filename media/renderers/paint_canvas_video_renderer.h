@@ -134,6 +134,9 @@ class MEDIA_EXPORT PaintCanvasVideoRenderer {
       viz::RasterContextProvider* raster_context_provider,
       viz::SharedImageFormat::ChannelFormat channel_format);
 
+  static bool IsPixelFormatSupportedForYuvSharedImageConversion(
+      VideoPixelFormat video_format);
+
   // Copy the CPU-side YUV contents of |video_frame| to texture |texture| in
   // context |destination_gl|.
   // |level|, |internal_format|, |type| specify target texture |texture|.
