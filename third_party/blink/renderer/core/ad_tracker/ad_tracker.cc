@@ -748,6 +748,12 @@ AdTracker::AdScriptAncestry AdTracker::GetAncestry(V8ScriptId script_id) {
                          }
 
                          auto it = this->ad_script_data_.find(script_id);
+                         if (it == this->ad_script_data_.end()) {
+                           // This can happen if an element is moved from one
+                           // AdTracker to another, and it references a script
+                           // id that this tracker doesn't know about.
+                           return true;
+                         }
                          ancestry.ancestry_chain.push_back(it->value.id);
 
                          // Move on to the next ancestor.
