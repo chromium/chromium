@@ -21,6 +21,7 @@
 #include "content/browser/devtools/shared_worker_devtools_manager.h"
 #include "content/browser/worker_host/shared_worker_host.h"
 #include "content/browser/worker_host/shared_worker_service_impl.h"
+#include "content/common/features.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/render_process_host.h"
 #include "net/cookies/site_for_cookies.h"
@@ -136,9 +137,11 @@ void SharedWorkerDevToolsAgentHost::WorkerReadyForInspection(
   DCHECK_EQ(WORKER_NOT_READY, state_);
   DCHECK(worker_host_);
   state_ = WORKER_READY;
-  GetRendererChannel()->SetRenderer(
-      std::move(agent_remote), std::move(agent_host_receiver),
-      worker_host_->GetProcessHost()->GetDeprecatedID());
+  pending_agent_remote_ = std::move(agent_remote);
+  pending_agent_host_receiver_ = std::move(agent_host_receiver);
+  UpdateRendererChannel(IsAttached() ||
+                        !base::FeatureList::IsEnabled(
+                            ::features::kSharedWorkerDevToolsWorkerReadyCheck));
   for (auto* inspector : protocol::InspectorHandler::ForAgentHost(this))
     inspector->TargetReloadedAfterCrash();
 }
@@ -158,8 +161,23 @@ void SharedWorkerDevToolsAgentHost::WorkerDestroyed() {
   for (auto* inspector : protocol::InspectorHandler::ForAgentHost(this))
     inspector->TargetCrashed();
   worker_host_ = nullptr;
+  pending_agent_remote_.reset();
+  pending_agent_host_receiver_.reset();
   GetRendererChannel()->SetRenderer(mojo::NullRemote(), mojo::NullReceiver(),
                                     ChildProcessHost::kInvalidUniqueID);
+}
+
+void SharedWorkerDevToolsAgentHost::UpdateRendererChannel(bool force) {
+  if (state_ != WORKER_READY) {
+    return;
+  }
+
+  if (force && pending_agent_remote_.is_valid()) {
+    GetRendererChannel()->SetRenderer(
+        std::move(pending_agent_remote_),
+        std::move(pending_agent_host_receiver_),
+        worker_host_->GetProcessHost()->GetDeprecatedID());
+  }
 }
 
 DevToolsAgentHostImpl::NetworkLoaderFactoryParamsAndInfo
