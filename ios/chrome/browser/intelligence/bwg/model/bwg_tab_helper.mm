@@ -74,18 +74,8 @@ NSMutableArray<NSString*>* ZeroStateSuggestionsAsNSArray(
 
 }  // namespace
 
-struct BwgTabHelper::ZeroStateSuggestions {
-  ZeroStateSuggestions() = default;
-  ~ZeroStateSuggestions() = default;
-
-  // The zero-state suggestions service.
-  mojo::Remote<ai::mojom::ZeroStateSuggestionsService> service;
-  std::unique_ptr<ai::ZeroStateSuggestionsServiceImpl> service_impl;
-
-  // The zero-state suggestions data for the current page.
-  std::optional<std::vector<std::string>> suggestions;
-  bool can_apply = false;
-};
+BwgTabHelper::ZeroStateSuggestions::ZeroStateSuggestions() = default;
+BwgTabHelper::ZeroStateSuggestions::~ZeroStateSuggestions() = default;
 
 BwgTabHelper::BwgTabHelper(web::WebState* web_state) : web_state_(web_state) {
   ProfileIOS* profile =

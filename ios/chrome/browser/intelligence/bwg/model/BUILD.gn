@@ -229,6 +229,7 @@ source_set("unit_tests") {
     "gemini_configuration_unittest.mm",
     "gemini_page_state_change_handler_unittest.mm",
     "gemini_service_impl_unittest.mm",
+    "gemini_suggestion_handler_unittest.mm",
   ]
   deps = [
     ":browser_agent",

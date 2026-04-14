@@ -7,6 +7,10 @@
 
 #import <UIKit/UIKit.h>
 
+#import <optional>
+#import <string>
+#import <vector>
+
 #import "base/observer_list.h"
 #import "base/scoped_observation.h"
 #import "components/optimization_guide/core/hints/optimization_guide_decider.h"
@@ -19,6 +23,7 @@
 #import "ios/web/public/favicon/favicon_url.h"
 #import "ios/web/public/web_state_observer.h"
 #import "ios/web/public/web_state_user_data.h"
+#import "mojo/public/cpp/bindings/remote.h"
 
 @protocol BWGCommands;
 @protocol HelpCommands;
@@ -28,6 +33,12 @@
 namespace gemini {
 enum class FloatyUpdateSource;
 }
+
+namespace ai {
+class ZeroStateSuggestionsServiceImpl;
+}
+
+class GeminiSuggestionHandlerTest;
 
 // Tab helper controlling the BWG feature and its current state for a given tab.
 class BwgTabHelper : public web::WebStateObserver,
@@ -52,8 +63,6 @@ class BwgTabHelper : public web::WebStateObserver,
   // Executes the zero-state suggestions flow.
   void ExecuteZeroStateSuggestions(
       base::OnceCallback<void(NSArray<NSString*>* suggestions)> callback);
-
-
 
   // Deactivates the BWG associated to this WebState.
   void DeactivateBWGSession();
@@ -152,7 +161,18 @@ class BwgTabHelper : public web::WebStateObserver,
   void WebStateDestroyed(web::WebState* web_state) override;
 
  private:
-  struct ZeroStateSuggestions;
+  struct ZeroStateSuggestions {
+    ZeroStateSuggestions();
+    ~ZeroStateSuggestions();
+
+    // The zero-state suggestions service.
+    mojo::Remote<ai::mojom::ZeroStateSuggestionsService> service;
+    std::unique_ptr<ai::ZeroStateSuggestionsServiceImpl> service_impl;
+
+    // The zero-state suggestions data for the current page.
+    std::optional<std::vector<std::string>> suggestions;
+    bool can_apply = false;
+  };
 
   explicit BwgTabHelper(web::WebState* web_state);
 
@@ -199,6 +219,10 @@ class BwgTabHelper : public web::WebStateObserver,
   // Adding BwgTabHelperTest as a friend to facilitate validation of behavior in
   // tests.
   friend class BwgTabHelperTest;
+
+  // TODO(crbug.com/502249229): Refactor GeminiSuggestionHandler to use a
+  // protocol or delegate to avoid needing to be a friend of BwgTabHelper.
+  friend class GeminiSuggestionHandlerTest;
 
   // Creates a new BWG session in the prefs, or updates an existing one, with
   // the current timestamp.
