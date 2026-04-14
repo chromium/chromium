@@ -75,6 +75,7 @@
 #include "ui/base/window_open_disposition.h"
 
 #if !BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/ui/lens/lens_media_link_handler.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #endif
 
@@ -428,6 +429,31 @@ tabs::TabInterface* ContextualTasksUiService::MaybeFocusExistingOpenTab(
   return nullptr;
 }
 
+bool ContextualTasksUiService::MaybeHandleVideoCitation(
+    const GURL& url,
+    tabs::TabInterface* tab,
+    const base::Uuid& task_id) {
+#if !BUILDFLAG(IS_ANDROID)
+  if (!base::FeatureList::IsEnabled(kContextualTasksVideoCitations)) {
+    return false;
+  }
+
+  if (tab) {
+    content::WebContents* web_contents = tab->GetContents();
+    std::optional<ContextualTask> task =
+        contextual_tasks_service_->GetContextualTaskForTab(
+            SessionTabHelper::IdForTab(web_contents));
+    if (task && task->GetTaskId() == task_id) {
+      auto handler = CreateMediaLinkHandler(web_contents);
+      if (handler && handler->MaybeReplaceNavigation(url)) {
+        return true;
+      }
+    }
+  }
+#endif
+  return false;
+}
+
 void ContextualTasksUiService::OnThreadLinkClicked(
     const GURL& url,
     base::Uuid task_id,
@@ -444,12 +470,30 @@ void ContextualTasksUiService::OnThreadLinkClicked(
     return;
   }
 
+  TabListInterface* tab_list = TabListInterface::From(browser.get());
+
   std::string ai_response_link_clicked_metric_name =
       base::StrCat({"ContextualTasks.AiResponse.UserAction.LinkClicked.",
                     (tab ? "Tab" : "Panel")});
   base::UmaHistogramBoolean(ai_response_link_clicked_metric_name, true);
   base::RecordAction(
       base::UserMetricsAction(ai_response_link_clicked_metric_name.c_str()));
+
+  // If the thread link click corresponds to a video citation, it should be
+  // handled before an unneeded web contents is created below.
+  if (!tab) {
+    tabs::TabInterface* active_tab = tab_list->GetActiveTab();
+    if (MaybeHandleVideoCitation(url, active_tab, task_id)) {
+      OMNIBOX_LOG("nav_trace")
+          << "ContextualTasks navigation trace: OnThreadLinkClicked "
+             "video citation handled on active tab";
+      if (auto* controller =
+              ContextualTasksPanelController::From(browser.get())) {
+        controller->OnAiInteraction();
+      }
+      return;
+    }
+  }
 
   std::unique_ptr<content::WebContents> new_contents =
       content::WebContents::Create(
@@ -473,8 +517,6 @@ void ContextualTasksUiService::OnThreadLinkClicked(
       << url;
   new_contents->GetController().LoadURLWithParams(
       content::NavigationController::LoadURLParams(url));
-
-  TabListInterface* tab_list = TabListInterface::From(browser.get());
 
   // If the source contents is the panel, open the AI page in a new foreground
   // tab.
@@ -1023,6 +1065,14 @@ void ContextualTasksUiService::LoadUrlInWebContents(
   params.transition_type = ::ui::PAGE_TRANSITION_AUTO_TOPLEVEL;
   web_contents->GetController().LoadURLWithParams(params);
 }
+
+#if !BUILDFLAG(IS_ANDROID)
+std::unique_ptr<lens::LensMediaLinkHandler>
+ContextualTasksUiService::CreateMediaLinkHandler(
+    content::WebContents* web_contents) {
+  return std::make_unique<lens::LensMediaLinkHandler>(web_contents);
+}
+#endif
 
 bool ContextualTasksUiService::IsUrlForPrimaryAccount(const GURL& url) {
   return contextual_tasks::IsUrlForPrimaryAccount(identity_manager_, url);

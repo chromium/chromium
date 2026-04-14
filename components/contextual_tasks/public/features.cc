@@ -102,6 +102,8 @@ BASE_FEATURE(kContextualTasksHideMenuOnAiPage,
 BASE_FEATURE(kContextualTasksUpdateModelOnNavigation,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+BASE_FEATURE(kContextualTasksVideoCitations, base::FEATURE_ENABLED_BY_DEFAULT);
+
 bool GetIsContextualTasksUpdateModeOnNavigationEnabled() {
   return base::FeatureList::IsEnabled(kContextualTasksUpdateModelOnNavigation);
 }

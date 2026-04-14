@@ -30,7 +30,7 @@ class LensMediaLinkHandler {
   // having a media session that should be seeked instead, false if it should be
   // allowed to proceed. This function does not actually modify or replace
   // the navigation.
-  bool MaybeReplaceNavigation(const GURL& target);
+  virtual bool MaybeReplaceNavigation(const GURL& target);
 
   content::WebContents* web_contents() { return web_contents_; }
 

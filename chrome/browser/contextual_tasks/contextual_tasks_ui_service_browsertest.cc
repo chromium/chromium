@@ -9,18 +9,23 @@
 #include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/uuid.h"
+#include "chrome/browser/autocomplete/aim_eligibility_service_factory.h"
 #include "chrome/browser/companion/text_finder/text_highlighter_manager.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_service_factory.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_ui_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/lens/lens_media_link_handler.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "components/contextual_tasks/public/contextual_tasks_service.h"
 #include "components/contextual_tasks/public/features.h"
+#include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/sessions/content/session_tab_helper.h"
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/test/browser_test.h"
+#include "content/public/test/mock_media_session.h"
+#include "testing/gmock/include/gmock/gmock.h"
 
 namespace contextual_tasks {
 
@@ -135,6 +140,110 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksUiServiceBrowserTest,
 
   // Another tab should have been opened since the text wasn't found.
   EXPECT_EQ(browser()->tab_strip_model()->count(), 3);
+}
+
+class TestLensMediaLinkHandler : public lens::LensMediaLinkHandler {
+ public:
+  explicit TestLensMediaLinkHandler(content::WebContents* web_contents)
+      : LensMediaLinkHandler(web_contents) {}
+
+  bool MaybeReplaceNavigation(const GURL& target) override { return true; }
+};
+
+class TestContextualTasksUiService : public ContextualTasksUiService {
+ public:
+  TestContextualTasksUiService(
+      Profile* profile,
+      contextual_tasks::ContextualTasksService* contextual_tasks_service,
+      AimEligibilityService* aim_eligibility_service)
+      : ContextualTasksUiService(profile,
+                                 /*delegate=*/nullptr,
+                                 contextual_tasks_service,
+                                 /*identity_manager=*/nullptr,
+                                 aim_eligibility_service) {}
+  ~TestContextualTasksUiService() override = default;
+
+  MOCK_METHOD(std::unique_ptr<lens::LensMediaLinkHandler>,
+              CreateMediaLinkHandler,
+              (content::WebContents * web_contents),
+              (override));
+};
+
+class ContextualTasksVideoCitationsBrowserTest : public InProcessBrowserTest {
+ public:
+  ContextualTasksVideoCitationsBrowserTest() {
+    feature_list_.InitWithFeatures(
+        {contextual_tasks::kContextualTasks,
+         contextual_tasks::kContextualTasksVideoCitations},
+        {});
+  }
+
+  void SetUpInProcessBrowserTestFixture() override {
+    create_services_subscription_ =
+        BrowserContextDependencyManager::GetInstance()
+            ->RegisterCreateServicesCallbackForTesting(
+                base::BindRepeating(&ContextualTasksVideoCitationsBrowserTest::
+                                        OnWillCreateBrowserContextServices,
+                                    base::Unretained(this)));
+  }
+
+  void OnWillCreateBrowserContextServices(content::BrowserContext* context) {
+    ContextualTasksUiServiceFactory::GetInstance()->SetTestingFactory(
+        context, base::BindRepeating(&ContextualTasksVideoCitationsBrowserTest::
+                                         BuildTestContextualTasksUiService,
+                                     base::Unretained(this)));
+  }
+
+  std::unique_ptr<KeyedService> BuildTestContextualTasksUiService(
+      content::BrowserContext* context) {
+    Profile* profile = Profile::FromBrowserContext(context);
+    return std::make_unique<TestContextualTasksUiService>(
+        profile, ContextualTasksServiceFactory::GetForProfile(profile),
+        AimEligibilityServiceFactory::GetForProfile(profile));
+  }
+
+ protected:
+  base::test::ScopedFeatureList feature_list_;
+  base::CallbackListSubscription create_services_subscription_;
+};
+
+IN_PROC_BROWSER_TEST_F(ContextualTasksVideoCitationsBrowserTest,
+                       VideoCitation_SeeksInsteadOfNavigating) {
+  using testing::_;
+
+  GURL url("data:text/html,<html><body></body></html>");
+  ASSERT_TRUE(AddTabAtIndex(0, url, ui::PAGE_TRANSITION_TYPED));
+
+  EXPECT_EQ(browser()->tab_strip_model()->count(), 2);
+  tabs::TabInterface* active_tab = browser()->tab_strip_model()->GetActiveTab();
+  EXPECT_EQ(active_tab->GetContents()->GetVisibleURL(), url);
+
+  ContextualTasksService* contextual_tasks_service =
+      ContextualTasksServiceFactory::GetForProfile(browser()->profile());
+  ContextualTask task = contextual_tasks_service->CreateTask();
+  contextual_tasks_service->AssociateTabWithTask(
+      task.GetTaskId(),
+      sessions::SessionTabHelper::IdForTab(active_tab->GetContents()));
+
+  ContextualTasksUiService* ui_service =
+      ContextualTasksUiServiceFactory::GetForBrowserContext(
+          browser()->profile());
+
+  TestContextualTasksUiService* test_ui_service =
+      static_cast<TestContextualTasksUiService*>(ui_service);
+
+  EXPECT_CALL(*test_ui_service,
+              CreateMediaLinkHandler(active_tab->GetContents()))
+      .WillOnce([&](content::WebContents* wc) {
+        return std::make_unique<TestLensMediaLinkHandler>(wc);
+      });
+
+  // Fake a thread link click.
+  test_ui_service->OnThreadLinkClicked(url, task.GetTaskId(), nullptr,
+                                       browser()->GetWeakPtr());
+
+  // Ensure the tab count hasn't changed.
+  EXPECT_EQ(browser()->tab_strip_model()->count(), 2);
 }
 
 }  // namespace contextual_tasks
