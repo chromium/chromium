@@ -230,10 +230,48 @@ public class ActorNotificationFactoryTest {
     }
 
     @Test
+    public void testBuildNotification_Reflecting() {
+        NotificationWrapper wrapper =
+                ActorNotificationFactory.buildNotification(mTask, ActorTaskState.REFLECTING);
+
+        assertNotNull("Notification wrapper should not be null", wrapper);
+        Notification notification = wrapper.getNotification();
+        assertEquals(
+                "Content title should match status",
+                mContext.getString(R.string.actor_notification_title_working_on_task),
+                shadowOf(notification).getContentTitle());
+        assertNotNull("Content intent should be set", notification.contentIntent);
+        assertEquals("Should have 2 actions", 2, notification.actions.length);
+        assertEquals(
+                "First action should be 'View task'",
+                mContext.getString(R.string.actor_notification_button_view_task),
+                notification.actions[0].title);
+    }
+
+    @Test
+    public void testBuildNotification_PausedByActor() {
+        NotificationWrapper wrapper =
+                ActorNotificationFactory.buildNotification(mTask, ActorTaskState.PAUSED_BY_ACTOR);
+
+        assertNotNull("Notification wrapper should not be null", wrapper);
+        Notification notification = wrapper.getNotification();
+        assertEquals(
+                "Content title should match status",
+                mContext.getString(R.string.actor_notification_title_task_paused),
+                shadowOf(notification).getContentTitle());
+        assertNotNull("Content intent should be set", notification.contentIntent);
+        assertEquals("Should have 2 actions", 2, notification.actions.length);
+        assertEquals(
+                "First action should be 'View task'",
+                mContext.getString(R.string.actor_notification_button_view_task),
+                notification.actions[0].title);
+    }
+
+    @Test
     public void testBuildNotification_Interrupted() {
         // Use an unhandled state to trigger the fallback
         NotificationWrapper wrapper =
-                ActorNotificationFactory.buildNotification(mTask, ActorTaskState.PAUSED_BY_ACTOR);
+                ActorNotificationFactory.buildNotification(mTask, ActorTaskState.FAILED);
 
         assertNotNull("Notification wrapper should not be null", wrapper);
         Notification notification = wrapper.getNotification();
@@ -241,7 +279,7 @@ public class ActorNotificationFactoryTest {
         ShadowNotification shadowNotification = shadowOf(notification);
 
         assertEquals(
-                "Content title should match paused status for fallback",
+                "Content title should match interrupted status for fallback",
                 mContext.getString(R.string.actor_notification_title_task_interrupted),
                 shadowNotification.getContentTitle());
         assertEquals(
@@ -255,6 +293,7 @@ public class ActorNotificationFactoryTest {
         assertFalse(
                 "Notification should not be ongoing",
                 (notification.flags & Notification.FLAG_ONGOING_EVENT) != 0);
+        assertNotNull("Content intent should be set", notification.contentIntent);
     }
 
     @Test

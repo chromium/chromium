@@ -73,14 +73,15 @@ public class ActorNotificationFactory {
 
         if (state == ActorTaskState.ACTING || state == ActorTaskState.REFLECTING) {
             return buildRunningNotification(builder, context, task, notificationId);
-        } else if (state == ActorTaskState.PAUSED_BY_USER) {
+        } else if (state == ActorTaskState.PAUSED_BY_ACTOR
+                || state == ActorTaskState.PAUSED_BY_USER) {
             return buildPausedNotification(builder, context, task, notificationId);
         } else if (state == ActorTaskState.WAITING_ON_USER) {
             return buildUserInputNotification(builder, context, task, notificationId);
         } else if (state == ActorTaskState.FINISHED) {
             return buildSuccessNotification(builder, context, task, notificationId);
         } else {
-            return buildInterruptedNotification(builder, context, task);
+            return buildInterruptedNotification(builder, context, task, notificationId);
         }
     }
 
@@ -115,7 +116,8 @@ public class ActorNotificationFactory {
                 .setContentTitle(
                         context.getString(R.string.actor_notification_title_working_on_task))
                 .setContentText(body)
-                .setBigTextStyle(body);
+                .setBigTextStyle(body)
+                .setContentIntent(createTabRoutingIntent(context, id, task));
         addViewAction(builder, context, id, task);
         addPauseAction(builder, context, id, task);
         return builder.buildNotificationWrapper();
@@ -127,7 +129,8 @@ public class ActorNotificationFactory {
         builder.setOngoing(true)
                 .setContentTitle(context.getString(R.string.actor_notification_title_task_paused))
                 .setContentText(body)
-                .setBigTextStyle(body);
+                .setBigTextStyle(body)
+                .setContentIntent(createTabRoutingIntent(context, id, task));
         addViewAction(builder, context, id, task);
         addResumeAction(builder, context, id, task);
         return builder.buildNotificationWrapper();
@@ -162,7 +165,7 @@ public class ActorNotificationFactory {
     }
 
     private static NotificationWrapper buildInterruptedNotification(
-            NotificationWrapperBuilder builder, Context context, ActorTask task) {
+            NotificationWrapperBuilder builder, Context context, ActorTask task, int id) {
         String body =
                 context.getString(R.string.actor_notification_body_interrupted, task.getTitle());
         builder.setAutoCancel(true)
@@ -170,7 +173,8 @@ public class ActorNotificationFactory {
                 .setContentTitle(
                         context.getString(R.string.actor_notification_title_task_interrupted))
                 .setContentText(body)
-                .setBigTextStyle(body);
+                .setBigTextStyle(body)
+                .setContentIntent(createTabRoutingIntent(context, id, task));
         return builder.buildNotificationWrapper();
     }
 
