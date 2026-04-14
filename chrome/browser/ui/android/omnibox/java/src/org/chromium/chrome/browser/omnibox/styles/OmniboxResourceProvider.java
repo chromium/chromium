@@ -439,14 +439,14 @@ public class OmniboxResourceProvider {
     private static @ColorInt int getHoverSuggestionBackgroundColor(
             Context context, @BrandedColorScheme int colorScheme) {
 
-        if (colorScheme == BrandedColorScheme.INCOGNITO) {
-            return context.getColor(R.color.search_suggestion_bg_color_hover_incognito);
-        }
-
-        // search_suggestion_bg_color + 8% colorOnSurface
+        @ColorInt int baseColor = getStandardSuggestionBackgroundColor(context, colorScheme);
         @ColorInt
-        int baseColor = ContextCompat.getColor(context, R.color.search_suggestion_bg_color);
-        @ColorInt int hoverColor = MaterialColors.getColor(context, R.attr.colorOnSurface, TAG);
+        int hoverColor =
+                switch (colorScheme) {
+                    case BrandedColorScheme.INCOGNITO ->
+                            context.getColor(R.color.baseline_neutral_90);
+                    default -> MaterialColors.getColor(context, R.attr.colorOnSurface, TAG);
+                };
         float fraction =
                 context.getResources()
                         .getFraction(R.fraction.omnibox_suggestion_bg_hover_overlay_fraction, 1, 1);
