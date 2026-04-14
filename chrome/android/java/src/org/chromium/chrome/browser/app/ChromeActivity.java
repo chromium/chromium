@@ -665,7 +665,8 @@ public abstract class ChromeActivity extends AsyncInitializationActivity
                     new ChromeActivitySnackbarHelper(
                             this,
                             getEdgeToEdgeSupplier(),
-                            assertNonNull(mRootUiCoordinator.getBottomSheetController()));
+                            assertNonNull(mRootUiCoordinator.getBottomSheetController()),
+                            mRootUiCoordinator::getBottomSheetControlsLayer);
             SnackbarManager snackbarManager =
                     new SnackbarManager(
                             this,

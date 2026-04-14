@@ -1366,6 +1366,7 @@ if (is_android) {
   robolectric_library("chrome_junit_tests_org.chromium.chrome.browser.ui") {
     sources = [
       "src/org/chromium/chrome/browser/ui/AppLaunchDrawBlockerUnitTest.java",
+      "src/org/chromium/chrome/browser/ui/BottomSheetManagerUnitTest.java",
       "src/org/chromium/chrome/browser/ui/ChromeActivitySnackbarHelperUnitTest.java",
       "src/org/chromium/chrome/browser/ui/ExclusiveAccessBubbleTest.java",
       "src/org/chromium/chrome/browser/ui/ExpandedSheetHelperImplUnitTest.java",
