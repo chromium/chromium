@@ -2,17 +2,22 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-
 #include <drm_fourcc.h>
+#include <errno.h>
 #include <overlay-prioritizer-client-protocol.h>
+#include <sys/stat.h>
+#include <unistd.h>
 
+#include <algorithm>
 #include <cstdint>
 #include <limits>
 #include <memory>
+#include <utility>
 
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/memory/raw_ptr.h"
+#include "base/posix/eintr_wrapper.h"
 #include "base/run_loop.h"
 #include "base/test/mock_callback.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -35,6 +40,7 @@
 #include "ui/ozone/platform/wayland/host/wayland_frame_manager.h"
 #include "ui/ozone/platform/wayland/host/wayland_subsurface.h"
 #include "ui/ozone/platform/wayland/host/wayland_zwp_linux_dmabuf.h"
+#include "ui/ozone/platform/wayland/test/mock_drm_syncobj_ioctl_wrapper.h"
 #include "ui/ozone/platform/wayland/test/mock_surface.h"
 #include "ui/ozone/platform/wayland/test/mock_zwp_linux_dmabuf.h"
 #include "ui/ozone/platform/wayland/test/test_overlay_prioritized_surface.h"
@@ -337,6 +343,162 @@ class WaylandBufferManagerTest : public WaylandTest {
   std::string channel_destroyed_error_message_;
 
   uint32_t surface_id_ = 0u;
+};
+
+class WaylandBufferManagerDrmSyncobjTest : public WaylandBufferManagerTest {
+ protected:
+  void SetUp() override {
+    WaylandBufferManagerTest::SetUp();
+    auto drm =
+        std::make_unique<testing::NiceMock<MockDrmSyncobjIoctlWrapper>>();
+    drm_ = drm.get();
+    manager_host_->SetDrmSyncobjWrapper(std::move(drm));
+
+    ASSERT_TRUE(connection_->SupportsExplicitSync());
+
+    ON_CALL(*drm_, SyncobjImportSyncFile(_, _))
+        .WillByDefault(testing::Return(0));
+    ON_CALL(*drm_, SyncobjTransfer(_, _, _, _, _))
+        .WillByDefault(testing::Return(0));
+    ON_CALL(*drm_, SyncobjEventfd(_, _, _, _))
+        .WillByDefault([](uint32_t, uint64_t, int ev_fd, uint32_t) {
+          uint64_t value = 1;
+          return HANDLE_EINTR(write(ev_fd, &value, sizeof(value))) >= 0 ? 0
+                                                                        : errno;
+        });
+    ON_CALL(*drm_, SyncobjExportSyncFile(_, _))
+        .WillByDefault([this](uint32_t, int* sync_file_fd) {
+          constexpr int kSuccess = 0;
+          auto sync_file = MakeFD();
+          *sync_file_fd = HANDLE_EINTR(dup(sync_file.get()));
+          if (*sync_file_fd < 0) {
+            const int error = errno;
+            return error;
+          }
+          struct stat statbuf;
+          if (fstat(sync_file.get(), &statbuf) != 0) {
+            const int error = errno;
+            return error;
+          }
+          exported_sync_file_stats_.emplace_back(statbuf.st_dev,
+                                                 statbuf.st_ino);
+          return kSuccess;
+        });
+  }
+
+  void CommitBufferWithAcquireFence(gfx::AcceleratedWidget widget,
+                                    uint32_t frame_id,
+                                    uint32_t buffer_id,
+                                    const gfx::Rect& bounds_rect) {
+    gfx::GpuFenceHandle fence;
+    fence.Adopt(MakeFD());
+    auto overlay_config =
+        CreateBasicWaylandOverlayConfig(INT32_MIN, buffer_id, bounds_rect);
+    overlay_config.access_fence_handle = std::move(fence);
+
+    std::vector<wl::WaylandOverlayConfig> overlay_configs;
+    overlay_configs.emplace_back(std::move(overlay_config));
+    buffer_manager_gpu_->CommitOverlays(widget, frame_id,
+                                        gfx::FrameData(delegate_.viz_seq()),
+                                        std::move(overlay_configs));
+    base::RunLoop().RunUntilIdle();
+  }
+
+  MockDrmSyncobjIoctlWrapper& drm() { return *drm_; }
+
+  bool IsMatchingExportedSyncFile(const gfx::GpuFenceHandle& fence) const {
+    if (fence.is_null() || exported_sync_file_stats_.empty()) {
+      return false;
+    }
+    struct stat fence_stat;
+    if (fstat(fence.Peek(), &fence_stat) != 0) {
+      return false;
+    }
+    return std::any_of(
+        exported_sync_file_stats_.begin(), exported_sync_file_stats_.end(),
+        [&fence_stat](const auto& exported_sync_file_stat) {
+          return fence_stat.st_dev == exported_sync_file_stat.first &&
+                 fence_stat.st_ino == exported_sync_file_stat.second;
+        });
+  }
+
+  void RunFencedReleaseScenario(bool expect_exported_release_fence) {
+    constexpr uint32_t kBufferId1 = 1;
+    constexpr uint32_t kBufferId2 = 2;
+    constexpr size_t kExpectedBufferParamsSize = 2u;
+
+    const gfx::AcceleratedWidget widget = window_->GetWidget();
+    const gfx::Rect bounds = window_->GetBoundsInPixels();
+
+    MockSurfaceGpu mock_surface_gpu(buffer_manager_gpu_.get(), widget);
+
+    EXPECT_CALL(drm(), SyncobjImportSyncFile(_, _)).Times(testing::AtLeast(1));
+    EXPECT_CALL(drm(), SyncobjTransfer(_, _, _, _, _))
+        .Times(testing::AtLeast(1));
+    EXPECT_CALL(drm(), SyncobjEventfd(_, _, _, _)).Times(testing::AtLeast(1));
+    EXPECT_CALL(drm(), SyncobjExportSyncFile(_, _)).Times(testing::AtLeast(1));
+
+    PostToServerAndWait([](wl::TestWaylandServerThread* server) {
+      EXPECT_CALL(*server->zwp_linux_dmabuf_v1(), CreateParams(_, _, _))
+          .Times(2);
+    });
+    CreateDmabufBasedBufferAndSetTerminateExpectation(/*fail=*/false,
+                                                      kBufferId1);
+    CreateDmabufBasedBufferAndSetTerminateExpectation(/*fail=*/false,
+                                                      kBufferId2);
+    ProcessCreatedBufferResourcesWithExpectation(kExpectedBufferParamsSize,
+                                                 /*fail=*/false);
+
+    PostToServerAndWait(
+        [id = surface_id_](wl::TestWaylandServerThread* server) {
+          auto* mock_surface = server->GetObject<wl::MockSurface>(id);
+          constexpr uint32_t kNumberOfCommits = 2;
+          EXPECT_CALL(*mock_surface, Attach(_, _, _)).Times(kNumberOfCommits);
+          EXPECT_CALL(*mock_surface, Frame(_)).Times(kNumberOfCommits);
+          EXPECT_CALL(*mock_surface, Commit()).Times(kNumberOfCommits);
+        });
+
+    {
+      testing::InSequence s;
+      EXPECT_CALL(mock_surface_gpu,
+                  OnSubmission(
+                      kBufferId1, gfx::SwapResult::SWAP_ACK,
+                      Truly([](const auto& fence) { return fence.is_null(); })))
+          .Times(1);
+      if (expect_exported_release_fence) {
+        EXPECT_CALL(mock_surface_gpu,
+                    OnSubmission(kBufferId2, gfx::SwapResult::SWAP_ACK,
+                                 Truly([this](const auto& fence) {
+                                   return IsMatchingExportedSyncFile(fence);
+                                 })))
+            .Times(1);
+      } else {
+        EXPECT_CALL(mock_surface_gpu,
+                    OnSubmission(kBufferId2, gfx::SwapResult::SWAP_ACK,
+                                 Truly([](const auto& fence) {
+                                   return fence.is_null();
+                                 })))
+            .Times(1);
+      }
+    }
+    EXPECT_CALL(mock_surface_gpu, OnPresentation(kBufferId1, _)).Times(1);
+    EXPECT_CALL(mock_surface_gpu, OnPresentation(kBufferId2, _)).Times(1);
+
+    CommitBufferWithAcquireFence(widget, kBufferId1, kBufferId1, bounds);
+    SendFrameCallbackForSurface(surface_id_);
+    base::RunLoop().RunUntilIdle();
+
+    CommitBufferWithAcquireFence(widget, kBufferId2, kBufferId2, bounds);
+    SendFrameCallbackForSurface(surface_id_);
+    base::RunLoop().RunUntilIdle();
+
+    DestroyBufferAndSetTerminateExpectation(kBufferId1, /*fail=*/false);
+    DestroyBufferAndSetTerminateExpectation(kBufferId2, /*fail=*/false);
+  }
+
+ private:
+  raw_ptr<MockDrmSyncobjIoctlWrapper> drm_ = nullptr;
+  std::vector<std::pair<dev_t, ino_t>> exported_sync_file_stats_;
 };
 
 TEST_P(WaylandBufferManagerTest, CreateDmabufBasedBuffers) {
@@ -2374,8 +2536,25 @@ TEST_P(WaylandBufferManagerTest, RootSurfaceIsCommittedLast) {
   });
 }
 
-// TODO(crbug.com/367623923): add FencedRelease test coverage for the new
-// linux-drm-syncobj protocol.
+// Tests fenced release on syncobj path returns an exported release fence.
+TEST_P(WaylandBufferManagerDrmSyncobjTest, FencedRelease) {
+  RunFencedReleaseScenario(/*expect_exported_release_fence=*/true);
+}
+
+// Tests SyncobjEventfd failure submission proceeds without release fence.
+TEST_P(WaylandBufferManagerDrmSyncobjTest, FencedReleaseSyncobjEventfdFails) {
+  ON_CALL(drm(), SyncobjEventfd(_, _, _, _))
+      .WillByDefault(testing::Return(EIO));
+  RunFencedReleaseScenario(/*expect_exported_release_fence=*/false);
+}
+
+// Tests SyncobjExportSyncFile failure submission has no release fence.
+TEST_P(WaylandBufferManagerDrmSyncobjTest,
+       FencedReleaseSyncobjExportSyncFileFails) {
+  ON_CALL(drm(), SyncobjExportSyncFile(_, _))
+      .WillByDefault(testing::Return(EIO));
+  RunFencedReleaseScenario(/*expect_exported_release_fence=*/false);
+}
 
 // Tests that destroying a channel doesn't result in resetting surface state
 // and buffers can be attached after the channel has been reinitialized.
@@ -2946,6 +3125,12 @@ INSTANTIATE_TEST_SUITE_P(XdgVersionStableTest,
 INSTANTIATE_TEST_SUITE_P(XdgVersionStableTest,
                          WaylandBufferManagerViewportTest,
                          Values(wl::ServerConfig{}));
+
+INSTANTIATE_TEST_SUITE_P(
+    XdgVersionStableTestWithLinuxDrmSyncobj,
+    WaylandBufferManagerDrmSyncobjTest,
+    Values(wl::ServerConfig{
+        .use_linux_drm_syncobj = wl::ShouldUseLinuxDrmSyncobjProtocol::kUse}));
 
 INSTANTIATE_TEST_SUITE_P(
     XdgVersionStableTestWithViewporterSurfaceScalingDisabled,
