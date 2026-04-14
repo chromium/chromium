@@ -125,7 +125,9 @@ class CORE_EXPORT ModelContext : public ScriptWrappable {
       const String& name,
       const String& input_arguments,
       AbortSignal* signal,
-      ScriptToolExecutedCallback tool_executed_cb);
+      ScriptToolExecutedCallback tool_executed_cb,
+      std::optional<base::UnguessableToken> execution_id_override =
+          std::nullopt);
   using CrossDocumentScriptToolResultCallback =
       base::OnceCallback<void(String)>;
   void GetCrossDocumentScriptToolResult(

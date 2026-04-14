@@ -1,0 +1,34 @@
+Tests WebMCP invokeTool command.
+Enabling WebMCP Domain
+\n--- Invoking test_tool ---
+invokeTool response: {
+    invocationId : <string 0>
+}
+toolResponded invocationId matches
+toolResponded event: {
+    invocationId : <string 0>
+    output : hello world
+    status : Completed
+}
+\n--- Invoking with invalid tool name ---
+Tool not found
+\n--- Invoking with invalid frameId ---
+No frame for given id found
+\n--- Invoking failing_tool (should fail execution) ---
+invokeTool response: {
+    invocationId : <string 1>
+}
+toolResponded invocationId matches
+toolResponded event for failing tool: {
+    errorText :
+    exception : {
+        className : Error
+        description : Error: This tool always fails     at fail (<anonymous>:12:19)
+        objectId : <string 2>
+        subtype : error
+        type : object
+    }
+    invocationId : <string 1>
+    status : Error
+}
+

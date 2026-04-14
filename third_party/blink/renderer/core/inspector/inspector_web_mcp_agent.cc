@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 #include "third_party/blink/renderer/core/inspector/inspector_web_mcp_agent.h"
 
+#include "base/functional/callback_helpers.h"
 #include "base/unguessable_token.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
@@ -127,6 +128,49 @@ protocol::Response InspectorWebMCPAgent::enable() {
 protocol::Response InspectorWebMCPAgent::disable() {
   enabled_.Set(false);
   instrumenting_agents_->RemoveInspectorWebMCPAgent(this);
+  return protocol::Response::Success();
+}
+
+protocol::Response InspectorWebMCPAgent::invokeTool(
+    const String& frameId,
+    const String& toolName,
+    std::unique_ptr<protocol::DictionaryValue> input,
+    String* invocationId) {
+  LocalFrame* frame = IdentifiersFactory::FrameById(inspected_frames_, frameId);
+  if (!frame) {
+    return protocol::Response::InvalidParams("No frame for given id found");
+  }
+
+  auto* model_context = GetModelContext(frame);
+  if (!model_context) {
+    return protocol::Response::InvalidParams(
+        "No ModelContext for given frame found");
+  }
+
+  if (!model_context->GetScriptToolDeclaration(toolName)) {
+    return protocol::Response::InvalidParams("Tool not found");
+  }
+
+  String input_arguments = "{}";
+  if (input) {
+    std::vector<uint8_t> cbor;
+    input->AppendSerialized(&cbor);
+    std::string json;
+    crdtp::json::ConvertCBORToJSON(
+        crdtp::span<uint8_t>(cbor.data(), cbor.size()), &json);
+    input_arguments = String::FromUtf8(json);
+  }
+
+  base::UnguessableToken execution_id = base::UnguessableToken::Create();
+  *invocationId = String(execution_id.ToString());
+
+  frame->GetTaskRunner(TaskType::kInternalInspector)
+      ->PostTask(FROM_HERE,
+                 blink::BindOnce(
+                     base::IgnoreResult(&ModelContext::ExecuteTool),
+                     WrapPersistent(model_context), toolName, input_arguments,
+                     /*signal=*/nullptr, base::DoNothing(), execution_id));
+
   return protocol::Response::Success();
 }
 

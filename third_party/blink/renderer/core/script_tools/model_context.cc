@@ -343,8 +343,11 @@ std::optional<base::UnguessableToken> ModelContext::ExecuteTool(
     const String& name,
     const String& input_arguments,
     AbortSignal* signal,
-    ScriptToolExecutedCallback tool_executed_cb) {
-  base::UnguessableToken execution_id = base::UnguessableToken::Create();
+    ScriptToolExecutedCallback tool_executed_cb,
+    std::optional<base::UnguessableToken> execution_id_override) {
+  base::UnguessableToken execution_id = execution_id_override
+                                            ? *execution_id_override
+                                            : base::UnguessableToken::Create();
   probe::WebMCPToolExecuted(document_, name, input_arguments, execution_id);
 
   auto it = tool_map_.find(name);

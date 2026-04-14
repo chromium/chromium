@@ -51,6 +51,19 @@ experimental domain WebMCP
   # Disables the WebMCP domain.
   command disable
 
+   # Invokes a registered tool.
+  command invokeTool
+    parameters
+      # Frame in which to invoke the tool.
+      Page.FrameId frameId
+      # Name of the tool to invoke.
+      string toolName
+      # Input parameters for the tool, matching the tool's inputSchema.
+      object input
+    returns
+      # Unique identifier for this invocation. Response is sent before tool events.
+      string invocationId
+
   # Event fired when new tools are added.
   event toolsAdded
     parameters
