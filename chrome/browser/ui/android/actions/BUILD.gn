@@ -10,6 +10,7 @@ android_library("java") {
     "java/src/org/chromium/chrome/browser/ui/actions/ActionId.java",
     "java/src/org/chromium/chrome/browser/ui/actions/ActionProperties.java",
     "java/src/org/chromium/chrome/browser/ui/actions/ActionRegistry.java",
+    "java/src/org/chromium/chrome/browser/ui/actions/ActionUtils.java",
     "java/src/org/chromium/chrome/browser/ui/actions/IphIntent.java",
     "java/src/org/chromium/chrome/browser/ui/actions/button/ActionButtonData.java",
     "java/src/org/chromium/chrome/browser/ui/actions/button/ButtonState.java",

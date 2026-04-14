@@ -22,11 +22,13 @@ public class ActionButtonBinder {
             if (view instanceof ImageView v) v.setImageDrawable(model.get(ActionProperties.ICON));
         } else if (ActionProperties.CONTENT_DESCRIPTION == propertyKey) {
             view.setContentDescription(model.get(ActionProperties.CONTENT_DESCRIPTION));
-        } else if (ActionProperties.ON_PRESS_CALLBACK == propertyKey) {
+        } else if (ActionProperties.ON_PRESS_CALLBACK == propertyKey
+                || ActionProperties.BUTTON_STATE == propertyKey) {
             Callback<View> callback = model.get(ActionProperties.ON_PRESS_CALLBACK);
             boolean hasPressCallback = callback != null;
             view.setOnClickListener(hasPressCallback ? callback::onResult : null);
-            view.setEnabled(hasPressCallback);
+            int buttonState = model.get(ActionProperties.BUTTON_STATE);
+            ActionUtils.applyButtonState(view, buttonState, hasPressCallback);
         } else if (ActionProperties.ON_LONG_PRESS_CALLBACK == propertyKey) {
             Callback<View> callback = model.get(ActionProperties.ON_LONG_PRESS_CALLBACK);
             OnLongClickListener listener = null;

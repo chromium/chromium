@@ -30,8 +30,10 @@ import org.mockito.junit.MockitoRule;
 import org.robolectric.Robolectric;
 
 import org.chromium.base.Callback;
+import org.chromium.base.MathUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.RobolectricUtil;
+import org.chromium.chrome.browser.ui.actions.button.ButtonState;
 import org.chromium.chrome.browser.user_education.IphCommand;
 import org.chromium.chrome.browser.user_education.UserEducationHelper;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -145,6 +147,37 @@ public class ActionButtonBinderUnitTest {
 
         mModel.set(ActionProperties.ON_LONG_PRESS_CALLBACK, null);
         assertFalse(mView.isEnabled());
+    }
+
+    @Test
+    @SmallTest
+    public void testButtonState() {
+        mModel.set(ActionProperties.ON_PRESS_CALLBACK, mOnPressCallback);
+
+        // Default state.
+        mModel.set(ActionProperties.BUTTON_STATE, ButtonState.DEFAULT);
+        assertEquals(1.0f, mView.getAlpha(), MathUtils.EPSILON);
+        assertTrue(mView.isClickable());
+        assertTrue(mView.isEnabled());
+
+        // Change state to UNCLICKABLE.
+        mModel.set(ActionProperties.BUTTON_STATE, ButtonState.UNCLICKABLE);
+        assertEquals(1.0f, mView.getAlpha(), MathUtils.EPSILON);
+        assertFalse(mView.isClickable());
+        assertTrue(mView.isEnabled()); // Remains enabled to avoid grey-out blink
+
+        // Change to INVISIBLE_AND_CLICKABLE.
+        mModel.set(ActionProperties.BUTTON_STATE, ButtonState.INVISIBLE_AND_CLICKABLE);
+        assertEquals(0.0f, mView.getAlpha(), MathUtils.EPSILON);
+        assertEquals(View.VISIBLE, mView.getVisibility());
+        assertTrue(mView.isClickable());
+        assertTrue(mView.isEnabled()); // Remains enabled to avoid grey-out blink
+
+        // Change back to DEFAULT.
+        mModel.set(ActionProperties.BUTTON_STATE, ButtonState.DEFAULT);
+        assertEquals(1.0f, mView.getAlpha(), MathUtils.EPSILON);
+        assertTrue(mView.isClickable());
+        assertTrue(mView.isEnabled());
     }
 
     @Test

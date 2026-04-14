@@ -9,8 +9,10 @@ import android.view.View;
 
 import org.chromium.base.Callback;
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.chrome.browser.ui.actions.button.ButtonState;
 import org.chromium.chrome.browser.user_education.UserEducationHelper;
 import org.chromium.ui.modelutil.PropertyKey;
+import org.chromium.ui.modelutil.PropertyModel.WritableIntPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableObjectPropertyKey;
 
 /** Properties for action buttons. */
@@ -20,6 +22,10 @@ public class ActionProperties {
             new WritableObjectPropertyKey<>();
     public static final WritableObjectPropertyKey<String> CONTENT_DESCRIPTION =
             new WritableObjectPropertyKey<>();
+
+    /** This property should have a {@link ButtonState} value. */
+    public static final WritableIntPropertyKey BUTTON_STATE = new WritableIntPropertyKey();
+
     public static final WritableObjectPropertyKey<Callback<View>> ON_PRESS_CALLBACK =
             new WritableObjectPropertyKey<>();
     public static final WritableObjectPropertyKey<Callback<View>> ON_LONG_PRESS_CALLBACK =
@@ -34,6 +40,7 @@ public class ActionProperties {
             new PropertyKey[] {
                 ICON,
                 CONTENT_DESCRIPTION,
+                BUTTON_STATE,
                 ON_PRESS_CALLBACK,
                 ON_LONG_PRESS_CALLBACK,
                 IPH_INTENT,
