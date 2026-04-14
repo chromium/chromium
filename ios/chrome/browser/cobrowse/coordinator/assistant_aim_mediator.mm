@@ -4,6 +4,8 @@
 
 #import "ios/chrome/browser/cobrowse/coordinator/assistant_aim_mediator.h"
 
+#import <algorithm>
+
 #import "base/strings/string_util.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/uuid.h"
@@ -95,19 +97,26 @@ const CGFloat kSheetDetentAnimationDuration = 0.3;
     return;
   }
 
-  _contextualTasksService->GetTasks(
-      base::BindOnce(^(std::vector<contextual_tasks::ContextualTask> tasks) {
-        std::vector<AssistantAIMHistoryItem> items;
-        for (const auto& task : tasks) {
-          AssistantAIMHistoryItem item;
-          item.task_id = task.GetTaskId().AsLowercaseString();
-          item.title = task.GetTitle();
-          items.push_back(item);
-        }
-        if (completion) {
-          completion(items);
-        }
-      }));
+  _contextualTasksService->GetTasks(base::BindOnce(^(
+      std::vector<contextual_tasks::ContextualTask> tasks) {
+    std::sort(tasks.begin(), tasks.end(), [](const auto& a, const auto& b) {
+      auto thread_a = a.GetThread();
+      auto thread_b = b.GetThread();
+      base::Time time_a = thread_a ? thread_a->last_turn_time : base::Time();
+      base::Time time_b = thread_b ? thread_b->last_turn_time : base::Time();
+      return time_a > time_b;
+    });
+    std::vector<AssistantAIMHistoryItem> items;
+    for (const auto& task : tasks) {
+      AssistantAIMHistoryItem item;
+      item.task_id = task.GetTaskId().AsLowercaseString();
+      item.title = task.GetTitle();
+      items.push_back(item);
+    }
+    if (completion) {
+      completion(items);
+    }
+  }));
 }
 
 // Loads a history thread with the given task ID.
