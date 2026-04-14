@@ -33,6 +33,12 @@ constexpr char kLiveOnDeviceTranslateDispatcherResult[] =
     "Accessibility.LiveTranslate.OnDeviceTranslation.Result";
 constexpr char kLiveGoogleApiTranslateDispatcherResult[] =
     "Accessibility.LiveTranslate.GoogleApiTranslation.Result";
+constexpr char kLiveOnDeviceTranslateDispatcherLatency[] =
+    "Accessibility.LiveTranslate.OnDeviceTranslation.Latency";
+constexpr char kLiveGoogleApiTranslateDispatcherLatency[] =
+    "Accessibility.LiveTranslate.GoogleApiTranslation.Latency";
+constexpr char kLiveTotalTranslationLatency[] =
+    "Accessibility.LiveTranslate.GetTranslation.Latency";
 
 }  // namespace
 
@@ -76,18 +82,20 @@ void LiveTranslateController::GetTranslation(const std::string& result,
       "Accessibility.LiveTranslate.GetTranslation.TargetLanguage",
       base::HashMetricName(target_language));
 
+  base::TimeTicks total_start_time = base::TimeTicks::Now();
   if (base::FeatureList::IsEnabled(
           live_caption::kLiveCaptionOnDeviceTranslation)) {
     on_device_dispatcher_->GetTranslation(
         result, source_language, target_language,
         base::BindOnce(&LiveTranslateController::OnOnDeviceTranslated,
                        weak_factory_.GetWeakPtr(), result, source_language,
-                       target_language, std::move(callback)));
+                       target_language, std::move(callback), total_start_time));
   } else {
     google_api_dispatcher_->GetTranslation(
         result, source_language, target_language,
         base::BindOnce(&LiveTranslateController::OnGoogleApiTranslated,
-                       weak_factory_.GetWeakPtr(), std::move(callback)));
+                       weak_factory_.GetWeakPtr(), std::move(callback),
+                       total_start_time, total_start_time));
   }
 }
 
@@ -96,6 +104,7 @@ void LiveTranslateController::OnOnDeviceTranslated(
     std::string_view source_language,
     std::string_view target_language,
     TranslateEventCallback callback,
+    base::TimeTicks total_start_time,
     const TranslateEvent& translate_event) {
   base::UmaHistogramBoolean(kLiveOnDeviceTranslateDispatcherResult,
                             translate_event.has_value());
@@ -104,18 +113,33 @@ void LiveTranslateController::OnOnDeviceTranslated(
         std::string(result), std::string(source_language),
         std::string(target_language),
         base::BindOnce(&LiveTranslateController::OnGoogleApiTranslated,
-                       weak_factory_.GetWeakPtr(), std::move(callback)));
+                       weak_factory_.GetWeakPtr(), std::move(callback),
+                       total_start_time, base::TimeTicks::Now()));
     return;
   }
 
+  if (translate_event.has_value()) {
+    base::TimeDelta latency = base::TimeTicks::Now() - total_start_time;
+    base::UmaHistogramTimes(kLiveOnDeviceTranslateDispatcherLatency, latency);
+    base::UmaHistogramTimes(kLiveTotalTranslationLatency, latency);
+  }
   std::move(callback).Run(translate_event);
 }
 
 void LiveTranslateController::OnGoogleApiTranslated(
     TranslateEventCallback callback,
+    base::TimeTicks total_start_time,
+    base::TimeTicks google_api_start_time,
     const TranslateEvent& translate_event) {
   base::UmaHistogramBoolean(kLiveGoogleApiTranslateDispatcherResult,
                             translate_event.has_value());
+  if (translate_event.has_value()) {
+    base::TimeTicks now = base::TimeTicks::Now();
+    base::UmaHistogramTimes(kLiveGoogleApiTranslateDispatcherLatency,
+                            now - google_api_start_time);
+    base::UmaHistogramTimes(kLiveTotalTranslationLatency,
+                            now - total_start_time);
+  }
   std::move(callback).Run(translate_event);
 }
 

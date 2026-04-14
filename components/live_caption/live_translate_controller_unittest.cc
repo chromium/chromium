@@ -83,6 +83,10 @@ TEST_F(LiveTranslateControllerTest,
   histogram_tester.ExpectUniqueSample(
       "Accessibility.LiveTranslate.GoogleApiTranslation.Result",
       /*sample=*/true, /*expected_bucket_count=*/1);
+  histogram_tester.ExpectTotalCount(
+      "Accessibility.LiveTranslate.GoogleApiTranslation.Latency", 1);
+  histogram_tester.ExpectTotalCount(
+      "Accessibility.LiveTranslate.GetTranslation.Latency", 1);
 }
 
 TEST_F(LiveTranslateControllerTest, GetTranslation_FallsBackToGoogleApi) {
@@ -127,6 +131,53 @@ TEST_F(LiveTranslateControllerTest, GetTranslation_FallsBackToGoogleApi) {
       "Accessibility.LiveTranslate.OnDeviceTranslation.Result", false, 1);
   histogram_tester.ExpectBucketCount(
       "Accessibility.LiveTranslate.GoogleApiTranslation.Result", true, 1);
+  histogram_tester.ExpectTotalCount(
+      "Accessibility.LiveTranslate.OnDeviceTranslation.Latency", 0);
+  histogram_tester.ExpectTotalCount(
+      "Accessibility.LiveTranslate.GoogleApiTranslation.Latency", 1);
+  histogram_tester.ExpectTotalCount(
+      "Accessibility.LiveTranslate.GetTranslation.Latency", 1);
+}
+
+TEST_F(LiveTranslateControllerTest,
+       GetTranslationRecordsMetrics_OnDevice_Success) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      live_caption::kLiveCaptionOnDeviceTranslation);
+
+  base::HistogramTester histogram_tester;
+  auto mock_on_device_dispatcher =
+      std::make_unique<testing::NiceMock<MockTranslationDispatcher>>();
+  auto mock_google_api_dispatcher =
+      std::make_unique<testing::NiceMock<MockTranslationDispatcher>>();
+
+  auto* on_device_ptr = mock_on_device_dispatcher.get();
+
+  LiveTranslateController controller(&prefs_,
+                                     std::move(mock_on_device_dispatcher),
+                                     std::move(mock_google_api_dispatcher));
+
+  EXPECT_CALL(*on_device_ptr, GetTranslation("hello", "en", "es", testing::_))
+      .WillOnce([](absl::string_view result, absl::string_view source_language,
+                   absl::string_view target_language,
+                   TranslateEventCallback callback) {
+        std::move(callback).Run(base::ok("hola"));
+      });
+
+  base::MockCallback<TranslateEventCallback> translate_callback;
+  EXPECT_CALL(translate_callback, Run(testing::_)).Times(1);
+
+  controller.GetTranslation("hello", "en", "es", translate_callback.Get());
+
+  histogram_tester.ExpectUniqueSample(
+      "Accessibility.LiveTranslate.OnDeviceTranslation.Result",
+      /*sample=*/true, /*expected_bucket_count=*/1);
+  histogram_tester.ExpectTotalCount(
+      "Accessibility.LiveTranslate.OnDeviceTranslation.Latency", 1);
+  histogram_tester.ExpectTotalCount(
+      "Accessibility.LiveTranslate.GoogleApiTranslation.Latency", 0);
+  histogram_tester.ExpectTotalCount(
+      "Accessibility.LiveTranslate.GetTranslation.Latency", 1);
 }
 
 }  // namespace captions

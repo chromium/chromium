@@ -10,6 +10,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/time/time.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/live_caption/translation_dispatcher.h"
 #include "components/live_caption/translation_util.h"
@@ -54,8 +55,11 @@ class LiveTranslateController : public KeyedService {
                             std::string_view source_language,
                             std::string_view target_language,
                             TranslateEventCallback callback,
+                            base::TimeTicks start_time,
                             const TranslateEvent& translate_event);
   void OnGoogleApiTranslated(TranslateEventCallback callback,
+                             base::TimeTicks total_start_time,
+                             base::TimeTicks google_api_start_time,
                              const TranslateEvent& translate_event);
   raw_ptr<PrefService> profile_prefs_;
   const std::unique_ptr<PrefChangeRegistrar> pref_change_registrar_;

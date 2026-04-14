@@ -2284,6 +2284,17 @@ even if they fit the naming pattern. -->
   </token>
 </histogram>
 
+<histogram name="Accessibility.LiveTranslate.GetTranslation.Latency" units="ms"
+    expires_after="2026-10-04">
+  <owner>danft@google.com</owner>
+  <owner>evliu@google.com</owner>
+  <summary>
+    Records the total latency of a successful translation request to the
+    LiveTranslate.GetTranslation. This includes time spent in all dispatchers
+    (e.g., on-device and fallback to Google API).
+  </summary>
+</histogram>
+
 <histogram name="Accessibility.LiveTranslate.GetTranslation.SourceLanguage"
     enum="LocaleCodeBCP47" expires_after="2026-10-04">
   <owner>danft@google.com</owner>
@@ -2306,12 +2317,31 @@ even if they fit the naming pattern. -->
   </summary>
 </histogram>
 
+<histogram name="Accessibility.LiveTranslate.GoogleApiTranslation.Latency"
+    units="ms" expires_after="2026-10-04">
+  <owner>danft@google.com</owner>
+  <owner>chrome-a11y-core@google.com</owner>
+  <summary>
+    Records the latency of a successful translation coming from the GoogleApi.
+  </summary>
+</histogram>
+
 <histogram name="Accessibility.LiveTranslate.GoogleApiTranslation.Result"
     enum="Boolean" expires_after="2026-10-04">
   <owner>danft@google.com</owner>
   <owner>chrome-a11y-core@google.com</owner>
   <summary>
     Records the result coming from the GoogleApi (true or false).
+  </summary>
+</histogram>
+
+<histogram name="Accessibility.LiveTranslate.OnDeviceTranslation.Latency"
+    units="ms" expires_after="2026-10-04">
+  <owner>danft@google.com</owner>
+  <owner>chrome-a11y-core@google.com</owner>
+  <summary>
+    Records the latency of a successful translation coming from
+    on-device-translation.
   </summary>
 </histogram>
 
