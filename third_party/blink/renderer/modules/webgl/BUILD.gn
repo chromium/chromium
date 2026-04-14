@@ -207,3 +207,31 @@ blink_modules_sources("webgl") {
   }
   allow_circular_includes_from = deps
 }
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "webgl_rendering_context_base_unittest.cc" ]
+
+  configs += [
+    "//third_party/blink/renderer:config",
+    "//third_party/blink/renderer:inside_blink",
+    "//third_party/blink/renderer/core:blink_core_pch",
+  ]
+
+  deps = [
+    "//base/test:test_support",
+    "//components/viz/test:test_support",
+    "//gpu:test_support",
+    "//media:test_support",
+    "//testing/gmock",
+    "//testing/gtest",
+    "//third_party/blink/renderer/controller:blink_bindings_test_sources",
+    "//third_party/blink/renderer/core:unit_test_support",
+    "//third_party/blink/renderer/modules",
+    "//third_party/blink/renderer/platform",
+    "//third_party/blink/renderer/platform:test_support",
+    "//third_party/blink/renderer/platform/wtf",
+    "//third_party/libyuv",
+    "//ui/gl:test_support",
+  ]
+}

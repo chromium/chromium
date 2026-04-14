@@ -912,6 +912,11 @@ ci.builder(
                     "--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_12_12l_13.gl_tests.filter",
                 ],
             ),
+            "blink_unittests": targets.mixin(
+                args = [
+                    "--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator.blink_unittests.filter",
+                ],
+            ),
             "media_unittests": targets.mixin(
                 args = [
                     "--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator.media_unittests.filter",
@@ -2361,6 +2366,11 @@ ci.builder(
             "base_unittests_android_death_tests": targets.mixin(
                 ci_only = True,
             ),
+            "blink_unittests": targets.mixin(
+                args = [
+                    "--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator.blink_unittests.filter",
+                ],
+            ),
             # If you change this, make similar changes in android-x86-code-coverage
             "android_browsertests": targets.mixin(
                 args = [
@@ -2583,6 +2593,11 @@ ci.builder(
             "base_unittests_android_death_tests": targets.mixin(
                 ci_only = True,
             ),
+            "blink_unittests": targets.mixin(
+                args = [
+                    "--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator.blink_unittests.filter",
+                ],
+            ),
             "chrome_public_test_apk": targets.mixin(
                 args = [
                     "--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_10.chrome_public_test_apk.filter",
@@ -2781,6 +2796,11 @@ ci.builder(
                 swarming = targets.swarming(
                     shards = 2,
                 ),
+            ),
+            "blink_unittests": targets.mixin(
+                args = [
+                    "--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator.blink_unittests.filter",
+                ],
             ),
             "components_unittests": targets.mixin(
                 args = [
@@ -2987,6 +3007,11 @@ ci.builder(
                     "--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_12.gl_unittests.filter",
                 ],
             ),
+            "blink_unittests": targets.mixin(
+                args = [
+                    "--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator.blink_unittests.filter",
+                ],
+            ),
             "media_unittests": targets.mixin(
                 args = [
                     "--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator.media_unittests.filter",
@@ -3140,6 +3165,11 @@ ci.builder(
             "gl_tests_validating": targets.mixin(
                 args = [
                     "--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_12_12l_13.gl_tests.filter",
+                ],
+            ),
+            "blink_unittests": targets.mixin(
+                args = [
+                    "--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator.blink_unittests.filter",
                 ],
             ),
             "media_unittests": targets.mixin(
@@ -3340,6 +3370,7 @@ ci.builder(
             ),
             "blink_unittests": targets.mixin(
                 args = [
+                    "--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator.blink_unittests.filter",
                     # https://crbug.com/352586409
                     "--gtest_filter=-All/HTMLPreloadScannerLCPPLazyLoadImageTest.TokenStreamMatcherWithLoadingLazy/*",
                 ],
@@ -3760,6 +3791,11 @@ ci.builder(
                     "--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_15_16.gwp_asan_unittests.filter",
                 ],
             ),
+            "blink_unittests": targets.mixin(
+                args = [
+                    "--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator.blink_unittests.filter",
+                ],
+            ),
             "media_unittests": targets.mixin(
                 args = [
                     "--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator.media_unittests.filter",
@@ -4084,6 +4120,11 @@ ci.builder(
                     "--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_15_16.gwp_asan_unittests.filter",
                 ],
             ),
+            "blink_unittests": targets.mixin(
+                args = [
+                    "--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator.blink_unittests.filter",
+                ],
+            ),
             "media_unittests": targets.mixin(
                 args = [
                     "--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator.media_unittests.filter",
@@ -4235,6 +4276,11 @@ ci.builder(
             "gwp_asan_unittests": targets.mixin(
                 args = [
                     "--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_15_16.gwp_asan_unittests.filter",
+                ],
+            ),
+            "blink_unittests": targets.mixin(
+                args = [
+                    "--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator.blink_unittests.filter",
                 ],
             ),
             "media_unittests": targets.mixin(

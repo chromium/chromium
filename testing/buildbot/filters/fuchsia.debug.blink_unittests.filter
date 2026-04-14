@@ -1,0 +1,3 @@
+# https://crbug.com/1241502
+-WebGLRenderingContextBaseUnittest.CopyVideoFrameYUVDataToGLTexture
+-WebGLRenderingContextBaseUnittest.CopyVideoFrameYUVDataToGLTexture_FlipY

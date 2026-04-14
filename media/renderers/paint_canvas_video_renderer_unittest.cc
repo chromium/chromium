@@ -112,15 +112,6 @@ static base::HeapArray<uint8_t> ReadbackTexture(gpu::gles2::GLES2Interface* gl,
   return pixels;
 }
 
-// Returns a functor that retrieves a SkColor for a given pixel, from raw RGBA
-// data.
-static auto ColorGetter(base::span<uint8_t> pixels, const gfx::Size& size) {
-  return [pixels, size](size_t x, size_t y) {
-    base::span<uint8_t> p = pixels.subspan((size.width() * y + x) * 4);
-    return SkColorSetARGB(p[3], p[0], p[1], p[2]);
-  };
-}
-
 class PaintCanvasVideoRendererTest : public testing::Test {
  public:
   enum Color {
@@ -1276,71 +1267,6 @@ class PaintCanvasVideoRendererWithGLTest : public testing::Test {
   base::test::TaskEnvironment task_environment_;
   raw_ptr<gl::GLDisplay> display_ = nullptr;
 };
-
-TEST_F(PaintCanvasVideoRendererWithGLTest, CopyVideoFrameYUVDataToGLTexture) {
-  auto* destination_gl = destination_context_->ContextGL();
-  DCHECK(destination_gl);
-  GLenum target = GL_TEXTURE_2D;
-  GLuint texture = 0;
-  destination_gl->GenTextures(1, &texture);
-  destination_gl->BindTexture(target, texture);
-
-  PaintCanvasVideoRenderer::CopyVideoFrameYUVDataToGLTexture(
-      media_context_.get(), destination_gl, cropped_frame(),
-      GetRGBSharedImageCache(), GetYUVSharedImageCache(), target, texture,
-      GL_RGBA, GL_RGBA, GL_UNSIGNED_BYTE, 0, kUnpremul_SkAlphaType,
-      kTopLeft_GrSurfaceOrigin);
-
-  gfx::Size expected_size = cropped_frame()->visible_rect().size();
-
-  base::HeapArray<uint8_t> pixels =
-      ReadbackTexture(destination_gl, texture, expected_size);
-  auto get_color = ColorGetter(pixels, expected_size);
-
-  // Avoid checking around the seams.
-  EXPECT_EQ(SK_ColorBLACK, get_color(0, 0));
-  EXPECT_EQ(SK_ColorRED, get_color(3, 0));
-  EXPECT_EQ(SK_ColorRED, get_color(7, 0));
-  EXPECT_EQ(SK_ColorGREEN, get_color(0, 3));
-  EXPECT_EQ(SK_ColorGREEN, get_color(0, 5));
-  EXPECT_EQ(SK_ColorBLUE, get_color(3, 3));
-  EXPECT_EQ(SK_ColorBLUE, get_color(7, 5));
-
-  destination_gl->DeleteTextures(1, &texture);
-}
-
-TEST_F(PaintCanvasVideoRendererWithGLTest,
-       CopyVideoFrameYUVDataToGLTexture_FlipY) {
-  auto* destination_gl = destination_context_->ContextGL();
-  DCHECK(destination_gl);
-  GLenum target = GL_TEXTURE_2D;
-  GLuint texture = 0;
-  destination_gl->GenTextures(1, &texture);
-  destination_gl->BindTexture(target, texture);
-
-  PaintCanvasVideoRenderer::CopyVideoFrameYUVDataToGLTexture(
-      media_context_.get(), destination_gl, cropped_frame(),
-      GetRGBSharedImageCache(), GetYUVSharedImageCache(), target, texture,
-      GL_RGBA, GL_RGBA, GL_UNSIGNED_BYTE, 0, kUnpremul_SkAlphaType,
-      kBottomLeft_GrSurfaceOrigin);
-
-  gfx::Size expected_size = cropped_frame()->visible_rect().size();
-
-  base::HeapArray<uint8_t> pixels =
-      ReadbackTexture(destination_gl, texture, expected_size);
-  auto get_color = ColorGetter(pixels, expected_size);
-
-  // Avoid checking around the seams.
-  EXPECT_EQ(SK_ColorBLACK, get_color(0, 5));
-  EXPECT_EQ(SK_ColorRED, get_color(3, 5));
-  EXPECT_EQ(SK_ColorRED, get_color(7, 5));
-  EXPECT_EQ(SK_ColorGREEN, get_color(0, 2));
-  EXPECT_EQ(SK_ColorGREEN, get_color(0, 0));
-  EXPECT_EQ(SK_ColorBLUE, get_color(3, 2));
-  EXPECT_EQ(SK_ColorBLUE, get_color(7, 0));
-
-  destination_gl->DeleteTextures(1, &texture);
-}
 
 // Checks that we correctly copy a RGBA shared image VideoFrame when using
 // CopyVideoFrameYUVDataToGLTexture, including correct cropping.

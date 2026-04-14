@@ -190,6 +190,9 @@
         "test_id_prefix": "ninja://third_party/blink/renderer/platform:blink_platform_unittests/"
       },
       {
+        "args": [
+          "--test-launcher-filter-file=../../testing/buildbot/filters/fuchsia.debug.blink_unittests.filter"
+        ],
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
