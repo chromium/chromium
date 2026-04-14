@@ -870,7 +870,14 @@ class BottomSheet extends FrameLayout
         if (mSheetContent != null && mSheetContent.getPeekHeight() != HeightMode.DEFAULT) {
             assert mSheetContent.getPeekHeight() != HeightMode.WRAP_CONTENT
                     : "The peek mode can't wrap content.";
-            return mSheetContent.getPeekHeight();
+            int peekHeight = mSheetContent.getPeekHeight();
+            assert peekHeight > 0 && peekHeight <= mContainerHeight
+                    : "Custom peek height must be in the range of (0, mContainerHeight]."
+                            + " mContainerHeight: "
+                            + mContainerHeight
+                            + " peekHeight :"
+                            + peekHeight;
+            return peekHeight;
         }
 
         View toolbarView = getToolbarView();
@@ -903,10 +910,8 @@ class BottomSheet extends FrameLayout
 
     /** Returns the ratio of the height of the screen that the peeking state is. */
     public float getPeekRatio() {
-        if (mContainerHeight <= 0 || !isPeekStateEnabled()) return 0;
-        float ratio = getPeekHeightPx() / (float) mContainerHeight;
-        assert ratio > 0 && ratio <= 1 : "Custom peek ratios must be in the range of (0, 1].";
-        return ratio;
+        if (mContainerHeight <= 0) return 0;
+        return getPeekHeightPx() / (float) mContainerHeight;
     }
 
     private @Nullable View getToolbarView() {
