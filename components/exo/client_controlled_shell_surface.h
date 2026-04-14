@@ -222,7 +222,7 @@ class ClientControlledShellSurface : public ShellSurfaceBase,
   static void SetClientControlledStateDelegateFactoryForTest(
       const DelegateFactoryCallback& callback);
 
-  ash::WideFrameView* wide_frame_for_test() { return wide_frame_.get(); }
+  ash::WideFrameView* wide_frame_for_test() { return wide_frame_view_; }
 
   // Used to scale incoming coordinates from the client to DP.
   float GetClientToDpScale() const;
@@ -280,6 +280,8 @@ class ClientControlledShellSurface : public ShellSurfaceBase,
 
   void UpdateFrameWidth();
 
+  void CloseWideFrame(views::Widget::ClosedReason reason);
+
   void UpdateFrameType() override;
 
   bool GetCanResizeFromSizeConstraints() const override;
@@ -326,7 +328,9 @@ class ClientControlledShellSurface : public ShellSurfaceBase,
   std::unique_ptr<chromeos::ImmersiveFullscreenController>
       immersive_fullscreen_controller_;
 
-  std::unique_ptr<ash::WideFrameView> wide_frame_;
+  std::unique_ptr<views::WidgetDelegate> wide_frame_delegate_;
+  std::unique_ptr<views::Widget> wide_frame_widget_;
+  raw_ptr<ash::WideFrameView> wide_frame_view_ = nullptr;
 
   std::unique_ptr<ui::CompositorLock> orientation_compositor_lock_;
 

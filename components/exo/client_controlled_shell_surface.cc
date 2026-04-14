@@ -403,7 +403,7 @@ ClientControlledShellSurface::~ClientControlledShellSurface() {
     GetWindowState()->SetDelegate(nullptr);
   if (client_controlled_state_)
     client_controlled_state_->ResetDelegate();
-  wide_frame_.reset();
+  CloseWideFrame(views::Widget::ClosedReason::kUnspecified);
 }
 
 void ClientControlledShellSurface::SetBounds(int64_t display_id,
@@ -631,8 +631,8 @@ void ClientControlledShellSurface::SetExtraTitle(
 
   GetFrameView()->GetHeaderView()->GetFrameHeader()->SetFrameTextOverride(
       extra_title);
-  if (wide_frame_) {
-    wide_frame_->header_view()->GetFrameHeader()->SetFrameTextOverride(
+  if (wide_frame_view_) {
+    wide_frame_view_->header_view()->GetFrameHeader()->SetFrameTextOverride(
         extra_title);
   }
 }
@@ -783,8 +783,8 @@ void ClientControlledShellSurface::OnSetFrame(SurfaceFrameType type) {
 void ClientControlledShellSurface::OnSetFrameColors(SkColor active_color,
                                                     SkColor inactive_color) {
   ShellSurfaceBase::OnSetFrameColors(active_color, inactive_color);
-  if (wide_frame_) {
-    aura::Window* window = wide_frame_->GetWidget()->GetNativeWindow();
+  if (wide_frame_view_) {
+    aura::Window* window = wide_frame_view_->GetWidget()->GetNativeWindow();
     window->SetProperty(chromeos::kTrackDefaultFrameColors, false);
     window->SetProperty(chromeos::kFrameActiveColorKey, active_color);
     window->SetProperty(chromeos::kFrameInactiveColorKey, inactive_color);
@@ -899,7 +899,7 @@ void ClientControlledShellSurface::OnWindowAddedToRootWindow(
 // views::WidgetDelegate overrides:
 
 void ClientControlledShellSurface::WindowClosing() {
-  wide_frame_.reset();
+  CloseWideFrame(views::Widget::ClosedReason::kUnspecified);
   ShellSurfaceBase::WindowClosing();
 }
 
@@ -1399,17 +1399,35 @@ void ClientControlledShellSurface::UpdateFrame() {
   bool update_frame = state_changed_;
   state_changed_ = false;
   if (enable_wide_frame) {
-    if (!wide_frame_) {
+    if (!wide_frame_view_) {
       update_frame = true;
-      wide_frame_ = std::make_unique<ash::WideFrameView>(widget_);
+      wide_frame_delegate_ = std::make_unique<views::WidgetDelegate>();
+      wide_frame_view_ = wide_frame_delegate_->SetContentsView(
+          std::make_unique<ash::WideFrameView>(widget_));
+
+      views::Widget::InitParams params(
+          views::Widget::InitParams::CLIENT_OWNS_WIDGET,
+          views::Widget::InitParams::TYPE_POPUP);
+      params.delegate = wide_frame_delegate_.get();
+      params.bounds = ash::WideFrameView::GetFrameBounds(widget_);
+      params.name = "WideFrameView";
+      params.parent = widget_->GetNativeWindow();
+      params.opacity = views::Widget::InitParams::WindowOpacity::kOpaque;
+      wide_frame_widget_ = std::make_unique<views::Widget>();
+      wide_frame_widget_->Init(std::move(params));
+
+      wide_frame_widget_->MakeCloseSynchronous(
+          base::BindOnce(&ClientControlledShellSurface::CloseWideFrame,
+                         base::Unretained(this)));
+
       chromeos::ImmersiveFullscreenController::EnableForWidget(widget_, false);
-      wide_frame_->Init(immersive_fullscreen_controller_.get());
-      wide_frame_->header_view()->GetFrameHeader()->SetFrameTextOverride(
+      wide_frame_view_->Init(immersive_fullscreen_controller_.get());
+      wide_frame_view_->header_view()->GetFrameHeader()->SetFrameTextOverride(
           GetFrameView()
               ->GetHeaderView()
               ->GetFrameHeader()
               ->frame_text_override());
-      wide_frame_->GetWidget()->Show();
+      wide_frame_widget_->Show();
 
       // Restoring window targeter replaced by ImmersiveFullscreenController.
       InstallCustomWindowTargeter();
@@ -1417,12 +1435,12 @@ void ClientControlledShellSurface::UpdateFrame() {
       UpdateCaptionButtonModel();
     }
     DCHECK_EQ(chromeos::FrameHeader::Get(widget_),
-              wide_frame_->header_view()->GetFrameHeader());
+              wide_frame_view_->header_view()->GetFrameHeader());
   } else {
-    if (wide_frame_) {
+    if (wide_frame_view_) {
       update_frame = true;
       chromeos::ImmersiveFullscreenController::EnableForWidget(widget_, false);
-      wide_frame_.reset();
+      CloseWideFrame(views::Widget::ClosedReason::kUnspecified);
       GetFrameView()->InitImmersiveFullscreenControllerForView(
           immersive_fullscreen_controller_.get());
       // Restoring window targeter replaced by ImmersiveFullscreenController.
@@ -1444,10 +1462,11 @@ void ClientControlledShellSurface::UpdateFrame() {
 void ClientControlledShellSurface::UpdateCaptionButtonModel() {
   auto model = std::make_unique<CaptionButtonModel>(frame_visible_button_mask_,
                                                     frame_enabled_button_mask_);
-  if (wide_frame_)
-    wide_frame_->SetCaptionButtonModel(std::move(model));
-  else
+  if (wide_frame_view_) {
+    wide_frame_view_->SetCaptionButtonModel(std::move(model));
+  } else {
     GetFrameView()->SetCaptionButtonModel(std::move(model));
+  }
 }
 
 void ClientControlledShellSurface::UpdateBackdrop() {
@@ -1478,6 +1497,13 @@ void ClientControlledShellSurface::UpdateFrameWidth() {
   }
   static_cast<chromeos::HeaderView*>(GetFrameView()->GetHeaderView())
       ->SetWidthInPixels(width_in_pixels);
+}
+
+void ClientControlledShellSurface::CloseWideFrame(
+    views::Widget::ClosedReason reason) {
+  wide_frame_view_ = nullptr;
+  wide_frame_widget_.reset();
+  wide_frame_delegate_.reset();
 }
 
 void ClientControlledShellSurface::UpdateFrameType() {

@@ -25,6 +25,8 @@
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
 #include "ui/events/types/event_type.h"
+#include "ui/views/view_tracker.h"
+#include "ui/views/view_utils.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/window/caption_button_layout_constants.h"
 
@@ -35,8 +37,9 @@ using ::chromeos::ImmersiveFullscreenController;
 
 class WideFrameTargeter : public aura::WindowTargeter {
  public:
-  explicit WideFrameTargeter(chromeos::HeaderView* header_view)
-      : header_view_(header_view) {}
+  explicit WideFrameTargeter(chromeos::HeaderView* header_view) {
+    header_view_tracker_.SetView(header_view);
+  }
 
   WideFrameTargeter(const WideFrameTargeter&) = delete;
   WideFrameTargeter& operator=(const WideFrameTargeter&) = delete;
@@ -47,8 +50,13 @@ class WideFrameTargeter : public aura::WindowTargeter {
   bool GetHitTestRects(aura::Window* target,
                        gfx::Rect* hit_test_rect_mouse,
                        gfx::Rect* hit_test_rect_touch) const override {
-    if (header_view_->in_immersive_mode() && !header_view_->is_revealed()) {
-      aura::Window* source = header_view_->GetWidget()->GetNativeWindow();
+    auto* header_view =
+        views::AsViewClass<chromeos::HeaderView>(header_view_tracker_.view());
+    if (!header_view) {
+      return false;
+    }
+    if (header_view->in_immersive_mode() && !header_view->is_revealed()) {
+      aura::Window* source = header_view->GetWidget()->GetNativeWindow();
       *hit_test_rect_mouse = source->bounds();
       aura::Window::ConvertRectToTarget(source, target->parent(),
                                         hit_test_rect_mouse);
@@ -62,7 +70,7 @@ class WideFrameTargeter : public aura::WindowTargeter {
   }
 
  private:
-  raw_ptr<chromeos::HeaderView> header_view_;
+  views::ViewTracker header_view_tracker_;
 };
 
 }  // namespace
@@ -109,31 +117,6 @@ WideFrameView::WideFrameView(views::Widget* target)
   header_view_->set_context_menu_controller(
       frame_context_menu_controller_.get());
 
-  views::Widget::InitParams params(
-      views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET,
-      views::Widget::InitParams::TYPE_POPUP);
-  params.delegate = this;
-  params.bounds = GetFrameBounds(target);
-  params.name = "WideFrameView";
-  params.parent = target->GetNativeWindow();
-  // Setup Opacity Control.
-  // WideFrame should be used only when the rounded corner is not necessary.
-  params.opacity = views::Widget::InitParams::WindowOpacity::kOpaque;
-  auto widget = std::make_unique<views::Widget>();
-  widget->Init(std::move(params));
-  widget_ = std::move(widget);
-
-  aura::Window* window = widget_->GetNativeWindow();
-  // Overview normally clips the caption container which exists on the same
-  // window. But this WideFrameView exists as a separate window, which we hide
-  // in overview using the `kHideInOverviewKey` property. However, we still want
-  // to show it in the desks mini_views.
-  window->SetProperty(kHideInOverviewKey, true);
-  window->SetProperty(kForceVisibleInMiniViewKey, true);
-  window->SetEventTargeter(std::make_unique<WideFrameTargeter>(header_view()));
-  set_owned_by_client(OwnedByClientPassKey());
-  WindowState::Get(window)->set_allow_set_bounds_direct(true);
-
   paint_as_active_subscription_ =
       target_->RegisterPaintAsActiveChangedCallback(base::BindRepeating(
           &WideFrameView::PaintAsActiveChanged, base::Unretained(this)));
@@ -142,8 +125,6 @@ WideFrameView::WideFrameView(views::Widget* target)
 
 WideFrameView::~WideFrameView() {
   header_view_->set_context_menu_controller(nullptr);
-  if (widget_)
-    widget_->CloseNow();
   if (target_) {
     chromeos::HeaderView* target_header_view = GetTargetHeaderView();
     target_header_view->SetShouldPaintHeader(true);
@@ -161,6 +142,18 @@ void WideFrameView::Layout(PassKey) {
     header_view_->SetBounds(0, onscreen_height - height, width(), height);
     header_view_->SetVisible(true);
   }
+}
+
+void WideFrameView::AddedToWidget() {
+  aura::Window* window = GetWidget()->GetNativeWindow();
+  // Overview normally clips the caption container which exists on the same
+  // window. But this WideFrameView exists as a separate window, which we hide
+  // in overview using the `kHideInOverviewKey` property. However, we still want
+  // to show it in the desks mini_views.
+  window->SetProperty(kHideInOverviewKey, true);
+  window->SetProperty(kForceVisibleInMiniViewKey, true);
+  window->SetEventTargeter(std::make_unique<WideFrameTargeter>(header_view()));
+  WindowState::Get(window)->set_allow_set_bounds_direct(true);
 }
 
 void WideFrameView::OnMouseEvent(ui::MouseEvent* event) {
@@ -195,7 +188,7 @@ void WideFrameView::OnDisplayMetricsChanged(const display::Display& display,
   display::Screen* screen = display::Screen::Get();
   if (screen->GetDisplayNearestWindow(target_->GetNativeWindow()).id() !=
           display.id() ||
-      !widget_) {
+      !GetWidget()) {
     return;
   }
   DCHECK(target_);
@@ -220,14 +213,14 @@ void WideFrameView::OnImmersiveRevealEnded() {
 
 void WideFrameView::OnImmersiveFullscreenEntered() {
   header_view_->OnImmersiveFullscreenEntered();
-  widget_->GetNativeWindow()->SetTransparent(true);
+  GetWidget()->GetNativeWindow()->SetTransparent(true);
   if (target_)
     GetTargetHeaderView()->OnImmersiveFullscreenEntered();
 }
 
 void WideFrameView::OnImmersiveFullscreenExited() {
   header_view_->OnImmersiveFullscreenExited();
-  widget_->GetNativeWindow()->SetTransparent(false);
+  GetWidget()->GetNativeWindow()->SetTransparent(false);
   if (target_)
     GetTargetHeaderView()->OnImmersiveFullscreenExited();
   DeprecatedLayoutImmediately();
