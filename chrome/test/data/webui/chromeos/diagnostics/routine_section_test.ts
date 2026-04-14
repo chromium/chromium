@@ -1092,12 +1092,8 @@ suite('routineSectionTestSuite', function() {
         .then(() => {
           assert(routineSectionElement);
           const entries = getEntries();
-          // We've encountered a test failure which means we should no longer
-          // update the status of our remaining routine result entries.
-          assertTrue(getResultList().ignoreRoutineStatusUpdates);
 
           // Second routine in the first group should have completed.
-
           assertEquals(
               RoutineType.kLanConnectivity,
               (entries[0]!.item as RoutineGroup).routines[1]);
@@ -1114,21 +1110,106 @@ suite('routineSectionTestSuite', function() {
           // Remaining routine groups should display the skipped state.
           assertEquals(ExecutionProgress.SKIPPED, entries[1]!.item.progress);
 
-          // Remaining routine should still be running in the background.
+          // Blocking failure stops execution immediately.
           assertEquals(
-              routineSectionElement.testSuiteStatus, TestSuiteStatus.RUNNING);
+              routineSectionElement.testSuiteStatus, TestSuiteStatus.COMPLETED);
+          assertFalse(getResultList().ignoreRoutineStatusUpdates);
+        });
+  });
 
-          // Resolve the running test.
+  test('BlockingFailurePreservesRoutineDetails', () => {
+    const kTestDetails = 'Connection failed\n\nServer unreachable';
+    const localNetworkGroup = new RoutineGroup(
+        [createRoutine(RoutineType.kGatewayCanBePinged, /*blocking=*/ true)],
+        'localNetworkGroupLabel');
+
+    const nameResolutionGroup = new RoutineGroup(
+        [createRoutine(RoutineType.kDnsResolverPresent, /*blocking=*/ true)],
+        'nameResolutionGroupLabel');
+    const groups = [localNetworkGroup, nameResolutionGroup];
+    routineController.setFakeStandardRoutineResult(
+        RoutineType.kGatewayCanBePinged, StandardRoutineResult.kTestFailed);
+    routineController.setFakeRoutineDetails(
+        RoutineType.kGatewayCanBePinged, kTestDetails);
+    routineController.setFakeStandardRoutineResult(
+        RoutineType.kDnsResolverPresent, StandardRoutineResult.kTestPassed);
+
+    return initializeRoutineSection(groups)
+        .then(() => {
+          assert(routineSectionElement);
+          routineSectionElement.showRoutineDetails = true;
+          return clickRunTestsButton();
+        })
+        .then(() => {
+          // First routine should be running.
+          const entries = getEntries();
+          assertEquals(
+              ExecutionProgress.RUNNING,
+              (entries[0]!.item as RoutineGroup).progress);
+
+          // Resolve the blocking routine (it will fail).
           return routineController.resolveRoutineForTesting();
         })
         .then(() => flushTasks())
         .then(() => {
           assert(routineSectionElement);
-          // All tests are completed and the ignore updates flag should be off
-          // again.
+          // Blocking failure stops execution immediately.
           assertEquals(
               routineSectionElement.testSuiteStatus, TestSuiteStatus.COMPLETED);
-          assertFalse(getResultList().ignoreRoutineStatusUpdates);
+
+          // Remaining group is skipped.
+          const entries = getEntries();
+          assertEquals(ExecutionProgress.SKIPPED, entries[1]!.item.progress);
+
+          // Detail messages are populated from the failed routine's details.
+          // kTestDetails has two paragraphs separated by double newline.
+          const detailDivs = routineSectionElement.shadowRoot!.querySelectorAll(
+              '.detail-message');
+          assertEquals(2, detailDivs.length);
+        });
+  });
+
+  test('RunAgainAfterBlockingFailureWorks', () => {
+    const localNetworkGroup = new RoutineGroup(
+        [createRoutine(RoutineType.kGatewayCanBePinged, /*blocking=*/ true)],
+        'localNetworkGroupLabel');
+    const groups = [localNetworkGroup];
+
+    // First run: blocking failure.
+    routineController.setFakeStandardRoutineResult(
+        RoutineType.kGatewayCanBePinged, StandardRoutineResult.kTestFailed);
+
+    return initializeRoutineSection(groups)
+        .then(() => {
+          assert(routineSectionElement);
+          return clickRunTestsButton();
+        })
+        .then(() => routineController.resolveRoutineForTesting())
+        .then(() => flushTasks())
+        .then(() => {
+          assert(routineSectionElement);
+          assertEquals(
+              routineSectionElement.testSuiteStatus, TestSuiteStatus.COMPLETED);
+
+          // Second run: configure pass and run again.
+          routineController.setFakeStandardRoutineResult(
+              RoutineType.kGatewayCanBePinged,
+              StandardRoutineResult.kTestPassed);
+          return clickRunTestsButton();
+        })
+        .then(() => routineController.resolveRoutineForTesting())
+        .then(() => flushTasks())
+        .then(() => {
+          assert(routineSectionElement);
+          // Second run completes successfully.
+          assertEquals(
+              routineSectionElement.testSuiteStatus, TestSuiteStatus.COMPLETED);
+
+          // Status should show success, not the previous failure.
+          const textBadge =
+              routineSectionElement.shadowRoot!.querySelector('text-badge');
+          assert(textBadge);
+          assertEquals('success', textBadge.badgeType);
         });
   });
 

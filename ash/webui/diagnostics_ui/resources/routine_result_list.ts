@@ -122,13 +122,15 @@ export class RoutineResultListElement extends PolymerElement {
 
   /**
    * Receives the callback from RoutineListExecutor whenever the status of a
-   * routine changed.
+   * routine changed. Returns `true` when a blocking failure is detected and
+   * the caller should stop running further routine groups.
    */
-  onStatusUpdate(status: ResultStatusItem): void {
+  onStatusUpdate(status: ResultStatusItem): boolean {
     if (this.ignoreRoutineStatusUpdates) {
-      return;
+      return false;
     }
     assert(this.results.length > 0);
+    let blockingFailureDetected = false;
     this.results.forEach(
         (result: RoutineGroup|ResultStatusItem, idx: number) => {
           if (result instanceof RoutineGroup &&
@@ -142,6 +144,7 @@ export class RoutineResultListElement extends PolymerElement {
             if (shouldUpdateRoutineUI) {
               this.ignoreRoutineStatusUpdates = true;
               this.updateRoutineUiAfterFailure();
+              blockingFailureDetected = true;
             }
             return;
           }
@@ -152,6 +155,7 @@ export class RoutineResultListElement extends PolymerElement {
             }
           }
         });
+    return blockingFailureDetected;
   }
 
   protected shouldHideVerticalLines({value}: {
