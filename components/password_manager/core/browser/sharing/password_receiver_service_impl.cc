@@ -140,6 +140,7 @@ std::vector<PasswordForm> IncomingSharingInvitationToPasswordForms(
     form.icon_url = GURL(password_group_element_data.avatar_url());
     form.date_created = base::Time::Now();
     form.type = PasswordForm::Type::kReceivedViaSharing;
+    form.skip_zero_click = true;
 
     // Invitation metadata.
     const sync_pb::UserDisplayInfo& sender_info =

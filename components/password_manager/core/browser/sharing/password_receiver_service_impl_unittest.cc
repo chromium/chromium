@@ -245,6 +245,7 @@ TEST_F(PasswordReceiverServiceImplTest,
           Field(&PasswordForm::sender_name, kSenderName),
           Field(&PasswordForm::sender_profile_image_url,
                 GURL(kSenderProfileImagerUrl)),
+          Field(&PasswordForm::skip_zero_click, true),
           Field(&PasswordForm::sharing_notification_displayed, false))));
 
   EXPECT_TRUE(
