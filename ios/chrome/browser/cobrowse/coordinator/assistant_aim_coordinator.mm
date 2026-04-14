@@ -69,12 +69,17 @@
   if (!context) {
     context = [CobrowseContext defaultContext];
   }
+  contextual_tasks::ContextualTasksService* contextualTasksService = nullptr;
+  if (IsCobrowseAimHistoryEnabled()) {
+    contextualTasksService = IOSContextualTasksServiceFactory::GetForProfile(
+        self.browser->GetProfile());
+  }
+
   _mediator = [[AssistantAIMMediator alloc]
             initWithWebState:web::WebState::Create(params)
                      context:context
             containerHandler:_containerHandler
-      contextualTasksService:IOSContextualTasksServiceFactory::GetForProfile(
-                                 self.browser->GetProfile())];
+      contextualTasksService:contextualTasksService];
   _mediator.delegate = self;
   _mediator.consumer = _viewController;
   _viewController.mutator = _mediator;

@@ -197,6 +197,9 @@ extern const char kCacheIdentityListInChromeDescription[];
 extern const char kChromeNextIaName[];
 extern const char kChromeNextIaDescription[];
 
+extern const char kCobrowseAimHistoryName[];
+extern const char kCobrowseAimHistoryDescription[];
+
 extern const char kCollaborationMessagingName[];
 extern const char kCollaborationMessagingDescription[];
 

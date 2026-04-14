@@ -6,6 +6,7 @@
 
 #import "ios/chrome/browser/cobrowse/ui/assistant_aim_mutator.h"
 #import "ios/chrome/browser/cobrowse/ui/assistant_aim_ui_constants.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/public/features/system_flags.h"
 #import "ios/chrome/browser/shared/ui/elements/extended_touch_target_button.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
@@ -244,17 +245,22 @@ const CGFloat kSymbolsPointSize = 24.0;
                                          primaryAction:nil];
   button.translatesAutoresizingMaskIntoConstraints = NO;
 
-  __weak __typeof(self) weakSelf = self;
-  UIAction* historyAction = [UIAction
-      actionWithTitle:l10n_util::GetNSString(IDS_IOS_AIM_HISTORY)
-                image:CustomSymbolWithPointSize(kLineThreeSparkSymbol,
-                                                kHeaderActionSymbolPointSize)
-           identifier:nil
-              handler:^(UIAction* action) {
-                [weakSelf didTapHistoryButton];
-              }];
+  NSMutableArray* actions = [[NSMutableArray alloc] init];
 
-  button.menu = [UIMenu menuWithTitle:@"" children:@[ historyAction ]];
+  if (IsCobrowseAimHistoryEnabled()) {
+    __weak __typeof(self) weakSelf = self;
+    UIAction* historyAction = [UIAction
+        actionWithTitle:l10n_util::GetNSString(IDS_IOS_AIM_HISTORY)
+                  image:CustomSymbolWithPointSize(kLineThreeSparkSymbol,
+                                                  kHeaderActionSymbolPointSize)
+             identifier:nil
+                handler:^(UIAction* action) {
+                  [weakSelf didTapHistoryButton];
+                }];
+    [actions addObject:historyAction];
+  }
+
+  button.menu = [UIMenu menuWithTitle:@"" children:actions];
 
   button.showsMenuAsPrimaryAction = YES;
 

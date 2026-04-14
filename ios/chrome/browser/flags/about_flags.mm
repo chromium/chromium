@@ -2835,6 +2835,9 @@ constexpr auto kFeatureEntries = std::to_array<flags_ui::FeatureEntry>({
     {"synced-group-color", flag_descriptions::kSyncedGroupColorName,
      flag_descriptions::kSyncedGroupColorDescription, flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(kSyncedGroupColor)},
+    {"cobrowse-aim-history", flag_descriptions::kCobrowseAimHistoryName,
+     flag_descriptions::kCobrowseAimHistoryDescription, flags_ui::kOsIos,
+     FEATURE_VALUE_TYPE(kCobrowseAimHistory)},
 });
 
 bool SkipConditionalFeatureEntry(const flags_ui::FeatureEntry& entry) {

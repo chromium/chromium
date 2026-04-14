@@ -312,6 +312,11 @@ const char kCacheIdentityListInChromeDescription[] =
 const char kChromeNextIaName[] = "ChromeNextIa";
 const char kChromeNextIaDescription[] = "Enables the chrome_next_ia feature.";
 
+const char kCobrowseAimHistoryName[] = "CobrowseAimHistory";
+const char kCobrowseAimHistoryDescription[] =
+    "When enabled, the history button in cobrowse is shown and can display the "
+    "list of all previous AIM conversations.";
+
 const char kCollaborationMessagingName[] = "Collaboration Messaging";
 const char kCollaborationMessagingDescription[] =
     "Enables the messaging framework within the collaboration feature, "

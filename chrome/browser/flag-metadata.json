@@ -1679,6 +1679,11 @@
     "expiry_milestone": 126
   },
   {
+    "name": "cobrowse-aim-history",
+    "owners": [ "ameurhosni@google.com", "bling-search@google.com" ],
+    "expiry_milestone": 154
+  },
+  {
     "name": "collaboration-entreprise-v2",
     "owners": ["haileywang@google.com", "//components/collaboration/OWNERS"],
     "expiry_milestone": 160
