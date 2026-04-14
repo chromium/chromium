@@ -1,14 +1,15 @@
 // Copyright 2023 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
-//
+
 #include "chrome/browser/extensions/api/document_scan/start_scan_runner.h"
 
 #include "base/strings/utf_string_conversions.h"
+#include "chrome/browser/ash/scanning/lorgnette_scanner_manager.h"
+#include "chrome/browser/ash/scanning/lorgnette_scanner_manager_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/extensions/extensions_dialogs.h"
 #include "chrome/common/pref_names.h"
-#include "chromeos/crosapi/mojom/document_scan.mojom.h"
 #include "components/prefs/pref_service.h"
 #include "extensions/browser/image_loader.h"
 #include "extensions/common/extension.h"
@@ -43,12 +44,10 @@ bool CanSkipConfirmation(content::BrowserContext* browser_context,
 
 StartScanRunner::StartScanRunner(gfx::NativeWindow native_window,
                                  content::BrowserContext* browser_context,
-                                 scoped_refptr<const Extension> extension,
-                                 crosapi::mojom::DocumentScan* document_scan)
+                                 scoped_refptr<const Extension> extension)
     : native_window_(native_window),
       browser_context_(browser_context),
       extension_(std::move(extension)),
-      document_scan_(document_scan),
       approved_(false) {
   CHECK(extension_);
   if (native_window_) {
@@ -68,7 +67,7 @@ StartScanRunner::SetStartScanConfirmationResultForTesting(bool val) {
 void StartScanRunner::Start(bool is_approved,
                             const std::string& scanner_name,
                             const std::string& scanner_handle,
-                            crosapi::mojom::StartScanOptionsPtr options,
+                            api::document_scan::StartScanOptions options,
                             StartScanCallback callback) {
   CHECK(!callback_) << "start scan call already in progress";
   callback_ = std::move(callback);
@@ -124,23 +123,29 @@ void StartScanRunner::OnConfirmationDialogClosed(bool approved) {
     return;
   }
 
-  auto response = crosapi::mojom::StartPreparedScanResponse::New();
-  response->result = crosapi::mojom::ScannerOperationResult::kAccessDenied;
-  response->scanner_handle = scanner_handle_;
+  lorgnette::StartPreparedScanResponse response;
+  response.set_result(lorgnette::OPERATION_RESULT_ACCESS_DENIED);
+  response.mutable_scanner()->set_token(scanner_handle_);
   std::move(callback_).Run(std::move(response));
 }
 
 void StartScanRunner::SendStartScanRequest() {
   approved_ = true;
-  document_scan_->StartPreparedScan(
-      scanner_handle_, std::move(options_),
-      base::BindOnce(&StartScanRunner::OnStartScanResponse,
-                     weak_ptr_factory_.GetWeakPtr()));
+  lorgnette::StartPreparedScanRequest request;
+  request.mutable_scanner()->set_token(scanner_handle_);
+  request.set_image_format(options_.format);
+  if (options_.max_read_size.has_value()) {
+    request.set_max_read_size(*options_.max_read_size);
+  }
+  ash::LorgnetteScannerManagerFactory::GetForBrowserContext(browser_context_)
+      ->StartPreparedScan(request,
+                          base::BindOnce(&StartScanRunner::OnStartScanResponse,
+                                         weak_ptr_factory_.GetWeakPtr()));
 }
 
 void StartScanRunner::OnStartScanResponse(
-    crosapi::mojom::StartPreparedScanResponsePtr response) {
-  std::move(callback_).Run(std::move(response));
+    const std::optional<lorgnette::StartPreparedScanResponse>& response) {
+  std::move(callback_).Run(response);
 }
 
 }  // namespace extensions

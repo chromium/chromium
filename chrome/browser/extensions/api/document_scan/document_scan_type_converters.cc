@@ -88,6 +88,17 @@ GetOptionGroupsResponse ConvertLorgnetteGetCurrentConfigResponse(
   return output;
 }
 
+StartScanResponse ConvertLorgnetteStartPreparedScanResponse(
+    const lorgnette::StartPreparedScanResponse& input) {
+  StartScanResponse output;
+  output.scanner_handle = input.scanner().token();
+  output.result = ConvertLorgnetteOperationResult(input.result());
+  if (input.has_job_handle()) {
+    output.job = input.job_handle().token();
+  }
+  return output;
+}
+
 ReadScanDataResponse ConvertLorgnetteReadScanDataResponse(
     const lorgnette::ReadScanDataResponse& input) {
   ReadScanDataResponse output;
@@ -576,31 +587,6 @@ TypeConverter<extensions::api::document_scan::SetOptionsResponse,
       output.options->additional_properties.Set(
           name, option.To<document_scan::ScannerOption>().ToValue());
     }
-  }
-  return output;
-}
-
-crosapi::mojom::StartScanOptionsPtr
-TypeConverter<crosapi::mojom::StartScanOptionsPtr,
-              extensions::api::document_scan::StartScanOptions>::
-    Convert(const extensions::api::document_scan::StartScanOptions& input) {
-  auto output = crosapi::mojom::StartScanOptions::New();
-  output->format = input.format;
-  if (input.max_read_size) {
-    output->max_read_size = *input.max_read_size;
-  }
-  return output;
-}
-
-extensions::api::document_scan::StartScanResponse
-TypeConverter<extensions::api::document_scan::StartScanResponse,
-              crosapi::mojom::StartPreparedScanResponsePtr>::
-    Convert(const crosapi::mojom::StartPreparedScanResponsePtr& input) {
-  document_scan::StartScanResponse output;
-  output.scanner_handle = input->scanner_handle;
-  output.result = ConvertTo<document_scan::OperationResult>(input->result);
-  if (input->job_handle.has_value()) {
-    output.job = input->job_handle.value();
   }
   return output;
 }

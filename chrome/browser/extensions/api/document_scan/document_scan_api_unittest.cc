@@ -6,15 +6,12 @@
 
 #include <memory>
 #include <optional>
-#include <string>
-#include <utility>
-#include <vector>
 
-#include "base/memory/ref_counted.h"
+#include "chrome/browser/ash/scanning/fake_lorgnette_scanner_manager.h"
+#include "chrome/browser/ash/scanning/lorgnette_scanner_manager_factory.h"
 #include "chrome/browser/extensions/extension_api_unittest.h"
+#include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "extensions/browser/api_test_utils.h"
-#include "testing/gmock/include/gmock/gmock-matchers.h"
-#include "testing/gtest/include/gtest/gtest.h"
 
 namespace extensions {
 
@@ -27,11 +24,26 @@ class DocumentScanScanFunctionTest : public ExtensionApiUnittest {
   ~DocumentScanScanFunctionTest() override = default;
 
   void SetUp() override {
+    create_services_subscription_.emplace(
+        BrowserContextDependencyManager::GetInstance()
+            ->RegisterCreateServicesCallbackForTesting(
+                base::BindRepeating(&DocumentScanScanFunctionTest::
+                                        OnWillCreateBrowserContextKeyedServices,
+                                    base::Unretained(this))));
     ExtensionApiUnittest::SetUp();
     function_->set_user_gesture(true);
   }
 
  protected:
+  void OnWillCreateBrowserContextKeyedServices(
+      content::BrowserContext* context) {
+    ash::LorgnetteScannerManagerFactory::GetInstance()->SetTestingFactory(
+        context, base::BindRepeating([](content::BrowserContext* context)
+                                         -> std::unique_ptr<KeyedService> {
+          return std::make_unique<ash::FakeLorgnetteScannerManager>();
+        }));
+  }
+
   std::string RunFunctionAndReturnError(const std::string& args) {
     function_->set_extension(extension());
     std::string error = api_test_utils::RunFunctionAndReturnError(
@@ -40,6 +52,7 @@ class DocumentScanScanFunctionTest : public ExtensionApiUnittest {
   }
 
   scoped_refptr<DocumentScanScanFunction> function_;
+  std::optional<base::CallbackListSubscription> create_services_subscription_;
 };
 
 TEST_F(DocumentScanScanFunctionTest, UserGestureRequiredError) {

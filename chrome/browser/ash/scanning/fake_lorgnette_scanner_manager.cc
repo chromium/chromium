@@ -248,9 +248,22 @@ void FakeLorgnetteScannerManager::GetCurrentConfig(
 void FakeLorgnetteScannerManager::StartPreparedScan(
     const lorgnette::StartPreparedScanRequest& request,
     StartPreparedScanCallback callback) {
+  std::optional<lorgnette::StartPreparedScanResponse> response;
+  if (start_prepared_scan_result_.has_value()) {
+    response.emplace();
+    response->mutable_scanner()->set_token(request.scanner().token());
+    if (request.has_max_read_size() && request.max_read_size() < 32768) {
+      response->set_result(lorgnette::OPERATION_RESULT_INVALID);
+    } else {
+      response->set_result(*start_prepared_scan_result_);
+      if (response->result() == lorgnette::OPERATION_RESULT_SUCCESS) {
+        response->mutable_job_handle()->set_token(base::StrCat(
+            {"job-handle-", base::NumberToString(++job_handle_count_)}));
+      }
+    }
+  }
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-      FROM_HERE,
-      base::BindOnce(std::move(callback), start_prepared_scan_response_));
+      FROM_HERE, base::BindOnce(std::move(callback), std::move(response)));
 }
 
 void FakeLorgnetteScannerManager::ReadScanData(
@@ -400,9 +413,9 @@ void FakeLorgnetteScannerManager::ConfigureGetCurrentConfigResponse(
   get_current_config_config_ = std::move(config);
 }
 
-void FakeLorgnetteScannerManager::SetStartPreparedScanResponse(
-    const std::optional<lorgnette::StartPreparedScanResponse>& response) {
-  start_prepared_scan_response_ = response;
+void FakeLorgnetteScannerManager::SetStartPreparedScanResult(
+    std::optional<lorgnette::OperationResult> result) {
+  start_prepared_scan_result_ = std::move(result);
 }
 
 void FakeLorgnetteScannerManager::ConfigureReadScanDataResponse(

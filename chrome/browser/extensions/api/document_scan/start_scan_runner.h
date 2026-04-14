@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_EXTENSIONS_API_DOCUMENT_SCAN_START_SCAN_RUNNER_H_
 #define CHROME_BROWSER_EXTENSIONS_API_DOCUMENT_SCAN_START_SCAN_RUNNER_H_
 
+#include <optional>
 #include <string>
 
 #include "base/auto_reset.h"
@@ -12,7 +13,8 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/types/expected.h"
-#include "chromeos/crosapi/mojom/document_scan.mojom.h"
+#include "chrome/common/extensions/api/document_scan.h"
+#include "chromeos/ash/components/dbus/lorgnette/lorgnette_service.pb.h"
 #include "extensions/common/extension_id.h"
 #include "ui/gfx/native_ui_types.h"
 
@@ -36,13 +38,12 @@ class Extension;
 // for permission and collecting the returned results.
 class StartScanRunner {
  public:
-  using StartScanCallback =
-      base::OnceCallback<void(crosapi::mojom::StartPreparedScanResponsePtr)>;
+  using StartScanCallback = base::OnceCallback<void(
+      const std::optional<lorgnette::StartPreparedScanResponse>&)>;
 
   StartScanRunner(gfx::NativeWindow native_window,
                   content::BrowserContext* browser_context,
-                  scoped_refptr<const Extension> extension,
-                  crosapi::mojom::DocumentScan* document_scan);
+                  scoped_refptr<const Extension> extension);
 
   ~StartScanRunner();
 
@@ -58,7 +59,7 @@ class StartScanRunner {
   void Start(bool is_approved,
              const std::string& scanner_name,
              const std::string& scanner_handle,
-             crosapi::mojom::StartScanOptionsPtr options,
+             api::document_scan::StartScanOptions options,
              StartScanCallback callback);
 
   const ExtensionId& extension_id() const;
@@ -80,7 +81,7 @@ class StartScanRunner {
 
   // Processes the result from requesting the scan and runs `callback_`.
   void OnStartScanResponse(
-      crosapi::mojom::StartPreparedScanResponsePtr response);
+      const std::optional<lorgnette::StartPreparedScanResponse>& response);
 
   gfx::NativeWindow native_window_;
   const raw_ptr<content::BrowserContext> browser_context_;
@@ -90,14 +91,12 @@ class StartScanRunner {
 
   scoped_refptr<const Extension> extension_;
 
-  const raw_ptr<crosapi::mojom::DocumentScan> document_scan_;
-
   // Keep track of whether the user approved the request or not.
   bool approved_;
 
   // Parameters for the in-progress call.
   std::string scanner_handle_;
-  crosapi::mojom::StartScanOptionsPtr options_;
+  api::document_scan::StartScanOptions options_;
   StartScanCallback callback_;
 
   base::WeakPtrFactory<StartScanRunner> weak_ptr_factory_{this};

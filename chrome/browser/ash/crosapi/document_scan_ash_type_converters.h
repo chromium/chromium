@@ -35,13 +35,6 @@ struct TypeConverter<crosapi::mojom::OpenScannerResponsePtr,
 };
 
 template <>
-struct TypeConverter<crosapi::mojom::StartPreparedScanResponsePtr,
-                     lorgnette::StartPreparedScanResponse> {
-  static crosapi::mojom::StartPreparedScanResponsePtr Convert(
-      const lorgnette::StartPreparedScanResponse& input);
-};
-
-template <>
 struct TypeConverter<std::optional<lorgnette::ScannerOption>,
                      crosapi::mojom::OptionSettingPtr> {
   static std::optional<lorgnette::ScannerOption> Convert(

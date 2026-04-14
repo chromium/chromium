@@ -194,19 +194,22 @@ void SimpleScanRunner::OnOpenScannerResponse(
   }
   scanner_handle_ = std::move(response->scanner_handle.value());
 
-  auto options = crosapi::mojom::StartScanOptions::New();
-  options->format = kScannerImageMimeTypePng;
+  lorgnette::StartPreparedScanRequest request;
+  request.mutable_scanner()->set_token(scanner_handle_);
+  request.set_image_format(kScannerImageMimeTypePng);
 
-  document_scan_->StartPreparedScan(
-      scanner_handle_, std::move(options),
-      base::BindOnce(&SimpleScanRunner::OnStartPreparedScanResponse,
-                     weak_ptr_factory_.GetWeakPtr()));
+  ash::LorgnetteScannerManagerFactory::GetForBrowserContext(browser_context_)
+      ->StartPreparedScan(
+          request,
+          base::BindOnce(&SimpleScanRunner::OnStartPreparedScanResponse,
+                         weak_ptr_factory_.GetWeakPtr()));
 }
 
 void SimpleScanRunner::OnStartPreparedScanResponse(
-    crosapi::mojom::StartPreparedScanResponsePtr response) {
-  if (response->result != crosapi::mojom::ScannerOperationResult::kSuccess ||
-      !response->job_handle.has_value()) {
+    const std::optional<lorgnette::StartPreparedScanResponse>& response) {
+  if (!response.has_value() ||
+      response->result() != lorgnette::OPERATION_RESULT_SUCCESS ||
+      !response->has_job_handle()) {
     // Closing the scanner will also return the response to the caller.
     lorgnette::CloseScannerRequest request;
     request.mutable_scanner()->set_token(scanner_handle_);
@@ -219,7 +222,7 @@ void SimpleScanRunner::OnStartPreparedScanResponse(
 
   // Scanners normally don't produce bytes right away, so start the read loop
   // after a delay.
-  job_handle_ = std::move(response->job_handle.value());
+  job_handle_ = response->job_handle().token();
   base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE,
       base::BindOnce(&SimpleScanRunner::ReadScanData,

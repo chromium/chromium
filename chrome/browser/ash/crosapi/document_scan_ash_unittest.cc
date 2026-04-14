@@ -73,15 +73,6 @@ class DocumentScanAshTest : public testing::Test {
     return future.Take();
   }
 
-  mojom::StartPreparedScanResponsePtr StartPreparedScan(
-      const std::string& scanner_handle,
-      mojom::StartScanOptionsPtr options) {
-    base::test::TestFuture<mojom::StartPreparedScanResponsePtr> future;
-    document_scan_ash().StartPreparedScan("scanner-handle", std::move(options),
-                                          future.GetCallback());
-    return future.Take();
-  }
-
   mojom::SetOptionsResponsePtr SetOptions(
       const std::string& scanner_handle,
       std::vector<mojom::OptionSettingPtr> options) {
@@ -136,35 +127,6 @@ TEST_F(DocumentScanAshTest, OpenScanner_GoodResponse) {
   ASSERT_TRUE(response->options.has_value());
   EXPECT_TRUE(response->options.value().contains("option1-name"));
   EXPECT_TRUE(response->options.value().contains("option2-name"));
-}
-
-TEST_F(DocumentScanAshTest, StartPreparedScan_BadResponse) {
-  GetLorgnetteScannerManager()->SetStartPreparedScanResponse(std::nullopt);
-  const mojom::StartPreparedScanResponsePtr response =
-      StartPreparedScan("scanner-handle", mojom::StartScanOptions::New());
-
-  EXPECT_EQ(response->result, mojom::ScannerOperationResult::kInternalError);
-  EXPECT_EQ(response->scanner_handle, "scanner-handle");
-  EXPECT_FALSE(response->job_handle.has_value());
-}
-
-TEST_F(DocumentScanAshTest, StartPreparedScan_GoodResponse) {
-  lorgnette::StartPreparedScanResponse fake_response;
-  fake_response.set_result(lorgnette::OPERATION_RESULT_SUCCESS);
-  fake_response.mutable_scanner()->set_token("scanner-handle");
-  fake_response.mutable_job_handle()->set_token("job-handle");
-  GetLorgnetteScannerManager()->SetStartPreparedScanResponse(
-      std::move(fake_response));
-  auto options = mojom::StartScanOptions::New();
-  options->format = "image/png";
-  options->max_read_size = 32768;
-  const mojom::StartPreparedScanResponsePtr response =
-      StartPreparedScan("scanner-handle", std::move(options));
-
-  EXPECT_EQ(response->result, mojom::ScannerOperationResult::kSuccess);
-  EXPECT_EQ(response->scanner_handle, "scanner-handle");
-  ASSERT_TRUE(response->job_handle.has_value());
-  EXPECT_EQ(response->job_handle.value(), "job-handle");
 }
 
 TEST_F(DocumentScanAshTest, SetOptions_BadResponse) {

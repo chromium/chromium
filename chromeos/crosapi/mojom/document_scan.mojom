@@ -347,31 +347,6 @@ struct OpenScannerResponse {
   map<string, ScannerOption>? options@3;
 };
 
-// Options for `StartPreparedScan()` that are not already specified via a
-// `ScannerOption`.  These tend to cover how the scanning framework itself works
-// as opposed to how a scanner works.
-struct StartScanOptions {
-  // The desired MIME type for returned scans.
-  string format@0;
-
-  // Maximum size of chunks returned from ReadScanData for this job.
-  [MinVersion=1]
-  uint32? max_read_size@1;
-};
-
-// The response from calling `StartPreparedScan()`.
-struct StartPreparedScanResponse {
-  // The same scanner handle that was passed to `StartPreparedScan()`.
-  string scanner_handle@0;
-
-  // The backend's job start result.
-  ScannerOperationResult result@1;
-
-  // If result is kSuccess, this contains a handle that can be used to read scan
-  // data or cancel the scan.
-  string? job_handle@2;
-};
-
 // Used to set an option from `ScannerOption`.
 struct OptionSetting {
   // The name of the option.
@@ -440,19 +415,12 @@ interface DocumentScan {
   // GetOptionGroups@8 was removed.
   // CloseScanner@4 was removed.
   // ReadScanData@6 was removed.
+  // StartPreparedScan@5 was removed.
 
   // Open an exclusive handle to a scanner returned from `GetScannerList()`.
   [MinVersion=2]
   OpenScanner@3(string client_id, string scanner_id)
       => (OpenScannerResponse response);
-
-  // Starts a scan on a scanner opened by `OpenScanner()`.  The scanner's
-  // current options, set via `SetOptions()`, are used along with the `options`
-  // specified.  `StartScanOptions.format` must match an entry from the
-  // scanner's `ScannerInfo.image_formats` or an error result will be returned.
-  [MinVersion=3]
-  StartPreparedScan@5(string scanner_handle, StartScanOptions options)
-      => (StartPreparedScanResponse response);
 
   // Sets the options for a scanner opened by `OpenScanner()`.
   [MinVersion=4]

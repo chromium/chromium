@@ -27,22 +27,14 @@ class FakeDocumentScanAsh : public crosapi::mojom::DocumentScan {
   void OpenScanner(const std::string& client_id,
                    const std::string& scanner_id,
                    OpenScannerCallback callback) override;
-  void StartPreparedScan(const std::string& scanner_handle,
-                         crosapi::mojom::StartScanOptionsPtr options,
-                         StartPreparedScanCallback callback) override;
   void SetOptions(const std::string& scanner_handle,
                   std::vector<crosapi::mojom::OptionSettingPtr> options,
                   SetOptionsCallback callback) override;
 
   void CloseScanner(const std::string& scanner_handle);
-  void CancelScan(const std::string& job_handle);
 
   void SetOpenScannerResponse(const std::string& connection_string,
                               crosapi::mojom::OpenScannerResponsePtr response);
-  void SetSmallestMaxReadSize(size_t max_size);
-  void SetStartPreparedScanResponse(
-      const std::string& connection_string,
-      crosapi::mojom::StartPreparedScanResponsePtr response);
 
  private:
   struct OpenScannerState {
@@ -53,21 +45,13 @@ class FakeDocumentScanAsh : public crosapi::mojom::DocumentScan {
 
     std::string client_id;
     std::string connection_string;
-    std::optional<std::string> job_handle;
-    bool cancelled;
   };
 
   size_t handle_count_ = 0;  // How many times a handle has been issued.
-  size_t smallest_max_read_ = 0;
 
   // Map from connection strings to the OpenScannerResponsePtr that should be
   // returned.
   std::map<std::string, crosapi::mojom::OpenScannerResponsePtr> open_responses_;
-
-  // Map from connection strings to the StartPreparedScanResponsePtr that should
-  // be returned.
-  std::map<std::string, crosapi::mojom::StartPreparedScanResponsePtr>
-      start_responses_;
 
   // Map from scanner handles to the original client and scanner used to create
   // the handle.

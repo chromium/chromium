@@ -507,16 +507,16 @@ void DocumentScanAPIHandler::StartScan(
   auto handle_it = state.scanner_handles.find(scanner_handle);
   if (handle_it == state.scanner_handles.end() ||
       !state.active_scanner_ids.contains(handle_it->second)) {
-    auto response = crosapi::mojom::StartPreparedScanResponse::New();
-    response->scanner_handle = scanner_handle;
-    response->result = crosapi::mojom::ScannerOperationResult::kInvalid;
-    OnStartScanResponse(/*runner=*/nullptr, std::move(callback),
-                        std::move(response));
+    lorgnette::StartPreparedScanResponse response;
+    response.mutable_scanner()->set_token(scanner_handle);
+    response.set_result(lorgnette::OPERATION_RESULT_INVALID);
+    OnStartScanResponse(scanner_handle, /*runner=*/nullptr, std::move(callback),
+                        response);
     return;
   }
 
   auto start_runner = std::make_unique<StartScanRunner>(
-      native_window, browser_context_, std::move(extension), document_scan_);
+      native_window, browser_context_, std::move(extension));
 
   bool approved = state.approved_scanner_handles.contains(scanner_handle) ||
                   (user_gesture && state.approved_scanner_ids.contains(
@@ -524,18 +524,26 @@ void DocumentScanAPIHandler::StartScan(
   StartScanRunner* raw_runner = start_runner.get();
   raw_runner->Start(
       approved, state.active_scanner_ids[handle_it->second].name,
-      scanner_handle, crosapi::mojom::StartScanOptions::From(options),
+      scanner_handle, std::move(options),
       base::BindOnce(&DocumentScanAPIHandler::OnStartScanResponse,
-                     weak_ptr_factory_.GetWeakPtr(), std::move(start_runner),
-                     std::move(callback)));
+                     weak_ptr_factory_.GetWeakPtr(), scanner_handle,
+                     std::move(start_runner), std::move(callback)));
 }
 
 void DocumentScanAPIHandler::OnStartScanResponse(
+    const std::string& scanner_handle,
     std::unique_ptr<StartScanRunner> runner,
     StartScanCallback callback,
-    crosapi::mojom::StartPreparedScanResponsePtr response) {
-  auto api_response =
-      std::move(response).To<api::document_scan::StartScanResponse>();
+    const std::optional<lorgnette::StartPreparedScanResponse>& response) {
+  api::document_scan::StartScanResponse api_response;
+  if (response.has_value()) {
+    api_response =
+        api::document_scan::ConvertLorgnetteStartPreparedScanResponse(
+            *response);
+  } else {
+    api_response.scanner_handle = scanner_handle;
+    api_response.result = api::document_scan::OperationResult::kInternalError;
+  }
 
   if (runner) {
     ExtensionState& state = extension_state_[runner->extension_id()];

@@ -657,45 +657,21 @@ TEST(DocumentScanTypeConvertersTest, SetOptionsResponse_NonEmpty) {
   EXPECT_TRUE(output.options->additional_properties.contains("option2"));
 }
 
-TEST(DocumentScanTypeConvertersTest, StartScanOptions_Empty) {
-  document_scan::StartScanOptions input;
-  auto output = mojom::StartScanOptions::From(input);
-  EXPECT_TRUE(output->format.empty());
-}
-
-TEST(DocumentScanTypeConvertersTest, StartScanOptions_Success) {
-  document_scan::StartScanOptions input;
-  input.format = "format";
-  auto output = mojom::StartScanOptions::From(input);
-  EXPECT_EQ(output->format, "format");
-  EXPECT_FALSE(output->max_read_size.has_value());
-}
-
-TEST(DocumentScanTypeConvertersTest, StartScanOptions_WithMaxReadSize) {
-  document_scan::StartScanOptions input;
-  input.format = "format";
-  input.max_read_size = 100000;
-  auto output = mojom::StartScanOptions::From(input);
-  EXPECT_EQ(output->format, "format");
-  ASSERT_TRUE(output->max_read_size.has_value());
-  EXPECT_EQ(output->max_read_size.value(), 100000U);
-}
-
 TEST(DocumentScanTypeConvertersTest, StartScanResponse_Empty) {
-  auto input = mojom::StartPreparedScanResponse::New();
-  auto output = input.To<document_scan::StartScanResponse>();
+  lorgnette::StartPreparedScanResponse input;
+  auto output = document_scan::ConvertLorgnetteStartPreparedScanResponse(input);
   EXPECT_EQ(output.result, document_scan::OperationResult::kUnknown);
   EXPECT_TRUE(output.scanner_handle.empty());
   EXPECT_FALSE(output.job.has_value());
 }
 
 TEST(DocumentScanTypeConvertersTest, StartScanResponse_Success) {
-  auto input = mojom::StartPreparedScanResponse::New();
-  input->scanner_handle = "scanner-handle";
-  input->result = mojom::ScannerOperationResult::kSuccess;
-  input->job_handle = "job-handle";
+  lorgnette::StartPreparedScanResponse input;
+  input.mutable_scanner()->set_token("scanner-handle");
+  input.set_result(lorgnette::OPERATION_RESULT_SUCCESS);
+  input.mutable_job_handle()->set_token("job-handle");
 
-  auto output = input.To<document_scan::StartScanResponse>();
+  auto output = document_scan::ConvertLorgnetteStartPreparedScanResponse(input);
   EXPECT_EQ(output.result, document_scan::OperationResult::kSuccess);
   EXPECT_EQ(output.scanner_handle, "scanner-handle");
   ASSERT_TRUE(output.job.has_value());

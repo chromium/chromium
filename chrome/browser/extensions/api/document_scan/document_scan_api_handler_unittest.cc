@@ -124,6 +124,8 @@ class DocumentScanAPIHandlerTest : public testing::Test {
         lorgnette::OPERATION_RESULT_SUCCESS);
     GetLorgnetteScannerManager()->ConfigureReadScanDataResponse(
         lorgnette::OPERATION_RESULT_SUCCESS);
+    GetLorgnetteScannerManager()->SetStartPreparedScanResult(
+        lorgnette::OPERATION_RESULT_SUCCESS);
   }
 
   void TearDown() override {
@@ -199,7 +201,7 @@ class DocumentScanAPIHandlerTest : public testing::Test {
         const std::optional<lorgnette::ListScannersResponse>&>
         future;
     scanner_manager->GetScannerInfoList(
-        /*client_id=*/std::string(),
+        extension_->id(),
         ash::LorgnetteScannerManager::LocalScannerFilter::
             kIncludeNetworkScanners,
         ash::LorgnetteScannerManager::SecureScannerFilter::
@@ -344,14 +346,9 @@ TEST_F(DocumentScanAPIHandlerTest, SimpleScan_OpenFails) {
 }
 
 TEST_F(DocumentScanAPIHandlerTest, SimpleScan_StartScanFails) {
-  auto scanner_info = CreateTestScannerInfo();
-  auto scan_response = crosapi::mojom::StartPreparedScanResponse::New();
-  scan_response->result = crosapi::mojom::ScannerOperationResult::kIoError;
-
-  GetDocumentScan().SetStartPreparedScanResponse(scanner_info.name(),
-                                                 std::move(scan_response));
-  AddScanners({std::move(scanner_info)});
-
+  AddScanners({CreateTestScannerInfo()});
+  GetLorgnetteScannerManager()->SetStartPreparedScanResult(
+      lorgnette::OPERATION_RESULT_IO_ERROR);
   SimpleScanFuture future;
   document_scan_api_handler_->SimpleScan(extension_, {"image/png"},
                                          future.GetCallback());
@@ -1487,6 +1484,27 @@ TEST_F(DocumentScanAPIHandlerTest, StartScan_HandleNotMine) {
   EXPECT_FALSE(response.job.has_value());
 }
 
+TEST_F(DocumentScanAPIHandlerTest, StartScan_DBusFailure) {
+  std::string scanner_handle = OpenScannerForExtension(extension_);
+  EXPECT_FALSE(scanner_handle.empty());
+
+  GetLorgnetteScannerManager()->SetStartPreparedScanResult(std::nullopt);
+
+  base::AutoReset<std::optional<bool>> testing_scope =
+      StartScanRunner::SetStartScanConfirmationResultForTesting(true);
+  api::document_scan::StartScanOptions options;
+  StartScanFuture future;
+  document_scan_api_handler_->StartScan(
+      /*native_window=*/nullptr, extension_, /*user_gesture=*/false,
+      scanner_handle, std::move(options), future.GetCallback());
+
+  const api::document_scan::StartScanResponse& response = future.Get();
+  EXPECT_EQ(response.result,
+            api::document_scan::OperationResult::kInternalError);
+  EXPECT_EQ(response.scanner_handle, scanner_handle);
+  EXPECT_FALSE(response.job.has_value());
+}
+
 TEST_F(DocumentScanAPIHandlerTest, CancelScan_InvalidJob) {
   // Since this job-handle is not valid, an error should get returned.
   CancelScanFuture future;
@@ -1680,10 +1698,10 @@ TEST_F(DocumentScanAPIHandlerTest, ReadScanData_ReadFromClosedScannerFails) {
 
   std::string scanner_handle = OpenScannerForExtension(extension_);
   EXPECT_FALSE(scanner_handle.empty());
+
   std::string job_handle = StartScanForScannerHandle(
       extension_, /*user_gesture=*/false, scanner_handle);
   EXPECT_FALSE(job_handle.empty());
-
   const std::vector<std::string> scan_data = {kScanDataItem, kScanDataItem, ""};
   GetLorgnetteScannerManager()->ConfigureReadScanDataResponse(
       lorgnette::OPERATION_RESULT_EOF, scan_data);

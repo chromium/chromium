@@ -35,8 +35,6 @@ namespace extensions {
 
 namespace {
 
-constexpr size_t kRealBackendMinimumReadSize = 32768;
-
 // Enum used to initialize the parameterized test with different types of
 // extensions.
 enum class ExtensionType {
@@ -115,8 +113,6 @@ class DocumentScanApiTest : public ExtensionApiTest,
     DocumentScanAPIHandler::Get(profile())->SetDocumentScanForTesting(
         &document_scan_ash_);
 
-    document_scan()->SetSmallestMaxReadSize(kRealBackendMinimumReadSize);
-
     auto* lorgnette_manager = static_cast<ash::FakeLorgnetteScannerManager*>(
         ash::LorgnetteScannerManagerFactory::GetForBrowserContext(profile()));
 
@@ -137,6 +133,10 @@ class DocumentScanApiTest : public ExtensionApiTest,
     group->add_members("item2");
     lorgnette_manager->ConfigureGetCurrentConfigResponse(
         lorgnette::OPERATION_RESULT_SUCCESS, std::move(config));
+
+    // Set up Lorgnette's StartPreparedScan response.
+    lorgnette_manager->SetStartPreparedScanResult(
+        lorgnette::OPERATION_RESULT_SUCCESS);
   }
 
   void SetUpBrowserContextKeyedServices(

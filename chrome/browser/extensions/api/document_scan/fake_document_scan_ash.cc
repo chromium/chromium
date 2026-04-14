@@ -22,10 +22,7 @@ FakeDocumentScanAsh::OpenScannerState::~OpenScannerState() = default;
 FakeDocumentScanAsh::OpenScannerState::OpenScannerState(
     const std::string& client_id,
     const std::string& connection_string)
-    : client_id(client_id),
-      connection_string(connection_string),
-      cancelled(false) {}
-
+    : client_id(client_id), connection_string(connection_string) {}
 
 void FakeDocumentScanAsh::OpenScanner(const std::string& client_id,
                                       const std::string& scanner_id,
@@ -66,43 +63,6 @@ void FakeDocumentScanAsh::OpenScanner(const std::string& client_id,
 
 void FakeDocumentScanAsh::CloseScanner(const std::string& scanner_handle) {
   open_scanners_.erase(scanner_handle);
-}
-
-void FakeDocumentScanAsh::StartPreparedScan(
-    const std::string& scanner_handle,
-    crosapi::mojom::StartScanOptionsPtr options,
-    StartPreparedScanCallback callback) {
-  if (!open_scanners_.contains(scanner_handle)) {
-    auto response = crosapi::mojom::StartPreparedScanResponse::New();
-    response->scanner_handle = scanner_handle;
-    response->result = crosapi::mojom::ScannerOperationResult::kInvalid;
-    std::move(callback).Run(std::move(response));
-    return;
-  }
-
-  auto response = crosapi::mojom::StartPreparedScanResponse::New();
-  response->scanner_handle = scanner_handle;
-  if (options->max_read_size.has_value() &&
-      options->max_read_size.value() < smallest_max_read_) {
-    response->result = crosapi::mojom::ScannerOperationResult::kInvalid;
-    std::move(callback).Run(std::move(response));
-    return;
-  }
-  if (start_responses_.contains(
-          open_scanners_.at(scanner_handle).connection_string)) {
-    const auto& template_response = start_responses_.at(
-        open_scanners_.at(scanner_handle).connection_string);
-    response->result = template_response->result;
-    response->job_handle = template_response->job_handle;
-  } else {
-    response->result = crosapi::mojom::ScannerOperationResult::kSuccess;
-    response->job_handle = base::StringPrintf(
-        "%s-job-%03zu", scanner_handle.c_str(), ++handle_count_);
-  }
-  open_scanners_.at(scanner_handle).job_handle = response->job_handle;
-  open_scanners_.at(scanner_handle).cancelled = false;
-
-  std::move(callback).Run(std::move(response));
 }
 
 void FakeDocumentScanAsh::SetOptions(
@@ -231,30 +191,10 @@ void FakeDocumentScanAsh::SetOptions(
   std::move(callback).Run(std::move(response));
 }
 
-void FakeDocumentScanAsh::CancelScan(const std::string& job_handle) {
-  for (auto& [scanner_handle, state] : open_scanners_) {
-    if (state.job_handle.value_or("") == job_handle) {
-      state.job_handle.reset();
-      state.cancelled = true;
-      break;
-    }
-  }
-}
-
 void FakeDocumentScanAsh::SetOpenScannerResponse(
     const std::string& connection_string,
     crosapi::mojom::OpenScannerResponsePtr response) {
   open_responses_[connection_string] = std::move(response);
-}
-
-void FakeDocumentScanAsh::SetStartPreparedScanResponse(
-    const std::string& connection_string,
-    crosapi::mojom::StartPreparedScanResponsePtr response) {
-  start_responses_[connection_string] = std::move(response);
-}
-
-void FakeDocumentScanAsh::SetSmallestMaxReadSize(size_t max_size) {
-  smallest_max_read_ = max_size;
 }
 
 }  // namespace extensions
