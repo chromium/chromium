@@ -105,6 +105,20 @@ ui::InteractionSequence::Builder CriticalUserJourneySession::BuildSequence(
 
 void CriticalUserJourneySession::OnStepStarted(int metric_id,
                                                base::TimeDelta timeout) {
+  base::TimeTicks now = base::TimeTicks::Now();
+
+  if (last_reached_metric_id_ == kNoMetricId) {
+    journey_start_time_ = now;
+  } else {
+    base::TimeDelta step_duration = now - last_step_time_;
+    std::string histogram_name =
+        base::StrCat({"CriticalUserJourney.", journey_->name(), ".Step",
+                      base::NumberToString(last_reached_metric_id_), "ToStep",
+                      base::NumberToString(metric_id), "Duration"});
+    base::UmaHistogramMediumTimes(histogram_name, step_duration);
+  }
+
+  last_step_time_ = now;
   last_reached_metric_id_ = metric_id;
   base::UmaHistogramSparse(
       base::StrCat({"CriticalUserJourney.", journey_->name(), ".StepReached"}),
@@ -128,7 +142,7 @@ void CriticalUserJourneySession::OnAborted(
   timeout_timer_.Stop();
   int aborted_metric_id = last_reached_metric_id_;
   if (!data.step_description.empty()) {
-    CHECK_NE(aborted_metric_id, -1);
+    CHECK_NE(aborted_metric_id, kNoMetricId);
     base::StringToInt(data.step_description, &aborted_metric_id);
   }
 
@@ -148,6 +162,17 @@ void CriticalUserJourneySession::OnAborted(
 
 void CriticalUserJourneySession::OnCompleted() {
   timeout_timer_.Stop();
+
+  // Record overall duration
+  if (!journey_start_time_.is_null()) {
+    base::TimeDelta overall_duration =
+        base::TimeTicks::Now() - journey_start_time_;
+    base::UmaHistogramMediumTimes(
+        base::StrCat(
+            {"CriticalUserJourney.", journey_->name(), ".OverallDuration"}),
+        overall_duration);
+  }
+
   base::UmaHistogramEnumeration(
       base::StrCat({"CriticalUserJourney.", journey_->name(), ".Result"}),
       JourneyResult::kCompleted);

@@ -46,6 +46,7 @@ source_set("impl") {
 source_set("unit_tests") {
   testonly = true
   sources = [
+    "critical_user_journey_registry_unittest.cc",
     "critical_user_journey_session_unittest.cc",
     "critical_user_journey_unittest.cc",
   ]

@@ -12,6 +12,7 @@
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "ui/base/interaction/interaction_sequence.h"
 
@@ -78,7 +79,11 @@ class CriticalUserJourneySession {
   base::OnceCallback<void(JourneyResult)> on_done_callback_;
   std::unique_ptr<ui::InteractionSequence> sequence_;
 
-  int last_reached_metric_id_ = -1;
+  static constexpr int kNoMetricId = -1;
+
+  int last_reached_metric_id_ = kNoMetricId;
+  base::TimeTicks journey_start_time_;
+  base::TimeTicks last_step_time_;
   base::OneShotTimer timeout_timer_;
   bool was_timeout_ = false;
 

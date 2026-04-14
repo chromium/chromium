@@ -185,6 +185,16 @@ IN_PROC_BROWSER_TEST_F(CriticalUserJourneyServiceInteractiveTest,
   histograms.ExpectBucketCount(step_reached, 2, 1);
   histograms.ExpectUniqueSample(
       result, CriticalUserJourneySession::JourneyResult::kCompleted, 1);
+
+  // Verify timing metrics are recorded.
+  histograms.ExpectTotalCount(
+      base::StrCat(
+          {GetMetricJourneyPrefix(kAppMenuJourney), ".Step1ToStep2Duration"}),
+      1);
+  histograms.ExpectTotalCount(
+      base::StrCat(
+          {GetMetricJourneyPrefix(kAppMenuJourney), ".OverallDuration"}),
+      1);
 }
 
 IN_PROC_BROWSER_TEST_F(CriticalUserJourneyServiceInteractiveTest,
