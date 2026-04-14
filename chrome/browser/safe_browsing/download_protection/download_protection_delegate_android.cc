@@ -311,11 +311,6 @@ bool DownloadProtectionDelegateAndroid::ShouldSampleEligibleFile() const {
   if (sample_percentage < 0 || sample_percentage > 100) {
     sample_percentage = 100;
   }
-  // This ensures that in telemetry-only mode, we sample at most 10% of
-  // eligible downloads.
-  if (kMaliciousApkDownloadCheckTelemetryOnly.Get()) {
-    sample_percentage = std::min(sample_percentage, 10);
-  }
   // Avoid the syscall if possible.
   if (sample_percentage >= 100) {
     CHECK_EQ(sample_percentage, 100);
