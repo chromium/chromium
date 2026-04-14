@@ -183,25 +183,46 @@ void ExternalBeginFrameSourceAndroid::AChoreographerImpl::VsyncCallback(
 
   (*self)->OnVSync(frame_time_nanos, possible_deadlines, self);
 
+  // When `viz` is enabled all the possible deadlines are emitted as trace event
+  // arguments, and in case `viz` is not enabled just
+  // `chrome_preferred_frame_timeline` is populated. Android can provide us
+  // with various deadlines each vsync and we wouldn't want to emit all possible
+  // deadlines for each vsync to save some trace buffer space.
   TRACE_EVENT_END("toplevel,graphics.pipeline,viz", [&](perfetto::EventContext
                                                             ctx) {
-    bool emit_choreographer_data_in_trace_event = false;
-    TRACE_EVENT_CATEGORY_GROUP_ENABLED("viz",
-                                       &emit_choreographer_data_in_trace_event);
-    if (!emit_choreographer_data_in_trace_event) {
-      return;
-    }
     auto* data = ctx.event<perfetto::protos::pbzero::ChromeTrackEvent>()
                      ->set_android_choreographer_frame_callback_data();
+
+    bool viz_enabled = false;
+    TRACE_EVENT_CATEGORY_GROUP_ENABLED("viz", &viz_enabled);
+    // TODO(crbug.com/500826814): Move to appropriate place once chrome chooses
+    // its own preferred deadline.
+    auto populate_timeline =
+        [](perfetto::protos::pbzero::
+               AndroidChoreographerFrameCallbackData_FrameTimeline* timeline,
+           const PossibleDeadline& deadline) {
+          timeline->set_vsync_id(deadline.vsync_id);
+          timeline->set_latch_delta_us(deadline.latch_delta.InMicroseconds());
+          timeline->set_present_delta_us(
+              deadline.present_delta.InMicroseconds());
+        };
+
+    const bool emit_only_preferred_deadline = !viz_enabled;
+    if (emit_only_preferred_deadline) {
+      const auto& deadline = possible_deadlines.deadlines[preferred_index];
+      auto* timeline = data->set_chrome_preferred_frame_timeline();
+      populate_timeline(timeline, deadline);
+      return;
+    }
+
     auto frame_time_us = base::TimeTicks::FromJavaNanoTime(frame_time_nanos)
                              .since_origin()
                              .InMicroseconds();
     data->set_frame_time_us(frame_time_us);
+
     for (const auto& deadline : possible_deadlines.deadlines) {
       auto* timeline = data->add_frame_timeline();
-      timeline->set_vsync_id(deadline.vsync_id);
-      timeline->set_latch_delta_us(deadline.latch_delta.InMicroseconds());
-      timeline->set_present_delta_us(deadline.present_delta.InMicroseconds());
+      populate_timeline(timeline, deadline);
     }
     data->set_preferred_frame_timeline_index(preferred_index);
   });

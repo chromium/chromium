@@ -2624,7 +2624,7 @@ message EventTiming {
 // Frame information provided by Android's Choreographer.
 // See
 // https://developer.android.com/ndk/reference/group/choreographer#achoreographerframecallbackdata.
-// Next ID: 4
+// Next ID: 5
 message AndroidChoreographerFrameCallbackData {
   // The time in microseconds at which the frame started being rendered.
   // See
@@ -2662,6 +2662,9 @@ message AndroidChoreographerFrameCallbackData {
   // See
   // https://developer.android.com/ndk/reference/group/choreographer#achoreographerframecallbackdata_getpreferredframetimelineindex.
   optional int64 preferred_frame_timeline_index = 3;
+
+  // The chrome-preferred frame timeline.
+  optional FrameTimeline chrome_preferred_frame_timeline = 4;
 }
 
 message ChromeFrameReporter2 {
