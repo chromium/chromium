@@ -112,7 +112,6 @@ try_.builder(
     },
     siso_remote_jobs = siso.remote_jobs.LOW_JOBS_FOR_CQ,
 )
-
 try_.builder(
     name = "linux-arm64-rel-fyi",
     mirrors = ["ci/linux-arm64-rel-fyi"],
@@ -123,7 +122,18 @@ try_.builder(
         ],
     ),
     contact_team_email = "chrome-linux-engprod@google.com",
-    siso_remote_jobs = siso.remote_jobs.LOW_JOBS_FOR_CQ,
+)
+
+try_.builder(
+    name = "linux-arm64-dbg-fyi",
+    mirrors = ["ci/linux-arm64-dbg-fyi"],
+    gn_args = gn_args.config(
+        configs = [
+            "ci/linux-arm64-dbg-fyi",
+            "debug_try_builder",
+        ],
+    ),
+    contact_team_email = "chrome-linux-engprod@google.com",
 )
 
 try_.builder(
