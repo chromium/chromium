@@ -107,8 +107,14 @@ UIImage* ReadImageForSnapshotIDFromDisk(SnapshotID snapshot_id,
   base::FilePath file_path =
       ImagePath(snapshot_id, IMAGE_TYPE_COLOR, image_scale, directory);
   NSString* path = base::apple::FilePathToNSString(file_path);
+  // Downsampled images are stored at half the device scale, so read
+  // them back at the same reduced scale to preserve point dimensions.
+  CGFloat device_scale = [SnapshotImageScale floatImageScaleForDevice];
+  CGFloat read_scale = IsSnapshotDownsampleImageEnabled()
+                           ? (device_scale / 2.0)
+                           : device_scale;
   return [UIImage imageWithData:[NSData dataWithContentsOfFile:path]
-                          scale:[SnapshotImageScale floatImageScaleForDevice]];
+                          scale:read_scale];
 }
 
 // Helper function to write an image to disk.

@@ -61,15 +61,14 @@ LegacySnapshotLRUCache<UIImage*>* CreateDefaultSnapshotLRUCache() {
 
 }  // namespace
 
-// Halves the image dimensions for disk storage. This reduces file size and
-// I/O while the tab grid displays thumbnails at a fraction of the original
-// resolution anyway.
+// Halves the pixel density of the image for disk storage while keeping
+// the same point dimensions, so UIKit layout stays correct when the
+// image is read back from disk.
 UIImage* DownsampledForStorage(UIImage* image) {
-  CGSize target_size =
-      CGSizeMake(image.size.width / 2.0, image.size.height / 2.0);
+  CGSize target_size = image.size;
   UIGraphicsImageRendererFormat* format =
       [[UIGraphicsImageRendererFormat alloc] init];
-  format.scale = 1.0;
+  format.scale = image.scale / 2.0;
   UIGraphicsImageRenderer* renderer =
       [[UIGraphicsImageRenderer alloc] initWithSize:target_size format:format];
   return [renderer imageWithActions:^(UIGraphicsImageRendererContext* context) {

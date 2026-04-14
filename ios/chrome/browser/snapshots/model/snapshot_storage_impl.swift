@@ -238,14 +238,13 @@ let kLRUCacheAdditionalCapacityForPinnedTabsEnabled = 4
     lruCache.removeAllObjects()
   }
 
-  // Halves the image dimensions for disk storage. This reduces file size and
-  // I/O while the tab grid displays thumbnails at a fraction of the original
-  // resolution anyway.
+  // Halves the pixel density of the image for disk storage while keeping
+  // the same point dimensions, so UIKit layout stays correct when the
+  // image is read back from disk.
   private static func downsampledForStorage(_ image: UIImage) -> UIImage {
-    let targetSize = CGSize(
-      width: image.size.width / 2.0, height: image.size.height / 2.0)
+    let targetSize = image.size
     let format = UIGraphicsImageRendererFormat()
-    format.scale = 1.0
+    format.scale = image.scale / 2.0
     let renderer = UIGraphicsImageRenderer(size: targetSize, format: format)
     return renderer.image { _ in
       image.draw(in: CGRect(origin: .zero, size: targetSize))
