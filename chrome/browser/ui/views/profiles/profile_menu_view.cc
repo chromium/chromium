@@ -899,6 +899,9 @@ ProfileMenuView::GetIdentitySectionParams(const ProfileAttributesEntry& entry) {
       params.email_subtitle = base::UTF8ToUTF16(primary_account_info.email);
       break;
     case signin_util::SignedInState::kSignInPending:
+    // Only reachable when the sync service is not available, so it is treated
+    // as `kSignInPending`.
+    case signin_util::SignedInState::kSyncPaused:
       button_type = ActionableItem::kSigninReauthButton;
       params.subtitle = l10n_util::GetStringFUTF16(
           IDS_SETTINGS_PENDING_STATE_DESCRIPTION,
@@ -909,9 +912,6 @@ ProfileMenuView::GetIdentitySectionParams(const ProfileAttributesEntry& entry) {
       params.has_dotted_ring = true;
       signin_metrics::LogSigninPendingOffered(access_point);
       break;
-    case signin_util::SignedInState::kSyncPaused:
-      // Sync paused is covered by the sync errors path.
-      NOTREACHED();
   }
 
   // Sets the default action if needed - if a button text was explicitly set and
