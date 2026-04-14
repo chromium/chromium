@@ -346,12 +346,7 @@ void AutofillBottomSheetTabHelper::ShowProactivePasswordGenerationBottomSheet(
 void AutofillBottomSheetTabHelper::AttachPasswordListeners(
     const std::vector<autofill::FieldRendererId>& renderer_ids,
     const std::string& frame_id) {
-  bool silenced = HasReachedCredentialBottomSheetDismissLimit();
-
-  base::UmaHistogramBoolean("IOS.PasswordBottomSheet.Activated",
-                            /*sample=*/!silenced);
-
-  if (silenced) {
+  if (HasReachedCredentialBottomSheetDismissLimit()) {
     // Do not allow displaying the sheet if silenced.
     return;
   }

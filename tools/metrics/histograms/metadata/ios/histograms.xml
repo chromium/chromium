@@ -4974,18 +4974,6 @@ chromium-metrics-reviews@google.com.
   <summary>The length of the selection received from javascript.</summary>
 </histogram>
 
-<histogram name="IOS.PasswordBottomSheet.Activated" enum="Boolean"
-    expires_after="2026-03-22">
-  <owner>vincb@google.com</owner>
-  <owner>tmartino@google.com</owner>
-  <owner>bling-transactions@google.com</owner>
-  <summary>
-    Tracks whether the password suggestion bottom sheet is activated. Recorded
-    when a password form is parsed with available credentials, which corresponds
-    to the moment where the bottom sheet listeners are attached.
-  </summary>
-</histogram>
-
 <histogram name="IOS.PasswordBottomSheet.Details.ValidCredential"
     enum="Boolean" expires_after="2026-10-31">
   <owner>sugoi@chromium.org</owner>
