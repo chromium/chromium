@@ -71,12 +71,15 @@ OpenXrSpatialFrameworkManager::OpenXrSpatialFrameworkManager(
   // to help abstract some of the details of creating the child structs, even
   // though at present we only have a configuration base.
   std::vector<OpenXrSpatialCapabilityConfigurationBase> capability_configs;
-  std::vector<XrSpatialCapabilityConfigurationBaseHeaderEXT*>
-      capability_config_ptrs;
+  capability_configs.reserve(capability_configuration.size());
   for (auto& [capability, components] : capability_configuration) {
     capability_configs.emplace_back(capability, components);
-    capability_config_ptrs.push_back(
-        capability_configs.back().GetAsBaseHeader());
+  }
+
+  std::vector<XrSpatialCapabilityConfigurationBaseHeaderEXT*>
+      capability_config_ptrs;
+  for (auto& config : capability_configs) {
+    capability_config_ptrs.push_back(config.GetAsBaseHeader());
   }
 
   XrSpatialContextCreateInfoEXT create_info = {
