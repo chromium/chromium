@@ -502,6 +502,8 @@ def _native_value_tag_impl(idl_type, argument=None):
 
     if "PassAsSpan" in idl_type.effective_annotations:
         assert argument, "PassAsSpan can only appear on an argument"
+        assert "AllowResizable" not in idl_type.effective_annotations, (
+            "[AllowResizable] is not supported with [PassAsSpan]")
         conversion_arguments = _pass_as_span_conversion_arguments(idl_type)
         return "PassAsSpan<{}>".format(", ".join(conversion_arguments))
 

@@ -49,6 +49,7 @@ def _build_supported_extended_attributes():
           applicable_to=[T.ATTRIBUTE, T.OPERATION],
           forms=F.IDENT,
           values=["Everything", "Nothing"]),
+        E("AllowResizable", applicable_to=[T.TYPE]),
         E("AllowShared", applicable_to=[T.TYPE]),
         E("BufferSourceTypeNoSizeLimit", applicable_to=[T.TYPE]),
         E("CEReactions", applicable_to=[T.ATTRIBUTE, T.OPERATION]),

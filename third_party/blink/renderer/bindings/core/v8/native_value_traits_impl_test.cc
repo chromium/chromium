@@ -482,22 +482,52 @@ TEST(NativeValueTraitsImplTest, PassAsSpanDataView) {
                   scope.GetIsolate(), 0, subarray, exception_state)
                   .as_span(),
               testing::IsEmpty());
+}
 
-  v8::Local<v8::Object> v8_object = EvaluateScriptForObject(scope, R"(
-        (function() {
-          const arr = new ArrayBuffer(8, {maxByteLength: 8});
-          const view = new Uint8Array(arr);
+TEST(NativeValueTraitsImplTest, PassAsSpanResizable) {
+  test::TaskEnvironment task_environment;
+  V8TestingScope scope;
 
-          for (let i = 0; i < 8; ++i) view[i] = i;
-          arr.resize(4);
-          return view;
-        })()
-      )");
+  {
+    v8::Local<v8::Object> v8_object = EvaluateScriptForObject(scope, R"(
+        new ArrayBuffer(8, {maxByteLength: 8});
+    )");
 
-  EXPECT_THAT(NativeValueTraits<PassAsSpanShared>::ArgumentValue(
-                  scope.GetIsolate(), 0, v8_object, exception_state)
-                  .as_span(),
-              testing::ElementsAre(0, 1, 2, 3));
+    ASSERT_TRUE(v8_object->IsArrayBuffer());
+    EXPECT_TRUE(v8_object.As<v8::ArrayBuffer>()->IsResizableByUserJavaScript());
+    DummyExceptionStateForTesting exception_state;
+    std::ignore = NativeValueTraits<PassAsSpanShared>::ArgumentValue(
+        scope.GetIsolate(), 0, v8_object, exception_state);
+    EXPECT_TRUE(exception_state.HadException());
+  }
+  {
+    v8::Local<v8::Object> v8_object = EvaluateScriptForObject(scope, R"(
+        new Uint8Array(new ArrayBuffer(8, {maxByteLength: 8}));
+    )");
+
+    ASSERT_TRUE(v8_object->IsArrayBufferView());
+    EXPECT_TRUE(v8_object.As<v8::ArrayBufferView>()
+                    ->Buffer()
+                    ->IsResizableByUserJavaScript());
+    DummyExceptionStateForTesting exception_state;
+    std::ignore = NativeValueTraits<PassAsSpanShared>::ArgumentValue(
+        scope.GetIsolate(), 0, v8_object, exception_state);
+    EXPECT_TRUE(exception_state.HadException());
+  }
+  {
+    v8::Local<v8::Object> v8_object = EvaluateScriptForObject(scope, R"(
+        new SharedArrayBuffer(8, {maxByteLength: 8});
+    )");
+
+    ASSERT_TRUE(v8_object->IsSharedArrayBuffer());
+    EXPECT_TRUE(v8_object.As<v8::SharedArrayBuffer>()
+                    ->GetBackingStore()
+                    ->IsResizableByUserJavaScript());
+    DummyExceptionStateForTesting exception_state;
+    std::ignore = NativeValueTraits<PassAsSpanShared>::ArgumentValue(
+        scope.GetIsolate(), 0, v8_object, exception_state);
+    EXPECT_TRUE(exception_state.HadException());
+  }
 }
 
 TEST(NativeValueTraitsImplTest, PassAsSpanInlineStorage) {

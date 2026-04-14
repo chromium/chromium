@@ -1642,6 +1642,14 @@ struct NativeValueTraits<IDLNullable<IDLOnBeforeUnloadEventHandler>>;
 template <>
 struct NativeValueTraits<IDLNullable<IDLOnErrorEventHandler>>;
 
+namespace bindings {
+bool CORE_EXPORT ThrowIfResizable(v8::Local<v8::ArrayBuffer> array_buffer,
+                                  ExceptionState& exception_state);
+bool CORE_EXPORT
+ThrowIfResizable(v8::Local<v8::SharedArrayBuffer> shared_array_buffer,
+                 ExceptionState& exception_state);
+}  // namespace bindings
+
 template <typename T>
   requires std::derived_from<T, PassAsSpanMarkerBase> && (!T::is_typed)
 struct NativeValueTraits<T> : public NativeValueTraitsBase<T> {
@@ -1658,25 +1666,39 @@ struct NativeValueTraits<T> : public NativeValueTraitsBase<T> {
         result;
     if (value->IsArrayBuffer()) {
       v8::Local<v8::ArrayBuffer> array_buffer = value.As<v8::ArrayBuffer>();
+      if (!bindings::ThrowIfResizable(array_buffer, exception_state))
+          [[unlikely]] {
+        return result;
+      }
       result.MaybeSetArrayBuffer(array_buffer);
       result.Assign(bindings::internal::GetArrayData(array_buffer));
       return result;
     }
     if (T::allow_shared && value->IsSharedArrayBuffer()) {
-      result.Assign(
-          bindings::internal::GetArrayData(value.As<v8::SharedArrayBuffer>()));
+      v8::Local<v8::SharedArrayBuffer> shared_array_buffer =
+          value.As<v8::SharedArrayBuffer>();
+      if (!bindings::ThrowIfResizable(shared_array_buffer, exception_state))
+          [[unlikely]] {
+        return result;
+      }
+      result.Assign(bindings::internal::GetArrayData(shared_array_buffer));
       return result;
     }
     if (value->IsArrayBufferView()) {
       v8::Local<v8::ArrayBufferView> view = value.As<v8::ArrayBufferView>();
       if (view->HasBuffer()) {
-        if (!T::allow_shared && view->Buffer()->GetBackingStore()->IsShared())
+        v8::Local<v8::ArrayBuffer> array_buffer = view->Buffer();
+        if (!bindings::ThrowIfResizable(array_buffer, exception_state))
+            [[unlikely]] {
+          return result;
+        }
+        if (!T::allow_shared && array_buffer->GetBackingStore()->IsShared())
             [[unlikely]] {
           exception_state.ThrowTypeError(
               "The provided ArrayBufferView value must not be shared.");
           return result;
         }
-        result.MaybeSetArrayBuffer(view->Buffer());
+        result.MaybeSetArrayBuffer(array_buffer);
       }
       result.Assign(view->GetContents(result.GetInlineStorage()));
       return result;
@@ -1705,13 +1727,18 @@ struct NativeValueTraits<T> : public NativeValueTraitsBase<T> {
     if (Traits::IsViewOfType(value)) [[likely]] {
       v8::Local<v8::ArrayBufferView> view = value.As<v8::ArrayBufferView>();
       if (view->HasBuffer()) {
-        if (!T::allow_shared && view->Buffer()->GetBackingStore()->IsShared())
+        v8::Local<v8::ArrayBuffer> array_buffer = view->Buffer();
+        if (!bindings::ThrowIfResizable(array_buffer, exception_state))
+            [[unlikely]] {
+          return result;
+        }
+        if (!T::allow_shared && array_buffer->GetBackingStore()->IsShared())
             [[unlikely]] {
           exception_state.ThrowTypeError(
               "The provided ArrayBufferView value must not be shared.");
           return result;
         }
-        result.MaybeSetArrayBuffer(view->Buffer());
+        result.MaybeSetArrayBuffer(array_buffer);
       }
       result.Assign(view->GetContents(result.GetInlineStorage()));
       return result;
