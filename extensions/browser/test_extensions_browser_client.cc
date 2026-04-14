@@ -12,12 +12,15 @@
 #include "components/update_client/test_configurator.h"
 #include "content/public/browser/browser_context.h"
 #include "extensions/browser/extension_host_delegate.h"
+#include "extensions/browser/extension_management_client.h"
+#include "extensions/browser/kiosk/kiosk_delegate.h"
 #include "extensions/browser/safe_browsing_delegate.h"
 #include "extensions/browser/test_runtime_api_delegate.h"
 #include "extensions/browser/updater/null_extension_cache.h"
 #include "extensions/buildflags/buildflags.h"
 #include "extensions/common/extension_id.h"
 #include "extensions/common/switches.h"
+#include "extensions/common/url_pattern_set.h"
 #include "services/network/public/mojom/url_loader.mojom.h"
 #include "ui/base/l10n/l10n_util.h"
 
@@ -28,11 +31,64 @@
 using content::BrowserContext;
 
 namespace extensions {
+namespace {
+
+// An ExtensionManagementClient that returns safe/null defaults.
+class TestExtensionManagementClient : public ExtensionManagementClient {
+ public:
+  explicit TestExtensionManagementClient() = default;
+  TestExtensionManagementClient(const TestExtensionManagementClient&) = delete;
+  TestExtensionManagementClient& operator=(
+      const TestExtensionManagementClient&) = delete;
+  ~TestExtensionManagementClient() override = default;
+
+  // ExtensionManagementClient:
+  bool UpdatesFromWebstore(const Extension& extension) override { return true; }
+  bool IsInstallationExplicitlyAllowed(const ExtensionId& id) override {
+    return false;
+  }
+  bool IsForceInstalledInLowTrustEnvironment(
+      const Extension& extension) override {
+    return false;
+  }
+  const URLPatternSet& GetPolicyBlockedHosts(
+      const Extension* extension) override {
+    return URLPatternSet::Empty();
+  }
+  const URLPatternSet& GetPolicyAllowedHosts(
+      const Extension* extension) override {
+    return URLPatternSet::Empty();
+  }
+  bool UsesDefaultPolicyHostRestrictions(const Extension* extension) override {
+    return false;
+  }
+  bool BlocklistedByDefault() const override { return false; }
+  GURL GetEffectiveUpdateURL(const Extension& extension) override { return {}; }
+};
+
+// A KioskDelegate that returns safe/null defaults.
+class TestKioskDelegate : public KioskDelegate {
+ public:
+  TestKioskDelegate() = default;
+  TestKioskDelegate(const TestKioskDelegate&) = delete;
+  TestKioskDelegate& operator=(const TestKioskDelegate&) = delete;
+  ~TestKioskDelegate() override = default;
+
+  // KioskDelegate:
+  bool IsAutoLaunchedKioskApp(const ExtensionId& id) const override {
+    return false;
+  }
+};
+
+}  // namespace
 
 TestExtensionsBrowserClient::TestExtensionsBrowserClient(
     BrowserContext* main_context)
     : extension_cache_(std::make_unique<NullExtensionCache>()),
-      safe_browsing_delegate_(std::make_unique<SafeBrowsingDelegate>()) {
+      safe_browsing_delegate_(std::make_unique<SafeBrowsingDelegate>()),
+      extension_management_client_(
+          std::make_unique<TestExtensionManagementClient>()),
+      kiosk_delegate_(std::make_unique<TestKioskDelegate>()) {
   if (main_context) {
     SetMainContext(main_context);
   }
@@ -289,11 +345,15 @@ TestExtensionsBrowserClient::GetExtensionWebContentsObserver(
 }
 
 KioskDelegate* TestExtensionsBrowserClient::GetKioskDelegate() {
-  return nullptr;
+  return kiosk_delegate_.get();
 }
 
 SafeBrowsingDelegate* TestExtensionsBrowserClient::GetSafeBrowsingDelegate() {
   return safe_browsing_delegate_.get();
+}
+
+UserScriptListener* TestExtensionsBrowserClient::GetUserScriptListener() {
+  return user_script_listener_;
 }
 
 scoped_refptr<update_client::UpdateClient>
@@ -312,6 +372,12 @@ TestExtensionsBrowserClient::CreateUpdateClientConfigurator(
 
 std::string TestExtensionsBrowserClient::GetApplicationLocale() {
   return l10n_util::GetApplicationLocale(std::string());
+}
+
+ExtensionManagementClient*
+TestExtensionsBrowserClient::GetExtensionManagementClient(
+    content::BrowserContext* context) {
+  return extension_management_client_.get();
 }
 
 bool TestExtensionsBrowserClient::IsTelemetryLoggingEnabled(

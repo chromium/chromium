@@ -49,6 +49,9 @@ class TestExtensionsBrowserClient : public ExtensionsBrowserClient {
   void set_process_manager_delegate(ProcessManagerDelegate* delegate) {
     process_manager_delegate_ = delegate;
   }
+  void set_user_script_listener(UserScriptListener* listener) {
+    user_script_listener_ = listener;
+  }
   void set_extension_system_factory(ExtensionSystemProvider* factory) {
     extension_system_factory_ = factory;
   }
@@ -161,11 +164,14 @@ class TestExtensionsBrowserClient : public ExtensionsBrowserClient {
       content::WebContents* web_contents) override;
   KioskDelegate* GetKioskDelegate() override;
   SafeBrowsingDelegate* GetSafeBrowsingDelegate() override;
+  UserScriptListener* GetUserScriptListener() override;
   scoped_refptr<update_client::UpdateClient> CreateUpdateClient(
       scoped_refptr<update_client::Configurator> configurator) override;
   scoped_refptr<update_client::Configurator> CreateUpdateClientConfigurator(
       content::BrowserContext* context) override;
   std::string GetApplicationLocale() override;
+  ExtensionManagementClient* GetExtensionManagementClient(
+      content::BrowserContext* context) override;
 
   bool IsTelemetryLoggingEnabled(content::BrowserContext* context) override;
   void SetTelemetryLoggingEnabled(bool enabled);
@@ -175,15 +181,10 @@ class TestExtensionsBrowserClient : public ExtensionsBrowserClient {
   }
 
  private:
-  // Not owned.
   raw_ptr<content::BrowserContext> main_context_ = nullptr;
-  // Not owned.
   raw_ptr<content::BrowserContext> incognito_context_ = nullptr;
-
-  // Not owned.
   raw_ptr<ProcessManagerDelegate> process_manager_delegate_ = nullptr;
-
-  // Not owned.
+  raw_ptr<UserScriptListener> user_script_listener_ = nullptr;
   raw_ptr<ExtensionSystemProvider> extension_system_factory_ = nullptr;
 
   std::unique_ptr<ExtensionCache> extension_cache_;
@@ -194,6 +195,8 @@ class TestExtensionsBrowserClient : public ExtensionsBrowserClient {
       update_client_factory_;
 
   std::unique_ptr<SafeBrowsingDelegate> safe_browsing_delegate_;
+  std::unique_ptr<ExtensionManagementClient> extension_management_client_;
+  std::unique_ptr<KioskDelegate> kiosk_delegate_;
 };
 
 }  // namespace extensions

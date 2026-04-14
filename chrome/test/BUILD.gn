@@ -1675,6 +1675,7 @@ source_set("platform_browser_tests") {
       "../browser/extensions/extension_browsertest_browsertest.cc",
       "../browser/extensions/extension_dom_apitest.cc",
       "../browser/extensions/extension_dom_clipboard_apitest.cc",
+      "../browser/extensions/extension_frame_host_browsertest.cc",
       "../browser/extensions/extension_function_registration_browsertest.cc",
       "../browser/extensions/extension_functional_browsertest.cc",
       "../browser/extensions/extension_geolocation_apitest.cc",

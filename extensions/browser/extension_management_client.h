@@ -18,6 +18,8 @@ class URLPatternSet;
 // settings managed by ExtensionManagement.
 class ExtensionManagementClient {
  public:
+  virtual ~ExtensionManagementClient() = default;
+
   // Returns true if this extension's update URL is from webstore.
   virtual bool UpdatesFromWebstore(const Extension& extension) = 0;
 

@@ -97,7 +97,12 @@ ChromeTestExtensionLoader::ChromeTestExtensionLoader(
     : browser_context_(browser_context),
       extension_system_(ExtensionSystem::Get(browser_context)),
       extension_registrar_(ExtensionRegistrar::Get(browser_context)),
-      extension_registry_(ExtensionRegistry::Get(browser_context)) {}
+      extension_registry_(ExtensionRegistry::Get(browser_context)) {
+  DCHECK(browser_context_);
+  DCHECK(extension_system_);
+  DCHECK(extension_registrar_);
+  DCHECK(extension_registry_);
+}
 
 ChromeTestExtensionLoader::~ChromeTestExtensionLoader() {
   // If there was a temporary directory created for a CRX, we need to clean it

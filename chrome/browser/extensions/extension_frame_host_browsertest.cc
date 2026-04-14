@@ -7,19 +7,23 @@
 #include <string>
 
 #include "base/memory/ref_counted.h"
-#include "components/user_prefs/user_prefs.h"
-#include "content/public/browser/browser_context.h"
+#include "base/path_service.h"
+#include "chrome/browser/extensions/chrome_extension_host_delegate.h"
+#include "chrome/browser/extensions/chrome_extension_system_factory.h"
+#include "chrome/browser/extensions/extension_apitest.h"
+#include "chrome/browser/extensions/user_script_listener.h"
+#include "chrome/browser/profiles/profile.h"
+#include "chrome/common/chrome_paths.h"
 #include "content/public/browser/web_contents_user_data.h"
+#include "content/public/test/browser_test.h"
 #include "extensions/browser/browsertest_util.h"
 #include "extensions/browser/extension_host.h"
 #include "extensions/browser/extension_prefs.h"
+#include "extensions/browser/extension_web_contents_observer.h"
 #include "extensions/browser/process_manager.h"
+#include "extensions/browser/test_extensions_browser_client.h"
 #include "extensions/common/constants.h"
 #include "extensions/common/extension.h"
-#include "extensions/shell/browser/shell_extension_host_delegate.h"
-#include "extensions/shell/browser/shell_extension_web_contents_observer.h"
-#include "extensions/shell/browser/shell_extensions_browser_client.h"
-#include "extensions/shell/test/shell_apitest.h"
 #include "extensions/test/result_catcher.h"
 #include "testing/gtest/include/gtest/gtest-spi.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -53,22 +57,21 @@ class TestExtensionFrameHost : public ExtensionFrameHost {
   std::string invalid_request_;
 };
 
-class TestShellExtensionWebContentsObserver
+class TestExtensionWebContentsObserver
     : public ExtensionWebContentsObserver,
-      public content::WebContentsUserData<
-          TestShellExtensionWebContentsObserver> {
+      public content::WebContentsUserData<TestExtensionWebContentsObserver> {
  public:
-  TestShellExtensionWebContentsObserver(
-      const TestShellExtensionWebContentsObserver&) = delete;
-  TestShellExtensionWebContentsObserver& operator=(
-      const TestShellExtensionWebContentsObserver&) = delete;
-  ~TestShellExtensionWebContentsObserver() override = default;
+  TestExtensionWebContentsObserver(const TestExtensionWebContentsObserver&) =
+      delete;
+  TestExtensionWebContentsObserver& operator=(
+      const TestExtensionWebContentsObserver&) = delete;
+  ~TestExtensionWebContentsObserver() override = default;
 
   // Creates and initializes an instance of this class for the given
   // |web_contents|, if it doesn't already exist.
   static void CreateForWebContents(content::WebContents* web_contents) {
-    content::WebContentsUserData<TestShellExtensionWebContentsObserver>::
-        CreateForWebContents(web_contents);
+    content::WebContentsUserData<
+        TestExtensionWebContentsObserver>::CreateForWebContents(web_contents);
     // Initialize this instance if necessary.
     FromWebContents(web_contents)->Initialize();
   }
@@ -80,37 +83,37 @@ class TestShellExtensionWebContentsObserver
   }
 
  private:
-  friend class content::WebContentsUserData<
-      TestShellExtensionWebContentsObserver>;
+  friend class content::WebContentsUserData<TestExtensionWebContentsObserver>;
 
-  explicit TestShellExtensionWebContentsObserver(
-      content::WebContents* web_contents)
+  explicit TestExtensionWebContentsObserver(content::WebContents* web_contents)
       : ExtensionWebContentsObserver(web_contents),
-        content::WebContentsUserData<TestShellExtensionWebContentsObserver>(
+        content::WebContentsUserData<TestExtensionWebContentsObserver>(
             *web_contents) {}
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();
 };
 
-WEB_CONTENTS_USER_DATA_KEY_IMPL(TestShellExtensionWebContentsObserver);
+WEB_CONTENTS_USER_DATA_KEY_IMPL(TestExtensionWebContentsObserver);
 
-class TestShellExtensionHostDelegate : public ShellExtensionHostDelegate {
+class TestExtensionHostDelegate : public ChromeExtensionHostDelegate {
  public:
-  TestShellExtensionHostDelegate() = default;
-  TestShellExtensionHostDelegate(const TestShellExtensionHostDelegate&) =
+  TestExtensionHostDelegate() = default;
+  TestExtensionHostDelegate(const TestExtensionHostDelegate&) = delete;
+  TestExtensionHostDelegate& operator=(const TestExtensionHostDelegate&) =
       delete;
-  TestShellExtensionHostDelegate& operator=(
-      const TestShellExtensionHostDelegate&) = delete;
-  ~TestShellExtensionHostDelegate() override = default;
+  ~TestExtensionHostDelegate() override = default;
 
-  // Overrides to create TestShellExtensionWebContentsObserver.
+  // Overrides to create TestExtensionWebContentsObserver.
   void OnExtensionHostCreated(content::WebContents* web_contents) override {
-    TestShellExtensionWebContentsObserver::CreateForWebContents(web_contents);
+    TestExtensionWebContentsObserver::CreateForWebContents(web_contents);
   }
 };
 
+// This test does not use ChromeExtensionsBrowserClient because it has strict
+// initialization and shutdown timing that is difficult to override in a test
+// (e.g. init occurs in the middle of g_browser_process initialization).
 class ExtensionFrameHostTestExtensionsBrowserClient
-    : public ShellExtensionsBrowserClient {
+    : public TestExtensionsBrowserClient {
  public:
   ExtensionFrameHostTestExtensionsBrowserClient() = default;
   ExtensionFrameHostTestExtensionsBrowserClient(
@@ -119,22 +122,22 @@ class ExtensionFrameHostTestExtensionsBrowserClient
       const ExtensionFrameHostTestExtensionsBrowserClient&) = delete;
   ~ExtensionFrameHostTestExtensionsBrowserClient() override = default;
 
-  // Overrides to create TestShellExtensionHostDelegate.
+  // Overrides to create TestExtensionHostDelegate.
   std::unique_ptr<ExtensionHostDelegate> CreateExtensionHostDelegate()
       override {
-    return std::make_unique<TestShellExtensionHostDelegate>();
+    return std::make_unique<TestExtensionHostDelegate>();
   }
 
-  // Overrides to return TestShellExtensionWebContentsObserver.
+  // Overrides to return TestExtensionWebContentsObserver.
   ExtensionWebContentsObserver* GetExtensionWebContentsObserver(
       content::WebContents* web_contents) override {
-    return TestShellExtensionWebContentsObserver::FromWebContents(web_contents);
+    return TestExtensionWebContentsObserver::FromWebContents(web_contents);
   }
 };
 
 }  // namespace
 
-class ExtensionFrameHostBrowserTest : public ShellApiTest {
+class ExtensionFrameHostBrowserTest : public ExtensionApiTest {
  public:
   ExtensionFrameHostBrowserTest() = default;
   ExtensionFrameHostBrowserTest(const ExtensionFrameHostBrowserTest&) = delete;
@@ -143,38 +146,73 @@ class ExtensionFrameHostBrowserTest : public ShellApiTest {
   ~ExtensionFrameHostBrowserTest() override = default;
 
   void SetUpOnMainThread() override {
-    ShellApiTest::SetUpOnMainThread();
+    ExtensionApiTest::SetUpOnMainThread();
 
+    // NOTE: The TestExtensionsBrowserClient needs sufficient dependencies
+    // initialized to load and run an extension. If this test suite fails, and
+    // you changed ExtensionsBrowserClient recently, you may need to add a
+    // more detailed stub method to TestExtensionsBrowserClient.
+    user_script_listener_ = std::make_unique<UserScriptListener>();
     extensions_browser_client_ =
         std::make_unique<ExtensionFrameHostTestExtensionsBrowserClient>();
-    extensions_browser_client_->InitWithBrowserContext(browser_context());
-    ExtensionsBrowserClient::Set(extensions_browser_client_.get());
+    extensions_browser_client_->SetMainContext(GetProfile());
+    extensions_browser_client_->set_user_script_listener(
+        user_script_listener_.get());
+    extensions_browser_client_->set_extension_system_factory(
+        ChromeExtensionSystemFactory::GetInstance());
 
-    extension_ = LoadExtension("extension");
-    ASSERT_TRUE(extension_.get());
-    ResultCatcher catcher;
-    ASSERT_TRUE(catcher.GetNextResult());
+    old_extensions_browser_client_ = ExtensionsBrowserClient::Get();
+    ExtensionsBrowserClient::Set(extensions_browser_client_.get());
+  }
+
+  void TearDownOnMainThread() override {
+    // Avoid dangling pointers.
+    extensions_browser_client_->set_extension_system_factory(nullptr);
+    extensions_browser_client_->set_user_script_listener(nullptr);
+    user_script_listener_.reset();
+
+    ExtensionsBrowserClient::Set(old_extensions_browser_client_);
+    old_extensions_browser_client_ = nullptr;
+    extensions_browser_client_.reset();
+
+    ExtensionApiTest::TearDownOnMainThread();
   }
 
  protected:
   const Extension* extension() const { return extension_.get(); }
 
+  // Loads and runs the test extension. Called from the test body to ensure that
+  // test suite setup is complete before the extension is loaded.
+  void LoadTestExtension() {
+    base::FilePath test_data_dir;
+    base::PathService::Get(chrome::DIR_TEST_DATA, &test_data_dir);
+    test_data_dir = test_data_dir.AppendASCII("extensions");
+
+    ResultCatcher catcher;
+    extension_ = LoadExtension(test_data_dir.AppendASCII("extension"));
+    ASSERT_TRUE(extension_.get());
+    ASSERT_TRUE(catcher.GetNextResult());
+  }
+
   void SetInvalidNameOnRequest(const std::string& method_name) {
     ExtensionHost* host =
-        ProcessManager::Get(browser_context())
+        ProcessManager::Get(GetProfile())
             ->GetBackgroundHostForExtension(extension()->id());
     ASSERT_TRUE(host);
     ASSERT_TRUE(host->host_contents());
     ExtensionWebContentsObserver* observer =
         extensions_browser_client_->GetExtensionWebContentsObserver(
             host->host_contents());
-    static_cast<TestExtensionFrameHost*>(
-        observer->extension_frame_host_for_testing())
-        ->SetInvalidRequest(method_name);
+    ASSERT_TRUE(observer);
+    auto* efh = observer->extension_frame_host_for_testing();
+    ASSERT_TRUE(efh);
+    static_cast<TestExtensionFrameHost*>(efh)->SetInvalidRequest(method_name);
   }
 
  private:
   scoped_refptr<const Extension> extension_;
+  std::unique_ptr<UserScriptListener> user_script_listener_;
+  raw_ptr<ExtensionsBrowserClient> old_extensions_browser_client_ = nullptr;
   std::unique_ptr<ExtensionFrameHostTestExtensionsBrowserClient>
       extensions_browser_client_;
 };
@@ -182,20 +220,24 @@ class ExtensionFrameHostBrowserTest : public ShellApiTest {
 // Test that when ExtensionFrameHost dispatches an invalid request it gets
 // an error associated with it. This is a regression test for
 // https://crbug.com/1196377.
-IN_PROC_BROWSER_TEST_F(ExtensionFrameHostBrowserTest, InValidNameRequest) {
+// NOTE: If this test fails or crashes, and you changed ExtensionBrowserClient
+// recently, see the note in SetUpOnMainThread() above.
+IN_PROC_BROWSER_TEST_F(ExtensionFrameHostBrowserTest, InvalidNameRequest) {
+  // This needs to be done after the profile is created.
+  LoadTestExtension();
   // Set 'test.getConfig' is invalid request.
   SetInvalidNameOnRequest("test.getConfig");
   // Run a script asynchronously that passes the test.
   ResultCatcher catcher;
   ASSERT_TRUE(browsertest_util::ExecuteScriptInBackgroundPageNoWait(
-      browser_context(), extension()->id(), R"(
+      GetProfile(), extension()->id(), R"(
         chrome.test.getConfig(() => {
           const expectedError = 'Access to extension API denied.';
           if (chrome.runtime.lastError &&
-            expectedError == chrome.runtime.lastError.message) {
+            expectedError === chrome.runtime.lastError.message) {
             chrome.test.notifyPass();
           } else {
-            chrome.test.notifyFail('TestFailed');
+            chrome.test.notifyFail('Test Failed');
           }
         });)"));
 
