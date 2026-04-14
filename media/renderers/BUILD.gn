@@ -113,6 +113,7 @@ static_library("test_support") {
     "//gpu/command_buffer/client:raster_interface",
     "//gpu/command_buffer/common",
     "//media/base:test_support",
+    "//third_party/libyuv",
     "//ui/gfx",
   ]
 }

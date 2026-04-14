@@ -44,6 +44,13 @@ scoped_refptr<VideoFrame> CreateSharedImageNV12Frame(
     const gfx::Rect& visible_rect,
     base::OnceClosure destroyed_callback);
 
+// Creates a cropped I420 frame with colors on the full frame mapped as follows.
+// Bk | R
+// ---+---
+// G  | Bl
+// The visible crop consists of a subset of each color region.
+scoped_refptr<VideoFrame> CreateCroppedFrame();
+
 }  // namespace media
 
 #endif  // MEDIA_RENDERERS_VIDEO_FRAME_TEST_UTILS_H_
