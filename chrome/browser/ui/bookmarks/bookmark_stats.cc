@@ -85,17 +85,6 @@ void RecordBookmarksAdded(const Profile* profile) {
   UMA_HISTOGRAM_ENUMERATION("Bookmarks.AddedPerProfileType", profile_type);
 }
 
-void RecordBookmarkAllTabsWithTabsCount(const Profile* profile, int count) {
-  profile_metrics::BrowserProfileType profile_type = GetMetricProfile(profile);
-  if (profile_type == profile_metrics::BrowserProfileType::kRegular) {
-    UMA_HISTOGRAM_COUNTS_100("Bookmarks.BookmarkAllTabsWithTabsCount.Regular",
-                             count);
-  } else {
-    UMA_HISTOGRAM_COUNTS_100("Bookmarks.BookmarkAllTabsWithTabsCount.Incognito",
-                             count);
-  }
-}
-
 void RecordBookmarkDropped(const bookmarks::BookmarkNodeData& data,
                            bool is_permanent_parent_node,
                            bool is_reorder) {

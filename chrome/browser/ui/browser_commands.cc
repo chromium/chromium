@@ -1797,8 +1797,6 @@ bool CanBookmarkCurrentTab(BrowserWindowInterface* browser) {
 
 void BookmarkAllTabs(BrowserWindowInterface* browser) {
   base::RecordAction(UserMetricsAction("BookmarkAllTabs"));
-  RecordBookmarkAllTabsWithTabsCount(browser->GetProfile(),
-                                     browser->GetTabStripModel()->count());
 
   bookmarks::ShowBookmarkAllTabsDialog(browser);
 }

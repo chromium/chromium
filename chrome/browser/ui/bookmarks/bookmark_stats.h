@@ -101,9 +101,6 @@ void RecordBookmarkRemoved(BookmarkLaunchLocation location);
 // count of tabs that were bookmarked.
 void RecordBookmarksAdded(const Profile* profile);
 
-// Records the user bookmarking all tabs, along with the open tabs count.
-void RecordBookmarkAllTabsWithTabsCount(const Profile* profile, int count);
-
 // Records that a bookmark or bookmarks were dropped. Determines the type of
 // drop operation based on the data and parent node.
 // TODO(crbug.com/410798420): This metric does not record the drop location
