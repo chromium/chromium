@@ -321,6 +321,8 @@ chromium-metrics-reviews@google.com.
   <int value="4" label="Ephemeral permission revoked by website"/>
 </enum>
 
+<!-- LINT.IfChange(WebHidChooserClosed) -->
+
 <enum name="WebHidChooserClosed">
   <int value="0" label="User cancelled"/>
   <int value="1" label="User cancelled, no devices available"/>
@@ -328,6 +330,8 @@ chromium-metrics-reviews@google.com.
   <int value="3" label="Ephemeral permission granted"/>
   <int value="4" label="Dismissed due to loss of focus"/>
 </enum>
+
+<!-- LINT.ThenChange(//chrome/browser/hid/web_hid_histograms.h:WebHidChooserClosed) -->
 
 <enum name="WebSiteSettingsAllSitesAction2">
   <int value="0" label="All Sites Loaded"/>
