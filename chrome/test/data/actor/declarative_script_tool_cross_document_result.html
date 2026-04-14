@@ -22,8 +22,6 @@
         const textValue = params.get('text');
 
         if (textValue) {
-            document.getElementById('output').textContent = textValue;
-
             const jsonLd = document.querySelector('script[type="application/ld+json"]');
             const data = JSON.parse(jsonLd.textContent);
             data.text = textValue;

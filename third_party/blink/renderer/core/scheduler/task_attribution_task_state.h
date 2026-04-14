@@ -21,6 +21,7 @@ namespace blink {
 class SchedulerTaskContext;
 class ResourceTimingContext;
 class SoftNavigationContext;
+class ScriptToolContext;
 
 // `TaskAttributionTaskState` objects are stored in V8 as continuation preserved
 // embedder data (CPED). They aren't exposed directly to JS.
@@ -72,6 +73,8 @@ class CORE_EXPORT TaskAttributionTaskState
   // SoftNavigationContext.
   virtual TaskAttributionTaskState* ForkAndSetVariable(
       SoftNavigationContext*) = 0;
+
+  virtual TaskAttributionTaskState* ForkAndSetVariable(ScriptToolContext*) = 0;
 
   virtual bool IsWebSchedulingTaskState() const { return false; }
   virtual bool IsTaskAttributionInfoImpl() const { return false; }

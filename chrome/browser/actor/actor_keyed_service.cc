@@ -330,7 +330,11 @@ size_t ActorKeyedService::GetActiveTasksCount() const {
 
 void ActorKeyedService::ResetForTesting() {
   for (auto it = active_tasks_.begin(); it != active_tasks_.end();) {
-    StopTask((it++)->first, ActorTask::StoppedReason::kTaskComplete);
+    if (!it->second->IsCompleted()) {
+      StopTask((it++)->first, ActorTask::StoppedReason::kTaskComplete);
+    } else {
+      ++it;
+    }
   }
   active_tasks_.clear();
 }

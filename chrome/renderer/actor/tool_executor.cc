@@ -141,8 +141,9 @@ mojom::InitializeToolResultPtr ToolExecutor::InitializeToolImpl(
       // explicit async hook to know when the tool is done. Or having the
       // stabilization only delay until a new frame is produced.
       tool_ = std::make_unique<ScriptTool>(
-          frame_.get(), invocation->task_id, journal_.get(),
-          std::move(invocation->target), std::move(invocation->observed_target),
+          frame_.get(), invocation->task_id, invocation->execution_id.value(),
+          journal_.get(), std::move(invocation->target),
+          std::move(invocation->observed_target),
           std::move(invocation->action->get_script_tool()));
       break;
     }

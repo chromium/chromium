@@ -19,6 +19,8 @@ TypingHelper::TypingHelper(content::WebContents* web_contents,
                            TypingResult callback)
     : dom_node_id_(dom_node_id), callback_(std::move(callback)) {
   auto invocation = actor::mojom::ToolInvocation::New();
+  invocation->execution_id = base::UnguessableToken::Create();
+
   auto type = actor::mojom::TypeAction::New();
   type->text = base::UTF16ToUTF8(value);
   type->mode = actor::mojom::TypeAction::Mode::kDeleteExisting;

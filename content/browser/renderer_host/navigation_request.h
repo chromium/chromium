@@ -384,6 +384,8 @@ class CONTENT_EXPORT NavigationRequest
   size_t GetIgnoredDuplicateNavigationCount() const override;
   bool IsInMainFrame() const override;
   bool IsInPrimaryMainFrame() const override;
+  const std::optional<base::UnguessableToken>& GetScriptToolInvocationId()
+      const override;
   bool IsInOutermostMainFrame() const override;
   bool IsInPrerenderedMainFrame() const override;
   bool IsPrerenderedPageActivation() const override;

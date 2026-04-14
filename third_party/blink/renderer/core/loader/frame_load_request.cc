@@ -14,11 +14,14 @@
 #include "third_party/blink/renderer/core/fileapi/public_url_manager.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/html/forms/html_form_element.h"
+#include "third_party/blink/renderer/core/script_tools/script_tool_context.h"
 #include "third_party/blink/renderer/platform/bindings/dom_wrapper_world.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_request.h"
 #include "third_party/blink/renderer/platform/network/encoded_form_data.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
+#include "third_party/blink/renderer/platform/scheduler/public/task_attribution_info.h"
+#include "third_party/blink/renderer/platform/scheduler/public/task_attribution_tracker.h"
 #include "third_party/blink/renderer/platform/weborigin/security_policy.h"
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
 
@@ -106,6 +109,20 @@ FrameLoadRequest::FrameLoadRequest(LocalDOMWindow* origin_window,
     SetReferrerForRequest(origin_window, resource_request_);
 
     SetSourceLocation(CaptureSourceLocation(origin_window));
+
+    // If a Script Tool (WebMCP tool) execution is currently active in the
+    // scheduler, capture its invocation ID and attach it to this request.
+    // This allows the browser to track navigations triggered by script tools.
+    if (auto* tracker = origin_window_->GetIsolate()
+                            ? scheduler::TaskAttributionTracker::From(
+                                  origin_window_->GetIsolate())
+                            : nullptr) {
+      if (auto* task_state = tracker->CurrentTaskState()) {
+        if (auto* script_tool_context = task_state->GetScriptToolContext()) {
+          script_tool_invocation_id_ = script_tool_context->GetInvocationId();
+        }
+      }
+    }
   }
 }
 

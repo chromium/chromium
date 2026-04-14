@@ -27,6 +27,10 @@
 #include "third_party/perfetto/include/perfetto/tracing/traced_value.h"
 #include "v8/include/v8-promise.h"
 
+namespace blink {
+class ScriptToolContext;
+}
+
 namespace blink::scheduler {
 
 namespace {
@@ -62,6 +66,8 @@ perfetto::protos::pbzero::BlinkTaskScope::TaskScopeType ToProtoEnum(
       return ProtoType::TASK_SCOPE_MISC_EVENT;
     case TaskAttributionTracker::TaskScopeType::kMicrotask:
       return ProtoType::TASK_SCOPE_MICROTASK;
+    case TaskAttributionTracker::TaskScopeType::kScriptToolExecution:
+      return ProtoType::TASK_SCOPE_SCRIPT_TOOL_EXECUTION;
   }
 }
 
@@ -195,7 +201,8 @@ TaskAttributionTrackerImpl::SetTaskStateVariable(
           ? previous_task_state->ForkAndSetVariable(soft_navigation_context)
           : MakeGarbageCollected<TaskAttributionInfoImpl>(
                 soft_navigation_context,
-                /*resource_timing_context=*/nullptr);
+                /*resource_timing_context=*/nullptr,
+                /*script_tool_context=*/nullptr);
 
   return SetCurrentTaskStateImpl(next_task_state, previous_task_state,
                                  TaskScopeType::kSoftNavigation);
@@ -211,10 +218,28 @@ TaskAttributionTrackerImpl::SetTaskStateVariable(
       previous_task_state
           ? previous_task_state->ForkAndSetVariable(resource_timing_context)
           : MakeGarbageCollected<TaskAttributionInfoImpl>(
-                /*soft_navigation_context=*/nullptr, resource_timing_context);
+                /*soft_navigation_context=*/nullptr, resource_timing_context,
+                /*script_tool_context=*/nullptr);
 
   return SetCurrentTaskStateImpl(next_task_state, previous_task_state,
                                  TaskScopeType::kResourceTiming);
+}
+
+TaskAttributionTracker::TaskScope
+TaskAttributionTrackerImpl::SetTaskStateVariable(
+    ScriptToolContext* script_tool_context) {
+  TaskAttributionTaskState* previous_task_state =
+      TaskAttributionTaskState::GetCurrent(isolate_);
+
+  TaskAttributionTaskState* next_task_state =
+      previous_task_state
+          ? previous_task_state->ForkAndSetVariable(script_tool_context)
+          : MakeGarbageCollected<TaskAttributionInfoImpl>(
+                /*soft_navigation_context=*/nullptr,
+                /*resource_timing_context=*/nullptr, script_tool_context);
+
+  return SetCurrentTaskStateImpl(next_task_state, previous_task_state,
+                                 TaskScopeType::kScriptToolExecution);
 }
 
 TaskAttributionTracker::TaskScope

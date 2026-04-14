@@ -244,7 +244,8 @@ void DOMScheduler::setAsyncData(v8::Isolate* isolate, uint32_t async_data) {
   }
   auto* task_state = MakeGarbageCollected<TaskAttributionInfoImpl>(
       /*soft_navigation_context=*/nullptr,
-      /*resource_timing_context=*/nullptr, async_data);
+      /*resource_timing_context=*/nullptr,
+      /*script_tool_context=*/nullptr, async_data);
   TaskAttributionTaskState::SetCurrent(isolate, task_state);
   auto* scheduler = ThreadScheduler::Current()->ToMainThreadScheduler();
   // This test API is only available on the main thread.

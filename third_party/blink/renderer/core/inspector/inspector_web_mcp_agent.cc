@@ -135,7 +135,7 @@ protocol::Response InspectorWebMCPAgent::invokeTool(
     const String& frameId,
     const String& toolName,
     std::unique_ptr<protocol::DictionaryValue> input,
-    String* invocationId) {
+    String* executionId) {
   LocalFrame* frame = IdentifiersFactory::FrameById(inspected_frames_, frameId);
   if (!frame) {
     return protocol::Response::InvalidParams("No frame for given id found");
@@ -161,15 +161,20 @@ protocol::Response InspectorWebMCPAgent::invokeTool(
     input_arguments = String::FromUtf8(json);
   }
 
+  // TODO(crbug.com/501190526): Replace the `execution_id` here with
+  // `invocation_id` to eliminate the redundancy of tracking two separate tokens
+  // for the same tool execution.
+  base::UnguessableToken invocation_id = base::UnguessableToken::Create();
   base::UnguessableToken execution_id = base::UnguessableToken::Create();
-  *invocationId = String(execution_id.ToString());
+  *executionId = String(execution_id.ToString());
 
   frame->GetTaskRunner(TaskType::kInternalInspector)
-      ->PostTask(FROM_HERE,
-                 blink::BindOnce(
-                     base::IgnoreResult(&ModelContext::ExecuteTool),
-                     WrapPersistent(model_context), toolName, input_arguments,
-                     /*signal=*/nullptr, base::DoNothing(), execution_id));
+      ->PostTask(
+          FROM_HERE,
+          blink::BindOnce(base::IgnoreResult(&ModelContext::ExecuteTool),
+                          WrapPersistent(model_context), invocation_id,
+                          toolName, input_arguments,
+                          /*signal=*/nullptr, base::DoNothing(), execution_id));
 
   return protocol::Response::Success();
 }

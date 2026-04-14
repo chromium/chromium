@@ -19,6 +19,7 @@
 
 namespace blink {
 class SoftNavigationContext;
+class ScriptToolContext;
 class ResourceTimingContext;
 class TaskAttributionTaskState;
 class WebSchedulingTaskState;
@@ -51,6 +52,7 @@ class PLATFORM_EXPORT TaskAttributionTracker {
     kResourceTiming,
     kMiscEvent,
     kMicrotask,
+    kScriptToolExecution,
   };
 
   // `TaskScope` stores state for the current task, which is propagated to tasks
@@ -180,6 +182,8 @@ class PLATFORM_EXPORT TaskAttributionTracker {
   // Similarly, initiates propagation of the given `ResourceTimingContext`.
   [[nodiscard]] virtual TaskScope SetTaskStateVariable(
       ResourceTimingContext*) = 0;
+  // Similarly, initiates propagation of the given `ScriptToolContext`.
+  [[nodiscard]] virtual TaskScope SetTaskStateVariable(ScriptToolContext*) = 0;
 
   // Get the `TaskAttributionInfo` for the currently running task.
   virtual TaskAttributionInfo* CurrentTaskState() const = 0;

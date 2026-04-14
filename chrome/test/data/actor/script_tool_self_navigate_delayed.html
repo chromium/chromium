@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+
+<body>
+  <script>
+    async function navigate(obj) {
+      setTimeout(() => {
+        window.location.href = "/actor/declarative_script_tool_cross_document_result.html?text=self_navigated";
+      }, 100);
+      return new Promise(r => setTimeout(r, 10000));
+    }
+
+    navigator.modelContext.registerTool({
+      execute: navigate, name: "navigate_delayed", description: "navigate",
+      inputSchema: {
+        type: "object",
+        properties: {
+          "text": {
+            type: "string"
+          }
+        },
+        required: ["text"]
+      }
+    });
+  </script>
+</body>

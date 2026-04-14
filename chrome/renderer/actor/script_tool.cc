@@ -8,6 +8,7 @@
 #include <optional>
 
 #include "base/notimplemented.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/strings/to_string.h"
 #include "chrome/common/actor/action_result.h"
 #include "chrome/common/actor/actor_constants.h"
@@ -77,6 +78,7 @@ mojom::ActionResultPtr OnToolExecuted(
 
 ScriptTool::ScriptTool(content::RenderFrame& frame,
                        TaskId task_id,
+                       base::UnguessableToken execution_id,
                        Journal& journal,
                        mojom::ToolTargetPtr target,
                        mojom::ObservedToolTargetPtr observed_target,
@@ -86,25 +88,17 @@ ScriptTool::ScriptTool(content::RenderFrame& frame,
                journal,
                std::move(target),
                std::move(observed_target)),
-      action_(std::move(action)) {}
+      action_(std::move(action)),
+      execution_id_(execution_id) {}
 
 ScriptTool::~ScriptTool() = default;
 
 void ScriptTool::Execute(ToolFinishedCallback callback) {
-  auto weak_this = weak_ptr_factory_.GetWeakPtr();
-  std::optional<base::UnguessableToken> execution_id =
-      frame_->GetWebFrame()->GetDocument().ExecuteScriptTool(
-          blink::WebString::FromUtf8(action_->name),
-          blink::WebString::FromUtf8(action_->input_arguments),
-          base::BindOnce(&OnToolExecuted, action_->name,
-                         action_->input_arguments)
-              .Then(std::move(callback)));
-  // If the tool completed synchronously, `this` is now destroyed
-  // via a tool_.reset() call in ToolExecutor::ToolFinished().
-  // We can only write to execution_id_ if this object is still alive.
-  if (weak_this) {
-    execution_id_ = execution_id;
-  }
+  frame_->GetWebFrame()->GetDocument().ExecuteScriptTool(
+      execution_id_.value(), blink::WebString::FromUtf8(action_->name),
+      blink::WebString::FromUtf8(action_->input_arguments),
+      base::BindOnce(&OnToolExecuted, action_->name, action_->input_arguments)
+          .Then(std::move(callback)));
 }
 
 void ScriptTool::Cancel() {

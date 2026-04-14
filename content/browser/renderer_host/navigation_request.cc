@@ -1319,7 +1319,7 @@ std::unique_ptr<NavigationRequest> NavigationRequest::Create(
       base::TimeTicks() /* before_unload_dialog_opened */,
       base::TimeTicks() /* before_unload_dialog_closed */,
       started_with_transient_activation, started_by_ad, is_container_initiated,
-      has_rel_opener);
+      has_rel_opener, std::nullopt /* script_tool_invocation_id */);
 
   // Shift-Reload forces bypassing caches and service workers.
   if (common_params->navigation_type ==
@@ -9717,6 +9717,17 @@ RenderFrameHostImpl* NavigationRequest::GetParentFrameOrOuterDocument() {
 
 bool NavigationRequest::IsInPrimaryMainFrame() const {
   return GetNavigatingFrameType() == FrameType::kPrimaryMainFrame;
+}
+
+const std::optional<base::UnguessableToken>&
+NavigationRequest::GetScriptToolInvocationId() const {
+  static const std::optional<base::UnguessableToken> empty_id = std::nullopt;
+  if (!begin_params_) {
+    return empty_id;
+  }
+  CHECK(!begin_params_->script_tool_invocation_id ||
+        !commit_params_->is_browser_initiated);
+  return begin_params_->script_tool_invocation_id;
 }
 
 bool NavigationRequest::IsInOutermostMainFrame() const {

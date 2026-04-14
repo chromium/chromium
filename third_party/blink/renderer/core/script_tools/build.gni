@@ -9,6 +9,7 @@ blink_core_sources_script_tools = [
   "model_context_supplement.h",
   "model_context_testing.cc",
   "model_context_testing.h",
+  "script_tool_context.h",
   "script_tool_types.h",
 ]
 

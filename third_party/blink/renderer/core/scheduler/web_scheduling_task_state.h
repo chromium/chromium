@@ -19,6 +19,7 @@ namespace blink {
 class SchedulerTaskContext;
 class ResourceTimingContext;
 class SoftNavigationContext;
+class ScriptToolContext;
 
 class CORE_EXPORT WebSchedulingTaskState final
     : public TaskAttributionTaskState {
@@ -34,6 +35,7 @@ class CORE_EXPORT WebSchedulingTaskState final
       ResourceTimingContext*) override;
   TaskAttributionTaskState* ForkAndSetVariable(
       SoftNavigationContext*) override;
+  TaskAttributionTaskState* ForkAndSetVariable(ScriptToolContext*) override;
 
   void Trace(Visitor*) const override;
 

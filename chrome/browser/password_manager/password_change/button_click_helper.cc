@@ -42,6 +42,8 @@ ButtonClickHelper::ButtonClickHelper(
     ClickResult callback)
     : callback_(std::move(callback)), client_(client) {
   auto invocation = actor::mojom::ToolInvocation::New();
+  invocation->execution_id = base::UnguessableToken::Create();
+
   auto click = actor::mojom::ClickAction::New();
   click->type = actor::mojom::ClickType::kLeft;
   click->count = actor::mojom::ClickCount::kSingle;

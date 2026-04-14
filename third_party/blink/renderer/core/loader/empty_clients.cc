@@ -128,8 +128,8 @@ void EmptyLocalFrameClient::BeginNavigation(
     mojo::PendingRemote<mojom::blink::NavigationStateKeepAliveHandle>,
     bool is_container_initiated,
     bool has_rel_opener,
-    mojo::PendingReceiver<
-        mojom::blink::NavigationResumeDeferredCommitListener>) {}
+    mojo::PendingReceiver<mojom::blink::NavigationResumeDeferredCommitListener>,
+    std::optional<base::UnguessableToken> script_tool_invocation_id) {}
 
 void EmptyLocalFrameClient::DispatchWillSendSubmitEvent(HTMLFormElement*) {}
 

@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+
+<body>
+  <script>
+    async function echo(obj) {
+      return new Promise(() => { }); // never resolves
+    }
+
+    navigator.modelContext.registerTool({
+      execute: echo,
+      name: "echo",
+      description: "echo input",
+      inputSchema: {
+        type: "object",
+        properties: {
+          "text": {
+            description: "Value to echo",
+            type: "string",
+          }
+        },
+        required: ["text"]
+      },
+      annotations: {
+        readOnlyHint: "true"
+      },
+    });
+  </script>
+</body>

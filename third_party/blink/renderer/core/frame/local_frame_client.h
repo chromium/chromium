@@ -203,7 +203,8 @@ class CORE_EXPORT LocalFrameClient : public FrameClient {
       bool has_rel_opener,
       mojo::PendingReceiver<
           mojom::blink::NavigationResumeDeferredCommitListener>
-          resume_defer_commit_listener) = 0;
+          resume_defer_commit_listener,
+      std::optional<base::UnguessableToken> script_tool_invocation_id) = 0;
 
   virtual void DispatchWillSendSubmitEvent(HTMLFormElement*) = 0;
 

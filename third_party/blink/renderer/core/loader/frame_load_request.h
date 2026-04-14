@@ -175,6 +175,14 @@ struct CORE_EXPORT FrameLoadRequest {
 
   void SetNoOpener() { window_features_.noopener = true; }
   void SetExplicitOpener() { window_features_.explicit_opener = true; }
+
+  const std::optional<base::UnguessableToken>& GetScriptToolInvocationId()
+      const {
+    return script_tool_invocation_id_;
+  }
+  void SetScriptToolInvocationId(const base::UnguessableToken& id) {
+    script_tool_invocation_id_ = id;
+  }
   void SetNoReferrer() {
     should_send_referrer_ = kNeverSendReferrer;
     resource_request_.SetReferrerString(Referrer::NoReferrer());
@@ -235,6 +243,7 @@ struct CORE_EXPORT FrameLoadRequest {
   ClientNavigationReason client_navigation_reason_ =
       ClientNavigationReason::kNone;
   NavigationPolicy navigation_policy_ = kNavigationPolicyCurrentTab;
+  std::optional<base::UnguessableToken> script_tool_invocation_id_;
   mojom::blink::TriggeringEventInfo triggering_event_info_ =
       mojom::blink::TriggeringEventInfo::kNotFromEvent;
   Element* source_element_ = nullptr;

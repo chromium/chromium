@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/core/scheduler/task_attribution_info_impl.h"
 
 #include "third_party/blink/public/common/scheduler/task_attribution_id.h"
+#include "third_party/blink/renderer/core/script_tools/script_tool_context.h"
 #include "third_party/blink/renderer/core/timing/resource_timing_context.h"
 #include "third_party/blink/renderer/core/timing/soft_navigation_context.h"
 
@@ -13,16 +14,19 @@ namespace blink {
 TaskAttributionInfoImpl::TaskAttributionInfoImpl(
     SoftNavigationContext* soft_navigation_context,
     ResourceTimingContext* resource_timing_context,
+    ScriptToolContext* script_tool_context,
     uint32_t async_data_for_test)
     : id_(scheduler::TaskAttributionId::NextId()),
       async_data_for_test_(async_data_for_test),
       soft_navigation_context_(soft_navigation_context),
-      resource_timing_context_(resource_timing_context) {}
+      resource_timing_context_(resource_timing_context),
+      script_tool_context_(script_tool_context) {}
 
 void TaskAttributionInfoImpl::Trace(Visitor* visitor) const {
   TaskAttributionTaskState::Trace(visitor);
   visitor->Trace(soft_navigation_context_);
   visitor->Trace(resource_timing_context_);
+  visitor->Trace(script_tool_context_);
 }
 
 SchedulerTaskContext* TaskAttributionInfoImpl::GetSchedulerTaskContext() {
@@ -36,13 +40,26 @@ bool TaskAttributionInfoImpl::IsTaskAttributionInfoImpl() const {
 TaskAttributionTaskState* TaskAttributionInfoImpl::ForkAndSetVariable(
     ResourceTimingContext* resource_timing_context) {
   return MakeGarbageCollected<TaskAttributionInfoImpl>(
-      GetSoftNavigationContext(), resource_timing_context, AsyncDataForTest());
+      GetSoftNavigationContext(), resource_timing_context,
+      GetScriptToolContext(), AsyncDataForTest());
 }
 
 TaskAttributionTaskState* TaskAttributionInfoImpl::ForkAndSetVariable(
     SoftNavigationContext* soft_navigation_context) {
   return MakeGarbageCollected<TaskAttributionInfoImpl>(
-      soft_navigation_context, GetResourceTimingContext(), AsyncDataForTest());
+      soft_navigation_context, GetResourceTimingContext(),
+      GetScriptToolContext(), AsyncDataForTest());
+}
+
+TaskAttributionTaskState* TaskAttributionInfoImpl::ForkAndSetVariable(
+    ScriptToolContext* script_tool_context) {
+  return MakeGarbageCollected<TaskAttributionInfoImpl>(
+      GetSoftNavigationContext(), GetResourceTimingContext(),
+      script_tool_context, AsyncDataForTest());
+}
+
+ScriptToolContext* TaskAttributionInfoImpl::GetScriptToolContext() {
+  return script_tool_context_.Get();
 }
 
 scheduler::TaskAttributionInfo*

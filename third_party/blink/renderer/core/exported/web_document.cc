@@ -422,6 +422,7 @@ size_t WebDocument::ActiveResourceRequestCount() const {
 }
 
 std::optional<base::UnguessableToken> WebDocument::ExecuteScriptTool(
+    const base::UnguessableToken& invocation_id,
     const WebString& name,
     const WebString& input_arguments,
     WebScriptToolResultCallback tool_result_cb) {
@@ -438,7 +439,7 @@ std::optional<base::UnguessableToken> WebDocument::ExecuteScriptTool(
     }
     // TODO(481899636): PLUMB SIGNAL TO THE BROWSER SIDE!
     return model_context->ExecuteTool(
-        name, input_arguments,
+        invocation_id, name, input_arguments,
         /* signal= */ nullptr,
         blink::BindOnce(
             [](WebScriptToolResultCallback tool_result_cb,

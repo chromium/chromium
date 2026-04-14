@@ -989,7 +989,8 @@ void FrameLoader::StartNavigation(FrameLoadRequest& request,
       request.TakeInitiatorNavigationStateKeepAliveHandle(),
       request.IsContainerInitiated(),
       request.GetWindowFeatures().explicit_opener,
-      request.TakeResumeDeferredCommitListener());
+      request.TakeResumeDeferredCommitListener(),
+      request.GetScriptToolInvocationId());
 }
 
 static void FillStaticResponseIfNeeded(WebNavigationParams* params,

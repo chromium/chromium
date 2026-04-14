@@ -220,6 +220,10 @@ IN_PROC_BROWSER_TEST_P(ActorPageToolLongClickDelayBrowserTest, CancelClick) {
       window.mousedownPromise = new Promise(resolve => {
         document.getElementById('clickable').addEventListener('mousedown',
                                                               resolve);
+      });
+      window.clickPromise = new Promise(resolve => {
+        document.getElementById('clickable').addEventListener('click',
+                                                              resolve);
       });)",
                                 content::EXECUTE_SCRIPT_NO_RESOLVE_PROMISES));
     ActResultFuture result_for_cancel;
@@ -236,6 +240,10 @@ IN_PROC_BROWSER_TEST_P(ActorPageToolLongClickDelayBrowserTest, CancelClick) {
 
     ExpectErrorResult(result_for_cancel, mojom::ActionResultCode::kTaskPaused);
     FlushChromeRenderFrameForTesting(*main_frame());
+
+    // Wait for the simulated mouseup and click events to be dispatched to and
+    // processed by the renderer before checking the event log.
+    EXPECT_TRUE(content::ExecJs(main_frame(), "window.clickPromise"));
 
     const content::EvalJsResult eval_result =
         content::EvalJs(main_frame(), "event_log.join(',')");

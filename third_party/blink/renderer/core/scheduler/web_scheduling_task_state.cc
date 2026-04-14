@@ -19,6 +19,23 @@ WebSchedulingTaskState::WebSchedulingTaskState(
     : subtask_propagatable_task_state_(task_state),
       scheduler_task_context_(task_context) {}
 
+TaskAttributionTaskState* WebSchedulingTaskState::ForkAndSetVariable(
+    ScriptToolContext* script_tool_context) {
+  TaskAttributionInfoImpl* previous_task_attribution_info_impl =
+      UnsafeTo<TaskAttributionInfoImpl>(GetTaskAttributionInfo());
+  TaskAttributionTaskState* current_task_state =
+      previous_task_attribution_info_impl
+          ? previous_task_attribution_info_impl->ForkAndSetVariable(
+                script_tool_context)
+          : MakeGarbageCollected<TaskAttributionInfoImpl>(
+                /*soft_navigation_context=*/nullptr,
+                /*resource_timing_context=*/nullptr, script_tool_context);
+
+  return MakeGarbageCollected<WebSchedulingTaskState>(
+      UnsafeTo<TaskAttributionInfoImpl>(current_task_state),
+      GetSchedulerTaskContext());
+}
+
 void WebSchedulingTaskState::Trace(Visitor* visitor) const {
   TaskAttributionTaskState::Trace(visitor);
   visitor->Trace(scheduler_task_context_);
@@ -45,7 +62,8 @@ TaskAttributionTaskState* WebSchedulingTaskState::ForkAndSetVariable(
           ? previous_task_attribution_info_impl->ForkAndSetVariable(
                 resource_timing_context)
           : MakeGarbageCollected<TaskAttributionInfoImpl>(
-                /*soft_navigation_context=*/nullptr, resource_timing_context);
+                /*soft_navigation_context=*/nullptr, resource_timing_context,
+                /*script_tool_context=*/nullptr);
   return MakeGarbageCollected<WebSchedulingTaskState>(
       UnsafeTo<TaskAttributionInfoImpl>(current_task_state),
       GetSchedulerTaskContext());
@@ -71,7 +89,8 @@ TaskAttributionTaskState* WebSchedulingTaskState::ForkAndSetVariable(
                 soft_navigation_context)
           : MakeGarbageCollected<TaskAttributionInfoImpl>(
                 soft_navigation_context,
-                /*resource_timing_context=*/nullptr);
+                /*resource_timing_context=*/nullptr,
+                /*script_tool_context=*/nullptr);
 
   return MakeGarbageCollected<WebSchedulingTaskState>(
       UnsafeTo<TaskAttributionInfoImpl>(current_task_state),

@@ -172,6 +172,8 @@ class CORE_EXPORT HTMLFormElement final : public HTMLElement {
   bool IsActiveToolSubmitButton(const HTMLFormControlElement* element) const;
   bool MatchesToolFormActivePseudoClass() const;
 
+  std::optional<base::UnguessableToken> GetActiveWebMCPToolInvocationId() const;
+
  private:
   friend class HTMLFormMcpToolTest;
 
@@ -270,6 +272,7 @@ class CORE_EXPORT HTMLFormElement final : public HTMLElement {
     String ComputeInputSchema() override;
     Element* FormElement() const override { return form_; }
     void ExecuteTool(
+        const base::UnguessableToken& invocation_id,
         String input_arguments,
         base::OnceCallback<void(McpToolCallbackResult)> done_callback) override;
     // Fill form controls with data as provided by `input_arguments`.
@@ -284,6 +287,9 @@ class CORE_EXPORT HTMLFormElement final : public HTMLElement {
     String ToolName() const { return tool_name_; }
     String ToolDescription() const { return tool_description_; }
     bool IsValidTool() const { return !tool_name_.IsNull(); }
+    std::optional<base::UnguessableToken> InvocationId() const {
+      return invocation_id_;
+    }
     bool CurrentlyRunning() const {
       return IsValidTool() && is_currently_running_;
     }
@@ -301,6 +307,7 @@ class CORE_EXPORT HTMLFormElement final : public HTMLElement {
     Member<HTMLFormElement> form_;
     Member<HTMLFormControlElement> active_submit_button_;
     base::OnceCallback<void(McpToolCallbackResult)> done_callback_;
+    std::optional<base::UnguessableToken> invocation_id_;
   };
 
   void HandleWebMcpToolResponse(HTMLFormMcpTool* tool,

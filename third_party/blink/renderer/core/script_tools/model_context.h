@@ -37,6 +37,7 @@ class DeclarativeWebMCPTool : public GarbageCollectedMixin {
   // if the execution resulted in a navigation, or an error if the execution
   // failed.
   virtual void ExecuteTool(
+      const base::UnguessableToken& invocation_id,
       String input_arguments,
       base::OnceCallback<void(base::expected<String, ScriptToolError>)>
           done_callback) = 0;
@@ -122,6 +123,7 @@ class CORE_EXPORT ModelContext : public ScriptWrappable {
       const String& name) const;
 
   std::optional<base::UnguessableToken> ExecuteTool(
+      const base::UnguessableToken& invocation_id,
       const String& name,
       const String& input_arguments,
       AbortSignal* signal,
@@ -143,6 +145,7 @@ class CORE_EXPORT ModelContext : public ScriptWrappable {
                                String description,
                                DeclarativeWebMCPTool* tool);
   void PauseExecution();
+
   void DidFinishParsing();
 
   void MaybeNotifyToolChanged();
@@ -160,12 +163,14 @@ class CORE_EXPORT ModelContext : public ScriptWrappable {
 
   bool ExecuteV8Tool(V8ToolExecuteCallback* tool_function,
                      const base::UnguessableToken& execution_id,
+                     const base::UnguessableToken& invocation_id,
                      const String& name,
                      const String& input_arguments,
                      AbortSignal* signal,
                      ScriptToolExecutedCallback tool_executed_cb);
   void ExecuteDeclarativeTool(DeclarativeWebMCPTool* tool,
                               const base::UnguessableToken& execution_id,
+                              const base::UnguessableToken& invocation_id,
                               const String& input_arguments,
                               ScriptToolExecutedCallback tool_executed_cb);
 
@@ -187,6 +192,7 @@ class CORE_EXPORT ModelContext : public ScriptWrappable {
   struct PendingExecution {
     String tool_name;
     ScriptToolExecutedCallback callback;
+    base::UnguessableToken invocation_id;
   };
   HashMap<String, PendingExecution> pending_executions_;
 

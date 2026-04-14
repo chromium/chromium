@@ -165,9 +165,19 @@ bool HTMLFormElement::MatchesToolFormActivePseudoClass() const {
   return IsValidWebMCPForm() && active_webmcp_tool_->CurrentlyRunning();
 }
 
+std::optional<base::UnguessableToken>
+HTMLFormElement::GetActiveWebMCPToolInvocationId() const {
+  return (IsValidWebMCPForm() && active_webmcp_tool_ &&
+          active_webmcp_tool_->CurrentlyRunning())
+             ? active_webmcp_tool_->InvocationId()
+             : std::nullopt;
+}
+
 void HTMLFormElement::HTMLFormMcpTool::ExecuteTool(
+    const base::UnguessableToken& invocation_id,
     String input_arguments,
     base::OnceCallback<void(McpToolCallbackResult)> done_callback) {
+  invocation_id_ = invocation_id;
   UseCounter::Count(form_->GetDocument(),
                     WebFeature::kModelContextExecuteDeclarativeTool);
   bool require_submit_button =
@@ -257,6 +267,7 @@ void HTMLFormElement::HTMLFormMcpTool::CallDoneCallback(
   is_currently_running_ = false;
   auto old_submit_button = active_submit_button_;
   active_submit_button_ = nullptr;
+  invocation_id_ = std::nullopt;
   form_->PseudoStateChanged(CSSSelector::kPseudoToolFormActive);
   if (old_submit_button) {
     old_submit_button->PseudoStateChanged(CSSSelector::kPseudoToolSubmitActive);

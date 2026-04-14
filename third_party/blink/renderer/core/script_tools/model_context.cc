@@ -18,16 +18,19 @@
 #include "third_party/blink/renderer/core/dom/scoped_abort_state.h"
 #include "third_party/blink/renderer/core/event_type_names.h"
 #include "third_party/blink/renderer/core/events/web_mcp_event.h"
+#include "third_party/blink/renderer/core/execution_context/agent.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/html/html_script_element.h"
 #include "third_party/blink/renderer/core/inspector/console_message.h"
 #include "third_party/blink/renderer/core/probe/core_probes.h"
+#include "third_party/blink/renderer/core/script_tools/script_tool_context.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/bindings/source_location.h"
 #include "third_party/blink/renderer/platform/heap/persistent.h"
 #include "third_party/blink/renderer/platform/json/json_parser.h"
 #include "third_party/blink/renderer/platform/json/json_values.h"
+#include "third_party/blink/renderer/platform/scheduler/public/task_attribution_tracker.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
@@ -340,11 +343,15 @@ void ModelContext::OnToolFailed(ScriptToolExecutedCallback callback,
 }
 
 std::optional<base::UnguessableToken> ModelContext::ExecuteTool(
+    const base::UnguessableToken& invocation_id,
     const String& name,
     const String& input_arguments,
     AbortSignal* signal,
     ScriptToolExecutedCallback tool_executed_cb,
     std::optional<base::UnguessableToken> execution_id_override) {
+  // TODO(crbug.com/501190526): Replace the `execution_id` here with
+  // `invocation_id` to eliminate the redundancy of tracking two separate tokens
+  // for the same tool execution.
   base::UnguessableToken execution_id = execution_id_override
                                             ? *execution_id_override
                                             : base::UnguessableToken::Create();
@@ -362,12 +369,13 @@ std::optional<base::UnguessableToken> ModelContext::ExecuteTool(
   if (V8ToolExecuteCallback* v8_tool_function =
           it->value->GetV8ToolExecuteCallback()) {
     success =
-        ExecuteV8Tool(v8_tool_function, execution_id, name, input_arguments,
-                      signal, std::move(tool_executed_cb));
+        ExecuteV8Tool(v8_tool_function, execution_id, invocation_id, name,
+                      input_arguments, signal, std::move(tool_executed_cb));
   } else {
     // TODO(481899636): Add signal support for declarative tools.
     ExecuteDeclarativeTool(it->value->DeclarativeTool(), execution_id,
-                           input_arguments, std::move(tool_executed_cb));
+                           invocation_id, input_arguments,
+                           std::move(tool_executed_cb));
   }
 
   // Fire the `toolactivate` event *after* activating the tool, but potentially
@@ -448,12 +456,21 @@ void ModelContext::DidFinishParsing() {
 void ModelContext::ExecuteDeclarativeTool(
     DeclarativeWebMCPTool* tool,
     const base::UnguessableToken& execution_id,
+    const base::UnguessableToken& invocation_id,
     const String& input_arguments,
     ScriptToolExecutedCallback tool_executed_cb) {
   // TODO(479598776): Add support for tracking execution of
   // declarative tools in pending_executions_, so that they can be cancelled.
+  std::optional<scheduler::TaskAttributionTracker::TaskScope> task_scope;
+  if (auto* tracker = document_->GetAgent().isolate()
+                          ? scheduler::TaskAttributionTracker::From(
+                                document_->GetAgent().isolate())
+                          : nullptr) {
+    task_scope = tracker->SetTaskStateVariable(
+        MakeGarbageCollected<ScriptToolContext>(invocation_id));
+  }
   tool->ExecuteTool(
-      input_arguments,
+      invocation_id, input_arguments,
       blink::BindOnce(
           [](Document* document, base::UnguessableToken execution_id,
              ScriptToolExecutedCallback tool_executed_cb,
@@ -481,6 +498,7 @@ void ModelContext::ExecuteDeclarativeTool(
 // it to OnToolExecuted().
 bool ModelContext::ExecuteV8Tool(V8ToolExecuteCallback* tool_function,
                                  const base::UnguessableToken& execution_id,
+                                 const base::UnguessableToken& invocation_id,
                                  const String& name,
                                  const String& input_arguments,
                                  AbortSignal* signal,
@@ -505,6 +523,12 @@ bool ModelContext::ExecuteV8Tool(V8ToolExecuteCallback* tool_function,
     result = ScriptPromise<IDLAny>::Reject(script_state,
                                            signal->reason(script_state));
   } else {
+    std::optional<scheduler::TaskAttributionTracker::TaskScope> task_scope;
+    if (auto* tracker = scheduler::TaskAttributionTracker::From(
+            script_state->GetIsolate())) {
+      task_scope = tracker->SetTaskStateVariable(
+          MakeGarbageCollected<ScriptToolContext>(invocation_id));
+    }
     v8::Maybe<ScriptPromise<IDLAny>> maybe_result =
         tool_function->Invoke(nullptr, {std::move(script_object)});
 
@@ -541,7 +565,8 @@ bool ModelContext::ExecuteV8Tool(V8ToolExecuteCallback* tool_function,
   pending_executions_.insert(
       String(execution_id.ToString()),
       PendingExecution{.tool_name = name,
-                       .callback = std::move(callback_wrapper)});
+                       .callback = std::move(callback_wrapper),
+                       .invocation_id = invocation_id});
 
   result.Then(script_state,
               MakeGarbageCollected<ToolFunctionFinishedCallback>(

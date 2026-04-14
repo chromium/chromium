@@ -14,6 +14,7 @@
 #include "base/memory/advanced_memory_safety_checks.h"
 #include "base/memory/safe_ref.h"
 #include "base/supports_user_data.h"
+#include "base/unguessable_token.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/error_navigation_trigger.h"
 #include "content/public/browser/frame_tree_node_id.h"
@@ -190,6 +191,11 @@ class CONTENT_EXPORT NavigationHandle : public base::SupportsUserData {
   // value remains constant over the navigation lifetime.
   // See docs/frame_trees.md for more details.
   virtual bool IsInPrimaryMainFrame() const = 0;
+
+  // If the navigation was triggered by a script tool, this contains the
+  // ID of the tool invocation.
+  virtual const std::optional<base::UnguessableToken>&
+  GetScriptToolInvocationId() const = 0;
 
   // Whether the navigation is taking place in a main frame which does not have
   // an outer document. For example, this will return true for the primary main

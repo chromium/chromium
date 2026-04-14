@@ -25,6 +25,7 @@ class ScriptTool : public ToolBase {
  public:
   ScriptTool(content::RenderFrame& frame,
              TaskId task_id,
+             base::UnguessableToken execution_id,
              Journal& journal,
              mojom::ToolTargetPtr target,
              mojom::ObservedToolTargetPtr observed_target,

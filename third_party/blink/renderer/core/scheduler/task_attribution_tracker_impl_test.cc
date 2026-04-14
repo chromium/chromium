@@ -66,7 +66,8 @@ class TaskAttributionTrackerImplTest : public PageTestBase {
     TaskAttributionInfoImpl* task_state =
         MakeGarbageCollected<TaskAttributionInfoImpl>(
             /*soft_navigation_context=*/nullptr,
-            /*resource_timing_context=*/nullptr, current_iteration);
+            /*resource_timing_context=*/nullptr,
+            /*script_tool_context=*/nullptr, current_iteration);
     std::optional<TaskAttributionTracker::TaskScope> scope(
         tracker_->SetCurrentTaskStateIfTopLevel(task_state,
                                                 TaskScopeType::kMiscEvent));

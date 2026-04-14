@@ -12,6 +12,7 @@
 #include "chrome/browser/actor/actor_keyed_service.h"
 #include "chrome/browser/actor/actor_task.h"
 #include "chrome/browser/actor/actor_test_util.h"
+#include "chrome/browser/actor/tools/script_tool_host.h"
 #include "chrome/browser/actor/tools/script_tool_request.h"
 #include "chrome/browser/actor/tools/tool_request.h"
 #include "chrome/browser/actor/tools/tools_test_util.h"
@@ -23,6 +24,7 @@
 #include "content/public/common/content_features.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
+#include "content/public/test/test_navigation_observer.h"
 #include "content/public/test/test_navigation_throttle.h"
 #include "content/public/test/test_navigation_throttle_inserter.h"
 #include "third_party/blink/public/common/features.h"
@@ -38,6 +40,16 @@ class TestDevToolsClient : public ::content::DevToolsAgentHostClient {
  public:
   TestDevToolsClient() = default;
   ~TestDevToolsClient() override { Detach(); }
+
+  void WaitForInvokedEvent() {
+    ASSERT_TRUE(
+        base::test::RunUntil([this]() { return !invoked_events_.empty(); }));
+  }
+
+  void WaitForRespondedEvent() {
+    ASSERT_TRUE(
+        base::test::RunUntil([this]() { return !responded_events_.empty(); }));
+  }
 
   void AttachToAndEnableWebMCP(
       scoped_refptr<content::DevToolsAgentHost> agent_host) {
@@ -94,13 +106,25 @@ class TestDevToolsClient : public ::content::DevToolsAgentHostClient {
   std::vector<base::Value> invoked_events_;
   std::vector<base::Value> responded_events_;
 };
-class ActorToolsTestScriptTool : public ActorToolsTest {
+
+}  // namespace
+
+class ActorToolsTestScriptTool : public ActorToolsTest,
+                                 public testing::WithParamInterface<bool> {
  public:
   ActorToolsTestScriptTool() {
-    features_.InitWithFeatures(
-        {blink::features::kWebMCP, blink::features::kDevToolsWebMCPSupport,
-         actor::kGlicActorEnableScriptTools},
-        {});
+    std::vector<base::test::FeatureRef> enabled_features = {
+        blink::features::kWebMCP, blink::features::kDevToolsWebMCPSupport,
+        actor::kGlicActorEnableScriptTools};
+    std::vector<base::test::FeatureRef> disabled_features;
+
+    if (GetParam()) {
+      enabled_features.push_back(::features::kBackForwardCache);
+    } else {
+      disabled_features.push_back(::features::kBackForwardCache);
+    }
+
+    features_.InitWithFeatures(enabled_features, disabled_features);
   }
 
   void SetUpOnMainThread() override {
@@ -145,7 +169,7 @@ class ActorToolsTestScriptToolWithStability : public ActorToolsTestScriptTool {
   base::test::ScopedFeatureList features_;
 };
 
-IN_PROC_BROWSER_TEST_F(ActorToolsTestScriptToolWithStability,
+IN_PROC_BROWSER_TEST_P(ActorToolsTestScriptToolWithStability,
                        PageStabilityDelay) {
   const GURL url = embedded_test_server()->GetURL("/actor/script_tool.html");
   ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
@@ -163,7 +187,15 @@ IN_PROC_BROWSER_TEST_F(ActorToolsTestScriptToolWithStability,
   EXPECT_TRUE(action_result->requires_page_stabilization);
 }
 
-IN_PROC_BROWSER_TEST_F(ActorToolsTestScriptTool, Basic) {
+INSTANTIATE_TEST_SUITE_P(All,
+                         ActorToolsTestScriptToolWithStability,
+                         testing::Bool(),
+                         [](const testing::TestParamInfo<bool>& info) {
+                           return info.param ? "BFCacheEnabled"
+                                             : "BFCacheDisabled";
+                         });
+
+IN_PROC_BROWSER_TEST_P(ActorToolsTestScriptTool, Basic) {
   const GURL url = embedded_test_server()->GetURL("/actor/script_tool.html");
   ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
 
@@ -186,7 +218,7 @@ IN_PROC_BROWSER_TEST_F(ActorToolsTestScriptTool, Basic) {
   EXPECT_EQ(response->tool->input_schema, expected_input_schema);
 }
 
-IN_PROC_BROWSER_TEST_F(ActorToolsTestScriptTool, EmitsCdpEvents) {
+IN_PROC_BROWSER_TEST_P(ActorToolsTestScriptTool, EmitsCdpEvents) {
   const GURL url = embedded_test_server()->GetURL("/actor/script_tool.html");
   ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
 
@@ -200,6 +232,7 @@ IN_PROC_BROWSER_TEST_F(ActorToolsTestScriptTool, EmitsCdpEvents) {
 
   EXPECT_EQ(response->result, "test_input");
 
+  client.WaitForInvokedEvent();
   ASSERT_EQ(client.invoked_events().size(), 1u);
   const base::DictValue& invoked_event = client.invoked_events()[0].GetDict();
   const base::DictValue* invoked_params = invoked_event.FindDict("params");
@@ -213,6 +246,7 @@ IN_PROC_BROWSER_TEST_F(ActorToolsTestScriptTool, EmitsCdpEvents) {
   const std::string* invocation_id = invoked_params->FindString("invocationId");
   ASSERT_TRUE(invocation_id);
 
+  client.WaitForRespondedEvent();
   ASSERT_EQ(client.responded_events().size(), 1u);
   const base::DictValue& responded_event =
       client.responded_events()[0].GetDict();
@@ -228,7 +262,7 @@ IN_PROC_BROWSER_TEST_F(ActorToolsTestScriptTool, EmitsCdpEvents) {
 
   client.Detach();
 }
-IN_PROC_BROWSER_TEST_F(ActorToolsTestScriptTool, BadToolName) {
+IN_PROC_BROWSER_TEST_P(ActorToolsTestScriptTool, BadToolName) {
   const GURL url = embedded_test_server()->GetURL("/actor/script_tool.html");
   ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
 
@@ -243,7 +277,7 @@ IN_PROC_BROWSER_TEST_F(ActorToolsTestScriptTool, BadToolName) {
   ExpectErrorResult(result, mojom::ActionResultCode::kScriptToolInvalidName);
 }
 
-IN_PROC_BROWSER_TEST_F(ActorToolsTestScriptTool, EmitsCdpEventsOnFailure) {
+IN_PROC_BROWSER_TEST_P(ActorToolsTestScriptTool, EmitsCdpEventsOnFailure) {
   const GURL url = embedded_test_server()->GetURL("/actor/script_tool.html");
   ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
 
@@ -258,6 +292,7 @@ IN_PROC_BROWSER_TEST_F(ActorToolsTestScriptTool, EmitsCdpEventsOnFailure) {
   actor_task().Act(ToRequestList(action), result.GetCallback());
   ExpectErrorResult(result, mojom::ActionResultCode::kScriptToolInvalidName);
 
+  client.WaitForInvokedEvent();
   ASSERT_EQ(client.invoked_events().size(), 1u);
   const base::DictValue& invoked_event = client.invoked_events()[0].GetDict();
   const base::DictValue* invoked_params = invoked_event.FindDict("params");
@@ -271,6 +306,7 @@ IN_PROC_BROWSER_TEST_F(ActorToolsTestScriptTool, EmitsCdpEventsOnFailure) {
   const std::string* invocation_id = invoked_params->FindString("invocationId");
   ASSERT_TRUE(invocation_id);
 
+  client.WaitForRespondedEvent();
   ASSERT_EQ(client.responded_events().size(), 1u);
   const base::DictValue& responded_event =
       client.responded_events()[0].GetDict();
@@ -289,7 +325,7 @@ IN_PROC_BROWSER_TEST_F(ActorToolsTestScriptTool, EmitsCdpEventsOnFailure) {
 
   client.Detach();
 }
-IN_PROC_BROWSER_TEST_F(ActorToolsTestScriptTool, DeclarativeTool) {
+IN_PROC_BROWSER_TEST_P(ActorToolsTestScriptTool, DeclarativeTool) {
   const GURL url =
       embedded_test_server()->GetURL("/actor/declarative_script_tool.html");
   ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
@@ -306,10 +342,11 @@ IN_PROC_BROWSER_TEST_F(ActorToolsTestScriptTool, DeclarativeTool) {
                                       declarative_input);
   auto [action_result, response] = RunScriptTool(std::move(action));
   EXPECT_EQ(response->tool->name, "declarative_tool");
+  ASSERT_TRUE(response);
   EXPECT_EQ(response->input_arguments, declarative_input);
 }
 
-IN_PROC_BROWSER_TEST_F(ActorToolsTestScriptTool,
+IN_PROC_BROWSER_TEST_P(ActorToolsTestScriptTool,
                        EmitsCdpEventsDeclarativeTool) {
   const GURL url =
       embedded_test_server()->GetURL("/actor/declarative_script_tool.html");
@@ -331,6 +368,7 @@ IN_PROC_BROWSER_TEST_F(ActorToolsTestScriptTool,
                                       declarative_input);
   auto [action_result, response] = RunScriptTool(std::move(action));
 
+  client.WaitForInvokedEvent();
   ASSERT_EQ(client.invoked_events().size(), 1u);
   const base::DictValue& invoked_event = client.invoked_events()[0].GetDict();
   const base::DictValue* invoked_params = invoked_event.FindDict("params");
@@ -350,6 +388,7 @@ IN_PROC_BROWSER_TEST_F(ActorToolsTestScriptTool,
   const std::string* invocation_id = invoked_params->FindString("invocationId");
   ASSERT_TRUE(invocation_id);
 
+  client.WaitForRespondedEvent();
   ASSERT_EQ(client.responded_events().size(), 1u);
   const base::DictValue& responded_event =
       client.responded_events()[0].GetDict();
@@ -365,7 +404,7 @@ IN_PROC_BROWSER_TEST_F(ActorToolsTestScriptTool,
 
   client.Detach();
 }
-IN_PROC_BROWSER_TEST_F(ActorToolsTestScriptTool, NavigateAfterResponse) {
+IN_PROC_BROWSER_TEST_P(ActorToolsTestScriptTool, NavigateAfterResponse) {
   const GURL url = embedded_test_server()->GetURL(
       "/actor/script_tool_navigate_after_response.html");
   ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
@@ -379,8 +418,7 @@ IN_PROC_BROWSER_TEST_F(ActorToolsTestScriptTool, NavigateAfterResponse) {
   EXPECT_EQ(response->result, "This is an example sentence.");
 }
 
-// TODO(crbug.com/492477322): Re-enable this test.
-IN_PROC_BROWSER_TEST_F(ActorToolsTestScriptTool, DISABLED_DeclarativeToolCrossDocument) {
+IN_PROC_BROWSER_TEST_P(ActorToolsTestScriptTool, DeclarativeToolCrossDocument) {
   const GURL url = embedded_test_server()->GetURL(
       "/actor/declarative_script_tool_cross_document.html");
   ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
@@ -395,11 +433,14 @@ IN_PROC_BROWSER_TEST_F(ActorToolsTestScriptTool, DISABLED_DeclarativeToolCrossDo
                                       declarative_input);
 
   auto [action_result, response] = RunScriptTool(std::move(action));
+  ASSERT_TRUE(response);
   EXPECT_EQ(response->input_arguments, declarative_input);
   EXPECT_EQ(response->tool->name, "declarative_tool");
   EXPECT_EQ(response->tool->description, "A declarative WebMCP tool");
   EXPECT_FALSE(response->tool->annotations);
-  EXPECT_EQ(response->tool->input_schema, "{}");
+  const std::string expected_input_schema =
+      R"JSON({"type":"object","properties":{"echo":{"type":"string","description":"Value to echo"}},"required":["echo"]})JSON";
+  EXPECT_EQ(response->tool->input_schema, expected_input_schema);
 
   base::Value actual_json = base::test::ParseJson(*response->result);
   base::Value expected_json = base::test::ParseJson(R"JSON(
@@ -420,9 +461,8 @@ IN_PROC_BROWSER_TEST_F(ActorToolsTestScriptTool, DISABLED_DeclarativeToolCrossDo
   EXPECT_EQ(actual_json, expected_json);
 }
 
-// TODO(crbug.com/496357393): Re-enable this test.
-IN_PROC_BROWSER_TEST_F(ActorToolsTestScriptTool,
-                       DISABLED_EmitsCdpEventsDeclarativeToolCrossDocument) {
+IN_PROC_BROWSER_TEST_P(ActorToolsTestScriptTool,
+                       EmitsCdpEventsDeclarativeToolCrossDocument) {
   const GURL url = embedded_test_server()->GetURL(
       "/actor/declarative_script_tool_cross_document.html");
   ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
@@ -441,9 +481,11 @@ IN_PROC_BROWSER_TEST_F(ActorToolsTestScriptTool,
                                       declarative_input);
 
   auto [action_result, response] = RunScriptTool(std::move(action));
+  ASSERT_TRUE(response);
   EXPECT_EQ(response->input_arguments, declarative_input);
   EXPECT_EQ(response->tool->name, "declarative_tool");
 
+  client.WaitForInvokedEvent();
   ASSERT_EQ(client.invoked_events().size(), 1u);
   const base::DictValue& invoked_event = client.invoked_events()[0].GetDict();
   const base::DictValue* invoked_params = invoked_event.FindDict("params");
@@ -463,9 +505,8 @@ IN_PROC_BROWSER_TEST_F(ActorToolsTestScriptTool,
   client.Detach();
 }
 
-// TODO(crbug.com/496357393): Re-enable this test.
-IN_PROC_BROWSER_TEST_F(ActorToolsTestScriptTool,
-                       DISABLED_DeclarativeToolCrossDocument_No_Autosubmit) {
+IN_PROC_BROWSER_TEST_P(ActorToolsTestScriptTool,
+                       DeclarativeToolCrossDocument_No_Autosubmit) {
   const GURL url = embedded_test_server()->GetURL(
       "/actor/declarative_script_tool_pause.html");
   ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
@@ -487,8 +528,8 @@ IN_PROC_BROWSER_TEST_F(ActorToolsTestScriptTool,
   }));
 
   // Trigger the submission manually.
-  ASSERT_TRUE(content::ExecJs(web_contents(),
-                              "document.querySelector('button').click()"));
+  content::ExecuteScriptAsync(web_contents(),
+                              "document.querySelector('button').click()");
 
   // The Act() call should now complete successfully with the result of the
   // navigation.
@@ -524,7 +565,7 @@ IN_PROC_BROWSER_TEST_F(ActorToolsTestScriptTool,
   EXPECT_EQ(actor_keyed_service().GetTask(task_id_), nullptr);
 }
 
-IN_PROC_BROWSER_TEST_F(ActorToolsTestScriptTool, Histograms) {
+IN_PROC_BROWSER_TEST_P(ActorToolsTestScriptTool, Histograms) {
   base::HistogramTester histogram_tester;
   const GURL url = embedded_test_server()->GetURL("/actor/script_tool.html");
   ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
@@ -560,7 +601,7 @@ IN_PROC_BROWSER_TEST_F(ActorToolsTestScriptTool, Histograms) {
       mojom::ActionResultCode::kScriptToolInvalidName, 1);
 }
 
-IN_PROC_BROWSER_TEST_F(ActorToolsTestScriptTool, NavigationFailed) {
+IN_PROC_BROWSER_TEST_P(ActorToolsTestScriptTool, NavigationFailed) {
   const GURL url = embedded_test_server()->GetURL(
       "/actor/declarative_script_tool_cross_document.html");
   ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
@@ -589,7 +630,7 @@ IN_PROC_BROWSER_TEST_F(ActorToolsTestScriptTool, NavigationFailed) {
                     mojom::ActionResultCode::kScriptToolNavigationDidNotCommit);
 }
 
-IN_PROC_BROWSER_TEST_F(ActorToolsTestScriptTool, NavigationCommittedErrorPage) {
+IN_PROC_BROWSER_TEST_P(ActorToolsTestScriptTool, NavigationCommittedErrorPage) {
   const GURL url = embedded_test_server()->GetURL(
       "/actor/declarative_script_tool_cross_document.html");
   ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
@@ -612,12 +653,7 @@ IN_PROC_BROWSER_TEST_F(ActorToolsTestScriptTool, NavigationCommittedErrorPage) {
       result, mojom::ActionResultCode::kScriptToolNavigationCommittedErrorPage);
 }
 
-// TODO(crbug.com/492477322): Enable for bfcache.
-IN_PROC_BROWSER_TEST_F(ActorToolsTestScriptTool, NavigationFailedLoad) {
-  if (!base::FeatureList::IsEnabled(features::kBackForwardCache)) {
-    GTEST_SKIP() << "Skipping when bfcache is disabled; crbug.com/492477322";
-  }
-
+IN_PROC_BROWSER_TEST_P(ActorToolsTestScriptTool, NavigationFailedLoad) {
   const GURL url = embedded_test_server()->GetURL(
       "/actor/declarative_script_tool_cross_document.html");
   ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
@@ -640,5 +676,222 @@ IN_PROC_BROWSER_TEST_F(ActorToolsTestScriptTool, NavigationFailedLoad) {
                     mojom::ActionResultCode::kScriptToolNavigationFailedLoad);
 }
 
-}  // namespace
+IN_PROC_BROWSER_TEST_P(ActorToolsTestScriptTool,
+                       OtherFrameNavigationDoesNotCancelTool) {
+  const GURL url =
+      embedded_test_server()->GetURL("/actor/script_tool_slow.html");
+  ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
+  ASSERT_TRUE(content::ExecJs(web_contents(),
+                              "let f = document.createElement('iframe'); "
+                              "document.body.appendChild(f);"));
+
+  const std::string input_arguments = R"JSON({"text": "test_input"})JSON";
+  auto action = MakeScriptToolRequest(*main_frame(), "echo", input_arguments);
+  ActResultFuture result;
+  actor_task().Act(ToRequestList(action), result.GetCallback());
+
+  content::TestNavigationObserver nav_observer(web_contents());
+  content::ExecuteScriptAsync(
+      web_contents(), "document.querySelector('iframe').src = '/title1.html';");
+  nav_observer.Wait();
+  EXPECT_TRUE(nav_observer.last_navigation_succeeded());
+  auto response = result.Get();
+  ExpectOkResult(*response[0].result);
+}
+
+IN_PROC_BROWSER_TEST_P(ActorToolsTestScriptTool,
+                       SameDocumentNavigationDoesNotCancelTool) {
+  const GURL url =
+      embedded_test_server()->GetURL("/actor/script_tool_slow.html");
+  ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
+
+  const std::string input_arguments = R"JSON({"text": "test_input"})JSON";
+  auto action = MakeScriptToolRequest(*main_frame(), "echo", input_arguments);
+  ActResultFuture result;
+  actor_task().Act(ToRequestList(action), result.GetCallback());
+
+  content::TestNavigationObserver nav_observer(web_contents());
+  content::ExecuteScriptAsync(web_contents(),
+                              "window.location.hash = \"#test\";");
+  nav_observer.Wait();
+  EXPECT_TRUE(nav_observer.last_navigation_succeeded());
+  auto response = result.Get();
+  ExpectOkResult(*response[0].result);
+}
+
+IN_PROC_BROWSER_TEST_P(ActorToolsTestScriptTool,
+                       UnrelatedNavigationCancelsTool) {
+  const GURL url =
+      embedded_test_server()->GetURL("/actor/script_tool_slow.html");
+  ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
+
+  const std::string input_arguments = R"JSON({"text": "test_input"})JSON";
+  auto action = MakeScriptToolRequest(*main_frame(), "echo", input_arguments);
+  ActResultFuture result;
+  actor_task().Act(ToRequestList(action), result.GetCallback());
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return actor_task().GetState() == ActorTask::State::kActing; }));
+
+  // Trigger a browser-initiated navigation.
+  content::TestNavigationObserver nav_observer(web_contents());
+  ASSERT_TRUE(content::NavigateToURL(
+      web_contents(), embedded_test_server()->GetURL("/title1.html")));
+  nav_observer.Wait();
+  EXPECT_TRUE(nav_observer.last_navigation_succeeded());
+
+  // The tool should be cancelled because it was replaced by an unrelated
+  // navigation.
+  ExpectErrorResult(result, mojom::ActionResultCode::kScriptToolCancelled);
+}
+
+IN_PROC_BROWSER_TEST_P(ActorToolsTestScriptTool,
+                       TabClosedWhileWaitingForNavigationDoesNotCrash) {
+  const GURL url =
+      embedded_test_server()->GetURL("/actor/script_tool_slow.html");
+  ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
+
+  ASSERT_TRUE(content::ExecJs(web_contents(), R"(
+    navigator.modelContext.registerTool({
+      execute: async () => {
+        window.location.href = '/title1.html';
+        return new Promise(r => {});
+      },
+      name: 'navigate_and_hang',
+      description: 'test',
+      inputSchema: { type: 'object', properties: {} }
+    });
+  )"));
+
+  auto action = MakeScriptToolRequest(*main_frame(), "navigate_and_hang", "{}");
+  ActResultFuture result;
+  content::TestNavigationManager nav_manager(
+      web_contents(), embedded_test_server()->GetURL("/title1.html"));
+  actor_task().Act(ToRequestList(action), result.GetCallback());
+  ASSERT_TRUE(nav_manager.WaitForRequestStart());
+
+  browser()->tab_strip_model()->CloseWebContentsAt(
+      0, TabCloseTypes::CLOSE_USER_GESTURE);
+
+  auto act_result = result.Get();
+  EXPECT_FALSE(act_result.empty());
+}
+IN_PROC_BROWSER_TEST_P(ActorToolsTestScriptTool,
+                       BrowserInitiatedBackNavigationFailsTool) {
+  ASSERT_TRUE(content::NavigateToURL(
+      web_contents(), embedded_test_server()->GetURL("/title1.html")));
+  const GURL url =
+      embedded_test_server()->GetURL("/actor/script_tool_slow.html");
+  ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
+
+  const std::string input_arguments = R"JSON({"text": "test_input"})JSON";
+  auto action = MakeScriptToolRequest(*main_frame(), "echo", input_arguments);
+  ActResultFuture result;
+  actor_task().Act(ToRequestList(action), result.GetCallback());
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return actor_task().GetState() == ActorTask::State::kActing; }));
+
+  content::TestNavigationObserver nav_observer(web_contents());
+  web_contents()->GetController().GoBack();
+  nav_observer.Wait();
+  EXPECT_TRUE(nav_observer.last_navigation_succeeded());
+  ExpectErrorResult(result, mojom::ActionResultCode::kScriptToolCancelled);
+}
+
+IN_PROC_BROWSER_TEST_P(ActorToolsTestScriptTool, ToolSelfNavigates) {
+  const GURL url =
+      embedded_test_server()->GetURL("/actor/script_tool_self_navigate.html");
+  ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
+
+  const std::string input_arguments = R"JSON({"text": "test_input"})JSON";
+  auto action =
+      MakeScriptToolRequest(*main_frame(), "navigate", input_arguments);
+  content::TestNavigationObserver nav_observer(web_contents());
+  ActResultFuture result;
+  actor_task().Act(ToRequestList(action), result.GetCallback());
+
+  nav_observer.Wait();
+  EXPECT_TRUE(nav_observer.last_navigation_succeeded());
+
+  auto response = result.Get();
+  ExpectOkResult(*response[0].result);
+}
+
+IN_PROC_BROWSER_TEST_P(ActorToolsTestScriptTool, ToolNavigatesAsyncTask) {
+  const GURL url = embedded_test_server()->GetURL(
+      "/actor/script_tool_self_navigate_delayed.html");
+  ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
+
+  const std::string input_arguments = R"JSON({"text": "test_input"})JSON";
+  auto action =
+      MakeScriptToolRequest(*main_frame(), "navigate_delayed", input_arguments);
+  content::TestNavigationObserver nav_observer(web_contents());
+  ActResultFuture result;
+  actor_task().Act(ToRequestList(action), result.GetCallback());
+
+  nav_observer.Wait();
+  EXPECT_TRUE(nav_observer.last_navigation_succeeded());
+
+  auto response = result.Get();
+  ExpectOkResult(*response[0].result);
+}
+
+IN_PROC_BROWSER_TEST_P(ActorToolsTestScriptTool, ToolReentrantExecution) {
+  const GURL url =
+      embedded_test_server()->GetURL("/actor/script_tool_slow.html");
+  ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
+
+  const std::string input_arguments = R"JSON({"text": "test_input"})JSON";
+  auto action1 = MakeScriptToolRequest(*main_frame(), "echo", input_arguments);
+  ActResultFuture result1;
+  actor_task().Act(ToRequestList(action1), result1.GetCallback());
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return actor_task().GetState() == ActorTask::State::kActing; }));
+
+  auto action2 = MakeScriptToolRequest(*main_frame(), "echo", input_arguments);
+  ActResultFuture result2;
+  auto task_id2 = actor_keyed_service().CreateTask(
+      actor::TestTaskSourceInfo(), actor::NoEnterprisePolicyChecker());
+  actor_keyed_service().GetTask(task_id2)->Act(ToRequestList(action2),
+                                               result2.GetCallback());
+
+  auto response1 = result1.Get();
+  auto response2 = result2.Get();
+  EXPECT_TRUE(response1[0].result);
+  EXPECT_TRUE(response2[0].result);
+}
+
+IN_PROC_BROWSER_TEST_P(
+    ActorToolsTestScriptTool,
+    BrowserInitiatedBackNavigationWhileWaitingForUserFailsTool) {
+  ASSERT_TRUE(content::NavigateToURL(
+      web_contents(), embedded_test_server()->GetURL("/title1.html")));
+  const GURL url = embedded_test_server()->GetURL(
+      "/actor/declarative_script_tool_pause.html");
+  ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
+
+  const std::string declarative_input =
+      R"JSON({"echo":"declarative_input"})JSON";
+  auto action = MakeScriptToolRequest(*main_frame(), "declarative_tool",
+                                      declarative_input);
+  ActResultFuture result;
+  actor_task().Act(ToRequestList(action), result.GetCallback());
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return actor_task().GetState() == ActorTask::State::kPausedByActor;
+  }));
+
+  content::TestNavigationObserver nav_observer(web_contents());
+  web_contents()->GetController().GoBack();
+  nav_observer.Wait();
+  EXPECT_TRUE(nav_observer.last_navigation_succeeded());
+  ExpectErrorResult(result, mojom::ActionResultCode::kScriptToolCancelled);
+}
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         ActorToolsTestScriptTool,
+                         testing::Bool(),
+                         [](const testing::TestParamInfo<bool>& info) {
+                           return info.param ? "BFCacheEnabled"
+                                             : "BFCacheDisabled";
+                         });
+
 }  // namespace actor

@@ -16,6 +16,7 @@
 namespace blink {
 class SchedulerTaskContext;
 class SoftNavigationContext;
+class ScriptToolContext;
 class ResourceTimingContext;
 
 class CORE_EXPORT TaskAttributionInfoImpl final
@@ -24,6 +25,7 @@ class CORE_EXPORT TaskAttributionInfoImpl final
  public:
   TaskAttributionInfoImpl(SoftNavigationContext*,
                           ResourceTimingContext*,
+                          ScriptToolContext*,
                           uint32_t async_data_for_test = 0);
   // `TaskAttributionTaskState` implementation:
   scheduler::TaskAttributionInfo* GetTaskAttributionInfo() override;
@@ -33,12 +35,14 @@ class CORE_EXPORT TaskAttributionInfoImpl final
       ResourceTimingContext*) override;
   TaskAttributionTaskState* ForkAndSetVariable(
       SoftNavigationContext*) override;
+  TaskAttributionTaskState* ForkAndSetVariable(ScriptToolContext*) override;
 
   // `scheduler::TaskAttributionInfo` implementation:
   scheduler::TaskAttributionId Id() const override;
   uint32_t AsyncDataForTest() const override;
   SoftNavigationContext* GetSoftNavigationContext() override;
   ResourceTimingContext* GetResourceTimingContext() override;
+  ScriptToolContext* GetScriptToolContext() override;
 
   void Trace(Visitor*) const override;
 
@@ -47,6 +51,7 @@ class CORE_EXPORT TaskAttributionInfoImpl final
   const uint32_t async_data_for_test_;
   Member<SoftNavigationContext> soft_navigation_context_;
   Member<ResourceTimingContext> resource_timing_context_;
+  Member<ScriptToolContext> script_tool_context_;
 };
 
 template <>

@@ -98,7 +98,8 @@ ScriptPromise<IDLNullable<IDLString>> ModelContextTesting::executeTool(
       };
 
   model_context_->ExecuteTool(
-      tool_name, input_arguments, options->getSignalOr(nullptr),
+      /*invocation_id=*/base::UnguessableToken::Create(), tool_name,
+      input_arguments, options->getSignalOr(nullptr),
       blink::BindOnce(callback, WrapPersistent(resolver)));
 
   return promise;

@@ -46,7 +46,7 @@ class CORE_EXPORT InspectorWebMCPAgent final
       const String& frameId,
       const String& toolName,
       std::unique_ptr<protocol::DictionaryValue> input,
-      String* invocationId) override;
+      String* executionId) override;
 
   // Probes
   void WebMCPToolAdded(Document* document, const ToolData& name);

@@ -1402,7 +1402,8 @@ bool NavigationSimulatorImpl::SimulateRendererInitiatedStart() {
           base::TimeTicks() /* before_unload_dialog_opened */,
           base::TimeTicks() /* before_unload_dialog_closed */,
           has_user_gesture_, false /* started_by_ad */,
-          false /* is_container_initiated */, false /* has_rel_opener */);
+          false /* is_container_initiated */, false /* has_rel_opener */,
+          std::nullopt /* script_tool_invocation_id */);
   auto common_params = blink::CreateCommonNavigationParams();
   common_params->navigation_start =
       navigation_start_.is_null() ? base::TimeTicks::Now() : navigation_start_;

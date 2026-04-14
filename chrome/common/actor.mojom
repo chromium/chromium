@@ -8,6 +8,7 @@ import "mojo/public/mojom/base/time.mojom";
 import "third_party/blink/public/mojom/content_extraction/ai_page_content.mojom";
 import "third_party/blink/public/mojom/content_extraction/script_tools.mojom";
 import "ui/gfx/geometry/mojom/geometry.mojom";
+import "mojo/public/mojom/base/unguessable_token.mojom";
 
 // This interface is meant to largely mirror the
 // BrowserAction::ActionInformation proto.
@@ -590,6 +591,12 @@ struct TaskId {
 struct ToolInvocation {
   // The task ID owning this invocation.
   TaskId task_id;
+
+  // The execution ID for state tracking (e.g., across navigations).
+  // This is null for tools that do not require state tracking across navigations
+  // (e.g., PageTools). Currently, it is only set by ScriptToolHost to associate
+  // the tool invocation with any navigations it triggers.
+  mojo_base.mojom.UnguessableToken? execution_id;
 
   // The action to carry out in this invocation.
   ToolAction action;

@@ -148,7 +148,8 @@ class CORE_EXPORT LocalFrameClientImpl final : public LocalFrameClient {
       bool is_container_initiated,
       bool has_rel_opener,
       mojo::PendingReceiver<
-          mojom::blink::NavigationResumeDeferredCommitListener>) override;
+          mojom::blink::NavigationResumeDeferredCommitListener>,
+      std::optional<base::UnguessableToken> script_tool_invocation_id) override;
   void DispatchWillSendSubmitEvent(HTMLFormElement*) override;
   void DidStartLoading() override;
   void DidStopLoading() override;

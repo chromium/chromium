@@ -229,6 +229,7 @@ class BLINK_EXPORT WebDocument : public WebNode {
   // The return value is a document-scoped execution ID which can be used to
   // cancel the tool execution.
   std::optional<base::UnguessableToken> ExecuteScriptTool(
+      const base::UnguessableToken& invocation_id,
       const WebString& name,
       const WebString& input_arguments,
       WebScriptToolResultCallback tool_result_cb);

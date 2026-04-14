@@ -44,6 +44,10 @@ class TestTaskAttributionTaskState final : public TaskAttributionTaskState {
       SoftNavigationContext*) override {
     return nullptr;
   }
+
+  TaskAttributionTaskState* ForkAndSetVariable(ScriptToolContext*) override {
+    return nullptr;
+  }
 };
 
 }  // namespace

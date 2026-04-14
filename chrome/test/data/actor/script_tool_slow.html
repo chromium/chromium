@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+
+<body>
+  <script>
+    async function echo(obj) {
+      return new Promise(r => setTimeout(() => r(obj.text), 1000));
+    }
+
+    navigator.modelContext.registerTool({
+      execute: echo, name: "echo", description: "echo input",
+      inputSchema: {
+        type: "object",
+        properties: {
+          "text": {
+            type: "string"
+          }
+        },
+        required: ["text"]
+      }
+    });
+  </script>
+</body>

@@ -38,6 +38,7 @@
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/events/event.h"
 #include "third_party/blink/renderer/core/events/current_input_event.h"
+#include "third_party/blink/renderer/core/execution_context/agent.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/policy_container.h"
@@ -52,6 +53,7 @@
 #include "third_party/blink/renderer/core/loader/frame_load_request.h"
 #include "third_party/blink/renderer/core/loader/frame_loader.h"
 #include "third_party/blink/renderer/core/probe/core_probes.h"
+#include "third_party/blink/renderer/core/script_tools/script_tool_context.h"
 #include "third_party/blink/renderer/platform/bindings/source_location.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
@@ -60,6 +62,8 @@
 #include "third_party/blink/renderer/platform/network/form_data_encoder.h"
 #include "third_party/blink/renderer/platform/network/http_names.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
+#include "third_party/blink/renderer/platform/scheduler/public/task_attribution_info.h"
+#include "third_party/blink/renderer/platform/scheduler/public/task_attribution_tracker.h"
 #include "third_party/blink/renderer/platform/wtf/text/strcat.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 #include "third_party/blink/renderer/platform/wtf/text/text_encoding.h"
@@ -410,7 +414,7 @@ FormSubmission* FormSubmission::Create(HTMLFormElement* form,
     load_type = WebFrameLoadType::kReplaceCurrentItem;
   }
 
-  return MakeGarbageCollected<FormSubmission>(
+  FormSubmission* form_submission = MakeGarbageCollected<FormSubmission>(
       copied_attributes.Method(), action_url, target_or_base_target,
       encoding_type, frame_request.GetSourceElement(), std::move(form_data),
       event, frame_request.GetNavigationPolicy(), triggering_event_info, reason,
@@ -419,6 +423,21 @@ FormSubmission* FormSubmission::Create(HTMLFormElement* form,
       frame_request.GetWindowFeatures().explicit_opener,
       CaptureSourceLocation(form->GetDocument().domWindow()),
       form_local_frame->IssueKeepAliveHandle());
+
+  if (auto invocation_id = form->GetActiveWebMCPToolInvocationId()) {
+    form_submission->script_tool_invocation_id_ = invocation_id;
+  } else if (auto* tracker = form->GetDocument().GetAgent().isolate()
+                                 ? scheduler::TaskAttributionTracker::From(
+                                       form->GetDocument().GetAgent().isolate())
+                                 : nullptr) {
+    if (auto* task_state = tracker->CurrentTaskState()) {
+      if (auto* script_tool_context = task_state->GetScriptToolContext()) {
+        form_submission->script_tool_invocation_id_ =
+            script_tool_context->GetInvocationId();
+      }
+    }
+  }
+  return form_submission;
 }
 
 void FormSubmission::Trace(Visitor* visitor) const {
@@ -450,6 +469,9 @@ void FormSubmission::Navigate() {
       std::move(initiator_navigation_state_keep_alive_handle_));
   frame_request.SetSourceLocation(source_location_);
   frame_request.SetInputStartTime(input_start_time_);
+  if (script_tool_invocation_id_) {
+    frame_request.SetScriptToolInvocationId(*script_tool_invocation_id_);
+  }
   if (has_rel_opener_) {
     frame_request.SetExplicitOpener();
   }
@@ -457,8 +479,9 @@ void FormSubmission::Navigate() {
   if (target_frame_ && !target_frame_->GetPage())
     return;
 
-  if (target_frame_)
+  if (target_frame_) {
     target_frame_->Navigate(frame_request, load_type_);
+  }
 }
 
 }  // namespace blink
