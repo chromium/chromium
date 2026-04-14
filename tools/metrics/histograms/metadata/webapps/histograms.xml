@@ -3094,7 +3094,7 @@ chromium-metrics-reviews@google.com.
 <!-- TODO(crbug.com/477993292): Reevaluate/clean up web install telemetry after Origin Trials -->
 
 <histogram name="WebApp.WebInstallApi.InstallType" enum="WebInstallServiceType"
-    expires_after="2026-06-02">
+    expires_after="2026-09-22">
   <owner>dmurph@chromium.org</owner>
   <owner>pwa-team@google.com</owner>
   <owner>liahiscock@microsoft.com</owner>
@@ -3108,7 +3108,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebApp.WebInstallApi.Result" enum="WebInstallServiceResult"
-    expires_after="2026-06-02">
+    expires_after="2026-09-22">
   <owner>dmurph@chromium.org</owner>
   <owner>pwa-team@google.com</owner>
   <owner>liahiscock@microsoft.com</owner>
@@ -3120,7 +3120,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebApp.WebInstallElement.InstallType"
-    enum="WebInstallServiceType" expires_after="2026-06-02">
+    enum="WebInstallServiceType" expires_after="2026-09-22">
   <owner>dmurph@chromium.org</owner>
   <owner>pwa-team@google.com</owner>
   <owner>liahiscock@microsoft.com</owner>
@@ -3134,7 +3134,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebApp.WebInstallElement.Result"
-    enum="WebInstallServiceResult" expires_after="2026-06-02">
+    enum="WebInstallServiceResult" expires_after="2026-09-22">
   <owner>dmurph@chromium.org</owner>
   <owner>pwa-team@google.com</owner>
   <owner>liahiscock@microsoft.com</owner>
@@ -3146,7 +3146,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebApp.WebInstallService.{EntryPoint}.InstallType"
-    enum="WebInstallServiceType" expires_after="2026-06-02">
+    enum="WebInstallServiceType" expires_after="2026-09-22">
   <owner>dmurph@chromium.org</owner>
   <owner>pwa-team@google.com</owner>
   <owner>liahiscock@microsoft.com</owner>
@@ -3160,7 +3160,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebApp.WebInstallService.{EntryPoint}.Result"
-    enum="WebInstallServiceResult" expires_after="2026-06-02">
+    enum="WebInstallServiceResult" expires_after="2026-09-22">
   <owner>dmurph@chromium.org</owner>
   <owner>pwa-team@google.com</owner>
   <owner>liahiscock@microsoft.com</owner>
