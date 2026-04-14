@@ -5,10 +5,11 @@
 #include "chrome/browser/extensions/extension_allowlist_factory.h"
 
 #include "base/memory/ptr_util.h"
-#include "chrome/browser/extensions/extension_allowlist.h"
+#include "chrome/browser/extensions/extension_allowlist_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/safe_browsing/safe_browsing_metrics_collector_factory.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
+#include "extensions/browser/extension_allowlist.h"
 #include "extensions/browser/extension_prefs_factory.h"
 #include "extensions/browser/extension_registrar_factory.h"
 #include "extensions/browser/extension_registry_factory.h"
@@ -56,9 +57,11 @@ ExtensionAllowlistFactory::~ExtensionAllowlistFactory() = default;
 std::unique_ptr<KeyedService>
 ExtensionAllowlistFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
-  Profile* profile = Profile::FromBrowserContext(context);
   // Use `new` because the constructor is private.
-  return base::WrapUnique(new ExtensionAllowlist(profile));
+  return base::WrapUnique(new ExtensionAllowlist(
+      context,
+      safe_browsing::SafeBrowsingMetricsCollectorFactory::GetForProfile(
+          Profile::FromBrowserContext(context))));
 }
 
 }  // namespace extensions

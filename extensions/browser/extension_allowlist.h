@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_EXTENSIONS_EXTENSION_ALLOWLIST_H_
-#define CHROME_BROWSER_EXTENSIONS_EXTENSION_ALLOWLIST_H_
+#ifndef EXTENSIONS_BROWSER_EXTENSION_ALLOWLIST_H_
+#define EXTENSIONS_BROWSER_EXTENSION_ALLOWLIST_H_
 
 #include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
@@ -18,11 +18,17 @@
 
 static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
-class Profile;
-
 namespace base {
 class DictValue;
 }  // namespace base
+
+namespace content {
+class BrowserContext;
+}  // namespace content
+
+namespace safe_browsing {
+class SafeBrowsingMetricsCollector;
+}  // namespace safe_browsing
 
 namespace extensions {
 class ExtensionRegistrar;
@@ -41,8 +47,6 @@ class ExtensionAllowlist : public KeyedService, public ExtensionPrefsObserver {
         const ExtensionId& extension_id,
         bool show_warning) {}
   };
-
-  static ExtensionAllowlist* Get(Profile* profile);
 
   ExtensionAllowlist(const ExtensionAllowlist&) = delete;
   ExtensionAllowlist& operator=(const ExtensionAllowlist&) = delete;
@@ -90,8 +94,11 @@ class ExtensionAllowlist : public KeyedService, public ExtensionPrefsObserver {
  private:
   friend class ExtensionAllowlistFactory;
 
-  // `profile` must outlive this object and the ownership remains at caller.
-  explicit ExtensionAllowlist(Profile* profile);
+  // `browser_context` must outlive this object and the ownership remains at
+  // caller.
+  ExtensionAllowlist(
+      content::BrowserContext* browser_context,
+      safe_browsing::SafeBrowsingMetricsCollector* metrics_collector);
 
   // Set if the allowlist should be enforced or not.
   void SetAllowlistEnforcementFields();
@@ -128,23 +135,26 @@ class ExtensionAllowlist : public KeyedService, public ExtensionPrefsObserver {
 
   base::ObserverList<Observer> observers_;
 
-  raw_ptr<Profile> profile_ = nullptr;
+  raw_ptr<content::BrowserContext> browser_context_ = nullptr;
   raw_ptr<ExtensionPrefs> extension_prefs_ = nullptr;
   raw_ptr<ExtensionRegistrar> extension_registrar_ = nullptr;
   raw_ptr<ExtensionRegistry> registry_ = nullptr;
+  raw_ptr<safe_browsing::SafeBrowsingMetricsCollector> metrics_collector_ =
+      nullptr;
 
   bool init_done_ = false;
 
   // Specifies if warnings should be shown for extensions not included in the
-  // allowlist for this profile (considers ESB setting and finch feature).
+  // allowlist for this browser context (considers ESB setting and finch
+  // feature).
   bool warnings_enabled_ = false;
 
   // Specifies if extensions not included in the allowlist should be
-  // automatically disabled on this profile (considers ESB setting and finch
-  // feature).
+  // automatically disabled on this browser context (considers ESB setting and
+  // finch feature).
   bool should_auto_disable_extensions_ = false;
 
-  // Used to subscribe to profile preferences updates.
+  // Used to subscribe to browser context preferences updates.
   PrefChangeRegistrar pref_change_registrar_;
 
   base::ScopedObservation<ExtensionPrefs, ExtensionPrefsObserver>
@@ -153,4 +163,4 @@ class ExtensionAllowlist : public KeyedService, public ExtensionPrefsObserver {
 
 }  // namespace extensions
 
-#endif  // CHROME_BROWSER_EXTENSIONS_EXTENSION_ALLOWLIST_H_
+#endif  // EXTENSIONS_BROWSER_EXTENSION_ALLOWLIST_H_

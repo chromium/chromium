@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/extensions/extension_allowlist.h"
+#include "extensions/browser/extension_allowlist.h"
 
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/extensions/extension_management_test_util.h"

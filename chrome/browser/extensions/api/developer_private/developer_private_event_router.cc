@@ -12,7 +12,7 @@
 #include "base/values.h"
 #include "chrome/browser/extensions/api/developer_private/profile_info_generator.h"
 #include "chrome/browser/extensions/error_console/error_console.h"
-#include "chrome/browser/extensions/extension_allowlist.h"
+#include "chrome/browser/extensions/extension_allowlist_factory.h"
 #include "chrome/browser/extensions/extension_management.h"
 #include "chrome/browser/extensions/sync/extension_sync_util.h"
 #include "chrome/browser/profiles/profile.h"
@@ -22,6 +22,7 @@
 #include "content/public/browser/render_frame_host.h"
 #include "extensions/browser/disable_reason.h"
 #include "extensions/browser/event_router.h"
+#include "extensions/browser/extension_allowlist.h"
 #include "extensions/browser/extension_error.h"
 #include "extensions/browser/extension_event_histogram_value.h"
 #include "extensions/browser/extension_prefs.h"
@@ -75,7 +76,8 @@ DeveloperPrivateEventRouter::DeveloperPrivateEventRouter(Profile* profile)
   permissions_manager_observation_.Observe(PermissionsManager::Get(profile));
   extension_management_observation_.Observe(
       ExtensionManagementFactory::GetForBrowserContext(profile));
-  extension_allowlist_observer_.Observe(ExtensionAllowlist::Get(profile));
+  extension_allowlist_observer_.Observe(
+      ExtensionAllowlistFactory::GetForBrowserContext(profile));
   command_service_observation_.Observe(CommandService::Get(profile));
   toolbar_actions_model_observation_.Observe(ToolbarActionsModel::Get(profile));
 #if BUILDFLAG(ENABLE_PLATFORM_APPS)

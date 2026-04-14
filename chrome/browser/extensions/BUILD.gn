@@ -277,8 +277,6 @@ source_set("extensions") {
     "extension_action_runner.h",
     "extension_action_storage_manager.cc",
     "extension_action_storage_manager.h",
-    "extension_allowlist.cc",
-    "extension_allowlist.h",
     "extension_allowlist_factory.cc",
     "extension_allowlist_factory.h",
     "extension_browser_window_helper.cc",

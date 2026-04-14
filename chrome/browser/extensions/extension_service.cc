@@ -43,7 +43,7 @@
 #include "chrome/browser/extensions/corrupted_extension_reinstaller.h"
 #include "chrome/browser/extensions/cws_info_service_factory.h"
 #include "chrome/browser/extensions/extension_action_storage_manager.h"
-#include "chrome/browser/extensions/extension_allowlist.h"
+#include "chrome/browser/extensions/extension_allowlist_factory.h"
 #include "chrome/browser/extensions/extension_disabled_ui.h"
 #include "chrome/browser/extensions/extension_error_controller.h"
 #include "chrome/browser/extensions/extension_special_storage_policy.h"
@@ -82,6 +82,7 @@
 #include "extensions/browser/delayed_install_manager.h"
 #include "extensions/browser/disable_reason.h"
 #include "extensions/browser/event_router.h"
+#include "extensions/browser/extension_allowlist.h"
 #include "extensions/browser/extension_file_task_runner.h"
 #include "extensions/browser/extension_host.h"
 #include "extensions/browser/extension_registrar.h"
@@ -203,7 +204,7 @@ ExtensionService::ExtensionService(
       system_(ExtensionSystem::Get(profile)),
       extension_prefs_(extension_prefs),
       blocklist_(blocklist),
-      allowlist_(ExtensionAllowlist::Get(profile)),
+      allowlist_(ExtensionAllowlistFactory::GetForBrowserContext(profile)),
       registry_(ExtensionRegistry::Get(profile)),
       pending_extension_manager_(PendingExtensionManager::Get(profile)),
       external_provider_manager_(ExternalProviderManager::Get(profile)),

@@ -2,20 +2,20 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/extensions/extension_allowlist.h"
+#include "extensions/browser/extension_allowlist.h"
 
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/observer_list.h"
-#include "chrome/browser/extensions/extension_allowlist_factory.h"
-#include "chrome/browser/extensions/extension_management.h"
-#include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/safe_browsing/safe_browsing_metrics_collector_factory.h"
 #include "components/safe_browsing/core/browser/safe_browsing_metrics_collector.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
+#include "components/user_prefs/user_prefs.h"
+#include "content/public/browser/browser_context.h"
 #include "extensions/browser/allowlist_state.h"
+#include "extensions/browser/extension_management_client.h"
 #include "extensions/browser/extension_registrar.h"
 #include "extensions/browser/extension_registry.h"
+#include "extensions/browser/extensions_browser_client.h"
 #include "extensions/buildflags/buildflags.h"
 #include "extensions/common/extension_features.h"
 #include "extensions/common/extension_id.h"
@@ -39,12 +39,13 @@ void ReportExtensionAllowlistOmahaAttribute(
     const base::Value* allowlist_value) {
   ExtensionAllowlistOmahaAttributeValue value;
 
-  if (!allowlist_value)
+  if (!allowlist_value) {
     value = ExtensionAllowlistOmahaAttributeValue::kUndefined;
-  else if (allowlist_value->GetBool())
+  } else if (allowlist_value->GetBool()) {
     value = ExtensionAllowlistOmahaAttributeValue::kAllowlisted;
-  else
+  } else {
     value = ExtensionAllowlistOmahaAttributeValue::kNotAllowlisted;
+  }
 
   base::UmaHistogramEnumeration("Extensions.EsbAllowlistOmahaAttribute", value);
 }
@@ -59,16 +60,14 @@ constexpr PrefMap kPrefAllowlistAcknowledge = {
 
 }  // namespace
 
-// static
-ExtensionAllowlist* ExtensionAllowlist::Get(Profile* profile) {
-  return ExtensionAllowlistFactory::GetForBrowserContext(profile);
-}
-
-ExtensionAllowlist::ExtensionAllowlist(Profile* profile)
-    : profile_(profile),
-      extension_prefs_(ExtensionPrefs::Get(profile)),
-      extension_registrar_(ExtensionRegistrar::Get(profile)),
-      registry_(ExtensionRegistry::Get(profile)) {
+ExtensionAllowlist::ExtensionAllowlist(
+    content::BrowserContext* browser_context,
+    safe_browsing::SafeBrowsingMetricsCollector* metrics_collector)
+    : browser_context_(browser_context),
+      extension_prefs_(ExtensionPrefs::Get(browser_context)),
+      extension_registrar_(ExtensionRegistrar::Get(browser_context)),
+      registry_(ExtensionRegistry::Get(browser_context)),
+      metrics_collector_(metrics_collector) {
   SetAllowlistEnforcementFields();
 
   // Relies on ExtensionSystem dependency on ExtensionPrefs to ensure
@@ -77,7 +76,8 @@ ExtensionAllowlist::ExtensionAllowlist(Profile* profile)
 
   // Register to Enhanced Safe Browsing setting changes for allowlist
   // enforcements.
-  pref_change_registrar_.Init(profile_->GetPrefs());
+  PrefService* prefs = user_prefs::UserPrefs::Get(browser_context_);
+  pref_change_registrar_.Init(prefs);
   pref_change_registrar_.Add(
       prefs::kSafeBrowsingEnhanced,
       base::BindRepeating(&ExtensionAllowlist::OnSafeBrowsingEnhancedChanged,
@@ -125,8 +125,9 @@ void ExtensionAllowlist::SetExtensionAllowlistState(
     AllowlistState state) {
   DCHECK_NE(state, ALLOWLIST_UNDEFINED);
 
-  if (state != GetExtensionAllowlistState(extension_id))
+  if (state != GetExtensionAllowlistState(extension_id)) {
     extension_prefs_->SetIntegerPref(extension_id, kPrefAllowlist, state);
+  }
 
   if (warnings_enabled_) {
     NotifyExtensionAllowlistWarningStateChanged(
@@ -219,21 +220,23 @@ void ExtensionAllowlist::PerformActionBasedOnOmahaAttributes(
 
 bool ExtensionAllowlist::ShouldDisplayWarning(
     const ExtensionId& extension_id) const {
-  if (!warnings_enabled_)
+  if (!warnings_enabled_) {
     return false;  // No warnings should be shown.
+  }
 
   // Do not display warnings for extensions explicitly allowed by policy
   // (forced, recommenced and allowed extensions).
   // TODO(jeffcyr): Policy allowed extensions should also be exempted from auto
   // disable.
-  ExtensionManagement* settings =
-      ExtensionManagementFactory::GetForBrowserContext(profile_);
-  if (settings->IsInstallationExplicitlyAllowed(extension_id)) {
+  if (ExtensionsBrowserClient::Get()
+          ->GetExtensionManagementClient(browser_context_)
+          ->IsInstallationExplicitlyAllowed(extension_id)) {
     return false;  // Extension explicitly allowed.
   }
 
-  if (GetExtensionAllowlistState(extension_id) != ALLOWLIST_NOT_ALLOWLISTED)
+  if (GetExtensionAllowlistState(extension_id) != ALLOWLIST_NOT_ALLOWLISTED) {
     return false;  // Extension is allowlisted.
+  }
 
   // Warn about the extension.
   return true;
@@ -251,7 +254,8 @@ void ExtensionAllowlist::OnExtensionInstalled(const ExtensionId& extension_id,
 }
 
 void ExtensionAllowlist::SetAllowlistEnforcementFields() {
-  if (safe_browsing::IsEnhancedProtectionEnabled(*profile_->GetPrefs())) {
+  PrefService* prefs = user_prefs::UserPrefs::Get(browser_context_);
+  if (safe_browsing::IsEnhancedProtectionEnabled(*prefs)) {
     warnings_enabled_ = true;
     should_auto_disable_extensions_ = base::FeatureList::IsEnabled(
         extensions_features::kSafeBrowsingCrxAllowlistAutoDisable);
@@ -371,14 +375,17 @@ void ExtensionAllowlist::OnExtensionStateChanged(
   // extensions during startup. So on the first startup with the enforcement
   // enabled, all not allowlisted extensions would be
   // `ALLOWLIST_ACKNOWLEDGE_ENABLED_BY_USER` instead of disabled.
-  if (!init_done_)
+  if (!init_done_) {
     return;
+  }
 
-  if (!is_now_enabled)
+  if (!is_now_enabled) {
     return;  // We only care if the extension is now enabled.
+  }
 
-  if (!should_auto_disable_extensions_)
+  if (!should_auto_disable_extensions_) {
     return;  // We only care if allowlist if being enforced.
+  }
 
   if (GetExtensionAllowlistState(extension_id) != ALLOWLIST_NOT_ALLOWLISTED) {
     // We only care if the current state is not allowlisted.
@@ -409,15 +416,10 @@ void ExtensionAllowlist::NotifyExtensionAllowlistWarningStateChanged(
 }
 
 void ExtensionAllowlist::ReportExtensionReEnabledEvent() {
-  auto* metrics_collector =
-      safe_browsing::SafeBrowsingMetricsCollectorFactory::GetForProfile(
-          profile_);
-  DCHECK(metrics_collector);
-  if (metrics_collector) {
-    metrics_collector->AddSafeBrowsingEventToPref(
-        safe_browsing::SafeBrowsingMetricsCollector::EventType::
-            NON_ALLOWLISTED_EXTENSION_RE_ENABLED);
-  }
+  DCHECK(metrics_collector_);
+  metrics_collector_->AddSafeBrowsingEventToPref(
+      safe_browsing::SafeBrowsingMetricsCollector::EventType::
+          NON_ALLOWLISTED_EXTENSION_RE_ENABLED);
 }
 
 }  // namespace extensions

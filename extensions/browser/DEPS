@@ -21,6 +21,7 @@ include_rules = [
   "+components/sync_preferences",
   "+components/update_client",
   "+components/user_manager",
+  "+components/user_prefs",
   "+components/value_store",
   "+components/variations",
   "+components/vector_icons",

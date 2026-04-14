@@ -29,7 +29,7 @@
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/extensions/api/webstore_private/extension_install_status.h"
-#include "chrome/browser/extensions/extension_allowlist.h"
+#include "chrome/browser/extensions/extension_allowlist_factory.h"
 #include "chrome/browser/extensions/extension_management.h"
 #include "chrome/browser/extensions/install_tracker_factory.h"
 #include "chrome/browser/extensions/manifest_v2_experiment_manager.h"
@@ -59,6 +59,7 @@
 #include "content/public/browser/storage_partition.h"
 #include "content/public/browser/web_contents.h"
 #include "extensions/browser/api/management/management_api.h"
+#include "extensions/browser/extension_allowlist.h"
 #include "extensions/browser/extension_dialog_auto_confirm.h"
 #include "extensions/browser/extension_function_constants.h"
 #include "extensions/browser/extension_registry.h"
@@ -1028,7 +1029,8 @@ bool WebstorePrivateBeginInstallWithManifest3Function::ShouldShowFrictionDialog(
   }
 
   // Only show friction if the allowlist warnings are enabled for the profile.
-  return ExtensionAllowlist::Get(profile)->warnings_enabled();
+  return ExtensionAllowlistFactory::GetForBrowserContext(profile)
+      ->warnings_enabled();
 }
 
 void WebstorePrivateBeginInstallWithManifest3Function::

@@ -20,7 +20,7 @@
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/extensions/api/webstore_private/webstore_private_api.h"
-#include "chrome/browser/extensions/extension_allowlist.h"
+#include "chrome/browser/extensions/extension_allowlist_factory.h"
 #include "chrome/browser/extensions/extension_install_prompt.h"
 #include "chrome/browser/extensions/mixin_based_extension_apitest.h"
 #include "chrome/browser/profiles/profile.h"
@@ -43,6 +43,7 @@
 #include "extensions/browser/allowlist_state.h"
 #include "extensions/browser/api/management/management_api.h"
 #include "extensions/browser/api_test_utils.h"
+#include "extensions/browser/extension_allowlist.h"
 #include "extensions/browser/extension_dialog_auto_confirm.h"
 #include "extensions/browser/extension_system.h"
 #include "extensions/browser/install_approval.h"
@@ -1192,7 +1193,7 @@ class ExtensionWebstorePrivateApiAllowlistEnforcementTest
   }
 
   ExtensionAllowlist* GetAllowlist() {
-    return ExtensionAllowlist::Get(profile());
+    return ExtensionAllowlistFactory::GetForBrowserContext(profile());
   }
 
  private:
