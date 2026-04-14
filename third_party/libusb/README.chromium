@@ -36,3 +36,5 @@ Local Modifications:
   ef8776ddea18ad5d2bf0a9d994c4cbfb6cc6f94d
 - unsigned-shifts.patch has been applied, which is a partial backport of
   upstream's 8a05a3f4e7424eb2071e4dbe1796cff3b660a141
+- darwin-cfsource-null.patch has been applied, which is a backport of
+  upstream's edd1a4bfe4b037e67b65e4538fd880123fb004f7
