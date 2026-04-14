@@ -6117,7 +6117,23 @@ auto GraphBuilderTflite::SerializeLstmGate(const LstmCellOperation& lstm_cell,
       output_tensor_index_of_recurrent_weight, updated_state_tensor_index));
 
   // mul(cellState, peepholeWeight) + updatedState.
+  // The peephole weight layout is always [i, o, f] regardless of the weight
+  // layout, so use dedicated offsets.
   if (lstm_cell.peephole_weight_tensor_index && type != LstmGateType::kCell) {
+    int32_t peephole_slice_start;
+    switch (type) {
+      case LstmGateType::kInput:
+        peephole_slice_start = 0;
+        break;
+      case LstmGateType::kOutput:
+        peephole_slice_start = hidden_size;
+        break;
+      case LstmGateType::kForget:
+        peephole_slice_start = 2 * hidden_size;
+        break;
+      case LstmGateType::kCell:
+        NOTREACHED();
+    }
     ASSIGN_OR_RETURN(
         TensorIndex output_tensor_index_of_slice,
         SerializeTemporaryTensorWithByteSizeCheck(
@@ -6126,7 +6142,7 @@ auto GraphBuilderTflite::SerializeLstmGate(const LstmCellOperation& lstm_cell,
         OperatorOffset operator_offset,
         SerializeSliceOperation(*lstm_cell.peephole_weight_tensor_index,
                                 output_tensor_index_of_slice,
-                                std::array<int32_t, 1>({slice_start}),
+                                std::array<int32_t, 1>({peephole_slice_start}),
                                 std::array<int32_t, 1>({hidden_size})));
     operators_.emplace_back(operator_offset);
 
