@@ -186,6 +186,8 @@ class PLATFORM_EXPORT CanvasResourceProvider
   void SetRecorderForCanvas2D(
       std::unique_ptr<MemoryManagedPaintRecorder> recorder);
 
+  // Canvas2D-specific, as it is called only when `recorder_for_canvas_2d_` is
+  // instantiated by Canvas2D-specific subclasses.
   void InitializeForRecording(cc::PaintCanvas* canvas) const override;
 
   bool IsPrinting() { return delegate_ && delegate_->IsPrinting(); }
@@ -268,6 +270,8 @@ class PLATFORM_EXPORT CanvasResourceProvider
   size_t GetSize() const override;
 
   // Called after the recording was cleared from any draw ops it might have had.
+  // Canvas2D-specific, as it is called only when `recorder_for_canvas_2d_` is
+  // instantiated by Canvas2D-specific subclasses.
   void RecordingCleared() override;
 
   // Disables lines drawing as paths if necessary. Drawing lines as paths is

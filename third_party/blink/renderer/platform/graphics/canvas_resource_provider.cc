@@ -1850,13 +1850,13 @@ void CanvasResourceProvider::InitializeForRecording(
 }
 
 void CanvasResourceProvider::RecordingCleared() {
-  if (IsCanvas2D()) {
-    // Since the recording has been cleared, it contains no draw commands and it
-    // is now safe to discard the old copy of canvas content on a subsequent
-    // CopyOnWrite.
-    must_preserve_content_on_copy_on_write_for_canvas_2d_ = false;
-    clear_frame_for_canvas2d_ = true;
-  }
+  CHECK(IsCanvas2D());
+
+  // Since the recording has been cleared, it contains no draw commands and it
+  // is now safe to discard the old copy of canvas content on a subsequent
+  // CopyOnWrite.
+  must_preserve_content_on_copy_on_write_for_canvas_2d_ = false;
+  clear_frame_for_canvas2d_ = true;
 }
 
 MemoryManagedPaintCanvas&
