@@ -1,0 +1,21 @@
+// Copyright 2026 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module browser.accessibility_annotator_internals.mojom;
+
+// Factory used by the WebUI page (caller) to create a PageHandler in the
+// browser process (callee) for the Accessibility Annotator Internals page.
+interface PageHandlerFactory {
+  // Creates a PageHandler instance and binds it to the given receiver.
+  CreatePageHandler(pending_receiver<PageHandler> handler);
+};
+
+// Provides access to accessibility annotator features.
+// The WebUI page (caller) uses this to interact with the browser
+// process (callee).
+interface PageHandler {
+  // Triggers the first-run experience for the accessibility annotator.
+  // Returns true if the operation was successful.
+  TriggerFirstRun() => (bool success);
+};

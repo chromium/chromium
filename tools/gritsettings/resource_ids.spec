@@ -182,6 +182,10 @@
     "META": {"sizes": {"includes": [10],}},
     "includes": [2745],
   },
+  "<(SHARED_INTERMEDIATE_DIR)/chrome/browser/resources/accessibility_annotator_internals/resources.grd": {
+    "META": {"sizes": {"includes": [10],}},
+    "includes": [2747],
+  },
   "<(SHARED_INTERMEDIATE_DIR)/chrome/browser/resources/actor_internals/resources.grd": {
     "META": {"sizes": {"includes": [10],}},
     "includes": [2750],

@@ -37,6 +37,10 @@ inline constexpr char kChromeUIAboutURL[] = "chrome://about/";
 inline constexpr char kChromeUIAccessCodeCastHost[] = "access-code-cast";
 inline constexpr char kChromeUIAccessCodeCastURL[] =
     "chrome://access-code-cast/";
+inline constexpr char kChromeUIAccessibilityAnnotatorInternalsHost[] =
+    "accessibility-annotator-internals";
+inline constexpr char kChromeUIAccessibilityAnnotatorInternalsURL[] =
+    "chrome://accessibility-annotator-internals/";
 inline constexpr char kChromeUIAccessibilityHost[] = "accessibility";
 inline constexpr char kChromeUIAccountSettingsURL[] =
     "chrome://settings/account";

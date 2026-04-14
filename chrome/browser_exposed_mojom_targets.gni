@@ -28,6 +28,7 @@ browser_exposed_mojom_targets = [
   "//chrome/browser/resources/certificate_manager:mojom",
   "//chrome/browser/ui/webui/access_code_cast:mojo_bindings",
   "//chrome/browser/ui/webui/accessibility_annotator:mojo_bindings",
+  "//chrome/browser/ui/webui/accessibility_annotator_internals:mojo_bindings",
   "//chrome/browser/ui/webui/actor_internals:mojo_bindings",
   "//chrome/browser/ui/webui/app_home:mojo_bindings",
   "//chrome/browser/ui/webui/app_service_internals:mojo_bindings",

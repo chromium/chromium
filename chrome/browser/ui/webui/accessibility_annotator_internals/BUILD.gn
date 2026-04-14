@@ -1,0 +1,35 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//mojo/public/tools/bindings/mojom.gni")
+
+mojom("mojo_bindings") {
+  sources = [ "accessibility_annotator_internals.mojom" ]
+  webui_module_path = "/"
+}
+
+source_set("accessibility_annotator_internals") {
+  sources = [
+    "accessibility_annotator_internals_page_handler.cc",
+    "accessibility_annotator_internals_page_handler.h",
+    "accessibility_annotator_internals_ui.cc",
+    "accessibility_annotator_internals_ui.h",
+  ]
+
+  public_deps = [
+    "//base",
+    "//content/public/browser",
+    "//mojo/public/cpp/bindings",
+    "//ui/webui",
+  ]
+
+  deps = [
+    ":mojo_bindings",
+    "//chrome/browser/accessibility_annotator/first_run",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/resources/accessibility_annotator_internals:resources",
+    "//chrome/common",
+    "//components/accessibility_annotator/first_run",
+  ]
+}
