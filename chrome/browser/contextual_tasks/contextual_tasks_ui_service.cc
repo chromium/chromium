@@ -845,6 +845,10 @@ bool ContextualTasksUiService::HandleNavigationImpl(
 
   // Allow any navigation to the contextual tasks host.
   if (IsContextualTasksUrl(url_params.url)) {
+    if (is_from_embedded_page) {
+      DCHECK(false) << "Unexpected URL from embedded page " << url_params.url;
+      return true;
+    }
     OMNIBOX_LOG("nav_trace")
         << "ContextualTasks navigation trace: HandleNavigationImpl "
            "returning early, navigating to contextual tasks host";

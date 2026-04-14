@@ -10,6 +10,7 @@
 #include "base/observer_list.h"
 #include "chrome/browser/context_sharing/tab_bottom_sheet/android/tab_bottom_sheet_bridge.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_panel_host.h"
+#include "content/public/browser/web_contents_delegate.h"
 
 class BrowserWindowInterface;
 class TabAndroid;
@@ -23,7 +24,8 @@ namespace contextual_tasks {
 // Android implementation of ContextualTasksPanelHost using a bottom sheet.
 class ContextualTasksPanelHostAndroid
     : public ContextualTasksPanelHost,
-      public context_sharing::TabBottomSheetBridge::Observer {
+      public context_sharing::TabBottomSheetBridge::Observer,
+      public content::WebContentsDelegate {
  public:
   explicit ContextualTasksPanelHostAndroid(
       BrowserWindowInterface* browser_window);
@@ -45,6 +47,13 @@ class ContextualTasksPanelHostAndroid
   void OnClosed() override;
   void OnSuppressed() override;
   void OnOpened(bool is_expanded) override;
+
+  // content::WebContentsDelegate:
+  content::WebContents* OpenURLFromTab(
+      content::WebContents* source,
+      const content::OpenURLParams& params,
+      base::OnceCallback<void(content::NavigationHandle&)>
+          navigation_handle_callback) override;
 
  private:
   // Helper method to get the bridge, creating it if necessary. This is because
