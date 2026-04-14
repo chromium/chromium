@@ -4592,7 +4592,6 @@ TEST_P(WaylandWindowTest, ChangeFocusDuringDispatch) {
                 server->GetObject<wl::MockSurface>(other_id);
             ASSERT_TRUE(other_surface);
             auto* pointer = server->seat()->pointer();
-            // Leaving will trigger a synthesized release event on focus change.
             wl_pointer_send_leave(pointer->resource(), 3, surface->resource());
             wl_pointer_send_frame(pointer->resource());
 
@@ -4616,7 +4615,7 @@ TEST_P(WaylandWindowTest, ChangeFocusDuringDispatch) {
     wl_pointer_send_frame(pointer->resource());
   });
 
-  EXPECT_EQ(count, 4);
+  EXPECT_EQ(count, 3);
 }
 
 TEST_P(WaylandWindowTest, WindowMovedResized) {

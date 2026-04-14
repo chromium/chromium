@@ -338,12 +338,10 @@ void WaylandEventSource::OnPointerFocusChanged(
     // Save new pointer location.
     pointer_location_ = location;
     window_manager_->SetPointerFocusedWindow(window);
+    pending_focus_loss_release_ = false;
   } else {
-    // The compositor may swallow the release event for any buttons that are
-    // pressed when the window loses focus, e.g. when right-clicking the
-    // titlebar to open the system menu on GNOME.
-    if (!connection_->IsDragInProgress()) {
-      ReleasePressedPointerButtons(window, ui::EventTimeForNow());
+    if (!connection_->IsDragInProgress() && pointer_flags_) {
+      pending_focus_loss_release_ = true;
     }
   }
 
@@ -532,6 +530,15 @@ const gfx::PointF& WaylandEventSource::GetPointerLocation() const {
 
 void WaylandEventSource::OnPointerFrameEvent() {
   base::TimeTicks now = EventTimeForNow();
+
+  // Release pressed buttons if focus was lost and not regained within the same
+  // frame. This handles cases where the compositor swallows release events
+  // (e.g. right-clicking the titlebar to open the system menu on GNOME).
+  if (pending_focus_loss_release_) {
+    pending_focus_loss_release_ = false;
+    ReleasePressedPointerButtons(nullptr, now);
+  }
+
   if (pointer_scroll_data_) {
     pointer_scroll_data_->dt = now - last_pointer_frame_time_;
     ProcessPointerScrollData();

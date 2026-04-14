@@ -280,6 +280,97 @@ TEST_P(WaylandEventSourceTest, ReleasesAllPressedPointerButtons) {
       pointer_delegate_->IsPointerButtonPressed(EF_MIDDLE_MOUSE_BUTTON));
 }
 
+// Verify that pressed buttons are released when pointer focus is lost and not
+// regained within the same frame (e.g. focus goes to the compositor's own UI).
+TEST_P(WaylandEventSourceTest, SyntheticReleaseOnFocusLoss) {
+  PostToServerAndWait([](wl::TestWaylandServerThread* server) {
+    wl_seat_send_capabilities(server->seat()->resource(),
+                              WL_SEAT_CAPABILITY_POINTER);
+  });
+  ASSERT_TRUE(connection_->seat()->pointer());
+
+  // Enter and press the right mouse button.
+  EXPECT_CALL(delegate_, DispatchEvent(_)).Times(2);
+  PostToServerAndWait([surface_id = window_->root_surface()->get_surface_id()](
+                          wl::TestWaylandServerThread* server) {
+    auto* const surface =
+        server->GetObject<wl::MockSurface>(surface_id)->resource();
+    auto* const pointer = server->seat()->pointer()->resource();
+
+    wl_pointer_send_enter(pointer, server->GetNextSerial(), surface, 0, 0);
+    wl_pointer_send_frame(pointer);
+    wl_pointer_send_button(pointer, server->GetNextSerial(),
+                           server->GetNextTime(), BTN_RIGHT,
+                           WL_POINTER_BUTTON_STATE_PRESSED);
+    wl_pointer_send_frame(pointer);
+  });
+
+  EXPECT_TRUE(pointer_delegate_->IsPointerButtonPressed(EF_RIGHT_MOUSE_BUTTON));
+
+  // Leave with no subsequent enter in the same frame — the button should be
+  // synthetically released at the frame event.
+  EXPECT_CALL(delegate_, DispatchEvent(_)).Times(testing::AtLeast(1));
+  PostToServerAndWait([surface_id = window_->root_surface()->get_surface_id()](
+                          wl::TestWaylandServerThread* server) {
+    auto* const surface =
+        server->GetObject<wl::MockSurface>(surface_id)->resource();
+    auto* const pointer = server->seat()->pointer()->resource();
+
+    wl_pointer_send_leave(pointer, server->GetNextSerial(), surface);
+    wl_pointer_send_frame(pointer);
+  });
+
+  EXPECT_FALSE(
+      pointer_delegate_->IsPointerButtonPressed(EF_RIGHT_MOUSE_BUTTON));
+}
+
+// Verify that pressed buttons are NOT synthetically released when pointer focus
+// moves between Chrome surfaces within the same frame.
+// Regression test for https://crbug.com/500653052.
+TEST_P(WaylandEventSourceTest, NoSyntheticReleaseOnIntraClientFocusChange) {
+  PostToServerAndWait([](wl::TestWaylandServerThread* server) {
+    wl_seat_send_capabilities(server->seat()->resource(),
+                              WL_SEAT_CAPABILITY_POINTER);
+  });
+  ASSERT_TRUE(connection_->seat()->pointer());
+
+  // Enter and press the right mouse button.
+  EXPECT_CALL(delegate_, DispatchEvent(_)).Times(2);
+  PostToServerAndWait([surface_id = window_->root_surface()->get_surface_id()](
+                          wl::TestWaylandServerThread* server) {
+    auto* const surface =
+        server->GetObject<wl::MockSurface>(surface_id)->resource();
+    auto* const pointer = server->seat()->pointer()->resource();
+
+    wl_pointer_send_enter(pointer, server->GetNextSerial(), surface, 0, 0);
+    wl_pointer_send_frame(pointer);
+    wl_pointer_send_button(pointer, server->GetNextSerial(),
+                           server->GetNextTime(), BTN_RIGHT,
+                           WL_POINTER_BUTTON_STATE_PRESSED);
+    wl_pointer_send_frame(pointer);
+  });
+
+  EXPECT_TRUE(pointer_delegate_->IsPointerButtonPressed(EF_RIGHT_MOUSE_BUTTON));
+
+  // Leave and re-enter (same surface for simplicity) within the same frame.
+  // This simulates pointer moving between Chrome surfaces (e.g. a page and its
+  // context menu popup). The button should remain pressed.
+  EXPECT_CALL(delegate_, DispatchEvent(_)).Times(testing::AtLeast(1));
+  PostToServerAndWait([surface_id = window_->root_surface()->get_surface_id()](
+                          wl::TestWaylandServerThread* server) {
+    auto* const surface =
+        server->GetObject<wl::MockSurface>(surface_id)->resource();
+    auto* const pointer = server->seat()->pointer()->resource();
+
+    wl_pointer_send_leave(pointer, server->GetNextSerial(), surface);
+    wl_pointer_send_enter(pointer, server->GetNextSerial(), surface, 0, 0);
+    wl_pointer_send_frame(pointer);
+  });
+
+  // The button must still be pressed — releasing it here is the regression.
+  EXPECT_TRUE(pointer_delegate_->IsPointerButtonPressed(EF_RIGHT_MOUSE_BUTTON));
+}
+
 INSTANTIATE_TEST_SUITE_P(
     EventsDispatchPolicyTest,
     WaylandEventSourceTest,
