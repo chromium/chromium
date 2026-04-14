@@ -247,8 +247,6 @@ void LogManualFallbackEntryThroughExpandIcon(ManualFillDataType data_type,
 
 - (void)passwordManualFillButtonPressed:(UIButton*)button {
   base::RecordAction(base::UserMetricsAction("ManualFallback_OpenPassword"));
-  UMA_HISTOGRAM_COUNTS_100("ManualFallback.VisibleSuggestions.OpenPasswords",
-                           self.formSuggestionView.suggestions.count);
   [self manualFillButtonPressed:button
                     forDataType:ManualFillDataType::kPassword];
 }
@@ -263,8 +261,6 @@ void LogManualFallbackEntryThroughExpandIcon(ManualFillDataType data_type,
 
 - (void)addressManualFillButtonPressed:(UIButton*)button {
   base::RecordAction(base::UserMetricsAction("ManualFallback_OpenProfile"));
-  UMA_HISTOGRAM_COUNTS_100("ManualFallback.VisibleSuggestions.OpenProfiles",
-                           self.formSuggestionView.suggestions.count);
   [self manualFillButtonPressed:button
                     forDataType:ManualFillDataType::kAddress];
 }

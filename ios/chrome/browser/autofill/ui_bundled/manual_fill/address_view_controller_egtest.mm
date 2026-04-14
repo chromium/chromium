@@ -404,16 +404,6 @@ void OpenAddressManualFillViewWithNoSavedAddresses() {
       l10n_util::GetNSString(IDS_IOS_MANUAL_FALLBACK_NO_ADDRESSES));
   [[EarlGrey selectElementWithMatcher:noAddressesFoundMessage]
       assertWithMatcher:grey_sufficientlyVisible()];
-
-  // Verify that the number of visible suggestions in the keyboard accessory was
-  // correctly recorded.
-  GREYAssertNil(
-      [MetricsAppInterface
-          expectUniqueSampleWithCount:1
-                            forBucket:0
-                         forHistogram:
-                             @"ManualFallback.VisibleSuggestions.OpenProfiles"],
-      @"Unexpected histogram error for number of visible suggestions.");
 }
 
 // Tests that tapping the "Autofill Form" button fills the address form with

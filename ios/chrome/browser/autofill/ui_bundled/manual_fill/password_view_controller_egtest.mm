@@ -881,16 +881,6 @@ void CheckKeyboardIsUpAndNotCovered() {
       l10n_util::GetNSString(IDS_IOS_MANUAL_FALLBACK_NO_PASSWORDS_FOR_SITE));
   [[EarlGrey selectElementWithMatcher:noPasswordsFoundMessage]
       assertWithMatcher:grey_sufficientlyVisible()];
-
-  // Verify that the number of visible suggestions in the manual fallback was
-  // correctly recorded.
-  GREYAssertNil(
-      [MetricsAppInterface
-          expectUniqueSampleWithCount:1
-                            forBucket:0
-                         forHistogram:@"ManualFallback.VisibleSuggestions."
-                                      @"OpenPasswords"],
-      @"Unexpected histogram error for number of visible suggestions.");
 }
 
 // Tests password generation on manual fallback.

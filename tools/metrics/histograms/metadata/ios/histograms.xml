@@ -5992,26 +5992,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="IOS.Reauth.Address.Autofill" enum="ReauthenticationEvent"
-    expires_after="2024-10-19">
-  <owner>sugoi@chromium.org</owner>
-  <owner>bling-transactions@google.com</owner>
-  <summary>
-    Tracks the results and attempts of reauthentication when using address
-    Autofill suggestions.
-  </summary>
-</histogram>
-
-<histogram name="IOS.Reauth.CreditCard.Autofill" enum="ReauthenticationEvent"
-    expires_after="2025-04-27">
-  <owner>sugoi@chromium.org</owner>
-  <owner>bling-transactions@google.com</owner>
-  <summary>
-    Tracks the results and attempts of reauthentication when using credit card
-    Autofill suggestions.
-  </summary>
-</histogram>
-
 <histogram name="IOS.Reauth.Password.Autofill" enum="ReauthenticationEvent"
     expires_after="2026-10-11">
   <owner>sugoi@chromium.org</owner>
@@ -8037,28 +8017,6 @@ chromium-metrics-reviews@google.com.
     [iOS Only] Tracks the number of autofill suggestions present when the user
     taps on the credit card button in manual fallback. Warning: this histogram
     was expired from 2023-12-10 to 2024-4-15; data may be missing.
-  </summary>
-</histogram>
-
-<histogram name="ManualFallback.VisibleSuggestions.OpenPasswords"
-    units="Suggestions" expires_after="2025-10-26">
-  <owner>tmartino@chromium.org</owner>
-  <owner>bling-transactions@google.com</owner>
-  <summary>
-    [iOS Only] Tracks the number of password suggestions present when the user
-    taps on the password button in manual fallback. Warning: this histogram was
-    expired from 2023-1-07 to 2024-4-15; data may be missing.
-  </summary>
-</histogram>
-
-<histogram name="ManualFallback.VisibleSuggestions.OpenProfiles"
-    units="Suggestions" expires_after="2025-08-24">
-  <owner>tmartino@chromium.org</owner>
-  <owner>bling-transactions@google.com</owner>
-  <summary>
-    [iOS Only] Tracks the number of autofill suggestions present when the user
-    taps on the profiles (address) button in manual fallback. Warning: this
-    histogram was expired from 2023-05-01 to 2024-4-15; data may be missing.
   </summary>
 </histogram>
 

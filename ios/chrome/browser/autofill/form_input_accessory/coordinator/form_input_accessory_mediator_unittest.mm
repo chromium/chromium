@@ -403,8 +403,6 @@ TEST_F(FormInputAccessoryMediatorTest, ShowSuggestions_WithConcurrentQueries) {
 // Tests that selecting a suggestion when Stateless is enabled is correctly
 // handled when no reauthentication is needed.
 TEST_F(FormInputAccessoryMediatorTest, DidSelectSuggestion_NoReauth) {
-  base::HistogramTester histogram_tester;
-
   id formInputSuggestionProviderMock =
       OCMProtocolMock(@protocol(FormInputSuggestionsProvider));
   [mediator_ injectCurrentProvider:formInputSuggestionProviderMock];
@@ -436,20 +434,6 @@ TEST_F(FormInputAccessoryMediatorTest, DidSelectSuggestion_NoReauth) {
   [mediator_ didSelectSuggestion:suggestion
                          atIndex:suggestionIndex
                       completion:nil];
-
-  // Look the authentication metrics associated with the type of the selected
-  // provided are correctly recorded.
-  histogram_tester.ExpectTotalCount("IOS.Reauth.CreditCard.Autofill", 2);
-  histogram_tester.ExpectBucketCount("IOS.Reauth.CreditCard.Autofill",
-                                     /*sample=*/
-                                     static_cast<base::HistogramBase::Sample32>(
-                                         ReauthenticationEvent::kAttempt),
-                                     /*expected_count=*/1);
-  histogram_tester.ExpectBucketCount("IOS.Reauth.CreditCard.Autofill",
-                                     /*sample=*/
-                                     static_cast<base::HistogramBase::Sample32>(
-                                         ReauthenticationEvent::kSuccess),
-                                     /*expected_count=*/1);
 
   EXPECT_OCMOCK_VERIFY(formInputSuggestionProviderMock);
 }
