@@ -157,28 +157,36 @@ void BrowserManagerService::AddBrowserForTesting(
 BrowserCollection::BrowserVector BrowserManagerService::GetBrowsers(
     Order order) {
   CHECK(order == Order::kCreation || order == Order::kActivation);
+  BrowserCollection::BrowserVector browsers;
   if (order == Order::kActivation) {
-    return browsers_activation_order_;
+    browsers.reserve(browsers_activation_order_.size());
+    for (raw_ptr<BrowserWindowInterface>& browser :
+         browsers_activation_order_) {
+      if (!browser->IsDeleteScheduled()) {
+        browsers.push_back(browser);
+      }
+    }
+    return browsers;
   }
 
-  BrowserCollection::BrowserVector browsers;
   CHECK(browsers_and_subscriptions_.empty() ||
         browsers_and_subscriptions_for_testing_.empty());
   if (!browsers_and_subscriptions_for_testing_.empty()) {
     CHECK(browsers_and_subscriptions_.empty());
     browsers.reserve(browsers_and_subscriptions_for_testing_.size());
-    std::ranges::transform(browsers_and_subscriptions_for_testing_,
-                           std::back_inserter(browsers),
-                           [](const auto& browser_and_subscriptions) {
-                             return browser_and_subscriptions.browser.get();
-                           });
+    for (auto& browser_and_subscription :
+         browsers_and_subscriptions_for_testing_) {
+      if (!browser_and_subscription.browser->IsDeleteScheduled()) {
+        browsers.push_back(browser_and_subscription.browser.get());
+      }
+    }
   } else {
     browsers.reserve(browsers_and_subscriptions_.size());
-    std::ranges::transform(browsers_and_subscriptions_,
-                           std::back_inserter(browsers),
-                           [](const auto& browser_and_subscriptions) {
-                             return browser_and_subscriptions.browser.get();
-                           });
+    for (auto& browser_and_subscription : browsers_and_subscriptions_) {
+      if (!browser_and_subscription.browser->IsDeleteScheduled()) {
+        browsers.push_back(browser_and_subscription.browser.get());
+      }
+    }
   }
 
   return browsers;
