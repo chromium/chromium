@@ -32,6 +32,7 @@ public interface BackPressHandler {
         Type.TEXT_BUBBLE,
         Type.XR_DELEGATE,
         Type.SCENE_OVERLAY,
+        Type.ACTOR_OVERLAY,
         // Deprecated: Type.START_SURFACE,
         Type.SELECTION_POPUP,
         Type.MANUAL_FILLING,
@@ -59,6 +60,7 @@ public interface BackPressHandler {
         int SCENE_OVERLAY = 2;
         int BOTTOM_SHEET = 3;
         int CANCEL_TAB_SWITCHER_DRAG = 4;
+        int ACTOR_OVERLAY = 5;
         // Deprecated: int START_SURFACE = 5;
         // The archived tabs dialog is shown on top of the hub, so it must take priority.
         int ARCHIVED_TABS_DIALOG = 6;

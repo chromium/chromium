@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.actor.ui;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.clearInvocations;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -39,6 +40,7 @@ import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.actor.ui.ActorUiTabController.ActorOverlayState;
 import org.chromium.chrome.browser.actor.ui.ActorUiTabController.HandoffButtonState;
 import org.chromium.chrome.browser.actor.ui.ActorUiTabController.UiTabState;
+import org.chromium.chrome.browser.back_press.BackPressManager;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsVisibilityManager;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -49,6 +51,7 @@ import org.chromium.chrome.browser.tab.TabObscuringHandler;
 import org.chromium.chrome.browser.tab.TabObserver;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
+import org.chromium.components.browser_ui.widget.gesture.BackPressHandler;
 
 /** Tests for {@link ActorOverlayCoordinator}. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -60,6 +63,7 @@ public class ActorOverlayCoordinatorTest {
     @Mock private BrowserControlsVisibilityManager mBrowserControlsVisibilityManager;
     @Mock private Tab mTab;
     @Mock private SnackbarManager mSnackbarManager;
+    @Mock private BackPressManager mBackPressManager;
     @Mock private ActorUiTabController.Natives mTabControllerNatives;
     @Mock private LayoutManager mLayoutManager;
     @Captor private ArgumentCaptor<TabObserver> mTabObserverCaptor;
@@ -108,6 +112,7 @@ public class ActorOverlayCoordinatorTest {
                         mBrowserControlsVisibilityManager,
                         mTabObscuringHandler,
                         mSnackbarManager,
+                        mBackPressManager,
                         mLayoutManagerSupplier);
         mLayoutManagerSupplier.set(mLayoutManager);
     }
@@ -120,6 +125,7 @@ public class ActorOverlayCoordinatorTest {
         Assert.assertTrue(mCurrentTabSupplier.hasObservers());
         verify(mBrowserControlsVisibilityManager).addObserver(any());
         verify(mLayoutManager).addObserver(any());
+        verify(mBackPressManager).addHandler(any(), eq(BackPressHandler.Type.ACTOR_OVERLAY));
     }
 
     @Test
@@ -512,6 +518,7 @@ public class ActorOverlayCoordinatorTest {
     @Test
     public void testDestroy() {
         mCoordinator.destroy();
+        verify(mBackPressManager).removeHandler(any());
         verify(mTab).removeObserver(any(TabObserver.class));
         verify(mBrowserControlsVisibilityManager).removeObserver(any());
         Assert.assertFalse(mCurrentTabSupplier.hasObservers());
