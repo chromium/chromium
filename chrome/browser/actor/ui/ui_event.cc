@@ -15,11 +15,13 @@ StartTask::StartTask(const StartTask&) = default;
 StopTask::StopTask(actor::TaskId id,
                    ActorTask::State final_state,
                    const std::string& title,
-                   tabs::TabInterface::Handle last_acted_on_tab_handle)
+                   tabs::TabInterface::Handle last_acted_on_tab_handle,
+                   ActorTask::TaskDuration duration)
     : task_id(id),
       final_state(final_state),
       title(title),
-      last_acted_on_tab_handle(last_acted_on_tab_handle) {
+      last_acted_on_tab_handle(last_acted_on_tab_handle),
+      duration(duration) {
   DCHECK(ActorTask::IsCompletedState(final_state));
 }
 StopTask::~StopTask() = default;

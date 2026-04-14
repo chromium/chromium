@@ -24,9 +24,13 @@ void ActorUiInteractiveBrowserTest::SetUpCommandLine(
   command_line->AppendSwitch(switches::kGlicAutomation);
 }
 
-void ActorUiInteractiveBrowserTest::StartActingOnTab() {
-  task_id_ = actor_keyed_service()->CreateTask(
-      actor::TestTaskSourceInfo(), actor::NoEnterprisePolicyChecker());
+void ActorUiInteractiveBrowserTest::StartActingOnTab(
+    actor::webui::mojom::TaskDuration duration) {
+  auto task_options = actor::webui::mojom::TaskOptions::New();
+  task_options->duration = duration;
+  task_id_ = actor_keyed_service()->CreateTaskWithOptions(
+      actor::TestTaskSourceInfo(), actor::NoEnterprisePolicyChecker(),
+      std::move(task_options), nullptr);
   TestFuture<actor::mojom::ActionResultPtr> future;
   actor_keyed_service()->GetTask(task_id_)->AddTab(
       browser()->GetActiveTabInterface()->GetHandle(), future.GetCallback());

@@ -32,6 +32,7 @@ class ActorUiStateManager : public ActorUiStateManagerInterface {
   std::optional<raw_ptr<tabs::TabInterface>> GetLastActedOnTab(
       TaskId id) override;
   std::optional<actor::ActorTask::State> GetActorTaskState(TaskId id) override;
+  ActorTask::TaskDuration GetDuration(TaskId task_id) override;
   size_t GetInactiveTaskCount() override;
 
   base::CallbackListSubscription RegisterActorTaskStateChange(
@@ -45,7 +46,6 @@ class ActorUiStateManager : public ActorUiStateManagerInterface {
   std::vector<tabs::TabInterface*> GetTabs(TaskId id);
 
  private:
-  ActorTask::TaskDuration GetDuration(TaskId task_id);
   ActorTask::TaskDuration GetDuration(const tabs::TabInterface* tab);
   // Notify profile scoped ui components about actor task state changes.
   void NotifyActorTaskStateChange(TaskId task_id);

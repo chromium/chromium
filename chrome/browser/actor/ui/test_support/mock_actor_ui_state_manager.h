@@ -50,6 +50,10 @@ class MockActorUiStateManager : public ActorUiStateManagerInterface {
               GetActorTaskState,
               (TaskId task_id),
               (override));
+  MOCK_METHOD(actor::ActorTask::TaskDuration,
+              GetDuration,
+              (TaskId),
+              (override));
   MOCK_METHOD(size_t, GetInactiveTaskCount, (), (override));
 };
 

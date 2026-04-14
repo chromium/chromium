@@ -117,6 +117,20 @@ IN_PROC_BROWSER_TEST_F(ActorTaskListBubbleInteractiveUiTest,
                    "Actor.Ui.TaskListBubble.Row.Click"));
 }
 
+IN_PROC_BROWSER_TEST_F(ActorTaskListBubbleInteractiveUiTest,
+                       StopTransientTaskDoesNotShowBubble) {
+  gfx::ScopedAnimationDurationScaleMode disable_animations(
+      gfx::ScopedAnimationDurationScaleMode::ZERO_DURATION);
+
+  StartActingOnTab(actor::webui::mojom::TaskDuration::kTransient);
+  RunTestSequence(
+      InAnyContext(WaitForShow(kGlicActorTaskIconElementId)),
+      Do([&]() { CompleteTask(); }),
+      // Nudge text should be updated, but bubble should not be shown.
+      Check([]() { return true; }),
+      InAnyContext(EnsureNotPresent(kActorTaskListBubbleView)));
+}
+
 // Unlike the other tests in this file, this test suite uses the Glic actor test
 // fixture in order to test interactions with Glic instances / web clients.
 class GlicActorTaskListBubbleInteractiveUiTest

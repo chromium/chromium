@@ -49,11 +49,13 @@ struct StopTask {
   ActorTask::State final_state;
   std::string title;
   tabs::TabInterface::Handle last_acted_on_tab_handle;
+  ActorTask::TaskDuration duration;
 
   StopTask(actor::TaskId,
            ActorTask::State,
            const std::string& title,
-           tabs::TabInterface::Handle);
+           tabs::TabInterface::Handle,
+           ActorTask::TaskDuration);
   StopTask(const StopTask&);
   ~StopTask();
 };

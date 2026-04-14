@@ -91,13 +91,14 @@ void ActorKeyedServiceFake::PauseTaskForTesting(TaskId task_id,  // IN-TEST
 void ActorKeyedServiceFake::StopTaskForTesting(  // IN-TEST
     TaskId task_id,
     ActorTask::StoppedReason stopped_reason) {
+  const auto duration = GetTask(task_id)->get_task_duration();
   StopTask(task_id, stopped_reason);
   // This fake mocks out the event dispatcher, so we need to manually notify the
   // ui state manager.
   GetActorUiStateManager()->OnUiEvent(ui::StopTask(
       task_id, ActorTask::GetTaskStateFromStoppedReason(stopped_reason),
       "Test Task",
-      /*last_acted_on_tab_handle=*/tabs::TabHandle()));
+      /*last_acted_on_tab_handle=*/tabs::TabHandle(), duration));
 }
 
 }  // namespace actor

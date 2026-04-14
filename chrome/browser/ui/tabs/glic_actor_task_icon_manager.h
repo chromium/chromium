@@ -42,8 +42,13 @@ class GlicActorTaskIconManager : public KeyedService {
   // failed.
   static bool RequiresTaskProcessing(actor::ActorTask::State state);
 
+  // Returns true if the task list bubble should be shown for the task state.
+  static bool ShouldShowBubble(actor::ActorTask::State state,
+                               actor::ActorTask::TaskDuration duration);
+
   // Register for this callback to get task nudge state change notifications.
   using TaskNudgeChangeCallback = base::RepeatingCallback<void(
+      bool show_bubble,
       actor::ui::ActorTaskNudgeState actor_task_nudge_state)>;
   base::CallbackListSubscription RegisterTaskNudgeStateChange(
       TaskNudgeChangeCallback callback);
@@ -81,6 +86,7 @@ class GlicActorTaskIconManager : public KeyedService {
   std::vector<base::CallbackListSubscription> callback_subscriptions_;
 
   using TaskNudgeChangeCallbackList = base::RepeatingCallbackList<void(
+      bool show_bubble,
       actor::ui::ActorTaskNudgeState actor_task_nudge_text)>;
   TaskNudgeChangeCallbackList task_nudge_state_change_callback_list_;
 

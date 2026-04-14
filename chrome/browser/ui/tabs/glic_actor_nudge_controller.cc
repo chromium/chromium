@@ -165,9 +165,8 @@ void GlicActorNudgeController::RegisterActorNudgeStateCallback() {
   if (auto* manager =
           GlicActorTaskIconManagerFactory::GetForProfile(profile_)) {
     actor_nudge_state_change_callback_subscription_.push_back(
-        manager->RegisterTaskNudgeStateChange(
-            base::BindRepeating(&GlicActorNudgeController::OnStateUpdate,
-                                base::Unretained(this), /*show_bubble=*/true)));
+        manager->RegisterTaskNudgeStateChange(base::BindRepeating(
+            &GlicActorNudgeController::OnStateUpdate, base::Unretained(this))));
   }
 }
 

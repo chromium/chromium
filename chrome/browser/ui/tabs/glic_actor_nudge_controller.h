@@ -36,7 +36,7 @@ class GlicActorNudgeController {
   static GlicActorNudgeController* From(BrowserWindowInterface* browser);
 
   // Update the nudge for the given state. Will also conditionally show the
-  // bubble on UI update based on show_bubble.
+  // bubble on UI update based on `show_bubble`.
   void OnStateUpdate(bool show_bubble,
                      actor::ui::ActorTaskNudgeState actor_task_nudge_state);
 

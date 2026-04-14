@@ -127,6 +127,10 @@ ActorTask::TaskDuration ActorUiStateManager::GetDuration(TaskId task_id) {
   if (ActorTask* task = actor_service_->GetTask(task_id)) {
     return task->get_task_duration();
   }
+  if (auto stopped_task = stopped_task_info_.find(task_id);
+      stopped_task != stopped_task_info_.end()) {
+    return stopped_task->second.duration;
+  }
   return ActorTask::TaskDuration::kDefault;
 }
 
@@ -276,6 +280,7 @@ void ActorUiStateManager::OnUiEvent(SyncUiEvent event) {
                       .final_state = e.final_state,
                       .title = e.title,
                       .last_acted_on_tab_handle = e.last_acted_on_tab_handle,
+                      .duration = e.duration,
                   });
               NotifyActorTaskStopped(e.task_id);
 

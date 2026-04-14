@@ -45,6 +45,7 @@ class UiEventDispatcher {
     ActorTask::State final_state;
     std::string title;
     tabs::TabInterface::Handle last_acted_on_tab_handle;
+    ActorTask::TaskDuration duration;
   };
 
   struct RemoveTab {

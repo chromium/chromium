@@ -23,6 +23,7 @@ struct StoppedTaskInfo {
   ActorTask::State final_state;
   std::string title;
   tabs::TabInterface::Handle last_acted_on_tab_handle;
+  ActorTask::TaskDuration duration;
 };
 
 class ActorUiStateManagerInterface {
@@ -59,6 +60,9 @@ class ActorUiStateManagerInterface {
   // std::nullopt is returned when we don't have a task for the given id.
   virtual std::optional<actor::ActorTask::State> GetActorTaskState(
       TaskId id) = 0;
+
+  // Gets the duration of a given task.
+  virtual ActorTask::TaskDuration GetDuration(TaskId task_id) = 0;
 
   // Gets the number of inactive tasks (finished and failed). Cancelled tasks
   // are not included in this count.

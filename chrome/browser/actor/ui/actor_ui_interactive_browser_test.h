@@ -20,7 +20,8 @@ class ActorUiInteractiveBrowserTest : public InteractiveBrowserTest {
 
   void SetUpCommandLine(base::CommandLine* command_line) override;
 
-  void StartActingOnTab();
+  void StartActingOnTab(actor::webui::mojom::TaskDuration duration =
+                            actor::webui::mojom::TaskDuration::kDefault);
   void PauseTask();
   void CompleteTask();
 

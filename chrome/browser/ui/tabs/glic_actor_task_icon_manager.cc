@@ -19,6 +19,7 @@ using actor::ActorKeyedService;
 using ActorTaskNudgeState = actor::ui::ActorTaskNudgeState;
 using actor::ActorTask;
 using TaskState = actor::ActorTask::State;
+using TaskDuration = actor::ActorTask::TaskDuration;
 using Text = ActorTaskNudgeState::Text;
 
 }  // namespace
@@ -70,34 +71,39 @@ void GlicActorTaskIconManager::UpdateTaskNudge() {
 
   bool needs_attention = false;
   bool tasks_complete = false;
-    for (const auto [task_id, requires_processing] :
-         actor_task_list_bubble_rows_) {
-      // Tasks that are processed will show the default nudge.
-      if (!requires_processing) {
-        continue;
-      }
-
-      const std::optional<TaskState> state =
-          actor_service_->GetActorUiStateManager()->GetActorTaskState(task_id);
-
-      // Tasks that have no state no longer exist and should not be processed.
-      if (!state) {
-        actor::ui::RecordTaskIconError(
-            actor::ui::ActorUiTaskIconError::kNudgeTaskDoesntExist);
-        continue;
-      }
-
-      if (tabs::GlicActorTaskIconManager::RequiresAttention(*state)) {
-        // Needs attention prioritized over other text
-        needs_attention = true;
-        break;
-      }
-
-      if (*state == TaskState::kFinished || *state == TaskState::kFailed) {
-        tasks_complete = true;
-      }
+  bool show_bubble = false;
+  for (const auto [task_id, requires_processing] :
+       actor_task_list_bubble_rows_) {
+    // Tasks that are processed will show the default nudge.
+    if (!requires_processing) {
+      continue;
     }
 
+    auto* manager = actor_service_->GetActorUiStateManager();
+    const std::optional<TaskState> state = manager->GetActorTaskState(task_id);
+
+    // Tasks that have no state no longer exist and should not be processed.
+    if (!state) {
+      actor::ui::RecordTaskIconError(
+          actor::ui::ActorUiTaskIconError::kNudgeTaskDoesntExist);
+      continue;
+    }
+
+    auto duration = manager->GetDuration(task_id);
+    if (ShouldShowBubble(*state, duration)) {
+      show_bubble = true;
+    }
+
+    if (tabs::GlicActorTaskIconManager::RequiresAttention(*state)) {
+      // Needs attention prioritized over other text
+      needs_attention = true;
+      break;
+    }
+
+    if (*state == TaskState::kFinished || *state == TaskState::kFailed) {
+      tasks_complete = true;
+    }
+  }
   current_actor_task_nudge_state_.text = needs_attention ? Text::kNeedsAttention
                                          : tasks_complete ? Text::kCompleteTasks
                                                           : Text::kDefault;
@@ -124,7 +130,7 @@ void GlicActorTaskIconManager::UpdateTaskNudge() {
         GetNumActorTasksNeedProcessing();
     stored_bubble_row_inactive_task_count_ = num_inactive_tasks;
     task_nudge_state_change_callback_list_.Notify(
-        current_actor_task_nudge_state_);
+        show_bubble, current_actor_task_nudge_state_);
   }
 }
 
@@ -138,18 +144,20 @@ void GlicActorTaskIconManager::ProcessRowInTaskListBubble(
 }
 
 void GlicActorTaskIconManager::UpdateTaskListBubble(actor::TaskId task_id) {
-  const auto state =
-      actor_service_->GetActorUiStateManager()->GetActorTaskState(task_id);
+  auto* manager = actor_service_->GetActorUiStateManager();
+  const auto state = manager->GetActorTaskState(task_id);
   if (!state.has_value() || state.value() == ActorTask::State::kCancelled) {
     // If there is no value for the state, this means the task does not exist so
     // we should remove it.
     // If the task was cancelled, it should also be removed from the bubble.
     actor_task_list_bubble_rows_.erase(task_id);
   } else {
-    const bool requires_processing = RequiresTaskProcessing(state.value());
+    const auto duration = manager->GetDuration(task_id);
+    actor_task_list_bubble_rows_[task_id] =
+        RequiresTaskProcessing(state.value());
 
-      actor_task_list_bubble_rows_[task_id] = requires_processing;
-    if (requires_processing) {
+    if (ShouldShowBubble(state.value(), duration)) {
+      LOG(WARNING) << __func__ << " ShouldShowBubble!";
       // Notify the bubble only if a task now requires processing. This callback
       // will open the task list bubble and make it active, in order to bring it
       // to the user's attention. This is also necessary for when a user
@@ -191,6 +199,16 @@ bool GlicActorTaskIconManager::RequiresAttention(TaskState state) {
 bool GlicActorTaskIconManager::RequiresTaskProcessing(TaskState state) {
   return GlicActorTaskIconManager::RequiresAttention(state) ||
          state == TaskState::kFinished || state == TaskState::kFailed;
+}
+
+// static
+bool GlicActorTaskIconManager::ShouldShowBubble(TaskState state,
+                                                TaskDuration duration) {
+  if (GlicActorTaskIconManager::RequiresAttention(state)) {
+    return true;
+  }
+  return (state == TaskState::kFinished || state == TaskState::kFailed) &&
+         duration != ActorTask::TaskDuration::kTransient;
 }
 
 }  // namespace tabs
