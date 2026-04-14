@@ -90,9 +90,8 @@ void PaintPieces(GraphicsContext& context,
                  const NinePieceImage& nine_piece_image,
                  Image& image,
                  const gfx::SizeF& unzoomed_image_size,
+                 RespectImageOrientationEnum respect_orientation,
                  PhysicalBoxSides sides_to_include) {
-  const RespectImageOrientationEnum respect_orientation =
-      style.ImageOrientation();
   // |image_size| is in the image's native resolution and |slice_scale| defines
   // the effective size of a CSS pixel in the image.
   const gfx::SizeF image_size = image.SizeAsFloat(respect_orientation);
@@ -208,8 +207,12 @@ bool NinePieceImagePainter::Paint(GraphicsContext& graphics_context,
   // generated or SVG), then get an image using that size. This will yield an
   // image with either "native" size (raster images) or size scaled by effective
   // zoom.
+  //
+  // Resolve the image orientation based on image origin here and pass it along
+  // for consistency to avoid leaking orientation metadata if the image is
+  // cross-origin.
   const RespectImageOrientationEnum respect_orientation =
-      style.ImageOrientation();
+      style_image->ForceOrientationIfNecessary(style.ImageOrientation());
   const gfx::SizeF default_object_size(border_image_rect.size);
   gfx::SizeF image_size = style_image->ImageSize(
       style.EffectiveZoom(), default_object_size, respect_orientation);
@@ -235,7 +238,8 @@ bool NinePieceImagePainter::Paint(GraphicsContext& graphics_context,
       inspector_paint_image_event::Data, node, *style_image,
       gfx::RectF(image->Rect()), gfx::RectF(border_image_rect));
   PaintPieces(graphics_context, border_image_rect, style, nine_piece_image,
-              *image, unzoomed_image_size, sides_to_include);
+              *image, unzoomed_image_size, respect_orientation,
+              sides_to_include);
   return true;
 }
 
