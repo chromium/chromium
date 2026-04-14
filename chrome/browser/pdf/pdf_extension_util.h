@@ -19,8 +19,8 @@
 class GURL;
 
 namespace content {
-class BrowserContext;
 class RenderFrameHost;
+class WebContents;
 }
 
 namespace pdf_extension_util {
@@ -42,7 +42,7 @@ base::DictValue GetStrings(PdfViewerContext context);
 
 // Gets additional data used by the PDF Viewer UI. e.g. whether certain features
 // are enabled/disabled.
-base::DictValue GetAdditionalData(content::BrowserContext* context);
+base::DictValue GetAdditionalData(content::WebContents* web_contents);
 
 // Returns the entries in `resources` that are relevant to `context`.
 // `context` must be `PdfViewerContext::kPdfViewer` or
@@ -61,7 +61,7 @@ void DispatchShouldUpdateViewportEvent(content::RenderFrameHost* embedder_host,
                                        const GURL& new_pdf_url);
 
 // Returns true if the glic summarize button should be shown.
-bool ShouldShowGlicSummarizeButton(content::BrowserContext* context);
+bool ShouldShowGlicSummarizeButton(content::WebContents* web_contents);
 
 }  // namespace pdf_extension_util
 

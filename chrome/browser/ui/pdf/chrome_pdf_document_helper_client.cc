@@ -70,8 +70,7 @@ void LogGlicSummarizeMetrics(content::RenderFrameHost* render_frame_host) {
       Profile::FromBrowserContext(web_contents_to_use->GetBrowserContext()));
   base::UmaHistogramBoolean("PDF.GlicEnabled", glic_enabled);
   bool glic_summarize_button_enabled =
-      pdf_extension_util::ShouldShowGlicSummarizeButton(
-          web_contents_to_use->GetBrowserContext());
+      pdf_extension_util::ShouldShowGlicSummarizeButton(web_contents_to_use);
   base::UmaHistogramBoolean("PDF.GlicSummarizeButtonEnabled",
                             glic_summarize_button_enabled);
 }

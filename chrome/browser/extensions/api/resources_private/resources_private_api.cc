@@ -60,7 +60,7 @@ ExtensionFunction::ResponseAction ResourcesPrivateGetStringsFunction::Run() {
 #if BUILDFLAG(ENABLE_PDF)
       dict = pdf_extension_util::GetStrings(
           pdf_extension_util::PdfViewerContext::kAll);
-      dict.Merge(pdf_extension_util::GetAdditionalData(browser_context()));
+      dict.Merge(pdf_extension_util::GetAdditionalData(GetSenderWebContents()));
 #endif  // BUILDFLAG(ENABLE_PDF)
       break;
     }

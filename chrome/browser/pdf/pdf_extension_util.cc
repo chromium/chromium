@@ -25,6 +25,7 @@
 #include "chrome/grit/generated_resources.h"
 #include "chrome/grit/pdf_resources_map.h"
 #include "components/strings/grit/components_strings.h"
+#include "components/tabs/public/tab_interface.h"
 #include "components/zoom/page_zoom_constants.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/render_frame_host.h"
@@ -335,7 +336,8 @@ base::DictValue GetStrings(PdfViewerContext context) {
   return dict;
 }
 
-base::DictValue GetAdditionalData(content::BrowserContext* context) {
+base::DictValue GetAdditionalData(content::WebContents* web_contents) {
+  content::BrowserContext* context = web_contents->GetBrowserContext();
   // NOTE: This function should not include any data used for $i18n{}
   // replacements. The i18n string resources should be added using GetStrings()
   // above instead.
@@ -343,7 +345,8 @@ base::DictValue GetAdditionalData(content::BrowserContext* context) {
   dict.Set("pdfGetSaveDataInBlocks",
            base::FeatureList::IsEnabled(
                chrome_pdf::features::kPdfGetSaveDataInBlocks));
-  dict.Set("pdfGlicSummarizeEnabled", ShouldShowGlicSummarizeButton(context));
+  dict.Set("pdfGlicSummarizeEnabled",
+           ShouldShowGlicSummarizeButton(web_contents));
   dict.Set(
       "pdfSearchifySaveEnabled",
       base::FeatureList::IsEnabled(chrome_pdf::features::kPdfSearchifySave));
@@ -452,9 +455,19 @@ void DispatchShouldUpdateViewportEvent(content::RenderFrameHost* embedder_host,
                                          std::move(event));
 }
 
-bool ShouldShowGlicSummarizeButton(content::BrowserContext* context) {
-  Profile* profile = Profile::FromBrowserContext(context);
+bool ShouldShowGlicSummarizeButton(content::WebContents* web_contents) {
+  if (!web_contents) {
+    return false;
+  }
+
+  Profile* profile =
+      Profile::FromBrowserContext(web_contents->GetBrowserContext());
   if (!glic::GlicEnabling::IsEnabledForProfile(profile)) {
+    return false;
+  }
+
+  auto* tab_interface = tabs::TabInterface::MaybeGetFromContents(web_contents);
+  if (tab_interface && !tab_interface->IsInNormalWindow()) {
     return false;
   }
 
