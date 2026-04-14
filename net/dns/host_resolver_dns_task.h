@@ -13,6 +13,7 @@
 #include <vector>
 
 #include "base/containers/circular_deque.h"
+#include "base/containers/unique_ptr_adapters.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/safe_ref.h"
 #include "base/memory/weak_ptr.h"
@@ -47,7 +48,7 @@ class NET_EXPORT_PRIVATE HostResolverDnsTask final {
   using ResultRefs = std::set<const HostResolverInternalResult*>;
 
   // Represents a single transaction results.
-  struct SingleTransactionResults {
+  struct NET_EXPORT_PRIVATE SingleTransactionResults {
     SingleTransactionResults(DnsQueryType query_type, ResultRefs results);
     ~SingleTransactionResults();
 
@@ -141,6 +142,12 @@ class NET_EXPORT_PRIVATE HostResolverDnsTask final {
     return weak_ptr_factory_.GetWeakPtr();
   }
 
+  // There are some complex circumstances when some in-progress transactions
+  // may be cancelled without cancelling the entire task. This trigger allows
+  // testing that logic can correctly respond to being cancelled, regardless of
+  // the reason for the cancellation.
+  void CancelInProgressTransactionsForTest();
+
  private:
   enum class TransactionErrorBehavior {
     // Errors lead to task fallback (immediately unless another pending/started
@@ -165,14 +172,10 @@ class NET_EXPORT_PRIVATE HostResolverDnsTask final {
                                  TransactionErrorBehavior::kFallback);
     ~TransactionInfo();
 
-    TransactionInfo(TransactionInfo&&);
-    TransactionInfo& operator=(TransactionInfo&&);
-
-    bool operator<(const TransactionInfo& other) const;
-
     DnsQueryType type;
     TransactionErrorBehavior error_behavior;
     std::unique_ptr<DnsTransaction> transaction;
+    base::WeakPtrFactory<TransactionInfo> weak_ptr_factory{this};
   };
 
   base::DictValue NetLogDnsTaskCreationParams();
@@ -183,15 +186,22 @@ class NET_EXPORT_PRIVATE HostResolverDnsTask final {
 
   void PushTransactionsNeeded(DnsQueryTypeSet query_types);
 
-  void CreateAndStartTransaction(TransactionInfo transaction_info);
+  void CreateAndStartTransaction(
+      std::unique_ptr<TransactionInfo> transaction_info);
 
   void OnTimeout();
 
   // Called on completion of a `DnsTransaction`, but not necessarily completion
   // of all work for the individual transaction in this task (see
   // `OnTransactionsFinished()`).
+  //
+  // Takes the TransactionInfo reference as a WeakPtr only for added safety and
+  // conformity with similar code. Not expected to actually be possible for this
+  // callback to be called after cancellation of a transaction and deletion of
+  // the TransactionInfo because the info itself owns the DnsTransaction, which
+  // cancels the async call on destruction.
   void OnDnsTransactionComplete(
-      std::set<TransactionInfo>::iterator transaction_info_it,
+      base::WeakPtr<TransactionInfo> transaction_info_ptr,
       uint16_t request_port,
       int net_error,
       const DnsResponse* response);
@@ -200,15 +210,16 @@ class NET_EXPORT_PRIVATE HostResolverDnsTask final {
                                  const TransactionInfo& transaction_info,
                                  const DnsResponse* response);
 
-  void SortTransactionAndHandleResults(TransactionInfo transaction_info,
-                                       Results transaction_results);
-  void OnTransactionSorted(
-      std::set<TransactionInfo>::iterator transaction_info_it,
-      Results transaction_results,
-      bool success,
-      std::vector<IPEndPoint> sorted);
-  void HandleTransactionResults(TransactionInfo transaction_info,
-                                Results transaction_results);
+  void SortTransactionAndHandleResults(
+      std::unique_ptr<TransactionInfo> transaction_info,
+      Results transaction_results);
+  void OnTransactionSorted(base::WeakPtr<TransactionInfo> transaction_info_ptr,
+                           Results transaction_results,
+                           bool success,
+                           std::vector<IPEndPoint> sorted);
+  void HandleTransactionResults(
+      std::unique_ptr<TransactionInfo> transaction_info,
+      Results transaction_results);
 
   void OnTransactionsFinished(
       std::optional<SingleTransactionResults> single_transaction_results);
@@ -255,11 +266,12 @@ class NET_EXPORT_PRIVATE HostResolverDnsTask final {
   const NetLogWithSource net_log_;
 
   bool any_transaction_started_ = false;
-  base::circular_deque<TransactionInfo> transactions_needed_;
+  base::circular_deque<std::unique_ptr<TransactionInfo>> transactions_needed_;
   // Active transactions have iterators pointing to their entry in this set, so
   // individual entries should not be modified or removed until completion or
   // cancellation of the transaction.
-  std::set<TransactionInfo> transactions_in_progress_;
+  std::set<std::unique_ptr<TransactionInfo>, base::UniquePtrComparator>
+      transactions_in_progress_;
 
   // For histograms.
   base::TimeTicks a_record_end_time_;

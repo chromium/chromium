@@ -4,13 +4,38 @@
 
 #include "net/dns/host_resolver_dns_task.h"
 
+#include <deque>
+#include <string>
+#include <string_view>
+#include <utility>
+#include <vector>
+
+#include "base/check.h"
+#include "base/functional/callback.h"
+#include "base/functional/callback_forward.h"
+#include "base/functional/callback_helpers.h"
 #include "base/run_loop.h"
+#include "base/test/scoped_feature_list.h"
+#include "base/test/simple_test_tick_clock.h"
+#include "net/base/features.h"
+#include "net/base/ip_address.h"
+#include "net/base/ip_endpoint.h"
+#include "net/base/network_anonymization_key.h"
 #include "net/dns/address_sorter.h"
+#include "net/dns/dns_response.h"
 #include "net/dns/dns_test_util.h"
+#include "net/dns/dns_transaction.h"
+#include "net/dns/host_resolver.h"
+#include "net/dns/public/dns_protocol.h"
+#include "net/dns/public/dns_query_type.h"
+#include "net/dns/public/secure_dns_mode.h"
+#include "net/log/net_log_with_source.h"
 #include "net/test/gtest_util.h"
 #include "net/test/test_with_task_environment.h"
 #include "net/url_request/url_request_context_builder.h"
 #include "net/url_request/url_request_test_util.h"
+#include "testing/gmock/include/gmock/gmock.h"
+#include "testing/gtest/include/gtest/gtest.h"
 #include "url/scheme_host_port.h"
 
 #if BUILDFLAG(IS_ANDROID)
@@ -25,6 +50,7 @@ using ::testing::_;
 using ::testing::AllOf;
 using ::testing::ElementsAre;
 using ::testing::IsEmpty;
+using ::testing::Mock;
 using ::testing::Pointee;
 using ::testing::Property;
 using ::testing::Return;
@@ -94,8 +120,8 @@ class HostResolverDnsTaskTest : public WithTaskEnvironment,
                                     /*additional_types_enabled=*/true);
   }
 
-  std::unique_ptr<ResolveContext> resolve_context_;
   std::unique_ptr<URLRequestContext> request_context_;
+  std::unique_ptr<ResolveContext> resolve_context_;
   std::unique_ptr<DnsClient> dns_client_;
 #if BUILDFLAG(IS_ANDROID)
   MockAndroidDnsPlatformAttemptDelegate
@@ -349,6 +375,185 @@ TEST_F(HostResolverDnsTaskTest,
     GTEST_SKIP_("Skip test on Android version below 29.");
   }
 }
-#endif
+#endif  // BUILDFLAG(IS_ANDROID)
+
+// Test implementation of AddressSorter that delays calling completion callbacks
+// until a call to FinishSorts(). Sorted order is just input order.
+class DelayingAddressSorter : public AddressSorter {
+ public:
+  DelayingAddressSorter() = default;
+
+  void WaitForSortCall() {
+    base::RunLoop run_loop;
+    on_sort_called_ = run_loop.QuitClosure();
+    run_loop.RunUntilIdle();
+
+    CHECK(on_sort_called_.is_null())
+        << "DelayingAddressSorter::Sort() not called.";
+  }
+
+  void FinishSorts() {
+    for (WorkItem& item : in_progress_) {
+      std::move(item.callback).Run(/*success=*/true, std::move(item.endpoints));
+    }
+    in_progress_.clear();
+  }
+
+  int NumInProgress() const { return in_progress_.size(); }
+
+  // AddressSorter:
+  void Sort(const std::vector<IPEndPoint>& endpoints,
+            CallbackType callback) const override {
+    in_progress_.emplace_back(endpoints, std::move(callback));
+
+    if (on_sort_called_) {
+      std::move(on_sort_called_).Run();
+    }
+  }
+
+ private:
+  struct WorkItem {
+    std::vector<IPEndPoint> endpoints;
+    CallbackType callback;
+  };
+
+  // Mutable to allow test-only functionality from the const Sort() method.
+  mutable std::deque<WorkItem> in_progress_;
+  mutable base::OnceClosure on_sort_called_;
+};
+
+TEST_F(HostResolverDnsTaskTest, HandlesIndividualTransactionSort) {
+  constexpr static std::string_view kHost = "foo.test";
+
+  base::test::ScopedFeatureList feature_list(features::kUseHostResolverCache);
+
+  // Configure a mock DnsClient to respond to "foo.test" with 2 addresses per
+  // address family.
+  DnsResponse a_response = BuildTestDnsResponse(
+      std::string(kHost), dns_protocol::kTypeA,
+      {BuildTestAddressRecord(std::string(kHost), IPAddress(192, 0, 2, 31)),
+       BuildTestAddressRecord(std::string(kHost), IPAddress(192, 0, 2, 36))});
+  DnsResponse aaaa_response = BuildTestDnsResponse(
+      std::string(kHost), dns_protocol::kTypeAAAA,
+      {BuildTestAddressRecord(std::string(kHost),
+                              *IPAddress::FromIPLiteral("3fff:14::31")),
+       BuildTestAddressRecord(std::string(kHost),
+                              *IPAddress::FromIPLiteral("3fff:14::36"))});
+  MockDnsClientRuleList rules;
+  rules.emplace_back(std::string(kHost), dns_protocol::kTypeA,
+                     /*secure=*/false,
+                     MockDnsClientRule::Result(std::move(a_response)),
+                     /*delay=*/false);
+  rules.emplace_back(std::string(kHost), dns_protocol::kTypeAAAA,
+                     /*secure=*/false,
+                     MockDnsClientRule::Result(std::move(aaaa_response)),
+                     /*delay=*/false);
+  MockDnsClient mock_dns_client(CreateValidDnsConfig(), std::move(rules));
+  mock_dns_client.SetInsecureEnabled(/*enabled=*/true,
+                                     /*additional_types_enabled=*/true);
+
+  auto test_sorter = std::make_unique<DelayingAddressSorter>();
+  DelayingAddressSorter* test_sorter_ptr = test_sorter.get();
+  mock_dns_client.SetAddressSorterForTesting(std::move(test_sorter));
+
+  // Task should wait on sorting before completion.
+  EXPECT_CALL(mock_dns_task_delegate_, OnDnsTaskComplete(_, _, _, _)).Times(0);
+
+  base::SimpleTestTickClock clock;
+  HostResolverDnsTask task(
+      &mock_dns_client,
+      HostResolver::Host(url::SchemeHostPort("http", "foo.test", 80)),
+      NetworkAnonymizationKey(), {DnsQueryType::A, DnsQueryType::AAAA},
+      resolve_context_.get(), DnsTransactionFactory::AttemptMode::kClassic,
+      SecureDnsMode::kAutomatic, &mock_dns_task_delegate_, NetLogWithSource(),
+      &clock,
+      /*fallback_available=*/false, HostResolver::HttpsSvcbOptions());
+  ASSERT_EQ(task.num_additional_transactions_needed(), 2);
+
+  // Expect sort to be called immediately on completion of first transaction.
+  task.StartNextTransaction();
+  test_sorter_ptr->WaitForSortCall();
+  ASSERT_EQ(task.num_additional_transactions_needed(), 1);
+  ASSERT_EQ(task.num_transactions_in_progress(), 1);
+  ASSERT_EQ(test_sorter_ptr->NumInProgress(), 1);
+
+  // Expect sort to be called immediately on completion of second transaction.
+  task.StartNextTransaction();
+  test_sorter_ptr->WaitForSortCall();
+  ASSERT_EQ(task.num_additional_transactions_needed(), 0);
+  ASSERT_EQ(task.num_transactions_in_progress(), 2);
+  ASSERT_EQ(test_sorter_ptr->NumInProgress(), 2);
+
+  Mock::VerifyAndClearExpectations(&mock_dns_task_delegate_);
+  EXPECT_CALL(mock_dns_task_delegate_, OnDnsTaskComplete(_, _, _, _));
+  test_sorter_ptr->FinishSorts();
+  EXPECT_EQ(task.num_transactions_in_progress(), 0);
+}
+
+TEST_F(HostResolverDnsTaskTest, CanCancelTransactionDuringSort) {
+  constexpr static std::string_view kHost = "foo.test";
+
+  base::test::ScopedFeatureList feature_list(features::kUseHostResolverCache);
+
+  // Configure a mock DnsClient to respond to "foo.test" with 2 addresses per
+  // address family.
+  DnsResponse a_response = BuildTestDnsResponse(
+      std::string(kHost), dns_protocol::kTypeA,
+      {BuildTestAddressRecord(std::string(kHost), IPAddress(192, 0, 2, 31)),
+       BuildTestAddressRecord(std::string(kHost), IPAddress(192, 0, 2, 36))});
+  DnsResponse aaaa_response = BuildTestDnsResponse(
+      std::string(kHost), dns_protocol::kTypeAAAA,
+      {BuildTestAddressRecord(std::string(kHost),
+                              *IPAddress::FromIPLiteral("3fff:14::31")),
+       BuildTestAddressRecord(std::string(kHost),
+                              *IPAddress::FromIPLiteral("3fff:14::36"))});
+  MockDnsClientRuleList rules;
+  rules.emplace_back(std::string(kHost), dns_protocol::kTypeA,
+                     /*secure=*/false,
+                     MockDnsClientRule::Result(std::move(a_response)),
+                     /*delay=*/false);
+  rules.emplace_back(std::string(kHost), dns_protocol::kTypeAAAA,
+                     /*secure=*/false,
+                     MockDnsClientRule::Result(std::move(aaaa_response)),
+                     /*delay=*/false);
+  MockDnsClient mock_dns_client(CreateValidDnsConfig(), std::move(rules));
+  mock_dns_client.SetInsecureEnabled(/*enabled=*/true,
+                                     /*additional_types_enabled=*/true);
+
+  auto test_sorter = std::make_unique<DelayingAddressSorter>();
+  DelayingAddressSorter* test_sorter_ptr = test_sorter.get();
+  mock_dns_client.SetAddressSorterForTesting(std::move(test_sorter));
+
+  // Task should wait on sorting before completion.
+  EXPECT_CALL(mock_dns_task_delegate_, OnDnsTaskComplete(_, _, _, _)).Times(0);
+
+  base::SimpleTestTickClock clock;
+  HostResolverDnsTask task(
+      &mock_dns_client,
+      HostResolver::Host(url::SchemeHostPort("http", "foo.test", 80)),
+      NetworkAnonymizationKey(), {DnsQueryType::A, DnsQueryType::AAAA},
+      resolve_context_.get(), DnsTransactionFactory::AttemptMode::kClassic,
+      SecureDnsMode::kAutomatic, &mock_dns_task_delegate_, NetLogWithSource(),
+      &clock,
+      /*fallback_available=*/false, HostResolver::HttpsSvcbOptions());
+  ASSERT_EQ(task.num_additional_transactions_needed(), 2);
+
+  // Expect sort to be called immediately on completion of first transaction.
+  task.StartNextTransaction();
+  test_sorter_ptr->WaitForSortCall();
+  ASSERT_EQ(task.num_additional_transactions_needed(), 1);
+  ASSERT_EQ(task.num_transactions_in_progress(), 1);
+  ASSERT_EQ(test_sorter_ptr->NumInProgress(), 1);
+
+  task.CancelInProgressTransactionsForTest();
+  ASSERT_EQ(task.num_additional_transactions_needed(), 1);
+  ASSERT_EQ(task.num_transactions_in_progress(), 0);
+  ASSERT_EQ(test_sorter_ptr->NumInProgress(), 1);
+
+  test_sorter_ptr->FinishSorts();
+  EXPECT_EQ(task.num_additional_transactions_needed(), 1);
+  EXPECT_EQ(task.num_transactions_in_progress(), 0);
+  EXPECT_EQ(test_sorter_ptr->NumInProgress(), 0);
+}
 
 }  // namespace net
