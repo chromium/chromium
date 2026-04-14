@@ -2393,34 +2393,6 @@
             ]
         }
     ],
-    "AutofillAiDefaultAvailability": [
-        {
-            "platforms": [
-                "chromeos",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "AutofillAiAvailableByDefault",
-                        "AutofillAiReauthRequired"
-                    ]
-                },
-                {
-                    "name": "EnabledWithReauthOnly",
-                    "enable_features": [
-                        "AutofillAiReauthRequired"
-                    ],
-                    "disable_features": [
-                        "AutofillAiAvailableByDefault"
-                    ]
-                }
-            ]
-        }
-    ],
     "AutofillAiIos": [
         {
             "platforms": [

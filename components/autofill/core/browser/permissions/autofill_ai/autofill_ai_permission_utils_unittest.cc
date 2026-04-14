@@ -189,65 +189,6 @@ TEST_P(AutofillAiMayPerformActionTest,
             is_transparency_action);
 }
 
-// Tests that when `kAutofillAiAvailableByDefault` and the user is opted out,
-// everything but IPH, wallet data sharing promotion, and model related actions
-// is permitted.
-TEST_P(AutofillAiMayPerformActionTest,
-       ReturnsTrueWhenAvailableByDefault_ExceptForModelRelatedActionsAndIph) {
-  base::test::ScopedFeatureList feature_list{
-      features::kAutofillAiAvailableByDefault};
-  SetAutofillAiOptInStatus(client(), AutofillAiOptInStatus::kOptedOut);
-
-  constexpr auto kForbiddenActions =
-      DenseSet({AutofillAiAction::kIphForOptIn, AutofillAiAction::kLogToMqls,
-                AutofillAiAction::kServerClassificationModel,
-                AutofillAiAction::kWalletDataSharingPromotion});
-
-  EXPECT_EQ(
-      MayPerformAutofillAiAction(client(), GetParam(), EntityType(kPassport)),
-      !kForbiddenActions.contains(GetParam()));
-}
-
-// Tests that when `kAutofillAiAvailableByDefault`, the user is opted out,
-// and the enterprise policy is off, everything but IPH, opt-in and model
-// related actions is permitted.
-TEST_P(
-    AutofillAiMayPerformActionTest,
-    AvailableByDefaultAndEnterprisePolicyIsOff_TrueExceptForModelRelatedActionsIphAndOptIn) {
-  base::test::ScopedFeatureList feature_list{
-      features::kAutofillAiAvailableByDefault};
-  SetAutofillAiOptInStatus(client(), AutofillAiOptInStatus::kOptedOut);
-  client().GetPrefs()->SetInteger(
-      optimization_guide::prefs::
-          kAutofillPredictionImprovementsEnterprisePolicyAllowed,
-      kAutofillPredictionSettingsDisable);
-
-  constexpr auto kForbiddenActions =
-      DenseSet({AutofillAiAction::kOptIn, AutofillAiAction::kIphForOptIn,
-                AutofillAiAction::kLogToMqls,
-                AutofillAiAction::kServerClassificationModel,
-                AutofillAiAction::kWalletDataSharingPromotion});
-
-  EXPECT_EQ(
-      MayPerformAutofillAiAction(client(), GetParam(), EntityType(kPassport)),
-      !kForbiddenActions.contains(GetParam()));
-}
-
-// Tests that when `kAutofillAiAvailableByDefault` and the user is opted in,
-// everything but IPH and the Wallet data sharing promotion is permitted.
-TEST_P(AutofillAiMayPerformActionTest,
-       ReturnsTrueWhenAvailableByDefault_ExceptForIph) {
-  base::test::ScopedFeatureList feature_list{
-      features::kAutofillAiAvailableByDefault};
-
-  constexpr auto kForbiddenActions =
-      DenseSet({AutofillAiAction::kIphForOptIn,
-                AutofillAiAction::kWalletDataSharingPromotion});
-  EXPECT_EQ(
-      MayPerformAutofillAiAction(client(), GetParam(), EntityType(kPassport)),
-      !kForbiddenActions.contains(GetParam()));
-}
-
 // Tests that the server model cannot be run and its cache cannot be used if
 // `kAutofillAiServerModel` is disabled.
 TEST_P(AutofillAiMayPerformActionTest, ModelFeatureOff) {
@@ -286,37 +227,28 @@ TEST_P(AutofillAiMayPerformActionTest, FeatureParamForModelCacheUseOff) {
       !kForbiddenActions.contains(GetParam()));
 }
 
-// Tests that the opt-in IPH cannot be shown if its feature is off.
-TEST_P(AutofillAiMayPerformActionTest, OptInIphFeatureOff) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndDisableFeature(
-      feature_engagement::kIPHAutofillAiOptInFeature);
-
-  SetAutofillAiOptInStatus(client(), AutofillAiOptInStatus::kOptedOut);
-  const bool is_allowed =
-      GetParam() == AutofillAiAction::kOptIn ||
-      GetParam() == AutofillAiAction::kListEntityInstancesInSettings;
-  EXPECT_EQ(
-      MayPerformAutofillAiAction(client(), GetParam(), EntityType(kPassport)),
-      is_allowed);
-}
-
-// Tests that listing entities is the only action permitted if the
-// AutofillAI enterprise policy is disabled regardless of whether data
-// is saved in the EntityDataManager.
+// Tests that the AutofillAI enterprise policy only contains MQLS logging and
+// online model calls. Note that opt-ins are not allowed either, since opting in
+// would enable the aforementioned operations, which are not allowed per
+// enterprise policy.
 TEST_P(AutofillAiMayPerformActionTest,
        ActionsWhenAutofillAiEnterprisePolicyDisabled) {
+  base::test::ScopedFeatureList feature_list{
+      features::kAutofillAiAvailableByDefault};
   client().GetPrefs()->SetInteger(
       optimization_guide::prefs::
           kAutofillPredictionImprovementsEnterprisePolicyAllowed,
       kAutofillPredictionSettingsDisable);
-  if (GetParam() == AutofillAiAction::kListEntityInstancesInSettings) {
-    EXPECT_TRUE(MayPerformAutofillAiAction(client(), GetParam(),
-                                           EntityType(kPassport)));
-  } else {
-    EXPECT_FALSE(MayPerformAutofillAiAction(client(), GetParam(),
-                                            EntityType(kPassport)));
-  }
+  constexpr auto kAllowedActions =
+      DenseSet({AutofillAiAction::kAddLocalEntityInstanceInSettings,
+                AutofillAiAction::kCrowdsourcingVote,
+                AutofillAiAction::kEditAndDeleteEntityInstanceInSettings,
+                AutofillAiAction::kFilling, AutofillAiAction::kImport,
+                AutofillAiAction::kListEntityInstancesInSettings,
+                AutofillAiAction::kUseCachedServerClassificationModelResults});
+  EXPECT_EQ(
+      MayPerformAutofillAiAction(client(), GetParam(), EntityType(kPassport)),
+      kAllowedActions.contains(GetParam()));
 }
 
 // Tests that no action is permitted if address Autofill is disabled and no data
@@ -338,33 +270,22 @@ TEST_P(AutofillAiMayPerformActionTest,
   EXPECT_EQ(MayPerformAutofillAiAction(client(), GetParam()), is_allowed);
 }
 
-// Verifies that IPH, opt-in and list entities are permitted if the user has not
-// opted into AutofillAI.
+// Verifies that only MQLS logging and online model calls require an opt-in.
 TEST_P(AutofillAiMayPerformActionTest, ActionsWhenNotOptedIntoAutofillAi) {
+  base::test::ScopedFeatureList feature_list{
+      features::kAutofillAiAvailableByDefault};
   SetAutofillAiOptInStatus(client(), AutofillAiOptInStatus::kOptedOut);
-  const bool is_allowed =
-      GetParam() == AutofillAiAction::kOptIn ||
-      GetParam() == AutofillAiAction::kIphForOptIn ||
-      GetParam() == AutofillAiAction::kListEntityInstancesInSettings;
+  constexpr auto kAllowedActions =
+      DenseSet({AutofillAiAction::kAddLocalEntityInstanceInSettings,
+                AutofillAiAction::kCrowdsourcingVote,
+                AutofillAiAction::kEditAndDeleteEntityInstanceInSettings,
+                AutofillAiAction::kFilling, AutofillAiAction::kImport,
+                AutofillAiAction::kListEntityInstancesInSettings,
+                AutofillAiAction::kOptIn,
+                AutofillAiAction::kUseCachedServerClassificationModelResults});
   EXPECT_EQ(
       MayPerformAutofillAiAction(client(), GetParam(), EntityType(kPassport)),
-      is_allowed);
-}
-
-// Tests that listing, editing and removing entities is permitted if user is no
-// longer opted into AutofillAI, but there is data saved.
-TEST_P(AutofillAiMayPerformActionTest,
-       ActionsWhenAutofillNotOptedIntoAutofillAiButDataSaved) {
-  AddEntity();
-  SetAutofillAiOptInStatus(client(), AutofillAiOptInStatus::kOptedOut);
-  const bool is_allowed =
-      GetParam() == AutofillAiAction::kOptIn ||
-      GetParam() == AutofillAiAction::kIphForOptIn ||
-      GetParam() == AutofillAiAction::kEditAndDeleteEntityInstanceInSettings ||
-      GetParam() == AutofillAiAction::kListEntityInstancesInSettings;
-  EXPECT_EQ(
-      MayPerformAutofillAiAction(client(), GetParam(), EntityType(kPassport)),
-      is_allowed);
+      kAllowedActions.contains(GetParam()));
 }
 
 #if !BUILDFLAG(IS_CHROMEOS)  // Signing out does not work on ChromeOS.
@@ -427,21 +348,6 @@ TEST_P(AutofillAiMayPerformActionTest, CapabilityCheckIgnored) {
   EXPECT_EQ(
       MayPerformAutofillAiAction(client(), GetParam(), EntityType(kPassport)),
       !kForbiddenActions.contains(GetParam()));
-}
-
-// Tests that the check whether a client can use model execution features is
-// ignored before opt-in or IPH.
-TEST_P(AutofillAiMayPerformActionTest, CapabilityCheckIgnoredOptedOut) {
-  SetAutofillAiOptInStatus(client(), AutofillAiOptInStatus::kOptedOut);
-  client().SetCanUseModelExecutionFeatures(false);
-
-  const bool is_allowed =
-      GetParam() == AutofillAiAction::kOptIn ||
-      GetParam() == AutofillAiAction::kIphForOptIn ||
-      GetParam() == AutofillAiAction::kListEntityInstancesInSettings;
-  EXPECT_EQ(
-      MayPerformAutofillAiAction(client(), GetParam(), EntityType(kPassport)),
-      is_allowed);
 }
 
 // Tests that only filling and cache use are allowed off-the-record.

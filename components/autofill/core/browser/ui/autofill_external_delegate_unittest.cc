@@ -2307,8 +2307,9 @@ TEST_F(AutofillExternalDelegateTest, AutofillAiReauthFlow_NoAuthenticator) {
 // Tests that no authentication is required when filling `kFillAutofillAi` and
 // the feature flag is off.
 TEST_F(AutofillExternalDelegateTest, AutofillAiReauthFlow_FlagOff) {
-  base::test::ScopedFeatureList scoped_feature_list{
-      features::kAutofillAiWithDataSchema};
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures({features::kAutofillAiWithDataSchema},
+                                       {features::kAutofillAiReauthRequired});
   autofill_client().GetPrefs()->SetBoolean(
       prefs::kAutofillAiReauthBeforeViewingSensitiveData, true);
 

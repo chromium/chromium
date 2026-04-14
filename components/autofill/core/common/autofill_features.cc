@@ -161,7 +161,9 @@ BASE_FEATURE(kAutofillAiAlwaysTriggerServerModel,
 // If enabled Autofill AI becomes available by default and the previous enable
 // toggle controls whether online model runs and MQLS logging are allowed.
 // TODO(crbug.com/440488776): Remove once clean up happens.
-BASE_FEATURE(kAutofillAiAvailableByDefault, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kAutofillAiAvailableByDefault,
+             IS_AUTOFILL_AI_PLATFORM ? base::FEATURE_ENABLED_BY_DEFAULT
+                                     : base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Kill switch. If enabled, the EntityDataManager is created irrespective of
 // whether other features are enabled. This is necessary so that cleaning up the
@@ -217,7 +219,9 @@ BASE_FEATURE(kAutofillAiOrder, base::FEATURE_DISABLED_BY_DEFAULT);
 // fields. As part of this feature sensitive fields are also obfuscated during
 // suggestion generation time.
 // TODO(crbug.com/468236932): Remove once feature is launched.
-BASE_FEATURE(kAutofillAiReauthRequired, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kAutofillAiReauthRequired,
+             IS_AUTOFILL_AI_PLATFORM ? base::FEATURE_ENABLED_BY_DEFAULT
+                                     : base::FEATURE_DISABLED_BY_DEFAULT);
 
 // When enabled, a HaTS survey is shown after the save prompt for a walletable
 // entity was interacted with.

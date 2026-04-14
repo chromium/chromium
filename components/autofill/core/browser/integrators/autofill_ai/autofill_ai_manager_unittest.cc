@@ -304,7 +304,11 @@ TEST_F(AutofillAiManagerTest,
 // Tests that IPH should be displayed if the user is opted out of the feature,
 // has an address, and form submission with filled out fields would lead to
 // entity import.
+// TODO(crbug.com/440488776): Remove this test when cleaning up
+// kAutofillAiAvailableByDefault. This feature deprecated the IPH.
 TEST_F(AutofillAiManagerTest, ShouldDisplayIph) {
+  base::test::ScopedFeatureList feature;
+  feature.InitAndDisableFeature(features::kAutofillAiAvailableByDefault);
   test::FormDescription form_description = {.fields = {{}}};
   FormData form = test::GetFormData(form_description);
   FormStructure form_structure = FormStructure(form);
@@ -318,8 +322,12 @@ TEST_F(AutofillAiManagerTest, ShouldDisplayIph) {
 
 // Tests that IPH should be displayed when the user is opted out of the feature
 // and does not have address or payments data stored.
+// TODO(crbug.com/440488776): Remove this test when cleaning up
+// kAutofillAiAvailableByDefault. This feature deprecated the IPH.
 TEST_F(AutofillAiManagerTest,
        ShouldDisplayIphWhenUserHasNoAddressOrPaymentsData) {
+  base::test::ScopedFeatureList feature;
+  feature.InitAndDisableFeature(features::kAutofillAiAvailableByDefault);
   test::FormDescription form_description = {.fields = {{}}};
   FormData form = test::GetFormData(form_description);
   FormStructure form_structure = FormStructure(form);

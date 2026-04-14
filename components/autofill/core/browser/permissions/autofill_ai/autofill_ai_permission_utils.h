@@ -44,6 +44,8 @@ enum class AutofillAiAction {
   // Import (i.e. saving or updating) AutofillAI data on form submission.
   kImport,
   // Show the IPH for opting into AutofillAI.
+  // TODO(crbug.com/440488776): Remove. Default availability is enabled by
+  // default and thus no IPH for opt-in is shown anymore.
   kIphForOptIn,
   // List existing AutofillAI data in settings.
   kListEntityInstancesInSettings,
