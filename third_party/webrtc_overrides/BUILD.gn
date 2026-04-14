@@ -174,6 +174,7 @@ webrtc_public_deps = [
   "//third_party/webrtc/stats:rtc_stats",
   "//third_party/webrtc/stats:rtc_stats_test_utils",
   "//third_party/webrtc/system_wrappers",
+  "//third_party/webrtc/video:null_video_decoder",
 ]
 if (defined(rtc_exclude_system_time) && rtc_exclude_system_time) {
   webrtc_public_deps += [ ":system_time" ]
