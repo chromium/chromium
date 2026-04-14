@@ -31,6 +31,7 @@
 #include "base/strings/string_view_util.h"
 #include "base/synchronization/lock.h"
 #include "base/task/sequenced_task_runner.h"
+#include "base/timer/elapsed_timer.h"
 #include "base/trace_event/trace_event.h"
 #include "base/values.h"
 #include "build/build_config.h"
@@ -1238,6 +1239,10 @@ void SSLClientSocketImpl::DoConnectCallback(int rv) {
 }
 
 void SSLClientSocketImpl::OnHandshakeIOComplete(int result) {
+  std::optional<base::ElapsedTimer> timer;
+  if (base::ShouldRecordSubsampledMetric(0.001)) {
+    timer.emplace();
+  }
   int rv = DoHandshakeLoop(result);
   if (rv != ERR_IO_PENDING) {
     if (in_confirm_handshake_) {
@@ -1247,6 +1252,11 @@ void SSLClientSocketImpl::OnHandshakeIOComplete(int result) {
       LogConnectEndEvent(rv);
     }
     DoConnectCallback(rv);
+  }
+  if (timer) {
+    base::UmaHistogramTimes(
+        "Net.SSLClientSocketImpl.OnHandshakeIOCompleteDuration",
+        timer->Elapsed());
   }
 }
 

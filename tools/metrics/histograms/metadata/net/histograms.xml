@@ -8604,6 +8604,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Net.SSLClientSocketImpl.OnHandshakeIOCompleteDuration"
+    units="ms" expires_after="2026-10-08">
+  <owner>pasko@chromium.org</owner>
+  <owner>src/net/ssl/OWNERS</owner>
+  <summary>
+    The time it takes to execute SSLClientSocketImpl::OnHandshakeIOComplete.
+    Measured at the end of OnHandshakeIOComplete. Subsampled to 1/1000.
+  </summary>
+</histogram>
+
 <histogram name="Net.SSLExtendedMainSecretSupported" enum="BooleanSupported"
     expires_after="2026-08-30">
   <owner>davidben@chromium.org</owner>
