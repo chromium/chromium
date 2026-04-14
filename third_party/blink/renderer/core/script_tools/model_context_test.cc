@@ -1624,4 +1624,95 @@ TEST_F(ModelContextTest,
   EXPECT_EQ(0, EvalJsInteger("window.toolchangeCount"));
 }
 
+TEST_F(ModelContextTest, ExecuteTool_RespondWith_And_RemoveForm) {
+  SimRequest main_resource("https://example.com/", "text/html");
+  LoadURL("https://example.com/");
+  v8::HandleScope handle_scope(Window().GetIsolate());
+  ScriptState::Scope script_scope(
+      ToScriptStateForMainWorld(Window().GetFrame()));
+  main_resource.Complete(R"(
+    <form toolautosubmit toolname="search_tool" tooldescription="Search the web" action="/search">
+      <input type=text name=query>
+      <button type=submit>Submit</button>
+    </form>
+    <script>
+      document.querySelector("form").addEventListener("submit", e => {
+        e.preventDefault();
+        e.respondWith(Promise.resolve("result value"));
+        document.querySelector("form").remove();
+      });
+    </script>
+  )");
+
+  auto* model_context =
+      ModelContextSupplement::modelContext(*Window().navigator());
+  ASSERT_TRUE(model_context);
+
+  base::RunLoop run_loop;
+  bool got_result = false;
+  model_context->ExecuteTool(
+      base::UnguessableToken::Create(), "search_tool",
+      "{\"query\": \"testing\"}",
+      /* signal= */ nullptr,
+      base::BindLambdaForTesting(
+          [&](base::expected<String, ScriptToolError> res) {
+            got_result = true;
+            EXPECT_TRUE(res.has_value());
+            if (res.has_value()) {
+              EXPECT_EQ(*res, "result value");
+            }
+            run_loop.Quit();
+          }));
+  run_loop.Run();
+
+  EXPECT_TRUE(got_result);
+}
+
+TEST_F(ModelContextTest, ExecuteTool_RespondWith_And_Navigate) {
+  SimRequest main_resource("https://example.com/", "text/html");
+  SimRequest search_resource("https://example.com/search", "text/html");
+  LoadURL("https://example.com/");
+  v8::HandleScope handle_scope(Window().GetIsolate());
+  ScriptState::Scope script_scope(
+      ToScriptStateForMainWorld(Window().GetFrame()));
+  main_resource.Complete(R"HTML(
+    <form toolautosubmit toolname="search_tool" tooldescription="Search the web" action="/search">
+      <input type=text name=query>
+      <button type=submit>Submit</button>
+    </form>
+    <script>
+      document.querySelector("form").addEventListener("submit", e => {
+        e.preventDefault();
+        e.respondWith(Promise.resolve("result value"));
+        window.location.href = "/search";
+      });
+    </script>
+  )HTML");
+
+  auto* model_context =
+      ModelContextSupplement::modelContext(*Window().navigator());
+  ASSERT_TRUE(model_context);
+
+  base::RunLoop run_loop;
+  bool got_result = false;
+  model_context->ExecuteTool(
+      base::UnguessableToken::Create(), "search_tool",
+      "{\"query\": \"testing\"}",
+      /* signal= */ nullptr,
+      base::BindLambdaForTesting(
+          [&](base::expected<String, ScriptToolError> res) {
+            got_result = true;
+            EXPECT_TRUE(res.has_value());
+            if (res.has_value()) {
+              EXPECT_EQ(*res, "result value");
+            }
+            run_loop.Quit();
+          }));
+  run_loop.Run();
+
+  search_resource.Complete("search page");
+
+  EXPECT_TRUE(got_result);
+}
+
 }  // namespace blink

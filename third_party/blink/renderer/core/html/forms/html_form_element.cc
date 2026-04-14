@@ -354,9 +354,11 @@ void HTMLFormElement::UpdateMcpDefinitionsIfNeeded() {
   if (IsValidWebMCPForm()) {
     CHECK(!is_valid_mcp_form || name_or_description_changed);
     // Unregister the tool to ensure any in-flight tool executions are aborted.
-    active_webmcp_tool_->CallDoneCallback(base::unexpected(ScriptToolError(
-        ScriptToolErrorCode::kToolCancelled,
-        "Tool execution cancelled, since tool definition was updated")));
+    if (!in_user_js_submit_event_) {
+      active_webmcp_tool_->CallDoneCallback(base::unexpected(ScriptToolError(
+          ScriptToolErrorCode::kToolCancelled,
+          "Tool execution cancelled, since tool definition was updated")));
+    }
     model_context->UnregisterTool(active_webmcp_tool_->ToolName());
     active_webmcp_tool_ = nullptr;
   }
@@ -588,6 +590,8 @@ void HTMLFormElement::PrepareForSubmission(const Event* event,
   }
 
   bool should_submit;
+  Member<HTMLFormMcpTool> executing_tool;
+  bool declarative_webmcp_call = false;
   {
     base::AutoReset<bool> submit_event_handler_scope(&in_user_js_submit_event_,
                                                      true);
@@ -609,14 +613,15 @@ void HTMLFormElement::PrepareForSubmission(const Event* event,
     UseCounter::Count(GetDocument(), WebFeature::kFormSubmissionStarted);
     // Interactive validation must be done before dispatching the submit event.
     // We also re-perform this validation *after* dispatching the submit event.
-    bool declarative_webmcp_call =
+    executing_tool = active_webmcp_tool_;
+    declarative_webmcp_call =
         IsValidWebMCPForm() && active_webmcp_tool_->CurrentlyRunning();
     if (!skip_validation && !ValidateInteractively()) {
       should_submit = false;
       if (declarative_webmcp_call) {
         // TODO(crbug.com/493951236) This error message should describe more
         // of the details of what failed validation.
-        active_webmcp_tool_->CallDoneCallback(base::unexpected(
+        executing_tool->CallDoneCallback(base::unexpected(
             ScriptToolError(ScriptToolErrorCode::kToolInvocationFailed,
                             "Form validation failed")));
       }
@@ -646,7 +651,7 @@ void HTMLFormElement::PrepareForSubmission(const Event* event,
       //
       // To handle all of this, update the boolean.
       declarative_webmcp_call =
-          IsValidWebMCPForm() && active_webmcp_tool_->CurrentlyRunning();
+          executing_tool && executing_tool->CurrentlyRunning();
       if (declarative_webmcp_call) {
         if (auto promise = submit_event->TakeRespondWithPromise()) {
           // Since we have a promise, respondWith() was called. That should only
@@ -655,24 +660,23 @@ void HTMLFormElement::PrepareForSubmission(const Event* event,
           CHECK(!should_submit);
           // Wait for the provided promise to resolve or reject, and then call
           // the active_webmcp_tool_'s callback with the result.
-          CHECK(active_webmcp_tool_.Get());
+
           std::move(*promise).Then(
               BindOnce(&HTMLFormElement::HandleWebMcpToolResponse,
-                       WrapWeakPersistent(this),
-                       WrapPersistent(active_webmcp_tool_.Get()),
+                       WrapPersistent(this),
+                       WrapPersistent(executing_tool.Get()),
                        /*resolved=*/true),
               BindOnce(&HTMLFormElement::HandleWebMcpToolResponse,
-                       WrapWeakPersistent(this),
-                       WrapPersistent(active_webmcp_tool_.Get()),
+                       WrapPersistent(this),
+                       WrapPersistent(executing_tool.Get()),
                        /*resolved=*/false));
         } else if (!should_submit) {
-          active_webmcp_tool_->CallDoneCallback(
-              base::unexpected(ScriptToolError(
-                  ScriptToolErrorCode::kToolInvocationFailed,
-                  "The site has a programming error: it called "
-                  "preventDefault() "
-                  "on the 'submit' event, without also calling respondWith() "
-                  "with the tool result")));
+          executing_tool->CallDoneCallback(base::unexpected(ScriptToolError(
+              ScriptToolErrorCode::kToolInvocationFailed,
+              "The site has a programming error: it called "
+              "preventDefault() "
+              "on the 'submit' event, without also calling respondWith() "
+              "with the tool result")));
         }
       }
     }
@@ -684,11 +688,11 @@ void HTMLFormElement::PrepareForSubmission(const Event* event,
       std::move(cancel_last_submission_).Run();
     }
     ScheduleFormSubmission(event, submitter);
-    if (IsValidWebMCPForm() && active_webmcp_tool_->CurrentlyRunning()) {
+    if (executing_tool && executing_tool->CurrentlyRunning()) {
       CHECK(RuntimeEnabledFeatures::WebMCPEnabled(GetExecutionContext()));
       // Return a null string to indicate that a navigation has been
       // triggered.
-      active_webmcp_tool_->CallDoneCallback(base::ok(String()));
+      executing_tool->CallDoneCallback(base::ok(String()));
     }
   }
 }
