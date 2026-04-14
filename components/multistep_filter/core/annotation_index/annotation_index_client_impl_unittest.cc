@@ -39,6 +39,7 @@ constexpr char kTestApiUrl[] = "https://api.googleapis.com/test";
 constexpr char kTestApiUrl2[] = "https://api.googleapis.com/test2";
 constexpr char kTestApiBody[] = "{\"test_body\": true}";
 constexpr char kTestFakeSuccessResponse[] = "{\"status\": \"ok\"}";
+constexpr char kTestCandidateId[] = "12345678-1234-4678-a234-567812345678";
 
 std::unique_ptr<network::ResourceRequest> CreateRequest(
     const std::string& url) {
@@ -192,7 +193,7 @@ TEST_F(AnnotationIndexClientImplTest, GetSupportedTaskTypesForDomain_Success) {
 TEST_F(AnnotationIndexClientImplTest, GetFilterSuggestionCandidates_Success) {
   GetTaskExecutionStrategiesResponse proto_response;
   TaskExecutionStrategy* strategy = proto_response.add_execution_strategies();
-  strategy->set_candidate_id("12345678-1234-5678-1234-567812345678");
+  strategy->set_candidate_id(kTestCandidateId);
   AppliedFilterUIString* filter1 = strategy->add_applied_filters();
   filter1->set_key("PRICE_MIN");
   filter1->set_label("Min Price");
@@ -216,7 +217,7 @@ TEST_F(AnnotationIndexClientImplTest, GetFilterSuggestionCandidates_Success) {
   ASSERT_TRUE(result);
   EXPECT_EQ(result->size(), 1u);
   EXPECT_EQ((*result)[0].filter_annotation_id.AsLowercaseString(),
-            "12345678-1234-5678-1234-567812345678");
+            kTestCandidateId);
   EXPECT_EQ((*result)[0].navigation_url.spec(),
             "https://travel.com/flights?min=100");
 }

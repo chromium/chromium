@@ -17,6 +17,8 @@
 namespace multistep_filter {
 namespace {
 
+constexpr char kTestCandidateId[] = "12345678-1234-4678-a234-567812345678";
+
 TEST(AnnotationIndexConversionUtilTest, ToGetSupportedTasksRequest) {
   GetSupportedTasksRequest request = ToGetSupportedTasksRequest("example.com");
 
@@ -36,15 +38,14 @@ TEST(AnnotationIndexConversionUtilTest, ToSupportedTasks) {
 }
 
 TEST(AnnotationIndexConversionUtilTest, ToExecutionCandidate) {
-  FilterAnnotation annotation(
-      base::Uuid::ParseLowercase("12345678-1234-5678-1234-567812345678"),
-      "SEARCH_FLIGHTS", "travel.com", base::Time::Now(),
-      {FilterAttribute("PRICE_MIN", "100"),
-       FilterAttribute("PRICE_MAX", "500")});
+  FilterAnnotation annotation(base::Uuid::ParseLowercase(kTestCandidateId),
+                              "SEARCH_FLIGHTS", "travel.com", base::Time::Now(),
+                              {FilterAttribute("PRICE_MIN", "100"),
+                               FilterAttribute("PRICE_MAX", "500")});
 
   ExecutionCandidate candidate = ToExecutionCandidate(annotation);
 
-  EXPECT_EQ(candidate.candidate_id(), "12345678-1234-5678-1234-567812345678");
+  EXPECT_EQ(candidate.candidate_id(), kTestCandidateId);
   EXPECT_EQ(candidate.task_type(), "SEARCH_FLIGHTS");
   ASSERT_EQ(candidate.task_attributes_size(), 2);
   EXPECT_EQ(candidate.task_attributes(0).key(), "PRICE_MIN");
@@ -82,7 +83,7 @@ TEST(AnnotationIndexConversionUtilTest, ToFilterSuggestionCandidates) {
   GetTaskExecutionStrategiesResponse response;
 
   TaskExecutionStrategy* strategy = response.add_execution_strategies();
-  strategy->set_candidate_id("12345678-1234-5678-1234-567812345678");
+  strategy->set_candidate_id(kTestCandidateId);
 
   AppliedFilterUIString* filter1 = strategy->add_applied_filters();
   filter1->set_key("PRICE_MIN");
@@ -108,7 +109,7 @@ TEST(AnnotationIndexConversionUtilTest, ToFilterSuggestionCandidates) {
   const FilterSuggestionCandidate& suggestion = candidates[0];
 
   EXPECT_EQ(suggestion.filter_annotation_id.AsLowercaseString(),
-            "12345678-1234-5678-1234-567812345678");
+            kTestCandidateId);
   EXPECT_EQ(suggestion.navigation_url.spec(),
             "https://travel.com/flights?min=100&max=500");
   ASSERT_EQ(suggestion.attributes.size(), 2u);

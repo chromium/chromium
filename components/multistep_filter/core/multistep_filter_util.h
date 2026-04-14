@@ -26,6 +26,15 @@ bool IsSameDomainOrHost(const GURL& url, const GURL& other);
 // Redundancy is defined as having the same base URL (scheme, host, and
 // path) and the candidate's query parameters being a subset of (or identical
 // to) the reference URL's query parameters.
+//
+// For example:
+// candidate: "http://example.com/path?a=1"
+// reference: "http://example.com/path?a=1&b=2"
+// -> Subsumed (returns true)
+//
+// candidate: "http://example.com/path?a=1&b=2"
+// reference: "http://example.com/path?a=1"
+// -> NOT Subsumed (returns false)
 bool IsUrlSubsumedBy(const GURL& candidate_url, const GURL& reference_url);
 
 }  // namespace multistep_filter

@@ -131,9 +131,8 @@ void FilterSuggestionGenerator::OnFilterSuggestionCandidatesFetched(
   // candidate.
   FilterSuggestionCandidate& candidate = candidates->front();
 
-  std::vector<FilterAnnotation>::iterator matching_annotation_it =
-      std::ranges::find(annotations, candidate.filter_annotation_id,
-                        &FilterAnnotation::id);
+  auto matching_annotation_it = std::ranges::find(
+      annotations, candidate.filter_annotation_id, &FilterAnnotation::id);
   if (matching_annotation_it == annotations.end()) {
     return;
   }

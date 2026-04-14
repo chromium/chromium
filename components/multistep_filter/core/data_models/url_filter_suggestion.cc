@@ -26,8 +26,9 @@ FilterAttributeUiLabel::FilterAttributeUiLabel(
 }
 
 std::string FilterAttributeUiLabel::ToString() const {
-  return "FilterAttributeUiLabel(label=" + base::UTF16ToUTF8(attribute_label) +
-         ", value=" + base::UTF16ToUTF8(attribute_value) + ")";
+  return base::StrCat(
+      {"FilterAttributeUiLabel(label=", base::UTF16ToUTF8(attribute_label),
+       ", value=", base::UTF16ToUTF8(attribute_value), ")"});
 }
 
 UrlFilterSuggestion::UrlFilterSuggestion(
