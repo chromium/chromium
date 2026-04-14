@@ -65,6 +65,9 @@ public class TabBottomSheetManager implements Destroyable {
                     if (layoutType == LayoutType.TAB_SWITCHER) {
                         mIsSuppressedOnTabSwitcher = true;
                         maybeCloseBottomSheet();
+                    } else if (layoutType == LayoutType.TOOLBAR_SWIPE) {
+                        mIsSuppressedOnToolbarSwipe = true;
+                        maybeCloseBottomSheet();
                     }
                 }
 
@@ -72,14 +75,19 @@ public class TabBottomSheetManager implements Destroyable {
                 public void onStartedHiding(@LayoutType int layoutType) {
                     if (layoutType == LayoutType.TAB_SWITCHER) {
                         mIsSuppressedOnTabSwitcher = false;
-                        if (mLayoutStateProviderOneShotSupplier.get() != null) {
-                            @LayoutType
-                            int nextLayoutType =
-                                    mLayoutStateProviderOneShotSupplier.get().getNextLayoutType();
-                            if (nextLayoutType == LayoutType.BROWSING) {
-                                maybeShowBottomSheet();
-                            }
-                        }
+                        maybeShowIfNextIsBrowsing();
+                    } else if (layoutType == LayoutType.TOOLBAR_SWIPE) {
+                        mIsSuppressedOnToolbarSwipe = false;
+                        maybeShowIfNextIsBrowsing();
+                    }
+                }
+
+                private void maybeShowIfNextIsBrowsing() {
+                    var layoutStateProvider = mLayoutStateProviderOneShotSupplier.get();
+                    assert layoutStateProvider != null;
+                    @LayoutType int nextLayoutType = layoutStateProvider.getNextLayoutType();
+                    if (nextLayoutType == LayoutType.BROWSING) {
+                        maybeShowBottomSheet();
                     }
                 }
             };
@@ -92,6 +100,7 @@ public class TabBottomSheetManager implements Destroyable {
     private final CallbackController mCallbackController = new CallbackController();
 
     private boolean mIsSuppressedOnTabSwitcher;
+    private boolean mIsSuppressedOnToolbarSwipe;
     private boolean mIsSuppressedByReadAloud;
 
     private @Nullable NullableObservableSupplier<Tab> mActivePlaybackTabSupplier;
@@ -167,7 +176,7 @@ public class TabBottomSheetManager implements Destroyable {
                         coBrowseViews,
                         mSheetEventsCallback);
 
-        if (mIsSuppressedOnTabSwitcher || mIsSuppressedByReadAloud) {
+        if (mIsSuppressedOnTabSwitcher || mIsSuppressedOnToolbarSwipe || mIsSuppressedByReadAloud) {
             // We are currently suppressed, save this sheet to be shown when suppression ends.
             mNativeInterfaceDelegate = nativeInterfaceDelegate;
             return true;
@@ -313,7 +322,9 @@ public class TabBottomSheetManager implements Destroyable {
     }
 
     private void maybeShowBottomSheet() {
-        if (!mIsSuppressedOnTabSwitcher && !mIsSuppressedByReadAloud) {
+        if (!mIsSuppressedOnTabSwitcher
+                && !mIsSuppressedOnToolbarSwipe
+                && !mIsSuppressedByReadAloud) {
 
             if (mTabBottomSheetCoordinator != null && mNativeInterfaceDelegate != null) {
                 if (!mTabBottomSheetCoordinator.tryToShowBottomSheet(

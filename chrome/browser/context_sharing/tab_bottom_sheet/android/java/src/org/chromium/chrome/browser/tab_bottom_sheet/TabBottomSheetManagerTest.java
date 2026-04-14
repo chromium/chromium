@@ -23,9 +23,11 @@ import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.Features.EnableFeatures;
+import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.content.WebContentsFactory;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab_bottom_sheet.TabBottomSheetManager.NativeInterfaceDelegate;
 import org.chromium.chrome.browser.tabbed_mode.TabbedRootUiCoordinator;
@@ -38,6 +40,7 @@ import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.content.browser.input.ImeAdapterImpl;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.browser.WebContents;
+import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.base.WindowAndroid;
 
 /** Instrumentation tests for {@link TabBottomSheetManager}. */
@@ -167,6 +170,33 @@ public class TabBottomSheetManagerTest {
 
         // Close tab switcher
         tabSwitcher.leaveHubToPreviousTabViaBack(WebPageStation.newBuilder());
+
+        CriteriaHelper.pollUiThread(() -> mManager.isSheetShowing());
+    }
+
+    @Test
+    @SmallTest
+    @Restriction(DeviceFormFactor.PHONE)
+    public void testBottomSheetHiddenOnToolbarSwipe() {
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mManager.tryToShowBottomSheet(
+                            mDelegate,
+                            mCoBrowseViews,
+                            /* animate= */ false,
+                            /* startsExpanded= */ true);
+                });
+        CriteriaHelper.pollUiThread(() -> mManager.isSheetShowing());
+
+        // Trigger toolbar swipe layout
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> mActivity.getLayoutManager().showLayout(LayoutType.TOOLBAR_SWIPE, false));
+
+        CriteriaHelper.pollUiThread(() -> !mManager.isSheetShowing());
+
+        // Restore to browsing layout
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> mActivity.getLayoutManager().showLayout(LayoutType.BROWSING, false));
 
         CriteriaHelper.pollUiThread(() -> mManager.isSheetShowing());
     }
