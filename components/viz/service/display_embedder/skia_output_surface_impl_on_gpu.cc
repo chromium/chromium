@@ -618,8 +618,7 @@ void SkiaOutputSurfaceImplOnGpu::FinishPaintRenderPass(
     std::vector<raw_ptr<ImageContextImpl, VectorExperimental>> image_contexts,
     base::OnceClosure on_finished,
     base::OnceCallback<void(gfx::GpuFenceHandle)> return_release_fence_cb,
-    const gfx::Rect& update_rect,
-    bool is_overlay) {
+    const gfx::Rect& update_rect) {
   TRACE_EVENT0("viz", "SkiaOutputSurfaceImplOnGpu::FinishPaintRenderPass");
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 

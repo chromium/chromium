@@ -98,8 +98,7 @@ gpu::SyncToken SkiaOutputSurfaceImplTest::PaintRootRenderPass(
   SkCanvas* root_canvas = output_surface_->BeginPaintCurrentFrame();
   root_canvas->drawRect(gfx::RectToSkRect(output_rect), paint);
   output_surface_->EndPaint(std::move(closure), std::move(return_release_fence),
-                            output_rect,
-                            /*is_overlay=*/false);
+                            output_rect);
   return output_surface_->Flush();
 }
 

@@ -184,8 +184,7 @@ SkCanvas* FakeSkiaOutputSurface::RecordOverdrawForCurrentPaint() {
 void FakeSkiaOutputSurface::EndPaint(
     base::OnceClosure on_finished,
     base::OnceCallback<void(gfx::GpuFenceHandle)> return_release_fence_cb,
-    const gfx::Rect& update_rect,
-    bool is_overlay) {
+    const gfx::Rect& update_rect) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   skgpu::ganesh::FlushAndSubmit(sk_surfaces_[current_render_pass_id_]);
   current_render_pass_id_ = AggregatedRenderPassId{0};
