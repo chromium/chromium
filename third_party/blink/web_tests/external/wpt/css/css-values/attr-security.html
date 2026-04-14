@@ -37,11 +37,17 @@
     function test_attr(property, attrString, attrValue, expectedValue) {
         var elem = document.getElementById("attr");
         elem.setAttribute("data-foo", attrValue);
-        elem.style.setProperty(property, attrString);
+
+        elem.style.setProperty("--unregistered", attrString);
+        let value = window.getComputedStyle(elem).getPropertyValue("--unregistered");
 
         test(() => {
+          // Skip tests that include unsupported functions, since they are not violation of attr() security.
+          if (value == "" || CSS.supports(`${property} : ${value}`)) {
+            elem.style.setProperty(property, attrString);
             assert_equals(window.getComputedStyle(elem).getPropertyValue(property),
                           expectedValue);
+          }
         }, `'${property}: ${attrString}' with data-foo="${attrValue}"`);
 
         elem.style.setProperty(property, null);
