@@ -30,7 +30,6 @@ android_library("java") {
     "java/src/org/chromium/components/browser_ui/notifications/NotificationWrapper.java",
     "java/src/org/chromium/components/browser_ui/notifications/NotificationWrapperBuilder.java",
     "java/src/org/chromium/components/browser_ui/notifications/NotificationWrapperCompatBuilder.java",
-    "java/src/org/chromium/components/browser_ui/notifications/NotificationWrapperStandardBuilder.java",
     "java/src/org/chromium/components/browser_ui/notifications/PendingIntentProvider.java",
     "java/src/org/chromium/components/browser_ui/notifications/PendingNotificationTask.java",
     "java/src/org/chromium/components/browser_ui/notifications/StatusBarNotificationAdaptor.java",
