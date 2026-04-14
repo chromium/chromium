@@ -491,12 +491,13 @@ IN_PROC_BROWSER_TEST_F(DiceWebSigninInterceptionBubbleBrowserTest,
   // Create a bubble using the temporary profile, but not attached to its view
   // hierarchy. This bubble won't be destroyed when the new browser is closed,
   // and will outlive it.
-  views::Widget* widget = views::BubbleDialogDelegateView::CreateBubble(
-      new DiceWebSigninInterceptionBubbleView(
-          new_browser, GetAvatarAnchor(new_browser), GetTestBubbleParameters(),
-          base::BindOnce(&DiceWebSigninInterceptionBubbleBrowserTest::
-                             OnInterceptionComplete,
-                         base::Unretained(this))));
+  auto* bubble = new DiceWebSigninInterceptionBubbleView(
+      new_browser, GetAvatarAnchor(new_browser), GetTestBubbleParameters(),
+      base::BindOnce(
+          &DiceWebSigninInterceptionBubbleBrowserTest::OnInterceptionComplete,
+          base::Unretained(this)));
+  bubble->set_has_parent(false);
+  views::Widget* widget = views::BubbleDialogDelegateView::CreateBubble(bubble);
   widget->Show();
   EXPECT_FALSE(callback_result_.has_value());
 
