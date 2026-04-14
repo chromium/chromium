@@ -182,6 +182,32 @@ suite('SettingsMenuElement', () => {
     assertFalse(imagesEnabledTogled);
   });
 
+  test('links toggle is disabled when speech is active', async () => {
+    const actionMenu = settingsMenu.$.lazyMenu.get();
+    const menuItems =
+        Array.from(actionMenu.querySelectorAll<HTMLButtonElement>('.menu-row'));
+    const targetItem = menuItems.find(item => item.id === SettingsOption.LINKS);
+    assertTrue(!!targetItem);
+
+    settingsMenu.isSpeechActive = true;
+    await microtasksFinished();
+
+    assertTrue(targetItem.disabled);
+    const toggle = targetItem.querySelector('cr-toggle');
+    assertTrue(!!toggle);
+    assertTrue(toggle.disabled);
+
+    let linksEventWasFired = false;
+    settingsMenu.addEventListener(
+        ToolbarEvent.LINKS, () => linksEventWasFired = true);
+    let linkEnabledTogled = false;
+    chrome.readingMode.onLinksEnabledToggled = () => linkEnabledTogled = true;
+
+    targetItem.click();
+    assertFalse(linksEventWasFired);
+    assertFalse(linkEnabledTogled);
+  });
+
   test('moving the mouse removes keyboard-nav class', () => {
     const actionMenu = settingsMenu.$.lazyMenu.get();
     actionMenu.classList.add(KEYBOARD_NAV_CLASS);

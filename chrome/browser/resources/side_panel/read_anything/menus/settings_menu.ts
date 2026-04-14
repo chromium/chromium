@@ -247,11 +247,12 @@ export class SettingsMenuElement extends SettingsMenuElementBase {
         ariaLabel = this.getImageItemLabels();
       }
 
-      // TODO: crbug.com/494316323- Consider disabling the links toggle when
-      // read aloud is speaking, similar to what is done with the images toggle.
       if (id === SettingsOption.LINKS) {
         checked = chrome.readingMode.linksEnabled;
         ariaLabel = this.getLinkItemLabels();
+        // Since links are disabled when read aloud is playing, the links
+        // toggle should also be disabled.
+        disabled = this.isSpeechActive;
       }
 
       if (id === SettingsOption.PINNED_TO_TOOLBAR) {
