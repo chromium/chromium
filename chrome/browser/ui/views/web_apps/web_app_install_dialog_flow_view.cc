@@ -6,25 +6,31 @@
 
 #include <memory>
 
-#include "chrome/browser/ui/views/web_apps/web_app_icon_name_and_origin_view.h"
+#include "base/functional/callback.h"
+#include "chrome/browser/ui/views/web_apps/web_app_install_intro_view.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/layout/box_layout.h"
 
 namespace web_app {
 
 // A generic view that represents the installation flow.
-WebAppInstallFlowView::WebAppInstallFlowView(const gfx::ImageSkia& icon_image,
-                                             const std::u16string& app_name,
-                                             const GURL& start_url,
-                                             bool is_maskable,
-                                             InstallOsType os_type) {
+WebAppInstallFlowView::WebAppInstallFlowView(
+    const gfx::ImageSkia& icon_image,
+    const std::u16string& app_name,
+    const GURL& start_url,
+    bool is_maskable,
+    InstallOsType os_type,
+    InstallDialogType install_type,
+    base::RepeatingCallback<void(const std::u16string&)>
+        text_tracker_callback) {
   os_type_ = os_type;
   SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kVertical));
 
   // kInstallDialog
-  auto* install_dialog_view = AddChildView(WebAppIconNameAndOriginView::Create(
-      icon_image, app_name, start_url, is_maskable));
+  auto* install_dialog_view = AddChildView(WebAppInstallIntroView::Create(
+      install_type, icon_image, app_name, start_url, is_maskable,
+      std::move(text_tracker_callback)));
   install_step_to_view_[InstallDialogStep::kInstallDialog] =
       install_dialog_view;
 
@@ -68,23 +74,6 @@ views::View* WebAppInstallFlowView::CreateInstallOptionsView() {
   return AddChildView(views::Builder<views::Label>().SetText(label).Build());
 }
 
-// Assigns a view to the provided InstallDialogStep in the
-// WebAppInstallFlowView.
-void WebAppInstallFlowView::SetStepView(InstallDialogStep step,
-                                        std::unique_ptr<views::View> view) {
-  auto pair = install_step_to_view_.find(step);
-  bool was_visible = true;
-  if (pair != install_step_to_view_.end()) {
-    views::View* old_view = pair->second;
-    was_visible = old_view->GetVisible();
-    pair->second = nullptr;
-    RemoveChildViewT(old_view);
-  }
-  view->SetVisible(was_visible);
-  install_step_to_view_[step] = AddChildView(std::move(view));
-}
-
-// Ensures visibility is appropriately updated for each views.
 void WebAppInstallFlowView::UpdateStepVisibility(
     InstallDialogStep current_step) {
   for (auto const& [step, view] : install_step_to_view_) {
@@ -93,6 +82,11 @@ void WebAppInstallFlowView::UpdateStepVisibility(
     }
   }
   PreferredSizeChanged();
+}
+
+views::View* WebAppInstallFlowView::GetViewForStep(InstallDialogStep step) {
+  auto it = install_step_to_view_.find(step);
+  return it != install_step_to_view_.end() ? it->second.get() : nullptr;
 }
 
 base::WeakPtr<WebAppInstallFlowView> WebAppInstallFlowView::GetWeakPtr() {

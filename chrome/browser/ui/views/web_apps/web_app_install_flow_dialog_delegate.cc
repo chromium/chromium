@@ -166,61 +166,28 @@ void WebAppInstallFlowDialogDelegate::Show(
 
   std::u16string title = install_info->title.value();
   GURL start_url = install_info->start_url();
-
-  auto flow_view = std::make_unique<WebAppInstallFlowView>(
-      icon_image, title, start_url, dialog_image_info.is_maskable, os_type);
-  auto flow_view_weak_ptr = flow_view->GetWeakPtr();
-
+  bool is_maskable = dialog_image_info.is_maskable;
   auto install_info_description = install_info->description.value();
 
   auto delegate = std::make_unique<WebAppInstallFlowDialogDelegate>(
       web_contents, std::move(install_info), std::move(install_tracker),
       std::move(callback), std::move(iph_state), prefs, tracker, install_type);
-  auto* delegate_ptr = delegate.get();
-  auto delegate_weak_ptr = delegate_ptr->AsWeakPtr();
+  auto delegate_weak_ptr = delegate->AsWeakPtr();
 
-  delegate_ptr->SetFlowView(flow_view_weak_ptr);
+  auto flow_view = std::make_unique<WebAppInstallFlowView>(
+      icon_image, title, start_url, is_maskable, os_type, install_type,
+      base::BindRepeating(
+          &WebAppInstallDialogDelegate::OnTextFieldChangedMaybeUpdateButton,
+          delegate_weak_ptr));
+  auto flow_view_weak_ptr = flow_view->GetWeakPtr();
+  delegate->SetFlowView(flow_view_weak_ptr);
 
-  views::View* focusable_view = nullptr;
-  std::unique_ptr<views::View> step_view;
-
-  switch (install_type) {
-    case InstallDialogType::kDetailed: {
-      const std::u16string description = gfx::TruncateString(
-          install_info_description, webapps::kMaximumDescriptionLength,
-          gfx::CHARACTER_BREAK);
-      step_view = CreateDetailedInstallDialogView(
-          icon_image, title, start_url, dialog_image_info.is_maskable,
-          std::move(screenshot_fetcher), description);
-      break;
-    }
-    case InstallDialogType::kDiy: {
-      if (title.empty()) {
-        title = UrlIdentity::CreateFromUrl(profile, start_url,
-                                           {UrlIdentity::Type::kDefault}, {})
-                    .name;
-      }
-      step_view = CreateDiyInstallDialogView(
-          icon_image, title, start_url, web_contents,
-          base::BindRepeating(
-              &WebAppInstallDialogDelegate::OnTextFieldChangedMaybeUpdateButton,
-              delegate_weak_ptr));
-      focusable_view = static_cast<SiteIconTextAndOriginView*>(step_view.get())
-                           ->title_field();
-      break;
-    }
-    case InstallDialogType::kSimple:
-      step_view = CreateSimpleInstallDialogView(icon_image, title, start_url,
-                                                dialog_image_info.is_maskable);
-      break;
-  }
-
-  flow_view->SetStepView(InstallDialogStep::kInstallDialog,
-                         std::move(step_view));
+  views::View* focusable_view =
+      flow_view->GetViewForStep(InstallDialogStep::kInstallDialog);
 
   auto dialog_model_builder = ui::DialogModel::Builder(std::move(delegate));
   dialog_model_builder.SetInternalName("WebAppInstallFlowDialog")
-      .SetTitle(
+      .SetAccessibleTitle(
           l10n_util::GetStringUTF16(install_type == InstallDialogType::kDiy
                                         ? IDS_DIY_APP_INSTALL_DIALOG_TITLE
                                         : IDS_INSTALL_PWA_DIALOG_TITLE))

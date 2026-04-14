@@ -7,6 +7,7 @@
 
 #include <map>
 
+#include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ui/views/web_apps/web_app_install_dialog_delegate.h"
@@ -23,14 +24,18 @@ class WebAppInstallFlowView : public views::View {
                         const std::u16string& app_name,
                         const GURL& start_url,
                         bool is_maskable,
-                        InstallOsType os_type);
+                        InstallOsType os_type,
+                        InstallDialogType install_type,
+                        base::RepeatingCallback<void(const std::u16string&)>
+                            text_tracker_callback);
   ~WebAppInstallFlowView() override;
 
   base::WeakPtr<WebAppInstallFlowView> GetWeakPtr();
 
-  void SetStepView(InstallDialogStep step, std::unique_ptr<views::View> view);
-
+  // Shows the view for the given step, and hides all others.
   void UpdateStepVisibility(InstallDialogStep current_step);
+
+  views::View* GetViewForStep(InstallDialogStep step);
 
  private:
   views::View* CreateInstallOptionsView();
