@@ -80,7 +80,6 @@ void GlicButtonController::UpdateButton() {
   toolbar_glic_controller_delegate_->SetGlicShowState(true);
 
   bool is_glic_panel_open =
-      glic_keyed_service_->IsFreShowing() ||
       glic_keyed_service_->IsPanelShowingForBrowser(*browser_);
   tab_strip_glic_controller_delegate_->SetGlicPanelIsOpen(is_glic_panel_open);
   toolbar_glic_controller_delegate_->SetGlicPanelIsOpen(is_glic_panel_open);

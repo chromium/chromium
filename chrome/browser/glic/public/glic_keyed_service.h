@@ -12,7 +12,6 @@
 
 #include "base/callback_list.h"
 #include "base/containers/flat_set.h"
-#include "base/memory/memory_pressure_listener.h"
 #include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
 #include "chrome/browser/glic/common/local_hotkey_manager.h"
@@ -78,8 +77,7 @@ enum class GlicPrewarmingChecksResult;
 // preference for changes and cause the UI to respond to it.
 class GlicKeyedService : public KeyedService,
                          public GlicSharingManagerProvider,
-                         public base::SupportsUserData,
-                         public base::MemoryPressureListener {
+                         public base::SupportsUserData {
  public:
   explicit GlicKeyedService(Profile* profile,
                             signin::IdentityManager* identity_manager,
@@ -155,7 +153,6 @@ class GlicKeyedService : public KeyedService,
 
   // Virtual for testing.
   virtual bool IsWindowShowing() const;
-  virtual bool IsFreShowing() const;
 
   // Returns true if `bwi` has a glic panel showing for its active tab. Virtual
   // for testing.
@@ -249,8 +246,6 @@ class GlicKeyedService : public KeyedService,
   void reset_profile_for_test() { profile_ = nullptr; }
 
   base::WeakPtr<GlicKeyedService> GetWeakPtr();
-
-  void OnMemoryPressure(base::MemoryPressureLevel level) override;
 
   HostManager& host_manager();
 
@@ -356,8 +351,6 @@ class GlicKeyedService : public KeyedService,
   std::unique_ptr<GlicRegionCaptureController> region_capture_controller_;
 #endif
   std::unique_ptr<AuthController> auth_controller_;
-  std::unique_ptr<base::MemoryPressureListenerRegistration>
-      memory_pressure_listener_registration_;
 
 #if !BUILDFLAG(IS_ANDROID)  // Single instance only
   // Null in multi-instance mode.

@@ -200,10 +200,15 @@ void GlicInstanceImpl::MaybeDaisyChainToTab(tabs::TabInterface* source_tab,
   auto* glic_embedder = GetEmbedderForTab(source_tab);
 
   if (base::FeatureList::IsEnabled(kGlicRemoveDaisyChainingWhenFreShowing)) {
-    if (service()->IsFreShowing() ||
-        (IsTrustFirstOnboardingPending(profile()) &&
-         features::kGlicTrustFirstOnboardingArmParam.Get() != 1)) {
-      return;
+    if (base::FeatureList::IsEnabled(features::kGlicTrustFirstOnboarding)) {
+      if (IsTrustFirstOnboardingPending(profile()) &&
+          features::kGlicTrustFirstOnboardingArmParam.Get() != 1) {
+        return;
+      }
+    } else {
+      if (!GlicEnabling::HasConsentedForProfile(profile())) {
+        return;
+      }
     }
   }
 

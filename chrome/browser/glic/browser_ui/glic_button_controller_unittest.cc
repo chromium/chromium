@@ -102,8 +102,6 @@ class MockGlicKeyedService : public glic::GlicKeyedService {
     return browser_with_open_panel_ == &bwi;
   }
 
-  bool IsFreShowing() const override { return fre_open_; }
-
   GlicInstanceCoordinator& instance_coordinator() const override {
     return *window_controller_;
   }
@@ -116,14 +114,8 @@ class MockGlicKeyedService : public glic::GlicKeyedService {
     window_controller_->NotifyShowHide();
   }
 
-  void SimulateFREShown(bool open) {
-    fre_open_ = open;
-    fre_controller_->NotifyStateChanged();
-  }
-
  private:
   raw_ptr<BrowserWindowInterface> browser_with_open_panel_ = nullptr;
-  bool fre_open_ = false;
   std::unique_ptr<TestingGlicInstanceCoordinator> window_controller_;
   std::unique_ptr<TestingGlicFreController> fre_controller_;
 };
@@ -301,21 +293,6 @@ TEST_F(GlicButtonControllerTest, PanelStateChangedSameBrowser) {
   EXPECT_TRUE(toolbar_controller_delegate()->panel_open());
 
   glic_keyed_service()->SimulatePanelShownForBrowser(nullptr);
-  EXPECT_FALSE(tab_strip_controller_delegate()->panel_open());
-  EXPECT_FALSE(toolbar_controller_delegate()->panel_open());
-}
-
-TEST_F(GlicButtonControllerTest, FREStateChanged) {
-  EXPECT_TRUE(tab_strip_controller_delegate()->show_state());
-  EXPECT_TRUE(toolbar_controller_delegate()->show_state());
-  EXPECT_FALSE(tab_strip_controller_delegate()->panel_open());
-  EXPECT_FALSE(toolbar_controller_delegate()->panel_open());
-
-  glic_keyed_service()->SimulateFREShown(true);
-  EXPECT_TRUE(tab_strip_controller_delegate()->panel_open());
-  EXPECT_TRUE(toolbar_controller_delegate()->panel_open());
-
-  glic_keyed_service()->SimulateFREShown(false);
   EXPECT_FALSE(tab_strip_controller_delegate()->panel_open());
   EXPECT_FALSE(toolbar_controller_delegate()->panel_open());
 }

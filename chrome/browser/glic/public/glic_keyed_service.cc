@@ -208,9 +208,6 @@ GlicKeyedService::GlicKeyedService(
   metrics_->ClearControllers();
   metrics_->RecordGlicProfilePreferences();
 
-  memory_pressure_listener_registration_ =
-      std::make_unique<base::MemoryPressureListenerRegistration>(
-          FROM_HERE, base::MemoryPressureListenerTag::kGlicKeyedService, this);
   if (base::FeatureList::IsEnabled(features::kGlicShareImage)) {
     share_image_handler_ = std::make_unique<GlicShareImageHandler>(*this);
   }
@@ -458,11 +455,7 @@ bool GlicKeyedService::IsWindowDetached() const {
 }
 
 bool GlicKeyedService::IsWindowOrFreShowing() const {
-  return IsWindowShowing() || IsFreShowing();
-}
-
-bool GlicKeyedService::IsFreShowing() const {
-  return fre_controller_->IsShowingDialog();
+  return IsWindowShowing();
 }
 
 base::CallbackListSubscription
@@ -633,14 +626,6 @@ void GlicKeyedService::Reload(content::RenderFrameHost* render_frame_host) {
   instance_coordinator().Reload(render_frame_host);
 }
 
-void GlicKeyedService::OnMemoryPressure(base::MemoryPressureLevel level) {
-  if (level == base::MEMORY_PRESSURE_LEVEL_NONE ||
-      (this == GlicProfileManager::GetInstance()->GetLastActiveGlic())) {
-    return;
-  }
-  // TODO(crbug.com/453747043): Handle Multi Instance.
-}
-
 base::WeakPtr<GlicKeyedService> GlicKeyedService::GetWeakPtr() {
   return weak_ptr_factory_.GetWeakPtr();
 }
@@ -649,8 +634,7 @@ bool GlicKeyedService::IsActiveWebContents(content::WebContents* contents) {
   if (!contents) {
     return false;
   }
-  return host_manager().IsGlicWebUi(contents) ||
-         contents == fre_controller().GetWebContents();
+  return host_manager().IsGlicWebUi(contents);
 }
 
 void GlicKeyedService::FinishPreload(GlicPrewarmingChecksResult result) {
@@ -669,12 +653,6 @@ void GlicKeyedService::FinishPreload(GlicPrewarmingChecksResult result) {
 
 bool GlicKeyedService::IsProcessHostForGlic(
     content::RenderProcessHost* process_host) {
-  auto* fre_contents = fre_controller().GetWebContents();
-  if (fre_contents) {
-    if (fre_contents->GetPrimaryMainFrame()->GetProcess() == process_host) {
-      return true;
-    }
-  }
   return host_manager().IsGlicWebUiHost(process_host);
 }
 

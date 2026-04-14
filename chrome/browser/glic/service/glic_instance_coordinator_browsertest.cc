@@ -565,14 +565,10 @@ IN_PROC_BROWSER_TEST_F(GlicInstanceCoordinatorBrowserTest,
 // Flaky test. crbug.com/498990943
 IN_PROC_BROWSER_TEST_F(
     GlicInstanceCoordinatorBrowserTest,
-    DISABLED_TabContentsDaisyChainingSuppressedWhenUnifiedFreShown) {
+    DISABLED_TabContentsDaisyChainingSuppressedWhenUnifiedFreInProgress) {
+  SetFRECompletion(GetProfile(), prefs::FreStatus::kIncomplete);
   ASSERT_OK(OpenGlicForActiveTab());
   tabs::TabInterface* tab1 = GetTabListInterface()->GetActiveTab();
-
-  // Mock FRE opening
-  auto* glic_service = GlicKeyedService::Get(GetProfile());
-  glic_service->fre_controller().SetIsShowingDialogForTesting(true);
-  EXPECT_TRUE(glic_service->IsFreShowing());
 
   // Try to daisy chain via Page Contents
   {
