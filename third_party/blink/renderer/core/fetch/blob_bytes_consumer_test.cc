@@ -46,9 +46,9 @@ class BlobBytesConsumerTest : public PageTestBase {
   scoped_refptr<BlobDataHandle> CreateBlob(const String& body) {
     mojo::PendingRemote<mojom::blink::Blob> mojo_blob;
     mojo::MakeSelfOwnedReceiver(
-        std::make_unique<FakeBlob>(kBlobUUID, body, &blob_state_),
+        std::make_unique<FakeBlob>(kBlobUuid, body, &blob_state_),
         mojo_blob.InitWithNewPipeAndPassReceiver());
-    return BlobDataHandle::Create(kBlobUUID, "", body.length(),
+    return BlobDataHandle::Create(kBlobUuid, "", body.length(),
                                   std::move(mojo_blob));
   }
 
@@ -58,7 +58,7 @@ class BlobBytesConsumerTest : public PageTestBase {
   }
 
  private:
-  const String kBlobUUID = "blob-id";
+  const String kBlobUuid = "blob-id";
   FakeBlob::State blob_state_;
 };
 

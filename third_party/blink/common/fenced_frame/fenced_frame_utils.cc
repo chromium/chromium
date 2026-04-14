@@ -32,16 +32,16 @@ bool IsValidFencedFrameURL(const GURL& url) {
          !url.parsed_for_possibly_invalid_spec().potentially_dangling_markup;
 }
 
-const char kURNUUIDprefix[] = "urn:uuid:";
+const char kUrnUuidPrefix[] = "urn:uuid:";
 
 bool IsValidUrnUuidURL(const GURL& url) {
   if (!url.is_valid())
     return false;
   const std::string& spec = url.spec();
-  return base::StartsWith(spec, kURNUUIDprefix,
+  return base::StartsWith(spec, kUrnUuidPrefix,
                           base::CompareCase::INSENSITIVE_ASCII) &&
          base::Uuid::ParseCaseInsensitive(
-             std::string_view(spec).substr(std::strlen(kURNUUIDprefix)))
+             std::string_view(spec).substr(std::strlen(kUrnUuidPrefix)))
              .is_valid();
 }
 

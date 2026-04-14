@@ -147,8 +147,8 @@ HistoryItem* HistoryItem::Create(const PageState& page_state) {
 HistoryItem::HistoryItem()
     : item_sequence_number_(GenerateSequenceNumber()),
       document_sequence_number_(GenerateSequenceNumber()),
-      navigation_api_key_(CreateCanonicalUUIDString()),
-      navigation_api_id_(CreateCanonicalUUIDString()) {}
+      navigation_api_key_(CreateCanonicalUuidString()),
+      navigation_api_id_(CreateCanonicalUuidString()) {}
 
 HistoryItem::~HistoryItem() = default;
 

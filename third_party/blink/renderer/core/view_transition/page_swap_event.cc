@@ -56,8 +56,8 @@ PageSwapEvent::PageSwapEvent(
       case mojom::blink::NavigationTypeForNavigationApi::kReplace:
         entry = MakeGarbageCollected<NavigationHistoryEntry>(
             document.domWindow(),
-            /*key=*/CreateCanonicalUUIDString(),
-            /*id=*/CreateCanonicalUUIDString(),
+            /*key=*/CreateCanonicalUuidString(),
+            /*id=*/CreateCanonicalUuidString(),
             /*url=*/page_swap_event_params->url,
             /*document_sequence_number=*/0,
             /*state=*/nullptr);

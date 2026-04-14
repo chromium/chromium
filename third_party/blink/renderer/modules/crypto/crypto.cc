@@ -80,7 +80,7 @@ NotShared<DOMArrayBufferView> Crypto::getRandomValues(
 }
 
 String Crypto::randomUUID() {
-  return CreateCanonicalUUIDString();
+  return CreateCanonicalUuidString();
 }
 
 SubtleCrypto* Crypto::subtle() {

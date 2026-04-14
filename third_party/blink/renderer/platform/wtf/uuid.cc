@@ -9,13 +9,13 @@
 
 namespace blink {
 
-String CreateCanonicalUUIDString() {
+String CreateCanonicalUuidString() {
   String uuid(base::Uuid::GenerateRandomV4().AsLowercaseString());
   DCHECK(uuid.ContainsNoAsciiUpper());
   return uuid;
 }
 
-bool IsValidUUID(const String& uuid) {
+bool IsValidUuid(const String& uuid) {
   // In most (if not all) cases the given uuid should be utf-8, so this
   // conversion should be almost no-op.
   StringUtf8Adaptor utf8(uuid);
