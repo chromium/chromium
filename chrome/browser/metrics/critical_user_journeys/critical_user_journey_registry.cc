@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "chrome/browser/browsing_data/browsing_data_important_sites_util.h"
 #include "chrome/browser/metrics/critical_user_journeys/critical_user_journey.h"
 #include "chrome/browser/metrics/critical_user_journeys/features.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
@@ -24,6 +25,10 @@ void CriticalUserJourneyRegistry::AddJourneys() {
   HatsParams pin_extension_hats_params;
   pin_extension_hats_params.trigger =
       metrics::kHatsSurveyTriggerPinExtensionJourney;
+
+  HatsParams clear_browsing_history_hats_params;
+  clear_browsing_history_hats_params.trigger =
+      metrics::kHatsSurveyTriggerClearBrowsingHistory;
 
   AddJourney(
       CriticalUserJourney::Builder(&kViewDownloadedFileJourney)
@@ -76,6 +81,30 @@ void CriticalUserJourneyRegistry::AddJourneys() {
                       PinExtensionJourneySteps::
                           kPinExtensionsViaSidePanelPinButton)})
           .LaunchHatsSurveyOnCompletion(pin_extension_hats_params)
+          .Build());
+
+  AddJourney(
+      CriticalUserJourney::Builder(&kClearBrowsingHistoryJourney)
+          .AddAnyOf(
+              {Branch(browsing_data_important_sites_util::
+                          kOpenClearBrowsingDataDialogViaAcceleratorEventId,
+                      ClearBrowsingHistoryJourneySteps::
+                          kOpenClearBrowsingDataDialogViaAccelerator),
+               Branch(
+                   kToolbarAppMenuButtonElementId,
+                   ui::InteractionSequence::StepType::kActivated,
+                   ClearBrowsingHistoryJourneySteps::kActivateAppMenuButton)})
+          .AddStep(browsing_data_important_sites_util::
+                       kShowClearBrowsingDataDialogEventId,
+                   ui::InteractionSequence::StepType::kCustomEvent,
+                   ClearBrowsingHistoryJourneySteps::
+                       kShowClearBrowsingDataSettingsDialog)
+          .AddStep(
+              browsing_data_important_sites_util::
+                  kClearBrowsingDataHistoryEventId,
+              ui::InteractionSequence::StepType::kCustomEvent,
+              ClearBrowsingHistoryJourneySteps::kClearBrowsingDataHistoryEvent)
+          .LaunchHatsSurveyOnCompletion(clear_browsing_history_hats_params)
           .Build());
 }
 

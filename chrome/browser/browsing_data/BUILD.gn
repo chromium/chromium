@@ -10,3 +10,17 @@ source_set("constants") {
     "//extensions/buildflags",
   ]
 }
+
+source_set("browsing_data") {
+  public = [ "browsing_data_important_sites_util.h" ]
+
+  sources = [ "browsing_data_important_sites_util.cc" ]
+
+  public_deps = [
+    "//components/browsing_data/core",
+    "//content/public/browser",
+    "//ui/base/interaction",
+  ]
+
+  deps = [ ":constants" ]
+}

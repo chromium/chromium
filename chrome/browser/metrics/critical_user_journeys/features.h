@@ -12,6 +12,7 @@ namespace metrics {
 BASE_DECLARE_FEATURE(kCriticalUserJourneyService);
 
 // Dedicated feature flags for each journey.
+BASE_DECLARE_FEATURE(kClearBrowsingHistoryJourney);
 BASE_DECLARE_FEATURE(kViewDownloadedFileJourney);
 BASE_DECLARE_FEATURE(kViewDownloadedFileFromAppMenuJourney);
 BASE_DECLARE_FEATURE(kPinExtensionJourney);
@@ -22,6 +23,9 @@ extern const char kHatsSurveyTriggerDownloadJourney[];
 
 BASE_DECLARE_FEATURE(kHappinessTrackingSurveysForPinExtensionJourney);
 extern const char kHatsSurveyTriggerPinExtensionJourney[];
+
+BASE_DECLARE_FEATURE(kHappinessTrackingSurveysForClearBrowsingHistory);
+extern const char kHatsSurveyTriggerClearBrowsingHistory[];
 
 }  // namespace metrics
 

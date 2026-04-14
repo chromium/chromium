@@ -43,6 +43,7 @@
 #include "chrome/browser/app_mode/app_mode_utils.h"
 #include "chrome/browser/ash/boca/on_task/on_task_locked_controller.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/browsing_data/browsing_data_important_sites_util.h"
 #include "chrome/browser/desktop_to_mobile_promos/promos_utils.h"
 #include "chrome/browser/devtools/devtools_ui_controller.h"
 #include "chrome/browser/devtools/devtools_window.h"
@@ -5351,6 +5352,14 @@ bool BrowserView::AcceleratorPressed(const ui::Accelerator& accelerator) {
   }
 
   UpdateAcceleratorMetrics(accelerator, command_id);
+
+  if (command_id == IDC_CLEAR_BROWSING_DATA) {
+    views::ElementTrackerViews::GetInstance()->NotifyCustomEvent(
+        browsing_data_important_sites_util::
+            kOpenClearBrowsingDataDialogViaAcceleratorEventId,
+        this);
+  }
+
   return chrome::ExecuteCommand(browser_.get(), command_id,
                                 accelerator.time_stamp());
 }

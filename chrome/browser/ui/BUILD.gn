@@ -288,6 +288,7 @@ static_library("ui") {
     "//chrome/browser/bookmarks",
     "//chrome/browser/bookmarks:impl",
     "//chrome/browser/breadcrumbs",
+    "//chrome/browser/browsing_data",
     "//chrome/browser/commerce",
     "//chrome/browser/complex_tasks",
     "//chrome/browser/content_settings",

@@ -27,6 +27,16 @@ chromium-metrics-reviews@google.com.
   <variant name="StepReached" summary="reached"/>
 </variants>
 
+<histogram name="CriticalUserJourney.ClearBrowsingHistoryJourney.{StepAction}"
+    enum="ClearBrowsingHistoryJourneySteps" expires_after="2027-01-01">
+  <owner>stluong@chromium.org</owner>
+  <owner>top-chrome-desktop-ui@google.com</owner>
+  <summary>
+    Recorded when a step is {StepAction} in the ClearBrowsingHistoryJourney.
+  </summary>
+  <token key="StepAction" variants="CriticalUserJourneyStepAction"/>
+</histogram>
+
 <histogram name="CriticalUserJourney.PinExtensionJourney.{StepAction}"
     enum="PinExtensionJourneySteps" expires_after="2027-01-01">
   <owner>stluong@chromium.org</owner>
@@ -68,6 +78,7 @@ chromium-metrics-reviews@google.com.
     {JourneyName} critical user journey.
   </summary>
   <token key="JourneyName">
+    <variant name="ClearBrowsingHistoryJourney"/>
     <variant name="PinExtensionJourney"/>
     <variant name="ViewDownloadedFileFromAppMenuJourney"/>
     <variant name="ViewDownloadedFileJourney"/>

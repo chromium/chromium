@@ -36,6 +36,7 @@ source_set("impl") {
 
   deps = [
     ":critical_user_journeys",
+    "//chrome/browser/browsing_data",
     "//chrome/browser/ui:browser_element_identifiers",
     "//chrome/browser/ui/hats",
     "//chrome/browser/ui/toolbar",
@@ -67,6 +68,7 @@ source_set("interactive_ui_tests") {
     "//base",
     "//base/test:test_support",
     "//chrome/browser",
+    "//chrome/browser/browsing_data",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/ui",
     "//chrome/browser/ui/hats:test_support",

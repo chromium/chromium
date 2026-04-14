@@ -186,6 +186,7 @@ DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(AppMenuModel, kTabGroupsMenuItem);
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(AppMenuModel, kDownloadsMenuItem);
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(AppMenuModel, kHistoryMenuItem);
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(AppMenuModel, kExtensionsMenuItem);
+DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(AppMenuModel, kClearBrowsingDataMenuItem);
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(AppMenuModel, kMoreToolsMenuItem);
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(AppMenuModel, kIncognitoMenuItem);
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(AppMenuModel,
@@ -2065,6 +2066,8 @@ void AppMenuModel::Build() {
   AddItemWithStringIdAndVectorIcon(this, IDC_CLEAR_BROWSING_DATA,
                                    IDS_CLEAR_BROWSING_DATA,
                                    kTrashCanRefreshIcon);
+  SetElementIdentifierAt(GetIndexOfCommandId(IDC_CLEAR_BROWSING_DATA).value(),
+                         kClearBrowsingDataMenuItem);
 
   AddSeparator(ui::NORMAL_SEPARATOR);
   CreateZoomMenu();
