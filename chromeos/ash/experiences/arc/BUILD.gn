@@ -171,7 +171,6 @@ static_library("arc") {
     "//chromeos/ash/components/network",
     "//chromeos/ash/components/policy",
     "//chromeos/ash/components/settings",
-    "//chromeos/ash/experiences/arc/vector_icons",
     "//chromeos/components/disks:prefs",
     "//chromeos/components/sensors",
     "//chromeos/dbus/permission_broker",

@@ -18,7 +18,6 @@
 #include "base/task/sequenced_task_runner.h"
 #include "chromeos/ash/experiences/arc/compat_mode/overlay_dialog.h"
 #include "chromeos/ash/experiences/arc/compat_mode/style/arc_color_provider.h"
-#include "chromeos/ash/experiences/arc/vector_icons/vector_icons.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "chromeos/ui/frame/caption_buttons/frame_center_button.h"
 #include "chromeos/ui/frame/default_frame_header.h"

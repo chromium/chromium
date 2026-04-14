@@ -10,7 +10,6 @@ aggregate_vector_icons("components_arc_vector_icons") {
   icon_directory = "."
 
   sources = [
-    "compat_mode_splashscreen.icon",
     "error_notification.icon",
     "save.icon",
   ]
