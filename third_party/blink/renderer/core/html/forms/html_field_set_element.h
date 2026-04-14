@@ -68,6 +68,7 @@ class CORE_EXPORT HTMLFieldSetElement final : public HTMLFormControlElement {
   bool IsSubmittableElement() override;
   bool AlwaysCreateUserAgentShadowRoot() const override { return false; }
   bool MatchesEnabledPseudoClass() const final;
+  bool MatchesDisabledPseudoClass() const final;
 
   Element* InvalidateDescendantDisabledStateAndFindFocusedOne(Element& base);
 };

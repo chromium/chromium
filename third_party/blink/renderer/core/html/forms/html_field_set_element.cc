@@ -257,5 +257,8 @@ void HTMLFieldSetElement::UpdateMenuItemCheckableExclusivity(
 bool HTMLFieldSetElement::MatchesEnabledPseudoClass() const {
   return !IsActuallyDisabled();
 }
+bool HTMLFieldSetElement::MatchesDisabledPseudoClass() const {
+  return IsActuallyDisabled();
+}
 
 }  // namespace blink

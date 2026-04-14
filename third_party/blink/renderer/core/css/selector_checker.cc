@@ -2662,14 +2662,7 @@ bool SelectorChecker::CheckPseudoClass(const SelectorCheckingContext& context,
       if (auto* scroll_button = DynamicTo<ScrollButtonPseudoElement>(element)) {
         return !scroll_button->IsEnabled();
       }
-      if (auto* fieldset = DynamicTo<HTMLFieldSetElement>(element)) {
-        // <fieldset> should never be considered disabled, but should still
-        // match the :enabled or :disabled pseudo-classes according to whether
-        // the attribute is set or not. See here for context:
-        // https://github.com/whatwg/html/issues/5886#issuecomment-1582410112
-        return fieldset->IsActuallyDisabled();
-      }
-      return element.IsDisabledFormControl();
+      return element.MatchesDisabledPseudoClass();
     case CSSSelector::kPseudoReadOnly: {
       probe::ForcePseudoState(&element, CSSSelector::kPseudoReadOnly,
                               &force_pseudo_state);

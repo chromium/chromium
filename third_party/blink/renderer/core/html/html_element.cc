@@ -3938,6 +3938,10 @@ bool HTMLElement::MatchesEnabledPseudoClass() const {
                                                  .IsActuallyDisabled();
 }
 
+bool HTMLElement::MatchesDisabledPseudoClass() const {
+  return IsDisabledFormControl();
+}
+
 bool HTMLElement::MatchesValidityPseudoClasses() const {
   return IsFormAssociatedCustomElement();
 }
