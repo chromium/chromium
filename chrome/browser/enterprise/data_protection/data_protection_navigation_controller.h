@@ -48,19 +48,19 @@ class DataProtectionNavigationController
   // DataProtectionNavigationDelegate
   void Cleanup(int64_t navigation_id) override;
 
+#if BUILDFLAG(ENTERPRISE_WATERMARK)
   std::string watermark_text() const { return watermark_text_; }
-
-#if BUILDFLAG(ENTERPRISE_SCREENSHOT_PROTECTION)
-  bool screenshot_allowed() const { return screenshot_allowed_; }
-#endif
 
   // callback registration methods
   using WatermarkStringUpdatedCallback =
       base::RepeatingCallback<void(const std::string&)>;
   base::CallbackListSubscription RegisterWatermarkStringUpdatedCallback(
       WatermarkStringUpdatedCallback callback);
+#endif  // BUILDFLAG(ENTERPRISE_WATERMARK)
 
 #if BUILDFLAG(ENTERPRISE_SCREENSHOT_PROTECTION)
+  bool screenshot_allowed() const { return screenshot_allowed_; }
+
   using ScreenshotAllowedUpdatedCallback = base::RepeatingCallback<void(bool)>;
   base::CallbackListSubscription RegisterScreenshotAllowedUpdatedCallback(
       ScreenshotAllowedUpdatedCallback callback);
@@ -104,11 +104,14 @@ class DataProtectionNavigationController
   base::OnceClosure
       on_delay_apply_data_protection_settings_if_empty_called_for_testing_;
 
+#if BUILDFLAG(ENTERPRISE_WATERMARK)
   // Clear data protections once the page loads.
   // TODO(b/330960313): These bools can be removed once FCP is used as the
   // signal to set the data protections for the current tab.
   bool clear_watermark_text_on_page_load_ = false;
   std::string watermark_text_;
+#endif  // BUILDFLAG(ENTERPRISE_WATERMARK)
+
 #if BUILDFLAG(ENTERPRISE_SCREENSHOT_PROTECTION)
   bool clear_screenshot_protection_on_page_load_ = false;
   bool screenshot_allowed_ = true;
@@ -121,8 +124,11 @@ class DataProtectionNavigationController
   // happens.
   DataProtectionNavigationObserver::NavigationObservers navigation_observers_;
 
+#if BUILDFLAG(ENTERPRISE_WATERMARK)
   base::RepeatingCallbackList<void(const std::string&)>
       watermark_string_updated_callbacks_;
+#endif  // BUILDFLAG(ENTERPRISE_WATERMARK)
+
 #if BUILDFLAG(ENTERPRISE_SCREENSHOT_PROTECTION)
   base::RepeatingCallbackList<void(bool)> screenshot_allowed_updated_callbacks_;
 #endif
