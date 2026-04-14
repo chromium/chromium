@@ -11970,6 +11970,7 @@ if (!is_android && !is_chromeos_device) {
         "../browser/ui/views/menu_test_base.cc",
         "../browser/ui/views/menu_test_base.h",
         "../browser/ui/views/menu_view_drag_and_drop_test.cc",
+        "../browser/ui/views/occlusion_visibility_interactive_uitest.cc",
         "../browser/ui/views/omnibox/omnibox_popup_view_views_interactive_uitest.cc",
         "../browser/ui/views/omnibox/omnibox_popup_view_webui_interactive_uitest.cc",
         "../browser/ui/views/omnibox/omnibox_view_views_browsertest.cc",
