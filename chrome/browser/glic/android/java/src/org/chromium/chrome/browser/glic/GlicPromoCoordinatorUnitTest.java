@@ -39,6 +39,7 @@ public class GlicPromoCoordinatorUnitTest {
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Mock private BottomSheetController mBottomSheetController;
     @Mock private Runnable mOnPositiveButtonClicked;
+    @Mock private Runnable mOnDismissed;
 
     @Captor ArgumentCaptor<BottomSheetObserver> mBottomSheetObserverCaptor;
 
@@ -54,7 +55,7 @@ public class GlicPromoCoordinatorUnitTest {
         mActivity.setTheme(android.R.style.Theme_Material_Light);
         mGlicPromoCoordinator =
                 new GlicPromoCoordinator(
-                        mActivity, mBottomSheetController, mOnPositiveButtonClicked);
+                        mActivity, mBottomSheetController, mOnPositiveButtonClicked, mOnDismissed);
         mView = mGlicPromoCoordinator.getViewForTesting();
         verify(mBottomSheetController).addObserver(mBottomSheetObserverCaptor.capture());
         mBottomSheetContent = mGlicPromoCoordinator.getBottomSheetContentForTesting();
@@ -79,11 +80,13 @@ public class GlicPromoCoordinatorUnitTest {
         observer.onSheetOpened(StateChangeReason.NONE);
 
         observer.onSheetClosed(StateChangeReason.TAP_SCRIM);
+        verify(mOnDismissed).run();
         verify(mBottomSheetController).removeObserver(eq(observer));
 
-        clearInvocations(mBottomSheetController);
+        clearInvocations(mBottomSheetController, mOnDismissed);
 
         observer.onSheetClosed(StateChangeReason.SWIPE);
+        verify(mOnDismissed).run();
         verify(mBottomSheetController).removeObserver(eq(observer));
     }
 

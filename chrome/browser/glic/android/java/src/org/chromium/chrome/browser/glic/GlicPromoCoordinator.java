@@ -38,18 +38,19 @@ public class GlicPromoCoordinator {
      * @param context The Android {@link Context}.
      * @param bottomSheetController The system {@link BottomSheetController}.
      * @param onPositiveButtonClicked The action to execute when the positive button is clicked.
+     * @param onDismissed The action to execute when the promo is dismissed.
      */
     public GlicPromoCoordinator(
             Context context,
             BottomSheetController bottomSheetController,
-            Runnable onPositiveButtonClicked) {
+            Runnable onPositiveButtonClicked,
+            Runnable onDismissed) {
         mContext = context;
         mBottomSheetController = bottomSheetController;
-
         mContentView =
                 LayoutInflater.from(mContext)
                         .inflate(R.layout.glic_promo_bottom_sheet, /* root= */ null);
-        mSheetContent = new GlicPromoSheetContent(mContentView, bottomSheetController);
+        mSheetContent = new GlicPromoSheetContent(mContentView, bottomSheetController, onDismissed);
 
         ButtonCompat positiveButtonView =
                 mContentView.findViewById(R.id.glic_promo_positive_button);
@@ -87,7 +88,8 @@ public class GlicPromoCoordinator {
                 ObservableSuppliers.createNonNull(false);
         private final ScrollView mScrollView;
 
-        GlicPromoSheetContent(View contentView, BottomSheetController controller) {
+        GlicPromoSheetContent(
+                View contentView, BottomSheetController controller, Runnable onDismissed) {
             mContentView = contentView;
             mController = controller;
             mScrollView = mContentView.findViewById(R.id.glic_promo_scrollview);
@@ -103,6 +105,7 @@ public class GlicPromoCoordinator {
                         public void onSheetClosed(@StateChangeReason int reason) {
                             super.onSheetClosed(reason);
                             mBackPressStateChangedSupplier.set(false);
+                            onDismissed.run();
                             mBottomSheetController.removeObserver(mBottomSheetOpenedObserver);
                         }
                     };

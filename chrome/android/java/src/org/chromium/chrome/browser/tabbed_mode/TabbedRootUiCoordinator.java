@@ -113,6 +113,7 @@ import org.chromium.chrome.browser.gesturenav.HistoryNavigationCoordinator;
 import org.chromium.chrome.browser.gesturenav.NavigationSheet;
 import org.chromium.chrome.browser.gesturenav.TabbedSheetDelegate;
 import org.chromium.chrome.browser.glic.GlicKeyedServiceHandler;
+import org.chromium.chrome.browser.glic.GlicPromoCoordinator;
 import org.chromium.chrome.browser.history.HistoryManagerUtils;
 import org.chromium.chrome.browser.hub.HubManager;
 import org.chromium.chrome.browser.incognito.reauth.IncognitoReauthCoordinatorFactory;
@@ -345,6 +346,7 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
     private final KeyboardFocusRowManager mKeyboardFocusRowManager;
     private CharSequence mApplicationLabel;
     private TipsOptInCoordinator mTipsOptInCoordinator;
+    private GlicPromoCoordinator mGlicPromoCoordinator;
     private final OneshotSupplier<ChromeInactivityTracker> mInactivityTrackerSupplier;
     private final InactivityObserver mInactivityObserver;
     private @Nullable NtpSyncedThemeManager mNtpSyncedThemeManager;
@@ -666,6 +668,7 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
                     @Override
                     public void onForegrounded(long timeSinceLastBackgroundedMs) {
                         maybeShowTipsOptInPromo(timeSinceLastBackgroundedMs);
+                        maybeShowGlicPromo();
                     }
                 };
 
@@ -833,6 +836,9 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
 
         if (mTipsOptInCoordinator != null) {
             mTipsOptInCoordinator.destroy();
+        }
+        if (mGlicPromoCoordinator != null) {
+            mGlicPromoCoordinator.destroy();
         }
 
         if (mInactivityTrackerSupplier.get() != null) {
@@ -1588,6 +1594,36 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
                             mTipsOptInCoordinator.showBottomSheet();
                         }
                     });
+        }
+    }
+
+    private void maybeShowGlicPromo() {
+        if (!ChromeFeatureList.sGlic.isEnabled()) {
+            return;
+        }
+        if (!Boolean.TRUE.equals(mTrackerInitializedOneshotSupplier.get())) {
+            return;
+        }
+
+        Profile profile = mProfileSupplier.get();
+        if (profile == null
+                || mActivity == null
+                || mActivity.isFinishing()
+                || mActivity.isDestroyed()) {
+            return;
+        }
+        Tracker tracker = TrackerFactory.getTrackerForProfile(profile);
+        String featureName =
+                FeatureConstants.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR_CUSTOMIZATION_GLIC_FEATURE;
+
+        if (tracker.shouldTriggerHelpUi(featureName)) {
+            mGlicPromoCoordinator =
+                    new GlicPromoCoordinator(
+                            mActivity,
+                            getBottomSheetController(),
+                            () -> {},
+                            () -> tracker.dismissed(featureName));
+            mGlicPromoCoordinator.showBottomSheet();
         }
     }
 
