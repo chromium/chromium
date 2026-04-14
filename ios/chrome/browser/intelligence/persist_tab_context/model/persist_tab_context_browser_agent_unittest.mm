@@ -4,6 +4,8 @@
 
 #import "ios/chrome/browser/intelligence/persist_tab_context/model/persist_tab_context_browser_agent.h"
 
+#import <algorithm>
+
 #import "base/files/file_enumerator.h"
 #import "base/files/file_path.h"
 #import "base/files/file_util.h"
@@ -18,6 +20,7 @@
 #import "base/test/task_environment.h"
 #import "base/test/test_future.h"
 #import "base/time/time.h"
+#import "base/types/expected.h"
 #import "components/optimization_guide/proto/features/common_quality_data.pb.h"
 #import "components/page_content_annotations/core/page_content_annotations_features.h"
 #import "ios/chrome/browser/intelligence/features/features.h"
@@ -30,6 +33,7 @@
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
+#import "ios/web/public/test/fakes/fake_web_state.h"
 #import "ios/web/public/test/web_state_test_util.h"
 #import "ios/web/public/test/web_task_environment.h"
 #import "ios/web/public/web_state.h"
@@ -143,12 +147,18 @@ class PersistTabContextBrowserAgentTest
     run_loop.Run();
   }
 
-  std::unique_ptr<web::WebState> CreateAndLoadWebState(const std::string& html,
-                                                       const GURL& url) {
-    web::WebState::CreateParams params(profile_.get());
-    std::unique_ptr<web::WebState> web_state = web::WebState::Create(params);
-    web::test::LoadHtml(base::SysUTF8ToNSString(html), url, web_state.get());
+  std::unique_ptr<web::FakeWebState> CreateFakeWebState(
+      const GURL& url,
+      const std::string& mime_type = "text/html") {
+    auto web_state = std::make_unique<web::FakeWebState>();
+    web_state->SetCurrentURL(url);
+    web_state->SetContentsMimeType(mime_type);
     return web_state;
+  }
+
+  void CallOnPageContextExtracted(base::WeakPtr<web::WebState> weak_web_state,
+                                  PageContextWrapperCallbackResponse response) {
+    agent_->OnPageContextExtracted(weak_web_state, std::move(response));
   }
 
   web::WebTaskEnvironment task_environment_;
@@ -374,6 +384,70 @@ TEST_P(PersistTabContextBrowserAgentTest,
   task_environment_.FastForwardBy(kPurgeTaskDelay + base::Milliseconds(100));
 
   EXPECT_FALSE(base::DirectoryExists(legacy_db_dir));
+}
+
+// Tests that when a tab is hidden and its URL is ineligible for persistence,
+// any existing persisted context for that tab is deleted.
+TEST_P(PersistTabContextBrowserAgentTest,
+       WasHiddenWithIneligibleURLDeletesContext) {
+  std::unique_ptr<web::FakeWebState> web_state =
+      CreateFakeWebState(GURL("chrome://newtab"));
+  web::WebStateID web_state_id = web_state->GetUniqueIdentifier();
+
+  CreateDummyContextFile(web_state_id);
+
+  agent_->WasHidden(web_state.get());
+
+  if (GetParam() == PersistTabStorageType::kSQLite) {
+    PageContentCacheService* service =
+        PageContentCacheServiceFactory::GetForProfile(profile_.get());
+    base::RunLoop run_loop;
+    service->GetAllTabIds(base::BindOnce(
+        [](base::RunLoop* run_loop, web::WebStateID id,
+           std::vector<int64_t> tab_ids) {
+          EXPECT_TRUE(std::find(tab_ids.begin(), tab_ids.end(),
+                                id.identifier()) == tab_ids.end());
+          run_loop->Quit();
+        },
+        &run_loop, web_state_id));
+    run_loop.Run();
+  } else {
+    task_environment_.FastForwardBy(base::Milliseconds(100));
+    EXPECT_FALSE(base::PathExists(GetPathForWebStateIdForTest(web_state_id)));
+  }
+}
+
+// Tests that when page context extraction fails, any existing persisted
+// context for that tab is deleted.
+TEST_P(PersistTabContextBrowserAgentTest,
+       OnPageContextExtractedFailureDeletesContext) {
+  std::unique_ptr<web::FakeWebState> web_state =
+      CreateFakeWebState(GURL("http://example.com"));
+  web::WebStateID web_state_id = web_state->GetUniqueIdentifier();
+
+  CreateDummyContextFile(web_state_id);
+
+  CallOnPageContextExtracted(
+      web_state->GetWeakPtr(),
+      base::unexpected(PageContextWrapperError::kGenericError));
+
+  if (GetParam() == PersistTabStorageType::kSQLite) {
+    PageContentCacheService* service =
+        PageContentCacheServiceFactory::GetForProfile(profile_.get());
+    base::RunLoop run_loop;
+    service->GetAllTabIds(base::BindOnce(
+        [](base::RunLoop* run_loop, web::WebStateID id,
+           std::vector<int64_t> tab_ids) {
+          EXPECT_TRUE(std::find(tab_ids.begin(), tab_ids.end(),
+                                id.identifier()) == tab_ids.end());
+          run_loop->Quit();
+        },
+        &run_loop, web_state_id));
+    run_loop.Run();
+  } else {
+    task_environment_.FastForwardBy(base::Milliseconds(100));
+    EXPECT_FALSE(base::PathExists(GetPathForWebStateIdForTest(web_state_id)));
+  }
 }
 
 class PersistTabContextBrowserAgentDisabledTest : public PlatformTest {

@@ -74,6 +74,7 @@ class PersistTabContextBrowserAgent
       web::PageLoadCompletionStatus load_completion_status) override;
 
  private:
+  friend class PersistTabContextBrowserAgentTest;
   friend class BrowserUserData<PersistTabContextBrowserAgent>;
 
   explicit PersistTabContextBrowserAgent(Browser* browser);
