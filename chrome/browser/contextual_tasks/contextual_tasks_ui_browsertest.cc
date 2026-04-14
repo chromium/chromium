@@ -36,6 +36,7 @@
 #include "components/contextual_tasks/public/contextual_tasks_service.h"
 #include "components/contextual_tasks/public/features.h"
 #include "components/contextual_tasks/public/mock_contextual_tasks_service.h"
+#include "components/contextual_tasks/public/prefs.h"
 #include "components/lens/lens_overlay_invocation_source.h"
 #include "components/omnibox/browser/searchbox.mojom.h"
 #include "components/signin/public/base/consent_level.h"
@@ -506,6 +507,43 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksUIBrowserTest,
 
   // Should fail for invalid URL.
   EXPECT_FALSE(controller_->CanUpdateSuggestedTabContext(tab, GURL()));
+}
+
+IN_PROC_BROWSER_TEST_F(ContextualTasksUIBrowserTest,
+                       CanUpdateSuggestedTabContext_SiteExclusion) {
+  tabs::TabInterface* tab = TabListInterface::From(browser())->GetActiveTab();
+  ASSERT_TRUE(tab);
+
+  // No composebox_handler_ initialized yet.
+  EXPECT_FALSE(controller_->CanUpdateSuggestedTabContext(
+      tab, GURL("http://example.com")));
+
+  mojo::PendingReceiver<composebox::mojom::PageHandler> handler_receiver;
+  mojo::Remote<composebox::mojom::PageHandler> handler_remote(
+      handler_receiver.InitWithNewPipeAndPassRemote());
+  mojo::PendingRemote<composebox::mojom::Page> composebox_page;
+  std::ignore = composebox_page.InitWithNewPipeAndPassReceiver();
+  mojo::PendingReceiver<searchbox::mojom::PageHandler>
+      searchbox_handler_receiver;
+  mojo::PendingRemote<searchbox::mojom::Page> searchbox_page;
+  std::ignore = searchbox_page.InitWithNewPipeAndPassReceiver();
+
+  controller_->CreatePageHandler(
+      std::move(composebox_page), std::move(handler_receiver),
+      std::move(searchbox_page), std::move(searchbox_handler_receiver));
+
+  // Add a couple of exclusions and save to prefs.
+  base::Time now = base::Time::Now();
+  base::DictValue site_exclusions;
+  site_exclusions.Set("excluded.com",
+                      static_cast<double>(now.InMillisecondsSinceUnixEpoch()));
+  contextual_tasks::SaveSiteExclusionsToPrefs(GetProfile()->GetPrefs(),
+                                              site_exclusions);
+
+  EXPECT_TRUE(controller_->CanUpdateSuggestedTabContext(
+      tab, GURL("http://example.com")));
+  EXPECT_FALSE(controller_->CanUpdateSuggestedTabContext(
+      tab, GURL("http://excluded.com")));
 }
 
 IN_PROC_BROWSER_TEST_F(ContextualTasksUIBrowserTest,

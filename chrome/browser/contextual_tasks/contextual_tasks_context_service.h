@@ -51,6 +51,8 @@ class EmbedderMetadataProvider;
 
 namespace contextual_tasks {
 
+struct SiteExclusionDetail;
+
 enum class ContextDeterminationStatus {
   kSuccess = 0,
   kEmbedderNotAvailable = 1,
@@ -141,16 +143,6 @@ class ContextualTasksContextService
     std::optional<passage_embeddings::Embedding> active_tab_title_embedding;
     std::optional<float> active_tab_title_similarity;
     std::vector<ScoredPassage> active_tab_passage_similarities;
-  };
-
-  struct SiteExclusionDetail {
-    int tabs_checked = 0;
-    int tabs_filtered = 0;
-    int exclusions_checked = 0;
-    base::TimeDelta duration;
-
-    void RecordActiveTabMetrics();
-    void RecordAllTabsMetrics();
   };
 
   // EmbedderMetadataObserver:

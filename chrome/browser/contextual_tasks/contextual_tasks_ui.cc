@@ -29,6 +29,7 @@
 #include "chrome/browser/contextual_tasks/contextual_tasks_ui_service_factory.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_utils.h"
 #include "chrome/browser/contextual_tasks/entry_point_eligibility_manager.h"
+#include "chrome/browser/contextual_tasks/site_exclusion_detail.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_attributes_storage.h"
@@ -1026,9 +1027,9 @@ bool ContextualTasksUI::CanUpdateSuggestedTabContext(
     return false;
   }
 
-  if (!last_committed_url.is_valid() ||
-      !(last_committed_url.SchemeIsHTTPOrHTTPS() ||
-        last_committed_url.SchemeIsFile())) {
+  contextual_tasks::SiteExclusionDetail site_exclusion_detail;
+  if (!contextual_tasks::IsValidUrlForSuggestedTab(
+          last_committed_url, GetProfile(), site_exclusion_detail)) {
     return false;
   }
 

@@ -25,13 +25,13 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/default_tick_clock.h"
 #include "base/time/time.h"
-#include "base/timer/elapsed_timer.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_context_scoring_utils.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_context_signal_utils.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_tab_visit_tracker.h"
+#include "chrome/browser/contextual_tasks/contextual_tasks_utils.h"
+#include "chrome/browser/contextual_tasks/site_exclusion_detail.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/search/search.h"
 #include "chrome/browser/tab_list/tab_list_interface.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
@@ -487,7 +487,8 @@ ContextualTasksContextService::GetAllEligibleTabs(
           tabs::TabInterface* tab = tab_list->GetTab(i);
           content::WebContents* web_contents =
               tab ? tab->GetContents() : nullptr;
-          if (!IsValidTab(web_contents, site_exclusion_detail)) {
+          if (!IsValidUrlForSuggestedTab(web_contents->GetLastCommittedURL(),
+                                         profile_, site_exclusion_detail)) {
             AUTO_CONTEXT_LOG(
                 base::StringPrintf("Removing %s from relevant set as it is not "
                                    "valid e.g. it is NTP, internal page, etc.",
@@ -548,7 +549,8 @@ ContextualTasksContextService::CreateQueryState(
 
   content::WebContents* active_tab_contents = GetActiveTabWebContents();
   SiteExclusionDetail site_exclusion_detail;
-  if (IsValidTab(active_tab_contents, site_exclusion_detail)) {
+  if (IsValidUrlForSuggestedTab(active_tab_contents->GetLastCommittedURL(),
+                                profile_, site_exclusion_detail)) {
     query_state.active_tab = active_tab_contents->GetWeakPtr();
     query_state.active_tab_embeddings = page_embeddings_service_->GetEmbeddings(
         active_tab_contents->GetPrimaryPage());
@@ -718,50 +720,6 @@ ContextualTasksContextService::GetDurationOfCurrentOrLastVisit(
   return std::nullopt;
 }
 
-bool ContextualTasksContextService::IsValidTab(
-    content::WebContents* web_contents,
-    SiteExclusionDetail& site_exclusion_detail) {
-  if (!web_contents) {
-    return false;
-  }
-
-  const GURL& url = web_contents->GetLastCommittedURL();
-
-  if (!url.is_valid() || url.IsAboutBlank()) {
-    return false;
-  }
-
-  if (url.SchemeIs(content::kChromeUIScheme) ||
-      url.SchemeIs(content::kChromeUIUntrustedScheme)) {
-    return false;
-  }
-
-  if (search::IsNTPOrRelatedURL(url, profile_)) {
-    return false;
-  }
-
-  if (profile_) {
-    base::ElapsedTimer timer;
-    // Since site exclusions are expected to be rare, it is generally faster
-    // and simpler to use list-like key processing instead of allocating with
-    // `url.GetHost()` and then having to check the dictionary for various
-    // domain substrings. Using `DomainIs` means sites like `en.wikipedia.org`
-    // will be filtered if the site exclusions contain `wikipedia.org`.
-    site_exclusion_detail.tabs_checked++;
-    for (auto it : ReadSiteExclusionsFromPrefs(profile_->GetPrefs())) {
-      site_exclusion_detail.exclusions_checked++;
-      if (url.DomainIs(it.first)) {
-        site_exclusion_detail.tabs_filtered++;
-        site_exclusion_detail.duration += timer.Elapsed();
-        return false;
-      }
-    }
-    site_exclusion_detail.duration += timer.Elapsed();
-  }
-
-  return true;
-}
-
 bool ContextualTasksContextService::ShouldAddTabToSelection(
     content::WebContents* web_contents) {
   // Get sensitivity.
@@ -786,30 +744,6 @@ bool ContextualTasksContextService::ShouldAddTabToSelection(
   }
 
   return is_eligible_for_server_upload && !is_sensitive;
-}
-
-void ContextualTasksContextService::SiteExclusionDetail::
-    RecordActiveTabMetrics() {
-  CHECK_LE(tabs_checked, 1);
-  base::UmaHistogramCounts100(
-      "ContextualTasks.Context.SiteExclusions.ActiveTab.ExclusionsChecked",
-      exclusions_checked);
-  base::UmaHistogramBoolean(
-      "ContextualTasks.Context.SiteExclusions.ActiveTab.Filtered",
-      tabs_filtered == 1);
-}
-
-void ContextualTasksContextService::SiteExclusionDetail::
-    RecordAllTabsMetrics() {
-  base::UmaHistogramTimes(
-      "ContextualTasks.Context.SiteExclusions.AllTabs.CheckingDuration",
-      duration);
-  base::UmaHistogramCounts100(
-      "ContextualTasks.Context.SiteExclusions.AllTabs.TabsChecked",
-      tabs_checked);
-  base::UmaHistogramCounts100(
-      "ContextualTasks.Context.SiteExclusions.AllTabs.TabsFiltered",
-      tabs_filtered);
 }
 
 ContextualTasksContextService::PendingRequest::PendingRequest(
