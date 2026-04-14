@@ -5,9 +5,11 @@
 package org.chromium.content.browser.accessibility;
 
 import android.os.Bundle;
+import android.view.View;
 import android.view.accessibility.AccessibilityEvent;
 
 import androidx.annotation.IntDef;
+import androidx.core.view.accessibility.AccessibilityNodeInfoCompat;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -25,6 +27,7 @@ public class AccessibilityActionAndEventTracker {
     private final boolean mShouldFilterTrivialEvents;
     private boolean mTestComplete;
     private @Nullable CountDownLatch mEventLatch;
+    private @Nullable WebContentsAccessibilityImpl mWebContentsAccessibilityImpl;
 
     public AccessibilityActionAndEventTracker() {
         mEvents = new ArrayList<String>();
@@ -63,7 +66,13 @@ public class AccessibilityActionAndEventTracker {
         mEventLatch = latch;
     }
 
-    public void addEvent(AccessibilityEvent event, @WindowContentChangedSubtype int subtype) {
+    public void setWebContentsAccessibilityImpl(
+            @Nullable WebContentsAccessibilityImpl webContentsAccessibilityImpl) {
+        mWebContentsAccessibilityImpl = webContentsAccessibilityImpl;
+    }
+
+    public void addEvent(
+            AccessibilityEvent event, @WindowContentChangedSubtype int subtype, int virtualViewId) {
         // In rare cases there may be a lingering event, so only add if the test is not complete.
         if (!mTestComplete) {
             if (mShouldFilterTrivialEvents) {
@@ -87,7 +96,7 @@ public class AccessibilityActionAndEventTracker {
                     }
                 }
             }
-            mEvents.add(eventToString(event));
+            mEvents.add(eventToString(event, mWebContentsAccessibilityImpl, virtualViewId));
         }
     }
 
@@ -171,10 +180,15 @@ public class AccessibilityActionAndEventTracker {
      * For any events with significant info, we append this to the end of the string in square
      * braces. For example, for the TYPE_ANNOUNCEMENT events we append the announcement text.
      *
-     * @param event AccessibilityEvent event to get a string for
-     * @return String representation of the given event
+     * @param event AccessibilityEvent event to get a string for.
+     * @param WebContentsAccessibilityImpl The WebContentsAccessibilityImpl instance.
+     * @param virtualViewId The virtual view ID for the node associated with the event.
+     * @return String representation of the given event.
      */
-    private static String eventToString(AccessibilityEvent event) {
+    private static String eventToString(
+            AccessibilityEvent event,
+            @Nullable WebContentsAccessibilityImpl webContentsAccessibilityImpl,
+            int virtualViewId) {
         // Convert event type to a human readable String
         StringBuilder builder = new StringBuilder();
         builder.append(AccessibilityEvent.eventTypeToString(event.getEventType()));
@@ -223,13 +237,38 @@ public class AccessibilityActionAndEventTracker {
                     break;
                 }
 
-                // Any TYPE_WINDOW_CONTENT_CHANGED event here should have the
-                // CONTENT_CHANGE_TYPE_STATE_DESCRIPTION flag
+            // Any TYPE_WINDOW_CONTENT_CHANGED event here has been
+            // designated as an important subtype to track.
             case AccessibilityEvent.TYPE_WINDOW_CONTENT_CHANGED:
                 {
-                    builder.append(" - [contentTypes=");
-                    builder.append(event.getContentChangeTypes());
+                    builder.append(" - [");
+                    builder.append("contentTypes=");
+                    builder.append(contentChangeTypeToString(event.getContentChangeTypes()));
                     builder.append("]");
+
+                    String computedLabelForTesting = null;
+                    if (webContentsAccessibilityImpl != null && virtualViewId != View.NO_ID) {
+                        AccessibilityNodeInfoCompat info =
+                                webContentsAccessibilityImpl.createAccessibilityNodeInfo(
+                                        virtualViewId);
+                        if (info != null) {
+                            CharSequence text = info.getText();
+                            if (text != null && text.length() > 0) {
+                                computedLabelForTesting = text.toString();
+                            } else {
+                                CharSequence contentDescription = info.getContentDescription();
+                                if (contentDescription != null && contentDescription.length() > 0) {
+                                    computedLabelForTesting = contentDescription.toString();
+                                }
+                            }
+                            info.recycle();
+                        }
+                    }
+                    if (computedLabelForTesting != null && !computedLabelForTesting.isEmpty()) {
+                        builder.append(" [");
+                        builder.append(computedLabelForTesting);
+                        builder.append("]");
+                    }
                     break;
                 }
 
@@ -260,5 +299,54 @@ public class AccessibilityActionAndEventTracker {
 
         // Return generated String.
         return builder.toString();
+    }
+
+    private static String contentChangeTypeToString(int contentChangeTypes) {
+        ArrayList<String> types = new ArrayList<>();
+        if ((contentChangeTypes & AccessibilityEvent.CONTENT_CHANGE_TYPE_CONTENT_DESCRIPTION)
+                != 0) {
+            types.add("CONTENT_DESCRIPTION");
+        }
+        if ((contentChangeTypes & AccessibilityEvent.CONTENT_CHANGE_TYPE_STATE_DESCRIPTION) != 0) {
+            types.add("STATE_DESCRIPTION");
+        }
+        if ((contentChangeTypes & AccessibilityEvent.CONTENT_CHANGE_TYPE_SUBTREE) != 0) {
+            types.add("SUBTREE");
+        }
+        if ((contentChangeTypes & AccessibilityEvent.CONTENT_CHANGE_TYPE_TEXT) != 0) {
+            types.add("TEXT");
+        }
+        if ((contentChangeTypes & AccessibilityEvent.CONTENT_CHANGE_TYPE_PANE_TITLE) != 0) {
+            types.add("PANE_TITLE");
+        }
+        if (contentChangeTypes == AccessibilityEvent.CONTENT_CHANGE_TYPE_UNDEFINED) {
+            types.add("UNDEFINED");
+        }
+        if ((contentChangeTypes & AccessibilityEvent.CONTENT_CHANGE_TYPE_PANE_APPEARED) != 0) {
+            types.add("PANE_APPEARED");
+        }
+        if ((contentChangeTypes & AccessibilityEvent.CONTENT_CHANGE_TYPE_PANE_DISAPPEARED) != 0) {
+            types.add("PANE_DISAPPEARED");
+        }
+        if ((contentChangeTypes & AccessibilityEvent.CONTENT_CHANGE_TYPE_DRAG_STARTED) != 0) {
+            types.add("DRAG_STARTED");
+        }
+        if ((contentChangeTypes & AccessibilityEvent.CONTENT_CHANGE_TYPE_DRAG_DROPPED) != 0) {
+            types.add("DRAG_DROPPED");
+        }
+        if ((contentChangeTypes & AccessibilityEvent.CONTENT_CHANGE_TYPE_DRAG_CANCELLED) != 0) {
+            types.add("DRAG_CANCELLED");
+        }
+        if ((contentChangeTypes & AccessibilityEvent.CONTENT_CHANGE_TYPE_CONTENT_INVALID) != 0) {
+            types.add("CONTENT_INVALID");
+        }
+        if ((contentChangeTypes & AccessibilityEvent.CONTENT_CHANGE_TYPE_ERROR) != 0) {
+            types.add("ERROR");
+        }
+        if ((contentChangeTypes & AccessibilityEvent.CONTENT_CHANGE_TYPE_ENABLED) != 0) {
+            types.add("ENABLED");
+        }
+
+        return String.join(" | ", types);
     }
 }
