@@ -4,6 +4,8 @@
 
 #include "chrome/common/process_singleton_lock_posix.h"
 
+#include <string_view>
+
 #include "base/files/file_util.h"
 #include "base/logging.h"
 #include "base/strings/string_number_conversions.h"
@@ -20,7 +22,7 @@ bool ParseProcessSingletonLock(const base::FilePath& path,
       PLOG(ERROR) << "readlink(" << path.value() << ") failed";
   }
 
-  std::string real_path = target.value();
+  std::string_view real_path = target.value();
   if (real_path.empty())
     return false;
 
@@ -36,7 +38,7 @@ bool ParseProcessSingletonLock(const base::FilePath& path,
 
   *hostname = real_path.substr(0, pos);
 
-  const std::string& pid_str = real_path.substr(pos + 1);
+  const std::string_view pid_str = real_path.substr(pos + 1);
   if (!base::StringToInt(pid_str, pid))
     *pid = -1;
 
