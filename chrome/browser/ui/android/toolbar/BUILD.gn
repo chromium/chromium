@@ -150,6 +150,7 @@ android_library("core_java") {
 
   deps = [
     ":java_resources",
+    ":variation_utils_java",
     "//base:base_java",
     "//base:service_loader_java",
     "//build/android:build_java",

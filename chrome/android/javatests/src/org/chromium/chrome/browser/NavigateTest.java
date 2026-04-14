@@ -517,9 +517,6 @@ public class NavigateTest {
         final ToolbarManager toolbarManager = mActivityTestRule.getActivity().getToolbarManager();
 
         for (int i = 0; i < repeats; i++) {
-            Assert.assertNull(
-                    "Back button is invisible in phone toolbar",
-                    mActivityTestRule.getActivity().findViewById(R.id.back_button));
             Assert.assertEquals(
                     "Tab should be able to be navigated back",
                     true,
@@ -533,9 +530,6 @@ public class NavigateTest {
                 "Tab should be unable to be navigated back",
                 false,
                 toolbarManager.getHandleBackPressChangedSupplier().get());
-        Assert.assertNull(
-                "Back button is invisible in phone toolbar",
-                mActivityTestRule.getActivity().findViewById(R.id.back_button));
     }
 
     /** Test back and forward buttons. */

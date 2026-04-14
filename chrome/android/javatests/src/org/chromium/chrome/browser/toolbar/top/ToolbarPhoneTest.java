@@ -80,6 +80,7 @@ import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.IncognitoStateProvider;
 import org.chromium.chrome.browser.theme.ThemeColorProvider;
+import org.chromium.chrome.browser.toolbar.back_button.BackButtonCoordinator;
 import org.chromium.chrome.browser.toolbar.menu_button.MenuButton;
 import org.chromium.chrome.browser.toolbar.menu_button.MenuButtonCoordinator;
 import org.chromium.chrome.browser.toolbar.optional_button.ButtonData;
@@ -209,6 +210,82 @@ public class ToolbarPhoneTest {
                 allOf(
                         withId(R.id.menu_button_wrapper),
                         withEffectiveVisibility(Visibility.VISIBLE)));
+    }
+
+    @Test
+    @MediumTest
+    @EnableFeatures({
+        ChromeFeatureList.ANDROID_BOTTOM_BAR + ":keep_app_menu_in_toolbar/true",
+        ChromeFeatureList.ANDROID_BOTTOM_BAR + ":keep_home_button_in_toolbar/false"
+    })
+    public void testBackButtonVisibility_ntp() {
+        ToolbarPhone toolbarSpy = Mockito.spy(mToolbar);
+        BackButtonCoordinator mockBackButtonCoordinator = Mockito.mock(BackButtonCoordinator.class);
+        toolbarSpy.setBackButtonCoordinatorForTesting(mockBackButtonCoordinator);
+
+        doReturn(true).when(toolbarSpy).isLocationBarShownInNtp();
+        doReturn(false).when(toolbarSpy).urlHasFocus();
+
+        ThreadUtils.runOnUiThreadBlocking(() -> toolbarSpy.updateButtonVisibility());
+
+        verify(mockBackButtonCoordinator).setVisibility(false);
+    }
+
+    @Test
+    @MediumTest
+    @EnableFeatures({
+        ChromeFeatureList.ANDROID_BOTTOM_BAR + ":keep_app_menu_in_toolbar/true",
+        ChromeFeatureList.ANDROID_BOTTOM_BAR + ":keep_home_button_in_toolbar/false"
+    })
+    public void testBackButtonVisibility_regularPage() {
+        ToolbarPhone toolbarSpy = Mockito.spy(mToolbar);
+        BackButtonCoordinator mockBackButtonCoordinator = Mockito.mock(BackButtonCoordinator.class);
+        toolbarSpy.setBackButtonCoordinatorForTesting(mockBackButtonCoordinator);
+
+        doReturn(false).when(toolbarSpy).isLocationBarShownInNtp();
+        doReturn(false).when(toolbarSpy).urlHasFocus();
+
+        ThreadUtils.runOnUiThreadBlocking(() -> toolbarSpy.updateButtonVisibility());
+
+        verify(mockBackButtonCoordinator).setVisibility(true);
+    }
+
+    @Test
+    @MediumTest
+    @EnableFeatures({
+        ChromeFeatureList.ANDROID_BOTTOM_BAR + ":keep_app_menu_in_toolbar/true",
+        ChromeFeatureList.ANDROID_BOTTOM_BAR + ":keep_home_button_in_toolbar/false"
+    })
+    public void testBackButtonVisibility_focused() {
+        ToolbarPhone toolbarSpy = Mockito.spy(mToolbar);
+        BackButtonCoordinator mockBackButtonCoordinator = Mockito.mock(BackButtonCoordinator.class);
+        toolbarSpy.setBackButtonCoordinatorForTesting(mockBackButtonCoordinator);
+
+        doReturn(false).when(toolbarSpy).isLocationBarShownInNtp();
+        doReturn(true).when(toolbarSpy).urlHasFocus();
+
+        ThreadUtils.runOnUiThreadBlocking(() -> toolbarSpy.updateButtonVisibility());
+
+        verify(mockBackButtonCoordinator).setVisibility(false);
+    }
+
+    @Test
+    @MediumTest
+    @EnableFeatures({
+        ChromeFeatureList.ANDROID_BOTTOM_BAR + ":keep_app_menu_in_toolbar/true",
+        ChromeFeatureList.ANDROID_BOTTOM_BAR + ":keep_home_button_in_toolbar/false"
+    })
+    public void testBackButtonVisibility_urlExpansion() {
+        BackButtonCoordinator mockBackButtonCoordinator = Mockito.mock(BackButtonCoordinator.class);
+        mToolbar.setBackButtonCoordinatorForTesting(mockBackButtonCoordinator);
+        when(mockBackButtonCoordinator.isVisible()).thenReturn(true);
+
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mToolbar.onUrlFocusChange(true);
+                });
+
+        verify(mockBackButtonCoordinator, atLeastOnce()).setVisibility(false);
     }
 
     @Test
@@ -599,6 +676,7 @@ public class ToolbarPhoneTest {
     @DisableIf.Build(sdk_equals = VERSION_CODES.TIRAMISU, message = "crbug.com/339034032")
     @DisableFeatures({
         ChromeFeatureList.ANDROID_SURFACE_COLOR_UPDATE,
+        ChromeFeatureList.ANDROID_BOTTOM_BAR
     })
     public void testToolbarBackgroundChangedWhenSearchEngineHasNoLogo() {
         when(mTemplateUrlService.doesDefaultSearchEngineHaveLogo()).thenReturn(false);

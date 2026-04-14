@@ -26,6 +26,15 @@ found in the LICENSE file.
         app:menuPositionedAtStart="true"
         app:tint="@color/default_icon_color_tint_list"/>
 
+    <org.chromium.ui.widget.ChromeImageButton
+        android:id="@+id/back_button"
+        style="@style/ToolbarHoverableButton"
+        android:src="@drawable/btn_back"
+        android:contentDescription="@string/accessibility_toolbar_btn_back"
+        android:tooltipText="@string/accessibility_toolbar_btn_back"
+        app:tint="@color/default_icon_color_tint_list"
+        android:visibility="gone" />
+
     <View
         android:id="@+id/location_bar_background_view"
         android:visibility="gone"

@@ -5,6 +5,9 @@
 package org.chromium.chrome.browser.toolbar.top;
 
 import static org.chromium.build.NullUtil.assumeNonNull;
+import static org.chromium.chrome.browser.toolbar.ToolbarVariationUtils.isNewToolbarUiEnabled;
+import static org.chromium.chrome.browser.toolbar.ToolbarVariationUtils.shouldBackButtonBeInOmnibox;
+import static org.chromium.chrome.browser.toolbar.ToolbarVariationUtils.shouldHomeButtonBeAtStartOfToolbar;
 import static org.chromium.ui.accessibility.KeyboardFocusUtil.setFocusOnFirstFocusableDescendant;
 
 import android.animation.Animator;
@@ -161,6 +164,8 @@ public class ToolbarPhone extends ToolbarLayout
     private @MonotonicNonNull OptionalButtonCoordinator mOptionalButtonCoordinator;
     // Non-null after inflation occurs.
     private ImageView mHomeButton;
+    private View mToolbarBackButton;
+    private @Nullable BackButtonCoordinator mBackButtonCoordinator;
 
     @ViewDebug.ExportedProperty(category = "chrome")
     protected int mTabSwitcherState;
@@ -372,6 +377,7 @@ public class ToolbarPhone extends ToolbarLayout
 
             mToolbarButtonsContainer = findViewById(R.id.toolbar_buttons);
             mHomeButton = findViewById(R.id.home_button);
+            mToolbarBackButton = findViewById(R.id.back_button);
 
             mToolbarBackground =
                     new ColorDrawable(getToolbarColorForVisualState(VisualState.NORMAL));
@@ -435,6 +441,7 @@ public class ToolbarPhone extends ToolbarLayout
                 /* incognitoWindowCountSupplier= */ null);
         mUserEducationHelper = userEducationHelper;
         mTrackerSupplier = trackerSupplier;
+        mBackButtonCoordinator = backButtonCoordinator;
 
         getToolbarDataProvider().addToolbarDataProviderObserver(this);
     }
@@ -716,8 +723,8 @@ public class ToolbarPhone extends ToolbarLayout
 
     /**
      * @return True if layout bar's unfocused width has changed, potentially causing updates to
-     *         visual elements. If this happens during measurement pass, then toolbar's layout needs
-     *         to be remeasured.
+     *     visual elements. If this happens during measurement pass, then toolbar's layout needs to
+     *     be remeasured.
      */
     private boolean updateUnfocusedLocationBarLayoutParams() {
         int leftViewBounds = getViewBoundsLeftOfLocationBar(mVisualState);
@@ -849,10 +856,16 @@ public class ToolbarPhone extends ToolbarLayout
     private int getBoundsAfterAccountingForLeftButton() {
         int padding = mToolbarSidePaddingForNtp;
 
+        assert mHomeButton.getVisibility() == GONE || mToolbarBackButton.getVisibility() == GONE;
+
         // If home button is visible, mHomeButton.getMeasuredWidth() should be returned as the left
         // bound.
         if (mHomeButton.getVisibility() != GONE) {
             padding = mHomeButton.getMeasuredWidth();
+        }
+        if (mToolbarBackButton.getVisibility() != GONE) {
+            int buttonWidth = mToolbarBackButton.getMeasuredWidth();
+            padding = Math.max(padding, buttonWidth);
         }
 
         return padding;
@@ -1240,6 +1253,11 @@ public class ToolbarPhone extends ToolbarLayout
             mHomeButton.setVisibility(toolbarButtonVisibility);
         }
 
+        if (mBackButtonCoordinator != null) {
+            mBackButtonCoordinator.setVisibility(
+                    toolbarButtonVisibility == VISIBLE && shouldShowBackButtonOutside());
+        }
+
         updateLocationBarLayoutForExpansionAnimation();
     }
 
@@ -1623,6 +1641,10 @@ public class ToolbarPhone extends ToolbarLayout
 
         if (mHomeButton.getVisibility() != GONE) {
             drawChild(canvas, mHomeButton, SystemClock.uptimeMillis());
+        }
+
+        if (mBackButtonCoordinator != null && mBackButtonCoordinator.isVisible()) {
+            drawChild(canvas, mToolbarBackButton, SystemClock.uptimeMillis());
         }
 
         // TODO(crbug.com/469492424): With the toolbar animation refactor, both the background and
@@ -2061,12 +2083,27 @@ public class ToolbarPhone extends ToolbarLayout
 
     @Override
     public void updateButtonVisibility() {
-        boolean hideHomeButton = !mIsHomeButtonEnabled;
+        boolean showBackButtonOutside = shouldShowBackButtonOutside();
+        boolean hideHomeButton =
+                !mIsHomeButtonEnabled
+                        || (isNewToolbarUiEnabled() && !shouldHomeButtonBeAtStartOfToolbar());
         if (hideHomeButton) {
             mHomeButton.setVisibility(View.GONE);
         } else {
             mHomeButton.setVisibility(urlHasFocus() ? View.INVISIBLE : View.VISIBLE);
         }
+
+        if (mBackButtonCoordinator != null) {
+            mBackButtonCoordinator.setHasSpaceToShow(true);
+            mBackButtonCoordinator.setVisibility(showBackButtonOutside);
+        }
+    }
+
+    private boolean shouldShowBackButtonOutside() {
+        return isNewToolbarUiEnabled()
+                && !shouldBackButtonBeInOmnibox()
+                && !isLocationBarShownInNtp()
+                && !urlHasFocus();
     }
 
     @Override
@@ -3699,6 +3736,10 @@ public class ToolbarPhone extends ToolbarLayout
         if (!skipUrlExpansion) {
             updateUrlExpansionAnimation();
         }
+    }
+
+    void setBackButtonCoordinatorForTesting(BackButtonCoordinator backButtonCoordinator) {
+        mBackButtonCoordinator = backButtonCoordinator;
     }
 
     private boolean inOrEnteringTabSwitcher() {
