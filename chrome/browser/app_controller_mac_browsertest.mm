@@ -25,6 +25,7 @@
 #include "base/strings/sys_string_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/task/thread_pool/thread_pool_instance.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/threading/thread_restrictions.h"
@@ -956,6 +957,45 @@ IN_PROC_BROWSER_TEST_F(AppControllerShortcutsNotAppsBrowserTest,
                         ->tab_strip_model()
                         ->GetActiveWebContents()
                         ->GetLastCommittedURL());
+
+  {
+    base::ScopedAllowBlockingForTesting allow_blocking;
+    EXPECT_TRUE(temp_dir.Delete());
+  }
+}
+
+IN_PROC_BROWSER_TEST_F(AppControllerShortcutsNotAppsBrowserTest,
+                       DisallowChromeUrlWeblocFile) {
+  // Ensure the AppController is the NSApp delegate.
+  std::ignore = AppController.sharedController;
+
+  // Create and open a .crwebloc file with a chrome:// URL.
+  GURL chrome_url("chrome://settings/");
+  base::ScopedTempDir temp_dir;
+  base::FilePath crwebloc_file;
+  {
+    base::ScopedAllowBlockingForTesting allow_blocking;
+    ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
+    crwebloc_file = temp_dir.GetPath().AppendASCII("test_shortcut.crwebloc");
+    ASSERT_TRUE(shortcuts::ChromeWeblocFile(
+                    chrome_url, *base::SafeBaseName::Create(
+                                    browser()->profile()->GetPath()))
+                    .SaveToFile(crwebloc_file));
+  }
+
+  int initial_tab_count = browser()->tab_strip_model()->count();
+  content::WebContents* current_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+
+  SendOpenUrlToAppController(net::FilePathToFileURL(crwebloc_file));
+  // Wait for any background tasks to complete and send its replies to the UI
+  // thread. This helps ensure that SendOpenUrlToAppController() completes.
+  base::ThreadPoolInstance::Get()->FlushForTesting();
+  base::RunLoop().RunUntilIdle();
+
+  // It should not be opened in the browser.
+  EXPECT_EQ(initial_tab_count, browser()->tab_strip_model()->count());
+  EXPECT_NE(chrome_url, current_contents->GetLastCommittedURL());
 
   {
     base::ScopedAllowBlockingForTesting allow_blocking;

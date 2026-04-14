@@ -127,6 +127,7 @@
 #include "content/public/browser/download_manager.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_system.h"
+#include "extensions/buildflags/buildflags.h"
 #include "net/base/apple/url_conversions.h"
 #include "net/base/filename_util.h"
 #import "ui/base/cocoa/nsmenu_additions.h"
@@ -434,8 +435,22 @@ void OpenUrlsInBrowser(std::vector<GURL> urls) {
               base::flat_map<base::FilePath, std::vector<GURL>> profile_url_map;
               for (const auto& path : shortcuts) {
                 auto shortcut = shortcuts::ChromeWeblocFile::LoadFromFile(path);
+                // TODO: Consider opening the original file URL?
                 if (!shortcut.has_value()) {
-                  // TODO: Consider opening the original file URL?
+                  continue;
+                }
+                bool is_shortcut_url_valid =
+                    startup::ValidateUrl(shortcut->target_url());
+        // Do not allow chrome sensitive urls to be launched from a .crwebloc
+        // file.
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+                is_shortcut_url_valid =
+                    is_shortcut_url_valid || shortcut->target_url().SchemeIs(
+                                                 extensions::kExtensionScheme);
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
+                if (!is_shortcut_url_valid) {
+                  LOG(ERROR) << "Not allowed to open target url: "
+                             << shortcut->target_url();
                   continue;
                 }
                 profile_url_map[shortcut->profile_path_name().path()].push_back(
