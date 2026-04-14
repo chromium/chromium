@@ -1172,6 +1172,10 @@ inline constexpr char kBlockCrossPartitionBlobUrlFetchingName[] =
 inline constexpr char kBlockCrossPartitionBlobUrlFetchingDescription[] =
     "Blocks fetching of cross-partitioned Blob URL.";
 
+inline constexpr char kBookmarksEncryptionName[] = "Bookmarks Encryption";
+inline constexpr char kBookmarksEncryptionDescription[] =
+    "Enable encryption for bookmarks";
+
 inline constexpr char kBookmarkTabGroupConversionName[] =
     "Bookmark and tab group conversion";
 inline constexpr char kBookmarkTabGroupConversionDescription[] =

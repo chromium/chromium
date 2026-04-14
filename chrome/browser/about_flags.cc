@@ -89,6 +89,7 @@
 #include "components/autofill/core/common/autofill_payments_features.h"
 #include "components/autofill/core/common/autofill_switches.h"
 #include "components/autofill/core/common/autofill_util.h"
+#include "components/bookmarks/common/bookmark_features.h"
 #include "components/browser_sync/browser_sync_switches.h"
 #include "components/browser_ui/accessibility/android/features.h"
 #include "components/browsing_data/core/features.h"
@@ -4544,6 +4545,17 @@ const FeatureEntry::FeatureParam kWalletApiPrivatePassesUrl[] = {
 const FeatureEntry::FeatureVariation
     kWalletApiPrivatePassesEnabledVariations[] = {
         {"Debug", kWalletApiPrivatePassesUrl, nullptr}};
+
+const FeatureEntry::FeatureParam kBookmarksEncryptionStage1[] = {
+    {"stage", "write_both_read_only_clear"}};
+const FeatureEntry::FeatureParam kBookmarksEncryptionStage2[] = {
+    {"stage", "write_both_read_prefer_encrypted"}};
+const FeatureEntry::FeatureParam kBookmarksEncryptionStage3[] = {
+    {"stage", "write_only_encrypted_read_prefer_encrypted"}};
+const FeatureEntry::FeatureVariation kBookmarksEncryptionVariations[] = {
+    {"Stage1", kBookmarksEncryptionStage1, nullptr},
+    {"Stage2", kBookmarksEncryptionStage2, nullptr},
+    {"Stage3", kBookmarksEncryptionStage3, nullptr}};
 
 // RECORDING USER METRICS FOR FLAGS:
 // -----------------------------------------------------------------------------
@@ -12935,6 +12947,12 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kSyncSearchEnginesAndroidDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(syncer::kSyncSearchEnginesAndroid)},
 #endif
+
+    {"bookmarks-encryption", flag_descriptions::kBookmarksEncryptionName,
+     flag_descriptions::kBookmarksEncryptionDescription, kOsAll,
+     FEATURE_WITH_PARAMS_VALUE_TYPE(bookmarks::kEncryptBookmarks,
+                                    kBookmarksEncryptionVariations,
+                                    "BookmarksEncryption")},
 
     // Add new entries above this line.
     // NOTE: Adding a new flag requires adding a corresponding entry to enum

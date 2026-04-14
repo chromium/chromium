@@ -12931,6 +12931,7 @@ from previous Chrome versions.
   <int value="-376546554"
       label="AndroidNoSurfaceSyncForBrowserControls:enabled"/>
   <int value="-376322609" label="BluetoothWifiQSPodRefresh:disabled"/>
+  <int value="-375953493" label="EncryptBookmarks:disabled"/>
   <int value="-375342164" label="SafeBrowsingAsyncRealTimeCheck:disabled"/>
   <int value="-375341515" label="DirectSocketsInSharedWorkers:disabled"/>
   <int value="-374657496" label="OmniboxEnableClipboardProvider:enabled"/>
@@ -19728,6 +19729,7 @@ from previous Chrome versions.
   <int value="1873688130"
       label="ExperimentalAccessibilityDictationMoreCommands:disabled"/>
   <int value="1873985461" label="GlicDetached:enabled"/>
+  <int value="1874013652" label="EncryptBookmarks:enabled"/>
   <int value="1874050287" label="UploadOfficeToCloud:enabled"/>
   <int value="1874104910" label="PrivacyGuidePreloadAndroid:disabled"/>
   <int value="1874195462" label="ChromeHomeMenuItemsExpandSheet:disabled"/>
