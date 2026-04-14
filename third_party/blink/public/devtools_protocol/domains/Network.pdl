@@ -2260,6 +2260,7 @@ domain Network
       # The result of a refresh.
       enum refreshResult
         Refreshed
+        RefreshedAsWaiter
         InitializedService
         Unreachable
         ServerError

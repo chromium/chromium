@@ -214,6 +214,7 @@ enum DeviceBoundSessionRefreshResult {
   kRefreshQuotaExceeded = 4,
   kFatalError = 5,
   kSigningQuotaExceeded = 6,
+  kRefreshedAsWaiter = 7,
 };
 
 // LINT.ThenChange(//net/device_bound_sessions/refresh_result.h:DeviceBoundSessionRefreshResult)

@@ -1020,7 +1020,7 @@ TEST_F(SessionServiceImplTest, EventObserverOnProactiveAndDeferredRefresh) {
   tracker.ResolvePendingRefresh(
       RegistrationResult(RegistrationResult::NoSessionConfigChange(),
                          /*maybe_stored_cookies=*/{}));
-  EXPECT_EQ(future.Take(), RefreshResult::kRefreshed);
+  EXPECT_EQ(future.Take(), RefreshResult::kRefreshedAsWaiter);
 }
 
 TEST_F(SessionServiceImplTest, EventObserverOnChallenge) {
@@ -2874,6 +2874,77 @@ TEST_F(SessionServiceImplTest, DeferringRefreshBlocksDeferring) {
   EXPECT_EQ(tracker.num_pending_refreshes(), 1);
 }
 
+TEST_F(SessionServiceImplTest, DeferredWaitersCanTriggerAnotherRefresh) {
+  // Register a session with kSessionId.
+  AddSessionsForTesting({{kSessionId, kRefreshUrlString, kOrigin}});
+
+  RefreshTracker tracker;
+  auto scoped_test_fetcher = ScopedTestRegistrationFetcher(base::BindRepeating(
+      &RefreshTracker::Refresh, base::Unretained(&tracker)));
+
+  auto site = SchemefulSite(kTestUrl);
+  ASSERT_TRUE(service().GetSession({site, Session::Id(kSessionId)}));
+
+  // Create two requests.
+  net::TestDelegate delegate1;
+  std::unique_ptr<URLRequest> request1 =
+      context()->CreateRequest(kTestUrl, IDLE, &delegate1, kDummyAnnotation);
+  request1->set_site_for_cookies(SiteForCookies::FromUrl(kTestUrl));
+  DbscRequest dbsc_request1(request1.get());
+
+  net::TestDelegate delegate2;
+  std::unique_ptr<URLRequest> request2 =
+      context()->CreateRequest(kTestUrl, IDLE, &delegate2, kDummyAnnotation);
+  request2->set_site_for_cookies(SiteForCookies::FromUrl(kTestUrl));
+  DbscRequest dbsc_request2(request2.get());
+
+  auto deferral = SessionService::DeferralParams(Session::Id(kSessionId));
+
+  base::test::TestFuture<RefreshResult> future1;
+  base::test::TestFuture<RefreshResult> future2;
+
+  // Defer the first request. This should trigger a refresh.
+  service().DeferRequestForRefresh(dbsc_request1, deferral,
+                                   future1.GetCallback());
+
+  // Defer the second request. This should NOT trigger a refresh.
+  service().DeferRequestForRefresh(dbsc_request2, deferral,
+                                   future2.GetCallback());
+
+  // Only one refresh actually happened.
+  EXPECT_EQ(tracker.num_pending_refreshes(), 1);
+
+  // Resolve the refresh successfully.
+  tracker.ResolvePendingRefresh(
+      RegistrationResult(RegistrationResult::NoSessionConfigChange(),
+                         /*maybe_stored_cookies=*/{}));
+
+  // Verify callbacks.
+  RefreshResult result1 = future1.Take();
+  EXPECT_EQ(result1, RefreshResult::kRefreshed);
+
+  RefreshResult result2 = future2.Take();
+  EXPECT_EQ(result2, RefreshResult::kRefreshedAsWaiter);
+
+  // Simulate what `URLRequestHttpJob` does when it receives the callback.
+  SessionKey session_key{site, Session::Id(kSessionId)};
+  request1->AddDeviceBoundSessionDeferral(session_key, result1);
+  request2->AddDeviceBoundSessionDeferral(session_key, result2);
+
+  // Verify that `ShouldDefer()` returns false for the first request
+  // (already refreshed) but true for the second one (waiter gets a second
+  // chance).
+  HttpRequestHeaders extra_headers1;
+  auto deferral1 = service().ShouldDefer(dbsc_request1, &extra_headers1,
+                                         FirstPartySetMetadata());
+  EXPECT_FALSE(deferral1.has_value());
+
+  HttpRequestHeaders extra_headers2;
+  auto deferral2 = service().ShouldDefer(dbsc_request2, &extra_headers2,
+                                         FirstPartySetMetadata());
+  EXPECT_TRUE(deferral2.has_value());
+}
+
 TEST_F(SessionServiceImplTest, ProactiveRefreshBlocksDeferring) {
   base::HistogramTester histograms;
 
@@ -2936,7 +3007,7 @@ TEST_F(SessionServiceImplTest, ProactiveRefreshBlocksDeferring) {
   tracker.ResolvePendingRefresh(
       RegistrationResult(RegistrationResult::NoSessionConfigChange(),
                          /*maybe_stored_cookies=*/{}));
-  EXPECT_EQ(future.Take(), RefreshResult::kRefreshed);
+  EXPECT_EQ(future.Take(), RefreshResult::kRefreshedAsWaiter);
 
   histograms.ExpectUniqueSample(
       "Net.DeviceBoundSessions.ProactiveRefreshAttempt",

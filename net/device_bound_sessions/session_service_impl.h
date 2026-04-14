@@ -51,6 +51,7 @@ struct DeferredURLRequest {
 
   base::ElapsedTimer timer;
   SessionService::RefreshCompleteCallback callback;
+  bool triggered_refresh = false;
 };
 
 class NET_EXPORT SessionServiceImpl : public SessionService {

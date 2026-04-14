@@ -372,6 +372,8 @@ EnumTraits<network::mojom::DeviceBoundSessionRefreshResult,
   switch (input) {
     case RefreshResult::kRefreshed:
       return MojomRefreshResult::kRefreshed;
+    case RefreshResult::kRefreshedAsWaiter:
+      return MojomRefreshResult::kRefreshedAsWaiter;
     case RefreshResult::kInitializedService:
       return MojomRefreshResult::kInitializedService;
     case RefreshResult::kUnreachable:
@@ -398,6 +400,8 @@ EnumTraits<network::mojom::DeviceBoundSessionRefreshResult,
   switch (input) {
     case MojomRefreshResult::kRefreshed:
       return RefreshResult::kRefreshed;
+    case MojomRefreshResult::kRefreshedAsWaiter:
+      return RefreshResult::kRefreshedAsWaiter;
     case MojomRefreshResult::kInitializedService:
       return RefreshResult::kInitializedService;
     case MojomRefreshResult::kUnreachable:

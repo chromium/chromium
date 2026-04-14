@@ -2162,6 +2162,9 @@ String BuildProtocolDeviceBoundSessionRefreshResult(
     case net::device_bound_sessions::RefreshResult::kRefreshed:
       return protocol::Network::RefreshEventDetails::RefreshResultEnum::
           Refreshed;
+    case net::device_bound_sessions::RefreshResult::kRefreshedAsWaiter:
+      return protocol::Network::RefreshEventDetails::RefreshResultEnum::
+          RefreshedAsWaiter;
     case net::device_bound_sessions::RefreshResult::kInitializedService:
       return protocol::Network::RefreshEventDetails::RefreshResultEnum::
           InitializedService;
