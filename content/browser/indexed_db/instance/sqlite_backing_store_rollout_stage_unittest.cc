@@ -16,6 +16,7 @@
 #include "content/browser/indexed_db/indexed_db_data_format_version.h"
 #include "content/browser/indexed_db/indexed_db_test_base.h"
 #include "content/browser/indexed_db/instance/bucket_context.h"
+#include "content/browser/indexed_db/instance/sqlite/database_connection.h"
 #include "content/browser/indexed_db/mock_mojo_indexed_db_database_callbacks.h"
 #include "content/browser/indexed_db/mock_mojo_indexed_db_factory_client.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -258,12 +259,17 @@ class SqliteBackingStoreRolloutStageTest
               base::StrCat(
                   {"IndexedDB.BackingStore.CreateIfMissing", histogram_suffix}),
               0 /*Status::Type::kOk*/, 0);
-        } break;
+          break;
+        }
       }
     }
   }
 
   void CloseAllBackingStores() {
+    // The SQLite store has an added delay between when an individual database
+    // connection is dropped and when store shutdown is initiated.
+    task_environment_.FastForwardBy(
+        sqlite::DatabaseConnection::GetDestructionGracePeriodForTesting());
     task_environment_.FastForwardBy(
         BucketContext::GetBackingStoreGracePeriodForTesting());
   }

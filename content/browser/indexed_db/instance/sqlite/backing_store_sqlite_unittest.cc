@@ -97,6 +97,19 @@ class BackingStoreSqliteTest : public BackingStoreTestBase {
     return output_blob_contents;
   }
 
+  // Drops the connection to a `DatabaseConnection` and makes sure it's fully
+  // closed.
+  void DropDbAndDestructDatabaseConnection(
+      std::unique_ptr<BackingStore::Database> db) {
+    const std::u16string name = db->GetMetadata().name;
+    db.reset();
+    // This step is necessary to get past the closing grace period.
+    task_environment_.FastForwardBy(
+        DatabaseConnection::GetDestructionGracePeriodForTesting());
+    // This step ensures cleanup is done before proceeding.
+    AcquireDatabaseLocks(name);
+  }
+
   // Creates a database with an object store, writes enough blob data to create
   // many pages, then clears the object store to produce freelist pages.
   std::unique_ptr<BackingStore::Database> CreateDatabaseWithFreelistPages(
@@ -239,6 +252,8 @@ TEST_F(BackingStoreSqliteTest, LegacyBlobBasics) {
     EXPECT_TRUE(transaction->PutRecord(object_store_id, key3, value.Clone())
                     .has_value());
     CommitTransactionAndVerify(std::move(transaction));
+
+    DropDbAndDestructDatabaseConnection(std::move(db));
   }
 
   // Test hack: convert these blobs to standalone files, as if they'd been
@@ -251,6 +266,10 @@ TEST_F(BackingStoreSqliteTest, LegacyBlobBasics) {
   EXPECT_TRUE(base::PathExists(blob_files[2]));
 
   {
+    // Necessary to reset the "preclose" period, which would normally happen via
+    // `BucketContext::Open()`, which is shortcut here.
+    auto scoper = SimulateFactoryRequest();
+
     ASSERT_OK_AND_ASSIGN(std::unique_ptr<BackingStore::Database> db,
                          backing_store()->CreateOrOpenDatabase(db_name));
     // Verify that one of these blobs can be read correctly.
@@ -281,22 +300,22 @@ TEST_F(BackingStoreSqliteTest, LegacyBlobBasics) {
 
     // And finally, the blob that was not overwritten is still there.
     EXPECT_TRUE(base::PathExists(blob_files[2]));
-  }
 
-  // Let the cleanup complete, which releases database locks.
-  AcquireDatabaseLocks(db_name);
+    DropDbAndDestructDatabaseConnection(std::move(db));
+  }
 
   // Re-create a blob file, as if it had failed to be deleted at some point.
   // It will be cleaned up when the database is opened then closed again.
   EXPECT_TRUE(base::WriteFile(blob_files[0], "some bytes"));
   {
+    auto scoper = SimulateFactoryRequest();
+
     ASSERT_OK_AND_ASSIGN(std::unique_ptr<BackingStore::Database> db,
                          backing_store()->CreateOrOpenDatabase(db_name));
     // Currently cleanup only occurs if there happens to be a Put.
     IndexedDBValue value_without_blob("non_blob_payload", {});
     PutRecord(*db, object_store_id, key2, value_without_blob);
-    db.reset();
-    AcquireDatabaseLocks(db_name);
+    DropDbAndDestructDatabaseConnection(std::move(db));
     // The artificially resurrected blob is now gone.
     EXPECT_FALSE(base::PathExists(blob_files[0]));
     // The blob that was not resurrected is still gone.
@@ -334,6 +353,8 @@ TEST_F(BackingStoreSqliteTest, DeleteDatabaseCleansUpLegacyBlobs) {
     EXPECT_TRUE(transaction->PutRecord(object_store_id, key, value.Clone())
                     .has_value());
     CommitTransactionAndVerify(std::move(transaction));
+
+    DropDbAndDestructDatabaseConnection(std::move(db));
   }
 
   // Convert this blob to a standalone file, as if it had been migrated from a
@@ -345,6 +366,7 @@ TEST_F(BackingStoreSqliteTest, DeleteDatabaseCleansUpLegacyBlobs) {
 
   // Delete the database.
   {
+    auto scoper = SimulateFactoryRequest();
     ASSERT_OK_AND_ASSIGN(std::unique_ptr<BackingStore::Database> db,
                          backing_store()->CreateOrOpenDatabase(db_name));
     EXPECT_TRUE(
@@ -538,8 +560,10 @@ TEST_F(BackingStoreSqliteTest, VacuumOnClose) {
   {
     base::HistogramTester histograms;
     CreateFactoryAndBackingStore();
-    ASSERT_OK(backing_store()->CreateOrOpenDatabase(db_name));
-    AcquireDatabaseLocks(db_name);
+
+    ASSERT_OK_AND_ASSIGN(std::unique_ptr<BackingStore::Database> db,
+                         backing_store()->CreateOrOpenDatabase(db_name));
+    DropDbAndDestructDatabaseConnection(std::move(db));
     ASSERT_OK_AND_ASSIGN(int64_t post_vacuum_size, base::GetFileSize(db_path));
 
     histograms.ExpectTotalCount("IndexedDB.SQLite.FreelistPercentageAtClose",

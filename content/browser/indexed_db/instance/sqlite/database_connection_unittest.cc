@@ -98,7 +98,7 @@ class DatabaseConnectionTest : public testing::Test {
         temp_dir_.GetPath(), blob_context_,
         base::BindRepeating(&DatabaseConnectionTest::AcquireDatabaseLocks,
                             base::Unretained(this)),
-        base::DoNothing());
+        base::DoNothing(), base::DoNothing());
   }
 
   void TearDown() override {
@@ -126,6 +126,19 @@ class DatabaseConnectionTest : public testing::Test {
     }
     EXPECT_TRUE(db.value().get());
     return std::move(db.value());
+  }
+
+  // Drops the connection to a `DatabaseConnection` and makes sure it's fully
+  // closed.
+  void DropDbAndDestructDatabaseConnection(
+      std::unique_ptr<BackingStore::Database> db) {
+    const std::u16string name = db->GetMetadata().name;
+    db.reset();
+    // This step is necessary to get past the closing grace period.
+    task_environment_.FastForwardBy(
+        DatabaseConnection::GetDestructionGracePeriodForTesting());
+    // This step ensures cleanup is done before proceeding.
+    AcquireDatabaseLocks(name);
   }
 
   base::FilePath GetDatabasePath(std::u16string_view name) {
@@ -167,7 +180,8 @@ class DatabaseConnectionTest : public testing::Test {
     ASSERT_TRUE(vc->CommitPhaseTwo().ok());
   }
 
-  base::test::TaskEnvironment task_environment_;
+  base::test::TaskEnvironment task_environment_{
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   MockBlobStorageContext blob_context_;
   PartitionedLockManager lock_manager_;
   base::ScopedTempDir temp_dir_;
@@ -183,7 +197,7 @@ TEST_F(DatabaseConnectionTest, TooNew) {
   const std::u16string kDbName{u"test db"};
   auto connection = OpenDb(kDbName);
   ASSERT_NO_FATAL_FAILURE(InitializeDbWithOneRecord(*connection));
-  connection.reset();
+  DropDbAndDestructDatabaseConnection(std::move(connection));
   const base::FilePath db_path = GetDatabasePath(kDbName);
   ASSERT_TRUE(base::PathExists(db_path));
   histograms.ExpectUniqueSample(
@@ -191,12 +205,9 @@ TEST_F(DatabaseConnectionTest, TooNew) {
       DatabaseConnection::SpecificEvent::kDatabaseOpenAttempt, 1);
 
   // Simulate a newer version of the browser updating the schema.
-  auto sql_db = std::make_unique<sql::Database>(sql::DatabaseOptions()
-                                                    .set_wal_mode(true)
-                                                    .set_enable_triggers(true),
-                                                sql::test::kTestTag);
-  // Wait for the earlier database to close fully before reopening.
-  AcquireDatabaseLocks(kDbName);
+  auto sql_db = std::make_unique<sql::Database>(
+      sql::DatabaseOptions().set_wal_mode(true).set_enable_triggers(true),
+      sql::test::kTestTag);
   ASSERT_TRUE(sql_db->Open(db_path));
   ASSERT_TRUE(sql::MetaTable::DoesTableExist(sql_db.get()));
   int original_version, original_compat_version;
@@ -218,7 +229,7 @@ TEST_F(DatabaseConnectionTest, TooNew) {
   // Note that this would fail if the object store still existed (i.e. if the
   // original DB hadn't been deleted).
   ASSERT_NO_FATAL_FAILURE(InitializeDbWithOneRecord(*connection));
-  connection.reset();
+  DropDbAndDestructDatabaseConnection(std::move(connection));
 
   histograms.ExpectBucketCount(
       "IndexedDB.SQLite.SpecificEvent.OnDisk",
@@ -230,7 +241,6 @@ TEST_F(DatabaseConnectionTest, TooNew) {
       "IndexedDB.SQLite.SpecificEvent.OnDisk",
       DatabaseConnection::SpecificEvent::kDatabaseHadSqlError, 0);
 
-  AcquireDatabaseLocks(kDbName);
   ASSERT_TRUE(sql_db->Open(db_path));
   ASSERT_TRUE(sql::MetaTable::DoesTableExist(sql_db.get()));
   {
@@ -334,9 +344,8 @@ class DatabaseConnectionCorruptionTest : public DatabaseConnectionTest {
                          SnapshotDatabase(*db));
 
     // Close the database and then corrupt it.
-    db.reset();
+    DropDbAndDestructDatabaseConnection(std::move(db));
     const base::FilePath db_path = GetDatabasePath(kDbName);
-    AcquireDatabaseLocks(kDbName);
     ASSERT_TRUE(sql::test::CorruptIndexRootPage(db_path, "records_by_key"));
 
     // Reopen the database. The corruption isn't detected until the index is
@@ -348,8 +357,7 @@ class DatabaseConnectionCorruptionTest : public DatabaseConnectionTest {
     EXPECT_TRUE(value.error().IsCorruption());
 
     // Closing the database should run the recovery routine.
-    db.reset();
-    AcquireDatabaseLocks(kDbName);
+    DropDbAndDestructDatabaseConnection(std::move(db));
     db = OpenDb(kDbName);
 
     auto verify_recovery = [&](bool recovery_expected) {
@@ -384,8 +392,7 @@ class DatabaseConnectionCorruptionTest : public DatabaseConnectionTest {
     // Now try a different style of corruption which is detected when the DB is
     // first opened. This verifies that such corruptions will be detected and
     // handled on startup.
-    db.reset();
-    AcquireDatabaseLocks(kDbName);
+    DropDbAndDestructDatabaseConnection(std::move(db));
     if (recoverable) {
       ASSERT_TRUE(sql::test::CorruptSizeInHeader(db_path));
     } else {
@@ -397,8 +404,7 @@ class DatabaseConnectionCorruptionTest : public DatabaseConnectionTest {
     }
     db = OpenDb(kDbName);
     verify_recovery(/*recovery_expected=*/recoverable);
-    db.reset();
-    AcquireDatabaseLocks(kDbName);
+    DropDbAndDestructDatabaseConnection(std::move(db));
   }
 };
 

@@ -1248,6 +1248,9 @@ BucketContext::InitBackingStore(bool create_if_missing) {
                 std::ref(*lock_manager)),
             /*on_blob_activity=*/
             base::BindRepeating(&BucketContext::OnSqliteBlobActivity,
+                                base::Unretained(this)),
+            /*on_can_close=*/
+            base::BindRepeating(&BucketContext::MaybeStartClosing,
                                 base::Unretained(this))),
         /*is_sqlite=*/true, histogram_suffix);
   } else {

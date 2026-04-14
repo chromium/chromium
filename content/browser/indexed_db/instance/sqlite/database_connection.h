@@ -73,8 +73,10 @@ class CONTENT_EXPORT DatabaseConnection {
       BackingStoreImpl& backing_store,
       bool erase_if_zygotic = false);
 
-  // Destroys the DatabaseConnection pointed to by `db`, if appropriate, i.e. if
-  // `db` is the last weak pointer.
+  // Called by the `BackingStoreDatabaseImpl` to release its reference. This may
+  // allow `this` to close ("self-destruct") if there are no active blobs. Note
+  // that the actual self-destruction is delayed as a performance optimization,
+  // as the page may re-open the DB soon.
   static void Release(base::WeakPtr<DatabaseConnection> db);
 
   DatabaseConnection(const DatabaseConnection&) = delete;
@@ -285,9 +287,16 @@ class CONTENT_EXPORT DatabaseConnection {
   // Overrides the VFS used for databases.
   static void OverrideVfsNameForTesting(const char* vfs_name);
 
+  // Returns the delay before a released `DatabaseConnection` destructs.
+  static base::TimeDelta GetDestructionGracePeriodForTesting();
+
  private:
   friend class BackingStoreSqliteTest;
   FRIEND_TEST_ALL_PREFIXES(DatabaseConnectionTest, TooNew);
+
+  // Destroys the DatabaseConnection pointed to by `db`, if appropriate, i.e. if
+  // `db` is the last weak pointer.
+  static void MaybeSelfDestruct(base::WeakPtr<DatabaseConnection> db);
 
   static void CloseDatabase(
       std::unique_ptr<sql::Database> db,

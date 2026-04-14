@@ -68,6 +68,10 @@ class BackingStoreTestBase : public testing::Test {
   // Migrates the entire backing store and attempts to verify cloning worked.
   void MigrateAndVerifyBackingStore();
 
+  // Some tests bypass `BucketContext::Open()`, and therefore need to call this
+  // to reset the close timer.
+  base::ScopedClosureRunner SimulateFactoryRequest();
+
   BackingStore* backing_store();
 
   static IndexedDBExternalObject CreateFileInfo(const std::u16string& file_name,

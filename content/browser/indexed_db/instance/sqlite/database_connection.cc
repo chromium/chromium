@@ -98,6 +98,11 @@ BASE_FEATURE(kIdbSqliteExclusiveDatabaseFileLock,
              base::FEATURE_ENABLED_BY_DEFAULT);
 #endif
 
+// The delay before a released `DatabaseConnection` actually destructs. This
+// gives the page a chance to re-open the same database without the overhead of
+// closing and re-opening the underlying SQLite connection.
+constexpr base::TimeDelta kDestructionGracePeriod = base::Seconds(2);
+
 namespace {
 
 // Persisted to disk; do not reuse or change values.
@@ -1024,8 +1029,31 @@ void DatabaseConnection::Release(base::WeakPtr<DatabaseConnection> db) {
     return;
   }
 
-  // TODO(crbug.com/419203257):  Consider delaying destruction by a short period
-  // in case the page reopens the same database soon.
+  // Just destruct immediately if:
+  // 1. the database isn't finished initializing, or
+  // 2. the database had an error
+  if (db->IsZygotic() || !sql::IsSqliteSuccessCode(sql::ToSqliteResultCode(
+                             db->db_->GetErrorCode()))) {
+    MaybeSelfDestruct(std::move(db));
+    return;
+  }
+
+  // Delay destruction by a short period in case the page reopens the same
+  // database soon. This is effectively equivalent to the 2 second "grace
+  // period" before backing store shutdown in `BucketContext`.
+  base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
+      FROM_HERE,
+      base::BindOnce(&DatabaseConnection::MaybeSelfDestruct, std::move(db)),
+      kDestructionGracePeriod);
+}
+
+// static
+void DatabaseConnection::MaybeSelfDestruct(
+    base::WeakPtr<DatabaseConnection> db) {
+  if (!db) {
+    return;
+  }
+
   DatabaseConnection* db_ptr = db.get();
   db.reset();
 
@@ -2813,6 +2841,11 @@ void DatabaseConnection::OverrideMaxBlobSizeForTesting(base::ByteSize size) {
 // static
 void DatabaseConnection::OverrideVfsNameForTesting(const char* vfs_name) {
   g_vfs_name_override = vfs_name;
+}
+
+// static
+base::TimeDelta DatabaseConnection::GetDestructionGracePeriodForTesting() {
+  return kDestructionGracePeriod;
 }
 
 }  // namespace content::indexed_db::sqlite

@@ -69,6 +69,7 @@
 #include "content/browser/indexed_db/instance/leveldb/backing_store.h"
 #include "content/browser/indexed_db/instance/mock_blob_storage_context.h"
 #include "content/browser/indexed_db/instance/mock_file_system_access_context.h"
+#include "content/browser/indexed_db/instance/sqlite/database_connection.h"
 #include "content/browser/indexed_db/instance/test_blob_consumer.h"
 #include "content/browser/indexed_db/mock_mojo_indexed_db_database_callbacks.h"
 #include "content/browser/indexed_db/mock_mojo_indexed_db_factory_client.h"
@@ -267,6 +268,17 @@ class IndexedDBTestBaseWithExtras : public IndexedDBTestBase {
                 net::SchemefulSite(GURL("http://rando.com/")),
                 blink::mojom::AncestorChainBit::kCrossSite))
             .ToBucketLocator();
+  }
+
+  void FastForwardToCloseStore() {
+    if (IsSqliteBackingStoreEnabled()) {
+      // The SQLite store has an added delay between when an individual database
+      // connection is dropped and when store shutdown is initiated.
+      task_environment_.FastForwardBy(
+          sqlite::DatabaseConnection::GetDestructionGracePeriodForTesting());
+    }
+    task_environment_.FastForwardBy(
+        BucketContext::GetBackingStoreGracePeriodForTesting());
   }
 
   bool IsThirdPartyStoragePartitioningEnabled() {
@@ -1738,9 +1750,7 @@ TEST_P(IndexedDBTestWithBucketType, OpenExistingDatabase) {
         DatabaseConnectionOpenResult::kSuccessUpgradeNeeded, 1);
   }
 
-  // Fast forward by the grace period so that the backing store gets closed.
-  task_environment_.FastForwardBy(
-      BucketContext::GetBackingStoreGracePeriodForTesting());
+  FastForwardToCloseStore();
   VerifyBucketContext(bucket_locator, /*expected_context_exists=*/true,
                       /*expected_backing_store_exists=*/false);
 
@@ -1801,11 +1811,9 @@ TEST_P(IndexedDBTest, DeleteDatabase) {
   // Delete the database now that the backing store actually exists.
   {
     MockMojoFactoryClient client;
-    MockMojoDatabaseCallbacks database_callbacks;
     base::RunLoop run_loop;
     EXPECT_CALL(client, DeleteSuccess(1))
         .WillOnce(RunClosure(run_loop.QuitClosure()));
-    mojo::AssociatedRemote<blink::mojom::IDBTransaction> transaction_remote;
     factory_remote->DeleteDatabase(client.CreateInterfacePtrAndBind(),
                                    kDatabaseName,
                                    /*force_close=*/false);
@@ -1840,9 +1848,7 @@ TEST_P(IndexedDBTestWithBucketType, DeleteDatabase_Cold) {
         0 /*Status::Type::kOk*/, 1);
   }
 
-  // Fast forward by the grace period so that the backing store gets closed.
-  task_environment_.FastForwardBy(
-      BucketContext::GetBackingStoreGracePeriodForTesting());
+  FastForwardToCloseStore();
   VerifyBucketContext(bucket_locator, /*expected_context_exists=*/true,
                       /*expected_backing_store_exists=*/false);
 
@@ -1979,8 +1985,7 @@ TEST_P(IndexedDBTestWithBucketType, GetDatabaseNames) {
   // the grace period to elapse.
   database_remote.reset();
   factory_remote.FlushForTesting();
-  task_environment_.FastForwardBy(
-      BucketContext::GetBackingStoreGracePeriodForTesting());
+  FastForwardToCloseStore();
   EXPECT_FALSE(GetBucketContext(bucket_locator.id)->backing_store());
 
   // GetDatabaseInfo opens the backing store, so it *should* close it.

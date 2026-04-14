@@ -38,12 +38,13 @@ class CONTENT_EXPORT BackingStoreImpl : public BackingStore {
   // called whenever a blob is read from the database, with `nullopt` if the
   // read is not finished, and when a read is complete, with the final result of
   // each read (i.e. each mojom::Blob request).
-  BackingStoreImpl(base::FilePath directory,
-                   storage::mojom::BlobStorageContext& blob_storage_context,
-                   base::RepeatingCallback<std::vector<PartitionedLock>(
-                       const std::u16string& name)> lock_database,
-                   base::RepeatingCallback<void(std::optional<net::Error>)>
-                       on_blob_activity);
+  BackingStoreImpl(
+      base::FilePath directory,
+      storage::mojom::BlobStorageContext& blob_storage_context,
+      base::RepeatingCallback<std::vector<PartitionedLock>(
+          const std::u16string& name)> lock_database,
+      base::RepeatingCallback<void(std::optional<net::Error>)> on_blob_activity,
+      base::RepeatingClosure on_can_close);
   BackingStoreImpl(const BackingStoreImpl&) = delete;
   BackingStoreImpl& operator=(const BackingStoreImpl&) = delete;
   ~BackingStoreImpl() override;
@@ -124,6 +125,9 @@ class CONTENT_EXPORT BackingStoreImpl : public BackingStore {
       lock_database_;
 
   base::RepeatingCallback<void(std::optional<net::Error>)> on_blob_activity_;
+
+  // To be called when `CanOpportunisticallyClose()` becomes true.
+  base::RepeatingClosure on_can_close_;
 
   std::unordered_map<std::u16string, std::unique_ptr<DatabaseConnection>>
       open_connections_;

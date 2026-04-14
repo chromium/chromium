@@ -36,11 +36,13 @@ BackingStoreImpl::BackingStoreImpl(
     storage::mojom::BlobStorageContext& blob_storage_context,
     base::RepeatingCallback<
         std::vector<PartitionedLock>(const std::u16string& name)> lock_database,
-    base::RepeatingCallback<void(std::optional<net::Error>)> on_blob_activity)
+    base::RepeatingCallback<void(std::optional<net::Error>)> on_blob_activity,
+    base::RepeatingClosure on_can_close)
     : directory_(std::move(directory)),
       blob_storage_context_(blob_storage_context),
       lock_database_(std::move(lock_database)),
       on_blob_activity_(std::move(on_blob_activity)),
+      on_can_close_(std::move(on_can_close)),
       is_force_closing_(std::make_unique<std::atomic_bool>(false)) {}
 
 BackingStoreImpl::~BackingStoreImpl() = default;
@@ -292,6 +294,10 @@ void BackingStoreImpl::DestroyConnection(const std::u16string& name,
           .Then(std::move(*connection).GetCleanupTask()),
       base::BindOnce(&BackingStoreImpl::OnCleanupComplete,
                      weak_factory_.GetWeakPtr(), name, std::move(locks)));
+
+  if (CanOpportunisticallyClose()) {
+    on_can_close_.Run();
+  }
 }
 
 void BackingStoreImpl::OnCleanupComplete(const std::u16string& name,

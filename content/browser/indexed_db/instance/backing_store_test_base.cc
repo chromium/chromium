@@ -329,6 +329,10 @@ void BackingStoreTestBase::MigrateAndVerifyBackingStore() {
   }
 }
 
+base::ScopedClosureRunner BackingStoreTestBase::SimulateFactoryRequest() {
+  return bucket_context_->ScopedHandlingRequest();
+}
+
 // This just checks the data that survive getting stored and recalled, e.g.
 // the file path and UUID will change and thus aren't verified.
 bool BackingStoreWithExternalObjectsTestBase::CheckBlobInfoMatches(
