@@ -76,6 +76,16 @@ public class AwNetLogService extends Service {
         return NET_LOG_DIR;
     }
 
+    /**
+     * This method asserts that the calling app really is {@code packageName}. We cannot directly
+     * determine what the app's package name is which is why we ask apps to provide their own
+     * package name in the calling parameters, however we can instead assert that the calling app is
+     * at least part of a shared UID group with {@code packageName}.
+     *
+     * <p>Shared UIDs are relatively rare: typically a UID group will only have a single package
+     * name. But even in the case where it has multiple package names, there's no security issue if
+     * one app uses another app's package name from the same UID group.
+     */
     private boolean isCorrectPackage(String packageName) {
         int binderUid = Binder.getCallingUid();
         try {
@@ -92,6 +102,11 @@ public class AwNetLogService extends Service {
         return false;
     }
 
+    /**
+     * Cleans up stale net log files from over 30 days ago. If the remaining non-stale netlogs are
+     * still taking up space exceeding MAX_TOTAL_CAPACITY, then this will delete non-stale net log
+     * files until we are back under storage capacity.
+     */
     public static void cleanUpNetLogDirectory() {
         // Date thirty days ago
         long expirationDate = System.currentTimeMillis() - (1000L * 60 * 60 * 24 * 30);
@@ -125,8 +140,7 @@ public class AwNetLogService extends Service {
                     public int compare(File fileOne, File fileTwo) {
                         long firstFileTime = getCreationTimeFromFileName(fileOne.getName());
                         long secondFileTime = getCreationTimeFromFileName(fileTwo.getName());
-                        long diff = firstFileTime - secondFileTime;
-                        return (int) diff;
+                        return Long.compare(firstFileTime, secondFileTime);
                     }
                 });
         int index = 0;

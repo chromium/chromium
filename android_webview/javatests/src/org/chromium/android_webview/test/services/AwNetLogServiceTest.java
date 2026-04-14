@@ -29,6 +29,8 @@ import org.chromium.base.test.util.CommandLineFlags;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Arrays;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Instrumentation tests AwNetLogServiceTest. These tests are not batched to make sure all unbinded
@@ -144,5 +146,41 @@ public class AwNetLogServiceTest {
         long fileTime = AwNetLogService.getCreationTimeFromFileName(fileName);
 
         Assert.assertEquals(currentTime, fileTime);
+    }
+
+    private void createNetLogWithTimestamp(long timestamp) throws Throwable {
+        Intent intent = new Intent(ContextUtils.getApplicationContext(), AwNetLogService.class);
+        try (ServiceConnectionHelper helper =
+                new ServiceConnectionHelper(intent, Context.BIND_AUTO_CREATE)) {
+            INetLogService service = INetLogService.Stub.asInterface(helper.getBinder());
+            ParcelFileDescriptor parcelFileDescriptor = service.streamLog(timestamp, PACKAGE_NAME);
+            Assert.assertTrue(
+                    "Received an invalid file descriptor for net log with timestamp " + timestamp,
+                    parcelFileDescriptor.getFileDescriptor().valid());
+
+            parcelFileDescriptor.close();
+        }
+    }
+
+    @Test
+    @MediumTest
+    @CommandLineFlags.Add(AwSwitches.NET_LOG)
+    public void testTimestampsIntegerOverflow() throws Throwable {
+        File directory = AwNetLogService.getNetLogFileDirectory();
+        Assert.assertEquals(0, directory.listFiles().length);
+        final long timestamp1 = System.currentTimeMillis();
+        final long timestamp2 = timestamp1 - TimeUnit.DAYS.toMillis(30);
+        final long timestamp3 = timestamp1 - TimeUnit.DAYS.toMillis(60);
+
+        createNetLogWithTimestamp(timestamp1);
+        createNetLogWithTimestamp(timestamp2);
+        createNetLogWithTimestamp(timestamp3);
+
+        AwNetLogService.cleanUpNetLogDirectory();
+        Assert.assertEquals(
+                "Expected only one unexpired net log but the directory has wrong number of files: "
+                        + Arrays.toString(directory.listFiles()),
+                1,
+                directory.listFiles().length);
     }
 }
