@@ -73,7 +73,10 @@ public class SidePanelContainerCoordinatorIntegrationTest {
         var sidePanelContent = createSidePanelContent("Side Panel Content");
 
         // Act.
-        ThreadUtils.runOnUiThreadBlocking(() -> coordinator.populateContent(sidePanelContent));
+        ThreadUtils.runOnUiThreadBlocking(
+                () ->
+                        coordinator.populateContent(
+                                sidePanelContent, mOnAnimationFinishedCallbackMock));
         FrameLayout containerView = waitForContainerViewWithValidWidth(coordinator);
 
         // Assert.
@@ -87,12 +90,18 @@ public class SidePanelContainerCoordinatorIntegrationTest {
         // Arrange.
         var coordinator = getSidePanelContainerCoordinator();
         var sidePanelContent1 = createSidePanelContent("Side Panel Content 1");
-        ThreadUtils.runOnUiThreadBlocking(() -> coordinator.populateContent(sidePanelContent1));
+        ThreadUtils.runOnUiThreadBlocking(
+                () ->
+                        coordinator.populateContent(
+                                sidePanelContent1, mOnAnimationFinishedCallbackMock));
         waitForContainerViewWithValidWidth(coordinator);
 
         // Act.
         var sidePanelContent2 = createSidePanelContent("Side Panel Content 2");
-        ThreadUtils.runOnUiThreadBlocking(() -> coordinator.populateContent(sidePanelContent2));
+        ThreadUtils.runOnUiThreadBlocking(
+                () ->
+                        coordinator.populateContent(
+                                sidePanelContent2, mOnAnimationFinishedCallbackMock));
         FrameLayout containerView = waitForContainerViewWithValidWidth(coordinator);
 
         // Assert.
@@ -108,7 +117,10 @@ public class SidePanelContainerCoordinatorIntegrationTest {
         var sidePanelContent = createSidePanelContent("Side Panel Content");
 
         // Act.
-        ThreadUtils.runOnUiThreadBlocking(() -> coordinator.populateContent(sidePanelContent));
+        ThreadUtils.runOnUiThreadBlocking(
+                () ->
+                        coordinator.populateContent(
+                                sidePanelContent, mOnAnimationFinishedCallbackMock));
         FrameLayout containerView = waitForContainerViewWithValidWidth(coordinator);
 
         // Assert.
@@ -126,7 +138,10 @@ public class SidePanelContainerCoordinatorIntegrationTest {
         // Arrange.
         var coordinator = getSidePanelContainerCoordinator();
         var sidePanelContent = createSidePanelContent("Side Panel Content To Remove");
-        ThreadUtils.runOnUiThreadBlocking(() -> coordinator.populateContent(sidePanelContent));
+        ThreadUtils.runOnUiThreadBlocking(
+                () ->
+                        coordinator.populateContent(
+                                sidePanelContent, mOnAnimationFinishedCallbackMock));
         FrameLayout containerView = waitForContainerViewWithValidWidth(coordinator);
 
         // Act.
@@ -155,7 +170,10 @@ public class SidePanelContainerCoordinatorIntegrationTest {
         // Arrange.
         var coordinator = getSidePanelContainerCoordinator();
         var sidePanelContent = createSidePanelContent("Side Panel Content");
-        ThreadUtils.runOnUiThreadBlocking(() -> coordinator.populateContent(sidePanelContent));
+        ThreadUtils.runOnUiThreadBlocking(
+                () ->
+                        coordinator.populateContent(
+                                sidePanelContent, mOnAnimationFinishedCallbackMock));
         waitForContainerViewWithValidWidth(coordinator);
 
         // Assert.
@@ -170,7 +188,10 @@ public class SidePanelContainerCoordinatorIntegrationTest {
         var coordinator = getSidePanelContainerCoordinator();
         var sidePanelContent1 = createSidePanelContent("Side Panel Content 1");
         var sidePanelContent2 = createSidePanelContent("Side Panel Content 2");
-        ThreadUtils.runOnUiThreadBlocking(() -> coordinator.populateContent(sidePanelContent1));
+        ThreadUtils.runOnUiThreadBlocking(
+                () ->
+                        coordinator.populateContent(
+                                sidePanelContent1, mOnAnimationFinishedCallbackMock));
         waitForContainerViewWithValidWidth(coordinator);
 
         // Assert.
@@ -184,7 +205,10 @@ public class SidePanelContainerCoordinatorIntegrationTest {
         // Arrange.
         var coordinator = getSidePanelContainerCoordinator();
         var sidePanelContent = createSidePanelContent("Side Panel Content To Remove");
-        ThreadUtils.runOnUiThreadBlocking(() -> coordinator.populateContent(sidePanelContent));
+        ThreadUtils.runOnUiThreadBlocking(
+                () ->
+                        coordinator.populateContent(
+                                sidePanelContent, mOnAnimationFinishedCallbackMock));
         waitForContainerViewWithValidWidth(coordinator);
         ThreadUtils.runOnUiThreadBlocking(
                 () -> coordinator.removeContentAndClose(mOnAnimationFinishedCallbackMock, true));

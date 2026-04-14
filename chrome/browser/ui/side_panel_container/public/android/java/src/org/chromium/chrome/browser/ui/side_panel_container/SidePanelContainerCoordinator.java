@@ -34,9 +34,13 @@ public interface SidePanelContainerCoordinator {
      * <p>This method is intended for a side panel feature.
      *
      * <p>If the container is closed, calling this method will show the container. If the container
-     * already has content, the existing content will be replaced.
+     * already has content, the existing content will be replaced with no animation.
+     *
+     * @param content Wrapper object for the content to show in the side panel.
+     * @param onAnimationFinishedCallback Callback to invoke after content is populated.
      */
-    void populateContent(SidePanelContent content);
+    void populateContent(
+            SidePanelContent content, Callback<@Nullable Void> onAnimationFinishedCallback);
 
     /**
      * Removes {@link SidePanelContent} from this side panel container and closes the container.

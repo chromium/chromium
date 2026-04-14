@@ -72,7 +72,8 @@ final class SidePanelContainerCoordinatorImpl
     }
 
     @Override
-    public void populateContent(SidePanelContent content) {
+    public void populateContent(
+            SidePanelContent content, Callback<@Nullable Void> onAnimationFinishedCallback) {
         log(TAG, "populateContent", content);
         ThreadUtils.assertOnUiThread();
         mCurrentContent = content;

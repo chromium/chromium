@@ -61,6 +61,18 @@ void SidePanelCoordinatorAndroid::Destroy(JNIEnv* env) {
   delete this;
 }
 
+void SidePanelCoordinatorAndroid::NotifyOpenAnimationFinished(
+    JNIEnv* env,
+    int32_t panel_type_int) {
+  SPLOG("NotifyOpenAnimationFinished - panel_type: " << panel_type_int);
+
+  CHECK(state_ == SidePanelState::kOpening)
+      << "Should only receive open animation finished callback when side "
+         "panel is opening.";
+
+  state_ = SidePanelState::kShown;
+}
+
 void SidePanelCoordinatorAndroid::NotifyCloseAnimationFinished(
     JNIEnv* env,
     int32_t panel_type_int) {

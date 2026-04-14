@@ -51,6 +51,7 @@ class SidePanelCoordinatorAndroid : public SidePanelUIBase {
   // called from Java via JNI, see `SidePanelCoordinatorAndroidImpl.java`.
   void Destroy(JNIEnv* env);
   void NotifyCloseAnimationFinished(JNIEnv* env, int32_t panel_type_int);
+  void NotifyOpenAnimationFinished(JNIEnv* env, int32_t panel_type_int);
 
   // Implements `SidePanelUI`:
   void ShowFrom(SidePanelEntryKey entry_key,
