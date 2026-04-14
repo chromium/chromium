@@ -573,7 +573,8 @@ TEST_F(PlusAddressServiceRequestsTest,
       identity_manager()->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin);
   identity_env().UpdatePersistentErrorOfRefreshTokenForAccount(
       primary_account.account_id,
-      GoogleServiceAuthError(GoogleServiceAuthError::INVALID_GAIA_CREDENTIALS));
+      GoogleServiceAuthError::FromInvalidGaiaCredentialsReason(
+          GoogleServiceAuthError::InvalidGaiaCredentialsReason::UNKNOWN));
 
   // The auth change calls the callback with an error.
   ASSERT_TRUE(future.Wait());
@@ -596,7 +597,8 @@ TEST_F(PlusAddressServiceRequestsTest,
   // Toggle creation off by triggering an error for the primary refresh token.
   identity_env().UpdatePersistentErrorOfRefreshTokenForAccount(
       primary_account.account_id,
-      GoogleServiceAuthError(GoogleServiceAuthError::INVALID_GAIA_CREDENTIALS));
+      GoogleServiceAuthError::FromInvalidGaiaCredentialsReason(
+          GoogleServiceAuthError::InvalidGaiaCredentialsReason::UNKNOWN));
 
   // Verify that Plus Address creation doesn't occur.
   PlusProfile profile = test::CreatePlusProfile();
@@ -608,8 +610,7 @@ TEST_F(PlusAddressServiceRequestsTest,
 
   // Toggle creation back on by removing the error.
   identity_env().UpdatePersistentErrorOfRefreshTokenForAccount(
-      primary_account.account_id,
-      GoogleServiceAuthError(GoogleServiceAuthError::NONE));
+      primary_account.account_id, GoogleServiceAuthError::AuthErrorNone());
 
   // Verify that Plus Address creation occurs and makes a network request.
   TestFuture<const PlusProfileOrError&> reserve;
@@ -1081,20 +1082,21 @@ TEST_F(PlusAddressServiceSignoutTest,
 
   // Setting to NONE doesn't disable the service.
   identity_env().UpdatePersistentErrorOfRefreshTokenForAccount(
-      primary_account().account_id,
-      GoogleServiceAuthError(GoogleServiceAuthError::NONE));
+      primary_account().account_id, GoogleServiceAuthError::AuthErrorNone());
   EXPECT_TRUE(service().IsEnabled());
 
   // The PlusAddressService isn't disabled for secondary account auth errors.
   identity_env().UpdatePersistentErrorOfRefreshTokenForAccount(
       secondary_account().account_id,
-      GoogleServiceAuthError(GoogleServiceAuthError::INVALID_GAIA_CREDENTIALS));
+      GoogleServiceAuthError::FromInvalidGaiaCredentialsReason(
+          GoogleServiceAuthError::InvalidGaiaCredentialsReason::UNKNOWN));
   EXPECT_TRUE(service().IsEnabled());
 
   // Being in the "sync-paused" state results in this error.
   identity_env().UpdatePersistentErrorOfRefreshTokenForAccount(
       primary_account().account_id,
-      GoogleServiceAuthError(GoogleServiceAuthError::INVALID_GAIA_CREDENTIALS));
+      GoogleServiceAuthError::FromInvalidGaiaCredentialsReason(
+          GoogleServiceAuthError::InvalidGaiaCredentialsReason::UNKNOWN));
   EXPECT_FALSE(service().IsEnabled());
 
   // Ensure that the local data is cleared on disabling.

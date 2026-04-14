@@ -462,7 +462,8 @@ TEST_P(PlusAddressCreationRequests, RunCallbackOnOauthError) {
   base::test::TestFuture<const PlusProfileOrError&> future;
   MakeCreationRequest(test::CreatePlusProfile(), future.GetCallback());
   identity_env().WaitForAccessTokenRequestIfNecessaryAndRespondWithError(
-      GoogleServiceAuthError(GoogleServiceAuthError::INVALID_GAIA_CREDENTIALS));
+      GoogleServiceAuthError::FromInvalidGaiaCredentialsReason(
+          GoogleServiceAuthError::InvalidGaiaCredentialsReason::UNKNOWN));
 
   // Verify that no network requests are made.
   EXPECT_EQ(url_loader_factory().NumPending(), 0);
@@ -791,7 +792,8 @@ TEST_F(PlusAddressAuthToken, AuthErrorWithMultipleAccounts) {
       identity_env().MakeAccountAvailable("secondary@foo.com");
   identity_env().UpdatePersistentErrorOfRefreshTokenForAccount(
       secondary.account_id,
-      GoogleServiceAuthError(GoogleServiceAuthError::INVALID_GAIA_CREDENTIALS));
+      GoogleServiceAuthError::FromInvalidGaiaCredentialsReason(
+          GoogleServiceAuthError::InvalidGaiaCredentialsReason::UNKNOWN));
   InitClient();
 
   base::test::TestFuture<std::optional<std::string>> callback;
@@ -832,7 +834,8 @@ TEST_F(PlusAddressAuthToken, RequestFails_ManyCallers) {
 
   // Although we failed to get a token, each callback should still be run.
   identity_env().WaitForAccessTokenRequestIfNecessaryAndRespondWithError(
-      GoogleServiceAuthError(GoogleServiceAuthError::INVALID_GAIA_CREDENTIALS));
+      GoogleServiceAuthError::FromInvalidGaiaCredentialsReason(
+          GoogleServiceAuthError::InvalidGaiaCredentialsReason::UNKNOWN));
   EXPECT_FALSE(first.Get().has_value());
   EXPECT_FALSE(second.Get().has_value());
   EXPECT_FALSE(third.Get().has_value());
