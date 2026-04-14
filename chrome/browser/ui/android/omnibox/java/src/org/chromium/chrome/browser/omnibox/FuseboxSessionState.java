@@ -7,7 +7,6 @@ package org.chromium.chrome.browser.omnibox;
 import org.chromium.base.Callback;
 import org.chromium.base.ResettersForTesting;
 import org.chromium.base.UserData;
-import org.chromium.base.UserDataHost;
 import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.base.supplier.OneShotCallback;
 import org.chromium.build.annotations.NullMarked;
@@ -84,10 +83,9 @@ public class FuseboxSessionState implements UserData {
     public static @Nullable FuseboxSessionState from(LocationBarDataProvider dataProvider) {
         if (sInstanceForTesting != null) return sInstanceForTesting.orElse(null);
 
-        var userDataHost = dataProvider.getUserDataHost();
-        if (userDataHost == null) return null;
+        var state = dataProvider.getFuseboxSessionState();
+        if (state == null) return null;
 
-        var state = getSessionForTab(userDataHost);
         // Re-apply page metadata in case of ephemeral session, background reload etc.
         state.mAutocompleteInput.setPageClassification(dataProvider.getPageClassification(false));
         state.mAutocompleteInput.setPageUrl(dataProvider.getCurrentGurl());
@@ -95,23 +93,8 @@ public class FuseboxSessionState implements UserData {
         return state;
     }
 
-    /**
-     * Returns session state for the supplied tab.
-     *
-     * @param userDataHost The tab to retrieve the session state for.
-     * @return FuseboxSessionState for the supplied UserDataHost.
-     */
-    private static FuseboxSessionState getSessionForTab(UserDataHost userDataHost) {
-        FuseboxSessionState state = userDataHost.getUserData(FuseboxSessionState.class);
-        if (state == null) {
-            state = new FuseboxSessionState();
-            userDataHost.setUserData(FuseboxSessionState.class, state);
-        }
-        return state;
-    }
-
     /** Constructs a new, empty FuseboxSessionState. */
-    private FuseboxSessionState() {
+    public FuseboxSessionState() {
         if (OmniboxFeatures.sShowModelPicker.getValue()) {
             mAutocompleteInput.getRequestTypeSupplier().addSyncObserver(mOnRequestTypeChanged);
         }

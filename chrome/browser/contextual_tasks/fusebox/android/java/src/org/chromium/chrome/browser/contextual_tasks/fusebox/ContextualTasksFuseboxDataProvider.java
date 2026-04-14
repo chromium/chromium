@@ -12,12 +12,12 @@ import androidx.annotation.ColorRes;
 import androidx.annotation.DrawableRes;
 import androidx.annotation.StringRes;
 
-import org.chromium.base.UserDataHost;
 import org.chromium.base.supplier.NonNullObservableSupplier;
 import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider.ControlsPosition;
+import org.chromium.chrome.browser.omnibox.FuseboxSessionState;
 import org.chromium.chrome.browser.omnibox.LocationBarDataProvider;
 import org.chromium.chrome.browser.omnibox.NewTabPageDelegate;
 import org.chromium.chrome.browser.omnibox.UrlBarData;
@@ -33,7 +33,7 @@ import org.chromium.url.GURL;
 public class ContextualTasksFuseboxDataProvider implements LocationBarDataProvider {
     private final NonNullObservableSupplier<@ControlsPosition Integer> mToolbarPosition =
             ObservableSuppliers.createNonNull(ControlsPosition.TOP);
-    private final UserDataHost mUserDataHost = new UserDataHost();
+    private final FuseboxSessionState mFuseboxSessionState = new FuseboxSessionState();
     private @ColorInt int mPrimaryColor;
     private boolean mIsIncognito;
 
@@ -43,7 +43,7 @@ public class ContextualTasksFuseboxDataProvider implements LocationBarDataProvid
     }
 
     void destroy() {
-        mUserDataHost.destroy();
+        mFuseboxSessionState.destroy();
     }
 
     @Override
@@ -87,8 +87,8 @@ public class ContextualTasksFuseboxDataProvider implements LocationBarDataProvid
     }
 
     @Override
-    public UserDataHost getUserDataHost() {
-        return mUserDataHost;
+    public FuseboxSessionState getFuseboxSessionState() {
+        return mFuseboxSessionState;
     }
 
     @Override

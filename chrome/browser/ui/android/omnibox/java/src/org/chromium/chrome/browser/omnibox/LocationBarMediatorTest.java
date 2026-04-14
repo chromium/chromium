@@ -229,6 +229,7 @@ public class LocationBarMediatorTest {
     private final SettableNonNullObservableSupplier<@FuseboxState Integer> mFuseboxStateSupplier =
             ObservableSuppliers.createNonNull(FuseboxState.EXPANDED);
     private final UserDataHost mTabUserDataHost = new UserDataHost();
+    private final FuseboxSessionState mSessionState = new FuseboxSessionState();
 
     // Members capturing final state of the LocationBarLayout elements.
     private boolean mNavigateButtonIsVisible;
@@ -261,10 +262,7 @@ public class LocationBarMediatorTest {
                 .when(mLocationBarDataProvider)
                 .getPrimaryColor();
         lenient().doReturn(mTab).when(mLocationBarDataProvider).getTab();
-        lenient()
-                .doAnswer(i -> mLocationBarDataProvider.getTab().getUserDataHost())
-                .when(mLocationBarDataProvider)
-                .getUserDataHost();
+        lenient().doReturn(mSessionState).when(mLocationBarDataProvider).getFuseboxSessionState();
         lenient()
                 .doReturn(mNewTabPageDelegate)
                 .when(mLocationBarDataProvider)
@@ -1819,9 +1817,9 @@ public class LocationBarMediatorTest {
         mMediator.beginInput(new AutocompleteInput().setUserText(newText));
         ShadowLooper.runUiThreadTasks();
 
-        // Set up and switch to a different tab (we technically only need user data host).
-        UserDataHost previousTabUserDataHost = new UserDataHost();
-        doReturn(previousTabUserDataHost).when(mLocationBarDataProvider).getUserDataHost();
+        // Set up and switch to a different tab (we technically only need fusebox session state).
+        FuseboxSessionState previousTabSessionState = new FuseboxSessionState();
+        doReturn(previousTabSessionState).when(mLocationBarDataProvider).getFuseboxSessionState();
         mTabletMediator.onTabChanged(null);
 
         // Simulate typing in the other tab.
@@ -1829,8 +1827,8 @@ public class LocationBarMediatorTest {
         mMediator.beginInput(new AutocompleteInput().setUserText(previousText));
         ShadowLooper.runUiThreadTasks();
 
-        // Emulate a tab switch back to original tab (again, user data host suffices).
-        doReturn(mTabUserDataHost).when(mLocationBarDataProvider).getUserDataHost();
+        // Emulate a tab switch back to original tab (again, fusebox session state suffices).
+        doReturn(mSessionState).when(mLocationBarDataProvider).getFuseboxSessionState();
         mTabletMediator.onTabChanged(null);
         ShadowLooper.runUiThreadTasks();
 
@@ -1856,7 +1854,7 @@ public class LocationBarMediatorTest {
         doReturn(newTabPageDelegate).when(mLocationBarDataProvider).getNewTabPageDelegate();
         doReturn(JUnitTestGURLs.NTP_URL).when(mLocationBarDataProvider).getCurrentGurl();
 
-        // Prepare a state to be restored for mTab.
+        // Prepare a session state to be restored.
         String newText = "new text";
         final int newSelectionStart = 2;
         final int newSelectionEnd = 6;
@@ -1865,26 +1863,23 @@ public class LocationBarMediatorTest {
         newState.getAutocompleteInput().setSelection(newSelectionStart, newSelectionEnd);
         newState.activate(mProfileSupplier, null);
 
-        Tab previousTab = Mockito.mock(Tab.class);
-        UserDataHost previousTabUserDataHost = new UserDataHost();
-        doReturn(previousTabUserDataHost).when(previousTab).getUserDataHost();
+        FuseboxSessionState previousState = new FuseboxSessionState();
+        doReturn(previousState).when(mLocationBarDataProvider).getFuseboxSessionState();
 
         // Emulate a state where the omnibox is focused and user has typed a text.
-        doReturn(previousTab).when(mLocationBarDataProvider).getTab();
         mTabletMediator.onUrlFocusChange(true);
         String previousText = "previous text";
         final int previousSelectionStart = 1;
         final int previousSelectionEnd = 5;
 
         // Note: input state is tracked by autocomplete.
-        var previousState = getSession();
         previousState.getAutocompleteInput().setUserText(previousText);
         doReturn(previousSelectionStart).when(mUrlCoordinator).getSelectionStart();
         doReturn(previousSelectionEnd).when(mUrlCoordinator).getSelectionEnd();
 
-        // Emulate a tab switch from previousTab to mTab.
-        doReturn(mTab).when(mLocationBarDataProvider).getTab();
-        mTabletMediator.onTabChanged(previousTab);
+        // Restore the original session state.
+        doReturn(newState).when(mLocationBarDataProvider).getFuseboxSessionState();
+        mTabletMediator.onTabChanged(null);
         mTabletMediator.onUrlChanged(true);
 
         ArgumentCaptor<FuseboxSessionState> captor =
@@ -2333,6 +2328,6 @@ public class LocationBarMediatorTest {
     }
 
     private FuseboxSessionState getSession() {
-        return FuseboxSessionState.from(mLocationBarDataProvider);
+        return mSessionState;
     }
 }

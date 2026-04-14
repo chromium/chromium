@@ -9,12 +9,12 @@ import android.content.Context;
 import androidx.annotation.ColorInt;
 import androidx.annotation.ColorRes;
 
-import org.chromium.base.UserDataHost;
 import org.chromium.base.supplier.NonNullObservableSupplier;
 import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider.ControlsPosition;
+import org.chromium.chrome.browser.omnibox.FuseboxSessionState;
 import org.chromium.chrome.browser.omnibox.LocationBarDataProvider;
 import org.chromium.chrome.browser.omnibox.NewTabPageDelegate;
 import org.chromium.chrome.browser.omnibox.UrlBarData;
@@ -29,7 +29,7 @@ import org.chromium.url.GURL;
 class SearchBoxDataProvider implements LocationBarDataProvider {
     private final NonNullObservableSupplier<@ControlsPosition Integer> mToolbarPosition =
             ObservableSuppliers.createNonNull(ControlsPosition.TOP);
-    private final UserDataHost mUserDataHost = new UserDataHost();
+    private final FuseboxSessionState mFuseboxSessionState = new FuseboxSessionState();
 
     private /* PageClassification */ int mPageClassification;
     private @ColorInt int mPrimaryColor;
@@ -50,7 +50,7 @@ class SearchBoxDataProvider implements LocationBarDataProvider {
     }
 
     public void destroy() {
-        mUserDataHost.destroy();
+        mFuseboxSessionState.destroy();
     }
 
     @Override
@@ -94,8 +94,8 @@ class SearchBoxDataProvider implements LocationBarDataProvider {
     }
 
     @Override
-    public UserDataHost getUserDataHost() {
-        return mUserDataHost;
+    public FuseboxSessionState getFuseboxSessionState() {
+        return mFuseboxSessionState;
     }
 
     @Override

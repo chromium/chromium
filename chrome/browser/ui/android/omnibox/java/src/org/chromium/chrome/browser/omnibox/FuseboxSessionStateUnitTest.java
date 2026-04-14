@@ -23,7 +23,6 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
-import org.chromium.base.UserDataHost;
 import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.SettableMonotonicObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
@@ -52,7 +51,7 @@ public class FuseboxSessionStateUnitTest {
     @Before
     public void setUp() {
         mProfileSupplier = ObservableSuppliers.createMonotonic(mProfile);
-        doReturn(new UserDataHost()).when(mLocationBarDataProvider).getUserDataHost();
+        doReturn(new FuseboxSessionState()).when(mLocationBarDataProvider).getFuseboxSessionState();
         ComposeboxQueryControllerBridge.setInstanceForTesting(mComposeboxQueryControllerBridge);
         AutocompleteController.setInstanceForTesting(mAutocompleteController);
     }
@@ -60,7 +59,7 @@ public class FuseboxSessionStateUnitTest {
     @Test
     public void testSetActiveTool() {
         OmniboxFeatures.sShowModelPicker.setForTesting(true);
-        FuseboxSessionState session = FuseboxSessionState.from(mLocationBarDataProvider);
+        FuseboxSessionState session = new FuseboxSessionState();
         Runnable onFullyActivated =
                 () -> {
                     AutocompleteInput input = session.getAutocompleteInput();
@@ -81,7 +80,7 @@ public class FuseboxSessionStateUnitTest {
     @Test
     public void testSetActiveTool_disabledShowModelPicker() {
         OmniboxFeatures.sShowModelPicker.setForTesting(false);
-        FuseboxSessionState session = FuseboxSessionState.from(mLocationBarDataProvider);
+        FuseboxSessionState session = new FuseboxSessionState();
         Runnable onFullyActivated =
                 () -> {
                     AutocompleteInput input = session.getAutocompleteInput();
@@ -97,7 +96,7 @@ public class FuseboxSessionStateUnitTest {
     @Test
     public void testRequestTypeObserver() {
         OmniboxFeatures.sShowModelPicker.setForTesting(true);
-        FuseboxSessionState session = FuseboxSessionState.from(mLocationBarDataProvider);
+        FuseboxSessionState session = new FuseboxSessionState();
         assertTrue(session.getAutocompleteInput().getRequestTypeSupplier().hasObservers());
         session.destroy();
         assertFalse(session.getAutocompleteInput().getRequestTypeSupplier().hasObservers());
@@ -106,7 +105,7 @@ public class FuseboxSessionStateUnitTest {
     @Test
     public void testRequestTypeObserver_disabledShowModelPicker() {
         OmniboxFeatures.sShowModelPicker.setForTesting(false);
-        FuseboxSessionState session = FuseboxSessionState.from(mLocationBarDataProvider);
+        FuseboxSessionState session = new FuseboxSessionState();
         assertFalse(session.getAutocompleteInput().getRequestTypeSupplier().hasObservers());
     }
 
@@ -200,7 +199,7 @@ public class FuseboxSessionStateUnitTest {
     @Test
     public void testDestroy() {
         OmniboxFeatures.sShowModelPicker.setForTesting(true);
-        FuseboxSessionState session = FuseboxSessionState.from(mLocationBarDataProvider);
+        FuseboxSessionState session = new FuseboxSessionState();
         session.activate(mProfileSupplier, null);
         RobolectricUtil.runAllBackgroundAndUi();
 

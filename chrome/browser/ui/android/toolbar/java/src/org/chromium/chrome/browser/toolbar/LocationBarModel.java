@@ -22,13 +22,13 @@ import org.jni_zero.NativeMethods;
 
 import org.chromium.base.ObserverList;
 import org.chromium.base.TraceEvent;
-import org.chromium.base.UserDataHost;
 import org.chromium.base.supplier.NonNullObservableSupplier;
 import org.chromium.build.annotations.EnsuresNonNullIf;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider.ControlsPosition;
 import org.chromium.chrome.browser.omnibox.ChromeAutocompleteSchemeClassifier;
+import org.chromium.chrome.browser.omnibox.FuseboxSessionState;
 import org.chromium.chrome.browser.omnibox.LocationBarDataProvider;
 import org.chromium.chrome.browser.omnibox.NewTabPageDelegate;
 import org.chromium.chrome.browser.omnibox.UrlBarData;
@@ -324,9 +324,16 @@ public class LocationBarModel implements ToolbarDataProvider, LocationBarDataPro
     }
 
     @Override
-    public @Nullable UserDataHost getUserDataHost() {
-        if (!hasTab()) return null;
-        return assumeNonNull(getTab()).getUserDataHost();
+    public @Nullable FuseboxSessionState getFuseboxSessionState() {
+        Tab tab = getTab();
+        if (tab == null) return null;
+        var userDataHost = tab.getUserDataHost();
+        FuseboxSessionState state = userDataHost.getUserData(FuseboxSessionState.class);
+        if (state == null) {
+            state = new FuseboxSessionState();
+            userDataHost.setUserData(FuseboxSessionState.class, state);
+        }
+        return state;
     }
 
     @Override
