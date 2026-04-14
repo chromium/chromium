@@ -59,14 +59,6 @@ export function getStringForCurrentLocale(localizedStrings: LocalizedString[]):
 }
 
 /**
- * @param args The arguments for the observer.
- * @return Whether all arguments are defined.
- */
-export function observerDepsDefined(args: any[]): boolean {
-  return args.every(arg => arg !== undefined);
-}
-
-/**
  * Returns background images (icon and dropdown arrow) for use in a md-select.
  * @param iconset The iconset the icon is in.
  * @param iconName The icon name

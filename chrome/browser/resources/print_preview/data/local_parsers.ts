@@ -9,7 +9,7 @@ import type {DestinationOptionalParams} from './destination.js';
 import {Destination, DestinationOrigin, PrinterType} from './destination.js';
 
 interface ObjectMap {
-  [k: string]: any;
+  [k: string]: string;
 }
 
 export interface LocalDestinationInfo {

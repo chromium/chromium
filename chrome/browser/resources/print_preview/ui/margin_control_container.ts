@@ -137,8 +137,7 @@ export class PrintPreviewMarginControlContainerElement extends
 
   private computeAvailable_(): boolean {
     return this.previewLoaded &&
-        ((this.getSettingValue('margins') as MarginsType) ===
-         MarginsType.CUSTOM) &&
+        (this.getSettingValue('margins') === MarginsType.CUSTOM) &&
         !!this.pageSize;
   }
 

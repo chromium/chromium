@@ -39,13 +39,13 @@ suite('LayoutSettingsTest', function() {
     // Verify that the selected option and names are as expected.
     const select = layoutSection.shadowRoot.querySelector('select')!;
     assertEquals('portrait', select.value);
-    assertFalse(layoutSection.getSettingValue('layout') as boolean);
+    assertFalse(layoutSection.getSettingValue('layout'));
     assertFalse(layoutSection.getSetting('layout').setFromUi);
     assertEquals(2, select.options.length);
 
     // Verify that selecting an new option in the dropdown sets the setting.
     await selectOption(layoutSection, 'landscape');
-    assertTrue(layoutSection.getSettingValue('layout') as boolean);
+    assertTrue(layoutSection.getSettingValue('layout'));
     assertTrue(layoutSection.getSetting('layout').setFromUi);
   });
 });

@@ -422,7 +422,7 @@ export class PrintPreviewPagesSettingsElement extends
    *     user.
    */
   private getNupPages_(): number[] {
-    const pagesPerSheet = this.getSettingValue('pagesPerSheet') as number;
+    const pagesPerSheet = this.getSettingValue('pagesPerSheet');
     if (pagesPerSheet <= 1 || this.pagesToPrint_.length === 0) {
       return this.pagesToPrint_;
     }
@@ -453,8 +453,8 @@ export class PrintPreviewPagesSettingsElement extends
     }
 
     const nupPages = this.getNupPages_();
-    const rangesChanged = !areRangesEqual(
-        this.rangesToPrint_, this.getSettingValue('ranges') as Range[]);
+    const rangesChanged =
+        !areRangesEqual(this.rangesToPrint_, this.getSettingValue('ranges'));
     if (rangesChanged ||
         nupPages.length !== this.getSettingValue('pages').length) {
       this.setSetting('pages', nupPages);

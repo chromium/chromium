@@ -56,8 +56,8 @@ suite('PagesSettingsTest', function() {
     const rangesValue = pagesSection.getSettingValue('ranges');
     assertEquals(expectedRanges.length, rangesValue.length);
     expectedRanges.forEach((range: Range, index: number) => {
-      assertEquals(range.to, rangesValue[index].to);
-      assertEquals(range.from, rangesValue[index].from);
+      assertEquals(range.to, rangesValue[index]!.to);
+      assertEquals(range.from, rangesValue[index]!.from);
     });
     assertEquals(!invalid, pagesSection.getSetting('pages').valid);
     assertEquals(

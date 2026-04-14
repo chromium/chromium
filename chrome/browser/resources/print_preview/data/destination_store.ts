@@ -216,8 +216,7 @@ export class DestinationStore extends EventTarget {
    *     DestinationStore constructor.
    */
   constructor(
-      addListenerCallback:
-          (eventName: string, listener: (p1: any, p2?: any) => void) => void) {
+      addListenerCallback: (eventName: string, listener: Function) => void) {
     super();
 
     this.destinationSearchStatus_ = new Map([

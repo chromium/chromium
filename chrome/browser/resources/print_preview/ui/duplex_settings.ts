@@ -110,7 +110,7 @@ export class PrintPreviewDuplexSettingsElement extends
 
   protected updateCollapseOpened_() {
     this.collapseOpened_ = this.getSetting('duplexShortEdge').available &&
-        (this.getSettingValue('duplex') as boolean);
+        this.getSettingValue('duplex');
   }
 
   /**

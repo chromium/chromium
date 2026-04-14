@@ -177,7 +177,7 @@ export class PrintPreviewScalingSettingsElement extends
    * Updates the input string when scaling setting is set.
    */
   private onScalingSettingChanged_() {
-    const value = this.getSetting('scaling').value as string;
+    const value = this.getSetting('scaling').value;
     this.lastValidScaling_ = value;
     this.currentValue_ = value;
   }

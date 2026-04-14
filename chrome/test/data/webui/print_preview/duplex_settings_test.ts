@@ -69,8 +69,8 @@ suite('DuplexSettingsTest', function() {
     const collapse = duplexSection.shadowRoot.querySelector('cr-collapse')!;
     assertFalse(checkbox.checked);
     assertFalse(collapse.opened);
-    assertFalse(duplexSection.getSettingValue('duplex') as boolean);
-    assertFalse(duplexSection.getSettingValue('duplexShortEdge') as boolean);
+    assertFalse(duplexSection.getSettingValue('duplex'));
+    assertFalse(duplexSection.getSettingValue('duplexShortEdge'));
     assertFalse(duplexSection.getSetting('duplex').setFromUi);
     assertFalse(duplexSection.getSetting('duplexShortEdge').setFromUi);
 
@@ -79,8 +79,8 @@ suite('DuplexSettingsTest', function() {
         new CustomEvent('change', {bubbles: true, composed: true}));
     await microtasksFinished();
     assertTrue(collapse.opened);
-    assertTrue(duplexSection.getSettingValue('duplex') as boolean);
-    assertFalse(duplexSection.getSettingValue('duplexShortEdge') as boolean);
+    assertTrue(duplexSection.getSettingValue('duplex'));
+    assertFalse(duplexSection.getSettingValue('duplexShortEdge'));
     assertTrue(duplexSection.getSetting('duplex').setFromUi);
     assertFalse(duplexSection.getSetting('duplexShortEdge').setFromUi);
 
@@ -90,8 +90,8 @@ suite('DuplexSettingsTest', function() {
 
     // Verify that selecting an new option in the dropdown sets the setting.
     await selectOption(duplexSection, DuplexMode.SHORT_EDGE.toString());
-    assertTrue(duplexSection.getSettingValue('duplex') as boolean);
-    assertTrue(duplexSection.getSettingValue('duplexShortEdge') as boolean);
+    assertTrue(duplexSection.getSettingValue('duplex'));
+    assertTrue(duplexSection.getSettingValue('duplexShortEdge'));
     assertTrue(duplexSection.getSetting('duplex').setFromUi);
     assertTrue(duplexSection.getSetting('duplexShortEdge').setFromUi);
   });

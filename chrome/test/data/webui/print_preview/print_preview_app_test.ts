@@ -69,8 +69,8 @@ suite('PrintPreviewAppTest', function() {
     const copies = 2;
     const duplex = DuplexMode.LONG_EDGE;
     webUIListenerCallback('print-preset-options', true, copies, duplex);
-    assertEquals(copies, page.getSettingValue('copies') as number);
-    assertTrue(page.getSettingValue('duplex') as boolean);
+    assertEquals(copies, page.getSettingValue('copies'));
+    assertTrue(page.getSettingValue('duplex'));
     assertFalse(page.getSetting('duplex').setFromUi);
     assertFalse(page.getSetting('copies').setFromUi);
   });

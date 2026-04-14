@@ -76,11 +76,11 @@ export class PrintPreviewHeaderElement extends PrintPreviewHeaderElementBase {
   }
 
   private updateSheetCount_() {
-    let sheets = (this.getSettingValue('pages') as number[]).length;
+    let sheets = this.getSettingValue('pages').length;
     if (this.getSettingValue('duplex')) {
       sheets = Math.ceil(sheets / 2);
     }
-    this.sheetCount_ = sheets * (this.getSettingValue('copies') as number);
+    this.sheetCount_ = sheets * this.getSettingValue('copies');
   }
 
   private isPdf_(): boolean {

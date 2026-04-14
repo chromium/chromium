@@ -184,7 +184,7 @@ suite('ModelSettingsAvailabilityTest', function() {
       assertFalse(model.getSetting('color').available);
       assertEquals(
           capabilityAndValue.expectedValue,
-          model.getSetting('color').unavailableValue as boolean);
+          model.getSetting('color').unavailableValue);
     });
 
     // Each of these settings should make the setting available, with the

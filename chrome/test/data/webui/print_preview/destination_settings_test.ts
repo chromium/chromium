@@ -370,7 +370,7 @@ suite('DestinationSettingsTest', function() {
         destinationSettings.getSettingValue('recentDestinations');
     assertEquals(expectedDestinationIds.length, recentDestinations.length);
     expectedDestinationIds.forEach((expectedId, index) => {
-      assertEquals(expectedId, recentDestinations[index].id);
+      assertEquals(expectedId, recentDestinations[index]!.id);
     });
   }
 

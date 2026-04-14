@@ -102,9 +102,9 @@ suite('AdvancedDialogTest', function() {
     await whenDialogClose;
     // Check that the setting has been set.
     const setting = dialog.getSettingValue('vendorItems');
-    assertEquals('6', setting.printArea);
-    assertEquals('1', setting.paperType);
-    assertEquals('XYZ', setting.watermark);
+    assertEquals('6', setting['printArea']);
+    assertEquals('1', setting['paperType']);
+    assertEquals('XYZ', setting['watermark']);
     assertTrue(dialog.getSetting('vendorItems').setFromUi);
   });
 
@@ -130,9 +130,9 @@ suite('AdvancedDialogTest', function() {
     await whenDialogClose;
     // Check that the setting has been set.
     const setting = dialog.getSettingValue('vendorItems');
-    assertEquals('6', setting.printArea);
-    assertEquals('1', setting.paperType);
-    assertEquals('Hello World', setting.watermark);
+    assertEquals('6', setting['printArea']);
+    assertEquals('1', setting['paperType']);
+    assertEquals('Hello World', setting['watermark']);
   });
 
   // Tests that the advanced settings dialog does not update the settings
@@ -151,9 +151,9 @@ suite('AdvancedDialogTest', function() {
     await whenDialogClose;
     // Check that the setting has not been set.
     const setting = dialog.getSettingValue('vendorItems');
-    assertEquals(undefined, setting.printArea);
-    assertEquals(undefined, setting.paperType);
-    assertEquals(undefined, setting.watermark);
+    assertEquals(undefined, setting['printArea']);
+    assertEquals(undefined, setting['paperType']);
+    assertEquals(undefined, setting['watermark']);
   });
 
   // Tests that the dialog correctly shows and hides settings based on the

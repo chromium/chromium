@@ -180,8 +180,7 @@ export class PrintPreviewDestinationSettingsElement extends
       defaultPrinter: string, pdfPrinterDisabled: boolean,
       serializedDefaultDestinationRulesStr: string|null) {
     this.pdfPrinterDisabled_ = pdfPrinterDisabled;
-    let recentDestinations =
-        this.getSettingValue('recentDestinations') as RecentDestination[];
+    let recentDestinations = this.getSettingValue('recentDestinations');
 
     recentDestinations = recentDestinations.slice(
         0, this.getRecentDestinationsDisplayCount_(recentDestinations));
@@ -275,8 +274,7 @@ export class PrintPreviewDestinationSettingsElement extends
     // Determine if this destination is already in the recent destinations,
     // where in the array it is located, and whether or not it is visible.
     const newDestination = makeRecentDestination(this.destination);
-    const recentDestinations =
-        this.getSettingValue('recentDestinations') as RecentDestination[];
+    const recentDestinations = this.getSettingValue('recentDestinations');
     let indexFound = -1;
     // Note: isVisible should be only be used if the destination is unpinned.
     // Although pinned destinations are always visible, isVisible may not
@@ -333,8 +331,7 @@ export class PrintPreviewDestinationSettingsElement extends
   }
 
   private updateDropdownDestinations_() {
-    const recentDestinations =
-        this.getSettingValue('recentDestinations') as RecentDestination[];
+    const recentDestinations = this.getSettingValue('recentDestinations');
     const updatedDestinations: Destination[] = [];
     let numDestinationsChecked = 0;
     for (const recent of recentDestinations) {

@@ -115,10 +115,10 @@ export class PrintPreviewCopiesSettingsElement extends
   private onSettingsChanged_() {
     const copies = this.getSetting('copies');
     if (this.inputValid_) {
-      this.currentValue_ = (copies.value as number).toString();
+      this.currentValue_ = copies.value.toString();
     }
     const collate = this.getSetting('collate');
-    this.$.collate.checked = collate.value as boolean;
+    this.$.collate.checked = collate.value;
   }
 
   /**

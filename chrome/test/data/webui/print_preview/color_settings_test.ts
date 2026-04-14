@@ -42,13 +42,13 @@ suite('ColorSettingsTest', function() {
     // Verify that the selected option and names are as expected.
     const select = colorSection.shadowRoot.querySelector('select')!;
     assertEquals('color', select.value);
-    assertTrue(colorSection.getSettingValue('color') as boolean);
+    assertTrue(colorSection.getSettingValue('color'));
     assertFalse(colorSection.getSetting('color').setFromUi);
     assertEquals(2, select.options.length);
 
     // Verify that selecting an new option in the dropdown sets the setting.
     await selectOption(colorSection, 'bw');
-    assertFalse(colorSection.getSettingValue('color') as boolean);
+    assertFalse(colorSection.getSettingValue('color'));
     assertTrue(colorSection.getSetting('color').setFromUi);
   });
 });

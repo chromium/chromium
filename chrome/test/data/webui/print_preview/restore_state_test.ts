@@ -44,10 +44,10 @@ suite('RestoreStateTest', function() {
         page.getSetting('mediaSize').value.width_microns);
     assertEquals(
         (stickySettings.vendorOptions! as {[key: string]: any})['paperType'],
-        page.getSetting('vendorItems').value.paperType);
+        page.getSetting('vendorItems').value['paperType']);
     assertEquals(
         (stickySettings.vendorOptions! as {[key: string]: any})['printArea'],
-        page.getSetting('vendorItems').value.printArea);
+        page.getSetting('vendorItems').value['printArea']);
 
     ([
       ['margins', 'marginsType'],

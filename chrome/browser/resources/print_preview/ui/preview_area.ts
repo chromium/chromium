@@ -302,7 +302,7 @@ export class PrintPreviewPreviewAreaElement extends
 
     this.pluginProxy_.resetPrintPreviewMode(
         previewUid, index, !this.getSettingValue('color'),
-        (this.getSettingValue('pages') as number[]), this.documentModifiable);
+        this.getSettingValue('pages'), this.documentModifiable);
   }
 
   /**
@@ -371,7 +371,7 @@ export class PrintPreviewPreviewAreaElement extends
     let index = this.getSettingValue('pages').indexOf(pageNumber);
     // When pagesPerSheet > 1, the backend will always return page indices 0 to
     // N-1, where N is the total page count of the N-upped document.
-    const pagesPerSheet = (this.getSettingValue('pagesPerSheet') as number);
+    const pagesPerSheet = this.getSettingValue('pagesPerSheet');
     if (pagesPerSheet > 1) {
       index = pageIndex;
     }
@@ -496,7 +496,7 @@ export class PrintPreviewPreviewAreaElement extends
    * @return Whether margin settings are valid for the print ticket.
    */
   protected marginsValid_(): boolean {
-    const type = this.getSettingValue('margins') as MarginsType;
+    const type = this.getSettingValue('margins');
     if (!Object.values(MarginsType).includes(type)) {
       // Unrecognized margins type.
       return false;
@@ -528,7 +528,7 @@ export class PrintPreviewPreviewAreaElement extends
     const lastTicket = this.lastTicket_;
 
     // Margins
-    const newMarginsType = this.getSettingValue('margins') as MarginsType;
+    const newMarginsType = this.getSettingValue('margins');
     if (newMarginsType !== lastTicket.marginsType &&
         newMarginsType !== MarginsType.CUSTOM) {
       return true;
@@ -565,10 +565,7 @@ export class PrintPreviewPreviewAreaElement extends
 
     // Simple settings: ranges, layout, header/footer, pages per sheet, fit to
     // page, css background, selection only, rasterize, scaling, dpi
-    if (!areRangesEqual(
-            (this.getSettingValue('ranges') as
-             Array<{to: number, from: number}>),
-            lastTicket.pageRange) ||
+    if (!areRangesEqual(this.getSettingValue('ranges'), lastTicket.pageRange) ||
         this.getSettingValue('layout') !== lastTicket.landscape ||
         this.getColorForTicket_() !== lastTicket.color ||
         this.getSettingValue('headerFooter') !==
@@ -617,8 +614,7 @@ export class PrintPreviewPreviewAreaElement extends
   /** @return Native color model of the destination. */
   private getColorForTicket_(): number {
     assert(this.destination);
-    return this.destination.getNativeColorModel(
-        this.getSettingValue('color') as boolean);
+    return this.destination.getNativeColorModel(this.getSettingValue('color'));
   }
 
   /** @return Scale factor for print ticket. */
@@ -714,19 +710,18 @@ export class PrintPreviewPreviewAreaElement extends
     const ticket: PreviewTicket = {
       pageRange: this.getSettingValue('ranges'),
       mediaSize: this.getSettingValue('mediaSize'),
-      landscape: this.getSettingValue('layout') as boolean,
+      landscape: this.getSettingValue('layout'),
       color: this.getColorForTicket_(),
-      headerFooterEnabled: this.getSettingValue('headerFooter') as boolean,
-      marginsType: this.getSettingValue('margins') as MarginsType,
-      pagesPerSheet: this.getSettingValue('pagesPerSheet') as number,
+      headerFooterEnabled: this.getSettingValue('headerFooter'),
+      marginsType: this.getSettingValue('margins'),
+      pagesPerSheet: this.getSettingValue('pagesPerSheet'),
       isFirstRequest: this.inFlightRequestId_ === 0,
       requestID: this.inFlightRequestId_,
       previewModifiable: this.documentModifiable,
       scaleFactor: this.getScaleFactorForTicket_(),
       scalingType: this.getSettingValue(this.getScalingSettingKey_()),
-      shouldPrintBackgrounds: this.getSettingValue('cssBackground') as boolean,
-      shouldPrintSelectionOnly: this.getSettingValue('selectionOnly') as
-          boolean,
+      shouldPrintBackgrounds: this.getSettingValue('cssBackground'),
+      shouldPrintSelectionOnly: this.getSettingValue('selectionOnly'),
       // NOTE: Even though the remaining fields don't directly relate to the
       // preview, they still need to be included.
       // e.g. printing::PrintSettingsFromJobSettings() still checks for them.
@@ -738,7 +733,7 @@ export class PrintPreviewPreviewAreaElement extends
       duplex: this.getSettingValue('duplex') ? DuplexMode.LONG_EDGE :
                                                DuplexMode.SIMPLEX,
       printerType: this.destination.type,
-      rasterizePDF: this.getSettingValue('rasterize') as boolean,
+      rasterizePDF: this.getSettingValue('rasterize'),
     };
 
     if (this.getSettingValue('margins') === MarginsType.CUSTOM) {

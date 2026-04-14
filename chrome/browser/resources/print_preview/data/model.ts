@@ -10,6 +10,7 @@ import type {PropertyValues} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
 import type {Policies} from '../native_layer.js';
 import {BackgroundGraphicsModeRestriction} from '../native_layer.js';
+import type {Range} from '../print_preview_utils.js';
 
 import type {CapabilityWithReset, Cdd, CddCapabilities, ColorOption, DpiOption, DuplexOption, MediaSizeOption} from './cdd.js';
 import {DuplexType} from './cdd.js';
@@ -28,9 +29,9 @@ import {Size} from './size.js';
  * setting, or an empty string if the setting should not be saved in the
  * serialized state.
  */
-export interface Setting {
-  value: any;
-  unavailableValue: any;
+export interface Setting<T> {
+  value: T;
+  unavailableValue: T;
   valid: boolean;
   available: boolean;
   // This property is set to true when this setting has a single value allowed
@@ -41,33 +42,36 @@ export interface Setting {
   setFromUi: boolean;
   key: string;
   updatesPreview: boolean;
-  policyDefaultValue?: any;
+  policyDefaultValue?: T;
 }
 
 export interface Settings {
-  pages: Setting;
-  copies: Setting;
-  collate: Setting;
-  layout: Setting;
-  color: Setting;
-  customMargins: Setting;
-  mediaSize: Setting;
-  margins: Setting;
-  dpi: Setting;
-  scaling: Setting;
-  scalingType: Setting;
-  scalingTypePdf: Setting;
-  duplex: Setting;
-  duplexShortEdge: Setting;
-  cssBackground: Setting;
-  selectionOnly: Setting;
-  headerFooter: Setting;
-  rasterize: Setting;
-  vendorItems: Setting;
-  otherOptions: Setting;
-  ranges: Setting;
-  pagesPerSheet: Setting;
-  recentDestinations: Setting;
+  pages: Setting<number[]>;
+  copies: Setting<number>;
+  collate: Setting<boolean>;
+  layout: Setting<boolean>;
+  color: Setting<boolean>;
+  // TODO(crbug.com/494464740) Change to Setting<MarginsSetting>.
+  customMargins: Setting<any>;
+  // TODO(crbug.com/494464740) Change to Setting<MediaSizeValue>.
+  mediaSize: Setting<any>;
+  margins: Setting<MarginsType>;
+  // TODO(crbug.com/494464740) Change to Setting<DpiOption>.
+  dpi: Setting<any>;
+  scaling: Setting<string>;
+  scalingType: Setting<ScalingType>;
+  scalingTypePdf: Setting<ScalingType>;
+  duplex: Setting<boolean>;
+  duplexShortEdge: Setting<boolean>;
+  cssBackground: Setting<boolean>;
+  selectionOnly: Setting<boolean>;
+  headerFooter: Setting<boolean>;
+  rasterize: Setting<boolean>;
+  vendorItems: Setting<{[key: string]: any}>;
+  otherOptions: Setting<null>;
+  ranges: Setting<Range[]>;
+  pagesPerSheet: Setting<number>;
+  recentDestinations: Setting<RecentDestination[]>;
 }
 
 export interface SerializedSettings {
@@ -136,6 +140,8 @@ export interface MediaSizeValue {
   imageable_area_bottom_microns?: number;
   imageable_area_right_microns?: number;
   imageable_area_top_microns?: number;
+  is_continuous_feed?: boolean;
+  vendor_id?: string;
 }
 
 export interface Ticket {
@@ -560,7 +566,7 @@ export class PrintPreviewModelElement extends CrLitElement {
   // Returns a direct reference to the non-proxied Settings object. The returned
   // object should never be mutated manually by callers, since such mutation
   // will not generate any Observable notifications.
-  getSetting(settingName: keyof Settings): Setting {
+  getSetting<K extends keyof Settings>(settingName: K): Settings[K] {
     const setting = this.observable.getTarget()[settingName];
     assert(setting, 'Setting is missing: ' + settingName);
     return setting;
@@ -570,7 +576,8 @@ export class PrintPreviewModelElement extends CrLitElement {
    * @param settingName Name of the setting to get the value for.
    * @return The value of the setting, accounting for availability.
    */
-  getSettingValue(settingName: keyof Settings): any {
+  getSettingValue<K extends keyof Settings>(settingName: K):
+      Settings[K]['value'] {
     const setting = this.getSetting(settingName);
     return setting.available ? setting.value : setting.unavailableValue;
   }
@@ -602,7 +609,8 @@ export class PrintPreviewModelElement extends CrLitElement {
    * @param value The value to set the setting to.
    * @param noSticky Whether to avoid stickying the setting. Defaults to false.
    */
-  setSetting(settingName: keyof Settings, value: any, noSticky?: boolean) {
+  setSetting<K extends keyof Settings>(
+      settingName: K, value: Settings[K]['value'], noSticky?: boolean) {
     const setting = this.getSetting(settingName);
     if (setting.setByGlobalPolicy) {
       return;
@@ -789,7 +797,7 @@ export class PrintPreviewModelElement extends CrLitElement {
     }
 
     // Otherwise, availability depends on the margins.
-    const marginsType = this.getSettingValue('margins') as MarginsType;
+    const marginsType = this.getSettingValue('margins');
     if (marginsType === MarginsType.NO_MARGINS) {
       return false;
     }
@@ -1414,8 +1422,7 @@ export class PrintPreviewModelElement extends CrLitElement {
       mediaSize: this.getSettingValue('mediaSize') as MediaSizeValue,
       pageCount: this.getSettingValue('pages').length,
       landscape: this.getSettingValue('layout'),
-      color: destination.getNativeColorModel(
-          this.getSettingValue('color') as boolean),
+      color: destination.getNativeColorModel(this.getSettingValue('color')),
       headerFooterEnabled: false,  // only used in print preview
       marginsType: this.getSettingValue('margins'),
       duplex: this.getDuplexMode_(),
@@ -1480,8 +1487,7 @@ export class PrintPreviewModelElement extends CrLitElement {
       cjt.print.collate = {collate: this.settings_.collate.value};
     }
     if (this.settings_.color.available) {
-      const selectedOption =
-          destination.getColor(this.settings_.color.value as boolean);
+      const selectedOption = destination.getColor(this.settings_.color.value);
       if (!selectedOption) {
         console.warn('Could not find correct color option');
       } else {

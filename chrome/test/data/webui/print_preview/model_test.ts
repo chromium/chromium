@@ -4,7 +4,7 @@
 
 import 'chrome://print/print_preview.js';
 
-import type {ColorOption, DocumentSettings, DpiOption, DuplexOption, PrintPreviewModelElement, PrintTicket, RecentDestination, Settings} from 'chrome://print/print_preview.js';
+import type {ColorOption, DocumentSettings, DpiOption, DuplexOption, PrintPreviewModelElement, PrintTicket, Settings} from 'chrome://print/print_preview.js';
 import {Destination, DestinationOrigin, DuplexMode, makeRecentDestination, MarginsType, PrinterType, ScalingType, Size} from 'chrome://print/print_preview.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertNotEquals, assertNotReached, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {eventToPromise, microtasksFinished} from 'chrome://webui-test/test_util.js';
@@ -135,7 +135,7 @@ suite('ModelTest', function() {
    */
   test('SetPolicySettings', function() {
     model.setSetting('headerFooter', false);
-    assertFalse(model.getSetting('headerFooter').value as boolean);
+    assertFalse(model.getSetting('headerFooter').value);
 
     // Sets to true, but doesn't mark as controlled by a policy.
     model.setPolicySettings({headerFooter: {defaultMode: true}});
@@ -144,18 +144,18 @@ suite('ModelTest', function() {
       headerFooter: false,
     }));
     model.applyStickySettings();
-    assertTrue(model.getSetting('headerFooter').value as boolean);
+    assertTrue(model.getSetting('headerFooter').value);
     model.setSetting('headerFooter', false);
-    assertFalse(model.getSetting('headerFooter').value as boolean);
+    assertFalse(model.getSetting('headerFooter').value);
 
     model.setPolicySettings({headerFooter: {allowedMode: true}});
     model.applyStickySettings();
-    assertTrue(model.getSetting('headerFooter').value as boolean);
+    assertTrue(model.getSetting('headerFooter').value);
 
     model.setSetting('headerFooter', false);
     // The value didn't change after setSetting(), because the policy takes
     // priority.
-    assertTrue(model.getSetting('headerFooter').value as boolean);
+    assertTrue(model.getSetting('headerFooter').value);
   });
 
   function toggleSettings(
@@ -503,8 +503,7 @@ suite('ModelTest', function() {
     model.setStickySettings(JSON.stringify(stickySettings));
 
     // Make sure recent destinations are filtered correctly.
-    let recentDestinations =
-        model.getSettingValue('recentDestinations') as RecentDestination[];
+    let recentDestinations = model.getSettingValue('recentDestinations');
     assertEquals(1, recentDestinations.length);
     assertEquals('FooDevice', recentDestinations[0]!.id);
 
@@ -515,8 +514,7 @@ suite('ModelTest', function() {
     model.applyPoliciesOnDestinationUpdate();
 
     // Make sure nothing changed.
-    recentDestinations =
-        model.getSettingValue('recentDestinations') as RecentDestination[];
+    recentDestinations = model.getSettingValue('recentDestinations');
     assertEquals(1, recentDestinations.length);
     assertEquals('FooDevice', recentDestinations[0]!.id);
   });
@@ -551,10 +549,10 @@ suite('ModelTest', function() {
     model.applyStickySettings();
 
     // Confirm some defaults.
-    assertEquals(false, model.getSettingValue('color'));
+    assertFalse(model.getSettingValue('color'));
     assertEquals('NA_LETTER', model.getSettingValue('mediaSize').name);
     assertEquals(200, model.getSettingValue('dpi').horizontal_dpi);
-    assertEquals(false, model.getSettingValue('duplex'));
+    assertFalse(model.getSettingValue('duplex'));
 
     // Toggle some printer specified settings.
     model.setSetting('duplex', true);
@@ -566,10 +564,10 @@ suite('ModelTest', function() {
         'dpi', testDestination.capabilities!.printer.dpi!.option[1]!);
 
     // Confirm toggles.
-    assertEquals(true, model.getSettingValue('color'));
+    assertTrue(model.getSettingValue('color'));
     assertEquals('CUSTOM', model.getSettingValue('mediaSize').name);
     assertEquals(100, model.getSettingValue('dpi').horizontal_dpi);
-    assertEquals(true, model.getSettingValue('duplex'));
+    assertTrue(model.getSettingValue('duplex'));
 
     // Set to a new destination with the same capabilities. Confirm that
     // everything stays the same, except for 'mediaSize' which is reverted back
@@ -627,10 +625,10 @@ suite('ModelTest', function() {
     // Verify things changed.
     const updatedSettings = JSON.stringify(model.observable.getTarget());
     assertNotEquals(oldSettings, updatedSettings);
-    assertEquals(false, model.getSettingValue('color'));
+    assertFalse(model.getSettingValue('color'));
     assertEquals('ISO_A4', model.getSettingValue('mediaSize').name);
     assertEquals(400, model.getSettingValue('dpi').horizontal_dpi);
-    assertEquals(false, model.getSettingValue('duplex'));
+    assertFalse(model.getSettingValue('duplex'));
   });
 
   /**

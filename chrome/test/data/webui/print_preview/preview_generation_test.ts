@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import type {NativeInitialSettings, PreviewTicket, PrintPreviewAppElement, Range, Settings} from 'chrome://print/print_preview.js';
+import type {NativeInitialSettings, PreviewTicket, PrintPreviewAppElement, Settings} from 'chrome://print/print_preview.js';
 import {ColorMode, CustomMarginsOrientation, Destination, DestinationOrigin, Margins, MarginsType, NativeLayerImpl, PluginProxyImpl, ScalingType} from 'chrome://print/print_preview.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
@@ -272,7 +272,7 @@ suite('PreviewGenerationTest', function() {
     nativeLayer.resetResolver('getPreview');
     page.setSetting('ranges', [{from: 1, to: 2}]);
     args = await nativeLayer.whenCalled('getPreview');
-    const setting = page.getSettingValue('ranges') as Range[];
+    const setting = page.getSettingValue('ranges');
     assertEquals(1, setting.length);
     assertEquals(1, setting[0]!.from);
     assertEquals(2, setting[0]!.to);
@@ -684,9 +684,8 @@ suite('PreviewGenerationTest', function() {
     // so they should be enabled again.
     ticket = JSON.parse(previewArgs.printTicket);
     assertMarginsFooter(ticket, 2, MarginsType.MINIMUM, true);
-    assertEquals(
-        MarginsType.MINIMUM, page.getSettingValue('margins') as MarginsType);
-    assertTrue(page.getSettingValue('headerFooter') as boolean);
+    assertEquals(MarginsType.MINIMUM, page.getSettingValue('margins'));
+    assertTrue(page.getSettingValue('headerFooter'));
     nativeLayer.resetResolver('getPreview');
     page.setSetting('margins', MarginsType.DEFAULT);
     previewArgs = await nativeLayer.whenCalled('getPreview');
@@ -696,7 +695,7 @@ suite('PreviewGenerationTest', function() {
     ticket = JSON.parse(previewArgs.printTicket);
     assertMarginsFooter(ticket, 3, MarginsType.DEFAULT, false);
     assertEquals(MarginsType.DEFAULT, page.getSettingValue('margins'));
-    assertEquals(false, page.getSettingValue('headerFooter'));
+    assertFalse(page.getSettingValue('headerFooter'));
   });
 
   /**

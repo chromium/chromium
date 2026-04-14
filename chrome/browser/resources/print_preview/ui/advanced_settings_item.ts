@@ -72,7 +72,7 @@ export class PrintPreviewAdvancedSettingsItemElement extends
       return;
     }
 
-    const value = settings[this.capability.id];
+    const value = settings[this.capability.id]!;
     if (this.isCapabilityTypeSelect_()) {
       // Ignore a value that can't be selected.
       if (this.hasOptionWithValue_(value)) {
