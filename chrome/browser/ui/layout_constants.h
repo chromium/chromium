@@ -240,6 +240,9 @@ enum class LayoutConstant {
   // strip.
   kVerticalTabStripNewTabButtonSize,
 
+  // The height and width of the collapse button for the vertical tab strip.
+  kVerticalTabStripCollapseButtonSize,
+
   // The default height and width of the tab groups and tab search buttons for
   // the vertical tab strip.
   kVerticalTabStripTopContainerButtonSize,

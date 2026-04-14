@@ -73,6 +73,13 @@ ui::ColorId TopContainerButton::GetForegroundColor() const {
              : kColorTabForegroundInactiveFrameInactive;
 }
 
+gfx::Size TopContainerButton::CalculatePreferredSize(
+    const views::SizeBounds& available_size) const {
+  const int size =
+      GetLayoutConstant(LayoutConstant::kVerticalTabStripCollapseButtonSize);
+  return gfx::Size(size, size);
+}
+
 std::unique_ptr<views::ActionViewInterface>
 TopContainerButton::GetActionViewInterface() {
   return std::make_unique<TopContainerButtonActionViewInterface>(this);

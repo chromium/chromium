@@ -149,6 +149,8 @@ std::string_view LayoutConstantToCssVarName(LayoutConstant layout_constant) {
       return "--vertical-tab-strip-top-button-container-height";
     case kVerticalTabStripNewTabButtonSize:
       return "--vertical-tab-strip-new-tab-button-size";
+    case kVerticalTabStripCollapseButtonSize:
+      return "--vertical-tab-strip-collapse-button-size";
     case kVerticalTabStripTopContainerButtonSize:
       return "--vertical-tab-strip-top-container-button-size";
     case kWebAppMenuButtonSize:
