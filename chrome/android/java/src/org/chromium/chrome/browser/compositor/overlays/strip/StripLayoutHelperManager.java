@@ -71,6 +71,8 @@ import org.chromium.chrome.browser.compositor.overlays.strip.reorder.TabStripDra
 import org.chromium.chrome.browser.compositor.scene_layer.TabStripSceneLayer;
 import org.chromium.chrome.browser.data_sharing.DataSharingTabManager;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.glic.GlicKeyedService;
+import org.chromium.chrome.browser.glic.GlicKeyedService.GlobalShowHideObserver;
 import org.chromium.chrome.browser.incognito.IncognitoUtils;
 import org.chromium.chrome.browser.layouts.EventFilter;
 import org.chromium.chrome.browser.layouts.LayoutStateProvider.LayoutStateObserver;
@@ -316,6 +318,9 @@ public class StripLayoutHelperManager
             ObservableSuppliers.createNonNull(0);
     private final @Nullable NonNullObservableSupplier<Boolean> mXrSpaceModeObservableSupplier;
 
+    private final @Nullable GlobalShowHideObserver mGlicUIObserver;
+    private final @Nullable GlicKeyedService mGlicKeyedService;
+
     // Drag-Drop
     private @Nullable TabStripDragHandler mTabStripDragHandler;
 
@@ -547,12 +552,28 @@ public class StripLayoutHelperManager
             @Nullable NonNullObservableSupplier<Boolean> xrSpaceModeObservableSupplier,
             BackPressManager backPressManager,
             SnackbarManager snackbarManager,
-            Runnable glicClickHandler) {
+            Runnable glicClickHandler,
+            @Nullable GlicKeyedService glicKeyedService) {
         mContext = context;
+        mGlicKeyedService = glicKeyedService;
         Resources res = context.getResources();
         mManagerHost = managerHost;
         mUpdateHost = updateHost;
         mRenderHost = renderHost;
+
+        if (mGlicKeyedService != null) {
+            mGlicUIObserver =
+                    isOpened -> {
+                        if (mGlicButton != null && mRenderHost != null) {
+                            mGlicButton.setPressed(isOpened);
+                            mRenderHost.requestRender();
+                        }
+                    };
+            mGlicKeyedService.addGlobalShowHideObserver(mGlicUIObserver);
+        } else {
+            mGlicUIObserver = null;
+        }
+
         mActorObserver =
                 state -> {
                     getStripLayoutHelper(false)
@@ -856,6 +877,9 @@ public class StripLayoutHelperManager
     public void destroy() {
         mTabStripTreeProvider.destroy();
         mTabStripTreeProvider = null;
+        if (mGlicKeyedService != null && mGlicUIObserver != null) {
+            mGlicKeyedService.removeGlobalShowHideObserver(mGlicUIObserver);
+        }
         mLifecycleDispatcher.unregister(this);
         // Remove the observer to prevent any updates on a destroyed EventFilter.
         mStripVisibilityStateSupplier.removeObserver(mStripVisibilityStateObserver);

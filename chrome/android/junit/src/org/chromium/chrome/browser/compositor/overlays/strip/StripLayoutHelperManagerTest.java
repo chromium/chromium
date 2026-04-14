@@ -78,6 +78,8 @@ import org.chromium.chrome.browser.compositor.scene_layer.TabStripSceneLayerJni;
 import org.chromium.chrome.browser.data_sharing.DataSharingTabManager;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.glic.GlicKeyedService;
+import org.chromium.chrome.browser.glic.GlicKeyedService.GlobalShowHideObserver;
 import org.chromium.chrome.browser.incognito.IncognitoUtils;
 import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.layouts.animation.CompositorAnimationHandler;
@@ -163,6 +165,7 @@ public class StripLayoutHelperManagerTest {
     @Mock private ResourceManager mResourceManager;
     @Mock private BackPressManager mBackPressManager;
     @Mock private SnackbarManager mSnackbarManager;
+    @Mock private GlicKeyedService mGlicKeyedService;
     @Captor private ArgumentCaptor<List<Rect>> mSystemExclusionRectCaptor;
 
     private final SettableMonotonicObservableSupplier<LayerTitleCache> mLayerTitleCacheSupplier =
@@ -259,7 +262,8 @@ public class StripLayoutHelperManagerTest {
                         /* xrSpaceModeObservableSupplier= */ null,
                         mBackPressManager,
                         mSnackbarManager,
-                        () -> {});
+                        () -> {},
+                        mGlicKeyedService);
         mStripLayoutHelperManager.setTabModelSelector(mTabModelSelector, mTabCreatorManager);
         mStripLayoutHelperManager.setIsTabStripHiddenByHeightTransition(false);
     }
@@ -1439,6 +1443,37 @@ public class StripLayoutHelperManagerTest {
                 0.65f,
                 mStripLayoutHelperManager.getGlicButton().getOpacity(),
                 MathUtils.EPSILON);
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.GLIC)
+    public void testGlicPressedState_GlicUiShowHide() {
+        assertNotNull("Glic button should be created.", mStripLayoutHelperManager.getGlicButton());
+
+        ArgumentCaptor<GlobalShowHideObserver> observerCaptor =
+                ArgumentCaptor.forClass(GlobalShowHideObserver.class);
+        Mockito.verify(mGlicKeyedService).addGlobalShowHideObserver(observerCaptor.capture());
+
+        // Verify initial state: button is not pressed.
+        assertFalse(
+                "Glic button should not be pressed initially.",
+                mStripLayoutHelperManager.getGlicButton().isPressed());
+
+        // Simulate Glic UI opening event.
+        observerCaptor.getValue().onGlobalShowHide(true);
+
+        // Verify button is in pressed state.
+        assertTrue(
+                "Glic button should be pressed when UI is shown globally.",
+                mStripLayoutHelperManager.getGlicButton().isPressed());
+
+        // Simulate Glic UI hiding event.
+        observerCaptor.getValue().onGlobalShowHide(false);
+
+        // Verify button returns to non-pressed state.
+        assertFalse(
+                "Glic button should not be pressed when UI is hidden globally.",
+                mStripLayoutHelperManager.getGlicButton().isPressed());
     }
 
     @Test

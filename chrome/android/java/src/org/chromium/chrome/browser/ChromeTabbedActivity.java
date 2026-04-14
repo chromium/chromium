@@ -144,6 +144,7 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.fullscreen.FullscreenOptions;
 import org.chromium.chrome.browser.gesturenav.NavigationSheet;
+import org.chromium.chrome.browser.glic.GlicKeyedServiceFactory;
 import org.chromium.chrome.browser.history.HistoryManager;
 import org.chromium.chrome.browser.history.HistoryManagerUtils;
 import org.chromium.chrome.browser.history.HistoryPane;
@@ -1105,7 +1106,8 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
                             getSnackbarManager(),
                             /* glicClickHandler= */ () ->
                                     ((TabbedRootUiCoordinator) mRootUiCoordinator)
-                                            .toggleGlic(false));
+                                            .toggleGlic(false),
+                            GlicKeyedServiceFactory.getForProfile(mTabModelProfileSupplier.get()));
             mLayoutStateProviderSupplier.set(mLayoutManager);
         }
     }
