@@ -296,6 +296,11 @@ class NotificationTestBase : public PrivacyHubCameraTestBase {
     controller_ = CameraPrivacySwitchController::Get();
   }
 
+  void TearDown() override {
+    controller_ = nullptr;
+    PrivacyHubCameraTestBase::TearDown();
+  }
+
   void LaunchAppAccessingCamera(const std::u16string& app_name) {
     delegate()->LaunchAppAccessingCamera(app_name);
     controller_->ActiveApplicationsChanged(/*application_added=*/true);
@@ -317,7 +322,7 @@ class NotificationTestBase : public PrivacyHubCameraTestBase {
             ->sensor_disabled_notification_delegate());
   }
 
-  raw_ptr<CameraPrivacySwitchController, DanglingUntriaged> controller_;
+  raw_ptr<CameraPrivacySwitchController> controller_;
   const base::HistogramTester histogram_tester_;
 };
 
