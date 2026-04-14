@@ -50,7 +50,19 @@ void ActorLoginQualityLogger::SetGetCredentialsDetails(
   log_data_.mutable_actor_login()
       ->mutable_quality()
       ->mutable_get_credentials_details()
-      ->CopyFrom(get_credentials_details);
+      // Merge instead of copy to avoid overwriting the federated get
+      // credentials details.
+      ->MergeFrom(get_credentials_details);
+}
+
+void ActorLoginQualityLogger::SetFederatedGetCredentialsDetails(
+    optimization_guide::proto::ActorLoginQuality_FederatedGetCredentialsDetails
+        federated_get_credentials_details) {
+  log_data_.mutable_actor_login()
+      ->mutable_quality()
+      ->mutable_get_credentials_details()
+      ->mutable_federated_get_credentials_details()
+      ->CopyFrom(federated_get_credentials_details);
 }
 
 void ActorLoginQualityLogger::AddAttemptLoginDetails(

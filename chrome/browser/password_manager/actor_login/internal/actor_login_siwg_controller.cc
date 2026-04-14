@@ -30,6 +30,35 @@ namespace actor_login {
 
 namespace {
 
+AttemptLoginOutcomeMqls FromFederatedLoginResultToMqls(
+    content::webid::FederatedLoginResult result) {
+  switch (result) {
+    case content::webid::FederatedLoginResult::kSuccess:
+      return AttemptLoginOutcomeMqls::kFederatedSuccess;
+    case content::webid::FederatedLoginResult::kContinuation:
+      return AttemptLoginOutcomeMqls::kFederatedContinuation;
+    case content::webid::FederatedLoginResult::kAccountNotLoggedIn:
+      return AttemptLoginOutcomeMqls::kFederatedAccountNotLoggedIn;
+    case content::webid::FederatedLoginResult::kAccountIsSignUp:
+      return AttemptLoginOutcomeMqls::kFederatedAccountIsSignUp;
+    case content::webid::FederatedLoginResult::kAccountNotAvailable:
+      return AttemptLoginOutcomeMqls::kFederatedAccountIsNotAvailable;
+    case content::webid::FederatedLoginResult::kIdpReturnedError:
+      return AttemptLoginOutcomeMqls::kFederatedIdpReturnedError;
+    case content::webid::FederatedLoginResult::kIdpNetworkError:
+      return AttemptLoginOutcomeMqls::kFederatedIdpNetworkError;
+    case content::webid::FederatedLoginResult::kTokenRequestAborted:
+      return AttemptLoginOutcomeMqls::kFederatedTokenRequestAborted;
+    case content::webid::FederatedLoginResult::kFrameNotActive:
+      return AttemptLoginOutcomeMqls::kFederatedFrameNotActive;
+    case content::webid::FederatedLoginResult::kExpectedAccountNotPresent:
+      return AttemptLoginOutcomeMqls::kFederatedExpectedAccountNotPresent;
+    case content::webid::FederatedLoginResult::kTimeout:
+    case content::webid::FederatedLoginResult::kTimeoutByEmbedder:
+      return AttemptLoginOutcomeMqls::kFederatedTimeout;
+  }
+}
+
 // Finds the local root of a given RenderFrameHost.
 content::RenderFrameHost* GetLocalRoot(content::RenderFrameHost* rfh) {
   content::RenderFrameHost* local_root = rfh;
@@ -81,7 +110,9 @@ ActorLoginSiwgController::ActorLoginSiwgController(
     bool should_store_permission,
     ActorLoginPermissionService& permission_service,
     LoginStatusResultOrErrorReply on_finished_callback,
-    base::WeakPtr<ActionSequenceDelegate> action_sequence_delegate)
+    base::WeakPtr<ActionSequenceDelegate> action_sequence_delegate,
+    base::WeakPtr<ActorLoginQualityLoggerInterface> mqls_logger,
+    base::TimeTicks attempt_login_tool_start_time)
     : ActorLoginSiwgController(
           web_contents,
           credential,
@@ -89,7 +120,9 @@ ActorLoginSiwgController::ActorLoginSiwgController(
           should_store_permission,
           permission_service,
           std::move(on_finished_callback),
-          std::move(action_sequence_delegate)) {}
+          std::move(action_sequence_delegate),
+          std::move(mqls_logger),
+          attempt_login_tool_start_time) {}
 
 ActorLoginSiwgController::ActorLoginSiwgController(
     content::WebContents* web_contents,
@@ -98,14 +131,18 @@ ActorLoginSiwgController::ActorLoginSiwgController(
     bool should_store_permission,
     ActorLoginPermissionService& permission_service,
     LoginStatusResultOrErrorReply on_finished_callback,
-    base::WeakPtr<ActionSequenceDelegate> action_sequence_delegate)
+    base::WeakPtr<ActionSequenceDelegate> action_sequence_delegate,
+    base::WeakPtr<ActorLoginQualityLoggerInterface> mqls_logger,
+    base::TimeTicks attempt_login_tool_start_time)
     : content::WebContentsObserver(web_contents),
       get_page_content_provider_(std::move(get_page_content_provider)),
       on_finished_callback_(std::move(on_finished_callback)),
       action_sequence_delegate_(std::move(action_sequence_delegate)),
       credential_(credential),
       should_store_permission_(should_store_permission),
-      permission_service_(permission_service) {}
+      permission_service_(permission_service),
+      mqls_logger_(std::move(mqls_logger)),
+      attempt_login_tool_start_time_(attempt_login_tool_start_time) {}
 
 ActorLoginSiwgController::~ActorLoginSiwgController() = default;
 
@@ -134,6 +171,7 @@ void ActorLoginSiwgController::StartFederatedLogin(
                              credential_.federation_detail->account_id)) {
     if (base::FeatureList::IsEnabled(
             password_manager::features::kActorLoginFederatedClickFromActor)) {
+      federated_attempt_login_details_.set_button_click_required(true);
       std::move(on_finished_callback_)
           .Run(LoginStatusResult::kRequiresButtonClick);
     } else {
@@ -178,6 +216,7 @@ void ActorLoginSiwgController::OnFederatedLoginResultReceived(
     permission_service_->GrantPermission(permission, base::DoNothing());
   }
 
+  LogFederatedLoginResult(result);
   LoginStatusResult status = FromFederatedLoginResult(result);
   if (action_sequence_delegate_) {
     action_sequence_delegate_->OnFederatedLoginOutcome(status);
@@ -185,6 +224,24 @@ void ActorLoginSiwgController::OnFederatedLoginResultReceived(
   if (on_finished_callback_) {
     std::move(on_finished_callback_).Run(status);
   }
+}
+
+void ActorLoginSiwgController::OnButtonClickCompleted(bool success) {
+  federated_attempt_login_details_.set_button_click_succeeded(success);
+}
+
+void ActorLoginSiwgController::LogFederatedLoginResult(
+    content::webid::FederatedLoginResult result) {
+  if (!mqls_logger_) {
+    return;
+  }
+
+  federated_attempt_login_details_.set_outcome(
+      OutcomeEnumToProtoType(FromFederatedLoginResultToMqls(result)));
+  federated_attempt_login_details_.set_attempt_login_time_ms(
+      (base::TimeTicks::Now() - attempt_login_tool_start_time_)
+          .InMilliseconds());
+  mqls_logger_->AddAttemptLoginDetails(federated_attempt_login_details_);
 }
 
 void ActorLoginSiwgController::OnPageContentReceived(

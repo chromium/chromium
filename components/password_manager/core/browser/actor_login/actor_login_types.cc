@@ -4,6 +4,8 @@
 
 #include "components/password_manager/core/browser/actor_login/actor_login_types.h"
 
+#include "base/notreached.h"
+
 namespace actor_login {
 
 namespace {
@@ -52,7 +54,8 @@ optimization_guide::proto::
     case GetCredentialsOutcomeMqls::kFillingNotAllowed:
       return optimization_guide::proto::
           ActorLoginQuality_GetCredentialsDetails_GetCredentialsOutcome_FILLING_NOT_ALLOWED;
-  };
+  }
+  NOTREACHED();
 }
 
 optimization_guide::proto::
@@ -69,6 +72,7 @@ optimization_guide::proto::
       return optimization_guide::proto::
           ActorLoginQuality_GetCredentialsDetails_PermissionDetails_NO_PERMANENT_PERMISSION;
   }
+  NOTREACHED();
 }
 
 optimization_guide::proto::
@@ -99,7 +103,41 @@ optimization_guide::proto::
     case AttemptLoginOutcomeMqls::kReauthFailed:
       return optimization_guide::proto::
           ActorLoginQuality_AttemptLoginDetails_AttemptLoginOutcome_REAUTH_FAILED;
-  };
+    case AttemptLoginOutcomeMqls::kFederatedSuccess:
+      return optimization_guide::proto::
+          ActorLoginQuality_AttemptLoginDetails_AttemptLoginOutcome_FEDERATED_SUCCESS;
+    case AttemptLoginOutcomeMqls::kFederatedContinuation:
+      return optimization_guide::proto::
+          ActorLoginQuality_AttemptLoginDetails_AttemptLoginOutcome_FEDERATED_CONTINUATION;
+    case AttemptLoginOutcomeMqls::kFederatedAccountNotLoggedIn:
+      return optimization_guide::proto::
+          ActorLoginQuality_AttemptLoginDetails_AttemptLoginOutcome_FEDERATED_ACCOUNT_NOT_LOGGED_IN;
+    case AttemptLoginOutcomeMqls::kFederatedAccountIsSignUp:
+      return optimization_guide::proto::
+          ActorLoginQuality_AttemptLoginDetails_AttemptLoginOutcome_FEDERATED_ACCOUNT_IS_SIGN_UP;
+    case AttemptLoginOutcomeMqls::kFederatedAccountIsNotAvailable:
+      return optimization_guide::proto::
+          ActorLoginQuality_AttemptLoginDetails_AttemptLoginOutcome_FEDERATED_ACCOUNT_IS_NOT_AVAILABLE;
+    case AttemptLoginOutcomeMqls::kFederatedIdpReturnedError:
+      return optimization_guide::proto::
+          ActorLoginQuality_AttemptLoginDetails_AttemptLoginOutcome_FEDERATED_IDP_RETURNED_ERROR;
+    case AttemptLoginOutcomeMqls::kFederatedIdpNetworkError:
+      return optimization_guide::proto::
+          ActorLoginQuality_AttemptLoginDetails_AttemptLoginOutcome_FEDERATED_IDP_NETWORK_ERROR;
+    case AttemptLoginOutcomeMqls::kFederatedTokenRequestAborted:
+      return optimization_guide::proto::
+          ActorLoginQuality_AttemptLoginDetails_AttemptLoginOutcome_FEDERATED_TOKEN_REQUEST_ABORTED;
+    case AttemptLoginOutcomeMqls::kFederatedFrameNotActive:
+      return optimization_guide::proto::
+          ActorLoginQuality_AttemptLoginDetails_AttemptLoginOutcome_FEDERATED_FRAME_NOT_ACTIVE;
+    case AttemptLoginOutcomeMqls::kFederatedExpectedAccountNotPresent:
+      return optimization_guide::proto::
+          ActorLoginQuality_AttemptLoginDetails_AttemptLoginOutcome_FEDERATED_EXPECTED_ACCOUNT_NOT_PRESENT;
+    case AttemptLoginOutcomeMqls::kFederatedTimeout:
+      return optimization_guide::proto::
+          ActorLoginQuality_AttemptLoginDetails_AttemptLoginOutcome_FEDERATED_TIMEOUT;
+  }
+  NOTREACHED();
 }
 
 }  // namespace actor_login

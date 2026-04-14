@@ -12,8 +12,10 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
+#include "components/optimization_guide/proto/features/actor_login.pb.h"
 #include "components/password_manager/core/browser/actor_login/actor_login_types.h"
 #include "components/password_manager/core/browser/actor_login/test/mock_actor_login_permission_service.h"
+#include "components/password_manager/core/browser/actor_login/test/mock_actor_login_quality_logger.h"
 #include "components/password_manager/core/browser/features/password_features.h"
 #include "content/public/browser/webid/identity_credential_source.h"
 #include "content/public/browser/webid/identity_request_account.h"
@@ -91,14 +93,35 @@ scoped_refptr<content::IdentityRequestAccount> CreateTestIdentityRequestAccount(
 
 }  // namespace
 
+using FederatedGetCredentialsDetails =
+    optimization_guide::proto::ActorLoginQuality_FederatedGetCredentialsDetails;
+
+testing::Matcher<FederatedGetCredentialsDetails>
+EqualsFederatedGetCredentialsDetails(
+    const FederatedGetCredentialsDetails& expected) {
+  return testing::AllOf(
+      testing::Property("outcome", &FederatedGetCredentialsDetails::outcome,
+                        expected.outcome()),
+      testing::Property(
+          "list_permissions_call_time_ms",
+          &FederatedGetCredentialsDetails::list_permissions_call_time_ms,
+          testing::Ge(expected.list_permissions_call_time_ms())));
+}
+
 class ActorLoginFederatedCredentialsFetcherTest : public testing::Test {
  public:
-  ActorLoginFederatedCredentialsFetcherTest() = default;
+  ActorLoginFederatedCredentialsFetcherTest()
+      : task_environment_(base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
 
  protected:
+  base::WeakPtr<MockActorLoginQualityLogger> mqls_logger() {
+    return mock_mqls_logger_.AsWeakPtr();
+  }
+
   base::test::TaskEnvironment task_environment_;
   MockIdentityCredentialSource mock_identity_source_;
   MockActorLoginPermissionService mock_permission_service_;
+  MockActorLoginQualityLogger mock_mqls_logger_;
 };
 
 TEST_F(ActorLoginFederatedCredentialsFetcherTest, GetCredentialsSuccess) {
@@ -115,22 +138,39 @@ TEST_F(ActorLoginFederatedCredentialsFetcherTest, GetCredentialsSuccess) {
   EXPECT_CALL(mock_permission_service_,
               ListPermissions(An<const url::Origin&>(), _))
       .WillOnce(
-          base::test::RunOnceCallback<1>(std::vector<FederatedPermission>()));
+          [this](const url::Origin&,
+                 base::OnceCallback<void(std::vector<FederatedPermission>)>
+                     callback) {
+            task_environment_.AdvanceClock(base::Milliseconds(50));
+            std::move(callback).Run(std::vector<FederatedPermission>());
+          });
+
+  FederatedGetCredentialsDetails expected_details;
+  expected_details.set_outcome(
+      optimization_guide::proto::
+          ActorLoginQuality_FederatedGetCredentialsDetails_FederatedGetCredentialsOutcome_CREDENTIALS_FOUND);
+  expected_details.set_list_permissions_call_time_ms(50);
+  EXPECT_CALL(mock_mqls_logger_,
+              SetFederatedGetCredentialsDetails(
+                  EqualsFederatedGetCredentialsDetails(expected_details)));
 
   base::test::TestFuture<std::vector<Credential>,
                          ActorLoginCredentialsFetcher::Status>
       future;
   url::Origin request_origin = url::Origin::Create(GURL("https://example.com"));
-  ActorLoginFederatedCredentialsFetcher fetcher(
-      request_origin,
-      base::BindLambdaForTesting(
-          [&]() -> content::webid::IdentityCredentialSource* {
-            return &mock_identity_source_;
-          }),
-      mock_permission_service_);
-  fetcher.Fetch(future.GetCallback());
+  {
+    // Separate scope to force destruction and upload logs
+    ActorLoginFederatedCredentialsFetcher fetcher(
+        request_origin,
+        base::BindLambdaForTesting(
+            [&]() -> content::webid::IdentityCredentialSource* {
+              return &mock_identity_source_;
+            }),
+        mock_permission_service_, mqls_logger());
+    fetcher.Fetch(future.GetCallback());
 
-  ASSERT_TRUE(future.Wait());
+    ASSERT_TRUE(future.Wait());
+  }
   const auto& [credentials, status] = future.Get();
   ASSERT_EQ(credentials.size(), 1u);
   EXPECT_EQ(credentials[0].type, CredentialType::kFederated);
@@ -172,8 +212,13 @@ TEST_F(ActorLoginFederatedCredentialsFetcherTest,
 
   EXPECT_CALL(mock_permission_service_,
               ListPermissions(An<const url::Origin&>(), _))
-      .WillOnce(base::test::RunOnceCallback<1>(
-          std::vector<FederatedPermission>{permission}));
+      .WillOnce([this, permission](
+                    const url::Origin&,
+                    base::OnceCallback<void(std::vector<FederatedPermission>)>
+                        callback) {
+        task_environment_.AdvanceClock(base::Milliseconds(50));
+        std::move(callback).Run(std::vector<FederatedPermission>{permission});
+      });
 
   base::test::TestFuture<std::vector<Credential>,
                          ActorLoginCredentialsFetcher::Status>
@@ -185,7 +230,7 @@ TEST_F(ActorLoginFederatedCredentialsFetcherTest,
           [&]() -> content::webid::IdentityCredentialSource* {
             return &mock_identity_source_;
           }),
-      mock_permission_service_);
+      mock_permission_service_, mqls_logger());
   fetcher.Fetch(future.GetCallback());
 
   ASSERT_TRUE(future.Wait());
@@ -216,8 +261,13 @@ TEST_F(ActorLoginFederatedCredentialsFetcherTest,
 
   EXPECT_CALL(mock_permission_service_,
               ListPermissions(An<const url::Origin&>(), _))
-      .WillOnce(base::test::RunOnceCallback<1>(
-          std::vector<FederatedPermission>{permission}));
+      .WillOnce([this, permission](
+                    const url::Origin&,
+                    base::OnceCallback<void(std::vector<FederatedPermission>)>
+                        callback) {
+        task_environment_.AdvanceClock(base::Milliseconds(50));
+        std::move(callback).Run(std::vector<FederatedPermission>{permission});
+      });
 
   base::test::TestFuture<std::vector<Credential>,
                          ActorLoginCredentialsFetcher::Status>
@@ -229,7 +279,7 @@ TEST_F(ActorLoginFederatedCredentialsFetcherTest,
           [&]() -> content::webid::IdentityCredentialSource* {
             return &mock_identity_source_;
           }),
-      mock_permission_service_);
+      mock_permission_service_, mqls_logger());
   fetcher.Fetch(future.GetCallback());
 
   ASSERT_TRUE(future.Wait());
@@ -261,8 +311,13 @@ TEST_F(ActorLoginFederatedCredentialsFetcherTest,
 
   EXPECT_CALL(mock_permission_service_,
               ListPermissions(An<const url::Origin&>(), _))
-      .WillOnce(base::test::RunOnceCallback<1>(
-          std::vector<FederatedPermission>{permission}));
+      .WillOnce([this, permission](
+                    const url::Origin&,
+                    base::OnceCallback<void(std::vector<FederatedPermission>)>
+                        callback) {
+        task_environment_.AdvanceClock(base::Milliseconds(50));
+        std::move(callback).Run(std::vector<FederatedPermission>{permission});
+      });
 
   base::test::TestFuture<std::vector<Credential>,
                          ActorLoginCredentialsFetcher::Status>
@@ -274,7 +329,7 @@ TEST_F(ActorLoginFederatedCredentialsFetcherTest,
           [&]() -> content::webid::IdentityCredentialSource* {
             return &mock_identity_source_;
           }),
-      mock_permission_service_);
+      mock_permission_service_, mqls_logger());
   fetcher.Fetch(future.GetCallback());
 
   ASSERT_TRUE(future.Wait());
@@ -299,7 +354,7 @@ TEST_F(ActorLoginFederatedCredentialsFetcherTest, FeatureDisabled) {
           [&]() -> content::webid::IdentityCredentialSource* {
             return &mock_identity_source_;
           }),
-      mock_permission_service_);
+      mock_permission_service_, mqls_logger());
   fetcher.Fetch(future.GetCallback());
 
   ASSERT_TRUE(future.Wait());
@@ -319,21 +374,38 @@ TEST_F(ActorLoginFederatedCredentialsFetcherTest, NoAccounts) {
   EXPECT_CALL(mock_permission_service_,
               ListPermissions(An<const url::Origin&>(), _))
       .WillOnce(
-          base::test::RunOnceCallback<1>(std::vector<FederatedPermission>()));
+          [this](const url::Origin&,
+                 base::OnceCallback<void(std::vector<FederatedPermission>)>
+                     callback) {
+            task_environment_.AdvanceClock(base::Milliseconds(50));
+            std::move(callback).Run(std::vector<FederatedPermission>());
+          });
+
+  FederatedGetCredentialsDetails expected_details;
+  expected_details.set_outcome(
+      optimization_guide::proto::
+          ActorLoginQuality_FederatedGetCredentialsDetails_FederatedGetCredentialsOutcome_NO_CREDENTIALS);
+  expected_details.set_list_permissions_call_time_ms(50);
+  EXPECT_CALL(mock_mqls_logger_,
+              SetFederatedGetCredentialsDetails(
+                  EqualsFederatedGetCredentialsDetails(expected_details)));
 
   base::test::TestFuture<std::vector<Credential>,
                          ActorLoginCredentialsFetcher::Status>
       future;
-  ActorLoginFederatedCredentialsFetcher fetcher(
-      url::Origin::Create(GURL("https://example.com")),
-      base::BindLambdaForTesting(
-          [&]() -> content::webid::IdentityCredentialSource* {
-            return &mock_identity_source_;
-          }),
-      mock_permission_service_);
-  fetcher.Fetch(future.GetCallback());
+  {
+    // Separate scope to force destruction and upload logs
+    ActorLoginFederatedCredentialsFetcher fetcher(
+        url::Origin::Create(GURL("https://example.com")),
+        base::BindLambdaForTesting(
+            [&]() -> content::webid::IdentityCredentialSource* {
+              return &mock_identity_source_;
+            }),
+        mock_permission_service_, mqls_logger());
+    fetcher.Fetch(future.GetCallback());
 
-  ASSERT_TRUE(future.Wait());
+    ASSERT_TRUE(future.Wait());
+  }
   const auto& [credentials, status] = future.Get();
   EXPECT_TRUE(credentials.empty());
   EXPECT_EQ(status, ActorLoginCredentialsFetcher::Status::kSuccess);
@@ -353,7 +425,7 @@ TEST_F(ActorLoginFederatedCredentialsFetcherTest, NoSource) {
           [&]() -> content::webid::IdentityCredentialSource* {
             return nullptr;
           }),
-      mock_permission_service_);
+      mock_permission_service_, mqls_logger());
   fetcher.Fetch(future.GetCallback());
 
   ASSERT_TRUE(future.Wait());

@@ -31,8 +31,10 @@
 #include "components/autofill/content/browser/test_content_autofill_client.h"
 #include "components/autofill/content/common/mojom/autofill_agent.mojom.h"
 #include "components/autofill/core/common/mojom/autofill_types.mojom.h"
+#include "components/optimization_guide/proto/features/actor_login.pb.h"
 #include "components/optimization_guide/proto/features/common_quality_data.pb.h"
 #include "components/password_manager/core/browser/actor_login/test/mock_actor_login_permission_service.h"
+#include "components/password_manager/core/browser/actor_login/test/mock_actor_login_quality_logger.h"
 #include "components/password_manager/core/browser/features/password_features.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/webid/federated_embedder_login_request.h"
@@ -203,7 +205,9 @@ TEST_F(ActorLoginSiwgControllerTest, ButtonFound_ClickSucceeded) {
       base::BindRepeating(&ActorLoginSiwgControllerTest::SaveCallback,
                           &page_content_callback),
       /*should_store_permission=*/false, mock_permission_service_,
-      finished_callback.Get(), /*action_sequence_delegate=*/nullptr);
+      finished_callback.Get(), /*action_sequence_delegate=*/nullptr,
+      /*mqls_logger=*/nullptr,
+      /*attempt_login_tool_start_time=*/base::TimeTicks::Now());
 
   controller.StartFederatedLogin(std::move(metrics_helper_owned));
 
@@ -219,7 +223,7 @@ TEST_F(ActorLoginSiwgControllerTest, ButtonFound_ClickSucceeded) {
   child->mutable_content_attributes()->set_common_ancestor_dom_node_id(2);
 
   // 2. Expect FindPotentialSiwgButtons on the agent.
-  EXPECT_CALL(mock_autofill_agent_, FindPotentialSiwgButtons(_))
+  EXPECT_CALL(mock_autofill_agent_, FindPotentialSiwgButtons)
       .WillOnce(WithArg<0>(
           [&](autofill::mojom::AutofillAgent::FindPotentialSiwgButtonsCallback
                   callback) {
@@ -232,7 +236,7 @@ TEST_F(ActorLoginSiwgControllerTest, ButtonFound_ClickSucceeded) {
           }));
 
   // 3. Expect InvokeTool (Click) on the frame.
-  EXPECT_CALL(mock_chrome_render_frame_, InvokeTool(_, _))
+  EXPECT_CALL(mock_chrome_render_frame_, InvokeTool)
       .WillOnce(WithArg<1>(
           [&](chrome::mojom::ChromeRenderFrame::InvokeToolCallback callback) {
             auto result = actor::mojom::ActionResult::New();
@@ -277,7 +281,9 @@ TEST_F(ActorLoginSiwgControllerTest, ButtonFound_ClickFailed) {
       base::BindRepeating(&ActorLoginSiwgControllerTest::SaveCallback,
                           &page_content_callback),
       /*should_store_permission=*/false, mock_permission_service_,
-      finished_callback.Get(), /*action_sequence_delegate=*/nullptr);
+      finished_callback.Get(), /*action_sequence_delegate=*/nullptr,
+      /*mqls_logger=*/nullptr,
+      /*attempt_login_tool_start_time=*/base::TimeTicks::Now());
 
   controller.StartFederatedLogin(/*metrics_helper=*/nullptr);
 
@@ -293,7 +299,7 @@ TEST_F(ActorLoginSiwgControllerTest, ButtonFound_ClickFailed) {
   child->mutable_content_attributes()->set_common_ancestor_dom_node_id(2);
 
   // 2. Expect FindPotentialSiwgButtons.
-  EXPECT_CALL(mock_autofill_agent_, FindPotentialSiwgButtons(_))
+  EXPECT_CALL(mock_autofill_agent_, FindPotentialSiwgButtons)
       .WillOnce(WithArg<0>(
           [&](autofill::mojom::AutofillAgent::FindPotentialSiwgButtonsCallback
                   callback) {
@@ -306,7 +312,7 @@ TEST_F(ActorLoginSiwgControllerTest, ButtonFound_ClickFailed) {
           }));
 
   // 3. Expect InvokeTool and simulate failure.
-  EXPECT_CALL(mock_chrome_render_frame_, InvokeTool(_, _))
+  EXPECT_CALL(mock_chrome_render_frame_, InvokeTool)
       .WillOnce(WithArg<1>(
           [&](chrome::mojom::ChromeRenderFrame::InvokeToolCallback callback) {
             auto result = actor::mojom::ActionResult::New();
@@ -338,7 +344,9 @@ TEST_F(ActorLoginSiwgControllerTest, NoButtonsFound) {
       base::BindRepeating(&ActorLoginSiwgControllerTest::SaveCallback,
                           &page_content_callback),
       /*should_store_permission=*/false, mock_permission_service_,
-      finished_callback.Get(), /*action_sequence_delegate=*/nullptr);
+      finished_callback.Get(), /*action_sequence_delegate=*/nullptr,
+      /*mqls_logger=*/nullptr,
+      /*attempt_login_tool_start_time=*/base::TimeTicks::Now());
 
   controller.StartFederatedLogin(/*metrics_helper=*/nullptr);
 
@@ -346,7 +354,7 @@ TEST_F(ActorLoginSiwgControllerTest, NoButtonsFound) {
   optimization_guide::proto::AnnotatedPageContent page_content;
 
   // Expect FindPotentialSiwgButtons but return empty.
-  EXPECT_CALL(mock_autofill_agent_, FindPotentialSiwgButtons(_))
+  EXPECT_CALL(mock_autofill_agent_, FindPotentialSiwgButtons)
       .WillOnce(WithArg<0>(
           [&](autofill::mojom::AutofillAgent::FindPotentialSiwgButtonsCallback
                   callback) {
@@ -355,7 +363,7 @@ TEST_F(ActorLoginSiwgControllerTest, NoButtonsFound) {
           }));
 
   // Do NOT expect InvokeTool.
-  EXPECT_CALL(mock_chrome_render_frame_, InvokeTool(_, _)).Times(0);
+  EXPECT_CALL(mock_chrome_render_frame_, InvokeTool).Times(0);
 
   EXPECT_CALL(finished_callback,
               Run(base::test::ErrorIs(ActorLoginError::kFillingNotAllowed)))
@@ -368,9 +376,32 @@ TEST_F(ActorLoginSiwgControllerTest, NoButtonsFound) {
   run_loop.Run();
 }
 
+using AttemptLoginDetails =
+    optimization_guide::proto::ActorLoginQuality_AttemptLoginDetails;
+
+testing::Matcher<AttemptLoginDetails> EqualsAttemptLoginDetails(
+    const AttemptLoginDetails& expected) {
+  return testing::AllOf(
+      testing::Property("outcome", &AttemptLoginDetails::outcome,
+                        expected.outcome()),
+      testing::Property("attempt_login_time_ms",
+                        &AttemptLoginDetails::attempt_login_time_ms,
+                        testing::Ge(expected.attempt_login_time_ms())),
+      testing::Property("button_click_required",
+                        &AttemptLoginDetails::button_click_required,
+                        expected.button_click_required()),
+      testing::Property("button_click_succeeded",
+                        &AttemptLoginDetails::button_click_succeeded,
+                        expected.button_click_succeeded()));
+}
+
 class ActorLoginSiwgControllerDelegateClickTest
     : public ChromeRenderViewHostTestHarness {
  public:
+  ActorLoginSiwgControllerDelegateClickTest()
+      : ChromeRenderViewHostTestHarness(
+            base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
+
   void SetUp() override {
     ChromeRenderViewHostTestHarness::SetUp();
 
@@ -381,9 +412,14 @@ class ActorLoginSiwgControllerDelegateClickTest
     NavigateAndCommit(GURL("https://example.com/login"));
   }
 
+  base::WeakPtr<MockActorLoginQualityLogger> mqls_logger() {
+    return mock_mqls_logger_.AsWeakPtr();
+  }
+
  protected:
   base::test::ScopedFeatureList feature_list_;
   StrictMock<MockActorLoginPermissionService> mock_permission_service_;
+  MockActorLoginQualityLogger mock_mqls_logger_;
 };
 
 TEST_F(ActorLoginSiwgControllerDelegateClickTest, DelegatesClick) {
@@ -399,11 +435,24 @@ TEST_F(ActorLoginSiwgControllerDelegateClickTest, DelegatesClick) {
 
   auto controller = std::make_unique<ActorLoginSiwgController>(
       web_contents(), credential, false, mock_permission_service_,
-      finished_callback.Get(), action_sequence_delegate.GetWeakPtr());
+      finished_callback.Get(), action_sequence_delegate.GetWeakPtr(),
+      mqls_logger(), base::TimeTicks::Now());
   base::RunLoop start_run_loop;
   EXPECT_CALL(finished_callback,
               Run(base::test::ValueIs(LoginStatusResult::kRequiresButtonClick)))
       .WillOnce(base::test::RunClosure(start_run_loop.QuitClosure()));
+
+  const int kAttemptLoginTimeMs = 50;
+  AttemptLoginDetails expected_details;
+  expected_details.set_outcome(
+      optimization_guide::proto::
+          ActorLoginQuality_AttemptLoginDetails_AttemptLoginOutcome_FEDERATED_SUCCESS);
+  expected_details.set_attempt_login_time_ms(kAttemptLoginTimeMs);
+  expected_details.set_button_click_required(true);
+
+  EXPECT_CALL(
+      mock_mqls_logger_,
+      AddAttemptLoginDetails(EqualsAttemptLoginDetails(expected_details)));
 
   controller->StartFederatedLogin(std::move(metrics_helper_owned));
 
@@ -417,6 +466,8 @@ TEST_F(ActorLoginSiwgControllerDelegateClickTest, DelegatesClick) {
   EXPECT_CALL(action_sequence_delegate,
               OnFederatedLoginOutcome(LoginStatusResult::kSuccessFederated))
       .WillOnce(base::test::RunClosure(outcome_run_loop.QuitClosure()));
+
+  task_environment()->AdvanceClock(base::Milliseconds(kAttemptLoginTimeMs));
 
   // Manually trigger the federated login completion callback.
   auto* request =
@@ -454,7 +505,20 @@ TEST_F(ActorLoginSiwgControllerDelegateClickTest, StoresPermissionOnSuccess) {
   ActorLoginSiwgController controller(
       web_contents(), credential,
       /*should_store_permission=*/true, mock_permission_service_,
-      finished_callback.Get(), action_sequence_delegate.GetWeakPtr());
+      finished_callback.Get(), action_sequence_delegate.GetWeakPtr(),
+      mqls_logger(), base::TimeTicks::Now());
+
+  const int kAttemptLoginTimeMs = 50;
+  AttemptLoginDetails expected_details;
+  expected_details.set_outcome(
+      optimization_guide::proto::
+          ActorLoginQuality_AttemptLoginDetails_AttemptLoginOutcome_FEDERATED_SUCCESS);
+  expected_details.set_attempt_login_time_ms(kAttemptLoginTimeMs);
+  expected_details.set_button_click_required(true);
+
+  EXPECT_CALL(
+      mock_mqls_logger_,
+      AddAttemptLoginDetails(EqualsAttemptLoginDetails(expected_details)));
 
   base::RunLoop login_run_loop;
   EXPECT_CALL(finished_callback,
@@ -481,6 +545,8 @@ TEST_F(ActorLoginSiwgControllerDelegateClickTest, StoresPermissionOnSuccess) {
               OnFederatedLoginOutcome(LoginStatusResult::kSuccessFederated))
       .WillOnce(base::test::RunClosure(outcome_run_loop.QuitClosure()));
 
+  task_environment()->AdvanceClock(base::Milliseconds(kAttemptLoginTimeMs));
+
   // Manually trigger the federated login completion callback.
   auto* request =
       content::webid::FederatedEmbedderLoginRequest::Get(web_contents());
@@ -504,7 +570,20 @@ TEST_F(ActorLoginSiwgControllerDelegateClickTest,
   ActorLoginSiwgController controller(
       web_contents(), credential,
       /*should_store_permission=*/true, mock_permission_service_,
-      finished_callback.Get(), action_sequence_delegate.GetWeakPtr());
+      finished_callback.Get(), action_sequence_delegate.GetWeakPtr(),
+      mqls_logger(), base::TimeTicks::Now());
+
+  const int kAttemptLoginTimeMs = 50;
+  AttemptLoginDetails expected_details;
+  expected_details.set_outcome(
+      optimization_guide::proto::
+          ActorLoginQuality_AttemptLoginDetails_AttemptLoginOutcome_FEDERATED_IDP_RETURNED_ERROR);
+  expected_details.set_attempt_login_time_ms(kAttemptLoginTimeMs);
+  expected_details.set_button_click_required(true);
+
+  EXPECT_CALL(
+      mock_mqls_logger_,
+      AddAttemptLoginDetails(EqualsAttemptLoginDetails(expected_details)));
 
   base::RunLoop start_run_loop;
   EXPECT_CALL(finished_callback,
@@ -521,6 +600,8 @@ TEST_F(ActorLoginSiwgControllerDelegateClickTest,
                   LoginStatusResult::kErrorFederatedIdpReturnedError))
       .WillOnce(base::test::RunClosure(outcome_run_loop.QuitClosure()));
   EXPECT_CALL(mock_permission_service_, GrantPermission).Times(0);
+
+  task_environment()->AdvanceClock(base::Milliseconds(kAttemptLoginTimeMs));
 
   // Manually trigger the federated login completion callback with FAILURE.
   auto* request =

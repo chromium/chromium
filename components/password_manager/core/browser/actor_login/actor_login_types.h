@@ -222,7 +222,17 @@ enum class AttemptLoginOutcomeMqls {
   kDisallowedOrigin,
   kReauthRequired,
   kReauthFailed,
-
+  kFederatedSuccess,
+  kFederatedContinuation,
+  kFederatedAccountNotLoggedIn,
+  kFederatedAccountIsSignUp,
+  kFederatedAccountIsNotAvailable,
+  kFederatedIdpReturnedError,
+  kFederatedIdpNetworkError,
+  kFederatedTokenRequestAborted,
+  kFederatedFrameNotActive,
+  kFederatedExpectedAccountNotPresent,
+  kFederatedTimeout,
 };
 
 optimization_guide::proto::
