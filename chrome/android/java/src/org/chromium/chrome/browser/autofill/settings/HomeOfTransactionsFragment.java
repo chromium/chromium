@@ -93,10 +93,7 @@ public class HomeOfTransactionsFragment extends ChromeBaseSettingsFragment {
         Preference travelPref = findPreference(PREF_AUTOFILL_TRAVEL);
         travelPref.setVisible(shouldShowTravel());
         travelPref.setOnPreferenceClickListener(
-                preference -> {
-                    // TODO(crbug.com/482994258): Launch travel leaf page.
-                    return true;
-                });
+                preference -> SettingsNavigationHelper.showAutofillTravelSettings(getActivity()));
 
         findPreference(PREF_AUTOFILL_SETTINGS)
                 .setOnPreferenceClickListener(

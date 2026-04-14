@@ -38,6 +38,21 @@ public class SettingsNavigationHelper {
     }
 
     /**
+     * Tries showing the settings page for Travel.
+     *
+     * @param context The {@link Context} required to start the settings page. Noop without it.
+     * @return True iff the context is valid and `startSettings` was called.
+     */
+    public static boolean showAutofillTravelSettings(@Nullable Context context) {
+        if (context == null) {
+            return false;
+        }
+        SettingsNavigationFactory.createSettingsNavigation()
+                .startSettings(context, AutofillTravelFragment.class);
+        return true;
+    }
+
+    /**
      * Tries showing the settings page for Addresses.
      *
      * @param context The {@link Context} required to start the settings page. Noop without it.

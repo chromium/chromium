@@ -64,6 +64,7 @@ chromium-metrics-reviews@google.com.
   <int value="-275160283" label="ExtendedPreloadingSettingsFragment"/>
   <int value="-273029950" label="PasswordCheckFragmentView"/>
   <int value="-268785515" label="ClearWebsiteStorageDialog"/>
+  <int value="-198735876" label="AutofillTravelFragment"/>
   <int value="-191422304" label="AccountManagementFragment"/>
   <int value="-175458226" label="ClearBrowsingDataFragment"/>
   <int value="-132150623" label="TracingCategoriesSettings"/>
