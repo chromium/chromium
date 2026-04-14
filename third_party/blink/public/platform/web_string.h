@@ -82,14 +82,14 @@ class StringImpl;
 //
 class BLINK_PLATFORM_EXPORT WebString {
  public:
-  enum class UTF8ConversionMode {
+  enum class Utf8ConversionMode {
     // Ignores errors for invalid characters.
     kLenient,
     // Errors out on invalid characters, returns null string.
     kStrict,
     // Replace invalid characters with 0xFFFD.
     // (This is the same conversion mode as base::UTF16ToUTF8)
-    kStrictReplacingErrorsWithFFFD,
+    kStrictReplacingErrors,
   };
 
   ~WebString();
@@ -119,7 +119,7 @@ class BLINK_PLATFORM_EXPORT WebString {
   bool IsEmpty() const { return !length(); }
   bool IsNull() const { return !impl_; }
 
-  std::string Utf8(UTF8ConversionMode = UTF8ConversionMode::kLenient) const;
+  std::string Utf8(Utf8ConversionMode = Utf8ConversionMode::kLenient) const;
 
   WebString Substring(size_t pos,
                       size_t len = std::numeric_limits<size_t>::max()) const;

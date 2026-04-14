@@ -25,18 +25,18 @@ TEST(WebStringTest, UTF8ConversionRoundTrip) {
 
     // Conversion with Strict mode results in an empty string.
     std::string utf8_string(
-        utf16_string.Utf8(WebString::UTF8ConversionMode::kStrict));
+        utf16_string.Utf8(WebString::Utf8ConversionMode::kStrict));
     EXPECT_TRUE(utf8_string.empty());
 
     // Unpaired surrogates can't be converted back in Lenient mode.
-    utf8_string = utf16_string.Utf8(WebString::UTF8ConversionMode::kLenient);
+    utf8_string = utf16_string.Utf8(WebString::Utf8ConversionMode::kLenient);
     EXPECT_FALSE(utf8_string.empty());
     WebString utf16_new_string = WebString::FromUtf8(utf8_string);
     EXPECT_TRUE(utf16_new_string.IsNull());
 
-    // Round-trip works with StrictReplacingErrorsWithFFFD mode.
+    // Round-trip works with StrictReplacingErrors mode.
     utf8_string = utf16_string.Utf8(
-        WebString::UTF8ConversionMode::kStrictReplacingErrorsWithFFFD);
+        WebString::Utf8ConversionMode::kStrictReplacingErrors);
     EXPECT_FALSE(utf8_string.empty());
     utf16_new_string = WebString::FromUtf8(utf8_string);
     EXPECT_FALSE(utf16_new_string.IsNull());

@@ -6790,8 +6790,8 @@ WebView* RenderFrameImpl::CreateNewWindow(
         GetWebView()->GetSessionStorageNamespaceId();
   }
 
-  const std::string& frame_name_utf8 = frame_name.Utf8(
-      WebString::UTF8ConversionMode::kStrictReplacingErrorsWithFFFD);
+  const std::string& frame_name_utf8 =
+      frame_name.Utf8(WebString::Utf8ConversionMode::kStrictReplacingErrors);
   params->frame_name = frame_name_utf8;
   params->opener_suppressed = features.noopener;
   params->disposition = NavigationPolicyToDisposition(policy);

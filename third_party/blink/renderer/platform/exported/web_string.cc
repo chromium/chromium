@@ -41,12 +41,12 @@
 #include "third_party/blink/renderer/platform/wtf/wtf_size_t.h"
 
 STATIC_ASSERT_ENUM(blink::Utf8ConversionMode::kLenient,
-                   blink::WebString::UTF8ConversionMode::kLenient);
+                   blink::WebString::Utf8ConversionMode::kLenient);
 STATIC_ASSERT_ENUM(blink::Utf8ConversionMode::kStrict,
-                   blink::WebString::UTF8ConversionMode::kStrict);
+                   blink::WebString::Utf8ConversionMode::kStrict);
 STATIC_ASSERT_ENUM(
     blink::Utf8ConversionMode::kStrictReplacingErrors,
-    blink::WebString::UTF8ConversionMode::kStrictReplacingErrorsWithFFFD);
+    blink::WebString::Utf8ConversionMode::kStrictReplacingErrors);
 
 namespace blink {
 
@@ -72,8 +72,8 @@ bool WebString::Is8Bit() const {
   return impl_->Is8Bit();
 }
 
-std::string WebString::Utf8(UTF8ConversionMode mode) const {
-  return String(impl_).Utf8(static_cast<Utf8ConversionMode>(mode));
+std::string WebString::Utf8(Utf8ConversionMode mode) const {
+  return String(impl_).Utf8(static_cast<blink::Utf8ConversionMode>(mode));
 }
 
 WebString WebString::Substring(size_t pos, size_t len) const {
