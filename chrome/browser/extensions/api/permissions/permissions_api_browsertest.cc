@@ -14,16 +14,20 @@
 #include "base/strings/stringprintf.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/extensions/chrome_test_extension_loader.h"
-#include "chrome/browser/extensions/extension_service_test_with_install.h"
+#include "chrome/browser/extensions/extension_browsertest.h"
 #include "chrome/browser/extensions/extension_tab_util.h"
 #include "chrome/browser/extensions/extension_util.h"
 #include "chrome/test/base/testing_profile.h"
+#include "chrome/test/base/ui_test_utils.h"
 #include "components/crx_file/id_util.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/test/browser_test.h"
 #include "content/public/test/web_contents_tester.h"
 #include "extensions/browser/api_test_utils.h"
 #include "extensions/browser/extension_api_frame_id_map.h"
 #include "extensions/browser/extension_registrar.h"
+#include "extensions/browser/extension_registry.h"
+#include "extensions/browser/extension_system.h"
 #include "extensions/browser/extension_util.h"
 #include "extensions/browser/permissions/active_tab_permission_granter.h"
 #include "extensions/browser/permissions/permissions_test_util.h"
@@ -37,6 +41,7 @@
 #include "extensions/common/manifest_handlers/permissions_parser.h"
 #include "extensions/common/permissions/permissions_data.h"
 #include "extensions/test/test_extension_dir.h"
+#include "net/dns/mock_host_resolver.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -111,7 +116,7 @@ bool RunRequestFunction(
 
 }  // namespace
 
-class PermissionsAPIUnitTest : public ExtensionServiceTestWithInstall {
+class PermissionsAPIUnitTest : public ExtensionBrowserTest {
  public:
   PermissionsAPIUnitTest() = default;
 
@@ -156,7 +161,7 @@ class PermissionsAPIUnitTest : public ExtensionServiceTestWithInstall {
     PermissionsUpdater updater(profile());
     updater.InitializePermissions(&extension);
     updater.GrantActivePermissions(&extension);
-    registrar()->AddExtension(&extension);
+    ExtensionRegistrar::Get(profile())->AddExtension(&extension);
   }
 
   // Adds the extension to the ExtensionService, and withheld any initial
@@ -166,21 +171,18 @@ class PermissionsAPIUnitTest : public ExtensionServiceTestWithInstall {
     updater.InitializePermissions(&extension);
     ScriptingPermissionsModifier(profile(), &extension)
         .SetWithholdHostPermissions(true);
-    registrar()->AddExtension(&extension);
+    ExtensionRegistrar::Get(profile())->AddExtension(&extension);
   }
 
  protected:
-  // ExtensionServiceTestBase:
-  void SetUp() override {
-    ExtensionServiceTestWithInstall::SetUp();
+  void SetUpOnMainThread() override {
+    ExtensionBrowserTest::SetUpOnMainThread();
     dialog_action_ = PermissionsRequestFunction::SetDialogActionForTests(
         PermissionsRequestFunction::DialogAction::kAutoConfirm);
-    InitializeEmptyExtensionService();
   }
-  // ExtensionServiceTestBase:
-  void TearDown() override {
+  void TearDownOnMainThread() override {
     dialog_action_.reset();
-    ExtensionServiceTestWithInstall::TearDown();
+    ExtensionBrowserTest::TearDownOnMainThread();
   }
 
  private:
@@ -188,7 +190,7 @@ class PermissionsAPIUnitTest : public ExtensionServiceTestWithInstall {
       dialog_action_;
 };
 
-TEST_F(PermissionsAPIUnitTest, Contains) {
+IN_PROC_BROWSER_TEST_F(PermissionsAPIUnitTest, Contains) {
   // 1. Since the extension does not have file:// origin access, expect it
   // to return false;
   bool expected_has_permission = false;
@@ -226,7 +228,8 @@ TEST_F(PermissionsAPIUnitTest, Contains) {
                                   true /* allow file access */));
 }
 
-TEST_F(PermissionsAPIUnitTest, ContainsAndGetAllWithRuntimeHostPermissions) {
+IN_PROC_BROWSER_TEST_F(PermissionsAPIUnitTest,
+                       ContainsAndGetAllWithRuntimeHostPermissions) {
   constexpr char kExampleCom[] = "https://example.com/*";
   constexpr char kContentScriptCom[] = "https://contentscript.com/*";
   scoped_refptr<const Extension> extension =
@@ -239,7 +242,7 @@ TEST_F(PermissionsAPIUnitTest, ContainsAndGetAllWithRuntimeHostPermissions) {
   PermissionsUpdater updater(profile());
   updater.InitializePermissions(extension.get());
   updater.GrantActivePermissions(extension.get());
-  registrar()->AddExtension(extension.get());
+  ExtensionRegistrar::Get(profile())->AddExtension(extension.get());
 
   auto contains_origin = [this, &extension](const char* origin) {
     SCOPED_TRACE(origin);
@@ -334,7 +337,7 @@ TEST_F(PermissionsAPIUnitTest, ContainsAndGetAllWithRuntimeHostPermissions) {
 
 // Tests requesting permissions that are already granted with the
 // permissions.request() API.
-TEST_F(PermissionsAPIUnitTest, RequestingGrantedPermissions) {
+IN_PROC_BROWSER_TEST_F(PermissionsAPIUnitTest, RequestingGrantedPermissions) {
   // Create an extension with requires all urls, and grant the permission.
   scoped_refptr<const Extension> extension =
       ExtensionBuilder("extension").AddHostPermission("<all_urls>").Build();
@@ -350,7 +353,7 @@ TEST_F(PermissionsAPIUnitTest, RequestingGrantedPermissions) {
 }
 
 // Tests requesting withheld permissions with the permissions.request() API.
-TEST_F(PermissionsAPIUnitTest, RequestingWithheldPermissions) {
+IN_PROC_BROWSER_TEST_F(PermissionsAPIUnitTest, RequestingWithheldPermissions) {
   // Create an extension with required host permissions, and withhold those
   // permissions.
   scoped_refptr<const Extension> extension =
@@ -387,7 +390,8 @@ TEST_F(PermissionsAPIUnitTest, RequestingWithheldPermissions) {
 
 // Tests requesting withheld content script permissions with the
 // permissions.request() API.
-TEST_F(PermissionsAPIUnitTest, RequestingWithheldContentScriptPermissions) {
+IN_PROC_BROWSER_TEST_F(PermissionsAPIUnitTest,
+                       RequestingWithheldContentScriptPermissions) {
   constexpr char kContentScriptPattern[] = "https://contentscript.com/*";
   // Create an extension with required host permissions, and withhold those
   // permissions.
@@ -424,8 +428,9 @@ TEST_F(PermissionsAPIUnitTest, RequestingWithheldContentScriptPermissions) {
 
 // Tests requesting a withheld host permission that is both an explicit and a
 // scriptable host with the permissions.request() API.
-TEST_F(PermissionsAPIUnitTest,
-       RequestingWithheldExplicitAndScriptablePermissionsInTheSameCall) {
+IN_PROC_BROWSER_TEST_F(
+    PermissionsAPIUnitTest,
+    RequestingWithheldExplicitAndScriptablePermissionsInTheSameCall) {
   constexpr char kContentScriptPattern[] = "https://example.com/*";
   // Create an extension with required host permissions, and withhold those
   // permissions.
@@ -463,7 +468,8 @@ TEST_F(PermissionsAPIUnitTest,
 }
 
 // Tests an extension re-requesting an optional host after the user removes it.
-TEST_F(PermissionsAPIUnitTest, ReRequestingWithheldOptionalPermissions) {
+IN_PROC_BROWSER_TEST_F(PermissionsAPIUnitTest,
+                       ReRequestingWithheldOptionalPermissions) {
   // Create an extension an optional host permissions, and withhold those
   // permissions.
   scoped_refptr<const Extension> extension =
@@ -520,7 +526,8 @@ TEST_F(PermissionsAPIUnitTest, ReRequestingWithheldOptionalPermissions) {
 
 // Tests requesting both optional and withheld permissions in the same call to
 // permissions.request().
-TEST_F(PermissionsAPIUnitTest, RequestingWithheldAndOptionalPermissions) {
+IN_PROC_BROWSER_TEST_F(PermissionsAPIUnitTest,
+                       RequestingWithheldAndOptionalPermissions) {
   // Create an extension with required and optional host permissions, and
   // withhold the required permissions.
   scoped_refptr<const Extension> extension =
@@ -565,7 +572,8 @@ TEST_F(PermissionsAPIUnitTest, RequestingWithheldAndOptionalPermissions) {
 
 // Tests requesting permissions that weren't specified in the manifest (either
 // in optional permissions or in required permissions).
-TEST_F(PermissionsAPIUnitTest, RequestingPermissionsNotSpecifiedInManifest) {
+IN_PROC_BROWSER_TEST_F(PermissionsAPIUnitTest,
+                       RequestingPermissionsNotSpecifiedInManifest) {
   // Create an extension with required and optional host permissions, and
   // withhold the required permissions.
   scoped_refptr<const Extension> extension =
@@ -601,7 +609,8 @@ TEST_F(PermissionsAPIUnitTest, RequestingPermissionsNotSpecifiedInManifest) {
 }
 
 // Tests requesting withheld permissions that have already been granted.
-TEST_F(PermissionsAPIUnitTest, RequestingAlreadyGrantedWithheldPermissions) {
+IN_PROC_BROWSER_TEST_F(PermissionsAPIUnitTest,
+                       RequestingAlreadyGrantedWithheldPermissions) {
   // Create an extension with required host permissions, withhold host
   // permissions, and then grant one of the hosts.
   scoped_refptr<const Extension> extension =
@@ -648,7 +657,7 @@ TEST_F(PermissionsAPIUnitTest, RequestingAlreadyGrantedWithheldPermissions) {
 
 // Test that requesting chrome:-scheme URLs is disallowed in the permissions
 // API.
-TEST_F(PermissionsAPIUnitTest, RequestingChromeURLs) {
+IN_PROC_BROWSER_TEST_F(PermissionsAPIUnitTest, RequestingChromeURLs) {
   scoped_refptr<const Extension> extension =
       ExtensionBuilder("extension")
           .AddOptionalHostPermission("<all_urls>")
@@ -694,7 +703,7 @@ TEST_F(PermissionsAPIUnitTest, RequestingChromeURLs) {
 
 // Tests requesting the a file:-scheme pattern with and without file
 // access granted. Regression test for https://crbug.com/40614226.
-TEST_F(PermissionsAPIUnitTest, RequestingFilePermissions) {
+IN_PROC_BROWSER_TEST_F(PermissionsAPIUnitTest, RequestingFilePermissions) {
   // We need a "real" extension here, since toggling file access requires
   // reloading the extension to re-initialize permissions.
   TestExtensionDir test_dir;
@@ -726,7 +735,8 @@ TEST_F(PermissionsAPIUnitTest, RequestingFilePermissions) {
     EXPECT_FALSE(extension->permissions_data()->HasHostPermission(file_url));
   }
   {
-    TestExtensionRegistryObserver observer(registry(), extension->id());
+    TestExtensionRegistryObserver observer(ExtensionRegistry::Get(profile()),
+                                           extension->id());
     // This will reload the extension, so we need to reset the extension
     // pointer.
     util::SetAllowFileAccess(extension->id(), profile(), true);
@@ -760,9 +770,25 @@ class PermissionsAPIHostAccessRequestsUnitTest : public PermissionsAPIUnitTest {
   PermissionsAPIHostAccessRequestsUnitTest& operator=(
       const PermissionsAPIHostAccessRequestsUnitTest&) = delete;
 
+  void SetUpOnMainThread() override {
+    PermissionsAPIUnitTest::SetUpOnMainThread();
+    host_resolver()->AddRule("*", "127.0.0.1");
+    ASSERT_TRUE(embedded_test_server()->Start());
+  }
+
   // Navigate to `url` in the current web contents.
-  void NavigateTo(const std::string& url) {
-    web_contents_tester_->NavigateAndCommit(GURL(url));
+  void NavigateTo(const std::string& url_string) {
+    GURL url(url_string);
+    if (url.SchemeIs("chrome")) {
+      ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+      return;
+    }
+    std::string path(url.path());
+    if (path.empty() || path == "/") {
+      path = "/title1.html";
+    }
+    GURL test_url = embedded_test_server()->GetURL(url.host(), path);
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), test_url));
   }
 
   // Returns the function params for permissions.add|removeHostAccessRequest for
@@ -778,45 +804,14 @@ class PermissionsAPIHostAccessRequestsUnitTest : public PermissionsAPIUnitTest {
                               pattern.c_str());
   }
 
- protected:
-  // PermissionsAPIUnitTest:
-  void SetUp() override {
-    PermissionsAPIUnitTest::SetUp();
-
-    auto browser_window = std::make_unique<TestBrowserWindow>();
-    Browser::CreateParams params(profile(), true);
-    params.type = Browser::TYPE_NORMAL;
-    params.window = browser_window.release();
-    browser_ = Browser::DeprecatedCreateOwnedForTesting(params);
-
-    std::unique_ptr<content::WebContents> web_contents =
-        content::WebContentsTester::CreateTestWebContents(profile(), nullptr);
-    content::WebContents* raw_web_contents = web_contents.get();
-    browser()->tab_strip_model()->AppendWebContents(std::move(web_contents),
-                                                    true);
-    web_contents_tester_ = content::WebContentsTester::For(raw_web_contents);
-  }
-
-  void TearDown() override {
-    // Detach the web contents.
-    web_contents_tester_ = nullptr;
-    browser()->tab_strip_model()->DetachAndDeleteWebContentsAt(/*index=*/0);
-    browser_.reset();
-    PermissionsAPIUnitTest::TearDown();
-  }
-
-  Browser* browser() { return browser_.get(); }
-
  private:
-  std::unique_ptr<Browser> browser_;
   base::test::ScopedFeatureList scoped_feature_list_;
-  raw_ptr<content::WebContentsTester> web_contents_tester_;
 };
 
 // Test extension can add a host access request for a site it has host
 // permissions for and has withheld host access.
-TEST_F(PermissionsAPIHostAccessRequestsUnitTest,
-       AddHostAccessRequest_RequestedSite) {
+IN_PROC_BROWSER_TEST_F(PermissionsAPIHostAccessRequestsUnitTest,
+                       AddHostAccessRequest_RequestedSite) {
   scoped_refptr<const Extension> extension =
       ExtensionBuilder("Extension")
           .AddHostPermission("*://*.requested.com/*")
@@ -869,8 +864,8 @@ TEST_F(PermissionsAPIHostAccessRequestsUnitTest,
 // Test extension can add a host access request with a pattern for a host it has
 // host permissions for and has withheld host access. Request is only valid if
 // pattern matches the extension's host permissions.
-TEST_F(PermissionsAPIHostAccessRequestsUnitTest,
-       AddHostAccessRequestWithPattern_RequestedSite) {
+IN_PROC_BROWSER_TEST_F(PermissionsAPIHostAccessRequestsUnitTest,
+                       AddHostAccessRequestWithPattern_RequestedSite) {
   scoped_refptr<const Extension> extension =
       ExtensionBuilder("Extension")
           .AddHostPermission("*://*.requested.com/*")
@@ -932,8 +927,8 @@ TEST_F(PermissionsAPIHostAccessRequestsUnitTest,
         base::MakeRefCounted<PermissionsAddHostAccessRequestFunction>();
     function->set_extension(extension.get());
     EXPECT_TRUE(api_test_utils::RunFunction(
-        function.get(), GetFunctionParams(tab_id, "*://*/path"), profile(),
-        api_test_utils::FunctionMode::kNone));
+        function.get(), GetFunctionParams(tab_id, "*://*/title2.html"),
+        profile(), api_test_utils::FunctionMode::kNone));
 
     // Verify host access request was not added. Note that new requests will
     // overridden any existent ones.
@@ -942,7 +937,7 @@ TEST_F(PermissionsAPIHostAccessRequestsUnitTest,
 
     // Verify host access request was added when navigating to the same-origin
     // url that matches the pattern.
-    NavigateTo("http://www.requested.com/path");
+    NavigateTo("http://www.requested.com/title2.html");
     EXPECT_TRUE(permissions_manager->HasActiveHostAccessRequest(
         tab_id, extension->id()));
   }
@@ -950,8 +945,8 @@ TEST_F(PermissionsAPIHostAccessRequestsUnitTest,
 
 // Test extension can add a host access request for a host it doesn't have host
 // permissions for, but request is not active.
-TEST_F(PermissionsAPIHostAccessRequestsUnitTest,
-       AddHostAccessRequest_NonRequestedSite) {
+IN_PROC_BROWSER_TEST_F(PermissionsAPIHostAccessRequestsUnitTest,
+                       AddHostAccessRequest_NonRequestedSite) {
   scoped_refptr<const Extension> extension =
       ExtensionBuilder("Extension")
           .AddHostPermission("*://*.requested.com/*")
@@ -1010,11 +1005,11 @@ TEST_F(PermissionsAPIHostAccessRequestsUnitTest,
 
 // Test extension cannot add a host access request when it doesn't have any
 // host permissions.
-TEST_F(PermissionsAPIHostAccessRequestsUnitTest,
-       AddHostAccessRequest_NoHostPermissions) {
+IN_PROC_BROWSER_TEST_F(PermissionsAPIHostAccessRequestsUnitTest,
+                       AddHostAccessRequest_NoHostPermissions) {
   scoped_refptr<const Extension> extension =
       ExtensionBuilder("Extension").AddAPIPermission("activeTab").Build();
-  registrar()->AddExtension(extension.get());
+  ExtensionRegistrar::Get(profile())->AddExtension(extension.get());
 
   // Open tab on any url.
   NavigateTo("http://www.example.com");
@@ -1042,8 +1037,8 @@ TEST_F(PermissionsAPIHostAccessRequestsUnitTest,
 
 // Test extension can add a host access request for a restricted host, but
 // request is not active.
-TEST_F(PermissionsAPIHostAccessRequestsUnitTest,
-       AddHostAccessRequest_TabId_RestrictedSite) {
+IN_PROC_BROWSER_TEST_F(PermissionsAPIHostAccessRequestsUnitTest,
+                       AddHostAccessRequest_TabId_RestrictedSite) {
   scoped_refptr<const Extension> extension =
       ExtensionBuilder("Extension")
           .AddHostPermission("*://*.requested.com/*")
@@ -1076,14 +1071,14 @@ TEST_F(PermissionsAPIHostAccessRequestsUnitTest,
 
 // Tests extension can add a host access request for a host where it has
 // optional host permissions.
-TEST_F(PermissionsAPIHostAccessRequestsUnitTest,
-       AddHostAccessRequest_OptionalHostPermissions) {
+IN_PROC_BROWSER_TEST_F(PermissionsAPIHostAccessRequestsUnitTest,
+                       AddHostAccessRequest_OptionalHostPermissions) {
   scoped_refptr<const Extension> extension =
       ExtensionBuilder("Extension")
           .SetManifestKey("optional_host_permissions",
                           base::ListValue().Append("*://*.optional.com/*"))
           .Build();
-  registrar()->AddExtension(extension.get());
+  ExtensionRegistrar::Get(profile())->AddExtension(extension.get());
 
   auto* permissions_manager = PermissionsManager::Get(profile());
 
@@ -1111,8 +1106,8 @@ TEST_F(PermissionsAPIHostAccessRequestsUnitTest,
 
 // Tests extension can add a host access request for a host where it wants to
 // inject a content script.
-TEST_F(PermissionsAPIHostAccessRequestsUnitTest,
-       AddHostAccessRequest_ContentScriptMatches) {
+IN_PROC_BROWSER_TEST_F(PermissionsAPIHostAccessRequestsUnitTest,
+                       AddHostAccessRequest_ContentScriptMatches) {
   scoped_refptr<const Extension> extension =
       ExtensionBuilder("Extension")
           .AddContentScript("script.js", {"*://*.contentscript.com/*"})
@@ -1146,8 +1141,8 @@ TEST_F(PermissionsAPIHostAccessRequestsUnitTest,
 // Tests extension can add a host access request for a host with access
 // withheld, even if the host was blocked by the user. Having a valid request
 // doesn't mean it will be signaled to the user.
-TEST_F(PermissionsAPIHostAccessRequestsUnitTest,
-       AddHostAccessRequest_UserBlockedSite) {
+IN_PROC_BROWSER_TEST_F(PermissionsAPIHostAccessRequestsUnitTest,
+                       AddHostAccessRequest_UserBlockedSite) {
   scoped_refptr<const Extension> extension =
       ExtensionBuilder("Extension")
           .SetManifestKey("host_permissions",
@@ -1207,8 +1202,8 @@ TEST_F(PermissionsAPIHostAccessRequestsUnitTest,
 
 // An extension with granted tab permission (via granting activeTab or running
 // an extension set on click) can't add a host request.
-TEST_F(PermissionsAPIHostAccessRequestsUnitTest,
-       AddHostAccessRequest_OneTimeGrantedAccess) {
+IN_PROC_BROWSER_TEST_F(PermissionsAPIHostAccessRequestsUnitTest,
+                       AddHostAccessRequest_OneTimeGrantedAccess) {
   scoped_refptr<const Extension> extension =
       ExtensionBuilder("Extension")
           .SetManifestKey("host_permissions",
@@ -1247,8 +1242,8 @@ TEST_F(PermissionsAPIHostAccessRequestsUnitTest,
 // Note: Document id is converted to a tab id by the API after parsing. Thus,
 // it's sufficient to test only some bases cases to make sure the documentId is
 // properly parsed. Other scenarios are extensively tested using a tab id.
-TEST_F(PermissionsAPIHostAccessRequestsUnitTest,
-       AddHostAccessRequest_DocumentId) {
+IN_PROC_BROWSER_TEST_F(PermissionsAPIHostAccessRequestsUnitTest,
+                       AddHostAccessRequest_DocumentId) {
   scoped_refptr<const Extension> extension =
       ExtensionBuilder("Extension")
           .AddHostPermission("*://*.requested.com/*")
@@ -1306,8 +1301,8 @@ TEST_F(PermissionsAPIHostAccessRequestsUnitTest,
 }
 
 // Tests extension cannot remove a host access request that doesn't exist.
-TEST_F(PermissionsAPIHostAccessRequestsUnitTest,
-       RemoveHostAccessRequest_TabId_Invalid) {
+IN_PROC_BROWSER_TEST_F(PermissionsAPIHostAccessRequestsUnitTest,
+                       RemoveHostAccessRequest_TabId_Invalid) {
   scoped_refptr<const Extension> extension =
       ExtensionBuilder("Extension")
           .SetManifestKey("host_permissions",
@@ -1411,8 +1406,8 @@ TEST_F(PermissionsAPIHostAccessRequestsUnitTest,
 
 // Tests extension can remove a host access request that matches an existent
 // request.
-TEST_F(PermissionsAPIHostAccessRequestsUnitTest,
-       RemoveHostAccessRequest_TabId_Valid) {
+IN_PROC_BROWSER_TEST_F(PermissionsAPIHostAccessRequestsUnitTest,
+                       RemoveHostAccessRequest_TabId_Valid) {
   scoped_refptr<const Extension> extension =
       ExtensionBuilder("Extension")
           .SetManifestKey("host_permissions",
@@ -1521,8 +1516,8 @@ TEST_F(PermissionsAPIHostAccessRequestsUnitTest,
 // is existent.
 // Note: Document id is converted to tab id. Thus, here we only need to test the
 // base cases since we have extensive testing for removing requests with tab id.
-TEST_F(PermissionsAPIHostAccessRequestsUnitTest,
-       RemoveHostAccessRequest_DocumentId) {
+IN_PROC_BROWSER_TEST_F(PermissionsAPIHostAccessRequestsUnitTest,
+                       RemoveHostAccessRequest_DocumentId) {
   scoped_refptr<const Extension> extension =
       ExtensionBuilder("Extension")
           .SetManifestKey("host_permissions",

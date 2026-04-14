@@ -1851,6 +1851,12 @@ source_set("platform_browser_tests") {
     }
   }
 
+  if (enable_extensions_core && !is_android) {
+    sources += [
+      "../browser/extensions/api/permissions/permissions_api_browsertest.cc",
+    ]
+  }
+
   if (enable_devtools_frontend) {
     sources += [
       "../browser/devtools/devtools_browsertest.cc",
@@ -9461,7 +9467,6 @@ test("unit_tests") {
       "../browser/extensions/api/omnibox/omnibox_unittest.cc",
       "../browser/extensions/api/omnibox/suggestion_parser_unittest.cc",
       "../browser/extensions/api/permissions/permissions_api_helpers_unittest.cc",
-      "../browser/extensions/api/permissions/permissions_api_unittest.cc",
       "../browser/extensions/api/preference/preference_api_prefs_unittest.cc",
       "../browser/extensions/api/proxy/proxy_api_helpers_unittest.cc",
       "../browser/extensions/api/runtime/chrome_runtime_api_delegate_unittest.cc",
