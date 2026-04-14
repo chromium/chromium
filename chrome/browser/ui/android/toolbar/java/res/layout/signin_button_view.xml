@@ -18,11 +18,15 @@ found in the LICENSE file.
         app:tint="@color/default_icon_color_tint_list"
         android:visibility="gone"/>
 
+    <!-- importantForAutofill is set to "no" to avoid crashes in the Autofill
+         codepath. SigninButton is not relevant for Autofill.
+         See https://crbug.com/501318669 -->
     <org.chromium.ui.widget.ButtonCompat
         android:id="@+id/signin_text_button"
         style="@style/TextButton"
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
         android:text="@string/signin_promo_sign_in"
+        android:importantForAutofill="no"
         android:visibility="gone" />
 </org.chromium.chrome.browser.toolbar.signin_button.SigninButtonView>
