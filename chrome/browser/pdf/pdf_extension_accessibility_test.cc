@@ -1295,6 +1295,15 @@ class PdfSearchifyIntegrationTest
     }
 
     EnableScreenReader();
+
+    base::test::TestFuture<bool> future;
+    auto* router =
+        screen_ai::ScreenAIServiceRouterFactory::GetForBrowserContext(
+            browser()->profile());
+    router->GetServiceStateAsync(
+        screen_ai::ScreenAIServiceRouter::Service::kOCR, future.GetCallback());
+    ASSERT_TRUE(future.Wait());
+    ASSERT_EQ(future.Get(), IsOcrAvailable());
   }
 
   void TearDownOnMainThread() override {
@@ -1446,14 +1455,7 @@ IN_PROC_BROWSER_TEST_P(PdfSearchifyIntegrationTest, EnsureScreenAIInitializes) {
   // Since screen reader is on, library download is triggered and if it is
   // successful, initialization of Screen AI OCR service will be successful.
 
-  // Wait for Screen AI OCR service to either get ready or fail.
-  base::test::TestFuture<bool> future;
-  auto* router = screen_ai::ScreenAIServiceRouterFactory::GetForBrowserContext(
-      browser()->profile());
-  router->GetServiceStateAsync(screen_ai::ScreenAIServiceRouter::Service::kOCR,
-                               future.GetCallback());
-  ASSERT_TRUE(future.Wait());
-  ASSERT_EQ(future.Get(), IsOcrAvailable());
+  // OCR service readiness is already checked in SetUpOnMainThread().
 
   // Library download state should not depend on OcrService availability.
   screen_ai::ScreenAIInstallState::State expected_state =
