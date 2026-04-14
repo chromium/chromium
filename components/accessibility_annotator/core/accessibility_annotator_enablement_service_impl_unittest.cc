@@ -8,6 +8,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "components/accessibility_annotator/core/accessibility_annotator_debug_features.h"
+#include "components/accessibility_annotator/core/accessibility_annotator_enablement_service_impl_test_api.h"
 #include "components/accessibility_annotator/core/accessibility_annotator_features.h"
 #include "components/accessibility_annotator/core/prefs.h"
 #include "components/account_settings/account_settings.h"
@@ -30,6 +31,15 @@ using testing::Return;
 MATCHER_P(AccountSettingWithName, name, "") {
   return std::string(arg.name) == name;
 }
+
+class MockAccessibilityAnnotatorEnablementServiceObserver
+    : public AccessibilityAnnotatorEnablementService::Observer {
+ public:
+  MOCK_METHOD(void,
+              OnEnablementStateChanged,
+              (RemoteAnnotatorEnablementState),
+              (override));
+};
 
 class AccessibilityAnnotatorEnablementServiceImplTest : public testing::Test {
  public:
@@ -147,6 +157,7 @@ TEST_F(AccessibilityAnnotatorEnablementServiceImplTest,
       /*disabled_features=*/{features::kAccessibilityAnnotator,
                              features::kAccessibilityAnnotatorFirstRun});
 
+  test_api(&service()).RecomputeEnablementState();
   EXPECT_EQ(service().GetEnablementState(),
             RemoteAnnotatorEnablementState::kDisabledNotEligible);
 }
@@ -158,6 +169,7 @@ TEST_F(AccessibilityAnnotatorEnablementServiceImplTest,
       /*enabled_features=*/{features::kAccessibilityAnnotatorFirstRun},
       /*disabled_features=*/{features::kAccessibilityAnnotator});
 
+  test_api(&service()).RecomputeEnablementState();
   EXPECT_EQ(service().GetEnablementState(),
             RemoteAnnotatorEnablementState::kDisabledNotEligible);
 }
@@ -173,7 +185,8 @@ TEST_F(AccessibilityAnnotatorEnablementServiceImplTest,
   pref_service_.SetBoolean(
       accessibility_annotator::prefs::kShouldShowRemoteAnnotatorFirstRunInfo,
       true);
-
+  // TODO(b/494149753): Remove after observing perf changes.
+  test_api(&service()).RecomputeEnablementState();
   EXPECT_EQ(service().GetEnablementState(),
             RemoteAnnotatorEnablementState::kDisabledPendingInfo);
 }
@@ -213,6 +226,8 @@ TEST_F(AccessibilityAnnotatorEnablementServiceImplTest,
   pref_service_.SetInteger(subscription_eligibility::prefs::kAiSubscriptionTier,
                            3);
 
+  // TODO(b/494149753): Remove after observing tier changes.
+  test_api(&service()).RecomputeEnablementState();
   EXPECT_EQ(service().GetEnablementState(),
             RemoteAnnotatorEnablementState::kDisabledNotEligible);
 }
@@ -235,6 +250,8 @@ TEST_F(AccessibilityAnnotatorEnablementServiceImplTest,
                   account_settings::kAccountSettingContext.name)))
       .WillOnce(Return(false));
 
+  // TODO(b/494149753): Remove after observing account setting changes.
+  test_api(&service()).RecomputeEnablementState();
   EXPECT_EQ(service().GetEnablementState(),
             RemoteAnnotatorEnablementState::kDisabledNotEligible);
 }
@@ -254,6 +271,8 @@ TEST_F(AccessibilityAnnotatorEnablementServiceImplTest,
                   account_settings::kAccountSettingContextPhotos.name)))
       .WillOnce(Return(false));
 
+  // TODO(b/494149753): Remove after observing account setting changes.
+  test_api(&service()).RecomputeEnablementState();
   EXPECT_EQ(service().GetEnablementState(),
             RemoteAnnotatorEnablementState::kDisabledNotEligible);
 }
@@ -275,6 +294,8 @@ TEST_F(AccessibilityAnnotatorEnablementServiceImplTest,
                     account_settings::kAccountSettingContextPhotos.name)))
         .Times(0);
 
+    // TODO(b/494149753): Remove after observing account setting changes.
+    test_api(&service()).RecomputeEnablementState();
     EXPECT_EQ(service().GetEnablementState(),
               RemoteAnnotatorEnablementState::kEnabled);
   }
@@ -289,9 +310,41 @@ TEST_F(AccessibilityAnnotatorEnablementServiceImplTest,
                     account_settings::kAccountSettingContextPhotos.name)))
         .WillOnce(Return(true));
 
+    // TODO(b/494149753): Remove after observing account setting changes.
+    test_api(&service()).RecomputeEnablementState();
     EXPECT_EQ(service().GetEnablementState(),
               RemoteAnnotatorEnablementState::kEnabled);
   }
+}
+
+TEST_F(AccessibilityAnnotatorEnablementServiceImplTest,
+       ObserversNotifiedOnEnablementStateChanged) {
+  MockAccessibilityAnnotatorEnablementServiceObserver observer;
+  service().AddObserver(&observer);
+
+  // Initial state is kEnabled.
+  ASSERT_EQ(service().GetEnablementState(),
+            RemoteAnnotatorEnablementState::kEnabled);
+
+  // Trigger a change to kDisabledPendingInfo by setting a pref.
+  EXPECT_CALL(observer,
+              OnEnablementStateChanged(
+                  RemoteAnnotatorEnablementState::kDisabledPendingInfo));
+  pref_service_.SetBoolean(
+      accessibility_annotator::prefs::kShouldShowRemoteAnnotatorFirstRunInfo,
+      true);
+  // TODO(b/494149753): Remove after observing perf changes.
+  test_api(&service()).RecomputeEnablementState();
+
+  // Trigger a change back to kEnabled.
+  EXPECT_CALL(observer, OnEnablementStateChanged(
+                            RemoteAnnotatorEnablementState::kEnabled));
+  pref_service_.SetBoolean(
+      accessibility_annotator::prefs::kShouldShowRemoteAnnotatorFirstRunInfo,
+      false);
+  test_api(&service()).RecomputeEnablementState();
+
+  service().RemoveObserver(&observer);
 }
 
 class AccessibilityAnnotatorEnablementServiceImplGeolocationTest

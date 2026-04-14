@@ -58,8 +58,14 @@ class AccessibilityAnnotatorEnablementServiceImpl
       const signin::PrimaryAccountChangeEvent& event_details) override;
   void OnIdentityManagerShutdown(
       signin::IdentityManager* identity_manager) override;
+  void OnExtendedAccountInfoUpdated(const AccountInfo& info) override;
 
  private:
+  friend class AccessibilityAnnotatorEnablementServiceImplTestApi;
+
+  RemoteAnnotatorEnablementState ComputeEnablementState();
+  void UpdateEnablementState();
+
   const raw_ptr<account_settings::AccountSettingService>
       account_settings_service_;
   const raw_ptr<signin::IdentityManager> identity_manager_;
@@ -72,6 +78,9 @@ class AccessibilityAnnotatorEnablementServiceImpl
   base::ScopedObservation<signin::IdentityManager,
                           signin::IdentityManager::Observer>
       identity_manager_observer_{this};
+  // Cached last enablement state.
+  RemoteAnnotatorEnablementState enablement_state_ =
+      RemoteAnnotatorEnablementState::kDisabledNotEligible;
 };
 
 }  // namespace accessibility_annotator

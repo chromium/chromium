@@ -19,6 +19,7 @@
 #include "components/accessibility_annotator/core/prefs.h"
 #include "components/account_settings/account_setting_service.h"
 #include "components/prefs/pref_service.h"
+#include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/subscription_eligibility/subscription_eligibility_service.h"
 
@@ -203,6 +204,7 @@ AccessibilityAnnotatorEnablementServiceImpl::
   if (identity_manager) {
     identity_manager_observer_.Observe(identity_manager);
   }
+  UpdateEnablementState();
 }
 
 AccessibilityAnnotatorEnablementServiceImpl::
@@ -220,13 +222,19 @@ void AccessibilityAnnotatorEnablementServiceImpl::RemoveObserver(
 
 RemoteAnnotatorEnablementState
 AccessibilityAnnotatorEnablementServiceImpl::GetEnablementState() {
-  using enum RemoteAnnotatorEnablementState;
   if (base::FeatureList::IsEnabled(
           features::debug::kAccessibilityAnnotatorForceEnablementState)) {
     return static_cast<RemoteAnnotatorEnablementState>(
         features::debug::kAccessibilityAnnotatorForceEnablementStateParam
             .Get());
   }
+
+  return enablement_state_;
+}
+
+RemoteAnnotatorEnablementState
+AccessibilityAnnotatorEnablementServiceImpl::ComputeEnablementState() {
+  using enum RemoteAnnotatorEnablementState;
 
   if (!SatisfiesFeatureRequirements()) {
     return kDisabledNotEligible;
@@ -248,6 +256,16 @@ AccessibilityAnnotatorEnablementServiceImpl::GetEnablementState() {
   return SatisfiesPreferenceRequirements(pref_service_.get());
 }
 
+void AccessibilityAnnotatorEnablementServiceImpl::UpdateEnablementState() {
+  RemoteAnnotatorEnablementState new_state = ComputeEnablementState();
+  if (new_state != enablement_state_) {
+    enablement_state_ = new_state;
+    observers_.Notify(&AccessibilityAnnotatorEnablementService::Observer::
+                          OnEnablementStateChanged,
+                      enablement_state_);
+  }
+}
+
 void AccessibilityAnnotatorEnablementServiceImpl::OnPrimaryAccountChanged(
     const signin::PrimaryAccountChangeEvent& event_details) {
   if (event_details.GetEventTypeFor(signin::ConsentLevel::kSignin) ==
@@ -256,11 +274,17 @@ void AccessibilityAnnotatorEnablementServiceImpl::OnPrimaryAccountChanged(
       pref_service_->ClearPref(prefs::kShouldShowRemoteAnnotatorFirstRunInfo);
     }
   }
+  UpdateEnablementState();
 }
 
 void AccessibilityAnnotatorEnablementServiceImpl::OnIdentityManagerShutdown(
     signin::IdentityManager* identity_manager) {
   identity_manager_observer_.Reset();
+}
+
+void AccessibilityAnnotatorEnablementServiceImpl::OnExtendedAccountInfoUpdated(
+    const AccountInfo& info) {
+  UpdateEnablementState();
 }
 
 }  // namespace accessibility_annotator

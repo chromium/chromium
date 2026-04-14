@@ -53,6 +53,7 @@ source_set("features") {
 source_set("test_support") {
   testonly = true
   sources = [
+    "accessibility_annotator_enablement_service_impl_test_api.h",
     "mock_accessibility_query_service.cc",
     "mock_accessibility_query_service.h",
   ]
@@ -74,6 +75,7 @@ source_set("unit_tests") {
 
   deps = [
     ":core",
+    ":test_support",
     "//base",
     "//base/test:test_support",
     "//components/accessibility_annotator/core/annotation_reducer:unit_tests",
