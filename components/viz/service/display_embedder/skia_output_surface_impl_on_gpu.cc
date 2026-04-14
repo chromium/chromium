@@ -675,9 +675,6 @@ void SkiaOutputSurfaceImplOnGpu::FinishPaintRenderPass(
     dependency_->ScheduleGrContextCleanup();
   }
 
-  // Only overlayed images require end_semaphore synchronization.
-  DCHECK(is_overlay || end_semaphores.empty());
-
   // If this render pass is an overlay we need to hang onto the scoped write
   // access until PostSubmit(), so we'll transfer ownership to a member
   // variable. This is necessary because in Vulkan on Android we need to wait
@@ -685,15 +682,20 @@ void SkiaOutputSurfaceImplOnGpu::FinishPaintRenderPass(
   // create a raw pointer to it first for use within this function.
   gpu::SkiaImageRepresentation::ScopedWriteAccess* scoped_access =
       local_scoped_access.get();
+  const bool is_scanout = local_scoped_access->representation()->usage().Has(
+      gpu::SHARED_IMAGE_USAGE_SCANOUT);
   // DComp only allows drawing to a single surface at a time and does not
   // require us to keep the write accesses open through submit.
   const bool is_dcomp_surface =
       local_scoped_access->representation()->usage().Has(
           gpu::SHARED_IMAGE_USAGE_SCANOUT_DCOMP_SURFACE);
-  if (is_overlay && !is_dcomp_surface) {
+  if (is_scanout && !is_dcomp_surface) {
     DCHECK(!overlay_pass_accesses_.contains(mailbox));
     overlay_pass_accesses_.emplace(mailbox, std::move(local_scoped_access));
   }
+
+  // Only overlayed images require end_semaphore synchronization.
+  DCHECK(is_scanout || end_semaphores.empty());
 
   DLOG_IF(WARNING, update_rect.IsEmpty() && !skia_representation->IsCleared())
       << "FinishPaintRenderPass called with empty update_rect on an "
