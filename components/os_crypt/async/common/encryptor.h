@@ -28,7 +28,8 @@ class EncryptorDataView;
 class KeyDataView;
 }  // namespace mojom
 
-class EncryptorTestBase;
+class EncryptorTest;
+class EncryptorParamTest;
 class OSCryptAsync;
 class TestOSCryptAsync;
 
@@ -64,10 +65,11 @@ class COMPONENT_EXPORT(OS_CRYPT_ASYNC) Encryptor {
     // OSCryptAsync and tests need to be able to Clone() keys.
     friend class OSCryptAsync;
     friend class TestOSCryptAsync;
-    friend class EncryptorTestBase;
+    friend class EncryptorTest;
+    friend class EncryptorParamTest;
     friend struct mojo::StructTraits<os_crypt_async::mojom::KeyDataView,
                                      os_crypt_async::Encryptor::Key>;
-    FRIEND_TEST_ALL_PREFIXES(EncryptorTestWithOSCrypt, MultipleKeys);
+    FRIEND_TEST_ALL_PREFIXES(EncryptorTest, MultipleKeys);
     FRIEND_TEST_ALL_PREFIXES(EncryptorTraitsTest, TraitsRoundTrip);
     FRIEND_TEST_ALL_PREFIXES(KeychainKeyProviderTest, GetKey_Success);
 
@@ -162,13 +164,11 @@ class COMPONENT_EXPORT(OS_CRYPT_ASYNC) Encryptor {
                                      DecryptFlags* flags = nullptr) const;
 
   // Returns true if there is at least one key contained within the encryptor
-  // that could be used for encryption, otherwise, it will return the value of
-  // OSCrypt::IsEncryptionAvailable.
+  // that could be used for encryption.
   virtual bool IsEncryptionAvailable() const;
 
   // Returns true if there is at least one key contained within the encryptor
-  // that might be able to decrypt data, otherwise it will return the value of
-  // OSCrypt::IsEncryptionAvailable. Note that if this function returns true
+  // that might be able to decrypt data. Note that if this function returns true
   // then there is no guarantee that arbitrary data can be decrypted, as the
   // correct key to decrypt the data might not be available.
   virtual bool IsDecryptionAvailable() const;
@@ -190,17 +190,18 @@ class COMPONENT_EXPORT(OS_CRYPT_ASYNC) Encryptor {
   Encryptor Clone(Option option) const;
 
  private:
-  friend class EncryptorTestBase;
+  friend class EncryptorTest;
+  friend class EncryptorParamTest;
   friend class OSCryptAsync;
   friend class TestEncryptor;
   friend struct mojo::StructTraits<os_crypt_async::mojom::EncryptorDataView,
                                    os_crypt_async::Encryptor>;
 
   FRIEND_TEST_ALL_PREFIXES(EncryptorTraitsTest, TraitsRoundTrip);
-  FRIEND_TEST_ALL_PREFIXES(EncryptorTestBase, Clone);
+  FRIEND_TEST_ALL_PREFIXES(EncryptorTest, Clone);
 
   // Create an encryptor with no keys or encryption provider. In this case, all
-  // encryption operations will be delegated to OSCrypt.
+  // encryption operations will fail.
   Encryptor();
 
   // Returns whether `provider_for_encryption_` is set, and it contains an entry
@@ -211,13 +212,13 @@ class COMPONENT_EXPORT(OS_CRYPT_ASYNC) Encryptor {
   // A KeyRing consists of a set of provider names and Key values. Encrypted
   // data is always tagged with the provider name and this is used to look up
   // the correct key to use for decryption. This can be empty, meaning
-  // encryption will fall back to OSCrypt Sync.
+  // encryption will fail.
   KeyRing keys_;
 
   // The provider with this tag is used when encrypting any new data, the Key to
   // use for the encryption is looked up from the entry in the KeyRing. This can
   // be empty string, which means that providers are registered for decryption
-  // only, but encryption will fall back to OSCrypt Sync.
+  // only, but encryption will fail.
   std::string provider_for_encryption_;
 
   // Provider for OSCrypt Sync compatible encryption. This could be the same as

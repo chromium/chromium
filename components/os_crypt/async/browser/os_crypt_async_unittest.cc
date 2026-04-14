@@ -19,16 +19,9 @@
 #include "components/os_crypt/async/browser/test_utils.h"
 #include "components/os_crypt/async/common/algorithm.mojom.h"
 #include "components/os_crypt/async/common/encryptor.h"
-#include "components/os_crypt/async/common/features.h"
-#include "components/os_crypt/sync/os_crypt.h"
-#include "components/os_crypt/sync/os_crypt_mocker.h"
 #include "crypto/hkdf.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-
-#if BUILDFLAG(IS_LINUX)
-#include "components/os_crypt/sync/key_storage_linux.h"
-#endif
 
 namespace os_crypt_async {
 
@@ -43,32 +36,6 @@ class OSCryptAsyncTest : public ::testing::Test {
     base::test::TestFuture<Encryptor> future;
     factory.GetInstance(future.GetCallback(), option);
     return future.Take();
-  }
-
-  // Simulate a 'locked' OSCrypt keychain on platforms that need it, which makes
-  // OSCrypt::IsEncryptionAvailable return false, without hitting a CHECK on
-  // Linux. Note this is different from using the full OSCryptMocker, because in
-  // this state, no key is available for encryption. Returns a
-  // ScopedClosureRunner that will reset the behavior back to default when it
-  // goes out of scope.
-  [[nodiscard]] static std::optional<base::ScopedClosureRunner>
-  MaybeSimulateLockedKeyChain() {
-#if BUILDFLAG(IS_LINUX)
-    OSCrypt::UseMockKeyStorageForTesting(base::BindOnce(
-        []() -> std::unique_ptr<KeyStorageLinux> { return nullptr; }));
-    return std::nullopt;
-#elif BUILDFLAG(IS_APPLE)
-    OSCryptMocker::SetBackendLocked(true);
-    return base::ScopedClosureRunner(
-        base::BindOnce([]() { OSCryptMocker::TearDown(); }));
-#elif BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
-    OSCrypt::SetEncryptionAvailableForTesting(/*available=*/false);
-    return base::ScopedClosureRunner(base::BindOnce([]() {
-      OSCrypt::SetEncryptionAvailableForTesting(/*available=*/std::nullopt);
-    }));
-#else
-    return std::nullopt;
-#endif
   }
 
   base::test::TaskEnvironment task_environment_;
@@ -283,7 +250,6 @@ TEST_P(OSCryptAsyncTestSwapped, EncryptorOption) {
   }
   // Check that with just second provider, data can still be decrypted.
   {
-    auto cleanup = MaybeSimulateLockedKeyChain();
     ProviderList providers;
     providers.emplace_back(
         /*precedence=*/5u,
@@ -517,49 +483,17 @@ class FailingKeyProvider : public TestKeyProvider {
   const std::string name_;
 };
 
-// Some tests require a working OSCrypt.
-class OSCryptAsyncTestWithOSCrypt : public OSCryptAsyncTest {
- protected:
-  void SetUp() override {
-    OSCryptMocker::SetUp();
-    scoped_feature_list_.InitAndDisableFeature(
-        kOSCryptAsyncPreventFallbackToSync);
-  }
-
-  void TearDown() override {
-    OSCryptMocker::TearDown();
-#if BUILDFLAG(IS_WIN)
-    OSCrypt::ResetStateForTesting();
-#endif  // BUILDFLAG(IS_WIN)
-  }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
 // This test merely verifies that OSCryptAsync can operate with no key providers
-// and return a valid Encryptor with no keys, and that it can interop with
-// OSCrypt. The rest of the encryption tests for this mode are located in
-// encryptor_unittest.cc.
-TEST_F(OSCryptAsyncTestWithOSCrypt, Empty) {
+// and return a valid Encryptor with no keys.
+TEST_F(OSCryptAsyncTest, Empty) {
   base::HistogramTester histograms;
   ProviderList providers;
   OSCryptAsync factory(std::move(providers));
   Encryptor encryptor = GetInstanceSync(factory);
   {
     std::string ciphertext;
-    EXPECT_TRUE(OSCrypt::EncryptString("secrets", &ciphertext));
-    std::string plaintext;
-    EXPECT_TRUE(encryptor.DecryptString(ciphertext, &plaintext));
-    EXPECT_EQ("secrets", plaintext);
-  }
-  {
-    const auto ciphertext = encryptor.EncryptString("moresecrets");
-    ASSERT_TRUE(ciphertext.has_value());
-    std::string plaintext;
-    EXPECT_TRUE(OSCrypt::DecryptString(
-        std::string(ciphertext->begin(), ciphertext->end()), &plaintext));
-    EXPECT_EQ("moresecrets", plaintext);
+    // Encryption should fail as there are no providers.
+    EXPECT_FALSE(encryptor.EncryptString("secrets"));
   }
   histograms.ExpectBucketCount("OSCrypt.EncryptorKeyCount", 0, 1);
   histograms.ExpectBucketCount("OSCrypt.EncryptorKeyCount.Available", 0, 1);
@@ -569,7 +503,7 @@ TEST_F(OSCryptAsyncTestWithOSCrypt, Empty) {
       "OSCrypt.EncryptorKeyCount.PermanentlyUnavailable", 0, 1);
 }
 
-TEST_F(OSCryptAsyncTestWithOSCrypt, FailingKeyProvider) {
+TEST_F(OSCryptAsyncTest, FailingKeyProvider) {
   base::HistogramTester histograms;
   ProviderList providers;
   providers.emplace_back(
@@ -581,23 +515,9 @@ TEST_F(OSCryptAsyncTestWithOSCrypt, FailingKeyProvider) {
   Encryptor encryptor = GetInstanceSync(factory);
 
   {
-    // Encryption should still work, because an empty Encryptor is made which
-    // falls back to OSCrypt.
+    // Encryption should fail, because an empty Encryptor is made.
     auto ciphertext = encryptor.EncryptString("secrets");
-    EXPECT_TRUE(ciphertext);
-    std::string plaintext;
-    EXPECT_TRUE(OSCrypt::DecryptString(
-        std::string(ciphertext->cbegin(), ciphertext->cend()), &plaintext));
-    EXPECT_EQ("secrets", plaintext);
-  }
-  {
-    std::string ciphertext;
-    EXPECT_TRUE(OSCrypt::EncryptString("secrets", &ciphertext));
-    std::string plaintext;
-    // Decryption falls back to OSCrypt if there are no matching providers. In
-    // this case, there are no providers at all.
-    EXPECT_TRUE(encryptor.DecryptString(ciphertext, &plaintext));
-    EXPECT_EQ("secrets", plaintext);
+    EXPECT_FALSE(ciphertext);
   }
 
   // Permanently failing key providers never get emplaced into the keyring at
@@ -610,7 +530,7 @@ TEST_F(OSCryptAsyncTestWithOSCrypt, FailingKeyProvider) {
       "OSCrypt.EncryptorKeyCount.PermanentlyUnavailable", 1, 1);
 }
 
-TEST_F(OSCryptAsyncTestWithOSCrypt, TemporarilyFailingKeyProvider) {
+TEST_F(OSCryptAsyncTest, TemporarilyFailingKeyProvider) {
   std::optional<std::vector<uint8_t>> ciphertext;
 
   // First, encrypt some data with the BLAH key provider.
@@ -641,15 +561,10 @@ TEST_F(OSCryptAsyncTestWithOSCrypt, TemporarilyFailingKeyProvider) {
     EXPECT_FALSE(plaintext);
     EXPECT_TRUE(flags.temporarily_unavailable);
 
-    // Encryption should still work, even with a temporarily failing key
-    // provider, but it will delegate to OSCrypt.
+    // Encryption should fail, as there are no available providers.
     {
       const auto ciphertext2 = encryptor.EncryptString("secret");
-      EXPECT_TRUE(ciphertext2);
-      std::string plaintext2;
-      EXPECT_TRUE(OSCrypt::DecryptString(
-          std::string(ciphertext2->begin(), ciphertext2->end()), &plaintext2));
-      EXPECT_EQ(plaintext2, "secret");
+      EXPECT_FALSE(ciphertext2);
     }
     histograms.ExpectBucketCount("OSCrypt.EncryptorKeyCount", 1, 1);
     histograms.ExpectBucketCount("OSCrypt.EncryptorKeyCount.Available", 0, 1);
@@ -670,20 +585,14 @@ TEST_F(OSCryptAsyncTestWithOSCrypt, TemporarilyFailingKeyProvider) {
     Encryptor encryptor = GetInstanceSync(factory);
     Encryptor::DecryptFlags flags;
     const auto plaintext = encryptor.DecryptData(*ciphertext, &flags);
-    // Since there is no key at all, this case has fallback to OSCrypt sync
-    // which cannot decrypt data encrypted with BLAH key.
+    // Since there is no key at all, this case has no fallback.
     EXPECT_FALSE(plaintext);
     EXPECT_FALSE(flags.temporarily_unavailable);
 
-    // With no key provided at all (a permanent failure), encryption is
-    // delegated to OSCrypt.
+    // With no key provided at all (a permanent failure), encryption fails.
     {
       const auto ciphertext2 = encryptor.EncryptString("secret");
-      EXPECT_TRUE(ciphertext2);
-      std::string plaintext2;
-      EXPECT_TRUE(OSCrypt::DecryptString(
-          std::string(ciphertext2->begin(), ciphertext2->end()), &plaintext2));
-      EXPECT_EQ(plaintext2, "secret");
+      EXPECT_FALSE(ciphertext2);
     }
   }
 }
@@ -734,9 +643,11 @@ TEST_F(OSCryptAsyncTest, ShouldReencrypt) {
         std::make_unique<TestKeyProvider>("FOO", /*use_for_encryption=*/true));
     OSCryptAsync factory(std::move(providers));
     Encryptor encryptor = GetInstanceSync(factory);
-    ASSERT_TRUE(encryptor.EncryptString("secrets", &ciphertext));
+    auto encrypted = encryptor.EncryptString("secrets");
+    ASSERT_TRUE(encrypted);
+    ciphertext = std::string(encrypted->begin(), encrypted->end());
     // FOO should be used, as it's the higher precedence.
-    EXPECT_THAT(base::span(ciphertext).first<3>(),
+    EXPECT_THAT(base::span(*encrypted).first<3>(),
                 ::testing::ElementsAreArray(base::span_from_cstring("FOO")));
     std::string plaintext;
     Encryptor::DecryptFlags flags;
@@ -763,69 +674,6 @@ TEST_F(OSCryptAsyncTest, ShouldReencrypt) {
   }
 }
 
-TEST_F(OSCryptAsyncTestWithOSCrypt, OSCryptShouldReencrypt) {
-  std::string ciphertext;
-  ASSERT_TRUE(OSCrypt::EncryptString("secrets", &ciphertext));
-
-  {
-    ProviderList providers;
-    OSCryptAsync factory(std::move(providers));
-    Encryptor encryptor = GetInstanceSync(factory);
-    std::string plaintext;
-    Encryptor::DecryptFlags flags;
-    // This encryptor has no providers, so falls back to OSCrypt Sync.
-    ASSERT_TRUE(encryptor.DecryptString(ciphertext, &plaintext, &flags));
-    EXPECT_EQ(plaintext, "secrets");
-    EXPECT_FALSE(flags.should_reencrypt);
-  }
-  {
-    ProviderList providers;
-    providers.emplace_back(
-        /*precedence=*/5u,
-        std::make_unique<TestKeyProvider>("FOO", /*use_for_encryption=*/true));
-    OSCryptAsync factory(std::move(providers));
-    Encryptor encryptor = GetInstanceSync(factory);
-    Encryptor::DecryptFlags flags;
-    std::string plaintext;
-    ASSERT_TRUE(encryptor.DecryptString(ciphertext, &plaintext, &flags));
-    EXPECT_EQ(plaintext, "secrets");
-    EXPECT_TRUE(flags.should_reencrypt);
-  }
-  {
-    ProviderList providers;
-    // Specify not to encrypt data with this provider.
-    providers.emplace_back(
-        /*precedence=*/5u,
-        std::make_unique<TestKeyProvider>("FOO", /*use_for_encryption=*/false));
-    OSCryptAsync factory(std::move(providers));
-    Encryptor encryptor = GetInstanceSync(factory);
-    Encryptor::DecryptFlags flags;
-    std::string plaintext;
-    ASSERT_TRUE(encryptor.DecryptString(ciphertext, &plaintext, &flags));
-    EXPECT_EQ(plaintext, "secrets");
-    EXPECT_FALSE(flags.should_reencrypt);
-  }
-}
-
-// Test also that if no key providers have OSCrypt sync compatibility then
-// encryption simply falls back to OSCrypt, and that OSCrypt can decrypt it
-// fine.
-TEST_F(OSCryptAsyncTestWithOSCrypt, EncryptorOption) {
-  ProviderList providers;
-  providers.emplace_back(/*precedence=*/5u,
-                         std::make_unique<TestKeyProvider>(
-                             "BAR", /*use_for_encryption=*/true,
-                             /*compatible_with_os_crypt_sync=*/false));
-  OSCryptAsync factory(std::move(providers));
-  Encryptor encryptor =
-      GetInstanceSync(factory, Encryptor::Option::kEncryptSyncCompat);
-  const auto ciphertext = encryptor.EncryptString("os_crypt_secrets");
-  ASSERT_TRUE(ciphertext);
-  std::string plaintext;
-  ASSERT_TRUE(OSCrypt::DecryptString(
-      std::string(ciphertext->begin(), ciphertext->end()), &plaintext));
-  EXPECT_EQ("os_crypt_secrets", plaintext);
-}
 
 using OSCryptAsyncDeathTest = OSCryptAsyncTest;
 

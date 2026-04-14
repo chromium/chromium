@@ -23,8 +23,7 @@ class DPAPIKeyProviderTest;
 
 // The DPAPI Key Provider provides forwards and backwards compatibility with
 // OSCrypt's in-built DPAPI support on Windows. The Key provider will use the
-// key from OSCrypt's storage which is encrypted with DPAPI. OSCrypt::Init
-// should always be called before attempting to obtain a key from this provider.
+// key from OSCrypt's storage which is encrypted with DPAPI.
 class DPAPIKeyProvider : public KeyProvider {
  public:
   explicit DPAPIKeyProvider(PrefService* local_state);

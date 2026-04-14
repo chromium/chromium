@@ -17,8 +17,6 @@
 #include "base/strings/utf_string_conversions.h"
 #include "build/buildflag.h"
 #include "components/os_crypt/async/common/algorithm.mojom.h"
-#include "components/os_crypt/async/common/features.h"
-#include "components/os_crypt/sync/os_crypt.h"
 #include "crypto/aead.h"
 #include "crypto/aes_cbc.h"
 #include "crypto/random.h"
@@ -247,18 +245,7 @@ std::optional<std::vector<uint8_t>> Encryptor::EncryptString(
   const auto& it = keys_.find(provider_for_encryption_);
 
   if (it == keys_.end() || !it->second.has_value()) {
-    // This can happen if there is no default provider, or `keys_` is empty, or
-    // if the key is temporarily unavailable for encryption. In these cases,
-    // fall back to legacy OSCrypt encryption.
-    if (base::FeatureList::IsEnabled(kOSCryptAsyncPreventFallbackToSync)) {
-      return std::nullopt;
-    }
 
-    std::string ciphertext;
-    if (OSCrypt::EncryptString(data, &ciphertext)) {
-      fallback_to_sync = true;
-      return std::vector<uint8_t>(ciphertext.cbegin(), ciphertext.cend());
-    }
     return std::nullopt;
   }
 
@@ -322,37 +309,6 @@ std::optional<std::string> Encryptor::DecryptData(
     }
   }
 
-  // OSCrypt is available, so fallback to using legacy OSCrypt to attempt
-  // decryption. This must be attempted first because some platforms report
-  // IsEncryptionAvailable is false when it really is available.
-  if (!base::FeatureList::IsEnabled(kOSCryptAsyncPreventFallbackToSync)) {
-    std::string string_data(data.begin(), data.end());
-    std::string plaintext;
-    if (OSCrypt::DecryptString(string_data, &plaintext)) {
-      fallback_to_sync = true;
-      if (flags) {
-        // Possibly, an OSCrypt sync compatible Key Provider had temporarily
-        // failed to provide a key for this data, so reset the
-        // `temporarily_unavailable` flag here, as the data successfully
-        // decrypted.
-        flags->temporarily_unavailable = false;
-        // If fallback to OSCrypt happened but there is a valid key provider,
-        // with a valid key, then recommend re-encryption.
-        if (DefaultEncryptionProviderAvailable()) {
-          flags->should_reencrypt = true;
-        }
-      }
-      return plaintext;
-    }
-  }
-
-  // If OSCrypt failed to decrypt, then check if EncryptionIsAvailable. If
-  // encryption is not available, then this is a temporary failure. See above
-  // for why this check can't be earlier.
-  if (!base::FeatureList::IsEnabled(kOSCryptAsyncPreventFallbackToSync) &&
-      !OSCrypt::IsEncryptionAvailable() && flags) {
-    flags->temporarily_unavailable = true;
-  }
 
   return std::nullopt;
 }
@@ -398,27 +354,11 @@ Encryptor Encryptor::Clone(Option option) const {
 }
 
 bool Encryptor::IsEncryptionAvailable() const {
-  if (DefaultEncryptionProviderAvailable()) {
-    return true;
-  }
-
-  if (!base::FeatureList::IsEnabled(kOSCryptAsyncPreventFallbackToSync)) {
-    return OSCrypt::IsEncryptionAvailable();
-  }
-
-  return false;
+  return DefaultEncryptionProviderAvailable();
 }
 
 bool Encryptor::IsDecryptionAvailable() const {
-  if (!keys_.empty()) {
-    return true;
-  }
-
-  if (!base::FeatureList::IsEnabled(kOSCryptAsyncPreventFallbackToSync)) {
-    return OSCrypt::IsEncryptionAvailable();
-  }
-
-  return false;
+  return !keys_.empty();
 }
 
 bool Encryptor::DefaultEncryptionProviderAvailable() const {
