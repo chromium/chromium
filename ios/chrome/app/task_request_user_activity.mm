@@ -26,6 +26,7 @@
 #import "ios/chrome/browser/intents/model/intent_type.h"
 #import "ios/chrome/browser/intents/model/intents_constants.h"
 #import "ios/chrome/browser/intents/model/user_activity_compatibility_util.h"
+#import "ios/chrome/browser/lens/ui_bundled/lens_entrypoint.h"
 #import "ios/chrome/browser/policy/model/policy_util.h"
 #import "ios/chrome/browser/reading_list/model/reading_list_browser_agent.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_controller.h"
@@ -38,6 +39,8 @@
 #import "ios/chrome/browser/shared/public/commands/bookmarks_commands.h"
 #import "ios/chrome/browser/shared/public/commands/browser_coordinator_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
+#import "ios/chrome/browser/shared/public/commands/lens_commands.h"
+#import "ios/chrome/browser/shared/public/commands/open_lens_input_selection_command.h"
 #import "ios/chrome/browser/shared/public/commands/scene_commands.h"
 #import "ios/chrome/browser/shared/public/commands/settings_commands.h"
 #import "ios/chrome/browser/url_loading/model/url_loading_params.h"
@@ -305,6 +308,21 @@ void OpenPaymentMethodsWithBrowser(base::WeakPtr<Browser> weak_browser) {
   }
 }
 
+// Opens Lens from intents.
+void OpenLensFromIntentsWithBrowser(base::WeakPtr<Browser> weak_browser) {
+  if (Browser* browser = weak_browser.get()) {
+    id<LensCommands> lensHandler =
+        HandlerForProtocol(browser->GetCommandDispatcher(), LensCommands);
+    OpenLensInputSelectionCommand* command =
+        [[OpenLensInputSelectionCommand alloc]
+                initWithEntryPoint:LensEntrypoint::Intents
+                 presentationStyle:LensInputSelectionPresentationStyle::
+                                       SlideFromRight
+            presentationCompletion:nil];
+    [lensHandler openLensInputSelection:command];
+  }
+}
+
 // Adds bookmarks to Chrome.
 void AddBookmarkToChromeWithIntent(INIntent* intent,
                                    base::WeakPtr<Browser> weak_browser) {
@@ -504,7 +522,9 @@ std::vector<GURL> GetURLsFromOpenInChromeIntent(INIntent* intent) {
       webpageGURLs.push_back(GURL(kChromeUINewTabURL));
       break;
     case UserActivityType::kOpenLensFromIntents:
-      // TODO(crbug.com/492115056): Add implementation.
+      completion = base::CallbackToBlock(base::BindRepeating(
+          &OpenLensFromIntentsWithBrowser, browser->AsWeakPtr()));
+      webpageGURLs.push_back(GURL(kChromeUINewTabURL));
       break;
     case UserActivityType::kClearBrowsingData:
       // TODO(crbug.com/492115056): Add implementation.
