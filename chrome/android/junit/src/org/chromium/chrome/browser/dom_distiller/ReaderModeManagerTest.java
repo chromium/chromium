@@ -19,6 +19,7 @@ import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.os.Looper;
@@ -38,7 +39,9 @@ import org.mockito.junit.MockitoRule;
 import org.robolectric.Shadows;
 
 import org.chromium.base.Callback;
+import org.chromium.base.ContextUtils;
 import org.chromium.base.FeatureOverrides;
+import org.chromium.base.IntentUtils;
 import org.chromium.base.UnownedUserDataHost;
 import org.chromium.base.UserDataHost;
 import org.chromium.base.supplier.OneshotSupplierImpl;
@@ -794,6 +797,31 @@ public class ReaderModeManagerTest {
         when(mTab.isCustomTab()).thenReturn(false);
         when(mTab.isIncognito()).thenReturn(true);
         assertFalse(ReaderModeManager.shouldUseReaderModeMessages(mTab));
+    }
+
+    @Test
+    @Feature("ReaderMode")
+    public void testIsReaderModeCreatedIntent_NotChrome() {
+        Intent intent = new Intent();
+        intent.putExtra(ReaderModeManager.EXTRA_READER_MODE_PARENT, 1);
+
+        assertFalse(
+                "Untrusted intent should not be considered Reader Mode created",
+                ReaderModeManager.isReaderModeCreatedIntent(intent));
+    }
+
+    @Test
+    @Feature("ReaderMode")
+    public void testIsReaderModeCreatedIntent_FromChrome() {
+        Intent intent = new Intent();
+        intent.putExtra(ReaderModeManager.EXTRA_READER_MODE_PARENT, 1);
+
+        intent.setPackage(ContextUtils.getApplicationContext().getPackageName());
+        IntentUtils.addTrustedIntentExtras(intent);
+
+        assertTrue(
+                "Intent from Chrome should be considered Reader Mode created",
+                ReaderModeManager.isReaderModeCreatedIntent(intent));
     }
 
     private NavigationEntry createNavigationEntry(int index, GURL url) {
