@@ -402,9 +402,6 @@ void ViewTimeline::ApplyStickyAdjustments(ScrollOffsets& scroll_offsets,
 
   StickyPositionScrollingConstraints constraints =
       sticky_container->StickyConstraints();
-  if (!constraints) {
-    return;
-  }
 
   const PhysicalAxis axis = orientation == kHorizontalScroll
                                 ? PhysicalAxis::kHorizontal

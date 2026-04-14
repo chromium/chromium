@@ -203,7 +203,7 @@ struct CORE_EXPORT StickyPositionScrollingConstraints final {
   StickyPositionScrollingConstraints(PerAxisData* x_data, PerAxisData* y_data)
       : x_data_(x_data), y_data_(y_data) {}
 
-  explicit operator bool() const { return x_data_ || y_data_; }
+  bool HasAnyConstraint() const { return x_data_ || y_data_; }
 
   // Computes the sticky offset for a given scroll position of the containing
   // scroll container. When the scroll position changed in a ScrollableArea,

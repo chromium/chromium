@@ -2470,7 +2470,7 @@ void PaintLayerScrollableArea::InvalidatePaintForStickyDescendants() {
     for (const auto& item : fragment.StickyDescendants()) {
       if (auto* sticky_descendant = item.GetIfConsumed()) {
         sticky_descendant->SetNeedsPaintPropertyUpdate();
-        DCHECK(sticky_descendant->StickyConstraints());
+        DCHECK(sticky_descendant->StickyConstraints().HasAnyConstraint());
         sticky_descendant->StickyConstraints().ComputeStickyOffset(
             ScrollPosition(), item.ConsumedAxes());
       }

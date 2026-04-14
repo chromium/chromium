@@ -171,7 +171,7 @@ AnchorPositionScrollData::ComputeAdjustmentContainersData(
       }
     }
     if (const auto* box_model = DynamicTo<LayoutBoxModelObject>(container)) {
-      if (box_model->StickyConstraints()) {
+      if (box_model->StickyConstraints().HasAnyConstraint()) {
         result.adjustment_container_ids.push_back(
             CompositorElementIdFromUniqueObjectId(
                 box_model->UniqueId(),
