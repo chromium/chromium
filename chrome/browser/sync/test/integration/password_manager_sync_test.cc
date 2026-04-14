@@ -689,15 +689,8 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerSyncTest,
 }
 
 // TODO(crbug.com/500570908): Enable the test.
-#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
-#define MAYBE_OfferToSaveNonPrimaryAccountCredential \
-  DISABLED_OfferToSaveNonPrimaryAccountCredential
-#else
-#define MAYBE_OfferToSaveNonPrimaryAccountCredential \
-  OfferToSaveNonPrimaryAccountCredential
-#endif
 IN_PROC_BROWSER_TEST_F(PasswordManagerSyncTest,
-                       MAYBE_OfferToSaveNonPrimaryAccountCredential) {
+                       DISABLED_OfferToSaveNonPrimaryAccountCredential) {
   // Disable signin interception, because it suppresses the password bubble.
   // See PasswordManagerBrowserTestWithSigninInterception for tests with
   // interception enabled.
@@ -726,15 +719,8 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerSyncTest,
 }
 
 // TODO(crbug.com/500570908): Enable the test.
-#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
-#define MAYBE_OfferToUpdatePrimaryAccountCredential \
-  DISABLED_OfferToUpdatePrimaryAccountCredential
-#else
-#define MAYBE_OfferToUpdatePrimaryAccountCredential \
-  OfferToUpdatePrimaryAccountCredential
-#endif
 IN_PROC_BROWSER_TEST_F(PasswordManagerSyncTest,
-                       MAYBE_OfferToUpdatePrimaryAccountCredential) {
+                       DISABLED_OfferToUpdatePrimaryAccountCredential) {
   ASSERT_TRUE(SetupClients());
 
   // The password for the primary account is already saved.
