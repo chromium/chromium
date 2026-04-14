@@ -640,53 +640,12 @@ void PaintLayerScrollableArea::EnqueueScrollEventIfNeeded() {
 }
 
 gfx::Vector2d PaintLayerScrollableArea::MinimumScrollOffsetInt() const {
-  if (!GetLayoutBox() || !GetLayoutBox()->IsScrollContainer()) {
-    // In cases when `PaintLayerScrollableArea` exists even though the
-    // `LayoutBox` is not a scroll container, and the writing direction is RTL
-    // or Vertical-RL - we can have a non-zero ScrollOrigin. For these cases, we
-    // clamp the scroll offset to zero.
-    return gfx::Vector2d();
-  }
-  return -ScrollOrigin().OffsetFromOrigin();
+  return ClampNonScrollableAxesOffsets(-ScrollOrigin().OffsetFromOrigin());
 }
 
 gfx::Vector2d PaintLayerScrollableArea::MaximumScrollOffsetInt() const {
-  if (!GetLayoutBox() || !GetLayoutBox()->IsScrollContainer()) {
-    // In cases when `PaintLayerScrollableArea` exists even though the
-    // `LayoutBox` is not a scroll container, and the writing direction is RTL
-    // or Vertical-RL - we can have a non-zero ScrollOrigin. For these cases, we
-    // clamp the scroll offset to zero.
-    return gfx::Vector2d();
-  }
-
-  gfx::Size content_size = ContentsSize();
-
-  Page* page = GetLayoutBox()->GetDocument().GetPage();
-  DCHECK(page);
-  TopDocumentRootScrollerController& controller =
-      page->GlobalRootScrollerController();
-
-  // The global root scroller should be clipped by the top LocalFrameView rather
-  // than it's overflow clipping box. This is to ensure that content exposed by
-  // hiding the URL bar at the bottom of the screen is visible.
-  gfx::Size visible_size;
-  if (this == controller.RootScrollerArea()) {
-    visible_size = controller.RootScrollerVisibleArea();
-  } else {
-    visible_size = ToRoundedSize(
-        GetLayoutBox()
-            ->OverflowClipRect(PhysicalOffset(), kIgnoreOverlayScrollbarSize)
-            .size);
-  }
-
-  // TODO(skobes): We should really ASSERT that contentSize >= visibleSize
-  // when we are not the root layer, but we can't because contentSize is
-  // based on stale scrollable overflow data (http://crbug.com/576933).
-  content_size.SetToMax(visible_size);
-
-  return -ScrollOrigin().OffsetFromOrigin() +
-         gfx::Vector2d(content_size.width() - visible_size.width(),
-                       content_size.height() - visible_size.height());
+  return ClampNonScrollableAxesOffsets(-ScrollOrigin().OffsetFromOrigin() +
+                                       ComputeScrollableSize());
 }
 
 void PaintLayerScrollableArea::VisibleSizeChanged() {
@@ -3770,6 +3729,54 @@ void PaintLayerScrollableArea::EnqueueOverscrollFinishedEventIfNeeded(
                    : event_type_names::kOverscrollcancel,
       overscroll_container, &overscroll_element,
       RareData()->is_currently_overscrolling_);
+}
+
+gfx::Vector2d PaintLayerScrollableArea::ComputeScrollableSize() const {
+  // Only an area with an associated scroll container has interior contents that
+  // can move and therefore have a scrollable size.
+  if (!GetLayoutBox() || !GetLayoutBox()->IsScrollContainer()) {
+    return gfx::Vector2d();
+  }
+
+  gfx::Size contents_size = ContentsSize();
+
+  Page* page = GetLayoutBox()->GetDocument().GetPage();
+  DCHECK(page);
+  TopDocumentRootScrollerController& controller =
+      page->GlobalRootScrollerController();
+
+  // The global root scroller should be clipped by the top LocalFrameView
+  // rather than it's overflow clipping box. This is to ensure that content
+  // exposed by hiding the URL bar at the bottom of the screen is visible.
+  gfx::Size visible_size;
+  if (this == controller.RootScrollerArea()) {
+    visible_size = controller.RootScrollerVisibleArea();
+  } else {
+    visible_size = ToRoundedSize(
+        GetLayoutBox()
+            ->OverflowClipRect(PhysicalOffset(), kIgnoreOverlayScrollbarSize)
+            .size);
+  }
+
+  // TODO(skobes): We should really ASSERT that contentSize >= visibleSize
+  // when we are not the root layer, but we can't because contentSize is
+  // based on stale scrollable overflow data (http://crbug.com/576933).
+  contents_size.SetToMax(visible_size);
+
+  return gfx::Vector2d(contents_size.width() - visible_size.width(),
+                       contents_size.height() - visible_size.height());
+}
+
+gfx::Vector2d PaintLayerScrollableArea::ClampNonScrollableAxesOffsets(
+    gfx::Vector2d offset) const {
+  const PhysicalAxes scrollable_axes = ScrollableAxes();
+  if (!(scrollable_axes & kPhysicalAxesHorizontal)) {
+    offset.set_x(0);
+  }
+  if (!(scrollable_axes & kPhysicalAxesVertical)) {
+    offset.set_y(0);
+  }
+  return offset;
 }
 
 }  // namespace blink

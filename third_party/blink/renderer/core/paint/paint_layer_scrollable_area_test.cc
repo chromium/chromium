@@ -1508,6 +1508,37 @@ TEST_P(PaintLayerScrollableAreaTest, CompositeWithTrivial3D) {
   EXPECT_TRUE(UsesCompositedScrolling(GetLayoutBoxByElementId("scroller")));
 }
 
+TEST_P(PaintLayerScrollableAreaTest, OverscrollContainerRtlScrollProperties) {
+  SetBodyInnerHTML(R"HTML(
+    <style>
+      #target {
+        direction: rtl;
+        width: 100px;
+        height: 100px;
+      }
+      #child {
+        width: 300px;
+        height: 100px;
+      }
+    </style>
+    <div id="target" overscrollcontainer>
+      <div id="child"></div>
+    </div>
+  )HTML");
+
+  auto* target_box = GetLayoutBoxByElementId("target");
+  ASSERT_TRUE(target_box);
+  EXPECT_FALSE(target_box->IsScrollContainer());
+  EXPECT_TRUE(target_box->IsOverscrollContainer());
+
+  auto* scrollable_area = target_box->GetScrollableArea();
+  ASSERT_TRUE(scrollable_area);
+
+  EXPECT_EQ(200, scrollable_area->ScrollOrigin().x());
+  EXPECT_EQ(0, scrollable_area->MinimumScrollOffsetInt().x());
+  EXPECT_EQ(0, scrollable_area->MaximumScrollOffsetInt().x());
+}
+
 class PaintLayerScrollableAreaTestLowEndPlatform
     : public TestingPlatformSupport {
  public:

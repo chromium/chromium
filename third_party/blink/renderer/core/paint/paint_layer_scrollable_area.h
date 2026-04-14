@@ -839,6 +839,13 @@ class CORE_EXPORT PaintLayerScrollableArea final
   void EnqueueOverscrollChangingEventIfNeeded();
   void EnqueueOverscrollFinishedEventIfNeeded(bool snap_changed);
 
+  // Returns the amount this area can scroll in each physical axis. Only scroll
+  // containers have a scrollable size.
+  gfx::Vector2d ComputeScrollableSize() const;
+
+  // Zeroes any offset on axes this area does not scroll.
+  gfx::Vector2d ClampNonScrollableAxesOffsets(gfx::Vector2d offset) const;
+
   // PaintLayer is destructed before PaintLayerScrollable area, during this
   // time before PaintLayerScrollableArea has been collected layer_ will
   // be set to nullptr by the Dispose method.
