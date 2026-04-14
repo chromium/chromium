@@ -8,6 +8,7 @@ build_webui("build") {
   grd_prefix = "skills"
 
   static_files = [
+    "favicon.png",
     "skills.html",
     "skills_dialog.html",
   ]
