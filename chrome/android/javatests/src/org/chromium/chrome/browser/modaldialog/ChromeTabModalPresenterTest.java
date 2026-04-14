@@ -66,6 +66,7 @@ import org.chromium.chrome.test.transit.page.WebPageStation;
 import org.chromium.chrome.test.util.ChromeTabUtils;
 import org.chromium.chrome.test.util.OmniboxTestUtils;
 import org.chromium.components.browser_ui.modaldialog.ModalDialogTestUtils;
+import org.chromium.components.browser_ui.modaldialog.ModalDialogView;
 import org.chromium.net.test.EmbeddedTestServer;
 import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.modaldialog.DialogDismissalCause;
@@ -597,6 +598,34 @@ public class ChromeTabModalPresenterTest {
                     // ViewGroup is no longer attached to a Window.
                     containerParent.removeAllViews();
                     mManager.dismissAllDialogs(DialogDismissalCause.UNKNOWN);
+                });
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"ModalDialog"})
+    public void testDismiss_NonClickableDuringDismissal() {
+        PropertyModel dialog1 = createDialog(mActivity, mManager, "1", null);
+
+        // Show a tab modal dialog and verify it shows.
+        showDialog(mManager, dialog1, ModalDialogType.TAB);
+        onViewWaiting(withId(R.id.tab_modal_dialog_container))
+                .check(matches(hasDescendant(withText("1"))));
+        checkCurrentPresenter(mManager, ModalDialogType.TAB);
+
+        final ModalDialogView dialogView = mTabModalPresenter.getDialogViewForTest();
+        Assert.assertNotNull(dialogView);
+
+        // Dismiss the dialog.
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> mManager.dismissDialog(dialog1, DialogDismissalCause.UNKNOWN));
+
+        // Verify that the dialog view is blocking inputs.
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    Assert.assertTrue(
+                            "Dialog view should block inputs during dismissal",
+                            dialogView.isBlockInputForTesting());
                 });
     }
 

@@ -683,6 +683,10 @@ public class ModalDialogView extends BoundedLinearLayout implements View.OnClick
         mBlockTouchInput = shouldBlockInputs;
     }
 
+    public boolean isBlockInputForTesting() {
+        return mBlockTouchInput;
+    }
+
     @Override
     public boolean dispatchTouchEvent(MotionEvent e) {
         if (mBlockTouchInput) return true;

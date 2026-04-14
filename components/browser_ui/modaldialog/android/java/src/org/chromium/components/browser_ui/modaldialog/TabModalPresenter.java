@@ -269,9 +269,13 @@ public abstract class TabModalPresenter extends ModalDialogManager.Presenter {
     }
 
     private void runExitAnimation() {
-        final View dialogView = assumeNonNull(mDialogView);
+        final ModalDialogView dialogView = assumeNonNull(mDialogView);
         // Clear focus so that keyboard can hide accordingly while entering tab switcher.
         dialogView.clearFocus();
+        // Disable interaction with the dialog while it is being animated out.
+        updateContainerHierarchy(false);
+        dialogView.blockInputs(true);
+        assumeNonNull(mDialogContainer).setClickable(false);
         assumeNonNull(mDialogContainer).animate().cancel();
         mDialogContainer
                 .animate()
