@@ -232,8 +232,6 @@ class CORE_EXPORT LayoutBlock : public LayoutBox {
     return true;
   }
 
-  virtual void RemoveLeftoverAnonymousBlock(LayoutBlock* child);
-
  protected:
   void InvalidatePaint(const PaintInvalidatorContext&) const override;
 

@@ -56,9 +56,4 @@ void LayoutRubyAsBlock::StyleDidChange(
   }
 }
 
-void LayoutRubyAsBlock::RemoveLeftoverAnonymousBlock(LayoutBlock*) {
-  NOT_DESTROYED();
-  NOTREACHED();
-}
-
 }  // namespace blink

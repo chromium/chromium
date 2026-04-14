@@ -236,25 +236,6 @@ void LayoutBlock::AddChild(LayoutObject* new_child,
   LayoutBox::AddChild(new_child, before_child);
 }
 
-void LayoutBlock::RemoveLeftoverAnonymousBlock(LayoutBlock* child) {
-  NOT_DESTROYED();
-  DCHECK(child->IsAnonymousBlockFlow());
-  DCHECK(!child->ChildrenInline());
-  DCHECK_EQ(child->Parent(), this);
-
-  // Promote all the leftover anonymous block's children (to become children of
-  // this block instead). We still want to keep the leftover block in the tree
-  // for a moment, for notification purposes done further below (grids).
-  child->MoveAllChildrenTo(this, child->NextSibling());
-
-  // Now remove the leftover anonymous block from the tree, and destroy it.
-  // We'll rip it out manually from the tree before destroying it, because we
-  // don't want to trigger any tree adjustments with regards to anonymous blocks
-  // (or any other kind of undesired chain-reaction).
-  Children()->RemoveChildNode(this, child, false);
-  child->Destroy();
-}
-
 void LayoutBlock::Paint(const PaintInfo& paint_info) const {
   NOT_DESTROYED();
 

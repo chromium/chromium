@@ -35,7 +35,6 @@ class CORE_EXPORT LayoutRubyAsBlock : public LayoutBlockFlow {
   void StyleDidChange(StyleDifference,
                       const ComputedStyle* old_style,
                       const StyleChangeContext&) override;
-  void RemoveLeftoverAnonymousBlock(LayoutBlock*) override;
 };
 
 template <>

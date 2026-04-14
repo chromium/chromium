@@ -88,7 +88,12 @@ bool IsInnerEditorChild(const LayoutBlockFlow& block) {
   return block.Parent() && block.Parent()->IsTextControlInnerEditor();
 }
 
-}  // anonymous namespace
+bool IsMergeableAnonymousBlock(const LayoutBlockFlow& block) {
+  return block.IsAnonymousBlockFlow() && !block.BeingDestroyed() &&
+         !block.IsViewTransitionRoot() && !IsInnerEditorChild(block);
+}
+
+}  // namespace
 
 struct SameSizeAsLayoutBlockFlow : public LayoutBlock {
   Member<void*> inline_node_data;
@@ -245,16 +250,15 @@ void LayoutBlockFlow::AddChild(LayoutObject* new_child,
   // insertion in a way that isn't sufficient for us, and can only cause trouble
   // at this point.
   LayoutBox::AddChild(new_child, before_child);
-  auto* parent_layout_block = DynamicTo<LayoutBlock>(Parent());
-  if (made_boxes_non_inline && IsAnonymousBlockFlow() && parent_layout_block) {
-    parent_layout_block->RemoveLeftoverAnonymousBlock(this);
-    // |this| may be dead now.
-  }
-}
 
-static bool IsMergeableAnonymousBlock(const LayoutBlockFlow* block) {
-  return block->IsAnonymousBlockFlow() && !block->BeingDestroyed() &&
-         !block->IsViewTransitionRoot() && !IsInnerEditorChild(*block);
+  // If we are anonymous, and made our children block-level we can promote our
+  // children to our parent and destroy ourselves as we aren't needed anymore.
+  auto* parent_block_flow = DynamicTo<LayoutBlockFlow>(Parent());
+  if (parent_block_flow && made_boxes_non_inline &&
+      IsMergeableAnonymousBlock(*this)) {
+    MoveAllChildrenTo(parent_block_flow, NextSibling(), true);
+    Destroy();
+  }
 }
 
 void LayoutBlockFlow::RemoveChild(LayoutObject* old_child) {
@@ -272,7 +276,7 @@ void LayoutBlockFlow::RemoveChild(LayoutObject* old_child) {
     LayoutObject* next = old_child->NextSibling();
     if (prev && next && !old_child->IsInline()) {
       auto* prev_block_flow = DynamicTo<LayoutBlockFlow>(prev);
-      if (prev_block_flow && IsMergeableAnonymousBlock(prev_block_flow)) {
+      if (prev_block_flow && IsMergeableAnonymousBlock(*prev_block_flow)) {
         // The previous sibling is an anonymous block-flow. Scan the next
         // siblings and reparent any floating or out-of-flow positioned objects
         // into the end of the previous anonymous block-flow.
@@ -284,7 +288,7 @@ void LayoutBlockFlow::RemoveChild(LayoutObject* old_child) {
       }
 
       auto* next_block_flow = DynamicTo<LayoutBlockFlow>(prev->NextSibling());
-      if (next_block_flow && IsMergeableAnonymousBlock(next_block_flow)) {
+      if (next_block_flow && IsMergeableAnonymousBlock(*next_block_flow)) {
         // The next sibling is an anonymous block-flow. Scan the previous
         // siblings and reparent any floating or out-of-flow positioned objects
         // into the start of the next anonymous block-flow.
@@ -325,7 +329,7 @@ void LayoutBlockFlow::RemoveChild(LayoutObject* old_child) {
     // If the removal has knocked us down to containing only a single anonymous
     // box we can go ahead and pull the content right back up into our box.
     if (auto* child_block_flow = DynamicTo<LayoutBlockFlow>(FirstChild())) {
-      if (IsMergeableAnonymousBlock(child_block_flow)) {
+      if (IsMergeableAnonymousBlock(*child_block_flow)) {
         CollapseAnonymousBlockChild(child_block_flow);
       }
     }
@@ -339,7 +343,7 @@ void LayoutBlockFlow::RemoveChild(LayoutObject* old_child) {
     MakeChildrenInlineIfPossible();
   }
 
-  if (!FirstChild() && IsMergeableAnonymousBlock(this)) {
+  if (!FirstChild() && IsMergeableAnonymousBlock(*this)) {
     // If we don't have any children, and this was created as an anonymous
     // block, remove this object as we aren't needed anymore.
     Destroy();
@@ -352,8 +356,8 @@ bool LayoutBlockFlow::CanMergeWith(const LayoutBoxModelObject& other) const {
     return false;
   }
 
-  return IsMergeableAnonymousBlock(this) &&
-         IsMergeableAnonymousBlock(other_block_flow);
+  return IsMergeableAnonymousBlock(*this) &&
+         IsMergeableAnonymousBlock(*other_block_flow);
 }
 
 static bool AllowsCollapseAnonymousBlockChild(const LayoutBlockFlow& parent,
