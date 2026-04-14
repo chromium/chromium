@@ -8275,6 +8275,7 @@ test("unit_tests") {
       "../browser/sync/sync_ui_util_unittest.cc",  # Sync setup uses native ui.
       "../browser/task_manager/sampling/task_group_unittest.cc",
       "../browser/task_manager/sampling/task_manager_impl_unittest.cc",
+      "../browser/task_manager/task_manager_metrics_recorder_unittest.cc",
       "../browser/task_manager/task_manager_observer_unittest.cc",
       "../browser/task_manager/test_task_manager.cc",
       "../browser/task_manager/test_task_manager.h",
