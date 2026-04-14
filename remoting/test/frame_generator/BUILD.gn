@@ -1,0 +1,33 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("frame_generator_test_support") {
+  testonly = true
+
+  sources = [
+    "differ_frame_generator.cc",
+    "differ_frame_generator.h",
+    "file_frame_generator.cc",
+    "file_frame_generator.h",
+    "frame_generator.h",
+    "headless_frame_generator.cc",
+    "headless_frame_generator.h",
+  ]
+
+  deps = [
+    "//base",
+    "//base/test:test_support",
+    "//skia",
+    "//third_party/webrtc/modules/desktop_capture",
+    "//third_party/webrtc_overrides:webrtc_component",
+    "//ui/gfx/codec",
+  ]
+
+  configs += [ "//third_party/webrtc:common_config" ]
+
+  data = [
+    "frame_generator.py",
+    "scenarios/",
+  ]
+}
