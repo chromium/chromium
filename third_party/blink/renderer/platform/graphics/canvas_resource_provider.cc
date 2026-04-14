@@ -944,7 +944,10 @@ CanvasNon2DResourceProviderSharedImage::ProduceCanvasResource() {
       return nullptr;
     }
 
-    FlushCanvas(/*is_overwrite=*/false);
+    if (recorder_->HasReleasableDrawOps()) {
+      FlushRecording(recorder_->ReleaseMainRecording(),
+                     /*is_overwrite=*/false);
+    }
 
     // Note that the resource *must* be a CanvasResourceSharedImage as this
     // class creates CanvasResourceSharedImage instances exclusively.
@@ -962,7 +965,10 @@ CanvasNon2DResourceProviderSharedImage::ProduceCanvasResource() {
   // backing SharedImage). Hence, we must make sure that the SI is updated to
   // reflect the ops made in the current write access (if any) and give up any
   // such write access.
-  FlushCanvas(/*is_overwrite=*/false);
+  if (recorder_->HasReleasableDrawOps()) {
+    FlushRecording(recorder_->ReleaseMainRecording(),
+                   /*is_overwrite=*/false);
+  }
   EndWriteAccess();
 
   return resource_;
@@ -1044,7 +1050,9 @@ CanvasNon2DResourceProviderSharedImage::DoExternalOverdrawAndProduceResource(
   }
 
   draw_callback(recorder_->getRecordingCanvas());
-  FlushCanvas(/*is_overwrite=*/true);
+  if (recorder_->HasReleasableDrawOps()) {
+    FlushRecording(recorder_->ReleaseMainRecording(), /*is_overwrite=*/true);
+  }
 
   if (is_software_) {
     // Note that the resource *must* be a CanvasResourceSharedImage as this
@@ -1074,7 +1082,9 @@ CanvasNon2DResourceProviderSharedImage::DoExternalOverdrawAndSnapshot(
   }
 
   draw_callback(recorder_->getRecordingCanvas());
-  FlushCanvas(/*is_overwrite=*/true);
+  if (recorder_->HasReleasableDrawOps()) {
+    FlushRecording(recorder_->ReleaseMainRecording(), /*is_overwrite=*/true);
+  }
   return Snapshot(orientation);
 }
 
@@ -1135,7 +1145,10 @@ CanvasNon2DResourceProviderSharedImage::Snapshot(ImageOrientation orientation) {
   // while in this case we are simply returning the rendered CPU-side results to
   // the client.
   if (!is_accelerated_) {
-    FlushCanvas(/*is_overwrite=*/false);
+    if (recorder_->HasReleasableDrawOps()) {
+      FlushRecording(recorder_->ReleaseMainRecording(),
+                     /*is_overwrite=*/false);
+    }
 
     cc::PaintImage paint_image;
 
@@ -1165,7 +1178,10 @@ CanvasNon2DResourceProviderSharedImage::Snapshot(ImageOrientation orientation) {
   }
 
   if (!cached_snapshot_) {
-    FlushCanvas(/*is_overwrite=*/false);
+    if (recorder_->HasReleasableDrawOps()) {
+      FlushRecording(recorder_->ReleaseMainRecording(),
+                     /*is_overwrite=*/false);
+    }
     EndWriteAccess();
     cached_snapshot_ = resource_->Bitmap();
 
@@ -1334,7 +1350,10 @@ void Canvas2DResourceProviderSharedImage::OnFlushForImage(
 void CanvasNon2DResourceProviderSharedImage::OnFlushForImage(
     cc::PaintImage::ContentId content_id) {
   if (recorder_->getRecordingCanvas().IsCachingImage(content_id)) {
-    FlushCanvas(/*is_overwrite=*/false);
+    if (recorder_->HasReleasableDrawOps()) {
+      FlushRecording(recorder_->ReleaseMainRecording(),
+                     /*is_overwrite=*/false);
+    }
   }
   if (cached_snapshot_ &&
       cached_snapshot_->PaintImageForCurrentFrame().GetContentIdForFrame(0) ==
@@ -1948,14 +1967,6 @@ ScopedRasterTimer CanvasResourceProvider::CreateScopedRasterTimerForCanvas2D() {
   CHECK(IsCanvas2D());
   return ScopedRasterTimer(nullptr, *this,
                            always_enable_raster_timers_for_testing_);
-}
-
-void CanvasNon2DResourceProviderSharedImage::FlushCanvas(bool is_overwrite) {
-  if (!recorder_->HasReleasableDrawOps()) {
-    return;
-  }
-
-  FlushRecording(recorder_->ReleaseMainRecording(), is_overwrite);
 }
 
 void CanvasNon2DResourceProviderSharedImage::FlushRecording(
