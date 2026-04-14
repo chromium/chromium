@@ -1040,8 +1040,7 @@ CanvasNon2DResourceProviderSharedImage::DoExternalOverdrawAndProduceResource(
 
   draw_callback(recorder_for_external_draws_->getRecordingCanvas());
   if (recorder_for_external_draws_->HasReleasableDrawOps()) {
-    FlushRecording(recorder_for_external_draws_->ReleaseMainRecording(),
-                   /*is_overwrite=*/true);
+    FlushRecording(recorder_for_external_draws_->ReleaseMainRecording());
   }
 
   if (is_software_) {
@@ -1073,8 +1072,7 @@ CanvasNon2DResourceProviderSharedImage::DoExternalOverdrawAndSnapshot(
 
   draw_callback(recorder_for_external_draws_->getRecordingCanvas());
   if (recorder_for_external_draws_->HasReleasableDrawOps()) {
-    FlushRecording(recorder_for_external_draws_->ReleaseMainRecording(),
-                   /*is_overwrite=*/true);
+    FlushRecording(recorder_for_external_draws_->ReleaseMainRecording());
   }
   return Snapshot(orientation);
 }
@@ -1946,8 +1944,7 @@ ScopedRasterTimer CanvasResourceProvider::CreateScopedRasterTimerForCanvas2D() {
 }
 
 void CanvasNon2DResourceProviderSharedImage::FlushRecording(
-    cc::PaintRecord last_recording,
-    bool is_overwrite) {
+    cc::PaintRecord last_recording) {
   if (!is_accelerated_) {
     if (!skia_canvas_) {
       if (!canvas_image_provider_) {
@@ -1970,7 +1967,7 @@ void CanvasNon2DResourceProviderSharedImage::FlushRecording(
     }
     skia_canvas_->drawPicture(std::move(last_recording));
   } else if (!IsGpuContextLost()) {
-    auto access = WillDrawInternal(is_overwrite);
+    auto access = WillDrawInternal(true);
     EnsureWriteAccess();
 
     const bool needs_clear = !is_cleared_;
