@@ -31,15 +31,6 @@
                         NewTabPageHeaderConsumer,
                         UserAccountImageUpdateDelegate>
 
-- (instancetype)initWithUseNewBadgeForLensButton:(BOOL)useNewBadgeForLensButton
-                 useNewBadgeForCustomizationMenu:
-                     (BOOL)useNewBadgeForCustomizationMenu
-    NS_DESIGNATED_INITIALIZER;
-- (instancetype)init NS_UNAVAILABLE;
-- (instancetype)initWithNibName:(NSString*)nibNameOrNil
-                         bundle:(NSBundle*)nibBundleOrNil NS_UNAVAILABLE;
-- (instancetype)initWithCoder:(NSCoder*)aDecoder NS_UNAVAILABLE;
-
 // Handlers for dispatched commands.
 @property(nonatomic, weak) id<FakeboxFocuser> fakeboxFocuserHandler;
 @property(nonatomic, weak) id<HelpCommands> helpHandler;
@@ -79,6 +70,16 @@
 
 // The mutator for the NTP.
 @property(nonatomic, weak) id<NewTabPageMutator> mutator;
+
+- (instancetype)initWithUseNewBadgeForLensButton:(BOOL)useNewBadgeForLensButton
+                 useNewBadgeForCustomizationMenu:
+                     (BOOL)useNewBadgeForCustomizationMenu
+    NS_DESIGNATED_INITIALIZER;
+
+- (instancetype)init NS_UNAVAILABLE;
+- (instancetype)initWithNibName:(NSString*)nibNameOrNil
+                         bundle:(NSBundle*)nibBundleOrNil NS_UNAVAILABLE;
+- (instancetype)initWithCoder:(NSCoder*)aDecoder NS_UNAVAILABLE;
 
 // Animation to expand this header in response to focusing the omnibox to match
 // the fake omnibox with the omnibox's.

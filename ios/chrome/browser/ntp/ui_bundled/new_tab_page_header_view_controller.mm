@@ -59,7 +59,6 @@
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 #import "ios/chrome/common/ui/util/ui_util.h"
 #import "ios/chrome/grit/ios_strings.h"
-#import "ui/base/device_form_factor.h"
 #import "ui/base/l10n/l10n_util.h"
 
 using base::UserMetricsAction;
@@ -182,60 +181,6 @@ const CGFloat kIdentityDiscMaxFontSize = 24;
   return self.headerView.omnibox;
 }
 
-- (void)willTransitionToTraitCollection:(UITraitCollection*)newCollection
-              withTransitionCoordinator:
-                  (id<UIViewControllerTransitionCoordinator>)coordinator {
-  [super willTransitionToTraitCollection:newCollection
-               withTransitionCoordinator:coordinator];
-
-  __weak __typeof(self) weakSelf = self;
-  const BOOL isSplitToolbarMode = IsSplitToolbarMode(newCollection);
-  const BOOL isTabletFormFactor =
-      ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET;
-
-  void (^transitionBlock)(id<UIViewControllerTransitionCoordinatorContext>) =
-      ^(id<UIViewControllerTransitionCoordinatorContext>) {
-        __strong __typeof(self) strongSelf = weakSelf;
-        if (!strongSelf) {
-          return;
-        }
-
-        if (IsChromeNextIaEnabled() && !isTabletFormFactor) {
-          [strongSelf updateToolsMenuButtonVisibility:isSplitToolbarMode];
-        }
-
-        // Ensure omnibox is reset when not a regular tablet.
-        if (isSplitToolbarMode && !CanShowTabStrip(newCollection)) {
-          [strongSelf.toolbarDelegate setScrollProgressForTabletOmnibox:1];
-        }
-        // Fake Tap button only needs to work in portrait. Disable the button
-        // in landscape because in landscape the button covers logoView (which
-        // need to handle taps).
-        strongSelf.fakeTapButton.userInteractionEnabled = isSplitToolbarMode;
-      };
-
-  void (^completionBlock)(id<UIViewControllerTransitionCoordinatorContext>) =
-      ^(id<UIViewControllerTransitionCoordinatorContext>) {
-        __strong __typeof(self) strongSelf = weakSelf;
-        if (!strongSelf) {
-          return;
-        }
-
-        if (IsChromeNextIaEnabled() && !isTabletFormFactor) {
-          if (!strongSelf.headerView.toolsMenuButton) {
-            return;
-          }
-
-          // Hide the tools menu button if it is no longer visible.
-          strongSelf.headerView.toolsMenuButton.hidden =
-              strongSelf.headerView.toolsMenuButton.alpha == 0.0;
-        }
-      };
-
-  [coordinator animateAlongsideTransition:transitionBlock
-                               completion:completionBlock];
-}
-
 - (void)dealloc {
   [self.accessibilityButton removeObserver:self forKeyPath:@"highlighted"];
 }
@@ -349,6 +294,30 @@ const CGFloat kIdentityDiscMaxFontSize = 24;
                                                   self.traitCollection);
 }
 
+#pragma mark - Accessors & Mutators
+
+- (void)setIsGoogleDefaultSearchEngine:(BOOL)isGoogleDefaultSearchEngine {
+  _isGoogleDefaultSearchEngine = isGoogleDefaultSearchEngine;
+  self.headerView.isGoogleDefaultSearchEngine = isGoogleDefaultSearchEngine;
+}
+
+- (void)setAllowFontScaleAnimation:(BOOL)allowFontScaleAnimation {
+  _allowFontScaleAnimation = allowFontScaleAnimation;
+  self.headerView.allowFontScaleAnimation = allowFontScaleAnimation;
+}
+
+- (void)setNTPShortcutsHandler:
+    (id<NewTabPageShortcutsHandler>)NTPShortcutsHandler {
+  _NTPShortcutsHandler = NTPShortcutsHandler;
+  self.headerView.NTPShortcutsHandler = NTPShortcutsHandler;
+}
+
+- (UIButton*)customizationMenuButton {
+  return [self.headerView customizationMenuButton];
+}
+
+#pragma mark - UIViewController
+
 - (void)viewDidLoad {
   [super viewDidLoad];
 
@@ -388,11 +357,9 @@ const CGFloat kIdentityDiscMaxFontSize = 24;
 
     [self addCustomizationMenu];
 
-    if (IsChromeNextIaEnabled() &&
-        ui::GetDeviceFormFactor() != ui::DEVICE_FORM_FACTOR_TABLET) {
-      // Add the tools menu to the NTP header if it is not visible in the
-      // toolbar.
-      [self addToolsMenu];
+    // Add a tools (overflow) menu entrypoint beside the customization menu.
+    if (IsChromeNextIaEnabled()) {
+      [self addToolsMenuIfNeeded];
     }
 
     UIEdgeInsets safeAreaInsets = self.baseViewController.view.safeAreaInsets;
@@ -411,11 +378,6 @@ const CGFloat kIdentityDiscMaxFontSize = 24;
       [self applyBackgroundTheme];
     }
   }
-}
-
-- (void)setIsGoogleDefaultSearchEngine:(BOOL)isGoogleDefaultSearchEngine {
-  _isGoogleDefaultSearchEngine = isGoogleDefaultSearchEngine;
-  self.headerView.isGoogleDefaultSearchEngine = isGoogleDefaultSearchEngine;
 }
 
 - (void)viewDidAppear:(BOOL)animated {
@@ -440,11 +402,6 @@ const CGFloat kIdentityDiscMaxFontSize = 24;
   [self maybeShowSwitchAccountsIPH];
 }
 
-- (void)setAllowFontScaleAnimation:(BOOL)allowFontScaleAnimation {
-  _allowFontScaleAnimation = allowFontScaleAnimation;
-  self.headerView.allowFontScaleAnimation = allowFontScaleAnimation;
-}
-
 - (void)omniboxDidEndEditing {
   // Return early if the view is already showing.
   if (self.view.alpha == 1) {
@@ -461,16 +418,35 @@ const CGFloat kIdentityDiscMaxFontSize = 24;
   self.headerView.tabGroupIndicatorView = view;
 }
 
-- (void)setNTPShortcutsHandler:
-    (id<NewTabPageShortcutsHandler>)NTPShortcutsHandler {
-  _NTPShortcutsHandler = NTPShortcutsHandler;
-  self.headerView.NTPShortcutsHandler = NTPShortcutsHandler;
-}
+#pragma mark - UIContentContainer
 
-#pragma mark - FakeboxButtonsSnapshotProvider
+- (void)willTransitionToTraitCollection:(UITraitCollection*)newCollection
+              withTransitionCoordinator:
+                  (id<UIViewControllerTransitionCoordinator>)coordinator {
+  [super willTransitionToTraitCollection:newCollection
+               withTransitionCoordinator:coordinator];
 
-- (UIView*)fakeboxButtonsSnapshot {
-  return [self.headerView fakeboxButtonsSnapshot];
+  __weak __typeof(self) weakSelf = self;
+  const BOOL isSplitToolbarMode = IsSplitToolbarMode(newCollection);
+
+  void (^transitionBlock)(id<UIViewControllerTransitionCoordinatorContext>) =
+      ^(id<UIViewControllerTransitionCoordinatorContext>) {
+        __strong __typeof(self) strongSelf = weakSelf;
+        if (!strongSelf) {
+          return;
+        }
+
+        // Ensure omnibox is reset when not a regular tablet.
+        if (isSplitToolbarMode && !CanShowTabStrip(newCollection)) {
+          [strongSelf.toolbarDelegate setScrollProgressForTabletOmnibox:1];
+        }
+        // Fake Tap button only needs to work in portrait. Disable the button
+        // in landscape because in landscape the button covers logoView (which
+        // need to handle taps).
+        strongSelf.fakeTapButton.userInteractionEnabled = isSplitToolbarMode;
+      };
+
+  [coordinator animateAlongsideTransition:transitionBlock completion:nil];
 }
 
 #pragma mark - UIIndirectScribbleInteractionDelegate
@@ -518,6 +494,47 @@ const CGFloat kIdentityDiscMaxFontSize = 24;
              (UIScribbleElementIdentifier)elementIdentifier {
   DCHECK(elementIdentifier == kScribbleFakeboxElementId);
   return YES;
+}
+
+#pragma mark - UIPointerInteractionDelegate
+
+- (UIPointerRegion*)pointerInteraction:(UIPointerInteraction*)interaction
+                      regionForRequest:(UIPointerRegionRequest*)request
+                         defaultRegion:(UIPointerRegion*)defaultRegion {
+  return defaultRegion;
+}
+
+- (UIPointerStyle*)pointerInteraction:(UIPointerInteraction*)interaction
+                       styleForRegion:(UIPointerRegion*)region {
+  // If the view is no longer in a window due to a race condition, no
+  // pointer style is needed.
+  if (!interaction.view.window) {
+    return nil;
+  }
+  // Without this, the hover effect looks slightly oversized.
+  CGRect rect = CGRectInset(interaction.view.bounds, 1, 1);
+  UIBezierPath* path =
+      [UIBezierPath bezierPathWithRoundedRect:rect
+                                 cornerRadius:rect.size.height];
+  UIPreviewParameters* parameters = [[UIPreviewParameters alloc] init];
+  parameters.visiblePath = path;
+  UITargetedPreview* preview =
+      [[UITargetedPreview alloc] initWithView:interaction.view
+                                   parameters:parameters];
+  UIPointerHoverEffect* effect =
+      [UIPointerHoverEffect effectWithPreview:preview];
+  effect.prefersScaledContent = NO;
+  effect.prefersShadow = NO;
+  UIPointerShape* shape = [UIPointerShape
+      beamWithPreferredLength:interaction.view.bounds.size.height / 2
+                         axis:UIAxisVertical];
+  return [UIPointerStyle styleWithEffect:effect shape:shape];
+}
+
+#pragma mark - FakeboxButtonsSnapshotProvider
+
+- (UIView*)fakeboxButtonsSnapshot {
+  return [self.headerView fakeboxButtonsSnapshot];
 }
 
 #pragma mark - SearchEngineLogoConsumer
@@ -635,47 +652,6 @@ const CGFloat kIdentityDiscMaxFontSize = 24;
   self.isSignedIn = YES;
 
   [self updateIdentityDiscAccessibilityLabelWithName:name email:email];
-}
-
-#pragma mark UIPointerInteractionDelegate
-
-- (UIPointerRegion*)pointerInteraction:(UIPointerInteraction*)interaction
-                      regionForRequest:(UIPointerRegionRequest*)request
-                         defaultRegion:(UIPointerRegion*)defaultRegion {
-  return defaultRegion;
-}
-
-- (UIPointerStyle*)pointerInteraction:(UIPointerInteraction*)interaction
-                       styleForRegion:(UIPointerRegion*)region {
-  // If the view is no longer in a window due to a race condition, no
-  // pointer style is needed.
-  if (!interaction.view.window) {
-    return nil;
-  }
-  // Without this, the hover effect looks slightly oversized.
-  CGRect rect = CGRectInset(interaction.view.bounds, 1, 1);
-  UIBezierPath* path =
-      [UIBezierPath bezierPathWithRoundedRect:rect
-                                 cornerRadius:rect.size.height];
-  UIPreviewParameters* parameters = [[UIPreviewParameters alloc] init];
-  parameters.visiblePath = path;
-  UITargetedPreview* preview =
-      [[UITargetedPreview alloc] initWithView:interaction.view
-                                   parameters:parameters];
-  UIPointerHoverEffect* effect =
-      [UIPointerHoverEffect effectWithPreview:preview];
-  effect.prefersScaledContent = NO;
-  effect.prefersShadow = NO;
-  UIPointerShape* shape = [UIPointerShape
-      beamWithPreferredLength:interaction.view.bounds.size.height / 2
-                         axis:UIAxisVertical];
-  return [UIPointerStyle styleWithEffect:effect shape:shape];
-}
-
-#pragma mark - Getters
-
-- (UIButton*)customizationMenuButton {
-  return [self.headerView customizationMenuButton];
 }
 
 #pragma mark - Private
@@ -884,10 +860,15 @@ const CGFloat kIdentityDiscMaxFontSize = 24;
                                  withNewBadge:_useNewBadgeForCustomizationMenu];
 }
 
-// Creates the Tools menu and adds it to the header view.
-- (void)addToolsMenu {
+// Creates the Tools menu and adds it to the header view (iPhone only)
+- (void)addToolsMenuIfNeeded {
   CHECK(IsChromeNextIaEnabled());
-  CHECK_NE(ui::GetDeviceFormFactor(), ui::DEVICE_FORM_FACTOR_TABLET);
+
+  // If the App Bar is not available (iPad), the Tools menu should not be added
+  // to the header view.
+  if (CanShowTabStrip(self)) {
+    return;
+  }
 
   UIButton* toolsMenuButton =
       [[ExtendedTouchTargetButton alloc] initWithFrame:CGRectZero];
@@ -912,30 +893,7 @@ const CGFloat kIdentityDiscMaxFontSize = 24;
                       action:@selector(toolsMenuWasTapped:)
             forControlEvents:UIControlEventTouchUpInside];
 
-  // Set initial button visibility. Visible in iPhone portrait, otherwise
-  // invisible.
-  BOOL isSplitToolbarMode = IsSplitToolbarMode(self);
-  toolsMenuButton.hidden = !isSplitToolbarMode;
-  toolsMenuButton.alpha = isSplitToolbarMode ? 1.0 : 0.0;
-
   self.headerView.toolsMenuButton = toolsMenuButton;
-}
-
-// Helper for `-[willTransitionToTraitCollection:withTransitionCoordinator:]`.
-// Updates the visibility of the tools menu button in the header view. The
-// `hidden` property of the `toolsMenuButton` should be updated according after
-// using this helper to fade the button in/out of view.
-- (void)updateToolsMenuButtonVisibility:(BOOL)visibility {
-  CHECK(IsChromeNextIaEnabled());
-  CHECK_NE(ui::GetDeviceFormFactor(), ui::DEVICE_FORM_FACTOR_TABLET);
-
-  if (!self.headerView.toolsMenuButton) {
-    return;
-  }
-
-  // Unhide the tools menu button before fading it in/out of view.
-  self.headerView.toolsMenuButton.hidden = NO;
-  self.headerView.toolsMenuButton.alpha = visibility ? 1.0 : 0.0;
 }
 
 // Configures `identityDiscButton` with the current state of
