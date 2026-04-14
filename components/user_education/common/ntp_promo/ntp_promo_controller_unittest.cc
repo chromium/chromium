@@ -416,6 +416,40 @@ TEST_F(NtpPromoControllerTest, SuppessedMultiplePromos) {
   EXPECT_TRUE(ShowsPromo(kPromo3Id));
 }
 
+TEST_F(NtpPromoControllerTest, ClickedPromoPreventsOtherPromosInSameSession) {
+  CreateController();
+  RegisterPromo(kPromoId, kEligible);
+  RegisterPromo(kPromo2Id, kEligible);
+
+  EXPECT_TRUE(ShowsPromo(kPromoId));
+  controller().OnPromoClicked(kPromoId, nullptr);
+
+  // No other promo should show in this session.
+  EXPECT_FALSE(ShowsAnyPromo());
+
+  AdvanceSession();
+
+  // In the next session, the other promo can show.
+  EXPECT_TRUE(ShowsPromo(kPromo2Id));
+}
+
+TEST_F(NtpPromoControllerTest, DismissedPromoPreventsOtherPromosInSameSession) {
+  CreateController();
+  RegisterPromo(kPromoId, kEligible);
+  RegisterPromo(kPromo2Id, kEligible);
+
+  EXPECT_TRUE(ShowsPromo(kPromoId));
+  controller().OnPromoDismissed(kPromoId);
+
+  // No other promo should show in this session.
+  EXPECT_FALSE(ShowsAnyPromo());
+
+  AdvanceSession();
+
+  // In the next session, the other promo can show.
+  EXPECT_TRUE(ShowsPromo(kPromo2Id));
+}
+
 TEST_F(NtpPromoControllerTest, MaxShowTermsExhaustionCycle) {
   // This test walks through two promos burning through their session and term
   // limits, to ensure that they both eventually become non-showable. Two promos
