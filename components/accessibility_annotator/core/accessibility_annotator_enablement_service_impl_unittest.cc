@@ -36,12 +36,20 @@ class AccessibilityAnnotatorEnablementServiceImplTest : public testing::Test {
   ~AccessibilityAnnotatorEnablementServiceImplTest() override = default;
 
  protected:
-  void SignIn(const std::string& email, bool is_underaged = false) {
+  void SignIn(const std::string& email,
+              bool is_underaged = false,
+              bool is_managed = false) {
     AccountInfo account_info = identity_test_env_.MakePrimaryAccountAvailable(
         email, signin::ConsentLevel::kSignin);
-    AccountCapabilitiesTestMutator mutator(&account_info.capabilities);
+    AccountInfo::Builder builder(account_info);
+    if (is_managed) {
+      builder.SetHostedDomain("example.com");
+    }
+    AccountCapabilities capabilities = account_info.GetAccountCapabilities();
+    AccountCapabilitiesTestMutator mutator(&capabilities);
     mutator.set_can_use_model_execution_features(!is_underaged);
-    identity_test_env_.UpdateAccountInfoForAccount(account_info);
+    builder.UpdateAccountCapabilitiesWith(capabilities);
+    identity_test_env_.UpdateAccountInfoForAccount(builder.Build());
   }
 
   void CreateService(const std::string& country_code) {
@@ -172,6 +180,13 @@ TEST_F(AccessibilityAnnotatorEnablementServiceImplTest, ClearsPrefOnSignout) {
 
 TEST_F(AccessibilityAnnotatorEnablementServiceImplTest, DisabledWhenUnderaged) {
   SignIn("under@gmail.com", /*is_underaged=*/true);
+
+  EXPECT_EQ(service().GetEnablementState(),
+            RemoteAnnotatorEnablementState::kDisabledNotEligible);
+}
+
+TEST_F(AccessibilityAnnotatorEnablementServiceImplTest, DisabledWhenManaged) {
+  SignIn("managed@example.com", /*is_underaged=*/false, /*is_managed=*/true);
 
   EXPECT_EQ(service().GetEnablementState(),
             RemoteAnnotatorEnablementState::kDisabledNotEligible);

@@ -90,14 +90,22 @@ const base::flat_set<int32_t>& GetAnnotatorEligibleTiers() {
     return false;
   }
 
+  const AccountInfo extended_account_info =
+      identity_manager->FindExtendedAccountInfo(
+          identity_manager->GetPrimaryAccountInfo(
+              signin::ConsentLevel::kSignin));
+
+  // Consumer account checks.
+  if (extended_account_info.IsManaged() == signin::Tribool::kTrue) {
+    MaybeOutputReason(debug_message, "The account is not a consumer account");
+    return false;
+  }
+
   // TODO(crbug.com/494149753): This `can_use_model_execution_features()`
   // check is a very hacky way to check whether the user is underaged.
   // Consider defining a separate capability or syncing a separate setting
   // through ACCOUNT_SETTING instead.
-  if (identity_manager
-          ->FindExtendedAccountInfo(identity_manager->GetPrimaryAccountInfo(
-              signin::ConsentLevel::kSignin))
-          .capabilities.can_use_model_execution_features() !=
+  if (extended_account_info.capabilities.can_use_model_execution_features() !=
       signin::Tribool::kTrue) {
     MaybeOutputReason(debug_message, "User is underaged.");
     return false;
