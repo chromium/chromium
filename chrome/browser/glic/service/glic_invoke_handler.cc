@@ -15,27 +15,82 @@
 #include "chrome/browser/glic/public/glic_keyed_service.h"
 #include "chrome/browser/glic/service/glic_instance_helper.h"
 #include "chrome/browser/glic/service/glic_instance_impl.h"
+#include "chrome/browser/tab_list/tab_list_interface.h"
+#include "chrome/browser/ui/browser_commands.h"
+#include "chrome/browser/ui/browser_finder.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
+#include "chrome/browser/ui/browser_window/public/create_browser_window.h"
 #include "chrome/common/chrome_features.h"
+#include "chrome/common/url_constants.h"
+#include "content/public/browser/navigation_handle.h"
 namespace glic {
 
 constexpr base::TimeDelta kDefaultTimeout = base::Minutes(1);
 
+static tabs::TabInterface* CreateBrowserAndGetActiveTab(Profile* profile) {
+  BrowserWindowCreateParams params(*profile, /*from_user_gesture=*/false);
+  BrowserWindowInterface* browser = CreateBrowserWindow(std::move(params));
+  if (!browser) {
+    return nullptr;
+  }
+  tabs::TabInterface* tab = TabListInterface::From(browser)->GetActiveTab();
+  if (!tab) {
+    tab = TabListInterface::From(browser)->OpenTab(
+        GURL(chrome::kChromeUINewTabURL), -1);
+  }
+  return tab;
+}
+
+// static
+GlicInvokeHandler::ResolvedTarget GlicInvokeHandler::ResolveTargetSurface(
+    Profile* profile,
+    const Target& target) {
+  if (std::holds_alternative<DefaultSurface>(target.surface)) {
+    auto default_surface = std::get<DefaultSurface>(target.surface);
+    BrowserWindowInterface* browser = default_surface.browser;
+    if (browser) {
+      tabs::TabInterface* tab = TabListInterface::From(browser)->GetActiveTab();
+      if (tab) {
+        return {tab, /*is_new=*/false};
+      }
+    }
+
+    tabs::TabInterface* tab = CreateBrowserAndGetActiveTab(profile);
+    if (tab) {
+      return {tab, /*is_new=*/true};
+    }
+
+    return {nullptr, /*is_new=*/false};
+  }
+
+  return {std::get<raw_ptr<tabs::TabInterface>>(target.surface).get(),
+          /*is_new=*/false};
+}
+
 GlicInvokeHandler::GlicInvokeHandler(
     GlicInstanceImpl& instance,
-    tabs::TabInterface* tab,
     GlicInvokeOptions options,
     std::optional<InvokeWithAutoSubmitPasskey> auto_submit_passkey,
     CompletionCallback completion_callback)
     : instance_(instance),
-      tab_(tab),
       options_(std::move(options)),
       auto_submit_passkey_(auto_submit_passkey),
       completion_callback_(std::move(completion_callback)) {
-  if (tab && GlicInstanceHelper::From(tab)) {
+  ResolvedTarget resolved_target =
+      ResolveTargetSurface(instance_->profile(), options_.target);
+  tab_ = resolved_target.tab;
+  if (tab_ && GlicInstanceHelper::From(tab_)) {
     tab_destruction_subscription_ =
-        GlicInstanceHelper::From(tab)->SubscribeToDestruction(
+        GlicInstanceHelper::From(tab_)->SubscribeToDestruction(
             base::BindRepeating(&GlicInvokeHandler::OnTabClosed,
                                 weak_ptr_factory_.GetWeakPtr()));
+  }
+  if (resolved_target.is_new && tab_ && tab_->GetContents() &&
+      tab_->GetContents()->HasUncommittedNavigationInPrimaryMainFrame()) {
+    // NOTE: This simple check won't do the right thing for chained navigations
+    // or potentially redirects, as the first navigation will finish and we will
+    // proceed, but then another navigation will start.
+    waiting_for_load_ = true;
   }
 }
 
@@ -54,6 +109,15 @@ void GlicInvokeHandler::Invoke() {
     return;
   }
 
+  if (waiting_for_load_) {
+    Observe(tab_->GetContents());
+    return;
+  }
+
+  ContinueInvoke();
+}
+
+void GlicInvokeHandler::ContinueInvoke() {
   auto show_options = ShowOptions::ForSidePanel(
       *tab_, GlicPinTrigger::kInstanceCreation, options_.invocation_source);
   if (options_.fre_override != mojom::FreOverride::kUnspecified) {
@@ -81,6 +145,17 @@ void GlicInvokeHandler::MaybeWaitForWebClientReady() {
   } else {
     host_observation_.Observe(&instance_->host());
   }
+}
+
+void GlicInvokeHandler::DidFinishNavigation(
+    content::NavigationHandle* navigation_handle) {
+  if (!navigation_handle->IsInPrimaryMainFrame() ||
+      !navigation_handle->HasCommitted()) {
+    return;
+  }
+  Observe(nullptr);
+  waiting_for_load_ = false;
+  ContinueInvoke();
 }
 
 void GlicInvokeHandler::WebClientConnected() {

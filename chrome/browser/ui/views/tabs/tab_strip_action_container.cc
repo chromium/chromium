@@ -403,12 +403,13 @@ void TabStripActionContainer::OnTriggerAnchoredMessage(
                 glic::GlicKeyedService::Get(bwi->GetProfile())) {
           if (tabs::TabInterface* tab = bwi->GetActiveTabInterface()) {
             glic::GlicInvokeOptions options(
+                glic::Target(tab),
                 glic::mojom::InvocationSource::kAnchoredContextualCue);
             if (prompt.has_value()) {
               options.prompts.push_back(prompt.value());
             }
             glic_service->InvokeWithAutoSubmit(
-                glic::InvokeWithAutoSubmitPasskeyProvider::GetPassKey(), tab,
+                glic::InvokeWithAutoSubmitPasskeyProvider::GetPassKey(),
                 std::move(options));
           }
         }

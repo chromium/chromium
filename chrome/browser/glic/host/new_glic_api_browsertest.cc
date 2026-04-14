@@ -90,7 +90,6 @@ class WithTestParams : public testing::WithParamInterface<TestParams> {
   base::test::ScopedFeatureList test_param_features_;
 };
 
-
 class GlicApiTestPasskeys {
  public:
   static InvokeWithAutoSubmitPasskey GetPassKey() {
@@ -411,8 +410,9 @@ IN_PROC_BROWSER_TEST_P(NewGlicApiTestWithPixelOutput,
 IN_PROC_BROWSER_TEST_P(NewGlicApiTest, testInvokeWaitsForNotifyPanelWillOpen) {
   ASSERT_OK(OpenGlicForActiveTab());
   GlicInvokeOptions options(mojom::InvocationSource::kOsButton);
-  coordinator().InvokeWithAutoSubmit(
-      GetPassKey(), GetTabListInterface()->GetActiveTab(), std::move(options));
+  options.target.surface = DefaultSurface{
+      GetTabListInterface()->GetActiveTab()->GetBrowserWindowInterface()};
+  coordinator().InvokeWithAutoSubmit(GetPassKey(), std::move(options));
 
   ExecuteJsTest();
 }

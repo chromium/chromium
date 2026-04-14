@@ -433,12 +433,13 @@ void ContextualCueingHelper::OnCueingDecision(
         invocation_source = glic::mojom::InvocationSource::kAutoOpenedForPdf;
       }
 
-      glic::GlicInvokeOptions options(invocation_source);
+      glic::GlicInvokeOptions options(glic::Target(tab_interface),
+                                      invocation_source);
       options.fre_override = glic::mojom::FreOverride::kTrustFirstInline;
       if (!decision_result->prompt_suggestion.empty()) {
         options.prompts.push_back(decision_result->prompt_suggestion);
       }
-      glic_service->Invoke(tab_interface, std::move(options));
+      glic_service->Invoke(std::move(options));
       return;
     }
     // Fall through to nudge if side panel open fails.

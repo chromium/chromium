@@ -16,9 +16,32 @@ ConversationId::~ConversationId() = default;
 ConversationId::ConversationId(const ConversationId&) = default;
 ConversationId& ConversationId::operator=(const ConversationId&) = default;
 
+Target::Target() = default;
+Target::Target(Target&&) = default;
+Target& Target::operator=(Target&&) = default;
+Target::~Target() = default;
+
+Target::Target(tabs::TabInterface* tab) : surface(tab) {}
+
+Target::Target(
+    tabs::TabInterface* tab,
+    std::variant<DefaultConversation, NewConversation, ConversationId>
+        conversation)
+    : surface(tab), conversation(std::move(conversation)) {}
+
+Target::Target(
+    std::variant<DefaultConversation, NewConversation, ConversationId>
+        conversation)
+    : conversation(std::move(conversation)) {}
+
 GlicInvokeOptions::GlicInvokeOptions(
     glic::mojom::InvocationSource invocation_source)
     : invocation_source(invocation_source) {}
+
+GlicInvokeOptions::GlicInvokeOptions(
+    Target target,
+    glic::mojom::InvocationSource invocation_source)
+    : invocation_source(invocation_source), target(std::move(target)) {}
 
 GlicInvokeOptions::~GlicInvokeOptions() = default;
 

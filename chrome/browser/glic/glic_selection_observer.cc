@@ -337,10 +337,11 @@ void GlicSelectionObserver::InvokeGlicFromSelectionAffordance(
 
           context->parts = std::move(parts);
 
-          GlicInvokeOptions options(mojom::InvocationSource::kNudge);
+          GlicInvokeOptions options(glic::Target(tab_interface),
+                                    mojom::InvocationSource::kNudge);
           options.additional_context = std::move(context);
 
-          glic_keyed_service->Invoke(tab_interface, std::move(options));
+          glic_keyed_service->Invoke(std::move(options));
         }
       }
     }

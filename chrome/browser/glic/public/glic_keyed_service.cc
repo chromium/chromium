@@ -344,8 +344,8 @@ bool GlicKeyedService::MaybeInvoke(
     if (prompt_suggestion) {
       options.prompts.push_back(*prompt_suggestion);
     }
-    Invoke(TabListInterface::From(target_bwi)->GetActiveTab(),
-           std::move(options));
+    options.target.surface = TabListInterface::From(target_bwi)->GetActiveTab();
+    Invoke(std::move(options));
     return true;
   }
 
@@ -354,7 +354,6 @@ bool GlicKeyedService::MaybeInvoke(
 
 void GlicKeyedService::InvokeWithAutoSubmit(
     InvokeWithAutoSubmitPasskey auto_submit_passkey,
-    tabs::TabInterface* tab,
     GlicInvokeOptions options) {
   CHECK(GlicEnabling::IsEnabledForProfile(profile_));
 
@@ -364,11 +363,10 @@ void GlicKeyedService::InvokeWithAutoSubmit(
   }
 
   static_cast<GlicInstanceCoordinatorImpl&>(instance_coordinator())
-      .InvokeWithAutoSubmit(auto_submit_passkey, tab, std::move(options));
+      .InvokeWithAutoSubmit(auto_submit_passkey, std::move(options));
 }
 
-void GlicKeyedService::Invoke(tabs::TabInterface* tab,
-                              GlicInvokeOptions options) {
+void GlicKeyedService::Invoke(GlicInvokeOptions options) {
   CHECK(GlicEnabling::IsEnabledForProfile(profile_));
 
   GlicProfileManager* glic_profile_manager = GlicProfileManager::GetInstance();
@@ -377,7 +375,7 @@ void GlicKeyedService::Invoke(tabs::TabInterface* tab,
   }
 
   static_cast<GlicInstanceCoordinatorImpl&>(instance_coordinator())
-      .Invoke(tab, std::move(options));
+      .Invoke(std::move(options));
 }
 
 void GlicKeyedService::OpenFreDialogInNewTab(BrowserWindowInterface* bwi,

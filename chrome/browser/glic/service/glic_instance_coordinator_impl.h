@@ -137,9 +137,8 @@ class GlicInstanceCoordinatorImpl
   // coordinator.
   void Shutdown() override;
   void Close(const CloseOptions& options) override;
-  void Invoke(tabs::TabInterface* tab, GlicInvokeOptions options);
+  void Invoke(GlicInvokeOptions options);
   void InvokeWithAutoSubmit(InvokeWithAutoSubmitPasskey auto_submit_passkey,
-                            tabs::TabInterface* tab,
                             GlicInvokeOptions options);
   void CloseInstanceWithFrame(
       content::RenderFrameHost* render_frame_host) override;
@@ -186,7 +185,6 @@ class GlicInstanceCoordinatorImpl
   void RemoveAllInstances();
   void InvokeInternal(
       std::optional<InvokeWithAutoSubmitPasskey> auto_submit_passkey,
-      tabs::TabInterface* tab,
       GlicInvokeOptions options);
 
   void OnTabEvent(const GlicTabEvent& event);

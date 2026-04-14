@@ -4442,6 +4442,7 @@ void RenderViewContextMenu::ExecGlic() {
       if (tab) {
         glic_item_executed_ = true;
         glic::GlicInvokeOptions options(
+            glic::Target(tab),
             glic::mojom::InvocationSource::kWebContentsContextMenu);
         options.fre_override = glic::mojom::FreOverride::kTrustFirstInline;
         std::string arm = features::kGlicContextMenuArm.Get();
@@ -4449,10 +4450,10 @@ void RenderViewContextMenu::ExecGlic() {
           options.prompts.push_back(
               l10n_util::GetStringUTF8(IDS_GLIC_SUMMARIZE_PAGE_PROMPT));
           glic_service->InvokeWithAutoSubmit(
-              glic::InvokeWithAutoSubmitPasskeyProvider::GetPassKey(), tab,
+              glic::InvokeWithAutoSubmitPasskeyProvider::GetPassKey(),
               std::move(options));
         } else {
-          glic_service->Invoke(tab, std::move(options));
+          glic_service->Invoke(std::move(options));
         }
       }
     }

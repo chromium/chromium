@@ -11,8 +11,15 @@
 #include <vector>
 
 #include "base/functional/callback_forward.h"
+#include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "chrome/browser/glic/host/glic.mojom.h"
+
+namespace tabs {
+class TabInterface;
+}
+
+class BrowserWindowInterface;
 
 namespace glic {
 
@@ -34,6 +41,41 @@ struct ConversationId {
 
   std::string conversation_id;
   std::optional<std::string> turn_id;
+};
+
+// Use the default surface (active tab of specified window or a new window).
+struct DefaultSurface {
+  raw_ptr<BrowserWindowInterface> browser = nullptr;
+};
+
+// The target for the invocation.
+struct Target {
+  Target();
+  explicit Target(tabs::TabInterface* tab);
+  Target(tabs::TabInterface* tab,
+         std::variant<DefaultConversation, NewConversation, ConversationId>
+             conversation);
+  explicit Target(
+      std::variant<DefaultConversation, NewConversation, ConversationId>
+          conversation);
+  Target(Target&&);
+  Target& operator=(Target&&);
+  ~Target();
+
+  // Specifies the surface where Glic should be invoked.
+  // - DefaultSurface: Resolves to the active tab of the specified browser
+  //   window, or creates a new window if no browser is specified.
+  // - TabInterface*: Targets a specific tab. Must not be null.
+  std::variant<DefaultSurface, raw_ptr<tabs::TabInterface>> surface =
+      DefaultSurface();
+
+  // Specifies which conversation to use or create.
+  // - DefaultConversation: Uses the conversation already bound to the target
+  //   surface if available, otherwise creates a new one.
+  // - NewConversation: Forces the creation of a new conversation.
+  // - ConversationId: Reconnects to a specific existing conversation.
+  std::variant<DefaultConversation, NewConversation, ConversationId>
+      conversation = DefaultConversation();
 };
 
 // The level of in-flight navigation events allowed without canceling the
@@ -66,6 +108,8 @@ enum class GlicInvokeError {
 // Configuration options for invoking Glic.
 struct GlicInvokeOptions {
   explicit GlicInvokeOptions(glic::mojom::InvocationSource invocation_source);
+  GlicInvokeOptions(Target target,
+                    glic::mojom::InvocationSource invocation_source);
   GlicInvokeOptions(GlicInvokeOptions&&);
   GlicInvokeOptions& operator=(GlicInvokeOptions&&);
   ~GlicInvokeOptions();
@@ -82,10 +126,8 @@ struct GlicInvokeOptions {
   // included with the invocation.
   glic::mojom::AdditionalContextPtr additional_context;
 
-  // Defines the conversation this invocation targets: either a specific
-  // conversation ID, or a general selection mode.
-  std::variant<DefaultConversation, NewConversation, ConversationId>
-      conversation = DefaultConversation();
+  // Defines the target for the invocation (surface and conversation).
+  Target target;
 
   // The feature mode to use for the invocation, triggering specific client
   // behaviours like actuation or image generation.

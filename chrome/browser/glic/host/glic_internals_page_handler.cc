@@ -176,12 +176,12 @@ void GlicInternalsPageHandler::TriggerInvokeFromInternalsAction(
   }
 
   if (mojo_options->conversation->is_new_conversation()) {
-    options.conversation = NewConversation();
+    options.target.conversation = NewConversation();
   } else if (mojo_options->conversation->is_conversation_id()) {
-    options.conversation = ConversationId{
+    options.target.conversation = ConversationId{
         mojo_options->conversation->get_conversation_id(), std::nullopt};
   } else {
-    options.conversation = DefaultConversation();
+    options.target.conversation = DefaultConversation();
   }
 
   options.feature_mode = mojo_options->feature_mode;
@@ -244,13 +244,13 @@ void GlicInternalsPageHandler::TriggerInvokeFromInternalsAction(
       },
       std::move(split_callback.second));
 
+  options.target.surface = tab;
   if (mojo_options->auto_submit) {
     service->InvokeWithAutoSubmit(
-        InvokeWithAutoSubmitPasskeyProvider::GetPassKey(), tab,
-        std::move(options));
+        InvokeWithAutoSubmitPasskeyProvider::GetPassKey(), std::move(options));
   } else {
     static_cast<GlicInstanceCoordinatorImpl&>(service->instance_coordinator())
-        .Invoke(tab, std::move(options));
+        .Invoke(std::move(options));
   }
 }
 

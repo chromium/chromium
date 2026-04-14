@@ -308,22 +308,23 @@ void GlicInstanceCoordinatorImpl::RemoveAllInstances() {
   }
 }
 
-void GlicInstanceCoordinatorImpl::Invoke(tabs::TabInterface* tab,
-                                         GlicInvokeOptions options) {
-  InvokeInternal(std::nullopt, tab, std::move(options));
+void GlicInstanceCoordinatorImpl::Invoke(GlicInvokeOptions options) {
+  InvokeInternal(std::nullopt, std::move(options));
 }
 
 void GlicInstanceCoordinatorImpl::InvokeWithAutoSubmit(
     InvokeWithAutoSubmitPasskey auto_submit_passkey,
-    tabs::TabInterface* tab,
     GlicInvokeOptions options) {
-  InvokeInternal(auto_submit_passkey, tab, std::move(options));
+  InvokeInternal(auto_submit_passkey, std::move(options));
 }
 
 void GlicInstanceCoordinatorImpl::InvokeInternal(
     std::optional<InvokeWithAutoSubmitPasskey> auto_submit_passkey,
-    tabs::TabInterface* tab,
     GlicInvokeOptions options) {
+  tabs::TabInterface* tab =
+      GlicInvokeHandler::ResolveTargetSurface(profile_, options.target).tab;
+  options.target.surface = tab;
+
   if (!tab || !GlicInstanceHelper::From(tab)) {
     if (options.on_error) {
       std::move(options.on_error).Run(GlicInvokeError::kInvalidTab);
@@ -352,7 +353,7 @@ void GlicInstanceCoordinatorImpl::InvokeInternal(
                      [&](DefaultConversation) {
                        return GetOrCreateGlicInstanceImplForTab(tab);
                      }},
-      options.conversation);
+      options.target.conversation);
 
   if (!instance) {
     return;
@@ -367,7 +368,7 @@ void GlicInstanceCoordinatorImpl::InvokeInternal(
   }
 
   invoke_handlers_[instance] = std::make_unique<GlicInvokeHandler>(
-      *instance, tab, std::move(options), auto_submit_passkey,
+      *instance, std::move(options), auto_submit_passkey,
       base::BindOnce(&GlicInstanceCoordinatorImpl::OnInvokeHandlerComplete,
                      base::Unretained(this)));
   invoke_handlers_[instance]->Invoke();

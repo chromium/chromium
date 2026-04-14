@@ -323,24 +323,24 @@ ExtensionFunction::ResponseAction PdfViewerPrivateGlicSummarizeFunction::Run() {
   bool has_consented = glic::GlicEnabling::HasConsentedForProfile(
       Profile::FromBrowserContext(contents->GetBrowserContext()));
 
-  glic::GlicInvokeOptions options{
-      glic::mojom::InvocationSource::kPdfSummarizeButton};
+  glic::GlicInvokeOptions options(
+      glic::Target(tab_interface, glic::NewConversation()),
+      glic::mojom::InvocationSource::kPdfSummarizeButton);
   options.prompts.push_back(kSummarizePrompt);
-  options.conversation = glic::NewConversation();
 
   if (has_consented) {
     glic_service->InvokeWithAutoSubmit(
-        glic::InvokeWithAutoSubmitPasskeyProvider::GetPassKey(), tab_interface,
+        glic::InvokeWithAutoSubmitPasskeyProvider::GetPassKey(),
         std::move(options));
   } else {
     if (arm == 3) {
       options.fre_override = glic::mojom::FreOverride::kTrustFirstInline;
       glic_service->InvokeWithAutoSubmit(
           glic::InvokeWithAutoSubmitPasskeyProvider::GetPassKey(),
-          tab_interface, std::move(options));
+          std::move(options));
     } else {
       options.fre_override = glic::mojom::FreOverride::kTrustFirstText;
-      glic_service->Invoke(tab_interface, std::move(options));
+      glic_service->Invoke(std::move(options));
     }
   }
 

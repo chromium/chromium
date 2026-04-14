@@ -148,7 +148,6 @@ bool IsTaskInterrupted(actor::ActorTask::State new_state) {
           new_state == actor::ActorTask::State::kPausedByUser);
 }
 
-
 }  // namespace
 
 PasswordChangeFromCheckupDelegate::PasswordChangeFromCheckupDelegate() =
@@ -198,7 +197,15 @@ void PasswordChangeFromCheckupDelegate::StartPasswordChangeFlow(
     return;
   }
 
-  glic::GlicInvokeOptions options(glic::mojom::InvocationSource::kSharedTab);
+  tabs::TabInterface* new_tab_interface =
+      tabs::TabInterface::MaybeGetFromContents(new_contents);
+
+  if (!new_tab_interface) {
+    return;
+  }
+
+  glic::GlicInvokeOptions options(glic::Target(new_tab_interface),
+                                  glic::mojom::InvocationSource::kSharedTab);
   options.prompts.push_back(std::move(reach_form_prompt));
   options.additional_context = glic::mojom::AdditionalContext::New();
 
@@ -208,19 +215,12 @@ void PasswordChangeFromCheckupDelegate::StartPasswordChangeFlow(
     options.additional_context->tab_id = session_tab_helper->session_id().id();
   }
 
-  tabs::TabInterface* new_tab_interface =
-      tabs::TabInterface::MaybeGetFromContents(new_contents);
-
-  if (!new_tab_interface) {
-    return;
-  }
-
   // Invoking it in a new tab ensures that the settings page is not shared.
   // It also expects that the actor uses the current tab instead of attempting
   // to open a new one for completing the flow.
   glic_service->InvokeWithAutoSubmit(
       glic::InvokeWithAutoSubmitPasskeyProvider::GetPassKey(),
-      new_tab_interface, std::move(options));
+      std::move(options));
 
   actor::ActorKeyedService* actor_service = actor::ActorKeyedService::Get(
       Profile::FromBrowserContext(new_contents->GetBrowserContext()));
@@ -377,13 +377,14 @@ void PasswordChangeFromCheckupDelegate::OnChangePasswordFormSubmitted(
   verification_task_id_ = std::nullopt;
   verification_task_created_ = false;
 
-  glic::GlicInvokeOptions options(glic::mojom::InvocationSource::kSharedTab);
   std::string post_submission_prompt = GetPostSubmissionPrompt();
 
   if (post_submission_prompt.empty()) {
     return;
   }
 
+  glic::GlicInvokeOptions options(glic::Target(tab_interface),
+                                  glic::mojom::InvocationSource::kSharedTab);
   options.prompts.push_back(std::move(post_submission_prompt));
   options.additional_context = glic::mojom::AdditionalContext::New();
   sessions::SessionTabHelper* session_tab_helper =
@@ -394,7 +395,7 @@ void PasswordChangeFromCheckupDelegate::OnChangePasswordFormSubmitted(
   }
 
   glic_service->InvokeWithAutoSubmit(
-      glic::InvokeWithAutoSubmitPasskeyProvider::GetPassKey(), tab_interface,
+      glic::InvokeWithAutoSubmitPasskeyProvider::GetPassKey(),
       std::move(options));
 
   actor::ActorKeyedService* actor_service =

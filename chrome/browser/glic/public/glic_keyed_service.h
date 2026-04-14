@@ -119,10 +119,9 @@ class GlicKeyedService : public KeyedService,
   // Invokes Glic with the given options and automatically submits the prompt.
   // Access is restricted to authorized callers via InvokeWithAutoSubmitPasskey.
   void InvokeWithAutoSubmit(InvokeWithAutoSubmitPasskey auto_submit_passkey,
-                            tabs::TabInterface* tab,
                             GlicInvokeOptions options);
 
-  virtual void Invoke(tabs::TabInterface* tab, GlicInvokeOptions options);
+  virtual void Invoke(GlicInvokeOptions options);
 
   virtual void OpenFreDialogInNewTab(BrowserWindowInterface* bwi,
                                      mojom::InvocationSource source);
