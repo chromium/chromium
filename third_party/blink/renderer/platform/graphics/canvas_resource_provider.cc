@@ -944,11 +944,6 @@ CanvasNon2DResourceProviderSharedImage::ProduceCanvasResource() {
       return nullptr;
     }
 
-    if (recorder_->HasReleasableDrawOps()) {
-      FlushRecording(recorder_->ReleaseMainRecording(),
-                     /*is_overwrite=*/false);
-    }
-
     // Note that the resource *must* be a CanvasResourceSharedImage as this
     // class creates CanvasResourceSharedImage instances exclusively.
     static_cast<CanvasResourceSharedImage*>(output_resource.get())
@@ -962,13 +957,7 @@ CanvasNon2DResourceProviderSharedImage::ProduceCanvasResource() {
   }
 
   // We are about to give the caller read access to this resource (and its
-  // backing SharedImage). Hence, we must make sure that the SI is updated to
-  // reflect the ops made in the current write access (if any) and give up any
-  // such write access.
-  if (recorder_->HasReleasableDrawOps()) {
-    FlushRecording(recorder_->ReleaseMainRecording(),
-                   /*is_overwrite=*/false);
-  }
+  // backing SharedImage). Hence, we must give up any write access.
   EndWriteAccess();
 
   return resource_;
@@ -1049,9 +1038,10 @@ CanvasNon2DResourceProviderSharedImage::DoExternalOverdrawAndProduceResource(
     }
   }
 
-  draw_callback(recorder_->getRecordingCanvas());
-  if (recorder_->HasReleasableDrawOps()) {
-    FlushRecording(recorder_->ReleaseMainRecording(), /*is_overwrite=*/true);
+  draw_callback(recorder_for_external_draws_->getRecordingCanvas());
+  if (recorder_for_external_draws_->HasReleasableDrawOps()) {
+    FlushRecording(recorder_for_external_draws_->ReleaseMainRecording(),
+                   /*is_overwrite=*/true);
   }
 
   if (is_software_) {
@@ -1081,9 +1071,10 @@ CanvasNon2DResourceProviderSharedImage::DoExternalOverdrawAndSnapshot(
     return nullptr;
   }
 
-  draw_callback(recorder_->getRecordingCanvas());
-  if (recorder_->HasReleasableDrawOps()) {
-    FlushRecording(recorder_->ReleaseMainRecording(), /*is_overwrite=*/true);
+  draw_callback(recorder_for_external_draws_->getRecordingCanvas());
+  if (recorder_for_external_draws_->HasReleasableDrawOps()) {
+    FlushRecording(recorder_for_external_draws_->ReleaseMainRecording(),
+                   /*is_overwrite=*/true);
   }
   return Snapshot(orientation);
 }
@@ -1145,11 +1136,6 @@ CanvasNon2DResourceProviderSharedImage::Snapshot(ImageOrientation orientation) {
   // while in this case we are simply returning the rendered CPU-side results to
   // the client.
   if (!is_accelerated_) {
-    if (recorder_->HasReleasableDrawOps()) {
-      FlushRecording(recorder_->ReleaseMainRecording(),
-                     /*is_overwrite=*/false);
-    }
-
     cc::PaintImage paint_image;
 
     auto sk_image = GetSkSurface()->makeImageSnapshot();
@@ -1178,10 +1164,6 @@ CanvasNon2DResourceProviderSharedImage::Snapshot(ImageOrientation orientation) {
   }
 
   if (!cached_snapshot_) {
-    if (recorder_->HasReleasableDrawOps()) {
-      FlushRecording(recorder_->ReleaseMainRecording(),
-                     /*is_overwrite=*/false);
-    }
     EndWriteAccess();
     cached_snapshot_ = resource_->Bitmap();
 
@@ -1349,12 +1331,6 @@ void Canvas2DResourceProviderSharedImage::OnFlushForImage(
 
 void CanvasNon2DResourceProviderSharedImage::OnFlushForImage(
     cc::PaintImage::ContentId content_id) {
-  if (recorder_->getRecordingCanvas().IsCachingImage(content_id)) {
-    if (recorder_->HasReleasableDrawOps()) {
-      FlushRecording(recorder_->ReleaseMainRecording(),
-                     /*is_overwrite=*/false);
-    }
-  }
   if (cached_snapshot_ &&
       cached_snapshot_->PaintImageForCurrentFrame().GetContentIdForFrame(0) ==
           content_id) {
@@ -2191,14 +2167,15 @@ CanvasNon2DResourceProviderSharedImage::CanvasNon2DResourceProviderSharedImage(
                                         is_accelerated,
                                         shared_image_usage_flags,
                                         delegate),
-      recorder_(std::make_unique<MemoryManagedPaintRecorder>(Size(), this)) {
+      recorder_for_external_draws_(
+          std::make_unique<MemoryManagedPaintRecorder>(Size(), this)) {
   if (context_provider_wrapper_) {
     // Graphite can handle a large buffer size.
     if (context_provider_wrapper_->ContextProvider()
             .GetGpuFeatureInfo()
             .status_values[gpu::GPU_FEATURE_TYPE_SKIA_GRAPHITE] ==
         gpu::kGpuFeatureStatusEnabled) {
-      recorder_->DisableLineDrawingAsPaths();
+      recorder_for_external_draws_->DisableLineDrawingAsPaths();
     }
   }
 }
@@ -2216,7 +2193,8 @@ CanvasNon2DResourceProviderSharedImage::CanvasNon2DResourceProviderSharedImage(
                                         color_space,
                                         shared_image_interface_provider,
                                         delegate),
-      recorder_(std::make_unique<MemoryManagedPaintRecorder>(Size(), this)) {}
+      recorder_for_external_draws_(
+          std::make_unique<MemoryManagedPaintRecorder>(Size(), this)) {}
 
 CanvasNon2DResourceProviderSharedImage::
     ~CanvasNon2DResourceProviderSharedImage() = default;

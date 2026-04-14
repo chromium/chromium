@@ -745,7 +745,7 @@ class PLATFORM_EXPORT CanvasNon2DResourceProviderSharedImage
 
   std::unique_ptr<CanvasImageProvider> canvas_image_provider_;
   std::unique_ptr<cc::SkiaPaintCanvas> skia_canvas_;
-  std::unique_ptr<MemoryManagedPaintRecorder> recorder_;
+  std::unique_ptr<MemoryManagedPaintRecorder> recorder_for_external_draws_;
 };
 
 }  // namespace blink
