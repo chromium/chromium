@@ -225,7 +225,8 @@ class AutofillClient {
                   AutofillSuggestionTriggerSource trigger_source,
                   int32_t form_control_ax_id,
                   PopupAnchorType anchor_type,
-                  bool show_tabbed_popup = false);
+                  bool show_tabbed_popup = false,
+                  bool prefer_prev_arrow_side_on_suggestions_update = false);
     PopupOpenArgs(const PopupOpenArgs&);
     PopupOpenArgs(PopupOpenArgs&&);
     PopupOpenArgs& operator=(const PopupOpenArgs&);
@@ -243,6 +244,10 @@ class AutofillClient {
     int32_t form_control_ax_id = 0;
     PopupAnchorType anchor_type = PopupAnchorType::kField;
     bool show_tabbed_popup = false;
+    // True if the popup should prefer the previous arrow side when suggestions
+    // are updated. This avoids unnecessary jumping when the popup is updated,
+    // unless the popup would otherwise go out of bounds.
+    bool prefer_prev_arrow_side_on_suggestions_update = false;
   };
 
   // Details about the UI that was shown to the user in an entity import bubble.

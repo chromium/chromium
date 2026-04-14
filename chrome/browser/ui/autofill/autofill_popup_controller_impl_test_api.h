@@ -38,6 +38,11 @@ class AutofillPopupControllerImplTestApi {
     controller_->SetSuggestions(std::move(suggestions));
   }
 
+  void SetPreferPrevArrowSideOnSuggestionsUpdate(bool prefer_prev_arrow_side) {
+    controller_->controller_common_
+        .prefer_prev_arrow_side_on_suggestions_update = prefer_prev_arrow_side;
+  }
+
  private:
   const raw_ref<AutofillPopupControllerImpl> controller_;
 };

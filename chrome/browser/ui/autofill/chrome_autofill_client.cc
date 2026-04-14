@@ -1326,10 +1326,11 @@ void ChromeAutofillClient::ShowAutofillSuggestionsImpl(
   // Deletes or reuses the old `suggestion_controller_`.
   suggestion_controller_ = AutofillSuggestionController::GetOrCreate(
       suggestion_controller_, delegate, web_contents(),
-      PopupControllerCommon(element_bounds_in_screen_space,
-                            open_args.text_direction,
-                            web_contents()->GetNativeView(),
-                            open_args.anchor_type, open_args.show_tabbed_popup),
+      PopupControllerCommon(
+          element_bounds_in_screen_space, open_args.text_direction,
+          web_contents()->GetNativeView(), open_args.anchor_type,
+          open_args.show_tabbed_popup,
+          open_args.prefer_prev_arrow_side_on_suggestions_update),
       open_args.form_control_ax_id, open_args.trigger_source);
 
   suggestion_controller_->Show(
