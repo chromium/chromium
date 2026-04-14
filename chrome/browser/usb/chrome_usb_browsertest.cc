@@ -13,7 +13,6 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/gmock_expected_support.h"
 #include "base/test/metrics/histogram_tester.h"
-#include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/chrome_content_browser_client.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
@@ -21,11 +20,9 @@
 #include "chrome/browser/device_notifications/device_status_icon_renderer.h"
 #include "chrome/browser/notifications/notification_display_service_tester.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/chooser_bubble_testapi.h"
+#include "chrome/browser/ui/browser_navigator.h"
+#include "chrome/browser/ui/browser_navigator_params.h"
 #include "chrome/browser/ui/dialogs/browser_dialogs.h"
-#include "chrome/browser/ui/tabs/tab_strip_model.h"
-#include "chrome/browser/ui/web_applications/test/isolated_web_app_test_utils.h"
 #include "chrome/browser/usb/chrome_usb_delegate.h"
 #include "chrome/browser/usb/usb_browser_test_utils.h"
 #include "chrome/browser/usb/usb_chooser_context.h"
@@ -35,11 +32,9 @@
 #include "chrome/browser/usb/usb_status_icon.h"
 #include "chrome/browser/usb/web_usb_chooser.h"
 #include "chrome/browser/usb/web_usb_histograms.h"
-#include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h"
-#include "chrome/browser/web_applications/isolated_web_apps/test/isolated_web_app_builder.h"
-#include "chrome/test/base/in_process_browser_test.h"
+#include "chrome/test/base/chrome_test_utils.h"
 #include "chrome/test/base/mixin_based_in_process_browser_test.h"
-#include "chrome/test/base/ui_test_utils.h"
+#include "chrome/test/base/platform_browser_test.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/console_message.h"
@@ -65,6 +60,17 @@
 #include "services/service_manager/public/cpp/binder_registry.h"
 #include "third_party/blink/public/mojom/usb/web_usb_service.mojom.h"
 
+#if !BUILDFLAG(IS_ANDROID)
+#include "chrome/app/chrome_command_ids.h"  // nogncheck
+#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/chooser_bubble_testapi.h"
+#include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/browser/ui/web_applications/test/isolated_web_app_test_utils.h"
+#include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h"
+#include "chrome/browser/web_applications/isolated_web_apps/test/isolated_web_app_builder.h"
+#include "chrome/test/base/ui_test_utils.h"
+#endif  // !BUILDFLAG(IS_ANDROID)
+
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 #include "base/test/test_future.h"
 #include "base/test/values_test_util.h"
@@ -84,12 +90,14 @@
 
 namespace {
 
-using ::base::test::TestFuture;
 using ::content::JsReplace;
+using ::testing::Return;
+
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+using ::base::test::TestFuture;
 using ::extensions::Extension;
 using ::extensions::ExtensionId;
 using ::extensions::TestExtensionDir;
-using ::testing::Return;
 
 const char kTestExtensionId[] = "iegclhlplifhodhkoafiokenjoapiobj";
 // Key for extension id `kTestExtensionId`.
@@ -100,6 +108,9 @@ constexpr const char kTestExtensionKey[] =
     "7TCwoVPKBfVshpFjdDOTeBg4iLctO3S/06QYqaTDrwVceSyHkVkvzBY6tc6mnYX0RZu78J9i"
     "L8bdqwfllOhs69cqoHHgrLdI6JdOyiuh6pBP6vxMlzSKWJ3YTNjaQTPwfOYaLMuzdl0v+Ydz"
     "afIzV9zwe4Xiskk+5JNGt8b2rQIDAQAB";
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
+
+#if !BUILDFLAG(IS_ANDROID)
 constexpr uint8_t kUsbPrinterClass = 7;
 constexpr char kNonAppHost[] = "nonapp.com";
 constexpr char kNonAppHost2[] = "nonapp2.com";
@@ -119,13 +130,15 @@ constexpr char OpenAndClaimDeviceScript[] = R"((async () => {
 auto FailedWithSubstr(std::string_view substr) {
   return content::EvalJsResult::ErrorIs(testing::HasSubstr(substr));
 }
+#endif  // !BUILDFLAG(IS_ANDROID)
 
-#if BUILDFLAG(ENABLE_EXTENSIONS) && BUILDFLAG(IS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS)
 constexpr auto kManagedUserAccountId =
     AccountId::Literal::FromUserEmailGaiaId("example@example.com",
                                             GaiaId::Literal("12345"));
-#endif  // BUILDFLAG(ENABLE_EXTENSIONS) && BUILDFLAG(IS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
+#if BUILDFLAG(ENABLE_EXTENSIONS)
 // Observer for an extension service worker events like start, activated, and
 // stop.
 class TestServiceWorkerContextObserver
@@ -202,6 +215,7 @@ class TestServiceWorkerContextObserver
       scoped_observation_{this};
   GURL extension_url_;
 };
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
 class TestServiceWorkerConsoleObserver
     : public content::ServiceWorkerContextObserver {
@@ -240,7 +254,7 @@ class TestServiceWorkerConsoleObserver
       scoped_observation_{this};
 };
 
-class ChromeWebUsbTest : public InProcessBrowserTest {
+class ChromeWebUsbTest : public PlatformBrowserTest {
  public:
   void SetUpOnMainThread() override {
     embedded_test_server()->ServeFilesFromSourceDirectory("content/test/data");
@@ -251,19 +265,18 @@ class ChromeWebUsbTest : public InProcessBrowserTest {
     mojo::PendingRemote<device::mojom::UsbDeviceManager> device_manager;
     device_manager_.AddReceiver(
         device_manager.InitWithNewPipeAndPassReceiver());
-    UsbChooserContextFactory::GetForProfile(browser()->profile())
+    UsbChooserContextFactory::GetForProfile(GetProfile())
         ->SetDeviceManagerForTesting(std::move(device_manager));
 
     test_content_browser_client_.SetAsBrowserClient();
 
     GURL url = embedded_test_server()->GetURL("localhost", "/simple_page.html");
-    EXPECT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+    auto* web_contents = GetActiveWebContents();
+    EXPECT_TRUE(chrome_test_utils::NavigateToURL(web_contents, url));
     origin_ = url.DeprecatedGetOriginAsURL();
 
-    content::RenderFrameHost* render_frame_host = browser()
-                                                      ->tab_strip_model()
-                                                      ->GetActiveWebContents()
-                                                      ->GetPrimaryMainFrame();
+    content::RenderFrameHost* render_frame_host =
+        web_contents->GetPrimaryMainFrame();
     EXPECT_EQ(origin_, render_frame_host->GetLastCommittedOrigin().GetURL());
   }
 
@@ -290,7 +303,11 @@ class ChromeWebUsbTest : public InProcessBrowserTest {
   }
 
   UsbChooserContext* GetChooserContext() {
-    return UsbChooserContextFactory::GetForProfile(browser()->profile());
+    return UsbChooserContextFactory::GetForProfile(GetProfile());
+  }
+
+  content::WebContents* GetActiveWebContents() {
+    return chrome_test_utils::GetActiveWebContents(this);
   }
 
  private:
@@ -300,6 +317,7 @@ class ChromeWebUsbTest : public InProcessBrowserTest {
   GURL origin_;
 };
 
+#if !BUILDFLAG(IS_ANDROID)
 scoped_refptr<device::FakeUsbDeviceInfo> CreateUsbDevice(
     uint8_t class_code,
     uint16_t product_id = 0x8765) {
@@ -321,10 +339,10 @@ scoped_refptr<device::FakeUsbDeviceInfo> CreateUsbDevice(
   return base::MakeRefCounted<device::FakeUsbDeviceInfo>(
       0x4321, product_id, "ACME", "Frobinator", "ABCDEF", std::move(configs));
 }
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 IN_PROC_BROWSER_TEST_F(ChromeWebUsbTest, RequestAndGetDevices) {
-  content::WebContents* web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
+  content::WebContents* web_contents = GetActiveWebContents();
 
   // Call getDevices with no device permissions.
   EXPECT_EQ(content::ListValueOf(), EvalJs(web_contents,
@@ -352,11 +370,9 @@ IN_PROC_BROWSER_TEST_F(ChromeWebUsbTest, RequestAndGetDevices) {
 }
 
 IN_PROC_BROWSER_TEST_F(ChromeWebUsbTest, RequestDeviceWithGuardBlocked) {
-  content::WebContents* web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
+  content::WebContents* web_contents = GetActiveWebContents();
 
-  auto* map =
-      HostContentSettingsMapFactory::GetForProfile(browser()->profile());
+  auto* map = HostContentSettingsMapFactory::GetForProfile(GetProfile());
   map->SetContentSettingDefaultScope(origin(), origin(),
                                      ContentSettingsType::USB_GUARD,
                                      CONTENT_SETTING_BLOCK);
@@ -377,8 +393,7 @@ IN_PROC_BROWSER_TEST_F(ChromeWebUsbTest, RequestDeviceWithGuardBlocked) {
 }
 
 IN_PROC_BROWSER_TEST_F(ChromeWebUsbTest, AddRemoveDevice) {
-  content::WebContents* web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
+  content::WebContents* web_contents = GetActiveWebContents();
 
   UseFakeChooser();
   EXPECT_EQ("123456", content::EvalJs(web_contents,
@@ -416,8 +431,7 @@ IN_PROC_BROWSER_TEST_F(ChromeWebUsbTest, AddRemoveDevice) {
 }
 
 IN_PROC_BROWSER_TEST_F(ChromeWebUsbTest, AddRemoveDeviceEphemeral) {
-  content::WebContents* web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
+  content::WebContents* web_contents = GetActiveWebContents();
 
   // Replace the default mock device with one that has no serial number.
   RemoveFakeDevice();
@@ -466,9 +480,11 @@ IN_PROC_BROWSER_TEST_F(ChromeWebUsbTest, AddRemoveDeviceEphemeral) {
       })())"));
 }
 
+#if !BUILDFLAG(IS_ANDROID)
+// TODO(crbug.com/494643383): Sort out chooser testing on Android. Note that
+// ChooserBubbleUiWaiter is views-only and not supported on Android.
 IN_PROC_BROWSER_TEST_F(ChromeWebUsbTest, NavigateWithChooserCrossOrigin) {
-  content::WebContents* web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
+  content::WebContents* web_contents = GetActiveWebContents();
 
   content::TestNavigationObserver observer(
       web_contents, 1 /* number_of_navigations */,
@@ -494,14 +510,16 @@ IN_PROC_BROWSER_TEST_F(ChromeWebUsbTest, NavigateWithChooserCrossOrigin) {
   EXPECT_EQ(GURL("https://google.com"), web_contents->GetLastCommittedURL());
 }
 
+// TODO(crbug.com/494643383): Sort out chooser testing on Android.
 IN_PROC_BROWSER_TEST_F(ChromeWebUsbTest, ShowChooserInBackgroundTab) {
   // Create a new foreground tab that covers `background_web_contents`.
-  content::WebContents* background_web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
+  content::WebContents* background_web_contents = GetActiveWebContents();
   GURL url = embedded_test_server()->GetURL("localhost", "/simple_page.html");
-  ui_test_utils::NavigateToURLWithDisposition(
-      browser(), url, WindowOpenDisposition::NEW_FOREGROUND_TAB,
-      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
+  NavigateParams params(GetBrowserWindowInterface(), url,
+                        ui::PAGE_TRANSITION_LINK);
+  params.disposition = WindowOpenDisposition::NEW_FOREGROUND_TAB;
+  Navigate(&params);
+  content::WaitForLoadStop(params.navigated_or_inserted_contents);
 
   // Try to show the chooser in the background tab.
   EXPECT_EQ(
@@ -517,10 +535,10 @@ IN_PROC_BROWSER_TEST_F(ChromeWebUsbTest, ShowChooserInBackgroundTab) {
           }
         })())"));
 }
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 IN_PROC_BROWSER_TEST_F(ChromeWebUsbTest, ForgetDevice) {
-  content::WebContents* web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
+  content::WebContents* web_contents = GetActiveWebContents();
 
   base::HistogramTester histogram_tester;
   UseFakeChooser();
@@ -542,7 +560,8 @@ IN_PROC_BROWSER_TEST_F(ChromeWebUsbTest, ForgetDevice) {
                                       WEBUSB_PERMISSION_REVOKED_BY_WEBSITE, 1);
 }
 
-#if BUILDFLAG(ENABLE_EXTENSIONS)
+#if BUILDFLAG(ENABLE_EXTENSIONS) && !BUILDFLAG(IS_ANDROID)
+// Android does not support Chrome Apps.
 class ChromeWebUsbAppTest : public extensions::ExtensionBrowserTest {
  public:
   void SetUpOnMainThread() override {
@@ -611,8 +630,11 @@ IN_PROC_BROWSER_TEST_F(ChromeWebUsbAppTest, AllowProtectedInterfaces) {
   ready_listener.Reply("ok");
   EXPECT_TRUE(result_catcher.GetNextResult()) << result_catcher.message();
 }
-#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS) && !BUILDFLAG(IS_ANDROID)
 
+#if !BUILDFLAG(IS_ANDROID)
+// Android does not support the code in //chrome/browser/web_applications
+// needed to run these tests.
 class IsolatedWebAppUsbBrowserTest
     : public web_app::IsolatedWebAppBrowserTestHarness {
  public:
@@ -1153,8 +1175,11 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppPermissionsPolicyBrowserTest,
       EvalJs(iframe1, OpenAndClaimDeviceScript).ExtractString(),
       testing::EndsWith("requested interface implements a protected class."));
 }
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
+// TODO(crbug.com/502280921): Enable these tests on desktop Android. They
+// currently crash on a NOTREACHED in the WebUsbServiceImpl constructor.
 class WebUsbExtensionBrowserTest : public InProcessBrowserTestMixinHostSupport<
                                        extensions::ExtensionBrowserTest> {
  public:
@@ -1258,9 +1283,10 @@ class WebUsbExtensionBrowserTest : public InProcessBrowserTestMixinHostSupport<
     fake_device_info_ = nullptr;
   }
 
-  void SimulateClickOnSystemTrayIconButton(Browser* browser,
-                                           const Extension* extension) {
-#if BUILDFLAG(IS_CHROMEOS)
+  void SimulateClickOnSystemTrayIconButton(const Extension* extension) {
+#if BUILDFLAG(IS_ANDROID)
+    // TODO(crbug.com/494643383): Sort out notifications testing on Android.
+#elif BUILDFLAG(IS_CHROMEOS)
     auto* usb_pinned_notification = static_cast<UsbPinnedNotification*>(
         g_browser_process->usb_system_tray_icon());
 
@@ -1269,8 +1295,7 @@ class WebUsbExtensionBrowserTest : public InProcessBrowserTestMixinHostSupport<
             usb_pinned_notification->GetIconRendererForTesting());
 
     auto expected_pinned_notification_id =
-        device_pinned_notification_renderer->GetNotificationId(
-            browser->profile());
+        device_pinned_notification_renderer->GetNotificationId(GetProfile());
     auto maybe_indicator_notification =
         display_service_for_system_notification_->GetNotification(
             expected_pinned_notification_id);
@@ -1279,7 +1304,7 @@ class WebUsbExtensionBrowserTest : public InProcessBrowserTestMixinHostSupport<
     display_service_for_system_notification_->SimulateClick(
         NotificationHandler::Type::TRANSIENT, expected_pinned_notification_id,
         /*action_index=*/0, /*reply=*/std::nullopt);
-    auto* web_contents = browser->tab_strip_model()->GetActiveWebContents();
+    auto* web_contents = GetActiveWebContents();
     EXPECT_EQ(web_contents->GetURL(), "chrome://settings/content/usbDevices");
 #else
     // On non-ChromeOS platforms, as they use status icon and there isn't good
@@ -1293,18 +1318,18 @@ class WebUsbExtensionBrowserTest : public InProcessBrowserTestMixinHostSupport<
 
     status_icon_renderer->ExecuteCommandForTesting(
         IDC_DEVICE_SYSTEM_TRAY_ICON_FIRST, 0);
-    EXPECT_EQ(browser->tab_strip_model()->GetActiveWebContents()->GetURL(),
+    EXPECT_EQ(GetActiveWebContents()->GetURL(),
               "https://support.google.com/chrome?p=webusb");
 
     status_icon_renderer->ExecuteCommandForTesting(
         IDC_DEVICE_SYSTEM_TRAY_ICON_FIRST + 1, 0);
-    EXPECT_EQ(browser->tab_strip_model()->GetActiveWebContents()->GetURL(),
+    EXPECT_EQ(GetActiveWebContents()->GetURL(),
               "chrome://settings/content/usbDevices");
 
     status_icon_renderer->ExecuteCommandForTesting(
         IDC_DEVICE_SYSTEM_TRAY_ICON_FIRST + 2, 0);
     EXPECT_EQ(
-        browser->tab_strip_model()->GetActiveWebContents()->GetURL(),
+        GetActiveWebContents()->GetURL(),
         "chrome://settings/content/siteDetails?site=chrome-extension%3A%2F%2F" +
             extension->id());
 #endif
@@ -1394,7 +1419,7 @@ IN_PROC_BROWSER_TEST_F(WebUsbExtensionBrowserTest, MAYBE_UsbConnectionTracker) {
   )";
   AddFakeDevice();
   const auto* extension = LoadExtensionAndRunTest(kBackgroundJs);
-  SimulateClickOnSystemTrayIconButton(browser(), extension);
+  SimulateClickOnSystemTrayIconButton(extension);
 }
 
 // Test the scenario of waking up the service worker upon device events and
@@ -1411,10 +1436,8 @@ IN_PROC_BROWSER_TEST_F(WebUsbExtensionBrowserTest, MAYBE_UsbConnectionTracker) {
 IN_PROC_BROWSER_TEST_F(
     WebUsbExtensionBrowserTest,
     MAYBE_DeviceConnectAndOpenDeviceWhenServiceWorkerStopped) {
-  content::ServiceWorkerContext* context = browser()
-                                               ->profile()
-                                               ->GetDefaultStoragePartition()
-                                               ->GetServiceWorkerContext();
+  content::ServiceWorkerContext* context =
+      GetProfile()->GetDefaultStoragePartition()->GetServiceWorkerContext();
   // Set up an observer for service worker events.
   TestServiceWorkerContextObserver sw_observer(context, kTestExtensionId);
 
@@ -1478,7 +1501,7 @@ IN_PROC_BROWSER_TEST_F(
       context, service_worker_version_id));
   // Since we have active USB device session at this point, click the USB system
   // tray icon and check right links are opened by the browser.
-  SimulateClickOnSystemTrayIconButton(browser(), extension);
+  SimulateClickOnSystemTrayIconButton(extension);
 
   // Remove device will close the device session, and worker will stop running
   // when it times out.
@@ -1509,7 +1532,7 @@ IN_PROC_BROWSER_TEST_F(
       context, service_worker_version_id));
   // Since we have active USB device session at this point, click the USB system
   // tray icon and check right links are opened by the browser.
-  SimulateClickOnSystemTrayIconButton(browser(), extension);
+  SimulateClickOnSystemTrayIconButton(extension);
 }
 
 // TODO(crbug.com/41494522): Flaky on non-Mac release builds.
@@ -1528,17 +1551,13 @@ IN_PROC_BROWSER_TEST_F(WebUsbExtensionBrowserTest,
       "https://developer.chrome.com/docs/extensions/mv3/service_workers/"
       "events/";
 
-  content::ServiceWorkerContext* context = browser()
-                                               ->profile()
-                                               ->GetDefaultStoragePartition()
-                                               ->GetServiceWorkerContext();
+  content::ServiceWorkerContext* context =
+      GetProfile()->GetDefaultStoragePartition()->GetServiceWorkerContext();
   // Set up an observer for service worker events.
   TestServiceWorkerContextObserver sw_observer(context, kTestExtensionId);
   // Set up an observer for console messages reported by service worker
-  TestServiceWorkerConsoleObserver console_observer(browser()
-                                                        ->tab_strip_model()
-                                                        ->GetActiveWebContents()
-                                                        ->GetBrowserContext());
+  TestServiceWorkerConsoleObserver console_observer(
+      GetActiveWebContents()->GetBrowserContext());
   TestExtensionDir test_dir;
   constexpr char kBackgroundJs[] = R"(
       chrome.test.sendMessage("ready", function() {

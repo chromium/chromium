@@ -264,14 +264,52 @@ if (is_linux || is_mac || is_win) {
   }
 }
 
+# Shared test support across Win/Mac/Linux/ChromeOS/Android.
+source_set("browser_test_support") {
+  testonly = true
+  sources = [
+    "usb_browser_test_utils.cc",
+    "usb_browser_test_utils.h",
+  ]
+  deps = [
+    ":usb",
+    "//base",
+    "//chrome/browser",
+  ]
+}
+
+# Tests that run on Win/Mac/Linux/ChromeOS/Android.
+source_set("platform_browser_tests") {
+  testonly = true
+  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+  sources = [ "chrome_usb_browsertest.cc" ]
+  deps = [
+    ":browser_test_support",
+    ":usb",
+    "//base",
+    "//base/test:test_support",
+    "//chrome/browser",
+    "//chrome/browser:browser_process",
+    "//chrome/browser/content_settings:content_settings_factory",
+    "//chrome/browser/ui:browser_navigator_params_headers",
+    "//chrome/test:test_support",
+  ]
+  if (!is_android) {
+    deps += [
+      "//chrome/app:command_ids",
+      "//chrome/browser/web_applications:web_applications_test_support",
+    ]
+  }
+  if (is_chromeos) {
+    deps += [ "//chrome/browser/ash/test:test_support" ]
+  }
+}
+
 if (!is_android) {
   source_set("browser_tests") {
     testonly = true
     defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
     sources = [
-      "chrome_usb_browsertest.cc",
-      "usb_browser_test_utils.cc",
-      "usb_browser_test_utils.h",
       "usb_connection_tracker_browsertest.cc",
       "web_usb_detector_browsertest.cc",
     ]
@@ -281,6 +319,7 @@ if (!is_android) {
       "//chrome/browser",
     ]
     deps = [
+      ":browser_test_support",
       ":test_support",
       "//base/test:test_support",
       "//chrome/app:command_ids",
