@@ -23,6 +23,9 @@ void ConvertToVariantFn::Apply(const AttemptLoginToolRequest& tr) {
 void ConvertToVariantFn::Apply(const AttemptFormFillingToolRequest& tr) {
   var_ = ToolRequestVariant(tr);
 }
+void ConvertToVariantFn::Apply(const AttemptOtpFillingToolRequest& tr) {
+  var_ = ToolRequestVariant(tr);
+}
 void ConvertToVariantFn::Apply(const ClickToolRequest& tr) {
   var_ = ToolRequestVariant(tr);
 }

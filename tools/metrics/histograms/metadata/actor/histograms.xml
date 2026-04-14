@@ -61,6 +61,7 @@ chromium-metrics-reviews@google.com.
   <variant name="ActivateWindow" summary="Activate Window"/>
   <variant name="AttemptFormFilling" summary="Attempt Form Filling"/>
   <variant name="AttemptLogin" summary="Attempt Login"/>
+  <variant name="AttemptOtpFilling" summary="Attempt OTP Filling"/>
   <variant name="Click" summary="Click"/>
   <variant name="CloseTab" summary="Close Tab"/>
   <variant name="CloseWindow" summary="Close Window"/>

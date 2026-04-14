@@ -98,6 +98,7 @@ constexpr absl::Overload PreToolEventsFn{
     NoUiEvents<WaitToolRequest>,
     NoUiEvents<AttemptLoginToolRequest>,
     NoUiEvents<AttemptFormFillingToolRequest>,
+    NoUiEvents<AttemptOtpFillingToolRequest>,
     NoUiEvents<ScriptToolRequest>,
     NoUiEvents<ScrollToToolRequest>};
 
@@ -125,6 +126,7 @@ constexpr absl::Overload PostToolEventsFn{
     NoUiEvents<WaitToolRequest>,
     NoUiEvents<AttemptLoginToolRequest>,
     NoUiEvents<AttemptFormFillingToolRequest>,
+    NoUiEvents<AttemptOtpFillingToolRequest>,
     NoUiEvents<ScriptToolRequest>,
     NoUiEvents<ScrollToToolRequest>};
 

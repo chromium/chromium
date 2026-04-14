@@ -7,6 +7,7 @@
 
 #include "chrome/browser/actor/tools/attempt_form_filling_tool_request.h"
 #include "chrome/browser/actor/tools/attempt_login_tool_request.h"
+#include "chrome/browser/actor/tools/attempt_otp_filling_tool_request.h"
 #include "chrome/browser/actor/tools/click_tool_request.h"
 #include "chrome/browser/actor/tools/drag_and_release_tool_request.h"
 #include "chrome/browser/actor/tools/history_tool_request.h"
@@ -38,6 +39,7 @@ class ToolRequestVisitorFunctor {
 #endif
   virtual void Apply(const AttemptLoginToolRequest&) = 0;
   virtual void Apply(const AttemptFormFillingToolRequest&) = 0;
+  virtual void Apply(const AttemptOtpFillingToolRequest&) = 0;
   virtual void Apply(const ClickToolRequest&) = 0;
 #if !BUILDFLAG(SKIP_ANDROID_UNMIGRATED_ACTOR_FILES)
   virtual void Apply(const CloseTabToolRequest&) = 0;
