@@ -521,7 +521,7 @@ const CGFloat kDividerWidth = 1.0;
                 action:@selector(handleGeminiTapped:)
       forControlEvents:UIControlEventTouchUpInside];
 
-  [self updateGeminiAvailability];
+  [self updateGeminiAvailabilityForButton:button];
 
   return button;
 }
@@ -736,8 +736,12 @@ const CGFloat kDividerWidth = 1.0;
 }
 
 - (void)updateGeminiAvailability {
+  [self updateGeminiAvailabilityForButton:_geminiButton];
+}
+
+- (void)updateGeminiAvailabilityForButton:(UIButton*)button {
   PageActionMenuContentEntryPoint* entryPoint = [self.mutator geminiEntryPoint];
-  [self updateButton:_geminiButton enabled:entryPoint.enabled];
+  [self updateButton:button enabled:entryPoint.enabled];
   [self updateFooterContent];
 }
 
