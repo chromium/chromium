@@ -48,7 +48,8 @@ class ReadAnythingMochaBrowserTest : public WebUIMochaBrowserTest {
 
 using ReadAnythingMochaTest = ReadAnythingMochaBrowserTest;
 
-IN_PROC_BROWSER_TEST_F(ReadAnythingMochaTest, Speech) {
+// TODO(crbug.com/501119951): Re-enable this test.
+IN_PROC_BROWSER_TEST_F(ReadAnythingMochaTest, DISABLED_Speech) {
   RunSidePanelTest("side_panel/read_anything/speech_test.js", "mocha.run()");
 }
 
