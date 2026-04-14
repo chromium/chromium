@@ -689,7 +689,7 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerSyncTest,
 }
 
 // TODO(crbug.com/500570908): Enable the test.
-#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) && defined(ADDRESS_SANITIZER)
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 #define MAYBE_OfferToSaveNonPrimaryAccountCredential \
   DISABLED_OfferToSaveNonPrimaryAccountCredential
 #else
