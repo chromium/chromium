@@ -105,10 +105,11 @@ public class PasswordManagerDialogContents {
 
     /**
      * The callback invoked when either of the two dialog buttons is clicked.
+     *
      * @return A {@link Callback} taking an {@link Integer} as a parameter which represents which
-     *         button was clicked.
+     *     button was clicked.
      */
-    public Callback getButtonClickCallback() {
+    public Callback<Integer> getButtonClickCallback() {
         return mButtonClickCallback;
     }
 

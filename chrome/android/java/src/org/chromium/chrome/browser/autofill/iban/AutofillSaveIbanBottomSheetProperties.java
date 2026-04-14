@@ -39,17 +39,17 @@ import java.util.function.Consumer;
 
     static final ReadableIntPropertyKey LOGO_ICON = new ReadableIntPropertyKey();
 
-    static final ReadableObjectPropertyKey<String> TITLE = new ReadableObjectPropertyKey();
+    static final ReadableObjectPropertyKey<String> TITLE = new ReadableObjectPropertyKey<>();
 
-    static final ReadableObjectPropertyKey<String> DESCRIPTION = new ReadableObjectPropertyKey();
+    static final ReadableObjectPropertyKey<String> DESCRIPTION = new ReadableObjectPropertyKey<>();
 
-    static final ReadableObjectPropertyKey<String> IBAN_VALUE = new ReadableObjectPropertyKey();
+    static final ReadableObjectPropertyKey<String> IBAN_VALUE = new ReadableObjectPropertyKey<>();
 
     static final ReadableObjectPropertyKey<String> ACCEPT_BUTTON_LABEL =
-            new ReadableObjectPropertyKey();
+            new ReadableObjectPropertyKey<>();
 
     static final ReadableObjectPropertyKey<String> CANCEL_BUTTON_LABEL =
-            new ReadableObjectPropertyKey();
+            new ReadableObjectPropertyKey<>();
 
     static final ReadableObjectPropertyKey<OnClickListener> ON_ACCEPT_BUTTON_CLICK_ACTION =
             new ReadableObjectPropertyKey<>();

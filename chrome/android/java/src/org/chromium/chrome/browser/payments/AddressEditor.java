@@ -321,7 +321,7 @@ public class AddressEditor extends EditorBase<AutofillAddress>
         mEditorModel =
                 new PropertyModel.Builder(ALL_KEYS)
                         .with(EDITOR_TITLE, editTitle)
-                        .with(EDITOR_FIELDS, new ListModel())
+                        .with(EDITOR_FIELDS, new ListModel<>())
                         .with(DONE_RUNNABLE, this::onDone)
                         .with(CANCEL_RUNNABLE, this::onCancel)
                         .with(ALLOW_DELETE, false)

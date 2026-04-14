@@ -48,7 +48,7 @@ import org.chromium.content_public.browser.SiteZoomInfo;
 public class HostZoomListener implements Destroyable {
 
     private final BrowserContextHandle mBrowserContextHandle;
-    private final ObserverList<ZoomEventsObserver> mObservers = new ObserverList();
+    private final ObserverList<ZoomEventsObserver> mObservers = new ObserverList<>();
     private long mNativeHostZoomLevelListenerKey;
 
     /**

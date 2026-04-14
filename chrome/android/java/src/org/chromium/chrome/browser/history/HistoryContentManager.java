@@ -563,6 +563,8 @@ public class HistoryContentManager implements SignInStateObserver, PrefObserver 
     }
 
     /** Binds the ViewHolder with the given HistoryItem. */
+    @SuppressWarnings(
+            "unchecked") // ViewHolder param from override; always SelectableItemViewHolder.
     public void bindViewHolderForHistoryItem(ViewHolder holder, HistoryItem item) {
         item.setHistoryManager(this);
         SelectableItemViewHolder<HistoryItem> selectableHolder =

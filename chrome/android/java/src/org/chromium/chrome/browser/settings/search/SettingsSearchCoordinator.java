@@ -1367,8 +1367,8 @@ public class SettingsSearchCoordinator
         }
 
         try {
-            Class fragment = Class.forName(preferenceFragment);
-            Constructor constructor = fragment.getConstructor();
+            Class<?> fragment = Class.forName(preferenceFragment);
+            Constructor<?> constructor = fragment.getConstructor();
             var f = (Fragment) constructor.newInstance();
             f.setArguments(entry.extras);
             FragmentManager fragmentManager = getSettingsFragmentManager();

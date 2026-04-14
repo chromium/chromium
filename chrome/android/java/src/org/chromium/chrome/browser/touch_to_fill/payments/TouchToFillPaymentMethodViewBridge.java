@@ -30,7 +30,6 @@ import org.chromium.components.browser_ui.bottomsheet.BottomSheetControllerProvi
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.url.GURL;
 
-import java.util.Arrays;
 import java.util.List;
 
 /** JNI wrapper for C++ TouchToFillPaymentMethodViewImpl. Delegates calls from native to Java. */
@@ -78,11 +77,9 @@ class TouchToFillPaymentMethodViewBridge {
 
     @CalledByNative
     private void showPaymentMethods(
-            @JniType("std::vector") Object[] suggestions,
+            @JniType("std::vector") List<AutofillSuggestion> suggestions,
             TouchToFillDisplayOptions touchToFillDisplayOptions) {
-        mComponent.showPaymentMethods(
-                (List<AutofillSuggestion>) (List<?>) Arrays.asList(suggestions),
-                touchToFillDisplayOptions);
+        mComponent.showPaymentMethods(suggestions, touchToFillDisplayOptions);
     }
 
     @CalledByNative
