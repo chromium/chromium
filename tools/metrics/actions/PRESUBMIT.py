@@ -146,20 +146,22 @@ def CheckRemovedSegmentationUserActions(input_api, output_api):
   actions_xml_path = os.path.join('tools', 'metrics', 'actions', 'actions.xml')
 
   # Only run check if actions.xml is changed.
-  if not any(
-      os.path.normpath(f.LocalPath()) == actions_xml_path
-      for f in input_api.AffectedFiles(include_deletes=True)):
+  actions_xml_file = [
+      f for f in input_api.AffectedFiles(include_deletes=True)
+      if os.path.normpath(f.LocalPath()) == actions_xml_path
+  ]
+  if not actions_xml_file:
     return []
-
-  removed_actions = []
+  assert len(actions_xml_file) == 1
+  f = actions_xml_file[0]
   try:
-    # get_action_diff compares the working directory with HEAD~, which is
-    # what we wantfor presubmit.
-    _, removed_names = print_action_names.get_action_diff('HEAD~')
+    # get_action_diff compares new and old contents of the file and returns
+    # the added and removed action names.
+    _, removed_names = print_action_names.get_action_diff(
+        '\n'.join(f.OldContents()), '\n'.join(f.NewContents()))
     removed_actions = removed_names
   except Exception as e:
     return [output_api.PresubmitError(f'Error getting user action diff: {e}')]
-
   # Load the list of all actions required by segmentation models.
   segmentation_actions = generate_histogram_list.GetActualActionNames()
 
