@@ -20,14 +20,21 @@ static constexpr int kMinLuminanceFixedPoint = 10000;
 namespace gl {
 
 HDRMetadataHelperWin::HDRMetadataHelperWin(
-    Microsoft::WRL::ComPtr<ID3D11Device> d3d11_device)
-    : d3d11_device_(std::move(d3d11_device)) {
+    Microsoft::WRL::ComPtr<IDXGIFactory> factory)
+    : dxgi_factory_(std::move(factory)) {
   UpdateDisplayMetadata();
   ui::GpuSwitchingManager::GetInstance()->AddObserver(this);
 }
 
 HDRMetadataHelperWin::~HDRMetadataHelperWin() {
   ui::GpuSwitchingManager::GetInstance()->RemoveObserver(this);
+}
+
+std::unique_ptr<HDRMetadataHelperWin> HDRMetadataHelperWin::Create() {
+  Microsoft::WRL::ComPtr<IDXGIFactory> dxgi_factory;
+  HRESULT hr = CreateDXGIFactory1(IID_PPV_ARGS(&dxgi_factory));
+  CHECK_EQ(hr, S_OK);
+  return std::make_unique<HDRMetadataHelperWin>(std::move(dxgi_factory));
 }
 
 std::optional<DXGI_HDR_METADATA_HDR10>
@@ -56,21 +63,6 @@ void HDRMetadataHelperWin::UpdateDisplayMetadata() {
   brightest_monitor_ = nullptr;
   hdr_metadatas_.clear();
 
-  if (!d3d11_device_)
-    return;
-
-  Microsoft::WRL::ComPtr<IDXGIDevice> dxgi_device;
-  HRESULT hr = d3d11_device_.As(&dxgi_device);
-  CHECK_EQ(hr, S_OK);
-
-  Microsoft::WRL::ComPtr<IDXGIAdapter> dxgi_adapter;
-  hr = dxgi_device->GetAdapter(&dxgi_adapter);
-  CHECK_EQ(hr, S_OK);
-
-  Microsoft::WRL::ComPtr<IDXGIFactory> dxgi_factory;
-  if (FAILED(dxgi_adapter->GetParent(IID_PPV_ARGS(&dxgi_factory))))
-    return;
-
   FLOAT max_luminance = 0;
   HMONITOR brightest_monitor = nullptr;
   std::unordered_map<HMONITOR, DXGI_HDR_METADATA_HDR10> hdr_metadatas;
@@ -79,7 +71,7 @@ void HDRMetadataHelperWin::UpdateDisplayMetadata() {
   // brightest monitor as the one we want as default.
   Microsoft::WRL::ComPtr<IDXGIAdapter> adapter;
   for (unsigned int i = 0;
-       dxgi_factory->EnumAdapters(i, &adapter) != DXGI_ERROR_NOT_FOUND; i++) {
+       dxgi_factory_->EnumAdapters(i, &adapter) != DXGI_ERROR_NOT_FOUND; i++) {
     Microsoft::WRL::ComPtr<IDXGIOutput> output;
     for (unsigned int u = 0;
          adapter->EnumOutputs(u, &output) != DXGI_ERROR_NOT_FOUND; u++) {

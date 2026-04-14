@@ -4,7 +4,6 @@
 
 #include "ui/gl/swap_chain_presenter.h"
 
-#include <d3d11_1.h>
 #include <d3d11_4.h>
 
 #include "base/feature_list.h"

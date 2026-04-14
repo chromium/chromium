@@ -391,7 +391,7 @@ void DCLayerTree::Initialize(
   dcomp_root_visual_->SetBitmapInterpolationMode(
       DCOMPOSITION_BITMAP_INTERPOLATION_MODE_LINEAR);
 
-  hdr_metadata_helper_ = std::make_unique<HDRMetadataHelperWin>(d3d11_device_);
+  hdr_metadata_helper_ = HDRMetadataHelperWin::Create();
 
   if (Microsoft::WRL::ComPtr<IDCompositionDevice5> dcomp_device5;
       SUCCEEDED(dcomp_device_.As(&dcomp_device5))) {

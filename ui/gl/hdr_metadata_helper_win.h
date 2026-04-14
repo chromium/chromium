@@ -5,7 +5,6 @@
 #ifndef UI_GL_HDR_METADATA_HELPER_WIN_H_
 #define UI_GL_HDR_METADATA_HELPER_WIN_H_
 
-#include <d3d11_1.h>
 #include <dxgi1_6.h>
 #include <wrl/client.h>
 
@@ -20,13 +19,15 @@ namespace gl {
 
 class GL_EXPORT HDRMetadataHelperWin : ui::GpuSwitchingObserver {
  public:
-  explicit HDRMetadataHelperWin(
-      Microsoft::WRL::ComPtr<ID3D11Device> d3d11_device);
+  HDRMetadataHelperWin() = delete;
+  explicit HDRMetadataHelperWin(Microsoft::WRL::ComPtr<IDXGIFactory> factory);
 
   HDRMetadataHelperWin(const HDRMetadataHelperWin&) = delete;
   HDRMetadataHelperWin& operator=(const HDRMetadataHelperWin&) = delete;
 
   ~HDRMetadataHelperWin() override;
+
+  static std::unique_ptr<HDRMetadataHelperWin> Create();
 
   // Return the metadata of the brightest monitor, if available.  Must call
   // UpdateDisplayMetadata first.
@@ -53,7 +54,7 @@ class GL_EXPORT HDRMetadataHelperWin : ui::GpuSwitchingObserver {
   void OnDisplayRemoved() override;
 
  private:
-  Microsoft::WRL::ComPtr<ID3D11Device> d3d11_device_;
+  Microsoft::WRL::ComPtr<IDXGIFactory> dxgi_factory_;
   HMONITOR brightest_monitor_ = nullptr;
   std::unordered_map<HMONITOR, DXGI_HDR_METADATA_HDR10> hdr_metadatas_;
 };

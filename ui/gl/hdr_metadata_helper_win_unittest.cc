@@ -10,10 +10,8 @@
 
 using ::testing::_;
 using ::testing::DoAll;
-// using ::testing::Eq;
 using ::testing::NiceMock;
 using ::testing::Return;
-// using ::testing::SaveArg;
 using ::testing::SetArgPointee;
 
 namespace gl {
@@ -24,31 +22,16 @@ class HDRMetadataHelperWinTest : public ::testing::Test {
     mock_dxgi_factory_ = media::MakeComPtr<NiceMock<media::DXGIFactoryMock>>();
     ON_CALL(*mock_dxgi_factory_.Get(), EnumAdapters(_, _))
         .WillByDefault(Return(DXGI_ERROR_NOT_FOUND));
-
-    mock_dxgi_device_ = media::MakeComPtr<NiceMock<media::DXGIDeviceMock>>();
-
-    mock_d3d11_device_ = media::MakeComPtr<NiceMock<media::D3D11DeviceMock>>();
-    ON_CALL(*mock_d3d11_device_.Get(), QueryInterface(IID_IDXGIDevice, _))
-        .WillByDefault(
-            media::SetComPointeeAndReturnOk<1>(mock_dxgi_device_.Get()));
   }
 
   std::unique_ptr<HDRMetadataHelperWin> CreateHelper() {
-    // Set the D3D11 device's adapter to the first one, somewhat arbitrarily.
-    ON_CALL(*mock_dxgi_device_.Get(), GetAdapter(_))
-        .WillByDefault(
-            media::SetComPointeeAndReturnOk<0>(mock_dxgi_adapters_[0].Get()));
-
-    return std::make_unique<HDRMetadataHelperWin>(mock_d3d11_device_);
+    return std::make_unique<HDRMetadataHelperWin>(mock_dxgi_factory_);
   }
 
   // Adds an adapter that |mock_dxgi_factory_| will enumerate.
   void AddAdapter() {
     Microsoft::WRL::ComPtr<media::DXGIAdapterMock> dxgi_adapter =
         media::MakeComPtr<NiceMock<media::DXGIAdapterMock>>();
-    ON_CALL(*dxgi_adapter.Get(), GetParent(_, _))
-        .WillByDefault(
-            media::SetComPointeeAndReturnOk<1>(mock_dxgi_factory_.Get()));
 
     // By default, the adapter has no outputs.
     ON_CALL(*dxgi_adapter.Get(), EnumOutputs(_, _))
@@ -79,8 +62,6 @@ class HDRMetadataHelperWinTest : public ::testing::Test {
         .WillByDefault(media::SetComPointeeAndReturnOk<1>(output6.Get()));
   }
 
-  Microsoft::WRL::ComPtr<media::D3D11DeviceMock> mock_d3d11_device_;
-  Microsoft::WRL::ComPtr<media::DXGIDeviceMock> mock_dxgi_device_;
   Microsoft::WRL::ComPtr<media::DXGIFactoryMock> mock_dxgi_factory_;
   std::vector<Microsoft::WRL::ComPtr<media::DXGIAdapterMock>>
       mock_dxgi_adapters_;
