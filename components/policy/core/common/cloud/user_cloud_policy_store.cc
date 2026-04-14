@@ -294,13 +294,6 @@ void DesktopCloudPolicyStore::ValidateKeyAndSignature(
   static_assert(std::is_same<PayloadProto, em::CloudPolicySettings>() ||
                 std::is_same<PayloadProto, em::ExtensionInstallPolicies>());
 
-  // TODO(crbug.com/483099777): Reenable signature verification once a good
-  // solution is found. This is temporarily disabled to avoid breaking existing
-  // enterprise policy fetches.
-  if (IsExtensionInstallPolicyType(policy_type())) {
-    return;
-  }
-
   VLOG_POLICY(1, POLICY_PROCESSING)
       << PolicyTypeLogPrefix(policy_type(), std::string())
       << "Has cached key: " << cached_key;
