@@ -57,10 +57,10 @@ import org.chromium.chrome.browser.tab.TabId;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab.TabSelectionType;
 import org.chromium.chrome.browser.tab_ui.TabContentManager;
+import org.chromium.chrome.browser.tabmodel.OverridableTabCount;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelUtils;
 import org.chromium.chrome.browser.theme.ThemeUtils;
-import org.chromium.chrome.browser.toolbar.CustomTabCount;
 import org.chromium.chrome.browser.toolbar.ToolbarManager;
 import org.chromium.chrome.browser.toolbar.ToolbarPositionController;
 import org.chromium.chrome.browser.toolbar.top.ToggleTabStackButton;
@@ -95,7 +95,7 @@ public class NewTabAnimationLayout extends Layout {
     private final Handler mHandler;
     private final ToolbarManager mToolbarManager;
     private final NonNullObservableSupplier<Boolean> mScrimVisibilitySupplier;
-    private final CustomTabCount mCustomTabCount;
+    private final OverridableTabCount mOverridableTabCount;
     private final BrowserStateBrowserControlsVisibilityDelegate mBrowserVisibilityDelegate;
     private final TopInsetProvider mTopInsetProvider;
     private final TopInsetProvider.Observer mTopInsetProviderObserver;
@@ -112,7 +112,7 @@ public class NewTabAnimationLayout extends Layout {
     private @Nullable Callback<Boolean> mVisibilityObserver;
     private @TabId int mNextTabId = Tab.INVALID_TAB_ID;
     private int mBrowserControlsVisibilityToken = TokenHolder.INVALID_TOKEN;
-    private int mCustomTabCountToken = TokenHolder.INVALID_TOKEN;
+    private int mOverridableTabCountToken = TokenHolder.INVALID_TOKEN;
     private int mTopPadding;
     private boolean mSkipForceAnimationToFinish;
     private boolean mTopInsetProviderAvailable;
@@ -155,7 +155,7 @@ public class NewTabAnimationLayout extends Layout {
         mHandler = new Handler();
         mToolbarManager = toolbarManager;
         mScrimVisibilitySupplier = scrimVisibilitySupplier;
-        mCustomTabCount = mToolbarManager.getCustomTabCount();
+        mOverridableTabCount = mToolbarManager.getOverridableTabCount();
         mBrowserVisibilityDelegate = browserControlsManager.getBrowserVisibilityDelegate();
         mTopInsetProvider = topInsetProvider;
 
@@ -687,7 +687,7 @@ public class NewTabAnimationLayout extends Layout {
                                         false);
         assumeNonNull(mTabModelSelector);
         int prevTabCount = mTabModelSelector.getModel(isIncognito).getCount() - 1;
-        mCustomTabCountToken = mCustomTabCount.setCount(prevTabCount);
+        mOverridableTabCountToken = mOverridableTabCount.setCount(prevTabCount);
 
         @ColorInt
         int toolbarColor =
@@ -799,12 +799,12 @@ public class NewTabAnimationLayout extends Layout {
                                     if (mTabSwitcherButton != null) {
                                         mTabSwitcherButton.setVisibility(View.INVISIBLE);
                                     }
-                                    // Release custom tab count as soon as the animation starts to
-                                    // avoid showing the old tab count if the user decides to scroll
-                                    // up during AnimationType.NTP_PARTIAL_SCROLL or
+                                    // Release overridable tab count as soon as the animation starts
+                                    // to avoid showing the old tab count if the user decides to
+                                    // scroll up during AnimationType.NTP_PARTIAL_SCROLL or
                                     // AnimationType.NTP_FULL_SCROLL.
-                                    mCustomTabCount.releaseCount(mCustomTabCountToken);
-                                    mCustomTabCountToken = TokenHolder.INVALID_TOKEN;
+                                    mOverridableTabCount.releaseCount(mOverridableTabCountToken);
+                                    mOverridableTabCountToken = TokenHolder.INVALID_TOKEN;
                                 }
 
                                 @Override
@@ -829,8 +829,8 @@ public class NewTabAnimationLayout extends Layout {
                     mTimeoutRunnable = null;
                     mAnimationRunnable = null;
                     cleanUpBackgroundAnimation();
-                    mCustomTabCount.releaseCount(mCustomTabCountToken);
-                    mCustomTabCountToken = TokenHolder.INVALID_TOKEN;
+                    mOverridableTabCount.releaseCount(mOverridableTabCountToken);
+                    mOverridableTabCountToken = TokenHolder.INVALID_TOKEN;
                     if (mVisibilityObserver != null) {
                         visibilitySupplier.removeObserver(mVisibilityObserver);
                         mVisibilityObserver = null;

@@ -71,9 +71,9 @@ import org.chromium.chrome.browser.tab.TabId;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab.TabSelectionType;
 import org.chromium.chrome.browser.tab_ui.TabContentManager;
+import org.chromium.chrome.browser.tabmodel.OverridableTabCount;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
-import org.chromium.chrome.browser.toolbar.CustomTabCount;
 import org.chromium.chrome.browser.toolbar.ToolbarManager;
 import org.chromium.chrome.browser.toolbar.top.ToggleTabStackButton;
 import org.chromium.chrome.browser.ui.edge_to_edge.TopInsetProvider;
@@ -106,7 +106,7 @@ public class NewTabAnimationLayoutUnitTest {
 
     @Mock private CompositorViewHolder mCompositorViewHolder;
     @Mock private ToolbarManager mToolbarManager;
-    @Mock private CustomTabCount mCustomTabCount;
+    @Mock private OverridableTabCount mOverridableTabCount;
     @Mock private BrowserControlsManager mBrowserControlsManager;
     @Mock private SceneLayer.Natives mSceneLayerJni;
     @Mock private StaticTabSceneLayer.Natives mStaticTabSceneLayerJni;
@@ -181,7 +181,7 @@ public class NewTabAnimationLayoutUnitTest {
         when(mNtp.getLastTouchPosition()).thenReturn(sPoint);
         when(mBrowserControlsManager.getBrowserVisibilityDelegate())
                 .thenReturn(mBrowserVisibilityDelegate);
-        when(mToolbarManager.getCustomTabCount()).thenReturn(mCustomTabCount);
+        when(mToolbarManager.getOverridableTabCount()).thenReturn(mOverridableTabCount);
         when(mToolbarManager.getNtpSearchBoxTransitionPercentageSupplier())
                 .thenReturn(mNtpSearchBoxTransitionPercentageSupplier);
         mTransitiveTopInsetProvider.set(mTopInsetProvider);

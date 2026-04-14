@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.toolbar;
+package org.chromium.chrome.browser.tabmodel;
 
 import static org.chromium.build.NullUtil.assumeNonNull;
 
@@ -14,15 +14,14 @@ import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.SettableNonNullObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
-import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.ui.util.TokenHolder;
 
 /**
- * CustomTabCount is a wrapper class to supply the current tab count. This class allows us to
+ * OverridableTabCount is a wrapper class to supply the current tab count. This class allows us to
  * overwrite the tab count for purposes like animations.
  */
 @NullMarked
-public class CustomTabCount implements Destroyable {
+public class OverridableTabCount implements Destroyable {
     private final MonotonicObservableSupplier<TabModelSelector> mTabModelSelectorSupplier;
     private final Callback<TabModelSelector> mTabModelSelectorObserver =
             this::onTabModelSelectorAvailable;
@@ -33,11 +32,12 @@ public class CustomTabCount implements Destroyable {
     private @Nullable NonNullObservableSupplier<Integer> mTabModelSelectorTabCountSupplier;
 
     /**
-     * Creates an instance of {@link CustomTabCount}.
+     * Creates an instance of {@link OverridableTabCount}.
      *
      * @param tabModelSelectorSupplier Supplier for the {@link TabModelSelector}.
      */
-    public CustomTabCount(MonotonicObservableSupplier<TabModelSelector> tabModelSelectorSupplier) {
+    public OverridableTabCount(
+            MonotonicObservableSupplier<TabModelSelector> tabModelSelectorSupplier) {
         mTabModelSelectorSupplier = tabModelSelectorSupplier;
         mTabModelSelectorSupplier.addSyncObserverAndCallIfNonNull(mTabModelSelectorObserver);
         mTokenHolder = new TokenHolder(this::onTokenChanged);
