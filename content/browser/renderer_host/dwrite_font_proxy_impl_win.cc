@@ -31,7 +31,6 @@
 #include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
 #include "content/browser/renderer_host/dwrite_font_file_util_win.h"
-#include "content/common/features.h"
 #include "mojo/public/cpp/bindings/callback_helpers.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "third_party/blink/public/common/font_unique_name_lookup/font_unique_name_table.pb.h"
@@ -483,7 +482,6 @@ void DWriteFontProxyImpl::MatchUniqueFont(
   base::UmaHistogramEnumeration("Chrome.DWriteFontProxy.InvokedIPC",
                                 DWriteFontProxyIPC::kMatchUniqueFont);
 
-  DCHECK(base::FeatureList::IsEnabled(features::kFontSrcLocalMatching));
   callback = mojo::WrapCallbackWithDefaultInvokeIfNotRun(std::move(callback),
                                                          base::File(), 0);
   InitializeDirectWrite();

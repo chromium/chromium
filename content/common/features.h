@@ -138,7 +138,6 @@ CONTENT_EXPORT BASE_DECLARE_FEATURE_PARAM(FontDataServiceTypefaceType,
 bool IsFontDataServiceEnabled();
 #endif
 
-CONTENT_EXPORT BASE_DECLARE_FEATURE(kFontSrcLocalMatching);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kFrameRoutingCache);
 CONTENT_EXPORT extern const base::FeatureParam<int>
     kFrameRoutingCacheResponseSize;

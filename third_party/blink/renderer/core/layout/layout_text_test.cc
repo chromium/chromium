@@ -182,10 +182,17 @@ TEST_F(LayoutTextTest, PrewarmFamily) {
 TEST_F(LayoutTextTest, PrewarmFontFace) {
   test::ScopedTestFontPrewarmer prewarmer;
   SetBodyInnerHTML(R"HTML(
+    <!--
+      This font was produced by subsetting <roboto regular> to include only the
+      .notdef glyph (GID 0) and 'A' (GID 1, U+0041). The following command was
+      used on the source font:
+      pyftsubset <roboto regular> --unicodes="U+0041" --no-hinting --layout-features='' \
+        --name-IDs='' --drop-tables+=GPOS,GSUB,gasp,GDEF,name,post
+    -->
     <style>
     @font-face {
       font-family: testfont;
-      src: local(Arial);
+      src: url(data:font/ttf;base64,AAEAAAAIAIAAAwAAT1MvMnKqYewAAAFQAAAAYGNtYXAADACUAAABsAAAADRnbHlm9aiJLAAAAIwAAAA4aGVhZPxq0noAAADsAAAANmhoZWEKugWiAAABLAAAACRobXR4CMQAgAAAASQAAAAIbG9jYQAcAAAAAADkAAAABm1heHAAJADlAAAAxAAAACAAAgAcAAAFHQWwAAcACgAAASEDIwEzASMBIQMDzf2eicYCLKgCLcX9TQHv+AF8/oQFsPpQAhoCqQABAAAAAgCPABYAVAAFAAEAAAAAAAAAAAAAAAAABgABAAAAAAAcAAAAAQAAAAIjEpNb+gZfDzz1ABkIAAAAAADE8BEuAAAAANUBUvT6G/3VCTAIcwAAAAkAAgAAAAAAAAOMAGQFOAAcAAEAAAds/gwAAAlJ+hv+SgkwAAEAAAAAAAAAAAAAAAAAAAACAAMEhgGQAAUAAAWaBTMAAAEfBZoFMwAAA9EAZgIAAAACAAAAAAAAAAAAAAAAAQAAAAAAAAAAAAAAAEdPT0cAQABBAEEGAP4AAGYHmgIAAAAAAQAAAAAEOgWwACAAIAADAAAAAgAAAAMAAAAUAAMAAQAAABQABAAgAAAABAAEAAEAAABB//8AAABB////wAABAAAAAA==);
     }
     #container { font-family: testfont; }
     </style>

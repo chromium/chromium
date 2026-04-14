@@ -51,7 +51,6 @@
 #include "third_party/blink/renderer/platform/fonts/mac/font_matcher_mac.h"
 #include "third_party/blink/renderer/platform/fonts/mac/font_platform_data_mac.h"
 #include "third_party/blink/renderer/platform/fonts/simple_font_data.h"
-#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/scheduler/public/main_thread.h"
 #include "third_party/blink/renderer/platform/web_test_support.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
@@ -408,8 +407,7 @@ const FontPlatformData* FontCache::CreateFontPlatformData(
   }
 
   ScopedCFTypeRef<CTFontRef> matched_font;
-  if (alternate_name == AlternateFontName::kLocalUniqueFace &&
-      RuntimeEnabledFeatures::FontSrcLocalMatchingEnabled()) {
+  if (alternate_name == AlternateFontName::kLocalUniqueFace) {
     matched_font = MatchUniqueFont(creation_params.Family(), size);
   } else if (creation_params.Family() == font_family_names::kSystemUi) {
     matched_font =

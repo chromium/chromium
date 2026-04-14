@@ -494,11 +494,11 @@ TEST_F(InspectorCSSAgentTest, GetFontFaceRule) {
   GetDocument().body()->SetHTMLUnsafeWithoutTrustedTypes(R"HTML(
     <style>
       @font-face {
-        font-family: Bixa;
-        src: local(Bixa);
+        font-family: ExampleFontForTest;
+        src: url(//nonexistent.ttf);
       }
       #e {
-        font-family: Bixa;
+        font-family: ExampleFontForTest;
       }
     </style>
     <div id=e></div>
@@ -515,19 +515,19 @@ TEST_F(InspectorCSSAgentTest, GetFontFaceRule) {
   EXPECT_EQ(rules->at(0)->getStyle()->getCssProperties()->at(0)->getName(),
             "font-family");
   EXPECT_EQ(rules->at(0)->getStyle()->getCssProperties()->at(0)->getValue(),
-            "Bixa");
+            "ExampleFontForTest");
   EXPECT_EQ(rules->at(0)->getStyle()->getCssProperties()->at(1)->getName(),
             "src");
   EXPECT_EQ(rules->at(0)->getStyle()->getCssProperties()->at(1)->getValue(),
-            "local(Bixa)");
+            "url(//nonexistent.ttf)");
 }
 
 TEST_F(InspectorCSSAgentTest, GetFontFaceRuleNoMatch) {
   GetDocument().body()->SetHTMLUnsafeWithoutTrustedTypes(R"HTML(
     <style>
       @font-face {
-        font-family: Bixa;
-        src: local(Bixa);
+        font-family: ExampleFontForTest;
+        src: url(//nonexistent.ttf);
       }
       #e {
         font-family: Papyrus;
@@ -545,19 +545,19 @@ TEST_F(InspectorCSSAgentTest, GetFontFaceRuleFromPseudoElement) {
   GetDocument().body()->SetHTMLUnsafeWithoutTrustedTypes(R"HTML(
     <style>
       @font-face {
-        font-family: Bixa;
-        src: local(Bixa);
+        font-family: ExampleFontForTest;
+        src: url(//nonexistent.ttf);
       }
       #e {
         font-family: Papyrus;
       }
       #e::before {
         content: "before";
-        font-family: Bixa;
+        font-family: ExampleFontForTest;
       }
       #e::after {
         content: "after";
-        font-family: Bixa;
+        font-family: ExampleFontForTest;
       }
     </style>
     <div id=e></div>
@@ -575,11 +575,11 @@ TEST_F(InspectorCSSAgentTest, GetFontFaceRuleFromPseudoElement) {
   EXPECT_EQ(rules->at(0)->getStyle()->getCssProperties()->at(0)->getName(),
             "font-family");
   EXPECT_EQ(rules->at(0)->getStyle()->getCssProperties()->at(0)->getValue(),
-            "Bixa");
+            "ExampleFontForTest");
   EXPECT_EQ(rules->at(0)->getStyle()->getCssProperties()->at(1)->getName(),
             "src");
   EXPECT_EQ(rules->at(0)->getStyle()->getCssProperties()->at(1)->getValue(),
-            "local(Bixa)");
+            "url(//nonexistent.ttf)");
 }
 
 TEST_F(InspectorCSSAgentTest, GetFontPaletteValuesRule) {

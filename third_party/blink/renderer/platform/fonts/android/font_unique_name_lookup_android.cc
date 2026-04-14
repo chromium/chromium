@@ -43,7 +43,6 @@ FontUniqueNameLookupAndroid::~FontUniqueNameLookupAndroid() = default;
 void FontUniqueNameLookupAndroid::PrepareFontUniqueNameLookup(
     NotifyFontUniqueNameLookupReady callback) {
   DCHECK(!font_table_matcher_.get());
-  DCHECK(RuntimeEnabledFeatures::FontSrcLocalMatchingEnabled());
 
   pending_callbacks_.push_back(std::move(callback));
 
@@ -62,9 +61,6 @@ void FontUniqueNameLookupAndroid::PrepareFontUniqueNameLookup(
 }
 
 bool FontUniqueNameLookupAndroid::IsFontUniqueNameLookupReadyForSyncLookup() {
-  if (!RuntimeEnabledFeatures::FontSrcLocalMatchingEnabled())
-    return true;
-
   EnsureServiceConnected();
 
   // If we have the table already, we're ready for sync lookups.
@@ -129,7 +125,7 @@ void FontUniqueNameLookupAndroid::Init() {
     }
   }
   if (base::FeatureList::IsEnabled(features::kPrefetchFontLookupTables) &&
-      RuntimeEnabledFeatures::FontSrcLocalMatchingEnabled()) {
+      RuntimeEnabledFeatures::AndroidDownloadableFontsMatchingEnabled()) {
     // This call primes IsFontUniqueNameLookupReadyForSyncLookup() by
     // asynchronously fetching the font table so it will be ready when needed.
     // It isn't needed now, so base::DoNothing() is passed as the callback.

@@ -367,11 +367,6 @@ bool IsFontDataServiceEnabled() {
 }
 #endif
 
-// Enables fixes for matching src: local() for web fonts correctly against full
-// font name or postscript name. Rolling out behind a flag, as enabling this
-// enables a font indexer on Android which we need to test in the field first.
-BASE_FEATURE(kFontSrcLocalMatching, base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Whether to use the Frame Routing Cache to avoid synchronous IPCs from the
 // renderer side for iframe creation.
 BASE_FEATURE(kFrameRoutingCache, base::FEATURE_ENABLED_BY_DEFAULT);

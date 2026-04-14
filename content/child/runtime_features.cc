@@ -353,7 +353,6 @@ void SetRuntimeFeaturesFromChromiumFeatures() {
            kSetOnlyIfOverridden},
           {"FledgeBiddingAndAuctionServerAPI",
            raw_ref(blink::features::kFledgeBiddingAndAuctionServer), kDefault},
-          {"FontSrcLocalMatching", raw_ref(features::kFontSrcLocalMatching)},
           {"HstsTopLevelNavigationsOnly",
            raw_ref(net::features::kHstsTopLevelNavigationsOnly)},
           {"MachineLearningNeuralNetwork",

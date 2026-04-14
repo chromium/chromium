@@ -10,7 +10,6 @@
 #include "build/build_config.h"
 #include "content/browser/devtools/protocol/devtools_protocol_test_support.h"
 #include "content/browser/web_contents/web_contents_impl.h"
-#include "content/common/features.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/content_browser_test_utils.h"
@@ -94,7 +93,6 @@ class FontUniqueNameBrowserTest : public DevToolsProtocolTest {
  public:
   void SetUpCommandLine(base::CommandLine* command_line) override {
     DevToolsProtocolTest::SetUpCommandLine(command_line);
-    feature_list_.InitAndEnableFeature(features::kFontSrcLocalMatching);
   }
 
   void LoadAndWait(const std::string& url) {

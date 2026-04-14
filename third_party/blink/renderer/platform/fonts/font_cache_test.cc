@@ -139,7 +139,15 @@ TEST_F(FontCacheTest, firstAvailableOrFirst) {
             FontCache::FirstAvailableOrFirst(", not exist, not exist"));
 }
 
-TEST_F(FontCacheTest, FontUniqueNameMatchAvailable) {
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_WIN) || \
+    BUILDFLAG(IS_ANDROID)
+// local() font matching requires a Mojo connection which is not available in
+// unit tests.
+#define MAYBE_FontUniqueNameMatchAvailable DISABLED_FontUniqueNameMatchAvailable
+#else
+#define MAYBE_FontUniqueNameMatchAvailable FontUniqueNameMatchAvailable
+#endif
+TEST_F(FontCacheTest, MAYBE_FontUniqueNameMatchAvailable) {
   FontCache& font_cache = FontCache::Get();
 
   FontDescription font_description;

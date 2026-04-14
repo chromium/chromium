@@ -88,6 +88,10 @@ TestBlinkWebUnitTestSupport::TestBlinkWebUnitTestSupport(
   std::string v8_flags("--expose-gc --no-freeze-flags-after-init");
   v8_flags += additional_v8_flags;
 
+  // Makes Mojo calls to the browser. This is called inside
+  // blink::Initialize so it needs to be set first.
+  blink::WebRuntimeFeatures::EnableAndroidDownloadableFontsMatching(false);
+
   blink::Platform::InitializeBlink();
   scoped_refptr<base::SingleThreadTaskRunner> dummy_task_runner;
   std::unique_ptr<base::SingleThreadTaskRunner::CurrentDefaultHandle>
@@ -117,10 +121,6 @@ TestBlinkWebUnitTestSupport::TestBlinkWebUnitTestSupport(
 
   // Set V8 flags.
   v8::V8::SetFlagsFromString(v8_flags.c_str(), v8_flags.size());
-
-  // Makes Mojo calls to the browser. This is called inside
-  // blink::Initialize so it needs to be set first.
-  blink::WebRuntimeFeatures::EnableAndroidDownloadableFontsMatching(false);
 
   mojo::BinderMap binders;
   blink::InitializeWithoutIsolateForTesting(this, &binders,

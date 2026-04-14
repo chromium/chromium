@@ -15,7 +15,6 @@
 #include "third_party/blink/public/common/thread_safe_browser_interface_broker_proxy.h"
 #include "third_party/blink/public/mojom/dwrite_font_proxy/dwrite_font_proxy.mojom-blink.h"
 #include "third_party/blink/public/platform/platform.h"
-#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/skia/include/core/SkFontMgr.h"
 #include "third_party/skia/include/core/SkStream.h"
 #include "third_party/skia/include/ports/SkTypeface_win.h"
@@ -63,10 +62,7 @@ sk_sp<SkTypeface> FontUniqueNameLookupWin::InstantiateFromFileAndTtcIndex(
 }
 
 bool FontUniqueNameLookupWin::IsFontUniqueNameLookupReadyForSyncLookup() {
-  if (RuntimeEnabledFeatures::FontSrcLocalMatchingEnabled()) {
-    EnsureServiceConnected();
-  }
-
+  EnsureServiceConnected();
   return true;
 }
 

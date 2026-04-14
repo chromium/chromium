@@ -11728,7 +11728,6 @@ from previous Chrome versions.
   <int value="-778047974" label="CrostiniUseBusterImage:disabled"/>
   <int value="-777973127" label="EnableIPH:enabled"/>
   <int value="-777568290" label="FilesTransferDetails:disabled"/>
-  <int value="-777126951" label="FontSrcLocalMatching:enabled"/>
   <int value="-776686417" label="SiteExplorationUi:disabled"/>
   <int value="-776598844" label="AIRewriterAPI:disabled"/>
   <int value="-775952696" label="FeedStamp:enabled"/>
@@ -19717,7 +19716,6 @@ from previous Chrome versions.
   <int value="1870023694" label="AccessibilityDeprecateChromeVoxTabs:enabled"/>
   <int value="1870187746" label="TabStripTransitionInDesktopWindow:enabled"/>
   <int value="1870973833" label="AssistantEnableStereoAudioInput:enabled"/>
-  <int value="1871938175" label="FontSrcLocalMatching:disabled"/>
   <int value="1872034472" label="TabletTabStripAnimation:enabled"/>
   <int value="1872185826" label="LocationHardReload:enabled"/>
   <int value="1872768755" label="BackgroundResourceFetch:disabled"/>

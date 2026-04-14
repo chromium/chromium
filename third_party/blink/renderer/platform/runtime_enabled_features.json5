@@ -2982,12 +2982,6 @@
       status: "stable",
     },
     {
-      name: "FontSrcLocalMatching",
-      base_feature: "none",
-      // No status, as the web platform runtime enabled feature is controlled by
-      // a Chromium level feature.
-    },
-    {
       // crbug.com/393391746
       name: "FontStyleObliqueZeroDegreeAsNormal",
       status: "stable",

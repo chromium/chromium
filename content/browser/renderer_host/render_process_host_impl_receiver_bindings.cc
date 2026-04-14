@@ -219,13 +219,10 @@ void RenderProcessHostImpl::RegisterMojoInterfaces() {
       hyphenation::HyphenationImpl::GetTaskRunner());
 #endif
 #if BUILDFLAG(IS_ANDROID)
-  if (base::FeatureList::IsEnabled(features::kFontSrcLocalMatching)) {
-    registry->AddInterface(
-        base::BindRepeating(&FontUniqueNameLookupService::Create),
-        FontUniqueNameLookupService::GetTaskRunner());
-  }
+  registry->AddInterface(
+      base::BindRepeating(&FontUniqueNameLookupService::Create),
+      FontUniqueNameLookupService::GetTaskRunner());
 #endif
-
 #if BUILDFLAG(IS_WIN)
   registry->AddInterface(
       base::BindRepeating(&DWriteFontProxyImpl::Create),

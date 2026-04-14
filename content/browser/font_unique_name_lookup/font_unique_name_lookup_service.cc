@@ -19,7 +19,6 @@ namespace content {
 
 FontUniqueNameLookupService::FontUniqueNameLookupService()
     : font_unique_name_lookup_(::content::FontUniqueNameLookup::GetInstance()) {
-  DCHECK(base::FeatureList::IsEnabled(features::kFontSrcLocalMatching));
 }
 
 FontUniqueNameLookupService::~FontUniqueNameLookupService() {}
