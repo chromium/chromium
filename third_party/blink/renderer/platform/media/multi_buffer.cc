@@ -409,7 +409,7 @@ void MultiBuffer::OnDataProviderEvent(DataProvider* provider_tmp) {
         AddProvider(std::move(provider));
         break;
       }
-      DCHECK_GE(pos, 0);
+      CHECK_GE(pos, 0);
       scoped_refptr<media::DataBuffer> data = provider->Read();
       data_.Set(pos, data);
       eof = data->end_of_stream();

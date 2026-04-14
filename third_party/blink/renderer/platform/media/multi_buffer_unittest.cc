@@ -613,4 +613,49 @@ TEST_F(MultiBufferTest, RandomTest_RangeSupported) {
   multibuffer_.CheckPresentState();
 }
 
+TEST_F(MultiBufferTest, BlockIdOverflowCrashes) {
+  // Mock a DataProvider that reports its position as -2.
+  class MockDataProvider : public MultiBuffer::DataProvider {
+   public:
+    explicit MockDataProvider(MultiBufferBlockId pos) : pos_(pos) {}
+    MultiBufferBlockId Tell() const override { return pos_; }
+    bool Available() const override { return available_; }
+    int64_t AvailableBytes() const override { return 0; }
+    scoped_refptr<media::DataBuffer> Read() override {
+      available_ = false;
+      return media::DataBuffer::CreateEOSBuffer();
+    }
+    void SetDeferred(bool deferred) override {}
+    void set_available(bool available) { available_ = available; }
+
+   private:
+    MultiBufferBlockId pos_;
+    bool available_ = false;
+  };
+
+  // We use -2 because it is the deleted sentinel for the HashMap.
+  MultiBufferBlockId sentinel_pos = -2;
+  auto mock_provider = std::make_unique<MockDataProvider>(sentinel_pos);
+  MockDataProvider* provider_ptr = mock_provider.get();
+  multibuffer_.AddProvider(std::move(mock_provider));
+
+  // Set available to true so OnDataProviderEvent can proceed.
+  provider_ptr->set_available(true);
+
+  // This call is expected to hit a CHECK_GE(pos, 0) in multi_buffer.cc.
+  EXPECT_DEATH(multibuffer_.OnDataProviderEvent(provider_ptr), "");
+}
+
+TEST_F(MultiBufferTest, BlockIdOverflow) {
+  // This test verifies that extremely large byte offsets that would cause
+  // MultiBufferBlockId (int32_t) overflow are caught by base::checked_cast.
+  int64_t huge_pos = 1LL << 45;  // 32TB, overflows when shifted by 8.
+
+  MultiBufferReader reader(&multibuffer_, 0, huge_pos + 1024, false,
+                           base::NullCallback(), task_runner_);
+
+  // This should crash due to base::checked_cast in MultiBufferReader::block.
+  EXPECT_DEATH(reader.Seek(huge_pos), "");
+}
+
 }  // namespace blink
