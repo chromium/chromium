@@ -47,11 +47,19 @@ class PrintManagementHandlerTest : public testing::Test {
   }
   ~PrintManagementHandlerTest() override = default;
 
+  // Test:
+  void TearDown() override {
+    // nulled before handler due to dependency.
+    delegate_ = nullptr;
+    handler_.reset();
+    Test::TearDown();
+  }
+
   FakePrintManagementDelegate* delegate() { return delegate_; }
   PrintManagementHandler* handler() { return handler_.get(); }
 
  private:
-  raw_ptr<FakePrintManagementDelegate, DanglingUntriaged> delegate_;
+  raw_ptr<FakePrintManagementDelegate> delegate_;
   std::unique_ptr<PrintManagementHandler> handler_;
 };
 
