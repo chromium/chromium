@@ -174,6 +174,27 @@ int SiteInstanceRenderProcessAssignmentToInt(
   return 0;
 }
 
+std::optional<base::TimeDelta> CalculateActualNavigationOffset(
+    const page_load_metrics::PageLoadMetricsObserverDelegate& delegate,
+    const content::NavigationHandleTiming& navigation_handle_timing) {
+  // Exclude cases where actual_navigation_start > GetNavigationStart(). This
+  // can happen due to timestamp inconsistencies between the renderer and
+  // browser processes, which might be made worse by
+  // `InterProcessTimeTicksConverter`.
+  if (!navigation_handle_timing.actual_navigation_start.is_null() &&
+      (navigation_handle_timing.actual_navigation_start <=
+       delegate.GetNavigationStart())) {
+    base::TimeDelta duration =
+        delegate.GetNavigationStart() -
+        navigation_handle_timing.actual_navigation_start -
+        navigation_handle_timing.before_unload_dialog_duration;
+    if (!duration.is_negative()) {
+      return duration;
+    }
+  }
+  return std::nullopt;
+}
+
 // These are the high bounds of each bucket, in enum order. The index into this
 // array is cast to an enum value when recording UKM. These should correspond to
 // the upper bounds of the BitsPerPixelExponential enum in
@@ -903,6 +924,143 @@ void UkmPageLoadMetricsObserver::RecordTimingMetrics(
     builder.SetExperimental_InputToNavigationStart(
         timing.input_to_navigation_start.value().InMilliseconds());
   }
+
+  if (std::optional<base::TimeDelta> actual_navigation_offset =
+          CalculateActualNavigationOffset(GetDelegate(),
+                                          navigation_handle_timing_)) {
+    builder.SetNavigationTiming_ActualNavigationStartToNavigationStartMs(
+        actual_navigation_offset->InMilliseconds());
+
+    if (!navigation_handle_timing_.navigation_commit_sent_time.is_null() &&
+        navigation_handle_timing_.navigation_commit_sent_time >=
+            GetDelegate().GetNavigationStart()) {
+      builder.SetNavigationTiming_ActualNavigationStartToNavigationCommitSentMs(
+          (*actual_navigation_offset +
+           (navigation_handle_timing_.navigation_commit_sent_time -
+            GetDelegate().GetNavigationStart()))
+              .InMilliseconds());
+    }
+
+    if (WasStartedInForegroundOptionalEventInForeground(
+            timing.parse_timing->parse_start, GetDelegate())) {
+      builder.SetParseTiming_ActualNavigationStartToParseStartMs(
+          (*actual_navigation_offset + timing.parse_timing->parse_start.value())
+              .InMilliseconds());
+    }
+
+    if (WasStartedInForegroundOptionalEventInForeground(
+            timing.paint_timing->first_contentful_paint, GetDelegate())) {
+      builder.SetPaintTiming_ActualNavigationStartToFirstContentfulPaintMs(
+          (*actual_navigation_offset +
+           timing.paint_timing->first_contentful_paint.value())
+              .InMilliseconds());
+    }
+
+    if (WasStartedInForegroundOptionalEventInForeground(
+            timing.document_timing->dom_content_loaded_event_start,
+            GetDelegate())) {
+      builder
+          .SetDocumentTiming_ActualNavigationStartToDOMContentLoadedEventFiredMs(
+              (*actual_navigation_offset +
+               timing.document_timing->dom_content_loaded_event_start.value())
+                  .InMilliseconds());
+    }
+
+    const page_load_metrics::ContentfulPaintTimingInfo& cwv_lcp_timing_info =
+        GetCoreWebVitalsLcpTimingInfo();
+    if (cwv_lcp_timing_info.ContainsValidTime() &&
+        WasStartedInForegroundOptionalEventInForeground(
+            cwv_lcp_timing_info.Time(), GetDelegate())) {
+      builder.SetPaintTiming_ActualNavigationStartToLargestContentfulPaintMs(
+          (*actual_navigation_offset + cwv_lcp_timing_info.Time().value())
+              .InMilliseconds());
+    }
+  }
+
+  if (!navigation_handle_timing_.user_interaction.is_null() &&
+      !navigation_handle_timing_.actual_navigation_start.is_null() &&
+      navigation_handle_timing_.user_interaction <=
+          navigation_handle_timing_.actual_navigation_start) {
+    builder.SetNavigationTiming_InteractionToActualNavigationStartMs(
+        (navigation_handle_timing_.actual_navigation_start -
+         navigation_handle_timing_.user_interaction)
+            .InMilliseconds());
+  }
+
+  if (!navigation_handle_timing_.user_interaction.is_null() &&
+      navigation_handle_timing_.user_interaction <=
+          GetDelegate().GetNavigationStart()) {
+    base::TimeDelta interaction_to_navigation_start =
+        GetDelegate().GetNavigationStart() -
+        navigation_handle_timing_.user_interaction -
+        navigation_handle_timing_.before_unload_dialog_duration;
+    if (!interaction_to_navigation_start.is_negative()) {
+      builder.SetNavigationTiming_InteractionToNavigationStartMs(
+          interaction_to_navigation_start.InMilliseconds());
+    }
+  }
+
+  if (!navigation_handle_timing_.navigation_commit_sent_time.is_null() &&
+      navigation_handle_timing_.navigation_commit_sent_time >=
+          GetDelegate().GetNavigationStart()) {
+    builder.SetNavigationTiming_NavigationStartToNavigationCommitSentMs(
+        (navigation_handle_timing_.navigation_commit_sent_time -
+         GetDelegate().GetNavigationStart())
+            .InMilliseconds());
+
+    if (WasStartedInForegroundOptionalEventInForeground(
+            timing.parse_timing->parse_start, GetDelegate())) {
+      base::TimeDelta commit_to_parse =
+          timing.parse_timing->parse_start.value() -
+          (navigation_handle_timing_.navigation_commit_sent_time -
+           GetDelegate().GetNavigationStart());
+      if (!commit_to_parse.is_negative()) {
+        builder.SetNavigationTiming_NavigationCommitSentToParseStartMs(
+            commit_to_parse.InMilliseconds());
+      }
+    }
+  }
+
+  if (WasStartedInForegroundOptionalEventInForeground(
+          timing.parse_timing->parse_start, GetDelegate())) {
+    base::TimeDelta parse_start = timing.parse_timing->parse_start.value();
+
+    if (WasStartedInForegroundOptionalEventInForeground(
+            timing.paint_timing->first_contentful_paint, GetDelegate())) {
+      base::TimeDelta parse_to_fcp =
+          timing.paint_timing->first_contentful_paint.value() - parse_start;
+      if (!parse_to_fcp.is_negative()) {
+        builder.SetPaintTiming_ParseStartToFirstContentfulPaintMs(
+            parse_to_fcp.InMilliseconds());
+      }
+    }
+
+    if (WasStartedInForegroundOptionalEventInForeground(
+            timing.document_timing->dom_content_loaded_event_start,
+            GetDelegate())) {
+      base::TimeDelta parse_to_dom_content_loaded =
+          timing.document_timing->dom_content_loaded_event_start.value() -
+          parse_start;
+      if (!parse_to_dom_content_loaded.is_negative()) {
+        builder.SetDocumentTiming_ParseStartToDOMContentLoadedEventFiredMs(
+            parse_to_dom_content_loaded.InMilliseconds());
+      }
+    }
+
+    const page_load_metrics::ContentfulPaintTimingInfo& cwv_lcp_timing_info =
+        GetCoreWebVitalsLcpTimingInfo();
+    if (cwv_lcp_timing_info.ContainsValidTime() &&
+        WasStartedInForegroundOptionalEventInForeground(
+            cwv_lcp_timing_info.Time(), GetDelegate())) {
+      base::TimeDelta parse_to_lcp =
+          cwv_lcp_timing_info.Time().value() - parse_start;
+      if (!parse_to_lcp.is_negative()) {
+        builder.SetPaintTiming_ParseStartToLargestContentfulPaintMs(
+            parse_to_lcp.InMilliseconds());
+      }
+    }
+  }
+
   if (WasStartedInForegroundOptionalEventInForeground(
           timing.parse_timing->parse_start, GetDelegate())) {
     builder.SetParseTiming_NavigationToParseStart(
