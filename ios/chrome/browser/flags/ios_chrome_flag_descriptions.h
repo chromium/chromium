@@ -1012,6 +1012,9 @@ extern const char kSyncAutofillValuableMetadataDescription[];
 extern const char kSyncAutofillValuableName[];
 extern const char kSyncAutofillValuableDescription[];
 
+extern const char kSyncContextualTaskName[];
+extern const char kSyncContextualTaskDescription[];
+
 extern const char kSyncSandboxName[];
 extern const char kSyncSandboxDescription[];
 

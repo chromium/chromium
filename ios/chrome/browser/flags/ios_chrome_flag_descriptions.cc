@@ -1659,6 +1659,10 @@ const char kSyncAutofillValuableName[] = "Sync autofill valuable";
 const char kSyncAutofillValuableDescription[] =
     "Enables syncing valuable for autofill to the server.";
 
+const char kSyncContextualTaskName[] = "Sync Contextual Task";
+const char kSyncContextualTaskDescription[] =
+    "Enables syncing of contextual tasks.";
+
 const char kSyncSandboxName[] = "Use Chrome Sync sandbox";
 const char kSyncSandboxDescription[] =
     "Connects to the testing server for Chrome Sync.";
