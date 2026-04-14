@@ -1255,6 +1255,26 @@ TEST_F(LabelTest, CanForceDirectionality) {
             ltr_text_force_rtl.GetTextDirectionForTesting());
 }
 
+TEST_F(LabelTest, SetDirectionalityMode) {
+  Label label(ToRTL("0123456"));
+  EXPECT_EQ(base::i18n::TextDirection::RIGHT_TO_LEFT,
+            label.GetTextDirectionForTesting());
+
+  label.SetDirectionalityMode(
+      gfx::DirectionalityMode::DIRECTIONALITY_FORCE_LTR);
+  EXPECT_EQ(base::i18n::TextDirection::LEFT_TO_RIGHT,
+            label.GetTextDirectionForTesting());
+
+  label.SetDirectionalityMode(
+      gfx::DirectionalityMode::DIRECTIONALITY_FORCE_RTL);
+  EXPECT_EQ(base::i18n::TextDirection::RIGHT_TO_LEFT,
+            label.GetTextDirectionForTesting());
+
+  label.SetDirectionalityMode(gfx::DirectionalityMode::DIRECTIONALITY_AS_URL);
+  EXPECT_EQ(base::i18n::TextDirection::LEFT_TO_RIGHT,
+            label.GetTextDirectionForTesting());
+}
+
 TEST_F(LabelTest, DefaultDirectionalityIsFromText) {
   Label ltr(u"Foo");
   EXPECT_EQ(base::i18n::TextDirection::LEFT_TO_RIGHT,

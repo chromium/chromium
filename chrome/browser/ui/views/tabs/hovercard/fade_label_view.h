@@ -18,6 +18,7 @@ struct FadeLabelViewData {
   std::u16string text;
   bool is_filename = false;
   gfx::ElideBehavior elide = gfx::ELIDE_TAIL;
+  bool is_domain_url = false;
 };
 
 using FadeWrapper_Label_FadeLabelViewData =

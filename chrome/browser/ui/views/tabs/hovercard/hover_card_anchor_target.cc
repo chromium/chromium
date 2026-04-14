@@ -96,6 +96,7 @@ void HoverCardAnchorTarget::SetHoverCardDataFrom(
   }
 
   std::u16string domain;
+  bool is_domain_url = false;
   if (domain_url.SchemeIsFile()) {
     domain = l10n_util::GetStringUTF16(IDS_HOVER_CARD_FILE_URL_SOURCE);
   } else if (domain_url.SchemeIsBlob()) {
@@ -104,6 +105,7 @@ void HoverCardAnchorTarget::SetHoverCardDataFrom(
     domain = l10n_util::GetStringUTF16(IDS_HOVER_CARD_VIEW_SOURCE_URL_SOURCE);
   } else {
     if (tab_data.should_display_url) {
+      is_domain_url = true;
       // Hide the domain when necessary. This leaves an empty space in the
       // card, but this scenario is very rare. Also, shrinking the card to
       // remove the space would result in visual noise, so we keep it simple.
@@ -121,7 +123,7 @@ void HoverCardAnchorTarget::SetHoverCardDataFrom(
 
   card_data.thumbnail = tab_data.thumbnail;
   card_data.title_data = GetTabTitleLabel(tab_data);
-  card_data.domain_data = {domain, false, gfx::ELIDE_HEAD};
+  card_data.domain_data = {domain, false, gfx::ELIDE_HEAD, is_domain_url};
 
   // Now set the collaboration data.
   using collaboration::messaging::CollaborationEvent;

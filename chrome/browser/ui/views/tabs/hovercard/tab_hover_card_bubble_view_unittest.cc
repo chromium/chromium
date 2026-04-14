@@ -9,13 +9,19 @@
 
 #include "base/logging.h"
 #include "build/build_config.h"
+#include "chrome/browser/ui/tabs/tab_data.h"
+#include "chrome/browser/ui/views/tabs/fake_tab_slot_controller.h"
 #include "chrome/browser/ui/views/tabs/hovercard/filename_elider.h"
+#include "chrome/browser/ui/views/tabs/hovercard/hover_card_anchor_target.h"
+#include "chrome/browser/ui/views/tabs/tab.h"
+#include "chrome/test/views/chrome_views_test_base.h"
 #include "content/public/test/browser_task_environment.h"
 #include "skia/ext/font_utils.h"
 #include "testing/gtest/include/gtest/gtest-param-test.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/render_text.h"
+#include "ui/views/widget/widget.h"
 
 #if BUILDFLAG(IS_MAC)
 #include "base/mac/mac_util.h"
@@ -373,4 +379,41 @@ TEST_P(TabHoverCardBubbleViewFilenameEliderFindImageDimensionsTest,
        FindImageDimensions) {
   const FindImageDimensionsTestParams& params = GetParam();
   EXPECT_EQ(params.expected, FilenameElider::FindImageDimensions(params.text));
+}
+
+class TabHoverCardBubbleViewTest : public ChromeViewsTestBase {
+ public:
+  TabHoverCardBubbleViewTest() = default;
+  ~TabHoverCardBubbleViewTest() override = default;
+};
+
+TEST_F(TabHoverCardBubbleViewTest, HoverCardLabel_DomainIsUrl) {
+  auto tab_slot_controller = std::make_unique<FakeTabSlotController>();
+  std::unique_ptr<views::Widget> widget =
+      CreateTestWidget(views::Widget::InitParams::CLIENT_OWNS_WIDGET);
+  Tab* tab = widget->SetContentsView(
+      std::make_unique<Tab>(tabs::TabHandle(1), tab_slot_controller.get()));
+
+  TabHoverCardBubbleView* hover_card =
+      new TabHoverCardBubbleView(tab, {.show_domain = true});
+
+  tabs::TabData data;
+  data.last_committed_url = GURL("https://example.com");
+  data.should_display_url = true;
+  tab->SetDataForTesting(data);
+
+  hover_card->UpdateCardContent(tab);
+
+  FadeLabelView* domain_view = hover_card->GetDomainViewForTesting();
+  FadeLabel* primary_label = domain_view->GetPrimaryViewForTesting();
+  EXPECT_EQ(gfx::DirectionalityMode::DIRECTIONALITY_AS_URL,
+            primary_label->GetDirectionalityMode());
+
+  data.should_display_url = false;
+  tab->SetDataForTesting(data);
+  hover_card->UpdateCardContent(tab);
+  EXPECT_EQ(gfx::DirectionalityMode::DIRECTIONALITY_FROM_TEXT,
+            primary_label->GetDirectionalityMode());
+
+  hover_card->GetWidget()->CloseNow();
 }

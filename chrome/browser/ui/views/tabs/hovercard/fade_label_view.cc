@@ -24,6 +24,9 @@ void FadeLabel::SetData(const FadeLabelViewData& data) {
   std::u16string text = data.text;
   const bool is_filename = data.is_filename;
   SetElideBehavior(is_filename ? gfx::NO_ELIDE : data.elide);
+  SetDirectionalityMode(
+      data.is_domain_url ? gfx::DirectionalityMode::DIRECTIONALITY_AS_URL
+                         : gfx::DirectionalityMode::DIRECTIONALITY_FROM_TEXT);
   if (is_filename) {
     text = TruncateFilenameToTwoLines(text);
   }

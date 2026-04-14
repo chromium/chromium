@@ -536,6 +536,14 @@ void Label::SetElideBehavior(gfx::ElideBehavior elide_behavior) {
   OnDisplayTextTruncation();
 }
 
+void Label::SetDirectionalityMode(gfx::DirectionalityMode mode) {
+  full_text_->SetDirectionalityMode(mode);
+}
+
+gfx::DirectionalityMode Label::GetDirectionalityMode() const {
+  return full_text_->directionality_mode();
+}
+
 void Label::SetCustomTooltipText(std::u16string_view tooltip_text) {
   custom_tooltip_text_ = std::u16string(tooltip_text);
 
