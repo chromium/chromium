@@ -10,10 +10,10 @@
 
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
 #include "base/uuid.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/multistep_filter/core/data_models/url_filter_suggestion.h"
-#include "components/multistep_filter/core/multistep_filter_ui_delegate.h"
 
 class GURL;
 
@@ -62,10 +62,10 @@ class MultistepFilterService : public KeyedService {
 
   // Generates a filter suggestion for `url`. Based on URL analysis, the
   // suggestion may be stored for later use. Results are returned via the
-  // `delegate`.
+  // `callback`.
   virtual void GenerateFilterSuggestions(
       const GURL& url,
-      base::WeakPtr<MultistepFilterUiDelegate> delegate);
+      base::OnceCallback<void(std::optional<UrlFilterSuggestion>)> callback);
 
  private:
   friend class MultistepFilterServiceTestApi;
@@ -74,8 +74,9 @@ class MultistepFilterService : public KeyedService {
   void OnExtractionFinished(std::optional<base::Uuid> annotation_id);
 
   // Callback for when a suggestion is generated.
-  void OnSuggestionGenerated(base::WeakPtr<MultistepFilterUiDelegate> delegate,
-                             std::optional<UrlFilterSuggestion> suggestion);
+  void OnSuggestionGenerated(
+      base::OnceCallback<void(std::optional<UrlFilterSuggestion>)> callback,
+      std::optional<UrlFilterSuggestion> suggestion);
 
   // Returns true if the user is currently signed in. The Multistep Filter
   // feature is only available for signed-in users.
@@ -100,6 +101,10 @@ class MultistepFilterService : public KeyedService {
   // Used to check if the user is signed in, as the feature is only available
   // for signed-in users.
   const raw_ptr<signin::IdentityManager> identity_manager_;
+
+  // This should be kept at the end so that it is the first member to be
+  // destroyed.
+  base::WeakPtrFactory<MultistepFilterService> weak_ptr_factory_{this};
 };
 
 }  // namespace multistep_filter

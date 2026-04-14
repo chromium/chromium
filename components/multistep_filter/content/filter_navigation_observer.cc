@@ -5,6 +5,7 @@
 #include "components/multistep_filter/content/filter_navigation_observer.h"
 
 #include "base/check.h"
+#include "base/functional/bind.h"
 #include "components/multistep_filter/content/filter_initiated_navigation_marker.h"
 #include "components/multistep_filter/core/multistep_filter_service.h"
 #include "components/multistep_filter/core/multistep_filter_ui_delegate.h"
@@ -97,10 +98,20 @@ void FilterNavigationObserver::DidFinishNavigation(
   // Prevent showing suggestions for same-site navigations to avoid spamming
   // the user, and don't re-trigger if the navigation was already initiated by
   // the filter UI.
-  if (!metadata.was_filter_initiated_navigation &&
-      !IsSameDomainOrHost(metadata.url, metadata.prev_url)) {
-    service_->GenerateFilterSuggestions(metadata.url, delegate_->GetWeakPtr());
+  if (metadata.was_filter_initiated_navigation ||
+      IsSameDomainOrHost(metadata.url, metadata.prev_url)) {
+    return;
   }
+
+  if (delegate_->ShouldSuppressSuggestions(metadata.url)) {
+    delegate_->OnSuggestionGenerated(std::nullopt);
+    return;
+  }
+
+  service_->GenerateFilterSuggestions(
+      metadata.url,
+      base::BindOnce(&MultistepFilterUiDelegate::OnSuggestionGenerated,
+                     delegate_->GetWeakPtr()));
 }
 
 void FilterNavigationObserver::PrimaryMainFrameRenderProcessGone(

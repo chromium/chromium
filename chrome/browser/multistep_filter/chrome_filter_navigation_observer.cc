@@ -14,6 +14,7 @@
 #include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "components/multistep_filter/content/filter_navigation_observer.h"
 #include "components/multistep_filter/core/multistep_filter_service.h"
+#include "components/multistep_filter/core/multistep_filter_ui_delegate.h"
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/web_contents.h"
 

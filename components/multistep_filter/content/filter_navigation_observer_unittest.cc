@@ -9,6 +9,7 @@
 #include "components/multistep_filter/core/annotation_index/annotation_index_client.h"
 #include "components/multistep_filter/core/annotation_index/mock_annotation_index_client.h"
 #include "components/multistep_filter/core/multistep_filter_service.h"
+#include "components/multistep_filter/core/multistep_filter_ui_delegate.h"
 #include "components/multistep_filter/core/storage/filter_store.h"
 #include "content/public/test/mock_navigation_handle.h"
 #include "content/public/test/navigation_simulator.h"
@@ -32,21 +33,24 @@ class MockMultistepFilterService : public MultistepFilterService {
                                std::move(filter_store),
                                /*identity_manager=*/nullptr) {
     ON_CALL(*this, GenerateFilterSuggestions)
-        .WillByDefault([](const GURL& url,
-                          base::WeakPtr<MultistepFilterUiDelegate> delegate) {
-          if (delegate) {
-            delegate->OnSuggestionGenerated(std::nullopt);
-          }
-        });
+        .WillByDefault(
+            [](const GURL& url,
+               base::OnceCallback<void(std::optional<UrlFilterSuggestion>)>
+                   callback) {
+              if (callback) {
+                std::move(callback).Run(std::nullopt);
+              }
+            });
   }
   ~MockMultistepFilterService() override = default;
 
   MOCK_METHOD(void, ExtractAnnotation, (const GURL& url), (override));
-  MOCK_METHOD(void,
-              GenerateFilterSuggestions,
-              (const GURL& url,
-               base::WeakPtr<MultistepFilterUiDelegate> delegate),
-              (override));
+  MOCK_METHOD(
+      void,
+      GenerateFilterSuggestions,
+      (const GURL& url,
+       base::OnceCallback<void(std::optional<UrlFilterSuggestion>)> callback),
+      (override));
 };
 
 class MockUiDelegate : public MultistepFilterUiDelegate {
@@ -159,6 +163,7 @@ TEST_F(FilterNavigationObserverTest, SameDocumentNavigation) {
 TEST_F(FilterNavigationObserverTest, SameUrlReCommitNavigation) {
   const GURL url("https://www.example.com");
   EXPECT_CALL(delegate(), ClearSuggestion());
+  EXPECT_CALL(mock_service(), ExtractAnnotation(url));
   EXPECT_CALL(mock_service(), GenerateFilterSuggestions(url, _));
   content::NavigationSimulator::NavigateAndCommitFromBrowser(web_contents(),
                                                              url);
@@ -411,6 +416,20 @@ TEST_F(FilterNavigationObserverTest,
   FilterInitiatedNavigationMarker::CreateForNavigationHandle(
       *navigation->GetNavigationHandle());
   navigation->Commit();
+}
+
+TEST_F(FilterNavigationObserverTest, SuppressSuggestions) {
+  const GURL url("https://www.example.com");
+  EXPECT_CALL(delegate(), ClearSuggestion());
+  EXPECT_CALL(mock_service(), ExtractAnnotation(url));
+
+  EXPECT_CALL(delegate(), ShouldSuppressSuggestions(url))
+      .WillOnce(testing::Return(true));
+  EXPECT_CALL(delegate(), OnSuggestionGenerated(testing::Eq(std::nullopt)));
+  EXPECT_CALL(mock_service(), GenerateFilterSuggestions).Times(0);
+
+  content::NavigationSimulator::NavigateAndCommitFromBrowser(web_contents(),
+                                                             url);
 }
 
 }  // namespace

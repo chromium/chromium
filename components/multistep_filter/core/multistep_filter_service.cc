@@ -41,35 +41,32 @@ MultistepFilterService::~MultistepFilterService() = default;
 
 void MultistepFilterService::ExtractAnnotation(const GURL& url) {
   // Extract filter annotations for signed-in users only.
-  if (IsUserSignedIn() && IsUrlAllowed(url)) {
-    filter_extractor_->ExtractAnnotationFromUrl(
-        url, base::BindOnce(&MultistepFilterService::OnExtractionFinished,
-                            base::Unretained(this)));
-  } else {
+  if (!IsUserSignedIn() || !IsUrlAllowed(url)) {
     OnExtractionFinished(std::nullopt);
+    return;
   }
+
+  filter_extractor_->ExtractAnnotationFromUrl(
+      url, base::BindOnce(&MultistepFilterService::OnExtractionFinished,
+                          weak_ptr_factory_.GetWeakPtr()));
 }
 
 void MultistepFilterService::GenerateFilterSuggestions(
     const GURL& url,
-    base::WeakPtr<MultistepFilterUiDelegate> delegate) {
-  if (!delegate) {
-    return;
-  }
-
-  if (delegate->ShouldSuppressSuggestions(url)) {
-    OnSuggestionGenerated(delegate, std::nullopt);
+    base::OnceCallback<void(std::optional<UrlFilterSuggestion>)> callback) {
+  if (callback.is_null()) {
     return;
   }
 
   // Generate filter suggestions for signed-in users only.
-  if (IsUserSignedIn() && IsUrlAllowed(url)) {
-    filter_suggestion_generator_->GenerateSuggestion(
-        url, base::BindOnce(&MultistepFilterService::OnSuggestionGenerated,
-                            base::Unretained(this), delegate));
-  } else {
-    OnSuggestionGenerated(delegate, std::nullopt);
+  if (!IsUserSignedIn() || !IsUrlAllowed(url)) {
+    OnSuggestionGenerated(std::move(callback), std::nullopt);
+    return;
   }
+
+  filter_suggestion_generator_->GenerateSuggestion(
+      url, base::BindOnce(&MultistepFilterService::OnSuggestionGenerated,
+                          weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
 }
 
 void MultistepFilterService::OnExtractionFinished(
@@ -80,14 +77,12 @@ void MultistepFilterService::OnExtractionFinished(
 }
 
 void MultistepFilterService::OnSuggestionGenerated(
-    base::WeakPtr<MultistepFilterUiDelegate> delegate,
+    base::OnceCallback<void(std::optional<UrlFilterSuggestion>)> callback,
     std::optional<UrlFilterSuggestion> suggestion) {
   if (observer_for_test_) {
     observer_for_test_->OnSuggestionGenerated(suggestion);
   }
-  if (delegate) {
-    delegate->OnSuggestionGenerated(suggestion);
-  }
+  std::move(callback).Run(std::move(suggestion));
 }
 
 bool MultistepFilterService::IsUserSignedIn() const {

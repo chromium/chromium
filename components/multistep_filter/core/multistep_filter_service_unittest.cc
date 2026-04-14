@@ -11,6 +11,7 @@
 #include "base/check.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
+#include "base/test/gmock_callback_support.h"
 #include "base/test/mock_callback.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
@@ -21,7 +22,6 @@
 #include "components/multistep_filter/core/extraction/filter_extractor.h"
 #include "components/multistep_filter/core/features.h"
 #include "components/multistep_filter/core/multistep_filter_service_test_api.h"
-#include "components/multistep_filter/core/multistep_filter_ui_delegate.h"
 #include "components/multistep_filter/core/storage/filter_store.h"
 #include "components/multistep_filter/core/suggestion/filter_suggestion_generator.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
@@ -58,21 +58,16 @@ class MockFilterSuggestionGenerator : public FilterSuggestionGenerator {
       (override));
 };
 
-class MockMultistepFilterUiDelegate : public MultistepFilterUiDelegate {
+class MockObserver : public MultistepFilterService::ObserverForTest {
  public:
-  MOCK_METHOD(bool, ShouldSuppressSuggestions, (const GURL& url), (override));
-  MOCK_METHOD(void, ClearSuggestion, (), (override));
+  MOCK_METHOD(void,
+              OnExtractionFinished,
+              (std::optional<base::Uuid>),
+              (override));
   MOCK_METHOD(void,
               OnSuggestionGenerated,
-              (std::optional<UrlFilterSuggestion> suggestion),
+              (std::optional<UrlFilterSuggestion>),
               (override));
-
-  base::WeakPtr<MultistepFilterUiDelegate> GetWeakPtr() override {
-    return weak_ptr_factory_.GetWeakPtr();
-  }
-
- private:
-  base::WeakPtrFactory<MockMultistepFilterUiDelegate> weak_ptr_factory_{this};
 };
 
 class MultistepFilterServiceTest : public testing::Test {
@@ -81,7 +76,7 @@ class MultistepFilterServiceTest : public testing::Test {
     scoped_feature_list_.InitAndEnableFeature(kMultistepFilter);
   }
 
-  void CreateService() {
+  void CreateService(signin::IdentityManager* identity_manager) {
     auto annotation_index_client =
         std::make_unique<MockAnnotationIndexClient>();
     auto filter_store = std::make_unique<FilterStore>();
@@ -96,17 +91,25 @@ class MultistepFilterServiceTest : public testing::Test {
 
     service_ = std::make_unique<MultistepFilterService>(
         std::move(annotation_index_client), std::move(filter_store),
-        identity_test_env_.identity_manager());
+        identity_manager);
 
-    test_api(*service_).set_filter_extractor(std::move(filter_extractor));
-    test_api(*service_).set_filter_suggestion_generator(
+    MultistepFilterServiceTestApi(*service_).set_filter_extractor(
+        std::move(filter_extractor));
+    MultistepFilterServiceTestApi(*service_).set_filter_suggestion_generator(
         std::move(filter_suggestion_generator));
+
+    mock_observer_ = std::make_unique<MockObserver>();
+    MultistepFilterServiceTestApi(*service_).SetObserverForTest(
+        mock_observer_.get());
   }
+
+  void CreateService() { CreateService(identity_test_env_.identity_manager()); }
 
   base::test::ScopedFeatureList scoped_feature_list_;
   base::test::TaskEnvironment task_environment_;
   signin::IdentityTestEnvironment identity_test_env_;
 
+  std::unique_ptr<MockObserver> mock_observer_;
   std::unique_ptr<MultistepFilterService> service_;
 
   // Raw pointers to the mocks, valid as long as the service is alive.
@@ -125,8 +128,13 @@ TEST_F(MultistepFilterServiceTest, ExtractAnnotation) {
 
   CreateService();
   const GURL kUrl("http://example.com");
+  base::Uuid mock_uuid = base::Uuid::GenerateRandomV4();
 
-  EXPECT_CALL(*mock_extractor_, ExtractAnnotationFromUrl(kUrl, _));
+  EXPECT_CALL(*mock_extractor_, ExtractAnnotationFromUrl(kUrl, _))
+      .WillOnce(base::test::RunOnceCallback<1>(mock_uuid));
+
+  EXPECT_CALL(*mock_observer_,
+              OnExtractionFinished(testing::Optional(mock_uuid)));
 
   service_->ExtractAnnotation(kUrl);
 }
@@ -136,13 +144,24 @@ TEST_F(MultistepFilterServiceTest, ExtractAnnotation_NotSignedIn) {
   const GURL kUrl("http://example.com");
 
   EXPECT_CALL(*mock_extractor_, ExtractAnnotationFromUrl).Times(0);
+  EXPECT_CALL(*mock_observer_, OnExtractionFinished(testing::Eq(std::nullopt)));
+
+  service_->ExtractAnnotation(kUrl);
+}
+
+TEST_F(MultistepFilterServiceTest, ExtractAnnotation_NullIdentityManager) {
+  CreateService(nullptr);
+  const GURL kUrl("http://example.com");
+
+  EXPECT_CALL(*mock_extractor_, ExtractAnnotationFromUrl).Times(0);
+  EXPECT_CALL(*mock_observer_, OnExtractionFinished(testing::Eq(std::nullopt)));
 
   service_->ExtractAnnotation(kUrl);
 }
 
 TEST_F(MultistepFilterServiceTest, ExtractAnnotation_NotAllowedDomain) {
-  base::test::ScopedFeatureList local_feature_list;
-  local_feature_list.InitAndEnableFeatureWithParameters(
+  scoped_feature_list_.Reset();
+  scoped_feature_list_.InitAndEnableFeatureWithParameters(
       kMultistepFilter, {{"allowed_domains", "example.com"}});
 
   identity_test_env_.MakePrimaryAccountAvailable("test@gmail.com",
@@ -152,6 +171,8 @@ TEST_F(MultistepFilterServiceTest, ExtractAnnotation_NotAllowedDomain) {
   const GURL kUrl("http://notexample.com");
 
   EXPECT_CALL(*mock_extractor_, ExtractAnnotationFromUrl).Times(0);
+  EXPECT_CALL(*mock_observer_, OnExtractionFinished(testing::Eq(std::nullopt)));
+
   service_->ExtractAnnotation(kUrl);
 }
 
@@ -161,45 +182,56 @@ TEST_F(MultistepFilterServiceTest, GenerateFilterSuggestions) {
 
   CreateService();
   const GURL kUrl("http://example.com");
-  MockMultistepFilterUiDelegate mock_delegate;
+  base::MockCallback<
+      base::OnceCallback<void(std::optional<UrlFilterSuggestion>)>>
+      mock_callback;
+  UrlFilterSuggestion mock_suggestion(kUrl, u"example.com", base::Time::Now(),
+                                      {});
 
-  EXPECT_CALL(mock_delegate, ShouldSuppressSuggestions(kUrl))
-      .WillOnce(testing::Return(false));
-  EXPECT_CALL(*mock_generator_, GenerateSuggestion(kUrl, _));
+  EXPECT_CALL(*mock_generator_, GenerateSuggestion(kUrl, _))
+      .WillOnce(base::test::RunOnceCallback<1>(mock_suggestion));
 
-  service_->GenerateFilterSuggestions(kUrl, mock_delegate.GetWeakPtr());
-}
+  EXPECT_CALL(*mock_observer_,
+              OnSuggestionGenerated(testing::Optional(mock_suggestion)));
+  EXPECT_CALL(mock_callback, Run(testing::Optional(mock_suggestion)));
 
-TEST_F(MultistepFilterServiceTest, GenerateFilterSuggestions_Suppressed) {
-  identity_test_env_.MakePrimaryAccountAvailable("test@gmail.com",
-                                                 signin::ConsentLevel::kSignin);
-
-  CreateService();
-  const GURL kUrl("http://example.com");
-  MockMultistepFilterUiDelegate mock_delegate;
-
-  EXPECT_CALL(mock_delegate, ShouldSuppressSuggestions(kUrl))
-      .WillOnce(testing::Return(true));
-  EXPECT_CALL(*mock_generator_, GenerateSuggestion).Times(0);
-  EXPECT_CALL(mock_delegate, OnSuggestionGenerated(testing::Eq(std::nullopt)));
-
-  service_->GenerateFilterSuggestions(kUrl, mock_delegate.GetWeakPtr());
+  service_->GenerateFilterSuggestions(kUrl, mock_callback.Get());
 }
 
 TEST_F(MultistepFilterServiceTest, GenerateFilterSuggestions_NotSignedIn) {
   CreateService();
   const GURL kUrl("http://example.com");
-  testing::NiceMock<MockMultistepFilterUiDelegate> mock_delegate;
+  base::MockCallback<
+      base::OnceCallback<void(std::optional<UrlFilterSuggestion>)>>
+      mock_callback;
 
   EXPECT_CALL(*mock_generator_, GenerateSuggestion).Times(0);
-  EXPECT_CALL(mock_delegate, OnSuggestionGenerated(testing::Eq(std::nullopt)));
+  EXPECT_CALL(*mock_observer_,
+              OnSuggestionGenerated(testing::Eq(std::nullopt)));
+  EXPECT_CALL(mock_callback, Run(testing::Eq(std::nullopt)));
 
-  service_->GenerateFilterSuggestions(kUrl, mock_delegate.GetWeakPtr());
+  service_->GenerateFilterSuggestions(kUrl, mock_callback.Get());
+}
+
+TEST_F(MultistepFilterServiceTest,
+       GenerateFilterSuggestions_NullIdentityManager) {
+  CreateService(nullptr);
+  const GURL kUrl("http://example.com");
+  base::MockCallback<
+      base::OnceCallback<void(std::optional<UrlFilterSuggestion>)>>
+      mock_callback;
+
+  EXPECT_CALL(*mock_generator_, GenerateSuggestion).Times(0);
+  EXPECT_CALL(*mock_observer_,
+              OnSuggestionGenerated(testing::Eq(std::nullopt)));
+  EXPECT_CALL(mock_callback, Run(testing::Eq(std::nullopt)));
+
+  service_->GenerateFilterSuggestions(kUrl, mock_callback.Get());
 }
 
 TEST_F(MultistepFilterServiceTest, GenerateFilterSuggestions_NotAllowedDomain) {
-  base::test::ScopedFeatureList local_feature_list;
-  local_feature_list.InitAndEnableFeatureWithParameters(
+  scoped_feature_list_.Reset();
+  scoped_feature_list_.InitAndEnableFeatureWithParameters(
       kMultistepFilter, {{"allowed_domains", "example.com"}});
 
   identity_test_env_.MakePrimaryAccountAvailable("test@gmail.com",
@@ -207,15 +239,19 @@ TEST_F(MultistepFilterServiceTest, GenerateFilterSuggestions_NotAllowedDomain) {
 
   CreateService();
   const GURL kUrl("http://notexample.com");
-  testing::NiceMock<MockMultistepFilterUiDelegate> mock_delegate;
+  base::MockCallback<
+      base::OnceCallback<void(std::optional<UrlFilterSuggestion>)>>
+      mock_callback;
 
   EXPECT_CALL(*mock_generator_, GenerateSuggestion).Times(0);
-  EXPECT_CALL(mock_delegate, OnSuggestionGenerated(testing::Eq(std::nullopt)));
+  EXPECT_CALL(*mock_observer_,
+              OnSuggestionGenerated(testing::Eq(std::nullopt)));
+  EXPECT_CALL(mock_callback, Run(testing::Eq(std::nullopt)));
 
-  service_->GenerateFilterSuggestions(kUrl, mock_delegate.GetWeakPtr());
+  service_->GenerateFilterSuggestions(kUrl, mock_callback.Get());
 }
 
-TEST_F(MultistepFilterServiceTest, GenerateFilterSuggestions_NullDelegate) {
+TEST_F(MultistepFilterServiceTest, GenerateFilterSuggestions_NullCallback) {
   identity_test_env_.MakePrimaryAccountAvailable("test@gmail.com",
                                                  signin::ConsentLevel::kSignin);
 
@@ -224,7 +260,7 @@ TEST_F(MultistepFilterServiceTest, GenerateFilterSuggestions_NullDelegate) {
 
   EXPECT_CALL(*mock_generator_, GenerateSuggestion).Times(0);
 
-  service_->GenerateFilterSuggestions(kUrl, nullptr);
+  service_->GenerateFilterSuggestions(kUrl, base::NullCallback());
 }
 
 }  // namespace multistep_filter
