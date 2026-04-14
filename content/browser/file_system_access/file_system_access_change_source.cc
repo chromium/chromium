@@ -71,13 +71,14 @@ void FileSystemAccessChangeSource::DidInitialize(
   CHECK(!initialization_result_.has_value());
   CHECK(!initialization_callbacks_.empty());
 
-  initialization_result_ = std::move(result);
+  // The callbacks may cause |this| to be deleted, so we should only use
+  // stack-based objects below.
+  initialization_result_ = result->Clone();
 
-  // Move the callbacks to the stack since they may cause |this| to be deleted.
   auto initialization_callbacks = std::move(initialization_callbacks_);
   initialization_callbacks_.clear();
   for (auto& callback : initialization_callbacks) {
-    std::move(callback).Run(initialization_result_->Clone());
+    std::move(callback).Run(result->Clone());
   }
 }
 
