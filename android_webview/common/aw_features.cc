@@ -212,7 +212,7 @@ BASE_FEATURE(kWebViewStartupTasksYieldToNative,
 // When this is disabled, logging is initiated on the main thread and a success
 // status is reported to the chromium metrics service immediately.
 BASE_FEATURE(kAndroidMetricsAsyncMetricLogging,
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Reduce when the app's copy of the finch seed expires. This makes WebView more
 // aggressive in requesting a new copy of its finch seed.
