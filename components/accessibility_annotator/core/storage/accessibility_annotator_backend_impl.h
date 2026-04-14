@@ -67,10 +67,11 @@ class AccessibilityAnnotatorBackendImpl
   void RemoveObserver(
       AccessibilityAnnotatorBackend::Observer* observer) override;
   base::optional_ref<const ContentAnnotationsData>
-  GetContentAnnotationsCacheData(const GURL& url) const override;
-  void SetContentAnnotationsCacheData(const GURL& url,
+  GetContentAnnotationsCacheData(history::VisitID visit_id) const override;
+  void SetContentAnnotationsCacheData(history::VisitID visit_id,
                                       ContentAnnotationsData data) override;
-  void RemoveContentAnnotationsCacheData(base::span<const GURL> urls) override;
+  void RemoveContentAnnotationsCacheData(
+      base::span<const history::VisitID> visit_ids) override;
   void ClearContentAnnotationsCache() override;
   base::Value GetDebugUICacheData() const override;
   void GetSyncAnnotationsByTypes(
@@ -104,10 +105,11 @@ class AccessibilityAnnotatorBackendImpl
   std::unique_ptr<AccessibilityAnnotationSyncBridge>
       accessibility_annotation_sync_bridge_;
 
-  // Stores annotations keyed by the URL they are associated with. The cache
-  // size is `kContentAnnotatorMaxCacheAnnotations`. When the cache is full, the
-  // least recently used entry is evicted.
-  base::LRUCache<GURL, ContentAnnotationsData> content_annotations_cache_;
+  // Stores annotations keyed by the visit ID they are associated with. The
+  // cache size is `kContentAnnotatorMaxCacheAnnotations`. When the cache is
+  // full, the least recently used entry is evicted.
+  base::LRUCache<history::VisitID, ContentAnnotationsData>
+      content_annotations_cache_;
 
   base::ScopedObservation<AccessibilityAnnotationSyncBridge,
                           AccessibilityAnnotationSyncBridge::Observer>

@@ -116,8 +116,8 @@ void AccessibilityAnnotatorBackendImpl::OnHistoryServiceLoaded(
 
 base::optional_ref<const AccessibilityAnnotatorBackend::ContentAnnotationsData>
 AccessibilityAnnotatorBackendImpl::GetContentAnnotationsCacheData(
-    const GURL& url) const {
-  auto it = content_annotations_cache_.Peek(url);
+    history::VisitID visit_id) const {
+  auto it = content_annotations_cache_.Peek(visit_id);
   if (it != content_annotations_cache_.end()) {
     return it->second;
   }
@@ -125,20 +125,20 @@ AccessibilityAnnotatorBackendImpl::GetContentAnnotationsCacheData(
 }
 
 void AccessibilityAnnotatorBackendImpl::SetContentAnnotationsCacheData(
-    const GURL& url,
+    history::VisitID visit_id,
     ContentAnnotationsData data) {
-  base::LRUCache<GURL, ContentAnnotationsData>::iterator it =
-      content_annotations_cache_.Put(url, std::move(data));
+  base::LRUCache<history::VisitID, ContentAnnotationsData>::iterator it =
+      content_annotations_cache_.Put(visit_id, std::move(data));
 
   observers_.Notify(
       &AccessibilityAnnotatorBackend::Observer::OnContentAnnotationsAdded,
-      it->second);
+      visit_id, it->second);
 }
 
 void AccessibilityAnnotatorBackendImpl::RemoveContentAnnotationsCacheData(
-    base::span<const GURL> urls) {
-  for (const GURL& url : urls) {
-    auto it = content_annotations_cache_.Peek(url);
+    base::span<const history::VisitID> visit_ids) {
+  for (history::VisitID visit_id : visit_ids) {
+    auto it = content_annotations_cache_.Peek(visit_id);
     if (it != content_annotations_cache_.end()) {
       content_annotations_cache_.Erase(it);
     }
@@ -151,14 +151,14 @@ void AccessibilityAnnotatorBackendImpl::ClearContentAnnotationsCache() {
 
 base::Value AccessibilityAnnotatorBackendImpl::GetDebugUICacheData() const {
   base::ListValue result;
-  for (const std::pair<GURL, ContentAnnotationsData>& item :
+  for (const std::pair<history::VisitID, ContentAnnotationsData>& item :
        content_annotations_cache_) {
     base::DictValue entry;
-    entry.Set("visit_id", base::NumberToString(item.second.visit_id));
+    entry.Set("visit_id", base::NumberToString(item.first));
     entry.Set("navigation_timestamp",
               base::UTF16ToUTF8(base::TimeFormatShortDateAndTime(
                   item.second.navigation_timestamp)));
-    entry.Set("url", item.first.spec());
+    entry.Set("url", item.second.url.spec());
     entry.Set("title", item.second.page_title);
     entry.Set("classifier_results", item.second.classifier_results.Clone());
     if (item.second.tab_id) {

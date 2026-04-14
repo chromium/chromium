@@ -600,13 +600,14 @@ TEST_F(ContentAnnotatorServiceTest, TestMaybeAnnotate_FullAnnotationReached) {
   base::optional_ref<
       const AccessibilityAnnotatorBackend::ContentAnnotationsData>
       cached_data =
-          accessibility_annotator_backend_->GetContentAnnotationsCacheData(url);
+          accessibility_annotator_backend_->GetContentAnnotationsCacheData(
+              static_cast<history::VisitID>(1));
   ASSERT_TRUE(cached_data.has_value());
   EXPECT_EQ(cached_data->annotations,
             base::JSONReader::Read(data, base::JSON_PARSE_RFC)->GetDict());
   EXPECT_EQ(cached_data->page_title, "Test Title");
+  EXPECT_EQ(cached_data->url, url);
   EXPECT_EQ(cached_data->navigation_timestamp, base_time);
-  EXPECT_EQ(cached_data->visit_id, static_cast<history::VisitID>(1));
 
   base::DictValue expected_classifier_results;
   expected_classifier_results.Set("title_keyword_result", "test category");
@@ -691,7 +692,8 @@ TEST_F(ContentAnnotatorServiceTest,
   base::optional_ref<
       const AccessibilityAnnotatorBackend::ContentAnnotationsData>
       cached_data =
-          accessibility_annotator_backend_->GetContentAnnotationsCacheData(url);
+          accessibility_annotator_backend_->GetContentAnnotationsCacheData(
+              static_cast<history::VisitID>(1));
   ASSERT_TRUE(cached_data.has_value());
   ASSERT_TRUE(cached_data->content_annotation.has_value());
   EXPECT_EQ(cached_data->content_annotation->description(), "Test description");
@@ -702,8 +704,8 @@ TEST_F(ContentAnnotatorServiceTest,
   EXPECT_EQ(cached_data->content_annotation->structured_data().orders(0).id(),
             "order_123");
   EXPECT_EQ(cached_data->page_title, "Test Title");
+  EXPECT_EQ(cached_data->url, url);
   EXPECT_EQ(cached_data->navigation_timestamp, base_time);
-  EXPECT_EQ(cached_data->visit_id, static_cast<history::VisitID>(1));
 
   base::DictValue expected_classifier_results;
   expected_classifier_results.Set("title_keyword_result", "test category");
@@ -880,7 +882,8 @@ TEST_F(ContentAnnotatorServiceTest,
   base::optional_ref<
       const AccessibilityAnnotatorBackend::ContentAnnotationsData>
       cached_data =
-          accessibility_annotator_backend_->GetContentAnnotationsCacheData(url);
+          accessibility_annotator_backend_->GetContentAnnotationsCacheData(
+              static_cast<history::VisitID>(1));
   EXPECT_FALSE(cached_data.has_value());
 }
 
@@ -950,7 +953,8 @@ TEST_F(ContentAnnotatorServiceTest,
   base::optional_ref<
       const AccessibilityAnnotatorBackend::ContentAnnotationsData>
       cached_data =
-          accessibility_annotator_backend_->GetContentAnnotationsCacheData(url);
+          accessibility_annotator_backend_->GetContentAnnotationsCacheData(
+              static_cast<history::VisitID>(1));
   ASSERT_TRUE(cached_data.has_value());
   EXPECT_EQ(cached_data->annotations,
             base::JSONReader::Read(data, base::JSON_PARSE_RFC)->GetDict());

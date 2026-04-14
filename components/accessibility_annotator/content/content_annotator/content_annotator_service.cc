@@ -294,19 +294,19 @@ void ContentAnnotatorService::MaybeAnnotate(CacheIterator it) {
 
     AccessibilityAnnotatorBackend::ContentAnnotationsData data;
     data.page_title = complete_data.page_title.value();
+    data.url = complete_data.url;
     data.tab_id = complete_data.tab_id;
     data.navigation_timestamp = complete_data.navigation_timestamp.value();
     data.classifier_results = std::move(classifier_values);
-    data.visit_id = complete_data.visit_id.value();
 
-    GenerateAnnotations(std::move(page_context), complete_data.url,
+    GenerateAnnotations(std::move(page_context), complete_data.visit_id.value(),
                         std::move(data));
   }
 }
 
 void ContentAnnotatorService::GenerateAnnotations(
     optimization_guide::proto::PageContext page_context,
-    const GURL& url,
+    history::VisitID visit_id,
     AccessibilityAnnotatorBackend::ContentAnnotationsData data) {
   optimization_guide::proto::ContentAnnotationRequest request;
   *request.mutable_page_context() = std::move(page_context);
@@ -316,15 +316,16 @@ void ContentAnnotatorService::GenerateAnnotations(
       std::move(request),
       {.execution_timeout = features::kContentAnnotatorAnnotationTimeout.Get()},
       base::BindOnce(&ContentAnnotatorService::HandleModelExecutionResult,
-                     weak_ptr_factory_.GetWeakPtr(), url, std::move(data)));
+                     weak_ptr_factory_.GetWeakPtr(), visit_id,
+                     std::move(data)));
 }
 
 void ContentAnnotatorService::HandleModelExecutionResult(
-    const GURL& url,
+    history::VisitID visit_id,
     AccessibilityAnnotatorBackend::ContentAnnotationsData data,
     optimization_guide::OptimizationGuideModelExecutionResult result,
     std::unique_ptr<optimization_guide::ModelQualityLogEntry> log_entry) {
-  if (url.is_empty() || !url.is_valid()) {
+  if (visit_id == history::kInvalidVisitID) {
     return;
   }
 
@@ -346,7 +347,7 @@ void ContentAnnotatorService::HandleModelExecutionResult(
     if (content_annotation.has_value()) {
       data.content_annotation = std::move(content_annotation);
       accessibility_annotator_backend_->SetContentAnnotationsCacheData(
-          url, std::move(data));
+          visit_id, std::move(data));
     }
   } else if (response->has_extracted_data() &&
              !response->extracted_data().empty()) {
@@ -356,7 +357,7 @@ void ContentAnnotatorService::HandleModelExecutionResult(
     if (extracted_data.has_value()) {
       data.annotations = std::move(extracted_data);
       accessibility_annotator_backend_->SetContentAnnotationsCacheData(
-          url, std::move(data));
+          visit_id, std::move(data));
     }
   }
 }

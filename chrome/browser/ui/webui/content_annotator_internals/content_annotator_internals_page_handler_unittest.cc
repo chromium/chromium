@@ -121,12 +121,12 @@ TEST_F(ContentAnnotatorInternalsPageHandlerTest, GetAnnotatedContentWithData) {
       data;
   data.page_title = "Title";
   data.tab_id = 123;
-  data.visit_id = static_cast<history::VisitID>(123);
+  data.url = GURL("https://example.com");
   data.navigation_timestamp = now;
   data.annotations = std::move(annotations);
   data.classifier_results = std::move(classifier_results);
 
-  backend->SetContentAnnotationsCacheData(GURL("https://example.com"),
+  backend->SetContentAnnotationsCacheData(static_cast<history::VisitID>(123),
                                           std::move(data));
 
   base::RunLoop run_loop;
@@ -162,7 +162,8 @@ TEST_F(ContentAnnotatorInternalsPageHandlerTest, ClearContentAnnotationsCache) {
   accessibility_annotator::AccessibilityAnnotatorBackend::ContentAnnotationsData
       data;
   data.page_title = "Title";
-  backend->SetContentAnnotationsCacheData(GURL("https://example.com"),
+  data.url = GURL("https://example.com");
+  backend->SetContentAnnotationsCacheData(static_cast<history::VisitID>(1),
                                           std::move(data));
 
   // Verify data is present.

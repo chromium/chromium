@@ -16,6 +16,7 @@
 #include "base/sequence_checker.h"
 #include "components/accessibility_annotator/content/content_annotator/content_classifier_types.h"
 #include "components/accessibility_annotator/core/storage/accessibility_annotator_backend.h"
+#include "components/history/core/browser/history_types.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/page_content_annotations/content/page_content_extraction_service.h"
 #include "components/page_content_annotations/content/page_embeddings_service.h"
@@ -121,16 +122,16 @@ class ContentAnnotatorService
   // annotation eligibility.
   void MaybeAnnotate(CacheIterator it);
 
-  // Generates annotations for the given URL based on the provided
+  // Generates annotations for the given visit_id based on the provided
   // `page_context`.
   void GenerateAnnotations(
       optimization_guide::proto::PageContext page_context,
-      const GURL& url,
+      history::VisitID visit_id,
       AccessibilityAnnotatorBackend::ContentAnnotationsData data);
 
   // Handles the result of the model execution from `GenerateAnnotations`.
   void HandleModelExecutionResult(
-      const GURL& url,
+      history::VisitID visit_id,
       AccessibilityAnnotatorBackend::ContentAnnotationsData data,
       optimization_guide::OptimizationGuideModelExecutionResult result,
       std::unique_ptr<optimization_guide::ModelQualityLogEntry> log_entry);
