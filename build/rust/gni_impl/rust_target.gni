@@ -593,7 +593,7 @@ template("rust_target") {
         deps = [ ":${_main_target_name}" ]
 
         # For `.rlib`s, build-script-generated files, etc.
-        deps += _rust_deps
+        deps += _rust_deps + _rust_public_deps
 
         testonly = _testonly
       }
