@@ -32,23 +32,24 @@ class NightLightFeaturePodControllerTest : public AshTestBase {
 
   void SetUp() override {
     AshTestBase::SetUp();
-    system_tray_ = GetPrimaryUnifiedSystemTray();
-    system_tray_->ShowBubble();
+    GetPrimaryUnifiedSystemTray()->ShowBubble();
   }
 
   void TearDown() override {
     tile_.reset();
     controller_.reset();
-    system_tray_->CloseBubble();
+    GetPrimaryUnifiedSystemTray()->CloseBubble();
     AshTestBase::TearDown();
   }
 
   void CreateButton() {
-    if (!system_tray_->IsBubbleShown()) {
-      system_tray_->ShowBubble();
+    if (!GetPrimaryUnifiedSystemTray()->IsBubbleShown()) {
+      GetPrimaryUnifiedSystemTray()->ShowBubble();
     }
     controller_ = std::make_unique<NightLightFeaturePodController>(
-        system_tray_->bubble()->unified_system_tray_controller());
+        GetPrimaryUnifiedSystemTray()
+            ->bubble()
+            ->unified_system_tray_controller());
     tile_ = controller_->CreateTile();
   }
 
@@ -66,7 +67,6 @@ class NightLightFeaturePodControllerTest : public AshTestBase {
   }
 
  private:
-  raw_ptr<UnifiedSystemTray, DanglingUntriaged> system_tray_;
   std::unique_ptr<NightLightFeaturePodController> controller_;
   std::unique_ptr<FeatureTile> tile_;
 };
