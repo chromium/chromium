@@ -897,9 +897,9 @@ void HistorySyncOptinHelperInProfilePicker::OnAccountManagementScreenClosed(
           HistorySyncSkipReason::kManagementRejected);
       return;
     case signin::SIGNIN_CHOICE_NEW_PROFILE:
+      FetchPoliciesAndUpdateManagedDisclaimerState();
       // Mark the user having accepted the management.
       enterprise_util::SetUserAcceptedAccountManagement(profile(), true);
-      FetchPoliciesAndUpdateManagedDisclaimerState();
       return;
   }
 }
