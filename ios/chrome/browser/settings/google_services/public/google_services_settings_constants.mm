@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/settings/ui_bundled/google_services/google_services_settings_constants.h"
+#import "ios/chrome/browser/settings/google_services/public/google_services_settings_constants.h"
 
 NSString* const kGoogleServicesSettingsViewIdentifier =
     @"google_services_settings_view_controller";

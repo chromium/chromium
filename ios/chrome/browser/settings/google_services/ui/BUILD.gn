@@ -1,0 +1,27 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("ui") {
+  sources = [
+    "google_services_settings_consumer.h",
+    "google_services_settings_view_controller.h",
+    "google_services_settings_view_controller.mm",
+    "google_services_settings_view_controller_model_delegate.h",
+  ]
+  deps = [
+    "//ios/chrome/app/strings",
+    "//ios/chrome/browser/net/model:crurl",
+    "//ios/chrome/browser/settings/google_services/public",
+    "//ios/chrome/browser/settings/ui_bundled:settings_root",
+    "//ios/chrome/browser/settings/ui_bundled/cells",
+    "//ios/chrome/browser/settings/ui_bundled/elements:enterprise_info_popover_view_controller",
+    "//ios/chrome/browser/settings/ui_bundled/elements:info_popover_view_controller",
+    "//ios/chrome/browser/shared/ui/table_view",
+    "//ios/chrome/browser/shared/ui/table_view:utils",
+    "//ios/chrome/browser/shared/ui/util",
+    "//ios/chrome/common/ui/colors",
+    "//net",
+    "//ui/base",
+  ]
+}

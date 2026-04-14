@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/settings/ui_bundled/google_services/google_services_settings_mediator.h"
+#import "ios/chrome/browser/settings/google_services/coordinator/google_services_settings_mediator.h"
 
 #import "base/apple/foundation_util.h"
 #import "base/auto_reset.h"
@@ -20,11 +20,11 @@
 #import "ios/chrome/browser/authentication/ui_bundled/authentication_constants.h"
 #import "ios/chrome/browser/authentication/ui_bundled/cells/table_view_account_item.h"
 #import "ios/chrome/browser/policy/model/policy_util.h"
+#import "ios/chrome/browser/settings/google_services/coordinator/google_services_settings_command_handler.h"
+#import "ios/chrome/browser/settings/google_services/public/google_services_settings_constants.h"
 #import "ios/chrome/browser/settings/model/sync/utils/sync_util.h"
 #import "ios/chrome/browser/settings/ui_bundled/cells/settings_image_detail_text_item.h"
 #import "ios/chrome/browser/settings/ui_bundled/cells/sync_switch_item.h"
-#import "ios/chrome/browser/settings/ui_bundled/google_services/google_services_settings_command_handler.h"
-#import "ios/chrome/browser/settings/ui_bundled/google_services/google_services_settings_constants.h"
 #import "ios/chrome/browser/settings/ui_bundled/settings_table_view_controller_constants.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_backed_boolean.h"

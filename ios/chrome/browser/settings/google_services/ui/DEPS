@@ -1,0 +1,6 @@
+include_rules = [
+  # keep-sorted start
+  "+ios/chrome/browser/net/model",
+  "+ios/chrome/browser/settings/ui_bundled",
+  # keep-sorted end
+]

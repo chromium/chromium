@@ -28,7 +28,7 @@
 #import "ios/chrome/browser/settings/google_services/bulk_upload/public/bulk_upload_constants.h"
 #import "ios/chrome/browser/settings/google_services/manage_accounts/public/manage_accounts_table_view_controller_constants.h"
 #import "ios/chrome/browser/settings/google_services/manage_sync/public/manage_sync_settings_constants.h"
-#import "ios/chrome/browser/settings/ui_bundled/google_services/google_services_settings_constants.h"
+#import "ios/chrome/browser/settings/google_services/public/google_services_settings_constants.h"
 #import "ios/chrome/browser/settings/ui_bundled/password/password_manager_egtest_utils.h"
 #import "ios/chrome/browser/settings/ui_bundled/settings_table_view_controller_constants.h"
 #import "ios/chrome/browser/shared/public/features/features.h"

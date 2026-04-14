@@ -1,0 +1,15 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("public") {
+  sources = [
+    "google_services_settings_constants.h",
+    "google_services_settings_constants.mm",
+  ]
+  deps = [
+    "//ios/chrome/browser/settings/google_services/manage_accounts/public",
+    "//ios/chrome/browser/settings/google_services/manage_sync/public",
+    "//ios/chrome/browser/shared/ui/list_model",
+  ]
+}

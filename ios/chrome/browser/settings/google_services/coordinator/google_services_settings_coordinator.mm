@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/settings/ui_bundled/google_services/google_services_settings_coordinator.h"
+#import "ios/chrome/browser/settings/google_services/coordinator/google_services_settings_coordinator.h"
 
 #import "base/apple/foundation_util.h"
 #import "components/google/core/common/google_util.h"
@@ -14,8 +14,8 @@
 #import "ios/chrome/browser/authentication/ui_bundled/signin/signin_utils.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signout_action_sheet/signout_action_sheet_coordinator.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_feature.h"
-#import "ios/chrome/browser/settings/ui_bundled/google_services/google_services_settings_command_handler.h"
-#import "ios/chrome/browser/settings/ui_bundled/google_services/google_services_settings_mediator.h"
+#import "ios/chrome/browser/settings/google_services/coordinator/google_services_settings_command_handler.h"
+#import "ios/chrome/browser/settings/google_services/coordinator/google_services_settings_mediator.h"
 #import "ios/chrome/browser/settings/ui_bundled/sync/sync_encryption_passphrase_table_view_controller.h"
 #import "ios/chrome/browser/shared/coordinator/alert/action_sheet_coordinator.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"

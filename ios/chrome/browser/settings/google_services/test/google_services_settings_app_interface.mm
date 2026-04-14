@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/settings/ui_bundled/google_services/google_services_settings_app_interface.h"
+#import "ios/chrome/browser/settings/google_services/test/google_services_settings_app_interface.h"
 
 #import "ios/chrome/app/main_controller.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"

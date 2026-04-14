@@ -2,14 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_SETTINGS_UI_BUNDLED_GOOGLE_SERVICES_GOOGLE_SERVICES_SETTINGS_MEDIATOR_H_
-#define IOS_CHROME_BROWSER_SETTINGS_UI_BUNDLED_GOOGLE_SERVICES_GOOGLE_SERVICES_SETTINGS_MEDIATOR_H_
+#ifndef IOS_CHROME_BROWSER_SETTINGS_GOOGLE_SERVICES_COORDINATOR_GOOGLE_SERVICES_SETTINGS_MEDIATOR_H_
+#define IOS_CHROME_BROWSER_SETTINGS_GOOGLE_SERVICES_COORDINATOR_GOOGLE_SERVICES_SETTINGS_MEDIATOR_H_
 
 #import <UIKit/UIKit.h>
 
-#import "ios/chrome/browser/settings/ui_bundled/google_services/google_services_settings_consumer.h"
-#import "ios/chrome/browser/settings/ui_bundled/google_services/google_services_settings_view_controller.h"
-#import "ios/chrome/browser/settings/ui_bundled/google_services/google_services_settings_view_controller_model_delegate.h"
+#import "ios/chrome/browser/settings/google_services/ui/google_services_settings_consumer.h"
+#import "ios/chrome/browser/settings/google_services/ui/google_services_settings_view_controller.h"
+#import "ios/chrome/browser/settings/google_services/ui/google_services_settings_view_controller_model_delegate.h"
 
 class AuthenticationService;
 @protocol GoogleServicesSettingsCommandHandler;
@@ -52,4 +52,4 @@ class IdentityManager;
 
 @end
 
-#endif  // IOS_CHROME_BROWSER_SETTINGS_UI_BUNDLED_GOOGLE_SERVICES_GOOGLE_SERVICES_SETTINGS_MEDIATOR_H_
+#endif  // IOS_CHROME_BROWSER_SETTINGS_GOOGLE_SERVICES_COORDINATOR_GOOGLE_SERVICES_SETTINGS_MEDIATOR_H_

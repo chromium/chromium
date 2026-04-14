@@ -2,18 +2,53 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+source_set("eg_app_support+eg2") {
+  configs += [ "//build/config/ios:xctest_config" ]
+  testonly = true
+  sources = [
+    "google_services_settings_app_interface.h",
+    "google_services_settings_app_interface.mm",
+  ]
+  deps = [
+    "//ios/chrome/app:app_internal",
+    "//ios/chrome/browser/shared/model/web_state_list",
+    "//ios/chrome/browser/tabs/model",
+    "//ios/chrome/test/app:test_support",
+    "//ios/web/public",
+    "//ios/web/public/navigation",
+  ]
+}
+
+source_set("eg_test_support+eg2") {
+  configs += [ "//build/config/ios:xctest_config" ]
+  testonly = true
+  sources = [
+    "google_services_settings_app_interface.h",
+    "google_services_settings_app_interface_stub.mm",
+  ]
+  deps = [ "//ios/testing/earl_grey:eg_test_support+eg2" ]
+}
+
 source_set("eg2_tests") {
   configs += [ "//build/config/ios:xctest_config" ]
   testonly = true
-  sources = [ "manage_sync_settings_egtest.mm" ]
+  sources = [ "google_services_settings_egtest.mm" ]
   deps = [
+    ":eg_test_support+eg2",
     "//base",
     "//base/test:test_support",
+    "//components/feature_engagement/public",
+    "//components/password_manager/core/common",
     "//components/policy:generated",
+    "//components/policy/core/common:common_constants",
     "//components/regional_capabilities",
+    "//components/search_engines",
+    "//components/signin/internal/identity_manager:capabilities",
+    "//components/signin/public/base",
     "//components/strings",
-    "//components/sync/base",
+    "//components/supervised_user/core/common:features",
     "//components/sync/base:features",
+    "//components/variations",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/authentication/account_menu/public",
     "//ios/chrome/browser/authentication/test:eg_test_support+eg2",
@@ -22,21 +57,30 @@ source_set("eg2_tests") {
     "//ios/chrome/browser/bookmarks/test:eg_test_support+eg2",
     "//ios/chrome/browser/device_reauth/test:eg_test_support+eg2",
     "//ios/chrome/browser/ntp/ui_bundled:feature_flags",
+    "//ios/chrome/browser/policy/model:constants",
     "//ios/chrome/browser/policy/model:eg_test_support+eg2",
     "//ios/chrome/browser/policy/model:policy_util",
     "//ios/chrome/browser/reading_list/ui_bundled:eg_test_support+eg2",
     "//ios/chrome/browser/settings/google_services/bulk_upload/public",
     "//ios/chrome/browser/settings/google_services/manage_accounts/public",
     "//ios/chrome/browser/settings/google_services/manage_sync/public",
+    "//ios/chrome/browser/settings/google_services/manage_sync/test:eg2_tests",
     "//ios/chrome/browser/settings/google_services/public",
     "//ios/chrome/browser/settings/ui_bundled:constants",
+    "//ios/chrome/browser/settings/ui_bundled:eg_test_support+eg2",
     "//ios/chrome/browser/settings/ui_bundled/password:eg_test_support",
+    "//ios/chrome/browser/shared/model/prefs:pref_names",
     "//ios/chrome/browser/shared/public/features",
+    "//ios/chrome/browser/shared/ui/elements:constants",
+    "//ios/chrome/browser/shared/ui/elements:eg_test_support+eg2",
     "//ios/chrome/browser/signin/model:fake_system_identity",
     "//ios/chrome/common/ui/promo_style:constants",
     "//ios/chrome/test:eg_test_support+eg2",
     "//ios/chrome/test/earl_grey:eg_test_support+eg2",
+    "//ios/chrome/test/earl_grey:switches",
     "//ios/testing/earl_grey:eg_test_support+eg2",
+    "//ios/testing/earl_grey:launch_configuration",
+    "//net:test_support",
     "//ui/base",
   ]
   frameworks = [ "UIKit.framework" ]
