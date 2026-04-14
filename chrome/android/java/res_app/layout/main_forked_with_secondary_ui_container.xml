@@ -88,6 +88,13 @@ TODO(http://crbug.com/485940935): Delete this.
             android:inflatedId="@+id/bottombar"
             android:layout="@layout/custom_tabs_bottombar" />
 
+        <ViewStub
+            android:id="@+id/bookmark_bar_stub"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:inflatedId="@+id/bookmark_bar"
+            android:layout="@layout/bookmark_bar" />
+
         <org.chromium.ui.AsyncViewStub
             android:id="@+id/omnibox_results_container_stub"
             android:layout_width="match_parent"
@@ -124,13 +131,6 @@ TODO(http://crbug.com/485940935): Delete this.
             android:layout_gravity="start|bottom"
             android:inflatedId="@+id/bottom_app_bar_container"
             android:layout="@layout/bottom_control_container" />
-
-        <ViewStub
-            android:id="@+id/bookmark_bar_stub"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:inflatedId="@+id/bookmark_bar"
-            android:layout="@layout/bookmark_bar" />
 
         <ViewStub
             android:id="@+id/control_container_stub"
