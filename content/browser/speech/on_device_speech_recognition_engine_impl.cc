@@ -197,10 +197,23 @@ void OnDeviceSpeechRecognitionEngine::OnAsrStreamCreated(
   DCHECK_CALLED_ON_VALID_SEQUENCE(main_sequence_checker_);
   asr_stream_.Bind(std::move(asr_stream));
   asr_stream_responder_.Bind(std::move(asr_stream_responder));
+  asr_stream_responder_.set_disconnect_with_reason_handler(base::BindOnce(
+      &OnDeviceSpeechRecognitionEngine::OnResponderDisconnectedWithReason,
+      weak_factory_.GetWeakPtr()));
 }
 
 void OnDeviceSpeechRecognitionEngine::OnRecognizerDisconnected() {
+  OnResponderDisconnectedWithReason(0, "");
+}
+
+void OnDeviceSpeechRecognitionEngine::OnResponderDisconnectedWithReason(
+    uint32_t custom_reason,
+    const std::string& description) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(main_sequence_checker_);
+  media::mojom::SpeechRecognitionError error;
+  error.code = media::mojom::SpeechRecognitionErrorCode::kServiceNotAllowed;
+  error.details = media::mojom::SpeechAudioErrorDetails::kNone;
+  delegate_->OnSpeechRecognitionEngineError(error);
   EndRecognition();
 }
 

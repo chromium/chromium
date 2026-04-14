@@ -83,6 +83,8 @@ class CONTENT_EXPORT OnDeviceSpeechRecognitionEngine
           asr_stream_responder);
 
   void OnRecognizerDisconnected();
+  void OnResponderDisconnectedWithReason(uint32_t custom_reason,
+                                         const std::string& description);
 
   on_device_model::mojom::AudioDataPtr ConvertAccumulatedAudioData();
 

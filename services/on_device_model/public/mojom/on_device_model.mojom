@@ -459,6 +459,15 @@ struct SpeechRecognitionResult {
   bool is_final;
 };
 
+// Errors yielded by `AsrStream()`, a `Session` may provide these values as a
+// custom reason when disconnecting the `AsrStreamResponder` pipe.
+[Stable, Extensible]
+enum AsrError {
+  [Default] kUnknown = 0,
+  // Initialization failed (e.g. audio encoder unavailable).
+  kInitializationFailed = 1,
+};
+
 // Interface used for listening for ASR transcription results.
 [Stable]
 interface AsrStreamResponder {

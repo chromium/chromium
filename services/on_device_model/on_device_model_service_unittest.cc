@@ -1275,5 +1275,36 @@ TEST_F(OnDeviceModelServiceTest, RegexConstraintWithInvalidPrefix) {
 
 #endif
 
+TEST_F(OnDeviceModelServiceTest, AsrStreamInitializationFailure) {
+  auto model = LoadModel();
+  mojo::Remote<mojom::Session> session;
+  model->StartSession(session.BindNewPipeAndPassReceiver(), nullptr);
+
+  class DummyResponder : public mojom::AsrStreamResponder {
+   public:
+    void OnResponse(
+        std::vector<mojom::SpeechRecognitionResultPtr> result) override {}
+  };
+  DummyResponder responder_impl;
+  mojo::PendingRemote<mojom::AsrStreamResponder> responder_remote;
+  mojo::Receiver<mojom::AsrStreamResponder> receiver(
+      &responder_impl, responder_remote.InitWithNewPipeAndPassReceiver());
+
+  base::test::TestFuture<uint32_t, const std::string&> received_reason_future;
+  receiver.set_disconnect_with_reason_handler(
+      received_reason_future.GetCallback());
+
+  auto options = mojom::AsrStreamOptions::New();
+  options->sample_rate_hz = 0;
+  mojo::PendingRemote<mojom::AsrStreamInput> asr_input;
+  session->AsrStream(std::move(options),
+                     asr_input.InitWithNewPipeAndPassReceiver(),
+                     std::move(responder_remote));
+
+  EXPECT_TRUE(received_reason_future.Wait());
+  EXPECT_EQ(std::get<0>(received_reason_future.Take()),
+            static_cast<uint32_t>(mojom::AsrError::kInitializationFailed));
+}
+
 }  // namespace
 }  // namespace on_device_model

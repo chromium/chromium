@@ -24,6 +24,7 @@
 #include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/numerics/safe_conversions.h"
+#include "base/task/bind_post_task.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/hang_watcher.h"
 #include "base/timer/elapsed_timer.h"
@@ -360,6 +361,12 @@ class AsrStreamResponder final {
     return weak_ptr_factory_.GetWeakPtr();
   }
 
+  void OnCreateDone(std::optional<odmm::AsrError> error) {
+    if (error) {
+      responder_.ResetWithReason(static_cast<uint32_t>(error.value()), "");
+    }
+  }
+
  private:
   void Cancel() { session_ = nullptr; }
   void OnOutput(std::vector<odmm::SpeechRecognitionResultPtr> output) {
@@ -630,7 +637,9 @@ void SessionImpl::AsrStream(
   asr_responder_ = std::make_unique<AsrStreamResponder>(std::move(responder),
                                                         std::move(cloned));
   ChromeMLASRStreamOutputFn output_fn = asr_responder_->CreateOutputFn();
-  cloned_raw->CreateAsrStream(std::move(options), output_fn);
+  cloned_raw->CreateAsrStream(std::move(options), output_fn,
+                              base::BindOnce(&AsrStreamResponder::OnCreateDone,
+                                             asr_responder_->AsWeakPtr()));
 }
 
 void SessionImpl::AsrAddAudioChunk(odmm::AudioDataPtr data) {

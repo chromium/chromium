@@ -198,13 +198,16 @@ void SessionAccessor::SizeInTokens(on_device_model::mojom::InputPtr input,
 
 void SessionAccessor::CreateAsrStream(
     odmm::AsrStreamOptionsPtr options,
-    const ChromeMLASRStreamOutputFn output_fn) {
+    const ChromeMLASRStreamOutputFn output_fn,
+    base::OnceCallback<void(std::optional<odmm::AsrError>)> done_callback) {
   TRACE_EVENT("optimization_guide", "SessionAccessor::CreateAsrStream");
   DCHECK(output_fn);
-  task_runner_->PostTask(
-      FROM_HERE, base::BindOnce(&SessionAccessor::CreateAsrStreamInternal,
-                                base::Unretained(this), std::move(options),
-                                std::move(output_fn)));
+  task_runner_->PostTaskAndReplyWithResult(
+      FROM_HERE,
+      base::BindOnce(&SessionAccessor::CreateAsrStreamInternal,
+                     base::Unretained(this), std::move(options),
+                     std::move(output_fn)),
+      std::move(done_callback));
 }
 
 void SessionAccessor::AsrAddAudioChunk(odmm::AudioDataPtr data) {
@@ -355,7 +358,7 @@ void SessionAccessor::SizeInTokensInternal(
       size_in_tokens_fn);
 }
 
-void SessionAccessor::CreateAsrStreamInternal(
+std::optional<odmm::AsrError> SessionAccessor::CreateAsrStreamInternal(
     odmm::AsrStreamOptionsPtr asr_options,
     const ChromeMLASRStreamOutputFn output_fn) {
   TRACE_EVENT("optimization_guide", "SessionAccessor::CreateAsrStreamInternal");
@@ -366,6 +369,10 @@ void SessionAccessor::CreateAsrStreamInternal(
       .output_fn = &output_fn,
   };
   asr_stream_ = chrome_ml_->ASRCreateStream(session_, &options);
+  if (asr_stream_ == 0) {
+    return odmm::AsrError::kInitializationFailed;
+  }
+  return std::nullopt;
 }
 
 void SessionAccessor::AsrAddAudioChunkInternal(odmm::AudioDataPtr data) {
