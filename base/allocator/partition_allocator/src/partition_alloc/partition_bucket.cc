@@ -394,6 +394,8 @@ SlotSpanMetadata* PartitionDirectMap(PartitionRoot* root,
         PartitionOutOfMemoryCommitFailure(root, slot_size);
       }
 
+      root->GetReservationOffsetTable().SetNotAllocatedTag(reservation_start,
+                                                           reservation_size);
       {
         ScopedSyscallTimer timer{root};
 #if !PA_BUILDFLAG(HAS_64_BIT_POINTERS)
