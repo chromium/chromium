@@ -31,7 +31,6 @@
 #include "ui/views/view_class_properties.h"
 
 namespace {
-constexpr int kRegionVerticalPadding = 5;
 constexpr int kComboButtonCollapsedPadding = 2;
 }
 
@@ -171,9 +170,13 @@ views::ProposedLayout VerticalTabStripTopContainer::CalculateProposedLayout(
                                           combo_button_->GetVisible(), bounds);
         host_size.SetToMax(gfx::Size(bounds.right(), 0));
 
-        current_y += pref_size.height() + kRegionVerticalPadding;
+        current_y +=
+            pref_size.height() +
+            GetLayoutConstant(
+                LayoutConstant::kVerticalTabStripCollapsedVerticalPadding);
       } else if (caption_button_width_ != 0) {
-        current_y += kRegionVerticalPadding;
+        current_y += GetLayoutConstant(
+            LayoutConstant::kVerticalTabStripCollapsedVerticalPadding);
       }
     }
 
