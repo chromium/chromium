@@ -515,9 +515,8 @@ IN_PROC_BROWSER_TEST_P(NtpPromoVisualUiTest, Screenshots) {
 class NtpPromoDisabledUiTest : public NtpPromoUiTest {
  public:
   NtpPromoDisabledUiTest() {
-    feature_list_.InitAndEnableFeatureWithParameters(
-        user_education::features::kEnableNtpBrowserPromos,
-        {{user_education::features::kNtpBrowserPromoType.name, "none"}});
+    feature_list_.InitAndDisableFeature(
+        user_education::features::kEnableNtpBrowserPromos);
   }
 
  private:

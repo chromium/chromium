@@ -182,7 +182,7 @@ BASE_FEATURE_ENUM_PARAM(NtpBrowserPromoType,
 
 NtpBrowserPromoType GetNtpBrowserPromoType() {
   if (base::FeatureList::IsEnabled(kEnableNtpBrowserPromos)) {
-    return kNtpBrowserPromoType.Get();
+    return NtpBrowserPromoType::kSimple;
   }
   return NtpBrowserPromoType::kNone;
 }
