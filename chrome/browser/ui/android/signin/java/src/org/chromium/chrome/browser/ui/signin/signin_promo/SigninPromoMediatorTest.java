@@ -154,12 +154,11 @@ public class SigninPromoMediatorTest {
         mAccountManagerTestRule.addAccount(TestAccounts.ACCOUNT1);
         mAccountManagerTestRule.addAccount(TestAccounts.ACCOUNT2);
         createSigninPromoMediator(mPromoDelegate);
-        verify(mProfileDataCache, atLeastOnce())
-                .getProfileDataOrDefault(TestAccounts.ACCOUNT1.getEmail());
+        verify(mProfileDataCache, atLeastOnce()).getById(TestAccounts.ACCOUNT1.getId());
 
         mAccountManagerTestRule.removeAccount(TestAccounts.ACCOUNT1.getId());
 
-        verify(mProfileDataCache).getProfileDataOrDefault(TestAccounts.ACCOUNT2.getEmail());
+        verify(mProfileDataCache).getById(TestAccounts.ACCOUNT2.getId());
     }
 
     @Test

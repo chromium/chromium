@@ -93,9 +93,7 @@ final class SigninPromoMediator
 
         CoreAccountInfo visibleAccount = getVisibleAccount();
         DisplayableProfileData profileData =
-                visibleAccount == null
-                        ? null
-                        : mProfileDataCache.getProfileDataOrDefault(visibleAccount.getEmail());
+                visibleAccount == null ? null : mProfileDataCache.getById(visibleAccount.getId());
 
         mModel =
                 SigninPromoProperties.createModel(
@@ -257,11 +255,8 @@ final class SigninPromoMediator
     }
 
     private void updateModel(@Nullable CoreAccountInfo visibleAccount) {
-        @Nullable
-        DisplayableProfileData profileData =
-                visibleAccount == null
-                        ? null
-                        : mProfileDataCache.getProfileDataOrDefault(visibleAccount.getEmail());
+        @Nullable DisplayableProfileData profileData =
+                visibleAccount == null ? null : mProfileDataCache.getById(visibleAccount.getId());
         mModel.set(SigninPromoProperties.PROFILE_DATA, profileData);
         mModel.set(
                 SigninPromoProperties.SHOULD_HIDE_SECONDARY_BUTTON,
@@ -312,9 +307,7 @@ final class SigninPromoMediator
         }
         CoreAccountInfo visibleAccount = getVisibleAccount();
         DisplayableProfileData profileData =
-                visibleAccount == null
-                        ? null
-                        : mProfileDataCache.getProfileDataOrDefault(visibleAccount.getEmail());
+                visibleAccount == null ? null : mProfileDataCache.getById(visibleAccount.getId());
         mModel.set(
                 SigninPromoProperties.SHOULD_SHOW_LOADING_STATE,
                 mPromoDelegate.shouldDisplayLoadingState());
