@@ -49,6 +49,11 @@ class HotspotDetailedViewControllerTest : public AshTestBase {
     base::RunLoop().RunUntilIdle();
   }
 
+  void TearDown() override {
+    hotspot_detailed_view_controller_ = nullptr;
+    AshTestBase::TearDown();
+  }
+
   void UpdateHotspotInfo(HotspotState state,
                          HotspotAllowStatus allow_status,
                          int client_count = 0,
@@ -91,8 +96,7 @@ class HotspotDetailedViewControllerTest : public AshTestBase {
   }
 
  protected:
-  raw_ptr<HotspotDetailedViewController, DanglingUntriaged>
-      hotspot_detailed_view_controller_;
+  raw_ptr<HotspotDetailedViewController> hotspot_detailed_view_controller_;
 };
 
 TEST_F(HotspotDetailedViewControllerTest, ToggleClicked) {
