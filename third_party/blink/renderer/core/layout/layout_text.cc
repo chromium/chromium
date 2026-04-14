@@ -155,15 +155,12 @@ class SelectionDisplayItemClient
 };
 
 using SelectionDisplayItemClientMap =
-    HeapHashMap<WeakMember<const LayoutText>,
-                Member<SelectionDisplayItemClient>>;
+    GCedHeapHashMap<WeakMember<const LayoutText>,
+                    Member<SelectionDisplayItemClient>>;
 SelectionDisplayItemClientMap& GetSelectionDisplayItemClientMap() {
-  using SelectionDisplayItemClientMapHolder =
-      DisallowNewWrapper<SelectionDisplayItemClientMap>;
-  DEFINE_STATIC_LOCAL(
-      Persistent<SelectionDisplayItemClientMapHolder>, holder,
-      (MakeGarbageCollected<SelectionDisplayItemClientMapHolder>()));
-  return holder->Value();
+  DEFINE_STATIC_LOCAL(Persistent<SelectionDisplayItemClientMap>, holder,
+                      (MakeGarbageCollected<SelectionDisplayItemClientMap>()));
+  return *holder;
 }
 
 }  // anonymous namespace
@@ -263,8 +260,6 @@ void LayoutText::WillBeDestroyed() {
 
   if (SecureTextTimer* timer = GetSecureTextTimers().Take(this))
     timer->Stop();
-
-  GetSelectionDisplayItemClientMap().erase(this);
 
   if (node_id_ != kInvalidDOMNodeId) {
     if (auto* manager = GetOrResetContentCaptureManager())
@@ -1413,14 +1408,16 @@ const DisplayItemClient* LayoutText::GetSelectionDisplayItemClient() const {
       [[unlikely]] {
     return text_combine;
   }
-  if (!IsSelected())
+  if (!IsSelected()) {
     return nullptr;
-  auto it = GetSelectionDisplayItemClientMap().find(this);
-  if (it != GetSelectionDisplayItemClientMap().end())
-    return &*it->value;
-  return GetSelectionDisplayItemClientMap()
-      .insert(this, MakeGarbageCollected<SelectionDisplayItemClient>())
-      .stored_value->value.Get();
+  }
+
+  auto result = GetSelectionDisplayItemClientMap().insert(this, nullptr);
+  if (result.is_new_entry) {
+    result.stored_value->value =
+        MakeGarbageCollected<SelectionDisplayItemClient>();
+  }
+  return result.stored_value->value.Get();
 }
 
 PhysicalRect LayoutText::DebugRect() const {
