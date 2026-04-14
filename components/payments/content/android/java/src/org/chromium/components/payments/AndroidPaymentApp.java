@@ -24,6 +24,7 @@ import org.chromium.components.payments.intent.WebPaymentIntentHelperTypeConvert
 import org.chromium.components.url_formatter.SchemeDisplay;
 import org.chromium.components.url_formatter.UrlFormatter;
 import org.chromium.payments.mojom.PaymentDetailsModifier;
+import org.chromium.payments.mojom.PaymentEventResponseType;
 import org.chromium.payments.mojom.PaymentItem;
 import org.chromium.payments.mojom.PaymentMethodData;
 import org.chromium.payments.mojom.PaymentOptions;
@@ -428,13 +429,16 @@ public class AndroidPaymentApp extends PaymentApp
         }
     }
 
+    // TODO(crbug.com/7693354): Update notifyErrorInvokingPaymentApp to handle internal payment app
+    // error, and pass the specific error to onInstrumentDetailsError.
     private void notifyErrorInvokingPaymentApp(String errorMessage) {
         assert mInstrumentDetailsCallback != null : "Callback should be invoked only once";
         mHandler.post(
                 () -> {
                     assert mInstrumentDetailsCallback != null
                             : "Callback should be invoked only once";
-                    mInstrumentDetailsCallback.onInstrumentDetailsError(errorMessage);
+                    mInstrumentDetailsCallback.onInstrumentDetailsError(
+                            PaymentEventResponseType.PAYMENT_EVENT_REJECT, errorMessage);
                     mInstrumentDetailsCallback = null;
                 });
     }

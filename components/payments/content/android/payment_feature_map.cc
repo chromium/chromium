@@ -34,6 +34,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &features::kGPayAppDynamicUpdate,
     &features::kWebPaymentsExperimentalFeatures,
     &features::kWebPaymentsSingleAppUiSkip,
+    &features::kPaymentRequestSupportReportingAppError,
     &kAndroidPaymentIntentsOmitDeprecatedParameters,
     &kDeduplicateNativePaymentApps,
     &kGooglePayViaAndroidIntents,

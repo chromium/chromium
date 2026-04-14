@@ -7,7 +7,7 @@
 
 #include "content/common/content_export.h"
 #include "services/metrics/public/cpp/ukm_recorder.h"
-#include "third_party/blink/public/mojom/payments/payment_app.mojom.h"
+#include "third_party/blink/public/mojom/payments/payment_app_events.mojom.h"
 
 namespace content {
 

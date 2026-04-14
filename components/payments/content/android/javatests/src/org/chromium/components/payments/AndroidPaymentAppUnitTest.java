@@ -26,6 +26,7 @@ import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.content_public.browser.test.NativeLibraryTestUtils;
 import org.chromium.payments.mojom.PaymentCurrencyAmount;
+import org.chromium.payments.mojom.PaymentEventResponseType;
 import org.chromium.payments.mojom.PaymentItem;
 import org.chromium.payments.mojom.PaymentMethodData;
 import org.chromium.payments.mojom.PaymentOptions;
@@ -199,7 +200,8 @@ public class AndroidPaymentAppUnitTest {
                     }
 
                     @Override
-                    public void onInstrumentDetailsError(String errorMessage) {
+                    public void onInstrumentDetailsError(
+                            @PaymentEventResponseType.EnumType int error, String errorMessage) {
                         mErrorMessage = errorMessage;
                         mInvokePaymentAppFinished = true;
                     }

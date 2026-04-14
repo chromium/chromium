@@ -38,6 +38,8 @@ public abstract class PaymentFeatureList {
     public static final String WEB_PAYMENTS_EXPERIMENTAL_FEATURES =
             "WebPaymentsExperimentalFeatures";
     public static final String WEB_PAYMENTS_SINGLE_APP_UI_SKIP = "WebPaymentsSingleAppUiSkip";
+    public static final String PAYMENT_REQUEST_SUPPORT_REPORTING_APP_ERROR =
+            "PaymentRequestSupportReportingAppError";
     public static final String PAYMENT_REQUEST_USE_RENDERER_URL_LOADER =
             "PaymentRequestUseRendererUrlLoader";
 

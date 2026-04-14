@@ -15,6 +15,7 @@ import org.chromium.components.payments.PaymentApp;
 import org.chromium.components.payments.PaymentAppType;
 import org.chromium.components.payments.SupportedDelegations;
 import org.chromium.payments.mojom.PaymentDetailsModifier;
+import org.chromium.payments.mojom.PaymentEventResponseType;
 import org.chromium.payments.mojom.PaymentItem;
 import org.chromium.payments.mojom.PaymentMethodData;
 import org.chromium.payments.mojom.PaymentOptions;
@@ -91,7 +92,10 @@ import java.util.Set;
             List<PaymentShippingOption> shippingOptions,
             PaymentApp.InstrumentDetailsCallback callback) {
         PostTask.postTask(
-                TaskTraits.UI_DEFAULT, () -> callback.onInstrumentDetailsError("Not implemented"));
+                TaskTraits.UI_DEFAULT,
+                () ->
+                        callback.onInstrumentDetailsError(
+                                PaymentEventResponseType.PAYMENT_EVENT_REJECT, "Not implemented"));
     }
 
     @Override

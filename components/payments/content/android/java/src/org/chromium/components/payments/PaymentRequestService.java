@@ -32,6 +32,7 @@ import org.chromium.payments.mojom.PaymentComplete;
 import org.chromium.payments.mojom.PaymentDetails;
 import org.chromium.payments.mojom.PaymentDetailsModifier;
 import org.chromium.payments.mojom.PaymentErrorReason;
+import org.chromium.payments.mojom.PaymentEventResponseType;
 import org.chromium.payments.mojom.PaymentItem;
 import org.chromium.payments.mojom.PaymentMethodData;
 import org.chromium.payments.mojom.PaymentOptions;
@@ -658,7 +659,8 @@ public class PaymentRequestService
      * @param debugMessage The debug message shown for web developers.
      * @param reason The reason of the disconnection defined in {@link PaymentErrorReason}.
      */
-    public void disconnectFromClientWithDebugMessage(String debugMessage, int reason) {
+    public void disconnectFromClientWithDebugMessage(
+            String debugMessage, @PaymentErrorReason.EnumType int reason) {
         Log.d(TAG, debugMessage);
         if (mClient != null) {
             // Secure Payment Confirmation must make it indistinguishable to the merchant page as to
@@ -1903,9 +1905,10 @@ public class PaymentRequestService
         }
     }
 
-    // Implements PaymentApp.AbortCallback:
+    // Implements PaymentApp.InstrumentDetailsCallback:
     @Override
-    public void onInstrumentDetailsError(String errorMessage) {
+    public void onInstrumentDetailsError(
+            @PaymentEventResponseType.EnumType int error, String errorMessage) {
         mInvokedPaymentApp = null;
         BrowserGlobalPaymentFlowManager.onInvokedPaymentAppStopped(this);
         if (sNativeObserverForTest != null) sNativeObserverForTest.onErrorDisplayed();
@@ -1913,7 +1916,22 @@ public class PaymentRequestService
         if (mBrowserPaymentRequest.hasSkippedAppSelector()) {
             assert !TextUtils.isEmpty(errorMessage);
             mJourneyLogger.setAborted(AbortReason.ABORTED_BY_USER);
-            disconnectFromClientWithDebugMessage(errorMessage, PaymentErrorReason.USER_CANCEL);
+            int reason = PaymentErrorReason.USER_CANCEL;
+            if (PaymentFeatureList.isEnabled(
+                    PaymentFeatureList.PAYMENT_REQUEST_SUPPORT_REPORTING_APP_ERROR)) {
+                switch (error) {
+                    case PaymentEventResponseType.PAYMENT_EVENT_REJECT:
+                        reason = PaymentErrorReason.USER_CANCEL;
+                        break;
+                    case PaymentEventResponseType.PAYMENT_EVENT_INTERNAL_ERROR:
+                        reason = PaymentErrorReason.PAYMENT_APP_ERROR;
+                        break;
+                    default:
+                        reason = PaymentErrorReason.UNKNOWN;
+                        break;
+                }
+            }
+            disconnectFromClientWithDebugMessage(errorMessage, reason);
         } else {
             mBrowserPaymentRequest.showAppSelectorAfterPaymentAppInvokeFailed();
         }

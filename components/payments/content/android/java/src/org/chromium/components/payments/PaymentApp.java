@@ -15,6 +15,7 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.components.autofill.EditableOption;
 import org.chromium.payments.mojom.PaymentDetailsModifier;
+import org.chromium.payments.mojom.PaymentEventResponseType;
 import org.chromium.payments.mojom.PaymentItem;
 import org.chromium.payments.mojom.PaymentMethodData;
 import org.chromium.payments.mojom.PaymentOptions;
@@ -46,10 +47,31 @@ public abstract class PaymentApp extends EditableOption {
 
         /**
          * Called if unable to retrieve payment details.
+         *
+         * <p>TODO(crbug.com/473478138): Deprecated in favour of two-argument version. This version
+         * kept temporarily to allow Chrome for Android internal code to keep compiling. Remove this
+         * method once that dependency is removed.
+         *
          * @param errorMessage Developer-facing error message to be used when rejecting the promise
-         *                     returned from PaymentRequest.show().
+         *     returned from PaymentRequest.show().
          */
-        void onInstrumentDetailsError(String errorMessage);
+        default void onInstrumentDetailsError(String errorMessage) {
+            onInstrumentDetailsError(PaymentEventResponseType.PAYMENT_EVENT_REJECT, errorMessage);
+        }
+
+        /**
+         * Called if unable to retrieve payment details.
+         *
+         * <p>TODO(crbug.com/473478138): Temporarily default to allow a unittest in Chrome for
+         * Android internal code to keep compiling. Remove 'default' once the test overrides this
+         * method.
+         *
+         * @param error One of the {@link PaymentEventResponseType} values.
+         * @param errorMessage Developer-facing error message to be used when rejecting the promise
+         *     returned from PaymentRequest.show().
+         */
+        default void onInstrumentDetailsError(
+                @PaymentEventResponseType.EnumType int error, String errorMessage) {}
     }
 
     /** The interface for the requester to abort payment. */

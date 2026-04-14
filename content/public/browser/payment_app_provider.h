@@ -8,6 +8,7 @@
 #include "base/functional/callback_forward.h"
 #include "content/common/content_export.h"
 #include "third_party/blink/public/mojom/payments/payment_app.mojom.h"
+#include "third_party/blink/public/mojom/payments/payment_app_events.mojom.h"
 
 class SkBitmap;
 

@@ -73,6 +73,7 @@ source_set("browser_tests") {
     "payment_handler_change_shipping_address_option_browsertest.cc",
     "payment_handler_enable_delegations_browsertest.cc",
     "payment_handler_enforce_full_delegation_browsertest.cc",
+    "payment_handler_error_browsertest.cc",
     "payment_handler_exploit_browsertest.cc",
     "payment_handler_install_failed_browsertest.cc",
     "payment_handler_jit_install_with_registered_sw_browsertest.cc",
@@ -123,7 +124,6 @@ source_set("browser_tests") {
     sources += [
       "capability_delegation_browsertest.cc",
       "manifest_verifier_browsertest.cc",
-      "payment_handler_error_browsertest.cc",
       "payment_manifest_parser_browsertest.cc",
       "secure_payment_confirmation_authenticator_browsertest.cc",
       "service_worker_payment_app_finder_browsertest.cc",

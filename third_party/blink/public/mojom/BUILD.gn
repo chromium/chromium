@@ -1196,6 +1196,7 @@ mojom("android_mojo_bindings") {
     "installedapp/installed_app_provider.mojom",
     "installedapp/related_application.mojom",
     "mediasession/media_session.mojom",
+    "payments/payment_app_events.mojom",
     "payments/payment_handler_host.mojom",
     "payments/payment_request.mojom",
     "payments/secure_payment_confirmation_service.mojom",

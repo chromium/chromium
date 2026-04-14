@@ -233,9 +233,8 @@ void JniPaymentApp::OnInstrumentDetailsError(
     mojom::PaymentEventResponseType error,
     const std::string& error_message) {
   JNIEnv* env = AttachCurrentThread();
-  // TODO(crbug.com/473478138): Pass `error` to Java Payment Request
-  // implementation to support rejecting show() with OperationError.
   Java_JniPaymentApp_onInvokeError(env, invoke_callback_,
+                                   static_cast<int>(error),
                                    ConvertUTF8ToJavaString(env, error_message));
 }
 
