@@ -4,9 +4,9 @@
 
 package org.chromium.content.browser;
 
+import android.os.Build;
 import android.os.Bundle;
 
-import org.chromium.base.AconfigFlaggedApiDelegate;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.library_loader.LibraryProcessType;
 import org.chromium.build.BuildConfig;
@@ -99,9 +99,7 @@ public class ChildProcessCreationParamsImpl {
     }
 
     public static boolean isNativeSandboxedServiceEnabled() {
-        AconfigFlaggedApiDelegate delegate = AconfigFlaggedApiDelegate.getInstance();
-        return delegate != null
-                && delegate.areNativeOnlyServicesEnabled()
+        return Build.VERSION.SDK_INT >= Build.VERSION_CODES.CINNAMON_BUN
                 && BuildConfig.JAVALESS_RENDERERS_AVAILABLE
                 // Incremental install disables isolated processes, which are required for
                 // javaless renderers.
