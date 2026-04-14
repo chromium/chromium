@@ -12,7 +12,6 @@ import android.content.res.Resources;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
 
-import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.build.annotations.Initializer;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -348,11 +347,6 @@ public class DownloadLocationDialogCoordinator implements ModalDialogProperties.
         // Update native with new path.
         DownloadDialogBridge.setDownloadAndSaveFileDefaultDirectory(
                 mProfile, directoryOption.location);
-
-        RecordHistogram.recordEnumeratedHistogram(
-                "MobileDownload.Location.Dialog.DirectoryType",
-                directoryOption.type,
-                DirectoryOption.DownloadLocationDirectoryType.NUM_ENTRIES);
 
         File file = new File(directoryOption.location, fileName);
 

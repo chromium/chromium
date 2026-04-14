@@ -98,12 +98,6 @@ chromium-metrics-reviews@google.com.
   <int value="3" label="Timeout"/>
 </enum>
 
-<enum name="DownloadLaterPromptStatus">
-  <int value="0" label="Show initial"/>
-  <int value="1" label="Show prompt"/>
-  <int value="2" label="Don't show prompt"/>
-</enum>
-
 <enum name="DownloadLocationDialogResult">
   <int value="0" label="USER_CONFIRMED"/>
   <int value="1" label="USER_CANCELED"/>
@@ -164,12 +158,6 @@ chromium-metrics-reviews@google.com.
   <int value="3" label="Entry Point disabled by flag"/>
   <int value="4" label="Lens Provider does not support the entry point"/>
   <int value="5" label="Disabled by enterprise policy"/>
-</enum>
-
-<enum name="IOSLensWebUploadStatus">
-  <summary>The status of the upload of image data to Lens.</summary>
-  <int value="0" label="Success"/>
-  <int value="1" label="Malformed response"/>
 </enum>
 
 <enum name="IOSMenuAction">
