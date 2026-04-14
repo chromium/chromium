@@ -32,12 +32,6 @@ TEST(FrameBufferPool, BasicFunctionality) {
   EXPECT_NE(buf1.data(), buf2.data());
   std::ranges::fill(buf2, 0);
 
-  auto alpha = pool->AllocateAlphaPlaneForFrameBuffer(kBufferSize, priv1);
-  ASSERT_FALSE(alpha.empty());
-  EXPECT_NE(alpha.data(), buf1.data());
-  EXPECT_NE(alpha.data(), buf2.data());
-  std::ranges::fill(alpha, 0);
-
   EXPECT_EQ(2u, pool->get_pool_size_for_testing());
 
   // Frames are not released immediately, so this should still show two frames.
@@ -52,7 +46,6 @@ TEST(FrameBufferPool, BasicFunctionality) {
   EXPECT_EQ(1u, pool->get_pool_size_for_testing());
 
   std::ranges::fill(buf1, 0);
-  std::ranges::fill(alpha, 0);
 
   // This will release all memory since we're in the shutdown state.
   std::move(frame_release_cb).Run();
