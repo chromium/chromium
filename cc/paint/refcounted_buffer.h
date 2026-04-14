@@ -13,12 +13,12 @@
 
 namespace cc {
 
-// A trivial RefCounted wrapper for a block of data.
+// A RefCountedThreadSafe wrapper for a block of data.
 // This is intended to minimize the number of copies when e.g.
 // recording large vertex/uv/index arrays to a PaintOpBuffer.
 template <typename T>
 class CC_PAINT_EXPORT RefCountedBuffer
-    : public base::RefCounted<RefCountedBuffer<T>> {
+    : public base::RefCountedThreadSafe<RefCountedBuffer<T>> {
  public:
   REQUIRE_ADOPTION_FOR_REFCOUNTED_TYPE();
 
@@ -32,7 +32,7 @@ class CC_PAINT_EXPORT RefCountedBuffer
   }
 
  private:
-  friend class base::RefCounted<RefCountedBuffer<T>>;
+  friend class base::RefCountedThreadSafe<RefCountedBuffer<T>>;
   ~RefCountedBuffer() = default;
 
   std::vector<T> buffer_;
