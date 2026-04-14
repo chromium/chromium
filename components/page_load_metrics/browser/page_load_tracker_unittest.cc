@@ -518,6 +518,40 @@ TEST_F(PageLoadTrackerTest, ResumeOnPrerenderActivation) {
 
   EXPECT_TRUE(GetEvents().was_prerendered_page_activated);
 }
+
+// Regression test: activating a prerendered page in a non-visible tab should
+// set first_background_time_ so that a subsequent PageShown() does not crash.
+// Uses WasOccluded() rather than WasHidden() because the prerender host
+// registry cancels activation when both initiator and target are HIDDEN.
+// OCCLUDED exercises the same code path in DidActivatePrerenderedPage.
+TEST_F(PageLoadTrackerTest, PrerenderActivationInBackgroundTab) {
+  ScopedPrerenderWebContentsDelegate web_contents_delegate(*web_contents());
+
+  const char kPrerenderingUrl[] = "https://a.test/prerender";
+  SetTargetUrl(kPrerenderingUrl);
+
+  // Navigate primary page in foreground.
+  NavigateAndCommit(GURL(kTestUrl));
+
+  // Add a prerender page.
+  content::WebContentsTester::For(web_contents())
+      ->AddPrerenderAndCommitNavigation(GURL(kPrerenderingUrl));
+
+  // Occlude the tab before activation. This simulates activating a prerendered
+  // page in a non-foreground tab (e.g., ctrl+click opening a background tab).
+  web_contents()->WasOccluded();
+
+  // Activate the prerendered page while the tab is occluded.
+  content::WebContentsTester::For(web_contents())
+      ->ActivatePrerenderedPage(GURL(kPrerenderingUrl));
+
+  EXPECT_TRUE(GetEvents().was_prerendered_page_activated);
+
+  // Switch to the tab. Without the fix, the DCHECK in PageShown() would fire
+  // because first_background_time_ was never set.
+  web_contents()->WasShown();
+}
+
 }  // namespace
 
 }  // namespace page_load_metrics
