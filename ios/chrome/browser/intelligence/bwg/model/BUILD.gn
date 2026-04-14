@@ -226,11 +226,13 @@ source_set("unit_tests") {
     "gemini_actuation_handler_unittest.mm",
     "gemini_browser_agent_unittest.mm",
     "gemini_camera_handler_unittest.mm",
+    "gemini_configuration_unittest.mm",
     "gemini_page_state_change_handler_unittest.mm",
     "gemini_service_impl_unittest.mm",
   ]
   deps = [
     ":browser_agent",
+    ":config",
     ":gemini_service",
     ":gemini_service_factory",
     ":model",
