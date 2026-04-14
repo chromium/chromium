@@ -6,9 +6,7 @@
 
 #include "base/functional/bind.h"
 #include "base/functional/callback_forward.h"
-#include "base/task/single_thread_task_runner.h"
 #include "base/test/bind.h"
-#include "base/test/run_until.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_finder.h"
@@ -119,8 +117,6 @@ DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kThirdTab);
 DEFINE_LOCAL_STATE_IDENTIFIER_VALUE(ui::test::PollingStateObserver<size_t>,
                                     kBrowserCountPoller);
 DEFINE_LOCAL_STATE_IDENTIFIER_VALUE(ui::test::PollingStateObserver<bool>,
-                                    kWidgetVisibilityPoller);
-DEFINE_LOCAL_STATE_IDENTIFIER_VALUE(ui::test::PollingStateObserver<bool>,
                                     kDragStatePoller);
 DEFINE_LOCAL_STATE_IDENTIFIER_VALUE(ui::test::PollingStateObserver<URLs>,
                                     kTabOrderPoller);
@@ -195,17 +191,6 @@ class VerticalTabDragTest
           GetLatestBrowser().GetWindow()->GetNativeWindow(), ui::VKEY_ESCAPE,
           false, false, false, false));
     });
-  }
-
-  base::RepeatingCallback<bool()> GetWidgetVisibilityCallback() {
-    return base::BindRepeating([](VerticalTabDragTest* test) {
-      BrowserWindowInterface& latest = test->GetLatestBrowser();
-      Browser* browser = static_cast<Browser*>(&latest);
-      BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser);
-      if (!browser_view) return false;
-      views::Widget* widget = browser_view->GetWidget();
-      return widget && widget->IsVisible();
-    }, this);
   }
 
   auto AddTabsToNewGroup(const std::vector<int>& indices) {
@@ -1042,9 +1027,7 @@ IN_PROC_BROWSER_TEST_F(VerticalTabDragDetachTest, MAYBE_DetachMultipleTabs) {
       DragTabTo(1, GetBrowserView().GetBoundsInScreen().top_right() +
                        gfx::Vector2d(50, 50)),
       PollState(kBrowserCountPoller, GetBrowserCount()),
-      WaitForState(kBrowserCountPoller, 2),
-      PollState(kWidgetVisibilityPoller, GetWidgetVisibilityCallback()),
-      WaitForState(kWidgetVisibilityPoller, true), ReleaseMouseAsync(),
+      WaitForState(kBrowserCountPoller, 2), ReleaseMouseAsync(),
       PollState(kDragStatePoller, GetDragActive()),
       WaitForState(kDragStatePoller, false), Do([&]() {
         TabStripModel* new_tab_strip_model =
@@ -1056,7 +1039,8 @@ IN_PROC_BROWSER_TEST_F(VerticalTabDragDetachTest, MAYBE_DetachMultipleTabs) {
         EXPECT_EQ(GURL(chrome::kChromeUISettingsURL),
                   new_tab_strip_model->GetWebContentsAt(1)->GetURL());
         EXPECT_EQ(1, browser()->GetTabStripModel()->count());
-      }));
+      }),
+      ReleaseMouseAsync());
 }
 
 // TODO(crbug.com/40249472): Tab DnD tests not working on ChromeOS and Mac, and
