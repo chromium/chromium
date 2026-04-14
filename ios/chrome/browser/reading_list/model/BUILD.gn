@@ -124,6 +124,7 @@ source_set("unit_tests") {
     "offline_page_tab_helper_unittest.mm",
     "offline_url_utils_unittest.mm",
     "reading_list_browser_agent_unittest.mm",
+    "reading_list_distiller_page_unittest.mm",
     "reading_list_web_state_observer_unittest.mm",
     "url_downloader_unittest.mm",
   ]
@@ -133,6 +134,7 @@ source_set("unit_tests") {
     ":test_support",
     "//base",
     "//base/test:test_support",
+    "//components/favicon/core/test:test_support",
     "//components/favicon/ios",
     "//components/prefs:test_support",
     "//components/reading_list/core",
@@ -148,6 +150,7 @@ source_set("unit_tests") {
     "//ios/chrome/test:test_support",
     "//ios/web",
     "//ios/web/public",
+    "//ios/web/public/security",
     "//ios/web/public/test",
     "//ios/web/public/test/fakes",
     "//net",

@@ -242,7 +242,7 @@ bool ReadingListDistillerPage::IsGoogleCachedAMPPage() {
   if (!google_util::IsGoogleDomainUrl(
           url, google_util::DISALLOW_SUBDOMAIN,
           google_util::DISALLOW_NON_STANDARD_PORTS) ||
-      !url.GetPath().compare(0, 4, "amp/")) {
+      url.GetPath().compare(0, 5, "/amp/") != 0) {
     return false;
   }
   const web::SSLStatus& ssl_status = CurrentWebState()
@@ -279,7 +279,7 @@ void ReadingListDistillerPage::OnHandleGoogleCachedAMPPageResult(
     NSError* error) {
   if (!error && value->is_string()) {
     GURL new_gurl(value->GetString());
-    if (new_gurl.is_valid()) {
+    if (new_gurl.is_valid() && new_gurl.SchemeIsHTTPOrHTTPS()) {
       FetchFavicon(new_gurl);
       web::NavigationManager::WebLoadParams params(new_gurl);
       CurrentWebState()->GetNavigationManager()->LoadURLWithParams(params);

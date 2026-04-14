@@ -8,6 +8,7 @@
 #include <memory>
 #include <string>
 
+#import "base/gtest_prod_util.h"
 #import "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "components/dom_distiller/ios/distiller_page_ios.h"
@@ -72,6 +73,10 @@ class ReadingListDistillerPage : public dom_distiller::DistillerPageIOS {
       web::PageLoadCompletionStatus load_completion_status) override;
 
  private:
+  FRIEND_TEST_ALL_PREFIXES(ReadingListDistillerPageTest, IsGoogleCachedAMPPage);
+  FRIEND_TEST_ALL_PREFIXES(ReadingListDistillerPageTest,
+                           OnHandleGoogleCachedAMPPageResult);
+
   // Returns whether there is the loading has no error and if the distillation
   // can continue.
   bool IsLoadingSuccess(web::PageLoadCompletionStatus load_completion_status);
