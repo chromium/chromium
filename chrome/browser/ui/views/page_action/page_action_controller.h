@@ -23,7 +23,6 @@
 #include "chrome/browser/ui/toolbar/pinned_toolbar/pinned_toolbar_actions_model.h"
 #include "chrome/browser/ui/views/page_action/chip_selector.h"
 #include "chrome/browser/ui/views/page_action/page_action_metrics_recorder_interface.h"
-#include "chrome/browser/ui/views/page_action/page_action_properties_provider.h"
 #include "chrome/browser/ui/views/page_action/page_action_triggers.h"
 #include "components/tabs/public/tab_interface.h"
 #include "ui/actions/action_id.h"
@@ -51,6 +50,8 @@ class PageActionMetricsRecorderFactory;
 class PageActionMetricsRecorderInterface;
 class ChipSelector;
 class PageActionController;
+struct PageActionProperties;
+class PageActionPropertiesProviderInterface;
 
 // Indicates the source used to color the page action icon.
 enum class PageActionColorSource {
@@ -445,6 +446,7 @@ class PageActionControllerImpl : public PageActionController,
   std::unique_ptr<ChipSelector> chip_selector_;
   base::RetainingOneShotTimer anchored_message_timeout_;
   std::optional<actions::ActionId> active_anchored_message_;
+  std::map<actions::ActionId, PageActionPriorityCategory> default_priorities_;
 
   base::WeakPtrFactory<PageActionControllerImpl> weak_factory_{this};
 };

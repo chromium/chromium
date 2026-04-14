@@ -8,6 +8,7 @@
 #include "chrome/browser/ui/actions/chrome_action_id.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/page_action/page_action_icon_type.h"
+#include "chrome/browser/ui/views/page_action/page_action_controller.h"
 #include "ui/actions/action_id.h"
 
 namespace {
@@ -21,6 +22,8 @@ constexpr auto kPageActionProperties = base::MakeFixedFlatMap<
             .exempt_from_omnibox_suppression = true,
             .type = PageActionIconType::kAiMode,
             .element_identifier = kAiModePageActionIconElementId,
+            .priority =
+                page_actions::PageActionPriorityCategory::kCoreSiteUtility,
         },
     },
     {
@@ -29,6 +32,8 @@ constexpr auto kPageActionProperties = base::MakeFixedFlatMap<
             .histogram_name = "Indigo",
             .type = PageActionIconType::kIndigo,
             .element_identifier = kIndigoPageActionIconElementId,
+            .priority =
+                page_actions::PageActionPriorityCategory::kContextualCue,
         },
     },
 
@@ -37,6 +42,8 @@ constexpr auto kPageActionProperties = base::MakeFixedFlatMap<
         {
             .histogram_name = "LensOverlay",
             .type = PageActionIconType::kLensOverlay,
+            .priority =
+                page_actions::PageActionPriorityCategory::kDiscoveryNudge,
         },
     },
     {
@@ -45,6 +52,8 @@ constexpr auto kPageActionProperties = base::MakeFixedFlatMap<
             .histogram_name = "LensOverlayHomework",
             .type = PageActionIconType::kLensOverlayHomework,
             .element_identifier = kLensOverlayHomeworkPageActionIconElementId,
+            .priority =
+                page_actions::PageActionPriorityCategory::kDiscoveryNudge,
         },
     },
     {
@@ -61,6 +70,8 @@ constexpr auto kPageActionProperties = base::MakeFixedFlatMap<
             .histogram_name = "MemorySaver",
             .type = PageActionIconType::kMemorySaver,
             .element_identifier = kMemorySaverChipElementId,
+            .priority =
+                page_actions::PageActionPriorityCategory::kPrivacySecurity,
         },
     },
     {
@@ -85,6 +96,8 @@ constexpr auto kPageActionProperties = base::MakeFixedFlatMap<
             .histogram_name = "IntentPicker",
             .type = PageActionIconType::kIntentPicker,
             .element_identifier = kIntentPickerPageActionElementId,
+            .priority =
+                page_actions::PageActionPriorityCategory::kCoreSiteUtility,
         },
     },
     {
@@ -100,6 +113,8 @@ constexpr auto kPageActionProperties = base::MakeFixedFlatMap<
         {
             .histogram_name = "ReadingMode",
             .type = PageActionIconType::kReadingMode,
+            .priority =
+                page_actions::PageActionPriorityCategory::kCoreSiteUtility,
         },
     },
     {
@@ -124,6 +139,8 @@ constexpr auto kPageActionProperties = base::MakeFixedFlatMap<
             .histogram_name = "PwaInstall",
             .type = PageActionIconType::kPwaInstall,
             .element_identifier = kInstallPwaElementId,
+            .priority =
+                page_actions::PageActionPriorityCategory::kCoreSiteUtility,
         },
     },
     {
@@ -132,6 +149,7 @@ constexpr auto kPageActionProperties = base::MakeFixedFlatMap<
             .histogram_name = "PriceInsights",
             .type = PageActionIconType::kPriceInsights,
             .element_identifier = kPriceInsightsChipElementId,
+            .priority = page_actions::PageActionPriorityCategory::kUnknown,
         },
     },
     {
@@ -140,6 +158,8 @@ constexpr auto kPageActionProperties = base::MakeFixedFlatMap<
             .histogram_name = "Discounts",
             .type = PageActionIconType::kDiscounts,
             .element_identifier = kDiscountsChipElementId,
+            .priority =
+                page_actions::PageActionPriorityCategory::kDiscoveryNudge,
         },
     },
     {
@@ -157,6 +177,8 @@ constexpr auto kPageActionProperties = base::MakeFixedFlatMap<
             .type = PageActionIconType::kCollaborationMessaging,
             .element_identifier =
                 kCollaborationMessagingPageActionIconElementId,
+            .priority =
+                page_actions::PageActionPriorityCategory::kDiscoveryNudge,
         },
     },
     {
@@ -181,6 +203,8 @@ constexpr auto kPageActionProperties = base::MakeFixedFlatMap<
             .histogram_name = "CookieControls",
             .type = PageActionIconType::kCookieControls,
             .element_identifier = kCookieControlsIconElementId,
+            .priority =
+                page_actions::PageActionPriorityCategory::kPrivacySecurity,
         },
     },
     {
@@ -250,6 +274,8 @@ constexpr auto kPageActionProperties = base::MakeFixedFlatMap<
             .histogram_name = "Federation",
             .type = PageActionIconType::kFederation,
             .element_identifier = kFederationElementId,
+            .priority =
+                page_actions::PageActionPriorityCategory::kPrivacySecurity,
         },
     },
     {

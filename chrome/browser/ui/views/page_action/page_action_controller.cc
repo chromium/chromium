@@ -120,6 +120,7 @@ void PageActionControllerImpl::Initialize(
         properties_provider.GetProperties(id);
     Register(id, tab_interface.IsActivated(), properties.is_ephemeral,
              properties.exempt_from_omnibox_suppression);
+    default_priorities_[id] = properties.priority;
 
     // It's safe to use base::Unretained here since the recorded is owned by
     // this object.
@@ -172,7 +173,16 @@ void PageActionControllerImpl::ShowSuggestionChip(actions::ActionId action_id) {
 void PageActionControllerImpl::ShowSuggestionChip(
     actions::ActionId action_id,
     const SuggestionChipConfig& config) {
-  chip_selector_->RequestChipShow(action_id, config);
+  if (config.priority == PageActionPriorityCategory::kUnknown &&
+      default_priorities_.contains(action_id)) {
+    // If the config does not specify the priority level, we fall back to the
+    // default one.
+    SuggestionChipConfig new_config = config;
+    new_config.priority = default_priorities_[action_id];
+    chip_selector_->RequestChipShow(action_id, new_config);
+  } else {
+    chip_selector_->RequestChipShow(action_id, config);
+  }
 }
 
 void PageActionControllerImpl::DoShowSuggestionChip(
@@ -196,7 +206,16 @@ void PageActionControllerImpl::DoHideSuggestionChip(
 void PageActionControllerImpl::ShowAnchoredMessage(
     actions::ActionId action_id,
     const AnchoredMessageConfig& config) {
-  chip_selector_->RequestAnchoredMessageShow(action_id, config);
+  if (config.priority == PageActionPriorityCategory::kUnknown &&
+      default_priorities_.contains(action_id)) {
+    // If the config does not specify the priority level, we fall back to the
+    // default one.
+    AnchoredMessageConfig new_config = config;
+    new_config.priority = default_priorities_[action_id];
+    chip_selector_->RequestAnchoredMessageShow(action_id, new_config);
+  } else {
+    chip_selector_->RequestAnchoredMessageShow(action_id, config);
+  }
 }
 
 void PageActionControllerImpl::DoShowAnchoredMessage(

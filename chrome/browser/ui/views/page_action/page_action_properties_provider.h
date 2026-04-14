@@ -7,6 +7,7 @@
 
 #include "base/containers/flat_map.h"
 #include "chrome/browser/ui/page_action/page_action_icon_type.h"
+#include "chrome/browser/ui/views/page_action/page_action_controller.h"
 #include "ui/actions/action_id.h"
 #include "ui/base/interaction/element_identifier.h"
 
@@ -31,6 +32,8 @@ struct PageActionProperties {
   PageActionIconType type;
   // This indicates the page action view element identifier. This is optional.
   ui::ElementIdentifier element_identifier;
+
+  PageActionPriorityCategory priority = PageActionPriorityCategory::kUnknown;
 };
 
 using PageActionPropertiesMap =

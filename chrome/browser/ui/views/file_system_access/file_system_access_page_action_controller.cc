@@ -8,6 +8,7 @@
 #include "chrome/browser/file_system_access/chrome_file_system_access_permission_context.h"
 #include "chrome/browser/file_system_access/file_system_access_permission_context_factory.h"
 #include "chrome/browser/ui/actions/chrome_action_id.h"
+#include "chrome/browser/ui/page_action/page_action_icon_type.h"
 #include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/browser/ui/views/file_system_access/file_system_access_usage_bubble_view.h"
 #include "chrome/browser/ui/views/page_action/page_action_controller.h"
