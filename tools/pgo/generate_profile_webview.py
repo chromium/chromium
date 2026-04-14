@@ -6,17 +6,18 @@
 '''
 
 import argparse
+from dataclasses import dataclass
 import glob
 import json
 import logging
 import os
+import pathlib
 import shutil
 import subprocess
 import sys
 import tempfile
 import time
 from typing import Optional
-import pathlib
 
 import websocket
 
@@ -73,7 +74,7 @@ def parse_args():
     parser.add_argument(
         '--profile-target',
         choices=['agsa', 'gma', 'combined'],
-        default='agsa',
+        default='combined',
         help='The target app to profile (AGSA, GMA, or both Combined).')
     parser.add_argument(
         '--webview-build-target',
@@ -194,8 +195,16 @@ def clear_remote_profiles(device, device_profiles_dir):
             "missing.")
 
 
-def launch_agsa(args: OptionsNamespace):
-    _LOGGER.info("Launching AGSA search results page...")
+@dataclass
+class CrossbenchArgumentFragments:
+    arch: str
+    driver_path_arg: list[str]
+    wpr_bin_path_arg_fragment: str
+    adb_bin_path_arg_fragment: str
+    disable_features: list[str]
+
+
+def _get_cb_arg_fragments(args: OptionsNamespace) -> CrossbenchArgumentFragments:
     arch = 'arm64'
     driver_path_arg = [
         f'--driver-path={os.path.join(args.builddir, "clang_x64", "chromedriver")}'
@@ -211,34 +220,64 @@ def launch_agsa(args: OptionsNamespace):
         'AndroidWarmUpSpareRendererWithTimeout',
         'WebViewPrefetchNativeLibrary',
     ]
+    return CrossbenchArgumentFragments(
+        arch=arch,
+        driver_path_arg=driver_path_arg,
+        wpr_bin_path_arg_fragment=wpr_bin_path_arg_fragment,
+        adb_bin_path_arg_fragment=adb_bin_path_arg_fragment,
+        disable_features=disable_features
+    )
+
+
+def launch_agsa(args: OptionsNamespace):
+    _LOGGER.info("Launching AGSA search results page...")
+    fragments = _get_cb_arg_fragments(args)
 
     cmd = [
         'tools/perf/cb',
         'embedder',
-        f'--browser={{browser:"clank/android_webview/tools/crossbench_config/cipd/{arch}/Velvet_{arch}.apk",driver:{{type:"Android"'
-        + adb_bin_path_arg_fragment + '}}',
-    ] + driver_path_arg + [
+        f'--browser={{browser:"clank/android_webview/tools/crossbench_config/cipd/{fragments.arch}/Velvet_{fragments.arch}.apk",driver:{{type:"Android"{fragments.adb_bin_path_arg_fragment}}}}}',
+    ] + fragments.driver_path_arg + [
         '--splashscreen=skip',
         '--cuj-config=third_party/crossbench/config/team/woa/embedder_cuj_config.hjson',
-        '--network={"type":"wpr","path":"tools/perf/page_sets/data/crossbench_android_embedder_000.wprgo"'
-        + wpr_bin_path_arg_fragment +
-        ',"skip_deterministic_script_injection":true}',
+        f'--network={{"type":"wpr","path":"tools/perf/page_sets/data/crossbench_android_embedder_000.wprgo"{fragments.wpr_bin_path_arg_fragment},"skip_deterministic_script_injection":true}}',
         '--embedder-process-name=googleapp',
         '--embedder-setup-command-config=clank/android_webview/tools/crossbench_config/agsa_setup_config.hjson',
-        f'--disable-features={",".join(disable_features)}',
+        f'--disable-features={",".join(fragments.disable_features)}',
     ]
     subprocess.check_call(cmd, cwd=_SRC_PATH)
 
 
-def launch_gma():
-    # TODO(ziadyoussef): Use Crossbench instead and set command line args.
+def launch_gma(args: OptionsNamespace):
     _LOGGER.info("Launching Mobile Ads WebView (Interstitial)...")
+    fragments = _get_cb_arg_fragments(args)
+
+    hosts_src = os.path.join(_SRC_PATH, 'third_party', 'crossbench', 'config',
+                             'team', 'woa', 'hosts')
+    dnsmasq_src = os.path.join(_SRC_PATH, 'third_party', 'crossbench',
+                                'config', 'team', 'woa', 'dnsmasq.conf')
+    dummy_vpn_src = os.path.join(
+        _SRC_PATH, 'clank', 'android_webview', 'tools', 'crossbench_config',
+        'cipd', 'arm64', 'dummy_vpn.apk')
+
     cmd = [
-        'adb', 'shell', 'am', 'start', '-n',
-        'com.google.android.libraries.ads.mobile.maitier.testapps.webview/'
-        '.MainActivity', '--ez', 'auto_show_interstitial', 'true'
+        'tools/perf/cb',
+        'embedder',
+        f'--browser={{browser:"clank/android_webview/tools/crossbench_config/cipd/{fragments.arch}/webview_test_app_binary.apk",driver:{{type:"Android"{fragments.adb_bin_path_arg_fragment}}}}}',
+    ] + fragments.driver_path_arg + [
+        '--splashscreen=skip',
+        '--cuj-config=third_party/crossbench/config/team/woa/gma_interstitial_cuj_config.hjson',
+        f'--network={{"type":"wpr","path":"tools/perf/page_sets/data/crossbench_android_gma_embedder_000.wprgo"{fragments.wpr_bin_path_arg_fragment},"skip_deterministic_script_injection":true,"http_port":8080,"https_port":8081}}',
+        '--android-activity=MainActivity',
+        '--android-action=',
+        '--embedder-setup-command-config=third_party/crossbench/config/team/woa/gma_device_setup.hjson',
+        '--embedder-teardown-command-config=third_party/crossbench/config/team/woa/gma_device_teardown.hjson',
+        f'--embedder-push-files={hosts_src}:/data/local/tmp/hosts',
+        f'--embedder-push-files={dnsmasq_src}:/data/local/tmp/dnsmasq.conf',
+        f'--embedder-push-files={dummy_vpn_src}:/data/local/tmp/dummy_vpn.apk',
+        f'--disable-features={",".join(fragments.disable_features)}',
     ]
-    subprocess.check_call(cmd)
+    subprocess.check_call(cmd, cwd=_SRC_PATH)
 
 
 def pull_profraw(device, device_profiles_dir, profiledir):
@@ -259,7 +298,7 @@ def run_target(device, target: str, args: OptionsNamespace):
         package = (
             'com.google.android.libraries.ads.mobile.maitier.testapps.webview')
         process_name = package
-        launch_func = launch_gma
+        launch_func = lambda: launch_gma(args)
 
     device_profiles_dir = f'/data/user/0/{package}/cache/pgo_profiles/'
 
