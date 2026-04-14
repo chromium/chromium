@@ -152,7 +152,7 @@ source_set("eg2_tests") {
     "//ios/chrome/browser/bookmarks/test:eg_test_support+eg2",
     "//ios/chrome/browser/metrics/model:eg_test_support+eg2",
     "//ios/chrome/browser/policy/model:eg_test_support+eg2",
-    "//ios/chrome/browser/settings/google_services/manage_sync/public",
+    "//ios/chrome/browser/settings/manage_sync/public",
     "//ios/chrome/browser/shared/model/prefs:pref_names",
     "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/browser/shared/public/snackbar:constants",

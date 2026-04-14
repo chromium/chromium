@@ -146,8 +146,6 @@ chrome_ios_eg2_test("ios_chrome_settings_eg2tests_module") {
     "//ios/chrome/browser/settings/clear_browsing_data/quick_delete_browsing_data/test:eg2_tests",
     "//ios/chrome/browser/settings/clear_browsing_data/quick_delete_other_data/test:eg2_tests",
     "//ios/chrome/browser/settings/clear_browsing_data/test:eg2_tests",
-    "//ios/chrome/browser/settings/google_services/manage_accounts/test:eg2_tests",
-    "//ios/chrome/browser/settings/google_services/test:eg2_tests",
     "//ios/chrome/browser/settings/ui_bundled:eg2_tests",
     "//ios/chrome/browser/settings/ui_bundled/autofill:eg2_tests",
     "//ios/chrome/browser/settings/ui_bundled/content_settings:eg2_tests",

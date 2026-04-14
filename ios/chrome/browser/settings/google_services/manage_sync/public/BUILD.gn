@@ -3,18 +3,6 @@
 # found in the LICENSE file.
 
 source_set("public") {
-  sources = [
-    "manage_sync_settings_constants.h",
-    "manage_sync_settings_constants.mm",
-  ]
-  deps = [
-    "//ios/chrome/browser/settings/google_services/manage_accounts/public",
-    "//ios/chrome/browser/shared/ui/list_model",
-  ]
-}
-
-source_set("sync_error_settings_command_handler") {
-  sources = [ "sync_error_settings_command_handler.h" ]
-  deps = []
-  frameworks = [ "UIKit.framework" ]
+  sources = [ "manage_sync_settings_constants.h" ]
+  deps = [ "//ios/chrome/browser/settings/manage_sync/public/" ]
 }

@@ -353,7 +353,7 @@ source_set("eg2_tests") {
     "//ios/chrome/browser/passwords/model:eg_test_support+eg2",
     "//ios/chrome/browser/passwords/model/metrics",
     "//ios/chrome/browser/policy/model:eg_test_support+eg2",
-    "//ios/chrome/browser/settings/google_services/manage_sync/public",
+    "//ios/chrome/browser/settings/manage_sync/public",
     "//ios/chrome/browser/settings/ui_bundled:settings_root_constants",
     "//ios/chrome/browser/settings/ui_bundled/password/password_checkup:password_checkup_constants",
     "//ios/chrome/browser/settings/ui_bundled/password/password_details:password_details_table_view_constants",

@@ -362,7 +362,7 @@ source_set("eg2_tests") {
     "//ios/chrome/browser/passwords/bottom_sheet/test:eg_test_support+eg2",
     "//ios/chrome/browser/passwords/password_suggestion/public",
     "//ios/chrome/browser/plus_addresses/ui:eg_test_support+eg2",
-    "//ios/chrome/browser/settings/google_services/manage_sync/public",
+    "//ios/chrome/browser/settings/manage_sync/public",
     "//ios/chrome/browser/settings/ui_bundled/autofill:constants",
     "//ios/chrome/browser/settings/ui_bundled/password:eg_test_support",
     "//ios/chrome/browser/settings/ui_bundled/password:eg_test_support+eg2",

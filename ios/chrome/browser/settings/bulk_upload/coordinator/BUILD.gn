@@ -1,0 +1,41 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("coordinator") {
+  sources = [
+    "bulk_upload_coordinator.h",
+    "bulk_upload_coordinator.mm",
+    "bulk_upload_coordinator_delegate.h",
+    "bulk_upload_mediator.h",
+    "bulk_upload_mediator.mm",
+    "bulk_upload_mediator_delegate.h",
+  ]
+  deps = [
+    "//base",
+    "//base:i18n",
+    "//components/signin/public/base",
+    "//components/signin/public/identity_manager",
+    "//components/signin/public/identity_manager/objc",
+    "//components/sync/base",
+    "//components/sync/service",
+    "//ios/chrome/app/strings",
+    "//ios/chrome/browser/device_reauth/model",
+    "//ios/chrome/browser/settings/bulk_upload/public",
+    "//ios/chrome/browser/settings/bulk_upload/ui",
+    "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
+    "//ios/chrome/browser/shared/model/browser",
+    "//ios/chrome/browser/shared/model/profile",
+    "//ios/chrome/browser/shared/public/commands",
+    "//ios/chrome/browser/shared/public/snackbar",
+    "//ios/chrome/browser/signin/model",
+    "//ios/chrome/browser/signin/model:system_identity",
+    "//ios/chrome/browser/sync/model",
+    "//ios/chrome/common/ui/reauthentication",
+    "//ui/base",
+  ]
+
+  # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
+  # enable the diagnostic by removing this line.
+  configs += [ "//build/config/compiler:no_exit_time_destructors" ]
+}
