@@ -486,7 +486,9 @@
     insets.bottom += margin;
   }
 
-  _appContentView.frame = UIEdgeInsetsInsetRect(frame, insets);
+  CGRect contentFrame = UIEdgeInsetsInsetRect(frame, insets);
+  _appContentView.frame = contentFrame;
+  _appContentContainerView.frame = contentFrame;
 }
 
 // Applies manual frames to views. This is the fallback layout path when
