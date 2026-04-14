@@ -110,6 +110,7 @@ class CameraEffectsControllerTest : public NoSessionAshTestBase {
   }
 
   void TearDown() override {
+    camera_effects_controller_ = nullptr;
     NoSessionAshTestBase::TearDown();
     controller_.reset();
   }
@@ -237,8 +238,7 @@ class CameraEffectsControllerTest : public NoSessionAshTestBase {
   base::FilePath camera_background_img_dir_;
   base::FilePath camera_background_run_dir_;
 
-  raw_ptr<CameraEffectsController, DanglingUntriaged>
-      camera_effects_controller_ = nullptr;
+  raw_ptr<CameraEffectsController> camera_effects_controller_ = nullptr;
 
   std::unique_ptr<FakeVideoConferenceTrayController> controller_;
   base::test::ScopedFeatureList scoped_feature_list_;
