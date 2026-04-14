@@ -45,8 +45,9 @@ void JNI_TabBottomSheetNativeInterface_OnOpened(
 }
 
 TabBottomSheetBridge::TabBottomSheetBridge(Observer* observer,
-                                           tabs::TabInterface* tab)
-    : observer_(observer), tab_(*tab) {
+                                           tabs::TabInterface* tab,
+                                           bool show_fusebox)
+    : observer_(observer), tab_(*tab), show_fusebox_(show_fusebox) {
   JNIEnv* env = AttachCurrentThread();
   java_bridge_.Reset(Java_TabBottomSheetNativeInterface_Constructor(
       env, reinterpret_cast<intptr_t>(this), GetTabAndroid()->GetJavaObject()));
@@ -137,8 +138,9 @@ void TabBottomSheetBridge::CreateCoBrowseViews(
 
   JNIEnv* env = base::android::AttachCurrentThread();
   // Call Factory to get CoBrowseViews and save it
-  co_browse_views_.Reset(Java_CoBrowseViewFactory_getCoBrowseViews(
-      env, window_android, web_contents));
+  co_browse_views_.Reset(Java_CoBrowseViewFactory_buildCoBrowseViews(
+      env, window_android, web_contents, /*show_toolbar=*/false,
+      show_fusebox_));
 }
 
 void TabBottomSheetBridge::DestroyCoBrowseViews() {

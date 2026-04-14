@@ -6,6 +6,8 @@ package org.chromium.chrome.browser.tab_bottom_sheet;
 
 import android.app.Activity;
 
+import androidx.annotation.VisibleForTesting;
+
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JniType;
 
@@ -85,7 +87,7 @@ public class CoBrowseViewFactory {
         TabBottomSheetWebUi webUi =
                 new TabBottomSheetWebUi(mActivity, mWindowAndroid, mContextMenuPopulatorFactory);
         ContextualTasksFusebox fusebox =
-                showFusebox || TabBottomSheetUtils.shouldShowFusebox()
+                showFusebox
                         ? new ContextualTasksFusebox(
                                 mActivity,
                                 mFuseboxConfig.contentView,
@@ -103,14 +105,16 @@ public class CoBrowseViewFactory {
     }
 
     @CalledByNative
-    public static @Nullable CoBrowseViews getCoBrowseViews(
+    @VisibleForTesting
+    public static @Nullable CoBrowseViews buildCoBrowseViews(
             @JniType("ui::WindowAndroid*") WindowAndroid windowAndroid,
-            @Nullable @JniType("content::WebContents*") WebContents webContents) {
+            @Nullable @JniType("content::WebContents*") WebContents webContents,
+            boolean showToolbar,
+            boolean showFusebox) {
         CoBrowseViewFactory factory = TabBottomSheetUtils.getFactoryFromWindow(windowAndroid);
         if (factory == null) {
             return null;
         }
-        return factory.buildCoBrowseViews(
-                webContents, /* showToolbar= */ false, /* showFusebox= */ false);
+        return factory.buildCoBrowseViews(webContents, showToolbar, showFusebox);
     }
 }

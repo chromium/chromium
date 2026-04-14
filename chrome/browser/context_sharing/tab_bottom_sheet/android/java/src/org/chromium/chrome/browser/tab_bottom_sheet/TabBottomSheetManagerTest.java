@@ -123,7 +123,12 @@ public class TabBottomSheetManagerTest {
                                         mActivityTestRule.getProfile(false), false, true));
         CoBrowseViews coBrowseViews =
                 ThreadUtils.runOnUiThreadBlocking(
-                        () -> CoBrowseViewFactory.getCoBrowseViews(mWindowAndroid, webContents));
+                        () ->
+                                CoBrowseViewFactory.buildCoBrowseViews(
+                                        mWindowAndroid,
+                                        webContents,
+                                        /* showToolbar= */ false,
+                                        /* showFusebox= */ false));
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {

@@ -113,7 +113,7 @@ ContextualTasksPanelHostAndroid::GetOrCreateBridge() {
       return nullptr;
     }
     bridge_ = std::make_unique<context_sharing::TabBottomSheetBridge>(
-        this, tab_android);
+        this, tab_android, /*show_fusebox=*/true);
   }
   return bridge_.get();
 }

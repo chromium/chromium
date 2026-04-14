@@ -46,7 +46,9 @@ class TabBottomSheetBridge {
   };
 
   // Creates a bridge to the Java `TabBottomSheetNativeInterface`.
-  explicit TabBottomSheetBridge(Observer* observer, tabs::TabInterface* tab);
+  explicit TabBottomSheetBridge(Observer* observer,
+                                tabs::TabInterface* tab,
+                                bool show_fusebox);
   ~TabBottomSheetBridge();
 
   // Sets or updates the WebContents displayed in the bottom sheet.
@@ -89,6 +91,7 @@ class TabBottomSheetBridge {
   base::android::ScopedJavaGlobalRef<jobject> java_bridge_;
   base::android::ScopedJavaGlobalRef<jobject> co_browse_views_;
   const raw_ref<tabs::TabInterface> tab_;
+  bool show_fusebox_;
 };
 
 }  // namespace context_sharing

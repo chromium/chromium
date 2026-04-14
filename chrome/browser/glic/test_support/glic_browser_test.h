@@ -126,8 +126,7 @@ class GlicBrowserTestMixin : public T {
         {features::kGlicMultiInstance, {}},
 #if BUILDFLAG(IS_ANDROID)
         {chrome::android::kBrowserWindowInterfaceMobile, {}},
-        {chrome::android::kTabBottomSheet,
-         { {"dont_show_fusebox", "true"} }},
+        {chrome::android::kTabBottomSheet, {}},
 #endif
     };
     scoped_feature_list_.InitWithFeaturesAndParameters(enabled_features, {});

@@ -27,10 +27,6 @@ public final class TabBottomSheetUtils {
         return ChromeFeatureList.sTabBottomSheetResizeWebview.getValue();
     }
 
-    public static boolean shouldShowFusebox() {
-        return !ChromeFeatureList.sTabBottomSheetDontShowFusebox.getValue();
-    }
-
     // Attach TabBottomSheetManager to WindowAndroid.
     // This allows TabBottomSheetManager to be retrieved statically.
     static void attachManagerToWindow(WindowAndroid windowAndroid, TabBottomSheetManager manager) {

@@ -3991,11 +3991,6 @@ const FeatureEntry::FeatureVariation kAndroidBottomBarVariations[] = {
     {"- 1C", kAndroidBottomBarKeepBothInToolbarParam, nullptr},
     {"- 1C with GTS", kAndroidBottomBarKeepBothInToolbarWithGtsParam, nullptr}};
 
-const FeatureEntry::FeatureParam kTabBottomSheetDontShowFusebox[] = {
-    {"dont_show_fusebox", "true"}};
-const FeatureEntry::FeatureVariation kTabBottomSheetVariations[] = {
-    {"Dont Show Fusebox", kTabBottomSheetDontShowFusebox, nullptr}};
-
 const FeatureEntry::FeatureParam kAndroidTipsNotificationsTrustAndSafety[] = {
     {"trust_and_safety", "true"}};
 const FeatureEntry::FeatureParam kAndroidTipsNotificationsEssential[] = {
@@ -9820,9 +9815,7 @@ const FeatureEntry kFeatureEntries[] = {
 
     {"tab-bottom-sheet", flag_descriptions::kTabBottomSheetName,
      flag_descriptions::kTabBottomSheetDescription, kOsAndroid,
-     FEATURE_WITH_PARAMS_VALUE_TYPE(chrome::android::kTabBottomSheet,
-                                    kTabBottomSheetVariations,
-                                    "TabBottomSheetVariations")},
+     FEATURE_VALUE_TYPE(chrome::android::kTabBottomSheet)},
 
     {"android-tips-notifications",
      flag_descriptions::kAndroidTipsNotificationsName,

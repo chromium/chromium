@@ -10,7 +10,6 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.content.WebContentsFactory;
 import org.chromium.chrome.browser.profiles.Profile;
-import org.chromium.chrome.browser.tab_bottom_sheet.CoBrowseViewFactory;
 import org.chromium.chrome.browser.tab_bottom_sheet.CoBrowseViews;
 import org.chromium.chrome.browser.ui.native_page.BasicNativePage;
 import org.chromium.chrome.browser.ui.native_page.NativePageHost;
@@ -50,16 +49,7 @@ public class ContextualTasksNativePage extends BasicNativePage {
                 WebContentsFactory.createWebContents(
                         profile, /* initiallyHidden= */ false, /* initializeRenderer= */ false);
 
-        // 2. Build CoBrowseViews components via the Factory.
-        // This will handle TabBottomSheetWebUi setup (with context menus) and wrap in
-        // CoBrowseViews.
-        mCoBrowseViews = CoBrowseViewFactory.getCoBrowseViews(windowAndroid, mWebContents);
-        assert mCoBrowseViews != null;
-
-        // 3. Add Observer to track what's happening.
-        mWebContentsObserver = new WebContentsObserver(mWebContents) {};
-
-        initWithView(mCoBrowseViews.getView());
+        // TODO(crbug.com/501840805): Delete this whole class as it's not necessary any more.
     }
 
     @Override
