@@ -182,11 +182,11 @@ TEST_F(PaymentsSuggestionBottomSheetMediatorTest,
 // TODO(crbug.com/422437108): re-enable.
 TEST_F(PaymentsSuggestionBottomSheetMediatorTest, DISABLED_FillingDelay) {
   base::ScopedMockClockOverride mock_clock;
-  base::HistogramTester histogram_tester;
 
-  CreateMediator();
-
-  OCMExpect([consumer_ activatePrimaryButton]);
+  CreateMediatorWithSuggestions();
+  OCMExpect([consumer_ setCreditCardData:[OCMArg isNotNil]
+                       showGooglePayLogo:YES]);
+  [mediator_ setConsumer:consumer_];
 
   // Select a suggestion before the countdown even started, should be ignored.
   [mediator_ didTapOnPrimaryButton];
@@ -203,28 +203,14 @@ TEST_F(PaymentsSuggestionBottomSheetMediatorTest, DISABLED_FillingDelay) {
   mock_clock.Advance(base::Milliseconds(250));
   [mediator_ didTapOnPrimaryButton];
 
+  // Once a minimal delay has passed, the primary button becomes active. We
+  // expect this call to happen a single time, at this stage.
+  OCMExpect([consumer_ activatePrimaryButton]);
   // Allow selecting a suggestion past the minimal delay.
   mock_clock.Advance(base::Milliseconds(250));
   [mediator_ didTapOnPrimaryButton];
 
-  // Verify that the number of attempts is recorded under the "Accept" variant
-  // of the histogram when a payment suggestion is accepted.
-  [mediator_ logExitReason:PaymentsSuggestionBottomSheetExitReason::
-                               kUsePaymentsSuggestion];
-  histogram_tester.ExpectUniqueSample(
-      "IOS.PaymentsBottomSheet.AcceptAttempts.Accept",
-      /*sample=*/4,
-      /*expected_bucket_count=*/1);
-
-  // Verify that the number of attempts is recorded under the "Dismiss" variant
-  // of the histogram when the sheet is dismissed without filling the
-  // suggestion.
-  [mediator_ logExitReason:PaymentsSuggestionBottomSheetExitReason::
-                               kShowPaymentDetails];
-  histogram_tester.ExpectUniqueSample(
-      "IOS.PaymentsBottomSheet.AcceptAttempts.Dismiss",
-      /*sample=*/4,
-      /*expected_bucket_count=*/1);
+  EXPECT_OCMOCK_VERIFY(consumer_);
 }
 
 // Tests that the time to selection is correctly recorded.

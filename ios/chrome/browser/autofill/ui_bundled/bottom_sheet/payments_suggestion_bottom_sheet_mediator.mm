@@ -104,12 +104,6 @@ bool IsV3() {
   // to when the presentation animation is done. Countdowns start once this
   // timestamp is set with a value.
   std::optional<base::TimeTicks> _viewDidAppearTimestamp;
-
-  // Counter that counts the number of attempts made to fill a suggestion before
-  // it actually happened. If the count is bigger than 1 it means that filling a
-  // suggestion was rejected at least once for some reason. The most common
-  // reason is that filling wasn't allowed yet, to prevent clickjacking.
-  int _fillAttemptsCount;
 }
 
 #pragma mark - Properties
@@ -126,7 +120,6 @@ bool IsV3() {
     _params = params;
     _hasCreditCards = NO;
     _webStateList = webStateList;
-    _fillAttemptsCount = 0;
     // Context deemed valid by default; status quo.
     _fillContextIsValid = YES;
     if (personalDataManager) {
@@ -186,14 +179,6 @@ bool IsV3() {
 - (void)logExitReason:(PaymentsSuggestionBottomSheetExitReason)exitReason {
   base::UmaHistogramEnumeration("IOS.PaymentsBottomSheet.ExitReason",
                                 exitReason);
-  if (exitReason ==
-      PaymentsSuggestionBottomSheetExitReason::kUsePaymentsSuggestion) {
-    base::UmaHistogramCounts100("IOS.PaymentsBottomSheet.AcceptAttempts.Accept",
-                                _fillAttemptsCount);
-  } else {
-    base::UmaHistogramCounts100(
-        "IOS.PaymentsBottomSheet.AcceptAttempts.Dismiss", _fillAttemptsCount);
-  }
 }
 
 #pragma mark - Accessors
@@ -363,8 +348,6 @@ bool IsV3() {
 }
 
 - (void)didTapOnPrimaryButton {
-  ++_fillAttemptsCount;
-
   // Allow the action if past the delay for accepting suggestions.
   if (_viewDidAppearTimestamp &&
       base::TimeTicks::Now() - *_viewDidAppearTimestamp >=
