@@ -96,6 +96,7 @@ resources = [
   "res/values-gu/values-gu.xml",
   "res/values-te/values-te.xml",
   "res/values-tr/values-tr.xml",
+  "res/values-v31/values-v31.xml",
   "res/values-bs/values-bs.xml",
   "res/values-kn/values-kn.xml",
   "res/values-am/values-am.xml",
