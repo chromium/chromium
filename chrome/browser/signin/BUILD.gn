@@ -3,6 +3,7 @@
 # found in the LICENSE file.
 
 import("//components/signin/features.gni")
+import("//third_party/protobuf/proto_library.gni")
 
 # TODO(crbug.com/364667553): complete modularization of //c/b/signin.
 # At the moment, it's hard to complete it at once as it pulls deps, which
@@ -109,4 +110,13 @@ source_set("google_accounts_private_api") {
     "//mojo/public/cpp/bindings",
   ]
   deps = [ "//google_apis" ]
+}
+
+if (enable_bound_session_credentials) {
+  proto_library("bound_session_credentials_proto") {
+    sources = [
+      "bound_session_credentials/bound_session_params.proto",
+      "bound_session_credentials/rotation_debug_info.proto",
+    ]
+  }
 }

@@ -39,7 +39,6 @@ import("//sandbox/features.gni")
 import("//services/screen_ai/buildflags/features.gni")
 import("//testing/libfuzzer/fuzzer_test.gni")
 import("//third_party/blink/public/public_features.gni")
-import("//third_party/protobuf/proto_library.gni")
 import("//third_party/webrtc/webrtc.gni")
 import("//third_party/widevine/cdm/widevine.gni")
 import("//tools/grit/grit_rule.gni")
@@ -2602,16 +2601,16 @@ static_library("browser") {
     public_deps += [ "//chrome/browser/accessibility/accessibility_prefs" ]
 
     deps += [
-      ":delta_file_proto",
-      ":language_data_proto",
-      ":profile_token",
-      ":sensitivity_data_proto",
-      ":usage_stats_proto",
       "//cc/slim",
       "//chrome/android:jni_headers",
       "//chrome/browser/accessibility/settings",
+      "//chrome/browser/android:delta_file_proto",
+      "//chrome/browser/android:language_data_proto",
+      "//chrome/browser/android:profile_token",
+      "//chrome/browser/android:sensitivity_data_proto",
       "//chrome/browser/android:tabs_impl",
       "//chrome/browser/android:tabs_public",
+      "//chrome/browser/android:usage_stats_proto",
       "//chrome/browser/android/content:jni_headers",
       "//chrome/browser/android/extensions:android",
       "//chrome/browser/android/extensions:jni_headers",
@@ -5762,7 +5761,7 @@ static_library("browser") {
       ]
     }
 
-    public_deps += [ ":bound_session_credentials_proto" ]
+    public_deps += [ "//chrome/browser/signin:bound_session_credentials_proto" ]
 
     deps += [
       "//chrome/common",
@@ -6434,7 +6433,7 @@ group("browser_public_dependencies") {
     public_deps += [ "//components/printing/common:mojo_interfaces" ]
   }
   if (enable_bound_session_credentials) {
-    public_deps += [ ":bound_session_credentials_proto" ]
+    public_deps += [ "//chrome/browser/signin:bound_session_credentials_proto" ]
   }
   if (enable_offline_pages) {
     public_deps += [
@@ -6606,12 +6605,13 @@ group("browser_generated_files") {
   if (enable_bound_session_credentials) {
     public_deps += [
       # TODO: Use //chrome/browser/ui instead after fixing cyclic dependency.
-      "//chrome/browser:bound_session_credentials_proto",
+      "//chrome/browser/signin:bound_session_credentials_proto",
     ]
   }
 
   if (enable_compose) {
-    public_deps += [ "//chrome/browser:compose_optimization_guide_proto" ]
+    public_deps +=
+        [ "//chrome/browser/compose:compose_optimization_guide_proto" ]
   }
 
   if (is_win || is_mac || is_linux) {
@@ -6676,34 +6676,6 @@ source_set("font_pref") {
   deps = [ "//chrome/common" ]
 }
 
-if (enable_compose) {
-  proto_library("compose_optimization_guide_proto") {
-    sources = [ "compose/proto/compose_optimization_guide.proto" ]
-    cc_generator_options = "lite=true:"
-  }
-}
-
-if (is_android) {
-  proto_library("delta_file_proto") {
-    sources = [ "android/proto/delta_file.proto" ]
-  }
-
-  proto_library("language_data_proto") {
-    sources = [ "android/persisted_tab_data/language_data.proto" ]
-  }
-  proto_library("sensitivity_data_proto") {
-    sources = [ "android/persisted_tab_data/sensitivity_data.proto" ]
-  }
-
-  proto_library("profile_token") {
-    sources = [ "android/proto/profile_token.proto" ]
-  }
-
-  proto_library("usage_stats_proto") {
-    sources = [ "android/usage_stats/website_event.proto" ]
-  }
-}
-
 # This source set is built into both //chrome:chrome_initial (chrome.exe) and
 # //chrome:main_dll (chrome.dll). It must not pull in additional dependencies
 # over what those targets already require.
@@ -6716,15 +6688,6 @@ if (is_win) {
   source_set("titlebar_config") {
     sources = [ "win/titlebar_config.h" ]
     deps = [ "//base" ]
-  }
-}
-
-if (enable_bound_session_credentials) {
-  proto_library("bound_session_credentials_proto") {
-    sources = [
-      "signin/bound_session_credentials/bound_session_params.proto",
-      "signin/bound_session_credentials/rotation_debug_info.proto",
-    ]
   }
 }
 

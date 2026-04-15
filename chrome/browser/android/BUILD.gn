@@ -3,6 +3,7 @@
 # found in the LICENSE file.
 
 import("//chrome/common/features.gni")
+import("//third_party/protobuf/proto_library.gni")
 
 source_set("tabs_public") {
   public = [
@@ -66,4 +67,24 @@ source_set("resource_mapper") {
     "//components/resources:android_resources",
     "//components/resources:components_scaled_resources",
   ]
+}
+
+proto_library("delta_file_proto") {
+  sources = [ "proto/delta_file.proto" ]
+}
+
+proto_library("language_data_proto") {
+  sources = [ "persisted_tab_data/language_data.proto" ]
+}
+
+proto_library("profile_token") {
+  sources = [ "proto/profile_token.proto" ]
+}
+
+proto_library("sensitivity_data_proto") {
+  sources = [ "persisted_tab_data/sensitivity_data.proto" ]
+}
+
+proto_library("usage_stats_proto") {
+  sources = [ "usage_stats/website_event.proto" ]
 }

@@ -3,6 +3,7 @@
 # found in the LICENSE file.
 
 import("//components/compose/features.gni")
+import("//third_party/protobuf/proto_library.gni")
 
 assert(enable_compose)
 
@@ -15,8 +16,8 @@ source_set("compose") {
     "proactive_nudge_tracker.h",
   ]
   public_deps = [
+    ":compose_optimization_guide_proto",
     "//base",
-    "//chrome/browser:compose_optimization_guide_proto",
     "//chrome/browser/optimization_guide",
     "//chrome/common/compose:mojo_bindings",
     "//components/autofill/core/browser",
@@ -208,4 +209,9 @@ if (!is_android) {
       "//ui/views:test_support",
     ]
   }
+}
+
+proto_library("compose_optimization_guide_proto") {
+  sources = [ "proto/compose_optimization_guide.proto" ]
+  cc_generator_options = "lite=true:"
 }
