@@ -213,21 +213,6 @@ where
         }
     }
 
-    /// Unbind this `Remote` from the current sequence, turning it back into
-    /// a `PendingRemote` which can be rebound later.
-    ///
-    /// If the remote has responses pending, they will be silently ignored.
-    // This function is included for completeness, but is not `pub` because this
-    // is a tricky operation. We need to be careful about unbinding a remote that
-    // has responses pending, in case it gets re-bound. We need to either ensure
-    // that there are no pending responses, or that we can distinguish "old"
-    // responses from new ones. In either case, we'll defer that problem until
-    // someone has a use for this function.
-    #[allow(unused)]
-    fn unbind(self) -> PendingRemote<T> {
-        PendingRemote::new(self.endpoint_watcher.into_endpoint())
-    }
-
     // Construct a header for the provided message ID and payload, and send it
     // through the pipe. When we get a response, call the provided response
     // handler.

@@ -22,6 +22,7 @@ rust_static_library("system") {
     "//base",
     "//mojo/public/rust/c_mojo_api",
     "//third_party/rust/bitflags/v2:lib",
+    "//third_party/rust/bytemuck/v1:lib",
     "//third_party/rust/cxx/v1:lib",
   ]
   public_deps = [ ":scoped_handle_interop_cc" ]

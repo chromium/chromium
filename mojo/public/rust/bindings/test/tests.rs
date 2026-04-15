@@ -74,7 +74,7 @@ fn test_watcher_basic() {
 
     run_loop.run();
 
-    let _sender = sender.into_endpoint();
+    drop(sender);
 
     // Make sure we got 2 (the system handler ensures we got 3 responses)
     expect_eq!(2, received_messages.lock().unwrap().len());

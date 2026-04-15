@@ -65,8 +65,10 @@ use crate::message_pipe_watcher::{MessagePipeWatcher, ResponseSender};
 /// processed until it is bound. Once bound, the newly-created `Receiver`
 /// will immediately schedule processing of all pending messages.
 pub struct Receiver<StateTy: MojomInterface> {
-    endpoint_watcher: MessagePipeWatcher,
-    state: Arc<Mutex<StateTy>>,
+    // We never actually access either field after creation, we just need to
+    // to keep them alive while the receiver is alive.
+    _endpoint_watcher: MessagePipeWatcher,
+    _state: Arc<Mutex<StateTy>>,
 }
 
 /// This type represents one end of a Mojo pipe corresponding to with a
@@ -227,21 +229,7 @@ where
             MessagePipeWatcher::new_with_runner(endpoint, runner, handler, disconnect_handler)
                 .expect("System ran out of resources to create new mojo objects.");
 
-        Self { endpoint_watcher, state }
-    }
-
-    /// Unbind the remote, returning the contained state object and a
-    /// `PendingRemote` which can be re-bound later.
-    // This function is not `pub` because it's a dangerous operation, so we're
-    // restricting access until someone has a use-case. It's mostly included here
-    // for completeness. Before making it usable, we need to figure out the
-    // implications of unbinding, e.g. for already-posted tasks, when we can
-    // safely unwrap Arcs, etc.
-    #[allow(unused)]
-    fn unbind(self) -> (PendingReceiver<StateTy::DynTy>, StateTy) {
-        let state = Arc::into_inner(self.state).unwrap().into_inner().unwrap();
-        let endpoint = self.endpoint_watcher.into_endpoint();
-        (PendingReceiver::new(endpoint), state)
+        Self { _endpoint_watcher: endpoint_watcher, _state: state }
     }
 
     /// This is the function which is called by the endpoint watcher
