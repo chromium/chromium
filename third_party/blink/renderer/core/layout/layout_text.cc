@@ -273,6 +273,7 @@ void LayoutText::WillBeDestroyed() {
 
   // We skip invoking LayoutObject::WillBeDestroyed as all of the logic (except
   // for removing from the tree) doesn't apply to LayoutText.
+  Remove();
 
 #if DCHECK_IS_ON()
   if (IsInLayoutNGInlineFormattingContext())
