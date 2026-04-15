@@ -4206,6 +4206,161 @@ TEST_F(
       1);
 }
 
+class ClientSideDetectionHostNewObserversForceRequestTest
+    : public ClientSideDetectionRTLookupResponseForceRequestTest {
+ public:
+  ClientSideDetectionHostNewObserversForceRequestTest() {
+    feature_list_.InitAndEnableFeature(kClientSideDetectionNewObservers);
+  }
+
+  void SetUp() override {
+    ClientSideDetectionRTLookupResponseForceRequestTest::SetUp();
+  }
+};
+
+TEST_F(ClientSideDetectionHostNewObserversForceRequestTest,
+       TestTriggerModelsConvertedToForceRequestAtLoad) {
+  if (base::FeatureList::IsEnabled(kClientSideDetectionKillswitch)) {
+    GTEST_SKIP();
+  }
+
+  // Expectations for classifications. Using AtLeast(1) inside
+  // ExpectPreClassificationChecks is not easy, so we'll just call it once
+  // and hope for the best, or use our own expectations if needed.
+  // Actually, let's use our own with AnyNumber() to be safe against
+  // multiple paint triggers.
+  EXPECT_CALL(*csd_service_, IsPrivateIPAddress(_))
+      .Times(testing::AnyNumber())
+      .WillRepeatedly(Return(false));
+  EXPECT_CALL(*database_manager_.get(), CheckCsdAllowlistUrl(_, _))
+      .Times(testing::AnyNumber())
+      .WillRepeatedly(Return(AsyncMatch::NO_MATCH));
+  EXPECT_CALL(*database_manager_.get(), CanCheckUrl(_))
+      .Times(testing::AnyNumber())
+      .WillRepeatedly(Return(true));
+  EXPECT_CALL(*csd_service_, AtPhishingReportLimit())
+      .Times(testing::AnyNumber())
+      .WillRepeatedly(Return(false));
+  EXPECT_CALL(*csd_service_, IsLocalResource(_))
+      .Times(testing::AnyNumber())
+      .WillRepeatedly(Return(false));
+
+  // Now navigate, but don't call the new observers yet.
+  controller().LoadURL(example_url_, content::Referrer(),
+                       ui::PAGE_TRANSITION_LINK, std::string());
+  content::WebContentsTester::For(web_contents())->CommitPendingNavigation();
+  histogram_tester_.ExpectTotalCount(
+      "SBClientPhishing.TriggerModelsConvertedToForceRequestAtLoad", 0);
+
+  SetRTResponseInCacheManager(true);
+
+  // Generally, this never happens unless a sampled RTLookupResponse contains
+  // the suspicious URL. For the purpose of this test, we will set that there's
+  // a match.
+  csd_host_->set_high_confidence_allowlist_acceptance_rate_for_testing(1.0f);
+  database_manager_->SetAllowlistLookupDetailsForUrl(example_url_, true);
+
+  // We will send a ping because the async check has completed and forced
+  // request is set.
+  base::RunLoop run_loop;
+  EXPECT_CALL(*csd_service_, SendClientReportPhishingRequest(_, _, _))
+      .Times(1)
+      .WillOnce(
+          [&](std::unique_ptr<ClientPhishingRequest>,
+              ClientSideDetectionService::ClientReportPhishingRequestCallback,
+              const std::string&) { run_loop.Quit(); });
+  // This should trigger OnAsyncSafeBrowsingCheckCompleted, which should
+  // trigger FORCE_REQUEST classification because the flag is set.
+  CompleteAsyncCheck();
+  run_loop.Run();
+
+  EXPECT_TRUE(Mock::VerifyAndClear(csd_service_.get()));
+  histogram_tester_.ExpectBucketCount(
+      "SBClientPhishing.ClientSideDetectionTypeRequest",
+      ClientSideDetectionType::FORCE_REQUEST, 1);
+
+  NotifyClientSideDetectionObservers();
+
+  histogram_tester_.ExpectUniqueSample(
+      "SBClientPhishing.TriggerModelsConvertedToForceRequestAtLoad", true, 1);
+
+  GURL different_url("http://different_url.com/");
+
+  // Although it won't be allowlisted, we will set it for the sake of this test.
+  database_manager_->SetAllowlistLookupDetailsForUrl(different_url, true);
+
+  // Make sure navigating to a different, fresh URL will not convert to a force
+  // request trigger.
+  NavigateAndCommit(different_url);
+  histogram_tester_.ExpectUniqueSample(
+      "SBClientPhishing.TriggerModelsConvertedToForceRequestAtLoad", true, 1);
+}
+
+TEST_F(ClientSideDetectionHostNewObserversForceRequestTest,
+       TestTriggerModelsConvertedToForceRequestAtRequest) {
+  if (base::FeatureList::IsEnabled(kClientSideDetectionKillswitch)) {
+    GTEST_SKIP();
+  }
+
+  SetEnhancedProtectionPrefForTests(profile()->GetPrefs(), true);
+  SetRTResponseInCacheManager(/*is_enforced=*/true);
+  // Generally, this never happens unless a sampled RTLookupResponse contains
+  // the suspicious URL. For the purpose of this test, we will set that there's
+  // a match.
+  csd_host_->set_high_confidence_allowlist_acceptance_rate_for_testing(1.0f);
+  database_manager_->SetAllowlistLookupDetailsForUrl(example_url_, true);
+
+  EXPECT_CALL(*csd_service_, IsPrivateIPAddress(_))
+      .Times(testing::AnyNumber())
+      .WillRepeatedly(Return(false));
+  EXPECT_CALL(*database_manager_.get(), CheckCsdAllowlistUrl(_, _))
+      .Times(testing::AnyNumber())
+      .WillRepeatedly(Return(AsyncMatch::NO_MATCH));
+  EXPECT_CALL(*database_manager_.get(), CanCheckUrl(_))
+      .Times(testing::AnyNumber())
+      .WillRepeatedly(Return(true));
+  EXPECT_CALL(*csd_service_, AtPhishingReportLimit())
+      .Times(testing::AnyNumber())
+      .WillRepeatedly(Return(false));
+  EXPECT_CALL(*csd_service_, IsLocalResource(_))
+      .Times(testing::AnyNumber())
+      .WillRepeatedly(Return(false));
+
+  // Navigate and trigger initial classification as TRIGGER_MODELS.
+  NavigateAndCommit(example_url_);
+
+  // Now async check completes. This triggers another classification as
+  // FORCE_REQUEST.
+  CompleteAsyncCheck();
+
+  histogram_tester_.ExpectBucketCount(
+      "SBClientPhishing.ClientSideDetection."
+      "AsyncCheckTriggerForceRequestResult",
+      ClientSideDetectionHost::AsyncCheckTriggerForceRequestResult::kTriggered,
+      1);
+
+  // Now simulate PhishingDetectionDone being called with TRIGGER_MODELS.
+  // This simulates a verdict coming back for the ORIGINAL request.
+  ClientPhishingRequest verdict;
+  verdict.set_url(example_url_.spec());
+  verdict.set_client_side_detection_type(
+      ClientSideDetectionType::TRIGGER_MODELS);
+  verdict.set_client_score(0.8f);
+  verdict.set_is_phishing(true);
+
+  // PhishingDetectionDone will call MaybeSendClientPhishingRequest.
+  // We expect it to be sent as FORCE_REQUEST to the service.
+  EXPECT_CALL(*csd_service_, SendClientReportPhishingRequest(_, _, _))
+      .WillOnce(base::test::RunOnceClosure(base::DoNothing()));
+
+  PhishingDetectionDone(mojo_base::ProtoWrapper(verdict),
+                        ClientSideDetectionType::TRIGGER_MODELS);
+
+  histogram_tester_.ExpectUniqueSample(
+      "SBClientPhishing.TriggerModelsConvertedToForceRequestAtRequest", true,
+      1);
+}
+
 class ClientSideDetectionHostDebugFeaturesTest
     : public ClientSideDetectionHostTest {
  public:

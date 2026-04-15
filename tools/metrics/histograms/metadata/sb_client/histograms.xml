@@ -1495,6 +1495,21 @@ useful for Chirp alerts (go/crca-alerts). -->
   </summary>
 </histogram>
 
+<histogram
+    name="SBClientPhishing.TriggerModelsConvertedToForceRequest{LogTime}"
+    units="bool" expires_after="2027-04-08">
+  <owner>andysjlim@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    Records when a page load trigger CSD ping request is converted to a force
+    request trigger. This is logged {LogTime}.
+  </summary>
+  <token key="LogTime">
+    <variant name="AtLoad" summary="at page load observer call"/>
+    <variant name="AtRequest" summary="at CSD request"/>
+  </token>
+</histogram>
+
 <histogram name="SBClientPhishing.VerdictParseSuccessful" enum="BooleanSuccess"
     expires_after="2026-12-15">
   <owner>andysjlim@chromium.org</owner>

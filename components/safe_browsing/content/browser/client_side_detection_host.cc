@@ -986,6 +986,7 @@ void ClientSideDetectionHost::PrimaryPageChanged(content::Page& page) {
   is_csd_running_ = false;
   last_request_type_ =
       ClientSideDetectionType::CLIENT_SIDE_DETECTION_TYPE_UNSPECIFIED;
+  should_send_as_force_request_ = false;
 
   if (base::FeatureList::IsEnabled(kClientSideDetectionOnlyESBClassification) &&
       !IsEnhancedProtectionEnabled(*delegate_->GetPrefs())) {
@@ -1003,6 +1004,11 @@ void ClientSideDetectionHost::PrimaryPageChanged(content::Page& page) {
     did_first_visually_non_empty_paint_ = false;
     on_first_contentful_paint_ = false;
     trigger_model_request_sent_as_force_request_ = false;
+    // It is possible for the async check force request to complete before this,
+    // and we should have the URL set in case it can match in the verdict cache
+    // manager.
+    content::RenderFrameHost* rfh = web_contents()->GetPrimaryMainFrame();
+    current_url_ = rfh->GetLastCommittedURL();
     return;
   }
 
@@ -1014,7 +1020,14 @@ void ClientSideDetectionHost::DidFirstVisuallyNonEmptyPaint() {
   if (base::FeatureList::IsEnabled(kClientSideDetectionNewObservers)) {
     did_first_visually_non_empty_paint_ = true;
     if (on_first_contentful_paint_) {
-      MaybeStartPreClassification(ClientSideDetectionType::TRIGGER_MODELS);
+      if (should_send_as_force_request_ || HasForceRequestFromRtUrlLookup()) {
+        base::UmaHistogramBoolean(
+            "SBClientPhishing.TriggerModelsConvertedToForceRequestAtLoad",
+            true);
+        MaybeStartPreClassification(ClientSideDetectionType::FORCE_REQUEST);
+      } else {
+        MaybeStartPreClassification(ClientSideDetectionType::TRIGGER_MODELS);
+      }
     }
   }
 }
@@ -1023,7 +1036,14 @@ void ClientSideDetectionHost::OnFirstContentfulPaintInPrimaryMainFrame() {
   if (base::FeatureList::IsEnabled(kClientSideDetectionNewObservers)) {
     on_first_contentful_paint_ = true;
     if (did_first_visually_non_empty_paint_) {
-      MaybeStartPreClassification(ClientSideDetectionType::TRIGGER_MODELS);
+      if (should_send_as_force_request_ || HasForceRequestFromRtUrlLookup()) {
+        base::UmaHistogramBoolean(
+            "SBClientPhishing.TriggerModelsConvertedToForceRequestAtLoad",
+            true);
+        MaybeStartPreClassification(ClientSideDetectionType::FORCE_REQUEST);
+      } else {
+        MaybeStartPreClassification(ClientSideDetectionType::TRIGGER_MODELS);
+      }
     }
   }
 }
@@ -1067,6 +1087,8 @@ void ClientSideDetectionHost::OnAsyncSafeBrowsingCheckCompleted() {
 
   RecordAsyncCheckTriggerForceRequestResult(
       AsyncCheckTriggerForceRequestResult::kTriggered);
+  // Any TRIGGER_MODELS from this URL on should be converted to force request.
+  should_send_as_force_request_ = true;
   MaybeStartPreClassification(ClientSideDetectionType::FORCE_REQUEST);
 }
 
@@ -1665,9 +1687,11 @@ void ClientSideDetectionHost::MaybeSendClientPhishingRequest(
 
   if (verdict->client_side_detection_type() ==
           ClientSideDetectionType::TRIGGER_MODELS &&
-      HasForceRequestFromRtUrlLookup()) {
+      (should_send_as_force_request_ || HasForceRequestFromRtUrlLookup())) {
     verdict->set_client_side_detection_type(
         safe_browsing::ClientSideDetectionType::FORCE_REQUEST);
+    base::UmaHistogramBoolean(
+        "SBClientPhishing.TriggerModelsConvertedToForceRequestAtRequest", true);
     force_request_from_rt_url_lookup = true;
   }
 
@@ -2104,6 +2128,11 @@ void ClientSideDetectionHost::MaybeShowPhishingWarning(
 
 bool ClientSideDetectionHost::HasForceRequestFromRtUrlLookup() {
   raw_ptr<VerdictCacheManager> cache_manager = delegate_->GetCacheManager();
+  // It is possible for the async check force request to complete before page
+  // load, and we should have the URL set in case it can match in the verdict
+  // cache manager.
+  content::RenderFrameHost* rfh = web_contents()->GetPrimaryMainFrame();
+  current_url_ = rfh->GetLastCommittedURL();
 
   if (!cache_manager || !current_url_.is_valid() ||
       !IsEnhancedProtectionEnabled(*delegate_->GetPrefs())) {

@@ -360,6 +360,10 @@ class ClientSideDetectionHost
   FRIEND_TEST_ALL_PREFIXES(
       ClientSideDetectionHostCreditCardFormDetectionAndInteractionTest,
       DetectionAndInteractionTriggersOnlyTriggerOnce);
+  FRIEND_TEST_ALL_PREFIXES(ClientSideDetectionHostNewObserversForceRequestTest,
+                           TestTriggerModelsConvertedToForceRequestAtLoad);
+  FRIEND_TEST_ALL_PREFIXES(ClientSideDetectionHostNewObserversForceRequestTest,
+                           TestTriggerModelsConvertedToForceRequestAtRequest);
 
   // Extracts suspicious tokens from a copied clipboard payload into a
   // structured object.
@@ -675,6 +679,11 @@ class ClientSideDetectionHost
   // FORCE_REQUEST. This is used to decide whether async check is allowed to
   // trigger FORCE_REQUEST.
   bool trigger_model_request_sent_as_force_request_ = false;
+
+  // A boolean that indicates whether all TRIGGER_MODELS request should be
+  // converted to FORCE_REQUEST. This is set true whenever the verdict cache
+  // manager is checked to see if we should send as a FORCE_REQUEST.
+  bool should_send_as_force_request_ = false;
 
   // Modified through tests only. Initial value is set to the const
   // kProbabilityForAcceptingHCAllowlistTrigger.
