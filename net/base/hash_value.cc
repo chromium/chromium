@@ -37,7 +37,7 @@ HashValue::HashValue(base::span<const uint8_t> hash)
   base::span(fingerprint.sha256).copy_from(hash);
 }
 
-bool HashValue::FromString(std::string_view value) {
+bool HashValue::DeprecatedFromString(std::string_view value) {
   if (!value.starts_with(kSha256Slash)) {
     return false;
   }
@@ -51,6 +51,12 @@ bool HashValue::FromString(std::string_view value) {
   tag_ = HASH_VALUE_SHA256;
   span().copy_from(*decoded);
   return true;
+}
+
+// static
+std::optional<HashValue> HashValue::FromString(std::string_view value) {
+  HashValue v(HASH_VALUE_SHA256);
+  return v.DeprecatedFromString(value) ? std::optional(v) : std::nullopt;
 }
 
 std::string HashValue::ToString() const {

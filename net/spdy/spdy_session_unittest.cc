@@ -6542,7 +6542,7 @@ TEST(CanPoolTest, CanPoolWithAcceptablePins) {
   ssl_info.is_issued_by_known_root = true;
   HashValue hash_value;
   // The expected value of GoodPin1 used by |scoped_security_state_source|.
-  ASSERT_TRUE(hash_value.FromString(
+  ASSERT_TRUE(hash_value.DeprecatedFromString(
       "sha256/Nn8jk5By4Vkq6BeOVZ7R7AC6XUUBZsWmUbJR1f1Y5FY="));
   ssl_info.public_key_hashes.push_back(hash_value.sha256hashvalue());
 

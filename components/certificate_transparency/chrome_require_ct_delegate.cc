@@ -340,7 +340,7 @@ void ChromeRequireCTDelegate::ParseSpkiHashes(
   hashes->clear();
   for (const auto& value : spki_list) {
     net::HashValue hash;
-    if (!hash.FromString(value)) {
+    if (!hash.DeprecatedFromString(value)) {
       continue;
     }
     if (hash.tag() != net::HASH_VALUE_SHA256) {

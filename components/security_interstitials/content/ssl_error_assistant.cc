@@ -68,7 +68,8 @@ absl::flat_hash_set<net::SHA256HashValue> HashesFromDynamicInterstitial(
   absl::flat_hash_set<net::SHA256HashValue> hashes;
   for (const std::string& hash : entry.sha256_hash()) {
     net::HashValue value;
-    if (!value.FromString(hash) || value.tag() != net::HASH_VALUE_SHA256) {
+    if (!value.DeprecatedFromString(hash) ||
+        value.tag() != net::HASH_VALUE_SHA256) {
       continue;
     }
     hashes.insert(value.sha256hashvalue());
@@ -84,7 +85,7 @@ LoadCaptivePortalCertHashes(
   for (const chrome_browser_ssl::CaptivePortalCert& cert :
        proto.captive_portal_cert()) {
     net::HashValue value;
-    if (!value.FromString(cert.sha256_hash()) ||
+    if (!value.DeprecatedFromString(cert.sha256_hash()) ||
         value.tag() != net::HASH_VALUE_SHA256) {
       continue;
     }

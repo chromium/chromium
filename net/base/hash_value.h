@@ -49,7 +49,9 @@ class NET_EXPORT HashValue {
 
   // Deserializes a HashValue from a string. Returns false if the input is not
   // valid.
-  bool FromString(std::string_view input);
+  // Deprecated: use the overload that returns an optional instead.
+  bool DeprecatedFromString(std::string_view input);
+  static std::optional<HashValue> FromString(std::string_view input);
 
   // Serializes the HashValue to a string.
   std::string ToString() const;

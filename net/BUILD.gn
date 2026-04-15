@@ -2827,6 +2827,7 @@ target(_test_target_type, "net_unittests") {
     "base/fake_proxy_delegate.h",
     "base/file_stream_unittest.cc",
     "base/filename_util_unittest.cc",
+    "base/hash_value_unittest.cc",
     "base/host_mapping_rules_unittest.cc",
     "base/host_port_pair_unittest.cc",
     "base/interval_test.cc",

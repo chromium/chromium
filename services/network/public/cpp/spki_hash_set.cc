@@ -15,7 +15,7 @@ SPKIHashSet CreateSPKIHashSet(const std::vector<std::string>& fingerprints) {
   SPKIHashSet spki_hash_list;
   for (const std::string& fingerprint : fingerprints) {
     net::HashValue hash;
-    if (!hash.FromString("sha256/" + fingerprint)) {
+    if (!hash.DeprecatedFromString("sha256/" + fingerprint)) {
       LOG(ERROR) << "Invalid SPKI: " << fingerprint;
       continue;
     }

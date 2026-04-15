@@ -2044,7 +2044,7 @@ TEST_P(QuicSessionPoolTest, HttpsPoolingWithMatchingPins) {
   ScopedTransportSecurityStateSource scoped_security_state_source;
 
   HashValue primary_pin(HASH_VALUE_SHA256);
-  EXPECT_TRUE(primary_pin.FromString(
+  EXPECT_TRUE(primary_pin.DeprecatedFromString(
       "sha256/Nn8jk5By4Vkq6BeOVZ7R7AC6XUUBZsWmUbJR1f1Y5FY="));
   ProofVerifyDetailsChromium verify_details = DefaultProofVerifyDetails();
   verify_details.cert_verify_result.public_key_hashes.push_back(
@@ -2104,7 +2104,7 @@ TEST_P(QuicSessionPoolTest, NoHttpsPoolingWithDifferentPins) {
   crypto_client_stream_factory_.AddProofVerifyDetails(&verify_details1);
 
   HashValue primary_pin(HASH_VALUE_SHA256);
-  EXPECT_TRUE(primary_pin.FromString(
+  EXPECT_TRUE(primary_pin.DeprecatedFromString(
       "sha256/Nn8jk5By4Vkq6BeOVZ7R7AC6XUUBZsWmUbJR1f1Y5FY="));
   ProofVerifyDetailsChromium verify_details2 = DefaultProofVerifyDetails();
   verify_details2.cert_verify_result.public_key_hashes.push_back(

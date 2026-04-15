@@ -251,7 +251,7 @@ void SCTAuditingHandler::DeserializeData(const std::string& serialized) {
     // Try to read the reporter_key from the entry and convert back to a
     // HashValue. If it fails, continue to the next entry.
     net::HashValue cache_key(net::HASH_VALUE_SHA256);
-    if (!cache_key.FromString(*reporter_key_string)) {
+    if (!cache_key.DeprecatedFromString(*reporter_key_string)) {
       continue;
     }
 
