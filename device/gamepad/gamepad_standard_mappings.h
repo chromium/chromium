@@ -123,6 +123,7 @@ float RenormalizeAndClampAxis(float value, float min, float max);
 void MapperSwitchPro(const Gamepad& input, Gamepad* mapped);
 void MapperSwitchJoyCon(const Gamepad& input, Gamepad* mapped);
 void MapperSwitchComposite(const Gamepad& input, Gamepad* mapped);
+void Mapper2Axes8Keys(const Gamepad& input, Gamepad* mapped);
 
 }  // namespace device
 

@@ -974,6 +974,8 @@ constexpr struct MappingData {
     {GamepadId::kPowerALicPro, MapperSwitchPro},
     // DragonRise Generic USB
     {GamepadId::kDragonRiseProduct0006, MapperDragonRiseGeneric},
+    // 2Axes 8Keys Game Pad
+    {GamepadId::kDragonRiseProduct0011, Mapper2Axes8Keys},
     // HORIPAD for Nintendo Switch
     {GamepadId::kHoriProduct00c1, MapperHoripadSwitch},
     // Xbox One S (Bluetooth)
