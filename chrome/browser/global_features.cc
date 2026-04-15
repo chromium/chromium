@@ -228,8 +228,6 @@ void GlobalFeatures::PostDestroyThreads() {
   // since its infobar manager observes GlobalBrowserCollection.
   startup_launch_manager_.reset();
 #endif  // !BUILDFLAG(IS_ANDROID)
-
-  global_browser_collection_.reset();
 }
 
 std::unique_ptr<system_permission_settings::PlatformHandle>

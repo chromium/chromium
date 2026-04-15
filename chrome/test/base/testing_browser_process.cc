@@ -223,6 +223,7 @@ TestingBrowserProcess::~TestingBrowserProcess() {
 raw_ptr<TestingProfileManager>
 TestingBrowserProcess::SetUpGlobalFeaturesForTesting(bool profile_manager) {
   CreateGlobalFeaturesPreProfileManager();
+  is_global_features_torn_down_ = false;
 
   raw_ptr<TestingProfileManager> testing_profile_manager = nullptr;
   if (profile_manager) {
