@@ -45,6 +45,8 @@ class MockSpeechRecognition {
   onerror:
       ((this: MockSpeechRecognition,
         ev: SpeechRecognitionErrorEvent) => void)|null = null;
+  onaudiostart: ((this: MockSpeechRecognition, ev: Event) => void)|null = null;
+  onspeechstart: ((this: MockSpeechRecognition, ev: Event) => void)|null = null;
   interimResults = true;
   continuous = false;
   constructor() {
@@ -203,6 +205,12 @@ suite('ComposeboxVoiceSearch', () => {
       });
 
   test('on result updates the searchbox input', async () => {
+    const voiceSearchButton = getVoiceSearchButton(composeboxElement);
+    voiceSearchButton!.click();
+    await microtasksFinished();
+
+    const voiceSearchElement = getVoiceSearchElement(composeboxElement);
+
     const result = createResults(2);
     Object.assign(result.results[0]![0]!, {transcript: 'hello'});
     Object.assign(result.results[1]![0]!, {transcript: 'world'});
@@ -210,6 +218,7 @@ suite('ComposeboxVoiceSearch', () => {
     // Act.
     mockSpeechRecognition.onresult!(result);
     await microtasksFinished();
+    await voiceSearchElement.updateComplete;
 
     const voiceSearchInput = getVoiceSearchElement(composeboxElement).$.input;
 
@@ -224,13 +233,11 @@ suite('ComposeboxVoiceSearch', () => {
     const result2 = createResults(2);
     Object.assign(result2.results[0]![0]!, {transcript: 'hello'});
     Object.assign(result2.results[1]![0]!, {transcript: 'goodbye'});
-    const [callback] = await windowProxy.whenCalled('setTimeout');
-    callback();
 
     // Act.
     mockSpeechRecognition.onresult!(result2);
     await microtasksFinished();
-
+    await voiceSearchElement.updateComplete;
     // Speech recognition overrides existing composebox input.
     assertEquals('hellogoodbye', voiceSearchInput.value);
   });
@@ -617,6 +624,149 @@ suite('ComposeboxVoiceSearch', () => {
 
         // Restore API
         windowProxy.setResultFor('hasWebkitSpeechRecognition', true);
+      });
+  test(
+      'onResult_ recovers from STARTED state missing audio and speech events',
+      async () => {
+        const voiceSearchButton = getVoiceSearchButton(composeboxElement);
+        voiceSearchButton!.click();
+        await microtasksFinished();
+
+        const voiceSearchElement =
+            getVoiceSearchElement(composeboxElement) as any;
+
+        // Listen for speech-received event to prove onSpeechStart_ was manually
+        // called.
+        let speechReceivedFired = false;
+        voiceSearchElement.addEventListener('speech-received', () => {
+          speechReceivedFired = true;
+        });
+
+        // Construct a mock speech recognition result using the existing helper.
+        const result = createResults(1);
+        Object.assign(
+            result.results[0]![0]!, {confidence: 1, transcript: 'test1'});
+        Object.assign(result.results[0]!, {isFinal: false});
+
+        // Trigger onresult directly while state is still STARTED.
+        mockSpeechRecognition.onresult!(result);
+        await microtasksFinished();
+
+        // Assert: Fallback logic should manually trigger the missing speech
+        // event.
+        assertTrue(speechReceivedFired);
+        // Assert: The result should be processed normally.
+        assertEquals('test1', voiceSearchElement.transcript_);
+      });
+
+  test(
+      'onResult_ recovers from AUDIO_RECEIVED state missing speech event',
+      async () => {
+        const voiceSearchButton = getVoiceSearchButton(composeboxElement);
+        voiceSearchButton!.click();
+        await microtasksFinished();
+
+        const voiceSearchElement =
+            getVoiceSearchElement(composeboxElement) as any;
+
+        // Simulate audiostart event so the state becomes AUDIO_RECEIVED.
+        mockSpeechRecognition.onaudiostart!(new Event('audiostart'));
+        await microtasksFinished();
+
+        let speechReceivedFired = false;
+        voiceSearchElement.addEventListener('speech-received', () => {
+          speechReceivedFired = true;
+        });
+
+        const result = createResults(1);
+        Object.assign(
+            result.results[0]![0]!, {confidence: 1, transcript: 'test2'});
+        Object.assign(result.results[0]!, {isFinal: false});
+
+        // Trigger onresult while state is AUDIO_RECEIVED.
+        mockSpeechRecognition.onresult!(result);
+        await microtasksFinished();
+
+        // Assert: Fallback logic should manually trigger the missing speech
+        // event.
+        assertTrue(speechReceivedFired);
+        assertEquals('test2', voiceSearchElement.transcript_);
+      });
+
+  test(
+      'onResult_ ignores late results in unexpected states like ERROR_RECEIVED',
+      async () => {
+        const voiceSearchButton = getVoiceSearchButton(composeboxElement);
+        voiceSearchButton!.click();
+        await microtasksFinished();
+
+        const voiceSearchElement =
+            getVoiceSearchElement(composeboxElement) as any;
+
+        // Simulate a network error so the state becomes ERROR_RECEIVED.
+        mockSpeechRecognition.onerror!
+            ({error: 'network'} as SpeechRecognitionErrorEvent);
+        await microtasksFinished();
+
+        let transcriptUpdateFired = false;
+        voiceSearchElement.addEventListener('transcript-update', () => {
+          transcriptUpdateFired = true;
+        });
+
+        // Construct a late recognition result.
+        const lateResult = createResults(1);
+        Object.assign(
+            lateResult.results[0]![0]!,
+            {confidence: 1, transcript: 'late text'});
+        Object.assign(lateResult.results[0]!, {isFinal: false});
+
+        // Trigger onresult while state is already ERROR_RECEIVED.
+        mockSpeechRecognition.onresult!(lateResult);
+        await microtasksFinished();
+
+        // Assert: The result should be completely ignored (default switch
+        // case).
+        assertFalse(transcriptUpdateFired);
+        assertEquals('', voiceSearchElement.transcript_);
+      });
+
+  test(
+      'onResult_ force-submits when interim result exceeds length limit',
+      async () => {
+        const voiceSearchButton = getVoiceSearchButton(composeboxElement);
+        voiceSearchButton!.click();
+        await microtasksFinished();
+
+        const voiceSearchElement = getVoiceSearchElement(composeboxElement);
+
+        // Listen for the final result event to verify if it was
+        // force-submitted.
+        let finalResultFired = false;
+        let submittedResult = '';
+        voiceSearchElement.addEventListener(
+            'voice-search-final-result', (e: any) => {
+              finalResultFired = true;
+              submittedResult = e.detail;
+            });
+
+        // Construct a long string exceeding the 120 character limit.
+        const longTranscript = 'a'.repeat(121);
+        const result = createResults(1);
+
+        // Set confidence to 0 to ensure it is treated as an interim result.
+        Object.assign(
+            result.results[0]![0]!,
+            {confidence: 0, transcript: longTranscript});
+        Object.assign(result.results[0]!, {isFinal: false});
+
+        // Simulate receiving this long interim result.
+        mockSpeechRecognition.onresult!(result);
+        await microtasksFinished();
+
+        // Assert: The system should force-submit it as a final result due to
+        // the length limit.
+        assertTrue(finalResultFired);
+        assertEquals(longTranscript, submittedResult);
       });
 });
 

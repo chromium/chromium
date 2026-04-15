@@ -30,6 +30,12 @@ const RECOGNITION_CONFIDENCE_THRESHOLD: number = 0.7;
  */
 const IDLE_TIMEOUT_MS: number = 1500;
 
+/**
+ * Maximum number of characters recognized before force-submitting a query.
+ * Includes characters of non-confident recognition transcripts.
+ */
+const QUERY_LENGTH_LIMIT: number = 120;
+
 // The set of controller states.
 enum State {
   // Initial state before voice recognition has been set up.
@@ -263,6 +269,24 @@ export class ComposeboxVoiceSearchElement extends
 
   private onResult_(e: SpeechRecognitionEvent) {
     this.resetIdleTimer_();
+    switch (this.state_) {
+      case State.STARTED:
+        // Network bugginess (the onspeechstart packet was lost).
+        this.onAudioStart_();
+        this.onSpeechStart_();
+        break;
+      case State.AUDIO_RECEIVED:
+        // Network bugginess (the onaudiostart packet was lost).
+        this.onSpeechStart_();
+        break;
+      case State.SPEECH_RECEIVED:
+      case State.RESULT_RECEIVED:
+        // Normal, expected states for processing results.
+        break;
+      default:
+        // Not expecting results in any other states.
+        return;
+    }
     const results = e.results;
     if (results.length === 0) {
       return;
@@ -295,6 +319,11 @@ export class ComposeboxVoiceSearchElement extends
       }
     }
     this.fire('transcript-update', this.transcript_);
+
+    // Force-stop long queries.
+    if (this.interimResult_.length > QUERY_LENGTH_LIMIT) {
+      this.onFinalResult_(this.transcript_);
+    }
   }
 
   private onEnd_() {
