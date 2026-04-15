@@ -1282,6 +1282,8 @@ public class TabGridDialogMediator
             int tabId = (Integer) actionData;
             model.cancelTabClosure(tabId);
         } else {
+            // actionData is List<Tab> in else branch.
+            @SuppressWarnings("unchecked")
             List<Tab> tabs = (List<Tab>) actionData;
             if (tabs.isEmpty()) return;
 
@@ -1300,6 +1302,8 @@ public class TabGridDialogMediator
 
             model.commitTabClosure(tabId);
         } else {
+            // actionData is List<Tab> in else branch.
+            @SuppressWarnings("unchecked")
             List<Tab> tabs = (List<Tab>) actionData;
             if (tabs.isEmpty()) return;
 

@@ -311,7 +311,11 @@ public abstract class PersistedTabData implements UserData {
         if (persistedTabData != null) {
             setUserData(tab, clazz, persistedTabData);
         }
-        for (Callback<@Nullable T> cachedCallback : assumeNonNull(sCachedCallbacks.get(key))) {
+        // Callback type varies per key; map stores raw Callback.
+        @SuppressWarnings("unchecked")
+        List<Callback<@Nullable T>> callbacks =
+                (List<Callback<@Nullable T>>) (List<?>) assumeNonNull(sCachedCallbacks.get(key));
+        for (Callback<@Nullable T> cachedCallback : callbacks) {
             PostTask.postTask(
                     TaskTraits.UI_DEFAULT, () -> cachedCallback.onResult(persistedTabData));
         }

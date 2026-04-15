@@ -216,7 +216,8 @@ public class TabListCoordinator implements PriceWelcomeMessageProvider, DestroyO
                     gridCardOnClickListenerProvider,
             TabListMediator.@Nullable TabGridDialogHandler dialogHandler,
             @TabActionState int initialTabActionState,
-            TabListMediator.@Nullable SelectionDelegateProvider selectionDelegateProvider,
+            TabListMediator.@Nullable SelectionDelegateProvider<TabListEditorItemSelectionId>
+                    selectionDelegateProvider,
             @Nullable Supplier<@Nullable PriceWelcomeMessageController>
                     priceWelcomeMessageControllerSupplier,
             ViewGroup parentView,

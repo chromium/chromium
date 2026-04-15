@@ -47,7 +47,7 @@ public class CollaborationActivityMessageCardViewModel {
     public CollaborationActivityMessageCardViewModel(
             Context context,
             ActionProvider actionProvider,
-            ServiceDismissActionProvider serviceDismissActionProvider) {
+            ServiceDismissActionProvider<@MessageType Integer> serviceDismissActionProvider) {
         String dismissButtonContentDescription =
                 context.getString(R.string.accessibility_tab_suggestion_dismiss_button);
         String actionText =

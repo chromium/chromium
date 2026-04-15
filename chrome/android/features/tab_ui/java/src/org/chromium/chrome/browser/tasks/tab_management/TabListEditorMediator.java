@@ -356,9 +356,13 @@ class TabListEditorMediator
             TabListEditorMenu menu =
                     new TabListEditorMenu(mContext, mTabListEditorToolbar.getActionViewLayout());
             mSelectionDelegate.addObserver(menu);
-            ListModelChangeProcessor actionChangeProcessor =
-                    new ListModelChangeProcessor(
-                            mActionListModel, menu, new TabListEditorMenuAdapter());
+            ListModelChangeProcessor<
+                            PropertyListModel<PropertyModel, PropertyKey>,
+                            TabListEditorMenu,
+                            PropertyKey>
+                    actionChangeProcessor =
+                            new ListModelChangeProcessor<>(
+                                    mActionListModel, menu, new TabListEditorMenuAdapter());
             mActionListModel.addObserver(actionChangeProcessor);
         }
 

@@ -83,7 +83,7 @@ public class PriceWelcomeMessageController {
     private final TabSwitcherMessageManager mTabSwitcherMessageManager;
     private final NullableObservableSupplier<TabGroupModelFilter>
             mCurrentTabGroupModelFilterSupplier;
-    private final MessageCardProvider mMessageCardProvider;
+    private final MessageCardProvider<@MessageType Integer, @UiType Integer> mMessageCardProvider;
     private final NullableObservableSupplier<PriceWelcomeMessageReviewActionProvider>
             mPriceWelcomeMessageReviewActionProviderSupplier;
     private final Profile mProfile;

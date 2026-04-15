@@ -131,7 +131,10 @@ public class TabGroupUiMediator implements BackPressHandler {
             this::onGroupSharedStateChanged;
     private final Callback<@Nullable List<GroupMember>> mOnGroupMembersChanged =
             this::onGroupMembersChanged;
-    private final Callback mOnTokenComponentChange = this::onTokenComponentChange;
+
+    private final Callback<Object> mOnChildTokenChange = this::onTokenComponentChange;
+    private final Callback<Integer> mOnWidthChange = this::onTokenComponentChange;
+
     private final SettableNonNullObservableSupplier<Integer> mWidthPxSupplier =
             ObservableSuppliers.createNonNull(0);
     private final ThemeColorObserver mThemeColorObserver = this::onThemeColorChanged;
@@ -199,8 +202,8 @@ public class TabGroupUiMediator implements BackPressHandler {
         mThemeColorProvider.addTintObserver(mTintObserver);
         mOnSnapshotTokenChange = onSnapshotTokenChange;
         mChildTokenSupplier = childTokenSupplier;
-        mChildTokenSupplier.addSyncObserverAndPostIfNonNull(mOnTokenComponentChange);
-        mWidthPxSupplier.addSyncObserverAndPostIfNonNull(mOnTokenComponentChange);
+        mChildTokenSupplier.addSyncObserverAndPostIfNonNull(mOnChildTokenChange);
+        mWidthPxSupplier.addSyncObserverAndPostIfNonNull(mOnWidthChange);
 
         onThemeColorChanged(mThemeColorProvider.getThemeColor(), false);
         ColorStateList tintList = mThemeColorProvider.getTint();
@@ -600,8 +603,8 @@ public class TabGroupUiMediator implements BackPressHandler {
                     .removeObserver(mOnGroupMembersChanged);
             mTransitiveSharedGroupObserver.destroy();
         }
-        mChildTokenSupplier.removeObserver(mOnTokenComponentChange);
-        mWidthPxSupplier.removeObserver(mOnTokenComponentChange);
+        mChildTokenSupplier.removeObserver(mOnChildTokenChange);
+        mWidthPxSupplier.removeObserver(mOnWidthChange);
         mThemeColorProvider.removeThemeColorObserver(mThemeColorObserver);
         mThemeColorProvider.removeTintObserver(mTintObserver);
     }

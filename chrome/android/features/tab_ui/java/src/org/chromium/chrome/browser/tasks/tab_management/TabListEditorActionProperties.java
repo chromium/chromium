@@ -32,8 +32,8 @@ public class TabListEditorActionProperties {
     public static final WritableBooleanPropertyKey TITLE_IS_PLURAL =
             new WritableBooleanPropertyKey();
     public static final WritableObjectPropertyKey<Integer> CONTENT_DESCRIPTION_RESOURCE_ID =
-            new WritableObjectPropertyKey();
-    public static final WritableObjectPropertyKey<String> TITLE = new WritableObjectPropertyKey();
+            new WritableObjectPropertyKey<>();
+    public static final WritableObjectPropertyKey<String> TITLE = new WritableObjectPropertyKey<>();
     public static final WritableObjectPropertyKey<String> CONTENT_DESCRIPTION =
             new WritableObjectPropertyKey<>();
     public static final WritableObjectPropertyKey<Drawable> ICON =
