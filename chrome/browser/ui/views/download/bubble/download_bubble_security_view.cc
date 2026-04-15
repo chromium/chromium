@@ -57,22 +57,6 @@ constexpr int kProgressBarHeight = 3;
 constexpr int kNumColumns = 5;
 constexpr int kAfterParagraphSpacing = 8;
 
-// These values are persisted to logs. Entries should not be renumbered and
-// numeric values should never be reused.
-enum class DownloadBubbleSubpageAction {
-  kShown = 0,
-  // Reserved (obsolete): kShownCheckbox = 1,
-  kShownSecondaryButton = 2,
-  kShownPrimaryButton = 3,
-  kPressedBackButton = 4,
-  kClosedSubpage = 5,
-  // Reserved (obsolete): kClickedCheckbox = 6,
-  kPressedSecondaryButton = 7,
-  kPressedPrimaryButton = 8,
-  kMaxValue = kPressedPrimaryButton
-};
-const char kSubpageActionHistogram[] = "Download.Bubble.SubpageAction";
-
 // Whether we should page away from the security view and return to the primary
 // view upon a download update.
 bool ShouldReturnToPrimaryDialog(const DownloadBubbleSecurityViewInfo& info) {
@@ -265,9 +249,6 @@ void DownloadBubbleSecurityView::BackButtonPressed() {
     delegate_->AddSecuritySubpageWarningActionEvent(
         content_id(), DownloadItemWarningData::WarningAction::BACK);
     did_log_action_ = true;
-    base::UmaHistogramEnumeration(
-        kSubpageActionHistogram,
-        DownloadBubbleSubpageAction::kPressedBackButton);
   }
   navigation_handler_->OpenPrimaryDialog();
 }
@@ -287,8 +268,6 @@ void DownloadBubbleSecurityView::CloseBubble() {
   // CloseDialog will delete the object. Do not access any members below.
   navigation_handler_->CloseDialog(
       views::Widget::ClosedReason::kCloseButtonClicked);
-  base::UmaHistogramEnumeration(kSubpageActionHistogram,
-                                DownloadBubbleSubpageAction::kClosedSubpage);
 }
 
 void DownloadBubbleSecurityView::UpdateIconAndText() {
@@ -533,12 +512,6 @@ bool DownloadBubbleSecurityView::ProcessButtonClick(
     return false;
   }
 
-  // Record metrics only if we are actually processing the command.
-  base::UmaHistogramEnumeration(
-      kSubpageActionHistogram,
-      is_secondary_button ? DownloadBubbleSubpageAction::kPressedSecondaryButton
-                          : DownloadBubbleSubpageAction::kPressedPrimaryButton);
-
   // Process the command first, since this may become uninitialized once the
   // navigation occurs.
   delegate_->ProcessSecuritySubpageButtonPress(content_id(), command);
@@ -586,11 +559,6 @@ void DownloadBubbleSecurityView::UpdateButton(
   if (button_info.is_prominent) {
     bubble_delegate_->SetDefaultButton(static_cast<int>(button_type));
   }
-
-  base::UmaHistogramEnumeration(
-      kSubpageActionHistogram,
-      is_secondary_button ? DownloadBubbleSubpageAction::kShownSecondaryButton
-                          : DownloadBubbleSubpageAction::kShownPrimaryButton);
 }
 
 void DownloadBubbleSecurityView::UpdateButtons() {
@@ -812,8 +780,6 @@ void DownloadBubbleSecurityView::OnContentIdChanged() {
   // new action) when the action is performed by a user, not when the browser
   // changes the danger type (when a scan is finished, for instance).
   did_log_action_ = false;
-  base::UmaHistogramEnumeration(kSubpageActionHistogram,
-                                DownloadBubbleSubpageAction::kShown);
 }
 
 BEGIN_METADATA(DownloadBubbleSecurityView)

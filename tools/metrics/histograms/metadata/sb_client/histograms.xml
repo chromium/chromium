@@ -238,8 +238,8 @@ useful for Chirp alerts (go/crca-alerts). -->
 </histogram>
 
 <histogram name="SBClientDownload.FileAnalysisDuration{Analysis}" units="ms"
-    expires_after="2026-04-27">
-  <owner>chlily@chromium.org</owner>
+    expires_after="2026-10-13">
+  <owner>yawfrempong@google.com</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
     Records the time it takes for the SafeBrowsing download service to check the
