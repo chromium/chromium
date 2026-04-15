@@ -694,12 +694,12 @@ inline constexpr base::FeatureParam<bool> kMobileParityEnableFeedForGoogleOnly{
 
 inline constexpr base::FeatureParam<bool>
     kOmniboxImprovementForLFFSwitchToTabChip{
-        &omnibox::kOmniboxImprovementForLFF, "switch_to_tab_chip", false};
+        &omnibox::kOmniboxImprovementForLFF, "switch_to_tab_chip", true};
 
 inline constexpr base::FeatureParam<bool>
     kOmniboxImprovementForLFFRemoveSuggestionViaButton{
         &omnibox::kOmniboxImprovementForLFF, "remove_suggestion_via_button",
-        false};
+        true};
 
 inline constexpr base::FeatureParam<bool>
     kOmniboxImprovementForLFFPersistEditingState{

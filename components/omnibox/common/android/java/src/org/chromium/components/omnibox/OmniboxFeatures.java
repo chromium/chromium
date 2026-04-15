@@ -175,7 +175,7 @@ public class OmniboxFeatures {
             newFlag(OmniboxFeatureList.ANDROID_HUB_SEARCH_TAB_GROUPS, FeatureState.ENABLED_IN_PROD);
 
     public static final CachedFlag sOmniboxImprovementForLFF =
-            newFlag(OmniboxFeatureList.OMNIBOX_IMPROVEMENT_FOR_LFF, FeatureState.ENABLED_IN_TEST);
+            newFlag(OmniboxFeatureList.OMNIBOX_IMPROVEMENT_FOR_LFF, FeatureState.ENABLED_IN_PROD);
 
     public static final CachedFlag sAIMSuppressVerbatimMatch =
             newFlag(OmniboxFeatureList.AIM_SUPPRESS_VERBATIM_MATCH, FeatureState.ENABLED_IN_PROD);
@@ -249,13 +249,13 @@ public class OmniboxFeatures {
 
     // This parameter enables showing the switch-to-tab chip on large form factors.
     public static final BooleanCachedFeatureParam sOmniboxImprovementForLFFSwitchToTabChip =
-            newBooleanParam(sOmniboxImprovementForLFF, "switch_to_tab_chip", false);
+            newBooleanParam(sOmniboxImprovementForLFF, "switch_to_tab_chip", true);
 
     // This parameter enables removing suggestion via "x" button.
     public static final BooleanCachedFeatureParam
             sOmniboxImprovementForLFFRemoveSuggestionViaButton =
                     newBooleanParam(
-                            sOmniboxImprovementForLFF, "remove_suggestion_via_button", false);
+                            sOmniboxImprovementForLFF, "remove_suggestion_via_button", true);
 
     // This parameter enables persisting editing state.
     public static final BooleanCachedFeatureParam sOmniboxImprovementForLFFPersistEditingState =

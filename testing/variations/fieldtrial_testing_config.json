@@ -16270,25 +16270,6 @@
             ]
         }
     ],
-    "OmniboxImprovementsForLff": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled_V2",
-                    "params": {
-                        "remove_suggestion_via_button": "true",
-                        "switch_to_tab_chip": "true"
-                    },
-                    "enable_features": [
-                        "OmniboxImprovementForLFF"
-                    ]
-                }
-            ]
-        }
-    ],
     "OmniboxLogURLScoringSignals": [
         {
             "platforms": [

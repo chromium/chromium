@@ -80,8 +80,7 @@ public abstract class BaseSuggestionViewProcessor implements SuggestionProcessor
                         && OmniboxFeatures.sOmniboxImprovementForLFFRemoveSuggestionViaButton
                                 .getValue()
                         && DeviceFormFactor.isNonMultiDisplayContextOnTablet(mContext)
-                        && (DeviceInput.supportsAlphabeticKeyboard()
-                                || DeviceInput.supportsPrecisionPointer());
+                        && DeviceInput.supportsPrecisionPointer();
     }
 
     /**

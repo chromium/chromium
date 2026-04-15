@@ -367,7 +367,7 @@ BASE_FEATURE(kDiagnostics, "OmniboxDiagnostics", DISABLED);
 
 // When enabled, offer a desktop-like omnibox UI enhancement on large form
 // factors.
-BASE_FEATURE(kOmniboxImprovementForLFF, DISABLED);
+BASE_FEATURE(kOmniboxImprovementForLFF, ENABLED);
 
 // If enabled, disables ligatures in the URL bar on Android.
 BASE_FEATURE(kUrlBarWithoutLigatures, ENABLED);
