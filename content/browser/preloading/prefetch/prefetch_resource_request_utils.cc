@@ -614,6 +614,12 @@ MaybeMakeSelfOwnedNetworkServiceDevToolsObserverForPrefetch(
     return mojo::NullRemote();
   }
 
+  if (base::FeatureList::IsEnabled(
+          features::kPrefetchOffTheMainThreadForceForTesting) &&
+      !BrowserThread::CurrentlyOn(content::BrowserThread::UI)) {
+    return mojo::NullRemote();
+  }
+
   auto* ftn =
       FrameTreeNode::From(renderer_initiator_info->GetRenderFrameHost());
   if (!ftn) {
