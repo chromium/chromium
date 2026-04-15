@@ -12,6 +12,7 @@
 #import "base/strings/sys_string_conversions.h"
 #import "components/enterprise/common/proto/connectors.pb.h"
 #import "components/enterprise/connectors/core/analysis_settings.h"
+#import "components/enterprise/connectors/core/cloud_content_scanning/files_request_handler_base.h"
 #import "components/enterprise/connectors/core/common.h"
 #import "components/policy/core/common/policy_pref_names.h"
 #import "components/prefs/pref_service.h"
@@ -25,7 +26,9 @@
 #import "ios/chrome/browser/drive/model/drive_service_factory.h"
 #import "ios/chrome/browser/drive/model/drive_tab_helper.h"
 #import "ios/chrome/browser/drive/model/upload_task.h"
-#import "ios/chrome/browser/enterprise/cloud_content_scanning/model/ios_analysis_request_handler.h"
+#import "ios/chrome/browser/enterprise/cloud_content_scanning/model/files_request_handler_ios.h"
+#import "ios/chrome/browser/enterprise/cloud_content_scanning/model/ios_cloud_binary_upload_service.h"
+#import "ios/chrome/browser/enterprise/cloud_content_scanning/model/ios_cloud_binary_upload_service_factory.h"
 #import "ios/chrome/browser/enterprise/cloud_content_scanning/model/scan_decision_helper.h"
 #import "ios/chrome/browser/enterprise/connectors/analysis/content_analysis_info.h"
 #import "ios/chrome/browser/enterprise/connectors/connectors_service_factory.h"
@@ -179,6 +182,8 @@ void DownloadManagerTabHelper::CleanupCurrentDownload() {
     ScheduleTaskDestruction();
     task_final_file_path_.clear();
   }
+  files_request_handler_.reset();
+  content_analysis_info_.reset();
 }
 
 void DownloadManagerTabHelper::AdaptToFullscreen(bool adapt_to_fullscreen) {
@@ -263,6 +268,8 @@ void DownloadManagerTabHelper::DidCreateDownload(
     task_ = nullptr;
     task_final_file_path_.clear();
   }
+  files_request_handler_.reset();
+  content_analysis_info_.reset();
   task_ = std::move(task);
   task_->AddObserver(this);
   if (web_state_->IsVisible() && delegate_) {
@@ -387,11 +394,16 @@ DownloadFileService* DownloadManagerTabHelper::GetDownloadFileService() {
 
 void DownloadManagerTabHelper::MaybeMoveDownloadToDownloadsDirectory(
     bool shouldProceed) {
-  // Ensure the handler is destroyed as soon as it is no longer necessary.
+  // Ensure the handler and content_analysis_info_ are destroyed as soon as they
+  // are no longer necessary.
   base::ScopedClosureRunner cleanup(base::BindOnce(
-      [](std::unique_ptr<enterprise_connectors::IOSAnalysisRequestHandler>
-             handler) {},
-      std::move(analysis_request_handler_)));
+      [](std::unique_ptr<enterprise_connectors::FilesRequestHandlerBase>
+             handler,
+         std::unique_ptr<enterprise_connectors::ContentAnalysisInfo> info) {
+        // Make sure the request_handler is destroyed first.
+        handler.reset();
+      },
+      std::move(files_request_handler_), std::move(content_analysis_info_)));
 
   if (!shouldProceed) {
     CleanupCurrentDownload();
@@ -428,25 +440,32 @@ void DownloadManagerTabHelper::ProcessCompleteDownloadTask() {
         url, enterprise_connectors::AnalysisConnector::FILE_DOWNLOADED);
   }
 
-  auto content_analysis_info =
+  content_analysis_info_ =
       std::make_unique<enterprise_connectors::ContentAnalysisInfo>(
           url,
           settings.has_value() ? std::move(settings.value())
                                : enterprise_connectors::AnalysisSettings(),
           enterprise_connectors::ContentAnalysisRequest::NORMAL_DOWNLOAD,
           web_state_->GetWeakPtr());
-
-  // Send the download file for enterprise DLP download content scanning.
-  analysis_request_handler_ = std::make_unique<
-      enterprise_connectors::IOSAnalysisRequestHandler>(
-      std::move(content_analysis_info), profile, "",
-      enterprise_connectors::DeepScanAccessPoint::DOWNLOAD,
-      task_->GetResponsePath(),
+  auto files_request_handler_delegate = std::make_unique<
+      enterprise_connectors::FilesRequestHandlerIOS>(
+      profile, task_->GetResponsePath(),
       base::BindOnce(
           &enterprise_connectors::HandleScanDecision, web_state_->GetWeakPtr(),
           enterprise_connectors::TriggerType::kSavePrompt,
           base::BindOnce(
               &DownloadManagerTabHelper::MaybeMoveDownloadToDownloadsDirectory,
               weak_ptr_factory_.GetWeakPtr())));
-  analysis_request_handler_->PrepareContentAnalysisRequest();
+
+  // Send the download file for enterprise DLP download content scanning.
+  // TODO(crbug.com/501456247): Update the cloudBinaryUploadsService with
+  // cloudBinaryUploadsServiceBase once the desktop refactor is done.
+  files_request_handler_ = std::make_unique<
+      enterprise_connectors::FilesRequestHandlerBase>(
+      content_analysis_info_.get(),
+      enterprise_connectors::IOSCloudBinaryUploadServiceFactory::GetForProfile(
+          profile),
+      url, "", enterprise_connectors::DeepScanAccessPoint::DOWNLOAD,
+      std::move(files_request_handler_delegate));
+  files_request_handler_->UploadData();
 }

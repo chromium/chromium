@@ -64,6 +64,7 @@ source_set("model") {
   deps = [
     "//base",
     "//components/enterprise/connectors/core",
+    "//components/enterprise/connectors/core:cloud_content_scanning",
     "//components/keyed_service/core",
     "//components/policy/core/common",
     "//components/prefs",

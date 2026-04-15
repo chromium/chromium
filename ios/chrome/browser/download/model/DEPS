@@ -2,8 +2,7 @@ include_rules = [
   # keep-sorted start
   "+crypto",
   "+ios/chrome/browser/drive/model",
-  "+ios/chrome/browser/enterprise/cloud_content_scanning/model/ios_analysis_request_handler.h",
-  "+ios/chrome/browser/enterprise/cloud_content_scanning/model/scan_decision_helper.h",
+  "+ios/chrome/browser/enterprise/cloud_content_scanning/model",
   "+ios/chrome/browser/enterprise/connectors/analysis/content_analysis_info.h",
   "+ios/chrome/browser/enterprise/connectors/connectors_service_factory.h",
   "+ios/chrome/browser/optimization_guide/model",
