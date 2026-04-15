@@ -140,14 +140,11 @@ AttemptLoginTool::~AttemptLoginTool() {
   OptimizationGuideKeyedService* opt_guide_service =
       OptimizationGuideKeyedServiceFactory::GetForProfile(profile);
 
-  // Disable MQLS upload if FedCM support or Password Checkup is enabled
-  // while prototyping to avoid uploading incorrect logs.
-  // TODO(crbug.com/480920277): Remove this check once the prototyping is
-  // complete for FedCM.
+  // Disable MQLS upload if Password Checkup is enabled while prototyping to
+  // avoid uploading incorrect logs.
   // TODO(crbug.com/485620841): Remove this check once the prototyping is
   // complete for Automated Password Change.
   bool prototype_features_enabled =
-      base::FeatureList::IsEnabled(features::kFedCmEmbedderInitiatedLogin) ||
       base::FeatureList::IsEnabled(
           password_manager::features::kPasswordCheckupPrototype);
 
