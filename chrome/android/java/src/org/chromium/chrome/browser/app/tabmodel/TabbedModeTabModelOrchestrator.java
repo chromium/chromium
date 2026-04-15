@@ -283,6 +283,12 @@ public class TabbedModeTabModelOrchestrator extends TabModelOrchestrator {
             markStoresInitialized();
         }
 
+        Profile profile = getOriginalProfile();
+        assert profile != null;
+
+        PersistentStoreCleanerFactory.getForProfile(profile)
+                .scheduleCleanUnusedData(tabContentManager);
+
         TabModelUtils.runOnTabStateInitialized(
                 mTabModelSelector,
                 (selector) -> createArchivedTabModelInDeferredTask(tabContentManager));
