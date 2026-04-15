@@ -102,5 +102,52 @@ TEST(TabStripApiUtilsTest, GetTabGroupId_WrongType) {
   ASSERT_EQ(mojo_base::mojom::Code::kInvalidArgument, result.error()->code);
 }
 
+TEST(TabStripApiUtilsTest, MergeTabGroupVisualData_EmptyMask) {
+  tab_groups::TabGroupVisualData current(u"Current",
+                                         tab_groups::TabGroupColorId::kBlue,
+                                         /*is_collapsed=*/false);
+  tab_groups::TabGroupVisualData incoming(u"Incoming",
+                                          tab_groups::TabGroupColorId::kRed,
+                                          /*is_collapsed=*/true);
+
+  auto result_no_mask =
+      MergeTabGroupVisualData(current, incoming, std::nullopt);
+  ASSERT_TRUE(result_no_mask.has_value());
+  EXPECT_EQ(u"Incoming", result_no_mask.value().title());
+  EXPECT_EQ(tab_groups::TabGroupColorId::kRed, result_no_mask.value().color());
+  EXPECT_TRUE(result_no_mask.value().is_collapsed());
+
+  auto result_empty_mask =
+      MergeTabGroupVisualData(current, incoming, std::vector<std::string>());
+  ASSERT_TRUE(result_empty_mask.has_value());
+  EXPECT_EQ(result_no_mask.value(), result_empty_mask.value());
+}
+
+TEST(TabStripApiUtilsTest, MergeTabGroupVisualData_PartialMask) {
+  tab_groups::TabGroupVisualData current(u"Current",
+                                         tab_groups::TabGroupColorId::kBlue,
+                                         /*is_collapsed=*/false);
+  tab_groups::TabGroupVisualData incoming(u"Incoming",
+                                          tab_groups::TabGroupColorId::kRed,
+                                          /*is_collapsed=*/true);
+
+  auto result = MergeTabGroupVisualData(
+      current, incoming, std::vector<std::string>({std::string(kTitleField)}));
+  ASSERT_TRUE(result.has_value());
+  EXPECT_EQ(u"Incoming", result.value().title());
+  EXPECT_EQ(tab_groups::TabGroupColorId::kBlue, result.value().color());
+  EXPECT_FALSE(result.value().is_collapsed());
+}
+
+TEST(TabStripApiUtilsTest, MergeTabGroupVisualData_InvalidField) {
+  tab_groups::TabGroupVisualData current;
+  tab_groups::TabGroupVisualData incoming;
+
+  auto result = MergeTabGroupVisualData(
+      current, incoming, std::vector<std::string>({"invalid_field"}));
+  ASSERT_FALSE(result.has_value());
+  EXPECT_EQ(mojo_base::mojom::Code::kInvalidArgument, result.error()->code);
+}
+
 }  // namespace
 }  // namespace tabs_api::utils

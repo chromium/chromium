@@ -65,7 +65,9 @@ class TabStripServiceImpl
   mojom::TabStripService::MoveNodeResult MoveNode(
       const tabs_api::NodeId& id,
       const tabs_api::Position& position) override;
-  mojom::TabStripService::UpdateResult Update(mojom::DataPtr data) override;
+  mojom::TabStripService::UpdateResult Update(
+      mojom::DataPtr data,
+      const std::optional<std::vector<std::string>>& update_mask) override;
 
   // tabs_api::mojom::TabStripExperimentalService overrides
   //
@@ -118,6 +120,10 @@ class TabStripServiceImpl
   base::expected<void, mojo_base::mojom::ErrorPtr> CloseCollection(
       const NodeId& id);
   void CloseTabs(const std::vector<tabs::TabHandle>& tab_targets);
+
+  mojom::TabStripService::UpdateResult UpdateTabGroup(
+      mojom::TabGroupPtr tab_group,
+      const std::optional<std::vector<std::string>>& update_mask);
 
   std::unique_ptr<PlatformAdaptersProvider> adapters_provider_;
   std::unique_ptr<events::TabStripEventRecorder> recorder_;

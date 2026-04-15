@@ -84,9 +84,13 @@ interface TabStripService {
 
   // Updates an existing resource in the tab strip (e.g., a TabGroup's visual
   // data).
+  // 'update_mask' specifies which fields of 'data' should be updated. If
+  // 'update_mask' is null or empty, all fields in 'data' will
+  // be applied.
   // The return value 'Data' union should be the corresponding resource type
   // being updated.
-  Update(Data data) => result<Data, mojo_base.mojom.Error>;
+  Update(Data data, array<string>? update_mask)
+      => result<Data, mojo_base.mojom.Error>;
 };
 
 union TabsEvent {

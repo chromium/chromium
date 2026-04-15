@@ -872,7 +872,7 @@ IN_PROC_BROWSER_TEST_F(TabStripServiceImplBrowserTest, UpdateTabGroupData) {
   auto tab_group = tabs_api::mojom::TabGroup::New(group_node_id, new_visuals);
   auto data = tabs_api::mojom::Data::NewTabGroup(std::move(tab_group));
   remote->Update(
-      std::move(data),
+      std::move(data), std::nullopt,
       base::BindLambdaForTesting(
           [&](tabs_api::mojom::TabStripService::UpdateResult result) {
             ASSERT_TRUE(result.has_value())

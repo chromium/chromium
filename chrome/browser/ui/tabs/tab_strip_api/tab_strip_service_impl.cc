@@ -9,6 +9,7 @@
 #include <utility>
 
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/to_string.h"
 #include "base/types/expected.h"
 #include "base/types/expected_macros.h"
 #include "chrome/browser/ui/tabs/tab_strip_api/adapters/platform_adapters_provider.h"
@@ -339,23 +340,41 @@ mojom::TabStripService::MoveNodeResult TabStripServiceImpl::MoveNode(
 }
 
 mojom::TabStripService::UpdateResult TabStripServiceImpl::Update(
-    mojom::DataPtr data) {
+    mojom::DataPtr data,
+    const std::optional<std::vector<std::string>>& update_mask) {
   auto session = session_controller_->CreateSession();
 
-  if (data->is_tab_group()) {
-    const auto& tab_group = data->get_tab_group();
-    ASSIGN_OR_RETURN(
-        auto group_id,
-        utils::GetTabGroupId(tab_strip_model_adapter(), tab_group->id));
-
-    tab_strip_model_adapter().UpdateTabGroupVisuals(group_id, tab_group->data);
-    return translation_adapter().ToMojoData(
-        tab_group->id.ToTabCollectionHandle().value());
+  switch (data->which()) {
+    case mojom::Data::Tag::kTabGroup:
+      return UpdateTabGroup(std::move(data->get_tab_group()), update_mask);
+    default:
+      return base::unexpected(mojo_base::mojom::Error::New(
+          mojo_base::mojom::Code::kUnimplemented,
+          "Update not implemented for resource type: " +
+              base::ToString(data->which())));
   }
+}
 
-  return base::unexpected(mojo_base::mojom::Error::New(
-      mojo_base::mojom::Code::kUnimplemented,
-      "Update not implemented for this resource type"));
+mojom::TabStripService::UpdateResult TabStripServiceImpl::UpdateTabGroup(
+    mojom::TabGroupPtr tab_group,
+    const std::optional<std::vector<std::string>>& update_mask) {
+  ASSIGN_OR_RETURN(
+      auto group_id,
+      utils::GetTabGroupId(tab_strip_model_adapter(), tab_group->id));
+
+  auto collection_handle =
+      tab_strip_model_adapter().GetCollectionHandleForTabGroupId(group_id);
+  ASSIGN_OR_RETURN(auto current_data,
+                   translation_adapter().ToMojoData(collection_handle));
+
+  ASSIGN_OR_RETURN(
+      auto updated_visual_data,
+      utils::MergeTabGroupVisualData(current_data->get_tab_group()->data,
+                                     tab_group->data, update_mask));
+
+  tab_strip_model_adapter().UpdateTabGroupVisuals(group_id,
+                                                  updated_visual_data);
+  return translation_adapter().ToMojoData(collection_handle);
 }
 
 // tabs_api::mojom::TabStripExperimentalService overrides

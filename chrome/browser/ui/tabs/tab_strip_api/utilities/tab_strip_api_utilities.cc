@@ -4,6 +4,9 @@
 
 #include "chrome/browser/ui/tabs/tab_strip_api/utilities/tab_strip_api_utilities.h"
 
+#include <string_view>
+
+#include "base/containers/fixed_flat_set.h"
 #include "chrome/browser/ui/tabs/tab_strip_api/adapters/tab_strip_model_adapter.h"
 
 namespace tabs_api::utils {
@@ -43,6 +46,35 @@ GetTabGroupId(TabStripModelAdapter& adapter, const NodeId& node_id) {
                                      "group with the specified ID not found."));
   }
   return group_id.value();
+}
+
+base::expected<tab_groups::TabGroupVisualData, mojo_base::mojom::ErrorPtr>
+MergeTabGroupVisualData(const tab_groups::TabGroupVisualData& current,
+                        const tab_groups::TabGroupVisualData& incoming,
+                        const std::optional<std::vector<std::string>>& mask) {
+  if (!mask || mask->empty()) {
+    return incoming;
+  }
+
+  std::u16string title = current.title();
+  tab_groups::TabGroupColorId color = current.color();
+  bool is_collapsed = current.is_collapsed();
+
+  for (const auto& field : *mask) {
+    if (field == kTitleField) {
+      title = incoming.title();
+    } else if (field == kColorField) {
+      color = incoming.color();
+    } else if (field == kIsCollapsedField) {
+      is_collapsed = incoming.is_collapsed();
+    } else {
+      return base::unexpected(mojo_base::mojom::Error::New(
+          mojo_base::mojom::Code::kInvalidArgument,
+          "Invalid field in update mask: " + field));
+    }
+  }
+
+  return tab_groups::TabGroupVisualData(title, color, is_collapsed);
 }
 
 }  // namespace tabs_api::utils
