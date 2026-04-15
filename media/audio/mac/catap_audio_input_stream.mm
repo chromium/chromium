@@ -1249,6 +1249,11 @@ bool CatapAudioInputStreamSource::ProbeAudioTapPermissions() {
 void CatapAudioInputStreamSource::ProcessPropertyChange(
     base::span<const AudioObjectPropertyAddress> property_addresses) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  // Keep a weak pointer to self to handle the case where `OnError()` or the
+  // callback implementation in `audio_property_change_callback_` might delete
+  // this object.
+  base::WeakPtr<CatapAudioInputStreamSource> weak_this =
+      weak_ptr_factory_.GetWeakPtr();
   for (const AudioObjectPropertyAddress& property_address :
        property_addresses) {
     if (property_address == kDeviceIsAliveAddress) {
@@ -1273,16 +1278,22 @@ void CatapAudioInputStreamSource::ProcessPropertyChange(
       SendLogMessage("%s => Device is alive property changed: %d", __func__,
                      is_alive);
       if (!is_alive) {
+        // OnError() may delete `this`.
         OnError();
+        if (!weak_this) {
+          return;
+        }
       }
     } else if (property_address == kDefaultOutputDevicePropertyAddress) {
       TRACE_EVENT1("audio",
                    "CatapAudioInputStreamSource::ProcessPropertyChange",
                    "property", "DefaultOutputDevice");
       SendLogMessage("%s => Default output device changed.", __func__);
-      // Nothing should be done after the callback is called, because 'this'
-      // might be deleted within the callback implementation.
+      // The callback may delete `this`.
       audio_property_change_callback_->OnDefaultDeviceChange();
+      if (!weak_this) {
+        return;
+      }
     } else if (property_address == kSampleRateAddress) {
       TRACE_EVENT1("audio",
                    "CatapAudioInputStreamSource::ProcessPropertyChange",
@@ -1293,9 +1304,11 @@ void CatapAudioInputStreamSource::ProcessPropertyChange(
         SendLogMessage("%s => Sample rate of aggregate device changed. New "
                        "sample rate: %f",
                        __func__, sample_rate.value_or(-1.0));
-        // Nothing should be done after the callback is called, because 'this'
-        // might be deleted within the callback implementation.
+        // The callback may delete `this`.
         audio_property_change_callback_->OnSampleRateChange();
+        if (!weak_this) {
+          return;
+        }
       }
     } else if (property_address == kAudioProcessListAddress) {
       // We only listen on `kAudioProcessListAddress` changes if we capture

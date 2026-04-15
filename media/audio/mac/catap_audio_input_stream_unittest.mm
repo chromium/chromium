@@ -1131,6 +1131,71 @@ TEST_F(CatapAudioInputStreamTest, ReopensOnSamplerateChange) {
   }
 }
 
+TEST_F(CatapAudioInputStreamTest,
+       ProcessPropertyChangeEarlyReturnOnDestruction) {
+  if (@available(macOS 14.2, *)) {
+    int expected_create_aggregate_device_count = 0;
+    CreateStream();
+    EXPECT_EQ(stream_->Open(), AudioInputStream::OpenOutcome::kSuccess);
+    ++expected_create_aggregate_device_count;
+
+    EXPECT_EQ(fake_catap_api()->create_aggregate_device_count,
+              expected_create_aggregate_device_count);
+
+    // Trigger a sample rate change which will cause destruction of the source
+    // object.
+    fake_catap_api()->last_set_sample_rate = 16000;
+
+    // Call ProcessPropertyChange with two property addresses:
+    // 1. kSampleRateAddress (triggers destruction).
+    // 2. kDefaultOutputDevicePropertyAddress (should not be processed).
+    AudioObjectPropertyAddress addresses[2] = {
+        kSampleRateAddress, kDefaultOutputDevicePropertyAddress};
+
+    fake_catap_api()->property_listener_block(2, addresses);
+
+    // The first address should trigger a restart (destroy and recreate).
+    // If the early return is successful, the second address is ignored,
+    // preventing a UAF and ensuring the stream isn't restarted a second time.
+    ++expected_create_aggregate_device_count;
+    EXPECT_EQ(fake_catap_api()->create_aggregate_device_count,
+              expected_create_aggregate_device_count);
+  }
+}
+
+TEST_F(CatapAudioInputStreamTest,
+       ProcessPropertyChangeEarlyReturnOnDestructionDefaultDevice) {
+  if (@available(macOS 14.2, *)) {
+    int expected_create_aggregate_device_count = 0;
+    CreateStream();
+    EXPECT_EQ(stream_->Open(), AudioInputStream::OpenOutcome::kSuccess);
+    ++expected_create_aggregate_device_count;
+
+    EXPECT_EQ(fake_catap_api()->create_aggregate_device_count,
+              expected_create_aggregate_device_count);
+
+    // Trigger a restart on default device change.
+    // We also change the sample rate so that if the second property is
+    // processed, it would trigger another restart.
+    fake_catap_api()->last_set_sample_rate = 16000;
+
+    // Call ProcessPropertyChange with two property addresses:
+    // 1. kDefaultOutputDevicePropertyAddress (triggers destruction).
+    // 2. kSampleRateAddress (should be ignored).
+    AudioObjectPropertyAddress addresses[2] = {
+        kDefaultOutputDevicePropertyAddress, kSampleRateAddress};
+
+    fake_catap_api()->property_listener_block(2, addresses);
+
+    // The first address should trigger a restart (destroy and recreate).
+    // If the early return is successful, the second address is ignored,
+    // preventing a UAF and ensuring the stream isn't restarted a second time.
+    ++expected_create_aggregate_device_count;
+    EXPECT_EQ(fake_catap_api()->create_aggregate_device_count,
+              expected_create_aggregate_device_count);
+  }
+}
+
 TEST_F(CatapAudioInputStreamTest, RestartFailingForStartedStream) {
   if (@available(macOS 14.2, *)) {
     CreateStream();
