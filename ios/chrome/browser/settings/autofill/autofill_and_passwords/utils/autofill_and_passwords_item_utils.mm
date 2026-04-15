@@ -27,7 +27,6 @@ TableViewDetailIconItem* DetailItemWithType(
     NSString* text,
     NSString* detail_text,
     UIImage* symbol,
-    UIColor* background_color,
     NSString* accessibility_identifier) {
   TableViewDetailIconItem* detail_item =
       [[TableViewDetailIconItem alloc] initWithType:type];
@@ -37,8 +36,10 @@ TableViewDetailIconItem* DetailItemWithType(
   detail_item.accessibilityTraits |= UIAccessibilityTraitButton;
   detail_item.accessibilityIdentifier = accessibility_identifier;
   detail_item.iconImage = symbol;
-  if (background_color) {
-    detail_item.iconBackgroundColor = background_color;
+  if (IsYourSavedInfoSettingsPageIosEnabled()) {
+    detail_item.iconTintColor = [UIColor colorNamed:kTextPrimaryColor];
+  } else {
+    detail_item.iconBackgroundColor = [UIColor colorNamed:kYellow500Color];
     detail_item.iconTintColor = UIColor.whiteColor;
   }
   return detail_item;
@@ -65,7 +66,6 @@ TableViewDetailIconItem* PasswordsItem(BOOL enabled) {
   return DetailItemWithType(SettingsItemTypePasswords, passwordsSectionTitle,
                             PasswordsItemDetailText(enabled),
                             CustomSettingsRootSymbol(kPasswordSymbol),
-                            [UIColor colorNamed:kYellow500Color],
                             kSettingsPasswordsCellId);
 }
 
@@ -77,7 +77,6 @@ TableViewDetailIconItem* AutofillCreditCardItem(BOOL enabled) {
   return DetailItemWithType(SettingsItemTypeAutofillCreditCard, title,
                             AutofillCreditCardItemDetailText(enabled),
                             DefaultSettingsRootSymbol(kCreditCardSymbol),
-                            [UIColor colorNamed:kYellow500Color],
                             kSettingsPaymentMethodsCellId);
 }
 
@@ -91,5 +90,5 @@ TableViewDetailIconItem* AutofillProfileItem(BOOL enabled) {
       SettingsItemTypeAutofillProfile, title,
       AutofillProfileItemDetailText(enabled),
       CustomSettingsRootSymbol(kLocationSymbol),
-      [UIColor colorNamed:kYellow500Color], kSettingsAddressesAndMoreCellId);
+      kSettingsAddressesAndMoreCellId);
 }
