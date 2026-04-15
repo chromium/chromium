@@ -42,9 +42,9 @@ TEST(TextCodec, HTMLEntityEncoding) {
   EXPECT_EQ(replacement, "&#57347;");
 }
 
-TEST(TextCodec, URLEntityEncoding) {
+TEST(TextCodec, UrlEntityEncoding) {
   std::string replacement = TextCodec::GetUnencodableReplacement(
-      0xE003, kURLEncodedEntitiesForUnencodables);
+      0xE003, kUrlEncodedEntitiesForUnencodables);
   EXPECT_EQ(replacement, "%26%2357347%3B");
 }
 

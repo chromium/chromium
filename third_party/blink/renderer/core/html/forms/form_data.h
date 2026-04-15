@@ -102,7 +102,7 @@ class CORE_EXPORT FormData final : public ScriptWrappable,
   void SetContainsPasswordData(bool flag) { contains_password_data_ = flag; }
 
   scoped_refptr<EncodedFormData> EncodeFormData(
-      EncodedFormData::EncodingType = EncodedFormData::kFormURLEncoded);
+      EncodedFormData::EncodingType = EncodedFormData::kFormUrlEncoded);
   scoped_refptr<EncodedFormData> EncodeMultiPartFormData();
 
   void AppendToControlState(FormControlState& state) const;

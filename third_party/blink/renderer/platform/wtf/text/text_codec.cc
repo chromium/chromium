@@ -39,7 +39,7 @@ std::string TextCodec::GetUnencodableReplacement(UChar32 code_point,
     case kEntitiesForUnencodables:
       snprintf(replacement, sizeof(replacement), "&#%u;", code_point);
       return std::string(replacement);
-    case kURLEncodedEntitiesForUnencodables:
+    case kUrlEncodedEntitiesForUnencodables:
       snprintf(replacement, sizeof(replacement), "%%26%%23%u%%3B", code_point);
       return std::string(replacement);
 

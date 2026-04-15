@@ -571,7 +571,7 @@ static void UrlEscapedEntityCallback(const void* context,
                                      UErrorCode* err) {
   FormatEscapedEntityCallback(
       context, from_u_args, code_units, length, code_point, reason, err,
-      UnencodableHandling::kURLEncodedEntitiesForUnencodables);
+      UnencodableHandling::kUrlEncodedEntitiesForUnencodables);
 }
 
 #if defined(USING_SYSTEM_ICU)
@@ -687,7 +687,7 @@ std::string TextCodecIcu::EncodeInternal(base::span<const UChar> input,
           0, 0, &err);
 #endif
       break;
-    case UnencodableHandling::kURLEncodedEntitiesForUnencodables:
+    case UnencodableHandling::kUrlEncodedEntitiesForUnencodables:
 #if !defined(USING_SYSTEM_ICU)
       ucnv_setFromUCallBack(converter_icu_, UrlEscapedEntityCallback, nullptr,
                             nullptr, nullptr, &err);

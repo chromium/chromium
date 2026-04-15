@@ -318,7 +318,7 @@ void URLSearchParams::EncodeAsFormData(Vector<char>& encoded_data) const {
   for (const auto& param : params_) {
     FormDataEncoder::AddKeyValuePairAsFormData(
         encoded_data, param.first.Utf8(), param.second.Utf8(),
-        EncodedFormData::kFormURLEncoded, FormDataEncoder::kDoNotNormalizeCRLF);
+        EncodedFormData::kFormUrlEncoded, FormDataEncoder::kDoNotNormalizeCRLF);
   }
 }
 

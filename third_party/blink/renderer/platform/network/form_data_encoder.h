@@ -65,7 +65,7 @@ class PLATFORM_EXPORT FormDataEncoder {
       Vector<char>&,
       const std::string& key,
       const std::string& value,
-      EncodedFormData::EncodingType = EncodedFormData::kFormURLEncoded,
+      EncodedFormData::EncodingType = EncodedFormData::kFormUrlEncoded,
       Mode = kNormalizeCRLF);
   static void EncodeStringAsFormData(Vector<char>&, const std::string&, Mode);
 };

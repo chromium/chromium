@@ -316,7 +316,7 @@ FormSubmission* FormSubmission::Create(HTMLFormElement* form,
   } else {
     form_data = dom_form_data->EncodeFormData(
         attributes.Method() == kGetMethod
-            ? EncodedFormData::kFormURLEncoded
+            ? EncodedFormData::kFormUrlEncoded
             : EncodedFormData::ParseEncodingType(encoding_type));
     if (copied_attributes.Method() == kPostMethod && is_mailto_form) {
       // Convert the form data into a string that we put into the URL.
