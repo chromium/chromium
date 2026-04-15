@@ -38,6 +38,12 @@ using ::testing::UnorderedElementsAreArray;
 // Test fixture for synchronous database operations.
 class EntityTableTest : public testing::Test {
  public:
+  EntityTableTest() {
+    scoped_feature_list_.InitWithFeatures(
+        {features::kAutofillAiWithDataSchema,
+         features::kAutofillAiWalletPrivatePasses},
+        {});
+  }
   void SetUp() override {
     ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
     db_.AddTable(&table_);
@@ -49,8 +55,7 @@ class EntityTableTest : public testing::Test {
   EntityTable& table() { return table_; }
 
  private:
-  base::test::ScopedFeatureList scoped_feature_list_{
-      features::kAutofillAiWithDataSchema};
+  base::test::ScopedFeatureList scoped_feature_list_;
   base::ScopedTempDir temp_dir_;
   const os_crypt_async::Encryptor encryptor_ =
       os_crypt_async::GetTestEncryptorForTesting();
@@ -444,6 +449,21 @@ TEST_F(EntityTableTest, GetEntityInstanceMaskedServerEntity) {
   std::vector<EntityInstance> entities = table().GetEntityInstances();
   ASSERT_THAT(entities, ElementsAre(masked_pp));
   EXPECT_TRUE(entities[0].IsMaskedServerEntity());
+}
+
+// Tests that when private passes support is disabled (for example, because a
+// user got un-enrolled from the experiment), the table doesn't return any
+// Wallet private passes that were previously created.
+// Note that this data will get wiped during the next sync GetUpdates.
+TEST_F(EntityTableTest, SuppressWalletPrivatePasses) {
+  EntityInstance pass = test::MaskEntityInstance(GetPassportEntityInstance(
+      {.record_type = EntityInstance::RecordType::kServerWallet}));
+  ASSERT_TRUE(table().AddOrUpdateEntityInstance(pass));
+  ASSERT_THAT(table().GetEntityInstances(), ElementsAre(pass));
+  // Simulate disabling the feature flag after adding the pass.
+  base::test::ScopedFeatureList feature;
+  feature.InitAndDisableFeature(features::kAutofillAiWalletPrivatePasses);
+  EXPECT_THAT(table().GetEntityInstances(), IsEmpty());
 }
 
 }  // namespace
