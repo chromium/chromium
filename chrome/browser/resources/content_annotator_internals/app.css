@@ -27,6 +27,13 @@ td {
   word-break: break-word;
 }
 
+th:first-child,
+td:first-child {
+  min-width: unset;
+  width: 30px;
+  text-align: center;
+}
+
 th {
   background-color: #f2f2f2;
 }
@@ -45,14 +52,36 @@ tr:hover {
   align-items: center;
 }
 
-#clear-cache {
+.button-group {
+  display: flex;
+  gap: 10px;
+  margin-left: 2rem;
+}
+
+.button-group button {
   padding: 6px 12px;
   cursor: pointer;
   background-color: #f2f2f2;
   border: 1px solid #ddd;
-  margin-left: 2rem;
 }
 
-#clear-cache:hover {
+.button-group button:hover {
   background-color: #ddd;
+}
+
+.button-group button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+tr.selectable {
+  cursor: pointer;
+}
+
+tr.selected {
+  background-color: #e8f0fe !important;
+}
+
+tr.selected:hover {
+  background-color: #d2e3fc !important;
 }

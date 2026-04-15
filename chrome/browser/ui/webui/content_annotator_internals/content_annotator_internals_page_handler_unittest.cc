@@ -215,5 +215,68 @@ TEST_F(ContentAnnotatorInternalsPageHandlerTest, ClearContentAnnotationsCache) {
   }
 }
 
+TEST_F(ContentAnnotatorInternalsPageHandlerTest, DeleteAnnotatedContent) {
+  accessibility_annotator::AccessibilityAnnotatorBackend* backend =
+      AccessibilityAnnotatorBackendFactory::GetForProfile(profile());
+  ASSERT_TRUE(backend);
+
+  // Add two entries.
+  accessibility_annotator::AccessibilityAnnotatorBackend::ContentAnnotationsData
+      data1;
+  data1.page_title = "Title 1";
+  data1.url = GURL("https://example.com/1");
+  backend->SetContentAnnotationsCacheData(static_cast<history::VisitID>(1),
+                                          std::move(data1));
+
+  accessibility_annotator::AccessibilityAnnotatorBackend::ContentAnnotationsData
+      data2;
+  data2.page_title = "Title 2";
+  data2.url = GURL("https://example.com/2");
+  backend->SetContentAnnotationsCacheData(static_cast<history::VisitID>(2),
+                                          std::move(data2));
+
+  // Verify data is present.
+  {
+    base::RunLoop run_loop;
+    handler()->GetAnnotatedContent(
+        base::BindLambdaForTesting([&](base::Value content) {
+          ASSERT_TRUE(content.is_list());
+          EXPECT_EQ(content.GetList().size(), 2u);
+          run_loop.Quit();
+        }));
+    run_loop.Run();
+  }
+
+  // Delete one entry.
+  {
+    base::RunLoop run_loop;
+    std::vector<int64_t> visit_ids = {1};
+    handler()->DeleteAnnotatedContent(
+        visit_ids, base::BindLambdaForTesting([&](bool success) {
+          EXPECT_TRUE(success);
+          run_loop.Quit();
+        }));
+    run_loop.Run();
+  }
+
+  // Verify only one entry remains.
+  {
+    base::RunLoop run_loop;
+    handler()->GetAnnotatedContent(
+        base::BindLambdaForTesting([&](base::Value content) {
+          ASSERT_TRUE(content.is_list());
+          const base::ListValue& list = content.GetList();
+          ASSERT_EQ(list.size(), 1u);
+          const base::DictValue& entry = list[0].GetDict();
+          EXPECT_THAT(entry.FindString("url"),
+                      Pointee(Eq("https://example.com/2")));
+          EXPECT_THAT(entry.FindString("title"), Pointee(Eq("Title 2")));
+          EXPECT_THAT(entry.FindString("visit_id"), Pointee(Eq("2")));
+          run_loop.Quit();
+        }));
+    run_loop.Run();
+  }
+}
+
 }  // namespace
 }  // namespace content_annotator_internals

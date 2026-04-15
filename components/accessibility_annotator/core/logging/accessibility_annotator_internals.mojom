@@ -21,8 +21,11 @@ interface PageHandler {
   // available.
   GetAnnotatedContent() => (mojo_base.mojom.Value content);
 
-  // Clears the content annotations cache.
+  // Clears the content annotations.
   ClearAnnotatedContent() => (bool success);
+
+  // Deletes selected annotationse.
+  DeleteAnnotatedContent(array<int64> visit_ids) => (bool success);
 };
 
 // Called from C++ side of chrome://content-annotator-internals

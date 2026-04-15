@@ -34,6 +34,8 @@ class ContentAnnotatorInternalsPageHandler
   void GetAnnotatedContent(GetAnnotatedContentCallback callback) override;
   void ClearAnnotatedContent(
       ClearAnnotatedContentCallback callback) override;
+  void DeleteAnnotatedContent(const std::vector<int64_t>& visit_ids,
+                              DeleteAnnotatedContentCallback callback) override;
 
  private:
   mojo::Receiver<accessibility_annotator_internals::mojom::PageHandler>

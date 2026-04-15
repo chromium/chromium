@@ -49,4 +49,18 @@ void ContentAnnotatorInternalsPageHandler::ClearAnnotatedContent(
   std::move(callback).Run(true);
 }
 
+void ContentAnnotatorInternalsPageHandler::DeleteAnnotatedContent(
+    const std::vector<int64_t>& visit_ids,
+    DeleteAnnotatedContentCallback callback) {
+  accessibility_annotator::AccessibilityAnnotatorBackend* backend =
+      AccessibilityAnnotatorBackendFactory::GetForProfile(profile_);
+  if (!backend) {
+    std::move(callback).Run(false);
+    return;
+  }
+
+  backend->RemoveContentAnnotationsCacheData(visit_ids);
+  std::move(callback).Run(true);
+}
+
 }  // namespace content_annotator_internals

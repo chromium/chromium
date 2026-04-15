@@ -37,11 +37,13 @@ export class ContentAnnotatorInternalsAppElement extends CrLitElement {
     return {
       logContent_: {type: Array},
       errorMessage_: {type: String},
+      selectedVisitIds_: {type: Object},
     };
   }
 
   protected accessor logContent_: AnnotationEntry[] = [];
   protected accessor errorMessage_: string = '';
+  protected accessor selectedVisitIds_: Set<string> = new Set();
   private browserProxy_: BrowserProxy = BrowserProxyImpl.getInstance();
 
   override connectedCallback() {
@@ -51,6 +53,7 @@ export class ContentAnnotatorInternalsAppElement extends CrLitElement {
 
   private async loadLogContent_() {
     this.errorMessage_ = '';
+    this.selectedVisitIds_.clear();
     try {
       const {content} = await this.browserProxy_.handler.getAnnotatedContent();
       this.logContent_ = this.flattenValue_(content) || [];
@@ -73,6 +76,63 @@ export class ContentAnnotatorInternalsAppElement extends CrLitElement {
     } catch (e) {
       this.errorMessage_ = 'Error: could not clear content annotations cache.';
     }
+  }
+
+  protected onToggleAllChange_() {
+    if (this.isAllSelected_()) {
+      this.selectedVisitIds_.clear();
+    } else {
+      this.selectedVisitIds_ =
+          new Set(this.logContent_.map(entry => entry.visit_id));
+    }
+    this.requestUpdate();
+  }
+
+  protected async onDeleteSelectedClick_() {
+    this.errorMessage_ = '';
+    const visitIdsToDelete =
+        Array.from(this.selectedVisitIds_).map(id => BigInt(id));
+    try {
+      const {success} = await this.browserProxy_.handler.deleteAnnotatedContent(
+          visitIdsToDelete);
+      if (success) {
+        this.loadLogContent_();
+      } else {
+        this.errorMessage_ = 'Error: could not delete selected annotations.';
+      }
+    } catch (e) {
+      this.errorMessage_ = 'Error: could not delete selected annotations.';
+    }
+  }
+
+  protected onCheckboxChange_(e: Event) {
+    const visitId = (e.currentTarget as HTMLElement).dataset['visitId'] || '';
+    if (visitId) {
+      this.toggleSelection_(visitId);
+    }
+  }
+
+  protected onCheckboxClick_(e: Event) {
+    e.stopPropagation();
+  }
+
+  private toggleSelection_(visitId: string) {
+    if (this.selectedVisitIds_.has(visitId)) {
+      this.selectedVisitIds_.delete(visitId);
+    } else {
+      this.selectedVisitIds_.add(visitId);
+    }
+    this.requestUpdate();
+  }
+
+  protected isSelected_(visitId: string): boolean {
+    return this.selectedVisitIds_.has(visitId);
+  }
+
+  protected isAllSelected_(): boolean {
+    return this.logContent_.length > 0 &&
+        this.logContent_.every(
+            entry => this.selectedVisitIds_.has(entry.visit_id));
   }
 
   private flattenValue_(value: Value): any {
