@@ -722,6 +722,10 @@ class SmartTabSharingTest : public ContextualSearchboxHandlerTestHarness {
   void SetUp() override {
     ContextualSearchboxHandlerTestHarness::SetUp();
 
+    feature_list_.InitAndEnableFeatureWithParameters(
+        contextual_tasks::kContextualTasksContext,
+        {{"ContextualTasksContextSmartTabSharing", "true"}});
+
     auto query_controller_config_params = std::make_unique<
         contextual_search::ContextualSearchContextController::ConfigParams>();
     query_controller_config_params->send_lns_surface = false;
@@ -812,6 +816,7 @@ class SmartTabSharingTest : public ContextualSearchboxHandlerTestHarness {
  protected:
   testing::NiceMock<MockSearchboxPage> mock_searchbox_page_;
   std::unique_ptr<FakeContextualSearchboxHandler> handler_;
+  base::test::ScopedFeatureList feature_list_;
   raw_ptr<MockContextualTasksContextService> mock_service_;
   std::unique_ptr<contextual_search::ContextualSearchSessionHandle>
       contextual_session_handle_;
@@ -831,11 +836,6 @@ TEST_F(SmartTabSharingTest, IsSmartTabSharingActive_ReadsPref) {
 }
 
 TEST_F(SmartTabSharingTest, SubmitQuery_SmartTabSharingOverrideDisabled) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeatureWithParameters(
-      contextual_tasks::kContextualTasksContext,
-      {{"ContextualTasksContextSmartTabSharing", "true"}});
-
   handler().set_smart_tab_sharing_active_override(false);
 
   ASSERT_TRUE(mock_service_);
@@ -854,11 +854,6 @@ TEST_F(SmartTabSharingTest,
        SubmitQuery_SmartTabSharingOverrideEnabledAndActive) {
   ASSERT_TRUE(mock_service_);
 
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeatureWithParameters(
-      contextual_tasks::kContextualTasksContext,
-      {{"ContextualTasksContextSmartTabSharing", "true"}});
-
   handler().set_smart_tab_sharing_active_override(true);
 
   EXPECT_CALL(*mock_service_, GetRelevantTabsForQuery(testing::_, testing::_,
@@ -869,6 +864,55 @@ TEST_F(SmartTabSharingTest,
                    auto callback) { std::move(callback).Run({}); });
 
   SubmitQueryAndWaitForNavigation();
+}
+
+TEST_F(SmartTabSharingTest, SetSmartTabSharingActive_FeatureDisabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(contextual_tasks::kContextualTasksContext);
+
+  EXPECT_FALSE(handler().IsSmartTabSharingActive());
+
+  handler().SetSmartTabSharingActive(true);
+  EXPECT_FALSE(handler().IsSmartTabSharingActive());
+}
+
+TEST_F(SmartTabSharingTest, GetSmartTabSharingActive) {
+  handler().SetSmartTabSharingActive(true);
+  base::test::TestFuture<bool> future;
+  handler().GetSmartTabSharingActive(future.GetCallback());
+  EXPECT_TRUE(future.Get());
+}
+
+TEST_F(SmartTabSharingTest, InitializationFromPref) {
+  profile()->GetPrefs()->SetBoolean(
+      contextual_tasks::kContextualTasksShareOpenTabsEveryThread, true);
+
+  // Recreate handler to test initialization.
+  auto handler = std::make_unique<FakeContextualSearchboxHandler>(
+      mojo::PendingReceiver<searchbox::mojom::PageHandler>(), profile(),
+      web_contents(),
+      std::make_unique<OmniboxController>(
+          std::make_unique<TestOmniboxClient>()),
+      base::BindLambdaForTesting(
+          [&]() { return contextual_session_handle_.get(); }));
+
+  EXPECT_TRUE(handler->IsSmartTabSharingActive());
+}
+
+TEST_F(SmartTabSharingTest, FallbackToPrefChanges) {
+  EXPECT_FALSE(handler().IsSmartTabSharingActive());
+
+  profile()->GetPrefs()->SetBoolean(
+      contextual_tasks::kContextualTasksShareOpenTabsEveryThread, true);
+  EXPECT_TRUE(handler().IsSmartTabSharingActive());
+
+  handler().SetSmartTabSharingActive(false);
+  EXPECT_FALSE(handler().IsSmartTabSharingActive());
+
+  // Now that it is overridden, changing the pref should NOT take effect!
+  profile()->GetPrefs()->SetBoolean(
+      contextual_tasks::kContextualTasksShareOpenTabsEveryThread, true);
+  EXPECT_FALSE(handler().IsSmartTabSharingActive());
 }
 
 TEST_F(ContextualSearchboxHandlerTest, OnInputStateChanged) {

@@ -139,6 +139,14 @@ class ContextualSearchboxHandler
       ShouldShowDriveDisclaimerCallback callback) override;
   void OnDriveDisclaimerAccepted() override;
 
+  // Returns true if smart tab sharing is active for the current query.
+  virtual bool IsSmartTabSharingActive() const;
+
+  virtual void SetSmartTabSharingActive(bool active);
+  virtual void GetSmartTabSharingActive(
+      composebox::mojom::PageHandler::GetSmartTabSharingActiveCallback
+          callback);
+
   // Continues the process of adding tab context for a given `tab_id`.
   // This method is used when a `context_token` has already been generated
   // (e.g., by a composebox handler's AddTabContext) and the tab context needs
@@ -205,9 +213,6 @@ class ContextualSearchboxHandler
  protected:
   // SearchboxHandler:
   omnibox::InputState GetInputState() const override;
-
-  // Returns true if smart tab sharing is active for the current query.
-  virtual bool IsSmartTabSharingActive() const;
 
   virtual void OpenUrl(GURL url, const WindowOpenDisposition disposition);
 
@@ -333,6 +338,8 @@ class ContextualSearchboxHandler
       tab_list_observation_{this};
 
  protected:
+  std::optional<bool> smart_tab_sharing_active_for_thread_;
+
   base::WeakPtrFactory<ContextualSearchboxHandler> weak_ptr_factory_{this};
 };
 
