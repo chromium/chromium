@@ -133,6 +133,9 @@ public interface AdaptiveToolbarBehavior {
             sValidButtons.addAll(COMMON_BUTTONS);
             sValidButtons.add(AdaptiveToolbarButtonVariant.NEW_TAB);
             sValidButtons.add(AdaptiveToolbarButtonVariant.VOICE);
+            if (AdaptiveToolbarFeatures.isGlicActionEnabled()) {
+                sValidButtons.add(AdaptiveToolbarButtonVariant.GLIC);
+            }
         }
 
         List<Integer> validResults = new ArrayList<>();

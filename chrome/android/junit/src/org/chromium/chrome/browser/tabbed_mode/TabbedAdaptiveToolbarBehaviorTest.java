@@ -5,19 +5,30 @@
 package org.chromium.chrome.browser.tabbed_mode;
 
 import static org.junit.Assert.assertEquals;
+import static org.mockito.Mockito.when;
 
 import android.app.Activity;
 
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 import org.robolectric.Robolectric;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
+import org.chromium.chrome.browser.actor.ActorKeyedService;
+import org.chromium.chrome.browser.actor.ActorKeyedServiceFactory;
+import org.chromium.chrome.browser.actor.ActorTask;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.tabmodel.TabModel;
+import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarButtonVariant;
 
 import java.util.List;
@@ -25,14 +36,37 @@ import java.util.List;
 /** Unit tests for {@link TabbedAdaptiveToolbarBehavior}. */
 @RunWith(BaseRobolectricTestRunner.class)
 public class TabbedAdaptiveToolbarBehaviorTest {
+    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
+
+    @Mock private TabModelSelector mTabModelSelector;
+    @Mock private TabModel mTabModel;
+    @Mock private Profile mProfile;
+    @Mock private ActorKeyedService mActorKeyedService;
+    @Mock private ActorTask mActorTask;
+
     private TabbedAdaptiveToolbarBehavior mBehavior;
 
     @Before
     public void setUp() {
         Activity activity = Robolectric.setupActivity(Activity.class);
+
+        when(mTabModelSelector.getCurrentModel()).thenReturn(mTabModel);
+        when(mTabModel.getProfile()).thenReturn(mProfile);
+
         mBehavior =
                 new TabbedAdaptiveToolbarBehavior(
-                        activity, null, null, null, null, null, null, null, null, null, null, null,
+                        activity,
+                        null,
+                        null,
+                        null,
+                        null,
+                        null,
+                        null,
+                        null,
+                        () -> mTabModelSelector,
+                        null,
+                        null,
+                        null,
                         null);
     }
 
@@ -41,6 +75,9 @@ public class TabbedAdaptiveToolbarBehaviorTest {
     @EnableFeatures(ChromeFeatureList.GLIC)
     @DisableFeatures(ChromeFeatureList.ENABLE_ANDROID_SIDE_PANEL)
     public void testResultFilterWithGlicEnabled() {
+        ActorKeyedServiceFactory.setForTesting(mActorKeyedService);
+        when(mActorKeyedService.getCurrentActiveTask()).thenReturn(mActorTask);
+
         assertTopResult(
                 /* segmentationResults= */ List.of(
                         AdaptiveToolbarButtonVariant.SHARE, AdaptiveToolbarButtonVariant.GLIC),

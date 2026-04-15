@@ -21,6 +21,7 @@ import org.chromium.chrome.browser.bookmarks.BookmarkModel;
 import org.chromium.chrome.browser.bookmarks.TabBookmarker;
 import org.chromium.chrome.browser.glic.GlicToolbarButtonController;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab_group_suggestion.toolbar.GroupSuggestionsButtonController;
 import org.chromium.chrome.browser.tab_group_suggestion.toolbar.GroupSuggestionsButtonDataProvider;
 import org.chromium.chrome.browser.tabmodel.TabCreatorManager;
@@ -159,10 +160,14 @@ public class TabbedAdaptiveToolbarBehavior implements AdaptiveToolbarBehavior {
 
     @Override
     public int resultFilter(List<Integer> segmentationResults) {
-        if (AdaptiveToolbarFeatures.isGlicActionEnabled()
-                && segmentationResults.contains(AdaptiveToolbarButtonVariant.GLIC)) {
-            return AdaptiveToolbarButtonVariant.GLIC;
+        TabModelSelector selector = mTabModelSelectorSupplier.get();
+        if (selector != null) {
+            Profile profile = selector.getCurrentModel().getProfile();
+            if (profile != null && AdaptiveToolbarFeatures.shouldForciblyShowGlicButton(profile)) {
+                return AdaptiveToolbarButtonVariant.GLIC;
+            }
         }
+
         return AdaptiveToolbarBehavior.defaultResultFilter(mContext, segmentationResults);
     }
 

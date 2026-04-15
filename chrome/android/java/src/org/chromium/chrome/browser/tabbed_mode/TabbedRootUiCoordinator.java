@@ -1603,6 +1603,10 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
         if (!ChromeFeatureList.sGlic.isEnabled()) {
             return;
         }
+        if (ChromeSharedPreferences.getInstance()
+                .contains(ChromePreferenceKeys.GLIC_PROMO_ACCEPTED)) {
+            return;
+        }
         if (!Boolean.TRUE.equals(mTrackerInitializedOneshotSupplier.get())) {
             return;
         }
@@ -1618,18 +1622,32 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
         String featureName =
                 FeatureConstants.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR_CUSTOMIZATION_GLIC_FEATURE;
 
-        if (tracker.shouldTriggerHelpUi(featureName)) {
-            Runnable onAccepted =
-                    () ->
-                            AdaptiveToolbarPrefs.saveToolbarButtonManualOverride(
-                                    AdaptiveToolbarButtonVariant.GLIC);
-            Runnable onDismissed = () -> tracker.dismissed(featureName);
+        boolean isToolbarPinned =
+                AdaptiveToolbarPrefs.getCustomizationSetting() != AdaptiveToolbarButtonVariant.AUTO;
+        if (tracker.shouldTriggerHelpUi(featureName) || isToolbarPinned) {
+            ChromeSharedPreferences.getInstance()
+                    .writeBoolean(ChromePreferenceKeys.GLIC_PROMO_ACCEPTED, false);
+
+            Runnable onAccepted = this::enableGlicButton;
+            Runnable onDismissed =
+                    () -> {
+                        tracker.dismissed(featureName);
+                    };
 
             mGlicPromoCoordinator =
                     new GlicPromoCoordinator(
                             mActivity, getBottomSheetController(), onAccepted, onDismissed);
             mGlicPromoCoordinator.showBottomSheet();
+            return;
         }
+
+        enableGlicButton();
+    }
+
+    private void enableGlicButton() {
+        ChromeSharedPreferences.getInstance()
+                .writeBoolean(ChromePreferenceKeys.GLIC_PROMO_ACCEPTED, true);
+        AdaptiveToolbarPrefs.saveToolbarButtonManualOverride(AdaptiveToolbarButtonVariant.GLIC);
     }
 
     private void updateTopControlsHeight() {
