@@ -133,7 +133,7 @@ all_platforms+=" -DCONFIG_DENOISE=0"
 all_platforms+=" -DCONFIG_QUANT_MATRIX=0"
 # avx2 optimizations account for ~0.3mb of the decoder.
 #all_platforms+=" -DENABLE_AVX2=0"
-toolchain="-DCMAKE_TOOLCHAIN_FILE=${SRC}/build/cmake/toolchains"
+toolchain="-DCMAKE_TOOLCHAIN_FILE=${SRC}/cmake/toolchains"
 # chromium has required sse3 for x86 since 2020:
 # http://crrev.com/5bb2864fdd57e45c84459520234b37a01e7a015a
 x86_flags="-DAOM_RTCD_FLAGS="
