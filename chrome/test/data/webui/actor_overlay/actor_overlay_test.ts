@@ -405,8 +405,8 @@ suite('MagicCursor', function() {
     // of coordinate updates (edge start -> target). We call the original
     // method to ensure the UI still updates.
     const transformCalls: Array<{x: number, y: number}> = [];
-    const originalSetTransform = (page as any).setCursorTransform.bind(page);
-    (page as any).setCursorTransform = (x: number, y: number) => {
+    const originalSetTransform = page.setCursorTransform.bind(page);
+    page.setCursorTransform = (x: number, y: number) => {
       transformCalls.push({x, y});
       originalSetTransform(x, y);
     };

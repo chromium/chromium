@@ -36,8 +36,7 @@ function getUrlForFixture(filename: string, query?: string): string {
 suite('WhatsNewAppTest', function() {
   setup(function() {
     loadTimeData.resetForTesting({isStaging: false});
-    document.body.innerHTML =
-        ((window.trustedTypes!.emptyHTML as any) as string);
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
   });
 
   test('with query parameters', async () => {

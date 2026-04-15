@@ -299,7 +299,7 @@ export class ActorOverlayAppElement extends CrLitElement {
     }, 200);
   }
 
-  private setCursorTransform(drawX: number, drawY: number) {
+  setCursorTransform(drawX: number, drawY: number) {
     this.$.magicCursor.style.transform =
         `translate(${Math.round(drawX)}px, ${Math.round(drawY)}px)`;
   }

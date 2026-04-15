@@ -4,6 +4,7 @@
 
 import {assert} from '//resources/js/assert.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
+import type {PropertyValues} from '//resources/lit/v3_0/lit.rollup.js';
 
 import {getCss} from './content_region.css.js';
 import {TabWebviewElement} from './webview.js';
@@ -26,7 +27,7 @@ export class ContentRegionElement extends CrLitElement {
   override render() {
     return '';
   }
-  override shouldUpdate(_: Map<string, any>) {
+  override shouldUpdate(_changedProperties: PropertyValues<this>) {
     return false;
   }
 

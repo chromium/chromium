@@ -190,13 +190,14 @@ export class ProfilePickerAppElement extends ProfilePickerAppElementBase {
     }
   }
 
-  private initializeModules_(): Promise<any> {
+  private initializeModules_(): Promise<void> {
     switch (this.currentRoute_) {
       case Routes.MAIN:
         return Promise.resolve();
       case Routes.NEW_PROFILE:
-        return Promise.all(
-            [this.initializeNewProfileThemeInfo_(), ensureLazyLoaded()]);
+        return Promise
+            .all([this.initializeNewProfileThemeInfo_(), ensureLazyLoaded()])
+            .then(() => {});
       case Routes.PROFILE_SWITCH:
         return ensureLazyLoaded();
       default:

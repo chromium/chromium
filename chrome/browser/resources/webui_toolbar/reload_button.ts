@@ -202,10 +202,13 @@ export class ReloadButtonElement extends CrLitElement {
   override willUpdate(changedProperties: PropertyValues<this>): void {
     super.willUpdate(changedProperties);
 
-    const props = changedProperties as Map<string, any>;
+    const changedPrivateProperties =
+        changedProperties as Map<PropertyKey, unknown>;
 
-    if (props.has('state')) {
-      const previousState = props.get('state') as typeof this.state | undefined;
+    if (changedPrivateProperties.has('state')) {
+      const previousState =
+          changedPrivateProperties.get('state') as ReloadControlState |
+          undefined;
       if (previousState) {
         this.metricsRecorder_.onChangeVisibleMode(
             MetricsRecorder.getVisibleMode(previousState.isNavigationLoading),

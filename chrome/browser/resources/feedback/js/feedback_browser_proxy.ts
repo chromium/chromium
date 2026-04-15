@@ -2,12 +2,25 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+
+// Type definitions for deprecated navigator.getUserMedia() API.
+export interface GetUserMediaParams {
+  video: {
+    mandatory: {
+      chromeMediaSource: 'screen',
+      maxWidth: number,
+      maxHeight: number,
+    },
+  };
+}
+
 declare global {
   type GetUserMediaError = Error&{constraintName: string};
 
   interface Navigator {
-    webkitGetUserMedia(
-        params: any, callback: (stream?: MediaStream) => void,
+    // https://developer.mozilla.org/en-US/docs/Web/API/Navigator/getUserMedia
+    getUserMedia(
+        params: GetUserMediaParams, callback: (stream?: MediaStream) => void,
         errorCallback: (error: GetUserMediaError) => void): void;
   }
 }
@@ -16,7 +29,7 @@ export interface FeedbackBrowserProxy {
   getSystemInformation(): Promise<chrome.feedbackPrivate.LogsMapEntry[]>;
   getUserEmail(): Promise<string>;
   getDialogArguments(): string;
-  getUserMedia(params: any): Promise<MediaStream|undefined>;
+  getUserMedia(params: GetUserMediaParams): Promise<MediaStream|undefined>;
 
   sendFeedback(
       feedback: chrome.feedbackPrivate.FeedbackInfo, loadSystemInfo?: boolean,
@@ -48,9 +61,9 @@ export class FeedbackBrowserProxyImpl implements FeedbackBrowserProxy {
     return chrome.getVariableValue('dialogArguments');
   }
 
-  getUserMedia(params: any): Promise<MediaStream|undefined> {
+  getUserMedia(params: GetUserMediaParams): Promise<MediaStream|undefined> {
     return new Promise((resolve, reject) => {
-      navigator.webkitGetUserMedia(
+      navigator.getUserMedia(
           params, stream => resolve(stream), error => reject(error));
     });
   }

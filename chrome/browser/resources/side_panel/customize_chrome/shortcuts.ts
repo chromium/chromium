@@ -31,6 +31,15 @@ export interface ShortcutsElement {
   };
 }
 
+interface ShortcutConfig {
+  type: TileType;
+  title: string;
+  description: string;
+  buttonName: string;
+  containerName: string;
+  disabled: boolean;
+}
+
 export class ShortcutsElement extends CrLitElement {
   static get is() {
     return 'customize-chrome-shortcuts';
@@ -63,7 +72,7 @@ export class ShortcutsElement extends CrLitElement {
   protected accessor show_: boolean = false;
   protected accessor showPersonalShortcuts_: boolean = false;
   protected accessor showEnterpriseShortcuts_: boolean = false;
-  protected accessor shortcutConfigs_: any[] = [];
+  protected accessor shortcutConfigs_: ShortcutConfig[] = [];
   protected accessor disabledShortcuts_: TileType[] = [];
 
   private setMostVisitedSettingsListenerId_: number|null = null;
@@ -115,7 +124,7 @@ export class ShortcutsElement extends CrLitElement {
     }
   }
 
-  private computeShortcutConfigs_() {
+  private computeShortcutConfigs_(): ShortcutConfig[] {
     return [
       {
         type: TileType.kEnterpriseShortcuts,
