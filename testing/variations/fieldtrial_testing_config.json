@@ -12259,6 +12259,21 @@
             ]
         }
     ],
+    "HeliosClientMigration": [
+        {
+            "platforms": [
+                "ios"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "GeminiClientMigration"
+                    ]
+                }
+            ]
+        }
+    ],
     "HeliosDynamicSettings": [
         {
             "platforms": [
@@ -12368,6 +12383,22 @@
                     },
                     "enable_features": [
                         "ZeroStateSuggestions"
+                    ]
+                }
+            ]
+        }
+    ],
+    "HeliosgRPCMigration": [
+        {
+            "platforms": [
+                "ios"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "GeminiBinaryMigration",
+                        "GeminiUnaryMigration"
                     ]
                 }
             ]
