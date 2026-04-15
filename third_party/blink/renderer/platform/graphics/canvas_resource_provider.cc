@@ -680,8 +680,10 @@ CanvasNon2DResourceProviderSharedImage::WillDrawInternal() {
   resource_ = NewOrRecycledResource();
   dst_access = resource_->BeginAccess(/*readonly=*/false);
 
-  // We need to ensure that the image (which has either just been created or
-  // has stale content) is cleared on the next BeginRasterCHROMIUM.
+  // As the image might have just been created, we need to ensure that it is
+  // cleared on the next BeginRasterCHROMIUM to satisfy service-side security
+  // requirements (note: as an optimization we could avoid doing this if the
+  // resource was recycled as in that case there are no security implications).
   is_cleared_ = false;
 
   return dst_access;
