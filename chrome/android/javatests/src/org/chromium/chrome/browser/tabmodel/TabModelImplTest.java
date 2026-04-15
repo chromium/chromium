@@ -47,6 +47,7 @@ import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.base.test.util.RequiresRestart;
+import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
@@ -1996,6 +1997,7 @@ public class TabModelImplTest {
 
     @Test
     @SmallTest
+    @Restriction(DeviceFormFactor.PHONE_OR_TABLET) // crbug.com/503008051
     public void testPinTabInGroup_ActionListener_Reject() {
         TabGroupModelFilter filter = mPage.getTabGroupModelFilter();
         createTabGroup(1, filter); // Group with 1 tab.
