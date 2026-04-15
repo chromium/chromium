@@ -277,6 +277,18 @@ IN_PROC_BROWSER_TEST_F(SurfaceEmbedBrowserTest, EmbedTagCreatesPlugin) {
   EXPECT_TRUE(CheckHasPixelInColor(SK_ColorRED));
 }
 
+// Make sure we don't crash on invalid content ID.
+IN_PROC_BROWSER_TEST_F(SurfaceEmbedBrowserTest, EmbedTagInvalidContentId) {
+  NavigateToAttachHarness();
+  ASSERT_TRUE(content::ExecJs(web_contents(), "createEmbed('bad')"));
+  EXPECT_EQ(1, CountEmbedElementsInPage());
+  // Access an unknown property on the embed to force plugin creation
+  // (since otherwise it's on a timer).
+  EXPECT_EQ(
+      base::Value(),
+      content::EvalJs(web_contents(), "document.embeds[0].noSuchProperty"));
+}
+
 IN_PROC_BROWSER_TEST_F(SurfaceEmbedBrowserTest, EmbedPixelTest) {
   auto child_contents = SetupHarnessAndChild();
   AttachChildToEmbed(child_contents.get());

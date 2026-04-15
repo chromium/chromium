@@ -28,8 +28,7 @@ base::UnguessableToken DecodeContentId(const std::string& id_string) {
   }
   std::optional<base::UnguessableToken> maybe_id =
       base::UnguessableToken::DeserializeFromString(id_string);
-  CHECK(maybe_id.has_value());
-  return *maybe_id;
+  return maybe_id.has_value() ? *maybe_id : base::UnguessableToken();
 }
 
 }  // namespace
