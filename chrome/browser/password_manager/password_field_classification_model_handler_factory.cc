@@ -10,8 +10,9 @@
 #include "chrome/browser/autofill/ml_log_router_factory.h"
 #include "chrome/browser/glic/glic_pref_names.h"
 #include "chrome/browser/glic/public/glic_keyed_service.h"
-#include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
-#include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
+#include "chrome/browser/optimization_guide/model_execution/optimization_guide_global_state.h"
+#include "chrome/browser/optimization_guide/optimization_guide_global_state_holder_keyed_service.h"
+#include "chrome/browser/optimization_guide/optimization_guide_global_state_holder_keyed_service_factory.h"
 #include "chrome/browser/password_manager/chrome_password_change_service.h"
 #include "chrome/browser/password_manager/password_change_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
@@ -41,7 +42,8 @@ PasswordFieldClassificationModelHandlerFactory::
     : BrowserContextKeyedServiceFactory(
           "FieldClassificationModelHandler",
           BrowserContextDependencyManager::GetInstance()) {
-  DependsOn(OptimizationGuideKeyedServiceFactory::GetInstance());
+  DependsOn(
+      OptimizationGuideGlobalStateHolderKeyedServiceFactory::GetInstance());
 }
 
 PasswordFieldClassificationModelHandlerFactory::
@@ -63,7 +65,8 @@ PasswordFieldClassificationModelHandlerFactory::GetBrowserContextToUse(
 
   // `FieldClassificationModelHandler` is not supported without an
   // `OptimizationGuideKeyedService`.
-  if (!OptimizationGuideKeyedServiceFactory::GetForProfile(profile)) {
+  if (!OptimizationGuideGlobalStateHolderKeyedServiceFactory::GetForProfile(
+          profile)) {
     return nullptr;
   }
 
@@ -99,8 +102,13 @@ std::unique_ptr<KeyedService> PasswordFieldClassificationModelHandlerFactory::
     BuildServiceInstanceForBrowserContext(
         content::BrowserContext* context) const {
   Profile* profile = Profile::FromBrowserContext(context);
-  OptimizationGuideKeyedService* optimization_guide =
-      OptimizationGuideKeyedServiceFactory::GetForProfile(profile);
+  auto* global_state_holder =
+      OptimizationGuideGlobalStateHolderKeyedServiceFactory::GetForProfile(
+          profile);
+  auto* optimization_guide =
+      global_state_holder
+          ? &global_state_holder->GetGlobalState().prediction_manager()
+          : nullptr;
   autofill::MlLogRouter* log_router =
       autofill::MlLogRouterFactory::GetForProfile(profile);
   return std::make_unique<autofill::FieldClassificationModelHandler>(
