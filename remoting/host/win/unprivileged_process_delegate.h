@@ -37,9 +37,15 @@ namespace remoting {
 class UnprivilegedProcessDelegate : public IPC::Listener,
                                     public WindowsProcessDelegate {
  public:
+  enum class IntegrityLevel {
+    kLow,
+    kUntrusted,
+  };
+
   UnprivilegedProcessDelegate(
       scoped_refptr<base::SingleThreadTaskRunner> io_task_runner,
-      std::unique_ptr<base::CommandLine> target_command);
+      std::unique_ptr<base::CommandLine> target_command,
+      IntegrityLevel integrity_level);
 
   UnprivilegedProcessDelegate(const UnprivilegedProcessDelegate&) = delete;
   UnprivilegedProcessDelegate& operator=(const UnprivilegedProcessDelegate&) =
@@ -77,6 +83,8 @@ class UnprivilegedProcessDelegate : public IPC::Listener,
   std::unique_ptr<IPC::ChannelProxy> channel_;
 
   mojo::AssociatedRemote<mojom::WorkerProcessControl> worker_process_control_;
+
+  IntegrityLevel integrity_level_;
 
   SEQUENCE_CHECKER(sequence_checker_);
 };

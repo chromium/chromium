@@ -60,9 +60,6 @@ namespace {
 // SYSTEM and the logon SID full access to the desktop.
 const char kDesktopSdFormat[] = "O:SYG:SYD:(A;;0xf01ff;;;SY)(A;;0xf01ff;;;%s)";
 
-// Mandatory label specifying low integrity level.
-const char kLowIntegrityMandatoryLabel[] = "S:(ML;CIOI;NW;;;LW)";
-
 // Security descriptor of the window station the worker process attaches to. It
 // gives SYSTEM and the logon SID full access the window station. The child
 // containers and objects inherit ACE giving SYSTEM and the logon SID full
@@ -86,7 +83,8 @@ const char kWorkerThreadSd[] = "O:SYG:SYD:(A;;GA;;;SY)(A;;0x120801;;;BA)";
 
 // Creates a token with limited access that will be used to run the worker
 // process.
-bool CreateRestrictedToken(ScopedHandle* token_out) {
+bool CreateRestrictedToken(UnprivilegedProcessDelegate::IntegrityLevel level,
+                           ScopedHandle* token_out) {
   // Create a token representing LocalService account.
   HANDLE temp_handle;
   if (!LogonUser(L"LocalService", L"NT AUTHORITY", nullptr,
@@ -102,7 +100,7 @@ bool CreateRestrictedToken(ScopedHandle* token_out) {
   // needed for HTTPS client third-party authentication . But the presence of
   // "SeChangeNotifyPrivilege" also allows it to open and manipulate objects
   // owned by the same user. This risk is only mitigated by setting the
-  // process integrity level to Low.
+  // process integrity level to Low or lower.
   if (!::CreateRestrictedToken(token.Get(), DISABLE_MAX_PRIVILEGE, 0, nullptr,
                                0, nullptr, 0, nullptr, &temp_handle)) {
     PLOG(ERROR) << "Failed to get the restricted token";
@@ -110,7 +108,18 @@ bool CreateRestrictedToken(ScopedHandle* token_out) {
   }
 
   ScopedHandle restricted_token(temp_handle);
-  std::optional<Sid> sid = Sid::FromIntegrityLevel(SECURITY_MANDATORY_LOW_RID);
+
+  DWORD integrity_rid = SECURITY_MANDATORY_LOW_RID;
+  switch (level) {
+    case UnprivilegedProcessDelegate::IntegrityLevel::kLow:
+      integrity_rid = SECURITY_MANDATORY_LOW_RID;
+      break;
+    case UnprivilegedProcessDelegate::IntegrityLevel::kUntrusted:
+      integrity_rid = SECURITY_MANDATORY_UNTRUSTED_RID;
+      break;
+  }
+
+  std::optional<Sid> sid = Sid::FromIntegrityLevel(integrity_rid);
   if (!sid) {
     LOG(ERROR) << "Failed to get integrity level SID";
     return false;
@@ -122,7 +131,7 @@ bool CreateRestrictedToken(ScopedHandle* token_out) {
 
   if (!SetTokenInformation(restricted_token.Get(), TokenIntegrityLevel, &label,
                            sizeof(label))) {
-    PLOG(ERROR) << "Failed to set low integrity level";
+    PLOG(ERROR) << "Failed to set integrity level";
     return false;
   }
 
@@ -132,8 +141,10 @@ bool CreateRestrictedToken(ScopedHandle* token_out) {
 
 // Creates a window station with a given name and the default desktop giving
 // the complete access to |logon_sid|.
-bool CreateWindowStationAndDesktop(ScopedSid logon_sid,
-                                   WindowStationAndDesktop* handles_out) {
+bool CreateWindowStationAndDesktop(
+    UnprivilegedProcessDelegate::IntegrityLevel level,
+    ScopedSid logon_sid,
+    WindowStationAndDesktop* handles_out) {
   // Convert the logon SID into a string.
   std::string logon_sid_string = ConvertSidToString(logon_sid.get());
   if (logon_sid_string.empty()) {
@@ -141,14 +152,26 @@ bool CreateWindowStationAndDesktop(ScopedSid logon_sid,
     return false;
   }
 
+  const char* integrity_label = "LW";
+  switch (level) {
+    case UnprivilegedProcessDelegate::IntegrityLevel::kLow:
+      integrity_label = "LW";
+      break;
+    case UnprivilegedProcessDelegate::IntegrityLevel::kUntrusted:
+      integrity_label = "S-1-16-0";
+      break;
+  }
+  std::string mandatory_label =
+      base::StringPrintf("S:(ML;CIOI;NW;;;%s)", integrity_label);
+
   // Format the security descriptors in SDDL form.
   std::string desktop_sddl =
       base::StringPrintf(kDesktopSdFormat, logon_sid_string.c_str()) +
-      kLowIntegrityMandatoryLabel;
+      mandatory_label;
   std::string window_station_sddl =
       base::StringPrintf(kWindowStationSdFormat, logon_sid_string.c_str(),
                          logon_sid_string.c_str()) +
-      kLowIntegrityMandatoryLabel;
+      mandatory_label;
 
   // Create the desktop and window station security descriptors.
   ScopedSd desktop_sd = ConvertSddlToSd(desktop_sddl);
@@ -231,9 +254,11 @@ bool CreateWindowStationAndDesktop(ScopedSid logon_sid,
 
 UnprivilegedProcessDelegate::UnprivilegedProcessDelegate(
     scoped_refptr<base::SingleThreadTaskRunner> io_task_runner,
-    std::unique_ptr<base::CommandLine> target_command)
+    std::unique_ptr<base::CommandLine> target_command,
+    IntegrityLevel integrity_level)
     : io_task_runner_(io_task_runner),
-      target_command_(std::move(target_command)) {}
+      target_command_(std::move(target_command)),
+      integrity_level_(integrity_level) {}
 
 UnprivilegedProcessDelegate::~UnprivilegedProcessDelegate() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -250,7 +275,7 @@ void UnprivilegedProcessDelegate::LaunchProcess(
 
   // Create a restricted token that will be used to run the worker process.
   ScopedHandle token;
-  if (!CreateRestrictedToken(&token)) {
+  if (!CreateRestrictedToken(integrity_level_, &token)) {
     PLOG(ERROR) << "Failed to create a restricted LocalService token";
     ReportFatalError();
     return;
@@ -286,7 +311,8 @@ void UnprivilegedProcessDelegate::LaunchProcess(
 
   // Create our own window station and desktop accessible by |logon_sid|.
   WindowStationAndDesktop handles;
-  if (!CreateWindowStationAndDesktop(std::move(logon_sid), &handles)) {
+  if (!CreateWindowStationAndDesktop(integrity_level_, std::move(logon_sid),
+                                     &handles)) {
     PLOG(ERROR) << "Failed to create a window station and desktop";
     ReportFatalError();
     return;

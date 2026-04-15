@@ -272,8 +272,10 @@ void DaemonProcessWin::LaunchNetworkProcess() {
   target->CopySwitchesFrom(*base::CommandLine::ForCurrentProcess(),
                            kCopiedSwitchNames);
 
-  std::unique_ptr<UnprivilegedProcessDelegate> delegate(
-      new UnprivilegedProcessDelegate(io_task_runner(), std::move(target)));
+  auto delegate = std::make_unique<UnprivilegedProcessDelegate>(
+      io_task_runner(), std::move(target),
+      UnprivilegedProcessDelegate::IntegrityLevel::kLow);
+
   network_launcher_ =
       std::make_unique<WorkerProcessLauncher>(std::move(delegate), this);
 }
