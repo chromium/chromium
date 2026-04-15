@@ -272,7 +272,7 @@ crbug.com/416294710 [ angle-metal graphite-disabled intel-0x3e9b sequoia ] WebCo
 crbug.com/416294710 [ sequoia intel-0x3e9b ] WebCodecs_ContentHint_hvc1.1.6.L123.00_text [ Failure ]
 
 # Mac Intel SharedImage Synchronization Flakes
-crbug.com/417899571 [ angle-metal asan intel-0x3e9b sonoma ] WebCodecs_EncodingRateControl_hvc1.1.6.L123.00_prefer-software_* [ Failure ]
+crbug.com/417899571 [ angle-metal asan graphite-enabled intel-0x3e9b sonoma ] WebCodecs_EncodingRateControl_hvc1.1.6.L123.00_prefer-software_* [ Failure ]
 
 
 # Pixel 10
