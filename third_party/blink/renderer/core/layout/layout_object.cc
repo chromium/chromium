@@ -3324,14 +3324,6 @@ void LayoutObject::StyleDidChange(
   SetOutlineMayBeAffectedByDescendants(style_->HasOutline());
 
   if (diff.NeedsFullLayout()) {
-    // TODO(layout-dev): Move this code down to LayoutBox. Only those can become
-    // out-of-flow or spanners.
-    if (IsBox() &&
-        To<LayoutBox>(this)->IsValidColumnSpannerInTree(*old_style) !=
-            To<LayoutBox>(this)->IsValidColumnSpannerInTree(*style_)) {
-      MarkParentForSpannerOrOutOfFlowPositionedChange();
-    }
-
     // If the object already needs layout, then setNeedsLayout won't do
     // any work. But if the containing block has changed, then we may need
     // to mark the new containing blocks for layout. The change that can

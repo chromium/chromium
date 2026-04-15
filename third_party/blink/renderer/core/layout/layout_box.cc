@@ -718,6 +718,13 @@ void LayoutBox::StyleDidChange(StyleDifference diff,
     }
   }
 
+  if (diff.NeedsFullLayout()) {
+    if (IsValidColumnSpannerInTree(*old_style) !=
+        IsValidColumnSpannerInTree(StyleRef())) {
+      MarkParentForSpannerOrOutOfFlowPositionedChange();
+    }
+  }
+
   // Update the script style map, from the new computed style.
   if (IsCustomItem())
     GetCustomLayoutChild()->styleMap()->UpdateStyle(GetDocument(), StyleRef());
