@@ -161,6 +161,7 @@ void ReadAnythingAppModel::Reset(std::vector<ui::AXNodeID> content_node_ids) {
 }
 
 void ReadAnythingAppModel::ResetSelection() {
+  side_panel_distillation_mode_ = SidePanelDistillationMode::kMainContent;
   selection_node_ids_.clear();
   start_ = SelectionEndpoint();
   end_ = SelectionEndpoint();
@@ -180,6 +181,9 @@ bool ReadAnythingAppModel::PostProcessSelection() {
   CHECK(it != tree_infos_.end());
 
   requires_post_process_selection_ = false;
+  const bool was_empty = is_empty();
+
+  UpdateSelectionEndpoints();
 
   // If the new selection came from the side panel, we don't need to draw
   // anything in the side panel, since whatever was being selected had to have
@@ -188,19 +192,58 @@ bool ReadAnythingAppModel::PostProcessSelection() {
   // inside the distilled content. In this case, we will only draw if the new
   // selection is outside the distilled content.
   // If there was a previous selection outside the distilled content, we always
-  // redraw. This will be either a) the new selected content or b) the original
-  // distilled content if the new selection is inside that or was cleared.
-  const auto selection_in_distilled_content = [&] {
-    return display_node_ids_.contains(start_.id) &&
-           display_node_ids_.contains(end_.id);
-  };
-  const bool need_to_draw = (selections_from_reading_mode_ == 0) &&
-                            has_selection() &&
-                            !selection_in_distilled_content();
-  const bool was_empty = is_empty();
+  // redraw (unless the selection came from the side panel). This will be either
+  // a) the new selected content or b) the original distilled content if the new
+  // selection is inside that or was cleared.
+  bool selection_outside_distilled_content =
+      has_selection() && !IsSelectionInDistilledContent();
+  SidePanelDistillationMode intended_view_mode =
+      selection_outside_distilled_content
+          ? SidePanelDistillationMode::kSelection
+          : SidePanelDistillationMode::kMainContent;
 
-  // Update selection.
-  ResetSelection();
+  // Determine if a redraw is required to sync the UI with the intended state.
+  // Redraw if a) The distillation mode is entering or leaving kSelection state
+  // or b) The view is remaining in selection mode but the selected range has
+  // changed.
+  const bool need_to_draw =
+      (selections_from_reading_mode_ == 0) &&
+      (side_panel_distillation_mode_ != intended_view_mode ||
+       intended_view_mode == SidePanelDistillationMode::kSelection);
+
+  // Only update side panel view mode if the SP view will be updated.
+  if (need_to_draw) {
+    side_panel_distillation_mode_ = intended_view_mode;
+    // Clear IDs only if redrawing to keep |selection_node_ids_| consistent with
+    // the current UI.
+    selection_node_ids_.clear();
+  }
+
+  if (!has_selection()) {
+    return need_to_draw;
+  }
+
+  if (was_empty) {
+    base::UmaHistogramEnumeration(kEmptyStateHistogramName,
+                                  EmptyState::kShownWithSelectionAfter);
+    ++it->second->num_selections;
+  }
+
+  if (IsSelectionInDistilledContent()) {
+    return need_to_draw;
+  }
+
+  // Only update |selection_node_ids| if redrawing to prevent merging new
+  // selections with existing ones.
+  if (need_to_draw) {
+    ComputeSelectionNodeIdsForSelectionMode();
+  }
+  return need_to_draw;
+}
+
+void ReadAnythingAppModel::UpdateSelectionEndpoints() {
+  start_ = SelectionEndpoint();
+  end_ = SelectionEndpoint();
   if (const ui::AXSelection selection =
           GetTreeFromId(active_tree_id_)->GetUnignoredSelection();
       selection.anchor_object_id != ui::kInvalidAXNodeID &&
@@ -218,21 +261,14 @@ bool ReadAnythingAppModel::PostProcessSelection() {
     start_ = SelectionEndpoint(selection, source_start);
     end_ = SelectionEndpoint(selection, source_end);
   }
+}
 
-  if (!has_selection()) {
-    return need_to_draw;
-  }
+bool ReadAnythingAppModel::IsSelectionInDistilledContent() const {
+  return display_node_ids_.contains(start_.id) &&
+         display_node_ids_.contains(end_.id);
+}
 
-  if (was_empty) {
-    base::UmaHistogramEnumeration(kEmptyStateHistogramName,
-                                  EmptyState::kShownWithSelectionAfter);
-    ++it->second->num_selections;
-  }
-
-  if (selection_in_distilled_content()) {
-    return need_to_draw;
-  }
-
+void ReadAnythingAppModel::ComputeSelectionNodeIdsForSelectionMode() {
   const ui::AXNode* node = GetAXNode(start_.id);
   const ui::AXNode* end = GetAXNode(end_.id);
   DUMP_WILL_BE_CHECK(node && end);
@@ -240,7 +276,7 @@ bool ReadAnythingAppModel::PostProcessSelection() {
     // Fail gracefully if the returned nodes are ever missing.
     // This should never happen given that the AXSelection object is retrieved
     // from the active tree.
-    return false;
+    return;
   }
 
   // The main panel selection contains content outside of the distilled
@@ -264,12 +300,12 @@ bool ReadAnythingAppModel::PostProcessSelection() {
       end = end->GetDeepestLastUnignoredDescendantCrossingTreeBoundary();
       if (node && end) {
         // Traverse the tree from the first sibling node to the last sibling
-        // node, inclusive. This ensures that when select-to-distill is used to
-        // distill non-distillable content (such as Gmail), text outside of the
-        // selected portion but on the same line is still distilled, even if
-        // there's special formatting.
-        // TODO(crbug.com/40802192): Consider using ax_position.h here to better
-        // manage selection.
+        // node, inclusive. This ensures that when select-to-distill is used
+        // to distill non-distillable content (such as Gmail), text outside of
+        // the selected portion but on the same line is still distilled, even
+        // if there's special formatting.
+        // TODO(crbug.com/40802192): Consider using ax_position.h here to
+        // better manage selection.
         for (node = node->GetFirstUnignoredChildCrossingTreeBoundary();
              node && node->CompareTo(*end).value_or(1) <= 0;
              node = node->GetNextUnignoredInTreeOrder()) {
@@ -278,7 +314,6 @@ bool ReadAnythingAppModel::PostProcessSelection() {
       }
     }
   }
-  return true;
 }
 
 bool ReadAnythingAppModel::ContentNodesOnlyContainHeadings() {
@@ -1260,9 +1295,10 @@ void ReadAnythingAppModel::SetFontSize(double font_size, int increment) {
 
 const std::set<ui::AXNodeID>* ReadAnythingAppModel::GetCurrentlyVisibleNodes()
     const {
-  return (selection_node_ids_.empty() || !has_selection())
-             ? &display_node_ids()
-             : &selection_node_ids_;
+  return (side_panel_distillation_mode_ ==
+          SidePanelDistillationMode::kSelection)
+             ? &selection_node_ids_
+             : &display_node_ids_;
 }
 
 void ReadAnythingAppModel::AllowChildTreeForActiveTree(bool use_child_tree) {

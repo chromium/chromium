@@ -1389,6 +1389,61 @@ TEST_F(ReadAnythingAppModelTest,
   ASSERT_TRUE(model().PostProcessSelection());
 }
 
+TEST_F(
+    ReadAnythingAppModelTest,
+    PostProcessSelection_DistilledContentSelection_AfterBlockedRedraw_DoesDraw) {
+  // Distilled article contains nodes 2 and 3.
+  ProcessDisplayNodes({2, 3});
+  ASSERT_EQ(model().side_panel_distillation_mode(),
+            ReadAnythingAppModel::SidePanelDistillationMode::kMainContent);
+
+  // Transition to Selection Mode (Node 4 is outside the article).
+  ui::AXTreeUpdate update1;
+  test::SetUpdateTreeID(&update1, tree_id_);
+  update1.tree_data.sel_anchor_object_id = 4;
+  update1.tree_data.sel_focus_object_id = 4;
+  update1.tree_data.sel_anchor_offset = 0;
+  update1.tree_data.sel_focus_offset = 5;
+  ApplyAccessibilityUpdates(tree_id_, {update1});
+
+  // Trigger a draw and switch to Selection Mode.
+  EXPECT_TRUE(model().PostProcessSelection());
+  EXPECT_EQ(model().side_panel_distillation_mode(),
+            ReadAnythingAppModel::SidePanelDistillationMode::kSelection);
+
+  // Simulate Collapsed selection with active counter.
+  model().increment_selections_from_reading_mode();
+
+  ui::AXTreeUpdate update2;
+  test::SetUpdateTreeID(&update2, tree_id_);
+  update2.tree_data.sel_anchor_object_id = 1;  // Root node
+  update2.tree_data.sel_focus_object_id = 1;
+  update2.tree_data.sel_anchor_offset = 0;
+  update2.tree_data.sel_focus_offset = 0;
+  ApplyAccessibilityUpdates(tree_id_, {update2});
+
+  // Should NOT draw because the counter is > 0.
+  EXPECT_FALSE(model().PostProcessSelection());
+  EXPECT_EQ(model().side_panel_distillation_mode(),
+            ReadAnythingAppModel::SidePanelDistillationMode::kSelection);
+
+  // Subsequent selection in the Distilled Article.
+  model().decrement_selections_from_reading_mode();
+
+  ui::AXTreeUpdate update3;
+  test::SetUpdateTreeID(&update3, tree_id_);
+  update3.tree_data.sel_anchor_object_id = 2;  // Inside article
+  update3.tree_data.sel_focus_object_id = 2;
+  update3.tree_data.sel_anchor_offset = 0;
+  update3.tree_data.sel_focus_offset = 5;
+  ApplyAccessibilityUpdates(tree_id_, {update3});
+
+  // New selection should trigger a draw.
+  EXPECT_TRUE(model().PostProcessSelection());
+  EXPECT_EQ(model().side_panel_distillation_mode(),
+            ReadAnythingAppModel::SidePanelDistillationMode::kMainContent);
+}
+
 TEST_F(ReadAnythingAppModelTest,
        StartAndEndNodesHaveDifferentParents_SelectionStateCorrect) {
   ui::AXTreeUpdate update;

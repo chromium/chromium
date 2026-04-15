@@ -65,6 +65,16 @@ class ReadAnythingAppModel {
     kMaxValue = kReadability,
   };
 
+  // Enum for tracking the side panel's distillation mode. This determines
+  // whether the view is derived from the main content article or from
+  // a specific user selection in the main panel.
+  // TODO: crbug.com/503024139 - Track when we switch modes.
+  enum class SidePanelDistillationMode {
+    kMainContent = 0,
+    kSelection = 1,
+    kMaxValue = kSelection,
+  };
+
   struct AXTreeInfo {
     explicit AXTreeInfo(std::unique_ptr<ui::AXTreeManager> manager);
     AXTreeInfo(const AXTreeInfo&) = delete;
@@ -474,6 +484,19 @@ class ReadAnythingAppModel {
   // the distilled content.
   bool PostProcessSelection();
 
+  // Synchronizes the model's selection endpoints (start_ and end_) with the
+  // latest state of the active accessibility tree. Ensures that the endpoints
+  // are stored in forward tree order.
+  void UpdateSelectionEndpoints();
+
+  // Returns true if the user's current selection is entirely contained within
+  // the distilled article content (display_node_ids_).
+  bool IsSelectionInDistilledContent() const;
+
+  // Traverses the accessibility tree to populate |selection_node_ids_| with
+  // the nodes required to render a custom user selection in the side panel.
+  void ComputeSelectionNodeIdsForSelectionMode();
+
   // Computes display nodes from the content nodes. These display nodes will be
   // displayed in the Read Anything app.ts by default.
   void ComputeDisplayNodeIdsForDistilledTree();
@@ -558,6 +581,10 @@ class ReadAnythingAppModel {
   void set_distillation_state(
       read_anything::mojom::ReadAnythingDistillationState distillation_state) {
     distillation_state_ = distillation_state;
+  }
+
+  SidePanelDistillationMode side_panel_distillation_mode() const {
+    return side_panel_distillation_mode_;
   }
 
  private:
@@ -754,6 +781,12 @@ class ReadAnythingAppModel {
   // The distillation method that produced the content currently visible in the
   // UI.
   DistillationMethod current_content_distillation_method_;
+
+  // Tracks whether the side panel distillation is derived from the main content
+  // article (even for an empty distillation) or from a specific user
+  // selection in the main panel.
+  SidePanelDistillationMode side_panel_distillation_mode_ =
+      SidePanelDistillationMode::kMainContent;
 
   std::map<ui::AXTreeID, ukm::SourceId> pending_ukm_sources_;
 
