@@ -178,9 +178,8 @@ void ProfileCustomizationHandler::HandleDeleteProfile(
 void ProfileCustomizationHandler::HandleSetAvatarIcon(
     const base::ListValue& args) {
   CHECK_EQ(1u, args.size());
-  size_t avatar_icon_index = args[0].GetInt();
-
-  profiles::SetDefaultProfileAvatarIndex(profile_, avatar_icon_index);
+  profiles::SetDefaultProfileAvatarIndex(
+      profile_, profiles::GetSanitizedAvatarIndex(args[0].GetInt()));
 }
 
 void ProfileCustomizationHandler::UpdateProfileInfo(

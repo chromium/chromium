@@ -84,6 +84,7 @@
 #include "chrome/browser/profiles/pref_service_builder_utils.h"
 #include "chrome/browser/profiles/profile_attributes_entry.h"
 #include "chrome/browser/profiles/profile_attributes_storage.h"
+#include "chrome/browser/profiles/profile_avatar_icon_util.h"
 #include "chrome/browser/profiles/profile_destroyer.h"
 #include "chrome/browser/profiles/profile_key.h"
 #include "chrome/browser/profiles/profile_manager.h"
@@ -1640,8 +1641,8 @@ void ProfileImpl::UpdateAvatarInStorage() {
                                       ->GetProfileAttributesStorage()
                                       .GetProfileAttributesWithPath(GetPath());
   if (entry) {
-    entry->SetAvatarIconIndex(
-        GetPrefs()->GetInteger(prefs::kProfileAvatarIndex));
+    entry->SetAvatarIconIndex(profiles::GetSanitizedAvatarIndex(
+        GetPrefs()->GetInteger(prefs::kProfileAvatarIndex)));
     entry->SetIsUsingDefaultAvatar(
         GetPrefs()->GetBoolean(prefs::kProfileUsingDefaultAvatar));
     entry->SetIsUsingGAIAPicture(

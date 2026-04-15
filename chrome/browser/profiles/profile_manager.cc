@@ -2087,8 +2087,8 @@ void ProfileManager::AddProfileToStorage(Profile* profile) {
   init_params.profile_name =
       base::UTF8ToUTF16(profile->GetPrefs()->GetString(prefs::kProfileName));
 
-  init_params.icon_index =
-      profile->GetPrefs()->GetInteger(prefs::kProfileAvatarIndex);
+  init_params.icon_index = profiles::GetSanitizedAvatarIndex(
+      profile->GetPrefs()->GetInteger(prefs::kProfileAvatarIndex));
 
   init_params.supervised_user_id =
       profile->GetPrefs()->GetString(prefs::kSupervisedUserId);

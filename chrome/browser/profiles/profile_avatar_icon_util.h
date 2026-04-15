@@ -195,6 +195,10 @@ std::string GetDefaultAvatarIconUrl(size_t index);
 // Checks if |index| is a valid avatar icon index
 bool IsDefaultAvatarIconIndex(size_t index);
 
+// Returns a valid avatar index. If `icon_index` is negative or invalid,
+// returns the placeholder avatar index.
+size_t GetSanitizedAvatarIndex(int icon_index);
+
 // Checks if the given URL points to one of the default avatar icons. If it
 // is, returns true and its index through |icon_index|. If not, returns false.
 bool IsDefaultAvatarIconUrl(std::string_view icon_url, size_t* icon_index);

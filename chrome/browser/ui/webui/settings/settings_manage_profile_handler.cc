@@ -166,8 +166,8 @@ void ManageProfileHandler::HandleSetProfileIconToDefaultAvatar(
   CHECK_EQ(1u, args.size());
   CHECK(args[0].is_int());
 
-  size_t avatar_icon_index = args[0].GetInt();
-  profiles::SetDefaultProfileAvatarIndex(profile_, avatar_icon_index);
+  profiles::SetDefaultProfileAvatarIndex(
+      profile_, profiles::GetSanitizedAvatarIndex(args[0].GetInt()));
 }
 
 void ManageProfileHandler::HandleSetProfileName(const base::ListValue& args) {
