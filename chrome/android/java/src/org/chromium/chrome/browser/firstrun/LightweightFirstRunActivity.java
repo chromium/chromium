@@ -16,7 +16,6 @@ import android.widget.Button;
 import android.widget.TextView;
 
 import androidx.annotation.StringRes;
-import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.IntentUtils;
 import org.chromium.base.ThreadUtils;
@@ -39,11 +38,7 @@ import org.chromium.ui.widget.LoadingView;
 @NullMarked
 public class LightweightFirstRunActivity extends FirstRunActivityBase
         implements LoadingView.Observer {
-    // TODO(crbug.com/40156897) Clean this boolean when releasing this feature, and remove
-    // @Nullable from members below.
-    private static boolean sSupportSkippingTos = true;
-
-    private @Nullable SkipTosDialogPolicyListener mSkipTosDialogPolicyListener;
+    private final SkipTosDialogPolicyListener mSkipTosDialogPolicyListener;
 
     private TextView mTosAndPrivacyTextView;
     private Button mOkButton;
@@ -66,14 +61,12 @@ public class LightweightFirstRunActivity extends FirstRunActivityBase
     public LightweightFirstRunActivity() {
         super();
 
-        if (sSupportSkippingTos) {
-            mSkipTosDialogPolicyListener =
-                    new SkipTosDialogPolicyListener(
-                            getPolicyLoadListener(), EnterpriseInfo.getInstance(), null);
-            // We can ignore the result from #onAvailable here, as views are not created at this
-            // point.
-            mSkipTosDialogPolicyListener.onAvailable((ignored) -> onPolicyLoadListenerAvailable());
-        }
+        mSkipTosDialogPolicyListener =
+                new SkipTosDialogPolicyListener(
+                        getPolicyLoadListener(), EnterpriseInfo.getInstance(), null);
+        // We can ignore the result from #onAvailable here, as views are not created at this
+        // point.
+        mSkipTosDialogPolicyListener.onAvailable((ignored) -> onPolicyLoadListenerAvailable());
     }
 
     @Override
@@ -156,16 +149,14 @@ public class LightweightFirstRunActivity extends FirstRunActivityBase
 
         mViewCreated = true;
 
-        if (mSkipTosDialogPolicyListener != null) {
-            // Check if we need to setup logic for policy loading.
-            if (mSkipTosDialogPolicyListener.get() == null) {
-                mLoadingView.addObserver(this);
-                mLoadingView.showLoadingUi();
-                setTosComponentVisibility(false);
-            } else if (mSkipTosDialogPolicyListener.get()) {
-                setTosComponentVisibility(false);
-                skipTosByPolicy();
-            }
+        // Check if we need to setup logic for policy loading.
+        if (mSkipTosDialogPolicyListener.get() == null) {
+            mLoadingView.addObserver(this);
+            mLoadingView.showLoadingUi();
+            setTosComponentVisibility(false);
+        } else if (mSkipTosDialogPolicyListener.get()) {
+            setTosComponentVisibility(false);
+            skipTosByPolicy();
         }
     }
 
@@ -186,7 +177,7 @@ public class LightweightFirstRunActivity extends FirstRunActivityBase
 
     @Override
     public void onHideLoadingUiComplete() {
-        assert mSkipTosDialogPolicyListener != null && mSkipTosDialogPolicyListener.get() != null;
+        assert mSkipTosDialogPolicyListener.get() != null;
         if (mSkipTosDialogPolicyListener.get()) {
             skipTosByPolicy();
         } else {
@@ -218,7 +209,7 @@ public class LightweightFirstRunActivity extends FirstRunActivityBase
 
         mLoadingView.destroy();
 
-        if (mSkipTosDialogPolicyListener != null) mSkipTosDialogPolicyListener.destroy();
+        mSkipTosDialogPolicyListener.destroy();
 
         if (mHandler != null && mExitFreRunnable != null) {
             mHandler.removeCallbacks(mExitFreRunnable);
@@ -282,10 +273,5 @@ public class LightweightFirstRunActivity extends FirstRunActivityBase
     public void showInfoPage(@StringRes int url) {
         CustomTabActivity.showInfoPage(
                 this, LocalizationUtils.substituteLocalePlaceholder(getString(url)));
-    }
-
-    @VisibleForTesting
-    public static void setSupportSkippingTos(boolean isSupported) {
-        sSupportSkippingTos = isSupported;
     }
 }
