@@ -142,8 +142,8 @@ void AddDataSourceToConfig(
   PopulateLocalResourceMap(*webui_data_source,
                            loader_source->path_to_resource_map);
   loader_source->replacement_strings.insert(
-      webui_data_source->source()->GetReplacements()->begin(),
-      webui_data_source->source()->GetReplacements()->end());
+      webui_data_source->GetReplacements()->begin(),
+      webui_data_source->GetReplacements()->end());
   loader_config->sources[origin] = std::move(loader_source);
 }
 
