@@ -179,8 +179,7 @@ TEST_F(PaymentsSuggestionBottomSheetMediatorTest,
 // delay before accepting filling. Tests each key moment, before view did
 // appear, right after appearance, after some time but not enough to reach the
 // minimal delay, and after the minimal delay.
-// TODO(crbug.com/422437108): re-enable.
-TEST_F(PaymentsSuggestionBottomSheetMediatorTest, DISABLED_FillingDelay) {
+TEST_F(PaymentsSuggestionBottomSheetMediatorTest, FillingDelay) {
   base::ScopedMockClockOverride mock_clock;
 
   CreateMediatorWithSuggestions();
