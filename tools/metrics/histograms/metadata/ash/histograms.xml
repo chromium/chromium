@@ -8178,17 +8178,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Ash.Shelf.TimeBetweenWindowMinimizedAndActivatedActions"
-    units="ms" expires_after="2020-06-28">
-  <owner>tbuckley@chromium.org</owner>
-  <summary>
-    Tracks the amount of time between a window being minimized by the shelf and
-    subsequently activated. In other words this metric is only recorded if a
-    shelf button pressed action causes a window to be minimized and the very
-    next shelf button pressed action causes the same window to be activated.
-  </summary>
-</histogram>
-
 <histogram name="Ash.ShelfAlignmentUsage" enum="ShelfAlignmentValue"
     expires_after="never">
 <!-- expires-never: Monitors core shelf behavior/usage (the shelf alignment) -->

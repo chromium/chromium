@@ -8,17 +8,11 @@
 #include "ash/shell.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/user_metrics.h"
-#include "base/time/default_tick_clock.h"
 #include "ui/views/controls/button/button.h"
 
 namespace ash {
 
-const char ShelfButtonPressedMetricTracker::
-    kTimeBetweenWindowMinimizedAndActivatedActionsHistogramName[] =
-        "Ash.Shelf.TimeBetweenWindowMinimizedAndActivatedActions";
-
-ShelfButtonPressedMetricTracker::ShelfButtonPressedMetricTracker()
-    : tick_clock_(base::DefaultTickClock::GetInstance()) {}
+ShelfButtonPressedMetricTracker::ShelfButtonPressedMetricTracker() = default;
 
 ShelfButtonPressedMetricTracker::~ShelfButtonPressedMetricTracker() = default;
 
@@ -28,21 +22,6 @@ void ShelfButtonPressedMetricTracker::ButtonPressed(
     ShelfAction performed_action) {
   RecordButtonPressedSource(event);
   RecordButtonPressedAction(performed_action);
-
-  switch (performed_action) {
-    case SHELF_ACTION_WINDOW_MINIMIZED:
-      SetMinimizedData(sender);
-      break;
-    case SHELF_ACTION_WINDOW_ACTIVATED:
-      if (IsSubsequentActivationEvent(sender))
-        RecordTimeBetweenMinimizedAndActivated();
-      break;
-    default:
-      break;
-  }
-
-  if (performed_action != SHELF_ACTION_WINDOW_MINIMIZED)
-    ResetMinimizedData();
 }
 
 void ShelfButtonPressedMetricTracker::RecordButtonPressedSource(
@@ -78,29 +57,6 @@ void ShelfButtonPressedMetricTracker::RecordButtonPressedAction(
       base::RecordAction(base::UserMetricsAction("Launcher_MinimizeTask"));
       break;
   }
-}
-
-void ShelfButtonPressedMetricTracker::RecordTimeBetweenMinimizedAndActivated() {
-  UMA_HISTOGRAM_TIMES(
-      kTimeBetweenWindowMinimizedAndActivatedActionsHistogramName,
-      tick_clock_->NowTicks() - time_of_last_minimize_);
-}
-
-bool ShelfButtonPressedMetricTracker::IsSubsequentActivationEvent(
-    const views::Button* sender) const {
-  return time_of_last_minimize_ != base::TimeTicks() &&
-         last_minimized_source_button_ == sender;
-}
-
-void ShelfButtonPressedMetricTracker::SetMinimizedData(
-    const views::Button* sender) {
-  last_minimized_source_button_ = sender;
-  time_of_last_minimize_ = tick_clock_->NowTicks();
-}
-
-void ShelfButtonPressedMetricTracker::ResetMinimizedData() {
-  last_minimized_source_button_ = nullptr;
-  time_of_last_minimize_ = base::TimeTicks();
 }
 
 }  // namespace ash

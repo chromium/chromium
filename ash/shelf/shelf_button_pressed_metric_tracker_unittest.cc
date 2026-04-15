@@ -7,13 +7,10 @@
 #include <utility>
 
 #include "ash/shelf/shelf.h"
-#include "ash/shelf/shelf_button_pressed_metric_tracker_test_api.h"
 #include "ash/shelf/shelf_view_test_api.h"
 #include "ash/test/ash_test_base.h"
 #include "base/memory/raw_ptr.h"
-#include "base/test/metrics/histogram_tester.h"
 #include "base/test/metrics/user_action_tester.h"
-#include "base/test/simple_test_tick_clock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/events/event.h"
 #include "ui/events/test/test_event.h"
@@ -37,9 +34,6 @@ DummyButton::DummyButton() : views::Button(views::Button::PressedCallback()) {}
 // AshTestBase to initilize the UserMetricsRecorder and it's dependencies.
 class ShelfButtonPressedMetricTrackerTest : public AshTestBase {
  public:
-  static const char*
-      kTimeBetweenWindowMinimizedAndActivatedActionsHistogramName;
-
   ShelfButtonPressedMetricTrackerTest();
 
   ShelfButtonPressedMetricTrackerTest(
@@ -68,15 +62,7 @@ class ShelfButtonPressedMetricTrackerTest : public AshTestBase {
  protected:
   // The test target. Not owned.
   raw_ptr<ShelfButtonPressedMetricTracker> metric_tracker_;
-
-  // The TickClock injected in to the test target.
-  base::SimpleTestTickClock tick_clock_;
 };
-
-const char* ShelfButtonPressedMetricTrackerTest::
-    kTimeBetweenWindowMinimizedAndActivatedActionsHistogramName =
-        ShelfButtonPressedMetricTracker::
-            kTimeBetweenWindowMinimizedAndActivatedActionsHistogramName;
 
 ShelfButtonPressedMetricTrackerTest::ShelfButtonPressedMetricTrackerTest() =
     default;
@@ -91,14 +77,6 @@ void ShelfButtonPressedMetricTrackerTest::SetUp() {
   ShelfViewTestAPI shelf_view_test_api(shelf->GetShelfViewForTesting());
 
   metric_tracker_ = shelf_view_test_api.shelf_button_pressed_metric_tracker();
-
-  ShelfButtonPressedMetricTrackerTestAPI test_api(metric_tracker_);
-
-  test_api.SetTickClock(&tick_clock_);
-
-  // Ensure the TickClock->NowTicks() doesn't return base::TimeTicks because
-  // ShelfButtonPressedMetricTracker interprets that value as unset.
-  tick_clock_.Advance(base::Milliseconds(100));
 }
 
 void ShelfButtonPressedMetricTrackerTest::TearDown() {
@@ -144,7 +122,7 @@ TEST_F(ShelfButtonPressedMetricTrackerTest,
 // Verifies that a Launcher_ButtonPressed_Touch UMA user action is recorded when
 // a button is pressed by a touch event.
 TEST_F(ShelfButtonPressedMetricTrackerTest,
-       Launcher_ButtonPressed_MouseIsRecordedWhenIconActivatedByTouch) {
+       Launcher_ButtonPressed_TouchIsRecordedWhenIconActivatedByTouch) {
   const ui::TouchEvent touch_event(
       ui::EventType::kGestureTap, gfx::Point(), base::TimeTicks(),
       ui::PointerDetails(ui::EventPointerType::kTouch, 0));
@@ -180,92 +158,6 @@ TEST_F(ShelfButtonPressedMetricTrackerTest,
   base::UserActionTester user_action_tester;
   ButtonPressed(SHELF_ACTION_WINDOW_ACTIVATED);
   EXPECT_EQ(1, user_action_tester.GetActionCount("Launcher_SwitchTask"));
-}
-
-// Verify that a window activation action will record a data point if it was
-// subsequent to a minimize action.
-TEST_F(ShelfButtonPressedMetricTrackerTest,
-       VerifyDataRecordedAfterMinimizedAndSubsequentActivatedAction) {
-  const DummyButton kDummyButton;
-
-  base::HistogramTester histogram_tester;
-
-  ButtonPressed(&kDummyButton, SHELF_ACTION_WINDOW_MINIMIZED);
-  histogram_tester.ExpectTotalCount(
-      kTimeBetweenWindowMinimizedAndActivatedActionsHistogramName, 0);
-
-  ButtonPressed(&kDummyButton, SHELF_ACTION_WINDOW_ACTIVATED);
-  histogram_tester.ExpectTotalCount(
-      kTimeBetweenWindowMinimizedAndActivatedActionsHistogramName, 1);
-}
-
-// Verify that a multiple window activation actions will record a single data
-// point if they are subsequent to a minimize action.
-TEST_F(ShelfButtonPressedMetricTrackerTest,
-       VerifyDataRecordedAfterMinimizedAndMultipleSubsequentActivatedActions) {
-  const DummyButton kDummyButton;
-
-  base::HistogramTester histogram_tester;
-
-  ButtonPressed(&kDummyButton, SHELF_ACTION_WINDOW_MINIMIZED);
-  ButtonPressed(&kDummyButton, SHELF_ACTION_WINDOW_ACTIVATED);
-  ButtonPressed(&kDummyButton, SHELF_ACTION_WINDOW_ACTIVATED);
-
-  histogram_tester.ExpectTotalCount(
-      kTimeBetweenWindowMinimizedAndActivatedActionsHistogramName, 1);
-}
-
-// Verify that a window activation action will not record a data point if it was
-// not subsequent to a minimize action.
-TEST_F(ShelfButtonPressedMetricTrackerTest,
-       VerifyDataRecordedAfterMinimizedAndNonSubsequentActivatedAction) {
-  const DummyButton kDummyButton;
-
-  base::HistogramTester histogram_tester;
-
-  ButtonPressed(&kDummyButton, SHELF_ACTION_WINDOW_MINIMIZED);
-  ButtonPressed(&kDummyButton, SHELF_ACTION_APP_LIST_SHOWN);
-  ButtonPressed(&kDummyButton, SHELF_ACTION_WINDOW_ACTIVATED);
-
-  histogram_tester.ExpectTotalCount(
-      kTimeBetweenWindowMinimizedAndActivatedActionsHistogramName, 0);
-}
-
-// Verify no data is recorded if a second source button is pressed in between
-// subsequent minimized and activated actions on the same source.
-TEST_F(ShelfButtonPressedMetricTrackerTest,
-       VerifyDataRecordedAfterMinimizedButtonA) {
-  const DummyButton kDummyButton;
-  const DummyButton kSecondDummyButton;
-
-  base::HistogramTester histogram_tester;
-
-  ButtonPressed(&kDummyButton, SHELF_ACTION_WINDOW_MINIMIZED);
-  ButtonPressed(&kSecondDummyButton, SHELF_ACTION_WINDOW_MINIMIZED);
-  ButtonPressed(&kDummyButton, SHELF_ACTION_WINDOW_ACTIVATED);
-
-  histogram_tester.ExpectTotalCount(
-      kTimeBetweenWindowMinimizedAndActivatedActionsHistogramName, 0);
-}
-
-// Verify the data value recorded when a window activation action is subsequent
-// to a minimize action.
-TEST_F(ShelfButtonPressedMetricTrackerTest,
-       VerifyTheValueRecordedBySubsequentMinimizedAndActivateActions) {
-  const int kTimeDeltaInMilliseconds = 17;
-  const DummyButton kDummyButton;
-
-  base::HistogramTester histogram_tester;
-
-  ButtonPressed(&kDummyButton, SHELF_ACTION_WINDOW_MINIMIZED);
-  tick_clock_.Advance(base::Milliseconds(kTimeDeltaInMilliseconds));
-  ButtonPressed(&kDummyButton, SHELF_ACTION_WINDOW_ACTIVATED);
-
-  histogram_tester.ExpectTotalCount(
-      kTimeBetweenWindowMinimizedAndActivatedActionsHistogramName, 1);
-  histogram_tester.ExpectBucketCount(
-      kTimeBetweenWindowMinimizedAndActivatedActionsHistogramName,
-      kTimeDeltaInMilliseconds, 1);
 }
 
 }  // namespace ash

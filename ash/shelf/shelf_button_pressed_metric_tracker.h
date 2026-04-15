@@ -7,9 +7,6 @@
 
 #include "ash/ash_export.h"
 #include "ash/public/cpp/shelf_types.h"
-#include "base/memory/raw_ptr.h"
-#include "base/time/tick_clock.h"
-#include "base/time/time.h"
 #include "ui/events/event.h"
 
 namespace views {
@@ -28,13 +25,9 @@ namespace ash {
 //      - Launcher_MinimizeTask
 //      - Launcher_SwitchTask
 //    Histograms:
-//      - Ash.Shelf.TimeBetweenWindowMinimizedAndActivatedActions
 //
 class ASH_EXPORT ShelfButtonPressedMetricTracker {
  public:
-  static const char
-      kTimeBetweenWindowMinimizedAndActivatedActionsHistogramName[];
-
   ShelfButtonPressedMetricTracker();
 
   ShelfButtonPressedMetricTracker(const ShelfButtonPressedMetricTracker&) =
@@ -50,39 +43,11 @@ class ASH_EXPORT ShelfButtonPressedMetricTracker {
                      ShelfAction performed_action);
 
  private:
-  friend class ShelfButtonPressedMetricTrackerTestAPI;
-
   // Records UMA metrics for the input source when a button is pressed.
   void RecordButtonPressedSource(const ui::Event& event);
 
   // Records UMA metrics for the action performed when a button is pressed.
   void RecordButtonPressedAction(ShelfAction performed_action);
-
-  // Records UMA metrics for the elapsed time since the last window minimize
-  // action.
-  void RecordTimeBetweenMinimizedAndActivated();
-
-  // Returns true if a window activation action triggered by |sender| would
-  // be subsequent to the last minimize window action.
-  bool IsSubsequentActivationEvent(const views::Button* sender) const;
-
-  // Caches state data for a window minimized action. The |sender| is the button
-  // that caused the action.
-  void SetMinimizedData(const views::Button* sender);
-
-  // Resets the state data associated with the last window minimize action.
-  void ResetMinimizedData();
-
-  // Time source for performed action times.
-  raw_ptr<const base::TickClock> tick_clock_;
-
-  // Stores the time of the last window minimize action.
-  base::TimeTicks time_of_last_minimize_;
-
-  // Stores the source button of the last window minimize action.
-  // NOTE: This may become stale and should not be operated on. Not owned.
-  raw_ptr<const views::Button, DanglingUntriaged>
-      last_minimized_source_button_ = nullptr;
 };
 
 }  // namespace ash

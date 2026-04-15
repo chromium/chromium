@@ -458,9 +458,6 @@ TEST_F(ShelfObserverIconTest, AddRemoveWithMultipleDisplays) {
 
 class ShelfViewTest : public AshTestBase {
  public:
-  static const char*
-      kTimeBetweenWindowMinimizedAndActivatedActionsHistogramName;
-
   template <typename... TaskEnvironmentTraits>
   explicit ShelfViewTest(TaskEnvironmentTraits&&... traits)
       : AshTestBase(std::forward<TaskEnvironmentTraits>(traits)...) {}
@@ -816,11 +813,6 @@ class LtrRtlShelfViewTest : public ShelfViewTest,
 };
 
 INSTANTIATE_TEST_SUITE_P(All, LtrRtlShelfViewTest, testing::Bool());
-
-const char*
-    ShelfViewTest::kTimeBetweenWindowMinimizedAndActivatedActionsHistogramName =
-        ShelfButtonPressedMetricTracker::
-            kTimeBetweenWindowMinimizedAndActivatedActionsHistogramName;
 
 TEST_P(LtrRtlShelfViewTest, GetAnchorBoundsInScreen) {
   // Help bubble anchor bounds changed events are only propagated when user
@@ -1892,27 +1884,6 @@ TEST_P(LtrRtlShelfViewTest, Launcher_TaskUserActionsRecordedWhenItemSelected) {
 
   SimulateClick(0);
   EXPECT_EQ(1, user_action_tester.GetActionCount("Launcher_LaunchTask"));
-}
-
-// Verifies that metrics are recorded when an item is minimized and subsequently
-// activated.
-TEST_P(LtrRtlShelfViewTest,
-       VerifyMetricsAreRecordedWhenAnItemIsMinimizedAndActivated) {
-  base::HistogramTester histogram_tester;
-
-  ShelfItemSelectionTracker* selection_tracker = new ShelfItemSelectionTracker;
-  model_->ReplaceShelfItemDelegate(
-      model_->items()[0].id,
-      base::WrapUnique<ShelfItemSelectionTracker>(selection_tracker));
-
-  selection_tracker->set_item_selected_action(SHELF_ACTION_WINDOW_MINIMIZED);
-  SimulateClick(0);
-
-  selection_tracker->set_item_selected_action(SHELF_ACTION_WINDOW_ACTIVATED);
-  SimulateClick(0);
-
-  histogram_tester.ExpectTotalCount(
-      kTimeBetweenWindowMinimizedAndActivatedActionsHistogramName, 1);
 }
 
 // Verify the animations of the shelf items are as long as expected.

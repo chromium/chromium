@@ -5228,8 +5228,6 @@ static_library("test_support") {
     "session/test_pref_service_provider.h",
     "session/test_session_controller_client.cc",
     "session/test_session_controller_client.h",
-    "shelf/shelf_button_pressed_metric_tracker_test_api.cc",
-    "shelf/shelf_button_pressed_metric_tracker_test_api.h",
     "shelf/shelf_test_util.cc",
     "shelf/shelf_test_util.h",
     "shelf/shelf_view_test_api.cc",
