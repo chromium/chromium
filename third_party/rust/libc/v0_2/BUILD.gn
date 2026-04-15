@@ -374,6 +374,7 @@ cargo_crate("lib") {
 
   features = [
     "default",
+    "extra_traits",
     "std",
   ]
   build_root = "//third_party/rust/chromium_crates_io/vendor/libc-v0_2/build.rs"

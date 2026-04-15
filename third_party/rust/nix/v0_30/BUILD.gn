@@ -1,0 +1,137 @@
+# Copyright 2023 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+# @generated from third_party/rust/chromium_crates_io/BUILD.gn.hbs by
+# tools/crates/gnrt.
+# Do not edit!
+
+import("//build/rust/cargo_crate.gni")
+
+cargo_crate("lib") {
+  crate_name = "nix"
+  epoch = "0.30"
+  crate_type = "rlib"
+  crate_root =
+      "//third_party/rust/chromium_crates_io/vendor/nix-v0_30/src/lib.rs"
+  sources = [
+    "//third_party/rust/chromium_crates_io/vendor/nix-v0_30/src/dir.rs",
+    "//third_party/rust/chromium_crates_io/vendor/nix-v0_30/src/env.rs",
+    "//third_party/rust/chromium_crates_io/vendor/nix-v0_30/src/errno.rs",
+    "//third_party/rust/chromium_crates_io/vendor/nix-v0_30/src/fcntl.rs",
+    "//third_party/rust/chromium_crates_io/vendor/nix-v0_30/src/features.rs",
+    "//third_party/rust/chromium_crates_io/vendor/nix-v0_30/src/ifaddrs.rs",
+    "//third_party/rust/chromium_crates_io/vendor/nix-v0_30/src/kmod.rs",
+    "//third_party/rust/chromium_crates_io/vendor/nix-v0_30/src/lib.rs",
+    "//third_party/rust/chromium_crates_io/vendor/nix-v0_30/src/macros.rs",
+    "//third_party/rust/chromium_crates_io/vendor/nix-v0_30/src/mount/apple.rs",
+    "//third_party/rust/chromium_crates_io/vendor/nix-v0_30/src/mount/bsd_without_apple.rs",
+    "//third_party/rust/chromium_crates_io/vendor/nix-v0_30/src/mount/linux.rs",
+    "//third_party/rust/chromium_crates_io/vendor/nix-v0_30/src/mount/mod.rs",
+    "//third_party/rust/chromium_crates_io/vendor/nix-v0_30/src/mqueue.rs",
+    "//third_party/rust/chromium_crates_io/vendor/nix-v0_30/src/net/if_.rs",
+    "//third_party/rust/chromium_crates_io/vendor/nix-v0_30/src/net/mod.rs",
+    "//third_party/rust/chromium_crates_io/vendor/nix-v0_30/src/poll.rs",
+    "//third_party/rust/chromium_crates_io/vendor/nix-v0_30/src/poll_timeout.rs",
+    "//third_party/rust/chromium_crates_io/vendor/nix-v0_30/src/pty.rs",
+    "//third_party/rust/chromium_crates_io/vendor/nix-v0_30/src/sched.rs",
+    "//third_party/rust/chromium_crates_io/vendor/nix-v0_30/src/spawn.rs",
+    "//third_party/rust/chromium_crates_io/vendor/nix-v0_30/src/sys/aio.rs",
+    "//third_party/rust/chromium_crates_io/vendor/nix-v0_30/src/sys/epoll.rs",
+    "//third_party/rust/chromium_crates_io/vendor/nix-v0_30/src/sys/event.rs",
+    "//third_party/rust/chromium_crates_io/vendor/nix-v0_30/src/sys/eventfd.rs",
+    "//third_party/rust/chromium_crates_io/vendor/nix-v0_30/src/sys/fanotify.rs",
+    "//third_party/rust/chromium_crates_io/vendor/nix-v0_30/src/sys/inotify.rs",
+    "//third_party/rust/chromium_crates_io/vendor/nix-v0_30/src/sys/ioctl/bsd.rs",
+    "//third_party/rust/chromium_crates_io/vendor/nix-v0_30/src/sys/ioctl/linux.rs",
+    "//third_party/rust/chromium_crates_io/vendor/nix-v0_30/src/sys/ioctl/mod.rs",
+    "//third_party/rust/chromium_crates_io/vendor/nix-v0_30/src/sys/memfd.rs",
+    "//third_party/rust/chromium_crates_io/vendor/nix-v0_30/src/sys/mman.rs",
+    "//third_party/rust/chromium_crates_io/vendor/nix-v0_30/src/sys/mod.rs",
+    "//third_party/rust/chromium_crates_io/vendor/nix-v0_30/src/sys/personality.rs",
+    "//third_party/rust/chromium_crates_io/vendor/nix-v0_30/src/sys/prctl.rs",
+    "//third_party/rust/chromium_crates_io/vendor/nix-v0_30/src/sys/pthread.rs",
+    "//third_party/rust/chromium_crates_io/vendor/nix-v0_30/src/sys/ptrace/bsd.rs",
+    "//third_party/rust/chromium_crates_io/vendor/nix-v0_30/src/sys/ptrace/linux.rs",
+    "//third_party/rust/chromium_crates_io/vendor/nix-v0_30/src/sys/ptrace/mod.rs",
+    "//third_party/rust/chromium_crates_io/vendor/nix-v0_30/src/sys/quota.rs",
+    "//third_party/rust/chromium_crates_io/vendor/nix-v0_30/src/sys/reboot.rs",
+    "//third_party/rust/chromium_crates_io/vendor/nix-v0_30/src/sys/resource.rs",
+    "//third_party/rust/chromium_crates_io/vendor/nix-v0_30/src/sys/select.rs",
+    "//third_party/rust/chromium_crates_io/vendor/nix-v0_30/src/sys/sendfile.rs",
+    "//third_party/rust/chromium_crates_io/vendor/nix-v0_30/src/sys/signal.rs",
+    "//third_party/rust/chromium_crates_io/vendor/nix-v0_30/src/sys/signalfd.rs",
+    "//third_party/rust/chromium_crates_io/vendor/nix-v0_30/src/sys/socket/addr.rs",
+    "//third_party/rust/chromium_crates_io/vendor/nix-v0_30/src/sys/socket/mod.rs",
+    "//third_party/rust/chromium_crates_io/vendor/nix-v0_30/src/sys/socket/sockopt.rs",
+    "//third_party/rust/chromium_crates_io/vendor/nix-v0_30/src/sys/stat.rs",
+    "//third_party/rust/chromium_crates_io/vendor/nix-v0_30/src/sys/statfs.rs",
+    "//third_party/rust/chromium_crates_io/vendor/nix-v0_30/src/sys/statvfs.rs",
+    "//third_party/rust/chromium_crates_io/vendor/nix-v0_30/src/sys/sysinfo.rs",
+    "//third_party/rust/chromium_crates_io/vendor/nix-v0_30/src/sys/termios.rs",
+    "//third_party/rust/chromium_crates_io/vendor/nix-v0_30/src/sys/time.rs",
+    "//third_party/rust/chromium_crates_io/vendor/nix-v0_30/src/sys/timer.rs",
+    "//third_party/rust/chromium_crates_io/vendor/nix-v0_30/src/sys/timerfd.rs",
+    "//third_party/rust/chromium_crates_io/vendor/nix-v0_30/src/sys/uio.rs",
+    "//third_party/rust/chromium_crates_io/vendor/nix-v0_30/src/sys/utsname.rs",
+    "//third_party/rust/chromium_crates_io/vendor/nix-v0_30/src/sys/wait.rs",
+    "//third_party/rust/chromium_crates_io/vendor/nix-v0_30/src/syslog.rs",
+    "//third_party/rust/chromium_crates_io/vendor/nix-v0_30/src/time.rs",
+    "//third_party/rust/chromium_crates_io/vendor/nix-v0_30/src/ucontext.rs",
+    "//third_party/rust/chromium_crates_io/vendor/nix-v0_30/src/unistd.rs",
+  ]
+  inputs = []
+
+  build_native_rust_unit_tests = false
+  edition = "2021"
+  cargo_pkg_authors = "The nix-rust Project Developers"
+  cargo_pkg_name = "nix"
+  cargo_pkg_description = "Rust friendly bindings to *nix APIs"
+  cargo_pkg_repository = "https://github.com/nix-rust/nix"
+  cargo_pkg_version = "0.30.1"
+
+  allow_unsafe = true
+
+  deps = [
+    "//third_party/rust/bitflags/v2:lib",
+    "//third_party/rust/cfg_if/v1:lib",
+    "//third_party/rust/libc/v0_2:lib",
+  ]
+  build_deps = [ "//third_party/rust/cfg_aliases/v0_2:buildrs_support" ]
+  features = [ "default" ]
+  build_root = "//third_party/rust/chromium_crates_io/vendor/nix-v0_30/build.rs"
+  build_sources =
+      [ "//third_party/rust/chromium_crates_io/vendor/nix-v0_30/build.rs" ]
+
+  testonly = true
+
+  #####################################################################
+  # Tweaking which GN `config`s apply to this target.
+
+  # Config changes that apply to all `//third_party/rust` crates.
+  _configs_to_remove = [
+    # We don't need code coverage data for any `chromium_crates_io` crates.
+    "//build/config/coverage:default_coverage",
+
+    # This is third-party code, so remove `chromium_code` config.  We are not
+    # at the same time adding `//build/config/compiler:no_chromium_code`,
+    # because 1) we don't want to pull how warnings are handled by that config
+    # and 2) that config doesn't have any non-warnings-related stuff.
+    "//build/config/compiler:chromium_code",
+  ]
+  _configs_to_add = []
+
+  # Changing (if needed) which configs apply to this specific crate (based on
+  # `extra_kv.configs_to_remove` and `extra_kv.configs_to_add` from
+  # `gnrt_config.toml`).
+  _configs_to_remove += []
+  _configs_to_add += []
+
+  # Applying config changes.
+  library_configs -= _configs_to_remove
+  library_configs += _configs_to_add
+  executable_configs -= _configs_to_remove
+  executable_configs += _configs_to_add
+  proc_macro_configs -= _configs_to_remove
+  proc_macro_configs += _configs_to_add
+}

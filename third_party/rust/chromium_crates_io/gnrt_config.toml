@@ -207,6 +207,10 @@ allow_unsafe = false
 [crate.cfg-if.extra_kv]
 allow_unsafe = false
 
+[crate.cfg_aliases]
+allow_first_party_usage = false
+extra_kv = { allow_unsafe = false }
+
 [crate.chrono]
 extra_kv = { allow_unsafe = true }
 
@@ -564,6 +568,11 @@ extra_kv = { allow_unsafe = true }
 
 [crate.murmur3]
 extra_kv = { allow_unsafe = false }
+
+[crate.nix]
+group = 'test'
+allow_first_party_usage = false
+extra_kv = { allow_unsafe = true }
 
 [crate.num-bigint.extra_kv]
 allow_unsafe = true

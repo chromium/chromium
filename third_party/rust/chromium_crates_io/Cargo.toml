@@ -43,6 +43,7 @@ itertools = "0.14.0"
 lazy_static = "1"
 libc = "0.2"
 minijinja = "2.14.0"
+nix = "0.30.1" # TODO(crbug.com/496920769): Remove once libafl is added as a depedency.
 num-traits = "0.2"
 ordered-float = "5.1.0"
 png = "0.18.1"
