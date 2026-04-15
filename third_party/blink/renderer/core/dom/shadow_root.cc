@@ -473,6 +473,7 @@ void ShadowRoot::ProcessAdoptedStylesheetAttribute(
   CHECK(RuntimeEnabledFeatures::ShadowRootAdoptedStyleSheetEnabled(
       GetDocument().GetExecutionContext()));
   if (!value.empty()) {
+    UseCounter::Count(GetDocument(), WebFeature::kShadowRootAdoptedStyleSheets);
     AppendAdoptedStyleSheets(ResolveAdoptedStyleSheets(value));
   }
 }

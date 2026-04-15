@@ -34,6 +34,7 @@
 #include "third_party/blink/renderer/core/frame/csp/content_security_policy.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
+#include "third_party/blink/renderer/core/frame/web_feature.h"
 #include "third_party/blink/renderer/core/html/blocking_attribute.h"
 #include "third_party/blink/renderer/core/html/html_style_element.h"
 #include "third_party/blink/renderer/core/loader/modulescript/module_script_creation_params.h"
@@ -46,6 +47,7 @@
 #include "third_party/blink/renderer/core/url/dom_url.h"
 #include "third_party/blink/renderer/platform/bindings/script_forbidden_scope.h"
 #include "third_party/blink/renderer/platform/instrumentation/tracing/trace_event.h"
+#include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 #include "third_party/blink/renderer/platform/json/json_values.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
@@ -209,10 +211,11 @@ StyleElement::ProcessingResult StyleElement::CreateSheetOrModule(
   if (passes_content_security_policy_checks && IsModule(document)) {
     CHECK(RuntimeEnabledFeatures::DeclarativeCSSModulesStyleTagEnabled(
         document.GetExecutionContext()));
+    UseCounter::Count(document, WebFeature::kStyleTypeModule);
     AddImportMapEntry(element, text);
 
-    // Return early, since we explicitly *don't* want to create a CSSStyleSheet
-    // for CSS modules.
+    // Return early, since we explicitly *don't* want to create a
+    // CSSStyleSheet for CSS modules.
     return kProcessingSuccessful;
   }
 

@@ -1665,6 +1665,20 @@ TEST_F(ElementTest, HeuristicCustomPasswordDetectionCSS) {
   EXPECT_TRUE(target->HasBeenHeuristicCustomPasswordCSS());
 }
 
+TEST_F(ElementTest, ShadowRootAdoptedStyleSheetsUseCounter) {
+  ScopedShadowRootAdoptedStyleSheetForTest scoped_feature(true);
+
+  EXPECT_FALSE(
+      GetDocument().IsUseCounted(WebFeature::kShadowRootAdoptedStyleSheets));
+  GetDocument().documentElement()->SetHTMLUnsafeWithoutTrustedTypes(
+      "<body><div>"
+      "<template shadowrootmode='open' "
+      "shadowrootadoptedstylesheets='foo'></template>"
+      "</div></body>");
+  EXPECT_TRUE(
+      GetDocument().IsUseCounted(WebFeature::kShadowRootAdoptedStyleSheets));
+}
+
 // Provide assertion-prettify function for gtest.
 namespace focusgroup {
 void PrintTo(FocusgroupFlags flags, std::ostream* os) {
