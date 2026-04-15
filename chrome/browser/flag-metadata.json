@@ -5082,6 +5082,14 @@
     "expiry_milestone": 150
   },
   {
+    "name": "glic-button-auto-summarize",
+    "owners": [
+      "sanaakbani@google.com",
+      "//chrome/browser/glic/OWNERS"
+    ],
+    "expiry_milestone": 152
+  },
+  {
     "name": "glic-button-pressed-state",
     "owners": [
       "iwells@chromium.org",

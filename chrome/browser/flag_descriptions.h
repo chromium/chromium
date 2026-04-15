@@ -307,6 +307,12 @@ inline constexpr char kGlicTabRestorationName[] = "Glic Tab Restoration";
 inline constexpr char kGlicTabRestorationDescription[] =
     "Enables Glic instance restore when tabs are restored.";
 
+inline constexpr char kGlicButtonAutoSummarizeName[] =
+    "Glic Button Auto Summarize";
+inline constexpr char kGlicButtonAutoSummarizeDescription[] =
+    "Automatically triggers a summary when the Glic button is clicked on a "
+    "certain page (ex. PDF).";
+
 inline constexpr char kBundledSecuritySettingsName[] =
     "Bundled Security Settings";
 inline constexpr char kBundledSecuritySettingsDescription[] =

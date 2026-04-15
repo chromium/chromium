@@ -11846,6 +11846,7 @@ from previous Chrome versions.
   <int value="-740300751" label="TabStripGroupCollapseAndroid:enabled"/>
   <int value="-738957187" label="OmniboxUIExperimentSwapTitleAndUrl:disabled"/>
   <int value="-738264153" label="WaylandScreenCoordinatesEnabled:enabled"/>
+  <int value="-737915986" label="GlicButtonAutoSummarize:disabled"/>
   <int value="-737740161" label="SupportForAddPasswordsInSettings:enabled"/>
   <int value="-737134288" label="AdjustGetOrCreate2DCanvasProvider:disabled"/>
   <int value="-737020263" label="EnterpriseProfileBadgingForAvatar:disabled"/>
@@ -18891,6 +18892,7 @@ from previous Chrome versions.
   <int value="1618633341" label="MashOopViz:enabled"/>
   <int value="1619842095" label="ColorProviderRedirection:enabled"/>
   <int value="1620369597" label="enable-unsafe-webgpu"/>
+  <int value="1620629467" label="GlicButtonAutoSummarize:enabled"/>
   <int value="1620668131" label="PageEntitiesPageContentAnnotations:disabled"/>
   <int value="1620787928" label="AndroidAppRatingPrompt:enabled"/>
   <int value="1621298798" label="VrBrowserKeyboard:enabled"/>
