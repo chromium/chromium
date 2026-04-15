@@ -1553,8 +1553,9 @@ IN_PROC_BROWSER_TEST_F(ChromeComposeClientBrowserTest,
               1)));
 }
 
+// Failing consistently. crbug.com/496788430
 IN_PROC_BROWSER_TEST_F(ChromeComposeClientBrowserTest,
-                       TestComposeQualityLoggedOnSubsequentError) {
+                       DISABLED_TestComposeQualityLoggedOnSubsequentError) {
   base::HistogramTester histograms;
   base::ScopedMockElapsedTimersForTest test_timer;
   ShowDialogAndBindMojo();
