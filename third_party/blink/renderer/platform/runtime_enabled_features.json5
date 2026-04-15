@@ -6104,8 +6104,9 @@
     {
       // Stops user action pseudo-classes from propagating out of top layer
       // elements. See https://crbug.com/407769114.
+      // This shipped in M149, and can be removed in M151.
       name: "UserActionPseudosStopAtTopLayer",
-      status: "experimental",
+      status: "stable",
     },
     {
       name: "UserDefinedEntryPointTiming",
