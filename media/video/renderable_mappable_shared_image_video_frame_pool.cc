@@ -307,6 +307,9 @@ InternalRefCountedPool::InternalRefCountedPool(
 scoped_refptr<VideoFrame> InternalRefCountedPool::MaybeCreateVideoFrame(
     const gfx::Size& visible_size,
     const gfx::ColorSpace& color_space) {
+  // The gfx::ColorSpace that reaches here is always valid so do not need a
+  // default ColorSpace.
+  CHECK(color_space.IsValid());
   // Find or create a suitable FrameResources.
   std::unique_ptr<FrameResources> frame_resources;
   while (!available_frame_resources_.empty()) {

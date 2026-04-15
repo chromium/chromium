@@ -21,6 +21,7 @@ MappableSharedImageVideoFramePool::MappableSharedImageVideoFramePool(
       color_space_(color_space),
       context_provider_(context_provider),
       buffer_format_preference_(buffer_format_preference) {
+  CHECK(color_space.IsValid());
   RecreateVideoFramePool();
 }
 
