@@ -37,6 +37,7 @@ fs2 = "0.4.3" # TODO(crbug.com/496920769): Remove once libafl is added as a depe
 getrandom = "0.4.1" # TODO(crbug.com/496920769): Remove once libafl is added as a dependency.
 hex = "0.4"
 hmac-sha256 = "1.1.12"
+hostname = "0.4.2" # TODO(crbug.com/496920769): Remove once libafl is added as a dependency.
 indexmap = "2.12.1"
 itertools = "0.14.0"
 lazy_static = "1"

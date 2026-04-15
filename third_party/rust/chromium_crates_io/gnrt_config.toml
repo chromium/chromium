@@ -380,6 +380,11 @@ visibility = [
   '//build/rust/chromium_prelude:*',
 ]
 
+[crate.hostname]
+group = 'test'
+allow_first_party_usage = false
+extra_kv = { allow_unsafe = true }
+
 [crate.iana-time-zone]
 extra_kv = { allow_unsafe = true }
 

@@ -1,0 +1,11 @@
+Name: hostname
+URL: https://crates.io/crates/hostname
+Version: 0.4.2
+Revision: c697709235a03e6d5791f70b9c83d5eb9b51c197
+Update Mechanism: Manual (https://crbug.com/449898466)
+License: MIT
+License File: //third_party/rust/chromium_crates_io/vendor/hostname-v0_4/LICENSE
+Shipped: no
+Security Critical: no
+
+Description: Cross-platform system's host name functions

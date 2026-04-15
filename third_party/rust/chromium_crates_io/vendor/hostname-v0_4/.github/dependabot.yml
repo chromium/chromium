@@ -1,0 +1,13 @@
+version: 2
+updates:
+- package-ecosystem: cargo
+  directory: "/"
+  schedule:
+    interval: weekly
+    time: "05:23"
+  open-pull-requests-limit: 99
+- package-ecosystem: github-actions
+  directory: "/"
+  schedule:
+    interval: weekly
+    time: "05:27"

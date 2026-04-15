@@ -1,0 +1,34 @@
+[package]
+name = "hostname"
+version = "0.4.2"
+description = "Cross-platform system's host name functions"
+categories = ["api-bindings", "os"]
+keywords = ["hostname", "gethostname", "sethostname"]
+repository = "https://github.com/djc/hostname"
+readme = "README.md"
+license = "MIT"
+edition = "2021"
+rust-version = "1.74"
+
+[features]
+default = []
+# Enables the `hostname::set` function
+set = []
+
+[dependencies]
+cfg-if = "1"
+
+[target.'cfg(any(unix, target_os = "redox"))'.dependencies]
+libc = "0.2"
+
+[target.'cfg(target_os = "windows")'.dependencies]
+windows-link = "0.2"
+
+[dev-dependencies]
+similar-asserts = { version = "1.6.1" }
+version-sync = "0.9"
+windows-bindgen = "0.65"
+
+[package.metadata.docs.rs]
+features = ["set"]
+rustdoc-args = ["--cfg", "docsrs"]
