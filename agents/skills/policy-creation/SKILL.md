@@ -1,5 +1,5 @@
 ---
-name: chrome-policy-creation
+name: policy-creation
 description: >
     Guide for adding new enterprise policies to Chromium. Complete guide for
     policy definitions, pref mapping, and writing tests.
