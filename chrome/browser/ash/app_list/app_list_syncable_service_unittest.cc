@@ -597,6 +597,48 @@ TEST_F(AppListSyncableServiceTest, NonOEMItemIgnoreSyncToOEMFolder) {
   EXPECT_EQ(std::string(), app_item->folder_id());
 }
 
+// Verifies that an item is not moved to a parent that is not a folder by sync.
+TEST_F(AppListSyncableServiceTest, ItemIgnoreSyncToNonFolderParent) {
+  // Create an app.
+  const std::string app_id = CreateNextAppId(extensions::kWebStoreAppId);
+  scoped_refptr<extensions::Extension> app = MakeApp(
+      kSomeAppName, app_id, extensions::Extension::WAS_INSTALLED_BY_DEFAULT);
+  InstallExtension(app.get());
+
+  // Create another app that will be the "fake" parent (not a folder).
+  const std::string fake_parent_id = CreateNextAppId(app_id);
+  scoped_refptr<extensions::Extension> fake_parent =
+      MakeApp("Fake Parent", fake_parent_id,
+              extensions::Extension::WAS_INSTALLED_BY_DEFAULT);
+  InstallExtension(fake_parent.get());
+
+  ChromeAppListItem* app_item = GetModelUpdater()->FindItem(app_id);
+  ASSERT_TRUE(app_item);
+  // It is in the top list.
+  EXPECT_EQ(std::string(), app_item->folder_id());
+
+  // Send sync that this app is parented by the other app (which is not a
+  // folder).
+  syncer::SyncDataList sync_list;
+  sync_list.push_back(
+      CreateAppRemoteData(app_id, kSomeAppName, fake_parent_id,
+                          app_item->position().ToInternalValue(),
+                          std::string() /* item_pin_ordinal */));
+  // Include the fake parent in sync data as an app, not a folder.
+  sync_list.push_back(CreateAppRemoteData(
+      fake_parent_id, "Fake Parent", std::string(),
+      GetModelUpdater()->FindItem(fake_parent_id)->position().ToInternalValue(),
+      std::string(), sync_pb::AppListSpecifics_AppListItemType_TYPE_APP));
+
+  app_list_syncable_service()->MergeDataAndStartSyncing(
+      syncer::APP_LIST, sync_list,
+      std::make_unique<syncer::FakeSyncChangeProcessor>());
+  content::RunAllTasksUntilIdle();
+
+  // Parent folder should not be changed to the non-folder item.
+  EXPECT_EQ(std::string(), app_item->folder_id());
+}
+
 TEST_F(AppListSyncableServiceTest, InitialMerge) {
   const std::string kItemId1 = GenerateId("item_id1");
   const std::string kItemId2 = GenerateId("item_id2");

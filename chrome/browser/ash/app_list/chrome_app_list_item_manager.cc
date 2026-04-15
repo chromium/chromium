@@ -80,9 +80,10 @@ void ChromeAppListItemManager::RemoveChromeItem(const std::string& id) {
 
   if (item->is_folder()) {
     auto iter = folder_item_mappings_.find(id);
-    DCHECK(iter != folder_item_mappings_.end());
-    DCHECK(iter->second.empty());
-    folder_item_mappings_.erase(iter);
+    if (iter != folder_item_mappings_.end()) {
+      DCHECK(iter->second.empty());
+      folder_item_mappings_.erase(iter);
+    }
   } else if (!item->folder_id().empty()) {
     RemoveChildFromFolderItemMapping(item, item->folder_id());
   }
@@ -135,7 +136,9 @@ syncer::StringOrdinal ChromeAppListItemManager::CreateChromePositionOnLast()
 ChromeAppListItem* ChromeAppListItemManager::FindLastChildInFolder(
     const std::string& folder_id) {
   auto iter = folder_item_mappings_.find(folder_id);
-  DCHECK(iter != folder_item_mappings_.end());
+  if (iter == folder_item_mappings_.end()) {
+    return nullptr;
+  }
   const std::vector<raw_ptr<ChromeAppListItem, VectorExperimental>>&
       sorted_children = iter->second;
 
@@ -152,7 +155,9 @@ void ChromeAppListItemManager::AddChildItemToFolderItemMapping(
 
   // Find the target folder's children.
   auto iter = folder_item_mappings_.find(dst_folder);
-  DCHECK(iter != folder_item_mappings_.end());
+  if (iter == folder_item_mappings_.end()) {
+    return;
+  }
   std::vector<raw_ptr<ChromeAppListItem, VectorExperimental>>*
       sorted_children_ptr = &iter->second;
 
@@ -169,13 +174,17 @@ void ChromeAppListItemManager::RemoveChildFromFolderItemMapping(
 
   // Find the source folder's children.
   auto folder_item_mappings_iter = folder_item_mappings_.find(src_folder);
-  DCHECK(folder_item_mappings_iter != folder_item_mappings_.end());
+  if (folder_item_mappings_iter == folder_item_mappings_.end()) {
+    return;
+  }
   std::vector<raw_ptr<ChromeAppListItem, VectorExperimental>>*
       sorted_children_ptr = &folder_item_mappings_iter->second;
 
   auto children_array_iter =
       std::ranges::find(*sorted_children_ptr, child_item);
-  DCHECK(children_array_iter != sorted_children_ptr->cend());
+  if (children_array_iter == sorted_children_ptr->cend()) {
+    return;
+  }
 
   // Delete `child_item` from `src_folder`'s children list.
   sorted_children_ptr->erase(children_array_iter);
