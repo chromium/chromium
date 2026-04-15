@@ -40,10 +40,24 @@ if (use_blink) {
 
 target(tracing_lib_type, "cpp") {
   sources = [
+    "perfetto/common_data_sources.cc",
+    "perfetto/common_data_sources.h",
+    "perfetto/custom_event_recorder.cc",
+    "perfetto/custom_event_recorder.h",
     "perfetto/flow_event_utils.cc",
     "perfetto/flow_event_utils.h",
+    "perfetto/histogram_samples_data_source.cc",
+    "perfetto/histogram_samples_data_source.h",
     "perfetto/macros.h",
     "perfetto/perfetto_data_source_names.h",
+    "perfetto/trace_string_lookup.cc",
+    "perfetto/trace_string_lookup.h",
+    "perfetto/track_name_recorder.cc",
+    "perfetto/track_name_recorder.h",
+    "stack_sampling/tracing_sampler_profiler.cc",
+    "stack_sampling/tracing_sampler_profiler.h",
+    "system_metrics_sampler.cc",
+    "system_metrics_sampler.h",
   ]
 
   defines = [ "IS_TRACING_CPP_IMPL" ]
@@ -53,16 +67,20 @@ target(tracing_lib_type, "cpp") {
 
   public_deps = [ "//base" ]
 
-  deps = [ "//third_party/perfetto/include/perfetto/protozero" ]
+  deps = [
+    ":buildflags",
+    "//base:i18n",
+    "//base/tracing/protos:chrome_track_event_zero",
+    "//build:blink_buildflags",
+    "//components/system_cpu",
+    "//third_party/icu:icui18n",
+    "//third_party/perfetto/include/perfetto/protozero",
+  ]
 
   all_dependent_configs = []
 
   if (use_blink) {
     sources += [
-      "perfetto/custom_event_recorder.cc",
-      "perfetto/custom_event_recorder.h",
-      "perfetto/histogram_samples_data_source.cc",
-      "perfetto/histogram_samples_data_source.h",
       "perfetto/interning_index.h",
       "perfetto/metadata_data_source.cc",
       "perfetto/metadata_data_source.h",
@@ -79,16 +97,8 @@ target(tracing_lib_type, "cpp") {
       "perfetto/system_trace_writer.h",
       "perfetto/trace_packet_tokenizer.cc",
       "perfetto/trace_packet_tokenizer.h",
-      "perfetto/trace_string_lookup.cc",
-      "perfetto/trace_string_lookup.h",
       "perfetto/traced_value_proto_writer.cc",
       "perfetto/traced_value_proto_writer.h",
-      "perfetto/track_name_recorder.cc",
-      "perfetto/track_name_recorder.h",
-      "stack_sampling/tracing_sampler_profiler.cc",
-      "stack_sampling/tracing_sampler_profiler.h",
-      "system_metrics_sampler.cc",
-      "system_metrics_sampler.h",
       "trace_startup.cc",
       "trace_startup.h",
       "trace_startup_config.cc",
@@ -132,10 +142,7 @@ target(tracing_lib_type, "cpp") {
     ]
 
     deps += [
-      ":buildflags",
-      "//base/tracing/protos:chrome_track_event_zero",
       "//build:chromecast_buildflags",
-      "//components/system_cpu",
       "//third_party/perfetto/protos/perfetto/trace/chrome:minimal_complete_lite",
       "//third_party/snappy",
     ]

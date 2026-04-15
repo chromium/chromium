@@ -19,12 +19,9 @@
 #include "base/tracing/perfetto_platform.h"
 #include "base/tracing/perfetto_task_runner.h"
 #include "build/build_config.h"
+#include "services/tracing/public/cpp/perfetto/common_data_sources.h"
 #include "services/tracing/public/cpp/perfetto/custom_event_recorder.h"
-#include "services/tracing/public/cpp/perfetto/histogram_samples_data_source.h"
 #include "services/tracing/public/cpp/perfetto/perfetto_tracing_backend.h"
-#include "services/tracing/public/cpp/perfetto/track_name_recorder.h"
-#include "services/tracing/public/cpp/stack_sampling/tracing_sampler_profiler.h"
-#include "services/tracing/public/cpp/system_metrics_sampler.h"
 #include "services/tracing/public/cpp/trace_startup.h"
 #include "services/tracing/public/cpp/traced_process_impl.h"
 #include "services/tracing/public/cpp/tracing_features.h"
@@ -363,14 +360,7 @@ void PerfettoTracedProcess::SetupClientLibrary(
   base::UmaHistogramTimes("Tracing.Init.Perfetto.Initialize",
                           base::TimeTicks::Now() - initialize_start);
 
-  base::TrackEvent::Register();
-  tracing::TracingSamplerProfiler::RegisterDataSource();
-  tracing::HistogramSamplesDataSource::Register();
-  // SystemMetricsSampler will be started when enabling
-  // kSystemMetricsSourceName.
-  tracing::SystemMetricsSampler::Register(/*system_wide=*/enable_consumer);
-  TrackNameRecorder::GetInstance();
-  CustomEventRecorder::GetInstance();
+  RegisterCommonPerfettoDataSources(enable_consumer);
 }
 
 void PerfettoTracedProcess::SetAllowSystemTracingConsumerCallback(
