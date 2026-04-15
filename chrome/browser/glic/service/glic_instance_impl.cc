@@ -42,6 +42,7 @@
 #include "chrome/browser/glic/suggestions/contextual_cueing_features.h"
 #include "chrome/browser/glic/suggestions/contextual_cueing_service.h"
 #include "chrome/browser/glic/suggestions/contextual_cueing_service_factory.h"
+#include "chrome/browser/metrics/profile_metrics_service_factory.h"
 #include "chrome/browser/tab_list/tab_list_interface.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
@@ -255,6 +256,7 @@ GlicInstanceImpl::GlicInstanceImpl(
       host_(profile_, this, this, this),
       sharing_manager_coordinator_(profile, this, metrics),
       instance_metrics_(
+          ProfileMetricsServiceFactory::GetForProfile(profile),
           &sharing_manager_coordinator_.GetActiveSharingManager()),
       zero_state_suggestions_manager_(
           std::make_unique<GlicZeroStateSuggestionsManager>(

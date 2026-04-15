@@ -11,12 +11,17 @@
 #include "base/callback_list.h"
 #include "base/containers/flat_map.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ref.h"
 #include "chrome/browser/glic/host/glic.mojom.h"
 #include "chrome/browser/glic/public/glic_instance_metrics_backwards_compatibility.h"
 #include "chrome/browser/glic/service/glic_state_tracker.h"
 #include "chrome/browser/glic/service/glic_ui_types.h"
 #include "chrome/browser/glic/service/metrics/glic_metrics_session_manager.h"
 #include "chrome/browser/glic/service/metrics/metrics_types.h"
+
+namespace metrics {
+class ProfileMetricsService;
+}
 
 namespace content {
 class WebContents;
@@ -145,8 +150,11 @@ class GlicInstanceMetrics : public GlicInstanceMetricsBackwardsCompatibility {
     kFloaty,
   };
 
-  GlicInstanceMetrics();
-  explicit GlicInstanceMetrics(GlicSharingManager* sharing_manager);
+  explicit GlicInstanceMetrics(
+      const metrics::ProfileMetricsService* profile_metrics_service);
+  GlicInstanceMetrics(
+      const metrics::ProfileMetricsService* profile_metrics_service,
+      GlicSharingManager* sharing_manager);
   ~GlicInstanceMetrics() override;
 
   GlicInstanceMetrics(const GlicInstanceMetrics&) = delete;
@@ -389,6 +397,7 @@ class GlicInstanceMetrics : public GlicInstanceMetricsBackwardsCompatibility {
 
   base::CallbackListSubscription pinned_tabs_changed_subscription_;
   base::CallbackListSubscription tab_pinning_status_subscription_;
+  const raw_ref<const metrics::ProfileMetricsService> profile_metrics_service_;
   raw_ptr<GlicSharingManager> sharing_manager_ = nullptr;
 
   bool first_side_panel_close_recorded_ = false;

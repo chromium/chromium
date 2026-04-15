@@ -15,6 +15,7 @@
 #include "chrome/browser/glic/glic_metrics.h"
 #include "chrome/browser/glic/service/metrics/glic_instance_metrics.h"
 #include "chrome/common/chrome_features.h"
+#include "components/metrics/profile_metrics_service.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace glic {
@@ -41,7 +42,9 @@ class GlicMetricsSessionManagerTest : public testing::Test {
           base::NumberToString(kDebounceTimeout.InSeconds()) + "s"}});
   }
 
-  void SetUp() override { metrics_ = std::make_unique<GlicInstanceMetrics>(); }
+  void SetUp() override {
+    metrics_ = std::make_unique<GlicInstanceMetrics>(&profile_metrics_service_);
+  }
 
  protected:
   void StartSession() {
@@ -57,6 +60,7 @@ class GlicMetricsSessionManagerTest : public testing::Test {
   base::test::ScopedFeatureList feature_list_;
   base::HistogramTester histogram_tester_;
   base::UserActionTester user_action_tester_;
+  metrics::ProfileMetricsService profile_metrics_service_;
   std::unique_ptr<GlicInstanceMetrics> metrics_;
 };
 

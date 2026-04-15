@@ -15,6 +15,7 @@
 #include "chrome/browser/glic/host/glic.mojom-shared.h"
 #include "chrome/browser/glic/service/metrics/metrics_types.h"
 #include "chrome/common/chrome_features.h"
+#include "components/metrics/profile_metrics_service.h"
 #include "components/skills/public/skills_metrics.h"
 #include "components/split_tabs/split_tab_id.h"
 #include "components/tabs/public/mock_tab_interface.h"
@@ -39,7 +40,8 @@ class GlicInstanceMetricsTest : public testing::Test {
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   base::HistogramTester histogram_tester_;
   ukm::TestAutoSetUkmRecorder ukm_tester_;
-  GlicInstanceMetrics metrics_;
+  metrics::ProfileMetricsService profile_metrics_service_;
+  GlicInstanceMetrics metrics_{&profile_metrics_service_};
   tabs::MockTabInterface mock_tab_;
   ui::UnownedUserDataHost unowned_user_data_host_;
   base::UserActionTester user_action_tester_;
@@ -486,7 +488,7 @@ TEST_F(GlicInstanceMetricsTest, ActuationResponseStopTime) {
 
 TEST_F(GlicInstanceMetricsTest, InputModesUsed_IgnoresUnknown) {
   {
-    GlicInstanceMetrics metrics;
+    GlicInstanceMetrics metrics(&profile_metrics_service_);
     metrics.OnVisibilityChanged(true);
     metrics.OnUserInputSubmitted(mojom::WebClientMode::kUnknown);
     metrics.OnUserInputSubmitted(mojom::WebClientMode::kAudio);
@@ -497,7 +499,7 @@ TEST_F(GlicInstanceMetricsTest, InputModesUsed_IgnoresUnknown) {
                                       InputModesUsed::kOnlyAudio, 1);
 
   {
-    GlicInstanceMetrics metrics;
+    GlicInstanceMetrics metrics(&profile_metrics_service_);
     metrics.OnVisibilityChanged(true);
     metrics.OnUserInputSubmitted(mojom::WebClientMode::kUnknown);
   }
@@ -690,6 +692,22 @@ TEST_F(GlicInstanceMetricsTest, RecordSkillsWebClientEvent_IsNoOpWhenUnknown) {
 
   // No metrics should be emitted.
   EXPECT_TRUE(histogram_tester_.GetTotalCountsForPrefix("Skills.").empty());
+}
+
+TEST_F(GlicInstanceMetricsTest, OnInstanceDestroyed_LogsPerProfileTurnCount) {
+  metrics::ProfileMetricsContext context = 1;  // Profile 1 -> .Profile1
+  metrics::ProfileMetricsService profile_metrics_service{context};
+  {
+    GlicInstanceMetrics metrics_with_profile(&profile_metrics_service);
+    metrics_with_profile.OnTurnCompleted(mojom::WebClientModel::kDefault,
+                                         base::Milliseconds(100));
+    metrics_with_profile.OnTurnCompleted(mojom::WebClientModel::kDefault,
+                                         base::Milliseconds(200));
+  }  // Destructor calls OnInstanceDestroyed
+
+  histogram_tester_.ExpectUniqueSample("Glic.Instance.TurnCount", 2, 1);
+  histogram_tester_.ExpectUniqueSample("Glic.Instance.TurnCount.Profile1", 2,
+                                       1);
 }
 
 }  // namespace glic

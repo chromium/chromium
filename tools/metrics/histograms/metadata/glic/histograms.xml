@@ -1382,7 +1382,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Glic.Instance.TurnCount" units="count"
+<histogram name="Glic.Instance.TurnCount{Profile}" units="count"
     expires_after="2026-10-16">
   <owner>birnie@google.com</owner>
   <owner>perrier@google.com</owner>
@@ -1390,7 +1390,10 @@ chromium-metrics-reviews@google.com.
     The number of turns that occurred in a single Glic instance's lifetime.
     Recorded when the instance is destroyed. Metrics recorded on instance
     destruction may not be recorded successfully on irregular Chrome shutdowns.
+
+    {Profile}
   </summary>
+  <token key="Profile" variants="ProfileIndex"/>
 </histogram>
 
 <histogram name="Glic.Instance.UninterruptedActiveDuration" units="ms"

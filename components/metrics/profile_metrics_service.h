@@ -58,6 +58,8 @@ class ProfileMetricsService : public KeyedService {
 
   void UmaHistogramBoolean(std::string_view name, bool sample);
 
+  void UmaHistogramCounts100(std::string_view name, int sample) const;
+
   void UmaHistogramCounts1000(std::string_view name, int sample);
 
   void UmaHistogramSparse(std::string_view name, int sample);

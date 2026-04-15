@@ -49,6 +49,15 @@ void ProfileMetricsService::UmaHistogramBoolean(std::string_view name,
   }
 }
 
+void ProfileMetricsService::UmaHistogramCounts100(std::string_view name,
+                                                  int sample) const {
+  base::UmaHistogramCounts100(name, sample);
+  if (!histogram_suffix_.empty()) {
+    base::UmaHistogramCounts100(base::StrCat({name, histogram_suffix_}),
+                                sample);
+  }
+}
+
 void ProfileMetricsService::UmaHistogramCounts1000(std::string_view name,
                                                    int sample) {
   base::UmaHistogramCounts1000(name, sample);
