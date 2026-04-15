@@ -9712,3 +9712,6 @@ crbug.com/42228011 external/wpt/webrtc/RTCPeerConnection-createDataChannel.html 
 # Gardener 2026-04-14
 crbug.com/502564763 [ Win11-arm64 ] virtual/dark-mode-default/dark-mode/images/crossfade.html [ Failure Pass ]
 crbug.com/502564763 [ Win11-arm64 ] virtual/dark-mode-default/dark-mode/images/none-repeat-image-as-background.html [ Failure Pass ]
+
+# Gardener 2026-04-15
+crbug.com/502777858 [ Linux ] external/wpt/largest-contentful-paint/multiple-image-same-src.html [ Failure Pass ]
