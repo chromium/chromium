@@ -860,6 +860,16 @@ TEST_F(ReadAnythingAppControllerTest, OnSpeechRateChange) {
   ASSERT_EQ(read_aloud_model().speech_rate(), expected_rate);
 }
 
+TEST_F(ReadAnythingAppControllerTest, IsImprovedReadAloudEnabled) {
+  scoped_feature_list_.Reset();
+  scoped_feature_list_.InitAndEnableFeature(features::kImprovedReadAloud);
+  EXPECT_TRUE(controller().IsImprovedReadAloudEnabled());
+
+  scoped_feature_list_.Reset();
+  scoped_feature_list_.InitAndDisableFeature(features::kImprovedReadAloud);
+  EXPECT_FALSE(controller().IsImprovedReadAloudEnabled());
+}
+
 TEST_F(ReadAnythingAppControllerTest, OnLanguagePrefChange) {
   std::string enabled_lang = "ja-jp";
   std::string disabled_lang = "en-us";

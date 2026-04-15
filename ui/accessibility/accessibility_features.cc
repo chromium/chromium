@@ -360,6 +360,11 @@ bool IsMainNodeAnnotationsEnabled() {
   return base::FeatureList::IsEnabled(::features::kMainNodeAnnotations);
 }
 
+BASE_FEATURE(kImprovedReadAloud, base::FEATURE_DISABLED_BY_DEFAULT);
+bool IsImprovedReadAloudEnabled() {
+  return base::FeatureList::IsEnabled(::features::kImprovedReadAloud);
+}
+
 BASE_FEATURE(kReadAnythingMenuShuffleExperiment,
              base::FEATURE_DISABLED_BY_DEFAULT);
 bool IsReadAnythingMenuShuffleExperimentEnabled() {

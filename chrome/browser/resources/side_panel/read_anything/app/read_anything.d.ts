@@ -112,6 +112,9 @@ declare namespace chrome {
     // Whether the Immersive Read Anything feature flag is enabled.
     let isImmersiveEnabled: boolean;
 
+    // Whether the Improved Read Aloud feature flag is enabled.
+    let isImprovedReadAloudEnabled: boolean;
+
     // Whether Read Anything is pinned to the toolbar.
     let isReadAnythingPinned: boolean;
 

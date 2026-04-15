@@ -295,6 +295,10 @@ AX_BASE_EXPORT bool IsImmersiveReadAnythingEnabled();
 AX_BASE_EXPORT BASE_DECLARE_FEATURE(kMainNodeAnnotations);
 AX_BASE_EXPORT bool IsMainNodeAnnotationsEnabled();
 
+// Enable Improved Read Aloud.
+AX_BASE_EXPORT BASE_DECLARE_FEATURE(kImprovedReadAloud);
+AX_BASE_EXPORT bool IsImprovedReadAloudEnabled();
+
 enum class ReadAnythingMenuShuffleExperimentGroup {
   kDefault,              // Leaves in default position
   kPlaceWithSeparation,  // Adds a UI separator from previous element.
