@@ -1144,9 +1144,9 @@ StyleRuleImport* CSSParserImpl::ConsumeImportRule(
     {
       CSSParserTokenStream::RestoringBlockGuard guard(stream);
       stream.ConsumeWhitespace();
-      style_scope =
-          StyleScope::Parse(stream, context_, CSSNestingType::kNone,
-                            /*parent_rule_for_nesting=*/nullptr, style_sheet_);
+      style_scope = StyleScope::Consume(stream, context_, CSSNestingType::kNone,
+                                        /*parent_rule_for_nesting=*/nullptr,
+                                        style_sheet_);
       if (!guard.Release()) {
         style_scope = nullptr;
       }
@@ -2117,17 +2117,17 @@ StyleRuleBase* CSSParserImpl::ConsumeScopeRule(
     StyleRule* parent_rule_for_nesting) {
   // Parse the prelude.
   wtf_size_t prelude_offset_start = stream.LookAheadOffset();
-  auto* style_scope = StyleScope::Parse(stream, context_, nesting_type,
-                                        parent_rule_for_nesting, style_sheet_);
-  if (!style_scope) {
-    ConsumeErroneousAtRule(stream, CSSAtRuleID::kCSSAtRuleScope);
-    return nullptr;
-  }
-
+  auto* style_scope = StyleScope::Consume(
+      stream, context_, nesting_type, parent_rule_for_nesting, style_sheet_);
   wtf_size_t prelude_offset_end = stream.LookAheadOffset();
   if (!ConsumeEndOfPreludeForAtRuleWithBlock(stream,
                                              CSSAtRuleID::kCSSAtRuleScope)) {
     return nullptr;
+  }
+  if (!style_scope) {
+    // The prelude was empty. This represents an implicit scope
+    // rooted at the parent element of the stylesheet's owner node.
+    style_scope = StyleScope::CreateImplicit();
   }
 
   if (observer_) {

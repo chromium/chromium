@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/core/css/style_scope.h"
 
+#include "third_party/blink/renderer/core/css/parser/css_parser_save_point.h"
 #include "third_party/blink/renderer/core/css/parser/css_selector_parser.h"
 #include "third_party/blink/renderer/core/css/properties/css_parsing_utils.h"
 #include "third_party/blink/renderer/core/css/style_rule.h"
@@ -58,77 +59,88 @@ const CSSSelector* StyleScope::To() const {
   return nullptr;
 }
 
-StyleScope* StyleScope::Parse(CSSParserTokenStream& stream,
-                              const CSSParserContext* context,
-                              CSSNestingType nesting_type,
-                              StyleRule* parent_rule_for_nesting,
-                              StyleSheetContents* style_sheet) {
-  HeapVector<CSSSelector> arena;
+namespace {
 
-  base::span<CSSSelector> from;
-  base::span<CSSSelector> to;
-
+// ( <scope-start> || <scope-end> )
+base::span<CSSSelector> ConsumeEnclosedBoundary(
+    CSSParserTokenStream& stream,
+    const CSSParserContext* context,
+    CSSNestingType nesting_type,
+    StyleRule* parent_rule_for_nesting,
+    StyleSheetContents* style_sheet,
+    HeapVector<CSSSelector>& arena) {
+  CHECK_EQ(stream.Peek().GetType(), kLeftParenthesisToken);
+  CSSParserTokenStream::RestoringBlockGuard guard(stream);
   stream.ConsumeWhitespace();
-
-  // <scope-start>
-  if (stream.Peek().GetType() == kLeftParenthesisToken) {
-    CSSParserTokenStream::BlockGuard guard(stream);
-    stream.ConsumeWhitespace();
-    from = CSSSelectorParser::ParseScopeBoundary(stream, context, nesting_type,
-                                                 parent_rule_for_nesting,
-                                                 style_sheet, arena);
-    if (from.empty()) {
-      return nullptr;
-    }
+  base::span<CSSSelector> selector_list = CSSSelectorParser::ParseScopeBoundary(
+      stream, context, nesting_type, parent_rule_for_nesting, style_sheet,
+      arena);
+  if (selector_list.empty() || !guard.Release()) {
+    return {};
   }
   stream.ConsumeWhitespace();
+  return selector_list;
+}
+
+}  // namespace
+
+StyleScope* StyleScope::Consume(CSSParserTokenStream& stream,
+                                const CSSParserContext* context,
+                                CSSNestingType nesting_type,
+                                StyleRule* parent_rule_for_nesting,
+                                StyleSheetContents* style_sheet) {
+  HeapVector<CSSSelector> arena;
 
   StyleRule* from_rule = nullptr;
-  if (!from.empty()) {
-    auto* properties = ImmutableCSSPropertyValueSet::Create(
-        base::span<CSSPropertyValue>(), CSSParserMode::kHTMLStandardMode);
-    from_rule = StyleRule::Create(from, properties);
+  CSSSelectorList* to_list = nullptr;
+
+  // ( <scope-start> )
+  if (stream.Peek().GetType() == kLeftParenthesisToken) {
+    base::span<CSSSelector> from =
+        ConsumeEnclosedBoundary(stream, context, nesting_type,
+                                parent_rule_for_nesting, style_sheet, arena);
+    if (!from.empty()) {
+      auto* properties = ImmutableCSSPropertyValueSet::Create(
+          base::span<CSSPropertyValue>(), CSSParserMode::kHTMLStandardMode);
+      from_rule = StyleRule::Create(from, properties);
+    }
   }
 
   // to (<scope-end>)
-  if (css_parsing_utils::ConsumeIfIdent(stream, "to")) {
-    if (stream.Peek().GetType() != kLeftParenthesisToken) {
-      return nullptr;
-    }
-
-    // Note that <scope-start> should act as the enclosing style rule for
-    // the purposes of matching the parent pseudo-class (&) within <scope-end>,
-    // hence we're not passing `nesting_type` or `parent_rule_for_nesting`
-    // to `ParseScopeBoundary` here.
-    //
-    // https://drafts.csswg.org/css-nesting-1/#nesting-at-scope
-    //
-    // Note: We are in the process of changing this behavior. The '&' pseudo-
-    // class should now behave like :where(:scope), which is what we
-    // automatically get if we pass nullptr as the parent rule.
-    // See crbug.com/445949406.
-    StyleRule* parent_rule_for_to_selector =
-        RuntimeEnabledFeatures::CSSScopeifiedParentPseudoClassEnabled()
-            ? nullptr
-            : from_rule;
-    CSSParserTokenStream::BlockGuard guard(stream);
-    stream.ConsumeWhitespace();
-    to = CSSSelectorParser::ParseScopeBoundary(
-        stream, context, CSSNestingType::kScope,
-        /*parent_rule_for_nesting=*/parent_rule_for_to_selector, style_sheet,
-        arena);
-    if (to.empty()) {
-      return nullptr;
+  {
+    CSSParserSavePoint save_point(stream);
+    if (css_parsing_utils::ConsumeIfIdent(stream, "to")) {
+      if (stream.Peek().GetType() == kLeftParenthesisToken) {
+        // Note that <scope-start> should act as the enclosing style rule
+        // for the purposes of matching the parent pseudo-class (&)
+        // within <scope-end>, hence we're not passing `nesting_type`
+        // or `parent_rule_for_nesting` to `ParseScopeBoundary` here.
+        //
+        // https://drafts.csswg.org/css-nesting-1/#nesting-at-scope
+        //
+        // Note: We are in the process of changing this behavior.
+        // The '&' pseudo-class should now behave like :where(:scope),
+        // which is what we automatically get if we pass nullptr
+        // as the parent rule.
+        //
+        // See crbug.com/445949406.
+        StyleRule* parent_rule_for_to_selector =
+            RuntimeEnabledFeatures::CSSScopeifiedParentPseudoClassEnabled()
+                ? nullptr
+                : from_rule;
+        base::span<CSSSelector> to = ConsumeEnclosedBoundary(
+            stream, context, CSSNestingType::kScope,
+            parent_rule_for_to_selector, style_sheet, arena);
+        if (!to.empty()) {
+          to_list = CSSSelectorList::AdoptSelectorVector(to);
+          save_point.Release();
+        }
+      }
     }
   }
-  stream.ConsumeWhitespace();
 
-  CSSSelectorList* to_list =
-      !to.empty() ? CSSSelectorList::AdoptSelectorVector(to) : nullptr;
-
-  if (from.empty()) {
-    // Implicitly rooted.
-    return MakeGarbageCollected<StyleScope>(/*from=*/nullptr, to_list);
+  if (!from_rule && !to_list) {
+    return nullptr;
   }
 
   return MakeGarbageCollected<StyleScope>(from_rule, to_list);

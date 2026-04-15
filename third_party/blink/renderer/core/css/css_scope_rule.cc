@@ -97,12 +97,16 @@ void CSSScopeRule::SetPreludeText(const ExecutionContext* execution_context,
   auto* parser_context =
       MakeGarbageCollected<CSSParserContext>(*execution_context);
   CSSParserTokenStream stream(value);
-  StyleScope* new_style_scope = StyleScope::Parse(
+  stream.ConsumeWhitespace();
+  StyleScope* new_style_scope = StyleScope::Consume(
       stream, parser_context, nesting_type, parent_rule_for_nesting, contents);
-  if (!new_style_scope || !stream.AtEnd()) {
+  if (!stream.AtEnd()) {
     // Quietly no-op if the provided prelude doesn't parse (similar to the
     // behavior of CSSStyleRule::setSelectorText).
     return;
+  }
+  if (!new_style_scope) {
+    new_style_scope = StyleScope::CreateImplicit();
   }
   // Any '&' selectors in child rules must now point to new_style_scope's
   // internally-held style rule.
