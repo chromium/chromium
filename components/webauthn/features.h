@@ -13,12 +13,6 @@
 namespace webauthn::features {
 
 #if BUILDFLAG(IS_ANDROID)
-
-// Use the passkey cache service parallel to the FIDO2 module to retrieve
-// passkeys from GMSCore. This is for migration.
-COMPONENT_EXPORT(WEBAUTHN)
-BASE_DECLARE_FEATURE(kWebAuthnAndroidPasskeyCacheMigration);
-
 // A development feature flag to control the CredMan mode.
 COMPONENT_EXPORT(WEBAUTHN)
 BASE_DECLARE_FEATURE(kWebAuthnAndroidCredManForDev);

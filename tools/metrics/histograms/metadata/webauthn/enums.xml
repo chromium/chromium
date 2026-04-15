@@ -191,7 +191,7 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//components/webauthn/android/java/src/org/chromium/components/webauthn/GmsCoreGetCredentialsHelper.java:GmsCoreGetCredentialsResult) -->
 
-<!-- LINT.IfChange(GmsCoreCacheSkippedReason) -->
+<!-- LINT.IfChange(GmsCoreSkippedCacheReason) -->
 
 <enum name="GmsCoreSkippedCacheReason">
   <int value="0" label="GoogleRp">The request is for a Google passkey.</int>
@@ -201,8 +201,8 @@ chromium-metrics-reviews@google.com.
   <int value="2" label="ModalAllowListRequest">
     This is a modal WebAuthn request with an allow list.
   </int>
-  <int value="3" label="FeatureDisabled">
-    Use of the metadata cache is disabled in Chrome.
+  <int value="3" label="(obsolete) FeatureDisabled">
+    Use of the metadata cache is disabled in Chrome. Removed in M144.
   </int>
   <int value="4" label="OldGmsCoreVersion">
     The current GMS Core version does not support the metadata cache.

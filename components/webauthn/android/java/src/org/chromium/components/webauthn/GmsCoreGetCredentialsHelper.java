@@ -31,7 +31,7 @@ public class GmsCoreGetCredentialsHelper {
     private static final String CREDENTIAL_FETCH_DURATION_HISTOGRAM =
             "WebAuthentication.CredentialFetchDuration.GmsCore";
 
-    // LINT.IfChange
+    // LINT.IfChange(GmsCoreGetCredentialsResult)
     //
     // These values are persisted to logs. Entries should not be renumbered and numeric values
     // should never be reused.
@@ -44,19 +44,19 @@ public class GmsCoreGetCredentialsHelper {
         int NUM_ENTRIES = 5;
     }
 
-    // LINT.ThenChange(//tools/metrics/histograms/webauthn/enums.xml)
+    // LINT.ThenChange(//tools/metrics/histograms/metadata/webauthn/enums.xml)
 
-    // LINT.IfChange
+    // LINT.IfChange(GmsCoreSkippedCacheReason)
     private @interface GmsCoreSkippedCacheReason {
         int GOOGLE_RP = 0;
         int PAYMENT_REQUEST = 1;
         int MODAL_ALLOW_LIST_REQUEST = 2;
-        int FEATURE_DISABLED = 3;
+        // Value 3 is deprecated and should not be reused.
         int OLD_GMSCORE_VERSION = 4;
         int NUM_ENTRIES = 5;
     }
 
-    // LINT.ThenChange(//tools/metrics/histograms/webauthn/enums.xml)
+    // LINT.ThenChange(//tools/metrics/histograms/metadata/webauthn/enums.xml)
 
     /** The reason for a get credentials request. */
     public enum Reason {
@@ -102,28 +102,18 @@ public class GmsCoreGetCredentialsHelper {
      * @param successCallback The callback to be run on success.
      * @param failureCallback The callback to be run on failure.
      */
-    public void getCredentials(
-            AuthenticationContextProvider authenticationContextProvider,
-            String relyingPartyId,
-            Reason reason,
-            GetCredentialsCallback successCallback,
+    public void getCredentials(AuthenticationContextProvider authenticationContextProvider,
+            String relyingPartyId, Reason reason, GetCredentialsCallback successCallback,
             OnFailureListener failureCallback) {
         log(TAG, "getCredentials with reason: " + reason);
         final long startTimeMs = SystemClock.elapsedRealtime();
-        if (reason == Reason.GET_ASSERTION_NON_GOOGLE
-                && GmsCoreUtils.isPasskeyCacheSupported()
-                && WebauthnFeatureMap.getInstance()
-                        .isEnabled(WebauthnFeatures.WEBAUTHN_ANDROID_PASSKEY_CACHE_MIGRATION)) {
+        if (reason == Reason.GET_ASSERTION_NON_GOOGLE && GmsCoreUtils.isPasskeyCacheSupported()) {
             Fido2ApiCallHelper.getInstance()
-                    .invokePasskeyCacheGetCredentials(
-                            authenticationContextProvider,
-                            relyingPartyId,
-                            (credentials) -> {
-                                recordSuccessMetrics(
-                                        credentials,
-                                        reason,
-                                        GmsCoreGetCredentialsResult.CACHE_SUCCESS,
-                                        startTimeMs);
+                    .invokePasskeyCacheGetCredentials(authenticationContextProvider, relyingPartyId,
+                            (credentials)
+                                    -> {
+                                recordSuccessMetrics(credentials, reason,
+                                        GmsCoreGetCredentialsResult.CACHE_SUCCESS, startTimeMs);
                                 successCallback.onCredentialsReceived(credentials);
                             },
                             (e) -> {
@@ -236,9 +226,6 @@ public class GmsCoreGetCredentialsHelper {
             reason = GmsCoreSkippedCacheReason.MODAL_ALLOW_LIST_REQUEST;
         } else if (!GmsCoreUtils.isPasskeyCacheSupported()) {
             reason = GmsCoreSkippedCacheReason.OLD_GMSCORE_VERSION;
-        } else if (!WebauthnFeatureMap.getInstance()
-                .isEnabled(WebauthnFeatures.WEBAUTHN_ANDROID_PASSKEY_CACHE_MIGRATION)) {
-            reason = GmsCoreSkippedCacheReason.FEATURE_DISABLED;
         } else {
             assert false : "Update metric to cover unknown reason to not use the cache";
             return;
