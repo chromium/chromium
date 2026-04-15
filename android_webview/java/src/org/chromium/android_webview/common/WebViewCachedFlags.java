@@ -18,6 +18,7 @@ import org.jni_zero.JNINamespace;
 import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
+import org.chromium.base.BaseFeatures;
 import org.chromium.base.FeatureList;
 import org.chromium.base.FeatureOverrides;
 import org.chromium.base.metrics.RecordHistogram;
@@ -162,6 +163,10 @@ public class WebViewCachedFlags {
                                             DefaultState.DISABLED),
                                     Map.entry(
                                             AwFeatures.WEBVIEW_FASTER_GET_DEFAULT_USER_AGENT,
+                                            DefaultState.DISABLED),
+                                    Map.entry(
+                                            BaseFeatures
+                                                    .SHUTDOWN_PRE_NATIVE_THREAD_POOL_AFTER_STARTUP,
                                             DefaultState.DISABLED)));
         }
     }

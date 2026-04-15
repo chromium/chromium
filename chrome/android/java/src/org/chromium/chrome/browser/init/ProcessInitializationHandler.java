@@ -230,6 +230,9 @@ public class ProcessInitializationHandler {
     protected void handlePreNativeInitialization() {
         ChromeCachedFlags.getInstance().setFullListOfFlags();
         setProcessStateSummaryForAnrs();
+
+        PostTask.setShutdownPostTaskPreNativeThreadPoolEnabled(
+                ChromeFeatureList.sShutdownPreNativeThreadPoolAfterStartup.isEnabled());
     }
 
     /**

@@ -46,6 +46,12 @@ public class PostTask {
     // one-way switch (outside of testing) and volatile makes writes to it immediately visible to
     // other threads.
     private static volatile boolean sNativeInitialized;
+    // Temporary boolean for an experiment crbug.com/489983480
+    // shuts down the thread pool when its no longer needed
+    // This variable is read by the main thread, but can be written from either
+    // the main thread or the background thread depending on whether WebView has been
+    // started asynchronously or not.
+    private static volatile boolean sShutdownPostTaskPreNativeThreadPoolEnabled;
     private static volatile boolean sDisablePreNativeUiTasks;
     private static ChromeThreadPoolExecutor sPrenativeThreadPoolExecutor =
             new ChromeThreadPoolExecutor();
@@ -94,6 +100,10 @@ public class PostTask {
 
     private static boolean isUiTaskTraits(@TaskTraits int taskTraits) {
         return taskTraits >= TaskTraits.UI_TRAITS_START;
+    }
+
+    public static void setShutdownPostTaskPreNativeThreadPoolEnabled(boolean enabled) {
+        sShutdownPostTaskPreNativeThreadPoolEnabled = enabled;
     }
 
     /**
@@ -372,6 +382,9 @@ public class PostTask {
         }
         for (TaskRunnerImpl taskRunner : preNativeTaskRunners) {
             taskRunner.initNativeTaskRunner();
+        }
+        if (sShutdownPostTaskPreNativeThreadPoolEnabled) {
+            sPrenativeThreadPoolExecutor.shutdown();
         }
     }
 

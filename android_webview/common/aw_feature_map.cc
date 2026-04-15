@@ -36,6 +36,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &safe_browsing::kHashPrefixRealTimeLookups,
     &base::features::kPostGetMyMemoryStateToBackground,
     &sensitive_content::features::kSensitiveContent,
+    &base::features::kShutdownPreNativeThreadPoolAfterStartup,
     &features::kWebViewAddQuicHints,
     &features::kWebViewBackForwardCache,
     &features::kWebViewBackgroundTracingInit,

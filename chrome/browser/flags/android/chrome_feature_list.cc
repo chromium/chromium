@@ -146,6 +146,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &base::features::kBackgroundThreadPoolFieldTrial,
     &base::features::kLowEndMemoryExperiment,
     &base::features::kPostGetMyMemoryStateToBackground,
+    &base::features::kShutdownPreNativeThreadPoolAfterStartup,
     &blink::features::kAndroidWindowControlsOverlay,
     &blink::features::kDocumentPictureInPictureAPI,
     &blink::features::kForceWebContentsDarkMode,

@@ -63,6 +63,7 @@ import org.chromium.android_webview.safe_mode.BrowserSafeModeActionList;
 import org.chromium.android_webview.safe_mode.DisableStartupTasksSafeModeAction;
 import org.chromium.android_webview.variations.FastVariationsSeedSafeModeAction;
 import org.chromium.base.ApkInfo;
+import org.chromium.base.BaseFeatures;
 import org.chromium.base.BundleUtils;
 import org.chromium.base.CommandLine;
 import org.chromium.base.ContextUtils;
@@ -454,6 +455,11 @@ public class WebViewChromiumFactoryProvider implements WebViewFactoryProvider {
                 // `TraceEvent` and `DualTraceEvent` can be used from this point.
                 EarlyTraceEvent.enable();
             }
+
+            PostTask.setShutdownPostTaskPreNativeThreadPoolEnabled(
+                    WebViewCachedFlags.get()
+                            .isCachedFeatureEnabled(
+                                    BaseFeatures.SHUTDOWN_PRE_NATIVE_THREAD_POOL_AFTER_STARTUP));
 
             mAwInit = createAwInit();
             mSharedStatics = new SharedStatics(mAwInit);
