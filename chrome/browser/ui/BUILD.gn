@@ -346,8 +346,6 @@ static_library("ui") {
     "//chrome/browser/page_info",
     "//chrome/browser/page_load_metrics",
     "//chrome/browser/page_load_metrics:impl",
-    "//chrome/browser/password_manager",
-    "//chrome/browser/password_manager:impl",
     "//chrome/browser/performance_manager",
     "//chrome/browser/performance_manager:impl",
     "//chrome/browser/permissions",
@@ -795,7 +793,6 @@ static_library("ui") {
     # c/b/ui/webui/feedback/feedback_dialog.h gets componentized.
     "//chrome/browser/feedback:feedback_impl",
 
-    "//chrome/browser/password_manager:impl",
     "//chrome/browser/permissions",
     "//chrome/browser/search",
     "//chrome/browser/ui/omnibox:impl",

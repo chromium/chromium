@@ -469,9 +469,6 @@ source_set("extensions") {
     # enterprise headers include extension_management.h.
     "//chrome/browser/enterprise",
 
-    # password_manager:impl includes extensions/api/settings_private/generated_pref.h
-    "//chrome/browser/password_manager:impl",
-
     # TODO(crbug.com/40161499): Remove this circular dependency.
     "//chrome/browser/devtools",
 
@@ -512,8 +509,6 @@ source_set("extensions") {
     "//chrome/browser/infobars",
     "//chrome/browser/lifetime:termination_notification",
     "//chrome/browser/net",
-    "//chrome/browser/password_manager",
-    "//chrome/browser/password_manager:impl",
     "//chrome/browser/password_manager/factories",
     "//chrome/browser/prefetch",
     "//chrome/browser/prefs",

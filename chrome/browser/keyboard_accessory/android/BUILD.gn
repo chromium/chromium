@@ -52,7 +52,6 @@ source_set("unit_test") {
     "//chrome/app:generated_resources_grit",
     "//chrome/browser",
     "//chrome/browser/autofill",
-    "//chrome/browser/password_manager",
     "//chrome/browser/password_manager/android:unit_tests",
     "//chrome/browser/password_manager/android/grouped_affiliations:test_utils",
     "//chrome/browser/plus_addresses",

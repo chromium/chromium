@@ -65,7 +65,6 @@ source_set("impl") {
       "//chrome/app/vector_icons",
       "//chrome/browser:resources",
       "//chrome/browser:resources_grit",
-      "//chrome/browser/password_manager",
       "//chrome/browser/password_manager/factories",
       "//chrome/browser/profiles:profile",
       "//chrome/browser/profiles:profile_util",
