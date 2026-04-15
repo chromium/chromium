@@ -44,6 +44,12 @@ suite('Logger', () => {
     assertEquals(
         'Accessibility.ReadAnything.ReadAloudPlaySessionCount',
         await metrics.whenCalled('incrementMetricCount'));
+    metrics.reset();
+
+    logger.logSpeechControlClick(SpeechControls.PLAY_FROM_SELECTION);
+    assertEquals(
+        'Accessibility.ReadAnything.ReadAloudPlayFromSelectionSessionCount',
+        await metrics.whenCalled('incrementMetricCount'));
   });
 
   test('with speech logs speech played', () => {

@@ -17,6 +17,7 @@ export enum SpeechControls {
   PAUSE = 'Pause',
   NEXT = 'NextButton',
   PREVIOUS = 'PreviousButton',
+  PLAY_FROM_SELECTION = 'PlayFromSelection',
 }
 
 export enum LinkStatus {
