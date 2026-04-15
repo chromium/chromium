@@ -4450,29 +4450,9 @@ void RenderViewContextMenu::ExecSaveAs() {
 
 void RenderViewContextMenu::ExecGlic() {
   if (glic::GlicEnabling::IsContextualMenuItemEnabled(GetProfile())) {
-    glic::GlicKeyedService* glic_service =
-        glic::GlicKeyedServiceFactory::GetGlicKeyedService(browser_context_);
-    if (glic_service) {
-      tabs::TabInterface* tab =
-          tabs::TabInterface::MaybeGetFromContents(source_web_contents_);
-      if (tab) {
-        glic_item_executed_ = true;
-        glic::GlicInvokeOptions options(
-            glic::Target(tab),
-            glic::mojom::InvocationSource::kWebContentsContextMenu);
-        options.fre_override = glic::mojom::FreOverride::kTrustFirstInline;
-        std::string arm = features::kGlicContextMenuArm.Get();
-        if (arm == "arm2") {
-          options.prompts.push_back(
-              l10n_util::GetStringUTF8(IDS_GLIC_SUMMARIZE_PAGE_PROMPT));
-          glic_service->InvokeWithAutoSubmit(
-              glic::InvokeWithAutoSubmitPasskeyProvider::GetPassKey(),
-              std::move(options));
-        } else {
-          glic_service->Invoke(std::move(options));
-        }
-      }
-    }
+    glic_item_executed_ = true;
+    glic::GlicContextMenuInvocationHelper::HandleContextualMenuClick(
+        tabs::TabInterface::MaybeGetFromContents(source_web_contents_));
   }
 }
 
