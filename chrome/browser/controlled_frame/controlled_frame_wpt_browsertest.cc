@@ -143,7 +143,14 @@ class ControlledFrameWptBrowserTest
 //   * Put the results in a top-level window.results promise that will contain
 //     the list of passed tests if there were no failures, or reject the promise
 //     with error information for failing tests otherwise.
-IN_PROC_BROWSER_TEST_P(ControlledFrameWptBrowserTest, Run) {
+
+// TODO(crbug.com/502734623): Re-enable this test on Linux.
+#if BUILDFLAG(IS_LINUX)
+#define MAYBE_Run DISABLED_Run
+#else
+#define MAYBE_Run Run
+#endif
+IN_PROC_BROWSER_TEST_P(ControlledFrameWptBrowserTest, MAYBE_Run) {
   device::ScopedGeolocationOverrider overrider(/*latitude=*/1, /*longitude=*/2);
 
   base::FilePath test_data_dir;
