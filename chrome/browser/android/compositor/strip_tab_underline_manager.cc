@@ -32,7 +32,8 @@ class StripTabUnderlineManager::UiDelegateImpl
   }
 
   void StartRampingDown() override {
-    // No-op for Android as animation is not supported yet.
+    // Fallback to StopShowing for Android as animation is not supported yet.
+    StopShowing();
   }
 
   bool IsShowing() const override { return is_showing_; }
