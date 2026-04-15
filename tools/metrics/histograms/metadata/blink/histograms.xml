@@ -4786,7 +4786,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Blink.Responsiveness.PerAnimationFrame.CommitToPresentationTime.{PerAnimationFrameInteractionType}"
-    units="ms" expires_after="2026-09-13">
+    units="ms" expires_after="2027-05-10">
   <owner>sullivan@chromium.org</owner>
   <owner>mmocny@chromium.org</owner>
   <owner>speed-metrics-dev@chromium.org</owner>
@@ -4811,7 +4811,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Blink.Responsiveness.PerAnimationFrame.EventCreationTimeToEventQueueTime.{PerAnimationFrameInteractionType}"
-    units="ms" expires_after="2026-09-13">
+    units="ms" expires_after="2027-05-10">
   <owner>sullivan@chromium.org</owner>
   <owner>mmocny@chromium.org</owner>
   <owner>speed-metrics-dev@chromium.org</owner>
@@ -4835,7 +4835,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Blink.Responsiveness.PerAnimationFrame.EventCreationTimeToProcessingStart.{PerAnimationFrameInteractionType}"
-    units="ms" expires_after="2026-09-13">
+    units="ms" expires_after="2027-05-10">
   <owner>sullivan@chromium.org</owner>
   <owner>mmocny@chromium.org</owner>
   <owner>speed-metrics-dev@chromium.org</owner>
@@ -4860,7 +4860,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Blink.Responsiveness.PerAnimationFrame.EventCreationToLastProcessingEnd.NoFramePresented.{PerAnimationFrameInteractionType}"
-    units="ms" expires_after="2026-09-13">
+    units="ms" expires_after="2027-05-10">
   <owner>sullivan@chromium.org</owner>
   <owner>mmocny@chromium.org</owner>
   <owner>speed-metrics-dev@chromium.org</owner>
@@ -4886,7 +4886,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Blink.Responsiveness.PerAnimationFrame.EventCreationToPresentationTime.{PerAnimationFrameInteractionType}"
-    units="ms" expires_after="2026-05-10">
+    units="ms" expires_after="2027-05-10">
   <owner>sullivan@chromium.org</owner>
   <owner>mmocny@chromium.org</owner>
   <owner>speed-metrics-dev@chromium.org</owner>
@@ -4910,7 +4910,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Blink.Responsiveness.PerAnimationFrame.EventQueueTimeToCommit.{PerAnimationFrameInteractionType}"
-    units="ms" expires_after="2026-05-10">
+    units="ms" expires_after="2027-05-10">
   <owner>sullivan@chromium.org</owner>
   <owner>mmocny@chromium.org</owner>
   <owner>speed-metrics-dev@chromium.org</owner>
@@ -4934,7 +4934,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Blink.Responsiveness.PerAnimationFrame.EventQueueTimeToProcessingStart.{PerAnimationFrameInteractionType}"
-    units="ms" expires_after="2026-09-13">
+    units="ms" expires_after="2027-05-10">
   <owner>sullivan@chromium.org</owner>
   <owner>mmocny@chromium.org</owner>
   <owner>speed-metrics-dev@chromium.org</owner>
@@ -4958,7 +4958,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Blink.Responsiveness.PerAnimationFrame.FirstProcessingStartToLastProcessingEnd.{PerAnimationFrameInteractionType}"
-    units="ms" expires_after="2026-09-13">
+    units="ms" expires_after="2027-05-10">
   <owner>sullivan@chromium.org</owner>
   <owner>mmocny@chromium.org</owner>
   <owner>speed-metrics-dev@chromium.org</owner>
@@ -4983,7 +4983,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Blink.Responsiveness.PerAnimationFrame.ProcessingEndToPresentationTime.{PerAnimationFrameInteractionType}"
-    units="ms" expires_after="2026-09-13">
+    units="ms" expires_after="2027-05-10">
   <owner>sullivan@chromium.org</owner>
   <owner>mmocny@chromium.org</owner>
   <owner>speed-metrics-dev@chromium.org</owner>
@@ -5009,7 +5009,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Blink.Responsiveness.PerAnimationFrame.ProcessingEndToRenderStartTime.{PerAnimationFrameInteractionType}"
-    units="ms" expires_after="2026-09-13">
+    units="ms" expires_after="2027-05-10">
   <owner>sullivan@chromium.org</owner>
   <owner>mmocny@chromium.org</owner>
   <owner>speed-metrics-dev@chromium.org</owner>
@@ -5033,7 +5033,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Blink.Responsiveness.PerAnimationFrame.RenderStartTimeToCommitTime.{PerAnimationFrameInteractionType}"
-    units="ms" expires_after="2026-09-13">
+    units="ms" expires_after="2027-05-10">
   <owner>sullivan@chromium.org</owner>
   <owner>mmocny@chromium.org</owner>
   <owner>speed-metrics-dev@chromium.org</owner>
@@ -5057,7 +5057,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Blink.Responsiveness.PerAnimationFrame.TotalUnaccountedEventProcessingTime.{PerAnimationFrameInteractionType}"
-    units="ms" expires_after="2026-09-13">
+    units="ms" expires_after="2027-05-10">
   <owner>sullivan@chromium.org</owner>
   <owner>mmocny@chromium.org</owner>
   <owner>speed-metrics-dev@chromium.org</owner>
