@@ -172,7 +172,6 @@ source_set("base") {
       "//chrome/installer/util:work_item",
       "//third_party/boringssl",
     ]
-    libs = [ "wtsapi32.lib" ]
     if (icu_use_data_file) {
       defines = [ "ENTERPRISE_COMPANION_USE_ICU_DATA_FILE" ]
       deps += [ ":icu_file_checksum_header" ]

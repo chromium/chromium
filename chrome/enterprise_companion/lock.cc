@@ -12,8 +12,7 @@
 #if BUILDFLAG(IS_WIN)
 #include <windows.h>
 
-#include "base/win/security_descriptor.h"
-#include "base/win/sid.h"
+#include "base/win/atl.h"
 #endif
 
 namespace {
@@ -25,14 +24,15 @@ constexpr char kLockName[] = MAC_BUNDLE_IDENTIFIER_STRING ".lock";
 #elif BUILDFLAG(IS_WIN)
 constexpr wchar_t kLockName[] = L"Global\\G" PRODUCT_FULLNAME_STRING;
 
-base::win::SecurityDescriptor GetAdminDaclSecurityDescriptor() {
-  base::win::SecurityDescriptor sd;
-  sd.set_owner(base::win::Sid(base::win::WellKnownSid::kBuiltinAdministrators));
-  sd.set_group(base::win::Sid(base::win::WellKnownSid::kBuiltinAdministrators));
-  sd.SetDaclEntry(base::win::WellKnownSid::kLocalSystem,
-                  base::win::SecurityAccessMode::kGrant, GENERIC_ALL, 0);
-  sd.SetDaclEntry(base::win::WellKnownSid::kBuiltinAdministrators,
-                  base::win::SecurityAccessMode::kGrant, GENERIC_ALL, 0);
+CSecurityDesc GetAdminDaclSecurityDescriptor() {
+  CDacl dacl;
+  dacl.AddAllowedAce(Sids::System(), GENERIC_ALL);
+  dacl.AddAllowedAce(Sids::Admins(), GENERIC_ALL);
+  CSecurityDesc sd;
+  sd.SetOwner(Sids::Admins());
+  sd.SetGroup(Sids::Admins());
+  sd.SetDacl(dacl);
+  sd.MakeAbsolute();
   return sd;
 }
 #endif
@@ -45,9 +45,8 @@ std::unique_ptr<ScopedLock> CreateScopedLock(base::TimeDelta timeout) {
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
   return named_system_lock::ScopedLock::Create(kLockName, timeout);
 #elif BUILDFLAG(IS_WIN)
-  base::win::SecurityDescriptor sd = GetAdminDaclSecurityDescriptor();
-  SECURITY_DESCRIPTOR absolute_sd = sd.ToAbsolute();
-  SECURITY_ATTRIBUTES sa = {sizeof(sa), &absolute_sd, FALSE};
+  CSecurityAttributes sa =
+      CSecurityAttributes(GetAdminDaclSecurityDescriptor());
   return named_system_lock::ScopedLock::Create(kLockName, &sa, timeout);
 #endif
 }

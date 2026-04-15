@@ -28,7 +28,6 @@
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/scoped_blocking_call.h"
-#include "base/win/access_token.h"
 #include "chrome/updater/event_logger.h"
 #include "chrome/updater/get_updater_scope.h"
 #include "chrome/updater/net/network.h"
@@ -36,6 +35,7 @@
 #include "chrome/updater/protos/omaha_usage_stats_event.pb.h"
 #include "chrome/updater/util/util.h"
 #include "chrome/updater/util/win_util.h"
+#include "chrome/updater/win/scoped_handle.h"
 #include "chrome/updater/win/scoped_impersonation.h"
 #include "chrome/updater/win/user_info.h"
 #include "components/update_client/network.h"
@@ -295,11 +295,12 @@ class NetworkFetcherFactory::Impl {
     ScopedImpersonation impersonate;
     if (IsSystemInstall()) {
       user_state_ = proto::NetworkEvent_UserState_NOT_LOGGED_IN;
-      std::optional<base::win::AccessToken> token = GetLoggedOnUserToken();
+      HResultOr<ScopedKernelHANDLE> token = GetLoggedOnUserToken();
       VLOG_IF(2, !token.has_value())
-          << __func__ << ": GetLoggedOnUserToken failed";
+          << __func__ << ": GetLoggedOnUserToken failed: " << std::hex
+          << token.error();
       if (token.has_value()) {
-        const HRESULT hr = impersonate.Impersonate(token->get());
+        const HRESULT hr = impersonate.Impersonate(token.value().get());
         VLOG(2)
             << __func__
             << ": Successfully got logged on user token. Impersonate result: "

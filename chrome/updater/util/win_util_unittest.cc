@@ -9,7 +9,6 @@
 #include <windows.h>
 
 #include <regstr.h>
-#include <sddl.h>
 #include <shellapi.h>
 #include <shlobj.h>
 
@@ -24,6 +23,7 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/path_service.h"
 #include "base/process/launch.h"
 #include "base/process/process.h"
@@ -42,12 +42,11 @@
 #include "base/test/test_timeouts.h"
 #include "base/threading/platform_thread.h"
 #include "base/uuid.h"
-#include "base/win/access_token.h"
+#include "base/win/atl.h"
 #include "base/win/registry.h"
 #include "base/win/scoped_com_initializer.h"
 #include "base/win/scoped_handle.h"
 #include "base/win/scoped_localalloc.h"
-#include "base/win/sid.h"
 #include "base/win/win_util.h"
 #include "chrome/updater/test/integration_tests_impl.h"
 #include "chrome/updater/test/test_scope.h"
@@ -525,7 +524,7 @@ INSTANTIATE_TEST_SUITE_P(
 TEST_P(WinUtilGetRegKeyContentsTest, TestCases) {
   std::optional<std::wstring> contents = GetRegKeyContents(GetParam().reg_key);
   ASSERT_TRUE(contents);
-  ASSERT_TRUE(contents->contains(GetParam().expected_substring));
+  ASSERT_NE(contents->find(GetParam().expected_substring), std::wstring::npos);
 }
 
 TEST(WinUtil, GetTextForSystemError) {
@@ -544,17 +543,24 @@ TEST(WinUtil, GetTextForSystemError) {
       L"0x80040200");
 }
 
+TEST(WinUtil, GetExplorerPid) {
+  if (!::IsUserAnAdmin() || !IsUACOn()) {
+    GTEST_SKIP();
+  }
+  ASSERT_NE(GetExplorerPid(), std::nullopt);
+}
+
 TEST(WinUtil, GetLoggedOnUserToken) {
   if (!::IsUserAnAdmin() || !IsUACOn()) {
     return;
   }
 
   ASSERT_TRUE(::IsUserAnAdmin());
-  std::optional<base::win::AccessToken> token = GetLoggedOnUserToken();
+  HResultOr<ScopedKernelHANDLE> token = GetLoggedOnUserToken();
   ASSERT_TRUE(token.has_value());
 
   ScopedImpersonation impersonate;
-  ASSERT_TRUE(SUCCEEDED(impersonate.Impersonate(token->get())));
+  ASSERT_TRUE(SUCCEEDED(impersonate.Impersonate(token.value().get())));
   ASSERT_FALSE(::IsUserAnAdmin());
 }
 
@@ -680,34 +686,27 @@ TEST(WinUtil, GetCommandLineForPid) {
 }
 
 TEST(WinUtil, AddCurrentUserAllowedAce) {
-  std::optional<base::win::AccessToken> token =
-      base::win::AccessToken::FromCurrentProcess();
-  ASSERT_TRUE(token.has_value());
-  std::optional<std::wstring> sid_str = token->User().ToSddlString();
-  ASSERT_TRUE(sid_str.has_value());
+  CAccessToken token;
+  CSid sid;
+  ASSERT_TRUE(token.GetEffectiveToken(TOKEN_QUERY));
+  ASSERT_TRUE(token.GetUser(&sid));
+  const std::wstring added_ace = base::StrCat({L"(A;;GA;;;", sid.Sid(), L")"});
 
-  // Empty SDDL should produce a DACL with the user's ACE.
   std::optional<std::wstring> new_sddl =
       AddCurrentUserAllowedAce(L"", GENERIC_ALL, 0);
   ASSERT_TRUE(new_sddl);
-  EXPECT_TRUE(new_sddl->contains(L"D:"));
-  EXPECT_TRUE(new_sddl->contains(*sid_str));
+  EXPECT_EQ(*new_sddl, base::StrCat({L"D:", added_ace}));
 
-  // Adding to DACL with existing BA ACE should preserve both.
   new_sddl = AddCurrentUserAllowedAce(L"D:(A;;GA;;;BA)", GENERIC_ALL, 0);
   ASSERT_TRUE(new_sddl);
-  EXPECT_TRUE(new_sddl->contains(*sid_str));
-  EXPECT_TRUE(new_sddl->contains(L"BA)"));
+  EXPECT_EQ(*new_sddl, base::StrCat({L"D:(A;;GA;;;BA)", added_ace}));
 
-  // Owner and group should be preserved.
   new_sddl =
       AddCurrentUserAllowedAce(L"O:AOG:BAD:(A;;GA;;;S-1-0-0)", GENERIC_ALL, 0);
   ASSERT_TRUE(new_sddl);
-  EXPECT_TRUE(new_sddl->contains(L"O:AO"));
-  EXPECT_TRUE(new_sddl->contains(L"G:BA"));
-  EXPECT_TRUE(new_sddl->contains(*sid_str));
+  EXPECT_EQ(*new_sddl,
+            base::StrCat({L"O:AOG:BAD:(A;;GA;;;S-1-0-0)", added_ace}));
 
-  // Complex SDDL with object ACEs and SACL.
   new_sddl = AddCurrentUserAllowedAce(
       L"O:BAG:BAD:(A;;RPWPCCDCLCRCWOWDSDSW;;;SY)(A;;RPWPCCDCLCRCWOWDSDSW;;;BA)("
       L"OA;;CCDC;aaaaaaaa-0000-1111-2222-bbbbbbbbbbbb;;AO)(OA;;CCDC;bbbbbbbb-"
@@ -717,126 +716,21 @@ TEST(WinUtil, AddCurrentUserAllowedAce) {
       GENERIC_ALL, 0);
   ASSERT_TRUE(new_sddl);
 
-  // Verify key properties: owner, group, user SID, SACL all preserved.
-  EXPECT_TRUE(new_sddl->contains(L"O:BA"));
-  EXPECT_TRUE(new_sddl->contains(L"G:BA"));
-  EXPECT_TRUE(new_sddl->contains(*sid_str));
-  EXPECT_TRUE(new_sddl->contains(L"S:"));
-  // The result must be valid SDDL and parse back.
-  PSECURITY_DESCRIPTOR raw_sd = nullptr;
-  EXPECT_TRUE(::ConvertStringSecurityDescriptorToSecurityDescriptor(
-      new_sddl->c_str(), SDDL_REVISION_1, &raw_sd, nullptr));
-  base::win::ScopedLocalAlloc sd_holder(raw_sd);
+  const std::wstring expected_sddl = base::StrCat(
+      {L"O:BAG:BAD:(A;;KA;;;SY)(A;;KA;;;BA)(A;;LCRPRC;;;AU)", added_ace,
+       L"(OA;;CCDC;cccccccc-2222-3333-4444-dddddddddddd;;AO)(OA;;CCDC;"
+       L"dddddddd-3333-4444-5555-eeeeeeeeeeee;;PO)(OA;;CCDC;aaaaaaaa-0000-"
+       L"1111-2222-bbbbbbbbbbbb;;AO)(OA;;CCDC;bbbbbbbb-1111-2222-3333-"
+       L"cccccccccccc;;AO)S:(AU;SAFA;CCDCSWWPSDWDWO;;;WD)"});
+  EXPECT_EQ(*new_sddl, expected_sddl);
 
-  // The SDDL must be stable/idempotent: repeated calls produce the same result.
-  const std::wstring stable_sddl = *new_sddl;
+  // The SDDL will contain only a single instance of the new ACE, even if
+  // attempts are made to add it multiple times.
   for (int i = 0; i < 100; ++i) {
     new_sddl = AddCurrentUserAllowedAce(*new_sddl, GENERIC_ALL, 0);
     ASSERT_TRUE(new_sddl);
-    EXPECT_EQ(*new_sddl, stable_sddl);
+    EXPECT_EQ(*new_sddl, expected_sddl);
   }
-}
-
-TEST(WinUtil, GetCurrentUserDefaultSecurityDescriptor) {
-  std::optional<std::wstring> sddl = GetCurrentUserDefaultSecurityDescriptor();
-  ASSERT_TRUE(sddl.has_value());
-  EXPECT_FALSE(sddl->empty());
-
-  // The SDDL must contain owner (O:), group (G:), and DACL (D:) sections.
-  EXPECT_TRUE(sddl->contains(L"O:"));
-  EXPECT_TRUE(sddl->contains(L"G:"));
-  EXPECT_TRUE(sddl->contains(L"D:"));
-
-  // The SDDL must contain the current user's SID.
-  auto token = base::win::AccessToken::FromCurrentProcess();
-  ASSERT_TRUE(token);
-  auto user_sddl = token->User().ToSddlString();
-  ASSERT_TRUE(user_sddl);
-  EXPECT_TRUE(sddl->contains(*user_sddl));
-
-  // The result must be a valid security descriptor.
-  PSECURITY_DESCRIPTOR raw_sd = nullptr;
-  EXPECT_TRUE(::ConvertStringSecurityDescriptorToSecurityDescriptor(
-      sddl->c_str(), SDDL_REVISION_1, &raw_sd, nullptr));
-  base::win::ScopedLocalAlloc sd_holder(raw_sd);
-}
-
-TEST(WinUtil, GetAdminDaclSecurityDescriptor) {
-  std::wstring sddl = GetAdminDaclSecurityDescriptor(GENERIC_ALL);
-  EXPECT_FALSE(sddl.empty());
-
-  // Must have owner (BA), group (BA), and DACL sections.
-  EXPECT_TRUE(sddl.contains(L"O:BA"));
-  EXPECT_TRUE(sddl.contains(L"G:BA"));
-  EXPECT_TRUE(sddl.contains(L"D:"));
-
-  // Must grant access to System (SY) and Admins (BA).
-  EXPECT_TRUE(sddl.contains(L";;;SY)"));
-  EXPECT_TRUE(sddl.contains(L";;;BA)"));
-
-  // The result must be a valid security descriptor.
-  PSECURITY_DESCRIPTOR raw_sd = nullptr;
-  EXPECT_TRUE(::ConvertStringSecurityDescriptorToSecurityDescriptor(
-      sddl.c_str(), SDDL_REVISION_1, &raw_sd, nullptr));
-  base::win::ScopedLocalAlloc sd_holder(raw_sd);
-
-  // Different access masks should produce different SDDLs.
-  std::wstring sddl2 = GetAdminDaclSecurityDescriptor(GENERIC_READ);
-  EXPECT_NE(sddl, sddl2);
-}
-
-TEST(WinUtil, NamedObjectAttributes_WithValidSddl) {
-  const std::wstring kName = L"TestObject";
-  NamedObjectAttributes attrs(kName, L"D:(A;;GA;;;BA)");
-
-  EXPECT_EQ(attrs.name, kName);
-  EXPECT_NE(attrs.sa.lpSecurityDescriptor, nullptr);
-  EXPECT_EQ(attrs.sa.nLength, sizeof(SECURITY_ATTRIBUTES));
-  EXPECT_FALSE(attrs.sa.bInheritHandle);
-}
-
-TEST(WinUtil, NamedObjectAttributes_WithEmptySddl) {
-  const std::wstring kName = L"TestObject";
-  NamedObjectAttributes attrs(kName, std::wstring());
-
-  EXPECT_EQ(attrs.name, kName);
-  EXPECT_EQ(attrs.sa.lpSecurityDescriptor, nullptr);
-}
-
-TEST(WinUtil, AddCurrentUserAllowedAce_InvalidSddl) {
-  // Invalid SDDL should return nullopt.
-  EXPECT_FALSE(
-      AddCurrentUserAllowedAce(L"INVALID_SDDL", GENERIC_ALL, 0).has_value());
-}
-
-TEST(WinUtil, AddCurrentUserAllowedAce_DenyBeforeAllow) {
-  // An SDDL with both deny and allow ACEs should maintain canonical ordering
-  // (deny before allow) after adding the current user's ACE.
-  std::optional<base::win::AccessToken> token =
-      base::win::AccessToken::FromCurrentProcess();
-  ASSERT_TRUE(token.has_value());
-  std::optional<std::wstring> sid_str = token->User().ToSddlString();
-  ASSERT_TRUE(sid_str.has_value());
-
-  std::optional<std::wstring> new_sddl = AddCurrentUserAllowedAce(
-      L"D:(D;;GA;;;S-1-0-0)(A;;GA;;;BA)", GENERIC_ALL, 0);
-  ASSERT_TRUE(new_sddl);
-
-  // The deny ACE (D;) should appear before any allow ACE (A;) in the result.
-  size_t deny_pos = new_sddl->find(L"(D;");
-  size_t allow_pos = new_sddl->find(L"(A;");
-  ASSERT_TRUE(new_sddl->contains(L"(D;"));
-  ASSERT_TRUE(new_sddl->contains(L"(A;"));
-  EXPECT_LT(deny_pos, allow_pos);
-
-  // The current user's ACE should be present.
-  EXPECT_TRUE(new_sddl->contains(*sid_str));
-
-  // The result must be a valid security descriptor.
-  PSECURITY_DESCRIPTOR raw_sd = nullptr;
-  EXPECT_TRUE(::ConvertStringSecurityDescriptorToSecurityDescriptor(
-      new_sddl->c_str(), SDDL_REVISION_1, &raw_sd, nullptr));
-  base::win::ScopedLocalAlloc sd_holder(raw_sd);
 }
 
 }  // namespace updater::test

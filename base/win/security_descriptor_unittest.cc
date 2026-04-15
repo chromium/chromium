@@ -415,30 +415,6 @@ TEST(SecurityDescriptorTest, SetDaclEntry) {
   EXPECT_EQ(sd.ToSddl(DACL_SECURITY_INFORMATION), kEventReadControl);
 }
 
-TEST(SecurityDescriptorTest, SetDaclEntryFromToken) {
-  auto token = AccessToken::FromCurrentProcess();
-  ASSERT_TRUE(token);
-  Sid user_sid = token->User();
-
-  SecurityDescriptor sd;
-  EXPECT_TRUE(
-      sd.SetDaclEntry(*token, SecurityAccessMode::kGrant, EVENT_ALL_ACCESS, 0));
-  auto sddl = sd.ToSddl(DACL_SECURITY_INFORMATION);
-  ASSERT_TRUE(sddl);
-
-  // Verify the SDDL contains the current user's SID.
-  auto user_sddl = user_sid.ToSddlString();
-  ASSERT_TRUE(user_sddl);
-  EXPECT_NE(sddl->find(*user_sddl), std::wstring::npos);
-
-  // Should produce the same result as using the SID directly.
-  SecurityDescriptor sd2;
-  EXPECT_TRUE(sd2.SetDaclEntry(user_sid, SecurityAccessMode::kGrant,
-                               EVENT_ALL_ACCESS, 0));
-  EXPECT_EQ(sd.ToSddl(DACL_SECURITY_INFORMATION),
-            sd2.ToSddl(DACL_SECURITY_INFORMATION));
-}
-
 TEST(SecurityDescriptorTest, FromFile) {
   ScopedTempDir temp_dir;
   ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
