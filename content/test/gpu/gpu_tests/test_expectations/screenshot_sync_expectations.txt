@@ -123,8 +123,6 @@ crbug.com/324934210 [ mac angle-metal intel-0x3e9b passthrough asan ] Screenshot
 
 
 
-# Win 11 AMD RX 5500XT
-crbug.com/458607668 [ win amd-0x7340 ] ScreenshotSync_SWRasterWithCanvas [ Failure ]
 
 
 #######################################################################
