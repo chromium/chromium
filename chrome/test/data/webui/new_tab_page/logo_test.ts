@@ -8,6 +8,7 @@ import {$$, NewTabPageProxy, WindowProxy} from 'chrome://new-tab-page/new_tab_pa
 import type {Doodle, Theme} from 'chrome://new-tab-page/new_tab_page.mojom-webui.js';
 import {DoodleImageType, DoodleShareChannel, PageCallbackRouter, PageHandlerRemote} from 'chrome://new-tab-page/new_tab_page.mojom-webui.js';
 import {hexColorToSkColor} from 'chrome://resources/js/color_utils.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {PromiseResolver} from 'chrome://resources/js/promise_resolver.js';
 import {assertEquals, assertFalse, assertGE, assertLE, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import type {TestMock} from 'chrome://webui-test/test_mock.js';
@@ -151,8 +152,36 @@ suite('NewTabPageLogoTest', () => {
           }));
       // Assert.
       assertStyle($$(logo, '#imageDoodle')!, 'padding', '16px 24px');
+      assertStyle($$(logo, '#imageDoodle')!, 'border-radius', '20px');
       assertStyle(
           $$(logo, '#imageDoodle')!, 'background-color', 'rgb(0, 0, 255)');
+    });
+  });
+
+  [true, false].forEach(isAnimated => {
+    const animatedStr = isAnimated ? 'animated' : 'static';
+    test(`${animatedStr} doodle uses correct boxed properties`, async () => {
+      // Arrange.
+      const doodle = createImageDoodle();
+      assertTrue(!!doodle.image);
+      doodle.image.light.animationUrl =
+          isAnimated ? 'https://animated_doodle.com' : null;
+      const expectedPadding = isAnimated ? '16px' : '16px 24px';
+      const expectedBorderRadius = isAnimated ? '28px' : '20px';
+      loadTimeData.overrideValues({animatedDoodlesEnabled: isAnimated});
+
+      // Act.
+      const logo = await createLogo(
+          doodle, createTheme({
+            isDark: false,
+            // Note: Doodle boxing is not applied to default light mode, so we
+            // use a different color to enable boxing.
+            backgroundColor: hexColorToSkColor('#ff0000'),
+          }));
+      // Assert.
+      assertStyle($$(logo, '#imageDoodle')!, 'padding', expectedPadding);
+      assertStyle(
+          $$(logo, '#imageDoodle')!, 'border-radius', expectedBorderRadius);
     });
   });
 
