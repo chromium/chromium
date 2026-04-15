@@ -200,11 +200,12 @@ class ExtensionsMenuMediator implements Destroyable, ExtensionsMenuBridge.Observ
             }
 
             updateMenuEntries();
-        } else if (getCurrentPage() == ExtensionsMenuProperties.Page.SITE_PERMISSIONS) {
-            String extensionId =
-                    mSitePermissionsPageModel.get(SitePermissionsPageProperties.EXTENSION_ID);
-            updateSitePermissionsPage(extensionId);
         }
+
+        // TODO(crbug.com/473213114): Implement data pull for site permissions page.
+        // This will need to consider the event source (e.g., page navigation vs. action update)
+        // to fetch and update the UI correctly, as their effects differ on the site permissions
+        // page and they will need to have different JNI observers.
     }
 
     @Override
@@ -314,7 +315,8 @@ class ExtensionsMenuMediator implements Destroyable, ExtensionsMenuBridge.Observ
         // TODO(crbug.com/473213114): If the extension no longer has site access, which can happen
         // during an update, the site permissions page should no longer be visible and we should
         // go back to the main page.
-        updateSitePermissionsPage(entry.id);
+        mSitePermissionsPageModel.set(
+                SitePermissionsPageProperties.EXTENSION_NAME, entry.actionButton.text);
     }
 
     /** Called when a host access request has been added. */
@@ -410,7 +412,22 @@ class ExtensionsMenuMediator implements Destroyable, ExtensionsMenuBridge.Observ
     private void onSitePermissionsButtonClicked(String extensionId) {
         mSitePermissionsPageModel.set(SitePermissionsPageProperties.EXTENSION_ID, extensionId);
 
-        updateSitePermissionsPage(extensionId);
+        // Update the site permissions page content.
+        ExtensionsMenuTypes.ExtensionSitePermissionsState sitePermissionsState =
+                mMenuBridge.getExtensionSitePermissionsState(extensionId);
+
+        mSitePermissionsPageModel.set(
+                SitePermissionsPageProperties.EXTENSION_NAME, sitePermissionsState.extensionName);
+        mSitePermissionsPageModel.set(
+                SitePermissionsPageProperties.EXTENSION_ICON, sitePermissionsState.extensionIcon);
+
+        mSitePermissionsPageModel.set(
+                SitePermissionsPageProperties.SHOW_REQUESTS_TOGGLE_CHECKED,
+                sitePermissionsState.showRequestsToggle.isOn);
+        mSitePermissionsPageModel.set(
+                SitePermissionsPageProperties.SHOW_REQUESTS_TOGGLE_CLICK_LISTENER,
+                (buttonView, isChecked) ->
+                        mMenuBridge.onShowRequestsTogglePressed(extensionId, isChecked));
 
         // Set current page to site permissions page.
         mMainPageModel.set(
@@ -481,40 +498,6 @@ class ExtensionsMenuMediator implements Destroyable, ExtensionsMenuBridge.Observ
         }
 
         updateZeroState();
-    }
-
-    /**
-     * Updates the site permissions page for the given extension.
-     *
-     * @param extensionId The ID of the extension to show permissions for.
-     */
-    private void updateSitePermissionsPage(String extensionId) {
-        ExtensionsMenuTypes.ExtensionSitePermissionsState sitePermissionsState =
-                mMenuBridge.getExtensionSitePermissionsState(extensionId);
-
-        mSitePermissionsPageModel.set(
-                SitePermissionsPageProperties.EXTENSION_NAME, sitePermissionsState.extensionName);
-        mSitePermissionsPageModel.set(
-                SitePermissionsPageProperties.EXTENSION_ICON, sitePermissionsState.extensionIcon);
-
-        mSitePermissionsPageModel.set(
-                SitePermissionsPageProperties.ON_CLICK_STATE, sitePermissionsState.onClickOption);
-        mSitePermissionsPageModel.set(
-                SitePermissionsPageProperties.ON_SITE_STATE, sitePermissionsState.onSiteOption);
-        mSitePermissionsPageModel.set(
-                SitePermissionsPageProperties.ON_ALL_SITES_STATE,
-                sitePermissionsState.onAllSitesOption);
-        mSitePermissionsPageModel.set(
-                SitePermissionsPageProperties.ON_SITE_ACCESS_SELECTED_LISTENER,
-                (siteAccess) -> mMenuBridge.onExtensionSiteAccessSelected(extensionId, siteAccess));
-
-        mSitePermissionsPageModel.set(
-                SitePermissionsPageProperties.SHOW_REQUESTS_TOGGLE_CHECKED,
-                sitePermissionsState.showRequestsToggle.isOn);
-        mSitePermissionsPageModel.set(
-                SitePermissionsPageProperties.SHOW_REQUESTS_TOGGLE_CLICK_LISTENER,
-                (buttonView, isChecked) ->
-                        mMenuBridge.onShowRequestsTogglePressed(extensionId, isChecked));
     }
 
     /** Updates the zero state visibility. */

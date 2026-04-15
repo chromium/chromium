@@ -21,13 +21,11 @@
 
 namespace {
 
-using base::android::ScopedJavaLocalRef;
-
 // TODO(crbug.com/471016915): Placeholder size. Replace with size provided from
 // Java.
 constexpr gfx::Size kActionIconSize = gfx::Size(40, 40);
 
-ScopedJavaLocalRef<jobject> ConvertToJavaBitmap(
+base::android::ScopedJavaLocalRef<jobject> ConvertToJavaBitmap(
     const ui::ImageModel& image_model) {
   if (image_model.IsEmpty() || !image_model.IsImage()) {
     return nullptr;
@@ -48,7 +46,7 @@ ScopedJavaLocalRef<jobject> ConvertToJavaBitmap(
 }
 
 // Returns a Java ExtensionsMenuTypes.ControlState object.
-ScopedJavaLocalRef<jobject> CreateJavaControlState(
+base::android::ScopedJavaLocalRef<jobject> CreateJavaControlState(
     JNIEnv* env,
     const ExtensionsMenuViewModel::ControlState& state) {
   auto state_icon_bitmap = ConvertToJavaBitmap(state.icon);
@@ -61,6 +59,7 @@ ScopedJavaLocalRef<jobject> CreateJavaControlState(
 
 namespace extensions {
 
+using base::android::ScopedJavaLocalRef;
 using PermissionsManager = extensions::PermissionsManager;
 
 ExtensionsMenuDelegateAndroid::ExtensionsMenuDelegateAndroid(
@@ -79,15 +78,14 @@ void ExtensionsMenuDelegateAndroid::Destroy(JNIEnv* env) {
   delete this;
 }
 
-ScopedJavaLocalRef<jobject> ExtensionsMenuDelegateAndroid::GetActionIcon(
-    JNIEnv* env,
-    int action_index) {
+base::android::ScopedJavaLocalRef<jobject>
+ExtensionsMenuDelegateAndroid::GetActionIcon(JNIEnv* env, int action_index) {
   ui::ImageModel icon_model =
       menu_model_->GetActionIcon(action_index, kActionIconSize);
   return ConvertToJavaBitmap(icon_model);
 }
 
-ScopedJavaLocalRef<jobject>
+base::android::ScopedJavaLocalRef<jobject>
 ExtensionsMenuDelegateAndroid::GetExtensionSitePermissionsState(
     JNIEnv* env,
     const std::string& extension_id) {
@@ -95,24 +93,16 @@ ExtensionsMenuDelegateAndroid::GetExtensionSitePermissionsState(
       menu_model_->GetExtensionSitePermissionsState(extension_id,
                                                     kActionIconSize);
 
-  ScopedJavaLocalRef<jobject> j_on_click_option =
-      CreateJavaControlState(env, state.on_click_option);
-  ScopedJavaLocalRef<jobject> j_on_site_option =
-      CreateJavaControlState(env, state.on_site_option);
-  ScopedJavaLocalRef<jobject> j_on_all_sites_option =
-      CreateJavaControlState(env, state.on_all_sites_option);
-  ScopedJavaLocalRef<jobject> j_show_requests_toggle =
+  base::android::ScopedJavaLocalRef<jobject> j_show_requests_toggle =
       CreateJavaControlState(env, state.show_requests_toggle);
 
   return extensions::Java_ExtensionSitePermissionsState_Constructor(
       env, state.extension_name, ConvertToJavaBitmap(state.extension_icon),
-      j_on_click_option, j_on_site_option, j_on_all_sites_option,
       j_show_requests_toggle);
 }
 
-ScopedJavaLocalRef<jobject> ExtensionsMenuDelegateAndroid::GetMenuEntry(
-    JNIEnv* env,
-    int action_index) {
+base::android::ScopedJavaLocalRef<jobject>
+ExtensionsMenuDelegateAndroid::GetMenuEntry(JNIEnv* env, int action_index) {
   const auto& action_models = menu_model_->action_models();
   CHECK_GE(action_index, 0);
   CHECK_LT(static_cast<size_t>(action_index), action_models.size());
@@ -133,9 +123,9 @@ int ExtensionsMenuDelegateAndroid::GetOptionalSection(JNIEnv* env) {
   return static_cast<int>(menu_model_->GetOptionalSection());
 }
 
-std::vector<ScopedJavaLocalRef<jobject>>
+std::vector<base::android::ScopedJavaLocalRef<jobject>>
 ExtensionsMenuDelegateAndroid::GetHostAccessRequests(JNIEnv* env) {
-  std::vector<ScopedJavaLocalRef<jobject>> java_entries;
+  std::vector<base::android::ScopedJavaLocalRef<jobject>> java_entries;
 
   const auto& requests = menu_model_->host_access_requests();
   for (const auto& extension_id : requests) {
@@ -149,9 +139,9 @@ ExtensionsMenuDelegateAndroid::GetHostAccessRequests(JNIEnv* env) {
   return java_entries;
 }
 
-std::vector<ScopedJavaLocalRef<jobject>>
+std::vector<base::android::ScopedJavaLocalRef<jobject>>
 ExtensionsMenuDelegateAndroid::GetMenuEntries(JNIEnv* env) {
-  std::vector<ScopedJavaLocalRef<jobject>> java_entries;
+  std::vector<base::android::ScopedJavaLocalRef<jobject>> java_entries;
 
   for (size_t i = 0; i < menu_model_->action_models().size(); ++i) {
     java_entries.push_back(GetMenuEntry(env, i));
@@ -160,12 +150,12 @@ ExtensionsMenuDelegateAndroid::GetMenuEntries(JNIEnv* env) {
   return java_entries;
 }
 
-ScopedJavaLocalRef<jobject> ExtensionsMenuDelegateAndroid::GetSiteSettings(
-    JNIEnv* env) {
+base::android::ScopedJavaLocalRef<jobject>
+ExtensionsMenuDelegateAndroid::GetSiteSettings(JNIEnv* env) {
   ExtensionsMenuViewModel::SiteSettingsState site_settings_state =
       menu_model_->GetSiteSettingsState();
 
-  ScopedJavaLocalRef<jobject> j_toggle_state =
+  base::android::ScopedJavaLocalRef<jobject> j_toggle_state =
       CreateJavaControlState(env, site_settings_state.toggle);
 
   return extensions::Java_SiteSettingsState_Constructor(
@@ -311,7 +301,7 @@ void ExtensionsMenuDelegateAndroid::OnShowRequestsTogglePressed(
 void ExtensionsMenuDelegateAndroid::OnSiteAccessSelected(
     const extensions::ExtensionId& extension_id,
     extensions::PermissionsManager::UserSiteAccess site_access) {
-  menu_model_->UpdateSiteAccess(extension_id, site_access);
+  // TODO(crbug.com/473213115)
 }
 
 void ExtensionsMenuDelegateAndroid::OnSiteSettingsToggleButtonPressed(
