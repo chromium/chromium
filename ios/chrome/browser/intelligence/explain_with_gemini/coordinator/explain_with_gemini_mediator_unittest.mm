@@ -11,7 +11,7 @@
 #import "components/signin/public/identity_manager/identity_manager.h"
 #import "components/sync/test/test_sync_service.h"
 #import "ios/chrome/browser/intelligence/bwg/model/bwg_tab_helper.h"
-#import "ios/chrome/browser/intelligence/bwg/model/fake_bwg_service.h"
+#import "ios/chrome/browser/intelligence/bwg/model/fake_gemini_service.h"
 #import "ios/chrome/browser/intelligence/bwg/model/gemini_service_factory.h"
 #import "ios/chrome/browser/intelligence/bwg/utils/gemini_constants.h"
 #import "ios/chrome/browser/intelligence/features/features.h"
@@ -78,7 +78,7 @@ class ExplainWithGeminiMediatorTest : public PlatformTest {
         GeminiServiceFactory::GetInstance(),
         base::BindRepeating(
             [](ProfileIOS* profile) -> std::unique_ptr<KeyedService> {
-              return std::make_unique<FakeBwgService>();
+              return std::make_unique<FakeGeminiService>();
             }));
 
     browser_state_ = std::move(builder).Build();
@@ -86,7 +86,7 @@ class ExplainWithGeminiMediatorTest : public PlatformTest {
         AuthenticationServiceFactory::GetForProfile(browser_state_.get());
     identity_manager_ =
         IdentityManagerFactory::GetForProfile(browser_state_.get());
-    fake_bwg_service_ = static_cast<FakeBwgService*>(
+    fake_gemini_service_ = static_cast<FakeGeminiService*>(
         GeminiServiceFactory::GetForProfile(browser_state_.get()));
 
     web_state_ = std::make_unique<web::FakeWebState>();
@@ -113,7 +113,7 @@ class ExplainWithGeminiMediatorTest : public PlatformTest {
   raw_ptr<signin::IdentityManager> identity_manager_;
   ExplainWithGeminiMediator* mediator_;
   std::unique_ptr<web::FakeWebState> web_state_;
-  raw_ptr<FakeBwgService> fake_bwg_service_;
+  raw_ptr<FakeGeminiService> fake_gemini_service_;
 };
 
 // Tests that the mediator can be instantiated.
@@ -212,7 +212,7 @@ TEST_F(ExplainWithGeminiMediatorTest, TriggerAction_StartsFlow_NoMock) {
         {});
 
     // Simulate that the user is eligible for the BWG (Gemini) service.
-    fake_bwg_service_->SetIsEligible(true);
+    fake_gemini_service_->SetIsEligible(true);
 
     // Set up a fake web frame manager with a main frame and mark content as
     // HTML to satisfy the conditions in

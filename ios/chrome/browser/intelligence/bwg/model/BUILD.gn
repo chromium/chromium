@@ -208,8 +208,8 @@ source_set("page_context") {
 source_set("test_support") {
   testonly = true
   sources = [
-    "fake_bwg_service.h",
-    "fake_bwg_service.mm",
+    "fake_gemini_service.h",
+    "fake_gemini_service.mm",
   ]
   public_deps = [
     ":gemini_service",

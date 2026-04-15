@@ -20,7 +20,7 @@
 #import "ios/chrome/browser/feature_engagement/model/tracker_factory.h"
 #import "ios/chrome/browser/intelligence/bwg/metrics/gemini_metrics.h"
 #import "ios/chrome/browser/intelligence/bwg/model/bwg_tab_helper.h"
-#import "ios/chrome/browser/intelligence/bwg/model/fake_bwg_service.h"
+#import "ios/chrome/browser/intelligence/bwg/model/fake_gemini_service.h"
 #import "ios/chrome/browser/intelligence/features/features.h"
 #import "ios/chrome/browser/intelligence/page_action_menu/ui/page_action_menu_consumer.h"
 #import "ios/chrome/browser/intelligence/page_action_menu/ui/page_action_menu_content_entry_point.h"
@@ -88,7 +88,7 @@ class PageActionMenuMediatorTest : public PlatformTest {
         AuthenticationServiceFactory::GetForProfile(browser_state_.get());
     pref_service_ = browser_state_->GetPrefs();
     ASSERT_TRUE(pref_service_);
-    fake_gemini_service_ = std::make_unique<FakeBwgService>();
+    fake_gemini_service_ = std::make_unique<FakeGeminiService>();
     web_state_ = std::make_unique<web::FakeWebState>();
     web_state_->SetBrowserState(browser_state_.get());
 
@@ -139,7 +139,7 @@ class PageActionMenuMediatorTest : public PlatformTest {
   raw_ptr<PrefService> pref_service_ = nullptr;
   raw_ptr<HostContentSettingsMap> settings_map_ = nullptr;
   std::unique_ptr<web::FakeWebState> web_state_;
-  std::unique_ptr<FakeBwgService> fake_gemini_service_;
+  std::unique_ptr<FakeGeminiService> fake_gemini_service_;
   raw_ptr<BwgTabHelper> bwg_tab_helper_;
   PageActionMenuMediator* mediator_;
   FakePageActionMenuConsumer* fake_consumer_;
