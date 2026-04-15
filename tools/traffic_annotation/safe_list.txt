@@ -51,6 +51,7 @@ missing,components/optimization_guide/core/model_execution/model_execution_fetch
 # For prototyping and will be removed (either by adding a proper traffic
 # annotation or by removing the code). b/491080183
 missing,chrome/browser/indigo/indigo_script_loader.cc
+missing,chrome/browser/indigo/api_client.cc
 
 # For prototyping and will be removed (either by adding a proper traffic
 # annotation or by removing the code). b/485217840

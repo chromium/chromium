@@ -38,6 +38,10 @@ class OAuthConsumerRegistry {
  protected:
   virtual OAuthConsumer GetOAuthConsumerForEnterprisePlusAddress() const = 0;
   virtual OAuthConsumer GetOAuthConsumerForGlicUserStatus() const = 0;
+
+  // TODO: b/502940191 - Remove this and hard-code the scope after Indigo is
+  // launched.
+  virtual OAuthConsumer GetOAuthConsumerForIndigo() const = 0;
 };
 
 }  // namespace signin

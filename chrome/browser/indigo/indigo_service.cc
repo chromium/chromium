@@ -6,6 +6,7 @@
 
 #include "base/functional/bind.h"
 #include "base/task/sequenced_task_runner.h"
+#include "chrome/browser/indigo/api_client.h"
 #include "chrome/browser/indigo/indigo_alpha_rpc.h"
 #include "chrome/browser/indigo/indigo_prefs.h"
 #include "chrome/browser/profiles/profile.h"
@@ -63,6 +64,9 @@ IndigoService::IndigoService(Profile* profile,
   }
 
   last_known_local_eligibility_ = ComputeLocalEligibility();
+  api_client_ = std::make_unique<ApiClient>(
+      identity_manager, profile->GetDefaultStoragePartition()
+                            ->GetURLLoaderFactoryForBrowserProcess());
 }
 
 IndigoService::~IndigoService() = default;

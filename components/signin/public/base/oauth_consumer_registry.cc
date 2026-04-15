@@ -691,6 +691,8 @@ OAuthConsumer OAuthConsumerRegistry::GetOAuthConsumerFromId(
       return GetOAuthConsumerForEnterprisePlusAddress();
     case OAuthConsumerId::kGlicUserStatus:
       return GetOAuthConsumerForGlicUserStatus();
+    case OAuthConsumerId::kIndigo:
+      return GetOAuthConsumerForIndigo();
     case OAuthConsumerId::kDevtoolsGdp:
       return OAuthConsumer(
           /*name=*/kDevtoolsGdpName,

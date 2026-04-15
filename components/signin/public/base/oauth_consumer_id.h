@@ -11,6 +11,7 @@ namespace oauth_consumer_name {
 inline extern const char kEnterprisePlusAddressName[] =
     "enterprise_plus_address";
 inline extern const char kGlicUserStatusName[] = "glic_user_status";
+inline extern const char kIndigoName[] = "indigo";
 }  // namespace oauth_consumer_name
 
 // LINT.IfChange(OAuthConsumerId)
@@ -114,7 +115,8 @@ enum class OAuthConsumerId {
   kGapisService = 93,
   kOneTimeTokenService = 94,
   kMultistepFilter = 95,
-  kMaxValue = kMultistepFilter,
+  kIndigo = 96,
+  kMaxValue = kIndigo,
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/signin/enums.xml:OAuthConsumerId)
 

@@ -776,6 +776,7 @@ chromium-metrics-reviews@google.com.
   <int value="93" label="Gapis Service"/>
   <int value="94" label="One Time Token Service"/>
   <int value="95" label="Multistep Filter"/>
+  <int value="96" label="Indigo"/>
 </enum>
 
 <!-- LINT.ThenChange(//components/signin/public/base/oauth_consumer_id.h:OAuthConsumerId) -->
