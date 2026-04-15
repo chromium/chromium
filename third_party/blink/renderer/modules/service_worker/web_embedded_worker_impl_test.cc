@@ -399,6 +399,7 @@ class MockServiceWorkerContextClient final
   void WorkerContextStarted(
       WebServiceWorkerContextProxy* proxy,
       scoped_refptr<base::SequencedTaskRunner> worker_task_runner) override {
+    proxy_ = proxy;
     worker_task_runner_ = std::move(worker_task_runner);
     mojo::PendingAssociatedRemote<mojom::blink::ServiceWorkerHost> host_remote;
     auto host_receiver = host_remote.InitWithNewEndpointAndPassReceiver();
@@ -457,18 +458,6 @@ class MockServiceWorkerContextClient final
     web_policy_container_->remote =
         mock_policy_container_host.BindNewEndpointAndPassDedicatedRemote();
     web_policy_container_ = nullptr;
-
-    // ControllerServiceWorker requires Clone to ensure
-    // CrossOriginResourcePolicyChecker. See
-    // ServiceWorkerGlobalScope::DispatchFetchEventForSubresource().
-    mojo::Remote<mojom::blink::ControllerServiceWorker>
-        stub_controller_service_worker;
-    proxy->BindControllerServiceWorker(
-        stub_controller_service_worker.BindNewPipeAndPassReceiver());
-    stub_controller_service_worker->Clone(
-        controller_service_worker_.BindNewPipeAndPassReceiver(),
-        network::CrossOriginEmbedderPolicy(), mojo::NullRemote(),
-        network::DocumentIsolationPolicy(), mojo::NullRemote());
 
     // To make the other side callable.
     host_receiver.EnableUnassociatedUsage();
@@ -534,6 +523,17 @@ class MockServiceWorkerContextClient final
     test_data_uploader_ = std::make_unique<TestDataUploader>(upload_contents);
     ResourceRequestBody src(test_data_uploader_->BindNewPipeAndPassRemote());
     request->body = std::move(src);
+
+    if (!controller_service_worker_.is_bound()) {
+      mojo::Remote<mojom::blink::ControllerServiceWorker>
+          stub_controller_service_worker;
+      proxy_->BindControllerServiceWorker(
+          stub_controller_service_worker.BindNewPipeAndPassReceiver());
+      stub_controller_service_worker->Clone(
+          controller_service_worker_.BindNewPipeAndPassReceiver(), nullptr,
+          nullptr);
+    }
+
     auto params = mojom::blink::DispatchFetchEventParams::New();
     params->request = std::move(request);
     params->client_id = "foo";
@@ -582,6 +582,7 @@ class MockServiceWorkerContextClient final
   base::WaitableEvent classic_script_load_failure_event_;
 
   scoped_refptr<base::SequencedTaskRunner> worker_task_runner_;
+  raw_ptr<WebServiceWorkerContextProxy, DanglingUntriaged> proxy_ = nullptr;
   mojo::Remote<mojom::blink::ControllerServiceWorker>
       controller_service_worker_;
   std::unique_ptr<TestDataUploader> test_data_uploader_;

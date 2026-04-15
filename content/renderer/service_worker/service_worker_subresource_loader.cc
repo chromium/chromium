@@ -1499,7 +1499,12 @@ void ServiceWorkerSubresourceLoader::DidCacheStorageMatch(
   if (response_head_->service_worker_router_info &&
       response_head_->service_worker_router_info->matched_source_type ==
           network::mojom::ServiceWorkerRouterSourceType::kCache) {
-    if (!IsValidStaticRouterResponse(resource_request_, response) &&
+    if (!IsValidStaticRouterResponse(
+            resource_request_, response,
+            controller_connector_->cross_origin_embedder_policy(),
+            controller_connector_->cross_origin_embedder_policy_reporter(),
+            controller_connector_->document_isolation_policy(),
+            controller_connector_->document_isolation_policy_reporter()) &&
         base::FeatureList::IsEnabled(
             features::kServiceWorkerStaticRouterOpaqueCheck)) {
       CommitCompleted(net::ERR_FAILED, "Invalid response from static router");

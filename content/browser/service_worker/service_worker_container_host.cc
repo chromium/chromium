@@ -86,17 +86,19 @@ ServiceWorkerContainerHostForClient::ServiceWorkerContainerHostForClient(
     blink::mojom::ServiceWorkerContainerInfoForClientPtr& container_info,
     const PolicyContainerPolicies& policy_container_policies,
     mojo::PendingRemote<network::mojom::CrossOriginEmbedderPolicyReporter>
-        coep_reporter,
+        cross_origin_embedder_policy_reporter,
     mojo::PendingRemote<network::mojom::DocumentIsolationPolicyReporter>
-        dip_reporter,
+        document_isolation_policy_reporter,
     ukm::SourceId ukm_source_id)
     : service_worker_client_(std::move(service_worker_client)),
       container_(
           container_info->client_receiver.InitWithNewEndpointAndPassRemote()),
       ukm_source_id_(std::move(ukm_source_id)),
       policy_container_policies_(policy_container_policies.Clone()),
-      coep_reporter_(std::move(coep_reporter)),
-      dip_reporter_(std::move(dip_reporter)) {
+      cross_origin_embedder_policy_reporter_(
+          std::move(cross_origin_embedder_policy_reporter)),
+      document_isolation_policy_reporter_(
+          std::move(document_isolation_policy_reporter)) {
   CHECK(container_.is_bound());
   CHECK(service_worker_client_);
   CHECK(!service_worker_client_->is_response_committed());
@@ -479,6 +481,11 @@ ServiceWorkerContainerHostForClient::CreateControllerServiceWorkerInfo() {
       controller_info->router_data->initial_running_status =
           controller()->running_status();
     }
+
+    controller_info->cross_origin_embedder_policy =
+        CreateCrossOriginEmbedderPolicyInfo();
+    controller_info->document_isolation_policy =
+        CreateDocumentIsolationPolicyInfo();
   }
 
   // Note that |controller_info->remote_controller| is null if the controller
@@ -705,26 +712,9 @@ ServiceWorkerContainerHostForClient::GetRemoteControllerServiceWorker() {
 
 void ServiceWorkerContainerHostForClient::CloneControllerServiceWorker(
     mojo::PendingReceiver<blink::mojom::ControllerServiceWorker> receiver) {
-  mojo::PendingRemote<network::mojom::CrossOriginEmbedderPolicyReporter>
-      coep_reporter_to_be_passed;
-  mojo::PendingRemote<network::mojom::DocumentIsolationPolicyReporter>
-      dip_reporter_to_be_passed;
-  if (coep_reporter_) {
-    coep_reporter_->Clone(
-        coep_reporter_to_be_passed.InitWithNewPipeAndPassReceiver());
-  }
-
-  if (dip_reporter_) {
-    dip_reporter_->Clone(
-        dip_reporter_to_be_passed.InitWithNewPipeAndPassReceiver());
-  }
-
-  controller()->controller()->Clone(
-      std::move(receiver),
-      policy_container_policies_.cross_origin_embedder_policy,
-      std::move(coep_reporter_to_be_passed),
-      policy_container_policies_.document_isolation_policy,
-      std::move(dip_reporter_to_be_passed));
+  controller()->controller()->Clone(std::move(receiver),
+                                    CreateCrossOriginEmbedderPolicyInfo(),
+                                    CreateDocumentIsolationPolicyInfo());
 }
 
 bool ServiceWorkerContainerHostForClient::AllowServiceWorker(
@@ -1389,6 +1379,30 @@ void ServiceWorkerContainerHostForServiceWorker::Update(
 
 ServiceWorkerVersion* ServiceWorkerContainerHostForClient::controller() const {
   return service_worker_client().controller();
+}
+
+blink::mojom::CrossOriginEmbedderPolicyInfoPtr
+ServiceWorkerContainerHostForClient::CreateCrossOriginEmbedderPolicyInfo()
+    const {
+  auto info = blink::mojom::CrossOriginEmbedderPolicyInfo::New(
+      policy_container_policies_.cross_origin_embedder_policy,
+      mojo::NullRemote());
+  if (cross_origin_embedder_policy_reporter_) {
+    cross_origin_embedder_policy_reporter_->Clone(
+        info->reporter.InitWithNewPipeAndPassReceiver());
+  }
+  return info;
+}
+
+blink::mojom::DocumentIsolationPolicyInfoPtr
+ServiceWorkerContainerHostForClient::CreateDocumentIsolationPolicyInfo() const {
+  auto info = blink::mojom::DocumentIsolationPolicyInfo::New(
+      policy_container_policies_.document_isolation_policy, mojo::NullRemote());
+  if (document_isolation_policy_reporter_) {
+    document_isolation_policy_reporter_->Clone(
+        info->reporter.InitWithNewPipeAndPassReceiver());
+  }
+  return info;
 }
 
 }  // namespace content

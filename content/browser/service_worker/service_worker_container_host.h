@@ -328,7 +328,25 @@ class CONTENT_EXPORT ServiceWorkerContainerHostForClient final
   ukm::SourceId ukm_source_id() const { return ukm_source_id_; }
   ServiceWorkerVersion* controller() const;
 
+  const mojo::Remote<network::mojom::CrossOriginEmbedderPolicyReporter>&
+  cross_origin_embedder_policy_reporter() const {
+    return cross_origin_embedder_policy_reporter_;
+  }
+  const mojo::Remote<network::mojom::DocumentIsolationPolicyReporter>&
+  document_isolation_policy_reporter() const {
+    return document_isolation_policy_reporter_;
+  }
+
+  const PolicyContainerPolicies& policy_container_policies() const {
+    return policy_container_policies_;
+  }
+
  private:
+  blink::mojom::CrossOriginEmbedderPolicyInfoPtr
+  CreateCrossOriginEmbedderPolicyInfo() const;
+  blink::mojom::DocumentIsolationPolicyInfoPtr
+  CreateDocumentIsolationPolicyInfo() const;
+
   // Callback for ServiceWorkerContextCore::RegisterServiceWorker().
   void RegistrationComplete(const GURL& script_url,
                             const GURL& scope,
@@ -438,11 +456,12 @@ class CONTENT_EXPORT ServiceWorkerContainerHostForClient final
   // An endpoint connected to the COEP reporter. A clone of this connection is
   // passed to the service worker. Bound on response commit.
   mojo::Remote<network::mojom::CrossOriginEmbedderPolicyReporter>
-      coep_reporter_;
+      cross_origin_embedder_policy_reporter_;
 
   // An endpoint connected to the DocumentIsolationPolicy reporter. A clone of
   // this connection is passed to the service worker. Bound on response commit.
-  mojo::Remote<network::mojom::DocumentIsolationPolicyReporter> dip_reporter_;
+  mojo::Remote<network::mojom::DocumentIsolationPolicyReporter>
+      document_isolation_policy_reporter_;
 
   base::WeakPtrFactory<ServiceWorkerContainerHostForClient> weak_ptr_factory_{
       this};

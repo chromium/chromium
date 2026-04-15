@@ -382,11 +382,8 @@ class FakeControllerServiceWorker
 
   void Clone(
       mojo::PendingReceiver<blink::mojom::ControllerServiceWorker> receiver,
-      const network::CrossOriginEmbedderPolicy&,
-      mojo::PendingRemote<network::mojom::CrossOriginEmbedderPolicyReporter>,
-      const network::DocumentIsolationPolicy&,
-      mojo::PendingRemote<network::mojom::DocumentIsolationPolicyReporter>)
-      override {
+      blink::mojom::CrossOriginEmbedderPolicyInfoPtr,
+      blink::mojom::DocumentIsolationPolicyInfoPtr) override {
     receivers_.Add(this, std::move(receiver));
   }
 
@@ -493,10 +490,7 @@ class FakeServiceWorkerContainerHost
     get_controller_service_worker_count_++;
     if (!fake_controller_)
       return;
-    fake_controller_->Clone(
-        std::move(receiver), network::CrossOriginEmbedderPolicy(),
-        mojo::NullRemote(), network::DocumentIsolationPolicy(),
-        mojo::NullRemote());
+    fake_controller_->Clone(std::move(receiver), nullptr, nullptr);
   }
   void CloneContainerHost(
       mojo::PendingReceiver<blink::mojom::ServiceWorkerContainerHost> receiver)
@@ -575,7 +569,11 @@ class ServiceWorkerSubresourceLoaderTest : public ::testing::Test {
           mojo::NullRemote() /*remote_controller*/,
           mojo::NullRemote() /*remote_cache_storage*/, "" /*client_id*/,
           blink::mojom::ServiceWorkerFetchHandlerBypassOption::kDefault,
-          std::nullopt, blink::EmbeddedWorkerStatus::kStopped,
+          std::nullopt, network::CrossOriginEmbedderPolicy(),
+          mojo::NullRemote() /*cross_origin_embedder_policy_reporter*/,
+          network::DocumentIsolationPolicy(),
+          mojo::NullRemote() /*document_isolation_policy_reporter*/,
+          blink::EmbeddedWorkerStatus::kStopped,
           mojo::NullReceiver() /*running_status_receiver*/);
     }
     mojo::Remote<network::mojom::URLLoaderFactory>
@@ -1078,8 +1076,12 @@ TEST_F(ServiceWorkerSubresourceLoaderTest,
       std::move(remote_container_host),
       mojo::NullRemote() /*remote_controller*/,
       mojo::NullRemote() /*remote_cache_storage*/, "" /*client_id*/,
-      blink::mojom::ServiceWorkerFetchHandlerBypassOption::kDefault,
-      rules, blink::EmbeddedWorkerStatus::kStopped,
+      blink::mojom::ServiceWorkerFetchHandlerBypassOption::kDefault, rules,
+      network::CrossOriginEmbedderPolicy(),
+      mojo::NullRemote() /*cross_origin_embedder_policy_reporter*/,
+      network::DocumentIsolationPolicy(),
+      mojo::NullRemote() /*document_isolation_policy_reporter*/,
+      blink::EmbeddedWorkerStatus::kRunning,
       mojo::NullReceiver() /*running_status_receiver*/);
 
   // Initialize by calling CreateSubresourceLoaderFactory() once.

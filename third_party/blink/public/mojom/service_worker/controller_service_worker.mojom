@@ -53,16 +53,21 @@ interface ControllerServiceWorker {
   // Connects a new pipe to this controller instance.
   // |cross_origin_embedder_policy| is the policy for the client which uses the
   // counterpart of |receiver|.
-  // |coep_reporter| is the endpoint to report the error raised by the CORP
-  // validation based on |cross_origin_embedder_policy|. This can be null when
-  // it's not supported yet.
   Clone(pending_receiver<ControllerServiceWorker> receiver,
-        network.mojom.CrossOriginEmbedderPolicy cross_origin_embedder_policy,
-        pending_remote<network.mojom.CrossOriginEmbedderPolicyReporter>?
-            coep_reporter,
-        network.mojom.DocumentIsolationPolicy document_isolation_policy,
-        pending_remote<network.mojom.DocumentIsolationPolicyReporter>?
-            dip_reporter);
+        CrossOriginEmbedderPolicyInfo? cross_origin_embedder_policy,
+        DocumentIsolationPolicyInfo? document_isolation_policy);
+};
+
+// Struct to represent Cross-Origin-Embedder-Policy and its reporter.
+struct CrossOriginEmbedderPolicyInfo {
+  network.mojom.CrossOriginEmbedderPolicy value;
+  pending_remote<network.mojom.CrossOriginEmbedderPolicyReporter>? reporter;
+};
+
+// Struct to represent Document-Isolation-Policy and its reporter.
+struct DocumentIsolationPolicyInfo {
+  network.mojom.DocumentIsolationPolicy value;
+  pending_remote<network.mojom.DocumentIsolationPolicyReporter>? reporter;
 };
 
 // A convenient struct to keep ServiceWorker static routing API data.
@@ -142,6 +147,10 @@ struct ControllerServiceWorkerInfo {
 
   // The set of features the controller has used, for UseCounter purposes.
   array<WebFeature> used_features;
+
+  // The security policies of the client being controlled.
+  CrossOriginEmbedderPolicyInfo? cross_origin_embedder_policy;
+  DocumentIsolationPolicyInfo? document_isolation_policy;
 };
 
 // A renderer-side interface for talking across threads. The main thread

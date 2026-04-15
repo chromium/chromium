@@ -22,6 +22,10 @@
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "services/network/public/cpp/cross_origin_embedder_policy.h"
+#include "services/network/public/cpp/document_isolation_policy.h"
+#include "services/network/public/mojom/cross_origin_embedder_policy.mojom.h"
+#include "services/network/public/mojom/document_isolation_policy.mojom.h"
 #include "services/network/public/mojom/url_loader_factory.mojom.h"
 #include "third_party/blink/public/mojom/service_worker/controller_service_worker.mojom.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_container.mojom.h"
@@ -338,6 +342,12 @@ class CONTENT_EXPORT ServiceWorkerProviderContext
 
   // Tracks feature usage for UseCounter.
   std::set<blink::mojom::WebFeature> used_features_;
+  network::CrossOriginEmbedderPolicy cross_origin_embedder_policy_;
+  mojo::Remote<network::mojom::CrossOriginEmbedderPolicyReporter>
+      cross_origin_embedder_policy_reporter_;
+  network::DocumentIsolationPolicy document_isolation_policy_;
+  mojo::Remote<network::mojom::DocumentIsolationPolicyReporter>
+      document_isolation_policy_reporter_;
 
   // Corresponds to this context's ServiceWorkerContainer. May be null when not
   // yet created, when already destroyed, or when this client is not a Document

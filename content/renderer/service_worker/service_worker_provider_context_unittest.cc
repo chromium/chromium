@@ -206,11 +206,8 @@ class FakeControllerServiceWorker
   }
   void Clone(
       mojo::PendingReceiver<blink::mojom::ControllerServiceWorker> receiver,
-      const network::CrossOriginEmbedderPolicy&,
-      mojo::PendingRemote<network::mojom::CrossOriginEmbedderPolicyReporter>,
-      const network::DocumentIsolationPolicy&,
-      mojo::PendingRemote<network::mojom::DocumentIsolationPolicyReporter>)
-      override {
+      blink::mojom::CrossOriginEmbedderPolicyInfoPtr,
+      blink::mojom::DocumentIsolationPolicyInfoPtr) override {
     receivers_.Add(this, std::move(receiver));
   }
 
@@ -480,9 +477,7 @@ TEST_F(ServiceWorkerProviderContextTest, SetControllerServiceWorker) {
   auto controller_info1 = blink::mojom::ControllerServiceWorkerInfo::New();
   mojo::Remote<blink::mojom::ControllerServiceWorker> remote_controller1;
   fake_controller1.Clone(remote_controller1.BindNewPipeAndPassReceiver(),
-                         network::CrossOriginEmbedderPolicy(),
-                         mojo::NullRemote(), network::DocumentIsolationPolicy(),
-                         mojo::NullRemote());
+                         nullptr, nullptr);
   controller_info1->mode =
       blink::mojom::ControllerServiceWorkerMode::kControlled;
   controller_info1->fetch_handler_type =
@@ -528,9 +523,7 @@ TEST_F(ServiceWorkerProviderContextTest, SetControllerServiceWorker) {
   auto controller_info2 = blink::mojom::ControllerServiceWorkerInfo::New();
   mojo::Remote<blink::mojom::ControllerServiceWorker> remote_controller2;
   fake_controller2.Clone(remote_controller2.BindNewPipeAndPassReceiver(),
-                         network::CrossOriginEmbedderPolicy(),
-                         mojo::NullRemote(), network::DocumentIsolationPolicy(),
-                         mojo::NullRemote());
+                         nullptr, nullptr);
   controller_info2->mode =
       blink::mojom::ControllerServiceWorkerMode::kControlled;
   controller_info2->fetch_handler_type =
@@ -622,9 +615,7 @@ TEST_F(ServiceWorkerProviderContextTest, SetControllerServiceWorker) {
   auto controller_info4 = blink::mojom::ControllerServiceWorkerInfo::New();
   mojo::Remote<blink::mojom::ControllerServiceWorker> remote_controller4;
   fake_controller4.Clone(remote_controller4.BindNewPipeAndPassReceiver(),
-                         network::CrossOriginEmbedderPolicy(),
-                         mojo::NullRemote(), network::DocumentIsolationPolicy(),
-                         mojo::NullRemote());
+                         nullptr, nullptr);
   controller_info4->mode =
       blink::mojom::ControllerServiceWorkerMode::kControlled;
   controller_info4->fetch_handler_type =
@@ -781,10 +772,8 @@ TEST_F(ServiceWorkerProviderContextTest, OnNetworkProviderDestroyed) {
   FakeControllerServiceWorker fake_controller;
   auto controller_info = blink::mojom::ControllerServiceWorkerInfo::New();
   mojo::Remote<blink::mojom::ControllerServiceWorker> remote_controller;
-  fake_controller.Clone(remote_controller.BindNewPipeAndPassReceiver(),
-                        network::CrossOriginEmbedderPolicy(),
-                        mojo::NullRemote(), network::DocumentIsolationPolicy(),
-                        mojo::NullRemote());
+  fake_controller.Clone(remote_controller.BindNewPipeAndPassReceiver(), nullptr,
+                        nullptr);
   controller_info->mode =
       blink::mojom::ControllerServiceWorkerMode::kControlled;
   controller_info->fetch_handler_type =
@@ -832,10 +821,8 @@ TEST_F(ServiceWorkerProviderContextTest,
   FakeControllerServiceWorker fake_controller;
   auto controller_info = blink::mojom::ControllerServiceWorkerInfo::New();
   mojo::Remote<blink::mojom::ControllerServiceWorker> remote_controller;
-  fake_controller.Clone(remote_controller.BindNewPipeAndPassReceiver(),
-                        network::CrossOriginEmbedderPolicy(),
-                        mojo::NullRemote(), network::DocumentIsolationPolicy(),
-                        mojo::NullRemote());
+  fake_controller.Clone(remote_controller.BindNewPipeAndPassReceiver(), nullptr,
+                        nullptr);
   controller_info->mode =
       blink::mojom::ControllerServiceWorkerMode::kControlled;
   controller_info->fetch_handler_type =

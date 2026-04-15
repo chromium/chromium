@@ -56,6 +56,12 @@ void CreateSubresourceLoaderFactoryForProviderContext(
     blink::mojom::ServiceWorkerFetchHandlerBypassOption
         fetch_handler_bypass_option,
     std::optional<blink::ServiceWorkerRouterRules> router_rules,
+    const network::CrossOriginEmbedderPolicy& cross_origin_embedder_policy,
+    mojo::PendingRemote<network::mojom::CrossOriginEmbedderPolicyReporter>
+        cross_origin_embedder_policy_reporter,
+    const network::DocumentIsolationPolicy& document_isolation_policy,
+    mojo::PendingRemote<network::mojom::DocumentIsolationPolicyReporter>
+        document_isolation_policy_reporter,
     std::optional<blink::EmbeddedWorkerStatus> initial_running_status,
     mojo::PendingReceiver<blink::mojom::ServiceWorkerRunningStatusCallback>
         running_status_receiver,
@@ -68,7 +74,10 @@ void CreateSubresourceLoaderFactoryForProviderContext(
   auto connector = base::MakeRefCounted<ControllerServiceWorkerConnector>(
       std::move(remote_container_host), std::move(remote_controller),
       std::move(remote_cache_storage), client_id, fetch_handler_bypass_option,
-      router_rules, initial_running_status, std::move(running_status_receiver));
+      router_rules, cross_origin_embedder_policy,
+      std::move(cross_origin_embedder_policy_reporter),
+      document_isolation_policy, std::move(document_isolation_policy_reporter),
+      initial_running_status, std::move(running_status_receiver));
   connector->AddBinding(std::move(connector_receiver));
   ServiceWorkerSubresourceLoaderFactory::Create(
       std::move(connector),
@@ -168,6 +177,20 @@ ServiceWorkerProviderContext::GetSubresourceLoaderFactoryInternal() {
     // extra contention on the main thread.
     auto task_runner = base::ThreadPool::CreateSequencedTaskRunner(
         {base::MayBlock(), base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN});
+    mojo::PendingRemote<network::mojom::CrossOriginEmbedderPolicyReporter>
+        cross_origin_embedder_policy_reporter;
+    if (cross_origin_embedder_policy_reporter_) {
+      cross_origin_embedder_policy_reporter_->Clone(
+          cross_origin_embedder_policy_reporter
+              .InitWithNewPipeAndPassReceiver());
+    }
+    mojo::PendingRemote<network::mojom::DocumentIsolationPolicyReporter>
+        document_isolation_policy_reporter;
+    if (document_isolation_policy_reporter_) {
+      document_isolation_policy_reporter_->Clone(
+          document_isolation_policy_reporter.InitWithNewPipeAndPassReceiver());
+    }
+
     task_runner->PostTask(
         FROM_HERE,
         base::BindOnce(
@@ -175,6 +198,10 @@ ServiceWorkerProviderContext::GetSubresourceLoaderFactoryInternal() {
             std::move(remote_container_host), std::move(remote_controller_),
             std::move(remote_cache_storage_), client_id_,
             fetch_handler_bypass_option_, router_rules_,
+            cross_origin_embedder_policy_,
+            std::move(cross_origin_embedder_policy_reporter),
+            document_isolation_policy_,
+            std::move(document_isolation_policy_reporter),
             initial_running_status_, std::move(running_status_receiver_),
             fallback_loader_factory_->Clone(),
             controller_connector_.BindNewPipeAndPassReceiver(),
@@ -434,6 +461,29 @@ void ServiceWorkerProviderContext::SetController(
   remote_controller_ = std::move(controller_info->remote_controller);
   fetch_handler_bypass_option_ = controller_info->fetch_handler_bypass_option;
   sha256_script_checksum_ = controller_info->sha256_script_checksum;
+
+  cross_origin_embedder_policy_ = network::CrossOriginEmbedderPolicy();
+  cross_origin_embedder_policy_reporter_.reset();
+  if (controller_info->cross_origin_embedder_policy) {
+    cross_origin_embedder_policy_ =
+        controller_info->cross_origin_embedder_policy->value;
+    if (controller_info->cross_origin_embedder_policy->reporter) {
+      cross_origin_embedder_policy_reporter_.Bind(
+          std::move(controller_info->cross_origin_embedder_policy->reporter));
+    }
+  }
+
+  document_isolation_policy_ = network::DocumentIsolationPolicy();
+  document_isolation_policy_reporter_.reset();
+  if (controller_info->document_isolation_policy) {
+    document_isolation_policy_ =
+        controller_info->document_isolation_policy->value;
+    if (controller_info->document_isolation_policy->reporter) {
+      document_isolation_policy_reporter_.Bind(
+          std::move(controller_info->document_isolation_policy->reporter));
+    }
+  }
+
   if (controller_info->router_data) {
     router_rules_ = controller_info->router_data->router_rules;
     initial_running_status_ =

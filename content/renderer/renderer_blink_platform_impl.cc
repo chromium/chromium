@@ -999,7 +999,11 @@ void RendererBlinkPlatformImpl::CreateServiceWorkerSubresourceLoaderFactory(
           /*remote_controller=*/mojo::NullRemote(),
           /*remote_cache_storage=*/mojo::NullRemote(), client_id.Utf8(),
           blink::mojom::ServiceWorkerFetchHandlerBypassOption::kDefault,
-          /*router_rules=*/std::nullopt, blink::EmbeddedWorkerStatus::kStopped,
+          /*router_rules=*/std::nullopt, network::CrossOriginEmbedderPolicy(),
+          mojo::NullRemote() /*coep_reporter*/,
+          network::DocumentIsolationPolicy(),
+          mojo::NullRemote() /*dip_reporter*/,
+          blink::EmbeddedWorkerStatus::kStopped,
           /*running_status_receiver=*/mojo::NullReceiver()),
       network::SharedURLLoaderFactory::Create(std::move(fallback_factory)),
       std::move(receiver), std::move(task_runner));
