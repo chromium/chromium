@@ -300,12 +300,12 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
     private @Nullable OfflineIndicatorControllerV2 mOfflineIndicatorController;
     private @Nullable OfflineIndicatorInProductHelpController
             mOfflineIndicatorInProductHelpController;
-    private ReadAloudIphController mReadAloudIphController;
+    private @Nullable ReadAloudIphController mReadAloudIphController;
     private @Nullable ReadLaterIphController mReadLaterIphController;
-    private DesktopSiteSettingsIphController mDesktopSiteSettingsIphController;
-    private PdfPageIphController mPdfPageIphController;
-    private WebFeedFollowIntroController mWebFeedFollowIntroController;
-    private UrlFocusChangeListener mUrlFocusChangeListener;
+    private @Nullable DesktopSiteSettingsIphController mDesktopSiteSettingsIphController;
+    private @Nullable PdfPageIphController mPdfPageIphController;
+    private @Nullable WebFeedFollowIntroController mWebFeedFollowIntroController;
+    private @Nullable UrlFocusChangeListener mUrlFocusChangeListener;
     private @Nullable ToolbarButtonInProductHelpController mToolbarButtonInProductHelpController;
     private PwaBottomSheetController mPwaBottomSheetController;
     private NotificationPermissionController mNotificationPermissionController;
