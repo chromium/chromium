@@ -4682,6 +4682,7 @@ if (!is_android) {
         "../browser/extensions/api/extension_action/page_action_browsertest.cc",
         "../browser/extensions/api/favicon/favicon_apitest.cc",
         "../browser/extensions/api/feedback_private/feedback_browsertest.cc",
+        "../browser/extensions/api/feedback_private/feedback_private_apitest.cc",
         "../browser/extensions/api/file_system/file_system_apitest.cc",
         "../browser/extensions/api/identity/gaia_remote_consent_flow_browsertest.cc",
         "../browser/extensions/api/idltest/idltest_apitest.cc",
