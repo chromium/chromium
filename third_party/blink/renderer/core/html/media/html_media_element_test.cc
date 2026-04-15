@@ -434,6 +434,21 @@ class HTMLMediaElementTest : public testing::TestWithParam<MediaTestParam> {
     return !!Media()->player_lazy_load_intersection_observer_;
   }
 
+  void SetLazyMediaLoadStateToFullMediaForTesting() {
+    Media()->lazy_media_load_state_ =
+        decltype(Media()->lazy_media_load_state_)::kFullMedia;
+  }
+
+  void SetLazyMediaLoadStateToDeferredForTesting() {
+    Media()->lazy_media_load_state_ =
+        decltype(Media()->lazy_media_load_state_)::kDeferred;
+  }
+
+  bool IsLazyMediaLoadStateNoneForTesting() const {
+    return Media()->lazy_media_load_state_ ==
+           decltype(Media()->lazy_media_load_state_)::kNone;
+  }
+
   bool ControlsVisible() const { return Media()->ShouldShowControls(); }
 
   bool MediaShouldShowAllControls() const {
@@ -1163,6 +1178,24 @@ TEST_P(HTMLMediaElementTest, VisibilityObserverCreatedForLazyLoad) {
 
   SetReadyState(HTMLMediaElement::kHaveFutureData);
   EXPECT_EQ(HasLazyLoadObserver(), GetParam() == MediaTestParam::kVideo);
+}
+
+TEST_P(HTMLMediaElementTest, LoadAlgorithmResetsLazyMediaLoadState) {
+  ScopedLazyLoadVideoAndAudioForTest scoped_feature(true);
+
+  SetLazyMediaLoadStateToFullMediaForTesting();
+  Media()->load();
+
+  EXPECT_TRUE(IsLazyMediaLoadStateNoneForTesting());
+}
+
+TEST_P(HTMLMediaElementTest, ClearMediaPlayerResetsLazyMediaLoadState) {
+  ScopedLazyLoadVideoAndAudioForTest scoped_feature(true);
+
+  SetLazyMediaLoadStateToDeferredForTesting();
+  ClearMediaPlayer();
+
+  EXPECT_TRUE(IsLazyMediaLoadStateNoneForTesting());
 }
 
 TEST_P(HTMLMediaElementTest, DomInteractive) {
