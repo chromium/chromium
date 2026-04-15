@@ -32,6 +32,7 @@
 #import "ios/chrome/browser/shared/public/commands/browser_coordinator_commands.h"
 #import "ios/chrome/browser/shared/public/commands/bwg_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
+#import "ios/chrome/browser/shared/public/commands/fullscreen_commands.h"
 #import "ios/chrome/browser/shared/public/commands/popup_menu_commands.h"
 #import "ios/chrome/browser/shared/public/commands/scene_commands.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
@@ -168,12 +169,22 @@ using tab_groups::VersioningMessageController;
 
 - (void)exitFullscreen:
     (FullscreenModeTransitionTrigger)fullscreenTransitionTrigger {
-  FullscreenController* fullscreenController =
-      FullscreenController::FromBrowser(self.browser);
-  if (fullscreenController->IsForceFullscreenMode()) {
-    fullscreenController->ExitForceFullscreenMode(fullscreenTransitionTrigger);
+  if (IsFullscreenRefactoringEnabled()) {
+    // TODO(crbug.com/500669310): Support forced fullscreen mode in
+    // FullscreenCommands.
+    id<FullscreenCommands> fullscreenHandler = HandlerForProtocol(
+        self.browser->GetCommandDispatcher(), FullscreenCommands);
+    [fullscreenHandler exitFullscreenWithTrigger:fullscreenTransitionTrigger
+                                        animated:YES];
   } else {
-    fullscreenController->ExitFullscreen(fullscreenTransitionTrigger);
+    FullscreenController* fullscreenController =
+        FullscreenController::FromBrowser(self.browser);
+    if (fullscreenController->IsForceFullscreenMode()) {
+      fullscreenController->ExitForceFullscreenMode(
+          fullscreenTransitionTrigger);
+    } else {
+      fullscreenController->ExitFullscreen(fullscreenTransitionTrigger);
+    }
   }
 
   web::WebState* webState =
