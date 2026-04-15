@@ -1097,4 +1097,24 @@ TEST_F(MappableSharedImageVideoFramePoolTest, AbortCopies) {
   ASSERT_FALSE(frame_2);
 }
 
+TEST_F(MappableSharedImageVideoFramePoolTest,
+       RespectColorSpaceForSharedImageBackedFrame) {
+  scoped_refptr<VideoFrame> software_frame = CreateTestYUVVideoFrame(10);
+  // Color space is invalid by default.
+  ASSERT_FALSE(software_frame->ColorSpace().IsValid());
+
+  scoped_refptr<VideoFrame> frame;
+  mappable_shared_image_pool_->MaybeCreateHardwareFrame(
+      software_frame, base::BindOnce(MaybeCreateHardwareFrameCallback, &frame));
+
+  RunUntilIdle();
+
+  EXPECT_NE(software_frame.get(), frame.get());
+  EXPECT_TRUE(frame->HasSharedImage());
+  // The color space should have been set to REC709 by default.
+  EXPECT_EQ(gfx::ColorSpace::CreateREC709(), frame->ColorSpace());
+  EXPECT_EQ(gfx::ColorSpace::CreateREC709(),
+            frame->shared_image()->color_space());
+}
+
 }  // namespace media

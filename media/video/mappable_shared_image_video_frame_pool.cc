@@ -631,6 +631,9 @@ void SetPrefersExternalSampler(viz::SharedImageFormat& format) {
   }
 }
 
+BASE_FEATURE(kUseDefaultColorSpaceInMappablePool,
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 gfx::ColorSpace GetOutputColorSpace(
     const gfx::ColorSpace& source_cs,
     GpuVideoAcceleratorFactories::OutputFormat output_format) {
@@ -850,20 +853,35 @@ void MappableSharedImageVideoFramePool::PoolImpl::StartCopy() {
   while (!frame_copy_requests_.empty()) {
     VideoFrameCopyRequest& request = frame_copy_requests_.front();
 
+    if (request.passthrough) {
+      std::move(request.frame_ready_cb).Run(std::move(request.video_frame));
+      frame_copy_requests_.pop_front();
+      continue;
+    }
+
     // Some formats require conversion which may change the color space.
     auto output_color_space =
-        request.passthrough
-            ? request.video_frame->ColorSpace()
-            : GetOutputColorSpace(request.video_frame->ColorSpace(),
-                                  output_format_);
+        GetOutputColorSpace(request.video_frame->ColorSpace(), output_format_);
+
+    // TOOD(crbug.com/425634684): ColorSpace defaults should instead be added up
+    // the stack where the software VideoFrame is created (ffmpeg, widevine,
+    // etc.) and passed here to be copied to a hardware VideoFrame. This will
+    // ensure the same color space defaults are used here and in other places
+    // such as WebGL Canvas copies, VideoResourceUpdater etc.
+    if (!output_color_space.IsValid() &&
+        base::FeatureList::IsEnabled(kUseDefaultColorSpaceInMappablePool)) {
+      if (output_format_ == GpuVideoAcceleratorFactories::OutputFormat::XR30 ||
+          output_format_ == GpuVideoAcceleratorFactories::OutputFormat::XB30) {
+        output_color_space = gfx::ColorSpace::CreateSRGB();
+      } else {
+        output_color_space = gfx::ColorSpace::CreateREC709();
+      }
+    }
 
     // Acquire resource. Incompatible one will be dropped from the pool.
-    FrameResource* frame_resource =
-        request.passthrough
-            ? nullptr
-            : GetOrCreateFrameResource(
-                  CodedSize(request.video_frame.get(), output_format_),
-                  gfx::BufferUsage::SCANOUT_CPU_READ_WRITE, output_color_space);
+    FrameResource* frame_resource = GetOrCreateFrameResource(
+        CodedSize(request.video_frame.get(), output_format_),
+        gfx::BufferUsage::SCANOUT_CPU_READ_WRITE, output_color_space);
     if (!frame_resource || !frame_resource->shared_image ||
         !(frame_resource->scoped_mapping =
               frame_resource->shared_image->Map())) {
