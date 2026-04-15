@@ -27,7 +27,12 @@ PaymentsWindowBridge::PaymentsWindowBridge(
       base::android::AttachCurrentThread(), reinterpret_cast<int64_t>(this));
 }
 
-PaymentsWindowBridge::~PaymentsWindowBridge() = default;
+PaymentsWindowBridge::~PaymentsWindowBridge() {
+  if (java_payments_window_bridge_) {
+    Java_PaymentsWindowBridge_onNativeDestroyed(
+        base::android::AttachCurrentThread(), java_payments_window_bridge_);
+  }
+}
 
 void PaymentsWindowBridge::OpenEphemeralTab(
     const GURL& url,
