@@ -176,8 +176,7 @@ std::unique_ptr<MtabWatcherLinux> CreateMtabWatcherLinuxOnMtabWatcherTaskRunner(
 }
 
 StorageMonitor::EjectStatus EjectPathOnBlockingTaskRunner(
-    const base::FilePath& path,
-    const base::FilePath& device) {
+    const base::FilePath& path) {
   base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
                                                 base::BlockingType::MAY_BLOCK);
 
@@ -274,19 +273,28 @@ void StorageMonitorLinux::EjectDevice(
   }
 
   // Find the mount point for the given device ID.
-  base::FilePath path;
-  base::FilePath device;
+  base::FilePath mount_point;
   for (auto it = mount_info_map_.begin(); it != mount_info_map_.end(); ++it) {
     const MountPointInfo& mount_point_info = it->second;
     if (mount_point_info.storage_info.device_id() == device_id) {
-      path = it->first;
-      device = mount_point_info.mount_device;
+      mount_point = it->first;
+      const base::FilePath& mount_device = mount_point_info.mount_device;
+      auto priority_it = mount_priority_map_.find(mount_device);
+      CHECK(priority_it != mount_priority_map_.end());
+      ReferencedMountPoint& priority_mount_point = priority_it->second;
+      bool erased = priority_mount_point.erase(mount_point);
+      CHECK(erased);
+      if (priority_mount_point.empty()) {
+        mount_priority_map_.erase(priority_it);
+      }
+
+      // Do this at the end so `mount_device` is valid while accessed.
       mount_info_map_.erase(it);
       break;
     }
   }
 
-  if (path.empty()) {
+  if (mount_point.empty()) {
     std::move(callback).Run(EJECT_NO_SUCH_DEVICE);
     return;
   }
@@ -295,7 +303,7 @@ void StorageMonitorLinux::EjectDevice(
 
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE, {base::MayBlock(), base::TaskPriority::BEST_EFFORT},
-      base::BindOnce(&EjectPathOnBlockingTaskRunner, path, device),
+      base::BindOnce(&EjectPathOnBlockingTaskRunner, mount_point),
       std::move(callback));
 }
 
