@@ -500,3 +500,28 @@ fn test_search() {
     assert_search("^[^a-z]+$", "[^a-z]+");
     assert_search("file\\.txt", ".*file\\.txt.*");
 }
+
+/// Regression test for guidance-ai/llguidance#326:
+/// json_quote on a Literal longer than MAX_BYTE_CONCAT (31 bytes) that
+/// contains a byte needing quoting (e.g. \n) would drop the ByteConcat
+/// tail, silently truncating the regex.
+#[test]
+fn test_json_quote_long_literal_with_newline() {
+    let options = JsonQuoteOptions::regular();
+
+    // 78 bytes — gets split into 3 ByteConcat chunks.
+    // The \n at byte offset 43 lands in the middle chunk.
+    let long_str =
+        "Welcome, dear Rosencrantz and Guildenstern!\nMoreover that we much did long to ";
+    let mut b = RegexBuilder::new();
+    let lit = b.mk(&RegexAst::Literal(long_str.to_string())).unwrap();
+    let quoted = b.json_quote(lit, &options).unwrap();
+    let mut rx = b.to_regex(quoted);
+
+    let expected =
+        "\"Welcome, dear Rosencrantz and Guildenstern!\\nMoreover that we much did long to \"";
+    let truncated = "\"Welcome, dear Rosencrantz and Guildenstern!\\nMore\"";
+
+    match_(&mut rx, expected);
+    no_match(&mut rx, truncated);
+}

@@ -1,6 +1,6 @@
 [package]
 name = "derivre"
-version = "0.3.8"
+version = "0.3.9"
 edition = "2021"
 authors = ["Michal Moskal <michal@moskal.me>"]
 license = "MIT"

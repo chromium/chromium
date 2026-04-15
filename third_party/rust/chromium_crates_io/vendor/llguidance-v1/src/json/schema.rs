@@ -365,7 +365,7 @@ impl Schema {
                 },
             }),
 
-            (Schema::Object(mut o1), Schema::Object(mut o2)) => {
+            (Schema::Object(mut o1), Schema::Object(o2)) => {
                 let mut properties = IndexMap::new();
                 for (key, prop1) in std::mem::take(&mut o1.properties).into_iter() {
                     let prop2 = ctx.property_schema(&o2, &key)?;
@@ -381,29 +381,14 @@ impl Schema {
                 let mut required = o1.required;
                 required.extend(o2.required);
 
-                let mut pattern_properties = IndexMap::new();
-                for (key, prop1) in o1.pattern_properties.into_iter() {
-                    if let Some(prop2) = o2.pattern_properties.get_mut(&key) {
-                        let prop2 = std::mem::replace(prop2, Schema::Null);
-                        pattern_properties.insert(
-                            key.clone(),
-                            prop1.intersect(prop2.clone(), ctx, stack_level + 1)?,
-                        );
-                    } else {
-                        pattern_properties.insert(key.clone(), prop1);
-                    }
-                }
-                for (key, prop2) in o2.pattern_properties.into_iter() {
-                    if pattern_properties.contains_key(&key) {
-                        continue;
-                    }
-                    pattern_properties.insert(key.clone(), prop2);
-                }
-
-                let keys = pattern_properties.keys().collect::<Vec<_>>();
-                if !keys.is_empty() {
-                    ctx.check_disjoint_pattern_properties(&keys)?;
-                }
+                let pattern_properties = intersect_pattern_properties(
+                    o1.pattern_properties,
+                    o2.pattern_properties,
+                    &o1.additional_properties,
+                    &o2.additional_properties,
+                    ctx,
+                    stack_level,
+                )?;
 
                 let additional_properties =
                     match (o1.additional_properties, o2.additional_properties) {
@@ -755,6 +740,51 @@ fn define_ref(ctx: &Context, ref_uri: &str) -> Result<()> {
     Ok(())
 }
 
+/// Merge pattern properties from two object schemas during intersection.
+/// Extracted from `intersect` to keep its stack frame small for deep recursion.
+#[inline(never)]
+fn intersect_pattern_properties(
+    o1_pp: IndexMap<String, Schema>,
+    o2_pp: IndexMap<String, Schema>,
+    o1_ap: &Option<Box<Schema>>,
+    o2_ap: &Option<Box<Schema>>,
+    ctx: &Context,
+    stack_level: usize,
+) -> Result<IndexMap<String, Schema>> {
+    let mut result = IndexMap::new();
+    // When a pattern exists only on one side, properties matching
+    // it are "additional" from the other side's perspective and
+    // must be intersected with that side's additionalProperties.
+    let mut o2_remaining = o2_pp;
+    for (key, prop1) in o1_pp.into_iter() {
+        if let Some(prop2) = o2_remaining.shift_remove(&key) {
+            result.insert(key, prop1.intersect(prop2, ctx, stack_level + 1)?);
+        } else if let Some(ap) = o2_ap {
+            result.insert(
+                key,
+                prop1.intersect(ap.as_ref().clone(), ctx, stack_level + 1)?,
+            );
+        } else {
+            result.insert(key, prop1);
+        }
+    }
+    for (key, prop2) in o2_remaining.into_iter() {
+        if let Some(ap) = o1_ap {
+            result.insert(
+                key,
+                prop2.intersect(ap.as_ref().clone(), ctx, stack_level + 1)?,
+            );
+        } else {
+            result.insert(key, prop2);
+        }
+    }
+    let keys = result.keys().collect::<Vec<_>>();
+    if !keys.is_empty() {
+        ctx.check_disjoint_pattern_properties(&keys)?;
+    }
+    Ok(result)
+}
+
 fn intersect_ref(
     ctx: &Context,
     ref_uri: &str,
@@ -1073,9 +1103,30 @@ fn compile_object(ctx: &Context, schema: &HashMap<&str, &Value>) -> Result<Schem
     let min_properties = get_usize(schema, "minProperties")?.unwrap_or(0);
     let max_properties = get_usize(schema, "maxProperties")?;
 
-    let properties = compile_prop_map(ctx, "properties", properties)?;
+    let mut properties = compile_prop_map(ctx, "properties", properties)?;
     let pattern_properties = compile_prop_map(ctx, "patternProperties", pattern_properties)?;
     ctx.check_disjoint_pattern_properties(&pattern_properties.keys().collect::<Vec<_>>())?;
+
+    // Per JSON Schema spec, a named property must validate against BOTH its
+    // properties schema AND any matching patternProperties schema. Since
+    // gen_json_object excludes named properties from pattern property regexes,
+    // we must pre-intersect here to preserve the pattern constraint.
+    //
+    // Note: the named property schema is the left operand, so when both are
+    // object or array types, the named property's sub-schema ordering takes
+    // precedence in the generated grammar.
+    if !pattern_properties.is_empty() {
+        for (name, prop_schema) in properties.iter_mut() {
+            for (pattern, pat_schema) in pattern_properties.iter() {
+                if ctx.property_schema_matches(pattern, name)? {
+                    let owned = std::mem::replace(prop_schema, Schema::Null);
+                    *prop_schema = owned.intersect(pat_schema.clone(), ctx, 0)?;
+                    break; // patterns are disjoint, at most one match
+                }
+            }
+        }
+    }
+
     let additional_properties = match additional_properties {
         None => None,
         Some(val) => Some(Box::new(compile_resource(ctx, ctx.as_resource_ref(val))?)),

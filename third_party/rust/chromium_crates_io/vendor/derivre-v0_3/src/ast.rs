@@ -568,7 +568,7 @@ impl ExprSet {
         (w & ATTR_HAS_REPEAT) != 0
     }
 
-    pub fn get(&self, id: ExprRef) -> Expr {
+    pub fn get(&self, id: ExprRef) -> Expr<'_> {
         Expr::from_slice(self.exprs.get(id.0))
     }
 

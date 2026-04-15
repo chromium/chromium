@@ -99,86 +99,8 @@ pub struct ParserStats {
     pub num_lexemes: usize,
 }
 
-#[derive(Debug, Clone)]
-pub struct XorShift {
-    seed: u32,
-}
-
-impl XorShift {
-    pub fn new(seed: u32) -> Self {
-        XorShift { seed }
-    }
-
-    pub fn new_str(s: &str) -> Self {
-        XorShift {
-            seed: XorShift::fnv1a_32(s.as_bytes()),
-        }
-    }
-
-    #[allow(clippy::should_implement_trait)]
-    pub fn next(&mut self) -> u32 {
-        let mut x = self.seed;
-        x ^= x << 13;
-        x ^= x >> 17;
-        x ^= x << 5;
-        self.seed = x;
-        x
-    }
-
-    pub fn from_range(&mut self, r: Range<usize>) -> usize {
-        assert!(r.start < r.end);
-        assert!(r.end < u32::MAX as usize);
-        r.start + (self.next() as usize) % (r.end - r.start)
-    }
-
-    pub fn one_in(&mut self, n: u32) -> bool {
-        self.next().is_multiple_of(n)
-    }
-
-    pub fn next_alt(&mut self) -> u32 {
-        let mut x = self.seed;
-        x ^= x << 15;
-        x ^= x >> 4;
-        x ^= x << 23;
-        self.seed = x;
-        x
-    }
-
-    pub fn fnv1a_32(s: &[u8]) -> u32 {
-        let mut hash: u32 = 0x811c9dc5;
-        for byte in s {
-            hash ^= *byte as u32;
-            hash = hash.wrapping_mul(0x01000193);
-        }
-        hash
-    }
-
-    pub fn sample_from_vob(&mut self, vob: &SimpleVob) -> u32 {
-        let nset = vob.num_set();
-        assert!(nset > 0);
-        if nset > vob.len() / 10 {
-            loop {
-                let idx = self.from_range(0..vob.len());
-                if vob[idx] {
-                    return idx as u32;
-                }
-            }
-        } else {
-            let choices = vob.to_list();
-            choices[self.from_range(0..choices.len())]
-        }
-    }
-}
-
-impl Default for XorShift {
-    fn default() -> Self {
-        XorShift { seed: 0xdeadf00d }
-    }
-}
-
 #[derive(Debug, Default, Clone)]
 pub struct ParserMetrics {
-    pub rand: XorShift,
     pub message: String,
     pub slicer_leftover_us: usize,
 }

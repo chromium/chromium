@@ -1,11 +1,11 @@
-use std::sync::{Arc, Mutex};
+use std::sync::Arc;
 
 use anyhow::Result;
 use toktrie::{InferenceCapabilities, TokEnv};
 
 use crate::{
     api::{GrammarInit, ParserLimits, TopLevelGrammar},
-    earley::{perf::ParserPerfCounters, SlicedBiasComputer, XorShift},
+    earley::{perf::ParserPerfCounters, SlicedBiasComputer},
     Logger, TokenParser,
 };
 
@@ -21,7 +21,6 @@ pub struct ParserFactory {
     stderr_log_level: u32,
     buffer_log_level: u32,
     limits: ParserLimits,
-    seed: Mutex<XorShift>,
     perf_counters: Arc<ParserPerfCounters>,
 }
 
@@ -38,7 +37,6 @@ impl ParserFactory {
             inference_caps,
             stderr_log_level: 1,
             buffer_log_level: 0,
-            seed: Mutex::new(XorShift::default()),
             limits: ParserLimits::default(),
             perf_counters: Arc::new(ParserPerfCounters::default()),
         })
@@ -64,7 +62,6 @@ impl ParserFactory {
             inference_caps: self.inference_caps.clone(),
             stderr_log_level: self.stderr_log_level,
             buffer_log_level: self.buffer_log_level,
-            seed: Mutex::new(XorShift::default()),
             limits: self.limits.clone(),
             perf_counters: self.perf_counters.clone(),
         })
@@ -112,12 +109,6 @@ impl ParserFactory {
 
     pub fn slicer(&self) -> Arc<SlicedBiasComputer> {
         self.slicer.clone()
-    }
-
-    pub(crate) fn next_rng(&self) -> XorShift {
-        let mut rng = self.seed.lock().unwrap();
-        rng.next_alt();
-        rng.clone()
     }
 
     pub fn create_parser(&self, grammar: TopLevelGrammar) -> Result<TokenParser> {
