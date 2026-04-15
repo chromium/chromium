@@ -6,6 +6,7 @@
 #define GPU_COMMAND_BUFFER_SERVICE_GLES2_CMD_CLEAR_FRAMEBUFFER_H_
 
 #include "gpu/command_buffer/service/gl_utils.h"
+#include "gpu/command_buffer/service/transform_feedback_manager.h"
 #include "gpu/gpu_gles2_export.h"
 
 namespace gfx {
@@ -29,6 +30,7 @@ class GPU_GLES2_EXPORT ClearFramebufferResourceManager {
 
   void Destroy();
   void ClearFramebuffer(const gles2::GLES2Decoder* decoder,
+                        TransformFeedback* transform_feedback,
                         const gfx::Size& max_viewport_size,
                         GLbitfield mask,
                         GLfloat clear_color_red,
