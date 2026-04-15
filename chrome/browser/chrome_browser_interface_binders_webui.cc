@@ -32,6 +32,8 @@
 #include "components/enterprise/connectors/connectors_internals.mojom.h"
 #include "components/policy/core/common/features.h"
 #if !BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/ui/webui/indigo_internals/indigo_internals.mojom.h"
+#include "chrome/browser/ui/webui/indigo_internals/indigo_internals_ui.h"
 #include "chrome/browser/ui/webui/omnibox_popup/mojom/omnibox_popup.mojom.h"
 #include "chrome/browser/ui/webui/omnibox_popup/mojom/omnibox_popup_aim.mojom.h"
 #include "chrome/browser/ui/webui/omnibox_popup/omnibox_popup_ui.h"
@@ -92,6 +94,8 @@ void PopulateChromeWebUIFrameBindersPartsAllPlatforms(
       omnibox_popup_aim::mojom::PageHandlerFactory, OmniboxPopupUI>(map);
   RegisterWebUIControllerInterfaceBinder<
       omnibox_popup::mojom::PageHandlerFactory, OmniboxPopupUI>(map);
+  RegisterWebUIControllerInterfaceBinder<
+      indigo_internals::mojom::PageHandlerFactory, IndigoInternalsUI>(map);
   RegisterWebUIControllerInterfaceBinder<
       webnn_internals::mojom::PageHandlerFactory, WebNNInternalsUI>(map);
 #endif

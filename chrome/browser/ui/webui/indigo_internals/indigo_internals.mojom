@@ -1,0 +1,65 @@
+// Copyright 2026 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module indigo_internals.mojom;
+
+// Represents the local eligibility status of the user for Indigo features.
+enum LocalEligibility {
+  kEligible,
+  kNotSignedIn,
+  kMissingCapabilities,
+  kDisabledByPolicy,
+};
+
+// Represents the remote eligibility status fetched from the server.
+struct RemoteEligibility {
+  bool is_service_supported_for_account;
+  bool has_user_image;
+};
+
+// Consolidates all eligibility signals for the Indigo feature.
+struct CombinedEligibility {
+  LocalEligibility local_eligibility;
+  RemoteEligibility? remote_eligibility;
+  bool can_generate_image;
+  bool ready_to_onboard;
+  bool has_onboarded_pref;
+};
+
+// Interface for creating a PageHandler. This is the entry point for the
+// chrome://indigo-internals WebUI to establish communication with the browser.
+// Implemented in the browser process.
+interface PageHandlerFactory {
+  // Binds the |handler| to receive requests from the WebUI, and sets up the
+  // |page| remote to send updates back to the WebUI.
+  CreatePageHandler(pending_remote<Page> page,
+                    pending_receiver<PageHandler> handler);
+};
+
+// Interface for querying and controlling Indigo diagnostics.
+// Implemented in the browser process and handles requests from an authorized
+// WebUI renderer process (chrome://indigo-internals).
+interface PageHandler {
+  // Fetches the current local eligibility status. This is a quick check
+  // based on local state (e.g., sign-in status).
+  GetLocalEligibility() => (LocalEligibility status);
+
+  // Fetches the full combined eligibility status. This may trigger an
+  // asynchronous network request to fetch remote eligibility if it is not
+  // already cached.
+  GetCombinedEligibility() => (CombinedEligibility status);
+
+  // Triggers invalidation of the remote eligibility cache. This is used
+  // to force a refresh of the status when testing.
+  InvalidateRemoteEligibility();
+};
+
+// Interface for the browser process to push updates to the WebUI.
+// Implemented in the renderer process (the chrome://indigo-internals WebUI).
+interface Page {
+  // Notifies the WebUI when the local eligibility status changes (e.g.,
+  // when the user signs in or out). The UI should update its display
+  // immediately upon receiving this notification.
+  OnLocalEligibilityChanged(LocalEligibility status);
+};

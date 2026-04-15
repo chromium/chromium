@@ -1856,6 +1856,7 @@ static_library("ui") {
       "//chrome/browser/ui/views/side_panel",
       "//chrome/browser/ui/waap:manager",
       "//chrome/browser/ui/webui/feedback/report_unsafe_site",
+      "//chrome/browser/ui/webui/indigo_internals",
       "//chrome/browser/ui/webui/on_device_internals",
       "//chrome/browser/ui/webui/util",
       "//chrome/browser/ui/webui/webnn_internals",

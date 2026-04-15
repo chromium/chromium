@@ -818,6 +818,7 @@ chromium-metrics-reviews@google.com.
              Manager)"/>
   <int value="-623121238" label="chrome://arc-graphics-tracing/"/>
   <int value="-614294009" label="chrome://crostini-credits/"/>
+  <int value="-611540207" label="chrome://indigo-internals/"/>
   <int value="-606058756" label="chrome://accessibility/"/>
   <int value="-601472337" label="chrome://shimless-rma/"/>
   <int value="-566908909" label="chrome://suggestions/"/>

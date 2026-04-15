@@ -1,0 +1,34 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//mojo/public/tools/bindings/mojom.gni")
+
+assert(!is_android)
+
+mojom("mojo_bindings") {
+  sources = [ "indigo_internals.mojom" ]
+  webui_module_path = "/"
+  public_deps = [ "//mojo/public/mojom/base" ]
+}
+
+source_set("indigo_internals") {
+  public = [ "indigo_internals_ui.h" ]
+  sources = [
+    "indigo_internals_page_handler.cc",
+    "indigo_internals_page_handler.h",
+    "indigo_internals_ui.cc",
+  ]
+  public_deps = [ ":mojo_bindings" ]
+  deps = [
+    "//base",
+    "//chrome/app:generated_resources",
+    "//chrome/browser/indigo",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/resources/indigo_internals:resources",
+    "//chrome/common",
+    "//content/public/browser",
+    "//ui/base",
+    "//ui/webui",
+  ]
+}
