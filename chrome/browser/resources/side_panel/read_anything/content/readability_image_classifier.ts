@@ -215,10 +215,15 @@ export class ReadabilityImageClassifier {
     return this.classifyByFallback_(img);
   }
 
-  // Post-processes all images in an element to apply classification classes.
+  // Post-processes all images in an element to apply classification classes
+  // and deduplicate images that appear multiple times due to layout artifacts.
   static processImagesIn(element: HTMLElement): void {
     const classifier = new ReadabilityImageClassifier();
-    const images = element.getElementsByTagName('img');
+
+    // Convert to Array because getElementsByTagName returns a LIVE collection.
+    // Modifying the DOM while iterating over a live collection can cause
+    // issues.
+    const images = Array.from(element.getElementsByTagName('img'));
 
     const applyClassification = (img: HTMLImageElement) => {
       const classification = classifier.classify(img);
@@ -231,6 +236,14 @@ export class ReadabilityImageClassifier {
       applyClassification(img);
     };
 
+    // Track seen image sources and their indices to deduplicate.
+    // Key is "src ||| alt". Value is the index where it was first seen.
+    const seenImages = new Map<string, number>();
+    // Maximum distance in the images array to consider images as duplicates.
+    // This prevents deduplicating images that are legitimately repeated much
+    // later in a long article.
+    const PROXIMITY_THRESHOLD = 3;
+
     for (let i = 0; i < images.length; i++) {
       const img = images[i];
       if (!img) {
@@ -238,6 +251,33 @@ export class ReadabilityImageClassifier {
       }
 
       classifier.loadLazyImageAttributes_(img);
+
+      const src = img.src;
+      const alt = img.getAttribute('alt') || '';
+
+      if (src) {
+        const key = `${src} ||| ${alt}`;
+        const prevIndex = seenImages.get(key);
+
+        if (prevIndex !== undefined && (i - prevIndex) <= PROXIMITY_THRESHOLD) {
+          // Duplicate detected within proximity.
+          // If the image is inside a FIGURE, remove the FIGURE to also remove
+          // any duplicate captions.
+          let toRemove: HTMLElement = img;
+          if (img.parentElement && img.parentElement.tagName === 'FIGURE') {
+            toRemove = img.parentElement;
+          }
+          toRemove.remove();
+
+          // Update the index to allow chaining of duplicates
+          seenImages.set(key, i);
+          continue;
+        }
+
+        // Track the occurrence
+        seenImages.set(key, i);
+      }
+
       // If the image is already loaded (e.g., from cache), manually trigger.
       if (img.complete) {
         applyClassification(img);

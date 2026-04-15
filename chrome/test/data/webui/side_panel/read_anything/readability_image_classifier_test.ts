@@ -88,19 +88,23 @@ suite('ReadabilityImageClassifier', function() {
       // 3. Inline via Metadata
       createImageTest(
           'math_class', safeNonDominantWidth, 100, 'p', '<img>',
-          {class: 'tex'}),
+          {class: 'tex', src: 'url1.jpg'}),
       createImageTest(
           'math_filename', safeNonDominantWidth, 100, 'p', '<img>',
           {src: '/foo/icon.svg'}),
       createImageTest(
-          'math_alt', safeNonDominantWidth, 100, 'p', '<img>', {alt: 'E=mc^2'}),
+          'math_alt', safeNonDominantWidth, 100, 'p', '<img>',
+          {alt: 'E=mc^2', src: 'url2.jpg'}),
 
       // 4. Definitely Full-width (Structure)
       createImageTest(
           'figure_with_caption', 400, 300, 'figure',
           '<img><figcaption>Test</figcaption>'),
-      createImageTest('sole_content_in_p', 400, 300, 'p', '<img>'),
-      createImageTest('sole_content_with_br', 400, 300, 'p', '<img><br>'),
+      createImageTest(
+          'sole_content_in_p', 400, 300, 'p', '<img>', {src: 'url3.jpg'}),
+      createImageTest(
+          'sole_content_with_br', 400, 300, 'p', '<img><br>',
+          {src: 'url4.jpg'}),
 
       // 5. Fallback
       createImageTest(
@@ -144,6 +148,8 @@ suite('ReadabilityImageClassifier', function() {
   test('should detect and load lazy-loaded image attributes', async () => {
     const modernURL = 'https://example.com/modern.jpg';
     const legacyURL = 'https://example.com/legacy.jpg';
+    const modernURL2 = 'https://example.com/modern2.jpg';
+    const legacyURL2 = 'https://example.com/legacy2.jpg';
     const wpURL = 'https://example.com/wordpress.jpg';
     const wpSrcSet = [
       'https://example.com/wp-400.jpg 400w',
@@ -161,8 +167,8 @@ suite('ReadabilityImageClassifier', function() {
         'data-lazy-sizes': wpSizes,
       }),
       createImageTest('lazy_priority', 100, 100, 'p', '<img>', {
-        'data-src': modernURL,
-        'data-original': legacyURL,
+        'data-src': modernURL2,
+        'data-original': legacyURL2,
       }),
     ];
 
@@ -199,7 +205,58 @@ suite('ReadabilityImageClassifier', function() {
     const imgPriority = document.getElementById('lazy_priority');
     assertTrue(!!imgPriority);
     assertEquals(
-        imgPriority.getAttribute('src'), modernURL,
+        imgPriority.getAttribute('src'), modernURL2,
         'Should prioritize data-src over data-original');
+  });
+
+  test('should deduplicate nearby identical images', async () => {
+    const src = 'https://example.com/dup.jpg';
+    const alt = 'Duplicate Alt';
+
+    const imagePromises = [
+      createImageTest('img0', 100, 100, 'p', '<img>', {src, alt}),
+      createImageTest('img1', 100, 100, 'p', '<img>', {src, alt}),
+      createImageTest('img2', 100, 100, 'p', '<img>', {src: 'other.jpg'}),
+      createImageTest('img3', 100, 100, 'p', '<img>', {src: 'other2.jpg'}),
+      createImageTest('img4', 100, 100, 'p', '<img>', {src: 'other3.jpg'}),
+      createImageTest('img5', 100, 100, 'p', '<img>', {src, alt}),
+    ];
+
+    await Promise.all(imagePromises);
+    ReadabilityImageClassifier.processImagesIn(testContainer);
+
+    assertTrue(!!document.getElementById('img0'), 'img0 should be kept');
+    assertFalse(!!document.getElementById('img1'), 'img1 should be removed');
+    assertTrue(!!document.getElementById('img2'), 'img2 should be kept');
+    assertTrue(!!document.getElementById('img3'), 'img3 should be kept');
+    assertTrue(!!document.getElementById('img4'), 'img4 should be kept');
+    assertTrue(!!document.getElementById('img5'), 'img5 should be kept');
+  });
+
+  test('should remove parent FIGURE when deduplicating', async () => {
+    const src = 'https://example.com/dup_fig.jpg';
+    const alt = 'Figure Alt';
+
+    const imagePromises = [
+      createImageTest(
+          'img_fig0', 100, 100, 'figure',
+          '<img><figcaption>Caption</figcaption>', {src, alt}),
+      createImageTest(
+          'img_fig1', 100, 100, 'figure',
+          '<img><figcaption>Caption</figcaption>', {src, alt}),
+    ];
+
+    await Promise.all(imagePromises);
+
+    const fig0 = document.getElementById('img_fig0')?.parentElement;
+    const fig1 = document.getElementById('img_fig1')?.parentElement;
+
+    assertTrue(!!fig0 && fig0.tagName === 'FIGURE');
+    assertTrue(!!fig1 && fig1.tagName === 'FIGURE');
+
+    ReadabilityImageClassifier.processImagesIn(testContainer);
+
+    assertTrue(testContainer.contains(fig0), 'fig0 should be kept');
+    assertFalse(testContainer.contains(fig1), 'fig1 should be removed');
   });
 });
