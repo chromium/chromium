@@ -258,10 +258,6 @@ class TestAutofillClientTemplate : public T {
   }
 
   payments::TestPaymentsAutofillClient* GetPaymentsAutofillClient() override {
-    if (!payments_autofill_client_) {
-      payments_autofill_client_ =
-          std::make_unique<payments::TestPaymentsAutofillClient>(this);
-    }
     return payments_autofill_client_.get();
   }
 
@@ -733,7 +729,8 @@ class TestAutofillClientTemplate : public T {
   // The below objects must be destroyed before `TestPersonalDataManager`
   // because they keep a reference to it.
   std::unique_ptr<payments::TestPaymentsAutofillClient>
-      payments_autofill_client_;
+      payments_autofill_client_ =
+          std::make_unique<payments::TestPaymentsAutofillClient>(this);
   std::unique_ptr<SingleFieldFillRouter> single_field_fill_router_;
   std::unique_ptr<FormDataImporter> form_data_importer_;
   std::unique_ptr<WalletPassAccessManager> wallet_pass_access_manager_;
