@@ -31,6 +31,34 @@ declare_args() {
 
 assert(is_linux)
 
+if (current_cpu == "x86") {
+  deb_arch = "i386"
+  rpm_arch = "i386"
+} else if (current_cpu == "x64") {
+  deb_arch = "amd64"
+  rpm_arch = "x86_64"
+} else if (current_cpu == "arm") {
+  deb_arch = "armhf"
+  rpm_arch = "armhf"
+} else if (current_cpu == "arm64") {
+  deb_arch = "arm64"
+  rpm_arch = "aarch64"
+} else if (current_cpu == "mipsel") {
+  deb_arch = "mipsel"
+  rpm_arch = "mipsel"
+} else if (current_cpu == "mips64el") {
+  deb_arch = "mips64el"
+  rpm_arch = "mips64el"
+} else if (current_cpu == "loong64") {
+  deb_arch = "loong64"
+  rpm_arch = "loongarch64"
+} else if (current_cpu == "riscv64") {
+  deb_arch = "riscv64"
+  rpm_arch = "riscv64"
+} else {
+  assert(false, "Linux installer not configured for this architecture.")
+}
+
 packaging_files_executables = [
   "$root_out_dir/chrome",
   "$root_out_dir/chrome_crashpad_handler",
@@ -269,11 +297,11 @@ action("deb_repo_package") {
     package = "chromium-browser-repo"
   }
 
-  outputs = [ "$root_out_dir/${package}_${pgp_key_version}_all.deb" ]
+  outputs = [ "$root_out_dir/${package}_${pgp_key_version}_${deb_arch}.deb" ]
 
   args = [
     "-a",
-    "amd64",
+    deb_arch,
     "-b",
     build_timestamp,
     "-c",
@@ -487,26 +515,6 @@ template("linux_package") {
     visibility = [ ":*" ]
     script = "debian/build.py"
 
-    if (current_cpu == "x86") {
-      deb_arch = "i386"
-    } else if (current_cpu == "x64") {
-      deb_arch = "amd64"
-    } else if (current_cpu == "arm") {
-      deb_arch = "armhf"
-    } else if (current_cpu == "arm64") {
-      deb_arch = "arm64"
-    } else if (current_cpu == "mipsel") {
-      deb_arch = "mipsel"
-    } else if (current_cpu == "mips64el") {
-      deb_arch = "mips64el"
-    } else if (current_cpu == "loong64") {
-      deb_arch = "loong64"
-    } else if (current_cpu == "riscv64") {
-      deb_arch = "riscv64"
-    } else {
-      assert(false, "Linux installer not configured for this architecture.")
-    }
-
     inputs = packaging_files
     outputs = [ "$root_out_dir/${package}-${channel}_${chrome_version_full}-1_${deb_arch}.deb" ]
 
@@ -542,26 +550,6 @@ template("linux_package") {
     action(rpm_target_name) {
       visibility = [ ":*" ]
       script = "rpm/build.py"
-
-      if (current_cpu == "x86") {
-        rpm_arch = "i386"
-      } else if (current_cpu == "x64") {
-        rpm_arch = "x86_64"
-      } else if (current_cpu == "arm") {
-        rpm_arch = "armhf"
-      } else if (current_cpu == "arm64") {
-        rpm_arch = "aarch64"
-      } else if (current_cpu == "mipsel") {
-        rpm_arch = "mipsel"
-      } else if (current_cpu == "mips64el") {
-        rpm_arch = "mips64el"
-      } else if (current_cpu == "loong64") {
-        rpm_arch = "loongarch64"
-      } else if (current_cpu == "riscv64") {
-        rpm_arch = "riscv64"
-      } else {
-        assert(false, "Linux installer not configured for this architecture.")
-      }
 
       inputs = packaging_files
       outputs = [ "$root_out_dir/${package}-${channel}-${chrome_version_full}-1.${rpm_arch}.rpm" ]

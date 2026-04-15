@@ -72,6 +72,7 @@ Types: deb
 URIs: https://dl.google.com/linux/chrome-@@channel/deb/
 Suites: stable
 Components: main
+Architectures: @@architecture
 Signed-By: $GPG_FILE
 EOF
 }

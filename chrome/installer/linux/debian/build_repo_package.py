@@ -81,7 +81,7 @@ def main() -> None:
         (debian_dir / "postrm").chmod(0o755)
 
         pkg_name = config.info_vars["PACKAGE"]
-        deb_file = output_dir / f"{pkg_name}_{pgp_key_version}_all.deb"
+        deb_file = output_dir / f"{pkg_name}_{pgp_key_version}_{args.arch}.deb"
 
         # Use fakeroot to ensure correct permissions in the debian package.
         installer.run_command(

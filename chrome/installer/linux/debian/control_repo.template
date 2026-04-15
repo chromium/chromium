@@ -1,6 +1,6 @@
 Package: @@PACKAGE
 Version: @@versionfull
-Architecture: all
+Architecture: @@architecture
 Section: web
 Priority: optional
 Maintainer: @@MAINTNAME <@@MAINTMAIL>
