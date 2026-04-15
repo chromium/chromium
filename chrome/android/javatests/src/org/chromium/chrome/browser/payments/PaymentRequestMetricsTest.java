@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.payments;
 
+import android.os.Build;
+
 import androidx.test.filters.MediumTest;
 import androidx.test.platform.app.InstrumentationRegistry;
 
@@ -252,6 +254,9 @@ public class PaymentRequestMetricsTest {
     @Test
     @MediumTest
     @Feature({"Payments"})
+    @DisableIf.Build(
+            sdk_is_less_than = Build.VERSION_CODES.UPSIDE_DOWN_CAKE,
+            message = "https://crbug.com/502914394")
     public void testAbortMetrics_UserAborted_TabClosed() throws TimeoutException {
         // Install the apps so the user can complete the Payment Request.
         mPaymentRequestTestRule.addPaymentAppFactory(
