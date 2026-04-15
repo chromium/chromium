@@ -627,7 +627,8 @@ source_set("test_support") {
     "mock_contextual_tasks_panel_host.h",
     "mock_contextual_tasks_ui_service.cc",
     "mock_contextual_tasks_ui_service.h",
-    "test_contextual_tasks_ui_service_delegate.h",
+    "mock_contextual_tasks_ui_service_delegate.cc",
+    "mock_contextual_tasks_ui_service_delegate.h",
   ]
   deps = [
     ":contextual_tasks",
