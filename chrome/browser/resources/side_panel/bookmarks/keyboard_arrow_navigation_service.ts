@@ -141,18 +141,17 @@ export class KeyArrowNavigationService {
    * element depending on the direction that is passed in.
    */
   moveFocus(direction: -1|1) {
-    if (this.focusIndex_ + direction > this.elements_.length - 1) {
-      this.focusIndex_ = 0;
-      this.focusCurrentIndex_();
-      return;
-    }
-    if (this.focusIndex_ + direction < 0) {
-      this.focusIndex_ = this.elements_.length - 1;
-      this.focusCurrentIndex_();
+    const elementCount = this.elements_.length;
+    if (elementCount === 0) {
       return;
     }
 
-    this.focusIndex_ += direction;
+    if (direction === 1) {
+      this.focusIndex_ = (this.focusIndex_ + 1) % elementCount;
+    } else {
+      this.focusIndex_ = (this.focusIndex_ - 1 + elementCount) % elementCount;
+    }
+
     this.focusCurrentIndex_();
   }
 
@@ -160,6 +159,10 @@ export class KeyArrowNavigationService {
     const {key} = event;
 
     if (!(key === 'ArrowUp' || key === 'ArrowDown')) {
+      return;
+    }
+
+    if (this.elements_.length === 0) {
       return;
     }
 
@@ -175,7 +178,10 @@ export class KeyArrowNavigationService {
   }
 
   private focusCurrentIndex_() {
-    this.elements_[this.focusIndex_].focus();
+    const element = this.elements_[this.focusIndex_];
+    if (element) {
+      element.focus();
+    }
   }
 
   private findElementIndex_(element: HTMLElement): number {

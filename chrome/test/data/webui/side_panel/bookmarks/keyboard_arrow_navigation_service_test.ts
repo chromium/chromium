@@ -4,7 +4,7 @@
 
 import {KeyArrowNavigationService} from 'chrome://bookmarks-side-panel.top-chrome/keyboard_arrow_navigation_service.js';
 import {getDeepActiveElement} from 'chrome://resources/js/util.js';
-import {assertEquals} from 'chrome://webui-test/chai_assert.js';
+import {assertArrayEquals, assertEquals} from 'chrome://webui-test/chai_assert.js';
 
 suite('KeyArrowNavigationServiceTest', () => {
   let service: KeyArrowNavigationService;
@@ -104,9 +104,7 @@ suite('KeyArrowNavigationServiceTest', () => {
     const elementListIds =
         service.getElementsForTesting().map((el: HTMLElement) => el.id);
 
-    assertEquals(
-        JSON.stringify(elementListIds),
-        JSON.stringify(['box-3', 'box-4', 'box-5', 'box-6']));
+    assertArrayEquals(['box-3', 'box-4', 'box-5', 'box-6'], elementListIds);
   });
 
   test('MovesFocus', () => {
@@ -142,18 +140,14 @@ suite('KeyArrowNavigationServiceTest', () => {
 
     let elementListIds =
         service.getElementsForTesting().map((el: HTMLElement) => el.id);
-    assertEquals(
-        JSON.stringify(elementListIds),
-        JSON.stringify(['box-3', 'box-4', 'box-5', 'box-6']));
+    assertArrayEquals(['box-3', 'box-4', 'box-5', 'box-6'], elementListIds);
 
     const targetElement = rootElement.shadowRoot!.querySelector('#box-5')!;
     service.removeElementsWithin(targetElement as HTMLElement);
 
     elementListIds =
         service.getElementsForTesting().map((el: HTMLElement) => el.id);
-    assertEquals(
-        JSON.stringify(elementListIds),
-        JSON.stringify(['box-3', 'box-4', 'box-5']));
+    assertArrayEquals(['box-3', 'box-4', 'box-5'], elementListIds);
 
     dispatchArrowEvent(rootElement, 'ArrowDown');
     dispatchArrowEvent(rootElement, 'ArrowDown');
@@ -168,15 +162,42 @@ suite('KeyArrowNavigationServiceTest', () => {
     let elementListIds =
         service.getElementsForTesting().map((el: HTMLElement) => el.id);
 
-    assertEquals(JSON.stringify(elementListIds), JSON.stringify([]));
+    assertArrayEquals([], elementListIds);
 
     service.addElementsWithin(rootElement);
 
     elementListIds =
         service.getElementsForTesting().map((el: HTMLElement) => el.id);
 
-    assertEquals(
-        JSON.stringify(elementListIds),
-        JSON.stringify(['box-3', 'box-4', 'box-5', 'box-6']));
+    assertArrayEquals(['box-3', 'box-4', 'box-5', 'box-6'], elementListIds);
+  });
+
+  test('DoesNotCrashOnEmptyList', () => {
+    rootElement.shadowRoot?.replaceChildren();
+    service.rebuildNavigationElements(rootElement);
+    assertEquals(service.getElementCount(), 0);
+
+    // This should not crash
+    dispatchArrowEvent(rootElement, 'ArrowDown');
+    dispatchArrowEvent(rootElement, 'ArrowUp');
+  });
+
+  test('DoesNotCrashOnStaleIndex', () => {
+    // Start with 4 elements. Focus the last one (index 3).
+    service.moveFocus(1);
+    service.moveFocus(1);
+    service.moveFocus(1);
+    assertEquals(service.getElementAtFocusIndexForTesting().id, 'box-6');
+
+    // Remove box-5 children (box-6). Now elements list has length 3.
+    const box5 = rootElement.shadowRoot!.querySelector('#box-5')!;
+    service.removeElementsWithin(box5 as HTMLElement);
+    assertEquals(service.getElementCount(), 3);
+
+    // This should not crash even if the index was stale
+    dispatchArrowEvent(rootElement, 'ArrowDown');
+    // The focus index wraps around to 0 after the last element is deleted and
+    // then is incremented to point at the second element.
+    assertEquals(service.getElementAtFocusIndexForTesting().id, 'box-4');
   });
 });
