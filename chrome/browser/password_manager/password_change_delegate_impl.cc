@@ -649,7 +649,8 @@ void PasswordChangeDelegateImpl::OnChangeFormSubmitted(
   if (result.has_value()) {
     form_manager_ = std::move(result).value();
     submission_verifier_ = std::make_unique<PasswordChangeSubmissionVerifier>(
-        executor(), logs_uploader_.get(),
+        executor(), ChromePasswordManagerClient::FromWebContents(executor()),
+        logs_uploader_.get(),
         base::BindOnce(
             &PasswordChangeDelegateImpl::OnChangeFormSubmissionVerified,
             weak_ptr_factory_.GetWeakPtr()));

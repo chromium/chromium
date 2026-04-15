@@ -22,6 +22,7 @@
 #include "components/optimization_guide/core/optimization_guide_proto_util.h"
 #include "components/password_manager/core/browser/features/password_features.h"
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
+#include "components/password_manager/core/browser/stub_password_manager_client.h"
 #include "components/ukm/test_ukm_recorder.h"
 #include "content/public/test/test_renderer_host.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
@@ -106,6 +107,9 @@ class PasswordChangeSubmissionVerifierTest
         OptimizationGuideKeyedServiceFactory::GetForProfile(profile()));
   }
 
+ protected:
+  password_manager::StubPasswordManagerClient stub_client_;
+
  private:
   std::unique_ptr<ModelQualityLogsUploader> logs_uploader_;
 };
@@ -121,7 +125,8 @@ TEST_F(PasswordChangeSubmissionVerifierTest, Succeeded) {
               PasswordChangeOutcome::
                   PasswordChangeSubmissionData_PasswordChangeOutcome_SUCCESSFUL_OUTCOME>));
   auto verifier = std::make_unique<PasswordChangeSubmissionVerifier>(
-      web_contents(), logs_uploader(), completion_future.GetCallback());
+      web_contents(), &stub_client_, logs_uploader(),
+      completion_future.GetCallback());
 
   EXPECT_TRUE(verifier->capturer());
   static_cast<FakeAnnotatedPageContentCapturer*>(verifier->capturer())
@@ -154,7 +159,8 @@ TEST_F(PasswordChangeSubmissionVerifierTest, Failed) {
               PasswordChangeOutcome::
                   PasswordChangeSubmissionData_PasswordChangeOutcome_UNSUCCESSFUL_OUTCOME>));
   auto verifier = std::make_unique<PasswordChangeSubmissionVerifier>(
-      web_contents(), logs_uploader(), completion_future.GetCallback());
+      web_contents(), &stub_client_, logs_uploader(),
+      completion_future.GetCallback());
 
   EXPECT_TRUE(verifier->capturer());
   static_cast<FakeAnnotatedPageContentCapturer*>(verifier->capturer())
@@ -185,7 +191,8 @@ TEST_F(PasswordChangeSubmissionVerifierTest, UnknownOutcome) {
               PasswordChangeOutcome::
                   PasswordChangeSubmissionData_PasswordChangeOutcome_UNKNOWN_OUTCOME>));
   auto verifier = std::make_unique<PasswordChangeSubmissionVerifier>(
-      web_contents(), logs_uploader(), completion_future.GetCallback());
+      web_contents(), &stub_client_, logs_uploader(),
+      completion_future.GetCallback());
 
   EXPECT_TRUE(verifier->capturer());
   static_cast<FakeAnnotatedPageContentCapturer*>(verifier->capturer())
@@ -223,7 +230,8 @@ TEST_F(PasswordChangeSubmissionVerifierTest,
               PasswordChangeOutcome::
                   PasswordChangeSubmissionData_PasswordChangeOutcome_SUCCESSFUL_OUTCOME>));
   auto verifier = std::make_unique<PasswordChangeSubmissionVerifier>(
-      web_contents(), logs_uploader(), completion_future.GetCallback());
+      web_contents(), &stub_client_, logs_uploader(),
+      completion_future.GetCallback());
 
   EXPECT_TRUE(verifier->capturer());
   static_cast<FakeAnnotatedPageContentCapturer*>(verifier->capturer())
@@ -260,7 +268,8 @@ TEST_F(PasswordChangeSubmissionVerifierTest, Failed_UserInterventionEnabled) {
               PasswordChangeOutcome::
                   PasswordChangeSubmissionData_PasswordChangeOutcome_UNSUCCESSFUL_OUTCOME>));
   auto verifier = std::make_unique<PasswordChangeSubmissionVerifier>(
-      web_contents(), logs_uploader(), completion_future.GetCallback());
+      web_contents(), &stub_client_, logs_uploader(),
+      completion_future.GetCallback());
 
   EXPECT_TRUE(verifier->capturer());
   static_cast<FakeAnnotatedPageContentCapturer*>(verifier->capturer())
@@ -296,7 +305,8 @@ TEST_F(PasswordChangeSubmissionVerifierTest,
               PasswordChangeOutcome::
                   PasswordChangeSubmissionData_PasswordChangeOutcome_UNKNOWN_OUTCOME>));
   auto verifier = std::make_unique<PasswordChangeSubmissionVerifier>(
-      web_contents(), logs_uploader(), completion_future.GetCallback());
+      web_contents(), &stub_client_, logs_uploader(),
+      completion_future.GetCallback());
 
   EXPECT_TRUE(verifier->capturer());
   static_cast<FakeAnnotatedPageContentCapturer*>(verifier->capturer())
@@ -334,7 +344,8 @@ TEST_F(PasswordChangeSubmissionVerifierTest,
               PasswordChangeOutcome::
                   PasswordChangeSubmissionData_PasswordChangeOutcome_USER_INTERVENTION_NEEDED>));
   auto verifier = std::make_unique<PasswordChangeSubmissionVerifier>(
-      web_contents(), logs_uploader(), completion_future.GetCallback());
+      web_contents(), &stub_client_, logs_uploader(),
+      completion_future.GetCallback());
 
   EXPECT_TRUE(verifier->capturer());
   static_cast<FakeAnnotatedPageContentCapturer*>(verifier->capturer())
@@ -371,7 +382,8 @@ TEST_F(PasswordChangeSubmissionVerifierTest,
               PasswordChangeOutcome::
                   PasswordChangeSubmissionData_PasswordChangeOutcome_USER_INTERVENTION_NEEDED>));
   auto verifier = std::make_unique<PasswordChangeSubmissionVerifier>(
-      web_contents(), logs_uploader(), completion_future.GetCallback());
+      web_contents(), &stub_client_, logs_uploader(),
+      completion_future.GetCallback());
 
   EXPECT_TRUE(verifier->capturer());
   static_cast<FakeAnnotatedPageContentCapturer*>(verifier->capturer())
@@ -401,7 +413,8 @@ TEST_F(PasswordChangeSubmissionVerifierTest,
   base::test::TestFuture<SubmissionResult> completion_future;
   EXPECT_CALL(*optimization_service(), ExecuteModel).Times(0);
   auto verifier = std::make_unique<PasswordChangeSubmissionVerifier>(
-      web_contents(), logs_uploader(), completion_future.GetCallback());
+      web_contents(), &stub_client_, logs_uploader(),
+      completion_future.GetCallback());
 
   EXPECT_TRUE(verifier->capturer());
   static_cast<FakeAnnotatedPageContentCapturer*>(verifier->capturer())
@@ -417,7 +430,7 @@ TEST_F(PasswordChangeSubmissionVerifierTest,
 
 TEST_F(PasswordChangeSubmissionVerifierTest, DurationRecordedOnDestruction) {
   auto verifier = std::make_unique<PasswordChangeSubmissionVerifier>(
-      web_contents(), logs_uploader(), base::DoNothing());
+      web_contents(), &stub_client_, logs_uploader(), base::DoNothing());
 
   task_environment()->FastForwardBy(base::Milliseconds(4543));
 

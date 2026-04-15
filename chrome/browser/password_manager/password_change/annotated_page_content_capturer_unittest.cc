@@ -13,6 +13,7 @@
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "components/optimization_guide/content/browser/page_content_proto_provider.h"
 #include "components/password_manager/core/browser/features/password_features.h"
+#include "components/password_manager/core/browser/stub_password_manager_client.h"
 #include "content/public/test/web_contents_tester.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -38,13 +39,15 @@ class AnnotatedPageContentCapturerTest
   std::unique_ptr<AnnotatedPageContentCapturerImpl> CreateCapturer(
       optimization_guide::OnAIPageContentDone callback) {
     return std::make_unique<AnnotatedPageContentCapturerImpl>(
-        web_contents(), blink::mojom::AIPageContentOptions::New(),
-        std::move(callback), mock_get_page_content_.Get());
+        web_contents(), &stub_client_,
+        blink::mojom::AIPageContentOptions::New(), std::move(callback),
+        mock_get_page_content_.Get());
   }
 
  protected:
   MockGetAIPageContentFunction mock_get_page_content_;
   base::test::ScopedFeatureList feature_list_;
+  password_manager::StubPasswordManagerClient stub_client_;
 };
 
 INSTANTIATE_TEST_SUITE_P(All,

@@ -19,6 +19,10 @@
 class AnnotatedPageContentCapturer;
 class ModelQualityLogsUploader;
 
+namespace password_manager {
+class PasswordManagerClient;
+}
+
 namespace content {
 class WebContents;
 }
@@ -64,6 +68,7 @@ class PasswordChangeSubmissionVerifier {
 
   PasswordChangeSubmissionVerifier(
       content::WebContents* web_contents,
+      password_manager::PasswordManagerClient* client,
       ModelQualityLogsUploader* logs_uploader,
       FormSubmissionVerificationResultCallback callback);
   ~PasswordChangeSubmissionVerifier();

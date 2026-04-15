@@ -2693,6 +2693,17 @@ useful for Chirp alerts (go/crca-alerts). -->
   </summary>
 </histogram>
 
+<histogram name="PasswordManager.PasswordChange.StabilityWaitDuration"
+    units="ms" expires_after="2026-09-06">
+  <owner>atsvirchkova@google.com</owner>
+  <owner>vsemeniuk@google.com</owner>
+  <summary>
+    The total duration of waiting for page stability during the password change
+    flow. Recorded when all stability checks (visual state, LCP, and Autofill
+    predictions) are completed.
+  </summary>
+</histogram>
+
 <histogram name="PasswordManager.PasswordChange.SuccessBubble"
     enum="PasswordManagerUIDismissalReason" expires_after="2026-09-06">
   <owner>atsvirchkova@google.com</owner>
