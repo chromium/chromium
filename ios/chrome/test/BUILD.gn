@@ -370,6 +370,7 @@ test("ios_chrome_unittests") {
     "//ios/chrome/browser/intelligence/explain_with_gemini/coordinator:unit_tests",
     "//ios/chrome/browser/intelligence/features:unit_tests",
     "//ios/chrome/browser/intelligence/page_action_menu/coordinator:unit_tests",
+    "//ios/chrome/browser/intelligence/page_action_menu/ui:unit_tests",
     "//ios/chrome/browser/intelligence/persist_tab_context/model:unit_tests",
     "//ios/chrome/browser/intelligence/proto_wrappers:unit_tests",
     "//ios/chrome/browser/intelligence/smart_tab_grouping/model:unit_tests",

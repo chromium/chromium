@@ -147,6 +147,10 @@ const CGFloat kFeatureRowIconSize = 20;
   return _readerModeTabHelper->IsActive();
 }
 
+- (BOOL)isReaderModeAvailable {
+  return IsReaderModeAvailable();
+}
+
 - (PageActionMenuContentEntryPoint*)geminiEntryPoint {
   if (!_geminiService || !_geminiTabHelper) {
     return [[PageActionMenuContentEntryPoint alloc] initWithEnabled:NO];

@@ -446,7 +446,8 @@ const CGFloat kDividerWidth = 1.0;
     [stackView addArrangedSubview:smartTabGroupingButton];
   }
 
-  if (IsReaderModeAvailable() && ![self.mutator isReaderModeActive]) {
+  if ([self.mutator isReaderModeAvailable] &&
+      ![self.mutator isReaderModeActive]) {
     UIImage* readerModeImage = DefaultSymbolWithPointSize(
         GetReaderModeSymbolName(), kSmallButtonIconSize);
 
@@ -809,7 +810,8 @@ const CGFloat kDividerWidth = 1.0;
     // If Reader Mode is available but inactive, we use a 3-button UI.
     // Otherwise, we just show the `buttonsStackView`, with an additional Reader
     // mode section (above) if Reader mode is available and active.
-    if (IsReaderModeAvailable() && ![self.mutator isReaderModeActive]) {
+    if ([self.mutator isReaderModeAvailable] &&
+        ![self.mutator isReaderModeActive]) {
       // Adds the large Gemini entry point button.
       _geminiButton = [self createGeminiButton];
       [_contentStackView addArrangedSubview:_geminiButton];

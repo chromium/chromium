@@ -38,3 +38,23 @@ source_set("ui") {
     "//ui/base",
   ]
 }
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "page_action_menu_view_controller_unittest.mm" ]
+  deps = [
+    ":ui",
+    "//base",
+    "//base/test:test_support",
+    "//components/dom_distiller/core/mojom",
+    "//ios/chrome/app/strings",
+    "//ios/chrome/browser/intelligence/page_action_menu/utils",
+    "//ios/chrome/browser/shared/model/browser/test:test_support",
+    "//ios/chrome/browser/shared/model/profile/test",
+    "//ios/chrome/browser/shared/public/commands",
+    "//ios/web/public/test",
+    "//testing/gtest",
+    "//third_party/ocmock",
+    "//ui/base",
+  ]
+}
