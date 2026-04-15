@@ -283,6 +283,23 @@ AccessibilityPrivateForwardKeyEventsToSwitchAccessFunction::Run() {
   return RespondNow(Error("Forwarding key events is no longer supported."));
 }
 
+ExtensionFunction::ResponseAction
+AccessibilityPrivateInstallTenjiFunction::Run() {
+  AccessibilityManager::Get()->InstallTenji(base::BindOnce(
+      &AccessibilityPrivateInstallTenjiFunction::OnInstallFinished, this));
+  return RespondLater();
+}
+
+void AccessibilityPrivateInstallTenjiFunction::OnInstallFinished(
+    std::optional<::extensions::api::accessibility_private::TenjiData> data) {
+  if (!data.has_value()) {
+    Respond(Error("Could not install Tenji DLC"));
+    return;
+  }
+
+  Respond(WithArguments(data->ToValue()));
+}
+
 AccessibilityPrivateGetBatteryDescriptionFunction::
     AccessibilityPrivateGetBatteryDescriptionFunction() = default;
 

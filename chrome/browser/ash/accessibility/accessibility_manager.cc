@@ -126,6 +126,7 @@ namespace {
 using ::extensions::api::accessibility_private::DlcType;
 using ::extensions::api::accessibility_private::FaceGazeAssets;
 using ::extensions::api::accessibility_private::PumpkinData;
+using ::extensions::api::accessibility_private::TenjiData;
 using ::extensions::api::accessibility_private::TtsVariant;
 using ::extensions::api::braille_display_private::BrailleController;
 using ::extensions::api::braille_display_private::DisplayState;
@@ -336,6 +337,27 @@ std::optional<FaceGazeAssets> CreateFaceGazeAssets(base::FilePath base_path) {
   }
 
   return assets;
+}
+
+std::optional<TenjiData> CreateTenjiData(base::FilePath base_path) {
+  DCHECK(!content::BrowserThread::CurrentlyOn(content::BrowserThread::UI));
+  base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
+                                                base::BlockingType::MAY_BLOCK);
+  TenjiData data;
+  base::flat_map<std::string, std::vector<uint8_t>*> files_to_data({
+      {"tenji_wasm_wrapper.js", &data.wrapper_js},
+      {"tenji_wasm_wrapper.wasm", &data.wasm},
+  });
+  for (const auto& iter : files_to_data) {
+    const std::string& file_name = iter.first;
+    std::vector<uint8_t>* file_data = iter.second;
+    ReadDlcFileResponse response = ReadDlcFile(base_path.Append(file_name));
+    if (response.error.has_value()) {
+      return std::nullopt;
+    }
+    *file_data = std::move(response.contents);
+  }
+  return data;
 }
 
 std::optional<PumpkinData> CreatePumpkinData(base::FilePath base_pumpkin_path) {
@@ -3050,6 +3072,53 @@ void AccessibilityManager::OnPumpkinError(std::string_view error) {
   is_pumpkin_installed_for_testing_ = false;
 
   UpdateDictationNotification();
+}
+
+void AccessibilityManager::InstallTenji(InstallTenjiCallback callback) {
+  CHECK(!callback.is_null());
+  CHECK(::features::IsAccessibilityChromeVoxJapaneseBrailleEnabled())
+      << "InstallTenji should not be called if "
+         "AccessibilityChromeVoxJapaneseBraille feature is disabled.";
+  install_tenji_callback_ = std::move(callback);
+  dlc_installer_->MaybeInstall(
+      AccessibilityDlcInstaller::DlcType::kTenji,
+      base::BindOnce(&AccessibilityManager::OnTenjiInstalled,
+                     weak_ptr_factory_.GetWeakPtr()),
+      base::BindRepeating([](double progress) {}),
+      base::BindOnce(&AccessibilityManager::OnTenjiError,
+                     weak_ptr_factory_.GetWeakPtr()));
+}
+
+void AccessibilityManager::OnTenjiInstalled(bool success,
+                                            const std::string& root_path) {
+  if (install_tenji_callback_.is_null()) {
+    return;
+  }
+  base::FilePath base_path = dlc_path_for_test_.empty()
+                                 ? base::FilePath(root_path)
+                                 : dlc_path_for_test_;
+
+  base::ThreadPool::PostTaskAndReplyWithResult(
+      FROM_HERE, {base::MayBlock()},
+      base::BindOnce(&CreateTenjiData, base::FilePath(base_path)),
+      base::BindOnce(&AccessibilityManager::OnTenjiDataCreated,
+                     weak_ptr_factory_.GetWeakPtr()));
+}
+
+void AccessibilityManager::OnTenjiDataCreated(std::optional<TenjiData> data) {
+  if (install_tenji_callback_.is_null()) {
+    return;
+  }
+
+  std::move(install_tenji_callback_).Run(std::move(data));
+}
+
+void AccessibilityManager::OnTenjiError(std::string_view error) {
+  if (install_tenji_callback_.is_null()) {
+    return;
+  }
+
+  std::move(install_tenji_callback_).Run(std::nullopt);
 }
 
 void AccessibilityManager::GetTtsDlcContents(

@@ -342,6 +342,11 @@ declare global {
         wasm: ArrayBuffer;
       }
 
+      export interface TenjiData {
+        wasm: ArrayBuffer;
+        wrapperJs: ArrayBuffer;
+      }
+
       export enum ScrollDirection {
         UP = 'up',
         DOWN = 'down',
@@ -389,6 +394,9 @@ declare global {
       type InstallPumpkinForDictationCallback = (data: PumpkinData) => void;
       export function installPumpkinForDictation(
           callback: InstallPumpkinForDictationCallback): void;
+
+      type InstallTenjiCallback = (data: TenjiData) => void;
+      export function installTenji(callback: InstallTenjiCallback): void;
 
       export function setNativeAccessibilityEnabled(enabled: boolean): void;
 

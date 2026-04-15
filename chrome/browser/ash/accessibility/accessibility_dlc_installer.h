@@ -30,7 +30,7 @@ class AccessibilityDlcInstaller {
   using ErrorCallback = base::OnceCallback<void(std::string_view error)>;
 
  public:
-  enum class DlcType { kFaceGazeAssets, kPumpkin };
+  enum class DlcType { kFaceGazeAssets, kPumpkin, kTenji };
 
   class Callbacks {
    public:
@@ -68,6 +68,7 @@ class AccessibilityDlcInstaller {
 
   bool IsFaceGazeAssetsInstalled() const;
   bool IsPumpkinInstalled() const;
+  bool IsTenjiInstalled() const;
 
  private:
   // A helper function that is run once we've grabbed the state of a DLC from

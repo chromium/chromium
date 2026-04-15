@@ -483,6 +483,20 @@
         "description": "The four directions for scrolling."
       },
       {
+        "id": "TenjiData",
+        "type": "object",
+        "properties": {
+          "wasm": {
+            "type": "binary",
+            "description": "The contents of the tenji_wasm_wrapper.wasm file as a Uint8Array."
+          },
+          "wrapperJs": {
+            "type": "binary",
+            "description": "The contents of the tenji_wasm_wrapper.js file as a Uint8Array."
+          }
+        }
+      },
+      {
         "id": "FacialGesture",
         "type": "string",
         "description": "The facial gestures supported by FaceGaze. Keep this in sync with facial_gestures.ts, FacialGesturesToMediapipeGestures in facegaze/gesture_detector.ts, and ConvertFacialGestureType in accessibility_extension_api_ash.cc.",
@@ -593,6 +607,22 @@
             {
               "name": "assets",
               "$ref": "FaceGazeAssets"
+            }
+          ]
+        }
+      },
+      {
+        "name": "installTenji",
+        "type": "function",
+        "description": "Installs the Tenji Braille DLC",
+        "parameters": [],
+        "returns_async": {
+          "name": "callback",
+          "description": "Resolves when Tenji download finishes.",
+          "parameters": [
+            {
+              "name": "data",
+              "$ref": "TenjiData"
             }
           ]
         }

@@ -28,6 +28,12 @@ constexpr char kPumpkinInstallationMetric[] =
 
 constexpr char kPumpkinInstallDurationMetric[] =
     "Accessibility.DlcInstallerPumpkinInstallationDuration";
+
+constexpr char kTenjiInstallationMetric[] =
+    "Accessibility.DlcInstallerTenjiInstallationSuccess";
+
+constexpr char kTenjiInstallDurationMetric[] =
+    "Accessibility.DlcInstallerTenjiInstallationDuration";
 }  // namespace
 
 namespace ash {
@@ -106,6 +112,25 @@ class AccessibilityDlcInstallerTest : public testing::Test {
     RunUntilIdle();
   }
 
+  void MaybeInstallTenji() {
+    DlcType type = DlcType::kTenji;
+
+    install_data_.insert_or_assign(type, InstallData());
+    installer_->MaybeInstall(
+        type,
+        base::BindOnce(&AccessibilityDlcInstallerTest::OnInstalled,
+                       base::Unretained(this), type),
+        base::BindRepeating(&AccessibilityDlcInstallerTest::OnProgress,
+                            base::Unretained(this)),
+        base::BindOnce(&AccessibilityDlcInstallerTest::OnError,
+                       base::Unretained(this), type));
+  }
+
+  void MaybeInstallTenjiAndWait() {
+    MaybeInstallTenji();
+    RunUntilIdle();
+  }
+
   bool IsFaceGazeAssetsInstalled() {
     return installer_->IsFaceGazeAssetsInstalled();
   }
@@ -113,6 +138,8 @@ class AccessibilityDlcInstallerTest : public testing::Test {
   bool IsPumpkinInstalled() {
     return installer_->IsPumpkinInstalled();
   }
+
+  bool IsTenjiInstalled() { return installer_->IsTenjiInstalled(); }
 
   void OnInstalled(DlcType type, bool success, const std::string& root_path) {
     install_data_[type].success = success;
@@ -161,6 +188,21 @@ class AccessibilityDlcInstallerTest : public testing::Test {
 
   void ExpectTotalPumpkinDurationSamples(int expected_count) {
     histogram_tester_.ExpectTotalCount(/*name=*/kPumpkinInstallDurationMetric,
+                                       expected_count);
+  }
+
+  void ExpectTenjiSuccessHistogramCount(int expected_count) {
+    histogram_tester_.ExpectBucketCount(/*name=*/kTenjiInstallationMetric,
+                                        /*sample=*/true, expected_count);
+  }
+
+  void ExpectTenjiFailureHistogramCount(int expected_count) {
+    histogram_tester_.ExpectBucketCount(/*name=*/kTenjiInstallationMetric,
+                                        /*sample=*/false, expected_count);
+  }
+
+  void ExpectTotalTenjiDurationSamples(int expected_count) {
+    histogram_tester_.ExpectTotalCount(/*name=*/kTenjiInstallDurationMetric,
                                        expected_count);
   }
 
@@ -329,25 +371,33 @@ TEST_F(AccessibilityDlcInstallerTest, InstallFaceGazeAssets) {
 TEST_F(AccessibilityDlcInstallerTest, InstallMultipleDlcs) {
   ASSERT_FALSE(GetInstallSuccess(DlcType::kFaceGazeAssets));
   ASSERT_FALSE(GetInstallSuccess(DlcType::kPumpkin));
+  ASSERT_FALSE(GetInstallSuccess(DlcType::kTenji));
   ASSERT_FALSE(IsFaceGazeAssetsInstalled());
   ASSERT_FALSE(IsPumpkinInstalled());
+  ASSERT_FALSE(IsTenjiInstalled());
 
   SetDlcRootPath("/fake/root/path");
   MaybeInstallFaceGazeAssets();
   MaybeInstallPumpkin();
+  MaybeInstallTenji();
 
   ASSERT_FALSE(GetInstallSuccess(DlcType::kFaceGazeAssets));
   ASSERT_FALSE(GetInstallSuccess(DlcType::kPumpkin));
+  ASSERT_FALSE(GetInstallSuccess(DlcType::kTenji));
   ASSERT_FALSE(IsFaceGazeAssetsInstalled());
   ASSERT_FALSE(IsPumpkinInstalled());
+  ASSERT_FALSE(IsTenjiInstalled());
   RunUntilIdle();
 
   ASSERT_TRUE(GetInstallSuccess(DlcType::kFaceGazeAssets));
   ASSERT_TRUE(GetInstallSuccess(DlcType::kPumpkin));
+  ASSERT_TRUE(GetInstallSuccess(DlcType::kTenji));
   ASSERT_TRUE(IsFaceGazeAssetsInstalled());
   ASSERT_TRUE(IsPumpkinInstalled());
+  ASSERT_TRUE(IsTenjiInstalled());
   ASSERT_EQ(GetDlcRootPath(DlcType::kFaceGazeAssets), "/fake/root/path");
   ASSERT_EQ(GetDlcRootPath(DlcType::kPumpkin), "/fake/root/path");
+  ASSERT_EQ(GetDlcRootPath(DlcType::kTenji), "/fake/root/path");
 
   // Assert metrics are properly recorded.
   ExpectFaceGazeSuccessHistogramCount(1);
@@ -357,6 +407,10 @@ TEST_F(AccessibilityDlcInstallerTest, InstallMultipleDlcs) {
   ExpectPumpkinSuccessHistogramCount(1);
   ExpectPumpkinFailureHistogramCount(0);
   ExpectTotalPumpkinDurationSamples(1);
+
+  ExpectTenjiSuccessHistogramCount(1);
+  ExpectTenjiFailureHistogramCount(0);
+  ExpectTotalTenjiDurationSamples(1);
 }
 
 TEST_F(AccessibilityDlcInstallerTest, InstallFaceGazeAssetsTwice) {
@@ -381,6 +435,22 @@ TEST_F(AccessibilityDlcInstallerTest, InstallFaceGazeAssetsTwice) {
 
   ExpectFaceGazeSuccessHistogramCount(2);
   ExpectFaceGazeFailureHistogramCount(0);
+}
+
+TEST_F(AccessibilityDlcInstallerTest, InstallTenji) {
+  ASSERT_FALSE(GetInstallSuccess(DlcType::kTenji));
+  ASSERT_FALSE(IsTenjiInstalled());
+
+  SetDlcRootPath("/fake/root/path");
+  MaybeInstallTenjiAndWait();
+
+  ASSERT_TRUE(GetInstallSuccess(DlcType::kTenji));
+  ASSERT_TRUE(IsTenjiInstalled());
+  ASSERT_EQ(GetDlcRootPath(DlcType::kTenji), "/fake/root/path");
+
+  ExpectTenjiSuccessHistogramCount(1);
+  ExpectTenjiFailureHistogramCount(0);
+  ExpectTotalTenjiDurationSamples(1);
 }
 
 }  // namespace ash

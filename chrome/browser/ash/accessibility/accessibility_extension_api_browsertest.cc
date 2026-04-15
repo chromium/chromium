@@ -61,7 +61,8 @@ class AccessibilityPrivateApiTest
     scoped_feature_list_.InitWithFeatures(
         {// Live Caption only works if on-device speech recognition is
          // available.
-         ash::features::kOnDeviceSpeechRecognition},
+         ash::features::kOnDeviceSpeechRecognition,
+         ::features::kAccessibilityChromeVoxJapaneseBraille},
         /*disabled_features=*/{});
   }
 
@@ -538,6 +539,28 @@ IN_PROC_BROWSER_TEST_P(AccessibilityPrivateApiTest, UpdateFaceGazeBubble) {
   empty_text_listener.Reply("Continue");
 
   ASSERT_TRUE(result_catcher.GetNextResult()) << result_catcher.message();
+}
+
+IN_PROC_BROWSER_TEST_P(AccessibilityPrivateApiTest, InstallTenjiFail) {
+  ASSERT_TRUE(RunSubtest("testInstallTenjiFail")) << message_;
+}
+
+IN_PROC_BROWSER_TEST_P(AccessibilityPrivateApiTest, InstallTenjiSuccess) {
+  // Initialize DLC directory.
+  base::ScopedAllowBlockingForTesting allow_blocking;
+  base::ScopedTempDir tenji_root_dir;
+  ASSERT_TRUE(tenji_root_dir.CreateUniqueTempDir());
+
+  // Create fake DLC files.
+  AccessibilityManager::Get()->SetDlcPathForTest(tenji_root_dir.GetPath());
+  ASSERT_TRUE(base::WriteFile(
+      tenji_root_dir.GetPath().Append("tenji_wasm_wrapper.wasm"),
+      "Fake tenji wasm"));
+  ASSERT_TRUE(
+      base::WriteFile(tenji_root_dir.GetPath().Append("tenji_wasm_wrapper.js"),
+                      "Fake tenji wrapper js"));
+
+  ASSERT_TRUE(RunSubtest("testInstallTenjiSuccess")) << message_;
 }
 
 INSTANTIATE_TEST_SUITE_P(ServiceWorker,

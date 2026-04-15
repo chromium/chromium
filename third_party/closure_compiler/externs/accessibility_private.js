@@ -523,6 +523,15 @@ chrome.accessibilityPrivate.installPumpkinForDictation = function(callback) {};
  */
 chrome.accessibilityPrivate.installFaceGazeAssets = function(callback) {};
 
+
+/**
+ * Called to request an install of the Tenji DLC for Japanese Braille support.
+ * @param {function(!chrome.accessibilityPrivate.TenjiData): void} callback
+ * Resolves with the file contents of the Tenji DLC when the installation
+ * finishes.
+ */
+chrome.accessibilityPrivate.installTenji = function (callback) { };
+
 /**
  * Enables or disables native accessibility support. Once disabled, it is up to
  * the calling extension to provide accessibility for web contents.

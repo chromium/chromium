@@ -24,6 +24,12 @@ constexpr char kPumpkinInstallationMetric[] =
 
 constexpr char kPumpkinInstallDurationMetric[] =
     "Accessibility.DlcInstallerPumpkinInstallationDuration";
+
+constexpr char kTenjiInstallationMetric[] =
+    "Accessibility.DlcInstallerTenjiInstallationSuccess";
+
+constexpr char kTenjiInstallDurationMetric[] =
+    "Accessibility.DlcInstallerTenjiInstallationDuration";
 }  // namespace
 
 namespace ash {
@@ -134,6 +140,10 @@ void AccessibilityDlcInstaller::OnInstalled(
       base::UmaHistogramBoolean(kPumpkinInstallationMetric,
                                 install_result.error == dlcservice::kErrorNone);
       break;
+    case DlcType::kTenji:
+      base::UmaHistogramBoolean(kTenjiInstallationMetric,
+                                install_result.error == dlcservice::kErrorNone);
+      break;
   }
 
   if (install_result.error != dlcservice::kErrorNone) {
@@ -152,6 +162,9 @@ void AccessibilityDlcInstaller::OnInstalled(
       break;
     case DlcType::kPumpkin:
       base::UmaHistogramTimes(kPumpkinInstallDurationMetric, install_duration);
+      break;
+    case DlcType::kTenji:
+      base::UmaHistogramTimes(kTenjiInstallDurationMetric, install_duration);
       break;
   }
 
@@ -182,6 +195,8 @@ std::string AccessibilityDlcInstaller::GetDlcName(DlcType type) {
       return "facegaze-assets";
     case DlcType::kPumpkin:
       return "pumpkin";
+    case DlcType::kTenji:
+      return "tenji-dlc";
   }
 }
 
@@ -202,6 +217,10 @@ bool AccessibilityDlcInstaller::IsFaceGazeAssetsInstalled() const {
 
 bool AccessibilityDlcInstaller::IsPumpkinInstalled() const {
   return installed_dlcs_.contains(DlcType::kPumpkin);
+}
+
+bool AccessibilityDlcInstaller::IsTenjiInstalled() const {
+  return installed_dlcs_.contains(DlcType::kTenji);
 }
 
 base::WeakPtr<AccessibilityDlcInstaller>

@@ -2891,6 +2891,7 @@ Called by update_extension_histograms.py.-->
       label="AUTOFILLPRIVATE_GETREQUIREDATTRIBUTETYPESFORENTITYTYPENAME"/>
   <int value="1960" label="PDFVIEWERPRIVATE_GLICSUMMARIZE"/>
   <int value="1961" label="GLICPRIVATE_GETSTATE"/>
+  <int value="1962" label="ACCESSIBILITY_PRIVATE_INSTALLTENJI"/>
 </enum>
 
 <!-- LINT.ThenChange(//extensions/browser/extension_function_histogram_value.h:HistogramValue) -->

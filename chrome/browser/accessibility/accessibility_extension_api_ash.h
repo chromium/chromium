@@ -78,6 +78,21 @@ class AccessibilityPrivateForwardKeyEventsToSwitchAccessFunction
       ACCESSIBILITY_PRIVATE_FORWARDKEYEVENTSTOSWITCHACCESS)
 };
 
+// API function that initiates a download of the Tenji DLC and responds with the
+// file bytes via a callback.
+class AccessibilityPrivateInstallTenjiFunction : public ExtensionFunction {
+  ~AccessibilityPrivateInstallTenjiFunction() override = default;
+
+ public:
+  ResponseAction Run() override;
+  DECLARE_EXTENSION_FUNCTION("accessibilityPrivate.installTenji",
+                             ACCESSIBILITY_PRIVATE_INSTALLTENJI)
+
+ private:
+  void OnInstallFinished(
+      std::optional<::extensions::api::accessibility_private::TenjiData> data);
+};
+
 // API function that is called to get the device's battery status as a string.
 class AccessibilityPrivateGetBatteryDescriptionFunction
     : public ExtensionFunction {

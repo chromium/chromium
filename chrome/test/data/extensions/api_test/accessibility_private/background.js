@@ -331,6 +331,25 @@ var availableTests = [
     chrome.test.succeed();
   },
 
+  async function testInstallTenjiFail() {
+    await chrome.test.assertPromiseRejects(
+        chrome.accessibilityPrivate.installTenji(),
+        'Error: Could not install Tenji DLC');
+    chrome.test.succeed();
+  },
+
+  async function testInstallTenjiSuccess() {
+    const data = await chrome.accessibilityPrivate.installTenji();
+    chrome.test.assertTrue(Boolean(data));
+    chrome.test.assertTrue(Boolean(data.wasm));
+    chrome.test.assertTrue(Boolean(data.wrapperJs));
+    const wasmContents = new TextDecoder().decode(data.wasm);
+    const jsContents = new TextDecoder().decode(data.wrapperJs);
+    chrome.test.assertEq('Fake tenji wasm', wasmContents);
+    chrome.test.assertEq('Fake tenji wrapper js', jsContents);
+    chrome.test.succeed();
+  },
+
   async function testEnableLiveCaption() {
     await chrome.accessibilityPrivate.enableLiveCaption(true);
     chrome.test.notifyPass();
