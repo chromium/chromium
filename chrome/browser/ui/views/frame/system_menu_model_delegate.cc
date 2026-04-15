@@ -201,10 +201,6 @@ void SystemMenuModelDelegate::ExecuteCommand(int command_id, int event_flags) {
         base::RecordAction(base::UserMetricsAction(
             is_pinned ? "SystemContextMenu_TabSearch_Unpinned"
                       : "SystemContextMenu_TabSearch_Pinned"));
-        base::RecordAction(base::UserMetricsAction(
-            is_pinned ? "TabStripComboButton.TabSearch.Unpinned"
-                      : "TabStripComboButton.TabSearch.Pinned"));
-        prefs->SetBoolean(prefs::kTabSearchPinnedToTabstrip, !is_pinned);
       }
       break;
     }

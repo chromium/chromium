@@ -268,6 +268,7 @@ void FindPrevious(BrowserWindowInterface* browser);
 void FindInPage(BrowserWindowInterface* browser, bool find_next, bool forward_direction);
 void ShowTabSearch(BrowserWindowInterface* browser);
 void CloseTabSearch(BrowserWindowInterface* browser);
+void ToggleTabSearchPin(BrowserWindowInterface* browser);
 void ToggleContextualTasksSidePanel(BrowserWindowInterface* browser);
 void ToggleVerticalTabs(BrowserWindowInterface* browser);
 void ToggleVerticalTabsExpandOnHover(BrowserWindowInterface* browser);
