@@ -4,13 +4,19 @@
 
 #include "components/enterprise/connectors/core/cloud_content_scanning/cloud_binary_upload_service_base.h"
 
+#include "base/base64.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/task/bind_post_task.h"
+#include "base/task/thread_pool.h"
 #include "components/enterprise/common/proto/connectors.pb.h"
+#include "components/enterprise/connectors/core/cloud_content_scanning/binary_upload_service.h"
 #include "components/enterprise/connectors/core/cloud_content_scanning/deep_scanning_utils.h"
 #include "components/enterprise/connectors/core/cloud_content_scanning/multipart_uploader.h"
 #include "components/enterprise/connectors/core/cloud_content_scanning/resumable_uploader.h"
 #include "components/enterprise/connectors/core/features.h"
+#include "components/enterprise/connectors/core/reporting_utils.h"
 #include "net/http/http_status_code.h"
+#include "net/traffic_annotation/network_traffic_annotation.h"
 #include "url/gurl.h"
 
 #if !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_FUCHSIA)
@@ -26,6 +32,119 @@ const char kSbEnterpriseUploadUrl[] =
 
 const char kSbConsumerUploadUrl[] =
     "https://safebrowsing.google.com/safebrowsing/uploads/consumer";
+
+constexpr base::TimeDelta kAuthTimeout = base::Seconds(10);
+constexpr base::TimeDelta kScanningTimeout = base::Minutes(5);
+
+net::NetworkTrafficAnnotationTag GetTrafficAnnotationTag(bool is_app) {
+  if (is_app) {
+    return net::DefineNetworkTrafficAnnotation(
+        "safe_browsing_binary_upload_app", R"(
+        semantics {
+          sender: "Safe Browsing"
+          description:
+            "For users opted in to Enhanced Safe Browsing or Google's Advanced "
+            "Protection Program, when a file is downloaded, Chrome may upload "
+            "that file to Safe Browsing for detailed scanning."
+          trigger:
+            "The browser will upload the file to Google when the user "
+            "downloads a suspicious file and the user is opted in to Enhanced "
+            "Safe Browsing or Google's Advanced Protection Program."
+          data:
+            "The downloaded file and metadata about how the user came to "
+            "download that file (including URLs)."
+          destination: GOOGLE_OWNED_SERVICE
+          internal {
+            contacts {
+              owners: "//chrome/browser/safe_browsing/cloud_content_scanning/OWNERS"
+            }
+          }
+          user_data {
+            type: ACCESS_TOKEN
+            type: FILE_DATA
+          }
+          last_reviewed: "2023-07-28"
+        }
+        policy {
+          cookies_allowed: NO
+          setting: "This is disabled by default an can only be enabled by "
+            "opting in to Enhanced Safe Browsing or the Advanced Protection "
+            "Program."
+          chrome_policy {
+            SafeBrowsingDeepScanningEnabled: {
+              SafeBrowsingDeepScanningEnabled: false
+            }
+          }
+        }
+        )");
+  } else {
+    return net::DefineNetworkTrafficAnnotation(
+        "safe_browsing_binary_upload_connector", R"(
+        semantics {
+          sender: "Chrome Enterprise Connectors"
+          description:
+            "For users with content analysis Chrome Enterprise Connectors "
+            "enabled, Chrome will upload the data corresponding to the "
+            "Connector for scanning."
+          trigger:
+            "If the OnFileAttachedEnterpriseConnector, "
+            "OnFileDownloadedEnterpriseConnector, "
+            "OnFileTransferEnterpriseConnector, "
+            "OnBulkDataEntryEnterpriseConnector or OnPrintEnterpriseConnector "
+            "policy is set, a request is made to scan a file attached to "
+            "Chrome, a file downloaded by Chrome, a file transfered from a "
+            "ChromeOS file system, data pasted in "
+            "Chrome or data printed from Chrome respectively."
+          data:
+            "The uploaded/downloaded/transfered file, pasted data or printed "
+            "data. Also includes an access token (enterprise only)."
+          destination: GOOGLE_OWNED_SERVICE
+          internal {
+            contacts {
+              owners: "//chrome/browser/safe_browsing/cloud_content_scanning/OWNERS"
+            }
+          }
+          user_data {
+            type: ACCESS_TOKEN
+            type: FILE_DATA
+            type: USER_CONTENT
+            type: WEB_CONTENT
+          }
+          last_reviewed: "2023-07-28"
+        }
+        policy {
+          cookies_allowed: YES
+          cookies_store: "Safe Browsing Cookie Store"
+          setting: "This is disabled by default an can only be enabled by "
+            "policy."
+          chrome_policy {
+            OnFileAttachedEnterpriseConnector {
+              OnFileAttachedEnterpriseConnector: "[]"
+            }
+            OnFileDownloadedEnterpriseConnector {
+              OnFileDownloadedEnterpriseConnector: "[]"
+            }
+            OnBulkDataEntryEnterpriseConnector {
+              OnBulkDataEntryEnterpriseConnector: "[]"
+            }
+            OnFileTransferEnterpriseConnector {
+              OnFileTransferEnterpriseConnector: "[]"
+            }
+            OnPrintEnterpriseConnector {
+              OnPrintEnterpriseConnector: "[]"
+            }
+          }
+        }
+        )");
+  }
+}
+
+bool IgnoreErrorResultForResumableUpload(BinaryUploadRequest* request,
+                                         ScanRequestUploadResult result) {
+  return IsResumableUpload(*request) &&
+         (result == ScanRequestUploadResult::kFileTooLarge ||
+          result == ScanRequestUploadResult::kFileEncrypted);
+}
 
 }  // namespace
 
@@ -492,6 +611,188 @@ CloudBinaryUploadServiceBase::CreateUploadRequest(
   }
 
   return upload_request;
+}
+
+void CloudBinaryUploadServiceBase::UploadForDeepScanning(
+    std::unique_ptr<BinaryUploadRequest> request) {
+  AssertCalledOnUIThread();
+
+  BinaryUploadRequest* raw_request = request.get();
+  BinaryUploadRequest::Id id = request_id_generator_.GenerateNextId();
+  request->set_id(id);
+  request->StartRequest();
+  active_requests_[id] = std::move(request);
+  start_times_[id] = base::TimeTicks::Now();
+
+  std::string token = raw_request->SetRandomRequestToken();
+  active_tokens_[id] = token;
+
+  PrepareRequestForUpload(id);
+}
+
+void CloudBinaryUploadServiceBase::PrepareRequestForUpload(
+    BinaryUploadRequest::Id request_id) {
+  BinaryUploadRequest* request = GetRequest(request_id);
+  if (!request) {
+    return;
+  }
+
+  if (request->IsAuthRequest()) {
+    request->GetRequestData(
+        base::BindOnce(&CloudBinaryUploadServiceBase::OnGetRequestData,
+                       weakptr_factory_.GetWeakPtr(), request_id));
+  } else if (!IsConsumerScanRequest(*request)) {
+    base::ThreadPool::PostTaskAndReplyWithResult(
+        FROM_HERE, {base::MayBlock(), base::TaskPriority::USER_VISIBLE},
+        base::BindOnce(&::enterprise_connectors::GetLocalIpAddresses),
+        base::BindOnce(&CloudBinaryUploadServiceBase::OnIpAddressesFetched,
+                       weakptr_factory_.GetWeakPtr(), request_id));
+  } else {
+    MaybeGetAccessToken(request_id);
+  }
+
+  // `request` might have been destroyed by `OnGetRequestData`
+  request = GetRequest(request_id);
+  if (!request) {
+    return;
+  }
+
+  active_timers_[request_id] = std::make_unique<base::OneShotTimer>();
+  active_timers_[request_id]->Start(
+      FROM_HERE, request->IsAuthRequest() ? kAuthTimeout : kScanningTimeout,
+      base::BindOnce(&CloudBinaryUploadServiceBase::FinishIfActive,
+                     weakptr_factory_.GetWeakPtr(), request_id,
+                     ScanRequestUploadResult::kTimeout,
+                     ContentAnalysisResponse()));
+}
+
+void CloudBinaryUploadServiceBase::OnIpAddressesFetched(
+    BinaryUploadRequest::Id request_id,
+    std::vector<std::string> ip_addresses) {
+  BinaryUploadRequest* request = GetRequest(request_id);
+  if (!request) {
+    return;
+  }
+
+  for (const auto& ip_address : ip_addresses) {
+    request->add_local_ips(ip_address);
+  }
+
+  MaybeGetAccessToken(request_id);
+}
+
+void CloudBinaryUploadServiceBase::RegisterOnGotHashCallback(
+    BinaryUploadRequest::Id request_id,
+    OnGotHashCallback on_got_hash_callback) {
+  BinaryUploadRequest* request = GetRequest(request_id);
+  if (!request) {
+    std::move(on_got_hash_callback).Run("");
+    return;
+  }
+  // If the request's hash has completed, the parameter callback will run
+  // immediately. Post it as a task so it runs after this function returns. Also
+  // set call_last to true since the parameter callback can delete the request.
+  request->register_on_got_hash_callback_.Run(
+      /*call_last=*/true,
+      base::BindPostTaskToCurrentDefault(std::move(on_got_hash_callback)));
+}
+
+void CloudBinaryUploadServiceBase::FinishIfActive(
+    BinaryUploadRequest::Id request_id,
+    ScanRequestUploadResult result,
+    ContentAnalysisResponse response) {
+  BinaryUploadRequest* request = GetRequest(request_id);
+  if (request) {
+    FinishAndCleanupRequest(request, result, response);
+  }
+}
+
+void CloudBinaryUploadServiceBase::OnGetRequestData(
+    BinaryUploadRequest::Id request_id,
+    ScanRequestUploadResult get_data_result,
+    BinaryUploadRequest::Data data) {
+  BinaryUploadRequest* request = GetRequest(request_id);
+  if (!request ||
+      ShouldTerminateRequestEarly(request, get_data_result, data.size)) {
+    return;
+  }
+
+  // If the file is encrypted, let the service know that the file is
+  // encrypted.
+  if (get_data_result == ScanRequestUploadResult::kFileEncrypted) {
+    request->set_is_content_encrypted(true);
+  }
+  if (get_data_result == ScanRequestUploadResult::kFileTooLarge) {
+    request->set_is_content_too_large(true);
+  }
+  request->set_should_skip_malware_scan(
+      data.size > BinaryUploadService::kMaxUploadSizeBytes);
+
+  ResumableUploadRequestBase::OnceRegisterOnGotHashCallback
+      register_on_got_hash_callback = base::NullCallback();
+  if (request->digest().empty() && request->register_on_got_hash_callback_) {
+    // The hash is being computed. Let the server know the hash will be
+    // uploaded as a header during the finalize call.
+    request->set_content_hash_in_final_call(true);
+    register_on_got_hash_callback =
+        base::BindOnce(&CloudBinaryUploadServiceBase::RegisterOnGotHashCallback,
+                       weakptr_factory_.GetWeakPtr(), request_id);
+  }
+
+  std::string metadata;
+  request->SerializeToString(&metadata);
+  metadata = base::Base64Encode(metadata);
+
+  GURL url = request->GetUrlWithParams();
+  if (!url.is_valid()) {
+    url = GetUploadUrl(IsConsumerScanRequest(*request));
+  }
+  net::NetworkTrafficAnnotationTag traffic_annotation =
+      GetTrafficAnnotationTag(IsConsumerScanRequest(*request));
+  std::string histogram_suffix =
+      IsConsumerScanRequest(*request) ? "ConsumerUpload" : "EnterpriseUpload";
+
+  // The downloaded file will not be available for deep scan upload due to the
+  // newly introduced download obfuscation step. We must wait for deobfuscation
+  // to complete before uploading, which is guaranteed under the pre-async
+  // upload behaviour.
+  bool force_sync_upload = request->analysis_connector() == FILE_DOWNLOADED;
+
+  std::unique_ptr<ConnectorUploadRequest> upload_request = CreateUploadRequest(
+      request, request_id, url, metadata, histogram_suffix, force_sync_upload,
+      traffic_annotation, data, get_data_result,
+      std::move(register_on_got_hash_callback));
+  upload_request->set_access_token(request->access_token());
+  upload_request->set_request_token(
+      request->content_analysis_request().request_token());
+
+  // |request| might have been deleted by the call to Start() in tests, so don't
+  // dereference it afterwards.
+  upload_request->Start();
+  active_uploads_[request_id] = std::move(upload_request);
+}
+
+bool CloudBinaryUploadServiceBase::ShouldTerminateRequestEarly(
+    BinaryUploadRequest* request,
+    ScanRequestUploadResult get_data_result,
+    size_t data_size) {
+  if (get_data_result != ScanRequestUploadResult::kSuccess &&
+      !IgnoreErrorResultForResumableUpload(request, get_data_result)) {
+    FinishAndCleanupRequest(request, get_data_result,
+                            ContentAnalysisResponse());
+    return true;
+  }
+
+  if (!request->IsAuthRequest() && data_size == 0) {
+    // A size of 0 implies an edge case like an empty file being uploaded. In
+    // such a case, the file doesn't need to scan so the request can simply
+    // finish early.
+    FinishAndCleanupRequest(request, ScanRequestUploadResult::kSuccess,
+                            ContentAnalysisResponse());
+    return true;
+  }
+
+  return false;
 }
 
 }  // namespace enterprise_connectors

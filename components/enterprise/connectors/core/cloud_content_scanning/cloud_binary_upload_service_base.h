@@ -11,6 +11,7 @@
 #include "components/enterprise/connectors/core/cloud_content_scanning/binary_upload_request.h"
 #include "components/enterprise/connectors/core/cloud_content_scanning/connector_upload_request.h"
 #include "components/enterprise/connectors/core/cloud_content_scanning/resumable_uploader_base.h"
+#include "components/enterprise/connectors/core/common.h"
 #include "services/network/public/mojom/url_loader_factory.mojom.h"
 
 namespace enterprise_connectors {
@@ -80,6 +81,34 @@ class CloudBinaryUploadServiceBase {
     bool IsAuthRequest() const override;
   };
 
+  // TODO(crbug.com/501456247): Move this method to the Delegate class once the
+  // migration is complete.
+  virtual void MaybeGetAccessToken(BinaryUploadRequest::Id request_id) = 0;
+
+  // Upload the given file contents for deep scanning. The results will be
+  // returned asynchronously by calling `request`'s `callback`. This must be
+  // called on the UI thread.
+  //
+  // Virtual for testing.
+  //
+  // TODO(crbug.com/501456247): After the migration is complete, revisit this
+  // method to see if we can remove `virtual` while keeping the test coverage.
+  virtual void UploadForDeepScanning(
+      std::unique_ptr<BinaryUploadRequest> request);
+
+  // This may destroy `request`.
+  // Virtual for testing.
+  //
+  // TODO(crbug.com/501456247): After the migration is complete, revisit this
+  // method to see if we can remove `virtual` while keeping the test coverage.
+  virtual void OnGetRequestData(BinaryUploadRequest::Id request_id,
+                                ScanRequestUploadResult result,
+                                BinaryUploadRequest::Data data);
+
+  void FinishIfActive(BinaryUploadRequest::Id request_id,
+                      ScanRequestUploadResult result,
+                      ContentAnalysisResponse response);
+
   void FinishRequest(BinaryUploadRequest* request,
                      ScanRequestUploadResult result,
                      ContentAnalysisResponse response);
@@ -102,16 +131,6 @@ class CloudBinaryUploadServiceBase {
   // `active_requests_` shrinks so queued requests are started as soon as
   // possible.
   void PopRequestQueue();
-
-  // Upload the given file contents for deep scanning. The results will be
-  // returned asynchronously by calling `request`'s `callback`. This must be
-  // called on the UI thread.
-  virtual void UploadForDeepScanning(
-      std::unique_ptr<BinaryUploadRequest> request) = 0;
-
-  // Clears request and associated data from memory and starts the next queued
-  // request, if present.
-  void CleanupRequest(BinaryUploadRequest* request);
 
   // Record metrics for the user action duration if this is the last request for
   // the batch cancelled by user corresponding to `action_id`.
@@ -170,9 +189,6 @@ class CloudBinaryUploadServiceBase {
       active_requests_;
   base::flat_map<BinaryUploadRequest::Id, std::unique_ptr<base::OneShotTimer>>
       active_timers_;
-  base::flat_map<BinaryUploadRequest::Id,
-                 std::unique_ptr<ConnectorUploadRequest>>
-      active_uploads_;
   base::flat_map<enterprise_connectors::BinaryUploadRequest::Id, std::string>
       active_tokens_;
 
@@ -215,6 +231,31 @@ class CloudBinaryUploadServiceBase {
   scoped_refptr<base::SequencedTaskRunner> ui_task_runner_;
 
  private:
+  void RegisterOnGotHashCallback(BinaryUploadRequest::Id request_id,
+                                 OnGotHashCallback on_got_hash_callback);
+
+  bool ShouldTerminateRequestEarly(BinaryUploadRequest* request,
+                                   ScanRequestUploadResult get_data_result,
+                                   size_t data_size);
+
+  void CleanupRequest(BinaryUploadRequest* request);
+
+  // Prepares auth and non-auth requests for uploading to the server.
+  void PrepareRequestForUpload(BinaryUploadRequest::Id request_id);
+
+  // Set the local IP addresses in the request. This is performed in a separate
+  // callback to avoid blocking the UI thread and is only used for enterprise
+  // requests.
+  void OnIpAddressesFetched(BinaryUploadRequest::Id request_id,
+                            std::vector<std::string> ip_addresses);
+
+  // Resources associated with an in-progress request.
+  base::flat_map<BinaryUploadRequest::Id,
+                 std::unique_ptr<ConnectorUploadRequest>>
+      active_uploads_;
+
+  BinaryUploadRequest::Id::Generator request_id_generator_;
+
   base::WeakPtrFactory<CloudBinaryUploadServiceBase> weakptr_factory_{this};
 };
 

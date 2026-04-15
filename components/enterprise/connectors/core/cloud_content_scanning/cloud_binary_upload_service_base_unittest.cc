@@ -39,8 +39,7 @@ class TestCloudBinaryUploadServiceBase : public CloudBinaryUploadServiceBase {
   using CloudBinaryUploadServiceBase::start_times_;
 
   // CloudBinaryUploadServiceBase:
-  void UploadForDeepScanning(
-      std::unique_ptr<BinaryUploadRequest> request) override {}
+  void MaybeGetAccessToken(BinaryUploadRequest::Id request_id) override {}
 };
 
 }  // namespace

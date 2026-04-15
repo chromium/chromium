@@ -74,14 +74,6 @@ class CloudBinaryUploadService
   void SetTokenFetcherForTesting(
       std::unique_ptr<SafeBrowsingTokenFetcher> token_fetcher);
 
- protected:
-  // This may destroy `request`.
-  // Virtual for testing.
-  virtual void OnGetRequestData(
-      enterprise_connectors::BinaryUploadRequest::Id request_id,
-      enterprise_connectors::ScanRequestUploadResult result,
-      enterprise_connectors::BinaryUploadRequest::Data data);
-
  private:
   using TokenAndConnector =
       std::pair<std::string, enterprise_connectors::AnalysisConnector>;
@@ -92,39 +84,18 @@ class CloudBinaryUploadService
   void QueueForDeepScanning(
       std::unique_ptr<enterprise_connectors::BinaryUploadRequest> request);
 
-  // CloudBinaryUploadServiceBase:
-  void UploadForDeepScanning(
-      std::unique_ptr<enterprise_connectors::BinaryUploadRequest> request)
-      override;
-
   // Get the access token only if the user matches the management and
   // affiliation requirements.
+  //
+  // CloudBinaryUploadServiceBase:
   void MaybeGetAccessToken(
-      enterprise_connectors::BinaryUploadRequest::Id request_id);
+      enterprise_connectors::BinaryUploadRequest::Id request_id) override;
+
   void OnGetAccessToken(
       enterprise_connectors::BinaryUploadRequest::Id request_id,
       const std::string& access_token);
 
-  // Set the local IP addresses in the request. This is performed in a separate
-  // callback to avoid blocking the UI thread and is only used for enterprise
-  // requests.
-  void OnIpAddressesFetched(
-      enterprise_connectors::BinaryUploadRequest::Id request_id,
-      std::vector<std::string> ip_addresses);
 
-  // Convenience wrapper around the
-  // FileAnalysisRequestBase::RegisterOnGotHashCallback to ensure the request is
-  // posted as a task to the current thread.
-  void RegisterOnGotHashCallback(
-      enterprise_connectors::BinaryUploadRequest::Id request_id,
-      enterprise_connectors::OnGotHashCallback on_got_hash_callback);
-
-  void FinishRequestWithIncompleteResponse(
-      enterprise_connectors::BinaryUploadRequest::Id request_id);
-
-  void FinishIfActive(enterprise_connectors::BinaryUploadRequest::Id request_id,
-                      enterprise_connectors::ScanRequestUploadResult result,
-                      enterprise_connectors::ContentAnalysisResponse response);
 
   void MaybeUploadForDeepScanningCallback(
       std::unique_ptr<enterprise_connectors::BinaryUploadRequest> request,
@@ -144,19 +115,7 @@ class CloudBinaryUploadService
       enterprise_connectors::ScanRequestUploadResult result,
       enterprise_connectors::ContentAnalysisResponse response);
 
-  // Prepares auth and non-auth requests for uploading to the server.
-  void PrepareRequestForUpload(
-      enterprise_connectors::BinaryUploadRequest::Id request_id);
-
-  bool ShouldTerminateRequestEarly(
-      enterprise_connectors::BinaryUploadRequest* request,
-      enterprise_connectors::ScanRequestUploadResult get_data_result,
-      size_t data_size);
-
   const raw_ptr<Profile> profile_;
-
-  enterprise_connectors::BinaryUploadRequest::Id::Generator
-      request_id_generator_;
 
   // Indicates if this service is waiting on the backend to validate event
   // reporting. Used to avoid spamming the backend.
