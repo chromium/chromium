@@ -2233,9 +2233,6 @@ IN_PROC_BROWSER_TEST_P(
               Contains(HasUniquePosition()).Times(3));
 }
 
-// Android doesn't currently support PRE_ tests, see crbug.com/40200835 or
-// crbug.com/40145099.
-#if !BUILDFLAG(IS_ANDROID)
 class SingleClientBookmarksSyncTestWithDisabledReuploadBookmarks
     : public SingleClientParameterizedBookmarksSyncTestBase {
  public:
@@ -2402,7 +2399,6 @@ IN_PROC_BROWSER_TEST_P(
                   .bookmark()
                   .has_parent_guid());
 }
-#endif  // !BUILDFLAG(IS_ANDROID)
 
 class SingleClientBookmarksSyncTestWithEnabledClientTagHashMigration
     : public SingleClientParameterizedBookmarksSyncTestBase {
