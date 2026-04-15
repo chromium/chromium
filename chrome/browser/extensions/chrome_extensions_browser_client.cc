@@ -147,6 +147,9 @@ namespace extensions {
 
 namespace {
 
+constexpr std::string_view kCrxUrlPath = "/service/update2/crx";
+constexpr std::string_view kJsonUrlPath = "/service/update2/json";
+
 // If true, the extensions client will behave as though there is always a
 // new chrome update.
 bool g_did_chrome_update_for_testing = false;
@@ -642,7 +645,16 @@ ChromeExtensionsBrowserClient::CreateUpdateClient(
 scoped_refptr<update_client::Configurator>
 ChromeExtensionsBrowserClient::CreateUpdateClientConfigurator(
     content::BrowserContext* context) {
-  return ChromeUpdateClientConfig::Create(context);
+  std::optional<GURL> override_url;
+  GURL update_url = extension_urls::GetWebstoreUpdateUrl();
+  if (update_url != extension_urls::GetDefaultWebstoreUpdateUrl()) {
+    if (update_url.GetPath() == kCrxUrlPath) {
+      override_url = update_url.GetWithEmptyPath().Resolve(kJsonUrlPath);
+    } else {
+      override_url = update_url;
+    }
+  }
+  return ChromeUpdateClientConfig::Create(context, override_url);
 }
 
 std::unique_ptr<ScopedBrowserContextKeepAlive>

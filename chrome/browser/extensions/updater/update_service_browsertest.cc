@@ -496,12 +496,6 @@ class PolicyUpdateServiceTest : public ExtensionUpdateClientBaseTest,
     ASSERT_TRUE(update_interceptor_->ExpectRequest(
         std::make_unique<update_client::PartialMatch>(R"("updatecheck":{)"),
         update_response));
-    ASSERT_TRUE(update_interceptor_->ExpectRequest(
-        std::make_unique<update_client::PartialMatch>(R"("updatecheck":{)"),
-        update_response));
-    ASSERT_TRUE(ping_interceptor_->ExpectRequest(
-        std::make_unique<update_client::PartialMatch>(R"("eventtype":)"),
-        ping_response));
     ASSERT_TRUE(ping_interceptor_->ExpectRequest(
         std::make_unique<update_client::PartialMatch>(R"("eventtype":)"),
         ping_response));
@@ -580,9 +574,10 @@ IN_PROC_BROWSER_TEST_F(PolicyUpdateServiceTest, FailedUpdateRetries) {
 
   // Wait for the extension to be installed by the policy we set up in
   // SetUpInProcessBrowserTestFixture.
-  EXPECT_EQ(update_client::ComponentState::kUpdated,
-            WaitOnComponentUpdaterCompleteEvent(id_));
-  ASSERT_TRUE(registry->GetInstalledExtension(id_));
+  if (!registry->GetInstalledExtension(id_)) {
+    TestExtensionRegistryObserver registry_observer(registry, id_);
+    EXPECT_TRUE(registry_observer.WaitForExtensionInstalled());
+  }
 
   content_verifier_test::DelayTracker delay_tracker;
   TestExtensionRegistryObserver registry_observer(registry, id_);
@@ -608,9 +603,7 @@ IN_PROC_BROWSER_TEST_F(PolicyUpdateServiceTest, FailedUpdateRetries) {
   EXPECT_EQ(update_client::ComponentState::kUpdated,
             WaitOnComponentUpdaterCompleteEvent(id_));
 
-  // Assert that we've received the update check for the policy install and the
-  // update check request for the corrupted reinstall.
-  ASSERT_EQ(2, update_interceptor_->GetCount())
+  ASSERT_EQ(1, update_interceptor_->GetCount())
       << update_interceptor_->GetRequestsAsString();
   EXPECT_EQ(1, get_interceptor_count());
 
@@ -621,7 +614,7 @@ IN_PROC_BROWSER_TEST_F(PolicyUpdateServiceTest, FailedUpdateRetries) {
   // - installedby="policy"
   // - enabled="0"
   // - <disabled reason="1024"/>
-  const std::optional<base::DictValue> root = GetRequest(1);
+  const std::optional<base::DictValue> root = GetRequest(0);
   ASSERT_TRUE(root);
   const base::DictValue& app = GetFirstApp(root.value());
   EXPECT_EQ(id_, CHECK_DEREF(app.FindString("appid")));
@@ -641,8 +634,6 @@ IN_PROC_BROWSER_TEST_F(PolicyUpdateServiceTest, Backoff) {
 
   // Wait for the extension to be installed by the policy we set up in
   // SetUpInProcessBrowserTestFixture.
-  EXPECT_EQ(update_client::ComponentState::kUpdated,
-            WaitOnComponentUpdaterCompleteEvent(id_));
   if (!registry->GetInstalledExtension(id_)) {
     TestExtensionRegistryObserver registry_observer(registry, id_);
     EXPECT_TRUE(registry_observer.WaitForExtensionInstalled());
@@ -665,7 +656,7 @@ IN_PROC_BROWSER_TEST_F(PolicyUpdateServiceTest, Backoff) {
               WaitOnComponentUpdaterCompleteEvent(id_));
   }
 
-  ASSERT_EQ(5, update_interceptor_->GetCount())
+  ASSERT_EQ(4, update_interceptor_->GetCount())
       << update_interceptor_->GetRequestsAsString();
   // Only one download because retries are cached.
   EXPECT_EQ(1, get_interceptor_count());
@@ -698,8 +689,6 @@ IN_PROC_BROWSER_TEST_F(PolicyUpdateServiceTest, PRE_PolicyCorruptedOnStartup) {
 
   // Wait for the extension to be installed by policy we set up in
   // SetUpInProcessBrowserTestFixture.
-  EXPECT_EQ(update_client::ComponentState::kUpdated,
-            WaitOnComponentUpdaterCompleteEvent(id_));
   if (!registry->GetInstalledExtension(id_))
     EXPECT_TRUE(registry_observer.WaitForExtensionInstalled());
 
@@ -715,9 +704,9 @@ IN_PROC_BROWSER_TEST_F(PolicyUpdateServiceTest, PRE_PolicyCorruptedOnStartup) {
   EXPECT_TRUE(reasons.contains(disable_reason::DISABLE_CORRUPTED));
   EXPECT_EQ(1u, delay_tracker.calls().size());
 
-  EXPECT_EQ(1, update_interceptor_->GetCount())
+  EXPECT_EQ(0, update_interceptor_->GetCount())
       << update_interceptor_->GetRequestsAsString();
-  EXPECT_EQ(1, get_interceptor_count());
+  EXPECT_EQ(0, get_interceptor_count());
 }
 
 // Now actually test what happens on the next startup after the PRE test above.
@@ -742,7 +731,7 @@ IN_PROC_BROWSER_TEST_F(PolicyUpdateServiceTest, PolicyCorruptedOnStartup) {
 
   ASSERT_EQ(1, update_interceptor_->GetCount())
       << update_interceptor_->GetRequestsAsString();
-  EXPECT_EQ(0, get_interceptor_count());
+  EXPECT_EQ(1, get_interceptor_count());
 
   const std::string update_request =
       std::get<0>(update_interceptor_->GetRequests()[0]);

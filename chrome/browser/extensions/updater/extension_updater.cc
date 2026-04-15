@@ -473,13 +473,6 @@ void ExtensionUpdater::CheckNow(CheckParams params) {
   // Filter out extensions that can't or shouldn't be updated.
   EraseUnupdatableIds(ids_to_update);
 
-  // If any pending extensions are high priority, the entire fetch should be
-  // done at high priority.
-  const DownloadFetchPriority pending_fetch_priority =
-      pending_extension_manager_->HasHighPriorityPendingExtension()
-          ? DownloadFetchPriority::kForeground
-          : params.fetch_priority;
-
   // The extension updater is a chimera of two update stacks:
   // ExtensionDownloader is used for XML v2 extensions-dialect updates, while
   // update_client is used for JSON v4 updates. Each extension being updated
@@ -488,7 +481,7 @@ void ExtensionUpdater::CheckNow(CheckParams params) {
   // and `request.in_progress_ids` are used for the ExtensionDownloader set.
   ExtensionUpdateCheckParams update_check_params;
   update_check_params.priority =
-      pending_fetch_priority == DownloadFetchPriority::kBackground
+      params.fetch_priority == DownloadFetchPriority::kBackground
           ? ExtensionUpdateCheckParams::UpdateCheckPriority::BACKGROUND
           : ExtensionUpdateCheckParams::UpdateCheckPriority::FOREGROUND;
   update_check_params.install_immediately = params.install_immediately;
@@ -498,6 +491,17 @@ void ExtensionUpdater::CheckNow(CheckParams params) {
   request.callback = std::move(params.callback);
   request.install_immediately = params.install_immediately;
   request.profile_keep_alive = std::move(keep_alive);
+
+  // If any pending extensions are high priority, they all are, but only when
+  // updated via ExtensionDownloader. (Fetch priority affects
+  // ExtensionDownloader differently and is distinct from server priority.)
+  // TODO(crbug.com/482088398): PendingExtensionManager determines priority
+  // based on install source and this is the only caller. The logic could be
+  // moved here (or into ExtensionDownloader) directly and made per-extension.
+  const DownloadFetchPriority pending_fetch_priority =
+      pending_extension_manager_->HasHighPriorityPendingExtension()
+          ? DownloadFetchPriority::kForeground
+          : params.fetch_priority;
 
   // Allocate each extension to a download stack.
   for (const ExtensionId& id : ids_to_update) {
@@ -777,21 +781,18 @@ bool ExtensionUpdater::CanUseUpdateService(
     return true;
   }
 
+  // UpdateService can only update extensions that have been installed on the
+  // system.
+  // TODO(crbug.com/482088398): Eliminate this constraint.
+  if (!extension) {
+    return false;
+  }
+
   // UpdateService can only update extensions from the store. If `update_url`
   // is empty, we default to checking from the store.
-  if (info) {
-    const GURL& update_url = info->update_url();
-    return update_url.is_empty() ||
-           extension_urls::IsWebstoreUpdateUrl(update_url);
-  }
-  if (extension) {
-    const GURL& update_url = GetEffectiveUpdateURL(*extension);
-    return update_url.is_empty() ||
-           extension_urls::IsWebstoreUpdateUrl(update_url);
-  }
-  // TODO(crbug.com/482088398): This could become NOTREACHED, or the function
-  // could take a std::variant.
-  return false;
+  GURL update_url = GetEffectiveUpdateURL(*extension);
+  return update_url.is_empty() ||
+         extension_urls::IsWebstoreUpdateUrl(update_url);
 }
 
 void ExtensionUpdater::InstallCRXFile(FetchedCRXFile crx_file) {

@@ -43,7 +43,6 @@
 #include "extensions/browser/extension_system.h"
 #include "extensions/browser/test_extension_registry_observer.h"
 #include "extensions/common/extension.h"
-#include "extensions/common/verifier_formats.h"
 #include "extensions/test/extension_test_message_listener.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
@@ -275,76 +274,13 @@ IN_PROC_BROWSER_TEST_F(ExtensionDisabledGlobalErrorTest,
 IN_PROC_BROWSER_TEST_F(ExtensionDisabledGlobalErrorTest, RemoteInstall) {
   static const char extension_id[] = "pgdpcfcocojkjfbgpiianjngphoopgmo";
 
-  auto reset = extensions::DisablePublisherKeyVerificationForTests();
-  content::URLLoaderInterceptor interceptor(base::BindLambdaForTesting(
-      [&](content::URLLoaderInterceptor::RequestParams* params) {
-        std::string path = params->url_request.url.GetPath();
-        if (path == "/autoupdate_nonwebstore/updates.xml") {
-          content::URLLoaderInterceptor::WriteResponse(
-              test_data_dir_.AppendASCII("permissions_increase")
-                  .AppendASCII("updates.xml"),
-              params->client.get());
-          return true;
-        } else if (path == "/autoupdate/v2.crx") {
-          content::URLLoaderInterceptor::WriteResponse(path_v2_,
-                                                       params->client.get());
-          return true;
-        }
-        return false;
-      }));
-
-  sync_pb::EntitySpecifics specifics;
-  specifics.mutable_extension()->set_id(extension_id);
-  specifics.mutable_extension()->set_enabled(false);
-  specifics.mutable_extension()->set_remote_install(true);
-  specifics.mutable_extension()->set_disable_reasons(
-      extensions::disable_reason::DISABLE_REMOTE_INSTALL);
-  specifics.mutable_extension()->set_update_url(
-      "http://localhost/autoupdate_nonwebstore/updates.xml");
-  specifics.mutable_extension()->set_version("2");
-  syncer::SyncData sync_data = syncer::SyncData::CreateRemoteData(
-      specifics, syncer::ClientTagHash::FromHashed("unused"));
-
-  ExtensionSyncService* sync_service = ExtensionSyncService::Get(profile());
-  sync_service->MergeDataAndStartSyncing(
-      syncer::EXTENSIONS, syncer::SyncDataList(),
-      std::make_unique<syncer::FakeSyncChangeProcessor>());
-  extensions::TestExtensionRegistryObserver install_observer(
-      extension_registry());
-  sync_service->ProcessSyncChanges(
-      FROM_HERE,
-      syncer::SyncChangeList(
-          1, syncer::SyncChange(FROM_HERE, syncer::SyncChange::ACTION_ADD,
-                                sync_data)));
-
-  install_observer.WaitForExtensionWillBeInstalled();
-  content::RunAllTasksUntilIdle();
-
-  const Extension* extension =
-      extension_registry()->disabled_extensions().GetByID(extension_id);
-  ASSERT_TRUE(extension);
-  EXPECT_EQ("2", extension->VersionString());
-  EXPECT_EQ(1u, extension_registry()->disabled_extensions().size());
-  EXPECT_THAT(ExtensionPrefs::Get(extension_service()->profile())
-                  ->GetDisableReasons(extension_id),
-              testing::UnorderedElementsAre(
-                  extensions::disable_reason::DISABLE_REMOTE_INSTALL));
-  EXPECT_TRUE(GetExtensionDisabledGlobalError());
-}
-
-// Test that an error appears if an extension gets installed server side.
-IN_PROC_BROWSER_TEST_F(ExtensionDisabledGlobalErrorTest,
-                       RemoteInstallFromWebstore) {
-  static const char extension_id[] = "pgdpcfcocojkjfbgpiianjngphoopgmo";
-
-  auto reset = extensions::DisablePublisherKeyVerificationForTests();
   content::URLLoaderInterceptor interceptor(base::BindLambdaForTesting(
       [&](content::URLLoaderInterceptor::RequestParams* params) {
         std::string path = params->url_request.url.GetPath();
         if (path == "/autoupdate/updates.xml") {
           content::URLLoaderInterceptor::WriteResponse(
               test_data_dir_.AppendASCII("permissions_increase")
-                  .AppendASCII("updates.json"),
+                  .AppendASCII("updates.xml"),
               params->client.get());
           return true;
         } else if (path == "/autoupdate/v2.crx") {
