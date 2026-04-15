@@ -121,12 +121,12 @@ WebTestBrowserContext::GetClientHintsControllerDelegate() {
 
 ReduceAcceptLanguageControllerDelegate*
 WebTestBrowserContext::GetReduceAcceptLanguageControllerDelegate() {
-  if (!reduce_accept_lang_controller_delegate_) {
-    reduce_accept_lang_controller_delegate_ =
+  if (!reduce_accept_language_delegate_) {
+    reduce_accept_language_delegate_ =
         std::make_unique<content::MockReduceAcceptLanguageControllerDelegate>(
             content::GetShellLanguage());
   }
-  return reduce_accept_lang_controller_delegate_.get();
+  return reduce_accept_language_delegate_.get();
 }
 
 }  // namespace content
