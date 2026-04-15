@@ -133,11 +133,14 @@ class LargestContentfulPaintCalculatorTest : public RenderingTest {
 
   uint64_t CandidateCount() { return test_delegate_->CandidateCount(); }
 
-  void UpdateLargestContentfulPaintCandidate() {
-    GetFrame().View()->GetPaintTimingDetector().UpdateLcpCandidate();
-  }
-
   Element* CurrentLcpCandidate() { return test_delegate_->CurrentCandidate(); }
+
+  LargestContentfulPaintCalculator* GetLargestContentfulPaintCalculator() {
+    return GetFrame()
+        .View()
+        ->GetPaintTimingDetector()
+        .GetLargestContentfulPaintCalculator();
+  }
 
  private:
   // The tests override the `LargestContentfulPaintCalculator::Delegate` to
@@ -173,13 +176,6 @@ class LargestContentfulPaintCalculatorTest : public RenderingTest {
     wtf_size_t candidate_count_ = 0;
     uint64_t largest_reported_size_ = 0;
   };
-
-  LargestContentfulPaintCalculator* GetLargestContentfulPaintCalculator() {
-    return GetFrame()
-        .View()
-        ->GetPaintTimingDetector()
-        .GetLargestContentfulPaintCalculator();
-  }
 
   base::test::TracingEnvironment tracing_environment_;
   base::SimpleTestTickClock simulated_clock_;
@@ -424,8 +420,7 @@ TEST_F(LargestContentfulPaintCalculatorTest, RemoveLargestPendingImage) {
   // painted image, but it relies on another contentful paint to trigger the
   // LCP candidate update.
   GetDocument().getElementById(AtomicString("large"))->remove();
-  SimulateRenderingAndPresentationTime();
-  UpdateLargestContentfulPaintCandidate();
+  GetLargestContentfulPaintCalculator()->MaybeFlushCandidates();
   EXPECT_EQ(LargestReportedSize(), 9u);
   EXPECT_EQ(LargestImagePaintSize(), 9u);
   EXPECT_FALSE(LargestImagePaintTime().is_null());
@@ -465,8 +460,7 @@ TEST_F(LargestContentfulPaintCalculatorTest, MulitiplePendingImages) {
   // this should fall back to the largest painted image, not the next largest
   // pending image, which isn't supported.
   GetDocument().getElementById(AtomicString("largest"))->remove();
-  SimulateRenderingAndPresentationTime();
-  UpdateLargestContentfulPaintCandidate();
+  GetLargestContentfulPaintCalculator()->MaybeFlushCandidates();
   EXPECT_EQ(LargestReportedSize(), 9u);
   EXPECT_EQ(LargestImagePaintSize(), 9u);
   EXPECT_FALSE(LargestImagePaintTime().is_null());

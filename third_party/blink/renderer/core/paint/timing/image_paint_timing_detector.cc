@@ -131,7 +131,7 @@ void ImagePaintTimingDetector::SendRectsToHud() {
   }
 }
 
-OptionalPaintTimingCallback
+OptionalPaintTimingDetectorCallback<ImageRecord>
 ImagePaintTimingDetector::TakePaintTimingCallback() {
   viewport_size_ = std::nullopt;
   if (!added_entry_in_latest_frame_)
@@ -143,17 +143,16 @@ ImagePaintTimingDetector::TakePaintTimingCallback() {
   added_entry_in_latest_frame_ = false;
   return BindOnce(
       [](ImagePaintTimingDetector* self, uint32_t frame_index,
-         LargestContentfulPaintCalculator* lcp_calculator,
          const base::TimeTicks& presentation_timestamp,
-         const DOMPaintTimingInfo& paint_timing_info) {
+         const DOMPaintTimingInfo& paint_timing_info,
+         HeapVector<Member<ImageRecord>>& settled_records) {
         if (self) {
           self->records_manager_.AssignPaintTimeToRegisteredQueuedRecords(
-              presentation_timestamp, paint_timing_info, frame_index,
-              lcp_calculator);
+              frame_index, presentation_timestamp, paint_timing_info,
+              settled_records);
         }
       },
-      WrapWeakPersistent(this), frame_index_++,
-      WrapWeakPersistent(GetLargestContentfulPaintCalculator()));
+      WrapWeakPersistent(this), frame_index_++);
 }
 
 void ImagePaintTimingDetector::NotifyImageRemoved(
@@ -187,11 +186,10 @@ void ImagePaintTimingDetector::StopRecordEntries() {
 }
 
 void ImageRecordsManager::AssignPaintTimeToRegisteredQueuedRecords(
+    uint32_t last_queued_frame_index,
     const base::TimeTicks& presentation_timestamp,
     const DOMPaintTimingInfo& paint_timing_info,
-    uint32_t last_queued_frame_index,
-    LargestContentfulPaintCalculator* lcp_calculator) {
-  ImageRecord* largest_removed_image = nullptr;
+    HeapVector<Member<ImageRecord>>& settled_records) {
   while (!images_queued_for_paint_time_.empty()) {
     ImageRecord* record = images_queued_for_paint_time_.front();
     // Not ready for this frame yet - we're done with the queue for now.
@@ -229,33 +227,12 @@ void ImageRecordsManager::AssignPaintTimeToRegisteredQueuedRecords(
       record->SetPaintTime(presentation_timestamp, paint_timing_info);
     }
 
-    // While we want to record the paint time for detached images since this is
-    // used downstream by soft navigation heuristics, we don't want these to
-    // affect hard LCP in order to match the long-standing behavior.
-    //
-    // TODO(crbug.com/454082773): we should consider allowing these to be LCP
-    // candidates since they would have been shown to the user, and since it
-    // better matches the LCP spec.
-    if (it == pending_images_.end()) {
-      if (lcp_calculator &&
-          record->IsEffectiveSizeLargerThan(largest_removed_image)) {
-        largest_removed_image = record;
-      }
-      continue;
-    }
+    settled_records.push_back(record);
 
-    // Update largest if necessary.
-    if (lcp_calculator) {
-      lcp_calculator->MaybeUpdateLargestPaintedImage(record);
-    }
     // Remove from pending.
-    pending_images_.erase(it);
-  }
-
-  if (largest_removed_image) {
-    CHECK(lcp_calculator);
-    lcp_calculator->MaybeRecordRemovedCandidateUseCounter(
-        *largest_removed_image);
+    if (it != pending_images_.end()) {
+      pending_images_.erase(it);
+    }
   }
 }
 

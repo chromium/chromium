@@ -7,6 +7,7 @@
 
 #include <memory>
 #include <optional>
+#include <type_traits>
 
 #include "base/time/time.h"
 #include "third_party/blink/public/platform/web_url_request.h"
@@ -191,6 +192,12 @@ struct DowncastTraits<ImageRecord> {
     return record.IsImageRecord();
   }
 };
+
+// Concept for generic algorithms that act on a collection of
+// `PaintTimingRecord`s.
+template <typename T>
+concept IsDerivedFromPaintTimingRecord =
+    std::derived_from<T, PaintTimingRecord>;
 
 }  // namespace blink
 

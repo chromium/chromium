@@ -16,6 +16,7 @@
 #include "third_party/blink/renderer/core/paint/timing/paint_timing.h"
 #include "third_party/blink/renderer/core/paint/timing/paint_timing_detector.h"
 #include "third_party/blink/renderer/core/paint/timing/paint_timing_utils.h"
+#include "third_party/blink/renderer/core/paint/timing/text_element_timing.h"
 #include "third_party/blink/renderer/core/timing/soft_navigation_context.h"
 #include "third_party/blink/renderer/core/timing/soft_navigation_heuristics.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
@@ -61,7 +62,8 @@ void TextPaintTimingDetector::SendRectsToHud() {
   }
 }
 
-OptionalPaintTimingCallback TextPaintTimingDetector::TakePaintTimingCallback() {
+OptionalPaintTimingDetectorCallback<TextRecord>
+TextPaintTimingDetector::TakePaintTimingCallback() {
   if (!added_entry_in_latest_frame_)
     return std::nullopt;
 
@@ -230,7 +232,6 @@ void TextPaintTimingDetector::ReportLargestIgnoredText() {
 
 void TextPaintTimingDetector::Trace(Visitor* visitor) const {
   visitor->Trace(frame_view_);
-  visitor->Trace(text_element_timing_);
   visitor->Trace(rewalkable_set_);
   visitor->Trace(recorded_set_);
   visitor->Trace(texts_queued_for_paint_time_);
@@ -263,22 +264,8 @@ void LargestTextPaintManager::Trace(Visitor* visitor) const {
 void TextPaintTimingDetector::AssignPaintTimeToQueuedRecords(
     uint32_t frame_index,
     const base::TimeTicks& timestamp,
-    const DOMPaintTimingInfo& paint_timing_info) {
-  if (!text_element_timing_) {
-    if (Document* document = frame_view_->GetFrame().GetDocument()) {
-      if (LocalDOMWindow* window = document->domWindow()) {
-        text_element_timing_ = MakeGarbageCollected<TextElementTiming>(*window);
-      }
-    }
-  }
-
-  LargestContentfulPaintCalculator* lcp_calculator =
-      paint_timing_detector_->GetLargestContentfulPaintCalculator();
-  bool is_needed_for_lcp = IsRecordingLargestTextPaint();
-  bool can_report_timing =
-      text_element_timing_ ? text_element_timing_->CanReportElements() : false;
-  TextRecord* largest_removed_text = nullptr;
-
+    const DOMPaintTimingInfo& paint_timing_info,
+    HeapVector<Member<TextRecord>>& settled_records) {
   while (!texts_queued_for_paint_time_.empty()) {
     TextRecord* record = texts_queued_for_paint_time_.front().Get();
     // `texts_queued_for_paint_time_` is in frame index order, so we're done
@@ -291,40 +278,7 @@ void TextPaintTimingDetector::AssignPaintTimeToQueuedRecords(
     CHECK(!record->HasPaintTime());
     record->SetPaintTime(timestamp, paint_timing_info);
 
-    // `record` may have been removed from the `recorded_set_` because the node
-    // was detached from the DOM but left in `texts_queued_for_paint_time_` to
-    // record paint and presentation time for soft navigation heuristics. To
-    // match current LCP and element timing behavior, we don't want such nodes
-    // to be LCP/timing candidates.
-    //
-    // TODO(crbug.com/454082773): we should consider allowing these to be LCP
-    // candidates since they would have been shown to the user, and since it
-    // better matches the LCP spec.
-    //
-    // Note: we can't check `recorded_set_` here to detect removal because the
-    // `largest_ignored_text_` is not added to that set when document opacity
-    // changes to a non-zero value (crbug.com/459517297).
-    if (record->WasNodeRemoved()) {
-      if (is_needed_for_lcp &&
-          record->IsEffectiveSizeLargerThan(largest_removed_text)) {
-        largest_removed_text = record;
-      }
-      continue;
-    }
-
-    if (can_report_timing && record->IsNeededForElementTiming()) {
-      text_element_timing_->OnTextObjectPainted(*record, paint_timing_info);
-    }
-
-    if (is_needed_for_lcp && record->RecordedSize() > 0u) {
-      lcp_calculator->MaybeUpdateLargestText(record);
-    }
-  }
-
-  if (largest_removed_text) {
-    CHECK(lcp_calculator);
-    lcp_calculator->MaybeRecordRemovedCandidateUseCounter(
-        *largest_removed_text);
+    settled_records.push_back(record);
   }
 }
 

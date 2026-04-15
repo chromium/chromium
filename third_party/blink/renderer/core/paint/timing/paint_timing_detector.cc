@@ -452,12 +452,14 @@ gfx::RectF PaintTimingDetector::CalculateVisualRect(
   return BlinkSpaceToDIPs(gfx::RectF(layout_visual_rect));
 }
 
-void PaintTimingDetector::UpdateLcpCandidate() {
+void PaintTimingDetector::OnFramePresented(
+    const HeapVector<Member<ImageRecord>>& image_records,
+    const HeapVector<Member<TextRecord>>& text_records) {
   auto* lcp_calculator = GetLargestContentfulPaintCalculator();
   if (!lcp_calculator) {
     return;
   }
-  lcp_calculator->MaybeFlushCandidates();
+  lcp_calculator->OnFramePresented(image_records, text_records);
 }
 
 void PaintTimingDetector::ReportIgnoredContent() {

@@ -150,11 +150,15 @@ class CORE_EXPORT SoftNavigationContext
   // Used to check if it is worthwhile to call `SatisfiesSoftNavPaintCriteria`.
   bool OnPaintFinished();
   void OnInputOrScroll();
-  void TryUpdateLcpCandidate();
-  const LargestContentfulPaintDetails& LatestLcpDetailsForUkm();
 
   bool SatisfiesSoftNavNonPaintCriteria() const;
   bool SatisfiesSoftNavPaintCriteria(uint64_t required_paint_area) const;
+
+  // Called by `SoftNavigationHeuristics` with the largest image and text
+  // records that were presented for this context in the last presented frame.
+  void OnFramePresented(LargestContentfulPaintCalculator::LcpCandidates*);
+
+  const LargestContentfulPaintDetails& LatestLcpDetailsForUkm();
 
   bool IsRecordingLargestContentfulPaint() const {
     return first_input_or_scroll_time_.is_null();

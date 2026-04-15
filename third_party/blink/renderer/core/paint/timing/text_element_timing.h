@@ -51,13 +51,16 @@ class CORE_EXPORT TextElementTiming final
   bool CanReportToContainerTiming();
   bool CanReportElements();
 
-  // Called when the swap promise queued by TextPaintTimingDetector has been
-  // resolved. Dispatches PerformanceElementTiming entries to WindowPerformance.
-  void OnTextObjectPainted(const TextRecord&, const DOMPaintTimingInfo&);
+  // Dispatches PerformanceElementTiming entries to WindowPerformance for any of
+  // the given records, if needed. Called on the main thread when the
+  // presentation time callback for a given frame runs.
+  void OnFramePresented(const HeapVector<Member<TextRecord>>&);
 
   void Trace(Visitor* visitor) const;
 
  private:
+  void OnTextNodePresented(const TextRecord&);
+
   void EnsureContainerTiming();
 
   Member<WindowPerformance> performance_;

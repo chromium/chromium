@@ -1063,8 +1063,7 @@ TEST_P(ImagePaintTimingDetectorTest, NullTimeNoCrash) {
     <img id="target"></img>
   )HTML");
   SetImageAndPaint("target", 5, 5);
-  SimulateRendering();
-  GetPaintTimingDetector().UpdateLcpCandidate();
+  SimulateRenderingAndPresentationTime();
 }
 
 TEST_P(ImagePaintTimingDetectorTest, Iframe) {
@@ -1370,15 +1369,13 @@ TEST_P(ImagePaintTimingDetectorTest, MAYBE_LargestImagePaint_Detached_Frame) {
   SetChildFrameImageAndPaint("target", 5, 5);
   SimulateRenderingAndPresentationTime();
   LocalFrame* child_frame = GetChildFrame();
-  PaintTimingDetector* child_detector =
-      &child_frame->View()->GetPaintTimingDetector();
   GetDocument().body()->SetInnerHTMLWithoutTrustedTypes("",
                                                         ASSERT_NO_EXCEPTION);
   EXPECT_TRUE(child_frame->IsDetached());
 
   // Start tracing, we only want to capture it during the ReportPaintTime.
   trace_analyzer::Start("loading");
-  child_detector->UpdateLcpCandidate();
+  SimulateRenderingAndPresentationTime();
 
   auto analyzer = trace_analyzer::Stop();
   trace_analyzer::TraceEventVector events;

@@ -124,13 +124,6 @@ bool SoftNavigationContext::AddPaintedArea(PaintTimingRecord* record) {
     first_image_or_text_ = record;
   }
 
-  if (record->IsImageRecord()) {
-    lcp_calculator_->MaybeUpdateLargestPaintedImage(To<ImageRecord>(record));
-  } else {
-    CHECK(record->IsTextRecord());
-    lcp_calculator_->MaybeUpdateLargestText(To<TextRecord>(record));
-  }
-
   return true;
 }
 
@@ -197,34 +190,12 @@ void SoftNavigationContext::OnInputOrScroll() {
   first_input_or_scroll_time_ = base::TimeTicks::Now();
 }
 
-// TODO(crbug.com/419386429): This gets called after each new presentation time
-// update, but this might have a range of deficiencies:
-//
-// 1. Candidate records might get replaced between paint and presentation.
-//
-// `largest_text_` and `largest_image_` are updated in `AddPaintedArea` from
-// Paint stage of rendering. But `UpdateSoftLcpCandidate` is called after we
-// receive frame presentation time feedback (via `PaintTimingMixin`). It is
-// possible that we replace the current largest* paint record with a "pending"
-// candidate, but unrelated to the presentation feedback of this
-// `UpdateSoftLcpCandidate`. We should only report fully recorded paint records.
-// One option is to manage a largest pending/painted recortd (like LCP
-// calculator), or, just skip this next step if the candidates aren't done.
-//
-// 2. We might not be ready to emit LCP candidates yet.
-//
-// Right now we skip emitting LCP candidates until after the `navigation_id_` is
-// set and the soft navigation entry is emitted, which might happen after a few
-// frames/paints. We do buffer the most recent candidate and emit that if and
-// when the soft navigation entry is emitted, but we might want to consider
-// buffering and emitting more candidates.
-void SoftNavigationContext::TryUpdateLcpCandidate() {
+void SoftNavigationContext::OnFramePresented(
+    LargestContentfulPaintCalculator::LcpCandidates* candidates) {
   // TODO(crbug.com/454082773): Input should not invalidate pending presentation
   // feedback, but this can happen due to scheduling races.
-  if (!IsRecordingLargestContentfulPaint()) {
-    return;
-  }
-  lcp_calculator_->MaybeFlushCandidates();
+  CHECK(IsRecordingLargestContentfulPaint());
+  lcp_calculator_->OnFramePresented(candidates);
 }
 
 const LargestContentfulPaintDetails&

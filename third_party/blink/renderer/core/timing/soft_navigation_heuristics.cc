@@ -29,7 +29,9 @@
 #include "third_party/blink/renderer/core/layout/layout_view.h"
 #include "third_party/blink/renderer/core/navigation_api/navigation_type_util.h"
 #include "third_party/blink/renderer/core/page/page.h"
+#include "third_party/blink/renderer/core/paint/timing/largest_contentful_paint_calculator.h"
 #include "third_party/blink/renderer/core/paint/timing/paint_timing_detector.h"
+#include "third_party/blink/renderer/core/paint/timing/paint_timing_record.h"
 #include "third_party/blink/renderer/core/timing/dom_window_performance.h"
 #include "third_party/blink/renderer/core/timing/interaction_effects_monitor.h"
 #include "third_party/blink/renderer/core/timing/performance_timing_for_reporting.h"
@@ -156,6 +158,29 @@ SoftNavigationHeuristics* GetHeuristicsForNodeIfShouldTrack(const Node& node) {
   LocalDOMWindow* window = node.GetDocument().domWindow();
   CHECK(window);
   return window->GetSoftNavigationHeuristics();
+}
+
+using LcpCandidates = LargestContentfulPaintCalculator::LcpCandidates;
+using ContextToCandidatesMap =
+    HeapHashMap<Member<SoftNavigationContext>, Member<LcpCandidates>>;
+
+template <IsDerivedFromPaintTimingRecord T>
+void GroupLcpCandidatesByContext(const HeapVector<Member<T>>& records,
+                                 ContextToCandidatesMap& context_map) {
+  for (const auto& record : records) {
+    SoftNavigationContext* context = record->GetSoftNavigationContext();
+    if (!context || !context->IsRecordingLargestContentfulPaint()) {
+      continue;
+    }
+    LcpCandidates* candidates = nullptr;
+    if (auto iter = context_map.find(context); iter != context_map.end()) {
+      candidates = iter->value.Get();
+    } else {
+      candidates = MakeGarbageCollected<LcpCandidates>();
+      context_map.insert(context, candidates);
+    }
+    candidates->MaybeUpdateCandidate(record);
+  }
 }
 
 }  // namespace
@@ -469,16 +494,19 @@ void SoftNavigationHeuristics::OnInputOrScroll() {
   }
 }
 
-void SoftNavigationHeuristics::UpdateSoftLcpCandidate() {
-  // First, update the LCP candidate and emit an ICP entry for the active
+void SoftNavigationHeuristics::OnFramePresented(
+    const HeapVector<Member<ImageRecord>>& image_records,
+    const HeapVector<Member<TextRecord>>& text_records) {
+  // First, group the records by context, ignoring records that aren't needed.
+  ContextToCandidatesMap candidates_per_context;
+  GroupLcpCandidatesByContext(image_records, candidates_per_context);
+  GroupLcpCandidatesByContext(text_records, candidates_per_context);
+
+  // Next, update the LCP candidate and emit an ICP entry for the active
   // context, if any. We do this before unblocking entries waiting for FCP
   // below, since that also emits and updates metrics.
-  //
-  // Note: this is called from PaintTimingMixin on every paint timing update,
-  // without feature flag check. We shouldn't have a url context without the
-  // feature.
-  for (const auto& context : interaction_id_to_context_.Values()) {
-    context->TryUpdateLcpCandidate();
+  for (const auto& context_and_records : candidates_per_context) {
+    context_and_records.key->OnFramePresented(context_and_records.value);
   }
 
   // If we're waiting on FCP presentation feedback to emit entries, check if we

@@ -79,6 +79,62 @@ LargestContentfulPaintCalculator::LargestContentfulPaintCalculator(
   CHECK(delegate_);
 }
 
+template <IsDerivedFromPaintTimingRecord T>
+void LargestContentfulPaintCalculator::ProcessLcpCandidates(
+    const HeapVector<Member<T>>& records,
+    LcpCandidates* candidates) {
+  // ICP processes its own candidates so it can group by context.
+  CHECK(delegate_->IsHardNavigation());
+
+  PaintTimingRecord* largest_removed_record = nullptr;
+  for (const auto& record : records) {
+    // Hard navigation LCP does not consider records whose node has been removed
+    // from the DOM.
+    //
+    // TODO(crbug.com/454082773): we should consider allowing these to be LCP
+    // candidates since they would have been shown to the user, and since it
+    // better matches the LCP spec.
+    if (record->WasNodeRemoved()) {
+      if (record->IsEffectiveSizeLargerThan(largest_removed_record)) {
+        largest_removed_record = record.Get();
+      }
+      continue;
+    }
+    candidates->MaybeUpdateCandidate(record.Get());
+  }
+  if (largest_removed_record) {
+    // Only record the UseCounter if the removed record was also larger than the
+    // candidate for this frame.
+    if (largest_removed_record->IsEffectiveSizeLargerThan(
+            candidates->Candidate<T>())) {
+      MaybeRecordRemovedCandidateUseCounter(*largest_removed_record);
+    }
+  }
+}
+
+void LargestContentfulPaintCalculator::OnFramePresented(
+    const HeapVector<Member<ImageRecord>>& image_records,
+    const HeapVector<Member<TextRecord>>& text_records) {
+  auto* per_frame_candidates = MakeGarbageCollected<LcpCandidates>();
+  ProcessLcpCandidates(image_records, per_frame_candidates);
+  ProcessLcpCandidates(text_records, per_frame_candidates);
+  OnFramePresented(per_frame_candidates);
+}
+
+void LargestContentfulPaintCalculator::OnFramePresented(
+    LcpCandidates* candidates) {
+  if (auto* candidate = candidates->Candidate<ImageRecord>();
+      candidate &&
+      candidate->IsEffectiveSizeLargerThan(largest_painted_image_)) {
+    largest_painted_image_ = candidate;
+  }
+  if (auto* candidate = candidates->Candidate<TextRecord>();
+      candidate && candidate->IsEffectiveSizeLargerThan(largest_text_)) {
+    largest_text_ = candidate;
+  }
+  MaybeFlushCandidates();
+}
+
 void LargestContentfulPaintCalculator::MaybeFlushCandidates() {
   bool did_update_metrics = false;
   did_update_metrics |= UpdateMetricsIfLargestImagePaintChanged();
@@ -482,20 +538,6 @@ void LargestContentfulPaintCalculator::ReportNoMetricsImageCandidateToTrace() {
                std::move(value), "frame", GetFrameIdForTracing(frame));
 }
 
-void LargestContentfulPaintCalculator::MaybeUpdateLargestText(
-    TextRecord* record) {
-  if (record->IsEffectiveSizeLargerThan(largest_text_)) {
-    largest_text_ = record;
-  }
-}
-
-void LargestContentfulPaintCalculator::MaybeUpdateLargestPaintedImage(
-    ImageRecord* record) {
-  if (record->IsEffectiveSizeLargerThan(largest_painted_image_)) {
-    largest_painted_image_ = record;
-  }
-}
-
 bool LargestContentfulPaintCalculator::IsImageNeededForLcp(
     uint64_t size) const {
   // TODO(crbug.com/454067883): The `largest_painted_image_` isn't updated until
@@ -539,26 +581,47 @@ ImageRecord* LargestContentfulPaintCalculator::LargestPaintedOrPendingImage()
 }
 
 void LargestContentfulPaintCalculator::MaybeRecordRemovedCandidateUseCounter(
-    const ImageRecord& record) {
-  // Use `LargestImage()` instead of `largest_painted_image_` since it's
-  // what's used to determine the largest image candidate. This might not end
-  // up affecting metrics, but it could, and it could be emitted to
-  // performance timeline (depending on the largest text).
-  ImageRecord* largest_image = LargestPaintedOrPendingImage();
-  if (!largest_image || largest_image->RecordedSize() < record.RecordedSize()) {
-    UseCounter::Count(window_performance_->DomWindow(),
-                      WebFeature::kLcpCandidateRemovedWhilePaintTimePending);
+    const PaintTimingRecord& record) {
+  if (record.IsTextRecord()) {
+    // This might not end up affecting metrics, but it could, and it could be
+    // emitted to performance timeline (depending on the largest image).
+    if (record.IsEffectiveSizeLargerThan(largest_text_)) {
+      UseCounter::Count(window_performance_->DomWindow(),
+                        WebFeature::kLcpCandidateRemovedWhilePaintTimePending);
+    }
+  } else {
+    // Use `LargestPaintedOrPendingImage()` instead of `largest_painted_image_`
+    // since it's what's used to determine the largest image candidate for
+    // metrics. This might not end up affecting metrics, but it could, and it
+    // could be emitted to performance timeline (depending on the largest text).
+    ImageRecord* largest_image = LargestPaintedOrPendingImage();
+    if (record.IsEffectiveSizeLargerThan(largest_image)) {
+      UseCounter::Count(window_performance_->DomWindow(),
+                        WebFeature::kLcpCandidateRemovedWhilePaintTimePending);
+    }
   }
 }
 
-void LargestContentfulPaintCalculator::MaybeRecordRemovedCandidateUseCounter(
-    const TextRecord& record) {
-  // This might not end up affecting metrics, but it could, and it could be
-  // emitted to performance timeline (depending on the largest image).
-  if (!largest_text_ || largest_text_->RecordedSize() < record.RecordedSize()) {
-    UseCounter::Count(window_performance_->DomWindow(),
-                      WebFeature::kLcpCandidateRemovedWhilePaintTimePending);
+LargestContentfulPaintCalculator::LcpCandidates::LcpCandidates() = default;
+
+void LargestContentfulPaintCalculator::LcpCandidates::MaybeUpdateCandidate(
+    TextRecord* record) {
+  if (record->IsEffectiveSizeLargerThan(text_candidate_)) {
+    text_candidate_ = record;
   }
+}
+
+void LargestContentfulPaintCalculator::LcpCandidates::MaybeUpdateCandidate(
+    ImageRecord* record) {
+  if (record->IsEffectiveSizeLargerThan(image_candidate_)) {
+    image_candidate_ = record;
+  }
+}
+
+void LargestContentfulPaintCalculator::LcpCandidates::Trace(
+    Visitor* visitor) const {
+  visitor->Trace(image_candidate_);
+  visitor->Trace(text_candidate_);
 }
 
 }  // namespace blink

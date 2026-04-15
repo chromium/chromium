@@ -23,6 +23,7 @@ namespace blink {
 
 class Image;
 class ImagePaintTimingDetector;
+class ImageRecord;
 class ImageResourceContent;
 class LayoutBoxModelObject;
 class LayoutObject;
@@ -31,6 +32,7 @@ class Node;
 class PropertyTreeStateOrAlias;
 class MediaTiming;
 class TextPaintTimingDetector;
+class TextRecord;
 class StyleImage;
 
 // PaintTimingDetector receives signals regarding text and image paints and
@@ -120,7 +122,8 @@ class CORE_EXPORT PaintTimingDetector
   }
   LargestContentfulPaintCalculator* GetLargestContentfulPaintCalculator();
 
-  void UpdateLcpCandidate();
+  void OnFramePresented(const HeapVector<Member<ImageRecord>>& image_records,
+                        const HeapVector<Member<TextRecord>>& text_records);
 
   // Reports the largest image and text candidates painted under non-nested 0
   // opacity layer.

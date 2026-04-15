@@ -22,6 +22,7 @@
 #include "third_party/blink/renderer/platform/graphics/dom_node_id.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_deque.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_set.h"
+#include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/member.h"
 #include "third_party/blink/renderer/platform/loader/fetch/media_timing.h"
@@ -127,10 +128,10 @@ class CORE_EXPORT ImageRecordsManager {
                                          bool is_recording_lcp);
 
   void AssignPaintTimeToRegisteredQueuedRecords(
+      uint32_t last_queued_frame_index,
       const base::TimeTicks&,
       const DOMPaintTimingInfo&,
-      uint32_t last_queued_frame_index,
-      LargestContentfulPaintCalculator*);
+      HeapVector<Member<ImageRecord>>& settled_records);
 
   void AddPendingImage(ImageRecord* record) {
     pending_images_.insert(record->Hash(), record);
@@ -232,7 +233,7 @@ class CORE_EXPORT ImagePaintTimingDetector final
   void ReportPresentationTime(uint32_t last_queued_frame_index,
                               base::TimeTicks);
 
-  OptionalPaintTimingCallback TakePaintTimingCallback();
+  OptionalPaintTimingDetectorCallback<ImageRecord> TakePaintTimingCallback();
 
   // Called when documentElement changes from zero to nonzero opacity. Makes the
   // largest image that was hidden due to this a Largest Contentful Paint

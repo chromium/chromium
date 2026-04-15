@@ -19,17 +19,20 @@
 #include "third_party/blink/renderer/core/paint/timing/paint_timing.h"
 #include "third_party/blink/renderer/core/timing/performance_timeline_entry_id_generator.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_set.h"
+#include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/scheduler/public/task_attribution_tracker.h"
 
 namespace blink {
 class Element;
+class ImageRecord;
 class InteractionEffectsMonitor;
 class HTMLVideoElement;
 class PerformanceEventTiming;
 class QualifiedName;
 class SoftNavigationContext;
 class SoftNavigationPaintAttributionTracker;
+class TextRecord;
 
 // This class contains the logic for calculating Single-Page-App soft navigation
 // heuristics. See https://github.com/WICG/soft-navigations
@@ -111,6 +114,11 @@ class CORE_EXPORT SoftNavigationHeuristics
 
   void OnContextDisposed(SoftNavigationContext*);
   void UpdateSoftLcpMetricsForContext(SoftNavigationContext*);
+
+  // Called by PaintTiming with the image and text records that were presented
+  // in the last presented frame.
+  void OnFramePresented(const HeapVector<Member<ImageRecord>>&,
+                        const HeapVector<Member<TextRecord>>&);
 
  private:
   // For new Interactions, we unconditionally use the Interaction id to map to

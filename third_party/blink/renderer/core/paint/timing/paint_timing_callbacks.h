@@ -7,6 +7,9 @@
 
 #include <optional>
 
+#include "third_party/blink/renderer/core/paint/timing/paint_timing_record.h"
+#include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
+#include "third_party/blink/renderer/platform/heap/member.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
 
 namespace base {
@@ -20,6 +23,18 @@ struct DOMPaintTimingInfo;
 using PaintTimingCallback =
     base::OnceCallback<void(const base::TimeTicks&, const DOMPaintTimingInfo&)>;
 using OptionalPaintTimingCallback = std::optional<PaintTimingCallback>;
+
+// Presentation time callback for the image and text paint timing detectors. The
+// detectors should update the presentation time for any pending
+// `PaintTimingRecord`s for the relevant frame and add them to the given vector.
+template <IsDerivedFromPaintTimingRecord T>
+using PaintTimingDetectorCallback =
+    base::OnceCallback<void(const base::TimeTicks&,
+                            const DOMPaintTimingInfo&,
+                            HeapVector<Member<T>>&)>;
+template <IsDerivedFromPaintTimingRecord T>
+using OptionalPaintTimingDetectorCallback =
+    std::optional<PaintTimingDetectorCallback<T>>;
 
 }  // namespace blink
 
