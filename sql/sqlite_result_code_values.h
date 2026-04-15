@@ -448,7 +448,19 @@ enum class SqliteLoggedResultCode : int {
   // SQLITE_IOERR_IN_PAGE
   kIoInPage = 59,
 
-  kMaxValue = kIoInPage,
+  // SQLITE_IOERR_SHMOPEN
+  kIoShmOpen = 60,
+
+  // SQLITE_IOERR_SHMSIZE
+  kIoShmSize = 61,
+
+  // SQLITE_IOERR_SHMLOCK
+  kIoShmLock = 62,
+
+  // SQLITE_IOERR_SHMMAP
+  kIoShmMap = 63,
+
+  kMaxValue = kIoShmMap,
 };
 
 }  // namespace sql

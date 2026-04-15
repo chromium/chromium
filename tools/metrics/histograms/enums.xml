@@ -25679,6 +25679,10 @@ Called by update_net_error_codes.py.-->
   <int value="57" label="kIoRollbackAtomic">SQLITE_IOERR_ROLLBACK_ATOMIC</int>
   <int value="58" label="kIoCorruptFileSystem">SQLITE_IOERR_CORRUPTFS</int>
   <int value="59" label="kIoInPage">SQLITE_IOERR_IN_PAGE</int>
+  <int value="60" label="kIoShmOpen">SQLITE_IOERR_SHMOPEN</int>
+  <int value="61" label="kIoShmSize">SQLITE_IOERR_SHMSIZE</int>
+  <int value="62" label="kIoShmLock">SQLITE_IOERR_SHMLOCK</int>
+  <int value="63" label="kIoShmMap">SQLITE_IOERR_SHMMAP</int>
 </enum>
 
 <enum name="SSLCipherSuite">
