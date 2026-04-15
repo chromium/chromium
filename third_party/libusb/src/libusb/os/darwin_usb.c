@@ -1261,6 +1261,7 @@ static int darwin_release_interface(struct libusb_device_handle *dev_handle, int
   if (cInterface->cfSource) {
     CFRunLoopRemoveSource (libusb_darwin_acfl, cInterface->cfSource, kCFRunLoopDefaultMode);
     CFRelease (cInterface->cfSource);
+    cInterface->cfSource = NULL;
   }
 
   kresult = (*(cInterface->interface))->USBInterfaceClose(cInterface->interface);
