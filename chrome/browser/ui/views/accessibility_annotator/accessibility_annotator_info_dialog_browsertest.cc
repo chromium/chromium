@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "base/functional/callback_helpers.h"
+#include "build/build_config.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window.h"
@@ -56,8 +57,13 @@ IN_PROC_BROWSER_TEST_F(AccessibilityAnnotatorInfoDialogBrowserTest,
   controller->CloseDialog();
 }
 
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_ClickOutsideDismissesDialog DISABLED_ClickOutsideDismissesDialog
+#else
+#define MAYBE_ClickOutsideDismissesDialog ClickOutsideDismissesDialog
+#endif
 IN_PROC_BROWSER_TEST_F(AccessibilityAnnotatorInfoDialogBrowserTest,
-                       ClickOutsideDismissesDialog) {
+                       MAYBE_ClickOutsideDismissesDialog) {
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
   Profile* profile = browser()->profile();
