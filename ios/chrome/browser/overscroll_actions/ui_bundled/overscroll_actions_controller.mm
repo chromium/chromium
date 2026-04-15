@@ -931,9 +931,6 @@ UIEdgeInsets TopContentInset(UIScrollView* scrollView, CGFloat topInset) {
 }
 
 - (CGFloat)initialHeaderInset {
-  if (IsFullscreenRefactoringEnabled() && !self.viewportAdjustsContentInset) {
-    return 0;
-  }
   return [self.delegate headerInsetForOverscrollActionsController:self];
 }
 
