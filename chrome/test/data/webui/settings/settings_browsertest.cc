@@ -2079,6 +2079,10 @@ IN_PROC_BROWSER_TEST_F(YourSavedInfoTest, IdentityDocsPageTest) {
   RunTest("settings/identity_docs_page_test.js", "mocha.run()");
 }
 
+IN_PROC_BROWSER_TEST_F(YourSavedInfoTest, ShoppingPageTest) {
+  RunTest("settings/shopping_page_test.js", "mocha.run()");
+}
+
 IN_PROC_BROWSER_TEST_F(YourSavedInfoTest, TravelPageTest) {
   RunTest("settings/travel_page_test.js", "mocha.run()");
 }

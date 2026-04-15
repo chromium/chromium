@@ -1,9 +1,7 @@
 <style include="settings-shared your-saved-info-shared">
-
   .card {
     overflow: hidden;
   }
-
 </style>
 
 <settings-subpage page-title="$i18n{shoppingCardTitle}" class="multi-card">
@@ -12,12 +10,28 @@
         disabled="[[optInToggleDisabled_(
             enhancedAutofillEligibleUser_, enhancedAutofillOptedIn_,
             autofillAddOtherDatatypesPrefIsEnabled_,
-            prefs.autofill.profile_enabled.value)]]"
+            prefs.autofill.profile_enabled.value, prefsInitialized_)]]"
         on-settings-boolean-control-change="onOptInToggleChange_"
+        pref="[[shoppingOptedIn_]]"
         no-extension-indicator
         label="$i18n{shoppingOptInToggleLabel}"
         sub-label="$i18n{shoppingOptInToggleSubLabel}">
     </settings-toggle-button>
+    <template is="dom-if" if="[[extensionControlledIndicatorIsVisible_(
+            prefs.autofill.profile_enabled.extensionId, prefsInitialized_)]]">
+      <div class="cr-row continuation">
+        <extension-controlled-indicator class="flex"
+            id="autofillExtensionIndicator"
+            extension-id=
+                "[[prefs.autofill.profile_enabled.extensionId]]"
+            extension-name=
+                "[[prefs.autofill.profile_enabled.controlledByName]]"
+            extension-can-be-disabled="[[
+                prefs.autofill.profile_enabled.extensionCanBeDisabled
+                ]]">
+        </extension-controlled-indicator>
+      </div>
+    </template>
   </div>
 
   <!-- Entities list card -->
@@ -26,6 +40,8 @@
     <settings-autofill-ai-entries-list
         list-title="$i18n{shoppingCardTitle}"
         allowed-entity-types="[[getAllowedEntityTypes_()]]"
+        allow-editing-pref="[[
+            prefs.autofill.autofill_ai.shopping_entities_enabled]]"
         prefs="{{prefs}}">
     </settings-autofill-ai-entries-list>
   </div>

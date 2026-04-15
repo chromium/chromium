@@ -377,6 +377,7 @@ build_webui("build") {
     "site_settings/website_usage_browser_proxy.ts",
     "time.ts",
     "tooltip_mixin.ts",
+    "your_saved_info_page/policy_utils.ts",
     "your_saved_info_page/saved_info_handler_proxy.ts",
   ]
 
