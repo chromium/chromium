@@ -830,6 +830,16 @@ public class RootUiCoordinator
         }
     }
 
+    /**
+     * Toggles the Glic UI.
+     *
+     * @param preventClose whether to prevent closing the Glic UI if it's already open.
+     * @return whether the UI was successfully toggled.
+     */
+    public boolean toggleGlic(boolean preventClose) {
+        return false;
+    }
+
     @Override
     @SuppressWarnings("NullAway")
     public void onDestroy() {

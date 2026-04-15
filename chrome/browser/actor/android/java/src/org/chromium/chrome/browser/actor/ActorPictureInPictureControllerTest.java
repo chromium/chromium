@@ -34,9 +34,12 @@ import org.mockito.junit.MockitoRule;
 import org.robolectric.Robolectric;
 import org.robolectric.annotation.Config;
 
+import org.chromium.base.Callback;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.actor.ui.ActorPictureInPictureOverlayCoordinator;
 import org.chromium.chrome.browser.actor.ui.R;
+import org.chromium.chrome.browser.glic.GlicKeyedService;
+import org.chromium.chrome.browser.glic.GlicKeyedServiceFactory;
 import org.chromium.chrome.browser.notifications.NotificationConstants;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileResolver;
@@ -56,9 +59,11 @@ public class ActorPictureInPictureControllerTest {
     @Mock private Profile mProfile;
     @Mock private ActorKeyedService mActorService;
     @Mock private ActorKeyedServiceFactory.Natives mActorKeyedServiceFactoryJni;
+    @Mock private GlicKeyedService mGlicKeyedService;
     @Mock private ActorPictureInPictureOverlayCoordinator mMockCoordinator;
     @Mock private ProfileResolver.Natives mProfileResolverJni;
     @Mock private TabModelSelector mTabModelSelector;
+    @Mock private Callback<Boolean> mToggleGlicCallback;
 
     private ComponentActivity mActivity;
     private Supplier<Profile> mProfileSupplier;
@@ -67,6 +72,7 @@ public class ActorPictureInPictureControllerTest {
     @Before
     public void setUp() {
         ActorKeyedServiceFactoryJni.setInstanceForTesting(mActorKeyedServiceFactoryJni);
+        GlicKeyedServiceFactory.setForTesting(mGlicKeyedService);
 
         ComponentActivity realActivity =
                 Robolectric.buildActivity(ComponentActivity.class).create().get();
@@ -85,7 +91,8 @@ public class ActorPictureInPictureControllerTest {
                         mProfileSupplier,
                         () -> mActivity.findViewById(android.R.id.content),
                         () -> mTabModelSelector,
-                        () -> {});
+                        () -> {},
+                        mToggleGlicCallback);
         mController.setOverlayCoordinatorForTesting(mMockCoordinator);
 
         ProfileResolverJni.setInstanceForTesting(mProfileResolverJni);
@@ -143,7 +150,8 @@ public class ActorPictureInPictureControllerTest {
                         mProfileSupplier,
                         () -> mActivity.findViewById(android.R.id.content),
                         () -> mTabModelSelector,
-                        mockHideTabSwitcher);
+                        mockHideTabSwitcher,
+                        mToggleGlicCallback);
 
         ActorTask mockTask = createMockActorTask(101, "Task", ActorTaskState.ACTING);
         when(mockTask.getLastActedTabs()).thenReturn(Collections.singleton(1));
@@ -154,6 +162,7 @@ public class ActorPictureInPictureControllerTest {
         mController.onPictureInPictureEvent(PictureInPictureDelegate.Event.EXITED, null);
 
         verify(mockHideTabSwitcher).run();
+        verify(mToggleGlicCallback).onResult(true);
     }
 
     @Test

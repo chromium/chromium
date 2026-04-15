@@ -177,6 +177,7 @@ if (is_android) {
     ]
     deps = [
       "//base:log_java",
+      "//base:resetters_java",
       "//base:supplier_java",
       "//chrome/browser/glic/android:jni_headers_java",
       "//chrome/browser/profiles/android:java",

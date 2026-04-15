@@ -8,6 +8,7 @@ import org.jni_zero.JNINamespace;
 import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
+import org.chromium.base.ResettersForTesting;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -16,11 +17,20 @@ import org.chromium.chrome.browser.profiles.Profile;
 @JNINamespace("glic")
 @NullMarked
 public class GlicKeyedServiceFactory {
+    @Nullable private static GlicKeyedService sServiceForTesting;
+
     private GlicKeyedServiceFactory() {}
 
     /** Returns The GlicKeyedService for the given profile. */
     public static @Nullable GlicKeyedService getForProfile(Profile profile) {
+        if (sServiceForTesting != null) return sServiceForTesting;
         return GlicKeyedServiceFactoryJni.get().getForProfile(profile);
+    }
+
+    /** Sets the service instance for testing. */
+    public static void setForTesting(@Nullable GlicKeyedService service) {
+        sServiceForTesting = service;
+        ResettersForTesting.register(() -> sServiceForTesting = null);
     }
 
     @NativeMethods

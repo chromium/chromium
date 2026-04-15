@@ -21,6 +21,7 @@ import androidx.core.content.ContextCompat;
 import androidx.core.pip.BasicPictureInPicture;
 import androidx.core.pip.PictureInPictureDelegate;
 
+import org.chromium.base.Callback;
 import org.chromium.base.Log;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -58,6 +59,7 @@ public class ActorPictureInPictureController
     private final Supplier<ViewGroup> mRootViewSupplier;
     private final Supplier<TabModelSelector> mTabModelSelectorSupplier;
     private final Runnable mHideTabSwitcherCallback;
+    private final Callback<Boolean> mToggleGlicCallback;
     private final BasicPictureInPicture mPipDelegate;
     private final android.os.Handler mHandler =
             new android.os.Handler(android.os.Looper.getMainLooper());
@@ -73,18 +75,21 @@ public class ActorPictureInPictureController
      * @param rootViewSupplier The supplier for the root view.
      * @param tabModelSelectorSupplier The supplier for the TabModelSelector.
      * @param hideTabSwitcherCallback Callback to exit the tab switcher.
+     * @param toggleGlicCallback Callback to toggle Glic UI.
      */
     public ActorPictureInPictureController(
             ComponentActivity activity,
             Supplier<Profile> profileSupplier,
             Supplier<ViewGroup> rootViewSupplier,
             Supplier<TabModelSelector> tabModelSelectorSupplier,
-            Runnable hideTabSwitcherCallback) {
+            Runnable hideTabSwitcherCallback,
+            Callback<Boolean> toggleGlicCallback) {
         mActivity = activity;
         mProfileSupplier = profileSupplier;
         mRootViewSupplier = rootViewSupplier;
         mTabModelSelectorSupplier = tabModelSelectorSupplier;
         mHideTabSwitcherCallback = hideTabSwitcherCallback;
+        mToggleGlicCallback = toggleGlicCallback;
         // Initialize the AndroidX PiP delegate.
         // Activity extends ComponentActivity, so this is valid.
         mPipDelegate = new BasicPictureInPicture(activity);
@@ -325,6 +330,8 @@ public class ActorPictureInPictureController
             mHideTabSwitcherCallback.run();
             selector.selectModel(tab.isIncognitoBranded());
             TabModelUtils.selectTabById(selector, tabId, TabSelectionType.FROM_USER);
+
+            mToggleGlicCallback.onResult(true);
         }
     }
 

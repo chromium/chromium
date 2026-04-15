@@ -2468,6 +2468,7 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
      * @param preventClose whether to prevent closing the Glic UI if it's already open.
      * @return whether the UI was successfully toggled.
      */
+    @Override
     public boolean toggleGlic(boolean preventClose) {
         // TODO(crbug.com/489548570): Remove this entry point into SidePanelDevFeature.
         if (mSidePanelDevFeature != null) {

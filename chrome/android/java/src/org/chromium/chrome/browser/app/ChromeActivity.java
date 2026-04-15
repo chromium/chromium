@@ -1398,6 +1398,18 @@ public abstract class ChromeActivity extends AsyncInitializationActivity
         }
     }
 
+    /**
+     * Toggles the Glic UI.
+     *
+     * @param preventClose whether to prevent closing the Glic UI if it's already open.
+     */
+    public void toggleGlic(boolean preventClose) {
+        if (!ChromeFeatureList.sGlic.isEnabled()) return;
+        if (mRootUiCoordinator != null) {
+            mRootUiCoordinator.toggleGlic(preventClose);
+        }
+    }
+
     @VisibleForTesting
     public @Nullable ActorPictureInPictureController maybeCreateActorPipController() {
         if (mActorPipController == null && ChromeFeatureList.sGlic.isEnabled()) {
@@ -1407,7 +1419,8 @@ public abstract class ChromeActivity extends AsyncInitializationActivity
                             () -> mTabModelProfileSupplier.get(),
                             () -> findViewById(android.R.id.content),
                             getTabModelSelectorSupplier(),
-                            this::exitOverviewModeOnActorPiPExpand);
+                            this::exitOverviewModeOnActorPiPExpand,
+                            this::toggleGlic);
         }
         return mActorPipController;
     }
