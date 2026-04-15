@@ -883,14 +883,6 @@ views::BubbleAnchor PinnedToolbarActionsContainer::GetBubbleAnchor(
   return views::BubbleAnchor(GetButtonFor(action_id));
 }
 
-void PinnedToolbarActionsContainer::SetActionElementIdentifier(
-    actions::ActionId action_id,
-    ui::ElementIdentifier element_id) {
-  auto* button = GetButtonFor(action_id);
-  CHECK(button);
-  button->SetProperty(views::kElementIdentifierKey, element_id);
-}
-
 PinnedActionToolbarButton*
 PinnedToolbarActionsContainer::GetChromeLabsButton() {
   return GetButtonFor(kActionShowChromeLabs);

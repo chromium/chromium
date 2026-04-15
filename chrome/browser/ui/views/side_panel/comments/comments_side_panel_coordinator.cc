@@ -144,10 +144,9 @@ void CommentsSidePanelCoordinator::UpdateCommentsActionVisibility(
   controller->ShowActionEphemerallyInToolbar(kActionSidePanelShowComments,
                                              should_show_comments_action);
 
-  if (should_show_comments_action) {
-    controller->SetActionElementIdentifier(
-        kActionSidePanelShowComments, kSharedTabGroupCommentsActionElementId);
-  }
+  CHECK_EQ(PinnedToolbarActions::GetElementIdentifierForAction(
+               kActionSidePanelShowComments),
+           kSharedTabGroupCommentsActionElementId);
 }
 
 void CommentsSidePanelCoordinator::UpdateCommentsSidePanelVisibility(

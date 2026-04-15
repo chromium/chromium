@@ -1172,31 +1172,15 @@ void MaybeRegisterChromeFeaturePromos(
   registry.RegisterFeature(std::move(
       FeaturePromoSpecification::CreateForToastPromo(
           feature_engagement::kIPHSidePanelLensOverlayPinnableFollowupFeature,
-          kPinnedActionToolbarButtonElementId,
+          kPinnedToolbarActionShowSidePanelLensOverlayResultsElementId,
           IDS_SIDE_PANEL_LENS_OVERLAY_PINNABLE_FOLLOWUP_IPH,
           IDS_SIDE_PANEL_LENS_OVERLAY_PINNABLE_FOLLOWUP_IPH_SCREENREADER,
           FeaturePromoSpecification::AcceleratorInfo())
           .SetBubbleArrow(HelpBubbleArrow::kTopRight)
           .SetBubbleIcon(&vector_icons::kCelebrationIcon)
-          .SetMetadata(126, "dfried@chromium.org, jdonnelly@google.com",
-                       "Triggered when the lens overlay side panel is pinned.")
-          .SetAnchorElementFilter(base::BindRepeating(
-              [](const ui::ElementTracker::ElementList& elements)
-                  -> ui::TrackedElement* {
-                // Locate the action button associated with the Lens Overlay
-                // feature. The button must be present in the Actions
-                // container in the toolbar.
-                for (auto* element : elements) {
-                  auto* const button =
-                      views::AsViewClass<PinnedActionToolbarButton>(
-                          element->AsA<views::TrackedElementViews>()->view());
-                  if (button && button->GetActionId() ==
-                                    kActionSidePanelShowLensOverlayResults) {
-                    return element;
-                  }
-                }
-                return nullptr;
-              }))));
+          .SetMetadata(
+              126, "dfried@chromium.org, jdonnelly@google.com",
+              "Triggered when the lens overlay side panel is pinned.")));
 
   if (features::IsReadAnythingOmniboxChipEnabled()) {
     // kIPHReadingModePageActionLabelFeature:

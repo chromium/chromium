@@ -225,9 +225,9 @@ void WebUIPinnedToolbarActions::OnActionsChanged() {
     state->enabled = item->GetEnabled();
     state->tooltip = item->GetTooltipText();
     state->accessibility_text = item->GetAccessibleName();
-    auto element_id = element_ids_.find(id);
-    if (element_id != element_ids_.end()) {
-      state->element_id = element_id->second.GetName();
+    if (auto element_id =
+            PinnedToolbarActions::GetElementIdentifierForAction(id)) {
+      state->element_id = element_id.GetName();
     }
     states.push_back(std::move(state));
     processed_actions.insert(id);
@@ -331,20 +331,6 @@ views::BubbleAnchor WebUIPinnedToolbarActions::GetBubbleAnchor(
     actions::ActionId action_id) {
   NOTIMPLEMENTED();
   return views::BubbleAnchor();
-}
-
-void WebUIPinnedToolbarActions::SetActionElementIdentifier(
-    actions::ActionId action_id,
-    ui::ElementIdentifier element_id) {
-  if (element_id) {
-    const auto known_ids = WebUIToolbarUI::GetKnownElementIdentifiers();
-    CHECK(std::find(known_ids.begin(), known_ids.end(), element_id) !=
-          known_ids.end());
-    element_ids_[action_id] = element_id;
-  } else {
-    element_ids_.erase(action_id);
-  }
-  OnActionsChanged();
 }
 
 PinnedActionToolbarButton* WebUIPinnedToolbarActions::GetChromeLabsButton() {

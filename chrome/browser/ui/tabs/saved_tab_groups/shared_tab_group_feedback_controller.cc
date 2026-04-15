@@ -70,11 +70,10 @@ void SharedTabGroupFeedbackController::UpdateFeedbackButtonVisibility(
   controller->ShowActionEphemerallyInToolbar(kActionSendSharedTabGroupFeedback,
                                              should_show_button);
 
-  if (should_show_button) {
-    // Add the ElementIdentifier so the IPH system can find the button.
-    controller->SetActionElementIdentifier(kActionSendSharedTabGroupFeedback,
-                                           kSharedTabGroupFeedbackElementId);
-  }
+  // Verify ElementIdentifier is set so the IPH system can find the button.
+  CHECK_EQ(PinnedToolbarActions::GetElementIdentifierForAction(
+               kActionSendSharedTabGroupFeedback),
+           kSharedTabGroupFeedbackElementId);
 }
 
 void SharedTabGroupFeedbackController::MaybeShowFeedbackActionInToolbar() {

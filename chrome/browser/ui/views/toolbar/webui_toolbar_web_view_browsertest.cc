@@ -2641,6 +2641,12 @@ IN_PROC_BROWSER_TEST_F(WebUIPinnedToolbarActionsBrowserTest,
   content::WebContents* web_contents = web_view->GetWebContents();
 
   for (const auto& [action_id, mojom_action] : kActionMappings) {
+    ui::ElementIdentifier id =
+        PinnedToolbarActions::GetElementIdentifierForAction(action_id);
+    if (id) {
+      EXPECT_FALSE(BrowserElements::From(browser())->GetElement(id));
+    }
+
     model_->UpdatePinnedState(action_id, true);
     ASSERT_TRUE(base::test::RunUntil(
         [&]() { return IsPinnedButtonVisible(web_contents, mojom_action); }));
@@ -2651,9 +2657,22 @@ IN_PROC_BROWSER_TEST_F(WebUIPinnedToolbarActionsBrowserTest,
                                      "!btn.hasAttribute('is-menu-open');")
                     .ExtractBool());
 
+    // Verify it's trackable.
+    if (id) {
+      EXPECT_TRUE(base::test::RunUntil([&]() {
+        return BrowserElements::From(browser())->GetElement(id) != nullptr;
+      }));
+    }
+
     model_->UpdatePinnedState(action_id, false);
     ASSERT_TRUE(base::test::RunUntil(
         [&]() { return !IsPinnedButtonVisible(web_contents, mojom_action); }));
+
+    if (id) {
+      EXPECT_TRUE(base::test::RunUntil([&]() {
+        return BrowserElements::From(browser())->GetElement(id) == nullptr;
+      }));
+    }
   }
 }
 
@@ -3114,39 +3133,4 @@ IN_PROC_BROWSER_TEST_F(WebUIPinnedToolbarActionsBrowserTest, ToolbarDivider) {
   webui_toolbar_view->GetPinnedToolbarActions()->ShowActionEphemerallyInToolbar(
       action2, false);
   ASSERT_TRUE(base::test::RunUntil([&]() { return !is_divider_visible(); }));
-}
-
-IN_PROC_BROWSER_TEST_F(WebUIPinnedToolbarActionsBrowserTest,
-                       SetActionElementIdentifier) {
-  WebUIToolbarWebView* webui_toolbar_view = GetWebUIToolbarWebView(browser());
-  views::WebView* web_view = webui_toolbar_view->GetWebViewForTesting();
-  content::WebContents* web_contents = web_view->GetWebContents();
-
-  actions::ActionId action_id = kActionSendSharedTabGroupFeedback;
-  toolbar_ui_api::mojom::PinnedToolbarAction mojom_action =
-      toolbar_ui_api::mojom::PinnedToolbarAction::kSendSharedTabGroupFeedback;
-
-  model_->UpdatePinnedState(action_id, true);
-  ASSERT_TRUE(base::test::RunUntil(
-      [&]() { return IsPinnedButtonVisible(web_contents, mojom_action); }));
-
-  // Set the identifier.
-  webui_toolbar_view->GetPinnedToolbarActions()->SetActionElementIdentifier(
-      action_id, kSharedTabGroupFeedbackElementId);
-
-  // Verify it is tracked by the C++ interaction system.
-  EXPECT_TRUE(base::test::RunUntil([&]() {
-    return BrowserElements::From(browser())->GetElement(
-               kSharedTabGroupFeedbackElementId) != nullptr;
-  }));
-
-  // Clear the identifier.
-  webui_toolbar_view->GetPinnedToolbarActions()->SetActionElementIdentifier(
-      action_id, ui::ElementIdentifier());
-
-  // Verify it is no longer tracked.
-  EXPECT_TRUE(base::test::RunUntil([&]() {
-    return BrowserElements::From(browser())->GetElement(
-               kSharedTabGroupFeedbackElementId) == nullptr;
-  }));
 }

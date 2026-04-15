@@ -244,5 +244,7 @@ WebUIToolbarUI::GetKnownElementIdentifiers() {
           kToolbarBackButtonElementId,
           kToolbarForwardButtonElementId,
           kSharedTabGroupFeedbackElementId,
-          kSharedTabGroupCommentsActionElementId};
+          kSharedTabGroupCommentsActionElementId,
+          kPinnedToolbarActionShowSidePanelLensOverlayResultsElementId,
+          kPinnedToolbarActionShowSidePanelBookmarksElementId};
 }

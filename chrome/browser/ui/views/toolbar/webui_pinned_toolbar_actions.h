@@ -51,8 +51,6 @@ class WebUIPinnedToolbarActions : public PinnedToolbarActions,
   void PostOrQueueActionAfterAnimation(base::OnceClosure action) override;
   ToolbarButton* GetDownloadButton() override;
   views::BubbleAnchor GetBubbleAnchor(actions::ActionId action_id) override;
-  void SetActionElementIdentifier(actions::ActionId action_id,
-                                  ui::ElementIdentifier element_id) override;
   PinnedActionToolbarButton* GetChromeLabsButton() override;
   void UpdatePinnedStateAndAnnounce(actions::ActionId id, bool pin) override;
 
@@ -68,8 +66,6 @@ class WebUIPinnedToolbarActions : public PinnedToolbarActions,
   std::vector<actions::ActionId> popped_out_actions_;
   // Allow this class to observe actions for currently displaying buttons.
   std::vector<base::CallbackListSubscription> action_subscriptions_;
-  // Mapping from ActionId to its current ElementIdentifier, if any.
-  std::map<actions::ActionId, ui::ElementIdentifier> element_ids_;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_TOOLBAR_WEBUI_PINNED_TOOLBAR_ACTIONS_H_
