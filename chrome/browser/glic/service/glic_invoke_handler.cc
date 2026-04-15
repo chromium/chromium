@@ -219,12 +219,12 @@ bool GlicInvokeHandler::RequiresAutoSubmitIncompatibleFre() const {
     return false;
   }
   if (options_.fre_override != mojom::FreOverride::kUnspecified) {
-    return options_.fre_override != mojom::FreOverride::kTrustFirstInline;
+    return options_.fre_override != mojom::FreOverride::kTrustFirstInline &&
+           options_.fre_override != mojom::FreOverride::kTrustFirstClick;
   }
   return GlicEnabling::IsTrustFirstOnboardingEnabledForProfile(
              instance_->profile()) &&
-         (features::kGlicTrustFirstOnboardingArmParam.Get() == 1 ||
-          features::kGlicTrustFirstOnboardingArmParam.Get() == 2);
+         features::kGlicTrustFirstOnboardingArmParam.Get() == 1;
 }
 
 bool GlicInvokeHandler::RequiresOverrideIncompatibleFre() const {
