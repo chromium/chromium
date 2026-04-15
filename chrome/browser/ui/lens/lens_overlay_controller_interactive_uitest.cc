@@ -345,12 +345,8 @@ class LensOverlayControllerCUJTest : public InteractiveFeaturePromoTest {
       auto* router = controller->query_router();
       auto file_token = router->overlay_tab_context_file_token();
 
-      auto* session_handle = lens::LensQueryFlowRouterTestApi(router)
-                                 .GetContextualSearchSessionHandle();
-      auto* context_controller = static_cast<ComposeboxQueryController*>(
-          session_handle->GetController());
-      context_controller->update_context_upload_status_for_testing(
-          *file_token,
+      router->OnContextUploadStatusChangedForTesting(
+          *file_token, lens::MimeType::kImage,
           contextual_search::ContextUploadStatus::kUploadSuccessful,
           std::nullopt);
     }));

@@ -9,11 +9,17 @@
 #include "chrome/browser/ui/lens/lens_query_flow_router.h"
 #include "chrome/browser/ui/lens/lens_search_contextualization_controller.h"
 #include "chrome/browser/ui/lens/lens_search_controller.h"
+#include "components/contextual_search/contextual_search_context_controller.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
 namespace variations {
 class VariationsClient;
 }  // namespace variations
+
+namespace contextual_search {
+class MockContextualSearchSessionHandle;
+class MockContextualSearchContextController;
+}  // namespace contextual_search
 
 namespace lens {
 
@@ -58,8 +64,22 @@ class FakeLensQueryFlowRouter : public LensQueryFlowRouter {
       LensSearchController* lens_search_controller);
   ~FakeLensQueryFlowRouter() override;
 
+  contextual_search::ContextualSearchSessionHandle*
+  GetContextualSearchSessionHandle() const override;
+
  protected:
   bool IsActiveTabContextEligible() const override;
+  TabContextualizationController* GetTabContextualizationController()
+      const override;
+
+ private:
+  std::unique_ptr<contextual_search::MockContextualSearchSessionHandle>
+      mock_handle_;
+  std::unique_ptr<contextual_search::MockContextualSearchContextController>
+      mock_context_controller_;
+  std::unique_ptr<tabs::TabInterface> fake_tab_interface_;
+  std::unique_ptr<TabContextualizationController> mock_tab_context_controller_;
+  std::unique_ptr<contextual_search::FileInfo> mock_file_info_;
 };
 
 class TestLensSearchController : public LensSearchController {
