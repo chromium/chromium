@@ -11,8 +11,13 @@ import android.widget.TextView;
 
 import com.google.android.material.materialswitch.MaterialSwitch;
 
+import org.chromium.base.Callback;
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.chrome.browser.ui.extensions.ExtensionsMenuTypes;
+import org.chromium.chrome.browser.ui.extensions.ExtensionsMenuTypes.ControlState;
 import org.chromium.chrome.browser.ui.extensions.R;
+import org.chromium.components.browser_ui.widget.RadioButtonWithDescription;
+import org.chromium.components.browser_ui.widget.RadioButtonWithDescriptionLayout;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 
@@ -39,6 +44,38 @@ public class SitePermissionsPageViewBinder {
                     .setOnClickListener(
                             model.get(
                                     SitePermissionsPageProperties.MANAGE_EXTENSION_CLICK_LISTENER));
+        } else if (key == SitePermissionsPageProperties.ON_CLICK_STATE) {
+            updateRadioButton(
+                    view.findViewById(R.id.extensions_menu_site_permissions_on_click),
+                    model.get(SitePermissionsPageProperties.ON_CLICK_STATE));
+        } else if (key == SitePermissionsPageProperties.ON_SITE_STATE) {
+            updateRadioButton(
+                    view.findViewById(R.id.extensions_menu_site_permissions_on_site),
+                    model.get(SitePermissionsPageProperties.ON_SITE_STATE));
+        } else if (key == SitePermissionsPageProperties.ON_ALL_SITES_STATE) {
+            updateRadioButton(
+                    view.findViewById(R.id.extensions_menu_site_permissions_on_all_sites),
+                    model.get(SitePermissionsPageProperties.ON_ALL_SITES_STATE));
+        } else if (key == SitePermissionsPageProperties.ON_SITE_ACCESS_SELECTED_LISTENER) {
+            RadioButtonWithDescriptionLayout group =
+                    view.findViewById(R.id.extensions_menu_site_permissions_radio_group);
+            Callback<Integer> callback =
+                    model.get(SitePermissionsPageProperties.ON_SITE_ACCESS_SELECTED_LISTENER);
+            group.setOnCheckedChangeListener(
+                    (radioGroup, checkedId) -> {
+                        int siteAccess = -1;
+                        if (checkedId == R.id.extensions_menu_site_permissions_on_click) {
+                            siteAccess = ExtensionsMenuTypes.UserSiteAccess.ON_CLICK;
+                        } else if (checkedId == R.id.extensions_menu_site_permissions_on_site) {
+                            siteAccess = ExtensionsMenuTypes.UserSiteAccess.ON_SITE;
+                        } else if (checkedId
+                                == R.id.extensions_menu_site_permissions_on_all_sites) {
+                            siteAccess = ExtensionsMenuTypes.UserSiteAccess.ON_ALL_SITES;
+                        }
+                        if (siteAccess != -1 && callback != null) {
+                            callback.onResult(siteAccess);
+                        }
+                    });
         } else if (key == SitePermissionsPageProperties.SHOW_REQUESTS_TOGGLE_CHECKED) {
             MaterialSwitch toggle = view.findViewById(R.id.extensions_menu_show_requests_toggle);
             toggle.setChecked(
@@ -57,5 +94,10 @@ public class SitePermissionsPageViewBinder {
                         }
                     });
         }
+    }
+
+    private static void updateRadioButton(RadioButtonWithDescription button, ControlState state) {
+        button.setChecked(state.isOn);
+        button.setEnabled(state.status == ExtensionsMenuTypes.ControlState.Status.ENABLED);
     }
 }

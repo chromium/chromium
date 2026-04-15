@@ -129,22 +129,37 @@ public class ExtensionsMenuTypes {
         }
     }
 
+    /** Mirrors {@code extensions::PermissionsManager::UserSiteAccess} */
+    @IntDef({UserSiteAccess.ON_CLICK, UserSiteAccess.ON_SITE, UserSiteAccess.ON_ALL_SITES})
+    @Retention(RetentionPolicy.SOURCE)
+    public @interface UserSiteAccess {
+        int ON_CLICK = 0;
+        int ON_SITE = 1;
+        int ON_ALL_SITES = 2;
+    }
+
     /** Mirrors {@code ExtensionsMenuViewModel::ExtensionSitePermissionsState} */
     public static class ExtensionSitePermissionsState {
         public final String extensionName;
         public final @Nullable Bitmap extensionIcon;
+        public final ControlState onClickOption;
+        public final ControlState onSiteOption;
+        public final ControlState onAllSitesOption;
         public final ControlState showRequestsToggle;
-
-        // TODO(crbug.com/471016915): Add the other fields from
-        // ExtensionsMenuViewModel::ExtensionSitePermissionsState.
 
         @CalledByNative
         public ExtensionSitePermissionsState(
                 @JniType("std::u16string") String extensionName,
                 @Nullable Bitmap extensionIcon,
+                ControlState onClickOption,
+                ControlState onSiteOption,
+                ControlState onAllSitesOption,
                 ControlState showRequestsToggle) {
             this.extensionName = extensionName;
             this.extensionIcon = extensionIcon;
+            this.onClickOption = onClickOption;
+            this.onSiteOption = onSiteOption;
+            this.onAllSitesOption = onAllSitesOption;
             this.showRequestsToggle = showRequestsToggle;
         }
     }
