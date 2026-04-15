@@ -942,20 +942,6 @@ This is emitted for two scenarios when a worker may be unregistered:
   </summary>
 </histogram>
 
-<histogram name="Extensions.CreateWindowHeight" units="pixels"
-    expires_after="2023-03-31">
-  <owner>emiliapaz@chromium.org</owner>
-  <owner>extensions-core@chromium.org</owner>
-  <summary>Height of the window created via chrome.windows.create.</summary>
-</histogram>
-
-<histogram name="Extensions.CreateWindowWidth" units="pixels"
-    expires_after="2023-03-31">
-  <owner>emiliapaz@chromium.org</owner>
-  <owner>extensions-core@chromium.org</owner>
-  <summary>Width of the window created via chrome.windows.create.</summary>
-</histogram>
-
 <histogram name="Extensions.CWSInfoService.FetchSuccess" enum="BooleanSuccess"
     expires_after="never">
 <!-- expires-never: used to monitor the health of CWS metadata fetch service -->

@@ -4,7 +4,6 @@
 
 #include "chrome/browser/extensions/api/tabs/tabs_api.h"
 
-#include "base/metrics/histogram_macros.h"
 #include "base/strings/pattern.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
@@ -938,13 +937,6 @@ ExtensionFunction::ResponseAction WindowsCreateFunction::Run() {
     if (!bounds_error.empty()) {
       return RespondNow(Error(std::move(bounds_error)));
     }
-
-    // Record the window height and width to determine if we
-    // can set a mininimum value for them (crbug.com/1369103).
-    UMA_HISTOGRAM_COUNTS_1000("Extensions.CreateWindowWidth",
-                              window_bounds.width());
-    UMA_HISTOGRAM_COUNTS_1000("Extensions.CreateWindowHeight",
-                              window_bounds.height());
 
     set_self_as_opener_ =
         create_data_->set_self_as_opener && *create_data_->set_self_as_opener;
