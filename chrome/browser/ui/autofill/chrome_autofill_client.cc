@@ -31,6 +31,7 @@
 #include "chrome/browser/autofill/actor/actor_key_metrics_recorder.h"
 #include "chrome/browser/autofill/address_normalizer_factory.h"
 #include "chrome/browser/autofill/android/save_update_address_profile_prompt_mode.h"
+#include "chrome/browser/autofill/at_memory_promo_tracker_factory.h"
 #include "chrome/browser/autofill/autocomplete_history_manager_factory.h"
 #include "chrome/browser/autofill/autofill_ai_model_cache_factory.h"
 #include "chrome/browser/autofill/autofill_ai_model_executor_factory.h"
@@ -93,6 +94,7 @@
 #include "components/autofill/content/browser/content_autofill_driver_factory.h"
 #include "components/autofill/content/browser/content_identity_credential_delegate.h"
 #include "components/autofill/content/browser/email_verifier_delegate.h"
+#include "components/autofill/core/browser/at_memory_promo_tracker.h"
 #include "components/autofill/core/browser/autofill_type.h"
 #include "components/autofill/core/browser/data_manager/autofill_ai/entity_data_manager.h"
 #include "components/autofill/core/browser/data_manager/payments/payments_data_manager.h"
@@ -148,6 +150,7 @@
 #include "components/profile_metrics/browser_profile_type.h"
 #include "components/security_state/content/security_state_tab_helper.h"
 #include "components/security_state/core/security_state.h"
+#include "components/sessions/content/session_tab_helper.h"
 #include "components/signin/public/base/signin_metrics.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
@@ -440,6 +443,43 @@ ChromeAutofillClient::~ChromeAutofillClient() {
     suggestion_controller_->Hide(SuggestionHidingReason::kTabGone);
   }
 }
+
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
+    BUILDFLAG(IS_CHROMEOS)
+ChromeAutofillClient::AtMemoryPromoObserver::AtMemoryPromoObserver(
+    ChromeAutofillClient* client)
+    : content::WebContentsObserver(client->web_contents()), client_(*client) {}
+
+void ChromeAutofillClient::AtMemoryPromoObserver::OnTextCopiedToClipboard(
+    content::RenderFrameHost* render_frame_host,
+    const std::u16string& copied_text) {
+  auto* tracker = AtMemoryPromoTrackerFactory::GetForBrowserContext(
+      client_->web_contents()->GetBrowserContext());
+  if (tracker) {
+    tracker->OnCopy(
+        sessions::SessionTabHelper::IdForTab(client_->web_contents()));
+  }
+}
+
+void ChromeAutofillClient::AtMemoryPromoObserver::OnPaste() {
+  auto* tracker = AtMemoryPromoTrackerFactory::GetForBrowserContext(
+      client_->web_contents()->GetBrowserContext());
+  if (tracker && tracker->OnPaste(sessions::SessionTabHelper::IdForTab(
+                     client_->web_contents()))) {
+    client_->ShowAutofillAtMemoryPromo();
+  }
+}
+
+void ChromeAutofillClient::ShowAutofillAtMemoryPromo() {
+  auto* user_education_interface =
+      BrowserUserEducationInterface::MaybeGetForWebContentsInTab(
+          web_contents());
+  if (user_education_interface) {
+    user_education_interface->MaybeShowFeaturePromo(
+        feature_engagement::kIPHAutofillAtMemoryFeature);
+  }
+}
+#endif
 
 base::WeakPtr<AutofillClient> ChromeAutofillClient::GetWeakPtr() {
   return weak_ptr_factory_.GetWeakPtr();

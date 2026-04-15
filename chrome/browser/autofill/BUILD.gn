@@ -90,6 +90,13 @@ static_library("autofill") {
   ]
   configs += [ "//build/config/compiler:wexit_time_destructors" ]
 
+  if (is_win || is_mac || is_linux || is_chromeos) {
+    sources += [
+      "at_memory_promo_tracker_factory.cc",
+      "at_memory_promo_tracker_factory.h",
+    ]
+  }
+
   if (is_android) {
     sources += [
       "android/android_autofill_availability_status.h",

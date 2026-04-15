@@ -14,6 +14,7 @@
 #include "base/functional/callback.h"
 #include "base/i18n/rtl.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "build/build_config.h"
@@ -42,6 +43,7 @@
 #include "components/autofill/core/browser/ui/payments/card_unmask_prompt_options.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "content/public/browser/visibility.h"
+#include "content/public/browser/web_contents_observer.h"
 
 #if BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/ui/autofill/autofill_snackbar_controller_impl.h"
@@ -115,6 +117,11 @@ class ChromeAutofillClient : public ContentAutofillClient {
   ChromeAutofillClient(const ChromeAutofillClient&) = delete;
   ChromeAutofillClient& operator=(const ChromeAutofillClient&) = delete;
   ~ChromeAutofillClient() override;
+
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
+    BUILDFLAG(IS_CHROMEOS)
+  void ShowAutofillAtMemoryPromo();
+#endif
 
   // AutofillClient:
   base::WeakPtr<AutofillClient> GetWeakPtr() final;
@@ -381,6 +388,25 @@ class ChromeAutofillClient : public ContentAutofillClient {
 
   std::unique_ptr<FormPredictionsTracker> form_predictions_tracker_;
   std::unique_ptr<ActorKeyMetricsRecorder> actor_key_metrics_recorder_;
+
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
+    BUILDFLAG(IS_CHROMEOS)
+  class AtMemoryPromoObserver : public content::WebContentsObserver {
+   public:
+    explicit AtMemoryPromoObserver(ChromeAutofillClient* client);
+    ~AtMemoryPromoObserver() override = default;
+
+    // content::WebContentsObserver:
+    void OnTextCopiedToClipboard(content::RenderFrameHost* render_frame_host,
+                                 const std::u16string& copied_text) override;
+    void OnPaste() override;
+
+   private:
+    const base::raw_ref<ChromeAutofillClient> client_;
+  };
+
+  AtMemoryPromoObserver at_memory_promo_observer_{this};
+#endif
 
   SEQUENCE_CHECKER(sequence_checker_);
 

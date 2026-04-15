@@ -1063,6 +1063,7 @@ static_library("browser") {
     "//components/prefs",
     "//components/profile_metrics",
     "//components/security_interstitials/core:insecure_form_util",
+    "//components/sessions:session_id",
     "//components/signin/public/base",
     "//components/signin/public/identity_manager",
     "//components/strings",
@@ -1127,6 +1128,13 @@ static_library("browser") {
 
   if (is_ios) {
     deps += [ "//components/autofill/ios/common" ]
+  }
+
+  if (is_win || is_mac || is_linux || is_chromeos) {
+    sources += [
+      "at_memory_promo_tracker.cc",
+      "at_memory_promo_tracker.h",
+    ]
   }
 }
 
@@ -1954,6 +1962,10 @@ source_set("unit_tests") {
 
   if (is_ios) {
     deps += [ "//components/autofill/ios/common" ]
+  }
+
+  if (is_win || is_mac || is_linux || is_chromeos) {
+    sources += [ "at_memory_promo_tracker_unittest.cc" ]
   }
 
   # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
