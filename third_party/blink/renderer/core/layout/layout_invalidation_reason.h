@@ -32,7 +32,6 @@ extern const char kImageChanged[];
 extern const char kSliderValueChanged[];
 extern const char kAncestorMarginCollapsing[];
 extern const char kFieldsetChanged[];
-extern const char kTextAutosizing[];
 extern const char kSvgResourceInvalidated[];
 extern const char kFloatDescendantChanged[];
 extern const char kCountersChanged[];

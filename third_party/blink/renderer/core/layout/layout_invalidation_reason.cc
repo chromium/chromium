@@ -28,7 +28,6 @@ const char kImageChanged[] = "Image changed";
 const char kSliderValueChanged[] = "Slider value changed";
 const char kAncestorMarginCollapsing[] = "Ancestor margin collapsing";
 const char kFieldsetChanged[] = "Fieldset changed";
-const char kTextAutosizing[] = "Text autosizing (font boosting)";
 const char kSvgResourceInvalidated[] = "SVG resource invalidated";
 const char kFloatDescendantChanged[] = "Floating descendant changed";
 const char kCountersChanged[] = "Counters changed";
