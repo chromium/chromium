@@ -48,7 +48,7 @@ class CastDialogView : public views::BubbleDialogDelegateView,
 
   enum SourceType { kTab, kDesktop };
 
-  CastDialogView(views::View* anchor_view,
+  CastDialogView(views::BubbleAnchor anchor,
                  views::BubbleBorder::Arrow anchor_position,
                  CastDialogController* controller,
                  Profile* profile,

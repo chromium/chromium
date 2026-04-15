@@ -53,6 +53,8 @@ class CastBrowserController : public IssuesObserver,
  private:
   CastToolbarButtonController* GetActionController() const;
 
+  // Returns the ToolbarButton instantiation of the Cast button, or nullptr if
+  // the button doesn't exist or isn't a ToolbarButton (i.e. is WebUI).
   ToolbarButton* GetToolbarButton() const;
 
   void LogIconChange(const gfx::VectorIcon* icon);

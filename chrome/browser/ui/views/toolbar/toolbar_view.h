@@ -183,7 +183,6 @@ class ToolbarView : public views::AccessiblePaneView,
   PerformanceInterventionButton* performance_intervention_button() const {
     return performance_intervention_button_;
   }
-  ToolbarButton* GetCastButton() const;
   MediaToolbarButtonView* media_button() const { return media_button_; }
   BrowserAppMenuButton* app_menu_button() const { return app_menu_button_; }
   HomeButton* home_button() const { return home_; }

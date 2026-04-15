@@ -31,11 +31,13 @@ void CastDialogCoordinator::ShowDialogWithToolbarAction(
     const base::Time& start_time,
     MediaRouterDialogActivationLocation activation_location) {
   BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser);
-  views::View* anchor_view = browser_view->toolbar()->GetCastButton();
-  DCHECK(anchor_view);
+  auto anchor = browser_view->toolbar_button_provider()
+                    ->GetPinnedToolbarActions()
+                    ->GetBubbleAnchor(kActionRouteMedia);
+  DCHECK(!anchor.IsNull());
   auto* action_item = actions::ActionManager::Get().FindAction(
       kActionRouteMedia, browser->GetActions()->root_action_item());
-  Show(anchor_view, views::BubbleBorder::TOP_RIGHT, controller,
+  Show(anchor, views::BubbleBorder::TOP_RIGHT, controller,
        browser->GetProfile(), start_time, activation_location, action_item);
 
   if (action_item &&
@@ -49,7 +51,8 @@ void CastDialogCoordinator::ShowDialogCenteredForBrowserWindow(
     BrowserWindowInterface* browser,
     const base::Time& start_time,
     MediaRouterDialogActivationLocation activation_location) {
-  Show(BrowserView::GetBrowserViewForBrowser(browser)->top_container(),
+  Show(views::BubbleAnchor(
+           BrowserView::GetBrowserViewForBrowser(browser)->top_container()),
        views::BubbleBorder::TOP_CENTER, controller, browser->GetProfile(),
        start_time, activation_location);
 }
@@ -60,7 +63,7 @@ void CastDialogCoordinator::ShowDialogCentered(
     Profile* profile,
     const base::Time& start_time,
     MediaRouterDialogActivationLocation activation_location) {
-  Show(/* anchor_view */ nullptr, views::BubbleBorder::TOP_CENTER, controller,
+  Show(views::BubbleAnchor(), views::BubbleBorder::TOP_CENTER, controller,
        profile, start_time, activation_location);
   GetCastDialogView()->SetAnchorRect(bounds);
 }
@@ -79,7 +82,7 @@ bool CastDialogCoordinator::IsShowing() const {
 }
 
 void CastDialogCoordinator::Show(
-    views::View* anchor_view,
+    views::BubbleAnchor anchor,
     views::BubbleBorder::Arrow anchor_position,
     CastDialogController* controller,
     Profile* profile,
@@ -91,7 +94,7 @@ void CastDialogCoordinator::Show(
   // instance at a time.
   Hide();
   auto cast_dialog_view = std::make_unique<CastDialogView>(
-      anchor_view, anchor_position, controller, profile, start_time,
+      anchor, anchor_position, controller, profile, start_time,
       activation_location, action_item);
   cast_dialog_view_tracker_.SetView(cast_dialog_view.get());
   views::Widget* widget = views::BubbleDialogDelegateView::CreateBubble(

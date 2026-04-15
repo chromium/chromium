@@ -878,10 +878,6 @@ ToolbarButton* PinnedToolbarActionsContainer::GetDownloadButton() {
   return GetButtonFor(kActionShowDownloads);
 }
 
-ToolbarButton* PinnedToolbarActionsContainer::GetCastButton() {
-  return GetButtonFor(kActionRouteMedia);
-}
-
 views::BubbleAnchor PinnedToolbarActionsContainer::GetBubbleAnchor(
     actions::ActionId action_id) {
   return views::BubbleAnchor(GetButtonFor(action_id));

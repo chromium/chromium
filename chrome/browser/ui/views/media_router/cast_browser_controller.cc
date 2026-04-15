@@ -119,6 +119,8 @@ void CastBrowserController::UpdateIcon() {
   action_item->SetStatefulImage(ui::ImageModel::FromVectorIcon(*new_icon));
   action_item->SetProperty(kActionItemUnderlineIndicatorKey, active);
 
+  // If Cast button is a ToolbarButton, manually update icon and inset.
+  // Not necessary for WebUI version which tracks ActionItem changes.
   if (ToolbarButton* button = GetToolbarButton()) {
     button->UpdateIcon();
     button->SetLayoutInsetDelta(
@@ -139,12 +141,18 @@ ToolbarButton* CastBrowserController::GetToolbarButton() const {
     return nullptr;
   }
 
-  ToolbarView* toolbar = browser_view->toolbar();
+  ToolbarButtonProvider* toolbar = browser_view->toolbar_button_provider();
   if (!toolbar) {
     return nullptr;
   }
 
-  return toolbar->GetCastButton();
+  views::BubbleAnchor anchor =
+      toolbar->GetPinnedToolbarActions()->GetBubbleAnchor(kActionRouteMedia);
+  if (!anchor.GetIfView()) {
+    return nullptr;
+  }
+
+  return views::AsViewClass<ToolbarButton>(anchor.GetIfView());
 }
 
 void CastBrowserController::ToggleDialog() {

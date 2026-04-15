@@ -9,6 +9,7 @@
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/prefs/browser_prefs.h"
 #include "chrome/browser/renderer_context_menu/render_view_context_menu_test_util.h"
+#include "chrome/browser/ui/actions/chrome_action_id.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_window.h"
@@ -95,9 +96,14 @@ class MediaRouterUIInteractiveUITest : public InProcessBrowserTest {
 
  private:
   ToolbarButton* GetCastIcon() {
-    return BrowserView::GetBrowserViewForBrowser(browser())
-        ->toolbar()
-        ->GetCastButton();
+    CHECK(!features::IsWebUIPinnedToolbarActionsEnabled())
+        << "Test needs modification to support WebUIPinnedToolbarActions";
+    return views::AsViewClass<ToolbarButton>(
+        BrowserView::GetBrowserViewForBrowser(browser())
+            ->toolbar_button_provider()
+            ->GetPinnedToolbarActions()
+            ->GetBubbleAnchor(kActionRouteMedia)
+            .GetIfView());
   }
 };
 

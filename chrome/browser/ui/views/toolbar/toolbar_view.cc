@@ -1277,11 +1277,6 @@ ExtensionsToolbarButton* ToolbarView::GetExtensionsButton() const {
   return extensions_container_->GetExtensionsButton();
 }
 
-ToolbarButton* ToolbarView::GetCastButton() const {
-  return pinned_toolbar_actions_ ? pinned_toolbar_actions_->GetCastButton()
-                                 : nullptr;
-}
-
 ////////////////////////////////////////////////////////////////////////////////
 // ToolbarView, LocationBarView::Delegate implementation:
 

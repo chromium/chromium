@@ -8,6 +8,7 @@
 
 #include "build/build_config.h"
 #include "chrome/browser/media/router/media_router_feature.h"
+#include "chrome/browser/ui/actions/chrome_action_id.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_manager.h"
@@ -85,7 +86,9 @@ void MediaRouterDialogControllerViews::CreateMediaRouterDialog(
       browser ? BrowserView::GetBrowserViewForBrowser(browser) : nullptr;
   if (browser_view) {
     // Show the Cast dialog anchored to the Cast toolbar button.
-    if (browser_view->toolbar()->GetCastButton()) {
+    if (browser_view->toolbar_button_provider()
+            ->GetPinnedToolbarActions()
+            ->IsActionPinnedOrPoppedOut(kActionRouteMedia)) {
       cast_dialog_coordinator_.ShowDialogWithToolbarAction(
           ui_.get(), browser, dialog_creation_time, activation_location);
     } else {

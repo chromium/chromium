@@ -53,7 +53,7 @@ class MediaRemotingDialogView : public views::BubbleDialogDelegateView {
 
  public:
   MediaRemotingDialogView(
-      views::View* anchor_view,
+      views::BubbleAnchor anchor,
       PrefService* pref_service,
       CastToolbarButtonController* action_controller,
       MediaRemotingDialogCoordinator::PermissionCallback permission_callback);

@@ -54,14 +54,14 @@
 namespace media_router {
 
 CastDialogView::CastDialogView(
-    views::View* anchor_view,
+    views::BubbleAnchor anchor,
     views::BubbleBorder::Arrow anchor_position,
     CastDialogController* controller,
     Profile* profile,
     const base::Time& start_time,
     MediaRouterDialogActivationLocation activation_location,
     actions::ActionItem* action_item)
-    : BubbleDialogDelegateView(anchor_view, anchor_position),
+    : BubbleDialogDelegateView(anchor, anchor_position),
       controller_(controller),
       profile_(profile),
       metrics_(start_time, activation_location, profile),

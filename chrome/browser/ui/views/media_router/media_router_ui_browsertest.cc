@@ -9,6 +9,7 @@
 #include "chrome/browser/media/router/media_router_feature.h"
 #include "chrome/browser/prefs/browser_prefs.h"
 #include "chrome/browser/renderer_context_menu/render_view_context_menu_test_util.h"
+#include "chrome/browser/ui/actions/chrome_action_id.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_window.h"
@@ -66,7 +67,7 @@ class MediaRouterUIBrowserTest : public InProcessBrowserTest {
 
   bool ToolbarIconExists() {
     base::RunLoop().RunUntilIdle();
-    ToolbarButton* cast_icon = GetCastIcon();
+    views::View* cast_icon = GetCastIcon();
     return cast_icon && cast_icon->GetVisible();
   }
 
@@ -76,10 +77,14 @@ class MediaRouterUIBrowserTest : public InProcessBrowserTest {
   }
 
  protected:
-  ToolbarButton* GetCastIcon() {
+  views::View* GetCastIcon() {
+    CHECK(!features::IsWebUIPinnedToolbarActionsEnabled())
+        << "Test needs modification to support WebUIPinnedToolbarActions";
     return BrowserView::GetBrowserViewForBrowser(browser())
-        ->toolbar()
-        ->GetCastButton();
+        ->toolbar_button_provider()
+        ->GetPinnedToolbarActions()
+        ->GetBubbleAnchor(kActionRouteMedia)
+        .GetIfView();
   }
 
   CastToolbarButtonController* action_controller() {

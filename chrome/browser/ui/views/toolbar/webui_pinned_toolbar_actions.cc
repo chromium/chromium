@@ -327,12 +327,6 @@ ToolbarButton* WebUIPinnedToolbarActions::GetDownloadButton() {
   return nullptr;
 }
 
-ToolbarButton* WebUIPinnedToolbarActions::GetCastButton() {
-  // TODO(https://crbug.com/474062755): Implement this.
-  NOTIMPLEMENTED();
-  return nullptr;
-}
-
 views::BubbleAnchor WebUIPinnedToolbarActions::GetBubbleAnchor(
     actions::ActionId action_id) {
   NOTIMPLEMENTED();

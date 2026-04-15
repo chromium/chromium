@@ -55,14 +55,13 @@ class CastToolbarButtonControllerBrowserTest : public InProcessBrowserTest {
   bool IsIconShown() const {
     CHECK(!features::IsWebUIPinnedToolbarActionsEnabled())
         << "Test needs modification to support WebUIPinnedToolbarActions";
+    auto* container = BrowserView::GetBrowserViewForBrowser(browser())
+                          ->toolbar_button_provider()
+                          ->GetPinnedToolbarActions();
     views::test::WaitForAnimatingLayoutManager(
-        static_cast<PinnedToolbarActionsContainer*>(
-            BrowserView::GetBrowserViewForBrowser(browser())
-                ->toolbar_button_provider()
-                ->GetPinnedToolbarActions()));
-    auto* cast_button = BrowserView::GetBrowserViewForBrowser(browser())
-                            ->toolbar()
-                            ->GetCastButton();
+        static_cast<PinnedToolbarActionsContainer*>(container));
+    auto* cast_button =
+        container->GetBubbleAnchor(kActionRouteMedia).GetIfView();
     return cast_button && cast_button->GetVisible();
   }
 

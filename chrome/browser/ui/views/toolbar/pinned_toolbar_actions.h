@@ -37,9 +37,6 @@ class PinnedToolbarActions : public ToolbarController::PinnedActionsDelegate {
   // Gets a pointer to the download button.
   // TODO(https://crbug.com/474063115): Change this to a non-Views return type.
   virtual ToolbarButton* GetDownloadButton() = 0;
-  // Gets a pointer to the cast button.
-  // TODO(https://crbug.com/474062755): Change this to a non-Views return type.
-  virtual ToolbarButton* GetCastButton() = 0;
 
   // Returns BubbleAnchor for the action.
   virtual views::BubbleAnchor GetBubbleAnchor(actions::ActionId action_id) = 0;
