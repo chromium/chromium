@@ -11,7 +11,7 @@
 #include <vector>
 
 #include "base/command_line.h"
-#include "base/compiler_specific.h"
+#include "base/containers/span.h"
 #include "base/feature_list.h"
 #include "base/functional/callback_helpers.h"
 #include "base/location.h"
@@ -448,10 +448,12 @@ bool CreateSpatialLayersConfig(
           codec_settings.VP9().numberOfSpatialLayers > 1) {
         std::optional<gfx::Size> top_res;
         spatial_layers->clear();
+        CHECK_LE(codec_settings.VP9().numberOfSpatialLayers,
+                 webrtc::kMaxSpatialLayers);
+        auto input_spatial_layers = base::span(codec_settings.spatialLayers);
         for (size_t i = 0; i < codec_settings.VP9().numberOfSpatialLayers;
              ++i) {
-          const webrtc::SpatialLayer& rtc_sl =
-              UNSAFE_TODO(codec_settings.spatialLayers[i]);
+          const webrtc::SpatialLayer& rtc_sl = input_spatial_layers[i];
           // We ignore non active spatial layer and don't proceed further. There
           // must NOT be an active higher spatial layer than non active spatial
           // layer.
@@ -1776,10 +1778,13 @@ void RTCVideoEncoder::Impl::BitstreamBufferReady(
             return;
           }
 
-          const std::vector<gfx::Size> expected_resolutions(
-              UNSAFE_TODO(init_spatial_layer_resolutions_.begin() +
-                          begin_index),
-              UNSAFE_TODO(init_spatial_layer_resolutions_.begin() + end_index));
+          CHECK_LE(begin_index, end_index);
+          CHECK_LE(begin_index, init_spatial_layer_resolutions_.size());
+          CHECK_LE(end_index, init_spatial_layer_resolutions_.size());
+          auto subspan = base::span(init_spatial_layer_resolutions_)
+                             .subspan(begin_index, end_index - begin_index);
+          const std::vector<gfx::Size> expected_resolutions(subspan.begin(),
+                                                            subspan.end());
           if (metadata.vp9->spatial_layer_resolutions != expected_resolutions) {
             NotifyErrorStatus(
                 {media::EncoderStatus::Codes::kEncoderFailedEncode,
@@ -1829,8 +1834,11 @@ void RTCVideoEncoder::Impl::BitstreamBufferReady(
         vp9.inter_layer_predicted =
             metadata.vp9->reference_lower_spatial_layers;
         vp9.num_ref_pics = metadata.vp9->p_diffs.size();
-        for (size_t i = 0; i < metadata.vp9->p_diffs.size(); ++i)
-          UNSAFE_TODO(vp9.p_diff[i]) = metadata.vp9->p_diffs[i];
+        CHECK_LE(metadata.vp9->p_diffs.size(), webrtc::kMaxVp9RefPics);
+        auto output_p_diff = base::span(vp9.p_diff);
+        for (size_t i = 0; i < metadata.vp9->p_diffs.size(); ++i) {
+          output_p_diff[i] = metadata.vp9->p_diffs[i];
+        }
         vp9.ss_data_available = metadata.key_frame;
 
         // |num_spatial_layers| is not the number of active spatial layers,
@@ -1841,18 +1849,22 @@ void RTCVideoEncoder::Impl::BitstreamBufferReady(
         if (vp9.ss_data_available) {
           vp9.spatial_layer_resolution_present = true;
           vp9.gof.num_frames_in_gof = 0;
+          auto output_width = base::span(vp9.width);
+          auto output_height = base::span(vp9.height);
+          CHECK_LE(vea_active_spatial_layers.begin_index,
+                   webrtc::kMaxVp9NumberOfSpatialLayers);
           for (size_t i = 0; i < vea_active_spatial_layers.begin_index; ++i) {
             // Signal disabled layers.
-            UNSAFE_TODO(vp9.width[i]) = 0;
-            UNSAFE_TODO(vp9.height[i]) = 0;
+            output_width[i] = 0;
+            output_height[i] = 0;
           }
+          CHECK_LE(vea_active_spatial_layers.end_index,
+                   webrtc::kMaxVp9NumberOfSpatialLayers);
           for (size_t i = vea_active_spatial_layers.begin_index;
                i < vea_active_spatial_layers.end_index; ++i) {
             wtf_size_t wtf_i = base::checked_cast<wtf_size_t>(i);
-            UNSAFE_TODO(vp9.width[i]) =
-                init_spatial_layer_resolutions_[wtf_i].width();
-            UNSAFE_TODO(vp9.height[i]) =
-                init_spatial_layer_resolutions_[wtf_i].height();
+            output_width[i] = init_spatial_layer_resolutions_[wtf_i].width();
+            output_height[i] = init_spatial_layer_resolutions_[wtf_i].height();
           }
         }
         vp9.flexible_mode = true;
@@ -3039,10 +3051,11 @@ void RTCVideoEncoder::UpdateEncoderInfo(
       webrtc::kMaxSpatialLayers >= media::VideoEncoderInfo::kMaxSpatialLayers,
       "webrtc::kMaxSpatiallayers is less than "
       "media::VideoEncoderInfo::kMaxSpatialLayers");
+  auto output_fps_allocation = base::span(encoder_info_.fps_allocation);
   for (size_t i = 0; i < std::size(media_enc_info.fps_allocation); ++i) {
     if (media_enc_info.fps_allocation[i].empty())
       continue;
-    UNSAFE_TODO(encoder_info_.fps_allocation[i]) =
+    output_fps_allocation[i] =
         absl::InlinedVector<uint8_t, webrtc::kMaxTemporalStreams>(
             media_enc_info.fps_allocation[i].begin(),
             media_enc_info.fps_allocation[i].end());
