@@ -323,6 +323,15 @@ void OpenLensFromIntentsWithBrowser(base::WeakPtr<Browser> weak_browser) {
   }
 }
 
+// Navigates to the tab grid.
+void OpenTabGridWithBrowser(base::WeakPtr<Browser> weak_browser) {
+  if (Browser* browser = weak_browser.get()) {
+    id<SceneCommands> handler =
+        HandlerForProtocol(browser->GetCommandDispatcher(), SceneCommands);
+    [handler displayTabGridInMode:TabGridOpeningMode::kDefault];
+  }
+}
+
 // Adds bookmarks to Chrome.
 void AddBookmarkToChromeWithIntent(INIntent* intent,
                                    base::WeakPtr<Browser> weak_browser) {
@@ -480,7 +489,8 @@ std::vector<GURL> GetURLsFromOpenInChromeIntent(INIntent* intent) {
       // TODO(crbug.com/492115056): Add implementation.
       break;
     case UserActivityType::kOpenTabGrid:
-      // TODO(crbug.com/492115056): Add implementation.
+      completion = base::CallbackToBlock(
+          base::BindRepeating(&OpenTabGridWithBrowser, browser->AsWeakPtr()));
       break;
     case UserActivityType::kVoiceSearch:
       // TODO(crbug.com/492115056): Add implementation.
@@ -534,6 +544,17 @@ std::vector<GURL> GetURLsFromOpenInChromeIntent(INIntent* intent) {
       break;
     case UserActivityType::kInvalid:
       NOTREACHED();
+  }
+
+  // Handle the case where no URLs need to be opened but we have a completion
+  // block.
+  if (webpageGURLs.empty()) {
+    if (completion) {
+      id<SceneCommands> handler =
+          HandlerForProtocol(browser->GetCommandDispatcher(), SceneCommands);
+      [handler dismissModalDialogsWithCompletion:completion];
+    }
+    return;
   }
 
   // Handle the case where multiple URLS need to be opened.
