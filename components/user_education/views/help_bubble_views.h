@@ -9,11 +9,11 @@
 #include <optional>
 
 #include "base/callback_list.h"
+#include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "components/user_education/common/help_bubble/custom_help_bubble.h"
 #include "components/user_education/common/help_bubble/help_bubble.h"
 #include "components/user_education/common/help_bubble/help_bubble_params.h"
-#include "components/user_education/views/help_bubble_view_info.h"
 #include "ui/base/accelerators/accelerator.h"
 #include "ui/base/interaction/element_tracker.h"
 #include "ui/color/color_id.h"
@@ -22,10 +22,6 @@
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_observer.h"
-
-namespace ash {
-class HelpBubbleFactoryViewsAsh;
-}
 
 namespace user_education {
 
@@ -61,32 +57,31 @@ class HelpBubbleViews : public HelpBubble,
 
   static views::BubbleBorder::Arrow TranslateArrow(HelpBubbleArrow arrow);
 
-  // HelpBubble:
-  bool Close(CloseReason reason) override;
-
  protected:
-  HelpBubbleViews(HelpBubbleViewInfo info, ui::TrackedElement* anchor_element);
+  HelpBubbleViews(views::BubbleDialogDelegateView* help_bubble_view,
+                  ui::TrackedElement* anchor_element);
 
-  bool has_widget() const { return help_bubble_widget_ != nullptr; }
-
-  void DestroyWidget();
-
-  virtual void OnHelpBubbleClosing(views::Widget::ClosedReason closed_reason);
-
-  views::View* GetAnchorView();
+  // HelpBubble:
+  void CloseBubbleImpl() override;
 
  private:
   friend class HelpBubbleFactoryViews;
   friend class HelpBubbleFactoryMac;
   friend class HelpBubbleViewsTest;
   friend class HelpBubbleViewsCustomBubbleTest;
-  friend ash::HelpBubbleFactoryViewsAsh;
+
+  // Clean up properties on the anchor view, if applicable.
+  void MaybeResetAnchorView();
+
+  // views::WidgetObserver:
+  void OnWidgetDestroying(views::Widget* widget) override;
 
   void OnElementHidden(ui::TrackedElement* element);
   void OnElementBoundsChanged(ui::TrackedElement* element);
 
-  std::unique_ptr<views::Widget> help_bubble_widget_;
   raw_ptr<views::BubbleDialogDelegateView> help_bubble_view_;
+  base::ScopedObservation<views::Widget, views::WidgetObserver>
+      scoped_observation_{this};
 
   // Track the anchor element to determine if/when it goes away.
   raw_ptr<const ui::TrackedElement> anchor_element_ = nullptr;
@@ -101,6 +96,8 @@ class HelpBubbleViews : public HelpBubble,
   // anchor view. Necessary for e.g. WebUI elements, which can be scrolled or
   // moved within the web page.
   base::CallbackListSubscription anchor_bounds_changed_subscription_;
+
+  base::WeakPtrFactory<HelpBubbleViews> weak_ptr_factory_{this};
 };
 
 // Help bubble that wraps a custom help bubble view.
@@ -146,8 +143,9 @@ class CustomHelpBubbleViews : public HelpBubbleViews, public CustomHelpBubble {
                         std::optional<UserAction> cancel_button_action);
 
  private:
-  void OnHelpBubbleClosing(views::Widget::ClosedReason closed_reason) override;
+  void OnHelpBubbleClosing(views::Widget::ClosedReason closed_reason);
 
+  std::unique_ptr<views::Widget> help_bubble_widget_;
   std::optional<UserAction> accept_button_action_;
   std::optional<UserAction> cancel_button_action_;
 };

@@ -84,14 +84,10 @@ int TestHelpBubble::GetIndexOfButtonWithText(std::u16string text) {
   return kNoButtonWithTextIndex;
 }
 
-bool TestHelpBubble::Close(CloseReason reason) {
-  auto scoped_callbacks = BeginClose(reason);
-
+void TestHelpBubble::CloseBubbleImpl() {
   bubble_element_.reset();
   anchor_element_ = nullptr;
   element_hidden_subscription_ = base::CallbackListSubscription();
-
-  return scoped_callbacks.is_valid();
 }
 
 ui::ElementContext TestHelpBubble::GetContext() const {

@@ -16,7 +16,6 @@
 #include "ash/user_education/views/help_bubble_view_ash.h"
 #include "base/strings/string_util.h"
 #include "components/user_education/common/help_bubble/help_bubble_params.h"
-#include "components/user_education/views/help_bubble_view_info.h"
 #include "components/vector_icons/vector_icons.h"
 #include "ui/compositor/layer.h"
 #include "ui/gfx/color_palette.h"
@@ -43,8 +42,7 @@ std::u16string Repeat(std::u16string_view str, size_t times) {
 
 // HelpBubbleViewAshTestBase ---------------------------------------------------
 
-user_education::HelpBubbleViewInfo
-HelpBubbleViewAshTestBase::CreateHelpBubbleView() {
+HelpBubbleViewAsh* HelpBubbleViewAshTestBase::CreateHelpBubbleView() {
   HelpBubbleParams params;
   params.arrow = HelpBubbleArrow::kNone;
 
@@ -52,12 +50,12 @@ HelpBubbleViewAshTestBase::CreateHelpBubbleView() {
   return CreateHelpBubbleView(std::move(params));
 }
 
-user_education::HelpBubbleViewInfo
-HelpBubbleViewAshTestBase::CreateHelpBubbleView(HelpBubbleArrow arrow,
-                                                bool with_title_text,
-                                                bool with_body_icon,
-                                                bool with_buttons,
-                                                bool with_progress) {
+HelpBubbleViewAsh* HelpBubbleViewAshTestBase::CreateHelpBubbleView(
+    HelpBubbleArrow arrow,
+    bool with_title_text,
+    bool with_body_icon,
+    bool with_buttons,
+    bool with_progress) {
   HelpBubbleParams params;
   params.arrow = arrow;
 
@@ -88,8 +86,8 @@ HelpBubbleViewAshTestBase::CreateHelpBubbleView(HelpBubbleArrow arrow,
   return CreateHelpBubbleView(std::move(params));
 }
 
-user_education::HelpBubbleViewInfo
-HelpBubbleViewAshTestBase::CreateHelpBubbleView(HelpBubbleParams params) {
+HelpBubbleViewAsh* HelpBubbleViewAshTestBase::CreateHelpBubbleView(
+    HelpBubbleParams params) {
   // NOTE: `HelpBubbleViewAsh` will never be created without body text.
   params.body_text = Repeat(u"Body", /*times=*/50);
 
@@ -98,8 +96,8 @@ HelpBubbleViewAshTestBase::CreateHelpBubbleView(HelpBubbleParams params) {
   anchor_params.view = widget_->GetContentsView();
 
   // NOTE: The returned help bubble view is owned by its widget.
-  return HelpBubbleViewAsh::Create(HelpBubbleId::kTest, anchor_params,
-                                   std::move(params));
+  return new HelpBubbleViewAsh(HelpBubbleId::kTest, anchor_params,
+                               std::move(params));
 }
 
 void HelpBubbleViewAshTestBase::SetUp() {

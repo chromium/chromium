@@ -24,7 +24,7 @@ HelpBubbleFactoryRegistry::~HelpBubbleFactoryRegistry() {
     // Unsubscribe from the bubble before trying to close it so we don't try to
     // modify the map while we're iterating it.
     pr.second = base::CallbackListSubscription();
-    pr.first->Close(HelpBubble::CloseReason::kBubbleDestroyed);
+    pr.first->Close();
   }
 }
 
@@ -78,14 +78,14 @@ void HelpBubbleFactoryRegistry::AddHelpBubble(HelpBubble* help_bubble) {
   CHECK(help_bubble);
   CHECK(help_bubble->is_open());
   help_bubbles_.emplace(help_bubble,
-                        help_bubble->AddOnClosingCallback(base::BindOnce(
-                            &HelpBubbleFactoryRegistry::OnHelpBubbleClosing,
+                        help_bubble->AddOnCloseCallback(base::BindOnce(
+                            &HelpBubbleFactoryRegistry::OnHelpBubbleClosed,
                             base::Unretained(this))));
 }
 
-void HelpBubbleFactoryRegistry::OnHelpBubbleClosing(const HelpBubble* bubble,
-                                                    HelpBubble::CloseReason) {
-  const auto result = help_bubbles_.erase(const_cast<HelpBubble*>(bubble));
+void HelpBubbleFactoryRegistry::OnHelpBubbleClosed(HelpBubble* bubble,
+                                                   HelpBubble::CloseReason) {
+  const auto result = help_bubbles_.erase(bubble);
   DCHECK(result);
 }
 

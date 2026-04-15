@@ -8,7 +8,6 @@
 #include <optional>
 
 #include "ash/test/ash_test_base.h"
-#include "components/user_education/views/help_bubble_view_info.h"
 #include "ui/views/widget/unique_widget_ptr.h"
 
 namespace user_education {
@@ -25,22 +24,21 @@ class HelpBubbleViewAshTestBase : public AshTestBase {
  public:
   // Creates and returns a pointer to a new `HelpBubbleViewAsh` instance.
   // Note that the returned help bubble view is owned by its widget.
-  user_education::HelpBubbleViewInfo CreateHelpBubbleView();
+  HelpBubbleViewAsh* CreateHelpBubbleView();
 
   // Creates and returns a pointer to a new `HelpBubbleViewAsh` instance with
   // the specified attributes. Note that the returned help bubble view is owned
   // by its widget.
-  user_education::HelpBubbleViewInfo CreateHelpBubbleView(
-      user_education::HelpBubbleArrow arrow,
-      bool with_title_text,
-      bool with_body_icon,
-      bool with_buttons,
-      bool with_progress);
+  HelpBubbleViewAsh* CreateHelpBubbleView(user_education::HelpBubbleArrow arrow,
+                                          bool with_title_text,
+                                          bool with_body_icon,
+                                          bool with_buttons,
+                                          bool with_progress);
 
   // Creates and returns a pointer to a new `HelpBubbleViewAsh` instance with
   // the specified `params`. Note that the returned help bubble view is owned
   // by its widget.
-  user_education::HelpBubbleViewInfo CreateHelpBubbleView(
+  HelpBubbleViewAsh* CreateHelpBubbleView(
       user_education::HelpBubbleParams params);
 
  private:

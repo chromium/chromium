@@ -111,7 +111,7 @@ TEST_F(HelpBubbleFactoryRegistryTest, CloseBubble) {
   auto bubble = help_bubble_factory_registry_.CreateHelpBubble(
       &test_element_, std::move(params));
 
-  bubble->Close(HelpBubble::CloseReason::kProgrammaticallyClosed);
+  bubble->Close();
   EXPECT_FALSE(bubble->is_open());
   EXPECT_FALSE(help_bubble_factory_registry_.is_any_bubble_showing());
 }
@@ -228,9 +228,9 @@ TEST_F(HelpBubbleFactoryRegistryTest, CloseTwoBubbles) {
       &test_element_, GetBubbleParams());
   auto bubble2 = help_bubble_factory_registry_.CreateHelpBubble(
       &test_element_, GetBubbleParams());
-  bubble->Close(HelpBubble::CloseReason::kProgrammaticallyClosed);
+  bubble->Close();
   EXPECT_TRUE(help_bubble_factory_registry_.is_any_bubble_showing());
-  bubble2->Close(HelpBubble::CloseReason::kProgrammaticallyClosed);
+  bubble2->Close();
   EXPECT_FALSE(help_bubble_factory_registry_.is_any_bubble_showing());
 }
 
@@ -238,12 +238,12 @@ TEST_F(HelpBubbleFactoryRegistryTest, OpenSecondBubbleAfterClose) {
   auto bubble = help_bubble_factory_registry_.CreateHelpBubble(
       &test_element_, GetBubbleParams());
   EXPECT_TRUE(help_bubble_factory_registry_.is_any_bubble_showing());
-  bubble->Close(HelpBubble::CloseReason::kProgrammaticallyClosed);
+  bubble->Close();
   EXPECT_FALSE(help_bubble_factory_registry_.is_any_bubble_showing());
   auto bubble2 = help_bubble_factory_registry_.CreateHelpBubble(
       &test_element_, GetBubbleParams());
   EXPECT_TRUE(help_bubble_factory_registry_.is_any_bubble_showing());
-  bubble2->Close(HelpBubble::CloseReason::kProgrammaticallyClosed);
+  bubble2->Close();
   EXPECT_FALSE(help_bubble_factory_registry_.is_any_bubble_showing());
 }
 
@@ -253,7 +253,7 @@ TEST_F(HelpBubbleFactoryRegistryTest, AddAndCloseExternalBubble) {
   help_bubble_factory_registry_.AddHelpBubble(bubble.get());
   EXPECT_EQ(bubble.get(), help_bubble_factory_registry_.GetHelpBubble(
                               test_element_.context()));
-  bubble->Close(HelpBubble::CloseReason::kProgrammaticallyClosed);
+  bubble->Close();
   EXPECT_EQ(nullptr, help_bubble_factory_registry_.GetHelpBubble(
                          test_element_.context()));
 }

@@ -16,7 +16,6 @@
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "components/user_education/common/help_bubble/help_bubble_params.h"
-#include "components/user_education/views/help_bubble_view_info.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/gfx/geometry/rect.h"
@@ -58,15 +57,12 @@ class ASH_EXPORT HelpBubbleViewAsh : public views::BubbleDialogDelegateView {
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kBodyIconIdForTesting);
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kBodyTextIdForTesting);
 
+  HelpBubbleViewAsh(HelpBubbleId id,
+                    const internal::HelpBubbleAnchorParams& anchor,
+                    user_education::HelpBubbleParams params);
   HelpBubbleViewAsh(const HelpBubbleViewAsh&) = delete;
   HelpBubbleViewAsh& operator=(const HelpBubbleViewAsh&) = delete;
   ~HelpBubbleViewAsh() override;
-
-  // Creates a help bubble view.
-  static user_education::HelpBubbleViewInfo Create(
-      HelpBubbleId id,
-      const internal::HelpBubbleAnchorParams& anchor,
-      user_education::HelpBubbleParams params);
 
   // Returns whether the given dialog is a help bubble.
   static bool IsHelpBubble(views::DialogDelegate* dialog);
@@ -102,12 +98,6 @@ class ASH_EXPORT HelpBubbleViewAsh : public views::BubbleDialogDelegateView {
                            RespectsProvidedTimeoutAfterActivate);
   FRIEND_TEST_ALL_PREFIXES(HelpBubbleViewAshTest, RootViewAccessibleName);
   friend class HelpBubbleViewsTest;
-
-  HelpBubbleViewAsh(HelpBubbleId id,
-                    const internal::HelpBubbleAnchorParams& anchor,
-                    user_education::HelpBubbleParams params);
-
-  void InitializeAndShow();
 
   void MaybeStartAutoCloseTimer();
 

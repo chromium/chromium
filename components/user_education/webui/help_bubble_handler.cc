@@ -178,7 +178,7 @@ HelpBubbleHandlerBase::HelpBubbleHandlerBase(
 HelpBubbleHandlerBase::~HelpBubbleHandlerBase() {
   for (auto& [id, data] : element_data_) {
     if (data.help_bubble) {
-      data.help_bubble->Close(HelpBubble::CloseReason::kBubbleDestroyed);
+      data.help_bubble->Close();
     }
   }
 }
@@ -214,7 +214,7 @@ std::unique_ptr<HelpBubbleWebUI> HelpBubbleHandlerBase::CreateHelpBubble(
     LOG(WARNING) << "A help bubble is already being shown for " << identifier;
     auto weak_ptr = weak_ptr_factory_.GetWeakPtr();
     if (data.help_bubble) {
-      data.help_bubble->Close(HelpBubble::CloseReason::kProgrammaticallyClosed);
+      data.help_bubble->Close();
       if (!weak_ptr) {
         return nullptr;
       }
@@ -264,9 +264,8 @@ void HelpBubbleHandlerBase::OnHelpBubbleClosing(
   if (it == element_data_.end()) {
     NOTREACHED() << "Identifier " << anchor_id << " was never registered.";
   }
-  if (!it->second.closing) {
+  if (!it->second.closing)
     GetClient()->HideHelpBubble(anchor_id.GetName());
-  }
   it->second.help_bubble = nullptr;
   it->second.params.reset();
   // If this anchor element was only considered visible because it still had a
@@ -442,13 +441,11 @@ void HelpBubbleHandlerBase::HelpBubbleButtonPressed(
   if (!weak_ptr)
     return;
 
-  if (data->help_bubble) {
-    data->help_bubble->Close(HelpBubble::CloseReason::kProgrammaticallyClosed);
-  }
+  if (data->help_bubble)
+    data->help_bubble->Close();
 
-  if (!weak_ptr) {
+  if (!weak_ptr)
     return;
-  }
 
   data->closing = false;
 }
@@ -491,7 +488,7 @@ void HelpBubbleHandlerBase::HelpBubbleClosed(
 
   // This could also theoretically trigger callbacks.
   if (data->help_bubble) {
-    data->help_bubble->Close(HelpBubble::CloseReason::kProgrammaticallyClosed);
+    data->help_bubble->Close();
   }
 
   if (!weak_ptr)
@@ -531,14 +528,14 @@ void HelpBubbleHandlerBase::OnFloatingHelpBubbleCreated(
     return;
   }
   DCHECK(!it->second.external_bubble_subscription);
-  it->second.external_bubble_subscription = help_bubble->AddOnClosingCallback(
+  it->second.external_bubble_subscription = help_bubble->AddOnCloseCallback(
       base::BindOnce(&HelpBubbleHandlerBase::OnFloatingHelpBubbleClosed,
                      weak_ptr_factory_.GetWeakPtr(), anchor_id));
 }
 
 void HelpBubbleHandlerBase::OnFloatingHelpBubbleClosed(
     ui::ElementIdentifier anchor_id,
-    const HelpBubble* help_bubble,
+    HelpBubble* help_bubble,
     HelpBubble::CloseReason) {
   const auto it = element_data_.find(anchor_id);
   if (it == element_data_.end()) {

@@ -8,16 +8,13 @@
 
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
-#include "build/build_config.h"
 #include "components/user_education/common/help_bubble/custom_help_bubble.h"
 #include "components/user_education/test/test_custom_help_bubble_view.h"
-#include "components/user_education/views/help_bubble_view_info.h"
 #include "components/user_education/views/help_bubble_views_test_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/interaction/element_tracker.h"
 #include "ui/base/interaction/expect_call_in_scope.h"
-#include "ui/base/interaction/interaction_sequence_test_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/views/bubble/bubble_border.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
@@ -89,27 +86,23 @@ class HelpBubbleViewsCustomBubbleTest : public views::ViewsTestBase {
     contents_view_->RemoveChildViewT(anchor);
   }
 
-  HelpBubbleViewInfo CreateBubble() {
+  test::TestCustomHelpBubbleView* CreateBubble() {
     auto bubble = std::make_unique<test::TestCustomHelpBubbleView>(
         anchor_view_, views::BubbleBorder::TOP_RIGHT);
     auto* const result = bubble.get();
-    auto* const widget = views::BubbleDialogDelegateView::CreateBubble(
-        std::move(bubble), views::Widget::InitParams::CLIENT_OWNS_WIDGET);
+    auto* const widget =
+        views::BubbleDialogDelegateView::CreateBubble(std::move(bubble));
     widget->Show();
-    return HelpBubbleViewInfo(base::WrapUnique(widget), result);
+    return result;
   }
 
   views::View* anchor_view() const { return anchor_view_; }
 
-  auto BuildHelpBubble(HelpBubbleViewInfo info) {
+  auto BuildHelpBubble(views::BubbleDialogDelegateView* bubble) {
+    CHECK(bubble);
     return base::WrapUnique(new HelpBubbleViews(
-        std::move(info),
-        views::ElementTrackerViews::GetInstance()->GetElementForView(
-            anchor_view_)));
-  }
-
-  test::TestCustomHelpBubbleView* GetBubble(const HelpBubbleViewInfo& info) {
-    return views::AsViewClass<test::TestCustomHelpBubbleView>(info.bubble_view);
+        bubble, views::ElementTrackerViews::GetInstance()->GetElementForView(
+                    anchor_view_)));
   }
 
  private:
@@ -119,9 +112,8 @@ class HelpBubbleViewsCustomBubbleTest : public views::ViewsTestBase {
 };
 
 TEST_F(HelpBubbleViewsCustomBubbleTest, CreateHelpBubble) {
-  auto info = CreateBubble();
-  auto* const bubble = GetBubble(info);
-  auto help_bubble = BuildHelpBubble(std::move(info));
+  auto* const bubble = CreateBubble();
+  auto help_bubble = BuildHelpBubble(bubble);
   ASSERT_EQ(bubble, help_bubble->bubble_view_for_testing());
   ASSERT_EQ(bubble->GetWidget()->GetWindowBoundsInScreen(),
             help_bubble->GetBoundsInScreen());
@@ -131,8 +123,8 @@ TEST_F(HelpBubbleViewsCustomBubbleTest, CreateHelpBubble) {
 }
 
 TEST_F(HelpBubbleViewsCustomBubbleTest, CloseHelpBubble) {
-  auto info = CreateBubble();
-  auto help_bubble = BuildHelpBubble(std::move(info));
+  auto* const bubble = CreateBubble();
+  auto help_bubble = BuildHelpBubble(bubble);
   UNCALLED_MOCK_CALLBACK(ui::ElementTracker::Callback, hidden);
   auto subscription =
       ui::ElementTracker::GetElementTracker()
@@ -142,68 +134,49 @@ TEST_F(HelpBubbleViewsCustomBubbleTest, CloseHelpBubble) {
   EXPECT_CALL(hidden, Run).WillOnce([&](ui::TrackedElement*) {
     run_loop.Quit();
   });
-  help_bubble->Close(HelpBubble::CloseReason::kProgrammaticallyClosed);
+  help_bubble->Close();
   run_loop.Run();
   EXPECT_FALSE(help_bubble->is_open());
   EXPECT_EQ(nullptr, help_bubble->bubble_view_for_testing());
 }
 
-// TODO(https://crbug.com/502638609): In Fuchsia, this test causes an unrelated
-// crash on the GPU thread.
-#if BUILDFLAG(IS_FUCHSIA)
-#define MAYBE_CloseHelpBubbleWidget DISABLED_CloseHelpBubbleWidget
-#else
-#define MAYBE_CloseHelpBubbleWidget CloseHelpBubbleWidget
-#endif
-TEST_F(HelpBubbleViewsCustomBubbleTest, MAYBE_CloseHelpBubbleWidget) {
-  auto info = CreateBubble();
-  auto* const bubble = GetBubble(info);
-  auto help_bubble = BuildHelpBubble(std::move(info));
-  UNCALLED_MOCK_CALLBACK(HelpBubble::ClosingCallback, closing);
+TEST_F(HelpBubbleViewsCustomBubbleTest, CloseHelpBubbleWidget) {
+  auto* const bubble = CreateBubble();
+  auto help_bubble = BuildHelpBubble(bubble);
   UNCALLED_MOCK_CALLBACK(HelpBubble::ClosedCallback, closed);
-  auto subscription1 = help_bubble->AddOnClosingCallback(closing.Get());
-  auto subscription2 = help_bubble->AddOnClosedCallback(closed.Get());
+  auto subscription = help_bubble->AddOnCloseCallback(closed.Get());
 
-  // Wait for the help bubble to close.
-  EXPECT_ASYNC_CALLS_IN_SCOPE_2(
-      closing,
-      Run(help_bubble.get(), HelpBubble::CloseReason::kBubbleDestroyed), closed,
-      Run(HelpBubble::CloseReason::kBubbleDestroyed),
-      bubble->GetWidget()->Close());
+  base::RunLoop run_loop;
+  EXPECT_CALL(closed, Run).WillOnce([&](HelpBubble*, HelpBubble::CloseReason) {
+    run_loop.Quit();
+  });
+  bubble->GetWidget()->Close();
+  run_loop.Run();
 
   EXPECT_FALSE(help_bubble->is_open());
   EXPECT_EQ(nullptr, help_bubble->bubble_view_for_testing());
 }
 
-// TODO(https://crbug.com/502638609): In Fuchsia, this test causes an unrelated
-// crash on the GPU thread.
-#if BUILDFLAG(IS_FUCHSIA)
-#define MAYBE_AnchorViewHidden DISABLED_AnchorViewHidden
-#else
-#define MAYBE_AnchorViewHidden AnchorViewHidden
-#endif
-TEST_F(HelpBubbleViewsCustomBubbleTest, MAYBE_AnchorViewHidden) {
-  auto info = CreateBubble();
-  auto help_bubble = BuildHelpBubble(std::move(info));
-  UNCALLED_MOCK_CALLBACK(HelpBubble::ClosingCallback, closing);
+TEST_F(HelpBubbleViewsCustomBubbleTest, AnchorViewHidden) {
+  auto* const bubble = CreateBubble();
+  auto help_bubble = BuildHelpBubble(bubble);
   UNCALLED_MOCK_CALLBACK(HelpBubble::ClosedCallback, closed);
-  auto subscription1 = help_bubble->AddOnClosingCallback(closing.Get());
-  auto subscription2 = help_bubble->AddOnClosedCallback(closed.Get());
+  auto subscription = help_bubble->AddOnCloseCallback(closed.Get());
 
-  // Wait for the help bubble to close.
-  EXPECT_ASYNC_CALLS_IN_SCOPE_2(
-      closing, Run(help_bubble.get(), HelpBubble::CloseReason::kAnchorHidden),
-      closed, Run(HelpBubble::CloseReason::kAnchorHidden),
-      anchor_view()->SetVisible(false));
+  base::RunLoop run_loop;
+  EXPECT_CALL(closed, Run).WillOnce([&](HelpBubble*, HelpBubble::CloseReason) {
+    run_loop.Quit();
+  });
+  anchor_view()->SetVisible(false);
+  run_loop.Run();
 
   EXPECT_FALSE(help_bubble->is_open());
   EXPECT_EQ(nullptr, help_bubble->bubble_view_for_testing());
 }
 
 TEST_F(HelpBubbleViewsCustomBubbleTest, CustomBubbleSendsCancel) {
-  auto info = CreateBubble();
-  auto* const bubble = GetBubble(info);
-  auto help_bubble = BuildHelpBubble(std::move(info));
+  auto* const bubble = CreateBubble();
+  auto help_bubble = BuildHelpBubble(bubble);
   UNCALLED_MOCK_CALLBACK(CustomHelpBubbleUi::UserActionCallback, user_action);
   auto subscription = bubble->AddUserActionCallback(user_action.Get());
   EXPECT_CALL_IN_SCOPE(
@@ -213,9 +186,8 @@ TEST_F(HelpBubbleViewsCustomBubbleTest, CustomBubbleSendsCancel) {
 }
 
 TEST_F(HelpBubbleViewsCustomBubbleTest, CustomBubbleSendsDismiss) {
-  auto info = CreateBubble();
-  auto* const bubble = GetBubble(info);
-  auto help_bubble = BuildHelpBubble(std::move(info));
+  auto* const bubble = CreateBubble();
+  auto help_bubble = BuildHelpBubble(bubble);
   UNCALLED_MOCK_CALLBACK(CustomHelpBubbleUi::UserActionCallback, user_action);
   auto subscription = bubble->AddUserActionCallback(user_action.Get());
   EXPECT_CALL_IN_SCOPE(
@@ -225,9 +197,8 @@ TEST_F(HelpBubbleViewsCustomBubbleTest, CustomBubbleSendsDismiss) {
 }
 
 TEST_F(HelpBubbleViewsCustomBubbleTest, CustomBubbleSendsAction) {
-  auto info = CreateBubble();
-  auto* const bubble = GetBubble(info);
-  auto help_bubble = BuildHelpBubble(std::move(info));
+  auto* const bubble = CreateBubble();
+  auto help_bubble = BuildHelpBubble(bubble);
   UNCALLED_MOCK_CALLBACK(CustomHelpBubbleUi::UserActionCallback, user_action);
   auto subscription = bubble->AddUserActionCallback(user_action.Get());
   EXPECT_CALL_IN_SCOPE(
@@ -237,9 +208,8 @@ TEST_F(HelpBubbleViewsCustomBubbleTest, CustomBubbleSendsAction) {
 }
 
 TEST_F(HelpBubbleViewsCustomBubbleTest, CustomBubbleSendsSnooze) {
-  auto info = CreateBubble();
-  auto* const bubble = GetBubble(info);
-  auto help_bubble = BuildHelpBubble(std::move(info));
+  auto* const bubble = CreateBubble();
+  auto help_bubble = BuildHelpBubble(bubble);
   UNCALLED_MOCK_CALLBACK(CustomHelpBubbleUi::UserActionCallback, user_action);
   auto subscription = bubble->AddUserActionCallback(user_action.Get());
   EXPECT_CALL_IN_SCOPE(

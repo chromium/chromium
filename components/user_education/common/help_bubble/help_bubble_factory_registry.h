@@ -68,14 +68,13 @@ class HelpBubbleFactoryRegistry {
   }
 
  private:
-  void OnHelpBubbleClosing(const HelpBubble* help_bubble,
-                           HelpBubble::CloseReason);
+  void OnHelpBubbleClosed(HelpBubble* help_bubble, HelpBubble::CloseReason);
 
   // The list of known factories.
   ui::FrameworkSpecificRegistrationList<HelpBubbleFactory> factories_;
 
   // The list of known help bubbles.
-  std::map<raw_ptr<HelpBubble>, base::CallbackListSubscription> help_bubbles_;
+  std::map<HelpBubble*, base::CallbackListSubscription> help_bubbles_;
 };
 
 }  // namespace user_education

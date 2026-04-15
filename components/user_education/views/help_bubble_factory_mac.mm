@@ -54,7 +54,7 @@ std::unique_ptr<HelpBubble> HelpBubbleFactoryMac::CreateBubble(
   }
 
   return base::WrapUnique(new HelpBubbleViews(
-      HelpBubbleView::Create(delegate_, anchor, std::move(params)), element));
+      new HelpBubbleView(delegate_, anchor, std::move(params)), element));
 }
 
 bool HelpBubbleFactoryMac::CanBuildBubbleForTrackedElement(

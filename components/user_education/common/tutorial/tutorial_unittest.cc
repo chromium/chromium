@@ -874,8 +874,7 @@ TEST_F(TutorialTest, BubbleClosingProgrammaticallyOnlyEndsTutorialOnLastStep) {
   ClearEventQueue();
   EXPECT_ASYNC_CALL_IN_SCOPE(
       completed, Run,
-      service.currently_displayed_bubble_for_testing()->Close(
-          HelpBubble::CloseReason::kProgrammaticallyClosed));
+      service.currently_displayed_bubble_for_testing()->Close());
 }
 
 TEST_F(TutorialTest, TimeoutBeforeFirstBubble) {

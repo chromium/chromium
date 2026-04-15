@@ -9,24 +9,8 @@
 
 namespace user_education {
 
-HelpBubble::ScopedNotifyOnClosed::ScopedNotifyOnClosed() = default;
-HelpBubble::ScopedNotifyOnClosed::ScopedNotifyOnClosed(
-    const HelpBubble* bubble,
-    CloseReason reason,
-    std::unique_ptr<ClosedCallbackList> callbacks)
-    : reason_(reason), callbacks_(std::move(callbacks)) {}
-HelpBubble::ScopedNotifyOnClosed::ScopedNotifyOnClosed(
-    ScopedNotifyOnClosed&&) noexcept = default;
-HelpBubble::ScopedNotifyOnClosed& HelpBubble::ScopedNotifyOnClosed::operator=(
-    ScopedNotifyOnClosed&&) noexcept = default;
-HelpBubble::ScopedNotifyOnClosed::~ScopedNotifyOnClosed() {
-  if (callbacks_) {
-    std::move(*callbacks_).Notify(reason_);
-  }
-}
-
 HelpBubble::HelpBubble()
-    : on_closed_callbacks_(std::make_unique<ClosedCallbackList>()) {}
+    : on_close_callbacks_(std::make_unique<CallbackList>()) {}
 
 HelpBubble::~HelpBubble() {
   // Derived classes must call Close() in destructor lest the bubble be
@@ -37,10 +21,31 @@ HelpBubble::~HelpBubble() {
   CHECK(is_closed());
 }
 
-HelpBubble::ScopedNotifyOnClosed HelpBubble::BeginClose(CloseReason reason) {
-  auto on_closed = std::move(on_closed_callbacks_);
-  on_closing_callbacks_.Notify(this, reason);
-  return ScopedNotifyOnClosed(this, reason, std::move(on_closed));
+bool HelpBubble::Close(CloseReason close_reason) {
+  // This prevents us from re-entrancy during CloseBubbleImpl() or after the
+  // bubble is closed.
+  if (is_closed()) {
+    return false;
+  }
+
+  // We can't destruct the callback list during callbacks, so ensure that it
+  // sticks around until the callbacks are all finished. This also has the side
+  // effect of making is_closed() true since it resets the value of
+  // `on_close_callbacks_`.
+  std::unique_ptr<CallbackList> callbacks = std::move(on_close_callbacks_);
+
+  // Note: any of the following could destroy `this`.
+
+  // Actually close the help bubble. For some implementations, this may trigger
+  // additional events.
+  CloseBubbleImpl();
+
+  // Call any on-close callbacks.
+  if (callbacks) {
+    callbacks->Notify(this, close_reason);
+  }
+
+  return true;
 }
 
 void HelpBubble::OnAnchorBoundsChanged() {}
@@ -49,22 +54,13 @@ gfx::Rect HelpBubble::GetBoundsInScreen() const {
   return gfx::Rect();
 }
 
-base::CallbackListSubscription HelpBubble::AddOnClosingCallback(
-    ClosingCallback callback) {
-  if (is_closed()) {
-    NOTREACHED();
-  }
-
-  return on_closing_callbacks_.Add(std::move(callback));
-}
-
-base::CallbackListSubscription HelpBubble::AddOnClosedCallback(
+base::CallbackListSubscription HelpBubble::AddOnCloseCallback(
     ClosedCallback callback) {
   if (is_closed()) {
     NOTREACHED();
   }
 
-  return on_closed_callbacks_->Add(std::move(callback));
+  return on_close_callbacks_->Add(std::move(callback));
 }
 
 }  // namespace user_education

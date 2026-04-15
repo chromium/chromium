@@ -34,24 +34,14 @@ bool IsFocusInHelpBubble(const views::BubbleDialogDelegateView* bubble) {
 
 DEFINE_FRAMEWORK_SPECIFIC_METADATA(HelpBubbleViews)
 
-HelpBubbleViews::HelpBubbleViews(HelpBubbleViewInfo info,
-                                 ui::TrackedElement* anchor_element)
-    : help_bubble_widget_(std::move(info.widget)),
-      help_bubble_view_(info.bubble_view),
-      anchor_element_(anchor_element) {
-  CHECK(help_bubble_widget_);
-  CHECK(help_bubble_view_);
-  CHECK(anchor_element_);
-  CHECK_EQ(help_bubble_widget_.get(), help_bubble_view_->GetWidget());
-
-  // If the anchor is a view, ensure it gets the proper state.
-  if (auto* const anchor = GetAnchorView()) {
-    anchor->SetProperty(kHasInProductHelpPromoKey, true);
-    MaybeApplyAttentionStateToTrackedElement(anchor);
-  }
-
-  help_bubble_widget_->MakeCloseSynchronous(base::BindOnce(
-      &HelpBubbleViews::OnHelpBubbleClosing, base::Unretained(this)));
+HelpBubbleViews::HelpBubbleViews(
+    views::BubbleDialogDelegateView* help_bubble_view,
+    ui::TrackedElement* anchor_element)
+    : help_bubble_view_(help_bubble_view), anchor_element_(anchor_element) {
+  CHECK(help_bubble_view);
+  CHECK(help_bubble_view->GetWidget());
+  CHECK(anchor_element);
+  scoped_observation_.Observe(help_bubble_view->GetWidget());
 
   anchor_hidden_subscription_ =
       ui::ElementTracker::GetElementTracker()->AddElementHiddenCallback(
@@ -66,9 +56,8 @@ HelpBubbleViews::HelpBubbleViews(HelpBubbleViewInfo info,
 }
 
 HelpBubbleViews::~HelpBubbleViews() {
-  // Needs to be called here while we still have access to class-specific logic.
-  // Safe to call even if `Close()` has already been called; see the
-  // implementation of `Close()`.
+  // Needs to be called here while we still have access to HelpBubbleViews-
+  // specific logic.
   Close(CloseReason::kBubbleDestroyed);
 }
 
@@ -120,38 +109,40 @@ bool HelpBubbleViews::ToggleFocusForAccessibility() {
     return true;
   }
 
-  bool set_focus = false;
+  auto* const anchor = help_bubble_view_->GetAnchorView();
+  if (!anchor) {
+    return false;
+  }
 
-  if (auto* const anchor = GetAnchorView()) {
-    if (anchor->GetViewAccessibility().IsAccessibilityFocusable()) {
+  bool set_focus = false;
+  if (anchor->GetViewAccessibility().IsAccessibilityFocusable()) {
 #if BUILDFLAG(IS_MAC)
-      // Mac does not automatically pass activation on focus, so we have to do
-      // it manually.
-      anchor->GetWidget()->Activate();
+    // Mac does not automatically pass activation on focus, so we have to do it
+    // manually.
+    anchor->GetWidget()->Activate();
 #else
-      // Focus the anchor. We can't request focus for an accessibility-only view
-      // until we turn on keyboard accessibility for its focus manager.
-      anchor->GetFocusManager()->SetKeyboardAccessible(true);
+    // Focus the anchor. We can't request focus for an accessibility-only view
+    // until we turn on keyboard accessibility for its focus manager.
+    anchor->GetFocusManager()->SetKeyboardAccessible(true);
 #endif
-      anchor->RequestFocus();
-      set_focus = true;
-    } else if (views::IsViewClass<views::AccessiblePaneView>(anchor)) {
-      // An AccessiblePaneView can receive focus, but is not necessarily itself
-      // accessibility focusable. Use the built-in functionality for focusing
-      // elements of AccessiblePaneView instead.
+    anchor->RequestFocus();
+    set_focus = true;
+  } else if (views::IsViewClass<views::AccessiblePaneView>(anchor)) {
+    // An AccessiblePaneView can receive focus, but is not necessarily itself
+    // accessibility focusable. Use the built-in functionality for focusing
+    // elements of AccessiblePaneView instead.
 #if BUILDFLAG(IS_MAC)
-      // Mac does not automatically pass activation on focus, so we have to do
-      // it manually.
-      anchor->GetWidget()->Activate();
+    // Mac does not automatically pass activation on focus, so we have to do it
+    // manually.
+    anchor->GetWidget()->Activate();
 #else
-      // You can't focus an accessible pane if it's already in accessibility
-      // mode, so avoid doing that; the SetPaneFocus() call will go back into
-      // accessibility navigation mode.
-      anchor->GetFocusManager()->SetKeyboardAccessible(false);
+    // You can't focus an accessible pane if it's already in accessibility
+    // mode, so avoid doing that; the SetPaneFocus() call will go back into
+    // accessibility navigation mode.
+    anchor->GetFocusManager()->SetKeyboardAccessible(false);
 #endif
-      set_focus = static_cast<views::AccessiblePaneView*>(anchor)->SetPaneFocus(
-          nullptr);
-    }
+    set_focus =
+        static_cast<views::AccessiblePaneView*>(anchor)->SetPaneFocus(nullptr);
   }
 
   return set_focus;
@@ -189,42 +180,36 @@ bool HelpBubbleViews::CanHandleAccelerators() const {
          help_bubble_view_->GetWidget()->IsActive();
 }
 
-void HelpBubbleViews::DestroyWidget() {
-  if (!has_widget()) {
+void HelpBubbleViews::MaybeResetAnchorView() {
+  if (!help_bubble_view_) {
     return;
   }
+  auto* const anchor_view = help_bubble_view_->GetAnchorView();
+  if (!anchor_view) {
+    return;
+  }
+  anchor_view->SetProperty(kHasInProductHelpPromoKey, false);
+  MaybeRemoveAttentionStateFromTrackedElement(anchor_view);
+}
 
+void HelpBubbleViews::CloseBubbleImpl() {
   anchor_hidden_subscription_ = base::CallbackListSubscription();
   anchor_bounds_changed_subscription_ = base::CallbackListSubscription();
+  scoped_observation_.Reset();
+  MaybeResetAnchorView();
 
-  // Maybe clean up anchor state.
-  if (auto* anchor_view = GetAnchorView()) {
-    anchor_view->SetProperty(kHasInProductHelpPromoKey, false);
-    MaybeRemoveAttentionStateFromTrackedElement(anchor_view);
-  }
-
+  // Reset the anchor view. Closing the widget could cause callbacks which could
+  // theoretically destroy `this`, so
+  auto* const help_bubble_view = help_bubble_view_.get();
   help_bubble_view_ = nullptr;
   anchor_element_ = nullptr;
-  help_bubble_widget_.reset();
+  if (help_bubble_view && help_bubble_view->GetWidget()) {
+    help_bubble_view->GetWidget()->Close();
+  }
 }
 
-bool HelpBubbleViews::Close(CloseReason reason) {
-  // All of these are no-ops if called a second time.
-  auto on_close = BeginClose(reason);
-  DestroyWidget();
-  return on_close.is_valid();
-}
-
-views::View* HelpBubbleViews::GetAnchorView() {
-  return help_bubble_view_ ? help_bubble_view_->GetAnchorView() : nullptr;
-}
-
-void HelpBubbleViews::OnHelpBubbleClosing(
-    views::Widget::ClosedReason closed_reason) {
-  // At this point, everything is cleared and `this` may be safely deleted.
-  // Call `Close()` [again]; this is a no-op if the help bubble is already
-  // marked as closing.
-  Close(CloseReason::kBubbleDestroyed);
+void HelpBubbleViews::OnWidgetDestroying(views::Widget* widget) {
+  Close(CloseReason::kBubbleElementDestroyed);
 }
 
 void HelpBubbleViews::OnElementHidden(ui::TrackedElement* element) {
@@ -260,66 +245,81 @@ CustomHelpBubbleViews::CustomHelpBubbleViews(
     ui::TrackedElement* anchor_element,
     std::optional<UserAction> accept_button_action,
     std::optional<UserAction> cancel_button_action)
-    : HelpBubbleViews(HelpBubbleViewInfo(std::move(widget), bubble),
-                      anchor_element),
+    : HelpBubbleViews(bubble, anchor_element),
       CustomHelpBubble(ui),
+      help_bubble_widget_(std::move(widget)),
       accept_button_action_(accept_button_action),
       cancel_button_action_(cancel_button_action) {
+  CHECK(help_bubble_widget_);
+
   // Help bubbles should not close on deactivate.
   bubble->set_close_on_deactivate(false);
 
   // Help bubbles should always send "ESC Pressed" on escape key, not cancel.
   bubble->set_esc_should_cancel_dialog_override(false);
+
+  bubble->GetWidget()->MakeCloseSynchronous(base::BindOnce(
+      &CustomHelpBubbleViews::OnHelpBubbleClosing, base::Unretained(this)));
+
+  // Custom help bubble should always have an anchor view.
+  auto* const anchor_view = bubble->GetAnchorView();
+  anchor_view->SetProperty(user_education::kHasInProductHelpPromoKey, true);
+  user_education::MaybeApplyAttentionStateToTrackedElement(anchor_view);
 }
 
-// Note that the `Close()` call in the base-class destructor will not trigger
-// `OnHelpBubbleClosing()` for this class; however, since the close reason is
-// "unspecified" there is no additional action to be taken in this class'
-// override, so it's safe to just call it there.
-CustomHelpBubbleViews::~CustomHelpBubbleViews() = default;
+CustomHelpBubbleViews::~CustomHelpBubbleViews() {
+  // Ensure that all closing of help bubbles goes through the same logic path.
+  //
+  // Due to upstream logic in HelpBubbleViews, `OnHelpBubbleClosing()` ends up
+  // getting called in a state where the widget cannot correctly be destroyed,
+  // leading to a CHECK().
+  //
+  // This will be unnecessary when HelpBubbleViews is migrated to ownership mode
+  // CLIENT_OWNS_WIDGET.
+  if (help_bubble_widget_) {
+    help_bubble_widget_->CloseWithReason(
+        views::Widget::ClosedReason::kUnspecified);
+  }
+}
 
 void CustomHelpBubbleViews::OnHelpBubbleClosing(
     views::Widget::ClosedReason reason) {
-  // If called during teardown, ignore.
-  if (!has_widget()) {
-    return;
+  // The calls below could also destroy `this`, so save off widget in a local.
+  // This both guarantees that the widget will get properly destroyed at the end
+  // of this method (as is required by `MakeCloseSynchronous()`) and also
+  // prevents re-entrancy in the destructor as `help_bubble_widget_` will be
+  // null.
+  std::unique_ptr<views::Widget> widget = std::move(help_bubble_widget_);
+
+  if (auto* const ui = custom_bubble_ui()) {
+    switch (reason) {
+      case views::Widget::ClosedReason::kAcceptButtonClicked:
+        if (accept_button_action_) {
+          ui->NotifyUserAction(*accept_button_action_);
+        }
+        break;
+
+      case views::Widget::ClosedReason::kCancelButtonClicked:
+        if (cancel_button_action_) {
+          ui->NotifyUserAction(*cancel_button_action_);
+        }
+        break;
+
+      case views::Widget::ClosedReason::kCloseButtonClicked:
+      case views::Widget::ClosedReason::kEscKeyPressed:
+        ui->NotifyUserAction(UserAction::kCancel);
+        break;
+
+      case views::Widget::ClosedReason::kLostFocus:
+      case views::Widget::ClosedReason::kUnspecified:
+        // Do nothing.
+        break;
+    }
   }
 
-  std::optional<UserAction> action;
-  CloseReason actual_reason = CloseReason::kProgrammaticallyClosed;
-
-  switch (reason) {
-    case views::Widget::ClosedReason::kAcceptButtonClicked:
-      action = accept_button_action_;
-      break;
-
-    case views::Widget::ClosedReason::kCancelButtonClicked:
-      action = cancel_button_action_;
-      break;
-
-    case views::Widget::ClosedReason::kCloseButtonClicked:
-    case views::Widget::ClosedReason::kEscKeyPressed:
-      action = UserAction::kCancel;
-      break;
-
-    case views::Widget::ClosedReason::kLostFocus:
-    case views::Widget::ClosedReason::kUnspecified:
-      actual_reason = CloseReason::kBubbleDestroyed;
-      break;
-  }
-
-  auto on_close = BeginClose(actual_reason);
-
-  // The following call may result in `this` being destroyed.
-  auto weak_this = GetWeakPtr();
-  if (auto* const ui = custom_bubble_ui(); ui && action) {
-    ui->NotifyUserAction(*action);
-  }
-
-  // If `this` survived the call, destroy the widget.
-  if (weak_this) {
-    DestroyWidget();
-  }
+  // This is required when responding to `OnHelpBubbleClosing()`; the widget
+  // must be destroyed before this method returns.
+  widget.reset();
 }
 
 }  // namespace user_education
