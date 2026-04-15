@@ -19,4 +19,10 @@
 #define EXPENSIVE_DCHECKS_ARE_ON() false
 #endif
 
+#if BUILDFLAG(ENABLE_CHECK_ELISION_WARNING)
+#define ENABLE_CHECK_ELISION_WARNING() true
+#else
+#define ENABLE_CHECK_ELISION_WARNING() false
+#endif
+
 #endif  // BASE_DCHECK_IS_ON_H_

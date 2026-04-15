@@ -30,6 +30,7 @@
 #include "base/compiler_specific.h"
 #include "base/containers/checked_iterators.h"
 #include "base/containers/span_forward_internal.h"
+#include "base/dcheck_is_on.h"
 #include "base/numerics/integral_constant_like.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/types/to_address.h"
@@ -283,6 +284,18 @@
 // - For safety, bans types which do not meet
 //   `std::has_unique_object_representations_v<>` from all byte span conversion
 //   functions by default. See more detailed comments above for workarounds.
+
+// Enables location of non-elided bounds checks. This is very verbose.
+// It must always be a "hard" check that is present in release builds
+// (unless the optimizer deems it eligible for elision).
+#if ENABLE_CHECK_ELISION_WARNING()
+#define SPAN_BOUNDS_CHECK(x)  \
+  if (!(x)) {                 \
+    base::check_not_elided(); \
+  } else
+#else
+#define SPAN_BOUNDS_CHECK(x) CHECK(x)
+#endif
 
 namespace base {
 
@@ -971,7 +984,7 @@ class GSL_POINTER span {
   constexpr pointer get_at(StrictNumeric<size_type> idx) const
     requires(extent > 0)
   {
-    CHECK(size_type{idx} < extent);
+    SPAN_BOUNDS_CHECK(size_type{idx} < extent);
     // SAFETY: `data()` points to at least `extent` elements, so `idx` must be
     // the index of a valid element.
     return UNSAFE_BUFFERS(data() + size_type{idx});
@@ -1301,13 +1314,13 @@ class GSL_POINTER span<ElementType, dynamic_extent, InternalPtrType> {
   // First `count` elements.
   template <size_t Count>
   constexpr auto first() const {
-    CHECK(Count <= size());
+    SPAN_BOUNDS_CHECK(Count <= size());
     // SAFETY: `data()` points to at least `size()` elements, so the new data
     // scope is a strict subset of the old.
     return UNSAFE_BUFFERS(span<element_type, Count>(unchecked, data(), Count));
   }
   constexpr auto first(StrictNumeric<size_t> count) const {
-    CHECK(size_type{count} <= size());
+    SPAN_BOUNDS_CHECK(size_type{count} <= size());
     // SAFETY: `data()` points to at least `size()` elements, so the new data
     // scope is a strict subset of the old.
     return UNSAFE_BUFFERS(span<element_type>(unchecked, data(), count));
@@ -1316,14 +1329,14 @@ class GSL_POINTER span<ElementType, dynamic_extent, InternalPtrType> {
   // Last `count` elements.
   template <size_t Count>
   constexpr auto last() const {
-    CHECK(Count <= size());
+    SPAN_BOUNDS_CHECK(Count <= size());
     // SAFETY: `data()` points to at least `size()` elements, so the new data
     // scope is a strict subset of the old.
     return UNSAFE_BUFFERS(
         span<element_type, Count>(unchecked, data() + (size() - Count), Count));
   }
   constexpr auto last(StrictNumeric<size_type> count) const {
-    CHECK(size_type{count} <= size());
+    SPAN_BOUNDS_CHECK(size_type{count} <= size());
     // SAFETY: `data()` points to at least `size()` elements, so the new data
     // scope is a strict subset of the old.
     return UNSAFE_BUFFERS(span<element_type>(
@@ -1333,7 +1346,7 @@ class GSL_POINTER span<ElementType, dynamic_extent, InternalPtrType> {
   // `count` elements beginning at `offset`.
   template <size_t Offset, size_t Count = dynamic_extent>
   constexpr auto subspan() const {
-    CHECK(Offset <= size());
+    SPAN_BOUNDS_CHECK(Offset <= size());
     const size_type remaining = size() - Offset;
     if constexpr (Count == dynamic_extent) {
       // SAFETY: `data()` points to at least `size()` elements, so `Offset`
@@ -1342,7 +1355,7 @@ class GSL_POINTER span<ElementType, dynamic_extent, InternalPtrType> {
       return UNSAFE_BUFFERS(
           span<element_type, Count>(unchecked, data() + Offset, remaining));
     }
-    CHECK(Count <= remaining);
+    SPAN_BOUNDS_CHECK(Count <= remaining);
     // SAFETY: `data()` points to at least `size()` elements, so `Offset`
     // specifies a valid element index or the past-the-end index, and `Count` is
     // no larger than the number of remaining valid elements.
@@ -1350,7 +1363,7 @@ class GSL_POINTER span<ElementType, dynamic_extent, InternalPtrType> {
         span<element_type, Count>(unchecked, data() + Offset, Count));
   }
   constexpr auto subspan(StrictNumeric<size_type> offset) const {
-    CHECK(size_type{offset} <= size());
+    SPAN_BOUNDS_CHECK(size_type{offset} <= size());
     const size_type remaining = size() - size_type{offset};
     // SAFETY: `data()` points to at least `size()` elements, so `offset`
     // specifies a valid element index or the past-the-end index, and
@@ -1363,8 +1376,8 @@ class GSL_POINTER span<ElementType, dynamic_extent, InternalPtrType> {
     // base does not allow dynamic_extent in two-arg subspan().
     DCHECK(size_type{count} != dynamic_extent);
     // Deliberately combine tests to minimize code size.
-    CHECK(size_type{offset} <= size() &&
-          size_type{count} <= size() - size_type{offset});
+    SPAN_BOUNDS_CHECK(size_type{offset} <= size() &&
+                      size_type{count} <= size() - size_type{offset});
     // SAFETY: `data()` points to at least `size()` elements, so `offset`
     // specifies a valid element index or the past-the-end index, and `count` is
     // no larger than the number of remaining valid elements.

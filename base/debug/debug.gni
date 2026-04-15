@@ -28,6 +28,14 @@ declare_args() {
   build_allocation_trace_recorder_full_reporting = false
 }
 
+declare_args() {
+  # If enabled, clang produces an extremely verbose amount of warnings about
+  # places in the code where CHECKS() (typically performance-sensitive bounds
+  # checks) could not be elided by the optimizer. Useful for hunting down a
+  # performance-regression when moving to safer types.
+  enable_check_elision_warning = false
+}
+
 assert(!(build_allocation_stack_trace_recorder && is_fuchsia),
        "Stack trace recording is not supported on Fuchsia due to missing" +
            " Crashpad!")
@@ -40,3 +48,6 @@ assert(
     build_allocation_stack_trace_recorder ||
         !build_allocation_trace_recorder_full_reporting,
     "Report for stack trace recorder is enabled, but the recorder is disabled!")
+
+assert(!enable_check_elision_warning || !is_debug,
+       "Check elision warning requires an optimized build!")

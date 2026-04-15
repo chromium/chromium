@@ -2841,6 +2841,7 @@ buildflag_header("debugging_buildflags") {
     "ENABLE_ALLOCATION_STACK_TRACE_RECORDER=$build_allocation_stack_trace_recorder",
     "ENABLE_ALLOCATION_TRACE_RECORDER_FULL_REPORTING=$build_allocation_trace_recorder_full_reporting",
     "PRINT_UNSYMBOLIZED_STACK_TRACES=$print_unsymbolized_stack_traces",
+    "ENABLE_CHECK_ELISION_WARNING=$enable_check_elision_warning",
   ]
 }
 

@@ -13,6 +13,7 @@
 #include "base/debug/crash_logging.h"
 #include "base/debug/dump_without_crashing.h"
 #include "base/logging.h"
+#include "base/notreached.h"
 #include "base/thread_annotations.h"
 #include "build/build_config.h"
 
@@ -460,3 +461,13 @@ void RawCheckFailure(const char* message) {
 }
 
 }  // namespace logging
+
+#if ENABLE_CHECK_ELISION_WARNING()
+namespace base {
+void check_not_elided() {
+  // Although compilation warnings are produced if this is not elided,
+  // it still must hard check if called.
+  NOTREACHED();
+}
+}  // namespace base
+#endif  // ENABLE_CHECK_ELISION_WARNING()

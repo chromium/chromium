@@ -341,4 +341,11 @@ class BASE_EXPORT NotReachedNoreturnError : public CheckError {
 
 }  // namespace logging
 
+#if ENABLE_CHECK_ELISION_WARNING()
+namespace base {
+[[noreturn]] __attribute__((warning("check not elided"))) void
+check_not_elided();
+}  // namespace base
+#endif  // ENABLE_CHECK_ELISION_WARNING()
+
 #endif  // BASE_CHECK_H_
