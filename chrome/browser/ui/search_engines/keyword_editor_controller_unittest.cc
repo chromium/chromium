@@ -69,6 +69,8 @@ class KeywordEditorControllerTest : public testing::Test,
     ClearChangeCount();
   }
 
+  void VerifyNotChanged() { ASSERT_EQ(0, model_changed_count_); }
+
   void ClearChangeCount() { model_changed_count_ = 0; }
 
   void SimulateDefaultSearchIsManaged(const std::string& url,
@@ -161,6 +163,30 @@ TEST_F(KeywordEditorControllerTest, Modify) {
   EXPECT_EQ(u"a1", turl->short_name());
   EXPECT_EQ(u"b1", turl->keyword());
   EXPECT_EQ("http://c1", turl->url());
+
+  // Verify preference was not updated.
+  const base::ListValue& overridden_keywords = profile().GetPrefs()->GetList(
+      EnterpriseSearchManager::kSiteSearchSettingsOverriddenKeywordsPrefName);
+  EXPECT_TRUE(overridden_keywords.empty());
+}
+
+// Regression test for crbug.com/499223471.
+TEST_F(KeywordEditorControllerTest, ModifyWithoutChange) {
+  const TemplateURLID turl_id =
+      controller()->AddTemplateURL(kA, kB, "c1.com/?s=%s");
+  ClearChangeCount();
+
+  // Trigger a modification, but the URL is the same as the original one, only
+  // in a fixed up format.
+  TemplateURL* turl = controller()->GetTemplateURL(turl_id);
+  controller()->ModifyTemplateURL(turl, kA, kB,
+                                  "http://c1.com/?s={searchTerms}");
+
+  // Make sure it was not updated.
+  VerifyNotChanged();
+  EXPECT_EQ(u"a", turl->short_name());
+  EXPECT_EQ(u"b", turl->keyword());
+  EXPECT_EQ("c1.com/?s=%s", turl->url());
 
   // Verify preference was not updated.
   const base::ListValue& overridden_keywords = profile().GetPrefs()->GetList(

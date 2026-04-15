@@ -16,6 +16,7 @@
 #include "components/search_engines/template_url_data.h"
 #include "components/search_engines/template_url_service.h"
 #include "components/search_engines/ui_utils.h"
+#include "components/search_engines/util.h"
 
 using base::UserMetricsAction;
 
@@ -23,6 +24,27 @@ namespace {
 
 bool IsPrepopulatedEngine(const TemplateURL* url) {
   return url->prepopulate_id() > 0;
+}
+
+bool ShouldUpdateTemplateURL(TemplateURLService* url_model,
+                             TemplateURL* template_url,
+                             const std::u16string& title,
+                             const std::u16string& keyword,
+                             const std::string& fixed_up_url) {
+  // Will happen if url was deleted while the user was editing it.
+  if (!template_url) {
+    return false;
+  }
+
+  // Compare against an extended version of the Template URL's url, because
+  // `fixed_up_url` has gone through this as well.
+  const std::string fixed_up_template_url = GetFixedUpSearchEngineUrl(
+      template_url->url(), url_model->search_terms_data());
+
+  // Don't do anything if the entry didn't change.
+  return template_url->short_name() != title ||
+         template_url->keyword() != keyword ||
+         fixed_up_template_url != fixed_up_url;
 }
 
 }  // namespace
@@ -40,42 +62,37 @@ KeywordEditorController::~KeywordEditorController() = default;
 TemplateURLID KeywordEditorController::AddTemplateURL(
     const std::u16string& title,
     const std::u16string& keyword,
-    const std::string& url) {
-  CHECK(!url.empty());
+    const std::string& fixed_up_url) {
+  CHECK(!fixed_up_url.empty());
 
   base::RecordAction(UserMetricsAction("KeywordEditor_AddKeyword"));
 
   TemplateURLData data;
   data.SetShortName(title);
   data.SetKeyword(keyword);
-  data.SetURL(url);
+  data.SetURL(fixed_up_url);
   data.is_active = TemplateURLData::ActiveStatus::kTrue;
   TemplateURL* template_url =
       url_model_->Add(std::make_unique<TemplateURL>(data));
   return template_url->id();
 }
 
-void KeywordEditorController::ModifyTemplateURL(TemplateURL* template_url,
-                                                const std::u16string& title,
-                                                const std::u16string& keyword,
-                                                const std::string& url) {
-  CHECK(!url.empty());
-  if (!template_url) {
-    // Will happen if url was deleted out from under us while the user was
-    // editing it.
-    return;
-  }
+void KeywordEditorController::ModifyTemplateURL(
+    TemplateURL* template_url,
+    const std::u16string& title,
+    const std::u16string& keyword,
+    const std::string& fixed_up_url) {
+  CHECK(!fixed_up_url.empty());
 
-  // Don't do anything if the entry didn't change.
-  if ((template_url->short_name() == title) &&
-      (template_url->keyword() == keyword) && (template_url->url() == url)) {
+  if (!ShouldUpdateTemplateURL(url_model_, template_url, title, keyword,
+                               fixed_up_url)) {
     return;
   }
 
   // The default search provider should support replacement.
   CHECK(url_model_->GetDefaultSearchProvider() != template_url ||
         template_url->SupportsReplacement(url_model_->search_terms_data()));
-  url_model_->ResetTemplateURL(template_url, title, keyword, url);
+  url_model_->ResetTemplateURL(template_url, title, keyword, fixed_up_url);
 
   base::RecordAction(UserMetricsAction("KeywordEditor_ModifiedKeyword"));
 }

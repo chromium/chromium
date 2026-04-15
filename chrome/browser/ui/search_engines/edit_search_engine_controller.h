@@ -22,7 +22,7 @@ class EditSearchEngineControllerDelegate {
   virtual void OnEditedKeyword(TemplateURL* template_url,
                                const std::u16string& title,
                                const std::u16string& keyword,
-                               const std::string& url) = 0;
+                               const std::string& fixed_up_url) = 0;
 
  protected:
   virtual ~EditSearchEngineControllerDelegate() = default;
