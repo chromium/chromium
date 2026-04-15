@@ -106,21 +106,22 @@ export class ComposeboxVoiceSearchElement extends
     };
   }
 
-  private accessor state_: State = State.UNINITIALIZED;
   protected accessor transcript_: string = '';
   protected accessor listeningPlaceholder_: string =
       loadTimeData.getString('voiceListening');
-  private voiceRecognition_: SpeechRecognition;
   protected accessor finalResult_: string = '';
   protected accessor interimResult_: string = '';
-  private timerId_: number|null = null;
   protected accessor error_: Error|null = null;
   protected accessor errorMessage_: string = '';
   protected accessor detailsUrl_: string =
       `https://support.google.com/chrome/?p=ui_voice_search&hl=${
           window.navigator.language}`;
+  private accessor state_: State = State.UNINITIALIZED;
+
   private pageHandler_: PageHandlerRemote =
       ComposeboxProxyImpl.getInstance().handler;
+  private voiceRecognition_: SpeechRecognition;
+  private timerId_: number|null = null;
 
   constructor() {
     super();
