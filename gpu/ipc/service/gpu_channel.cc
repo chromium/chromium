@@ -971,6 +971,11 @@ void GpuChannel::CreateCommandBuffer(
     return;
   }
 
+  if (route_id <= static_cast<int32_t>(GpuChannelReservedRoutes::kMaxValue)) {
+    LOG(ERROR) << "ContextResult::kFatalFailure: using reserved route";
+    return;
+  }
+
   int32_t stream_id = init_params->stream_id;
   CommandBufferId command_buffer_id =
       CommandBufferIdFromChannelAndRoute(client_id_, route_id);
@@ -1031,6 +1036,10 @@ void GpuChannel::CreateCommandBuffer(
 void GpuChannel::DestroyCommandBuffer(int32_t route_id) {
   TRACE_EVENT1("gpu", "GpuChannel::OnDestroyCommandBuffer", "route_id",
                route_id);
+
+  if (route_id <= static_cast<int32_t>(GpuChannelReservedRoutes::kMaxValue)) {
+    return;
+  }
 
   std::unique_ptr<CommandBufferStub> stub;
   auto it = stubs_.find(route_id);
