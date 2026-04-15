@@ -167,10 +167,10 @@ class ModelContext::ToolFunctionFinishedCallback
  public:
   explicit ToolFunctionFinishedCallback(
       ModelContext* model_context,
-      const base::UnguessableToken& execution_id,
+      const base::UnguessableToken& invocation_id,
       bool success)
       : model_context_(model_context),
-        execution_id_(execution_id),
+        invocation_id_(invocation_id),
         success_(success) {}
   ~ToolFunctionFinishedCallback() override = default;
 
@@ -196,12 +196,13 @@ class ModelContext::ToolFunctionFinishedCallback
       if (!result || result->empty()) {
         result = "Operation succeeded";
       }
-      model_context_->OnToolExecuted(execution_id_, *result);
+      model_context_->OnToolExecuted(invocation_id_, *result);
     } else {
       V8ScriptRunner::ReportException(script_state->GetIsolate(),
                                       value.V8Value());
       model_context_->OnToolExecuted(
-          execution_id_, base::unexpected(std::make_pair(value, script_state)));
+          invocation_id_,
+          base::unexpected(std::make_pair(value, script_state)));
     }
   }
 
@@ -212,7 +213,7 @@ class ModelContext::ToolFunctionFinishedCallback
 
  private:
   Member<ModelContext> model_context_;
-  const base::UnguessableToken execution_id_;
+  const base::UnguessableToken invocation_id_;
   const bool success_;
 };
 
@@ -333,49 +334,40 @@ std::optional<ScriptToolDeclaration> ModelContext::GetScriptToolDeclaration(
 }
 
 void ModelContext::OnToolFailed(ScriptToolExecutedCallback callback,
-                                const base::UnguessableToken& execution_id,
+                                const base::UnguessableToken& invocation_id,
                                 ScriptToolError&& error) {
-  probe::WebMCPToolFailed(document_, error, execution_id,
+  probe::WebMCPToolFailed(document_, error, invocation_id,
                           /*exception=*/std::nullopt);
   task_runner_->PostTask(
       FROM_HERE,
       blink::BindOnce(std::move(callback), base::unexpected(std::move(error))));
 }
 
-std::optional<base::UnguessableToken> ModelContext::ExecuteTool(
-    const base::UnguessableToken& invocation_id,
-    const String& name,
-    const String& input_arguments,
-    AbortSignal* signal,
-    ScriptToolExecutedCallback tool_executed_cb,
-    std::optional<base::UnguessableToken> execution_id_override) {
-  // TODO(crbug.com/501190526): Replace the `execution_id` here with
-  // `invocation_id` to eliminate the redundancy of tracking two separate tokens
-  // for the same tool execution.
-  base::UnguessableToken execution_id = execution_id_override
-                                            ? *execution_id_override
-                                            : base::UnguessableToken::Create();
-  probe::WebMCPToolExecuted(document_, name, input_arguments, execution_id);
+bool ModelContext::ExecuteTool(const base::UnguessableToken& invocation_id,
+                               const String& name,
+                               const String& input_arguments,
+                               AbortSignal* signal,
+                               ScriptToolExecutedCallback tool_executed_cb) {
+  probe::WebMCPToolExecuted(document_, name, input_arguments, invocation_id);
 
   auto it = tool_map_.find(name);
   if (it == tool_map_.end()) {
-    OnToolFailed(std::move(tool_executed_cb), execution_id,
+    OnToolFailed(std::move(tool_executed_cb), invocation_id,
                  ScriptToolError(ScriptToolErrorCode::kInvalidToolName,
                                  String("Tool not found: " + name)));
-    return std::nullopt;
+    return false;
   }
 
   bool success = true;
   if (V8ToolExecuteCallback* v8_tool_function =
           it->value->GetV8ToolExecuteCallback()) {
     success =
-        ExecuteV8Tool(v8_tool_function, execution_id, invocation_id, name,
-                      input_arguments, signal, std::move(tool_executed_cb));
+        ExecuteV8Tool(v8_tool_function, invocation_id, name, input_arguments,
+                      signal, std::move(tool_executed_cb));
   } else {
     // TODO(481899636): Add signal support for declarative tools.
-    ExecuteDeclarativeTool(it->value->DeclarativeTool(), execution_id,
-                           invocation_id, input_arguments,
-                           std::move(tool_executed_cb));
+    ExecuteDeclarativeTool(it->value->DeclarativeTool(), invocation_id,
+                           input_arguments, std::move(tool_executed_cb));
   }
 
   // Fire the `toolactivate` event *after* activating the tool, but potentially
@@ -389,14 +381,11 @@ std::optional<base::UnguessableToken> ModelContext::ExecuteTool(
         *WebMCPEvent::Create(event_type_names::kToolactivated, name));
   }
 
-  if (success) {
-    return execution_id;
-  }
-  return std::nullopt;
+  return success;
 }
 
-void ModelContext::CancelTool(const base::UnguessableToken& execution_id) {
-  auto it = pending_executions_.find(String(execution_id.ToString()));
+void ModelContext::CancelTool(const base::UnguessableToken& invocation_id) {
+  auto it = pending_executions_.find(String(invocation_id.ToString()));
   if (it == pending_executions_.end()) {
     return;
   }
@@ -411,11 +400,11 @@ void ModelContext::CancelTool(const base::UnguessableToken& execution_id) {
 
   // The pending_executions_ map might have been rehashed during DispatchEvent.
   auto pending_execution =
-      pending_executions_.find(String(execution_id.ToString()));
+      pending_executions_.find(String(invocation_id.ToString()));
   if (pending_execution == pending_executions_.end()) {
     return;
   }
-  OnToolFailed(std::move(pending_execution->value.callback), execution_id,
+  OnToolFailed(std::move(pending_execution->value.callback), invocation_id,
                ScriptToolError(ScriptToolErrorCode::kToolCancelled));
   pending_executions_.erase(pending_execution);
 }
@@ -455,7 +444,6 @@ void ModelContext::DidFinishParsing() {
 //     but respondWith() isn't called, an error is reported back to the agent.)
 void ModelContext::ExecuteDeclarativeTool(
     DeclarativeWebMCPTool* tool,
-    const base::UnguessableToken& execution_id,
     const base::UnguessableToken& invocation_id,
     const String& input_arguments,
     ScriptToolExecutedCallback tool_executed_cb) {
@@ -472,7 +460,7 @@ void ModelContext::ExecuteDeclarativeTool(
   tool->ExecuteTool(
       invocation_id, input_arguments,
       blink::BindOnce(
-          [](Document* document, base::UnguessableToken execution_id,
+          [](Document* document, base::UnguessableToken invocation_id,
              ScriptToolExecutedCallback tool_executed_cb,
              base::expected<String, ScriptToolError> result) {
             if (result.has_value()) {
@@ -480,15 +468,15 @@ void ModelContext::ExecuteDeclarativeTool(
               // case we don't want to emit a toolResponded event here. The
               // new document will handle the response.
               if (!result->IsNull()) {
-                probe::WebMCPToolResponded(document, *result, execution_id);
+                probe::WebMCPToolResponded(document, *result, invocation_id);
               }
             } else {
-              probe::WebMCPToolFailed(document, result.error(), execution_id,
+              probe::WebMCPToolFailed(document, result.error(), invocation_id,
                                       /*exception=*/std::nullopt);
             }
             std::move(tool_executed_cb).Run(result);
           },
-          WrapWeakPersistent(document_.Get()), execution_id,
+          WrapWeakPersistent(document_.Get()), invocation_id,
           std::move(tool_executed_cb)));
 }
 
@@ -497,7 +485,6 @@ void ModelContext::ExecuteDeclarativeTool(
 // waits for the promise to resolve, JSON-stringifies the result, and passes
 // it to OnToolExecuted().
 bool ModelContext::ExecuteV8Tool(V8ToolExecuteCallback* tool_function,
-                                 const base::UnguessableToken& execution_id,
                                  const base::UnguessableToken& invocation_id,
                                  const String& name,
                                  const String& input_arguments,
@@ -512,7 +499,7 @@ bool ModelContext::ExecuteV8Tool(V8ToolExecuteCallback* tool_function,
   ScriptValue script_value = script_object;
 
   if (try_catch.HasCaught() || script_value.IsEmpty()) {
-    OnToolFailed(std::move(tool_executed_cb), execution_id,
+    OnToolFailed(std::move(tool_executed_cb), invocation_id,
                  ScriptToolError(ScriptToolErrorCode::kInvalidInputArguments,
                                  "Failed to parse input arguments"));
     return false;
@@ -549,7 +536,7 @@ bool ModelContext::ExecuteV8Tool(V8ToolExecuteCallback* tool_function,
   std::unique_ptr<ScopedAbortState> scoped_abort_state;
   if (signal && !signal->aborted()) {
     auto callback = blink::BindOnce(&ModelContext::CancelTool,
-                                    WrapWeakPersistent(this), execution_id);
+                                    WrapWeakPersistent(this), invocation_id);
     auto* handle = signal->AddAlgorithm(std::move(callback));
     scoped_abort_state = std::make_unique<ScopedAbortState>(signal, handle);
   }
@@ -563,16 +550,16 @@ bool ModelContext::ExecuteV8Tool(V8ToolExecuteCallback* tool_function,
       },
       std::move(tool_executed_cb), std::move(scoped_abort_state));
   pending_executions_.insert(
-      String(execution_id.ToString()),
+      String(invocation_id.ToString()),
       PendingExecution{.tool_name = name,
                        .callback = std::move(callback_wrapper),
                        .invocation_id = invocation_id});
 
   result.Then(script_state,
               MakeGarbageCollected<ToolFunctionFinishedCallback>(
-                  this, execution_id, true),
+                  this, invocation_id, true),
               MakeGarbageCollected<ToolFunctionFinishedCallback>(
-                  this, execution_id, false));
+                  this, invocation_id, false));
   return true;
 }
 
@@ -597,19 +584,19 @@ void ModelContext::RegisterDeclarativeTool(
 }
 
 void ModelContext::OnToolExecuted(
-    const base::UnguessableToken& execution_id,
+    const base::UnguessableToken& invocation_id,
     base::expected<String, std::pair<ScriptValue, ScriptState*>> result) {
-  auto it = pending_executions_.find(String(execution_id.ToString()));
+  auto it = pending_executions_.find(String(invocation_id.ToString()));
   if (it == pending_executions_.end()) {
     return;
   }
 
   if (result.has_value()) {
-    probe::WebMCPToolResponded(document_, result.value(), execution_id);
+    probe::WebMCPToolResponded(document_, result.value(), invocation_id);
     std::move(it->value.callback).Run(result.value());
   } else {
     ScriptToolError error(ScriptToolErrorCode::kToolInvocationFailed);
-    probe::WebMCPToolFailed(document_, error, execution_id, result.error());
+    probe::WebMCPToolFailed(document_, error, invocation_id, result.error());
     std::move(it->value.callback).Run(base::unexpected(error));
   }
   pending_executions_.erase(it);

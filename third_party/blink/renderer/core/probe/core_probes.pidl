@@ -249,7 +249,7 @@ interface CoreProbes {
   void UpdateAffectedByStartingStylesFlag([Keep] Node* node, std::optional<bool> override_flag);
   void WebMCPToolAdded([Keep] Document* document, const ToolData& tool);
   void WebMCPToolRemoved([Keep] Document* document, const ToolData& tool);
-  void WebMCPToolExecuted([Keep] Document* document, const String& name, const String& input_arguments, const base::UnguessableToken& execution_id);
-  void WebMCPToolResponded([Keep] Document* document, const String& result, const base::UnguessableToken& execution_id);
-  void WebMCPToolFailed([Keep] Document* document, const ScriptToolError& result, const base::UnguessableToken& execution_id, ScriptException exception);
+  void WebMCPToolExecuted([Keep] Document* document, const String& name, const String& input_arguments, const base::UnguessableToken& invocation_id);
+  void WebMCPToolResponded([Keep] Document* document, const String& result, const base::UnguessableToken& invocation_id);
+  void WebMCPToolFailed([Keep] Document* document, const ScriptToolError& result, const base::UnguessableToken& invocation_id, ScriptException exception);
 }

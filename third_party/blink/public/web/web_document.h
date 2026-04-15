@@ -222,17 +222,11 @@ class BLINK_EXPORT WebDocument : public WebNode {
   //
   // The associated callback is invoked once the async execution of the tool is
   // finished along with the result of the execution and the tool declaration.
-  // A null response indicates a navigation was triggered and the response will
-  // be on the next Document.
-  // An error is returned if the execution failed.
-  //
-  // The return value is a document-scoped execution ID which can be used to
-  // cancel the tool execution.
-  std::optional<base::UnguessableToken> ExecuteScriptTool(
-      const base::UnguessableToken& invocation_id,
-      const WebString& name,
-      const WebString& input_arguments,
-      WebScriptToolResultCallback tool_result_cb);
+  // Returns true for success.
+  bool ExecuteScriptTool(const base::UnguessableToken& invocation_id,
+                         const WebString& name,
+                         const WebString& input_arguments,
+                         WebScriptToolResultCallback tool_result_cb);
 
   // Provides the result of a script tool execution initiated on an old
   // Document.
@@ -242,7 +236,7 @@ class BLINK_EXPORT WebDocument : public WebNode {
       CrossDocumentScriptToolResultCallback result_callback);
 
   // Cancels a script tool with the given execution ID.
-  void CancelScriptTool(const base::UnguessableToken& execution_id);
+  void CancelScriptTool(const base::UnguessableToken& invocation_id);
 
   // Returns whether the AutofillEvent runtime feature is enabled for this
   // document's execution context (including origin trial tokens).

@@ -122,20 +122,17 @@ class CORE_EXPORT ModelContext : public ScriptWrappable {
   std::optional<ScriptToolDeclaration> GetScriptToolDeclaration(
       const String& name) const;
 
-  std::optional<base::UnguessableToken> ExecuteTool(
-      const base::UnguessableToken& invocation_id,
-      const String& name,
-      const String& input_arguments,
-      AbortSignal* signal,
-      ScriptToolExecutedCallback tool_executed_cb,
-      std::optional<base::UnguessableToken> execution_id_override =
-          std::nullopt);
+  bool ExecuteTool(const base::UnguessableToken& invocation_id,
+                   const String& name,
+                   const String& input_arguments,
+                   AbortSignal* signal,
+                   ScriptToolExecutedCallback tool_executed_cb);
   using CrossDocumentScriptToolResultCallback =
       base::OnceCallback<void(String)>;
   void GetCrossDocumentScriptToolResult(
       CrossDocumentScriptToolResultCallback result_callback);
 
-  void CancelTool(const base::UnguessableToken& execution_id);
+  void CancelTool(const base::UnguessableToken& invocation_id);
 
   void SetToolChangeCallback(std::optional<base::RepeatingClosure> cb) {
     tool_change_closure_ = std::move(cb);
@@ -162,24 +159,22 @@ class CORE_EXPORT ModelContext : public ScriptWrappable {
   class ToolUnregisterAbortAlgorithm;
 
   bool ExecuteV8Tool(V8ToolExecuteCallback* tool_function,
-                     const base::UnguessableToken& execution_id,
                      const base::UnguessableToken& invocation_id,
                      const String& name,
                      const String& input_arguments,
                      AbortSignal* signal,
                      ScriptToolExecutedCallback tool_executed_cb);
   void ExecuteDeclarativeTool(DeclarativeWebMCPTool* tool,
-                              const base::UnguessableToken& execution_id,
                               const base::UnguessableToken& invocation_id,
                               const String& input_arguments,
                               ScriptToolExecutedCallback tool_executed_cb);
 
   void OnToolFailed(ScriptToolExecutedCallback callback,
-                    const base::UnguessableToken& execution_id,
+                    const base::UnguessableToken& invocation_id,
                     ScriptToolError&& error);
 
   void OnToolExecuted(
-      const base::UnguessableToken& execution_id,
+      const base::UnguessableToken& invocation_id,
       base::expected<String, std::pair<ScriptValue, ScriptState*>> result);
 
   void OnToolChange(bool force);

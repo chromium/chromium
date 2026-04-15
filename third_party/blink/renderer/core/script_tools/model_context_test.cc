@@ -910,18 +910,18 @@ TEST_F(ModelContextTest, CancelTool) {
 
   base::RunLoop run_loop;
 
-  std::optional<base::UnguessableToken> execution_id =
-      model_context->ExecuteTool(
-          base::UnguessableToken::Create(), "echo", "{\"text\": \"hello\"}",
-          /* signal= */ nullptr,
-          base::BindLambdaForTesting(
-              [&](base::expected<String, ScriptToolError> res) {
-                ASSERT_FALSE(res.has_value());
-                run_loop.Quit();
-              }));
+  base::UnguessableToken invocation_id = base::UnguessableToken::Create();
+  bool success = model_context->ExecuteTool(
+      invocation_id, "echo", "{\"text\": \"hello\"}",
+      /* signal= */ nullptr,
+      base::BindLambdaForTesting(
+          [&](base::expected<String, ScriptToolError> res) {
+            ASSERT_FALSE(res.has_value());
+            run_loop.Quit();
+          }));
 
-  ASSERT_TRUE(execution_id.has_value());
-  model_context->CancelTool(execution_id.value());
+  ASSERT_TRUE(success);
+  model_context->CancelTool(invocation_id);
   run_loop.Run();
 }
 
@@ -959,18 +959,18 @@ TEST_F(ModelContextTest, ToolEventsDispatched) {
   base::RunLoop run_loop;
 
   // Execute and Cancel
-  std::optional<base::UnguessableToken> execution_id =
-      model_context->ExecuteTool(
-          base::UnguessableToken::Create(), "slow", "{}", /* signal= */ nullptr,
-          base::BindLambdaForTesting(
-              [&](base::expected<String, ScriptToolError> res) {
-                run_loop.Quit();
-              }));
+  base::UnguessableToken invocation_id = base::UnguessableToken::Create();
+  bool success = model_context->ExecuteTool(
+      invocation_id, "slow", "{}", /* signal= */ nullptr,
+      base::BindLambdaForTesting(
+          [&](base::expected<String, ScriptToolError> res) {
+            run_loop.Quit();
+          }));
 
   EXPECT_EQ(EvalJsString("window.events.join(',')"), "activated:slow");
 
-  ASSERT_TRUE(execution_id.has_value());
-  model_context->CancelTool(*execution_id);
+  ASSERT_TRUE(success);
+  model_context->CancelTool(invocation_id);
   run_loop.Run();
 
   EXPECT_EQ(EvalJsString("window.events.join(',')"),
@@ -1215,21 +1215,21 @@ TEST_F(ModelContextTest, CancelToolReentrancy) {
 
   base::RunLoop run_loop;
 
-  std::optional<base::UnguessableToken> execution_id =
-      model_context->ExecuteTool(
-          base::UnguessableToken::Create(), "hang", "{}", /* signal= */ nullptr,
-          base::BindLambdaForTesting(
-              [&](base::expected<String, ScriptToolError> res) {
-                EXPECT_FALSE(res.has_value());
-                EXPECT_EQ(res.error(), ScriptToolErrorCode::kToolCancelled);
-                run_loop.Quit();
-              }));
+  base::UnguessableToken invocation_id = base::UnguessableToken::Create();
+  bool success = model_context->ExecuteTool(
+      invocation_id, "hang", "{}", /* signal= */ nullptr,
+      base::BindLambdaForTesting(
+          [&](base::expected<String, ScriptToolError> res) {
+            EXPECT_FALSE(res.has_value());
+            EXPECT_EQ(res.error(), ScriptToolErrorCode::kToolCancelled);
+            run_loop.Quit();
+          }));
 
-  ASSERT_TRUE(execution_id.has_value());
+  ASSERT_TRUE(success);
 
   // This should trigger the toolcancel event, which re-enters and modifies
   // pending_executions_.
-  model_context->CancelTool(*execution_id);
+  model_context->CancelTool(invocation_id);
 
   run_loop.Run();
 }
