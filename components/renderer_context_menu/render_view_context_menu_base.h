@@ -215,7 +215,7 @@ class RenderViewContextMenuBase : public ui::SimpleMenuModel::Delegate,
   scoped_refptr<content::SiteInstance> site_instance_;
 
   // Our observers.
-  mutable base::ObserverList<
+  mutable base::ReentrantObserverList<
       RenderViewContextMenuObserver>::UncheckedAndDanglingUntriaged observers_;
 
   // Whether a command has been executed. Used to track whether menu observers

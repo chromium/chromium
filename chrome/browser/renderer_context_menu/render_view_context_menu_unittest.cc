@@ -2130,3 +2130,46 @@ INSTANTIATE_TEST_SUITE_P(All,
                          testing::Values("MenuShuffleDefault",
                                          "MenuShuffleSeparation",
                                          "MenuShufflePlaceAtBottom"));
+
+class ReentrantTestRenderViewContextMenu : public TestRenderViewContextMenu {
+ public:
+  using TestRenderViewContextMenu::TestRenderViewContextMenu;
+
+  void NotifyObserversOnContextMenuShown() {
+    for (auto& observer : observers_) {
+      observer.OnContextMenuShown(params_, gfx::Rect());
+    }
+  }
+};
+
+class MockReentrantObserver : public RenderViewContextMenuObserver {
+ public:
+  explicit MockReentrantObserver(ReentrantTestRenderViewContextMenu* menu)
+      : menu_(menu) {}
+
+  bool IsCommandIdSupported(int command_id) override {
+    return command_id == IDC_CONTENT_CONTEXT_COPY;
+  }
+
+  bool IsCommandIdEnabled(int command_id) override { return true; }
+
+  void OnContextMenuShown(const content::ContextMenuParams& params,
+                          const gfx::Rect& bounds) override {
+    bool enabled = false;
+    menu_->IsCommandIdKnown(IDC_CONTENT_CONTEXT_COPY, &enabled);
+  }
+
+ private:
+  raw_ptr<ReentrantTestRenderViewContextMenu> menu_;
+};
+
+TEST_F(RenderViewContextMenuPrefsTest, ReentrantObserverListTest) {
+  content::ContextMenuParams params;
+  ReentrantTestRenderViewContextMenu menu(
+      *web_contents()->GetPrimaryMainFrame(), params);
+  MockReentrantObserver observer(&menu);
+  menu.AddObserverForTesting(&observer);
+
+  // This should not crash with ReentrantObserverList.
+  menu.NotifyObserversOnContextMenuShown();
+}
