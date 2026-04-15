@@ -60,6 +60,7 @@ class PLATFORM_EXPORT JPEGImageDecoder final : public ImageDecoder {
       SkGainmapInfo& out_gainmap_info,
       scoped_refptr<SegmentReader>& out_gainmap_data) const override;
   bool HasC2PAManifest() const override;
+
   bool HasImagePlanes() const { return image_planes_.get(); }
 
   bool OutputScanlines();
@@ -70,9 +71,6 @@ class PLATFORM_EXPORT JPEGImageDecoder final : public ImageDecoder {
   bool ShouldGenerateAllSizes() const;
   void Complete();
 
-  void SetDensityCorrectedSize(const gfx::Size& size) {
-    density_corrected_size_ = size;
-  }
   void SetDecodedSize(unsigned width, unsigned height);
 
   void SetSupportedDecodeSizes(Vector<SkISize> sizes);
