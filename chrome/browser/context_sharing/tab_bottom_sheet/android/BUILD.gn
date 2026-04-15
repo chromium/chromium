@@ -31,6 +31,8 @@ android_resources("java_resources") {
   sources = [
     "java/res/layout/tab_bottom_sheet.xml",
     "java/res/layout/tab_bottom_sheet_toolbar.xml",
+    "java/res/values-night/colors.xml",
+    "java/res/values/colors.xml",
   ]
   deps = [
     "//chrome/app:java_strings_grd",

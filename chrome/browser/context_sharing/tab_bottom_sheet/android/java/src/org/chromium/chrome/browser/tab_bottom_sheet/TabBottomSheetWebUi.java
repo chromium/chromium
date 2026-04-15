@@ -93,7 +93,7 @@ public class TabBottomSheetWebUi {
                     mContextMenuPopulatorFactory,
                     /* selectionDropdownMenuDelegate= */ null,
                     /* enablePermissionRequests= */ false,
-                    /* supportTheming= */ false);
+                    /* supportTheming= */ true);
         } else {
             resetThinWebView();
         }

@@ -6,7 +6,6 @@ package org.chromium.chrome.browser.tab_bottom_sheet;
 
 import android.content.Context;
 import android.view.View;
-import android.graphics.Color;
 
 import androidx.annotation.ColorInt;
 import androidx.annotation.StringRes;
@@ -34,6 +33,7 @@ public class TabBottomSheetContent implements BottomSheetContent {
     public TabBottomSheetContent(View contentView, float fullHeightRatio) {
         mContentView = contentView;
         mFullHeightRatio = fullHeightRatio;
+        // TODO(crbug.com/502611927): Remove or tweak this for AIM.
         mGlowSpec =
                 new GlowSpec(
                         mContentView.getContext().getColor(R.color.default_bg_color_blue),
@@ -82,8 +82,8 @@ public class TabBottomSheetContent implements BottomSheetContent {
 
     @Override
     public @ColorInt int getSheetBackgroundColorOverride() {
-        // TODO(crbug.com/490402422): Remove when color scheme is updated.
-        return Color.WHITE;
+        // TODO(crbug.com/502611927): This may need to be different for AIM.
+        return mContentView.getContext().getColor(R.color.tab_bottom_sheet_bg);
     }
 
     @Override
@@ -98,12 +98,13 @@ public class TabBottomSheetContent implements BottomSheetContent {
 
     @Override
     public int getPeekHeight() {
-        // TODO (crbug.com/489070365) Update min height based on java toolbar or webUi header.
+        // TODO(crbug.com/489070365): Update min height based on java toolbar or webUi header.
         return Math.round(mContentView.getHeight() * 0.1f);
     }
 
     @Override
     public float getHalfHeightRatio() {
+        // TODO(crbug.com/502611927): Update this for AIM.
         return ChromeFeatureList.sTabBottomSheetResizeWebview.getValue()
                 ? mFullHeightRatio
                 : HeightMode.DISABLED;
@@ -111,6 +112,7 @@ public class TabBottomSheetContent implements BottomSheetContent {
 
     @Override
     public float getFullHeightRatio() {
+        // TODO(crbug.com/502611927): Update this for AIM.
         return ChromeFeatureList.sTabBottomSheetResizeWebview.getValue()
                 ? HeightMode.DEFAULT
                 : mFullHeightRatio;
@@ -130,6 +132,8 @@ public class TabBottomSheetContent implements BottomSheetContent {
     public boolean hideOnScroll() {
         return false;
     }
+
+    // TODO(crbug.com/502611927): These strings may need to be different for different clients.
 
     @Override
     public @StringRes int getSheetHalfHeightAccessibilityStringId() {
