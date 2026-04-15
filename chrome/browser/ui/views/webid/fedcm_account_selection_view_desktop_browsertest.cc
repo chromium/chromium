@@ -213,7 +213,8 @@ IN_PROC_BROWSER_TEST_F(FedCmAccountSelectionViewBrowserTest,
       &FedCmAccountSelectionViewBrowserTest::ResetAccountSelectionView,
       base::Unretained(this)));
   account_selection_view_->ShowModalDialog(GURL("https://rp-example.com"),
-                                           blink::mojom::RpMode::kPassive);
+                                           blink::mojom::RpMode::kPassive,
+                                           base::DoNothing());
   // Because a modal dialog is up, this should save the accounts for later.
   ShowVerifyingDialog(Account::SignInMode::kAuto);
   // This should trigger auto re-authn without crashing or UAF.

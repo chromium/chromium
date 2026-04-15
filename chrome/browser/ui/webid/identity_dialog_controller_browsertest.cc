@@ -117,7 +117,10 @@ class MockAccountSelectionView : public AccountSelectionView {
 
   MOCK_METHOD(content::WebContents*,
               ShowModalDialog,
-              (const GURL& url, blink::mojom::RpMode rp_mode),
+              (const GURL& url,
+               blink::mojom::RpMode rp_mode,
+               content::IdentityRequestDialogController::ShownModalAsyncCallback
+                   on_shown_async),
               (override));
 
   MOCK_METHOD(void, CloseModalDialog, (), (override));

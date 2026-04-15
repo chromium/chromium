@@ -153,8 +153,11 @@ class FedCmAccountSelectionView : public AccountSelectionView,
       std::unique_ptr<views::InputEventActivationProtector>);
 
   // AccountSelectionBubbleView::Observer:
-  content::WebContents* ShowModalDialog(const GURL& url,
-                                        blink::mojom::RpMode rp_mode) override;
+  content::WebContents* ShowModalDialog(
+      const GURL& url,
+      blink::mojom::RpMode rp_mode,
+      content::IdentityRequestDialogController::ShownModalAsyncCallback
+          on_shown_async) override;
   void CloseModalDialog() override;
   void PrimaryMainFrameWasResized(bool width_changed) override;
 
@@ -399,6 +402,10 @@ class FedCmAccountSelectionView : public AccountSelectionView,
   // Called when the tab's modalUI is shown or hidden.
   void ModalUIChanged(tabs::TabInterface* tab);
 
+  // Called when the tab associated with an actor task, that was originally in
+  // the background, becomes foregrounded.
+  void BackgroundTaskTabForegrounded(tabs::TabInterface* tab);
+
   // Returns false if `this` got deleted. In that case, the caller must early
   // return.
   bool NotifyDelegateOfAccountSelection(
@@ -483,6 +490,10 @@ class FedCmAccountSelectionView : public AccountSelectionView,
   // initial value to false.
   void ShouldShowDialog(bool& should_show);
 
+  // Actually show the popup window, which may have been deferred in
+  // ShowModalDialog.
+  content::WebContents* ShowPopupWindow(const GURL& url);
+
   // PageActionObserver
   void RecordPageActionImpression(
       const page_actions::PageActionState& page_action,
@@ -537,6 +548,21 @@ class FedCmAccountSelectionView : public AccountSelectionView,
   // closes the popup, but Show() will never be called. This is currently not
   // handled by the fedcm control-flow. For now we keep hiding the dialog.
   bool hide_dialog_widget_after_idp_login_popup_{false};
+
+  // If an actor task is in the background when it would trigger a popup window,
+  // we prevent the popup from showing until the user returns to the tab
+  // associated with the task.
+  struct WithheldPopupState {
+    WithheldPopupState();
+    WithheldPopupState(
+        const GURL& url,
+        base::OnceCallback<void(content::WebContents*)> on_shown);
+    ~WithheldPopupState();
+
+    GURL url;
+    base::OnceCallback<void(content::WebContents*)> on_shown;
+  };
+  std::optional<WithheldPopupState> withheld_popup_state_;
 
   // If Show() is called, the intention is to show the accounts dialog. This
   // callback is invoked when the widget is actually shown for the first time.

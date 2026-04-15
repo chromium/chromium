@@ -137,7 +137,9 @@ class AccountSelectionView {
   virtual void ShowUrl(LinkType type, const GURL& url) = 0;
   virtual content::WebContents* ShowModalDialog(
       const GURL& url,
-      blink::mojom::RpMode rp_mode) = 0;
+      blink::mojom::RpMode rp_mode,
+      content::IdentityRequestDialogController::ShownModalAsyncCallback
+          on_shown_async) = 0;
   virtual void CloseModalDialog() = 0;
   virtual content::WebContents* GetRpWebContents() = 0;
 
