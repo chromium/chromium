@@ -692,6 +692,9 @@ void TaskManagerImpl::StopUpdating() {
   arc_vm_task_groups_by_proc_id_.clear();
   task_groups_by_task_id_.clear();
   sorted_task_ids_.clear();
+
+  waiting_for_memory_dump_ = false;
+  weak_ptr_factory_.InvalidateWeakPtrs();
 }
 
 Task* TaskManagerImpl::GetTaskByRoute(
