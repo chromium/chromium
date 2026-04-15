@@ -65,7 +65,7 @@ class NavigationSheetCoordinator implements BottomSheetContent, NavigationSheet 
 
     private final View mToolbarView;
     private final LayoutInflater mLayoutInflater;
-    private final Supplier<BottomSheetController> mBottomSheetController;
+    private final Supplier<@Nullable BottomSheetController> mBottomSheetController;
     private final NavigationSheetMediator mMediator;
     private final BottomSheetObserver mSheetObserver =
             new EmptyBottomSheetObserver() {
@@ -117,7 +117,7 @@ class NavigationSheetCoordinator implements BottomSheetContent, NavigationSheet 
     NavigationSheetCoordinator(
             View parent,
             Context context,
-            Supplier<BottomSheetController> bottomSheetController,
+            Supplier<@Nullable BottomSheetController> bottomSheetController,
             Profile profile) {
         mParentView = parent;
         mBottomSheetController = bottomSheetController;
@@ -174,12 +174,14 @@ class NavigationSheetCoordinator implements BottomSheetContent, NavigationSheet 
         // Incognito NTP.
         if (history.getEntryCount() == 0) return false;
         mMediator.populateEntries(history);
-        if (!mBottomSheetController.get().requestShowContent(this, true)) {
+        BottomSheetController controller = mBottomSheetController.get();
+        if (controller == null) return false;
+        if (!controller.requestShowContent(this, true)) {
             close(false);
             mContentView = null;
             return false;
         }
-        mBottomSheetController.get().addObserver(mSheetObserver);
+        controller.addObserver(mSheetObserver);
         if (expandIfSmall && history.getEntryCount() <= SKIP_PEEK_COUNT) {
             expandSheet();
         }
@@ -187,7 +189,9 @@ class NavigationSheetCoordinator implements BottomSheetContent, NavigationSheet 
     }
 
     private void expandSheet() {
-        mBottomSheetController.get().expandSheet();
+        BottomSheetController controller = mBottomSheetController.get();
+        assert controller != null;
+        controller.expandSheet();
     }
 
     // NavigationSheet
@@ -276,10 +280,10 @@ class NavigationSheetCoordinator implements BottomSheetContent, NavigationSheet 
     }
 
     private @SheetState int getTargetOrCurrentState() {
-        @SheetState int state = mBottomSheetController.get().getTargetSheetState();
-        return state != BottomSheetController.SheetState.NONE
-                ? state
-                : mBottomSheetController.get().getSheetState();
+        BottomSheetController controller = mBottomSheetController.get();
+        assert controller != null;
+        @SheetState int state = controller.getTargetSheetState();
+        return state != BottomSheetController.SheetState.NONE ? state : controller.getSheetState();
     }
 
     @Override

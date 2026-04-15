@@ -8,6 +8,7 @@ import android.content.Context;
 import android.view.View;
 
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.content_public.browser.NavigationHistory;
@@ -41,7 +42,7 @@ public interface NavigationSheet {
     static NavigationSheet create(
             View parentView,
             Context context,
-            Supplier<BottomSheetController> bottomSheetController,
+            Supplier<@Nullable BottomSheetController> bottomSheetController,
             Profile profile) {
         return new NavigationSheetCoordinator(parentView, context, bottomSheetController, profile);
     }

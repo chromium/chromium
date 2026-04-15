@@ -292,7 +292,7 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
     private static boolean sDisableTopControlsAnimationForTesting;
     private final RootUiTabObserver mRootUiTabObserver;
     private @Nullable TabbedSystemUiCoordinator mSystemUiCoordinator;
-    private TabGroupSyncController mTabGroupSyncController;
+    private @Nullable TabGroupSyncController mTabGroupSyncController;
     private final OneshotSupplierImpl<TabGroupUiActionHandler> mTabGroupUiActionHandlerSupplier =
             new OneshotSupplierImpl<>();
     private @Nullable StatusIndicatorCoordinator mStatusIndicatorCoordinator;
@@ -307,16 +307,16 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
     private @Nullable WebFeedFollowIntroController mWebFeedFollowIntroController;
     private @Nullable UrlFocusChangeListener mUrlFocusChangeListener;
     private @Nullable ToolbarButtonInProductHelpController mToolbarButtonInProductHelpController;
-    private PwaBottomSheetController mPwaBottomSheetController;
-    private NotificationPermissionController mNotificationPermissionController;
-    private HistoryNavigationCoordinator mHistoryNavigationCoordinator;
-    private NavigationSheet mNavigationSheet;
-    private LayoutManagerImpl mLayoutManager;
-    private CommerceSubscriptionsService mCommerceSubscriptionsService;
-    private UndoGroupSnackbarController mUndoGroupSnackbarController;
-    private PrivacySandbox3pcdRollbackMessageController
+    private @Nullable PwaBottomSheetController mPwaBottomSheetController;
+    private @Nullable NotificationPermissionController mNotificationPermissionController;
+    private @Nullable HistoryNavigationCoordinator mHistoryNavigationCoordinator;
+    private @Nullable NavigationSheet mNavigationSheet;
+    private @Nullable LayoutManagerImpl mLayoutManager;
+    private @Nullable CommerceSubscriptionsService mCommerceSubscriptionsService;
+    private @Nullable UndoGroupSnackbarController mUndoGroupSnackbarController;
+    private @Nullable PrivacySandbox3pcdRollbackMessageController
             mPrivacySandbox3pcdRollbackMessageController;
-    private GestureUserEducationIphController mGestureUserEducationIphController;
+    private @Nullable GestureUserEducationIphController mGestureUserEducationIphController;
     private final InsetObserver mInsetObserver;
     private final Function<Tab, Boolean> mBackButtonShouldCloseTabFn;
     private final Callback<Tab> mSendToBackground;
@@ -604,6 +604,7 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
                     @Override
                     public void onStartedShowing(int layoutType) {
                         if (layoutType == LayoutType.TAB_SWITCHER) {
+                            assert mHistoryNavigationCoordinator != null;
                             mHistoryNavigationCoordinator.reset();
                             setActivityTitle(/* tab= */ null, /* isTabSwitcher= */ true);
                         }
@@ -1255,10 +1256,12 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
         }
 
         if (TabGroupSyncFeatures.isTabGroupSyncEnabled(originalProfile)) {
+            var tabGroupSyncService = TabGroupSyncServiceFactory.getForProfile(originalProfile);
+            assert tabGroupSyncService != null;
             mTabGroupSyncController =
                     new TabGroupSyncControllerImpl(
-                            mTabModelSelectorSupplier.get(),
-                            TabGroupSyncServiceFactory.getForProfile(originalProfile),
+                            mTabModelSelectorSupplier.asNonNull().get(),
+                            tabGroupSyncService,
                             UserPrefs.get(originalProfile),
                             () -> {
                                 return MultiWindowUtils.getInstanceCount(PersistedInstanceType.ANY)
@@ -2162,6 +2165,7 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
 
     /** Returns the {@link TabGroupSyncControllerImpl} if it has been created yet. */
     public TabGroupSyncController getTabGroupSyncController() {
+        assert mTabGroupSyncController != null;
         return mTabGroupSyncController;
     }
 
@@ -2174,11 +2178,11 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
         return mStatusIndicatorCoordinator;
     }
 
-    public HistoryNavigationCoordinator getHistoryNavigationCoordinatorForTesting() {
+    public @Nullable HistoryNavigationCoordinator getHistoryNavigationCoordinatorForTesting() {
         return mHistoryNavigationCoordinator;
     }
 
-    public NavigationSheet getNavigationSheetForTesting() {
+    public @Nullable NavigationSheet getNavigationSheetForTesting() {
         return mNavigationSheet;
     }
 
