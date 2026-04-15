@@ -15,11 +15,18 @@ import org.chromium.build.annotations.Nullable;
 public class NotificationWrapper {
     private final @Nullable Notification mNotification;
     private final NotificationMetadata mNotificationMetadata;
+    private final boolean mIsSilent;
 
     public NotificationWrapper(@Nullable Notification notification, NotificationMetadata metadata) {
+        this(notification, metadata, /* isSilent= */ false);
+    }
+
+    public NotificationWrapper(
+            @Nullable Notification notification, NotificationMetadata metadata, boolean isSilent) {
         assert metadata != null;
         mNotification = notification;
         mNotificationMetadata = metadata;
+        mIsSilent = isSilent;
     }
 
     /** Returns the {@link Notification}. */
@@ -35,5 +42,13 @@ public class NotificationWrapper {
      */
     public NotificationMetadata getMetadata() {
         return mNotificationMetadata;
+    }
+
+    /**
+     * Returns whether the notification is silent. This exists because {@link
+     * android.app.Notification} does not have a getter for this boolean.
+     */
+    public boolean isSilent() {
+        return mIsSilent;
     }
 }

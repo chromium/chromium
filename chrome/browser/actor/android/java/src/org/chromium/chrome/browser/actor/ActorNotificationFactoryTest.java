@@ -13,11 +13,13 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.robolectric.Shadows.shadowOf;
 
+import android.app.Activity;
 import android.app.Notification;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -29,6 +31,8 @@ import org.robolectric.RuntimeEnvironment;
 import org.robolectric.annotation.Config;
 import org.robolectric.shadows.ShadowNotification;
 
+import org.chromium.base.ActivityState;
+import org.chromium.base.ApplicationStatus;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.actor.ui.R;
 import org.chromium.chrome.browser.notifications.NotificationIntentInterceptor;
@@ -47,6 +51,7 @@ public class ActorNotificationFactoryTest {
     @Mock private Profile mProfile;
     @Mock private ProfileResolver.Natives mProfileResolverNatives;
     @Mock private ActorForegroundServiceController mServiceController;
+    @Mock private Activity mActivity;
 
     private Context mContext;
     private static final String TASK_TITLE = "Test Task";
@@ -56,12 +61,21 @@ public class ActorNotificationFactoryTest {
         mContext = RuntimeEnvironment.application;
         ProfileResolverJni.setInstanceForTesting(mProfileResolverNatives);
         ActorForegroundServiceController.setInstanceForTesting(mServiceController);
+        if (!ApplicationStatus.isInitialized()) {
+            ApplicationStatus.initialize(RuntimeEnvironment.application);
+        }
+        ApplicationStatus.onStateChangeForTesting(mActivity, ActivityState.CREATED);
 
         when(mTask.getId()).thenReturn(1);
         when(mTask.getTitle()).thenReturn(TASK_TITLE);
         when(mTask.getProfile()).thenReturn(mProfile);
         when(mServiceController.createTrustedBringTabToFrontIntent(mTask))
                 .thenReturn(new Intent("DEFAULT_ACTION"));
+    }
+
+    @After
+    public void tearDown() {
+        ApplicationStatus.destroyForJUnitTests();
     }
 
     @Test
@@ -314,5 +328,34 @@ public class ActorNotificationFactoryTest {
                 "Remaining action should be 'Pause task'",
                 mContext.getString(R.string.actor_notification_button_pause_task),
                 notification.actions[0].title);
+    }
+
+    @Test
+    public void testBuildNotification_Silencing_Background() {
+        ApplicationStatus.onStateChangeForTesting(mActivity, ActivityState.STOPPED);
+
+        NotificationWrapper wrapper =
+                ActorNotificationFactory.buildNotification(mTask, ActorTaskState.WAITING_ON_USER);
+        assertFalse("Notification should not be silent in background", wrapper.isSilent());
+    }
+
+    @Test
+    public void testBuildNotification_Silencing_Foreground() {
+        ApplicationStatus.onStateChangeForTesting(mActivity, ActivityState.RESUMED);
+        when(mActivity.isInPictureInPictureMode()).thenReturn(false);
+
+        NotificationWrapper wrapper =
+                ActorNotificationFactory.buildNotification(mTask, ActorTaskState.WAITING_ON_USER);
+        assertTrue("Notification should be silent in foreground", wrapper.isSilent());
+    }
+
+    @Test
+    public void testBuildNotification_Silencing_PiP() {
+        ApplicationStatus.onStateChangeForTesting(mActivity, ActivityState.RESUMED);
+        when(mActivity.isInPictureInPictureMode()).thenReturn(true);
+
+        NotificationWrapper wrapper =
+                ActorNotificationFactory.buildNotification(mTask, ActorTaskState.WAITING_ON_USER);
+        assertFalse("Notification should not be silent in PiP", wrapper.isSilent());
     }
 }

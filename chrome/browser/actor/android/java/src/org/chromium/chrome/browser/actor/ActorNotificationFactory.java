@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.actor;
 
+import android.app.Activity;
 import android.app.Notification;
 import android.app.PendingIntent;
 import android.content.Context;
@@ -11,6 +12,8 @@ import android.content.Intent;
 
 import androidx.annotation.IntDef;
 
+import org.chromium.base.ApplicationState;
+import org.chromium.base.ApplicationStatus;
 import org.chromium.base.ContextUtils;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -59,6 +62,8 @@ public class ActorNotificationFactory {
     public static NotificationWrapper buildNotification(ActorTask task, @ActorTaskState int state) {
         int notificationId = task.getId();
         Context context = ContextUtils.getApplicationContext();
+        boolean isSilent = shouldSilenceNotifications();
+
         NotificationWrapperBuilder builder =
                 NotificationWrapperBuilderFactory.createNotificationWrapperBuilder(
                                 ChromeChannelDefinitions.ChannelId.ACTOR,
@@ -69,7 +74,7 @@ public class ActorNotificationFactory {
                         .setSmallIcon(R.drawable.ic_spark_24dp)
                         .setGroup(NotificationConstants.GROUP_ACTOR)
                         .setLocalOnly(true)
-                        .setSilent(true);
+                        .setSilent(isSilent);
 
         if (state == ActorTaskState.ACTING || state == ActorTaskState.REFLECTING) {
             return buildRunningNotification(builder, context, task, notificationId);
@@ -83,6 +88,17 @@ public class ActorNotificationFactory {
         } else {
             return buildInterruptedNotification(builder, context, task, notificationId);
         }
+    }
+
+    private static boolean shouldSilenceNotifications() {
+        // TODO(crbug.com/494093802): Behavior for the WORKING state notification
+        // visibility will need to be changed.
+        boolean isForeground =
+                ApplicationStatus.getStateForApplication()
+                        == ApplicationState.HAS_RUNNING_ACTIVITIES;
+        Activity activity = ApplicationStatus.getLastTrackedFocusedActivity();
+        boolean isPiP = activity != null && activity.isInPictureInPictureMode();
+        return isForeground && !isPiP;
     }
 
     /**

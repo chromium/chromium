@@ -33,6 +33,7 @@ public class NotificationWrapperCompatBuilder implements NotificationWrapperBuil
     private final NotificationCompat.Builder mBuilder;
     private final @Nullable NotificationMetadata mMetadata;
     private final Context mContext;
+    private boolean mIsSilent;
 
     public NotificationWrapperCompatBuilder(
             Context context,
@@ -258,6 +259,7 @@ public class NotificationWrapperCompatBuilder implements NotificationWrapperBuil
     @Override
     public NotificationWrapperBuilder setSilent(boolean silent) {
         mBuilder.setSilent(silent);
+        mIsSilent = silent;
         return this;
     }
 
@@ -332,7 +334,8 @@ public class NotificationWrapperCompatBuilder implements NotificationWrapperBuil
     @Override
     public NotificationWrapper buildWithBigContentView(RemoteViews view) {
         assert mMetadata != null;
-        return new NotificationWrapper(mBuilder.setCustomBigContentView(view).build(), mMetadata);
+        return new NotificationWrapper(
+                mBuilder.setCustomBigContentView(view).build(), mMetadata, mIsSilent);
     }
 
     @Override
@@ -342,7 +345,7 @@ public class NotificationWrapperCompatBuilder implements NotificationWrapperBuil
         bigTextStyle.bigText(bigText);
 
         assert mMetadata != null;
-        return new NotificationWrapper(bigTextStyle.build(), mMetadata);
+        return new NotificationWrapper(bigTextStyle.build(), mMetadata, mIsSilent);
     }
 
     @Override
@@ -364,7 +367,7 @@ public class NotificationWrapperCompatBuilder implements NotificationWrapperBuil
     @Override
     public NotificationWrapper buildNotificationWrapper() {
         assert mMetadata != null;
-        return new NotificationWrapper(build(), mMetadata);
+        return new NotificationWrapper(build(), mMetadata, mIsSilent);
     }
 
     protected NotificationCompat.Builder getBuilder() {
