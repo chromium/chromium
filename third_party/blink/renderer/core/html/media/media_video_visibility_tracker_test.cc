@@ -1660,4 +1660,70 @@ TEST_F(MediaVideoVisibilityTrackerTest,
   EXPECT_FALSE(IsTrackerAttached());
 }
 
+TEST_F(MediaVideoVisibilityTrackerTest,
+       ElementWithZeroOpacityAncestorIsIgnored) {
+  WebView().MainFrameViewWidget()->Resize(gfx::Size(800, 800));
+  LoadMainResource(R"HTML(
+    <style>
+      .container {
+        opacity: 0;
+      }
+      video {
+        width: 100px;
+        height: 100px;
+      }
+    </style>
+    <div class="container">
+      <video></video>
+    </div>
+  )HTML");
+
+  GetDocument().View()->UpdateAllLifecyclePhasesForTest();
+
+  RequestVisibilityRatioCallback request_visibility_ratio_callback;
+  auto* tracker = CreateAndAttachVideoVisibilityTracker(1000);
+
+  Compositor().BeginFrame();
+  test::RunPendingTasks();
+
+  tracker->RequestVisibilityRatio(
+      request_visibility_ratio_callback.VisibilityRatioCallback());
+  request_visibility_ratio_callback.WaitUntilDone();
+
+  // The video itself has opacity 1.0, but its ancestor has opacity 0.0.
+  // We expect visibility ratio to be 0.0.
+  EXPECT_EQ(request_visibility_ratio_callback.VisibilityRatio(), 0.0);
+}
+
+TEST_F(MediaVideoVisibilityTrackerTest,
+       ElementWithZeroOpacityAncestorDoesNotMeetThreshold) {
+  WebView().MainFrameViewWidget()->Resize(gfx::Size(800, 800));
+  LoadMainResource(R"HTML(
+    <style>
+      .container {
+        opacity: 0;
+      }
+      video {
+        width: 100px;
+        height: 100px;
+      }
+    </style>
+    <div class="container">
+      <video></video>
+    </div>
+  )HTML");
+
+  GetDocument().View()->UpdateAllLifecyclePhasesForTest();
+
+  // Threshold is 5000 (50% of 100x100).
+  CreateAndAttachVideoVisibilityTracker(5000);
+
+  // We expect the tracker to report false because of the zero opacity ancestor.
+  EXPECT_CALL(ReportContinuousVisibilityCb(), Run(false))
+      .Times(testing::AtLeast(1));
+
+  Compositor().BeginFrame();
+  test::RunPendingTasks();
+}
+
 }  // namespace blink

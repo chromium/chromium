@@ -260,6 +260,19 @@ bool IsContentType(DisplayItem::Type type) {
            type == DisplayItem::kForeignLayerViewportScrollbar);
 }
 
+// Returns true if `layout` is perceptually visible, false otherwise.
+//
+// In the context of `MediaVideoVisibilityTracker`, an element is considered
+// perceptually visible if it and all of its ancestors have a non-zero opacity
+// and its visibility style is set to visible.
+bool IsPerceptuallyVisible(const LayoutObject* layout) {
+  // Check if the element itself or any of its ancestors are styled to be
+  // invisible. HasNonZeroEffectiveOpacity() is a pre-calculated check
+  // performed during the PrePaint lifecycle phase.
+  return layout && layout->HasNonZeroEffectiveOpacity() &&
+         layout->StyleRef().Visibility() == EVisibility::kVisible;
+}
+
 void RecordVideoOcclusionState(
     const HTMLVideoElement& video_element,
     const MediaVideoVisibilityTracker::OcclusionState& occlusion_state,
@@ -656,16 +669,18 @@ bool MediaVideoVisibilityTracker::MeetsVisibilityThreshold(
 }
 
 bool MediaVideoVisibilityTracker::ComputeVisibility() {
-  DCHECK(VideoElement().GetLayoutObject());
+  if (!IsPerceptuallyVisible(VideoElement().GetLayoutObject())) {
+    return false;
+  }
+
   ComputeAreaOccludedByViewport(
       *tracker_attached_to_document_->GetFrame()->View());
 
   auto intersection_area = ComputeArea(occlusion_state_.intersection_rect);
 
-  auto* layout = VideoElement().GetLayoutObject();
   // Return early if the area of the video that intersects with the view is
   // below |visibility_threshold_|.
-  if (!layout || intersection_area < visibility_threshold_) {
+  if (intersection_area < visibility_threshold_) {
     return false;
   }
 
@@ -681,16 +696,7 @@ bool MediaVideoVisibilityTracker::ComputeVisibility() {
 }
 
 double MediaVideoVisibilityTracker::ComputeVisibilityRatio() {
-  DCHECK(VideoElement().GetLayoutObject());
-
-  const auto* layout = VideoElement().GetLayoutObject();
-  if (!layout) {
-    return 0.0;
-  }
-
-  // Check if the element itself is styled to be invisible.
-  const ComputedStyle& style = layout->StyleRef();
-  if (style.Opacity() == 0.0f || style.Visibility() != EVisibility::kVisible) {
+  if (!IsPerceptuallyVisible(VideoElement().GetLayoutObject())) {
     return 0.0;
   }
 
