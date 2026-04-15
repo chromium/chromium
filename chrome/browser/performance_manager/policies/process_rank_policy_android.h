@@ -7,14 +7,22 @@
 
 #include <map>
 #include <memory>
+#include <optional>
 
+#include "base/containers/flat_map.h"
 #include "base/timer/timer.h"
+#include "components/guest_view/buildflags/buildflags.h"
 #include "components/performance_manager/public/decorators/page_live_state_decorator.h"
-#include "components/performance_manager/public/graph/graph.h"
+#include "components/performance_manager/public/graph/graph_registered.h"
 #include "components/performance_manager/public/graph/page_node.h"
 #include "content/public/browser/android/child_process_importance.h"
+#include "extensions/buildflags/buildflags.h"
 
 namespace performance_manager::policies {
+
+#if BUILDFLAG(ENABLE_GUEST_VIEW) && !BUILDFLAG(ENABLE_EXTENSIONS_CORE)
+class WebViewUpdater;
+#endif
 
 // This class is responsible to set content::ChildProcessImportance to the
 // WebContents on a page basis.
@@ -35,15 +43,19 @@ namespace performance_manager::policies {
 // content::ChildProcessImportance on any page status change unlike
 // UrgentPageDiscardingPolicy calculates memory priority of all pages at once
 // only on critical memory pressure.
-class ProcessRankPolicyAndroid : public GraphOwned,
-                                 public PageNodeObserver,
-                                 public PageLiveStateObserver {
+class ProcessRankPolicyAndroid
+    : public performance_manager::GraphOwnedAndRegistered<
+          ProcessRankPolicyAndroid>,
+      public PageNodeObserver,
+      public PageLiveStateObserver {
  public:
   ProcessRankPolicyAndroid();
   explicit ProcessRankPolicyAndroid(bool is_perceptible_importance_supported);
   ~ProcessRankPolicyAndroid() override;
   ProcessRankPolicyAndroid(const ProcessRankPolicyAndroid& other) = delete;
   ProcessRankPolicyAndroid& operator=(const ProcessRankPolicyAndroid&) = delete;
+
+  void OnGuestViewAssociated(const PageNode* page_node);
 
   // GraphOwned implementation:
   void OnPassedToGraph(Graph* graph) override;
@@ -97,6 +109,10 @@ class ProcessRankPolicyAndroid : public GraphOwned,
       const PageNode* page_node) override;
 
  private:
+#if BUILDFLAG(ENABLE_GUEST_VIEW) && !BUILDFLAG(ENABLE_EXTENSIONS_CORE)
+  friend class WebViewUpdater;
+#endif
+
   const bool is_perceptible_importance_supported_;
   void UpdateProcessRank(const PageNode* page_node);
   void UpdateProcessRankAndClearTimer(const PageNode* page_node);

@@ -14,6 +14,7 @@
 #include "chrome/browser/flags/android/chrome_feature_list.h"
 #include "chrome/browser/performance_manager/policies/discard_eligibility_policy.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
+#include "components/guest_view/buildflags/buildflags.h"
 #include "components/performance_manager/graph/frame_node_impl.h"
 #include "components/performance_manager/graph/page_node_impl.h"
 #include "components/performance_manager/graph/process_node_impl.h"
@@ -22,7 +23,14 @@
 #include "content/public/browser/android/child_process_importance.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_features.h"
+#include "extensions/buildflags/buildflags.h"
 #include "testing/gtest/include/gtest/gtest.h"
+
+#if BUILDFLAG(ENABLE_GUEST_VIEW) && !BUILDFLAG(ENABLE_EXTENSIONS_CORE)
+#include "chrome/browser/android/guest_view/chrome_guest_view_manager_delegate.h"
+#include "components/guest_view/browser/slim_web_view/slim_web_view_guest.h"  // nogncheck
+#include "components/guest_view/browser/test_guest_view_manager.h"
+#endif
 #include "url/gurl.h"
 
 namespace performance_manager::policies {
@@ -845,5 +853,60 @@ TEST_F(ProcessRankPolicyAndroidTest, ProtectRecentlyVisibleTab) {
   EXPECT_EQ(web_contents()->GetPrimaryMainFrameImportanceForTesting(),
             content::ChildProcessImportance::NORMAL);
 }
+
+#if BUILDFLAG(ENABLE_GUEST_VIEW) && !BUILDFLAG(ENABLE_EXTENSIONS_CORE)
+TEST_F(ProcessRankPolicyAndroidTest,
+       SlimWebViewPageInheritsVisibilityFromEmbedder) {
+  guest_view::TestGuestViewManagerFactory factory;
+  factory.GetOrCreateTestGuestViewManager(
+      GetBrowserContext(),
+      std::make_unique<android::ChromeGuestViewManagerDelegate>());
+
+  graph_->PassToGraph(std::make_unique<ProcessRankPolicyAndroid>());
+
+  // Create Owner Page Node (the default one in the harness).
+  MockPageGraph owner_page_graph = CreateDefaultPage();
+  DefaultNavigation(owner_page_graph.page.get());
+  owner_page_graph.page.get()->SetIsFocused(true);
+  owner_page_graph.page.get()->SetIsVisible(true);
+
+  // Create Guest WebContents and its PageNode.
+  std::unique_ptr<content::WebContents> guest_contents =
+      CreateTestWebContents();
+  auto guest_process = TestNodeWrapper<ProcessNodeImpl>::Create(graph_.get());
+  auto guest_page = TestNodeWrapper<PageNodeImpl>::Create(
+      graph_.get(), guest_contents->GetWeakPtr(),
+      GetBrowserContext()->UniqueId());
+
+  // Link Guest to Owner via SlimWebViewGuest.
+  std::unique_ptr<guest_view::GuestViewBase> slim_webview_guest =
+      guest_view::SlimWebViewGuest::Create(main_rfh());
+  slim_webview_guest->InitWithWebContents(base::DictValue(),
+                                          guest_contents.get());
+  // In these tests, there is no PerformanceManagerTabHelper, which would
+  // normally associate the contents with the page. Due to this absence, the
+  // test needs to manually notify the ProcessRankPolicyAndroid that the
+  // webcontents are now associated with the GuestView.
+  ProcessRankPolicyAndroid::GetFromGraph(guest_page->GetGraph())
+      ->OnGuestViewAssociated(guest_page.get());
+
+  // Link Guest Page Node to Owner Frame Node.
+  guest_page->SetEmbedderFrameNode(owner_page_graph.frame.get());
+
+  // Make the guest page invisible.
+  guest_page->SetIsVisible(false);
+
+  // Even though the guest page is not visible, the parent is visible and
+  // focused, so the guest should be IMPORTANT.
+  EXPECT_EQ(guest_contents->GetPrimaryMainFrameImportanceForTesting(),
+            content::ChildProcessImportance::IMPORTANT);
+
+  // Toggling the visibility of the parent should affect the guest.
+  owner_page_graph.page->SetIsVisible(false);
+
+  EXPECT_NE(guest_contents->GetPrimaryMainFrameImportanceForTesting(),
+            content::ChildProcessImportance::IMPORTANT);
+}
+#endif  // BUILDFLAG(ENABLE_GUEST_VIEW) && !BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 
 }  // namespace performance_manager::policies

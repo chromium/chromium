@@ -4,6 +4,7 @@
 
 import("//build/config/chromeos/ui_mode.gni")
 import("//build/config/features.gni")
+import("//components/guest_view/buildflags/buildflags.gni")
 import("//extensions/buildflags/buildflags.gni")
 
 source_set("performance_manager") {
@@ -40,6 +41,7 @@ source_set("performance_manager") {
     "//chrome/browser/profiles:profile",
     "//chrome/browser/resource_coordinator:mojo_bindings",
     "//chrome/browser/resource_coordinator:mojo_bindings_shared",
+    "//components/guest_view/buildflags",
     "//components/history/core/browser",
     "//components/keyed_service/core",
     "//components/memory_pressure",
@@ -58,6 +60,7 @@ source_set("performance_manager") {
     public += [
       "policies/discard_page_with_crashed_subframe_policy.h",
       "policies/process_rank_policy_android.h",
+      "public/guest_view_policy.h",
     ]
     public_deps += [ "//content/public/browser" ]
   }
@@ -188,6 +191,7 @@ source_set("impl") {
 
   if (is_android) {
     sources += [
+      "guest_view_policy.cc",
       "policies/discard_page_with_crashed_subframe_policy.cc",
       "policies/process_rank_policy_android.cc",
     ]
@@ -196,6 +200,9 @@ source_set("impl") {
       "//chrome/browser/flags:flags_android",
       "//chrome/browser/ui/android/tab_model",
     ]
+    if (enable_guest_view && !enable_extensions_core) {
+      deps += [ "//components/guest_view/browser/slim_web_view" ]
+    }
   }
 
   if (!is_android) {

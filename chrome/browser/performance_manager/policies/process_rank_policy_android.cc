@@ -12,11 +12,94 @@
 #include "base/not_fatal_until.h"
 #include "chrome/browser/flags/android/chrome_feature_list.h"
 #include "chrome/browser/performance_manager/policies/discard_eligibility_policy.h"
+#include "components/guest_view/buildflags/buildflags.h"
+#include "components/performance_manager/public/graph/frame_node.h"
+#include "components/performance_manager/public/graph/node_attached_data.h"
 #include "content/public/browser/android/child_process_importance.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_features.h"
+#include "extensions/buildflags/buildflags.h"
+
+#if BUILDFLAG(ENABLE_GUEST_VIEW) && !BUILDFLAG(ENABLE_EXTENSIONS_CORE)
+#include "components/guest_view/browser/slim_web_view/slim_web_view_guest.h"  // nogncheck
+#include "components/performance_manager/public/graph/frame_node.h"
+#endif
 
 namespace performance_manager::policies {
+
+#if BUILDFLAG(ENABLE_GUEST_VIEW) && !BUILDFLAG(ENABLE_EXTENSIONS_CORE)
+
+namespace {
+bool IsSlimWebViewAssociated(const PageNode* page_node) {
+  const auto web_contents = page_node->GetWebContents();
+  return web_contents &&
+         guest_view::SlimWebViewGuest::FromWebContents(web_contents.get());
+}
+}  // namespace
+
+// WebViewUpdater tracks the relationship between a SlimWebView guest and its
+// embedder. SlimWebViews are only used in WebUIs and
+// are crucial to the WebUI functions. Therefore, WebViewUpdater ensures to
+// update the process rank of the SlimWebView when thethe visibility or focus
+// of the embedder page changes.
+// Being a PageNodeObserver, it will be called for every page node change, even
+// if the observer returns early.
+// This is fine since the number of SlimWebView guest pages is expected to be
+// small.
+class WebViewUpdater : public PageNodeObserver,
+                       public NodeAttachedDataImpl<WebViewUpdater> {
+ public:
+  explicit WebViewUpdater(const PageNode* guest_node)
+      : guest_node_(guest_node),
+        policy_(
+            ProcessRankPolicyAndroid::GetFromGraph(guest_node_->GetGraph())) {
+    guest_node_->GetGraph()->AddPageNodeObserver(this);
+  }
+
+  ~WebViewUpdater() override {
+    guest_node_->GetGraph()->RemovePageNodeObserver(this);
+  }
+
+  WebViewUpdater(const WebViewUpdater&) = delete;
+  WebViewUpdater& operator=(const WebViewUpdater&) = delete;
+
+  // PageNodeObserver implementation:
+  void OnEmbedderFrameNodeChanged(const PageNode* page_node,
+                                  const FrameNode* previous_embedder) override {
+    if (page_node != guest_node_) {
+      return;
+    }
+    const PageNode* previous_embedder_node =
+        previous_embedder ? previous_embedder->GetPageNode() : nullptr;
+    if (GetEmbedderNode() != previous_embedder_node) {
+      policy_->UpdateProcessRank(guest_node_);
+    }
+  }
+  void OnIsVisibleChanged(const PageNode* page_node) override {
+    if (page_node == GetEmbedderNode()) {
+      policy_->UpdateProcessRank(guest_node_);
+    }
+  }
+
+  void OnIsFocusedChanged(const PageNode* page_node) override {
+    if (page_node == GetEmbedderNode()) {
+      policy_->UpdateProcessRank(guest_node_);
+    }
+  }
+
+ private:
+  const PageNode* GetEmbedderNode() const {
+    const FrameNode* embedder_frame = guest_node_->GetEmbedderFrameNode();
+    return embedder_frame ? embedder_frame->GetPageNode() : nullptr;
+  }
+
+  // The WebViewUpdater is attached to the guest node and the policy guaranteed
+  // to outlive the guest node.
+  const raw_ptr<const PageNode> guest_node_;
+  const raw_ptr<ProcessRankPolicyAndroid> policy_;
+};
+
+#endif  // BUILDFLAG(ENABLE_GUEST_VIEW) && !BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 
 ProcessRankPolicyAndroid::ProcessRankPolicyAndroid()
     : ProcessRankPolicyAndroid(content::IsPerceptibleImportanceSupported()) {}
@@ -27,6 +110,16 @@ ProcessRankPolicyAndroid::ProcessRankPolicyAndroid(
           is_perceptible_importance_supported) {}
 
 ProcessRankPolicyAndroid::~ProcessRankPolicyAndroid() = default;
+
+void ProcessRankPolicyAndroid::OnGuestViewAssociated(
+    const PageNode* page_node) {
+#if BUILDFLAG(ENABLE_GUEST_VIEW) && !BUILDFLAG(ENABLE_EXTENSIONS_CORE)
+  if (IsSlimWebViewAssociated(page_node)) {
+    WebViewUpdater::GetOrCreate(page_node);
+    UpdateProcessRank(page_node);
+  }
+#endif
+}
 
 void ProcessRankPolicyAndroid::OnPassedToGraph(Graph* graph) {
   DCHECK(graph->HasOnlySystemNode());
@@ -45,6 +138,12 @@ void ProcessRankPolicyAndroid::OnPageNodeAdded(const PageNode* page_node) {
   PageLiveStateDecorator::Data::GetOrCreateForPageNode(page_node)->AddObserver(
       this);
   UpdateProcessRank(page_node);
+
+#if BUILDFLAG(ENABLE_GUEST_VIEW) && !BUILDFLAG(ENABLE_EXTENSIONS_CORE)
+  if (IsSlimWebViewAssociated(page_node)) {
+    WebViewUpdater::GetOrCreate(page_node);
+  }
+#endif
 }
 
 void ProcessRankPolicyAndroid::OnBeforePageNodeRemoved(
@@ -219,11 +318,30 @@ void ProcessRankPolicyAndroid::UpdateProcessRank(const PageNode* page_node) {
 
 content::ChildProcessImportance ProcessRankPolicyAndroid::CalculateRank(
     const PageNode* page_node) {
-  if (page_node->IsVisible()) {
+  const PageNode* node_to_check_visibility_and_focus = page_node;
+#if BUILDFLAG(ENABLE_GUEST_VIEW) && !BUILDFLAG(ENABLE_EXTENSIONS_CORE)
+  // SlimWebViews can only be hosted by WebUIs. In all scenarios where they are
+  // used, the SlimWebView is central to the parent UI, therefore we should
+  // inherit the visibility and focus of the parent page.
+  const base::WeakPtr<content::WebContents> web_contents =
+      page_node->GetWebContents();
+  if (web_contents) {
+    auto* slim_web_view =
+        guest_view::SlimWebViewGuest::FromWebContents(web_contents.get());
+    if (slim_web_view) {
+      const FrameNode* embedder_frame = page_node->GetEmbedderFrameNode();
+      if (embedder_frame) {
+        node_to_check_visibility_and_focus = embedder_frame->GetPageNode();
+      }
+    }
+  }
+#endif  // BUILDFLAG(ENABLE_GUEST_VIEW) && !BUILDFLAG(ENABLE_EXTENSIONS_CORE)
+
+  if (node_to_check_visibility_and_focus->IsVisible()) {
     // On Android visibility is updated synchronously on tab switch, but focus
     // is updated asynchronously. Focused status should be checked only if it is
     // visible.
-    if (page_node->IsFocused() ||
+    if (node_to_check_visibility_and_focus->IsFocused() ||
         !base::FeatureList::IsEnabled(
             chrome::android::kChangeUnfocusedPriority)) {
       return content::ChildProcessImportance::IMPORTANT;
