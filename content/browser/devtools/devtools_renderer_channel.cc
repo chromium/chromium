@@ -7,6 +7,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/safety_checks.h"
+#include "content/browser/bad_message.h"
 #include "content/browser/devtools/dedicated_worker_devtools_agent_host.h"
 #include "content/browser/devtools/devtools_agent_host_impl.h"
 #include "content/browser/devtools/devtools_manager.h"
@@ -14,6 +15,7 @@
 #include "content/browser/devtools/protocol/devtools_domain_handler.h"
 #include "content/browser/devtools/worker_devtools_manager.h"
 #include "content/browser/devtools/worklet_devtools_agent_host.h"
+#include "content/common/features.h"
 #include "content/public/browser/child_process_host.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/web_contents.h"
@@ -185,7 +187,7 @@ void DevToolsRendererChannel::ChildTargetCreated(
     case blink::mojom::DevToolsExecutionContextType::kDedicatedWorker: {
       // WorkerDevToolsAgentHost for dedicated workers is already created in the
       // browser process.
-      DCHECK(content::DevToolsAgentHost::GetForId(
+      CHECK(content::DevToolsAgentHost::GetForId(
           devtools_worker_token.ToString()));
       DedicatedWorkerDevToolsAgentHost* dedicated_worker_agent_host =
           WorkerDevToolsManager::GetInstance().GetDevToolsHostFromToken(
@@ -195,6 +197,15 @@ void DevToolsRendererChannel::ChildTargetCreated(
         // `DedicatedWorkerHost` has been destructed while handling
         // `DedicatedWorker::ContinueStart`. We do not need to continue in that
         // case.
+        return;
+      }
+      if (base::FeatureList::IsEnabled(
+              ::features::kWorkerOrWorkletAgentDoubleReleaseFix) &&
+          dedicated_worker_agent_host->child_worker_created()) {
+        // If `child_worker_created()` is true, the renderer is attempting to
+        // initialize the same worker again, which is not allowed.
+        bad_message::ReceivedBadMessage(
+            process, bad_message::DT_DUPLICATE_CHILD_TARGET_CREATED);
         return;
       }
       dedicated_worker_agent_host->ChildWorkerCreated(
