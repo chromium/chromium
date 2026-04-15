@@ -48,6 +48,8 @@ static_assert(
 static_assert(kAlwaysShownRegionMultiplier > 0.f,
               "Always shown region must be non-zero to minimize the chance of "
               "shifting the web contents when controls are shown.");
+constexpr float kSnapAnimationThresholdMinMultiplier = 0.15f;
+constexpr float kSnapAnimationThresholdMaxMultiplier = 0.75f;
 
 float NormalizeShownRatio(float value, float min_shown_ratio) {
   if (min_shown_ratio == 1.f) {
@@ -237,6 +239,21 @@ float BrowserControlsOffsetManager::SnapAnimationCanHideRegionHeight(
   return ControlsAnimatedHeight() *
          gfx::Tween::FloatValueBetween(slowness, kCanHideRegionMinMultiplier,
                                        kCanHideRegionMaxMultiplier);
+}
+
+float BrowserControlsOffsetManager::SnapAnimationThreshold(
+    float slowness) const {
+  DCHECK_GE(slowness, 0.f);
+  DCHECK_LE(slowness, 1.f);
+
+  // Scale the threshold based on the animation duration. Start the animation
+  // early when the animation duration is short, and late when the animation
+  // duration is long. This gives the appearance of a consistent, responsive
+  // threshold.
+  return ControlsAnimatedHeight() *
+         gfx::Tween::FloatValueBetween(slowness,
+                                       kSnapAnimationThresholdMinMultiplier,
+                                       kSnapAnimationThresholdMaxMultiplier);
 }
 
 void BrowserControlsOffsetManager::UpdateBrowserControlsState(
@@ -759,6 +776,7 @@ void BrowserControlsOffsetManager::SetupSnapAnimation(
                   std::abs(scroll_velocity_tracker_.CurrentVelocity().y())) /
                      kShowHideMaxDurationMs,
                  0.f, 1.f);
+  const float trigger_threshold = SnapAnimationThreshold(slowness);
 
   AnimationDirection direction;
   gfx::Tween::Type curve;
@@ -802,13 +820,13 @@ void BrowserControlsOffsetManager::SetupSnapAnimation(
   if (scroll_delta.y() >= 0) {
     // Animate to hide the controls when the user scrolls down:
     //  - If the viewport offset is in the can-hide region
-    //  - If the accumulated delta for this scroll is greater than the height of
-    //    the controls
+    //  - If the accumulated delta for this scroll is greater than the trigger
+    //    threshold in the direction of hiding the controls
     //  - At most once per scroll to prevent the controls from thrashing between
     //    the shown and hidden states
     if (viewport_offset_y <= SnapAnimationCanHideRegionHeight(slowness) ||
         did_hide_this_scroll_ ||
-        accumulated_scroll_delta_ < controls_animated_height) {
+        accumulated_scroll_delta_ < trigger_threshold) {
       return;
     }
 
@@ -823,15 +841,15 @@ void BrowserControlsOffsetManager::SetupSnapAnimation(
   } else {
     // Animate to show the controls when the user scrolls up:
     //  - If the viewport offset is in the always-shown region
-    //  - If the accumulated delta for this scroll is greater than the height of
-    //    the controls
+    //  - If the accumulated delta for this scroll is greater than the trigger
+    //    threshold in the direction of showing the controls
     //
     // There is no restriction on how many times the show animation can run per
     // scroll. This combined with the restriction on the hide animation is
     // intended to leave the controls always showing if the user rapidly scrolls
     // up and down.
     if (viewport_offset_y > SnapAnimationAlwaysShownRegionHeight() &&
-        accumulated_scroll_delta_ > -controls_animated_height) {
+        accumulated_scroll_delta_ > -trigger_threshold) {
       return;
     }
 

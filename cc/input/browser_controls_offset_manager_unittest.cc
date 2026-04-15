@@ -1981,6 +1981,41 @@ TEST_F(BrowserControlsOffsetManagerSnapAnimationTest,
 }
 
 TEST_F(BrowserControlsOffsetManagerSnapAnimationTest,
+       SnapAnimationThresholdIsSmallerForFasterScrolls) {
+  constexpr base::TimeDelta kSlowScrollUpdateInterval = base::Milliseconds(1);
+  constexpr base::TimeDelta kFastScrollUpdateInterval =
+      kSlowScrollUpdateInterval / 2;
+
+  BrowserControlsOffsetManager* manager = client_.manager();
+
+  // Start well inside in the can-hide region.
+  client_.SetViewportScrollOffset(
+      0.f,
+      manager->SnapAnimationCanHideRegionHeight(1.f) + 2 * kControlsHeight);
+
+  ASSERT_EQ(manager->TopControlsShownRatio(), 1.f);
+  float trigger_threshold_slow_scroll = MeasureScrollDeltaToHide(
+      /*step_size=*/1.f,
+      /*interval_between_scroll_updates=*/kSlowScrollUpdateInterval);
+  EXPECT_GT(trigger_threshold_slow_scroll, 0.f);
+  ASSERT_EQ(manager->TopControlsShownRatio(), 0.f);
+
+  manager->ScrollBegin();
+  // Show the browser controls.
+  EXPECT_TRUE(ScrollDidAnimate(-kControlsHeight, /*animate_to_show=*/true));
+  manager->ScrollEnd();
+  ASSERT_EQ(manager->TopControlsShownRatio(), 1.f);
+
+  float trigger_threshold_fast_scroll = MeasureScrollDeltaToHide(
+      /*step_size=*/1.f,
+      /*interval_between_scroll_updates=*/kFastScrollUpdateInterval);
+  EXPECT_GT(trigger_threshold_fast_scroll, 0.f);
+  ASSERT_EQ(manager->TopControlsShownRatio(), 0.f);
+
+  EXPECT_GT(trigger_threshold_slow_scroll, trigger_threshold_fast_scroll);
+}
+
+TEST_F(BrowserControlsOffsetManagerSnapAnimationTest,
        ControlsShowInAlwaysShownRegion) {
   BrowserControlsOffsetManager* manager = client_.manager();
 
