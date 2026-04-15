@@ -203,6 +203,8 @@ import org.chromium.chrome.browser.toolbar.ToolbarButtonInProductHelpController;
 import org.chromium.chrome.browser.toolbar.ToolbarFeatures;
 import org.chromium.chrome.browser.toolbar.ToolbarIntentMetadata;
 import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarBehavior;
+import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarButtonVariant;
+import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarPrefs;
 import org.chromium.chrome.browser.ui.RootUiCoordinator;
 import org.chromium.chrome.browser.ui.app_rating.AppRatingPromoController;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuBlocker;
@@ -1617,12 +1619,15 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
                 FeatureConstants.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR_CUSTOMIZATION_GLIC_FEATURE;
 
         if (tracker.shouldTriggerHelpUi(featureName)) {
+            Runnable onAccepted =
+                    () ->
+                            AdaptiveToolbarPrefs.saveToolbarButtonManualOverride(
+                                    AdaptiveToolbarButtonVariant.GLIC);
+            Runnable onDismissed = () -> tracker.dismissed(featureName);
+
             mGlicPromoCoordinator =
                     new GlicPromoCoordinator(
-                            mActivity,
-                            getBottomSheetController(),
-                            () -> {},
-                            () -> tracker.dismissed(featureName));
+                            mActivity, getBottomSheetController(), onAccepted, onDismissed);
             mGlicPromoCoordinator.showBottomSheet();
         }
     }

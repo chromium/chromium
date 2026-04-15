@@ -38,8 +38,10 @@ import org.chromium.chrome.browser.toolbar.optional_button.BaseButtonDataProvide
 import org.chromium.chrome.browser.toolbar.optional_button.ButtonData;
 import org.chromium.chrome.browser.toolbar.optional_button.ButtonData.ButtonSpec;
 import org.chromium.chrome.browser.ui.browser_window.ChromeAndroidTask;
+import org.chromium.chrome.browser.user_education.IphCommandBuilder;
 import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.components.feature_engagement.EventConstants;
+import org.chromium.components.feature_engagement.FeatureConstants;
 import org.chromium.components.feature_engagement.Tracker;
 
 import java.lang.annotation.Retention;
@@ -70,6 +72,7 @@ public class GlicToolbarButtonController extends BaseButtonDataProvider
         void onClick(boolean preventClose);
     }
 
+    private final Context mContext;
     private final GlicButtonDelegate mToggleGlicCallback;
     private final Supplier<@Nullable Tracker> mTrackerSupplier;
     private final Supplier<ChromeAndroidTask> mTaskSupplier;
@@ -110,6 +113,7 @@ public class GlicToolbarButtonController extends BaseButtonDataProvider
                 /* iphCommandBuilder= */ null,
                 AdaptiveToolbarButtonVariant.GLIC,
                 /* tooltipTextResId= */ Resources.ID_NULL);
+        mContext = context;
         mToggleGlicCallback = toggleGlicCallback;
         mTrackerSupplier = trackerSupplier;
         mTaskSupplier = taskSupplier;
@@ -331,6 +335,15 @@ public class GlicToolbarButtonController extends BaseButtonDataProvider
         }
         mCurrentProfile = null;
         super.destroy();
+    }
+
+    @Override
+    protected @Nullable IphCommandBuilder getIphCommandBuilder(Tab tab) {
+        return new IphCommandBuilder(
+                mContext.getResources(),
+                FeatureConstants.GLIC_PROMO_ANDROID_FEATURE,
+                R.string.iph_glic_promo_text,
+                R.string.iph_glic_promo_accessibility_text);
     }
 
     @Override

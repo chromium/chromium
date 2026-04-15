@@ -248,10 +248,6 @@ public class ToolbarButtonInProductHelpController {
     public void showColdStartIph() {
         showAddToGroupIph();
         showDownloadHomeIph();
-
-        if (ChromeFeatureList.isEnabled(ChromeFeatureList.GLIC)) {
-            showGlicPromoIph();
-        }
     }
 
     private void showDownloadHomeIph() {
@@ -263,19 +259,6 @@ public class ToolbarButtonInProductHelpController {
                                 R.string.iph_download_home_accessibility_text)
                         .setAnchorView(mMenuButtonAnchorView)
                         .setOnShowCallback(() -> turnOnHighlightForMenuItem(R.id.downloads_menu_id))
-                        .setOnDismissCallback(this::turnOffHighlightForMenuItem)
-                        .build());
-    }
-
-    private void showGlicPromoIph() {
-        mUserEducationHelper.requestShowIph(
-                new IphCommandBuilder(
-                                mActivity.getResources(),
-                                FeatureConstants.GLIC_PROMO_ANDROID_FEATURE,
-                                R.string.iph_glic_promo_text,
-                                R.string.iph_glic_promo_accessibility_text)
-                        .setAnchorView(mMenuButtonAnchorView)
-                        .setOnShowCallback(() -> turnOnHighlightForMenuItem(R.id.glic_menu_id))
                         .setOnDismissCallback(this::turnOffHighlightForMenuItem)
                         .build());
     }

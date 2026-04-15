@@ -6135,10 +6135,10 @@ To change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>delete the Chrome d
 
       <!-- In-Product Help strings -->
       <message name="IDS_IPH_GLIC_PROMO_TEXT" desc="The in-product-help promotion message to try Glic.">
-        Try Gemini in Chrome to get answers, key takeaways and more.
+        Gemini is now on your toolbar. To change your pinned tool anytime, long-press the icon.
       </message>
       <message name="IDS_IPH_GLIC_PROMO_ACCESSIBILITY_TEXT" desc="The in-product-help accessibility text to try Glic.">
-        Try Gemini in Chrome to get answers, key takeaways and more from the More Options button.
+        Gemini is now on your toolbar. To change your pinned tool anytime, long-press the icon.
       </message>
       <message name="IDS_IPH_DOWNLOAD_PAGE_FOR_OFFLINE_USAGE_TEXT" desc="The in-product-help message after a successful navigation prompting user to download the pages to view offline.">
         Download pages to use them offline
