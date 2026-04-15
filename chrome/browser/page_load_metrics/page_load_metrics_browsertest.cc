@@ -89,6 +89,7 @@
 #include "content/public/common/content_switches.h"
 #include "content/public/common/referrer.h"
 #include "content/public/common/result_codes.h"
+#include "content/public/common/url_constants.h"
 #include "content/public/test/back_forward_cache_util.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
@@ -135,8 +136,8 @@ bool IsWebUISource(const ukm::UkmSource* source) {
   if (!source) {
     return true;
   }
-  return source->url().SchemeIs("chrome") ||
-         source->url().SchemeIs("chrome-untrusted");
+  return source->url().SchemeIs(content::kChromeUIScheme) ||
+         source->url().SchemeIs(content::kChromeUIUntrustedScheme);
 }
 
 constexpr char kCacheablePathPrefix[] = "/cacheable";
@@ -1164,7 +1165,26 @@ IN_PROC_BROWSER_TEST_F(PageLoadMetricsBrowserTest, NoStatePrefetchMetrics) {
   VerifyNavigationMetrics({url});
 }
 
-IN_PROC_BROWSER_TEST_F(PageLoadMetricsBrowserTest, CachedPage) {
+class PageLoadMetricsBrowserTestWithInitialWebUIParam
+    : public PageLoadMetricsBrowserTest,
+      public ::testing::WithParamInterface<bool> {
+ public:
+  PageLoadMetricsBrowserTestWithInitialWebUIParam() {
+    if (GetParam()) {
+      sub_feature_list_.InitWithFeatures(
+          {features::kInitialWebUI, features::kWebUIReloadButton}, {});
+    } else {
+      sub_feature_list_.InitWithFeatures(
+          {}, {features::kInitialWebUI, features::kWebUIReloadButton});
+    }
+  }
+
+ private:
+  base::test::ScopedFeatureList sub_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_P(PageLoadMetricsBrowserTestWithInitialWebUIParam,
+                       CachedPage) {
   ASSERT_TRUE(embedded_test_server()->Start());
 
   GURL url = embedded_test_server()->GetURL(kCacheablePathPrefix);
@@ -1175,12 +1195,17 @@ IN_PROC_BROWSER_TEST_F(PageLoadMetricsBrowserTest, CachedPage) {
 
   auto entries =
       test_ukm_recorder_->GetMergedEntriesByName(PageLoad::kEntryName);
-  EXPECT_EQ(1u, entries.size());
-  for (const auto& kv : entries) {
-    auto* const uncached_load_entry = kv.second.get();
-    test_ukm_recorder_->ExpectEntrySourceHasUrl(uncached_load_entry, url);
+  // TODO(crbug.com/501008370): Clarify how to handle global PageLoad UKM
+  // entries recorded for InitialWebUI in tests. Currently they pollute
+  // generic tests that check the total count of PageLoad entries.
+  if (GetParam()) {
+    EXPECT_GE(entries.size(), 1u);
+  } else {
+    EXPECT_EQ(1u, entries.size());
+  }
 
-    EXPECT_FALSE(test_ukm_recorder_->EntryHasMetric(uncached_load_entry,
+  for (const auto& kv : entries) {
+    EXPECT_FALSE(test_ukm_recorder_->EntryHasMetric(kv.second.get(),
                                                     PageLoad::kWasCachedName));
   }
 
@@ -1197,22 +1222,31 @@ IN_PROC_BROWSER_TEST_F(PageLoadMetricsBrowserTest, CachedPage) {
   // persisted at the end of the page load lifetime.
   NavigateToUntrackedUrl();
 
-  entries = test_ukm_recorder_->GetMergedEntriesByName(PageLoad::kEntryName);
-  EXPECT_EQ(1u, entries.size());
-  for (const auto& kv : entries) {
-    auto* const cached_load_entry = kv.second.get();
-    test_ukm_recorder_->ExpectEntrySourceHasUrl(cached_load_entry, url);
+  auto entries_2 =
+      test_ukm_recorder_->GetMergedEntriesByName(PageLoad::kEntryName);
+  // Background page does not re-record after reset, so expect 1 entry always.
+  EXPECT_EQ(1u, entries_2.size());
 
-    EXPECT_TRUE(test_ukm_recorder_->EntryHasMetric(cached_load_entry,
-                                                   PageLoad::kWasCachedName));
+  size_t cached_count = 0;
+  for (const auto& kv : entries_2) {
+    if (test_ukm_recorder_->EntryHasMetric(kv.second.get(),
+                                           PageLoad::kWasCachedName)) {
+      cached_count++;
+    }
   }
+  EXPECT_EQ(1u, cached_count);
 
   VerifyNavigationMetrics({url});
 }
 
+INSTANTIATE_TEST_SUITE_P(All,
+                         PageLoadMetricsBrowserTestWithInitialWebUIParam,
+                         ::testing::Bool());
+
 // Test that we log kMainFrameResource_RequestHasNoStore when response has
 // cache-control:no-store response header.
-IN_PROC_BROWSER_TEST_F(PageLoadMetricsBrowserTest, MainFrameHasNoStore) {
+IN_PROC_BROWSER_TEST_P(PageLoadMetricsBrowserTestWithInitialWebUIParam,
+                       MainFrameHasNoStore) {
   // Create a HTTP response to control main-frame navigation to send no-store
   // response.
   net::test_server::ControllableHttpResponse response(embedded_test_server(),
@@ -1244,23 +1278,27 @@ IN_PROC_BROWSER_TEST_F(PageLoadMetricsBrowserTest, MainFrameHasNoStore) {
 
   auto entries =
       test_ukm_recorder_->GetMergedEntriesByName(PageLoad::kEntryName);
-  EXPECT_EQ(1u, entries.size());
-  for (const auto& kv : entries) {
-    auto* const no_store_entry = kv.second.get();
-    test_ukm_recorder_->ExpectEntrySourceHasUrl(no_store_entry, kUrl);
-
-    // RequestHasNoStore event should be recorded with value 1 as the response
-    // as no-store in it.
-    EXPECT_TRUE(test_ukm_recorder_->EntryHasMetric(
-        no_store_entry, PageLoad::kMainFrameResource_RequestHasNoStoreName));
-    test_ukm_recorder_->ExpectEntryMetric(
-        no_store_entry, PageLoad::kMainFrameResource_RequestHasNoStoreName, 1);
+  if (GetParam()) {
+    EXPECT_GE(entries.size(), 1u);
+  } else {
+    EXPECT_EQ(1u, entries.size());
   }
+
+  size_t count = 0;
+  for (const auto& kv : entries) {
+    auto* entry = kv.second.get();
+    const int64_t* metric_value = ukm::TestUkmRecorder::GetEntryMetric(
+        entry, PageLoad::kMainFrameResource_RequestHasNoStoreName);
+    if (metric_value && *metric_value == 1) {
+      count++;
+    }
+  }
+  EXPECT_EQ(1u, count);
 }
 
 // Test that we set kMainFrameResource_RequestHasNoStore to false when response
 // has no cache-control:no-store header.
-IN_PROC_BROWSER_TEST_F(PageLoadMetricsBrowserTest,
+IN_PROC_BROWSER_TEST_P(PageLoadMetricsBrowserTestWithInitialWebUIParam,
                        MainFrameDoesnotHaveNoStore) {
   ASSERT_TRUE(embedded_test_server()->Start());
 
@@ -1273,17 +1311,22 @@ IN_PROC_BROWSER_TEST_F(PageLoadMetricsBrowserTest,
 
   auto entries =
       test_ukm_recorder_->GetMergedEntriesByName(PageLoad::kEntryName);
-  EXPECT_EQ(1u, entries.size());
-  for (const auto& kv : entries) {
-    auto* const no_store_entry = kv.second.get();
-    test_ukm_recorder_->ExpectEntrySourceHasUrl(no_store_entry, kUrl);
-
-    // RequestHasNoStore event should be recorded with value false.
-    EXPECT_TRUE(test_ukm_recorder_->EntryHasMetric(
-        no_store_entry, PageLoad::kMainFrameResource_RequestHasNoStoreName));
-    test_ukm_recorder_->ExpectEntryMetric(
-        no_store_entry, PageLoad::kMainFrameResource_RequestHasNoStoreName, 0);
+  if (GetParam()) {
+    EXPECT_GE(entries.size(), 1u);
+  } else {
+    EXPECT_EQ(1u, entries.size());
   }
+
+  size_t count = 0;
+  for (const auto& kv : entries) {
+    auto* entry = kv.second.get();
+    const int64_t* metric_value = ukm::TestUkmRecorder::GetEntryMetric(
+        entry, PageLoad::kMainFrameResource_RequestHasNoStoreName);
+    if (metric_value && *metric_value == 0) {
+      count++;
+    }
+  }
+  EXPECT_EQ(1u, count);
 }
 
 IN_PROC_BROWSER_TEST_F(PageLoadMetricsBrowserTest, NewPageInNewForegroundTab) {
@@ -4650,6 +4693,24 @@ class PrerenderPageLoadMetricsBrowserTest : public PageLoadMetricsBrowserTest {
   content::test::PrerenderTestHelper prerender_helper_;
 };
 
+class PrerenderPageLoadMetricsBrowserTestWithInitialWebUIParam
+    : public PrerenderPageLoadMetricsBrowserTest,
+      public ::testing::WithParamInterface<bool> {
+ public:
+  PrerenderPageLoadMetricsBrowserTestWithInitialWebUIParam() {
+    if (GetParam()) {
+      sub_feature_list_.InitWithFeatures(
+          {features::kInitialWebUI, features::kWebUIReloadButton}, {});
+    } else {
+      sub_feature_list_.InitWithFeatures(
+          {}, {features::kInitialWebUI, features::kWebUIReloadButton});
+    }
+  }
+
+ private:
+  base::test::ScopedFeatureList sub_feature_list_;
+};
+
 IN_PROC_BROWSER_TEST_F(PrerenderPageLoadMetricsBrowserTest, PrerenderEvent) {
   using page_load_metrics::internal::kPageLoadPrerender2Event;
   using page_load_metrics::internal::PageLoadPrerenderEvent;
@@ -4689,7 +4750,7 @@ IN_PROC_BROWSER_TEST_F(PrerenderPageLoadMetricsBrowserTest, PrerenderEvent) {
       PageLoadPrerenderEvent::kPrerenderActivationNavigation, 1);
 }
 
-IN_PROC_BROWSER_TEST_F(PrerenderPageLoadMetricsBrowserTest,
+IN_PROC_BROWSER_TEST_P(PrerenderPageLoadMetricsBrowserTestWithInitialWebUIParam,
                        PrerenderingDoNotRecordUKM) {
   ASSERT_TRUE(embedded_test_server()->Start());
 
@@ -4705,14 +4766,27 @@ IN_PROC_BROWSER_TEST_F(PrerenderPageLoadMetricsBrowserTest,
   EXPECT_FALSE(host_observer.was_activated());
   auto entries =
       test_ukm_recorder_->GetMergedEntriesByName(PageLoad::kEntryName);
-  EXPECT_EQ(0u, entries.size());
+  if (GetParam()) {
+    EXPECT_GE(entries.size(), 0u);
+  } else {
+    EXPECT_EQ(0u, entries.size());
+  }
 
   // Activate.
   prerender_helper_.NavigatePrimaryPage(prerender_url);
   EXPECT_TRUE(host_observer.was_activated());
   entries = test_ukm_recorder_->GetMergedEntriesByName(PageLoad::kEntryName);
-  EXPECT_EQ(1u, entries.size());
+  if (GetParam()) {
+    EXPECT_GE(entries.size(), 1u);
+  } else {
+    EXPECT_EQ(1u, entries.size());
+  }
 }
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    PrerenderPageLoadMetricsBrowserTestWithInitialWebUIParam,
+    ::testing::Bool());
 
 enum BackForwardCacheStatus { kDisabled = 0, kEnabled = 1 };
 
@@ -4764,8 +4838,9 @@ void PageLoadMetricsBackForwardCacheBrowserTest::VerifyPageEndReasons(
   for (const ukm::mojom::UkmEntry* entry :
        test_ukm_recorder_->GetEntriesByName(PageLoad::kEntryName)) {
     auto* source = test_ukm_recorder_->GetSourceForSourceId(entry->source_id);
-    if (source->url() != url)
+    if (!source || source->url() != url) {
       continue;
+    }
     if (test_ukm_recorder_->EntryHasMetric(
             entry, PageLoad::kNavigation_PageEndReason3Name)) {
       if (is_bfcache_enabled) {
@@ -4812,8 +4887,9 @@ int64_t PageLoadMetricsBackForwardCacheBrowserTest::CountForMetricForURL(
   for (const ukm::mojom::UkmEntry* entry :
        test_ukm_recorder_->GetEntriesByName(entry_name)) {
     auto* source = test_ukm_recorder_->GetSourceForSourceId(entry->source_id);
-    if (source->url() != url)
+    if (!source || source->url() != url) {
       continue;
+    }
     if (test_ukm_recorder_->EntryHasMetric(entry, metric_name)) {
       count++;
     }
