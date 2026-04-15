@@ -78,4 +78,7 @@ const base::FeatureParam<size_t>
 BASE_FEATURE(kPrefetchFixHeaderUpdatesOnRedirect,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+BASE_FEATURE(kPrefetchOffTheMainThreadForceForTesting,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 }  // namespace features

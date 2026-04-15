@@ -95,6 +95,15 @@ CONTENT_EXPORT extern const base::FeatureParam<size_t>
 // TODO(crbug.com/467177773): Remove it after confirming stability.
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kPrefetchFixHeaderUpdatesOnRedirect);
 
+// Force the off-the-main-thread prefetch code path for testing, to anyway
+// increase the test coverage of off-the-main-thread prefetch.
+// https://crbug.com/452389538
+// This is anyway expected to be incomplete, and expected deviations are
+// explicitly tracked in `TestExpectations` etc.
+//
+// To enable this, also enable `kPrefetchOffTheMainThread`.
+CONTENT_EXPORT BASE_DECLARE_FEATURE(kPrefetchOffTheMainThreadForceForTesting);
+
 }  // namespace features
 
 #endif  // CONTENT_BROWSER_PRELOADING_PREFETCH_PREFETCH_FEATURES_H_
