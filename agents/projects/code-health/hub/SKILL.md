@@ -1,5 +1,5 @@
 ---
-name: code-health-hub
+name: hub
 description: Orchestrator for the "Code Health Hub" framework. Trigger only when the user refers to the Hub or asks to see "available cleanup tasks" within the Chromium technical debt reduction system.
 ---
 

@@ -1,5 +1,5 @@
 ---
-name: code-health-histogram-cleanup
+name: histogram-cleanup
 description: Identify and safely remove expired Chromium histograms (dead metrics/technical debt). Use this skill when a contributor asks to clean up metrics, fix code health issues related to histograms, remove obsolete code, or work on a histogram cleanup task.
 ---
 
