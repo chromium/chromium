@@ -44,7 +44,6 @@ public class OfflineIndicatorInProductHelpController
         mAppMenuHandler = appMenuHandler;
         mUserEducationHelper = new UserEducationHelper(mActivity, profile, mHandler);
 
-        assert coordinator != null;
         mCoordinator = coordinator;
         mCoordinator.addObserver(this);
     }

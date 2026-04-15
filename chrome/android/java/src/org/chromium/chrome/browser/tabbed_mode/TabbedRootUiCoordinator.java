@@ -295,10 +295,11 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
     private TabGroupSyncController mTabGroupSyncController;
     private final OneshotSupplierImpl<TabGroupUiActionHandler> mTabGroupUiActionHandlerSupplier =
             new OneshotSupplierImpl<>();
-    private StatusIndicatorCoordinator mStatusIndicatorCoordinator;
-    private StatusIndicatorCoordinator.StatusIndicatorObserver mStatusIndicatorObserver;
-    private OfflineIndicatorControllerV2 mOfflineIndicatorController;
-    private OfflineIndicatorInProductHelpController mOfflineIndicatorInProductHelpController;
+    private @Nullable StatusIndicatorCoordinator mStatusIndicatorCoordinator;
+    private StatusIndicatorCoordinator.@Nullable StatusIndicatorObserver mStatusIndicatorObserver;
+    private @Nullable OfflineIndicatorControllerV2 mOfflineIndicatorController;
+    private @Nullable OfflineIndicatorInProductHelpController
+            mOfflineIndicatorInProductHelpController;
     private ReadAloudIphController mReadAloudIphController;
     private @Nullable ReadLaterIphController mReadLaterIphController;
     private DesktopSiteSettingsIphController mDesktopSiteSettingsIphController;
@@ -1494,11 +1495,12 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
             // mOfflineIndicatorController is enabled and initialized. For example, it wouldn't be
             // initialized if the OfflineIndicatorV2 feature is disabled.
             assert mOfflineIndicatorInProductHelpController == null;
+            assert mStatusIndicatorCoordinator != null;
             mOfflineIndicatorInProductHelpController =
                     new OfflineIndicatorInProductHelpController(
                             mActivity,
                             profile,
-                            mToolbarManager,
+                            getToolbarManager(),
                             mAppMenuCoordinator.getAppMenuHandler(),
                             mStatusIndicatorCoordinator);
         }
@@ -2168,7 +2170,7 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
         return EdgeToEdgeUtils.isEdgeToEdgeBottomChinEnabled(mActivity);
     }
 
-    public StatusIndicatorCoordinator getStatusIndicatorCoordinatorForTesting() {
+    public @Nullable StatusIndicatorCoordinator getStatusIndicatorCoordinatorForTesting() {
         return mStatusIndicatorCoordinator;
     }
 
