@@ -90,6 +90,16 @@ public class ActorPictureInPictureOverlayCoordinatorTest {
     }
 
     @Test
+    public void testUpdateStatus_InterruptedState() {
+        mCoordinator.updateStatus(ActorTaskState.CANCELLED);
+
+        TextView statusTextView = mParentView.findViewById(R.id.pip_status);
+        String expectedStatus =
+                mActivity.getString(R.string.actor_notification_title_task_interrupted);
+        assertEquals(expectedStatus, statusTextView.getText().toString());
+    }
+
+    @Test
     public void testDestroy_RemovesView() {
         assertEquals(1, mParentView.getChildCount());
         mCoordinator.destroy();
