@@ -18,6 +18,7 @@
 #include "base/values.h"
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
+#include "chrome/browser/accessibility_annotator/accessibility_annotator_enablement_service_factory.h"
 #include "chrome/browser/browser_features.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/commerce/shopping_service_factory.h"
@@ -96,6 +97,8 @@
 #include "chrome/grit/generated_resources.h"
 #include "chrome/grit/settings_resources.h"
 #include "chrome/grit/settings_resources_map.h"
+#include "components/accessibility_annotator/core/accessibility_annotator_enablement_service.h"
+#include "components/accessibility_annotator/core/accessibility_annotator_types.h"
 #include "components/account_manager_core/account_manager_facade.h"
 #include "components/autofill/content/browser/content_autofill_client.h"
 #include "components/autofill/core/browser/data_manager/payments/payments_data_manager.h"
@@ -678,8 +681,15 @@ SettingsUI::SettingsUI(content::WebUI* web_ui)
       "searchSettingsUpdate",
       base::FeatureList::IsEnabled(switches::kSearchSettingsUpdate));
 
-  // TODO(b/493907185): Connect to accessibility annotator visibility.
-  html_source->AddBoolean("showAccessibilityAnnotatorSettingsLink", false);
+  accessibility_annotator::AccessibilityAnnotatorEnablementService*
+      enablement_service =
+          AccessibilityAnnotatorEnablementServiceFactory::GetForProfile(
+              profile);
+  html_source->AddBoolean(
+      "showAccessibilityAnnotatorSettingsLink",
+      enablement_service && enablement_service->GetEnablementState() ==
+                                accessibility_annotator::
+                                    RemoteAnnotatorEnablementState::kEnabled);
 
   TryShowHatsSurveyWithTimeout();
 }

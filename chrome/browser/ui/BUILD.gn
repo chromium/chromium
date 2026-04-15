@@ -1844,6 +1844,7 @@ static_library("ui") {
 
     # Non-android public_deps for "ui" target.
     public_deps += [
+      "//chrome/browser/accessibility_annotator",
       "//chrome/browser/accessibility_annotator/first_run",
       "//chrome/browser/importer",
       "//chrome/browser/importer:impl",
