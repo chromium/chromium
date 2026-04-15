@@ -80,6 +80,7 @@ impl ExprSet {
                     } else {
                         args.extend_from_slice(self.get_args(a));
                     }
+                    i += 1;
                 }
                 return;
             }
@@ -539,14 +540,14 @@ impl ExprSet {
         }
     }
 
-    pub fn iter_concat(&self, root: ExprRef) -> ConcatIter<'_> {
+    pub fn iter_concat(&self, root: ExprRef) -> ConcatIter {
         ConcatIter {
             exprs: self,
             current: Some(root),
         }
     }
 
-    pub fn iter_concat_bytes(&self, root: ExprRef) -> ConcatByteIter<'_> {
+    pub fn iter_concat_bytes(&self, root: ExprRef) -> ConcatByteIter {
         ConcatByteIter {
             exprs: self,
             pointer: ConcatBytePointer::new(root),

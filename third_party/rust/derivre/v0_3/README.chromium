@@ -1,7 +1,7 @@
 Name: derivre
 URL: https://crates.io/crates/derivre
-Version: 0.3.9
-Revision: 6cf5fc23f089a2d62b804099b7b3f99ad7d63514
+Version: 0.3.8
+Revision: c68f60791d191a05131796771f38c2e904417074
 Update Mechanism: Manual (https://crbug.com/449898466)
 License: MIT
 License File: //third_party/rust/chromium_crates_io/vendor/derivre-v0_3/LICENSE
