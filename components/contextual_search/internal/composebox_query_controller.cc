@@ -1278,8 +1278,6 @@ ComposeboxQueryController::CreateOAuthHeadersAndContinue(
       identity_manager_->HasPrimaryAccount(signin::ConsentLevel::kSignin)) {
     signin::AccessTokenFetcher::TokenCallback token_callback =
         base::BindOnce(&lens::CreateOAuthHeader).Then(std::move(callback));
-    signin::ScopeSet oauth_scopes;
-    oauth_scopes.insert(GaiaConstants::kLensOAuth2Scope);
     return std::make_unique<signin::PrimaryAccountAccessTokenFetcher>(
         signin::OAuthConsumerId::kComposeboxQueryController, identity_manager_,
         std::move(token_callback),
