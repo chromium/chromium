@@ -710,6 +710,7 @@ public final class StatusMediatorUnitTest {
         mMediator.setShowStatusIconForSecureOrigins(false);
         assertFalse(mModel.get(StatusProperties.SHOW_STATUS_VIEW));
 
+        mMediator.updateSecurityIcon(R.drawable.ic_logo_googleg_20dp, 0, 0);
         mMediator.updateVerboseStatus(ConnectionSecurityLevel.WARNING, false, false);
         assertTrue(mModel.get(StatusProperties.SHOW_STATUS_VIEW));
 
@@ -729,9 +730,10 @@ public final class StatusMediatorUnitTest {
         assertTrue(mModel.get(StatusProperties.SHOW_STATUS_VIEW));
 
         mMediator.setUrlHasFocus(false);
-        assertTrue(mModel.get(StatusProperties.SHOW_STATUS_VIEW));
+        assertFalse(mModel.get(StatusProperties.SHOW_STATUS_VIEW));
 
         // Non-secure pages should show the status view.
+        mMediator.updateSecurityIcon(R.drawable.ic_logo_googleg_20dp, 0, 0);
         mMediator.updateVerboseStatus(ConnectionSecurityLevel.DANGEROUS, false, false);
         assertTrue(mModel.get(StatusProperties.SHOW_STATUS_VIEW));
 
@@ -744,6 +746,45 @@ public final class StatusMediatorUnitTest {
         setupStoreIconForTesting(false);
         mMediator.showStoreIcon(
                 mWindowAndroid, JUnitTestGURLs.BLUE_1.getSpec(), mStoreIconDrawable, 0, false);
+        assertTrue(mModel.get(StatusProperties.SHOW_STATUS_VIEW));
+    }
+
+    @Test
+    @SmallTest
+    public void testUpdateStatusViewVisibility_withPermissionIcon() {
+        mMediator.setShowStatusIconForSecureOrigins(false);
+        mMediator.updateVerboseStatus(ConnectionSecurityLevel.SECURE, false, false);
+        assertFalse(mModel.get(StatusProperties.SHOW_STATUS_VIEW));
+
+        StatusProperties.PermissionIconResource icon =
+                new StatusProperties.PermissionIconResource(null, false, "test_icon");
+        mMediator.showPermissionIcon(icon);
+
+        assertTrue(mModel.get(StatusProperties.SHOW_STATUS_VIEW));
+    }
+
+    @Test
+    @SmallTest
+    public void testUpdateStatusViewVisibility_withVerboseStatusText() {
+        mMediator.setShowStatusIconForSecureOrigins(false);
+        mMediator.updateVerboseStatus(ConnectionSecurityLevel.SECURE, false, false);
+        assertFalse(mModel.get(StatusProperties.SHOW_STATUS_VIEW));
+
+        mMediator.updateVerboseStatus(ConnectionSecurityLevel.SECURE, true, false);
+
+        assertTrue(mModel.get(StatusProperties.SHOW_STATUS_VIEW));
+    }
+
+    @Test
+    @SmallTest
+    public void testUpdateStatusViewVisibility_withPaintPreview() {
+        mMediator.setShowStatusIconForSecureOrigins(false);
+        mMediator.updateVerboseStatus(ConnectionSecurityLevel.SECURE, false, false);
+        assertFalse(mModel.get(StatusProperties.SHOW_STATUS_VIEW));
+
+        // Simulate Paint Preview active (third argument is true)
+        mMediator.updateVerboseStatus(ConnectionSecurityLevel.SECURE, false, true);
+
         assertTrue(mModel.get(StatusProperties.SHOW_STATUS_VIEW));
     }
 
