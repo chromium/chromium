@@ -178,6 +178,8 @@ source_set("elevated_native_messaging_host") {
       "//ipc",
       "//remoting/host/win:security_descriptor",
     ]
+  } else if (is_linux) {
+    sources += [ "launch_native_messaging_host_process_linux.cc" ]
   } else {
     sources += [ "launch_native_messaging_host_process_failing.cc" ]
   }
