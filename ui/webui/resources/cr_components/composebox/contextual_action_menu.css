@@ -11,7 +11,6 @@
 
 #menu {
   --color-sys-divider: var(--color-composebox-file-carousel-divider);
-  --cr-action-menu-overflow: visible;
   --cr-menu-background-color: var(--color-composebox-background);
   --cr-menu-border-radius: 16px;
   --cr-primary-text-color: var(--color-composebox-file-chip-text);
