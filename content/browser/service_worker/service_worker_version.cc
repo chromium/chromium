@@ -1342,10 +1342,16 @@ void ServiceWorkerVersion::SetDevToolsAttached(bool attached) {
 
 void ServiceWorkerVersion::SetMainScriptResponse(
     std::unique_ptr<MainScriptResponse> response) {
-  main_script_fetched_ = true;
-  if (!response) {
-    main_script_response_callbacks_.Notify();
-    return;
+  if (base::FeatureList::IsEnabled(
+          features::kServiceWorkerStaticRouterConsolidateMainScriptResponse)) {
+    main_script_fetched_ = true;
+    if (!response) {
+      main_script_response_callbacks_.Notify();
+      return;
+    }
+  } else {
+    // In the old code path, this should never be called with a null response.
+    CHECK(response);
   }
 
   script_response_time_for_devtools_ = response->response_time;
@@ -1366,7 +1372,10 @@ void ServiceWorkerVersion::SetMainScriptResponse(
     context_->OnMainScriptResponseSet(version_id(), *main_script_response_);
   }
 
-  main_script_response_callbacks_.Notify();
+  if (base::FeatureList::IsEnabled(
+          features::kServiceWorkerStaticRouterConsolidateMainScriptResponse)) {
+    main_script_response_callbacks_.Notify();
+  }
 }
 
 bool ServiceWorkerVersion::main_script_fetched() const {
@@ -1375,6 +1384,10 @@ bool ServiceWorkerVersion::main_script_fetched() const {
 
 void ServiceWorkerVersion::EnsureMainScriptResponseSet(
     base::OnceClosure callback) {
+  if (!base::FeatureList::IsEnabled(
+          features::kServiceWorkerStaticRouterConsolidateMainScriptResponse)) {
+    return;
+  }
   if (main_script_fetched_) {
     std::move(callback).Run();
     return;
@@ -2519,13 +2532,24 @@ void ServiceWorkerVersion::StartWorkerInternal() {
   params->main_script_load_params = std::move(main_script_load_params_);
 
   if (IsInstalled(status())) {
-    if (!installed_scripts_sender_) {
+    if (base::FeatureList::IsEnabled(
+            features::
+                kServiceWorkerStaticRouterConsolidateMainScriptResponse)) {
+      if (!installed_scripts_sender_) {
+        installed_scripts_sender_ =
+            std::make_unique<ServiceWorkerInstalledScriptsSender>(this);
+        installed_scripts_sender_->Start();
+      }
+      params->installed_scripts_info =
+          installed_scripts_sender_->CreateInfoAndBind();
+    } else {
+      DCHECK(!installed_scripts_sender_);
       installed_scripts_sender_ =
           std::make_unique<ServiceWorkerInstalledScriptsSender>(this);
+      params->installed_scripts_info =
+          installed_scripts_sender_->CreateInfoAndBind();
       installed_scripts_sender_->Start();
     }
-    params->installed_scripts_info =
-        installed_scripts_sender_->CreateInfoAndBind();
   }
 
   params->service_worker_receiver =

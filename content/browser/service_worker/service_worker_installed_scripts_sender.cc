@@ -14,6 +14,7 @@
 #include "content/browser/service_worker/service_worker_consts.h"
 #include "content/browser/service_worker/service_worker_context_core.h"
 #include "content/browser/service_worker/service_worker_script_cache_map.h"
+#include "content/common/features.h"
 #include "net/base/hash_value.h"
 
 namespace content {
@@ -36,7 +37,12 @@ ServiceWorkerInstalledScriptsSender::~ServiceWorkerInstalledScriptsSender() {}
 
 blink::mojom::ServiceWorkerInstalledScriptsInfoPtr
 ServiceWorkerInstalledScriptsSender::CreateInfoAndBind() {
-  DCHECK(!manager_.is_bound());
+  if (base::FeatureList::IsEnabled(
+          features::kServiceWorkerStaticRouterConsolidateMainScriptResponse)) {
+    DCHECK(!manager_.is_bound());
+  } else {
+    DCHECK_EQ(State::kNotStarted, state_);
+  }
 
   std::vector<storage::mojom::ServiceWorkerResourceRecordPtr> resources =
       owner_->script_cache_map()->GetResources();
@@ -266,8 +272,12 @@ void ServiceWorkerInstalledScriptsSender::UpdateFinishedReasonAndBecomeIdle(
   // Inform the owner that we are done with the main script. If the reason is
   // not Success, we may still need to notify listeners that no metadata will
   // be forthcoming.
-  if (reason != ServiceWorkerInstalledScriptReader::FinishedReason::kSuccess) {
-    owner_->SetMainScriptResponse(nullptr);
+  if (base::FeatureList::IsEnabled(
+          features::kServiceWorkerStaticRouterConsolidateMainScriptResponse)) {
+    if (reason !=
+        ServiceWorkerInstalledScriptReader::FinishedReason::kSuccess) {
+      owner_->SetMainScriptResponse(nullptr);
+    }
   }
 
   if (finish_callback_) {
