@@ -162,9 +162,9 @@ crbug.com/1378476 [ mac arch-arm64 ] GpuProcess_no_swiftshader_for_webgl_without
 crbug.com/380269801 [ android android-brya ] GpuProcess_visibility [ Failure ]
 
 # Flaky DFM issues on Pixel 2 devices caused by loading chrome://gpu.
-crbug.com/490145251 [ android android-pixel-2 ] GpuProcess_disabling_workarounds_works [ Failure ]
-crbug.com/490145251 [ android android-pixel-2 ] GpuProcess_driver_bug_workarounds_in_gpu_process [ Failure ]
-crbug.com/490145251 [ android android-pixel-2 ] GpuProcess_one_extra_workaround [ Failure ]
+crbug.com/490145251 [ android android-pixel-2 no-clang-coverage ] GpuProcess_disabling_workarounds_works [ Failure ]
+crbug.com/490145251 [ android android-pixel-2 no-clang-coverage ] GpuProcess_driver_bug_workarounds_in_gpu_process [ Failure ]
+crbug.com/490145251 [ android android-pixel-2 no-clang-coverage ] GpuProcess_one_extra_workaround [ Failure ]
 crbug.com/490145251 [ android android-pixel-2 ] GpuProcess_readback_webgl_gpu_process [ Failure ]
 
 #######################################################################
