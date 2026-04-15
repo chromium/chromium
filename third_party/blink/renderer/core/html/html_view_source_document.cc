@@ -56,6 +56,7 @@
 #include "third_party/blink/renderer/core/input_type_names.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/text/platform_locale.h"
 
 namespace blink {
@@ -191,7 +192,7 @@ void HTMLViewSourceDocument::AddSource(
       ProcessTagToken(source, token, attributes_ranges, token_start);
       break;
     case HTMLToken::kProcessingInstruction:
-      // TODO(nrosenthal): implement processing instructions in view-source.
+      ProcessProcessingInstructionToken(source, token);
       break;
     case HTMLToken::kComment:
       ProcessCommentToken(source, token);
@@ -286,6 +287,14 @@ void HTMLViewSourceDocument::ProcessCommentToken(const String& source,
 void HTMLViewSourceDocument::ProcessCharacterToken(const String& source,
                                                    HTMLToken&) {
   AddText(source, g_empty_atom);
+}
+
+void HTMLViewSourceDocument::ProcessProcessingInstructionToken(
+    const String& source,
+    HTMLToken&) {
+  CHECK(RuntimeEnabledFeatures::HTMLProcessingInstructionEnabled());
+  AddText(source, class_processing_instruction_);
+  current_ = td_;
 }
 
 Element* HTMLViewSourceDocument::AddSpanWithClassName(

@@ -4,11 +4,15 @@
 
 #include "third_party/blink/renderer/core/html/html_view_source_document.h"
 
+#include <optional>
+
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/platform/web_runtime_features.h"
 #include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/frame/web_local_frame_impl.h"
 #include "third_party/blink/renderer/core/testing/sim/sim_request.h"
 #include "third_party/blink/renderer/core/testing/sim/sim_test.h"
+#include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 
 namespace blink {
 
@@ -22,9 +26,13 @@ class HTMLViewSourceDocumentTest : public SimTest {
   }
 
   void SetUp() override {
+    scoped_feature_.emplace(true);
     SimTest::SetUp();
     MainFrame().EnableViewSourceMode(true);
   }
+
+ private:
+  std::optional<ScopedHTMLProcessingInstructionForTest> scoped_feature_;
 };
 
 TEST_F(HTMLViewSourceDocumentTest, ViewSource1) {
@@ -747,6 +755,19 @@ TEST_F(HTMLViewSourceDocumentTest, LinebreakInLink) {
       "class=\"line-number\" value=\"7\"></td><td class=\"line-content\">  "
       "</td></tr></tbody></table></body></"
       "html>");
+}
+
+TEST_F(HTMLViewSourceDocumentTest, ProcessingInstruction) {
+  LoadMainResource(R"HTML(<?foo bar?>)HTML");
+  EXPECT_EQ(
+      GetDocument().documentElement()->GetOuterHTMLString(),
+      "<html><head><meta name=\"color-scheme\" content=\"light "
+      "dark\"></head><body><div class=\"line-gutter-backdrop\"></div><form "
+      "autocomplete=\"off\"><label class=\"line-wrap-control\"><input "
+      "type=\"checkbox\"></label></form><table><tbody><tr><td "
+      "class=\"line-number\" value=\"1\"></td><td class=\"line-content\">"
+      "<span class=\"html-processing-instruction\">&lt;?foo bar?&gt;</span>"
+      "</td></tr></tbody></table></body></html>");
 }
 
 }  // namespace blink

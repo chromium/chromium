@@ -141,6 +141,10 @@ tbody:last-child .line-content:empty:before {
     color: rgb(35, 110, 37);
 }
 
+.html-processing-instruction {
+    color: light-dark(rgb(0, 96, 96), rgb(100, 200, 200));
+}
+
 .html-doctype {
     /* Keep this in sync with inspectorSyntaxHighlight.css (.webkit-html-doctype) */
     color: rgb(192, 192, 192);

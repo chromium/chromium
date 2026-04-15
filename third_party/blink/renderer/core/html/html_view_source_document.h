@@ -58,6 +58,7 @@ class CORE_EXPORT HTMLViewSourceDocument final : public HTMLDocument {
                        int token_start);
   void ProcessCommentToken(const String& source, HTMLToken&);
   void ProcessCharacterToken(const String& source, HTMLToken&);
+  void ProcessProcessingInstructionToken(const String& source, HTMLToken&);
 
   struct Link {
     bool is_anchor;
@@ -94,6 +95,8 @@ class CORE_EXPORT HTMLViewSourceDocument final : public HTMLDocument {
   const AtomicString class_attribute_name_{"html-attribute-name"};
   const AtomicString class_attribute_value_{"html-attribute-value"};
   const AtomicString class_comment_{"html-comment"};
+  const AtomicString class_processing_instruction_{
+      "html-processing-instruction"};
 };
 
 }  // namespace blink
