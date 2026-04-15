@@ -185,10 +185,6 @@ class GnomeDesktopResizer : public DesktopResizer {
   // testing only.
   base::OnceClosure on_trying_to_apply_preferred_monitors_config_for_testing_;
 
-  // Flag to allow disabling the ignore-fractional-scale behavior for testing.
-  // See comments in DoApplyPreferredMonitorsConfig().
-  bool ignore_fractional_scales_in_multimon_ = true;
-
   bool block_and_queue_display_changes_ GUARDED_BY_CONTEXT(sequence_checker_) =
       false;
   std::vector<base::OnceClosure> pending_requests_

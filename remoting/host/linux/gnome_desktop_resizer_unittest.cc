@@ -82,7 +82,6 @@ class GnomeDesktopResizerTest : public testing::Test {
 };
 
 GnomeDesktopResizerTest::GnomeDesktopResizerTest() {
-  resizer_.ignore_fractional_scales_in_multimon_ = false;
   display_config_.layout_mode = GnomeDisplayConfig::LayoutMode::kLogical;
   display_config_.monitors = {
       {kMeta0, CreateMonitorInfo(0, 0, 100, 100, 2.0)},

@@ -49,27 +49,17 @@ inline double InverseIfLessThanOne(double v) {
 // example, the best scale for 1.5 with supported_scales=[1, 2] is 2, since
 // 2 / 1.5 = 1.33, which is smaller than 1.5 / 1 = 1.5.
 inline double FindBestScale(double preferred_scale,
-                            const std::vector<double>& supported_scales,
-                            bool ignore_fractional_scales) {
+                            const std::vector<double>& supported_scales) {
   DCHECK_GT(preferred_scale, 0.0);
   auto it = std::ranges::min_element(
-      supported_scales,
-      [preferred_scale, ignore_fractional_scales](double s1, double s2) {
+      supported_scales, [preferred_scale](double s1, double s2) {
         DCHECK_GT(s1, 0.0);
         DCHECK_GT(s2, 0.0);
-        if (ignore_fractional_scales && trunc(s1) == s1 && trunc(s2) != s2) {
-          // Make non-fractional scales better than fractional scales.
-          return true;
-        }
         return InverseIfLessThanOne(preferred_scale / s1) <
                InverseIfLessThanOne(preferred_scale / s2);
       });
   if (it == supported_scales.end()) {
     LOG(ERROR) << "Cannot find best scale for " << preferred_scale;
-    return 1.0;
-  }
-  if (ignore_fractional_scales && trunc(*it) != *it) {
-    LOG(ERROR) << "Cannot find non-fractional scales";
     return 1.0;
   }
   return *it;
@@ -490,12 +480,6 @@ void GnomeDesktopResizer::DoApplyPreferredMonitorsConfig() {
   // desired scales and positions, in which case we don't want to apply the
   // display config, since it would show a confirmation dialog.
   GnomeDisplayConfig new_config = current_display_config_;
-  // There is a bug in mutter such that fractional scales may be reported as
-  // supported but will fail to be applied when there are multiple virtual
-  // monitors, so we ignore fractional scales in that case.
-  // See: https://gitlab.gnome.org/GNOME/mutter/-/issues/4277
-  bool ignore_fractional_scales =
-      ignore_fractional_scales_in_multimon_ && new_config.monitors.size() > 1;
   bool config_changed = false;
   // Code below will early return if not all expected resolution changes have
   // been reflected in the display config.
@@ -525,8 +509,7 @@ void GnomeDesktopResizer::DoApplyPreferredMonitorsConfig() {
       config_changed = true;
     }
     double best_monitor_scale = FindBestScale(
-        preferred_config.scale, monitor.GetCurrentMode()->supported_scales,
-        ignore_fractional_scales);
+        preferred_config.scale, monitor.GetCurrentMode()->supported_scales);
     if (monitor.scale != best_monitor_scale) {
       monitor.scale = best_monitor_scale;
       config_changed = true;
