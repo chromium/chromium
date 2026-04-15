@@ -8,9 +8,6 @@
 #include "base/logging.h"
 #include "device/fido/cable/v2_handshake.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/boringssl/src/include/openssl/ec.h"
-#include "third_party/boringssl/src/include/openssl/ec_key.h"
-#include "third_party/boringssl/src/include/openssl/obj.h"
 
 using device::cablev2::authenticator::Registration;
 
@@ -99,13 +96,6 @@ class CableRegistrationStateTest : public testing::Test {
   }
 
  protected:
-  static bssl::UniquePtr<EC_KEY> FakeKey() {
-    bssl::UniquePtr<EC_GROUP> p256(
-        EC_GROUP_new_by_curve_name(NID_X9_62_prime256v1));
-    return bssl::UniquePtr<EC_KEY>(
-        EC_KEY_derive_from_secret(p256.get(), nullptr, 0));
-  }
-
   raw_ptr<TestSystemInterface> interface_ = nullptr;
   std::unique_ptr<RegistrationState> state_;
 };

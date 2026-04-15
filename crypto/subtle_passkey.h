@@ -38,6 +38,10 @@ crypto::SubtlePassKey MakeCryptoPassKey();
 crypto::SubtlePassKey MakeCryptoPassKeyForPasswordHash();
 }
 
+namespace webauthn {
+crypto::SubtlePassKey MakeCryptoPassKey();
+}  // namespace webauthn
+
 class OSCryptImpl;
 
 namespace crypto {
@@ -86,6 +90,10 @@ class CRYPTO_EXPORT SubtlePassKey final {
   // compatibility with a server-side implementation.
   friend SubtlePassKey password_manager::MakeCryptoPassKey();
   friend SubtlePassKey password_manager::MakeCryptoPassKeyForPasswordHash();
+
+  // These use custom scrypt parameters for compatibility with Android and the
+  // enclave server.
+  friend SubtlePassKey webauthn::MakeCryptoPassKey();
 
   // This class uses custom PBKDF2 parameters which cannot be changed for
   // compatibility with persisted data.

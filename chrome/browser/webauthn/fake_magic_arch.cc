@@ -16,11 +16,11 @@
 #include "components/trusted_vault/proto/recovery_key_store.pb.h"
 #include "components/trusted_vault/proto/vault.pb.h"
 #include "components/trusted_vault/securebox.h"
+#include "crypto/aead.h"
 #include "crypto/hash.h"
 #include "crypto/hmac.h"
-#include "third_party/boringssl/src/include/openssl/aead.h"
-#include "third_party/boringssl/src/include/openssl/evp.h"
-#include "third_party/boringssl/src/include/openssl/hmac.h"
+#include "crypto/kdf.h"
+#include "crypto/subtle_passkey.h"
 
 namespace {
 
@@ -49,9 +49,12 @@ std::array<uint8_t, 32> HashPIN(std::string_view pin,
   const base::span<const uint8_t> salt =
       base::as_byte_span(metadata.hash_salt());
   std::array<uint8_t, 32> hashed;
-  CHECK(EVP_PBE_scrypt(pin.data(), pin.size(), salt.data(), salt.size(),
-                       metadata.hash_difficulty(), 8, 1,
-                       /*max_mem=*/0, hashed.data(), hashed.size()));
+  crypto::kdf::Scrypt(
+      {.cost = static_cast<uint64_t>(metadata.hash_difficulty()),
+       .block_size = 8,
+       .parallelization = 1},
+      base::as_byte_span(pin), salt, hashed,
+      crypto::SubtlePassKey::ForTesting());
   return hashed;
 }
 
@@ -71,18 +74,8 @@ std::vector<uint8_t> Decrypt(base::span<const uint8_t> key,
   CHECK_GE(nonce_and_ciphertext.size(), 12u);
   const auto [nonce, ciphertext] = nonce_and_ciphertext.split_at<12>();
 
-  EVP_AEAD_CTX ctx;
-  CHECK(EVP_AEAD_CTX_init(&ctx, EVP_aead_aes_256_gcm(), key.data(), key.size(),
-                          EVP_AEAD_DEFAULT_TAG_LENGTH, nullptr));
-  std::vector<uint8_t> result(ciphertext.size());
-  size_t result_len;
-  CHECK(EVP_AEAD_CTX_open(&ctx, result.data(), &result_len, result.size(),
-                          nonce.data(), nonce.size(), ciphertext.data(),
-                          ciphertext.size(), nullptr, 0));
-  EVP_AEAD_CTX_cleanup(&ctx);
-  CHECK_LE(result_len, result.size());
-  result.resize(result_len);
-  return result;
+  crypto::Aead aead(crypto::Aead::AeadAlgorithm::AES_256_GCM, key);
+  return aead.Open(ciphertext, nonce, /*aad=*/{}).value();
 }
 
 }  // namespace

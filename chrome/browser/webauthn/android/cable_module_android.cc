@@ -36,13 +36,6 @@
 #include "device/fido/cable/v2_registration.h"
 #include "device/fido/cbor_extract.h"
 #include "device/fido/public/features.h"
-#include "third_party/boringssl/src/include/openssl/bytestring.h"
-#include "third_party/boringssl/src/include/openssl/digest.h"
-#include "third_party/boringssl/src/include/openssl/ec.h"
-#include "third_party/boringssl/src/include/openssl/ec_key.h"
-#include "third_party/boringssl/src/include/openssl/hkdf.h"
-#include "third_party/boringssl/src/include/openssl/mem.h"
-#include "third_party/boringssl/src/include/openssl/obj.h"
 
 // These "headers" actually contains function definitions and thus can only be
 // included once across Chromium.

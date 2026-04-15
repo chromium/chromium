@@ -16,7 +16,10 @@
 #include "components/trusted_vault/proto/recovery_key_store.pb.h"
 #include "components/trusted_vault/proto/vault.pb.h"
 #include "crypto/evp.h"
+#include "crypto/keypair.h"
 #include "crypto/sha2.h"
+#include "crypto/sign.h"
+#include "crypto/subtle_passkey.h"
 #include "device/fido/enclave/constants.h"
 #include "device/fido/enclave/enclave_authenticator.h"
 #include "net/cert/asn1_util.h"
@@ -24,10 +27,8 @@
 #include "services/network/public/cpp/data_element.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "third_party/boringssl/src/include/openssl/bn.h"
-#include "third_party/boringssl/src/include/openssl/bytestring.h"
-#include "third_party/boringssl/src/include/openssl/ec_key.h"
+#include "third_party/boringssl/src/include/openssl/ec.h"
 #include "third_party/boringssl/src/include/openssl/evp.h"
-#include "third_party/boringssl/src/include/openssl/rsa.h"
 
 namespace {
 
@@ -247,38 +248,21 @@ static const uint8_t kSigRSAPrivateKey[] = {
 constexpr uint32_t kTestTime = 1707344402;
 
 // Load an RSA private key from one of the embedded bytestrings, above.
-bssl::UniquePtr<EVP_PKEY> GetRSAKey(base::span<const uint8_t> der) {
-  CBS cbs;
-  CBS_init(&cbs, der.data(), der.size());
-  bssl::UniquePtr<RSA> rsa(RSA_parse_private_key(&cbs));
-  CHECK(rsa);
-  bssl::UniquePtr<EVP_PKEY> pkey(EVP_PKEY_new());
-  EVP_PKEY_set1_RSA(pkey.get(), rsa.get());
-  return pkey;
+crypto::keypair::PrivateKey GetRSAKey(base::span<const uint8_t> der) {
+  std::optional<crypto::keypair::PrivateKey> key =
+      crypto::keypair::PrivateKey::FromRSAPrivateKey(der);
+  CHECK(key);
+  return *key;
 }
 
 // Generate a random P-256 key.
-bssl::UniquePtr<EVP_PKEY> NewECKey() {
-  bssl::UniquePtr<EC_KEY> ec_key(
-      EC_KEY_new_by_curve_name(NID_X9_62_prime256v1));
-  CHECK(EC_KEY_generate_key(ec_key.get()));
-  bssl::UniquePtr<EVP_PKEY> pkey(EVP_PKEY_new());
-  EVP_PKEY_set1_EC_KEY(pkey.get(), ec_key.get());
-  return pkey;
+crypto::keypair::PrivateKey NewECKey() {
+  return crypto::keypair::PrivateKey::GenerateEcP256();
 }
 
-std::vector<uint8_t> GetPublicKeyBytes(const EVP_PKEY& key) {
-  std::vector<uint8_t> spki = crypto::evp::PublicKeyToBytes(&key);
-  std::string_view spki_view =
-      std::string_view(reinterpret_cast<const char*>(spki.data()), spki.size());
-  // Extract the public key from the SPKI.
-  std::string_view ec_point_oct;
-  CHECK(net::asn1::ExtractSubjectPublicKeyFromSPKI(spki_view, &ec_point_oct));
-  // ExtractSubjectPublicKeyFromSPKI does not remove the initial octet
-  // encoding the number of unused bits in the ASN.1 BIT STRING so we do it
-  // here. The public key is always byte-aligned.
-  ec_point_oct.remove_prefix(1);
-  return std::vector<uint8_t>(ec_point_oct.begin(), ec_point_oct.end());
+std::vector<uint8_t> GetPublicKeyBytes(const crypto::keypair::PrivateKey& key) {
+  return crypto::keypair::PublicKey::FromPrivateKey(key)
+      .ToUncompressedX962Point();
 }
 
 class FakeRecoveryKeyStoreImpl : public FakeRecoveryKeyStore {
@@ -341,20 +325,20 @@ class FakeRecoveryKeyStoreImpl : public FakeRecoveryKeyStore {
   std::array<uint8_t, 32> EndpointPrivateKeyFor(
       base::span<const uint8_t> public_key_bytes) const override {
     for (const auto& endpoint_key : endpoint_keys_) {
-      if (GetPublicKeyBytes(*endpoint_key) != public_key_bytes) {
+      if (GetPublicKeyBytes(endpoint_key) != public_key_bytes) {
         continue;
       }
       std::array<uint8_t, 32> result;
       CHECK(BN_bn2bin_padded(
           result.data(), result.size(),
-          EC_KEY_get0_private_key(EVP_PKEY_get0_EC_KEY(endpoint_key.get()))));
+          EC_KEY_get0_private_key(EVP_PKEY_get0_EC_KEY(endpoint_key.key()))));
       return result;
     }
     NOTREACHED() << "Could not find public key";
   }
 
   std::vector<uint8_t> CurrentEndpointPublicKeyBytes() const override {
-    return GetPublicKeyBytes(*endpoint_keys_.back());
+    return GetPublicKeyBytes(endpoint_keys_.back());
   }
 
  private:
@@ -374,7 +358,7 @@ class FakeRecoveryKeyStoreImpl : public FakeRecoveryKeyStore {
     static const uint8_t kIsCA[] = {0x30, 0x03, 0x01, 0x01, 0xff};
     std::string root_cert;
     CHECK(net::x509_util::CreateSelfSignedCert(
-        endpoint_keys_.back().get(), net::x509_util::DIGEST_SHA256, "CN=Root",
+        endpoint_keys_.back().key(), net::x509_util::DIGEST_SHA256, "CN=Root",
         /*serial_number=*/1, not_before, not_after,
         {net::x509_util::Extension(kBasicConstraints, /*critical=*/true,
                                    kIsCA)},
@@ -385,14 +369,14 @@ class FakeRecoveryKeyStoreImpl : public FakeRecoveryKeyStore {
 #endif
 
     CHECK(net::x509_util::CreateCert(
-        sig_key_.get(), net::x509_util::DIGEST_SHA256, "CN=Sig",
+        sig_key_.key(), net::x509_util::DIGEST_SHA256, "CN=Sig",
         /*serial_number=*/2, not_before, not_after, /*extension_specs=*/{},
-        "CN=Root", root_key_.get(), &sig_cert_der_));
+        "CN=Root", root_key_.key(), &sig_cert_der_));
     CHECK(net::x509_util::CreateCert(
-        endpoint_keys_.back().get(), net::x509_util::DIGEST_SHA256,
+        endpoint_keys_.back().key(), net::x509_util::DIGEST_SHA256,
         "CN=Endpoint",
         /*serial_number=*/3, not_before, not_after, /*extension_specs=*/{},
-        "CN=Root", root_key_.get(), &endpoint_cert_der_));
+        "CN=Root", root_key_.key(), &endpoint_cert_der_));
 
     certs_xml_ = base::ReplaceStringPlaceholders(
         R"(<?xml version="1.0" encoding="UTF-8"?>
@@ -418,13 +402,9 @@ class FakeRecoveryKeyStoreImpl : public FakeRecoveryKeyStore {
          base::NumberToString(recovery_key_store_serial_number_)},
         /*offsets=*/nullptr);
 
-    const auto certs_xml_hash =
-        crypto::SHA256Hash(base::as_byte_span(certs_xml_));
-    RSA* const sig_key = EVP_PKEY_get0_RSA(sig_key_.get());
-    unsigned sig_len = RSA_size(sig_key);
-    std::vector<uint8_t> sig(sig_len, 0);
-    CHECK(RSA_sign(NID_sha256, certs_xml_hash.data(), certs_xml_hash.size(),
-                   sig.data(), &sig_len, sig_key));
+    const std::vector<uint8_t> sig =
+        crypto::sign::Sign(crypto::sign::RSA_PKCS1_SHA256, sig_key_,
+                           base::as_byte_span(certs_xml_));
 
     sig_xml_ = base::ReplaceStringPlaceholders(
         R"(<?xml version="1.0" encoding="UTF-8"?>
@@ -505,9 +485,9 @@ class FakeRecoveryKeyStoreImpl : public FakeRecoveryKeyStore {
     return std::make_pair(net::HTTP_OK, response.SerializeAsString());
   }
 
-  const bssl::UniquePtr<EVP_PKEY> root_key_;
-  const bssl::UniquePtr<EVP_PKEY> sig_key_;
-  std::vector<bssl::UniquePtr<EVP_PKEY>> endpoint_keys_;
+  crypto::keypair::PrivateKey root_key_;
+  crypto::keypair::PrivateKey sig_key_;
+  std::vector<crypto::keypair::PrivateKey> endpoint_keys_;
   std::string sig_cert_der_;
   std::string endpoint_cert_der_;
   std::string certs_xml_;

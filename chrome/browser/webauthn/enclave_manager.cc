@@ -87,8 +87,10 @@
 #include "crypto/aead.h"
 #include "crypto/hash.h"
 #include "crypto/kdf.h"
+#include "crypto/keypair.h"
 #include "crypto/random.h"
 #include "crypto/sha2.h"
+#include "crypto/subtle_passkey.h"
 #include "crypto/unexportable_key.h"
 #include "crypto/user_verifying_key.h"
 #include "device/fido/enclave/constants.h"
@@ -111,9 +113,6 @@
 #include "third_party/abseil-cpp/absl/functional/overload.h"
 #include "third_party/boringssl/src/include/openssl/base.h"
 #include "third_party/boringssl/src/include/openssl/bytestring.h"
-#include "third_party/boringssl/src/include/openssl/ec.h"
-#include "third_party/boringssl/src/include/openssl/evp.h"
-#include "third_party/boringssl/src/include/openssl/rand.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "ash/shell.h"
@@ -178,6 +177,12 @@ EnclaveManager::StoreKeysLock::~StoreKeysLock() {
   CHECK_GT(manager_->store_keys_lock_depth_, 0u);
   manager_->store_keys_lock_depth_--;
 }
+
+namespace webauthn {
+crypto::SubtlePassKey MakeCryptoPassKey() {
+  return crypto::SubtlePassKey();
+}
+}  // namespace webauthn
 
 namespace {
 
@@ -289,20 +294,11 @@ std::string VecToString(base::span<const uint8_t> v) {
 }
 
 bool IsValidSubjectPublicKeyInfo(base::span<const uint8_t> spki) {
-  CBS cbs;
-  CBS_init(&cbs, spki.data(), spki.size());
-  bssl::UniquePtr<EVP_PKEY> pkey(EVP_parse_public_key(&cbs));
-  return static_cast<bool>(pkey);
+  return crypto::keypair::PublicKey::FromSubjectPublicKeyInfo(spki).has_value();
 }
 
 bool IsValidUncompressedP256X962(base::span<const uint8_t> x962) {
-  if (x962.empty() || x962[0] != 4) {
-    return false;
-  }
-  const EC_GROUP* group = EC_group_p256();
-  bssl::UniquePtr<EC_POINT> point(EC_POINT_new(group));
-  return 1 == EC_POINT_oct2point(group, point.get(), x962.data(), x962.size(),
-                                 /*ctx=*/nullptr);
+  return crypto::keypair::PublicKey::FromEcP256Point(x962).has_value();
 }
 
 std::optional<int> CheckPINInvariants(
@@ -1053,7 +1049,7 @@ struct HashedPIN {
 
 std::unique_ptr<HashedPIN> HashPINSlowly(std::string_view pin) {
   auto hashed = std::make_unique<HashedPIN>();
-  RAND_bytes(hashed->metadata.salt.data(), hashed->metadata.salt.size());
+  crypto::RandBytes(hashed->metadata.salt);
   // This is the primary work factor in scrypt. This value matches
   // the original recommended parameters. Those are a little out
   // of date in 2024, but Android is using 4096. Since this work
@@ -1064,9 +1060,11 @@ std::unique_ptr<HashedPIN> HashPINSlowly(std::string_view pin) {
       pin.size() == 6 && std::ranges::all_of(pin, [](char c) -> bool {
         return c >= '0' && c <= '9';
       });
-  CHECK(EVP_PBE_scrypt(pin.data(), pin.size(), hashed->metadata.salt.data(),
-                       hashed->metadata.salt.size(), hashed->metadata.n, 8, 1,
-                       /*max_mem=*/0, hashed->hashed, sizeof(hashed->hashed)));
+  crypto::kdf::Scrypt({.cost = static_cast<uint64_t>(hashed->metadata.n),
+                       .block_size = 8,
+                       .parallelization = 1},
+                      base::as_byte_span(pin), hashed->metadata.salt,
+                      hashed->hashed, webauthn::MakeCryptoPassKey());
   return hashed;
 }
 
@@ -4138,11 +4136,13 @@ std::unique_ptr<enclave::ClaimedPIN> EnclaveManager::MakeClaimedPINSlowly(
     std::string pin,
     std::unique_ptr<webauthn_pb::EnclaveLocalState_WrappedPIN> wrapped_pin) {
   uint8_t hashed[32];
-  const std::string& salt = wrapped_pin->hash_salt();
-  CHECK(EVP_PBE_scrypt(pin.data(), pin.size(),
-                       reinterpret_cast<const uint8_t*>(salt.data()),
-                       salt.size(), wrapped_pin->hash_difficulty(), 8, 1,
-                       1ul << 28, hashed, sizeof(hashed)));
+  crypto::kdf::Scrypt(
+      {.cost = static_cast<uint64_t>(wrapped_pin->hash_difficulty()),
+       .block_size = 8,
+       .parallelization = 1,
+       .max_memory_bytes = 1ul << 28},
+      base::as_byte_span(pin), base::as_byte_span(wrapped_pin->hash_salt()),
+      hashed, webauthn::MakeCryptoPassKey());
 
   static constexpr uint8_t kAAD[] = {'P', 'I', 'N', ' ', 'c',
                                      'l', 'a', 'i', 'm'};
