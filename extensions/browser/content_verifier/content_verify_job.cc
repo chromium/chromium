@@ -252,9 +252,9 @@ void ContentVerifyJob::StartWithContentHash(
   // .../<extension_version>_N folder could still exist, and still have the same
   // files (until it's garbage collected at some point) so the file's hash in
   // the corrupted folder wouldn't match `content_hash`.
-  if ((GetCurrentChannel() == version_info::Channel::CANARY ||
-       GetCurrentChannel() == version_info::Channel::DEV) &&
-      content_hash->extension_root() != extension_root_) {
+  // TODO(crbug.com/416484593): Remove crash keys once we're confident the
+  // issue is fixed.
+  if (content_hash->extension_root() != extension_root_) {
     debug::ScopedContentVerifyJobCrashKey crash_keys(
         content_hash->extension_root(), extension_root_,
         content_hash->extension_id(), extension_id_,
