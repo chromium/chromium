@@ -22,40 +22,6 @@ chromium-metrics-reviews@google.com.
 
 <histograms>
 
-<variants name="BackgroundFetchEvents">
-  <variant name=".AbortEvent" summary="BackgroundFetchAbortEvent"/>
-  <variant name=".ClickEvent" summary="BackgroundFetchClickEvent"/>
-  <variant name=".FailEvent" summary="BackgroundFetchFailEvent"/>
-  <variant name=".FetchedEvent" summary="BackgroundFetchedEvent"/>
-  <variant name=".SuccessEvent" summary="BackgroundFetchSuccessEvent"/>
-</variants>
-
-<histogram
-    name="BackgroundFetch.EventDispatchFailure.FindWorker{BackgroundFetchEvents}"
-    enum="ServiceWorkerStatusCode" expires_after="2022-06-30">
-  <owner>peter@chromium.org</owner>
-  <owner>rayankans@chromium.org</owner>
-  <summary>
-    Records the Service Worker status code that caused a Background Fetch API
-    event to fail dispatching whilst trying to find the Service Worker.
-    {BackgroundFetchEvents}
-  </summary>
-  <token key="BackgroundFetchEvents" variants="BackgroundFetchEvents"/>
-</histogram>
-
-<histogram
-    name="BackgroundFetch.EventDispatchFailure.StartWorker{BackgroundFetchEvents}"
-    enum="ServiceWorkerStatusCode" expires_after="2022-06-30">
-  <owner>peter@chromium.org</owner>
-  <owner>rayankans@chromium.org</owner>
-  <summary>
-    Records the Service Worker status code that caused a Background Fetch API
-    event to fail dispatching whilst trying to start the active Service Worker.
-    {BackgroundFetchEvents}
-  </summary>
-  <token key="BackgroundFetchEvents" variants="BackgroundFetchEvents"/>
-</histogram>
-
 <histogram name="BackgroundSync.Event.BatchSize" units="units"
     expires_after="2024-02-06">
   <owner>nator@chromium.org</owner>
