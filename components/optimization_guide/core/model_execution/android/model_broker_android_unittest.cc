@@ -26,8 +26,6 @@ namespace optimization_guide {
 
 namespace {
 
-using ModelStatus = on_device_model::ModelDownloaderAndroid::ModelStatus;
-
 proto::OnDeviceBaseModelMetadata MatchingMetadata(
     const OnDeviceBaseModelSpec& spec) {
   return CreateOnDeviceBaseModelMetadata(spec.model_name, spec.model_version,
@@ -50,7 +48,6 @@ class ModelBrokerAndroidFeatureList {
         {
             {features::kOptimizationGuideModelExecution, {}},
             {features::kOptimizationGuideOnDeviceModel, {}},
-            {features::kAICoreTest, {}},
         },
         {features::kRequirePersistentModeForScamDetection});
   }
@@ -82,7 +79,6 @@ class RequirePersistentModeForScamDetectionEnabledFeatureList {
         {
             {features::kOptimizationGuideModelExecution, {}},
             {features::kOptimizationGuideOnDeviceModel, {}},
-            {features::kAICoreTest, {}},
             {features::kRequirePersistentModeForScamDetection, {}},
         },
         {});
@@ -95,10 +91,7 @@ class RequirePersistentModeForScamDetectionEnabledFeatureList {
 
 class ModelBrokerAndroidTest : public testing::Test {
  public:
-  ModelBrokerAndroidTest() {
-    java_helper_.SetMockAiCoreFactory();
-    java_helper_.SetDefaultStatusCheckResult(ModelStatus::kAvailable);
-  }
+  ModelBrokerAndroidTest() { java_helper_.SetMockAiCoreFactory(); }
   ~ModelBrokerAndroidTest() override = default;
 
   ModelBrokerAndroid& EnsureBroker() {
@@ -342,122 +335,6 @@ TEST_F(ModelBrokerAndroidTest, DownloadSuccessForAlreadyUsedFeature) {
   auto session =
       DownloadModelAndCreateSession(client, mojom::OnDeviceFeature::kTest);
   ASSERT_TRUE(session);
-}
-
-// Test fixture for verifying model status check behavior with specific
-// statuses set per test.
-class ModelBrokerAndroidStatusCheckTest : public ModelBrokerAndroidTest {
- public:
-  ModelBrokerAndroidStatusCheckTest() = default;
-  ~ModelBrokerAndroidStatusCheckTest() override = default;
-};
-
-// Verify that when model status is unavailable, the subscriber gets
-// kNotSupported and the session future resolves to nullptr.
-TEST_F(ModelBrokerAndroidStatusCheckTest, ModelStatusUnavailable) {
-  java_helper_.SetDefaultStatusCheckResult(ModelStatus::kUnavailable);
-  InstallTestFeatureConfig();
-  ModelBrokerClient client(BindAndPassRemote(), nullptr);
-
-  base::test::TestFuture<ModelBrokerClient::CreateSessionResult> future;
-  client.CreateSession(mojom::OnDeviceFeature::kTest, SessionConfigParams{},
-                       future.GetCallback());
-  base::test::RunUntil([&]() {
-    return client.GetSubscriber(mojom::OnDeviceFeature::kTest)
-               .unavailable_reason() ==
-           mojom::ModelUnavailableReason::kNotSupported;
-  });
-  EXPECT_EQ(future.Get(), nullptr);
-}
-
-// Verify that when model status is downloading, the subscriber gets
-// kPendingAssets.
-TEST_F(ModelBrokerAndroidStatusCheckTest, ModelStatusDownloading) {
-  java_helper_.SetDefaultStatusCheckResult(ModelStatus::kDownloading);
-  InstallTestFeatureConfig();
-  ModelBrokerClient client(BindAndPassRemote(), nullptr);
-
-  base::test::TestFuture<ModelBrokerClient::CreateSessionResult> future;
-  client.CreateSession(mojom::OnDeviceFeature::kTest, SessionConfigParams{},
-                       future.GetCallback());
-  base::test::RunUntil([&]() {
-    return client.GetSubscriber(mojom::OnDeviceFeature::kTest)
-               .unavailable_reason() ==
-           mojom::ModelUnavailableReason::kPendingAssets;
-  });
-  EXPECT_FALSE(future.IsReady());
-}
-
-// Verify that when model status is downloadable, the subscriber gets
-// kPendingUsage.
-TEST_F(ModelBrokerAndroidStatusCheckTest, ModelStatusDownloadable) {
-  java_helper_.SetDefaultStatusCheckResult(ModelStatus::kDownloadable);
-  InstallTestFeatureConfig();
-  ModelBrokerClient client(BindAndPassRemote(), nullptr);
-
-  base::test::TestFuture<ModelBrokerClient::CreateSessionResult> future;
-  client.CreateSession(mojom::OnDeviceFeature::kTest, SessionConfigParams{},
-                       future.GetCallback());
-  base::test::RunUntil([&]() {
-    return client.GetSubscriber(mojom::OnDeviceFeature::kTest)
-               .unavailable_reason() ==
-           mojom::ModelUnavailableReason::kPendingUsage;
-  });
-  EXPECT_FALSE(future.IsReady());
-}
-
-// Verify that when model status is kApiNotAvailable (e.g., Chrome-branded
-// builds without MLKit), the flow continues as if the check passed. The
-// subscriber should reach kPendingAssets since the model adaptation may still
-// need to be downloaded.
-TEST_F(ModelBrokerAndroidStatusCheckTest, ModelStatusApiNotAvailable) {
-  java_helper_.SetDefaultStatusCheckResult(ModelStatus::kApiNotAvailable);
-  InstallTestFeatureConfig();
-  ModelBrokerClient client(BindAndPassRemote(), nullptr);
-
-  base::test::TestFuture<ModelBrokerClient::CreateSessionResult> future;
-  client.CreateSession(mojom::OnDeviceFeature::kTest, SessionConfigParams{},
-                       future.GetCallback());
-  base::test::RunUntil([&]() {
-    return client.GetSubscriber(mojom::OnDeviceFeature::kTest)
-               .unavailable_reason() ==
-           mojom::ModelUnavailableReason::kPendingAssets;
-  });
-  EXPECT_FALSE(future.IsReady());
-}
-
-// Verify that the init callback is not fired until all AICore features' status
-// checks complete (BarrierClosure).
-TEST_F(ModelBrokerAndroidStatusCheckTest, BarrierWaitsForAllStatusChecks) {
-  // Clear auto-respond so status checks wait for explicit triggering.
-  java_helper_.ClearDefaultStatusCheckResult();
-  InstallTestFeatureConfig();
-  ModelBrokerClient client(BindAndPassRemote(), nullptr);
-
-  base::test::TestFuture<ModelBrokerClient::CreateSessionResult> future;
-  client.CreateSession(mojom::OnDeviceFeature::kTest, SessionConfigParams{},
-                       future.GetCallback());
-
-  // CheckModelStatus creates one status checker per unique AICore
-  // feature. With kAICorePrompt and kScamDetection enabled plus kAICoreTest
-  // enabled in the test feature list, the unique AICore features are: PROMPT
-  // (covers kPromptApi, kSummarize), SCAM_DETECTION (kScamDetection), and TEST.
-  base::test::RunUntil(
-      [&]() { return java_helper_.GetStatusCheckerCount() == 3; });
-
-  // Complete status checks for all AICore features. The barrier fires,
-  // solutions are updated, and the subscriber for kTest feature is added.
-  java_helper_.TriggerAllDownloadersOnStatusCheckResult(
-      ModelStatus::kAvailable);
-
-  // All status checkers should have been destroyed after completion.
-  EXPECT_EQ(java_helper_.GetStatusCheckerCount(), 0);
-  base::test::RunUntil([&]() {
-    return client.GetSubscriber(mojom::OnDeviceFeature::kTest)
-               .unavailable_reason() ==
-           mojom::ModelUnavailableReason::kPendingAssets;
-  });
-  EXPECT_FALSE(future.IsReady());
 }
 
 class ModelBrokerAndroidRequirePersistentModeEnabledTest
