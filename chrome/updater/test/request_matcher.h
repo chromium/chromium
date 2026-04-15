@@ -11,6 +11,7 @@
 
 #include "base/containers/flat_map.h"
 #include "base/functional/callback_forward.h"
+#include "base/values.h"
 #include "base/version.h"
 #include "chrome/updater/update_service.h"
 #include "chrome/updater/updater_scope.h"
@@ -47,10 +48,15 @@ Matcher GetUpdaterUserAgentMatcher(
 // for the `target_url` (uses current server as a proxy).
 Matcher GetTargetURLMatcher(GURL target_url);
 
-// Returns a matcher which returns true if all regexex are found in the given
+// Returns a matcher which returns true if all regexes are found in the given
 // order.
 [[nodiscard]] Matcher GetContentMatcher(
     const std::vector<std::string>& expected_content_regex_sequence);
+
+// Returns a matcher which returns true if the request's decoded content parses
+// to a JSON object that covers the `expected_target` (using IsJSONSubset).
+[[nodiscard]] Matcher GetJSONContentMatcher(
+    const base::DictValue& expected_target);
 
 // Returns a matcher which returns true if request scope is same as the given
 // value.

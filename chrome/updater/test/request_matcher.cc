@@ -24,6 +24,7 @@
 #include "base/version.h"
 #include "chrome/updater/branded_constants.h"
 #include "chrome/updater/test/http_request.h"
+#include "chrome/updater/test/unit_test_util.h"
 #include "chrome/updater/update_service.h"
 #include "chrome/updater/updater_scope.h"
 #include "chrome/updater/util/util.h"
@@ -294,6 +295,35 @@ Matcher GetMultipartContentMatcher(
 
     return true;
   });
+}
+
+Matcher GetJSONContentMatcher(const base::DictValue& expected_target) {
+  // Capture `expected_target` by value, since the reference might be local
+  // to the test scope, but the matcher callback is used asynchronously.
+  return base::BindLambdaForTesting(
+      [target =
+           base::Value(expected_target.Clone())](const HttpRequest& request) {
+        std::optional<base::DictValue> doc = base::JSONReader::ReadDict(
+            request.decoded_content, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
+        if (!doc) {
+          ADD_FAILURE() << "Could not parse decoded content as a JSON dict: "
+                        << GetPrintableContent(request);
+          return false;
+        }
+
+        base::Value doc_value(std::move(*doc));
+        if (!IsJSONSubset(target, doc_value,
+                          [](const std::string& a, const std::string& b) {
+                            return base::EqualsCaseInsensitiveASCII(a, b);
+                          })) {
+          ADD_FAILURE() << "Expected JSON subset: [" << target.DebugString()
+                        << "] not found in (parsed) request content: ["
+                        << doc_value.DebugString() << "]";
+          return false;
+        }
+
+        return true;
+      });
 }
 
 }  // namespace updater::test::request

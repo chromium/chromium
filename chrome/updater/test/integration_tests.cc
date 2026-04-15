@@ -128,10 +128,18 @@ using enterprise_management::OmahaSettingsClientProto;
 void ExpectNoUpdateSequence(
     ScopedServer& test_server,
     const std::string& app_id,
-    const base::Version& version = base::Version(kUpdaterVersion)) {
-  test_server.ExpectOnce({request::GetUpdaterUserAgentMatcher(version),
-                          request::GetContentMatcher({base::StringPrintf(
-                              R"(.*"appid":"%s".*)", app_id)})},
+    const base::Version& updater_version = base::Version(kUpdaterVersion),
+    std::optional<base::Version> app_version = std::nullopt) {
+  base::DictValue app_expectation = base::DictValue().Set("appid", app_id);
+  if (app_version) {
+    app_expectation.Set("version", app_version->GetString());
+  }
+  test_server.ExpectOnce({request::GetUpdaterUserAgentMatcher(updater_version),
+                          request::GetJSONContentMatcher(
+                              base::DictValue().SetByDottedPath(
+                                  "request.apps",
+                                  base::ListValue().Append(
+                                      std::move(app_expectation))))},
                          base::BindRepeating(
                              [](const std::string& app_id, bool v4) {
                                return v4 ? base::StringPrintf(
@@ -1842,14 +1850,18 @@ TEST_F(IntegrationTest, UpdateApps) {
   ASSERT_NO_FATAL_FAILURE(ExpectUpdateSequence(
       test_server, kAppId, "", UpdateService::Priority::kForeground,
       base::Version("0.1"), v1));
-  ASSERT_NO_FATAL_FAILURE(ExpectNoUpdateSequence(test_server, kUpdaterAppId));
+  ASSERT_NO_FATAL_FAILURE(ExpectNoUpdateSequence(
+      test_server, kUpdaterAppId, base::Version(kUpdaterVersion),
+      base::Version(kUpdaterVersion)));
   ASSERT_NO_FATAL_FAILURE(RunUpdateApps(0));
 
   base::Version v2("2");
   ASSERT_NO_FATAL_FAILURE(ExpectUpdateSequence(
       test_server, kAppId, "", UpdateService::Priority::kForeground, v1, v2,
       false, true));
-  ASSERT_NO_FATAL_FAILURE(ExpectNoUpdateSequence(test_server, kUpdaterAppId));
+  ASSERT_NO_FATAL_FAILURE(ExpectNoUpdateSequence(
+      test_server, kUpdaterAppId, base::Version(kUpdaterVersion),
+      base::Version(kUpdaterVersion)));
   ASSERT_NO_FATAL_FAILURE(RunUpdateApps(0));
 
   ASSERT_TRUE(WaitForUpdaterExit());

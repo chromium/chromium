@@ -15,11 +15,12 @@
 #include "base/check.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
+#include "base/json/json_reader.h"
 #include "base/logging.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/strings/string_util.h"
-#include "base/strings/stringprintf.h"
 #include "base/time/time.h"
+#include "base/values.h"
 #include "chrome/updater/test/http_request.h"
 #include "chrome/updater/test/integration_test_commands.h"
 #include "chrome/updater/test/integration_tests_impl.h"
@@ -28,25 +29,32 @@
 #include "net/test/embedded_test_server/http_request.h"
 #include "net/test/embedded_test_server/http_response.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/strings/str_format.h"
 #include "third_party/zlib/google/compression_utils.h"
 
 namespace updater::test {
 namespace {
 
-std::string SerializeRequest(HttpRequest& request) {
+std::string DebugStringForReq(HttpRequest& request) {
   std::vector<std::string> request_strs;
 
   request_strs.push_back("Request:");
-  request_strs.push_back(
-      base::StringPrintf("Path: %s", request.relative_url.c_str()));
+  request_strs.push_back(absl::StrFormat("Path: %s", request.relative_url));
   request_strs.push_back("Headers: {");
   for (const auto& [name, value] : request.headers) {
-    request_strs.push_back(
-        base::StringPrintf("    %s: %s", name.c_str(), value.c_str()));
+    request_strs.push_back(absl::StrFormat("    %s: %s", name, value));
   }
   request_strs.push_back("}");
-  request_strs.push_back(
-      base::StringPrintf("Content: %s", GetPrintableContent(request).c_str()));
+
+  std::optional<base::Value> json = base::JSONReader::Read(
+      request.decoded_content, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
+  if (json) {
+    request_strs.push_back(absl::StrFormat("Content (JSON, pretty-printed): %s",
+                                           json->DebugString()));
+  } else {
+    request_strs.push_back(
+        absl::StrFormat("Content: %s", GetPrintableContent(request)));
+  }
 
   return base::JoinString(request_strs, "\n  ");
 }
@@ -99,11 +107,11 @@ std::unique_ptr<net::test_server::HttpResponse> ScopedServer::HandleRequest(
     const net::test_server::HttpRequest& req) {
   HttpRequest request(req);
   VLOG(0) << "Handle request at path:" << request.relative_url;
-  VLOG(3) << SerializeRequest(request);
+  VLOG(3) << DebugStringForReq(request);
   auto response = std::make_unique<net::test_server::BasicHttpResponse>();
   if (request_matcher_groups_.empty()) {
     VLOG(0) << "Unexpected request.";
-    ADD_FAILURE() << "Unexpected " << SerializeRequest(request);
+    ADD_FAILURE() << "Unexpected " << DebugStringForReq(request);
     response->set_code(net::HTTP_INTERNAL_SERVER_ERROR);
     return response;
   }
@@ -112,7 +120,7 @@ std::unique_ptr<net::test_server::HttpResponse> ScopedServer::HandleRequest(
                              return matcher.Run(request);
                            })) {
     VLOG(0) << "Request did not match.";
-    ADD_FAILURE() << "Unmatched " << SerializeRequest(request);
+    ADD_FAILURE() << "Unmatched " << DebugStringForReq(request);
     response->set_code(net::HTTP_INTERNAL_SERVER_ERROR);
     return response;
   }
@@ -140,7 +148,7 @@ std::unique_ptr<net::test_server::HttpResponse> ScopedServer::HandleRequest(
         request.headers["Accept-Encoding"].find("gzip") == std::string::npos) {
       VLOG(0) << "gzip `Accept-Encoding` not found in request.";
       ADD_FAILURE() << "gzip `Accept-Encoding` not found in request, "
-                    << SerializeRequest(request);
+                    << DebugStringForReq(request);
       response->set_code(net::HTTP_INTERNAL_SERVER_ERROR);
       return response;
     }
@@ -148,7 +156,8 @@ std::unique_ptr<net::test_server::HttpResponse> ScopedServer::HandleRequest(
     std::string compressed_body;
     if (!compression::GzipCompress(response_body, &compressed_body)) {
       VLOG(0) << "gzip compression failed.";
-      ADD_FAILURE() << "gzip compression failed, " << SerializeRequest(request);
+      ADD_FAILURE() << "gzip compression failed, "
+                    << DebugStringForReq(request);
       response->set_code(net::HTTP_INTERNAL_SERVER_ERROR);
       return response;
     }

@@ -15,6 +15,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/process/process_iterator.h"
 #include "base/synchronization/waitable_event.h"
+#include "base/values.h"
 #include "chrome/updater/tag.h"
 
 namespace base {
@@ -141,6 +142,20 @@ void ExpectOnlyMockUpdater(const base::FilePath& mock_updater_path);
 // Expects that all members of `actual` and `expected` are the same.
 void ExpectTagArgsEqual(const updater::tagging::TagArgs& actual,
                         const updater::tagging::TagArgs& expected);
+
+// Returns true if `haystack` covers `needle`. "Cover" means that
+// `haystack` is a superset of `needle` (recursively), with lists
+// matching as non-consecutive subsequences. If `needle` contains a null value
+// for a key, `haystack` must either not have the key or have a null value for
+// it. If `string_comparator` is provided, it is used to test string values.
+// Otherwise, direct equality is used. The parameters to `string_comparator`
+// are provided in (`needle`, `haystack`) order.
+[[nodiscard]] bool IsJSONSubset(
+    const base::Value& needle,
+    const base::Value& haystack,
+    base::FunctionRef<bool(const std::string&, const std::string&)>
+        string_comparator =
+            [](const std::string& a, const std::string& b) { return a == b; });
 
 // Wait for the process to exit up to the action timeout and returns the exit
 // code. The function expects the process to exit in time.

@@ -13,10 +13,12 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
+#include "base/json/json_reader.h"
 #include "base/logging.h"
 #include "base/path_service.h"
 #include "base/process/launch.h"
 #include "base/process/process.h"
+#include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/synchronization/waitable_event.h"
@@ -182,5 +184,102 @@ TEST(UnitTestUtil, FindProcesses) {
   EXPECT_TRUE(test::FindProcesses(kTestProcessExecutableName).empty());
 }
 #endif  // BUILDFLAG(IS_WIN)
+
+TEST(UnitTestUtil, IsJSONSubset) {
+  std::optional<base::Value> needle =
+      base::JSONReader::Read(R"({
+    "key_a": "val_a",
+    "key_b": {
+      "key_b1": 1,
+      "key_b2": ["x", ["y"]]
+    },
+    "missing_key": null
+  })",
+                             base::JSON_PARSE_CHROMIUM_EXTENSIONS);
+  ASSERT_TRUE(needle);
+
+  std::optional<base::Value> haystack_match =
+      base::JSONReader::Read(R"({
+    "another_key": 50,
+    "key_a": "val_a",
+    "key_b": {
+      "key_b1": 1,
+      "key_b2": [4, "x", 19, ["rutabaga", "y", "beef"]],
+      "extra": "cabbage"
+    }
+  })",
+                             base::JSON_PARSE_CHROMIUM_EXTENSIONS);
+  ASSERT_TRUE(haystack_match);
+  EXPECT_TRUE(IsJSONSubset(*needle, *haystack_match));
+
+  std::optional<base::Value> haystack_missing_b =
+      base::JSONReader::Read(R"({
+    "key_a": "val_a"
+  })",
+                             base::JSON_PARSE_CHROMIUM_EXTENSIONS);
+  ASSERT_TRUE(haystack_missing_b);
+  EXPECT_FALSE(IsJSONSubset(*needle, *haystack_missing_b));
+
+  std::optional<base::Value> haystack_not_missing =
+      base::JSONReader::Read(R"({
+    "key_a": "val_a",
+    "key_b": {
+      "key_b1": 1,
+      "key_b2": ["x", ["y"]]
+    },
+    "missing_key": "oops"
+  })",
+                             base::JSON_PARSE_CHROMIUM_EXTENSIONS);
+  ASSERT_TRUE(haystack_not_missing);
+  EXPECT_FALSE(IsJSONSubset(*needle, *haystack_not_missing));
+
+  std::optional<base::Value> haystack_out_of_order =
+      base::JSONReader::Read(R"({
+    "key_a": "val_a",
+    "key_b": {
+      "key_b1": 1,
+      "key_b2": [["y"], "x"]
+    }
+  })",
+                             base::JSON_PARSE_CHROMIUM_EXTENSIONS);
+  ASSERT_TRUE(haystack_out_of_order);
+  EXPECT_FALSE(IsJSONSubset(*needle, *haystack_out_of_order));
+}
+
+TEST(UnitTestUtil, IsJSONSubsetNumericConversions) {
+  EXPECT_TRUE(IsJSONSubset(base::Value(1.0), base::Value(1)));
+  EXPECT_TRUE(IsJSONSubset(base::Value(1), base::Value(1.0)));
+}
+
+TEST(UnitTestUtil, IsJSONSubsetStringComparators) {
+  base::Value needle_str(base::DictValue().Set("key", "VALUE"));
+  base::Value haystack_str(base::DictValue().Set("key", "value"));
+
+  EXPECT_FALSE(IsJSONSubset(needle_str, haystack_str));
+
+  auto case_insensitive_comparator = [](const std::string& a,
+                                        const std::string& b) {
+    return base::EqualsCaseInsensitiveASCII(a, b);
+  };
+
+  EXPECT_TRUE(
+      IsJSONSubset(needle_str, haystack_str, case_insensitive_comparator));
+
+  auto never_match_comparator = [](const std::string& a, const std::string& b) {
+    return false;
+  };
+  EXPECT_FALSE(IsJSONSubset(needle_str, haystack_str, never_match_comparator));
+
+  std::optional<base::Value> needle_list = base::JSONReader::Read(
+      R"(["A", "B"])", base::JSON_PARSE_CHROMIUM_EXTENSIONS);
+  ASSERT_TRUE(needle_list);
+  std::optional<base::Value> haystack_list = base::JSONReader::Read(
+      R"(["a", "b"])", base::JSON_PARSE_CHROMIUM_EXTENSIONS);
+  ASSERT_TRUE(haystack_list);
+
+  EXPECT_FALSE(IsJSONSubset(*needle_list, *haystack_list));
+  EXPECT_TRUE(
+      IsJSONSubset(*needle_list, *haystack_list, case_insensitive_comparator));
+}
 
 }  // namespace updater::test
