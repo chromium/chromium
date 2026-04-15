@@ -59,6 +59,7 @@ source_set("ui") {
     "//ios/chrome/browser/shared/ui/symbols",
     "//ios/chrome/browser/shared/ui/util",
     "//ios/chrome/browser/shared/ui/util:util_swift",
+    "//ios/chrome/browser/tab_picker/coordinator",
     "//ios/chrome/common/ui/colors",
     "//ios/chrome/common/ui/util",
     "//ios/public/provider/chrome/browser/glow_effect:glow_effect_api",

@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/composebox/ui/composebox_snackbar_presenter.h"
 
 #import "ios/chrome/browser/composebox/coordinator/composebox_constants.h"
+#import "ios/chrome/browser/composebox/public/features.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/snackbar_commands.h"
@@ -26,14 +27,6 @@
 
 - (void)stop {
   _browser = nil;
-}
-
-- (void)showSnackbarForTabAttachmentLimit:(NSUInteger)attachmentLimit {
-  NSString* title = l10n_util::GetPluralNSStringF(
-      IDS_IOS_COMPOSEBOX_MAXIMUM_TABS_REACHED, attachmentLimit);
-  SnackbarMessage* message = [[SnackbarMessage alloc] initWithTitle:title];
-
-  [self.snackbarHandler showSnackbarMessage:message bottomOffset:0];
 }
 
 - (void)showSnackbarForAttachmentLimit:(NSUInteger)attachmentLimit {
@@ -68,16 +61,31 @@
   [self.snackbarHandler showSnackbarMessage:message bottomOffset:bottomOffset];
 }
 
+- (void)dismissAllSnackbars {
+  [self.snackbarHandler dismissAllSnackbars];
+}
+
+#pragma mark - TabPickerSnackbarPresenter
+
+- (void)showSnackbarForTabAttachmentLimit:(NSUInteger)attachmentLimit {
+  if (!EnableComposeboxServerSideState()) {
+    [self showSnackbarForAttachmentLimit:kAttachmentLimit];
+    return;
+  }
+
+  NSString* title = l10n_util::GetPluralNSStringF(
+      IDS_IOS_COMPOSEBOX_MAXIMUM_TABS_REACHED, attachmentLimit);
+  SnackbarMessage* message = [[SnackbarMessage alloc] initWithTitle:title];
+
+  [self.snackbarHandler showSnackbarMessage:message bottomOffset:0];
+}
+
 - (void)showCannotReloadTabError {
   NSString* title =
       l10n_util::GetNSString(IDS_IOS_COMPOSEBOX_CANNOT_RELOAD_TAB_ERROR);
   SnackbarMessage* message = [[SnackbarMessage alloc] initWithTitle:title];
 
   [self.snackbarHandler showSnackbarMessage:message bottomOffset:0];
-}
-
-- (void)dismissAllSnackbars {
-  [self.snackbarHandler dismissAllSnackbars];
 }
 
 #pragma mark - Private

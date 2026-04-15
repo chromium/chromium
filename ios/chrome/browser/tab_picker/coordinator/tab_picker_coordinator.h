@@ -9,6 +9,7 @@
 
 #import "ios/chrome/browser/shared/coordinator/chrome_coordinator/chrome_coordinator.h"
 #import "ios/chrome/browser/tab_picker/coordinator/tab_picker_mediator.h"
+#import "ios/chrome/browser/tab_picker/coordinator/tab_picker_snackbar_presenter.h"
 #import "ios/web/public/web_state.h"
 
 @protocol TabPickerCommands;
@@ -48,6 +49,9 @@
 
 // Delegate for logging events
 @property(nonatomic, weak) id<TabPickerLogger> logger;
+
+// Presenter for snackbars
+@property(nonatomic, weak) id<TabPickerSnackbarPresenter> snackbarPresenter;
 
 // Handler for tab picker commands.
 @property(nonatomic, weak) id<TabPickerCommands> tabPickerHandler;

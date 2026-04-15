@@ -9,12 +9,10 @@ source_set("coordinator") {
     "tab_picker_logger.h",
     "tab_picker_mediator.h",
     "tab_picker_mediator.mm",
+    "tab_picker_snackbar_presenter.h",
   ]
   deps = [
     "//base",
-    "//ios/chrome/browser/composebox/coordinator:constants",
-    "//ios/chrome/browser/composebox/public:features",
-    "//ios/chrome/browser/composebox/ui",
     "//ios/chrome/browser/intelligence/persist_tab_context/model",
     "//ios/chrome/browser/ntp/model:util",
     "//ios/chrome/browser/shared/coordinator/chrome_coordinator",

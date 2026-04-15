@@ -1,6 +1,5 @@
 include_rules = [
   # keep-sorted start
-  "+ios/chrome/browser/composebox",
   "+ios/chrome/browser/intelligence/persist_tab_context/model",
   "+ios/chrome/browser/ntp/model",
   "+ios/chrome/browser/snapshots/model",

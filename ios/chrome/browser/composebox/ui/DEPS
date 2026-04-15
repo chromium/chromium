@@ -6,5 +6,6 @@ include_rules = [
   "+ios/chrome/browser/ntp/ui_bundled/incognito/incognito_view.h",
   "+ios/chrome/browser/omnibox/public/omnibox_constants.h",
   "+ios/chrome/browser/omnibox/ui",
+  "+ios/chrome/browser/tab_picker/coordinator",
   # keep-sorted end
 ]

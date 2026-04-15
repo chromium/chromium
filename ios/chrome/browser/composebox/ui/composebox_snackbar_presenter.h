@@ -7,10 +7,12 @@
 
 #import <UIKit/UIKit.h>
 
+#import "ios/chrome/browser/tab_picker/coordinator/tab_picker_snackbar_presenter.h"
+
 class Browser;
 
 // Presents snackbars related to the Composebox feature.
-@interface ComposeboxSnackbarPresenter : NSObject
+@interface ComposeboxSnackbarPresenter : NSObject <TabPickerSnackbarPresenter>
 
 // Shows a snackbar with the attachment limit message.
 - (void)showSnackbarForAttachmentLimit:(NSUInteger)attachmentLimit;
@@ -20,18 +22,12 @@ class Browser;
 - (void)showAttachmentLimitForImageGenerationSnackbarWithBottomOffset:
     (CGFloat)bottomOffset;
 
-// Shows a snackbar with the tab limit message.
-- (void)showSnackbarForTabAttachmentLimit:(NSUInteger)attachmentLimit;
-
 // Shows a snackbar with the attachment limit message with a bottom offset.
 - (void)showSnackbarForAttachmentLimit:(NSUInteger)attachmentLimit
                           bottomOffset:(CGFloat)bottomOffset;
 
 // Shows a snackbar with a generic error message with a bottom offset.
 - (void)showUnableToAddAttachmentSnackbarWithBottomOffset:(CGFloat)bottomOffset;
-
-// Shows a snackbar with a generic error message if a tab can't be reloaded.
-- (void)showCannotReloadTabError;
 
 // Dismisses all presented snackbars.
 - (void)dismissAllSnackbars;

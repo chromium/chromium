@@ -6,15 +6,13 @@
 
 #import "base/strings/string_number_conversions.h"
 #import "base/strings/sys_string_conversions.h"
-#import "ios/chrome/browser/composebox/coordinator/composebox_constants.h"
-#import "ios/chrome/browser/composebox/public/features.h"
-#import "ios/chrome/browser/composebox/ui/composebox_snackbar_presenter.h"
 #import "ios/chrome/browser/intelligence/persist_tab_context/model/persist_tab_context_browser_agent.h"
 #import "ios/chrome/browser/ntp/model/new_tab_page_util.h"
 #import "ios/chrome/browser/shared/model/utils/web_state_deferred_executor.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/snapshots/model/snapshot_tab_helper.h"
 #import "ios/chrome/browser/tab_picker/coordinator/tab_picker_logger.h"
+#import "ios/chrome/browser/tab_picker/coordinator/tab_picker_snackbar_presenter.h"
 #import "ios/chrome/browser/tab_picker/ui/tab_picker_consumer.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_collection_consumer.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/grid/grid_item_identifier.h"
@@ -115,22 +113,10 @@
 - (void)userTappedOnItemID:(GridItemIdentifier*)itemID {
   CHECK_EQ(self.modeHolder.mode, TabGridMode::kSelection);
   CHECK_EQ(itemID.type, GridItemType::kTab);
-  Browser* browser = self.browser;
   if ([self attachmentLimitReached:itemID]) {
-    if (!browser) {
-      return;
-    }
-    ComposeboxSnackbarPresenter* snackbar =
-        [[ComposeboxSnackbarPresenter alloc] initWithBrowser:browser];
-
-    if (EnableComposeboxServerSideState()) {
-      [snackbar showSnackbarForTabAttachmentLimit:[_tabsAttachmentDelegate
-                                                      maxTabAttachmentCount]];
-    } else {
-      [snackbar showSnackbarForAttachmentLimit:kAttachmentLimit];
-    }
-    [snackbar stop];
-
+    [self.snackbarPresenter
+        showSnackbarForTabAttachmentLimit:[_tabsAttachmentDelegate
+                                              maxTabAttachmentCount]];
     return;
   }
 
@@ -345,13 +331,7 @@
 
 /// Handles the scenario where a tab fails to load.
 - (void)handleFailedTabLoad:(GridItemIdentifier*)itemID {
-  Browser* browser = self.browser;
-  if (browser) {
-    ComposeboxSnackbarPresenter* snackbar =
-        [[ComposeboxSnackbarPresenter alloc] initWithBrowser:self.browser];
-    [snackbar showCannotReloadTabError];
-    [snackbar stop];
-  }
+  [self.snackbarPresenter showCannotReloadTabError];
   [_failedLoadedItemIDs addObject:itemID];
   [self removeFromSelectionItemID:itemID];
   [self reconfigureGridItem:itemID];

@@ -12,6 +12,7 @@
 #import "ios/web/public/web_state.h"
 
 @protocol TabPickerLogger;
+@protocol TabPickerSnackbarPresenter;
 @class TabPickerMediator;
 @protocol TabPickerConsumer;
 
@@ -41,8 +42,11 @@
               tabsAttachmentDelegate:
                   (id<TabsAttachmentDelegate>)tabsAttachmentDelegate;
 
-// Delegate for logging events
+// Delegate for logging events.
 @property(nonatomic, weak) id<TabPickerLogger> logger;
+
+// Presenter for snackbars.
+@property(nonatomic, weak) id<TabPickerSnackbarPresenter> snackbarPresenter;
 
 /// The mediator's delegate for attaching selected tabs.
 @property(nonatomic, weak) id<TabsAttachmentDelegate> tabsAttachmentDelegate;

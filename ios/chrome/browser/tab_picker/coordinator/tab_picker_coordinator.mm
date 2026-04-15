@@ -36,6 +36,7 @@
            tabPickerConsumer:_viewController
       tabsAttachmentDelegate:self];
   _mediator.logger = self.logger;
+  _mediator.snackbarPresenter = self.snackbarPresenter;
   _mediator.browser = self.browser;
 
   _viewController.mutator = _mediator;
