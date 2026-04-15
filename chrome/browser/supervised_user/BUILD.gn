@@ -20,10 +20,6 @@ source_set("supervised_user") {
 source_set("unit_tests") {
   testonly = true
 
-  # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
-  # enable the diagnostic by removing this line.
-  configs += [ "//build/config/compiler:no_exit_time_destructors" ]
-
   sources = [
     "classify_url_navigation_throttle_unittest.cc",
     "supervised_user_browser_utils_unittest.cc",
