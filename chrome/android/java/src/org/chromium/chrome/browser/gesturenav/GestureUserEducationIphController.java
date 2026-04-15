@@ -4,7 +4,9 @@
 
 package org.chromium.chrome.browser.gesturenav;
 
+import android.view.GestureDetector;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewPropertyAnimator;
@@ -42,9 +44,20 @@ public class GestureUserEducationIphController {
 
     private final ViewGroup mAnchorView;
     private final BackPressManager mBackPressManager;
+    private final GestureDetector.SimpleOnGestureListener mGestureDetectorListener =
+            new GestureDetector.SimpleOnGestureListener() {
+                @Override
+                public boolean onDown(MotionEvent e) {
+                    if (mIsIphShowing) {
+                        hideIph();
+                    }
+                    return super.onDown(e);
+                }
+            };
     private final ScrimManager mScrimManager;
     private @Nullable PropertyModel mScrimPropertyModel;
     private @Nullable ActivityTabTabObserver mTabObserver;
+    private @Nullable GestureDetector mDetector;
     private @Nullable View mGestureUserEducationIphLayout;
     private @Nullable LottieAnimationView mBackArrowAnimation;
     private @Nullable ViewPropertyAnimator mTextBubbleAnimation;
@@ -103,6 +116,9 @@ public class GestureUserEducationIphController {
                                     R.layout.gesture_user_education_iph_layout, mAnchorView, false);
             mAnchorView.addView(mGestureUserEducationIphLayout);
 
+            // Create Gesture Detector for touch events on the scrim
+            mDetector = new GestureDetector(tab.getContext(), mGestureDetectorListener);
+
             // Display scrim
             mScrimPropertyModel =
                     new PropertyModel.Builder(ScrimProperties.ALL_KEYS)
@@ -110,7 +126,7 @@ public class GestureUserEducationIphController {
                             .with(ScrimProperties.AFFECTS_NAVIGATION_BAR, false)
                             .with(ScrimProperties.ANCHOR_VIEW, mGestureUserEducationIphLayout)
                             .with(ScrimProperties.CUSTOM_PARENT, mAnchorView)
-                            .with(ScrimProperties.CLICK_DELEGATE, this::hideIph)
+                            .with(ScrimProperties.GESTURE_DETECTOR, mDetector)
                             .build();
 
             mScrimManager.showScrim(mScrimPropertyModel);
@@ -149,6 +165,7 @@ public class GestureUserEducationIphController {
     }
 
     private void hideIph() {
+        assert mIsIphShowing;
         if (mScrimPropertyModel != null) {
             mScrimManager.hideScrim(mScrimPropertyModel, false);
         }
@@ -165,6 +182,7 @@ public class GestureUserEducationIphController {
         mAnchorView.removeView(mGestureUserEducationIphLayout);
         unregisterTabObserver();
         mIsIphShowing = false;
+        mDetector = null;
     }
 
     private boolean shouldShowIph(Tab tab) {

@@ -40,6 +40,7 @@ import org.chromium.components.feature_engagement.FeatureConstants;
 import org.chromium.components.feature_engagement.Tracker;
 import org.chromium.content_public.browser.NavigationController;
 import org.chromium.content_public.browser.WebContents;
+import org.chromium.ui.base.MotionEventTestUtils;
 import org.chromium.ui.base.TestActivity;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -183,7 +184,10 @@ public class GestureUserEducationIphControllerUnitTest {
                 ArgumentCaptor.forClass(PropertyModel.class);
         verify(mScrimManager).showScrim(scrimPropertyModelCaptor.capture());
 
-        scrimPropertyModelCaptor.getValue().get(ScrimProperties.CLICK_DELEGATE).run();
+        scrimPropertyModelCaptor
+                .getValue()
+                .get(ScrimProperties.GESTURE_DETECTOR)
+                .onTouchEvent(MotionEventTestUtils.getTrackpadTouchDownEventNoClick());
         verify(mScrimManager).hideScrim(any(), anyBoolean());
         Assert.assertEquals(0, mAnchorView.getChildCount());
     }
