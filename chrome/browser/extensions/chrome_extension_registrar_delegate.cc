@@ -22,7 +22,6 @@
 #include "chrome/browser/extensions/external_install_manager.h"
 #include "chrome/browser/extensions/install_verifier_factory.h"
 #include "chrome/browser/extensions/installed_loader.h"
-#include "chrome/browser/extensions/managed_installation_mode.h"
 #include "chrome/browser/extensions/profile_util.h"
 #include "chrome/browser/extensions/updater/extension_updater.h"
 #include "chrome/browser/profiles/profile.h"

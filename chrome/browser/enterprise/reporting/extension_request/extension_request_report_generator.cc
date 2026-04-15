@@ -13,7 +13,6 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/enterprise/reporting/prefs.h"
 #include "chrome/browser/extensions/extension_management.h"
-#include "chrome/browser/extensions/managed_installation_mode.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/extensions/extension_constants.h"
 #include "chrome/common/pref_names.h"
@@ -21,6 +20,7 @@
 #include "components/policy/core/common/cloud/cloud_policy_util.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
+#include "extensions/browser/managed_installation_mode.h"
 #include "extensions/common/extension_urls.h"
 
 namespace enterprise_reporting {

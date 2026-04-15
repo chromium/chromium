@@ -373,7 +373,6 @@ source_set("extensions") {
     "installed_loader.h",
     "launch_util.cc",
     "launch_util.h",
-    "managed_installation_mode.h",
     "managed_toolbar_pin_mode.h",
     "management/management_util.cc",
     "management/management_util.h",

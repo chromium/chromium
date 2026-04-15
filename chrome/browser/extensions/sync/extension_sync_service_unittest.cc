@@ -26,7 +26,6 @@
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/extension_service_test_with_install.h"
 #include "chrome/browser/extensions/extension_util.h"
-#include "chrome/browser/extensions/managed_installation_mode.h"
 #include "chrome/browser/extensions/signin_test_util.h"
 #include "chrome/browser/extensions/sync/account_extension_tracker.h"
 #include "chrome/browser/extensions/sync/extension_sync_data.h"

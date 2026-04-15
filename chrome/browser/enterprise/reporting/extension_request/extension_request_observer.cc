@@ -6,11 +6,11 @@
 
 #include "base/metrics/histogram_functions.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/extensions/managed_installation_mode.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
+#include "extensions/browser/managed_installation_mode.h"
 #include "extensions/common/extension_urls.h"
 
 namespace enterprise_reporting {

@@ -446,6 +446,7 @@ source_set("browser_sources") {
     "load_and_localize_file.h",
     "load_error_reporter.cc",
     "load_error_reporter.h",
+    "managed_installation_mode.h",
     "management_policy.cc",
     "management_policy.h",
     "manifest_check_level.h",

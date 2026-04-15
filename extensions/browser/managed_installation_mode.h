@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_EXTENSIONS_MANAGED_INSTALLATION_MODE_H_
-#define CHROME_BROWSER_EXTENSIONS_MANAGED_INSTALLATION_MODE_H_
+#ifndef EXTENSIONS_BROWSER_MANAGED_INSTALLATION_MODE_H_
+#define EXTENSIONS_BROWSER_MANAGED_INSTALLATION_MODE_H_
 
 #include "extensions/buildflags/buildflags.h"
 
@@ -28,4 +28,4 @@ enum class ManagedInstallationMode {
 
 }  // namespace extensions
 
-#endif  // CHROME_BROWSER_EXTENSIONS_MANAGED_INSTALLATION_MODE_H_
+#endif  // EXTENSIONS_BROWSER_MANAGED_INSTALLATION_MODE_H_
