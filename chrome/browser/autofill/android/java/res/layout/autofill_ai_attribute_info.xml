@@ -35,6 +35,7 @@ found in the LICENSE file.
         android:layout_gravity="center_vertical"
         android:layout_marginEnd="@dimen/dialog_padding_sides"
         android:textAppearance="@style/TextAppearance.TextLarge.Disabled"
-        android:visibility="gone" />
+        android:visibility="gone"
+        android:importantForAccessibility="no" />
 
 </LinearLayout>
