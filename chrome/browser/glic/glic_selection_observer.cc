@@ -16,6 +16,7 @@
 #include "chrome/browser/glic/host/glic.mojom.h"
 #include "chrome/browser/glic/public/features.h"
 #include "chrome/browser/glic/public/glic_enabling.h"
+#include "chrome/browser/glic/public/glic_invoke_options.h"
 #include "chrome/browser/glic/public/glic_keyed_service.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_finder.h"
@@ -49,7 +50,6 @@ constexpr size_t kMinSelectionLength = 3;
 
 // The MIME type for selected text.
 constexpr char kSelectionMimeType[] = "application/x-glic-selection";
-constexpr char kPromptMimeType[] = "application/x-glic-prompt";
 
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
@@ -281,8 +281,7 @@ void GlicSelectionObserver::ProcessPendingSelection() {
 
 // static
 void GlicSelectionObserver::InvokeGlicFromSelectionAffordance(
-    std::string prompt_text,
-    size_t text_length,
+    std::u16string selected_text,
     bool is_widget,
     base::WeakPtr<content::WebContents> web_contents,
     GlicNudgeActivity activity) {
@@ -307,25 +306,41 @@ void GlicSelectionObserver::InvokeGlicFromSelectionAffordance(
     base::UmaHistogramCounts1000(
         base::StrCat(
             {"Glic.Selection.WidgetClicked.SelectionLength", histogram_suffix}),
-        text_length);
+        selected_text.length());
   } else {
     base::UmaHistogramCounts1000(
         base::StrCat(
             {"Glic.Selection.NudgeClicked.SelectionLength", histogram_suffix}),
-        text_length);
+        selected_text.length());
   }
 
-  if (is_widget) {
-    if (web_contents) {
-      if (auto* tab_interface =
-              tabs::TabInterface::MaybeGetFromContents(web_contents.get())) {
-        if (auto* bwi = tab_interface->GetBrowserWindowInterface()) {
-          Profile* profile =
-              Profile::FromBrowserContext(web_contents->GetBrowserContext());
-          if (auto* glic_keyed_service = GlicKeyedService::Get(profile)) {
-            glic_keyed_service->ToggleUI(
-                bwi, false, mojom::InvocationSource::kNudge, prompt_text);
+  if (web_contents) {
+    if (auto* tab_interface =
+            tabs::TabInterface::MaybeGetFromContents(web_contents.get())) {
+      if (tab_interface->GetBrowserWindowInterface()) {
+        Profile* profile =
+            Profile::FromBrowserContext(web_contents->GetBrowserContext());
+        if (auto* glic_keyed_service = GlicKeyedService::Get(profile)) {
+          auto context = mojom::AdditionalContext::New();
+          context->source = mojom::AdditionalContextSource::kTextSelection;
+          std::vector<mojom::AdditionalContextPartPtr> parts;
+
+          {
+            auto context_data = mojom::ContextData::New();
+            context_data->mime_type = kSelectionMimeType;
+            std::string utf8_text = base::UTF16ToUTF8(selected_text);
+            context_data->data =
+                mojo_base::BigBuffer(base::as_bytes(base::span(utf8_text)));
+            parts.push_back(
+                mojom::AdditionalContextPart::NewData(std::move(context_data)));
           }
+
+          context->parts = std::move(parts);
+
+          GlicInvokeOptions options(mojom::InvocationSource::kNudge);
+          options.additional_context = std::move(context);
+
+          glic_keyed_service->Invoke(tab_interface, std::move(options));
         }
       }
     }
@@ -390,18 +405,6 @@ void GlicSelectionObserver::UpdateSelectionState(
           mojom::AdditionalContextPart::NewData(std::move(context_data)));
     }
 
-    {
-      auto context_data = mojom::ContextData::New();
-      context_data->mime_type = kPromptMimeType;
-      std::u16string prompt_text = l10n_util::GetStringFUTF16(
-          IDS_GLIC_SELECTION_TELL_ME_ABOUT, std::u16string());
-      std::string utf8_text = base::UTF16ToUTF8(prompt_text);
-      context_data->data =
-          mojo_base::BigBuffer(base::as_bytes(base::span(utf8_text)));
-      parts.push_back(
-          mojom::AdditionalContextPart::NewData(std::move(context_data)));
-    }
-
     context->parts = std::move(parts);
 
     glic_keyed_service_->SendAdditionalContext(tab_interface->GetHandle(),
@@ -429,8 +432,6 @@ void GlicSelectionObserver::ShowSelectionAffordance(
     }
     std::u16string label = l10n_util::GetStringFUTF16(
         IDS_GLIC_SELECTION_ASK_ABOUT, truncated_text);
-    std::u16string title = l10n_util::GetStringFUTF16(
-        IDS_GLIC_SELECTION_TELL_ME_ABOUT, selected_text);
 
     bool is_post_fre = GlicEnabling::HasConsentedForProfile(
         Profile::FromBrowserContext(web_contents()->GetBrowserContext()));
@@ -443,10 +444,10 @@ void GlicSelectionObserver::ShowSelectionAffordance(
           GlicSelectionAction::kNudgeShown);
       auto invoke_glic = base::BindRepeating(
           &GlicSelectionObserver::InvokeGlicFromSelectionAffordance,
-          base::UTF16ToUTF8(selected_text), selected_text.length(),
+          selected_text,
           /*is_widget=*/false, web_contents()->GetWeakPtr());
       controller->UpdateNudgeLabel(web_contents(), base::UTF16ToUTF8(label),
-                                   std::make_optional(base::UTF16ToUTF8(title)),
+                                   std::nullopt,
                                    /*anchored_message_text=*/std::string(),
                                    std::nullopt, std::move(invoke_glic));
     } else {
@@ -467,7 +468,7 @@ void GlicSelectionObserver::ShowSelectionAffordance(
             GlicSelectionAction::kWidgetShown);
         auto invoke_glic = base::BindRepeating(
             &GlicSelectionObserver::InvokeGlicFromSelectionAffordance,
-            base::UTF16ToUTF8(selected_text), selected_text.length(),
+            selected_text,
             /*is_widget=*/true, web_contents()->GetWeakPtr(),
             GlicNudgeActivity::kNudgeClicked);
 

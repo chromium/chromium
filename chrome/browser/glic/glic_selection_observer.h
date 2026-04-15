@@ -68,8 +68,7 @@ class GlicSelectionObserver
   void ProcessPendingSelection();
 
   static void InvokeGlicFromSelectionAffordance(
-      std::string prompt_text,
-      size_t text_length,
+      std::u16string selected_text,
       bool is_widget,
       base::WeakPtr<content::WebContents> web_contents,
       GlicNudgeActivity activity);
