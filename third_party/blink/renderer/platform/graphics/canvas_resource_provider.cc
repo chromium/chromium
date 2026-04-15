@@ -377,13 +377,6 @@ CanvasResourceProviderSharedImage::~CanvasResourceProviderSharedImage() {
   }
 }
 
-ScopedRasterTimer
-CanvasResourceProviderSharedImage::CreateScopedRasterTimerForCanvas2D() {
-  CHECK(IsCanvas2D());
-  return ScopedRasterTimer(IsAccelerated() ? RasterInterface() : nullptr, *this,
-                           always_enable_raster_timers_for_testing_);
-}
-
 base::WeakPtr<CanvasResourceProviderSharedImage>
 CanvasResourceProviderSharedImage::CreateWeakPtr() {
   return weak_ptr_factory_.GetWeakPtr();
@@ -697,6 +690,23 @@ void Canvas2DResourceProviderSharedImage::WillDrawUnaccelerated() {
   }
   cached_snapshot_.reset();
   EnsureWriteAccess();
+}
+
+ScopedRasterTimer
+Canvas2DResourceProviderSharedImage::CreateScopedRasterTimerForCanvas2D() {
+  return ScopedRasterTimer(IsAccelerated() ? RasterInterface() : nullptr, *this,
+                           always_enable_raster_timers_for_testing_);
+}
+
+void Canvas2DResourceProviderSharedImage::
+    DisableLineDrawingAsPathsIfNecessaryForCanvas2D() {
+  if (context_provider_wrapper_ &&
+      context_provider_wrapper_->ContextProvider()
+              .GetGpuFeatureInfo()
+              .status_values[gpu::GPU_FEATURE_TYPE_SKIA_GRAPHITE] ==
+          gpu::kGpuFeatureStatusEnabled) {
+    RecorderForCanvas2D().DisableLineDrawingAsPaths();
+  }
 }
 
 void CanvasNon2DResourceProviderSharedImage::PrepareForWebGPUDummyMailbox() {
@@ -2278,18 +2288,6 @@ void CanvasResourceProvider::OnMemoryDump(
 
 size_t CanvasResourceProvider::GetSize() const {
   return ComputeSurfaceSize();
-}
-
-void CanvasResourceProviderSharedImage::
-    DisableLineDrawingAsPathsIfNecessaryForCanvas2D() {
-  CHECK(IsCanvas2D());
-  if (context_provider_wrapper_ &&
-      context_provider_wrapper_->ContextProvider()
-              .GetGpuFeatureInfo()
-              .status_values[gpu::GPU_FEATURE_TYPE_SKIA_GRAPHITE] ==
-          gpu::kGpuFeatureStatusEnabled) {
-    RecorderForCanvas2D().DisableLineDrawingAsPaths();
-  }
 }
 
 std::unique_ptr<CanvasResourceProvider>

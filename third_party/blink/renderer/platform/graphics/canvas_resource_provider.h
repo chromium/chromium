@@ -457,8 +457,6 @@ class PLATFORM_EXPORT CanvasResourceProviderSharedImage
   bool ShouldReplaceTargetBuffer(
       PaintImage::ContentId content_id = PaintImage::kInvalidContentId);
 
-  ScopedRasterTimer CreateScopedRasterTimerForCanvas2D() override;
-
   cc::PaintImage::ContentId cached_content_id_ =
       cc::PaintImage::kInvalidContentId;
 
@@ -490,7 +488,6 @@ class PLATFORM_EXPORT CanvasResourceProviderSharedImage
 
  private:
   scoped_refptr<CanvasResourceSharedImage> CreateResource();
-  void DisableLineDrawingAsPathsIfNecessaryForCanvas2D() override;
 
   static void NotifyGpuContextLostTask(
       base::WeakPtr<CanvasResourceProviderSharedImage>);
@@ -610,6 +607,8 @@ class PLATFORM_EXPORT Canvas2DResourceProviderSharedImage
   // token.
   void TransferBackFromWebGPU(const gpu::SyncToken& webgpu_write_sync_token);
 
+  ScopedRasterTimer CreateScopedRasterTimerForCanvas2D() override;
+
  private:
   CanvasImageProvider* GetOrCreateCanvasImageProvider();
   std::unique_ptr<gpu::RasterScopedAccess> WillDrawInternal();
@@ -617,6 +616,7 @@ class PLATFORM_EXPORT Canvas2DResourceProviderSharedImage
   // Notifies before any unaccelerated drawing will be done on the resource used
   // by this provider.
   void WillDrawUnaccelerated();
+  void DisableLineDrawingAsPathsIfNecessaryForCanvas2D() override;
 };
 
 // * Subclass of CanvasResourceProviderSharedImage that is specialized for usage
