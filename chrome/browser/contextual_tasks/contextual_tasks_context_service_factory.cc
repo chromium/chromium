@@ -6,7 +6,6 @@
 
 #include "base/feature_list.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_context_service.h"
-#include "chrome/browser/contextual_tasks/contextual_tasks_service_factory.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/page_content_annotations/page_content_extraction_service_factory.h"
 #include "chrome/browser/page_content_annotations/page_embeddings_service_factory.h"
