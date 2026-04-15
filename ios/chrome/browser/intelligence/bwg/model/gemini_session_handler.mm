@@ -1,8 +1,8 @@
-// Copyright 2025 The Chromium Authors
+// Copyright 2026 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/intelligence/bwg/model/bwg_session_handler.h"
+#import "ios/chrome/browser/intelligence/bwg/model/gemini_session_handler.h"
 
 #import "base/strings/string_number_conversions.h"
 #import "base/strings/sys_string_conversions.h"
@@ -106,7 +106,7 @@ IOSGeminiSessionCancellationReason HistogramEnumFromGeminiCancelType(
 
 }  // namespace
 
-@implementation BWGSessionHandler {
+@implementation GeminiSessionHandler {
   // The associated WebStateList.
   raw_ptr<WebStateList> _webStateList;
   // Session start time for duration tracking.
@@ -356,7 +356,6 @@ IOSGeminiSessionCancellationReason HistogramEnumFromGeminiCancelType(
   BWGTabHelper->CreateOrUpdateBwgSessionInStorage(
       base::SysNSStringToUTF8(serverID));
 }
-
 
 // Sets all BWG sessions inactive other than for the WebState matching
 // `clientID`.

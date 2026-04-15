@@ -1,8 +1,8 @@
-// Copyright 2025 The Chromium Authors
+// Copyright 2026 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/intelligence/bwg/model/bwg_session_handler.h"
+#import "ios/chrome/browser/intelligence/bwg/model/gemini_session_handler.h"
 
 #import "base/test/metrics/histogram_tester.h"
 #import "base/test/metrics/user_action_tester.h"
@@ -28,9 +28,9 @@ const base::TimeDelta kTestResponseLatency = base::Milliseconds(500);
 NSString* const kTestServerID = @"server_id";
 }  // namespace
 
-class BWGSessionHandlerTest : public PlatformTest {
+class GeminiSessionHandlerTest : public PlatformTest {
  protected:
-  BWGSessionHandlerTest()
+  GeminiSessionHandlerTest()
       : task_environment_(base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
 
   void SetUp() override {
@@ -43,7 +43,7 @@ class BWGSessionHandlerTest : public PlatformTest {
     browser_ = std::make_unique<TestBrowser>(profile_.get());
     web_state_list_ = browser_->GetWebStateList();
     session_handler_ =
-        [[BWGSessionHandler alloc] initWithWebStateList:web_state_list_];
+        [[GeminiSessionHandler alloc] initWithWebStateList:web_state_list_];
 
     optimization_guide_service_ =
         OptimizationGuideServiceFactory::GetForProfile(profile_.get());
@@ -84,14 +84,14 @@ class BWGSessionHandlerTest : public PlatformTest {
   raw_ptr<WebStateList> web_state_list_;
   base::HistogramTester histogram_tester_;
   base::UserActionTester user_action_tester_;
-  BWGSessionHandler* session_handler_;
+  GeminiSessionHandler* session_handler_;
   raw_ptr<OptimizationGuideService> optimization_guide_service_;
   id mock_bwg_handler_;
   id mock_settings_handler_;
 };
 
 // Tests that UIDidDisappearWithClientID records the session duration.
-TEST_F(BWGSessionHandlerTest, TestSessionDurationRecorded) {
+TEST_F(GeminiSessionHandlerTest, TestSessionDurationRecorded) {
   NSString* client_id = GetClientID();
 
   [session_handler_ UIDidAppearWithClientID:client_id serverID:kTestServerID];
@@ -105,7 +105,7 @@ TEST_F(BWGSessionHandlerTest, TestSessionDurationRecorded) {
 }
 
 // Tests that responseReceivedWithClientID records response latency.
-TEST_F(BWGSessionHandlerTest, TestResponseLatencyRecorded) {
+TEST_F(GeminiSessionHandlerTest, TestResponseLatencyRecorded) {
   NSString* client_id = GetClientID();
 
   [session_handler_ UIDidAppearWithClientID:client_id serverID:kTestServerID];
@@ -127,7 +127,7 @@ TEST_F(BWGSessionHandlerTest, TestResponseLatencyRecorded) {
 }
 
 // Tests that didSendQueryWithInputType records the correct metrics.
-TEST_F(BWGSessionHandlerTest, TestQueryMetricsRecorded) {
+TEST_F(GeminiSessionHandlerTest, TestQueryMetricsRecorded) {
   [session_handler_ didSendQueryWithInputType:gemini::InputType::kText
                      isNanoBananaToolSelected:NO
                           imagesAttachedCount:0
@@ -148,7 +148,7 @@ TEST_F(BWGSessionHandlerTest, TestQueryMetricsRecorded) {
 }
 
 // Tests that Nano Banana metrics are recorded correctly.
-TEST_F(BWGSessionHandlerTest, TestQueryMetricsRecorded_WithNanoBanana) {
+TEST_F(GeminiSessionHandlerTest, TestQueryMetricsRecorded_WithNanoBanana) {
   // Use a Nano Banana input type.
   [session_handler_
       didSendQueryWithInputType:gemini::InputType::
@@ -176,7 +176,7 @@ TEST_F(BWGSessionHandlerTest, TestQueryMetricsRecorded_WithNanoBanana) {
 }
 
 // Tests that generated image included in response is recorded.
-TEST_F(BWGSessionHandlerTest, TestResponseGeneratedImageRecorded) {
+TEST_F(GeminiSessionHandlerTest, TestResponseGeneratedImageRecorded) {
   NSString* client_id = GetClientID();
   [session_handler_ UIDidAppearWithClientID:client_id serverID:kTestServerID];
   [session_handler_ didSendQueryWithInputType:gemini::InputType::kText
@@ -195,7 +195,7 @@ TEST_F(BWGSessionHandlerTest, TestResponseGeneratedImageRecorded) {
 }
 
 // Tests that the first run flag is properly handled.
-TEST_F(BWGSessionHandlerTest, TestFirstRunFlag) {
+TEST_F(GeminiSessionHandlerTest, TestFirstRunFlag) {
   NSString* client_id = GetClientID();
 
   // Set first run flag.
@@ -221,7 +221,7 @@ TEST_F(BWGSessionHandlerTest, TestFirstRunFlag) {
 }
 
 // Tests handling unrealized web states.
-TEST_F(BWGSessionHandlerTest, TestUnrealizedWebStates) {
+TEST_F(GeminiSessionHandlerTest, TestUnrealizedWebStates) {
   // Add an unrealized web state.
   auto unrealized_web_state = std::make_unique<web::FakeWebState>();
   unrealized_web_state->SetBrowserState(profile_.get());
@@ -243,10 +243,10 @@ TEST_F(BWGSessionHandlerTest, TestUnrealizedWebStates) {
 }
 
 // Tests different input types for first prompt submission.
-TEST_F(BWGSessionHandlerTest, TestDifferentInputTypes) {
+TEST_F(GeminiSessionHandlerTest, TestDifferentInputTypes) {
   // Test Summarize input type.
-  BWGSessionHandler* handler1 =
-      [[BWGSessionHandler alloc] initWithWebStateList:web_state_list_];
+  GeminiSessionHandler* handler1 =
+      [[GeminiSessionHandler alloc] initWithWebStateList:web_state_list_];
   [handler1 didSendQueryWithInputType:gemini::InputType::kSummarize
              isNanoBananaToolSelected:NO
                   imagesAttachedCount:0
@@ -257,8 +257,8 @@ TEST_F(BWGSessionHandlerTest, TestDifferentInputTypes) {
       IOSGeminiFirstPromptSubmissionMethod::kSummarize, 1);
 
   // Test CheckThisSite input type.
-  BWGSessionHandler* handler2 =
-      [[BWGSessionHandler alloc] initWithWebStateList:web_state_list_];
+  GeminiSessionHandler* handler2 =
+      [[GeminiSessionHandler alloc] initWithWebStateList:web_state_list_];
   [handler2 didSendQueryWithInputType:gemini::InputType::kCheckThisSite
              isNanoBananaToolSelected:NO
                   imagesAttachedCount:0
@@ -269,8 +269,8 @@ TEST_F(BWGSessionHandlerTest, TestDifferentInputTypes) {
       IOSGeminiFirstPromptSubmissionMethod::kCheckThisSite, 1);
 
   // Test FindRelatedSites input type.
-  BWGSessionHandler* handler3 =
-      [[BWGSessionHandler alloc] initWithWebStateList:web_state_list_];
+  GeminiSessionHandler* handler3 =
+      [[GeminiSessionHandler alloc] initWithWebStateList:web_state_list_];
   [handler3 didSendQueryWithInputType:gemini::InputType::kFindRelatedSites
              isNanoBananaToolSelected:NO
                   imagesAttachedCount:0
@@ -281,8 +281,8 @@ TEST_F(BWGSessionHandlerTest, TestDifferentInputTypes) {
       IOSGeminiFirstPromptSubmissionMethod::kFindRelatedSites, 1);
 
   // Test AskAboutPage input type.
-  BWGSessionHandler* handler4 =
-      [[BWGSessionHandler alloc] initWithWebStateList:web_state_list_];
+  GeminiSessionHandler* handler4 =
+      [[GeminiSessionHandler alloc] initWithWebStateList:web_state_list_];
   [handler4 didSendQueryWithInputType:gemini::InputType::kAskAboutPage
              isNanoBananaToolSelected:NO
                   imagesAttachedCount:0
@@ -293,8 +293,8 @@ TEST_F(BWGSessionHandlerTest, TestDifferentInputTypes) {
       IOSGeminiFirstPromptSubmissionMethod::kAskAboutPage, 1);
 
   // Test CreateFaq input type.
-  BWGSessionHandler* handler5 =
-      [[BWGSessionHandler alloc] initWithWebStateList:web_state_list_];
+  GeminiSessionHandler* handler5 =
+      [[GeminiSessionHandler alloc] initWithWebStateList:web_state_list_];
   [handler5 didSendQueryWithInputType:gemini::InputType::kCreateFaq
              isNanoBananaToolSelected:NO
                   imagesAttachedCount:0
@@ -305,8 +305,8 @@ TEST_F(BWGSessionHandlerTest, TestDifferentInputTypes) {
       IOSGeminiFirstPromptSubmissionMethod::kCreateFaq, 1);
 
   // Test Unknown input type.
-  BWGSessionHandler* handler6 =
-      [[BWGSessionHandler alloc] initWithWebStateList:web_state_list_];
+  GeminiSessionHandler* handler6 =
+      [[GeminiSessionHandler alloc] initWithWebStateList:web_state_list_];
   [handler6 didSendQueryWithInputType:gemini::InputType::kUnknown
              isNanoBananaToolSelected:NO
                   imagesAttachedCount:0
@@ -318,7 +318,7 @@ TEST_F(BWGSessionHandlerTest, TestDifferentInputTypes) {
 }
 
 // Tests that updateSessionWithClientID handles invalid client IDs gracefully.
-TEST_F(BWGSessionHandlerTest, TestUpdateSessionWithInvalidClientID) {
+TEST_F(GeminiSessionHandlerTest, TestUpdateSessionWithInvalidClientID) {
   NSString* invalid_client_id = @"invalid_id_999";
   NSString* server_id = @"test_server_123";
 
@@ -329,7 +329,7 @@ TEST_F(BWGSessionHandlerTest, TestUpdateSessionWithInvalidClientID) {
 }
 
 // Tests that UIDidAppearWithClientID sets the session to active state.
-TEST_F(BWGSessionHandlerTest, TestSetSessionActiveTrue) {
+TEST_F(GeminiSessionHandlerTest, TestSetSessionActiveTrue) {
   NSString* client_id = GetClientID();
 
   // Set session active.
@@ -342,7 +342,7 @@ TEST_F(BWGSessionHandlerTest, TestSetSessionActiveTrue) {
 }
 
 // Tests that methods handle missing web states gracefully.
-TEST_F(BWGSessionHandlerTest, TestWebStateWithClientIDNotFound) {
+TEST_F(GeminiSessionHandlerTest, TestWebStateWithClientIDNotFound) {
   NSString* non_existent_id = @"999999999";
 
   // Test that methods handle missing web state gracefully.
@@ -360,7 +360,7 @@ TEST_F(BWGSessionHandlerTest, TestWebStateWithClientIDNotFound) {
 }
 
 // Tests that updateSessionWithClientID creates/updates the session in storage.
-TEST_F(BWGSessionHandlerTest, TestUpdateSessionWithClientID) {
+TEST_F(GeminiSessionHandlerTest, TestUpdateSessionWithClientID) {
   NSString* client_id = GetClientID();
   NSString* server_id = @"test_server_id";
 
@@ -380,7 +380,7 @@ TEST_F(BWGSessionHandlerTest, TestUpdateSessionWithClientID) {
 }
 
 // Tests that didTapNewChatButtonWithSessionID maintains client ID consistency.
-TEST_F(BWGSessionHandlerTest, TestNewChatButtonTapped) {
+TEST_F(GeminiSessionHandlerTest, TestNewChatButtonTapped) {
   NSString* client_id = GetClientID();
   NSString* conversation_id = @"conversation_123";
   NSString* server_id = @"test_server_123";
@@ -410,7 +410,7 @@ TEST_F(BWGSessionHandlerTest, TestNewChatButtonTapped) {
 }
 
 // Tests that didTapFeedbackButton records the correct metrics.
-TEST_F(BWGSessionHandlerTest, TestFeedbackMetricsRecorded) {
+TEST_F(GeminiSessionHandlerTest, TestFeedbackMetricsRecorded) {
   // Test Thumbs Up.
   [session_handler_ didTapFeedbackButton:GeminiFeedbackType::kThumbsUp
                                sessionID:kTestServerID

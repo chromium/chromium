@@ -25,7 +25,6 @@
 #import "ios/chrome/browser/intelligence/bwg/metrics/gemini_metrics.h"
 #import "ios/chrome/browser/intelligence/bwg/model/bwg_link_opening_delegate.h"
 #import "ios/chrome/browser/intelligence/bwg/model/bwg_link_opening_handler.h"
-#import "ios/chrome/browser/intelligence/bwg/model/bwg_session_handler.h"
 #import "ios/chrome/browser/intelligence/bwg/model/bwg_tab_helper.h"
 #import "ios/chrome/browser/intelligence/bwg/model/gemini_actuation_handler.h"
 #import "ios/chrome/browser/intelligence/bwg/model/gemini_camera_handler.h"
@@ -34,6 +33,7 @@
 #import "ios/chrome/browser/intelligence/bwg/model/gemini_page_state_change_handler.h"
 #import "ios/chrome/browser/intelligence/bwg/model/gemini_scroll_observer.h"
 #import "ios/chrome/browser/intelligence/bwg/model/gemini_session_delegate.h"
+#import "ios/chrome/browser/intelligence/bwg/model/gemini_session_handler.h"
 #import "ios/chrome/browser/intelligence/bwg/model/gemini_startup_configuration.h"
 #import "ios/chrome/browser/intelligence/bwg/model/gemini_suggestion_delegate.h"
 #import "ios/chrome/browser/intelligence/bwg/model/gemini_suggestion_handler.h"
@@ -169,7 +169,7 @@ GeminiBrowserAgent::GeminiBrowserAgent(Browser* browser)
         initWithPrefService:browser_->GetProfile()->GetPrefs()];
     bwg_gateway_.pageStateChangeHandler = gemini_page_state_change_handler_;
 
-    bwg_session_handler_ = [[BWGSessionHandler alloc]
+    bwg_session_handler_ = [[GeminiSessionHandler alloc]
         initWithWebStateList:browser_->GetWebStateList()];
     if (IsGeminiCopresenceEnabled()) {
       gemini_view_state_handler_ = [[GeminiViewStateChangeHandler alloc]
