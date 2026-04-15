@@ -126,6 +126,16 @@ class SearchboxInteractiveTestMixin : public T {
                            result.c_str()))));
   }
 
+  void SetUpOnMainThread() override {
+    T::SetUpOnMainThread();
+    SetUpUrlLoaderInterceptor();
+  }
+
+  void TearDownOnMainThread() override {
+    TearDownUrlLoaderInterceptor();
+    T::TearDownOnMainThread();
+  }
+
  protected:
   void SetUpUrlLoaderInterceptor() {
     url_loader_interceptor_ =
