@@ -27,9 +27,9 @@ namespace quarantine {
 namespace {
 
 void CheckQuarantineResult(base::OnceClosure quit_closure,
-                           QuarantineFileResult result,
-                           QuarantineFileResult expected_result) {
-  EXPECT_EQ(expected_result, result);
+                           QuarantineFileResult expected,
+                           QuarantineFileResult actual) {
+  EXPECT_EQ(expected, actual);
   std::move(quit_closure).Run();
 }
 
