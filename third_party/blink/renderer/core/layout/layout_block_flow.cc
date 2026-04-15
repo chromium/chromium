@@ -176,13 +176,7 @@ void LayoutBlockFlow::AddChildBeforeDescendant(
 
   LayoutObject* before_child =
       SplitAnonymousBoxesAroundChild(before_descendant);
-
-  DCHECK_EQ(before_child->Parent(), this);
-  if (before_child->Parent() != this) {
-    // We should never reach here. If we do, we need to use the
-    // safe fallback to use the topmost beforeChild container.
-    before_child = before_descendant_container;
-  }
+  CHECK_EQ(before_child->Parent(), this);
 
   AddChild(new_child, before_child);
 }
