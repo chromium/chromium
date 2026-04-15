@@ -61,7 +61,7 @@ export class ComposeboxInputElement extends I18nMixinLit
 
   private caretResizeObserver_: ResizeObserver|null = null;
   private lastObservedInputWrapperWidth_: number = -1;
-  private isRtl_: boolean = document.documentElement.dir === 'rtl';
+  private anchoredSpan_: HTMLElement|null = null;
 
   get inputElement(): HTMLInputElement|HTMLTextAreaElement {
     return this.$.input;
@@ -224,10 +224,6 @@ export class ComposeboxInputElement extends I18nMixinLit
       }
       mirror.appendChild(span);
     });
-
-    if (chars.length === 0) {
-      mirror.textContent = ZERO_SPACE_STRING;
-    }
   }
 
   private updateCaret_() {
@@ -243,56 +239,56 @@ export class ComposeboxInputElement extends I18nMixinLit
       this.updateMirror_();
     }
 
+    // Restart the color-cycling animation on every update.
     caret.classList.remove('animating');
     void caret.offsetHeight;
     caret.classList.add('animating');
 
-    const {selectionEnd} = input as HTMLInputElement;
-    const wrapperRect = this.$.input.getBoundingClientRect();
-
-    if (selectionEnd === 0) {
-      const mirrorTextSpan = mirror.firstChild as HTMLElement;
-
-      if (mirrorTextSpan) {
-        const rect = mirrorTextSpan.getBoundingClientRect();
-        const xOffset = this.isRtl_ ? rect.right : rect.left;
-        const caretX = this.isRtl_ ? (xOffset - wrapperRect.right) :
-                                     (xOffset - wrapperRect.left);
-        const caretY = rect.top - wrapperRect.top;
-        caret.style.transform = `translate(${caretX}px, ${caretY}px)`;
-      } else {
-        this.resetCaret();
-      }
-      return;
+    // Clear anchor from the previously anchored span.
+    if (this.anchoredSpan_) {
+      this.anchoredSpan_.style.anchorName = '';
     }
 
-    const charBeforeCursor =
-        mirror.childNodes[selectionEnd! - 1] as HTMLElement;
+    // Set anchor-name on the span at the cursor position.
+    // CSS `position-anchor: --cursor-char` on #caret does the rest.
+    const selectionEnd = (input as HTMLInputElement).selectionEnd;
+    const atStart = selectionEnd === 0;
+    const targetSpan = atStart ? mirror.firstChild as HTMLElement :
+        mirror.childNodes[selectionEnd! - 1] as
+        HTMLElement;
 
-    if (charBeforeCursor) {
-      const rect = charBeforeCursor.getBoundingClientRect();
-      const xOffset = this.isRtl_ ? rect.left : rect.right;
-      const caretX = this.isRtl_ ? (xOffset - wrapperRect.right) :
-                                   (xOffset - wrapperRect.left);
-      const caretY = rect.top - wrapperRect.top;
-      caret.style.transform = `translate(${caretX}px, ${caretY}px)`;
+    if (targetSpan) {
+      targetSpan.style.anchorName = '--cursor-char';
+      this.anchoredSpan_ = targetSpan;
+      caret.classList.toggle('at-start', atStart);
     }
+
   }
 
   resetCaret() {
     const caret = this.shadowRoot.getElementById('caret');
-    if (!caret) {
+    const mirror = this.shadowRoot.getElementById('mirror');
+    if (!caret || !mirror) {
       return;
     }
-    const isRtl = document.documentElement.dir === 'rtl';
-    const boxPaddingOffset = 12;
-    let originX =
-        this.entrypointName === 'ContextualTasks' ? 0 : boxPaddingOffset;
-    if (isRtl) {
-      originX = -originX;
+
+    this.updateMirror_();
+
+    // Clear the previous anchor.
+    if (this.anchoredSpan_) {
+      this.anchoredSpan_.style.anchorName = '';
     }
-    const originY = boxPaddingOffset;
-    caret.style.transform = `translate(${originX}px, ${originY}px)`;
+
+    // Always anchor to the first span at the start position, regardless of the
+    // current textarea selectionEnd. The parent calls this after clearing its
+    // input property, but before the child's Lit render flushes,
+    // so selectionEnd may still reflect the old cursor.
+    const firstSpan = mirror.firstChild as HTMLElement;
+    if (firstSpan) {
+      firstSpan.style.anchorName = '--cursor-char';
+      this.anchoredSpan_ = firstSpan;
+      caret.classList.add('at-start');
+    }
   }
 }
 

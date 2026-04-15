@@ -135,15 +135,22 @@
   background-color: var(--google-blue-500);
   display: none;
   height: 24px;
+  left: anchor(end);
   pointer-events: none;
   position: absolute;
-  top: -2px;
+  position-anchor: --cursor-char;
+  top: calc(anchor(top) - 2px);
   width: 2px;
+  z-index: 1;
+}
+
+#caret.at-start {
+  left: anchor(start);
 }
 
 :host([entrypoint-name='Omnibox']) #caret {
   height: 18px;
-  top: 0;
+  top: anchor(top);
 }
 
 #caret.animating {
