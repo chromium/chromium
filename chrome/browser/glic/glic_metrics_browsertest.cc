@@ -126,7 +126,7 @@ IN_PROC_BROWSER_TEST_F(GlicMetricsBrowserTest,
 
   GlicInvokeOptions options(mojom::InvocationSource::kNavigationCapture);
   options.target.conversation = DefaultConversation{};
-  options.target.surface = DefaultSurface{browser()};
+  options.target.surface = TabListInterface::From(browser())->GetActiveTab();
 
   glic_service->Invoke(std::move(options));
 
@@ -161,7 +161,7 @@ IN_PROC_BROWSER_TEST_F(GlicMetricsBrowserTest,
   // 2. Call Invoke with a NEW conversation.
   GlicInvokeOptions options(mojom::InvocationSource::kNavigationCapture);
   options.target.conversation = NewConversation{};
-  options.target.surface = DefaultSurface{browser()};
+  options.target.surface = TabListInterface::From(browser())->GetActiveTab();
 
   base::HistogramTester histogram_tester_invoke;
   glic_service->Invoke(std::move(options));
@@ -201,7 +201,7 @@ IN_PROC_BROWSER_TEST_F(GlicMetricsBrowserTest,
   // conversation).
   GlicInvokeOptions options(mojom::InvocationSource::kNavigationCapture);
   options.target.conversation = DefaultConversation{};
-  options.target.surface = DefaultSurface{browser()};
+  options.target.surface = TabListInterface::From(browser())->GetActiveTab();
 
   glic_service->Invoke(std::move(options));
 

@@ -4,7 +4,12 @@
 
 #include "chrome/browser/glic/host/glic_internals_page_handler.h"
 
+#include <cstdio>
+
 #include "base/command_line.h"
+#include "base/strings/string_number_conversions.h"
+#include "base/strings/stringprintf.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/glic/actor/glic_actor_policy_checker.h"
@@ -20,6 +25,9 @@
 #include "chrome/browser/glic/public/glic_passkeys.h"
 #include "chrome/browser/glic/service/glic_instance_coordinator_impl.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/tab_list/tab_list_interface.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
 #include "components/prefs/pref_service.h"
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/web_contents.h"
@@ -244,7 +252,13 @@ void GlicInternalsPageHandler::TriggerInvokeFromInternalsAction(
       },
       std::move(split_callback.second));
 
-  options.target.surface = tab;
+  BrowserWindowInterface* current_browser = tab->GetBrowserWindowInterface();
+  if (mojo_options->surface->is_default_surface()) {
+    options.target.surface = DefaultSurface{current_browser};
+  } else if (mojo_options->surface->is_new_tab()) {
+    options.target.surface = NewTab{current_browser};
+  }
+
   if (mojo_options->auto_submit) {
     service->InvokeWithAutoSubmit(
         InvokeWithAutoSubmitPasskeyProvider::GetPassKey(), std::move(options));

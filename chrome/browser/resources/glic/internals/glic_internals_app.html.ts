@@ -155,6 +155,20 @@ export function getHtml(this: GlicInternalsAppElement) {
               <option value="${item.value}">${item.name}</option>
             `)}
           </select>
+
+          <div style="display: flex; gap: 8px; align-items: center;">
+            <label for="invokeSurfaceTypeSelect">Target Surface</label>
+            <select id="invokeSurfaceTypeSelect"
+                .value="${this.invokeSurfaceType_}"
+                @change="${this.onInvokeSurfaceTypeChange_}">
+              <option value="default">Default</option>
+              <option value="newTab">New Tab</option>
+            </select>
+            ${this.invokeSurfaceType_ === 'default' ? html`
+              <span style="color: gray;">(Uses this window)</span>
+            ` : html``}
+          </div>
+
           <cr-button @click="${this.onTriggerInvokeClick_}">
             Trigger Invoke
           </cr-button>

@@ -254,6 +254,18 @@ union InvokeConversationSelection {
   string conversation_id;
 };
 
+// Targets the default Glic surface (e.g., side panel).
+struct DefaultSurfaceMojo {};
+
+// Targets a new tab for the invocation.
+struct NewTabMojo {};
+
+// Defines the surface an invocation targets.
+union InvokeTargetSurface {
+  DefaultSurfaceMojo default_surface;
+  NewTabMojo new_tab;
+};
+
 // The level of in-flight navigation events allowed without canceling the
 // invocation.
 enum AllowedInflightNavigation {
@@ -277,6 +289,7 @@ struct TriggerInvokeFromInternalsOptions {
   bool auto_submit;
   FreOverride fre_override = kUnspecified;
   bool wait_for_panel_open;
+  InvokeTargetSurface surface;
 };
 
 // Page handler for the glic WebUI.
