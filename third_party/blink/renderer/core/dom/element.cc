@@ -11458,7 +11458,8 @@ inline void Element::UpdateFocusgroup(const AtomicString& input) {
     shadow_root->SetHasFocusgroupAttributeOnDescendant(true);
   }
 
-  EnsureRareData().SetFocusgroupData(focusgroup::ParseFocusgroup(this, input));
+  data_ = EnsureRareData().SetFocusgroupData(
+      blink::focusgroup::ParseFocusgroup(this, input));
 }
 
 void Element::UpdateFocusgroupInShadowRootIfNeeded() {

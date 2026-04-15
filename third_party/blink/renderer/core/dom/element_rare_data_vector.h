@@ -446,22 +446,9 @@ class CORE_EXPORT ElementRareDataVector final
   bool MayBeImplicitAnchor() const { return flags_.may_be_implicit_anchor; }
   void SetMayBeImplicitAnchor() { flags_.may_be_implicit_anchor = true; }
 
-  FocusgroupData GetFocusgroupData() const {
-    return {static_cast<FocusgroupBehavior>(flags_.focusgroup_behavior_),
-            static_cast<FocusgroupFlags>(flags_.focusgroup_flags_)};
-  }
-  void SetFocusgroupData(FocusgroupData data) {
-    flags_.focusgroup_behavior_ = static_cast<unsigned>(data.behavior);
-    flags_.focusgroup_flags_ = static_cast<unsigned>(data.flags);
-    DCHECK_EQ(GetFocusgroupData().behavior, data.behavior);
-    DCHECK_EQ(GetFocusgroupData().flags, data.flags);
-  }
-  void ClearFocusgroupData() {
-    flags_.focusgroup_behavior_ =
-        static_cast<unsigned>(FocusgroupBehavior::kNoBehavior);
-    flags_.focusgroup_flags_ = static_cast<unsigned>(FocusgroupFlags::kNone);
-    SetFieldToNullIfExists(FieldId::kFocusgroupLastFocused);
-  }
+  FocusgroupData GetFocusgroupData() const;
+  [[nodiscard]] ElementRareDataVector* SetFocusgroupData(FocusgroupData data);
+  void ClearFocusgroupData();
   [[nodiscard]] ElementRareDataVector* SetFocusgroupLastFocused(
       Element* element);
   Element* GetFocusgroupLastFocused() const;
@@ -636,6 +623,7 @@ class CORE_EXPORT ElementRareDataVector final
     kMutationObserverData = 45,
     kFlatTreeNodeData = 46,
     kScrollTimelines = 47,
+    kFocusgroupData = 48,
     kDOMNodeId = 49,
     kNumFields = 50,
   };
@@ -815,14 +803,6 @@ class CORE_EXPORT ElementRareDataVector final
     unsigned affected_by_logical_combinations_in_has_ : 1 = false;
     unsigned affected_by_multiple_has_ : 1 = false;
 
-    // Underlying type is FocusgroupBehavior.
-    unsigned focusgroup_behavior_ : 4 =
-        static_cast<unsigned>(FocusgroupBehavior::kNoBehavior);
-
-    // Underlying type is FocusgroupFlags.
-    unsigned focusgroup_flags_ : 7 =
-        static_cast<unsigned>(FocusgroupFlags::kNone);
-
     // We need to be able to distinguish between unset CustomElementRegistry
     // and explicitly nullptr CustomElementRegistry.
     unsigned has_custom_element_registry_ : 1 = false;
@@ -832,8 +812,9 @@ class CORE_EXPORT ElementRareDataVector final
     // This is distinct from native passwords (<input type=password>).
     unsigned has_been_heuristic_custom_password_css_ : 1 = false;
 
-    // Currently no free bits left.
+    // Currently 10 free bits left.
   };
+  static_assert(sizeof(Flags) <= 8, "Flags struct should not exceed 64 bits");
 
   Flags flags_;
 

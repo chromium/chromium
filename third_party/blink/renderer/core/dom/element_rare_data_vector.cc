@@ -733,6 +733,23 @@ ElementRareDataVector::EnsureDisplayAdElementMonitor(
       FieldId::kDisplayAdElementMonitor, element, std::move(ad_provenance));
 }
 
+FocusgroupData ElementRareDataVector::GetFocusgroupData() const {
+  if (auto* value = GetWrappedField<FocusgroupData>(FieldId::kFocusgroupData)) {
+    return *value;
+  }
+  return FocusgroupData();
+}
+
+ElementRareDataVector* ElementRareDataVector::SetFocusgroupData(
+    FocusgroupData data) {
+  return SetWrappedField<FocusgroupData>(FieldId::kFocusgroupData, data);
+}
+
+void ElementRareDataVector::ClearFocusgroupData() {
+  SetFieldToNullIfExists(FieldId::kFocusgroupData);
+  SetFieldToNullIfExists(FieldId::kFocusgroupLastFocused);
+}
+
 ElementRareDataVector* ElementRareDataVector::SetFocusgroupLastFocused(
     Element* element) {
   // Store weak reference, this should not keep the element alive.
