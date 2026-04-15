@@ -36,7 +36,7 @@ void FrameTokenMessageQueue::DidProcessFrame(uint32_t frame_token,
   // TODO(jonross): we should consider updating LocalSurfaceId to also track
   // frame_token. So that we could properly differentiate between origins of
   // frame. As we cannot enforce ordering between Reset Renderers.
-  if (!viz::FrameTokenGT(frame_token, last_received_frame_token_) &&
+  if (frame_token <= last_received_frame_token_ &&
       !(last_received_frame_token_reset_ &&
         last_received_frame_token_reset_ != frame_token)) {
     // TODO(crbug.com/431761865): Remove after the bug is fixed.

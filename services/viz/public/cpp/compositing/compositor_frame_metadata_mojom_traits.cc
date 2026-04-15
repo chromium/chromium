@@ -43,8 +43,9 @@ bool StructTraits<viz::mojom::CompositorFrameMetadataDataView,
     return false;
   }
 
-  if (data.frame_token() == 0u)
+  if (data.frame_token() == viz::kInvalidFrameToken) {
     return false;
+  }
   out->frame_token = data.frame_token();
 
   if (!data.ReadContentColorUsage(&out->content_color_usage))

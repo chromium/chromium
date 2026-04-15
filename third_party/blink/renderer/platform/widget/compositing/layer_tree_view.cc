@@ -419,8 +419,9 @@ void LayerTreeView::DidPresentCompositorFrame(
   }
   while (!presentation_callbacks_.empty()) {
     const auto& front = presentation_callbacks_.begin();
-    if (viz::FrameTokenGT(front->first, frame_token))
+    if (front->first > frame_token) {
       break;
+    }
     for (auto& callback : front->second)
       std::move(callback).Run(frame_timing_details);
     presentation_callbacks_.erase(front);
@@ -429,8 +430,9 @@ void LayerTreeView::DidPresentCompositorFrame(
 #if BUILDFLAG(IS_APPLE)
   while (!core_animation_error_code_callbacks_.empty()) {
     const auto& front = core_animation_error_code_callbacks_.begin();
-    if (viz::FrameTokenGT(front->first, frame_token))
+    if (front->first > frame_token) {
       break;
+    }
     for (auto& callback : front->second) {
       std::move(callback).Run(
           frame_timing_details.presentation_feedback.ca_layer_error_code);
@@ -538,7 +540,7 @@ void LayerTreeView::AddCallback(
       DCHECK_LE(previous.second.size(), 250u);
       return;
     }
-    DCHECK(viz::FrameTokenGT(frame_token, previous_frame_token));
+    DCHECK_GT(frame_token, previous_frame_token);
   }
   std::vector<Callback> new_callbacks;
   new_callbacks.push_back(std::move(callback));

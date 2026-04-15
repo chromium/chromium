@@ -372,11 +372,12 @@ void VideoFrameSubmitter::OnBeginFrame(
   for (const auto& id : timing_details.Keys())
     frame_tokens.push_back(id);
   std::sort(frame_tokens.begin(), frame_tokens.end(),
-            [](uint32_t a, uint32_t b) { return viz::FrameTokenGT(b, a); });
+            [](uint32_t a, uint32_t b) { return b > a; });
 
   for (const auto& frame_token : frame_tokens) {
-    if (viz::FrameTokenGT(frame_token, *next_frame_token_))
+    if (frame_token > *next_frame_token_) {
       continue;
+    }
 
     auto& details = timing_details.find(frame_token)->value;
     auto& feedback = details.presentation_feedback;

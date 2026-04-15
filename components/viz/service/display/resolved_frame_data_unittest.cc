@@ -235,6 +235,9 @@ TEST_F(ResolvedFrameDataTest, RenderPassWithPerQuadDamage) {
   constexpr gfx::Rect quad_damage_rect(10, 10, 20, 20);
   constexpr ResourceId resource_id(1);
 
+  // Submit a first frame so the next one can have kFrame damage.
+  SubmitCompositorFrame(MakeSimpleFrame());
+
   auto frame =
       CompositorFrameBuilder()
           .AddRenderPass(RenderPassBuilder(kOutputRect)
@@ -246,14 +249,16 @@ TEST_F(ResolvedFrameDataTest, RenderPassWithPerQuadDamage) {
           .Build();
 
   Surface* surface = SubmitCompositorFrame(std::move(frame));
-  EXPECT_EQ(surface->GetActiveFrameIndex(), kFrameIndexStart);
-  ResolvedFrameData resolved_frame(&resource_provider_, surface, 1u,
-                                   AggregatedRenderPassId());
+  uint32_t frame_index = surface->GetActiveFrameIndex();
+  EXPECT_GT(frame_index, kFrameIndexStart);
+  ResolvedFrameData resolved_frame(&resource_provider_, surface,
+                                   frame_index - 1, AggregatedRenderPassId());
 
   resolved_frame.UpdateForAggregation(render_pass_id_generator_);
   ASSERT_TRUE(resolved_frame.is_valid());
 
   // The damage rect should not include TextureDrawQuad's damage_rect.
+  EXPECT_EQ(resolved_frame.GetFrameDamageType(), FrameDamageType::kFrame);
   EXPECT_EQ(resolved_frame.GetSurfaceDamage(), pass_damage_rect);
 
   resolved_frame.ResetAfterAggregation();

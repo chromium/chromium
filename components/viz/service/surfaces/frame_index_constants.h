@@ -11,7 +11,7 @@ namespace viz {
 
 // Frame index values for the first frame received by from a viz client and an
 // invalid value that will never be assigned to a frame.
-inline constexpr uint32_t kFrameIndexStart = 2;
+inline constexpr uint32_t kFrameIndexStart = 1;
 inline constexpr uint32_t kInvalidFrameIndex = 0;
 
 }  // namespace viz

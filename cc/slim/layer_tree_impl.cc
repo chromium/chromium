@@ -349,7 +349,7 @@ void LayerTreeImpl::DidPresentCompositorFrame(
   const bool success = !details.presentation_feedback.failed();
   for (auto itr = pending_presentation_callbacks_.begin();
        itr != pending_presentation_callbacks_.end();) {
-    if (viz::FrameTokenGT(itr->frame_token, frame_token)) {
+    if (itr->frame_token > frame_token) {
       break;
     }
     for (auto& callback : itr->presentation_callbacks) {

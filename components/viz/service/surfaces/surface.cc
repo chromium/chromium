@@ -727,7 +727,7 @@ void Surface::ActivateFrame(FrameData frame_data) {
   // completely processed.
   const auto& metadata = GetActiveFrameMetadata();
   if (surface_client_ && metadata.send_frame_token_to_embedder) {
-    if (!FrameTokenGT(metadata.frame_token, last_sent_frame_token_)) {
+    if (metadata.frame_token <= last_sent_frame_token_) {
       uint32_t current_token = metadata.frame_token;
       uint32_t last_token = last_sent_frame_token_;
       base::debug::Alias(&current_token);

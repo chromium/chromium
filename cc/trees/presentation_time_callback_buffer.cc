@@ -94,8 +94,9 @@ PresentationTimeCallbackBuffer::PopPendingCallbacks(uint32_t frame_token,
 
   for (auto info = frame_token_infos_.begin();
        info != frame_token_infos_.end();) {
-    if (viz::FrameTokenGT(info->token, frame_token))
+    if (info->token > frame_token) {
       break;
+    }
 
     // Presentation time callbacks should be run whether presentation was
     // successful or not.
@@ -129,7 +130,7 @@ PresentationTimeCallbackBuffer::GetOrMakeRegistration(uint32_t frame_token) {
   // If the freshest registration is for an earlier frame token, add a new
   // entry to the queue.
   if (frame_token_infos_.empty() ||
-      viz::FrameTokenGT(frame_token, frame_token_infos_.back().token)) {
+      frame_token > frame_token_infos_.back().token) {
     frame_token_infos_.emplace_back(frame_token);
     DCHECK_LE(frame_token_infos_.size(), kMaxBufferSize);
   }

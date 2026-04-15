@@ -617,7 +617,7 @@ void CompositorFrameReportingController::DidPresentCompositorFrame(
 
   for (auto submitted_frame = submitted_compositor_frames_.begin();
        submitted_frame != submitted_compositor_frames_.end() &&
-       !viz::FrameTokenGT(submitted_frame->frame_token, frame_token);) {
+       submitted_frame->frame_token <= frame_token;) {
     bool is_earlier_frame = submitted_frame->frame_token != frame_token;
 
     // If the presentation feedback is a failure, earlier frames should still be

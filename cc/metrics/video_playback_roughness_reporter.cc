@@ -63,7 +63,7 @@ void VideoPlaybackRoughnessReporter::FrameSubmitted(
     TokenType token,
     const media::VideoFrame& frame,
     base::TimeDelta render_interval) {
-  if (!frames_.empty() && viz::FrameTokenGT(frames_.back().token, token)) {
+  if (!frames_.empty() && frames_.back().token > token) {
     DCHECK(false) << "Frames submitted out of order.";
     return;
   }
@@ -106,8 +106,9 @@ void VideoPlaybackRoughnessReporter::FramePresented(TokenType token,
         frame.presentation_time = timestamp;
       break;
     }
-    if (viz::FrameTokenGT(token, frame.token))
+    if (token > frame.token) {
       break;
+    }
   }
 }
 
