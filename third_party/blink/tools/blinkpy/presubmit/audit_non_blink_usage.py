@@ -2316,6 +2316,7 @@ _CONFIG = [
             'base::ListValue',
             'base::MakeFixedFlatSet',
             'base::Value',
+            'on_device_model::features::.+',
         ],
     },
     {
