@@ -306,6 +306,13 @@ bool IsAccessibilityManifestV3EnabledForGoogleTts() {
       ::features::kAccessibilityManifestV3GoogleTts);
 }
 
+BASE_FEATURE(kAccessibilityChromeVoxJapaneseBraille,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+bool IsAccessibilityChromeVoxJapaneseBrailleEnabled() {
+  return base::FeatureList::IsEnabled(
+      ::features::kAccessibilityChromeVoxJapaneseBraille);
+}
+
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(IS_ANDROID)
