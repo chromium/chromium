@@ -243,15 +243,6 @@ CC_BASE_EXPORT BASE_DECLARE_FEATURE_PARAM(
     double,
     kScrollJankV4MetricFlingContinuityThreshold);
 
-// When disabled, the scroll jank V4 metric orders scroll starts, updates and
-// ends within a single frame based on their
-// `EventMetrics::DispatchStage::kGenerated` timestamps. When enabled, it orders
-// them based on their
-// `EventMetrics::DispatchStage::kArrivedInRendererCompositor` timestamps
-// instead.
-CC_BASE_EXPORT BASE_DECLARE_FEATURE(
-    kOrderScrollJankV4EventMetricsByArrivedInRendererCompositor);
-
 // When enabled, AsyncLayerTreeFrameSink will generate its own BeginFrameArgs
 // when auto_needs_begin_frame_ is enabled.
 CC_BASE_EXPORT BASE_DECLARE_FEATURE(kManualBeginFrame);

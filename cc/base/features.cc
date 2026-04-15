@@ -239,9 +239,6 @@ BASE_FEATURE_PARAM(double,
                    "fling_continuity_threshold_pixels",
                    0.2);
 
-BASE_FEATURE(kOrderScrollJankV4EventMetricsByArrivedInRendererCompositor,
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 BASE_FEATURE(kManualBeginFrame, base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kUnlockDuringGpuImageOperations, base::FEATURE_ENABLED_BY_DEFAULT);
