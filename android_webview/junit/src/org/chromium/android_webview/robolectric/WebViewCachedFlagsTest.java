@@ -204,6 +204,70 @@ public class WebViewCachedFlagsTest {
     @Test
     @Feature({"AndroidWebView"})
     @SmallTest
+    public void testFeatureAccessHistograms() {
+        InMemorySharedPreferences sharedPrefs = new InMemorySharedPreferences();
+        WebViewCachedFlags cachedFlags =
+                new WebViewCachedFlags(
+                        sharedPrefs,
+                        Map.of(
+                                "Foo", WebViewCachedFlags.DefaultState.DISABLED,
+                                "Bar", WebViewCachedFlags.DefaultState.DISABLED,
+                                "Baz", WebViewCachedFlags.DefaultState.ENABLED,
+                                "Back", WebViewCachedFlags.DefaultState.ENABLED));
+
+        int fooHash = WebViewCachedFlags.hashFieldTrialName("Foo");
+        int barHash = WebViewCachedFlags.hashFieldTrialName("Bar");
+        int backHash = WebViewCachedFlags.hashFieldTrialName("Back");
+
+        // Before startup is completed, both histograms should be logged for Foo.
+        try (HistogramWatcher ignoredEarly =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecord("Variations.FeatureAccess", fooHash)
+                        .expectIntRecord("Variations.FeatureAccessEarly", fooHash)
+                        .build()) {
+            cachedFlags.isCachedFeatureEnabled("Foo");
+            // Calling it a second time should not log the histogram again.
+            cachedFlags.isCachedFeatureEnabled("Foo");
+        }
+
+        // After startup is completed, only Variations.FeatureAccess is logged for Bar.
+        cachedFlags.onStartupCompleted(sharedPrefs);
+        try (HistogramWatcher ignoredLate =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecord("Variations.FeatureAccess", barHash)
+                        .expectNoRecords("Variations.FeatureAccessEarly")
+                        .build()) {
+            cachedFlags.isCachedFeatureEnabled("Bar");
+            // Calling it a second time should not log the histogram again.
+            cachedFlags.isCachedFeatureEnabled("Bar");
+        }
+
+        // Check that a negative hash (e.g. for "Back") is logged correctly.
+        try (HistogramWatcher ignoredNegative =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecord("Variations.FeatureAccess", backHash)
+                        .expectNoRecords("Variations.FeatureAccessEarly")
+                        .build()) {
+            cachedFlags.isCachedFeatureEnabled("Back");
+        }
+    }
+
+    @Test
+    @Feature({"AndroidWebView"})
+    @SmallTest
+    public void testHashFieldTrialName() {
+        Assert.assertEquals(0x3f66c0bc, WebViewCachedFlags.hashFieldTrialName("NewTab"));
+        Assert.assertEquals(0x26724eba, WebViewCachedFlags.hashFieldTrialName("Forward"));
+        Assert.assertEquals(0xb7362bb5, WebViewCachedFlags.hashFieldTrialName("Back"));
+        // C++ base::HashFieldTrialName() returns a uint32_t. Java does not have an unsigned 32-bit
+        // type, so we use a signed int. The "Back" test case demonstrates that values > 0x7FFFFFFF
+        // (the maximum signed int) are correctly represented as negative numbers in Java.
+        Assert.assertEquals(-1221186635, WebViewCachedFlags.hashFieldTrialName("Back"));
+    }
+
+    @Test
+    @Feature({"AndroidWebView"})
+    @SmallTest
     public void testResetToDefaults() {
         InMemorySharedPreferences sharedPrefs = new InMemorySharedPreferences();
         sharedPrefs

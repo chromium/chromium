@@ -51,6 +51,20 @@ TEST(MetricsHashesTest, HashMetricNameAs32Bits) {
   }
 }
 
+TEST(MetricsHashesTest, HashFieldTrialName) {
+  static const auto cases = std::to_array<Cases>({
+      {"Back", "0xb7362bb5"},
+      {"NewTab", "0x3f66c0bc"},
+      {"Forward", "0x26724eba"},
+  });
+
+  for (const auto& i : cases) {
+    uint32_t hash = HashFieldTrialName(i.input);
+    std::string hash_hex = base::StringPrintf("0x%08" PRIx32, hash);
+    EXPECT_EQ(i.output, hash_hex);
+  }
+}
+
 TEST(MetricsHashesTest, ParseMetricHashTo32Bits) {
   static const auto cases = std::to_array<Cases>({
     {"Back", "0x0557fa92"},

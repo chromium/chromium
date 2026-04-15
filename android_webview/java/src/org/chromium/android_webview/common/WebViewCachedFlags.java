@@ -28,6 +28,9 @@ import org.chromium.services.tracing.TracingServiceFeatures;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
+import java.nio.charset.StandardCharsets;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Map;
@@ -69,6 +72,33 @@ public class WebViewCachedFlags {
     private final Map<String, @DefaultState Integer> mDefaults;
     private final Set<String> mOverrideEnabled;
     private final Set<String> mOverrideDisabled;
+    private volatile boolean mIsStartupComplete;
+
+    /*
+     * These sets keep track of which features have been logged to the UMA histograms
+     * "Variations.FeatureAccess" and "Variations.FeatureAccessEarly", respectively.
+     * This ensures that we only log each feature access once per process lifetime.
+     * This is done for performance reasons, to avoid hashing the feature name on every access.
+     */
+    private final Set<String> mFeaturesLoggedGeneral = Collections.synchronizedSet(new HashSet<>());
+    private final Set<String> mFeaturesLoggedEarly = Collections.synchronizedSet(new HashSet<>());
+
+    /*
+     * ThreadLocal to hold a MessageDigest instance for hashing feature names. This is used to avoid
+     * the cost of creating a new MessageDigest instance on every access. It needs to be a
+     * ThreadLocal because MessageDigest object is not thread-safe.
+     */
+    private static final ThreadLocal<MessageDigest> sMessageDigest =
+            new ThreadLocal<MessageDigest>() {
+                @Override
+                protected MessageDigest initialValue() {
+                    try {
+                        return MessageDigest.getInstance("SHA-1");
+                    } catch (NoSuchAlgorithmException e) {
+                        throw new RuntimeException("SHA-1 not supported", e);
+                    }
+                }
+            };
 
     /**
      * Initializes the singleton instance and reads the cached values from prefs. This method must
@@ -153,6 +183,8 @@ public class WebViewCachedFlags {
     public void resetToDefaults() {
         mOverrideEnabled.clear();
         mOverrideDisabled.clear();
+        mFeaturesLoggedGeneral.clear();
+        mFeaturesLoggedEarly.clear();
     }
 
     /**
@@ -168,6 +200,29 @@ public class WebViewCachedFlags {
         }
     }
 
+    private void logFeatureAccess(String feature) {
+        int featureHash = 0;
+        boolean featureHashInitialized = false;
+
+        // We always log "Variations.FeatureAccess" for every feature access, regardless of when it
+        // happens. This matches the behavior of the C++ base::FeatureList.
+        if (mFeaturesLoggedGeneral.add(feature)) {
+            featureHash = hashFieldTrialName(feature);
+            featureHashInitialized = true;
+            RecordHistogram.recordSparseHistogram("Variations.FeatureAccess", featureHash);
+        }
+
+        // In addition to the general access log, we also log "Variations.FeatureAccessEarly" if the
+        // feature is accessed before startup is complete.
+        if (!mIsStartupComplete && mFeaturesLoggedEarly.add(feature)) {
+            if (!featureHashInitialized) {
+                featureHash = hashFieldTrialName(feature);
+                featureHashInitialized = true;
+            }
+            RecordHistogram.recordSparseHistogram("Variations.FeatureAccessEarly", featureHash);
+        }
+    }
+
     /**
      * @param feature the name of the feature to query.
      * @return true if feature is enabled in the cache, false if it is disabled and the default
@@ -175,6 +230,7 @@ public class WebViewCachedFlags {
      *     registered in mDefaults or one of the caches.
      */
     public boolean isCachedFeatureEnabled(String feature) {
+        logFeatureAccess(feature);
         if (mOverrideEnabled.contains(feature)) {
             return true;
         } else if (mOverrideDisabled.contains(feature)) {
@@ -207,6 +263,7 @@ public class WebViewCachedFlags {
      * @param prefs the SharedPreferences to write new feature values to.
      */
     public void onStartupCompleted(SharedPreferences prefs) {
+        mIsStartupComplete = true;
         Set<String> newEnabledSet = new HashSet<>();
         Set<String> newDisabledSet = new HashSet<>();
         mDefaults.forEach(
@@ -302,6 +359,24 @@ public class WebViewCachedFlags {
         }
 
         return WebViewCachedFlagsJni.get().getStateIfOverridden(feature);
+    }
+
+    /**
+     * Computes the hash of a feature name. This must be kept in sync with base::HashFieldTrialName
+     * in base/metrics/metrics_hashes.cc.
+     *
+     * <p>Note: RecordHistogram calls are buffered until native is initialized. Since we are
+     * providing the logged value directly to the histogram here, we need to compute it in Java.
+     */
+    @VisibleForTesting
+    public static int hashFieldTrialName(String feature) {
+        byte[] featureBytes = feature.getBytes(StandardCharsets.UTF_8);
+        byte[] hash = sMessageDigest.get().digest(featureBytes);
+        // Read the first 4 bytes as a little-endian 32-bit integer.
+        return (hash[0] & 0xFF)
+                | ((hash[1] & 0xFF) << 8)
+                | ((hash[2] & 0xFF) << 16)
+                | ((hash[3] & 0xFF) << 24);
     }
 
     @NativeMethods
