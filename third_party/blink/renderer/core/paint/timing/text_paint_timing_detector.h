@@ -11,6 +11,7 @@
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/dom/node.h"
 #include "third_party/blink/renderer/core/layout/layout_object.h"
+#include "third_party/blink/renderer/core/paint/timing/paint_timing_callbacks.h"
 #include "third_party/blink/renderer/core/paint/timing/paint_timing_record.h"
 #include "third_party/blink/renderer/core/paint/timing/text_element_timing.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_deque.h"
@@ -88,9 +89,7 @@ class CORE_EXPORT TextPaintTimingDetector final
   void RecordAggregatedText(const LayoutBoxModelObject& aggregator,
                             const gfx::Rect& aggregated_visual_rect,
                             const PropertyTreeStateOrAlias&);
-  std::optional<base::OnceCallback<void(const base::TimeTicks&,
-                                        const DOMPaintTimingInfo&)>>
-  TakePaintTimingCallback();
+  OptionalPaintTimingCallback TakePaintTimingCallback();
   void LayoutObjectWillBeDestroyed(const LayoutObject&);
   void StopRecordingLargestTextPaint();
 

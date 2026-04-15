@@ -484,16 +484,14 @@ void LargestContentfulPaintCalculator::ReportNoMetricsImageCandidateToTrace() {
 
 void LargestContentfulPaintCalculator::MaybeUpdateLargestText(
     TextRecord* record) {
-  if (!largest_text_ ||
-      largest_text_->RecordedSize() < record->RecordedSize()) {
+  if (record->IsEffectiveSizeLargerThan(largest_text_)) {
     largest_text_ = record;
   }
 }
 
 void LargestContentfulPaintCalculator::MaybeUpdateLargestPaintedImage(
     ImageRecord* record) {
-  if (!largest_painted_image_ ||
-      largest_painted_image_->RecordedSize() < record->RecordedSize()) {
+  if (record->IsEffectiveSizeLargerThan(largest_painted_image_)) {
     largest_painted_image_ = record;
   }
 }
@@ -510,8 +508,7 @@ bool LargestContentfulPaintCalculator::IsImageNeededForLcp(
 }
 
 void LargestContentfulPaintCalculator::OnImageFirstPaint(ImageRecord* record) {
-  if (!largest_pending_image_ ||
-      largest_pending_image_->RecordedSize() < record->RecordedSize()) {
+  if (record->IsEffectiveSizeLargerThan(largest_pending_image_)) {
     largest_pending_image_ = record;
   }
 }

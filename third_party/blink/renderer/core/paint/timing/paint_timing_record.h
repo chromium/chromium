@@ -74,6 +74,14 @@ class CORE_EXPORT PaintTimingRecord
   // such records without reporting them as LCP candidates.
   bool WasNodeRemoved() const;
 
+  // Returns true if this record's effective size is larger than `other`'s
+  // effective size (null records are considered to have no size) and false
+  // otherwise. See also
+  // https://www.w3.org/TR/largest-contentful-paint/#sec-effective-visual-size.
+  bool IsEffectiveSizeLargerThan(PaintTimingRecord* other) const {
+    return RecordedSize() > (other ? other->RecordedSize() : 0u);
+  }
+
  private:
   const WeakMember<Node> node_;
   const WeakMember<LayoutObject> layout_object_;

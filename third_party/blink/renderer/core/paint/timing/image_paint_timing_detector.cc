@@ -238,8 +238,7 @@ void ImageRecordsManager::AssignPaintTimeToRegisteredQueuedRecords(
     // better matches the LCP spec.
     if (it == pending_images_.end()) {
       if (lcp_calculator &&
-          (!largest_removed_image ||
-           largest_removed_image->RecordedSize() < record->RecordedSize())) {
+          record->IsEffectiveSizeLargerThan(largest_removed_image)) {
         largest_removed_image = record;
       }
       continue;

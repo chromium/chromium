@@ -305,9 +305,8 @@ void TextPaintTimingDetector::AssignPaintTimeToQueuedRecords(
     // `largest_ignored_text_` is not added to that set when document opacity
     // changes to a non-zero value (crbug.com/459517297).
     if (record->WasNodeRemoved()) {
-      if (is_needed_for_lcp && record->RecordedSize() > 0u &&
-          (!largest_removed_text ||
-           largest_removed_text->RecordedSize() < record->RecordedSize())) {
+      if (is_needed_for_lcp &&
+          record->IsEffectiveSizeLargerThan(largest_removed_text)) {
         largest_removed_text = record;
       }
       continue;

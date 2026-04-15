@@ -212,6 +212,7 @@ blink_core_sources_paint = [
   "timing/media_record_id.cc",
   "timing/media_record_id.h",
   "timing/paint_timing.cc",
+  "timing/paint_timing_callbacks.h",
   "timing/paint_timing_detector.cc",
   "timing/paint_timing_detector.h",
   "timing/paint_timing_record.cc",
