@@ -20,6 +20,7 @@
 #include "gin/gin_export.h"
 #include "gin/per_isolate_data.h"
 #include "gin/public/gin_embedders.h"
+#include "v8/include/cppgc/macros.h"
 #include "v8/include/v8-external.h"
 #include "v8/include/v8-forward.h"
 #include "v8/include/v8-persistent-handle.h"
@@ -173,6 +174,9 @@ GIN_EXPORT void ThrowConversionError(Arguments* args,
 // at position |index|.
 template <size_t index, typename ArgType, typename = void>
 struct ArgumentHolder {
+  CPPGC_STACK_ALLOCATED();
+
+ public:
   using ArgLocalType = typename CallbackParamTraits<ArgType>::LocalType;
 
   ArgLocalType value;
@@ -196,6 +200,9 @@ template <size_t index, typename ArgType>
       std::is_constructible_v<typename CallbackParamTraits<ArgType>::LocalType,
                               v8::Isolate*>)
 struct ArgumentHolder<index, ArgType> {
+  CPPGC_STACK_ALLOCATED();
+
+ public:
   using ArgLocalType = typename CallbackParamTraits<ArgType>::LocalType;
 
   ArgLocalType value;
