@@ -1,0 +1,13 @@
+This is a testharness.js-based test.
+[FAIL] Opening a hint popover will not hide unrelated auto popovers.
+  assert_array_equals: lengths differ, expected array [Element node <div id="auto1" popover="auto">Auto 1</div>, Element node <div id="auto2" popover="auto">Auto 2</div>, Element node <div id="hint1" popover="hint">Hint 1</div>] length 3, got [Element node <div id="auto1" popover="auto">Auto 1</div>, Element node <div id="hint1" popover="hint">Hint 1</div>] length 2
+[FAIL] Opening a hint popover closes only other non-ancestor hint popovers.
+  assert_array_equals: after hint3 show lengths differ, expected array [Element node <div id="auto1" popover="auto">Auto 1</div>, Element node <div id="hint3" popover="hint">Hint 3</div>] length 2, got [Element node <div id="auto1" popover="auto">Auto 1</div>, Element node <div id="hint1" popover="hint">Hint 1</div>, Element node <div id="hint2" popover="hint">Hint 2</div>, Element node <div id="hint3" popover="hint">Hint 3</div>] length 4
+[FAIL] Clicking outside consistently closes both auto and hint popovers.
+  assert_array_equals: after hint click lengths differ, expected array [Element node <div id="hint1" popover="hint">Hint 1</div>] length 1, got [Element node <div id="auto1" popover="auto">Auto 1</div>, Element node <div id="hint1" popover="hint">Hint 1</div>] length 2
+[FAIL] Hiding an auto popover closes only its child popovers.
+  assert_array_equals: after auto hide lengths differ, expected array [Element node <div id="hint1" popover="hint">Hint 1</div>] length 1, got [] length 0
+[FAIL] Opening an auto popover inside a hint popover is disallowed and will fail.
+  assert_throws_dom: Opening auto popover inside hint popover is not allowed function "() => {\n    auto1.showPopover({source: hint1});\n  }" did not throw
+Harness: the test ran to completion.
+

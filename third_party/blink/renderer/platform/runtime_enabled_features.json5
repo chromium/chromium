@@ -4356,6 +4356,12 @@
       status: "stable",
     },
     {
+      // Simplifies the behavior and stacking interactions of popover=hint and
+      // popover=auto. See https://crbug.com/499019927.
+      name: "PopoverHintNewBehavior",
+      status: "experimental",
+    },
+    {
       name: "PositionOutsideTabSpanCheckSiblingNode",
       status: "stable",
     },

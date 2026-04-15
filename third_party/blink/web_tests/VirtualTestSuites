@@ -6387,5 +6387,20 @@
       "moonira@google.com"
     ],
     "expires": "Jan 1, 2027"
+  },
+  {
+    "prefix": "popover-hint-new-behavior-disabled",
+    "platforms": ["Linux", "Mac", "Win"],
+    "bases": [
+      "external/wpt/html/semantics/popovers",
+      "inspector-protocol/dom/dom-forceShowPopover.js"
+    ],
+    "args": [
+      "--disable-blink-features=PopoverHintNewBehavior"
+    ],
+    "expires": "Dec 1, 2026",
+    "owners": [
+      "masonf@chromium.org"
+    ]
   }
 ]

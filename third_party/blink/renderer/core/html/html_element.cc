@@ -1572,28 +1572,96 @@ void HTMLElement::ShowPopoverInternal(Element* invoker,
     };
 
     auto focus_behavior = HidePopoverFocusBehavior::kNone;
-    if (const HTMLElement* hint_ancestor_to_keep =
-            (original_type == PopoverValueType::kHint)
-                ? FindTopmostPopoverAncestor(*this, hint_stack, invoker)
-                : nullptr) {
-      HideAllPopoversUntil(hint_ancestor_to_keep, original_document,
-                           focus_behavior, transition_behavior);
-      append_to_stack = &hint_stack;
-    } else {
-      CloseEntirePopoverStack(hint_stack, focus_behavior, transition_behavior);
-      if (!check_popover_validity(
-              "The value of the popover attribute was changed while hiding "
-              "hint popovers.")) {
-        return;
-      }
-      auto* auto_ancestor =
-          FindTopmostPopoverAncestor(*this, auto_stack, invoker);
-      if (original_type == PopoverValueType::kAuto || auto_ancestor) {
-        HideAllPopoversUntil(auto_ancestor, original_document, focus_behavior,
-                             transition_behavior);
-        append_to_stack = &auto_stack;
-      } else {
+    if (!RuntimeEnabledFeatures::PopoverHintNewBehaviorEnabled()) {
+      if (HTMLElement* hint_ancestor_to_keep =
+              (original_type == PopoverValueType::kHint)
+                  ? FindTopmostPopoverAncestor(*this, &hint_stack, invoker,
+                                               TopLayerElementType::kPopover)
+                  : nullptr) {
+        HideAllPopoversUntil(hint_ancestor_to_keep, original_document,
+                             focus_behavior, transition_behavior);
         append_to_stack = &hint_stack;
+      } else {
+        CloseEntirePopoverStack(hint_stack, focus_behavior,
+                                transition_behavior);
+        if (!check_popover_validity(
+                "The value of the popover attribute was changed while hiding "
+                "hint popovers.")) {
+          return;
+        }
+        auto* auto_ancestor = FindTopmostPopoverAncestor(
+            *this, &auto_stack, invoker, TopLayerElementType::kPopover);
+        if (original_type == PopoverValueType::kAuto || auto_ancestor) {
+          HideAllPopoversUntil(auto_ancestor, original_document, focus_behavior,
+                               transition_behavior);
+          append_to_stack = &auto_stack;
+        } else {
+          append_to_stack = &hint_stack;
+        }
+      }
+    } else {
+      auto* popoverToOpenParent =
+          FindTopmostPopoverAncestor(*this, /*stack_to_check=*/nullptr, invoker,
+                                     TopLayerElementType::kPopover);
+      if (popoverToOpenParent && hint_stack.Contains(popoverToOpenParent)) {
+        if (new_popover_is_auto) {
+          if (exception_state) {
+            exception_state->ThrowDOMException(
+                DOMExceptionCode::kInvalidStateError,
+                "Cannot open an auto popover nested inside a hint popover.");
+          } else {
+            auto* message = MakeGarbageCollected<ConsoleMessage>(
+                mojom::blink::ConsoleMessageSource::kOther,
+                mojom::blink::ConsoleMessageLevel::kError,
+                "Cannot open an auto popover nested inside a hint popover.");
+            Vector<DOMNodeId> nodes;
+            nodes.push_back(GetDomNodeId());
+            message->SetNodes(original_document.GetFrame(), nodes);
+            original_document.AddConsoleMessage(message);
+          }
+          return;
+        }
+        HideAllPopoversUntil(popoverToOpenParent, original_document,
+                             focus_behavior, transition_behavior);
+        append_to_stack = &hint_stack;
+      } else {
+        auto hide_result = CloseEntirePopoverStack(hint_stack, focus_behavior,
+                                                   transition_behavior);
+        if (hide_result != PopoverHideResult::kForcedOpenByInspector) {
+          original_document.SetPopoverHintStackParent(nullptr);
+        }
+
+        if (!check_popover_validity(
+                "The value of the popover attribute was changed while hiding "
+                "hint popovers.")) {
+          return;
+        }
+        popoverToOpenParent =
+            FindTopmostPopoverAncestor(*this, /*stack_to_check=*/nullptr,
+                                       invoker, TopLayerElementType::kPopover);
+
+        if (new_popover_is_auto) {
+          auto auto_hide_result =
+              HideAllPopoversUntil(popoverToOpenParent, original_document,
+                                   focus_behavior, transition_behavior);
+          if (!check_popover_validity("The popover attribute changed while "
+                                      "hiding other popovers.")) {
+            return;
+          }
+          if (!hint_stack.empty() &&
+              auto_hide_result != PopoverHideResult::kForcedOpenByInspector) {
+            return;
+          }
+
+          append_to_stack = &auto_stack;
+        } else {
+          DCHECK(hint_stack.empty() ||
+                 hide_result == PopoverHideResult::kForcedOpenByInspector);
+          if (popoverToOpenParent && hint_stack.empty()) {
+            original_document.SetPopoverHintStackParent(popoverToOpenParent);
+          }
+          append_to_stack = &hint_stack;
+        }
       }
     }
     CHECK(append_to_stack);
@@ -1782,14 +1850,20 @@ PopoverHideResult HTMLElement::HideAllPopoversUntil(
   }
 
   if (!endpoint) {
-    auto hint_stack_result = CloseEntirePopoverStack(
-        document.PopoverHintStack(), focus_behavior, transition_behavior);
-    auto auto_stack_result = CloseEntirePopoverStack(
-        document.PopoverAutoStack(), focus_behavior, transition_behavior);
-    if (hint_stack_result == PopoverHideResult::kForcedOpenByInspector ||
-        auto_stack_result == PopoverHideResult::kForcedOpenByInspector) {
+    if (CloseEntirePopoverStack(document.PopoverHintStack(), focus_behavior,
+                                transition_behavior) ==
+        PopoverHideResult::kForcedOpenByInspector) {
       return PopoverHideResult::kForcedOpenByInspector;
     }
+    if (RuntimeEnabledFeatures::PopoverHintNewBehaviorEnabled()) {
+      document.SetPopoverHintStackParent(nullptr);
+    }
+    if (CloseEntirePopoverStack(document.PopoverAutoStack(), focus_behavior,
+                                transition_behavior) ==
+        PopoverHideResult::kForcedOpenByInspector) {
+      return PopoverHideResult::kForcedOpenByInspector;
+    }
+    return PopoverHideResult::kHidden;
   }
 
   // Given an ancestor to leave open, this finds the last (counting from the
@@ -1843,6 +1917,10 @@ PopoverHideResult HTMLElement::HideAllPopoversUntil(
           DCHECK(!stack.empty() && stack_top == stack.back());
           popover_stack_for_inspector->push_back(stack_top);
           stack.pop_back();
+          if (RuntimeEnabledFeatures::PopoverHintNewBehaviorEnabled() &&
+              &stack == &document.PopoverHintStack() && stack.empty()) {
+            document.SetPopoverHintStackParent(nullptr);
+          }
           if (stack_top == last_to_hide) {
             // We're keeping last_to_hide open
             break;
@@ -1883,16 +1961,41 @@ PopoverHideResult HTMLElement::HideAllPopoversUntil(
     return hide_stack_until(endpoint, hint_stack);
   }
 
-  // If the endpoint wasn't in the hint stack, close the entire hint stack.
-  CloseEntirePopoverStack(document.PopoverHintStack(), focus_behavior,
-                          transition_behavior);
-
   // Now check the auto stack.
   auto& auto_stack = document.PopoverAutoStack();
-  if (!auto_stack.Contains(endpoint)) {
-    // Event handlers from hint popovers could have closed our endpoint.
-    return PopoverHideResult::kHidden;
+  if (!RuntimeEnabledFeatures::PopoverHintNewBehaviorEnabled()) {
+    // If the endpoint wasn't in the hint stack, close the entire hint stack.
+    CloseEntirePopoverStack(document.PopoverHintStack(), focus_behavior,
+                            transition_behavior);
+    if (!auto_stack.Contains(endpoint)) {
+      // Event handlers from hint popovers could have closed our endpoint.
+      return PopoverHideResult::kHidden;
+    }
+  } else {
+    CHECK(auto_stack.Contains(endpoint));
+    bool should_hide_hint_stack = false;
+    if (auto* hint_parent = document.PopoverHintStackParent()) {
+      for (auto& popover : base::Reversed(auto_stack)) {
+        if (popover == hint_parent) {
+          should_hide_hint_stack = true;
+          break;
+        }
+        if (popover == endpoint) {
+          break;
+        }
+      }
+    }
+
+    if (should_hide_hint_stack) {
+      if (CloseEntirePopoverStack(document.PopoverHintStack(), focus_behavior,
+                                  transition_behavior) ==
+          PopoverHideResult::kForcedOpenByInspector) {
+        return PopoverHideResult::kForcedOpenByInspector;
+      }
+      document.SetPopoverHintStackParent(nullptr);
+    }
   }
+
   return hide_stack_until(endpoint, auto_stack);
 }
 
@@ -2092,6 +2195,10 @@ PopoverHideResult HTMLElement::HidePopoverInternal(
         stack_top_ignoring_inspector(hint_stack) == this) {
       CHECK_EQ(PopoverType(), PopoverValueType::kHint);
       hint_stack.EraseAt(hint_stack.Find(this));
+      if (hint_stack.empty() &&
+          RuntimeEnabledFeatures::PopoverHintNewBehaviorEnabled()) {
+        document.SetPopoverHintStackParent(nullptr);
+      }
     } else {
       CHECK(!auto_stack.empty());
       CHECK(auto_stack.Contains(this));
@@ -2344,9 +2451,9 @@ const HTMLElement* NearestTargetPopoverForInvoker(
 // have anchors pointing to each other, the only valid relationship is that the
 // first one to open is the "parent" and the second is the "child".
 // Additionally, a `popover=hint` cannot be the ancestor of a `popover=auto`.
-const HTMLElement* HTMLElement::FindTopmostPopoverAncestor(
+HTMLElement* HTMLElement::FindTopmostPopoverAncestor(
     Element& new_popover_or_top_layer_element,
-    HTMLDocument::PopoverStack& stack_to_check,
+    HTMLDocument::PopoverStack* stack_to_check,
     Element* new_popovers_invoker,
     TopLayerElementType top_layer_element_type) {
   bool is_popover = top_layer_element_type == TopLayerElementType::kPopover;
@@ -2367,8 +2474,20 @@ const HTMLElement* HTMLElement::FindTopmostPopoverAncestor(
   // Build a map from each open popover to its position in the stack.
   HeapHashMap<Member<const HTMLElement>, int> popover_positions;
   int indx = 0;
-  for (auto popover : stack_to_check) {
-    popover_positions.Set(popover, indx++);
+  if (stack_to_check) {
+    CHECK(!RuntimeEnabledFeatures::PopoverHintNewBehaviorEnabled());
+    for (auto& popover : *stack_to_check) {
+      popover_positions.Set(popover, indx++);
+    }
+  } else {
+    CHECK(RuntimeEnabledFeatures::PopoverHintNewBehaviorEnabled());
+    Document& document = new_popover_or_top_layer_element.GetDocument();
+    for (auto& popover : document.PopoverAutoStack()) {
+      popover_positions.Set(popover, indx++);
+    }
+    for (auto& popover : document.PopoverHintStack()) {
+      popover_positions.Set(popover, indx++);
+    }
   }
   if (is_popover) {
     popover_positions.Set(new_popover, indx++);
@@ -2387,11 +2506,16 @@ const HTMLElement* HTMLElement::FindTopmostPopoverAncestor(
       }
       CHECK_NE(candidate_ancestor->PopoverType(), PopoverValueType::kManual);
       CHECK_NE(candidate_ancestor->PopoverType(), PopoverValueType::kNone);
-      ok_nesting = !new_popover ||
-                   new_popover->PopoverType() == PopoverValueType::kHint ||
-                   candidate_ancestor->PopoverType() == PopoverValueType::kAuto;
-      if (!ok_nesting) {
-        to_check = FlatTreeTraversal::ParentElement(*candidate_ancestor);
+      if (!RuntimeEnabledFeatures::PopoverHintNewBehaviorEnabled()) {
+        ok_nesting =
+            !new_popover ||
+            new_popover->PopoverType() == PopoverValueType::kHint ||
+            candidate_ancestor->PopoverType() == PopoverValueType::kAuto;
+        if (!ok_nesting) {
+          to_check = FlatTreeTraversal::ParentElement(*candidate_ancestor);
+        }
+      } else {
+        ok_nesting = true;
       }
     }
     int candidate_position = popover_positions.at(candidate_ancestor);
@@ -2406,7 +2530,7 @@ const HTMLElement* HTMLElement::FindTopmostPopoverAncestor(
       FlatTreeTraversal::ParentElement(new_popover_or_top_layer_element));
   // 2. Invoker to popover
   check_ancestor(new_popovers_invoker);
-  return topmost_popover_ancestor;
+  return const_cast<HTMLElement*>(topmost_popover_ancestor);
 }
 
 // static
@@ -2421,16 +2545,22 @@ const HTMLElement* HTMLElement::TopLayerElementPopoverAncestor(
   // CHECK above), pass `nullptr` otherwise.
   Element* new_popovers_invoker =
       is_menulist ? top_layer_element.GetPopoverData()->invoker() : nullptr;
-  // Check the hint stack first.
-  if (auto* ancestor = FindTopmostPopoverAncestor(
-          top_layer_element, document.PopoverHintStack(), new_popovers_invoker,
-          top_layer_element_type)) {
-    return ancestor;
+  if (!RuntimeEnabledFeatures::PopoverHintNewBehaviorEnabled()) {
+    // Check the hint stack first.
+    if (auto* ancestor = FindTopmostPopoverAncestor(
+            top_layer_element, &document.PopoverHintStack(),
+            new_popovers_invoker, top_layer_element_type)) {
+      return ancestor;
+    }
+    // Then the auto stack.
+    return FindTopmostPopoverAncestor(
+        top_layer_element, &document.PopoverAutoStack(), new_popovers_invoker,
+        top_layer_element_type);
+  } else {
+    return FindTopmostPopoverAncestor(
+        top_layer_element, /*stack_to_check=*/nullptr, new_popovers_invoker,
+        top_layer_element_type);
   }
-  // Then the auto stack.
-  return FindTopmostPopoverAncestor(
-      top_layer_element, document.PopoverAutoStack(), new_popovers_invoker,
-      top_layer_element_type);
 }
 
 namespace {
@@ -2467,6 +2597,50 @@ const HTMLElement* FindTopmostRelatedPopover(
 }
 }  // namespace
 
+// This differs from `HideAllPopoversUntil` in that it is more aggressive
+// about closing hint popovers. If the target is an auto popover, or outside of
+// any popovers, it closes all hint popovers.
+void HTMLElement::HidePopoversForLightDismiss(const HTMLElement* target_popover,
+                                              Document& document) {
+  if (!RuntimeEnabledFeatures::PopoverHintNewBehaviorEnabled()) {
+    HideAllPopoversUntil(
+        target_popover, document, HidePopoverFocusBehavior::kNone,
+        HidePopoverTransitionBehavior::kFireEventsAndWaitForTransitions);
+    return;
+  }
+  auto& hint_stack = document.PopoverHintStack();
+  auto* hint_parent = document.PopoverHintStackParent();
+  bool clicked_on_hint = target_popover && target_popover->PopoverType() ==
+                                               PopoverValueType::kHint;
+  if (!clicked_on_hint) {
+    if (CloseEntirePopoverStack(
+            hint_stack, HidePopoverFocusBehavior::kNone,
+            HidePopoverTransitionBehavior::kFireEventsAndWaitForTransitions) ==
+        PopoverHideResult::kForcedOpenByInspector) {
+      return;
+    }
+    document.SetPopoverHintStackParent(nullptr);
+  }
+  HideAllPopoversUntil(
+      target_popover, document, HidePopoverFocusBehavior::kNone,
+      HidePopoverTransitionBehavior::kFireEventsAndWaitForTransitions);
+  if (hint_stack.empty()) {
+    document.SetPopoverHintStackParent(nullptr);
+  }
+  if (clicked_on_hint) {
+    if (hint_parent) {
+      document.SetPopoverHintStackParent(nullptr);
+      HideAllPopoversUntil(
+          hint_parent, document, HidePopoverFocusBehavior::kNone,
+          HidePopoverTransitionBehavior::kFireEventsAndWaitForTransitions);
+    } else {
+      CloseEntirePopoverStack(
+          document.PopoverAutoStack(), HidePopoverFocusBehavior::kNone,
+          HidePopoverTransitionBehavior::kFireEventsAndWaitForTransitions);
+    }
+  }
+}
+
 // static
 void HTMLElement::HandlePopoverLightDismiss(const PointerEvent& event,
                                             const Node& target_node) {
@@ -2501,9 +2675,7 @@ void HTMLElement::HandlePopoverLightDismiss(const PointerEvent& event,
     bool same_target = ancestor_popover == document.PopoverPointerdownTarget();
     document.SetPopoverPointerdownTarget(nullptr);
     if (same_target) {
-      HideAllPopoversUntil(
-          ancestor_popover, document, HidePopoverFocusBehavior::kNone,
-          HidePopoverTransitionBehavior::kFireEventsAndWaitForTransitions);
+      HidePopoversForLightDismiss(ancestor_popover, document);
     }
   }
 }
@@ -2516,10 +2688,8 @@ void HTMLElement::HandlePopoverLightDismissForClick(
   auto* pointer_down_popover = FindTopmostRelatedPopover(pointer_down_target);
   auto* pointer_up_popover = FindTopmostRelatedPopover(pointer_up_target);
   if (pointer_down_popover == pointer_up_popover) {
-    HideAllPopoversUntil(
-        pointer_up_popover, pointer_down_target.GetDocument(),
-        HidePopoverFocusBehavior::kNone,
-        HidePopoverTransitionBehavior::kFireEventsAndWaitForTransitions);
+    auto& document = pointer_down_target.GetDocument();
+    HidePopoversForLightDismiss(pointer_up_popover, document);
   }
 }
 

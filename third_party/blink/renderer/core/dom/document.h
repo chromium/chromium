@@ -1719,6 +1719,12 @@ class CORE_EXPORT Document : public ContainerNode,
   const PopoverStack& PopoverHintStack() const { return popover_hint_stack_; }
   PopoverStack& PopoverHintStack() { return popover_hint_stack_; }
   bool PopoverHintShowing() const { return !popover_hint_stack_.empty(); }
+  HTMLElement* PopoverHintStackParent() const {
+    return popover_hint_stack_parent_.Get();
+  }
+  void SetPopoverHintStackParent(HTMLElement* parent) {
+    popover_hint_stack_parent_ = parent;
+  }
   PopoverStack& PopoverAutoStack() { return popover_auto_stack_; }
   const PopoverStack& PopoverAutoStack() const { return popover_auto_stack_; }
   bool PopoverAutoShowing() const { return !popover_auto_stack_.empty(); }
@@ -2973,6 +2979,10 @@ class CORE_EXPORT Document : public ContainerNode,
   // stack is the same as for `popover_auto_stack_`. This stack will only ever
   // contain `popover=hint` elements, and nothing else.
   HeapVector<Member<HTMLElement>> popover_hint_stack_;
+  // Tracks the auto popover (if any) that serves as the root/parent for the
+  // current hint popover stack. Null if the hint stack is empty or not anchored
+  // to an auto popover.
+  Member<HTMLElement> popover_hint_stack_parent_;
   // The popover (if any) that received the most recent pointerdown event.
   Member<const HTMLElement> popover_pointerdown_target_;
   // The dialog (if any) that received the most recent pointerdown event. This

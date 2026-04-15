@@ -9449,6 +9449,7 @@ void Document::Trace(Visitor* visitor) const {
   visitor->Trace(top_layer_elements_pending_removal_);
   visitor->Trace(popover_auto_stack_);
   visitor->Trace(popover_hint_stack_);
+  visitor->Trace(popover_hint_stack_parent_);
   visitor->Trace(popover_pointerdown_target_);
   visitor->Trace(dialog_pointerdown_target_);
   visitor->Trace(popover_picker_pointerdown_info_);

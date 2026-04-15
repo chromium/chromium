@@ -314,12 +314,11 @@ class CORE_EXPORT HTMLElement : public Element {
       HidePopoverTransitionBehavior event_firing,
       ExceptionState* exception_state);
   void PopoverHideFinishIfNeeded(bool immediate);
-  static const HTMLElement* FindTopmostPopoverAncestor(
+  static HTMLElement* FindTopmostPopoverAncestor(
       Element& new_popover_or_top_layer_element,
-      HeapVector<Member<HTMLElement>>& stack_to_check,
+      HeapVector<Member<HTMLElement>>* stack_to_check,
       Element* new_popovers_invoker,
-      TopLayerElementType top_layer_element_type =
-          TopLayerElementType::kPopover);
+      TopLayerElementType top_layer_element_type);
   static const HTMLElement* TopLayerElementPopoverAncestor(
       Element& top_layer_element,
       TopLayerElementType top_layer_element_type);
@@ -334,6 +333,8 @@ class CORE_EXPORT HTMLElement : public Element {
   // pointerup events.
   static void HandlePopoverLightDismiss(const PointerEvent& event,
                                         const Node& node);
+  static void HidePopoversForLightDismiss(const HTMLElement* target_popover,
+                                          Document& document);
   static void HandlePopoverLightDismissForClick(const Node& pointer_down_target,
                                                 const Node& pointer_up_target);
   void InvokePopover(Element& invoker);
