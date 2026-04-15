@@ -479,13 +479,19 @@ test("accessibility_unittests") {
 fuzzer_test("ax_tree_fuzzer") {
   sources = [ "ax_tree_fuzzer.cc" ]
 
-  deps = [ ":accessibility" ]
+  deps = [
+    ":accessibility",
+    "//testing/libfuzzer:libfuzzer_base_wrappers",
+  ]
 }
 
 fuzzer_test("ax_table_fuzzer") {
   sources = [ "ax_table_fuzzer.cc" ]
 
-  deps = [ ":accessibility" ]
+  deps = [
+    ":accessibility",
+    "//testing/libfuzzer:libfuzzer_base_wrappers",
+  ]
 
   seed_corpus = "fuzz_corpus"
 }

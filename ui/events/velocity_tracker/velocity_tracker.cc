@@ -64,7 +64,7 @@ struct Estimator {
   TimeTicks time;
 
   // Polynomial coefficients describing motion in X and Y.
-  float xcoeff[kMaxDegree + 1], ycoeff[kMaxDegree + 1];
+  std::array<float, kMaxDegree + 1> xcoeff, ycoeff;
 
   // Polynomial degree (number of coefficients), or zero if no information is
   // available.
@@ -79,25 +79,25 @@ struct Estimator {
     degree = 0;
     confidence = 0;
     for (size_t i = 0; i <= kMaxDegree; i++) {
-      UNSAFE_TODO(xcoeff[i]) = 0;
-      UNSAFE_TODO(ycoeff[i]) = 0;
+      xcoeff[i] = 0;
+      ycoeff[i] = 0;
     }
   }
 };
 
-float VectorDot(const float* a, const float* b, uint32_t m) {
+float VectorDot(base::span<float> lhs, base::span<float> rhs) {
+  CHECK_EQ(lhs.size(), rhs.size());
   float r = 0;
-  while (m--) {
-    r += *(UNSAFE_TODO(a++)) * *(UNSAFE_TODO(b++));
+  for (size_t i = 0; i < lhs.size(); ++i) {
+    r += lhs[i] * rhs[i];
   }
   return r;
 }
 
-float VectorNorm(const float* a, uint32_t m) {
+float VectorNorm(base::span<float> row) {
   float r = 0;
-  while (m--) {
-    float t = *(UNSAFE_TODO(a++));
-    r += t * t;
+  for (float f : row) {
+    r += f * f;
   }
   return sqrtf(r);
 }
@@ -490,7 +490,7 @@ static bool SolveLeastSquares(base::span<const float> x,
                               base::span<const float> w,
                               uint32_t m,
                               uint32_t n,
-                              float* out_b,
+                              base::span<float> out_b,
                               float* out_det) {
   constexpr uint32_t M_ARRAY_LENGTH =
       LeastSquaresVelocityTrackerStrategy::kHistorySize;
@@ -519,13 +519,14 @@ static bool SolveLeastSquares(base::span<const float> x,
       q[j][h] = a[j][h];
     }
     for (uint32_t i = 0; i < j; i++) {
-      float dot = VectorDot(&q[j][0], &q[i][0], m);
+      float dot = VectorDot(base::span<float>(q[i]).first(m),
+                            base::span<float>(q[j]).first(m));
       for (uint32_t h = 0; h < m; h++) {
         q[j][h] -= dot * q[i][h];
       }
     }
 
-    float norm = VectorNorm(&q[j][0], m);
+    float norm = VectorNorm(base::span(q[j]).first(m));
     if (norm < 0.000001f) {
       // vectors are linearly dependent or zero so no solution
       return false;
@@ -536,22 +537,25 @@ static bool SolveLeastSquares(base::span<const float> x,
       q[j][h] *= invNorm;
     }
     for (uint32_t i = 0; i < n; i++) {
-      r[j][i] = i < j ? 0 : VectorDot(&q[j][0], &a[i][0], m);
+      r[j][i] = i < j ? 0
+                      : VectorDot(base::span<float>(q[j]).first(m),
+                                  base::span<float>(a[i]).first(m));
     }
   }
 
   // Solve R B = Qt W Y to find B.  This is easy because R is upper triangular.
   // We just work from bottom-right to top-left calculating B's coefficients.
-  float wy[M_ARRAY_LENGTH];
+  std::array<float, M_ARRAY_LENGTH> wy;
   for (uint32_t h = 0; h < m; h++) {
-    UNSAFE_TODO(wy[h]) = y[h] * w[h];
+    wy[h] = y[h] * w[h];
   }
   for (uint32_t i = n; i-- != 0;) {
-    UNSAFE_TODO(out_b[i]) = VectorDot(&q[i][0], wy, m);
+    out_b[i] = VectorDot(base::span<float>(q[i]).first(m),
+                         base::span<float>(wy).first(m));
     for (uint32_t j = n - 1; j > i; j--) {
-      UNSAFE_TODO(out_b[i]) -= r[i][j] * UNSAFE_TODO(out_b[j]);
+      out_b[i] -= r[i][j] * out_b[j];
     }
-    UNSAFE_TODO(out_b[i]) /= r[i][i];
+    out_b[i] /= r[i][i];
   }
 
   // Calculate the coefficient of determination as 1 - (SSerr / SStot) where
@@ -571,7 +575,7 @@ static bool SolveLeastSquares(base::span<const float> x,
     float term = 1;
     for (uint32_t i = 1; i < n; i++) {
       term *= x[h];
-      err -= term * UNSAFE_TODO(out_b[i]);
+      err -= term * out_b[i];
     }
     sserr += w[h] * w[h] * err * err;
     float var = y[h] - ymean;

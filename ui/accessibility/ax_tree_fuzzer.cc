@@ -7,6 +7,7 @@
 #include "base/compiler_specific.h"
 #include "base/containers/span.h"
 #include "base/logging.h"
+#include "testing/libfuzzer/libfuzzer_base_wrappers.h"
 #include "ui/accessibility/ax_tree_observer.h"
 
 class EmptyAXTreeObserver : public ui::AXTreeObserver {
@@ -16,18 +17,16 @@ class EmptyAXTreeObserver : public ui::AXTreeObserver {
 };
 
 // Entry point for LibFuzzer.
-extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
-  // SAFETY: `data` points to a buffer containing at least `size` bytes.
-  auto data_span = UNSAFE_BUFFERS(base::span(data, size));
+DEFINE_LLVM_FUZZER_TEST_ONE_INPUT_SPAN(base::span<const uint8_t> data) {
   ui::AXTreeUpdate initial_state;
   size_t i = 0;
-  while (i < data_span.size()) {
+  while (i < data.size()) {
     ui::AXNodeData node;
-    node.id = data_span[i++];
-    if (i < data_span.size()) {
-      size_t child_count = data_span[i++];
-      for (size_t j = 0; j < child_count && i < data_span.size(); j++) {
-        node.child_ids.push_back(data_span[i++]);
+    node.id = data[i++];
+    if (i < data.size()) {
+      size_t child_count = data[i++];
+      for (size_t j = 0; j < child_count && i < data.size(); j++) {
+        node.child_ids.push_back(data[i++]);
       }
     }
     initial_state.nodes.push_back(node);

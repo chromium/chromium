@@ -2,9 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include <cstring>
+#include <cstdint>
 
-#include "base/compiler_specific.h"
+#include "base/containers/span.h"
+#include "base/numerics/byte_conversions.h"
 #include "ui/events/event.h"
 
 namespace ui {
@@ -20,9 +21,11 @@ int GetKeyboardDeviceIdProperty(const Event& event) {
   if (auto* properties = event.properties()) {
     auto it = properties->find(kPropertyKeyboardDeviceId);
     if (it != properties->end()) {
-      int result = 0;
-      UNSAFE_TODO(std::memcpy(&result, it->second.data(), it->second.size()));
-      return result;
+      auto bytes = base::span(it->second);
+      if (bytes.size() == sizeof(int32_t)) {
+        return base::I32FromNativeEndian(bytes.first<sizeof(int32_t)>());
+      }
+      DCHECK_EQ(bytes.size(), sizeof(int32_t));
     }
   }
   DCHECK(event.IsKeyEvent());
@@ -30,9 +33,8 @@ int GetKeyboardDeviceIdProperty(const Event& event) {
 }
 
 void SetKeyboardDeviceIdProperty(Event* event, int device_id) {
-  std::vector<std::uint8_t> buf;
-  buf.resize(sizeof(device_id));
-  UNSAFE_TODO(std::memcpy(buf.data(), &device_id, buf.size()));
+  auto bytes = base::I32ToNativeEndian(device_id);
+  std::vector<std::uint8_t> buf(bytes.begin(), bytes.end());
   auto properties =
       event->properties() ? *event->properties() : Event::Properties();
   properties.emplace(kPropertyKeyboardDeviceId, std::move(buf));

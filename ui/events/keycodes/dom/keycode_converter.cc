@@ -4,6 +4,7 @@
 
 #include "ui/events/keycodes/dom/keycode_converter.h"
 
+#include <array>
 #include <string_view>
 
 #include "base/compiler_specific.h"
@@ -54,11 +55,11 @@ struct DomKeyMapEntry {
 };
 
 #define DOM_KEY_MAP_DECLARATION_START \
-  constexpr DomKeyMapEntry kDomKeyMappings[] = {
+  constexpr auto kDomKeyMappings = std::to_array<DomKeyMapEntry>({
 #define DOM_KEY_UNI(key, id, value) {DomKey::id, key},
 #define DOM_KEY_MAP(key, id, value) {DomKey::id, key},
 #define DOM_KEY_MAP_DECLARATION_END \
-  }                                 \
+  })                                 \
   ;
 #include "ui/events/keycodes/dom/dom_key_data.inc"
 #undef DOM_KEY_MAP_DECLARATION_START
@@ -162,7 +163,7 @@ const KeycodeMapEntry* KeycodeConverter::GetKeycodeMapForTest() {
 const char* KeycodeConverter::DomKeyStringForTest(size_t index) {
   if (index >= std::size(kDomKeyMappings))
     return nullptr;
-  return UNSAFE_TODO(kDomKeyMappings[index]).string;
+  return kDomKeyMappings[index].string;
 }
 
 // static
