@@ -865,6 +865,21 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Navigation.BackToOpener.Eligible" enum="Boolean"
+    expires_after="2027-04-30">
+  <owner>dljames@chromium.org</owner>
+  <owner>xiaqu@microsoft.com</owner>
+  <owner>edgecin@microsoft.com</owner>
+  <summary>
+    Records when a back-to-opener relationship is established between a newly
+    opened destination tab and its opener tab. This is emitted in
+    SetOpenerWebContents when the opener relationship is first created (i.e.
+    when a user-initiated navigation from one tab opens a new tab). Use this as
+    the denominator with Navigation.BackToOpener.Clicked to compute the trigger
+    rate of the back-to-opener feature.
+  </summary>
+</histogram>
+
 <histogram
     name="Navigation.BeforeUnloadExecutionMode.IsInOutermostMainFrame{SameOrCrossOrigin}"
     enum="BeforeUnloadExecutionMode" expires_after="2027-02-04">

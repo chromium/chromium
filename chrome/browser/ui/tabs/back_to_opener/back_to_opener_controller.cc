@@ -350,6 +350,10 @@ void BackToOpenerController::SetOpenerWebContents(
   opener_web_contents_ = opener->GetWeakPtr();
   opener_title_ = opener->GetTitle();
   has_valid_opener_ = true;
+
+  // Record that a back-to-opener relationship was established.
+  base::UmaHistogramBoolean("Navigation.BackToOpener.Eligible", true);
+
   NotifyUIStateChanged();
 }
 

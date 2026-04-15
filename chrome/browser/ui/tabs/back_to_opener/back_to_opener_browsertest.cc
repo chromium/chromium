@@ -56,6 +56,10 @@ IN_PROC_BROWSER_TEST_F(BackToOpenerBrowserTest, BasicBackToOpener) {
   // Wait for opener page to load
   EXPECT_TRUE(content::WaitForLoadStop(opener_contents));
 
+  // Create HistogramTester before the link click so it captures the Eligible
+  // histogram emitted during opener relationship establishment.
+  base::HistogramTester histogram_tester;
+
   // Wait for new tab to open
   ui_test_utils::TabAddedWaiter tab_waiter(browser());
 
@@ -79,17 +83,18 @@ IN_PROC_BROWSER_TEST_F(BackToOpenerBrowserTest, BasicBackToOpener) {
   EXPECT_TRUE(controller->HasValidOpener());
   EXPECT_TRUE(controller->CanGoBackToOpener());
 
+  // Verify the Eligible histogram was recorded.
+  histogram_tester.ExpectUniqueSample("Navigation.BackToOpener.Eligible", true,
+                                      1);
+
   // Verify back button is enabled in UI
   EXPECT_TRUE(browser()->command_controller()->IsCommandEnabled(IDC_BACK));
-
-  // Verify the histogram for destination tab close duration
-  base::HistogramTester histogram_tester;
 
   content::WebContentsDestroyedWatcher close_watcher(dest_contents);
   chrome::ExecuteCommand(browser(), IDC_BACK);
   close_watcher.Wait();
 
-  // Verify the histograms were recorded
+  // Verify all histograms were recorded
   histogram_tester.ExpectTotalCount("Navigation.BackToOpener.Clicked", 1);
   histogram_tester.ExpectTotalCount(
       "Navigation.BackToOpener.DestinationTabCloseDuration", 1);
