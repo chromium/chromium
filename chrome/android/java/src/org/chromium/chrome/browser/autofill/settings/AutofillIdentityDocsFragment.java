@@ -14,6 +14,8 @@ import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.settings.ChromeBaseSettingsFragment;
 import org.chromium.components.browser_ui.settings.SettingsFragment;
+import org.chromium.components.browser_ui.settings.search.BaseSearchIndexProvider;
+import org.chromium.components.browser_ui.settings.search.SearchIndexProvider;
 
 /** Fragment to manage Autofill AI Identity Documents. */
 @NullMarked
@@ -36,4 +38,8 @@ public class AutofillIdentityDocsFragment extends ChromeBaseSettingsFragment {
     public @SettingsFragment.AnimationType int getAnimationType() {
         return SettingsFragment.AnimationType.PROPERTY;
     }
+
+   // TODO(crbug.com/482994257): Implement search index provider.
+    public static final SearchIndexProvider SEARCH_INDEX_DATA_PROVIDER =
+            new BaseSearchIndexProvider(AutofillIdentityDocsFragment.class.getName());
 }

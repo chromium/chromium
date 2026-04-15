@@ -108,6 +108,8 @@ public final class SearchIndexProviderRegistry {
                             .SEARCH_INDEX_DATA_PROVIDER,
                     org.chromium.chrome.browser.autofill.settings.AutofillCardBenefitsFragment
                             .SEARCH_INDEX_DATA_PROVIDER,
+                    org.chromium.chrome.browser.autofill.settings.AutofillIdentityDocsFragment
+                            .SEARCH_INDEX_DATA_PROVIDER,
                     org.chromium.chrome.browser.autofill.settings.AutofillPaymentMethodsFragment
                             .SEARCH_INDEX_DATA_PROVIDER,
                     org.chromium.chrome.browser.autofill.settings.AutofillProfilesFragment
