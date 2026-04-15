@@ -14,6 +14,8 @@
 #include "chrome/browser/profiles/profile.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/render_process_host.h"
+#include "content/public/browser/web_contents.h"
+#include "extensions/browser/bad_message.h"
 #include "extensions/browser/renderer_startup_helper.h"
 #include "extensions/buildflags/buildflags.h"
 #include "extensions/common/api/declarative/declarative_constants.h"
@@ -218,7 +220,18 @@ void DeclarativeContentCssConditionTracker::OnWatchedPageChanged(
     content::WebContents* contents,
     const std::vector<std::string>& css_selectors) {
   DCHECK(per_web_contents_tracker_.contains(contents));
-  per_web_contents_tracker_[contents]->OnWatchedPageChanged(css_selectors);
+
+  std::vector<std::string> valid_selectors;
+  for (const std::string& selector : css_selectors) {
+    // A compromised renderer might send selectors that were not requested.
+    // We ignore unrecognized selectors to avoid race conditions where a
+    // legitimate message arrives after the browser stopped watching a selector.
+    if (watched_css_selector_predicate_count_.contains(selector)) {
+      valid_selectors.push_back(selector);
+    }
+  }
+
+  per_web_contents_tracker_[contents]->OnWatchedPageChanged(valid_selectors);
 }
 
 bool DeclarativeContentCssConditionTracker::EvaluatePredicate(
