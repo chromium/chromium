@@ -32,7 +32,7 @@ import {ModelMode} from '//resources/mojo/components/omnibox/composebox/composeb
 import type {UnguessableToken} from '//resources/mojo/mojo/public/mojom/base/unguessable_token.mojom-webui.js';
 import type {Url} from '//resources/mojo/url/mojom/url.mojom-webui.js';
 
-import {ComposeboxFile, ContextType, ContextualSearchInputStateDeletionType, FILE_VALIDATION_ERRORS_MAP, ProcessFilesError, recordBoolean, recordContextAdditionMethod, recordContextualElementClickedMetric, recordEnumerationValue, recordUserAction, TabUploadOrigin} from './common.js';
+import {ComposeboxFile, ContextType, ContextualSearchInputStateDeletionType, FILE_VALIDATION_ERRORS_MAP, ProcessFilesError, recordBoolean, recordContextAdditionMethod, recordContextualElementClickedMetric, recordEnumerationValue, recordInputTypeShown, recordModelModeShown, recordToolModeShown, recordUserAction, TabUploadOrigin} from './common.js';
 import type {ComposeboxState, TabUpload} from './common.js';
 import {getCss} from './composebox.css.js';
 import {getHtml} from './composebox.html.js';
@@ -42,7 +42,7 @@ import type {ComposeboxFileInputsElement} from './composebox_file_inputs.js';
 import type {ComposeboxInputElement} from './composebox_input.js';
 import {ComposeboxEmbedderMixin} from './composebox_mixin.js';
 import {ComposeboxProxyImpl} from './composebox_proxy.js';
-import {ContextUploadStatus, ToolMode} from './composebox_query.mojom-webui.js';
+import {ContextUploadStatus, InputType, ToolMode} from './composebox_query.mojom-webui.js';
 import type {ContextUploadErrorType, InputState} from './composebox_query.mojom-webui.js';
 import type {ComposeboxVoiceSearchElement} from './composebox_voice_search.js';
 import type {ContextualEntrypointAndMenuElement} from './contextual_entrypoint_and_menu.js';
@@ -939,6 +939,30 @@ export class ComposeboxElement extends ComposeboxEmbedderMixin
     this.browserTabContextAdded_ = false;
     this.contextMenuOpened = true;
     this.refreshTabSuggestions();
+
+    if (this.inputState) {
+      const {allowedInputTypes, disabledInputTypes} = this.inputState;
+      allowedInputTypes.forEach((inputType: InputType) => {
+        if (inputType !== InputType.kBrowserTab &&
+            !disabledInputTypes.includes(inputType)) {
+          recordInputTypeShown(inputType, this.composeboxSource, 'AimPopup');
+        }
+      });
+
+      const {allowedTools, disabledTools} = this.inputState;
+      allowedTools.forEach((tool: ToolMode) => {
+        if (!disabledTools.includes(tool)) {
+          recordToolModeShown(tool, this.composeboxSource, 'AimPopup');
+        }
+      });
+
+      const {allowedModels, disabledModels} = this.inputState;
+      allowedModels.forEach((model: ModelMode) => {
+        if (!disabledModels.includes(model)) {
+          recordModelModeShown(model, this.composeboxSource, 'AimPopup');
+        }
+      });
+    }
   }
 
   protected voiceSearchEndCleanup_() {
