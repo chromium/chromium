@@ -206,15 +206,17 @@ bool IsOpaqueResponse(const std::optional<url::Origin>& request_initiator,
 
 bool HasNoSniff(
     const mojom::URLResponseHead& response) {
-  // TODO(vogelheim): Check for compatibility with spec &
-  //   ParseContentTypeOptionsHeader. Maybe move this to parsed_headers.
+  // https://fetch.spec.whatwg.org/#determine-nosniff
   if (!response.headers) {
     return false;
   }
   std::string nosniff_header =
       response.headers->GetNormalizedHeader("x-content-type-options")
           .value_or(std::string());
-  return base::EqualsCaseInsensitiveASCII(nosniff_header, "nosniff");
+  net::HttpUtil::ValuesIterator it(nosniff_header, ',',
+                                   /*ignore_empty_values=*/false);
+  return it.GetNext() &&
+         base::EqualsCaseInsensitiveASCII(it.value(), "nosniff");
 }
 
 }  // namespace

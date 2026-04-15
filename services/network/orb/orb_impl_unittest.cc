@@ -1922,4 +1922,70 @@ TEST(CrossOriginReadBlockingTest, OrbReportsIssuesOnARAResponse) {
   }
 }
 
+TEST(CrossOriginReadBlockingTest, NosniffSpecCompliance) {
+  struct {
+    const char* description;
+    const char* header;
+    bool expected_nosniff;
+  } kTestCases[] = {
+      {"Upper case", "X-Content-Type-Options: NOSNIFF\n", true},
+      {"Mixed case", "x-content-type-OPTIONS: nosniff\n", true},
+      {"Nosniff with junk after comma",
+       "X-Content-Type-Options: nosniff,,@#$#%%&^&^*()()11!\n", true},
+      {"Junk before nosniff",
+       "X-Content-Type-Options: @#$#%%&^&^*()()11!,nosniff\n", false},
+      {"Multiple headers, nosniff first",
+       "X-Content-Type-Options: nosniff\n"
+       "X-Content-Type-Options: no\n",
+       true},
+      {"Multiple headers, nosniff second",
+       "X-Content-Type-Options: no\n"
+       "X-Content-Type-Options: nosniff\n",
+       false},
+      {"Empty first header",
+       "X-Content-Type-Options: \n"
+       "X-Content-Type-Options: nosniff\n",
+       false},
+      {"Duplicate nosniff",
+       "X-Content-Type-Options: nosniff\n"
+       "X-Content-Type-Options: nosniff\n",
+       true},
+      {"Leading comma", "X-Content-Type-Options: ,nosniff\n", false},
+      {"Trailing form feed", "X-Content-Type-Options: nosniff\f\n", false},
+      {"Trailing vertical tab", "X-Content-Type-Options: nosniff\v\n", false},
+      {"Trailing vertical tab before comma",
+       "X-Content-Type-Options: nosniff\v,nosniff\n", false},
+      {"Single quoted", "X-Content-Type-Options: 'NosniFF'\n", false},
+      {"Double quoted", "X-Content-Type-Options: \"nosniFF\"\n", false},
+      {"Missing X-", "Content-Type-Options: nosniff\n", false},
+  };
+
+  for (const auto& test_case : kTestCases) {
+    SCOPED_TRACE(test_case.description);
+    PerFactoryState per_factory_state;
+    auto analyzer =
+        std::make_unique<OpaqueResponseBlockingAnalyzer>(&per_factory_state);
+
+    auto response = CreateResponse(
+        "HTTP/1.1 200 OK\n"
+        "Content-Type: application/json\n" +
+        std::string(test_case.header));
+    // Use application/json to ensure that nosniff detection leads to an
+    // immediate block.
+    response->mime_type = "application/json";
+
+    ResponseAnalyzer::Decision decision =
+        analyzer->Init(GURL("https://target.test"),
+                       url::Origin::Create(GURL("https://initiator.test")),
+                       mojom::RequestMode::kNoCors,
+                       mojom::RequestDestination::kEmpty, *response);
+
+    if (test_case.expected_nosniff) {
+      EXPECT_EQ(ResponseAnalyzer::Decision::kBlock, decision);
+    } else {
+      EXPECT_EQ(ResponseAnalyzer::Decision::kSniffMore, decision);
+    }
+  }
+}
+
 }  // namespace network::orb
