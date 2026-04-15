@@ -7,18 +7,30 @@
 #include <memory>
 
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/common/chrome_features.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/page_load_metrics/browser/metrics_web_contents_observer.h"
 #include "components/page_load_metrics/browser/page_load_metrics_embedder_interface.h"
 #include "components/page_load_metrics/browser/page_load_metrics_test_waiter.h"
+#include "content/public/common/content_features.h"
 #include "content/public/test/browser_test.h"
 
 class NonTabWebUIPageLoadMetricsObserverBrowserTest
-    : public InProcessBrowserTest {
+    : public InProcessBrowserTest,
+      public ::testing::WithParamInterface<bool> {
  public:
-  NonTabWebUIPageLoadMetricsObserverBrowserTest() = default;
+  NonTabWebUIPageLoadMetricsObserverBrowserTest() {
+    if (GetParam()) {
+      scoped_feature_list_.InitWithFeatures(
+          {features::kInitialWebUI, features::kWebUIReloadButton}, {});
+    } else {
+      scoped_feature_list_.InitWithFeatures(
+          {}, {features::kInitialWebUI, features::kWebUIReloadButton});
+    }
+  }
 
   NonTabWebUIPageLoadMetricsObserverBrowserTest(
       const NonTabWebUIPageLoadMetricsObserverBrowserTest&) = delete;
@@ -64,11 +76,12 @@ class NonTabWebUIPageLoadMetricsObserverBrowserTest
   }
 
   std::unique_ptr<base::HistogramTester> histogram_tester_;
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 // Test that NonTabWebUIPageLoadMetricsObserver does NOT record histograms when
 // WebUI is designed for a tab.
-IN_PROC_BROWSER_TEST_F(NonTabWebUIPageLoadMetricsObserverBrowserTest,
+IN_PROC_BROWSER_TEST_P(NonTabWebUIPageLoadMetricsObserverBrowserTest,
                        DoesntRecordHistogramsForTabWebUI) {
   // Navigate to a chrome:// URL in a regular tab (not a non-tab WebUI context).
   NavigateToTabWebUIAndWaitForMetrics(GURL("chrome://version"));
@@ -76,18 +89,22 @@ IN_PROC_BROWSER_TEST_F(NonTabWebUIPageLoadMetricsObserverBrowserTest,
   // Navigate away to force histogram recording.
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL("about:blank")));
 
-  // Verify that NonTabWebUI metrics were NOT recorded. In a regular browser
-  // tab, IsNonTabWebUI() returns false, so no metrics should be recorded.
+  // Verify that NonTabWebUI metrics were NOT recorded for this navigation.
+  // We check the host-specific histogram to ignore background pollution from
+  // other WebUIs (e.g. preloaded toolbar).
   histogram_tester_->ExpectTotalCount(
-      "PageLoad.PaintTiming.NavigationToFirstContentfulPaint.NonTabWebUI", 0);
+      "PageLoad.PaintTiming.NavigationToFirstContentfulPaint."
+      "NonTabWebUI.version",
+      0);
+
   histogram_tester_->ExpectTotalCount(
       "PageLoad.PaintTiming.NavigationToLargestContentfulPaint2.NonTabWebUI",
-      0);
+      0);  // LCP is not recorded for background pages.
 }
 
 // Test that NonTabWebUIPageLoadMetricsObserver does NOT record histograms for
 // non-chrome schemes.
-IN_PROC_BROWSER_TEST_F(NonTabWebUIPageLoadMetricsObserverBrowserTest,
+IN_PROC_BROWSER_TEST_P(NonTabWebUIPageLoadMetricsObserverBrowserTest,
                        DoesntRecordHistogramsForNonChromeScheme) {
   // Navigate to a data: URL (non-chrome scheme).
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
@@ -96,10 +113,18 @@ IN_PROC_BROWSER_TEST_F(NonTabWebUIPageLoadMetricsObserverBrowserTest,
   // Navigate away to force histogram recording.
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL("about:blank")));
 
-  // Verify that NonTabWebUI metrics were NOT recorded for non-chrome scheme.
+  // Verify that NonTabWebUI metrics were NOT recorded for this navigation.
+  // We check a dummy host-specific histogram to be consistent with Test 1.
+  // Since it's a data URL, it shouldn't record to any host-specific histogram.
   histogram_tester_->ExpectTotalCount(
-      "PageLoad.PaintTiming.NavigationToFirstContentfulPaint.NonTabWebUI", 0);
+      "PageLoad.PaintTiming.NavigationToFirstContentfulPaint.NonTabWebUI.data",
+      0);
+
   histogram_tester_->ExpectTotalCount(
       "PageLoad.PaintTiming.NavigationToLargestContentfulPaint2.NonTabWebUI",
       0);
 }
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         NonTabWebUIPageLoadMetricsObserverBrowserTest,
+                         ::testing::Bool());
