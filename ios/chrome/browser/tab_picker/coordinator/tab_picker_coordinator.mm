@@ -4,10 +4,10 @@
 
 #import "ios/chrome/browser/tab_picker/coordinator/tab_picker_coordinator.h"
 
-#import "ios/chrome/browser/composebox/debugger/composebox_debugger_logger.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/public/commands/tab_picker_commands.h"
+#import "ios/chrome/browser/tab_picker/coordinator/tab_picker_logger.h"
 #import "ios/chrome/browser/tab_picker/ui/tab_picker_view_controller.h"
 #import "ios/chrome/browser/tab_switcher/tab_grid/base_grid/ui/base_grid_view_controller.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_collection_consumer.h"
@@ -35,7 +35,7 @@
         initWithGridConsumer:_viewController.gridViewController
            tabPickerConsumer:_viewController
       tabsAttachmentDelegate:self];
-  _mediator.debugLogger = self.debugLogger;
+  _mediator.logger = self.logger;
   _mediator.browser = self.browser;
 
   _viewController.mutator = _mediator;
@@ -55,20 +55,18 @@
                                         animated:YES
                                       completion:nil];
   self.started = YES;
-  [self.debugLogger
-      logEvent:[ComposeboxDebuggerEvent
-                   composeboxGeneralEvent:composebox_debugger::event::
-                                              Composebox::kTabPickerShown]];
+  if ([self.logger respondsToSelector:@selector(logTabPickerShown)]) {
+    [self.logger logTabPickerShown];
+  }
 }
 
 - (void)stop {
   if (!self.started) {
     return;
   }
-  [self.debugLogger
-      logEvent:[ComposeboxDebuggerEvent
-                   composeboxGeneralEvent:composebox_debugger::event::
-                                              Composebox::kTabPickerHidden]];
+  if ([self.logger respondsToSelector:@selector(logTabPickerHidden)]) {
+    [self.logger logTabPickerHidden];
+  }
   [_navigationController.presentingViewController
       dismissViewControllerAnimated:YES
                          completion:nil];

@@ -12,7 +12,7 @@
 #import "ios/web/public/web_state.h"
 
 @protocol TabPickerCommands;
-@protocol ComposeboxDebuggerLogger;
+@protocol TabPickerLogger;
 
 // Responsible for processing the selection of tab picker.
 @protocol TabPickerSelectionDelegate
@@ -47,7 +47,7 @@
 @property(nonatomic, weak) id<TabPickerSelectionDelegate> delegate;
 
 // Delegate for logging events
-@property(nonatomic, weak) id<ComposeboxDebuggerLogger> debugLogger;
+@property(nonatomic, weak) id<TabPickerLogger> logger;
 
 // Handler for tab picker commands.
 @property(nonatomic, weak) id<TabPickerCommands> tabPickerHandler;

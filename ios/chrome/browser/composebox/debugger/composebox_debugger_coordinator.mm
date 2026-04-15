@@ -46,6 +46,61 @@ const CGSize kOptionsButtonSize = {80.0f, 40.0f};
   [_events addObject:event];
 }
 
+#pragma mark - TabPickerLogger
+
+- (void)logTabPickerShown {
+  ComposeboxDebuggerEvent* event = [ComposeboxDebuggerEvent
+      composeboxGeneralEvent:composebox_debugger::event::Composebox::
+                                 kTabPickerShown];
+  [self logEvent:event];
+}
+
+- (void)logTabPickerHidden {
+  ComposeboxDebuggerEvent* event = [ComposeboxDebuggerEvent
+      composeboxGeneralEvent:composebox_debugger::event::Composebox::
+                                 kTabPickerHidden];
+  [self logEvent:event];
+}
+
+- (void)logWillLoadTabWithTitle:(NSString*)title tabID:(web::WebStateID)tabID {
+  ComposeboxDebuggerEvent* event = [ComposeboxDebuggerEvent
+       tabEvent:composebox_debugger::event::Tabs::kWillLoadTab
+      withTitle:title
+          tabID:tabID.identifier()];
+  [self logEvent:event];
+}
+
+- (void)logDidLoadTabWithSuccess:(BOOL)success
+                           title:(NSString*)title
+                           tabID:(web::WebStateID)tabID {
+  composebox_debugger::event::Tabs tabEvent =
+      success ? composebox_debugger::event::Tabs::kDidLoadTab
+              : composebox_debugger::event::Tabs::kFailedToLoadTab;
+  ComposeboxDebuggerEvent* event =
+      [ComposeboxDebuggerEvent tabEvent:tabEvent
+                              withTitle:title
+                                  tabID:tabID.identifier()];
+  [self logEvent:event];
+}
+
+- (void)logWillRealizeTabWithTitle:(NSString*)title
+                             tabID:(web::WebStateID)tabID {
+  ComposeboxDebuggerEvent* event = [ComposeboxDebuggerEvent
+       tabEvent:composebox_debugger::event::Tabs::kWillRealizeTab
+      withTitle:title
+          tabID:tabID.identifier()];
+  [self logEvent:event];
+}
+
+- (void)logDidRealizeTabWithTitle:(NSString*)title
+                            tabID:(web::WebStateID)tabID {
+  ComposeboxDebuggerEvent* event = [ComposeboxDebuggerEvent
+       tabEvent:composebox_debugger::event::Tabs::kDidRealizeTab
+      withTitle:title
+          tabID:tabID.identifier()];
+  [self logEvent:event];
+}
+
 #pragma mark - private
 
 - (void)setupOptionsButton {

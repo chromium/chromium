@@ -1,6 +1,7 @@
 include_rules = [
   # keep-sorted start
   "+ios/chrome/browser/aim/debugger",
+  "+ios/chrome/browser/tab_picker/coordinator",
   # keep-sorted end
 ]
 

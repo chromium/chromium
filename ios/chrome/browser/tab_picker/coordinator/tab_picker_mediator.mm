@@ -6,9 +6,7 @@
 
 #import "base/strings/string_number_conversions.h"
 #import "base/strings/sys_string_conversions.h"
-#import "base/strings/utf_string_conversions.h"
 #import "ios/chrome/browser/composebox/coordinator/composebox_constants.h"
-#import "ios/chrome/browser/composebox/debugger/composebox_debugger_logger.h"
 #import "ios/chrome/browser/composebox/public/features.h"
 #import "ios/chrome/browser/composebox/ui/composebox_snackbar_presenter.h"
 #import "ios/chrome/browser/intelligence/persist_tab_context/model/persist_tab_context_browser_agent.h"
@@ -16,6 +14,7 @@
 #import "ios/chrome/browser/shared/model/utils/web_state_deferred_executor.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/snapshots/model/snapshot_tab_helper.h"
+#import "ios/chrome/browser/tab_picker/coordinator/tab_picker_logger.h"
 #import "ios/chrome/browser/tab_picker/ui/tab_picker_consumer.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_collection_consumer.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/grid/grid_item_identifier.h"
@@ -367,42 +366,44 @@
 
 - (void)webStateDeferredExecutor:(WebStateDeferredExecutor*)executor
                 willLoadWebState:(web::WebState*)webState {
-  ComposeboxDebuggerEvent* event = [ComposeboxDebuggerEvent
-       tabEvent:composebox_debugger::event::Tabs::kWillLoadTab
-      withTitle:base::SysUTF16ToNSString(webState->GetTitle())
-          tabID:webState->GetUniqueIdentifier().identifier()];
-  [self.debugLogger logEvent:event];
+  if ([self.logger respondsToSelector:@selector(logWillLoadTabWithTitle:
+                                                                  tabID:)]) {
+    [self.logger
+        logWillLoadTabWithTitle:base::SysUTF16ToNSString(webState->GetTitle())
+                          tabID:webState->GetUniqueIdentifier()];
+  }
 }
 
 - (void)webStateDeferredExecutor:(WebStateDeferredExecutor*)executor
                  didLoadWebState:(web::WebState*)webState
                          success:(BOOL)success {
-  composebox_debugger::event::Tabs tabEvent =
-      success ? composebox_debugger::event::Tabs::kDidLoadTab
-              : composebox_debugger::event::Tabs::kFailedToLoadTab;
-  ComposeboxDebuggerEvent* event = [ComposeboxDebuggerEvent
-       tabEvent:tabEvent
-      withTitle:base::SysUTF16ToNSString(webState->GetTitle())
-          tabID:webState->GetUniqueIdentifier().identifier()];
-  [self.debugLogger logEvent:event];
+  if ([self.logger respondsToSelector:@selector
+                   (logDidLoadTabWithSuccess:title:tabID:)]) {
+    [self.logger
+        logDidLoadTabWithSuccess:success
+                           title:base::SysUTF16ToNSString(webState->GetTitle())
+                           tabID:webState->GetUniqueIdentifier()];
+  }
 }
 
 - (void)webStateDeferredExecutor:(WebStateDeferredExecutor*)executor
         willForceRealizeWebState:(web::WebState*)webState {
-  ComposeboxDebuggerEvent* event = [ComposeboxDebuggerEvent
-       tabEvent:composebox_debugger::event::Tabs::kWillRealizeTab
-      withTitle:base::SysUTF16ToNSString(webState->GetTitle())
-          tabID:webState->GetUniqueIdentifier().identifier()];
-  [self.debugLogger logEvent:event];
+  if ([self.logger respondsToSelector:@selector(logWillRealizeTabWithTitle:
+                                                                     tabID:)]) {
+    [self.logger logWillRealizeTabWithTitle:base::SysUTF16ToNSString(
+                                                webState->GetTitle())
+                                      tabID:webState->GetUniqueIdentifier()];
+  }
 }
 
 - (void)webStateDeferredExecutor:(WebStateDeferredExecutor*)executor
          didForceRealizeWebState:(web::WebState*)webState {
-  ComposeboxDebuggerEvent* event = [ComposeboxDebuggerEvent
-       tabEvent:composebox_debugger::event::Tabs::kDidRealizeTab
-      withTitle:base::SysUTF16ToNSString(webState->GetTitle())
-          tabID:webState->GetUniqueIdentifier().identifier()];
-  [self.debugLogger logEvent:event];
+  if ([self.logger respondsToSelector:@selector(logDidRealizeTabWithTitle:
+                                                                    tabID:)]) {
+    [self.logger
+        logDidRealizeTabWithTitle:base::SysUTF16ToNSString(webState->GetTitle())
+                            tabID:webState->GetUniqueIdentifier()];
+  }
 }
 
 @end

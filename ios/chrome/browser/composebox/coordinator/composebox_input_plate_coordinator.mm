@@ -751,7 +751,7 @@ contextual_search::ContextualSearchSource ContextualSearchSourceFromEntrypoint(
   _tabPickerCoordinator =
       [[TabPickerCoordinator alloc] initWithBaseViewController:_viewController
                                                        browser:self.browser];
-  _tabPickerCoordinator.debugLogger = self.debugLogger;
+  _tabPickerCoordinator.logger = self.debugLogger;
   _tabPickerCoordinator.delegate = _mediator;
   _tabPickerCoordinator.tabPickerHandler = self;
   [_tabPickerCoordinator start];

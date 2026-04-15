@@ -11,7 +11,7 @@
 #import "ios/chrome/browser/tab_switcher/tab_grid/base_grid/coordinator/base_grid_mediator.h"
 #import "ios/web/public/web_state.h"
 
-@protocol ComposeboxDebuggerLogger;
+@protocol TabPickerLogger;
 @class TabPickerMediator;
 @protocol TabPickerConsumer;
 
@@ -42,7 +42,7 @@
                   (id<TabsAttachmentDelegate>)tabsAttachmentDelegate;
 
 // Delegate for logging events
-@property(nonatomic, weak) id<ComposeboxDebuggerLogger> debugLogger;
+@property(nonatomic, weak) id<TabPickerLogger> logger;
 
 /// The mediator's delegate for attaching selected tabs.
 @property(nonatomic, weak) id<TabsAttachmentDelegate> tabsAttachmentDelegate;
