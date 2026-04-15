@@ -26,6 +26,7 @@ import org.chromium.components.embedder_support.view.ContentView;
 import org.chromium.components.payments.PaymentHandlerNavigationThrottle;
 import org.chromium.components.payments.ui.InputProtector;
 import org.chromium.components.thinwebview.ThinWebView;
+import org.chromium.components.thinwebview.ThinWebViewAttachParams;
 import org.chromium.components.thinwebview.ThinWebViewConstraints;
 import org.chromium.components.thinwebview.ThinWebViewFactory;
 import org.chromium.content_public.browser.LoadUrlParams;
@@ -147,11 +148,7 @@ public class PaymentHandlerCoordinator {
         thinWebView.attachWebContents(
                 mPaymentHandlerWebContents,
                 webContentView,
-                null,
-                /* contextMenuPopulatorFactory= */ null,
-                /* selectionDropdownMenuDelegate= */ null,
-                /* enablePermissionRequests= */ false,
-                /* supportTheming= */ false);
+                new ThinWebViewAttachParams.Builder().build());
         PaymentHandlerView view =
                 new PaymentHandlerView(
                         activity,

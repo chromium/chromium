@@ -18,6 +18,7 @@ import org.chromium.components.embedder_support.contextmenu.ContextMenuPopulator
 import org.chromium.components.embedder_support.delegate.WebContentsDelegateAndroid;
 import org.chromium.components.embedder_support.view.ContentView;
 import org.chromium.components.thinwebview.ThinWebView;
+import org.chromium.components.thinwebview.ThinWebViewAttachParams;
 import org.chromium.components.thinwebview.ThinWebViewConstraints;
 import org.chromium.components.thinwebview.ThinWebViewFactory;
 import org.chromium.components.thinwebview.internal.ThinWebViewContextMenuItemDelegate;
@@ -89,11 +90,11 @@ public class TabBottomSheetWebUi {
             mThinWebView.attachWebContents(
                     mWebContents,
                     contentView,
-                    new WebContentsDelegateAndroid() {},
-                    mContextMenuPopulatorFactory,
-                    /* selectionDropdownMenuDelegate= */ null,
-                    /* enablePermissionRequests= */ false,
-                    /* supportTheming= */ true);
+                    new ThinWebViewAttachParams.Builder()
+                            .setWebContentsDelegate(new WebContentsDelegateAndroid() {})
+                            .setContextMenuPopulatorFactory(mContextMenuPopulatorFactory)
+                            .setSupportTheming(true)
+                            .build());
         } else {
             resetThinWebView();
         }

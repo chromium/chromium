@@ -20,6 +20,7 @@ android_library("java") {
   sources = [
     "java/src/org/chromium/components/thinwebview/CompositorView.java",
     "java/src/org/chromium/components/thinwebview/ThinWebView.java",
+    "java/src/org/chromium/components/thinwebview/ThinWebViewAttachParams.java",
     "java/src/org/chromium/components/thinwebview/ThinWebViewConstraints.java",
   ]
 

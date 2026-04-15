@@ -30,6 +30,7 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.mockito.stubbing.Answer;
+import org.robolectric.RuntimeEnvironment;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.FeatureOverrides;
@@ -40,11 +41,11 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.ui.favicon.FaviconHelper;
 import org.chromium.chrome.browser.ui.favicon.FaviconHelper.FaviconImageCallback;
 import org.chromium.chrome.tab_ui.R;
-import org.chromium.components.embedder_support.delegate.WebContentsDelegateAndroid;
 import org.chromium.components.security_state.ConnectionSecurityLevel;
 import org.chromium.components.security_state.SecurityStateModel;
 import org.chromium.components.security_state.SecurityStateModelJni;
 import org.chromium.components.thinwebview.ThinWebView;
+import org.chromium.components.thinwebview.ThinWebViewAttachParams;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.browser.NavigationController;
 import org.chromium.content_public.browser.NavigationHandle;
@@ -69,10 +70,6 @@ public class MerchantTrustBottomSheetMediatorTest {
 
     @Mock private NavigationController mMockNavigationController;
 
-    @Mock private Context mMockContext;
-
-    @Mock private Resources mMockResources;
-
     @Mock private WindowAndroid mMockWindowAndroid;
 
     @Mock private DisplayAndroid mMockDisplayAndroid;
@@ -93,7 +90,7 @@ public class MerchantTrustBottomSheetMediatorTest {
 
     @Mock private Drawable mMockDrawable;
 
-    @Captor private ArgumentCaptor<WebContentsDelegateAndroid> mWebContentsDelegateCaptor;
+    @Captor private ArgumentCaptor<ThinWebViewAttachParams> mAttachParamsCaptor;
 
     @Captor private ArgumentCaptor<WebContentsObserver> mWebContentsObserverCaptor;
 
@@ -102,15 +99,15 @@ public class MerchantTrustBottomSheetMediatorTest {
     private static final String NON_GOOGLE_URL = "https://www.example.com";
     private static final String DUMMY_URL = NON_GOOGLE_URL;
 
+    private Context mContext;
+    private Resources mResources;
     private MerchantTrustBottomSheetMediator mMediator;
     private PropertyModel mToolbarModel;
 
     @Before
     public void setUp() {
-        doReturn(mMockResources).when(mMockContext).getResources();
-        doReturn(56)
-                .when(mMockResources)
-                .getDimensionPixelSize(eq(R.dimen.toolbar_height_no_shadow));
+        mContext = RuntimeEnvironment.getApplication();
+        mResources = mContext.getResources();
         doReturn(mMockDisplayAndroid).when(mMockWindowAndroid).getDisplay();
         doReturn(1f).when(mMockDisplayAndroid).getDipScale();
         doReturn(DUMMY_URL).when(mMockDestinationGurl).getSpec();
@@ -141,7 +138,7 @@ public class MerchantTrustBottomSheetMediatorTest {
 
         mMediator =
                 new MerchantTrustBottomSheetMediator(
-                        mMockContext,
+                        mContext,
                         mMockWindowAndroid,
                         mMockMetrics,
                         ObservableSuppliers.createNonNull(mMockProfile),
@@ -162,14 +159,7 @@ public class MerchantTrustBottomSheetMediatorTest {
         mMediator.setupSheetWebContents(mMockThinWebView, mToolbarModel);
         verify(mMockWebContents, times(1)).addObserver(mWebContentsObserverCaptor.capture());
         verify(mMockThinWebView, times(1))
-                .attachWebContents(
-                        eq(mMockWebContents),
-                        eq(null),
-                        mWebContentsDelegateCaptor.capture(),
-                        eq(null),
-                        eq(null),
-                        eq(false),
-                        eq(false));
+                .attachWebContents(eq(mMockWebContents), any(), mAttachParamsCaptor.capture());
     }
 
     @Test
@@ -194,7 +184,7 @@ public class MerchantTrustBottomSheetMediatorTest {
 
     @Test
     public void testWebContentsDelegateSslChanges() {
-        mWebContentsDelegateCaptor.getValue().visibleSSLStateChanged();
+        mAttachParamsCaptor.getValue().webContentsDelegate.visibleSSLStateChanged();
         assertEquals(mMockDestinationGurl, mToolbarModel.get(BottomSheetToolbarProperties.URL));
         assertEquals(
                 R.drawable.omnibox_https_valid_lock,
@@ -203,26 +193,32 @@ public class MerchantTrustBottomSheetMediatorTest {
 
     @Test
     public void testWebContentsDelegateOpenNewTab() {
-        mWebContentsDelegateCaptor.getValue().openNewTab(mMockDestinationGurl, "", null, 0, true);
+        mAttachParamsCaptor
+                .getValue()
+                .webContentsDelegate
+                .openNewTab(mMockDestinationGurl, "", null, 0, true);
         verify(mMockNavigationController, times(1)).loadUrl(any(LoadUrlParams.class));
     }
 
     @Test
     public void testWebContentsDelegateShouldCreateWebContents() {
-        mWebContentsDelegateCaptor.getValue().shouldCreateWebContents(mMockDestinationGurl);
+        mAttachParamsCaptor
+                .getValue()
+                .webContentsDelegate
+                .shouldCreateWebContents(mMockDestinationGurl);
         verify(mMockNavigationController, times(1)).loadUrl(any(LoadUrlParams.class));
     }
 
     @Test
     public void testWebContentsDelegateGetTopControlsHeight() {
-        assertEquals(56, mWebContentsDelegateCaptor.getValue().getTopControlsHeight());
+        assertEquals(56, mAttachParamsCaptor.getValue().webContentsDelegate.getTopControlsHeight());
     }
 
     @Test
     public void testWebContentsDelegateLoadingStateChanges() {
         // Loading state.
         doReturn(true).when(mMockWebContents).isLoading();
-        mWebContentsDelegateCaptor.getValue().loadingStateChanged(true);
+        mAttachParamsCaptor.getValue().webContentsDelegate.loadingStateChanged(true);
         assertEquals(0, mToolbarModel.get(BottomSheetToolbarProperties.LOAD_PROGRESS), 0.01);
         assertEquals(true, mToolbarModel.get(BottomSheetToolbarProperties.PROGRESS_VISIBLE));
     }

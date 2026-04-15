@@ -21,12 +21,12 @@ import org.chromium.components.embedder_support.contextmenu.ContextMenuPopulator
 import org.chromium.components.embedder_support.delegate.WebContentsDelegateAndroid;
 import org.chromium.components.thinwebview.CompositorView;
 import org.chromium.components.thinwebview.ThinWebView;
+import org.chromium.components.thinwebview.ThinWebViewAttachParams;
 import org.chromium.components.thinwebview.ThinWebViewConstraints;
 import org.chromium.content_public.browser.SelectionClient;
 import org.chromium.content_public.browser.SelectionPopupController;
 import org.chromium.content_public.browser.Visibility;
 import org.chromium.content_public.browser.WebContents;
-import org.chromium.content_public.browser.selection.SelectionDropdownMenuDelegate;
 import org.chromium.ui.base.ActivityWindowAndroid;
 import org.chromium.ui.base.IntentRequestTracker;
 import org.chromium.ui.base.WindowAndroid;
@@ -109,41 +109,36 @@ public class ThinWebViewImpl extends FrameLayout implements ThinWebView {
 
     @Override
     public void attachWebContents(
-            WebContents webContents,
-            @Nullable View contentView,
-            @Nullable WebContentsDelegateAndroid delegate,
-            @Nullable ContextMenuPopulatorFactory contextMenuPopulatorFactory,
-            @Nullable SelectionDropdownMenuDelegate selectionDropdownMenuDelegate,
-            boolean enablePermissionRequests,
-            boolean supportTheming) {
+            WebContents webContents, View contentView, ThinWebViewAttachParams attachParams) {
         if (mNativeThinWebViewImpl == 0) return;
 
-        assert !enablePermissionRequests : "Permission requests are not supported yet.";
+        assert !attachParams.enablePermissionRequests
+                : "Permission requests are not supported yet.";
 
         // Native code holds only a weak reference to this object.
-        mWebContentsDelegate = delegate;
+        mWebContentsDelegate = attachParams.webContentsDelegate;
         setContentView(contentView);
         ThinWebViewImplJni.get()
                 .setWebContents(
                         mNativeThinWebViewImpl,
                         webContents,
-                        delegate,
-                        enablePermissionRequests,
-                        supportTheming);
+                        attachParams.webContentsDelegate,
+                        attachParams.enablePermissionRequests,
+                        attachParams.supportTheming);
 
         // Allow highlighting text.
         SelectionPopupController controller = SelectionPopupController.fromWebContents(webContents);
-        if (selectionDropdownMenuDelegate != null) {
-            controller.setDropdownMenuDelegate(selectionDropdownMenuDelegate);
+        if (attachParams.selectionDropdownMenuDelegate != null) {
+            controller.setDropdownMenuDelegate(attachParams.selectionDropdownMenuDelegate);
         }
         controller.setActionModeCallback(new ThinWebViewActionModeCallback(webContents));
         controller.setSelectionClient(SelectionClient.createSmartSelectionClient(webContents));
 
         // Populate context menu.
-        if (contextMenuPopulatorFactory != null) {
+        if (attachParams.contextMenuPopulatorFactory != null) {
             ThinWebViewImplJni.get()
                     .setContextMenuPopulatorFactory(
-                            mNativeThinWebViewImpl, contextMenuPopulatorFactory);
+                            mNativeThinWebViewImpl, attachParams.contextMenuPopulatorFactory);
         }
 
         webContents.updateWebContentsVisibility(Visibility.VISIBLE);
@@ -177,7 +172,7 @@ public class ThinWebViewImpl extends FrameLayout implements ThinWebView {
         }
     }
 
-    private void setContentView(@Nullable View contentView) {
+    private void setContentView(View contentView) {
         if (mContentView == contentView) return;
 
         if (mContentView != null) {

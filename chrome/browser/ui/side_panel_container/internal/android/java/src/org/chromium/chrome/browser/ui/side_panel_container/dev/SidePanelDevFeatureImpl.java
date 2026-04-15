@@ -17,6 +17,7 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.ui.side_panel_container.SidePanelContainerCoordinator;
 import org.chromium.components.embedder_support.delegate.WebContentsDelegateAndroid;
 import org.chromium.components.embedder_support.view.ContentView;
+import org.chromium.components.thinwebview.ThinWebViewAttachParams;
 import org.chromium.components.thinwebview.ThinWebViewConstraints;
 import org.chromium.components.thinwebview.ThinWebViewFactory;
 import org.chromium.content_public.browser.LoadUrlParams;
@@ -71,11 +72,9 @@ public final class SidePanelDevFeatureImpl implements SidePanelDevFeature {
         thinWebView.attachWebContents(
                 webContents,
                 contentView,
-                new WebContentsDelegateAndroid(),
-                /* contextMenuPopulatorFactory= */ null,
-                /* selectionDropdownMenuDelegate= */ null,
-                /* enablePermissionRequests= */ false,
-                /* supportTheming= */ false);
+                new ThinWebViewAttachParams.Builder()
+                        .setWebContentsDelegate(new WebContentsDelegateAndroid())
+                        .build());
 
         return new SidePanelDevFeatureContent(thinWebView, webContents);
     }

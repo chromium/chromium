@@ -33,6 +33,7 @@ import org.chromium.components.embedder_support.view.ContentView;
 import org.chromium.components.security_state.ConnectionSecurityLevel;
 import org.chromium.components.security_state.SecurityStateModel;
 import org.chromium.components.thinwebview.ThinWebView;
+import org.chromium.components.thinwebview.ThinWebViewAttachParams;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.browser.NavigationController;
 import org.chromium.content_public.browser.NavigationHandle;
@@ -197,17 +198,16 @@ public class MerchantTrustBottomSheetMediator {
                         return mTopControlsHeightDp;
                     }
                 };
-        if ((mWebContentView != null) && (mWebContentView.getParent() != null)) {
+        assert mWebContentView != null;
+        if (mWebContentView.getParent() != null) {
             ((ViewGroup) mWebContentView.getParent()).removeView(mWebContentView);
         }
         thinWebView.attachWebContents(
                 mWebContents,
                 mWebContentView,
-                mWebContentsDelegate,
-                /* contextMenuPopulatorFactory= */ null,
-                /* selectionDropdownMenuDelegate= */ null,
-                /* enablePermissionRequests= */ false,
-                /* supportTheming= */ false);
+                new ThinWebViewAttachParams.Builder()
+                        .setWebContentsDelegate(mWebContentsDelegate)
+                        .build());
     }
 
     // This method should only be used for the first navigation before showing some content in the
@@ -230,6 +230,7 @@ public class MerchantTrustBottomSheetMediator {
         assert mWebContents == null;
         if (mWebContentsForTesting != null) {
             mWebContents = mWebContentsForTesting;
+            mWebContentView = ContentView.createContentView(mContext, mWebContents);
             return;
         }
         mWebContents =

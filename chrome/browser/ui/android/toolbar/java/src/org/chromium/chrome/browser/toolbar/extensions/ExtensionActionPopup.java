@@ -26,6 +26,7 @@ import org.chromium.chrome.browser.ui.extensions.ExtensionActionPopupContents;
 import org.chromium.components.embedder_support.contextmenu.ContextMenuPopulatorFactory;
 import org.chromium.components.embedder_support.view.ContentView;
 import org.chromium.components.thinwebview.ThinWebView;
+import org.chromium.components.thinwebview.ThinWebViewAttachParams;
 import org.chromium.components.thinwebview.ThinWebViewConstraints;
 import org.chromium.components.thinwebview.ThinWebViewFactory;
 import org.chromium.components.thinwebview.internal.ThinWebViewContextMenuItemDelegate;
@@ -158,11 +159,10 @@ class ExtensionActionPopup implements Destroyable {
         mThinWebView.attachWebContents(
                 webContents,
                 mContentView,
-                /* delegate= */ null,
-                contextMenuPopulatorFactory,
-                selectionDropdownMenuDelegate,
-                /* enablePermissionRequests= */ false,
-                /* supportTheming= */ false);
+                new ThinWebViewAttachParams.Builder()
+                        .setContextMenuPopulatorFactory(contextMenuPopulatorFactory)
+                        .setSelectionDropdownMenuDelegate(selectionDropdownMenuDelegate)
+                        .build());
 
         mPopupWindow =
                 new AnchoredPopupWindow(
