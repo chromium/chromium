@@ -141,7 +141,7 @@ TextDecorationInfo::TextDecorationInfo(
     const AppliedTextDecoration* decoration_override,
     const Font* font_override,
     MinimumThickness1 minimum_thickness1,
-    float scaling_factor)
+    float svg_resource_scaling_factor)
     : target_style_(target_style),
       inline_context_(inline_context),
       selection_decoration_line_(selection_decoration_line),
@@ -153,7 +153,7 @@ TextDecorationInfo::TextDecorationInfo(
       local_origin_(local_origin),
       width_(width),
       target_ascent_(GetAscent(target_style, font_override)),
-      scaling_factor_(scaling_factor),
+      svg_resource_scaling_factor_(svg_resource_scaling_factor),
       // NOTE: The use of font_override_ here is probably problematic.
       // See LayoutSVGInlineText::ComputeNewScaledFontForStyle() for
       // a workaround that is needed due to that.

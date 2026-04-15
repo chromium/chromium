@@ -147,7 +147,7 @@ void TextDecorationPainter::PaintUnderOrOverLineDecorations(
     const TextPaintStyle& text_style,
     TextDecorationLine lines_to_paint) {
   if (paint_info_.IsRenderingResourceSubtree()) {
-    paint_info_.context.Scale(1, decoration_info.ScalingFactor());
+    paint_info_.context.Scale(1, decoration_info.SvgResourceScalingFactor());
   }
   const AutoDarkMode auto_dark_mode(PaintAutoDarkMode(
       decoration_info.TargetStyle(), DarkModeFilter::ElementRole::kForeground));
@@ -215,7 +215,7 @@ void TextDecorationPainter::PaintLineThroughDecorations(
     TextDecorationInfo& decoration_info,
     const TextPaintStyle& text_style) {
   if (paint_info_.IsRenderingResourceSubtree()) {
-    paint_info_.context.Scale(1, decoration_info.ScalingFactor());
+    paint_info_.context.Scale(1, decoration_info.SvgResourceScalingFactor());
   }
 
   const AutoDarkMode auto_dark_mode(PaintAutoDarkMode(

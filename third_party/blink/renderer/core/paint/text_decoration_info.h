@@ -92,7 +92,7 @@ class CORE_EXPORT TextDecorationInfo {
       const AppliedTextDecoration* decoration_override = nullptr,
       const Font* font_override = nullptr,
       MinimumThickness1 minimum_thickness1 = MinimumThickness1(true),
-      float scaling_factor = 1.0f);
+      float svg_resource_scaling_factor = 1.0f);
 
   wtf_size_t AppliedDecorationCount() const;
   const AppliedTextDecoration& AppliedDecoration(wtf_size_t) const;
@@ -132,7 +132,9 @@ class CORE_EXPORT TextDecorationInfo {
   // Returns the scaling factor for the decoration.
   // It can be different from FragmentItem::SvgScalingFactor() if the
   // text works as a resource.
-  float ScalingFactor() const { return scaling_factor_; }
+  float SvgResourceScalingFactor() const {
+    return svg_resource_scaling_factor_;
+  }
   float BaselineForInkSkip() const {
     return local_origin_.line_over.ToFloat() + target_ascent_;
   }
@@ -187,7 +189,7 @@ class CORE_EXPORT TextDecorationInfo {
   const LineRelativeOffset local_origin_;
   const LayoutUnit width_;
   const float target_ascent_ = 0.f;
-  const float scaling_factor_;
+  const float svg_resource_scaling_factor_;
 
   wtf_size_t decoration_index_ = 0;
 
