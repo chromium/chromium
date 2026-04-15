@@ -62,7 +62,7 @@ class COMPONENT_EXPORT(VULKAN) VulkanDeviceQueue
       uint32_t heap_memory_limit,
       const bool is_thread_safe = false);
 
-  bool InitializeFromANGLE();
+  bool InitializeFromANGLE(const bool is_thread_safe);
 
   bool InitializeForWebView(VkPhysicalDevice vk_physical_device,
                             VkDevice vk_device,
@@ -156,7 +156,8 @@ class COMPONENT_EXPORT(VULKAN) VulkanDeviceQueue
                   VkDevice vk_device,
                   VkQueue vk_queue,
                   uint32_t vk_queue_index,
-                  gfx::ExtensionSet enabled_extensions);
+                  gfx::ExtensionSet enabled_extensions,
+                  const bool is_thread_safe);
 
   gfx::ExtensionSet enabled_extensions_;
   VkPhysicalDevice vk_physical_device_ = VK_NULL_HANDLE;

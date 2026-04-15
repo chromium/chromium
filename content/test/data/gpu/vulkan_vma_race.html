@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<!--
+Copyright 2026 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+<html>
+<head>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<style>
+  body { margin: 0; background: #000; }
+  /* Stack of large layers each forcing its own render pass on the
+     CompositorGpuThread via backdrop-filter + will-change. Sizes are toggled
+     every frame so SkiaOutputSurfaceImplOnGpu must (re)allocate render-pass
+     backings through the DrDc GrContext -> shared VmaAllocator. */
+  .rp {
+    position: fixed;
+    left: 0; top: 0;
+    width: 480px; height: 480px;
+    backdrop-filter: blur(6px);
+    will-change: transform, backdrop-filter;
+    transform: translateZ(0);
+    background: rgba(255,255,255,0.05);
+  }
+</style>
+</head>
+<body>
+<canvas id="gl" width="512" height="512"></canvas>
+<div id="layers"></div>
+<script>
+'use strict';
+
+// ---------------- CompositorGpuThread side ----------------
+// Create a stack of backdrop-filter layers; toggle their size each frame so
+// the DrDc-thread display compositor reallocates render-pass backings every
+// frame on the shared VmaAllocator.
+const layerHost = document.getElementById('layers');
+const LAYERS = 16;
+const layers = [];
+for (let i = 0; i < LAYERS; i++) {
+  const d = document.createElement('div');
+  d.className = 'rp';
+  d.style.zIndex = i;
+  d.style.transform = `translate3d(${i*6}px, ${i*6}px, 0)`;
+  layerHost.appendChild(d);
+  layers.push(d);
+}
+let frame = 0;
+function compositorChurn() {
+  // Alternate size & blur radius -> render-pass backing must be reallocated.
+  const a = (frame & 1);
+  for (let i = 0; i < LAYERS; i++) {
+    const w = a ? 384 + (i % 4) * 32 : 512 + (i % 4) * 32;
+    const h = a ? 512 + (i % 3) * 32 : 384 + (i % 3) * 32;
+    layers[i].style.width = w + 'px';
+    layers[i].style.height = h + 'px';
+    layers[i].style.backdropFilter = `blur(${4 + ((frame + i) % 6)}px)`;
+  }
+}
+
+// ---------------- gpu-main thread side ----------------
+// WebGL texture allocate/delete churn. Each texImage2D for a fresh size
+// allocates a new image+VMA allocation on gpu-main's GrContext via
+// SkiaVulkanMemoryAllocator -> vmaAllocateMemoryForImage on the SAME
+// externally-synchronized allocator.
+const gl = document.getElementById('gl').getContext('webgl2',
+              {antialias: false, preserveDrawingBuffer: false});
+if (!gl) {
+  if (window.domAutomationController) {
+    window.domAutomationController.send('FAILED'); // Fail if no WebGL2
+  }
+}
+
+const TEX_PER_FRAME = 32;
+function gpuMainChurn() {
+  if (!gl) return;
+  for (let i = 0; i < TEX_PER_FRAME; i++) {
+    const t = gl.createTexture();
+    gl.bindTexture(gl.TEXTURE_2D, t);
+    const sz = 64 + ((frame * 7 + i * 13) % 192);
+    gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA8, sz, sz, 0,
+                  gl.RGBA, gl.UNSIGNED_BYTE, null);
+    gl.deleteTexture(t);
+  }
+  // Force a flush to gpu-main this frame.
+  gl.clearColor((frame & 1), 0, 0, 1);
+  gl.clear(gl.COLOR_BUFFER_BIT);
+  gl.flush();
+}
+
+// Also churn an OffscreenCanvas / 2D-GPU path for additional gpu-main raster
+// allocations in parallel with WebGL.
+const off = new OffscreenCanvas(256, 256);
+const ctx2d = off.getContext('2d', {willReadFrequently: false});
+function rasterChurn() {
+  off.width = 192 + ((frame * 11) % 192);
+  off.height = 192 + ((frame * 17) % 192);
+  ctx2d.fillStyle = `hsl(${frame % 360},80%,50%)`;
+  ctx2d.fillRect(0, 0, off.width, off.height);
+}
+
+function tick() {
+  compositorChurn();
+  gpuMainChurn();
+  rasterChurn();
+  frame++;
+  if (frame > 50) {
+    if (window.domAutomationController) {
+      window.domAutomationController.send('SUCCESS');
+    }
+    return;
+  }
+  requestAnimationFrame(tick);
+}
+requestAnimationFrame(tick);
+</script>
+</body>
+</html>

@@ -36,7 +36,7 @@ std::unique_ptr<VulkanDeviceQueue> CreateVulkanDeviceQueue(
       vulkan_implementation->GetOptionalDeviceExtensions();
 
   if (instance->is_from_angle()) {
-    if (!device_queue->InitializeFromANGLE()) {
+    if (!device_queue->InitializeFromANGLE(is_thread_safe)) {
       device_queue->Destroy();
       return nullptr;
     }

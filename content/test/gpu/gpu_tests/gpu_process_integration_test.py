@@ -126,6 +126,7 @@ class GpuProcessIntegrationTest(gpu_integration_test.GpuIntegrationTest):
         ('GpuProcess_webgl_disabled_extension',
          'gpu/functional_webgl_disabled_extension.html'),
         ('GpuProcess_webgpu_iframe_removed', 'gpu/webgpu-iframe-removed.html'),
+        ('GpuProcess_vulkan_vma_race', 'gpu/vulkan_vma_race.html'),
         ('GpuProcess_visibility', 'about:blank'),
     )
 
@@ -805,6 +806,11 @@ class GpuProcessIntegrationTest(gpu_integration_test.GpuIntegrationTest):
   def _GpuProcess_webgpu_iframe_removed(self, test_path: str) -> None:
     self.RestartBrowserIfNecessaryWithArgs([])
     self._NavigateAndWait(test_path)
+
+  def _GpuProcess_vulkan_vma_race(self, test_path: str) -> None:
+    self.RestartBrowserIfNecessaryWithArgs([])
+    self._NavigateAndWait(test_path)
+    self._VerifyGpuProcessPresent()
 
   @classmethod
   def ExpectationsFiles(cls) -> list[str]:

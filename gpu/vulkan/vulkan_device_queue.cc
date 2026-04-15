@@ -410,7 +410,8 @@ bool VulkanDeviceQueue::InitCommon(VkPhysicalDevice vk_physical_device,
                                    VkDevice vk_device,
                                    VkQueue vk_queue,
                                    uint32_t vk_queue_index,
-                                   gfx::ExtensionSet enabled_extensions) {
+                                   gfx::ExtensionSet enabled_extensions,
+                                   const bool is_thread_safe) {
   DCHECK_EQ(static_cast<VkPhysicalDevice>(VK_NULL_HANDLE), vk_physical_device_);
   DCHECK_EQ(static_cast<VkDevice>(VK_NULL_HANDLE), owned_vk_device_);
   DCHECK_EQ(static_cast<VkDevice>(VK_NULL_HANDLE), vk_device_);
@@ -424,11 +425,11 @@ bool VulkanDeviceQueue::InitCommon(VkPhysicalDevice vk_physical_device,
   enabled_extensions_ = std::move(enabled_extensions);
 
   if (vma_allocator_ == VK_NULL_HANDLE) {
-    vma::CreateAllocator(vk_physical_device_, vk_device_, vk_instance_,
-                         enabled_extensions_,
-                         GetPreferredVMALargeHeapBlockSize(),
-                         /*heap_size_limit=*/nullptr,
-                         /*is_thread_safe =*/false, &owned_vma_allocator_);
+    vma::CreateAllocator(
+        vk_physical_device_, vk_device_, vk_instance_, enabled_extensions_,
+        GetPreferredVMALargeHeapBlockSize(),
+        /*heap_size_limit=*/nullptr,
+        /*is_thread_safe =*/is_thread_safe, &owned_vma_allocator_);
     vma_allocator_ = owned_vma_allocator_;
 #if BUILDFLAG(IS_ANDROID)
     if (!metric_) {
@@ -449,7 +450,7 @@ bool VulkanDeviceQueue::InitCommon(VkPhysicalDevice vk_physical_device,
   return true;
 }
 
-bool VulkanDeviceQueue::InitializeFromANGLE() {
+bool VulkanDeviceQueue::InitializeFromANGLE(const bool is_thread_safe) {
   const VulkanInfo& info = instance_->vulkan_info();
   VkPhysicalDevice vk_physical_device = gl::QueryVkPhysicalDeviceFromANGLE();
   if (vk_physical_device == VK_NULL_HANDLE)
@@ -490,7 +491,7 @@ bool VulkanDeviceQueue::InitializeFromANGLE() {
 
   angle_display_ = gl::QueryDisplayFromANGLE();
   return InitCommon(vk_physical_device, vk_device, vk_queue, vk_queue_index,
-                    enabled_extensions);
+                    enabled_extensions, is_thread_safe);
 }
 
 bool VulkanDeviceQueue::InitializeForWebView(
@@ -499,8 +500,10 @@ bool VulkanDeviceQueue::InitializeForWebView(
     VkQueue vk_queue,
     uint32_t vk_queue_index,
     gfx::ExtensionSet enabled_extensions) {
+  // VulkanDeviceQueue for compositing on WebView is used on a single
+  // thread (Android RenderThread), so it doesn't need to be thread-safe.
   return InitCommon(vk_physical_device, vk_device, vk_queue, vk_queue_index,
-                    enabled_extensions);
+                    enabled_extensions, /*is_thread_safe =*/false);
 }
 
 bool VulkanDeviceQueue::InitializeForCompositorGpuThread(
@@ -532,8 +535,10 @@ bool VulkanDeviceQueue::InitializeForCompositorGpuThread(
 
   // Note that CompositorGpuThread uses same vma allocator as gpu main thread.
   vma_allocator_ = vma_allocator;
+  // is_thread_safe here likely does nothing since the VMA is already
+  // allocated.
   return InitCommon(vk_physical_device, vk_device, vk_queue, vk_queue_index,
-                    enabled_extensions);
+                    enabled_extensions, /*is_thread_safe =*/true);
 }
 
 void VulkanDeviceQueue::Destroy() {
