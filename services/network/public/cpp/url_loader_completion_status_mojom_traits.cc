@@ -6,6 +6,7 @@
 
 #include "mojo/public/cpp/base/time_mojom_traits.h"
 #include "services/network/public/cpp/network_param_mojom_traits.h"
+#include "services/network/public/cpp/ssl_info_mojom_traits.h"
 
 namespace mojo {
 

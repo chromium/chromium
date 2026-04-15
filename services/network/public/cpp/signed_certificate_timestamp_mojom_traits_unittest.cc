@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "services/network/public/cpp/digitally_signed_mojom_traits.h"
+#include "services/network/public/cpp/signed_certificate_timestamp_mojom_traits.h"
 
 #include "base/test/gtest_util.h"
 #include "mojo/public/cpp/test_support/test_utils.h"
 #include "net/cert/signed_certificate_timestamp.h"
-#include "services/network/public/mojom/digitally_signed.mojom.h"
+#include "services/network/public/mojom/signed_certificate_timestamp.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace network {

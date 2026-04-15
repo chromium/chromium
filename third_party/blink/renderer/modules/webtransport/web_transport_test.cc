@@ -15,6 +15,9 @@
 #include "base/memory/weak_ptr.h"
 #include "base/test/mock_callback.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
+#include "net/http/http_response_headers.h"
+#include "net/http/http_version.h"
+#include "services/network/public/mojom/http_response_headers.mojom-blink.h"
 #include "services/network/public/mojom/web_transport.mojom-blink.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -260,7 +263,8 @@ class WebTransportTest : public ::testing::Test {
     handshake_client->OnConnectionEstablished(
         std::move(web_transport_to_pass),
         client_remote.InitWithNewPipeAndPassReceiver(),
-        network::mojom::blink::HttpResponseHeaders::New(),
+        net::HttpResponseHeaders::Builder(net::HttpVersion(1, 1), "200 OK")
+            .Build(),
         /*selected_application_protocol=*/String(),
         network::mojom::blink::WebTransportStats::New());
     client_remote_.Bind(std::move(client_remote));

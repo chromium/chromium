@@ -8,6 +8,7 @@ import "mojo/public/mojom/base/time.mojom";
 import "services/network/public/mojom/blocked_by_response_reason.mojom";
 import "services/network/public/mojom/cors.mojom";
 import "services/network/public/mojom/network_param.mojom";
+import "services/network/public/mojom/ssl_info.mojom";
 import "services/network/public/mojom/trust_tokens.mojom";
 
 // Unlike structs, enums are not nullable, so we wrap this enum in a struct.

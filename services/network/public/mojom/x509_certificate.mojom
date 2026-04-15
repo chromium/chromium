@@ -1,0 +1,13 @@
+// Copyright 2026 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module network.mojom;
+
+// Typemapped to `scoped_refptr<net::X509Certificate>`.
+struct X509Certificate {
+  // The DER-encoded certificate.
+  array<uint8> cert;
+  // DER-encoded intermediates in the chain, if any.
+  array<array<uint8>> intermediates;
+};

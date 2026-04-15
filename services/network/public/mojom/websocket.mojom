@@ -4,6 +4,8 @@
 
 module network.mojom;
 
+import "services/network/public/mojom/auth.mojom";
+import "services/network/public/mojom/http_response_headers.mojom";
 import "services/network/public/mojom/ip_endpoint.mojom";
 import "services/network/public/mojom/network_param.mojom";
 import "url/mojom/url.mojom";

@@ -1,0 +1,13 @@
+// Copyright 2026 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module network.mojom;
+
+// Typemapped to `net::ct::SCTVerifyStatus`.
+enum SCTVerifyStatus {
+  kLogUnknown = 0,
+  kInvalidSignature = 1,
+  kOk = 2,
+  kInvalidTimestamp = 3,
+};

@@ -4,28 +4,26 @@
 
 #include "services/network/public/cpp/network_param_mojom_traits.h"
 
+#include <string_view>
+
+#include "base/compiler_specific.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/notreached.h"
+#include "base/strings/string_view_util.h"
 #include "mojo/public/cpp/base/time_mojom_traits.h"
 #include "mojo/public/cpp/bindings/struct_traits.h"
+#include "net/cert/cert_verify_result.h"
+#include "net/cert/signed_certificate_timestamp.h"
 #include "net/log/net_log_source_type.h"
 #include "net/ssl/ssl_cert_request_info.h"
+#include "services/network/public/cpp/ct_policy_status_mojom_traits.h"
+#include "services/network/public/cpp/http_response_headers_mojom_traits.h"
+#include "services/network/public/cpp/ocsp_verify_result_mojom_traits.h"
+#include "services/network/public/cpp/signed_certificate_timestamp_and_status_mojom_traits.h"
+#include "services/network/public/cpp/x509_certificate_mojom_traits.h"
+#include "third_party/boringssl/src/include/openssl/pool.h"
 
 namespace mojo {
-
-// static
-bool StructTraits<network::mojom::AuthChallengeInfoDataView,
-                  net::AuthChallengeInfo>::
-    Read(network::mojom::AuthChallengeInfoDataView data,
-         net::AuthChallengeInfo* out) {
-  out->is_proxy = data.is_proxy();
-  if (!data.ReadChallenger(&out->challenger) ||
-      !data.ReadScheme(&out->scheme) || !data.ReadRealm(&out->realm) ||
-      !data.ReadChallenge(&out->challenge) || !data.ReadPath(&out->path)) {
-    return false;
-  }
-  return true;
-}
 
 // static
 bool StructTraits<network::mojom::HttpVersionDataView, net::HttpVersion>::Read(

@@ -13,8 +13,10 @@ import "mojo/public/mojom/base/unguessable_token.mojom";
 import "mojo/public/mojom/base/values.mojom";
 import "sandbox/policy/mojom/context.mojom";
 import "services/network/public/mojom/address_list.mojom";
+import "services/network/public/mojom/auth.mojom";
 import "services/network/public/mojom/cache_encryption_provider.mojom";
 import "services/network/public/mojom/cert_verifier_service.mojom";
+import "services/network/public/mojom/cert_verify_result.mojom";
 import "services/network/public/mojom/clear_data_filter.mojom";
 import "services/network/public/mojom/client_security_state.mojom";
 import "services/network/public/mojom/connection_allowlist.mojom";
@@ -36,6 +38,7 @@ import "services/network/public/mojom/hash_value.mojom";
 import "services/network/public/mojom/host_resolver.mojom";
 import "services/network/public/mojom/http_cache_backend_file_operations.mojom";
 import "services/network/public/mojom/http_request_headers.mojom";
+import "services/network/public/mojom/http_response_headers.mojom";
 import "services/network/public/mojom/ip_address.mojom";
 import "services/network/public/mojom/ip_address_space.mojom";
 import "services/network/public/mojom/ip_endpoint.mojom";
@@ -64,6 +67,7 @@ import "services/network/public/mojom/shared_dictionary_usage_info.mojom";
 import "services/network/public/mojom/site_for_cookies.mojom";
 import "services/network/public/mojom/socket_broker.mojom";
 import "services/network/public/mojom/ssl_config.mojom";
+import "services/network/public/mojom/ssl_info.mojom";
 import "services/network/public/mojom/storage_access_api.mojom";
 import "services/network/public/mojom/tcp_socket.mojom";
 import "services/network/public/mojom/transferable_directory.mojom";
@@ -77,6 +81,7 @@ import "services/network/public/mojom/url_request.mojom";
 import "services/network/public/mojom/url_response_head.mojom";
 import "services/network/public/mojom/web_transport.mojom";
 import "services/network/public/mojom/websocket.mojom";
+import "services/network/public/mojom/x509_certificate.mojom";
 import "services/proxy_resolver/public/mojom/proxy_resolver.mojom";
 import "url/mojom/origin.mojom";
 import "url/mojom/scheme_host_port.mojom";
@@ -1595,10 +1600,10 @@ interface NetworkContext {
 
   // Performs 2-QWAC verification. Returns the verified 2-QWAC certificate
   // chain if `binding` is a valid 2-QWAC binding for `hostname` which binds
-  // `tls_certificate`.
+  // `tls_certificate`, or null otherwise.
   Verify2QwacCertBinding(
       string binding, string hostname, X509Certificate tls_certificate)
-      => (X509Certificate verified_cert);
+      => (X509Certificate? verified_cert);
 
   // Adds explicitly-specified data as if it was processed from an
   // HSTS header. Used by tests and implementation of chrome://net-internals.
@@ -1739,7 +1744,7 @@ interface NetworkContext {
   // Will flush cached client certificate for `host` if `certificate`
   // doesn't match the corresponding cached certificate.
   FlushCachedClientCertIfNeeded(
-      HostPortPair host, X509Certificate certificate);
+      HostPortPair host, X509Certificate? certificate);
 
   // Flushes a cached client certificate preference if `certificate` matches
   // the cached certificate.

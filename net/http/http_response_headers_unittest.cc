@@ -14,6 +14,7 @@
 
 #include "base/byte_count.h"
 #include "base/pickle.h"
+#include "base/strings/string_view_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
@@ -2913,6 +2914,24 @@ TEST(HttpResponseHeadersTest, StrictlyEqualsRawMismatch) {
   const auto parsed2 = base::MakeRefCounted<HttpResponseHeaders>(raw2);
   EXPECT_FALSE(parsed1->StrictlyEquals(*parsed2));
   EXPECT_FALSE(parsed2->StrictlyEquals(*parsed1));
+}
+
+TEST(HttpResponseHeadersTest, SerializeForMojoIpcDropsCookieHeaders) {
+  std::string raw_headers =
+      "HTTP/1.1 200 OK\n"
+      "Set-Cookie: foo=bar; httponly\n"
+      "Set-Cookie: bar=foo\n"
+      "Bar: 1\n"
+      "Set-Cookie2: bar2=foo2\n";
+  HeadersToRaw(&raw_headers);
+  const auto original = base::MakeRefCounted<HttpResponseHeaders>(raw_headers);
+
+  const auto actual = base::MakeRefCounted<HttpResponseHeaders>(
+      base::as_string_view(original->SerializeForMojoIpc()));
+  EXPECT_EQ(
+      "HTTP/1.1 200 OK\n"
+      "Bar: 1\n",
+      ToSimpleString(actual));
 }
 
 // There's no known way to produce an HttpResponseHeaders object with the same

@@ -22,6 +22,7 @@ import "services/network/public/mojom/fetch_api.mojom";
 import "services/network/public/mojom/fetch_retry_options.mojom";
 import "services/network/public/mojom/http_raw_headers.mojom";
 import "services/network/public/mojom/http_request_headers.mojom";
+import "services/network/public/mojom/http_response_headers.mojom";
 import "services/network/public/mojom/ip_address_space.mojom";
 import "services/network/public/mojom/isolation_info.mojom";
 import "services/network/public/mojom/network_param.mojom";

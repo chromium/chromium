@@ -9,6 +9,7 @@ import "mojo/public/mojom/base/file_path.mojom";
 import "mojo/public/mojom/base/memory_pressure_level.mojom";
 import "mojo/public/mojom/base/time.mojom";
 import "services/network/public/mojom/address_list.mojom";
+import "services/network/public/mojom/cert_verify_result.mojom";
 import "services/network/public/mojom/host_resolver.mojom";
 import "services/network/public/mojom/http_cache_backend_file_operations.mojom";
 import "services/network/public/mojom/ip_endpoint.mojom";
@@ -17,6 +18,7 @@ import "services/network/public/mojom/network_interface_change_listener.mojom";
 import "services/network/public/mojom/network_param.mojom";
 import "services/network/public/mojom/network_types.mojom";
 import "services/network/public/mojom/transferable_socket.mojom";
+import "services/network/public/mojom/x509_certificate.mojom";
 
 // Maps to net::RuleBasedHostResolverProc::Rule::ResolverType.
 //

@@ -1,0 +1,46 @@
+// Copyright 2026 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module network.mojom;
+
+import "services/network/public/mojom/ct_policy_status.mojom";
+import "services/network/public/mojom/hash_value.mojom";
+import "services/network/public/mojom/signed_certificate_timestamp_and_status.mojom";
+import "services/network/public/mojom/x509_certificate.mojom";
+
+// Typemapped to `net::SSLInfo::HandshakeType`.
+enum SSLInfoHandshakeType {
+  kUnknown = 0,
+  kResume = 1,
+  kFull = 2,
+};
+
+// Typemapped to `net::SSLInfo`.
+struct SSLInfo {
+  X509Certificate? cert;
+  X509Certificate? unverified_cert;
+  // Bitmasks of status flags, e.g. indicating known errors and EV errors.
+  // Values are defined in cert_status_flags.h
+  uint32 cert_status;
+  uint16 key_exchange_group;
+  // Algorithm used by the signature peer as defined in
+  // https://www.iana.org/assignments/tls-parameters/tls-parameters.xhtml#tls-signaturescheme,
+  // or 0 if unknown.
+  uint16 peer_signature_algorithm;
+  // Values defined in ssl_connection_status_flags.h.
+  int32 connection_status;
+  bool is_issued_by_known_root;
+  bool pkp_bypassed;
+  bool client_cert_sent;
+  bool encrypted_client_hello;
+  SSLInfoHandshakeType handshake_type;
+  array<SHA256HashValue> public_key_hashes;
+  array<SignedCertificateTimestampAndStatus> signed_certificate_timestamps;
+  CTPolicyCompliance ct_policy_compliance;
+  bool is_fatal_cert_error;
+
+  // TODO(crbug.com/501919014): `net::SSLInfo` has two additional fields which
+  // are not passed over IPC: `early_data_received` and `early_data_accepted`.
+  // It is unclear if this is intentional or an accidental omission.
+};

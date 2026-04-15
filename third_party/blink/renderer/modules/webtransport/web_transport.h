@@ -97,7 +97,7 @@ class MODULES_EXPORT WebTransport final
   void OnConnectionEstablished(
       mojo::PendingRemote<network::mojom::blink::WebTransport>,
       mojo::PendingReceiver<network::mojom::blink::WebTransportClient>,
-      network::mojom::blink::HttpResponseHeadersPtr response_headers,
+      const scoped_refptr<net::HttpResponseHeaders>& response_headers,
       const String& selected_application_protocol,
       network::mojom::blink::WebTransportStatsPtr initial_stats) override;
   void OnHandshakeFailed(network::mojom::blink::WebTransportErrorPtr) override;

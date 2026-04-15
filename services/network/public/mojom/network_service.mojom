@@ -18,6 +18,7 @@ import "services/network/public/mojom/client_security_state.mojom";
 import "services/network/public/mojom/first_party_sets.mojom";
 import "services/network/public/mojom/host_resolver.mojom";
 import "services/network/public/mojom/http_raw_headers.mojom";
+import "services/network/public/mojom/http_response_headers.mojom";
 import "services/network/public/mojom/ip_address_space.mojom";
 import "services/network/public/mojom/ip_endpoint.mojom";
 import "services/network/public/mojom/key_pinning.mojom";
@@ -395,7 +396,7 @@ interface NetworkService {
   // URLLoader where parsing hasn't been implemented.
   // In particular, this is used for request served from WebBundle,
   // Extensions, etc.
-  ParseHeaders(url.mojom.Url url, HttpResponseHeaders headers)
+  ParseHeaders(url.mojom.Url url, HttpResponseHeaders? headers)
       => (ParsedHeaders parsed_headers);
 
   // Enables or disables whether URLLoaders need to call

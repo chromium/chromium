@@ -91,7 +91,7 @@ class NET_EXPORT CertVerifyResult {
   // The result of evaluating CT requirements.
   ct::CTRequirementsStatus ct_requirement_status;
 };
-// LINT.ThenChange(/services/network/public/cpp/net_ipc_param_traits.cc:CertVerifyResult)
+// LINT.ThenChange(/services/network/public/mojom/network_param.mojom:CertVerifyResult)
 
 }  // namespace net
 

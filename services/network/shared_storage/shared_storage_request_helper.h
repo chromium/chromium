@@ -18,6 +18,7 @@
 #include "url/origin.h"
 
 namespace net {
+class HttpRequestHeaders;
 class URLRequest;
 }  // namespace net
 

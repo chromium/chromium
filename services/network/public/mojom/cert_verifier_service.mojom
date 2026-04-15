@@ -6,8 +6,10 @@ module cert_verifier.mojom;
 
 import "mojo/public/mojom/base/byte_string.mojom";
 import "mojo/public/mojom/base/time.mojom";
+import "services/network/public/mojom/cert_verify_result.mojom";
 import "services/network/public/mojom/network_param.mojom";
 import "services/network/public/mojom/url_loader_factory.mojom";
+import "services/network/public/mojom/x509_certificate.mojom";
 
 // Mojo version of net::CertVerifier::RequestParams.
 struct RequestParams {
@@ -60,7 +62,7 @@ interface CertVerifierService {
                      string hostname,
                      network.mojom.X509Certificate tls_certificate,
                      network.mojom.NetLogSource net_log_source)
-      => (network.mojom.X509Certificate verified_cert);
+      => (network.mojom.X509Certificate? verified_cert);
 
   // Sets the config for the underlying CertVerifier.
   SetConfig(CertVerifierConfig config);

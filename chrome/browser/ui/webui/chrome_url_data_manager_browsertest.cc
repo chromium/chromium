@@ -27,6 +27,8 @@
 #include "content/public/browser/url_data_source.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
+#include "net/http/http_response_headers.h"
+#include "net/http/http_version.h"
 
 namespace {
 

@@ -5,54 +5,28 @@
 #ifndef SERVICES_NETWORK_PUBLIC_CPP_NETWORK_PARAM_MOJOM_TRAITS_H_
 #define SERVICES_NETWORK_PUBLIC_CPP_NETWORK_PARAM_MOJOM_TRAITS_H_
 
+#include <string>
+#include <vector>
+
 #include "base/component_export.h"
-#include "base/memory/scoped_refptr.h"
+#include "mojo/public/cpp/base/string16_mojom_traits.h"
+#include "mojo/public/cpp/bindings/enum_traits.h"
 #include "mojo/public/cpp/bindings/struct_traits.h"
 #include "net/base/auth.h"
 #include "net/base/host_port_pair.h"
 #include "net/base/proxy_chain.h"
 #include "net/base/proxy_server.h"
+#include "net/cert/signed_certificate_timestamp_and_status.h"
 #include "net/dns/public/resolve_error_info.h"
 #include "net/http/http_version.h"
 #include "net/log/net_log_source.h"
 #include "net/ssl/ssl_cert_request_info.h"
+#include "net/ssl/ssl_info.h"
+#include "services/network/public/cpp/hash_value_mojom_traits.h"
 #include "services/network/public/mojom/network_param.mojom-shared.h"
 #include "url/mojom/scheme_host_port_mojom_traits.h"
 
 namespace mojo {
-
-template <>
-class COMPONENT_EXPORT(NETWORK_CPP_NETWORK_PARAM)
-    StructTraits<network::mojom::AuthChallengeInfoDataView,
-                 net::AuthChallengeInfo> {
- public:
-  static bool is_proxy(const net::AuthChallengeInfo& auth_challenge_info) {
-    return auth_challenge_info.is_proxy;
-  }
-  static const url::SchemeHostPort& challenger(
-      const net::AuthChallengeInfo& auth_challenge_info) {
-    return auth_challenge_info.challenger;
-  }
-  static const std::string& scheme(
-      const net::AuthChallengeInfo& auth_challenge_info) {
-    return auth_challenge_info.scheme;
-  }
-  static const std::string& realm(
-      const net::AuthChallengeInfo& auth_challenge_info) {
-    return auth_challenge_info.realm;
-  }
-  static const std::string& challenge(
-      const net::AuthChallengeInfo& auth_challenge_info) {
-    return auth_challenge_info.challenge;
-  }
-  static const std::string& path(
-      const net::AuthChallengeInfo& auth_challenge_info) {
-    return auth_challenge_info.path;
-  }
-
-  static bool Read(network::mojom::AuthChallengeInfoDataView data,
-                   net::AuthChallengeInfo* out);
-};
 
 template <>
 class COMPONENT_EXPORT(NETWORK_CPP_NETWORK_PARAM)
