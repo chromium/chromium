@@ -21,9 +21,14 @@ source_set("contextual_tasks") {
     "active_task_context_provider_impl.h",
     "ai_mode_context_library_converter.h",
     "contextual_tasks_composebox_handler_interface.h",
+    "contextual_tasks_context_scoring_utils.h",
+    "contextual_tasks_context_service.h",
+    "contextual_tasks_context_service_factory.h",
     "contextual_tasks_panel_controller.h",
     "contextual_tasks_panel_host.h",
     "contextual_tasks_service_factory.h",
+    "contextual_tasks_tab_visit_tracker.cc",
+    "contextual_tasks_tab_visit_tracker.h",
     "contextual_tasks_ui_interface.h",
     "contextual_tasks_ui_service_delegate.h",
     "contextual_tasks_utils.h",
@@ -39,7 +44,6 @@ source_set("contextual_tasks") {
 
   public_deps = [
     ":mojo_bindings",
-    ":relevance",
     "//chrome/browser/passage_embeddings",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/tab_list",
@@ -68,6 +72,15 @@ source_set("impl") {
   sources = [
     "active_task_context_provider_impl.cc",
     "ai_mode_context_library_converter.cc",
+    "contextual_tasks_context_model_executor.cc",
+    "contextual_tasks_context_model_executor.h",
+    "contextual_tasks_context_model_handler.cc",
+    "contextual_tasks_context_model_handler.h",
+    "contextual_tasks_context_scoring_utils.cc",
+    "contextual_tasks_context_service.cc",
+    "contextual_tasks_context_service_factory.cc",
+    "contextual_tasks_context_signal_utils.cc",
+    "contextual_tasks_context_signal_utils.h",
     "contextual_tasks_service_factory.cc",
     "contextual_tasks_utils.cc",
     "site_exclusion_detail.cc",
@@ -92,7 +105,6 @@ source_set("impl") {
 
   deps = [
     ":contextual_tasks",
-    ":relevance_impl",
     ":ui",
     "//chrome/browser:browser_public_dependencies",
     "//chrome/browser/autocomplete:aim_eligibility_service",
@@ -138,63 +150,6 @@ source_set("impl") {
       "//ui/android",
     ]
   }
-}
-
-source_set("relevance") {
-  sources = [
-    "contextual_tasks_context_scoring_utils.h",
-    "contextual_tasks_context_service.h",
-    "contextual_tasks_context_service_factory.h",
-    "contextual_tasks_tab_visit_tracker.h",
-  ]
-
-  public_deps = [
-    ":mojo_bindings",
-    "//base",
-    "//chrome/browser/profiles:profile",
-    "//chrome/browser/ui/browser_window",
-    "//components/keyed_service/core",
-    "//components/page_content_annotations/content:page_embeddings",
-    "//components/page_content_annotations/core",
-    "//components/passage_embeddings/core:passage_embeddings_types",
-    "//content/public/browser",
-  ]
-}
-
-source_set("relevance_impl") {
-  sources = [
-    "contextual_tasks_context_model_executor.cc",
-    "contextual_tasks_context_model_executor.h",
-    "contextual_tasks_context_model_handler.cc",
-    "contextual_tasks_context_model_handler.h",
-    "contextual_tasks_context_scoring_utils.cc",
-    "contextual_tasks_context_service.cc",
-    "contextual_tasks_context_service_factory.cc",
-    "contextual_tasks_context_signal_utils.cc",
-    "contextual_tasks_context_signal_utils.h",
-    "contextual_tasks_tab_visit_tracker.cc",
-  ]
-
-  deps = [
-    ":relevance",
-    "//chrome/browser/optimization_guide",
-    "//chrome/browser/page_content_annotations",
-    "//chrome/browser/passage_embeddings",
-    "//chrome/browser/profiles:profile",
-    "//chrome/browser/search",
-    "//chrome/browser/tab_list",
-    "//chrome/browser/ui/browser_window",
-    "//chrome/browser/ui/tabs:tabs_public",
-    "//components/contextual_tasks/public",
-    "//components/optimization_guide/core:model_execution",
-    "//components/optimization_guide/proto:optimization_guide_proto",
-    "//components/page_content_annotations/core",
-    "//components/passage_embeddings/core:passage_embeddings_types",
-    "//components/tabs:public",
-    "//content/public/browser",
-    "//third_party/omnibox_proto",
-    "//third_party/tflite_support",
-  ]
 }
 
 source_set("ui") {
@@ -429,8 +384,6 @@ if (!is_android) {
     deps = [
       ":contextual_tasks",
       ":impl",
-      ":relevance",
-      ":relevance_impl",
       ":test_support",
       ":ui",
       ":ui_impl",
@@ -502,8 +455,6 @@ source_set("unit_tests") {
   deps = [
     ":contextual_tasks",
     ":impl",
-    ":relevance",
-    ":relevance_impl",
     ":test_support",
     ":ui",
     ":ui_impl",
