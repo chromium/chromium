@@ -2209,17 +2209,6 @@ void CloseTabSearch(BrowserWindowInterface* browser) {
   browser->GetBrowserForMigrationOnly()->window()->CloseTabSearchBubble();
 }
 
-void ToggleTabSearchPin(BrowserWindowInterface* browser) {
-  if (base::FeatureList::IsEnabled(tabs::kHorizontalTabStripComboButton)) {
-    PrefService* prefs = browser->GetProfile()->GetPrefs();
-    const bool is_pinned = prefs->GetBoolean(prefs::kTabSearchPinnedToTabstrip);
-    base::RecordAction(base::UserMetricsAction(
-        is_pinned ? "TabStripComboButton.TabSearch.Unpinned"
-                  : "TabStripComboButton.TabSearch.Pinned"));
-    prefs->SetBoolean(prefs::kTabSearchPinnedToTabstrip, !is_pinned);
-  }
-}
-
 void ToggleContextualTasksSidePanel(BrowserWindowInterface* browser) {
   auto* controller =
       contextual_tasks::ContextualTasksPanelController::From(browser);

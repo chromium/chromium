@@ -654,9 +654,6 @@ bool BrowserCommandController::ExecuteCommandWithDisposition(
     case IDC_TAB_SEARCH_CLOSE:
       CloseTabSearch(browser_);
       break;
-    case IDC_TAB_SEARCH_TOGGLE_PIN:
-      ToggleTabSearchPin(browser_);
-      break;
     case IDC_TOGGLE_VERTICAL_TABS:
       ToggleVerticalTabs(browser_);
       break;
@@ -1817,8 +1814,6 @@ void BrowserCommandController::InitCommandState() {
   command_updater_.UpdateCommandEnabled(IDC_TAB_SEARCH,
                                         enable_tab_search_commands);
   command_updater_.UpdateCommandEnabled(IDC_TAB_SEARCH_CLOSE,
-                                        enable_tab_search_commands);
-  command_updater_.UpdateCommandEnabled(IDC_TAB_SEARCH_TOGGLE_PIN,
                                         enable_tab_search_commands);
 
   command_updater_.UpdateCommandEnabled(IDC_SHOW_CONTEXTUAL_TASKS_SIDE_PANEL,
