@@ -4421,6 +4421,20 @@ void LayerTreeHostImpl::ActivateSyncTree() {
     input_delegate_->DidActivatePendingTree();
   }
 
+  // When a tab is backgrounded and SetVisible(false) is called, it triggers
+  // a FlushDisplayTree() at the end, which syncs the current state (e.g., tile
+  // evictions) and ensures should_batch_updated_tiles_ is false.
+  // When a new tree activates, it sets `should_batch_updated_tiles_` to true
+  // on the active tree's layers. Because tab is hidden and visible_ is already
+  // false, no new SetVisible(false) call will ever occur and hence no more
+  // FlushDisplayTree() will occur. As a result, all future background updates
+  // (like tile deletions) stay trapped in the renderer's local batch and never
+  // reach Viz. This flush ensures Viz stays in sync even when we aren't
+  // drawing.
+  if (layer_context_ && !visible_ && settings_.TreesInVizInClientProcess()) {
+    FlushDisplayTree();
+  }
+
   // Dump property trees and layers if VerboseLogEnabled().
   VERBOSE_LOG() << "After activating sync tree, the active tree:"
                 << "\nproperty_trees:\n"
