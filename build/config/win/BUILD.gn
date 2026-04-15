@@ -42,6 +42,11 @@ declare_args() {
   #  and with this switch, clang emits it like this:
   #    foo/bar.cc:12:34: error: something went wrong
   use_clang_diagnostics_format = false
+
+  # Enable /prefetch-inputs for lld-link.exe to improve linking performance.
+  # This may increase RAM usage, so it is disabled by default for a safe
+  # rollout.
+  use_lld_prefetch_inputs = false
 }
 
 # This is included by reference in the //build/config/compiler config that
@@ -159,6 +164,10 @@ config("compiler") {
 
     # Don't look for libpaths in %LIB%, similar to /X in cflags above.
     ldflags += [ "/lldignoreenv" ]
+
+    if (use_lld_prefetch_inputs) {
+      ldflags += [ "/prefetch-inputs" ]
+    }
   }
 
   # Some binaries create PDBs larger than 4 GiB. Increasing the PDB page size
