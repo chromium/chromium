@@ -1816,6 +1816,9 @@ void CompositorFrameReporter::ReportCompositorLatencyTraceEvents(
 }
 
 void CompositorFrameReporter::ReportScrollJankMetrics() {
+  if (!should_report_histograms_) {
+    return;
+  }
   ReportScrollJankV1Metrics();
   ReportScrollJankV4Metrics();
 }

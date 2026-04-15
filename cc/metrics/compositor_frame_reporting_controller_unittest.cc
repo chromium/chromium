@@ -44,9 +44,10 @@ class TestCompositorFrameReportingController
     : public CompositorFrameReportingController {
  public:
   explicit TestCompositorFrameReportingController(
+      bool should_report_histograms = true,
       bool is_trees_in_viz_client = false)
       : CompositorFrameReportingController(
-            /*should_report_histograms=*/true,
+            should_report_histograms,
             /*layer_tree_host_id=*/1,
             /*is_trees_in_viz_client=*/is_trees_in_viz_client) {}
 
@@ -3125,6 +3126,71 @@ TEST_F(CompositorFrameReportingControllerTest, VsyncIntervalArg) {
                                   std::vector<std::string>{"interval", "cnt"},
                                   std::vector<std::string>{"8", "1"},
                                   std::vector<std::string>{"32", "1"}));
+}
+
+TEST_F(CompositorFrameReportingControllerTest,
+       NoScrollJankMetricsInSingleThreadedMode) {
+  base::HistogramTester histogram_tester;
+
+  {
+    FrameSorter local_frame_sorter;
+    FrameSequenceTrackerCollection local_tracker_collection(false);
+    // Simulate single-threaded mode by disabling histograms.
+    TestCompositorFrameReportingController reporting_controller_no_histograms(
+        /*should_report_histograms=*/false);
+    reporting_controller_no_histograms.set_tick_clock(&test_tick_clock_);
+    reporting_controller_no_histograms.SetFrameSorter(&local_frame_sorter);
+    reporting_controller_no_histograms.SetFrameSequenceTrackerCollection(
+        &local_tracker_collection);
+
+    std::unique_ptr<EventMetrics> scroll_metrics =
+        CreateScrollUpdateEventMetrics(
+            ui::ScrollInputType::kWheel, /*is_inertial=*/false,
+            ScrollUpdateEventMetrics::ScrollUpdateType::kStarted, std::nullopt);
+
+    base::TimeDelta vsync_interval = base::Milliseconds(16);
+    args_.interval = vsync_interval;
+    base::TimeTicks first_begin_frame_ts = test_tick_clock_.NowTicks();
+
+    IncrementCurrentId();
+    args_.frame_time = test_tick_clock_.NowTicks();
+    reporting_controller_no_histograms.WillBeginImplFrame(
+        args_, /*will_throttle_main=*/false);
+    reporting_controller_no_histograms.OnFinishImplFrame(
+        current_id_, /*waiting_for_main=*/false);
+
+    // Use WillInvalidateOnImplSide to advance the reporter to the correct state
+    // for activation in single-threaded/impl-side invalidation mode.
+    reporting_controller_no_histograms.WillInvalidateOnImplSide();
+    reporting_controller_no_histograms.WillActivate();
+    reporting_controller_no_histograms.DidActivate();
+
+    EventMetrics::List metrics_list;
+    metrics_list.push_back(std::move(scroll_metrics));
+
+    uint32_t frame_token = ++current_token_;
+    SubmitInfo submit_info(frame_token, base::TimeTicks::Now());
+    submit_info.events_metrics.impl_event_metrics = std::move(metrics_list);
+
+    reporting_controller_no_histograms.DidSubmitCompositorFrame(
+        submit_info, current_id_, last_activated_id_);
+
+    viz::FrameTimingDetails details = {};
+    details.presentation_feedback.timestamp =
+        first_begin_frame_ts + 2 * vsync_interval;
+    reporting_controller_no_histograms.DidPresentCompositorFrame(frame_token,
+                                                                 details);
+  }
+
+  // Verify that no ScrollJank metrics are reported.
+  histogram_tester.ExpectTotalCount("Event.ScrollJank.MissedVsyncs.PerFrame",
+                                    0);
+  histogram_tester.ExpectTotalCount(
+      "Event.ScrollJank.DelayedFramesPercentage.PerScroll", 0);
+  histogram_tester.ExpectTotalCount(
+      "Event.ScrollJank.DelayedFramesPercentage4.PerScroll", 0);
+  histogram_tester.ExpectTotalCount("Event.Jank.PredictorJankyFramePercentage2",
+                                    0);
 }
 
 }  // namespace
