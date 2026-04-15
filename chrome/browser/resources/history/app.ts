@@ -438,8 +438,7 @@ export class HistoryAppElement extends HistoryAppElementBase {
     }
 
     requestIdleCallback(function() {
-      // https://github.com/microsoft/TypeScript/issues/13569
-      (document as any).fonts.load('bold 12px Roboto');
+      document.fonts.load('bold 12px Roboto');
     });
   }
 

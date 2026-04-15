@@ -212,8 +212,7 @@ export class ExtensionsManagerElement extends ExtensionsManagerElementBase {
     super.connectedCallback();
 
     document.documentElement.classList.remove('loading');
-    // https://github.com/microsoft/TypeScript/issues/13569
-    (document as any).fonts.load('bold 12px Roboto');
+    document.fonts.load('bold 12px Roboto');
 
     this.navigationListener_ = navigation.addListener(newPage => {
       this.changePage_(newPage);

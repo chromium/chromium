@@ -157,8 +157,7 @@ export class SettingsUiElement extends SettingsUiElementBase {
     document.documentElement.classList.remove('loading');
 
     // Preload bold Roboto so it doesn't load and flicker the first time used.
-    // https://github.com/microsoft/TypeScript/issues/13569
-    (document as any).fonts.load('bold 12px Roboto');
+    document.fonts.load('bold 12px Roboto');
     setGlobalScrollTarget(this.$.container);
   }
 
