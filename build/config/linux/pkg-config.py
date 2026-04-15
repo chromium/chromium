@@ -126,7 +126,7 @@ def main():
   # success. This allows us to "kind of emulate" a Linux build from other
   # platforms.
   if "linux" not in sys.platform:
-    if options.libdir:
+    if options.dridriverdir or options.libdir:
       sys.stdout.write("")
       return 0
     print("[[],[],[],[],[]]")
