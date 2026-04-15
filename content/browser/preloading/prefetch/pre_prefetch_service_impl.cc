@@ -269,7 +269,7 @@ PrePrefetchServiceImpl::PreCalculatePrePrefetchHeadersOnUI(
   // TODO(crbug.com/470242977): Revisit once we set `request_initiator`.
   const bool is_first_party_context_for_variations_header = true;
 
-  return PrepareInitialHeadersForPrefetch(
+  return PrepareInitialHeadersForPrefetchPhase2(
       key.origin.GetURL(), *tentative_prefetch_request,
       is_first_party_context_for_variations_header);
 

@@ -13,6 +13,7 @@
 #include "content/browser/preloading/prefetch/prefetch_key.h"
 #include "content/browser/preloading/prefetch/prefetch_params.h"
 #include "content/browser/preloading/prefetch/prefetch_type.h"
+#include "content/browser/preloading/preload_pipeline_info_impl.h"
 #include "content/browser/preloading/speculation_rules/speculation_rules_tags.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/browser_thread.h"
@@ -130,8 +131,11 @@ class CONTENT_EXPORT PrefetchBrowserInitiatorInfo final {
 //   original UI thread.
 // - `PreloadPipelineInfo` (`RefCountedThreadSafe` scoped_refptr):
 //   Creating/destructing/passing `PreloadPipelineInfo` across thread
-//   should be safe. Should not be dereferenced from non-main thread, as
-//   `PreloadPipelineInfo` itself is not thread safe.
+//   should be safe.
+//   `PreloadPipelineInfo` itself is not thread safe, so shouldn't be
+//   dereferenced from non-main thread, except for exceptional cases for
+//   accessing const members
+//   (e.g. `preload_pipeline_info_planned_max_preloading_type()`).
 // - const value-type members can be safely accessed from any thread.
 //
 // TODO(crbug.com/452406598, crbug.com/452389538): Consider decoupling them
@@ -257,10 +261,15 @@ class CONTENT_EXPORT PrefetchRequest final {
   }
   const std::optional<PrefetchPriority>& priority() const { return priority_; }
 
-  // Can only be accessed its methods/members on the UI thread.
+  // Can only be accessed its mutable methods/members on the UI thread.
   PreloadPipelineInfoImpl& preload_pipeline_info() const {
     DCHECK_CURRENTLY_ON(BrowserThread::UI);
     return *preload_pipeline_info_;
+  }
+
+  // Const members of `PreloadPipelineInfoImpl` can be accessed from any thread.
+  PreloadingType preload_pipeline_info_planned_max_preloading_type() const {
+    return preload_pipeline_info_->planned_max_preloading_type();
   }
 
   // Can only be accessed its methods/members on the UI thread.

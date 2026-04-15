@@ -40,7 +40,23 @@ extern const net::NetworkTrafficAnnotationTag
 
 // Returns a `PrefetchUpdateHeadersParams` that contains the headers to be added
 // to the initial prefetch `ResourceRequest`.
-PrefetchUpdateHeadersParams PrepareInitialHeadersForPrefetch(
+
+// Header constructions are split into two phases, due to the different nature
+// of the dependencies to the UI thread, and in order to apply Phase 1 after
+// receiving actual `PrefetchRequest`s to make more headers reflect actual
+// `PrefetchRequest`s.
+// The two `PrefetchUpdateHeadersParams` must be applied in order.
+
+// Phase 1:
+// - [1] and part of [2].
+// - Can be executed on any thread.
+PrefetchUpdateHeadersParams PrepareInitialHeadersForPrefetchPhase1(
+    const GURL& request_url,
+    const PrefetchRequest& prefetch_request);
+// Phase 2:
+// - [2], [3] and [4].
+// - Must be executed only on the UI thread.
+PrefetchUpdateHeadersParams PrepareInitialHeadersForPrefetchPhase2(
     const GURL& request_url,
     const PrefetchRequest& prefetch_request,
     bool is_first_party_context_for_variations_header);
