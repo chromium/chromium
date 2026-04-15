@@ -93,6 +93,10 @@ suite('Speech', () => {
     chrome.readingMode.restoreSettingsFromPrefs = () => {};
     chrome.readingMode.languageChanged = () => {};
     chrome.readingMode.onTtsEngineInstalled = () => {};
+    // This test isn't testing engine stall behavior, so these
+    // methods should be mocked to reduce flakiness from test timing.
+    chrome.readingMode.onSpeechEngineFirstStall = () => {};
+    chrome.readingMode.onSpeechEngineStalled = () => {};
     mockMetrics();
     voiceLanguageController = new VoiceLanguageController();
     VoiceLanguageController.setInstance(voiceLanguageController);
