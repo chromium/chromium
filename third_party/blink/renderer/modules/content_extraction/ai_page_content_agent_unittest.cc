@@ -5767,6 +5767,51 @@ TEST_F(AIPageContentAgentTest, AriaRole) {
             ax::mojom::blink::Role::kButton);
 }
 
+TEST_F(AIPageContentAgentTest,
+       ActionableModeKeepsInteractiveContainersButDropsEmptySpan) {
+  frame_test_helpers::LoadHTMLString(
+      helper_.LocalMainFrame(),
+      R"HTML(
+      <body>
+        <div id="outer" onclick="void(0)">
+          <div id="option" role="option">
+            <span id="empty"></span>
+          </div>
+        </div>
+      </body>
+      )HTML",
+      url_test_helpers::ToKURL("http://foobar.com"));
+
+  GetAIPageContentWithActionableElements();
+
+  // The outer wrapper has a click handler, so actionable mode should keep it
+  // as a generic container with click-event metadata.
+  const mojom::blink::AIPageContentNode* outer = FindNodeBySelector("#outer");
+  ASSERT_TRUE(outer);
+  CheckContainerNode(*outer);
+  ASSERT_TRUE(outer->content_attributes->node_interaction_info);
+  EXPECT_THAT(
+      outer->content_attributes->node_interaction_info->clickability_reasons,
+      testing::Contains(ClickabilityReason::kClickEvents));
+
+  // The inner wrapper has role=option. APC still uses a generic container
+  // here, but actionable mode should preserve the node because the ARIA role
+  // makes it interactive.
+  const mojom::blink::AIPageContentNode* option = FindNodeBySelector("#option");
+  ASSERT_TRUE(option);
+  CheckContainerNode(*option);
+  EXPECT_EQ(option->content_attributes->aria_role,
+            ax::mojom::blink::Role::kListBoxOption);
+  ASSERT_TRUE(option->content_attributes->node_interaction_info);
+  EXPECT_THAT(
+      option->content_attributes->node_interaction_info->clickability_reasons,
+      testing::Contains(ClickabilityReason::kAriaRole));
+
+  // The span has no text and no interactive signal, so APC should flatten it
+  // away instead of emitting an empty wrapper node.
+  ExpectSelectorNotInApcOutput("#empty");
+}
+
 TEST_F(AIPageContentAgentTest, LabelNotActionable) {
   frame_test_helpers::LoadHTMLString(
       helper_.LocalMainFrame(),

@@ -1852,15 +1852,15 @@ void AIPageContentAgent::ContentBuilder::AddMetaData(
   }
 }
 
-bool AIPageContentAgent::ContentBuilder::IsGenericContainer(
+bool AIPageContentAgent::ContentBuilder::ShouldSkipSingleNode(
     const LayoutObject& object,
     const mojom::blink::AIPageContentAttributes& attributes) const {
   if (object.StyleRef().GetPosition() == EPosition::kFixed) {
-    return true;
+    return false;
   }
 
   if (object.StyleRef().GetPosition() == EPosition::kSticky) {
-    return true;
+    return false;
   }
 
   // This has some duplication with the scrollability in InteractionInfo but is
@@ -1869,37 +1869,43 @@ bool AIPageContentAgent::ContentBuilder::IsGenericContainer(
   //    requested.
   // 2. The interaction info is meant to capture the current state (is the
   //    element scrollable given the current content). This is a heuristic to
-  //    decide whether a node is likely to be a "container" based on the author
-  //    making it scrollable.
+  //    decide whether this node should stay in APC as a generic container
+  //    based on the author making it scrollable.
   // TODO(khushalsagar): Consider removing this, no consumer relies on this
   // behaviour.
   if (object.StyleRef().ScrollsOverflow()) {
-    return true;
+    return false;
   }
 
   if (object.IsInTopOrViewTransitionLayer()) {
-    return true;
+    return false;
   }
 
   if (const auto* element = DynamicTo<HTMLElement>(object.GetNode())) {
     if (element->HasTagName(html_names::kFigureTag)) {
-      return true;
+      return false;
     }
   }
 
   if (!attributes.annotated_roles.empty()) {
-    return true;
+    return false;
   }
 
   if (attributes.node_interaction_info) {
-    return true;
+    return false;
   }
 
   if (attributes.label_for_dom_node_id) {
-    return true;
+    return false;
   }
 
-  return false;
+  // Do not skip nodes that are needed for their dom_node_id.
+  if (interactive_dom_node_ids_.Contains(
+          DOMNodeIds::ExistingIdForNode(object.GetNode()))) {
+    return false;
+  }
+
+  return true;
 }
 
 DOMNodeId AIPageContentAgent::ContentBuilder::AddInteractiveNode(Node& node) {
@@ -2180,20 +2186,15 @@ AIPageContentAgent::ContentBuilder::MaybeGenerateContentNodeImpl(
                          element->HasTagName(html_names::kDdTag))) {
     attributes.attribute_type =
         mojom::blink::AIPageContentAttributeType::kListItem;
-  } else if (IsGenericContainer(object, attributes)) {
-    // Be sure to set annotated roles before calling IsGenericContainer, as
-    // IsGenericContainer will check for annotated roles.
-    // Keep container at the bottom of the list as it is the least specific.
-    attributes.attribute_type =
-        mojom::blink::AIPageContentAttributeType::kContainer;
-  } else if (interactive_dom_node_ids_.Contains(
-                 DOMNodeIds::ExistingIdForNode(object.GetNode()))) {
-    // Fall back to a generic container when we need to emit this node for
-    // dom_node_id purposes but no more specific type matched.
+  } else if (!ShouldSkipSingleNode(object, attributes)) {
+    // We must keep the node and there is no more specific type -> kContainer.
+    // Be sure to set annotated roles before calling ShouldSkipSingleNode(), as
+    // it uses the populated annotation and interaction state to decide whether
+    // this otherwise-unspecialized node should stay in APC.
     attributes.attribute_type =
         mojom::blink::AIPageContentAttributeType::kContainer;
   } else {
-    // If no attribute type was set, do not generate a content node.
+    // No attribute type set and we should skip -> don't create a content node.
     return nullptr;
   }
 

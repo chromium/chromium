@@ -182,7 +182,7 @@ class MODULES_EXPORT AIPageContentAgent final
     // id emission.
     bool IsNodeIdAttributeTypeAllowlisted(
         mojom::blink::AIPageContentAttributeType attribute_type) const;
-    bool IsGenericContainer(
+    bool ShouldSkipSingleNode(
         const LayoutObject& object,
         const mojom::blink::AIPageContentAttributes& attributes) const;
 
