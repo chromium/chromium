@@ -201,7 +201,7 @@ void CanvasResourceDispatcher::PostImageToPlaceholder(
 
 void CanvasResourceDispatcher::DispatchFrame(
     scoped_refptr<CanvasResource>&& canvas_resource,
-    const SkIRect& damage_rect,
+    const gfx::Rect& damage_rect,
     bool is_opaque) {
   TRACE_EVENT0("blink", "CanvasResourceDispatcher::DispatchFrame");
   viz::CompositorFrame frame;
@@ -218,7 +218,7 @@ void CanvasResourceDispatcher::DispatchFrame(
 
 bool CanvasResourceDispatcher::PrepareFrame(
     scoped_refptr<CanvasResource>&& canvas_resource,
-    const SkIRect& damage_rect,
+    const gfx::Rect& damage_rect,
     bool is_opaque,
     viz::CompositorFrame* frame) {
   TRACE_EVENT0("blink", "CanvasResourceDispatcher::PrepareFrame");
@@ -261,10 +261,7 @@ bool CanvasResourceDispatcher::PrepareFrame(
   auto pass =
       viz::CompositorRenderPass::Create(/*shared_quad_state_list_size=*/1u,
                                         /*quad_list_size=*/1u);
-  pass->SetNew(kRenderPassId, bounds,
-               gfx::Rect(damage_rect.x(), damage_rect.y(), damage_rect.width(),
-                         damage_rect.height()),
-               gfx::Transform());
+  pass->SetNew(kRenderPassId, bounds, damage_rect, gfx::Transform());
 
   viz::SharedQuadState* sqs = pass->CreateAndAppendSharedQuadState();
   sqs->SetAll(gfx::Transform(), bounds, bounds, gfx::MaskFilterInfo(),

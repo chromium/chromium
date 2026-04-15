@@ -14,6 +14,7 @@
 #include "third_party/blink/renderer/platform/graphics/test/test_webgraphics_shared_image_interface_provider.h"
 #include "third_party/blink/renderer/platform/testing/task_environment.h"
 #include "third_party/blink/renderer/platform/testing/testing_platform_support.h"
+#include "ui/gfx/geometry/rect.h"
 
 using testing::_;
 using testing::Mock;
@@ -114,7 +115,7 @@ scoped_refptr<CanvasResource> OffscreenCanvasPlaceholderTest::DrawSomething() {
 CanvasResource* OffscreenCanvasPlaceholderTest::DispatchOneFrame() {
   scoped_refptr<CanvasResource> resource = DrawSomething();
   CanvasResource* resource_raw_ptr = resource.get();
-  dispatcher_->DispatchFrame(std::move(resource), SkIRect::MakeEmpty(),
+  dispatcher_->DispatchFrame(std::move(resource), gfx::Rect(),
                              /*is_opaque=*/false);
   // We avoid holding a ref here to avoid interfering with
   // OffscreenCanvasPlaceholder's ref count logic.  This pointer should only

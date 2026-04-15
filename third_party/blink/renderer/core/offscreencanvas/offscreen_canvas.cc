@@ -55,6 +55,7 @@
 #include "third_party/blink/renderer/platform/supplementable.h"
 #include "third_party/blink/renderer/platform/wtf/math_extras.h"
 #include "third_party/skia/include/core/SkSurface.h"
+#include "ui/gfx/geometry/skia_conversions.h"
 
 namespace blink {
 
@@ -560,15 +561,17 @@ CanvasResourceDispatcher* OffscreenCanvas::GetOrCreateResourceDispatcher() {
 }
 
 void OffscreenCanvas::DidDraw(const SkIRect& rect) {
-  if (rect.isEmpty())
+  if (rect.isEmpty()) {
     return;
+  }
 
-  current_frame_damage_rect_.join(rect);
+  current_frame_damage_rect_.Union(gfx::SkIRectToRect(rect));
 
   if (HasPlaceholderCanvas()) {
     needs_push_frame_ = true;
-    if (!inside_worker_raf_)
+    if (!inside_worker_raf_) {
       GetOrCreateResourceDispatcher()->SetNeedsBeginFrame(true);
+    }
   }
 }
 
@@ -595,11 +598,10 @@ bool OffscreenCanvas::PushFrame(
     return false;
   }
   canvas_resource->SetOriginClean(OriginClean());
-  current_frame_damage_rect_.intersect(
-      SkIRect::MakeWH(Size().width(), Size().height()));
+  current_frame_damage_rect_.Intersect(gfx::Rect(Size()));
   GetOrCreateResourceDispatcher()->DispatchFrame(
       std::move(canvas_resource), current_frame_damage_rect_, IsOpaque());
-  current_frame_damage_rect_ = SkIRect::MakeEmpty();
+  current_frame_damage_rect_ = gfx::Rect();
 
   return true;
 }

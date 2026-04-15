@@ -21,6 +21,7 @@
 #include "third_party/blink/renderer/platform/graphics/resource_id_traits.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/timer.h"
+#include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
 
 namespace blink {
@@ -87,7 +88,7 @@ class PLATFORM_EXPORT CanvasResourceDispatcher
     return animation_state_ == AnimationState::kSuspended;
   }
   void DispatchFrame(scoped_refptr<CanvasResource>&&,
-                     const SkIRect& damage_rect,
+                     const gfx::Rect& damage_rect,
                      bool is_opaque);
   // virtual for mocking
   virtual void OnMainThreadReceivedImage();
@@ -122,7 +123,7 @@ class PLATFORM_EXPORT CanvasResourceDispatcher
       HashMap<viz::ResourceId, std::unique_ptr<ExportedResource>>;
 
   bool PrepareFrame(scoped_refptr<CanvasResource>&&,
-                    const SkIRect& damage_rect,
+                    const gfx::Rect& damage_rect,
                     bool is_opaque,
                     viz::CompositorFrame* frame);
 

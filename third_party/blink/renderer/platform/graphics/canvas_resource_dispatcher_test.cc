@@ -23,6 +23,7 @@
 #include "third_party/blink/renderer/platform/testing/testing_platform_support.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
 #include "third_party/skia/include/core/SkSurface.h"
+#include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/rect_f.h"
 #include "ui/gfx/mojom/presentation_feedback.mojom-blink.h"
 
@@ -89,7 +90,7 @@ class CanvasResourceDispatcherTest
     scoped_refptr<CanvasResource> canvas_resource =
         resource_provider_->ProduceCanvasResource();
     auto canvas_resource_extra = canvas_resource;
-    dispatcher_->DispatchFrame(std::move(canvas_resource), SkIRect::MakeEmpty(),
+    dispatcher_->DispatchFrame(std::move(canvas_resource), gfx::Rect(),
                                /*is_opaque=*/false);
     return canvas_resource_extra;
   }
@@ -438,7 +439,7 @@ TEST_P(CanvasResourceDispatcherTest, DispatchFrame) {
                       kPremul_SkAlphaType);
           }));
 
-  constexpr SkIRect damage_rect = SkIRect::MakeWH(kDamageWidth, kDamageHeight);
+  const gfx::Rect damage_rect(kDamageWidth, kDamageHeight);
   Dispatcher()->DispatchFrame(canvas_resource, damage_rect,
                               !context_alpha /* is_opaque */);
   platform->RunUntilIdle();
