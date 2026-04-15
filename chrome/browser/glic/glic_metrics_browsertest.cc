@@ -274,8 +274,9 @@ class GlicMetricsBrowserTestWithCaptureRegion : public GlicMetricsBrowserTest {
 };
 
 #if !BUILDFLAG(IS_ANDROID)
+// TODO(crbug.com/500964398): This test is flaky.
 IN_PROC_BROWSER_TEST_F(GlicMetricsBrowserTestWithCaptureRegion,
-                       SelectionUsedFromController) {
+                       DISABLED_SelectionUsedFromController) {
   // The feature is enabled in constructor of
   // GlicMetricsBrowserTestWithCaptureRegion but let's double check.
   ASSERT_TRUE(base::FeatureList::IsEnabled(features::kGlicCaptureRegion));
