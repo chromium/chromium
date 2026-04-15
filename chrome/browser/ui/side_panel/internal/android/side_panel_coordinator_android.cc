@@ -188,7 +188,33 @@ void SidePanelCoordinatorAndroid::Show(
     return;
   }
 
-  waiter(entry->type())
+  SidePanelType entry_type = entry->type();
+  if (IsSidePanelShowing(entry_type)) {
+    std::optional<UniqueKey> current_entry_key = current_key(entry_type);
+    CHECK(current_entry_key)
+        << "Current entry key should exist when side panel is showing.";
+
+    // If the current entry is the same as the new entry we're trying to show,
+    // we should cancel loading the new entry and keep the side panel visible.
+    //
+    // Not doing the above will cause the same entry to be loaded again and sent
+    // to `PopulateSidePanel()`, whose logic will replace the current entry
+    // with itself and then mark the entry as closed, since the same entry is
+    // both the "previous entry" and the "new entry".
+    if (*current_entry_key == key) {
+      SPLOG("Show - entry is already visible.");
+      waiter(entry_type)->ResetLoadingEntryIfNecessary();
+
+      // TODO(crbug.com/493931047): Handle the case where the current entry is
+      // being closed, i.e., when `state_` is `SidePanelState::kClosing`.
+      // In this case, we should:
+      //   (1) stop the closing animation and keep the side panel open, and
+      //   (2) notify the entry of `OnEntryHideCancelled()`.
+      return;
+    }
+  }
+
+  waiter(entry_type)
       ->WaitForEntry(
           entry, base::BindOnce(&SidePanelCoordinatorAndroid::PopulateSidePanel,
                                 base::Unretained(this), suppress_animations,

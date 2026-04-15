@@ -129,8 +129,9 @@ IN_PROC_BROWSER_TEST_F(SidePanelCoordinatorAndroidBrowserTest,
   EXPECT_EQ(entry_key.id(), entry_observer.id_for_last_entry_shown_.value());
 }
 
-IN_PROC_BROWSER_TEST_F(SidePanelCoordinatorAndroidBrowserTest,
-                       Show_SidePanelAlreadyShown_ReplacesSidePanelContent) {
+IN_PROC_BROWSER_TEST_F(
+    SidePanelCoordinatorAndroidBrowserTest,
+    Show_SidePanelAlreadyShownWithDifferentEntry_ReplacesSidePanelContent) {
   // Arrange: Register two entries in the tab-scoped registry.
   BrowserWindowInterface* browser = GetBrowserWindow();
   auto* tab_list = TabListInterface::From(browser);
@@ -181,6 +182,41 @@ IN_PROC_BROWSER_TEST_F(SidePanelCoordinatorAndroidBrowserTest,
   // Assert: Second entry should be notified of the "shown" event.
   EXPECT_EQ(second_entry_key.id(),
             second_entry_observer.id_for_last_entry_shown_.value());
+}
+
+IN_PROC_BROWSER_TEST_F(
+    SidePanelCoordinatorAndroidBrowserTest,
+    Show_SidePanelAlreadyShownWithSameEntry_CancelsLoadingEntryAndKeepsSidePanelOpen) {
+  // Arrange:
+  BrowserWindowInterface* browser = GetBrowserWindow();
+
+  auto entry_key = SidePanelEntryKey(SidePanelEntryId::kAboutThisSite);
+  std::unique_ptr<SidePanelEntry> entry =
+      CreateSidePanelEntry(entry_key, browser);
+  TestSidePanelEntryObserver entry_observer;
+  entry->AddObserver(&entry_observer);
+
+  auto* registry = SidePanelRegistry::From(browser);
+  registry->Register(std::move(entry));
+
+  auto* coordinator = SidePanelCoordinatorAndroid::From(browser);
+  coordinator->SetNoDelaysForTesting(true);
+
+  // Act: Show the entry for the first time.
+  coordinator->SidePanelUIBase::Show(entry_key, /*open_trigger=*/std::nullopt,
+                                     /*suppress_animations=*/true);
+  ASSERT_TRUE(coordinator->SidePanelUIBase::IsSidePanelEntryShowing(entry_key));
+
+  // Act: Show the same entry again.
+  coordinator->SidePanelUIBase::Show(entry_key, /*open_trigger=*/std::nullopt,
+                                     /*suppress_animations=*/true);
+
+  // Assert: Side panel should still show the entry.
+  EXPECT_TRUE(coordinator->SidePanelUIBase::IsSidePanelEntryShowing(entry_key));
+
+  // Assert: No "hide" events should be triggered.
+  EXPECT_FALSE(entry_observer.id_for_last_entry_will_hide_.has_value());
+  EXPECT_FALSE(entry_observer.id_for_last_entry_hidden_.has_value());
 }
 
 IN_PROC_BROWSER_TEST_F(SidePanelCoordinatorAndroidBrowserTest,
