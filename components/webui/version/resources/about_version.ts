@@ -117,13 +117,13 @@ function returnArcAndArcAndroidSdkVersions(arcAndroidSdkVersion: string) {
 /**
  * Callback from chromeosInfoPrivate with the value of the customization ID.
  */
-function returnCustomizationId(response: {[customizationId: string]: any}) {
+function returnCustomizationId(response: {[customizationId: string]: unknown}) {
   if (!response['customizationId']) {
     return;
   }
   getRequiredElement('customization_id_holder').hidden = false;
   getRequiredElement('customization_id').textContent =
-      response['customizationId'];
+      response['customizationId'] as string;
 }
 
 // </if>

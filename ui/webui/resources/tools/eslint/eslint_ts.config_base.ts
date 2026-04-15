@@ -113,3 +113,15 @@ export const noChromeSendConfig = {
     ],
   },
 };
+
+// A dedicated config that is only added when
+// enable_no_explicit_any=true is passed to eslint_ts().
+// TODO(crbug.com/494464740): Move this to the defaultConfig above once all
+// violations are fixed.
+export const noExplicitAnyConfig = {
+  files: ['**/*.ts'],
+  rules: {
+    // https://google.github.io/styleguide/tsguide.html#any
+    '@typescript-eslint/no-explicit-any': ['error', {'ignoreRestArgs': true}],
+  },
+};

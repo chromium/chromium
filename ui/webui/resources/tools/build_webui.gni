@@ -616,6 +616,73 @@ template("build_webui") {
                          legacy_chrome_send_users) == [] && !is_ash_webui) {
         enable_no_chrome_send = true
       }
+
+      no_explicit_any_exceptions = [
+        # Note: DO NOT add new entries to the list below.
+        # TODO(crbug.com/494464740): Fix all violations below and turn on this
+        # check by default.
+        "//chrome/browser/resources/access_code_cast",
+        "//chrome/browser/resources/accessibility",
+        "//chrome/browser/resources/ai_overlay_dialog",
+        "//chrome/browser/resources/app_home",
+        "//chrome/browser/resources/bluetooth_internals",
+        "//chrome/browser/resources/compose",
+        "//chrome/browser/resources/content_annotator_internals",
+        "//chrome/browser/resources/contextual_tasks",
+        "//chrome/browser/resources/discards",
+        "//chrome/browser/resources/downloads",
+        "//chrome/browser/resources/engagement",
+        "//chrome/browser/resources/extensions",
+        "//chrome/browser/resources/family_link_user_internals",
+        "//chrome/browser/resources/feedback",
+        "//chrome/browser/resources/glic",
+        "//chrome/browser/resources/history",
+        "//chrome/browser/resources/lens/shared",
+        "//chrome/browser/resources/location_internals",
+        "//chrome/browser/resources/media",
+        "//chrome/browser/resources/media_router/internals",
+        "//chrome/browser/resources/new_tab_page",
+        "//chrome/browser/resources/new_tab_page/untrusted",
+        "//chrome/browser/resources/omnibox",
+        "//chrome/browser/resources/omnibox_popup",
+        "//chrome/browser/resources/password_manager",
+        "//chrome/browser/resources/pdf",
+        "//chrome/browser/resources/print_preview",
+        "//chrome/browser/resources/privacy_sandbox/internals",
+        "//chrome/browser/resources/settings",
+        "//chrome/browser/resources/settings_shared",
+        "//chrome/browser/resources/side_panel/customize_chrome",
+        "//chrome/browser/resources/side_panel/read_anything",
+        "//chrome/browser/resources/signin/profile_picker",
+        "//chrome/browser/resources/tab_search",
+        "//chrome/browser/resources/tab_strip_internals",
+        "//chrome/browser/resources/tab_strip",
+        "//chrome/browser/resources/updater",
+        "//chrome/browser/resources/webui_browser",
+        "//chrome/browser/resources/webui_toolbar",
+        "//chrome/browser/resources/whats_new",
+        "//components/metrics/debug",
+        "//components/policy/resources/webui",
+        "//components/sync/service/resources",
+        "//content/browser/resources/attribution_reporting",
+        "//content/browser/resources/gpu",
+        "//content/browser/resources/histograms",
+        "//content/browser/resources/private_aggregation",
+        "//content/browser/resources/service_worker",
+        "//content/browser/resources/traces_internals",
+        "//ui/webui/resources/cr_components/composebox",
+        "//ui/webui/resources/cr_components/searchbox",
+        "//ui/webui/resources/cr_elements",
+        "//ui/webui/resources/js",
+      ]
+
+      if (!is_ash_webui && filter_include([ get_label_info(":lint_ts", "dir") ],
+                                          no_explicit_any_exceptions) == []) {
+        enable_no_explicit_any = true
+      } else {
+        # Prevent GN from throwing an error.
+        not_needed([ "no_explicit_any_exceptions" ])
+      }
     }
   }
 

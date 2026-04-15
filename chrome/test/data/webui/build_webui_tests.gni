@@ -146,6 +146,28 @@ template("build_webui_tests") {
       invoker.enable_type_aware_eslint_checks
 
   if (enable_type_aware_eslint_checks) {
+    if (is_chromeos) {
+      # Folders hosting Ash-only WebUIs. Should be kept in sync with
+      # //tools/typescript/path_utils.py. This is used to differentiate
+      # eslint_ts() configurations.
+      ash_folders = [
+        "//chrome/test/data/webui/chromeos",
+        "//chrome/test/data/webui/cr_components/chromeos",
+      ]
+    }
+
+    # Determine whether the current invocation corresponds to an Ash WebUI.
+    is_ash_webui = false
+    if (is_chromeos) {
+      target_dir = get_label_info(":build_ts", "dir")
+
+      foreach(prefix, ash_folders) {
+        if (!is_ash_webui) {
+          is_ash_webui = string_replace(target_dir, prefix, "") != target_dir
+        }
+      }
+    }
+
     eslint_ts("lint") {
       visibility = [ ":build_grdp" ]
       in_folder = preprocess_dir
@@ -155,6 +177,53 @@ template("build_webui_tests") {
         ":build_ts",
         ":preprocess",
       ]
+
+      no_explicit_any_exceptions = [
+        # Note: DO NOT add new entries to the list below.
+        # TODO(crbug.com/494464740): Fix all violations below and turn on this
+        # check by default.
+        "//chrome/test/data/pdf",
+        "//chrome/test/data/webui/access_code_cast",
+        "//chrome/test/data/webui/actor_overlay",
+        "//chrome/test/data/webui/bluetooth_internals",
+        "//chrome/test/data/webui/bookmarks",
+        "//chrome/test/data/webui/compose",
+        "//chrome/test/data/webui/contextual_tasks",
+        "//chrome/test/data/webui/cr_components/composebox",
+        "//chrome/test/data/webui/cr_components",
+        "//chrome/test/data/webui/cr_components/searchbox",
+        "//chrome/test/data/webui/cr_elements",
+        "//chrome/test/data/webui/extensions",
+        "//chrome/test/data/webui/feedback",
+        "//chrome/test/data/webui/glic",
+        "//chrome/test/data/webui/guest_view_shared",
+        "//chrome/test/data/webui/inspect",
+        "//chrome/test/data/webui/intro",
+        "//chrome/test/data/webui/js",
+        "//chrome/test/data/webui/lens",
+        "//chrome/test/data/webui/new_tab_footer",
+        "//chrome/test/data/webui/new_tab_page",
+        "//chrome/test/data/webui/print_preview",
+        "//chrome/test/data/webui/privacy_sandbox/internals",
+        "//chrome/test/data/webui/settings",
+        "//chrome/test/data/webui/side_panel/customize_chrome",
+        "//chrome/test/data/webui/side_panel/read_anything",
+        "//chrome/test/data/webui/tab_search",
+        "//chrome/test/data/webui/unexportable_keys_internals",
+        "//chrome/test/data/webui/updater",
+        "//chrome/test/data/webui/usb_internals",
+        "//chrome/test/data/webui/webui_toolbar",
+        "//chrome/test/data/webui/webview",
+        "//chrome/test/data/webui/whats_new",
+      ]
+
+      if (!is_ash_webui && filter_include([ get_label_info(":lint", "dir") ],
+                                          no_explicit_any_exceptions) == []) {
+        enable_no_explicit_any = true
+      } else {
+        # Prevent GN from throwing an error.
+        not_needed([ "no_explicit_any_exceptions" ])
+      }
     }
   }
 
