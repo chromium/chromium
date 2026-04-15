@@ -1,6 +1,7 @@
 # Copyright 2014 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
+import("//extensions/buildflags/buildflags.gni")
 
 import("//testing/libfuzzer/fuzzer_test.gni")
 
@@ -228,6 +229,7 @@ source_set("internal") {
     "//components/policy/proto",
     "//components/reporting/proto:record_constants",
     "//components/reporting/proto:record_proto",
+    "//extensions/buildflags",
   ]
 
   deps = [
@@ -244,7 +246,6 @@ source_set("internal") {
     "//components/strings",
     "//components/user_manager",
     "//components/version_info",
-    "//extensions/buildflags",
     "//google_apis",
     "//net",
     "//services/network/public/cpp",
@@ -301,7 +302,7 @@ source_set("internal") {
       "registry_dict.h",
     ]
   }
-  if (is_android || is_ios) {
+  if ((is_android && !enable_extensions_core) || is_ios) {
     sources += [ "cloud/component_cloud_policy_service_stub.cc" ]
     sources -= [
       "cloud/cloud_external_data_store.cc",
@@ -474,6 +475,7 @@ static_library("test_support") {
     "//components/reporting/proto:record_proto",
     "//components/strings",
     "//crypto",
+    "//extensions/buildflags",
     "//net",
     "//services/network/public/cpp",
     "//testing/gmock",
@@ -605,7 +607,7 @@ source_set("unit_tests") {
   } else {
     sources += [ "async_policy_provider_unittest.cc" ]
   }
-  if (!is_android && !is_ios) {
+  if ((!is_android || enable_extensions_core) && !is_ios) {
     sources += [
       "cloud/cloud_external_data_store_unittest.cc",
       "cloud/component_cloud_policy_service_unittest.cc",
