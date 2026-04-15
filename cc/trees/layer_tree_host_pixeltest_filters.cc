@@ -990,9 +990,10 @@ TEST_P(LayerTreeHostFiltersPixelTest, MAYBE_RotatedFilter) {
 
   background->AddChild(child);
 
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_FUCHSIA) || BUILDFLAG(IS_APPLE)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_FUCHSIA) || BUILDFLAG(IS_APPLE) || \
+    BUILDFLAG(IS_LINUX)
 #if defined(ARCH_CPU_ARM64)
-  // Windows, macOS, iOS and Fuchsia on ARM64 has some pixels difference
+  // Windows, macOS, iOS, Fuchsia and Linux on ARM64 has some pixels difference
   // crbug.com/1029728, crbug.com/1048249, crbug.com/1128443
   float percentage_pixels_error = 1.f;
   float average_error_allowed_in_bad_pixels = 2.f;
@@ -1049,10 +1050,10 @@ TEST_P(LayerTreeHostFiltersPixelTest, RotatedDropShadowFilter) {
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_CHROMEOS) || \
     defined(ARCH_CPU_ARM64) || BUILDFLAG(IS_OZONE)
-#if defined(ARCH_CPU_ARM64) && \
-    (BUILDFLAG(IS_WIN) || BUILDFLAG(IS_FUCHSIA) || BUILDFLAG(IS_APPLE))
+#if defined(ARCH_CPU_ARM64) && (BUILDFLAG(IS_WIN) || BUILDFLAG(IS_FUCHSIA) || \
+                                BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_LINUX))
 
-  // Windows, macOS, and Fuchsia on ARM64 has some pixels difference.
+  // Windows, macOS, Fuchsia and Linux on ARM64 has some pixels difference.
   // crbug.com/1029728, crbug.com/1128443
 #if !BUILDFLAG(IS_IOS)
   float percentage_pixels_error = 0.89f;
