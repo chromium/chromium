@@ -15,10 +15,10 @@
 
 #ifdef _WIN32
 #include <intrin.h>
-// kFastFailRangeCheckFailure mirrors the FAST_FAIL_RANGE_CHECK_FAILURE macro.
-// Typically FAST_FAIL_RANGE_CHECK_FAILURE would be imported from winnt.h
+// kFastFailInvalidArg mirrors the FAST_FAIL_INVALID_ARG macro.
+// Typically FAST_FAIL_INVALID_ARG would be imported from winnt.h
 // but winnt.h pulls in other dependencies and introduces build failures.
-constexpr unsigned int kFastFailRangeCheckFailure = 8u;
+constexpr unsigned int kFastFailInvalidArg = 5u;
 #endif
 
 #include "absl/base/internal/hardening.h"
@@ -32,9 +32,9 @@ ABSL_NAMESPACE_BEGIN
 
 namespace base_internal {
 
-[[noreturn]] ABSL_ATTRIBUTE_NOINLINE void FailedBoundsCheckAbort() {
+[[noreturn]] ABSL_ATTRIBUTE_NOINLINE void HardeningAbort() {
 #ifdef _WIN32
-  __fastfail(kFastFailRangeCheckFailure);
+  __fastfail(kFastFailInvalidArg);
 #else
   ABSL_INTERNAL_HARDENING_ABORT();
 #endif

@@ -2384,7 +2384,7 @@ template <template <typename> class C, class Table, class = void>
 struct VerifyResultOf : std::false_type {};
 
 template <template <typename> class C, class Table>
-struct VerifyResultOf<C, Table, absl::void_t<C<Table>>> : std::true_type {};
+struct VerifyResultOf<C, Table, std::void_t<C<Table>>> : std::true_type {};
 
 TEST(Table, HeterogeneousLookupOverloads) {
   using NonTransparentTable =

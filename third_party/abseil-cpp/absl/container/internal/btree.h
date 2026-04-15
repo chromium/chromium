@@ -330,11 +330,11 @@ template <typename T, typename = void>
 struct prefers_linear_node_search : std::false_type {};
 template <typename T>
 struct has_linear_node_search_preference<
-    T, absl::void_t<typename T::absl_btree_prefer_linear_node_search>>
+    T, std::void_t<typename T::absl_btree_prefer_linear_node_search>>
     : std::true_type {};
 template <typename T>
 struct prefers_linear_node_search<
-    T, absl::void_t<typename T::absl_btree_prefer_linear_node_search>>
+    T, std::void_t<typename T::absl_btree_prefer_linear_node_search>>
     : T::absl_btree_prefer_linear_node_search {};
 
 template <typename Compare, typename Key>

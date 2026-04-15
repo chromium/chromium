@@ -85,14 +85,14 @@ struct IsBaseOfSpecializationImpl : std::false_type {};
 // template.
 template <typename C, template <typename, typename> class T>
 struct IsBaseOfSpecializationImpl<
-    C, T, absl::void_t<typename C::value_type, typename C::allocator_type>>
+    C, T, std::void_t<typename C::value_type, typename C::allocator_type>>
     : std::is_base_of<C,
                       T<typename C::value_type, typename C::allocator_type>> {};
 template <typename C, template <typename, typename, typename> class T>
 struct IsBaseOfSpecializationImpl<
     C, T,
-    absl::void_t<typename C::key_type, typename C::key_compare,
-                 typename C::allocator_type>>
+    std::void_t<typename C::key_type, typename C::key_compare,
+                typename C::allocator_type>>
     : std::is_base_of<C, T<typename C::key_type, typename C::key_compare,
                            typename C::allocator_type>> {};
 template <typename C, template <typename, typename, typename, typename> class T>
@@ -116,9 +116,9 @@ template <typename C,
           template <typename, typename, typename, typename, typename> class T>
 struct IsBaseOfSpecializationImpl<
     C, T,
-    absl::void_t<typename C::key_type, typename C::mapped_type,
-                 typename C::hasher, typename C::key_equal,
-                 typename C::allocator_type>>
+    std::void_t<typename C::key_type, typename C::mapped_type,
+                typename C::hasher, typename C::key_equal,
+                typename C::allocator_type>>
     : std::is_base_of<C, T<typename C::key_type, typename C::mapped_type,
                            typename C::hasher, typename C::key_equal,
                            typename C::allocator_type>> {};
@@ -143,18 +143,18 @@ using IsBaseOfBitset = IsBaseOfBitsetImpl<std::decay_t<C>>;
 template <typename C>
 struct IsBaseOfSTLContainer
     : std::disjunction<IsBaseOfArray<C>, IsBaseOfBitset<C>,
-                        IsBaseOfSpecialization<C, std::deque>,
-                        IsBaseOfSpecialization<C, std::forward_list>,
-                        IsBaseOfSpecialization<C, std::list>,
-                        IsBaseOfSpecialization<C, std::map>,
-                        IsBaseOfSpecialization<C, std::multimap>,
-                        IsBaseOfSpecialization<C, std::set>,
-                        IsBaseOfSpecialization<C, std::multiset>,
-                        IsBaseOfSpecialization<C, std::unordered_map>,
-                        IsBaseOfSpecialization<C, std::unordered_multimap>,
-                        IsBaseOfSpecialization<C, std::unordered_set>,
-                        IsBaseOfSpecialization<C, std::unordered_multiset>,
-                        IsBaseOfSpecialization<C, std::vector>> {};
+                       IsBaseOfSpecialization<C, std::deque>,
+                       IsBaseOfSpecialization<C, std::forward_list>,
+                       IsBaseOfSpecialization<C, std::list>,
+                       IsBaseOfSpecialization<C, std::map>,
+                       IsBaseOfSpecialization<C, std::multimap>,
+                       IsBaseOfSpecialization<C, std::set>,
+                       IsBaseOfSpecialization<C, std::multiset>,
+                       IsBaseOfSpecialization<C, std::unordered_map>,
+                       IsBaseOfSpecialization<C, std::unordered_multimap>,
+                       IsBaseOfSpecialization<C, std::unordered_set>,
+                       IsBaseOfSpecialization<C, std::unordered_multiset>,
+                       IsBaseOfSpecialization<C, std::vector>> {};
 
 template <typename C, template <typename...> class T, typename = void>
 struct IsConvertibleToSpecializationImpl : std::false_type {};
@@ -163,14 +163,14 @@ struct IsConvertibleToSpecializationImpl : std::false_type {};
 // STL template.
 template <typename C, template <typename, typename> class T>
 struct IsConvertibleToSpecializationImpl<
-    C, T, absl::void_t<typename C::value_type, typename C::allocator_type>>
+    C, T, std::void_t<typename C::value_type, typename C::allocator_type>>
     : std::is_convertible<
           C, T<typename C::value_type, typename C::allocator_type>> {};
 template <typename C, template <typename, typename, typename> class T>
 struct IsConvertibleToSpecializationImpl<
     C, T,
-    absl::void_t<typename C::key_type, typename C::key_compare,
-                 typename C::allocator_type>>
+    std::void_t<typename C::key_type, typename C::key_compare,
+                typename C::allocator_type>>
     : std::is_convertible<C, T<typename C::key_type, typename C::key_compare,
                                typename C::allocator_type>> {};
 template <typename C, template <typename, typename, typename, typename> class T>
@@ -193,9 +193,9 @@ template <typename C,
           template <typename, typename, typename, typename, typename> class T>
 struct IsConvertibleToSpecializationImpl<
     C, T,
-    absl::void_t<typename C::key_type, typename C::mapped_type,
-                 typename C::hasher, typename C::key_equal,
-                 typename C::allocator_type>>
+    std::void_t<typename C::key_type, typename C::mapped_type,
+                typename C::hasher, typename C::key_equal,
+                typename C::allocator_type>>
     : std::is_convertible<C, T<typename C::key_type, typename C::mapped_type,
                                typename C::hasher, typename C::key_equal,
                                typename C::allocator_type>> {};
@@ -239,8 +239,8 @@ struct IsConvertibleToSTLContainer
 template <typename C>
 struct IsStrictlyBaseOfAndConvertibleToSTLContainer
     : std::conjunction<std::negation<IsSTLContainer<C>>,
-                        IsBaseOfSTLContainer<C>,
-                        IsConvertibleToSTLContainer<C>> {};
+                       IsBaseOfSTLContainer<C>,
+                       IsConvertibleToSTLContainer<C>> {};
 
 }  // namespace strings_internal
 ABSL_NAMESPACE_END

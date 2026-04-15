@@ -79,6 +79,7 @@
 #include "absl/base/internal/endian.h"
 #include "absl/base/internal/unaligned_access.h"
 #include "absl/base/optimization.h"
+#include "absl/base/options.h"
 #include "absl/base/port.h"
 #include "absl/container/fixed_array.h"
 #include "absl/hash/internal/city.h"
@@ -95,6 +96,10 @@
     !defined(__XTENSA__)
 #include <filesystem>  // NOLINT
 #endif
+
+// We are allowed to use a non-portable hardware-accelerated implementation in
+// headers if ABSL_OPTION_INLINE_HW_ACCEL_STRATEGY != 0
+#if ABSL_OPTION_INLINE_HW_ACCEL_STRATEGY != 0
 
 // 32-bit builds with SSE 4.2 do not have _mm_crc32_u64, so the
 // __x86_64__ condition is necessary.
@@ -129,6 +134,15 @@
 #define ABSL_HASH_INTERNAL_CRC32_U32 __crc32cw
 #define ABSL_HASH_INTERNAL_CRC32_U8 __crc32cb
 
+#endif  // Platform tests
+
+#endif  // ABSL_OPTION_INLINE_HW_ACCEL_STRATEGY != 0
+
+
+#if ABSL_OPTION_INLINE_HW_ACCEL_STRATEGY == 1
+#ifndef ABSL_HASH_INTERNAL_HAS_CRC32
+#error "Hardware acceleration is required by ABSL_OPTION_INLINE_HW_ACCEL_STRATEGY but not supported on this platform; see absl/base/options.h"
+#endif
 #endif
 
 namespace absl {

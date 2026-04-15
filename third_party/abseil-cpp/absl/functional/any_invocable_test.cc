@@ -90,7 +90,7 @@ struct GiveQualifiersToFunImpl<T, R(P...)> {
 template <class T, class R, class... P>
 struct GiveQualifiersToFunImpl<T&, R(P...)> {
   using type =
-      std::conditional_t<std::is_const<T>::value, R(P...) const&, R(P...)&>;
+      std::conditional_t<std::is_const<T>::value, R(P...) const&, R(P...) &>;
 };
 
 template <class T, class R, class... P>
@@ -102,21 +102,20 @@ struct GiveQualifiersToFunImpl<T&&, R(P...)> {
 template <class T, class R, class... P>
 struct GiveQualifiersToFunImpl<T, R(P...) noexcept> {
   using type = std::conditional_t<std::is_const<T>::value,
-                                   R(P...) const noexcept, R(P...) noexcept>;
+                                  R(P...) const noexcept, R(P...) noexcept>;
 };
 
 template <class T, class R, class... P>
 struct GiveQualifiersToFunImpl<T&, R(P...) noexcept> {
-  using type =
-      std::conditional_t<std::is_const<T>::value, R(P...) const & noexcept,
-                          R(P...) & noexcept>;
+  using type = std::conditional_t<std::is_const<T>::value,
+                                  R(P...) const & noexcept, R(P...) & noexcept>;
 };
 
 template <class T, class R, class... P>
 struct GiveQualifiersToFunImpl<T&&, R(P...) noexcept> {
   using type =
       std::conditional_t<std::is_const<T>::value, R(P...) const && noexcept,
-                          R(P...) && noexcept>;
+                         R(P...) && noexcept>;
 };
 
 template <class T, class Fun>
@@ -368,15 +367,15 @@ struct TestParams {
 
   using CompatibleAnyInvocableFunType =
       std::conditional_t<std::is_rvalue_reference<Qual>::value,
-                          GiveQualifiersToFun<const _&&, UnqualifiedFunType>,
-                          GiveQualifiersToFun<const _&, UnqualifiedFunType>>;
+                         GiveQualifiersToFun<const _&&, UnqualifiedFunType>,
+                         GiveQualifiersToFun<const _&, UnqualifiedFunType>>;
 
   using CompatibleAnyInvType = AnyInvocable<CompatibleAnyInvocableFunType>;
 
   using IncompatibleInvocable =
       std::conditional_t<std::is_rvalue_reference<Qual>::value,
-                          GiveQualifiersToFun<_&, UnqualifiedFunType>(_::*),
-                          GiveQualifiersToFun<_&&, UnqualifiedFunType>(_::*)>;
+                         GiveQualifiersToFun<_&, UnqualifiedFunType>(_::*),
+                         GiveQualifiersToFun<_&&, UnqualifiedFunType>(_::*)>;
 };
 
 // Given a member-pointer type, this metafunction yields the target type of the
@@ -401,7 +400,7 @@ struct IsMemberSwappableImpl : std::false_type {
 
 template <class T>
 struct IsMemberSwappableImpl<
-    T, absl::void_t<decltype(std::declval<T&>().swap(std::declval<T&>()))>>
+    T, std::void_t<decltype(std::declval<T&>().swap(std::declval<T&>()))>>
     : std::true_type {
   static constexpr bool kIsNothrow =
       noexcept(std::declval<T&>().swap(std::declval<T&>()));

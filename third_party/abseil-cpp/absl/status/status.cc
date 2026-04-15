@@ -158,75 +158,35 @@ std::ostream& operator<<(std::ostream& os, const Status& x) {
   return os;
 }
 
-Status AbortedError(absl::string_view message, absl::SourceLocation loc) {
-  return Status(absl::StatusCode::kAborted, message, loc);
+namespace status_internal {
+// We use an int in the template parameter to shorten mangled names.
+template <int error_code>
+Status MakeErrorImpl(string_view message, SourceLocation loc) {
+  return Status(static_cast<StatusCode>(error_code), message, loc);
 }
 
-Status AlreadyExistsError(absl::string_view message, absl::SourceLocation loc) {
-  return Status(absl::StatusCode::kAlreadyExists, message, loc);
-}
-
-Status CancelledError(absl::string_view message, absl::SourceLocation loc) {
-  return Status(absl::StatusCode::kCancelled, message, loc);
-}
-
-Status DataLossError(absl::string_view message, absl::SourceLocation loc) {
-  return Status(absl::StatusCode::kDataLoss, message, loc);
-}
-
-Status DeadlineExceededError(absl::string_view message,
-                             absl::SourceLocation loc) {
-  return Status(absl::StatusCode::kDeadlineExceeded, message, loc);
-}
-
-Status FailedPreconditionError(absl::string_view message,
-                               absl::SourceLocation loc) {
-  return Status(absl::StatusCode::kFailedPrecondition, message, loc);
-}
-
-Status InternalError(absl::string_view message, absl::SourceLocation loc) {
-  return Status(absl::StatusCode::kInternal, message, loc);
-}
-
-Status InvalidArgumentError(absl::string_view message,
-                            absl::SourceLocation loc) {
-  return Status(absl::StatusCode::kInvalidArgument, message, loc);
-}
-
-Status NotFoundError(absl::string_view message, absl::SourceLocation loc) {
-  return Status(absl::StatusCode::kNotFound, message, loc);
-}
-
-Status OutOfRangeError(absl::string_view message, absl::SourceLocation loc) {
-  return Status(absl::StatusCode::kOutOfRange, message, loc);
-}
-
-Status PermissionDeniedError(absl::string_view message,
-                             absl::SourceLocation loc) {
-  return Status(absl::StatusCode::kPermissionDenied, message, loc);
-}
-
-Status ResourceExhaustedError(absl::string_view message,
-                              absl::SourceLocation loc) {
-  return Status(absl::StatusCode::kResourceExhausted, message, loc);
-}
-
-Status UnauthenticatedError(absl::string_view message,
-                            absl::SourceLocation loc) {
-  return Status(absl::StatusCode::kUnauthenticated, message, loc);
-}
-
-Status UnavailableError(absl::string_view message, absl::SourceLocation loc) {
-  return Status(absl::StatusCode::kUnavailable, message, loc);
-}
-
-Status UnimplementedError(absl::string_view message, absl::SourceLocation loc) {
-  return Status(absl::StatusCode::kUnimplemented, message, loc);
-}
-
-Status UnknownError(absl::string_view message, absl::SourceLocation loc) {
-  return Status(absl::StatusCode::kUnknown, message, loc);
-}
+// Explicit instantiation for all the error codes.
+// If we add more error code, we need to add their values on this list.
+// Using ints here instead of static_cast<int>(StatusCode::kFoo) makes it easier
+// to see that the list is complete.
+template Status MakeErrorImpl<0>(string_view, SourceLocation);
+template Status MakeErrorImpl<1>(string_view, SourceLocation);
+template Status MakeErrorImpl<2>(string_view, SourceLocation);
+template Status MakeErrorImpl<3>(string_view, SourceLocation);
+template Status MakeErrorImpl<4>(string_view, SourceLocation);
+template Status MakeErrorImpl<5>(string_view, SourceLocation);
+template Status MakeErrorImpl<6>(string_view, SourceLocation);
+template Status MakeErrorImpl<7>(string_view, SourceLocation);
+template Status MakeErrorImpl<8>(string_view, SourceLocation);
+template Status MakeErrorImpl<9>(string_view, SourceLocation);
+template Status MakeErrorImpl<10>(string_view, SourceLocation);
+template Status MakeErrorImpl<11>(string_view, SourceLocation);
+template Status MakeErrorImpl<12>(string_view, SourceLocation);
+template Status MakeErrorImpl<13>(string_view, SourceLocation);
+template Status MakeErrorImpl<14>(string_view, SourceLocation);
+template Status MakeErrorImpl<15>(string_view, SourceLocation);
+template Status MakeErrorImpl<16>(string_view, SourceLocation);
+}  // namespace status_internal
 
 bool IsAborted(const Status& status) {
   return status.code() == absl::StatusCode::kAborted;

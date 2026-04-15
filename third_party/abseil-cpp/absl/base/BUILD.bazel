@@ -653,6 +653,7 @@ cc_test(
     linkopts = ABSL_DEFAULT_LINKOPTS,
     deps = [
         ":config",
+        ":core_headers",
         ":hardening",
         "@googletest//:gtest",
         "@googletest//:gtest_main",

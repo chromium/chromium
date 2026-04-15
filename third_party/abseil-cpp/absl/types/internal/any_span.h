@@ -216,7 +216,7 @@ struct HasSize : public std::false_type {};
 
 template <class Container>
 struct HasSize<Container,
-               absl::void_t<decltype(std::declval<Container&>().size())>>
+               std::void_t<decltype(std::declval<Container&>().size())>>
     : public std::true_type {};
 
 //
@@ -233,7 +233,7 @@ struct TypeOfData {
 
 template <class Container>
 struct TypeOfData<Container,
-                  absl::void_t<decltype(std::declval<Container&>().data())>> {
+                  std::void_t<decltype(std::declval<Container&>().data())>> {
   using type = decltype(std::declval<Container&>().data());
 };
 

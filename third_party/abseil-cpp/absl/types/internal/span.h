@@ -113,8 +113,8 @@ struct IsView {
 
 template <typename T>
 struct IsView<
-    T, absl::void_t<decltype(span_internal::GetData(std::declval<const T&>()))>,
-    absl::void_t<decltype(span_internal::GetData(std::declval<T&>()))>> {
+    T, std::void_t<decltype(span_internal::GetData(std::declval<const T&>()))>,
+    std::void_t<decltype(span_internal::GetData(std::declval<T&>()))>> {
  private:
   using Container = std::remove_const_t<T>;
   using ConstData =

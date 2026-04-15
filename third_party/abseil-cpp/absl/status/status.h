@@ -1062,6 +1062,111 @@ inline Status CancelledError() { return Status(absl::StatusCode::kCancelled); }
 const char* absl_nonnull StatusMessageAsCStr(
     const Status& status ABSL_ATTRIBUTE_LIFETIME_BOUND);
 
+namespace status_internal {
+// We use an int in the template parameter to shorten mangled names.
+template <int error_code>
+Status MakeErrorImpl(string_view message, SourceLocation loc);
+// Make the instantiations extern to reduce bloat on callers.
+extern template Status MakeErrorImpl<0>(string_view, SourceLocation);
+extern template Status MakeErrorImpl<1>(string_view, SourceLocation);
+extern template Status MakeErrorImpl<2>(string_view, SourceLocation);
+extern template Status MakeErrorImpl<3>(string_view, SourceLocation);
+extern template Status MakeErrorImpl<4>(string_view, SourceLocation);
+extern template Status MakeErrorImpl<5>(string_view, SourceLocation);
+extern template Status MakeErrorImpl<6>(string_view, SourceLocation);
+extern template Status MakeErrorImpl<7>(string_view, SourceLocation);
+extern template Status MakeErrorImpl<8>(string_view, SourceLocation);
+extern template Status MakeErrorImpl<9>(string_view, SourceLocation);
+extern template Status MakeErrorImpl<10>(string_view, SourceLocation);
+extern template Status MakeErrorImpl<11>(string_view, SourceLocation);
+extern template Status MakeErrorImpl<12>(string_view, SourceLocation);
+extern template Status MakeErrorImpl<13>(string_view, SourceLocation);
+extern template Status MakeErrorImpl<14>(string_view, SourceLocation);
+extern template Status MakeErrorImpl<15>(string_view, SourceLocation);
+extern template Status MakeErrorImpl<16>(string_view, SourceLocation);
+
+template <StatusCode error_code>
+Status MakeError(string_view message, SourceLocation loc) {
+  Status out = MakeErrorImpl<static_cast<int>(error_code)>(message, loc);
+  // -Wassume warning complains about potential side effects of `ok()`, so use a
+  // local to avoid that.
+  ABSL_ATTRIBUTE_UNUSED bool ok = out.ok();
+  ABSL_ASSUME(!ok);
+  return out;
+}
+}  // namespace status_internal
+
+// Inline implementations to give the compiler static knowledge about the
+// objects.
+inline Status AbortedError(absl::string_view message,
+                           absl::SourceLocation loc) {
+  return status_internal::MakeError<StatusCode::kAborted>(message, loc);
+}
+inline Status AlreadyExistsError(absl::string_view message,
+                                 absl::SourceLocation loc) {
+  return status_internal::MakeError<StatusCode::kAlreadyExists>(message, loc);
+}
+inline Status CancelledError(absl::string_view message,
+                             absl::SourceLocation loc) {
+  return status_internal::MakeError<StatusCode::kCancelled>(message, loc);
+}
+inline Status DataLossError(absl::string_view message,
+                            absl::SourceLocation loc) {
+  return status_internal::MakeError<StatusCode::kDataLoss>(message, loc);
+}
+inline Status DeadlineExceededError(absl::string_view message,
+                                    absl::SourceLocation loc) {
+  return status_internal::MakeError<StatusCode::kDeadlineExceeded>(message,
+                                                                   loc);
+}
+inline Status FailedPreconditionError(absl::string_view message,
+                                      absl::SourceLocation loc) {
+  return status_internal::MakeError<StatusCode::kFailedPrecondition>(message,
+                                                                     loc);
+}
+inline Status InternalError(absl::string_view message,
+                            absl::SourceLocation loc) {
+  return status_internal::MakeError<StatusCode::kInternal>(message, loc);
+}
+inline Status InvalidArgumentError(absl::string_view message,
+                                   absl::SourceLocation loc) {
+  return status_internal::MakeError<StatusCode::kInvalidArgument>(message, loc);
+}
+inline Status NotFoundError(absl::string_view message,
+                            absl::SourceLocation loc) {
+  return status_internal::MakeError<StatusCode::kNotFound>(message, loc);
+}
+inline Status OutOfRangeError(absl::string_view message,
+                              absl::SourceLocation loc) {
+  return status_internal::MakeError<StatusCode::kOutOfRange>(message, loc);
+}
+inline Status PermissionDeniedError(absl::string_view message,
+                                    absl::SourceLocation loc) {
+  return status_internal::MakeError<StatusCode::kPermissionDenied>(message,
+                                                                   loc);
+}
+inline Status ResourceExhaustedError(absl::string_view message,
+                                     absl::SourceLocation loc) {
+  return status_internal::MakeError<StatusCode::kResourceExhausted>(message,
+                                                                    loc);
+}
+inline Status UnauthenticatedError(absl::string_view message,
+                                   absl::SourceLocation loc) {
+  return status_internal::MakeError<StatusCode::kUnauthenticated>(message, loc);
+}
+inline Status UnavailableError(absl::string_view message,
+                               absl::SourceLocation loc) {
+  return status_internal::MakeError<StatusCode::kUnavailable>(message, loc);
+}
+inline Status UnimplementedError(absl::string_view message,
+                                 absl::SourceLocation loc) {
+  return status_internal::MakeError<StatusCode::kUnimplemented>(message, loc);
+}
+inline Status UnknownError(absl::string_view message,
+                           absl::SourceLocation loc) {
+  return status_internal::MakeError<StatusCode::kUnknown>(message, loc);
+}
+
 ABSL_NAMESPACE_END
 }  // namespace absl
 

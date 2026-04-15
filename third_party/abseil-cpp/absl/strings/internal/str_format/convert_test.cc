@@ -285,9 +285,6 @@ const NativePrintfTraits &VerifyNativeImplementation() {
 }
 
 bool IsNativeHexFloatConversion(char f) { return f == 'a' || f == 'A'; }
-bool IsNativeFloatConversion(char f) {
-  return f == 'f' || f == 'F' || f == 'e' || f == 'E' || f == 'a' || f == 'A';
-}
 
 class FormatConvertTest : public ::testing::Test { };
 
@@ -804,12 +801,6 @@ void TestWithMultipleFormatsHelper(Floating tested_float) {
                    'e', 'E'}) {
       std::string fmt_str = std::string(fmt) + f;
 
-      if (fmt == absl::string_view("%.5000") && !IsNativeFloatConversion(f)) {
-        // This particular test takes way too long with snprintf.
-        // Disable for the case we are not implementing natively.
-        continue;
-      }
-
       if (IsNativeHexFloatConversion(f) &&
           !native_traits.hex_float_has_glibc_rounding) {
         continue;
@@ -1074,6 +1065,13 @@ TEST_F(FormatConvertTest, DoubleRound) {
 
   // Rounding large negative exponent first digit
   EXPECT_EQ(format("%0.1e", -8.956e-294), "-9.0e-294");
+
+  // FormatGNegativeExpSlow: 2^(-77) has decomposed.exponent < -128.
+  EXPECT_EQ(format("%.10g", std::ldexp(1.0, -77)), "6.6174449e-24");
+
+  // FormatGPositiveExpSlow: 2^130 has total_bits > 128.
+  EXPECT_EQ(format("%.10g", std::ldexp(1.0, 130)),
+            "1.361129468e+39");
 }
 
 TEST_F(FormatConvertTest, DoubleRoundA) {
@@ -1331,12 +1329,6 @@ TEST_F(FormatConvertTest, LongDouble) {
                    'a', 'A',  //
                    'e', 'E'}) {
       std::string fmt_str = std::string(fmt) + 'L' + f;
-
-      if (fmt == absl::string_view("%.5000") && !IsNativeFloatConversion(f)) {
-        // This particular test takes way too long with snprintf.
-        // Disable for the case we are not implementing natively.
-        continue;
-      }
 
       if (IsNativeHexFloatConversion(f)) {
         if (!native_traits.hex_float_has_glibc_rounding ||

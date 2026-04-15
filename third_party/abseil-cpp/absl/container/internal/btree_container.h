@@ -474,8 +474,8 @@ class btree_map_container : public btree_set_container<Tree> {
                           typename Tree::params_type::mapped_type, M>>;
   template <class K, bool KValue, class M, bool MValue, typename... Dummy>
   using LifetimeBoundKV =
-      std::conjunction<LifetimeBoundK<K, KValue, absl::void_t<Dummy...>>,
-                        LifetimeBoundV<M, MValue>>;
+      std::conjunction<LifetimeBoundK<K, KValue, std::void_t<Dummy...>>,
+                       LifetimeBoundV<M, MValue>>;
 
  public:
   using key_type = typename Tree::key_type;

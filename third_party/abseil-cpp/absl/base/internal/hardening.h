@@ -17,8 +17,8 @@
 // File: hardening.h
 // -----------------------------------------------------------------------------
 //
-// This header file defines macros and functions for checking bounds on
-// accesses to Abseil container types.
+// This header file defines macros and functions for performing Abseil
+// hardening checks and aborts.
 
 #ifndef ABSL_BASE_INTERNAL_HARDENING_H_
 #define ABSL_BASE_INTERNAL_HARDENING_H_
@@ -41,15 +41,101 @@ ABSL_NAMESPACE_BEGIN
 
 namespace base_internal {
 
-[[noreturn]] ABSL_ATTRIBUTE_NOINLINE void FailedBoundsCheckAbort();
+[[noreturn]] ABSL_ATTRIBUTE_NOINLINE void HardeningAbort();
+
+// `HardeningAssert` performs runtime checks when Abseil Hardening is enabled,
+// even if `NDEBUG` is defined.
+//
+// When `NDEBUG` is not defined, `HardeningAssert`'s behavior is identical to
+// `ABSL_ASSERT`.
+//
+// Prefer a more specific assertion function over this more general one,
+// as assertion functions which perform the comparison themselves
+// can have the cost of the comparison attributed to them.
+inline void HardeningAssert(bool cond) {
+  ABSL_ASSERT(cond);
+#if (ABSL_OPTION_HARDENED == 1 || ABSL_OPTION_HARDENED == 2) && defined(NDEBUG)
+  if (ABSL_PREDICT_FALSE(!cond)) {
+    ABSL_INTERNAL_ATTRIBUTE_NO_MERGE HardeningAbort();
+  }
+#endif
+}
+
+// `HardeningAssertSlow` is used to perform runtime checks which are too
+// computationally expensive to enable widely by default.
+//
+// When `NDEBUG` is not defined, `HardeningAssertSlow`'s behavior is identical
+// to `ABSL_ASSERT`.
+inline void HardeningAssertSlow(bool cond) {
+  ABSL_ASSERT(cond);
+#if (ABSL_OPTION_HARDENED == 1) && defined(NDEBUG)
+  if (ABSL_PREDICT_FALSE(!cond)) {
+    ABSL_INTERNAL_ATTRIBUTE_NO_MERGE HardeningAbort();
+  }
+#endif
+}
+
+template <typename T>
+inline void HardeningAssertGT(T val1, T val2) {
+  ABSL_ASSERT(val1 > val2);
+#if (ABSL_OPTION_HARDENED == 1 || ABSL_OPTION_HARDENED == 2) && defined(NDEBUG)
+  if (!ABSL_PREDICT_TRUE(val1 > val2)) {
+    ABSL_INTERNAL_ATTRIBUTE_NO_MERGE HardeningAbort();
+  }
+#endif
+}
+
+template <typename T>
+inline void HardeningAssertGE(T val1, T val2) {
+  ABSL_ASSERT(val1 >= val2);
+#if (ABSL_OPTION_HARDENED == 1 || ABSL_OPTION_HARDENED == 2) && defined(NDEBUG)
+  if (!ABSL_PREDICT_TRUE(val1 >= val2)) {
+    ABSL_INTERNAL_ATTRIBUTE_NO_MERGE HardeningAbort();
+  }
+#endif
+}
+
+template <typename T>
+inline void HardeningAssertLT(T val1, T val2) {
+  ABSL_ASSERT(val1 < val2);
+#if (ABSL_OPTION_HARDENED == 1 || ABSL_OPTION_HARDENED == 2) && defined(NDEBUG)
+  if (!ABSL_PREDICT_TRUE(val1 < val2)) {
+    ABSL_INTERNAL_ATTRIBUTE_NO_MERGE HardeningAbort();
+  }
+#endif
+}
+
+template <typename T>
+inline void HardeningAssertLE(T val1, T val2) {
+  ABSL_ASSERT(val1 <= val2);
+#if (ABSL_OPTION_HARDENED == 1 || ABSL_OPTION_HARDENED == 2) && defined(NDEBUG)
+  if (!ABSL_PREDICT_TRUE(val1 <= val2)) {
+    ABSL_INTERNAL_ATTRIBUTE_NO_MERGE HardeningAbort();
+  }
+#endif
+}
 
 inline void HardeningAssertInBounds(size_t index, size_t size) {
+  HardeningAssertLT(index, size);
+}
+
+template <typename T>
+inline void HardeningAssertNonEmpty(const T& container) {
+  ABSL_ASSERT(!container.empty());
 #if (ABSL_OPTION_HARDENED == 1 || ABSL_OPTION_HARDENED == 2) && defined(NDEBUG)
-  if (ABSL_PREDICT_FALSE(index >= size)) {
-    ABSL_INTERNAL_ATTRIBUTE_NO_MERGE FailedBoundsCheckAbort();
+  if (ABSL_PREDICT_FALSE(container.empty())) {
+    ABSL_INTERNAL_ATTRIBUTE_NO_MERGE HardeningAbort();
   }
-#else
-  ABSL_ASSERT(index < size);
+#endif
+}
+
+template <typename T>
+inline void HardeningAssertNonNull(T ptr) {
+  ABSL_ASSERT(ptr != nullptr);
+#if (ABSL_OPTION_HARDENED == 1 || ABSL_OPTION_HARDENED == 2) && defined(NDEBUG)
+  if (ABSL_PREDICT_FALSE(ptr == nullptr)) {
+    ABSL_INTERNAL_ATTRIBUTE_NO_MERGE HardeningAbort();
+  }
 #endif
 }
 

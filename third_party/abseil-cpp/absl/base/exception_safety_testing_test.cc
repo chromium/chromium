@@ -518,7 +518,7 @@ struct NullaryTestValidator : public std::false_type {};
 template <typename TesterInstance>
 struct NullaryTestValidator<
     TesterInstance,
-    absl::void_t<decltype(std::declval<TesterInstance>().Test())>>
+    std::void_t<decltype(std::declval<TesterInstance>().Test())>>
     : public std::true_type {};
 
 template <typename TesterInstance>
@@ -534,7 +534,7 @@ struct UnaryTestValidator : public std::false_type {};
 template <typename TesterInstance>
 struct UnaryTestValidator<
     TesterInstance,
-    absl::void_t<decltype(std::declval<TesterInstance>().Test(DummyOp))>>
+    std::void_t<decltype(std::declval<TesterInstance>().Test(DummyOp))>>
     : public std::true_type {};
 
 template <typename TesterInstance>

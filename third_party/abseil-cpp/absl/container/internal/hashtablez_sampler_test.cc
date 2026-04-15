@@ -63,9 +63,10 @@ using ::testing::UnorderedElementsAre;
 
 std::vector<size_t> GetSizes(HashtablezSampler* s) {
   std::vector<size_t> res;
-  s->Iterate([&](const HashtablezInfo& info) {
+  EXPECT_EQ(s->Iterate([&](const HashtablezInfo& info) {
     res.push_back(info.size.load(std::memory_order_acquire));
-  });
+  }),
+            0);
   return res;
 }
 
@@ -359,19 +360,20 @@ TEST(HashtablezSamplerTest, Handle) {
   info->hashes_bitwise_and.store(0x12345678, std::memory_order_relaxed);
 
   bool found = false;
-  sampler.Iterate([&](const HashtablezInfo& h) {
+  EXPECT_EQ(sampler.Iterate([&](const HashtablezInfo& h) {
     if (&h == info) {
       EXPECT_EQ(h.weight, test_stride);
       EXPECT_EQ(h.hashes_bitwise_and.load(), 0x12345678);
       found = true;
     }
-  });
+  }),
+            0);
   EXPECT_TRUE(found);
 
   h.Unregister();
   h = HashtablezInfoHandle();
   found = false;
-  sampler.Iterate([&](const HashtablezInfo& h) {
+  EXPECT_EQ(sampler.Iterate([&](const HashtablezInfo& h) {
     if (&h == info) {
       // this will only happen if some other thread has resurrected the info
       // the old handle was using.
@@ -379,7 +381,8 @@ TEST(HashtablezSamplerTest, Handle) {
         found = true;
       }
     }
-  });
+  }),
+            0);
   EXPECT_FALSE(found);
 }
 #endif
@@ -465,9 +468,10 @@ TEST(HashtablezSamplerTest, MultiThreaded) {
           }
           case 2: {
             absl::Duration oldest = absl::ZeroDuration();
-            sampler.Iterate([&](const HashtablezInfo& info) {
+            EXPECT_EQ(sampler.Iterate([&](const HashtablezInfo& info) {
               oldest = std::max(oldest, absl::Now() - info.create_time);
-            });
+            }),
+                      0);
             ASSERT_GE(oldest, absl::ZeroDuration());
             break;
           }

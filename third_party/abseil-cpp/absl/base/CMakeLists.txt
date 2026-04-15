@@ -425,6 +425,7 @@ absl_cc_test(
     ${ABSL_TEST_COPTS}
   DEPS
     absl::config
+    absl::core_headers
     absl::hardening
     GTest::gtest_main
 )

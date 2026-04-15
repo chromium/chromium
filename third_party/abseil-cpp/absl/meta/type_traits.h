@@ -104,9 +104,10 @@ struct is_detected : is_detected_impl<void, Op, Args...>::type {};
 // metafunction allows you to create a general case that maps to `void` while
 // allowing specializations that map to specific types.
 //
-// This metafunction is not 100% compatible with the C++17 `std::void_t`
-// metafunction. It has slightly different behavior, such as when ordering
-// partial specializations. It is recommended to use `std::void_t` instead.
+// This metafunction is a workaround for some implementations of `std::void_t`
+// that evaluate to `void` prematurely, causing partial specializations to
+// appear duplicated (and thus invalid) to the compiler prior to substitution
+// taking place. Whenever possible, use `std::void_t` instead.
 template <typename... Ts>
 using void_t = typename type_traits_internal::VoidTImpl<Ts...>::type;
 

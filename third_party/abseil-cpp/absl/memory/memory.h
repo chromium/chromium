@@ -123,7 +123,7 @@ struct MakeUniqueResult<T[N]> {
 // `absl::make_unique_for_overwrite` overload for non-array types.
 template <typename T>
 typename memory_internal::MakeUniqueResult<T>::scalar
-    make_unique_for_overwrite() {
+make_unique_for_overwrite() {
   return std::unique_ptr<T>(new T);
 }
 
@@ -132,8 +132,8 @@ typename memory_internal::MakeUniqueResult<T>::scalar
 // take element constructor arguments. The `std::unique_ptr` will manage
 // destructing these array elements.
 template <typename T>
-typename memory_internal::MakeUniqueResult<T>::array
-    make_unique_for_overwrite(size_t n) {
+typename memory_internal::MakeUniqueResult<T>::array make_unique_for_overwrite(
+    size_t n) {
   return std::unique_ptr<T>(new typename std::remove_extent_t<T>[n]);
 }
 
@@ -141,7 +141,7 @@ typename memory_internal::MakeUniqueResult<T>::array
 // This construction will be rejected.
 template <typename T, typename... Args>
 typename memory_internal::MakeUniqueResult<T>::invalid
-    make_unique_for_overwrite(Args&&... /* args */) = delete;
+make_unique_for_overwrite(Args&&... /* args */) = delete;
 
 // -----------------------------------------------------------------------------
 // Function Template: RawPtr()
@@ -235,7 +235,7 @@ struct ExtractOr {
 };
 
 template <template <typename> class Extract, typename Obj, typename Default>
-struct ExtractOr<Extract, Obj, Default, void_t<Extract<Obj>>> {
+struct ExtractOr<Extract, Obj, Default, std::void_t<Extract<Obj>>> {
   using type = Extract<Obj>;
 };
 
