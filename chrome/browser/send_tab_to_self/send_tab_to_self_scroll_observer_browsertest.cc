@@ -94,10 +94,9 @@ class SendTabToSelfScrollObserverBrowserTest : public InProcessBrowserTest {
 
   void SetUpOnMainThread() override {
     InProcessBrowserTest::SetUpOnMainThread();
-    model_fake_ = &(static_cast<StubSendTabToSelfSyncService*>(
-                        SendTabToSelfSyncServiceFactory::GetForProfile(
-                            browser()->profile()))
-                        ->model_fake());
+    model_fake_ = SendTabToSelfSyncServiceFactory::GetForProfile(
+                      browser()->profile())
+                      ->GetSendTabToSelfModel();
     ASSERT_TRUE(embedded_test_server()->Start());
   }
 
@@ -107,7 +106,7 @@ class SendTabToSelfScrollObserverBrowserTest : public InProcessBrowserTest {
   }
 
  protected:
-  raw_ptr<FakeSendTabToSelfModel> model_fake_;
+  raw_ptr<SendTabToSelfModel> model_fake_;
   base::test::ScopedFeatureList feature_list_;
 };
 

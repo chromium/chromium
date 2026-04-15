@@ -4,6 +4,7 @@
 
 #include "chrome/browser/send_tab_to_self/send_tab_to_self_page_handler.h"
 
+#include <iterator>
 #include <memory>
 #include <string>
 #include <utility>
@@ -50,8 +51,7 @@ using testing::Return;
 MATCHER(IsValidNavigationHistory, "") {
   return !arg.navigations.empty() && arg.current_navigation_index.has_value() &&
          *arg.current_navigation_index >= 0 &&
-         *arg.current_navigation_index <
-             static_cast<int>(arg.navigations.size());
+         *arg.current_navigation_index < std::ssize(arg.navigations);
 }
 
 class MockTextFragmentReceiver : public blink::mojom::TextFragmentReceiver {
