@@ -5,6 +5,7 @@
 #include <string_view>
 
 #include "base/check_deref.h"
+#include "base/containers/extend.h"
 #include "base/path_service.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
@@ -25,6 +26,7 @@
 #include "components/contextual_search/contextual_search_service.h"
 #include "components/contextual_search/contextual_search_session_handle.h"
 #include "components/contextual_search/mock_contextual_search_service.h"
+#include "components/contextual_tasks/public/features.h"
 #include "components/omnibox/browser/aim_eligibility_service_features.h"
 #include "components/omnibox/browser/mock_aim_eligibility_service.h"
 #include "components/prefs/pref_service.h"
@@ -329,6 +331,10 @@ class NtpRealboxUiTestBase
   }
 
  protected:
+  static std::vector<base::test::FeatureRef> GetDisabledFeatures() {
+    return {contextual_tasks::kContextualTasks};
+  }
+
   static std::vector<base::test::FeatureRefAndParams> GetEnabledFeatures(
       bool compose_button_enabled = true) {
     std::vector<base::test::FeatureRefAndParams> enabled_features;
@@ -389,6 +395,7 @@ class NtpRealboxUiScreenshotTest
       disabled_features.push_back(ntp_composebox::kNtpComposebox);
     }
 
+    base::Extend(disabled_features, GetDisabledFeatures());
     feature_list_.InitWithFeaturesAndParameters(enabled_features,
                                                 disabled_features);
 
@@ -485,7 +492,8 @@ IN_PROC_BROWSER_TEST_P(NtpRealboxUiScreenshotTest, DISABLED_Screenshots) {
 class NtpRealboxInteractiveTest : public NtpRealboxUiTestBase {
  public:
   NtpRealboxInteractiveTest() {
-    feature_list_.InitWithFeaturesAndParameters(GetEnabledFeatures(), {});
+    feature_list_.InitWithFeaturesAndParameters(GetEnabledFeatures(),
+                                                GetDisabledFeatures());
   }
 
  private:
@@ -654,7 +662,8 @@ class NtpRealboxUploadInteractiveTest
           NtpRealboxUploadInteractiveTestParams> {
  public:
   NtpRealboxUploadInteractiveTest() {
-    feature_list_.InitWithFeaturesAndParameters(GetEnabledFeatures(), {});
+    feature_list_.InitWithFeaturesAndParameters(GetEnabledFeatures(),
+                                                GetDisabledFeatures());
   }
 
  private:
@@ -799,7 +808,8 @@ class NtpRealboxToolInteractiveTest
       public testing::WithParamInterface<NtpRealboxToolInteractiveTestParams> {
  public:
   NtpRealboxToolInteractiveTest() {
-    feature_list_.InitWithFeaturesAndParameters(GetEnabledFeatures(), {});
+    feature_list_.InitWithFeaturesAndParameters(GetEnabledFeatures(),
+                                                GetDisabledFeatures());
   }
 
  private:
@@ -860,7 +870,8 @@ class NtpComposeboxSearchFulfillmentTest
       public testing::WithParamInterface<ComposeboxSearchParam> {
  public:
   NtpComposeboxSearchFulfillmentTest() {
-    feature_list_.InitWithFeaturesAndParameters(GetEnabledFeatures(), {});
+    feature_list_.InitWithFeaturesAndParameters(GetEnabledFeatures(),
+                                                GetDisabledFeatures());
   }
 
  private:
@@ -924,7 +935,8 @@ class NtpComposeboxDismissTest : public NtpRealboxUiTestBase,
                                  public testing::WithParamInterface<bool> {
  public:
   NtpComposeboxDismissTest() {
-    feature_list_.InitWithFeaturesAndParameters(GetEnabledFeatures(), {});
+    feature_list_.InitWithFeaturesAndParameters(GetEnabledFeatures(),
+                                                GetDisabledFeatures());
   }
 
   bool CloseViaEscButton() const { return GetParam(); }
@@ -1014,7 +1026,8 @@ class NtpRealboxCyclingPlaceholderInteractiveTest
         enabled_features.push_back(feature_ref_and_params);
       }
     }
-    feature_list_.InitWithFeaturesAndParameters(enabled_features, {});
+    feature_list_.InitWithFeaturesAndParameters(enabled_features,
+                                                GetDisabledFeatures());
   }
 
  private:
@@ -1074,3 +1087,20 @@ IN_PROC_BROWSER_TEST_F(NtpRealboxInteractiveTest,
       WaitForElementVisibilityChange(kSearchboxDropdown,
                                      /*expected_visible=*/false));
 }
+
+class NtpRealboxDefaultExperienceInteractiveTest : public NtpRealboxUiTestBase {
+ public:
+  NtpRealboxDefaultExperienceInteractiveTest() {
+    std::vector<base::test::FeatureRef> disabled_features =
+        GetDisabledFeatures();
+    for (const auto& feature_ref_and_params : GetEnabledFeatures()) {
+      disabled_features.push_back(*feature_ref_and_params.feature);
+    }
+    disabled_features.push_back(ntp_features::kNtpNextFeatures);
+
+    feature_list_.InitWithFeaturesAndParameters({}, disabled_features);
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
