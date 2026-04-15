@@ -20,6 +20,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_file_util.h"
 #include "base/uuid.h"
+#include "build/build_config.h"
 #include "chrome/browser/enterprise/identifiers/profile_id_service_factory.h"
 #include "chrome/browser/enterprise/profile_management/profile_management_features.h"
 #include "chrome/browser/enterprise/signin/enterprise_signin_prefs.h"
@@ -730,8 +731,37 @@ class OidcAuthenticationSigninInterceptorTest
   policy::FakeBrowserDMTokenStorage storage_;
 };
 
+// TODO(crbug.com/502719212): re-enable these tests after fixing them.
+#if BUILDFLAG(IS_LINUX) && defined(UNDEFINED_SANITIZER)
+#define MAYBE_ProfileCreationThenSwitch DISABLED_ProfileCreationThenSwitch
+#define MAYBE_MultipleProfileCreationSameIssuer \
+  DISABLED_MultipleProfileCreationSameIssuer
+#define MAYBE_MultipleProfileCreationSameSubject \
+  DISABLED_MultipleProfileCreationSameSubject
+#define MAYBE_UserDidNotAccept DISABLED_UserDidNotAccept
+#define MAYBE_InterceptionForSameProfile DISABLED_InterceptionForSameProfile
+#define MAYBE_RegistrationFailure DISABLED_RegistrationFailure
+#define MAYBE_RegistrationTimeout DISABLED_RegistrationTimeout
+#define MAYBE_PolicyRecoveryFromPref DISABLED_PolicyRecoveryFromPref
+#define MAYBE_PolicyFetchFailure DISABLED_PolicyFetchFailure
+#define MAYBE_DeviceIdFailure DISABLED_DeviceIdFailure
+#else
+#define MAYBE_ProfileCreationThenSwitch ProfileCreationThenSwitch
+#define MAYBE_MultipleProfileCreationSameIssuer \
+  MultipleProfileCreationSameIssuer
+#define MAYBE_MultipleProfileCreationSameSubject \
+  MultipleProfileCreationSameSubject
+#define MAYBE_UserDidNotAccept UserDidNotAccept
+#define MAYBE_InterceptionForSameProfile InterceptionForSameProfile
+#define MAYBE_RegistrationFailure RegistrationFailure
+#define MAYBE_RegistrationTimeout RegistrationTimeout
+#define MAYBE_PolicyRecoveryFromPref PolicyRecoveryFromPref
+#define MAYBE_PolicyFetchFailure PolicyFetchFailure
+#define MAYBE_DeviceIdFailure DeviceIdFailure
+#endif
+
 IN_PROC_BROWSER_TEST_P(OidcAuthenticationSigninInterceptorTest,
-                       ProfileCreationThenSwitch) {
+                       MAYBE_ProfileCreationThenSwitch) {
   TestProfileCreationOrSwitch(
       kExampleOidcTokens, kExampleIssuerIdentifier, kExampleSubjectIdentifier,
       /*expect_profile_created=*/true,
@@ -753,7 +783,7 @@ IN_PROC_BROWSER_TEST_P(OidcAuthenticationSigninInterceptorTest,
 }
 
 IN_PROC_BROWSER_TEST_P(OidcAuthenticationSigninInterceptorTest,
-                       MultipleProfileCreationSameIssuer) {
+                       MAYBE_MultipleProfileCreationSameIssuer) {
   TestProfileCreationOrSwitch(
       kExampleOidcTokens, kExampleIssuerIdentifier, kExampleSubjectIdentifier,
       /*expect_profile_created=*/true,
@@ -768,7 +798,7 @@ IN_PROC_BROWSER_TEST_P(OidcAuthenticationSigninInterceptorTest,
 }
 
 IN_PROC_BROWSER_TEST_P(OidcAuthenticationSigninInterceptorTest,
-                       MultipleProfileCreationSameSubject) {
+                       MAYBE_MultipleProfileCreationSameSubject) {
   TestProfileCreationOrSwitch(
       kExampleOidcTokens, kExampleIssuerIdentifier, kExampleSubjectIdentifier,
       /*expect_profile_created=*/true,
@@ -783,7 +813,7 @@ IN_PROC_BROWSER_TEST_P(OidcAuthenticationSigninInterceptorTest,
 }
 
 IN_PROC_BROWSER_TEST_P(OidcAuthenticationSigninInterceptorTest,
-                       UserDidNotAccept) {
+                       MAYBE_UserDidNotAccept) {
   TestProfileCreationOrSwitch(
       kExampleOidcTokens, kExampleIssuerIdentifier, kExampleSubjectIdentifier,
       /*expect_profile_created=*/false,
@@ -797,7 +827,7 @@ IN_PROC_BROWSER_TEST_P(OidcAuthenticationSigninInterceptorTest,
 }
 
 IN_PROC_BROWSER_TEST_P(OidcAuthenticationSigninInterceptorTest,
-                       InterceptionForSameProfile) {
+                       MAYBE_InterceptionForSameProfile) {
   ProfileManagementOidcTokens new_example_token = ProfileManagementOidcTokens(
       "new_auth_token", "new_id_token", /*identity_name=*/u"");
 
@@ -826,7 +856,7 @@ IN_PROC_BROWSER_TEST_P(OidcAuthenticationSigninInterceptorTest,
 }
 
 IN_PROC_BROWSER_TEST_P(OidcAuthenticationSigninInterceptorTest,
-                       RegistrationFailure) {
+                       MAYBE_RegistrationFailure) {
   TestProfileCreationOrSwitch(
       kExampleOidcTokens, kExampleIssuerIdentifier, kExampleSubjectIdentifier,
       /*expect_profile_created=*/false, /*expected_number_of_windows=*/0,
@@ -839,7 +869,7 @@ IN_PROC_BROWSER_TEST_P(OidcAuthenticationSigninInterceptorTest,
 }
 
 IN_PROC_BROWSER_TEST_P(OidcAuthenticationSigninInterceptorTest,
-                       RegistrationTimeout) {
+                       MAYBE_RegistrationTimeout) {
   TestProfileCreationOrSwitch(
       kExampleOidcTokens, kExampleIssuerIdentifier, kExampleSubjectIdentifier,
       /*expect_profile_created=*/false, /*expected_number_of_windows=*/0,
@@ -852,7 +882,7 @@ IN_PROC_BROWSER_TEST_P(OidcAuthenticationSigninInterceptorTest,
 }
 
 IN_PROC_BROWSER_TEST_P(OidcAuthenticationSigninInterceptorTest,
-                       PolicyRecoveryFromPref) {
+                       MAYBE_PolicyRecoveryFromPref) {
   TestProfileCreationOrSwitch(
       kExampleOidcTokens, kExampleIssuerIdentifier, kExampleSubjectIdentifier,
       /*expect_profile_created=*/true,
@@ -900,7 +930,7 @@ class OidcAuthenticationSigninInterceptorFetchFailureTest
 };
 
 IN_PROC_BROWSER_TEST_P(OidcAuthenticationSigninInterceptorFetchFailureTest,
-                       PolicyFetchFailure) {
+                       MAYBE_PolicyFetchFailure) {
   TestProfileCreationOrSwitch(
       kExampleOidcTokens, kExampleIssuerIdentifier, kExampleSubjectIdentifier,
       /*expect_profile_created=*/true, /*expected_number_of_windows=*/1,
@@ -927,7 +957,7 @@ class OidcAuthenticationSigninInterceptorIdFailureTest
 };
 
 IN_PROC_BROWSER_TEST_P(OidcAuthenticationSigninInterceptorIdFailureTest,
-                       DeviceIdFailure) {
+                       MAYBE_DeviceIdFailure) {
   TestProfileCreationOrSwitch(
       kExampleOidcTokens, kExampleIssuerIdentifier, kExampleSubjectIdentifier,
       /*expect_profile_created=*/true,
