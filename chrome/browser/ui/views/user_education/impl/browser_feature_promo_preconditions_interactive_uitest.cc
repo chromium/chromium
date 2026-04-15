@@ -522,7 +522,7 @@ IN_PROC_BROWSER_TEST_F(ActorNotActuatingActiveTabPreconditionUiTest,
             actor::TestTaskSourceInfo(), actor::NoEnterprisePolicyChecker());
         auto* task = service->GetTask(task_id);
         task->AddTab(browser()->GetActiveTabInterface()->GetHandle(),
-                     base::DoNothing());
+                     /*stop_task_on_detach=*/true, base::DoNothing());
       }),
       // Precondition should block
       CheckResult(
@@ -551,7 +551,7 @@ IN_PROC_BROWSER_TEST_F(ActorNotActuatingActiveTabPreconditionUiTest,
         auto* task = service->GetTask(task_id);
         task->AddTab(
             browser()->GetTabStripModel()->GetTabAtIndex(0)->GetHandle(),
-            base::DoNothing());
+            /*stop_task_on_detach=*/true, base::DoNothing());
       }),
       CheckResult(
           [this]() {

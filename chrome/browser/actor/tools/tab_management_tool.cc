@@ -161,7 +161,8 @@ void TabManagementTool::UpdateTaskAfterInvoke(ActorTask& task,
                                               mojom::ActionResultPtr result,
                                               ToolCallback callback) const {
   if (action_ == kCreate && target_tab_) {
-    task.AddTab(*target_tab_, std::move(callback));
+    task.AddTab(*target_tab_, /*stop_task_on_detach=*/true,
+                std::move(callback));
   } else {
     std::move(callback).Run(std::move(result));
   }

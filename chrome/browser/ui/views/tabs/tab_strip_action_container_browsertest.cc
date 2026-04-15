@@ -231,7 +231,7 @@ class TabStripActionContainerBrowserTest : public InProcessBrowserTest {
     // Add tab to task.
     base::test::TestFuture<actor::mojom::ActionResultPtr> add_tab_future;
     task->AddTab(browser()->GetActiveTabInterface()->GetHandle(),
-                 add_tab_future.GetCallback());
+                 /*stop_task_on_detach=*/true, add_tab_future.GetCallback());
     return task_id;
   }
 

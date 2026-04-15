@@ -82,6 +82,7 @@ class ActorTaskListBubbleTest : public ChromeViewsTestBase {
     base::RunLoop loop;
     actor_service_->GetTask(id)->AddTab(
         mock_tab().GetHandle(),
+        /*stop_task_on_detach=*/true,
         base::BindLambdaForTesting([&](actor::mojom::ActionResultPtr result) {
           EXPECT_TRUE(actor::IsOk(*result));
           loop.Quit();
@@ -195,6 +196,7 @@ TEST_F(ActorTaskListBubbleTest, CreateAndShowBubbleWithTasksInOrder) {
   base::RunLoop loop;
   actor_service_->GetTask(id_4)->AddTab(
       mock_tab().GetHandle(),
+      /*stop_task_on_detach=*/true,
       base::BindLambdaForTesting([&](actor::mojom::ActionResultPtr result) {
         EXPECT_TRUE(actor::IsOk(*result));
         loop.Quit();

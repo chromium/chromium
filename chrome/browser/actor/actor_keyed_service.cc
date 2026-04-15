@@ -64,6 +64,7 @@ void OnCreateActorTabComplete(
   if (base::FeatureList::IsEnabled(actor::kActorBindCreatedTabToTask) && tab) {
     task.AddTab(
         tab->GetHandle(),
+        /*stop_task_on_detach=*/true,
         base::BindOnce(
             [](actor::ActorKeyedService::CreateActorTabCallback callback,
                tabs::TabHandle handle, actor::TaskId task_id,

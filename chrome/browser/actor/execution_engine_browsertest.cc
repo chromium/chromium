@@ -419,6 +419,7 @@ IN_PROC_BROWSER_TEST_F(ExecutionEngineBrowserTest, PrerenderBlockedSite) {
   base::RunLoop loop;
   actor_task().AddTab(
       active_tab()->GetHandle(),
+      /*stop_task_on_detach=*/true,
       base::BindLambdaForTesting([&](mojom::ActionResultPtr result) {
         EXPECT_TRUE(IsOk(*result));
         loop.Quit();
@@ -533,6 +534,7 @@ IN_PROC_BROWSER_TEST_F(ExecutionEnginePixelBrowserTest,
   base::RunLoop loop;
   actor_task().AddTab(
       active_tab()->GetHandle(),
+      /*stop_task_on_detach=*/true,
       base::BindLambdaForTesting([&](mojom::ActionResultPtr result) {
         EXPECT_TRUE(IsOk(*result));
         loop.Quit();
@@ -661,6 +663,7 @@ class ExecutionEngineDropdownCaptureOopifBrowserTest
     base::RunLoop loop;
     actor_task().AddTab(
         active_tab()->GetHandle(),
+        /*stop_task_on_detach=*/true,
         base::BindLambdaForTesting([&](mojom::ActionResultPtr result) {
           EXPECT_TRUE(IsOk(*result));
           loop.Quit();
@@ -913,7 +916,8 @@ IN_PROC_BROWSER_TEST_P(ExecutionEngineSkipBeforeUnloadBrowserTest,
                        SkipBeforeUnloadDialogAndNavigate) {
   if (IsActorActive()) {
     base::test::TestFuture<mojom::ActionResultPtr> future;
-    actor_task().AddTab(active_tab()->GetHandle(), future.GetCallback());
+    actor_task().AddTab(active_tab()->GetHandle(), /*stop_task_on_detach=*/true,
+                        future.GetCallback());
     mojom::ActionResultPtr result = future.Take();
     ASSERT_TRUE(IsOk(*result));
   } else {

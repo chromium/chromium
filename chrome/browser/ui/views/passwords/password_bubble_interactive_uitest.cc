@@ -160,6 +160,7 @@ class PasswordBubbleInteractiveUiTest : public ManagePasswordsTest,
     base::RunLoop loop;
     task->AddTab(
         browser()->tab_strip_model()->GetActiveTab()->GetHandle(),
+        /*stop_task_on_detach=*/true,
         base::BindLambdaForTesting(
             [&](actor::mojom::ActionResultPtr result) { loop.Quit(); }));
     loop.Run();

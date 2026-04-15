@@ -893,7 +893,8 @@ TEST_F(ExecutionEngineTest,
        MAYBE_VisibleNotVisibleActuationCompletedHistogram) {
   content::NavigationSimulator::NavigateAndCommitFromBrowser(
       web_contents(), GURL("http://localhost/"));
-  task_->AddTab(GetTab()->GetHandle(), base::DoNothing());
+  task_->AddTab(GetTab()->GetHandle(), /*stop_task_on_detach=*/true,
+                base::DoNothing());
   web_contents()->WasShown();
 
   // Simulate visible actuation.
@@ -928,7 +929,8 @@ TEST_P(ExecutionEngineStopReasonParamTest,
        MAYBE_VisibleNotVisibleActuationStoppedHistogram) {
   content::NavigationSimulator::NavigateAndCommitFromBrowser(
       web_contents(), GURL("http://localhost/"));
-  task_->AddTab(GetTab()->GetHandle(), base::DoNothing());
+  task_->AddTab(GetTab()->GetHandle(), /*stop_task_on_detach=*/true,
+                base::DoNothing());
   web_contents()->WasShown();
 
   // Simulate visible actuation.
@@ -965,7 +967,8 @@ TEST_F(ExecutionEngineTest,
        MAYBE_VisibleNotVisibleActuationWithPauseHistogram) {
   content::NavigationSimulator::NavigateAndCommitFromBrowser(
       web_contents(), GURL("http://localhost/"));
-  task_->AddTab(GetTab()->GetHandle(), base::DoNothing());
+  task_->AddTab(GetTab()->GetHandle(), /*stop_task_on_detach=*/true,
+                base::DoNothing());
   web_contents()->WasShown();
 
   // Simulate visible actuation.
@@ -1005,7 +1008,8 @@ TEST_F(ExecutionEngineTest,
        MAYBE_VisibleNotVisibleActuationWithWaitingHistogram) {
   content::NavigationSimulator::NavigateAndCommitFromBrowser(
       web_contents(), GURL("http://localhost/"));
-  task_->AddTab(GetTab()->GetHandle(), base::DoNothing());
+  task_->AddTab(GetTab()->GetHandle(), /*stop_task_on_detach=*/true,
+                base::DoNothing());
   web_contents()->WasShown();
   task_->SetState(ActorTask::State::kReflecting);
 

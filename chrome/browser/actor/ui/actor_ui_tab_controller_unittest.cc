@@ -151,6 +151,7 @@ class ActorUiTabControllerTest : public ChromeRenderViewHostTestHarness {
     base::RunLoop loop;
     actor_keyed_service()->GetTask(task_id_)->AddTab(
         mock_tab_.GetHandle(),
+        /*stop_task_on_detach=*/true,
         base::BindLambdaForTesting([&](::actor::mojom::ActionResultPtr result) {
           EXPECT_TRUE(IsOk(*result));
           loop.Quit();

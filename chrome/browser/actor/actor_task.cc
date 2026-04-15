@@ -10,6 +10,7 @@
 
 #include "base/barrier_callback.h"
 #include "base/cancelable_callback.h"
+#include "base/containers/map_util.h"
 #include "base/feature_list.h"
 #include "base/no_destructor.h"
 #include "base/state_transitions.h"
@@ -98,8 +99,10 @@ void SetFocusState(content::WebContents* contents,
 
 }  // namespace
 
-ActorTask::ActorControlledTabState::ActorControlledTabState(ActorTask* task)
-    : task(task) {}
+ActorTask::ActorControlledTabState::ActorControlledTabState(
+    ActorTask* task,
+    bool stop_task_on_detach)
+    : task(task), stop_task_on_detach(stop_task_on_detach) {}
 ActorTask::ActorControlledTabState::~ActorControlledTabState() {
   // Stop observing the Webcontents immediately to prevent reentrant calls to
   // OnVisibilityChanged() when other members (e.g. `actuation_runner`) are
@@ -348,7 +351,7 @@ void ActorTask::Act(std::vector<std::unique_ptr<ToolRequest>>&& actions,
     auto add_tabs_barrier = base::BarrierCallback<mojom::ActionResultPtr>(
         tabs_to_add.size(), did_add_tabs_callback_.callback());
     for (const tabs::TabHandle& tab : tabs_to_add) {
-      AddTab(tab, add_tabs_barrier);
+      AddTab(tab, /*stop_task_on_detach=*/true, add_tabs_barrier);
     }
   } else {
     SetState(State::kActing);
@@ -546,7 +549,9 @@ base::Time ActorTask::GetEndTime() const {
   return end_time_;
 }
 
-void ActorTask::AddTab(tabs::TabHandle tab_handle, AddTabCallback callback) {
+void ActorTask::AddTab(tabs::TabHandle tab_handle,
+                       bool stop_task_on_detach,
+                       AddTabCallback callback) {
   if (!IsUnderActorControl()) {
     journal_->Log(
         GURL(), id(), "ActorTask::AddTab",
@@ -571,7 +576,8 @@ void ActorTask::AddTab(tabs::TabHandle tab_handle, AddTabCallback callback) {
       JournalDetailsBuilder().Add("tab_id", tab_handle.raw_value()).Build());
 
   auto emplace_result = controlled_tabs_.emplace(
-      tab_handle, std::make_unique<ActorControlledTabState>(this));
+      tab_handle,
+      std::make_unique<ActorControlledTabState>(this, stop_task_on_detach));
   if (tabs::TabInterface* tab = tab_handle.Get()) {
     emplace_result.first->second->will_detach_subscription =
         tab->RegisterWillDetach(base::BindRepeating(
@@ -655,10 +661,10 @@ void ActorTask::ObserveTabOnce(tabs::TabHandle tab_handle) {
       GURL(), id(), "ObserveTabOnce",
       JournalDetailsBuilder().Add("tab_id", tab_handle.raw_value()).Build());
 
-  auto itr =
-      to_observe_tabs_
-          .emplace(tab_handle, std::make_unique<ActorControlledTabState>(this))
-          .first;
+  auto itr = to_observe_tabs_
+                 .emplace(tab_handle, std::make_unique<ActorControlledTabState>(
+                                          this, /*stop_task_on_detach=*/true))
+                 .first;
   ActorControlledTabState* state = itr->second.get();
 
   state->will_detach_subscription = tab->RegisterWillDetach(base::BindRepeating(
@@ -678,7 +684,9 @@ void ActorTask::OnTabWillDetach(tabs::TabInterface* tab,
     // else.
     to_observe_tabs_.erase(tab->GetHandle());
   }
-  if (!HasTab(tab->GetHandle())) {
+  const auto* controlled_tab_state =
+      base::FindPtrOrNull(controlled_tabs_, tab->GetHandle());
+  if (!controlled_tab_state || !controlled_tab_state->stop_task_on_detach) {
     return;
   }
 

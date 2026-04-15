@@ -783,6 +783,7 @@ TEST_F(ActorLoginDelegateImplTest,
   actor::ActorTask* task = actor_service->GetTask(task_id);
   base::RunLoop loop;
   task->AddTab(tabs::TabInterface::GetFromContents(test_contents)->GetHandle(),
+               /*stop_task_on_detach=*/true,
                base::BindLambdaForTesting(
                    [&](actor::mojom::ActionResultPtr result) { loop.Quit(); }));
   loop.Run();
@@ -1361,6 +1362,7 @@ TEST_F(ActorLoginDelegateImplTest, RemovedOnUserTakeover) {
   content::WebContents* test_contents = tab_strip_model_->GetWebContentsAt(0);
   base::RunLoop loop;
   task->AddTab(tabs::TabInterface::GetFromContents(test_contents)->GetHandle(),
+               /*stop_task_on_detach=*/true,
                base::BindLambdaForTesting(
                    [&](actor::mojom::ActionResultPtr result) { loop.Quit(); }));
   loop.Run();
@@ -1467,6 +1469,7 @@ TEST_F(ActorLoginDelegateImplTest,
   content::WebContents* test_contents = tab_strip_model_->GetWebContentsAt(0);
   base::RunLoop loop;
   task->AddTab(tabs::TabInterface::GetFromContents(test_contents)->GetHandle(),
+               /*stop_task_on_detach=*/true,
                base::BindLambdaForTesting(
                    [&](actor::mojom::ActionResultPtr result) { loop.Quit(); }));
   loop.Run();
@@ -1578,6 +1581,7 @@ TEST_F(ActorLoginDelegateImplTest, FailedFederatedLoginDoesntClearPermissions) {
   content::WebContents* test_contents = tab_strip_model_->GetWebContentsAt(0);
   base::RunLoop loop;
   task->AddTab(tabs::TabInterface::GetFromContents(test_contents)->GetHandle(),
+               /*stop_task_on_detach=*/true,
                base::BindLambdaForTesting(
                    [&](actor::mojom::ActionResultPtr result) { loop.Quit(); }));
   loop.Run();
@@ -1689,6 +1693,7 @@ TEST_F(ActorLoginDelegateImplTest,
   content::WebContents* test_contents = tab_strip_model_->GetWebContentsAt(0);
   base::RunLoop loop;
   task->AddTab(tabs::TabInterface::GetFromContents(test_contents)->GetHandle(),
+               /*stop_task_on_detach=*/true,
                base::BindLambdaForTesting(
                    [&](actor::mojom::ActionResultPtr result) { loop.Quit(); }));
   loop.Run();

@@ -357,8 +357,8 @@ class ActorUiHandoffButtonSplitViewTest
     task_id = actor_keyed_service()->CreateTask(actor::TestTaskSourceInfo(),
                                                 NoEnterprisePolicyChecker());
     TestFuture<actor::mojom::ActionResultPtr> future;
-    actor_keyed_service()->GetTask(task_id)->AddTab(tab->GetHandle(),
-                                                    future.GetCallback());
+    actor_keyed_service()->GetTask(task_id)->AddTab(
+        tab->GetHandle(), /*stop_task_on_detach=*/true, future.GetCallback());
     ExpectOkResult(future);
 
     actor::PerformActionsFuture result_future;

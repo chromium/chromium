@@ -470,7 +470,7 @@ void GlicActorTaskManager::PauseActorTask(
 
   if (tab_handle != tabs::TabHandle::Null()) {
     // Pausing the task on a tab means we're actuating on it.
-    task->AddTab(tab_handle, base::DoNothing());
+    task->AddTab(tab_handle, /*stop_task_on_detach=*/true, base::DoNothing());
   }
 
   const bool from_actor =

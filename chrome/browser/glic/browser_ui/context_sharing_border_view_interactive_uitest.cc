@@ -1001,7 +1001,8 @@ IN_PROC_BROWSER_TEST_F(ContextSharingBorderViewUiTest,
   const actor::TaskId task_id = actor_keyed_service->CreateTask(
       MockGlicTaskSourceInfo(), actor::NoEnterprisePolicyChecker());
   actor_keyed_service->GetTask(task_id)->AddTab(
-      browser()->GetActiveTabInterface()->GetHandle(), base::DoNothing());
+      browser()->GetActiveTabInterface()->GetHandle(),
+      /*stop_task_on_detach=*/true, base::DoNothing());
 
   // Perform an action to trigger the glow.
   actor::PerformActionsFuture result_future;

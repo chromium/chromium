@@ -165,7 +165,8 @@ void WindowManagementTool::UpdateTaskAfterInvoke(ActorTask& task,
   // acting.
   if (action_ == Action::kCreate && task.GetTabs().empty()) {
     CHECK(created_tab_handle_.has_value());
-    task.AddTab(*created_tab_handle_, std::move(callback));
+    task.AddTab(*created_tab_handle_, /*stop_task_on_detach=*/true,
+                std::move(callback));
   } else {
     std::move(callback).Run(std::move(result));
   }

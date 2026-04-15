@@ -748,7 +748,8 @@ IN_PROC_BROWSER_TEST_F(GlicActorPolicyCheckerBrowserTestManagedBrowser,
   ASSERT_TRUE(task);
 
   base::test::TestFuture<actor::mojom::ActionResultPtr> future;
-  task->AddTab(active_tab().GetHandle(), future.GetCallback());
+  task->AddTab(active_tab().GetHandle(), /*stop_task_on_detach=*/true,
+               future.GetCallback());
   ASSERT_THAT(future.Get(), testing::Pointee(testing::Field(
                                 &actor::mojom::ActionResult::code,
                                 actor::mojom::ActionResultCode::kOk)));

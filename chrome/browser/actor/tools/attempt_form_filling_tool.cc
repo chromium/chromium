@@ -192,7 +192,7 @@ tabs::TabHandle AttemptFormFillingTool::GetTargetTab() const {
 void AttemptFormFillingTool::UpdateTaskBeforeInvoke(
     ActorTask& task,
     ToolCallback callback) const {
-  task.AddTab(tab_handle_, std::move(callback));
+  task.AddTab(tab_handle_, /*stop_task_on_detach=*/true, std::move(callback));
 }
 
 void AttemptFormFillingTool::OnSuggestionsRetrieved(

@@ -33,7 +33,8 @@ void ActorUiInteractiveBrowserTest::StartActingOnTab(
       std::move(task_options), nullptr);
   TestFuture<actor::mojom::ActionResultPtr> future;
   actor_keyed_service()->GetTask(task_id_)->AddTab(
-      browser()->GetActiveTabInterface()->GetHandle(), future.GetCallback());
+      browser()->GetActiveTabInterface()->GetHandle(),
+      /*stop_task_on_detach=*/true, future.GetCallback());
   ASSERT_TRUE(future.Wait());
   ExpectOkResult(future);
   actor::PerformActionsFuture result_future;

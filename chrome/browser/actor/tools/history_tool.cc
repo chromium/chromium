@@ -149,7 +149,7 @@ std::unique_ptr<ObservationDelayController> HistoryTool::GetObservationDelayer(
 
 void HistoryTool::UpdateTaskBeforeInvoke(ActorTask& task,
                                          ToolCallback callback) const {
-  task.AddTab(tab_handle_, std::move(callback));
+  task.AddTab(tab_handle_, /*stop_task_on_detach=*/true, std::move(callback));
 }
 
 tabs::TabHandle HistoryTool::GetTargetTab() const {

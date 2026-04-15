@@ -231,6 +231,7 @@ TEST_P(ActorUiStateManagerActorTaskUiTabScopedTest,
   base::RunLoop loop;
   actor_keyed_service()->GetTask(task_id)->AddTab(
       mock_tab().GetHandle(),
+      /*stop_task_on_detach=*/true,
       base::BindLambdaForTesting([&](ActionResultPtr result) {
         EXPECT_TRUE(IsOk(*result));
         loop.Quit();
@@ -376,6 +377,7 @@ TEST_F(ActorUiStateManagerUiEventUiTabScopedTest,
   base::RunLoop loop;
   actor_keyed_service()->GetTask(task_id)->AddTab(
       mock_tab().GetHandle(),
+      /*stop_task_on_detach=*/true,
       base::BindLambdaForTesting([&](ActionResultPtr result) {
         EXPECT_TRUE(IsOk(*result));
         loop.Quit();
@@ -402,6 +404,7 @@ TEST_F(ActorUiStateManagerUiEventUiTabScopedTest,
   base::RunLoop loop;
   actor_keyed_service()->GetTask(task_id)->AddTab(
       mock_tab().GetHandle(),
+      /*stop_task_on_detach=*/true,
       base::BindLambdaForTesting([&](ActionResultPtr result) {
         EXPECT_TRUE(IsOk(*result));
         loop.Quit();
@@ -456,6 +459,7 @@ TEST_F(ActorUiStateManagerUiEventUiTabScopedTest, GetsActiveTaskInfo) {
   base::RunLoop loop;
   actor_keyed_service()->GetTask(task_id)->AddTab(
       mock_tab().GetHandle(),
+      /*stop_task_on_detach=*/true,
       base::BindLambdaForTesting([&](ActionResultPtr result) {
         EXPECT_TRUE(IsOk(*result));
         loop.Quit();

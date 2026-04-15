@@ -563,7 +563,8 @@ std::unique_ptr<ObservationDelayController> PageTool::GetObservationDelayer(
 
 void PageTool::UpdateTaskBeforeInvoke(ActorTask& task,
                                       ToolCallback callback) const {
-  task.AddTab(request_->GetTabHandle(), std::move(callback));
+  task.AddTab(request_->GetTabHandle(), /*stop_task_on_detach=*/true,
+              std::move(callback));
 }
 
 tabs::TabHandle PageTool::GetTargetTab() const {

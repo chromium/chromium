@@ -96,6 +96,7 @@ TEST_F(ActorKeyedServiceTest, StopActiveTask) {
   base::WeakPtr<ActorTask> task = actor_service->GetTask(id)->GetWeakPtr();
   base::RunLoop loop;
   task->AddTab(tabs::TabHandle(123),
+               /*stop_task_on_detach=*/true,
                base::BindLambdaForTesting([&](mojom::ActionResultPtr result) {
                  EXPECT_TRUE(IsOk(*result));
                  loop.Quit();
@@ -149,6 +150,7 @@ TEST_F(ActorKeyedServiceTest, AddTabToPausedOrStoppedTask) {
   {
     base::RunLoop loop;
     task->AddTab(tab_handle,
+                 /*stop_task_on_detach=*/true,
                  base::BindLambdaForTesting([&](mojom::ActionResultPtr result) {
                    EXPECT_EQ(result->code,
                              mojom::ActionResultCode::kTaskPaused);
@@ -177,7 +179,8 @@ TEST_F(ActorKeyedServiceTest, PausedTaskTabs) {
 
   {
     base::test::TestFuture<mojom::ActionResultPtr> future;
-    task->AddTab(tab_handle, future.GetCallback());
+    task->AddTab(tab_handle, /*stop_task_on_detach=*/true,
+                 future.GetCallback());
     ASSERT_TRUE(future.Wait());
   }
 

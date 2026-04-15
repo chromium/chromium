@@ -109,7 +109,8 @@ class ActorKeyedServiceBrowserTest : public PlatformBrowserTest {
 
   void AddTabToTask(tabs::TabHandle tab_handle, ActorTask* actor_task) {
     TestFuture<mojom::ActionResultPtr> add_tab_future;
-    actor_task->AddTab(tab_handle, add_tab_future.GetCallback());
+    actor_task->AddTab(tab_handle, /*stop_task_on_detach=*/true,
+                       add_tab_future.GetCallback());
     auto add_tab_result = add_tab_future.Take();
     ASSERT_TRUE(add_tab_result);
   }

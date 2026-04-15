@@ -741,7 +741,8 @@ void ExecutionEngine::KickOffNextAction() {
           contents->GetLastCommittedURL(), task_->id(),
           "ExecutionEngine::KickOffNextAction",
           JournalDetailsBuilder().AddError("Renderer crashed").Build());
-      task_->AddTab(GetNextAction().GetTabHandle(), base::DoNothing());
+      task_->AddTab(GetNextAction().GetTabHandle(),
+                    /*stop_task_on_detach=*/true, base::DoNothing());
       CompleteActions(MakeResult(mojom::ActionResultCode::kRendererCrashed,
                                  /*requires_page_stabilization=*/false,
                                  "Renderer crashed."),
@@ -888,7 +889,7 @@ void ExecutionEngine::FailedOnTabBeforeToolCreation() {
                     .Add("tabId", tab.raw_value())
                     .AddError("Associating tab for failed action")
                     .Build());
-  task_->AddTab(tab, base::DoNothing());
+  task_->AddTab(tab, /*stop_task_on_detach=*/true, base::DoNothing());
 }
 
 void ExecutionEngine::ExecuteNextAction() {
@@ -1236,6 +1237,21 @@ void ExecutionEngine::EnqueueFollowupAction(
   action->SetAsFollowup(base::PassKey<ExecutionEngine>());
   action_sequence_.insert(action_sequence_.begin() + next_action_index_,
                           std::move(action));
+}
+
+void ExecutionEngine::AddTab(
+    tabs::TabHandle tab_handle,
+    bool stop_task_on_detach,
+    base::OnceCallback<void(mojom::ActionResultPtr)> callback) {
+  task_->AddTab(tab_handle, stop_task_on_detach, std::move(callback));
+}
+
+bool ExecutionEngine::HasTab(tabs::TabHandle tab_handle) {
+  return task_->HasTab(tab_handle);
+}
+
+void ExecutionEngine::RemoveTab(tabs::TabHandle tab_handle) {
+  task_->RemoveTab(tab_handle);
 }
 
 base::WeakPtr<actor_login::ActionSequenceDelegate>

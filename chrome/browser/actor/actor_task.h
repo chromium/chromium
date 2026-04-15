@@ -205,9 +205,12 @@ class ActorTask : public base::SupportsUserData {
 
   // Add/remove the given TabHandle to the set of tabs this task is operating
   // over and notify the UI if this is a new tab for the task. Added tabs will
-  // enter actuation mode and be kept as visible.
+  // enter actuation mode and be kept as visible. If `stop_task_on_detach` is
+  // true, then the task will be stopped when the given tab is detached.
   using AddTabCallback = base::OnceCallback<void(mojom::ActionResultPtr)>;
-  void AddTab(tabs::TabHandle tab, AddTabCallback callback);
+  void AddTab(tabs::TabHandle tab,
+              bool stop_task_on_detach,
+              AddTabCallback callback);
   void RemoveTab(tabs::TabHandle tab);
 
   // Transient version of the above. The tab will enter the same
@@ -254,7 +257,7 @@ class ActorTask : public base::SupportsUserData {
  private:
   class ActorControlledTabState : public content::WebContentsObserver {
    public:
-    explicit ActorControlledTabState(ActorTask* task);
+    ActorControlledTabState(ActorTask* task, bool stop_task_on_detach);
     ~ActorControlledTabState() override;
 
     void SetContents(content::WebContents* web_contents);
@@ -277,6 +280,9 @@ class ActorTask : public base::SupportsUserData {
     base::CallbackListSubscription will_detach_subscription;
     // Subscription for TabInterface::WillDiscardContents.
     base::CallbackListSubscription content_discarded_subscription;
+
+    // Whether to stop the task when the tab is detached.
+    bool stop_task_on_detach = true;
   };
 
   // Transitions a tab/contents into a state where only the actor is responsible

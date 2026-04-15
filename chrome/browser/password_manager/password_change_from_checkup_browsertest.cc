@@ -131,7 +131,8 @@ IN_PROC_BROWSER_TEST_F(PasswordChangeFromCheckupDelegateBrowserTest,
   actor::ActorTask* task = actor_service->GetTask(task_id);
 
   base::test::TestFuture<actor::mojom::ActionResultPtr> add_tab_future;
-  task->AddTab(actuation_tab->GetHandle(), add_tab_future.GetCallback());
+  task->AddTab(actuation_tab->GetHandle(), /*stop_task_on_detach=*/true,
+               add_tab_future.GetCallback());
   EXPECT_TRUE(add_tab_future.Wait());
 
   EXPECT_TRUE(base::test::RunUntil([&]() {
@@ -178,7 +179,8 @@ IN_PROC_BROWSER_TEST_F(PasswordChangeFromCheckupDelegateBrowserTest,
       actor::TestTaskSourceInfo(), actor::NoEnterprisePolicyChecker());
   actor::ActorTask* task = actor_service->GetTask(task_id);
   base::test::TestFuture<actor::mojom::ActionResultPtr> add_tab_future;
-  task->AddTab(actuation_tab->GetHandle(), add_tab_future.GetCallback());
+  task->AddTab(actuation_tab->GetHandle(), /*stop_task_on_detach=*/true,
+               add_tab_future.GetCallback());
   EXPECT_TRUE(add_tab_future.Wait());
   actor_service->NotifyTaskStateChanged(*task);
 
@@ -244,7 +246,8 @@ IN_PROC_BROWSER_TEST_F(PasswordChangeFromCheckupDelegateBrowserTest,
 
   actor::ActorTask* task = actor_service->GetTask(task_id);
   base::test::TestFuture<actor::mojom::ActionResultPtr> add_tab_future;
-  task->AddTab(actuation_tab->GetHandle(), add_tab_future.GetCallback());
+  task->AddTab(actuation_tab->GetHandle(), /*stop_task_on_detach=*/true,
+               add_tab_future.GetCallback());
   EXPECT_TRUE(add_tab_future.Wait());
   EXPECT_TRUE(base::test::RunUntil([&]() {
     return browser()->tab_strip_model()->GetActiveTab() == actuation_tab;
@@ -284,7 +287,8 @@ IN_PROC_BROWSER_TEST_F(PasswordChangeFromCheckupDelegateBrowserTest,
       actor::TestTaskSourceInfo(), actor::NoEnterprisePolicyChecker());
   actor::ActorTask* task = actor_service->GetTask(task_id);
   base::test::TestFuture<actor::mojom::ActionResultPtr> add_tab_future;
-  task->AddTab(actuation_tab->GetHandle(), add_tab_future.GetCallback());
+  task->AddTab(actuation_tab->GetHandle(), /*stop_task_on_detach=*/true,
+               add_tab_future.GetCallback());
   ASSERT_TRUE(add_tab_future.Wait());
 
   actor_service->NotifyTaskStateChanged(*task);
@@ -351,7 +355,8 @@ IN_PROC_BROWSER_TEST_F(PasswordChangeFromCheckupDelegateBrowserTest,
   // Attach the tab to the task to verify that the delegate is tracking the
   // task now.
   base::test::TestFuture<actor::mojom::ActionResultPtr> add_tab_future;
-  task->AddTab(actuation_tab->GetHandle(), add_tab_future.GetCallback());
+  task->AddTab(actuation_tab->GetHandle(), /*stop_task_on_detach=*/true,
+               add_tab_future.GetCallback());
   ASSERT_TRUE(add_tab_future.Wait());
   // Fire a state change after the tab is attached to verify that the delegate
   // is tracking the task now. This simulates the kActing notification where

@@ -46,7 +46,8 @@ class ActorUiHandoffButtonControllerPixelTest : public DialogBrowserTest {
         actor::TestTaskSourceInfo(), actor::NoEnterprisePolicyChecker());
     TestFuture<actor::mojom::ActionResultPtr> future;
     GetActorKeyedService()->GetTask(task_id_)->AddTab(
-        browser()->GetActiveTabInterface()->GetHandle(), future.GetCallback());
+        browser()->GetActiveTabInterface()->GetHandle(),
+        /*stop_task_on_detach=*/true, future.GetCallback());
     ExpectOkResult(future);
     actor::PerformActionsFuture result_future;
     std::vector<std::unique_ptr<actor::ToolRequest>> actions;

@@ -2,12 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <algorithm>
+#include <iterator>
 #include <memory>
 #include <optional>
 #include <string>
 #include <string_view>
+#include <utility>
 #include <vector>
 
+#include "base/containers/span.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
@@ -26,7 +30,9 @@
 #include "chrome/browser/ui/tabs/tab_enums.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
+#include "chrome/common/actor.mojom.h"
 #include "components/actor/core/actor_features.h"
+#include "components/actor/core/safety_list_manager.h"
 #include "components/optimization_guide/proto/features/actions_data.pb.h"
 #include "components/optimization_guide/proto/features/common_quality_data.pb.h"
 #include "content/public/browser/browser_context.h"
@@ -40,6 +46,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
+#include "url/url_constants.h"
 
 namespace actor {
 
@@ -48,6 +55,15 @@ namespace {
 using TabObservation = optimization_guide::proto::TabObservation;
 using TabObservationResult = TabObservation::TabObservationResult;
 using ActionsResult = optimization_guide::proto::ActionsResult;
+
+// Returns a vector of URLs with all copies of `about:blank` removed.
+std::vector<GURL> IgnoreAboutBlank(base::span<const GURL> urls) {
+  std::vector<GURL> result;
+  result.reserve(urls.size());
+  std::ranges::remove_copy(urls, std::back_inserter(result),
+                           GURL(url::kAboutBlankURL));
+  return result;
+}
 
 class ActorLoadAndExtractContentToolBrowserTest : public ActorToolsTest {
  public:
@@ -62,6 +78,18 @@ class ActorLoadAndExtractContentToolBrowserTest : public ActorToolsTest {
         &ActorLoadAndExtractContentToolBrowserTest::HandleStallRequest,
         base::Unretained(this)));
     ASSERT_TRUE(embedded_test_server()->Start());
+
+    std::string json = content::JsReplace(
+        R"json({
+      "navigation_allowed": [
+        { "from": "*", "to": $1 }
+      ],
+      "navigation_blocked": [
+        { "from": "*", "to": "blocked.example.com" }
+      ]
+    })json",
+        net::GetHostAndPort(embedded_test_server()->base_url()));
+    SafetyListManager::GetInstance()->ParseSafetyLists(json);
   }
 
  protected:
@@ -89,7 +117,7 @@ class ActorLoadAndExtractContentToolBrowserTest : public ActorToolsTest {
   void VerifyActionsResult(
       mojom::ActionResultCode expected_code,
       ActResultFuture& result_future,
-      std::vector<ExpectedTabObservation> expected_tab_observations) {
+      base::span<const ExpectedTabObservation> expected_tab_observations) {
     base::test::TestFuture<
         base::TimeTicks, std::vector<actor::ActionResultWithLatencyInfo>,
         actor::TaskId, bool,
@@ -167,6 +195,14 @@ class ActorLoadAndExtractContentToolBrowserTest : public ActorToolsTest {
                  .children = {
                      {.type = optimization_guide::proto::CONTENT_ATTRIBUTE_TEXT,
                       .text = "This is a simple test page"}}}}};
+  }
+
+  ExpectedNode GetCookiePageExpectedNode(std::string_view expected_text) {
+    return {
+        .type = optimization_guide::proto::CONTENT_ATTRIBUTE_ROOT,
+        .text = std::nullopt,
+        .children = {{.type = optimization_guide::proto::CONTENT_ATTRIBUTE_TEXT,
+                      .text = std::string(expected_text)}}};
   }
 
  private:
@@ -292,10 +328,39 @@ IN_PROC_BROWSER_TEST_F(ActorLoadAndExtractContentToolBrowserTest, Success) {
   EXPECT_EQ(observer.tabs_added_count(), expected_urls.size());
 
   // The tool should have successfully navigated in the opened tabs.
-  std::vector<GURL> actual_urls = observer.navigated_urls();
+  std::vector<GURL> actual_urls = IgnoreAboutBlank(observer.navigated_urls());
   EXPECT_THAT(actual_urls, testing::UnorderedElementsAreArray(expected_urls));
 
   // The tool should have closed the tabs it opened.
+  observer.VerifyTabCountRestored();
+}
+
+IN_PROC_BROWSER_TEST_F(ActorLoadAndExtractContentToolBrowserTest,
+                       SameSiteStrictCookieNotSent) {
+  const GURL url = embedded_test_server()->GetURL("/echoheader?cookie");
+
+  ASSERT_TRUE(content::SetCookie(browser()->profile(), url,
+                                 "strict_cookie=1; SameSite=Strict"));
+  ASSERT_TRUE(content::SetCookie(browser()->profile(), url,
+                                 "lax_cookie=1; SameSite=Lax"));
+
+  std::unique_ptr<ToolRequest> request =
+      std::make_unique<LoadAndExtractContentToolRequest>(std::vector{url});
+
+  TabNavigationObserver observer(browser());
+
+  ActResultFuture result;
+  actor_task().Act(ToRequestList(std::move(request)), result.GetCallback());
+  ExpectOkResult(result);
+
+  VerifyActionsResult(
+      mojom::ActionResultCode::kOk, result,
+      {{TabObservation::TAB_OBSERVATION_OK, url.spec(),
+        /*expected_title=*/"", GetCookiePageExpectedNode("lax_cookie=1")}});
+
+  EXPECT_EQ(observer.tabs_added_count(), 1);
+  EXPECT_THAT(IgnoreAboutBlank(observer.navigated_urls()),
+              testing::ElementsAre(url));
   observer.VerifyTabCountRestored();
 }
 
@@ -319,6 +384,38 @@ IN_PROC_BROWSER_TEST_F(ActorLoadAndExtractContentToolBrowserTest, SingleURL) {
 
   VerifyActionsResult(mojom::ActionResultCode::kOk, result,
                       expected_tab_observations);
+
+  EXPECT_EQ(observer.tabs_added_count(), 1);
+  EXPECT_THAT(IgnoreAboutBlank(observer.navigated_urls()),
+              testing::ElementsAre(url));
+  observer.VerifyTabCountRestored();
+}
+
+// Verifies that the tool works with a navigation to about:blank.
+IN_PROC_BROWSER_TEST_F(ActorLoadAndExtractContentToolBrowserTest, AboutBlank) {
+  const GURL url(url::kAboutBlankURL);
+
+  std::unique_ptr<ToolRequest> request =
+      std::make_unique<LoadAndExtractContentToolRequest>(std::vector{url});
+
+  TabNavigationObserver observer(browser());
+
+  ActResultFuture result;
+  actor_task().Act(ToRequestList(std::move(request)), result.GetCallback());
+  ExpectOkResult(result);
+
+  VerifyActionsResult(
+      mojom::ActionResultCode::kOk, result,
+      {
+          {
+              TabObservation::TAB_OBSERVATION_OK,
+              url::kAboutBlankURL,
+              /*expected_title=*/"",
+              ExpectedNode{
+                  .type = optimization_guide::proto::CONTENT_ATTRIBUTE_ROOT,
+              },
+          },
+      });
 
   EXPECT_EQ(observer.tabs_added_count(), 1);
   EXPECT_THAT(observer.navigated_urls(), testing::ElementsAre(url));
@@ -351,7 +448,8 @@ IN_PROC_BROWSER_TEST_F(ActorLoadAndExtractContentToolBrowserTest, Redirect) {
                       expected_tab_observations);
 
   EXPECT_EQ(observer.tabs_added_count(), 1);
-  EXPECT_THAT(observer.navigated_urls(), testing::ElementsAre(destination_url));
+  EXPECT_THAT(IgnoreAboutBlank(observer.navigated_urls()),
+              testing::ElementsAre(destination_url));
   observer.VerifyTabCountRestored();
 }
 
@@ -380,7 +478,7 @@ IN_PROC_BROWSER_TEST_F(ActorLoadAndExtractContentToolBrowserTest,
                       expected_tab_observations);
 
   EXPECT_EQ(observer.tabs_added_count(), 1);
-  EXPECT_THAT(observer.navigated_urls(), testing::IsEmpty());
+  EXPECT_THAT(IgnoreAboutBlank(observer.navigated_urls()), testing::IsEmpty());
   observer.VerifyTabCountRestored();
 }
 
@@ -400,7 +498,7 @@ IN_PROC_BROWSER_TEST_F(ActorLoadAndExtractContentToolBrowserTest,
   ExpectErrorResult(result, mojom::ActionResultCode::kArgumentsInvalid);
 
   EXPECT_EQ(observer.tabs_added_count(), 0);
-  EXPECT_THAT(observer.navigated_urls(), testing::IsEmpty());
+  EXPECT_THAT(IgnoreAboutBlank(observer.navigated_urls()), testing::IsEmpty());
   observer.VerifyTabCountRestored();
 }
 
@@ -432,7 +530,8 @@ IN_PROC_BROWSER_TEST_F(ActorLoadAndExtractContentToolBrowserTest,
                       expected_tab_observations);
 
   EXPECT_EQ(observer.tabs_added_count(), 2);
-  EXPECT_THAT(observer.navigated_urls(), testing::ElementsAre(valid_url));
+  EXPECT_THAT(IgnoreAboutBlank(observer.navigated_urls()),
+              testing::ElementsAre(valid_url));
   observer.VerifyTabCountRestored();
 }
 
@@ -576,7 +675,7 @@ IN_PROC_BROWSER_TEST_F(ActorLoadAndExtractContentToolTimeoutBrowserTest,
 
   observer.VerifyTabCountRestored();
   EXPECT_EQ(observer.tabs_added_count(), 1);
-  EXPECT_THAT(observer.navigated_urls(), testing::IsEmpty());
+  EXPECT_THAT(IgnoreAboutBlank(observer.navigated_urls()), testing::IsEmpty());
 }
 
 // Simulates a user cancelling a navigation before it completes.
@@ -609,7 +708,7 @@ IN_PROC_BROWSER_TEST_F(ActorLoadAndExtractContentToolBrowserTest,
 
   observer.VerifyTabCountRestored();
   EXPECT_EQ(observer.tabs_added_count(), 1);
-  EXPECT_THAT(observer.navigated_urls(), testing::IsEmpty());
+  EXPECT_THAT(IgnoreAboutBlank(observer.navigated_urls()), testing::IsEmpty());
 }
 
 // Tests the tool object being deleted while a page is in the middle of
@@ -636,6 +735,29 @@ IN_PROC_BROWSER_TEST_F(ActorLoadAndExtractContentToolBrowserTest,
 
   observer.VerifyTabCountRestored();
   ExpectErrorResult(result, mojom::ActionResultCode::kTaskWentAway);
+}
+
+IN_PROC_BROWSER_TEST_F(ActorLoadAndExtractContentToolBrowserTest,
+                       RedirectBlocked) {
+  const GURL destination_url =
+      embedded_test_server()->GetURL("blocked.example.com", "/title1.html");
+  const GURL redirect_url = embedded_test_server()->GetURL(
+      base::StrCat({"/server-redirect?", destination_url.spec()}));
+
+  std::unique_ptr<ToolRequest> request =
+      std::make_unique<LoadAndExtractContentToolRequest>(
+          std::vector{redirect_url});
+
+  TabNavigationObserver observer(browser());
+
+  ActResultFuture result;
+  actor_task().Act(ToRequestList(std::move(request)), result.GetCallback());
+
+  ExpectErrorResult(result,
+                    mojom::ActionResultCode::kTriggeredNavigationBlocked);
+
+  observer.VerifyTabCountRestored();
+  EXPECT_EQ(observer.tabs_added_count(), 1);
 }
 
 }  // namespace

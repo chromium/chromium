@@ -35,8 +35,12 @@
 #include "components/optimization_guide/proto/features/actions_data.pb.h"
 #include "components/sessions/core/session_id.h"
 #include "components/tabs/public/tab_interface.h"
+#include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/web_contents.h"
+#include "ui/base/page_transition_types.h"
 #include "url/gurl.h"
+#include "url/origin.h"
+#include "url/url_constants.h"
 
 using TabObservation = ::optimization_guide::proto::TabObservation;
 
@@ -104,9 +108,9 @@ enum class LoadAndExtractContentTool::PerTabResultCode {
 };
 
 // Manages waiting for a tab to finish navigating and then delegation to the
-// `ObservationDelayController` to wait for page stability. Begins waiting on
-// construction, invoking the callback once the page is stable (or an error
-// occurs).
+// `ObservationDelayController` to wait for page stability. Begins waiting after
+// initial navigation to about:blank is complete. Invokes the callback once the
+// page is stable (or an error occurs).
 class LoadAndExtractContentTool::TabObservationDelayer
     : public content::WebContentsObserver {
  public:
@@ -115,6 +119,7 @@ class LoadAndExtractContentTool::TabObservationDelayer
       TaskId task_id,
       AggregatedJournal& journal,
       ObservationDelayController::PageStabilityConfig page_stability_config,
+      bool target_is_about_blank,
       base::OnceCallback<void(LoadAndExtractContentTool::PerTabResultCode)>
           callback);
   ~TabObservationDelayer() override = default;
@@ -130,6 +135,7 @@ class LoadAndExtractContentTool::TabObservationDelayer
   TaskId task_id_;
   AggregatedJournal& journal_;
   ObservationDelayController::PageStabilityConfig page_stability_config_;
+  const bool target_is_about_blank_;
   base::OnceCallback<void(LoadAndExtractContentTool::PerTabResultCode)>
       callback_;
 
@@ -144,11 +150,13 @@ LoadAndExtractContentTool::TabObservationDelayer::TabObservationDelayer(
     TaskId task_id,
     AggregatedJournal& journal,
     ObservationDelayController::PageStabilityConfig page_stability_config,
+    bool target_is_about_blank,
     base::OnceCallback<void(PerTabResultCode)> callback)
     : content::WebContentsObserver(web_contents),
       task_id_(task_id),
       journal_(journal),
       page_stability_config_(page_stability_config),
+      target_is_about_blank_(target_is_about_blank),
       callback_(std::move(callback)) {
   observation_delay_controller_ = std::make_unique<ObservationDelayController>(
       *web_contents->GetPrimaryMainFrame(), task_id_, journal_,
@@ -170,6 +178,14 @@ void LoadAndExtractContentTool::TabObservationDelayer::DidFinishNavigation(
     // ObservationDelayController.
     return;
   }
+
+  if (!target_is_about_blank_ &&
+      navigation_handle->GetURL() == GURL(url::kAboutBlankURL)) {
+    // Don't count the initial about:blank navigation (unless the target is
+    // about:blank).
+    return;
+  }
+
   has_finished_main_frame_navigation_ = true;
 
   if (!navigation_handle->HasCommitted() || navigation_handle->IsErrorPage()) {
@@ -367,13 +383,18 @@ void LoadAndExtractContentTool::Invoke(ToolCallback callback) {
     return;
   }
 
+  const GURL about_blank(url::kAboutBlankURL);
+
   for (size_t i = 0; i < urls_.size(); ++i) {
     const GURL& url = urls_[i];
     UrlIndex url_index = UrlIndex(i);
 
     constexpr int kIndexAppendToEnd = -1;
+    // We start the tab on about:blank and ensure the tab is "controlled" before
+    // performing the "real" navigation, to avoid racing with the navigation
+    // itself.
     content::WebContents* web_contents = chrome::AddAndReturnTabAt(
-        browser_window_interface->GetBrowserForMigrationOnly(), url,
+        browser_window_interface->GetBrowserForMigrationOnly(), about_blank,
         kIndexAppendToEnd, /*foreground=*/false);
     if (!web_contents) {
       journal().Log(url, task_id(),
@@ -400,17 +421,32 @@ void LoadAndExtractContentTool::Invoke(ToolCallback callback) {
     // TODO(b/478282022): Consider adding a new enum value for this case.
     tab_observation.set_screenshot_result(TabObservation::SCREENSHOT_ERROR);
 
+    const bool target_is_about_blank = url == about_blank;
     per_tab_state_.emplace(
         url_index,
         PerTabState{
             .tab_handle = tab_handle,
             .tab_observation_delayer = std::make_unique<TabObservationDelayer>(
                 web_contents, task_id(), journal(),
-                page_stability_config_.value(),
+                page_stability_config_.value(), target_is_about_blank,
                 base::BindOnce(
                     &LoadAndExtractContentTool::OnTabObservationDelayComplete,
                     weak_ptr_factory_.GetWeakPtr(), url_index)),
             .tab_observation = std::move(tab_observation)});
+    tool_delegate().AddTab(tab_handle,
+                           /*stop_task_on_detach=*/false, base::DoNothing());
+    CHECK(tool_delegate().HasTab(tab_handle));
+
+    if (target_is_about_blank) {
+      // No need to issue another navigation, since the tab is already
+      // navigating to about:blank.
+      return;
+    }
+
+    content::NavigationController::LoadURLParams params(url);
+    params.transition_type = ::ui::PAGE_TRANSITION_AUTO_TOPLEVEL;
+    params.initiator_origin = url::Origin();
+    tab->GetContents()->GetController().LoadURLWithParams(params);
   }
 }
 
@@ -489,16 +525,19 @@ void LoadAndExtractContentTool::OnTabReadyToClose(
                       .Build());
   }
 
-  if (tabs::TabInterface* tab = per_tab_state_[index].tab_handle.Get()) {
+  PerTabState& state = per_tab_state_.at(index);
+  if (tabs::TabInterface* tab = state.tab_handle.Get()) {
+    // Remove the tab from the set of controlled tabs before closing it, to
+    // avoid tests thinking that something went wrong.
+    tool_delegate().RemoveTab(state.tab_handle);
     tab->Close();
-  } else if (!per_tab_state_[index]
-                  .tab_observation->has_annotated_page_content()) {
+  } else if (!state.tab_observation->has_annotated_page_content()) {
     // Record an error code if the tab was closed before we could extract the
     // APC.
     result_code = PerTabResultCode::kTabWentAway;
   }
 
-  per_tab_state_[index].result_code = result_code;
+  state.result_code = result_code;
   per_url_completion_closure_.Run();
 }
 

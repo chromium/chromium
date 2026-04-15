@@ -162,6 +162,7 @@ IN_PROC_BROWSER_TEST_F(ActorUiTabControllerTest,
   base::RunLoop loop;
   task->AddTab(
       tab_one->GetHandle(),
+      /*stop_task_on_detach=*/true,
       base::BindLambdaForTesting([&](actor::mojom::ActionResultPtr result) {
         EXPECT_TRUE(actor::IsOk(*result));
         loop.Quit();
@@ -221,6 +222,7 @@ IN_PROC_BROWSER_TEST_F(ActorUiTabControllerTest,
   base::RunLoop loop;
   actor_keyed_service()->GetTask(task_id)->AddTab(
       actuating_tab->GetHandle(),
+      /*stop_task_on_detach=*/true,
       base::BindLambdaForTesting([&](ActionResultPtr result) {
         EXPECT_TRUE(IsOk(*result));
         loop.Quit();

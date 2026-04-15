@@ -201,7 +201,7 @@ std::string ScriptToolHost::JournalEvent() const {
 
 void ScriptToolHost::UpdateTaskBeforeInvoke(ActorTask& task,
                                             ToolCallback callback) const {
-  task.AddTab(target_tab_, std::move(callback));
+  task.AddTab(target_tab_, /*stop_task_on_detach=*/true, std::move(callback));
 }
 
 tabs::TabHandle ScriptToolHost::GetTargetTab() const {
