@@ -1140,6 +1140,7 @@ source_set("unit_tests") {
     "//components/safe_browsing/core/common/proto:crx_info_proto_gen",
     "//components/services/unzip:in_process",
     "//components/services/unzip/content",
+    "//components/signin/public/identity_manager:test_support",
     "//components/sync_preferences:test_support",
     "//components/update_client",
     "//components/url_matcher",

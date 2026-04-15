@@ -1257,6 +1257,17 @@ void ExtensionDownloader::StartExtensionLoader() {
       GetURLLoaderFactoryToUse(extension_loader_resource_request_->url);
   extension_loader_ = network::SimpleURLLoader::Create(
       std::move(extension_loader_resource_request_), traffic_annotation);
+
+  // Remove Authorization headers on redirect to avoid open redirect attacks.
+  extension_loader_->SetOnRedirectCallback(
+      base::BindRepeating([](const GURL& url, const net::RedirectInfo& redirect,
+                             const network::mojom::URLResponseHead& head,
+                             std::vector<std::string>* to_be_removed_headers) {
+        CHECK(to_be_removed_headers);
+        to_be_removed_headers->emplace_back(
+            net::HttpRequestHeaders::kAuthorization);
+      }));
+
   // Retry up to 3 times.
   extension_loader_->SetRetryOptions(
       3, network::SimpleURLLoader::RetryMode::RETRY_ON_NETWORK_CHANGE);

@@ -314,6 +314,7 @@ test("extensions_unittests") {
 
   if (is_android) {
     deps += [
+      "//components/signin/public/android:signin_java_test_support",
       "//content/public/android:content_full_java",
       "//gin:v8_snapshot_assets",
       "//ui/android:ui_full_java",
