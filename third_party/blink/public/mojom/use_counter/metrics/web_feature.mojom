@@ -5184,6 +5184,8 @@ enum WebFeature {
   kConnectionAllowlist = 5867,
   kStyleTypeModule = 5868,
   kShadowRootAdoptedStyleSheets = 5869,
+  kWebAuthnConditionalCreate = 5870,
+  kWebAuthnConditionalCreateSuccess = 5871,
 
   // Add new features immediately above this line. Don't change the existing
   // numbers of any item, and don't reuse removed slots. Also don't add extra

@@ -175,6 +175,21 @@ class MockAuthenticatorInterface : public mojom::blink::Authenticator {
              nullptr);
   }
 
+  void InvokeMakeCredentialSuccessCallback() {
+    EXPECT_TRUE(receiver_.is_bound());
+    auto info = mojom::blink::CommonCredentialInfo::New();
+    info->id = "id";
+    info->raw_id = Vector<uint8_t>{1, 2, 3, 4};
+    info->client_data_json = Vector<uint8_t>{5, 6, 7, 8};
+    info->authenticator_data = Vector<uint8_t>{9, 10, 11, 12};
+    auto response = mojom::blink::MakeCredentialAuthenticatorResponse::New();
+    response->info = std::move(info);
+    response->attestation_object = Vector<uint8_t>{13, 14, 15, 16};
+    std::move(make_credential_callback_)
+        .Run(mojom::blink::AuthenticatorStatus::SUCCESS, std::move(response),
+             nullptr);
+  }
+
  protected:
   void MakeCredential(
       blink::mojom::blink::PublicKeyCredentialCreationOptionsPtr options,
@@ -938,10 +953,10 @@ TEST(AuthenticationCredentialsContainerTest, PublicKeyCreateCspMetric) {
           DOMArrayBuffer::Create(challenge)));
   creation_options->setPublicKey(public_key_creation_options);
 
-  auto promise = AuthenticationCredentialsContainer::credentials(
-                     *context.DomWindow().navigator())
-                     ->create(context.GetScriptState(), creation_options,
-                              IGNORE_EXCEPTION_FOR_TESTING);
+  AuthenticationCredentialsContainer::credentials(
+      *context.DomWindow().navigator())
+      ->create(context.GetScriptState(), creation_options,
+               IGNORE_EXCEPTION_FOR_TESTING);
   mock_authenticator.WaitForCallToMakeCredential();
   mock_authenticator.InvokeMakeCredentialCallback();
 
@@ -951,16 +966,71 @@ TEST(AuthenticationCredentialsContainerTest, PublicKeyCreateCspMetric) {
   // Now try one that is blocked.
   mock_authenticator.Reset();
   public_key_creation_options->rp()->setId("blocked.com");
-  promise = AuthenticationCredentialsContainer::credentials(
-                *context.DomWindow().navigator())
-                ->create(context.GetScriptState(), creation_options,
-                         IGNORE_EXCEPTION_FOR_TESTING);
+  AuthenticationCredentialsContainer::credentials(
+      *context.DomWindow().navigator())
+      ->create(context.GetScriptState(), creation_options,
+               IGNORE_EXCEPTION_FOR_TESTING);
   mock_authenticator.WaitForCallToMakeCredential();
   mock_authenticator.InvokeMakeCredentialCallback();
 
   histogram_tester.ExpectBucketCount("WebAuthentication.CspAllow.Create", false,
                                      1);
   histogram_tester.ExpectTotalCount("WebAuthentication.CspAllow.Create", 2);
+}
+
+TEST(AuthenticationCredentialsContainerTest,
+     PublicKeyConditionalCreateUseCounter) {
+  test::TaskEnvironment task_environment;
+
+  MockAuthenticatorInterface mock_authenticator;
+  CredentialManagerTestingContext context(/*mock_credential_manager=*/nullptr,
+                                          &mock_authenticator);
+
+  context.DomWindow().document()->ClearUseCounterForTesting(
+      WebFeature::kWebAuthnConditionalCreate);
+  context.DomWindow().document()->ClearUseCounterForTesting(
+      WebFeature::kWebAuthnConditionalCreateSuccess);
+
+  auto* creation_options = CredentialCreationOptions::Create();
+  creation_options->setMediation(
+      V8CredentialMediationRequirement::Enum::kConditional);
+  auto* public_key_creation_options =
+      PublicKeyCredentialCreationOptions::Create();
+  auto* rp = PublicKeyCredentialRpEntity::Create();
+  rp->setId("example.test");
+  rp->setName("Example");
+  public_key_creation_options->setRp(rp);
+
+  auto* user = PublicKeyCredentialUserEntity::Create();
+  user->setId(MakeGarbageCollected<V8UnionArrayBufferOrArrayBufferView>(
+      DOMArrayBuffer::Create(Vector<uint8_t>{1, 2, 3, 4})));
+  user->setName("marisa");
+  user->setDisplayName("Marisa Kirisame");
+  public_key_creation_options->setUser(user);
+
+  const Vector<uint8_t> challenge = {1, 2, 3, 4};
+  public_key_creation_options->setChallenge(
+      MakeGarbageCollected<V8UnionArrayBufferOrArrayBufferView>(
+          DOMArrayBuffer::Create(challenge)));
+  creation_options->setPublicKey(public_key_creation_options);
+
+  auto promise = AuthenticationCredentialsContainer::credentials(
+                     *context.DomWindow().navigator())
+                     ->create(context.GetScriptState(), creation_options,
+                              IGNORE_EXCEPTION_FOR_TESTING);
+  mock_authenticator.WaitForCallToMakeCredential();
+
+  EXPECT_TRUE(context.DomWindow().document()->IsUseCounted(
+      WebFeature::kWebAuthnConditionalCreate));
+  EXPECT_FALSE(context.DomWindow().document()->IsUseCounted(
+      WebFeature::kWebAuthnConditionalCreateSuccess));
+
+  mock_authenticator.InvokeMakeCredentialSuccessCallback();
+  ScriptPromiseTester tester(context.GetScriptState(), promise);
+  tester.WaitUntilSettled();
+  EXPECT_TRUE(tester.IsFulfilled());
+  EXPECT_TRUE(context.DomWindow().document()->IsUseCounted(
+      WebFeature::kWebAuthnConditionalCreateSuccess));
 }
 
 }  // namespace blink
