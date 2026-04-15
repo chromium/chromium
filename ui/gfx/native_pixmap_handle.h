@@ -31,8 +31,8 @@ class Size;
 // buffer. More fields can be added if they are plane specific.
 struct COMPONENT_EXPORT(GFX) NativePixmapPlane {
   NativePixmapPlane();
-  NativePixmapPlane(int stride,
-                    int offset,
+  NativePixmapPlane(uint32_t stride,
+                    uint64_t offset,
                     uint64_t size
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
                     ,

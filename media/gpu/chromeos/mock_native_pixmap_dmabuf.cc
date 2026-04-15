@@ -59,8 +59,8 @@ scoped_refptr<const gfx::NativePixmapDmaBuf> CreateMockNativePixmapDmaBuf(
       LOG(ERROR) << "Failed to open a file";
       return nullptr;
     }
-    handle.planes.emplace_back(base::checked_cast<int>(plane.stride),
-                               base::checked_cast<int>(plane.offset),
+    handle.planes.emplace_back(base::checked_cast<uint32_t>(plane.stride),
+                               base::strict_cast<uint64_t>(plane.offset),
                                base::strict_cast<uint64_t>(plane.size),
                                base::ScopedFD(file.TakePlatformFile()));
   }

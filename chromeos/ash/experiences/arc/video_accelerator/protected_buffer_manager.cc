@@ -505,7 +505,7 @@ scoped_refptr<gfx::NativePixmap> ProtectedBufferManager::ImportDummyFd(
   // also on failure.
   gfx::NativePixmapHandle pixmap_handle;
   pixmap_handle.planes.emplace_back(
-      gfx::NativePixmapPlane(0, 0, 0u, std::move(dummy_fd)));
+      gfx::NativePixmapPlane(0u, 0u, 0u, std::move(dummy_fd)));
   ui::OzonePlatform* platform = ui::OzonePlatform::GetInstance();
   ui::SurfaceFactoryOzone* factory = platform->GetSurfaceFactoryOzone();
   scoped_refptr<gfx::NativePixmap> pixmap =

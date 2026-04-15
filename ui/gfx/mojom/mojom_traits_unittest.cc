@@ -20,9 +20,11 @@
 #include "ui/gfx/mojom/buffer_types_mojom_traits.h"
 #include "ui/gfx/mojom/hdr_metadata.mojom.h"
 #include "ui/gfx/mojom/hdr_metadata_mojom_traits.h"
+#include "ui/gfx/mojom/native_handle_types_mojom_traits.h"
 #include "ui/gfx/mojom/presentation_feedback.mojom.h"
 #include "ui/gfx/mojom/presentation_feedback_mojom_traits.h"
 #include "ui/gfx/mojom/traits_test_service.mojom.h"
+#include "ui/gfx/native_pixmap_handle.h"
 #include "ui/gfx/native_ui_types.h"
 #include "ui/gfx/selection_bound.h"
 
@@ -268,6 +270,28 @@ TEST_F(StructTraitsTest, AcceleratedWidget) {
                                                                      output);
   EXPECT_EQ(input, output);
 }
+
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+TEST_F(StructTraitsTest, NativePixmapHandle) {
+  // Test with a large offset that would trigger sign-extension if treated as
+  // int.
+  gfx::NativePixmapHandle native_pixmap_handle;
+  const uint32_t kStride = 1024;
+  const uint64_t kOffset = 0x80000000;
+  const uint64_t kSize = 4096;
+  native_pixmap_handle.planes.emplace_back(kStride, kOffset, kSize,
+                                           CreateValidLookingBufferHandle());
+
+  gfx::NativePixmapHandle output;
+  ASSERT_TRUE(
+      mojo::test::SerializeAndDeserialize<gfx::mojom::NativePixmapHandle>(
+          native_pixmap_handle, output));
+  ASSERT_FALSE(output.planes.empty());
+  EXPECT_EQ(kStride, output.planes[0].stride);
+  EXPECT_EQ(kOffset, output.planes[0].offset);
+  EXPECT_EQ(kSize, output.planes[0].size);
+}
+#endif
 
 TEST_F(StructTraitsTest, GpuMemoryBufferHandle) {
   const uint32_t kOffset = 126;

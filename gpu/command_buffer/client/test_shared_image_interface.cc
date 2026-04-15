@@ -16,6 +16,8 @@
 
 #include "base/check.h"
 #include "base/notreached.h"
+#include "base/numerics/checked_math.h"
+#include "base/numerics/safe_conversions.h"
 #include "build/build_config.h"
 #include "components/viz/common/resources/shared_image_format_utils.h"
 #include "gpu/command_buffer/client/client_shared_image.h"
@@ -440,7 +442,8 @@ TestSharedImageInterface::CreateNativePixmapBackedSharedImage(
         viz::SharedMemoryRowSizeForSharedImageFormat(format, i, size.width())
             .value();
     native_pixmap_handle.planes.emplace_back(
-        stride, 0, height_in_pixels * stride,
+        base::checked_cast<uint32_t>(stride), 0,
+        base::CheckMul(height_in_pixels, stride).ValueOrDie<uint64_t>(),
         base::ScopedFD(open("/dev/zero", O_RDWR)));
   }
 

@@ -104,8 +104,9 @@ TestGbmBuffer::TestGbmBuffer(gbm_bo* buffer_object)
   for (size_t i = 0;
        i < static_cast<size_t>(gbm_bo_get_plane_count(buffer_object)); ++i) {
     native_pixmap_handle.planes.push_back(gfx::NativePixmapPlane(
-        base::checked_cast<int>(gbm_bo_get_stride_for_plane(buffer_object, i)),
-        base::checked_cast<int>(gbm_bo_get_offset(buffer_object, i)),
+        base::checked_cast<uint32_t>(
+            gbm_bo_get_stride_for_plane(buffer_object, i)),
+        base::checked_cast<uint64_t>(gbm_bo_get_offset(buffer_object, i)),
         base::strict_cast<uint64_t>(gbm_bo_get_plane_size(buffer_object, i)),
         base::ScopedFD(gbm_bo_get_plane_fd(buffer_object, i))));
   }

@@ -33,8 +33,8 @@ static_assert(NativePixmapHandle::kNoModifier == DRM_FORMAT_MOD_INVALID,
 
 NativePixmapPlane::NativePixmapPlane() : stride(0), offset(0), size(0) {}
 
-NativePixmapPlane::NativePixmapPlane(int stride,
-                                     int offset,
+NativePixmapPlane::NativePixmapPlane(uint32_t stride,
+                                     uint64_t offset,
                                      uint64_t size
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
                                      ,

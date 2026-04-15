@@ -57,8 +57,8 @@ struct COMPONENT_EXPORT(GFX_NATIVE_HANDLE_TYPES_SHARED_MOJOM_TRAITS)
   static uint32_t stride(const gfx::NativePixmapPlane& plane) {
     return plane.stride;
   }
-  static int32_t offset(const gfx::NativePixmapPlane& plane) {
-    return base::saturated_cast<int32_t>(plane.offset);
+  static uint64_t offset(const gfx::NativePixmapPlane& plane) {
+    return plane.offset;
   }
   static uint64_t size(const gfx::NativePixmapPlane& plane) {
     return plane.size;

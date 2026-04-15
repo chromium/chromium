@@ -522,8 +522,8 @@ gfx::GpuMemoryBufferHandle CreateGpuMemoryBufferHandle(
       for (size_t i = 0; i < num_planes; ++i) {
         const auto& plane = video_frame->layout().planes()[i];
         native_pixmap_handle.planes.emplace_back(
-            base::checked_cast<int>(plane.stride),
-            base::checked_cast<int>(plane.offset),
+            base::checked_cast<uint32_t>(plane.stride),
+            base::strict_cast<uint64_t>(plane.offset),
             base::strict_cast<uint64_t>(plane.size), std::move(duped_fds[i]));
       }
       handle = gfx::GpuMemoryBufferHandle(std::move(native_pixmap_handle));
