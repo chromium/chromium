@@ -183,6 +183,12 @@ public class StripLayoutHelper
     private static final int ANIM_TAB_DRAW_X_MS = 250;
     private static final int ANIM_BUTTONS_FADE_MS = 150;
 
+    // Fade constants.
+    static final float NO_BUTTON_FADE_OPAQUE_WIDTH_DP = 8;
+    static final float NO_BUTTON_FADE_GRADIENT_WIDTH_DP = 52;
+    static final float BUTTON_FADE_GRADIENT_SHORT_WIDTH_DP = 24;
+    static final float BUTTON_FADE_GRADIENT_LONG_WIDTH_DP = 32;
+
     // Visibility Constants
     private static final float NEW_TAB_BUTTON_BACKGROUND_Y_OFFSET_DP = 3.f;
 
@@ -575,12 +581,15 @@ public class StripLayoutHelper
     private float mWidth;
     private float mHeight;
     private long mLastSpinnerUpdate;
+    // TODO(crbug.com/501549791): Consider simplifying/merging some of the logic for the left/right
+    //  paddings/fades/margins.
     // The margins on the tab strip used when positioning tabs. Tabs within these margins are not
     // touchable, but other strip widgets (e.g new tab button) could be.
     private float mLeftMargin;
     private float mRightMargin;
     private float mLeftFadeWidth;
     private float mRightFadeWidth;
+    private float mButtonSideFadeGradientWidth;
     // Padding regions on the edges of the strip where strip touch events are blocked. Different
     // from margins, no strip widgets should be drawn within the padding regions.
     private float mLeftPadding;
@@ -588,6 +597,7 @@ public class StripLayoutHelper
     private float mTopPadding;
 
     // New tab button with tab strip end padding
+    private final float mButtonSideFadePadding;
     private final float mFixedEndPadding;
     private float mReservedEndMargin;
 
@@ -761,10 +771,13 @@ public class StripLayoutHelper
         mScrollDelegate = new ScrollDelegate(context);
 
         // Use toolbar menu button padding to align NTB with menu button.
-        mFixedEndPadding =
+        float buttonEndPadding =
                 context.getResources().getDimension(R.dimen.button_end_padding)
                         / context.getResources().getDisplayMetrics().density;
+        mButtonSideFadePadding = buttonEndPadding;
+        mFixedEndPadding = buttonEndPadding;
         mReservedEndMargin = mFixedEndPadding + mNewTabButtonWidth;
+        updateFades(/* stripButtonsTouchTargetSize= */ 0);
         updateMargins(false);
 
         mSceneOverlay = manager;
@@ -1064,6 +1077,38 @@ public class StripLayoutHelper
         }
     }
 
+    public float getLeftFadeGradientWidth() {
+        return LocalizationUtils.isLayoutRtl()
+                ? mButtonSideFadeGradientWidth
+                : NO_BUTTON_FADE_GRADIENT_WIDTH_DP;
+    }
+
+    public float getRightFadeGradientWidth() {
+        return LocalizationUtils.isLayoutRtl()
+                ? NO_BUTTON_FADE_GRADIENT_WIDTH_DP
+                : mButtonSideFadeGradientWidth;
+    }
+
+    public float getLeftFadeOpaqueWidth() {
+        return LocalizationUtils.isLayoutRtl()
+                ? mLeftFadeWidth - mButtonSideFadeGradientWidth
+                : NO_BUTTON_FADE_OPAQUE_WIDTH_DP;
+    }
+
+    public float getRightFadeOpaqueWidth() {
+        return LocalizationUtils.isLayoutRtl()
+                ? NO_BUTTON_FADE_OPAQUE_WIDTH_DP
+                : mRightFadeWidth - mButtonSideFadeGradientWidth;
+    }
+
+    float getLeftFadeWidthForTesting() {
+        return mLeftFadeWidth;
+    }
+
+    float getRightFadeWidthForTesting() {
+        return mRightFadeWidth;
+    }
+
     private boolean doPinnedTabsOccupyEntireVisibleArea() {
         // Return false if tab strip is still initializing and `mWidth` is 0.
         if (mWidth == 0) return false;
@@ -1126,7 +1171,6 @@ public class StripLayoutHelper
      * @param glicTouchTargetSize The touch target size for the Glic button.
      * @param msbTouchTargetSize The touch target size for the model selector button.
      */
-    // TODO(crbug.com/483119043): Fading assets only support 2 buttons (NTB and MSB)
     public void updateEndMarginForStripButtons(
             float glicTouchTargetSize, float msbTouchTargetSize) {
         // There are two additional tab strip buttons: Glic & MSB
@@ -1139,6 +1183,8 @@ public class StripLayoutHelper
                         ? NEW_TAB_BUTTON_WITH_STRIP_BUTTON_PADDING
                         : mFixedEndPadding;
         mReservedEndMargin = stripButtonsTouchTargetSize + mNewTabButtonWidth + padding;
+
+        updateFades(stripButtonsTouchTargetSize);
         updateMargins(true);
     }
 
@@ -1156,27 +1202,21 @@ public class StripLayoutHelper
         }
     }
 
-    /**
-     * Sets the left fade width based on which fade is showing.
-     *
-     * @param fadeWidth The width of the left fade.
-     */
-    public void setLeftFadeWidth(float fadeWidth) {
-        if (mLeftFadeWidth != fadeWidth) {
-            mLeftFadeWidth = fadeWidth;
-            bringSelectedTabToVisibleArea(LayoutManagerImpl.time(), false);
-        }
-    }
+    private void updateFades(float stripButtonsTouchTargetSize) {
+        mButtonSideFadeGradientWidth =
+                stripButtonsTouchTargetSize > 0
+                        ? BUTTON_FADE_GRADIENT_LONG_WIDTH_DP
+                        : BUTTON_FADE_GRADIENT_SHORT_WIDTH_DP;
 
-    /**
-     * Sets the right fade width based on which fade is showing.
-     *
-     * @param fadeWidth The width of the right fade.
-     */
-    public void setRightFadeWidth(float fadeWidth) {
-        if (mRightFadeWidth != fadeWidth) {
-            mRightFadeWidth = fadeWidth;
-            bringSelectedTabToVisibleArea(LayoutManagerImpl.time(), false);
+        float startFadeWidth = NO_BUTTON_FADE_GRADIENT_WIDTH_DP + NO_BUTTON_FADE_OPAQUE_WIDTH_DP;
+        float endFadeWidth =
+                mReservedEndMargin + mButtonSideFadePadding + mButtonSideFadeGradientWidth;
+        if (LocalizationUtils.isLayoutRtl()) {
+            mRightFadeWidth = startFadeWidth;
+            mLeftFadeWidth = endFadeWidth;
+        } else {
+            mLeftFadeWidth = startFadeWidth;
+            mRightFadeWidth = endFadeWidth;
         }
     }
 

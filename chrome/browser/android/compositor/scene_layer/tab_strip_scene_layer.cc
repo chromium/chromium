@@ -40,8 +40,8 @@ TabStripSceneLayer::TabStripSceneLayer(JNIEnv* env,
       new_tab_button_(cc::slim::UIResourceLayer::Create()),
       new_tab_button_background_(cc::slim::UIResourceLayer::Create()),
       new_tab_button_keyboard_focus_ring_(cc::slim::UIResourceLayer::Create()),
-      left_fade_(cc::slim::UIResourceLayer::Create()),
-      right_fade_(cc::slim::UIResourceLayer::Create()),
+      left_fade_(cc::slim::SolidColorLayer::Create()),
+      right_fade_(cc::slim::SolidColorLayer::Create()),
       left_padding_layer_(cc::slim::SolidColorLayer::Create()),
       right_padding_layer_(cc::slim::SolidColorLayer::Create()),
       glic_button_(cc::slim::UIResourceLayer::Create()),
@@ -527,75 +527,51 @@ void TabStripSceneLayer::UpdateCompositorButton(
   }
 }
 
-void TabStripSceneLayer::UpdateTabStripLeftFade(JNIEnv* env,
-                                                int32_t resource_id,
-                                                float opacity,
-                                                int32_t left_fade_color,
-                                                float left_padding) {
+void TabStripSceneLayer::UpdateTabStripFade(JNIEnv* env,
+                                            bool is_left,
+                                            int32_t fade_color,
+                                            float opacity,
+                                            float gradient_width,
+                                            float opaque_width,
+                                            float padding) {
+  // Act on the correct fade.
+  cc::slim::SolidColorLayer& fade = is_left ? *left_fade_ : *right_fade_;
+
   // Hide layer if it's not visible.
   if (opacity == 0.f) {
-    left_fade_->SetHideLayerAndSubtree(true);
+    fade.SetHideLayerAndSubtree(true);
     return;
   }
 
-  DCHECK(resource_manager_);
-  ui::Resource* fade_resource = resource_manager_->GetStaticResourceWithTint(
-      resource_id, left_fade_color);
-  left_fade_->SetUIResourceId(fade_resource->ui_resource()->id());
-
-  // The same resource is used for both left and right fade, so the
-  // resource must be mirrored for the left fade.
-  gfx::Transform fade_transform = gfx::Transform::MakeScale(-1.0f, 1.0f);
-  left_fade_->SetTransform(fade_transform);
-
   // Set opacity.
-  left_fade_->SetOpacity(opacity);
+  fade.SetOpacity(opacity);
 
-  // Set bounds. Use the parent layer height so the 1px fade resource is
-  // stretched vertically.
+  // Set background color.
+  fade.SetBackgroundColor(SkColor4f::FromColor(fade_color));
+
+  // Set bounds.
+  float width = opaque_width + gradient_width;
   float height = tab_strip_layer_->bounds().height();
-  left_fade_->SetBounds(gfx::Size(fade_resource->size().width(), height));
+  fade.SetBounds(gfx::Size(width, height));
 
-  // Set position. The rotation set above requires the layer to be offset
-  // by its width in order to display on the left edge.
-  left_fade_->SetPosition(
-      gfx::PointF(fade_resource->size().width() + left_padding, 0));
+  // Set position.
+  int fade_x =
+      is_left ? padding : tab_strip_layer_->bounds().width() - width - padding;
+  fade.SetPosition(gfx::PointF(fade_x, 0));
 
-  // Ensure layer is visible.
-  left_fade_->SetHideLayerAndSubtree(false);
-}
-
-void TabStripSceneLayer::UpdateTabStripRightFade(JNIEnv* env,
-                                                 int32_t resource_id,
-                                                 float opacity,
-                                                 int32_t right_fade_color,
-                                                 float right_padding) {
-  // Hide layer if it's not visible.
-  if (opacity == 0.f) {
-    right_fade_->SetHideLayerAndSubtree(true);
-    return;
+  // Set gradient.
+  gfx::LinearGradient gradient;
+  gradient.AddStep(0.f, 255);
+  gradient.AddStep(opaque_width / (opaque_width + gradient_width), 255);
+  gradient.AddStep(1.f, 0);
+  if (!is_left) {
+    gradient.set_angle(180);
   }
-
-  DCHECK(resource_manager_);
-  ui::Resource* fade_resource = resource_manager_->GetStaticResourceWithTint(
-      resource_id, right_fade_color);
-  right_fade_->SetUIResourceId(fade_resource->ui_resource()->id());
-
-  // Set opacity.
-  right_fade_->SetOpacity(opacity);
-
-  // Set bounds. Use the parent layer height so the 1px fade resource is
-  // stretched vertically.
-  float height = tab_strip_layer_->bounds().height();
-  right_fade_->SetBounds(gfx::Size(fade_resource->size().width(), height));
-
-  // Set position. The right fade is positioned at the end of the tab strip.
-  float x = tab_strip_layer_->bounds().width() - fade_resource->size().width() -
-            right_padding;
-  right_fade_->SetPosition(gfx::PointF(x, 0));
+  fade.SetContentsOpaque(false);
+  fade.SetGradientMask(gradient);
 
   // Ensure layer is visible.
-  right_fade_->SetHideLayerAndSubtree(false);
+  fade.SetHideLayerAndSubtree(false);
 }
 
 void TabStripSceneLayer::PutStripTabLayer(

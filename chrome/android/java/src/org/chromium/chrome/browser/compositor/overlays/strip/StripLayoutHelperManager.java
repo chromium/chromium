@@ -31,7 +31,6 @@ import android.view.ViewStub;
 import android.view.animation.Interpolator;
 
 import androidx.annotation.ColorInt;
-import androidx.annotation.DrawableRes;
 import androidx.annotation.Px;
 import androidx.annotation.VisibleForTesting;
 import androidx.appcompat.content.res.AppCompatResources;
@@ -227,11 +226,6 @@ public class StripLayoutHelperManager
     @VisibleForTesting
     static final Interpolator TAB_STRIP_TRANSITION_INTERPOLATOR =
             Interpolators.STANDARD_DEFAULT_EFFECTS;
-
-    // Fade constants.
-    static final float FADE_SHORT_WIDTH_DP = 60;
-    static final float FADE_MEDIUM_WIDTH_DP = 72;
-    static final float FADE_LONG_WIDTH_DP = 136;
 
     // Caching Variables
     private final RectF mStripFilterArea = new RectF();
@@ -1597,56 +1591,25 @@ public class StripLayoutHelperManager
         return getActiveStripLayoutHelper().getRightFadeOpacity();
     }
 
-    public int getLeftFadeDrawable() {
-        int leftFadeDrawable;
-        if (LocalizationUtils.isLayoutRtl()) {
-            if (mModelSelectorButton != null && mModelSelectorButton.isVisible()) {
-                leftFadeDrawable = R.drawable.tab_strip_fade_long;
-                mNormalHelper.setLeftFadeWidth(FADE_LONG_WIDTH_DP);
-                mIncognitoHelper.setLeftFadeWidth(FADE_LONG_WIDTH_DP);
-            } else {
-                // Use fade_medium for left fade when RTL and model selector button not
-                // visible.
-                leftFadeDrawable = R.drawable.tab_strip_fade_medium;
-                mNormalHelper.setLeftFadeWidth(FADE_MEDIUM_WIDTH_DP);
-                mIncognitoHelper.setLeftFadeWidth(FADE_MEDIUM_WIDTH_DP);
-            }
-        } else {
-            leftFadeDrawable = R.drawable.tab_strip_fade_short;
-            mNormalHelper.setLeftFadeWidth(FADE_SHORT_WIDTH_DP);
-            mIncognitoHelper.setLeftFadeWidth(FADE_SHORT_WIDTH_DP);
-        }
-        return leftFadeDrawable;
+    public float getLeftFadeGradientWidth() {
+        return getActiveStripLayoutHelper().getLeftFadeGradientWidth();
     }
 
-    public @DrawableRes int getRightFadeDrawable() {
-        @DrawableRes int rightFadeDrawable;
-        if (!LocalizationUtils.isLayoutRtl()) {
-            if (mModelSelectorButton != null && mModelSelectorButton.isVisible()) {
-                rightFadeDrawable = R.drawable.tab_strip_fade_long;
-                mNormalHelper.setRightFadeWidth(FADE_LONG_WIDTH_DP);
-                mIncognitoHelper.setRightFadeWidth(FADE_LONG_WIDTH_DP);
-            } else {
-                // Use fade_medium for right fade when model selector button not visible.
-                rightFadeDrawable = R.drawable.tab_strip_fade_medium;
-                mNormalHelper.setRightFadeWidth(FADE_MEDIUM_WIDTH_DP);
-                mIncognitoHelper.setRightFadeWidth(FADE_MEDIUM_WIDTH_DP);
-            }
-        } else {
-            rightFadeDrawable = R.drawable.tab_strip_fade_short;
-            mNormalHelper.setRightFadeWidth(FADE_SHORT_WIDTH_DP);
-            mIncognitoHelper.setRightFadeWidth(FADE_SHORT_WIDTH_DP);
-        }
-        return rightFadeDrawable;
+    public float getRightFadeGradientWidth() {
+        return getActiveStripLayoutHelper().getRightFadeGradientWidth();
+    }
+
+    public float getLeftFadeOpaqueWidth() {
+        return getActiveStripLayoutHelper().getLeftFadeOpaqueWidth();
+    }
+
+    public float getRightFadeOpaqueWidth() {
+        return getActiveStripLayoutHelper().getRightFadeOpaqueWidth();
     }
 
     /** Returns drag listener for tab strip. */
     public @Nullable OnDragListener getDragListener() {
         return mTabStripDragHandler;
-    }
-
-    void setGlicButtonVisibleForTesting(boolean isVisible) {
-        assumeNonNull(mGlicButton).setVisible(isVisible);
     }
 
     void setModelSelectorButtonVisibleForTesting(boolean isVisible) {

@@ -240,19 +240,23 @@ public class TabStripSceneLayer extends SceneOverlayLayer {
         }
 
         TabStripSceneLayerJni.get()
-                .updateTabStripLeftFade(
+                .updateTabStripFade(
                         mNativePtr,
-                        layoutHelper.getLeftFadeDrawable(),
-                        layoutHelper.getLeftFadeOpacity(),
+                        /* isLeft= */ true,
                         layoutHelper.getBackgroundColor(),
+                        layoutHelper.getLeftFadeOpacity(),
+                        Math.round(layoutHelper.getLeftFadeGradientWidth() * mDpToPx),
+                        Math.round(layoutHelper.getLeftFadeOpaqueWidth() * mDpToPx),
                         leftPaddingPx);
 
         TabStripSceneLayerJni.get()
-                .updateTabStripRightFade(
+                .updateTabStripFade(
                         mNativePtr,
-                        layoutHelper.getRightFadeDrawable(),
-                        layoutHelper.getRightFadeOpacity(),
+                        /* isLeft= */ false,
                         layoutHelper.getBackgroundColor(),
+                        layoutHelper.getRightFadeOpacity(),
+                        Math.round(layoutHelper.getRightFadeGradientWidth() * mDpToPx),
+                        Math.round(layoutHelper.getRightFadeOpaqueWidth() * mDpToPx),
                         rightPaddingPx);
     }
 
@@ -485,19 +489,14 @@ public class TabStripSceneLayer extends SceneOverlayLayer {
                 @DrawableRes int keyboardFocusRingResourceId,
                 @ColorInt int keyboardFocusRingColor);
 
-        void updateTabStripLeftFade(
+        void updateTabStripFade(
                 long nativeTabStripSceneLayer,
-                @DrawableRes int resourceId,
+                boolean isLeft,
+                @ColorInt int fadeColor,
                 float opacity,
-                @ColorInt int leftFadeColor,
-                float leftPaddingPx);
-
-        void updateTabStripRightFade(
-                long nativeTabStripSceneLayer,
-                @DrawableRes int resourceId,
-                float opacity,
-                @ColorInt int rightFadeColor,
-                float rightPaddingPx);
+                float gradientWidthPx,
+                float opaqueWidthPx,
+                float paddingPx);
 
         void putStripTabLayer(
                 long nativeTabStripSceneLayer,
