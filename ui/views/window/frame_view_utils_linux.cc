@@ -1,23 +1,31 @@
-// Copyright 2022 The Chromium Authors
+// Copyright 2026 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/views/frame/browser_frame_view_paint_utils_linux.h"
+#include "ui/views/window/frame_view_utils_linux.h"
+
+#include <cmath>
 
 #include "third_party/skia/include/core/SkRRect.h"
+#include "third_party/skia/include/core/SkRegion.h"
 #include "ui/color/color_provider.h"
 #include "ui/gfx/color_utils.h"
+#include "ui/gfx/geometry/insets_f.h"
 #include "ui/gfx/geometry/rect_conversions.h"
+#include "ui/gfx/geometry/rect_f.h"
+#include "ui/gfx/geometry/skia_conversions.h"
 #include "ui/gfx/scoped_canvas.h"
 #include "ui/gfx/skia_paint_util.h"
 #include "ui/views/view.h"
 #include "ui/views/window/frame_background.h"
 
+namespace views {
+
 namespace {
 
 constexpr int kBorderAlpha = 0x26;
 
-}
+}  // namespace
 
 void PaintRestoredFrameBorderLinux(gfx::Canvas& canvas,
                                    const views::View& view,
@@ -104,3 +112,88 @@ gfx::Insets GetRestoredFrameBorderInsetsLinux(
   return gfx::Insets::TLBR(-frame_extents.y(), -frame_extents.x(),
                            frame_extents.bottom(), frame_extents.right());
 }
+
+SkRRect GetRestoredClipRegion(const gfx::RectF& bounds,
+                              const gfx::InsetsF& border,
+                              const gfx::RoundedCornersF& radii) {
+  gfx::RectF clipped_bounds = bounds;
+  clipped_bounds.Inset(border);
+  SkVector sk_radii[4]{
+      {radii.upper_left(), radii.upper_left()},
+      {radii.upper_right(), radii.upper_right()},
+      {radii.lower_right(), radii.lower_right()},
+      {radii.lower_left(), radii.lower_left()},
+  };
+  SkRRect clip;
+  clip.setRectRadii(gfx::RectFToSkRect(clipped_bounds), sk_radii);
+  return clip;
+}
+
+ui::NavButtonProvider::FrameButtonDisplayType GetFrameButtonDisplayType(
+    FrameButton button_id,
+    bool is_maximized) {
+  switch (button_id) {
+    case FrameButton::kMinimize:
+      return ui::NavButtonProvider::FrameButtonDisplayType::kMinimize;
+    case FrameButton::kMaximize:
+      return is_maximized
+                 ? ui::NavButtonProvider::FrameButtonDisplayType::kRestore
+                 : ui::NavButtonProvider::FrameButtonDisplayType::kMaximize;
+    case FrameButton::kClose:
+      return ui::NavButtonProvider::FrameButtonDisplayType::kClose;
+  }
+}
+
+std::vector<gfx::Rect> GetRestoredOpaqueRegion(
+    const SkRRect& clip_region,
+    float scale,
+    int translucent_top_area_height_dip) {
+  // The opaque region is a list of rectangles that contain only fully
+  // opaque pixels of the window.  We need to convert the clipping
+  // rounded-rect into this format.
+  gfx::RectF rectf = gfx::SkRectToRectF(clip_region.rect());
+  rectf.Scale(scale);
+  // It is acceptable to omit some pixels that are opaque, but the region
+  // must not include any translucent pixels.  Therefore, we must
+  // conservatively scale to the enclosed rectangle.
+  gfx::Rect rect = gfx::ToEnclosedRect(rectf);
+
+  // Create the initial region from the clipping rectangle without rounded
+  // corners.
+  SkRegion region(gfx::RectToSkIRect(rect));
+
+  // Now subtract out the small rectangles that cover the corners.
+  struct {
+    SkRRect::Corner corner;
+    bool left;
+    bool upper;
+  } kCorners[] = {
+      {SkRRect::kUpperLeft_Corner, true, true},
+      {SkRRect::kUpperRight_Corner, false, true},
+      {SkRRect::kLowerLeft_Corner, true, false},
+      {SkRRect::kLowerRight_Corner, false, false},
+  };
+  for (const auto& corner : kCorners) {
+    auto radii = clip_region.radii(corner.corner);
+    auto rx = std::ceil(scale * radii.x());
+    auto ry = std::ceil(scale * radii.y());
+    auto corner_rect =
+        SkIRect::MakeXYWH(corner.left ? rect.x() : rect.right() - rx,
+                          corner.upper ? rect.y() : rect.bottom() - ry, rx, ry);
+    region.op(corner_rect, SkRegion::kDifference_Op);
+  }
+
+  auto translucent_top_area_rect = SkIRect::MakeXYWH(
+      rect.x(), rect.y(), rect.width(),
+      std::ceil(translucent_top_area_height_dip * scale - rect.y()));
+  region.op(translucent_top_area_rect, SkRegion::kDifference_Op);
+
+  // Convert the region to a list of rectangles.
+  std::vector<gfx::Rect> opaque_region;
+  for (SkRegion::Iterator i(region); !i.done(); i.next()) {
+    opaque_region.push_back(gfx::SkIRectToRect(i.rect()));
+  }
+  return opaque_region;
+}
+
+}  // namespace views

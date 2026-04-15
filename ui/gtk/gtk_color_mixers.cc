@@ -116,6 +116,10 @@ void AddGtkNativeColorMixer(ui::ColorProvider* provider,
       {"combobox window.background.popup ", "menu(gtk-combobox-popup-menu) ",
        GtkCssMenuItem(), ":hover cellview"}))};
   mixer[ui::kColorFrameActive] = {frame_color};
+  mixer[ui::kColorFrameCaptionForegroundActive] = {
+      GetFgColor(header_selector + " label.title")};
+  mixer[ui::kColorFrameCaptionForegroundInactive] = {
+      GetFgColor(header_selector_inactive + " label.title")};
   mixer[ui::kColorFrameInactive] = {frame_color_inactive};
   mixer[ui::kColorFocusableBorderUnfocused] = {entry_border};
   mixer[ui::kColorHelpIconActive] = {GetFgColor("button.image-button:hover")};

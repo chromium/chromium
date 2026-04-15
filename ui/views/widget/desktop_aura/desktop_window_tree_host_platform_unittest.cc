@@ -9,6 +9,7 @@
 #include <utility>
 
 #include "base/command_line.h"
+#include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/scoped_observation.h"
@@ -31,6 +32,8 @@
 #include "ui/views/widget/desktop_aura/desktop_native_widget_aura.h"
 #include "ui/views/widget/widget_delegate.h"
 #include "ui/views/widget/widget_observer.h"
+#include "ui/views/window/default_frame_view.h"
+#include "ui/views/window/frame_view.h"
 
 #if BUILDFLAG(IS_OZONE)
 #include "ui/ozone/public/ozone_platform.h"
@@ -223,7 +226,20 @@ TEST_F(DesktopWindowTreeHostPlatformTest,
 // Tests that the window shape is updated from the
 // |NonClientView::GetWindowMask|.
 TEST_F(DesktopWindowTreeHostPlatformTest, UpdateWindowShapeFromWindowMask) {
-  std::unique_ptr<Widget> widget = CreateWidgetWithNativeWidget();
+  // Use DefaultFrameView, which produces a non-empty mask, so the test
+  // does not depend on the platform-specific default frame view.
+  auto delegate = std::make_unique<WidgetDelegate>();
+  delegate->SetFrameViewFactory(
+      base::BindRepeating([](Widget* widget) -> std::unique_ptr<FrameView> {
+        return std::make_unique<DefaultFrameView>(widget);
+      }));
+  Widget::InitParams params(Widget::InitParams::CLIENT_OWNS_WIDGET,
+                            Widget::InitParams::TYPE_WINDOW);
+  params.delegate = delegate.get();
+  params.remove_standard_frame = true;
+  params.bounds = gfx::Rect(100, 100, 100, 100);
+  std::unique_ptr<Widget> widget =
+      CreateWidgetWithNativeWidgetWithParams(std::move(params));
   widget->Show();
 
   auto* host_platform = DesktopWindowTreeHostPlatform::GetHostForWidget(

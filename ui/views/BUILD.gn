@@ -656,7 +656,17 @@ component("views") {
   if (is_linux) {
     public_deps += [ "//ui/linux:linux_ui" ]
     deps += [ "//ui/base/ime/linux" ]
-    sources += [ "controls/menu/menu_config_linux.cc" ]
+    public += [
+      "window/frame_view_layout_linux.h",
+      "window/frame_view_linux.h",
+      "window/frame_view_utils_linux.h",
+    ]
+    sources += [
+      "controls/menu/menu_config_linux.cc",
+      "window/frame_view_layout_linux.cc",
+      "window/frame_view_linux.cc",
+      "window/frame_view_utils_linux.cc",
+    ]
   }
 
   if (is_chromeos) {
@@ -1437,6 +1447,7 @@ test("views_unittests") {
   }
 
   if (is_linux) {
+    sources += [ "window/frame_view_linux_unittest.cc" ]
     deps += [
       "//ui/base/ime/linux",
       "//ui/linux:test_support",

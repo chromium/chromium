@@ -7,10 +7,10 @@
 #include "base/i18n/rtl.h"
 #include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/views/frame/browser_frame_view_linux.h"
-#include "chrome/browser/ui/views/frame/browser_frame_view_paint_utils_linux.h"
 #include "chrome/browser/ui/views/frame/opaque_browser_frame_view_layout.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/gfx/geometry/insets.h"
+#include "ui/views/window/frame_view_utils_linux.h"
 
 namespace {
 
@@ -62,7 +62,7 @@ gfx::Insets BrowserFrameViewLayoutLinux::RestoredFrameBorderInsets() const {
 #endif
   auto shadow_values =
       tiled ? gfx::ShadowValues() : view_->GetShadowValues(true);
-  return GetRestoredFrameBorderInsetsLinux(
+  return views::GetRestoredFrameBorderInsetsLinux(
       delegate_->ShouldDrawRestoredFrameShadow(),
       OpaqueBrowserFrameViewLayout::RestoredFrameBorderInsets(), shadow_values,
       gfx::Insets(kResizeBorder));

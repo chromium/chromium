@@ -80,6 +80,10 @@ void AddUiColorMixer(ColorProvider* provider, const ColorProviderKey& key) {
   mixer[kColorFrameActive] = {kColorFrameActiveUnthemed};
   mixer[kColorFrameActiveUnthemed] = {
       dark_mode ? gfx::kGoogleGrey900 : SkColorSetRGB(0xDE, 0xE1, 0xE6)};
+  mixer[kColorFrameCaptionForegroundActive] =
+      GetColorWithMaxContrast(kColorFrameActive);
+  mixer[kColorFrameCaptionForegroundInactive] =
+      GetColorWithMaxContrast(kColorFrameInactive);
   mixer[kColorFrameInactive] = {dark_mode ? gfx::kGoogleGrey800
                                           : gfx::kGoogleGrey200};
   mixer[kColorHelpIconActive] = {kColorPrimaryForeground};
