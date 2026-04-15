@@ -78,7 +78,7 @@ class BookmarkToolbarMediator
     private final Profile mProfile;
     private final PropertyModel mModel;
     private final DragTouchHandler mDragTouchHandler;
-    private final SelectionDelegate mSelectionDelegate;
+    private final SelectionDelegate<BookmarkId> mSelectionDelegate;
     private final BookmarkModel mBookmarkModel;
     private final BookmarkOpener mBookmarkOpener;
     private final BookmarkUiPrefs mBookmarkUiPrefs;

@@ -67,7 +67,7 @@ public class BookmarkToolbar extends SelectableListToolbar<BookmarkId>
         setOnMenuItemClickListener(this);
     }
 
-    void setSelectionDelegate(SelectionDelegate selectionDelegate) {
+    void setSelectionDelegate(SelectionDelegate<BookmarkId> selectionDelegate) {
         mSelectionDelegate = selectionDelegate;
         getMenu().setGroupEnabled(R.id.selection_mode_menu_group, true);
     }

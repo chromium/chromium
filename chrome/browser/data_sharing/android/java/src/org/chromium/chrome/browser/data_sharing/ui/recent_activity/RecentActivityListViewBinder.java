@@ -41,7 +41,7 @@ class RecentActivityListViewBinder {
         } else if (ON_CLICK_LISTENER == propertyKey) {
             view.setOnClickListener(model.get(ON_CLICK_LISTENER));
         } else if (FAVICON_PROVIDER == propertyKey) {
-            Callback faviconProvider = model.get(FAVICON_PROVIDER);
+            Callback<ImageView> faviconProvider = model.get(FAVICON_PROVIDER);
             ImageView faviconView = view.findViewById(R.id.favicon);
             if (faviconProvider == null) {
                 faviconView.setVisibility(View.GONE);

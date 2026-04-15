@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.safety_check;
 
 import androidx.annotation.IntDef;
+import androidx.preference.Preference;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.pwd_check_wrapper.PasswordCheckController.PasswordCheckResult;
@@ -26,8 +27,8 @@ class PasswordsCheckPreferenceProperties {
     static final WritableIntPropertyKey COMPROMISED_PASSWORDS_COUNT = new WritableIntPropertyKey();
 
     /** Listener for the passwords element click events. */
-    static final WritableObjectPropertyKey PASSWORDS_CLICK_LISTENER =
-            new WritableObjectPropertyKey();
+    static final WritableObjectPropertyKey<Preference.OnPreferenceClickListener>
+            PASSWORDS_CLICK_LISTENER = new WritableObjectPropertyKey<>();
 
     /** The title for the password check preference. */
     static final ReadableObjectPropertyKey<String> PASSWORDS_TITLE =

@@ -85,7 +85,7 @@ public class BookmarkToolbarMediatorTest {
     @Mock private BookmarkDelegate mBookmarkDelegate;
     @Mock private DragTouchHandler mDragTouchHandler;
     @Mock private BookmarkOpener mBookmarkOpener;
-    @Mock private SelectionDelegate mSelectionDelegate;
+    @Mock private SelectionDelegate<BookmarkId> mSelectionDelegate;
     @Mock private Runnable mNavigateBackRunnable;
     @Mock private BookmarkUiPrefs mBookmarkUiPrefs;
     @Mock private BookmarkAddNewFolderCoordinator mBookmarkAddNewFolderCoordinator;

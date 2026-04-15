@@ -1129,9 +1129,9 @@ public class FeedStream implements Stream {
 
     /**
      * Adds a spacer into the recycler view at the current position. If there is no spacer, we can't
-     * scroll to the top, the scrolling  code won't go past the end of the content.
+     * scroll to the top, the scrolling code won't go past the end of the content.
      */
-    void addSpacer(List list) {
+    void addSpacer(List<FeedListContentManager.FeedContent> list) {
         if (mSpacerViewContent == null) {
             DisplayMetrics displayMetrics = new DisplayMetrics();
             mActivity.getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);

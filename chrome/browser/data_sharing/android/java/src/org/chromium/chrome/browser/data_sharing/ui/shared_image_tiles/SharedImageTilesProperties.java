@@ -15,7 +15,7 @@ class SharedImageTilesProperties {
     public static final PropertyModel.WritableBooleanPropertyKey IS_LOADING =
             new PropertyModel.WritableBooleanPropertyKey();
     public static final PropertyModel.WritableObjectPropertyKey<SharedImageTilesConfig>
-            VIEW_CONFIG = new PropertyModel.WritableObjectPropertyKey();
+            VIEW_CONFIG = new PropertyModel.WritableObjectPropertyKey<>();
     public static final PropertyModel.WritableIntPropertyKey ICON_TILES =
             new PropertyModel.WritableIntPropertyKey();
     public static final PropertyModel.WritableIntPropertyKey REMAINING_TILES =

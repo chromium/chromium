@@ -168,8 +168,12 @@ public class SafetyHubNotificationsModuleMediator
                         @Override
                         public void onAction(@Nullable Object actionData) {
                             assert actionData != null : "Action data should be non-null.";
+                            @SuppressWarnings(
+                                    "unchecked") // SnackbarController actionData is Object.
+                            List<NotificationPermissions> permissions =
+                                    (List<NotificationPermissions>) actionData;
                             mNotificationPermissionReviewBridge.bulkAllowNotificationPermissions(
-                                    (List<NotificationPermissions>) actionData);
+                                    permissions);
                             recordNotificationsInteraction(
                                     NotificationsModuleInteractions.UNDO_BLOCK_ALL);
                         }

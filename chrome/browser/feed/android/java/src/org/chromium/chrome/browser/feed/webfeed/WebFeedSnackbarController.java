@@ -317,7 +317,7 @@ public class WebFeedSnackbarController {
     /** Dismisses all active snackbars created by this conotroller. */
     public void dismissSnackbars() {
         // A copy is needed as controllers will self-remove from the list.
-        List<SnackbarController> controllersCopy = new ArrayList(mActiveControllers);
+        List<SnackbarController> controllersCopy = new ArrayList<>(mActiveControllers);
         controllersCopy.forEach(
                 (c) -> {
                     mSnackbarManager.dismissSnackbars(c);

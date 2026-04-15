@@ -280,7 +280,7 @@ class SafetyCheckMediator {
                     SafetyCheckProperties.SAFE_BROWSING_STATE, SafeBrowsingState.CHECKING);
             mSafetyCheckModel.set(SafetyCheckProperties.UPDATES_STATE, UpdatesState.CHECKING);
             checkSafeBrowsing();
-            mUpdatesClient.checkForUpdates(new WeakReference(mUpdatesCheckCallback));
+            mUpdatesClient.checkForUpdates(new WeakReference<>(mUpdatesCheckCallback));
         } else {
             mShowSafePasswordState = false;
             mSafetyCheckModel.set(
@@ -332,7 +332,7 @@ class SafetyCheckMediator {
         checkSafeBrowsing();
         checkPasswords(PasswordStorageType.ACCOUNT_STORAGE);
         checkPasswords(PasswordStorageType.LOCAL_STORAGE);
-        mUpdatesClient.checkForUpdates(new WeakReference(mUpdatesCheckCallback));
+        mUpdatesClient.checkForUpdates(new WeakReference<>(mUpdatesCheckCallback));
     }
 
     /** Cancels any pending callbacks and registered observers. */
@@ -521,7 +521,7 @@ class SafetyCheckMediator {
         PropertyModel passwordCheckModel = getPasswordsCheckModelForStoreType(passwordStorageType);
         if (passwordCheckModel == null) return;
 
-        WeakReference<SafetyCheckMediator> weakRef = new WeakReference(this);
+        WeakReference<SafetyCheckMediator> weakRef = new WeakReference<>(this);
         mPasswordCheckController
                 .getBreachedCredentialsCount(passwordStorageType)
                 .whenComplete(
@@ -542,7 +542,7 @@ class SafetyCheckMediator {
         PropertyModel passwordCheckModel = getPasswordsCheckModelForStoreType(passwordStorageType);
         if (passwordCheckModel == null) return;
 
-        WeakReference<SafetyCheckMediator> weakRef = new WeakReference(this);
+        WeakReference<SafetyCheckMediator> weakRef = new WeakReference<>(this);
         mPasswordCheckController
                 .checkPasswords(passwordStorageType)
                 .whenComplete(
