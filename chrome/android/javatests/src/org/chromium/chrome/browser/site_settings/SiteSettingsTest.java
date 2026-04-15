@@ -1743,6 +1743,7 @@ public class SiteSettingsTest {
     @SmallTest
     @Feature({"Preferences"})
     @EnableFeatures(ChromeFeatureList.PRIVACY_SANDBOX_AD_PRIVACY_UX_DEPRECATION)
+    @DisableIf.Device(DeviceFormFactor.DESKTOP) // crbug.com/503017220
     public void testBlockAllThirdPartyCookiesSnackbarHiddenWhenDeprecationEnabled() {
         var userActionTester = new UserActionTester();
         // Enable Topics API.
