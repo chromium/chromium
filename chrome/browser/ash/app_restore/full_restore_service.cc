@@ -391,6 +391,7 @@ void FullRestoreService::SetAppLaunchHandlerForTesting(
 
 void FullRestoreService::Shutdown() {
   is_shut_down_ = true;
+  session_termination_observation_.Reset();
 }
 
 bool FullRestoreService::CanBeInited() const {

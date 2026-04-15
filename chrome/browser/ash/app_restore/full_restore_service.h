@@ -167,11 +167,9 @@ class FullRestoreService : public KeyedService,
   // Shows the informed restore onboarding dialog when there is no restore data.
   void MaybeShowInformedRestoreOnboarding(bool restore_on);
 
-  // TODO(crbug.com/498537324): remove when the FullRestoreService is
-  // no longer outliving the SessionTerminationManager it observes.
   base::ScopedObservation<ash::SessionTerminationManager,
-                          ash::SessionTerminationManager::Observer>::
-      LeakedDanglingUntriaged session_termination_observation_{this};
+                          ash::SessionTerminationManager::Observer>
+      session_termination_observation_{this};
 
   raw_ptr<Profile> profile_ = nullptr;
   PrefChangeRegistrar pref_change_registrar_;
