@@ -1282,7 +1282,6 @@ if (enable_extensions) {
       "api/sockets_tcp/sockets_tcp_apitest.cc",
       "api/sockets_tcp_server/sockets_tcp_server_apitest.cc",
       "api/sockets_udp/sockets_udp_apitest.cc",
-      "api/system_display/system_display_apitest.cc",
       "api/system_storage/storage_api_test_util.cc",
       "api/system_storage/storage_api_test_util.h",
       "api/system_storage/system_storage_apitest.cc",

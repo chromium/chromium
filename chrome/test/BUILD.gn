@@ -4699,6 +4699,7 @@ if (!is_android) {
         "../browser/extensions/api/settings_private/settings_private_apitest.cc",
         "../browser/extensions/api/side_panel/side_panel_apitest.cc",
         "../browser/extensions/api/socket/socket_apitest.cc",
+        "../browser/extensions/api/system_display/system_display_apitest.cc",
         "../browser/extensions/api/system_private/system_private_apitest.cc",
         "../browser/extensions/api/tab_capture/tab_capture_performance_test_base.cc",
         "../browser/extensions/api/tab_capture/tab_capture_performance_test_base.h",

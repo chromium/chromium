@@ -10,7 +10,10 @@
 #include "base/test/gtest_tags.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
+#include "chrome/browser/extensions/extension_apitest.h"
+#include "chrome/browser/profiles/profile.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "extensions/browser/api/system_display/display_info_provider.h"
 #include "extensions/browser/api/system_display/system_display_api.h"
@@ -20,14 +23,14 @@
 #include "extensions/browser/process_manager.h"
 #include "extensions/common/api/system_display.h"
 #include "extensions/common/extension_builder.h"
-#include "extensions/shell/test/shell_apitest.h"
 #include "extensions/test/result_catcher.h"
 
 namespace extensions {
 
-class SystemDisplayApiTest : public ShellApiTest {
+class SystemDisplayApiTest : public ExtensionApiTest {
  public:
-  SystemDisplayApiTest() : provider_(new MockDisplayInfoProvider) {}
+  SystemDisplayApiTest()
+      : provider_(std::make_unique<MockDisplayInfoProvider>()) {}
 
   SystemDisplayApiTest(const SystemDisplayApiTest&) = delete;
   SystemDisplayApiTest& operator=(const SystemDisplayApiTest&) = delete;
@@ -35,7 +38,7 @@ class SystemDisplayApiTest : public ShellApiTest {
   ~SystemDisplayApiTest() override = default;
 
   void SetUpOnMainThread() override {
-    ShellApiTest::SetUpOnMainThread();
+    ExtensionApiTest::SetUpOnMainThread();
     DisplayInfoProvider::InitializeForTesting(provider_.get());
   }
 
@@ -51,8 +54,7 @@ class SystemDisplayApiTest : public ShellApiTest {
 
 #if BUILDFLAG(IS_CHROMEOS)
 
-// TODO(stevenjb): Add API tests for {GS}etDisplayLayout. That code currently
-// lives in src/chrome but should be getting moved soon.
+// TODO(stevenjb): Add API tests for {GS}etDisplayLayout.
 
 IN_PROC_BROWSER_TEST_F(SystemDisplayApiTest, SetDisplayNotKioskEnabled) {
   scoped_refptr<const Extension> test_extension =
@@ -64,10 +66,9 @@ IN_PROC_BROWSER_TEST_F(SystemDisplayApiTest, SetDisplayNotKioskEnabled) {
   set_info_function->set_extension(test_extension.get());
   set_info_function->set_has_callback(true);
 
-  EXPECT_EQ(
-      SystemDisplayCrOSRestrictedFunction::kKioskOnlyError,
-      api_test_utils::RunFunctionAndReturnError(
-          set_info_function.get(), "[\"display_id\", {}]", browser_context()));
+  EXPECT_EQ(SystemDisplayCrOSRestrictedFunction::kKioskOnlyError,
+            api_test_utils::RunFunctionAndReturnError(
+                set_info_function.get(), "[\"display_id\", {}]", profile()));
 
   std::optional<base::DictValue> set_info = provider_->GetSetInfoValue();
   EXPECT_FALSE(set_info);
@@ -95,7 +96,7 @@ IN_PROC_BROWSER_TEST_F(SystemDisplayApiTest, SetDisplayKioskEnabled) {
       "  \"rotation\": 90,\n"
       "  \"overscan\": {\"left\": 1, \"top\": 2, \"right\": 3, \"bottom\": 4}\n"
       "}]",
-      browser_context()));
+      profile()));
 
   std::optional<base::DictValue> set_info = provider_->GetSetInfoValue();
   ASSERT_TRUE(set_info);
@@ -134,7 +135,7 @@ IN_PROC_BROWSER_TEST_F(SystemDisplayApiTest, EnableUnifiedDesktop) {
     EXPECT_FALSE(provider_->unified_desktop_enabled());
 
     ASSERT_TRUE(api_test_utils::RunFunction(enable_unified_function.get(),
-                                            "[true]", browser_context()));
+                                            "[true]", profile()));
     EXPECT_TRUE(provider_->unified_desktop_enabled());
   }
   {
@@ -145,7 +146,7 @@ IN_PROC_BROWSER_TEST_F(SystemDisplayApiTest, EnableUnifiedDesktop) {
     enable_unified_function->set_has_callback(true);
     enable_unified_function->set_extension(test_extension.get());
     ASSERT_TRUE(api_test_utils::RunFunction(enable_unified_function.get(),
-                                            "[false]", browser_context()));
+                                            "[false]", profile()));
     EXPECT_FALSE(provider_->unified_desktop_enabled());
   }
 }
@@ -166,8 +167,8 @@ IN_PROC_BROWSER_TEST_F(SystemDisplayApiTest, OverscanCalibrationStart) {
       new SystemDisplayOverscanCalibrationStartFunction());
   start_function->set_extension(test_extension.get());
   start_function->set_has_callback(true);
-  ASSERT_TRUE(api_test_utils::RunFunction(
-      start_function.get(), "[\"" + id + "\"]", browser_context()));
+  ASSERT_TRUE(api_test_utils::RunFunction(start_function.get(),
+                                          "[\"" + id + "\"]", profile()));
 
   ASSERT_TRUE(provider_->calibration_started(id));
 
@@ -176,8 +177,8 @@ IN_PROC_BROWSER_TEST_F(SystemDisplayApiTest, OverscanCalibrationStart) {
       complete_function(new SystemDisplayOverscanCalibrationCompleteFunction());
   complete_function->set_extension(test_extension.get());
   complete_function->set_has_callback(true);
-  ASSERT_TRUE(api_test_utils::RunFunction(
-      complete_function.get(), "[\"" + id + "\"]", browser_context()));
+  ASSERT_TRUE(api_test_utils::RunFunction(complete_function.get(),
+                                          "[\"" + id + "\"]", profile()));
 
   ASSERT_FALSE(provider_->calibration_started(id));
 }
@@ -188,7 +189,7 @@ IN_PROC_BROWSER_TEST_F(SystemDisplayApiTest, OverscanCalibrationApp) {
   api::system_display::DisplayProperties params;
   SetInfo(id, params);
 
-  ASSERT_TRUE(RunAppTest("system/display/overscan")) << message_;
+  ASSERT_TRUE(RunExtensionTest("system/display/overscan")) << message_;
 
   ASSERT_FALSE(provider_->calibration_started(id));
   ASSERT_TRUE(provider_->calibration_changed(id));
@@ -201,8 +202,8 @@ IN_PROC_BROWSER_TEST_F(SystemDisplayApiTest, OverscanCalibrationAppNoComplete) {
   SetInfo(id, params);
 
   ResultCatcher catcher;
-  scoped_refptr<const Extension> extension =
-      LoadApp("system/display/overscan_no_complete");
+  scoped_refptr<const Extension> extension = LoadExtension(
+      test_data_dir_.AppendASCII("system/display/overscan_no_complete"));
   ASSERT_TRUE(extension);
   EXPECT_TRUE(catcher.GetNextResult()) << catcher.message();
 
@@ -210,7 +211,7 @@ IN_PROC_BROWSER_TEST_F(SystemDisplayApiTest, OverscanCalibrationAppNoComplete) {
   ASSERT_TRUE(provider_->calibration_started(id));
 
   // Unloading the app should complete the calibration (and hide the overlay).
-  UnloadApp(extension.get());
+  UnloadExtension(extension->id());
   ASSERT_FALSE(provider_->calibration_changed(id));
   ASSERT_FALSE(provider_->calibration_started(id));
 }
@@ -232,7 +233,7 @@ IN_PROC_BROWSER_TEST_F(SystemDisplayApiTest, ShowNativeTouchCalibrationFail) {
   provider_->SetTouchCalibrationWillSucceed(false);
 
   std::string result(api_test_utils::RunFunctionAndReturnError(
-      show_native_calibration.get(), "[\"" + id + "\"]", browser_context()));
+      show_native_calibration.get(), "[\"" + id + "\"]", profile()));
 
   EXPECT_FALSE(result.empty());
 }
@@ -255,8 +256,7 @@ IN_PROC_BROWSER_TEST_F(SystemDisplayApiTest, ShowNativeTouchCalibration) {
 
   std::optional<base::Value> result(
       api_test_utils::RunFunctionAndReturnSingleResult(
-          show_native_calibration.get(), "[\"" + id + "\"]",
-          browser_context()));
+          show_native_calibration.get(), "[\"" + id + "\"]", profile()));
 
   ASSERT_TRUE(result->is_bool());
   EXPECT_TRUE(result->GetBool());
@@ -278,7 +278,7 @@ IN_PROC_BROWSER_TEST_F(SystemDisplayApiTest, SetMirrorMode) {
                                             "[{\n"
                                             "  \"mode\": \"normal\"\n"
                                             "}]",
-                                            browser_context()));
+                                            profile()));
     EXPECT_EQ(api::system_display::MirrorMode::kNormal,
               provider_->mirror_mode());
   }
@@ -295,7 +295,7 @@ IN_PROC_BROWSER_TEST_F(SystemDisplayApiTest, SetMirrorMode) {
                                     "  \"mirroringSourceId\": \"10\",\n"
                                     "  \"mirroringDestinationIds\": [\"11\"]\n"
                                     "}]",
-                                    browser_context()));
+                                    profile()));
     EXPECT_EQ(api::system_display::MirrorMode::kMixed,
               provider_->mirror_mode());
   }
@@ -310,7 +310,7 @@ IN_PROC_BROWSER_TEST_F(SystemDisplayApiTest, SetMirrorMode) {
                                             "[{\n"
                                             "  \"mode\": \"off\"\n"
                                             "}]",
-                                            browser_context()));
+                                            profile()));
     EXPECT_EQ(api::system_display::MirrorMode::kOff, provider_->mirror_mode());
   }
 }
@@ -322,12 +322,14 @@ IN_PROC_BROWSER_TEST_F(SystemDisplayApiTest, ResetDisplayIds) {
   SetInfo(id, params);
 
   ResultCatcher catcher;
-  const Extension* extension = LoadApp("system/display/overscan_no_complete");
+  const Extension* extension = LoadExtension(
+      test_data_dir_.AppendASCII("system/display/overscan_no_complete"));
   ASSERT_TRUE(extension);
   EXPECT_TRUE(catcher.GetNextResult()) << catcher.message();
 
-  ExtensionHost* host = ProcessManager::Get(browser_context())
-                            ->GetBackgroundHostForExtension(extension->id());
+  ExtensionHost* host =
+      ProcessManager::Get(profile())->GetBackgroundHostForExtension(
+          extension->id());
   ASSERT_TRUE(host);
   ASSERT_TRUE(host->host_contents());
 
@@ -342,9 +344,10 @@ IN_PROC_BROWSER_TEST_F(SystemDisplayApiTest, ResetDisplayIds) {
   // By loading the app, calibration is started.
   ASSERT_TRUE(provider_->calibration_started(id));
 
-  EXPECT_TRUE(ExecJs(host->host_contents()->GetPrimaryMainFrame(),
-                     "const iframe = document.querySelector('iframe');\
-                     iframe.remove();"));
+  EXPECT_TRUE(ExecJs(host->host_contents()->GetPrimaryMainFrame(), R"(
+                     const iframe = document.querySelector('iframe');
+                     iframe.remove();
+      )"));
   ASSERT_TRUE(
       sub_frame_render_frame_host_wrapper.WaitUntilRenderFrameDeleted());
 
@@ -363,7 +366,7 @@ IN_PROC_BROWSER_TEST_F(SystemDisplayApiTest, ResetDisplayIds) {
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(IS_WIN)
-using SystemDisplayGetInfoTest = ShellApiTest;
+using SystemDisplayGetInfoTest = ExtensionApiTest;
 
 IN_PROC_BROWSER_TEST_F(SystemDisplayGetInfoTest, GetInfo) {
   DisplayInfoProvider::ResetForTesting();
@@ -379,8 +382,8 @@ IN_PROC_BROWSER_TEST_F(SystemDisplayGetInfoTest, GetInfo) {
   // Verify that the GetInfo function runs successfully. This uses the real
   // DisplayInfoProvider to verify that DisplayInfoProvider::GetAllDisplaysInfo
   // calls its callback.
-  ASSERT_TRUE(api_test_utils::RunFunction(get_info_function.get(), "[]",
-                                          browser_context()));
+  ASSERT_TRUE(
+      api_test_utils::RunFunction(get_info_function.get(), "[]", profile()));
 }
 #endif  // BUILDFLAG(IS_WIN)
 
