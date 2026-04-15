@@ -1,4 +1,5 @@
 <!doctype html>
+<meta name="timeout" content="long">
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <script src="/html/canvas/resources/canvas-promise-test.js"></script>
@@ -9,6 +10,164 @@ function drawAndReadBack(ctx) {
   ctx.fillStyle = 'red';
   ctx.fillRect(0, 0, 100, 100);
   return ctx.getImageData(1, 1, 1, 1).data;
+}
+
+/**
+ * Returns a promise that settles after `frameCount` animation frames.
+ */
+async function waitFrames(frameCount) {
+  for (let i = 0; i < frameCount; ++i) {
+    await new Promise(resolve => requestAnimationFrame(resolve))
+  }
+}
+
+/**
+ * Returns a promise that is rejected after `timeoutMs` milliseconds.
+ * On timeout, the promise rejection will include the `errorMessage` text.
+ */
+function promiseFinishBefore(timeoutMs, errorMessage) {
+  const { promise, reject } = Promise.withResolvers();
+  setTimeout(() => reject(new Error(errorMessage)), timeoutMs);
+  return promise;
+}
+
+/**
+ * Returns a promise that resolves when the contextlost event of the canvas
+ * associated with `ctx` fires.
+ *
+ * This function watches for contextlost events by registering an event
+ * handler. That event handler is unregistered when `signal` aborts. This allows
+ * racing between multiple events using `raceAndAbortOthers`.
+ *
+ * Of course, `promiseContextLost()` must be called before the contextlost event
+ * fires. If the event already fired before calling this function, the promise
+ * will never resolve. `promiseContextLost()` can still be called anytime before
+ * the current task finishes though because events can't be called concurrently
+ * to the current task:
+ *
+ *   somehowLoseTheContext();
+ *   const controller = new AbortController();
+ *   await promiseContextLost(controller.signal)
+ *       .finally(() => controller.abort());
+ *
+ * If dealing with asynchronous logic however, the promise needs to be created
+ * before the task that lost the context ends:
+ *
+ *   somehowLoseTheContext();
+ *   const controller = new AbortController();
+ *   const promise = promiseContextLost(ctx, controller.signal);
+ *   await waitFrames(1);  // The contextlost event could fire here.
+ *   await promise.finally(() => controller.abort());
+ */
+function promiseContextLost(ctx, signal) {
+  const { promise, resolve } = Promise.withResolvers();
+  ctx.canvas.addEventListener('contextlost', resolve, {signal});
+  return promise;
+}
+
+/**
+ * Returns a promise that resolves when the contextrestored event of the canvas
+ * associated with `ctx` fires.
+ *
+ * Behaves similarly to `promiseContextLost`, see that function for more
+ * details.
+ */
+function promiseContextRestored(ctx, signal) {
+  const { promise, resolve } = Promise.withResolvers();
+  ctx.canvas.addEventListener('contextrestored', resolve, {signal});
+  return promise;
+}
+
+/**
+ * Returns a promise that is rejected if the contextlost event of the canvas
+ * associated with `ctx` fires.
+ *
+ * Behaves similarly to `promiseContextLost`, see that function for more
+ * details.
+ */
+function promiseContextNotLost(ctx, signal) {
+  const { promise, reject } = Promise.withResolvers();
+  ctx.canvas.addEventListener(
+      'contextlost',
+      () => reject(new Error('Unexpected contextlost event.')),
+      {signal});
+  return promise;
+}
+
+
+/**
+ * Returns a promise that is rejected if the contextrestored event of the canvas
+ * associated with `ctx` fires.
+ *
+ * Behaves similarly to `promiseContextLost`, see that function for more
+ * details.
+ */
+function promiseContextNotRestored(ctx, signal) {
+  const { promise, reject } = Promise.withResolvers();
+  ctx.canvas.addEventListener(
+      'contextrestored',
+      () => reject(new Error('Unexpected contextrestored event.')),
+      {signal});
+  return promise;
+}
+
+/**
+ * Returns a promise that resolves or rejects when the first promise in
+ * `promises` resolves or rejects. Once settled, this promise aborts
+ * `controller` to clean up all passed `promises`.
+ */
+function raceAndAbortOthers(controller, promises) {
+  return Promise.race(promises)
+      .finally(() => controller.abort());
+}
+
+/**
+ * Returns a promise that resolves when the canvas associated with `ctx` loses
+ * it's context. The promise rejects if the contextrestored fires, or if
+ * contextlost doesn't fire within `deadlineMs` milliseconds.
+ *
+ * Must be called before, or in the same task that loses the context or else the
+ * promise will never resolve.
+ */
+async function waitForContextLost(ctx, deadlineMs=2000) {
+  const controller = new AbortController();
+  await raceAndAbortOthers(controller, [
+    promiseFinishBefore(deadlineMs, 'Event contextlost should have fired.'),
+    promiseContextLost(ctx, controller.signal),
+    promiseContextNotRestored(ctx, controller.signal),
+  ]);
+  assert_true(ctx.isContextLost(), 'GPU context should be lost.');
+}
+
+/**
+ * Returns a promise that resolves when the canvas associated with `ctx` has
+ * it's context restored. The promise rejects if the contextlost fires, or if
+ * contextrestored doesn't fire within `deadlineMs` milliseconds.
+ *
+ * Must be called before the context is restored or else the promise will never
+ * resolve.
+ */
+async function waitForContextRestored(ctx, deadlineMs=2000) {
+  const controller = new AbortController();
+  await raceAndAbortOthers(controller, [
+    promiseFinishBefore(deadlineMs, 'Event contextrestored should have fired.'),
+    promiseContextNotLost(ctx, controller.signal),
+    promiseContextRestored(ctx, controller.signal),
+  ]);
+  assert_false(ctx.isContextLost(), 'GPU context should be restored.');
+}
+
+/**
+ * Returns a promise that resolves after `frameCount` animation frames and
+ * rejects if a contextlost or contextrestored event fires before then.
+ */
+async function waitFramesAndRejectOnContextEvents(ctx, frameCount=5) {
+  const controller = new AbortController();
+  await raceAndAbortOthers(controller, [
+    waitFrames(frameCount),
+    promiseContextNotLost(ctx, controller.signal),
+    promiseContextNotRestored(ctx, controller.signal),
+  ]);
 }
 
 /**
@@ -81,98 +240,6 @@ canvasPromiseTest(async (canvas) => {
       `The canvas should be usable after it's restored.`);
 
 }, 'Test losing and restoring a 2D context by setting an invalid canvas size.',
-   {testTypes: ALL_CANVAS_TEST_TYPES});
-
-/**
- * Validates that after losing the context due to an invalid canvas size, the
- * page can set a valid canvas size before the oncontextlost event is fired.
- */
-canvasPromiseTest(async (canvas) => {
-  const ctx = canvas.getContext('2d', {
-    // Stay on GPU acceleration despite read-backs.
-    willReadFrequently: false,
-  });
-
-  let contextLostEventInvoked = false;
-  let contextRestoredEventInvoked = false;
-  let contextLost = new Promise(resolve => {
-    canvas.oncontextlost = () => {
-      assert_false(contextRestoredEventInvoked,
-                   `oncontextrestore shouldn't be called before oncontextlost`);
-      contextLostEventInvoked = true;
-      resolve();
-    }
-  });
-  let contextRestored = new Promise(resolve => {
-    canvas.oncontextrestored = () => {
-      assert_true(contextLostEventInvoked,
-                  'oncontextlost should be called before oncontextrestored.');
-      contextRestoredEventInvoked = true;
-      resolve();
-    }
-  });
-
-  // Make sure the canvas is fully initialized.
-  drawAndReadBack(ctx);
-
-  // Set invalid size and use the canvas so it tries (and fails) to allocate a
-  // surface, triggering the context lost logic.
-  canvas.width = 100000000;
-  drawAndReadBack(ctx);
-  assert_true(ctx.isContextLost(),
-              'Context lost is detected when the canvas is used.');
-
-  // Restore the canvas size before the oneventloss event fires.
-  canvas.width = 200;
-
-  // The contextlost and contextrestored events should fire in the right order.
-  await contextLost;
-  await contextRestored;
-}, 'Invalid size can be corrected before the contextlost event.',
-   {testTypes: ALL_CANVAS_TEST_TYPES});
-
-/**
- * Validates setting an invalid size right after restoring from an invalid one.
- */
- canvasPromiseTest(async (canvas) => {
-  const ctx = canvas.getContext('2d', {
-    // Stay on GPU acceleration despite read-backs.
-    willReadFrequently: false,
-  });
-
-  // Make sure the canvas is fully initialized.
-  drawAndReadBack(ctx);
-
-  // Set invalid canvas size. Using the canvas attempts a resource provider
-  // creation which fails, setting context_lost_mode_ = kInvalidCanvasSize. An
-  // oncontextlost event is queued.
-  canvas.width = 100000000;
-  drawAndReadBack(ctx);
-
-  // When correcting the canvas size, we find that an oncontextlost
-  // is queued, so we set need_dispatch_context_restored_ = true
-  canvas.width = 200;
-
-  // Set an invalid size, but since context_lost_mode_ ==
-  // kInvalidCanvasSize, the draw is no-op and no provider creation
-  // is attempted.
-  canvas.width = 100000000;
-  drawAndReadBack(ctx);
-
-  // The oncontextlost is fired, which runs oncontextrestored because
-  // need_dispatch_context_restored_ == true
-  await new Promise(resolve => { canvas.oncontextlost = resolve; });
-  await new Promise(resolve => { canvas.oncontextrestored = resolve; });
-
-  // Now that the context is restored, we can draw to the canvas.
-  // Doing so attempts to create a provider, which fails and sets
-  // context_lost_mode_ = kInvalidCanvasSize
-  drawAndReadBack(ctx);
-
-  // This fires another oncontextlost event.
-  await new Promise(resolve => { canvas.oncontextlost = resolve; });
-}, 'Canvas can be given an invalid size right after restoring from a ' +
-   'previous invalid size.',
    {testTypes: ALL_CANVAS_TEST_TYPES});
 
 /**
@@ -265,6 +332,819 @@ canvasPromiseTest(async (canvas) => {
   }
 }, 'Invalid size context loss restoration can be cancelled even if size is ' +
    'fixed in oncontextlost task.',
+   {testTypes: ALL_CANVAS_TEST_TYPES});
+
+/**
+ * Check that the canvas is unusable while the context is lost.
+ */
+canvasPromiseTest(async (canvas, {canvasType} = {}) => {
+  const ctx = canvas.getContext('2d', {
+    willReadFrequently: false,  // Stay on GPU acceleration despite read-backs.
+  });
+
+  assert_array_equals(drawAndReadBack(ctx), [255, 0, 0, 255],
+      'Canvas should start in an healthy, usable state.');
+
+  canvas.width = 100000000;
+  assert_array_equals(drawAndReadBack(ctx), [0, 0, 0, 0],
+      'Canvas should become unusable after setting an invalid size.');
+
+  canvas.width = 64;
+  assert_array_equals(drawAndReadBack(ctx), [0, 0, 0, 0],
+      'Canvas should be unusable before the contextlost event fires.');
+
+  await waitForContextLost(ctx);
+  assert_array_equals(drawAndReadBack(ctx), [0, 0, 0, 0],
+      'Canvas should be unusable before the contextrestored event fires.');
+
+  await waitForContextRestored(ctx);
+  assert_array_equals(drawAndReadBack(ctx), [255, 0, 0, 255],
+      'Canvas should be usable after the contextrestored event is fired.');
+}, 'The canvas should remain unusable until contextrestored fires.',
+   {testTypes: ALL_CANVAS_TEST_TYPES});
+
+/**
+ * Give an invalid size to an initialized canvas.
+ */
+canvasPromiseTest(async (canvas, {canvasType} = {}) => {
+  const ctx = canvas.getContext('2d', {
+    willReadFrequently: false,  // Stay on GPU acceleration despite read-backs.
+  });
+
+  // Use the canvas do that it allocates a backing bitmap.
+  drawAndReadBack(ctx);
+
+  // Set an invalid size after resources are allocated.
+  canvas.width = 100000000;
+  assert_false(ctx.isContextLost(),
+              'Context should not be lost right after setting the size.');
+
+  // Using the canvas now loses the context.
+  ctx.fillRect(0, 0, 100, 100);
+  await waitForContextLost(ctx);
+
+  // The context won't restore until we give it a valid size.
+  await waitFramesAndRejectOnContextEvents(ctx);
+  canvas.width = 64;
+  await waitForContextRestored(ctx);
+}, 'Valid provider -> bad size -> context lost.',
+   {testTypes: ALL_CANVAS_TEST_TYPES});
+
+/**
+ * Give an invalid size to a new uninitialized canvas.
+ */
+canvasPromiseTest(async (canvas, {canvasType} = {}) => {
+  const ctx = canvas.getContext('2d');
+
+  // Set an invalid size in a new canvas (before resources are allocated).
+  canvas.width = 100000000;
+  assert_false(ctx.isContextLost(),
+              'Context should not be lost right after setting the size.');
+
+  // Using the canvas now loses the context.
+  ctx.fillRect(0, 0, 100, 100);
+  await waitForContextLost(ctx);
+
+  // The context won't restore until we give it a valid size.
+  await waitFramesAndRejectOnContextEvents(ctx);
+  canvas.width = 64;
+  await waitForContextRestored(ctx);
+}, 'No provider -> bad size -> context lost.',
+   {testTypes: ALL_CANVAS_TEST_TYPES});
+
+/**
+ * Give an invalid size to a canvas and use it in the same task.
+ */
+canvasPromiseTest(async (canvas, {canvasType} = {}) => {
+  const ctx = canvas.getContext('2d');
+
+  canvas.width = 100000000;
+  ctx.fillRect(0, 0, 100, 100);
+
+  // TODO: crbug.com/348445884 - `HTMLCanvasElement` and `OffscreenCanvas`
+  // behave differently. This test is merely testing existing behavior, but this
+  // should be fixed such that the two classes behave the same way.
+  if (HTML_CANVAS_ELEMENT_TEST_TYPES.includes(canvasType)) {
+    // `HTMLCanvasElement` lost the context in `fillRect`.
+    assert_true(ctx.isContextLost(),
+                'Context should be lost immediately after a failed draw.');
+  } else {
+    // For `OffscreenCanvas`, the `fillRect` above aborted, but the context
+    // wasn't lost. The context will only become lost when the task terminates.
+    assert_false(ctx.isContextLost(),
+                'Context should be lost only when flushing the canvas.');
+  }
+
+  await waitForContextLost(ctx);
+}, 'Bad size -> fillRect -> context lost.',
+   {testTypes: ALL_CANVAS_TEST_TYPES});
+
+/**
+ * Give an invalid size to an `HTMLCanvasElement` and use it in a following
+ * task.
+ */
+canvasPromiseTest(async (canvas) => {
+  const ctx = canvas.getContext('2d');
+
+  canvas.width = 100000000;
+  assert_false(ctx.isContextLost(),
+              'Context should not be lost right after setting the size.');
+
+  // Wait a few frames to make sure the context isn't lost.
+  await waitFramesAndRejectOnContextEvents(ctx);
+  assert_false(ctx.isContextLost(),
+               'Context should not be lost until canvas is used.');
+
+  // Using the canvas now loses the context.
+  ctx.fillRect(0, 0, 100, 100);
+  await waitForContextLost(ctx);
+}, 'Bad size -> rAF -> fillRect -> context lost.',
+   {testTypes: HTML_CANVAS_ELEMENT_TEST_TYPES});
+
+/**
+ * Give an invalid size to an `OffscreenCanvas` and use it in a following task.
+ *
+ * TODO: crbug.com/348445884 - `HTMLCanvasElement` and `OffscreenCanvas` have
+ * different behaviors here (see previous test). This test merely verify the
+ * current behavior, but `OffscreenCanvas` should probably be fixed to not lose
+ * the context until the canvas is actually used, like we do for
+ * HTMLCanvasElement. For `OffscreenCanvas`, the resize clears it and it wants
+ * to push a new blank frame by rasterizing an empty image, which doesn't even
+ * work because the canvas doesn't even have a valid size.
+ */
+canvasPromiseTest(async (canvas) => {
+  const ctx = canvas.getContext('2d');
+
+  canvas.width = 100000000;
+  assert_false(ctx.isContextLost(),
+               'Context should not be lost until we finish the task.');
+  await waitForContextLost(ctx);
+}, 'Bad size -> DidProcessTask -> context lost.',
+   {testTypes: OFFSCREEN_CANVAS_TEST_TYPES});
+
+/**
+ * Cycle size as good -> bad -> good and try using the canvas right away.
+ */
+canvasPromiseTest(async (canvas) => {
+  const ctx = canvas.getContext('2d', {
+    willReadFrequently: false,  // Stay on GPU acceleration despite read-backs.
+  });
+
+  // Toggle good -> bad -> good. This is effectively the same as just doing
+  // good -> good.
+  canvas.width = 100000000;
+  canvas.width = 64;
+  assert_false(ctx.isContextLost(),
+               'Context should not be lost after restoring the size.');
+
+  // The canvas should be immediately usable.
+  ctx.fillRect(0, 0, 100, 100);
+  assert_false(ctx.isContextLost(),
+               'Context should not be lost after drawing.');
+
+  // Wait a few frames to make sure the context isn't lost asynchronously.
+  await waitFramesAndRejectOnContextEvents(ctx);
+  assert_false(ctx.isContextLost(),
+               'Context should not be lost after rAF.');
+  assert_array_equals(drawAndReadBack(ctx), [255, 0, 0, 255],
+                      'The canvas draw should have worked');
+}, 'Bad size -> valid size -> fillRect.',
+   {testTypes: ALL_CANVAS_TEST_TYPES});
+
+/**
+ * Cycle size as good -> bad -> good and use the canvas in a following task.
+ */
+canvasPromiseTest(async (canvas) => {
+  const ctx = canvas.getContext('2d', {
+    willReadFrequently: false,  // Stay on GPU acceleration despite read-backs.
+  });
+
+  // Toggle good -> bad -> good. This is effectively the same as just doing
+  // good -> good.
+  canvas.width = 100000000;
+  canvas.width = 64;
+  assert_false(ctx.isContextLost(),
+               'Context should not be lost after restoring the size.');
+
+  // Wait a few frames to make sure the GPU context isn't lost asynchronously.
+  await waitFramesAndRejectOnContextEvents(ctx);
+  assert_false(ctx.isContextLost(),
+               'Context should not be lost after rAF.');
+
+  // The canvas should now be usable.
+  ctx.fillRect(0, 0, 100, 100);
+  assert_false(ctx.isContextLost(),
+               'Context should not be lost after drawing.');
+  assert_array_equals(drawAndReadBack(ctx), [255, 0, 0, 255],
+                      'The canvas draw should have worked');
+}, 'Bad size -> valid size -> rAF -> fillRect.',
+   {testTypes: ALL_CANVAS_TEST_TYPES});
+
+/**
+ * Cycle size as good -> bad -> good -> bad.
+ **/
+canvasPromiseTest(async (canvas) => {
+  const ctx = canvas.getContext('2d');
+
+  canvas.width = 100000000;
+  canvas.width = 100000000;
+  canvas.width = 64;
+  canvas.width = 64;
+  canvas.width = 100000000;
+  assert_false(ctx.isContextLost(),
+              'Context should not be lost right after setting the size.');
+  ctx.fillRect(0, 0, 100, 100);
+  await waitForContextLost(ctx);
+
+  // The context won't restore until we give it a valid size.
+  await waitFramesAndRejectOnContextEvents(ctx);
+  canvas.width = 64;
+  await waitForContextRestored(ctx);
+}, 'Bad size -> good size -> bad size -> context lost.',
+   {testTypes: ALL_CANVAS_TEST_TYPES});
+
+/**
+ * Restore the canvas size while a contextlost event is scheduled to run.
+ **/
+canvasPromiseTest(async (canvas) => {
+  const ctx = canvas.getContext('2d', {
+    willReadFrequently: false,  // Stay on GPU acceleration despite read-backs.
+  });
+
+  // Set an invalid size and get the canvas to lose the context.
+  canvas.width = 100000000;
+  drawAndReadBack(ctx);
+  assert_true(ctx.isContextLost(), 'Context should be lost.');
+
+  // The context is lost, the contextlost event is pending but hasn't yet fired.
+  canvas.width = 64;
+
+  await waitForContextLost(ctx);
+  await waitForContextRestored(ctx);
+  assert_array_equals(drawAndReadBack(ctx), [255, 0, 0, 255],
+                      'The canvas should be usable.');
+}, 'Bad size -> contextlost scheduled -> good size.',
+   {testTypes: ALL_CANVAS_TEST_TYPES});
+
+/**
+ * Cycle the canvas size as good -> bad -> good while a contextlost event is
+ * scheduled to run.
+ **/
+canvasPromiseTest(async (canvas) => {
+  const ctx = canvas.getContext('2d', {
+    willReadFrequently: false,  // Stay on GPU acceleration despite read-backs.
+  });
+
+  // Set an invalid size and get the canvas to lose the context.
+  canvas.width = 100000000;
+  drawAndReadBack(ctx);
+  assert_true(ctx.isContextLost(), 'Context should be lost.');
+
+  // The context is lost, the contextlost event is pending but hasn't yet fired.
+  canvas.width = 64;
+  canvas.width = 100000000;
+
+  await waitForContextLost(ctx);
+
+  // The context won't restore until we give it a valid size.
+  await waitFramesAndRejectOnContextEvents(ctx);
+  canvas.width = 64;
+  await waitForContextRestored(ctx);
+  assert_array_equals(drawAndReadBack(ctx), [255, 0, 0, 255],
+                      'The canvas should be usable.');
+}, 'Bad size -> contextlost scheduled -> good size -> bad size.',
+   {testTypes: ALL_CANVAS_TEST_TYPES});
+
+/**
+ * Cycling the canvas size as good -> bad -> good -> bad while a contextlost
+ * event is scheduled to run.
+ **/
+canvasPromiseTest(async (canvas) => {
+  const ctx = canvas.getContext('2d', {
+    willReadFrequently: false,  // Stay on GPU acceleration despite read-backs.
+  });
+
+  // Set an invalid size and get the canvas to lose the context.
+  canvas.width = 100000000;
+  drawAndReadBack(ctx);
+  assert_true(ctx.isContextLost(), 'Context should be lost.');
+
+  // The context is lost, the contextlost event is pending but hasn't yet fired.
+  canvas.width = 64;
+  canvas.width = 100000000;
+  canvas.width = 64;
+
+  await waitForContextLost(ctx);
+  await waitForContextRestored(ctx);
+  assert_array_equals(drawAndReadBack(ctx), [255, 0, 0, 255],
+                      'The canvas should be usable.');
+}, 'Bad size -> contextlost scheduled -> good size -> bad size -> good size.',
+   {testTypes: ALL_CANVAS_TEST_TYPES});
+
+/**
+ * Reset the canvas with the same invalid size while a contextlost event is
+ * scheduled to run.
+ **/
+canvasPromiseTest(async (canvas) => {
+  const ctx = canvas.getContext('2d', {
+    willReadFrequently: false,  // Stay on GPU acceleration despite read-backs.
+  });
+
+  // Set an invalid size and get the canvas to lose the context.
+  canvas.width = 100000000;
+  drawAndReadBack(ctx);
+  assert_true(ctx.isContextLost(), 'Context should be lost.');
+
+  // The context is lost, the contextlost event is pending but hasn't yet fired.
+  canvas.width = 100000000;
+  await waitForContextLost(ctx);
+
+  canvas.width = 64;
+  await waitForContextRestored(ctx);
+  assert_array_equals(drawAndReadBack(ctx), [255, 0, 0, 255],
+                      'The canvas should be usable.');
+}, 'Bad size -> contextlost scheduled -> same bad size.',
+   {testTypes: ALL_CANVAS_TEST_TYPES});
+
+/**
+ * Resize the canvas to a different invalid size while a contextlost event is
+ * scheduled to run.
+ **/
+canvasPromiseTest(async (canvas) => {
+  const ctx = canvas.getContext('2d', {
+    willReadFrequently: false,  // Stay on GPU acceleration despite read-backs.
+  });
+
+  // Set an invalid size and get the canvas to lose the context.
+  canvas.width = 100000000;
+  drawAndReadBack(ctx);
+  assert_true(ctx.isContextLost(), 'Context should be lost.');
+
+  // The context is lost, the contextlost event is pending but hasn't yet fired.
+  canvas.width = 200000000;
+  await waitForContextLost(ctx);
+
+  canvas.width = 64;
+  await waitForContextRestored(ctx);
+  assert_array_equals(drawAndReadBack(ctx), [255, 0, 0, 255],
+                      'The canvas should be usable.');
+}, 'Bad size -> contextlost scheduled -> different bad size.',
+   {testTypes: ALL_CANVAS_TEST_TYPES});
+
+/**
+ * Restore the canvas size before contextlost fires and make the size invalid
+ * again from inside the contextlost event handler.
+ **/
+canvasPromiseTest(async (canvas) => {
+  const ctx = canvas.getContext('2d', {
+    willReadFrequently: false,  // Stay on GPU acceleration despite read-backs.
+  });
+
+  // Set an invalid size and get the canvas to lose the context.
+  canvas.width = 100000000;
+  drawAndReadBack(ctx);
+  assert_true(ctx.isContextLost(), 'Context should be lost.');
+
+  // The context is lost, but the contextlost event has not yet fired. Restore
+  // the canvas size before contextlost executes.
+  canvas.width = 64;
+
+  // Wait to be inside the contextlost event handler.
+  await waitForContextLost(ctx);
+
+  // We are now inside the contextlost event handler and the contextrestored
+  // event has not yet been scheduled. Set an invalid size before it is.
+  canvas.width = 100000000;
+  await waitFramesAndRejectOnContextEvents(ctx);
+
+  // We should now be able to set a valid size and restore the canvas
+  canvas.width = 64;
+  await waitForContextRestored(ctx);
+  assert_array_equals(drawAndReadBack(ctx), [255, 0, 0, 255],
+                      'The canvas should be usable.');
+}, 'Bad size -> contextlost scheduled -> good size -> contextlost -> ' +
+   'bad size.',
+   {testTypes: ALL_CANVAS_TEST_TYPES});
+
+/**
+ * Restore the canvas size before contextlost fires and make the size invalid
+ * again after the contextlost event fired but before the contextrestored
+ * event does.
+ **/
+canvasPromiseTest(async (canvas) => {
+  const ctx = canvas.getContext('2d', {
+    willReadFrequently: false,  // Stay on GPU acceleration despite read-backs.
+  });
+
+  // Set an invalid size and get the canvas to lose the context.
+  canvas.width = 100000000;
+  drawAndReadBack(ctx);
+  assert_true(ctx.isContextLost(), 'Context should be lost.');
+
+  // The context is lost, but the contextlost event has not yet fired. Restore
+  // the canvas size before contextlost executes.
+  canvas.width = 64;
+
+  // Wait until after the contextlost event is fully processed.
+  await waitForContextLost(ctx);
+  // We are now inside the contextlost event handler. Wait until the task is
+  // finished. A microtask is needed to make sure we regain control before the
+  // contextrestored event fires.
+  await new Promise(resolve => queueMicrotask(resolve));
+
+  // A contextrestored event is now pending execution. Set an invalid size
+  // before it runs.
+  canvas.width = 100000000;
+  await waitFramesAndRejectOnContextEvents(ctx);
+
+  // We should now be able to set a valid size and restore the canvas
+  canvas.width = 64;
+  await waitForContextRestored(ctx);
+  assert_array_equals(drawAndReadBack(ctx), [255, 0, 0, 255],
+                      'The canvas should be usable.');
+}, 'Bad size -> contextlost scheduled -> good size -> contextlost -> ' +
+   'contextrestored scheduled -> bad size.',
+   {testTypes: ALL_CANVAS_TEST_TYPES});
+
+/**
+ * Restore the canvas size before contextlost fires and reset the canvas from
+ * inside the contextlost event handler.
+ **/
+canvasPromiseTest(async (canvas) => {
+  const ctx = canvas.getContext('2d', {
+    willReadFrequently: false,  // Stay on GPU acceleration despite read-backs.
+  });
+
+  // Set an invalid size and get the canvas to lose the context.
+  canvas.width = 100000000;
+  drawAndReadBack(ctx);
+  assert_true(ctx.isContextLost(), 'Context should be lost.');
+
+  // The context is lost, but the contextlost event has not yet fired. Restore
+  // the canvas size before contextlost executes.
+  canvas.width = 64;
+
+  // Wait to be inside the contextlost event handler.
+  await waitForContextLost(ctx);
+
+  // Reset the canvas from within the contextlost event handler.
+  canvas.width = 64;
+  await waitForContextRestored(ctx);
+  assert_array_equals(drawAndReadBack(ctx), [255, 0, 0, 255],
+                      'The canvas should be usable.');
+}, 'Bad size -> contextlost scheduled -> good size -> contextlost -> ' +
+   'same good size.',
+   {testTypes: ALL_CANVAS_TEST_TYPES});
+
+/**
+ * Restore the canvas size before contextlost fires and reset the canvas after
+ * the contextlost event fired but before the contextrestored event does.
+ **/
+canvasPromiseTest(async (canvas) => {
+  const ctx = canvas.getContext('2d', {
+    willReadFrequently: false,  // Stay on GPU acceleration despite read-backs.
+  });
+
+  // Set an invalid size and get the canvas to lose the context.
+  canvas.width = 100000000;
+  drawAndReadBack(ctx);
+  assert_true(ctx.isContextLost(), 'Context should be lost.');
+
+  // The context is lost, but the contextlost event has not yet fired. Restore
+  // the canvas size before contextlost executes.
+  canvas.width = 64;
+
+  // Wait until after the contextlost event is fully processed.
+  await waitForContextLost(ctx);
+  // We are now inside the contextlost event handler. Wait until the task is
+  // finished. A microtask is needed to make sure we regain control before the
+  // contextrestored event fires.
+  await new Promise(resolve => queueMicrotask(resolve));
+
+  // Reset the canvas between the contextlost and contextrestored events.
+  canvas.width = 64;
+  await waitForContextRestored(ctx);
+  assert_array_equals(drawAndReadBack(ctx), [255, 0, 0, 255],
+                      'The canvas should be usable.');
+}, 'Bad size -> contextlost scheduled -> good size -> contextlost -> ' +
+   'contextrestored scheduled -> same good size.',
+   {testTypes: ALL_CANVAS_TEST_TYPES});
+
+/**
+ * Restore the canvas size before contextlost fires and resize the canvas from
+ * inside the contextlost event handler.
+ **/
+canvasPromiseTest(async (canvas) => {
+  const ctx = canvas.getContext('2d', {
+    willReadFrequently: false,  // Stay on GPU acceleration despite read-backs.
+  });
+
+  // Set an invalid size and get the canvas to lose the context.
+  canvas.width = 100000000;
+  drawAndReadBack(ctx);
+  assert_true(ctx.isContextLost(), 'Context should be lost.');
+
+  // The context is lost, but the contextlost event has not yet fired. Restore
+  // the canvas size before contextlost executes.
+  canvas.width = 64;
+
+  // Wait to be inside the contextlost event handler.
+  await waitForContextLost(ctx);
+
+  // Resize the canvas from within the contextlost event handler.
+  canvas.width = 128;
+  await waitForContextRestored(ctx);
+  assert_array_equals(drawAndReadBack(ctx), [255, 0, 0, 255],
+                      'The canvas should be usable.');
+}, 'Bad size -> contextlost scheduled -> good size -> contextlost -> ' +
+   'different good size.',
+   {testTypes: ALL_CANVAS_TEST_TYPES});
+
+/**
+ * Restore the canvas size before contextlost fires and resize the canvas after
+ * the contextlost event fired but before the contextrestored event does.
+ **/
+canvasPromiseTest(async (canvas) => {
+  const ctx = canvas.getContext('2d', {
+    willReadFrequently: false,  // Stay on GPU acceleration despite read-backs.
+  });
+
+  // Set an invalid size and get the canvas to lose the context.
+  canvas.width = 100000000;
+  drawAndReadBack(ctx);
+  assert_true(ctx.isContextLost(), 'Context should be lost.');
+
+  // The context is lost, but the contextlost event has not yet fired. Restore
+  // the canvas size before contextlost executes.
+  canvas.width = 64;
+
+  // Wait until after the contextlost event is fully processed.
+  await waitForContextLost(ctx);
+  // We are now inside the contextlost event handler. Wait until the task is
+  // finished. A microtask is needed to make sure we regain control before the
+  // contextrestored event fires.
+  await new Promise(resolve => queueMicrotask(resolve));
+
+  // Resize the canvas between the contextlost and contextrestored events.
+  canvas.width = 128;
+  await waitForContextRestored(ctx);
+  assert_array_equals(drawAndReadBack(ctx), [255, 0, 0, 255],
+                      'The canvas should be usable.');
+}, 'Bad size -> contextlost scheduled -> good size -> contextlost -> ' +
+   'contextrestored scheduled -> different good size.',
+   {testTypes: ALL_CANVAS_TEST_TYPES});
+
+/**
+ * Restore the canvas size from inside the contextlost event handler.
+ **/
+canvasPromiseTest(async (canvas) => {
+  const ctx = canvas.getContext('2d', {
+    willReadFrequently: false,  // Stay on GPU acceleration despite read-backs.
+  });
+
+  // Set an invalid size and get the canvas to lose the context.
+  canvas.width = 100000000;
+  drawAndReadBack(ctx);
+  await waitForContextLost(ctx);
+
+  // Restore the canvas size from inside the contextlost event handler.
+  canvas.width = 64;
+  await waitForContextRestored(ctx);
+  assert_array_equals(drawAndReadBack(ctx), [255, 0, 0, 255],
+                      'The canvas should be usable.');
+}, 'Bad size -> contextlost -> good size -> contextrestored.',
+   {testTypes: ALL_CANVAS_TEST_TYPES});
+
+/**
+ * Restore the canvas size after the contextlost event.
+ **/
+canvasPromiseTest(async (canvas) => {
+  const ctx = canvas.getContext('2d', {
+    willReadFrequently: false,  // Stay on GPU acceleration despite read-backs.
+  });
+
+  // Set an invalid size and get the canvas to lose the context.
+  canvas.width = 100000000;
+  drawAndReadBack(ctx);
+  await waitForContextLost(ctx);
+  await waitFrames(1);
+
+  // Restore the size after the contextlost event handler.
+  canvas.width = 64;
+  await waitForContextRestored(ctx);
+  assert_array_equals(drawAndReadBack(ctx), [255, 0, 0, 255],
+                      'The canvas should be usable.');
+}, 'Bad size -> contextlost -> rAF -> good size -> contextrestored.',
+   {testTypes: ALL_CANVAS_TEST_TYPES});
+
+/**
+ * Cycle "bad -> good -> bad" inside the contextlost event handler.
+ **/
+canvasPromiseTest(async (canvas) => {
+  const ctx = canvas.getContext('2d', {
+    willReadFrequently: false,  // Stay on GPU acceleration despite read-backs.
+  });
+
+  // Set an invalid size and get the canvas to lose the context.
+  canvas.width = 100000000;
+  drawAndReadBack(ctx);
+  await waitForContextLost(ctx);
+
+  // Restore the context, but set an invalid size again, from inside the
+  // contextlost event handler.
+  canvas.width = 64;
+  canvas.width = 100000000;
+  await waitFramesAndRejectOnContextEvents(ctx);
+  assert_true(ctx.isContextLost());
+
+  canvas.width = 64;
+  await waitForContextRestored(ctx);
+  assert_array_equals(drawAndReadBack(ctx), [255, 0, 0, 255],
+                      'The canvas should be usable.');
+}, 'Bad size -> contextlost -> good size -> bad size.',
+   {testTypes: ALL_CANVAS_TEST_TYPES});
+
+/**
+ * Cycle "bad -> good -> bad" after the contextlost event handler.
+ **/
+canvasPromiseTest(async (canvas) => {
+  const ctx = canvas.getContext('2d', {
+    willReadFrequently: false,  // Stay on GPU acceleration despite read-backs.
+  });
+
+  // Set an invalid size and get the canvas to lose the context.
+  canvas.width = 100000000;
+  drawAndReadBack(ctx);
+  await waitForContextLost(ctx);
+  await waitFrames(1);
+
+  // Restore the context, but set an invalid size again, after the contextlost
+  // event handler ran.
+  canvas.width = 64;
+  canvas.width = 100000000;
+  await waitFramesAndRejectOnContextEvents(ctx);
+  assert_true(ctx.isContextLost());
+
+  canvas.width = 64;
+  await waitForContextRestored(ctx);
+  assert_array_equals(drawAndReadBack(ctx), [255, 0, 0, 255],
+                      'The canvas should be usable.');
+}, 'Bad size -> contextlost -> rAF -> good size -> bad size.',
+   {testTypes: ALL_CANVAS_TEST_TYPES});
+
+/**
+ * Cycle "bad -> good -> bad -> good" inside the contextlost event handler.
+ **/
+canvasPromiseTest(async (canvas) => {
+  const ctx = canvas.getContext('2d', {
+    willReadFrequently: false,  // Stay on GPU acceleration despite read-backs.
+  });
+
+  // Set an invalid size and get the canvas to lose the context.
+  canvas.width = 100000000;
+  drawAndReadBack(ctx);
+  await waitForContextLost(ctx);
+
+  // Toggle from good to bad to good, from inside the contextlost event handler.
+  canvas.width = 64;
+  canvas.width = 100000000;
+  canvas.width = 64;
+  await waitForContextRestored(ctx);
+  assert_array_equals(drawAndReadBack(ctx), [255, 0, 0, 255],
+                      'The canvas should be usable.');
+}, 'Bad size -> contextlost -> good size -> bad size -> good size.',
+   {testTypes: ALL_CANVAS_TEST_TYPES});
+
+/**
+ * Cycle "bad -> good -> bad -> good" after the contextlost event handler.
+ **/
+canvasPromiseTest(async (canvas) => {
+  const ctx = canvas.getContext('2d', {
+    willReadFrequently: false,  // Stay on GPU acceleration despite read-backs.
+  });
+
+  // Set an invalid size and get the canvas to lose the context.
+  canvas.width = 100000000;
+  drawAndReadBack(ctx);
+  await waitForContextLost(ctx);
+  await waitFrames(1);
+
+  // Toggle from good to bad to good after the contextlost event handler ran.
+  canvas.width = 64;
+  canvas.width = 100000000;
+  canvas.width = 64;
+  await waitForContextRestored(ctx);
+  assert_array_equals(drawAndReadBack(ctx), [255, 0, 0, 255],
+                      'The canvas should be usable.');
+}, 'Bad size -> contextlost -> rAF -> good size -> bad size -> good size.',
+   {testTypes: ALL_CANVAS_TEST_TYPES});
+
+/**
+ * Test cycling "bad -> same bad size" inside the contextlost event handler.
+ **/
+canvasPromiseTest(async (canvas) => {
+  const ctx = canvas.getContext('2d');
+
+  canvas.width = 100000000;
+  ctx.fillRect(0, 0, 100, 100);
+  await waitForContextLost(ctx);
+
+  // Set the same invalid size from inside the contextlost event handler.
+  canvas.width = 100000000;
+  await waitFramesAndRejectOnContextEvents(ctx);
+  assert_true(ctx.isContextLost(), 'Context should still be lost.');
+
+  // The canvas should now restore if we set a valid size.
+  canvas.width = 64;
+  await waitForContextRestored(ctx);
+}, 'Bad size -> contextlost -> same bad size -> good size.',
+   {testTypes: ALL_CANVAS_TEST_TYPES});
+
+/**
+ * Test cycling "bad -> same bad size" after the contextlost event handler.
+ **/
+canvasPromiseTest(async (canvas) => {
+  const ctx = canvas.getContext('2d');
+
+  canvas.width = 100000000;
+  ctx.fillRect(0, 0, 100, 100);
+  await waitForContextLost(ctx);
+  await waitFrames(1);
+
+  // Set the same invalid size after the contextlost event handler ran.
+  canvas.width = 100000000;
+  await waitFramesAndRejectOnContextEvents(ctx);
+  assert_true(ctx.isContextLost(), 'Context should still be lost.');
+
+  // The canvas should now restore if we set a valid size.
+  canvas.width = 64;
+  await waitForContextRestored(ctx);
+}, 'Bad size -> contextlost -> rAF -> same bad size -> good size.',
+   {testTypes: ALL_CANVAS_TEST_TYPES});
+
+/**
+ * Test cycling "bad -> different bad size" inside the contextlost handler.
+ **/
+canvasPromiseTest(async (canvas) => {
+  const ctx = canvas.getContext('2d');
+
+  canvas.width = 100000000;
+  ctx.fillRect(0, 0, 100, 100);
+  await waitForContextLost(ctx);
+
+  // Set a different invalid size from inside the contextlost event handler.
+  canvas.width = 200000000;
+  await waitFramesAndRejectOnContextEvents(ctx);
+  assert_true(ctx.isContextLost(), 'Context should still be lost.');
+
+  // The canvas should now restore if we set a valid size.
+  canvas.width = 64;
+  await waitForContextRestored(ctx);
+}, 'Bad size -> contextlost -> different bad size -> good size.',
+   {testTypes: ALL_CANVAS_TEST_TYPES});
+
+/**
+ * Test cycling "bad -> different bad size" after the contextlost event handler.
+ **/
+canvasPromiseTest(async (canvas) => {
+  const ctx = canvas.getContext('2d');
+
+  canvas.width = 100000000;
+  ctx.fillRect(0, 0, 100, 100);
+  await waitForContextLost(ctx);
+  await waitFrames(1);
+
+  // Set a different invalid size after the contextlost event handler ran.
+  canvas.width = 200000000;
+  await waitFramesAndRejectOnContextEvents(ctx);
+  assert_true(ctx.isContextLost(), 'Context should still be lost.');
+
+  // The canvas should now restore if we set a valid size.
+  canvas.width = 64;
+  await waitForContextRestored(ctx);
+}, 'Bad size -> contextlost -> rAF -> different bad size -> good size.',
+   {testTypes: ALL_CANVAS_TEST_TYPES});
+
+/**
+ * Test making the size bad again from inside the contextrestored event handler.
+ **/
+canvasPromiseTest(async (canvas) => {
+  const ctx = canvas.getContext('2d');
+
+  canvas.width = 100000000;
+  ctx.fillRect(0, 0, 100, 100);
+  await waitForContextLost(ctx);
+  canvas.width = 64;
+  await waitForContextRestored(ctx);
+
+  // We are now inside the contextrestored event handler. Set an invalid size
+  // again.
+  canvas.width = 100000000;
+  ctx.fillRect(0, 0, 100, 100);
+  await waitForContextLost(ctx);
+  canvas.width = 64;
+  await waitForContextRestored(ctx);
+}, 'Bad size -> contextlost -> contextrestored -> bad size.',
    {testTypes: ALL_CANVAS_TEST_TYPES});
 
 </script>
