@@ -143,7 +143,6 @@ source_set("permissions") {
     "//components/guest_view/buildflags",
     "//components/keyed_service/content",
     "//components/passage_embeddings/core",
-    "//components/permissions/vector_icons",
     "//components/pref_registry",
     "//components/prefs",
     "//components/safety_check",

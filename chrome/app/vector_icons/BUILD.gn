@@ -28,7 +28,6 @@ aggregate_vector_icons("chrome_vector_icons") {
     "arrow_upward.icon",
     "astrophotography_mode.icon",
     "attach_file.icon",
-    "auto_tab_groups.icon",
     "autofill/local_offer_flipped_refresh.icon",
     "autofill/webauthn_dialog_header.icon",
     "autofill/webauthn_dialog_header_dark.icon",
@@ -61,8 +60,6 @@ aggregate_vector_icons("chrome_vector_icons") {
     "close_chrome_refresh.icon",
     "close_group_refresh.icon",
     "close_tab_chrome_refresh.icon",
-    "compare.icon",
-    "computer_with_circle_background.icon",
     "copy.icon",
     "copy_menu.icon",
     "crashed_tab.icon",
@@ -93,7 +90,6 @@ aggregate_vector_icons("chrome_vector_icons") {
     "edit_chrome_refresh.icon",
     "exit_menu.icon",
     "extension_crashed.icon",
-    "file_download_shelf.icon",
     "file_save.icon",
     "file_save_chrome_refresh.icon",
     "file_save_off_chrome_refresh.icon",
@@ -128,20 +124,15 @@ aggregate_vector_icons("chrome_vector_icons") {
     "left_panel_close.icon",
     "link_chrome_refresh.icon",
     "logout.icon",
-    "media_controls_arrow_drop_down.icon",
-    "media_controls_arrow_drop_up.icon",
     "media_toolbar_button_chrome_refresh.icon",
     "media_toolbar_button_touch.icon",
     "menu_book_chrome_refresh.icon",
-    "mixed_content.icon",
     "more_tools_menu.icon",
     "move_group_to_new_window_refresh.icon",
     "my_location.icon",
     "name_window.icon",
-    "navigate_home.icon",
     "navigate_home_chrome_refresh.icon",
     "navigate_home_touch.icon",
-    "navigate_stop.icon",
     "navigate_stop_chrome_refresh.icon",
     "navigate_stop_touch.icon",
     "new_tab_in_group_refresh.icon",
@@ -158,14 +149,11 @@ aggregate_vector_icons("chrome_vector_icons") {
     "paintbrush.icon",
     "password_field.icon",
     "paste_menu.icon",
-    "payments/save_card_and_vcn_success_confirmation.icon",
-    "payments/save_card_and_vcn_success_confirmation_dark.icon",
     "payments/secure_payment_confirmation_header.icon",
     "payments/secure_payment_confirmation_header_dark.icon",
     "people_group.icon",
     "performance.icon",
     "performance_speedometer.icon",
-    "person.icon",
     "person_filled_padded_small.icon",
     "picture_in_picture_alt.icon",
     "print_menu.icon",
@@ -184,7 +172,6 @@ aggregate_vector_icons("chrome_vector_icons") {
     "right_panel_close.icon",
     "sad_tab.icon",
     "safety_check.icon",
-    "save_group_refresh.icon",
     "save_page.icon",
     "saved_tab_group_bar_everything.icon",
     "science.icon",
@@ -193,7 +180,6 @@ aggregate_vector_icons("chrome_vector_icons") {
     "security.icon",
     "settings_menu.icon",
     "sharing_hub_screenshot.icon",
-    "side_panel.icon",
     "smartphone.icon",
     "smartphone_refresh.icon",
     "speaker.icon",
@@ -211,8 +197,6 @@ aggregate_vector_icons("chrome_vector_icons") {
     "sync_paused_circle.icon",
     "sync_refresh.icon",
     "tab.icon",
-    "tab_audio.icon",
-    "tab_close_inactive.icon",
     "tab_close_normal.icon",
     "tab_group.icon",
     "tab_group_closed.icon",
@@ -244,7 +228,6 @@ aggregate_vector_icons("chrome_vector_icons") {
     "webauthn/icloud_keychain.icon",
     "webauthn/icloud_keychain_color.icon",
     "webauthn/passkey_aoa.icon",
-    "webauthn/passkey_aoa_dark.icon",
     "webauthn/passkey_error.icon",
     "webauthn/passkey_error_bluetooth.icon",
     "webauthn/passkey_error_bluetooth_dark.icon",
@@ -275,19 +258,6 @@ aggregate_vector_icons("chrome_vector_icons") {
 
   if (is_mac) {
     sources += [ "new_tab_mac_touchbar.icon" ]
-  }
-
-  if (is_win) {
-    sources += [
-      "open_in_phone.icon",
-      "payments/secure_payment_confirmation_face.icon",
-      "payments/secure_payment_confirmation_face_dark.icon",
-    ]
-  } else {
-    sources += [
-      "payments/secure_payment_confirmation_fingerprint.icon",
-      "payments/secure_payment_confirmation_fingerprint_dark.icon",
-    ]
   }
 
   if (is_chromeos) {

@@ -10,10 +10,7 @@ aggregate_vector_icons("chromeos_ui_vector_icons") {
   icon_directory = "."
 
   sources = [
-    "assistant.icon",
-    "calculate.icon",
     "camera.icon",
-    "conversion_path.icon",
     "dictionary.icon",
     "editor_menu_elaborate.icon",
     "editor_menu_emojify.icon",
@@ -58,13 +55,8 @@ aggregate_vector_icons("chromeos_ui_vector_icons") {
     "mahi_simplify.icon",
     "mahi_spark.icon",
     "mahi_summarize.icon",
-    "notification_assistant.icon",
     "notification_supervised_user.icon",
-    "person_pin_circle.icon",
     "redeem.icon",
-    "screenshot.icon",
-    "sentiment_very_satisfied.icon",
-    "straighten.icon",
     "text.icon",
     "timer.icon",
     "translate.icon",

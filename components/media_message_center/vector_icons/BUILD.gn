@@ -15,8 +15,6 @@ aggregate_vector_icons("media_vector_icons") {
     "media_exit_pip.icon",
     "media_next_track.icon",
     "media_previous_track.icon",
-    "media_seek_backward.icon",
-    "media_seek_forward.icon",
     "pause.icon",
     "play_arrow.icon",
   ]
