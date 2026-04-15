@@ -14,6 +14,7 @@ class PostSelectionWorklet {
       `--post-selection-corner-vertical-length`,
       `--post-selection-corner-radius`,
       `--post-selection-corner-width`,
+      `--post-selection-show-gradient`,
     ];
   }
 
@@ -27,6 +28,7 @@ class PostSelectionWorklet {
         properties.get('--post-selection-corner-vertical-length');
     const cornerWidthProp = properties.get('--post-selection-corner-width');
     const cornerRadiusProp = properties.get('--post-selection-corner-radius');
+    const showGradientProp = properties.get('--post-selection-show-gradient');
 
     // Ensure the values are in the correct format
     assertInstanceof(cornerLengthHorizontalProp, CSSUnitValue);
@@ -69,8 +71,24 @@ class PostSelectionWorklet {
       return;
     }
 
+    // Only draw the full box border with the white linear gradient if enabled.
+    const showGradient =
+        showGradientProp && showGradientProp.toString() === '1';
+    if (showGradient) {
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      ctx.roundRect(
+          minX, minY, size.width - cornerWidth, size.height - cornerWidth,
+          cornerRadius);
+      const gradient = ctx.createLinearGradient(0, size.height, size.width, 0);
+      gradient.addColorStop(0, 'rgba(255, 255, 255, 1)');
+      gradient.addColorStop(0.92, 'rgba(255, 255, 255, 0.5)');
+      ctx.strokeStyle = gradient;
+      ctx.stroke();
+    }
+
     ctx.lineWidth = cornerWidth;
-    ctx.beginPath;
+    ctx.beginPath();
 
     // Top-Left Corner
     ctx.moveTo(minX, cornerLengthVertical);

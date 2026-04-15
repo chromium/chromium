@@ -855,6 +855,9 @@ export class PostSelectionRendererElement extends
     // Only update properties defined absolutely, i.e. corner dimensions.
     // Properties that are defined relatively do not need to be updated.
     this.updateCornerDimensions();
+    this.style.setProperty(
+        '--post-selection-show-gradient',
+        this.multiRegionSelectionEnabled ? '1' : '0');
     if (this.newBoxAnimation) {
       (this.newBoxAnimation.effect as KeyframeEffect)
           .setKeyframes(this.getNewBoxAnimationKeyframes());

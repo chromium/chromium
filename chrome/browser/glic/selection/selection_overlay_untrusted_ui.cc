@@ -50,7 +50,7 @@ SelectionOverlayUntrustedUI::SelectionOverlayUntrustedUI(content::WebUI* web_ui)
   html_source->AddBoolean("enableKeyboardSelection", false);
   html_source->AddInteger("tapRegionHeight", 300);
   html_source->AddInteger("tapRegionWidth", 300);
-  html_source->AddBoolean("enableGradientRegionStroke", true);
+  html_source->AddBoolean("enableGradientRegionStroke", false);
   html_source->AddBoolean("enableWhiteRegionStroke", true);
   html_source->AddBoolean("enableRegionSelectedGlow", true);
   html_source->AddInteger("sliderChangedTimeout", 1000);
