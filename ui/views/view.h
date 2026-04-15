@@ -62,7 +62,6 @@
 #include "ui/views/view_targeter.h"
 #include "ui/views/views_export.h"
 
-class BrowserView;
 class InfoBarView;
 class OmniboxPopupPresenter;
 class OmniboxPopupViewViews;
@@ -74,7 +73,6 @@ class CustomTab;
 
 namespace ash {
 class ArcNotificationContentView;
-class WideFrameView;
 }  // namespace ash
 
 namespace exo {
@@ -311,14 +309,12 @@ class VIEWS_EXPORT View : public ui::LayerDelegate,
     // DO NOT ADD TO THIS LIST!
     // These existing cases are "grandfathered in", but there shouldn't be more.
     // See comments atop class.
-    friend class ::BrowserView;
     friend class ::InfoBarView;
     friend class ::OmniboxPopupPresenter;
     friend class ::OmniboxPopupViewViews;
     friend class ::StatusIconButtonLinux;
     friend class ::arc::CustomTab;
     friend class ::ash::ArcNotificationContentView;
-    friend class ::ash::WideFrameView;
     friend class ::exo::ShellSurfaceBase;
     friend class ::eye_dropper::EyeDropperView;
     friend class SubmenuView;

@@ -304,7 +304,7 @@ class BrowserView : public BrowserWindow,
   ToolbarView* toolbar() { return toolbar_; }
 
   // Bookmark bar may be null, for example for pop-ups.
-  BookmarkBarView* bookmark_bar() { return bookmark_bar_view_.get(); }
+  BookmarkBarView* bookmark_bar() { return bookmark_bar_view_; }
 
   // Returns the do-nothing view which controls the z-order of the find bar
   // widget relative to views which paint into layers and views which have an
@@ -1260,7 +1260,8 @@ class BrowserView : public BrowserWindow,
 
   // The Bookmark Bar View for this window. Lazily created. May be null for
   // non-tabbed browsers like popups. May not be visible.
-  std::unique_ptr<BookmarkBarView> bookmark_bar_view_;
+  std::unique_ptr<BookmarkBarView> detached_bookmark_bar_view_;
+  raw_ptr<BookmarkBarView> bookmark_bar_view_ = nullptr;
 
   std::unique_ptr<TabSearchBubbleHost> tab_search_bubble_host_;
 

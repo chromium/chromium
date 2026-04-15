@@ -16,6 +16,7 @@
 #include "ui/gfx/geometry/rect.h"
 #include "ui/views/view.h"
 
+class BrowserView;
 class Tab;
 class TabSlotView;
 class TabStrip;

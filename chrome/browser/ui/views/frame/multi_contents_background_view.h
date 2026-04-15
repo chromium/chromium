@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_VIEWS_FRAME_MULTI_CONTENTS_BACKGROUND_VIEW_H_
 
 #include "ui/views/view.h"
+class BrowserView;
 
 namespace gfx {
 class RoundedCornersF;

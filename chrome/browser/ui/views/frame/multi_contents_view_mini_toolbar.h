@@ -12,6 +12,7 @@
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/view.h"
 
+class BrowserView;
 class ContentsWebView;
 class TabUIHelper;
 

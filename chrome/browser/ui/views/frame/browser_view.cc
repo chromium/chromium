@@ -5518,17 +5518,17 @@ bool BrowserView::MaybeShowBookmarkBar(WebContents* contents) {
   const bool show_bookmark_bar =
       contents && browser_->SupportsWindowFeature(
                       Browser::WindowFeature::kFeatureBookmarkBar);
-  if (!show_bookmark_bar && !bookmark_bar_view_.get()) {
+  if (!show_bookmark_bar && !bookmark_bar_view_) {
     return false;
   }
 
-  if (!bookmark_bar_view_.get()) {
-    bookmark_bar_view_ =
+  if (!bookmark_bar_view_) {
+    detached_bookmark_bar_view_ =
         std::make_unique<BookmarkBarView>(browser_.get(), this);
-    bookmark_bar_view_->set_owned_by_client(OwnedByClientPassKey());
+    bookmark_bar_view_ = detached_bookmark_bar_view_.get();
     bookmark_bar_view_->SetBookmarkBarState(
         bookmark_bar_state(), BookmarkBar::DONT_ANIMATE_STATE_CHANGE);
-    GetBrowserViewLayout()->set_bookmark_bar(bookmark_bar_view_.get());
+    GetBrowserViewLayout()->set_bookmark_bar(bookmark_bar_view_);
   }
 
   bookmark_bar_view_->SetPageNavigator(GetActiveWebContents());
@@ -5536,17 +5536,18 @@ bool BrowserView::MaybeShowBookmarkBar(WebContents* contents) {
   // BrowserViewLayout is responsible for handling the final visibility and
   // animation of the BookmarkBar.
   bool needs_layout = false;
-  if (show_bookmark_bar && !bookmark_bar_view_->parent()) {
+  if (show_bookmark_bar && detached_bookmark_bar_view_) {
     // Add the bookmark bar to the view hierarchy if it might be shown.
-    top_container_->AddChildView(bookmark_bar_view_.get());
+    top_container_->AddChildView(std::move(detached_bookmark_bar_view_));
     // Make sure the contents separator is painted last as the background for
     // BookmarkVieBar may paint over it otherwise.
     top_container_->ReorderChildView(top_container_separator_,
                                      top_container_->children().size());
     needs_layout = true;
-  } else if (!show_bookmark_bar && bookmark_bar_view_->parent()) {
+  } else if (!show_bookmark_bar && !detached_bookmark_bar_view_) {
     // Remove the bookmark bar from the view hierarchy if it should be hidden.
-    top_container_->RemoveChildView(bookmark_bar_view_.get());
+    detached_bookmark_bar_view_ =
+        top_container_->RemoveChildViewT(bookmark_bar_view_);
     needs_layout = true;
   }
 
