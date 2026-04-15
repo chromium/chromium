@@ -10,6 +10,7 @@
 #include "cc/tiles/image_decode_cache.h"
 #include "components/viz/test/test_context_provider.h"
 #include "gpu/command_buffer/client/gles2_interface.h"
+#include "gpu/command_buffer/client/raster_interface.h"
 #include "gpu/command_buffer/client/webgpu_interface_stub.h"
 #include "gpu/command_buffer/common/capabilities.h"
 #include "gpu/config/gpu_feature_info.h"

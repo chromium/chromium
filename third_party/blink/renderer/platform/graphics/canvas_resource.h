@@ -23,7 +23,6 @@
 #include "gpu/command_buffer/common/sync_token.h"
 #include "skia/buildflags.h"
 #include "third_party/blink/public/platform/web_graphics_shared_image_interface_provider.h"
-#include "third_party/blink/renderer/platform/graphics/canvas_resource_provider.h"
 #include "third_party/blink/renderer/platform/graphics/web_graphics_context_3d_provider_wrapper.h"
 #include "third_party/blink/renderer/platform/scheduler/public/thread.h"
 #include "third_party/blink/renderer/platform/wtf/thread_safe_ref_counted.h"
@@ -45,7 +44,6 @@ class RasterInterface;
 
 namespace blink {
 
-class CanvasResourceProviderSharedImage;
 class StaticBitmapImage;
 
 // Generic resource interface, used for locking (RAII) and recycling pixel
