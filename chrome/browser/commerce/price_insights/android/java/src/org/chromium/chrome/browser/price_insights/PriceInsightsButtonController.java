@@ -7,7 +7,6 @@ package org.chromium.chrome.browser.price_insights;
 import static org.chromium.build.NullUtil.assertNonNull;
 
 import android.content.Context;
-import android.content.res.Resources;
 import android.graphics.drawable.Drawable;
 import android.view.View;
 
@@ -23,6 +22,7 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarButtonVariant;
 import org.chromium.chrome.browser.toolbar.optional_button.BaseButtonDataProvider;
+import org.chromium.chrome.browser.toolbar.optional_button.ButtonData.ButtonSpec;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.user_education.IphCommandBuilder;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
@@ -71,13 +71,13 @@ public class PriceInsightsButtonController extends BaseButtonDataProvider {
         super(
                 tabSupplier,
                 modalDialogManager,
-                buttonDrawable,
-                /* contentDescription= */ context.getString(R.string.price_insights_title),
-                /* actionChipLabelResId= */ R.string.price_insights_price_is_low_title,
-                /* supportsTinting= */ true,
-                /* iphCommandBuilder= */ null,
-                AdaptiveToolbarButtonVariant.PRICE_INSIGHTS,
-                /* tooltipTextResId= */ Resources.ID_NULL);
+                new ButtonSpec.Builder(
+                                buttonDrawable,
+                                context.getString(R.string.price_insights_title),
+                                /* supportsTinting= */ true)
+                        .setActionChipLabelResId(R.string.price_insights_price_is_low_title)
+                        .setButtonVariant(AdaptiveToolbarButtonVariant.PRICE_INSIGHTS)
+                        .build());
 
         mContext = context;
         mBottomSheetController = bottomSheetController;

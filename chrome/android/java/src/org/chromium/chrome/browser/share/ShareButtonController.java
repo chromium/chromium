@@ -5,7 +5,6 @@
 package org.chromium.chrome.browser.share;
 
 import android.content.Context;
-import android.content.res.Resources;
 import android.graphics.drawable.Drawable;
 import android.view.View;
 
@@ -19,6 +18,7 @@ import org.chromium.chrome.browser.share.ShareDelegate.ShareOrigin;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarButtonVariant;
 import org.chromium.chrome.browser.toolbar.optional_button.BaseButtonDataProvider;
+import org.chromium.chrome.browser.toolbar.optional_button.ButtonData.ButtonSpec;
 import org.chromium.chrome.browser.user_education.IphCommandBuilder;
 import org.chromium.components.browser_ui.widget.highlight.ViewHighlighter.HighlightParams;
 import org.chromium.components.browser_ui.widget.highlight.ViewHighlighter.HighlightShape;
@@ -64,13 +64,13 @@ public class ShareButtonController extends BaseButtonDataProvider {
         super(
                 tabProvider,
                 modalDialogManager,
-                buttonDrawable,
-                context.getString(R.string.share),
-                /* actionChipLabelResId= */ Resources.ID_NULL,
-                /* supportsTinting= */ true,
-                /* iphCommandBuilder= */ null,
-                AdaptiveToolbarButtonVariant.SHARE,
-                /* tooltipTextResId= */ R.string.adaptive_toolbar_button_preference_share);
+                new ButtonSpec.Builder(
+                                buttonDrawable,
+                                context.getString(R.string.share),
+                                /* supportsTinting= */ true)
+                        .setButtonVariant(AdaptiveToolbarButtonVariant.SHARE)
+                        .setHoverTooltipTextId(R.string.adaptive_toolbar_button_preference_share)
+                        .build());
 
         mShareDelegateSupplier = shareDelegateSupplier;
         mTrackerSupplier = trackerSupplier;

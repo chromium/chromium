@@ -6,7 +6,6 @@ package org.chromium.chrome.browser.toolbar.adaptive;
 
 import static org.chromium.build.NullUtil.assumeNonNull;
 
-import android.content.res.Resources;
 import android.graphics.drawable.Drawable;
 import android.view.View;
 
@@ -16,6 +15,7 @@ import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.toolbar.R;
 import org.chromium.chrome.browser.toolbar.optional_button.BaseButtonDataProvider;
+import org.chromium.chrome.browser.toolbar.optional_button.ButtonData.ButtonSpec;
 import org.chromium.chrome.browser.translate.TranslateBridge;
 import org.chromium.chrome.browser.user_education.IphCommandBuilder;
 import org.chromium.components.embedder_support.util.UrlUtilities;
@@ -46,13 +46,10 @@ public class TranslateToolbarButtonController extends BaseButtonDataProvider {
         super(
                 activeTabSupplier,
                 /* modalDialogManager= */ null,
-                buttonDrawable,
-                contentDescription,
-                Resources.ID_NULL,
-                /* supportsTinting= */ true,
-                null,
-                AdaptiveToolbarButtonVariant.TRANSLATE,
-                /* tooltipTextResId= */ Resources.ID_NULL);
+                new ButtonSpec.Builder(
+                                buttonDrawable, contentDescription, /* supportsTinting= */ true)
+                        .setButtonVariant(AdaptiveToolbarButtonVariant.TRANSLATE)
+                        .build());
         mTrackerSupplier = trackerSupplier;
     }
 

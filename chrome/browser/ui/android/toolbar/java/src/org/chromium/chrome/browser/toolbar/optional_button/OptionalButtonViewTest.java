@@ -141,10 +141,8 @@ public class OptionalButtonViewTest {
                         .setButtonVariant(AdaptiveToolbarButtonVariant.NEW_TAB)
                         .setHoverTooltipTextId(R.string.new_tab_title)
                         .build();
-        ButtonDataImpl buttonData = new ButtonDataImpl();
-        buttonData.setButtonSpec(buttonSpec);
-        buttonData.setCanShow(true);
-        buttonData.setEnabled(true);
+        ButtonDataImpl buttonData =
+                new ButtonDataImpl(/* canShow= */ true, /* isEnabled= */ true, buttonSpec);
 
         return buttonData;
     }
@@ -164,10 +162,8 @@ public class OptionalButtonViewTest {
                         .setOnLongClickListener(longClickListener)
                         .setButtonVariant(AdaptiveToolbarButtonVariant.READER_MODE)
                         .build();
-        ButtonDataImpl buttonData = new ButtonDataImpl();
-        buttonData.setButtonSpec(buttonSpec);
-        buttonData.setCanShow(true);
-        buttonData.setEnabled(true);
+        ButtonDataImpl buttonData =
+                new ButtonDataImpl(/* canShow= */ true, /* isEnabled= */ true, buttonSpec);
 
         return buttonData;
     }
@@ -187,10 +183,8 @@ public class OptionalButtonViewTest {
                         .setButtonVariant(AdaptiveToolbarButtonVariant.READER_MODE)
                         .setActionChipLabelResId(actionChipLabelResId)
                         .build();
-        ButtonDataImpl buttonData = new ButtonDataImpl();
-        buttonData.setButtonSpec(buttonSpec);
-        buttonData.setCanShow(true);
-        buttonData.setEnabled(true);
+        ButtonDataImpl buttonData =
+                new ButtonDataImpl(/* canShow= */ true, /* isEnabled= */ true, buttonSpec);
 
         return buttonData;
     }
@@ -210,10 +204,8 @@ public class OptionalButtonViewTest {
                         .setHoverTooltipTextId(tooltipTextIdRes)
                         .build();
 
-        ButtonDataImpl buttonData = new ButtonDataImpl();
-        buttonData.setButtonSpec(buttonSpec);
-        buttonData.setCanShow(true);
-        buttonData.setEnabled(true);
+        ButtonDataImpl buttonData =
+                new ButtonDataImpl(/* canShow= */ true, /* isEnabled= */ true, buttonSpec);
 
         return buttonData;
     }
@@ -229,10 +221,8 @@ public class OptionalButtonViewTest {
                         .setOnClickListener(clickListener)
                         .setOnLongClickListener(longClickListener)
                         .build();
-        ButtonDataImpl buttonData = new ButtonDataImpl();
-        buttonData.setButtonSpec(buttonSpec);
-        buttonData.setCanShow(true);
-        buttonData.setEnabled(true);
+        ButtonDataImpl buttonData =
+                new ButtonDataImpl(/* canShow= */ true, /* isEnabled= */ true, buttonSpec);
 
         return buttonData;
     }

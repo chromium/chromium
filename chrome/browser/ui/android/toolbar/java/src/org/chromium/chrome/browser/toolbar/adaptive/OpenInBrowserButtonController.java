@@ -5,7 +5,6 @@
 package org.chromium.chrome.browser.toolbar.adaptive;
 
 import android.content.Context;
-import android.content.res.Resources;
 import android.graphics.drawable.Drawable;
 import android.view.View;
 
@@ -15,6 +14,7 @@ import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.toolbar.R;
 import org.chromium.chrome.browser.toolbar.optional_button.BaseButtonDataProvider;
+import org.chromium.chrome.browser.toolbar.optional_button.ButtonData.ButtonSpec;
 import org.chromium.chrome.browser.user_education.IphCommandBuilder;
 import org.chromium.components.browser_ui.widget.highlight.ViewHighlighter.HighlightParams;
 import org.chromium.components.browser_ui.widget.highlight.ViewHighlighter.HighlightShape;
@@ -52,13 +52,13 @@ public class OpenInBrowserButtonController extends BaseButtonDataProvider {
         super(
                 activeTabSupplier,
                 /* modalDialogManager= */ null,
-                buttonDrawable,
-                context.getString(R.string.menu_open_in_product_default),
-                /* actionChipLabelResId= */ Resources.ID_NULL,
-                /* supportsTinting= */ true,
-                /* iphCommandBuilder= */ null,
-                AdaptiveToolbarButtonVariant.OPEN_IN_BROWSER,
-                /* tooltipTextResId= */ R.string.menu_open_in_product_default);
+                new ButtonSpec.Builder(
+                                buttonDrawable,
+                                context.getString(R.string.menu_open_in_product_default),
+                                /* supportsTinting= */ true)
+                        .setButtonVariant(AdaptiveToolbarButtonVariant.OPEN_IN_BROWSER)
+                        .setHoverTooltipTextId(R.string.menu_open_in_product_default)
+                        .build());
         setShouldShowOnIncognitoTabs(true);
         mOpenInBrowserRunnable = openInBrowserRunnable;
         mTrackerSupplier = trackerSupplier;

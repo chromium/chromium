@@ -4,9 +4,7 @@
 
 package org.chromium.chrome.browser.ai;
 
-
 import android.content.Context;
-import android.content.res.Resources;
 import android.view.View;
 
 import androidx.appcompat.content.res.AppCompatResources;
@@ -54,14 +52,14 @@ public class PageSummaryButtonController extends BaseButtonDataProvider {
             Supplier<@Nullable Tracker> tracker) {
         super(
                 activeTabSupplier,
-                /* modalDialogManager= */ modalDialogManager,
-                AppCompatResources.getDrawable(context, R.drawable.summarize_auto),
-                /* contentDescription= */ context.getString(R.string.menu_summarize_with_ai),
-                /* actionChipLabelResId= */ Resources.ID_NULL,
-                /* supportsTinting= */ true,
-                /* iphCommandBuilder= */ null,
-                AdaptiveToolbarButtonVariant.PAGE_SUMMARY,
-                /* tooltipTextResId= */ R.string.menu_summarize_with_ai);
+                modalDialogManager,
+                new ButtonSpec.Builder(
+                                AppCompatResources.getDrawable(context, R.drawable.summarize_auto),
+                                context.getString(R.string.menu_summarize_with_ai),
+                                /* supportsTinting= */ true)
+                        .setButtonVariant(AdaptiveToolbarButtonVariant.PAGE_SUMMARY)
+                        .setHoverTooltipTextId(R.string.menu_summarize_with_ai)
+                        .build());
         mContext = context;
         mAiAssistantService = aiAssistantService;
         mTrackerSupplier = tracker;

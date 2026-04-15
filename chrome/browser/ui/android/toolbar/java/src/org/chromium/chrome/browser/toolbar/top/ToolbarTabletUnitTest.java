@@ -1465,8 +1465,8 @@ public final class ToolbarTabletUnitTest {
                         .setHasErrorBadge(hasErrorBadge)
                         .build();
 
-        ButtonDataImpl buttonData = new ButtonDataImpl();
-        buttonData.setButtonSpec(buttonSpec);
+        ButtonDataImpl buttonData =
+                new ButtonDataImpl(/* canShow= */ false, /* isEnabled= */ false, buttonSpec);
         mToolbarTablet.updateOptionalButton(buttonData);
     }
 }

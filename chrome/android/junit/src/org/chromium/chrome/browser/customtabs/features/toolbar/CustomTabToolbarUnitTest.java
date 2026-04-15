@@ -803,11 +803,7 @@ public class CustomTabToolbarUnitTest {
                         .setOnLongClickListener(longClickListener)
                         .setButtonVariant(AdaptiveToolbarButtonVariant.PRICE_INSIGHTS)
                         .build();
-        ButtonDataImpl buttonData = new ButtonDataImpl();
-        buttonData.setButtonSpec(buttonSpec);
-        buttonData.setCanShow(true);
-        buttonData.setEnabled(true);
-        return buttonData;
+        return new ButtonDataImpl(/* canShow= */ true, /* isEnabled= */ true, buttonSpec);
     }
 
     private ButtonData getDataForReaderModeIconButton() {
@@ -825,10 +821,6 @@ public class CustomTabToolbarUnitTest {
                         .setOnLongClickListener(longClickListener)
                         .setButtonVariant(READER_MODE)
                         .build();
-        ButtonDataImpl buttonData = new ButtonDataImpl();
-        buttonData.setButtonSpec(buttonSpec);
-        buttonData.setCanShow(true);
-        buttonData.setEnabled(true);
-        return buttonData;
+        return new ButtonDataImpl(/* canShow= */ true, /* isEnabled= */ true, buttonSpec);
     }
 }

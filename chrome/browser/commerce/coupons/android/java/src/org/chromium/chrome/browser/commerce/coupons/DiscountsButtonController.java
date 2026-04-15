@@ -5,7 +5,6 @@
 package org.chromium.chrome.browser.commerce.coupons;
 
 import android.content.Context;
-import android.content.res.Resources;
 import android.view.View;
 
 import androidx.appcompat.content.res.AppCompatResources;
@@ -16,6 +15,7 @@ import org.chromium.chrome.browser.commerce.CommerceBottomSheetContentController
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarButtonVariant;
 import org.chromium.chrome.browser.toolbar.optional_button.BaseButtonDataProvider;
+import org.chromium.chrome.browser.toolbar.optional_button.ButtonData.ButtonSpec;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.SheetState;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetObserver;
@@ -43,13 +43,14 @@ public class DiscountsButtonController extends BaseButtonDataProvider {
         super(
                 activeTabSupplier,
                 modalDialogManager,
-                AppCompatResources.getDrawable(context, R.drawable.ic_shoppingmode_24dp),
-                /* contentDescription= */ context.getString(R.string.discount_container_title),
-                /* actionChipLabelResId= */ R.string.discount_container_title,
-                /* supportsTinting= */ true,
-                /* iphCommandBuilder= */ null,
-                AdaptiveToolbarButtonVariant.DISCOUNTS,
-                /* tooltipTextResId= */ Resources.ID_NULL);
+                new ButtonSpec.Builder(
+                                AppCompatResources.getDrawable(
+                                        context, R.drawable.ic_shoppingmode_24dp),
+                                context.getString(R.string.discount_container_title),
+                                /* supportsTinting= */ true)
+                        .setActionChipLabelResId(R.string.discount_container_title)
+                        .setButtonVariant(AdaptiveToolbarButtonVariant.DISCOUNTS)
+                        .build());
 
         mBottomSheetController = bottomSheetController;
         mBottomSheetObserver =

@@ -8,7 +8,6 @@ import static org.chromium.build.NullUtil.assumeNonNull;
 
 import android.content.Context;
 import android.content.res.ColorStateList;
-import android.content.res.Resources;
 import android.graphics.PorterDuff;
 import android.graphics.PorterDuffColorFilter;
 import android.graphics.drawable.Drawable;
@@ -106,13 +105,12 @@ public class GlicToolbarButtonController extends BaseButtonDataProvider
         super(
                 activeTabSupplier,
                 /* modalDialogManager= */ null,
-                AppCompatResources.getDrawable(context, R.drawable.ic_spark_24dp),
-                context.getString(R.string.glic_button_entrypoint_ask_gemini_label),
-                /* actionChipLabelResId= */ Resources.ID_NULL,
-                /* supportsTinting= */ true,
-                /* iphCommandBuilder= */ null,
-                AdaptiveToolbarButtonVariant.GLIC,
-                /* tooltipTextResId= */ Resources.ID_NULL);
+                new ButtonSpec.Builder(
+                                AppCompatResources.getDrawable(context, R.drawable.ic_spark_24dp),
+                                context.getString(R.string.glic_button_entrypoint_ask_gemini_label),
+                                /* supportsTinting= */ true)
+                        .setButtonVariant(AdaptiveToolbarButtonVariant.GLIC)
+                        .build());
         mContext = context;
         mToggleGlicCallback = toggleGlicCallback;
         mTrackerSupplier = trackerSupplier;

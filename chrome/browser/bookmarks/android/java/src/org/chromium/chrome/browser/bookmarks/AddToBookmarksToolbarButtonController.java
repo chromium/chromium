@@ -6,7 +6,6 @@ package org.chromium.chrome.browser.bookmarks;
 
 import android.content.Context;
 import android.content.res.Configuration;
-import android.content.res.Resources;
 import android.view.View;
 
 import androidx.appcompat.content.res.AppCompatResources;
@@ -92,13 +91,12 @@ public class AddToBookmarksToolbarButtonController extends BaseButtonDataProvide
         super(
                 activeTabSupplier,
                 /* modalDialogManager= */ null,
-                AppCompatResources.getDrawable(context, R.drawable.ic_star_24dp),
-                context.getString(R.string.accessibility_menu_bookmark),
-                /* actionChipLabelResId= */ Resources.ID_NULL,
-                /* supportsTinting= */ true,
-                /* iphCommandBuilder= */ null,
-                AdaptiveToolbarButtonVariant.ADD_TO_BOOKMARKS,
-                /* tooltipTextResId= */ Resources.ID_NULL);
+                new ButtonSpec.Builder(
+                                AppCompatResources.getDrawable(context, R.drawable.ic_star_24dp),
+                                context.getString(R.string.accessibility_menu_bookmark),
+                                /* supportsTinting= */ true)
+                        .setButtonVariant(AdaptiveToolbarButtonVariant.ADD_TO_BOOKMARKS)
+                        .build());
         mActivityLifecycleDispatcher = activityLifecycleDispatcher;
         mTabBookmarkerSupplier = tabBookmarkerSupplier;
         mTrackerSupplier = trackerSupplier;

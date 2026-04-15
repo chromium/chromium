@@ -5,7 +5,6 @@
 package org.chromium.chrome.browser.readaloud;
 
 import android.content.Context;
-import android.content.res.Resources;
 import android.graphics.drawable.Drawable;
 import android.view.View;
 
@@ -15,6 +14,7 @@ import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarButtonVariant;
 import org.chromium.chrome.browser.toolbar.optional_button.BaseButtonDataProvider;
+import org.chromium.chrome.browser.toolbar.optional_button.ButtonData.ButtonSpec;
 import org.chromium.chrome.browser.user_education.IphCommandBuilder;
 import org.chromium.components.feature_engagement.EventConstants;
 import org.chromium.components.feature_engagement.FeatureConstants;
@@ -46,13 +46,12 @@ public class ReadAloudToolbarButtonController extends BaseButtonDataProvider {
         super(
                 activeTabSupplier,
                 /* modalDialogManager= */ null,
-                buttonDrawable,
-                context.getString(R.string.menu_listen_to_this_page),
-                Resources.ID_NULL,
-                /* supportsTinting= */ true,
-                /* iphCommandBuilder= */ null,
-                AdaptiveToolbarButtonVariant.READ_ALOUD,
-                /* tooltipTextResId= */ Resources.ID_NULL);
+                new ButtonSpec.Builder(
+                                buttonDrawable,
+                                context.getString(R.string.menu_listen_to_this_page),
+                                /* supportsTinting= */ true)
+                        .setButtonVariant(AdaptiveToolbarButtonVariant.READ_ALOUD)
+                        .build());
         mControllerSupplier = controllerSupplier;
         mTrackerSupplier = trackerSupplier;
     }

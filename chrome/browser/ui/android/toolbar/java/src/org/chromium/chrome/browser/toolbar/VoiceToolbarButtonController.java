@@ -5,7 +5,6 @@
 package org.chromium.chrome.browser.toolbar;
 
 import android.content.Context;
-import android.content.res.Resources;
 import android.graphics.drawable.Drawable;
 import android.view.View;
 
@@ -17,6 +16,7 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarButtonVariant;
 import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarFeatures;
 import org.chromium.chrome.browser.toolbar.optional_button.BaseButtonDataProvider;
+import org.chromium.chrome.browser.toolbar.optional_button.ButtonData.ButtonSpec;
 import org.chromium.chrome.browser.user_education.IphCommandBuilder;
 import org.chromium.components.browser_ui.widget.highlight.ViewHighlighter.HighlightParams;
 import org.chromium.components.browser_ui.widget.highlight.ViewHighlighter.HighlightShape;
@@ -72,13 +72,14 @@ public class VoiceToolbarButtonController extends BaseButtonDataProvider {
         super(
                 activeTabSupplier,
                 modalDialogManager,
-                buttonDrawable,
-                context.getString(R.string.accessibility_toolbar_btn_mic),
-                /* actionChipLabelResId= */ Resources.ID_NULL,
-                /* supportsTinting= */ true,
-                /* iphCommandBuilder= */ null,
-                AdaptiveToolbarButtonVariant.VOICE,
-                /* tooltipTextResId= */ R.string.adaptive_toolbar_button_preference_voice_search);
+                new ButtonSpec.Builder(
+                                buttonDrawable,
+                                context.getString(R.string.accessibility_toolbar_btn_mic),
+                                /* supportsTinting= */ true)
+                        .setButtonVariant(AdaptiveToolbarButtonVariant.VOICE)
+                        .setHoverTooltipTextId(
+                                R.string.adaptive_toolbar_button_preference_voice_search)
+                        .build());
         mTrackerSupplier = trackerSupplier;
         mVoiceSearchDelegate = voiceSearchDelegate;
     }

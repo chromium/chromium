@@ -68,13 +68,15 @@ public class ReaderModeToolbarButtonController extends BaseButtonDataProvider
         super(
                 activityTabProvider,
                 modalDialogManager,
-                AppCompatResources.getDrawable(context, R.drawable.ic_mobile_friendly_24dp),
-                context.getString(R.string.reader_mode_cpa_button_text),
-                /* actionChipLabelResId= */ R.string.reader_mode_cpa_button_text,
-                /* supportsTinting= */ true,
-                /* iphCommandBuilder= */ null,
-                AdaptiveToolbarButtonVariant.READER_MODE,
-                /* tooltipTextResId= */ R.string.show_reading_mode_text);
+                new ButtonSpec.Builder(
+                                AppCompatResources.getDrawable(
+                                        context, R.drawable.ic_mobile_friendly_24dp),
+                                context.getString(R.string.reader_mode_cpa_button_text),
+                                /* supportsTinting= */ true)
+                        .setActionChipLabelResId(R.string.reader_mode_cpa_button_text)
+                        .setButtonVariant(AdaptiveToolbarButtonVariant.READER_MODE)
+                        .setHoverTooltipTextId(R.string.show_reading_mode_text)
+                        .build());
 
         mReaderModeIphControllerSupplier = readerModeIphControllerSupplier;
         mActivityTabObserver =

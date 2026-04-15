@@ -15,6 +15,7 @@ import org.chromium.chrome.browser.tab_group_suggestion.R;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarButtonVariant;
 import org.chromium.chrome.browser.toolbar.optional_button.BaseButtonDataProvider;
+import org.chromium.chrome.browser.toolbar.optional_button.ButtonData.ButtonSpec;
 
 import java.util.function.Supplier;
 
@@ -34,14 +35,14 @@ public class GroupSuggestionsButtonDataProvider extends BaseButtonDataProvider {
         super(
                 activeTabSupplier,
                 /* modalDialogManager= */ null,
-                buttonDrawable,
-                /* contentDescription= */ context.getString(
-                        R.string.tab_group_suggestion_action_chip_label),
-                /* actionChipLabelResId= */ R.string.tab_group_suggestion_action_chip_label,
-                /* supportsTinting= */ true,
-                /* iphCommandBuilder= */ null,
-                AdaptiveToolbarButtonVariant.TAB_GROUPING,
-                /* tooltipTextResId= */ R.string.tab_group_suggestion_action_chip_label);
+                new ButtonSpec.Builder(
+                                buttonDrawable,
+                                context.getString(R.string.tab_group_suggestion_action_chip_label),
+                                /* supportsTinting= */ true)
+                        .setActionChipLabelResId(R.string.tab_group_suggestion_action_chip_label)
+                        .setButtonVariant(AdaptiveToolbarButtonVariant.TAB_GROUPING)
+                        .setHoverTooltipTextId(R.string.tab_group_suggestion_action_chip_label)
+                        .build());
         mGroupSuggestionsButtonControllerSupplier = groupSuggestionsButtonControllerSupplier;
         mTabModelSelectorSupplier = tabModelSelectorSupplier;
     }

@@ -206,9 +206,7 @@ public class OptionalButtonCoordinatorTest {
                         .setIphCommandBuilder(mockIphCommandBuilder)
                         .setHasErrorBadge(true)
                         .build();
-        ButtonDataImpl buttonData = new ButtonDataImpl();
-        buttonData.setButtonSpec(buttonSpec);
-        buttonData.setEnabled(isEnabled);
+        ButtonDataImpl buttonData = new ButtonDataImpl(/* canShow= */ false, isEnabled, buttonSpec);
 
         mOptionalButtonCoordinator.updateButton(buttonData, /* isIncognito= */ false);
 
@@ -510,9 +508,7 @@ public class OptionalButtonCoordinatorTest {
                         .setIphCommandBuilder(mockIphCommandBuilder)
                         .setHasErrorBadge(false)
                         .build();
-        ButtonDataImpl buttonData = new ButtonDataImpl();
-        buttonData.setButtonSpec(buttonSpec);
-        buttonData.setEnabled(isEnabled);
+        ButtonDataImpl buttonData = new ButtonDataImpl(/* canShow= */ false, isEnabled, buttonSpec);
 
         mOptionalButtonCoordinator.updateButton(buttonData, /* isIncognito= */ false);
 

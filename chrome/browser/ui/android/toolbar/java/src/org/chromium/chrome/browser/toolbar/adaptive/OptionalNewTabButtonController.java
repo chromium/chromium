@@ -6,7 +6,6 @@ package org.chromium.chrome.browser.toolbar.adaptive;
 
 import android.content.Context;
 import android.content.res.Configuration;
-import android.content.res.Resources;
 import android.graphics.drawable.Drawable;
 import android.view.View;
 
@@ -25,6 +24,7 @@ import org.chromium.chrome.browser.tabmodel.TabCreatorUtil;
 import org.chromium.chrome.browser.tabstrip.StripVisibilityState;
 import org.chromium.chrome.browser.toolbar.R;
 import org.chromium.chrome.browser.toolbar.optional_button.BaseButtonDataProvider;
+import org.chromium.chrome.browser.toolbar.optional_button.ButtonData.ButtonSpec;
 import org.chromium.chrome.browser.user_education.IphCommandBuilder;
 import org.chromium.components.browser_ui.widget.highlight.ViewHighlighter.HighlightParams;
 import org.chromium.components.browser_ui.widget.highlight.ViewHighlighter.HighlightShape;
@@ -82,13 +82,13 @@ public class OptionalNewTabButtonController extends BaseButtonDataProvider
         super(
                 activeTabSupplier,
                 /* modalDialogManager= */ null,
-                buttonDrawable,
-                context.getString(R.string.button_new_tab),
-                /* actionChipLabelResId= */ Resources.ID_NULL,
-                /* supportsTinting= */ true,
-                /* iphCommandBuilder= */ null,
-                AdaptiveToolbarButtonVariant.NEW_TAB,
-                /* tooltipTextResId= */ R.string.new_tab_title);
+                new ButtonSpec.Builder(
+                                buttonDrawable,
+                                context.getString(R.string.button_new_tab),
+                                /* supportsTinting= */ true)
+                        .setButtonVariant(AdaptiveToolbarButtonVariant.NEW_TAB)
+                        .setHoverTooltipTextId(R.string.new_tab_title)
+                        .build());
         setShouldShowOnIncognitoTabs(true);
 
         mContext = context;

@@ -8,7 +8,6 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import android.app.Activity;
-import android.content.res.Resources;
 import android.graphics.drawable.Drawable;
 import android.view.View;
 
@@ -35,6 +34,7 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.toolbar.R;
 import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarButtonVariant;
 import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarFeatures;
+import org.chromium.chrome.browser.toolbar.optional_button.ButtonData.ButtonSpec;
 import org.chromium.chrome.browser.user_education.IphCommandBuilder;
 import org.chromium.components.feature_engagement.FeatureConstants;
 import org.chromium.ui.modaldialog.ModalDialogManager;
@@ -58,13 +58,10 @@ public class BaseButtonDataProviderTest {
             super(
                     activeTabSupplier,
                     modalDialogManager,
-                    buttonDrawable,
-                    contentDescription,
-                    actionChipLabelResId,
-                    supportsTinting,
-                    /* iphCommandBuilder= */ null,
-                    adaptiveButtonVariant,
-                    /* tooltipTextResId= */ Resources.ID_NULL);
+                    new ButtonSpec.Builder(buttonDrawable, contentDescription, supportsTinting)
+                            .setActionChipLabelResId(actionChipLabelResId)
+                            .setButtonVariant(adaptiveButtonVariant)
+                            .build());
         }
 
         @Override
