@@ -93,6 +93,26 @@ bool IsMergeableAnonymousBlock(const LayoutBlockFlow& block) {
          !block.IsViewTransitionRoot() && !IsInnerEditorChild(block);
 }
 
+void ReparentSubsequentFloatingOrOutOfFlow(LayoutBlockFlow* from,
+                                           LayoutBlockFlow* to,
+                                           LayoutObject* next) {
+  while (next && next->IsFloatingOrOutOfFlowPositioned()) {
+    LayoutObject* sibling = next->NextSibling();
+    from->MoveChildTo(to, next, nullptr, true);
+    next = sibling;
+  }
+}
+
+void ReparentPrecedingFloatingOrOutOfFlow(LayoutBlockFlow* from,
+                                          LayoutBlockFlow* to,
+                                          LayoutObject* prev) {
+  while (prev && prev->IsFloatingOrOutOfFlowPositioned()) {
+    LayoutObject* sibling = prev->NextSibling();
+    from->MoveChildTo(to, prev, to->FirstChild(), true);
+    prev = sibling;
+  }
+}
+
 }  // namespace
 
 struct SameSizeAsLayoutBlockFlow : public LayoutBlock {
@@ -229,13 +249,15 @@ void LayoutBlockFlow::AddChild(LayoutObject* new_child,
     // LayoutOutsideListMarker is out-of-flow for the tree building purpose,
     // and that is not inline level, but IsInline().
     if (new_child->IsInline() && !new_child->IsLayoutOutsideListMarker()) {
-      // No suitable existing anonymous box - create a new one.
-      auto* new_block = To<LayoutBlockFlow>(CreateAnonymousBlock());
-      LayoutBox::AddChild(new_block, before_child);
-      // Reparent adjacent floating or out-of-flow siblings to the new box.
-      new_block->ReparentPrecedingFloatingOrOutOfFlowSiblings();
-      new_block->AddChild(new_child);
-      new_block->ReparentSubsequentFloatingOrOutOfFlowSiblings();
+      // No suitable existing anonymous block-flow - create a new one.
+      auto* new_block_flow = To<LayoutBlockFlow>(CreateAnonymousBlock());
+      LayoutBox::AddChild(new_block_flow, before_child);
+      // Reparent adjacent floating or out-of-flow siblings to the new block.
+      ReparentPrecedingFloatingOrOutOfFlow(this, new_block_flow,
+                                           new_block_flow->PreviousSibling());
+      new_block_flow->AddChild(new_child);
+      ReparentSubsequentFloatingOrOutOfFlow(this, new_block_flow,
+                                            new_block_flow->NextSibling());
       return;
     }
   }
@@ -261,37 +283,18 @@ void LayoutBlockFlow::RemoveChild(LayoutObject* old_child) {
   // If the old_child is block-level we need to check if any adjacent siblings
   // are floating or out-of-flow positioned, and if so reparent them into the
   // inline-level anonymous block.
-  //
-  // This logic is the complement to these reparenting methods:
-  //  - ReparentPrecedingFloatingOrOutOfFlowSiblings
-  //  - ReparentSubsequentFloatingOrOutOfFlowSiblings
   {
     LayoutObject* prev = old_child->PreviousSibling();
     LayoutObject* next = old_child->NextSibling();
     if (prev && next && !old_child->IsInline()) {
       auto* prev_block_flow = DynamicTo<LayoutBlockFlow>(prev);
       if (prev_block_flow && IsMergeableAnonymousBlock(*prev_block_flow)) {
-        // The previous sibling is an anonymous block-flow. Scan the next
-        // siblings and reparent any floating or out-of-flow positioned objects
-        // into the end of the previous anonymous block-flow.
-        while (next && next->IsFloatingOrOutOfFlowPositioned()) {
-          LayoutObject* sibling = next->NextSibling();
-          MoveChildTo(prev_block_flow, next, nullptr, false);
-          next = sibling;
-        }
+        ReparentSubsequentFloatingOrOutOfFlow(this, prev_block_flow, next);
       }
 
       auto* next_block_flow = DynamicTo<LayoutBlockFlow>(prev->NextSibling());
       if (next_block_flow && IsMergeableAnonymousBlock(*next_block_flow)) {
-        // The next sibling is an anonymous block-flow. Scan the previous
-        // siblings and reparent any floating or out-of-flow positioned objects
-        // into the start of the next anonymous block-flow.
-        while (prev && prev->IsFloatingOrOutOfFlowPositioned()) {
-          LayoutObject* sibling = prev->PreviousSibling();
-          MoveChildTo(next_block_flow, prev, next_block_flow->FirstChild(),
-                      false);
-          prev = sibling;
-        }
+        ReparentPrecedingFloatingOrOutOfFlow(this, next_block_flow, prev);
       }
     }
   }
@@ -381,38 +384,6 @@ void LayoutBlockFlow::CollapseAnonymousBlockChild(LayoutBlockFlow* child) {
 
   Children()->RemoveChildNode(this, child, child->HasLayer());
   child->Destroy();
-}
-
-void LayoutBlockFlow::ReparentSubsequentFloatingOrOutOfFlowSiblings() {
-  NOT_DESTROYED();
-  auto* parent_block_flow = DynamicTo<LayoutBlockFlow>(Parent());
-  if (!parent_block_flow)
-    return;
-  if (BeingDestroyed()) {
-    return;
-  }
-  LayoutObject* child = NextSibling();
-  while (child && child->IsFloatingOrOutOfFlowPositioned()) {
-    LayoutObject* sibling = child->NextSibling();
-    parent_block_flow->MoveChildTo(this, child, nullptr, false);
-    child = sibling;
-  }
-}
-
-void LayoutBlockFlow::ReparentPrecedingFloatingOrOutOfFlowSiblings() {
-  NOT_DESTROYED();
-  auto* parent_block_flow = DynamicTo<LayoutBlockFlow>(Parent());
-  if (!parent_block_flow)
-    return;
-  if (BeingDestroyed()) {
-    return;
-  }
-  LayoutObject* child = PreviousSibling();
-  while (child && child->IsFloatingOrOutOfFlowPositioned()) {
-    LayoutObject* sibling = child->PreviousSibling();
-    parent_block_flow->MoveChildTo(this, child, FirstChild(), false);
-    child = sibling;
-  }
 }
 
 void LayoutBlockFlow::MakeChildrenInlineIfPossible() {

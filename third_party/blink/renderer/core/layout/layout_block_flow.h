@@ -158,11 +158,6 @@ class CORE_EXPORT LayoutBlockFlow : public LayoutBlock {
   void AddChildBeforeDescendant(LayoutObject* new_child,
                                 LayoutObject* before_descendant);
 
-  // Reparent subsequent or preceding adjacent floating or out-of-flow siblings
-  // into this object.
-  void ReparentSubsequentFloatingOrOutOfFlowSiblings();
-  void ReparentPrecedingFloatingOrOutOfFlowSiblings();
-
   void MakeChildrenInlineIfPossible();
 
   void MakeChildrenNonInline(LayoutObject* insertion_point = nullptr);
