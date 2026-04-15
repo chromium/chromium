@@ -113,7 +113,7 @@ enum class ObserverListReentrancyPolicy {
 
 // TODO(oshima): Change the default to non reentrant. https://crbug.com/812109
 namespace internal {
-#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
+#if BUILDFLAG(IS_IOS)
 inline constexpr ObserverListReentrancyPolicy kDefaultReentrancy =
     ObserverListReentrancyPolicy::kAllowReentrancy;
 #else
