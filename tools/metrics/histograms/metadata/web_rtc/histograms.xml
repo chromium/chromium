@@ -1671,6 +1671,19 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="WebRTC.PeerConnection.SdpBandwidth" enum="SdpBandwidthValue"
+    expires_after="2026-09-14">
+  <owner>hta@chromium.org</owner>
+  <owner>webrtc-dev@chromium.org</owner>
+  <summary>
+    Classifier for the numbers presented in b= lines in SDP descriptions. The
+    purpose of the recording is to see if we can delete the special handling of
+    -1, and to see if very large values are a problem. Recorded every time an
+    SDP description is parsed, which will be at least when a remote offer or
+    answer is processed.
+  </summary>
+</histogram>
+
 <histogram name="WebRTC.PeerConnection.SdpMunging.Outcome"
     enum="SdpMungingOutcome" expires_after="2026-09-06">
   <owner>hta@chromium.org</owner>

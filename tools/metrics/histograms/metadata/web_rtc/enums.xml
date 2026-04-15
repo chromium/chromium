@@ -255,6 +255,15 @@ chromium-metrics-reviews@google.com.
   <int value="12" label="SetPreferredSinkId"/>
 </enum>
 
+<enum name="SdpBandwidthValue">
+  <int value="0" label="Parse failure"/>
+  <int value="1" label="Minus one"/>
+  <int value="2" label="Zero = unlimited"/>
+  <int value="3" label="Betweeen 1 and 2M"/>
+  <int value="4" label="Above 2M"/>
+  <int value="5" label="Negative - error"/>
+</enum>
+
 <enum name="SdpMungingOutcome">
   <int value="0" label="Accepted"/>
   <int value="1" label="Rejected"/>
