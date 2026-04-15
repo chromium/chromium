@@ -28,7 +28,7 @@ BASE_FEATURE_PARAM(bool,
                    kPrewarmThrottleUserNavigation,
                    &kPrewarm,
                    "throttle_user_navigation",
-                   true);
+                   false);
 BASE_FEATURE_PARAM(bool,
                    kForceEnableWithDevTools,
                    &kPrewarm,
