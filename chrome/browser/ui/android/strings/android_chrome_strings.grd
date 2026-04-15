@@ -5925,6 +5925,12 @@ To change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>delete the Chrome d
       <message name="IDS_KEYBOARD_SHORTCUT_SEARCH" desc="A text label that appears next to the keyboard that will focusa and clear the address bar on the screen. The shortcut description is shown in a system dialog along with all other supported shortcuts. [CHAR_LIMIT=55]">
         Start new search
       </message>
+      <message name="IDS_KEYBOARD_SHORTCUT_SCROLL_TO_TOP" desc="A text label that appears next to the keyboard shortcut that will scroll to the top of the page. The shortcut description is shown in a system dialog along with all other supported shortcuts. [CHAR_LIMIT=55]">
+        Scroll to top of page
+      </message>
+      <message name="IDS_KEYBOARD_SHORTCUT_SCROLL_TO_BOTTOM" desc="A text label that appears next to the keyboard shortcut that will scroll to the bottom of the page. The shortcut description is shown in a system dialog along with all other supported shortcuts. [CHAR_LIMIT=55]">
+        Scroll to bottom of page
+      </message>
       <message name="IDS_KEYBOARD_SHORTCUT_BOOKMARK_MANAGER" desc="A text label that appears next to the keyboard shortcut that will open the bookmarks manager in Chrome. On a tablet this is a new tab, on the phone this is a new activity. The shortcut description is shown in a system dialog along with all other supported shortcuts. [CHAR_LIMIT=55]">
         Open Bookmarks Manager
       </message>

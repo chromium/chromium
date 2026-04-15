@@ -3772,4 +3772,59 @@ TEST_F(EventHandlerSimTest, LocalFrameFromPluginElementForTesting) {
          "element";
 }
 
+#if BUILDFLAG(IS_ANDROID)
+TEST_F(EventHandlerSimTest, KeyboardScrollHomeEndWithCtrlAltOnAndroid) {
+  WebView().MainFrameViewWidget()->Resize(gfx::Size(800, 600));
+  SimRequest request("https://example.com/test.html", "text/html");
+  LoadURL("https://example.com/test.html");
+  request.Complete(R"HTML(
+    <!DOCTYPE html>
+    <div style='height:10000px'>
+    Tall text to create viewport scrollbar</div>
+  )HTML");
+
+  Compositor().BeginFrame();
+
+  EXPECT_FALSE(
+      GetDocument().IsUseCounted(WebFeature::kScrollByKeyboardHomeEndKeys));
+  EXPECT_EQ(0, GetDocument().View()->LayoutViewport()->GetScrollOffset().y());
+
+  WebKeyboardEvent e{WebInputEvent::Type::kKeyDown,
+                     WebInputEvent::kControlKey | WebInputEvent::kAltKey,
+                     WebInputEvent::GetStaticTimeStampForTests()};
+  e.dom_code = static_cast<int>(ui::DomCode::ARROW_DOWN);
+  e.dom_key = ui::DomKey::ARROW_DOWN;
+  e.native_key_code = e.windows_key_code = blink::VKEY_DOWN;
+  GetDocument().GetFrame()->GetEventHandler().KeyEvent(e);
+
+  // The first BeginFrame() creates the scroll animation.
+  Compositor().BeginFrame();
+  // The second BeginFrame() with a time delta advances the animation.
+  Compositor().BeginFrame(1.0);
+
+  GetDocument().View()->UpdateAllLifecyclePhasesForTest();
+  EXPECT_GT(GetDocument().View()->LayoutViewport()->GetScrollOffset().y(), 0);
+
+  EXPECT_TRUE(
+      GetDocument().IsUseCounted(WebFeature::kScrollByKeyboardHomeEndKeys));
+
+  // Now test scrolling back to the top (VKEY_UP).
+  WebKeyboardEvent e_up{WebInputEvent::Type::kKeyDown,
+                        WebInputEvent::kControlKey | WebInputEvent::kAltKey,
+                        WebInputEvent::GetStaticTimeStampForTests()};
+  e_up.dom_code = static_cast<int>(ui::DomCode::ARROW_UP);
+  e_up.dom_key = ui::DomKey::ARROW_UP;
+  e_up.native_key_code = e_up.windows_key_code = blink::VKEY_UP;
+  GetDocument().GetFrame()->GetEventHandler().KeyEvent(e_up);
+
+  // The first BeginFrame() creates the scroll animation.
+  Compositor().BeginFrame();
+  // The second BeginFrame() with a time delta advances the animation.
+  Compositor().BeginFrame(1.0);
+
+  GetDocument().View()->UpdateAllLifecyclePhasesForTest();
+  EXPECT_EQ(0, GetDocument().View()->LayoutViewport()->GetScrollOffset().y());
+}
+#endif
+
 }  // namespace blink

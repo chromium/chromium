@@ -20,7 +20,9 @@ enum class KeyboardShortcut {
   kDeleteLine = 3,
   kPageUp = 4,
   kPageDown = 5,
-  kMaxValue = kPageDown,
+  kScrollToTop = 6,
+  kScrollToBottom = 7,
+  kMaxValue = kScrollToBottom,
 };
 
 #if BUILDFLAG(IS_ANDROID)

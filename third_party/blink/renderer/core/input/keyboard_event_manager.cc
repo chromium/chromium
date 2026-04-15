@@ -72,6 +72,29 @@ bool MapKeyCodeForScroll(int key_code,
       modifiers & WebInputEvent::kMetaKey)
     return false;
 
+#if BUILDFLAG(IS_ANDROID)
+  // Maps Ctrl+Alt+Up/Down to Scroll by Document (Home/End behavior).
+  constexpr int kTargetModifiers =
+      WebInputEvent::kControlKey | WebInputEvent::kAltKey;
+  if ((modifiers & WebInputEvent::kKeyModifiers) == kTargetModifiers) {
+    if (key_code == VKEY_UP) {
+      RecordKeyboardShortcutForAndroid(KeyboardShortcut::kScrollToTop);
+      *scroll_direction =
+          mojom::blink::ScrollDirection::kScrollUpIgnoringWritingMode;
+      *scroll_granularity = ui::ScrollGranularity::kScrollByDocument;
+      *scroll_use_uma = WebFeature::kScrollByKeyboardHomeEndKeys;
+      return true;
+    } else if (key_code == VKEY_DOWN) {
+      RecordKeyboardShortcutForAndroid(KeyboardShortcut::kScrollToBottom);
+      *scroll_direction =
+          mojom::blink::ScrollDirection::kScrollDownIgnoringWritingMode;
+      *scroll_granularity = ui::ScrollGranularity::kScrollByDocument;
+      *scroll_use_uma = WebFeature::kScrollByKeyboardHomeEndKeys;
+      return true;
+    }
+  }
+#endif
+
   if (modifiers & WebInputEvent::kAltKey) {
     // Alt-Up/Down should behave like PageUp/Down on Mac.  (Note that Alt-keys
     // on other platforms are suppressed due to isSystemKey being set.)

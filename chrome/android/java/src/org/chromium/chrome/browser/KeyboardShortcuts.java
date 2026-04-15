@@ -905,6 +905,24 @@ public class KeyboardShortcuts {
                     shortcutDefinition.mPrimaryShortcut.mModifier);
         }
 
+        // The scroll to top and scroll to bottom shortcuts are handled via
+        // Blink in
+        // third_party/blink/renderer/core/input/keyboard_event_manager.cc.
+        addShortcut(
+                context,
+                shortcutGroupsById,
+                R.string.keyboard_shortcut_chrome_feature_group_header,
+                R.string.keyboard_shortcut_scroll_to_top,
+                KeyEvent.KEYCODE_DPAD_UP,
+                (KeyEvent.META_CTRL_ON | KeyEvent.META_ALT_ON));
+        addShortcut(
+                context,
+                shortcutGroupsById,
+                R.string.keyboard_shortcut_chrome_feature_group_header,
+                R.string.keyboard_shortcut_scroll_to_bottom,
+                KeyEvent.KEYCODE_DPAD_DOWN,
+                (KeyEvent.META_CTRL_ON | KeyEvent.META_ALT_ON));
+
         if (BookmarkBarUtils.isDeviceBookmarkBarCompatible(context)) {
             addShortcut(
                     context,
