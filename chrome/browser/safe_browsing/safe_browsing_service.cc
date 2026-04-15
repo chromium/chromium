@@ -819,11 +819,8 @@ void SafeBrowsingServiceImpl::SendDownloadReport(
                                      show_download_in_folder);
   Profile* profile = Profile::FromBrowserContext(
       content::DownloadItemUtils::GetBrowserContext(download));
-  PingManager::ReportThreatDetailsResult result =
-      ChromePingManagerFactory::GetForBrowserContext(profile)
-          ->ReportThreatDetails(std::move(report));
-  base::UmaHistogramEnumeration(
-      "SafeBrowsing.ClientSafeBrowsingReport.SendDownloadReportResult", result);
+  ChromePingManagerFactory::GetForBrowserContext(profile)->ReportThreatDetails(
+      std::move(report));
   return;
 }
 

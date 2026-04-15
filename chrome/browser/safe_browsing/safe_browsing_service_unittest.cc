@@ -239,7 +239,6 @@ class SafeBrowsingServiceTest : public testing::Test {
 };
 
 TEST_F(SafeBrowsingServiceTest, SendDownloadReport_Success) {
-  base::HistogramTester histogram_tester;
   SetUpDownload();
   SetExtendedReportingPrefForTests(profile_->GetPrefs(), true);
 
@@ -272,15 +271,11 @@ TEST_F(SafeBrowsingServiceTest, SendDownloadReport_Success) {
       ClientSafeBrowsingReportRequest::DANGEROUS_DOWNLOAD_OPENED,
       /*did_proceed=*/true,
       /*show_download_in_folder=*/true);
-  histogram_tester.ExpectUniqueSample(
-      "SafeBrowsing.ClientSafeBrowsingReport.SendDownloadReportResult",
-      PingManager::ReportThreatDetailsResult::SUCCESS, 1);
 }
 
 TEST_F(
     SafeBrowsingServiceTest,
     SendDownloadReport_NoDownloadWarningActionWhenExtendedReportingDisabled) {
-  base::HistogramTester histogram_tester;
   SetUpDownload();
   SetExtendedReportingPrefForTests(profile_->GetPrefs(), false);
 
@@ -303,9 +298,6 @@ TEST_F(
       ClientSafeBrowsingReportRequest::DANGEROUS_DOWNLOAD_RECOVERY,
       /*did_proceed=*/true,
       /*show_download_in_folder=*/true);
-  histogram_tester.ExpectUniqueSample(
-      "SafeBrowsing.ClientSafeBrowsingReport.SendDownloadReportResult",
-      PingManager::ReportThreatDetailsResult::SUCCESS, 1);
 }
 
 TEST_F(SafeBrowsingServiceTest,

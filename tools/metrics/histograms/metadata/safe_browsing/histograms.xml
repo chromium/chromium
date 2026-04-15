@@ -727,7 +727,7 @@ useful for Chirp alerts (go/crca-alerts). -->
 </histogram>
 
 <histogram name="SafeBrowsing.ClientSafeBrowsingReport.PersisterWriteResult"
-    enum="ClientReportPersisterWriteResult" expires_after="2026-05-03">
+    enum="ClientReportPersisterWriteResult" expires_after="2027-04-10">
   <owner>xinghuilu@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
@@ -776,17 +776,6 @@ useful for Chirp alerts (go/crca-alerts). -->
     Logs per report type when the network request to send the report completes
     when the response was 200 OK and no net error. Logged each time the response
     is received once a report has been sent.
-  </summary>
-</histogram>
-
-<histogram
-    name="SafeBrowsing.ClientSafeBrowsingReport.SendDownloadReportResult"
-    enum="ClientReportSendDownloadReportResult" expires_after="2026-04-26">
-  <owner>xinghuilu@chromium.org</owner>
-  <owner>chrome-counter-abuse-alerts@google.com</owner>
-  <summary>
-    Records the result of the call to send a download report to the backend.
-    Logged each time a download report needs to be sent.
   </summary>
 </histogram>
 
@@ -1601,23 +1590,6 @@ useful for Chirp alerts (go/crca-alerts). -->
   </summary>
 </histogram>
 
-<histogram
-    name="SafeBrowsing.GmsSafeBrowsingApi.CheckDelta.SuccessWithRealTime"
-    units="microseconds" expires_after="2026-04-26">
-  <owner>xinghuilu@chromium.org</owner>
-  <owner>chrome-counter-abuse-alerts@google.com</owner>
-  <summary>
-    The microseconds between sending the SafeBrowsing API real time call and
-    receiving the SUCCESS_WITH_REAL_TIME response. The end time is fixed in java
-    code and does not include any thread hops or extra work. Note that this does
-    include task queue time to respond to the IPC (and that queue time is often
-    non-trivial). This is logged each time a SUCCESS_WITH_REAL_TIME response is
-    received from SafeBrowsing API.
-
-    This histogram only records metrics on machines with high-resolution clocks.
-  </summary>
-</histogram>
-
 <histogram name="SafeBrowsing.GmsSafeBrowsingApi.CheckDelta{Protocol}"
     units="microseconds" expires_after="2026-09-13">
 <!-- Note to owner: This histogram can be renewed 1 full year if it is still
@@ -1711,7 +1683,7 @@ useful for Chirp alerts (go/crca-alerts). -->
 
 <histogram
     name="SafeBrowsing.GmsSafeBrowsingApi.ThreatAttributeCount{Protocol}"
-    units="entries" expires_after="2026-04-26">
+    units="entries" expires_after="2027-04-10">
   <owner>xinghuilu@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
@@ -2719,7 +2691,7 @@ useful for Chirp alerts (go/crca-alerts). -->
 </histogram>
 
 <histogram name="SafeBrowsing.RendererThrottle.RequestDestination"
-    enum="RequestDestination" expires_after="2026-04-01">
+    enum="RequestDestination" expires_after="2027-04-10">
   <owner>xinghuilu@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
@@ -2948,7 +2920,7 @@ useful for Chirp alerts (go/crca-alerts). -->
 </histogram>
 
 <histogram name="SafeBrowsing.RT.HasAccessTokenFromFetcher{UserCategory}"
-    enum="BooleanHasToken" expires_after="2026-05-17">
+    enum="BooleanHasToken" expires_after="2027-04-10">
   <owner>xinghuilu@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
@@ -2992,7 +2964,7 @@ useful for Chirp alerts (go/crca-alerts). -->
 </histogram>
 
 <histogram name="SafeBrowsing.RT.IsLookupServiceFound" enum="BooleanFound"
-    expires_after="2026-04-01">
+    expires_after="2027-04-10">
   <owner>xinghuilu@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
@@ -3948,7 +3920,7 @@ and applied correctly. -->
 
 <histogram
     name="SafeBrowsing.V4ProcessPartialUpdate.AdditionsHashesCount{SafeBrowsing_V4Store_Metrics}"
-    units="entries" expires_after="2026-04-01">
+    units="entries" expires_after="2027-04-10">
   <owner>xinghuilu@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>

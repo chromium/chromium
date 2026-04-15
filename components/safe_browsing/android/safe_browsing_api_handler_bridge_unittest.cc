@@ -166,18 +166,6 @@ class SafeBrowsingApiHandlerBridgeTest
           "SafeBrowsing.GmsSafeBrowsingApi.ResponseStatus" + suffix,
           /*sample=*/expected_response_status.value(),
           /*expected_bucket_count=*/1);
-      if (expected_response_status.value() ==
-          static_cast<int>(
-              SafeBrowsingJavaResponseStatus::SUCCESS_WITH_REAL_TIME)) {
-        histogram_tester_.ExpectUniqueSample(
-            "SafeBrowsing.GmsSafeBrowsingApi.CheckDelta.SuccessWithRealTime",
-            /*sample=*/kExpectedSafeBrowsingCheckDeltaMicroseconds,
-            /*expected_bucket_count=*/1);
-      } else {
-        histogram_tester_.ExpectTotalCount(
-            "SafeBrowsing.GmsSafeBrowsingApi.CheckDelta.SuccessWithRealTime",
-            /*expected_count=*/0);
-      }
     } else {
       histogram_tester_.ExpectTotalCount(
           /*name=*/"SafeBrowsing.GmsSafeBrowsingApi.ResponseStatus",

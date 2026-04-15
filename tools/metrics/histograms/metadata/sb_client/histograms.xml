@@ -874,7 +874,7 @@ useful for Chirp alerts (go/crca-alerts). -->
 
 <histogram
     name="SBClientPhishing.IntelligentScanInnerTextSize{IntelligentScanRequestType}"
-    units="bytes" expires_after="2026-05-17">
+    units="bytes" expires_after="2027-04-10">
   <owner>xinghuilu@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
