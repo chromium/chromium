@@ -172,7 +172,12 @@ class CC_EXPORT BrowserControlsOffsetManager {
 
   // Returns the viewport Y-offset below which the toolbar can be hidden when
   // snap animation is enabled.
-  float SnapAnimationCanHideRegionHeight() const;
+  //
+  // |slowness| is a multiplier that controls how much the height of the
+  // can-hide region changes relative to the height of the controls, where a
+  // higher value means a larger region and a lower value means a smaller
+  // region. The value should be between 0 and 1.
+  float SnapAnimationCanHideRegionHeight(float slowness) const;
 
  protected:
   BrowserControlsOffsetManager(BrowserControlsOffsetManagerClient* client,
@@ -200,6 +205,7 @@ class CC_EXPORT BrowserControlsOffsetManager {
 
   gfx::Vector2dF ScrollByPrecise(const gfx::Vector2dF& pending_delta);
   void ScrollBySnap(const gfx::Vector2dF& pending_delta);
+  float ControlsAnimatedHeight() const;
 
   // The client manages the lifecycle of this.
   raw_ptr<BrowserControlsOffsetManagerClient> client_;

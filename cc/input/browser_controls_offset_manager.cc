@@ -35,9 +35,19 @@ const int64_t kShowHideMaxDurationMs = 200;
 // TODO(sinansahin): Temporary value, pending UX guidance probably.
 const int64_t kHeightChangeDurationMs = 200;
 
-// This constant was chosen based on local testing to preserve responsiveness
+// These constants were chosen based on local testing to preserve responsiveness
 // when using snap animation.
-const int64_t kShowHideMinDurationMs = 50;
+const int64_t kShowHideMinDurationMs = 75;
+constexpr float kAlwaysShownRegionMultiplier = 0.5f;
+constexpr float kCanHideRegionMinMultiplier = 1.5f;
+constexpr float kCanHideRegionMaxMultiplier = 4.5f;
+static_assert(
+    kCanHideRegionMinMultiplier >= kAlwaysShownRegionMultiplier + 1.f,
+    "Can hide region must start after always shown region and account for "
+    "counter-scrolling due to the controls hiding.");
+static_assert(kAlwaysShownRegionMultiplier > 0.f,
+              "Always shown region must be non-zero to minimize the chance of "
+              "shifting the web contents when controls are shown.");
 
 float NormalizeShownRatio(float value, float min_shown_ratio) {
   if (min_shown_ratio == 1.f) {
@@ -46,13 +56,6 @@ float NormalizeShownRatio(float value, float min_shown_ratio) {
 
   return (std::clamp(value, min_shown_ratio, 1.f) - min_shown_ratio) /
          (1.f - min_shown_ratio);
-}
-
-int64_t GetSnapAnimationDuration(float browser_controls_travel,
-                                 float scroll_speed) {
-  return std::clamp(
-      static_cast<int64_t>(browser_controls_travel / scroll_speed),
-      kShowHideMinDurationMs, kShowHideMaxDurationMs);
 }
 
 }  // namespace
@@ -193,21 +196,47 @@ BrowserControlsOffsetManager::BottomControlsShownRatioRange() {
   return std::make_pair(0.f, 1.f);
 }
 
-float BrowserControlsOffsetManager::SnapAnimationAlwaysShownRegionHeight()
-    const {
-  // When controls are at the top, always show the browser controls if the user
-  // has not scrolled down at least twice the travel distance of the browser
-  // controls to ensure that when the page counter-scrolls as the browser
-  // controls hide, it does not visually scroll the page. This is not a concern
-  // when the controls are only on the bottom.
+float BrowserControlsOffsetManager::ControlsAnimatedHeight() const {
   return TopControlsHeight() > 0
-             ? 2 * (TopControlsHeight() - TopControlsMinHeight())
-             : 0.f;
+             ? TopControlsHeight() - TopControlsMinHeight()
+             : BottomControlsHeight() - BottomControlsMinHeight();
 }
 
-float BrowserControlsOffsetManager::SnapAnimationCanHideRegionHeight() const {
+float BrowserControlsOffsetManager::SnapAnimationAlwaysShownRegionHeight()
+    const {
+  // When controls are at the top, trigger the show animation early to prevent
+  // the browser controls from being shown when the page has been scrolled all
+  // the way to the top and the controls are not obscuring any web content. This
+  // is not a concern when the controls are only on the bottom.
+  if (TopControlsHeight() == 0) {
+    return 0.f;
+  }
+
+  return ControlsAnimatedHeight() * kAlwaysShownRegionMultiplier;
+}
+
+float BrowserControlsOffsetManager::SnapAnimationCanHideRegionHeight(
+    float slowness) const {
+  DCHECK_GE(slowness, 0.f);
+  DCHECK_LE(slowness, 1.f);
+
+  // Can hide region is not relevant for bottom controls.
+  if (TopControlsHeight() == 0) {
+    return 0.f;
+  }
+
   // Hide the browser controls well-past the always shown region (if it exists).
-  return 2 * SnapAnimationAlwaysShownRegionHeight();
+  // The purpose of the can-hide region is to prevent the browser controls from
+  // animating to show when the page has been scrolled all the way to the top.
+  // It works by delaying the hide animation until the user has scrolled a
+  // sufficient distance from the top of the page so that a subsequent show
+  // animation does not start when the page is at the top, resulting in the web
+  // content being shifted down as part of the animation. The faster the user
+  // scrolls, the shorter the duration of the hide animation, and therefore the
+  // smaller this region needs to be.
+  return ControlsAnimatedHeight() *
+         gfx::Tween::FloatValueBetween(slowness, kCanHideRegionMinMultiplier,
+                                       kCanHideRegionMaxMultiplier);
 }
 
 void BrowserControlsOffsetManager::UpdateBrowserControlsState(
@@ -711,9 +740,7 @@ void BrowserControlsOffsetManager::SetupSnapAnimation(
   // The top controls have priority because they need to visually be in sync
   // with the web contents.
   const bool base_on_top_controls = TopControlsHeight();
-  const float controls_animated_height =
-      base_on_top_controls ? TopControlsHeight() - TopControlsMinHeight()
-                           : BottomControlsHeight() - BottomControlsMinHeight();
+  const float controls_animated_height = ControlsAnimatedHeight();
   DCHECK_GE(controls_animated_height, 0.f);
 
   const float shown_ratio = base_on_top_controls ? TopControlsShownRatio()
@@ -724,42 +751,62 @@ void BrowserControlsOffsetManager::SetupSnapAnimation(
 
   const float viewport_offset_y = client_->ViewportScrollOffset().y();
 
+  // Calculate the slowness factor based on how long it would take to animate
+  // the controls to their final position given the current velocity compared to
+  // the maximum animation duration.
+  float slowness =
+      std::clamp((controls_animated_height /
+                  std::abs(scroll_velocity_tracker_.CurrentVelocity().y())) /
+                     kShowHideMaxDurationMs,
+                 0.f, 1.f);
+
   AnimationDirection direction;
   gfx::Tween::Type curve;
 
-  // The snap animation logic divides the webpage into two parts vertically:
-  //  1. Always-Shown Region: This is at the top of the page. When viewport
-  //     offset is in this region, the toolbar is always shown.
-  //  2. Can-Hide Region: This follows the always-shown region (with a gap if
-  //     the toolbar is at the top) and extends to the bottom of the page. When
-  //     viewport offset is in this region and the user scrolls down the page
-  //     the toolbar can be hidden if the user scrolls sufficiently.
+  // The snap animation logic divides the page into three vertical regions:
   //
-  //                    +-----------------------------+
-  //                    |                             |
-  //                    |     Always-Shown Region     |
-  //                    |                             |
-  //                    +-----------------------------+
-  //                    |                             |
-  //                    |           (gap)             |
-  //                    |                             |
-  //                    +-----------------------------+
-  //                    |                             |
-  //                    |      Can-Hide Region        |
-  //                    |   (extends to the bottom)   |
-  //                    |                             |
-  //                    |                             |
-  //                    |                             |
-  //                    +-----------------------------+
+  //                  +-----------------------------+ Page Top
+  //                  |                             |
+  //                  |     Always-Shown Region     | Show controls immediately
+  //                  |       (from page top)       | when scrolling up.
+  //                  |                             |
+  //                  +^^^^^^^^^^^^^^^^^^^^^^^^^^^^^+
+  //                  |                             |
+  //                  |            (gap)            | Prevents show/hide loops.
+  //                  |                             |
+  //                  +vvvvvvvvvvvvvvvvvvvvvvvvvvvvv+
+  //                  |                             |
+  //                  |       Can-Hide Region       | Allows hiding controls
+  //                  |   (extends to the bottom)   | when scrolling down.
+  //                  |                             |
+  //                  +-----------------------------+
+  //
+  // The core goal is to prevent web contents from shifting. Controls should
+  // neither animate in at the page top nor hide unless there is enough web
+  // content below to absorb the counter-scroll.
+  //
+  // 1. Always-Shown Region: At the very top, the page does not counter-scroll,
+  //    so an animation would shift the web contents down. By triggering the
+  //    show animation even if the user has not scrolled up enough in the
+  //    current scroll sequence, the chance of the controls animating in when
+  //    scrolled to the top is minimized.
+  // 2. Gap: When controls hide, the page counter-scrolls upward by the
+  //    controls' height. The gap ensures this counter-scroll doesn't push
+  //    the viewport top back into the Always-Shown region, which can
+  //    instantly trigger a show at the end of the hide animation.
+  // 3. Can-Hide Region: Starts dynamically below the gap. Slower scrolls
+  //    push the start further down to prevent the user from scrolling up
+  //    while the hide animation is running and reaching the page top before a
+  //    show animation can start.
 
   if (scroll_delta.y() >= 0) {
     // Animate to hide the controls when the user scrolls down:
-    //  - If the viewport offset is in the always-shown region
+    //  - If the viewport offset is in the can-hide region
     //  - If the accumulated delta for this scroll is greater than the height of
     //    the controls
     //  - At most once per scroll to prevent the controls from thrashing between
     //    the shown and hidden states
-    if (viewport_offset_y <= SnapAnimationCanHideRegionHeight() ||
+    if (viewport_offset_y <= SnapAnimationCanHideRegionHeight(slowness) ||
         did_hide_this_scroll_ ||
         accumulated_scroll_delta_ < controls_animated_height) {
       return;
@@ -775,7 +822,7 @@ void BrowserControlsOffsetManager::SetupSnapAnimation(
     did_hide_this_scroll_ = true;
   } else {
     // Animate to show the controls when the user scrolls up:
-    //  - If the viewport offset is in the can-hide region
+    //  - If the viewport offset is in the always-shown region
     //  - If the accumulated delta for this scroll is greater than the height of
     //    the controls
     //
@@ -797,10 +844,10 @@ void BrowserControlsOffsetManager::SetupSnapAnimation(
     curve = gfx::Tween::LINEAR_OUT_SLOW_IN;
   }
 
-  int64_t animation_duration_ms = GetSnapAnimationDuration(
-      controls_animated_height,
-      std::abs(scroll_velocity_tracker_.CurrentVelocity().y()));
-  SetupAnimation(direction, animation_duration_ms, curve);
+  SetupAnimation(direction,
+                 gfx::Tween::IntValueBetween(slowness, kShowHideMinDurationMs,
+                                             kShowHideMaxDurationMs),
+                 curve);
 }
 
 void BrowserControlsOffsetManager::ScrollEnd(

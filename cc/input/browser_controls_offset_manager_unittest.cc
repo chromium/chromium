@@ -11,6 +11,7 @@
 #include <optional>
 
 #include "base/test/scoped_feature_list.h"
+#include "base/test/scoped_mock_clock_override.h"
 #include "base/time/time.h"
 #include "cc/base/features.h"
 #include "cc/input/browser_controls_offset_manager_client.h"
@@ -1778,6 +1779,9 @@ TEST_F(BrowserControlsOffsetManagerCancelAnimationTest,
   EXPECT_FALSE(manager->HasAnimation());
 }
 
+// TODO(b/501391526): Enable the tests on Linux TSAN once
+// base::ScopedMockClockOverride is thread-safe.
+#if !(BUILDFLAG(IS_LINUX) && defined(THREAD_SANITIZER))
 class BrowserControlsOffsetManagerSnapAnimationTest : public testing::Test {
  public:
   BrowserControlsOffsetManagerSnapAnimationTest()
@@ -1791,8 +1795,14 @@ class BrowserControlsOffsetManagerSnapAnimationTest : public testing::Test {
   // snap animation. Also checks if the triggered animation is configured
   // correctly.
   bool ScrollDidAnimate(float scroll_y,
-                        std::optional<bool> animate_to_show = std::nullopt) {
+                        std::optional<bool> animate_to_show = std::nullopt,
+                        base::TimeDelta time_delta_from_previous_scroll_update =
+                            base::Milliseconds(1)) {
     BrowserControlsOffsetManager* manager = client_.manager();
+
+    // Advance the mock clock by 1ms to ensure that the second scroll update is
+    // not coalesced with the first and is treated as a new sample.
+    mock_clock_.Advance(time_delta_from_previous_scroll_update);
     client_.ScrollVerticallyBy(scroll_y);
     if (!manager->HasAnimation()) {
       return false;
@@ -1816,19 +1826,36 @@ class BrowserControlsOffsetManagerSnapAnimationTest : public testing::Test {
     return true;
   }
 
+  float MeasureScrollDeltaToHide(
+      float step_size,
+      base::TimeDelta interval_between_scroll_updates) {
+    BrowserControlsOffsetManager* manager = client_.manager();
+    float scroll_delta = step_size;
+    manager->ScrollBegin();
+    while (!ScrollDidAnimate(step_size,
+                             /*animate_to_show=*/false,
+                             interval_between_scroll_updates)) {
+      scroll_delta += step_size;
+    }
+    manager->ScrollEnd();
+    return scroll_delta;
+  }
+
   constexpr static float kControlsHeight = 100.f;
 
   MockBrowserControlsOffsetManagerClient client_;
   base::test::ScopedFeatureList feature_list_;
+  base::ScopedMockClockOverride mock_clock_;
 };
 
 TEST_F(BrowserControlsOffsetManagerSnapAnimationTest,
        HideAnimationTriggeredOncePerScroll) {
   BrowserControlsOffsetManager* manager = client_.manager();
 
-  // Start in the can-hide region.
+  // Start well inside in the can-hide region.
   client_.SetViewportScrollOffset(
-      0.f, manager->SnapAnimationCanHideRegionHeight() + 2 * kControlsHeight);
+      0.f,
+      manager->SnapAnimationCanHideRegionHeight(1.f) + 2 * kControlsHeight);
 
   manager->ScrollBegin();
   // Simulate the user scrolling up and down in succession. The expected
@@ -1858,7 +1885,8 @@ TEST_F(BrowserControlsOffsetManagerSnapAnimationTest,
 
   // Start in the can-hide region.
   client_.SetViewportScrollOffset(
-      0.f, manager->SnapAnimationCanHideRegionHeight() + 2 * kControlsHeight);
+      0.f,
+      manager->SnapAnimationCanHideRegionHeight(1.f) + 2 * kControlsHeight);
 
   manager->ScrollBegin();
   // Hide the browser controls.
@@ -1889,13 +1917,67 @@ TEST_F(BrowserControlsOffsetManagerSnapAnimationTest,
   client_.SetViewportScrollOffset(0.f, 0.f);
   manager->ScrollBegin();
 
-  while (client_.ViewportScrollOffset().y() <=
-         manager->SnapAnimationCanHideRegionHeight()) {
+  // Before the top of the page is in the can-hide region, the controls should
+  // not be hidden.
+  float can_hide_region_height_min =
+      manager->SnapAnimationCanHideRegionHeight(0.f);
+  while (client_.ViewportScrollOffset().y() < can_hide_region_height_min) {
     EXPECT_FALSE(ScrollDidAnimate(1.f));
   }
 
-  EXPECT_TRUE(ScrollDidAnimate(1.f, /*animate_to_show=*/false));
+  // Once the top of the page is in the can-hide region, the controls should be
+  // hidden.
+  bool did_animate = false;
+  float can_hide_region_height_max =
+      manager->SnapAnimationCanHideRegionHeight(1.f);
+  while (client_.ViewportScrollOffset().y() <= can_hide_region_height_max) {
+    if (ScrollDidAnimate(1.f, /*animate_to_show=*/false)) {
+      did_animate = true;
+      break;
+    }
+  }
+  EXPECT_TRUE(did_animate);
   manager->ScrollEnd();
+}
+
+TEST_F(BrowserControlsOffsetManagerSnapAnimationTest,
+       CanHideRegionHeightIsSmallerForFasterScrolls) {
+  constexpr base::TimeDelta kSlowScrollUpdateInterval = base::Milliseconds(1);
+  constexpr base::TimeDelta kFastScrollUpdateInterval =
+      kSlowScrollUpdateInterval / 2;
+
+  BrowserControlsOffsetManager* manager = client_.manager();
+
+  ASSERT_EQ(manager->TopControlsShownRatio(), 1.f);
+
+  float can_hide_region_height_slow_scroll = MeasureScrollDeltaToHide(
+      /*step_size=*/1.f,
+      /*interval_between_scroll_updates=*/kSlowScrollUpdateInterval);
+  EXPECT_GT(can_hide_region_height_slow_scroll, 0.f);
+  EXPECT_EQ(manager->TopControlsShownRatio(), 0.f);
+
+  // Scroll up to page top and reveal the controls.
+  bool did_animate = false;
+  manager->ScrollBegin();
+  while (client_.ViewportScrollOffset().y() > 0.f) {
+    did_animate |=
+        ScrollDidAnimate(-std::min(1.f, client_.ViewportScrollOffset().y()),
+                         /*animate_to_show=*/true);
+  }
+  manager->ScrollEnd();
+  EXPECT_TRUE(did_animate);
+  ASSERT_EQ(manager->TopControlsShownRatio(), 1.f);
+
+  float can_hide_region_height_fast_scroll = MeasureScrollDeltaToHide(
+      /*step_size=*/1.f,
+      /*interval_between_scroll_updates=*/kFastScrollUpdateInterval);
+  EXPECT_GT(can_hide_region_height_fast_scroll, 0.f);
+  EXPECT_EQ(manager->TopControlsShownRatio(), 0.f);
+
+  EXPECT_GT(can_hide_region_height_slow_scroll,
+            can_hide_region_height_fast_scroll);
+  EXPECT_LT(can_hide_region_height_fast_scroll,
+            manager->SnapAnimationCanHideRegionHeight(1.f));
 }
 
 TEST_F(BrowserControlsOffsetManagerSnapAnimationTest,
@@ -1903,7 +1985,7 @@ TEST_F(BrowserControlsOffsetManagerSnapAnimationTest,
   BrowserControlsOffsetManager* manager = client_.manager();
 
   client_.SetViewportScrollOffset(
-      0.f, manager->SnapAnimationCanHideRegionHeight() + kControlsHeight);
+      0.f, manager->SnapAnimationCanHideRegionHeight(1.f) + kControlsHeight);
   manager->ScrollBegin();
   EXPECT_TRUE(ScrollDidAnimate(kControlsHeight, /*animate_to_show=*/false));
   manager->ScrollEnd();
@@ -1919,6 +2001,7 @@ TEST_F(BrowserControlsOffsetManagerSnapAnimationTest,
   EXPECT_TRUE(ScrollDidAnimate(-1.f, /*animate_to_show=*/true));
   manager->ScrollEnd();
 }
+#endif  // !(BUILDFLAG(IS_LINUX) && defined(THREAD_SANITIZER))
 
 }  // namespace
 }  // namespace cc
