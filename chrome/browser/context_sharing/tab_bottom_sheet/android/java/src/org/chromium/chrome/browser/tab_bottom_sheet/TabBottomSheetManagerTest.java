@@ -84,7 +84,7 @@ public class TabBottomSheetManagerTest {
                             (TabbedRootUiCoordinator) mActivity.getRootUiCoordinatorForTesting();
                     mBottomSheetController = tabbedRootUiCoordinator.getBottomSheetController();
                     var compositorViewHolder = mActivity.getCompositorViewHolderSupplier().get();
-                    mCoBrowseViews = new CoBrowseViews(mActivity, null, null);
+                    mCoBrowseViews = new CoBrowseViews(mActivity, null, null, null);
                     mManager = tabbedRootUiCoordinator.getTabBottomSheetManagerForTesting();
                 });
     }
@@ -125,7 +125,10 @@ public class TabBottomSheetManagerTest {
                 ThreadUtils.runOnUiThreadBlocking(
                         () ->
                                 CoBrowseViewFactory.buildCoBrowseViews(
-                                        mWindowAndroid, webContents, /* showFusebox= */ false));
+                                        mWindowAndroid,
+                                        webContents,
+                                        /* showToolbar= */ false,
+                                        /* showFusebox= */ false));
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
