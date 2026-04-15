@@ -363,12 +363,16 @@ bool ChromeDevToolsManagerDelegate::AllowInspectingRenderFrameHost(
 
 bool ChromeDevToolsManagerDelegate::AllowInspectingTarget(
     content::DevToolsAgentHost* agent_host) {
+#if BUILDFLAG(IS_ANDROID)
+  return true;
+#else
   Profile* profile =
       Profile::FromBrowserContext(agent_host->GetBrowserContext());
   if (!profile) {
     return true;
   }
   return IsInspectionAllowed(profile, agent_host);
+#endif
 }
 
 void ChromeDevToolsManagerDelegate::ClientAttached(

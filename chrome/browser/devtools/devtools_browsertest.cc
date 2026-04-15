@@ -101,6 +101,7 @@
 #include "content/public/browser/child_process_data.h"
 #include "content/public/browser/content_browser_client.h"
 #include "content/public/browser/devtools_agent_host.h"
+#include "content/public/browser/devtools_agent_host_client.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_widget_host.h"
 #include "content/public/browser/render_widget_host_view.h"
@@ -3012,6 +3013,164 @@ IN_PROC_BROWSER_TEST_F(DevToolsDisallowedForForceInstalledExtensionsPolicyTest,
   // installed extension.
   DisallowDevToolsForForceInstalledExtenions(browser());
   ASSERT_TRUE(DevToolsWindow::FindDevToolsWindow(agent_host.get()));
+}
+
+IN_PROC_BROWSER_TEST_F(DevToolsDisallowedForForceInstalledExtensionsPolicyTest,
+                       BlockDevToolsOnRestrictedExtensionErrorPage) {
+  // 1. Setup: Load a "force-installed" extension.
+  std::string extension_id;
+  ASSERT_NO_FATAL_FAILURE(InstallExtensionWithLocation(
+      ManifestLocation::kExternalPolicyDownload, &extension_id));
+
+  const extensions::Extension* extension =
+      extensions::ExtensionRegistry::Get(profile())->GetExtensionById(
+          extension_id, extensions::ExtensionRegistry::EVERYTHING);
+  ASSERT_TRUE(extension);
+
+  // 2. Set policy to "Disallow for force-installed extensions" (0).
+  DisallowDevToolsForForceInstalledExtenions(browser());
+
+  // 3. Navigate to a non-existent page of this extension (causes error page).
+  GURL error_url = extension->GetResourceURL("non_existent.html");
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), error_url));
+
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+
+  // 4. Verify DevTools are NOT allowed.
+  EXPECT_FALSE(DevToolsWindow::AllowDevToolsFor(profile(), web_contents));
+
+  // 5. Verify it cannot be opened.
+  DevToolsWindow::OpenDevToolsWindow(web_contents,
+                                     DevToolsOpenedByAction::kUnknown);
+  auto agent_host = GetOrCreateDevToolsHostForWebContents(web_contents);
+  EXPECT_FALSE(DevToolsWindow::FindDevToolsWindow(agent_host.get()));
+}
+
+IN_PROC_BROWSER_TEST_F(DevToolsDisallowedForForceInstalledExtensionsPolicyTest,
+                       AllowDevToolsOnRegularExtensionErrorPage) {
+  // 1. Setup: Load a regular extension.
+  std::string extension_id;
+  ASSERT_NO_FATAL_FAILURE(
+      InstallExtensionWithLocation(ManifestLocation::kInternal, &extension_id));
+
+  const extensions::Extension* extension =
+      extensions::ExtensionRegistry::Get(profile())->GetExtensionById(
+          extension_id, extensions::ExtensionRegistry::EVERYTHING);
+  ASSERT_TRUE(extension);
+
+  // 2. Set policy to "Disallow for force-installed extensions" (0).
+  DisallowDevToolsForForceInstalledExtenions(browser());
+
+  // 3. Navigate to a non-existent page of this extension.
+  GURL error_url = extension->GetResourceURL("non_existent.html");
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), error_url));
+
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+
+  // 4. Verify DevTools ARE allowed (since it's not a restricted extension).
+  EXPECT_TRUE(DevToolsWindow::AllowDevToolsFor(profile(), web_contents));
+}
+
+IN_PROC_BROWSER_TEST_F(DevToolsDisallowedForForceInstalledExtensionsPolicyTest,
+                       BlockDevToolsOnRestrictedExtensionServiceWorker) {
+  // 1. Setup: Load a "force-installed" extension with a service worker.
+  base::ScopedAllowBlockingForTesting allow_blocking;
+  base::ScopedTempDir temp_dir;
+  ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
+
+  base::WriteFile(temp_dir.GetPath().AppendASCII("manifest.json"),
+                  R"({
+                    "name": "Restricted SW Extension",
+                    "version": "1.0",
+                    "manifest_version": 3,
+                    "background": { "service_worker": "sw.js" }
+                  })");
+  base::WriteFile(temp_dir.GetPath().AppendASCII("sw.js"), "// background sw");
+
+  const Extension* extension = InstallExtension(
+      temp_dir.GetPath(), 1, ManifestLocation::kExternalPolicyDownload);
+  ASSERT_TRUE(extension);
+  std::string extension_id = extension->id();
+
+  // 2. Set policy.
+  DisallowDevToolsForForceInstalledExtenions(browser());
+
+  // 3. Find the ServiceWorkerDevToolsAgentHost.
+  scoped_refptr<content::DevToolsAgentHost> sw_host;
+  for (auto& host : content::DevToolsAgentHost::GetOrCreateAll()) {
+    if (host->GetType() == content::DevToolsAgentHost::kTypeServiceWorker &&
+        host->GetURL().host() == extension_id) {
+      sw_host = host;
+      break;
+    }
+  }
+  ASSERT_TRUE(sw_host);
+
+  // 4. Verify attachment is blocked.
+  class TestClient : public content::DevToolsAgentHostClient {
+    void AgentHostClosed(content::DevToolsAgentHost* host) override {}
+    void DispatchProtocolMessage(content::DevToolsAgentHost* host,
+                                 base::span<const uint8_t> message) override {}
+  } client;
+
+  EXPECT_FALSE(sw_host->AttachClient(&client));
+}
+
+IN_PROC_BROWSER_TEST_F(DevToolsDisallowedForForceInstalledExtensionsPolicyTest,
+                       BlockDevToolsOnRestrictedExtensionDevToolsPage) {
+  // 1. Setup: Load a "force-installed" extension with a devtools_page.
+  base::ScopedAllowBlockingForTesting allow_blocking;
+  base::ScopedTempDir temp_dir;
+  ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
+
+  base::WriteFile(temp_dir.GetPath().AppendASCII("manifest.json"),
+                  R"({
+                    "name": "Restricted DevToolsPage Extension",
+                    "version": "1.0",
+                    "manifest_version": 3,
+                    "devtools_page": "devtools.html"
+                  })");
+  base::WriteFile(temp_dir.GetPath().AppendASCII("devtools.html"),
+                  "<html>DevTools Page</html>");
+
+  const Extension* extension = InstallExtension(
+      temp_dir.GetPath(), 1, ManifestLocation::kExternalPolicyDownload);
+  ASSERT_TRUE(extension);
+  std::string extension_id = extension->id();
+
+  // 2. Set policy.
+  DisallowDevToolsForForceInstalledExtenions(browser());
+
+  // 3. Open DevTools on a normal page to trigger devtools_page loading.
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL("about:blank")));
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  DevToolsWindowTesting::OpenDevToolsWindowSync(web_contents, true);
+
+  // 4. Find the DevToolsPage host.
+  scoped_refptr<content::DevToolsAgentHost> dt_host;
+  // It might take a moment to load the devtools_page.
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    for (auto& host : content::DevToolsAgentHost::GetOrCreateAll()) {
+      if (host->GetURL().host() == extension_id &&
+          host->GetURL().ExtractFileName() == "devtools.html") {
+        dt_host = host;
+        return true;
+      }
+    }
+    return false;
+  }));
+
+  // 5. Verify attachment is blocked.
+  class TestClient : public content::DevToolsAgentHostClient {
+    void AgentHostClosed(content::DevToolsAgentHost* host) override {}
+    void DispatchProtocolMessage(content::DevToolsAgentHost* host,
+                                 base::span<const uint8_t> message) override {}
+  } client;
+
+  ASSERT_FALSE(dt_host->AttachClient(&client));
 }
 
 class DevToolsAllowedByCommandLineSwitch
