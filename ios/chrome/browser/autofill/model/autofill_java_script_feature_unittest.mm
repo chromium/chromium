@@ -64,10 +64,6 @@ NSString* const kUnownedUntitledFormHtml =
      "<TEXTAREA id='textarea-nonempty'>Go&#10;away!</TEXTAREA>"
      "<INPUT type='submit' name='reply-send' value='Send'/>";
 
-NSNumber* GetDefaultMaxLength() {
-  return @524288;
-}
-
 using base::test::ios::kWaitForJSCompletionTimeout;
 using base::test::ios::WaitUntilConditionOrTimeout;
 
@@ -176,7 +172,6 @@ TEST_F(AutofillJavaScriptFeatureTest, ExtractForms) {
         @"form_control_type" : @"text",
         @"pattern_attribute" : @"",
         @"placeholder_attribute" : @"",
-        @"max_length" : GetDefaultMaxLength(),
         @"should_autocomplete" : @true,
         @"is_checkable" : @false,
         @"is_focusable" : @true,
@@ -195,7 +190,6 @@ TEST_F(AutofillJavaScriptFeatureTest, ExtractForms) {
         @"form_control_type" : @"text",
         @"pattern_attribute" : @"",
         @"placeholder_attribute" : @"",
-        @"max_length" : GetDefaultMaxLength(),
         @"should_autocomplete" : @true,
         @"is_checkable" : @false,
         @"is_focusable" : @true,
@@ -214,7 +208,6 @@ TEST_F(AutofillJavaScriptFeatureTest, ExtractForms) {
         @"form_control_type" : @"email",
         @"pattern_attribute" : @"",
         @"placeholder_attribute" : @"",
-        @"max_length" : GetDefaultMaxLength(),
         @"should_autocomplete" : @true,
         @"is_checkable" : @false,
         @"is_focusable" : @true,
@@ -278,7 +271,6 @@ TEST_F(AutofillJavaScriptFeatureTest, ExtractForms2) {
         @"form_control_type" : @"text",
         @"pattern_attribute" : @"",
         @"placeholder_attribute" : @"",
-        @"max_length" : GetDefaultMaxLength(),
         @"should_autocomplete" : @true,
         @"is_checkable" : @false,
         @"is_focusable" : @true,
@@ -297,7 +289,6 @@ TEST_F(AutofillJavaScriptFeatureTest, ExtractForms2) {
         @"form_control_type" : @"text",
         @"pattern_attribute" : @"",
         @"placeholder_attribute" : @"",
-        @"max_length" : GetDefaultMaxLength(),
         @"should_autocomplete" : @true,
         @"is_checkable" : @false,
         @"is_focusable" : @true,
@@ -316,7 +307,6 @@ TEST_F(AutofillJavaScriptFeatureTest, ExtractForms2) {
         @"form_control_type" : @"email",
         @"pattern_attribute" : @"",
         @"placeholder_attribute" : @"",
-        @"max_length" : GetDefaultMaxLength(),
         @"should_autocomplete" : @true,
         @"is_checkable" : @false,
         @"is_focusable" : @true,

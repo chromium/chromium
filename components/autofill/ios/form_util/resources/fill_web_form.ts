@@ -207,14 +207,17 @@ export function webFormControlElementToFormField(
         element.tabIndex >= 0 && fillUtil.isVisibleNode(element);
   }
 
-  if (inferenceUtil.isAutofillableInputElement(element)) {
-    if (isTextField(element)) {
-      field.max_length = (element as HTMLInputElement).maxLength;
-      if (field.max_length === -1) {
-        // Take default value as defined by W3C.
-        field.max_length = 524288;
-      }
+  if (isTextField(element) || inferenceUtil.isTextAreaElement(element)) {
+    const maxLength =
+        (element as (HTMLInputElement | HTMLTextAreaElement)).maxLength;
+    if (maxLength !== -1) {
+      field.max_length = maxLength;
     }
+  } else {
+    field.max_length = 0;
+  }
+
+  if (inferenceUtil.isAutofillableInputElement(element)) {
     field.is_checkable = inferenceUtil.isCheckableElement(element);
   } else if (inferenceUtil.isTextAreaElement(element)) {
     // Nothing more to do in this case.

@@ -58,8 +58,6 @@ using ::testing::VariantWith;
 using web::JavaScriptFeature;
 using web::WebFrame;
 
-// Default maximum length for text input fields defined by W3C.
-constexpr uint64_t kTextInputFieldMaxLength = 524288;
 // HTML containing one form with a text field and a submit button.
 constexpr NSString* kTestHTMLForm = @"<form name='form-name'>"
                                      "<input type='text' id='text'/>"
@@ -94,7 +92,7 @@ constexpr NSString* kTestHTMLFormWithIframes =
   test_field_data.set_host_form_id(test_form_data.renderer_id());
   test_field_data.set_renderer_id(FieldRendererId(2));
   test_field_data.set_id_attribute(u"text");
-  test_field_data.set_max_length(kTextInputFieldMaxLength);
+  test_field_data.set_max_length(FormFieldData::kDefaultMaxLength);
 
   test_form_data.set_fields({test_field_data});
 

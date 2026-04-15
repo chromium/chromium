@@ -65,9 +65,6 @@ using ::testing::IsTrue;
 // components/password_manager/ios/resources/password_controller.js
 namespace {
 
-// Default maximum length for text input fields defined by W3C.
-constexpr int kTextInputFieldMaxLength = 524288;
-
 // Serializes a dictionary value in a NSString.
 NSString* SerializeDictValueToNSString(const base::DictValue& value) {
   std::optional<std::string> output = base::WriteJson(value);
@@ -93,7 +90,6 @@ base::DictValue ParsedField(std::string renderer_id,
                               .Set("should_autocomplete", true)
                               .Set("is_focusable", true)
                               .Set("is_user_edited_deprecated", true)
-                              .Set("max_length", kTextInputFieldMaxLength)
                               .Set("is_checkable", false)
                               .Set("value", value)
                               .Set("label", label)
@@ -898,13 +894,11 @@ TEST_F(PasswordControllerJsTest, TouchendAsSubmissionIndicator) {
       /*renderer_id=*/"2", /*contole_type=*/"text",
       /*identifier=*/"username", /*value=*/"user1",
       /*label=*/"Name:", /*name=*/"username");
-  expected_username_field.Set("max_length", (double)kTextInputFieldMaxLength);
 
   base::DictValue expected_password_field = ParsedField(
       /*renderer_id=*/"3", /*contole_type=*/"password",
       /*identifier=*/"password", /*value=*/"password1",
       /*label=*/"Password:", /*name=*/"password");
-  expected_password_field.Set("max_length", (double)kTextInputFieldMaxLength);
   auto expected_fields = base::ListValue()
                              .Append(std::move(expected_username_field))
                              .Append(std::move(expected_password_field));
