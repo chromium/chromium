@@ -235,17 +235,17 @@ public class ComposeboxQueryControllerBridge {
         void getAimUrl(
                 long nativeComposeboxQueryControllerBridge,
                 @JniType("GURL") GURL url,
-                Callback<@JniType("GURL") GURL> callback);
+                Callback<GURL> callback);
 
         void getImageGenerationUrl(
                 long nativeComposeboxQueryControllerBridge,
                 @JniType("GURL") GURL url,
-                Callback<@JniType("GURL") GURL> callback);
+                Callback<GURL> callback);
 
         void getAimUrlFromInputState(
                 long nativeComposeboxQueryControllerBridge,
                 @JniType("GURL") GURL url,
-                Callback<@JniType("GURL") GURL> callback);
+                Callback<GURL> callback);
 
         void removeAttachment(
                 long nativeComposeboxQueryControllerBridge, @JniType("std::string") String token);

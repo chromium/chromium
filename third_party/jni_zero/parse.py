@@ -342,6 +342,8 @@ def _parse_type(type_resolver, value):
       generics = tuple(
           _parse_type(type_resolver, g)
           for g in _split_by_delimiter(generics_str, ','))
+      if any(t.converted_type for t in generics):
+        raise ParseError('@JniType not allowed within generics: ' + value)
 
     java_class = type_resolver.resolve(parsed_value)
     primitive_name = None

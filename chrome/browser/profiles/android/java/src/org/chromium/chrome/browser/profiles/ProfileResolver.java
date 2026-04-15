@@ -79,8 +79,7 @@ public class ProfileResolver implements PartitionResolver {
 
         String tokenizeProfileKey(@Nullable ProfileKey profileKey);
 
-        void resolveProfile(
-                @Nullable String token, Callback<@JniType("Profile*") @Nullable Profile> callback);
+        void resolveProfile(@Nullable String token, Callback<@Nullable Profile> callback);
 
         void resolveProfileKey(@Nullable String token, Callback<@Nullable ProfileKey> callback);
     }

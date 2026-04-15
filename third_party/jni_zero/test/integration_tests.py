@@ -618,6 +618,16 @@ class MyFile {
 """
     self._TestParseError('Found multiple @JNINamespace', data)
 
+  def testParseError_jniTypeInGenerics(self):
+    data = """
+package foo;
+class MyFile {
+  @CalledByNative
+  void foo(List<@JniType("bar") String> arg) {}
+}
+"""
+    self._TestParseError('@JniType not allowed within generics', data)
+
 
 def main():
   try:
