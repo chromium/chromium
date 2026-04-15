@@ -246,16 +246,30 @@ void AccessibilityAnnotatorBackendImpl::MergeContentAnnotationStructuredData(
 
 void AccessibilityAnnotatorBackendImpl::RemoveContentAnnotationsCacheData(
     base::span<const history::VisitID> visit_ids) {
+  std::vector<history::VisitID> deleted_ids;
   for (history::VisitID visit_id : visit_ids) {
     auto it = content_annotations_cache_.Peek(visit_id);
     if (it != content_annotations_cache_.end()) {
       content_annotations_cache_.Erase(it);
+      deleted_ids.push_back(visit_id);
     }
+  }
+
+  if (!deleted_ids.empty()) {
+    observers_.Notify(
+        &AccessibilityAnnotatorBackend::Observer::OnContentAnnotationsDeleted,
+        deleted_ids);
   }
 }
 
 void AccessibilityAnnotatorBackendImpl::ClearContentAnnotationsCache() {
+  if (content_annotations_cache_.empty()) {
+    return;
+  }
   content_annotations_cache_.Clear();
+
+  observers_.Notify(
+      &AccessibilityAnnotatorBackend::Observer::OnContentAnnotationsCleared);
 }
 
 base::Value AccessibilityAnnotatorBackendImpl::GetDebugUICacheData() const {

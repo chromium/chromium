@@ -15,6 +15,7 @@
 #include "base/types/optional_ref.h"
 #include "components/accessibility_annotator/core/accessibility_annotator_features.h"
 #include "components/accessibility_annotator/core/storage/accessibility_annotator_backend_impl.h"
+#include "components/accessibility_annotator/core/storage/test_accessibility_annotator_backend.h"
 #include "components/history/core/browser/history_types.h"
 #include "components/optimization_guide/proto/features/content_annotation.pb.h"
 #include "components/sync/test/data_type_store_test_util.h"
@@ -49,15 +50,6 @@ CreateContentAnnotationsData(std::string_view page_title) {
   data.tab_id = 123;
   return data;
 }
-
-class MockBackendObserver : public AccessibilityAnnotatorBackend::Observer {
- public:
-  MOCK_METHOD(void,
-              OnContentAnnotationsAdded,
-              (history::VisitID,
-               const AccessibilityAnnotatorBackend::ContentAnnotationsData&),
-              (override));
-};
 
 class AccessibilityAnnotatorBackendTest : public testing::Test {
  public:
@@ -284,7 +276,7 @@ TEST_F(AccessibilityAnnotatorBackendTest, ClearContentAnnotationsCache) {
 }
 
 TEST_F(AccessibilityAnnotatorBackendTest, ObserverNotified) {
-  MockBackendObserver observer;
+  MockAccessibilityAnnotatorBackendObserver observer;
   backend_->AddObserver(&observer);
 
   history::VisitID visit_id(123);
@@ -461,6 +453,50 @@ TEST_F(AccessibilityAnnotatorBackendTest,
 
   const auto& merged = backend_->GetMergedMultipageAnnotationsForTesting();
   EXPECT_EQ(merged.size(), static_cast<size_t>(max_size));
+}
+
+TEST_F(AccessibilityAnnotatorBackendTest, OnContentAnnotationsDeletedNotified) {
+  MockAccessibilityAnnotatorBackendObserver observer;
+  backend_->AddObserver(&observer);
+
+  history::VisitID visit_id1(1);
+  history::VisitID visit_id2(2);
+
+  backend_->SetContentAnnotationsCacheData(
+      visit_id1, CreateContentAnnotationsData("Page 1"));
+  backend_->SetContentAnnotationsCacheData(
+      visit_id2, CreateContentAnnotationsData("Page 2"));
+
+  EXPECT_CALL(observer,
+              OnContentAnnotationsDeleted(testing::ElementsAre(visit_id1)));
+  backend_->RemoveContentAnnotationsCacheData({visit_id1});
+  testing::Mock::VerifyAndClearExpectations(&observer);
+
+  backend_->RemoveObserver(&observer);
+}
+
+TEST_F(AccessibilityAnnotatorBackendTest, OnContentAnnotationsClearedNotified) {
+  MockAccessibilityAnnotatorBackendObserver observer;
+  backend_->AddObserver(&observer);
+
+  // Empty cache should not notify the observer.
+  EXPECT_CALL(observer, OnContentAnnotationsCleared()).Times(0);
+  backend_->ClearContentAnnotationsCache();
+  testing::Mock::VerifyAndClearExpectations(&observer);
+
+  history::VisitID visit_id1(1);
+  history::VisitID visit_id2(2);
+
+  backend_->SetContentAnnotationsCacheData(
+      visit_id1, CreateContentAnnotationsData("Page 1"));
+  backend_->SetContentAnnotationsCacheData(
+      visit_id2, CreateContentAnnotationsData("Page 2"));
+
+  EXPECT_CALL(observer, OnContentAnnotationsCleared());
+  backend_->ClearContentAnnotationsCache();
+  testing::Mock::VerifyAndClearExpectations(&observer);
+
+  backend_->RemoveObserver(&observer);
 }
 
 }  // namespace

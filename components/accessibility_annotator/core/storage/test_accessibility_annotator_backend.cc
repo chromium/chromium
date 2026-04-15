@@ -11,6 +11,12 @@
 
 namespace accessibility_annotator {
 
+MockAccessibilityAnnotatorBackendObserver::
+    MockAccessibilityAnnotatorBackendObserver() = default;
+
+MockAccessibilityAnnotatorBackendObserver::
+    ~MockAccessibilityAnnotatorBackendObserver() = default;
+
 TestAccessibilityAnnotatorBackend::TestAccessibilityAnnotatorBackend() =
     default;
 

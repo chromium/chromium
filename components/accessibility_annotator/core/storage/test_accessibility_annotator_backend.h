@@ -15,6 +15,24 @@
 
 namespace accessibility_annotator {
 
+class MockAccessibilityAnnotatorBackendObserver
+    : public AccessibilityAnnotatorBackend::Observer {
+ public:
+  MockAccessibilityAnnotatorBackendObserver();
+  ~MockAccessibilityAnnotatorBackendObserver() override;
+
+  MOCK_METHOD(void,
+              OnContentAnnotationsAdded,
+              (history::VisitID,
+               const AccessibilityAnnotatorBackend::ContentAnnotationsData&),
+              (override));
+  MOCK_METHOD(void,
+              OnContentAnnotationsDeleted,
+              (base::span<const history::VisitID>),
+              (override));
+  MOCK_METHOD(void, OnContentAnnotationsCleared, (), (override));
+};
+
 class TestAccessibilityAnnotatorBackend : public AccessibilityAnnotatorBackend {
  public:
   TestAccessibilityAnnotatorBackend();

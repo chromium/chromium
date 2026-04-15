@@ -40,13 +40,18 @@ class AccessibilityAnnotatorBackend : public KeyedService {
   struct ContentAnnotationsData;
 
   class Observer : public base::CheckedObserver {
-    // TODO(crbug.com/501107222): Add observer method for when annotations are
-    // deleted.
    public:
     // Called when content annotations are added.
     virtual void OnContentAnnotationsAdded(
         history::VisitID visit_id,
         const ContentAnnotationsData& annotation_data) = 0;
+
+    // Called when content annotations are deleted.
+    virtual void OnContentAnnotationsDeleted(
+        base::span<const history::VisitID> visit_ids) = 0;
+
+    // Called when content annotations are cleared.
+    virtual void OnContentAnnotationsCleared() = 0;
   };
 
   // TODO(crbug.com/501429617): Move this struct out of backend class.
