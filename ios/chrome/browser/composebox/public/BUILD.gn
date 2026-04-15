@@ -5,6 +5,7 @@
 group("public") {
   public_deps = [
     ":animation",
+    ":attachment_options",
     ":constants",
     ":features",
     ":input_plate_controls",
@@ -58,5 +59,10 @@ source_set("input_plate_controls") {
 
 source_set("model_options") {
   sources = [ "composebox_model_option.h" ]
+  deps = [ "//base" ]
+}
+
+source_set("attachment_options") {
+  sources = [ "composebox_attachment_option.h" ]
   deps = [ "//base" ]
 }

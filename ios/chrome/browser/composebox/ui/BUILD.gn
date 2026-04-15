@@ -29,6 +29,8 @@ source_set("ui") {
     "composebox_server_strings.mm",
     "composebox_snackbar_presenter.h",
     "composebox_snackbar_presenter.mm",
+    "composebox_ui_input_state.h",
+    "composebox_ui_input_state.mm",
     "composebox_view_controller.h",
     "composebox_view_controller.mm",
   ]
@@ -40,6 +42,7 @@ source_set("ui") {
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/composebox/coordinator:constants",
     "//ios/chrome/browser/composebox/public:animation",
+    "//ios/chrome/browser/composebox/public:attachment_options",
     "//ios/chrome/browser/composebox/public:constants",
     "//ios/chrome/browser/composebox/public:features",
     "//ios/chrome/browser/composebox/public:input_plate_controls",

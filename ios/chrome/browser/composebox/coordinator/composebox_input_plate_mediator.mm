@@ -56,6 +56,7 @@
 #import "ios/chrome/browser/composebox/coordinator/composebox_constants.h"
 #import "ios/chrome/browser/composebox/coordinator/composebox_url_loader.h"
 #import "ios/chrome/browser/composebox/debugger/composebox_debugger_logger.h"
+#import "ios/chrome/browser/composebox/public/composebox_attachment_option.h"
 #import "ios/chrome/browser/composebox/public/composebox_constants.h"
 #import "ios/chrome/browser/composebox/public/composebox_input_plate_controls.h"
 #import "ios/chrome/browser/composebox/public/composebox_model_option.h"
@@ -64,6 +65,7 @@
 #import "ios/chrome/browser/composebox/ui/composebox_input_item_collection.h"
 #import "ios/chrome/browser/composebox/ui/composebox_metrics_recorder.h"
 #import "ios/chrome/browser/composebox/ui/composebox_server_strings.h"
+#import "ios/chrome/browser/composebox/ui/composebox_ui_input_state.h"
 #import "ios/chrome/browser/favicon/model/favicon_loader.h"
 #import "ios/chrome/browser/intelligence/persist_tab_context/model/persist_tab_context_browser_agent.h"
 #import "ios/chrome/browser/intelligence/proto_wrappers/page_context_wrapper.h"
@@ -2659,46 +2661,83 @@ class QueryContextualizerDelegateBridge
 
 /// Updates the consumer UI input state.
 - (void)updateUIInputState {
-  BOOL canAttachTab = [self canAttachActiveTab];
-  id<ComposeboxInputPlateConsumer> consumer = self.consumer;
-  [consumer hideAttachCurrentTabAction:!canAttachTab];
+  ComposeboxUIInputState* state = [[ComposeboxUIInputState alloc] init];
 
-  [consumer hideAIMActions:_entrypoint == ComposeboxEntrypoint::kCobrowse];
-  [consumer disableCreateImageActions:[self imageToolDisabled]];
-  [consumer hideCreateImageActions:![self imageToolAllowed]];
-  [consumer disableCanvasActions:[self canvasToolDisabled]];
-  [consumer hideCanvasActions:![self canvasToolAllowed]];
-  [consumer disableDeepSearchActions:[self deepSearchToolDisabled]];
-  [consumer hideDeepSearchActions:![self deepSearchToolAllowed]];
-  [consumer allowModelPicker:ShowComposeboxAdditionalAdvancedTools()];
-  [consumer setAllowedModels:[self allowedModels]];
-  [consumer setDisabledModels:[self disabledModels]];
-  [consumer disableAttachTabActions:[self tabAttachmentDisabled]];
-  [consumer hideAttachTabActions:![self tabAttachmentAllowed]];
-  [consumer disableAttachFileActions:[self fileAttachmentDisabled]];
-  [consumer hideAttachFileActions:![self fileAttachmentAllowed]];
-  [consumer disableGalleryActions:[self imageAttachmentDisabled]];
-  [consumer hideGalleryActions:![self imageAttachmentAllowed]];
-  [consumer disableCameraActions:[self imageAttachmentDisabled]];
-  [consumer hideCameraActions:![self imageAttachmentAllowed]];
-  [consumer setRemainingAttachmentCapacity:[self remainingAttachmentCapacity]];
-
-  if (_modeHolder.isRegularSearch) {
-    [consumer setModelOption:ComposeboxModelOption::kNone];
-  } else {
-    [consumer setModelOption:_modelOption];
-  }
-
-  auto mode = _modeHolder.mode;
-  [consumer setAIModeEnabled:mode == ComposeboxMode::kAIM];
-  [consumer setImageGenerationEnabled:mode == ComposeboxMode::kImageGeneration];
-  [consumer setCanvasEnabled:mode == ComposeboxMode::kCanvas];
-  [consumer setDeepSearchEnabled:mode == ComposeboxMode::kDeepSearch];
+  state.currentTabFavicon = _currentTabFavicon;
+  state.remainingAttachmentCapacity = [self remainingAttachmentCapacity];
+  state.allowModelPicker = ShowComposeboxAdditionalAdvancedTools();
+  state.activeTool = _modeHolder.mode;
+  state.activeModel =
+      _modeHolder.isRegularSearch ? ComposeboxModelOption::kNone : _modelOption;
 
   if (EnableComposeboxServerSideState()) {
-    [consumer setServerStrings:_serverStrings];
+    state.serverStrings = _serverStrings;
   }
-  [consumer setCurrentTabFavicon:_currentTabFavicon];
+
+  // Populate allowed/disabled attachments
+  std::unordered_set<ComposeboxAttachmentOption> allowedAttachments;
+  std::unordered_set<ComposeboxAttachmentOption> disabledAttachments;
+
+  if ([self canAttachActiveTab]) {
+    allowedAttachments.insert(ComposeboxAttachmentOption::kCurrentTab);
+  }
+  if ([self tabAttachmentAllowed]) {
+    allowedAttachments.insert(ComposeboxAttachmentOption::kTab);
+  }
+  if ([self tabAttachmentDisabled]) {
+    disabledAttachments.insert(ComposeboxAttachmentOption::kTab);
+  }
+  if ([self fileAttachmentAllowed]) {
+    allowedAttachments.insert(ComposeboxAttachmentOption::kFile);
+  }
+  if ([self fileAttachmentDisabled]) {
+    disabledAttachments.insert(ComposeboxAttachmentOption::kFile);
+  }
+  if ([self imageAttachmentAllowed]) {
+    allowedAttachments.insert(ComposeboxAttachmentOption::kGallery);
+    allowedAttachments.insert(ComposeboxAttachmentOption::kCamera);
+  }
+  if ([self imageAttachmentDisabled]) {
+    disabledAttachments.insert(ComposeboxAttachmentOption::kGallery);
+    disabledAttachments.insert(ComposeboxAttachmentOption::kCamera);
+  }
+
+  state.allowedAttachments = allowedAttachments;
+  state.disabledAttachments = disabledAttachments;
+
+  // Populate allowed/disabled tools
+  std::unordered_set<ComposeboxMode> allowedTools;
+  std::unordered_set<ComposeboxMode> disabledTools;
+
+  if ([self imageToolAllowed]) {
+    allowedTools.insert(ComposeboxMode::kImageGeneration);
+  }
+  if ([self imageToolDisabled]) {
+    disabledTools.insert(ComposeboxMode::kImageGeneration);
+  }
+  if ([self canvasToolAllowed]) {
+    allowedTools.insert(ComposeboxMode::kCanvas);
+  }
+  if ([self canvasToolDisabled]) {
+    disabledTools.insert(ComposeboxMode::kCanvas);
+  }
+  if ([self deepSearchToolAllowed]) {
+    allowedTools.insert(ComposeboxMode::kDeepSearch);
+  }
+  if ([self deepSearchToolDisabled]) {
+    disabledTools.insert(ComposeboxMode::kDeepSearch);
+  }
+  if (_entrypoint != ComposeboxEntrypoint::kCobrowse) {
+    allowedTools.insert(ComposeboxMode::kAIM);
+  }
+
+  state.allowedTools = allowedTools;
+  state.disabledTools = disabledTools;
+
+  state.allowedModels = [self allowedModels];
+  state.disabledModels = [self disabledModels];
+
+  [self.consumer setUIInputState:state];
 }
 
 // Pushes the batched UI updates to the consumer.
