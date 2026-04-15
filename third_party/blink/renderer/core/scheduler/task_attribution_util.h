@@ -28,14 +28,6 @@ namespace blink {
   return tracker ? tracker->CurrentTaskState() : nullptr;
 }
 
-[[nodiscard]] inline scheduler::TaskAttributionInfo*
-CaptureCurrentTaskStateIfMainWorld(ScriptState* script_state) {
-  if (!script_state || !script_state->World().IsMainWorld()) {
-    return nullptr;
-  }
-  return CaptureCurrentTaskState(ExecutionContext::From(script_state));
-}
-
 [[nodiscard]] inline std::optional<scheduler::TaskAttributionTracker::TaskScope>
 SetCurrentTaskStateIfTopLevel(scheduler::TaskAttributionInfo* task_state,
                               ExecutionContext* context,

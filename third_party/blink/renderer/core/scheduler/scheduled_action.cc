@@ -64,7 +64,7 @@ ScheduledAction::ScheduledAction(ScriptState* script_state,
           To<LocalDOMWindow>(&target))) {
     function_ = handler;
     arguments_ = arguments;
-    task_state_ = CaptureCurrentTaskStateIfMainWorld(script_state);
+    task_state_ = CaptureCurrentTaskState(ExecutionContext::From(script_state));
   } else {
     UseCounter::Count(target, WebFeature::kScheduledActionIgnored);
   }
@@ -80,7 +80,7 @@ ScheduledAction::ScheduledAction(ScriptState* script_state,
           EnteredDOMWindow(script_state->GetIsolate()),
           To<LocalDOMWindow>(&target))) {
     code_ = handler;
-    task_state_ = CaptureCurrentTaskStateIfMainWorld(script_state);
+    task_state_ = CaptureCurrentTaskState(ExecutionContext::From(script_state));
   } else {
     UseCounter::Count(target, WebFeature::kScheduledActionIgnored);
   }

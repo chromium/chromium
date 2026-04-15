@@ -704,8 +704,6 @@ void SoftNavigationHeuristics::InsertedNode(Node* inserted_node,
   // When a child node, which is an HTML-element, is modified within a parent
   // (added, moved, etc), mark that child as modified by soft navigation.
   // Otherwise, if the child is not an HTML-element, mark the parent instead.
-  // TODO(crbug.com/41494072): This does not filter out updates from isolated
-  // worlds. Should it?
   heuristics->ModifiedDOM(inserted_node->IsHTMLElement() ? inserted_node
                                                          : container_node);
 }

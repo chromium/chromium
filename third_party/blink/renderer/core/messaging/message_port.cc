@@ -146,12 +146,13 @@ void MessagePort::postMessage(ScriptState* script_state,
   msg.locked_to_sender_agent_cluster = msg.message->IsLockedToAgentCluster();
   msg.task_state_id = std::nullopt;
 
-  // Only pass the task state ID if we're in the main world, as isolated world
-  // task tracking is not yet supported. Also, only pass the task state if the
-  // port is still entangled to its initially entangled port.
+  // Only pass the task state if the port is still entangled to its initially
+  // entangled port. This is meant to enable propagating task state for
+  // MessageChannels that are used as a (same-frame) scheduling mechanism, which
+  // is common in web frameworks.
   if (initially_entangled_port_) {
     if (scheduler::TaskAttributionInfo* task_state =
-            CaptureCurrentTaskStateIfMainWorld(script_state)) {
+            CaptureCurrentTaskState(ExecutionContext::From(script_state))) {
       // Since `initially_entangled_port_` is not nullptr, neither should be
       // `post_message_task_container_`.
       CHECK(post_message_task_container_);
@@ -401,11 +402,6 @@ void MessagePort::DispatchMessageEvent(BlinkTransferableMessage message) {
       message.sender_origin->IsSameOriginWith(context->GetSecurityOrigin()) &&
       context->IsSameAgentCluster(message.sender_agent_cluster_id) &&
       context->IsWindow()) {
-    // It is not correct to assume we're running in the main world here,
-    // although if `task_state` is non-null, the message must have originated
-    // from the main world. And given isolated worlds cannot access main world
-    // variables and message ports aren't exposed through the DOM, we can assume
-    // we're propagating this in the main world.
     if (auto* tracker =
             scheduler::TaskAttributionTracker::From(context->GetIsolate())) {
       // Since `initially_entangled_port_` is not nullptr, neither should be

@@ -190,8 +190,8 @@ int RequestAnimationFrame(Document* document,
   // impact is understood.
   SyncScrollAttemptHeuristic::DidRequestAnimationFrame();
 
-  callback->SetTaskState(CaptureCurrentTaskStateIfMainWorld(
-      callback->CallbackRelevantScriptState()));
+  callback->SetTaskState(CaptureCurrentTaskState(
+      ExecutionContext::From(callback->CallbackRelevantScriptState())));
 
   auto* frame_callback = MakeGarbageCollected<V8FrameCallback>(callback);
   frame_callback->SetUseLegacyTimeBase(legacy);
@@ -1249,8 +1249,6 @@ void LocalDOMWindow::SchedulePostMessage(PostedMessage* posted_message) {
 
   // Propagate the current task state if this is a same-window postMessage,
   // which is commonly used as a scheduling mechanism.
-  //
-  // TODO(crbug.com/41494072): Consider only propagating in the main world.
   scheduler::TaskAttributionInfo* task_context =
       source == this ? CaptureCurrentTaskState(this) : nullptr;
 

@@ -46,7 +46,7 @@ class V8IdleTask : public IdleTask {
             ->GetFixedPriorityTaskSignal(
                 script_state, WebSchedulingPriority::kBackgroundPriority);
     web_scheduling_task_state_ = MakeGarbageCollected<WebSchedulingTaskState>(
-        CaptureCurrentTaskStateIfMainWorld(script_state),
+        CaptureCurrentTaskState(scheduling_context),
         MakeGarbageCollected<SchedulerTaskContext>(
             scheduling_context, /*abort_source=*/nullptr, signal));
   }

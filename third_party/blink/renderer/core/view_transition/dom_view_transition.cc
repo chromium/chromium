@@ -83,8 +83,7 @@ DOMViewTransition::DOMViewTransition(
       dom_updated_promise_property_(
           MakeGarbageCollected<PromiseProperty>(execution_context_)),
       task_state_(update_dom_callback_
-                      ? CaptureCurrentTaskStateIfMainWorld(
-                            update_dom_callback_->CallbackRelevantScriptState())
+                      ? CaptureCurrentTaskState(execution_context_)
                       : nullptr) {
   CHECK(execution_context_->GetAgent());
 }

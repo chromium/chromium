@@ -887,7 +887,7 @@ PendingScript* ScriptLoader::PrepareScript(
         }
         ClassicPendingScript* pending_script = ClassicPendingScript::Fetch(
             url, element_document, options, cross_origin, encoding, element_,
-            defer, CaptureCurrentTaskStateIfMainWorld(script_state));
+            defer, CaptureCurrentTaskState(context_window));
         prepared_pending_script_ = pending_script;
         Resource* resource = pending_script->GetResource();
         resource_keep_alive_ = resource;
@@ -1043,7 +1043,7 @@ PendingScript* ScriptLoader::PrepareScript(
         prepared_pending_script_ = ClassicPendingScript::CreateInline(
             element_, position, source_url, base_url, source_text,
             script_location_type, options,
-            CaptureCurrentTaskStateIfMainWorld(script_state));
+            CaptureCurrentTaskState(context_window));
 
         // <spec step="30.2.A.2">Mark as ready el given script.</spec>
         //
@@ -1109,7 +1109,7 @@ PendingScript* ScriptLoader::PrepareScript(
             network::mojom::RequestDestination::kScript, module_tree_client);
         prepared_pending_script_ = MakeGarbageCollected<ModulePendingScript>(
             element_, module_tree_client, is_external_script_,
-            CaptureCurrentTaskStateIfMainWorld(script_state));
+            CaptureCurrentTaskState(context_window));
         break;
       }
     }
@@ -1251,7 +1251,8 @@ void ScriptLoader::FetchModuleScriptTree(
                        ModuleImportPhase::kEvaluation);
   prepared_pending_script_ = MakeGarbageCollected<ModulePendingScript>(
       element_, module_tree_client, is_external_script_,
-      CaptureCurrentTaskStateIfMainWorld(modulator->GetScriptState()));
+      CaptureCurrentTaskState(
+          ExecutionContext::From(modulator->GetScriptState())));
 }
 
 PendingScript* ScriptLoader::TakePendingScript(

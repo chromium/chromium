@@ -88,10 +88,10 @@ DOMTask::DOMTask(ScriptPromiseResolver<IDLAny>* resolver,
       callback_->CallbackRelevantScriptStateOrReportError("DOMTask", "Create");
   DCHECK(script_state && script_state->ContextIsValid());
 
-  web_scheduling_task_state_ = MakeGarbageCollected<WebSchedulingTaskState>(
-      CaptureCurrentTaskStateIfMainWorld(script_state), scheduler_task_context);
-
   auto* context = ExecutionContext::From(script_state);
+  web_scheduling_task_state_ = MakeGarbageCollected<WebSchedulingTaskState>(
+      CaptureCurrentTaskState(context), scheduler_task_context);
+
   DEVTOOLS_TIMELINE_TRACE_EVENT_INSTANT(
       "SchedulePostTaskCallback", inspector_scheduler_schedule_event::Data,
       context, task_id_for_tracing_, task_queue_->GetPriority(),
