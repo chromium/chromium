@@ -315,8 +315,9 @@ class BASE_EXPORT SequenceManagerImpl
     internal::TaskQueueSelector selector;
     // RAW_PTR_EXCLUSION: Performance reasons(based on analysis of
     // speedometer3).
-    ObserverList<TaskObserver>::UncheckedAndRawPtrExcluded task_observers;
-    ObserverList<TaskTimeObserver> task_time_observers;
+    ReentrantObserverList<TaskObserver>::UncheckedAndRawPtrExcluded
+        task_observers;
+    ReentrantObserverList<TaskTimeObserver> task_time_observers;
     const raw_ptr<const base::TickClock> default_clock;
     raw_ptr<TimeDomain> time_domain = nullptr;
 
