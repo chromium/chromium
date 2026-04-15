@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "build/build_config.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_accessibility_test.h"
@@ -168,6 +169,12 @@ IN_PROC_BROWSER_TEST_P(ForwardButtonAccessibilityTest, AccessibilityNode) {
 
 IN_PROC_BROWSER_TEST_P(ForwardButtonAccessibilityTest,
                        ToggleForwardButtonVisibilityWithPref) {
+#if BUILDFLAG(IS_LINUX)
+  // TODO(https://crbug.com/500966638): Disabled on linux due to flakiness.
+  if (GetParam()) {
+    GTEST_SKIP() << "Skipping /1 version on Linux due to flakiness.";
+  }
+#endif
   RunTestSequence(
       // Start visible
       Do([this]() {
