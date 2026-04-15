@@ -393,7 +393,7 @@ TEST_F(ModelExecutionFetcherImplTest, TestAccessTokenFailureWithLogin) {
   ExecuteModel(ModelBasedCapabilityKey::kWallpaperSearch,
                BuildTestMessage("foo request"));
   identity_test_env()->WaitForAccessTokenRequestIfNecessaryAndRespondWithError(
-      GoogleServiceAuthError(GoogleServiceAuthError::CONNECTION_FAILED));
+      GoogleServiceAuthError::FromConnectionError(net::ERR_FAILED));
 
   EXPECT_EQ(0, test_url_loader_factory_.NumPending());
   histogram_tester_.ExpectUniqueSample(

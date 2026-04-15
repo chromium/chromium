@@ -3704,7 +3704,7 @@ TEST_F(HintsManagerPersonalizedFetchingTest, TokenFailure) {
           run_loop.get()),
       std::nullopt);
   identity_test_env()->WaitForAccessTokenRequestIfNecessaryAndRespondWithError(
-      GoogleServiceAuthError(GoogleServiceAuthError::CONNECTION_FAILED));
+      GoogleServiceAuthError::FromConnectionError(net::ERR_FAILED));
   run_loop->Run();
 
   histogram_tester.ExpectUniqueSample(
@@ -3862,7 +3862,7 @@ TEST_F(HintsManagerProactivePersonalizationFetchingTest, TokenFailure) {
   base::HistogramTester histogram_tester;
   CallOnNavigationStartOrRedirect(navigation_data.get(), base::DoNothing());
   identity_test_env()->WaitForAccessTokenRequestIfNecessaryAndRespondWithError(
-      GoogleServiceAuthError(GoogleServiceAuthError::CONNECTION_FAILED));
+      GoogleServiceAuthError::FromConnectionError(net::ERR_FAILED));
   RunUntilIdle();
 
   histogram_tester.ExpectUniqueSample(
@@ -3997,7 +3997,7 @@ TEST_F(HintsManagerProactivePersonalizationFetchingTest,
   RunUntilIdle();
   // An access token request is expected with personalized types.
   identity_test_env()->WaitForAccessTokenRequestIfNecessaryAndRespondWithError(
-      GoogleServiceAuthError(GoogleServiceAuthError::CONNECTION_FAILED));
+      GoogleServiceAuthError::FromConnectionError(net::ERR_FAILED));
   histogram_tester.ExpectUniqueSample(
       "OptimizationGuide.AccessTokenHelper.Result",
       OptimizationGuideAccessTokenResult::kTransientError, 1);
