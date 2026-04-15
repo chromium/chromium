@@ -141,26 +141,12 @@ class MultiInstanceProtoMigrationController {
             }
 
             // 5. Notify MultiInstancePersistentStore
-            MultiInstancePersistentStore.initializeFromMigration(
-                    builder.build(),
-                    (success) -> {
-                        if (success) {
-                            prefs.writeBoolean(
-                                    MultiInstancePreferenceKeys
-                                            .MULTI_INSTANCE_PROTO_MIGRATION_COMPLETE,
-                                    true);
-                            cleanupOldKeys(prefs);
-                            RecordHistogram.recordExactLinearHistogram(
-                                    MIGRATION_ATTEMPTS_HISTOGRAM,
-                                    attemptCount + 1,
-                                    MIGRATION_ATTEMPT_LIMIT + 1);
-                        } else {
-                            prefs.writeInt(
-                                    MultiInstancePreferenceKeys
-                                            .MULTI_INSTANCE_PROTO_MIGRATION_ATTEMPTS,
-                                    attemptCount + 1);
-                        }
-                    });
+            MultiInstancePersistentStore.initializeFromMigration(builder.build());
+            prefs.writeBoolean(
+                    MultiInstancePreferenceKeys.MULTI_INSTANCE_PROTO_MIGRATION_COMPLETE, true);
+            cleanupOldKeys(prefs);
+            RecordHistogram.recordExactLinearHistogram(
+                    MIGRATION_ATTEMPTS_HISTOGRAM, attemptCount + 1, MIGRATION_ATTEMPT_LIMIT + 1);
             return true;
         } catch (Exception e) {
             Log.e(TAG, "Migration failed", e);

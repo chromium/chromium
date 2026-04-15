@@ -9,14 +9,10 @@ import android.util.AtomicFile;
 
 import androidx.annotation.VisibleForTesting;
 
-import org.chromium.base.Callback;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
 import org.chromium.base.StreamUtil;
 import org.chromium.base.shared_preferences.SharedPreferencesManager;
-import org.chromium.base.task.PostTask;
-import org.chromium.base.task.SequencedTaskRunner;
-import org.chromium.base.task.TaskTraits;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -44,17 +40,9 @@ public class MultiInstancePersistentStore {
 
     protected static @Nullable MultiInstanceData sData;
     private static @Nullable AtomicFile sAtomicFile;
-    private static @Nullable SequencedTaskRunner sTaskRunner;
 
     static {
         ensureInitialized();
-    }
-
-    private static SequencedTaskRunner getTaskRunner() {
-        if (sTaskRunner == null) {
-            sTaskRunner = PostTask.createSequencedTaskRunner(TaskTraits.USER_BLOCKING_MAY_BLOCK);
-        }
-        return sTaskRunner;
     }
 
     protected MultiInstancePersistentStore() {}
@@ -89,10 +77,9 @@ public class MultiInstancePersistentStore {
         }
     }
 
-    protected static void initializeFromMigration(
-            MultiInstanceData data, @Nullable Callback<Boolean> onComplete) {
+    protected static void initializeFromMigration(MultiInstanceData data) {
         sData = data;
-        saveProto(onComplete);
+        saveProto();
     }
 
     private static AtomicFile getAtomicFile() {
@@ -105,7 +92,6 @@ public class MultiInstancePersistentStore {
     }
 
     protected static @Nullable MultiInstanceData loadProtoFromFile() {
-        if (sData != null) return sData;
         AtomicFile atomicFile = getAtomicFile();
         if (!atomicFile.getBaseFile().exists()) return MultiInstanceData.getDefaultInstance();
 
@@ -122,44 +108,22 @@ public class MultiInstancePersistentStore {
     }
 
     protected static void saveProto() {
-        saveProto(null);
-    }
-
-    protected static void saveProto(@Nullable Callback<Boolean> onComplete) {
-        MultiInstanceData data = sData;
-        if (data == null) {
-            if (onComplete != null) onComplete.onResult(false);
-            return;
+        if (sData == null) return;
+        AtomicFile atomicFile = getAtomicFile();
+        FileOutputStream stream = null;
+        try {
+            stream = atomicFile.startWrite();
+            sData.writeTo(stream);
+            atomicFile.finishWrite(stream);
+        } catch (IOException e) {
+            if (stream != null) atomicFile.failWrite(stream);
+            Log.e(TAG, "Failed to save multi-instance proto", e);
         }
-
-        getTaskRunner()
-                .execute(
-                        () -> {
-                            boolean success = false;
-                            AtomicFile atomicFile = getAtomicFile();
-                            FileOutputStream stream = null;
-                            try {
-                                stream = atomicFile.startWrite();
-                                data.writeTo(stream);
-                                atomicFile.finishWrite(stream);
-                                success = true;
-                            } catch (IOException e) {
-                                if (stream != null) atomicFile.failWrite(stream);
-                                Log.e(TAG, "Failed to save multi-instance proto", e);
-                            }
-
-                            if (onComplete != null) {
-                                final boolean finalSuccess = success;
-                                PostTask.postTask(
-                                        TaskTraits.UI_DEFAULT,
-                                        () -> onComplete.onResult(finalSuccess));
-                            }
-                        });
     }
 
     protected static void deleteProtoFile() {
+        getAtomicFile().delete();
         sData = null;
-        getTaskRunner().execute(() -> getAtomicFile().delete());
     }
 
     public static boolean containsMultiWindowModeCycleStartTime() {
