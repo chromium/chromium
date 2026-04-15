@@ -4,6 +4,8 @@
 
 #import "ios/chrome/browser/settings/autofill/autofill_ai/ui/autofill_ai_entity_edit_table_view_controller.h"
 
+#import <string_view>
+
 #import "base/apple/foundation_util.h"
 #import "base/strings/sys_string_conversions.h"
 #import "ios/chrome/browser/autofill/autofill_ai/public/autofill_ai_ui_util.h"
@@ -23,14 +25,49 @@
 #import "third_party/ocmock/gtest_support.h"
 #import "ui/base/l10n/l10n_util.h"
 
+@interface FakeMutator : NSObject <AutofillAIEntityEditMutator>
+@property(nonatomic, assign) autofill::DenseSet<autofill::AttributeType>
+    missingFields;
+@end
+
+@implementation FakeMutator
+- (void)saveEntityInstance {
+}
+- (void)didChangeDate:(NSDate*)date
+              forItem:(AutofillAIEntityEditDateItem*)item {
+}
+- (autofill::DenseSet<autofill::AttributeType>)getMissingRequiredFieldsFor:
+    (const autofill::DenseSet<autofill::AttributeType>&)presentAttributes {
+  return _missingFields;
+}
+- (void)requestEditingWithCompletion:(ReauthenticationResultBlock)completion {
+}
+@end
+
 namespace {
 
 class AutofillAIEntityEditTableViewControllerTest
     : public LegacyChromeTableViewControllerTest {
  protected:
   LegacyChromeTableViewController* InstantiateController() override {
-    return [[AutofillAIEntityEditTableViewController alloc]
-        initWithStyle:UITableViewStyleGrouped];
+    AutofillAIEntityEditTableViewController* controller =
+        [[AutofillAIEntityEditTableViewController alloc]
+            initWithStyle:UITableViewStyleGrouped];
+
+    const testing::TestInfo* test_info =
+        testing::UnitTest::GetInstance()->current_test_info();
+    std::string_view test_name = test_info->name();
+
+    if (test_name == "TestDidTapSaveNewEntity" ||
+        test_name == "TestDidTapCancel" ||
+        test_name == "TestStartInEditModeHidesDoneButton" ||
+        test_name == "TestDidFinishSavingWithLocalFallbackTrue" ||
+        test_name == "TestDidFinishSavingWithLocalFallbackFalse" ||
+        test_name == "TestSaveButtonState") {
+      controller.mode = AutofillAIEntityEditMode::kCreate;
+    }
+
+    return controller;
   }
 
   void SetUp() override {
@@ -111,9 +148,6 @@ TEST_F(AutofillAIEntityEditTableViewControllerTest, TestDidTapSaveNewEntity) {
       base::apple::ObjCCastStrict<AutofillAIEntityEditTableViewController>(
           controller());
 
-  view_controller.mode = AutofillAIEntityEditMode::kCreate;
-  [view_controller loadViewIfNeeded];
-
   // Expect the mutator to save.
   OCMExpect([mock_mutator_ saveEntityInstance]);
 
@@ -146,9 +180,6 @@ TEST_F(AutofillAIEntityEditTableViewControllerTest, TestDidTapCancel) {
       base::apple::ObjCCastStrict<AutofillAIEntityEditTableViewController>(
           controller());
 
-  view_controller.mode = AutofillAIEntityEditMode::kCreate;
-  [view_controller loadViewIfNeeded];
-
   // Expect the delegate to close the view controller.
   OCMExpect([mock_delegate_ dismissViewController:view_controller]);
 
@@ -163,9 +194,6 @@ TEST_F(AutofillAIEntityEditTableViewControllerTest,
   AutofillAIEntityEditTableViewController* view_controller =
       base::apple::ObjCCastStrict<AutofillAIEntityEditTableViewController>(
           controller());
-
-  view_controller.mode = AutofillAIEntityEditMode::kCreate;
-  [view_controller loadViewIfNeeded];
 
   // Verify that the top right Done button is hidden and edit button isn't
   // shown.
@@ -217,9 +245,6 @@ TEST_F(AutofillAIEntityEditTableViewControllerTest,
       base::apple::ObjCCastStrict<AutofillAIEntityEditTableViewController>(
           controller());
 
-  view_controller.mode = AutofillAIEntityEditMode::kCreate;
-  [view_controller loadViewIfNeeded];
-
   // Expect the delegate to be notified of the fallback.
   OCMExpect([mock_delegate_ showLocalSaveFallbackAlert]);
 
@@ -235,9 +260,6 @@ TEST_F(AutofillAIEntityEditTableViewControllerTest,
       base::apple::ObjCCastStrict<AutofillAIEntityEditTableViewController>(
           controller());
 
-  view_controller.mode = AutofillAIEntityEditMode::kCreate;
-  [view_controller loadViewIfNeeded];
-
   // Expect the delegate to process a standard dismissal.
   OCMExpect([mock_delegate_ dismissViewController:view_controller]);
 
@@ -245,6 +267,30 @@ TEST_F(AutofillAIEntityEditTableViewControllerTest,
   [view_controller didFinishSavingWithLocalFallback:NO];
 
   [mock_delegate_ verify];
+}
+
+TEST_F(AutofillAIEntityEditTableViewControllerTest, TestSaveButtonState) {
+  AutofillAIEntityEditTableViewController* view_controller =
+      base::apple::ObjCCastStrict<AutofillAIEntityEditTableViewController>(
+          controller());
+
+  FakeMutator* fake_mutator = [[FakeMutator alloc] init];
+  autofill::DenseSet<autofill::AttributeType> missing_fields;
+  missing_fields.insert(
+      autofill::AttributeType(autofill::AttributeTypeName::kPassportName));
+  fake_mutator.missingFields = missing_fields;
+  view_controller.mutator = fake_mutator;
+
+  [view_controller tableViewItemDidChange:nil];
+
+  EXPECT_FALSE(view_controller.saveButton.enabled);
+
+  missing_fields.clear();
+  fake_mutator.missingFields = missing_fields;
+
+  [view_controller tableViewItemDidChange:nil];
+
+  EXPECT_TRUE(view_controller.saveButton.enabled);
 }
 
 }  // namespace
