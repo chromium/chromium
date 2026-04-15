@@ -3,6 +3,8 @@
 # found in the LICENSE file.
 
 import click
+import functools
+import os
 
 from dataclasses import dataclass, fields
 
@@ -29,6 +31,7 @@ class AutotestConfig:
   no_build: bool | None
   suite: bool | None
   files: tuple[str, ...]
+  gemini: bool | None
   extras: list[str] | None = None  # To hold ctx.args
 
 
@@ -88,6 +91,16 @@ class Formatter(click.Command):
 
 def autotest_options(f):
   """Decorator to group all autotest CLI options."""
+
+  @functools.wraps(f)
+  def wrapper(*args, **kwargs):
+    if kwargs.get('gemini') and os.environ.get('GEMINI_CLI') == '1':
+      raise click.UsageError(
+          'Cannot run autotest with --gemini from within an active Gemini CLI session to prevent nested agent invocations.'
+      )
+    return f(*args, **kwargs)
+
+  # Apply the options to the wrapper function
   options = [
       click.option('--out-dir',
                    '--out_dir',
@@ -182,8 +195,14 @@ def autotest_options(f):
       click.option('--suite',
                    is_flag=True,
                    help='Run entire test suites instead of individual tests.'),
+      click.option(
+          '--gemini',
+          is_flag=True,
+          help=
+          'If a test fails, interactively launch the Gemini CLI to diagnose the failure and propose a fix.'
+      ),
   ]
   # Apply in reverse so the first item in the list appears first in --help
   for option in reversed(options):
-    f = option(f)
-  return f
+    wrapper = option(wrapper)
+  return wrapper

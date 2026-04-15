@@ -221,7 +221,8 @@ def main(ctx, **kwargs) -> int:
                                       config.no_try_android_wrappers,
                                       config.no_fast_local_dev,
                                       config.no_single_variant,
-                                      is_suite=config.suite)
+                                      is_suite=config.suite,
+                                      gemini=config.gemini)
 
 if __name__ == '__main__':
   telemetry.telemetry.initialize('chromium.tools.autotest')
