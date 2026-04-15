@@ -105,9 +105,9 @@ static void AppendMailtoPostFormDataToURL(KURL& url,
   url.SetQuery(query.ToString());
 }
 
-void FormSubmission::Attributes::ParseAction(const String& action) {
+void FormSubmission::Attributes::ParseAction(const StringView& action) {
   // m_action cannot be converted to KURL (bug https://crbug.com/388664)
-  action_ = StripLeadingAndTrailingHTMLSpaces(action);
+  action_ = StripLeadingAndTrailingHtmlSpaces(action).ToString();
 }
 
 AtomicString FormSubmission::Attributes::ParseEncodingType(const String& type) {

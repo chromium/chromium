@@ -38,9 +38,6 @@ namespace blink {
 class TextEncoding;
 
 // Strip leading and trailing whitespace as defined by the HTML specification.
-// This function copies the content of the input string.
-CORE_EXPORT String StripLeadingAndTrailingHTMLSpaces(const String&);
-// Strip leading and trailing whitespace as defined by the HTML specification.
 // The resultant string shares the content of the input string.
 CORE_EXPORT StringView StripLeadingAndTrailingHtmlSpaces(const StringView&);
 

@@ -108,7 +108,7 @@ void HTMLObjectElement::ParseAttribute(
     // suppress the reload stuff when a persistable widget-type is specified?
     ReloadPluginOnAttributeChange(name);
   } else if (name == html_names::kDataAttr) {
-    SetUrl(StripLeadingAndTrailingHTMLSpaces(params.new_value));
+    SetUrl(StripLeadingAndTrailingHtmlSpaces(params.new_value));
     if (GetLayoutObject() && IsImageType()) {
       SetNeedsPluginUpdate(true);
       if (!image_loader_)

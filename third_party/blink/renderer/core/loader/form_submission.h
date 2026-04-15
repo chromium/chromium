@@ -76,7 +76,7 @@ class FormSubmission final : public GarbageCollected<FormSubmission> {
     static String MethodString(SubmitMethod);
 
     const String& Action() const { return action_; }
-    void ParseAction(const String&);
+    void ParseAction(const StringView&);
 
     const AtomicString& Target() const { return target_; }
     void SetTarget(const AtomicString& target) { target_ = target; }

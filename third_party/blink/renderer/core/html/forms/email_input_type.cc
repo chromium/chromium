@@ -279,7 +279,7 @@ bool EmailInputType::SupportsSelectionAPI() const {
 String EmailInputType::SanitizeValue(const String& proposed_value) const {
   String no_line_break_value = proposed_value.RemoveCharacters(IsHTMLLineBreak);
   if (!GetElement().Multiple())
-    return StripLeadingAndTrailingHTMLSpaces(no_line_break_value);
+    return StripLeadingAndTrailingHtmlSpaces(no_line_break_value).ToString();
   Vector<StringView> addresses = ParseMultipleValues(no_line_break_value);
   StringBuilder stripped_value;
   stripped_value.AppendRange(addresses, ",", [](const auto& address) {

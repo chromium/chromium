@@ -108,7 +108,7 @@ void HTMLEmbedElement::ParseAttribute(
   } else if (params.name == html_names::kCodeAttr) {
     // TODO(rendering-core): Remove this branch? It's not in the spec and we're
     // not in the HTMLAppletElement hierarchy.
-    SetUrl(StripLeadingAndTrailingHTMLSpaces(params.new_value));
+    SetUrl(StripLeadingAndTrailingHtmlSpaces(params.new_value));
     SetDisposeView();
   } else if (params.name == html_names::kSrcAttr) {
     // https://html.spec.whatwg.org/multipage/iframe-embed-object.html#the-embed-element
@@ -117,7 +117,7 @@ void HTMLEmbedElement::ParseAttribute(
     // steps.
     // We don't follow the "potentially active" definition precisely here, but
     // it works.
-    SetUrl(StripLeadingAndTrailingHTMLSpaces(params.new_value));
+    SetUrl(StripLeadingAndTrailingHtmlSpaces(params.new_value));
     SetDisposeView();
     if (GetLayoutObject() && IsImageType()) {
       if (!image_loader_)

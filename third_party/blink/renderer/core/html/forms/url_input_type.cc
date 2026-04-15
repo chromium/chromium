@@ -58,7 +58,7 @@ String URLInputType::TypeMismatchText() const {
 
 String URLInputType::SanitizeValue(const String& proposed_value) const {
   return BaseTextInputType::SanitizeValue(
-      StripLeadingAndTrailingHTMLSpaces(proposed_value));
+      StripLeadingAndTrailingHtmlSpaces(proposed_value).ToString());
 }
 
 String URLInputType::SanitizeUserInputValue(
