@@ -501,14 +501,14 @@ MemoryManagedPaintRecorder* CanvasRenderingContext2D::Recorder() {
 }
 
 void CanvasRenderingContext2D::WillDraw(
-    const SkIRect& dirty_rect,
+    const gfx::Rect& dirty_rect,
     CanvasPerformanceMonitor::DrawType draw_type) {
   if (ShouldAntialias()) {
-    SkIRect inflated_dirty_rect = dirty_rect.makeOutset(1, 1);
-    CanvasRenderingContext::DidDraw(gfx::SkIRectToRect(inflated_dirty_rect),
-                                    draw_type);
+    gfx::Rect inflated_dirty_rect = dirty_rect;
+    inflated_dirty_rect.Outset(1);
+    CanvasRenderingContext::DidDraw(inflated_dirty_rect, draw_type);
   } else {
-    CanvasRenderingContext::DidDraw(gfx::SkIRectToRect(dirty_rect), draw_type);
+    CanvasRenderingContext::DidDraw(dirty_rect, draw_type);
   }
 
   if (!canvas()) {

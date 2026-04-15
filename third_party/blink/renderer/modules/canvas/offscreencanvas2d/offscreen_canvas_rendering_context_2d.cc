@@ -411,15 +411,15 @@ const MemoryManagedPaintRecorder* OffscreenCanvasRenderingContext2D::Recorder()
 }
 
 void OffscreenCanvasRenderingContext2D::WillDraw(
-    const SkIRect& dirty_rect,
+    const gfx::Rect& dirty_rect,
     CanvasPerformanceMonitor::DrawType draw_type) {
-  SkIRect adjusted_dirty_rect = dirty_rect;
+  gfx::Rect adjusted_dirty_rect = dirty_rect;
   if (GetState().ShouldAntialias()) {
-    adjusted_dirty_rect = adjusted_dirty_rect.makeOutset(1, 1);
+    adjusted_dirty_rect.Outset(1);
   }
 
   GetCanvasPerformanceMonitor().DidDraw(draw_type);
-  Host()->DidDraw(gfx::SkIRectToRect(adjusted_dirty_rect));
+  Host()->DidDraw(adjusted_dirty_rect);
 
   if (layer_count_ == 0 && resource_provider_ != nullptr) [[likely]] {
     // TODO(crbug.com/1246486): Make auto-flushing layer friendly.

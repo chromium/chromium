@@ -723,7 +723,8 @@ void Canvas2DRecorderContext::endLayer(ExceptionState& exception_state) {
   cc::PaintCanvas& parent_canvas = recorder->getRecordingCanvas();
   SkIRect clip_bounds;
   if (parent_canvas.getDeviceClipBounds(&clip_bounds)) {
-    WillDraw(clip_bounds, CanvasPerformanceMonitor::DrawType::kOther);
+    WillDraw(gfx::SkIRectToRect(clip_bounds),
+             CanvasPerformanceMonitor::DrawType::kOther);
   }
 
   ValidateStateStack();
@@ -840,7 +841,7 @@ void Canvas2DRecorderContext::ResetInternal() {
   if (cc::PaintCanvas* c = GetPaintCanvas()) {
     int width = Width();  // Keeping results to avoid repetitive virtual calls.
     int height = Height();
-    WillDraw(SkIRect::MakeXYWH(0, 0, width, height),
+    WillDraw(gfx::Rect(width, height),
              CanvasPerformanceMonitor::DrawType::kOther);
     c->drawRect(SkRect::MakeXYWH(0.0f, 0.0f, width, height), GetClearFlags());
   }
@@ -1962,12 +1963,14 @@ void Canvas2DRecorderContext::clearRect(double x,
   if (RectContainsTransformedRect(rect, clip_bounds)) {
     CheckOverdraw(&clear_flags, CanvasRenderingContext2DState::kNoImage,
                   OverdrawOp::kClearRect);
-    WillDraw(clip_bounds, CanvasPerformanceMonitor::DrawType::kOther);
+    WillDraw(gfx::SkIRectToRect(clip_bounds),
+             CanvasPerformanceMonitor::DrawType::kOther);
     c->drawRect(gfx::RectFToSkRect(rect), clear_flags);
   } else {
     SkIRect dirty_rect;
     if (ComputeDirtyRect(rect, clip_bounds, &dirty_rect)) {
-      WillDraw(clip_bounds, CanvasPerformanceMonitor::DrawType::kOther);
+      WillDraw(gfx::SkIRectToRect(clip_bounds),
+               CanvasPerformanceMonitor::DrawType::kOther);
       c->drawRect(gfx::RectFToSkRect(rect), clear_flags);
     }
   }

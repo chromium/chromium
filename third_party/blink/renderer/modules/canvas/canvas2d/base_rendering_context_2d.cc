@@ -623,16 +623,14 @@ void BaseRenderingContext2D::putImageData(ImageData* data,
 
     PutByteArray(converted_bitmap.pixmap(), source_rect, dest_offset);
     if (GetPaintCanvas()) {
-      WillDraw(gfx::RectToSkIRect(dest_rect),
-               CanvasPerformanceMonitor::DrawType::kImageData);
+      WillDraw(dest_rect, CanvasPerformanceMonitor::DrawType::kImageData);
     }
     return;
   }
 
   PutByteArray(data_pixmap, source_rect, dest_offset);
   if (GetPaintCanvas()) {
-    WillDraw(gfx::RectToSkIRect(dest_rect),
-             CanvasPerformanceMonitor::DrawType::kImageData);
+    WillDraw(dest_rect, CanvasPerformanceMonitor::DrawType::kImageData);
   }
 }
 
@@ -1481,7 +1479,7 @@ GPUTexture* BaseRenderingContext2D::transferToGPUTexture(
   // provider might stick around for while. Jettison any unnecessary resources.
   resource_provider_from_webgpu_access_->ClearUnusedResources();
 
-  WillDraw(SkIRect::MakeXYWH(0, 0, Width(), Height()),
+  WillDraw(gfx::Rect(Width(), Height()),
            CanvasPerformanceMonitor::DrawType::kOther);
 
   return webgpu_access_texture_;
@@ -1554,7 +1552,7 @@ void BaseRenderingContext2D::transferBackFromGPUTexture(
   // We are finished with the WebGPU texture and its associated device.
   webgpu_access_texture_ = nullptr;
 
-  WillDraw(SkIRect::MakeXYWH(0, 0, Width(), Height()),
+  WillDraw(gfx::Rect(Width(), Height()),
            CanvasPerformanceMonitor::DrawType::kOther);
 }
 

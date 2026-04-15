@@ -63,7 +63,7 @@ const MemoryManagedPaintCanvas* PaintRenderingContext2D::GetPaintCanvas()
   return &paint_recorder_.getRecordingCanvas();
 }
 
-void PaintRenderingContext2D::WillDraw(const SkIRect&,
+void PaintRenderingContext2D::WillDraw(const gfx::Rect&,
                                        CanvasPerformanceMonitor::DrawType) {}
 
 sk_sp<PaintFilter> PaintRenderingContext2D::StateGetFilter() {

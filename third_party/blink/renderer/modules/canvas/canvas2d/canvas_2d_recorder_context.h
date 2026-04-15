@@ -503,7 +503,7 @@ class MODULES_EXPORT Canvas2DRecorderContext : public CanvasPath {
 
   // Called when about to draw. When this is called GetPaintCanvas() has already
   // been called and returned a non-null value.
-  virtual void WillDraw(const SkIRect& dirty_rect,
+  virtual void WillDraw(const gfx::Rect& dirty_rect,
                         CanvasPerformanceMonitor::DrawType) = 0;
 
   virtual sk_sp<PaintFilter> StateGetFilter() = 0;
@@ -825,7 +825,7 @@ void Canvas2DRecorderContext::DrawInternal(
   const CanvasRenderingContext2DState& state = GetState();
   SkBlendMode global_composite = state.GlobalComposite();
   if (ShouldUseCompositedDraw(paint_type, image_type)) {
-    WillDraw(clip_bounds, draw_type);
+    WillDraw(gfx::SkIRectToRect(clip_bounds), draw_type);
     CompositedDraw(draw_func, paint_canvas, paint_type, image_type);
     ResetAlphaIfNeeded(paint_canvas, global_composite);
   } else if (global_composite == SkBlendMode::kSrc) {
@@ -833,7 +833,7 @@ void Canvas2DRecorderContext::DrawInternal(
     paint_canvas->clear(HasAlpha() ? SkColors::kTransparent : SkColors::kBlack);
     const cc::PaintFlags* flags =
         state.GetFlags(paint_type, kDrawForegroundOnly, image_type);
-    WillDraw(clip_bounds, draw_type);
+    WillDraw(gfx::SkIRectToRect(clip_bounds), draw_type);
     draw_func(paint_canvas, flags);
     ResetAlphaIfNeeded(paint_canvas, global_composite, &bounds);
   } else {
@@ -849,7 +849,7 @@ void Canvas2DRecorderContext::DrawInternal(
           CheckOverdraw(flags, image_type, CurrentOverdrawOp);
         }
       }
-      WillDraw(dirty_rect, draw_type);
+      WillDraw(gfx::SkIRectToRect(dirty_rect), draw_type);
       draw_func(paint_canvas, flags);
       ResetAlphaIfNeeded(paint_canvas, global_composite, &bounds);
     }

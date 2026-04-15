@@ -67,7 +67,7 @@ class MODULES_EXPORT PaintRenderingContext2D
     return &paint_recorder_;
   }
 
-  void WillDraw(const SkIRect&, CanvasPerformanceMonitor::DrawType) final;
+  void WillDraw(const gfx::Rect&, CanvasPerformanceMonitor::DrawType) final;
 
   sk_sp<PaintFilter> StateGetFilter() final;
 

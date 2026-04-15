@@ -115,7 +115,7 @@ class TestRenderingContext2D final
   const MemoryManagedPaintCanvas* GetPaintCanvas() const override {
     return &recorder_.getRecordingCanvas();
   }
-  void WillDraw(const SkIRect& dirty_rect,
+  void WillDraw(const gfx::Rect& dirty_rect,
                 CanvasPerformanceMonitor::DrawType) override {}
 
   sk_sp<PaintFilter> StateGetFilter() override {

@@ -96,7 +96,7 @@ class MODULES_EXPORT OffscreenCanvasRenderingContext2D final
   const MemoryManagedPaintCanvas* GetPaintCanvas() const final;
   const MemoryManagedPaintRecorder* Recorder() const final;
 
-  void WillDraw(const SkIRect& dirty_rect,
+  void WillDraw(const gfx::Rect& dirty_rect,
                 CanvasPerformanceMonitor::DrawType) final;
 
   sk_sp<PaintFilter> StateGetFilter() final;
