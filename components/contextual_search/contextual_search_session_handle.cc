@@ -168,7 +168,7 @@ void ContextualSearchSessionHandle::StartFileContextUploadFlow(
     } else if (mime_type_has_image) {
       mime_type = lens::MimeType::kImage;
     } else {
-      NOTREACHED();
+      mime_type = lens::MimeType::kUnknown;
     }
   }
 
