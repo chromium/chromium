@@ -100,7 +100,7 @@ public class NotificationManager {
                                 intent, IntentHandler.EXTRA_SCROLL_TO_TEXT_FRAGMENT);
                 openUrl(intent.getData(), scrollToTextFragment);
                 hideNotification(guid);
-                SendTabToSelfAndroidBridge.deleteEntry(profile, guid);
+                SendTabToSelfAndroidBridge.markEntryOpened(profile, guid);
                 SendTabToSelfMetricsRecorder.recordNotificationOpened();
                 break;
             case NOTIFICATION_ACTION_DISMISS:

@@ -70,6 +70,14 @@ public class SendTabToSelfAndroidBridgeTest {
 
     @Test
     @SmallTest
+    public void testMarkEntryOpened() {
+        String guid = "guid";
+        SendTabToSelfAndroidBridge.markEntryOpened(mProfile, guid);
+        verify(mNativeMock).markEntryOpened(eq(mProfile), eq(guid));
+    }
+
+    @Test
+    @SmallTest
     public void testDismissEntry() {
         String guid = "guid";
         SendTabToSelfAndroidBridge.dismissEntry(mProfile, guid);

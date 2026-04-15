@@ -173,7 +173,7 @@ void AndroidNotificationHandler::OnMessageOpened(GURL url, std::string guid) {
     }
   }
 
-  send_tab_to_self_model_->DismissEntry(guid);
+  send_tab_to_self_model_->MarkEntryOpened(guid);
 }
 
 void AndroidNotificationHandler::OnMessageDismissed(

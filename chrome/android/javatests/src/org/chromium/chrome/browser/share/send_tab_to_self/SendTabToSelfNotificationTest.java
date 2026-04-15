@@ -14,7 +14,9 @@ import static androidx.test.espresso.intent.matcher.IntentMatchers.hasExtraWithK
 
 import static org.hamcrest.CoreMatchers.not;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.verify;
 
 import android.app.Activity;
 import android.app.Instrumentation.ActivityResult;
@@ -74,8 +76,8 @@ public class SendTabToSelfNotificationTest {
         BaseNotificationManagerProxyFactory.setInstanceForTesting(mMockNotificationManager);
         SendTabToSelfAndroidBridgeJni.setInstanceForTesting(mNativeMock);
         ProfileManager.setLastUsedProfileForTesting(mProfile);
-        // deleteEntry and dismissEntry are called by NotificationManager.
-        doNothing().when(mNativeMock).deleteEntry(any(), any());
+        // markEntryOpened and dismissEntry are called by NotificationManager.
+        doNothing().when(mNativeMock).markEntryOpened(any(), any());
         doNothing().when(mNativeMock).dismissEntry(any(), any());
     }
 
@@ -100,6 +102,7 @@ public class SendTabToSelfNotificationTest {
         intended(hasComponent(ChromeLauncherActivity.class.getName()));
         intended(hasData(URL));
         intended(hasExtra(IntentHandler.EXTRA_SCROLL_TO_TEXT_FRAGMENT, TEXT_FRAGMENT));
+        verify(mNativeMock).markEntryOpened(eq(mProfile), eq(GUID));
     }
 
     @Test
@@ -116,6 +119,7 @@ public class SendTabToSelfNotificationTest {
         intended(hasComponent(ChromeLauncherActivity.class.getName()));
         intended(hasData(URL));
         intended(not(hasExtraWithKey(IntentHandler.EXTRA_SCROLL_TO_TEXT_FRAGMENT)));
+        verify(mNativeMock).markEntryOpened(eq(mProfile), eq(GUID));
     }
 
     @Test
@@ -133,5 +137,30 @@ public class SendTabToSelfNotificationTest {
         intended(hasComponent(ChromeLauncherActivity.class.getName()));
         intended(hasData(URL));
         intended(not(hasExtraWithKey(IntentHandler.EXTRA_SCROLL_TO_TEXT_FRAGMENT)));
+        verify(mNativeMock).markEntryOpened(eq(mProfile), eq(GUID));
+    }
+
+    @Test
+    @SmallTest
+    public void testNotificationDismiss() {
+        Intent intent = new Intent();
+        intent.setAction("send_tab_to_self.dismiss");
+        intent.putExtra("send_tab_to_self.notification.guid", GUID);
+
+        ThreadUtils.runOnUiThreadBlocking(() -> NotificationManager.handleIntent(intent));
+
+        verify(mNativeMock).dismissEntry(eq(mProfile), eq(GUID));
+    }
+
+    @Test
+    @SmallTest
+    public void testNotificationTimeout() {
+        Intent intent = new Intent();
+        intent.setAction("send_tab_to_self.timeout");
+        intent.putExtra("send_tab_to_self.notification.guid", GUID);
+
+        ThreadUtils.runOnUiThreadBlocking(() -> NotificationManager.handleIntent(intent));
+
+        verify(mNativeMock).dismissEntry(eq(mProfile), eq(GUID));
     }
 }

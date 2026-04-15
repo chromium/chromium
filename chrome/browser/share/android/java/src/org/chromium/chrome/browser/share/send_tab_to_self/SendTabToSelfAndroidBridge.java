@@ -64,6 +64,16 @@ public class SendTabToSelfAndroidBridge {
     }
 
     /**
+     * Marks the entry associated with the GUID as opened.
+     *
+     * @param profile Profile of the user to mark entry for.
+     * @param guid The GUID to mark the entry for.
+     */
+    public static void markEntryOpened(Profile profile, String guid) {
+        SendTabToSelfAndroidBridgeJni.get().markEntryOpened(profile, guid);
+    }
+
+    /**
      * Dismiss the entry associated with the GUID.
      *
      * @param profile Profile of the user to dismiss entry for.
@@ -106,6 +116,8 @@ public class SendTabToSelfAndroidBridge {
                 CommitConfirmationCallback commitConfirmation);
 
         void deleteEntry(@JniType("Profile*") Profile profile, String guid);
+
+        void markEntryOpened(@JniType("Profile*") Profile profile, String guid);
 
         void dismissEntry(@JniType("Profile*") Profile profile, String guid);
 

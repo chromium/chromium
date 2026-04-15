@@ -111,6 +111,20 @@ static void JNI_SendTabToSelfAndroidBridge_DeleteEntry(
   }
 }
 
+// Marks the entry with the associated GUID as opened.
+static void JNI_SendTabToSelfAndroidBridge_MarkEntryOpened(
+    JNIEnv* env,
+    Profile* profile,
+    const JavaRef<jstring>& j_guid) {
+  SendTabToSelfModel* model =
+      SendTabToSelfSyncServiceFactory::GetForProfile(profile)
+          ->GetSendTabToSelfModel();
+  if (model->IsReady()) {
+    const std::string guid = ConvertJavaStringToUTF8(env, j_guid);
+    model->MarkEntryOpened(guid);
+  }
+}
+
 // Marks the entry with the associated GUID as dismissed.
 static void JNI_SendTabToSelfAndroidBridge_DismissEntry(
     JNIEnv* env,
