@@ -395,9 +395,14 @@ void OpenManageDevicesTab(CommandDispatcher* dispatcher) {
 
   SendTabToSelfSyncServiceFactory::GetForProfile(self.profile)
       ->GetSendTabToSelfModel()
-      ->AddEntry(self.url, base::SysNSStringToUTF8(self.title),
-                 base::SysNSStringToUTF8(cacheGUID), pageContext,
-                 send_tab_to_self::NavigationHistory(), base::DoNothing());
+      ->AddEntry(
+          self.url, base::SysNSStringToUTF8(self.title),
+          base::SysNSStringToUTF8(cacheGUID), pageContext,
+          send_tab_to_self::NavigationHistory(),
+          base::BindOnce([](send_tab_to_self::SendTabToSelfResult result) {
+            // TODO(crbug.com/492072882): Add logic to surface a toast
+            // and required strings.
+          }));
 
   // ShowSendingMessage() opens UI, so wait for the dialog to be dismissed.
   self.dismissedCompletion = base::CallbackToBlock(base::BindRepeating(

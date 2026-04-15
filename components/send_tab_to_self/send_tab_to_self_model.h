@@ -22,11 +22,13 @@ struct TargetDeviceInfo;
 
 // GENERATED_JAVA_ENUM_PACKAGE: (
 //   org.chromium.chrome.browser.share.send_tab_to_self)
-// TODO(crbug.com/492072882): Maybe consider extending this enum to include more
-// refined failure cases (e.g. kInvalidUrl, kNotTrackingMetadata, etc.).
 enum class SendTabToSelfResult {
-  kSuccess,
-  kFailure,
+  kSuccess = 0,
+  kSuccessThrottled = 1,
+  kFailureNotTrackingMetadata = 2,
+  kFailureInvalidUrl = 3,
+  kFailureModelNotReady = 4,
+  kMaxValue = kFailureModelNotReady,
 };
 
 // The send tab to self model contains a list of entries of shared urls.

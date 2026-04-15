@@ -195,9 +195,12 @@ void SendTabToSelfBubbleController::HandleSendTabToDeviceResult(
     SendTabToSelfResult result) {
   switch (result) {
     case SendTabToSelfResult::kSuccess:
+    case SendTabToSelfResult::kSuccessThrottled:
       SetShowConfirmationMessage(true);
       break;
-    case SendTabToSelfResult::kFailure:
+    case SendTabToSelfResult::kFailureInvalidUrl:
+    case SendTabToSelfResult::kFailureNotTrackingMetadata:
+    case SendTabToSelfResult::kFailureModelNotReady:
       OnSendFailed(url);
       break;
   }

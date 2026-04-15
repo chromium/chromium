@@ -264,7 +264,8 @@ void SendTabToSelfPageHandler::SendFinalizedRequest(
       SendTabToSelfSyncServiceFactory::GetForProfile(profile)
           ->GetSendTabToSelfModel();
   if (!model->IsReady()) {
-    std::move(request.commit_confirmation).Run(SendTabToSelfResult::kFailure);
+    std::move(request.commit_confirmation)
+        .Run(SendTabToSelfResult::kFailureModelNotReady);
     return;
   }
 
