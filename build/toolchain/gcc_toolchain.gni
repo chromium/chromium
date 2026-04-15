@@ -688,6 +688,13 @@ template("single_gcc_toolchain") {
       rustc = "$rust_compiler_prefix${rustc_bin}"
       rustc_wrapper += " --rustc=$rustc"
 
+      rustc_wrapper_inputs = [
+        "//build/action_helpers.py",
+        "//build/gn_helpers.py",
+        "//build/rust/gni_impl/rustc_wrapper.py",
+        "//third_party/rust-toolchain/bin/rustc",
+      ]
+
       # RSP manipulation due to https://bugs.chromium.org/p/gn/issues/detail?id=249
       tool("rust_staticlib") {
         libname = "{{output_dir}}/{{target_output_name}}{{output_extension}}"

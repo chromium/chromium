@@ -309,9 +309,8 @@ def __step_config(ctx, step_config):
                 "build/rust/gni_impl/clippy_wrapper.py",
             ],
             "indirect_inputs": rust_compile_indirect_inputs,
-            "remote": remote,
-            "timeout": "2m",
-            "platform_ref": platform_ref,
+            # TODO: Enable remote execution after enablling clippy by default.
+            "remote": False,
         },
         {
             # rust/bindgen fails remotely when *.d does not exist.
