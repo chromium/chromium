@@ -10912,11 +10912,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kAndroidNewMediaPickerDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(chrome::android::kAndroidNewMediaPicker)},
 
-    {"enable-android-window-controls-overlay",
-     flag_descriptions::kAndroidWindowControlsOverlayName,
-     flag_descriptions::kAndroidWindowControlsOverlayDescription, kOsAndroid,
-     FEATURE_VALUE_TYPE(blink::features::kAndroidWindowControlsOverlay)},
-
     {"credential-management-third-party-web-api-request-forwarding",
      flag_descriptions::
          kCredentialManagementThirdPartyWebApiRequestForwardingName,

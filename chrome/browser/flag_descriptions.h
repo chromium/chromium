@@ -5255,11 +5255,6 @@ inline constexpr char kAndroidUseDisplayTopologyDescription[] =
     "displays. The browser obtains this infromation on startup and uses it for "
     "Window Management API and better window placement on other screens.";
 
-inline constexpr char kAndroidWindowControlsOverlayName[] =
-    "Enable window controls overlay in PWAs";
-inline constexpr char kAndroidWindowControlsOverlayDescription[] =
-    "Allow window-controls-overlay display mode for PWAs.";
-
 inline constexpr char kAndroidWindowManagementWebApiName[] =
     "Window Management Web API";
 inline constexpr char kAndroidWindowManagementWebApiDescription[] =

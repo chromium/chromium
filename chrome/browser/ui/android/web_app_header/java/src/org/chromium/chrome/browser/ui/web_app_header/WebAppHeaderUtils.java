@@ -151,14 +151,17 @@ public class WebAppHeaderUtils {
 
         return intentDataProvider.isTrustedWebActivity()
                 && displayMode == DisplayMode.WINDOW_CONTROLS_OVERLAY
-                && isWindowControlsOverlayFlagEnabled();
+                && isWindowControlsOverlayEnabled();
     }
 
-    /** Checks whether the window controls overlay feature flag is enabled. */
+    /**
+     * Checks whether window controls overlay is enabled for Android 15+ SDK.
+     *
+     * @return true if running on SDK >= 35, false otherwise.
+     */
     @ChecksSdkIntAtLeast(api = Build.VERSION_CODES.VANILLA_ICE_CREAM)
-    public static boolean isWindowControlsOverlayFlagEnabled() {
-        return Build.VERSION.SDK_INT >= Build.VERSION_CODES.VANILLA_ICE_CREAM
-                && ChromeFeatureList.sAndroidWindowControlsOverlay.isEnabled();
+    public static boolean isWindowControlsOverlayEnabled() {
+        return Build.VERSION.SDK_INT >= Build.VERSION_CODES.VANILLA_ICE_CREAM;
     }
 
     /** Checks whether a display mode that requires the custom web app header is enabled. */

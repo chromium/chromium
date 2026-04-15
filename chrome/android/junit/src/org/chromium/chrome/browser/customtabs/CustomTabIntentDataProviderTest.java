@@ -1807,19 +1807,7 @@ public class CustomTabIntentDataProviderTest {
 
     @Test
     @Config(sdk = {BaseRobolectricTestRunner.MAX_SDK})
-    @DisableFeatures({ChromeFeatureList.ANDROID_WINDOW_CONTROLS_OVERLAY})
-    public void testTwaBrowserModeWithDisabledWindowControlsOverlay_ResolveToStandalone() {
-        checkResolvedDisplayMode(
-                null,
-                Collections.singletonList(
-                        new TrustedWebActivityDisplayMode.WindowControlsOverlayMode()),
-                DisplayMode.STANDALONE);
-    }
-
-    @Test
-    @Config(sdk = {BaseRobolectricTestRunner.MAX_SDK})
-    @EnableFeatures({ChromeFeatureList.ANDROID_WINDOW_CONTROLS_OVERLAY})
-    public void testTwaBrowserModeWithEnableWindowControlsOverlay_ResolveToWindowControlsOverlay() {
+    public void testTwaBrowserMode_ResolveToWindowControlsOverlay() {
         checkResolvedDisplayMode(
                 null,
                 Collections.singletonList(
@@ -1829,9 +1817,7 @@ public class CustomTabIntentDataProviderTest {
 
     @Test
     @Config(sdk = {BaseRobolectricTestRunner.MAX_SDK})
-    @EnableFeatures({ChromeFeatureList.ANDROID_WINDOW_CONTROLS_OVERLAY})
-    public void
-            testTwaBrowserModeWithEnableWindowControlsOverlay_IgnoreWindowControlsOverlayNotInDisplayOverride() {
+    public void testTwaBrowserMode_IgnoreWindowControlsOverlayNotInDisplayOverride() {
         checkResolvedDisplayMode(
                 new TrustedWebActivityDisplayMode.WindowControlsOverlayMode(),
                 null,

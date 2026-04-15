@@ -1904,7 +1904,7 @@ public class CustomTabIntentDataProvider extends BrowserServicesIntentDataProvid
             return true;
         }
 
-        if (WebAppHeaderUtils.isWindowControlsOverlayFlagEnabled()
+        if (WebAppHeaderUtils.isWindowControlsOverlayEnabled()
                 && displayMode instanceof TrustedWebActivityDisplayMode.WindowControlsOverlayMode) {
             return isDisplayOverride;
         }
@@ -1948,7 +1948,7 @@ public class CustomTabIntentDataProvider extends BrowserServicesIntentDataProvid
             return DisplayMode.MINIMAL_UI;
         }
 
-        if (WebAppHeaderUtils.isWindowControlsOverlayFlagEnabled()
+        if (WebAppHeaderUtils.isWindowControlsOverlayEnabled()
                 && displayMode instanceof TrustedWebActivityDisplayMode.WindowControlsOverlayMode) {
             return DisplayMode.WINDOW_CONTROLS_OVERLAY;
         }
