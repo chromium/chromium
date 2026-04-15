@@ -555,6 +555,7 @@ inline constexpr char kFileSystemSettingsSubpage[] =
     "content/filesystem/siteDetails";
 inline constexpr char kFileSystemSubpage[] = "content/filesystem";
 inline constexpr char kGlicSettingsSubpage[] = "ai/gemini";
+inline constexpr char kGlicLoginSettingsSubpage[] = "ai/gemini/login";
 inline constexpr char kGoogleServicesSubpage[] = "googleServices";
 inline constexpr char kHandlerSettingsSubPage[] = "handlers";
 inline constexpr char kHistorySearchSubpage[] = "ai/historySearch";

@@ -1360,10 +1360,13 @@ IN_PROC_BROWSER_TEST_P(GlicApiTestWithOneTab,
                        testOpenPasswordManagerSettingsPage) {
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kPasswordManagerTab);
 
-  RunTestSequence(
-      InstrumentNextTab(kPasswordManagerTab), Do([this]() { ExecuteJsTest(); }),
-      WaitForWebContentsReady(kPasswordManagerTab,
-                              GURL(GetGooglePasswordManagerSubPageURLStr())));
+  const GURL settings_url =
+      base::FeatureList::IsEnabled(features::kFedCmEmbedderInitiatedLogin)
+          ? chrome::GetSettingsUrl(chrome::kGlicLoginSettingsSubpage)
+          : GURL(GetGooglePasswordManagerSubPageURLStr());
+  RunTestSequence(InstrumentNextTab(kPasswordManagerTab),
+                  Do([this]() { ExecuteJsTest(); }),
+                  WaitForWebContentsReady(kPasswordManagerTab, settings_url));
 }
 
 IN_PROC_BROWSER_TEST_P(GlicApiTestWithDaisyChain,
