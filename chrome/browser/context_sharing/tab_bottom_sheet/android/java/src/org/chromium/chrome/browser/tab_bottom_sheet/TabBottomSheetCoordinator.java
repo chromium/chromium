@@ -382,6 +382,7 @@ public class TabBottomSheetCoordinator {
                 }
                 if (newContent == mSheetContent) {
                     mIsShowingTabBottomSheet = true;
+                    updatePlaceholderBackgroundColor();
                 } else {
                     if (mIsShowingTabBottomSheet) {
                         mMediator.onSheetStateChanged(
@@ -425,6 +426,12 @@ public class TabBottomSheetCoordinator {
                 defaultHeightRatio,
                 mBottomSheetController.getCurrentOffset(),
                 mBottomSheetController.getMaxOffset());
+    }
+
+    private void updatePlaceholderBackgroundColor() {
+        Integer sheetBackgroundColor = mBottomSheetController.getSheetBackgroundColor();
+        assert sheetBackgroundColor != null;
+        mMediator.setPlaceholderBackgroundColor(sheetBackgroundColor);
     }
 
     private float getDefaultHeightRatio() {

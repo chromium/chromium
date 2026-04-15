@@ -13,6 +13,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import android.content.Context;
+import android.view.ContextThemeWrapper;
 import android.view.View;
 
 import androidx.test.core.app.ApplicationProvider;
@@ -27,6 +28,7 @@ import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.chrome.R;
 import org.chromium.components.embedder_support.contextmenu.ContextMenuPopulatorFactory;
 import org.chromium.components.thinwebview.ThinWebView;
 import org.chromium.components.thinwebview.ThinWebViewFactory;
@@ -52,7 +54,10 @@ public class TabBottomSheetWebUiTest {
     public void setUp() {
         ThinWebViewFactory.setInstanceForTesting(mThinWebView);
         when(mThinWebView.getView()).thenReturn(mView);
-        Context context = ApplicationProvider.getApplicationContext();
+        Context context =
+                new ContextThemeWrapper(
+                        ApplicationProvider.getApplicationContext(),
+                        R.style.Theme_BrowserUI_DayNight);
         mWebUi = new TabBottomSheetWebUi(context, mWindowAndroid, mContextMenuPopulatorFactory);
         TabBottomSheetWebUi.setInTestModeForTesting();
     }

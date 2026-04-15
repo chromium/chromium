@@ -39,6 +39,8 @@ public class TabBottomSheetProperties {
             new WritableObjectPropertyKey<>("resizing_state");
     public static final WritableBooleanPropertyKey IS_RESIZING =
             new WritableBooleanPropertyKey("is_resizing");
+    public static final WritableIntPropertyKey PLACEHOLDER_BACKGROUND_COLOR =
+            new WritableIntPropertyKey("placeholder_background_color");
     public static final WritableFloatPropertyKey PEEK_VIEW_AND_EXPANDED_CONTENT_ALPHA =
             new WritableFloatPropertyKey("peek_view_alpha_and_expanded_content_alpha");
     public static final WritableIntPropertyKey PEEK_VIEW_AND_EXPANDED_CONTENT_VISIBILITY =
@@ -48,6 +50,7 @@ public class TabBottomSheetProperties {
         BOTTOM_SHEET_VIEWS,
         RESIZING_STATE,
         IS_RESIZING,
+        PLACEHOLDER_BACKGROUND_COLOR,
         PEEK_VIEW_AND_EXPANDED_CONTENT_ALPHA,
         PEEK_VIEW_AND_EXPANDED_CONTENT_VISIBILITY,
     };

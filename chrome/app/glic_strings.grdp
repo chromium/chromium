@@ -513,4 +513,9 @@
   <message name="IDS_EDUCATIONAL_TIP_GLIC_DISMISS_BUTTON" desc="Dismiss button text for the Glic educational tip card." formatter_data="android_java">
     No, thanks
   </message>
+
+  <!-- Tab bottom sheet -->
+  <message name="IDS_TAB_BOTTOM_SHEET_RESIZING_VIEW_TEXT" desc="Text shown while the web view is resizing." formatter_data="android_java">
+    Resizing Gemini...
+  </message>
 </grit-part>

@@ -11,6 +11,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import androidx.annotation.ColorInt;
 import androidx.annotation.Px;
 import androidx.annotation.VisibleForTesting;
 
@@ -133,6 +134,13 @@ public class CoBrowseViews {
         if (sheetContentParams.height != height) {
             sheetContentParams.height = height;
             sheetContent.setLayoutParams(sheetContentParams);
+        }
+    }
+
+    /** Sets the background color for the resizing placeholder. */
+    public void setPlaceholderBackgroundColor(@ColorInt int color) {
+        if (mWebUi != null) {
+            mWebUi.setPlaceholderBackgroundColor(color);
         }
     }
 

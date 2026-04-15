@@ -10,6 +10,8 @@ import android.annotation.SuppressLint;
 import android.content.Context;
 import android.view.View;
 
+import androidx.annotation.ColorInt;
+
 import org.chromium.base.ResettersForTesting;
 import org.chromium.base.version_info.VersionInfo;
 import org.chromium.build.annotations.NullMarked;
@@ -98,6 +100,10 @@ public class TabBottomSheetWebUi {
         } else {
             resetThinWebView();
         }
+    }
+
+    void setPlaceholderBackgroundColor(@ColorInt int color) {
+        mWebViewResizingHelper.setPlaceholderBackgroundColor(color);
     }
 
     void setIsResizing(boolean isResizing) {
