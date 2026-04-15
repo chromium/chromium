@@ -72,7 +72,7 @@ bool MidiService::EndSession(MidiManagerClient* client) {
 // MIDIClientCreate starts failing with the OSStatus -50 after repeated calls
 // of MIDIClientDispose. It rarely happens, but once it starts, it will never
 // get back to be sane. See https://crbug.com/718140.
-#if !BUILDFLAG(IS_MAC)
+#if !BUILDFLAG(IS_APPLE)
   if (!manager_->HasOpenSession()) {
     // MidiManager for each platform should be able to shutdown correctly even
     // if following destruction happens in the middle of StartInitialization().
