@@ -322,10 +322,11 @@ class GeneratorFixture {
   }
 
   void set_searchbox_config(base::span<const omnibox::ToolMode> allowed_tools) {
-    mock_aim_eligibility_service_->config()
-        .mutable_rule_set()
-        ->mutable_allowed_tools()
-        ->Assign(allowed_tools.begin(), allowed_tools.end());
+    mock_aim_eligibility_service_->config().clear_tool_configs();
+    for (const auto tool : allowed_tools) {
+      mock_aim_eligibility_service_->config().add_tool_configs()->set_tool(
+          tool);
+    }
   }
 
  private:
