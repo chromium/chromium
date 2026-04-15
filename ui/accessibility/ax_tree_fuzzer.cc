@@ -10,12 +10,6 @@
 #include "testing/libfuzzer/libfuzzer_base_wrappers.h"
 #include "ui/accessibility/ax_tree_observer.h"
 
-class EmptyAXTreeObserver : public ui::AXTreeObserver {
- public:
-  EmptyAXTreeObserver() = default;
-  ~EmptyAXTreeObserver() override = default;
-};
-
 // Entry point for LibFuzzer.
 DEFINE_LLVM_FUZZER_TEST_ONE_INPUT_SPAN(base::span<const uint8_t> data) {
   ui::AXTreeUpdate initial_state;
@@ -46,7 +40,7 @@ DEFINE_LLVM_FUZZER_TEST_ONE_INPUT_SPAN(base::span<const uint8_t> data) {
   // Run with --v=1 to aid in debugging a specific crash.
   VLOG(1) << "Input accessibility tree:\n" << initial_state.ToString();
 
-  EmptyAXTreeObserver observer;
+  ui::AXTreeObserver observer;
   ui::AXTree tree;
   tree.AddObserver(&observer);
   tree.Unserialize(initial_state);

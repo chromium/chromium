@@ -99,24 +99,12 @@ void TestTableAPIs(const ui::AXNode* node) {
     for (int j = 0; j < 3; j++)
       std::ignore = node->GetTableCellFromCoords(i, j);
   // Note: some of the APIs return IDs - we don't care what's
-  // returned, we just want to make sure these APIs don't
-  // crash. Normally |ids| is an out argument only, but
-  // there's no reason we shouldn't be able to pass a vector
-  // that was previously used by another call.
-  std::vector<ui::AXNodeID> ids;
+  // returned, we just want to make sure these APIs don't crash.
   for (int i = 0; i < 3; i++) {
-    std::vector<ui::AXNodeID> col_header_node_ids =
-        node->GetTableColHeaderNodeIds(i);
-    ids.insert(ids.end(), col_header_node_ids.begin(),
-               col_header_node_ids.end());
-
-    std::vector<ui::AXNodeID> row_header_node_ids =
-        node->GetTableRowHeaderNodeIds(i);
-    ids.insert(ids.end(), row_header_node_ids.begin(),
-               row_header_node_ids.end());
+    std::ignore = node->GetTableColHeaderNodeIds(i);
+    std::ignore = node->GetTableRowHeaderNodeIds(i);
   }
-  std::vector<ui::AXNodeID> unique_cell_ids = node->GetTableUniqueCellIds();
-  ids.insert(ids.end(), unique_cell_ids.begin(), unique_cell_ids.end());
+  std::ignore = node->GetTableUniqueCellIds();
 
   std::ignore = node->IsTableRow();
   std::ignore = node->GetTableRowRowIndex();
@@ -132,14 +120,12 @@ void TestTableAPIs(const ui::AXNode* node) {
   std::ignore = node->GetTableCellRowSpan();
   std::ignore = node->GetTableCellAriaColIndex();
   std::ignore = node->GetTableCellAriaRowIndex();
-  std::vector<ui::AXNodeID> cell_col_header_node_ids =
-      node->GetTableCellColHeaderNodeIds();
-  ids.insert(ids.end(), cell_col_header_node_ids.begin(),
-             cell_col_header_node_ids.end());
-  std::vector<ui::AXNodeID> cell_row_header_node_ids =
-      node->GetTableCellRowHeaderNodeIds();
-  ids.insert(ids.end(), cell_row_header_node_ids.begin(),
-             cell_row_header_node_ids.end());
+  std::ignore = node->GetTableCellColHeaderNodeIds();
+  std::ignore = node->GetTableCellRowHeaderNodeIds();
+
+  // Normally |headers| is an out argument only, but there's no reason we
+  // shouldn't be able to pass a vector that was previously used by another
+  // call.
   std::vector<ui::AXNode*> headers;
   node->GetTableCellColHeaders(&headers);
   node->GetTableCellRowHeaders(&headers);
