@@ -318,8 +318,6 @@
 // Sets up the Auto Layout constraints for the App Bar.
 - (void)setupAppBarConstraints {
   UIView* view = self.view;
-  UIView* appBarRealView =
-      [self.layoutGuideCenter referencedViewUnderName:kAppBarGuide];
 
   _portraitConstraints = @[
     [_appContentContainerView.topAnchor constraintEqualToAnchor:view.topAnchor],
@@ -328,7 +326,7 @@
     [_appContentContainerView.trailingAnchor
         constraintEqualToAnchor:view.trailingAnchor],
     [_appContentContainerView.bottomAnchor
-        constraintEqualToAnchor:appBarRealView.topAnchor],
+        constraintEqualToAnchor:view.bottomAnchor],
   ];
   _landscapeLeftConstraints = @[
     [_appContentContainerView.topAnchor constraintEqualToAnchor:view.topAnchor],
