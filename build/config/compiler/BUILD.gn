@@ -598,7 +598,17 @@ config("compiler") {
   # Clang-specific compiler flags setup.
   # ------------------------------------
   if (is_clang) {
+    # Flags for diagnostics.
     cflags += [ "-fcolor-diagnostics" ]
+    if (!is_win) {
+      cflags += [ "-fdiagnostics-show-inlining-chain" ]
+    } else {
+      # Combine after https://github.com/llvm/llvm-project/pull/192241
+      cflags += [ "/clang:-fdiagnostics-show-inlining-chain" ]
+    }
+    if (diagnostics_print_source_range_info && !is_win) {
+      cflags += [ "-fdiagnostics-print-source-range-info" ]
+    }
 
     # Enable -fmerge-all-constants. This used to be the default in clang
     # for over a decade. It makes clang non-conforming, but is fairly safe
@@ -614,10 +624,6 @@ config("compiler") {
       } else {
         cflags += [ "-fno-sized-deallocation" ]
       }
-    }
-
-    if (diagnostics_print_source_range_info && !is_win) {
-      cflags += [ "-fdiagnostics-print-source-range-info" ]
     }
   }
 
@@ -2119,8 +2125,7 @@ config("tot_warnings") {
   # Entries should generally require both is_clang and llvm_force_head_revision,
   # but may have additional constraints as well (e.g. only some OSes)
   if (is_clang && llvm_force_head_revision) {
-    cflags += [
-    ]
+    cflags += []
   }
 }
 
