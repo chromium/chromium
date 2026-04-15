@@ -160,10 +160,9 @@ static void JNI_PaymentRequestTestBridge_SetAppDescriptions(
 
   std::vector<AppDescription> descriptions(app_labels_length);
   for (int i = 0; i < app_labels_length; ++i) {
-    descriptions[i].label = japp_labels.Get(env, i).ConvertTo<std::string>(env);
-    descriptions[i].sublabel =
-        japp_sublabels.Get(env, i).ConvertTo<std::string>(env);
-    descriptions[i].total = japp_totals.Get(env, i).ConvertTo<std::string>(env);
+    descriptions[i].label = japp_labels.GetAs<std::string>(env, i);
+    descriptions[i].sublabel = japp_sublabels.GetAs<std::string>(env, i);
+    descriptions[i].total = japp_totals.GetAs<std::string>(env, i);
   }
 
   auto* callback = reinterpret_cast<SetAppDescriptionsCallback*>(callback_ptr);

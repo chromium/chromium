@@ -77,7 +77,7 @@ JNI_AutofillProviderTestHelper_SimulateMainFrameAutofillServerResponseForTesting
     for (int32_t i = 0; i < field_types_view.GetLength(); ++i) {
       for (auto form_field_data : form_data.fields()) {
         if (form_field_data.id_attribute() ==
-            jfield_ids.Get(env, i).ConvertTo<std::u16string>(env)) {
+            jfield_ids.GetAs<std::u16string>(env, i)) {
           autofill::test::AddFieldPredictionToForm(
               form_field_data,
               static_cast<autofill::FieldType>(field_types_view.Get(i)),
@@ -128,7 +128,7 @@ JNI_AutofillProviderTestHelper_SimulateMainFramePredictionsAutofillServerRespons
     for (int32_t i = 0; i < field_ids_length; ++i) {
       for (auto form_field_data : form_data.fields()) {
         if (form_field_data.id_attribute() ==
-            jfield_ids.Get(env, i).ConvertTo<std::u16string>(env)) {
+            jfield_ids.GetAs<std::u16string>(env, i)) {
           base::android::ScopedJavaLocalRef<JArray<int32_t>>
               field_types_jarray = jfield_types.Get(env, i);
           std::vector<FieldType> field_types = base::ToVector(

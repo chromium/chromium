@@ -106,6 +106,11 @@ struct _JArrayHelper<T> {
 };
 
 template <>
+struct _JArrayHelper<jobject> {
+  using type = _jobjectArray;
+};
+
+template <>
 struct _JArrayHelper<bool> {
   using type = _jbooleanArray;
 };
@@ -357,6 +362,13 @@ class JavaRef : public JavaRef<jobject> {
     requires std::is_same_v<T, jobjectArray>;
 
   template <typename U>
+  U GetAs(JNIEnv* env, int32_t index) const
+    requires std::is_same_v<T, jobjectArray>
+  {
+    return Get(env, index).template ConvertTo<U>(env);
+  }
+
+  template <typename U>
   void CopyTo(JNIEnv* env, std::vector<ScopedJavaLocalRef<U>>* buf) const
     requires std::is_convertible_v<T, jobjectArray>;
 
@@ -397,6 +409,11 @@ class JavaRef<internal::_JObjectArray<T>*> : public JavaRef<jobjectArray> {
   }
 
   ScopedJavaLocalRef<T> Get(JNIEnv* env, int32_t index) const;
+
+  template <typename U>
+  U GetAs(JNIEnv* env, int32_t index) const {
+    return Get(env, index).template ConvertTo<U>(env);
+  }
 
   JArrayView<T> CreateView(JNIEnv* env) const [[clang::lifetimebound]] {
     return JArrayView<T>(env, obj());

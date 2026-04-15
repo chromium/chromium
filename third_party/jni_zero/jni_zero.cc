@@ -37,6 +37,10 @@ static_assert(std::is_same<jlong, int64_t>::value);
 static_assert(std::is_same<jfloat, float>::value);
 static_assert(std::is_same<jdouble, double>::value);
 
+// Make sure our array type aliasing works.
+static_assert(std::is_same<JArray<jobject>, jobjectArray>::value);
+static_assert(std::is_same<JArray<bool>, jbooleanArray>::value);
+
 namespace jni_zero {
 namespace {
 
@@ -167,7 +171,7 @@ void InitVM(JavaVM* vm) {
   // Mark as used when multiplexing not enabled.
   (void)&Java_JniZero_crashIfMultiplexingMisaligned;
 #endif
-  ScopedJavaLocalRef<jobjectArray> globals = JniZeroJni::init(env);
+  ScopedJavaLocalRef<JArray<jobject>> globals = JniZeroJni::init(env);
   jobject empty_list = env->GetObjectArrayElement(globals.obj(), 0);
   jobject empty_map = env->GetObjectArrayElement(globals.obj(), 1);
   jobject jni_class_loader = env->GetObjectArrayElement(globals.obj(), 2);
