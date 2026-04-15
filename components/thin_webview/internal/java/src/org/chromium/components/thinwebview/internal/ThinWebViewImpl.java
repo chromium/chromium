@@ -111,27 +111,25 @@ public class ThinWebViewImpl extends FrameLayout implements ThinWebView {
     public void attachWebContents(
             WebContents webContents,
             @Nullable View contentView,
-            @Nullable WebContentsDelegateAndroid delegate) {
-        attachWebContents(
-                webContents,
-                contentView,
-                delegate,
-                /* contextMenuPopulatorFactory= */ null,
-                /* selectionDropdownMenuDelegate= */ null);
-    }
-
-    @Override
-    public void attachWebContents(
-            WebContents webContents,
-            @Nullable View contentView,
             @Nullable WebContentsDelegateAndroid delegate,
             @Nullable ContextMenuPopulatorFactory contextMenuPopulatorFactory,
-            @Nullable SelectionDropdownMenuDelegate selectionDropdownMenuDelegate) {
+            @Nullable SelectionDropdownMenuDelegate selectionDropdownMenuDelegate,
+            boolean enablePermissionRequests,
+            boolean supportTheming) {
         if (mNativeThinWebViewImpl == 0) return;
+
+        assert !enablePermissionRequests : "Permission requests are not supported yet.";
+
         // Native code holds only a weak reference to this object.
         mWebContentsDelegate = delegate;
         setContentView(contentView);
-        ThinWebViewImplJni.get().setWebContents(mNativeThinWebViewImpl, webContents, delegate);
+        ThinWebViewImplJni.get()
+                .setWebContents(
+                        mNativeThinWebViewImpl,
+                        webContents,
+                        delegate,
+                        enablePermissionRequests,
+                        supportTheming);
 
         // Allow highlighting text.
         SelectionPopupController controller = SelectionPopupController.fromWebContents(webContents);
@@ -200,7 +198,9 @@ public class ThinWebViewImpl extends FrameLayout implements ThinWebView {
         void setWebContents(
                 long nativeThinWebView,
                 WebContents webContents,
-                @Nullable WebContentsDelegateAndroid delegate);
+                @Nullable WebContentsDelegateAndroid delegate,
+                boolean enablePermissionRequests,
+                boolean supportTheming);
 
         void setContextMenuPopulatorFactory(
                 long nativeThinWebView, ContextMenuPopulatorFactory factory);

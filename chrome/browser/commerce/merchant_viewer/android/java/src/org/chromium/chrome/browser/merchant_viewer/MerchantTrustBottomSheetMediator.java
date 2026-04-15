@@ -200,7 +200,14 @@ public class MerchantTrustBottomSheetMediator {
         if ((mWebContentView != null) && (mWebContentView.getParent() != null)) {
             ((ViewGroup) mWebContentView.getParent()).removeView(mWebContentView);
         }
-        thinWebView.attachWebContents(mWebContents, mWebContentView, mWebContentsDelegate);
+        thinWebView.attachWebContents(
+                mWebContents,
+                mWebContentView,
+                mWebContentsDelegate,
+                /* contextMenuPopulatorFactory= */ null,
+                /* selectionDropdownMenuDelegate= */ null,
+                /* enablePermissionRequests= */ false,
+                /* supportTheming= */ false);
     }
 
     // This method should only be used for the first navigation before showing some content in the

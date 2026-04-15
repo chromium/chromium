@@ -118,7 +118,14 @@ public class CreatorTabSheetContent implements BottomSheetContent {
         if (mWebContentView.getParent() != null) {
             ((ViewGroup) mWebContentView.getParent()).removeView(mWebContentView);
         }
-        mThinWebView.attachWebContents(mWebContents, mWebContentView, delegate);
+        mThinWebView.attachWebContents(
+                mWebContents,
+                mWebContentView,
+                delegate,
+                /* contextMenuPopulatorFactory= */ null,
+                /* selectionDropdownMenuDelegate= */ null,
+                /* enablePermissionRequests= */ false,
+                /* supportTheming= */ false);
 
         // Initialize the supplier of {@link ShareDelegate} for the WindowAndroid used by
         // ThinWebView.  The {@link ShareDelegate} itself is not set by design in order to leave

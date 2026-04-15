@@ -10,8 +10,7 @@ namespace content {
 class WebContents;
 }  // namespace content
 
-namespace thin_webview {
-namespace android {
+namespace thin_webview::android {
 
 // A helper class to help in attaching tab helpers and context menu populator.
 class ThinWebViewInitializer {
@@ -26,10 +25,14 @@ class ThinWebViewInitializer {
 
   ~ThinWebViewInitializer() = default;
 
+  // Sets up theming support for the WebContents.
+  virtual void SetUpTheming(content::WebContents* web_contents) = 0;
+
   // Adopts the specified WebContents as a light version of a browser tab,
   // attaching all the associated tab helpers that are needed for the
   // WebContents to serve in that role.
-  virtual void AttachTabHelpers(content::WebContents* web_contents) = 0;
+  virtual void AttachTabHelpers(content::WebContents* web_contents,
+                                bool enable_permission_requests) = 0;
 
   // Set the context menu populator factory for the web contents. This allows
   // the ThinWebView to show a context menu on long press.
@@ -38,7 +41,6 @@ class ThinWebViewInitializer {
       const base::android::JavaRef<jobject>& jpopulator_factory) = 0;
 };
 
-}  // namespace android
-}  // namespace thin_webview
+}  // namespace thin_webview::android
 
 #endif  // COMPONENTS_THIN_WEBVIEW_THIN_WEBVIEW_INITIALIZER_H_

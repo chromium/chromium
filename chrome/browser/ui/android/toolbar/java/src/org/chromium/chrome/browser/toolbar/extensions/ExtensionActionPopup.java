@@ -160,7 +160,9 @@ class ExtensionActionPopup implements Destroyable {
                 mContentView,
                 /* delegate= */ null,
                 contextMenuPopulatorFactory,
-                selectionDropdownMenuDelegate);
+                selectionDropdownMenuDelegate,
+                /* enablePermissionRequests= */ false,
+                /* supportTheming= */ false);
 
         mPopupWindow =
                 new AnchoredPopupWindow(

@@ -289,7 +289,13 @@ public class DocumentPictureInPictureActivity extends AsyncInitializationActivit
                 windowAndroid,
                 WebContents.createDefaultInternalsHolder());
         mThinWebView.attachWebContents(
-                mWebContents, contentView, new DocumentPictureInPictureWebContentsDelegate());
+                mWebContents,
+                contentView,
+                new DocumentPictureInPictureWebContentsDelegate(),
+                /* contextMenuPopulatorFactory= */ null,
+                /* selectionDropdownMenuDelegate= */ null,
+                /* enablePermissionRequests= */ false,
+                /* supportTheming= */ false);
 
         Context context =
                 NightModeUtils.wrapContextWithNightModeConfig(

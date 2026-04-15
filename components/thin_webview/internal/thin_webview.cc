@@ -19,8 +19,7 @@
 using base::android::JavaRef;
 using web_contents_delegate_android::WebContentsDelegateAndroid;
 
-namespace thin_webview {
-namespace android {
+namespace thin_webview::android {
 
 static int64_t JNI_ThinWebViewImpl_Init(
     JNIEnv* env,
@@ -60,21 +59,25 @@ void ThinWebView::PrimaryPageChanged(content::Page& page) {
   }
 }
 
-void ThinWebView::SetWebContents(
-    JNIEnv* env,
-    const JavaRef<jobject>& jweb_contents,
-    const JavaRef<jobject>& jweb_contents_delegate) {
+void ThinWebView::SetWebContents(JNIEnv* env,
+                                 const JavaRef<jobject>& jweb_contents,
+                                 const JavaRef<jobject>& jweb_contents_delegate,
+                                 bool enable_permission_requests,
+                                 bool support_theming) {
   content::WebContents* web_contents =
       content::WebContents::FromJavaWebContents(jweb_contents);
   WebContentsDelegateAndroid* delegate =
       jweb_contents_delegate.is_null()
           ? nullptr
           : new WebContentsDelegateAndroid(env, jweb_contents_delegate);
-  SetWebContents(web_contents, delegate);
+  SetWebContents(web_contents, delegate, enable_permission_requests,
+                 support_theming);
 }
 
 void ThinWebView::SetWebContents(content::WebContents* web_contents,
-                                 WebContentsDelegateAndroid* delegate) {
+                                 WebContentsDelegateAndroid* delegate,
+                                 bool enable_permission_requests,
+                                 bool support_theming) {
   DCHECK(web_contents);
   Observe(web_contents);
   web_contents_ = web_contents->GetWeakPtr();
@@ -85,12 +88,19 @@ void ThinWebView::SetWebContents(content::WebContents* web_contents,
 
   compositor_view_->SetRootLayer(web_contents_->GetNativeView()->GetLayer());
   ResizeWebContents(view_size_);
+
+  if (support_theming) {
+    ThinWebViewInitializer::GetInstance()->SetUpTheming(web_contents);
+    web_contents->OnWebPreferencesChanged();
+  }
+
   web_contents_delegate_.reset(delegate);
   if (delegate) {
     web_contents->SetDelegate(delegate);
   }
 
-  ThinWebViewInitializer::GetInstance()->AttachTabHelpers(web_contents);
+  ThinWebViewInitializer::GetInstance()->AttachTabHelpers(
+      web_contents, enable_permission_requests);
 }
 
 void ThinWebView::SetContextMenuPopulatorFactory(
@@ -122,7 +132,6 @@ void ThinWebView::ResizeWebContents(const gfx::Size& size) {
   web_contents_->GetNativeView()->OnSizeChanged(size.width(), size.height());
 }
 
-}  // namespace android
-}  // namespace thin_webview
+}  // namespace thin_webview::android
 
 DEFINE_JNI(ThinWebViewImpl)

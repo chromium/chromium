@@ -33,6 +33,7 @@ android_library("java") {
     "//chrome/browser/ui/side_panel_container/public:java",
     "//chrome/browser/ui/side_ui/public:java",
     "//components/embedder_support/android:content_view_java",
+    "//components/embedder_support/android:context_menu_java",
     "//components/embedder_support/android:web_contents_delegate_java",
     "//components/thin_webview:factory_java",
     "//components/thin_webview:java",

@@ -163,7 +163,13 @@ public class MerchantTrustBottomSheetMediatorTest {
         verify(mMockWebContents, times(1)).addObserver(mWebContentsObserverCaptor.capture());
         verify(mMockThinWebView, times(1))
                 .attachWebContents(
-                        eq(mMockWebContents), eq(null), mWebContentsDelegateCaptor.capture());
+                        eq(mMockWebContents),
+                        eq(null),
+                        mWebContentsDelegateCaptor.capture(),
+                        eq(null),
+                        eq(null),
+                        eq(false),
+                        eq(false));
     }
 
     @Test

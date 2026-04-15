@@ -19,8 +19,7 @@ namespace web_contents_delegate_android {
 class WebContentsDelegateAndroid;
 }  // namespace web_contents_delegate_android
 
-namespace thin_webview {
-namespace android {
+namespace thin_webview::android {
 
 // Native counterpart of ThinWebViewImpl.java.
 class ThinWebView : public content::WebContentsObserver {
@@ -40,7 +39,9 @@ class ThinWebView : public content::WebContentsObserver {
   void SetWebContents(
       JNIEnv* env,
       const base::android::JavaRef<jobject>& jweb_contents,
-      const base::android::JavaRef<jobject>& jweb_contents_delegate);
+      const base::android::JavaRef<jobject>& jweb_contents_delegate,
+      bool enable_permission_requests,
+      bool support_theming);
 
   void SetContextMenuPopulatorFactory(
       JNIEnv* env,
@@ -54,7 +55,9 @@ class ThinWebView : public content::WebContentsObserver {
 
   void SetWebContents(
       content::WebContents* web_contents,
-      web_contents_delegate_android::WebContentsDelegateAndroid* delegate);
+      web_contents_delegate_android::WebContentsDelegateAndroid* delegate,
+      bool enable_permission_requests,
+      bool support_theming);
   void ResizeWebContents(const gfx::Size& size);
 
   base::android::ScopedJavaGlobalRef<jobject> obj_;
@@ -66,7 +69,6 @@ class ThinWebView : public content::WebContentsObserver {
   base::WeakPtr<content::WebContents> web_contents_;
 };
 
-}  // namespace android
-}  // namespace thin_webview
+}  // namespace thin_webview::android
 
 #endif  // COMPONENTS_THIN_WEBVIEW_INTERNAL_THIN_WEBVIEW_H_

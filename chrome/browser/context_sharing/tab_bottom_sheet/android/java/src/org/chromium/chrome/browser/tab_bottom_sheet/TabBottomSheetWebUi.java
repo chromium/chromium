@@ -91,7 +91,9 @@ public class TabBottomSheetWebUi {
                     contentView,
                     new WebContentsDelegateAndroid() {},
                     mContextMenuPopulatorFactory,
-                    /* selectionDropdownMenuDelegate= */ null);
+                    /* selectionDropdownMenuDelegate= */ null,
+                    /* enablePermissionRequests= */ false,
+                    /* supportTheming= */ false);
         } else {
             resetThinWebView();
         }

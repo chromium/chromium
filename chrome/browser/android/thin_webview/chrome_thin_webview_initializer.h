@@ -7,8 +7,7 @@
 
 #include "components/thin_webview/thin_webview_initializer.h"
 
-namespace thin_webview {
-namespace android {
+namespace thin_webview::android {
 
 // A helper class to help in attaching tab helpers.
 class ChromeThinWebViewInitializer : public ThinWebViewInitializer {
@@ -23,14 +22,16 @@ class ChromeThinWebViewInitializer : public ThinWebViewInitializer {
 
   ~ChromeThinWebViewInitializer() = default;
 
-  void AttachTabHelpers(content::WebContents* web_contents) override;
+  void SetUpTheming(content::WebContents* web_contents) override;
+
+  void AttachTabHelpers(content::WebContents* web_contents,
+                        bool enable_permission_requests) override;
 
   void SetContextMenuPopulatorFactory(
       content::WebContents* web_contents,
       const base::android::JavaRef<jobject>& jpopulator_factory) override;
 };
 
-}  // namespace android
-}  // namespace thin_webview
+}  // namespace thin_webview::android
 
 #endif  // CHROME_BROWSER_ANDROID_THIN_WEBVIEW_CHROME_THIN_WEBVIEW_INITIALIZER_H_

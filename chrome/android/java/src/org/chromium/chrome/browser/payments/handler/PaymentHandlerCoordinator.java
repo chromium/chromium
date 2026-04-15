@@ -144,7 +144,14 @@ public class PaymentHandlerCoordinator {
                 ThinWebViewFactory.create(
                         activity, new ThinWebViewConstraints(), intentRequestTracker);
         assert webContentView.getParent() == null;
-        thinWebView.attachWebContents(mPaymentHandlerWebContents, webContentView, null);
+        thinWebView.attachWebContents(
+                mPaymentHandlerWebContents,
+                webContentView,
+                null,
+                /* contextMenuPopulatorFactory= */ null,
+                /* selectionDropdownMenuDelegate= */ null,
+                /* enablePermissionRequests= */ false,
+                /* supportTheming= */ false);
         PaymentHandlerView view =
                 new PaymentHandlerView(
                         activity,

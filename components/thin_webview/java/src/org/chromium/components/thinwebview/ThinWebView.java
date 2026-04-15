@@ -34,30 +34,19 @@ public interface ThinWebView {
      * @param delegate A {@link WebContentsDelegateAndroid} responding to requests on WebContents.
      *     This is recommended for the WebContents created explicitly for ThisWebView, in case it
      *     needs one.
-     */
-    void attachWebContents(
-            WebContents webContents,
-            @Nullable View contentView,
-            @Nullable WebContentsDelegateAndroid delegate);
-
-    /**
-     * Method to be called to display the contents of a {@link WebContents} on the surface. The user
-     * interactability is provided through the {@code contentView}.
-     *
-     * @param webContents A {@link WebContents} for providing the contents to be rendered.
-     * @param contentView A {@link ContentView} that can handle user inputs.
-     * @param delegate A {@link WebContentsDelegateAndroid} responding to requests on WebContents.
-     *     This is recommended for the WebContents created explicitly for ThisWebView, in case it
-     *     needs one.
      * @param contextMenuPopulatorFactory A {@link ContextMenuPopulatorFactory} required to display
      *     the long press context menu.
+     * @param enablePermissionRequests Whether to enable permission requests.
+     * @param supportTheming Whether to support theming (e.g. night mode).
      */
     void attachWebContents(
             WebContents webContents,
             @Nullable View contentView,
             @Nullable WebContentsDelegateAndroid delegate,
             @Nullable ContextMenuPopulatorFactory contextMenuPopulatorFactory,
-            @Nullable SelectionDropdownMenuDelegate selectionDropdownMenuDelegate);
+            @Nullable SelectionDropdownMenuDelegate selectionDropdownMenuDelegate,
+            boolean enablePermissionRequests,
+            boolean supportTheming);
 
     /**
      * Sets opacity for the view. {@link ThinWebViewConstraints#supportsOpacity} must be true for
