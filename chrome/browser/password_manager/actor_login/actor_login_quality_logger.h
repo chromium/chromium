@@ -32,6 +32,11 @@ class ActorLoginQualityLogger
   void SetGetCredentialsDetails(
       optimization_guide::proto::ActorLoginQuality_GetCredentialsDetails
           get_credentials_details) override;
+
+  void SetFederatedGetCredentialsDetails(
+      optimization_guide::proto::
+          ActorLoginQuality_FederatedGetCredentialsDetails
+              federated_get_credentials_details) override;
   void AddAttemptLoginDetails(
       optimization_guide::proto::ActorLoginQuality_AttemptLoginDetails
           attempt_login_details) override;

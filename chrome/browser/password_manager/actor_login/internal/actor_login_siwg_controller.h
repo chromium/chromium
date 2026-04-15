@@ -10,7 +10,6 @@
 #include <vector>
 
 #include "base/memory/weak_ptr.h"
-#include "base/time/time.h"
 #include "chrome/browser/password_manager/actor_login/internal/actor_login_metrics_helper.h"
 #include "chrome/browser/password_manager/actor_login/internal/siwg_button_finder.h"
 #include "chrome/common/actor.mojom-forward.h"
@@ -18,6 +17,7 @@
 #include "components/autofill/core/common/mojom/autofill_types.mojom-forward.h"
 #include "components/optimization_guide/content/browser/page_content_proto_provider.h"
 #include "components/password_manager/core/browser/actor_login/actor_login_permission_service.h"
+#include "components/password_manager/core/browser/actor_login/actor_login_quality_logger_interface.h"
 #include "components/password_manager/core/browser/actor_login/actor_login_types.h"
 #include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/web_contents_observer.h"
@@ -60,7 +60,9 @@ class ActorLoginSiwgController : public content::WebContentsObserver {
       bool should_store_permission,
       ActorLoginPermissionService& permission_service,
       LoginStatusResultOrErrorReply on_finished_callback,
-      base::WeakPtr<ActionSequenceDelegate> action_sequence_delegate);
+      base::WeakPtr<ActionSequenceDelegate> action_sequence_delegate,
+      base::WeakPtr<ActorLoginQualityLoggerInterface> mqls_logger,
+      base::TimeTicks attempt_login_tool_start_time);
   ActorLoginSiwgController(
       content::WebContents* web_contents,
       const Credential& credential,
@@ -68,7 +70,9 @@ class ActorLoginSiwgController : public content::WebContentsObserver {
       bool should_store_permission,
       ActorLoginPermissionService& permission_service,
       LoginStatusResultOrErrorReply on_finished_callback,
-      base::WeakPtr<ActionSequenceDelegate> action_sequence_delegate);
+      base::WeakPtr<ActionSequenceDelegate> action_sequence_delegate,
+      base::WeakPtr<ActorLoginQualityLoggerInterface> mqls_logger,
+      base::TimeTicks attempt_login_tool_start_time);
   ~ActorLoginSiwgController() override;
 
   // Not copyable or movable.
@@ -86,6 +90,10 @@ class ActorLoginSiwgController : public content::WebContentsObserver {
   // Starts the detection process for SiwG buttons on the current page and
   // clicks the first one found.
   void ClickSiwgButton();
+
+  // Informs the controller about the success of a button click triggered by
+  // the actor framework.
+  void OnButtonClickCompleted(bool success);
 
  private:
   void OnPageContentReceived(
@@ -113,6 +121,8 @@ class ActorLoginSiwgController : public content::WebContentsObserver {
       std::unique_ptr<ActorLoginMetricsHelper> metrics_helper,
       content::webid::FederatedLoginResult result);
 
+  void LogFederatedLoginResult(content::webid::FederatedLoginResult result);
+
   GetPageContentProvider get_page_content_provider_;
   std::unique_ptr<SiwgButtonFinder> siwg_finder_;
   // Invoked once the actions taken by this class to advance the login are
@@ -132,6 +142,13 @@ class ActorLoginSiwgController : public content::WebContentsObserver {
   // SiwG button was found. Keeps the remote alive for the duration of the click
   // action.
   mojo::AssociatedRemote<chrome::mojom::ChromeRenderFrame> chrome_render_frame_;
+
+  // Details of the current federated login attempt.
+  optimization_guide::proto::ActorLoginQuality_AttemptLoginDetails
+      federated_attempt_login_details_;
+
+  base::WeakPtr<ActorLoginQualityLoggerInterface> mqls_logger_;
+  base::TimeTicks attempt_login_tool_start_time_;
 
   base::WeakPtrFactory<ActorLoginSiwgController> weak_ptr_factory_{this};
 };

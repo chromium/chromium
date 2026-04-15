@@ -25,13 +25,20 @@ constexpr char kSupportedIdentityProvider[] =
 ActorLoginFederatedCredentialsFetcher::ActorLoginFederatedCredentialsFetcher(
     const url::Origin& request_origin,
     IdentityCredentialSourceCallback get_source_callback,
-    ActorLoginPermissionService& permission_service)
+    ActorLoginPermissionService& permission_service,
+    base::WeakPtr<ActorLoginQualityLoggerInterface> mqls_logger)
     : request_origin_(request_origin),
       get_source_callback_(std::move(get_source_callback)),
-      permission_service_(permission_service) {}
+      permission_service_(permission_service),
+      mqls_logger_(std::move(mqls_logger)) {}
 
 ActorLoginFederatedCredentialsFetcher::
-    ~ActorLoginFederatedCredentialsFetcher() = default;
+    ~ActorLoginFederatedCredentialsFetcher() {
+  if (mqls_logger_) {
+    mqls_logger_->SetFederatedGetCredentialsDetails(
+        std::move(get_credentials_logs_));
+  }
+}
 
 void ActorLoginFederatedCredentialsFetcher::Fetch(
     FetchResultCallback callback) {
@@ -76,7 +83,8 @@ void ActorLoginFederatedCredentialsFetcher::Fetch(
       request_origin_,
       base::BindOnce(
           &ActorLoginFederatedCredentialsFetcher::OnGetPermissionsCompleted,
-          weak_ptr_factory_.GetWeakPtr(), barrier_callback));
+          weak_ptr_factory_.GetWeakPtr(), barrier_callback,
+          base::TimeTicks::Now()));
 }
 
 void ActorLoginFederatedCredentialsFetcher::SetMetricsHelper(
@@ -129,7 +137,10 @@ void ActorLoginFederatedCredentialsFetcher::OnGetIdentityCredentialSuggestions(
 
 void ActorLoginFederatedCredentialsFetcher::OnGetPermissionsCompleted(
     base::RepeatingCallback<void(FetchResultVariant)> barrier_callback,
+    base::TimeTicks list_permissions_start_time,
     std::vector<FederatedPermission> permissions) {
+  get_credentials_logs_.set_list_permissions_call_time_ms(
+      (base::TimeTicks::Now() - list_permissions_start_time).InMilliseconds());
   barrier_callback.Run(std::move(permissions));
 }
 
@@ -158,6 +169,13 @@ void ActorLoginFederatedCredentialsFetcher::OnFetchComplete(
       }
     }
   }
+
+  get_credentials_logs_.set_outcome(
+      credentials.empty()
+          ? optimization_guide::proto::
+                ActorLoginQuality_FederatedGetCredentialsDetails_FederatedGetCredentialsOutcome_NO_CREDENTIALS
+          : optimization_guide::proto::
+                ActorLoginQuality_FederatedGetCredentialsDetails_FederatedGetCredentialsOutcome_CREDENTIALS_FOUND);
 
   base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,

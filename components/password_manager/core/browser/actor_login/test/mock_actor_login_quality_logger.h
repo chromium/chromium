@@ -26,6 +26,11 @@ class MockActorLoginQualityLogger : public ActorLoginQualityLoggerInterface {
       SetGetCredentialsDetails,
       (optimization_guide::proto::ActorLoginQuality_GetCredentialsDetails),
       (override));
+  MOCK_METHOD(void,
+              SetFederatedGetCredentialsDetails,
+              (optimization_guide::proto::
+                   ActorLoginQuality_FederatedGetCredentialsDetails),
+              (override));
   MOCK_METHOD(
       void,
       AddAttemptLoginDetails,

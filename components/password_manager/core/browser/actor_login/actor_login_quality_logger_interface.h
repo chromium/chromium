@@ -31,6 +31,11 @@ class ActorLoginQualityLoggerInterface {
       optimization_guide::proto::ActorLoginQuality_GetCredentialsDetails
           get_credentials_details) = 0;
 
+  virtual void SetFederatedGetCredentialsDetails(
+      optimization_guide::proto::
+          ActorLoginQuality_FederatedGetCredentialsDetails
+              federated_get_credentials_details) = 0;
+
   virtual void AddAttemptLoginDetails(
       optimization_guide::proto::ActorLoginQuality_AttemptLoginDetails
           attempt_login_details) = 0;

@@ -159,7 +159,7 @@ void ActorLoginDelegateImpl::GetCredentials(
                       web_contents->GetPrimaryPage());
                 },
                 GetWebContents().GetWeakPtr()),
-            *permission_service);
+            *permission_service, mqls_logger);
     federated_fetcher->SetMetricsHelper(metrics_helper_.get());
     fetchers.push_back(std::move(federated_fetcher));
   }
@@ -240,7 +240,7 @@ void ActorLoginDelegateImpl::AttemptLogin(
         base::BindPostTaskToCurrentDefault(
             base::BindOnce(&ActorLoginDelegateImpl::OnAttemptLoginCompleted,
                            weak_ptr_factory_.GetWeakPtr())),
-        action_sequence_delegate_);
+        action_sequence_delegate_, mqls_logger, attempt_login_tool_start_time);
     siwg_controller_->StartFederatedLogin(std::move(metrics_helper_));
     return;
   }
@@ -388,6 +388,7 @@ void ActorLoginDelegateImpl::ProcessFederatedResult(
 
 void ActorLoginDelegateImpl::OnActionSequenceEnded(bool success) {
   bool should_store_permission = siwg_controller_->should_store_permission();
+  siwg_controller_->OnButtonClickCompleted(success);
   siwg_controller_.reset();
   action_sequence_subscription_ = {};
   if (last_attempted_credential_->type != CredentialType::kFederated) {

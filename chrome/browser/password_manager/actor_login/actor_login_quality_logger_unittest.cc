@@ -125,6 +125,93 @@ TEST_F(ActorLoginQualityLoggerTest, SetsGetCredentialsDetails) {
   VerifyUniqueLogDetails(logs_uploader_->uploaded_logs(), expected_details);
 }
 
+TEST_F(ActorLoginQualityLoggerTest, SetsFederatedGetCredentialsDetails) {
+  ActorLoginQualityLogger logger;
+
+  optimization_guide::proto::ActorLoginQuality_FederatedGetCredentialsDetails
+      federated_details;
+  federated_details.set_outcome(
+      optimization_guide::proto::
+          ActorLoginQuality_FederatedGetCredentialsDetails_FederatedGetCredentialsOutcome_CREDENTIALS_FOUND);
+  federated_details.set_list_permissions_call_time_ms(123);
+
+  logger.SetFederatedGetCredentialsDetails(federated_details);
+
+  GetCredentialsDetails get_credentials_details =
+      logger.get_log_data().get_credentials_details();
+
+  EXPECT_THAT(get_credentials_details.federated_get_credentials_details(),
+              ProtoEquals(federated_details));
+}
+
+TEST_F(ActorLoginQualityLoggerTest,
+       SetsFederatedGetCredentialsDetailsDoesNotOverridePasswordDetails) {
+  ActorLoginQualityLogger logger;
+
+  GetCredentialsDetails password_details;
+  password_details.set_outcome(
+      optimization_guide::proto::
+          ActorLoginQuality_GetCredentialsDetails_GetCredentialsOutcome_NO_SIGN_IN_FORM);
+  password_details.set_permission_details(
+      optimization_guide::proto::
+          ActorLoginQuality_GetCredentialsDetails_PermissionDetails_HAS_PERMANENT_PERMISSION);
+  password_details.set_getting_credentials_time_ms(5);
+  logger.SetGetCredentialsDetails(password_details);
+
+  optimization_guide::proto::ActorLoginQuality_FederatedGetCredentialsDetails
+      federated_details;
+  federated_details.set_outcome(
+      optimization_guide::proto::
+          ActorLoginQuality_FederatedGetCredentialsDetails_FederatedGetCredentialsOutcome_CREDENTIALS_FOUND);
+  federated_details.set_list_permissions_call_time_ms(123);
+  logger.SetFederatedGetCredentialsDetails(federated_details);
+
+  GetCredentialsDetails get_credentials_details =
+      logger.get_log_data().get_credentials_details();
+
+  EXPECT_EQ(get_credentials_details.outcome(), password_details.outcome());
+  EXPECT_EQ(get_credentials_details.permission_details(),
+            password_details.permission_details());
+  EXPECT_EQ(get_credentials_details.getting_credentials_time_ms(),
+            password_details.getting_credentials_time_ms());
+  EXPECT_THAT(get_credentials_details.federated_get_credentials_details(),
+              ProtoEquals(federated_details));
+}
+
+TEST_F(ActorLoginQualityLoggerTest,
+       SetsGetCredentialsDetailsDoesNotOverrideFederatedDetails) {
+  ActorLoginQualityLogger logger;
+
+  optimization_guide::proto::ActorLoginQuality_FederatedGetCredentialsDetails
+      federated_details;
+  federated_details.set_outcome(
+      optimization_guide::proto::
+          ActorLoginQuality_FederatedGetCredentialsDetails_FederatedGetCredentialsOutcome_CREDENTIALS_FOUND);
+  federated_details.set_list_permissions_call_time_ms(123);
+  logger.SetFederatedGetCredentialsDetails(federated_details);
+
+  GetCredentialsDetails password_details;
+  password_details.set_outcome(
+      optimization_guide::proto::
+          ActorLoginQuality_GetCredentialsDetails_GetCredentialsOutcome_NO_SIGN_IN_FORM);
+  password_details.set_permission_details(
+      optimization_guide::proto::
+          ActorLoginQuality_GetCredentialsDetails_PermissionDetails_HAS_PERMANENT_PERMISSION);
+  password_details.set_getting_credentials_time_ms(5);
+  logger.SetGetCredentialsDetails(password_details);
+
+  GetCredentialsDetails get_credentials_details =
+      logger.get_log_data().get_credentials_details();
+
+  EXPECT_EQ(get_credentials_details.outcome(), password_details.outcome());
+  EXPECT_EQ(get_credentials_details.permission_details(),
+            password_details.permission_details());
+  EXPECT_EQ(get_credentials_details.getting_credentials_time_ms(),
+            password_details.getting_credentials_time_ms());
+  EXPECT_THAT(get_credentials_details.federated_get_credentials_details(),
+              ProtoEquals(federated_details));
+}
+
 TEST_F(ActorLoginQualityLoggerTest, SetsDomainAndLanguage) {
   ActorLoginQualityLogger logger;
 
