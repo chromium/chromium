@@ -75,6 +75,17 @@ public class ActorOverlayPTTest {
                 .enterFacility(new SnackbarFacility<>(null, SnackbarFacility.NO_BUTTON));
     }
 
+    @Test
+    @MediumTest
+    @EnableFeatures(ChromeFeatureList.GLIC)
+    public void testBackPressShowsSnackbar() {
+        WebPageStation page = mActivityTestRule.startOnBlankPage();
+        showOverlay(true);
+
+        // Press back and wait for the snackbar to appear.
+        page.pressBackTo().enterFacility(new SnackbarFacility<>(null, SnackbarFacility.NO_BUTTON));
+    }
+
     private void showOverlay(boolean visible) {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {

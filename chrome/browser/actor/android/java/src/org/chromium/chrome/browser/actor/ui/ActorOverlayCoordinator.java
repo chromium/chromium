@@ -15,6 +15,8 @@ import org.chromium.chrome.browser.tab.TabObscuringHandler;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.ui.messages.snackbar.Snackbar;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
+import org.chromium.components.browser_ui.widget.gesture.BackPressHandler;
+import org.chromium.components.browser_ui.widget.gesture.BackPressHandlerRegistry;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 
@@ -26,6 +28,7 @@ public class ActorOverlayCoordinator {
     private final PropertyModel mModel;
     private final PropertyModelChangeProcessor mChangeProcessor;
     private final SnackbarManager mSnackbarManager;
+    private final BackPressHandlerRegistry mBackPressHandlerRegistry;
 
     /**
      * Constructs the Coordinator.
@@ -35,6 +38,7 @@ public class ActorOverlayCoordinator {
      * @param browserControlsVisibilityManager The BrowserControlsVisibilityManager to observe.
      * @param tabObscuringHandler The TabObscuringHandler to obscure the web content.
      * @param snackbarManager The SnackbarManager to show the snackbar.
+     * @param backPressHandlerRegistry The BackPressHandlerRegistry to handle back press.
      * @param layoutManagerSupplier The LayoutManager supplier to observe layout changes.
      */
     public ActorOverlayCoordinator(
@@ -43,9 +47,11 @@ public class ActorOverlayCoordinator {
             BrowserControlsVisibilityManager browserControlsVisibilityManager,
             TabObscuringHandler tabObscuringHandler,
             SnackbarManager snackbarManager,
+            BackPressHandlerRegistry backPressHandlerRegistry,
             MonotonicObservableSupplier<LayoutManager> layoutManagerSupplier) {
         mView = (ActorOverlayView) viewStub.inflate();
         mSnackbarManager = snackbarManager;
+        mBackPressHandlerRegistry = backPressHandlerRegistry;
 
         mModel =
                 new PropertyModel.Builder(ActorOverlayProperties.ALL_KEYS)
@@ -64,10 +70,16 @@ public class ActorOverlayCoordinator {
                         tabModelSelector,
                         browserControlsVisibilityManager,
                         tabObscuringHandler,
-                        layoutManagerSupplier);
+                        layoutManagerSupplier,
+                        this::showInteractionLimitedSnackbar);
+        mBackPressHandlerRegistry.addHandler(mMediator, BackPressHandler.Type.ACTOR_OVERLAY);
     }
 
     private void handleOnClick() {
+        showInteractionLimitedSnackbar();
+    }
+
+    private void showInteractionLimitedSnackbar() {
         if (mSnackbarManager.isShowing()) return;
 
         Snackbar snackbar =
@@ -100,6 +112,7 @@ public class ActorOverlayCoordinator {
 
     /** Cleans up the coordinator. */
     public void destroy() {
+        mBackPressHandlerRegistry.removeHandler(mMediator);
         mMediator.destroy();
         mChangeProcessor.destroy();
     }

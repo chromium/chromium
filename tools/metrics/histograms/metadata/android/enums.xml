@@ -874,6 +874,7 @@ chromium-metrics-reviews@google.com.
   <int value="23" label="(20) NATIVE_PAGE"/>
   <int value="24" label="(12) CANCEL_TAB_STRIP_DRAG"/>
   <int value="25" label="(04) CANCEL_TAB_SWITCHER_DRAG"/>
+  <int value="26" label="(05) ACTOR_OVERLAY"/>
 </enum>
 
 <!-- LINT.IfChange(BackPressTabCloseType) -->

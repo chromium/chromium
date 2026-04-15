@@ -28,6 +28,7 @@ import org.chromium.base.test.BaseActivityTestRule;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.browser.actor.R;
+import org.chromium.components.browser_ui.widget.gesture.BackPressHandlerRegistry;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsVisibilityManager;
 import org.chromium.chrome.browser.browser_controls.BrowserStateBrowserControlsVisibilityDelegate;
@@ -60,6 +61,7 @@ public class ActorOverlayViewRenderTest {
 
     @Mock private TabModelSelector mTabModelSelector;
     @Mock private SnackbarManager mSnackbarManager;
+    @Mock private BackPressHandlerRegistry mBackPressHandlerRegistry;
     @Mock private LayoutManager mLayoutManager;
     private TestBrowserControlsVisibilityManager mBrowserControlsVisibilityManager;
 
@@ -103,6 +105,7 @@ public class ActorOverlayViewRenderTest {
                                     mBrowserControlsVisibilityManager,
                                     mTabObscuringHandler,
                                     mSnackbarManager,
+                                    mBackPressHandlerRegistry,
                                     mLayoutManagerSupplier);
                 });
     }
