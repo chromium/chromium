@@ -2,28 +2,18 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include <map>
-
-#include "base/callback_list.h"
 #include "base/check_deref.h"
-#include "base/task/sequenced_task_runner.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/autocomplete/aim_eligibility_service_factory.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_panel_controller.h"
-#include "chrome/browser/contextual_tasks/contextual_tasks_service_factory.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_side_panel_coordinator.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_ui.h"
-#include "chrome/browser/contextual_tasks/contextual_tasks_ui_service.h"
-#include "chrome/browser/contextual_tasks/contextual_tasks_ui_service_factory.h"
-#include "chrome/browser/contextual_tasks/contextual_tasks_utils.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
-#include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/contextual_search/tab_contextualization_controller.h"
 #include "chrome/browser/ui/lens/lens_overlay_controller.h"
 #include "chrome/browser/ui/lens/lens_overlay_side_panel_coordinator.h"
 #include "chrome/browser/ui/lens/lens_overlay_wait_for_paint_utils.h"
@@ -34,10 +24,7 @@
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/contextual_search/contextual_search_types.h"
 #include "components/contextual_search/internal/composebox_query_controller.h"
-#include "components/contextual_search/mock_contextual_search_session_handle.h"
 #include "components/contextual_tasks/public/features.h"
-#include "components/contextual_tasks/public/mock_contextual_tasks_service.h"
-#include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/lens/lens_features.h"
 #include "components/lens/lens_overlay_invocation_source.h"
 #include "components/lens/lens_overlay_permission_utils.h"
@@ -45,9 +32,6 @@
 #include "components/prefs/pref_service.h"
 #include "components/search_engines/template_url.h"
 #include "components/search_engines/template_url_service.h"
-#include "components/sessions/content/session_tab_helper.h"
-#include "components/signin/public/identity_manager/identity_manager.h"
-#include "content/public/browser/web_contents_observer.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/test_navigation_observer.h"
@@ -58,138 +42,6 @@
 #include "ui/views/view_utils.h"
 
 namespace {
-
-GURL g_test_server_url;
-
-class TestingContextualTasksUiService
-    : public contextual_tasks::ContextualTasksUiService,
-      public content::WebContentsObserver {
- public:
-  TestingContextualTasksUiService(
-      Profile* profile,
-      contextual_tasks::ContextualTasksService* contextual_tasks_service,
-      signin::IdentityManager* identity_manager,
-      AimEligibilityService* aim_eligibility_service)
-      : ContextualTasksUiService(profile,
-                                 /*delegate=*/nullptr,
-                                 contextual_tasks_service,
-                                 identity_manager,
-                                 aim_eligibility_service),
-        profile_(profile),
-        contextual_tasks_service_(contextual_tasks_service) {}
-  ~TestingContextualTasksUiService() override = default;
-
-  void Shutdown() override {
-    stub_web_contents_ = nullptr;
-    contextual_tasks::ContextualTasksUiService::Shutdown();
-  }
-
-  bool CookieJarContainsPrimaryAccount() override {
-    return cookie_jar_contains_primary_account_;
-  }
-
-  void SetCookieJarContainsPrimaryAccount(bool contains) {
-    cookie_jar_contains_primary_account_ = contains;
-  }
-
-  void StartTaskUiInSidePanel(
-      BrowserWindowInterface* browser_window_interface,
-      tabs::TabInterface* tab_interface,
-      const GURL& url,
-      std::unique_ptr<contextual_search::ContextualSearchSessionHandle>
-          session_handle) override {
-    is_panel_open_ = true;
-    if (!stub_web_contents_) {
-      content::WebContents::CreateParams params(profile_);
-      auto web_contents = content::WebContents::Create(params);
-      stub_web_contents_ = web_contents.get();
-      Observe(stub_web_contents_);
-      Browser* browser = static_cast<Browser*>(browser_window_interface);
-      browser->tab_strip_model()->AppendWebContents(std::move(web_contents),
-                                                    /*foreground=*/false);
-    }
-    std::string webui_url = "chrome://contextual-tasks/?aimUrl=" + url.spec();
-    stub_web_contents_->GetController().LoadURL(
-        GURL(webui_url), content::Referrer(), ui::PAGE_TRANSITION_LINK,
-        std::string());
-  }
-
-  content::WebContents* stub_web_contents() { return stub_web_contents_.get(); }
-
-  void StartTaskUiInSidePanelWithErrorPage(
-      BrowserWindowInterface* browser_window_interface,
-      tabs::TabInterface* tab_interface,
-      std::unique_ptr<contextual_search::ContextualSearchSessionHandle>
-          session_handle) override {
-    is_panel_open_ = true;
-    session_handle_ = std::move(session_handle);
-
-    auto web_contents = content::WebContents::Create(
-        content::WebContents::CreateParams(profile_));
-    stub_web_contents_ = web_contents.get();
-    Observe(stub_web_contents_);
-    Browser* browser = static_cast<Browser*>(browser_window_interface);
-    browser->tab_strip_model()->AppendWebContents(std::move(web_contents),
-                                                  /*foreground=*/false);
-    stub_web_contents_->GetController().LoadURL(
-        GURL("about:blank"), content::Referrer(), ui::PAGE_TRANSITION_LINK,
-        std::string());
-
-    if (contextual_tasks_service_ && tab_interface) {
-      auto task = contextual_tasks_service_->CreateTask();
-      pending_error_page_task_id_ = task.GetTaskId();
-      SessionID session_id =
-          sessions::SessionTabHelper::IdForTab(tab_interface->GetContents());
-      if (session_id.is_valid()) {
-        contextual_tasks_service_->AssociateTabWithTask(task.GetTaskId(),
-                                                        session_id);
-      }
-    }
-
-    contextual_tasks::RecordErrorPageShown(
-        contextual_search::ContextualSearchSource::kLens);
-
-    auto* controller = contextual_tasks::ContextualTasksPanelController::From(
-        browser_window_interface);
-    if (controller) {
-      controller->Show();
-    }
-  }
-
-  bool IsPendingErrorPage(const base::Uuid& task_id) override {
-    return task_id == pending_error_page_task_id_;
-  }
-
-  bool HasPendingErrorPage() const {
-    return pending_error_page_task_id_.is_valid();
-  }
-
-  std::optional<GURL> GetInitialUrlForTask(const base::Uuid& uuid) override {
-    if (uuid == pending_task_id_) {
-      return pending_task_url_;
-    }
-    return std::nullopt;
-  }
-
-  bool IsPanelOpen() const { return is_panel_open_; }
-  void SetPanelOpen(bool open) { is_panel_open_ = open; }
-
-  contextual_search::ContextualSearchSessionHandle* GetSessionHandle() {
-    return session_handle_.get();
-  }
-
- private:
-  bool cookie_jar_contains_primary_account_ = true;
-  bool is_panel_open_ = false;
-  raw_ptr<Profile> profile_;
-  raw_ptr<content::WebContents, DanglingUntriaged> stub_web_contents_ = nullptr;
-  raw_ptr<contextual_tasks::ContextualTasksService> contextual_tasks_service_;
-  base::Uuid pending_error_page_task_id_;
-  base::Uuid pending_task_id_;
-  GURL pending_task_url_;
-  std::unique_ptr<contextual_search::ContextualSearchSessionHandle>
-      session_handle_;
-};
 
 std::unique_ptr<KeyedService> BuildMockAimServiceEligibilityServiceInstance(
     content::BrowserContext* context) {
@@ -248,59 +100,6 @@ class MockLensSearchContextualizationController
   bool eligible_ = true;
 };
 
-class TestingLensQueryFlowRouter : public lens::LensQueryFlowRouter {
- public:
-  explicit TestingLensQueryFlowRouter(LensSearchController* controller)
-      : LensQueryFlowRouter(controller) {
-    mock_handle_ = std::make_unique<
-        contextual_search::MockContextualSearchSessionHandle>();
-    ON_CALL(*mock_handle_, CreateSearchUrl(::testing::_, ::testing::_))
-        .WillByDefault(
-            [this](std::unique_ptr<
-                       contextual_search::ContextualSearchContextController::
-                           CreateSearchUrlRequestInfo> Info,
-                   base::OnceCallback<void(GURL)> callback) {
-              GURL url = g_test_server_url;
-              if (call_count_ > 0) {
-                url = GURL(url.spec() +
-                           "?q=" + base::NumberToString(call_count_));
-              }
-              call_count_++;
-              base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-                  FROM_HERE, base::BindOnce(std::move(callback), url));
-            });
-  }
-  ~TestingLensQueryFlowRouter() override = default;
-
-  contextual_search::ContextualSearchSessionHandle*
-  GetContextualSearchSessionHandle() const override {
-    return mock_handle_.get();
-  }
-
-  bool IsActiveTabContextEligible() const override { return eligible_; }
-
-  void SetEligibility(bool eligible) { eligible_ = eligible; }
-
- private:
-  bool eligible_ = true;
-  int call_count_ = 0;
-  std::unique_ptr<contextual_search::MockContextualSearchSessionHandle>
-      mock_handle_;
-};
-
-class MockTabContextualizationController
-    : public lens::TabContextualizationController {
- public:
-  explicit MockTabContextualizationController(tabs::TabInterface* tab)
-      : TabContextualizationController(tab) {}
-  ~MockTabContextualizationController() override = default;
-
-  void GetPageContext(GetPageContextCallback callback) override {
-    auto data = std::make_unique<lens::ContextualInputData>();
-    std::move(callback).Run(std::move(data));
-  }
-};
-
 class LensSearchControllerHelper : public LensSearchController {
  public:
   explicit LensSearchControllerHelper(tabs::TabInterface* tab)
@@ -309,21 +108,10 @@ class LensSearchControllerHelper : public LensSearchController {
 
   bool should_route_to_contextual_tasks() const override { return true; }
 
-  std::unique_ptr<lens::LensQueryFlowRouter> CreateLensQueryFlowRouter()
-      override {
-    auto router = std::make_unique<TestingLensQueryFlowRouter>(this);
-    router->SetEligibility(eligibility_);
-    mock_router_ = router.get();
-    return router;
-  }
-
   void SetContextEligibility(bool eligible) {
     eligibility_ = eligible;
     if (mock_controller_) {
       mock_controller_->SetEligibility(eligible);
-    }
-    if (mock_router_) {
-      mock_router_->SetEligibility(eligible);
     }
   }
 
@@ -340,8 +128,6 @@ class LensSearchControllerHelper : public LensSearchController {
  private:
   bool eligibility_ = true;
   raw_ptr<MockLensSearchContextualizationController> mock_controller_ = nullptr;
-  raw_ptr<TestingLensQueryFlowRouter, DisableDanglingPtrDetection>
-      mock_router_ = nullptr;
 };
 
 // Override the factory to create our helper.
@@ -355,86 +141,18 @@ std::unique_ptr<LensSearchController> CreateLensSearchControllerHelper(
 class ContextualTasksLensInteractionBrowserTestBase
     : public InProcessBrowserTest {
  public:
-  ContextualTasksLensInteractionBrowserTestBase() {
-    controller_override_ =
-        tabs::TabFeatures::GetUserDataFactoryForTesting().AddOverrideForTesting(
-            base::BindRepeating(
-                [](tabs::TabInterface& tab)
-                    -> std::unique_ptr<lens::TabContextualizationController> {
-                  return std::make_unique<MockTabContextualizationController>(
-                      &tab);
-                }));
-  }
+  void SetUpBrowserContextKeyedServices(
+      content::BrowserContext* context) override {
+    InProcessBrowserTest::SetUpBrowserContextKeyedServices(context);
 
-  ui::UserDataFactory::ScopedOverride controller_override_;
-
-  void SetUpInProcessBrowserTestFixture() override {
-    InProcessBrowserTest::SetUpInProcessBrowserTestFixture();
-    create_services_subscription_ =
-        BrowserContextDependencyManager::GetInstance()
-            ->RegisterCreateServicesCallbackForTesting(base::BindRepeating(
-                &ContextualTasksLensInteractionBrowserTestBase::
-                    OnWillCreateBrowserContextServices,
-                base::Unretained(this)));
-  }
-
-  void OnWillCreateBrowserContextServices(content::BrowserContext* context) {
     AimEligibilityServiceFactory::GetInstance()->SetTestingFactory(
         context,
         base::BindOnce(&BuildMockAimServiceEligibilityServiceInstance));
-
-    contextual_tasks::ContextualTasksServiceFactory::GetInstance()
-        ->SetTestingFactory(
-            context, base::BindOnce([](content::BrowserContext* context)
-                                        -> std::unique_ptr<KeyedService> {
-              auto mock_service = std::make_unique<
-                  contextual_tasks::MockContextualTasksService>();
-              ON_CALL(*mock_service, CreateTask()).WillByDefault([]() {
-                return contextual_tasks::ContextualTask(
-                    base::Uuid::GenerateRandomV4());
-              });
-              ON_CALL(*mock_service, CreateTaskFromUrl(::testing::_))
-                  .WillByDefault([](const GURL& url) {
-                    return contextual_tasks::ContextualTask(
-                        base::Uuid::GenerateRandomV4());
-                  });
-              ON_CALL(*mock_service,
-                      GetContextForTask(::testing::_, ::testing::_,
-                                        ::testing::_, ::testing::_))
-                  .WillByDefault(::testing::WithArg<3>(
-                      [](base::OnceCallback<void(
-                             std::unique_ptr<
-                                 contextual_tasks::ContextualTaskContext>)>
-                             callback) {
-                        contextual_tasks::ContextualTask dummy_task(
-                            base::Uuid::GenerateRandomV4());
-                        std::move(callback).Run(
-                            std::make_unique<
-                                contextual_tasks::ContextualTaskContext>(
-                                dummy_task));
-                      }));
-              return mock_service;
-            }));
-
-    contextual_tasks::ContextualTasksUiServiceFactory::GetInstance()
-        ->SetTestingFactory(
-            context,
-            base::BindOnce(&ContextualTasksLensInteractionBrowserTestBase::
-                               CreateTestingUiService,
-                           base::Unretained(this)));
   }
 
  public:
   void SetUpOnMainThread() override {
     InProcessBrowserTest::SetUpOnMainThread();
-
-    g_test_server_url = embedded_test_server()->GetURL("/empty.html");
-    sessions::SessionTabHelper::CreateForWebContents(
-        browser()->GetActiveTabInterface()->GetContents(),
-        base::BindRepeating(
-            [](content::WebContents*) -> sessions::SessionTabHelperDelegate* {
-              return nullptr;
-            }));
     embedded_test_server()->StartAcceptingConnections();
 
     // Permits sharing the page screenshot by default.
@@ -464,11 +182,6 @@ class ContextualTasksLensInteractionBrowserTestBase
     service->SetUserSelectedDefaultSearchProvider(template_url);
   }
 
-  void TearDownOnMainThread() override {
-    testing_ui_service_ = nullptr;
-    InProcessBrowserTest::TearDownOnMainThread();
-  }
-
   LensSearchController* GetLensSearchController() {
     return LensSearchController::From(browser()->GetActiveTabInterface());
   }
@@ -480,24 +193,20 @@ class ContextualTasksLensInteractionBrowserTestBase
   }
 
   bool IsContextualTasksSidePanelOpen() {
-    return testing_ui_service_ && testing_ui_service_->IsPanelOpen();
+    auto* controller = contextual_tasks::ContextualTasksPanelController::From(
+        GetBrowserWindowInterface());
+    return controller && controller->IsPanelOpenForContextualTask();
   }
 
   content::WebContents* GetContextualTasksWebContents() {
-    if (testing_ui_service_ && testing_ui_service_->stub_web_contents()) {
-      return testing_ui_service_->stub_web_contents();
-    }
-
-    auto* controller = contextual_tasks::ContextualTasksPanelController::From(
-        GetBrowserWindowInterface());
-    if (!controller) {
+    auto* contextual_tasks_coordinator =
+        contextual_tasks::ContextualTasksSidePanelCoordinator::From(
+            GetBrowserWindowInterface());
+    if (!contextual_tasks_coordinator ||
+        !contextual_tasks_coordinator->IsPanelOpenForContextualTask()) {
       return nullptr;
     }
-    auto contents_list = controller->GetPanelWebContentsList();
-    if (!contents_list.empty()) {
-      return contents_list[0];
-    }
-    return controller->GetActiveWebContents();
+    return contextual_tasks_coordinator->GetActiveWebContents();
   }
 
   content::WebContents* GetContextualTasksInnerWebContents() {
@@ -507,19 +216,12 @@ class ContextualTasksLensInteractionBrowserTestBase
     }
     auto inner_contents = panel_contents->GetInnerWebContents();
     if (inner_contents.empty()) {
-      return panel_contents;
+      return nullptr;
     }
     return inner_contents[0];
   }
 
   bool IsContextualTasksErrorPageOpen() {
-    auto* ui_service = static_cast<TestingContextualTasksUiService*>(
-        contextual_tasks::ContextualTasksUiServiceFactory::GetForBrowserContext(
-            browser()->profile()));
-    if (ui_service && ui_service->HasPendingErrorPage()) {
-      return true;
-    }
-
     auto* contents = GetContextualTasksWebContents();
     if (!contents || !contents->GetWebUI()) {
       return false;
@@ -557,21 +259,6 @@ class ContextualTasksLensInteractionBrowserTestBase
   BrowserWindowInterface* GetBrowserWindowInterface() {
     return browser()->GetActiveTabInterface()->GetBrowserWindowInterface();
   }
-
-  std::unique_ptr<KeyedService> CreateTestingUiService(
-      content::BrowserContext* context) {
-    Profile* profile = Profile::FromBrowserContext(context);
-    auto service = std::make_unique<TestingContextualTasksUiService>(
-        profile,
-        contextual_tasks::ContextualTasksServiceFactory::GetForProfile(profile),
-        IdentityManagerFactory::GetForProfile(profile),
-        AimEligibilityServiceFactory::GetForProfile(profile));
-    this->testing_ui_service_ = service.get();
-    return service;
-  }
-
-  raw_ptr<TestingContextualTasksUiService> testing_ui_service_ = nullptr;
-  base::CallbackListSubscription create_services_subscription_;
 };
 
 class ContextualTasksLensInteractionBrowserTest
@@ -686,7 +373,6 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksLensInteractionBrowserTest,
   WaitForPaint();
 
   auto* controller = GetLensSearchController();
-
   ASSERT_TRUE(controller);
 
   // Open Lens Overlay via App Menu.
@@ -714,15 +400,20 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksLensInteractionBrowserTest,
   ASSERT_TRUE(
       base::test::RunUntil([&]() { return !inner_contents->IsLoading(); }));
 
+  // Create a navigation observer for the second region request
+  content::TestNavigationObserver second_search_observer(inner_contents);
+
   // Issue the second region request
   controller->lens_overlay_controller()->IssueLensRegionRequestForTesting(
       region->Clone(), /*is_click=*/false);
 
-  // Wait for the URL to update to reflect the second request
-  ASSERT_TRUE(base::test::RunUntil([&]() {
-    return inner_contents->GetLastCommittedURL().spec().find("q=1") !=
-           std::string::npos;
-  }));
+  // Wait for the second navigation to finish
+  second_search_observer.Wait();
+
+  // Check that the second navigation was attempted
+  EXPECT_TRUE(
+      base::StartsWith(second_search_observer.last_navigation_url().spec(),
+                       "https://www.google.com/search"));
 }
 
 #if BUILDFLAG(IS_CHROMEOS)
@@ -766,14 +457,14 @@ IN_PROC_BROWSER_TEST_F(
   ASSERT_TRUE(
       base::test::RunUntil([&]() { return !inner_contents->IsLoading(); }));
 
-  // Simulate a click on the Lens icon in the composebox by calling
-  // onLensClick_() directly.
+  // Simulate a click on the Lens icon in the composebox.
   content::WebContents* panel_contents = GetContextualTasksWebContents();
   EXPECT_TRUE(content::ExecJs(
       panel_contents,
       "document.querySelector('contextual-tasks-app').shadowRoot."
       "querySelector('contextual-tasks-composebox').shadowRoot."
-      "querySelector('cr-composebox').onLensClick_()"));
+      "querySelector('cr-composebox').shadowRoot."
+      "querySelector('#lensIcon').click()"));
 
   // Wait for the invocation source to be updated to ContextualTasksComposebox.
   ASSERT_TRUE(base::test::RunUntil([&]() {
