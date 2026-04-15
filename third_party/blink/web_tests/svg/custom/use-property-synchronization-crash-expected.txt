@@ -1,2 +1,0 @@
-CONSOLE ERROR: Error: <polyline> attribute points: Unexpected end of attribute. Expected number, "0".
-CONSOLE ERROR: Error: <polyline> attribute points: Unexpected end of attribute. Expected number, "0".

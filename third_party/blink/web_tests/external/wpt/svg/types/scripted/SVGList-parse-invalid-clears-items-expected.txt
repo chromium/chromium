@@ -1,5 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] SVGPointList clears items when attribute value is invalid
-  assert_equals: SVGPointList: partially invalid attribute value should result in 0 items expected 0 but got 2
-Harness: the test ran to completion.
-

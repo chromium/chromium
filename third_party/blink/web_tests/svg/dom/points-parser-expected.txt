@@ -1,9 +1,6 @@
 CONSOLE ERROR: Error: <polyline> attribute points: Expected number, "a".
-CONSOLE ERROR: Error: <polyline> attribute points: Unexpected end of attribute. Expected number, "10".
-CONSOLE ERROR: Error: <polyline> attribute points: Unexpected end of attribute. Expected number, "10,".
 CONSOLE ERROR: Error: <polyline> attribute points: Expected number, "10,,".
 CONSOLE ERROR: Error: <polyline> attribute points: Expected number, "10,,10".
-CONSOLE ERROR: Error: <polyline> attribute points: Unexpected end of attribute. Expected number, "10,10,".
 CONSOLE ERROR: Error: <polyline> attribute points: Expected number, "10,10a".
 CONSOLE ERROR: Error: <polyline> attribute points: Expected number, ",10".
 CONSOLE ERROR: Error: <polyline> attribute points: Expected number, ",10,".
@@ -141,7 +138,7 @@ PASS '10 10' is '10 10'
 
 
 Test string: '10,10a'
-PASS '10 10' is '10 10'
+PASS '' is ''
 
 
 Test string: ',10'

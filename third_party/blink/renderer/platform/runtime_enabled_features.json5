@@ -5602,6 +5602,10 @@
       status: "experimental",
     },
     {
+      name: "SvgPointListClearOnParsingFailure",
+      status: "stable",
+    },
+    {
       name: "SvgScriptElementAsyncAttribute",
       status: "stable",
     },
