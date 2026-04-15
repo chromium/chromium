@@ -260,10 +260,7 @@ base::CallbackListSubscription CrosSettings::AddSettingsObserver(
   DCHECK(GetProvider(path));
 
   // Get the callback registry associated with the path.
-  auto it = settings_observers_.find(path);
-  if (it == settings_observers_.end()) {
-    it = settings_observers_.try_emplace(std::string(path)).first;
-  }
+  auto it = settings_observers_.try_emplace(std::string(path)).first;
   return it->second.Add(std::move(callback));
 }
 
