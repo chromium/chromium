@@ -297,20 +297,35 @@ ScopedSharedBufferHandle WrapWritableSharedMemoryRegion(
 
 base::ReadOnlySharedMemoryRegion UnwrapReadOnlySharedMemoryRegion(
     ScopedSharedBufferHandle handle) {
-  return base::ReadOnlySharedMemoryRegion::Deserialize(
-      UnwrapPlatformSharedMemoryRegion(std::move(handle)));
+  auto region = UnwrapPlatformSharedMemoryRegion(std::move(handle));
+  if (!region.IsValid() ||
+      region.GetMode() !=
+          base::subtle::PlatformSharedMemoryRegion::Mode::kReadOnly) {
+    return base::ReadOnlySharedMemoryRegion();
+  }
+  return base::ReadOnlySharedMemoryRegion::Deserialize(std::move(region));
 }
 
 base::UnsafeSharedMemoryRegion UnwrapUnsafeSharedMemoryRegion(
     ScopedSharedBufferHandle handle) {
-  return base::UnsafeSharedMemoryRegion::Deserialize(
-      UnwrapPlatformSharedMemoryRegion(std::move(handle)));
+  auto region = UnwrapPlatformSharedMemoryRegion(std::move(handle));
+  if (!region.IsValid() ||
+      region.GetMode() !=
+          base::subtle::PlatformSharedMemoryRegion::Mode::kUnsafe) {
+    return base::UnsafeSharedMemoryRegion();
+  }
+  return base::UnsafeSharedMemoryRegion::Deserialize(std::move(region));
 }
 
 base::WritableSharedMemoryRegion UnwrapWritableSharedMemoryRegion(
     ScopedSharedBufferHandle handle) {
-  return base::WritableSharedMemoryRegion::Deserialize(
-      UnwrapPlatformSharedMemoryRegion(std::move(handle)));
+  auto region = UnwrapPlatformSharedMemoryRegion(std::move(handle));
+  if (!region.IsValid() ||
+      region.GetMode() !=
+          base::subtle::PlatformSharedMemoryRegion::Mode::kWritable) {
+    return base::WritableSharedMemoryRegion();
+  }
+  return base::WritableSharedMemoryRegion::Deserialize(std::move(region));
 }
 
 }  // namespace mojo

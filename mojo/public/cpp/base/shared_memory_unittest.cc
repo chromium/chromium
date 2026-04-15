@@ -41,6 +41,28 @@ TEST(SharedMemoryMojomTest, Writable) {
   EXPECT_EQ(base::as_chars(base::span(mapping)).first(kTestData.size()),
             kTestData);
 }
+
+TEST(SharedMemoryMojomTest, UnwrapReadOnlyModeMismatch) {
+  auto region = base::WritableSharedMemoryRegion::Create(64);
+  auto handle = mojo::WrapWritableSharedMemoryRegion(std::move(region));
+
+  // Try to unwrap it as a ReadOnlySharedMemoryRegion. This should return an
+  // invalid region instead of crashing.
+  base::ReadOnlySharedMemoryRegion read_only_out =
+      mojo::UnwrapReadOnlySharedMemoryRegion(std::move(handle));
+  EXPECT_FALSE(read_only_out.IsValid());
+}
+
+TEST(SharedMemoryMojomTest, UnwrapWritableModeMismatch) {
+  auto region = base::ReadOnlySharedMemoryRegion::Create(64);
+  auto handle = mojo::WrapReadOnlySharedMemoryRegion(std::move(region.region));
+
+  // Try to unwrap it as a WritableSharedMemoryRegion. This should return an
+  // invalid region instead of crashing.
+  base::WritableSharedMemoryRegion writable_out =
+      mojo::UnwrapWritableSharedMemoryRegion(std::move(handle));
+  EXPECT_FALSE(writable_out.IsValid());
+}
 #endif  // BUILDFLAG(USE_BLINK)
 
 TEST(SharedMemoryMojomTest, Unsafe) {
@@ -56,4 +78,15 @@ TEST(SharedMemoryMojomTest, Unsafe) {
   mapping = unsafe_out.Map();
   EXPECT_EQ(base::as_chars(base::span(mapping)).first(kTestData.size()),
             kTestData);
+}
+
+TEST(SharedMemoryMojomTest, UnwrapUnsafeModeMismatch) {
+  auto region = base::ReadOnlySharedMemoryRegion::Create(64);
+  auto handle = mojo::WrapReadOnlySharedMemoryRegion(std::move(region.region));
+
+  // Try to unwrap it as an UnsafeSharedMemoryRegion. This should return an
+  // invalid region instead of crashing.
+  base::UnsafeSharedMemoryRegion unsafe_out =
+      mojo::UnwrapUnsafeSharedMemoryRegion(std::move(handle));
+  EXPECT_FALSE(unsafe_out.IsValid());
 }
