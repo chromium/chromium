@@ -2318,6 +2318,9 @@ const CGFloat kTopDynamicIslandInset = 24;
   // it is the NTP.
   UIView* newPage = [self viewForWebState:webState];
   DCHECK(newPage);
+  if (IsFullscreenRefactoringEnabled()) {
+    newPage.translatesAutoresizingMaskIntoConstraints = YES;
+  }
   GURL tabURL = webState->GetVisibleURL();
   // Toolbar snapshot is only used for the UIRefresh animation.
   UIView* toolbarSnapshot;
@@ -2358,6 +2361,9 @@ const CGFloat kTopDynamicIslandInset = 24;
   auto commonCompletion = ^{
     __strong __typeof(self) strongSelf = weakSelf;
     newPage.userInteractionEnabled = YES;
+    if (IsFullscreenRefactoringEnabled()) {
+      newPage.translatesAutoresizingMaskIntoConstraints = NO;
+    }
 
     // Check for nil because we need to access an ivar below.
     if (!strongSelf) {
