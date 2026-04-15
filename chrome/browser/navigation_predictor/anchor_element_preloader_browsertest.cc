@@ -27,8 +27,6 @@
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/preloading_test_util.h"
 #include "net/base/features.h"
-#include "net/base/isolation_info.h"
-#include "net/base/network_anonymization_key.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
@@ -68,12 +66,11 @@ class AnchorElementPreloaderBrowserTest
   void SetUpCommandLine(base::CommandLine* command_line) override {
     // Without this flag, mouse events are suppressed in these tests.
     command_line->AppendSwitch("allow-pre-commit-input");
-    command_line->AppendSwitch("ignore-certificate-errors");
   }
 
   void SetUpOnMainThread() override {
     subresource_filter::SubresourceFilterBrowserTest::SetUpOnMainThread();
-    host_resolver()->AddRule("*", "127.0.0.1");
+    host_resolver()->ClearRules();
     auto* loading_predictor =
         predictors::LoadingPredictorFactory::GetForProfile(
             browser()->profile());
@@ -126,7 +123,6 @@ class AnchorElementPreloaderBrowserTest
       mojo::PendingRemote<network::mojom::ConnectionChangeObserverClient>&
           observer,
       bool success) override {
-    last_network_anonymization_key_ = network_anonymization_key;
     if (url != GURL(kOrigin1) && url != GURL(kOrigin2)) {
       return;
     }
@@ -155,10 +151,8 @@ class AnchorElementPreloaderBrowserTest
 
  protected:
   int preresolve_count_;
-  net::NetworkAnonymizationKey last_network_anonymization_key_;
   // Disable sampling of UKM preloading logs.
   content::test::PreloadingConfigOverride preloading_config_override_;
-  std::unique_ptr<net::EmbeddedTestServer> https_server_;
 
  private:
   // TODO(https://crbug.com/423465927): Explore a better approach to make the
@@ -167,6 +161,7 @@ class AnchorElementPreloaderBrowserTest
       test::ScopedPrewarmFeatureList::PrewarmState::kDisabled};
   base::test::ScopedFeatureList feature_list_;
   base::ScopedMockElapsedTimersForTest test_timer_;
+  std::unique_ptr<net::EmbeddedTestServer> https_server_;
   std::unique_ptr<base::RunLoop> run_loop_;
   std::unique_ptr<ukm::TestAutoSetUkmRecorder> test_ukm_recorder_;
   std::unique_ptr<base::HistogramTester> histogram_tester_;
@@ -440,68 +435,6 @@ IN_PROC_BROWSER_TEST_F(AnchorElementSetIsNavigationInDomainBrowserTest,
   histogram_tester.ExpectBucketCount(
       "Preloading.Predictor.PointerDownOnAnchor.Recall",
       /*content::PredictorConfusionMatrix::kFalseNegative*/ 3, 1);
-}
-
-IN_PROC_BROWSER_TEST_F(AnchorElementPreloaderBrowserTest,
-                       PreconnectNetworkAnonymizationKey) {
-  const GURL& url = GetTestURL("/one_anchor.html");
-  EXPECT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
-  SimulateMouseDownElementWithId("anchor1");
-
-  WaitForPreresolveCountForURL(1);
-  EXPECT_EQ(1, preresolve_count_);
-
-  // The NAK should be the one from the primary main frame's isolation info for
-  // subresources.
-  EXPECT_EQ(last_network_anonymization_key_,
-            GetPrimaryMainFrame()
-                ->GetIsolationInfoForSubresources()
-                .network_anonymization_key());
-}
-
-IN_PROC_BROWSER_TEST_F(AnchorElementPreloaderBrowserTest,
-                       PreconnectNetworkAnonymizationKeyCrossOrigin) {
-  const GURL& url = GetTestURL("/iframe_anchor.html");
-  EXPECT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
-
-  // Navigate the iframe to a cross-origin site.
-  GURL cross_origin_url = https_server_->GetURL("b.com", "/iframe.html");
-  content::RenderFrameHost* main_frame = GetPrimaryMainFrame();
-  content::RenderFrameHost* iframe = content::ChildFrameAt(main_frame, 0);
-  ASSERT_TRUE(iframe);
-
-  EXPECT_TRUE(content::NavigateIframeToURL(
-      browser()->tab_strip_model()->GetActiveWebContents(), "iframe1",
-      cross_origin_url));
-  // Re-get the iframe RFH after navigation.
-  iframe = content::ChildFrameAt(main_frame, 0);
-  ASSERT_TRUE(iframe);
-  EXPECT_EQ(iframe->GetLastCommittedURL(), cross_origin_url);
-
-  // Trigger mousedown in the iframe.
-  content::WebContents* web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
-  gfx::Point point = gfx::ToFlooredPoint(
-      content::GetCenterCoordinatesOfElementWithId(iframe, "iframe_anchor"));
-
-  content::SimulateMouseEvent(web_contents,
-                              blink::WebMouseEvent::Type::kMouseDown,
-                              blink::WebMouseEvent::Button::kLeft, point);
-
-  WaitForPreresolveCountForURL(1);
-  EXPECT_EQ(1, preresolve_count_);
-
-  // The NAK should be the one from the iframe's isolation info for
-  // subresources.
-  EXPECT_EQ(
-      last_network_anonymization_key_,
-      iframe->GetIsolationInfoForSubresources().network_anonymization_key());
-
-  // Also verify it's different from the main frame's NAK to be sure we are
-  // testing something interesting.
-  EXPECT_NE(last_network_anonymization_key_,
-            main_frame->GetIsolationInfoForSubresources()
-                .network_anonymization_key());
 }
 
 }  // namespace

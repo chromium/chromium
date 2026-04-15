@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/navigation_predictor/anchor_element_preloader.h"
-
 #include "base/functional/callback.h"
 #include "base/metrics/histogram_functions.h"
 #include "chrome/browser/predictors/loading_predictor.h"
@@ -14,9 +13,7 @@
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/preloading.h"
 #include "content/public/browser/preloading_data.h"
-#include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
-#include "net/base/isolation_info.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/metrics/public/cpp/ukm_recorder.h"
 #include "third_party/blink/public/common/features.h"
@@ -115,9 +112,9 @@ void AnchorElementPreloader::MaybePreconnect(const GURL& target) {
   attempt->SetTriggeringOutcome(
       content::PreloadingTriggeringOutcome::kTriggeredButOutcomeUnknown);
 
+  net::SchemefulSite schemeful_site(target);
   auto network_anonymization_key =
-      render_frame_host_->GetIsolationInfoForSubresources()
-          .network_anonymization_key();
+      net::NetworkAnonymizationKey::CreateSameSite(std::move(schemeful_site));
   loading_predictor->PreconnectURLIfAllowed(target, /*allow_credentials=*/true,
                                             network_anonymization_key);
 }
