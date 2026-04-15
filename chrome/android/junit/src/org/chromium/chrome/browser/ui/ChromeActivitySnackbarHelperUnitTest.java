@@ -9,9 +9,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -33,7 +31,6 @@ import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.SettableMonotonicObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.browser_controls.BottomControlsLayer;
 import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeController;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager.ParentOverrideSlot;
@@ -46,26 +43,22 @@ import org.chromium.components.browser_ui.bottomsheet.BottomSheetObserver;
 public class ChromeActivitySnackbarHelperUnitTest {
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
 
-    private SettableMonotonicObservableSupplier<EdgeToEdgeController> mEdgeToEdgeControllerSupplier;
+    private final SettableMonotonicObservableSupplier<EdgeToEdgeController>
+            mEdgeToEdgeControllerSupplier = ObservableSuppliers.createMonotonic();
 
     @Mock private Activity mActivity;
     @Mock private EdgeToEdgeController mEdgeToEdgeController1;
     @Mock private EdgeToEdgeController mEdgeToEdgeController2;
     @Mock private BottomSheetController mBottomSheetController;
     @Mock private SnackbarManager mSnackbarManager;
-    @Mock private BottomControlsLayer mBottomControlsLayer;
 
     private ChromeActivitySnackbarHelper mSnackbarHelper;
 
     @Before
     public void setUp() {
-        mEdgeToEdgeControllerSupplier = ObservableSuppliers.createMonotonic();
         mSnackbarHelper =
                 new ChromeActivitySnackbarHelper(
-                        mActivity,
-                        mEdgeToEdgeControllerSupplier,
-                        mBottomSheetController,
-                        () -> mBottomControlsLayer);
+                        mActivity, mEdgeToEdgeControllerSupplier, mBottomSheetController);
         mSnackbarHelper.setSnackbarManager(mSnackbarManager);
     }
 
@@ -104,94 +97,12 @@ public class ChromeActivitySnackbarHelperUnitTest {
         when(mBottomSheetController.getCurrentOffset()).thenReturn(50);
         observerCaptor.getValue().onSheetOffsetChanged(0.5f, 50.0f);
 
-        assertEquals(100, (int) mSnackbarHelper.getBottomMarginSupplier().get());
+        assertEquals(150, (int) mSnackbarHelper.getBottomMarginSupplier().get());
 
         // Test that both EdgeToEdgeController and BottomSheetObserver updates stack correctly.
         when(mEdgeToEdgeController1.getBottomInsetPx()).thenReturn(200);
         mSnackbarHelper.onToEdgeChange(200, false, false);
-        assertEquals(200, (int) mSnackbarHelper.getBottomMarginSupplier().get());
-    }
-
-    @Test
-    public void testBottomSheetOffset_ActsAsBrowserControls() {
-        reset(mEdgeToEdgeController1);
-        when(mEdgeToEdgeController1.getBottomInsetPx()).thenReturn(100);
-        mEdgeToEdgeControllerSupplier.set(mEdgeToEdgeController1);
-
-        verify(mEdgeToEdgeController1).registerObserver(mSnackbarHelper);
-        verify(mBottomSheetController).addObserver(any(BottomSheetObserver.class));
-        assertEquals(100, (int) mSnackbarHelper.getBottomMarginSupplier().get());
-
-        ArgumentCaptor<BottomSheetObserver> observerCaptor =
-                ArgumentCaptor.forClass(BottomSheetObserver.class);
-        verify(mBottomSheetController).addObserver(observerCaptor.capture());
-
-        doReturn(100).when(mBottomSheetController).getCurrentOffset();
-        doReturn(50).when(mBottomControlsLayer).getHeight();
-
-        mSnackbarHelper.onToEdgeChange(100, false, false);
-
-        assertEquals(50, (int) mSnackbarHelper.getBottomMarginSupplier().get());
-
-        doReturn(50).when(mBottomSheetController).getCurrentOffset();
-        observerCaptor.getValue().onSheetOffsetChanged(0.5f, 50.0f);
-
-        assertEquals(50, (int) mSnackbarHelper.getBottomMarginSupplier().get());
-    }
-
-    @Test
-    public void testBottomSheetOffset_StandardOverlay() {
-        reset(mEdgeToEdgeController1);
-        when(mEdgeToEdgeController1.getBottomInsetPx()).thenReturn(100);
-        mEdgeToEdgeControllerSupplier.set(mEdgeToEdgeController1);
-
-        doReturn(50).when(mBottomSheetController).getCurrentOffset();
-        doReturn(0).when(mBottomControlsLayer).getHeight(); // Standard overlay
-
-        mSnackbarHelper.onToEdgeChange(100, false, false);
-
-        // targetPosition = Math.max(100, 50) = 100
-        // margin = Math.max(0, 100 - 0) = 100
-        assertEquals(100, (int) mSnackbarHelper.getBottomMarginSupplier().get());
-    }
-
-    @Test
-    public void testBottomSheetOffset_ActsAsBrowserControls_HeightGreaterThanInset() {
-        reset(mEdgeToEdgeController1);
-        when(mEdgeToEdgeController1.getBottomInsetPx()).thenReturn(100);
-        mEdgeToEdgeControllerSupplier.set(mEdgeToEdgeController1);
-
-        doReturn(150).when(mBottomSheetController).getCurrentOffset();
-        doReturn(150).when(mBottomControlsLayer).getHeight(); // Greater than inset (100)
-
-        mSnackbarHelper.onToEdgeChange(100, false, false);
-
-        // targetPosition = Math.max(100, 150) = 150
-        // margin = Math.max(0, 150 - 150) = 0
-        assertEquals(0, (int) mSnackbarHelper.getBottomMarginSupplier().get());
-    }
-
-    @Test
-    public void testBottomSheetOffset_NullLayer() {
-        mSnackbarHelper =
-                new ChromeActivitySnackbarHelper(
-                        mActivity,
-                        mEdgeToEdgeControllerSupplier,
-                        mBottomSheetController,
-                        () -> null);
-
-        reset(mEdgeToEdgeController1);
-        when(mEdgeToEdgeController1.getBottomInsetPx()).thenReturn(100);
-        mEdgeToEdgeControllerSupplier.set(mEdgeToEdgeController1);
-
-        doReturn(50).when(mBottomSheetController).getCurrentOffset();
-
-        mSnackbarHelper.onToEdgeChange(100, false, false);
-
-        // layer is null -> contributedHeight = 0 -> Standard overlay sheet
-        // targetPosition = Math.max(100, 50) = 100
-        // margin = Math.max(0, 100 - 0) = 100
-        assertEquals(100, (int) mSnackbarHelper.getBottomMarginSupplier().get());
+        assertEquals(250, (int) mSnackbarHelper.getBottomMarginSupplier().get());
     }
 
     @Test
