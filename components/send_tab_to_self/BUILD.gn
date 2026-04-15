@@ -102,16 +102,16 @@ if (is_android) {
     deps = [ "//third_party/androidx:androidx_annotation_annotation_java" ]
   }
 }
-
 source_set("test_support") {
   testonly = true
   sources = [
-    "test_send_tab_to_self_model.cc",
-    "test_send_tab_to_self_model.h",
+    "fake_send_tab_to_self_model.cc",
+    "fake_send_tab_to_self_model.h",
   ]
   deps = [
     ":send_tab_to_self",
     "//base",
+    "//url",
   ]
 }
 

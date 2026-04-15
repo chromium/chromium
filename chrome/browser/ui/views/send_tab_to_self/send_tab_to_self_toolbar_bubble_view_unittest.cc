@@ -12,11 +12,11 @@
 #include "chrome/browser/send_tab_to_self/send_tab_to_self_client_service_factory.h"
 #include "chrome/browser/sync/send_tab_to_self_sync_service_factory.h"
 #include "chrome/browser/ui/views/frame/test_with_browser_view.h"
+#include "components/send_tab_to_self/fake_send_tab_to_self_model.h"
 #include "components/send_tab_to_self/features.h"
 #include "components/send_tab_to_self/page_context.h"
 #include "components/send_tab_to_self/send_tab_to_self_entry.h"
 #include "components/send_tab_to_self/send_tab_to_self_sync_service.h"
-#include "components/send_tab_to_self/test_send_tab_to_self_model.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/navigation_simulator.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -28,14 +28,15 @@ namespace {
 
 class StubSendTabToSelfSyncService : public SendTabToSelfSyncService {
  public:
-  explicit StubSendTabToSelfSyncService(SendTabToSelfModel* model)
+  explicit StubSendTabToSelfSyncService(FakeSendTabToSelfModel* model)
       : model_(model) {}
   ~StubSendTabToSelfSyncService() override = default;
 
   SendTabToSelfModel* GetSendTabToSelfModel() override { return model_; }
+  FakeSendTabToSelfModel* GetModelFake() { return model_; }
 
  private:
-  raw_ptr<SendTabToSelfModel> model_;
+  raw_ptr<FakeSendTabToSelfModel> model_;
 };
 
 class StubReceivingUiHandler : public ReceivingUiHandler {
@@ -95,12 +96,12 @@ class SendTabToSelfToolbarBubbleViewTestBase : public TestWithBrowserView {
   }
 
   views::Widget* anchor_widget() { return anchor_widget_.get(); }
-  TestSendTabToSelfModel& test_model() { return test_model_; }
+  FakeSendTabToSelfModel* test_model() { return &test_model_; }
 
  private:
   base::test::ScopedFeatureList feature_list_;
   std::unique_ptr<views::Widget> anchor_widget_;
-  TestSendTabToSelfModel test_model_;
+  FakeSendTabToSelfModel test_model_;
 };
 
 class SendTabToSelfToolbarBubbleViewTest

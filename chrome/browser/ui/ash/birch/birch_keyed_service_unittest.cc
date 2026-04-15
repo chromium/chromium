@@ -47,11 +47,11 @@
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
 #include "components/favicon/core/test/mock_favicon_service.h"
+#include "components/send_tab_to_self/fake_send_tab_to_self_model.h"
 #include "components/send_tab_to_self/page_context.h"
 #include "components/send_tab_to_self/send_tab_to_self_entry.h"
 #include "components/send_tab_to_self/send_tab_to_self_model.h"
 #include "components/send_tab_to_self/target_device_info.h"
-#include "components/send_tab_to_self/test_send_tab_to_self_model.h"
 #include "components/sessions/core/serialized_navigation_entry_test_helper.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
 #include "components/sync/test/fake_data_type_controller_delegate.h"
@@ -88,8 +88,6 @@ constexpr char16_t kTabTitle2[] = u"Tab Title 2";
 constexpr char kTargetDeviceFullName[] = "Device_1";
 constexpr char kTargetDeviceCacheGuid[] = "device_guid_1";
 
-constexpr char kChromeSyncGuid[] = "Entry Guid";
-constexpr char kChromeSyncDeviceName[] = "Device Name";
 constexpr char kChromeSyncUrl[] = "https://www.example.com";
 
 constexpr char16_t kSessionMetadataTitle[] = u"Media Title";
@@ -225,87 +223,14 @@ std::unique_ptr<KeyedService> BuildTestSyncService(
   return std::make_unique<syncer::TestSyncService>();
 }
 
-class SendTabToSelfModelMock : public send_tab_to_self::TestSendTabToSelfModel {
- public:
-  SendTabToSelfModelMock() = default;
-
-  ~SendTabToSelfModelMock() override = default;
-
-  MOCK_METHOD1(DeleteEntry, void(const std::string&));
-  MOCK_METHOD1(DismissEntry, void(const std::string&));
-
-  const send_tab_to_self::SendTabToSelfEntry* AddEntry(
-      const GURL& url,
-      const std::string& title,
-      const std::string& target_device_cache_guid,
-      const send_tab_to_self::PageContext& context,
-      send_tab_to_self::NavigationHistory navigation_history,
-      base::OnceCallback<void(send_tab_to_self::SendTabToSelfResult)>
-          commit_confirmation) override {
-    auto entry = std::make_unique<send_tab_to_self::SendTabToSelfEntry>(
-        kChromeSyncGuid, url, title, base::Time::Now(), kChromeSyncDeviceName,
-        target_device_cache_guid, context, std::move(navigation_history));
-
-    auto* result = entry.get();
-
-    entries_.emplace(kChromeSyncGuid, std::move(entry));
-
-    std::move(commit_confirmation)
-        .Run(send_tab_to_self::SendTabToSelfResult::kSuccess);
-
-    return result;
-  }
-
-  const send_tab_to_self::SendTabToSelfEntry* GetEntryByGUID(
-      const std::string& guid) const override {
-    auto it = entries_.find(guid);
-    return it != entries_.end() ? it->second.get() : nullptr;
-  }
-
-  std::vector<std::string> GetAllGuids() const override {
-    std::vector<std::string> keys;
-    for (const auto& it : entries_) {
-      DCHECK_EQ(it.first, it.second->GetGUID());
-      keys.push_back(it.first);
-    }
-    return keys;
-  }
-
-  void MarkEntryOpened(const std::string& guid) override {
-    auto it = entries_.find(guid);
-    if (it != entries_.end()) {
-      if (auto* entry = it->second.get()) {
-        entry->MarkOpened(base::Time::Now());
-      }
-    }
-  }
-
-  std::vector<send_tab_to_self::TargetDeviceInfo>
-  GetTargetDeviceInfoSortedList() override {
-    return devices_;
-  }
-
-  void AddMockTargetDevice(syncer::DeviceInfo::FormFactor form_factor) {
-    devices_.emplace_back(kTargetDeviceFullName, kTargetDeviceCacheGuid,
-                          form_factor, base::Time::Now());
-  }
-
- private:
-  std::map<std::string, std::unique_ptr<send_tab_to_self::SendTabToSelfEntry>>
-      entries_;
-
-  std::vector<send_tab_to_self::TargetDeviceInfo> devices_;
-};
-
-class TestSendTabToSelfSyncService
+class StubSendTabToSelfSyncService
     : public send_tab_to_self::SendTabToSelfSyncService {
  public:
-  TestSendTabToSelfSyncService() : fake_delegate_(syncer::SEND_TAB_TO_SELF) {}
-
-  ~TestSendTabToSelfSyncService() override = default;
+  StubSendTabToSelfSyncService() : fake_delegate_(syncer::SEND_TAB_TO_SELF) {}
+  ~StubSendTabToSelfSyncService() override = default;
 
   send_tab_to_self::SendTabToSelfModel* GetSendTabToSelfModel() override {
-    return &model_mock_;
+    return &model_fake_;
   }
 
   base::WeakPtr<syncer::DataTypeControllerDelegate> GetControllerDelegate()
@@ -313,14 +238,18 @@ class TestSendTabToSelfSyncService
     return fake_delegate_.GetWeakPtr();
   }
 
+  send_tab_to_self::FakeSendTabToSelfModel* GetModelFake() {
+    return &model_fake_;
+  }
+
  protected:
   syncer::FakeDataTypeControllerDelegate fake_delegate_;
-  SendTabToSelfModelMock model_mock_;
+  send_tab_to_self::FakeSendTabToSelfModel model_fake_;
 };
 
-std::unique_ptr<KeyedService> BuildTestSendTabToSelfSyncService(
+std::unique_ptr<KeyedService> BuildStubSendTabToSelfSyncService(
     content::BrowserContext* context) {
-  return std::make_unique<TestSendTabToSelfSyncService>();
+  return std::make_unique<StubSendTabToSelfSyncService>();
 }
 
 class FaviconServiceMock : public favicon::MockFaviconService {
@@ -420,9 +349,10 @@ class BirchKeyedServiceTest : public BrowserWithTestWindowTest {
 
     SetSessionServiceToReturnOpenTabsDelegate(true);
 
-    send_tab_to_self_model_ = static_cast<SendTabToSelfModelMock*>(
-        SendTabToSelfSyncServiceFactory::GetForProfile(GetProfile())
-            ->GetSendTabToSelfModel());
+    send_tab_to_self_model_ =
+        static_cast<send_tab_to_self::FakeSendTabToSelfModel*>(
+            SendTabToSelfSyncServiceFactory::GetForProfile(GetProfile())
+                ->GetSendTabToSelfModel());
 
     favicon_service_ =
         static_cast<FaviconServiceMock*>(FaviconServiceFactory::GetForProfile(
@@ -585,11 +515,18 @@ class BirchKeyedServiceTest : public BrowserWithTestWindowTest {
     return session_sync_service_;
   }
 
-  SendTabToSelfModelMock* send_tab_to_self_model() {
+  send_tab_to_self::FakeSendTabToSelfModel* send_tab_to_self_model() {
     return send_tab_to_self_model_;
   }
 
   FaviconServiceMock* favicon_service() { return favicon_service_; }
+
+  void AddMockTargetDevice(syncer::DeviceInfo::FormFactor form_factor) {
+    send_tab_to_self_model()->AddTargetDevice(
+        send_tab_to_self::TargetDeviceInfo(kTargetDeviceFullName,
+                                           kTargetDeviceCacheGuid, form_factor,
+                                           base::Time::Now()));
+  }
 
   TestMediaController* media_controller() const {
     return media_controller_.get();
@@ -623,7 +560,7 @@ class BirchKeyedServiceTest : public BrowserWithTestWindowTest {
             base::BindRepeating(&BuildMockSessionSyncService)},
         TestingProfile::TestingFactory{
             SendTabToSelfSyncServiceFactory::GetInstance(),
-            base::BindRepeating(&BuildTestSendTabToSelfSyncService)},
+            base::BindRepeating(&BuildStubSendTabToSelfSyncService)},
         TestingProfile::TestingFactory{
             FaviconServiceFactory::GetInstance(),
             base::BindRepeating(&BuildFaviconServiceMock)},
@@ -650,7 +587,7 @@ class BirchKeyedServiceTest : public BrowserWithTestWindowTest {
 
   raw_ptr<syncer::TestSyncService> sync_service_;
 
-  raw_ptr<SendTabToSelfModelMock> send_tab_to_self_model_;
+  raw_ptr<send_tab_to_self::FakeSendTabToSelfModel> send_tab_to_self_model_;
 
   raw_ptr<FaviconServiceMock> favicon_service_;
 
@@ -895,8 +832,7 @@ TEST_F(BirchKeyedServiceTest, SelfShareProvider_FromTablet) {
   EXPECT_EQ(model->GetSelfShareItemsForTest().size(), 0u);
 
   AddNewChromeSyncEntry();
-  send_tab_to_self_model()->AddMockTargetDevice(
-      syncer::DeviceInfo::FormFactor::kTablet);
+  AddMockTargetDevice(syncer::DeviceInfo::FormFactor::kTablet);
   self_share_provider->RequestBirchDataFetch();
   model->SetCalendarItems(std::vector<BirchCalendarItem>());
   model->SetRecentTabItems(std::vector<BirchTabItem>());
@@ -923,8 +859,7 @@ TEST_F(BirchKeyedServiceTest, SelfShareProvider_FromPhone) {
   EXPECT_EQ(model->GetSelfShareItemsForTest().size(), 0u);
 
   AddNewChromeSyncEntry();
-  send_tab_to_self_model()->AddMockTargetDevice(
-      syncer::DeviceInfo::FormFactor::kPhone);
+  AddMockTargetDevice(syncer::DeviceInfo::FormFactor::kPhone);
   self_share_provider->RequestBirchDataFetch();
   model->SetCalendarItems(std::vector<BirchCalendarItem>());
   model->SetRecentTabItems(std::vector<BirchTabItem>());
@@ -950,8 +885,7 @@ TEST_F(BirchKeyedServiceTest, SelfShareProvider_FromDesktop) {
   EXPECT_EQ(model->GetSelfShareItemsForTest().size(), 0u);
 
   AddNewChromeSyncEntry();
-  send_tab_to_self_model()->AddMockTargetDevice(
-      syncer::DeviceInfo::FormFactor::kDesktop);
+  AddMockTargetDevice(syncer::DeviceInfo::FormFactor::kDesktop);
   self_share_provider->RequestBirchDataFetch();
   model->SetCalendarItems(std::vector<BirchCalendarItem>());
   model->SetRecentTabItems(std::vector<BirchTabItem>());

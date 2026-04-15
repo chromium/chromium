@@ -9,11 +9,11 @@
 #import "base/functional/bind.h"
 #import "base/memory/raw_ptr.h"
 #import "base/strings/utf_string_conversions.h"
+#import "components/send_tab_to_self/fake_send_tab_to_self_model.h"
 #import "components/send_tab_to_self/page_context.h"
 #import "components/send_tab_to_self/send_tab_to_self_entry.h"
 #import "components/send_tab_to_self/send_tab_to_self_model.h"
 #import "components/send_tab_to_self/send_tab_to_self_sync_service.h"
-#import "components/send_tab_to_self/test_send_tab_to_self_model.h"
 #import "ios/chrome/browser/infobars/model/infobar_manager_impl.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
@@ -29,45 +29,10 @@
 #import "testing/platform_test.h"
 #import "url/gurl.h"
 
+using send_tab_to_self::FakeSendTabToSelfModel;
 using send_tab_to_self::SendTabToSelfEntry;
 
 namespace {
-
-// TODO (crbug/974040): update TestSendTabToSelfModel and delete this class
-class FakeSendTabToSelfModel : public send_tab_to_self::TestSendTabToSelfModel {
- public:
-  FakeSendTabToSelfModel() = default;
-  ~FakeSendTabToSelfModel() override = default;
-
-  const SendTabToSelfEntry* AddEntry(
-      const GURL& url,
-      const std::string& title,
-      const std::string& target_device_cache_guid,
-      const send_tab_to_self::PageContext& context,
-      send_tab_to_self::NavigationHistory navigation_history,
-      base::OnceCallback<void(send_tab_to_self::SendTabToSelfResult)>
-          commit_confirmation) override {
-    last_entry_ = SendTabToSelfEntry::FromRequiredFields(
-        "test-guid", url, target_device_cache_guid);
-    return last_entry_.get();
-  }
-
-  bool IsReady() override { return true; }
-  bool HasValidTargetDevice() override { return true; }
-
-  SendTabToSelfEntry* GetLastEntry() { return last_entry_.get(); }
-
-  void RemoteAddEntry(send_tab_to_self::SendTabToSelfEntry* entry) {
-    std::vector<const SendTabToSelfEntry*> entries;
-    entries.push_back(entry);
-    for (send_tab_to_self::SendTabToSelfModelObserver& observer : observers_) {
-      observer.EntriesAddedRemotely(entries);
-    }
-  }
-
- private:
-  std::unique_ptr<SendTabToSelfEntry> last_entry_;
-};
 
 // TODO (crbug/974040): Move TestSendTabToSelfSyncService to components and
 // reuse in both ios/chrome and chrome tests
@@ -90,6 +55,8 @@ class TestSendTabToSelfSyncService
       override {
     return nullptr;
   }
+
+  FakeSendTabToSelfModel* GetModel() { return model_.get(); }
 
  private:
   std::unique_ptr<FakeSendTabToSelfModel> model_;
@@ -160,10 +127,9 @@ TEST_F(SendTabToSelfBrowserAgentTest, TestRemoteAddSimple) {
       InfoBarManagerImpl::FromWebState(web_state);
   EXPECT_EQ(0UL, infobar_manager->infobars().size());
 
-  std::unique_ptr<SendTabToSelfEntry> entry =
-      SendTabToSelfEntry::FromRequiredFields(
-          "test-guid", GURL("http://www.test.com/test-1"), "device1");
-  model_->RemoteAddEntry(entry.get());
+  model_->AddEntryRemotely(GURL("http://www.test.com/test-1"), "title",
+                           "device1", send_tab_to_self::PageContext(),
+                           send_tab_to_self::NavigationHistory());
 
   // An infobar for the entry should have been added.
   EXPECT_EQ(1UL, infobar_manager->infobars().size());
@@ -171,10 +137,9 @@ TEST_F(SendTabToSelfBrowserAgentTest, TestRemoteAddSimple) {
 
 TEST_F(SendTabToSelfBrowserAgentTest, TestRemoteAddNoTab) {
   // Remote entries added when there are no web states.
-  std::unique_ptr<SendTabToSelfEntry> entry =
-      SendTabToSelfEntry::FromRequiredFields(
-          "test-guid", GURL("http://www.test.com/test-1"), "device1");
-  model_->RemoteAddEntry(entry.get());
+  model_->AddEntryRemotely(GURL("http://www.test.com/test-1"), "title",
+                           "device1", send_tab_to_self::PageContext(),
+                           send_tab_to_self::NavigationHistory());
 
   // Add a web state, active and visible.
   web::WebState* web_state = AppendNewWebState(GURL("http://www.blank.com"));
@@ -195,10 +160,9 @@ TEST_F(SendTabToSelfBrowserAgentTest, TestRemoteAddTabNotVisible) {
   EXPECT_EQ(0UL, infobar_manager->infobars().size());
 
   // Remote entries added.
-  std::unique_ptr<SendTabToSelfEntry> entry =
-      SendTabToSelfEntry::FromRequiredFields(
-          "test-guid", GURL("http://www.test.com/test-1"), "device1");
-  model_->RemoteAddEntry(entry.get());
+  model_->AddEntryRemotely(GURL("http://www.test.com/test-1"), "title",
+                           "device1", send_tab_to_self::PageContext(),
+                           send_tab_to_self::NavigationHistory());
 
   // No visible web state, so expect no infobar.
   EXPECT_EQ(0UL, infobar_manager->infobars().size());
@@ -220,10 +184,9 @@ TEST_F(SendTabToSelfBrowserAgentTest, TestRemoteAddTabNotActive) {
   EXPECT_EQ(0UL, infobar_manager->infobars().size());
 
   // Remote entries added.
-  std::unique_ptr<SendTabToSelfEntry> entry =
-      SendTabToSelfEntry::FromRequiredFields(
-          "test-guid", GURL("http://www.test.com/test-1"), "device1");
-  model_->RemoteAddEntry(entry.get());
+  model_->AddEntryRemotely(GURL("http://www.test.com/test-1"), "title",
+                           "device1", send_tab_to_self::PageContext(),
+                           send_tab_to_self::NavigationHistory());
 
   // No active web state, so expect no infobar.
   EXPECT_EQ(0UL, infobar_manager->infobars().size());
@@ -248,10 +211,9 @@ TEST_F(SendTabToSelfBrowserAgentTest, TestRemoteAddTabNotVisibleActivated) {
   EXPECT_EQ(0UL, infobar_manager->infobars().size());
 
   // Remote entries added.
-  std::unique_ptr<SendTabToSelfEntry> entry =
-      SendTabToSelfEntry::FromRequiredFields(
-          "test-guid", GURL("http://www.test.com/test-1"), "device1");
-  model_->RemoteAddEntry(entry.get());
+  model_->AddEntryRemotely(GURL("http://www.test.com/test-1"), "title",
+                           "device1", send_tab_to_self::PageContext(),
+                           send_tab_to_self::NavigationHistory());
 
   // No visible web state, so expect no infobar.
   EXPECT_EQ(0UL, infobar_manager->infobars().size());

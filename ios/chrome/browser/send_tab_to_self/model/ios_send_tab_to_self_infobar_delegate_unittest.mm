@@ -12,8 +12,8 @@
 #import "base/strings/sys_string_conversions.h"
 #import "base/strings/utf_string_conversions.h"
 #import "components/infobars/core/infobar.h"
+#import "components/send_tab_to_self/fake_send_tab_to_self_model.h"
 #import "components/send_tab_to_self/send_tab_to_self_entry.h"
-#import "components/send_tab_to_self/test_send_tab_to_self_model.h"
 #import "ios/chrome/browser/infobars/model/infobar_manager_impl.h"
 #import "ios/chrome/browser/infobars/model/infobar_utils.h"
 #import "ios/chrome/grit/ios_strings.h"
@@ -41,23 +41,6 @@ class FakeWebState : public web::FakeWebState {
 
  private:
   std::unique_ptr<web::WebState::OpenURLParams> last_open_url_params_;
-};
-
-class FakeSendTabToSelfModel : public TestSendTabToSelfModel {
- public:
-  void DismissEntry(const std::string& guid) override {
-    dismissed_guid_ = guid;
-  }
-  void MarkEntryOpened(const std::string& guid) override {
-    opened_guid_ = guid;
-  }
-
-  const std::string& dismissed_guid() const { return dismissed_guid_; }
-  const std::string& opened_guid() const { return opened_guid_; }
-
- private:
-  std::string dismissed_guid_;
-  std::string opened_guid_;
 };
 
 class IOSSendTabToSelfInfoBarDelegateTest : public PlatformTest {
@@ -108,7 +91,7 @@ TEST_F(IOSSendTabToSelfInfoBarDelegateTest, Accept) {
 
   EXPECT_TRUE(delegate_ptr->Accept());
 
-  EXPECT_EQ("test-guid", model_.opened_guid());
+  EXPECT_EQ("test-guid", model_.last_opened_guid());
 
   web::WebState::OpenURLParams* params = web_state()->last_open_url_params();
   ASSERT_TRUE(params);
@@ -152,7 +135,7 @@ TEST_F(IOSSendTabToSelfInfoBarDelegateTest, Cancel) {
   ConfirmInfoBarDelegate* confirm_delegate = delegate.get();
 
   EXPECT_TRUE(confirm_delegate->Cancel());
-  EXPECT_EQ("test-guid", model_.dismissed_guid());
+  EXPECT_EQ("test-guid", model_.last_dismissed_guid());
 }
 
 }  // namespace

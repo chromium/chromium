@@ -17,11 +17,12 @@
 #include "chrome/browser/sync/send_tab_to_self_sync_service_factory.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "chrome/test/base/testing_profile.h"
+#include "components/keyed_service/core/keyed_service.h"
+#include "components/send_tab_to_self/fake_send_tab_to_self_model.h"
 #include "components/send_tab_to_self/features.h"
 #include "components/send_tab_to_self/send_tab_to_self_model.h"
 #include "components/send_tab_to_self/send_tab_to_self_sync_service.h"
 #include "components/send_tab_to_self/target_device_info.h"
-#include "components/send_tab_to_self/test_send_tab_to_self_model.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/web_contents.h"
@@ -36,56 +37,17 @@ namespace {
 using testing::ElementsAre;
 using testing::Field;
 
-// A stub model that returns a predetermined list of devices for testing.
-class StubSendTabToSelfModel : public TestSendTabToSelfModel {
- public:
-  StubSendTabToSelfModel() = default;
-  ~StubSendTabToSelfModel() override = default;
-
-  std::vector<TargetDeviceInfo> GetTargetDeviceInfoSortedList() override {
-    return devices_;
-  }
-
-  void SetDevices(const std::vector<TargetDeviceInfo>& devices) {
-    devices_ = devices;
-  }
-
-  const SendTabToSelfEntry* AddEntry(
-      const GURL& url,
-      const std::string& title,
-      const std::string& device_id,
-      const PageContext& context,
-      NavigationHistory navigation_history,
-      base::OnceCallback<void(SendTabToSelfResult)> commit_confirmation)
-      override {
-    last_sent_guid_ = device_id;
-    last_sent_url_ = url;
-    last_sent_title_ = title;
-    std::move(commit_confirmation).Run(SendTabToSelfResult::kSuccess);
-    return nullptr;
-  }
-
-  std::string last_sent_guid_;
-  GURL last_sent_url_;
-  std::string last_sent_title_;
-
-  bool IsReady() override { return true; }
-
- private:
-  std::vector<TargetDeviceInfo> devices_;
-};
-
 // A stub sync service that simply returns our stub model.
 class StubSendTabToSelfSyncService : public SendTabToSelfSyncService {
  public:
-  explicit StubSendTabToSelfSyncService(SendTabToSelfModel* model)
-      : model_(model) {}
+  StubSendTabToSelfSyncService() = default;
   ~StubSendTabToSelfSyncService() override = default;
 
-  SendTabToSelfModel* GetSendTabToSelfModel() override { return model_; }
+  SendTabToSelfModel* GetSendTabToSelfModel() override { return &model_; }
+  FakeSendTabToSelfModel* GetModelFake() { return &model_; }
 
  private:
-  raw_ptr<SendTabToSelfModel> model_;
+  FakeSendTabToSelfModel model_;
 };
 
 class SendTabToSelfContextMenuDelegateTest
@@ -109,11 +71,14 @@ class SendTabToSelfContextMenuDelegateTest
 
   std::unique_ptr<KeyedService> BuildStubSyncService(
       content::BrowserContext* context) {
-    return std::make_unique<StubSendTabToSelfSyncService>(&model_);
+    return std::make_unique<StubSendTabToSelfSyncService>();
   }
 
- protected:
-  StubSendTabToSelfModel model_;
+  FakeSendTabToSelfModel* model() {
+    return static_cast<StubSendTabToSelfSyncService*>(
+               SendTabToSelfSyncServiceFactory::GetForProfile(profile()))
+        ->GetModelFake();
+  }
 
  private:
   base::test::ScopedFeatureList feature_list_;
@@ -129,7 +94,7 @@ TEST_F(SendTabToSelfContextMenuDelegateTest, GetDevicesForDisplayLimitsToFive) {
                          "guid" + base::NumberToString(i),
                          syncer::DeviceInfo::FormFactor::kDesktop, now);
   }
-  model_.SetDevices(devices);
+  model()->SetTargetDeviceInfoSortedList(devices);
 
   SendTabToSelfContextMenuDelegate delegate(web_contents());
   ui::SimpleMenuModel menu_model(&delegate);
@@ -150,7 +115,7 @@ TEST_F(SendTabToSelfContextMenuDelegateTest, ExecuteCommandSendsToDevice) {
   std::vector<TargetDeviceInfo> devices;
   devices.emplace_back("Device 0", "guid0",
                        syncer::DeviceInfo::FormFactor::kDesktop, now);
-  model_.SetDevices(devices);
+  model()->SetTargetDeviceInfoSortedList(devices);
 
   const GURL kExampleUrl("https://example.com");
   const std::u16string kExampleTitle = u"Example Title";
@@ -165,9 +130,12 @@ TEST_F(SendTabToSelfContextMenuDelegateTest, ExecuteCommandSendsToDevice) {
 
   delegate.ExecuteCommand(IDC_CONTENT_CONTEXT_SEND_TAB_TO_SELF_DEVICE1, 0);
 
-  EXPECT_EQ(model_.last_sent_guid_, "guid0");
-  EXPECT_EQ(model_.last_sent_url_, kExampleUrl);
-  EXPECT_EQ(model_.last_sent_title_, base::UTF16ToUTF8(kExampleTitle));
+  std::vector<std::string> guids = model()->GetAllGuids();
+  ASSERT_EQ(guids.size(), 1u);
+  const SendTabToSelfEntry* sent_entry = model()->GetEntryByGUID(guids[0]);
+  EXPECT_EQ(sent_entry->GetTargetDeviceSyncCacheGuid(), "guid0");
+  EXPECT_EQ(sent_entry->GetURL(), kExampleUrl);
+  EXPECT_EQ(sent_entry->GetTitle(), base::UTF16ToUTF8(kExampleTitle));
 }
 
 // Tests that PopulateSubmenu correctly adds the device items and the "Manage
@@ -178,7 +146,7 @@ TEST_F(SendTabToSelfContextMenuDelegateTest,
   std::vector<TargetDeviceInfo> devices;
   devices.emplace_back("Device 0", "guid0",
                        syncer::DeviceInfo::FormFactor::kDesktop, now);
-  model_.SetDevices(devices);
+  model()->SetTargetDeviceInfoSortedList(devices);
 
   SendTabToSelfContextMenuDelegate delegate(web_contents());
   ui::SimpleMenuModel menu_model(&delegate);

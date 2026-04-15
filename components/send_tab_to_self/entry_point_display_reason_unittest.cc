@@ -10,8 +10,8 @@
 #include "base/functional/bind.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/testing_pref_service.h"
+#include "components/send_tab_to_self/fake_send_tab_to_self_model.h"
 #include "components/send_tab_to_self/send_tab_to_self_sync_service.h"
-#include "components/send_tab_to_self/test_send_tab_to_self_model.h"
 #include "components/signin/public/base/signin_pref_names.h"
 #include "components/sync/test/test_sync_service.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -26,32 +26,12 @@ using internal::GetEntryPointDisplayReason;
 const char kHttpsUrl[] = "https://www.foo.com";
 const char kHttpUrl[] = "http://www.foo.com";
 
-class FakeSendTabToSelfModel : public TestSendTabToSelfModel {
- public:
-  FakeSendTabToSelfModel() = default;
-  ~FakeSendTabToSelfModel() override = default;
-
-  void SetIsReady(bool is_ready) { is_ready_ = is_ready; }
-  void SetHasValidTargetDevice(bool has_valid_target_device) {
-    if (has_valid_target_device) {
-      DCHECK(is_ready_) << "Target devices are only known if the model's ready";
-    }
-    has_valid_target_device_ = has_valid_target_device;
-  }
-
-  bool IsReady() override { return is_ready_; }
-  bool HasValidTargetDevice() override { return has_valid_target_device_; }
-
- private:
-  bool is_ready_ = false;
-  bool has_valid_target_device_ = false;
-};
-
 class EntryPointDisplayReasonTest : public ::testing::Test {
  public:
   EntryPointDisplayReasonTest() {
     pref_service_.registry()->RegisterBooleanPref(prefs::kSigninAllowed, true);
     sync_service_.SetSignedOut();
+    send_tab_to_self_model_.SetIsReady(false);
   }
 
   syncer::TestSyncService* sync_service() { return &sync_service_; }

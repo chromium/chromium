@@ -25,11 +25,11 @@
 #include "chrome/browser/ui/views/send_tab_to_self/send_tab_to_self_toolbar_bubble_controller.h"
 #include "chrome/browser/ui/views/toolbar/pinned_toolbar_actions.h"
 #include "chrome/test/base/in_process_browser_test.h"
+#include "components/send_tab_to_self/fake_send_tab_to_self_model.h"
 #include "components/send_tab_to_self/features.h"
 #include "components/send_tab_to_self/send_tab_to_self_entry.h"
 #include "components/send_tab_to_self/send_tab_to_self_model.h"
 #include "components/send_tab_to_self/send_tab_to_self_sync_service.h"
-#include "components/send_tab_to_self/test_send_tab_to_self_model.h"
 #include "components/sync/model/data_type_controller_delegate.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
@@ -57,44 +57,10 @@ void SimulateOpeningReceivedTab(Browser* browser,
   controller->bubble()->OpenInNewTab();
 }
 
-class FakeSendTabToSelfModel : public TestSendTabToSelfModel {
+class StubSendTabToSelfSyncService : public SendTabToSelfSyncService {
  public:
-  FakeSendTabToSelfModel() = default;
-  ~FakeSendTabToSelfModel() override = default;
-
-  const SendTabToSelfEntry* GetEntryByGUID(
-      const std::string& guid) const override {
-    auto it = entries_.find(guid);
-    return it != entries_.end() ? it->second.get() : nullptr;
-  }
-
-  const SendTabToSelfEntry* AddEntry(
-      const GURL& url,
-      const std::string& title,
-      const std::string& device_id,
-      const PageContext& context,
-      NavigationHistory navigation_history,
-      base::OnceCallback<void(SendTabToSelfResult)> commit_confirmation)
-      override {
-    // For testing purposes, we hardcode the guid as "guid" so we can reference
-    // it in the Navigate call.
-    auto entry = std::make_unique<SendTabToSelfEntry>(
-        "guid", url, title, base::Time::Now(), device_id, "cache_guid", context,
-        std::move(navigation_history));
-    const SendTabToSelfEntry* raw_ptr = entry.get();
-    entries_[raw_ptr->GetGUID()] = std::move(entry);
-    std::move(commit_confirmation).Run(SendTabToSelfResult::kSuccess);
-    return raw_ptr;
-  }
-
- private:
-  std::map<std::string, std::unique_ptr<SendTabToSelfEntry>> entries_;
-};
-
-class TestSendTabToSelfSyncService : public SendTabToSelfSyncService {
- public:
-  TestSendTabToSelfSyncService() = default;
-  ~TestSendTabToSelfSyncService() override = default;
+  StubSendTabToSelfSyncService() = default;
+  ~StubSendTabToSelfSyncService() override = default;
 
   SendTabToSelfModel* GetSendTabToSelfModel() override { return &model_fake_; }
 
@@ -109,9 +75,9 @@ class TestSendTabToSelfSyncService : public SendTabToSelfSyncService {
   FakeSendTabToSelfModel model_fake_;
 };
 
-std::unique_ptr<KeyedService> BuildTestSendTabToSelfSyncService(
+std::unique_ptr<KeyedService> BuildStubSendTabToSelfSyncService(
     content::BrowserContext* context) {
-  return std::make_unique<TestSendTabToSelfSyncService>();
+  return std::make_unique<StubSendTabToSelfSyncService>();
 }
 
 class SendTabToSelfScrollObserverBrowserTest : public InProcessBrowserTest {
@@ -123,12 +89,12 @@ class SendTabToSelfScrollObserverBrowserTest : public InProcessBrowserTest {
   void SetUpBrowserContextKeyedServices(
       content::BrowserContext* context) override {
     SendTabToSelfSyncServiceFactory::GetInstance()->SetTestingFactory(
-        context, base::BindRepeating(&BuildTestSendTabToSelfSyncService));
+        context, base::BindRepeating(&BuildStubSendTabToSelfSyncService));
   }
 
   void SetUpOnMainThread() override {
     InProcessBrowserTest::SetUpOnMainThread();
-    model_fake_ = &(static_cast<TestSendTabToSelfSyncService*>(
+    model_fake_ = &(static_cast<StubSendTabToSelfSyncService*>(
                         SendTabToSelfSyncServiceFactory::GetForProfile(
                             browser()->profile()))
                         ->model_fake());
@@ -155,14 +121,14 @@ IN_PROC_BROWSER_TEST_F(SendTabToSelfScrollObserverBrowserTest,
   page_context.scroll_position.text_fragment =
       TextFragmentData("Some text", "", "", "");
 
-  model_fake_->AddEntry(test_url, "title", "device", page_context,
-                        NavigationHistory(), base::DoNothing());
+  const SendTabToSelfEntry* entry =
+      model_fake_->AddEntry(test_url, "title", "device", page_context,
+                            NavigationHistory(), base::DoNothing());
 
   content::TestNavigationObserver navigation_observer{test_url};
   navigation_observer.StartWatchingNewWebContents();
 
   // Mimic the user opening the received tab.
-  const SendTabToSelfEntry* entry = model_fake_->GetEntryByGUID("guid");
   base::HistogramTester histogram_tester;
   SimulateOpeningReceivedTab(browser(), *entry);
 
@@ -198,14 +164,14 @@ IN_PROC_BROWSER_TEST_F(SendTabToSelfScrollObserverBrowserTest,
   // No scroll position in PageContext.
   PageContext page_context;
 
-  model_fake_->AddEntry(test_url, "title", "device", page_context,
-                        NavigationHistory(), base::DoNothing());
+  const SendTabToSelfEntry* entry =
+      model_fake_->AddEntry(test_url, "title", "device", page_context,
+                            NavigationHistory(), base::DoNothing());
 
   content::TestNavigationObserver navigation_observer{test_url};
   navigation_observer.StartWatchingNewWebContents();
 
   // Mimic the user opening the received tab.
-  const SendTabToSelfEntry* entry = model_fake_->GetEntryByGUID("guid");
   base::HistogramTester histogram_tester;
   SimulateOpeningReceivedTab(browser(), *entry);
 

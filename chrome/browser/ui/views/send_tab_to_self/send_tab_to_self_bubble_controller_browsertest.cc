@@ -14,13 +14,14 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
+#include "components/keyed_service/core/keyed_service.h"
+#include "components/send_tab_to_self/fake_send_tab_to_self_model.h"
 #include "components/send_tab_to_self/features.h"
 #include "components/send_tab_to_self/metrics_util.h"
 #include "components/send_tab_to_self/page_context.h"
 #include "components/send_tab_to_self/send_tab_to_self_entry.h"
 #include "components/send_tab_to_self/send_tab_to_self_model_observer.h"
 #include "components/send_tab_to_self/send_tab_to_self_sync_service.h"
-#include "components/send_tab_to_self/test_send_tab_to_self_model.h"
 #include "components/sync/test/fake_data_type_controller_delegate.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/test/browser_test.h"
@@ -35,43 +36,10 @@ namespace send_tab_to_self {
 
 namespace {
 
-class FakeSendTabToSelfModel : public TestSendTabToSelfModel {
+class StubSendTabToSelfSyncService : public SendTabToSelfSyncService {
  public:
-  FakeSendTabToSelfModel() = default;
-  ~FakeSendTabToSelfModel() override = default;
-
-  bool IsReady() override { return true; }
-
-  const SendTabToSelfEntry* AddEntry(
-      const GURL& url,
-      const std::string& title,
-      const std::string& device_id,
-      const send_tab_to_self::PageContext& context,
-      send_tab_to_self::NavigationHistory navigation_history,
-      base::OnceCallback<void(send_tab_to_self::SendTabToSelfResult)>
-          commit_confirmation) override {
-    auto entry = std::make_unique<SendTabToSelfEntry>(
-        "guid", url, title, base::Time::Now(), "device", device_id, context,
-        std::move(navigation_history));
-    const SendTabToSelfEntry* entry_ptr = entry.get();
-    entries_.push_back(std::move(entry));
-
-    for (auto& observer : observers_) {
-      observer.EntryAddedLocally(entry_ptr);
-    }
-    std::move(commit_confirmation)
-        .Run(send_tab_to_self::SendTabToSelfResult::kSuccess);
-    return entry_ptr;
-  }
-
- private:
-  std::vector<std::unique_ptr<SendTabToSelfEntry>> entries_;
-};
-
-class TestSendTabToSelfSyncService : public SendTabToSelfSyncService {
- public:
-  TestSendTabToSelfSyncService() : fake_delegate_(syncer::SEND_TAB_TO_SELF) {}
-  ~TestSendTabToSelfSyncService() override = default;
+  StubSendTabToSelfSyncService() : fake_delegate_(syncer::SEND_TAB_TO_SELF) {}
+  ~StubSendTabToSelfSyncService() override = default;
 
   SendTabToSelfModel* GetSendTabToSelfModel() override { return &model_fake_; }
 
@@ -87,9 +55,9 @@ class TestSendTabToSelfSyncService : public SendTabToSelfSyncService {
   FakeSendTabToSelfModel model_fake_;
 };
 
-std::unique_ptr<KeyedService> BuildTestSendTabToSelfSyncService(
+std::unique_ptr<KeyedService> BuildStubSyncService(
     content::BrowserContext* context) {
-  return std::make_unique<TestSendTabToSelfSyncService>();
+  return std::make_unique<StubSendTabToSelfSyncService>();
 }
 
 class TestSendTabToSelfModelObserver : public SendTabToSelfModelObserver {
@@ -150,7 +118,7 @@ class SendTabToSelfBubbleControllerBrowserTest : public InProcessBrowserTest {
 
   void OnWillCreateBrowserContextServices(content::BrowserContext* context) {
     SendTabToSelfSyncServiceFactory::GetInstance()->SetTestingFactory(
-        context, base::BindRepeating(&BuildTestSendTabToSelfSyncService));
+        context, base::BindRepeating(&BuildStubSyncService));
   }
 
  protected:
@@ -173,8 +141,8 @@ IN_PROC_BROWSER_TEST_F(SendTabToSelfBubbleControllerBrowserTest,
       browser()->tab_strip_model()->GetActiveWebContents();
   ASSERT_TRUE(content::NavigateToURL(web_contents, test_url));
 
-  TestSendTabToSelfSyncService* sync_service =
-      static_cast<TestSendTabToSelfSyncService*>(
+  StubSendTabToSelfSyncService* sync_service =
+      static_cast<StubSendTabToSelfSyncService*>(
           SendTabToSelfSyncServiceFactory::GetForProfile(browser()->profile()));
   ASSERT_TRUE(sync_service);
 
@@ -216,8 +184,8 @@ IN_PROC_BROWSER_TEST_F(SendTabToSelfBubbleControllerBrowserTest,
       browser()->tab_strip_model()->GetActiveWebContents();
   ASSERT_TRUE(content::NavigateToURL(web_contents, test_url));
 
-  TestSendTabToSelfSyncService* sync_service =
-      static_cast<TestSendTabToSelfSyncService*>(
+  StubSendTabToSelfSyncService* sync_service =
+      static_cast<StubSendTabToSelfSyncService*>(
           SendTabToSelfSyncServiceFactory::GetForProfile(browser()->profile()));
   ASSERT_TRUE(sync_service);
 
@@ -273,8 +241,8 @@ IN_PROC_BROWSER_TEST_F(SendTabToSelfBubbleControllerBrowserTest,
       "  );"
       "});"));
 
-  TestSendTabToSelfSyncService* sync_service =
-      static_cast<TestSendTabToSelfSyncService*>(
+  StubSendTabToSelfSyncService* sync_service =
+      static_cast<StubSendTabToSelfSyncService*>(
           SendTabToSelfSyncServiceFactory::GetForProfile(browser()->profile()));
   ASSERT_TRUE(sync_service);
 
