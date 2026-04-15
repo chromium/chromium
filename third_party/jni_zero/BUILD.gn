@@ -78,6 +78,9 @@ component("jni_zero") {
   configs += [ "//build/config/compiler:no_exit_time_destructors" ]
 
   defines = []
+  if (build_with_chromium) {
+    defines += [ "JNI_ZERO_BUILD_WITH_CHROMIUM" ]
+  }
   if (enable_jni_multiplexing) {
     defines += [ "JNI_ZERO_MULTIPLEXING_ENABLED" ]
   }
@@ -95,6 +98,9 @@ component("jni_zero") {
     ":generate_jni($default_toolchain)",
     ":system_jni_unchecked_exceptions($default_toolchain)",
   ]
+  if (build_with_chromium) {
+    deps += [ "//base:base_static" ]
+  }
   public_deps = [ ":system_jni($default_toolchain)" ]
 }
 

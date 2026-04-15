@@ -14,6 +14,10 @@
 
 #include "third_party/jni_zero/jni_export.h"
 
+#if defined(JNI_ZERO_BUILD_WITH_CHROMIUM)
+#include "base/immediate_crash.h"
+#endif
+
 #if defined(NDEBUG) && !defined(DCHECK_ALWAYS_ON)
 #define JNI_ZERO_DCHECK_IS_ON() false
 #else
@@ -64,11 +68,15 @@ JNI_ZERO_COMPONENT_BUILD_EXPORT void LogMessage(LogLev,
                                                 ...)
     __attribute__((__format__(__printf__, 4, 5)));
 
+#if defined(JNI_ZERO_BUILD_WITH_CHROMIUM)
+#define JNI_ZERO_IMMEDIATE_CRASH() base::ImmediateCrash()
+#else
 #define JNI_ZERO_IMMEDIATE_CRASH() \
   do {                             \
     __builtin_trap();              \
     __builtin_unreachable();       \
   } while (0)
+#endif
 #define JNI_ZERO_XLOG(level, fmt, ...)                                         \
   ::jni_zero::LogMessage(level, ::jni_zero::Basename(__FILE__), __LINE__, fmt, \
                          ##__VA_ARGS__)
