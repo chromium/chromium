@@ -109,6 +109,11 @@ class ContextualTasksContextService
       base::OnceCallback<void(std::vector<base::WeakPtr<content::WebContents>>)>
           callback);
 
+  // Called when the user starts typing a query.
+  //
+  // This will pre-flight any pending embeddings required.
+  void OnTypedQuery();
+
   void SetClockForTesting(const base::TickClock* tick_clock);
 
  protected:

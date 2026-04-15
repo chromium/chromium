@@ -278,9 +278,6 @@ void ContextualTasksContextService::GetRelevantTabsForQuery(
     return;
   }
 
-  // Force active tab embedding to be processed.
-  page_embeddings_service_->ProcessEmbeddingsOnDemand();
-
   AUTO_CONTEXT_LOG("Submitted query to embedder");
   int64_t request_id = next_request_id_++;
 
@@ -303,6 +300,17 @@ void ContextualTasksContextService::GetRelevantTabsForQuery(
                          explicit_urls, request_id));
   pending_requests_[request_id] =
       std::make_unique<PendingRequest>(task_id, std::move(callback));
+}
+
+void ContextualTasksContextService::OnTypedQuery() {
+  if (!embedder_model_version_) {
+    // Do not queue if embedder is not available.
+    return;
+  }
+
+  // Process embeddings for all tabs as the user has intent to call
+  // `GetRelevantTabsForQuery` soon.
+  page_embeddings_service_->ProcessEmbeddingsOnDemand();
 }
 
 void ContextualTasksContextService::EmbedderMetadataUpdated(
