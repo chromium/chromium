@@ -22214,6 +22214,25 @@
             ]
         }
     ],
+    "SystemPdhMetrics": [
+        {
+            "platforms": [
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "params": {
+                        "system_pdh_metrics_downsampling_factor": "20",
+                        "system_pdh_metrics_sampling_period": "30s"
+                    },
+                    "enable_features": [
+                        "SystemPdhMetrics"
+                    ]
+                }
+            ]
+        }
+    ],
     "TLSTrustAnchorIDs": [
         {
             "platforms": [
