@@ -8,12 +8,12 @@
 
 #include "base/functional/callback_helpers.h"
 #include "base/memory/ptr_util.h"
+#include "base/task/single_thread_task_runner.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/views/accessibility_annotator/accessibility_annotator_info_dialog.h"
 #include "chrome/browser/ui/webui/accessibility_annotator/accessibility_annotator_info_ui.h"
 #include "chrome/browser/ui/webui/top_chrome/webui_contents_wrapper.h"
 #include "components/constrained_window/constrained_window_views.h"
-#include "components/web_modal/web_contents_modal_dialog_manager.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/views/controls/webview/webview.h"
 #include "ui/views/widget/widget.h"
@@ -39,6 +39,9 @@ void AccessibilityAnnotatorInfoDialogController::ShowDialog(
   if (dialog_widget_) {
     // Dialog is already open, focus it or ignore.
     dialog_widget_->Show();
+    if (callback) {
+      std::move(callback).Run(InfoDialogResult::kDismissed);
+    }
     return;
   }
 
@@ -67,35 +70,28 @@ void AccessibilityAnnotatorInfoDialogController::ShowDialog(
         weak_factory_.GetWeakPtr(), std::move(callback));
 
     info_ui->SetDialogCallback(std::move(wrapped_callback));
+  } else if (callback) {
+    std::move(callback).Run(InfoDialogResult::kDismissed);
   }
 
   auto dialog_view = std::make_unique<AccessibilityAnnotatorInfoDialog>(
       nullptr, std::move(contents_wrapper));
 
-  bool use_web_modal = false;
-  if (web_contents) {
-    auto* manager =
-        web_modal::WebContentsModalDialogManager::FromWebContents(web_contents);
-    if (manager && manager->delegate()) {
-      use_web_modal = true;
-    }
-  }
+  dialog_view->SetOwnershipOfNewWidget(
+      views::Widget::InitParams::CLIENT_OWNS_WIDGET);
 
-  if (use_web_modal) {
-    dialog_view->SetModalType(ui::mojom::ModalType::kChild);
-    dialog_view->SetOwnershipOfNewWidget(
-        views::Widget::InitParams::CLIENT_OWNS_WIDGET);
-    dialog_widget_ = constrained_window::ShowWebModalDialogViewsOwned(
-        dialog_view.release(), web_contents,
-        views::Widget::InitParams::CLIENT_OWNS_WIDGET);
-    // ShowWebModalDialogViews handles showing the widget
+  if (web_contents) {
+    dialog_view->SetModalType(ui::mojom::ModalType::kNone);
+    dialog_view->set_parent_window(web_contents->GetNativeView());
+    dialog_view->SetAnchorRect(web_contents->GetContainerBounds());
   } else {
     dialog_view->set_has_parent(false);
-    auto* widget = views::BubbleDialogDelegateView::CreateBubble(
-        std::move(dialog_view), views::Widget::InitParams::CLIENT_OWNS_WIDGET);
-    dialog_widget_ = base::WrapUnique(widget);
-    dialog_widget_->Show();
   }
+
+  views::Widget* widget = views::BubbleDialogDelegateView::CreateBubble(
+      std::move(dialog_view), views::Widget::InitParams::CLIENT_OWNS_WIDGET);
+  dialog_widget_ = base::WrapUnique(widget);
+  dialog_widget_->Show();
 
   // Ensure that the dialog is closed synchronously when the widget is
   // destroyed.
@@ -106,7 +102,10 @@ void AccessibilityAnnotatorInfoDialogController::ShowDialog(
 }
 
 void AccessibilityAnnotatorInfoDialogController::CloseDialog() {
-  dialog_widget_.reset();
+  if (dialog_widget_) {
+    base::SingleThreadTaskRunner::GetCurrentDefault()->DeleteSoon(
+        FROM_HERE, dialog_widget_.release());
+  }
 }
 
 }  // namespace accessibility_annotator::info

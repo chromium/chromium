@@ -25,11 +25,11 @@ AccessibilityAnnotatorInfoDialog::AccessibilityAnnotatorInfoDialog(
     : WebUIBubbleDialogView(anchor_view,
                             contents_wrapper->GetWeakPtr(),
                             std::nullopt,
-                            views::BubbleBorder::NONE,
+                            views::BubbleBorder::FLOAT,
                             /*autosize=*/true),
       contents_wrapper_(std::move(contents_wrapper)) {
   SetButtons(static_cast<int>(ui::mojom::DialogButton::kNone));
-  SetModalType(ui::mojom::ModalType::kChild);
+  SetModalType(ui::mojom::ModalType::kNone);
   set_fixed_width(kBubbleWidth);
   set_margins(gfx::Insets());
 }

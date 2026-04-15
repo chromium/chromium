@@ -47,7 +47,11 @@ AccessibilityAnnotatorInfoUI::AccessibilityAnnotatorInfoUI(
   source->AddLocalizedString("privacyPageTitle", IDS_SETTINGS_PRIVACY);
 }
 
-AccessibilityAnnotatorInfoUI::~AccessibilityAnnotatorInfoUI() = default;
+AccessibilityAnnotatorInfoUI::~AccessibilityAnnotatorInfoUI() {
+  if (dialog_callback_) {
+    std::move(dialog_callback_).Run(InfoDialogResult::kDismissed);
+  }
+}
 
 void AccessibilityAnnotatorInfoUI::BindInterface(
     mojo::PendingReceiver<accessibility_annotator::info::mojom::PageHandler>
