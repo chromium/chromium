@@ -302,43 +302,7 @@ class GlicPolicyTest : public PolicyTest {
     return policy_for_profile_2_;
   }
 
-  base::expected<mojom::WebUiState, std::string> GetWebUIStateForActiveTab() {
-    tabs::TabInterface* tab = browser()->tab_strip_model()->GetActiveTab();
-    if (!tab) {
-      return base::unexpected("no active tab");
-    }
-    content::BrowserContext* browser_context =
-        tab->GetContents()->GetBrowserContext();
 
-    GlicKeyedService* service =
-        GlicKeyedServiceFactory::GetGlicKeyedService(browser_context);
-    Host* host = service->host_manager().FindHostForTabForTesting(
-        *browser()->tab_strip_model()->GetActiveTab());
-
-    if (!host) {
-      return base::unexpected("no host for tab");
-    }
-    return base::ok(host->GetPrimaryWebUiState());
-  }
-
-  [[nodiscard]] base::expected<void, std::string> RunUntilWebUIState(
-      mojom::WebUiState state) {
-    if (GetWebUIStateForActiveTab() == state) {
-      return base::ok();
-    }
-    bool ok = base::test::RunUntil([&]() {
-      auto current = GetWebUIStateForActiveTab();
-      return current.has_value() && current.value() == state;
-    });
-    if (ok) {
-      return base::ok();
-    }
-    auto current_state = GetWebUIStateForActiveTab();
-    std::stringstream ss;
-    ss << "Waiting until WebUI state equals " << state << ", current state is "
-       << *current_state;
-    return base::unexpected(ss.str());
-  }
 
  protected:
   // Get the active tab's glic host. Must be called only after instantiating

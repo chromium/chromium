@@ -56,8 +56,6 @@
 
 namespace glic {
 
-BASE_FEATURE(kGlicInATab, base::FEATURE_DISABLED_BY_DEFAULT);
-
 // Sets the maximum number of in-flight requests to the guest.
 BASE_FEATURE(kGlicMaxInFlightRequests, base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE_PARAM(int,
@@ -408,15 +406,7 @@ void GlicUI::CreatePageHandler(
   if (!IsProfileEligible()) {
     return;
   }
-  if (!host_ && base::FeatureList::IsEnabled(kGlicInATab)) {
-    // Create a Host for tabs navigated to chrome://glic
-    GlicKeyedService* service = GlicKeyedServiceFactory::GetGlicKeyedService(
-        web_ui()->GetWebContents()->GetBrowserContext());
-    if (service) {
-      host_ = service->host_manager().GetOrCreateHostForTab(
-          web_ui()->GetWebContents());
-    }
-  }
+
   if (!host_) {
     // If there is no host yet, wait for a glic host to be associated with this
     // WebUI.

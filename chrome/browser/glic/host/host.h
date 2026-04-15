@@ -40,7 +40,7 @@ class GlicInstanceCoordinator;
 class WebUIContentsContainer;
 class GlicInstanceMetrics;
 class GlicInstanceMetricsBackwardsCompatibility;
-class EmptyInstanceDelegate;
+
 class GlicSkillsManager;
 
 // The host owns the WebUI that contains the main glic UI and the web client.
@@ -450,14 +450,15 @@ class Host : public GlicSharingManagerProvider {
   void NotifyContextualSkillsChanged(
       std::vector<mojom::SkillPreviewPtr> contextual_skill_previews);
 
+  void WebUIPageHandlerAdded(GlicPageHandler* page_handler);
+  void WebUIPageHandlerRemoved(GlicPageHandler* page_handler);
+
  private:
   friend class HostManager;
 
   void InvokeInternal(mojom::InvokeOptionsPtr options,
                       base::OnceClosure callback);
 
-  void WebUIPageHandlerAdded(GlicPageHandler* page_handler);
-  void WebUIPageHandlerRemoved(GlicPageHandler* page_handler);
   GlicKeyedService& glic_service();
   GlicPageHandler* page_handler() const;
   bool IsGlicWebUiHost(content::RenderProcessHost* host) const;
@@ -571,11 +572,6 @@ class HostManager {
 
   void Shutdown();
 
-  // Called when a `GlicPageHandler` is created.
-  void WebUIPageHandlerAdded(GlicPageHandler* page_handler, Host* host);
-  // Called when a `GlicPageHandler` is about to be destroyed.
-  void WebUIPageHandlerRemoved(GlicPageHandler* page_handler);
-
   // Called when a glic guest (webview web contents) is added.
   void GuestAdded(content::WebContents* guest_contents);
 
@@ -585,25 +581,13 @@ class HostManager {
   // Returns whether `contents` is the glic WebUI web contents.
   bool IsGlicWebUi(content::WebContents* contents);
 
-  // Get pointers to all Hosts, including those for chrome://glic in a tab.
+  // Get pointers to all Hosts.
   std::vector<Host*> GetAllHosts();
-
-  // Returns the host for the given web contents, creating one if necessary
-  // (e.g. if the web contents is a tab).
-  Host* GetOrCreateHostForTab(content::WebContents* web_contents);
-
-  Host* FindHostForTabForTesting(tabs::TabInterface& tab);
 
  private:
   std::vector<Host*> GetPrimaryHosts();
   raw_ptr<Profile> profile_;
   base::WeakPtr<GlicInstanceCoordinator> window_controller_;
-  std::unique_ptr<EmptyEmbedderDelegate> empty_embedder_delegate_;
-  std::unique_ptr<EmptyInstanceDelegate> instance_delegate_stub_;
-  // Hosts for any unclaimed page handlers, which is approximately limited to
-  // chrome://glic in tabs. These are only important for developers, and do not
-  // need to be fully functional.
-  std::vector<std::unique_ptr<Host>> tab_hosts_;
 };
 
 }  // namespace glic

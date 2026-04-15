@@ -2467,7 +2467,8 @@ GlicPageHandler::GlicPageHandler(
       receiver_(this, std::move(receiver)),
       page_(std::move(page)) {
   VLOG(1) << "Glic [PageHandler] Constructor";
-  GetGlicService()->host_manager().WebUIPageHandlerAdded(this, host_.get());
+  CHECK(host_);
+  host_->WebUIPageHandlerAdded(this);
   host_->AddPanelStateObserver(this);
   UpdatePageState(host_->GetPanelState(web_client_handler_.get()).kind);
   subscriptions_.push_back(
@@ -2485,8 +2486,9 @@ GlicPageHandler::~GlicPageHandler() {
   web_client_handler_.reset();
   // Clear `host_` before unregistering so the Host can be deleted
   // synchronously without leaving a dangling raw_ptr during teardown.
+  Host* host = host_;
   host_ = nullptr;
-  GetGlicService()->host_manager().WebUIPageHandlerRemoved(this);
+  host->WebUIPageHandlerRemoved(this);
 }
 
 GlicKeyedService* GlicPageHandler::GetGlicService() {
