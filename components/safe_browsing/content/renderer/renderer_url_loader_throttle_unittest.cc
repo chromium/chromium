@@ -89,8 +89,9 @@ class SBRendererUrlLoaderThrottleTest : public ::testing::Test {
   FakeSafeBrowsing safe_browsing_;
   mojo::Receiver<mojom::SafeBrowsing> mojo_receiver_;
   mojo::Remote<mojom::SafeBrowsing> safe_browsing_remote_;
-  std::unique_ptr<RendererURLLoaderThrottle> throttle_;
+  // Must outlive `throttle_`.
   std::unique_ptr<MockThrottleDelegate> throttle_delegate_;
+  std::unique_ptr<RendererURLLoaderThrottle> throttle_;
 };
 
 TEST_F(SBRendererUrlLoaderThrottleTest, DoesNotDeferHttpsImageUrl) {

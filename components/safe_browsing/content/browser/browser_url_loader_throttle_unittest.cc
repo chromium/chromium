@@ -428,6 +428,8 @@ class SBBrowserUrlLoaderThrottleTestBase : public ::testing::Test {
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   GURL url_;
   network::mojom::URLResponseHeadPtr response_head_;
+  // Must outlive `throttle_`.
+  std::unique_ptr<MockThrottleDelegate> throttle_delegate_;
   std::unique_ptr<BrowserURLLoaderThrottle> throttle_;
   // Owned by |throttle_|. May be deleted before the test completes. Prefer
   // setting it up at the start of the test.
@@ -436,7 +438,6 @@ class SBBrowserUrlLoaderThrottleTestBase : public ::testing::Test {
   std::unique_ptr<FakeRealTimeUrlLookupService> url_lookup_service_ =
       std::make_unique<FakeRealTimeUrlLookupService>();
   scoped_refptr<MockUrlCheckerDelegate> url_checker_delegate_;
-  std::unique_ptr<MockThrottleDelegate> throttle_delegate_;
   std::unique_ptr<AsyncCheckTracker> async_check_tracker_;
   scoped_refptr<BaseUIManager> ui_manager_;
   content::TestBrowserContext browser_context_;
