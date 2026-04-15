@@ -4393,6 +4393,81 @@ TEST_F(AXPlatformNodeWinTest, UIAGetPropertyValueIsDialog) {
                      UIA_IsDialogPropertyId, true);
 }
 
+TEST_F(AXPlatformNodeWinTest, UIAGetPropertyValueHeadingLevel) {
+  TestAXTreeUpdate update(std::string(R"HTML(
+    ++1 kRootWebArea
+    ++++2 kHeading intAttribute=kHierarchicalLevel,1
+    ++++3 kHeading intAttribute=kHierarchicalLevel,2
+    ++++4 kHeading intAttribute=kHierarchicalLevel,6
+    ++++5 kGroup intAttribute=kHierarchicalLevel,3
+    ++++6 kHeading
+    ++++7 kHeading intAttribute=kHierarchicalLevel,10
+    ++++8 kHeading intAttribute=kHierarchicalLevel,100
+  )HTML"));
+  Init(update);
+
+  EXPECT_UIA_INT_EQ(GetIRawElementProviderSimpleFromChildIndex(0),
+                    UIA_HeadingLevelPropertyId, int{HeadingLevel1});
+
+  EXPECT_UIA_INT_EQ(GetIRawElementProviderSimpleFromChildIndex(1),
+                    UIA_HeadingLevelPropertyId, int{HeadingLevel2});
+
+  EXPECT_UIA_INT_EQ(GetIRawElementProviderSimpleFromChildIndex(2),
+                    UIA_HeadingLevelPropertyId, int{HeadingLevel6});
+
+  EXPECT_UIA_INT_EQ(GetIRawElementProviderSimpleFromChildIndex(3),
+                    UIA_HeadingLevelPropertyId, int{HeadingLevel_None});
+
+  EXPECT_UIA_INT_EQ(GetIRawElementProviderSimpleFromChildIndex(4),
+                    UIA_HeadingLevelPropertyId, int{HeadingLevel_None});
+
+  EXPECT_UIA_INT_EQ(GetIRawElementProviderSimpleFromChildIndex(5),
+                    UIA_HeadingLevelPropertyId, int{HeadingLevel_None});
+
+  EXPECT_UIA_INT_EQ(GetIRawElementProviderSimpleFromChildIndex(6),
+                    UIA_HeadingLevelPropertyId, int{HeadingLevel_None});
+}
+
+TEST_F(AXPlatformNodeWinTest,
+       UIAGetPropertyValueHeadingLevelDisclosureTriangle) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      features::kAccessibilityExposeSummaryAsHeading);
+
+  TestAXTreeUpdate update(std::string(R"HTML(
+    ++1 kRootWebArea
+    ++++2 kDisclosureTriangle intAttribute=kHierarchicalLevel,2
+    ++++3 kDisclosureTriangleGrouped intAttribute=kHierarchicalLevel,4
+    ++++4 kDisclosureTriangle intAttribute=kHierarchicalLevel,3
+  )HTML"));
+  Init(update);
+
+  EXPECT_UIA_INT_EQ(GetIRawElementProviderSimpleFromChildIndex(0),
+                    UIA_HeadingLevelPropertyId, int{HeadingLevel2});
+
+  EXPECT_UIA_INT_EQ(GetIRawElementProviderSimpleFromChildIndex(1),
+                    UIA_HeadingLevelPropertyId, int{HeadingLevel4});
+}
+
+TEST_F(AXPlatformNodeWinTest,
+       UIAGetPropertyValueHeadingLevelDisclosureTriangleFeatureDisabled) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(
+      features::kAccessibilityExposeSummaryAsHeading);
+
+  TestAXTreeUpdate update(std::string(R"HTML(
+    ++1 kRootWebArea
+    ++++2 kDisclosureTriangle intAttribute=kHierarchicalLevel,2
+    ++++3 kDisclosureTriangleGrouped intAttribute=kHierarchicalLevel,4
+  )HTML"));
+  Init(update);
+
+  EXPECT_UIA_INT_EQ(GetIRawElementProviderSimpleFromChildIndex(0),
+                    UIA_HeadingLevelPropertyId, int{HeadingLevel_None});
+  EXPECT_UIA_INT_EQ(GetIRawElementProviderSimpleFromChildIndex(1),
+                    UIA_HeadingLevelPropertyId, int{HeadingLevel_None});
+}
+
 TEST_F(AXPlatformNodeWinTest,
        UIAGetPropertyValueIsControlElementIgnoredInvisible) {
   TestAXTreeUpdate update(std::string(R"HTML(
