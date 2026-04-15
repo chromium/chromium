@@ -4441,8 +4441,8 @@ IN_PROC_BROWSER_TEST_F(SigninErrorProfilePickerBrowserTest,
   ASSERT_TRUE(ProfilePicker::IsOpen());
 
   content::WebContents* signin_web_contents = web_contents();
-  auto auth_error =
-      GoogleServiceAuthError(GoogleServiceAuthError::INVALID_GAIA_CREDENTIALS);
+  auto auth_error = GoogleServiceAuthError::FromInvalidGaiaCredentialsReason(
+      GoogleServiceAuthError::InvalidGaiaCredentialsReason::UNKNOWN);
 
   {
     // Simulate Dice token exchange failure in a scope, to avoid having

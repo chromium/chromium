@@ -158,7 +158,7 @@ void DataSharingPageHandler::RequestAccessToken() {
       base::BindOnce(
           &DataSharingPageHandler::OnAccessTokenFetched,
           weak_ptr_factory_.GetWeakPtr(),
-          GoogleServiceAuthError(GoogleServiceAuthError::NONE),
+          GoogleServiceAuthError::AuthErrorNone(),
           signin::AccessTokenInfo(
               "", base::Time::Now() + kDummyTokenExpirationDuration, "")));
 #endif

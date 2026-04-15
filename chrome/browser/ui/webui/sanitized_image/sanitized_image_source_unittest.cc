@@ -284,7 +284,7 @@ TEST_P(SanitizedImageSourceSigninPromoTest, GooglePhotosImage) {
   ASSERT_EQ(4, test_url_loader_factory_.NumPending());
   EXPECT_TRUE(identity_test_env.IsAccessTokenRequestPending());
   identity_test_env.WaitForAccessTokenRequestIfNecessaryAndRespondWithError(
-      GoogleServiceAuthError(GoogleServiceAuthError::REQUEST_CANCELED));
+      GoogleServiceAuthError::CreateRequestCanceled());
   EXPECT_FALSE(identity_test_env.IsAccessTokenRequestPending());
   ASSERT_EQ(4, test_url_loader_factory_.NumPending());
 
