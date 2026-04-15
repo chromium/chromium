@@ -184,6 +184,9 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) SandboxFileSystemBackendDelegate
                                      FileAccessObserver* observer,
                                      base::SequencedTaskRunner* task_runner);
 
+  virtual void RemoveFileChangeObserver(FileSystemType type,
+                                        FileChangeObserver* observer);
+
   // Returns observer lists for the specified |type| of a file system.
   virtual const UpdateObserverList* GetUpdateObservers(
       FileSystemType type) const;

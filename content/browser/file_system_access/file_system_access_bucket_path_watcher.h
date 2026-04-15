@@ -5,6 +5,7 @@
 #ifndef CONTENT_BROWSER_FILE_SYSTEM_ACCESS_FILE_SYSTEM_ACCESS_BUCKET_PATH_WATCHER_H_
 #define CONTENT_BROWSER_FILE_SYSTEM_ACCESS_FILE_SYSTEM_ACCESS_BUCKET_PATH_WATCHER_H_
 
+#include "base/memory/advanced_memory_safety_checks.h"
 #include "base/thread_annotations.h"
 #include "base/types/pass_key.h"
 #include "content/browser/file_system_access/file_system_access_change_source.h"
@@ -22,6 +23,9 @@ class FileSystemAccessWatcherManager;
 // sequence as the `FileSystemContext` it holds a reference to.
 class FileSystemAccessBucketPathWatcher : public FileSystemAccessChangeSource,
                                           public storage::FileChangeObserver {
+  // TODO(crbug.com/40105284): Remove once verified as fixed.
+  ADVANCED_MEMORY_SAFETY_CHECKS();
+
  public:
   FileSystemAccessBucketPathWatcher(
       scoped_refptr<storage::FileSystemContext> file_system_context,

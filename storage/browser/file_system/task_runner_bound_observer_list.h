@@ -53,6 +53,14 @@ class TaskRunnerBoundObserverList {
     return TaskRunnerBoundObserverList(observers);
   }
 
+  TaskRunnerBoundObserverList RemoveObserver(Observer* observer) const {
+    ObserversListMap observers = observers_;
+    observers.erase(observer);
+    return TaskRunnerBoundObserverList(observers);
+  }
+
+  bool empty() const { return observers_.empty(); }
+
   // Notify on the task runner that is given to AddObserver.
   // If we're already on the runner this just dispatches the method.
   template <typename Method, typename... Params>

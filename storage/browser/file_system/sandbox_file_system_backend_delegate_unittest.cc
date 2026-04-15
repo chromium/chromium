@@ -12,6 +12,7 @@
 #include "base/functional/bind.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/task_environment.h"
+#include "storage/browser/file_system/file_observers.h"
 #include "storage/browser/file_system/file_system_url.h"
 #include "storage/browser/test/mock_quota_manager_proxy.h"
 #include "storage/browser/test/test_file_system_options.h"
@@ -23,6 +24,22 @@
 namespace storage {
 
 namespace {
+
+class MockFileChangeObserver : public FileChangeObserver {
+ public:
+  MockFileChangeObserver() = default;
+  ~MockFileChangeObserver() override = default;
+
+  void OnCreateFile(const FileSystemURL& url) override {}
+  void OnCreateFileFrom(const FileSystemURL& url,
+                        const FileSystemURL& src) override {}
+  void OnMoveFileFrom(const FileSystemURL& url,
+                      const FileSystemURL& src) override {}
+  void OnRemoveFile(const FileSystemURL& url) override {}
+  void OnModifyFile(const FileSystemURL& url) override {}
+  void OnCreateDirectory(const FileSystemURL& url) override {}
+  void OnRemoveDirectory(const FileSystemURL& url) override {}
+};
 
 FileSystemURL CreateFileSystemURL(const char* path) {
   return FileSystemURL::CreateForTest(
@@ -69,6 +86,9 @@ class SandboxFileSystemBackendDelegateTest : public testing::Test {
     return quota_manager_proxy_.get();
   }
 
+ protected:
+  std::unique_ptr<SandboxFileSystemBackendDelegate> delegate_;
+
  private:
   void OpenFileSystemCallback(const GURL& root_url,
                               const std::string& name,
@@ -80,7 +100,6 @@ class SandboxFileSystemBackendDelegateTest : public testing::Test {
   base::ScopedTempDir data_dir_;
   base::test::TaskEnvironment task_environment_;
   scoped_refptr<MockQuotaManagerProxy> quota_manager_proxy_;
-  std::unique_ptr<SandboxFileSystemBackendDelegate> delegate_;
 
   int callback_count_ = 0;
   base::File::Error last_error_ = base::File::FILE_OK;
@@ -143,6 +162,25 @@ TEST_F(SandboxFileSystemBackendDelegateTest, OpenFileSystemAccessesStorage) {
   EXPECT_EQ(last_error(), base::File::FILE_OK);
   EXPECT_EQ(quota_manager_proxy()->notify_bucket_accessed_count(), 1);
   EXPECT_EQ(quota_manager_proxy()->last_notified_storage_key(), storage_key);
+}
+
+TEST_F(SandboxFileSystemBackendDelegateTest, ObserverRegistration) {
+  MockFileChangeObserver observer;
+  delegate_->AddFileChangeObserver(kFileSystemTypeTemporary, &observer,
+                                   nullptr);
+  const ChangeObserverList* observers =
+      delegate_->GetChangeObservers(kFileSystemTypeTemporary);
+  ASSERT_TRUE(observers);
+  EXPECT_FALSE(observers->empty());
+
+  delegate_->RemoveFileChangeObserver(kFileSystemTypeTemporary, &observer);
+  observers = delegate_->GetChangeObservers(kFileSystemTypeTemporary);
+  ASSERT_TRUE(observers);
+  EXPECT_TRUE(observers->empty());
+
+  // Test that it returns nullptr for a type that was never added.
+  observers = delegate_->GetChangeObservers(kFileSystemTypePersistent);
+  EXPECT_FALSE(observers);
 }
 
 }  // namespace storage

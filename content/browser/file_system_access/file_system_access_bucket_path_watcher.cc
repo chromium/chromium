@@ -26,8 +26,15 @@ FileSystemAccessBucketPathWatcher::FileSystemAccessBucketPathWatcher(
           FileSystemAccessWatchScope::GetScopeForAllBucketFileSystems(),
           std::move(file_system_context)) {}
 
-FileSystemAccessBucketPathWatcher::~FileSystemAccessBucketPathWatcher() =
-    default;
+FileSystemAccessBucketPathWatcher::~FileSystemAccessBucketPathWatcher() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  storage::SandboxFileSystemBackendDelegate* sandbox_delegate =
+      file_system_context()->sandbox_delegate();
+  if (sandbox_delegate) {
+    sandbox_delegate->RemoveFileChangeObserver(
+        storage::FileSystemType::kFileSystemTypeTemporary, this);
+  }
+}
 
 void FileSystemAccessBucketPathWatcher::Initialize(
     base::OnceCallback<void(blink::mojom::FileSystemAccessErrorPtr)>
