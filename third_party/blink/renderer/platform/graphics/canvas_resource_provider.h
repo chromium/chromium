@@ -68,6 +68,11 @@ class OffscreenCanvasRenderingContext2D;
 class StaticBitmapImage;
 class WebGraphicsSharedImageInterfaceProvider;
 
+class FlushForImageObserver : public base::CheckedObserver {
+ public:
+  virtual void OnFlushForImage(cc::PaintImage::ContentId content_id) = 0;
+};
+
 // Specifies whether the provider should rasterize paint commands on the CPU
 // or GPU. This is used to support software raster with GPU compositing.
 enum class RasterMode {
@@ -380,7 +385,8 @@ class PLATFORM_EXPORT CanvasResourceProviderSharedImage
       public WebGraphicsContext3DProviderWrapper::DestructionObserver,
       public viz::ContextLostObserver,
       public BitmapGpuChannelLostObserver,
-      public CanvasResourceSharedImage::Client {
+      public CanvasResourceSharedImage::Client,
+      public FlushForImageObserver {
  public:
   CanvasResourceProviderSharedImage(
       gfx::Size,
@@ -423,7 +429,7 @@ class PLATFORM_EXPORT CanvasResourceProviderSharedImage
   base::ByteSize EstimatedSizeInBytes() const override;
 
   sk_sp<SkSurface> CreateSkSurface() const override;
-  virtual void OnFlushForImage(cc::PaintImage::ContentId content_id) = 0;
+  void OnFlushForImage(cc::PaintImage::ContentId content_id) override = 0;
   void OnMemoryDump(base::trace_event::ProcessMemoryDump* pmd) final;
 
   // Indicates that the compositing path is single buffered, meaning that
