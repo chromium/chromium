@@ -6,8 +6,6 @@ source_set("model") {
   sources = [
     "files_request_handler_ios.h",
     "files_request_handler_ios.mm",
-    "ios_analysis_request_handler.h",
-    "ios_analysis_request_handler.mm",
     "ios_cloud_binary_upload_service.h",
     "ios_cloud_binary_upload_service.mm",
     "ios_cloud_binary_upload_service_factory.h",
