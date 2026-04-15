@@ -120,7 +120,9 @@ class CORE_EXPORT HTMLFormElement final : public HTMLElement {
 
   // Find the 'default button.'
   // https://html.spec.whatwg.org/C/#default-button
-  HTMLFormControlElement* FindDefaultButton() const;
+  // Returns either an HTMLFormControlElement or a custom element with
+  // HTMLSubmitButtonBehavior.
+  Element* FindDefaultButton() const;
 
   bool checkValidity();
   bool reportValidity();

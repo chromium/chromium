@@ -461,28 +461,41 @@ HTMLElement* HTMLFormElement::item(unsigned index) {
 void HTMLFormElement::SubmitImplicitly(const Event& event,
                                        bool from_implicit_submission_trigger) {
   int submission_trigger_count = 0;
-  bool seen_default_button = false;
   for (ListedElement* element : ListedElements()) {
-    auto* control = DynamicTo<HTMLFormControlElement>(element);
-    if (!control)
+    // Check native form controls.
+    if (auto* control = DynamicTo<HTMLFormControlElement>(element)) {
+      if (control->CanBeSuccessfulSubmitButton()) {
+        if (control->IsSuccessfulSubmitButton()) {
+          control->DispatchSimulatedClick(&event);
+          return;
+        }
+        if (from_implicit_submission_trigger) {
+          // Default (submit) button is not activated; no implicit submission.
+          return;
+        }
+      } else if (control->CanTriggerImplicitSubmission()) {
+        ++submission_trigger_count;
+      }
       continue;
-    if (!seen_default_button && control->CanBeSuccessfulSubmitButton()) {
-      if (from_implicit_submission_trigger)
-        seen_default_button = true;
-      if (control->IsSuccessfulSubmitButton()) {
-        control->DispatchSimulatedClick(&event);
+    }
+
+    // Check custom elements with HTMLSubmitButtonBehavior.
+    HTMLElement& html_element = element->ToHTMLElement();
+    if (auto* behavior = html_element.SubmitBehavior()) {
+      if (!behavior->IsEffectivelyDisabled()) {
+        html_element.DispatchSimulatedClick(&event);
         return;
       }
       if (from_implicit_submission_trigger) {
-        // Default (submit) button is not activated; no implicit submission.
+        // Custom element is disabled; no implicit submission.
         return;
       }
-    } else if (control->CanTriggerImplicitSubmission()) {
-      ++submission_trigger_count;
     }
   }
-  if (from_implicit_submission_trigger && submission_trigger_count == 1)
+
+  if (from_implicit_submission_trigger && submission_trigger_count == 1) {
     PrepareForSubmission(&event, nullptr);
+  }
 }
 
 bool HTMLFormElement::ValidateInteractively() {
@@ -1328,13 +1341,14 @@ void HTMLFormElement::setMethod(const AtomicString& value) {
   setAttribute(html_names::kMethodAttr, value);
 }
 
-HTMLFormControlElement* HTMLFormElement::FindDefaultButton() const {
+Element* HTMLFormElement::FindDefaultButton() const {
   for (ListedElement* element : ListedElements()) {
-    auto* control = DynamicTo<HTMLFormControlElement>(element);
-    if (!control)
-      continue;
-    if (control->CanBeSuccessfulSubmitButton())
+    if (auto* control = DynamicTo<HTMLFormControlElement>(element);
+        control && control->CanBeSuccessfulSubmitButton()) {
       return control;
+    } else if (element->ToHTMLElement().SubmitBehavior()) {
+      return &element->ToHTMLElement();
+    }
   }
   return nullptr;
 }

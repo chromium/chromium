@@ -238,6 +238,7 @@ class CORE_EXPORT HTMLElement : public Element {
   bool MatchesReadOnlyPseudoClass() const override;
   bool MatchesReadWritePseudoClass() const override;
   bool MatchesValidityPseudoClasses() const override;
+  bool MatchesDefaultPseudoClass() const override;
   bool willValidate() const override;
   bool IsValidElement() override;
 

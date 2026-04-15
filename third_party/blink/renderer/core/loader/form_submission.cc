@@ -256,11 +256,13 @@ FormSubmission* FormSubmission::Create(HTMLFormElement* form,
   }
 
   if (copied_attributes.Method() == kDialogMethod) {
-    if (submit_button) {
-      return MakeGarbageCollected<FormSubmission>(
-          submit_button->ResultForDialogSubmit());
+    if (behavior) {
+      CHECK(!submit_button);
+      return MakeGarbageCollected<FormSubmission>(behavior->value());
     }
-    return MakeGarbageCollected<FormSubmission>("");
+    return MakeGarbageCollected<FormSubmission>(
+        submit_button ? submit_button->ResultForDialogSubmit()
+                      : g_empty_string);
   }
 
   Document& document = form->GetDocument();

@@ -3946,6 +3946,21 @@ bool HTMLElement::MatchesValidityPseudoClasses() const {
   return IsFormAssociatedCustomElement();
 }
 
+bool HTMLElement::MatchesDefaultPseudoClass() const {
+  // Check if this is a form-associated custom element with
+  // `HTMLSubmitButtonBehavior`.
+  if (!SubmitBehavior() || !IsFormAssociatedCustomElement()) {
+    return false;
+  }
+  // Check if this element is the default button for its form.
+  const ElementInternals* internals = GetElementInternals();
+  // `SubmitBehavior()` is non-null only when  behaviors were set via
+  // `attachInternals()`, which creates the `ElementInternals` object.
+  CHECK(internals);
+  HTMLFormElement* form = internals->Form();
+  return form && form->FindDefaultButton() == this;
+}
+
 bool HTMLElement::willValidate() const {
   return IsFormAssociatedCustomElement() && const_cast<HTMLElement*>(this)
                                                 ->EnsureElementInternals()
