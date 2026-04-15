@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include <third_party/blink/renderer/core/dom/scroll_marker_group_data.h>
+#include "third_party/blink/renderer/core/dom/scroll_marker_group_data.h"
 
 #include "third_party/blink/renderer/core/dom/column_pseudo_element.h"
 #include "third_party/blink/renderer/core/dom/element.h"
@@ -10,6 +10,7 @@
 #include "third_party/blink/renderer/core/dom/scroll_marker_group_pseudo_element.h"
 #include "third_party/blink/renderer/core/html/html_anchor_element.h"
 #include "third_party/blink/renderer/core/layout/layout_box.h"
+#include "third_party/blink/renderer/core/paint/paint_layer_scrollable_area.h"
 #include "third_party/blink/renderer/core/scroll/scroll_into_view_util.h"
 #include "third_party/blink/renderer/platform/wtf/wtf_size_t.h"
 
@@ -612,12 +613,24 @@ void ScrollMarkerGroupData::UpdateScrollableAreaSubscriptions() {
     scrollable_area->RemoveScrollMarkerGroupContainerData(this);
   }
   scrollable_areas_.clear();
-  for (Element* anchor_scroll_marker : focus_group_) {
-    if (PaintLayerScrollableArea* scrollable_area =
-            To<HTMLAnchorElement>(anchor_scroll_marker)
-                ->AncestorScrollableAreaOfScrollTargetElement()) {
-      scrollable_areas_.insert(scrollable_area);
-      scrollable_area->AddScrollMarkerGroupContainerData(this);
+  for (Element* scroll_marker : focus_group_) {
+    Element* target = ScrollTargetElement(scroll_marker);
+    if (!target || !target->GetLayoutObject()) {
+      continue;
+    }
+    // Find the closest ancestor scrollable area of this anchor's scroll target
+    // element.
+    if (const LayoutBox* scroller =
+            target->GetLayoutObject()->ContainingScrollContainer()) {
+      ScrollableArea* scrollable_area =
+          scroll_into_view_util::GetScrollableAreaForLayoutBox(
+              *scroller,
+              /*make_visible_in_visual_viewport=*/false);
+      if (auto* paint_scrollable_area =
+              DynamicTo<PaintLayerScrollableArea>(scrollable_area)) {
+        scrollable_areas_.insert(paint_scrollable_area);
+        paint_scrollable_area->AddScrollMarkerGroupContainerData(this);
+      }
     }
   }
   needs_scrollers_map_update_ = false;
@@ -646,6 +659,7 @@ Element* ScrollMarkerGroupData::FindPreviousScrollMarker(
 }
 
 bool ScrollMarkerGroupData::UpdateSnapshot() {
+  UpdateScrollableAreaSubscriptions();
   if (invalidation_state_ == InvalidationState::kNeedsFullUpdate) {
     if (Element* selected = ChooseMarkerRecursively()) {
       // We avoid calling ScrollMarkerPseudoElement::SetSelected here so as not

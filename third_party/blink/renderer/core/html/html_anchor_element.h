@@ -148,9 +148,6 @@ class CORE_EXPORT HTMLAnchorElement : public HTMLAnchorElementBase {
   // Gets the element which is referenced by this anchor fragment
   // (#scroll-target), or nullptr if not found.
   Element* ScrollTargetElement() const;
-  // Gets the closest ancestor scrollable area of this anchors scroll target
-  // element.
-  PaintLayerScrollableArea* AncestorScrollableAreaOfScrollTargetElement() const;
 };
 
 template <>

@@ -148,7 +148,6 @@ template <>
 void OrderedScope<HTMLAnchorElement>::UpdateItemsInScope(
     const OrderedScope<HTMLAnchorElement>* scope) {
   if (ScrollMarkerGroupData* data = GetScrollMarkerGroupDataForScope(scope)) {
-    data->UpdateScrollableAreaSubscriptions();
     data->UpdateSelectedScrollMarker();
   }
 

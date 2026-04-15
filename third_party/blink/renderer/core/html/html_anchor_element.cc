@@ -742,21 +742,4 @@ Element* HTMLAnchorElement::ScrollTargetElement() const {
   return DynamicTo<Element>(anchor_node);
 }
 
-PaintLayerScrollableArea*
-HTMLAnchorElement::AncestorScrollableAreaOfScrollTargetElement() const {
-  Element* scroll_target = ScrollTargetElement();
-  if (!scroll_target || !scroll_target->GetLayoutObject()) {
-    return nullptr;
-  }
-  if (const LayoutBox* scroller =
-          scroll_target->GetLayoutObject()->ContainingScrollContainer()) {
-    ScrollableArea* scrollable_area =
-        scroll_into_view_util::GetScrollableAreaForLayoutBox(
-            *scroller,
-            /*make_visible_in_visual_viewport=*/false);
-    return DynamicTo<PaintLayerScrollableArea>(scrollable_area);
-  }
-  return nullptr;
-}
-
 }  // namespace blink
