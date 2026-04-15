@@ -3315,6 +3315,9 @@ def create_modules_from_target(blueprint, gn, gn_target_name, parent_gn_type,
                     elif module.type in ('rust_ffi_static', 'rust_bindgen'):
                         module_target.shared_libs.update(
                             dep_module.shared_libs)
+                        # Add the cc_library_static as a static_lib to ensure that
+                        # they propagate their exported headers correctly.
+                        module_target.static_libs.add(dep_module.name)
                     elif module.type == 'rust_proc_macro' and dep_module.type == 'cc_library_static':
                         # rust_proc_macro cannot depend on cc_library_static. Having said
                         # that, we still need these dependencies to further bubble them up
