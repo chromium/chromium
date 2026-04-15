@@ -84,13 +84,14 @@ void AimEligibilityRefreshNavigationThrottle::MaybeCreateAndAdd(
   }
 
   // Ignore navigations that aren't in the outermost main frame.
-  if (!registry.GetNavigationHandle().IsInOutermostMainFrame()) {
+  content::NavigationHandle& nav_handle = registry.GetNavigationHandle();
+  if (!nav_handle.IsInOutermostMainFrame() ||
+      nav_handle.IsInPrerenderedMainFrame()) {
     return;
   }
 
   // Ignore embedded page navigations.
-  content::WebContents* web_contents =
-      registry.GetNavigationHandle().GetWebContents();
+  content::WebContents* web_contents = nav_handle.GetWebContents();
   if (web_contents != web_contents->GetResponsibleWebContents()) {
     return;
   }

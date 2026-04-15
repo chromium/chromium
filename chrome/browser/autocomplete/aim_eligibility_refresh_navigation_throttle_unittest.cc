@@ -44,10 +44,19 @@ class MockNavigationHandleForOutermostFrame
  public:
   MockNavigationHandleForOutermostFrame(
       const GURL& url,
-      content::RenderFrameHost* render_frame_host)
-      : content::MockNavigationHandle(url, render_frame_host) {}
+      content::RenderFrameHost* render_frame_host,
+      bool is_outermost_frame,
+      bool is_prerender_frame)
+      : content::MockNavigationHandle(url, render_frame_host),
+        is_outermost_(is_outermost_frame),
+        is_prerender_(is_prerender_frame) {}
   ~MockNavigationHandleForOutermostFrame() override = default;
-  bool IsInOutermostMainFrame() const override { return false; }
+  bool IsInOutermostMainFrame() const override { return is_outermost_; }
+  bool IsInPrerenderedMainFrame() const override { return is_prerender_; }
+
+ private:
+  bool is_outermost_;
+  bool is_prerender_;
 };
 
 }  // namespace
@@ -111,7 +120,24 @@ class AimEligibilityRefreshNavigationThrottleTest
 TEST_F(AimEligibilityRefreshNavigationThrottleTest,
        NotCreatedForNonOutermostMainFrame) {
   const GURL url("https://www.google.com/search?udm=50&q=query");
-  MockNavigationHandleForOutermostFrame handle(url, main_rfh());
+  MockNavigationHandleForOutermostFrame handle(url, main_rfh(),
+                                               /*is_outermost_frame=*/false,
+                                               /*is_prerender_frame=*/false);
+
+  content::MockNavigationThrottleRegistry registry(
+      &handle,
+      content::MockNavigationThrottleRegistry::RegistrationMode::kHold);
+  AimEligibilityRefreshNavigationThrottle::MaybeCreateAndAdd(registry);
+
+  EXPECT_TRUE(registry.throttles().empty());
+}
+
+TEST_F(AimEligibilityRefreshNavigationThrottleTest,
+       NotCreatedForPrerenderFrame) {
+  const GURL url("https://www.google.com/search?udm=50&q=query");
+  MockNavigationHandleForOutermostFrame handle(url, main_rfh(),
+                                               /*is_outermost_frame=*/true,
+                                               /*is_prerender_frame=*/true);
 
   content::MockNavigationThrottleRegistry registry(
       &handle,
