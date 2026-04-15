@@ -2491,6 +2491,62 @@ TEST_F(SharedTabGroupDataSyncBridgeTest,
 }
 
 TEST_F(SharedTabGroupDataSyncBridgeTest,
+       ShouldRemoveResolvedTabsFromMissingGroups) {
+  const CollaborationId kCollaborationId("collaboration");
+  const base::Uuid kMissingGroupGuid = base::Uuid::GenerateRandomV4();
+  const base::Uuid kTabGuid = base::Uuid::GenerateRandomV4();
+  ASSERT_TRUE(InitializeBridgeAndModel());
+
+  // 1. Add a tab missing its group remotely.
+  sync_pb::SharedTabGroupDataSpecifics tab_specifics =
+      MakeTabSpecifics("tab title", GURL("http://google.com/1"),
+                       kMissingGroupGuid, GenerateRandomUniquePosition());
+  tab_specifics.set_guid(kTabGuid.AsLowercaseString());
+  tab_specifics.set_version(999);
+
+  ApplySingleEntityChange(
+      CreateAddEntityChange(tab_specifics, kCollaborationId));
+
+  // 2. Add the missing group entry remotely. This resolves the tab and should
+  // remove it from `tabs_missing_groups_`.
+  sync_pb::SharedTabGroupDataSpecifics group_specifics =
+      MakeTabGroupSpecifics("group title", sync_pb::SharedTabGroup::CYAN);
+  group_specifics.set_guid(kMissingGroupGuid.AsLowercaseString());
+  ApplySingleEntityChange(
+      CreateAddEntityChange(group_specifics, kCollaborationId));
+
+  // Verify the tab is added to the group in the model.
+  const SavedTabGroup* group = model()->Get(kMissingGroupGuid);
+  ASSERT_TRUE(group);
+  EXPECT_THAT(group->saved_tabs(),
+              ElementsAre(HasTabMetadata("tab title", "http://google.com/1")));
+
+  // 3. Update the tab locally (simulate a user changing the tab title).
+  SavedTabGroupTab updated_tab = *group->saved_tabs().begin();
+  updated_tab.SetTitle(u"updated local title");
+  model()->UpdateTabInGroup(kMissingGroupGuid, updated_tab,
+                            /*notify_observers=*/true);
+
+  // 4. Trigger a completely unrelated remote update.
+  const base::Uuid kUnrelatedGroupGuid = base::Uuid::GenerateRandomV4();
+  sync_pb::SharedTabGroupDataSpecifics unrelated_group_specifics =
+      MakeTabGroupSpecifics("unrelated group", sync_pb::SharedTabGroup::RED);
+  unrelated_group_specifics.set_guid(kUnrelatedGroupGuid.AsLowercaseString());
+  ApplySingleEntityChange(
+      CreateAddEntityChange(unrelated_group_specifics, kCollaborationId));
+
+  // 5. Verify the tab title was not reverted to the original remote title.
+  // If the bug was present (tab left in `tabs_missing_groups_`), the unrelated
+  // update would trigger `ResolveTabsMissingGroups` and overwrite the local
+  // title.
+  group = model()->Get(kMissingGroupGuid);
+  ASSERT_TRUE(group);
+  EXPECT_THAT(group->saved_tabs(),
+              ElementsAre(HasTabMetadata("updated local title",
+                                         "http://google.com/1")));
+}
+
+TEST_F(SharedTabGroupDataSyncBridgeTest,
        ShouldTrimAllSupportedFieldsFromRemoteTabGroupSpecifics) {
   ASSERT_TRUE(InitializeBridgeAndModel());
 

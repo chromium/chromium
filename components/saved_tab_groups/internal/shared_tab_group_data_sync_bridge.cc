@@ -1601,12 +1601,14 @@ SharedTabGroupDataSyncBridge::ResolveTabsMissingGroups(
   // This method should only be called when there is an ongoing write batch,
   // for example during a remote update.
   CHECK(ongoing_write_batch_);
-  for (const auto& [tab_guid, tab_missing_group] : tabs_missing_groups_) {
+  auto it = tabs_missing_groups_.begin();
+  while (it != tabs_missing_groups_.end()) {
+    const auto& [tab_guid, tab_missing_group] = *it;
     base::Uuid group_guid = base::Uuid::ParseLowercase(
         tab_missing_group.specifics.tab().shared_tab_group_guid());
     const SavedTabGroup* group = model_wrapper_->GetGroup(group_guid);
     if (!group) {
-      // The group still does not exist in the model.
+      ++it;
       continue;
     }
 
@@ -1623,6 +1625,10 @@ SharedTabGroupDataSyncBridge::ResolveTabsMissingGroups(
                                  tab_missing_group.modification_time)) {
       return error;
     }
+
+    // Cleanup tabs so subsequent calls to ResolveTabsMissingGroups does not add
+    // stale data.
+    it = tabs_missing_groups_.erase(it);
   }
   return std::nullopt;
 }
