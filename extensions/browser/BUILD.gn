@@ -816,8 +816,6 @@ source_set("browser_sources") {
       "api/hid/hid_connection_resource.h",
       "api/hid/hid_device_manager.cc",
       "api/hid/hid_device_manager.h",
-      "api/usb/usb_api.cc",
-      "api/usb/usb_api.h",
       "api/usb/usb_device_manager.cc",
       "api/usb/usb_device_manager.h",
       "api/usb/usb_device_resource.cc",
@@ -829,6 +827,11 @@ source_set("browser_sources") {
     deps += [ "//services/device/public/cpp/hid" ]
 
     if (is_chromeos) {
+      sources += [
+        "api/usb/usb_api.cc",
+        "api/usb/usb_api.h",
+      ]
+
       deps += [ "//chromeos/dbus/permission_broker" ]
     }
   }
@@ -1284,7 +1287,6 @@ if (enable_extensions) {
       "api/system_storage/storage_api_test_util.h",
       "api/system_storage/system_storage_apitest.cc",
       "api/system_storage/system_storage_eject_apitest.cc",
-      "api/usb/usb_apitest.cc",
       "browsertest_util_browsertest.cc",
       "guest_view/app_view/app_view_apitest.cc",
       "guest_view/web_view/web_view_apitest.cc",
@@ -1330,6 +1332,7 @@ if (enable_extensions) {
         "api/bluetooth_socket/bluetooth_socket_apitest.cc",
         "api/cec_private/cec_private_ash_apitest.cc",
         "api/media_perception_private/media_perception_private_apitest.cc",
+        "api/usb/usb_apitest.cc",
         "api/virtual_keyboard/virtual_keyboard_apitest.cc",
       ]
 

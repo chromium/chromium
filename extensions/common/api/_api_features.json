@@ -847,7 +847,8 @@
   },
   "usb": {
     "dependencies": ["permission:usb"],
-    "contexts": ["privileged_extension"]
+    "contexts": ["privileged_extension"],
+    "platforms": ["chromeos"]
   },
   "userScripts": {
     "dependencies": [ "permission:userScripts" ],

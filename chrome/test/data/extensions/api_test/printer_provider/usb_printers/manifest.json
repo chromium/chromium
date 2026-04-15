@@ -9,7 +9,6 @@
     }
   },
   "permissions": [
-    "printerProvider",
-    "usb"
+    "printerProvider", "usb"
   ]
 }

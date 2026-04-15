@@ -657,8 +657,9 @@ IN_PROC_BROWSER_TEST_F(PrinterProviderApiTest, GetPrintersInvalidPrinterValue) {
   EXPECT_TRUE(printers.empty());
 }
 
+#if BUILDFLAG(IS_CHROMEOS)
 // These tests are separate out from the main test class because the USB api
-// is only available to apps.
+// is only available on ChromeOS to Chrome Apps.
 class PrinterProviderUsbApiTest : public PrinterProviderApiTest {
  public:
   PrinterProviderUsbApiTest() = default;
@@ -738,6 +739,7 @@ IN_PROC_BROWSER_TEST_F(PrinterProviderUsbApiTest,
 IN_PROC_BROWSER_TEST_F(PrinterProviderUsbApiTest, GetUsbPrinterInfoNoListener) {
   RunUsbPrinterInfoRequestTest("NO_LISTENER");
 }
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 }  // namespace
 

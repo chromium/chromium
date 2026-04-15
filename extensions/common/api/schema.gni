@@ -87,7 +87,6 @@ if (enable_extensions) {
     "sockets_tcp.idl",
     "sockets_udp.idl",
     "system_storage.webidl",
-    "usb.webidl",
     "virtual_keyboard_private.json",
     "virtual_keyboard.webidl",
   ]
@@ -101,8 +100,13 @@ if (enable_extensions) {
       "diagnostics.webidl",
       "media_perception_private.webidl",
       "serial.webidl",
+      "usb.webidl",
       "webcam_private.webidl",
     ]
+  } else {
+    # On non-ChromeOS platforms the USB API is not supported but the types are
+    # still used by other APIs (e.g. printerProvider).
+    extensions_types_only_schema_files_ += [ "usb.webidl" ]
   }
 }
 
