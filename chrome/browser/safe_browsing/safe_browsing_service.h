@@ -79,6 +79,7 @@ class SafeBrowsingDatabaseManager;
 class SafeBrowsingPrefChangeHandler;
 class SafeBrowsingServiceFactory;
 class SafeBrowsingUIManager;
+class SecuritySettingsBundlePrefChangeHandler;
 class TriggerManager;
 
 // Construction needs to happen on the main thread.
@@ -312,7 +313,13 @@ class SafeBrowsingServiceImpl : public SafeBrowsingServiceInterface,
                            EnhancedProtectionPrefChange_SingleProfile);
   FRIEND_TEST_ALL_PREFIXES(
       SafeBrowsingServiceTest,
+      BundlePrefChanged_MaybeShowEnhancedBundleSettingChangeNotificationCalledForProfile);
+  FRIEND_TEST_ALL_PREFIXES(
+      SafeBrowsingServiceTest,
       EnhancedProtectionPrefChange_SupportsMultipleProfiles);
+  FRIEND_TEST_ALL_PREFIXES(
+      SafeBrowsingServiceTest,
+      BundlePrefChanged_MaybeShowEnhancedBundleSettingChangeNotificationCalledForEachProfile);
   FRIEND_TEST_ALL_PREFIXES(V4SafeBrowsingServiceTest,
                            NotificationsAcceptedReportSentWithCorrectOrigins);
   FRIEND_TEST_ALL_PREFIXES(V4SafeBrowsingServiceTest,
@@ -344,6 +351,11 @@ class SafeBrowsingServiceImpl : public SafeBrowsingServiceInterface,
   // for referrer chains, and potentially shows a toast about Enhanced
   // Protection setting changes when its preference value updates.
   void EnhancedProtectionPrefChange(Profile* profile);
+
+  // Potentially shows a toast about Enhanced Bundle
+  // setting changes when the bundled settings preference value updates.
+  // TODO(crbug.com/502677594): Rename the enhanced protection toast variable.
+  void SecuritySettingsBundlePrefChange(Profile* profile);
 
   // Maybe show a toast about Enhanced Protection setting changes. Called when
   // its preference value updates.
@@ -439,8 +451,13 @@ class SafeBrowsingServiceImpl : public SafeBrowsingServiceInterface,
 
   // Manages the logic for handling preference changes, including displaying
   // specific UI elements in response to certain preference changes.
+  // TODO(crbug.com/502649234): Remove after bundled settings is launched.
   std::map<Profile*, std::unique_ptr<SafeBrowsingPrefChangeHandler>>
       pref_change_handlers_map_;
+
+  // Manages the logic for handling bundled settings preference changes.
+  std::map<Profile*, std::unique_ptr<SecuritySettingsBundlePrefChangeHandler>>
+      bundled_settings_pref_change_handlers_map_;
 };
 
 // TODO(crbug.com/41437292): Remove this once dependencies are using the

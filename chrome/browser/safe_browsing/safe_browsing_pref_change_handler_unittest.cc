@@ -43,9 +43,7 @@ class MockToastController : public ToastController {
 
 class SafeBrowsingPrefChangeHandlerTest : public BrowserWithTestWindowTest {
  public:
-  SafeBrowsingPrefChangeHandlerTest() {
-    feature_list_.InitAndEnableFeature(kEsbAsASyncedSetting);
-  }
+  SafeBrowsingPrefChangeHandlerTest() = default;
 
   void SetUp() override {
     BrowserWithTestWindowTest::SetUp();
@@ -138,6 +136,23 @@ TEST_F(SafeBrowsingPrefChangeHandlerTest,
 
   // We expect 1 call because the pref is user set and not managed.
   EXPECT_CALL(toast_controller_, MaybeShowToast(testing::_)).Times(1);
+
+  handler_->MaybeShowEnhancedProtectionSettingChangeNotification();
+}
+
+TEST_F(SafeBrowsingPrefChangeHandlerTest,
+       BundledSettingsToastNotShownWhenEnhancedProtectionIsEnabled) {
+  // Set initial state.
+  feature_list_.InitAndEnableFeature(kBundledSecuritySettings);
+  profile()->GetTestingPrefService()->ClearPref(prefs::kSafeBrowsingEnhanced);
+  profile()->GetTestingPrefService()->ClearPref(prefs::kSafeBrowsingEnabled);
+
+  // Enable enhanced safe browsing.
+  SetSafeBrowsingState(profile()->GetTestingPrefService(),
+                       SafeBrowsingState::ENHANCED_PROTECTION);
+
+  // We expect 0 calls because the enhanced bundle was not selected.
+  EXPECT_CALL(toast_controller_, MaybeShowToast(testing::_)).Times(0);
 
   handler_->MaybeShowEnhancedProtectionSettingChangeNotification();
 }

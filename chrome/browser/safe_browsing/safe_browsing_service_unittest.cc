@@ -17,6 +17,7 @@
 #include "chrome/browser/safe_browsing/chrome_ping_manager_factory.h"
 #include "chrome/browser/safe_browsing/download_protection/download_protection_service.h"
 #include "chrome/browser/safe_browsing/safe_browsing_pref_change_handler.h"
+#include "chrome/browser/safe_browsing/security_settings_bundle_pref_change_handler.h"
 #include "chrome/browser/site_protection/site_familiarity_utils.h"
 #include "chrome/browser/ui/toasts/api/toast_id.h"
 #include "chrome/browser/ui/toasts/toast_controller.h"
@@ -69,6 +70,18 @@ class MockSafeBrowsingPrefChangeHandler
       : SafeBrowsingPrefChangeHandler(profile) {}
   MOCK_METHOD(void,
               MaybeShowEnhancedProtectionSettingChangeNotification,
+              (),
+              (override));
+};
+
+// Mock SecuritySettingsBundlePrefChangeHandler.
+class MockSecuritySettingsBundlePrefChangeHandler
+    : public safe_browsing::SecuritySettingsBundlePrefChangeHandler {
+ public:
+  explicit MockSecuritySettingsBundlePrefChangeHandler(Profile* profile)
+      : SecuritySettingsBundlePrefChangeHandler(profile) {}
+  MOCK_METHOD(void,
+              MaybeShowEnhancedBundleSettingChangeNotification,
               (),
               (override));
 };
@@ -564,6 +577,22 @@ TEST_F(SafeBrowsingServiceTest, EnhancedProtectionPrefChange_SingleProfile) {
   sb_service_->EnhancedProtectionPrefChange(profile1);
 }
 
+TEST_F(
+    SafeBrowsingServiceTest,
+    BundlePrefChanged_MaybeShowEnhancedBundleSettingChangeNotificationCalledForProfile) {
+  Profile* profile1 = profile();
+  auto mock_handler1 = std::make_unique<
+      ::testing::NiceMock<MockSecuritySettingsBundlePrefChangeHandler>>(
+      profile1);
+
+  EXPECT_CALL(*mock_handler1,
+              MaybeShowEnhancedBundleSettingChangeNotification());
+
+  sb_service_->bundled_settings_pref_change_handlers_map_[profile1] =
+      std::move(mock_handler1);
+  sb_service_->SecuritySettingsBundlePrefChange(profile1);
+}
+
 TEST_F(SafeBrowsingServiceTest,
        EnhancedProtectionPrefChange_SupportsMultipleProfiles) {
   // 1. Create multiple profiles.
@@ -592,6 +621,31 @@ TEST_F(SafeBrowsingServiceTest,
   // 5. Call the method under test for each profile.
   sb_service_->EnhancedProtectionPrefChange(profile1);
   sb_service_->EnhancedProtectionPrefChange(profile2_ptr);
+}
+
+TEST_F(
+    SafeBrowsingServiceTest,
+    BundlePrefChanged_MaybeShowEnhancedBundleSettingChangeNotificationCalledForEachProfile) {
+  Profile* profile1 = profile();
+  Profile* profile2_ptr = profile2_.get();
+  auto mock_handler1 = std::make_unique<
+      ::testing::NiceMock<MockSecuritySettingsBundlePrefChangeHandler>>(
+      profile1);
+  auto mock_handler2 = std::make_unique<
+      ::testing::NiceMock<MockSecuritySettingsBundlePrefChangeHandler>>(
+      profile2_ptr);
+
+  EXPECT_CALL(*mock_handler1.get(),
+              MaybeShowEnhancedBundleSettingChangeNotification());
+  EXPECT_CALL(*mock_handler2.get(),
+              MaybeShowEnhancedBundleSettingChangeNotification());
+
+  sb_service_->bundled_settings_pref_change_handlers_map_[profile1] =
+      std::move(mock_handler1);
+  sb_service_->bundled_settings_pref_change_handlers_map_[profile2_ptr] =
+      std::move(mock_handler2);
+  sb_service_->SecuritySettingsBundlePrefChange(profile1);
+  sb_service_->SecuritySettingsBundlePrefChange(profile2_ptr);
 }
 
 class SafeBrowsingServiceAntiPhishingTelemetryTest
