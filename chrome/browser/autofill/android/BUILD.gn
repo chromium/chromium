@@ -331,6 +331,7 @@ robolectric_library("junit") {
     "//components/autofill/android:main_autofill_java",
     "//components/browser_ui/bottomsheet/android:java",
     "//components/browser_ui/settings/android:java",
+    "//components/browser_ui/styles/android:java",
     "//components/browser_ui/widget/android:java",
     "//components/device_reauth:device_reauth_java_enums",
     "//components/prefs/android:java",
