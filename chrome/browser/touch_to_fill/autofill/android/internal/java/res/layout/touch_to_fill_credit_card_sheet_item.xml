@@ -13,6 +13,8 @@ found in the LICENSE file.
     android:layout_marginBottom="@dimen/ttf_for_sheet_item_margin_bottom"
     android:layout_marginHorizontal="@dimen/ttf_for_sheet_item_margin_horizontal"
     android:background="@drawable/touch_to_fill_credential_background_modern_rounded_all"
+    android:foreground="?attr/selectableItemBackground"
+    android:focusable="true"
     android:gravity="center_vertical"
     android:orientation="horizontal"
     android:padding="@dimen/ttf_for_sheet_item_padding">
