@@ -18,8 +18,9 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/test_timeouts.h"
-#include "base/win/atl.h"
 #include "base/win/registry.h"
+#include "base/win/security_descriptor.h"
+#include "base/win/sid.h"
 #include "chrome/updater/test/unit_test_util.h"
 #include "chrome/updater/updater_scope.h"
 #include "chrome/updater/util/win_util.h"
@@ -172,15 +173,15 @@ void SetupCmdExe(UpdaterScope scope,
          (::GetLastError() == ERROR_SERVICE_MARKED_FOR_DELETE);
 }
 
-CSecurityDesc GetEveryoneDaclSecurityDescriptor(ACCESS_MASK accessmask) {
-  CSecurityDesc sd;
-  CDacl dacl;
-  dacl.AddAllowedAce(Sids::System(), accessmask);
-  dacl.AddAllowedAce(Sids::Admins(), accessmask);
-  dacl.AddAllowedAce(Sids::Interactive(), accessmask);
-
-  sd.SetDacl(dacl);
-  sd.MakeAbsolute();
+base::win::SecurityDescriptor GetEveryoneDaclSecurityDescriptor(
+    ACCESS_MASK accessmask) {
+  base::win::SecurityDescriptor sd;
+  sd.SetDaclEntry(base::win::WellKnownSid::kLocalSystem,
+                  base::win::SecurityAccessMode::kGrant, accessmask, 0);
+  sd.SetDaclEntry(base::win::WellKnownSid::kBuiltinAdministrators,
+                  base::win::SecurityAccessMode::kGrant, accessmask, 0);
+  sd.SetDaclEntry(base::win::WellKnownSid::kInteractive,
+                  base::win::SecurityAccessMode::kGrant, accessmask, 0);
   return sd;
 }
 
@@ -188,7 +189,10 @@ test::EventHolder CreateEveryoneWaitableEventForTest() {
   const std::wstring event_name =
       base::StrCat({base::UTF8ToWide(test::GetTestName()), L" ",
                     base::NumberToWString(::GetCurrentProcessId())});
-  CSecurityAttributes sa(GetEveryoneDaclSecurityDescriptor(GENERIC_ALL));
+  base::win::SecurityDescriptor sd =
+      GetEveryoneDaclSecurityDescriptor(GENERIC_ALL);
+  SECURITY_DESCRIPTOR absolute_sd = sd.ToAbsolute();
+  SECURITY_ATTRIBUTES sa = {sizeof(sa), &absolute_sd, FALSE};
   return {base::WaitableEvent(base::win::ScopedHandle(
               ::CreateEvent(&sa, FALSE, FALSE, event_name.c_str()))),
           event_name};

@@ -12,8 +12,6 @@
 
 #if BUILDFLAG(IS_WIN)
 #include <windows.h>
-
-#include "base/win/atl.h"
 #endif
 
 namespace base {
@@ -43,7 +41,7 @@ class ScopedLock {
                                             base::TimeDelta timeout);
 #elif BUILDFLAG(IS_WIN)
   static std::unique_ptr<ScopedLock> Create(const std::wstring& mutex_name,
-                                            CSecurityAttributes* sa,
+                                            SECURITY_ATTRIBUTES* sa,
                                             base::TimeDelta timeout);
 #endif
 

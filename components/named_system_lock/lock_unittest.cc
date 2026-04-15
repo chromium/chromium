@@ -30,7 +30,6 @@
 #include <windows.h>
 
 #include "base/strings/utf_string_conversions.h"
-#include "base/win/atl.h"
 #endif
 
 namespace named_system_lock {
@@ -48,7 +47,7 @@ class NamedSystemLockTest : public ::testing::Test {
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC)
     return ScopedLock::Create(lock_name_, base::Seconds(0));
 #else
-    CSecurityAttributes sa;
+    SECURITY_ATTRIBUTES sa = {sizeof(SECURITY_ATTRIBUTES), nullptr, FALSE};
     return ScopedLock::Create(base::ASCIIToWide(lock_name_), &sa,
                               base::Seconds(0));
 #endif

@@ -35,14 +35,14 @@
 #include "base/time/time.h"
 #include "base/types/expected.h"
 #include "base/version.h"
-#include "base/win/atl.h"
+#include "base/win/access_token.h"
 #include "base/win/scoped_handle.h"
+#include "base/win/security_descriptor.h"
 #include "base/win/win_util.h"
 #include "base/win/windows_types.h"
 #include "build/build_config.h"
 #include "chrome/updater/updater_scope.h"
 #include "chrome/updater/updater_version.h"
-#include "chrome/updater/win/scoped_handle.h"
 
 namespace base {
 class FilePath;
@@ -188,18 +188,19 @@ class DynamicIIDsMultImpl : public internal::WrlRuntimeClass<Interface...> {
 // NO_ERROR to E_FAIL.
 HRESULT HRESULTFromLastError();
 
-struct NamedObjectAttributes {
-  NamedObjectAttributes(const std::wstring& name, const CSecurityDesc& sd);
+class NamedObjectAttributes {
+ public:
+  NamedObjectAttributes(const std::wstring& name, const std::wstring& sddl);
   NamedObjectAttributes(const NamedObjectAttributes& other) = delete;
   NamedObjectAttributes& operator=(const NamedObjectAttributes& other) = delete;
   ~NamedObjectAttributes();
 
   std::wstring name;
+  SECURITY_ATTRIBUTES sa = {};
 
-  // `CSecurityAttributes` has broken value semantics because it does not update
-  // its `SECURITY_ATTRIBUTES` base to keep it in sync with the internal
-  // `m_SecurityDescriptor` data member.
-  CSecurityAttributes sa;
+ private:
+  std::optional<base::win::SecurityDescriptor> sd_;
+  SECURITY_DESCRIPTOR absolute_sd_ = {};
 };
 
 // For machine and local system, the prefix would be "Global\G{obj_name}".
@@ -211,13 +212,13 @@ NamedObjectAttributes GetNamedObjectAttributes(const wchar_t* base_name,
                                                UpdaterScope scope);
 
 // Gets the security descriptor with the default DACL for the current process
-// user. The owner is the current user, the group is the current primary group.
-// Returns security attributes on success, nullopt on failure.
-std::optional<CSecurityDesc> GetCurrentUserDefaultSecurityDescriptor();
+// user as an SDDL string. The owner is the current user, the group is the
+// current primary group. Returns SDDL on success, nullopt on failure.
+std::optional<std::wstring> GetCurrentUserDefaultSecurityDescriptor();
 
-// Get security descriptor containing a DACL that grants the ACCESS_MASK access
-// to admins and system.
-CSecurityDesc GetAdminDaclSecurityDescriptor(ACCESS_MASK accessmask);
+// Get an SDDL security descriptor containing a DACL that grants the
+// ACCESS_MASK access to admins and system.
+std::wstring GetAdminDaclSecurityDescriptor(ACCESS_MASK accessmask);
 
 // Returns an SDDL string derived from `sddl`, with the addition of an allowed
 // ACE entry for the current user with the `required_permissions` and
@@ -227,6 +228,14 @@ std::optional<std::wstring> AddCurrentUserAllowedAce(
     const std::wstring& sddl,
     ACCESS_MASK required_permissions,
     UINT8 required_ace_flags);
+
+// Retrieves an access token for the logged-on user by finding the
+// `explorer.exe` process in the active session and duplicating its token. This
+// is useful for system services running in session 0 that need to impersonate
+// the interactive user. Unlike `base::win::GetExplorerPid()`, this works from
+// session 0 by using WTS APIs to find the active session.
+// Returns std::nullopt if no active session or explorer process is found.
+std::optional<base::win::AccessToken> GetLoggedOnUserToken();
 
 // Returns the registry path `Software\{CompanyName}\Update\Clients\{app_id}`.
 std::wstring GetAppClientsKey(const std::string& app_id);
@@ -273,18 +282,6 @@ bool SetRegistryKey(HKEY root,
 // Deletes or sets the `eulaaccepted` value in the `Google\Update` key, based on
 // whether `eula_accepted` is `true` or `false`. Returns `true` on success.
 bool SetEulaAccepted(UpdaterScope scope, bool eula_accepted);
-
-// Returns `true` if the token is an elevated administrator. If
-// `token` is `NULL`, the current thread token is used.
-HResultOr<bool> IsTokenAdmin(HANDLE token);
-
-// Returns true if the user is running as an elevated
-// administrator.
-HResultOr<bool> IsUserAdmin();
-
-// Returns `true` if the user is running as a
-// non-elevated administrator.
-HResultOr<bool> IsUserNonElevatedAdmin();
 
 // Returns `true` if the COM caller is an admin.
 HResultOr<bool> IsCOMCallerAdmin();
@@ -469,13 +466,6 @@ std::optional<std::wstring> GetRegKeyContents(const std::wstring& reg_key);
 // thread is set, otherwise, the function uses the user/system default LANGID,
 // or it defaults to US English.
 std::wstring GetTextForSystemError(int error);
-
-// Returns the first instance found of explorer.exe.
-std::optional<DWORD> GetExplorerPid();
-
-// Retrieves the logged on user token for the active explorer process if one
-// exists.
-HResultOr<ScopedKernelHANDLE> GetLoggedOnUserToken();
 
 // Returns true if running in Windows Audit mode, as documented at
 // http://technet.microsoft.com/en-us/library/cc721913.aspx.

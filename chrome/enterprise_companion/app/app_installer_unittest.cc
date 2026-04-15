@@ -19,8 +19,9 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 #if BUILDFLAG(IS_WIN)
+#include <windows.h>
+
 #include "base/strings/utf_string_conversions.h"
-#include "base/win/atl.h"
 #endif
 
 namespace enterprise_companion {
@@ -32,7 +33,7 @@ using ::testing::Return;
 std::unique_ptr<ScopedLock> CreateLockForTest(base::TimeDelta) {
   std::string lock_name = base::UnguessableToken::Create().ToString();
 #if BUILDFLAG(IS_WIN)
-  CSecurityAttributes sa;
+  SECURITY_ATTRIBUTES sa = {sizeof(SECURITY_ATTRIBUTES), nullptr, FALSE};
   return ScopedLock::Create(base::ASCIIToWide(lock_name), &sa,
                             base::Seconds(0));
 #else

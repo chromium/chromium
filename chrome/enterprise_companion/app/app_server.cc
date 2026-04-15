@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include <memory>
+#include <optional>
 #include <utility>
 
 #include "base/functional/bind.h"
@@ -28,13 +29,10 @@
 #endif
 
 #if BUILDFLAG(IS_WIN)
-#include <windows.h>
-
-#include <atlsecurity.h>
-
+#include "base/win/access_token.h"
 #include "base/win/scoped_com_initializer.h"
+#include "base/win/sid.h"
 #include "chrome/updater/util/win_util.h"
-#include "chrome/updater/win/scoped_handle.h"
 #endif
 
 namespace enterprise_companion {
@@ -42,21 +40,16 @@ namespace enterprise_companion {
 namespace {
 
 #if BUILDFLAG(IS_WIN)
+
 bool IsSystemProcess() {
-  CAccessToken current_process_token;
-  if (!current_process_token.GetProcessToken(TOKEN_QUERY,
-                                             ::GetCurrentProcess())) {
-    VPLOG(1) << "CAccessToken::GetProcessToken failed";
+  std::optional<base::win::AccessToken> token =
+      base::win::AccessToken::FromCurrentProcess();
+  if (!token) {
+    VPLOG(1) << "AccessToken::FromCurrentProcess failed";
     return false;
   }
 
-  CSid logon_sid;
-  if (!current_process_token.GetUser(&logon_sid)) {
-    VPLOG(1) << "CAccessToken::GetUser failed";
-    return false;
-  }
-
-  return logon_sid == Sids::System();
+  return token->User() == base::win::Sid(base::win::WellKnownSid::kLocalSystem);
 }
 #endif
 
@@ -150,11 +143,10 @@ class AppServer : public App {
                 if (!::RevertToSelf()) {
                   VPLOG(1) << "Failed to revert net thread impersonation";
                 }
-                updater::HResultOr<updater::ScopedKernelHANDLE> token =
+                std::optional<base::win::AccessToken> token =
                     updater::GetLoggedOnUserToken();
                 VLOG_IF(2, !token.has_value())
-                    << __func__ << ": GetLoggedOnUserToken failed: " << std::hex
-                    << token.error();
+                    << __func__ << ": GetLoggedOnUserToken failed";
                 if (token.has_value()) {
                   if (!::ImpersonateLoggedOnUser(token->get())) {
                     VPLOG(1)
