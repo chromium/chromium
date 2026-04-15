@@ -25,7 +25,7 @@
 #include "ui/views/widget/widget.h"
 
 namespace {
-constexpr int kButtonWithLabelPadding = 4;
+constexpr int kButtonWithLabelPadding = 5;
 
 class TabStripFlatEdgeButtonActionViewInterface
     : public views::LabelButtonActionViewInterface {
@@ -75,7 +75,7 @@ TabStripFlatEdgeButton::TabStripFlatEdgeButton() {
       this, kColorTabStripControlButtonInkDrop,
       kColorTabStripControlButtonInkDropRipple);
   SetIconSize(
-      GetLayoutConstant(LayoutConstant::kVerticalTabStripButtonIconSize));
+      GetLayoutConstant(LayoutConstant::kVerticalTabStripComboButtonIconSize));
   SetImageLabelSpacing(kButtonWithLabelPadding);
   SetInsets(gfx::Insets());
 }
