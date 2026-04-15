@@ -16,6 +16,7 @@
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
+#include "chrome/browser/ui/browser_window/public/profile_browser_collection.h"
 #include "chrome/browser/ui/profiles/profile_picker.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
@@ -52,6 +53,18 @@ std::unique_ptr<web_app::WebAppInstallInfo> GetTestWebAppInstallInfo() {
 webapps::AppId GetTestWebAppId() {
   return web_app::GenerateAppIdFromManifestId(
       webapps::ManifestId(GURL(kTestWebUIManifestId)));
+}
+
+size_t GetTabbedBrowserCount(Profile* profile) {
+  size_t count = 0;
+  ProfileBrowserCollection::GetForProfile(profile)->ForEach(
+      [&](BrowserWindowInterface* browser) {
+        if (browser->GetType() == BrowserWindowInterface::TYPE_NORMAL) {
+          count++;
+        }
+        return true;
+      });
+  return count;
 }
 
 Profile* CreateAdditionalProfile() {
@@ -165,7 +178,7 @@ IN_PROC_BROWSER_TEST_F(WebAppProfileSwitcherBrowserTest,
       web_app::AppBrowserController::FindForWebApp(*first_profile,
                                                    ash::kPasswordManagerAppId);
   ASSERT_TRUE(first_profile_app_browser);
-  ASSERT_EQ(chrome::FindAllTabbedBrowsersWithProfile(first_profile).size(), 1U);
+  ASSERT_EQ(GetTabbedBrowserCount(first_profile), 1U);
 
   // Create a second profile and install the app for it.
   Profile* second_profile = CreateAdditionalProfile();
@@ -191,7 +204,7 @@ IN_PROC_BROWSER_TEST_F(WebAppProfileSwitcherBrowserTest,
   EXPECT_TRUE(profile_switch_complete.Wait());
 
   // Check that there is only one browser for the first_profile and it's active.
-  ASSERT_EQ(chrome::FindAllTabbedBrowsersWithProfile(first_profile).size(), 1U);
+  ASSERT_EQ(GetTabbedBrowserCount(first_profile), 1U);
   EXPECT_EQ(GlobalBrowserCollection::GetInstance()->GetActiveBrowser(),
             first_profile_app_browser);
 
