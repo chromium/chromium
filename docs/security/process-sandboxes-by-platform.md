@@ -23,7 +23,7 @@ Last updated for M128.
 |---|---|---|
 | Browser | all | **unsandboxed** |
 | Network | Android, Windows, Linux | **unsandboxed** |
-| GPU | Android, non-ChromeOS Linux | **unsandboxed** |
+| GPU | Android | **unsandboxed** |
 | On Device Model Execution | Android, non-ChromeOS Linux | **unsandboxed** |
 | Video Capture | non-Fuchsia | **unsandboxed** |
 | kNoSandbox | all | **unsandboxed** |
