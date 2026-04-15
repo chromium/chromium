@@ -12,6 +12,8 @@
 #include "chrome/test/base/testing_profile.h"
 #include "content/public/test/browser_task_environment.h"
 #include "extensions/browser/api/messaging/native_message_host.h"
+#include "extensions/browser/extension_registry.h"
+#include "extensions/common/extension_builder.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -157,6 +159,28 @@ TEST_F(DriveFsNativeMessageHostTest, Error) {
 
   host->OnMessage("bar");
   base::RunLoop().RunUntilIdle();
+}
+
+TEST_F(DriveFsNativeMessageHostTest,
+       ConnectToDriveFsNativeMessageExtensionVerification) {
+  // Create a non-Drive extension with nativeMessaging permission.
+  scoped_refptr<const extensions::Extension> extension =
+      extensions::ExtensionBuilder("Test Extension")
+          .SetID("abcdefghijklmnopqrstuvwxyzabcdef")
+          .AddAPIPermission("nativeMessaging")
+          .Build();
+  extensions::ExtensionRegistry::Get(&profile_)->AddEnabled(extension);
+
+  mojo::PendingRemote<drivefs::mojom::NativeMessagingPort> extension_port;
+  mojo::PendingReceiver<drivefs::mojom::NativeMessagingHost> drivefs_host;
+
+  auto status = ConnectToDriveFsNativeMessageExtension(
+      &profile_, extension->id(),
+      extension_port.InitWithNewPipeAndPassReceiver(),
+      drivefs_host.InitWithNewPipeAndPassRemote());
+
+  EXPECT_EQ(status,
+            drivefs::mojom::ExtensionConnectionStatus::kExtensionNotFound);
 }
 
 }  // namespace

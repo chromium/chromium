@@ -4,6 +4,8 @@
 
 #include "chrome/browser/chromeos/drivefs/drivefs_native_message_host.h"
 
+#include <algorithm>
+
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
@@ -25,6 +27,7 @@
 #include "extensions/common/permissions/permissions_data.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "url/gurl.h"
 
 namespace drive {
 
@@ -127,6 +130,16 @@ ConnectToDriveFsNativeMessageExtension(
     mojo::PendingReceiver<drivefs::mojom::NativeMessagingPort>
         extension_receiver,
     mojo::PendingRemote<drivefs::mojom::NativeMessagingHost> drivefs_remote) {
+  // If none of the explicitly accepted DriveFS native messaging origins match
+  // the provided |extension_id|, return an error to prevent privilege
+  // escalation:
+  if (std::ranges::none_of(kDriveFsNativeMessageHostOrigins,
+                           [&extension_id](const char* allowed_origin) {
+                             return extension_id == GURL(allowed_origin).host();
+                           })) {
+    return drivefs::mojom::ExtensionConnectionStatus::kExtensionNotFound;
+  }
+
   auto* extension =
       extensions::ExtensionRegistry::Get(context)->enabled_extensions().GetByID(
           extension_id);
