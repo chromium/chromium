@@ -16,18 +16,18 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
+#include "base/scoped_observation.h"
 #include "base/types/expected.h"
 #include "build/chromeos_buildflags.h"
+#include "chrome/browser/ash/printing/cups_print_job_manager.h"
 #include "chrome/browser/ash/printing/cups_print_job_manager_factory.h"
 #include "chrome/browser/ash/printing/local_printer.h"
 #include "chrome/browser/extensions/api/printing/print_job_submitter.h"
 #include "chrome/common/extensions/api/printing.h"
-#include "chromeos/crosapi/mojom/local_printer.mojom.h"
 #include "extensions/browser/browser_context_keyed_api_factory.h"
 #include "extensions/browser/event_router_factory.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "ui/gfx/native_ui_types.h"
-
 
 class PrefRegistrySimple;
 
@@ -57,7 +57,7 @@ class ExtensionRegistry;
 // The callback function is never run directly - it is posted to
 // base::SequencedTaskRunner::GetCurrentDefault().
 class PrintingAPIHandler : public BrowserContextKeyedAPI,
-                           public crosapi::mojom::PrintJobObserver {
+                           public ash::CupsPrintJobManager::Observer {
  public:
   using SubmitJobCallback = base::OnceCallback<void(
       std::optional<api::printing::SubmitJobStatus> status,
@@ -76,7 +76,6 @@ class PrintingAPIHandler : public BrowserContextKeyedAPI,
       ExtensionRegistry* extension_registry,
       std::unique_ptr<printing::PrintJobController> print_job_controller,
       std::unique_ptr<chromeos::CupsWrapper> cups_wrapper,
-      crosapi::mojom::LocalPrinter* cros_local_printer,
       ash::LocalPrinter* local_printer);
 
   explicit PrintingAPIHandler(content::BrowserContext* browser_context);
@@ -87,7 +86,6 @@ class PrintingAPIHandler : public BrowserContextKeyedAPI,
       ExtensionRegistry* extension_registry,
       std::unique_ptr<printing::PrintJobController> print_job_controller,
       std::unique_ptr<chromeos::CupsWrapper> cups_wrapper,
-      crosapi::mojom::LocalPrinter* cros_local_printer,
       ash::LocalPrinter* local_printer);
 
   PrintingAPIHandler(const PrintingAPIHandler&) = delete;
@@ -103,10 +101,11 @@ class PrintingAPIHandler : public BrowserContextKeyedAPI,
   // Returns the current instance for `browser_context`.
   static PrintingAPIHandler* Get(content::BrowserContext* browser_context);
 
-  // crosapi::mojom::PrintJobObserver:
-  void OnPrintJobUpdate(const std::string& printer_id,
-                        unsigned int job_id,
-                        crosapi::mojom::PrintJobUpdatePtr update) override;
+  // ash::CupsPrintJobManager::Observer:
+  void OnPrintJobStarted(base::WeakPtr<ash::CupsPrintJob> job) override;
+  void OnPrintJobDone(base::WeakPtr<ash::CupsPrintJob> job) override;
+  void OnPrintJobError(base::WeakPtr<ash::CupsPrintJob> job) override;
+  void OnPrintJobCancelled(base::WeakPtr<ash::CupsPrintJob> job) override;
 
   // Register the printing API preference with the `registry`.
   static void RegisterProfilePrefs(PrefRegistrySimple* registry);
@@ -138,8 +137,12 @@ class PrintingAPIHandler : public BrowserContextKeyedAPI,
   // Needed for BrowserContextKeyedAPI implementation.
   friend class BrowserContextKeyedAPIFactory<PrintingAPIHandler>;
 
+  FRIEND_TEST_ALL_PREFIXES(PrintingAPIHandlerParam, EventIsDispatched);
+  FRIEND_TEST_ALL_PREFIXES(PrintingAPIHandlerParam, GetJobStatus);
   FRIEND_TEST_ALL_PREFIXES(PrintingAPIHandlerParam, GetJobStatus_CacheFull);
   FRIEND_TEST_ALL_PREFIXES(PrintingAPIHandlerUnittest, EvictOldFinishedJobs);
+  FRIEND_TEST_ALL_PREFIXES(PrintingAPIHandlerUnittest, CancelJob);
+  FRIEND_TEST_ALL_PREFIXES(PrintingAPIHandlerUnittest, CancelJob_InvalidState);
 
   struct PrintJobInfo {
     std::string printer_id;
@@ -147,6 +150,10 @@ class PrintingAPIHandler : public BrowserContextKeyedAPI,
     std::string extension_id;
     api::printing::JobStatus status;
   };
+
+  void UpdateJobStatus(const std::string& printer_id,
+                       int job_id,
+                       api::printing::JobStatus job_status);
 
   void OnPrintJobSubmitted(SubmitJobCallback callback,
                            const std::string& extension_id,
@@ -203,11 +210,12 @@ class PrintingAPIHandler : public BrowserContextKeyedAPI,
   // oldest jobs from `finished_print_jobs_`.
   base::circular_deque<std::string> finished_jobs_order_;
 
-  raw_ptr<crosapi::mojom::LocalPrinter> cros_local_printer_;
   // Associated with the whole ash browser process globally.
-  raw_ref<ash::LocalPrinter> local_printer_;
+  const raw_ref<ash::LocalPrinter> local_printer_;
 
-  mojo::Receiver<crosapi::mojom::PrintJobObserver> receiver_{this};
+  base::ScopedObservation<ash::CupsPrintJobManager,
+                          ash::CupsPrintJobManager::Observer>
+      observation_{this};
 
   base::WeakPtrFactory<PrintingAPIHandler> weak_ptr_factory_{this};
 };

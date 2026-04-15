@@ -9838,7 +9838,12 @@ test("unit_tests") {
         "../browser/extensions/api/printing/printing_api_handler_unittest.cc",
         "../browser/extensions/api/printing/printing_api_utils_unittest.cc",
       ]
-      deps += [ "//chromeos/printing" ]
+      deps += [
+        "//chrome/browser/ash/printing/history",
+        "//chrome/browser/ash/printing/history:test_support",
+        "//chrome/browser/ash/printing/print_management",
+        "//chromeos/printing",
+      ]
     }
 
     if (is_chromeos) {

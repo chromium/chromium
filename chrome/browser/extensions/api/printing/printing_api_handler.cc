@@ -20,7 +20,10 @@
 #include "base/task/task_runner.h"
 #include "base/types/to_address.h"
 #include "build/chromeos_buildflags.h"
+#include "chrome/browser/ash/printing/cups_print_job.h"
 #include "chrome/browser/ash/printing/local_printer.h"
+#include "chrome/browser/ash/printing/print_management/printing_manager.h"
+#include "chrome/browser/ash/printing/print_management/printing_manager_factory.h"
 #include "chrome/browser/chromeos/printing/cups_wrapper.h"
 #include "chrome/browser/chromeos/printing/printer_error_codes.h"
 #include "chrome/browser/extensions/api/printing/print_job_submitter.h"
@@ -31,11 +34,14 @@
 #include "chrome/browser/printing/print_job_controller.h"
 #include "chrome/browser/printing/print_preview_sticky_settings.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/common/pref_names.h"
-#include "chromeos/crosapi/mojom/local_printer.mojom.h"
+#include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #include "components/printing/common/cloud_print_cdd_conversion.h"
+#include "components/session_manager/core/session.h"
+#include "components/session_manager/core/session_manager.h"
 #include "components/user_manager/user_manager.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_thread.h"
@@ -75,12 +81,10 @@ std::unique_ptr<PrintingAPIHandler> PrintingAPIHandler::CreateForTesting(
     ExtensionRegistry* extension_registry,
     std::unique_ptr<printing::PrintJobController> print_job_controller,
     std::unique_ptr<chromeos::CupsWrapper> cups_wrapper,
-    crosapi::mojom::LocalPrinter* cros_local_printer,
     ash::LocalPrinter* local_printer) {
   return std::make_unique<PrintingAPIHandler>(
       browser_context, event_router, extension_registry,
-      std::move(print_job_controller), std::move(cups_wrapper),
-      cros_local_printer, local_printer);
+      std::move(print_job_controller), std::move(cups_wrapper), local_printer);
 }
 
 PrintingAPIHandler::PrintingAPIHandler(content::BrowserContext* browser_context)
@@ -89,12 +93,22 @@ PrintingAPIHandler::PrintingAPIHandler(content::BrowserContext* browser_context)
                          ExtensionRegistry::Get(browser_context),
                          std::make_unique<printing::PrintJobController>(),
                          chromeos::CupsWrapper::Create(),
-                         printing::GetLocalPrinterInterface(),
                          ash::LocalPrinter::Get()) {
-  CHECK(cros_local_printer_);
-  cros_local_printer_->AddPrintJobObserver(
-      receiver_.BindNewPipeAndPassRemoteWithVersion(),
-      crosapi::mojom::PrintJobSource::kExtension, base::DoNothing());
+  CHECK(user_manager::UserManager::IsInitialized());
+  CHECK(user_manager::UserManager::Get()->IsUserLoggedIn());
+  CHECK(session_manager::SessionManager::Get()->GetPrimarySession());
+  // TODO(crbug.com/354842935): Replace by ash::AnnotatedAccountId.
+  // TODO(crbug.com/479647640): Check if we should use current user than
+  // primary user.
+  AccountId account_id =
+      session_manager::SessionManager::Get()->GetPrimarySession()->account_id();
+  auto* primary_context =
+      ash::BrowserContextHelper::Get()->GetBrowserContextByAccountId(
+          account_id);
+  ash::CupsPrintJobManager* print_job_manager =
+      ash::CupsPrintJobManagerFactory::GetForBrowserContext(primary_context);
+  CHECK(print_job_manager);
+  observation_.Observe(print_job_manager);
 }
 
 PrintingAPIHandler::PrintingAPIHandler(
@@ -103,7 +117,6 @@ PrintingAPIHandler::PrintingAPIHandler(
     ExtensionRegistry* extension_registry,
     std::unique_ptr<printing::PrintJobController> print_job_controller,
     std::unique_ptr<chromeos::CupsWrapper> cups_wrapper,
-    crosapi::mojom::LocalPrinter* cros_local_printer,
     ash::LocalPrinter* local_printer)
     : browser_context_(browser_context),
       event_router_(event_router),
@@ -112,10 +125,7 @@ PrintingAPIHandler::PrintingAPIHandler(
       cups_wrapper_(std::move(cups_wrapper)),
       pdf_blob_data_flattener_(std::make_unique<printing::PdfBlobDataFlattener>(
           Profile::FromBrowserContext(browser_context))),
-      cros_local_printer_(cros_local_printer),
-      local_printer_(CHECK_DEREF(local_printer)) {
-  CHECK(cros_local_printer_);
-}
+      local_printer_(CHECK_DEREF(local_printer)) {}
 
 PrintingAPIHandler::~PrintingAPIHandler() = default;
 
@@ -159,7 +169,7 @@ void PrintingAPIHandler::SubmitJob(
   PrintJobSubmitter::Run(std::make_unique<PrintJobSubmitter>(
       native_window, browser_context_, print_job_controller_.get(),
       pdf_blob_data_flattener_.get(), std::move(extension),
-      std::move(params->request), base::to_address(local_printer_),
+      std::move(params->request), &*local_printer_,
       base::BindOnce(&PrintingAPIHandler::OnPrintJobSubmitted,
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback),
                      std::move(extension_id))));
@@ -226,8 +236,21 @@ std::optional<std::string> PrintingAPIHandler::CancelJob(
     return kNoActivePrintJobWithIdError;
   }
 
-  cros_local_printer_->CancelPrintJob(it->second.printer_id, it->second.job_id,
-                                      base::DoNothing());
+  CHECK(user_manager::UserManager::IsInitialized());
+  CHECK(user_manager::UserManager::Get()->IsUserLoggedIn());
+  CHECK(session_manager::SessionManager::Get()->GetPrimarySession());
+  // TODO(crbug.com/354842935): Replace by ash::AnnotatedAccountId.
+  // TODO(crbug.com/479647640): Check if we should use current user than
+  // primary user.
+  AccountId account_id =
+      session_manager::SessionManager::Get()->GetPrimarySession()->account_id();
+  auto* primary_context =
+      ash::BrowserContextHelper::Get()->GetBrowserContextByAccountId(
+          account_id);
+  ash::printing::print_management::PrintingManagerFactory::GetForProfile(
+      Profile::FromBrowserContext(primary_context))
+      ->CancelPrintJob(CreateUniqueId(it->second.printer_id, it->second.job_id),
+                       base::DoNothing());
 
   return std::nullopt;
 }
@@ -367,29 +390,40 @@ PrintingAPIHandler::GetJobStatus(const std::string& extension_id,
   return base::unexpected(kNoPrintJobWithIdError);
 }
 
-void PrintingAPIHandler::OnPrintJobUpdate(
-    const std::string& printer_id,
-    unsigned int job_id,
-    crosapi::mojom::PrintJobUpdatePtr update) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-
-  api::printing::JobStatus job_status;
-  switch (update->status) {
-    case crosapi::mojom::PrintJobStatus::kStarted:
-      job_status = api::printing::JobStatus::kInProgress;
-      break;
-    case crosapi::mojom::PrintJobStatus::kDone:
-      job_status = api::printing::JobStatus::kPrinted;
-      break;
-    case crosapi::mojom::PrintJobStatus::kError:
-      job_status = api::printing::JobStatus::kFailed;
-      break;
-    case crosapi::mojom::PrintJobStatus::kCancelled:
-      job_status = api::printing::JobStatus::kCanceled;
-      break;
-    default:  // crosapi::mojom::PrintJobStatus::kCreated
-      return;
+void PrintingAPIHandler::OnPrintJobStarted(
+    base::WeakPtr<ash::CupsPrintJob> job) {
+  if (job) {
+    UpdateJobStatus(job->printer().id(), job->job_id(),
+                    api::printing::JobStatus::kInProgress);
   }
+}
+
+void PrintingAPIHandler::OnPrintJobDone(base::WeakPtr<ash::CupsPrintJob> job) {
+  if (job) {
+    UpdateJobStatus(job->printer().id(), job->job_id(),
+                    api::printing::JobStatus::kPrinted);
+  }
+}
+
+void PrintingAPIHandler::OnPrintJobError(base::WeakPtr<ash::CupsPrintJob> job) {
+  if (job) {
+    UpdateJobStatus(job->printer().id(), job->job_id(),
+                    api::printing::JobStatus::kFailed);
+  }
+}
+
+void PrintingAPIHandler::OnPrintJobCancelled(
+    base::WeakPtr<ash::CupsPrintJob> job) {
+  if (job) {
+    UpdateJobStatus(job->printer().id(), job->job_id(),
+                    api::printing::JobStatus::kCanceled);
+  }
+}
+
+void PrintingAPIHandler::UpdateJobStatus(const std::string& printer_id,
+                                         int job_id,
+                                         api::printing::JobStatus job_status) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   std::string cups_id = CreateUniqueId(printer_id, job_id);
   auto it = in_progress_print_jobs_.find(cups_id);

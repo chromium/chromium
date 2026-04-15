@@ -1148,7 +1148,9 @@ source_set("extensions") {
         ]
 
         deps += [
+          "//chrome/browser/ash/base",
           "//chrome/browser/ash/printing",
+          "//chrome/browser/ash/printing/print_management",
           "//chrome/browser/chromeos/extensions/printing_metrics",
           "//chrome/browser/chromeos/printing",
           "//chrome/browser/pdf:pdf_pref_names",
