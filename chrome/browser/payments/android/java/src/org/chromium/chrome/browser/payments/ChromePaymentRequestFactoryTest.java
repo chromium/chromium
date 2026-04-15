@@ -23,6 +23,7 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.payments.InvalidPaymentRequest;
 import org.chromium.components.payments.PaymentFeatureList;
 import org.chromium.components.payments.test_support.DefaultPaymentFeatureConfig;
+import org.chromium.content_public.browser.LifecycleState;
 import org.chromium.content_public.browser.PermissionsPolicyFeature;
 import org.chromium.content_public.browser.RenderFrameHost;
 import org.chromium.content_public.browser.WebContents;
@@ -49,6 +50,8 @@ public class ChromePaymentRequestFactoryTest {
 
         Mockito.doReturn(true).when(mProfile).isOffTheRecord();
         Profile.setProfileFromWebContentsForTesting(mProfile);
+
+        Mockito.when(mRenderFrameHost.getLifecycleState()).thenReturn(LifecycleState.ACTIVE);
 
         setPaymentPermissionsPolicy(true);
     }
@@ -90,6 +93,15 @@ public class ChromePaymentRequestFactoryTest {
         Assert.assertNull(createFactory(mRenderFrameHost).createImpl());
         // 241 == PAYMENTS_WITHOUT_PERMISSION.
         Assert.assertEquals(241, isKilledReason.get());
+    }
+
+    @Test
+    @Feature({"Payments"})
+    public void testInactiveLifecycleStateCausesInvalidPaymentRequest() {
+        Mockito.when(mRenderFrameHost.getLifecycleState())
+                .thenReturn(LifecycleState.IN_BACK_FORWARD_CACHE);
+        Assert.assertTrue(
+                createFactory(mRenderFrameHost).createImpl() instanceof InvalidPaymentRequest);
     }
 
     @Test
