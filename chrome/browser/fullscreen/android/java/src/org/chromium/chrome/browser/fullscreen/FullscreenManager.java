@@ -9,7 +9,16 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.tab.Tab;
 
-/** An interface for observing and changing fullscreen mode. */
+/**
+ * An interface for observing and changing tab fullscreen mode. Note that this is not browser
+ * fullscreen mode. Tab fullscreen refers to a renderer-initiated fullscreen mode (eg: from an
+ * extension or via the JS fullscreen API) i.e. NOT triggered by the browser. Browser fullscreen
+ * refers to the user putting the browser itself into fullscreen mode from the browser UI. The
+ * difference is that tab fullscreen has implications for how the contents of the tab render (eg: a
+ * video element may grow to consume the whole tab), whereas browser fullscreen mode doesn't. Tab
+ * fullscreen must be entered by the WebContents to ensure the rendering differences are handled
+ * correctly. Chrome on Android currently only supports tab fullscreen, not browser fullscreen.
+ */
 @NullMarked
 public interface FullscreenManager {
     /**
@@ -51,17 +60,13 @@ public interface FullscreenManager {
      */
     void removeObserver(Observer listener);
 
-    /**
-     * @return Whether the application is in persistent fullscreen mode.
-     */
+    /** Returns whether the application is in persistent fullscreen mode. */
     boolean getPersistentFullscreenMode();
 
     /** Returns target display id for which full screen was requested. */
     long getFullscreenTargetDisplay();
 
-    /**
-     * @return Supplier of whether the activity is in persistent fullscreen mode.
-     */
+    /** Returns a supplier of whether the activity is in persistent fullscreen mode. */
     NonNullObservableSupplier<Boolean> getPersistentFullscreenModeSupplier();
 
     /**
@@ -71,14 +76,18 @@ public interface FullscreenManager {
     void exitPersistentFullscreenMode();
 
     /**
-     * Enter fullscreen.
+     * Enter fullscreen in response to a request from the WebContents. DO NOT CALL THIS TO ENTER
+     * FULLSCREEN. This does not tell the WebContents to enter fullscreen, it happens in response to
+     * the WebContents entering fullscreen.
+     *
      * @param tab {@link Tab} that goes into fullscreen.
      * @param options Fullscreen options.
      */
     void onEnterFullscreen(Tab tab, FullscreenOptions options);
 
     /**
-     * Exit fullscreen.
+     * Exit fullscreen. It is possible to call this from browser code as unlike entering fullscreen,
+     * exiting fullscreen does not require a WebContents initiated request.
      *
      * @param tab {@link Tab} that goes out of fullscreen.
      */
