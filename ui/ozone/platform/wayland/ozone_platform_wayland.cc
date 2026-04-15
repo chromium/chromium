@@ -360,6 +360,11 @@ class OzonePlatformWayland : public OzonePlatform,
       // arbitrary position.
       properties->supports_global_screen_coordinates = false;
 
+      // Sever communicates a preferred drm device for chrome to both composite
+      // and decode video. This is a workaround to prevent decoding and
+      // compositing on different GPUs.
+      properties->webgpu_on_vulkan_via_gl_interop = true;
+
       initialised = true;
     }
 
