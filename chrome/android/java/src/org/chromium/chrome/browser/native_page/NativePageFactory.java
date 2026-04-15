@@ -33,7 +33,6 @@ import org.chromium.chrome.browser.back_press.BackPressManager;
 import org.chromium.chrome.browser.bookmarks.BookmarkPage;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsMarginAdapter;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
-import org.chromium.chrome.browser.contextual_tasks.ContextualTasksNativePage;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.fullscreen.BrowserControlsManager;
 import org.chromium.chrome.browser.history.HistoryManagerUtils;
@@ -396,18 +395,6 @@ public class NativePageFactory {
                     tab.getProfile());
         }
 
-        protected NativePage buildContextualTasksPage(Tab tab) {
-            return new ContextualTasksNativePage(
-                    mActivity,
-                    new TabShim(
-                            tab,
-                            mBrowserControlsManager,
-                            mTabModelSelector,
-                            /* edgeToEdgeControllerSupplier= */ null),
-                    mWindowAndroid,
-                    tab.getProfile());
-        }
-
         protected NativePage buildPdfPage(Tab tab, String url, PdfInfo pdfInfo) {
             return NativePageFactory.buildPdfPage(
                     url, tab, pdfInfo, mBrowserControlsManager, mTabModelSelector, mActivity);
@@ -477,9 +464,6 @@ public class NativePageFactory {
                 break;
             case NativePageType.MANAGEMENT:
                 page = getBuilder().buildManagementPage(tab);
-                break;
-            case NativePageType.CONTEXTUAL_TASKS:
-                page = getBuilder().buildContextualTasksPage(tab);
                 break;
             case NativePageType.PDF:
                 assumeNonNull(pdfInfo);

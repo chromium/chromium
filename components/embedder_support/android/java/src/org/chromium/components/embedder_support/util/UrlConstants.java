@@ -76,10 +76,6 @@ public class UrlConstants {
     public static final String HISTORY_HOST = "history";
     public static final String SETTINGS_HOST = "settings";
 
-    public static final String CONTEXTUAL_TASKS_HOST = "contextual-tasks-page";
-    public static final String CONTEXTUAL_TASKS_WEBUI_HOST = "contextual-tasks";
-    public static final String CONTEXTUAL_TASKS_URL = "chrome-native://contextual-tasks-page/";
-
     public static final String LAUNCHPAD_HOST = "apps";
     public static final String LAUNCHPAD_URL = "chrome://apps/";
 

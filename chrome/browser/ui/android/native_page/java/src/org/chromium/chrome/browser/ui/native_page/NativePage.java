@@ -179,7 +179,6 @@ public interface NativePage {
         NativePageType.EXPLORE,
         NativePageType.MANAGEMENT,
         NativePageType.PDF,
-        NativePageType.CONTEXTUAL_TASKS
     })
     @Retention(RetentionPolicy.SOURCE)
     @interface NativePageType {
@@ -193,7 +192,6 @@ public interface NativePage {
         int EXPLORE = 7;
         int MANAGEMENT = 8;
         int PDF = 9;
-        int CONTEXTUAL_TASKS = 10;
     }
 
     /**
@@ -287,8 +285,6 @@ public interface NativePage {
                 return NativePageType.NONE;
             }
             return NativePageType.MANAGEMENT;
-        } else if (UrlConstants.CONTEXTUAL_TASKS_HOST.equals(host)) {
-            return NativePageType.CONTEXTUAL_TASKS;
         } else {
             return NativePageType.NONE;
         }

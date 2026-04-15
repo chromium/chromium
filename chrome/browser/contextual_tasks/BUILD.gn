@@ -562,31 +562,22 @@ if (is_android) {
 
     sources = [
       "android/java/src/org/chromium/chrome/browser/contextual_tasks/ContextualTasksBridge.java",
-      "android/java/src/org/chromium/chrome/browser/contextual_tasks/ContextualTasksNativePage.java",
       "android/java/src/org/chromium/chrome/browser/contextual_tasks/ContextualTasksUiServiceDelegate.java",
-      "android/java/src/org/chromium/chrome/browser/contextual_tasks/ContextualTasksUtils.java",
     ]
 
     deps = [
       ":java_resources",
       "//base:base_java",
       "//build/android:build_java",
-      "//chrome/browser/android/content:java",
-      "//chrome/browser/context_sharing/tab_bottom_sheet/android:java",
       "//chrome/browser/feedback/android:factory_java",
       "//chrome/browser/feedback/android:java",
       "//chrome/browser/profiles/android:java",
-      "//chrome/browser/ui/android/native_page:java",
       "//chrome/browser/ui/browser_window/public/android:java",
       "//chrome/browser/ui/messages/android:java",
-      "//components/embedder_support/android:util_java",
       "//components/strings:components_strings_grd",
-      "//content/public/android:content_java",
       "//third_party/androidx:androidx_annotation_annotation_java",
       "//third_party/jni_zero:jni_zero_java",
       "//ui/android:ui_java",
-      "//ui/android:ui_no_recycler_view_java",
-      "//url:gurl_java",
     ]
   }
 
@@ -598,10 +589,7 @@ if (is_android) {
   }
 
   robolectric_library("junit") {
-    sources = [
-      "android/junit/src/org/chromium/chrome/browser/contextual_tasks/ContextualTasksUiServiceDelegateUnitTest.java",
-      "android/junit/src/org/chromium/chrome/browser/contextual_tasks/ContextualTasksUtilsUnitTest.java",
-    ]
+    sources = [ "android/junit/src/org/chromium/chrome/browser/contextual_tasks/ContextualTasksUiServiceDelegateUnitTest.java" ]
     deps = [
       ":java",
       "//base:base_java",

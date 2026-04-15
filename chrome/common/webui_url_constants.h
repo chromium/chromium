@@ -102,10 +102,6 @@ inline constexpr char kChromeUIContentAnnotatorInternalsURL[] =
 inline constexpr char kChromeUIContextualTasksHost[] = "contextual-tasks";
 inline constexpr char kChromeUIContextualTasksURL[] =
     "chrome://contextual-tasks/";
-#if BUILDFLAG(IS_ANDROID)
-inline constexpr char kChromeUINativeContextualTasksHost[] =
-    "contextual-tasks-page";
-#endif
 inline constexpr char kChromeUIContentSettingsURL[] =
     "chrome://settings/content";
 inline constexpr char16_t kChromeUIContentSettingsURL16[] =
