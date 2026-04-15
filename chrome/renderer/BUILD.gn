@@ -384,10 +384,10 @@ static_library("renderer") {
 
     deps += [
       "//chrome/common/read_anything:mojo_bindings",
-      "//chrome/common/record_replay",
-      "//chrome/renderer/record_replay",
       "//chrome/renderer/webui_browser",
       "//components/crx_file",
+      "//components/record_replay/content/renderer",
+      "//components/record_replay/core/common",
       "//components/trusted_vault",
       "//services/screen_ai/buildflags",
       "//services/screen_ai/public/mojom",

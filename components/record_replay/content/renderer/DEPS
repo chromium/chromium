@@ -1,0 +1,15 @@
+include_rules = [
+  "+base",
+  "+components/record_replay/core/common",
+  "+content/public/renderer",
+  "+mojo/public/cpp/bindings",
+  "+third_party/blink/public/web",
+  "+third_party/blink/public/common",
+  "+url",
+]
+
+specific_include_rules = {
+  "record_replay_agent_browsertest\.cc": [
+    "+content/public/test/render_view_test.h",
+  ],
+}

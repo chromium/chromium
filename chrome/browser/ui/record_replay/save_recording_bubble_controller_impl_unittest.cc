@@ -5,8 +5,8 @@
 #include "chrome/browser/ui/record_replay/save_recording_bubble_controller_impl.h"
 
 #include "base/test/mock_callback.h"
-#include "chrome/browser/record_replay/recording.pb.h"
-#include "chrome/browser/record_replay/recording_data_manager.h"
+#include "components/record_replay/core/browser/recording.pb.h"
+#include "components/record_replay/core/browser/recording_data_manager.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 

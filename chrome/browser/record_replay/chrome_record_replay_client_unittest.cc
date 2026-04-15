@@ -7,8 +7,8 @@
 #include <optional>
 
 #include "base/test/scoped_feature_list.h"
-#include "chrome/common/record_replay/record_replay_features.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
+#include "components/record_replay/core/common/record_replay_features.h"
 #include "components/tabs/public/mock_tab_interface.h"
 #include "content/public/test/web_contents_tester.h"
 #include "testing/gmock/include/gmock/gmock.h"

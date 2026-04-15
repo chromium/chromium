@@ -587,7 +587,6 @@ if (!is_android) {
         "//chrome/browser/record_replay:impl",
         "//chrome/browser/ui/views/js_optimization:impl",
         "//chrome/browser/ui/views/zoom",
-        "//chrome/common/record_replay",
       ]
     }
 

@@ -104,7 +104,7 @@
 #include "chrome/browser/record_replay/chrome_record_replay_client.h"
 #include "chrome/browser/ui/views/location_bar/record_replay_page_action_controller.h"
 #include "chrome/browser/wallet/chrome_walletable_pass_client.h"
-#include "chrome/common/record_replay/record_replay_features.h"
+#include "components/record_replay/core/common/record_replay_features.h"
 #endif
 #include "chrome/browser/glic/browser_ui/glic_tab_indicator_helper.h"
 #include "chrome/browser/glic/glic_selection_observer.h"

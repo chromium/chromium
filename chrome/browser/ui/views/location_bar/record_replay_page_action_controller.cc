@@ -4,9 +4,6 @@
 
 #include "chrome/browser/ui/views/location_bar/record_replay_page_action_controller.h"
 
-#include "chrome/browser/record_replay/record_replay_client.h"
-#include "chrome/browser/record_replay/record_replay_manager.h"
-#include "chrome/browser/record_replay/recording_data_manager.h"
 #include "chrome/browser/ui/actions/chrome_action_id.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
@@ -21,6 +18,9 @@
 #include "chrome/browser/ui/views/page_action/page_action_view.h"
 #include "chrome/browser/ui/views/record_replay/save_recording_bubble_view.h"
 #include "chrome/grit/generated_resources.h"
+#include "components/record_replay/core/browser/record_replay_client.h"
+#include "components/record_replay/core/browser/record_replay_manager.h"
+#include "components/record_replay/core/browser/recording_data_manager.h"
 #include "components/tabs/public/tab_interface.h"
 #include "components/vector_icons/vector_icons.h"
 #include "third_party/skia/include/core/SkColor.h"

@@ -5,11 +5,11 @@
 #ifndef CHROME_BROWSER_RECORD_REPLAY_CHROME_RECORD_REPLAY_CLIENT_H_
 #define CHROME_BROWSER_RECORD_REPLAY_CHROME_RECORD_REPLAY_CLIENT_H_
 
-#include "chrome/browser/record_replay/content_record_replay_driver_factory.h"
-#include "chrome/browser/record_replay/record_replay_client.h"
-#include "chrome/browser/record_replay/record_replay_manager.h"
 #include "chrome/browser/ui/tabs/contents_observing_tab_feature.h"
-#include "chrome/common/record_replay/record_replay.mojom.h"
+#include "components/record_replay/content/browser/content_record_replay_driver_factory.h"
+#include "components/record_replay/core/browser/record_replay_client.h"
+#include "components/record_replay/core/browser/record_replay_manager.h"
+#include "components/record_replay/core/common/record_replay.mojom.h"
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/web_contents_user_data.h"
 #include "ui/base/unowned_user_data/scoped_unowned_user_data.h"

@@ -545,6 +545,7 @@ source_set("profiles_extra_parts_impl") {
       "//chrome/browser/private_ai",
       "//chrome/browser/profile_resetter",
       "//chrome/browser/record_replay",
+      "//chrome/browser/record_replay:impl",
       "//chrome/browser/screen_ai:screen_ai_service_router_factory",
       "//chrome/browser/search",
       "//chrome/browser/search_engine_choice",
@@ -565,7 +566,6 @@ source_set("profiles_extra_parts_impl") {
       "//chrome/browser/user_education",
     ]
   }
-
   if (is_chromeos) {
     deps += [
       "//chrome/browser/apps/almanac_api_client",

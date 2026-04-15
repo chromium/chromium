@@ -314,8 +314,8 @@ static_library("test_support") {
     public_deps += [ "//chrome/renderer:process_state" ]
     deps += [
       "//chrome/browser/apps/app_service/publishers",
-      "//chrome/common/record_replay",
-      "//chrome/renderer/record_replay",
+      "//components/record_replay/content/renderer",
+      "//components/record_replay/core/common",
       "//components/storage_monitor:test_support",
     ]
   }
@@ -2938,12 +2938,8 @@ if (!is_android) {
       "//chrome/browser/webid:browser_tests",
       "//chrome/browser/window_management:browser_tests",
       "//chrome/common:version_header",
-      "//chrome/common/record_replay",
-      "//chrome/common/record_replay:mojom",
       "//chrome/renderer",
       "//chrome/renderer/actor:browser_tests",
-      "//chrome/renderer/record_replay",
-      "//chrome/renderer/record_replay:test_support",
       "//chrome/renderer/webui_browser:browser_tests",
       "//chrome/services/removable_storage_writer:lib",
       "//chrome/test/components_tests:browser_tests",
@@ -3117,6 +3113,10 @@ if (!is_android) {
       "//components/proxy_config",
       "//components/qr_code_generator:bitmap_generator",
       "//components/reading_list/core",
+      "//components/record_replay/content/renderer",
+      "//components/record_replay/content/renderer:test_support",
+      "//components/record_replay/core/common",
+      "//components/record_replay/core/common:mojom",
       "//components/resources",
       "//components/safe_browsing:buildflags",
       "//components/safe_browsing/content/browser",
@@ -3451,6 +3451,7 @@ if (!is_android) {
 
     sources = [
       "../../components/live_caption/views/caption_bubble_browsertest.cc",
+      "../../components/record_replay/content/renderer/record_replay_agent_browsertest.cc",
       "../app/chrome_main_delegate_browsertest.cc",
       "../browser/accessibility/accessibility_labels_service_browsertest.cc",
       "../browser/accessibility/ax_main_node_annotator_controller_browsertest.cc",
@@ -3946,7 +3947,6 @@ if (!is_android) {
       "../renderer/chrome_render_frame_observer_browsertest.cc",
       "../renderer/commerce/commerce_web_extractor_browsertest.cc",
       "../renderer/indigo/indigo_agent_browsertest.cc",
-      "../renderer/record_replay/record_replay_agent_browsertest.cc",
       "../renderer/translate/translate_agent_browsertest.cc",
       "../renderer/translate/translate_script_browsertest.cc",
       "base/devtools_listener.cc",
@@ -8454,7 +8454,6 @@ test("unit_tests") {
       "//chrome/browser/predictors/lcp_critical_path_predictor:unit_tests",
       "//chrome/browser/privacy_sandbox:test_support",
       "//chrome/browser/private_ai:unit_tests",
-      "//chrome/browser/record_replay:unit_tests",
       "//chrome/browser/renderer_context_menu:mock_test_support",
       "//chrome/browser/renderer_context_menu:unit_tests",
       "//chrome/browser/resource_coordinator",
@@ -8560,6 +8559,7 @@ test("unit_tests") {
       "//components/ntp_tiles:pref_names",
       "//components/passage_embeddings/core",
       "//components/passage_embeddings/core:test_support",
+      "//components/record_replay/core/browser:unit_tests",
       "//components/safe_browsing/core/browser:safe_browsing_metrics_collector",
       "//components/sync_preferences:features",
       "//components/tab_groups",

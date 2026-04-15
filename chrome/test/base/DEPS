@@ -1,3 +1,5 @@
 include_rules = [
   "+components/os_crypt/common",
+  "+components/record_replay/core/common",
+  "+components/record_replay/content/renderer",
 ]

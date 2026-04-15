@@ -6,55 +6,16 @@ import("//third_party/protobuf/proto_library.gni")
 
 assert(is_win || is_mac || is_linux || is_chromeos)
 
-static_library("record_replay") {
-  sources = [
-    "capabilities_database.cc",
-    "capabilities_database.h",
-    "content_element_id.cc",
-    "content_element_id.h",
-    "content_record_replay_driver.cc",
-    "content_record_replay_driver.h",
-    "content_record_replay_driver_factory.cc",
-    "content_record_replay_driver_factory.h",
-    "element_id.cc",
-    "element_id.h",
-    "record_replay_client.cc",
-    "record_replay_client.h",
-    "record_replay_driver.h",
-    "record_replay_driver_factory.h",
-    "record_replay_manager.cc",
-    "record_replay_manager.h",
-    "recorder.cc",
-    "recorder.h",
-    "recording_data_manager.h",
-    "recording_data_manager_factory.cc",
-    "recording_data_manager_factory.h",
-    "recording_data_manager_impl.cc",
-    "recording_data_manager_impl.h",
-    "replayer.cc",
-    "replayer.h",
-  ]
-
-  deps = [
-    "//base",
-    "//chrome/browser/profiles:profile",
-    "//chrome/common/record_replay",
-    "//chrome/common/record_replay:mojom",
-    "//components/autofill/core/browser",
-    "//components/keyed_service/core",
-    "//content/public/browser",
-    "//sql",
-    "//third_party/blink/public/common",
-    "//url",
-  ]
-
-  public_deps = [ ":proto" ]
+group("record_replay") {
+  public_deps = [ "//components/record_replay/content/browser" ]
 }
 
 static_library("impl") {
   sources = [
     "chrome_record_replay_client.cc",
     "chrome_record_replay_client.h",
+    "recording_data_manager_factory.cc",
+    "recording_data_manager_factory.h",
   ]
 
   deps = [
@@ -64,10 +25,11 @@ static_library("impl") {
     "//chrome/browser/ui/tabs",
     "//chrome/browser/ui/toasts",
     "//chrome/browser/ui/toasts/api:toasts",
-    "//chrome/common/record_replay",
-    "//chrome/common/record_replay:mojom",
     "//components/autofill/content/browser",
-    "//components/autofill/core/browser",
+    "//components/record_replay/content/browser",
+    "//components/record_replay/core/browser",
+    "//components/record_replay/core/common:mojom",
+    "//components/tabs",
     "//content/public/browser",
     "//ui/base/unowned_user_data",
   ]
@@ -75,28 +37,17 @@ static_library("impl") {
 
 source_set("unit_tests") {
   testonly = true
-  sources = [
-    "chrome_record_replay_client_unittest.cc",
-    "content_record_replay_driver_factory_unittest.cc",
-    "record_replay_manager_unittest.cc",
-    "recording_data_manager_impl_unittest.cc",
-    "replayer_unittest.cc",
-  ]
+  sources = [ "chrome_record_replay_client_unittest.cc" ]
   deps = [
     ":impl",
     ":record_replay",
     "//base/test:test_support",
-    "//chrome/common/record_replay",
     "//chrome/test:test_support",
+    "//components/record_replay/content/browser",
+    "//components/record_replay/core/browser",
+    "//components/record_replay/core/common",
     "//components/tabs:test_support",
     "//content/test:test_support",
-    "//testing/gmock",
-    "//testing/gtest",
     "//url",
   ]
-}
-
-proto_library("proto") {
-  proto_in_dir = "//"
-  sources = [ "recording.proto" ]
 }

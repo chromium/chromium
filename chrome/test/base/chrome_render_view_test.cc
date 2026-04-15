@@ -43,9 +43,9 @@
 
 #if !BUILDFLAG(IS_ANDROID)
 #include "chrome/common/chrome_features.h"
-#include "chrome/common/record_replay/record_replay_features.h"
 #include "chrome/renderer/process_state.h"  // nogncheck
-#include "chrome/renderer/record_replay/record_replay_agent.h"
+#include "components/record_replay/content/renderer/record_replay_agent.h"
+#include "components/record_replay/core/common/record_replay_features.h"
 #endif
 
 using autofill::AutofillAgent;

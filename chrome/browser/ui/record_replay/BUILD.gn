@@ -11,7 +11,8 @@ source_set("record_replay") {
 
   deps = [
     "//base",
-    "//chrome/browser/record_replay",
+    "//components/record_replay/core/browser",
+    "//components/record_replay/core/browser:proto",
   ]
 }
 
@@ -23,7 +24,8 @@ source_set("unit_tests") {
   deps = [
     ":record_replay",
     "//base/test:test_support",
-    "//chrome/browser/record_replay",
+    "//components/record_replay/core/browser",
+    "//components/record_replay/core/browser:proto",
     "//testing/gmock",
     "//testing/gtest",
   ]

@@ -1,0 +1,17 @@
+include_rules = [
+  "+base",
+  "+components/record_replay/core/browser",
+  "+components/record_replay/core/common",
+  "+content/public/browser",
+  "+content/public/common",
+  "+content/public/test",
+  "+third_party/blink/public/common",
+  "+mojo/public/cpp/bindings",
+  "+url",
+]
+
+specific_include_rules = {
+  ".*unittest\.cc": [
+    "+components/tabs/public/mock_tab_interface.h",
+  ],
+}

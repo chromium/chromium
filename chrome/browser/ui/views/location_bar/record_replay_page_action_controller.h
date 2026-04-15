@@ -7,7 +7,7 @@
 
 #include "base/memory/weak_ptr.h"
 #include "base/timer/timer.h"
-#include "chrome/browser/record_replay/record_replay_manager.h"
+#include "components/record_replay/core/browser/record_replay_manager.h"
 #include "ui/base/unowned_user_data/scoped_unowned_user_data.h"
 
 namespace tabs {

@@ -1,0 +1,49 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//third_party/protobuf/proto_library.gni")
+
+assert(is_win || is_mac || is_linux || is_chromeos)
+
+static_library("browser") {
+  sources = [
+    "content_element_id.cc",
+    "content_element_id.h",
+    "content_record_replay_driver.cc",
+    "content_record_replay_driver.h",
+    "content_record_replay_driver_factory.cc",
+    "content_record_replay_driver_factory.h",
+  ]
+
+  deps = [
+    "//base",
+    "//components/record_replay/core/browser",
+    "//components/record_replay/core/common",
+    "//components/record_replay/core/common:mojom",
+    "//content/public/browser",
+  ]
+
+  public_deps = [ "//components/record_replay/core/browser:proto" ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [
+    "content_record_replay_driver_factory_unittest.cc",
+    "record_replay_manager_unittest.cc",
+    "replayer_unittest.cc",
+  ]
+  deps = [
+    ":browser",
+    "//base/test:test_support",
+    "//components/record_replay/core/browser",
+    "//components/record_replay/core/common",
+    "//components/record_replay/core/common:mojom",
+    "//components/tabs:test_support",
+    "//content/test:test_support",
+    "//testing/gmock",
+    "//testing/gtest",
+    "//url",
+  ]
+}

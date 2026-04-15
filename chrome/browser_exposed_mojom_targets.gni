@@ -86,7 +86,7 @@ browser_exposed_mojom_targets = [
   "//chrome/common/read_anything:mojo_bindings",
   "//chrome/common/compose:mojo_bindings",
   "//chrome/common/importer:interfaces",
-  "//chrome/common/record_replay:mojom",
+  "//components/record_replay/core/common:mojom",
   "//chrome/common/search:mojo_bindings",
   "//chrome/services/file_util/public/mojom:mojom",
   "//chrome/services/media_gallery_util/public/mojom:mojom",

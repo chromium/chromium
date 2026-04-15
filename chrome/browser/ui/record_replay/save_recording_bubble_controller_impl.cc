@@ -6,7 +6,7 @@
 
 #include "base/functional/callback.h"
 #include "base/strings/utf_string_conversions.h"
-#include "chrome/browser/record_replay/recording_data_manager.h"
+#include "components/record_replay/core/browser/recording_data_manager.h"
 
 namespace record_replay {
 

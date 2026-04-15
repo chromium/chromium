@@ -1,0 +1,54 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//third_party/protobuf/proto_library.gni")
+
+static_library("browser") {
+  sources = [
+    "capabilities_database.cc",
+    "capabilities_database.h",
+    "record_replay_client.cc",
+    "record_replay_client.h",
+    "record_replay_driver.h",
+    "record_replay_driver_factory.h",
+    "record_replay_manager.cc",
+    "record_replay_manager.h",
+    "recorder.cc",
+    "recorder.h",
+    "recording_data_manager.h",
+    "recording_data_manager_impl.cc",
+    "recording_data_manager_impl.h",
+    "replayer.cc",
+    "replayer.h",
+  ]
+
+  deps = [
+    "//base",
+    "//components/autofill/core/browser",
+    "//components/keyed_service/core",
+    "//components/record_replay/core/common",
+    "//components/record_replay/core/common:mojom",
+    "//sql",
+    "//url",
+  ]
+
+  public_deps = [ ":proto" ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "recording_data_manager_impl_unittest.cc" ]
+  deps = [
+    ":browser",
+    "//base/test:test_support",
+    "//components/record_replay/core/common",
+    "//testing/gmock",
+    "//testing/gtest",
+  ]
+}
+
+proto_library("proto") {
+  proto_in_dir = "//"
+  sources = [ "recording.proto" ]
+}

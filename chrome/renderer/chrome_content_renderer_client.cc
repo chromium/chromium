@@ -197,12 +197,12 @@
 #include "components/feed/content/renderer/rss_link_reader.h"
 #include "components/feed/feed_feature_list.h"
 #else
-#include "chrome/common/record_replay/record_replay_features.h"
 #include "chrome/renderer/indigo/indigo_agent.h"
 #include "chrome/renderer/indigo/onboarding_agent.h"
-#include "chrome/renderer/record_replay/record_replay_agent.h"
 #include "chrome/renderer/searchbox/searchbox.h"
 #include "chrome/renderer/searchbox/searchbox_extension.h"
+#include "components/record_replay/content/renderer/record_replay_agent.h"
+#include "components/record_replay/core/common/record_replay_features.h"
 #include "components/search/ntp_features.h"  // nogncheck
 #endif
 

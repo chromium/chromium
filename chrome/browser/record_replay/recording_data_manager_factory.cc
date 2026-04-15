@@ -6,8 +6,8 @@
 
 #include "base/feature_list.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/record_replay/recording_data_manager_impl.h"
-#include "chrome/common/record_replay/record_replay_features.h"
+#include "components/record_replay/core/browser/recording_data_manager_impl.h"
+#include "components/record_replay/core/common/record_replay_features.h"
 
 namespace record_replay {
 

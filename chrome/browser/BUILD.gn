@@ -3503,6 +3503,8 @@ static_library("browser") {
       "//components/payments/content",
       "//components/payments/content:utils",
       "//components/private_ai",
+      "//components/record_replay/content/browser",
+      "//components/record_replay/core/browser",
       "//components/safe_browsing/core/browser/realtime:url_lookup_service_base",
       "//components/services/app_service",
       "//components/shared_highlighting/core/common",
@@ -6379,9 +6381,9 @@ group("browser_public_dependencies") {
   } else {
     public_deps += [
       "//chrome/browser/record_replay",
-      "//chrome/common/record_replay:mojom",
       "//components/commerce/core:coupon_db_content_proto",
       "//components/commerce/core/mojom:mojo_bindings",
+      "//components/record_replay/core/common:mojom",
       "//extensions/buildflags",
       "//ui/webui/resources/cr_components/help_bubble:mojo_bindings",
     ]

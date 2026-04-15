@@ -11,8 +11,8 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
-#include "chrome/browser/record_replay/recording.pb.h"
 #include "chrome/browser/ui/record_replay/save_recording_bubble_controller.h"
+#include "components/record_replay/core/browser/recording.pb.h"
 
 namespace record_replay {
 

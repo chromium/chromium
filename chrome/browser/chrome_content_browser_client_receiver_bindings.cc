@@ -98,7 +98,7 @@
 #include "chrome/browser/record_replay/chrome_record_replay_client.h"
 #include "chrome/browser/ui/search/search_tab_helper.h"
 #include "chrome/common/indigo/indigo.mojom.h"
-#include "chrome/common/record_replay/record_replay.mojom.h"
+#include "components/record_replay/core/common/record_replay.mojom.h"
 #endif
 
 #if BUILDFLAG(ENABLE_PDF)
