@@ -158,6 +158,9 @@ const CGFloat kFullscreenSnapThreshold = 10.0;
         WebViewProxyTabHelper::FromWebState(_webState);
     tabHelper->AddObserver(_webViewProxyObserver.get());
     self.scrollViewProxy = tabHelper->GetWebViewProxy().scrollViewProxy;
+    _browserAgent->ExitFullscreen(
+        PassKey(), FullscreenModeTransitionTrigger::kForcedByCode,
+        /*animated=*/false);
   } else {
     self.scrollViewProxy = nil;
   }
