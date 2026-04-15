@@ -2115,11 +2115,14 @@ TEST_F(MultiBufferDataSourceTest, FactoryCreation) {
   MultiBufferDataSource::Factory factory(
       std::move(media_log),
       base::BindRepeating(
-          [](UrlIndex* url_index, const GURL& url, bool ignore_cache,
+          [](UrlIndex* url_index, const GURL& url,
+             media::DataSource::CacheMode cache_mode,
              base::OnceCallback<void(scoped_refptr<UrlData>)> cb) {
             std::move(cb).Run(url_index->GetByUrl(
                 KURL(url), UrlData::CORS_UNSPECIFIED,
-                ignore_cache ? UrlData::kCacheDisabled : UrlData::kNormal));
+                cache_mode == media::DataSource::CacheMode::kBypassCache
+                    ? UrlData::kCacheDisabled
+                    : UrlData::kNormal));
           },
           base::Unretained(&url_index_)),
       /*is_audio_element=*/true,
@@ -2130,7 +2133,7 @@ TEST_F(MultiBufferDataSourceTest, FactoryCreation) {
       /*tick_clock=*/nullptr, task_runner_);
 
   std::unique_ptr<media::DataSource> created_source;
-  factory.Create(GURL(kHttpUrl), false,
+  factory.Create(GURL(kHttpUrl), media::DataSource::CacheMode::kHitCache,
                  base::BindOnce(
                      [](std::unique_ptr<media::DataSource>* out_source,
                         std::unique_ptr<media::DataSource> source) {
@@ -2155,13 +2158,17 @@ TEST_F(MultiBufferDataSourceTest, FactoryCreation) {
 TEST_F(MultiBufferDataSourceTest, FactoryCreationDefault) {
   auto media_log = std::make_unique<NiceMock<media::MockMediaLog>>();
   MultiBufferDataSource::Factory factory(
-      std::move(media_log),
+      /*media_log=*/std::move(media_log),
+      /*get_url_data=*/
       base::BindRepeating(
-          [](UrlIndex* url_index, const GURL& url, bool ignore_cache,
+          [](UrlIndex* url_index, const GURL& url,
+             media::DataSource::CacheMode cache_mode,
              base::OnceCallback<void(scoped_refptr<UrlData>)> cb) {
             std::move(cb).Run(url_index->GetByUrl(
                 KURL(url), UrlData::CORS_UNSPECIFIED,
-                ignore_cache ? UrlData::kCacheDisabled : UrlData::kNormal));
+                cache_mode == media::DataSource::CacheMode::kBypassCache
+                    ? UrlData::kCacheDisabled
+                    : UrlData::kNormal));
           },
           base::Unretained(&url_index_)),
       /*is_audio_element=*/false,
@@ -2169,7 +2176,7 @@ TEST_F(MultiBufferDataSourceTest, FactoryCreationDefault) {
       task_runner_);
 
   std::unique_ptr<media::DataSource> created_source;
-  factory.Create(GURL(kHttpUrl), false,
+  factory.Create(GURL(kHttpUrl), media::DataSource::CacheMode::kHitCache,
                  base::BindOnce(
                      [](std::unique_ptr<media::DataSource>* out_source,
                         std::unique_ptr<media::DataSource> source) {

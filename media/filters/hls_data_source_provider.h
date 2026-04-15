@@ -15,6 +15,7 @@
 #include "base/functional/callback.h"
 #include "base/sequence_checker.h"
 #include "base/types/id_type.h"
+#include "media/base/data_source.h"
 #include "media/base/media_export.h"
 #include "media/base/status.h"
 #include "media/formats/hls/types.h"
@@ -52,7 +53,7 @@ class MEDIA_EXPORT HlsDataSourceProvider {
   struct UrlDataSegment {
     const GURL uri;
     const std::optional<hls::types::ByteRange> range;
-    const bool bypass_cache;
+    const DataSource::CacheMode cache_mode;
   };
   using SegmentQueue = base::queue<UrlDataSegment>;
 
@@ -119,6 +120,15 @@ class MEDIA_EXPORT HlsDataSourceStream {
   // in this playback is tainted.
   void set_would_taint_origin() { would_taint_origin_ = true; }
 
+  // A stream is considered to require a range request if any of the sub-URIs
+  // in the stream use range requests.
+  void set_requires_range_request() { requires_range_request_ = true; }
+
+  // A stream is never allowed to have a tainted origin and be a range request.
+  bool HasIncompatibleRangeAndOrigin() const {
+    return would_taint_origin_ && requires_range_request_;
+  }
+
   // Often the network data for HLS consists of plain-text manifest files, so
   // this supports accessing the fetched data as a string view.
   std::string_view AsString() const;
@@ -136,7 +146,8 @@ class MEDIA_EXPORT HlsDataSourceStream {
   // segments. It is invalid to call this method if `RequiresNextDataSource`
   // does not return true. This method will also update the internal range if
   // the segment has one.
-  std::pair<GURL, bool> GetNextSegmentURIAndCacheStatus();
+  std::tuple<GURL, DataSource::CacheMode, DataSource::RangeMode>
+  GetNextSegmentURIAndCacheStatus();
 
   // Has the stream read all possible data?
   bool CanReadMore() const;
@@ -167,6 +178,11 @@ class MEDIA_EXPORT HlsDataSourceStream {
   // This is critical to security. Once set to true, it must _never_ be set back
   // to false.
   bool would_taint_origin_ = false;
+
+  // This is critical for security. Range requests are not allowed to be mixed
+  // with cross-origin requests at any point. Once this has been set, it must
+  // not be unset.
+  bool requires_range_request_ = false;
 
   // The memory usage represents the total memory usage for _all_ streams used
   // in this playback.

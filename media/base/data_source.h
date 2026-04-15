@@ -41,6 +41,16 @@ class MEDIA_EXPORT DataSource : public DataSourceInfo {
   using DataSourceCb = base::OnceCallback<void(std::unique_ptr<DataSource>)>;
   using EventCb = base::RepeatingCallback<void(const DataSource*)>;
 
+  enum class RangeMode {
+    kRangeRequest,
+    kFullRequest,
+  };
+
+  enum class CacheMode {
+    kBypassCache,
+    kHitCache,
+  };
+
   enum { kReadError = -1, kAborted = -2 };
 
   // Used to specify video preload states. They are "hints" to the browser about
@@ -60,7 +70,7 @@ class MEDIA_EXPORT DataSource : public DataSourceInfo {
    public:
     virtual ~Factory();
     virtual void Create(const GURL& uri,
-                        bool ignore_cache,
+                        CacheMode cache_mode,
                         DataSourceCb cb) = 0;
   };
 

@@ -104,14 +104,15 @@ void HlsDataSourceProviderImpl::ReadFromExistingStream(
   // try to make one. Creating a new data source will re-enter this function to
   // complete `callback`.
   if (stream->RequiresNextDataSource()) {
-    auto [new_uri, bypass_cache] = stream->GetNextSegmentURIAndCacheStatus();
+    auto [new_uri, cache_mode, range_mode] =
+        stream->GetNextSegmentURIAndCacheStatus();
     TRACE_EVENT_BEGIN("media", "HLS::CreateDataSource",
                       perfetto::Track::FromPointer(this), "uri", new_uri);
     data_source_factory_->Create(
-        std::move(new_uri), bypass_cache,
+        std::move(new_uri), cache_mode,
         base::BindOnce(&HlsDataSourceProviderImpl::OnDataSourceCreated,
-                       weak_factory_.GetWeakPtr(), std::move(stream),
-                       std::move(callback)));
+                       weak_factory_.GetWeakPtr(), range_mode,
+                       std::move(stream), std::move(callback)));
     return;
   }
 
@@ -157,6 +158,7 @@ void HlsDataSourceProviderImpl::ReadFromExistingStream(
 }
 
 void HlsDataSourceProviderImpl::OnDataSourceCreated(
+    DataSource::RangeMode range_mode,
     std::unique_ptr<HlsDataSourceStream> stream,
     ReadCb callback,
     std::unique_ptr<DataSource> data_source) {
@@ -169,6 +171,20 @@ void HlsDataSourceProviderImpl::OnDataSourceCreated(
     data_source_map_.erase(old_data_source);
   }
   would_taint_origin_ |= data_source->WouldTaintOrigin();
+  if (would_taint_origin_) {
+    stream->set_would_taint_origin();
+  }
+  if (range_mode == DataSource::RangeMode::kRangeRequest) {
+    stream->set_requires_range_request();
+  }
+
+  if (stream->HasIncompatibleRangeAndOrigin()) {
+    std::move(callback).Run(
+        {ReadStatus::Codes::kError,
+         "Range requests are not allowed for cross-origin content"});
+    return;
+  }
+
   auto pair = data_source_map_.try_emplace(stream_id, std::move(data_source));
   // Cross origin data sources have an asynchronous initialize method which
   // must be called after they're put into `data_source_map_`. Other types of

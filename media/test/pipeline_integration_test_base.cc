@@ -82,7 +82,7 @@ class TestDataSourceFactory : public DataSource::Factory {
  public:
   ~TestDataSourceFactory() override = default;
   void Create(const GURL& uri,
-              bool,
+              DataSource::CacheMode,
               DataSource::DataSourceCb callback) override {
     auto file_data_source = std::make_unique<FileDataSource>();
     base::FilePath file_path(

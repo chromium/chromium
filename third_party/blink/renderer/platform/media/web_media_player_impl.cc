@@ -1729,15 +1729,27 @@ void WebMediaPlayerImpl::SetTrackState(const media::MediaTrack& track,
 
 #if BUILDFLAG(ENABLE_HLS_DEMUXER)
 
+UrlData::CacheMode TranslateCacheMode(bool always_disable,
+                                      media::DataSource::CacheMode mode) {
+  if (always_disable) {
+    return UrlData::kCacheDisabled;
+  }
+  switch (mode) {
+    case media::DataSource::CacheMode::kBypassCache:
+      return UrlData::kCacheDisabled;
+    case media::DataSource::CacheMode::kHitCache:
+      return UrlData::kNormal;
+  }
+}
+
 void WebMediaPlayerImpl::GetUrlData(
     const GURL& gurl,
-    bool ignore_cache,
+    media::DataSource::CacheMode cache_mode,
     base::OnceCallback<void(scoped_refptr<UrlData>)> cb) {
   DCHECK(main_task_runner_->BelongsToCurrentThread());
   auto url_data = url_index_->GetByUrl(
       KURL(gurl), static_cast<UrlData::CorsMode>(cors_mode_),
-      (is_cache_disabled_ || ignore_cache) ? UrlData::kCacheDisabled
-                                           : UrlData::kNormal);
+      TranslateCacheMode(is_cache_disabled_, cache_mode));
   std::move(cb).Run(std::move(url_data));
 }
 

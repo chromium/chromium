@@ -37,7 +37,8 @@ class MEDIA_EXPORT HlsDataSourceProviderImpl : public HlsDataSourceProvider {
  private:
   void UpdateStreamMetadata(HlsDataSourceStream::StreamId,
                             HlsDataSourceStream& stream);
-  void OnDataSourceCreated(std::unique_ptr<HlsDataSourceStream> stream,
+  void OnDataSourceCreated(DataSource::RangeMode range_mode,
+                           std::unique_ptr<HlsDataSourceStream> stream,
                            ReadCb callback,
                            std::unique_ptr<DataSource> data_source);
   void OnStreamReleased(HlsDataSourceStream::StreamId stream_id);

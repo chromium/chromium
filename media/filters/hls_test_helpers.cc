@@ -87,7 +87,7 @@ MockDataSourceFactory::~MockDataSourceFactory() = default;
 MockDataSourceFactory::MockDataSourceFactory() = default;
 
 void MockDataSourceFactory::Create(const GURL&,
-                                   bool,
+                                   DataSource::CacheMode,
                                    DataSource::DataSourceCb cb) {
   if (!next_mock_) {
     PregenerateNextMock();

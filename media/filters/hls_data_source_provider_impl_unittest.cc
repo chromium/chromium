@@ -340,4 +340,148 @@ TEST_F(HlsDataSourceProviderImplUnittest, ReadMultipleRangedSegments) {
   task_environment_.RunUntilIdle();
 }
 
-}  // namespace blink
+TEST_F(HlsDataSourceProviderImplUnittest, TestCrossoriginRangeRequest) {
+  HlsDataSourceProvider::SegmentQueue segments;
+  // Read 10 bytes from offset 0.
+  segments.emplace(GURL("http://example.com"),
+                   hls::types::ByteRange::Validate(10, 0));
+
+  auto* mock_data_source = factory_->PregenerateNextMock();
+  EXPECT_CALL(*mock_data_source, WouldTaintOrigin())
+      .WillRepeatedly(Return(true));
+
+  bool has_error = false;
+  impl_->ReadFromCombinedUrlQueue(
+      std::move(segments),
+      base::BindOnce(
+          [](bool* error_canary, HlsDataSourceProvider::ReadResult result) {
+            if (!result.has_value()) {
+              *error_canary =
+                  (std::move(result).error() ==
+                   HlsDataSourceProvider::ReadStatus::Codes::kError);
+            }
+          },
+          &has_error));
+
+  task_environment_.RunUntilIdle();
+  ASSERT_TRUE(has_error);
+}
+
+TEST_F(HlsDataSourceProviderImplUnittest, TestPersistentTainting) {
+  // First, a full request that is cross-origin.
+  {
+    HlsDataSourceProvider::SegmentQueue segments;
+    segments.emplace(GURL("http://example.com"), std::nullopt);
+
+    auto* mock_data_source = factory_->PregenerateNextMock();
+    EXPECT_CALL(*mock_data_source, WouldTaintOrigin())
+        .WillRepeatedly(Return(true));
+    EXPECT_CALL(*mock_data_source, Initialize)
+        .WillOnce(base::test::RunOnceCallback<0>(true));
+    EXPECT_CALL(*mock_data_source, Read(0, SpanSizeEq(16384), _))
+        .WillOnce(base::test::RunOnceCallback<2>(16384));
+    EXPECT_CALL(*mock_data_source, Stop());
+
+    bool has_result = false;
+    impl_->ReadFromCombinedUrlQueue(
+        std::move(segments),
+        base::BindOnce(
+            [](bool* canary, HlsDataSourceProvider::ReadResult result) {
+              ASSERT_TRUE(result.has_value());
+              *canary = true;
+            },
+            &has_result));
+    task_environment_.RunUntilIdle();
+    ASSERT_TRUE(has_result);
+  }
+
+  // Now, a range request that is NOT cross-origin (but the provider is already
+  // tainted).
+  {
+    HlsDataSourceProvider::SegmentQueue segments;
+    segments.emplace(GURL("http://example.com"),
+                     hls::types::ByteRange::Validate(10, 0));
+
+    auto* mock_data_source = factory_->PregenerateNextMock();
+    // This one doesn't taint, but the provider is already tainted.
+    EXPECT_CALL(*mock_data_source, WouldTaintOrigin())
+        .WillRepeatedly(Return(false));
+
+    bool has_error = false;
+    impl_->ReadFromCombinedUrlQueue(
+        std::move(segments),
+        base::BindOnce(
+            [](bool* error_canary, HlsDataSourceProvider::ReadResult result) {
+              if (!result.has_value()) {
+                *error_canary =
+                    (std::move(result).error() ==
+                     HlsDataSourceProvider::ReadStatus::Codes::kError);
+              }
+            },
+            &has_error));
+
+    task_environment_.RunUntilIdle();
+    ASSERT_TRUE(has_error);
+  }
+}
+
+TEST_F(HlsDataSourceProviderImplUnittest, TestRangeThenCrossorigin) {
+  HlsDataSourceProvider::SegmentQueue segments;
+  // First segment: same-origin range request.
+  segments.emplace(GURL("http://a.com/init"),
+                   hls::types::ByteRange::Validate(10, 0));
+  // Second segment: cross-origin non-range request.
+  segments.emplace(GURL("http://b.com/media"), std::nullopt);
+
+  // Setup for the first segment (init)
+  {
+    auto* mock_data_source = factory_->PregenerateNextMock();
+    EXPECT_CALL(*mock_data_source, WouldTaintOrigin())
+        .WillRepeatedly(Return(false));
+    EXPECT_CALL(*mock_data_source, Initialize)
+        .WillOnce(base::test::RunOnceCallback<0>(true));
+    EXPECT_CALL(*mock_data_source, Read(0, SpanSizeEq(10), _))
+        .WillOnce(base::test::RunOnceCallback<2>(10));
+    EXPECT_CALL(*mock_data_source, Stop());
+  }
+
+  std::unique_ptr<HlsDataSourceStream> stream;
+  impl_->ReadFromCombinedUrlQueue(
+      std::move(segments), base::BindOnce(
+                               [](std::unique_ptr<HlsDataSourceStream>* extract,
+                                  HlsDataSourceProvider::ReadResult result) {
+                                 ASSERT_TRUE(result.has_value());
+                                 *extract = std::move(result).value();
+                               },
+                               &stream));
+
+  task_environment_.RunUntilIdle();
+  ASSERT_NE(stream, nullptr);
+  ASSERT_TRUE(stream->RequiresNextDataSource());
+
+  // Setup for the second segment (media) - it's cross-origin!
+  {
+    auto* mock_data_source = factory_->PregenerateNextMock();
+    EXPECT_CALL(*mock_data_source, WouldTaintOrigin())
+        .WillRepeatedly(Return(true));
+    // It should fail before Initialize/Read/Stop.
+  }
+
+  bool has_error = false;
+  impl_->ReadFromExistingStream(
+      std::move(stream),
+      base::BindOnce(
+          [](bool* error_canary, HlsDataSourceProvider::ReadResult result) {
+            if (!result.has_value()) {
+              *error_canary =
+                  (std::move(result).error() ==
+                   HlsDataSourceProvider::ReadStatus::Codes::kError);
+            }
+          },
+          &has_error));
+
+  task_environment_.RunUntilIdle();
+  ASSERT_TRUE(has_error);
+}
+
+}  // namespace media
