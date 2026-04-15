@@ -375,6 +375,11 @@ class QueryContextualizerDelegateBridge
   // Browser agent to manage the cobrowse context.
   raw_ptr<CobrowseBrowserAgent> _cobrowseBrowserAgent;
 
+  // Cached server strings.
+  ComposeboxServerStrings* _serverStrings;
+  // Cached current tab favicon.
+  UIImage* _currentTabFavicon;
+
   // Stores the page context wrappers for the duration of the APC retrieval.
   std::unordered_map<web::WebStateID, PageContextWrapper*> _pageContextWrappers;
   std::unordered_map<base::UnguessableToken,
@@ -555,9 +560,7 @@ class QueryContextualizerDelegateBridge
     return;
   }
 
-  BOOL canAttachCurrentTab = [self updateOptionToAttachCurrentTab];
-
-  if (canAttachCurrentTab) {
+  if ([self canAttachActiveTab]) {
     [self extractFaviconForCurrentTab];
   }
 
@@ -858,7 +861,7 @@ class QueryContextualizerDelegateBridge
 
   _modelOption = modelOption;
 
-  [self updateModel];
+  [self commitUIUpdates];
 
   if (_inputStateModel) {
     switch (modelOption) {
@@ -995,8 +998,6 @@ class QueryContextualizerDelegateBridge
         recordTextEditedBeforeAiMode:(_userInputInProgress && _hasText)];
   }
   _previousMode = mode;
-
-  [self updateMode];
 
   [self applyStateForMode:mode];
 
@@ -1253,13 +1254,18 @@ class QueryContextualizerDelegateBridge
 
   auto faviconLoadedBlock = ^(FaviconAttributes* attributes, bool cached) {
     if (attributes.faviconImage) {
-      [weakSelf.consumer setCurrentTabFavicon:attributes.faviconImage];
+      [weakSelf setCachedCurrentTabFavicon:attributes.faviconImage];
     }
   };
 
   _faviconLoader->FaviconForPageUrl(
       webState->GetVisibleURL(), gfx::kFaviconSize, gfx::kFaviconSize,
       /*fallback_to_google_server=*/true, faviconLoadedBlock);
+}
+
+- (void)setCachedCurrentTabFavicon:(UIImage*)image {
+  _currentTabFavicon = image;
+  [self commitUIUpdates];
 }
 
 - (void)attachCurrentTabContent {
@@ -2532,6 +2538,20 @@ class QueryContextualizerDelegateBridge
   [self removeItem:item];
 }
 
+/// Updates the consumer items and maybe trigger AIM.
+- (void)updateConsumerItems {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(_sequenceChecker);
+  [self.consumer setItems:_items.containedItems];
+
+  // AI mode is implicitly enabled by items attachment.
+  BOOL shouldSwitchToAIM = !_items.empty && [_modeHolder isRegularSearch];
+  if (shouldSwitchToAIM) {
+    [self.metricsRecorder
+        recordAiModeActivationSource:AiModeActivationSource::kImplicit];
+    _modeHolder.mode = ComposeboxMode::kAIM;
+  }
+}
+
 - (void)updateButtonsVisibility {
   using enum ComposeboxInputPlateControls;
   BOOL compactMode = [self compactModeRequired];
@@ -2621,95 +2641,6 @@ class QueryContextualizerDelegateBridge
   [self.consumer updateVisibleControls:visibleControls];
 }
 
-- (BOOL)updateOptionToAttachCurrentTab {
-  BOOL canAttachTab = [self canAttachActiveTab];
-
-  [_consumer hideAttachCurrentTabAction:!canAttachTab];
-
-  return canAttachTab;
-}
-
-/// Updates the consumer actions enabled/disable state.
-- (void)updateConsumerActionsState {
-  // AIM action.
-  [self.consumer hideAIMActions:_entrypoint == ComposeboxEntrypoint::kCobrowse];
-
-  // Image generation action.
-  [self.consumer disableCreateImageActions:[self imageToolDisabled]];
-  [self.consumer hideCreateImageActions:![self imageToolAllowed]];
-
-  // Canvas action.
-  [self.consumer disableCanvasActions:[self canvasToolDisabled]];
-  [self.consumer hideCanvasActions:![self canvasToolAllowed]];
-
-  // Deep search action.
-  [self.consumer disableDeepSearchActions:[self deepSearchToolDisabled]];
-  [self.consumer hideDeepSearchActions:![self deepSearchToolAllowed]];
-
-  // Model picker.
-  // TODO(crbug.com/477888273): Handle attachment incompatibility based on
-  // server-side logic.
-  [self.consumer allowModelPicker:ShowComposeboxAdditionalAdvancedTools()];
-  [self.consumer setAllowedModels:[self allowedModels]];
-  [self.consumer setDisabledModels:[self disabledModels]];
-
-  // Add tabs action.
-  [self.consumer disableAttachTabActions:[self tabAttachmentDisabled]];
-  [self.consumer hideAttachTabActions:![self tabAttachmentAllowed]];
-
-  // Add files action.
-  [self.consumer disableAttachFileActions:[self fileAttachmentDisabled]];
-  [self.consumer hideAttachFileActions:![self fileAttachmentAllowed]];
-
-  // Add pictures from user gallery action.
-  [self.consumer disableGalleryActions:[self imageAttachmentDisabled]];
-  [self.consumer hideGalleryActions:![self imageAttachmentAllowed]];
-
-  // Add picture from camera action.
-  [self.consumer disableCameraActions:[self imageAttachmentDisabled]];
-  [self.consumer hideCameraActions:![self imageAttachmentAllowed]];
-
-  // Set the number of attachments that can still be added.
-  [self.consumer
-      setRemainingAttachmentCapacity:[self remainingAttachmentCapacity]];
-}
-
-/// Updates the consumer items and maybe trigger AIM.
-- (void)updateConsumerItems {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(_sequenceChecker);
-  [self.consumer setItems:_items.containedItems];
-  [self updateOptionToAttachCurrentTab];
-
-  // AI mode is implicitly enabled by items attachment.
-  BOOL shouldSwitchToAIM = !_items.empty && [_modeHolder isRegularSearch];
-  if (shouldSwitchToAIM) {
-    [self.metricsRecorder
-        recordAiModeActivationSource:AiModeActivationSource::kImplicit];
-    _modeHolder.mode = ComposeboxMode::kAIM;
-  }
-}
-
-// Updates the UI for the visible mode.
-- (void)updateMode {
-  auto mode = _modeHolder.mode;
-  [self.consumer setAIModeEnabled:mode == ComposeboxMode::kAIM];
-  [self.consumer
-      setImageGenerationEnabled:mode == ComposeboxMode::kImageGeneration];
-  [self.consumer setCanvasEnabled:mode == ComposeboxMode::kCanvas];
-  [self.consumer setDeepSearchEnabled:mode == ComposeboxMode::kDeepSearch];
-}
-
-// Updates the UI for the current model.
-- (void)updateModel {
-  // In regular
-  if (_modeHolder.isRegularSearch) {
-    [_consumer setModelOption:ComposeboxModelOption::kNone];
-    return;
-  }
-
-  [_consumer setModelOption:_modelOption];
-}
-
 /// Updates the consumer whether to show in compact mode.
 - (void)updateCompactMode {
   BOOL compact = [self compactModeRequired];
@@ -2722,22 +2653,61 @@ class QueryContextualizerDelegateBridge
                                  : composebox_debugger::event::Composebox::
                                        kCompactModeDisabled]];
   }
-
   [self.consumer setCompact:compact];
   _compact = compact;
+}
+
+/// Updates the consumer UI input state.
+- (void)updateUIInputState {
+  BOOL canAttachTab = [self canAttachActiveTab];
+  id<ComposeboxInputPlateConsumer> consumer = self.consumer;
+  [consumer hideAttachCurrentTabAction:!canAttachTab];
+
+  [consumer hideAIMActions:_entrypoint == ComposeboxEntrypoint::kCobrowse];
+  [consumer disableCreateImageActions:[self imageToolDisabled]];
+  [consumer hideCreateImageActions:![self imageToolAllowed]];
+  [consumer disableCanvasActions:[self canvasToolDisabled]];
+  [consumer hideCanvasActions:![self canvasToolAllowed]];
+  [consumer disableDeepSearchActions:[self deepSearchToolDisabled]];
+  [consumer hideDeepSearchActions:![self deepSearchToolAllowed]];
+  [consumer allowModelPicker:ShowComposeboxAdditionalAdvancedTools()];
+  [consumer setAllowedModels:[self allowedModels]];
+  [consumer setDisabledModels:[self disabledModels]];
+  [consumer disableAttachTabActions:[self tabAttachmentDisabled]];
+  [consumer hideAttachTabActions:![self tabAttachmentAllowed]];
+  [consumer disableAttachFileActions:[self fileAttachmentDisabled]];
+  [consumer hideAttachFileActions:![self fileAttachmentAllowed]];
+  [consumer disableGalleryActions:[self imageAttachmentDisabled]];
+  [consumer hideGalleryActions:![self imageAttachmentAllowed]];
+  [consumer disableCameraActions:[self imageAttachmentDisabled]];
+  [consumer hideCameraActions:![self imageAttachmentAllowed]];
+  [consumer setRemainingAttachmentCapacity:[self remainingAttachmentCapacity]];
+
+  if (_modeHolder.isRegularSearch) {
+    [consumer setModelOption:ComposeboxModelOption::kNone];
+  } else {
+    [consumer setModelOption:_modelOption];
+  }
+
+  auto mode = _modeHolder.mode;
+  [consumer setAIModeEnabled:mode == ComposeboxMode::kAIM];
+  [consumer setImageGenerationEnabled:mode == ComposeboxMode::kImageGeneration];
+  [consumer setCanvasEnabled:mode == ComposeboxMode::kCanvas];
+  [consumer setDeepSearchEnabled:mode == ComposeboxMode::kDeepSearch];
+
+  if (EnableComposeboxServerSideState()) {
+    [consumer setServerStrings:_serverStrings];
+  }
+  [consumer setCurrentTabFavicon:_currentTabFavicon];
 }
 
 // Pushes the batched UI updates to the consumer.
 - (void)commitUIUpdates {
   _isUpdatingCompactMode = YES;
 
-  // Update button visibility first, as the compact state change is asynchronous
-  // and could conflict.
   [self updateButtonsVisibility];
-  [self updateConsumerActionsState];
   [self updateCompactMode];
-  [self updateModel];
-  [self updateMode];
+  [self updateUIInputState];
 
   _isUpdatingCompactMode = NO;
 }
@@ -2837,9 +2807,7 @@ class QueryContextualizerDelegateBridge
   _inputState = inputState;
 
   if (EnableComposeboxServerSideState()) {
-    ComposeboxServerStrings* serverStrings =
-        ServerStringsFromInputState(inputState);
-    [self.consumer setServerStrings:serverStrings];
+    _serverStrings = ServerStringsFromInputState(inputState);
   }
 
   [self changeModeForInputState:inputState];
