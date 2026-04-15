@@ -5,6 +5,7 @@
 #include "chrome/browser/sharing/sharing_handler_registry_impl.h"
 
 #include "build/build_config.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/sharing/one_time_tokens/one_time_token_sharing_handler.h"
 #include "chrome/browser/sharing/optimization_guide/optimization_guide_message_handler.h"
 #include "components/one_time_tokens/core/browser/gmail_otp_backend.h"
@@ -26,6 +27,13 @@
     BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/sharing/shared_clipboard/remote_copy_message_handler.h"
 #endif
+
+#include "base/feature_list.h"
+#if !BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/glic/public/glic_keyed_service_factory.h"
+#include "chrome/browser/sharing/glic_experimental_triggering/glic_experimental_triggering_message_handler.h"
+#endif
+#include "chrome/common/chrome_features.h"
 
 SharingHandlerRegistryImpl::SharingHandlerRegistryImpl(
     Profile* profile,
@@ -90,6 +98,17 @@ SharingHandlerRegistryImpl::SharingHandlerRegistryImpl(
         std::make_unique<OneTimeTokenSharingHandler>(gmail_otp_backend),
         {components_sharing_message::SharingMessage::
              kOneTimeTokenBackendNotification});
+  }
+#endif  // !BUILDFLAG(IS_ANDROID)
+
+#if !BUILDFLAG(IS_ANDROID)
+  if (base::FeatureList::IsEnabled(features::kGlicExperimentalTriggering) &&
+      glic::GlicKeyedServiceFactory::GetGlicKeyedService(profile,
+                                                         /*create=*/true)) {
+    AddSharingHandler(
+        std::make_unique<GlicExperimentalTriggeringMessageHandler>(profile),
+        {components_sharing_message::SharingMessage::
+             kGlicExperimentalTriggering});
   }
 #endif  // !BUILDFLAG(IS_ANDROID)
 }

@@ -2035,6 +2035,13 @@ static_library("browser") {
     "//chrome/browser/ui/webauthn:impl",
   ]
 
+  if (!is_android) {
+    deps += [
+      "//chrome/browser/sharing/glic_experimental_triggering",
+      "//chrome/browser/sharing/glic_experimental_triggering:impl",
+    ]
+  }
+
   if (is_android) {
     deps += [
       "//chrome/browser/webapps:android",

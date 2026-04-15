@@ -1,0 +1,40 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("glic_experimental_triggering") {
+  public = [ "glic_experimental_triggering_message_handler.h" ]
+
+  public_deps = [
+    "//base",
+    "//components/sharing_message",
+    "//components/sharing_message/proto",
+  ]
+}
+
+source_set("impl") {
+  sources = [ "glic_experimental_triggering_message_handler.cc" ]
+
+  deps = [
+    ":glic_experimental_triggering",
+    "//chrome/browser/glic",
+    "//chrome/browser/glic:impl",
+    "//chrome/browser/profiles:profile",
+    "//chrome/common:chrome_features",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "glic_experimental_triggering_message_handler_unittest.cc" ]
+  deps = [
+    ":glic_experimental_triggering",
+    ":impl",
+    "//base/test:test_support",
+    "//chrome/test:test_support",
+    "//components/sharing_message/proto",
+    "//content/test:test_support",
+    "//testing/gmock",
+    "//testing/gtest",
+  ]
+}

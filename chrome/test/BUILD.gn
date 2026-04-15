@@ -8486,6 +8486,7 @@ test("unit_tests") {
       "//chrome/browser/send_tab_to_self",
       "//chrome/browser/send_tab_to_self:unit_tests",
       "//chrome/browser/serial",
+      "//chrome/browser/sharing/glic_experimental_triggering:unit_tests",
       "//chrome/browser/sharing/one_time_tokens:unit_tests",
       "//chrome/browser/sharing/shared_clipboard:unit_tests",
       "//chrome/browser/signin:signin_promo",

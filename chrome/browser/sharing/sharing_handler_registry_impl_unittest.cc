@@ -6,6 +6,8 @@
 
 #include <memory>
 
+#include "base/test/scoped_feature_list.h"
+#include "chrome/common/chrome_features.h"
 #include "components/sharing_message/mock_sharing_message_handler.h"
 #include "components/sharing_message/sharing_device_registration.h"
 #include "content/public/test/browser_task_environment.h"
@@ -73,6 +75,15 @@ TEST_F(SharingHandlerRegistryImplTest, SharedClipboard_NotAdded) {
   auto handler_registry = CreateHandlerRegistry();
   EXPECT_FALSE(handler_registry->GetSharingHandler(
       components_sharing_message::SharingMessage::kSharedClipboardMessage));
+}
+
+TEST_F(SharingHandlerRegistryImplTest, Glic_NotAddedWhenServiceMissing) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      features::kGlicExperimentalTriggering);
+  auto handler_registry = CreateHandlerRegistry();
+  EXPECT_FALSE(handler_registry->GetSharingHandler(
+      components_sharing_message::SharingMessage::kGlicExperimentalTriggering));
 }
 #endif  // !BUILDFLAG(IS_ANDROID)
 

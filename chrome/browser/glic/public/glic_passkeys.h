@@ -7,6 +7,7 @@
 
 #include "base/types/pass_key.h"
 
+class GlicExperimentalTriggeringMessageHandler;
 class RenderViewContextMenu;
 class TabStripActionContainer;
 
@@ -40,6 +41,7 @@ class InvokeWithAutoSubmitPasskeyProvider {
   friend class GlicInstanceCoordinatorBrowserTest;
   friend class GlicInstanceCoordinatorTrustFirstOnboardingArm1BrowserTest;
   friend class GlicApiTestPasskeys;
+  friend class ::GlicExperimentalTriggeringMessageHandler;
 };
 
 using InvokeWithAutoSubmitPasskey =
