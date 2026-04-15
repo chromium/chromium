@@ -12,7 +12,7 @@ import type {ShortcutsElement} from 'chrome://customize-chrome-side-panel.top-ch
 import {TileType} from 'chrome://customize-chrome-side-panel.top-chrome/tile_type.mojom-webui.js';
 import type {CrCheckboxElement} from 'chrome://resources/cr_elements/cr_checkbox/cr_checkbox.js';
 import type {CrRadioButtonElement} from 'chrome://resources/cr_elements/cr_radio_button/cr_radio_button.js';
-import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {assertArrayEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import type {MetricsTracker} from 'chrome://webui-test/metrics_test_support.js';
 import {fakeMetricsPrivate} from 'chrome://webui-test/metrics_test_support.js';
 import type {TestMock} from 'chrome://webui-test/test_mock.js';
@@ -172,8 +172,7 @@ suite('ShortcutsTest', () => {
     assertEquals(1, handler.getCallCount('setMostVisitedSettings'));
     const [shortcutsTypes, shortcutsVisible] =
         handler.getArgs('setMostVisitedSettings')[0];
-    assertEquals(
-        JSON.stringify([TileType.kTopSites]), JSON.stringify(shortcutsTypes));
+    assertArrayEquals([TileType.kTopSites], shortcutsTypes);
     assertTrue(shortcutsVisible);
   });
 
@@ -193,8 +192,7 @@ suite('ShortcutsTest', () => {
     assertEquals(1, handler.getCallCount('setMostVisitedSettings'));
     const [shortcutsTypes, shortcutsVisible] =
         handler.getArgs('setMostVisitedSettings')[0];
-    assertEquals(
-        JSON.stringify([TileType.kTopSites]), JSON.stringify(shortcutsTypes));
+    assertArrayEquals([TileType.kTopSites], shortcutsTypes);
     assertFalse(shortcutsVisible);
   });
 
@@ -214,8 +212,7 @@ suite('ShortcutsTest', () => {
     assertEquals(1, handler.getCallCount('setMostVisitedSettings'));
     const [shortcutsTypes, shortcutsVisible] =
         handler.getArgs('setMostVisitedSettings')[0];
-    assertEquals(
-        JSON.stringify([TileType.kTopSites]), JSON.stringify(shortcutsTypes));
+    assertArrayEquals([TileType.kTopSites], shortcutsTypes);
     assertTrue(shortcutsVisible);
   });
 
@@ -232,9 +229,7 @@ suite('ShortcutsTest', () => {
     assertEquals(1, handler.getCallCount('setMostVisitedSettings'));
     const [shortcutsTypes, shortcutsVisible] =
         handler.getArgs('setMostVisitedSettings')[0];
-    assertEquals(
-        JSON.stringify([TileType.kCustomLinks]),
-        JSON.stringify(shortcutsTypes));
+    assertArrayEquals([TileType.kCustomLinks], shortcutsTypes);
     assertTrue(shortcutsVisible);
   });
 
@@ -251,9 +246,7 @@ suite('ShortcutsTest', () => {
     assertEquals(1, handler.getCallCount('setMostVisitedSettings'));
     const [shortcutsTypes, shortcutsVisible] =
         handler.getArgs('setMostVisitedSettings')[0];
-    assertEquals(
-        JSON.stringify([TileType.kCustomLinks]),
-        JSON.stringify(shortcutsTypes));
+    assertArrayEquals([TileType.kCustomLinks], shortcutsTypes);
     assertTrue(shortcutsVisible);
   });
 
@@ -270,8 +263,7 @@ suite('ShortcutsTest', () => {
     assertEquals(1, handler.getCallCount('setMostVisitedSettings'));
     const [shortcutsTypes, shortcutsVisible] =
         handler.getArgs('setMostVisitedSettings')[0];
-    assertEquals(
-        JSON.stringify([TileType.kTopSites]), JSON.stringify(shortcutsTypes));
+    assertArrayEquals([TileType.kTopSites], shortcutsTypes);
     assertTrue(shortcutsVisible);
   });
 
@@ -287,8 +279,7 @@ suite('ShortcutsTest', () => {
     assertEquals(1, handler.getCallCount('setMostVisitedSettings'));
     const [shortcutsTypes, shortcutsVisible] =
         handler.getArgs('setMostVisitedSettings')[0];
-    assertEquals(
-        JSON.stringify([TileType.kTopSites]), JSON.stringify(shortcutsTypes));
+    assertArrayEquals([TileType.kTopSites], shortcutsTypes);
     assertTrue(shortcutsVisible);
   });
 
@@ -346,9 +337,7 @@ suite('ShortcutsTest', () => {
         assertEquals(1, handler.getCallCount('setMostVisitedSettings'));
         const [shortcutsTypes, shortcutsVisible, shortcutsPersonalVisible] =
             handler.getArgs('setMostVisitedSettings')[0];
-        assertEquals(
-            JSON.stringify([TileType.kCustomLinks]),
-            JSON.stringify(shortcutsTypes));
+        assertArrayEquals([TileType.kCustomLinks], shortcutsTypes);
         assertTrue(shortcutsVisible);
         assertTrue(shortcutsPersonalVisible);
       });
@@ -368,10 +357,9 @@ suite('ShortcutsTest', () => {
         assertEquals(1, handler.getCallCount('setMostVisitedSettings'));
         const [shortcutsTypes, shortcutsVisible, shortcutsPersonalVisible] =
             handler.getArgs('setMostVisitedSettings')[0];
-        assertEquals(
-            JSON.stringify(
-                [TileType.kEnterpriseShortcuts, TileType.kCustomLinks]),
-            JSON.stringify(shortcutsTypes));
+        assertArrayEquals(
+            [TileType.kEnterpriseShortcuts, TileType.kCustomLinks],
+            shortcutsTypes);
         assertTrue(shortcutsVisible);
         assertFalse(shortcutsPersonalVisible);
       });

@@ -162,15 +162,15 @@ suite('General', () => {
       powerBookmarksList.flushNavigationElementsDebouncerForTesting();
 
       assertArrayEquals(
-          powerBookmarksList.getKeyboardNavigationServiceforTesting()
-              .getElementsForTesting()
-              .map((el: HTMLElement) => el.id),
           [
             'bookmark-SIDE_PANEL_BOOKMARK_BAR_ID',
             'bookmark-5',
             'bookmark-4',
             'bookmark-3',
-          ]);
+          ],
+          powerBookmarksList.getKeyboardNavigationServiceforTesting()
+              .getElementsForTesting()
+              .map((el: HTMLElement) => el.id));
 
       bookmarksApi.callbackRouterRemote.onBookmarkNodeAdded({
         id: '999',
@@ -188,16 +188,16 @@ suite('General', () => {
       powerBookmarksList.flushNavigationElementsDebouncerForTesting();
 
       assertArrayEquals(
-          powerBookmarksList.getKeyboardNavigationServiceforTesting()
-              .getElementsForTesting()
-              .map((el: HTMLElement) => el.id),
           [
             'bookmark-SIDE_PANEL_BOOKMARK_BAR_ID',
             'bookmark-5',
             'bookmark-999',
             'bookmark-4',
             'bookmark-3',
-          ]);
+          ],
+          powerBookmarksList.getKeyboardNavigationServiceforTesting()
+              .getElementsForTesting()
+              .map((el: HTMLElement) => el.id));
     });
 
     test('RebuildsKeyboardNavigationOnRemoved', async () => {
@@ -205,15 +205,15 @@ suite('General', () => {
       powerBookmarksList.flushNavigationElementsDebouncerForTesting();
 
       assertArrayEquals(
-          powerBookmarksList.getKeyboardNavigationServiceforTesting()
-              .getElementsForTesting()
-              .map((el: HTMLElement) => el.id),
           [
             'bookmark-SIDE_PANEL_BOOKMARK_BAR_ID',
             'bookmark-5',
             'bookmark-4',
             'bookmark-3',
-          ]);
+          ],
+          powerBookmarksList.getKeyboardNavigationServiceforTesting()
+              .getElementsForTesting()
+              .map((el: HTMLElement) => el.id));
 
       bookmarksApi.callbackRouterRemote.onBookmarkNodesRemoved(['4']);
       await flushTasks();
@@ -221,14 +221,14 @@ suite('General', () => {
       powerBookmarksList.flushNavigationElementsDebouncerForTesting();
 
       assertArrayEquals(
-          powerBookmarksList.getKeyboardNavigationServiceforTesting()
-              .getElementsForTesting()
-              .map((el: HTMLElement) => el.id),
           [
             'bookmark-SIDE_PANEL_BOOKMARK_BAR_ID',
             'bookmark-5',
             'bookmark-3',
-          ]);
+          ],
+          powerBookmarksList.getKeyboardNavigationServiceforTesting()
+              .getElementsForTesting()
+              .map((el: HTMLElement) => el.id));
     });
 
     test('RebuildsKeyboardNavigationFiltered', async () => {
@@ -236,48 +236,46 @@ suite('General', () => {
       powerBookmarksList.flushNavigationElementsDebouncerForTesting();
 
       assertArrayEquals(
-          powerBookmarksList.getKeyboardNavigationServiceforTesting()
-              .getElementsForTesting()
-              .map((el: HTMLElement) => el.id),
           [
             'bookmark-SIDE_PANEL_BOOKMARK_BAR_ID',
             'bookmark-5',
             'bookmark-4',
             'bookmark-3',
-          ]);
+          ],
+          powerBookmarksList.getKeyboardNavigationServiceforTesting()
+              .getElementsForTesting()
+              .map((el: HTMLElement) => el.id));
 
       await performSearch('child');
       await microtasksFinished();
       await flushTasks();
       powerBookmarksList.flushNavigationElementsDebouncerForTesting();
 
-      assertEquals(
-          JSON.stringify(
-              powerBookmarksList.getKeyboardNavigationServiceforTesting()
-                  .getElementsForTesting()
-                  .map((el: HTMLElement) => el.id)),
-          JSON.stringify([
+      assertArrayEquals(
+          [
             'bookmark-5',
             'bookmark-4',
             'bookmark-3',
-          ]));
+          ],
+          powerBookmarksList.getKeyboardNavigationServiceforTesting()
+              .getElementsForTesting()
+              .map((el: HTMLElement) => el.id));
     });
 
     test('RebuildsKeyboardNavigationMoved', async () => {
       await flushTasks();
       powerBookmarksList.flushNavigationElementsDebouncerForTesting();
 
-      assertEquals(
-          JSON.stringify(
-              powerBookmarksList.getKeyboardNavigationServiceforTesting()
-                  .getElementsForTesting()
-                  .map((el: HTMLElement) => el.id)),
-          JSON.stringify([
+      assertArrayEquals(
+          [
             'bookmark-SIDE_PANEL_BOOKMARK_BAR_ID',
             'bookmark-5',
             'bookmark-4',
             'bookmark-3',
-          ]));
+          ],
+          powerBookmarksList.getKeyboardNavigationServiceforTesting()
+              .getElementsForTesting()
+              .map((el: HTMLElement) => el.id));
 
       const movedBookmark = FOLDERS[1]!.children![2]!.children![0]!;
       assertTrue(!!movedBookmark);
@@ -292,18 +290,17 @@ suite('General', () => {
       await flushTasks();
       powerBookmarksList.flushNavigationElementsDebouncerForTesting();
 
-      assertEquals(
-          JSON.stringify(
-              powerBookmarksList.getKeyboardNavigationServiceforTesting()
-                  .getElementsForTesting()
-                  .map((el: HTMLElement) => el.id)),
-          JSON.stringify([
+      assertArrayEquals(
+          [
             'bookmark-SIDE_PANEL_BOOKMARK_BAR_ID',
             'bookmark-5',
             'bookmark-6',
             'bookmark-4',
             'bookmark-3',
-          ]));
+          ],
+          powerBookmarksList.getKeyboardNavigationServiceforTesting()
+              .getElementsForTesting()
+              .map((el: HTMLElement) => el.id));
     });
 
     test('DefaultsToSortByNewest', () => {
