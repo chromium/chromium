@@ -4176,22 +4176,24 @@ if (!is_android) {
       "//third_party/federated_compute:confidential_compute_crypto_test_util",
     ]
 
-    # SODA doesn't support Windows on Arm64.
-    sources += [
-      "../browser/accessibility/live_caption/live_caption_controller_browsertest.cc",
-      "../browser/accessibility/live_caption/live_caption_speech_recognition_host_browsertest.cc",
-      "../browser/accessibility/live_caption/live_caption_speech_recognition_host_browsertest.h",
-    ]
-
-    deps += [ "//components/live_caption:utils" ]
-
-    if (is_win || is_mac || is_linux) {
+    if (!is_linux || target_cpu != "arm64") {
+      # SODA doesn't support Linux on Arm64.
       sources += [
-        "../browser/accessibility/live_caption/live_caption_automatic_language_download_browsertest.cc",
-        "../browser/accessibility/live_caption/live_caption_language_identification_browsertest.cc",
-        "../browser/speech/on_device_speech_recognition_impl_browsertest.cc",
+        "../browser/accessibility/live_caption/live_caption_controller_browsertest.cc",
+        "../browser/accessibility/live_caption/live_caption_speech_recognition_host_browsertest.cc",
+        "../browser/accessibility/live_caption/live_caption_speech_recognition_host_browsertest.h",
       ]
-      deps += [ "//chrome/browser/speech" ]
+
+      deps += [ "//components/live_caption:utils" ]
+
+      if (is_win || is_mac || is_linux) {
+        sources += [
+          "../browser/accessibility/live_caption/live_caption_automatic_language_download_browsertest.cc",
+          "../browser/accessibility/live_caption/live_caption_language_identification_browsertest.cc",
+          "../browser/speech/on_device_speech_recognition_impl_browsertest.cc",
+        ]
+        deps += [ "//chrome/browser/speech" ]
+      }
     }
 
     if (enterprise_cloud_content_analysis) {
