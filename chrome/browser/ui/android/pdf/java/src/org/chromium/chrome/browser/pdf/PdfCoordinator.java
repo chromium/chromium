@@ -55,6 +55,12 @@ public class PdfCoordinator implements PdfActionsDelegate, PdfToolbarActionsDele
     private static final String TAG = "PdfCoordinator";
     private static final int PAGE_TRANSITION_TYPE = PageTransition.LINK;
 
+    static final String JSON_KEY_FILE_METADATA = "file_metadata";
+    static final String JSON_KEY_FILE_URI = "file_uri";
+    static final String JSON_KEY_MIME_TYPE = "mime_type";
+    static final String JSON_KEY_FILE_NAME = "file_name";
+    static final String JSON_KEY_IS_WORK_PROFILE = "is_work_profile";
+
     /**
      * The timestamp when the last pdf document starts to load. Used to calculate the elapsed time
      * between two pdf loads.
@@ -396,6 +402,33 @@ public class PdfCoordinator implements PdfActionsDelegate, PdfToolbarActionsDele
         }
     }
 
+    /**
+     * Returns the URI of the PDF file and grants read permission to the specified target package.
+     * If the target package is null, the assistant package is set as the target.
+     *
+     * @param isWorkProfile Whether the current profile is a work profile.
+     * @param targetPackage The package name to grant URI permission to. If null, the default
+     *     assistant package is used.
+     * @return The URI of the PDF file, or null if the URI is not available.
+     */
+    @Nullable Uri getFileUri(boolean isWorkProfile, @Nullable String targetPackage) {
+        if (mUri == null) {
+            return null;
+        }
+
+        if (targetPackage == null) {
+            targetPackage = PackageUtils.getDefaultAssistantPackageName(mActivity);
+            PdfUtils.recordGetAssistantPackageResult(targetPackage != null);
+        }
+
+        if (targetPackage != null) {
+            mActivity.grantUriPermission(
+                    targetPackage, mUri, Intent.FLAG_GRANT_READ_URI_PERMISSION);
+        }
+        PdfUtils.recordIsWorkProfile(isWorkProfile);
+        return mUri;
+    }
+
     @Nullable String requestAssistContent(String filename, boolean isWorkProfile) {
         if (mUri == null) {
             return null;
@@ -405,12 +438,12 @@ public class PdfCoordinator implements PdfActionsDelegate, PdfToolbarActionsDele
             structuredData =
                     new JSONObject()
                             .put(
-                                    "file_metadata",
+                                    JSON_KEY_FILE_METADATA,
                                     new JSONObject()
-                                            .put("file_uri", mUri.toString())
-                                            .put("mime_type", MimeTypeUtils.PDF_MIME_TYPE)
-                                            .put("file_name", filename)
-                                            .put("is_work_profile", isWorkProfile))
+                                            .put(JSON_KEY_FILE_URI, mUri.toString())
+                                            .put(JSON_KEY_MIME_TYPE, MimeTypeUtils.PDF_MIME_TYPE)
+                                            .put(JSON_KEY_FILE_NAME, filename)
+                                            .put(JSON_KEY_IS_WORK_PROFILE, isWorkProfile))
                             .toString();
         } catch (JSONException e) {
             return null;

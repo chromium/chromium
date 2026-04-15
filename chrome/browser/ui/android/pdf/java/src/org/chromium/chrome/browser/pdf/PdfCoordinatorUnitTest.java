@@ -13,12 +13,14 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import android.net.Uri;
+import android.view.ViewGroup;
 
 import androidx.fragment.app.FragmentActivity;
 import androidx.pdf.PdfPoint;
 import androidx.pdf.view.PdfView;
 import androidx.test.ext.junit.rules.ActivityScenarioRule;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -38,6 +40,7 @@ import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.ui.native_page.NativePageHost;
+import org.chromium.chrome.browser.util.ChromeFileProvider;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.ui.base.PageTransition;
 import org.chromium.ui.base.TestActivity;
@@ -70,6 +73,12 @@ public class PdfCoordinatorUnitTest {
     public void setUp() {
         mActivityScenarioRule.getScenario().onActivity(activity -> mActivity = activity);
         PdfCoordinator.skipLoadPdfForTesting(true);
+        ChromeFileProvider.setGeneratedUriForTesting(Uri.parse(PDF_URL));
+    }
+
+    @After
+    public void tearDown() {
+        ChromeFileProvider.setGeneratedUriForTesting(null);
     }
 
     private void createPdfCoordinator() {
@@ -82,6 +91,8 @@ public class PdfCoordinatorUnitTest {
         mPdfView = new PdfView(mActivity);
         mPdfView.layout(0, 0, /* width= */ 500, /* height= */ PDF_CONTENT_HEIGHT);
         mPdfCoordinator.mChromePdfViewerFragment.setPdfViewForTesting(mPdfView);
+        ViewGroup contentView = mActivity.findViewById(android.R.id.content);
+        contentView.addView(mPdfCoordinator.getView());
     }
 
     @Test
@@ -149,6 +160,29 @@ public class PdfCoordinatorUnitTest {
         } catch (Exception e) {
             fail("Fragment instantiation should not throw an exception: " + e.getMessage());
         }
+    }
+
+    @Test
+    public void testGetFileUri() {
+        createPdfCoordinator();
+
+        Uri uri =
+                mPdfCoordinator.getFileUri(
+                        /* isWorkProfile= */ false, "com.google.android.googlequicksearchbox");
+        assertNotNull(uri);
+        assertEquals(mPdfCoordinator.getUri(), uri);
+    }
+
+    @Test
+    public void testGetFileUri_NullUri() {
+        when(mProfile.isOffTheRecord()).thenReturn(false);
+        mPdfCoordinator =
+                new PdfCoordinator(mNativePageHost, mProfile, mActivity, null, TAB_ID, PDF_URL);
+
+        Uri uri =
+                mPdfCoordinator.getFileUri(
+                        /* isWorkProfile= */ false, "com.google.android.googlequicksearchbox");
+        assertEquals(null, uri);
     }
 
     @Implements(PdfView.class)

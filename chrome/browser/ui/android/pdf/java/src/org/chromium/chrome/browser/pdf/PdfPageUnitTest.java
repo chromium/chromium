@@ -122,17 +122,33 @@ public class PdfPageUnitTest {
         Assert.assertNotNull(
                 "Assist content should be generated when the pdf is ready to load", jsonString);
         JSONObject jsonObject = new JSONObject(jsonString);
-        JSONObject metadata = (JSONObject) jsonObject.get("file_metadata");
+        JSONObject metadata = (JSONObject) jsonObject.get(PdfCoordinator.JSON_KEY_FILE_METADATA);
         Assert.assertEquals(
                 "File uri should match.",
                 pdfPage.mPdfCoordinator.getUri().toString(),
-                metadata.get("file_uri"));
+                metadata.get(PdfCoordinator.JSON_KEY_FILE_URI));
         Assert.assertEquals(
-                "File name should match.", pdfPage.getTitle(), metadata.get("file_name"));
+                "File name should match.",
+                pdfPage.getTitle(),
+                metadata.get(PdfCoordinator.JSON_KEY_FILE_NAME));
         Assert.assertEquals(
-                "Mime type should match.", MimeTypeUtils.PDF_MIME_TYPE, metadata.get("mime_type"));
-        Assert.assertEquals("Work profile should match.", true, metadata.get("is_work_profile"));
+                "Mime type should match.",
+                MimeTypeUtils.PDF_MIME_TYPE,
+                metadata.get(PdfCoordinator.JSON_KEY_MIME_TYPE));
+        Assert.assertEquals(
+                "Work profile should match.",
+                true,
+                metadata.get(PdfCoordinator.JSON_KEY_IS_WORK_PROFILE));
         histogramExpectation.assertExpected();
+
+        Uri fileUri =
+                pdfPage.getFileUri(
+                        /* isWorkProfile= */ true, "com.google.android.googlequicksearchbox");
+        Assert.assertNotNull("File uri should be generated when the pdf is ready to load", fileUri);
+        Assert.assertEquals(
+                "File uri should match.",
+                pdfPage.mPdfCoordinator.getUri().toString(),
+                fileUri.toString());
 
         contentView.removeView(view);
         pdfPage.destroy();
@@ -222,17 +238,33 @@ public class PdfPageUnitTest {
         Assert.assertNotNull(
                 "Assist content should be generated when the pdf is ready to load", jsonString);
         JSONObject jsonObject = new JSONObject(jsonString);
-        JSONObject metadata = (JSONObject) jsonObject.get("file_metadata");
+        JSONObject metadata = (JSONObject) jsonObject.get(PdfCoordinator.JSON_KEY_FILE_METADATA);
         Assert.assertEquals(
                 "File uri should match.",
                 pdfPage.mPdfCoordinator.getUri().toString(),
-                metadata.get("file_uri"));
+                metadata.get(PdfCoordinator.JSON_KEY_FILE_URI));
         Assert.assertEquals(
-                "File name should match.", pdfPage.getTitle(), metadata.get("file_name"));
+                "File name should match.",
+                pdfPage.getTitle(),
+                metadata.get(PdfCoordinator.JSON_KEY_FILE_NAME));
         Assert.assertEquals(
-                "Mime type should match.", MimeTypeUtils.PDF_MIME_TYPE, metadata.get("mime_type"));
-        Assert.assertEquals("Work profile should match.", false, metadata.get("is_work_profile"));
+                "Mime type should match.",
+                MimeTypeUtils.PDF_MIME_TYPE,
+                metadata.get(PdfCoordinator.JSON_KEY_MIME_TYPE));
+        Assert.assertEquals(
+                "Work profile should match.",
+                false,
+                metadata.get(PdfCoordinator.JSON_KEY_IS_WORK_PROFILE));
         histogramExpectation.assertExpected();
+
+        Uri fileUri =
+                pdfPage.getFileUri(
+                        /* isWorkProfile= */ false, "com.google.android.googlequicksearchbox");
+        Assert.assertNotNull("File uri should be generated when the pdf is ready to load", fileUri);
+        Assert.assertEquals(
+                "File uri should match.",
+                pdfPage.mPdfCoordinator.getUri().toString(),
+                fileUri.toString());
 
         contentView.removeView(view);
         pdfPage.destroy();

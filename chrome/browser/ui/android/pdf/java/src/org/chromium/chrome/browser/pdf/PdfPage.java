@@ -159,4 +159,15 @@ public class PdfPage extends BasicNativePage {
     public @Nullable String requestAssistContent(boolean isWorkProfile) {
         return mPdfCoordinator.requestAssistContent(getTitle(), isWorkProfile);
     }
+
+    /**
+     * Retrieve uri of the pdf document and grant permission to the target package.
+     *
+     * @param isWorkProfile Whether Chrome is running in the Android work profile.
+     * @param targetPackage The package to grant access to. If null, the default assistant package
+     *     will be used.
+     */
+    public @Nullable Uri getFileUri(boolean isWorkProfile, @Nullable String targetPackage) {
+        return mPdfCoordinator.getFileUri(isWorkProfile, targetPackage);
+    }
 }
