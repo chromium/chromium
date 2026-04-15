@@ -2,16 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import './searchbox_compose_button.js';
 import './searchbox_dropdown.js';
 import './searchbox_icon.js';
 import './searchbox_thumbnail.js';
-import '//resources/cr_components/search/animated_glow.js';
 import './searchbox_input.js';
 
 import type {ComposeboxState, ContextualUpload} from '//resources/cr_components/composebox/common.js';
-import {ContextType, GlifAnimationState, recordContextAdditionMethod, recordContextualElementClickedMetric, recordModelModeSelection, recordToolModeSelection} from '//resources/cr_components/composebox/common.js';
-import {ComposeboxContextAddedMethod, GlowAnimationState} from '//resources/cr_components/search/constants.js';
+import {ContextType, recordContextAdditionMethod, recordContextualElementClickedMetric, recordModelModeSelection, recordToolModeSelection} from '//resources/cr_components/composebox/common.js';
+import {ComposeboxContextAddedMethod} from '//resources/cr_components/search/constants.js';
 import {I18nMixinLit} from '//resources/cr_elements/i18n_mixin_lit.js';
 import {WebUiListenerMixinLit} from '//resources/cr_elements/web_ui_listener_mixin_lit.js';
 import {assert} from '//resources/js/assert.js';
@@ -28,10 +26,6 @@ import type {SearchboxDropdownElement} from './searchbox_dropdown.js';
 import type {SearchboxInputElement} from './searchbox_input.js';
 import type {SearchboxMixinInterface} from './searchbox_mixin.js';
 import {SearchboxMixin} from './searchbox_mixin.js';
-
-// LINT.IfChange(GhostLoaderTagName)
-const LENS_GHOST_LOADER_TAG_NAME = 'cr-searchbox-ghost-loader';
-// LINT.ThenChange(/chrome/browser/resources/lens/shared/searchbox_ghost_loader.ts:GhostLoaderTagName)
 
 // Register --placeholder-opacity as type <number> so that we can animate it.
 CSS.registerProperty({
@@ -125,11 +119,6 @@ export class SearchboxElement extends SearchboxElementBase implements
         reflect: true,
       },
 
-      contextMenuGlifAnimationState: {
-        type: String,
-        reflect: true,
-      },
-
       placeholderText: {
         type: String,
         reflect: true,
@@ -139,11 +128,6 @@ export class SearchboxElement extends SearchboxElementBase implements
       //========================================================================
       // Private properties
       //========================================================================
-
-      isLensSearchbox_: {
-        type: Boolean,
-        reflect: true,
-      },
 
       enableThumbnailSizingTweaks_: {
         type: Boolean,
@@ -177,10 +161,6 @@ export class SearchboxElement extends SearchboxElementBase implements
         type: Boolean,
         reflect: true,
       },
-      animationState: {
-        reflect: true,
-        type: String,
-      },
     };
   }
 
@@ -194,13 +174,8 @@ export class SearchboxElement extends SearchboxElementBase implements
   accessor searchboxSteadyStateShadow: boolean =
       loadTimeData.getBoolean('searchboxCr23SteadyStateShadow');
   accessor searchboxLayoutMode: string = '';
-  accessor contextMenuGlifAnimationState: GlifAnimationState =
-      GlifAnimationState.INELIGIBLE;
   accessor showThumbnail: boolean = false;
   accessor placeholderText: string = '';
-  accessor animationState: GlowAnimationState = GlowAnimationState.NONE;
-  protected accessor isLensSearchbox_: boolean =
-      loadTimeData.getBoolean('isLensSearchbox');
   protected accessor enableThumbnailSizingTweaks_: boolean =
       loadTimeData.getBoolean('enableThumbnailSizingTweaks');
   protected accessor searchboxIcon_: string =
@@ -353,27 +328,11 @@ export class SearchboxElement extends SearchboxElementBase implements
 
   protected onSearchboxInputTextUpdated_(
       e: CustomEvent<{value: string, isComposing: boolean}>) {
-    this.onSearchboxInputTextUpdated(e, this.isLensSearchbox_);
+    this.onSearchboxInputTextUpdated(e);
   }
 
   protected onSearchboxInputFilesPasted_(e: CustomEvent<{files: FileList}>) {
     this.processFiles_(e.detail.files, ComposeboxContextAddedMethod.COPY_PASTE);
-  }
-
-  override onInputWrapperFocusout(e: FocusEvent) {
-    const newlyFocusedEl = e.relatedTarget as Element;
-
-    // If this is a Lens searchbox, treat the ghost loader as keeping searchbox
-    // focus.
-    // TODO(380467089): This workaround wouldn't be needed if the ghost loader
-    // was part of the searchbox element. Remove this workaround once they are
-    // combined.
-    if (this.isLensSearchbox_ &&
-        newlyFocusedEl?.tagName.toLowerCase() === LENS_GHOST_LOADER_TAG_NAME) {
-      return;
-    }
-
-    super.onInputWrapperFocusout(e);
   }
 
   override handleKeyNavigation(e: KeyboardEvent) {

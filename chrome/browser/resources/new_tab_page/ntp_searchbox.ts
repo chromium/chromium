@@ -9,9 +9,9 @@ import '//resources/cr_components/search/animated_glow.js';
 import '//resources/cr_components/searchbox/searchbox_input.js';
 
 import type {ContextualUpload, TabUpload, TabUploadOrigin} from '//resources/cr_components/composebox/common.js';
-import {ContextType, recordContextualElementClickedMetric} from '//resources/cr_components/composebox/common.js';
+import {ContextType, GlifAnimationState, recordContextualElementClickedMetric} from '//resources/cr_components/composebox/common.js';
 import type {ContextualEntrypointAndMenuElement} from '//resources/cr_components/composebox/contextual_entrypoint_and_menu.js';
-import {ComposeboxContextAddedMethod} from '//resources/cr_components/search/constants.js';
+import {ComposeboxContextAddedMethod, GlowAnimationState} from '//resources/cr_components/search/constants.js';
 import {DragAndDropHandler} from '//resources/cr_components/search/drag_drop_handler.js';
 import type {DragAndDropHost} from '//resources/cr_components/search/drag_drop_host.js';
 import {PlaceholderTextCycler} from '//resources/cr_components/searchbox/placeholder_text_cycler.js';
@@ -77,6 +77,16 @@ export class NtpSearchboxElement extends SearchboxElement implements
         type: Boolean,
       },
 
+      contextMenuGlifAnimationState: {
+        type: String,
+        reflect: true,
+      },
+
+      animationState: {
+        reflect: true,
+        type: String,
+      },
+
       //========================================================================
       // Protected properties
       //========================================================================
@@ -90,6 +100,9 @@ export class NtpSearchboxElement extends SearchboxElement implements
   accessor composeButtonEnabled: boolean = false;
   accessor cyclingPlaceholders: boolean = false;
   accessor isDraggingFile: boolean = false;
+  accessor contextMenuGlifAnimationState: GlifAnimationState =
+      GlifAnimationState.INELIGIBLE;
+  accessor animationState: GlowAnimationState = GlowAnimationState.NONE;
   protected accessor tabSuggestions_: TabInfo[] = [];
   protected accessor inputState_: InputState|null = null;
   protected dragAndDropHandler: DragAndDropHandler|null = null;
