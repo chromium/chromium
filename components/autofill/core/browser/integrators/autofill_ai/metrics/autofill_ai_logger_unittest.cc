@@ -582,17 +582,17 @@ class AutofillAiKeyMetricsTest
                                             record_type) {
       EXPECT_FALSE(!entity_type && record_type)
           << "Only entity-type-specific histograms are split by record type.";
+      std::string histogram_name = base::StringPrintf(
+          kKeyMetricsUmaMask, key_metric_name,
+          entity_type
+              ? base::StrCat({".", EntityTypeToMetricsString(*entity_type)})
+              : "",
+          record_type ? base::StrCat({".", EntityRecordTypeToMetricsString(
+                                               *record_type)})
+                      : "");
+      histogram_tester.ExpectUniqueSample(histogram_name, sample, 1);
       histogram_tester.ExpectUniqueSample(
-          base::StringPrintf(
-              kKeyMetricsUmaMask, key_metric_name,
-              entity_type
-                  ? base::StrCat({".", EntityTypeToMetricsString(*entity_type)})
-                  : "",
-              record_type ? base::StrCat({".", EntityRecordTypeToMetricsString(
-                                                   *record_type)})
-                          : ""),
-          sample, 1);
-      return;
+          base::StrCat({histogram_name, ".Profile1"}), sample, 1);
     };
 
     expect_correct_histogram(/*entity_type=*/std::nullopt,

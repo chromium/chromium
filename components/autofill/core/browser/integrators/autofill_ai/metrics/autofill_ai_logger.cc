@@ -9,6 +9,7 @@
 #include <optional>
 #include <string_view>
 
+#include "base/check_deref.h"
 #include "base/containers/map_util.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
@@ -25,6 +26,7 @@
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/dense_set.h"
 #include "components/autofill/core/common/unique_ids.h"
+#include "components/metrics/profile_metrics_service.h"
 
 namespace autofill {
 
@@ -64,7 +66,8 @@ void LogFunnelMetric(std::string_view funnel_metric_name,
 void LogKeyMetric(std::string_view key_metric_name,
                   std::optional<EntityType> entity_type,
                   std::optional<EntityInstance::RecordType> record_type,
-                  bool metric_value) {
+                  bool metric_value,
+                  metrics::ProfileMetricsService& profile_metrics_service) {
   // Only entity-type-specific histograms are split by record type.
   CHECK(!record_type || entity_type);
 
@@ -79,7 +82,7 @@ void LogKeyMetric(std::string_view key_metric_name,
           ? base::StrCat({".", EntityRecordTypeToMetricsString(*record_type)})
           : "";
 
-  base::UmaHistogramBoolean(
+  profile_metrics_service.UmaHistogramBoolean(
       base::StringPrintf(kKeyMetricsHistogramMask, key_metric_name,
                          entity_type_str, record_type_str),
       metric_value);
@@ -88,7 +91,9 @@ void LogKeyMetric(std::string_view key_metric_name,
 }  // namespace
 
 AutofillAiLogger::AutofillAiLogger(AutofillClient* client)
-    : ukm_logger_(client) {}
+    : ukm_logger_(client),
+      profile_metrics_service_(
+          CHECK_DEREF(client->GetProfileMetricsService())) {}
 AutofillAiLogger::~AutofillAiLogger() {
   for (const auto& [form_id, states] : form_states_) {
     if (!submitted_forms_.contains(form_id)) {
@@ -317,16 +322,17 @@ void AutofillAiLogger::RecordKeyMetricsForState(
     std::optional<EntityType> entity_type,
     std::optional<EntityInstance::RecordType> record_type) const {
   LogKeyMetric("FillingReadiness", entity_type, record_type,
-               funnel_state.has_data_to_fill);
+               funnel_state.has_data_to_fill, *profile_metrics_service_);
   LogKeyMetric("FillingAssistance", entity_type, record_type,
-               funnel_state.did_fill_suggestions);
+               funnel_state.did_fill_suggestions, *profile_metrics_service_);
   if (funnel_state.suggestions_shown) {
     LogKeyMetric("FillingAcceptance", entity_type, record_type,
-                 funnel_state.did_fill_suggestions);
+                 funnel_state.did_fill_suggestions, *profile_metrics_service_);
   }
   if (funnel_state.did_fill_suggestions) {
     LogKeyMetric("FillingCorrectness", entity_type, record_type,
-                 !funnel_state.edited_autofilled_field);
+                 !funnel_state.edited_autofilled_field,
+                 *profile_metrics_service_);
   }
 }
 

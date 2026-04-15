@@ -15,6 +15,10 @@
 #include "components/autofill/core/common/unique_ids.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 
+namespace metrics {
+class ProfileMetricsService;
+}
+
 namespace autofill {
 
 // A class that takes care of keeping track of metric-related states and user
@@ -145,6 +149,11 @@ class AutofillAiLogger {
       last_filled_entity_;
 
   AutofillAiUkmLogger ukm_logger_;
+  // This instance will outlive the object as it is a keyed service attached to
+  // a profile, whereas the object is indirectly owned by the client, which is
+  // itself owned by the Profile through the web contents. The keyed service
+  // will outlive the web contents.
+  const raw_ref<metrics::ProfileMetricsService> profile_metrics_service_;
 };
 
 }  // namespace autofill
