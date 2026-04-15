@@ -47,7 +47,7 @@ public class TabRemoverImpl implements TabRemover {
     public TabRemoverImpl(
             Context context,
             ModalDialogManager modalDialogManager,
-            Supplier<TabGroupModelFilter> tabGroupModelFilterSupplier) {
+            Supplier<@Nullable TabGroupModelFilter> tabGroupModelFilterSupplier) {
         this(new TabModelRemover(context, modalDialogManager, tabGroupModelFilterSupplier));
     }
 

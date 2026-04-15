@@ -49,7 +49,7 @@ public class AppHooks {
 
     /** Async fetch the iterator of partner bookmarks (or null if not available). */
     public void requestPartnerBookmarkIterator(
-            Callback<PartnerBookmark.@Nullable BookmarkIterator> callback) {
+            Callback<PartnerBookmark.BookmarkIterator> callback) {
         PartnerBookmarksProviderIterator.createIfAvailable(callback);
     }
 

@@ -22,12 +22,13 @@ import java.util.function.Supplier;
 @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
 @NullMarked
 public class PassthroughTabRemover implements TabRemover {
-    private final Supplier<TabGroupModelFilter> mTabGroupModelFilterSupplier;
+    private final Supplier<@Nullable TabGroupModelFilter> mTabGroupModelFilterSupplier;
 
     /**
      * @param tabGroupModelFilterSupplier The supplier of the {@link TabGroupModelFilter}.
      */
-    public PassthroughTabRemover(Supplier<TabGroupModelFilter> tabGroupModelFilterSupplier) {
+    public PassthroughTabRemover(
+            Supplier<@Nullable TabGroupModelFilter> tabGroupModelFilterSupplier) {
         mTabGroupModelFilterSupplier = tabGroupModelFilterSupplier;
     }
 

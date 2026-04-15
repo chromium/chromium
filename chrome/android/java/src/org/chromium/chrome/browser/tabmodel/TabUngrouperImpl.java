@@ -41,7 +41,7 @@ public class TabUngrouperImpl implements TabUngrouper {
     public TabUngrouperImpl(
             Context context,
             ModalDialogManager modalDialogManager,
-            Supplier<TabGroupModelFilter> tabGroupModelFilterSupplier) {
+            Supplier<@Nullable TabGroupModelFilter> tabGroupModelFilterSupplier) {
         this(new TabModelRemover(context, modalDialogManager, tabGroupModelFilterSupplier));
     }
 

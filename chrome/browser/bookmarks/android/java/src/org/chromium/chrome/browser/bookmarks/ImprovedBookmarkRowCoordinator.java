@@ -13,6 +13,7 @@ import android.util.Pair;
 import org.chromium.base.supplier.LazyOneshotSupplier;
 import org.chromium.base.supplier.LazyOneshotSupplierImpl;
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.bookmarks.BookmarkUiPrefs.BookmarkRowDisplayPref;
 import org.chromium.chrome.browser.bookmarks.ImprovedBookmarkRowProperties.ImageVisibility;
 import org.chromium.components.bookmarks.BookmarkId;
@@ -203,7 +204,7 @@ public class ImprovedBookmarkRowCoordinator {
                         bookmarkItem.getId(),
                         mBookmarkModel,
                         BookmarkRowDisplayPref.VISUAL));
-        LazyOneshotSupplierImpl<Pair<Drawable, Drawable>> drawablesSupplier =
+        LazyOneshotSupplierImpl<Pair<@Nullable Drawable, @Nullable Drawable>> drawablesSupplier =
                 new LazyOneshotSupplierImpl<>() {
                     @Override
                     public void doSet() {

@@ -66,7 +66,7 @@ public class PartnerBookmarksProviderIterator implements PartnerBookmark.Bookmar
      *
      * @param callback The callback to receive the result.
      */
-    public static void createIfAvailable(Callback<@Nullable BookmarkIterator> callback) {
+    public static void createIfAvailable(Callback<BookmarkIterator> callback) {
         new AsyncTask<@Nullable Cursor>() {
             @Override
             protected @Nullable Cursor doInBackground() {
@@ -89,8 +89,9 @@ public class PartnerBookmarksProviderIterator implements PartnerBookmark.Bookmar
 
             @Override
             protected void onPostExecute(@Nullable Cursor result) {
-                callback.onResult(
-                        result == null ? null : new PartnerBookmarksProviderIterator(result));
+                if (result != null) {
+                    callback.onResult(new PartnerBookmarksProviderIterator(result));
+                }
             }
         }.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
     }

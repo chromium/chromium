@@ -101,7 +101,7 @@ class TabModelRemover {
 
     private final Context mContext;
     private final ModalDialogManager mModalDialogManager;
-    private final Supplier<TabGroupModelFilter> mTabGroupModelFilterSupplier;
+    private final Supplier<@Nullable TabGroupModelFilter> mTabGroupModelFilterSupplier;
 
     // Lazily created objects use corresponding getters.
     private @MonotonicNonNull ActionConfirmationManager mActionConfirmationManager;
@@ -117,7 +117,7 @@ class TabModelRemover {
     /*package*/ TabModelRemover(
             Context context,
             ModalDialogManager modalDialogManager,
-            Supplier<TabGroupModelFilter> tabGroupModelFilterSupplier) {
+            Supplier<@Nullable TabGroupModelFilter> tabGroupModelFilterSupplier) {
         mContext = context;
         mModalDialogManager = modalDialogManager;
         mTabGroupModelFilterSupplier = tabGroupModelFilterSupplier;

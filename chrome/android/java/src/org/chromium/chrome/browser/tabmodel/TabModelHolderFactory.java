@@ -6,7 +6,6 @@ package org.chromium.chrome.browser.tabmodel;
 
 import static org.chromium.chrome.browser.tab.TabStateStorageServiceFactory.createBatch;
 
-import org.chromium.base.Holder;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.flags.ActivityType;
@@ -111,9 +110,6 @@ public class TabModelHolderFactory {
             TabRemover tabRemover,
             TabUngrouperFactory tabUngrouperFactory,
             boolean supportUndo) {
-        Holder<@Nullable TabGroupModelFilter> filterHolder = new Holder<>(null);
-        TabUngrouper tabUngrouper =
-                tabUngrouperFactory.create(/* isIncognitoBranded= */ false, filterHolder);
         TabCollectionTabModelImpl regularTabModel =
                 new TabCollectionTabModelImpl(
                         profile,
@@ -128,10 +124,10 @@ public class TabModelHolderFactory {
                         modelDelegate,
                         asyncTabParamsManager,
                         tabRemover,
-                        tabUngrouper,
+                        /* isIncognitoBranded= */ false,
+                        tabUngrouperFactory,
                         () -> createBatch(profile),
                         supportUndo);
-        filterHolder.value = regularTabModel;
 
         return new TabModelHolder(regularTabModel, regularTabModel);
     }

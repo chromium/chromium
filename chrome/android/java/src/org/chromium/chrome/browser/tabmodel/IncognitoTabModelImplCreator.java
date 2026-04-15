@@ -6,7 +6,6 @@ package org.chromium.chrome.browser.tabmodel;
 
 import static org.chromium.chrome.browser.tab.TabStateStorageServiceFactory.createBatch;
 
-import org.chromium.base.Holder;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.flags.ActivityType;
@@ -82,9 +81,6 @@ class IncognitoTabModelImplCreator implements IncognitoTabModelDelegate {
 
     @Override
     public TabModelInternal createTabModel() {
-        Holder<@Nullable TabGroupModelFilter> filterHolder = new Holder<>(null);
-        TabUngrouper tabUngrouper =
-                mTabUngrouperFactory.create(/* isIncognitoBranded= */ true, filterHolder);
         TabCollectionTabModelImpl model =
                 new TabCollectionTabModelImpl(
                         mProfileProvider.getOrCreateOffTheRecordProfile(),
@@ -99,10 +95,10 @@ class IncognitoTabModelImplCreator implements IncognitoTabModelDelegate {
                         mModelDelegate,
                         mAsyncTabParamsManager,
                         mTabRemover,
-                        tabUngrouper,
+                        /* isIncognitoBranded= */ true,
+                        mTabUngrouperFactory,
                         () -> createBatch(mProfileProvider.getOriginalProfile()),
                         /* supportUndo= */ false);
-        filterHolder.value = model;
         return model;
     }
 

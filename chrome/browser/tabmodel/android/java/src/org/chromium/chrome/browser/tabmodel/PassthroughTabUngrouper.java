@@ -24,12 +24,13 @@ import java.util.function.Supplier;
 @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
 @NullMarked
 public class PassthroughTabUngrouper implements TabUngrouper {
-    private final Supplier<TabGroupModelFilter> mTabGroupModelFilterSupplier;
+    private final Supplier<@Nullable TabGroupModelFilter> mTabGroupModelFilterSupplier;
 
     /**
      * @param tabGroupModelFilterSupplier The supplier of the {@link TabGroupModelFilter}.
      */
-    public PassthroughTabUngrouper(Supplier<TabGroupModelFilter> tabGroupModelFilterSupplier) {
+    public PassthroughTabUngrouper(
+            Supplier<@Nullable TabGroupModelFilter> tabGroupModelFilterSupplier) {
         mTabGroupModelFilterSupplier = tabGroupModelFilterSupplier;
     }
 
@@ -84,8 +85,7 @@ public class PassthroughTabUngrouper implements TabUngrouper {
     }
 
     private TabGroupModelFilterInternal getTabGroupModelFilter() {
-
-        @Nullable TabGroupModelFilterInternal tabGroupModelFilter =
+        TabGroupModelFilterInternal tabGroupModelFilter =
                 (TabGroupModelFilterInternal) mTabGroupModelFilterSupplier.get();
         assert tabGroupModelFilter != null;
         return tabGroupModelFilter;

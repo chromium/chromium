@@ -144,7 +144,7 @@ public class TabModelSelectorImpl extends TabModelSelectorBase implements TabMod
         TabCreator incognitoTabCreator = getTabCreatorManager().getTabCreator(true);
         mRecentlyClosedBridge =
                 new RecentlyClosedBridge(profileProvider.getOriginalProfile(), this);
-        Supplier<TabGroupModelFilter> regularTabGroupModelFilterSupplier =
+        Supplier<@Nullable TabGroupModelFilter> regularTabGroupModelFilterSupplier =
                 () -> getModel(/* incognito= */ false);
         TabRemover regularTabRemover =
                 mModalDialogManager != null
@@ -152,11 +152,16 @@ public class TabModelSelectorImpl extends TabModelSelectorBase implements TabMod
                                 mContext, mModalDialogManager, regularTabGroupModelFilterSupplier)
                         : new PassthroughTabRemover(regularTabGroupModelFilterSupplier);
         TabUngrouperFactory tabUngrouperFactory =
-                (isIncognitoBranded, tabGroupModelFilterSupplier) -> {
-                    return (isIncognitoBranded || mModalDialogManager == null)
-                            ? new PassthroughTabUngrouper(tabGroupModelFilterSupplier)
-                            : new TabUngrouperImpl(
-                                    mContext, mModalDialogManager, tabGroupModelFilterSupplier);
+                new TabUngrouperFactory() {
+                    @Override
+                    public TabUngrouper create(
+                            boolean isIncognitoBranded,
+                            Supplier<@Nullable TabGroupModelFilter> tabGroupModelFilterSupplier) {
+                        return (isIncognitoBranded || mModalDialogManager == null)
+                                ? new PassthroughTabUngrouper(tabGroupModelFilterSupplier)
+                                : new TabUngrouperImpl(
+                                        mContext, mModalDialogManager, tabGroupModelFilterSupplier);
+                    }
                 };
         TabModelHolder normalModelHolder =
                 TabModelHolderFactory.createTabModelHolder(

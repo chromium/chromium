@@ -175,7 +175,8 @@ public class ArchivedTabModelSelectorImpl extends TabModelSelectorBase implement
     }
 
     private static TabUngrouper createTabUngrouper(
-            boolean isIncognitoBranded, Supplier<TabGroupModelFilter> tabGroupModelFilterSupplier) {
+            boolean isIncognitoBranded,
+            Supplier<@Nullable TabGroupModelFilter> tabGroupModelFilterSupplier) {
         return new PassthroughTabUngrouper(tabGroupModelFilterSupplier);
     }
 }
