@@ -118,6 +118,7 @@
                             "loadNetworkResource",
                             "enableReportingApi",
                             "enableDeviceBoundSessions",
+                            "deleteDeviceBoundSession",
                             "fetchSchemefulSite",
                             "setCookieControls",
                             "configureDurableMessages"

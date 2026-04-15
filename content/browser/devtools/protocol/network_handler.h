@@ -165,6 +165,8 @@ class NetworkHandler : public DevToolsDomainHandler,
 #endif  // BUILDFLAG(ENABLE_DEVICE_BOUND_SESSIONS)
 
   Response EnableDeviceBoundSessions(bool enable) override;
+  Response DeleteDeviceBoundSession(
+      std::unique_ptr<protocol::Network::DeviceBoundSessionKey> key) override;
 
   Response FetchSchemefulSite(const std::string& origin,
                               std::string* schemeful_site) override;

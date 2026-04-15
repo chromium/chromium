@@ -130,6 +130,7 @@
                   "enableReportingApi",
                   "enableDeviceBoundSessions",
                   "fetchSchemefulSite",
+                  "deleteDeviceBoundSession",
                   "setCookieControls",
                   "configureDurableMessages"
                 ],

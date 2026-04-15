@@ -246,6 +246,7 @@ chromium-metrics-reviews@google.com.
   <int value="5" label="Server requested termination"/>
   <int value="6" label="Invalid session params"/>
   <int value="7" label="Fatal error during refresh"/>
+  <int value="8" label="Deleted via DevTools"/>
 </enum>
 
 <!-- LINT.ThenChange(//services/network/public/mojom/device_bound_sessions.mojom:DeviceBoundSessionDeletionReason) -->

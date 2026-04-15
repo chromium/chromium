@@ -254,3 +254,16 @@ Usages (only same-site for alternate site included): [
     }
 ]
 
+Running test: testDeleteSession
+
+--- Creating a DBSC session ---
+
+--- Verifying session exists ---
+Sessions found: 5
+
+--- Deleting the session ---
+Delete command sent successfully.
+
+--- Verifying session is gone ---
+Sessions found after delete: 4
+

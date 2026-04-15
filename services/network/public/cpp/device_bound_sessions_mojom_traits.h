@@ -135,6 +135,8 @@ struct EnumTraits<network::mojom::DeviceBoundSessionDeletionReason,
       case kRefreshFatalError:
         return network::mojom::DeviceBoundSessionDeletionReason::
             kRefreshFatalError;
+      case kDevTools:
+        return network::mojom::DeviceBoundSessionDeletionReason::kDevTools;
     }
   }
 
@@ -161,6 +163,8 @@ struct EnumTraits<network::mojom::DeviceBoundSessionDeletionReason,
         return kInvalidSessionParams;
       case network::mojom::DeviceBoundSessionDeletionReason::kRefreshFatalError:
         return kRefreshFatalError;
+      case network::mojom::DeviceBoundSessionDeletionReason::kDevTools:
+        return kDevTools;
     }
     NOTREACHED();
   }

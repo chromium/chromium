@@ -227,6 +227,49 @@
             requestExtraInfo.params.deviceBoundSessionUsages,
             'Usages (only same-site for alternate site included): ', []);
       }
+    },
+    async function testDeleteSession() {
+      // Force disabled state first to ensure we get the event when enabling.
+      await dp.Network.enableDeviceBoundSessions({enable: false});
+      dp.Network.enableDeviceBoundSessions({enable: true});
+      await dp.Network.onceDeviceBoundSessionsAdded();
+
+      const sessionId = 'dbsc-delete-test-session-id';
+      const cookieName = 'dbsc-cookie';
+
+      testRunner.log('\n--- Creating a DBSC session ---');
+      page.navigate(
+          `https://dbsc.test:8443/inspector-protocol/network/resources/dbsc/initiate-dbsc.php?session_id=${
+              sessionId}&cookie_name=${cookieName}&domain_prefix=dbsc`);
+      await dp.Network.onceDeviceBoundSessionEventOccurred();
+
+      testRunner.log('\n--- Verifying session exists ---');
+      // Disable and re-enable to see the session in the list.
+      await dp.Network.enableDeviceBoundSessions({enable: false});
+      dp.Network.enableDeviceBoundSessions({enable: true});
+      const sessionAddedEvent = await dp.Network.onceDeviceBoundSessionsAdded();
+      testRunner.log(
+          `Sessions found: ${sessionAddedEvent.params.sessions.length}`);
+
+      testRunner.log('\n--- Deleting the session ---');
+      const response = await dp.Network.deleteDeviceBoundSession(
+          {key: {site: 'https://dbsc.test:8443', id: sessionId}});
+
+      if (response.error) {
+        testRunner.log(`Error deleting session: ${response.error.message}`);
+      } else {
+        testRunner.log('Delete command sent successfully.');
+      }
+
+      testRunner.log('\n--- Verifying session is gone ---');
+      await dp.Network.enableDeviceBoundSessions({enable: false});
+      dp.Network.enableDeviceBoundSessions({enable: true});
+      const sessionAddedEventAfterDelete =
+          await dp.Network.onceDeviceBoundSessionsAdded();
+      testRunner.log(`Sessions found after delete: ${
+          sessionAddedEventAfterDelete.params.sessions.length}`);
+
+      await dp.Network.enableDeviceBoundSessions({enable: false});
     }
   ]);
 })

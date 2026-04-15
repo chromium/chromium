@@ -23,7 +23,8 @@ enum class DeletionReason {
   kServerRequested = 5,          // Server explicitly requested termination.
   kInvalidSessionParams = 6,     // Refresh provided invalid params.
   kRefreshFatalError = 7,        // Fatal error during refresh.
-  kMaxValue = kRefreshFatalError,
+  kDevTools = 8,                 // Deleted via DevTools.
+  kMaxValue = kDevTools,
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/net/enums.xml:DeviceBoundSessionDeletionReason)
 
