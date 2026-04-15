@@ -79,6 +79,7 @@ class ChromeDevToolsManagerDelegate : public content::DevToolsManagerDelegate,
                              DisposeCallback callback) override;
 
   bool AllowInspectingRenderFrameHost(content::RenderFrameHost* rfh) override;
+  bool AllowInspectingTarget(content::DevToolsAgentHost* agent_host) override;
   void ClientAttached(
       content::DevToolsAgentHostClientChannel* channel) override;
   void ClientDetached(

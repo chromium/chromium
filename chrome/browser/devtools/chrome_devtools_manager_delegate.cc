@@ -361,6 +361,16 @@ bool ChromeDevToolsManagerDelegate::AllowInspectingRenderFrameHost(
                              content::WebContents::FromRenderFrameHost(rfh));
 }
 
+bool ChromeDevToolsManagerDelegate::AllowInspectingTarget(
+    content::DevToolsAgentHost* agent_host) {
+  Profile* profile =
+      Profile::FromBrowserContext(agent_host->GetBrowserContext());
+  if (!profile) {
+    return true;
+  }
+  return IsInspectionAllowed(profile, agent_host);
+}
+
 void ChromeDevToolsManagerDelegate::ClientAttached(
     content::DevToolsAgentHostClientChannel* channel) {
   DCHECK(sessions_.find(channel) == sessions_.end());

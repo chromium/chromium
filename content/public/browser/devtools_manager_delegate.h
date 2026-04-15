@@ -134,6 +134,9 @@ class CONTENT_EXPORT DevToolsManagerDelegate {
   virtual void ClientAttached(DevToolsAgentHostClientChannel* channel);
   virtual void ClientDetached(DevToolsAgentHostClientChannel* channel);
 
+  // Returns whether embedder allows to inspect given |agent_host|.
+  virtual bool AllowInspectingTarget(DevToolsAgentHost* agent_host);
+
   // Call callback if command was not handled.
   using NotHandledCallback =
       base::OnceCallback<void(base::span<const uint8_t>)>;

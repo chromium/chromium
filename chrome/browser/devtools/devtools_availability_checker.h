@@ -9,6 +9,7 @@ class GURL;
 class Profile;
 
 namespace content {
+class DevToolsAgentHost;
 class WebContents;
 }
 
@@ -35,5 +36,8 @@ bool IsInspectionAllowed(Profile* profile, const web_app::WebApp* web_app);
 
 // Checks the developer tools policies for a given |url|.
 bool IsInspectionAllowed(Profile* profile, const GURL& url);
+
+bool IsInspectionAllowed(Profile* profile,
+                         content::DevToolsAgentHost* agent_host);
 
 #endif  // CHROME_BROWSER_DEVTOOLS_DEVTOOLS_AVAILABILITY_CHECKER_H_

@@ -319,6 +319,11 @@ bool DevToolsAgentHostImpl::AttachInternal(
     std::unique_ptr<DevToolsSession> session_owned) {
   scoped_refptr<DevToolsAgentHostImpl> protect(this);
   DevToolsSession* session = session_owned.get();
+  DevToolsManager* manager = DevToolsManager::GetInstance();
+  if (manager->delegate() &&
+      !manager->delegate()->AllowInspectingTarget(this)) {
+    return false;
+  }
   session->SetAgentHost(this);
   if (!AttachSession(session)) {
     return false;
@@ -329,7 +334,6 @@ bool DevToolsAgentHostImpl::AttachInternal(
   session_by_client_.emplace(session->GetClient(), std::move(session_owned));
   if (sessions_.size() == 1)
     NotifyAttached();
-  DevToolsManager* manager = DevToolsManager::GetInstance();
   if (manager->delegate())
     manager->delegate()->ClientAttached(session);
   return true;
@@ -556,7 +560,7 @@ std::string DevToolsAgentHostImpl::GetSubtype() {
 }
 
 void DevToolsAgentHostImpl::NotifyCreated() {
-  CHECK(!GetDevtoolsInstances().contains(id_));
+  DCHECK(!GetDevtoolsInstances().contains(id_));
   GetDevtoolsInstances()[id_] = this;
   for (auto& observer : GetDevtoolsObservers())
     observer.DevToolsAgentHostCreated(this);

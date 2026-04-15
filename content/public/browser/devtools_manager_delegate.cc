@@ -91,6 +91,11 @@ void DevToolsManagerDelegate::ClientAttached(
 void DevToolsManagerDelegate::ClientDetached(
     DevToolsAgentHostClientChannel* channel) {}
 
+bool DevToolsManagerDelegate::AllowInspectingTarget(
+    DevToolsAgentHost* agent_host) {
+  return true;
+}
+
 void DevToolsManagerDelegate::HandleCommand(
     DevToolsAgentHostClientChannel* channel,
     base::span<const uint8_t> message,
