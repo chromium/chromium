@@ -16,6 +16,20 @@
 # Chromium), e.g.
 #
 # [[clang::no_sanitize("cfi-unrelated-cast")]]
+#
+# However, an ignorelist entry IS the right approach when:
+# - The indirect call (cfi-icall) happens inside a third-party header function
+#   declared static inline. The compiler may emit a non-inlined copy, placing
+#   the indirect call outside any caller's NO_SANITIZE scope.
+#
+# - The code calls through function pointers obtained via dlopen()/dlsym()
+#   into shared libraries that are not built with CFI. This is common for
+#   system libraries loaded at runtime (e.g. PipeWire, PulseAudio, VA-API,
+#   Vulkan, EGL/GL). In these cases the target function has no CFI type
+#   information, so the check will always fail.
+#
+# - Auto-generated stub files (from generate_stubs.py, generate_bindings.py,
+#   etc.) where adding per-function attributes is impractical.
 
 [cfi-{unrelated,derived}-cast]
 
@@ -268,6 +282,7 @@ fun:*pw_loop_add_event*
 fun:*pw_loop_signal_event*
 fun:*pw_registry_add_listener*
 fun:*pw_registry_bind*
+fun:*spa_hook_remove*
 fun:*spa_loop_utils*
 
 ######### Function pointers cast to incorrect type signatures
