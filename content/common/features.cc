@@ -175,6 +175,11 @@ BASE_FEATURE(kDeviceBoundSessionsDevTools, base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kWorkerOrWorkletAgentDoubleReleaseFix,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// This feature gates the entry to ServiceWorkerDevToolsAgentHost to ensure
+// it is only accessible when DevTools is actually attached.
+BASE_FEATURE(kServiceWorkerDevToolsWorkerReadyCheck,
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 // This feature gates the entry to SharedWorkerDevToolsAgentHost to ensure
 // it is only accessible when DevTools is actually attached.
 BASE_FEATURE(kSharedWorkerDevToolsWorkerReadyCheck,
