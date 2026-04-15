@@ -21,6 +21,7 @@ import org.robolectric.annotation.Config;
 import org.chromium.base.shared_preferences.KeyPrefix;
 import org.chromium.base.shared_preferences.SharedPreferencesManager;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.RobolectricUtil;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceDataProto.InstanceData;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceDataProto.MultiInstanceData;
@@ -117,6 +118,7 @@ public class MultiInstanceProtoMigrationControllerUnitTest {
                         .expectIntRecord(MIGRATION_ATTEMPTS_HISTOGRAM, 1)
                         .build();
         assertTrue(MultiInstanceProtoMigrationController.getInstance().migrate());
+        RobolectricUtil.runAllBackgroundAndUiIncludingDelayed();
 
         // 4. Verify all data has successfully migrated to protobuf.
         data = MultiInstancePersistentStore.sData;
@@ -203,6 +205,7 @@ public class MultiInstanceProtoMigrationControllerUnitTest {
                         .expectIntRecord(MIGRATION_ATTEMPTS_HISTOGRAM, 1)
                         .build();
         assertTrue(MultiInstanceProtoMigrationController.getInstance().migrate());
+        RobolectricUtil.runAllBackgroundAndUiIncludingDelayed();
 
         // 4. Verify all data has successfully migrated to protobuf.
         data = MultiInstancePersistentStore.sData;
@@ -254,6 +257,7 @@ public class MultiInstanceProtoMigrationControllerUnitTest {
 
         // 3. Start migration.
         assertTrue(MultiInstanceProtoMigrationController.getInstance().migrate());
+        RobolectricUtil.runAllBackgroundAndUiIncludingDelayed();
 
         // 4. Verify all data has successfully migrated to protobuf.
         data = MultiInstancePersistentStore.sData;
@@ -305,11 +309,12 @@ public class MultiInstanceProtoMigrationControllerUnitTest {
                         .putInstances(INSTANCE_ID_0, instanceData)
                         .putWindowModes(MODE, windowModeData)
                         .build();
-        MultiInstancePersistentStore.initializeFromMigration(data);
+        MultiInstancePersistentStore.initializeFromMigration(data, null);
         mPrefs.writeInt(MultiInstancePreferenceKeys.MULTI_INSTANCE_PROTO_MIGRATION_ATTEMPTS, 1);
 
         // 2. Start downgrade.
         MultiInstanceProtoMigrationController.getInstance().downgrade();
+        RobolectricUtil.runAllBackgroundAndUiIncludingDelayed();
 
         // 3. Verify all data has successfully downgraded to SharedPreferences.
         // Global
@@ -445,6 +450,7 @@ public class MultiInstanceProtoMigrationControllerUnitTest {
 
         // 2. Migration should return false immediately.
         assertFalse(MultiInstanceProtoMigrationController.getInstance().migrate());
+        RobolectricUtil.runAllBackgroundAndUiIncludingDelayed();
 
         // 3. Set attempt count to 2.
         mPrefs.writeInt(MultiInstancePreferenceKeys.MULTI_INSTANCE_PROTO_MIGRATION_ATTEMPTS, 2);
@@ -455,6 +461,8 @@ public class MultiInstanceProtoMigrationControllerUnitTest {
                         .expectIntRecord(MIGRATION_ATTEMPTS_HISTOGRAM, 3)
                         .build();
         assertTrue(MultiInstanceProtoMigrationController.getInstance().migrate());
+        RobolectricUtil.runAllBackgroundAndUiIncludingDelayed();
+
         watcher.assertExpected();
     }
 
@@ -470,6 +478,7 @@ public class MultiInstanceProtoMigrationControllerUnitTest {
 
         // 2. Attempt migration. It should fail and return false.
         assertFalse(MultiInstanceProtoMigrationController.getInstance().migrate());
+        RobolectricUtil.runAllBackgroundAndUiIncludingDelayed();
 
         // 3. Verify attempt count is incremented to 1.
         assertEquals(
@@ -479,6 +488,7 @@ public class MultiInstanceProtoMigrationControllerUnitTest {
 
         // 4. Attempt retry migration. It should fail again.
         assertFalse(MultiInstanceProtoMigrationController.getInstance().migrate());
+        RobolectricUtil.runAllBackgroundAndUiIncludingDelayed();
 
         // 5. Verify attempt count is incremented to 2.
         assertEquals(
@@ -488,6 +498,7 @@ public class MultiInstanceProtoMigrationControllerUnitTest {
 
         // 6. Attempt retry migration again. It should fail again.
         assertFalse(MultiInstanceProtoMigrationController.getInstance().migrate());
+        RobolectricUtil.runAllBackgroundAndUiIncludingDelayed();
 
         // 7. Verify attempt count is incremented to 3.
         assertEquals(
@@ -497,6 +508,7 @@ public class MultiInstanceProtoMigrationControllerUnitTest {
 
         // 8. Attempt migration again. It should return false immediately due to limit.
         assertFalse(MultiInstanceProtoMigrationController.getInstance().migrate());
+        RobolectricUtil.runAllBackgroundAndUiIncludingDelayed();
 
         // 9. Verify attempt count remains 2 (not incremented further).
         assertEquals(
