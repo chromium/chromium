@@ -348,7 +348,7 @@
       "CBCC42ABED43A4B58FE3810E62AFFA010EB0349F"   // PDF
     ]
   },
-  "mime_types_handler": {
+  "mime_types_handler": [{
     "channel": "stable",
     "extension_types": [ "extension", "legacy_packaged_app", "platform_app" ],
     "allowlist": [
@@ -358,7 +358,11 @@
       "3727DD3E564B6055387425027AD74C58784ACC15",  // QuickOffice Editor
       "CBCC42ABED43A4B58FE3810E62AFFA010EB0349F"   // PDF
     ]
-  },
+  }, {
+    "channel": "stable",
+    "extension_types": ["extension"],
+    "feature_flag": "ApiMimeHandler"
+  }],
   "nacl_modules": {
     "channel": "stable",
     "extension_types": [

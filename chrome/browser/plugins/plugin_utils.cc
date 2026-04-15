@@ -89,7 +89,7 @@ PluginUtils::GetMimeTypeToExtensionIdMap(
     }
 
     if (MimeTypesHandler* handler = MimeTypesHandler::GetHandler(extension)) {
-      for (const auto& supported_mime_type : handler->mime_type_set()) {
+      for (const auto& supported_mime_type : handler->GetSupportedMimeTypes()) {
         // If multiple are installed, Quickoffice extensions may clobber ones
         // earlier in the allowlist. Silently allow this (logging causes ~100
         // lines of output since this function is invoked 3 times during startup

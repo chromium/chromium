@@ -50,12 +50,11 @@ void PluginManager::OnExtensionLoaded(content::BrowserContext* browser_context,
     info.path = handler->GetPluginPath();
     info.background_color = handler->GetBackgroundColor();
 
-    for (auto mime_type = handler->mime_type_set().begin();
-         mime_type != handler->mime_type_set().end(); ++mime_type) {
+    for (const auto& mime_type : handler->GetSupportedMimeTypes()) {
       content::WebPluginMimeType mime_type_info;
-      mime_type_info.mime_type = *mime_type;
+      mime_type_info.mime_type = mime_type;
       base::FilePath::StringType file_extension;
-      if (net::GetPreferredExtensionForMimeType(*mime_type, &file_extension)) {
+      if (net::GetPreferredExtensionForMimeType(mime_type, &file_extension)) {
         mime_type_info.file_extensions.push_back(
             base::FilePath(file_extension).AsUTF8Unsafe());
       }

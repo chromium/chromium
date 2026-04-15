@@ -226,7 +226,8 @@ void PluginResponseInterceptorURLLoaderThrottle::WillProcessResponse(
       base::BindOnce(
           &extensions::mime_handlers::SendExecuteMimeTypeHandlerEvent,
           extension_id, stream_id, embedded, frame_tree_node_id_,
-          std::move(transferrable_loader), response_url, internal_id));
+          std::move(transferrable_loader), response_url, internal_id,
+          response_head->mime_type));
 
 #if BUILDFLAG(ENABLE_PDF)
   if (is_for_oopif_pdf) {

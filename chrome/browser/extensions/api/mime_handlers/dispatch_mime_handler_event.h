@@ -19,6 +19,7 @@ namespace extensions::mime_handlers {
 // MimeHandlerViewGuest creation. `embedded` should be set to whether the
 // document is embedded within another document. The `frame_tree_node_id`
 // parameter is used for the top level plugins case. (PDF, etc).
+// `mime_type` is used to resolve the handler URL from the extension manifest.
 void SendExecuteMimeTypeHandlerEvent(
     const ExtensionId& extension_id,
     const std::string& stream_id,
@@ -26,7 +27,8 @@ void SendExecuteMimeTypeHandlerEvent(
     content::FrameTreeNodeId frame_tree_node_id,
     blink::mojom::TransferrableURLLoaderPtr transferrable_loader,
     const GURL& original_url,
-    const std::string& internal_id);
+    const std::string& internal_id,
+    const std::string& mime_type);
 
 }  // namespace extensions::mime_handlers
 
