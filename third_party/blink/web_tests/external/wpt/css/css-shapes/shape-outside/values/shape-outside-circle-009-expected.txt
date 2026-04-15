@@ -1,0 +1,27 @@
+This is a testharness.js-based test.
+[FAIL] circle(at +50px) - inline
+  assert_equals: expected "circle(at 50px center)" but got "circle(at 50px 50%)"
+[FAIL] circle(at -50px) - inline
+  assert_equals: expected "circle(at -50px center)" but got "circle(at -50px 50%)"
+[FAIL] circle(at +50%) - inline
+  assert_equals: expected "circle(at 50% center)" but got "circle(at 50% 50%)"
+[FAIL] circle(at -50%) - inline
+  assert_equals: expected "circle(at -50% center)" but got "circle(at -50% 50%)"
+[FAIL] circle(at left +50px) - inline
+  assert_equals: expected "circle(at left 50px)" but got "circle(at 0% 50px)"
+[FAIL] circle(at left +50%) - inline
+  assert_equals: expected "circle(at left 50%)" but got "circle(at 0% 50%)"
+[FAIL] circle(at right -50px) - inline
+  assert_equals: expected "circle(at right -50px)" but got "circle(at 100% -50px)"
+[FAIL] circle(at right -50%) - inline
+  assert_equals: expected "circle(at right -50%)" but got "circle(at 100% -50%)"
+[FAIL] circle(at +50px top) - inline
+  assert_equals: expected "circle(at 50px top)" but got "circle(at 50px 0%)"
+[FAIL] circle(at +50% top) - inline
+  assert_equals: expected "circle(at 50% top)" but got "circle(at 50% 0%)"
+[FAIL] circle(at -50px bottom) - inline
+  assert_equals: expected "circle(at -50px bottom)" but got "circle(at -50px 100%)"
+[FAIL] circle(at -50% bottom) - inline
+  assert_equals: expected "circle(at -50% bottom)" but got "circle(at -50% 100%)"
+Harness: the test ran to completion.
+

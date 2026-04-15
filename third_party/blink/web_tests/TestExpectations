@@ -2736,7 +2736,14 @@ crbug.com/501209160 external/wpt/webrtc/RTCDtlsTransport-state.html [ Failure Ti
 crbug.com/501209160 external/wpt/webrtc/RTCDTMFSender-ontonechange.https.html [ Failure Timeout ]
 crbug.com/501209160 external/wpt/webrtc/rtp-stats-lifetime.https.html [ Failure ]
 
+external/wpt/webgl/compressed-tex-sub-image-2d-without-base-image.html [ Failure Pass ]
+
 # ====== New tests from wpt-importer added here ======
+external/wpt/css/css-backgrounds/background-clip/clip-text-background-table-cell.html [ Failure ]
+[ Win ] external/wpt/fetch/api/response/response-form-data.html [ Pass Timeout ]
+external/wpt/webdriver/tests/classic/get_element_tag_name/user_prompts.py [ Failure ]
+virtual/scalefactor200/external/wpt/css/filter-effects/svg-filter-gradient-interpolation.html [ Failure ]
+virtual/threaded/external/wpt/css/css-backgrounds/background-clip/clip-text-background-table-cell.html [ Failure ]
 crbug.com/501224236 external/wpt/css/css-masking/clip-path/clip-path-inset-round-rendering.html [ Failure ]
 crbug.com/501216032 external/wpt/css/css-overflow/overflow-clip-margin-016.html [ Failure ]
 crbug.com/501216032 external/wpt/css/css-overflow/overflow-clip-margin-017.html [ Failure ]

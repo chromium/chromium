@@ -1,0 +1,5 @@
+This is a testharness.js-based test.
+[FAIL] push should be queried without crash
+  assert_equals: push can throw a TypeError if unsupported expected "TypeError" but got "NotSupportedError"
+Harness: the test ran to completion.
+

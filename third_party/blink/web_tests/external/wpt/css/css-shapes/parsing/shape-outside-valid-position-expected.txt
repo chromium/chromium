@@ -1,7 +1,41 @@
 This is a testharness.js-based test.
+[FAIL] e.style['shape-outside'] = "circle(at 10%)" should set the property value
+  assert_equals: serialization should be canonical expected "circle(at 10% center)" but got "circle(at 10% 50%)"
+[FAIL] e.style['shape-outside'] = "circle(at 30px center)" should set the property value
+  assert_equals: serialization should be canonical expected "circle(at 30px center)" but got "circle(at 30px 50%)"
+[FAIL] e.style['shape-outside'] = "circle(at 40px top)" should set the property value
+  assert_equals: serialization should be canonical expected "circle(at 40px top)" but got "circle(at 40px 0%)"
 [FAIL] e.style['shape-outside'] = "circle(at bottom 10% right 20%)" should set the property value
-  assert_equals: serialization should be canonical expected "circle(at calc(80%) calc(90%))" but got "circle(at 80% 90%)"
+  assert_equals: serialization should be canonical expected "circle(at right 20% bottom 10%)" but got "circle(at 80% 90%)"
+[FAIL] e.style['shape-outside'] = "circle(at bottom right)" should set the property value
+  assert_equals: serialization should be canonical expected "circle(at right bottom)" but got "circle(at 100% 100%)"
+[FAIL] e.style['shape-outside'] = "circle(at center)" should set the property value
+  assert_equals: serialization should be canonical expected "circle(at center center)" but got "circle(at 50% 50%)"
+[FAIL] e.style['shape-outside'] = "circle(at center 50px)" should set the property value
+  assert_equals: serialization should be canonical expected "circle(at center 50px)" but got "circle(at 50% 50px)"
+[FAIL] e.style['shape-outside'] = "circle(at center bottom)" should set the property value
+  assert_equals: serialization should be canonical expected "circle(at center bottom)" but got "circle(at 50% 100%)"
+[FAIL] e.style['shape-outside'] = "circle(at center center)" should set the property value
+  assert_equals: serialization should be canonical expected "circle(at center center)" but got "circle(at 50% 50%)"
+[FAIL] e.style['shape-outside'] = "circle(at center left)" should set the property value
+  assert_equals: serialization should be canonical expected "circle(at left center)" but got "circle(at 0% 50%)"
+[FAIL] e.style['shape-outside'] = "circle(at left)" should set the property value
+  assert_equals: serialization should be canonical expected "circle(at left center)" but got "circle(at 0% 50%)"
+[FAIL] e.style['shape-outside'] = "circle(at left bottom)" should set the property value
+  assert_equals: serialization should be canonical expected "circle(at left bottom)" but got "circle(at 0% 100%)"
+[FAIL] e.style['shape-outside'] = "circle(at left center)" should set the property value
+  assert_equals: serialization should be canonical expected "circle(at left center)" but got "circle(at 0% 50%)"
+[FAIL] e.style['shape-outside'] = "circle(at right 40%)" should set the property value
+  assert_equals: serialization should be canonical expected "circle(at right 40%)" but got "circle(at 100% 40%)"
 [FAIL] e.style['shape-outside'] = "circle(at right 30% top 60px)" should set the property value
-  assert_equals: serialization should be canonical expected "circle(at calc(70%) 60px)" but got "circle(at 70% 60px)"
+  assert_equals: serialization should be canonical expected "circle(at right 30% top 60px)" but got "circle(at 70% 60px)"
+[FAIL] e.style['shape-outside'] = "circle(at top)" should set the property value
+  assert_equals: serialization should be canonical expected "circle(at center top)" but got "circle(at 50% 0%)"
+[FAIL] e.style['shape-outside'] = "circle(at top center)" should set the property value
+  assert_equals: serialization should be canonical expected "circle(at center top)" but got "circle(at 50% 0%)"
+[FAIL] e.style['shape-outside'] = "circle(at top 0% right calc(10% * sign(1em - 1px)))" should set the property value
+  assert_equals: serialization should be canonical expected "circle(at right calc(10% * sign(1em - 1px)) top 0%)" but got "circle(at calc(100% - (10% * sign(1em - 1px))) 0%)"
+[FAIL] e.style['shape-outside'] = "circle(at top 0% right calc(10% * sibling-index()))" should set the property value
+  assert_equals: serialization should be canonical expected "circle(at right calc(10% * sibling-index()) top 0%)" but got "circle(at calc(100% - (10% * sibling-index())) 0%)"
 Harness: the test ran to completion.
 

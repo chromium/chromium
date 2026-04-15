@@ -1,0 +1,7 @@
+This is a testharness.js-based test.
+[FAIL] shadowrootslotassignment=manual is serialized and appears before shadowrootclonable and shadowrootserializable
+  assert_equals: expected "manual" but got "named"
+[FAIL] shadowrootslotassignment=manual serializes between shadowrootdelegatesfocus and shadowrootclonable
+  assert_equals: expected "manual" but got "named"
+Harness: the test ran to completion.
+

@@ -1,0 +1,7 @@
+This is a testharness.js-based test.
+[FAIL] isContentEditable for contenteditable=false in design mode
+  assert_false: Element with contenteditable=false in designMode document should have isContentEditable = false expected false got true
+[FAIL] isContentEditable for element in shadow DOM in design mode
+  assert_false: isContentEditable should not be inherited through shadow DOM expected false got true
+Harness: the test ran to completion.
+

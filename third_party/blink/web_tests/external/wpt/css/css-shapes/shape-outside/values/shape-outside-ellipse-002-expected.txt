@@ -1,45 +1,121 @@
 This is a testharness.js-based test.
-Found 30 FAIL, 0 TIMEOUT, 0 NOTRUN.
-[FAIL] ellipse(at left 50% bottom 70%) serializes as ellipse(at 50% calc(30%)) - inline
-  assert_equals: expected "ellipse(at 50% calc(30%))" but got "ellipse(at 50% 30%)"
-[FAIL] ellipse(at left 50% bottom 70px) serializes as ellipse(at 50% calc(100% - 70px)) - inline
-  assert_equals: expected "ellipse(at 50% calc(100% - 70px))" but got "ellipse(at left 50% bottom 70px)"
-[FAIL] ellipse(at left 50px bottom 70%) serializes as ellipse(at 50px calc(30%)) - inline
-  assert_equals: expected "ellipse(at 50px calc(30%))" but got "ellipse(at 50px 30%)"
-[FAIL] ellipse(at top 50% right 80%) serializes as ellipse(at calc(20%) 50%) - inline
-  assert_equals: expected "ellipse(at calc(20%) 50%)" but got "ellipse(at 20% 50%)"
-[FAIL] ellipse(at top 50% right 80px) serializes as ellipse(at calc(100% - 80px) 50%) - inline
-  assert_equals: expected "ellipse(at calc(100% - 80px) 50%)" but got "ellipse(at right 80px top 50%)"
-[FAIL] ellipse(at top 50px right 80%) serializes as ellipse(at calc(20%) 50px) - inline
-  assert_equals: expected "ellipse(at calc(20%) 50px)" but got "ellipse(at 20% 50px)"
-[FAIL] ellipse(at bottom 70% left 50%) serializes as ellipse(at 50% calc(30%)) - inline
-  assert_equals: expected "ellipse(at 50% calc(30%))" but got "ellipse(at 50% 30%)"
-[FAIL] ellipse(at bottom 70% left 50px) serializes as ellipse(at 50px calc(30%)) - inline
-  assert_equals: expected "ellipse(at 50px calc(30%))" but got "ellipse(at 50px 30%)"
-[FAIL] ellipse(at bottom 70% right 80%) serializes as ellipse(at calc(20%) calc(30%)) - inline
-  assert_equals: expected "ellipse(at calc(20%) calc(30%))" but got "ellipse(at 20% 30%)"
-[FAIL] ellipse(at bottom 70% right 80px) serializes as ellipse(at calc(100% - 80px) calc(30%)) - inline
-  assert_equals: expected "ellipse(at calc(100% - 80px) calc(30%))" but got "ellipse(at right 80px top 30%)"
-[FAIL] ellipse(at bottom 70px left 50%) serializes as ellipse(at 50% calc(100% - 70px)) - inline
-  assert_equals: expected "ellipse(at 50% calc(100% - 70px))" but got "ellipse(at left 50% bottom 70px)"
-[FAIL] ellipse(at bottom 70px right 50%) serializes as ellipse(at calc(50%) calc(100% - 70px)) - inline
-  assert_equals: expected "ellipse(at calc(50%) calc(100% - 70px))" but got "ellipse(at left 50% bottom 70px)"
-[FAIL] ellipse(at bottom 70px right 80px) serializes as ellipse(at calc(100% - 80px) calc(100% - 70px)) - inline
-  assert_equals: expected "ellipse(at calc(100% - 80px) calc(100% - 70px))" but got "ellipse(at right 80px bottom 70px)"
-[FAIL] ellipse(at right 80% top 50%) serializes as ellipse(at calc(20%) 50%) - inline
-  assert_equals: expected "ellipse(at calc(20%) 50%)" but got "ellipse(at 20% 50%)"
-[FAIL] ellipse(at right 80% top 50px) serializes as ellipse(at calc(20%) 50px) - inline
-  assert_equals: expected "ellipse(at calc(20%) 50px)" but got "ellipse(at 20% 50px)"
-[FAIL] ellipse(at right 80% bottom 70%) serializes as ellipse(at calc(20%) calc(30%)) - inline
-  assert_equals: expected "ellipse(at calc(20%) calc(30%))" but got "ellipse(at 20% 30%)"
-[FAIL] ellipse(at right 80% bottom 70px) serializes as ellipse(at calc(20%) calc(100% - 70px)) - inline
-  assert_equals: expected "ellipse(at calc(20%) calc(100% - 70px))" but got "ellipse(at left 20% bottom 70px)"
-[FAIL] ellipse(at right 80px top 50%) serializes as ellipse(at calc(100% - 80px) 50%) - inline
-  assert_equals: expected "ellipse(at calc(100% - 80px) 50%)" but got "ellipse(at right 80px top 50%)"
-[FAIL] ellipse(at right 80px bottom 70%) serializes as ellipse(at calc(100% - 80px) calc(30%)) - inline
-  assert_equals: expected "ellipse(at calc(100% - 80px) calc(30%))" but got "ellipse(at right 80px top 30%)"
-[FAIL] ellipse(at right 80px bottom 70px) serializes as ellipse(at calc(100% - 80px) calc(100% - 70px)) - inline
-  assert_equals: expected "ellipse(at calc(100% - 80px) calc(100% - 70px))" but got "ellipse(at right 80px bottom 70px)"
+Found 68 FAIL, 0 TIMEOUT, 0 NOTRUN.
+[FAIL] ellipse(at 50%) serializes as ellipse(at 50% center) - inline
+  assert_equals: expected "ellipse(at 50% center)" but got "ellipse(at 50% 50%)"
+[FAIL] ellipse(at 50px) serializes as ellipse(at 50px center) - inline
+  assert_equals: expected "ellipse(at 50px center)" but got "ellipse(at 50px 50%)"
+[FAIL] ellipse(at left) serializes as ellipse(at left center) - inline
+  assert_equals: expected "ellipse(at left center)" but got "ellipse(at 0% 50%)"
+[FAIL] ellipse(at top) serializes as ellipse(at center top) - inline
+  assert_equals: expected "ellipse(at center top)" but got "ellipse(at 50% 0%)"
+[FAIL] ellipse(at right) serializes as ellipse(at right center) - inline
+  assert_equals: expected "ellipse(at right center)" but got "ellipse(at 100% 50%)"
+[FAIL] ellipse(at bottom) serializes as ellipse(at center bottom) - inline
+  assert_equals: expected "ellipse(at center bottom)" but got "ellipse(at 50% 100%)"
+[FAIL] ellipse(at center) serializes as ellipse(at center center) - inline
+  assert_equals: expected "ellipse(at center center)" but got "ellipse(at 50% 50%)"
+[FAIL] ellipse(at left top) serializes as ellipse(at left top) - inline
+  assert_equals: expected "ellipse(at left top)" but got "ellipse(at 0% 0%)"
+[FAIL] ellipse(at left bottom) serializes as ellipse(at left bottom) - inline
+  assert_equals: expected "ellipse(at left bottom)" but got "ellipse(at 0% 100%)"
+[FAIL] ellipse(at left center) serializes as ellipse(at left center) - inline
+  assert_equals: expected "ellipse(at left center)" but got "ellipse(at 0% 50%)"
+[FAIL] ellipse(at top left) serializes as ellipse(at left top) - inline
+  assert_equals: expected "ellipse(at left top)" but got "ellipse(at 0% 0%)"
+[FAIL] ellipse(at top right) serializes as ellipse(at right top) - inline
+  assert_equals: expected "ellipse(at right top)" but got "ellipse(at 100% 0%)"
+[FAIL] ellipse(at top center) serializes as ellipse(at center top) - inline
+  assert_equals: expected "ellipse(at center top)" but got "ellipse(at 50% 0%)"
+[FAIL] ellipse(at right top) serializes as ellipse(at right top) - inline
+  assert_equals: expected "ellipse(at right top)" but got "ellipse(at 100% 0%)"
+[FAIL] ellipse(at right bottom) serializes as ellipse(at right bottom) - inline
+  assert_equals: expected "ellipse(at right bottom)" but got "ellipse(at 100% 100%)"
+[FAIL] ellipse(at right center) serializes as ellipse(at right center) - inline
+  assert_equals: expected "ellipse(at right center)" but got "ellipse(at 100% 50%)"
+[FAIL] ellipse(at bottom left) serializes as ellipse(at left bottom) - inline
+  assert_equals: expected "ellipse(at left bottom)" but got "ellipse(at 0% 100%)"
+[FAIL] ellipse(at bottom right) serializes as ellipse(at right bottom) - inline
+  assert_equals: expected "ellipse(at right bottom)" but got "ellipse(at 100% 100%)"
+[FAIL] ellipse(at bottom center) serializes as ellipse(at center bottom) - inline
+  assert_equals: expected "ellipse(at center bottom)" but got "ellipse(at 50% 100%)"
+[FAIL] ellipse(at center top) serializes as ellipse(at center top) - inline
+  assert_equals: expected "ellipse(at center top)" but got "ellipse(at 50% 0%)"
+[FAIL] ellipse(at center left) serializes as ellipse(at left center) - inline
+  assert_equals: expected "ellipse(at left center)" but got "ellipse(at 0% 50%)"
+[FAIL] ellipse(at center right) serializes as ellipse(at right center) - inline
+  assert_equals: expected "ellipse(at right center)" but got "ellipse(at 100% 50%)"
+[FAIL] ellipse(at center bottom) serializes as ellipse(at center bottom) - inline
+  assert_equals: expected "ellipse(at center bottom)" but got "ellipse(at 50% 100%)"
+[FAIL] ellipse(at center center) serializes as ellipse(at center center) - inline
+  assert_equals: expected "ellipse(at center center)" but got "ellipse(at 50% 50%)"
+[FAIL] ellipse(at left 50%) serializes as ellipse(at left 50%) - inline
+  assert_equals: expected "ellipse(at left 50%)" but got "ellipse(at 0% 50%)"
+[FAIL] ellipse(at left 50px) serializes as ellipse(at left 50px) - inline
+  assert_equals: expected "ellipse(at left 50px)" but got "ellipse(at 0% 50px)"
+[FAIL] ellipse(at 50% top) serializes as ellipse(at 50% top) - inline
+  assert_equals: expected "ellipse(at 50% top)" but got "ellipse(at 50% 0%)"
+[FAIL] ellipse(at 50px top) serializes as ellipse(at 50px top) - inline
+  assert_equals: expected "ellipse(at 50px top)" but got "ellipse(at 50px 0%)"
+[FAIL] ellipse(at right 80%) serializes as ellipse(at right 80%) - inline
+  assert_equals: expected "ellipse(at right 80%)" but got "ellipse(at 100% 80%)"
+[FAIL] ellipse(at right 80px) serializes as ellipse(at right 80px) - inline
+  assert_equals: expected "ellipse(at right 80px)" but got "ellipse(at 100% 80px)"
+[FAIL] ellipse(at 70% bottom) serializes as ellipse(at 70% bottom) - inline
+  assert_equals: expected "ellipse(at 70% bottom)" but got "ellipse(at 70% 100%)"
+[FAIL] ellipse(at 70px bottom) serializes as ellipse(at 70px bottom) - inline
+  assert_equals: expected "ellipse(at 70px bottom)" but got "ellipse(at 70px 100%)"
+[FAIL] ellipse(at center 60%) serializes as ellipse(at center 60%) - inline
+  assert_equals: expected "ellipse(at center 60%)" but got "ellipse(at 50% 60%)"
+[FAIL] ellipse(at center 60px) serializes as ellipse(at center 60px) - inline
+  assert_equals: expected "ellipse(at center 60px)" but got "ellipse(at 50% 60px)"
+[FAIL] ellipse(at 60% center) serializes as ellipse(at 60% center) - inline
+  assert_equals: expected "ellipse(at 60% center)" but got "ellipse(at 60% 50%)"
+[FAIL] ellipse(at 60px center) serializes as ellipse(at 60px center) - inline
+  assert_equals: expected "ellipse(at 60px center)" but got "ellipse(at 60px 50%)"
+[FAIL] ellipse(at left 50% top 50%) serializes as ellipse(at left 50% top 50%) - inline
+  assert_equals: expected "ellipse(at left 50% top 50%)" but got "ellipse(at 50% 50%)"
+[FAIL] ellipse(at left 50% top 50px) serializes as ellipse(at left 50% top 50px) - inline
+  assert_equals: expected "ellipse(at left 50% top 50px)" but got "ellipse(at 50% 50px)"
+[FAIL] ellipse(at left 50% bottom 70%) serializes as ellipse(at left 50% bottom 70%) - inline
+  assert_equals: expected "ellipse(at left 50% bottom 70%)" but got "ellipse(at 50% 30%)"
+[FAIL] ellipse(at left 50px top 50%) serializes as ellipse(at left 50px top 50%) - inline
+  assert_equals: expected "ellipse(at left 50px top 50%)" but got "ellipse(at 50px 50%)"
+[FAIL] ellipse(at left 50px top 50px) serializes as ellipse(at left 50px top 50px) - inline
+  assert_equals: expected "ellipse(at left 50px top 50px)" but got "ellipse(at 50px 50px)"
+[FAIL] ellipse(at left 50px bottom 70%) serializes as ellipse(at left 50px bottom 70%) - inline
+  assert_equals: expected "ellipse(at left 50px bottom 70%)" but got "ellipse(at 50px 30%)"
+[FAIL] ellipse(at top 50% left 50%) serializes as ellipse(at left 50% top 50%) - inline
+  assert_equals: expected "ellipse(at left 50% top 50%)" but got "ellipse(at 50% 50%)"
+[FAIL] ellipse(at top 50% left 50px) serializes as ellipse(at left 50px top 50%) - inline
+  assert_equals: expected "ellipse(at left 50px top 50%)" but got "ellipse(at 50px 50%)"
+[FAIL] ellipse(at top 50% right 80%) serializes as ellipse(at right 80% top 50%) - inline
+  assert_equals: expected "ellipse(at right 80% top 50%)" but got "ellipse(at 20% 50%)"
+[FAIL] ellipse(at top 50px left 50%) serializes as ellipse(at left 50% top 50px) - inline
+  assert_equals: expected "ellipse(at left 50% top 50px)" but got "ellipse(at 50% 50px)"
+[FAIL] ellipse(at top 50px left 50px) serializes as ellipse(at left 50px top 50px) - inline
+  assert_equals: expected "ellipse(at left 50px top 50px)" but got "ellipse(at 50px 50px)"
+[FAIL] ellipse(at top 50px right 80%) serializes as ellipse(at right 80% top 50px) - inline
+  assert_equals: expected "ellipse(at right 80% top 50px)" but got "ellipse(at 20% 50px)"
+[FAIL] ellipse(at bottom 70% left 50%) serializes as ellipse(at left 50% bottom 70%) - inline
+  assert_equals: expected "ellipse(at left 50% bottom 70%)" but got "ellipse(at 50% 30%)"
+[FAIL] ellipse(at bottom 70% left 50px) serializes as ellipse(at left 50px bottom 70%) - inline
+  assert_equals: expected "ellipse(at left 50px bottom 70%)" but got "ellipse(at 50px 30%)"
+[FAIL] ellipse(at bottom 70% right 80%) serializes as ellipse(at right 80% bottom 70%) - inline
+  assert_equals: expected "ellipse(at right 80% bottom 70%)" but got "ellipse(at 20% 30%)"
+[FAIL] ellipse(at bottom 70% right 80px) serializes as ellipse(at right 80px bottom 70%) - inline
+  assert_equals: expected "ellipse(at right 80px bottom 70%)" but got "ellipse(at right 80px top 30%)"
+[FAIL] ellipse(at bottom 70px right 50%) serializes as ellipse(at right 50% bottom 70px) - inline
+  assert_equals: expected "ellipse(at right 50% bottom 70px)" but got "ellipse(at left 50% bottom 70px)"
+[FAIL] ellipse(at right 80% top 50%) serializes as ellipse(at right 80% top 50%) - inline
+  assert_equals: expected "ellipse(at right 80% top 50%)" but got "ellipse(at 20% 50%)"
+[FAIL] ellipse(at right 80% top 50px) serializes as ellipse(at right 80% top 50px) - inline
+  assert_equals: expected "ellipse(at right 80% top 50px)" but got "ellipse(at 20% 50px)"
+[FAIL] ellipse(at right 80% bottom 70%) serializes as ellipse(at right 80% bottom 70%) - inline
+  assert_equals: expected "ellipse(at right 80% bottom 70%)" but got "ellipse(at 20% 30%)"
+[FAIL] ellipse(at right 80% bottom 70px) serializes as ellipse(at right 80% bottom 70px) - inline
+  assert_equals: expected "ellipse(at right 80% bottom 70px)" but got "ellipse(at left 20% bottom 70px)"
+[FAIL] ellipse(at right 80px bottom 70%) serializes as ellipse(at right 80px bottom 70%) - inline
+  assert_equals: expected "ellipse(at right 80px bottom 70%)" but got "ellipse(at right 80px top 30%)"
 [FAIL] ellipse(at left 50% bottom 70px) serializes as ellipse(at 50% calc(100% - 70px)) - computed
   assert_equals: expected "ellipse(at 50% calc(100% - 70px))" but got "ellipse(at left 50% bottom 70px)"
 [FAIL] ellipse(at top 50% right 80px) serializes as ellipse(at calc(100% - 80px) 50%) - computed

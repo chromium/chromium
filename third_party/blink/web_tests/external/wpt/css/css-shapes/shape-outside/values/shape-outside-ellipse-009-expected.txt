@@ -1,0 +1,27 @@
+This is a testharness.js-based test.
+[FAIL] ellipse(at +50px) - inline
+  assert_equals: expected "ellipse(at 50px center)" but got "ellipse(at 50px 50%)"
+[FAIL] ellipse(at -50px) - inline
+  assert_equals: expected "ellipse(at -50px center)" but got "ellipse(at -50px 50%)"
+[FAIL] ellipse(at +50%) - inline
+  assert_equals: expected "ellipse(at 50% center)" but got "ellipse(at 50% 50%)"
+[FAIL] ellipse(at -50%) - inline
+  assert_equals: expected "ellipse(at -50% center)" but got "ellipse(at -50% 50%)"
+[FAIL] ellipse(at left +50px) - inline
+  assert_equals: expected "ellipse(at left 50px)" but got "ellipse(at 0% 50px)"
+[FAIL] ellipse(at left +50%) - inline
+  assert_equals: expected "ellipse(at left 50%)" but got "ellipse(at 0% 50%)"
+[FAIL] ellipse(at right -50px) - inline
+  assert_equals: expected "ellipse(at right -50px)" but got "ellipse(at 100% -50px)"
+[FAIL] ellipse(at right -50%) - inline
+  assert_equals: expected "ellipse(at right -50%)" but got "ellipse(at 100% -50%)"
+[FAIL] ellipse(at +50px top) - inline
+  assert_equals: expected "ellipse(at 50px top)" but got "ellipse(at 50px 0%)"
+[FAIL] ellipse(at +50% top) - inline
+  assert_equals: expected "ellipse(at 50% top)" but got "ellipse(at 50% 0%)"
+[FAIL] ellipse(at -50px bottom) - inline
+  assert_equals: expected "ellipse(at -50px bottom)" but got "ellipse(at -50px 100%)"
+[FAIL] ellipse(at -50% bottom) - inline
+  assert_equals: expected "ellipse(at -50% bottom)" but got "ellipse(at -50% 100%)"
+Harness: the test ran to completion.
+

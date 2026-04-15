@@ -1,45 +1,121 @@
 This is a testharness.js-based test.
-Found 30 FAIL, 0 TIMEOUT, 0 NOTRUN.
-[FAIL] circle(at left 50% bottom 70%) serializes as circle(at 50% calc(30%)) - inline
-  assert_equals: expected "circle(at 50% calc(30%))" but got "circle(at 50% 30%)"
-[FAIL] circle(at left 50% bottom 70px) serializes as circle(at 50% calc(100% - 70px)) - inline
-  assert_equals: expected "circle(at 50% calc(100% - 70px))" but got "circle(at left 50% bottom 70px)"
-[FAIL] circle(at left 50px bottom 70%) serializes as circle(at 50px calc(30%)) - inline
-  assert_equals: expected "circle(at 50px calc(30%))" but got "circle(at 50px 30%)"
-[FAIL] circle(at top 50% right 80%) serializes as circle(at calc(20%) 50%) - inline
-  assert_equals: expected "circle(at calc(20%) 50%)" but got "circle(at 20% 50%)"
-[FAIL] circle(at top 50% right 80px) serializes as circle(at calc(100% - 80px) 50%) - inline
-  assert_equals: expected "circle(at calc(100% - 80px) 50%)" but got "circle(at right 80px top 50%)"
-[FAIL] circle(at top 50px right 80%) serializes as circle(at calc(20%) 50px) - inline
-  assert_equals: expected "circle(at calc(20%) 50px)" but got "circle(at 20% 50px)"
-[FAIL] circle(at bottom 70% left 50%) serializes as circle(at 50% calc(30%)) - inline
-  assert_equals: expected "circle(at 50% calc(30%))" but got "circle(at 50% 30%)"
-[FAIL] circle(at bottom 70% left 50px) serializes as circle(at 50px calc(30%)) - inline
-  assert_equals: expected "circle(at 50px calc(30%))" but got "circle(at 50px 30%)"
-[FAIL] circle(at bottom 70% right 80%) serializes as circle(at calc(20%) calc(30%)) - inline
-  assert_equals: expected "circle(at calc(20%) calc(30%))" but got "circle(at 20% 30%)"
-[FAIL] circle(at bottom 70% right 80px) serializes as circle(at calc(100% - 80px) calc(30%)) - inline
-  assert_equals: expected "circle(at calc(100% - 80px) calc(30%))" but got "circle(at right 80px top 30%)"
-[FAIL] circle(at bottom 70px left 50%) serializes as circle(at 50% calc(100% - 70px)) - inline
-  assert_equals: expected "circle(at 50% calc(100% - 70px))" but got "circle(at left 50% bottom 70px)"
-[FAIL] circle(at bottom 70px right 50%) serializes as circle(at calc(50%) calc(100% - 70px)) - inline
-  assert_equals: expected "circle(at calc(50%) calc(100% - 70px))" but got "circle(at left 50% bottom 70px)"
-[FAIL] circle(at bottom 70px right 80px) serializes as circle(at calc(100% - 80px) calc(100% - 70px)) - inline
-  assert_equals: expected "circle(at calc(100% - 80px) calc(100% - 70px))" but got "circle(at right 80px bottom 70px)"
-[FAIL] circle(at right 80% top 50%) serializes as circle(at calc(20%) 50%) - inline
-  assert_equals: expected "circle(at calc(20%) 50%)" but got "circle(at 20% 50%)"
-[FAIL] circle(at right 80% top 50px) serializes as circle(at calc(20%) 50px) - inline
-  assert_equals: expected "circle(at calc(20%) 50px)" but got "circle(at 20% 50px)"
-[FAIL] circle(at right 80% bottom 70%) serializes as circle(at calc(20%) calc(30%)) - inline
-  assert_equals: expected "circle(at calc(20%) calc(30%))" but got "circle(at 20% 30%)"
-[FAIL] circle(at right 80% bottom 70px) serializes as circle(at calc(20%) calc(100% - 70px)) - inline
-  assert_equals: expected "circle(at calc(20%) calc(100% - 70px))" but got "circle(at left 20% bottom 70px)"
-[FAIL] circle(at right 80px top 50%) serializes as circle(at calc(100% - 80px) 50%) - inline
-  assert_equals: expected "circle(at calc(100% - 80px) 50%)" but got "circle(at right 80px top 50%)"
-[FAIL] circle(at right 80px bottom 70%) serializes as circle(at calc(100% - 80px) calc(30%)) - inline
-  assert_equals: expected "circle(at calc(100% - 80px) calc(30%))" but got "circle(at right 80px top 30%)"
-[FAIL] circle(at right 80px bottom 70px) serializes as circle(at calc(100% - 80px) calc(100% - 70px)) - inline
-  assert_equals: expected "circle(at calc(100% - 80px) calc(100% - 70px))" but got "circle(at right 80px bottom 70px)"
+Found 68 FAIL, 0 TIMEOUT, 0 NOTRUN.
+[FAIL] circle(at 50%) serializes as circle(at 50% center) - inline
+  assert_equals: expected "circle(at 50% center)" but got "circle(at 50% 50%)"
+[FAIL] circle(at 50px) serializes as circle(at 50px center) - inline
+  assert_equals: expected "circle(at 50px center)" but got "circle(at 50px 50%)"
+[FAIL] circle(at left) serializes as circle(at left center) - inline
+  assert_equals: expected "circle(at left center)" but got "circle(at 0% 50%)"
+[FAIL] circle(at top) serializes as circle(at center top) - inline
+  assert_equals: expected "circle(at center top)" but got "circle(at 50% 0%)"
+[FAIL] circle(at right) serializes as circle(at right center) - inline
+  assert_equals: expected "circle(at right center)" but got "circle(at 100% 50%)"
+[FAIL] circle(at bottom) serializes as circle(at center bottom) - inline
+  assert_equals: expected "circle(at center bottom)" but got "circle(at 50% 100%)"
+[FAIL] circle(at center) serializes as circle(at center center) - inline
+  assert_equals: expected "circle(at center center)" but got "circle(at 50% 50%)"
+[FAIL] circle(at left top) serializes as circle(at left top) - inline
+  assert_equals: expected "circle(at left top)" but got "circle(at 0% 0%)"
+[FAIL] circle(at left bottom) serializes as circle(at left bottom) - inline
+  assert_equals: expected "circle(at left bottom)" but got "circle(at 0% 100%)"
+[FAIL] circle(at left center) serializes as circle(at left center) - inline
+  assert_equals: expected "circle(at left center)" but got "circle(at 0% 50%)"
+[FAIL] circle(at top left) serializes as circle(at left top) - inline
+  assert_equals: expected "circle(at left top)" but got "circle(at 0% 0%)"
+[FAIL] circle(at top right) serializes as circle(at right top) - inline
+  assert_equals: expected "circle(at right top)" but got "circle(at 100% 0%)"
+[FAIL] circle(at top center) serializes as circle(at center top) - inline
+  assert_equals: expected "circle(at center top)" but got "circle(at 50% 0%)"
+[FAIL] circle(at right top) serializes as circle(at right top) - inline
+  assert_equals: expected "circle(at right top)" but got "circle(at 100% 0%)"
+[FAIL] circle(at right bottom) serializes as circle(at right bottom) - inline
+  assert_equals: expected "circle(at right bottom)" but got "circle(at 100% 100%)"
+[FAIL] circle(at right center) serializes as circle(at right center) - inline
+  assert_equals: expected "circle(at right center)" but got "circle(at 100% 50%)"
+[FAIL] circle(at bottom left) serializes as circle(at left bottom) - inline
+  assert_equals: expected "circle(at left bottom)" but got "circle(at 0% 100%)"
+[FAIL] circle(at bottom right) serializes as circle(at right bottom) - inline
+  assert_equals: expected "circle(at right bottom)" but got "circle(at 100% 100%)"
+[FAIL] circle(at bottom center) serializes as circle(at center bottom) - inline
+  assert_equals: expected "circle(at center bottom)" but got "circle(at 50% 100%)"
+[FAIL] circle(at center top) serializes as circle(at center top) - inline
+  assert_equals: expected "circle(at center top)" but got "circle(at 50% 0%)"
+[FAIL] circle(at center left) serializes as circle(at left center) - inline
+  assert_equals: expected "circle(at left center)" but got "circle(at 0% 50%)"
+[FAIL] circle(at center right) serializes as circle(at right center) - inline
+  assert_equals: expected "circle(at right center)" but got "circle(at 100% 50%)"
+[FAIL] circle(at center bottom) serializes as circle(at center bottom) - inline
+  assert_equals: expected "circle(at center bottom)" but got "circle(at 50% 100%)"
+[FAIL] circle(at center center) serializes as circle(at center center) - inline
+  assert_equals: expected "circle(at center center)" but got "circle(at 50% 50%)"
+[FAIL] circle(at left 50%) serializes as circle(at left 50%) - inline
+  assert_equals: expected "circle(at left 50%)" but got "circle(at 0% 50%)"
+[FAIL] circle(at left 50px) serializes as circle(at left 50px) - inline
+  assert_equals: expected "circle(at left 50px)" but got "circle(at 0% 50px)"
+[FAIL] circle(at 50% top) serializes as circle(at 50% top) - inline
+  assert_equals: expected "circle(at 50% top)" but got "circle(at 50% 0%)"
+[FAIL] circle(at 50px top) serializes as circle(at 50px top) - inline
+  assert_equals: expected "circle(at 50px top)" but got "circle(at 50px 0%)"
+[FAIL] circle(at right 80%) serializes as circle(at right 80%) - inline
+  assert_equals: expected "circle(at right 80%)" but got "circle(at 100% 80%)"
+[FAIL] circle(at right 80px) serializes as circle(at right 80px) - inline
+  assert_equals: expected "circle(at right 80px)" but got "circle(at 100% 80px)"
+[FAIL] circle(at 70% bottom) serializes as circle(at 70% bottom) - inline
+  assert_equals: expected "circle(at 70% bottom)" but got "circle(at 70% 100%)"
+[FAIL] circle(at 70px bottom) serializes as circle(at 70px bottom) - inline
+  assert_equals: expected "circle(at 70px bottom)" but got "circle(at 70px 100%)"
+[FAIL] circle(at center 60%) serializes as circle(at center 60%) - inline
+  assert_equals: expected "circle(at center 60%)" but got "circle(at 50% 60%)"
+[FAIL] circle(at center 60px) serializes as circle(at center 60px) - inline
+  assert_equals: expected "circle(at center 60px)" but got "circle(at 50% 60px)"
+[FAIL] circle(at 60% center) serializes as circle(at 60% center) - inline
+  assert_equals: expected "circle(at 60% center)" but got "circle(at 60% 50%)"
+[FAIL] circle(at 60px center) serializes as circle(at 60px center) - inline
+  assert_equals: expected "circle(at 60px center)" but got "circle(at 60px 50%)"
+[FAIL] circle(at left 50% top 50%) serializes as circle(at left 50% top 50%) - inline
+  assert_equals: expected "circle(at left 50% top 50%)" but got "circle(at 50% 50%)"
+[FAIL] circle(at left 50% top 50px) serializes as circle(at left 50% top 50px) - inline
+  assert_equals: expected "circle(at left 50% top 50px)" but got "circle(at 50% 50px)"
+[FAIL] circle(at left 50% bottom 70%) serializes as circle(at left 50% bottom 70%) - inline
+  assert_equals: expected "circle(at left 50% bottom 70%)" but got "circle(at 50% 30%)"
+[FAIL] circle(at left 50px top 50%) serializes as circle(at left 50px top 50%) - inline
+  assert_equals: expected "circle(at left 50px top 50%)" but got "circle(at 50px 50%)"
+[FAIL] circle(at left 50px top 50px) serializes as circle(at left 50px top 50px) - inline
+  assert_equals: expected "circle(at left 50px top 50px)" but got "circle(at 50px 50px)"
+[FAIL] circle(at left 50px bottom 70%) serializes as circle(at left 50px bottom 70%) - inline
+  assert_equals: expected "circle(at left 50px bottom 70%)" but got "circle(at 50px 30%)"
+[FAIL] circle(at top 50% left 50%) serializes as circle(at left 50% top 50%) - inline
+  assert_equals: expected "circle(at left 50% top 50%)" but got "circle(at 50% 50%)"
+[FAIL] circle(at top 50% left 50px) serializes as circle(at left 50px top 50%) - inline
+  assert_equals: expected "circle(at left 50px top 50%)" but got "circle(at 50px 50%)"
+[FAIL] circle(at top 50% right 80%) serializes as circle(at right 80% top 50%) - inline
+  assert_equals: expected "circle(at right 80% top 50%)" but got "circle(at 20% 50%)"
+[FAIL] circle(at top 50px left 50%) serializes as circle(at left 50% top 50px) - inline
+  assert_equals: expected "circle(at left 50% top 50px)" but got "circle(at 50% 50px)"
+[FAIL] circle(at top 50px left 50px) serializes as circle(at left 50px top 50px) - inline
+  assert_equals: expected "circle(at left 50px top 50px)" but got "circle(at 50px 50px)"
+[FAIL] circle(at top 50px right 80%) serializes as circle(at right 80% top 50px) - inline
+  assert_equals: expected "circle(at right 80% top 50px)" but got "circle(at 20% 50px)"
+[FAIL] circle(at bottom 70% left 50%) serializes as circle(at left 50% bottom 70%) - inline
+  assert_equals: expected "circle(at left 50% bottom 70%)" but got "circle(at 50% 30%)"
+[FAIL] circle(at bottom 70% left 50px) serializes as circle(at left 50px bottom 70%) - inline
+  assert_equals: expected "circle(at left 50px bottom 70%)" but got "circle(at 50px 30%)"
+[FAIL] circle(at bottom 70% right 80%) serializes as circle(at right 80% bottom 70%) - inline
+  assert_equals: expected "circle(at right 80% bottom 70%)" but got "circle(at 20% 30%)"
+[FAIL] circle(at bottom 70% right 80px) serializes as circle(at right 80px bottom 70%) - inline
+  assert_equals: expected "circle(at right 80px bottom 70%)" but got "circle(at right 80px top 30%)"
+[FAIL] circle(at bottom 70px right 50%) serializes as circle(at right 50% bottom 70px) - inline
+  assert_equals: expected "circle(at right 50% bottom 70px)" but got "circle(at left 50% bottom 70px)"
+[FAIL] circle(at right 80% top 50%) serializes as circle(at right 80% top 50%) - inline
+  assert_equals: expected "circle(at right 80% top 50%)" but got "circle(at 20% 50%)"
+[FAIL] circle(at right 80% top 50px) serializes as circle(at right 80% top 50px) - inline
+  assert_equals: expected "circle(at right 80% top 50px)" but got "circle(at 20% 50px)"
+[FAIL] circle(at right 80% bottom 70%) serializes as circle(at right 80% bottom 70%) - inline
+  assert_equals: expected "circle(at right 80% bottom 70%)" but got "circle(at 20% 30%)"
+[FAIL] circle(at right 80% bottom 70px) serializes as circle(at right 80% bottom 70px) - inline
+  assert_equals: expected "circle(at right 80% bottom 70px)" but got "circle(at left 20% bottom 70px)"
+[FAIL] circle(at right 80px bottom 70%) serializes as circle(at right 80px bottom 70%) - inline
+  assert_equals: expected "circle(at right 80px bottom 70%)" but got "circle(at right 80px top 30%)"
 [FAIL] circle(at left 50% bottom 70px) serializes as circle(at 50% calc(100% - 70px)) - computed
   assert_equals: expected "circle(at 50% calc(100% - 70px))" but got "circle(at left 50% bottom 70px)"
 [FAIL] circle(at top 50% right 80px) serializes as circle(at calc(100% - 80px) 50%) - computed

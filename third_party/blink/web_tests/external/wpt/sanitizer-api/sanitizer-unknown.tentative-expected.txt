@@ -1,0 +1,9 @@
+This is a testharness.js-based test.
+[FAIL] The is= attribute is removed by the default sanitizer config.
+  assert_equals: expected "<div>hello</div>" but got "<div is=\\"foo-bar\\">hello</div>"
+[FAIL] The is= attribute is removed from span by the default sanitizer config.
+  assert_equals: expected "<span>hello</span>" but got "<span is=\\"foo-bar\\">hello</span>"
+[FAIL] The is= attribute gets blocked with a custom config.
+  assert_equals: expected "<div>hello</div>" but got "<div is=\\"foo-bar\\">hello</div>"
+Harness: the test ran to completion.
+

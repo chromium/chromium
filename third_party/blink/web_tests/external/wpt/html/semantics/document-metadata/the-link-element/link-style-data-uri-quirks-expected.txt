@@ -1,0 +1,5 @@
+This is a testharness.js-based test.
+[FAIL] data: URI stylesheet with text/plain is blocked in standards mode
+  assert_equals: expected "error" but got "load"
+Harness: the test ran to completion.
+

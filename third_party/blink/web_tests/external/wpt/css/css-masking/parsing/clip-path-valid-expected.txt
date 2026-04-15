@@ -1,0 +1,10 @@
+This is a testharness.js-based test.
+Found 3 FAIL, 0 TIMEOUT, 0 NOTRUN.
+[FAIL] e.style['clip-path'] = "circle(farthest-side at center top)" should set the property value
+  assert_equals: serialization should be canonical expected "circle(farthest-side at center top)" but got "circle(farthest-side at 50% 0%)"
+[FAIL] e.style['clip-path'] = "circle(4% at top right)" should set the property value
+  assert_equals: serialization should be canonical expected "circle(4% at right top)" but got "circle(4% at 100% 0%)"
+[FAIL] e.style['clip-path'] = "ellipse(farthest-side 4% at bottom left)" should set the property value
+  assert_equals: serialization should be canonical expected "ellipse(farthest-side 4% at left bottom)" but got "ellipse(farthest-side 4% at 0% 100%)"
+Harness: the test ran to completion.
+
