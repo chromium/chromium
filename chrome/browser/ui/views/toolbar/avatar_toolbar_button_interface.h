@@ -120,7 +120,9 @@ class AvatarToolbarButtonInterface {
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 
  protected:
-  static base::TimeDelta iph_min_delay_after_creation_;
+  // Do not show the IPH right when creating the window, so that the IPH has a
+  // separate animation.
+  static base::TimeDelta g_iph_min_delay_after_creation;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_TOOLBAR_AVATAR_TOOLBAR_BUTTON_INTERFACE_H_

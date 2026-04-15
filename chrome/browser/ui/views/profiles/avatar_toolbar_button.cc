@@ -95,10 +95,6 @@ constexpr int kAvatarIconEnlargement = 1;
 
 }  // namespace
 
-// static
-base::TimeDelta AvatarToolbarButton::g_iph_min_delay_after_creation =
-    base::Seconds(2);
-
 AvatarToolbarButton::AvatarToolbarButton(BrowserView* browser_view)
     : ToolbarButton(base::BindRepeating(&AvatarToolbarButton::ButtonPressed,
                                         base::Unretained(this),

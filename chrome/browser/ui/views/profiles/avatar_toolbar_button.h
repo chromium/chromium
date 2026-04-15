@@ -145,10 +145,6 @@ class AvatarToolbarButton : public ToolbarButton,
   // Time when this object was created.
   const base::TimeTicks creation_time_;
 
-  // Do not show the IPH right when creating the window, so that the IPH has a
-  // separate animation.
-  static base::TimeDelta g_iph_min_delay_after_creation;
-
   // Gaia Id of the account that was signed in from having it's choice
   // remembered following a web sign-in event but waiting for the available
   // account information to be fetched in order to show the sign in IPH.

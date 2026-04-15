@@ -10,7 +10,7 @@
 #include "chrome/browser/ui/views/profiles/avatar_toolbar_button_state_manager.h"
 
 // static
-base::TimeDelta AvatarToolbarButtonInterface::iph_min_delay_after_creation_ =
+base::TimeDelta AvatarToolbarButtonInterface::g_iph_min_delay_after_creation =
     base::Seconds(2);
 
 views::BubbleAnchor AvatarToolbarButtonInterface::GetBubbleAnchor(
@@ -23,7 +23,7 @@ views::BubbleAnchor AvatarToolbarButtonInterface::GetBubbleAnchor(
 base::AutoReset<base::TimeDelta> AvatarToolbarButtonInterface::
     SetScopedIPHMinDelayAfterCreationForTesting(  // IN-TEST
         base::TimeDelta delay) {
-  return base::AutoReset<base::TimeDelta>(&iph_min_delay_after_creation_,
+  return base::AutoReset<base::TimeDelta>(&g_iph_min_delay_after_creation,
                                           delay);
 }
 
