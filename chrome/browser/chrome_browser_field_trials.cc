@@ -149,10 +149,6 @@ void ChromeBrowserFieldTrials::RegisterFeatureOverrides(
   // override in the generic IS_ANDROID block below, guarded by an appropriate
   // runtime check.
 
-  // Enable the link hover status bar.
-  // TODO(crbug.com/404678510): Remove when the feature is stable.
-  feature_overrides.EnableFeature(chrome::android::kLinkHoverStatusBar);
-
   // If enabled, render processes associated only with tabs in unfocused windows
   // will be downgraded to "vis" priority, rather than remaining at "fg". This
   // will allow tabs in unfocused windows to be prioritized for OOM kill in
