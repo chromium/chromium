@@ -25,6 +25,7 @@
 #include "base/not_fatal_until.h"
 #include "base/notreached.h"
 #include "base/numerics/safe_conversions.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "chrome/browser/favicon/large_icon_service_factory.h"
@@ -330,7 +331,6 @@ bool PopupViewViews::Show(
   MaybeAnnounceCurrentTab();
   MaybeAnnouncePasswordRecoveryPopup();
   MaybeAnnounceLoadingState();
-  MaybeAnnounceBnplFootnotePopup();
   MaybeA11yFocusInformationalSuggestion();
 
   return !CanActivate() || (GetWidget() && GetWidget()->IsActive());
@@ -772,10 +772,8 @@ void PopupViewViews::OnSuggestionsChanged(bool prefer_prev_arrow_side) {
     return;
   }
 
-  MaybeAnnounceCurrentTab();
   MaybeAnnouncePasswordRecoveryPopup();
   MaybeAnnounceLoadingState();
-  MaybeAnnounceBnplFootnotePopup();
   MaybeA11yFocusInformationalSuggestion();
   ShowIPHFeaturePromos();
 }
@@ -872,6 +870,8 @@ bool PopupViewViews::SearchBarHandleKeyPressed(const ui::KeyEvent& event) {
 void PopupViewViews::TabSelectedAt(int index) {
   CHECK_LT(base::checked_cast<size_t>(index), tabbed_pane_config_->tabs.size());
   controller_->OnTabSelected(index, tabbed_pane_config_->tabs[index].type);
+  MaybeAnnounceCurrentTab();
+  MaybeAnnounceBnplFootnotePopup();
 }
 
 void PopupViewViews::SetSelectedCell(
@@ -966,11 +966,19 @@ void PopupViewViews::ShowIPHFeaturePromos() {
 
 void PopupViewViews::MaybeAnnounceCurrentTab() {
   if (tabbed_pane_) {
-    a11y_announcer_.Run(
-        std::u16string(
-            tabbed_pane_->GetTabAt(tabbed_pane_->GetSelectedTabIndex())
-                ->GetTitleText()),
-        /*polite=*/true);
+    size_t index = tabbed_pane_->GetSelectedTabIndex();
+    size_t total = tabbed_pane_->GetTabCount();
+    std::u16string tab_title(tabbed_pane_->GetTabAt(index)->GetTitleText());
+
+    // Constructs the accessibility announcement for the currently selected tab.
+    // The message reads out the tab's title, its current index out of the total
+    // number of tabs, and instructions for using the keyboard's left or right
+    // arrow keys to switch between tabs.
+    std::u16string announcement = l10n_util::GetStringFUTF16(
+        IDS_AUTOFILL_PAY_NOW_PAY_LATER_TAB_ACCESSIBILITY_ANNOUNCEMENT,
+        tab_title, base::NumberToString16(index + 1),
+        base::NumberToString16(total));
+    a11y_announcer_.Run(announcement, /*polite=*/true);
   }
 }
 
