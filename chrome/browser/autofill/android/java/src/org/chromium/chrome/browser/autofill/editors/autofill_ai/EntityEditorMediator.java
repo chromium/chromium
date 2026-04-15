@@ -26,11 +26,13 @@ import static org.chromium.chrome.browser.autofill.editors.common.EditorComponen
 import static org.chromium.chrome.browser.autofill.editors.common.EditorComponentsProperties.NoticeProperties.NOTICE_ALL_KEYS;
 import static org.chromium.chrome.browser.autofill.editors.common.EditorComponentsProperties.NoticeProperties.NOTICE_TEXT;
 import static org.chromium.chrome.browser.autofill.editors.common.EditorComponentsProperties.NoticeProperties.SHOW_BACKGROUND;
+import static org.chromium.chrome.browser.autofill.editors.common.EditorComponentsProperties.isEditable;
 import static org.chromium.chrome.browser.autofill.editors.common.EditorComponentsProperties.validateForm;
 import static org.chromium.chrome.browser.autofill.editors.common.EditorComponentsUtil.scrollToFieldWithErrorMessage;
 import static org.chromium.chrome.browser.autofill.editors.common.date_field.DateFieldProperties.DATE_ALL_KEYS;
 import static org.chromium.chrome.browser.autofill.editors.common.dropdown_field.DropdownFieldProperties.DROPDOWN_ALL_KEYS;
 import static org.chromium.chrome.browser.autofill.editors.common.dropdown_field.DropdownFieldProperties.DROPDOWN_KEY_VALUE_LIST;
+import static org.chromium.chrome.browser.autofill.editors.common.field.FieldProperties.ERROR_MESSAGE;
 import static org.chromium.chrome.browser.autofill.editors.common.field.FieldProperties.IS_REQUIRED;
 import static org.chromium.chrome.browser.autofill.editors.common.field.FieldProperties.LABEL;
 import static org.chromium.chrome.browser.autofill.editors.common.field.FieldProperties.VALIDATOR;
@@ -53,7 +55,6 @@ import org.chromium.chrome.browser.autofill.R;
 import org.chromium.chrome.browser.autofill.editors.autofill_ai.EntityEditorCoordinator.Delegate;
 import org.chromium.chrome.browser.autofill.editors.common.EditorComponentsProperties.EditorItem;
 import org.chromium.chrome.browser.autofill.editors.common.date_field.DateFieldValidator;
-import org.chromium.chrome.browser.autofill.editors.common.field.EditorFieldValidator;
 import org.chromium.chrome.browser.feedback.HelpAndFeedbackLauncherFactory;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.autofill.autofill_ai.AttributeInstance;
@@ -69,7 +70,9 @@ import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.text.ChromeClickableSpan;
 import org.chromium.ui.text.SpanApplier;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /** Mediator for the Entity Editor. */
@@ -166,13 +169,50 @@ class EntityEditorMediator {
     }
 
     private void onDone() {
-        if (!validateForm(mEditorModel.get(EDITOR_FIELDS))) {
+        if (!validateEntityForm()) {
             scrollToFieldWithErrorMessage(mEditorModel.get(EDITOR_FIELDS));
             return;
         }
         assumeNonNull(mEditorModel).set(EntityEditorProperties.VISIBLE, false);
         commitChanges();
         mDelegate.onDone(mEntityInstance);
+    }
+
+    /**
+     * The entity editor makes sure at least 1 of the required fields are non-empty. All required
+     * fields must be non-empty in other editors.
+     *
+     * @return {@code true} if any of the required fields are non-empty, {@code false} otherwise.
+     */
+    private boolean validateEntityForm() {
+        List<EditorItem> emptyRequiredFields = new ArrayList<>();
+        boolean hasRequiredFields = false;
+        boolean hasNonEmptyRequiredField = false;
+        for (EditorItem editorItem : mEditorModel.get(EDITOR_FIELDS)) {
+            if (!isEditable(editorItem)) {
+                continue;
+            }
+            if (editorItem.model.get(IS_REQUIRED)) {
+                hasRequiredFields = true;
+                if (TextUtils.isEmpty(editorItem.model.get(VALUE))
+                        || TextUtils.getTrimmedLength(editorItem.model.get(VALUE)) == 0) {
+                    // Collect all required fields that are empty.
+                    emptyRequiredFields.add(editorItem);
+                } else {
+                    // Stop the process if at least 1 required field is non-empty.
+                    hasNonEmptyRequiredField = true;
+                    break;
+                }
+            }
+        }
+        if (hasRequiredFields && !hasNonEmptyRequiredField) {
+            for (EditorItem editorItem : emptyRequiredFields) {
+                editorItem.model.set(
+                        ERROR_MESSAGE, getRequiredFieldErrorMessage(editorItem.model.get(LABEL)));
+            }
+            return false;
+        }
+        return validateForm(mEditorModel.get(EDITOR_FIELDS));
     }
 
     private void commitChanges() {
@@ -237,13 +277,6 @@ class EntityEditorMediator {
                         .with(
                                 IS_REQUIRED,
                                 entityInstance.getEntityType().isRequiredAttribute(attributeType))
-                        .with(
-                                VALIDATOR,
-                                getRequiredFieldValidator(
-                                        attributeType.getTypeNameAsString(),
-                                        entityInstance
-                                                .getEntityType()
-                                                .isRequiredAttribute(attributeType)))
                         .build(),
                 /* isFullLine= */ true);
     }
@@ -265,13 +298,6 @@ class EntityEditorMediator {
                                 IS_REQUIRED,
                                 entityInstance.getEntityType().isRequiredAttribute(attributeType))
                         .with(VALUE, value)
-                        .with(
-                                VALIDATOR,
-                                getRequiredFieldValidator(
-                                        attributeType.getTypeNameAsString(),
-                                        entityInstance
-                                                .getEntityType()
-                                                .isRequiredAttribute(attributeType)))
                         .build());
     }
 
@@ -283,14 +309,6 @@ class EntityEditorMediator {
             attributeValue =
                     ((AttributeInstance.DateValue) attribute.getAttributeValue()).toString();
         }
-        EditorFieldValidator validator =
-                new DateFieldValidator(
-                        mContext.getString(
-                                R.string.autofill_ai_entity_editor_invalid_date_error_message));
-        if (entityInstance.getEntityType().isRequiredAttribute(attributeType)) {
-            validator.setRequiredErrorMessage(
-                    getRequiredFieldErrorMessage(attributeType.getTypeNameAsString()));
-        }
         return new EditorItem(
                 DATE,
                 new PropertyModel.Builder(DATE_ALL_KEYS)
@@ -299,19 +317,14 @@ class EntityEditorMediator {
                                 IS_REQUIRED,
                                 entityInstance.getEntityType().isRequiredAttribute(attributeType))
                         .with(VALUE, attributeValue)
-                        .with(VALIDATOR, validator)
+                        .with(
+                                VALIDATOR,
+                                new DateFieldValidator(
+                                        mContext.getString(
+                                                R.string
+                                                        .autofill_ai_entity_editor_invalid_date_error_message)))
                         .build(),
                 /* isFullLine= */ true);
-    }
-
-    private @Nullable EditorFieldValidator getRequiredFieldValidator(
-            String label, boolean isRequired) {
-        if (!isRequired) {
-            return null;
-        }
-        return new EditorFieldValidator.Builder()
-                .withRequiredErrorMessage(getRequiredFieldErrorMessage(label))
-                .build();
     }
 
     private String getRequiredFieldErrorMessage(String label) {

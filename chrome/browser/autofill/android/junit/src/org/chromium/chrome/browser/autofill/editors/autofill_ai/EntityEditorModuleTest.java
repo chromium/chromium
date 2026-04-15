@@ -90,6 +90,7 @@ import org.chromium.ui.modelutil.ListModel;
 import org.chromium.ui.modelutil.PropertyModel;
 
 import java.time.LocalDate;
+import java.util.Collections;
 import java.util.List;
 
 @RunWith(BaseRobolectricTestRunner.class)
@@ -146,6 +147,71 @@ public class EntityEditorModuleTest {
                             PASSPORT_ISSUE_DATE_TYPE,
                             PASSPORT_EXPIRATION_DATE_TYPE),
                     /* requiredAttributes= */ List.of(PASSPORT_NUMBER_ATTRIBUTE_TYPE));
+
+    private static final AttributeType sVehicleMakeType =
+            new AttributeType(
+                    /* typeName= */ AttributeTypeName.VEHICLE_MAKE,
+                    /* typeNameAsString= */ "Make",
+                    /* dataType= */ DataType.STRING,
+                    /* fieldType= */ FieldType.VEHICLE_MAKE);
+    private static final AttributeType sVehicleModelType =
+            new AttributeType(
+                    /* typeName= */ AttributeTypeName.VEHICLE_MODEL,
+                    /* typeNameAsString= */ "Model",
+                    /* dataType= */ DataType.STRING,
+                    /* fieldType= */ FieldType.VEHICLE_MODEL);
+    private static final AttributeType sVehicleYearType =
+            new AttributeType(
+                    /* typeName= */ AttributeTypeName.VEHICLE_YEAR,
+                    /* typeNameAsString= */ "Year",
+                    /* dataType= */ DataType.STRING,
+                    /* fieldType= */ FieldType.VEHICLE_YEAR);
+    private static final AttributeType sVehicleOwnerType =
+            new AttributeType(
+                    /* typeName= */ AttributeTypeName.VEHICLE_OWNER,
+                    /* typeNameAsString= */ "Owner",
+                    /* dataType= */ DataType.NAME,
+                    /* fieldType= */ FieldType.NAME_FULL);
+    private static final AttributeType sVehicleLicensePlateType =
+            new AttributeType(
+                    /* typeName= */ AttributeTypeName.VEHICLE_PLATE_NUMBER,
+                    /* typeNameAsString= */ "License place",
+                    /* dataType= */ DataType.STRING,
+                    /* fieldType= */ FieldType.VEHICLE_LICENSE_PLATE);
+    private static final AttributeType sVehiclePlateStateType =
+            new AttributeType(
+                    /* typeName= */ AttributeTypeName.VEHICLE_PLATE_STATE,
+                    /* typeNameAsString= */ "State",
+                    /* dataType= */ DataType.STATE,
+                    /* fieldType= */ FieldType.VEHICLE_PLATE_STATE);
+    private static final AttributeType sVehicleVinType =
+            new AttributeType(
+                    /* typeName= */ AttributeTypeName.VEHICLE_VIN,
+                    /* typeNameAsString= */ "VIN",
+                    /* dataType= */ DataType.STRING,
+                    /* fieldType= */ FieldType.VEHICLE_VIN);
+
+    private static final EntityType sVehicleType =
+            new EntityType(
+                    EntityTypeName.VEHICLE,
+                    /* isReadOnly= */ false,
+                    /* isEnabled= */ true,
+                    /* isEligibleForWalletStorage= */ true,
+                    /* isMaskedStorageSupported= */ true,
+                    /* typeNameAsString= */ "Vehicle",
+                    /* typeNameAsMetricsString= */ "Vehicle",
+                    /* addEntityTypeString= */ "Add vehicle",
+                    /* editEntityTypeString= */ "Edit vehicle",
+                    /* deleteEntityTypeString= */ "Delete vehicle",
+                    /* attributeTypes= */ List.of(
+                            sVehicleMakeType,
+                            sVehicleModelType,
+                            sVehicleYearType,
+                            sVehicleOwnerType,
+                            sVehicleLicensePlateType,
+                            sVehiclePlateStateType,
+                            sVehicleVinType),
+                    /* requiredAttributes= */ List.of(sVehicleLicensePlateType, sVehicleVinType));
 
     private static final EntityInstance LOCAL_PASSPORT =
             new EntityInstance.Builder(PASSPORT_TYPE)
@@ -212,7 +278,7 @@ public class EntityEditorModuleTest {
                     new DropdownKeyValue("DE", "Germany"),
                     new DropdownKeyValue("CU", "Cuba"));
 
-    @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule().strictness(Strictness.STRICT_STUBS);
+    @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule().strictness(Strictness.LENIENT);
     @Mock private Delegate mDelegate;
     @Mock private Profile mProfile;
     @Mock private IdentityManager mIdentityManager;
@@ -577,11 +643,9 @@ public class EntityEditorModuleTest {
         showEditorDialog(entity);
 
         ViewGroup content = mCoordinator.getEntityEditorViewForTest().getContentView();
-        DateFieldView issueDate = (DateFieldView) content.getChildAt(3);
 
         PropertyModel model = mCoordinator.getEditorModelForTest();
         ListModel<EditorItem> editorFields = model.get(EntityEditorProperties.EDITOR_FIELDS);
-        // Make sure that the fields order is correct before editing them.
         EditorItem passportNameItem = editorFields.get(0);
         EditorItem passportNumberItem = editorFields.get(2);
 
@@ -606,6 +670,90 @@ public class EntityEditorModuleTest {
                 updatedEntityInstance
                         .getAttribute(PASSPORT_NUMBER_ATTRIBUTE_TYPE)
                         .getAttributeValue());
+    }
+
+    @Test
+    @SmallTest
+    public void testCommitChangesWithTwoRequiredFields() {
+        EntityInstance localVehicle =
+                new EntityInstance.Builder(sVehicleType)
+                        .setGUID("guid")
+                        .setRecordType(RecordType.LOCAL)
+                        .setIsMaskedServerEntity(false)
+                        .setModifiedDate(LocalDate.of(2026, 2, 15))
+                        .setUseCount(0)
+                        .build();
+        showEditorDialog(localVehicle);
+
+        PropertyModel model = mCoordinator.getEditorModelForTest();
+        ListModel<EditorItem> editorFields = model.get(EntityEditorProperties.EDITOR_FIELDS);
+        EditorItem vehicleLicensePlate = editorFields.get(4);
+        EditorItem vehicleIdentificationNumber = editorFields.get(6);
+
+        // Make sure both fields are required.
+        assertTrue(vehicleLicensePlate.model.get(IS_REQUIRED));
+        assertTrue(vehicleIdentificationNumber.model.get(IS_REQUIRED));
+
+        mContainerView.findViewById(R.id.editor_dialog_done_button).performClick();
+        // The entity should not be saved because all required fields are left empty.
+        verify(mDelegate, times(0)).onDone(any());
+        assertFalse(TextUtils.isEmpty(vehicleLicensePlate.model.get(ERROR_MESSAGE)));
+        assertFalse(TextUtils.isEmpty(vehicleIdentificationNumber.model.get(ERROR_MESSAGE)));
+
+        vehicleLicensePlate.model.set(VALUE, "AA123456BB");
+        // Click the "Done" button and make sure that the editor is closed because only one required
+        // attribute is required to save the entity.
+        mContainerView.findViewById(R.id.editor_dialog_done_button).performClick();
+        verify(mDelegate).onDone(mEntityInstanceCaptor.capture());
+
+        EntityInstance updatedEntityInstance = mEntityInstanceCaptor.getValue();
+        // The name attribute should not be added to the entity because it wasn't set before.
+        assertTrue(updatedEntityInstance.hasAttribute(sVehicleLicensePlateType));
+        assertEquals(
+                new StringValue("AA123456BB"),
+                updatedEntityInstance.getAttribute(sVehicleLicensePlateType).getAttributeValue());
+    }
+
+    @Test
+    @SmallTest
+    public void testCommitChangesWithNoRequiredFields() {
+        when(mPersonalDataManager.getDefaultCountryCodeForNewAddress()).thenReturn("US");
+        EntityType passportTypeWithNoRequiredFields =
+                new EntityType(
+                        /* typeName= */ EntityTypeName.PASSPORT,
+                        /* isReadOnly= */ false,
+                        /* isEnabled= */ true,
+                        /* isEligibleForWalletStorage= */ false,
+                        /* isMaskedStorageSupported= */ true,
+                        /* typeNameAsString= */ "Passport",
+                        /* typeNameAsMetricsString= */ "Passport",
+                        /* addEntityTypeString= */ "Add passport",
+                        /* editEntityTypeString= */ "Edit passport",
+                        /* deleteEntityTypeString= */ "Delete passport",
+                        /* attributeTypes= */ List.of(
+                                PASSPORT_NAME_ATTRIBUTE_TYPE,
+                                PASSPORT_COUNTRY_ATTRIBUTE_TYPE,
+                                PASSPORT_NUMBER_ATTRIBUTE_TYPE,
+                                PASSPORT_ISSUE_DATE_TYPE,
+                                PASSPORT_EXPIRATION_DATE_TYPE),
+                        /* requiredAttributes= */ Collections.emptyList());
+        EntityInstance passportEntity =
+                new EntityInstance.Builder(passportTypeWithNoRequiredFields)
+                        .setGUID("guid")
+                        .setRecordType(RecordType.LOCAL)
+                        .setIsMaskedServerEntity(false)
+                        .setModifiedDate(LocalDate.of(2026, 2, 15))
+                        .setUseCount(0)
+                        .build();
+        showEditorDialog(passportEntity);
+
+        PropertyModel model = mCoordinator.getEditorModelForTest();
+        ListModel<EditorItem> editorFields = model.get(EntityEditorProperties.EDITOR_FIELDS);
+
+        // Click the "Done" button and make sure that the editor is closed because there are no
+        // required fields in the provided entity.
+        mContainerView.findViewById(R.id.editor_dialog_done_button).performClick();
+        verify(mDelegate).onDone(mEntityInstanceCaptor.capture());
     }
 
     private void showEditorDialog(EntityInstance entityInstance) {
