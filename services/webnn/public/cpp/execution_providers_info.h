@@ -112,11 +112,13 @@ inline constexpr auto kKnownEPs = base::MakeFixedFlatMap<base::cstring_view,
     {
         kOpenVINOExecutionProvider,
         {
+            // The package version 1.8.69.0 maps to the EP
+            // version 1.3.0+b130ce1.
             .min_package_version =
                 {
                     .Major = 1,
                     .Minor = 8,
-                    .Build = 15,
+                    .Build = 69,
                     .Revision = 0,
                 },
             .vendor_id = 0x8086,
