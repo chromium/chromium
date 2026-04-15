@@ -269,10 +269,15 @@ void GenerateResourceFromSharedImageVideoFrame(
     return;
   }
 
+  auto* shared_image_stub = command_buffer_helper->GetSharedImageStub();
+  if (!shared_image_stub || !shared_image_stub->shared_context_state()) {
+    std::move(frame_available_cb)
+        .Run(std::move(frame), base::win::ScopedHandle(), 0, E_FAIL);
+    return;
+  }
+
   Microsoft::WRL::ComPtr<ID3D11Device> d3d11_device =
-      command_buffer_helper->GetSharedImageStub()
-          ->shared_context_state()
-          ->GetD3D11Device();
+      shared_image_stub->shared_context_state()->GetD3D11Device();
   if (!d3d11_device) {
     std::move(frame_available_cb)
         .Run(std::move(frame), base::win::ScopedHandle(), 0, E_FAIL);
@@ -290,17 +295,38 @@ void GenerateResourceFromSharedImageVideoFrame(
 D3D12VideoEncodeAccelerator::GetCommandBufferHelperResult::
     GetCommandBufferHelperResult() = default;
 D3D12VideoEncodeAccelerator::GetCommandBufferHelperResult::
-    GetCommandBufferHelperResult(const GetCommandBufferHelperResult& other) =
+    GetCommandBufferHelperResult(GetCommandBufferHelperResult&& other) =
         default;
+D3D12VideoEncodeAccelerator::GetCommandBufferHelperResult&
+D3D12VideoEncodeAccelerator::GetCommandBufferHelperResult::operator=(
+    GetCommandBufferHelperResult&& other) = default;
 D3D12VideoEncodeAccelerator::GetCommandBufferHelperResult::
     ~GetCommandBufferHelperResult() = default;
+
+std::unique_ptr<D3D11To12Fence> Create11On12InteropFence(
+    ID3D12Device* d3d12_device,
+    ID3D11Device* d3d11_device);
 
 D3D12VideoEncodeAccelerator::GetCommandBufferHelperResult
 GetCommandBufferHelperOnGpuThread(
     base::RepeatingCallback<scoped_refptr<CommandBufferHelper>()>
-        get_command_buffer_helper_cb) {
+        get_command_buffer_helper_cb,
+    Microsoft::WRL::ComPtr<ID3D12Device> d3d12_device) {
   D3D12VideoEncodeAccelerator::GetCommandBufferHelperResult result;
   result.command_buffer_helper = get_command_buffer_helper_cb.Run();
+
+  if (result.command_buffer_helper) {
+    auto* shared_image_stub =
+        result.command_buffer_helper->GetSharedImageStub();
+    if (shared_image_stub && shared_image_stub->shared_context_state()) {
+      Microsoft::WRL::ComPtr<ID3D11Device> d3d11_device =
+          shared_image_stub->shared_context_state()->GetD3D11Device();
+      if (d3d11_device) {
+        result.source_texture_fence =
+            Create11On12InteropFence(d3d12_device.Get(), d3d11_device.Get());
+      }
+    }
+  }
 
   // For D3D12 VEA, the encoding device is always on the same adapter as
   // rendering device, so we don't check if the adapter is the same as the one
@@ -968,14 +994,11 @@ std::unique_ptr<D3D11To12Fence> Create11On12InteropFence(
 }
 
 void D3D12VideoEncodeAccelerator::OnCommandBufferHelperAvailable(
-    const GetCommandBufferHelperResult& result) {
-  command_buffer_helper_ = result.command_buffer_helper;
+    GetCommandBufferHelperResult result) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(encoder_sequence_checker_);
+  command_buffer_helper_ = std::move(result.command_buffer_helper);
+  source_texture_fence_ = std::move(result.source_texture_fence);
 
-  source_texture_fence_ = Create11On12InteropFence(
-      device_.Get(), command_buffer_helper_->GetSharedImageStub()
-                         ->shared_context_state()
-                         ->GetD3D11Device()
-                         .Get());
   if (!source_texture_fence_) {
     return NotifyError(
         {EncoderStatus::Codes::kD3D12CreateFenceFailed,
@@ -985,10 +1008,7 @@ void D3D12VideoEncodeAccelerator::OnCommandBufferHelperAvailable(
 
   // Resolve frames in the queue that are waiting for command buffer
   // availability.
-  encoder_task_runner_->PostTask(
-      FROM_HERE,
-      base::BindOnce(&D3D12VideoEncodeAccelerator::ResolveQueuedSharedImages,
-                     encoder_weak_this_));
+  ResolveQueuedSharedImages();
 }
 
 void D3D12VideoEncodeAccelerator::SetCommandBufferHelperCB(
@@ -1003,10 +1023,12 @@ void D3D12VideoEncodeAccelerator::SetCommandBufferHelperCB(
   gpu_task_runner->PostTaskAndReplyWithResult(
       FROM_HERE,
       base::BindOnce(&GetCommandBufferHelperOnGpuThread,
-                     get_command_buffer_helper_cb),
-      base::BindOnce(
-          &D3D12VideoEncodeAccelerator::OnCommandBufferHelperAvailable,
-          child_weak_this_));
+                     get_command_buffer_helper_cb, device_),
+      base::BindPostTask(
+          encoder_task_runner_,
+          base::BindOnce(
+              &D3D12VideoEncodeAccelerator::OnCommandBufferHelperAvailable,
+              encoder_weak_this_)));
 }
 
 // This runs on the encoder task runner. It does not replace the original
