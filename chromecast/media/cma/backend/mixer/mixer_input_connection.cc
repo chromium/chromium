@@ -638,7 +638,12 @@ void MixerInputConnection::RestartPlaybackAt(int64_t timestamp, int64_t pts) {
 void MixerInputConnection::SetMediaPlaybackRate(double rate) {
   DCHECK(io_task_runner_->RunsTasksInCurrentSequence());
   LOG(INFO) << this << " SetMediaPlaybackRate rate=" << rate;
-  DCHECK_GT(rate, 0);
+  // Non-positive playback rates are invalid and can lead to out-of-bounds
+  // memory access (crbug.com/501659253).
+  if (rate <= 0) {
+    LOG(ERROR) << "Invalid playback rate: " << rate;
+    return;
+  }
 
   base::AutoLock lock(lock_);
   if (state_ == State::kGotEos || state_ == State::kRemoved) {
