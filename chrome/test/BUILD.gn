@@ -4954,6 +4954,7 @@ if (!is_android) {
           "//chrome/browser/chromeos/extensions/telemetry/api:browser_tests",
           "//chrome/browser/chromeos/extensions/vpn_provider",
           "//chrome/browser/chromeos/extensions/wm",
+          "//chrome/browser/extensions/api/enterprise_platform_keys_private:browser_tests",
           "//chrome/browser/policy:system_features_disable_list",
           "//chrome/browser/ui/webui/ash/parent_access:test_support",
           "//chromeos/ash/components/platform_keys",
