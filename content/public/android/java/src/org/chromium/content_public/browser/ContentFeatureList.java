@@ -70,6 +70,9 @@ public class ContentFeatureList {
     public static final String ANDROID_BLOCK_MISSPELLING_SUGGESTION_SPAN_IN_COMPOSITION_MODE =
             "AndroidBlockMisspellingSuggestionSpanInCompositionMode";
 
+    public static final String ANDROID_BLOCK_GRAMMAR_SUGGESTION_SPAN_IN_COMPOSITION_MODE =
+            "AndroidBlockGrammarSuggestionSpanInCompositionMode";
+
     public static final String HIDE_PASTE_POPUP_ON_GSB = "HidePastePopupOnGSB";
 
     public static final String INPUT_ON_VIZ = "InputOnViz";

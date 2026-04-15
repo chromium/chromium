@@ -35,6 +35,7 @@
 #include "third_party/blink/public/mojom/input/stylus_writing_gesture.mojom.h"
 #include "third_party/blink/public/platform/web_text_input_type.h"
 #include "ui/base/ime/ime_text_span.h"
+#include "ui/base/ime/mojom/ime_types_mojom_traits.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
 #include "content/public/android/content_jni_headers/ImeAdapterImpl_jni.h"
@@ -130,7 +131,7 @@ static void JNI_ImeAdapterImpl_AppendSuggestionSpan(
     int64_t ime_text_spans_ptr,
     int32_t start,
     int32_t end,
-    bool is_misspelling,
+    int32_t type,
     bool remove_on_finish_composing,
     int32_t underline_color,
     int32_t suggestion_highlight_color,
@@ -139,16 +140,16 @@ static void JNI_ImeAdapterImpl_AppendSuggestionSpan(
   DCHECK_GE(start, 0);
   DCHECK_GE(end, 0);
 
-  ui::ImeTextSpan::Type type =
-      is_misspelling ? ui::ImeTextSpan::Type::kMisspellingSuggestion
-                     : ui::ImeTextSpan::Type::kSuggestion;
+  ui::ImeTextSpan::Type ui_type =
+      mojo::EnumTraits<ui::mojom::ImeTextSpanType, ui::ImeTextSpan::Type>::
+          FromMojom(static_cast<ui::mojom::ImeTextSpanType>(type));
 
   std::vector<ui::ImeTextSpan>* ime_text_spans =
       reinterpret_cast<std::vector<ui::ImeTextSpan>*>(ime_text_spans_ptr);
   std::vector<std::string> suggestions_vec;
   AppendJavaStringArrayToStringVector(env, suggestions, &suggestions_vec);
   ui::ImeTextSpan ime_text_span = ui::ImeTextSpan(
-      type, static_cast<unsigned>(start), static_cast<unsigned>(end),
+      ui_type, static_cast<unsigned>(start), static_cast<unsigned>(end),
       ui::ImeTextSpan::Thickness::kThick,
       ui::ImeTextSpan::UnderlineStyle::kSolid, SK_ColorTRANSPARENT,
       static_cast<unsigned>(suggestion_highlight_color), suggestions_vec,

@@ -11697,6 +11697,13 @@ const FeatureEntry kFeatureEntries[] = {
      kOsAndroid,
      FEATURE_VALUE_TYPE(
          features::kAndroidBlockMisspellingSuggestionSpanInCompositionMode)},
+    {"android-block-grammar-suggestion-span-in-composition-mode",
+     flag_descriptions::kAndroidBlockGrammarSuggestionSpanInCompositionModeName,
+     flag_descriptions::
+         kAndroidBlockGrammarSuggestionSpanInCompositionModeDescription,
+     kOsAndroid,
+     FEATURE_VALUE_TYPE(
+         features::kAndroidBlockGrammarSuggestionSpanInCompositionMode)},
 #endif
 
 #if !BUILDFLAG(IS_ANDROID)

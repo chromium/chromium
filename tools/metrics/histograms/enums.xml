@@ -15775,6 +15775,8 @@ from previous Chrome versions.
   <int value="576878329" label="enable-background-blur"/>
   <int value="577867979"
       label="CertificateTransparencyIgnoreOcspScts:disabled"/>
+  <int value="578267279"
+      label="AndroidBlockGrammarSuggestionSpanInCompositionMode:enabled"/>
   <int value="578633424" label="HistoryClustersHideVisits:disabled"/>
   <int value="578695119" label="ImprovedCookieControls:disabled"/>
   <int value="578894559" label="IPH_Snooze:enabled"/>
@@ -18233,6 +18235,8 @@ from previous Chrome versions.
       label="AuthenticateUsingUserConsentVerifierInteropApi:enabled"/>
   <int value="1387925207" label="MlRelevanceScoring:enabled"/>
   <int value="1388323853" label="ModifierSplit:enabled"/>
+  <int value="1388430725"
+      label="AndroidBlockGrammarSuggestionSpanInCompositionMode:disabled"/>
   <int value="1388550916" label="EnableIframeForPix:disabled"/>
   <int value="1388726032" label="ChromeOSAmbientModeThrottleAnimation:enabled"/>
   <int value="1388776696" label="ReadAloudLanguagePackDownloading:enabled"/>

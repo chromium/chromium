@@ -71,6 +71,10 @@ BASE_FEATURE(kAndroidPkAutocorrectUnderline, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kAndroidBlockMisspellingSuggestionSpanInCompositionMode,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Blocks the grammar suggestion span in composition mode.
+BASE_FEATURE(kAndroidBlockGrammarSuggestionSpanInCompositionMode,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Warm up a spare renderer after each navigation on Android.
 BASE_FEATURE(kAndroidWarmUpSpareRendererWithTimeout,
              base::FEATURE_DISABLED_BY_DEFAULT);

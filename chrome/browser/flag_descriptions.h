@@ -5200,6 +5200,14 @@ inline constexpr char
         "When enabled, misspelling suggestion spans will be blocked when "
         "entering composition mode";
 
+inline constexpr char
+    kAndroidBlockGrammarSuggestionSpanInCompositionModeName[] =
+        "Block Android grammar suggestion span in composition mode";
+inline constexpr char
+    kAndroidBlockGrammarSuggestionSpanInCompositionModeDescription[] =
+        "When enabled, grammar suggestion spans will be blocked when "
+        "entering composition mode";
+
 inline constexpr char kAndroidSurfaceColorUpdateName[] =
     "Android surface color update.";
 inline constexpr char kAndroidSurfaceColorUpdateDescription[] =

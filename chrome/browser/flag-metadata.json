@@ -224,6 +224,14 @@
     "expiry_milestone": 150
   },
   {
+    "name": "android-block-grammar-suggestion-span-in-composition-mode",
+    "owners": [
+      "hdchuong@google.com",
+      "essential-inputs-team@google.com"
+    ],
+    "expiry_milestone": 155
+  },
+  {
     "name": "android-block-misspelling-suggestion-span-in-composition-mode",
     "owners": [
       "hdchuong@google.com",

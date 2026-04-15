@@ -55,6 +55,7 @@ import org.chromium.content_public.browser.ImeEventObserver;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.common.ContentFeatures;
 import org.chromium.ui.base.ime.TextInputType;
+import org.chromium.ui.mojom.ImeTextSpanType;
 import org.chromium.ui.test.util.TestViewAndroidDelegate;
 
 /** Unit tests for {@link ImeAdapterImpl}. */
@@ -62,6 +63,7 @@ import org.chromium.ui.test.util.TestViewAndroidDelegate;
 @Config(shadows = {ShadowToast.class})
 @DisableFeatures({
     ContentFeatures.ANDROID_PK_AUTOCORRECT_UNDERLINE,
+    ContentFeatureList.ANDROID_BLOCK_GRAMMAR_SUGGESTION_SPAN_IN_COMPOSITION_MODE,
     ContentFeatureList.ANDROID_BLOCK_MISSPELLING_SUGGESTION_SPAN_IN_COMPOSITION_MODE
 })
 public class ImeAdapterImplUnitTest {
@@ -413,11 +415,64 @@ public class ImeAdapterImplUnitTest {
                         /* spanPtr= */ eq(123L),
                         /* start= */ eq(0),
                         /* end= */ eq(5),
-                        /* isMisspelling= */ eq(true),
+                        /* type= */ eq(ImeTextSpanType.MISSPELLING_SUGGESTION),
                         /* removeOnFinishComposing= */ eq(false),
                         /* underlineColor= */ anyInt(),
                         /* suggestionHighlightColor= */ anyInt(),
                         /* suggestions= */ eq(suggestions),
+                        /* shouldHideSuggestionMenu= */ eq(true));
+    }
+
+    @Test
+    public void testPopulateImeTextSpansFromJava_GrammarSpanNotBlocked() {
+        ImeAdapterImpl adapter = new ImeAdapterImpl(mWebContentsImpl);
+        SpannableString text = new SpannableString("hello");
+        String[] suggestions = new String[] {"suggestion"};
+        SuggestionSpan span =
+                new SuggestionSpan(
+                        ApplicationProvider.getApplicationContext(),
+                        suggestions,
+                        SuggestionSpan.FLAG_GRAMMAR_ERROR);
+        text.setSpan(span, 0, 5, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+
+        adapter.populateImeTextSpansFromJava(text, 123L);
+
+        verify(mImeAdapterImplJni)
+                .appendSuggestionSpan(
+                        /* spanPtr= */ eq(123L),
+                        /* start= */ eq(0),
+                        /* end= */ eq(5),
+                        /* type= */ eq(ImeTextSpanType.GRAMMAR_SUGGESTION),
+                        /* removeOnFinishComposing= */ eq(false),
+                        /* underlineColor= */ anyInt(),
+                        /* suggestionHighlightColor= */ anyInt(),
+                        /* suggestions= */ eq(suggestions),
+                        /* shouldHideSuggestionMenu= */ eq(true));
+    }
+
+    @Test
+    public void testPopulateImeTextSpansFromJava_AutoCorrectionSpan() {
+        ImeAdapterImpl adapter = new ImeAdapterImpl(mWebContentsImpl);
+        SpannableString text = new SpannableString("hello");
+        SuggestionSpan span =
+                new SuggestionSpan(
+                        ApplicationProvider.getApplicationContext(),
+                        new String[] {"suggestion"},
+                        SuggestionSpan.FLAG_AUTO_CORRECTION);
+        text.setSpan(span, 0, 5, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+
+        adapter.populateImeTextSpansFromJava(text, 123L);
+
+        verify(mImeAdapterImplJni)
+                .appendSuggestionSpan(
+                        /* spanPtr= */ eq(123L),
+                        /* start= */ eq(0),
+                        /* end= */ eq(5),
+                        /* type= */ eq(ImeTextSpanType.AUTOCORRECT),
+                        /* removeOnFinishComposing= */ eq(false),
+                        /* underlineColor= */ anyInt(),
+                        /* suggestionHighlightColor= */ anyInt(),
+                        /* suggestions= */ eq(new String[0]),
                         /* shouldHideSuggestionMenu= */ eq(true));
     }
 
@@ -441,7 +496,34 @@ public class ImeAdapterImplUnitTest {
                         /* spanPtr= */ anyLong(),
                         /* start= */ anyInt(),
                         /* end= */ anyInt(),
-                        /* isMisspelling= */ anyBoolean(),
+                        /* type= */ anyInt(),
+                        /* removeOnFinishComposing= */ anyBoolean(),
+                        /* underlineColor= */ anyInt(),
+                        /* suggestionHighlightColor= */ anyInt(),
+                        /* suggestions= */ any(),
+                        /* shouldHideSuggestionMenu= */ anyBoolean());
+    }
+
+    @Test
+    @EnableFeatures(ContentFeatureList.ANDROID_BLOCK_GRAMMAR_SUGGESTION_SPAN_IN_COMPOSITION_MODE)
+    public void testPopulateImeTextSpansFromJava_GrammarSpanBlocked() {
+        ImeAdapterImpl adapter = new ImeAdapterImpl(mWebContentsImpl);
+        SpannableString text = new SpannableString("hello");
+        SuggestionSpan span =
+                new SuggestionSpan(
+                        ApplicationProvider.getApplicationContext(),
+                        new String[] {"suggestion"},
+                        SuggestionSpan.FLAG_GRAMMAR_ERROR);
+        text.setSpan(span, 0, 5, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+
+        adapter.populateImeTextSpansFromJava(text, 123L);
+
+        verify(mImeAdapterImplJni, never())
+                .appendSuggestionSpan(
+                        /* spanPtr= */ anyLong(),
+                        /* start= */ anyInt(),
+                        /* end= */ anyInt(),
+                        /* type= */ anyInt(),
                         /* removeOnFinishComposing= */ anyBoolean(),
                         /* underlineColor= */ anyInt(),
                         /* suggestionHighlightColor= */ anyInt(),

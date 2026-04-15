@@ -1925,6 +1925,10 @@ public class ImeAdapterImpl
                 ContentFeatureMap.isEnabled(
                         ContentFeatureList
                                 .ANDROID_BLOCK_MISSPELLING_SUGGESTION_SPAN_IN_COMPOSITION_MODE);
+        final boolean blockGrammarInComposition =
+                ContentFeatureMap.isEnabled(
+                        ContentFeatureList
+                                .ANDROID_BLOCK_GRAMMAR_SUGGESTION_SPAN_IN_COMPOSITION_MODE);
 
         SpannableString spannableString = ((SpannableString) text);
         CharacterStyle[] spans = spannableString.getSpans(0, text.length(), CharacterStyle.class);
@@ -1972,15 +1976,26 @@ public class ImeAdapterImpl
                         (suggestionSpan.getFlags() & SuggestionSpan.FLAG_EASY_CORRECT) != 0;
                 final boolean isMisspellingSpan =
                         (suggestionSpan.getFlags() & SuggestionSpan.FLAG_MISSPELLED) != 0;
+                final boolean isGrammarSpan =
+                        (suggestionSpan.getFlags() & SuggestionSpan.FLAG_GRAMMAR_ERROR) != 0;
                 final boolean isAutoCorrectionSpan =
                         (suggestionSpan.getFlags() & SuggestionSpan.FLAG_AUTO_CORRECTION) != 0;
 
-                if (!isEasyCorrectSpan && !isMisspellingSpan && !isAutoCorrectionSpan) continue;
+                if (!isEasyCorrectSpan
+                        && !isMisspellingSpan
+                        && !isGrammarSpan
+                        && !isAutoCorrectionSpan) {
+                    continue;
+                }
 
                 // Some IMEs (Gboard) require the additional suggestion spans with FLAG_MISSPELLED
                 // present in the surrounding text to guide their custom spell check bar. We should
                 // not report these "artificial" suggestion spans to Blink.
                 if (!isEasyCorrectSpan && isMisspellingSpan && blockMisspellingInComposition) {
+                    continue;
+                }
+
+                if (!isEasyCorrectSpan && isGrammarSpan && blockGrammarInComposition) {
                     continue;
                 }
 
@@ -1994,14 +2009,23 @@ public class ImeAdapterImpl
                 final int suggestionHighlightColor =
                         (underlineColor & 0x00FFFFFF) + (newAlpha << 24);
 
-                // In native side, we treat FLAG_AUTO_CORRECTION span as kMisspellingSuggestion
+                // In native side, we treat FLAG_AUTO_CORRECTION span as kAutocorrect
                 // marker with 0 suggestion.
+                @ImeTextSpanType.EnumType int type = ImeTextSpanType.SUGGESTION;
+                if (isAutoCorrectionSpan) {
+                    type = ImeTextSpanType.AUTOCORRECT;
+                } else if (isMisspellingSpan) {
+                    type = ImeTextSpanType.MISSPELLING_SUGGESTION;
+                } else if (isGrammarSpan) {
+                    type = ImeTextSpanType.GRAMMAR_SUGGESTION;
+                }
+
                 ImeAdapterImplJni.get()
                         .appendSuggestionSpan(
                                 imeTextSpans,
                                 spannableString.getSpanStart(suggestionSpan),
                                 spannableString.getSpanEnd(suggestionSpan),
-                                isMisspellingSpan || isAutoCorrectionSpan,
+                                type,
                                 removeOnFinishComposing,
                                 underlineColor,
                                 suggestionHighlightColor,
@@ -2085,7 +2109,7 @@ public class ImeAdapterImpl
                 long spanPtr,
                 int start,
                 int end,
-                boolean isMisspelling,
+                @ImeTextSpanType.EnumType int type,
                 boolean removeOnFinishComposing,
                 int underlineColor,
                 int suggestionHighlightColor,
