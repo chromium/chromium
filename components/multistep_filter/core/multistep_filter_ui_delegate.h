@@ -30,7 +30,7 @@ class MultistepFilterUiDelegate {
       std::optional<UrlFilterSuggestion> suggestion) = 0;
 
   // Returns true if suggestions should be suppressed for the given `url`.
-  virtual bool ShouldSuppressSuggestions(const GURL& url) = 0;
+  virtual bool ShouldSuppressSuggestions(const GURL& url) const = 0;
 
   virtual base::WeakPtr<MultistepFilterUiDelegate> GetWeakPtr() = 0;
 };

@@ -43,7 +43,10 @@ class MockFilterUiController : public FilterUiController {
               (std::optional<UrlFilterSuggestion> suggestion),
               (override));
   MOCK_METHOD(void, ClearSuggestion, (), (override));
-  MOCK_METHOD(bool, ShouldSuppressSuggestions, (const GURL& url), (override));
+  MOCK_METHOD(bool,
+              ShouldSuppressSuggestions,
+              (const GURL& url),
+              (const, override));
 };
 
 class MockMultistepFilterService : public MultistepFilterService {

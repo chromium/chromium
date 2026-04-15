@@ -67,7 +67,7 @@ class FilterUiController : public tabs::ContentsObservingTabFeature {
   virtual void ApplySuggestion();
 
   // Returns true if suggestions should be suppressed for the given URL.
-  virtual bool ShouldSuppressSuggestions(const GURL& url);
+  virtual bool ShouldSuppressSuggestions(const GURL& url) const;
 
   // Returns the UI data for the given `suggestion` and `time`.
   SuggestionUiData GetSuggestionUiData(const UrlFilterSuggestion& suggestion,

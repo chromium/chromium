@@ -16,6 +16,8 @@ source_set("multistep_filter") {
     sources += [
       "chrome_filter_navigation_observer.cc",
       "chrome_filter_navigation_observer.h",
+      "multistep_filter_ui_delegate_impl.cc",
+      "multistep_filter_ui_delegate_impl.h",
     ]
     deps += [
       "//base",
@@ -37,7 +39,10 @@ source_set("unit_tests") {
   deps = []
 
   if (!is_android && !is_ios) {
-    sources += [ "chrome_filter_navigation_observer_unittest.cc" ]
+    sources += [
+      "chrome_filter_navigation_observer_unittest.cc",
+      "multistep_filter_ui_delegate_impl_unittest.cc",
+    ]
     deps += [
       ":multistep_filter",
       "//base/test:test_support",

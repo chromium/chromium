@@ -9,6 +9,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ref.h"
 #include "chrome/browser/multistep_filter/core/multistep_filter_service_factory.h"
+#include "chrome/browser/multistep_filter/multistep_filter_ui_delegate_impl.h"
 #include "chrome/browser/multistep_filter/ui/filter_ui_controller.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/tabs/public/tab_features.h"
@@ -27,48 +28,6 @@ ChromeFilterNavigationObserver* ChromeFilterNavigationObserver::From(
     tabs::TabInterface* tab) {
   return Get(tab->GetUnownedUserDataHost());
 }
-
-namespace {
-
-class UiDelegateImpl : public MultistepFilterUiDelegate {
- public:
-  explicit UiDelegateImpl(tabs::TabInterface& tab) : tab_(tab) {}
-
-  void ClearSuggestion() override {
-    weak_ptr_factory_.InvalidateWeakPtrs();
-    if (auto* controller = GetController()) {
-      controller->ClearSuggestion();
-    }
-  }
-
-  void OnSuggestionGenerated(
-      std::optional<UrlFilterSuggestion> suggestion) override {
-    if (auto* controller = GetController()) {
-      controller->OnSuggestionGenerated(std::move(suggestion));
-    }
-  }
-
-  bool ShouldSuppressSuggestions(const GURL& url) override {
-    if (auto* controller = GetController()) {
-      return controller->ShouldSuppressSuggestions(url);
-    }
-    return false;
-  }
-
-  base::WeakPtr<MultistepFilterUiDelegate> GetWeakPtr() override {
-    return weak_ptr_factory_.GetWeakPtr();
-  }
-
- private:
-  FilterUiController* GetController() {
-    return FilterUiController::From(&tab_.get());
-  }
-
-  raw_ref<tabs::TabInterface> tab_;
-  base::WeakPtrFactory<UiDelegateImpl> weak_ptr_factory_{this};
-};
-
-}  // namespace
 
 ChromeFilterNavigationObserver::ChromeFilterNavigationObserver(
     tabs::TabInterface& tab)
@@ -97,7 +56,7 @@ void ChromeFilterNavigationObserver::UpdateObserver(
       Profile::FromBrowserContext(web_contents->GetBrowserContext());
   observer_ = std::make_unique<FilterNavigationObserver>(
       web_contents, MultistepFilterServiceFactory::GetForProfile(profile),
-      std::make_unique<UiDelegateImpl>(tab()));
+      std::make_unique<MultistepFilterUiDelegateImpl>(tab()));
 }
 
 }  // namespace multistep_filter

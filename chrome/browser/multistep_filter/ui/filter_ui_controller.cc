@@ -106,7 +106,7 @@ void FilterUiController::ApplySuggestion() {
   NavigateTo(url);
 }
 
-bool FilterUiController::ShouldSuppressSuggestions(const GURL& url) {
+bool FilterUiController::ShouldSuppressSuggestions(const GURL& url) const {
   return dismissed_hosts_.contains(GetEtldPlusOne(url));
 }
 
