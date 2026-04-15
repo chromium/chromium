@@ -4976,6 +4976,11 @@
     "expiry_milestone": 160
   },
   {
+    "name": "gemini-multi-tab-context",
+    "owners": [ "joepeplowski@google.com", "bling-alchemy-eng@google.com" ],
+    "expiry_milestone": 153
+  },
+  {
     "name": "gemini-navigation-promo",
     "owners": [ "adamta@google.com", "bling-alchemy-eng@google.com" ],
     "expiry_milestone": 160

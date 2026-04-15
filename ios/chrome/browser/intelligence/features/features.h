@@ -394,4 +394,10 @@ BASE_DECLARE_FEATURE(kGeminiClientMigration);
 // Returns true if the GeminiClientMigration feature is enabled.
 bool IsGeminiClientMigrationEnabled();
 
+// Enables the GeminiMultiTabContext feature.
+BASE_DECLARE_FEATURE(kGeminiMultiTabContext);
+
+// Returns true if the GeminiMultiTabContext feature is enabled.
+bool IsGeminiMultiTabContextEnabled();
+
 #endif  // IOS_CHROME_BROWSER_INTELLIGENCE_FEATURES_FEATURES_H_

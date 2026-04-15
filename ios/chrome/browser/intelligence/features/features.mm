@@ -734,3 +734,12 @@ BASE_FEATURE(kGeminiClientMigration, base::FEATURE_DISABLED_BY_DEFAULT);
 bool IsGeminiClientMigrationEnabled() {
   return base::FeatureList::IsEnabled(kGeminiClientMigration);
 }
+
+BASE_FEATURE(kGeminiMultiTabContext, base::FEATURE_DISABLED_BY_DEFAULT);
+
+bool IsGeminiMultiTabContextEnabled() {
+  if (!IsPageActionMenuEnabled()) {
+    return false;
+  }
+  return base::FeatureList::IsEnabled(kGeminiMultiTabContext);
+}

@@ -746,6 +746,10 @@ const char kGeminiMapsRichUIName[] = "Gemini Maps Rich UI";
 const char kGeminiMapsRichUIDescription[] =
     "Enables the rich Maps UI in Gemini.";
 
+const char kGeminiMultiTabContextName[] = "Gemini Multi Tab Context";
+const char kGeminiMultiTabContextDescription[] =
+    "Enables attaching multiple tabs in Gemini.";
+
 const char kGeminiNavigationPromoName[] = "GeminiNavigationPromo";
 const char kGeminiNavigationPromoDescription[] =
     "Enables the automatic promo for Gemini on navigation.";

@@ -460,6 +460,9 @@ extern const char kGeminiLiveDescription[];
 extern const char kGeminiMapsRichUIName[];
 extern const char kGeminiMapsRichUIDescription[];
 
+extern const char kGeminiMultiTabContextName[];
+extern const char kGeminiMultiTabContextDescription[];
+
 extern const char kGeminiNavigationPromoName[];
 extern const char kGeminiNavigationPromoDescription[];
 
