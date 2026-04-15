@@ -140,7 +140,6 @@ public class GlicToolbarButtonController extends BaseButtonDataProvider
     }
 
     private ButtonSpec createWorkingSpec(Context context) {
-        // TODO(haileywang): Handle other button states.
         LottieDrawable lottieDrawable = new LottieDrawable();
         LottieCompositionFactory.fromRawRes(context, R.raw.glic_spinner)
                 .addListener(
@@ -256,35 +255,14 @@ public class GlicToolbarButtonController extends BaseButtonDataProvider
         }
 
         ActorTask task = mCurrentActorService.getCurrentActiveTask();
-        if (task == null) {
-            // Fallback to DONE state if it was persisted, otherwise DEFAULT.
-            mButtonState = mPersistDoneState ? ButtonState.DONE : ButtonState.DEFAULT;
-            return;
-        }
-
-        mPersistDoneState = false;
-        @ActorTaskState int state = task.getState();
-        switch (state) {
-            case ActorTaskState.WAITING_ON_USER:
-            case ActorTaskState.FAILED:
-                mButtonState = ButtonState.NEEDS_REVIEW;
-                break;
-            case ActorTaskState.FINISHED:
-                mButtonState = ButtonState.DONE;
-                mPersistDoneState = true;
-                break;
-            case ActorTaskState.ACTING:
-            case ActorTaskState.REFLECTING:
-            case ActorTaskState.PAUSED_BY_USER:
-            case ActorTaskState.PAUSED_BY_ACTOR:
-                mButtonState = ButtonState.WORKING;
-                break;
-            case ActorTaskState.CANCELLED:
-            case ActorTaskState.CREATED:
-                mButtonState = ButtonState.DEFAULT;
-                break;
-            default:
-                throw new AssertionError("Unexpected task state: " + state);
+        if (task != null) {
+            @ActorTaskState int state = task.getState();
+            mButtonState = mapTaskStateToButtonState(state);
+            mPersistDoneState = (mButtonState == ButtonState.DONE);
+        } else if (mPersistDoneState) {
+            mButtonState = ButtonState.DONE;
+        } else {
+            mButtonState = ButtonState.DEFAULT;
         }
     }
 
@@ -298,6 +276,26 @@ public class GlicToolbarButtonController extends BaseButtonDataProvider
         if (mIsPanelOpen != isOpen) {
             mIsPanelOpen = isOpen;
             notifyObservers(true);
+        }
+    }
+
+    private @ButtonState int mapTaskStateToButtonState(@ActorTaskState int taskState) {
+        switch (taskState) {
+            case ActorTaskState.WAITING_ON_USER:
+            case ActorTaskState.FAILED:
+                return ButtonState.NEEDS_REVIEW;
+            case ActorTaskState.FINISHED:
+                return ButtonState.DONE;
+            case ActorTaskState.ACTING:
+            case ActorTaskState.REFLECTING:
+            case ActorTaskState.PAUSED_BY_USER:
+            case ActorTaskState.PAUSED_BY_ACTOR:
+                return ButtonState.WORKING;
+            case ActorTaskState.CANCELLED:
+            case ActorTaskState.CREATED:
+                return ButtonState.DEFAULT;
+            default:
+                throw new AssertionError("Unexpected task state: " + taskState);
         }
     }
 
@@ -363,7 +361,10 @@ public class GlicToolbarButtonController extends BaseButtonDataProvider
     @Override
     public void onTaskStateChanged(int taskId, @ActorTaskState int newState) {
         int oldButtonState = mButtonState;
-        updateButtonState();
+
+        mButtonState = mapTaskStateToButtonState(newState);
+        mPersistDoneState = (mButtonState == ButtonState.DONE);
+
         if (mButtonState != oldButtonState) {
             notifyObservers(true);
         }

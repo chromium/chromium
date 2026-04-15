@@ -203,6 +203,31 @@ public class GlicToolbarButtonControllerTest {
     }
 
     @Test
+    public void testTaskState_Done_FromNotificationOnly() {
+        GlicToolbarButtonController controller =
+                new GlicToolbarButtonController(
+                        mContext, () -> mTab, mToggleGlicCallback, () -> mTracker, () -> null);
+        controller.addObserver(mObserver);
+
+        controller.get(mTab);
+        verify(mActorService).addObserver(mActorObserverCaptor.capture());
+        ActorKeyedService.Observer actorObserver = mActorObserverCaptor.getValue();
+
+        // Mock that the service returns null (task is gone).
+        when(mActorService.getCurrentActiveTask()).thenReturn(null);
+
+        // Trigger state change to FINISHED.
+        actorObserver.onTaskStateChanged(1, ActorTaskState.FINISHED);
+
+        // Verify that the state becomes DONE.
+        ButtonData buttonData = controller.get(mTab);
+        Assert.assertEquals(
+                mContext.getString(R.string.glic_button_status_done),
+                mContext.getString(buttonData.getButtonSpec().getActionChipLabelResId()));
+        verify(mObserver).buttonDataChanged(true);
+    }
+
+    @Test
     public void testTaskState_Done_ClearedOnClick() {
         GlicToolbarButtonController controller =
                 new GlicToolbarButtonController(
