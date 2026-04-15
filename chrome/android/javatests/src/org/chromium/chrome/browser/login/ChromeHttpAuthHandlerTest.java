@@ -29,7 +29,6 @@ import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
-import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.autofill.AndroidAutofillAvailabilityStatus;
 import org.chromium.chrome.browser.autofill.AutofillClientProviderUtils;
 import org.chromium.chrome.browser.customtabs.CustomTabActivityTestRule;
@@ -118,7 +117,6 @@ public class ChromeHttpAuthHandlerTest {
 
     @Test
     @MediumTest
-    @Restriction(Restriction.RESTRICTION_TYPE_NON_LOW_END_DEVICE)
     @DisabledTest(message = "https://crbug.com/1218039")
     public void authDialogSuppressedOnBackgroundTab() throws Exception {
         Tab firstTab = mActivityTestRule.getActivityTab();

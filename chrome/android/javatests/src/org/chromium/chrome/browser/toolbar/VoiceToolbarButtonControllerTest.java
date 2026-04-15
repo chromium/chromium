@@ -19,7 +19,6 @@ import static org.mockito.Mockito.eq;
 import static org.mockito.Mockito.verify;
 
 import static org.chromium.base.test.transit.ViewFinder.waitForNoView;
-import static org.chromium.base.test.util.Restriction.RESTRICTION_TYPE_NON_LOW_END_DEVICE;
 import static org.chromium.chrome.browser.url_constants.UrlConstantResolver.getOriginalNativeNtpUrl;
 import static org.chromium.ui.test.util.ViewUtils.onViewWaiting;
 
@@ -40,7 +39,6 @@ import org.mockito.junit.MockitoRule;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.Features.EnableFeatures;
-import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.omnibox.LocationBarCoordinator;
@@ -123,7 +121,6 @@ public final class VoiceToolbarButtonControllerTest {
 
     @Test
     @MediumTest
-    @Restriction(RESTRICTION_TYPE_NON_LOW_END_DEVICE)
     public void testVoiceButtonInToolbarIsDisabledOnNtp() {
         // Ensure the button starts visible.
         ViewUtils.waitForVisibleView(
@@ -151,7 +148,6 @@ public final class VoiceToolbarButtonControllerTest {
 
     @Test
     @MediumTest
-    @Restriction(RESTRICTION_TYPE_NON_LOW_END_DEVICE)
     public void testVoiceButtonDisabledOnIncognito() {
         // Ensure the button starts visible.
         ViewUtils.waitForVisibleView(
@@ -168,7 +164,6 @@ public final class VoiceToolbarButtonControllerTest {
 
     @Test
     @MediumTest
-    @Restriction(RESTRICTION_TYPE_NON_LOW_END_DEVICE)
     public void testVoiceButtonInToolbarIsDisabledDuringModal() {
         // Ensure the button starts visible.
         ViewUtils.waitForVisibleView(
@@ -227,7 +222,6 @@ public final class VoiceToolbarButtonControllerTest {
 
     @Test
     @MediumTest
-    @Restriction(RESTRICTION_TYPE_NON_LOW_END_DEVICE)
     public void testVoiceButtonInToolbarStartsVoiceRecognition() {
         onViewWaiting(
                         allOf(

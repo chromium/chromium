@@ -19,7 +19,6 @@ import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
-import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.contextualsearch.ContextualSearchManager;
 import org.chromium.chrome.browser.ephemeraltab.EphemeralTabCoordinator;
@@ -49,7 +48,6 @@ import java.util.concurrent.TimeoutException;
  * FocusedEditableTextFieldZoomTest and TabsTest.
  */
 @RunWith(ChromeJUnit4ClassRunner.class)
-@Restriction(Restriction.RESTRICTION_TYPE_NON_LOW_END_DEVICE)
 public class PreviewTabTest {
     @Rule
     public FreshCtaTransitTestRule mActivityTestRule =

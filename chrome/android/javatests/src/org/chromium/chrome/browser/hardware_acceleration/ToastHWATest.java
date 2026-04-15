@@ -4,8 +4,6 @@
 
 package org.chromium.chrome.browser.hardware_acceleration;
 
-import static org.chromium.base.test.util.Restriction.RESTRICTION_TYPE_NON_LOW_END_DEVICE;
-
 import android.content.Context;
 import android.view.View;
 
@@ -29,7 +27,6 @@ import org.chromium.base.task.TaskTraits;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.DisabledTest;
-import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.download.DownloadTestRule;
 import org.chromium.chrome.browser.firstrun.FirstRunStatus;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
@@ -159,7 +156,6 @@ public class ToastHWATest {
 
     @Test
     @SmallTest
-    @Restriction(RESTRICTION_TYPE_NON_LOW_END_DEVICE)
     public void testToastAcceleration() throws Exception {
         // Toasts created on high-end devices should be HW accelerated.
         Assert.assertTrue(isToastAcceleratedWithContext(mActivityTestRule.getActivity()));
