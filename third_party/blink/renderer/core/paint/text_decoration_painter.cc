@@ -177,7 +177,7 @@ void TextDecorationPainter::PaintUnderOrOverLineDecorations(
             continue;
           }
 
-          if (decoration.HasUnderline() && decoration_info.FontData() &&
+          if (decoration.HasUnderline() && decoration.font_data &&
               EnumHasFlags(lines_to_paint, TextDecorationLine::kUnderline)) {
             DecorationGeometry geometry =
                 decoration_info.ComputeUnderlineLineData(decoration,
@@ -192,7 +192,7 @@ void TextDecorationPainter::PaintUnderOrOverLineDecorations(
                 auto_dark_mode);
           }
 
-          if (decoration.HasOverline() && decoration_info.FontData() &&
+          if (decoration.HasOverline() && decoration.font_data &&
               EnumHasFlags(lines_to_paint, TextDecorationLine::kOverline)) {
             DecorationGeometry geometry =
                 decoration_info.ComputeOverlineLineData(decoration,

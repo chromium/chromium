@@ -256,19 +256,13 @@ const ResolvedDecoration TextDecorationInfo::UpdateForDecorationIndex() {
   }
 
   // Compute the |Font| and its properties.
-  const Font* font =
-      font_override_ ? font_override_ : decorating_box_style_->GetFont();
-  DCHECK(font);
-  if (font != font_) {
-    font_ = font;
-    computed_font_size_ = font->GetFontDescription().ComputedSize();
-
-    const SimpleFontData* font_data = font->PrimaryFont();
-    if (font_data != font_data_) {
-      font_data_ = font_data;
-      ascent_ = font_data ? font_data->GetFontMetrics().FloatAscent() : 0;
-    }
-  }
+  font_ = font_override_ ? font_override_ : decorating_box_style_->GetFont();
+  DCHECK(font_);
+  const SimpleFontData* font_data = font_->PrimaryFont();
+  decoration.font_data = font_data;
+  decoration.computed_font_size = font_->GetFontDescription().ComputedSize();
+  decoration.ascent =
+      font_data ? font_data->GetFontMetrics().FloatAscent() : 0.f;
 
   decoration.resolved_thickness = ComputeThickness(decoration);
   return decoration;
@@ -371,8 +365,8 @@ DecorationGeometry TextDecorationInfo::ComputeUnderlineLineData(
     line_offset = applied_text_decoration_->UnderlineOffset();
   }
   float paint_underline_offset = decoration_offset.ComputeUnderlineOffset(
-      FlippedUnderlinePosition(), ComputedFontSize(), FontData(), line_offset,
-      decoration.resolved_thickness);
+      FlippedUnderlinePosition(), decoration.computed_font_size,
+      decoration.font_data, line_offset, decoration.resolved_thickness);
   if (use_decorating_box_) {
     // The offset is for the decorating box. Convert it for the target text/box.
     paint_underline_offset += OffsetFromDecoratingBox();
@@ -397,7 +391,7 @@ DecorationGeometry TextDecorationInfo::ComputeOverlineLineData(
   }
   const int paint_overline_offset =
       decoration_offset.ComputeUnderlineOffsetForUnder(
-          line_offset, TargetStyle().ComputedFontSize(), FontData(),
+          line_offset, TargetStyle().ComputedFontSize(), decoration.font_data,
           decoration.resolved_thickness, position);
   return ComputeLineData(decoration, TextDecorationLine::kOverline,
                          paint_overline_offset);
@@ -410,7 +404,7 @@ DecorationGeometry TextDecorationInfo::ComputeLineThroughLineData(
   // in both directions from its origin, subtract half the thickness to keep
   // it centered at the same origin.
   const float line_through_offset =
-      2 * Ascent() / 3 - decoration.resolved_thickness / 2;
+      2 * decoration.ascent / 3 - decoration.resolved_thickness / 2;
   return ComputeLineData(decoration, TextDecorationLine::kLineThrough,
                          line_through_offset);
 }
@@ -424,8 +418,8 @@ DecorationGeometry TextDecorationInfo::ComputeSpellingOrGrammarErrorLineData(
   DCHECK(!decoration.HasLineThrough());
   DCHECK(applied_text_decoration_);
   const int paint_underline_offset = decoration_offset.ComputeUnderlineOffset(
-      FlippedUnderlinePosition(), TargetStyle().ComputedFontSize(), FontData(),
-      Length(), decoration.resolved_thickness);
+      FlippedUnderlinePosition(), decoration.computed_font_size,
+      decoration.font_data, Length(), decoration.resolved_thickness);
   return ComputeLineData(decoration,
                          decoration.HasSpellingError()
                              ? TextDecorationLine::kSpellingError
@@ -477,7 +471,8 @@ float TextDecorationInfo::ComputeThickness(
 #endif
   }
   const float thickness = ComputeDecorationThickness(
-      applied_text_decoration_->Thickness(), computed_font_size_, font_data_);
+      applied_text_decoration_->Thickness(), decoration.computed_font_size,
+      decoration.font_data);
   const float minimum_thickness = minimum_thickness_is_one_ ? 1.0f : 0.0f;
   return std::max(minimum_thickness, thickness);
 }

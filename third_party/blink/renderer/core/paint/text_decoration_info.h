@@ -49,7 +49,10 @@ struct ResolvedDecoration {
   STACK_ALLOCATED();
 
  public:
+  const SimpleFontData* font_data = nullptr;
   TextDecorationLine lines = TextDecorationLine::kNone;
+  float ascent = 0.f;
+  float computed_font_size = 0.f;
   float resolved_thickness = 0.f;
   bool has_underline = false;
   bool has_overline = false;
@@ -134,8 +137,6 @@ class CORE_EXPORT TextDecorationInfo {
     return local_origin_.line_over.ToFloat() + target_ascent_;
   }
 
-  // |ResolveDecorationAt| may change the results of these methods.
-  const SimpleFontData* FontData() const { return font_data_; }
   Color LineColor(const ResolvedDecoration& decoration) const;
 
   // Overrides the line color with the given topmost active highlight ‘color’
@@ -153,8 +154,6 @@ class CORE_EXPORT TextDecorationInfo {
   LayoutUnit Width() const { return width_; }
 
   // |ResolveDecorationAt| may change the results of these methods.
-  float ComputedFontSize() const { return computed_font_size_; }
-  float Ascent() const { return ascent_; }
   ResolvedUnderlinePosition FlippedUnderlinePosition() const {
     return flipped_underline_position_;
   }
@@ -177,7 +176,6 @@ class CORE_EXPORT TextDecorationInfo {
       TextDecorationLine::kNone;
   const Color selection_decoration_color_;
   const Font* font_ = nullptr;
-  const SimpleFontData* font_data_ = nullptr;
 
   // These "overrides" fields force using the specified style or font instead
   // of the one from the decorating box. Note that using them means that the
@@ -190,10 +188,6 @@ class CORE_EXPORT TextDecorationInfo {
   const LayoutUnit width_;
   const float target_ascent_ = 0.f;
   const float scaling_factor_;
-
-  // Cached properties for the current |decoration_index_|.
-  float ascent_ = 0.f;
-  float computed_font_size_ = 0.f;
 
   wtf_size_t decoration_index_ = 0;
 
