@@ -137,6 +137,34 @@ suite('Logger', () => {
     assertEquals(1, metrics.getCallCount('recordEmptyState'));
   });
 
+  test('when hidden does not log new page', () => {
+    logger.setHidden(true);
+    logger.logNewPage(false);
+    logger.logNewPage(true);
+
+    assertEquals(0, metrics.getCallCount('recordNewPage'));
+    assertEquals(0, metrics.getCallCount('recordNewPageWithSpeech'));
+
+    logger.setHidden(false);
+    logger.logNewPage(false);
+    logger.logNewPage(true);
+
+    assertEquals(1, metrics.getCallCount('recordNewPage'));
+    assertEquals(1, metrics.getCallCount('recordNewPageWithSpeech'));
+  });
+
+  test('when hidden does not log empty state', () => {
+    logger.setHidden(true);
+    logger.logEmptyState();
+
+    assertEquals(0, metrics.getCallCount('recordEmptyState'));
+
+    logger.setHidden(false);
+    logger.logEmptyState();
+
+    assertEquals(1, metrics.getCallCount('recordEmptyState'));
+  });
+
   test('line focus session with flag enabled', () => {
     chrome.readingMode.isLineFocusEnabled = true;
     logger.logLineFocusSession();
