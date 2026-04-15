@@ -27,6 +27,7 @@ specific_include_rules = {
     "+remoting/protocol",
   ],
   "ash_mojom_video_consumer.*": [
+    "+media/base",
     "+media/capture/mojom/video_capture_buffer.mojom.h",
   ],
   "frame_sink_desktop_capturer.*": [

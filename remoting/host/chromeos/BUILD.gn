@@ -143,6 +143,7 @@ source_set("unit_tests") {
   testonly = true
 
   sources = [
+    "ash_mojom_video_consumer_unittest.cc",
     "audio_helper_chromeos_impl_unittest.cc",
     "clipboard_aura_unittest.cc",
     "file_session_storage_unittest.cc",
