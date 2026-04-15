@@ -337,8 +337,8 @@ TerminalPrivateOpenTerminalProcessFunction::OpenProcess(
     args->insert(args->begin(), kVmShellCommand);
     base::CommandLine params_args(*args);
     VLOG(1) << "Original cmdline= " << params_args.GetCommandLineString();
-    std::string owner_id =
-        GetSwitch(params_args, &cmdline, kSwitchOwnerId, user_id_hash);
+    // Do not use GetSwitch for kSwitchOwnerId. Force the trusted value.
+    cmdline.AppendSwitchASCII(kSwitchOwnerId, user_id_hash);
     std::string vm_name = GetSwitch(params_args, &cmdline, kSwitchVmName,
                                     crostini::kCrostiniDefaultVmName);
     std::string container_name =
