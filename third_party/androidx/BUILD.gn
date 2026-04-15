@@ -2290,7 +2290,6 @@ if (!limit_android_deps) {
       ":androidx_lifecycle_lifecycle_viewmodel_ktx_java",
       ":androidx_savedstate_savedstate_compose_java",
       ":androidx_savedstate_savedstate_ktx_java",
-      ":androidx_transition_transition_java",
       ":androidx_window_window_java",
       "//third_party/android_deps:org_jetbrains_kotlinx_kotlinx_coroutines_android_java",
       "//third_party/android_deps:org_jetbrains_kotlinx_kotlinx_coroutines_core_java",
