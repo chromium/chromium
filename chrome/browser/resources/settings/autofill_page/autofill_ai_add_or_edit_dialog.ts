@@ -457,14 +457,11 @@ export class SettingsAutofillAiAddOrEditDialogElement extends
   }
 
   private walletManageYourInfoUrl_(entityType: EntityType): string {
-    // Distinguish between public and private passes. Unfortunately, the C++
-    // EntityTypeName enum is not available in TypeScript. 2 corresponds to
-    // kVehicle and 6 to kFlightReservation, the only two Wallet public passes.
-    // TODO(crbug.com/477845712): Find a cleaner way to make this distinction.
-    if (entityType.typeName === 2 || entityType.typeName === 6) {
-      return loadTimeData.getString('managePublicPassesUrl');
-    }
-    return loadTimeData.getString('managePrivatePassesUrl');
+    assert(entityType.passType);
+    return entityType.passType ===
+            chrome.autofillPrivate.EntityPassType.PUBLIC_PASS ?
+        loadTimeData.getString('managePublicPassesUrl') :
+        loadTimeData.getString('managePrivatePassesUrl');
   }
 
   private shouldHideFooterText_(footer: TrustedHTML): boolean {

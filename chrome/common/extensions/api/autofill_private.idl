@@ -185,6 +185,15 @@ namespace autofillPrivate {
     STRING
   };
 
+  // Entity types that have an equivalent in Wallet are referred to as "passes".
+  // This enum represents what kind of pass (if any) an entity type represents.
+  // Note that having a pass type doesn't imply that the entity is stored in
+  // Wallet. Local passes are supported by AutofillAi as well.
+  enum EntityPassType {
+    PUBLIC_PASS,
+    PRIVATE_PASS
+  };
+
   // Metadata about an autofill entry (address or credit card) which is used to
   // render a summary list of all entries.
   dictionary AutofillMetadata {
@@ -383,6 +392,9 @@ namespace autofillPrivate {
     // Note that an entity type might support Wallet and local storage
     // as well. (e.g. Vehicle).
     boolean supportsWalletStorage;
+    // What kind of pass the entity type represents, if any. This field is not
+    // set for non-pass entities.
+    EntityPassType? passType;
   };
 
   // Contains date information: month, day and year.

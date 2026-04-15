@@ -176,6 +176,11 @@ declare global {
         STRING = 'STRING',
       }
 
+      export enum EntityPassType {
+        PUBLIC_PASS = 'PUBLIC_PASS',
+        PRIVATE_PASS = 'PRIVATE_PASS',
+      }
+
       export interface AutofillMetadata {
         summaryLabel: string;
         summarySublabel?: string;
@@ -258,6 +263,7 @@ declare global {
         editEntityTypeString: string;
         deleteEntityTypeString: string;
         supportsWalletStorage: boolean;
+        passType?: EntityPassType;
       }
 
       export interface DateValue {

@@ -277,6 +277,7 @@ suite('DataChipsVisibility', function() {
         editEntityTypeString: 'Edit passport',
         deleteEntityTypeString: 'Delete passport',
         supportsWalletStorage: false,
+        passType: chrome.autofillPrivate.EntityPassType.PRIVATE_PASS,
       },
       {
         typeName: 1,
@@ -285,6 +286,7 @@ suite('DataChipsVisibility', function() {
         editEntityTypeString: 'Edit driver\'s license',
         deleteEntityTypeString: 'Delete driver\'s license',
         supportsWalletStorage: false,
+        passType: chrome.autofillPrivate.EntityPassType.PRIVATE_PASS,
       },
       {
         typeName: 2,
@@ -293,6 +295,7 @@ suite('DataChipsVisibility', function() {
         editEntityTypeString: 'Edit vehicle',
         deleteEntityTypeString: 'Delete vehicle',
         supportsWalletStorage: false,
+        passType: chrome.autofillPrivate.EntityPassType.PUBLIC_PASS,
       },
     ]);
     EntityDataManagerProxyImpl.setInstance(entityDataManager);
@@ -439,6 +442,7 @@ suite('DataChipsVisibility', function() {
           editEntityTypeString: 'Edit ID',
           deleteEntityTypeString: 'Delete ID',
           supportsWalletStorage: false,
+          passType: chrome.autofillPrivate.EntityPassType.PRIVATE_PASS,
         },
         entityInstanceLabel: 'John Doe',
         entityInstanceSubLabel: 'ID card',

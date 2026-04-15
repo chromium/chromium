@@ -39,6 +39,7 @@ suite('AutofillAiAddOrEditDialogUiTest', function() {
         editEntityTypeString: 'Edit vehicle',
         deleteEntityTypeString: 'Delete vehicle',
         supportsWalletStorage: true,
+        passType: chrome.autofillPrivate.EntityPassType.PUBLIC_PASS,
       },
       attributeInstances: [
         {
@@ -532,6 +533,7 @@ suite('AutofillAiAddOrEditDialogSelectElementUiTest', function() {
         editEntityTypeString: 'Edit passport',
         deleteEntityTypeString: 'Delete passport',
         supportsWalletStorage: false,
+        passType: chrome.autofillPrivate.EntityPassType.PRIVATE_PASS,
       },
       attributeInstances: [],
       guid: 'e4bbe384-ee63-45a4-8df3-713a58fdc181',

@@ -91,18 +91,12 @@ void EntityInstanceToPrivateApiEntityInstanceWithLabels(
         output.emplace_back();
     entity_instance_with_labels.guid = *entity_instance.guid();
 
-    const EntityType entity_type = entity_instance.type();
-    entity_instance_with_labels.type.type_name =
-        std::to_underlying(entity_type.name());
-    entity_instance_with_labels.type.type_name_as_string =
-        base::UTF16ToUTF8(entity_type.GetNameForI18n());
-    entity_instance_with_labels.type.add_entity_type_string =
-        autofill::GetAddEntityTypeStringForI18n(entity_type);
-    entity_instance_with_labels.type.edit_entity_type_string =
-        autofill::GetEditEntityTypeStringForI18n(entity_type);
-    entity_instance_with_labels.type.delete_entity_type_string =
-        autofill::GetDeleteEntityTypeStringForI18n(entity_type);
-
+    // TODO(crbug.com/477845712): Pass a proper value for
+    // supports_wallet_storage. Currently, the value doesn't matter, because
+    // EntityInstanceWithLabels is only used for displaying the list of existing
+    // entities, which are already stored either locally or in Wallet.
+    entity_instance_with_labels.type = EntityTypeToPrivateApiEntityType(
+        entity_instance.type(), /*supports_wallet_storage=*/false);
     entity_instance_with_labels.entity_instance_label =
         base::UTF16ToUTF8(entity_instance.type().GetNameForI18n());
     entity_instance_with_labels.entity_instance_sub_label = base::UTF16ToUTF8(
@@ -276,24 +270,14 @@ autofill_private::EntityInstance EntityInstanceToPrivateApiEntityInstance(
   }
 
   autofill_private::EntityInstance private_api_entity_instance;
-  private_api_entity_instance.type.type_name =
-      std::to_underlying(entity_instance.type().name());
-  private_api_entity_instance.type.type_name_as_string =
-      base::UTF16ToUTF8(entity_instance.type().GetNameForI18n());
-  private_api_entity_instance.type.add_entity_type_string =
-      autofill::GetAddEntityTypeStringForI18n(entity_instance.type());
-  private_api_entity_instance.type.edit_entity_type_string =
-      autofill::GetEditEntityTypeStringForI18n(entity_instance.type());
-  private_api_entity_instance.type.delete_entity_type_string =
-      autofill::GetDeleteEntityTypeStringForI18n(entity_instance.type());
+  private_api_entity_instance.type = EntityTypeToPrivateApiEntityType(
+      entity_instance.type(), entity_supports_wallet_storage);
   private_api_entity_instance.attribute_instances =
       std::move(private_api_attribute_instances);
   private_api_entity_instance.guid = *entity_instance.guid();
   private_api_entity_instance.nickname = entity_instance.nickname();
   private_api_entity_instance.should_authenticate_to_view =
       should_authenticate_to_view;
-  private_api_entity_instance.type.supports_wallet_storage =
-      entity_supports_wallet_storage;
   private_api_entity_instance.stored_in_wallet =
       (entity_instance.record_type() ==
        EntityInstance::RecordType::kServerWallet);
@@ -335,6 +319,23 @@ api::autofill_private::EntityType EntityTypeToPrivateApiEntityType(
   api_type.delete_entity_type_string =
       autofill::GetDeleteEntityTypeStringForI18n(entity_type);
   api_type.supports_wallet_storage = supports_wallet_storage;
+  switch (entity_type.name()) {
+    case EntityTypeName::kPassport:
+    case EntityTypeName::kDriversLicense:
+    case EntityTypeName::kNationalIdCard:
+    case EntityTypeName::kKnownTravelerNumber:
+    case EntityTypeName::kRedressNumber:
+      api_type.pass_type = autofill_private::EntityPassType::kPrivatePass;
+      break;
+    case EntityTypeName::kVehicle:
+    case EntityTypeName::kFlightReservation:
+      api_type.pass_type = autofill_private::EntityPassType::kPublicPass;
+      break;
+    case EntityTypeName::kOrder:
+    case EntityTypeName::kShipment:
+      // pass_type is unset for non-pass type entities.
+      break;
+  }
   return api_type;
 }
 

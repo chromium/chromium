@@ -54,6 +54,7 @@ suite('AutofillAiEntriesListUiReflectsEligibilityStatus', function() {
           editEntityTypeString: 'Edit car',
           deleteEntityTypeString: 'Delete car',
           supportsWalletStorage: false,
+          passType: chrome.autofillPrivate.EntityPassType.PUBLIC_PASS,
         },
         entityInstanceLabel: 'Toyota',
         entityInstanceSubLabel: 'Car',
@@ -68,6 +69,7 @@ suite('AutofillAiEntriesListUiReflectsEligibilityStatus', function() {
           editEntityTypeString: 'Edit passport',
           deleteEntityTypeString: 'Delete passport',
           supportsWalletStorage: false,
+          passType: chrome.autofillPrivate.EntityPassType.PRIVATE_PASS,
         },
         entityInstanceLabel: 'John Doe',
         entityInstanceSubLabel: 'Passport',
@@ -403,6 +405,7 @@ suite('AutofillAiEntriesListUiTest', function() {
         editEntityTypeString: 'Edit driver\'s license',
         deleteEntityTypeString: 'Delete driver\'s license',
         supportsWalletStorage: false,
+        passType: chrome.autofillPrivate.EntityPassType.PUBLIC_PASS,
       },
       attributeInstances: [
         {
@@ -436,6 +439,7 @@ suite('AutofillAiEntriesListUiTest', function() {
         editEntityTypeString: 'Edit passport',
         deleteEntityTypeString: 'Delete passport',
         supportsWalletStorage: false,
+        passType: chrome.autofillPrivate.EntityPassType.PRIVATE_PASS,
       },
       {
         typeName: 6,
@@ -444,6 +448,7 @@ suite('AutofillAiEntriesListUiTest', function() {
         editEntityTypeString: '',
         deleteEntityTypeString: '',
         supportsWalletStorage: true,
+        passType: chrome.autofillPrivate.EntityPassType.PUBLIC_PASS,
       },
       {
         typeName: 2,
@@ -452,6 +457,7 @@ suite('AutofillAiEntriesListUiTest', function() {
         editEntityTypeString: 'Edit car',
         deleteEntityTypeString: 'Delete car',
         supportsWalletStorage: false,
+        passType: chrome.autofillPrivate.EntityPassType.PUBLIC_PASS,
       },
     ];
     // Initially not sorted alphabetically. The production code should sort them
@@ -962,6 +968,7 @@ suite('AutofillAiEntriesListUserActionsTest', function() {
         editEntityTypeString: 'Edit driver\'s license',
         deleteEntityTypeString: 'Delete driver\'s license',
         supportsWalletStorage: false,
+        passType: chrome.autofillPrivate.EntityPassType.PRIVATE_PASS,
       },
       attributeInstances: [],
       guid: 'd70b5bb7-49a6-4276-b4b7-b014dacdc9e6',
@@ -984,6 +991,7 @@ suite('AutofillAiEntriesListUserActionsTest', function() {
       editEntityTypeString: 'Edit flight reservation',
       deleteEntityTypeString: 'Delete flight reservation',
       supportsWalletStorage: false,
+      passType: chrome.autofillPrivate.EntityPassType.PUBLIC_PASS,
     }];
 
     entityDataManager.setGetOptInStatusResponse(true);
@@ -1040,6 +1048,7 @@ suite('AutofillAiEntriesListUserActionsTest', function() {
       editEntityTypeString: 'Edit driver\'s license',
       deleteEntityTypeString: 'Delete driver\'s license',
       supportsWalletStorage: false,
+      passType: chrome.autofillPrivate.EntityPassType.PRIVATE_PASS,
     }];
     entityDataManager.setGetWritableEntityTypesResponse(entityTypes);
     await createEntriesList(
@@ -1077,6 +1086,7 @@ suite('AutofillAiEntriesListUserActionsTest', function() {
       editEntityTypeString: 'Edit driver\'s license',
       deleteEntityTypeString: 'Delete driver\'s license',
       supportsWalletStorage: false,
+      passType: chrome.autofillPrivate.EntityPassType.PRIVATE_PASS,
     }];
     entityDataManager.setGetWritableEntityTypesResponse(entityTypes);
     await createEntriesList(
@@ -1132,6 +1142,7 @@ suite('AutofillAiEntriesListLongLabelsUiTest', function() {
           editEntityTypeString: 'Edit car',
           deleteEntityTypeString: 'Delete car',
           supportsWalletStorage: false,
+          passType: chrome.autofillPrivate.EntityPassType.PUBLIC_PASS,
         },
         entityInstanceLabel: 'A label'.repeat(100),
         entityInstanceSubLabel: 'Car',
@@ -1146,6 +1157,7 @@ suite('AutofillAiEntriesListLongLabelsUiTest', function() {
           editEntityTypeString: 'Edit passport',
           deleteEntityTypeString: 'Delete passport',
           supportsWalletStorage: false,
+          passType: chrome.autofillPrivate.EntityPassType.PRIVATE_PASS,
         },
         entityInstanceLabel: 'John Doe',
         entityInstanceSubLabel: 'Sublabel'.repeat(100),
@@ -1160,6 +1172,7 @@ suite('AutofillAiEntriesListLongLabelsUiTest', function() {
           editEntityTypeString: 'Edit passport',
           deleteEntityTypeString: 'Delete passport',
           supportsWalletStorage: false,
+          passType: chrome.autofillPrivate.EntityPassType.PRIVATE_PASS,
         },
         entityInstanceLabel: 'Mark Donald',
         entityInstanceSubLabel: 'Passport',

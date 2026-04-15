@@ -7,6 +7,7 @@
 // and failures are detected.
 
 const AttributeTypeDataType = chrome.autofillPrivate.AttributeTypeDataType;
+const EntityPassType = chrome.autofillPrivate.EntityPassType;
 
 // Constants for the tests.
 var FIRST_NAME = 'Firstname';
@@ -43,6 +44,7 @@ var ENTITY_INSTANCE = {
     editEntityTypeString: 'Edit driver\'s license',
     deleteEntityTypeString: 'Delete driver\'s license',
     supportsWalletStorage: false,
+    passType: EntityPassType.PRIVATE_PASS,
   },
   attributeInstances: [
     {
@@ -950,6 +952,7 @@ var availableTests = [
             editEntityTypeString: 'Edit driver\'s license',
             deleteEntityTypeString: 'Delete driver\'s license',
             supportsWalletStorage: false,
+            passType: EntityPassType.PRIVATE_PASS,
           },
           attributeInstances: [
             {
@@ -1000,6 +1003,7 @@ var availableTests = [
             editEntityTypeString: 'Edit passport',
             deleteEntityTypeString: 'Delete passport',
             supportsWalletStorage: false,
+            passType: EntityPassType.PRIVATE_PASS,
           },
           attributeInstances: [
             {
@@ -1041,6 +1045,7 @@ var availableTests = [
             editEntityTypeString: 'Edit passport',
             deleteEntityTypeString: 'Delete passport',
             supportsWalletStorage: false,
+            passType: EntityPassType.PRIVATE_PASS,
           },
           attributeInstances: [
             {
@@ -1082,6 +1087,7 @@ var availableTests = [
             editEntityTypeString: 'Edit passport',
             deleteEntityTypeString: 'Delete passport',
             supportsWalletStorage: false,
+            passType: EntityPassType.PRIVATE_PASS,
           },
           attributeInstances: [
             {
@@ -1133,6 +1139,7 @@ var availableTests = [
             editEntityTypeString: 'Edit vehicle',
             deleteEntityTypeString: 'Delete vehicle',
             supportsWalletStorage: false,
+            passType: EntityPassType.PUBLIC_PASS,
           },
           attributeInstances: [
             {
@@ -1166,6 +1173,7 @@ var availableTests = [
             editEntityTypeString: 'Edit vehicle',
             deleteEntityTypeString: 'Delete vehicle',
             supportsWalletStorage: false,
+            passType: EntityPassType.PUBLIC_PASS,
           },
           attributeInstances: [
             {
@@ -1231,6 +1239,7 @@ var availableTests = [
             editEntityTypeString: 'Edit passport',
             deleteEntityTypeString: 'Delete passport',
             supportsWalletStorage: false,
+            passType: EntityPassType.PRIVATE_PASS,
           },
           attributeInstances: [
             {
@@ -1259,6 +1268,7 @@ var availableTests = [
             editEntityTypeString: 'Edit passport',
             deleteEntityTypeString: 'Delete passport',
             supportsWalletStorage: false,
+            passType: EntityPassType.PRIVATE_PASS,
           },
           attributeInstances: [
             {
@@ -1383,6 +1393,7 @@ var availableTests = [
         editEntityTypeString: 'Edit passport',
         deleteEntityTypeString: 'Delete passport',
         supportsWalletStorage: false,
+        passType: EntityPassType.PRIVATE_PASS,
       },
       {
         typeName: 1,
@@ -1391,6 +1402,7 @@ var availableTests = [
         editEntityTypeString: 'Edit driver\'s license',
         deleteEntityTypeString: 'Delete driver\'s license',
         supportsWalletStorage: false,
+        passType: EntityPassType.PRIVATE_PASS,
       },
       {
         typeName: 2,
@@ -1399,6 +1411,7 @@ var availableTests = [
         editEntityTypeString: 'Edit vehicle',
         deleteEntityTypeString: 'Delete vehicle',
         supportsWalletStorage: false,
+        passType: EntityPassType.PUBLIC_PASS,
       },
     ];
     for (const index in expectedEntityTypesList) {
@@ -1568,6 +1581,7 @@ var availableTests = [
         editEntityTypeString: 'Edit passport',
         deleteEntityTypeString: 'Delete passport',
         supportsWalletStorage: false,
+        passType: EntityPassType.PRIVATE_PASS,
       },
       attributeInstances: [{
         type: {
@@ -1590,6 +1604,7 @@ var availableTests = [
         editEntityTypeString: 'Edit passport',
         deleteEntityTypeString: 'Delete passport',
         supportsWalletStorage: false,
+        passType: EntityPassType.PRIVATE_PASS,
       },
       attributeInstances: [{
         type: {

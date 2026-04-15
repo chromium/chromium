@@ -49,6 +49,7 @@ suite('AutofillAiSectionUiReflectsEligibilityStatus', function() {
           editEntityTypeString: 'Edit car',
           deleteEntityTypeString: 'Delete car',
           supportsWalletStorage: false,
+          passType: chrome.autofillPrivate.EntityPassType.PUBLIC_PASS,
         },
         entityInstanceLabel: 'Toyota',
         entityInstanceSubLabel: 'Car',
@@ -63,6 +64,7 @@ suite('AutofillAiSectionUiReflectsEligibilityStatus', function() {
           editEntityTypeString: 'Edit passport',
           deleteEntityTypeString: 'Delete passport',
           supportsWalletStorage: false,
+          passType: chrome.autofillPrivate.EntityPassType.PRIVATE_PASS,
         },
         entityInstanceLabel: 'John Doe',
         entityInstanceSubLabel: 'Passport',
@@ -218,6 +220,7 @@ suite('AutofillAiSectionUiTest', function() {
         editEntityTypeString: 'Edit driver\'s license',
         deleteEntityTypeString: 'Delete driver\'s license',
         supportsWalletStorage: false,
+        passType: chrome.autofillPrivate.EntityPassType.PRIVATE_PASS,
       },
       attributeInstances: [
         {
@@ -251,6 +254,7 @@ suite('AutofillAiSectionUiTest', function() {
         editEntityTypeString: 'Edit passport',
         deleteEntityTypeString: 'Delete passport',
         supportsWalletStorage: false,
+        passType: chrome.autofillPrivate.EntityPassType.PRIVATE_PASS,
       },
       {
         typeName: 2,
@@ -259,6 +263,7 @@ suite('AutofillAiSectionUiTest', function() {
         editEntityTypeString: 'Edit car',
         deleteEntityTypeString: 'Delete car',
         supportsWalletStorage: false,
+        passType: chrome.autofillPrivate.EntityPassType.PUBLIC_PASS,
       },
     ];
     // Initially not sorted alphabetically. The production code should sort them
