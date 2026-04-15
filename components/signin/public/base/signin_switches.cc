@@ -385,6 +385,10 @@ BASE_FEATURE(kEnableSearchAIModeSigninPromo, base::FEATURE_DISABLED_BY_DEFAULT);
 const base::FeatureParam<base::TimeDelta> kSearchAIModePromoPageLoadDelay{
     &kEnableSearchAIModeSigninPromo, "SearchAIModePromoPageLoadDelay",
     base::Seconds(4)};
+// The gap between impressions of the Signin AI Search Mode promo.
+const base::FeatureParam<base::TimeDelta> kSearchAIModePromoFrequency{
+    &kEnableSearchAIModeSigninPromo, "SearchAIModePromoFrequency",
+    base::Days(14)};
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 
 #if BUILDFLAG(IS_IOS)

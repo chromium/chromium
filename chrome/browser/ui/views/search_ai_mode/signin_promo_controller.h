@@ -22,8 +22,8 @@ class SearchAIModeSignInPromoController {
   SearchAIModeSignInPromoController& operator=(
       const SearchAIModeSignInPromoController&) = delete;
 
-  // Triggers the promo.
-  virtual void ShowPromo(BrowserView* browser_view);
+  // Triggers the promo, subject to eligibility conditions (rate limits).
+  virtual void MaybeShowPromo(BrowserView* browser_view);
 
   // Called when the bubble is closed.
   void OnBubbleClosed();

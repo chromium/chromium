@@ -25,6 +25,7 @@ source_set("signin") {
     public_deps += [
       "//chrome/browser:browser_process",
       "//chrome/browser/search_engine_choice",
+      "//chrome/browser/signin:signin_promo",
       "//chrome/browser/ui/browser_window",
       "//chrome/browser/ui/webui/signin:signin_utils",
       "//components/keyed_service/core",

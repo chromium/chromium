@@ -116,6 +116,9 @@ class SigninPrefs {
   void IncrementBookmarkSigninPromoImpressionCount(const GaiaId& gaia_id);
   int GetBookmarkSigninPromoImpressionCount(const GaiaId& gaia_id) const;
 
+  void IncrementSearchAIModeSigninPromoImpressionCount(const GaiaId& gaia_id);
+  int GetSearchAIModeSigninPromoImpressionCount(const GaiaId& gaia_id) const;
+
   void IncrementAutofillSigninPromoDismissCount(const GaiaId& gaia_id);
   int GetAutofillSigninPromoDismissCount(const GaiaId& gaia_id) const;
 
@@ -128,6 +131,9 @@ class SigninPrefs {
   void IncrementPasswordSigninPromoDismissCount(const GaiaId& gaia_id);
   int GetPasswordSigninPromoDismissCount(const GaiaId& gaia_id) const;
 
+  void IncrementSearchAIModeSigninPromoDismissCount(const GaiaId& gaia_id);
+  int GetSearchAIModeSigninPromoDismissCount(const GaiaId& gaia_id) const;
+
   void SetExtensionsExplicitBrowserSignin(const GaiaId& gaia_id, bool enabled);
   bool GetExtensionsExplicitBrowserSignin(const GaiaId& gaia_id) const;
 
@@ -139,6 +145,12 @@ class SigninPrefs {
       base::Time last_registration_failure_time);
   void ClearPolicyDisclaimerLastRegistrationFailureTime(const GaiaId& gaia_id);
   std::optional<base::Time> GetPolicyDisclaimerLastRegistrationFailureTime(
+      const GaiaId& gaia_id) const;
+
+  void SetSearchAIModeSigninPromoLastImpressionTime(
+      const GaiaId& gaia_id,
+      base::Time last_impression_time);
+  std::optional<base::Time> GetSearchAIModeSigninPromoLastImpressionTime(
       const GaiaId& gaia_id) const;
 
   // Sync promo on the avatar button.

@@ -4,9 +4,12 @@
 
 #include "chrome/browser/ui/views/search_ai_mode/signin_promo_controller.h"
 
+#include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/signin/signin_promo_util.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/toolbar_button_provider.h"
+#include "chrome/browser/ui/views/profiles/avatar_toolbar_button.h"
 #include "chrome/browser/ui/views/search_ai_mode/signin_promo_view.h"
 #include "chrome/browser/ui/views/toolbar/avatar_toolbar_button_interface.h"
 #include "chrome/grit/branded_strings.h"
@@ -23,22 +26,19 @@ SearchAIModeSignInPromoController::SearchAIModeSignInPromoController(
 SearchAIModeSignInPromoController::~SearchAIModeSignInPromoController() =
     default;
 
-void SearchAIModeSignInPromoController::ShowPromo(BrowserView* browser_view) {
-  // TODO(crbug.com/486858498): Implement a `ShouldShowSearchAIModeSignInPromo`
-  // method to check conditions for showing the promo based on rate limits and
-  // other criteria. Only if it return true invoke the present method.
+void SearchAIModeSignInPromoController::MaybeShowPromo(
+    BrowserView* browser_view) {
   CHECK(base::FeatureList::IsEnabled(switches::kEnableSearchAIModeSigninPromo));
-  if (promo_view_) {
-    return;
-  }
-  if (!browser_view) {
-    return;
-  }
+  CHECK(!promo_view_);
+  CHECK(browser_view);
+  CHECK(web_contents_);
+  AvatarToolbarButton* avatar_button =
+      browser_view->toolbar_button_provider()->GetAvatarToolbarButton();
+  CHECK(avatar_button);
 
-  AvatarToolbarButtonInterface* avatar_button =
-      browser_view->toolbar_button_provider()
-          ->GetAvatarToolbarButtonInterface();
-  if (!avatar_button) {
+  Profile* profile =
+      Profile::FromBrowserContext(web_contents_->GetBrowserContext());
+  if (!signin::ShouldShowSearchAIModeSignInPromo(*profile)) {
     return;
   }
 

@@ -8,6 +8,7 @@
 #include "base/memory/raw_ref.h"
 #include "base/scoped_observation.h"
 #include "build/build_config.h"
+#include "chrome/browser/signin/signin_promo.h"
 #include "components/signin/public/base/signin_buildflags.h"
 #include "components/signin/public/base/signin_prefs.h"
 #include "components/signin/public/identity_manager/account_info.h"
@@ -49,6 +50,9 @@ bool ShouldShowPasswordSignInPromo(Profile& profile);
 // Whether we should show the sign in promo after `address` was saved.
 bool ShouldShowAddressSignInPromo(Profile& profile,
                                   const autofill::AutofillProfile& address);
+
+// Returns true if the Search AI Mode sign in promo should be shown.
+bool ShouldShowSearchAIModeSignInPromo(Profile& profile);
 
 // Whether we should show the sign in promo after a bookmark was saved.
 bool ShouldShowBookmarkSignInPromo(Profile& profile);
@@ -96,6 +100,11 @@ struct ProfileMenuAvatarButtonPromoInfo {
                          const ProfileMenuAvatarButtonPromoInfo& info2) =
       default;
 };
+
+// Returns true if the sign-in promo for `promo_type` should use the legacy
+// global Autofill sign-in promo limits. This is true when the limits
+// experiment is disabled and the promo type is not Search AI Mode.
+bool ShouldUseAutofillSignInPromoLimits(signin::SignInPromoType promo_type);
 
 // Records the show count at which the AvatarButton was showing `promo_type`
 // for `gaia_id` that lead to the promo being accepted. `gaia_id` may be empty

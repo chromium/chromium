@@ -20,6 +20,7 @@
 #include "chrome/browser/contextual_tasks/contextual_tasks_utils.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
+#include "chrome/browser/signin/signin_promo_util.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_list.h"
@@ -264,6 +265,15 @@ void SearchAiModePromoTabHelper::DidFinishNavigation(
     return;
   }
 
+  Profile* profile =
+      Profile::FromBrowserContext(web_contents()->GetBrowserContext());
+  // If we know already that the promo cannot be shown (e.g. due to rate limits)
+  // abort the flow and self-destruct.
+  if (!signin::ShouldShowSearchAIModeSignInPromo(*profile)) {
+    SelfDestruct();
+    return;
+  }
+
   // Determine if the navigation was initiated from an AI search page.
   std::optional<base::WeakPtr<content::WebContents>> initiator =
       GetInitiatorWebContents(*navigation_handle);
@@ -315,7 +325,7 @@ void SearchAiModePromoTabHelper::MaybeShowPromo() {
         BrowserView::GetBrowserViewForBrowser(tab->GetBrowserWindowInterface());
     if (browser_view && identity_manager_) {
       identity_manager_scoped_observation_.Observe(identity_manager_);
-      signin_promo_controller_->ShowPromo(browser_view);
+      signin_promo_controller_->MaybeShowPromo(browser_view);
     }
   }
 

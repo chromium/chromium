@@ -208,7 +208,9 @@ signin_metrics::PromoAction GetPromoAction(bool is_signin_promo,
 void IncrementContextualPromoDismissCountPerSignedOutProfile(
     Profile* profile,
     signin_metrics::AccessPoint access_point) {
-  if (!base::FeatureList::IsEnabled(switches::kSigninPromoLimitsExperiment)) {
+  signin::SignInPromoType promo_type =
+      signin::GetSignInPromoTypeFromAccessPoint(access_point);
+  if (signin::ShouldUseAutofillSignInPromoLimits(promo_type)) {
     int dismiss_count = profile->GetPrefs()->GetInteger(
         prefs::kAutofillSignInPromoDismissCountPerProfile);
     profile->GetPrefs()->SetInteger(
@@ -216,8 +218,6 @@ void IncrementContextualPromoDismissCountPerSignedOutProfile(
     return;
   }
 
-  signin::SignInPromoType promo_type =
-      signin::GetSignInPromoTypeFromAccessPoint(access_point);
   switch (promo_type) {
     case signin::SignInPromoType::kPassword:
       return profile->GetPrefs()->SetInteger(
@@ -234,8 +234,11 @@ void IncrementContextualPromoDismissCountPerSignedOutProfile(
                   kAddressSignInPromoDismissCountPerProfileForLimitsExperiment) +
               1);
     case signin::SignInPromoType::kSearchAIMode:
-      // TODO(crbug.com/486858498): Implement prefs for rate limiting.
-      return;
+      return profile->GetPrefs()->SetInteger(
+          prefs::kSearchAIModeSignInPromoDismissCountPerProfile,
+          profile->GetPrefs()->GetInteger(
+              prefs::kSearchAIModeSignInPromoDismissCountPerProfile) +
+              1);
     case signin::SignInPromoType::kBookmark:
       CHECK(base::FeatureList::IsEnabled(syncer::kUnoPhase2FollowUp));
       return profile->GetPrefs()->SetInteger(
@@ -253,14 +256,14 @@ void IncrementContextualPromoDismissCountPerAccount(
     Profile* profile,
     signin_metrics::AccessPoint access_point,
     const AccountInfo& account) {
-  if (!base::FeatureList::IsEnabled(switches::kSigninPromoLimitsExperiment)) {
+  signin::SignInPromoType promo_type =
+      signin::GetSignInPromoTypeFromAccessPoint(access_point);
+  if (signin::ShouldUseAutofillSignInPromoLimits(promo_type)) {
     SigninPrefs(*profile->GetPrefs())
         .IncrementAutofillSigninPromoDismissCount(account.gaia);
     return;
   }
 
-  signin::SignInPromoType promo_type =
-      signin::GetSignInPromoTypeFromAccessPoint(access_point);
   switch (promo_type) {
     case signin::SignInPromoType::kPassword:
       SigninPrefs(*profile->GetPrefs())
@@ -276,7 +279,8 @@ void IncrementContextualPromoDismissCountPerAccount(
           .IncrementBookmarkSigninPromoDismissCount(account.gaia);
       break;
     case signin::SignInPromoType::kSearchAIMode:
-      // TODO(crbug.com/486858498): Implement prefs for rate limiting.
+      SigninPrefs(*profile->GetPrefs())
+          .IncrementSearchAIModeSigninPromoDismissCount(account.gaia);
       break;
     case signin::SignInPromoType::kExtension:
       NOTREACHED();

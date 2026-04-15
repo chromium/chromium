@@ -308,6 +308,8 @@ BASE_DECLARE_FEATURE(kEnableSearchAIModeSigninPromo);
 COMPONENT_EXPORT(SIGNIN_SWITCHES)
 extern const base::FeatureParam<base::TimeDelta>
     kSearchAIModePromoPageLoadDelay;
+COMPONENT_EXPORT(SIGNIN_SWITCHES)
+extern const base::FeatureParam<base::TimeDelta> kSearchAIModePromoFrequency;
 #endif
 
 #if BUILDFLAG(IS_IOS)

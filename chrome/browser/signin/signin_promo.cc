@@ -215,6 +215,13 @@ void RegisterProfilePrefs(
       prefs::kPasswordSignInPromoDismissCountPerProfileForLimitsExperiment, 0);
   registry->RegisterIntegerPref(
       prefs::kBookmarkSignInPromoDismissCountPerProfileForLimitsExperiment, 0);
+  registry->RegisterIntegerPref(
+      prefs::kSearchAIModeSignInPromoShownCountPerProfile, 0);
+  registry->RegisterIntegerPref(
+      prefs::kSearchAIModeSignInPromoDismissCountPerProfile, 0);
+  registry->RegisterTimePref(
+      prefs::kSearchAIModeSignInPromoLastImpressionTimestampPerProfile,
+      base::Time());
 }
 
 }  // namespace signin

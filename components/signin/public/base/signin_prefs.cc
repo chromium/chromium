@@ -103,6 +103,21 @@ constexpr char kBookmarkSignInPromoDismissCount[] =
 constexpr char kPasswordSignInPromoDismissCount[] =
     "PasswordSignInPromoDismissCount";
 
+// Pref to store the number of times the Search AI Mode bubble signin promo
+// has been shown per account.
+constexpr char kSearchAIModeSignInPromoShownCount[] =
+    "SearchAIModeSignInPromoShownCount";
+
+// Pref to store the number of times the Search AI Mode bubble signin promo
+// has been dismissed per account.
+constexpr char kSearchAIModeSignInPromoDismissCount[] =
+    "SearchAIModeSignInPromoDismissCount";
+
+// Pref used to track the last time the Search AI Mode bubble signin promo was
+// shown.
+constexpr char kSearchAIModeSignInPromoLastImpressionTime[] =
+    "SearchAIModeSignInPromoLastImpressionTime";
+
 // Registers that the sign in occurred with an explicit user action from the
 // bubble that appears after installing an extension. False by default.
 constexpr char kExtensionsExplicitBrowserSigninEnabled[] =
@@ -350,6 +365,16 @@ int SigninPrefs::GetBookmarkSigninPromoImpressionCount(
           : kBookmarkSignInPromoShownCount);
 }
 
+void SigninPrefs::IncrementSearchAIModeSigninPromoImpressionCount(
+    const GaiaId& gaia_id) {
+  IncrementIntPrefForAccount(gaia_id, kSearchAIModeSignInPromoShownCount);
+}
+
+int SigninPrefs::GetSearchAIModeSigninPromoImpressionCount(
+    const GaiaId& gaia_id) const {
+  return GetIntPrefForAccount(gaia_id, kSearchAIModeSignInPromoShownCount);
+}
+
 void SigninPrefs::IncrementAutofillSigninPromoDismissCount(
     const GaiaId& gaia_id) {
   IncrementIntPrefForAccount(gaia_id, kAutofillSignInPromoDismissCount);
@@ -390,6 +415,16 @@ int SigninPrefs::GetPasswordSigninPromoDismissCount(
   return GetIntPrefForAccount(gaia_id, kPasswordSignInPromoDismissCount);
 }
 
+void SigninPrefs::IncrementSearchAIModeSigninPromoDismissCount(
+    const GaiaId& gaia_id) {
+  IncrementIntPrefForAccount(gaia_id, kSearchAIModeSignInPromoDismissCount);
+}
+
+int SigninPrefs::GetSearchAIModeSigninPromoDismissCount(
+    const GaiaId& gaia_id) const {
+  return GetIntPrefForAccount(gaia_id, kSearchAIModeSignInPromoDismissCount);
+}
+
 void SigninPrefs::SetExtensionsExplicitBrowserSignin(const GaiaId& gaia_id,
                                                      bool enabled) {
   SetBooleanPrefForAccount(gaia_id, kExtensionsExplicitBrowserSigninEnabled,
@@ -424,6 +459,19 @@ void SigninPrefs::SetPolicyDisclaimerLastRegistrationFailureTime(
 void SigninPrefs::ClearPolicyDisclaimerLastRegistrationFailureTime(
     const GaiaId& gaia_id) {
   ClearPref(gaia_id, kPolicyDisclaimerLastRegistrationFailureTime);
+}
+
+void SigninPrefs::SetSearchAIModeSigninPromoLastImpressionTime(
+    const GaiaId& gaia_id,
+    base::Time last_impression_time) {
+  SetTimePref(last_impression_time, gaia_id,
+              kSearchAIModeSignInPromoLastImpressionTime);
+}
+
+std::optional<base::Time>
+SigninPrefs::GetSearchAIModeSigninPromoLastImpressionTime(
+    const GaiaId& gaia_id) const {
+  return GetTimePref(gaia_id, kSearchAIModeSignInPromoLastImpressionTime);
 }
 
 std::optional<base::Time>
