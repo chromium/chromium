@@ -697,8 +697,9 @@ void ClientControlledShellSurface::OnBoundsChangeEvent(
   DCHECK(display_exists && display.is_valid());
   const float scale =
       use_default_scale_cancellation_ ? 1.f : display.device_scale_factor();
-  const gfx::Rect scaled_client_bounds_in_display =
-      gfx::ScaleToRoundedRect(client_bounds_in_display, scale);
+  const gfx::Rect scaled_client_bounds_in_display = gfx::Rect(
+      gfx::ScaleToRoundedPoint(client_bounds_in_display.origin(), scale),
+      gfx::ScaleToRoundedSize(client_bounds_in_display.size(), scale));
 
   requested_display_id_ = requested_display_id;
 
