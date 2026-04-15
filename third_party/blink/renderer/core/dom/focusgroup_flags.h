@@ -115,10 +115,9 @@ CORE_EXPORT ax::mojom::blink::Role FocusgroupItemMinimumAriaRole(
     const FocusgroupData& data);
 }  // namespace focusgroup
 
-// The "::blink" prefix is to avoid false-positive of audit_non_blink_usages.py.
-using FocusgroupFlags = ::blink::focusgroup::FocusgroupFlags;
-using FocusgroupBehavior = ::blink::focusgroup::FocusgroupBehavior;
-using FocusgroupData = ::blink::focusgroup::FocusgroupData;
+using FocusgroupFlags = focusgroup::FocusgroupFlags;
+using FocusgroupBehavior = focusgroup::FocusgroupBehavior;
+using FocusgroupData = focusgroup::FocusgroupData;
 
 }  // namespace blink
 

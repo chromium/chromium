@@ -817,6 +817,7 @@ _CONFIG = [
             'event_util::.+',
             'file_error::.+',
             'file_system_access_error::.+',
+            'focusgroup::.+',
             'geometry_util::.+',
             'inspector_\\w+_event::.+',
             'inspector_async_task::.+',

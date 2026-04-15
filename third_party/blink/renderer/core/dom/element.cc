@@ -11459,7 +11459,7 @@ inline void Element::UpdateFocusgroup(const AtomicString& input) {
   }
 
   data_ = EnsureRareData().SetFocusgroupData(
-      blink::focusgroup::ParseFocusgroup(this, input));
+      focusgroup::ParseFocusgroup(this, input));
 }
 
 void Element::UpdateFocusgroupInShadowRootIfNeeded() {
