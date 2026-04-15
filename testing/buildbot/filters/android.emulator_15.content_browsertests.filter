@@ -12,3 +12,5 @@
 # crbug.com/382588633
 -Default/MediaTest.VideoBearWavPcm3kHz*
 
+# crbug.com/501324952
+-MediaColorTest.Yuvj420pH264
