@@ -31,6 +31,9 @@ class GlicButtonController {
                        GlicKeyedService* service);
   ~GlicButtonController();
 
+  bool ShouldAutoSummarize() const;
+  mojom::InvocationSource GetInvocationSource(bool is_showing_nudge) const;
+
  private:
   void UpdateButton();
   void OnFreStateChanged(mojom::FreWebUiState);

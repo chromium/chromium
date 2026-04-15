@@ -2867,6 +2867,8 @@ export enum InvocationSource {
   TEXT_SELECTION_NUDGE = 24,
   // User clicked on text selection widget.
   TEXT_SELECTION_WIDGET = 25,
+  // Automatic summarization upon opening.
+  ZERO_STATE_AUTO_SUMMARIZE = 26,
 }
 
 ///////////////////////////////////////////////

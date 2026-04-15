@@ -309,6 +309,7 @@ class ToolbarView : public views::AccessiblePaneView,
   views::View* GetViewForDrop() override;
 
   // GlicButtonControllerDelegate:
+  void SetButtonController(glic::GlicButtonController* controller) override;
   void SetGlicShowState(bool show) override;
   void SetGlicPanelIsOpen(bool open) override;
 
@@ -402,6 +403,7 @@ class ToolbarView : public views::AccessiblePaneView,
   raw_ptr<glic::ToolbarGlicButton> glic_button_ = nullptr;
   raw_ptr<glic::ToolbarGlicActorTaskIcon> glic_actor_task_icon_ = nullptr;
   raw_ptr<ToolbarDivider> glic_button_divider_ = nullptr;
+  raw_ptr<glic::GlicButtonController> button_controller_ = nullptr;
 
   // When locked, the container is unable to change its expanded state.
   // Changes will be staged until after this is unlocked.
