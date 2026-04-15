@@ -114,7 +114,6 @@ class StatusIconLinuxDbus : public ui::StatusIconLinux,
 
   std::unique_ptr<DbusProperties> properties_;
 
-  std::unique_ptr<DbusMenu> menu_;
   // A menu that contains the click action (if there is a click action) and a
   // separator (if there's a click action and delegate_->GetMenuModel() is
   // non-empty).
@@ -124,8 +123,11 @@ class StatusIconLinuxDbus : public ui::StatusIconLinux,
   std::unique_ptr<ui::SimpleMenuModel> empty_menu_;
   // A concatenation of |click_action_menu_| and either
   // delegate_->GetMenuModel() or |empty_menu_| if the delegate's menu is null.
-  // Appears after the other menus so that it gets destroyed first.
   std::unique_ptr<ConcatMenuModel> concat_menu_;
+
+  // Must be destroyed before the menus above, as it holds pointers to them.
+  std::unique_ptr<DbusMenu> menu_;
+
   // Used when the server doesn't support DBus menus and requests for us to use
   // our own menu.
   std::unique_ptr<views::MenuRunner> menu_runner_;

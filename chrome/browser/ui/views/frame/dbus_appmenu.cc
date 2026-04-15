@@ -516,7 +516,10 @@ void DbusAppmenu::TabRestoreServiceChanged(
   const sessions::TabRestoreService::Entries& entries = service->entries();
 
   int index = ClearHistoryMenuSection(kTagRecentlyClosed);
-  recently_closed_window_menus_.clear();
+  // Delay destruction of old submenu models until after `menu_service_` is
+  // updated to prevent `DbusMenu::MenuItem` from holding dangling pointers.
+  auto old_recently_closed_window_menus =
+      std::move(recently_closed_window_menus_);
 
   unsigned int added_count = 0;
   for (auto it = entries.begin();
