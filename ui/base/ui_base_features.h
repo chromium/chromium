@@ -132,6 +132,11 @@ COMPONENT_EXPORT(UI_BASE_FEATURES)
 BASE_DECLARE_FEATURE(kWaylandSessionManagement);
 #endif  // BUILDFLAG(IS_OZONE)
 
+#if BUILDFLAG(IS_LINUX)
+COMPONENT_EXPORT(UI_BASE_FEATURES)
+BASE_DECLARE_FEATURE(kGlobalShortcutsPortalPreferredTrigger);
+#endif
+
 // Indicates whether DrmOverlayManager should used the synchronous API to
 // perform pageflip tests.
 COMPONENT_EXPORT(UI_BASE_FEATURES)

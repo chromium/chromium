@@ -116,6 +116,11 @@ BASE_FEATURE(kWaylandTextInputV3, base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kWaylandSessionManagement, base::FEATURE_DISABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_OZONE)
 
+#if BUILDFLAG(IS_LINUX)
+BASE_FEATURE(kGlobalShortcutsPortalPreferredTrigger,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+#endif
+
 // When enabled, the feature will query the OS for a default cursor size,
 // to be used in determining the concrete object size of a custom cursor in
 // blink. Currently enabled by default on Windows only.

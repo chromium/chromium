@@ -9,6 +9,7 @@
 #include "build/config/linux/dbus/buildflags.h"
 #include "content/public/browser/browser_thread.h"
 #include "ui/base/accelerators/accelerator.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/ozone/public/ozone_platform.h"
 
 #if BUILDFLAG(IS_LINUX) && BUILDFLAG(USE_DBUS)
@@ -54,9 +55,13 @@ GlobalAcceleratorListener* GlobalAcceleratorListener::GetInstance() {
   // shortcuts, leading to a dialog shown on every browser start.
   // https://gitlab.gnome.org/GNOME/xdg-desktop-portal-gnome/-/issues/185
   auto env = base::Environment::Create();
-  if (base::nix::GetDesktopEnvironment(env.get()) !=
-          base::nix::DESKTOP_ENVIRONMENT_GNOME &&
-      base::FeatureList::IsEnabled(kGlobalShortcutsPortal)) {
+  const bool is_gnome = base::nix::GetDesktopEnvironment(env.get()) ==
+                        base::nix::DESKTOP_ENVIRONMENT_GNOME;
+  const bool should_create_listener =
+      base::FeatureList::IsEnabled(kGlobalShortcutsPortal) &&
+      (!is_gnome || base::FeatureList::IsEnabled(
+                        features::kGlobalShortcutsPortalPreferredTrigger));
+  if (should_create_listener) {
     static GlobalAcceleratorListenerLinux* const linux_instance =
         new GlobalAcceleratorListenerLinux(nullptr, GetSessionName());
     return linux_instance;

@@ -10,6 +10,8 @@
 #include <vector>
 
 #include "base/containers/flat_set.h"
+#include "base/environment.h"
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
@@ -22,8 +24,9 @@
 #include "crypto/sha2.h"
 #include "dbus/message.h"
 #include "dbus/object_path.h"
-#include "ui/base/accelerators/accelerator.h"
 #include "ui/base/accelerators/command.h"
+#include "ui/base/linux/xdg_shortcut.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/linux/linux_ui_delegate.h"
 
 namespace ui {
@@ -49,6 +52,17 @@ std::string GetShortcutPrefix(const std::string& accelerator_group_id,
       .substr(0, 32);
 }
 
+bool ShouldSetPreferredTrigger() {
+  auto env = base::Environment::Create();
+  const base::nix::DesktopEnvironment desktop_environment =
+      base::nix::GetDesktopEnvironment(env.get());
+  const bool default_preferred_trigger =
+      desktop_environment != base::nix::DESKTOP_ENVIRONMENT_GNOME;
+  return base::FeatureList::GetStateIfOverridden(
+             features::kGlobalShortcutsPortalPreferredTrigger)
+      .value_or(default_preferred_trigger);
+}
+
 }  // namespace
 
 GlobalAcceleratorListenerLinux::BoundCommand::BoundCommand() = default;
@@ -67,7 +81,9 @@ GlobalAcceleratorListenerLinux::BoundCommand::operator=(BoundCommand&&) =
 GlobalAcceleratorListenerLinux::GlobalAcceleratorListenerLinux(
     scoped_refptr<dbus::Bus> bus,
     const std::string& session_token)
-    : bus_(std::move(bus)), session_token_(session_token) {
+    : bus_(std::move(bus)),
+      session_token_(session_token),
+      set_preferred_trigger_(ShouldSetPreferredTrigger()) {
   if (!bus_) {
     bus_ = dbus_thread_linux::GetSharedSessionBus();
   }
@@ -292,6 +308,12 @@ void GlobalAcceleratorListenerLinux::BindShortcuts(DbusShortcuts old_shortcuts,
       new_props["description"] =
           dbus_utils::Variant::Wrap<"s">(std::move(*description));
     }
+    auto preferred_trigger =
+        TakeFromDict<std::string>(properties, "preferred_trigger");
+    if (preferred_trigger) {
+      new_props["preferred_trigger"] =
+          dbus_utils::Variant::Wrap<"s">(std::move(*preferred_trigger));
+    }
     shortcuts.emplace_back(id, std::move(new_props));
   }
 
@@ -299,6 +321,12 @@ void GlobalAcceleratorListenerLinux::BindShortcuts(DbusShortcuts old_shortcuts,
     dbus_xdg::Dictionary props;
     props["description"] = dbus_utils::Variant::Wrap<"s">(
         base::UTF16ToUTF8(bound_cmd.command.description()));
+    std::string trigger =
+        AcceleratorToXdgShortcut(bound_cmd.command.accelerator());
+    if (set_preferred_trigger_ && !trigger.empty()) {
+      props["preferred_trigger"] =
+          dbus_utils::Variant::Wrap<"s">(std::move(trigger));
+    }
     shortcuts.emplace_back(modified_id, std::move(props));
   }
 

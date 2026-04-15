@@ -12,7 +12,6 @@
 #include "base/nix/xdg_util.h"
 #include "base/notreached.h"
 #include "base/strings/strcat.h"
-#include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/dbus/utils/read_value.h"
 #include "components/dbus/utils/variant.h"
@@ -356,7 +355,21 @@ TEST(GlobalAcceleratorListenerLinuxTest, OnCommandsChanged) {
           dbus::ObjectPath session_path;
           EXPECT_TRUE(reader.PopObjectPath(&session_path));
           auto shortcuts = dbus_utils::ReadValue<DbusShortcuts>(reader);
-          EXPECT_TRUE(shortcuts);
+          ASSERT_TRUE(shortcuts);
+
+          ASSERT_EQ(shortcuts->size(), 1u);
+          auto& [_, props] = (*shortcuts)[0];
+          auto trigger_it = props.find("preferred_trigger");
+          if (global_shortcut_listener->set_preferred_trigger_) {
+            ASSERT_NE(trigger_it, props.end());
+            auto trigger_value =
+                std::move(trigger_it->second).Take<std::string>();
+            ASSERT_TRUE(trigger_value);
+            EXPECT_EQ(*trigger_value, "CTRL+a");
+          } else {
+            EXPECT_EQ(trigger_it, props.end());
+          }
+
           std::string parent_window;
           EXPECT_TRUE(reader.PopString(&parent_window));
           EXPECT_EQ(parent_window, "test_handle");

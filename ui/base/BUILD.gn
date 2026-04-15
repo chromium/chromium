@@ -407,6 +407,13 @@ component("base") {
       ]
     }
 
+    if (is_linux) {
+      sources += [
+        "linux/xdg_shortcut.cc",
+        "linux/xdg_shortcut.h",
+      ]
+    }
+
     if (is_chromeos) {
       sources += [
         "accelerators/ash/quick_insert_event_property.cc",
@@ -1333,6 +1340,10 @@ test("ui_base_unittests") {
       "//ui/base/accelerators/global_accelerator_listener",
       "//ui/linux:linux_ui",
     ]
+  }
+
+  if (is_linux) {
+    sources += [ "linux/xdg_shortcut_unittest.cc" ]
   }
 
   # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and

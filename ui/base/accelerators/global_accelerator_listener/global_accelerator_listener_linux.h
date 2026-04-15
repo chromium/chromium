@@ -138,6 +138,7 @@ class GlobalAcceleratorListenerLinux : public GlobalAcceleratorListener {
   std::unique_ptr<dbus_xdg::Request> request_;
   BindState bind_state_ = BindState::kNotBound;
   const std::string session_token_;
+  const bool set_preferred_trigger_;
 
   gfx::AcceleratedWidget context_window_ = gfx::kNullAcceleratedWidget;
   std::map<std::string, BoundCommand> bound_commands_;
