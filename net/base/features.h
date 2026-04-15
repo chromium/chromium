@@ -866,6 +866,8 @@ NET_EXPORT BASE_DECLARE_FEATURE(kIgnoreMemoryPressureForSslClientSessionCache);
 // serialization.
 NET_EXPORT BASE_DECLARE_FEATURE(kCookieParseRejectEmptyNameAmbiguous);
 
+NET_EXPORT BASE_DECLARE_FEATURE(kEnablePrivateVerificationTokens);
+
 }  // namespace net::features
 
 #endif  // NET_BASE_FEATURES_H_
