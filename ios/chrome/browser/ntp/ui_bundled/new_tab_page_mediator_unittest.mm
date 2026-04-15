@@ -222,6 +222,11 @@ class NewTabPageMediatorTest : public PlatformTest {
     return ntp_consumer;
   }
 
+  void SetFuseboxEligible(bool eligible) {
+    EXPECT_CALL(*aim_eligibility_service_, IsFuseboxEligible())
+        .WillRepeatedly([&]() { return eligible; });
+  }
+
  protected:
   web::WebTaskEnvironment task_environment_;
   IOSChromeScopedTestingLocalState scoped_testing_local_state_;
@@ -373,6 +378,7 @@ TEST_F(NewTabPageMediatorTest,
 
 // Tests that the AIM is disabled if the user is not eligible.
 TEST_F(NewTabPageMediatorTest, TestAIMNotEligible) {
+  SetFuseboxEligible(true);
   scoped_feature_list_.InitAndEnableFeature(kAIMNTPEntrypointTablet);
   // Setup with non eligible.
   EXPECT_CALL(*aim_eligibility_service_,
@@ -395,6 +401,8 @@ TEST_F(NewTabPageMediatorTest, TestAIMNotEligible) {
 
 // Tests that the AIM is enabled if the user is eligible.
 TEST_F(NewTabPageMediatorTest, TestAIMEligible) {
+  SetFuseboxEligible(true);
+
   scoped_feature_list_.InitAndEnableFeature(kAIMNTPEntrypointTablet);
   // Setup with eligible.
   EXPECT_CALL(*aim_eligibility_service_,
@@ -418,6 +426,8 @@ TEST_F(NewTabPageMediatorTest, TestAIMEligible) {
 // Tests that NTP modules are not updated if AIM eligibility changes before
 // setup.
 TEST_F(NewTabPageMediatorTest, TestAIMBecomeEligibleBeforeSetUp) {
+  SetFuseboxEligible(true);
+
   scoped_feature_list_.InitWithFeatures(
       /*enabled_featured=*/{kAIMEligibilityRefreshNTPModules,
                             kAIMNTPEntrypointTablet},
@@ -464,6 +474,8 @@ TEST_F(NewTabPageMediatorTest, TestAIMBecomeEligibleBeforeSetUp) {
 
 // Tests that NTP modules are updated if AIM eligibility changes after setup.
 TEST_F(NewTabPageMediatorTest, TestAIMBecomeEligibleAfterSetUp) {
+  SetFuseboxEligible(true);
+
   scoped_feature_list_.InitWithFeatures(
       /*enabled_featured=*/{kAIMEligibilityRefreshNTPModules,
                             kAIMNTPEntrypointTablet},

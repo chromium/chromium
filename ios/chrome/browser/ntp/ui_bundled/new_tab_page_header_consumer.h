@@ -37,6 +37,9 @@
 // Whether AIM is allowed.
 - (void)setAIMAllowed:(BOOL)allowed;
 
+// Whether the current session is eligible for fusebox.
+- (void)setFuseboxEligible:(BOOL)eligible;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_NTP_UI_BUNDLED_NEW_TAB_PAGE_HEADER_CONSUMER_H_

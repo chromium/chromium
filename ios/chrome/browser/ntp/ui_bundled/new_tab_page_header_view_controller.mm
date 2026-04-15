@@ -134,6 +134,8 @@ const CGFloat kIdentityDiscMaxFontSize = 24;
   NSLayoutConstraint* _identityDiscCapsuleWidthConstraint;
   // Whether AIM is allowed.
   BOOL _isAIMAllowed;
+  // Whether the session is fusebox eligible.
+  BOOL _fuseboxEligible;
   // The logo for the default search engine. This is owned by the caching system
   // backing this logo.
   __weak UIImage* _dseLogo;
@@ -329,6 +331,7 @@ const CGFloat kIdentityDiscMaxFontSize = 24;
     self.headerView = [[NewTabPageHeaderView alloc]
         initWithUseNewBadgeForLensButton:_useNewBadgeForLensButton];
     [self.headerView setAIMAllowed:_isAIMAllowed];
+    [self.headerView setFuseboxEligible:_fuseboxEligible];
     self.headerView.NTPShortcutsHandler = self.NTPShortcutsHandler;
     self.headerView.isGoogleDefaultSearchEngine =
         self.isGoogleDefaultSearchEngine;
@@ -619,6 +622,11 @@ const CGFloat kIdentityDiscMaxFontSize = 24;
 - (void)setAIMAllowed:(BOOL)allowed {
   [_headerView setAIMAllowed:allowed];
   _isAIMAllowed = allowed;
+}
+
+- (void)setFuseboxEligible:(BOOL)eligible {
+  [_headerView setFuseboxEligible:eligible];
+  _fuseboxEligible = eligible;
 }
 
 #pragma mark - UserAccountImageUpdateDelegate

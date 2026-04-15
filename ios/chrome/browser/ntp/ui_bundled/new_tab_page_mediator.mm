@@ -652,15 +652,18 @@ const net::NetworkTrafficAnnotationTag kTrafficAnnotation =
 
 - (void)updateAIMAvailability {
   BOOL aimAllowed = NO;
+  BOOL fuseboxEligible = NO;
   if (_aimEligibilityService) {
     const BOOL allowedOnDevice =
         ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_PHONE ||
         IsAIMNTPEntrypointTabletEnabled();
     aimAllowed = _aimEligibilityService->IsAimEligible() && allowedOnDevice;
+    fuseboxEligible = _aimEligibilityService->IsFuseboxEligible();
   }
 
   [self.consumer setAIMAllowed:aimAllowed];
   [self.headerConsumer setAIMAllowed:aimAllowed];
+  [self.headerConsumer setFuseboxEligible:fuseboxEligible];
 
   if (aimAllowed == _isAIMAllowed) {
     return;

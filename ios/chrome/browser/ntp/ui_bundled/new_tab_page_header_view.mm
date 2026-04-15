@@ -252,6 +252,9 @@ CGFloat Interpolate(CGFloat from, CGFloat to, CGFloat percent) {
   // Whether AIM is allowed.
   BOOL _isAIMAllowed;
 
+  // Whether the current session is eligible to fusebox.
+  BOOL _fuseboxEligible;
+
   // Location bar view for when it has a colored gradient.
   GradientView* _fakeLocationBarGradientView;
   // Location bar view to use for when it should have a blur effect.
@@ -948,8 +951,12 @@ CGFloat Interpolate(CGFloat from, CGFloat to, CGFloat percent) {
   _isAIMAllowed = allowed;
 }
 
+- (void)setFuseboxEligible:(BOOL)eligible {
+  _fuseboxEligible = eligible;
+}
+
 - (BOOL)shouldShowPlusButton {
-  return IsPlusButtonInFakeboxEnabled() && _isAIMAllowed;
+  return IsPlusButtonInFakeboxEnabled() && _isAIMAllowed && _fuseboxEligible;
 }
 
 #pragma mark - Property accessors

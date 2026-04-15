@@ -133,6 +133,9 @@ enum class SearchEngineLogoState;
 // Whether AIM is allowed.
 - (void)setAIMAllowed:(BOOL)allowed;
 
+// Whether the current session is eligible for fusebox.
+- (void)setFuseboxEligible:(BOOL)eligible;
+
 // Whether to show the plus button.
 - (BOOL)shouldShowPlusButton;
 
