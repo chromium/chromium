@@ -156,6 +156,7 @@ fuzzer_test("media_vp8_parser_fuzzer") {
     ":parsers",
     "//base",
     "//media:test_support",
+    "//testing/libfuzzer:libfuzzer_base_wrappers",
   ]
   libfuzzer_options = [ "max_len = 400000" ]
   dict = "//media/test/vp8.dict"
@@ -167,6 +168,7 @@ fuzzer_test("media_vp9_parser_fuzzer") {
     ":parsers",
     "//base",
     "//media:test_support",
+    "//testing/libfuzzer:libfuzzer_base_wrappers",
   ]
   libfuzzer_options = [ "max_len = 400000" ]
 }
@@ -177,6 +179,7 @@ fuzzer_test("media_vp9_parser_encrypted_fuzzer") {
     "//base",
     "//base/test:test_support",
     "//media:test_support",
+    "//testing/libfuzzer:libfuzzer_base_wrappers",
   ]
   seed_corpus = "//media/test/data"
 }

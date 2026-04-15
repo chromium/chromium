@@ -15,6 +15,7 @@
 
 #include "base/containers/span.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/raw_span.h"
 #include "media/base/media_export.h"
 #include "media/parsers/vp8_bool_decoder.h"
 
@@ -213,9 +214,7 @@ class MEDIA_EXPORT Vp8Parser {
   Vp8LoopFilterHeader curr_loopfilter_hdr_;
   Vp8EntropyHeader curr_entropy_hdr_;
 
-  // TODO(crbug.com/40284755): Should be a raw_span.
-  raw_ptr<const uint8_t, AllowPtrArithmetic | DanglingUntriaged> stream_;
-  size_t bytes_left_;
+  base::raw_span<const uint8_t> stream_;
   Vp8BoolDecoder bd_;
 };
 

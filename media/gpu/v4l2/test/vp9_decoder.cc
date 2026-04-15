@@ -124,7 +124,7 @@ std::unique_ptr<Vp9Decoder> Vp9Decoder::Create(
   auto ivf_parser = std::make_unique<media::IvfParser>();
   media::IvfFileHeader file_header{};
 
-  if (!ivf_parser->Initialize(stream.data(), stream.length(), &file_header)) {
+  if (!ivf_parser->Initialize(stream.bytes(), &file_header)) {
     LOG(ERROR) << "Couldn't initialize IVF parser";
     return nullptr;
   }

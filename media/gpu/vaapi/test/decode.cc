@@ -139,20 +139,19 @@ std::unique_ptr<VideoDecoder> CreateDecoder(
     const std::string& codec,
     const VaapiDevice& va_device,
     SharedVASurface::FetchPolicy fetch_policy,
-    const uint8_t* stream_data,
-    size_t stream_len) {
+    base::span<const uint8_t> stream) {
   if (codec == "H264")
-    return std::make_unique<H264Decoder>(stream_data, stream_len, va_device,
-                                         fetch_policy);
+    return std::make_unique<H264Decoder>(stream.data(), stream.size(),
+                                         va_device, fetch_policy);
 #if BUILDFLAG(ENABLE_PLATFORM_HEVC)
   if (codec == "H265")
-    return std::make_unique<H265Decoder>(stream_data, stream_len, va_device,
-                                         fetch_policy);
+    return std::make_unique<H265Decoder>(stream.data(), stream.size(),
+                                         va_device, fetch_policy);
 #endif
 
   auto ivf_parser = std::make_unique<media::IvfParser>();
   media::IvfFileHeader file_header{};
-  if (!ivf_parser->Initialize(stream_data, stream_len, &file_header)) {
+  if (!ivf_parser->Initialize(stream, &file_header)) {
     LOG(ERROR) << "Couldn't initialize IVF parser";
     return nullptr;
   }
@@ -290,8 +289,8 @@ int main(int argc, char** argv) {
   const bool show_progress = cmd->HasSwitch("progress");
 
   do {
-    const std::unique_ptr<VideoDecoder> dec = CreateDecoder(
-        codec, va_device, *fetch_policy, stream.data(), stream.length());
+    const std::unique_ptr<VideoDecoder> dec =
+        CreateDecoder(codec, va_device, *fetch_policy, stream.bytes());
     if (!dec) {
       LOG(ERROR) << "Failed to create decoder for file: " << video_path;
       return EXIT_FAILURE;

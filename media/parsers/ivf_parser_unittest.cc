@@ -22,7 +22,7 @@ TEST(IvfParserTest, StreamFileParsing) {
   IvfParser parser;
   IvfFileHeader file_header = {};
 
-  EXPECT_TRUE(parser.Initialize(stream.data(), stream.length(), &file_header));
+  EXPECT_TRUE(parser.Initialize(stream.bytes(), &file_header));
 
   // Check file header fields.
   EXPECT_EQ(base::as_byte_span(file_header.signature), kIvfHeaderSignature);

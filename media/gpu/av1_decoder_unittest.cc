@@ -270,9 +270,7 @@ std::vector<scoped_refptr<DecoderBuffer>> AV1DecoderTest::ReadIVF(
 
   IvfParser ivf_parser;
   IvfFileHeader ivf_header{};
-  EXPECT_TRUE(
-      ivf_parser.Initialize(reinterpret_cast<const uint8_t*>(ivf_data.data()),
-                            ivf_data.size(), &ivf_header));
+  EXPECT_TRUE(ivf_parser.Initialize(base::as_byte_span(ivf_data), &ivf_header));
   EXPECT_EQ(ivf_header.fourcc, /*AV01=*/0x31305641u);
 
   std::vector<scoped_refptr<DecoderBuffer>> buffers;

@@ -111,9 +111,7 @@ std::vector<scoped_refptr<media::DecoderBuffer>> ReadIVF(const std::string& fnam
 
   media::IvfParser ivf_parser;
   media::IvfFileHeader ivf_header{};
-  EXPECT_TRUE(
-      ivf_parser.Initialize(reinterpret_cast<const uint8_t*>(ivf_data.data()),
-                            ivf_data.size(), &ivf_header));
+  EXPECT_TRUE(ivf_parser.Initialize(base::as_byte_span(ivf_data), &ivf_header));
 
   std::vector<scoped_refptr<media::DecoderBuffer>> buffers;
   media::IvfFrameHeader ivf_frame_header{};

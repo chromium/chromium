@@ -23,8 +23,7 @@ TEST(Vp8ParserTest, StreamFileParsing) {
 
   IvfParser ivf_parser;
   IvfFileHeader ivf_file_header = {};
-  ASSERT_TRUE(
-      ivf_parser.Initialize(stream.data(), stream.length(), &ivf_file_header));
+  ASSERT_TRUE(ivf_parser.Initialize(stream.bytes(), &ivf_file_header));
   ASSERT_EQ(ivf_file_header.fourcc, 0x30385056u);  // VP80
 
   Vp8Parser vp8_parser;

@@ -17,14 +17,13 @@ namespace media {
 
 IvfParser::IvfParser() = default;
 
-bool IvfParser::Initialize(const uint8_t* stream,
-                           size_t size,
+bool IvfParser::Initialize(base::span<const uint8_t> stream,
                            IvfFileHeader* file_header) {
-  DCHECK(stream);
+  DCHECK(stream.data());
   DCHECK(file_header);
-  stream_ = UNSAFE_TODO(base::span(stream, size));
+  stream_ = stream;
 
-  if (size < sizeof(IvfFileHeader)) {
+  if (stream.size() < sizeof(IvfFileHeader)) {
     DLOG(ERROR) << "EOF before file header";
     return false;
   }

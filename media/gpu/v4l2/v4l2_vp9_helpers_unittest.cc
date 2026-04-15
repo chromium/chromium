@@ -81,8 +81,7 @@ TEST(V4L2VP9HelpersTest, ParseAppendedSuperFrameIndex) {
   // Read three frames from test-25fps.vp9.
   IvfParser ivf_parser;
   IvfFileHeader ivf_file_header;
-  ASSERT_TRUE(ivf_parser.Initialize(stream->data(), stream->length(),
-                                    &ivf_file_header));
+  ASSERT_TRUE(ivf_parser.Initialize(stream->bytes(), &ivf_file_header));
   ASSERT_EQ(ivf_file_header.fourcc, 0x30395056u);  // VP90
 
   constexpr size_t kNumBuffers = 3;

@@ -54,12 +54,9 @@ class IvfParser {
   IvfParser(const IvfParser&) = delete;
   IvfParser& operator=(const IvfParser&) = delete;
 
-  // Initializes the parser for IVF |stream| with size |size| and parses the
+  // Initializes the parser for IVF |stream| and parses the
   // file header. Returns true on success.
-  // TODO(crbug.com/40284755): stream+size should be a span.
-  bool Initialize(const uint8_t* stream,
-                  size_t size,
-                  IvfFileHeader* file_header);
+  bool Initialize(base::span<const uint8_t> stream, IvfFileHeader* file_header);
 
   // Parses the next frame. If there is an error, returns empty span.
   // Otherwise, the returned span is the next frame.

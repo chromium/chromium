@@ -63,6 +63,7 @@ class MEDIA_EXPORT Vp8BoolDecoder {
 
   // Initializes the decoder to start decoding |data|, |size| being size
   // of |data| in bytes. Returns false if |data| is NULL or empty.
+  // TODO(crbug.com/40284755): data+size should be a span.
   bool Initialize(const uint8_t* data, size_t size);
 
   // Reads a boolean from the coded stream. Returns false if it has reached the

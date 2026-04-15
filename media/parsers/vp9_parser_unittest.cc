@@ -79,8 +79,7 @@ class Vp9ParserTest : public TestWithParam<TestParams> {
                                                 << file_path.MaybeAsASCII();
 
     IvfFileHeader ivf_file_header;
-    ASSERT_TRUE(ivf_parser_.Initialize(stream_->data(), stream_->length(),
-                                       &ivf_file_header));
+    ASSERT_TRUE(ivf_parser_.Initialize(stream_->bytes(), &ivf_file_header));
     ASSERT_EQ(ivf_file_header.fourcc, 0x30395056u);  // VP90
 
     vp9_parser_ = std::make_unique<Vp9Parser>();

@@ -18,8 +18,6 @@ VP8Decoder::VP8Accelerator::~VP8Accelerator() {}
 VP8Decoder::VP8Decoder(std::unique_ptr<VP8Accelerator> accelerator,
                        const VideoColorSpace& container_color_space)
     : state_(kNeedStreamMetadata),
-      curr_frame_start_(nullptr),
-      frame_size_(0),
       accelerator_(std::move(accelerator)),
       container_color_space_(container_color_space) {
   DCHECK(accelerator_);
@@ -36,7 +34,7 @@ bool VP8Decoder::Flush() {
 void VP8Decoder::SetStream(int32_t id,
                            scoped_refptr<DecoderBuffer> decoder_buffer) {
   CHECK(decoder_buffer);
-  curr_frame_start_ = nullptr;
+  curr_frame_ = {};
   decoder_buffer_ = std::move(decoder_buffer);
   const DecryptConfig* decrypt_config = decoder_buffer_->decrypt_config();
 
@@ -49,14 +47,12 @@ void VP8Decoder::SetStream(int32_t id,
   DVLOG(4) << "New input stream id: " << id
            << ", buffer: " << decoder_buffer_->AsHumanReadableString();
   stream_id_ = id;
-  curr_frame_start_ = base::span(*decoder_buffer_).data();
-  frame_size_ = decoder_buffer_->size();
+  curr_frame_ = base::span(*decoder_buffer_);
 }
 
 void VP8Decoder::Reset() {
   curr_frame_hdr_ = nullptr;
-  curr_frame_start_ = nullptr;
-  frame_size_ = 0;
+  curr_frame_ = {};
 
   ref_frames_.Clear();
   decoder_buffer_.reset();
@@ -66,15 +62,13 @@ void VP8Decoder::Reset() {
 }
 
 VP8Decoder::DecodeResult VP8Decoder::Decode() {
-  if (!curr_frame_start_ || frame_size_ == 0)
+  if (curr_frame_.empty()) {
     return kRanOutOfStreamData;
+  }
 
   if (!curr_frame_hdr_) {
     curr_frame_hdr_ = std::make_unique<Vp8FrameHeader>();
-    // TODO(crbug.com/40284755): Change curr_frame_start_ to raw_span.
-    if (!parser_.ParseFrame(
-            UNSAFE_TODO(base::span(curr_frame_start_.get(), frame_size_)),
-            curr_frame_hdr_.get())) {
+    if (!parser_.ParseFrame(curr_frame_, curr_frame_hdr_.get())) {
       DVLOG(1) << "Error during decode";
       state_ = kError;
       return kDecodeError;
@@ -171,8 +165,7 @@ bool VP8Decoder::DecodeAndOutputCurrentFrame(scoped_refptr<VP8Picture> pic) {
 
   ref_frames_.Refresh(pic);
 
-  curr_frame_start_ = nullptr;
-  frame_size_ = 0;
+  curr_frame_ = {};
   return true;
 }
 

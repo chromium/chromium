@@ -10,9 +10,11 @@
 #include <array>
 #include <cstring>
 
+#include "base/auto_reset.h"
 #include "base/check_op.h"
 #include "base/compiler_specific.h"
 #include "base/logging.h"
+#include "base/numerics/byte_conversions.h"
 #include "base/numerics/checked_math.h"
 #include "base/numerics/safe_conversions.h"
 
@@ -60,30 +62,31 @@ Vp8FrameHeader::Vp8FrameHeader(const Vp8FrameHeader& fhdr) = default;
 
 Vp8FrameHeader& Vp8FrameHeader::operator=(const Vp8FrameHeader& fhdr) = default;
 
-Vp8Parser::Vp8Parser() : stream_(nullptr), bytes_left_(0) {
-}
+Vp8Parser::Vp8Parser() = default;
 
 Vp8Parser::~Vp8Parser() = default;
 
 bool Vp8Parser::ParseFrame(base::span<const uint8_t> frame,
                            Vp8FrameHeader* fhdr) {
-  stream_ = frame.data();
-  bytes_left_ = frame.size();
+  base::AutoReset reset_stream(&stream_, frame);
 
   *fhdr = Vp8FrameHeader();
-  fhdr->data = stream_;
-  fhdr->frame_size = bytes_left_;
+  fhdr->data = stream_.data();
+  fhdr->frame_size = stream_.size();
 
-  if (!ParseFrameTag(fhdr))
+  if (!ParseFrameTag(fhdr)) {
     return false;
+  }
 
-  fhdr->first_part_offset = stream_ - fhdr->data;
+  fhdr->first_part_offset = stream_.data() - fhdr->data;
 
-  if (!ParseFrameHeader(fhdr))
+  if (!ParseFrameHeader(fhdr)) {
     return false;
+  }
 
-  if (!ParsePartitions(fhdr))
+  if (!ParsePartitions(fhdr)) {
     return false;
+  }
 
   DVLOG(4) << "Frame parsed, start: " << static_cast<const void*>(frame.data())
            << ", size: " << frame.size()
@@ -99,11 +102,15 @@ static inline uint32_t GetBitsAt(uint32_t data, size_t shift, size_t num_bits) {
 
 bool Vp8Parser::ParseFrameTag(Vp8FrameHeader* fhdr) {
   const size_t kFrameTagSize = 3;
-  if (bytes_left_ < kFrameTagSize)
+  if (stream_.size() < kFrameTagSize) {
     return false;
+  }
 
-  uint32_t frame_tag = (UNSAFE_TODO(stream_[2]) << 16) |
-                       (UNSAFE_TODO(stream_[1]) << 8) | UNSAFE_TODO(stream_[0]);
+  // Converting from little Endian, since kFrameTagSize is only 3, we set the
+  // fourth byte to 0.
+  uint32_t frame_tag = base::U32FromLittleEndian(
+      std::to_array<uint8_t>({stream_[0], stream_[1], stream_[2], 0}));
+  stream_.take_first<kFrameTagSize>();
   fhdr->frame_type =
       static_cast<Vp8FrameHeader::FrameType>(GetBitsAt(frame_tag, 0, 1));
   fhdr->version = GetBitsAt(frame_tag, 1, 2);
@@ -111,41 +118,38 @@ bool Vp8Parser::ParseFrameTag(Vp8FrameHeader* fhdr) {
   fhdr->show_frame =!!GetBitsAt(frame_tag, 4, 1);
   fhdr->first_part_size = GetBitsAt(frame_tag, 5, 19);
 
-  UNSAFE_TODO(stream_ += kFrameTagSize);
-  bytes_left_ -= kFrameTagSize;
-
   if (fhdr->IsKeyframe()) {
     const size_t kKeyframeTagSize = 7;
-    if (bytes_left_ < kKeyframeTagSize)
-      return false;
-
-    static const uint8_t kVp8StartCode[] = {0x9d, 0x01, 0x2a};
-    if (UNSAFE_TODO(memcmp(stream_, kVp8StartCode, sizeof(kVp8StartCode))) !=
-        0) {
+    if (stream_.size() < kKeyframeTagSize) {
       return false;
     }
 
-    UNSAFE_TODO(stream_ += sizeof(kVp8StartCode));
-    bytes_left_ -= sizeof(kVp8StartCode);
+    constexpr auto kVp8StartCode = std::to_array<uint8_t>({0x9d, 0x01, 0x2a});
+    if (stream_.first<sizeof(kVp8StartCode)>() != kVp8StartCode) {
+      return false;
+    }
 
-    uint16_t data = (UNSAFE_TODO(stream_[1]) << 8) | UNSAFE_TODO(stream_[0]);
+    // Advance the span only if the first bytes match kVp8StartCode.
+    stream_.take_first<sizeof(kVp8StartCode)>();
+
+    // width & height are stored in little-endian as per spec.
+    // See: https://datatracker.ietf.org/doc/html/rfc6386
+    uint16_t data = base::U16FromLittleEndian(stream_.take_first<2>());
     fhdr->width = data & 0x3fff;
     fhdr->horizontal_scale = data >> 14;
 
-    data = (UNSAFE_TODO(stream_[3]) << 8) | UNSAFE_TODO(stream_[2]);
+    data = base::U16FromLittleEndian(stream_.take_first<2>());
     fhdr->height = data & 0x3fff;
     fhdr->vertical_scale = data >> 14;
-
-    UNSAFE_TODO(stream_ += 4);
-    bytes_left_ -= 4;
   }
 
   return true;
 }
 
 bool Vp8Parser::ParseFrameHeader(Vp8FrameHeader* fhdr) {
-  if (!bd_.Initialize(stream_, bytes_left_))
+  if (!bd_.Initialize(stream_.data(), stream_.size())) {
     return false;
+  }
 
   bool keyframe = fhdr->IsKeyframe();
   if (keyframe) {

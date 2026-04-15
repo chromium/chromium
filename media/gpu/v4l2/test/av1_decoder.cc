@@ -56,8 +56,9 @@ const gfx::Size GetResolutionFromBitstream(
   media::IvfParser ivf_parser{};
   media::IvfFileHeader ivf_file_header{};
 
-  if (!ivf_parser.Initialize(stream.data(), stream.length(), &ivf_file_header))
+  if (!ivf_parser.Initialize(stream.bytes(), &ivf_file_header)) {
     LOG(FATAL) << "Couldn't initialize IVF parser.";
+  }
 
   IvfFrameHeader ivf_frame_header{};
   base::span<const uint8_t> ivf_frame_data =
@@ -571,7 +572,7 @@ std::unique_ptr<Av1Decoder> Av1Decoder::Create(
   auto ivf_parser = std::make_unique<media::IvfParser>();
   media::IvfFileHeader file_header{};
 
-  if (!ivf_parser->Initialize(stream.data(), stream.length(), &file_header)) {
+  if (!ivf_parser->Initialize(stream.bytes(), &file_header)) {
     LOG(ERROR) << "Couldn't initialize IVF parser";
     return nullptr;
   }
