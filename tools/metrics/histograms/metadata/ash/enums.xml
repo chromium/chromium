@@ -214,6 +214,8 @@ ash/webui/personalization_app/mojom/personalization_app.mojom -->
   <int value="2" label="Fingerprint"/>
 </enum>
 
+<!-- LINT.IfChange(AuthMethod) -->
+
 <enum name="AuthMethod">
   <int value="0" label="Password"/>
   <int value="1" label="PIN"/>
@@ -222,6 +224,10 @@ ash/webui/personalization_app/mojom/personalization_app.mojom -->
   <int value="4" label="Challenge-response"/>
   <int value="5" label="Nothing"/>
 </enum>
+
+<!-- LINT.ThenChange(//chrome/browser/ash/login/login_auth_recorder.h:AuthMethod) -->
+
+<!-- LINT.IfChange(AuthMethodSwitchType) -->
 
 <enum name="AuthMethodSwitchType">
   <int value="0" label="Password to PIN"/>
@@ -243,6 +249,8 @@ ash/webui/personalization_app/mojom/personalization_app.mojom -->
   <int value="16" label="Nothing to Fingerprint"/>
   <int value="17" label="Nothing to Challenge-response"/>
 </enum>
+
+<!-- LINT.ThenChange(//chrome/browser/ash/login/login_auth_recorder.h:AuthMethodSwitchType) -->
 
 <!-- LINT.IfChange(BabelOrcaReceivingStoppedReason) -->
 
