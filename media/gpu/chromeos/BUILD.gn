@@ -242,6 +242,7 @@ source_set("unit_tests") {
   testonly = true
   deps = [
     ":common",
+    ":video_frame_mapper",
     "//base",
     "//base/test:test_support",
     "//build/config/linux/libdrm",
@@ -260,6 +261,7 @@ source_set("unit_tests") {
   sources = [
     "fourcc_unittest.cc",
     "frame_registry_unittest.cc",
+    "generic_dmabuf_video_frame_mapper_unittest.cc",
     "mailbox_video_frame_converter_unittest.cc",
     "mock_native_pixmap_dmabuf.cc",
     "mock_native_pixmap_dmabuf.h",

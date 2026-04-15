@@ -170,6 +170,17 @@ scoped_refptr<VideoFrame> GenericDmaBufVideoFrameMapper::MapFrame(
 
     chunks.emplace_back(mapped_addr, mapped_size);
     for (size_t j = i; j < next_buf; ++j) {
+      size_t plane_end = 0;
+      if (!base::CheckAdd<size_t>(planes[j].offset, planes[j].size)
+               .AssignIfValid(&plane_end) ||
+          plane_end > mapped_size) {
+        VLOGF(1) << "Plane " << j << " (offset=" << planes[j].offset
+                 << " size=" << planes[j].size
+                 << ") extends past group mapping size " << mapped_size;
+        MunmapBuffers(chunks, /*video_frame=*/nullptr);
+        return nullptr;
+      }
+
       // TODO(crbug.com/40285824): spanify this usage.
       plane_addrs[j] = UNSAFE_TODO(
           base::span(mapped_addr + planes[j].offset, planes[j].size));
