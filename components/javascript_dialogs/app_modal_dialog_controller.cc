@@ -86,8 +86,7 @@ AppModalDialogController::AppModalDialogController(
       display_suppress_checkbox_(display_suppress_checkbox),
       is_before_unload_dialog_(is_before_unload_dialog),
       is_reload_(is_reload),
-      callback_(std::move(callback)),
-      use_override_prompt_text_(false) {}
+      callback_(std::move(callback)) {}
 
 AppModalDialogController::~AppModalDialogController() {
   CompleteDialog();
@@ -144,18 +143,15 @@ void AppModalDialogController::OnCancel(bool suppress_js_messages) {
   // is a temporary workaround.
   CompleteDialog();
 
-  NotifyDelegate(false, std::u16string(), suppress_js_messages);
+  NotifyDelegate(/*success=*/false, std::u16string(), suppress_js_messages);
 }
 
 void AppModalDialogController::OnAccept(const std::u16string& prompt_text,
                                         bool suppress_js_messages) {
-  std::u16string prompt_text_to_use = prompt_text;
-  // This is only for testing.
-  if (use_override_prompt_text_)
-    prompt_text_to_use = override_prompt_text_;
-
   CompleteDialog();
-  NotifyDelegate(true, prompt_text_to_use, suppress_js_messages);
+
+  NotifyDelegate(/*success=*/true, override_prompt_text_.value_or(prompt_text),
+                 suppress_js_messages);
 }
 
 void AppModalDialogController::OnClose() {
@@ -165,7 +161,6 @@ void AppModalDialogController::OnClose() {
 void AppModalDialogController::SetOverridePromptText(
     const std::u16string& override_prompt_text) {
   override_prompt_text_ = override_prompt_text;
-  use_override_prompt_text_ = true;
 }
 
 void AppModalDialogController::WebContentsDestroyed() {

@@ -138,9 +138,8 @@ class AppModalDialogController : public content::WebContentsObserver {
   content::JavaScriptDialogManager::DialogClosedCallback callback_;
 
   // Used only for testing. Specifies alternative prompt text that should be
-  // used when notifying the delegate, if |use_override_prompt_text_| is true.
-  std::u16string override_prompt_text_;
-  bool use_override_prompt_text_;
+  // used when notifying the delegate.
+  std::optional<std::u16string> override_prompt_text_;
 };
 
 // An interface to observe that a modal dialog is shown.
