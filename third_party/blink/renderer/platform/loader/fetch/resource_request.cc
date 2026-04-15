@@ -348,23 +348,6 @@ void ResourceRequestHead::ClearHTTPOrigin() {
   http_header_fields_.Remove(http_names::kOrigin);
 }
 
-void ResourceRequestHead::SetHTTPOriginToMatchReferrerPolicyIfNeeded(
-    const SecurityOrigin* origin) {
-  if (!NeedsHTTPOrigin()) {
-    return;
-  }
-  if (origin->IsOpaque()) {
-    SetHTTPOrigin(origin);
-  } else {
-    Referrer origin_with_referrer_policy_applied =
-        SecurityPolicy::GenerateReferrer(referrer_policy_, url_,
-                                         origin->ToString());
-    SetHTTPOrigin(SecurityOrigin::CreateFromString(
-                      origin_with_referrer_policy_applied.referrer)
-                      .get());
-  }
-}
-
 void ResourceRequestHead::ClearHTTPUserAgent() {
   http_header_fields_.Remove(http_names::kUserAgent);
 }

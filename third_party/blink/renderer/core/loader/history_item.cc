@@ -276,7 +276,6 @@ ResourceRequest HistoryItem::GenerateResourceRequest(
     request.SetHttpMethod(http_names::kPOST);
     request.SetHttpBody(form_data_);
     request.SetHTTPContentType(form_content_type_);
-    request.SetHTTPOriginToMatchReferrerPolicyIfNeeded(requestor_origin_.get());
   }
   return request;
 }

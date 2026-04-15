@@ -210,8 +210,6 @@ ResourceRequest FrameLoader::ResourceRequestForReload(
     request.SetReferrerString(referrer.referrer);
     request.SetReferrerPolicy(referrer.referrer_policy);
     request.ClearHTTPOrigin();
-    request.SetHTTPOriginToMatchReferrerPolicyIfNeeded(
-        window->GetSecurityOrigin());
   }
 
   request.SetSkipServiceWorker(frame_load_type ==
