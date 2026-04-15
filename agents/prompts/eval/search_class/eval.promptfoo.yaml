@@ -15,5 +15,6 @@ tests:
     - type: icontains
       value: browser_accessibility_service.cc
     metadata:
-      tags:
-      - stable
+      # This was previously tagged with the "stable" tag, but that was
+      # removed as part of b/502322531 since Gemini 3 Flash did not
+      # pass sufficiently often.
