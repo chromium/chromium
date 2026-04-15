@@ -83,6 +83,7 @@ source_set("permissions") {
     "//chrome/browser/favicon",
     "//chrome/browser/geolocation",
     "//chrome/browser/idle",
+    "//chrome/browser/media",
     "//chrome/browser/metrics",
     "//chrome/browser/nfc",
     "//chrome/browser/optimization_guide",

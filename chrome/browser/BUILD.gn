@@ -284,30 +284,6 @@ static_library("browser") {
     "lifetime/application_lifetime.h",
     "lifetime/browser_shutdown.cc",
     "lifetime/browser_shutdown.h",
-    "media/audio_service_util.cc",
-    "media/audio_service_util.h",
-    "media/autoplay_policy_status_observer.cc",
-    "media/autoplay_policy_status_observer.h",
-    "media/chrome_media_session_client.cc",
-    "media/chrome_media_session_client.h",
-    "media/media_engagement_contents_observer.cc",
-    "media/media_engagement_contents_observer.h",
-    "media/media_engagement_preloaded_list.cc",
-    "media/media_engagement_preloaded_list.h",
-    "media/media_engagement_score.cc",
-    "media/media_engagement_score.h",
-    "media/media_engagement_service.cc",
-    "media/media_engagement_service.h",
-    "media/media_engagement_service_factory.cc",
-    "media/media_engagement_service_factory.h",
-    "media/media_engagement_session.cc",
-    "media/media_engagement_session.h",
-    "media/media_storage_id_salt.cc",
-    "media/media_storage_id_salt.h",
-    "media/output_protection_proxy.cc",
-    "media/output_protection_proxy.h",
-    "media/unified_autoplay_config.cc",
-    "media/unified_autoplay_config.h",
     "memory_details.cc",
     "memory_details.h",
     "metrics/accessibility_state_provider.cc",
@@ -754,6 +730,11 @@ static_library("browser") {
     # split out yet.
     "//chrome/browser/enterprise:impl",
     "//chrome/browser/ntp_tiles:impl",
+
+    # media:impl includes headers from //chrome/browser that can't be
+    # split out yet (e.g. browser_process.h,
+    # policy/chrome_browser_policy_connector.h).
+    "//chrome/browser/media:impl",
     "//chrome/browser/memory:impl",
     "//chrome/browser/preloading/search_preload:search_preload",
     "//chrome/browser/ai:impl",
@@ -1217,9 +1198,11 @@ static_library("browser") {
     "//chrome/browser/lookalikes:impl",
     "//chrome/browser/manta",
     "//chrome/browser/manta:impl",
+    "//chrome/browser/media",
     "//chrome/browser/media:access_handler",
     "//chrome/browser/media:access_handler_impl",
     "//chrome/browser/media:audio_process_ml_model_forwarder",
+    "//chrome/browser/media:impl",
     "//chrome/browser/media/prefs",
     "//chrome/browser/media/router",
     "//chrome/browser/media/router:media_router_feature",
@@ -2454,16 +2437,6 @@ static_library("browser") {
       "lens/android/lens_prefs.h",
       "lifetime/application_lifetime_android.cc",
       "lifetime/application_lifetime_android.h",
-      "media/android/cdm/media_drm_origin_id_manager.cc",
-      "media/android/cdm/media_drm_origin_id_manager.h",
-      "media/android/cdm/media_drm_origin_id_manager_factory.cc",
-      "media/android/cdm/media_drm_origin_id_manager_factory.h",
-      "media/android/cdm/media_drm_storage_factory.cc",
-      "media/android/cdm/media_drm_storage_factory.h",
-      "media/android/cdm/per_device_provisioning_permission.cc",
-      "media/android/cdm/per_device_provisioning_permission.h",
-      "media/android/router/chrome_media_router_client.cc",
-      "media/android/router/chrome_media_router_client.h",
       "memory_details_android.cc",
       "metrics/android/background_upload_task.cc",
       "metrics/android/background_upload_task.h",
@@ -3056,16 +3029,6 @@ static_library("browser") {
       "lifetime/restartability_monitor.h",
       "lifetime/smart_restart_metrics_observer.cc",
       "lifetime/smart_restart_metrics_observer.h",
-      "media/audio_ducker.cc",
-      "media/audio_ducker.h",
-      "media/cast_mirroring_service_host.cc",
-      "media/cast_mirroring_service_host.h",
-      "media/cast_mirroring_service_host_factory.cc",
-      "media/cast_mirroring_service_host_factory.h",
-      "media/mirroring_service_host.cc",
-      "media/mirroring_service_host.h",
-      "media/offscreen_tab.cc",
-      "media/offscreen_tab.h",
       "memory/oom_memory_details.cc",
       "metrics/browser_activity_watcher.cc",
       "metrics/browser_activity_watcher.h",
@@ -3863,24 +3826,6 @@ static_library("browser") {
     }
   }
 
-  if (enable_screen_capture) {
-    sources += [
-      "media/capture_access_handler_base.cc",
-      "media/capture_access_handler_base.h",
-    ]
-
-    if (is_android) {
-      sources += [
-        "media/android/desktop_media_picker_android.cc",
-        "media/android/desktop_media_picker_android.h",
-        "media/android/media_capture_picker_manager_bridge.cc",
-        "media/android/media_capture_picker_manager_bridge.h",
-        "media/android/tab_sharing_indicator_android.cc",
-        "media/android/tab_sharing_indicator_android.h",
-      ]
-    }
-  }
-
   if (is_chromeos) {
     sources += [
       "accessibility/media_app/ax_media_app.h",
@@ -3912,10 +3857,6 @@ static_library("browser") {
       "icon_loader_chromeos.cc",
       "lifetime/application_lifetime_chromeos.cc",
       "lifetime/application_lifetime_chromeos.h",
-      "media/chromeos_login_and_lock_media_access_handler.cc",
-      "media/chromeos_login_and_lock_media_access_handler.h",
-      "media/platform_verification_chromeos.cc",
-      "media/platform_verification_chromeos.h",
       "memory/memory_kills_monitor.cc",
       "memory/oom_kills_monitor.cc",
       "metrics/ambient_mode_metrics_provider.cc",
@@ -5130,10 +5071,6 @@ static_library("browser") {
       "font_prewarmer_tab_helper.h",
       "fullscreen_win.cc",
       "icon_loader_win.cc",
-      "media/cdm_pref_service_helper.cc",
-      "media/cdm_pref_service_helper.h",
-      "media/media_foundation_service_monitor.cc",
-      "media/media_foundation_service_monitor.h",
       "memory_details_win.cc",
       "metrics/antivirus_metrics_provider_win.cc",
       "metrics/google_update_metrics_provider_win.cc",
@@ -5628,13 +5565,6 @@ static_library("browser") {
     allow_circular_includes_from += [ "//chrome/browser/downgrade:impl" ]
   }
 
-  if (is_android || is_chromeos || is_win) {
-    sources += [
-      "media/protected_media_identifier_permission_context.cc",
-      "media/protected_media_identifier_permission_context.h",
-    ]
-  }
-
   if (is_posix && !is_mac) {
     sources += [
       "//chrome/app/chrome_crash_reporter_client.cc",
@@ -5859,10 +5789,6 @@ static_library("browser") {
   }
 
   if (enable_media_remoting) {
-    sources += [
-      "media/cast_remoting_connector.cc",
-      "media/cast_remoting_connector.h",
-    ]
     deps += [ "//media/mojo/mojom:remoting" ]
   }
 
@@ -5945,8 +5871,6 @@ static_library("browser") {
     sources += [
       "accessibility/animation_policy_prefs.cc",
       "accessibility/animation_policy_prefs.h",
-      "media/extension_media_access_handler.cc",
-      "media/extension_media_access_handler.h",
       "policy/value_provider/extension_install_policies_value_provider.cc",
       "policy/value_provider/extension_install_policies_value_provider.h",
       "policy/value_provider/extension_policies_value_provider.cc",
@@ -6078,19 +6002,9 @@ static_library("browser") {
   }
 
   if (enable_library_cdms) {
-    sources += [
-      "media/output_protection_impl.cc",
-      "media/output_protection_impl.h",
-    ]
     deps += [ "//media/mojo/mojom" ]
 
     if (enable_cdm_storage_id) {
-      sources += [
-        "media/cdm_storage_id.cc",
-        "media/cdm_storage_id.h",
-        "media/cdm_storage_id_key.cc",
-        "media/cdm_storage_id_key.h",
-      ]
       if (is_chrome_branded) {
         sources += [ "internal/google_chrome_cdm_storage_id_key.h" ]
       }
@@ -6102,13 +6016,6 @@ static_library("browser") {
     if (mojo_media_host == "browser") {
       deps += [ "//media/mojo/services" ]
     }
-  }
-
-  if (enable_library_cdms || is_win) {
-    sources += [
-      "media/cdm_document_service_impl.cc",
-      "media/cdm_document_service_impl.h",
-    ]
   }
 
   if (enable_chrome_notifications) {

@@ -139,6 +139,7 @@ source_set("impl") {
     "//chrome/browser:browser_process",
     "//chrome/browser/actor:impl",
     "//chrome/browser/history_embeddings",
+    "//chrome/browser/media",
     "//chrome/browser/net",
     "//chrome/browser/page_load_metrics",
     "//chrome/browser/permissions",

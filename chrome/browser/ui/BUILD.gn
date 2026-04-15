@@ -236,6 +236,8 @@ static_library("ui") {
     "//chrome/browser/feedback",
     "//chrome/browser/headless",
     "//chrome/browser/loader",
+    "//chrome/browser/media",
+    "//chrome/browser/media:impl",
     "//chrome/browser/media/webrtc",
     "//chrome/browser/memory",
     "//chrome/browser/net",
@@ -771,6 +773,11 @@ static_library("ui") {
     # split out yet.
     "//chrome/browser/enterprise",
     "//chrome/browser/enterprise:impl",
+
+    # media:impl includes headers from //chrome/browser/ui that can't be
+    # split out yet (e.g. tab_sharing/tab_sharing_ui.h, browser.h,
+    # tabs/tab_strip_model.h, recently_audible_helper.h).
+    "//chrome/browser/media:impl",
     "//chrome/browser/ui/autofill/payments",
     "//chrome/browser/ui/autofill/payments:impl",
 

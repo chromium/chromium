@@ -114,6 +114,7 @@ source_set("impl") {
     "//chrome/browser/history",
     "//chrome/browser/language",
     "//chrome/browser/login_detection",
+    "//chrome/browser/media",
     "//chrome/browser/media/webrtc",
     "//chrome/browser/optimization_guide",
     "//chrome/browser/password_manager/factories",

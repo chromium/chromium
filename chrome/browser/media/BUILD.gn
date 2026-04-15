@@ -2,7 +2,12 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/config/chrome_build.gni")
+import("//content/public/common/features.gni")
+import("//extensions/buildflags/buildflags.gni")
+import("//media/media_options.gni")
 import("//mojo/public/tools/bindings/mojom.gni")
+import("//rlz/buildflags/buildflags.gni")
 import("//third_party/protobuf/proto_library.gni")
 
 source_set("access_handler") {
@@ -83,6 +88,270 @@ source_set("browser_tests") {
     "//media",
     "//testing/gtest",
   ]
+}
+
+source_set("media") {
+  public = [
+    "audio_service_util.h",
+    "autoplay_policy_status_observer.h",
+    "chrome_media_session_client.h",
+    "media_engagement_contents_observer.h",
+    "media_engagement_preloaded_list.h",
+    "media_engagement_score.h",
+    "media_engagement_service.h",
+    "media_engagement_service_factory.h",
+    "media_engagement_session.h",
+    "media_storage_id_salt.h",
+    "output_protection_proxy.h",
+    "unified_autoplay_config.h",
+  ]
+
+  public_deps = [
+    ":access_handler",
+    ":mojo_bindings",
+    "//base",
+    "//chrome/browser/profiles",
+    "//components/content_settings/core/browser",
+    "//components/history/core/browser",
+    "//components/keyed_service/core",
+    "//components/pref_registry",
+    "//content/public/browser",
+    "//extensions/buildflags",
+    "//services/metrics/public/cpp:ukm_builders",
+    "//url",
+  ]
+
+  if (is_chromeos) {
+    public += [
+      "chromeos_login_and_lock_media_access_handler.h",
+      "platform_verification_chromeos.h",
+    ]
+    public_deps += [ "//ash" ]
+  }
+
+  if (!is_android) {
+    public += [
+      "audio_ducker.h",
+      "cast_mirroring_service_host.h",
+      "cast_mirroring_service_host_factory.h",
+      "mirroring_service_host.h",
+      "offscreen_tab.h",
+    ]
+    public_deps += [
+      "//components/mirroring/mojom:service",
+      "//media/capture/mojom:video_capture",
+      "//media/mojo/mojom",
+      "//mojo/public/cpp/bindings",
+      "//services/media_session/public/mojom",
+      "//ui/gfx/geometry",
+    ]
+  }
+
+  if (is_android) {
+    public += [
+      "android/cdm/media_drm_origin_id_manager.h",
+      "android/cdm/media_drm_origin_id_manager_factory.h",
+      "android/cdm/media_drm_storage_factory.h",
+      "android/cdm/per_device_provisioning_permission.h",
+      "android/router/chrome_media_router_client.h",
+    ]
+    public_deps += [
+      "//media",
+      "//media/mojo/mojom",
+      "//mojo/public/cpp/bindings",
+    ]
+  }
+
+  if (is_android || is_chromeos || is_win) {
+    public += [ "protected_media_identifier_permission_context.h" ]
+    public_deps += [ "//components/permissions" ]
+  }
+
+  if (is_win) {
+    public += [
+      "cdm_pref_service_helper.h",
+      "media_foundation_service_monitor.h",
+    ]
+    public_deps += [ "//ui/display" ]
+  }
+
+  if (enable_media_remoting) {
+    public += [ "cast_remoting_connector.h" ]
+    public_deps += [
+      "//components/prefs",
+      "//components/sessions:session_id",
+      "//media/mojo/mojom:remoting",
+      "//mojo/public/cpp/bindings",
+    ]
+  }
+
+  if (enable_extensions) {
+    public += [ "extension_media_access_handler.h" ]
+  }
+
+  if (enable_library_cdms) {
+    public += [ "output_protection_impl.h" ]
+    public_deps += [
+      "//media/mojo/mojom",
+      "//mojo/public/cpp/bindings",
+    ]
+
+    if (enable_cdm_storage_id) {
+      public += [
+        "cdm_storage_id.h",
+        "cdm_storage_id_key.h",
+      ]
+    }
+  }
+
+  if (enable_library_cdms || is_win) {
+    public += [ "cdm_document_service_impl.h" ]
+    public_deps += [ "//media/mojo/mojom" ]
+
+    if (is_chromeos) {
+      public_deps += [ "//chrome/browser/ash/attestation" ]
+    }
+  }
+}
+
+source_set("impl") {
+  sources = [
+    "audio_service_util.cc",
+    "autoplay_policy_status_observer.cc",
+    "chrome_media_session_client.cc",
+    "media_engagement_contents_observer.cc",
+    "media_engagement_preloaded_list.cc",
+    "media_engagement_score.cc",
+    "media_engagement_service.cc",
+    "media_engagement_service_factory.cc",
+    "media_engagement_session.cc",
+    "media_storage_id_salt.cc",
+    "output_protection_proxy.cc",
+    "unified_autoplay_config.cc",
+  ]
+
+  public_deps = [
+    ":media",
+    "//chrome/browser:browser_public_dependencies",
+  ]
+
+  deps = [
+    ":media_engagement_preload_proto",
+    "//chrome/browser:browser_process",
+    "//chrome/browser/content_settings:content_settings_factory",
+    "//chrome/browser/history",
+    "//chrome/browser/media/webrtc",
+    "//chrome/browser/preloading/prefetch/no_state_prefetch",
+    "//chrome/browser/ui:ui_features",
+    "//chrome/browser/ui/browser_window",
+    "//components/content_settings/browser",
+    "//components/content_settings/core/common",
+    "//components/no_state_prefetch/browser",
+    "//components/prefs",
+    "//components/sessions",
+    "//components/site_engagement/content",
+    "//components/user_prefs",
+    "//crypto",
+    "//media",
+    "//services/metrics/public/cpp:ukm_builders",
+    "//third_party/blink/public/common",
+  ]
+
+  if (is_chromeos) {
+    sources += [
+      "chromeos_login_and_lock_media_access_handler.cc",
+      "platform_verification_chromeos.cc",
+    ]
+    deps += [
+      "//chrome/browser/ui/ash/login",
+      "//chrome/browser/ui/webui/ash/lock_screen_reauth",
+      "//chromeos/ash/components/settings",
+      "//chromeos/dbus/constants",
+      "//components/guest_view/browser",
+    ]
+  }
+
+  if (!is_android) {
+    sources += [
+      "audio_ducker.cc",
+      "cast_mirroring_service_host.cc",
+      "cast_mirroring_service_host_factory.cc",
+      "mirroring_service_host.cc",
+      "offscreen_tab.cc",
+    ]
+    deps += [
+      "//chrome/browser/media/router:media_router_feature",
+      "//chrome/browser/media/router/discovery/access_code:access_code_cast_feature",
+      "//chrome/browser/net",
+      "//chrome/browser/ui/tab_sharing",
+      "//chrome/browser/ui/tabs:tab_strip",
+      "//components/media_router/browser",
+      "//components/mirroring/browser",
+      "//media/mojo/services",
+    ]
+  }
+
+  if (is_android) {
+    sources += [
+      "android/cdm/media_drm_origin_id_manager.cc",
+      "android/cdm/media_drm_origin_id_manager_factory.cc",
+      "android/cdm/media_drm_storage_factory.cc",
+      "android/cdm/per_device_provisioning_permission.cc",
+      "android/router/chrome_media_router_client.cc",
+    ]
+    deps += [
+      "//chrome/android:chrome_jni_headers",
+      "//chrome/browser/net",
+      "//components/cdm/browser",
+      "//third_party/widevine/cdm:headers",
+    ]
+  }
+
+  if (is_android || is_chromeos || is_win) {
+    sources += [ "protected_media_identifier_permission_context.cc" ]
+  }
+
+  if (is_win) {
+    sources += [
+      "cdm_pref_service_helper.cc",
+      "media_foundation_service_monitor.cc",
+    ]
+  }
+
+  if (enable_media_remoting) {
+    sources += [ "cast_remoting_connector.cc" ]
+    deps += [
+      "//chrome/browser/media/router:media_router_feature",
+      "//media/mojo/mojom:remoting",
+    ]
+  }
+
+  if (enable_extensions) {
+    sources += [ "extension_media_access_handler.cc" ]
+  }
+
+  if (enable_library_cdms) {
+    sources += [ "output_protection_impl.cc" ]
+    deps += [ "//media/mojo/mojom" ]
+
+    if (enable_cdm_storage_id) {
+      sources += [
+        "cdm_storage_id.cc",
+        "cdm_storage_id_key.cc",
+      ]
+      if (enable_rlz) {
+        deps += [ "//rlz:rlz_lib" ]
+      }
+    }
+
+    if (mojo_media_host == "browser") {
+      deps += [ "//media/mojo/services" ]
+    }
+  }
+
+  if (enable_library_cdms || is_win) {
+    sources += [ "cdm_document_service_impl.cc" ]
+  }
 }
 
 mojom("mojo_bindings") {
