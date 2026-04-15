@@ -137,7 +137,7 @@ void PlaybackCommandDispatcher::OnRemotingSessionNegotiated(
                           base::Unretained(this)),
       base::BindRepeating(
           &PlaybackCommandDispatcher::SendRemotingRpcMessageToRemote,
-          base::Unretained(this)));
+          weak_factory_.GetWeakPtr()));
 }
 
 void PlaybackCommandDispatcher::ConfigureRemotingAsync(
