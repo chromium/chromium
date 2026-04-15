@@ -33,6 +33,7 @@ build_webui_tests("build") {
     "overlay/selection_overlay_test.ts",
     "overlay/simplified_selection_test.ts",
     "overlay/test_language_browser_proxy.ts",
+    "overlay/test_searchbox_browser_proxy.ts",
     "overlay/test_overlay_browser_proxy.ts",
     "overlay/translate_button_test.ts",
     "side_panel/composebox_test.ts",

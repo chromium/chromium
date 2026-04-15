@@ -15,7 +15,8 @@ import {eventToPromise, microtasksFinished} from 'chrome://webui-test/test_util.
 
 import {TestSearchboxBrowserProxy} from './test_searchbox_browser_proxy.js';
 
-suite('Lens search', () => {
+// This is the realbox's lens button tests, not the lens searchbox's tests.
+suite('Lens search in ntp realbox', () => {
   let realbox: SearchboxElement;
 
   let testProxy: TestSearchboxBrowserProxy;

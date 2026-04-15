@@ -14,7 +14,7 @@ import {getDeepActiveElement} from 'chrome://resources/js/util.js';
 import {NavigationPredictor} from 'chrome://resources/mojo/components/omnibox/browser/omnibox.mojom-webui.js';
 import type {AutocompleteMatch} from 'chrome://resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
 import {RenderType, SideType} from 'chrome://resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
-import {assertEquals, assertFalse, assertNotEquals, assertNull, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {TestMock} from 'chrome://webui-test/test_mock.js';
 import {eventToPromise, isVisible, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
@@ -147,8 +147,7 @@ suite('SearchboxTest', () => {
   let testMetricsReporterProxy: TestMock<BrowserProxyImpl>;
 
   setup(async () => {
-    ({realbox, testProxy, testMetricsReporterProxy} =
-         await setupRealboxTest());
+    ({realbox, testProxy, testMetricsReporterProxy} = await setupRealboxTest());
     window.open = () => null;
   });
 
@@ -682,46 +681,6 @@ suite('SearchboxTest', () => {
     assertTrue(args.clearResult);
   });
 
-  test(
-      'autocomplete triggers on focus on non-empty input with thumbnail',
-      async () => {
-        testProxy.callbackRouterRemote.setThumbnail(
-            'foo.png', /*isDeletable=*/ true);
-        await microtasksFinished();
-        const thumbnail = realbox.shadowRoot.querySelector('#thumbnail');
-        assertTrue(thumbnail !== null);
-        realbox.$.input.inputElement.value = 'hi';
-        realbox.$.input.inputElement.dispatchEvent(new InputEvent('input'));
-        // Make sure realbox is not focused and matches aren't showing.
-        realbox.$.input.blur();
-        assertFalse(await areMatchesShowing());
-
-        // Click on realbox.
-        realbox.$.input.inputElement.dispatchEvent(
-            new MouseEvent('mousedown', {button: 0}));
-
-        // Check that autocomplete gets queried with last input on click with
-        // non empty input when thumbnail is showing.
-        let args = await testProxy.handler.whenCalled('queryAutocomplete');
-        assertEquals(args.input, realbox.$.input.inputElement.value);
-
-        // Make sure realbox focus is not focused and matches aren't showing.
-        realbox.$.input.blur();
-        assertFalse(await areMatchesShowing());
-
-        // Tabbing into realbox.
-        realbox.$.input.inputElement.dispatchEvent(new KeyboardEvent('keyup', {
-          bubbles: true,
-          cancelable: true,
-          composed: true,
-          key: 'Tab',
-        }));
-
-        // Check that autocomplete gets queried with last input on keyup with
-        // non empty input when thumbnail is showing.
-        args = await testProxy.handler.whenCalled('queryAutocomplete');
-        assertEquals(args.input, realbox.$.input.inputElement.value);
-      });
 
   //============================================================================
   // Test Autocomplete Response
@@ -2778,107 +2737,6 @@ suite('SearchboxTest', () => {
     assertEquals(0, args.line);
     assertEquals(
         NavigationPredictor.kUpOrDownArrowButton, args.navigationPredictor);
-  });
-
-  //============================================================================
-  // Test Thumbnails
-  //============================================================================
-  test('thumbnail appears on page call from browser', async () => {
-    assertTrue(
-        realbox.shadowRoot.querySelector('#thumbnailContainer') === null);
-    testProxy.callbackRouterRemote.setThumbnail(
-        'foo.png', /*isDeletable=*/ true);
-    await microtasksFinished();
-    const thumbnailContainer =
-        realbox.shadowRoot.querySelector('#thumbnailContainer');
-    assertTrue(thumbnailContainer !== null);
-    assertTrue(isVisible(thumbnailContainer));
-  });
-
-  test('thumbnail clicked deletion', async () => {
-    testProxy.callbackRouterRemote.setThumbnail(
-        'foo.png', /*isDeletable=*/ true);
-    await microtasksFinished();
-    const thumbnail = realbox.shadowRoot.querySelector('#thumbnail');
-    assertTrue(!!thumbnail);
-    const thumbnailRemoveButton =
-        thumbnail.shadowRoot!.querySelector<HTMLElement>('#remove');
-    assertTrue(!!thumbnailRemoveButton);
-    // Thumbnail remove button click should remove thumbnail, focus input,
-    // and notify browser.
-    thumbnailRemoveButton.click();
-    await microtasksFinished();
-    const thumbnailContainer =
-        realbox.shadowRoot.querySelector<HTMLElement>('#thumbnailContainer');
-    assertNull(thumbnailContainer);
-    assertEquals(realbox.$.input.inputElement, getDeepActiveElement());
-    await testProxy.handler.whenCalled('onThumbnailRemoved');
-    assertEquals(1, testProxy.handler.getCallCount('onThumbnailRemoved'));
-    // When thumbnail is removed, autocomplete should be requeried
-    const args = await testProxy.handler.whenCalled('stopAutocomplete');
-    assertTrue(args.clearResult);
-    assertEquals(1, testProxy.handler.getCallCount('queryAutocomplete'));
-  });
-
-  test('thumbnail keyboard deletion', async () => {
-    realbox.$.input.inputElement.value = '';
-    testProxy.callbackRouterRemote.setThumbnail(
-        'foo.png', /*isDeletable=*/ true);
-    await microtasksFinished();
-    const thumbnail = realbox.shadowRoot.querySelector('#thumbnail');
-    assertTrue(thumbnail !== null);
-    realbox.$.input.focus();
-    realbox.$.inputWrapper.dispatchEvent(new KeyboardEvent('keydown', {
-      key: 'Backspace',
-      bubbles: true,
-      cancelable: true,
-      composed: true,
-    }));
-    await microtasksFinished();
-    // First backspace should focus the thumbnail
-    assertEquals(thumbnail, getDeepActiveElement());
-
-    // When thumbnail is focused, a backspace should delete the thumbnail,
-    // focus input, and notify browser.
-    realbox.$.inputWrapper.dispatchEvent(new KeyboardEvent('keydown', {
-      key: 'Backspace',
-      bubbles: true,
-      cancelable: true,
-      composed: true,
-    }));
-    await microtasksFinished();
-    const thumbnailContainer =
-        realbox.shadowRoot.querySelector<HTMLElement>('#thumbnailContainer');
-    assertNull(thumbnailContainer);
-    assertEquals(realbox.$.input.inputElement, getDeepActiveElement());
-    await testProxy.handler.whenCalled('onThumbnailRemoved');
-    assertEquals(1, testProxy.handler.getCallCount('onThumbnailRemoved'));
-    // When thumbnail is removed, autocomplete should be requeried
-    const args = await testProxy.handler.whenCalled('stopAutocomplete');
-    assertTrue(args.clearResult);
-    assertEquals(1, testProxy.handler.getCallCount('queryAutocomplete'));
-  });
-
-  test('keyboard deletion with non-empty input', async () => {
-    testProxy.callbackRouterRemote.setThumbnail(
-        'foo.png', /*isDeletable=*/ true);
-    await microtasksFinished();
-    const thumbnail = realbox.shadowRoot.querySelector('#thumbnail');
-    assertTrue(thumbnail !== null);
-    realbox.$.input.inputElement.value = 'hi';
-    realbox.$.input.focus();
-    // Cursor is at the end of the input.
-    assertEquals(realbox.$.input.inputElement.selectionStart, 2);
-    const backspaceEvent = new KeyboardEvent('keydown', {
-      key: 'Backspace',
-      bubbles: true,
-      cancelable: true,
-      composed: true,  // So it propagates across shadow DOM boundary.
-    });
-    realbox.$.input.inputElement.dispatchEvent(backspaceEvent);
-    // Checking the input value after a backspace event doesn't work
-    // so check the default behavior occurs (deleting a character).
-    assertFalse(backspaceEvent.defaultPrevented);
   });
 
   //============================================================================

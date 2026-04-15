@@ -28,11 +28,6 @@
   z-index: 99;
 }
 
-/* Side panel searchbox should not have a shadow when dropdown isn't visible */
-:host([is-lens-searchbox_]:not([dropdown-is-visible])) {
-  --cr-searchbox-shadow: none;
-}
-
 :host([searchbox-chrome-refresh-theming][dropdown-is-visible]) {
   --cr-searchbox-shadow: 0 0 12px 4px var(--color-searchbox-shadow);
 }
@@ -71,10 +66,6 @@
   }
 }
 
-:host([dropdown-is-visible]:not([is-lens-searchbox_])) {
-  box-shadow: none;
-}
-
 #inputWrapper {
   background-color: var(--color-searchbox-background);
   border-radius: var(--cr-searchbox-border-radius);
@@ -87,11 +78,6 @@
   width: 100%;
 }
 
-:host([is-lens-searchbox_]) #inputWrapper {
-  box-shadow: none;
-  overflow: hidden;
-}
-
 cr-searchbox-input::part(searchbox-input) {
   align-self: center;
   padding-top: 2px;
@@ -102,24 +88,8 @@ cr-searchbox-input::part(searchbox-input) {
   color: var(--color-searchbox-selection-foreground);
 }
 
-:host([is-lens-searchbox_]) cr-searchbox-input::part(searchbox-input):focus::placeholder {
-  visibility: visible;
-}
-
-:host([is-lens-searchbox_][dropdown-is-visible]) cr-searchbox-input::part(searchbox-input) {
-  background-color: var(--color-bubble-searchbox-results-input-background, --color-searchbox-results-background);
-}
-
-:host([is-lens-searchbox_]:not([dropdown-is-visible])) cr-searchbox-input::part(searchbox-input):focus {
-  background-color: var(--color-searchbox-background);
-}
-
 cr-searchbox-input::part(icon) {
   align-self: center;
-}
-
-:host-context([is-back-arrow-visible]) #icon {
-  display: none;
 }
 
 .searchbox-icon-button {
@@ -193,12 +163,6 @@ cr-searchbox-input::part(icon) {
   background-color: var(--color-searchbox-lens-voice-icon-background);
 }
 
-#thumbnailContainer {
-  align-self: center;
-  padding-inline: 10px;
-  z-index: 101;
-}
-
 cr-searchbox-dropdown::part(dropdown-content) {
   background-color: unset;
   border-radius: unset;
@@ -216,10 +180,6 @@ cr-searchbox-dropdown::part(dropdown-content) {
   display: flex;
   flex-direction: column;
   width: 100%;
-}
-
-:host([is-lens-searchbox_]) cr-searchbox-input::part(input-inner-container) {
-  min-height: 52px;
 }
 
 #inputInnerBottomContainer {

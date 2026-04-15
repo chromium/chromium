@@ -4,7 +4,6 @@
 
 import './searchbox_dropdown.js';
 import './searchbox_icon.js';
-import './searchbox_thumbnail.js';
 import './searchbox_input.js';
 
 import type {ComposeboxState, ContextualUpload} from '//resources/cr_components/composebox/common.js';
@@ -149,14 +148,6 @@ export class SearchboxElement extends SearchboxElementBase implements
         reflect: true,
       },
 
-      showThumbnail: {
-        type: Boolean,
-        reflect: true,
-      },
-
-      thumbnailUrl_: {type: String},
-      isThumbnailDeletable_: {type: Boolean},
-
       useWebkitSearchIcons_: {
         type: Boolean,
         reflect: true,
@@ -164,6 +155,10 @@ export class SearchboxElement extends SearchboxElementBase implements
     };
   }
 
+  // Required since searchbox_searchbox_dropdown.html.ts
+  // still uses it for other searchboxes despite it not
+  // being needed for regular searchbox
+  showThumbnail: boolean = false;
   accessor canShowSecondarySide: boolean = false;
   accessor colorSourceIsBaseline: boolean = false;
   accessor hadSecondarySide: boolean = false;
@@ -174,7 +169,6 @@ export class SearchboxElement extends SearchboxElementBase implements
   accessor searchboxSteadyStateShadow: boolean =
       loadTimeData.getBoolean('searchboxCr23SteadyStateShadow');
   accessor searchboxLayoutMode: string = '';
-  accessor showThumbnail: boolean = false;
   accessor placeholderText: string = '';
   protected accessor enableThumbnailSizingTweaks_: boolean =
       loadTimeData.getBoolean('enableThumbnailSizingTweaks');
@@ -184,15 +178,12 @@ export class SearchboxElement extends SearchboxElementBase implements
       loadTimeData.getBoolean('searchboxVoiceSearch');
   protected accessor searchboxLensSearchEnabled_: boolean =
       loadTimeData.getBoolean('searchboxLensSearch');
-  protected accessor thumbnailUrl_: string = '';
-  protected accessor isThumbnailDeletable_: boolean = false;
   protected accessor useWebkitSearchIcons_: boolean = false;
 
   protected callbackRouter_: PageCallbackRouter;
   private pageHandler_: PageHandlerInterface;
 
   private autocompleteResultChangedListenerId_: number|null = null;
-  private thumbnailChangedListenerId_: number|null = null;
 
   constructor() {
     performance.mark('realbox-creation-start');
@@ -207,9 +198,6 @@ export class SearchboxElement extends SearchboxElementBase implements
     this.autocompleteResultChangedListenerId_ =
         this.callbackRouter_.autocompleteResultChanged.addListener(
             this.onAutocompleteResultChanged.bind(this));
-    this.thumbnailChangedListenerId_ =
-        this.callbackRouter_.setThumbnail.addListener(
-            this.onSetThumbnail_.bind(this));
   }
 
   override disconnectedCallback() {
@@ -218,8 +206,6 @@ export class SearchboxElement extends SearchboxElementBase implements
     assert(this.autocompleteResultChangedListenerId_);
     this.callbackRouter_.removeListener(
         this.autocompleteResultChangedListenerId_);
-    assert(this.thumbnailChangedListenerId_);
-    this.callbackRouter_.removeListener(this.thumbnailChangedListenerId_);
   }
 
   override willUpdate(changedProperties: PropertyValues<this>) {
@@ -237,10 +223,6 @@ export class SearchboxElement extends SearchboxElementBase implements
     if (changedPrivateProperties.has('result') ||
         changedPrivateProperties.has('selectedMatchIndex')) {
       this.selectedMatch = this.computeSelectedMatch_();
-    }
-
-    if (changedPrivateProperties.has('thumbnailUrl_')) {
-      this.showThumbnail = !!this.thumbnailUrl_;
     }
   }
 
@@ -313,11 +295,6 @@ export class SearchboxElement extends SearchboxElementBase implements
   // Callbacks
   //============================================================================
 
-  private onSetThumbnail_(thumbnailUrl: string, isDeletable: boolean) {
-    this.thumbnailUrl_ = thumbnailUrl;
-    this.isThumbnailDeletable_ = isDeletable;
-  }
-
   //============================================================================
   // Event handlers
   //============================================================================
@@ -328,56 +305,15 @@ export class SearchboxElement extends SearchboxElementBase implements
 
   protected onSearchboxInputTextUpdated_(
       e: CustomEvent<{value: string, isComposing: boolean}>) {
-    this.onSearchboxInputTextUpdated(e);
+    this.onSearchboxInputTextUpdated(e, /*is_composing=*/ false);
   }
 
   protected onSearchboxInputFilesPasted_(e: CustomEvent<{files: FileList}>) {
     this.processFiles_(e.detail.files, ComposeboxContextAddedMethod.COPY_PASTE);
   }
 
-  override handleKeyNavigation(e: KeyboardEvent) {
-    if (this.showThumbnail) {
-      const thumbnail =
-          this.shadowRoot.querySelector<HTMLElement>('cr-searchbox-thumbnail');
-      if (thumbnail === this.shadowRoot.activeElement) {
-        if (e.key === 'Backspace' || e.key === 'Enter') {
-          // Remove thumbnail, focus input, and notify browser.
-          this.thumbnailUrl_ = '';
-          this.$.input.focus();
-          this.clearAutocompleteMatches();
-          this.pageHandler_.onThumbnailRemoved();
-          const inputValue = this.$.input.inputElement.value;
-          // Clearing the autocomplete matches above doesn't allow for
-          // navigation directly after removing the thumbnail. Must manually
-          // query autocomplete after removing the thumbnail since the
-          // thumbnail isn't part of the text input.
-          this.queryAutocomplete(inputValue, false);
-          e.preventDefault();
-        } else if (e.key === 'Tab' && !e.shiftKey) {
-          this.$.input.focus();
-          e.preventDefault();
-        } else if (
-            this.dropdownIsVisible &&
-            (e.key === 'ArrowUp' || e.key === 'ArrowDown')) {
-          // If the dropdown is visible, arrowing up and down unfocuses the
-          // thumbnail and follows standard arrow up/down behavior (selects
-          // the next/previous match).
-          this.$.input.focus();
-        }
-      } else if (
-          this.isThumbnailDeletable_ &&
-          this.$.input.inputElement.selectionStart === 0 &&
-          this.$.input.inputElement.selectionEnd === 0 &&
-          this.$.input === this.shadowRoot.activeElement &&
-          (e.key === 'Backspace' || (e.key === 'Tab' && e.shiftKey))) {
-        // Backspacing or shift-tabbing the thumbnail results in the thumbnail
-        // being focused.
-        thumbnail?.focus();
-        e.preventDefault();
-      }
-    }
-
-    super.handleKeyNavigation(e);
+  override onInputWrapperFocusout(e: FocusEvent) {
+    super.onInputWrapperFocusout(e);
   }
 
   /**
@@ -427,23 +363,6 @@ export class SearchboxElement extends SearchboxElementBase implements
     this.setInputText('');
   }
 
-  hasThumbnail(): boolean {
-    return !!this.thumbnailUrl_;
-  }
-
-  protected onRemoveThumbnailClick_() {
-    /* Remove thumbnail, focus input, and notify browser. */
-    this.thumbnailUrl_ = '';
-    this.$.input.focus();
-    this.clearAutocompleteMatches();
-    this.pageHandler_.onThumbnailRemoved();
-    // Clearing the autocomplete matches above doesn't allow for
-    // navigation directly after removing the thumbnail. Must manually
-    // query autocomplete after removing the thumbnail since the
-    // thumbnail isn't part of the text input.
-    this.queryInputAutocomplete();
-  }
-
   //============================================================================
   // Helpers
   //============================================================================
@@ -464,14 +383,7 @@ export class SearchboxElement extends SearchboxElementBase implements
     if (placeholderText) {
       return placeholderText;
     }
-    return this.showThumbnail ? this.i18n('searchBoxHintMultimodal') :
-                                this.i18n('searchBoxHint');
-  }
-
-  protected getThumbnailTabindex_(): string {
-    // If the thumbnail can't be deleted, returning an empty string will set the
-    // tabindex to nothing, which will make the thumbnail not focusable.
-    return this.isThumbnailDeletable_ ? '1' : '';
+    return this.i18n('searchBoxHint');
   }
 
   protected onSelectedMatchIndexChanged_(e: CustomEvent<{value: number}>) {
