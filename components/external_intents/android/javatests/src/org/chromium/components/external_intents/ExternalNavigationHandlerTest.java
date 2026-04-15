@@ -1726,6 +1726,13 @@ public class ExternalNavigationHandlerTest {
 
     @Test
     @MediumTest
+    public void testDigitalCredentialsWarningDialog_WrappedMdoc() {
+        String wrappedUrl = "intent://#Intent;scheme=mdoc;action=android.intent.action.VIEW;end";
+        checkDigitalCredentialsWarningDialogShow("mdoc", wrappedUrl);
+    }
+
+    @Test
+    @MediumTest
     public void testDigitalCredentialsWarningDialog_NegativeClick() {
         mUrlHandler.sendIntentsForReal();
         IntentFilter filter = new IntentFilter(Intent.ACTION_VIEW);

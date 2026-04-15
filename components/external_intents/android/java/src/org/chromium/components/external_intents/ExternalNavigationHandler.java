@@ -1054,17 +1054,25 @@ public class ExternalNavigationHandler implements ExternalNavigationHelper {
     }
 
     /**
-     * The "about:", "chrome:", "chrome-native:", and "devtools:" schemes
-     * are internal to the browser; don't want these to be dispatched to other apps.
+     * @return The scheme of the target URL, or the scheme of the inner intent data if the target
+     *         URL has an intent: scheme.
+     */
+    private @Nullable String getSchemeFromUrlOrIntent(GURL targetUrl, Intent targetIntent) {
+        if (UrlUtilities.hasIntentScheme(targetUrl)
+                && targetIntent != null
+                && targetIntent.getData() != null) {
+            return targetIntent.getData().getScheme();
+        }
+        return targetUrl.getScheme();
+    }
+
+    /**
+     * The "about:", "chrome:", "chrome-native:", and "devtools:" schemes are internal to the
+     * browser; don't want these to be dispatched to other apps.
      */
     private boolean hasInternalScheme(GURL targetUrl, Intent targetIntent) {
-        if (isInternalScheme(targetUrl.getScheme())) {
-            if (debug()) Log.i(TAG, "Navigating to a chrome-internal page");
-            return true;
-        }
-        if (UrlUtilities.hasIntentScheme(targetUrl)
-                && targetIntent.getData() != null
-                && isInternalScheme(targetIntent.getData().getScheme())) {
+        @Nullable String scheme = getSchemeFromUrlOrIntent(targetUrl, targetIntent);
+        if (isInternalScheme(scheme)) {
             if (debug()) Log.i(TAG, "Navigating to a chrome-internal page");
             return true;
         }
@@ -1084,14 +1092,8 @@ public class ExternalNavigationHandler implements ExternalNavigationHelper {
      * load the URL in-browser.
      */
     private boolean hasContentScheme(GURL targetUrl, Intent targetIntent) {
-        boolean hasContentScheme = false;
-        if (UrlUtilities.hasIntentScheme(targetUrl) && targetIntent.getData() != null) {
-            hasContentScheme =
-                    UrlConstants.CONTENT_SCHEME.equalsIgnoreCase(
-                            targetIntent.getData().getScheme());
-        } else {
-            hasContentScheme = UrlConstants.CONTENT_SCHEME.equalsIgnoreCase(targetUrl.getScheme());
-        }
+        @Nullable String scheme = getSchemeFromUrlOrIntent(targetUrl, targetIntent);
+        boolean hasContentScheme = UrlConstants.CONTENT_SCHEME.equalsIgnoreCase(scheme);
         if (debug() && hasContentScheme) Log.i(TAG, "Navigation to content: URL");
         return hasContentScheme;
     }
@@ -1125,10 +1127,8 @@ public class ExternalNavigationHandler implements ExternalNavigationHelper {
      * access that platform functionality.
      */
     private boolean hasFidoScheme(GURL targetUrl, Intent targetIntent) {
-        if (UrlUtilities.hasIntentScheme(targetUrl) && targetIntent.getData() != null) {
-            return UrlConstants.FIDO_SCHEME.equalsIgnoreCase(targetIntent.getData().getScheme());
-        }
-        return UrlConstants.FIDO_SCHEME.equalsIgnoreCase(targetUrl.getScheme());
+        @Nullable String scheme = getSchemeFromUrlOrIntent(targetUrl, targetIntent);
+        return UrlConstants.FIDO_SCHEME.equalsIgnoreCase(scheme);
     }
 
     /**
@@ -2130,7 +2130,7 @@ public class ExternalNavigationHandler implements ExternalNavigationHelper {
 
     private boolean handleDigitalCredentialsIntent(
             ExternalNavigationParams params, Intent targetIntent) {
-        final String scheme = params.getUrl().getScheme();
+        final @Nullable String scheme = getSchemeFromUrlOrIntent(params.getUrl(), targetIntent);
         if (scheme != null
                 && (scheme.startsWith(OPENID4VP_SCHEME_PREFIX_SUFFIX)
                         || scheme.endsWith(OPENID4VP_SCHEME_PREFIX_SUFFIX)
