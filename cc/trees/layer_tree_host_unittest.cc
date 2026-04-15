@@ -957,7 +957,7 @@ class LayerTreeHostTestPushPropertiesTo : public LayerTreeHostTest {
         EXPECT_EQ(gfx::Size(20, 20).ToString(), layer->bounds().ToString());
         break;
       case HIDE_LAYER_AND_SUBTREE:
-        EXPECT_EQ(tree.EffectiveOpacity(node), 0.f);
+        EXPECT_EQ(tree.EffectiveOpacity(*node), 0.f);
         break;
       case DRAWS_CONTENT:
         EXPECT_TRUE(layer->draws_content());

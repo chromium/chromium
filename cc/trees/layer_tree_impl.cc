@@ -1873,7 +1873,8 @@ bool LayerTreeImpl::UpdateDrawProperties(
                                       &draw_transform);
         const EffectNode* effect_node = property_trees()->effect_tree().Node(
             render_surface->EffectTreeIndex());
-        draw_property_utils::ConcatInverseSurfaceContentsScale(effect_node,
+        CHECK(effect_node);
+        draw_property_utils::ConcatInverseSurfaceContentsScale(*effect_node,
                                                                &draw_transform);
         draw_transform.PostTranslate(
             occlusion_surface->pixel_alignment_offset());

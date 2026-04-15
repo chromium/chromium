@@ -216,12 +216,14 @@ class CC_EXPORT TransformTree final : public PropertyTree<TransformNode> {
       int id,
       const ViewportPropertyIds* viewport_property_ids = nullptr,
       UpdateTransformsData* update_data = nullptr);
-  void UpdateTransformChanged(TransformNode* node, TransformNode* parent_node);
+  void UpdateTransformChanged(TransformNode* node,
+                              const TransformNode& parent_node);
   void UpdateNodeAndAncestorsAreAnimatedOrInvertible(
       TransformNode* node,
-      TransformNode* parent_node);
-  void UpdateNodeOrAncestorsWillChangeTransform(TransformNode* node,
-                                                TransformNode* parent_node);
+      const TransformNode& parent_node);
+  void UpdateNodeOrAncestorsWillChangeTransform(
+      TransformNode* node,
+      const TransformNode& parent_node);
 
   void set_needs_update(bool needs_update);
 
@@ -305,7 +307,7 @@ class CC_EXPORT TransformTree final : public PropertyTree<TransformNode> {
     return cached_data_;
   }
 
-  void UndoOverscroll(const TransformNode* node,
+  void UndoOverscroll(const TransformNode& node,
                       gfx::Vector2dF& position_adjustment,
                       const ViewportPropertyIds* viewport_property_ids);
 
@@ -355,8 +357,8 @@ class CC_EXPORT TransformTree final : public PropertyTree<TransformNode> {
   bool IsDescendant(int desc_id, int anc_id) const;
 
   StickyPositionNodeData* MutableStickyPositionData(int node_id);
-  gfx::Vector2dF StickyPositionOffset(TransformNode* node);
-  gfx::Vector2dF AnchorPositionOffset(TransformNode* node,
+  gfx::Vector2dF StickyPositionOffset(const TransformNode& node);
+  gfx::Vector2dF AnchorPositionOffset(const TransformNode& node,
                                       int max_updated_node_id,
                                       UpdateTransformsData* update_data,
                                       base::flat_set<int>& visited);
@@ -364,14 +366,11 @@ class CC_EXPORT TransformTree final : public PropertyTree<TransformNode> {
                             const ViewportPropertyIds* viewport_property_ids,
                             UpdateTransformsData* update_data);
   void UpdateScreenSpaceTransform(TransformNode* node,
-                                  TransformNode* parent_node);
+                                  const TransformNode& parent_node);
   void UpdateAnimationProperties(TransformNode* node,
-                                 TransformNode* parent_node);
+                                 const TransformNode& parent_node);
   void UndoSnapping(TransformNode* node);
   void UpdateSnapping(TransformNode* node);
-  void UpdateNodeAndAncestorsHaveIntegerTranslations(
-      TransformNode* node,
-      TransformNode* parent_node);
 
   // When to_screen transform has perspective, the transform node's sublayer
   // scale is calculated using page scale factor, device scale factor and the
@@ -459,7 +458,7 @@ class CC_EXPORT EffectTree final : public PropertyTree<EffectNode> {
 
   void clear();
 
-  float EffectiveOpacity(const EffectNode* node) const;
+  float EffectiveOpacity(const EffectNode& node) const;
 
   void UpdateSurfaceContentsScale(EffectNode* node);
 
@@ -470,10 +469,11 @@ class CC_EXPORT EffectTree final : public PropertyTree<EffectNode> {
 
   void UpdateEffects(int id);
 
-  void UpdateEffectChanged(EffectNode* node, EffectNode* parent_node);
+  void UpdateEffectChanged(EffectNode* node, const EffectNode* parent_node);
 
-  void UpdateHasFilters(EffectNode* node, EffectNode* parent_node);
-  void UpdateHasFastRoundedCorner(EffectNode* node, EffectNode* parent_node);
+  void UpdateHasFilters(EffectNode* node, const EffectNode* parent_node);
+  void UpdateHasFastRoundedCorner(EffectNode* node,
+                                  const EffectNode* parent_node);
 
   // TODO(crbug.com/443024856): Revisit decision of 'unordered_multimap' to
   // 'multimap'.
@@ -536,14 +536,16 @@ class CC_EXPORT EffectTree final : public PropertyTree<EffectNode> {
   CopyRequestMap TakeCopyRequests();
 
  private:
-  void UpdateOpacities(EffectNode* node, EffectNode* parent_node);
-  void UpdateSubtreeHidden(EffectNode* node, EffectNode* parent_node);
-  void UpdateIsDrawn(EffectNode* node, EffectNode* parent_node);
-  void UpdateBackfaceVisibility(EffectNode* node, EffectNode* parent_node);
+  void UpdateOpacities(EffectNode* node, const EffectNode* parent_node);
+  void UpdateSubtreeHidden(EffectNode* node, const EffectNode* parent_node);
+  void UpdateIsDrawn(EffectNode* node, const EffectNode* parent_node);
+  void UpdateBackfaceVisibility(EffectNode* node,
+                                const EffectNode* parent_node);
   void UpdateHasMaskingChild(EffectNode* node, EffectNode* parent_node);
-  void UpdateOnlyDrawsVisibleContent(EffectNode* node, EffectNode* parent_node);
+  void UpdateOnlyDrawsVisibleContent(EffectNode* node,
+                                     const EffectNode* parent_node);
   void UpdateClosestAncestorSharedElement(EffectNode* node,
-                                          EffectNode* parent_node);
+                                          const EffectNode* parent_node);
 
   // Stores copy requests, keyed by node id.
   // TODO(crbug.com/443024856): Revisit decision of 'unordered_multimap' to

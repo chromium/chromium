@@ -32,7 +32,7 @@ struct ViewportPropertyIds;
 
 namespace draw_property_utils {
 
-void CC_EXPORT ConcatInverseSurfaceContentsScale(const EffectNode* effect_node,
+void CC_EXPORT ConcatInverseSurfaceContentsScale(const EffectNode& effect_node,
                                                  gfx::Transform* transform);
 
 // Computes combined (screen space) transforms for every node in the transform

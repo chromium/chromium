@@ -136,16 +136,19 @@ void SetLocalTransformChanged(LayerType* layer) {
 
 template <typename LayerType>
 void SetWillChangeTransform(LayerType* layer, bool will_change_transform) {
-  DCHECK(layer->has_transform_node());
+  CHECK(layer->has_transform_node());
   auto* transform_node = GetTransformNode(layer);
+  CHECK(transform_node);
   transform_node->will_change_transform = will_change_transform;
   transform_node->node_or_ancestors_will_change_transform =
       will_change_transform;
   transform_node->SetTransformChanged(DamageReason::kUntracked);
   TransformTree& transform_tree =
       GetPropertyTrees(layer)->transform_tree_mutable();
-  transform_tree.UpdateNodeOrAncestorsWillChangeTransform(
-      transform_node, transform_tree.parent(transform_node));
+  auto* parent_node = transform_tree.parent(transform_node);
+  CHECK(parent_node);
+  transform_tree.UpdateNodeOrAncestorsWillChangeTransform(transform_node,
+                                                          *parent_node);
   transform_tree.set_needs_update(true);
 }
 
