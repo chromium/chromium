@@ -58,18 +58,14 @@ void MediaBrowserTest::SetUpCommandLine(base::CommandLine* command_line) {
   };
 
   std::vector<base::test::FeatureRef> disabled_features = {
-      // Disable fallback after decode error to avoid unexpected test pass on
-      // the fallback path.
-      media::kFallbackAfterDecodeError,
-
-      // Disable hardware decoder deprioritization to retain control over
-      // hardware/software decoder selection.
-      media::kResolutionBasedDecoderPriority,
+    // Disable fallback after decode error to avoid unexpected test pass on
+    // the fallback path.
+    media::kFallbackAfterDecodeError,
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
-      // Disable out of process audio on Linux due to process spawn
-      // failures. http://crbug.com/986021
-      features::kAudioServiceOutOfProcess,
+    // Disable out of process audio on Linux due to process spawn
+    // failures. http://crbug.com/986021
+    features::kAudioServiceOutOfProcess,
 #endif
   };
 
