@@ -345,10 +345,7 @@ BOOL ApplicationIsInBackground() {
 
 - (void)incrementForcePortraitOrientationCounter {
   if (!_forcePortraitOrientationCounter) {
-    for (SceneState* sceneState in self.connectedScenes) {
-      [sceneState.browserProviderInterface.currentBrowserProvider
-              .viewController setNeedsUpdateOfSupportedInterfaceOrientations];
-    }
+    [self updateSupportedInterfaceOrientationForAllScenes];
   }
   ++_forcePortraitOrientationCounter;
 }
@@ -357,10 +354,14 @@ BOOL ApplicationIsInBackground() {
   CHECK_GT(_forcePortraitOrientationCounter, 0ul);
   --_forcePortraitOrientationCounter;
   if (!_forcePortraitOrientationCounter) {
-    for (SceneState* sceneState in self.connectedScenes) {
-      [sceneState.browserProviderInterface.currentBrowserProvider
-              .viewController setNeedsUpdateOfSupportedInterfaceOrientations];
-    }
+    [self updateSupportedInterfaceOrientationForAllScenes];
+  }
+}
+
+- (void)updateSupportedInterfaceOrientationForAllScenes {
+  for (SceneState* sceneState in self.connectedScenes) {
+    UIViewController* viewController = sceneState.window.rootViewController;
+    [viewController setNeedsUpdateOfSupportedInterfaceOrientations];
   }
 }
 
