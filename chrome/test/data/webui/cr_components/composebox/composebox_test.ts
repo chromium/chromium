@@ -145,4 +145,99 @@ suite('ComposeboxTest', () => {
     const suggestionActivity = composebox.shadowRoot.querySelector('#suggestionActivity');
     assertFalse(!!suggestionActivity);
   });
+
+  test(
+      'Shift+Enter allows inserting a newline when input is focused and not empty',
+      async () => {
+        const composeboxDiv =
+            composebox.shadowRoot.querySelector('#composebox');
+        assertTrue(!!composeboxDiv);
+
+        composebox.input = 'Some text';
+        await composebox.updateComplete;
+
+        const inputElement = composebox.getInputElement();
+        inputElement.inputElement.focus();
+
+        let preventDefaultCalled = false;
+        const event = new KeyboardEvent('keydown', {
+          key: 'Enter',
+          shiftKey: true,
+          bubbles: true,
+          cancelable: true,
+        });
+
+        Object.defineProperty(event, 'preventDefault', {
+          value: () => {
+            preventDefaultCalled = true;
+          },
+        });
+
+        assertEquals(composebox.getActiveElement(), inputElement);
+
+        composeboxDiv.dispatchEvent(event);
+
+        assertFalse(
+            preventDefaultCalled, 'preventDefault should not be called');
+      });
+
+  test(
+      'Enter prevents inserting a newline and attempts to submit query when focus is not in dropdown',
+      () => {
+        const composeboxDiv =
+            composebox.shadowRoot.querySelector('#composebox');
+        assertTrue(!!composeboxDiv);
+
+        let preventDefaultCalled = false;
+        const event = new KeyboardEvent('keydown', {
+          key: 'Enter',
+          shiftKey: false,
+          bubbles: true,
+          cancelable: true,
+        });
+
+        Object.defineProperty(event, 'preventDefault', {
+          value: () => {
+            preventDefaultCalled = true;
+          },
+        });
+
+        assertFalse(
+            composebox.getActiveElement() === composebox.getDropdownElement());
+
+        composeboxDiv.dispatchEvent(event);
+
+        assertTrue(preventDefaultCalled, 'preventDefault should be called');
+      });
+
+  test(
+      'Shift+Enter submits dropdown selection when focus is in dropdown',
+      () => {
+        const composeboxDiv =
+            composebox.shadowRoot.querySelector('#composebox');
+        assertTrue(!!composeboxDiv);
+
+        let preventDefaultCalled = false;
+        const event = new KeyboardEvent('keydown', {
+          key: 'Enter',
+          shiftKey: true,
+          bubbles: true,
+          cancelable: true,
+        });
+
+        Object.defineProperty(event, 'preventDefault', {
+          value: () => {
+            preventDefaultCalled = true;
+          },
+        });
+
+        const originalGetActiveElement = composebox.getActiveElement;
+        composebox.getActiveElement = () => composebox.getDropdownElement();
+
+        composeboxDiv.dispatchEvent(event);
+
+        assertTrue(preventDefaultCalled, 'preventDefault should be called');
+
+        composebox.getActiveElement = originalGetActiveElement;
+      });
 });
