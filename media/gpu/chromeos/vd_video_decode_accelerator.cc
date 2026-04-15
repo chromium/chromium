@@ -93,6 +93,10 @@ scoped_refptr<DecoderBuffer> DecryptBitstreamBuffer(
     DVLOG(2) << "Invalid shared memory region";
     return nullptr;
   }
+  if (bitstream_buffer.offset() > mem_region.GetSize()) {
+    DVLOG(2) << "Invalid bitstream buffer offset";
+    return nullptr;
+  }
   const size_t available_size =
       mem_region.GetSize() -
       base::checked_cast<size_t>(bitstream_buffer.offset());
