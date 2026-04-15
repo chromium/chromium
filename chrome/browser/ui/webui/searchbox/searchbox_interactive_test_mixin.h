@@ -113,6 +113,22 @@ class SearchboxInteractiveTestMixin : public T {
                         input_text + " - Google Search");
   }
 
+  // Waits for a JavaScript condition to evaluate to true for the element
+  // resolved by `where`.
+  auto WaitForJsConditionAt(
+      const ui::ElementIdentifier& contents_id,
+      const WebContentsInteractionTestUtil::DeepQuery& where,
+      const std::string& test_function) {
+    DEFINE_LOCAL_CUSTOM_ELEMENT_EVENT_TYPE(kJsConditionEvent);
+    WebContentsInteractionTestUtil::StateChange state_change;
+    state_change.event = kJsConditionEvent;
+    state_change.where = where;
+    state_change.test_function = test_function;
+
+    return T::Steps(
+        T::InAnyContext(T::WaitForStateChange(contents_id, state_change)));
+  }
+
   // Triggers a voice search with the final result matching `result`.
   auto TriggerAimVoiceSearch(
       const ui::ElementIdentifier& contents_id,
