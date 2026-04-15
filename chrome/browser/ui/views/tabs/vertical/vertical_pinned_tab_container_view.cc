@@ -94,7 +94,7 @@ views::ProposedLayout VerticalPinnedTabContainerView::CalculateProposedLayout(
     // including collapsing state.
     const int region_horizontal_padding = GetLayoutConstant(
         collapse_state != tabs::VerticalTabStripCollapseState::kExpanded
-            ? LayoutConstant::kVerticalTabStripCollapsedPadding
+            ? LayoutConstant::kVerticalTabStripCollapsedHorizontalPadding
             : LayoutConstant::kVerticalTabStripUncollapsedPadding);
     int available_width =
         size_bounds.width().value() - region_horizontal_padding;

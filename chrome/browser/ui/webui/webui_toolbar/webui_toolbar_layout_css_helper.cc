@@ -133,8 +133,8 @@ std::string_view LayoutConstantToCssVarName(LayoutConstant layout_constant) {
       return "--vertical-tab-pinned-border-thickness";
     case kVerticalTabStripUncollapsedPadding:
       return "--vertical-tab-strip-uncollapsed-padding";
-    case kVerticalTabStripCollapsedPadding:
-      return "--vertical-tab-strip-collapsed-padding";
+    case kVerticalTabStripCollapsedHorizontalPadding:
+      return "--vertical-tab-strip-collapsed-horizontal-padding";
     case kVerticalTabStripCollapsedVerticalPadding:
       return "--vertical-tab-strip-collapsed-vertical-padding";
     case kVerticalTabStripCollapsedSeparatorPadding:

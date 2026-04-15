@@ -209,7 +209,7 @@ enum class LayoutConstant {
 
   // The padding between the sides of the vertical tab strip and its
   // content when in the collapsed state.
-  kVerticalTabStripCollapsedPadding,
+  kVerticalTabStripCollapsedHorizontalPadding,
 
   // The padding between the top/bottom of the vertical tab strip and its
   // content when in the collapsed state.

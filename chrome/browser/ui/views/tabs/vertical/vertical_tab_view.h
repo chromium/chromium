@@ -32,10 +32,7 @@ class GlowHoverController;
 class TabCloseButton;
 class TabCollectionNode;
 class TabIcon;
-
-namespace views {
-class Label;
-}
+class TabTitle;
 
 namespace glic {
 class TabUnderlineView;
@@ -137,9 +134,8 @@ class VerticalTabView : public views::View,
                            const TabChildConfig& config,
                            const bool center) const;
 
-  // Calculates the visibilities of child views based on various states.
-  absl::flat_hash_map<views::View*, bool> CalculateChildVisibilities(
-      const int width) const;
+  // Calculates the visibility of child view based on various states.
+  bool IsChildVisible(const views::View* child, const int width) const;
 
   // views::LayoutDelegate
   views::ProposedLayout CalculateProposedLayout(
@@ -163,6 +159,7 @@ class VerticalTabView : public views::View,
   void ResetCollectionNode();
 
   void UpdateAccessibleName();
+  void OnFrameActiveStateChanged();
   void OnAXNameChanged(ax::mojom::StringAttribute attribute,
                        const std::optional<std::string>& name);
   void OnCollapseStateChanged(tabs::VerticalTabStripCollapseState state);
@@ -204,16 +201,16 @@ class VerticalTabView : public views::View,
   const raw_ptr<const TabStyle> tab_style_;
 
   const raw_ptr<TabIcon> icon_;
-  const raw_ptr<views::Label> title_;
+  const raw_ptr<TabTitle> title_;
   const raw_ptr<AlertIndicatorButton> alert_indicator_;
   const raw_ptr<TabCloseButton> close_button_;
-
   raw_ptr<glic::TabUnderlineView> glic_tab_underline_view_ = nullptr;
 
   base::CallbackListSubscription node_destroyed_subscription_;
   base::CallbackListSubscription data_changed_subscription_;
   base::CallbackListSubscription collapsed_state_changed_subscription_;
   base::CallbackListSubscription paint_as_active_subscription_;
+  base::CallbackListSubscription ax_name_changed_subscription_;
 
   tabs::TabData tab_data_;
   bool active_ = false;
@@ -231,8 +228,7 @@ class VerticalTabView : public views::View,
 
   std::optional<int> active_tab_fill_id_;
   std::optional<int> inactive_tab_fill_id_;
-
-  base::CallbackListSubscription ax_name_changed_subscription_;
+  bool should_fill_background_tab_color_ = false;
 
   std::optional<performance_manager::freezing::FreezingVote> freezing_vote_;
 

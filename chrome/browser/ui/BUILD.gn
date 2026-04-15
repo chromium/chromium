@@ -4564,6 +4564,8 @@ static_library("ui") {
       "views/tabs/tab/tab_context_menu_controller.h",
       "views/tabs/tab/tab_icon.cc",
       "views/tabs/tab/tab_icon.h",
+      "views/tabs/tab/tab_title.cc",
+      "views/tabs/tab/tab_title.h",
       "views/tabs/tab_container.cc",
       "views/tabs/tab_container.h",
       "views/tabs/tab_container_controller.h",

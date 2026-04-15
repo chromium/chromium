@@ -936,7 +936,7 @@ void VerticalTabStripRegionView::OnCollapseStateChanged(
 
   // Immediately apply the padding at the start of the collapsing animation.
   const int padding = GetLayoutConstant(
-      collapsed ? LayoutConstant::kVerticalTabStripCollapsedPadding
+      collapsed ? LayoutConstant::kVerticalTabStripCollapsedHorizontalPadding
                 : LayoutConstant::kVerticalTabStripUncollapsedPadding);
 
   // The TopContainer handles the padding distance to the separator so that we
@@ -970,7 +970,8 @@ void VerticalTabStripRegionView::OnCollapseStateChanged(
     tab_strip_view_->SetCollapsedState(collapsed);
   }
 
-  if (state == tabs::VerticalTabStripCollapseState::kExpanded) {
+  if (state == tabs::VerticalTabStripCollapseState::kExpanded ||
+      state == tabs::VerticalTabStripCollapseState::kCollapsed) {
     UpdateExpandOnHoverState();
   }
 }
