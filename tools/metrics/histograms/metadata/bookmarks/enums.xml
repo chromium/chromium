@@ -269,13 +269,6 @@ chromium-metrics-reviews@google.com.
   <int value="2" label="Price tracking disabled"/>
 </enum>
 
-<enum name="StarEntryPointAction">
-  <int value="0" label="Add bookmark"/>
-  <int value="1" label="Edit bookmark"/>
-  <int value="2" label="Add to reading list"/>
-  <int value="3" label="Mark as read"/>
-</enum>
-
 </enums>
 
 </histogram-configuration>

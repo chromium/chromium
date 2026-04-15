@@ -736,15 +736,6 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
-<histogram name="Bookmarks.StarEntryPoint.ClickedAction"
-    enum="StarEntryPointAction" expires_after="2022-08-28">
-  <owner>corising@chromium.org</owner>
-  <owner>top-chrome-desktop-ui@google.com</owner>
-  <summary>
-    Recorded when an action in the Bookmark icon menu is clicked.
-  </summary>
-</histogram>
-
 <histogram name="Bookmarks.Storage.EncryptedFileSizeAtStartup" units="KB"
     expires_after="2027-02-24">
   <owner>plcoirier@google.com</owner>
