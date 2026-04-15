@@ -153,4 +153,11 @@ public class SupplierUtils {
             NonNullObservableSupplier<ChildT> s, Class<BaseT> baseClass) {
         return (NonNullObservableSupplier<BaseT>) s;
     }
+
+    /** Casts an OneshotSupplier of a derived type to one of a base type. */
+    @SuppressWarnings("unchecked")
+    public static <BaseT, ChildT extends BaseT> OneshotSupplier<BaseT> upcast(
+            OneshotSupplier<ChildT> s, Class<BaseT> baseClass) {
+        return (OneshotSupplier<BaseT>) s;
+    }
 }

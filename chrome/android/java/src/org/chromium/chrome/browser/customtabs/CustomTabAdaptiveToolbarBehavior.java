@@ -66,7 +66,7 @@ public class CustomTabAdaptiveToolbarBehavior implements AdaptiveToolbarBehavior
         mOpenInBrowserButton = openInBrowserButton;
         mOpenInBrowserRunnable = openInBrowserRunnable;
         mRegisterVoiceSearchRunnable = registerVoiceSearchRunnable;
-        mValidButtons = new HashSet(COMMON_BUTTONS);
+        mValidButtons = new HashSet<>(COMMON_BUTTONS);
         if (isOpenInBrowserButtonEnabled()) {
             mValidButtons.add(AdaptiveToolbarButtonVariant.OPEN_IN_BROWSER);
         }

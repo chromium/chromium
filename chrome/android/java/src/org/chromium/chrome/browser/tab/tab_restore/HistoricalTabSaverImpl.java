@@ -99,7 +99,7 @@ public class HistoricalTabSaverImpl implements HistoricalTabSaver {
 
         // Distinct group IDs that will be saved - one per group.
         List<Token> tabGroupIds = new ArrayList<>();
-        List<String> savedTabGroupIds = new ArrayList();
+        List<String> savedTabGroupIds = new ArrayList<>();
         // Titles corresponding to each element in tabGroupIds.
         List<String> groupTitles = new ArrayList<>();
         // Colors corresponding to each element in tabGroupIds.

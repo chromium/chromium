@@ -2364,10 +2364,6 @@ public class ToolbarManager
                         mUndoBarThrottle,
                         mTabBookmarkerSupplier,
                         mShareDelegateSupplier);
-        var tabGroupUiBottomControlsContentDelegateSupplier =
-                (OneshotSupplier<BottomControlsContentDelegate>)
-                        ((OneshotSupplier<? extends BottomControlsContentDelegate>)
-                                mTabGroupUiOneshotSupplier);
         var tabGroupUiBottomControlsCoordinator =
                 new BottomControlsCoordinator(
                         mWindowAndroid,
@@ -2379,7 +2375,8 @@ public class ToolbarManager
                         mEdgeToEdgeControllerSupplier,
                         (ScrollingBottomViewResourceFrameLayout) tabGroupUiContainer,
                         LayerType.TABSTRIP_TOOLBAR,
-                        tabGroupUiBottomControlsContentDelegateSupplier,
+                        SupplierUtils.upcast(
+                                mTabGroupUiOneshotSupplier, BottomControlsContentDelegate.class),
                         mTabObscuringHandler,
                         mOverlayPanelVisibilitySupplier,
                         mConstraintsSupplier,

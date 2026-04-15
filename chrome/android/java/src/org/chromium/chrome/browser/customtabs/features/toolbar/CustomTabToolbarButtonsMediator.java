@@ -289,7 +289,7 @@ class CustomTabToolbarButtonsMediator
     }
 
     @SuppressWarnings("NullAway")
-    private Supplier getProfileSupplier() {
+    private Supplier<@Nullable Profile> getProfileSupplier() {
         Tab tab = mTabProvider.get();
         if (tab != null) return () -> tab.getProfile();
 

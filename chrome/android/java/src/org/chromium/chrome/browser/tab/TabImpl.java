@@ -2469,7 +2469,7 @@ class TabImpl implements Tab {
             // TODO: crbug.com/432447902 — Provide only an activity context and push changes.
             mAutofillProvider =
                     new AutofillProvider(
-                            new WeakReference(getContext()),
+                            new WeakReference<>(getContext()),
                             mContentView,
                             newWebContents,
                             getContext().getString(R.string.app_name));

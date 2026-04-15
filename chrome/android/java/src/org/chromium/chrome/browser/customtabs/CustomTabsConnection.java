@@ -2250,7 +2250,7 @@ public class CustomTabsConnection {
             String[] foundTextFragments) {
         getInstance()
                 .notifyClientOfTextFragmentLookupCompletionReportApp(
-                        session, stateKey, new ArrayList(Arrays.asList(foundTextFragments)));
+                        session, stateKey, new ArrayList<>(Arrays.asList(foundTextFragments)));
     }
 
     protected void notifyClientOfTextFragmentLookupCompletionReportApp(

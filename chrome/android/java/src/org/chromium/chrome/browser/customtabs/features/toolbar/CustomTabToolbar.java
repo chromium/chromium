@@ -1785,7 +1785,7 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
             return true;
         }
 
-        private Supplier getProfileSupplier() {
+        private Supplier<@Nullable Profile> getProfileSupplier() {
             Tab tab = getCurrentTab();
             if (tab != null) return () -> tab.getProfile();
 
