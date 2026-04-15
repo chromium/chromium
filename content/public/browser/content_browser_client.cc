@@ -535,6 +535,12 @@ bool ContentBrowserClient::AllowSharedWorkerBlobURLFix(
   return true;
 }
 
+bool ContentBrowserClient::IsDataUrlInWebWorkerOpaqueOriginEnabled(
+    BrowserContext* context) {
+  return base::FeatureList::IsEnabled(
+      blink::features::kDataUrlWorkerOpaqueOrigin);
+}
+
 bool ContentBrowserClient::AllowSharedWorkerExtendedLifetime(
     BrowserContext* context) {
   return true;

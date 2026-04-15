@@ -16,10 +16,9 @@ namespace content {
 
 blink::StorageKey CalculateWorkerStorageKey(
     const GURL& script_url,
-    const blink::StorageKey& creator_storage_key) {
-  if (script_url.SchemeIs(url::kDataScheme) &&
-      base::FeatureList::IsEnabled(
-          blink::features::kDataUrlWorkerOpaqueOrigin)) {
+    const blink::StorageKey& creator_storage_key,
+    bool is_opaque_origin_enabled) {
+  if (script_url.SchemeIs(url::kDataScheme) && is_opaque_origin_enabled) {
     url::Origin opaque_origin =
         creator_storage_key.origin().DeriveNewOpaqueOrigin();
     if (creator_storage_key.nonce()) {
@@ -35,10 +34,9 @@ blink::StorageKey CalculateWorkerStorageKey(
 
 url::Origin CalculateWorkerRendererOrigin(
     const GURL& script_url,
-    const blink::StorageKey& worker_storage_key) {
-  if (script_url.SchemeIs(url::kDataScheme) &&
-      !base::FeatureList::IsEnabled(
-          blink::features::kDataUrlWorkerOpaqueOrigin)) {
+    const blink::StorageKey& worker_storage_key,
+    bool is_opaque_origin_enabled) {
+  if (script_url.SchemeIs(url::kDataScheme) && !is_opaque_origin_enabled) {
     return url::Origin();
   }
   return worker_storage_key.origin();

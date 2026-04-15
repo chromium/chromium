@@ -2394,6 +2394,7 @@ chromium-metrics-reviews@google.com.
   <int value="1441" label="DeviceMetricsReportingLevel"/>
   <int value="1442" label="CpuPerformanceTierOverride"/>
   <int value="1443" label="ForceForegroundPriorityForOrigins"/>
+  <int value="1444" label="DataUrlInWebWorkerOpaqueOriginEnabled"/>
 </enum>
 
 <enum name="EnterprisePoliciesSources">

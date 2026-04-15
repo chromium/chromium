@@ -28,10 +28,12 @@ class SharedWorkerInstanceTest : public testing::Test {
   SharedWorkerInstance CreateInstance(const GURL& script_url,
                                       const std::string& name,
                                       const blink::StorageKey& storage_key) {
-    blink::StorageKey worker_storage_key =
-        CalculateWorkerStorageKey(script_url, storage_key);
-    url::Origin renderer_origin =
-        CalculateWorkerRendererOrigin(script_url, worker_storage_key);
+    bool is_opaque_origin_enabled = base::FeatureList::IsEnabled(
+        blink::features::kDataUrlWorkerOpaqueOrigin);
+    blink::StorageKey worker_storage_key = CalculateWorkerStorageKey(
+        script_url, storage_key, is_opaque_origin_enabled);
+    url::Origin renderer_origin = CalculateWorkerRendererOrigin(
+        script_url, worker_storage_key, is_opaque_origin_enabled);
     return SharedWorkerInstance(
         script_url, blink::mojom::ScriptType::kClassic,
         network::mojom::CredentialsMode::kSameOrigin, name, storage_key,

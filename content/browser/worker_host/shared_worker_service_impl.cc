@@ -267,10 +267,14 @@ void SharedWorkerServiceImpl::ConnectToWorker(
     return;
   }
   auto partition_domain = site_instance->GetPartitionDomain(storage_partition_);
-  blink::StorageKey worker_storage_key =
-      CalculateWorkerStorageKey(info->url, storage_key);
-  url::Origin renderer_origin =
-      CalculateWorkerRendererOrigin(info->url, worker_storage_key);
+  bool is_opaque_origin_enabled =
+      GetContentClient()->browser()->IsDataUrlInWebWorkerOpaqueOriginEnabled(
+          render_frame_host->GetBrowserContext());
+
+  blink::StorageKey worker_storage_key = CalculateWorkerStorageKey(
+      info->url, storage_key, is_opaque_origin_enabled);
+  url::Origin renderer_origin = CalculateWorkerRendererOrigin(
+      info->url, worker_storage_key, is_opaque_origin_enabled);
 
   SharedWorkerInstance instance(
       info->url, info->options->type, info->options->credentials,

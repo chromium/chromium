@@ -1,0 +1,33 @@
+caption: 'Enable opaque origins for data URLs in Web Workers'
+desc: |-
+  Controls whether Web Workers created from data URLs are assigned a unique opaque origin.
+
+  Web Workers can be created using a data URL containing the worker's script. Previously, these workers inherited the origin of the page that created them, allowing them to access the same local storage, cookies, and other origin-bound data. To improve security and align with the HTML specification, Chrome is changing its default behavior in milestone 149 so that workers created from data URLs will now have a unique, opaque origin. This isolates them from the creator page's data.
+
+  If this policy is set to Enabled or left unset, the new default (more secure) behavior is used, and Web Workers created from data URLs will have a unique opaque origin.
+
+  If this policy is set to Disabled, Chrome reverts to the legacy behavior, and Web Workers created from data URLs will inherit the origin of their creator. This allows administrators to temporarily resolve compatibility issues if internal applications break due to the security change.
+
+  This policy is intended to be temporary and will be removed in milestone 157.
+default: true
+example_value: false
+features:
+  dynamic_refresh: true
+  per_profile: true
+items:
+- caption: 'Opaque origins for data URLs in Web Workers are enabled (new default behavior)'
+  value: true
+- caption: 'Opaque origins for data URLs in Web Workers are disabled (deprecated legacy behavior)'
+  value: false
+owners:
+- yyanagisawa@chromium.org
+- file://content/browser/worker_host/OWNERS
+schema:
+  type: boolean
+supported_on:
+- android:149-
+- chrome.*:149-
+- chrome_os:149-
+- fuchsia:149-
+tags: []
+type: main

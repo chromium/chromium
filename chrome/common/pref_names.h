@@ -3563,6 +3563,10 @@ inline constexpr char kServiceWorkerToControlSrcdocIframeEnabled[] =
 inline constexpr char kSharedWorkerBlobURLFixEnabled[] =
     "worker.shared_worker_blob_url_fix_enabled";
 
+// Boolean that specifies whether data: URL web workers have opaque origins.
+inline constexpr char kDataUrlInWebWorkerOpaqueOriginEnabled[] =
+    "worker.data_url_in_web_worker_opaque_origin_enabled";
+
 // Boolean that specifies whether the shared worker has extended lifetime.
 inline constexpr char kSharedWorkerExtendedLifetimeEnabled[] =
     "worker.shared_worker_extended_lifetime_enabled";

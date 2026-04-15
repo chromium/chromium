@@ -87,10 +87,12 @@ class SharedWorkerHostTest : public testing::Test {
       bool extended_lifetime) {
     blink::StorageKey creator_storage_key =
         blink::StorageKey::CreateFirstParty(url::Origin::Create(kWorkerUrl));
-    blink::StorageKey worker_storage_key =
-        CalculateWorkerStorageKey(kWorkerUrl, creator_storage_key);
-    url::Origin renderer_origin =
-        CalculateWorkerRendererOrigin(kWorkerUrl, worker_storage_key);
+    bool is_opaque_origin_enabled = base::FeatureList::IsEnabled(
+        blink::features::kDataUrlWorkerOpaqueOrigin);
+    blink::StorageKey worker_storage_key = CalculateWorkerStorageKey(
+        kWorkerUrl, creator_storage_key, is_opaque_origin_enabled);
+    url::Origin renderer_origin = CalculateWorkerRendererOrigin(
+        kWorkerUrl, worker_storage_key, is_opaque_origin_enabled);
     SharedWorkerInstance instance(
         kWorkerUrl, blink::mojom::ScriptType::kClassic,
         network::mojom::CredentialsMode::kSameOrigin, "name",
@@ -408,10 +410,12 @@ TEST_F(SharedWorkerHostTest,
   base::UnguessableToken nonce = base::UnguessableToken::Create();
   blink::StorageKey creator_storage_key = blink::StorageKey::CreateWithNonce(
       url::Origin::Create(kWorkerUrl), nonce);
-  blink::StorageKey worker_storage_key =
-      CalculateWorkerStorageKey(kWorkerUrl, creator_storage_key);
-  url::Origin renderer_origin =
-      CalculateWorkerRendererOrigin(kWorkerUrl, worker_storage_key);
+  bool is_opaque_origin_enabled =
+      base::FeatureList::IsEnabled(blink::features::kDataUrlWorkerOpaqueOrigin);
+  blink::StorageKey worker_storage_key = CalculateWorkerStorageKey(
+      kWorkerUrl, creator_storage_key, is_opaque_origin_enabled);
+  url::Origin renderer_origin = CalculateWorkerRendererOrigin(
+      kWorkerUrl, worker_storage_key, is_opaque_origin_enabled);
 
   SharedWorkerInstance instance(
       kWorkerUrl, blink::mojom::ScriptType::kClassic,
@@ -458,10 +462,12 @@ TEST_F(SharedWorkerHostTestWithLNAEnabled,
        CreateNetworkFactoryParamsForSubresources) {
   blink::StorageKey creator_storage_key =
       blink::StorageKey::CreateFirstParty(url::Origin::Create(kWorkerUrl));
-  blink::StorageKey worker_storage_key =
-      CalculateWorkerStorageKey(kWorkerUrl, creator_storage_key);
-  url::Origin renderer_origin =
-      CalculateWorkerRendererOrigin(kWorkerUrl, worker_storage_key);
+  bool is_opaque_origin_enabled =
+      base::FeatureList::IsEnabled(blink::features::kDataUrlWorkerOpaqueOrigin);
+  blink::StorageKey worker_storage_key = CalculateWorkerStorageKey(
+      kWorkerUrl, creator_storage_key, is_opaque_origin_enabled);
+  url::Origin renderer_origin = CalculateWorkerRendererOrigin(
+      kWorkerUrl, worker_storage_key, is_opaque_origin_enabled);
 
   SharedWorkerInstance instance(
       kWorkerUrl, blink::mojom::ScriptType::kClassic,

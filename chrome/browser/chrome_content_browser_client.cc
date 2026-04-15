@@ -1611,6 +1611,8 @@ void ChromeContentBrowserClient::RegisterProfilePrefs(
 
   registry->RegisterBooleanPref(prefs::kWebAudioOutputBufferingEnabled, false);
   registry->RegisterBooleanPref(prefs::kSharedWorkerBlobURLFixEnabled, true);
+  registry->RegisterBooleanPref(prefs::kDataUrlInWebWorkerOpaqueOriginEnabled,
+                                true);
   registry->RegisterBooleanPref(prefs::kSharedWorkerExtendedLifetimeEnabled,
                                 true);
   registry->RegisterBooleanPref(
@@ -3323,6 +3325,14 @@ bool ChromeContentBrowserClient::AllowSharedWorkerBlobURLFix(
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   Profile* profile = Profile::FromBrowserContext(browser_context);
   return profile->GetPrefs()->GetBoolean(prefs::kSharedWorkerBlobURLFixEnabled);
+}
+
+bool ChromeContentBrowserClient::IsDataUrlInWebWorkerOpaqueOriginEnabled(
+    content::BrowserContext* browser_context) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  Profile* profile = Profile::FromBrowserContext(browser_context);
+  return profile->GetPrefs()->GetBoolean(
+      prefs::kDataUrlInWebWorkerOpaqueOriginEnabled);
 }
 
 bool ChromeContentBrowserClient::AllowSharedWorkerExtendedLifetime(

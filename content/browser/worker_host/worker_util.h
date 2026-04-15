@@ -26,7 +26,8 @@ namespace content {
 // https://github.com/wanderview/quota-storage-partitioning/blob/main/explainer.md
 CONTENT_EXPORT blink::StorageKey CalculateWorkerStorageKey(
     const GURL& script_url,
-    const blink::StorageKey& creator_storage_key);
+    const blink::StorageKey& creator_storage_key,
+    bool is_opaque_origin_enabled);
 
 // Returns the origin that should be used by the worker on the renderer side.
 // This will almost always be the same as the origin of `worker_storage_key`,
@@ -35,7 +36,8 @@ CONTENT_EXPORT blink::StorageKey CalculateWorkerStorageKey(
 // TODO(crbug.com/40051700): Remove this when the feature is enabled by default.
 CONTENT_EXPORT url::Origin CalculateWorkerRendererOrigin(
     const GURL& script_url,
-    const blink::StorageKey& worker_storage_key);
+    const blink::StorageKey& worker_storage_key,
+    bool is_opaque_origin_enabled);
 
 }  // namespace content
 

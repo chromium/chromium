@@ -352,6 +352,8 @@ class ChromeContentBrowserClient : public content::ContentBrowserClient {
   bool AllowCompressionDictionaryTransport(
       content::BrowserContext* context) override;
   bool AllowSharedWorkerBlobURLFix(content::BrowserContext* context) override;
+  bool IsDataUrlInWebWorkerOpaqueOriginEnabled(
+      content::BrowserContext* context) override;
   bool AllowSharedWorkerExtendedLifetime(
       content::BrowserContext* context) override;
   void RequestFilesAccess(

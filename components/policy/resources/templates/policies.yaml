@@ -1442,6 +1442,7 @@ policies:
   1441: DeviceMetricsReportingLevel
   1442: CpuPerformanceTierOverride
   1443: ForceForegroundPriorityForOrigins
+  1444: DataUrlInWebWorkerOpaqueOriginEnabled
 
 atomic_groups:
   1: Homepage

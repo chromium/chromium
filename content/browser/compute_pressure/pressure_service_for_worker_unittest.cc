@@ -271,10 +271,12 @@ class PressureServiceForSharedWorkerTest
     pressure_manager_.reset();
 
     auto* rfh = contents()->GetPrimaryMainFrame();
-    blink::StorageKey worker_storage_key =
-        CalculateWorkerStorageKey(kWorkerUrl, rfh->GetStorageKey());
-    url::Origin renderer_origin =
-        CalculateWorkerRendererOrigin(kWorkerUrl, worker_storage_key);
+    bool is_opaque_origin_enabled = base::FeatureList::IsEnabled(
+        blink::features::kDataUrlWorkerOpaqueOrigin);
+    blink::StorageKey worker_storage_key = CalculateWorkerStorageKey(
+        kWorkerUrl, rfh->GetStorageKey(), is_opaque_origin_enabled);
+    url::Origin renderer_origin = CalculateWorkerRendererOrigin(
+        kWorkerUrl, worker_storage_key, is_opaque_origin_enabled);
 
     SharedWorkerInstance instance(
         kWorkerUrl, blink::mojom::ScriptType::kClassic,
