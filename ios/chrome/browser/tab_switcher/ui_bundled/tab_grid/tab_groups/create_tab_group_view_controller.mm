@@ -494,10 +494,10 @@ const CGFloat kClearButtonWidthAndHeight = 40;
       static_cast<tab_groups::TabGroupColorId>(_selectedButton.tag);
   if (IsTabGroupColorOnSurfaceEnabled()) {
     [_dotView setBackgroundColor:[TabGroupColorPalette commonColor:colorID]];
+    [self updateSurfaceColors];
   } else {
     [_dotView setBackgroundColor:tab_groups::ColorForTabGroupColorId(colorID)];
   }
-  [self updateSurfaceColors];
 }
 
 // Creates all the available color buttons.
