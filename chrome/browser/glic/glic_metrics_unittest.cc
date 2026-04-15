@@ -412,9 +412,9 @@ TEST_F(GlicMetricsTest, FreUserInputEntrypointRecorded) {
   // Reset time and submit another input to make sure it's only recorded once.
   metrics()->OnUserInputSubmitted(mojom::WebClientMode::kText);
 
-  histogram_tester().ExpectBucketCount("Glic.Fre.UserInput.Entrypoint",
-                                       glic::GlicEntrypoint::kOsButton, 1);
-  histogram_tester().ExpectTotalCount("Glic.Fre.UserInput.Entrypoint", 1);
+  histogram_tester().ExpectBucketCount("Glic.Fre.UserInput.InvocationSource",
+                                       mojom::InvocationSource::kOsButton, 1);
+  histogram_tester().ExpectTotalCount("Glic.Fre.UserInput.InvocationSource", 1);
 }
 
 TEST_F(GlicMetricsTest, ResponseStartTime_WithFocusedTab) {
@@ -1075,9 +1075,9 @@ TEST_F(GlicMetricsTrustFirstOnboardingTest, ShownAndDismissed) {
       user_action_tester().GetActionCount("Glic.Fre.Dismissed.Onboarding"), 1);
   histogram_tester().ExpectTotalCount("Glic.Fre.TotalTime.Dismissed.Onboarding",
                                       1);
-  histogram_tester().ExpectUniqueSample("Glic.Fre.Shown.Entrypoint",
+  histogram_tester().ExpectUniqueSample("Glic.Fre.Shown.InvocationSource",
                                         mojom::InvocationSource::kOsButton, 1);
-  histogram_tester().ExpectUniqueSample("Glic.Fre.Dismissed.Entrypoint",
+  histogram_tester().ExpectUniqueSample("Glic.Fre.Dismissed.InvocationSource",
                                         mojom::InvocationSource::kOsButton, 1);
 }
 
@@ -1099,11 +1099,11 @@ TEST_F(GlicMetricsTrustFirstOnboardingTest, ShownAndAccepted) {
   metrics()->OnGlicWindowClose(nullptr, std::nullopt, gfx::Rect());
   EXPECT_EQ(
       user_action_tester().GetActionCount("Glic.Fre.Dismissed.Onboarding"), 0);
-  histogram_tester().ExpectUniqueSample("Glic.Fre.Shown.Entrypoint",
+  histogram_tester().ExpectUniqueSample("Glic.Fre.Shown.InvocationSource",
                                         mojom::InvocationSource::kOsButton, 1);
-  histogram_tester().ExpectUniqueSample("Glic.Fre.Accept.Entrypoint",
+  histogram_tester().ExpectUniqueSample("Glic.Fre.Accept.InvocationSource",
                                         mojom::InvocationSource::kOsButton, 1);
-  histogram_tester().ExpectTotalCount("Glic.Fre.Dismissed.Entrypoint", 0);
+  histogram_tester().ExpectTotalCount("Glic.Fre.Dismissed.InvocationSource", 0);
 }
 
 TEST_F(GlicMetricsTrustFirstOnboardingTest, NotShownIfConsented) {
