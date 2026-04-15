@@ -94,7 +94,7 @@ public class CompositorModelChangeProcessor<V extends SceneLayer> {
             Runnable requestFrameRunnable,
             boolean performInitialBind,
             @Nullable Set<PropertyKey> exclusions) {
-        return new CompositorModelChangeProcessor(
+        return new CompositorModelChangeProcessor<>(
                 model,
                 view,
                 viewBinder,

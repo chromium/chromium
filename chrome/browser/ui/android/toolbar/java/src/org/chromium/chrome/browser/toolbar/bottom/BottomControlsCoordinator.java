@@ -118,7 +118,7 @@ public class BottomControlsCoordinator implements BackPressHandler {
         mSceneLayer = new ScrollingBottomViewSceneLayer(root, root.getTopShadowHeight());
         PropertyModelChangeProcessor.create(
                 model, new ViewHolder(root, mSceneLayer), BottomControlsViewBinder::bind);
-        Set<PropertyKey> exclusions = new HashSet();
+        Set<PropertyKey> exclusions = new HashSet<>();
         exclusions.add(BottomControlsProperties.ANDROID_VIEW_VISIBLE);
         layoutManager.createCompositorMCPWithExclusions(
                 model, mSceneLayer, BottomControlsViewBinder::bindCompositorMCP, exclusions);

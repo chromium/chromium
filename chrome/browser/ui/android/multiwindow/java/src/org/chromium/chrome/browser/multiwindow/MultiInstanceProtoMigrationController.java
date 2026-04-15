@@ -415,6 +415,7 @@ class MultiInstanceProtoMigrationController {
         }
     }
 
+    @SuppressWarnings("unchecked") // Set<String> from SharedPreferences can't verify element type.
     private void populateWindowModeBuilder(
             WindowModeData.Builder windowModeBuilder, String key, Object value, int mode) {
         if (MultiInstancePreferenceKeys.MULTI_WINDOW_MODE_START_TIME.createKey(mode).equals(key)) {

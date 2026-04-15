@@ -139,7 +139,7 @@ class AccountPickerBottomSheetProperties {
 
     // PropertyKey indicating the title, subtitle, and cancel text for the bottom sheet.
     static final ReadableObjectPropertyKey<AccountPickerBottomSheetStrings> BOTTOM_SHEET_STRINGS =
-            new ReadableObjectPropertyKey("bottom_sheet_strings");
+            new ReadableObjectPropertyKey<>("bottom_sheet_strings");
 
     static final PropertyKey[] ALL_KEYS =
             new PropertyKey[] {

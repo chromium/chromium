@@ -87,7 +87,8 @@ public class AdaptiveToolbarSettingsFragment extends ChromeBaseSettingsFragment 
                     new AdaptiveToolbarStatePredictor(
                             getContext(),
                             getProfile(),
-                            new ActivityAndroidPermissionDelegate(new WeakReference(getActivity())),
+                            new ActivityAndroidPermissionDelegate(
+                                    new WeakReference<>(getActivity())),
                             /* behavior= */ null));
             mRadioButtonGroup.setOnPreferenceChangeListener(
                     (preference, newValue) -> {
@@ -139,7 +140,7 @@ public class AdaptiveToolbarSettingsFragment extends ChromeBaseSettingsFragment 
         Activity activity = getActivity();
         if (activity == null) return false;
         AndroidPermissionDelegate permissionDelegate =
-                new ActivityAndroidPermissionDelegate(new WeakReference(activity));
+                new ActivityAndroidPermissionDelegate(new WeakReference<>(activity));
         return VoiceRecognitionUtil.isVoiceSearchEnabled(permissionDelegate);
     }
 

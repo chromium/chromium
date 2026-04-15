@@ -19,7 +19,7 @@ import org.chromium.ui.util.TokenHolder;
 @NullMarked
 public class ForcedSigninStatusProvider {
     private static final ProfileKeyedMap<ForcedSigninStatusProvider> sProfileMap =
-            new ProfileKeyedMap<>(ProfileKeyedMap.NO_REQUIRED_CLEANUP_ACTION);
+            new ProfileKeyedMap<>(ProfileKeyedMap.noRequiredCleanupAction());
 
     @Nullable private static ForcedSigninStatusProvider sInstanceForTesting;
     private final TokenHolder mShownForcedSigninScreens = new TokenHolder(() -> {});

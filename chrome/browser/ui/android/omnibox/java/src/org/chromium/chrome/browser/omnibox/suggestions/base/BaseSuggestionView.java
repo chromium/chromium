@@ -58,6 +58,7 @@ public class BaseSuggestionView<T extends View> extends SuggestionLayout {
      * @param context The context used to construct the suggestion view.
      * @param layoutId Layout ID to be inflated as the contents view.
      */
+    @SuppressWarnings("unchecked") // inflate() returns View, not T.
     public BaseSuggestionView(Context context, @LayoutRes int layoutId) {
         this((T) LayoutInflater.from(context).inflate(layoutId, null));
     }

@@ -59,7 +59,7 @@ class MenuButtonProperties {
     public static final WritableObjectPropertyKey<Supplier<MenuButtonState>> STATE_SUPPLIER =
             new WritableObjectPropertyKey<>();
     public static final WritableObjectPropertyKey<ShowBadgeProperty> SHOW_UPDATE_BADGE =
-            new WritableObjectPropertyKey(true);
+            new WritableObjectPropertyKey<>(true);
     public static final WritableObjectPropertyKey<ThemeProperty> THEME =
             new WritableObjectPropertyKey<>(true);
     public static final WritableFloatPropertyKey TRANSLATION_X = new WritableFloatPropertyKey();
