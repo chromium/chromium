@@ -56,6 +56,7 @@ class FakePageHandler extends TestBrowserProxy implements PageHandlerInterface {
       'activateMetricsFunnel',
       'setPopupSelection',
       'openPopupSelection',
+      'getPageClassification',
     ]);
   }
 
@@ -250,6 +251,11 @@ class FakePageHandler extends TestBrowserProxy implements PageHandlerInterface {
   }
 
   onDriveDisclaimerAccepted() {}
+
+  getPageClassification() {
+    this.methodCalled('getPageClassification');
+    return Promise.resolve({metricSource: 'LENS_SIDE_PANEL_SEARCHBOX'});
+  }
 }
 
 export class TestSearchboxBrowserProxy {

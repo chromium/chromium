@@ -4,10 +4,12 @@
 
 import '//resources/cr_elements/cr_icon_button/cr_icon_button.js';
 
+import {VoiceSearchState} from '//resources/cr_components/search/constants.js';
 import {I18nMixinLit} from '//resources/cr_elements/i18n_mixin_lit.js';
 import {assert} from '//resources/js/assert.js';
 import {loadTimeData} from '//resources/js/load_time_data.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
+import type {PageHandlerRemote as SearchboxPageHandlerRemote} from '//resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
 
 import type {PageHandlerRemote} from './composebox.mojom-webui.js';
 import {ComposeboxProxyImpl} from './composebox_proxy.js';
@@ -63,6 +65,59 @@ enum Error {
   OTHER = 1,
 }
 
+export enum VoiceSearchError {
+  ABORTED = 0,
+  AUDIO_CAPTURE = 1,
+  BAD_GRAMMAR = 2,
+  LANGUAGE_NOT_SUPPORTED = 3,
+  NETWORK = 4,
+  NO_MATCH = 5,
+  NO_SPEECH = 6,
+  NOT_ALLOWED = 7,
+  OTHER = 8,
+  SERVICE_NOT_ALLOWED = 9,
+  MAX_VALUE = SERVICE_NOT_ALLOWED,
+}
+
+export enum VoiceSearchAction {
+  ACTIVATED_BY_ICON = 0,
+  ACTIVATED_BY_KEYBOARD = 1,
+  CLOSED_BY_USER = 2,
+  QUERY_SUBMITTED = 3,
+  SUPPORT_LINK_CLICKED = 4,
+  RETRY_BY_TRY_AGAIN_CLICKED = 5,
+  MAX_VALUE = RETRY_BY_TRY_AGAIN_CLICKED,
+}
+
+export enum VoiceSearchMetricType {
+  ACTION = 'Action',
+  ERROR = 'Errors',
+  STATE = 'State',
+}
+
+function toError(webkitError: string): VoiceSearchError {
+  switch (webkitError) {
+    case 'aborted':
+      return VoiceSearchError.ABORTED;
+    case 'audio-capture':
+      return VoiceSearchError.AUDIO_CAPTURE;
+    case 'language-not-supported':
+      return VoiceSearchError.LANGUAGE_NOT_SUPPORTED;
+    case 'network':
+      return VoiceSearchError.NETWORK;
+    case 'no-speech':
+      return VoiceSearchError.NO_SPEECH;
+    case 'not-allowed':
+      return VoiceSearchError.NOT_ALLOWED;
+    case 'service-not-allowed':
+      return VoiceSearchError.SERVICE_NOT_ALLOWED;
+    case 'bad-grammar':
+      return VoiceSearchError.BAD_GRAMMAR;
+    default:
+      return VoiceSearchError.OTHER;
+  }
+}
+
 // TODO(crbug.com/40449919): Remove when bug is fixed.
 declare global {
   interface Window {
@@ -103,6 +158,7 @@ export class ComposeboxVoiceSearchElement extends
       errorMessage_: {type: String},
       error_: {type: Number},
       detailsUrl_: {type: String},
+      detailedError_: {type: Number},
     };
   }
 
@@ -113,6 +169,7 @@ export class ComposeboxVoiceSearchElement extends
   protected accessor interimResult_: string = '';
   protected accessor error_: Error|null = null;
   protected accessor errorMessage_: string = '';
+  accessor detailedError_: VoiceSearchError|null = null;
   protected accessor detailsUrl_: string =
       `https://support.google.com/chrome/?p=ui_voice_search&hl=${
           window.navigator.language}`;
@@ -122,6 +179,8 @@ export class ComposeboxVoiceSearchElement extends
       ComposeboxProxyImpl.getInstance().handler;
   private voiceRecognition_: SpeechRecognition;
   private timerId_: number|null = null;
+  private searchboxHandler_: SearchboxPageHandlerRemote =
+      ComposeboxProxyImpl.getInstance().searchboxHandler;
 
   constructor() {
     super();
@@ -134,7 +193,16 @@ export class ComposeboxVoiceSearchElement extends
     this.voiceRecognition_.onaudiostart = this.onAudioStart_.bind(this);
     this.voiceRecognition_.onspeechstart = this.onSpeechStart_.bind(this);
     this.voiceRecognition_.onerror = (e) => {
+      const detailedError = toError(e.error);
+      this.recordMetric_(
+          VoiceSearchMetricType.ERROR, detailedError,
+          VoiceSearchError.MAX_VALUE + 1);
       this.onError_(e.error);
+    };
+    this.voiceRecognition_.onnomatch = () => {
+      this.recordMetric_(
+          VoiceSearchMetricType.ERROR, VoiceSearchError.NO_MATCH,
+          VoiceSearchError.MAX_VALUE + 1);
     };
   }
 
@@ -174,6 +242,10 @@ export class ComposeboxVoiceSearchElement extends
       this.onFinalResult_(this.transcript_);
       return;
     }
+    this.recordMetric_(
+        VoiceSearchMetricType.ERROR, VoiceSearchError.NO_MATCH,
+        VoiceSearchError.MAX_VALUE + 1);
+
     this.voiceRecognition_.abort();
   }
 
@@ -231,10 +303,22 @@ export class ComposeboxVoiceSearchElement extends
       // If voiceRecognition calls `onEnd_` with the state being anything other
       // than RESULT_FINAL, close out voice search since there was an error.
       case State.STARTED:
+        this.recordMetric_(
+            VoiceSearchMetricType.ERROR, VoiceSearchError.AUDIO_CAPTURE,
+            VoiceSearchError.MAX_VALUE + 1);
+        this.fire('voice-search-cancel', /*canceled-by-user=*/ false);
+        return;
       case State.AUDIO_RECEIVED:
+        this.recordMetric_(
+            VoiceSearchMetricType.ERROR, VoiceSearchError.NO_SPEECH,
+            VoiceSearchError.MAX_VALUE + 1);
+        this.fire('voice-search-cancel', /*canceled-by-user=*/ false);
+        return;
       case State.SPEECH_RECEIVED:
       case State.RESULT_RECEIVED:
-        // No metric recorded:
+        this.recordMetric_(
+            VoiceSearchMetricType.ERROR, VoiceSearchError.NO_MATCH,
+            VoiceSearchError.MAX_VALUE + 1);
         this.fire('voice-search-cancel', /*canceled-by-user=*/ false);
         return;
       case State.ERROR_RECEIVED:
@@ -247,10 +331,17 @@ export class ComposeboxVoiceSearchElement extends
           /* No metric recorded through this event firing.
            * This event is fired just to hide voice overlay:
            */
+          this.recordMetric_(
+              VoiceSearchMetricType.STATE,
+              VoiceSearchState.VOICE_SEARCH_ERROR_AND_CANCELED,
+              VoiceSearchState.MAX_VALUE + 1);
           this.fire('voice-search-cancel', /*canceled-by-user=*/ false);
           // Metric recorded through this event firing:
           this.fire('voice-search-error', /*canceled-by-error=*/ true);
         } else {
+          this.recordMetric_(
+              VoiceSearchMetricType.STATE, VoiceSearchState.VOICE_SEARCH_ERROR,
+              VoiceSearchState.MAX_VALUE + 1);
           // Metric recorded through this event firing:
           this.fire('voice-search-error', /*canceled-by-error=*/ false);
         }
@@ -258,9 +349,29 @@ export class ComposeboxVoiceSearchElement extends
       case State.RESULT_FINAL:  // Query already submitted if is this state
         return;
       default:
+        this.recordMetric_(
+            VoiceSearchMetricType.ERROR, VoiceSearchError.OTHER,
+            VoiceSearchError.MAX_VALUE + 1);
         return;
     }
   }
+
+  private async recordMetric_(
+      type: VoiceSearchMetricType, value: number, max: number) {
+    // Safety return statement in rare case chrome metrics is not available.
+    if (!chrome.metricsPrivate) {
+      return;
+    }
+
+    const {metricSource} = await this.searchboxHandler_.getPageClassification();
+    if (!metricSource) {
+      return;
+    }
+    const metricName = `VoiceSearch.${type}.${metricSource}`;
+    chrome.metricsPrivate.recordEnumerationValue(metricName, value, max);
+  }
+
+
 
   private onError_(webkitError: string) {
     this.state_ = State.ERROR_RECEIVED;
@@ -287,6 +398,12 @@ export class ComposeboxVoiceSearchElement extends
     this.state_ = State.RESULT_FINAL;
     // Metric recorded through this event firing:
     this.fire('voice-search-final-result', result);
+    this.recordMetric_(
+        VoiceSearchMetricType.ACTION, VoiceSearchAction.QUERY_SUBMITTED,
+        VoiceSearchAction.MAX_VALUE + 1);
+    this.recordMetric_(
+        VoiceSearchMetricType.STATE, VoiceSearchState.SUCCESSFUL_TRANSCRIPT,
+        VoiceSearchState.MAX_VALUE + 1);
     this.voiceModeEndCleanup_();
   }
 
@@ -296,6 +413,12 @@ export class ComposeboxVoiceSearchElement extends
     this.fire(
         'voice-search-cancel',
         /*canceled-by-user=*/ true);
+    this.recordMetric_(
+        VoiceSearchMetricType.ACTION, VoiceSearchAction.CLOSED_BY_USER,
+        VoiceSearchAction.MAX_VALUE + 1);
+    this.recordMetric_(
+        VoiceSearchMetricType.STATE, VoiceSearchState.VOICE_SEARCH_CANCELED,
+        VoiceSearchState.MAX_VALUE + 1);
   }
 
   private resetState_() {
@@ -310,8 +433,8 @@ export class ComposeboxVoiceSearchElement extends
   }
 
   protected onLinkClick_(e: Event) {
-    // Manually handle navigation to support WebView environments where default
-    // link clicks may be ignored.
+    // Manually handle navigation to support WebView environments where
+    // default link clicks may be ignored.
     e.preventDefault();
     const href = (e.currentTarget as HTMLAnchorElement).href;
     if (href) {
@@ -321,8 +444,23 @@ export class ComposeboxVoiceSearchElement extends
      * param to false in this event:
      */
     this.fire('voice-search-cancel', /*canceled-by-user=*/ false);
+    this.recordMetric_(
+        VoiceSearchMetricType.ACTION, VoiceSearchAction.SUPPORT_LINK_CLICKED,
+        VoiceSearchAction.MAX_VALUE + 1);
   }
-}
+
+  protected onTryAgainClick_(e: Event) {
+    e.preventDefault();
+    e.stopPropagation();
+    this.recordMetric_(
+        VoiceSearchMetricType.ACTION,
+        VoiceSearchAction.RETRY_BY_TRY_AGAIN_CLICKED,
+        VoiceSearchAction.MAX_VALUE + 1);
+    this.errorMessage_ = '';
+    this.error_ = null;
+    this.start();
+  }
+  }
 
 declare global {
   interface HTMLElementTagNameMap {

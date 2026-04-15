@@ -11,7 +11,7 @@ import type {PageHandlerRemote} from '//resources/cr_components/composebox/compo
 import {LensOverlayDismissalSource} from '//resources/cr_components/composebox/composebox.mojom-webui.js';
 import type {ComposeboxDropdownElement} from '//resources/cr_components/composebox/composebox_dropdown.js';
 import {ComposeboxProxyImpl, createAutocompleteMatch} from '//resources/cr_components/composebox/composebox_proxy.js';
-import {GlowAnimationState} from '//resources/cr_components/search/constants.js';
+import {GlowAnimationState, VoiceSearchState} from '//resources/cr_components/search/constants.js';
 import {I18nMixinLit} from '//resources/cr_elements/i18n_mixin_lit.js';
 import {assert} from '//resources/js/assert.js';
 import {EventTracker} from '//resources/js/event_tracker.js';
@@ -26,7 +26,6 @@ import {WindowOpenDisposition} from 'chrome://resources/mojo/ui/base/mojom/windo
 
 import {getCss} from './composebox.css.js';
 import {getHtml} from './composebox.html.js';
-import {VoiceSearchState} from './constants.js';
 import {IconType} from './contextual_tasks.mojom-webui.js';
 import type {PageHandlerInterface} from './contextual_tasks.mojom-webui.js';
 import {BrowserProxyImpl} from './contextual_tasks_browser_proxy.js';

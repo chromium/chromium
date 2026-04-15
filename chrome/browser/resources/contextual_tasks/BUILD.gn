@@ -30,7 +30,6 @@ build_webui("build") {
   ts_files = [
     "app.html.ts",
     "app.ts",
-    "constants.ts",
     "contextual_tasks_browser_proxy.ts",
     "error_dialog.html.ts",
     "error_dialog.ts",

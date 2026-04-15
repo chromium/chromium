@@ -46,18 +46,6 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//chrome/browser/contextual_tasks/contextual_tasks_ui_service.cc:EntrypointSource) -->
 
-<!-- LINT.IfChange(VoiceSearchState) -->
-
-<enum name="VoiceSearchState">
-  <int value="0" label="Voice Search Button Clicked And Voice Search Started"/>
-  <int value="1" label="Voice Search Transcription Success"/>
-  <int value="2" label="Voice Search Error That Does Not Cancel Voice Search"/>
-  <int value="3" label="Voice Search Error That Cancels Voice Search"/>
-  <int value="4" label="Voice Search Is Canceled By User"/>
-</enum>
-
-<!-- LINT.ThenChange(//chrome/browser/contextual_tasks/constants.ts:VoiceSearchState) -->
-
 </enums>
 
 </histogram-configuration>

@@ -5369,6 +5369,37 @@ Keep consistent with active providers. Doesn't need to include every provider in
   </summary>
 </histogram>
 
+<histogram name="VoiceSearch.Action.{OmniboxPageContext}"
+    enum="VoiceSearchAction" expires_after="2026-11-20">
+  <owner>wenhuc@google.com</owner>
+  <owner>chrome-desktop-search@google.com</owner>
+  <summary>
+    Actions taken by users of voice search on {OmniboxPageContext}.
+  </summary>
+  <token key="OmniboxPageContext" variants="OmniboxPageContext"/>
+</histogram>
+
+<histogram name="VoiceSearch.Errors.{OmniboxPageContext}"
+    enum="VoiceSearchError" expires_after="2026-11-20">
+  <owner>wenhuc@google.com</owner>
+  <owner>chrome-desktop-search@google.com</owner>
+  <summary>
+    Errors that occur during voice search on {OmniboxPageContext}.
+  </summary>
+  <token key="OmniboxPageContext" variants="OmniboxPageContext"/>
+</histogram>
+
+<histogram name="VoiceSearch.State.{OmniboxPageContext}"
+    enum="VoiceSearchState" expires_after="2026-11-20">
+  <owner>wenhuc@google.com</owner>
+  <owner>chrome-desktop-search@google.com</owner>
+  <summary>
+    Tracks user interaction states of the voice search feature on
+    {OmniboxPageContext}.
+  </summary>
+  <token key="OmniboxPageContext" variants="OmniboxPageContext"/>
+</histogram>
+
 </histograms>
 
 </histogram-configuration>

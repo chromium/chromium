@@ -601,6 +601,53 @@ chromium-metrics-reviews@google.com.
   <int value="40" label="Set Chrome as default browser"/>
 </enum>
 
+<!-- TODO(b/501544449): Remove NewTabPageVoiceAction and NewTabPageVoiceError in tools/metrics/histograms/metadata/new_tab_page/enums.xml. -->
+
+<!-- LINT.IfChange(VoiceSearchAction) -->
+
+<enum name="VoiceSearchAction">
+  <int value="0" label="Activated by clicking on the icon"/>
+  <int value="1" label="Activated by keyboard shortcut"/>
+  <int value="2" label="Closed overlay by a user's explicit action"/>
+  <int value="3" label="Submitted voice query"/>
+  <int value="4" label="Clicked on support link in error message"/>
+  <int value="5" label="Retried by clicking Try Again link"/>
+  <int value="6"
+      label="(Obsolete) Retried by clicking microphone button. Deprecated as
+             of 09/2022."/>
+</enum>
+
+<!-- LINT.ThenChange(//ui/webui/resources/cr_components/composebox/composebox_voice_search.ts:VoiceSearchAction) -->
+
+<!-- LINT.IfChange(VoiceSearchError) -->
+
+<enum name="VoiceSearchError">
+  <int value="0" label="&quot;aborted&quot; error"/>
+  <int value="1" label="&quot;audio-capture&quot; error"/>
+  <int value="2" label="&quot;bad-grammar&quot; error"/>
+  <int value="3" label="&quot;language-not-supported&quot; error"/>
+  <int value="4" label="&quot;network&quot; error"/>
+  <int value="5" label="&quot;no-match&quot; error"/>
+  <int value="6" label="&quot;no-speech&quot; error"/>
+  <int value="7" label="&quot;not-allowed&quot; error"/>
+  <int value="8" label="&quot;other&quot; error"/>
+  <int value="9" label="&quot;service-not-allowed&quot; error"/>
+</enum>
+
+<!-- LINT.ThenChange(//ui/webui/resources/cr_components/composebox/composebox_voice_search.ts:VoiceSearchError) -->
+
+<!-- LINT.IfChange(VoiceSearchState) -->
+
+<enum name="VoiceSearchState">
+  <int value="0" label="Voice Search Button Clicked And Voice Search Started"/>
+  <int value="1" label="Voice Search Transcription Success"/>
+  <int value="2" label="Voice Search Error That Does Not Cancel Voice Search"/>
+  <int value="3" label="Voice Search Error That Cancels Voice Search"/>
+  <int value="4" label="Voice Search Is Canceled By User"/>
+</enum>
+
+<!-- LINT.ThenChange(//ui/webui/resources/cr_components/search/constants.ts:VoiceSearchState) -->
+
 <enum name="ZeroSuggestEligibility">
   <int value="0" label="Eligible for current context and external conditions">
     Zero-prefix suggestions are eligible.

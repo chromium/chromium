@@ -150,6 +150,7 @@ class SearchboxHandler : public searchbox::mojom::PageHandler,
   void ShouldShowDriveDisclaimer(
       ShouldShowDriveDisclaimerCallback callback) override;
   void OnDriveDisclaimerAccepted() override;
+  void GetPageClassification(GetPageClassificationCallback callback) override;
 
   // Stores `callback` to be run when the page remote is bound and ready to
   // receive calls. Runs `callback` immediately if the remote is already bound.
