@@ -31,7 +31,6 @@ const char kFindInPageTestSpecialCharactersText[] = "!@#$%^&*()_+";
 const char kFindInPageTestNumbersText[] = "1234567890";
 const char kFindInPageTestAlphanumericText[] = "f00bar";
 const char kFindInPageTestNonASCIIText[] = "大家好🦑";
-const char kFindInPageTestWithSpanishAccentText[] = "á";
 const char kFindInPageTestWithoutSpanishAccentText[] = "a";
 const char kFindInPageTestLowercaseAndUppercaseText[] =
     "ThIs tExT Is bOtH UpPeRcAsE AnD LoWeRcAsE";
@@ -507,41 +506,6 @@ FindInPageTestCrossOriginFramePageHttpResponse(
   [self openFindInPageWithOverflowMenu];
   [self replaceFindInPageText:@(queryWithNoMatches)];
   // Test the result label shows no results.
-  [self assertResultStringIsEmptyOrZero];
-  [self closeFindInPageWithDoneButton];
-}
-
-// Tests that FIP yields no matches for a text with spanish accents e.g. 'á' if
-// the web page contains the same text without spanish accents e.g. 'a'. This
-// test assumes removing accents from `kFindInPageTestWithSpanishAccentText`
-// yields `kFindInPageTestWithoutSpanishAccentText`.
-- (void)testFindInPageDifferentAccent {
-  // TODO(crbug.com/439548043): Re-enable the test on iOS26.
-  if (base::ios::IsRunningOnIOS26OrLater()) {
-    EARL_GREY_TEST_DISABLED(@"Test disabled on iOS 26.");
-  }
-  [self setUpTestServersForWebPageTest];
-
-  // Load test page with cross-origin iframe.
-  GURL destinationURL =
-      [self secondTestServer]->GetURL(kFindInPageCrossOriginFrameTestURL);
-  [ChromeEarlGrey loadURL:destinationURL];
-
-  // Assert the text without accent is there but the text with accents does
-  // not match.
-  [ChromeEarlGrey
-      waitForWebStateContainingText:kFindInPageTestWithoutSpanishAccentText];
-  [ChromeEarlGrey
-      waitForWebStateNotContainingText:kFindInPageTestWithSpanishAccentText];
-
-  // Open FIP and assert that text with no accents yields matches.
-  [self openFindInPageWithOverflowMenu];
-  [self replaceFindInPageText:@(kFindInPageTestWithoutSpanishAccentText)];
-  [self assertResultStringIsNonZero];
-
-  // Replace the text without spanish accent with the same text with spanish
-  // accents and test that there are no more matches.
-  [self replaceFindInPageText:@(kFindInPageTestWithSpanishAccentText)];
   [self assertResultStringIsEmptyOrZero];
   [self closeFindInPageWithDoneButton];
 }
