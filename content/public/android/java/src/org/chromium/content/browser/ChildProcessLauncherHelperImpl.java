@@ -688,12 +688,6 @@ public final class ChildProcessLauncherHelperImpl {
                                 /* fallbackToNextSlot= */ false,
                                 sandboxed);
             } else if (ChildProcessConnection.supportVariableConnections()) {
-                // Use an increased process limit if SafeSetID and Native Zygote are enabled.
-                // This is only supported when Javaless renderers are available and active.
-                int maxProcessLimit =
-                        ChildProcessCreationParamsImpl.isNativeSandboxedServiceEnabled()
-                                ? ChildConnectionAllocator.MAX_PROCESSES_WITH_NATIVE_ZYGOTE
-                                : ChildConnectionAllocator.MAX_VARIABLE_ALLOCATED;
                 connectionAllocator =
                         ChildConnectionAllocator.createVariableSize(
                                 context,
@@ -704,8 +698,7 @@ public final class ChildProcessLauncherHelperImpl {
                                 ChildProcessCreationParamsImpl.getBackupSandboxedServicesName(),
                                 bindToCaller,
                                 bindAsExternalService,
-                                sandboxed,
-                                maxProcessLimit);
+                                sandboxed);
             } else {
                 connectionAllocator =
                         ChildConnectionAllocator.create(
