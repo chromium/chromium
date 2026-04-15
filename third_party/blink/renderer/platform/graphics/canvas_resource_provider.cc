@@ -308,13 +308,6 @@ CanvasResourceProviderSharedImage::CanvasResourceProviderSharedImage(
   if (raster_context_provider_) {
     raster_context_provider_->AddObserver(this);
   }
-
-  resource_ = NewOrRecycledResource();
-  GetFlushForImageListener()->AddObserver(this);
-
-  if (resource_) {
-    EnsureWriteAccess();
-  }
 }
 
 CanvasResourceProviderSharedImage::CanvasResourceProviderSharedImage(
@@ -2116,6 +2109,13 @@ Canvas2DResourceProviderSharedImage::Canvas2DResourceProviderSharedImage(
       recorder_for_canvas_2d_->DisableLineDrawingAsPaths();
     }
   }
+
+  resource_ = NewOrRecycledResource();
+  GetFlushForImageListener()->AddObserver(this);
+
+  if (resource_) {
+    EnsureWriteAccess();
+  }
 }
 
 Canvas2DResourceProviderSharedImage::Canvas2DResourceProviderSharedImage(
@@ -2163,6 +2163,13 @@ CanvasNon2DResourceProviderSharedImage::CanvasNon2DResourceProviderSharedImage(
         gpu::kGpuFeatureStatusEnabled) {
       recorder_for_external_draws_->DisableLineDrawingAsPaths();
     }
+  }
+
+  resource_ = NewOrRecycledResource();
+  GetFlushForImageListener()->AddObserver(this);
+
+  if (resource_) {
+    EnsureWriteAccess();
   }
 }
 
