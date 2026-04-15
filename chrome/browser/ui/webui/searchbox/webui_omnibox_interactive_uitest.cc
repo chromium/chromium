@@ -220,7 +220,7 @@ IN_PROC_BROWSER_TEST_F(OmniboxWebUiInteractiveTest,
       WaitForVerbatimMatch(kClassicPopupWebView, kClassicMatchText, "@gemini"),
       // Clicking the top match should navigate to a Google search results page.
       InSameContext(ClickElement(kClassicPopupWebView, kClassicMatch)),
-      WaitForGoogleSearch(kNewTab, "%40gemini&oq=%40gemini"));
+      WaitForGoogleSearch(kNewTab, {{"q", "@gemini"}, {"oq", "@gemini"}}));
 }
 
 // TODO(crbug.com/496926191): Interactive tests involving verbatim matches are
@@ -262,7 +262,7 @@ IN_PROC_BROWSER_TEST_F(OmniboxWebUiInteractiveTest,
 //                  .SetMustRemainVisible(false))),
 //          Else(SendKeyPress(kOmniboxElementId, ui::VKEY_RETURN))),
 //       // Ensure google search occurs.
-//       WaitForGoogleSearch(kNewTab, "a"));
+//       WaitForGoogleSearch(kNewTab, {{"q", "a"}}));
 // }
 // Ensures that the entrypoint is not shown in the popup whenever the AIM popup
 // feature is disabled.
@@ -509,7 +509,7 @@ IN_PROC_BROWSER_TEST_F(OmniboxAimWebUiInteractiveTest,
       // Trigger a search.
       InputAimPopupText("foo"),
       InSameContext(ClickElement(kAimPopupWebView, kAimSubmit)),
-      WaitForGoogleSearch(kNewTab, "foo"),
+      WaitForGoogleSearch(kNewTab, {{"q", "foo"}}),
       // Verify tab has focus and not the location bar.
       CheckJsResult(kNewTab, "() => document.hasFocus()", true),
       CheckViewProperty(kOmniboxElementId, &views::View::HasFocus, false));
@@ -585,7 +585,7 @@ IN_PROC_BROWSER_TEST_F(OmniboxAimWebUiInteractiveTest, QueryWithTabContext) {
       InSameContext(ClickElement(kAimPopupWebView, kAimSubmit)),
 
       // 7. Verify navigation to Google Search with the query.
-      WaitForGoogleSearch(kNewTab, "foo"));
+      WaitForGoogleSearch(kNewTab, {{"q", "foo"}}));
 }
 
 IN_PROC_BROWSER_TEST_F(OmniboxAimWebUiInteractiveTest, TextTransfersOnDismiss) {
@@ -668,5 +668,5 @@ IN_PROC_BROWSER_TEST_P(OmniboxAimSearchFulfillmentTest,
                         SendKeyPress(kOmniboxElementId, ui::VKEY_RETURN))
                   : InSameContext(ClickElement(kAimPopupWebView, kAimSubmit)))),
       // Ensure tab navigates to a Google search results page.
-      WaitForGoogleSearch(kNewTab, query));
+      WaitForGoogleSearch(kNewTab, {{"q", query}}));
 }

@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_WEBUI_SEARCHBOX_SEARCHBOX_INTERACTIVE_TEST_MIXIN_H_
 
 #include <concepts>
+#include <map>
 #include <memory>
 #include <string>
 
@@ -16,6 +17,7 @@
 #include "chrome/test/interaction/interactive_browser_test.h"
 #include "chrome/test/interaction/tracked_element_webcontents.h"
 #include "chrome/test/interaction/webcontents_interaction_test_util.h"
+#include "components/google/core/common/google_util.h"
 #include "components/history/core/browser/history_service.h"
 #include "content/public/test/url_loader_interceptor.h"
 #include "net/base/url_util.h"
@@ -49,21 +51,39 @@ class SearchboxInteractiveTestMixin : public T {
     });
   }
 
-  // Waits for navigation to a Google search results page for `query`.
-  auto WaitForGoogleSearch(const ui::ElementIdentifier& tab_id,
-                           const std::string& query) {
+  // Waits for navigation to a Google search results page for `expected_params`.
+  auto WaitForGoogleSearch(
+      const ui::ElementIdentifier& tab_id,
+      const std::map<std::string, std::string>& expected_params) {
     return T::Steps(T::InAnyContext(
         T::WaitForWebContentsNavigation(tab_id),
         T::CheckElement(
             tab_id,
             [](ui::TrackedElement* el) {
-              return el->AsA<TrackedElementWebContents>()
-                  ->owner()
-                  ->web_contents()
-                  ->GetLastCommittedURL()
-                  .spec();
+              GURL url = el->AsA<TrackedElementWebContents>()
+                             ->owner()
+                             ->web_contents()
+                             ->GetLastCommittedURL();
+              std::map<std::string, std::string> actual_params;
+              if (!google_util::IsGoogleSearchUrl(url)) {
+                return actual_params;
+              }
+              static constexpr base::UnescapeRule::Type kUnescapeRules =
+                  base::UnescapeRule::SPACES |
+                  base::UnescapeRule::REPLACE_PLUS_WITH_SPACE |
+                  base::UnescapeRule::URL_SPECIAL_CHARS_EXCEPT_PATH_SEPARATORS |
+                  base::UnescapeRule::PATH_SEPARATORS;
+
+              for (net::QueryIterator it(url); !it.IsAtEnd(); it.Advance()) {
+                std::string key =
+                    base::UnescapeURLComponent(it.GetKey(), kUnescapeRules);
+                std::string value =
+                    base::UnescapeURLComponent(it.GetValue(), kUnescapeRules);
+                actual_params[key] = value;
+              }
+              return actual_params;
             },
-            testing::StartsWith("https://www.google.com/search?q=" + query))));
+            testing::IsSupersetOf(expected_params))));
   }
 
   // Waits for match to render and verifies its text equals `expected_text`.
