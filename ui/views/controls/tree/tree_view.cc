@@ -396,12 +396,7 @@ void TreeView::SetRootShown(bool root_shown) {
     }
   }
 
-  AXVirtualView* ax_view = root_.accessibility_view();
-  // There should always be a virtual accessibility view for the root, unless
-  // someone calls this method before setting a model.
-  if (ax_view) {
-    ax_view->NotifyEvent(ax::mojom::Event::kStateChanged, true);
-  }
+  UpdateAccessiblePositionalPropertiesForNodeAndChildren(&root_);
   DrawnNodesChanged();
 }
 

@@ -498,7 +498,11 @@ TEST_F(TreeViewTest, HideRoot) {
   EXPECT_TRUE(FiredAccessibilityEvent(std::make_pair(
       GetAccessibilityViewByName("a"), ax::mojom::Event::kSelection)));
   EXPECT_TRUE(FiredAccessibilityEvent(std::make_pair(
-      GetRootAccessibilityView(), ax::mojom::Event::kStateChanged)));
+      GetRootAccessibilityView(), ax::mojom::Event::kTreeChanged)));
+
+  // Root should be ignored when hidden.
+  ui::AXNodeData data = GetRootAccessibilityView()->GetData();
+  EXPECT_TRUE(data.HasState(ax::mojom::State::kIgnored));
 }
 
 // Expands a node and verifies the children are loaded correctly.
@@ -1279,7 +1283,7 @@ TEST_F(TreeViewTest, OnFocusAccessibilityEvents) {
   EXPECT_TRUE(FiredAccessibilityEvent(std::make_pair(
       GetTreeAccessibilityView(), ax::mojom::Event::kSelection)));
   EXPECT_TRUE(FiredAccessibilityEvent(std::make_pair(
-      GetRootAccessibilityView(), ax::mojom::Event::kStateChanged)));
+      GetRootAccessibilityView(), ax::mojom::Event::kTreeChanged)));
   EXPECT_TRUE(FiredAccessibilityEvent(
       std::make_pair(GetTreeAccessibilityView(), ax::mojom::Event::kFocus)));
 
