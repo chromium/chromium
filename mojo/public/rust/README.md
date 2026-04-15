@@ -1,6 +1,9 @@
 # Mojo Rust Bindings
 
 This document is a subset of the [Mojo documentation](/mojo/README.md).
+If you're interested in using the Mojo bindings to write Rust code, you probably
+want to read the documentation for the
+[Rust Bindings API](//mojo/public/rust/bindings/README.md).
 
 ## Overview
 
@@ -9,7 +12,8 @@ divided into three layers:
 
 1. C API Wrappers: Safe, idiomatic, Rust wrappers around the [Mojo C API](/mojo/public/c/system/README.md).
 2. System API: Ergonomic, mid-level bindings.
-3. Bindings API: High-level, often Mojom-specific code.
+3. [Bindings API](//mojo/public/rust/bindings/README.md):
+   High-level, often Mojom-specific code.
 
 Note that other languages (particularly C++) have only layers (2) and (3),
 building on the C API without wrappers.
@@ -61,7 +65,8 @@ the higher-level constructs in the Bindings API will be more convenient.
 
 ## Bindings API
 
-The Mojo Rust Bindings API provides the user-visible API for sending and
+The [Rust Bindings API](//mojo/public/rust/bindings/README.md)
+provides the user-visible API for sending and
 receiving messages via Mojo. In contrast to the lower two layers, which aim to
 provide APIs for the basic Mojo primitives, the Bindings API provides high-level
 APIs that build atop them. For example, the `MessagePipeWatcher` type uses a
