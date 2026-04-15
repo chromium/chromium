@@ -289,6 +289,7 @@ export {SettingsSafetyHubUnusedSitePermissionsModuleElement} from './safety_hub/
 export {SettingsOmniboxExtensionEntryElement} from './search_page/omnibox_extension_entry.js';
 export {SettingsSearchEngineEditDialogElement} from './search_page/search_engine_edit_dialog.js';
 export {SettingsSearchEngineEntryElement} from './search_page/search_engine_entry.js';
+export {SettingsSearchEngineIconElement} from './search_page/search_engine_icon.js';
 export {SettingsSearchEnginesListElement} from './search_page/search_engines_list.js';
 export {SettingsSearchEnginesPageElement} from './search_page/search_engines_page.js';
 export {SettingsSimpleConfirmationDialogElement} from './simple_confirmation_dialog.js';

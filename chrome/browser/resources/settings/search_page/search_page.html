@@ -1,8 +1,4 @@
 <style include="cr-shared-style settings-shared">
-  :host {
-    --favicon-size: 0;
-  }
-
   #search-wrapper {
     align-items: center;
     display: flex;
@@ -22,17 +18,6 @@
   .search-engine-name {
     margin-inline-end: auto;
   }
-
-  site-favicon {
-    --site-favicon-border-radius: 4px;
-    --site-favicon-height: var(--favicon-size);
-    --site-favicon-width: var(--favicon-size);
-  }
-
-  settings-search-engine-list-dialog {
-    --search-engine-icon-size: var(--favicon-size);
-  }
-
 </style>
 <settings-section page-title="[[searchPageTitle_]]">
   <div route-path="default">
@@ -50,10 +35,8 @@
           </a>
         </div>
         <div class="cr-row first">
-          <site-favicon favicon-url="[[defaultSearchEngine_.iconURL]]"
-              url="[[defaultSearchEngine_.url]]"
-              icon-path="[[defaultSearchEngine_.iconPath]]">
-          </site-favicon>
+          <settings-search-engine-icon engine="[[defaultSearchEngine_]]">
+          </settings-search-engine-icon>
           <div class="search-engine-name">[[defaultSearchEngine_.name]]</div>
           <template is="dom-if" if="[[isDefaultSearchControlledByPolicy_(
               prefs.default_search_provider_data.template_url_data)]]">

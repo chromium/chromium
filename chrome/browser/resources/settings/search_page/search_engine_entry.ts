@@ -7,7 +7,6 @@
  * search engine with its name, domain and query URL.
  */
 import 'chrome://resources/cr_elements/cr_action_menu/cr_action_menu.js';
-import 'chrome://resources/cr_elements/cr_auto_img/cr_auto_img.js';
 import 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import 'chrome://resources/cr_elements/icons.html.js';
@@ -16,7 +15,7 @@ import '/shared/settings/controls/extension_controlled_indicator.js';
 import 'chrome://resources/cr_elements/cr_icon/cr_icon.js';
 import './search_engine_entry.css.js';
 import '../settings_shared.css.js';
-import '../site_favicon.js';
+import './search_engine_icon.js';
 
 import {ExtensionControlBrowserProxyImpl} from '/shared/settings/extension_control_browser_proxy.js';
 import type {ExtensionControlBrowserProxy} from '/shared/settings/extension_control_browser_proxy.js';
@@ -30,12 +29,6 @@ import {loadTimeData} from '../i18n_setup.js';
 import {getTemplate} from './search_engine_entry.html.js';
 import type {SearchEngine, SearchEnginesBrowserProxy} from './search_engines_browser_proxy.js';
 import {ChoiceMadeLocation, SearchEnginesBrowserProxyImpl} from './search_engines_browser_proxy.js';
-
-export interface SettingsSearchEngineEntryElement {
-  $: {
-    downloadedIcon: HTMLImageElement,
-  };
-}
 
 const SettingsSearchEngineEntryElementBase = I18nMixin(PolymerElement);
 
@@ -51,10 +44,7 @@ export class SettingsSearchEngineEntryElement extends
 
   static get properties() {
     return {
-      engine: {
-        type: Object,
-        observer: 'onEngineChanged_',
-      },
+      engine: Object,
 
       showShortcut: {type: Boolean, value: false, reflectToAttribute: true},
 
@@ -69,11 +59,6 @@ export class SettingsSearchEngineEntryElement extends
       showEditIcon_: {
         type: Boolean,
         computed: 'computeShowEditIcon_(engine)',
-      },
-
-      showDownloadedIcon_: {
-        type: Boolean,
-        value: false,
       },
 
       showSecondaryButton_: {
@@ -112,34 +97,12 @@ export class SettingsSearchEngineEntryElement extends
   private extensionBrowserProxy_: ExtensionControlBrowserProxy =
       ExtensionControlBrowserProxyImpl.getInstance();
   declare private showEditIcon_: boolean;
-  declare private showDownloadedIcon_: boolean;
   declare private showSecondaryButton_: boolean;
   declare private disableDots_: boolean;
-  private timeoutId_: number|null = null;
   declare turnOnLabel: string;
   declare turnOffLabel: string;
 
   declare private searchSettingsUpdateEnabled_: boolean;
-
-  private onEngineChanged_(
-      newEngine: SearchEngine, oldEngine: SearchEngine|undefined) {
-    if (oldEngine && newEngine.iconURL === oldEngine.iconURL) {
-      return;
-    }
-    this.showDownloadedIcon_ = false;
-    if (this.timeoutId_) {
-      clearTimeout(this.timeoutId_);
-      this.timeoutId_ = null;
-    }
-    this.timeoutId_ = setTimeout(() => {
-      if (!this.$.downloadedIcon.complete) {
-        // Reset src to cancel ongoing request.
-        this.$.downloadedIcon.src = '';
-        this.showDownloadedIcon_ = false;
-      }
-      this.timeoutId_ = null;
-    }, 1000);
-  }
 
   private closePopupMenu_() {
     this.shadowRoot!.querySelector('cr-action-menu')!.close();
@@ -334,23 +297,6 @@ export class SettingsSearchEngineEntryElement extends
     this.closePopupMenu_();
     this.browserProxy_.setIsActiveSearchEngine(
         this.engine.id, /*is_active=*/ false);
-  }
-
-  private onDownloadedIconLoadError_() {
-    this.showDownloadedIcon_ = false;
-  }
-
-  private onDownloadedIconLoadSuccess_() {
-    this.showDownloadedIcon_ = true;
-    if (this.timeoutId_) {
-      clearTimeout(this.timeoutId_);
-    }
-    this.timeoutId_ = null;
-  }
-
-  private shouldShowDownloadedIcon_(): boolean {
-    return this.showDownloadedIcon_ && !this.engine.iconPath &&
-        !!this.engine.iconURL;
   }
 
   private getMoreActionsAriaLabel_(): string {

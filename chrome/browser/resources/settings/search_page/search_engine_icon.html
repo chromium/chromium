@@ -1,0 +1,20 @@
+<style include="settings-shared">
+  site-favicon,
+  #downloadedIcon {
+    display: block;
+    --site-favicon-height: 16px;
+    --site-favicon-width: 16px;
+    height: 16px;
+    width: 16px;
+  }
+</style>
+
+<img id="downloadedIcon" is="cr-auto-img"
+    auto-src="[[getIconUrl_(engine.iconURL)]]" clear-src
+    on-load="onDownloadedIconLoadSuccess_"
+    on-error="onDownloadedIconLoadError_"
+    hidden="[[!shouldShowDownloadedIcon_(showDownloadedIcon_, engine)]]">
+<site-favicon favicon-url="[[engine.iconURL]]" url="[[engine.url]]"
+    icon-path="[[engine.iconPath]]"
+    hidden="[[shouldShowDownloadedIcon_(showDownloadedIcon_, engine)]]">
+</site-favicon>
