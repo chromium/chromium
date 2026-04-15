@@ -67,26 +67,26 @@ TEST_F(URLLoaderThrottleTest, WildcardHosts) {
   URLLoaderThrottle throttle(
       base::MakeRefCounted<UrlRequestRewriteRules>(std::move(rules)),
       CreateCorsExemptHeadersCallback({}));
-  bool defer = false;
+  bool unused_defer = false;
 
   network::ResourceRequest request1;
   request1.url = GURL("http://test.net");
-  throttle.WillStartRequest(&request1, &defer);
+  throttle.WillStartRequest(&request1, &unused_defer);
   EXPECT_TRUE(request1.headers.HasHeader("Header"));
 
   network::ResourceRequest request2;
   request2.url = GURL("http://subdomain.test.net");
-  throttle.WillStartRequest(&request2, &defer);
+  throttle.WillStartRequest(&request2, &unused_defer);
   EXPECT_TRUE(request2.headers.HasHeader("Header"));
 
   network::ResourceRequest request3;
   request3.url = GURL("http://domaintest.net");
-  throttle.WillStartRequest(&request3, &defer);
+  throttle.WillStartRequest(&request3, &unused_defer);
   EXPECT_FALSE(request3.headers.HasHeader("Header"));
 
   network::ResourceRequest request4;
   request4.url = GURL("http://otherdomain.net");
-  throttle.WillStartRequest(&request4, &defer);
+  throttle.WillStartRequest(&request4, &unused_defer);
   EXPECT_FALSE(request4.headers.HasHeader("Header"));
 }
 
@@ -166,11 +166,11 @@ TEST_F(URLLoaderThrottleTest, DataReplacementUrl) {
   URLLoaderThrottle throttle(
       base::MakeRefCounted<UrlRequestRewriteRules>(std::move(rules)),
       CreateCorsExemptHeadersCallback({}));
-  bool defer = false;
+  bool unused_defer = false;
 
   network::ResourceRequest request;
   request.url = GURL("http://test.net/style.css?query#ref");
-  throttle.WillStartRequest(&request, &defer);
+  throttle.WillStartRequest(&request, &unused_defer);
   EXPECT_EQ(request.url, std::string_view(kCssDataURI));
 }
 
@@ -197,18 +197,18 @@ TEST_F(URLLoaderThrottleTest, RedirectsToSameHost) {
   URLLoaderThrottle throttle(
       base::MakeRefCounted<UrlRequestRewriteRules>(std::move(rules)),
       CreateCorsExemptHeadersCallback({}));
-  bool defer = false;
+  bool unused_defer = false;
 
   network::ResourceRequest request;
   request.url = GURL(kBaseUrl);
   request.navigation_redirect_chain = {GURL(kBaseUrl)};
-  throttle.WillStartRequest(&request, &defer);
+  throttle.WillStartRequest(&request, &unused_defer);
   EXPECT_EQ(request.url, GURL(kUrlWithQueryString));
 
   request.url = GURL(kUrlWithQueryString);
   request.navigation_redirect_chain = {GURL(kBaseUrl),
                                        GURL(kUrlWithQueryString)};
-  throttle.WillStartRequest(&request, &defer);
+  throttle.WillStartRequest(&request, &unused_defer);
   EXPECT_EQ(request.url, GURL(kUrlWithQueryString));
 }
 
@@ -234,17 +234,17 @@ TEST_F(URLLoaderThrottleTest, RedirectsFromDifferentHost) {
   URLLoaderThrottle throttle(
       base::MakeRefCounted<UrlRequestRewriteRules>(std::move(rules)),
       CreateCorsExemptHeadersCallback({}));
-  bool defer = false;
+  bool unused_defer = false;
 
   network::ResourceRequest request;
   request.url = GURL(kBaseUrl1);
   request.navigation_redirect_chain = {GURL(kBaseUrl1)};
-  throttle.WillStartRequest(&request, &defer);
+  throttle.WillStartRequest(&request, &unused_defer);
   EXPECT_EQ(request.url, GURL(kBaseUrl1));
 
   request.url = GURL(kBaseUrl2);
   request.navigation_redirect_chain = {GURL(kBaseUrl1), GURL(kBaseUrl2)};
-  throttle.WillStartRequest(&request, &defer);
+  throttle.WillStartRequest(&request, &unused_defer);
   EXPECT_EQ(request.url, GURL(kBaseUrl2));
 }
 
@@ -273,16 +273,16 @@ TEST_F(URLLoaderThrottleTest, RedirectsToDifferentHost) {
   URLLoaderThrottle throttle(
       base::MakeRefCounted<UrlRequestRewriteRules>(std::move(rules)),
       CreateCorsExemptHeadersCallback({}));
-  bool defer = false;
+  bool unused_defer = false;
 
   network::ResourceRequest request;
   request.url = GURL(kBaseUrl1);
-  throttle.WillStartRequest(&request, &defer);
+  throttle.WillStartRequest(&request, &unused_defer);
   EXPECT_EQ(request.url, GURL(kUrl1WithQueryString));
 
   request.url = GURL(kBaseUrl2);
   request.navigation_redirect_chain = {GURL(kBaseUrl1), GURL(kBaseUrl2)};
-  throttle.WillStartRequest(&request, &defer);
+  throttle.WillStartRequest(&request, &unused_defer);
   EXPECT_EQ(request.url, GURL(kBaseUrl2));
 }
 
@@ -331,24 +331,23 @@ TEST_F(URLLoaderThrottleTest, AllowAndDeny) {
     rules->rules.push_back(std::move(rule));
   }
 
+  TestThrottleDelegate delegate;
   URLLoaderThrottle throttle(
       base::MakeRefCounted<UrlRequestRewriteRules>(std::move(rules)),
       CreateCorsExemptHeadersCallback({}));
-  bool defer = false;
-
-  TestThrottleDelegate delegate;
   throttle.set_delegate(&delegate);
 
+  bool unused_defer = false;
   network::ResourceRequest request1;
   request1.url = GURL("http://test.net");
-  throttle.WillStartRequest(&request1, &defer);
+  throttle.WillStartRequest(&request1, &unused_defer);
   EXPECT_FALSE(delegate.canceled());
 
   delegate.Reset();
 
   network::ResourceRequest request2;
   request2.url = GURL("http://blocked.net");
-  throttle.WillStartRequest(&request2, &defer);
+  throttle.WillStartRequest(&request2, &unused_defer);
   EXPECT_TRUE(delegate.canceled());
   EXPECT_EQ(delegate.cancel_reason(),
             "Resource load blocked by embedder policy.");

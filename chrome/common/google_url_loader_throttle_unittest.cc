@@ -210,8 +210,9 @@ class GoogleURLLoaderThrottleTest
   base::test::TaskEnvironment task_environment_;
   raw_ptr<FakeBoundSessionRequestThrottledHandler, DanglingUntriaged>
       bound_session_handler_ = nullptr;
-  std::unique_ptr<GoogleURLLoaderThrottle> throttle_;
+  // Must outlive `throttle_`.
   std::unique_ptr<MockThrottleDelegate> delegate_;
+  std::unique_ptr<GoogleURLLoaderThrottle> throttle_;
   std::vector<BoundSessionThrottlerParamsPtr> bound_session_throttler_params_;
   std::unique_ptr<base::HistogramTester> histogram_tester_ =
       std::make_unique<base::HistogramTester>();

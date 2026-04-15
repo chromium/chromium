@@ -198,11 +198,11 @@ TEST_F(ExtensionLocalizationThrottleTest, DoNotCreate) {
 }
 
 TEST_F(ExtensionLocalizationThrottleTest, DoNotIntercept) {
+  auto delegate = std::make_unique<FakeDelegate>();
   const GURL url = test_gurl_.Resolve("test.txt");
   auto throttle = ExtensionLocalizationThrottle::MaybeCreate(
       std::nullopt, blink::WebURL(url));
   ASSERT_TRUE(throttle);
-  auto delegate = std::make_unique<FakeDelegate>();
   throttle->set_delegate(delegate.get());
 
   auto response_head = network::mojom::URLResponseHead::New();
@@ -214,12 +214,11 @@ TEST_F(ExtensionLocalizationThrottleTest, DoNotIntercept) {
 }
 
 TEST_F(ExtensionLocalizationThrottleTest, OneMessage) {
+  auto delegate = std::make_unique<FakeDelegate>();
   const GURL url = test_gurl_.Resolve("test.css");
   auto throttle = ExtensionLocalizationThrottle::MaybeCreate(
       std::nullopt, blink::WebURL(url));
   ASSERT_TRUE(throttle);
-
-  auto delegate = std::make_unique<FakeDelegate>();
   throttle->set_delegate(delegate.get());
 
   auto response_head = network::mojom::URLResponseHead::New();
@@ -243,12 +242,11 @@ TEST_F(ExtensionLocalizationThrottleTest, OneMessage) {
 }
 
 TEST_F(ExtensionLocalizationThrottleTest, TwoMessages) {
+  auto delegate = std::make_unique<FakeDelegate>();
   const GURL url = test_gurl_.Resolve("test.css");
   auto throttle = ExtensionLocalizationThrottle::MaybeCreate(
       std::nullopt, blink::WebURL(url));
   ASSERT_TRUE(throttle);
-
-  auto delegate = std::make_unique<FakeDelegate>();
   throttle->set_delegate(delegate.get());
 
   auto response_head = network::mojom::URLResponseHead::New();
@@ -275,12 +273,11 @@ TEST_F(ExtensionLocalizationThrottleTest, TwoMessages) {
 }
 
 TEST_F(ExtensionLocalizationThrottleTest, EmptyData) {
+  auto delegate = std::make_unique<FakeDelegate>();
   const GURL url = test_gurl_.Resolve("test.css");
   auto throttle = ExtensionLocalizationThrottle::MaybeCreate(
       std::nullopt, blink::WebURL(url));
   ASSERT_TRUE(throttle);
-
-  auto delegate = std::make_unique<FakeDelegate>();
   throttle->set_delegate(delegate.get());
 
   auto response_head = network::mojom::URLResponseHead::New();
@@ -304,12 +301,11 @@ TEST_F(ExtensionLocalizationThrottleTest, EmptyData) {
 
 // Regression test for https://crbug.com/1475798
 TEST_F(ExtensionLocalizationThrottleTest, Cancel) {
+  auto delegate = std::make_unique<FakeDelegate>();
   const GURL url = test_gurl_.Resolve("test.css");
   auto throttle = ExtensionLocalizationThrottle::MaybeCreate(
       std::nullopt, blink::WebURL(url));
   ASSERT_TRUE(throttle);
-
-  auto delegate = std::make_unique<FakeDelegate>();
   throttle->set_delegate(delegate.get());
 
   auto response_head = network::mojom::URLResponseHead::New();
@@ -334,12 +330,11 @@ TEST_F(ExtensionLocalizationThrottleTest, Cancel) {
 }
 
 TEST_F(ExtensionLocalizationThrottleTest, SourceSideError) {
+  auto delegate = std::make_unique<FakeDelegate>();
   const GURL url = test_gurl_.Resolve("test.css");
   auto throttle = ExtensionLocalizationThrottle::MaybeCreate(
       std::nullopt, blink::WebURL(url));
   ASSERT_TRUE(throttle);
-
-  auto delegate = std::make_unique<FakeDelegate>();
   throttle->set_delegate(delegate.get());
 
   auto response_head = network::mojom::URLResponseHead::New();
@@ -367,12 +362,11 @@ TEST_F(ExtensionLocalizationThrottleTest, SourceSideError) {
 }
 
 TEST_F(ExtensionLocalizationThrottleTest, WriteError) {
+  auto delegate = std::make_unique<FakeDelegate>();
   const GURL url = test_gurl_.Resolve("test.css");
   auto throttle = ExtensionLocalizationThrottle::MaybeCreate(
       std::nullopt, blink::WebURL(url));
   ASSERT_TRUE(throttle);
-
-  auto delegate = std::make_unique<FakeDelegate>();
   throttle->set_delegate(delegate.get());
 
   auto response_head = network::mojom::URLResponseHead::New();
@@ -396,13 +390,12 @@ TEST_F(ExtensionLocalizationThrottleTest, WriteError) {
 }
 
 TEST_F(ExtensionLocalizationThrottleTest, CreateDataPipeError) {
+  auto delegate = std::make_unique<FakeDelegate>();
   const GURL url = test_gurl_.Resolve("test.css");
   auto throttle = ExtensionLocalizationThrottle::MaybeCreate(
       std::nullopt, blink::WebURL(url));
   ASSERT_TRUE(throttle);
   throttle->ForceCreateDataPipeErrorForTest();
-
-  auto delegate = std::make_unique<FakeDelegate>();
   throttle->set_delegate(delegate.get());
 
   auto response_head = network::mojom::URLResponseHead::New();
@@ -423,12 +416,11 @@ TEST_F(ExtensionLocalizationThrottleTest, CreateDataPipeError) {
 }
 
 TEST_F(ExtensionLocalizationThrottleTest, URLLoaderChain) {
+  auto delegate = std::make_unique<FakeDelegate>();
   const GURL url = test_gurl_.Resolve("test.css");
   auto throttle = ExtensionLocalizationThrottle::MaybeCreate(
       std::nullopt, blink::WebURL(url));
   ASSERT_TRUE(throttle);
-
-  auto delegate = std::make_unique<FakeDelegate>();
   throttle->set_delegate(delegate.get());
 
   auto response_head = network::mojom::URLResponseHead::New();
@@ -465,12 +457,11 @@ TEST_F(ExtensionLocalizationThrottleTest, URLLoaderChain) {
 
 TEST_F(ExtensionLocalizationThrottleTest,
        URLLoaderClientOnTransferSizeUpdated) {
+  auto delegate = std::make_unique<FakeDelegate>();
   const GURL url = test_gurl_.Resolve("test.css");
   auto throttle = ExtensionLocalizationThrottle::MaybeCreate(
       std::nullopt, blink::WebURL(url));
   ASSERT_TRUE(throttle);
-
-  auto delegate = std::make_unique<FakeDelegate>();
   throttle->set_delegate(delegate.get());
 
   auto response_head = network::mojom::URLResponseHead::New();
@@ -555,10 +546,10 @@ TEST_F(ExtensionLocalizationThrottleTestWithRendererThread,
   RendererExtensionRegistry::Get()->Insert(extension);
 
   auto process_response = [](const GURL& gurl) {
+    auto delegate = std::make_unique<FakeDelegate>();
     auto throttle = ExtensionLocalizationThrottle::MaybeCreate(
         std::nullopt, blink::WebURL(gurl));
     ASSERT_TRUE(throttle);
-    auto delegate = std::make_unique<FakeDelegate>();
     throttle->set_delegate(delegate.get());
 
     auto response_head = network::mojom::URLResponseHead::New();
