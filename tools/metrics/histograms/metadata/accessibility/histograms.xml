@@ -3321,6 +3321,17 @@ even if they fit the naming pattern. -->
   </summary>
 </histogram>
 
+<histogram name="Accessibility.ReadAnything.ReadAloud.VoiceLanguageChange"
+    units="count" expires_after="2026-10-04">
+  <owner>lwinston@google.com</owner>
+  <owner>komo-eng@google.com</owner>
+  <summary>
+    Records how often the user changes the voice for reading aloud in reading
+    mode from one langauge to another. This excludes automatic voice language
+    changes done directly from reading mode.
+  </summary>
+</histogram>
+
 <histogram name="Accessibility.ReadAnything.ReadAloud.VoiceSpeed"
     units="speech rate %" expires_after="2026-08-02">
   <owner>kristislee@google.com</owner>
