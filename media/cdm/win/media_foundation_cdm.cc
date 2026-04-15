@@ -44,9 +44,11 @@ using Exception = CdmPromise::Exception;
 
 // The HDCP value follows the feature value in
 // https://docs.microsoft.com/en-us/uwp/api/windows.media.protection.protectioncapabilities.istypesupported?view=winrt-19041
+// Note that the public document says "HDCP 2.2 Type 1" but it should be
+// "HDCP 2.1 Type 1" instead.
 // - 0 (off)
-// - 1 (on without HDCP 2.2 Type 1 restriction)
-// - 2 (on with HDCP 2.2 Type 1 restriction)
+// - 1 (on without HDCP 2.1 Type 1 restriction; HDCP < 2.1)
+// - 2 (on with HDCP 2.1 Type 1 restriction; HDCP >= 2.1)
 enum class HdcpValue {
   kHdcpNotSupported = -1,
   kHdcpAlawaysSupported = 0,
@@ -120,8 +122,8 @@ HdcpValue GetHdcpValue(HdcpVersion hdcp_version) {
     case HdcpVersion::kHdcpVersion1_3:
     case HdcpVersion::kHdcpVersion1_4:
     case HdcpVersion::kHdcpVersion2_0:
-    case HdcpVersion::kHdcpVersion2_1:
       return HdcpValue::kHdcp1;
+    case HdcpVersion::kHdcpVersion2_1:
     case HdcpVersion::kHdcpVersion2_2:
       return HdcpValue::kHdcp2;
     case HdcpVersion::kHdcpVersion2_3:
