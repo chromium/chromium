@@ -42,9 +42,6 @@ class OnDeviceModelBridgeNativeUnitTestHelper {
   void ResumeOnCompleteCallback();
   void SetDownloaderCallbackOnDifferentThread();
 
-  void SetDefaultStatusCheckResult(ModelDownloaderAndroid::ModelStatus status);
-  void ClearDefaultStatusCheckResult();
-
   void VerifyDownloaderParams(
       optimization_guide::proto::ModelExecutionFeature feature,
       bool require_persistent_mode);
@@ -55,10 +52,6 @@ class OnDeviceModelBridgeNativeUnitTestHelper {
                                     const std::string& version);
   void TriggerDownloaderOnStatusCheckResult(
       ModelDownloaderAndroid::ModelStatus model_status);
-  void TriggerAllDownloadersOnStatusCheckResult(
-      ModelDownloaderAndroid::ModelStatus model_status);
-
-  int GetStatusCheckerCount();
 
  private:
   base::android::ScopedJavaGlobalRef<jobject> java_helper_;
