@@ -7,6 +7,7 @@ include_rules = [
   "+components/omnibox/common",
   "+components/omnibox/composebox",
   "+components/prefs",
+  "+components/pref_registry",
   "+components/policy",
   "+components/search_engines",
   "+components/sessions/core",

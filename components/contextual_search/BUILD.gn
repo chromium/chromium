@@ -113,6 +113,7 @@ source_set("impl") {
     "//components/contextual_search/internal",
     "//components/lens",
     "//components/lens/proto/server:proto",
+    "//components/pref_registry",
     "//components/search_engines",
     "//components/signin/public/identity_manager",
     "//components/variations",

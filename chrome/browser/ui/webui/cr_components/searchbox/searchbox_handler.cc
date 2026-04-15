@@ -1264,6 +1264,13 @@ omnibox::InputState SearchboxHandler::GetInputState() const {
   return omnibox::InputState();
 }
 
+void SearchboxHandler::ShouldShowDriveDisclaimer(
+    ShouldShowDriveDisclaimerCallback callback) {
+  std::move(callback).Run(false);
+}
+
+void SearchboxHandler::OnDriveDisclaimerAccepted() {}
+
 OmniboxController* SearchboxHandler::omnibox_controller() const {
   return controller_;
 }

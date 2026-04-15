@@ -396,6 +396,12 @@ interface PageHandler {
 
   // Called when a user interacts with a model selection button explicitly.
   RecordModelSelectionAction(composebox_query.mojom.ModelMode model);
+
+  // Queries whether the AIM x Drive disclaimer should be shown.
+  ShouldShowDriveDisclaimer() => (bool should_show);
+
+  // Informs the browser that the user accepted the AIM x Drive disclaimer.
+  OnDriveDisclaimerAccepted();
 };
 
 // WebUI-side handler for requests from the browser.

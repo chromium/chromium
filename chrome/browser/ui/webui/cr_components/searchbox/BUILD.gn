@@ -16,6 +16,7 @@ source_set("searchbox") {
     "//chrome/browser/autocomplete",
     "//chrome/browser/tab_list",
     "//chrome/browser/ui/omnibox",
+    "//components/contextual_search:prefs",
     "//components/contextual_search:public",
     "//components/contextual_tasks/public",
     "//components/contextual_tasks/public:query_contextualizer",

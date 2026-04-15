@@ -20,6 +20,10 @@ enum class SearchContentSharingSettingsValue {
 inline constexpr char kSearchContentSharingSettings[] =
     "contextual_search.search_content_sharing_settings";
 
+// Boolean that specifies whether the user has accepted the Drive disclaimer.
+inline constexpr char kDriveDisclaimerAccepted[] =
+    "contextual_search.drive_disclaimer_accepted";
+
 }  // namespace contextual_search
 
 #endif  // COMPONENTS_CONTEXTUAL_SEARCH_PREF_NAMES_H_
