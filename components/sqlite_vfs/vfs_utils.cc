@@ -15,6 +15,7 @@
 #include "components/sqlite_vfs/metrics_util.h"
 #include "components/sqlite_vfs/pending_file_set.h"
 #include "components/sqlite_vfs/sandboxed_file.h"
+#include "components/sqlite_vfs/shared_locks.h"
 #include "components/sqlite_vfs/sqlite_database_vfs_file_set.h"
 
 #if BUILDFLAG(IS_WIN)
@@ -127,8 +128,7 @@ std::optional<PendingFileSet> MakePendingFileSet(
 
   if (!single_connection) {
     // The shared lock is only needed if multiple connections are permitted.
-    pending_file_set.shared_lock =
-        base::UnsafeSharedMemoryRegion::Create(sizeof(SharedAtomicLock));
+    pending_file_set.shared_lock = SharedLocks::CreateRegion();
     if (!pending_file_set.shared_lock.IsValid()) {
       return std::nullopt;
     }

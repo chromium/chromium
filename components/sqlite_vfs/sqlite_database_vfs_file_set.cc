@@ -6,6 +6,7 @@
 
 #include <atomic>
 #include <memory>
+#include <optional>
 #include <string_view>
 #include <utility>
 
@@ -20,6 +21,7 @@
 #include "components/sqlite_vfs/file_type.h"
 #include "components/sqlite_vfs/pending_file_set.h"
 #include "components/sqlite_vfs/sandboxed_file.h"
+#include "components/sqlite_vfs/shared_locks.h"
 #include "sql/database.h"
 
 namespace {
@@ -44,10 +46,10 @@ std::optional<SqliteVfsFileSet> SqliteVfsFileSet::Bind(
   // Write-ahead logging requires read-write access.
   CHECK(!pending_file_set.wal_file.IsValid() || pending_file_set.read_write);
 
-  base::WritableSharedMemoryMapping mapped_shared_lock;
+  std::optional<SharedLocks> shared_locks;
   if (pending_file_set.shared_lock.IsValid()) {
-    mapped_shared_lock = pending_file_set.shared_lock.Map();
-    if (!mapped_shared_lock.IsValid()) {
+    shared_locks = SharedLocks::Create(pending_file_set.shared_lock);
+    if (!shared_locks) {
       return std::nullopt;  // Failed to map the shared lock.
     }
   }
@@ -58,7 +60,7 @@ std::optional<SqliteVfsFileSet> SqliteVfsFileSet::Bind(
 
   auto db_file = std::make_unique<SandboxedFile>(
       client, FileType::kMainDb, std::move(pending_file_set.db_file),
-      access_rights, std::move(mapped_shared_lock));
+      access_rights, std::move(shared_locks));
   auto journal_file = std::make_unique<SandboxedFile>(
       client, FileType::kMainJournal, std::move(pending_file_set.journal_file),
       access_rights);

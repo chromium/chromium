@@ -73,15 +73,15 @@ class COMPONENT_EXPORT(SQLITE_VFS) SqliteVfsFileSet {
   bool wal_journal_mode() const { return !!wal_journal_file_; }
 
   // Permanently marks this file set's database as no longer suitable for use by
-  // any connection. Returns true if any connection to the database holds either
-  // a shared reader lock; or the reserved, pending, or exclusive lock. All
-  // subsequent attempts to lock the database by any connection will fail with
-  // SQLITE_IOERR_LOCK. Clients accessing a database by such a file set should
-  // handle this error by closing their connection. When `Abandon()` returns
-  // `kNotHeld`, it is safe to re-establish new connections to the same files.
-  // Conversely, the backing files should be deleted if a file set is abandoned
-  // while any other connection holds a lock since it is not possible to know
-  // when all outstanding connections have been closed.
+  // any connection. Returns the state of the primary database lock at the time
+  // of abandonment. All subsequent attempts to lock the database by any
+  // connection will fail with SQLITE_IOERR_LOCK. Clients accessing a database
+  // by such a file set should handle this error by closing their connection.
+  // When `Abandon()` returns `kNotHeld`, it is safe to re-establish new
+  // connections to the same files. Conversely, the backing files should be
+  // deleted if a file set is abandoned while any other connection holds a lock
+  // since it is not possible to know when all outstanding connections have been
+  // closed.
   LockState Abandon();
 
  private:

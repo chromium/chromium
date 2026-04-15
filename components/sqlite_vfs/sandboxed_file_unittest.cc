@@ -10,6 +10,7 @@
 #include "components/sqlite_vfs/client.h"
 #include "components/sqlite_vfs/file_type.h"
 #include "components/sqlite_vfs/lock_state.h"
+#include "components/sqlite_vfs/shared_locks.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/sqlite/sqlite3.h"
 
@@ -23,19 +24,21 @@ class SandboxedFileTest : public testing::Test {
  public:
   void SetUp() override {
     ASSERT_TRUE(temporary_directory_.CreateUniqueTempDir());
-    shared_region_ =
-        base::UnsafeSharedMemoryRegion::Create(sizeof(SharedAtomicLock));
+    shared_region_ = SharedLocks::CreateRegion();
   }
 
   std::unique_ptr<SandboxedFile> CreateEmptyFile(std::string_view file_name) {
-    base::WritableSharedMemoryMapping mapped_shared_lock = shared_region_.Map();
+    auto shared_locks = SharedLocks::Create(shared_region_);
+    if (!shared_locks) {
+      return nullptr;
+    }
 
     base::FilePath path = temporary_directory_.GetPath().AppendASCII(file_name);
     base::File file(path, base::File::FLAG_CREATE_ALWAYS |
                               base::File::FLAG_READ | base::File::FLAG_WRITE);
     return std::make_unique<SandboxedFile>(
         Client::kTest, FileType::kMainDb, std::move(file),
-        SandboxedFile::AccessRights::kReadWrite, std::move(mapped_shared_lock));
+        SandboxedFile::AccessRights::kReadWrite, std::move(shared_locks));
   }
 
   std::unique_ptr<SandboxedFile> CreateEmptySingleConnectionFile(

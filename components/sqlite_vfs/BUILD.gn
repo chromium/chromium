@@ -33,6 +33,8 @@ component("sqlite_vfs") {
       "metrics_util.h",
       "sandboxed_file.cc",
       "sandboxed_file.h",
+      "shared_locks.cc",
+      "shared_locks.h",
       "sqlite_database_vfs_file_set.cc",
       "sqlite_database_vfs_file_set.h",
       "sqlite_sandboxed_vfs.cc",
@@ -48,6 +50,8 @@ component("sqlite_vfs") {
       "//base",
       "//sql",
     ]
+
+    friend = [ ":unit_tests" ]
   }
 
   defines = [ "IS_SQLITE_VFS_IMPL" ]
@@ -60,6 +64,7 @@ source_set("unit_tests") {
   if (!is_fuchsia) {
     sources = [
       "sandboxed_file_unittest.cc",
+      "shared_locks_unittest.cc",
       "sqlite_database_vfs_file_set_unittest.cc",
       "sqlite_sandboxed_vfs_unittest.cc",
     ]

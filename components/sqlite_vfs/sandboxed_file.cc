@@ -4,46 +4,35 @@
 
 #include "components/sqlite_vfs/sandboxed_file.h"
 
+#include <algorithm>
 #include <optional>
 #include <utility>
 
+#include "base/check.h"
 #include "base/check_op.h"
+#include "base/containers/span.h"
 #include "base/files/platform_file.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
 #include "base/numerics/safe_conversions.h"
-#include "build/build_config.h"
 #include "components/sqlite_vfs/file_type.h"
 #include "components/sqlite_vfs/metrics_util.h"
 #include "third_party/sqlite/sqlite3.h"
 
-#if BUILDFLAG(IS_WIN)
-#include <windows.h>
-#endif
-
 namespace sqlite_vfs {
 
-namespace {
-
-constexpr uint32_t kMaxSharedLocks = 0x08000000;
-constexpr uint32_t kSharedMask = 0x0FFFFFFF;
-constexpr uint32_t kReservedBit = 0x20000000;
-constexpr uint32_t kPendingBit = 0x40000000;
-constexpr uint32_t kAbandonedBit = 0x80000000;
-
-}  // namespace
-
-SandboxedFile::SandboxedFile(
-    Client client,
-    FileType file_type,
-    base::File file,
-    AccessRights access_rights,
-    base::WritableSharedMemoryMapping mapped_shared_lock)
+SandboxedFile::SandboxedFile(Client client,
+                             FileType file_type,
+                             base::File file,
+                             AccessRights access_rights,
+                             std::optional<SharedLocks> shared_locks)
     : client_(client),
       file_type_(file_type),
       underlying_file_(std::move(file)),
       access_rights_(access_rights),
-      mapped_shared_lock_(std::move(mapped_shared_lock)) {}
+      shared_locks_(std::move(shared_locks)) {
+  CHECK(!shared_locks_ || file_type_ == FileType::kMainDb);
+}
 
 SandboxedFile::~SandboxedFile() = default;
 
@@ -85,22 +74,9 @@ int SandboxedFile::Close() {
 }
 
 LockState SandboxedFile::Abandon() {
-  // Set `kAbandonedBit`, causing all subsequent attempts to raise the lock's
-  // state to a higher level by any party to fail with `SQLITE_IOERR_LOCK`.
-  // Determination of the state of the lock at the time of abandonment is made
-  // based on a snapshot of the lock at the moment that the bit is set. This is
-  // the only point where it is possible to know the state of the lock owing to
-  // the nature of atomic bitwise operations on the lock itself --
-  // `kReservedBit` and `kPendingBit` may be added to the lock after
-  // abandonment; such parties will properly detect that the lock has been
-  // abandoned.
-  uint32_t previous_state = GetSharedAtomicLock().fetch_or(kAbandonedBit);
-
-  LockState state =
-      ((previous_state & (kReservedBit | kPendingBit)) != 0)
-          ? LockState::kWriting
-          : (((previous_state & kSharedMask) != 0) ? LockState::kReading
-                                                   : LockState::kNotHeld);
+  CHECK_EQ(file_type_, FileType::kMainDb);
+  CHECK(!is_single_connection());
+  LockState state = shared_locks_->Abandon();
   base::UmaHistogramEnumeration(GetHistogramName(client_, "LockStateOnAbandon"),
                                 state);
   return state;
@@ -266,116 +242,7 @@ int SandboxedFile::Lock(int mode) {
     return SQLITE_OK;
   }
 
-  auto& shared_atomic_lock = GetSharedAtomicLock();
-  switch (mode) {
-    case SQLITE_LOCK_SHARED: {
-      // Try to increment the SHARED lock count as long as the PENDING lock
-      // remains unheld and there is room remaining to count a new SHARED lock.
-      uint32_t lock_snapshot = shared_atomic_lock.load();
-
-      if ((lock_snapshot & kAbandonedBit) != 0) {
-        return SQLITE_IOERR_LOCK;
-      }
-
-      for (int i = 0; i < 5; ++i) {
-        if ((lock_snapshot & kPendingBit) != 0 ||
-            (lock_snapshot & kSharedMask) == kMaxSharedLocks) {
-          break;
-        }
-        if (shared_atomic_lock.compare_exchange_strong(lock_snapshot,
-                                                       lock_snapshot + 1)) {
-          // The SHARED lock was successfully acquired.
-          sqlite_lock_mode_ = SQLITE_LOCK_SHARED;
-          return SQLITE_OK;
-        }
-
-        if ((lock_snapshot & kAbandonedBit) != 0) {
-          return SQLITE_IOERR_LOCK;
-        }
-
-        // Perform up to four retries in case this client is racing against
-        // other changes to the shared lock.
-      }
-      return SQLITE_BUSY;
-    }
-
-    case SQLITE_LOCK_RESERVED: {
-      // To acquire a RESERVED lock, the current connection must already have
-      // a shared access to it.
-      CHECK_EQ(sqlite_lock_mode_, SQLITE_LOCK_SHARED);
-
-      // Acquire a RESERVED lock to prevent a different writer to declare its
-      // intention to modify the database. At this point, readers are still
-      // allowed to get a SHARED lock on the database.
-      const uint32_t lock_snapshot = shared_atomic_lock.fetch_or(kReservedBit);
-      if ((lock_snapshot & kAbandonedBit) != 0) {
-        return SQLITE_IOERR_LOCK;
-      }
-
-      if ((lock_snapshot & kReservedBit) != 0) {
-        return SQLITE_BUSY;
-      }
-
-      // The RESERVED lock was successfully acquired.
-      sqlite_lock_mode_ = SQLITE_LOCK_RESERVED;
-      return SQLITE_OK;
-    }
-
-    case SQLITE_LOCK_EXCLUSIVE: {
-      // Acquiring an EXCLUSIVE lock may happen through multiple calls to
-      // SandboxedFile::Lock(...) and the PENDING lock may be kept between these
-      // calls.
-
-      // To acquire an EXCLUSIVE lock, the current connection must already have
-      // at least SHARED lock. Owning RESERVED lock not mandatory.
-      CHECK_GE(sqlite_lock_mode_, SQLITE_LOCK_SHARED);
-
-      // Acquire the PENDING lock, if not already acquired. Hold it until the
-      // EXCLUSIVE lock is obtained. No new SHARED locks will be granted in
-      // the meantime, but current SHARED locks remain valid.
-      uint32_t lock_snapshot = 0;
-      if (sqlite_lock_mode_ < SQLITE_LOCK_PENDING) {
-        lock_snapshot = shared_atomic_lock.fetch_or(kPendingBit);
-        if ((lock_snapshot & kAbandonedBit) != 0) {
-          // This instance may have just set `kPendingBit`. There is no need to
-          // clear it since all other parties will detect that the instance is
-          // abandoned on their next attempt to acquire any lock.
-          return SQLITE_IOERR_LOCK;
-        }
-
-        if ((lock_snapshot & kPendingBit) != 0) {
-          // This connection is not the owner of the PENDING lock.
-          return SQLITE_BUSY;
-        }
-        // The PENDING lock was acquired. Keep it for subsequent calls until all
-        // SHARED locks are released.
-        sqlite_lock_mode_ = SQLITE_LOCK_PENDING;
-        // Update the copy of the current state of the lock for use below.
-        lock_snapshot |= kPendingBit;
-      } else {
-        // Fetch the current state of the lock for use below.
-        lock_snapshot = shared_atomic_lock.load();
-
-        if ((lock_snapshot & kAbandonedBit) != 0) {
-          return SQLITE_IOERR_LOCK;
-        }
-      }
-
-      // Do not grant the EXCLUSIVE lock until all other readers have released
-      // their SHARED locks. This connection still owns and keeps a SHARED lock.
-      if ((lock_snapshot & kSharedMask) != 1) {
-        return SQLITE_BUSY;
-      }
-
-      // There is no active SHARED lock except for this connection. The PENDING
-      // lock is owned by this connection so it is valid to grant the EXCLUSIVE
-      // lock.
-      sqlite_lock_mode_ = SQLITE_LOCK_EXCLUSIVE;
-      return SQLITE_OK;
-    }
-  }
-
-  return SQLITE_IOERR_LOCK;
+  return shared_locks_->Lock(mode, sqlite_lock_mode_);
 }
 
 // This function is the counterpart to Lock and is responsible for reducing the
@@ -408,26 +275,7 @@ int SandboxedFile::Unlock(int mode) {
     return SQLITE_OK;
   }
 
-  auto& shared_atomic_lock = GetSharedAtomicLock();
-
-  // Release the RESERVED or RESERVED and PENDING bits, if held.
-  if (uint32_t clear_mask =
-          (sqlite_lock_mode_ >= SQLITE_LOCK_PENDING
-               ? (kPendingBit | kReservedBit)
-               : (sqlite_lock_mode_ == SQLITE_LOCK_RESERVED ? kReservedBit
-                                                            : 0U))) {
-    shared_atomic_lock.fetch_and(~clear_mask);
-  }
-
-  // Release the SHARED lock if no longer needed.
-  if (mode == SQLITE_LOCK_NONE) {
-    const uint32_t lock_snapshot = shared_atomic_lock.fetch_sub(1);
-    CHECK_GE(lock_snapshot & kSharedMask, 1u);
-  }
-
-  // Lock was successfully released.
-  sqlite_lock_mode_ = mode;
-  return SQLITE_OK;
+  return shared_locks_->Unlock(mode, sqlite_lock_mode_);
 }
 
 int SandboxedFile::CheckReservedLock(int* has_reserved_lock) {
@@ -435,8 +283,7 @@ int SandboxedFile::CheckReservedLock(int* has_reserved_lock) {
   if (is_single_connection()) {
     *has_reserved_lock = sqlite_lock_mode_ >= SQLITE_LOCK_RESERVED;
   } else {
-    uint32_t lock_snapshot = GetSharedAtomicLock().load();
-    *has_reserved_lock = (lock_snapshot & kReservedBit) != 0;
+    *has_reserved_lock = shared_locks_->IsReserved() ? 1 : 0;
   }
   return SQLITE_OK;
 }
@@ -489,11 +336,6 @@ int SandboxedFile::Fetch(sqlite3_int64 offset, int size, void** result) {
 int SandboxedFile::Unfetch(sqlite3_int64 offset, void* fetch_result) {
   // TODO(https://crbug.com/377475540): Implement shared memory.
   return SQLITE_IOERR;
-}
-
-SharedAtomicLock& SandboxedFile::GetSharedAtomicLock() {
-  CHECK(mapped_shared_lock_.IsValid());
-  return *mapped_shared_lock_.GetMemoryAs<SharedAtomicLock>();
 }
 
 bool SandboxedFile::AcquireSingleConnectionlock() {
