@@ -120,11 +120,34 @@ void DedicatedWorkerHostFactoryImpl::CreateWorkerHostAndStartScriptLoad(
   // `script_url`, and report as bad message if that fails.
   if (base::FeatureList::IsEnabled(
           features::kEnforceDedicatedWorkerSameOriginCheck) &&
-      !script_url.SchemeIs(url::kDataScheme) &&
-      !creator_storage_key_.origin().IsSameOriginWith(
-          url::Origin::Create(script_url))) {
-    mojo::ReportBadMessage("DWH_INVALID_SCRIPT_URL_ORIGIN");
-    return;
+      !script_url.SchemeIs(url::kDataScheme)) {
+    url::Origin script_origin = url::Origin::Create(script_url);
+    if (creator_storage_key_.origin() != script_origin) {
+      // If the creator is opaque, it might be a sandboxed iframe or a data:
+      // URL. In such cases, we should allow the load if the precursor origin
+      // matches the script origin.
+      if (creator_storage_key_.origin().opaque() &&
+          creator_storage_key_.origin().GetTupleOrPrecursorTupleIfOpaque() ==
+              script_origin.GetTupleOrPrecursorTupleIfOpaque()) {
+        // Match found via precursor.
+      } else {
+        // Only enforce the same-origin check for IWA and Extensions,
+        // to avoid breaking existing web content that relies on opaque origins
+        // or other complex origin relationships.
+        //
+        // We use hardcoded scheme names here to avoid dependencies on chrome/
+        // or components/ from the content/ layer.
+        constexpr char kIsolatedAppScheme[] = "isolated-app";
+        constexpr char kExtensionScheme[] = "chrome-extension";
+        if (creator_storage_key_.origin().scheme() == kIsolatedAppScheme ||
+            creator_storage_key_.origin().scheme() == kExtensionScheme ||
+            script_origin.scheme() == kIsolatedAppScheme ||
+            script_origin.scheme() == kExtensionScheme) {
+          mojo::ReportBadMessage("DWH_INVALID_SCRIPT_URL_ORIGIN");
+          return;
+        }
+      }
+    }
   }
 
   mojo::PendingRemote<blink::mojom::DedicatedWorkerHost> pending_remote_host;

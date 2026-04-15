@@ -241,11 +241,30 @@ bool AllowExtensionResourceLoad(const network::ResourceRequest& request,
     // If a feature-guarded same-origin check is required (e.g. for worker
     // main scripts), verify that the request URL matches the initiator origin
     // stored in `upstream_url`.
+    //
+    // We specifically exclude frame navigations from this check to avoid
+    // breaking existing functionality like Declarative Net Request redirects,
+    // which are already handled by other security mechanisms like
+    // ExtensionNavigationThrottle.
     if (base::FeatureList::IsEnabled(
             features::kEnforceDedicatedWorkerSameOriginCheck) &&
         !upstream_url.is_empty() &&
-        !url::Origin::Create(upstream_url).IsSameOriginWith(request.url)) {
-      return false;
+        !blink::IsRequestDestinationFrame(destination)) {
+      url::Origin upstream_origin = url::Origin::Create(upstream_url);
+      url::Origin target_origin = url::Origin::Create(request.url);
+      if (upstream_origin != target_origin) {
+        // Only enforce the check if either side is an IWA or Extension.
+        //
+        // We use a hardcoded scheme name for IWA here to avoid a dependency
+        // from the extensions layer.
+        constexpr char kIsolatedAppScheme[] = "isolated-app";
+        if (upstream_origin.scheme() == kIsolatedAppScheme ||
+            upstream_origin.scheme() == kExtensionScheme ||
+            target_origin.scheme() == kIsolatedAppScheme ||
+            target_origin.scheme() == kExtensionScheme) {
+          return false;
+        }
+      }
     }
     return true;
   }

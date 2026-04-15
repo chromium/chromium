@@ -36,6 +36,7 @@
 #include "third_party/blink/public/mojom/worker/dedicated_worker_host_factory.mojom.h"
 #include "third_party/blink/public/mojom/worker/worker_main_script_load_params.mojom.h"
 #include "url/origin.h"
+#include "url/url_util.h"
 
 namespace content {
 
@@ -72,7 +73,8 @@ class MockDedicatedWorker
 
     factory_->CreateWorkerHostAndStartScriptLoad(
         blink::DedicatedWorkerToken(),
-        /*script_url=*/GURL(), network::mojom::CredentialsMode::kSameOrigin,
+        /*script_url=*/origin.GetURL().Resolve("worker.js"),
+        network::mojom::CredentialsMode::kSameOrigin,
         std::move(fetch_client_settings_object),
         mojo::PendingRemote<blink::mojom::BlobURLToken>(),
         receiver_.BindNewPipeAndPassRemote(),
@@ -293,16 +295,29 @@ class DedicatedWorkerHostFactoryImplTest
 };
 
 TEST_F(DedicatedWorkerHostFactoryImplTest, CrossOriginScriptOriginCheck) {
-  const GURL kCreatorUrl("https://example.com/index.html");
-  const url::Origin kCreatorOrigin = url::Origin::Create(kCreatorUrl);
-  const GURL kCrossOriginScriptUrl("https://other.com/worker.js");
+  url::ScopedSchemeRegistryForTests scoped_registry;
+  url::AddStandardScheme("isolated-app", url::SCHEME_WITH_HOST);
+  url::AddStandardScheme("chrome-extension", url::SCHEME_WITH_HOST);
 
-  NavigationSimulator::NavigateAndCommitFromBrowser(web_contents(),
-                                                    kCreatorUrl);
+  const GURL kIwaAppA(
+      "isolated-app://"
+      "aerugqztij5biu7uk3mi3no76snn7762675v7vsyof772itbv7id2yyd");
+  const url::Origin kIwaOriginA = url::Origin::Create(kIwaAppA);
+  const GURL kIwaAppB(
+      "isolated-app://"
+      "berugqztij5biu7uk3mi3no76snn7762675v7vsyof772itbv7id2yyd");
+
+  const GURL kExtAppA(
+      "chrome-extension://"
+      "aerugqztij5biu7uk3mi3no76snn7762675v7vsyof772itbv7id2yyd");
+  const url::Origin kExtOriginA = url::Origin::Create(kExtAppA);
+
+  NavigationSimulator::NavigateAndCommitFromBrowser(web_contents(), kIwaAppA);
   RenderFrameHost* creator_rfh = web_contents()->GetPrimaryMainFrame();
 
   auto create_factory =
-      [&](mojo::Remote<blink::mojom::DedicatedWorkerHostFactory>& factory) {
+      [&](mojo::Remote<blink::mojom::DedicatedWorkerHostFactory>& factory,
+          const url::Origin& creator_origin) {
         auto coep_reporter =
             std::make_unique<CrossOriginEmbedderPolicyReporter>(
                 static_cast<StoragePartitionImpl*>(
@@ -316,7 +331,7 @@ TEST_F(DedicatedWorkerHostFactoryImplTest, CrossOriginScriptOriginCheck) {
             creator_rfh->GetProcess()->GetID(),
             static_cast<RenderFrameHostImpl*>(creator_rfh)->GetGlobalId(),
             static_cast<RenderFrameHostImpl*>(creator_rfh)->GetGlobalId(),
-            blink::StorageKey::CreateFirstParty(kCreatorOrigin),
+            blink::StorageKey::CreateFirstParty(creator_origin),
             net::IsolationInfo::CreateTransient(std::nullopt),
             network::mojom::ClientSecurityState::New(),
             PolicyContainerPolicies(), coep_reporter->GetWeakPtr(),
@@ -350,30 +365,50 @@ TEST_F(DedicatedWorkerHostFactoryImplTest, CrossOriginScriptOriginCheck) {
         features::kEnforceDedicatedWorkerSameOriginCheck);
 
     mojo::Remote<blink::mojom::DedicatedWorkerHostFactory> factory;
-    auto factory_impl = create_factory(factory);
+    auto factory_impl = create_factory(factory, kIwaOriginA);
     mojo::Receiver<blink::mojom::DedicatedWorkerHostFactory> receiver(
         factory_impl.get(), factory.BindNewPipeAndPassReceiver());
 
     mojo::test::BadMessageObserver bad_message_observer;
-    start_script_load(factory, kCrossOriginScriptUrl);
+    start_script_load(factory, kIwaAppB);
     factory.FlushForTesting();
 
     EXPECT_FALSE(bad_message_observer.got_bad_message());
   }
 
-  // Flag ON: Cross-origin script URL should cause a bad message.
+  // Flag ON: Cross-origin script URL for IWA should cause a bad message.
   {
     base::test::ScopedFeatureList feature_list;
     feature_list.InitAndEnableFeature(
         features::kEnforceDedicatedWorkerSameOriginCheck);
 
     mojo::Remote<blink::mojom::DedicatedWorkerHostFactory> factory;
-    auto factory_impl = create_factory(factory);
+    auto factory_impl = create_factory(factory, kIwaOriginA);
     mojo::Receiver<blink::mojom::DedicatedWorkerHostFactory> receiver(
         factory_impl.get(), factory.BindNewPipeAndPassReceiver());
 
     mojo::test::BadMessageObserver bad_message_observer;
-    start_script_load(factory, kCrossOriginScriptUrl);
+    start_script_load(factory, kIwaAppB);
+    factory.FlushForTesting();
+
+    EXPECT_EQ("DWH_INVALID_SCRIPT_URL_ORIGIN",
+              bad_message_observer.WaitForBadMessage());
+  }
+
+  // Flag ON: Cross-origin script URL for Extensions should cause a bad message.
+  {
+    base::test::ScopedFeatureList feature_list;
+    feature_list.InitAndEnableFeature(
+        features::kEnforceDedicatedWorkerSameOriginCheck);
+
+    mojo::Remote<blink::mojom::DedicatedWorkerHostFactory> factory;
+    auto factory_impl = create_factory(factory, kExtOriginA);
+    mojo::Receiver<blink::mojom::DedicatedWorkerHostFactory> receiver(
+        factory_impl.get(), factory.BindNewPipeAndPassReceiver());
+
+    mojo::test::BadMessageObserver bad_message_observer;
+    // Cross-origin load (even to https) should be blocked for extensions now.
+    start_script_load(factory, GURL("https://example.com/worker.js"));
     factory.FlushForTesting();
 
     EXPECT_EQ("DWH_INVALID_SCRIPT_URL_ORIGIN",
@@ -387,12 +422,12 @@ TEST_F(DedicatedWorkerHostFactoryImplTest, CrossOriginScriptOriginCheck) {
         features::kEnforceDedicatedWorkerSameOriginCheck);
 
     mojo::Remote<blink::mojom::DedicatedWorkerHostFactory> factory;
-    auto factory_impl = create_factory(factory);
+    auto factory_impl = create_factory(factory, kIwaOriginA);
     mojo::Receiver<blink::mojom::DedicatedWorkerHostFactory> receiver(
         factory_impl.get(), factory.BindNewPipeAndPassReceiver());
 
     mojo::test::BadMessageObserver bad_message_observer;
-    start_script_load(factory, kCreatorUrl);
+    start_script_load(factory, kIwaAppA);
     factory.FlushForTesting();
 
     EXPECT_FALSE(bad_message_observer.got_bad_message());
@@ -406,12 +441,64 @@ TEST_F(DedicatedWorkerHostFactoryImplTest, CrossOriginScriptOriginCheck) {
         features::kEnforceDedicatedWorkerSameOriginCheck);
 
     mojo::Remote<blink::mojom::DedicatedWorkerHostFactory> factory;
-    auto factory_impl = create_factory(factory);
+    auto factory_impl = create_factory(factory, kIwaOriginA);
     mojo::Receiver<blink::mojom::DedicatedWorkerHostFactory> receiver(
         factory_impl.get(), factory.BindNewPipeAndPassReceiver());
 
     mojo::test::BadMessageObserver bad_message_observer;
     start_script_load(factory, GURL("data:text/javascript,console.log('hi')"));
+    factory.FlushForTesting();
+
+    EXPECT_FALSE(bad_message_observer.got_bad_message());
+  }
+
+  // Flag ON: Opaque origin creator should NOT be blocked for same-site-ish
+  // URLs, to avoid breaking sandboxed iframes etc. (unless it's an IWA/Ext).
+  {
+    base::test::ScopedFeatureList feature_list;
+    feature_list.InitAndEnableFeature(
+        features::kEnforceDedicatedWorkerSameOriginCheck);
+
+    const GURL kOpaqueUrl("data:text/html,<html></html>");
+    const url::Origin kOpaqueOrigin = url::Origin::Create(kOpaqueUrl);
+    EXPECT_TRUE(kOpaqueOrigin.opaque());
+
+    NavigationSimulator::NavigateAndCommitFromBrowser(web_contents(),
+                                                      kOpaqueUrl);
+    RenderFrameHost* opaque_rfh = web_contents()->GetPrimaryMainFrame();
+
+    auto create_opaque_factory =
+        [&](mojo::Remote<blink::mojom::DedicatedWorkerHostFactory>& factory) {
+          auto coep_reporter =
+              std::make_unique<CrossOriginEmbedderPolicyReporter>(
+                  static_cast<StoragePartitionImpl*>(
+                      opaque_rfh->GetStoragePartition())
+                      ->GetWeakPtr(),
+                  GURL(), std::nullopt, std::nullopt,
+                  base::UnguessableToken::Create(),
+                  net::NetworkAnonymizationKey());
+
+          return std::make_unique<DedicatedWorkerHostFactoryImpl>(
+              opaque_rfh->GetProcess()->GetID(),
+              static_cast<RenderFrameHostImpl*>(opaque_rfh)->GetGlobalId(),
+              static_cast<RenderFrameHostImpl*>(opaque_rfh)->GetGlobalId(),
+              blink::StorageKey::CreateFirstParty(kOpaqueOrigin),
+              net::IsolationInfo::CreateTransient(std::nullopt),
+              network::mojom::ClientSecurityState::New(),
+              PolicyContainerPolicies(), coep_reporter->GetWeakPtr(),
+              /*network_restrictions_id=*/std::nullopt);
+        };
+
+    mojo::Remote<blink::mojom::DedicatedWorkerHostFactory> factory;
+    auto factory_impl = create_opaque_factory(factory);
+    mojo::Receiver<blink::mojom::DedicatedWorkerHostFactory> receiver(
+        factory_impl.get(), factory.BindNewPipeAndPassReceiver());
+
+    mojo::test::BadMessageObserver bad_message_observer;
+    // Attempt to load a script that would normally be same-origin to the
+    // precursor (https://example.com). This should be allowed because
+    // neither side is an IWA or Extension.
+    start_script_load(factory, GURL("https://example.com/worker.js"));
     factory.FlushForTesting();
 
     EXPECT_FALSE(bad_message_observer.got_bad_message());

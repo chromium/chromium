@@ -403,7 +403,7 @@ BASE_FEATURE(kEmailVerificationProtocol, base::FEATURE_DISABLED_BY_DEFAULT);
 // Enforce same-origin check for dedicated worker script URLs.
 // See https://crbug.com/496253755.
 BASE_FEATURE(kEnforceDedicatedWorkerSameOriginCheck,
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enables the spec-compliant 'error' attribute in IdentityCredentialError while
 // deprecating the legacy 'code' attribute.
