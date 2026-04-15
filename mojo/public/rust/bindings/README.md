@@ -1,5 +1,4 @@
-
-# High-level design
+# Mojo Rust Bindings API
 
 This document is a subset of the [Mojo documentation](/mojo/README.md).
 
@@ -9,7 +8,7 @@ This document is a subset of the [Mojo documentation](/mojo/README.md).
 
 The Mojo Rust Bindings API provides users with high-level components for
 sending and receiving Mojom messages from Rust. Most of the constructs are
-directly analogous to the [C++ Bindings API](mojo/public/cpp/bindings/README.md).
+directly analogous to the [C++ Bindings API](/mojo/public/cpp/bindings/README.md).
 
 ## Key Concepts
 
