@@ -280,6 +280,9 @@ export class LineFocusController {
       this.calculateNewPositions_(container, height);
       if (this.isStatic()) {
         this.setCenterY_();
+      } else if (!wasEnabled && this.model_.getTextBounds().length > 0) {
+        this.initializeSnapIndex_(
+            this.model_.getTextBounds(), /*isForward=*/ true);
       } else {
         this.setY_(Math.max(this.model_.getMinY(), this.model_.getY()));
       }
@@ -325,6 +328,10 @@ export class LineFocusController {
     const currentIndex = this.model_.getCurrentLineIndex();
     if (currentIndex === null) {
       this.initializeSnapIndex_(lines, isForward);
+      const linesToLog = this.getCurrentLineFocusLines_();
+      for (let i = 0; i < linesToLog; i++) {
+        chrome.readingMode.incrementLineFocusKeyboardLines();
+      }
       return;
     }
 
@@ -337,11 +344,6 @@ export class LineFocusController {
 
     this.model_.setCurrentLineIndex(safeIndex);
     this.setyOrScroll_(lines[safeIndex]!);
-
-    const linesToLog = this.getCurrentLineFocusLines_();
-    for (let i = 0; i < linesToLog; i++) {
-      chrome.readingMode.incrementLineFocusKeyboardLines();
-    }
   }
 
   private updateSnapIndex_(

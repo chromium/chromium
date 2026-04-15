@@ -33,6 +33,7 @@ suite('LineFocusController', () => {
     const container = document.createElement('p');
     container.innerText =
         'I\'ve heard it said\nThat people come into our lives\nfor a reason.';
+    container.style.whiteSpace = 'pre-line';
     document.body.appendChild(container);
     return container;
   }
@@ -44,6 +45,7 @@ suite('LineFocusController', () => {
         'who help us most to grow\nif we let them and we help them in return\n' +
         'Now I don\'t know if I believe that\'s true\n' +
         'But I know I\'m who I am today because I met you';
+    container.style.whiteSpace = 'pre-line';
     document.body.appendChild(container);
     return container;
   }
@@ -793,13 +795,13 @@ suite('LineFocusController', () => {
   });
 
   test('onMouseMoveInToolbar sets new window position and height', () => {
-    const container = createLongContainer();
+    const container = createShortContainer();
     lineFocusController.onStyleChange(
         LineFocusStyle.MEDIUM_WINDOW, container, defaultHeight);
     lineFocusController.onMovementChange(
         LineFocusMovement.CURSOR, container, defaultHeight);
     chrome.readingMode.isLineFocusEnabled = true;
-    const newPos = container.offsetTop + 50;
+    const newPos = container.offsetTop + 10;
 
     lineFocusController.onMouseMoveInToolbar(newPos);
 
@@ -885,7 +887,10 @@ suite('LineFocusController', () => {
 
   test('onWordBoundary updates position', () => {
     chrome.readingMode.isLineFocusEnabled = true;
-    const container = createShortContainer();
+    const container = document.createElement('p');
+    container.innerText = 'You\'re\ninvisible';
+    container.style.whiteSpace = 'pre-line';
+    document.body.appendChild(container);
     lineFocusController.onMovementChange(
         LineFocusMovement.CURSOR, container, defaultHeight);
     lineFocusController.onStyleChange(
@@ -894,7 +899,7 @@ suite('LineFocusController', () => {
     NodeStore.getInstance().setDomNode(container, 1);
     const segments = [{
       node: ReadAloudNode.create(container)!,
-      start: 0,
+      start: 7,
       length: 5,
     }];
 
@@ -907,7 +912,10 @@ suite('LineFocusController', () => {
 
   test('onWordBoundary only counts new lines', () => {
     chrome.readingMode.isLineFocusEnabled = true;
-    const container = createShortContainer();
+    const container = document.createElement('p');
+    container.innerText = 'when\nyou\'re sad';
+    container.style.whiteSpace = 'pre-line';
+    document.body.appendChild(container);
     lineFocusController.onMovementChange(
         LineFocusMovement.CURSOR, container, defaultHeight);
     lineFocusController.onStyleChange(
@@ -916,13 +924,13 @@ suite('LineFocusController', () => {
     NodeStore.getInstance().setDomNode(container, 1);
     const segments1 = [{
       node: ReadAloudNode.create(container)!,
-      start: 0,
+      start: 5,
       length: 5,
     }];
     const segments2 = [{
       node: ReadAloudNode.create(container)!,
-      start: 5,
-      length: 5,
+      start: 12,
+      length: 3,
     }];
 
     lineFocusController.onWordBoundary(segments1);
@@ -979,7 +987,8 @@ suite('LineFocusController', () => {
     chrome.readingMode.isLineFocusEnabled = true;
     const container = document.createElement('p');
     container.innerText =
-        'Like a siege rocked by a sky bird\nin a distant wood';
+        'Like a siege rocked by a sky bird\nin a distant wood\nwho can say';
+    container.style.whiteSpace = 'pre-line';
     document.body.appendChild(container);
     lineFocusController.onMovementChange(
         LineFocusMovement.CURSOR, container, defaultHeight);
@@ -987,7 +996,7 @@ suite('LineFocusController', () => {
         LineFocusStyle.UNDERLINE, container, defaultHeight);
     let oldTop = lineFocusController.getTop();
 
-    // Snap to the first line.
+    // Snap to the second line.
     lineFocusController.snapToNextLine(true);
     let newTop = lineFocusController.getTop();
     assertLT(oldTop, newTop);
@@ -1000,7 +1009,7 @@ suite('LineFocusController', () => {
     assertLT(oldTop, newTop);
     assertEquals(2, keyboardLines);
 
-    // The container only has two lines, so moving forward should not change
+    // The container only has three lines, so moving forward should not change
     // position.
     oldTop = newTop;
     lineFocusController.snapToNextLine(true);
@@ -1008,19 +1017,26 @@ suite('LineFocusController', () => {
     assertEquals(oldTop, newTop);
     assertEquals(2, keyboardLines);
 
-    // Snap back to the first line.
+    // Snap back to the second line.
     oldTop = newTop;
     lineFocusController.snapToNextLine(false);
     newTop = lineFocusController.getTop();
     assertGT(oldTop, newTop);
     assertEquals(3, keyboardLines);
 
+    // Snap back to the first line.
+    oldTop = newTop;
+    lineFocusController.snapToNextLine(false);
+    newTop = lineFocusController.getTop();
+    assertGT(oldTop, newTop);
+    assertEquals(4, keyboardLines);
+
     // Moving back again should not change position.
     oldTop = newTop;
     lineFocusController.snapToNextLine(false);
     newTop = lineFocusController.getTop();
     assertEquals(oldTop, newTop);
-    assertEquals(3, keyboardLines);
+    assertEquals(4, keyboardLines);
     assertEquals(0, speechLines);
   });
 
@@ -1181,29 +1197,22 @@ suite('LineFocusController', () => {
     // Snap to the second line.
     lineFocusController.snapToNextLine(true);
     let newTop = lineFocusController.getTop();
-    assertEquals(oldTop, newTop);
-    assertEquals(3, keyboardLines);
-
-    // Snap to the last line.
-    oldTop = newTop;
-    lineFocusController.snapToNextLine(true);
-    newTop = lineFocusController.getTop();
     assertLT(oldTop, newTop);
-    assertEquals(4, keyboardLines);
+    assertEquals(1, keyboardLines);
 
     // Moving forward should not change position.
     oldTop = newTop;
     lineFocusController.snapToNextLine(true);
     newTop = lineFocusController.getTop();
     assertEquals(oldTop, newTop);
-    assertEquals(4, keyboardLines);
+    assertEquals(1, keyboardLines);
 
     // Snap back to the second line.
     oldTop = newTop;
     lineFocusController.snapToNextLine(false);
     newTop = lineFocusController.getTop();
     assertGT(oldTop, newTop);
-    assertEquals(5, keyboardLines);
+    assertEquals(2, keyboardLines);
 
     // Moving back again should not change position since the window is 3 lines
     // long and we are already surrounding the second line.
@@ -1211,7 +1220,7 @@ suite('LineFocusController', () => {
     lineFocusController.snapToNextLine(false);
     newTop = lineFocusController.getTop();
     assertEquals(oldTop, newTop);
-    assertEquals(5, keyboardLines);
+    assertEquals(2, keyboardLines);
     assertEquals(0, speechLines);
   });
 
