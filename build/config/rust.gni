@@ -425,3 +425,15 @@ if (toolchain_for_rust_host_build_tools) {
 # compiled, which is typically as unwind.
 rust_prebuilt_stdlib =
     !use_chromium_rust_toolchain || toolchain_for_rust_host_build_tools
+
+rustc_wrapper_inputs = [
+  "//build/action_helpers.py",
+  "//build/gn_helpers.py",
+  "//build/rust/gni_impl/rustc_wrapper.py",
+]
+
+if (host_os == "win") {
+  rustc_wrapper_inputs += [ "//third_party/rust-toolchain/bin/rustc.exe" ]
+} else {
+  rustc_wrapper_inputs += [ "//third_party/rust-toolchain/bin/rustc" ]
+}
