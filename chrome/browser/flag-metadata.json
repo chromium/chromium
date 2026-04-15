@@ -1088,11 +1088,7 @@
     "owners": [ "shend@chromium.org", "ssid@chromium.org" ],
     "expiry_milestone": 160
   },
-    {
-    "name": "avatar-button-sync-promo",
-    "owners": [ "rsult@google.com", "chrome-signin-desktop-team@google.com" ],
-    "expiry_milestone": 148
-  },
+
   {
       "name": "background-compact",
       "owners": [ "thiabaud@google.com", "clank-performance-team@google.com" ],

@@ -4446,10 +4446,6 @@ inline constexpr char kTranslationAPIStreamingBySentenceName[] =
 inline constexpr char kTranslationAPIStreamingBySentenceDescription[] =
     "Enables sentence-split streaming for on-device translation API.";
 
-inline constexpr char kAvatarButtonSyncPromoName[] = "Avatar Sync Promo";
-inline constexpr char kAvatarButtonSyncPromoDescription[] =
-    "Enables the avatar button sync promo for eligible users. Only available "
-    "on Windows.";
 
 inline constexpr char kTreatInsecureOriginAsSecureName[] =
     "Insecure origins treated as secure";

@@ -341,13 +341,6 @@ class ProfileMenuViewPixelTest
     // 1. Get default-disabled features.
     // Disabled by default but may be overridden by `extra_features_and_params`.
     base::flat_set<base::test::FeatureRef> disabled_features_set = {
-#if BUILDFLAG(IS_WIN)
-        // The real flag is always disabled for simplicity, it is actually being
-        // replaced by `switches::kAvatarButtonSyncPromoForTesting` in tests to
-        // ensure that all platforms runs the test. When the feature is launched
-        // those tests should remain (with the testing flag).
-        switches::kAvatarButtonSyncPromo,
-#endif
         // This feature is disabled by default as it is not compatible with
         // `syncer::kReplaceSyncPromosWithSignInPromos` (enabled by default in
         // the test suite). If this feature needs to be enabled, then
