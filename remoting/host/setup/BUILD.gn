@@ -40,6 +40,7 @@ source_set("common") {
     "//remoting/base",
     "//remoting/base:authorization",
     "//remoting/host:common",
+    "//remoting/host:elevated_native_messaging_host",
     "//remoting/host:resources",
     "//remoting/host/native_messaging",
     "//remoting/protocol",
@@ -76,7 +77,6 @@ source_set("common") {
       "daemon_controller_delegate_win.h",
     ]
     deps += [
-      "//remoting/host/win:elevated_native_messaging_host",
       "//remoting/host/win:remoting_lib_idl",
       "//remoting/host/win:security_descriptor",
     ]

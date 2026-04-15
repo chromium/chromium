@@ -1,15 +1,16 @@
-// Copyright 2016 The Chromium Authors
+// Copyright 2026 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef REMOTING_HOST_WIN_LAUNCH_NATIVE_MESSAGING_HOST_PROCESS_H_
-#define REMOTING_HOST_WIN_LAUNCH_NATIVE_MESSAGING_HOST_PROCESS_H_
+#ifndef REMOTING_HOST_LAUNCH_NATIVE_MESSAGING_HOST_PROCESS_H_
+#define REMOTING_HOST_LAUNCH_NATIVE_MESSAGING_HOST_PROCESS_H_
 
 #include <cstdint>
 
-#include "base/win/scoped_handle.h"
+#include "build/build_config.h"
 
 namespace base {
+class File;
 class FilePath;
 }  // namespace base
 
@@ -28,9 +29,9 @@ ProcessLaunchResult LaunchNativeMessagingHostProcess(
     const base::FilePath& binary_path,
     intptr_t parent_window_handle,
     bool elevate_process,
-    base::win::ScopedHandle* read_handle,
-    base::win::ScopedHandle* write_handle);
+    base::File& read_handle,
+    base::File& write_handle);
 
 }  // namespace remoting
 
-#endif  // REMOTING_HOST_WIN_LAUNCH_NATIVE_MESSAGING_HOST_PROCESS_H_
+#endif  // REMOTING_HOST_LAUNCH_NATIVE_MESSAGING_HOST_PROCESS_H_

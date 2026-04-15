@@ -1,21 +1,22 @@
-// Copyright 2016 The Chromium Authors
+// Copyright 2026 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef REMOTING_HOST_WIN_ELEVATED_NATIVE_MESSAGING_HOST_H_
-#define REMOTING_HOST_WIN_ELEVATED_NATIVE_MESSAGING_HOST_H_
+#ifndef REMOTING_HOST_ELEVATED_NATIVE_MESSAGING_HOST_H_
+#define REMOTING_HOST_ELEVATED_NATIVE_MESSAGING_HOST_H_
 
 #include <cstdint>
 #include <memory>
 
 #include "base/files/file_path.h"
 #include "base/memory/raw_ptr.h"
-#include "base/threading/thread_checker.h"
+#include "base/sequence_checker.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
+#include "build/build_config.h"
 #include "extensions/browser/api/messaging/native_message_host.h"
 #include "extensions/browser/api/messaging/native_messaging_channel.h"
-#include "remoting/host/win/launch_native_messaging_host_process.h"
+#include "remoting/host/launch_native_messaging_host_process.h"
 
 namespace remoting {
 
@@ -52,6 +53,8 @@ class ElevatedNativeMessagingHost
   // Disconnect and shut down the elevated host.
   void DisconnectHost();
 
+  SEQUENCE_CHECKER(sequence_checker_);
+
   // Path to the binary to use for the elevated host process.
   base::FilePath host_binary_path_;
 
@@ -75,10 +78,8 @@ class ElevatedNativeMessagingHost
 
   // Timer to control the lifetime of the elevated host.
   base::OneShotTimer elevated_host_timer_;
-
-  base::ThreadChecker thread_checker_;
 };
 
 }  // namespace remoting
 
-#endif  // REMOTING_HOST_WIN_ELEVATED_NATIVE_MESSAGING_HOST_H_
+#endif  // REMOTING_HOST_ELEVATED_NATIVE_MESSAGING_HOST_H_

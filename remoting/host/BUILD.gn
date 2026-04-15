@@ -158,6 +158,31 @@ source_set("ipc_constants") {
   ]
 }
 
+source_set("elevated_native_messaging_host") {
+  sources = [
+    "elevated_native_messaging_host.cc",
+    "elevated_native_messaging_host.h",
+    "launch_native_messaging_host_process.h",
+  ]
+
+  deps = [
+    "//base",
+    "//extensions/browser/api/messaging:native_messaging",
+    "//remoting/host/base",
+    "//remoting/host/native_messaging",
+  ]
+
+  if (is_win) {
+    sources += [ "launch_native_messaging_host_process_win.cc" ]
+    deps += [
+      "//ipc",
+      "//remoting/host/win:security_descriptor",
+    ]
+  } else {
+    sources += [ "launch_native_messaging_host_process_failing.cc" ]
+  }
+}
+
 source_set("chromoting_host_services_client") {
   sources = [
     "chromoting_host_services_client.cc",

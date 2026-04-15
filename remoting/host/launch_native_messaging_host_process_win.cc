@@ -1,8 +1,8 @@
-// Copyright 2016 The Chromium Authors
+// Copyright 2026 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "remoting/host/win/launch_native_messaging_host_process.h"
+#include "remoting/host/launch_native_messaging_host_process.h"
 
 #include <windows.h>
 
@@ -13,9 +13,11 @@
 
 #include "base/command_line.h"
 #include "base/compiler_specific.h"
+#include "base/files/file.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/logging.h"
+#include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/win/win_util.h"
@@ -65,11 +67,8 @@ ProcessLaunchResult LaunchNativeMessagingHostProcess(
     const base::FilePath& binary_path,
     intptr_t parent_window_handle,
     bool elevate_process,
-    base::win::ScopedHandle* read_handle,
-    base::win::ScopedHandle* write_handle) {
-  DCHECK(read_handle);
-  DCHECK(write_handle);
-
+    base::File& read_handle,
+    base::File& write_handle) {
   if (!base::PathExists(binary_path)) {
     LOG(ERROR) << "Cannot find binary: " << binary_path.value();
     return PROCESS_LAUNCH_RESULT_FAILED;
@@ -174,8 +173,8 @@ ProcessLaunchResult LaunchNativeMessagingHostProcess(
     }
   }
 
-  read_handle->Set(temp_read_handle.Take());
-  write_handle->Set(temp_write_handle.Take());
+  read_handle = base::File(std::move(temp_read_handle));
+  write_handle = base::File(std::move(temp_write_handle));
   return PROCESS_LAUNCH_RESULT_SUCCESS;
 }
 

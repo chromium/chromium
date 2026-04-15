@@ -28,13 +28,10 @@
 #include "remoting/base/oauth_client.h"
 #include "remoting/base/rsa_key_pair.h"
 #include "remoting/host/chromoting_host_context.h"
+#include "remoting/host/elevated_native_messaging_host.h"
 #include "remoting/host/native_messaging/log_message_handler.h"
 #include "remoting/host/pin_hash.h"
 #include "remoting/protocol/pairing_registry.h"
-
-#if BUILDFLAG(IS_WIN)
-#include "remoting/host/win/elevated_native_messaging_host.h"
-#endif  // BUILDFLAG(IS_WIN)
 
 namespace {
 

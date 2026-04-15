@@ -1,8 +1,8 @@
-// Copyright 2016 The Chromium Authors
+// Copyright 2026 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "remoting/host/win/elevated_native_messaging_host.h"
+#include "remoting/host/elevated_native_messaging_host.h"
 
 #include <memory>
 #include <string>
@@ -13,7 +13,7 @@
 #include "base/functional/callback.h"
 #include "base/json/json_writer.h"
 #include "base/values.h"
-#include "base/win/scoped_handle.h"
+#include "build/build_config.h"
 #include "remoting/host/native_messaging/pipe_messaging_channel.h"
 
 namespace remoting {
@@ -31,33 +31,34 @@ ElevatedNativeMessagingHost::ElevatedNativeMessagingHost(
       client_(client) {}
 
 ElevatedNativeMessagingHost::~ElevatedNativeMessagingHost() {
-  DCHECK(thread_checker_.CalledOnValidThread());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 }
 
 void ElevatedNativeMessagingHost::OnMessage(const base::Value& message) {
-  DCHECK(thread_checker_.CalledOnValidThread());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   // Simply pass along the response from the elevated host to the client.
   client_->PostMessageFromNativeHost(base::WriteJson(message).value_or(""));
 }
 
 void ElevatedNativeMessagingHost::OnDisconnect() {
-  DCHECK(thread_checker_.CalledOnValidThread());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   client_->CloseChannel(std::string());
 }
 
 ProcessLaunchResult ElevatedNativeMessagingHost::EnsureElevatedHostCreated() {
-  DCHECK(thread_checker_.CalledOnValidThread());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (elevated_channel_) {
     return PROCESS_LAUNCH_RESULT_SUCCESS;
   }
 
-  base::win::ScopedHandle read_handle;
-  base::win::ScopedHandle write_handle;
+  base::File read_handle;
+  base::File write_handle;
+
   ProcessLaunchResult result = LaunchNativeMessagingHostProcess(
       host_binary_path_, parent_window_handle_, elevate_host_process_,
-      &read_handle, &write_handle);
+      read_handle, write_handle);
   if (result != PROCESS_LAUNCH_RESULT_SUCCESS) {
     return result;
   }
@@ -65,7 +66,7 @@ ProcessLaunchResult ElevatedNativeMessagingHost::EnsureElevatedHostCreated() {
   // Set up the native messaging channel to talk to the elevated host.
   // Note that input for the elevated channel is output for the elevated host.
   elevated_channel_ = std::make_unique<PipeMessagingChannel>(
-      base::File(std::move(read_handle)), base::File(std::move(write_handle)));
+      std::move(read_handle), std::move(write_handle));
   elevated_channel_->Start(this);
 
   if (!host_process_timeout_.is_zero()) {
@@ -77,12 +78,12 @@ ProcessLaunchResult ElevatedNativeMessagingHost::EnsureElevatedHostCreated() {
 }
 
 void ElevatedNativeMessagingHost::SendMessage(const base::DictValue& message) {
-  DCHECK(thread_checker_.CalledOnValidThread());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   elevated_channel_->SendMessage(message);
 }
 
 void ElevatedNativeMessagingHost::DisconnectHost() {
-  DCHECK(thread_checker_.CalledOnValidThread());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   // This will send an EOF to the elevated host, triggering its shutdown.
   elevated_channel_.reset();

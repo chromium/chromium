@@ -241,7 +241,6 @@ source_set("unit_tests") {
   ]
 
   deps = [
-    ":elevated_native_messaging_host",
     ":win",
     "//base/test:test_support",
     "//ipc",
@@ -398,23 +397,6 @@ executable("remoting_me2me_host") {
   }
 }
 
-source_set("elevated_native_messaging_host") {
-  sources = [
-    "elevated_native_messaging_host.cc",
-    "elevated_native_messaging_host.h",
-    "launch_native_messaging_host_process.cc",
-    "launch_native_messaging_host_process.h",
-  ]
-  deps = [
-    ":security_descriptor",
-    "//base",
-    "//extensions/browser/api/messaging:native_messaging",
-    "//ipc",
-    "//remoting/host/base",
-    "//remoting/host/native_messaging",
-  ]
-}
-
 shared_library("remoting_core") {
   configs += [
     "//build/config/compiler:wexit_time_destructors",
@@ -443,7 +425,6 @@ shared_library("remoting_core") {
     "unprivileged_process_delegate.cc",
     "wts_session_process_delegate.cc",
   ]
-  public_deps = [ ":elevated_native_messaging_host" ]
   deps = [
     ":messages",
     ":remoting_lib_idl",

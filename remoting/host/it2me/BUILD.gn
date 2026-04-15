@@ -93,6 +93,7 @@ source_set("common") {
     "//remoting/base",
     "//remoting/base:authorization",
     "//remoting/host:common",
+    "//remoting/host:elevated_native_messaging_host",
     "//remoting/host/base",
     "//remoting/host/native_messaging",
     "//remoting/proto/ftl/v1:ftl_messages",
@@ -128,10 +129,7 @@ source_set("common") {
     deps += [ "//ui/base" ]
   }
   if (is_win) {
-    deps += [
-      "//remoting/host/win",
-      "//remoting/host/win:elevated_native_messaging_host",
-    ]
+    deps += [ "//remoting/host/win" ]
   }
 }
 
