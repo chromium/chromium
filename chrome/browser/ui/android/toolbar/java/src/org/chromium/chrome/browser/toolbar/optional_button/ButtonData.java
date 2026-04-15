@@ -25,6 +25,9 @@ import java.util.Objects;
  */
 @NullMarked
 public interface ButtonData {
+    /** Default delay for collapsing the action chip. */
+    int DEFAULT_ACTION_CHIP_DELAY_MS = 3000;
+
     /** Returns {@code true} when the {@link ButtonDataProvider} wants to show a button. */
     boolean canShow();
 
@@ -61,6 +64,7 @@ public interface ButtonData {
         private final boolean mHasErrorBadge;
         private final boolean mIsChecked;
         private final boolean mShouldSuppressCpa;
+        private final int mActionChipCollapseDelayMs;
 
         private ButtonSpec(
                 @Nullable Drawable drawable,
@@ -74,7 +78,8 @@ public interface ButtonData {
                 int tooltipTextResId,
                 boolean hasErrorBadge,
                 boolean isChecked,
-                boolean shouldSuppressCpa) {
+                boolean shouldSuppressCpa,
+                int actionChipCollapseDelayMs) {
             mDrawable = drawable;
             mOnClickListener = onClickListener;
             mOnLongClickListener = onLongClickListener;
@@ -88,6 +93,7 @@ public interface ButtonData {
             mHasErrorBadge = hasErrorBadge;
             mIsChecked = isChecked;
             mShouldSuppressCpa = shouldSuppressCpa;
+            mActionChipCollapseDelayMs = actionChipCollapseDelayMs;
         }
 
         /** Builder for {@link ButtonSpec}. */
@@ -105,6 +111,7 @@ public interface ButtonData {
             private boolean mHasErrorBadge;
             private boolean mIsChecked;
             private boolean mShouldSuppressCpa;
+            private int mActionChipCollapseDelayMs = DEFAULT_ACTION_CHIP_DELAY_MS;
 
             /**
              * Creates a new {@link Builder} with the required properties.
@@ -140,6 +147,7 @@ public interface ButtonData {
                 mHasErrorBadge = buttonSpec.mHasErrorBadge;
                 mIsChecked = buttonSpec.mIsChecked;
                 mShouldSuppressCpa = buttonSpec.mShouldSuppressCpa;
+                mActionChipCollapseDelayMs = buttonSpec.mActionChipCollapseDelayMs;
             }
 
             public Builder setDrawable(@Nullable Drawable drawable) {
@@ -203,6 +211,11 @@ public interface ButtonData {
                 return this;
             }
 
+            public Builder setActionChipCollapseDelayMs(int actionChipCollapseDelayMs) {
+                mActionChipCollapseDelayMs = actionChipCollapseDelayMs;
+                return this;
+            }
+
             public ButtonSpec build() {
                 return new ButtonSpec(
                         mDrawable,
@@ -216,7 +229,8 @@ public interface ButtonData {
                         mTooltipTextResId,
                         mHasErrorBadge,
                         mIsChecked,
-                        mShouldSuppressCpa);
+                        mShouldSuppressCpa,
+                        mActionChipCollapseDelayMs);
             }
         }
 
@@ -299,6 +313,14 @@ public interface ButtonData {
             return mShouldSuppressCpa;
         }
 
+        /**
+         * Returns the delay for collapsing the action chip in milliseconds. The default value is
+         * 3000ms.
+         */
+        public int getActionChipCollapseDelayMs() {
+            return mActionChipCollapseDelayMs;
+        }
+
         @Override
         public boolean equals(Object o) {
             if (this == o) {
@@ -314,6 +336,7 @@ public interface ButtonData {
                     && mActionChipLabelResId == that.mActionChipLabelResId
                     && mIsChecked == that.mIsChecked
                     && mShouldSuppressCpa == that.mShouldSuppressCpa
+                    && mActionChipCollapseDelayMs == that.mActionChipCollapseDelayMs
                     && Objects.equals(mDrawable, that.mDrawable)
                     && Objects.equals(mOnClickListener, that.mOnClickListener)
                     && Objects.equals(mOnLongClickListener, that.mOnLongClickListener)
@@ -334,7 +357,8 @@ public interface ButtonData {
                     mIsDynamicAction,
                     mActionChipLabelResId,
                     mIsChecked,
-                    mShouldSuppressCpa);
+                    mShouldSuppressCpa,
+                    mActionChipCollapseDelayMs);
         }
     }
 }

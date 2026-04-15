@@ -1102,4 +1102,31 @@ public class OptionalButtonViewTest {
         mOptionalButtonView.onTransitionStart(null);
         mOptionalButtonView.onTransitionEnd(null);
     }
+
+    @Test
+    public void testSetIconDrawableWithAnimation_expandAndCollapseActionChip_customDelay() {
+        int customDelay = 5000;
+        ButtonDataImpl actionChipButtonData = getDataForReaderModeActionChip();
+        actionChipButtonData.setButtonSpec(
+                new ButtonSpec.Builder(actionChipButtonData.getButtonSpec())
+                        .setActionChipCollapseDelayMs(customDelay)
+                        .build());
+
+        Callback<Integer> transitionStartedCallback = mock(Callback.class);
+        mOptionalButtonView.setTransitionStartedCallback(transitionStartedCallback);
+
+        // Show action chip.
+        mOptionalButtonView.updateButtonWithAnimation(actionChipButtonData);
+        mOptionalButtonView.onTransitionStart(null);
+        mOptionalButtonView.onTransitionEnd(null);
+
+        // Verify that the collapse task was scheduled with the custom delay.
+        mShadowLooper.idleFor(customDelay - 1, java.util.concurrent.TimeUnit.MILLISECONDS);
+        verify(transitionStartedCallback, never()).onResult(TransitionType.COLLAPSING_ACTION_CHIP);
+
+        mShadowLooper.idleFor(1, java.util.concurrent.TimeUnit.MILLISECONDS);
+
+        mOptionalButtonView.onTransitionStart(null);
+        verify(transitionStartedCallback).onResult(TransitionType.COLLAPSING_ACTION_CHIP);
+    }
 }

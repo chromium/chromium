@@ -102,6 +102,7 @@ class OptionalButtonView extends FrameLayout implements TransitionListener {
     private @AdaptiveToolbarButtonVariant int mCurrentButtonVariant =
             AdaptiveToolbarButtonVariant.NONE;
     private boolean mCanCurrentButtonShow;
+    private int mActionChipCollapseDelayMs;
 
     // Indicates whether this optional button can change its own the visibility or leave the control
     // to some other entity. {@code true} by default.
@@ -289,6 +290,7 @@ class OptionalButtonView extends FrameLayout implements TransitionListener {
 
         mCurrentButtonVariant = buttonSpec.getButtonVariant();
         mCanCurrentButtonShow = true;
+        mActionChipCollapseDelayMs = buttonSpec.getActionChipCollapseDelayMs();
         mCurrentButtonSupportsTinting = buttonSpec.getSupportsTinting();
 
         mIconDrawable = buttonSpec.getDrawable();
@@ -546,13 +548,9 @@ class OptionalButtonView extends FrameLayout implements TransitionListener {
             mButton.setContentDescription(mContentDescription);
         }
 
-        // When finished expanding the action chip schedule the collapse transition in 3 seconds.
+        // When finished expanding the action chip schedule the collapse transition.
         if (mState == State.SHOWING_ACTION_CHIP) {
-            getHandler()
-                    .postDelayed(
-                            mCollapseActionChipRunnable,
-                            AdaptiveToolbarFeatures.getContextualPageActionDelayMs(
-                                    mCurrentButtonVariant));
+            getHandler().postDelayed(mCollapseActionChipRunnable, mActionChipCollapseDelayMs);
         }
     }
 

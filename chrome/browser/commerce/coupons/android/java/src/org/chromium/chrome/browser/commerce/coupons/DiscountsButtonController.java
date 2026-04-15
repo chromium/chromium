@@ -27,6 +27,7 @@ import java.util.function.Supplier;
 /** This class is responsible for providing UI resources for showing the Discounts action. */
 @NullMarked
 public class DiscountsButtonController extends BaseButtonDataProvider {
+    public static final int ACTION_CHIP_COLLAPSE_DELAY_MS = 6000;
 
     private final BottomSheetController mBottomSheetController;
     private final BottomSheetObserver mBottomSheetObserver;
@@ -49,6 +50,7 @@ public class DiscountsButtonController extends BaseButtonDataProvider {
                                 context.getString(R.string.discount_container_title),
                                 /* supportsTinting= */ true)
                         .setActionChipLabelResId(R.string.discount_container_title)
+                        .setActionChipCollapseDelayMs(ACTION_CHIP_COLLAPSE_DELAY_MS)
                         .setButtonVariant(AdaptiveToolbarButtonVariant.DISCOUNTS)
                         .build());
 

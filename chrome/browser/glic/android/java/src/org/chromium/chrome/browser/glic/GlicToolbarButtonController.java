@@ -51,6 +51,8 @@ import java.util.function.Supplier;
 @NullMarked
 public class GlicToolbarButtonController extends BaseButtonDataProvider
         implements ActorKeyedService.Observer, GlicKeyedService.GlobalShowHideObserver {
+    public static final int ACTION_CHIP_COLLAPSE_DELAY_MS = 30000;
+
     @IntDef({ButtonState.DEFAULT, ButtonState.WORKING, ButtonState.NEEDS_REVIEW, ButtonState.DONE})
     @Retention(RetentionPolicy.SOURCE)
     private @interface ButtonState {
@@ -125,6 +127,7 @@ public class GlicToolbarButtonController extends BaseButtonDataProvider
         return new ButtonSpec.Builder(mDefaultSpec)
                 .setActionChipLabelResId(R.string.glic_button_status_review)
                 .setShouldSuppressCpa(true)
+                .setActionChipCollapseDelayMs(ACTION_CHIP_COLLAPSE_DELAY_MS)
                 .build();
     }
 
@@ -132,6 +135,7 @@ public class GlicToolbarButtonController extends BaseButtonDataProvider
         return new ButtonSpec.Builder(mDefaultSpec)
                 .setActionChipLabelResId(R.string.glic_button_status_done)
                 .setShouldSuppressCpa(true)
+                .setActionChipCollapseDelayMs(ACTION_CHIP_COLLAPSE_DELAY_MS)
                 .build();
     }
 

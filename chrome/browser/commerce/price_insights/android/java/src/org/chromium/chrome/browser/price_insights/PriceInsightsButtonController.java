@@ -43,6 +43,7 @@ import java.util.function.Supplier;
  */
 @NullMarked
 public class PriceInsightsButtonController extends BaseButtonDataProvider {
+    public static final int ACTION_CHIP_COLLAPSE_DELAY_MS = 6000;
 
     private final Context mContext;
     private final BottomSheetController mBottomSheetController;
@@ -76,6 +77,7 @@ public class PriceInsightsButtonController extends BaseButtonDataProvider {
                                 context.getString(R.string.price_insights_title),
                                 /* supportsTinting= */ true)
                         .setActionChipLabelResId(R.string.price_insights_price_is_low_title)
+                        .setActionChipCollapseDelayMs(ACTION_CHIP_COLLAPSE_DELAY_MS)
                         .setButtonVariant(AdaptiveToolbarButtonVariant.PRICE_INSIGHTS)
                         .build());
 

@@ -22,6 +22,8 @@ import java.util.function.Supplier;
 /** Defines the UI details and click handler for the tab grouping toolbar button. */
 @NullMarked
 public class GroupSuggestionsButtonDataProvider extends BaseButtonDataProvider {
+    public static final int ACTION_CHIP_COLLAPSE_DELAY_MS = 6000;
+
     private final Supplier<GroupSuggestionsButtonController>
             mGroupSuggestionsButtonControllerSupplier;
     private final Supplier<TabModelSelector> mTabModelSelectorSupplier;
@@ -40,6 +42,7 @@ public class GroupSuggestionsButtonDataProvider extends BaseButtonDataProvider {
                                 context.getString(R.string.tab_group_suggestion_action_chip_label),
                                 /* supportsTinting= */ true)
                         .setActionChipLabelResId(R.string.tab_group_suggestion_action_chip_label)
+                        .setActionChipCollapseDelayMs(ACTION_CHIP_COLLAPSE_DELAY_MS)
                         .setButtonVariant(AdaptiveToolbarButtonVariant.TAB_GROUPING)
                         .setHoverTooltipTextId(R.string.tab_group_suggestion_action_chip_label)
                         .build());

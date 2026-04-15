@@ -42,18 +42,6 @@ public class AdaptiveToolbarFeatures {
     /** Maximum toolbar width to show text bubble instead of animation. Used in CCT. */
     public static final int MAX_WIDTH_FOR_BUBBLE_DP = 360;
 
-    /** Default delay between action chip expansion and collapse. */
-    public static final int DEFAULT_CONTEXTUAL_PAGE_ACTION_CHIP_DELAY_MS = 3000;
-
-    /** Default action chip delay for price tracking. */
-    public static final int DEFAULT_PRICE_TRACKING_ACTION_CHIP_DELAY_MS = 6000;
-
-    /** Default action chip delay for reader mode. */
-    public static final int DEFAULT_READER_MODE_ACTION_CHIP_DELAY_MS = 3000;
-
-    /** Default action chip delay for glic. */
-    public static final int DEFAULT_GLIC_ACTION_CHIP_DELAY_MS = 60000;
-
     @VisibleForTesting
     public static final String CONTEXTUAL_PAGE_ACTION_TEST_FEATURE_NAME =
             "CONTEXTUAL_PAGE_ACTION_TEST_FEATURE_NAME";
@@ -131,29 +119,6 @@ public class AdaptiveToolbarFeatures {
             default:
                 assert false : "Unknown button variant " + buttonVariant;
                 return false;
-        }
-    }
-
-    /**
-     * @return The amount of time the action chip should remain expanded in milliseconds. Default is
-     *     3 seconds.
-     */
-    public static int getContextualPageActionDelayMs(
-            @AdaptiveToolbarButtonVariant int buttonVariant) {
-        switch (buttonVariant) {
-            case AdaptiveToolbarButtonVariant.PRICE_TRACKING:
-            case AdaptiveToolbarButtonVariant.PRICE_INSIGHTS:
-            case AdaptiveToolbarButtonVariant.DISCOUNTS:
-            case AdaptiveToolbarButtonVariant.TAB_GROUPING:
-            case AdaptiveToolbarButtonVariant.TEST_BUTTON:
-                return DEFAULT_PRICE_TRACKING_ACTION_CHIP_DELAY_MS;
-            case AdaptiveToolbarButtonVariant.READER_MODE:
-                return DEFAULT_READER_MODE_ACTION_CHIP_DELAY_MS;
-            case AdaptiveToolbarButtonVariant.GLIC:
-                return DEFAULT_GLIC_ACTION_CHIP_DELAY_MS;
-            default:
-                assert false : "Unknown button variant " + buttonVariant;
-                return DEFAULT_CONTEXTUAL_PAGE_ACTION_CHIP_DELAY_MS;
         }
     }
 

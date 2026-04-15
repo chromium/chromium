@@ -58,6 +58,8 @@ import java.util.function.BooleanSupplier;
 /** Unit tests for OptionalButtonCoordinator. */
 @RunWith(BaseRobolectricTestRunner.class)
 public class OptionalButtonCoordinatorTest {
+    public static final int ACTION_CHIP_COLLAPSE_DELAY_MS = 6000;
+
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Mock private ViewGroup mMockRootView;
     @Mock private BooleanSupplier mMockIsAnimationAllowedDelegate;
@@ -332,6 +334,7 @@ public class OptionalButtonCoordinatorTest {
                                 iconDrawable, contentDescription, /* supportsTinting= */ true)
                         .setOnClickListener(clickListener)
                         .setActionChipLabelResId(actionChipResourceId)
+                        .setActionChipCollapseDelayMs(ACTION_CHIP_COLLAPSE_DELAY_MS)
                         .setIphCommandBuilder(mockIphCommandBuilder)
                         .setButtonVariant(AdaptiveToolbarButtonVariant.TEST_BUTTON)
                         .build();
@@ -369,6 +372,7 @@ public class OptionalButtonCoordinatorTest {
                                 iconDrawable, contentDescription, /* supportsTinting= */ true)
                         .setOnClickListener(clickListener)
                         .setActionChipLabelResId(actionChipResourceId)
+                        .setActionChipCollapseDelayMs(ACTION_CHIP_COLLAPSE_DELAY_MS)
                         .setIphCommandBuilder(mockIphCommandBuilder)
                         .setButtonVariant(AdaptiveToolbarButtonVariant.TEST_BUTTON)
                         .build();
@@ -406,6 +410,7 @@ public class OptionalButtonCoordinatorTest {
                                 iconDrawable, contentDescription, /* supportsTinting= */ true)
                         .setOnClickListener(clickListener)
                         .setActionChipLabelResId(actionChipResourceId)
+                        .setActionChipCollapseDelayMs(ACTION_CHIP_COLLAPSE_DELAY_MS)
                         .setIphCommandBuilder(mockIphCommandBuilder)
                         .setButtonVariant(AdaptiveToolbarButtonVariant.TEST_BUTTON)
                         .build();

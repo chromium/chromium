@@ -45,6 +45,7 @@ import java.util.function.Supplier;
  */
 @NullMarked
 public class PriceTrackingButtonController extends BaseButtonDataProvider {
+    public static final int ACTION_CHIP_COLLAPSE_DELAY_MS = 6000;
 
     private final SnackbarManager mSnackbarManager;
     private final Supplier<TabBookmarker> mTabBookmarkerSupplier;
@@ -78,6 +79,7 @@ public class PriceTrackingButtonController extends BaseButtonDataProvider {
                                 context.getString(R.string.enable_price_tracking_menu_item),
                                 /* supportsTinting= */ true)
                         .setActionChipLabelResId(R.string.enable_price_tracking_menu_item)
+                        .setActionChipCollapseDelayMs(ACTION_CHIP_COLLAPSE_DELAY_MS)
                         .setButtonVariant(AdaptiveToolbarButtonVariant.PRICE_TRACKING)
                         .build());
         mSnackbarManager = snackbarManager;
