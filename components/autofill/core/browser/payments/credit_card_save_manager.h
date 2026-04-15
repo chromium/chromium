@@ -31,6 +31,8 @@ class SaveCardOfferObserver;
 
 namespace autofill {
 
+using SaveCardPromptOffer = autofill_metrics::SaveCardPromptOffer;
+
 class AutofillClient;
 
 // Time in sec to wait before showing virtual card enrollment if save card
@@ -382,9 +384,16 @@ class CreditCardSaveManager {
   // offered.
   int upload_decision_metrics_ = 0;
 
-  // |true| if the offer-to-save bubble/infobar should pop-up, |false| if not.
+  // `true` if the offer-to-save bubble/infobar should pop-up, `false` if not.
   // Will be std::nullopt until data has been retrieved from the StrikeSystem.
+  // Applies to both card and CVC-only save.
   std::optional<bool> show_save_prompt_;
+
+  // std::nullopt until data is retrieved from the StrikeSystem, at which point
+  // it will be populated with the eventual metric to be logged for a card save,
+  // whether that is `kShown` or a specific `kNotShown[ForReason]` value. Not
+  // needed for the CVC path as it can log immediately instead of eventually.
+  std::optional<SaveCardPromptOffer> save_card_prompt_offer_decision_;
 
   // |true| if the card being offered for upload is already a local card on the
   // device; |false| otherwise.

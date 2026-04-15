@@ -2838,6 +2838,12 @@ constexpr auto kFeatureEntries = std::to_array<flags_ui::FeatureEntry>({
     {"cobrowse-aim-history", flag_descriptions::kCobrowseAimHistoryName,
      flag_descriptions::kCobrowseAimHistoryDescription, flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(kCobrowseAimHistory)},
+    {"autofill-upstream-enforce-strike-delay",
+     flag_descriptions::kAutofillUpstreamEnforceStrikeDelayName,
+     flag_descriptions::kAutofillUpstreamEnforceStrikeDelayDescription,
+     flags_ui::kOsIos,
+     FEATURE_VALUE_TYPE(
+         autofill::features::kAutofillUpstreamEnforceStrikeDelay)},
 });
 
 bool SkipConditionalFeatureEntry(const flags_ui::FeatureEntry& entry) {

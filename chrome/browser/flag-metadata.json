@@ -1051,6 +1051,11 @@
     "expiry_milestone": 155
   },
   {
+    "name": "autofill-upstream-enforce-strike-delay",
+    "owners": ["osaul@google.com", "payments-autofill-team@google.com"],
+    "expiry_milestone": 160
+  },
+  {
     "name": "autofill-vcn-enroll-strike-expiry-time",
     "owners": ["hvs@google.com", "payments-autofill-team@google.com"],
     "expiry_milestone": 147

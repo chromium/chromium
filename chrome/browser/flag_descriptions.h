@@ -1112,6 +1112,13 @@ inline constexpr char kAutofillTouchToFillShowManualFillForVcnFixDescription[] =
     "successful and the user clicks on the 'show card' button to fill the card "
     "manually.";
 
+inline constexpr char kAutofillUpstreamEnforceStrikeDelayName[] =
+    "Require a week between offers to save credit cards";
+inline constexpr char kAutofillUpstreamEnforceStrikeDelayDescription[] =
+    "When enabled, users should not see offers to save the same credit card "
+    "twice in a week, as the strike database enforces a 7-day delay between "
+    "strikes.";
+
 inline constexpr char kAutofillVcnEnrollStrikeExpiryTimeName[] =
     "Expiry duration for VCN enrollment strikes";
 inline constexpr char kAutofillVcnEnrollStrikeExpiryTimeDescription[] =

@@ -716,6 +716,7 @@ static_library("browser") {
     "strike_databases/autofill_ai/autofill_ai_save_strike_database_by_host.cc",
     "strike_databases/autofill_ai/autofill_ai_save_strike_database_by_host.h",
     "strike_databases/autofill_ai/autofill_ai_update_strike_database.h",
+    "strike_databases/payments/credit_card_save_strike_database.cc",
     "strike_databases/payments/credit_card_save_strike_database.h",
     "strike_databases/payments/cvc_storage_strike_database.cc",
     "strike_databases/payments/cvc_storage_strike_database.h",

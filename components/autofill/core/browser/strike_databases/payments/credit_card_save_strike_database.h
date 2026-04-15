@@ -21,13 +21,22 @@ struct CreditCardSaveStrikeDatabaseTraits {
   static constexpr std::optional<size_t> kMaxStrikeEntities;
   static constexpr std::optional<size_t> kMaxStrikeEntitiesAfterCleanup;
   static constexpr size_t kMaxStrikeLimit = 3;
+  static constexpr base::TimeDelta kRequiredDelayBetweenStrikes = base::Days(7);
   static constexpr base::TimeDelta kExpiryTimeDelta = base::Days(183);
   static constexpr bool kUniqueIdRequired = true;
 };
 
 // Strike database for credit card saves (both local and upload).
-using CreditCardSaveStrikeDatabase =
-    strike_database::SimpleStrikeDatabase<CreditCardSaveStrikeDatabaseTraits>;
+class CreditCardSaveStrikeDatabase
+    : public strike_database::SimpleStrikeDatabase<
+          CreditCardSaveStrikeDatabaseTraits> {
+ public:
+  using SimpleStrikeDatabase<
+      CreditCardSaveStrikeDatabaseTraits>::SimpleStrikeDatabase;
+
+  std::optional<base::TimeDelta> GetRequiredDelaySinceLastStrike()
+      const override;
+};
 
 }  // namespace autofill
 

@@ -12967,6 +12967,11 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_WITH_PARAMS_VALUE_TYPE(bookmarks::kEncryptBookmarks,
                                     kBookmarksEncryptionVariations,
                                     "BookmarksEncryption")},
+    {"autofill-upstream-enforce-strike-delay",
+     flag_descriptions::kAutofillUpstreamEnforceStrikeDelayName,
+     flag_descriptions::kAutofillUpstreamEnforceStrikeDelayDescription, kOsAll,
+     FEATURE_VALUE_TYPE(
+         autofill::features::kAutofillUpstreamEnforceStrikeDelay)},
 
     // Add new entries above this line.
     // NOTE: Adding a new flag requires adding a corresponding entry to enum

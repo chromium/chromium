@@ -316,6 +316,11 @@ BASE_FEATURE(kAutofillTouchToFillShowManualFillForVcnFix,
 // as well as enable non-fully-launched countries on a trial basis.
 BASE_FEATURE(kAutofillUpstream, base::FEATURE_DISABLED_BY_DEFAULT);
 
+// When enabled, users should not see offers to save the same credit card twice
+// in a week, as the strike database enforces a 7-day delay between strikes.
+BASE_FEATURE(kAutofillUpstreamEnforceStrikeDelay,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // When enabled, updates the VCN strike database with different values of
 // kExpiryTimeDelta as part of of the VCN strike optimization experiment.
 // See go/vcn-strike-optimization-design.

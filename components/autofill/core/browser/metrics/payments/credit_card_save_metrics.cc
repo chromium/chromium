@@ -47,8 +47,11 @@ void LogCardUploadEnabledMetric(
   base::UmaHistogramEnumeration(child_metric, metric_value);
 }
 
-void LogCreditCardSaveNotOfferedDueToMaxStrikesMetric(
+void LogCreditCardSaveNotOfferedDueToStrikeDatabaseMetric(
     AutofillMetrics::SaveTypeMetric metric) {
+  // Unfortunate outdated naming: As of April 2026, this histogram implies card
+  // save was not offered due to the strike database decision, not *necessarily*
+  // because of max strikes.
   UMA_HISTOGRAM_ENUMERATION(
       "Autofill.StrikeDatabase.CreditCardSaveNotOfferedDueToMaxStrikes",
       metric);

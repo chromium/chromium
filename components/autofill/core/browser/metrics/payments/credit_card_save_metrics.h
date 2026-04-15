@@ -206,8 +206,9 @@ void LogCardUploadEnabledMetric(
     AutofillMetrics::PaymentsSigninState sync_state);
 
 // When credit card save is not offered (either at all on mobile or by simply
-// not showing the bubble on desktop), logs the occurrence.
-void LogCreditCardSaveNotOfferedDueToMaxStrikesMetric(
+// not showing the bubble on desktop) due to a decision by the strike database,
+// logs the occurrence.
+void LogCreditCardSaveNotOfferedDueToStrikeDatabaseMetric(
     AutofillMetrics::SaveTypeMetric metric);
 
 void LogCreditCardUploadLegalMessageLinkClicked();

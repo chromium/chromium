@@ -255,6 +255,13 @@ const char kAutofillThrottleFilteredDocumentFormScanDescription[] =
     "Enables the throttling of the on the spot filtered form scans done by "
     "Autofill (e.g. get the latest state of a form that had an activity).";
 
+const char kAutofillUpstreamEnforceStrikeDelayName[] =
+    "Require a week between offers to save credit cards";
+const char kAutofillUpstreamEnforceStrikeDelayDescription[] =
+    "When enabled, users should not see offers to save the same credit card "
+    "twice in a week, as the strike database enforces a 7-day delay between "
+    "strikes.";
+
 const char kAutofillUseRendererIDsName[] =
     "Autofill logic uses unqiue renderer IDs";
 const char kAutofillUseRendererIDsDescription[] =

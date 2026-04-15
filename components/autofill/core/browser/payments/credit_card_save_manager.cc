@@ -194,31 +194,32 @@ void LogPromptOfferMetricForCreditCardSave(
   autofill_metrics::LogSaveCreditCardPromptOfferMetric(metric, is_upload_save);
 
   switch (metric) {
+    case SaveCardPromptOffer::kCvcMissingForPotentialUpdate:
+      // The other kNotShown entries below offer save via the omnibox icon
+      // without popping up the bubble, and will later call
+      // LogSaveCreditCardPromptOfferMetricDesktop(~) from
+      // SaveCardBubbleController. This kCvcMissing case will abort early, so we
+      // must call LogSaveCreditCardPromptOfferMetricDesktop(~) here now, in
+      // addition to the other metrics.
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+      autofill_metrics::LogSaveCreditCardPromptOfferMetricDesktop(
+          metric, is_upload_save, /*save_credit_card_options=*/options);
+#endif
+      [[fallthrough]];
     case SaveCardPromptOffer::kNotShownMaxStrikesReached:
-    case SaveCardPromptOffer::kCvcMissingForPotentialUpdate: {
+    case SaveCardPromptOffer::kNotShownRequiredDelay:
 #if BUILDFLAG(IS_ANDROID)
       autofill_metrics::LogSaveCreditCardPromptOfferMetricAndroid(
           metric, is_upload_save, /*save_credit_card_options=*/options);
 #elif BUILDFLAG(IS_IOS)
       LogSaveCardPromptOfferMetricIos(metric, is_upload_save, options);
-#else
-      if (metric == SaveCardPromptOffer::kNotShownMaxStrikesReached) {
-        // On desktop, save will be offered in the omnibox without popping-up
-        // the bubble. Detailed metric will be logged by
-        // SaveCardBubbleController when decision to show omnibox icon will be
-        // taken.
-        return;
-      }
-      autofill_metrics::LogSaveCreditCardPromptOfferMetricDesktop(
-          metric, is_upload_save, /*save_credit_card_options=*/options);
 #endif
       break;
-    }
     case SaveCardPromptOffer::kShown:
-    case SaveCardPromptOffer::kNotShownRequiredDelay:
       break;
   }
 }
+
 }  // namespace
 
 CreditCardSaveManager::CreditCardSaveManager(AutofillClient* client)
@@ -238,6 +239,7 @@ bool CreditCardSaveManager::AttemptToOfferCardLocalSave(
   }
   card_save_candidate_ = card;
   show_save_prompt_.reset();
+  save_card_prompt_offer_decision_.reset();
 
   // If the card data does not have the expiration month or the year, then do
   // not offer to save to save locally, as the local save bubble does not
@@ -252,8 +254,35 @@ bool CreditCardSaveManager::AttemptToOfferCardLocalSave(
   }
   // Query the Autofill StrikeDatabase on if we should pop up the
   // offer-to-save prompt for this card.
-  show_save_prompt_ = !GetCreditCardSaveStrikeDatabase()->ShouldBlockFeature(
-      base::UTF16ToUTF8(card_save_candidate_.LastFourDigits()));
+  if (base::FeatureList::IsEnabled(
+          features::kAutofillUpstreamEnforceStrikeDelay)) {
+    // TODO: crbug.com/40912817 - Once this flag is removed,
+    //     `save_card_prompt_offer_decision_` should always be set. At that
+    //     time, remove the `save_card_prompt_offer_decision_.has_value()` check
+    //     from OfferCardUploadSave(~).
+    CreditCardSaveStrikeDatabase::StrikeDatabaseDecision decision =
+        GetCreditCardSaveStrikeDatabase()->GetStrikeDatabaseDecision(
+            base::UTF16ToUTF8(card_save_candidate_.LastFourDigits()));
+    switch (decision) {
+      case CreditCardSaveStrikeDatabase::kDoNotBlock:
+        show_save_prompt_ = true;
+        save_card_prompt_offer_decision_ = SaveCardPromptOffer::kShown;
+        break;
+      case CreditCardSaveStrikeDatabase::kMaxStrikeLimitReached:
+        show_save_prompt_ = false;
+        save_card_prompt_offer_decision_ =
+            SaveCardPromptOffer::kNotShownMaxStrikesReached;
+        break;
+      case CreditCardSaveStrikeDatabase::kRequiredDelayNotPassed:
+        show_save_prompt_ = false;
+        save_card_prompt_offer_decision_ =
+            SaveCardPromptOffer::kNotShownRequiredDelay;
+        break;
+    }
+  } else {
+    show_save_prompt_ = !GetCreditCardSaveStrikeDatabase()->ShouldBlockFeature(
+        base::UTF16ToUTF8(card_save_candidate_.LastFourDigits()));
+  }
   OfferCardLocalSave();
   return show_save_prompt_.value_or(false);
 }
@@ -390,6 +419,7 @@ void CreditCardSaveManager::AttemptToOfferCardUploadSave(
   upload_request_.card = card;
   uploading_local_card_ = uploading_local_card;
   show_save_prompt_.reset();
+  save_card_prompt_offer_decision_.reset();
 
   // In an ideal scenario, when uploading a card, we would have:
   //  1) Card number and expiration
@@ -552,8 +582,31 @@ void CreditCardSaveManager::AttemptToOfferCardUploadSave(
 
   // Query the Autofill StrikeDatabase on if we should pop up the
   // offer-to-save prompt for this card.
-  show_save_prompt_ = !GetCreditCardSaveStrikeDatabase()->ShouldBlockFeature(
-      base::UTF16ToUTF8(upload_request_.card.LastFourDigits()));
+  if (base::FeatureList::IsEnabled(
+          features::kAutofillUpstreamEnforceStrikeDelay)) {
+    CreditCardSaveStrikeDatabase::StrikeDatabaseDecision decision =
+        GetCreditCardSaveStrikeDatabase()->GetStrikeDatabaseDecision(
+            base::UTF16ToUTF8(upload_request_.card.LastFourDigits()));
+    switch (decision) {
+      case CreditCardSaveStrikeDatabase::kDoNotBlock:
+        show_save_prompt_ = true;
+        save_card_prompt_offer_decision_ = SaveCardPromptOffer::kShown;
+        break;
+      case CreditCardSaveStrikeDatabase::kMaxStrikeLimitReached:
+        show_save_prompt_ = false;
+        save_card_prompt_offer_decision_ =
+            SaveCardPromptOffer::kNotShownMaxStrikesReached;
+        break;
+      case CreditCardSaveStrikeDatabase::kRequiredDelayNotPassed:
+        show_save_prompt_ = false;
+        save_card_prompt_offer_decision_ =
+            SaveCardPromptOffer::kNotShownRequiredDelay;
+        break;
+    }
+  } else {
+    show_save_prompt_ = !GetCreditCardSaveStrikeDatabase()->ShouldBlockFeature(
+        base::UTF16ToUTF8(upload_request_.card.LastFourDigits()));
+  }
 
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
   upload_request_.client_behavior_signals.push_back(
@@ -871,12 +924,21 @@ void CreditCardSaveManager::OfferCardLocalSave() {
         base::BindOnce(&CreditCardSaveManager::OnUserDidDecideOnLocalSave,
                        weak_ptr_factory_.GetWeakPtr()));
   }
-  if (show_save_prompt_.has_value()) {
+  if (save_card_prompt_offer_decision_.has_value()) {
+    LogPromptOfferMetricForCreditCardSave(
+        save_card_prompt_offer_decision_.value(),
+        /*is_upload_save=*/false, options);
+    if (save_card_prompt_offer_decision_.value() !=
+        SaveCardPromptOffer::kShown) {
+      autofill_metrics::LogCreditCardSaveNotOfferedDueToStrikeDatabaseMetric(
+          AutofillMetrics::SaveTypeMetric::LOCAL);
+    }
+  } else if (show_save_prompt_.has_value()) {
     if (show_save_prompt_.value()) {
       LogPromptOfferMetricForCreditCardSave(SaveCardPromptOffer::kShown,
                                             /*is_upload_save=*/false);
     } else if (!show_save_prompt_.value()) {
-      autofill_metrics::LogCreditCardSaveNotOfferedDueToMaxStrikesMetric(
+      autofill_metrics::LogCreditCardSaveNotOfferedDueToStrikeDatabaseMetric(
           AutofillMetrics::SaveTypeMetric::LOCAL);
       LogPromptOfferMetricForCreditCardSave(
           SaveCardPromptOffer::kNotShownMaxStrikesReached,
@@ -968,12 +1030,21 @@ void CreditCardSaveManager::OfferCardUploadSave(ukm::SourceId ukm_source_id) {
         autofill_metrics::UPLOAD_NOT_OFFERED_MAX_STRIKES_ON_MOBILE;
   }
   LogCardUploadDecisions(ukm_source_id, upload_decision_metrics_);
-  if (show_save_prompt_.has_value()) {
+  if (save_card_prompt_offer_decision_.has_value()) {
+    LogPromptOfferMetricForCreditCardSave(
+        save_card_prompt_offer_decision_.value(),
+        /*is_upload_save=*/true, options);
+    if (save_card_prompt_offer_decision_.value() !=
+        SaveCardPromptOffer::kShown) {
+      autofill_metrics::LogCreditCardSaveNotOfferedDueToStrikeDatabaseMetric(
+          AutofillMetrics::SaveTypeMetric::SERVER);
+    }
+  } else if (show_save_prompt_.has_value()) {
     if (show_save_prompt_.value()) {
       LogPromptOfferMetricForCreditCardSave(SaveCardPromptOffer::kShown,
                                             /*is_upload_save=*/true);
     } else if (!show_save_prompt_.value()) {
-      autofill_metrics::LogCreditCardSaveNotOfferedDueToMaxStrikesMetric(
+      autofill_metrics::LogCreditCardSaveNotOfferedDueToStrikeDatabaseMetric(
           AutofillMetrics::SaveTypeMetric::SERVER);
       LogPromptOfferMetricForCreditCardSave(
           SaveCardPromptOffer::kNotShownMaxStrikesReached,

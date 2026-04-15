@@ -164,6 +164,9 @@ extern const char kAutofillThrottleDocumentFormScanDescription[];
 extern const char kAutofillThrottleFilteredDocumentFormScanName[];
 extern const char kAutofillThrottleFilteredDocumentFormScanDescription[];
 
+extern const char kAutofillUpstreamEnforceStrikeDelayName[];
+extern const char kAutofillUpstreamEnforceStrikeDelayDescription[];
+
 extern const char kAutofillUseRendererIDsName[];
 extern const char kAutofillUseRendererIDsDescription[];
 

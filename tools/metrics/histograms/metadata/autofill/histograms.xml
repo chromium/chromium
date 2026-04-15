@@ -8016,8 +8016,14 @@ Called by update_autofill_enums.py. This is a manual comment.-->
   <owner>payments-autofill-team@google.com</owner>
   <summary>
     Records when credit card save is not offered (either at all on mobile or by
-    simply not showing the bubble on desktop) due to the candidate card having
-    too many strikes.
+    simply not showing the bubble on desktop) due to the candidate card not
+    passing the strike database check.
+
+    Note that as of M149, this histogram implies card save was not offered due
+    to the strike database decision, not *necessarily* because of max strikes
+    reached. The strike database check can fail because the card has too many
+    strikes, or because a required delay has not yet passed. The name is an
+    unfortunate reflection on the feature's original initial behavior only.
   </summary>
 </histogram>
 
