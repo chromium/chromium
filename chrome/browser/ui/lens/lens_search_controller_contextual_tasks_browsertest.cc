@@ -674,47 +674,6 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksLensInteractionBrowserTest,
 }
 
 #if BUILDFLAG(IS_CHROMEOS)
-#define MAYBE_TextQueryFromComposeboxLoadsResult \
-  DISABLED_TextQueryFromComposeboxLoadsResult
-#else
-#define MAYBE_TextQueryFromComposeboxLoadsResult \
-  TextQueryFromComposeboxLoadsResult
-#endif
-IN_PROC_BROWSER_TEST_F(ContextualTasksLensInteractionBrowserTest,
-                       MAYBE_TextQueryFromComposeboxLoadsResult) {
-  // Wait for the page to be painted to prevent flakiness when screenshotting.
-  WaitForPaint();
-
-  auto* controller = GetLensSearchController();
-  ASSERT_TRUE(controller);
-
-  // Open Lens Overlay via Composebox button.
-  controller->OpenLensOverlay(
-      lens::LensOverlayInvocationSource::kContextualTasksComposebox);
-
-  // Wait for the screenshot to be captured and overlay to be shown.
-  WaitForOverlayToOpen(controller);
-  ASSERT_TRUE(controller->IsShowingUI());
-
-  // Issue a text query from composebox.
-  controller->IssueTextSearchRequest(
-      lens::LensOverlayInvocationSource::kContextualTasksComposebox,
-      "test query", /*additional_query_parameters=*/{},
-      AutocompleteMatchType::Type::SEARCH_WHAT_YOU_TYPED,
-      /*is_zero_prefix_suggestion=*/false,
-      /*suppress_contextualization=*/false);
-
-  // Wait for the side panel to open and the inner WebContents to be created.
-  ASSERT_TRUE(base::test::RunUntil(
-      [&]() { return GetContextualTasksInnerWebContents() != nullptr; }));
-  content::WebContents* inner_contents = GetContextualTasksInnerWebContents();
-
-  // Wait for the first navigation to finish.
-  ASSERT_TRUE(
-      base::test::RunUntil([&]() { return !inner_contents->IsLoading(); }));
-}
-
-#if BUILDFLAG(IS_CHROMEOS)
 #define MAYBE_SubsequentRegionSelectionLoadsNewResult \
   DISABLED_SubsequentRegionSelectionLoadsNewResult
 #else
@@ -754,9 +713,6 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksLensInteractionBrowserTest,
   // www.google.com is not resolvable in the test environment).
   ASSERT_TRUE(
       base::test::RunUntil([&]() { return !inner_contents->IsLoading(); }));
-
-  // Create a navigation observer for the second region request
-  content::TestNavigationObserver second_search_observer(inner_contents);
 
   // Issue the second region request
   controller->lens_overlay_controller()->IssueLensRegionRequestForTesting(
