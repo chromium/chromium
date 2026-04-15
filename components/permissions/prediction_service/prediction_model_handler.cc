@@ -43,6 +43,8 @@ void PredictionModelHandler::OnModelUpdated(
     DCHECK(ModelAvailable());
     prediction_model_metadata_ = ParsedSupportedFeaturesForLoadedModel<
         WebPermissionPredictionsModelMetadata>();
+  } else {
+    prediction_model_metadata_.reset();
   }
 
   model_load_run_loop_.Quit();

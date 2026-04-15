@@ -554,5 +554,27 @@ TEST_F(Aiv4HandlerTest, GetPassageCountReturnsNulloptWhenNotSet) {
   EXPECT_EQ(aiv4_handler->GetPassageCount(), std::nullopt);
 }
 
+TEST_F(Aiv4HandlerTest, GetPassageCountReturnsNulloptWhenZero) {
+  PermissionsAiv4ModelMetadata metadata = BuildMetadataFromValues(
+      {0.1, 0.2, 0.3, 0.4}, /*text_embeddings_input_size=*/std::nullopt,
+      /*passage_count=*/0);
+  PushModelFileToModelExecutor(kOptTargetNotifications,
+                               test::ModelFilePath(kZeroReturnModel), metadata);
+
+  auto* aiv4_handler = model_handler();
+  EXPECT_EQ(aiv4_handler->GetPassageCount(), std::nullopt);
+}
+
+TEST_F(Aiv4HandlerTest, GetPassageCountReturnsNulloptWhenNegative) {
+  PermissionsAiv4ModelMetadata metadata = BuildMetadataFromValues(
+      {0.1, 0.2, 0.3, 0.4}, /*text_embeddings_input_size=*/std::nullopt,
+      /*passage_count=*/-1);
+  PushModelFileToModelExecutor(kOptTargetNotifications,
+                               test::ModelFilePath(kZeroReturnModel), metadata);
+
+  auto* aiv4_handler = model_handler();
+  EXPECT_EQ(aiv4_handler->GetPassageCount(), std::nullopt);
+}
+
 }  // namespace
 }  // namespace permissions

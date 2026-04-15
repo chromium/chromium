@@ -50,7 +50,7 @@ void PassageEmbedderDelegate::CreatePassageEmbeddingsFromRenderedText(
   VLOG(1) << "[PermissionsAIv4] "
              "PassageEmbedderDelegate::CreatePassageEmbeddingsFromRenderedText";
   if (text.empty() || passage_count < 1) {
-    std::move(fallback_callback_).Run();
+    std::move(fallback_callback).Run();
     return;
   }
 

@@ -321,6 +321,7 @@ void PermissionsAiUiSelector::SelectUiToUse(
   cpss_v1_model_holdback_probability_ = std::nullopt;
   was_decision_held_back_ = std::nullopt;
   language_detection_observer_->Reset();
+  passage_embedder_delegate_->Reset();
 
   const PredictionSource prediction_source =
       GetPredictionTypeToUse(request->request_type());

@@ -70,11 +70,14 @@ void PermissionsAiv4Handler::OnModelUpdated(
     DCHECK(ModelAvailable());
     model_metadata_ =
         ParsedSupportedFeaturesForLoadedModel<PermissionsAiv4ModelMetadata>();
+  } else {
+    model_metadata_.reset();
   }
 }
 
 std::optional<int32_t> PermissionsAiv4Handler::GetPassageCount() const {
-  if (model_metadata_ && model_metadata_->has_passage_count()) {
+  if (model_metadata_ && model_metadata_->has_passage_count() &&
+      model_metadata_->passage_count() > 0) {
     return model_metadata_->passage_count();
   }
   return std::nullopt;
