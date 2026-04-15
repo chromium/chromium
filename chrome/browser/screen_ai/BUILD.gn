@@ -7,190 +7,188 @@ import("//services/screen_ai/buildflags/features.gni")
 
 assert(enable_screen_ai_service)
 
-if (!is_android) {
-  source_set("screen_ai_downloader") {
-    if (is_chromeos) {
-      sources = [
-        "screen_ai_downloader_chromeos.cc",
-        "screen_ai_downloader_chromeos.h",
-      ]
-
-      deps = [
-        ":prefs",
-        ":screen_ai_dlc_installer",
-        ":screen_ai_install_state",
-        "//base",
-        "//chrome/browser:browser_process",
-        "//components/prefs",
-        "//content/public/browser",
-        "//dbus",
-      ]
-    } else {
-      sources = [
-        "screen_ai_downloader_non_chromeos.cc",
-        "screen_ai_downloader_non_chromeos.h",
-      ]
-
-      deps = [
-        ":prefs",
-        ":screen_ai_install_state",
-        "//base",
-        "//chrome/browser:browser_process",
-        "//chrome/browser/component_updater",
-        "//components/component_updater",
-        "//components/prefs",
-        "//components/update_client",
-        "//content/public/browser",
-        "//services/screen_ai/public/cpp:utilities",
-      ]
-    }
-
-    configs += [ "//build/config/compiler:wexit_time_destructors" ]
-  }
-
+source_set("screen_ai_downloader") {
   if (is_chromeos) {
-    source_set("screen_ai_dlc_installer") {
-      sources = [
-        "screen_ai_dlc_installer.cc",
-        "screen_ai_dlc_installer.h",
-      ]
-
-      deps = [
-        ":screen_ai_install_state",
-        "//chromeos/ash/components/dbus/dlcservice",
-        "//chromeos/ash/components/dbus/dlcservice:dlcservice_proto",
-        "//services/screen_ai/public/cpp:utilities",
-      ]
-
-      configs += [ "//build/config/compiler:wexit_time_destructors" ]
-    }
-  }
-
-  source_set("screen_ai_install_state") {
     sources = [
-      "screen_ai_install_state.cc",
-      "screen_ai_install_state.h",
+      "screen_ai_downloader_chromeos.cc",
+      "screen_ai_downloader_chromeos.h",
     ]
 
     deps = [
       ":prefs",
+      ":screen_ai_dlc_installer",
+      ":screen_ai_install_state",
       "//base",
       "//chrome/browser:browser_process",
       "//components/prefs",
       "//content/public/browser",
-      "//services/screen_ai/public/cpp:utilities",
-      "//ui/accessibility:ax_base",
+      "//dbus",
     ]
-
-    configs += [ "//build/config/compiler:wexit_time_destructors" ]
-  }
-
-  source_set("screen_ai_service_router_factory") {
+  } else {
     sources = [
-      "resource_monitor.cc",
-      "resource_monitor.h",
-      "screen_ai_service_handler_base.cc",
-      "screen_ai_service_handler_base.h",
-      "screen_ai_service_handler_main_content_extraction.cc",
-      "screen_ai_service_handler_main_content_extraction.h",
-      "screen_ai_service_handler_ocr.cc",
-      "screen_ai_service_handler_ocr.h",
-      "screen_ai_service_router.cc",
-      "screen_ai_service_router.h",
-      "screen_ai_service_router_factory.cc",
-      "screen_ai_service_router_factory.h",
+      "screen_ai_downloader_non_chromeos.cc",
+      "screen_ai_downloader_non_chromeos.h",
     ]
 
     deps = [
+      ":prefs",
       ":screen_ai_install_state",
-      "//chrome/browser/profiles:profile",
-      "//components/keyed_service/core",
-      "//components/performance_manager",
+      "//base",
+      "//chrome/browser:browser_process",
+      "//chrome/browser/component_updater",
+      "//components/component_updater",
+      "//components/prefs",
+      "//components/update_client",
       "//content/public/browser",
       "//services/screen_ai/public/cpp:utilities",
-      "//services/screen_ai/public/mojom",
-      "//services/screen_ai/public/mojom:factory",
     ]
-
-    configs += [ "//build/config/compiler:wexit_time_destructors" ]
   }
 
-  source_set("prefs") {
+  configs += [ "//build/config/compiler:wexit_time_destructors" ]
+}
+
+if (is_chromeos) {
+  source_set("screen_ai_dlc_installer") {
     sources = [
-      "pref_names.cc",
-      "pref_names.h",
+      "screen_ai_dlc_installer.cc",
+      "screen_ai_dlc_installer.h",
     ]
-
-    deps = [ "//components/prefs" ]
-
-    configs += [ "//build/config/compiler:wexit_time_destructors" ]
-  }
-
-  source_set("unit_tests") {
-    testonly = true
-    sources = [
-      "screen_ai_install_state_unittest.cc",
-      "screen_ai_service_handler_unittest.cc",
-    ]
-    deps = [
-      ":screen_ai_install_state",
-      ":screen_ai_service_router_factory",
-      "//base",
-      "//base/test:test_support",
-      "//testing/gtest",
-    ]
-
-    if (is_chromeos) {
-      sources += [ "screen_ai_dlc_installer_unittest.cc" ]
-      deps += [
-        ":screen_ai_dlc_installer",
-        "//chrome/browser/screen_ai:screen_ai_install_state",
-        "//chromeos/ash/components/dbus/dlcservice",
-        "//chromeos/ash/components/dbus/dlcservice:dlcservice_proto",
-        "//testing/gmock",
-      ]
-    }
-  }
-
-  source_set("browser_tests") {
-    testonly = true
-    defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
-
-    configs -= [ "//build/config/compiler:chromium_code" ]
-    configs += [ "//build/config/compiler:no_chromium_code" ]
-
-    sources = [
-      "optical_character_recognizer_browsertest.cc",
-      "screen_ai_service_router_browsertest.cc",
-    ]
-
-    public_deps = [ "//chrome/test:test_support_ui" ]
 
     deps = [
       ":screen_ai_install_state",
-      ":screen_ai_service_router_factory",
-      "//base",
-      "//chrome/browser/profiles:profile",
-      "//chrome/browser/screen_ai/public:optical_character_recognizer",
-      "//components/metrics:content",
-      "//services/screen_ai/buildflags",
+      "//chromeos/ash/components/dbus/dlcservice",
+      "//chromeos/ash/components/dbus/dlcservice:dlcservice_proto",
       "//services/screen_ai/public/cpp:utilities",
-      "//services/screen_ai/public/mojom",
-      "//testing/gmock",
-      "//testing/gtest",
-      "//ui/accessibility:ax_base",
-      "//ui/accessibility:ax_features_mojo",
-      "//ui/gfx/codec",
     ]
 
-    if (enable_screen_ai_browsertests) {
-      sources += [ "main_content_extraction_browsertest.cc" ]
-      data_deps = [ "//third_party/screen-ai:screen_ai" ]
-      deps += [
-        "//mojo/public/cpp/bindings",
-        "//net:test_support",
-        "//services/metrics/public/cpp:metrics_cpp",
-      ]
-    }
+    configs += [ "//build/config/compiler:wexit_time_destructors" ]
+  }
+}
+
+source_set("screen_ai_install_state") {
+  sources = [
+    "screen_ai_install_state.cc",
+    "screen_ai_install_state.h",
+  ]
+
+  deps = [
+    ":prefs",
+    "//base",
+    "//chrome/browser:browser_process",
+    "//components/prefs",
+    "//content/public/browser",
+    "//services/screen_ai/public/cpp:utilities",
+    "//ui/accessibility:ax_base",
+  ]
+
+  configs += [ "//build/config/compiler:wexit_time_destructors" ]
+}
+
+source_set("screen_ai_service_router_factory") {
+  sources = [
+    "resource_monitor.cc",
+    "resource_monitor.h",
+    "screen_ai_service_handler_base.cc",
+    "screen_ai_service_handler_base.h",
+    "screen_ai_service_handler_main_content_extraction.cc",
+    "screen_ai_service_handler_main_content_extraction.h",
+    "screen_ai_service_handler_ocr.cc",
+    "screen_ai_service_handler_ocr.h",
+    "screen_ai_service_router.cc",
+    "screen_ai_service_router.h",
+    "screen_ai_service_router_factory.cc",
+    "screen_ai_service_router_factory.h",
+  ]
+
+  deps = [
+    ":screen_ai_install_state",
+    "//chrome/browser/profiles:profile",
+    "//components/keyed_service/core",
+    "//components/performance_manager",
+    "//content/public/browser",
+    "//services/screen_ai/public/cpp:utilities",
+    "//services/screen_ai/public/mojom",
+    "//services/screen_ai/public/mojom:factory",
+  ]
+
+  configs += [ "//build/config/compiler:wexit_time_destructors" ]
+}
+
+source_set("prefs") {
+  sources = [
+    "pref_names.cc",
+    "pref_names.h",
+  ]
+
+  deps = [ "//components/prefs" ]
+
+  configs += [ "//build/config/compiler:wexit_time_destructors" ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [
+    "screen_ai_install_state_unittest.cc",
+    "screen_ai_service_handler_unittest.cc",
+  ]
+  deps = [
+    ":screen_ai_install_state",
+    ":screen_ai_service_router_factory",
+    "//base",
+    "//base/test:test_support",
+    "//testing/gtest",
+  ]
+
+  if (is_chromeos) {
+    sources += [ "screen_ai_dlc_installer_unittest.cc" ]
+    deps += [
+      ":screen_ai_dlc_installer",
+      "//chrome/browser/screen_ai:screen_ai_install_state",
+      "//chromeos/ash/components/dbus/dlcservice",
+      "//chromeos/ash/components/dbus/dlcservice:dlcservice_proto",
+      "//testing/gmock",
+    ]
+  }
+}
+
+source_set("browser_tests") {
+  testonly = true
+  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+
+  configs -= [ "//build/config/compiler:chromium_code" ]
+  configs += [ "//build/config/compiler:no_chromium_code" ]
+
+  sources = [
+    "optical_character_recognizer_browsertest.cc",
+    "screen_ai_service_router_browsertest.cc",
+  ]
+
+  public_deps = [ "//chrome/test:test_support_ui" ]
+
+  deps = [
+    ":screen_ai_install_state",
+    ":screen_ai_service_router_factory",
+    "//base",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/screen_ai/public:optical_character_recognizer",
+    "//components/metrics:content",
+    "//services/screen_ai/buildflags",
+    "//services/screen_ai/public/cpp:utilities",
+    "//services/screen_ai/public/mojom",
+    "//testing/gmock",
+    "//testing/gtest",
+    "//ui/accessibility:ax_base",
+    "//ui/accessibility:ax_features_mojo",
+    "//ui/gfx/codec",
+  ]
+
+  if (enable_screen_ai_browsertests) {
+    sources += [ "main_content_extraction_browsertest.cc" ]
+    data_deps = [ "//third_party/screen-ai:screen_ai" ]
+    deps += [
+      "//mojo/public/cpp/bindings",
+      "//net:test_support",
+      "//services/metrics/public/cpp:metrics_cpp",
+    ]
   }
 }
