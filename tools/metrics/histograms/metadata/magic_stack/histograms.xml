@@ -309,7 +309,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="MagicStack.Clank.SetupList.ItemCompletion" enum="ModuleType"
-    expires_after="2026-05-26">
+    expires_after="2026-09-13">
   <owner>agazal@google.com</owner>
   <owner>clank-start-surface@google.com</owner>
   <summary>
