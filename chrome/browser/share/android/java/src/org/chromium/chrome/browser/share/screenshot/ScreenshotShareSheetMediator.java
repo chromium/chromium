@@ -82,16 +82,10 @@ class ScreenshotShareSheetMediator {
     public void performNoArgOperation(
             @ScreenshotShareSheetViewProperties.NoArgOperation int operation) {
         if (NoArgOperation.SHARE == operation) {
-            ScreenshotShareSheetMetrics.logScreenshotAction(
-                    ScreenshotShareSheetMetrics.ScreenshotShareSheetAction.SHARE);
             share();
         } else if (NoArgOperation.SAVE == operation) {
-            ScreenshotShareSheetMetrics.logScreenshotAction(
-                    ScreenshotShareSheetMetrics.ScreenshotShareSheetAction.SAVE);
             mSaveRunnable.run();
         } else if (NoArgOperation.DELETE == operation) {
-            ScreenshotShareSheetMetrics.logScreenshotAction(
-                    ScreenshotShareSheetMetrics.ScreenshotShareSheetAction.DELETE);
             mCloseDialogRunnable.run();
         }
     }

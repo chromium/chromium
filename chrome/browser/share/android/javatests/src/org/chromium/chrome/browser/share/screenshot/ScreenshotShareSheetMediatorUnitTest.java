@@ -25,7 +25,6 @@ import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.Callback;
-import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.share.share_sheet.ChromeOptionShareCallback;
 import org.chromium.ui.base.WindowAndroid;
@@ -112,11 +111,6 @@ public class ScreenshotShareSheetMediatorUnitTest {
         callback.onResult(ScreenshotShareSheetViewProperties.NoArgOperation.DELETE);
 
         verify(mDeleteRunnable).run();
-        Assert.assertEquals(
-                1,
-                RecordHistogram.getHistogramValueCountForTesting(
-                        "Sharing.ScreenshotFallback.Action",
-                        ScreenshotShareSheetMetrics.ScreenshotShareSheetAction.DELETE));
     }
 
     @Test
@@ -126,11 +120,6 @@ public class ScreenshotShareSheetMediatorUnitTest {
         callback.onResult(ScreenshotShareSheetViewProperties.NoArgOperation.SAVE);
 
         verify(mSaveRunnable).run();
-        Assert.assertEquals(
-                1,
-                RecordHistogram.getHistogramValueCountForTesting(
-                        "Sharing.ScreenshotFallback.Action",
-                        ScreenshotShareSheetMetrics.ScreenshotShareSheetAction.SAVE));
     }
 
     @Test
@@ -141,10 +130,5 @@ public class ScreenshotShareSheetMediatorUnitTest {
 
         Assert.assertTrue(mMediator.generateTemporaryUriFromBitmapCalled());
         verify(mDeleteRunnable).run();
-        Assert.assertEquals(
-                1,
-                RecordHistogram.getHistogramValueCountForTesting(
-                        "Sharing.ScreenshotFallback.Action",
-                        ScreenshotShareSheetMetrics.ScreenshotShareSheetAction.SHARE));
     }
 }

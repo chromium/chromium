@@ -287,15 +287,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Sharing.ScreenshotFallback.Action"
-    enum="SharingScreenshotFallbackAction" expires_after="2022-12-25">
-  <owner>jeffreycohen@chromium.org</owner>
-  <owner>src/chrome/browser/share/OWNERS</owner>
-  <summary>
-    Logged when actions are taken in the sharing screenshot fallback feature.
-  </summary>
-</histogram>
-
 <histogram name="Sharing.ScrollCapture.BitmapGeneratorStatus"
     enum="SharingScrollCaptureBitmapGenerationStatus"
     expires_after="2026-10-01">
