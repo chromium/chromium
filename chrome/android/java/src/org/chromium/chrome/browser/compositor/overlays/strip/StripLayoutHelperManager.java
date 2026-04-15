@@ -265,6 +265,7 @@ public class StripLayoutHelperManager
     private int mOrientation;
     private final Runnable mGlicClickHandler;
     private @Nullable TintedCompositorTextButton mGlicButton;
+    private boolean mIsGlicUIVisible;
     private @Nullable TintedCompositorButton mModelSelectorButton;
     private final Context mContext;
     private float mStripTransitionScrimOpacity;
@@ -564,6 +565,7 @@ public class StripLayoutHelperManager
         if (mGlicKeyedService != null) {
             mGlicUIObserver =
                     isOpened -> {
+                        mIsGlicUIVisible = isOpened;
                         if (mGlicButton != null && mRenderHost != null) {
                             mGlicButton.setPressed(isOpened);
                             mRenderHost.requestRender();
@@ -839,8 +841,14 @@ public class StripLayoutHelperManager
 
         updateGlicButtonOpacity();
 
+        mGlicButton.setTint(SemanticColorUtils.getDefaultIconColor(context));
+
         mGlicButton.setAccessibilityDescription(
                 context.getString(R.string.glic_tab_strip_button_tooltip));
+    }
+
+    public boolean isGlicUIVisible() {
+        return mIsGlicUIVisible;
     }
 
     private void createModelSelectorButton(

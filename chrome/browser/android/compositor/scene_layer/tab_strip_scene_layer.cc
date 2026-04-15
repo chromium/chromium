@@ -337,6 +337,7 @@ void TabStripSceneLayer::UpdateGlicButton(
     bool visible,
     bool should_apply_hover_highlight,
     int32_t tint,
+    bool should_tint,
     int32_t background_tint,
     float button_alpha,
     bool is_keyboard_focused,
@@ -347,8 +348,14 @@ void TabStripSceneLayer::UpdateGlicButton(
     float icon_text_padding,
     float corner_radius) {
   DCHECK(resource_manager_);
-  ui::Resource* icon_resource = resource_manager_->GetResource(
-      ui::ANDROID_RESOURCE_TYPE_STATIC, resource_id);
+  ui::Resource* icon_resource;
+  if (should_tint) {
+    icon_resource =
+        resource_manager_->GetStaticResourceWithTint(resource_id, tint);
+  } else {
+    icon_resource = resource_manager_->GetResource(
+        ui::ANDROID_RESOURCE_TYPE_STATIC, resource_id);
+  }
   ui::Resource* text_resource = resource_manager_->GetResource(
       ui::ANDROID_RESOURCE_TYPE_DYNAMIC, text_texture_id);
   ui::Resource* keyboard_focus_ring_drawable =

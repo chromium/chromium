@@ -640,6 +640,7 @@ public class TabStripSceneLayerTest {
                         anyBoolean(),
                         anyBoolean(),
                         anyInt(),
+                        anyBoolean(),
                         anyInt(),
                         anyFloat(),
                         eq(true),

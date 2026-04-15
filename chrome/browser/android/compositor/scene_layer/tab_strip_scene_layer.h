@@ -98,6 +98,7 @@ class TabStripSceneLayer : public SceneLayer {
                         bool visible,
                         bool should_apply_hover_highlight,
                         int32_t tint,
+                        bool should_tint,
                         int32_t background_tint,
                         float button_alpha,
                         bool is_keyboard_focused,
