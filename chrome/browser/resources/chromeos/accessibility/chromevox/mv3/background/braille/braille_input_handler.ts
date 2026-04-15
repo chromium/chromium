@@ -15,9 +15,9 @@ import {TestImportManager} from '/common/testing/test_import_manager.js';
 import {BrailleKeyCommand, BrailleKeyEvent} from '../../common/braille/braille_key_types.js';
 import {Spannable} from '../../common/spannable.js';
 
+import {BrailleTranslator} from './braille_translator.js';
 import {BrailleTranslatorManager} from './braille_translator_manager.js';
 import {ExpandingBrailleTranslator} from './expanding_braille_translator.js';
-import {LibLouis} from './liblouis.js';
 import {ExtraCellsSpan, ValueSelectionSpan, ValueSpan} from './spans.js';
 
 type Port = chrome.runtime.Port;
@@ -40,9 +40,8 @@ const STARTS_WITH_NON_WHITESPACE_RE = /^\S/;
 const ENDS_WITH_NON_WHITESPACE_RE = /\S$/;
 
 
-type EntryStateConstructor =
-    new (handler: BrailleInputHandler, translator: LibLouis.Translator) =>
-        EntryState;
+type EntryStateConstructor = new (
+    handler: BrailleInputHandler, translator: BrailleTranslator) => EntryState;
 
 /**
  * The entry state is the state related to entering a series of braille cells
@@ -65,7 +64,7 @@ class EntryState {
 
   constructor(
       inputHandler: BrailleInputHandler,
-      private translator_: LibLouis.Translator) {
+      private translator_: BrailleTranslator) {
     this.inputHandler = inputHandler;
   }
 
@@ -73,7 +72,7 @@ class EntryState {
    * @return The translator used by this entry state. This doesn't change for a
    * given object.
    */
-  get translator(): LibLouis.Translator {
+  get translator(): BrailleTranslator {
     return this.translator_;
   }
 

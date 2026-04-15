@@ -11,8 +11,10 @@ import {BrailleTable} from '../../common/braille/braille_table.js';
 import {SettingsManager} from '../../common/settings_manager.js';
 import {Output} from '../output/output.js';
 
+import {BrailleTranslator} from './braille_translator.js';
 import {ExpandingBrailleTranslator} from './expanding_braille_translator.js';
 import {LibLouis} from './liblouis.js';
+import {TenjiTranslator} from './tenji_translator.js';
 
 export class BrailleTranslatorManager {
   private liblouis_: LibLouis;
@@ -20,9 +22,9 @@ export class BrailleTranslatorManager {
   private tables_: BrailleTable.Table[] = [];
   private expandingTranslator_: ExpandingBrailleTranslator|null = null;
   private defaultTableId_: string|null = null;
-  private defaultTranslator_: LibLouis.Translator|null = null;
+  private defaultTranslator_: BrailleTranslator|null = null;
   private uncontractedTableId_: string|null = null;
-  private uncontractedTranslator_: LibLouis.Translator|null = null;
+  private uncontractedTranslator_: BrailleTranslator|null = null;
 
   static instance: BrailleTranslatorManager;
 
@@ -69,6 +71,11 @@ export class BrailleTranslatorManager {
     this.changeListeners_.push(listener);
   }
 
+  private useTenjiTranslator_(_: string): boolean {
+    // TODO(crbug.com/500394286): Implement this.
+    return false;
+  }
+
   /**
    * Refreshes the braille translator(s) used for input and output.  This
    * should be called when something has changed (such as a preference) to
@@ -86,12 +93,36 @@ export class BrailleTranslatorManager {
       return;
     }
 
+    // First check if the Tenji translator should be used, since it is a special
+    // case that does not rely on liblouis tables.
+    if (!(this.defaultTranslator_ instanceof TenjiTranslator) &&
+        this.useTenjiTranslator_(brailleTable)) {
+      const tenjiTranslator = new TenjiTranslator();
+      try {
+        await tenjiTranslator.init();
+        // TODO(crbug.com/500394286) this.defaultTableId_ = ...;
+        this.defaultTranslator_ = tenjiTranslator;
+        this.expandingTranslator_ =
+            new ExpandingBrailleTranslator(tenjiTranslator, null);
+        this.uncontractedTableId_ = null;
+        this.uncontractedTranslator_ = null;
+        this.changeListeners_.forEach(listener => listener());
+        finishCallback();
+        return;
+      } catch (error) {
+        console.error('Failed to initialize TenjiTranslator', error);
+        // Fall back on liblouis translator with its ja-kantenji table if Tenji
+        // translator init fails.
+        brailleTable = 'ja-kantenji';
+      }
+    }
+
+    // Initialize a liblouis translator.
     const tables = this.tables_;
     if (tables.length === 0) {
       finishCallback();
       return;
     }
-
     // Look for the table requested.
     let table = BrailleTable.forId(tables, brailleTable);
     if (!table) {
@@ -133,8 +164,8 @@ export class BrailleTranslatorManager {
     }
 
     const finishRefresh =
-        (defaultTranslator: LibLouis.Translator|null,
-         uncontractedTranslator: LibLouis.Translator|null): void => {
+        (defaultTranslator: BrailleTranslator|null,
+         uncontractedTranslator: BrailleTranslator|null): void => {
           this.defaultTableId_ = newDefaultTableId;
           this.uncontractedTableId_ = newUncontractedTableId;
           // TODO(crbug.com/314203187): Not null asserted, check that this is
@@ -171,7 +202,7 @@ export class BrailleTranslatorManager {
    * @return The current braille translator to use by default, or null if none
    * is available.
    */
-  getDefaultTranslator(): LibLouis.Translator|null {
+  getDefaultTranslator(): BrailleTranslator|null {
     return this.defaultTranslator_;
   }
 
@@ -179,7 +210,7 @@ export class BrailleTranslatorManager {
    * @return The current uncontracted braille translator, or null if it is the
    * same as the default translator.
    */
-  getUncontractedTranslator(): LibLouis.Translator|null {
+  getUncontractedTranslator(): BrailleTranslator|null {
     return this.uncontractedTranslator_;
   }
 

@@ -10,11 +10,11 @@ import {TestImportManager} from '/common/testing/test_import_manager.js';
 
 import type {Spannable} from '../../common/spannable.js';
 
-import type {LibLouis} from './liblouis.js';
+import {BrailleTranslator, TranslateCallback} from './braille_translator.js';
 import {BrailleTextStyleSpan, ExtraCellsSpan, ValueSelectionSpan, ValueSpan} from './spans.js';
 
 interface Chunk {
-  translator: LibLouis.Translator | null;
+  translator: BrailleTranslator|null;
   start: number;
   end: number;
   cells?: ArrayBuffer;
@@ -47,12 +47,12 @@ export class ExpandingBrailleTranslator {
    *     translation.
    */
   constructor(
-      private defaultTranslator_: LibLouis.Translator,
-      private uncontractedTranslator_?: LibLouis.Translator | null) {}
+      private defaultTranslator_: BrailleTranslator,
+      private uncontractedTranslator_?: BrailleTranslator|null) {}
 
   /**
    * Translates text to braille using the translator(s) provided to the
-   * constructor.  See LibLouis.Translator for further details.
+   * constructor.  See BrailleTranslator for further details.
    * @param text Text to translate.
    * @param expansionType Indicates how the text marked by a value span,
    *    if any, is expanded.
@@ -87,7 +87,7 @@ export class ExpandingBrailleTranslator {
 
     const chunks: Chunk[] = [];
     function maybeAddChunkToTranslate(
-        translator: LibLouis.Translator, start: number, end: number): void {
+        translator: BrailleTranslator, start: number, end: number): void {
       if (start < end) {
         chunks.push({translator, start, end});
       }
@@ -107,7 +107,7 @@ export class ExpandingBrailleTranslator {
       chunks.push(chunk);
     }
     function addChunk(
-        translator: LibLouis.Translator, start: number, end: number): void {
+        translator: BrailleTranslator, start: number, end: number): void {
       while (extraCellsSpans.length > 0 && extraCellsPositions[0] <= end) {
         maybeAddChunkToTranslate(translator, start, extraCellsPositions[0]);
         // TODO(b/314203187): Not null asserted, check that this is correct.
@@ -304,8 +304,8 @@ export class ExpandingBrailleTranslator {
    * @return An adapted version of the callback.
    */
   private static nullParamsToEmptyAdapter_(
-      inputLength: number, callback: RequiredTranslateCallback):
-          LibLouis.TranslateCallback {
+      inputLength: number,
+      callback: RequiredTranslateCallback): TranslateCallback {
     return function(
         cells: ArrayBuffer | null, textToBraille: number[] | null,
         brailleToText: number[] | null): void {

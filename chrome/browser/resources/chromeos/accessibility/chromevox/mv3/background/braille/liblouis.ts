@@ -11,6 +11,8 @@ import {TestImportManager} from '/common/testing/test_import_manager.js';
 import {BridgeConstants} from '../../common/bridge_constants.js';
 import {OffscreenBridge} from '../../common/offscreen_bridge.js';
 
+import {BackTranslateCallback, BrailleTranslator, TranslateCallback} from './braille_translator.js';
+
 type LoadCallback = (instance: LibLouis) => void;
 type MessageCallback = (message: Object) => void;
 
@@ -150,11 +152,6 @@ export class LibLouis {
 }
 
 export namespace LibLouis {
-  export type TranslateCallback =
-      (cells: ArrayBuffer|null, textToBraille: number[]|null,
-       brailleToText: number[]|null) => void;
-  export type BackTranslateCallback = (text: string|null) => void;
-
   /**
    * Constants taken from liblouis.h.
    * Controls braille indicator insertion during translation.
@@ -171,7 +168,7 @@ export namespace LibLouis {
   export const DEBUG = false;
 
   /** Braille translator which uses a Web Assembly instance of liblouis. */
-  export class Translator {
+  export class Translator implements BrailleTranslator {
     private instance_: LibLouis;
     private tableNames_: string;
 
@@ -185,14 +182,6 @@ export namespace LibLouis {
       this.tableNames_ = tableNames;
     }
 
-    /**
-     * Translates text into braille cells.
-     * @param text Text to be translated.
-     * @param callback Callback for result. Takes 3 parameters: the resulting
-     *     cells, mapping from text to braille positions and mapping from
-     *     braille to text positions. If translation fails for any reason, all
-     *     parameters are null.
-     */
     translate(
         text: string, formTypeMap: number[]|number,
         callback: TranslateCallback): void {
@@ -233,11 +222,6 @@ export namespace LibLouis {
           });
     }
 
-    /**
-     * Translates braille cells into text.
-     * @param cells Cells to be translated.
-     * @param callback Callback for result.
-     */
     backTranslate(cells: ArrayBuffer, callback: BackTranslateCallback): void {
       if (!this.instance_.isLoaded()) {
         callback(null /*text*/);
