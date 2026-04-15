@@ -27,17 +27,12 @@ namespace {
 
 std::vector<std::string> ConvertJavaStringArrayToListValue(
     JNIEnv* env,
-    const base::android::JavaRef<jobjectArray>& array) {
+    const base::android::JavaRef<JArray<jstring>>& array) {
   DCHECK(!array.is_null());
-  base::android::JavaObjectArrayReader<jstring> array_reader(array);
-  DCHECK_GE(array_reader.size(), 0)
-      << "Invalid array length: " << array_reader.size();
-
   std::vector<std::string> vector_string;
-  for (auto j_str : array_reader) {
+  for (auto j_str : array.CreateView(env)) {
     vector_string.push_back(base::android::ConvertJavaStringToUTF8(env, j_str));
   }
-
   return vector_string;
 }
 
@@ -125,7 +120,7 @@ static void JNI_CustomTabsConnection_TextFragmentLookup(
     const base::android::JavaRef<jobject>& session,
     const base::android::JavaRef<jobject>& jweb_contents,
     const std::string& state_key,
-    const base::android::JavaRef<jobjectArray>& jtext_fragments) {
+    const base::android::JavaRef<JArray<jstring>>& jtext_fragments) {
   auto* web_contents = content::WebContents::FromJavaWebContents(jweb_contents);
 
   TextFragmentLookupStateTracker::OnResultCallback cb =

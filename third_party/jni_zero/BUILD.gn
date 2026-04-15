@@ -94,14 +94,14 @@ component("jni_zero") {
     public_configs = [ "//third_party/jdk:jdk" ]
   }
 
-  deps = [
-    ":generate_jni($default_toolchain)",
-    ":system_jni_unchecked_exceptions($default_toolchain)",
-  ]
+  deps = [ ":generate_jni($default_toolchain)" ]
   if (build_with_chromium) {
     deps += [ "//base:base_static" ]
   }
-  public_deps = [ ":system_jni($default_toolchain)" ]
+  public_deps = [
+    ":system_jni($default_toolchain)",
+    ":system_jni_unchecked_exceptions($default_toolchain)",
+  ]
 }
 
 if (enable_java_templates && is_android) {

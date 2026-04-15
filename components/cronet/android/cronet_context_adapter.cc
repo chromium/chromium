@@ -311,7 +311,7 @@ static void JNI_CronetUrlRequestContext_AddPkp(
     JNIEnv* env,
     int64_t jurl_request_context_config,
     const JavaRef<jstring>& jhost,
-    const JavaRef<jobjectArray>& jhashes,
+    const JavaRef<JArray<JArray<int8_t>>>& jhashes,
     bool jinclude_subdomains,
     int64_t jexpiration_time) {
   URLRequestContextConfig* config =
@@ -321,20 +321,19 @@ static void JNI_CronetUrlRequestContext_AddPkp(
           base::android::ConvertJavaStringToUTF8(env, jhost),
           jinclude_subdomains,
           base::Time::UnixEpoch() + base::Milliseconds(jexpiration_time)));
-  for (auto bytes_array : jhashes.ReadElements<jbyteArray>()) {
+  for (auto bytes_array : jhashes.CreateView(env)) {
     static_assert(std::is_trivially_copyable<net::SHA256HashValue>::value,
                   "net::SHA256HashValue is not trivially copyable");
     static_assert(sizeof(net::SHA256HashValue) * CHAR_BIT == 256,
                   "net::SHA256HashValue contains overhead");
-    if (env->GetArrayLength(bytes_array.obj()) !=
-        sizeof(net::SHA256HashValue)) {
+    auto bytes_array_view = bytes_array.CreateView(env);
+    if (bytes_array_view.length() != sizeof(net::SHA256HashValue)) {
       LOG(ERROR) << "Unable to add public key hash value.";
       continue;
     }
-    int8_t* bytes = env->GetByteArrayElements(bytes_array.obj(), nullptr);
-    net::HashValue hash(*reinterpret_cast<net::SHA256HashValue*>(bytes));
+    const int8_t* bytes = bytes_array_view.data();
+    net::HashValue hash(*reinterpret_cast<const net::SHA256HashValue*>(bytes));
     pkp->pin_hashes.push_back(hash);
-    env->ReleaseByteArrayElements(bytes_array.obj(), bytes, JNI_ABORT);
   }
   config->pkp_list.push_back(std::move(pkp));
 }

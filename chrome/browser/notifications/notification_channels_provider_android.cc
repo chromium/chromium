@@ -208,7 +208,7 @@ static void JNI_NotificationSettingsBridge_OnGetSiteChannelsDone(
     int64_t callback_id,
     const JavaRef<jobjectArray>& j_channels) {
   std::vector<NotificationChannel> channels;
-  for (auto jchannel : j_channels.ReadElements<jobject>()) {
+  for (auto jchannel : j_channels.CreateView(env)) {
     channels.emplace_back(Java_SiteChannel_getId(env, jchannel),
                           Java_SiteChannel_getOrigin(env, jchannel),
                           base::Time::FromInternalValue(

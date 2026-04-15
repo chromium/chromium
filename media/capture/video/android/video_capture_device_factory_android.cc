@@ -173,7 +173,7 @@ VideoCaptureFormats VideoCaptureDeviceFactoryAndroid::GetSupportedFormats(
     return {};
 
   VideoCaptureFormats capture_formats;
-  for (auto format : collected_formats.ReadElements<jobject>()) {
+  for (auto format : collected_formats.CreateView(env)) {
     VideoPixelFormat pixel_format = PIXEL_FORMAT_UNKNOWN;
     switch (Java_VideoCaptureFactory_getCaptureFormatPixelFormat(env, format)) {
       case VideoCaptureDeviceAndroid::ANDROID_IMAGE_FORMAT_YV12:

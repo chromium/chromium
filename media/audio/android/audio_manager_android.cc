@@ -121,38 +121,34 @@ class JniDelegateImpl : public AudioManagerAndroid::JniDelegate {
   }
 
   std::vector<JniAudioDevice> GetDevices(bool inputs) override {
+    JNIEnv* env = AttachCurrentThread();
     ScopedJavaLocalRef<jobjectArray> j_devices =
-        Java_AudioManagerAndroid_getDevices(AttachCurrentThread(),
-                                            j_audio_manager_, inputs);
+        Java_AudioManagerAndroid_getDevices(env, j_audio_manager_, inputs);
     std::vector<JniAudioDevice> devices;
-    for (ScopedJavaLocalRef<jobject> j_device :
-         j_devices.ReadElements<jobject>()) {
-      devices.emplace_back(
-          Java_AudioDevice_id(AttachCurrentThread(), j_device),
-          Java_AudioDevice_name(AttachCurrentThread(), j_device),
-          Java_AudioDevice_type(AttachCurrentThread(), j_device),
-          Java_AudioDevice_sampleRates(AttachCurrentThread(), j_device));
+    for (ScopedJavaLocalRef<jobject> j_device : j_devices.CreateView(env)) {
+      devices.emplace_back(Java_AudioDevice_id(env, j_device),
+                           Java_AudioDevice_name(env, j_device),
+                           Java_AudioDevice_type(env, j_device),
+                           Java_AudioDevice_sampleRates(env, j_device));
     }
     return devices;
   }
 
   std::optional<std::vector<JniAudioDevice>> GetCommunicationDevices()
       override {
+    JNIEnv* env = AttachCurrentThread();
     ScopedJavaLocalRef<jobjectArray> j_devices =
-        Java_AudioManagerAndroid_getCommunicationDevices(AttachCurrentThread(),
-                                                         j_audio_manager_);
+        Java_AudioManagerAndroid_getCommunicationDevices(env, j_audio_manager_);
     if (j_devices.is_null()) {
       return std::nullopt;
     }
 
     std::vector<JniAudioDevice> devices;
-    for (ScopedJavaLocalRef<jobject> j_device :
-         j_devices.ReadElements<jobject>()) {
-      devices.emplace_back(
-          Java_AudioDevice_id(AttachCurrentThread(), j_device),
-          Java_AudioDevice_name(AttachCurrentThread(), j_device),
-          Java_AudioDevice_type(AttachCurrentThread(), j_device),
-          Java_AudioDevice_sampleRates(AttachCurrentThread(), j_device));
+    for (ScopedJavaLocalRef<jobject> j_device : j_devices.CreateView(env)) {
+      devices.emplace_back(Java_AudioDevice_id(env, j_device),
+                           Java_AudioDevice_name(env, j_device),
+                           Java_AudioDevice_type(env, j_device),
+                           Java_AudioDevice_sampleRates(env, j_device));
     }
     return devices;
   }

@@ -6,11 +6,13 @@
 
 #include <iterator>
 #include <type_traits>
+#include <vector>
 
 #include "base/android/jni_android.h"
 #include "base/android/jni_string.h"
 #include "base/compiler_specific.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/jni_zero/system_jni/Integer_shared_jni.h"
 
 #define EXPECT_SAME_OBJECT(a, b) \
   EXPECT_TRUE(env->IsSameObject((a).obj(), (b).obj()))
@@ -253,58 +255,95 @@ TEST_F(ScopedJavaRefTest, RefCounts) {
   EXPECT_EQ(0, g_global_refs);
 }
 
-class JavaObjectArrayReaderTest : public testing::Test {
+class JArrayViewTest : public testing::Test {
  protected:
   void SetUp() override {
     JNIEnv* env = AttachCurrentThread();
     int_class_ = GetClass(env, "java/lang/Integer");
     int_constructor_ = MethodID::Get<MethodID::TYPE_INSTANCE>(
         env, int_class_.obj(), "<init>", "(I)V");
-    array_ = MakeArray(array_len_);
 
     // Make array_len_ different Integer objects, keep a reference to each,
     // and add them to the array.
     for (int32_t i = 0; i < array_len_; ++i) {
       jobject member = env->NewObject(int_class_.obj(), int_constructor_, i);
       ASSERT_NE(member, nullptr);
-      UNSAFE_TODO(array_members_[i]) =
-          ScopedJavaLocalRef<jobject>::Adopt(env, member);
-      env->SetObjectArrayElement(array_.obj(), i, member);
+      object_array_members_.push_back(
+          ScopedJavaLocalRef<JInteger>::Adopt(env, member));
     }
+
+    object_array_ =
+        jni_zero::NewArray(env, object_array_members_, int_class_.obj());
+
+    for (int32_t i = 0; i < array_len_; ++i) {
+      primitive_array_members_.push_back(i);
+    }
+
+    primitive_array_ = jni_zero::NewArray(env, primitive_array_members_);
   }
 
-  // Make an Integer[] with len elements, all initialized to null.
-  ScopedJavaLocalRef<jobjectArray> MakeArray(jsize len) {
-    JNIEnv* env = AttachCurrentThread();
-    jobjectArray array = env->NewObjectArray(len, int_class_.obj(), nullptr);
-    EXPECT_NE(array, nullptr);
-    return ScopedJavaLocalRef<jobjectArray>::Adopt(env, array);
-  }
-
-  static constexpr jsize array_len_ = 10;
+  static constexpr int32_t array_len_ = 10;
   ScopedJavaLocalRef<jclass> int_class_;
   jmethodID int_constructor_;
-  ScopedJavaLocalRef<jobject> array_members_[array_len_];
-  ScopedJavaLocalRef<jobjectArray> array_;
+  std::vector<ScopedJavaLocalRef<JInteger>> object_array_members_;
+  ScopedJavaLocalRef<JArray<JInteger>> object_array_;
+  std::vector<int32_t> primitive_array_members_;
+  ScopedJavaLocalRef<JArray<int32_t>> primitive_array_;
 };
 
-// Must actually define the variable until C++17 :(
-constexpr jsize JavaObjectArrayReaderTest::array_len_;
+TEST_F(JArrayViewTest, ZeroLengthArray) {
+  JNIEnv* env = AttachCurrentThread();
+  std::vector<ScopedJavaLocalRef<JInteger>> members;
+  ScopedJavaLocalRef<JArray<JInteger>> array =
+      jni_zero::NewArray(env, members, int_class_.obj());
+  EXPECT_EQ(array.GetLength(env), 0);
+  jni_zero::JArrayView<JInteger> array_view = array.CreateView(env);
+  EXPECT_EQ(array_view.begin(), array_view.end());
+}
 
-TEST_F(JavaObjectArrayReaderTest, ZeroLengthArray) {
-  JavaObjectArrayReader<jobject> zero_length(MakeArray(0));
-  EXPECT_TRUE(zero_length.empty());
-  EXPECT_EQ(zero_length.size(), 0);
-  EXPECT_EQ(zero_length.begin(), zero_length.end());
+TEST_F(JArrayViewTest, GetLength) {
+  JNIEnv* env = AttachCurrentThread();
+  EXPECT_EQ(object_array_.GetLength(env), array_len_);
+  EXPECT_EQ(object_array_.CreateView(env).length(), array_len_);
+  EXPECT_EQ(primitive_array_.GetLength(env), array_len_);
+  EXPECT_EQ(primitive_array_.CreateView(env).length(), array_len_);
+}
+
+TEST_F(JArrayViewTest, GetOneElement) {
+  JNIEnv* env = AttachCurrentThread();
+  int32_t i = 3;
+  EXPECT_SAME_OBJECT(object_array_.Get(env, i), object_array_members_[i]);
+  EXPECT_SAME_OBJECT(object_array_.CreateView(env).Get(i),
+                     object_array_members_[i]);
+  EXPECT_EQ(primitive_array_.CreateView(env).Get(i),
+            primitive_array_members_[i]);
+}
+
+TEST_F(JArrayViewTest, GetAllElements) {
+  JNIEnv* env = AttachCurrentThread();
+
+  std::vector<ScopedJavaLocalRef<JInteger>> object_vec;
+  object_array_.CopyTo(env, &object_vec);
+  EXPECT_EQ(object_vec.size(), array_len_);
+  for (int32_t i = 0; i < array_len_; i++) {
+    EXPECT_SAME_OBJECT(object_vec[i], object_array_members_[i]);
+  }
+
+  object_vec.clear();
+  object_array_.CreateView(env).CopyTo(&object_vec);
+  EXPECT_EQ(object_vec.size(), array_len_);
+  for (int32_t i = 0; i < array_len_; i++) {
+    EXPECT_SAME_OBJECT(object_vec[i], object_array_members_[i]);
+  }
 }
 
 // Verify that we satisfy the C++ "InputIterator" named requirements.
-TEST_F(JavaObjectArrayReaderTest, InputIteratorRequirements) {
-  typedef JavaObjectArrayReader<jobject>::iterator It;
+TEST_F(JArrayViewTest, InputIteratorRequirements) {
+  typedef jni_zero::JArrayView<JInteger>::iterator It;
 
   JNIEnv* env = AttachCurrentThread();
-  JavaObjectArrayReader<jobject> reader(array_);
-  It i = reader.begin();
+  jni_zero::JArrayView<JInteger> array_view = object_array_.CreateView(env);
+  It i = array_view.begin();
 
   EXPECT_TRUE(std::is_copy_constructible_v<It>);
   It copy = i;
@@ -312,7 +351,7 @@ TEST_F(JavaObjectArrayReaderTest, InputIteratorRequirements) {
   EXPECT_EQ(It(i), i);
 
   EXPECT_TRUE(std::is_copy_assignable_v<It>);
-  It assign = reader.end();
+  It assign = array_view.end();
   It& assign2 = (assign = i);
   EXPECT_EQ(assign, i);
   EXPECT_EQ(assign2, assign);
@@ -320,10 +359,10 @@ TEST_F(JavaObjectArrayReaderTest, InputIteratorRequirements) {
   EXPECT_TRUE(std::is_destructible_v<It>);
 
   // Swappable
-  It left = reader.begin(), right = reader.end();
+  It left = array_view.begin(), right = array_view.end();
   std::swap(left, right);
-  EXPECT_EQ(left, reader.end());
-  EXPECT_EQ(right, reader.begin());
+  EXPECT_EQ(left, array_view.end());
+  EXPECT_EQ(right, array_view.begin());
 
   // Basic check that iterator_traits works
   bool same_type = std::is_same_v<std::iterator_traits<It>::iterator_category,
@@ -331,29 +370,35 @@ TEST_F(JavaObjectArrayReaderTest, InputIteratorRequirements) {
   EXPECT_TRUE(same_type);
 
   // Comparisons
-  EXPECT_EQ(reader.begin(), reader.begin());
-  EXPECT_NE(reader.begin(), reader.end());
+  EXPECT_EQ(array_view.begin(), array_view.begin());
+  EXPECT_NE(array_view.begin(), array_view.end());
 
   // Dereferencing
-  ScopedJavaLocalRef<jobject> o = *(reader.begin());
-  EXPECT_SAME_OBJECT(o, array_members_[0]);
-  EXPECT_TRUE(env->IsSameObject(o.obj(), reader.begin()->obj()));
+  ScopedJavaLocalRef<JInteger> o = *(array_view.begin());
+  EXPECT_SAME_OBJECT(o, object_array_members_[0]);
+  EXPECT_TRUE(env->IsSameObject(o.obj(), array_view.begin()->obj()));
 
   // Incrementing
-  It preinc = ++(reader.begin());
-  EXPECT_SAME_OBJECT(*preinc, array_members_[1]);
-  It postinc = reader.begin();
-  EXPECT_SAME_OBJECT(*postinc++, array_members_[0]);
-  EXPECT_SAME_OBJECT(*postinc, array_members_[1]);
+  It preinc = ++(array_view.begin());
+  EXPECT_SAME_OBJECT(*preinc, object_array_members_[1]);
+  It postinc = array_view.begin();
+  EXPECT_SAME_OBJECT(*postinc++, object_array_members_[0]);
+  EXPECT_SAME_OBJECT(*postinc, object_array_members_[1]);
 }
 
 // Check that range-based for and the convenience function work as expected.
-TEST_F(JavaObjectArrayReaderTest, RangeBasedFor) {
+TEST_F(JArrayViewTest, RangeBasedFor) {
   JNIEnv* env = AttachCurrentThread();
 
-  int i = 0;
-  for (ScopedJavaLocalRef<jobject> element : array_.ReadElements<jobject>()) {
-    UNSAFE_TODO(EXPECT_SAME_OBJECT(element, array_members_[i++]));
+  int32_t i = 0;
+  for (ScopedJavaLocalRef<JInteger> element : object_array_.CreateView(env)) {
+    EXPECT_SAME_OBJECT(element, object_array_members_[i++]);
+  }
+  EXPECT_EQ(i, array_len_);
+
+  i = 0;
+  for (int32_t element : primitive_array_.CreateView(env)) {
+    EXPECT_EQ(element, primitive_array_members_[i++]);
   }
   EXPECT_EQ(i, array_len_);
 }

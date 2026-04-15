@@ -153,14 +153,14 @@ static void JNI_AwContentsStatics_LogCommandLineForDebugging(JNIEnv* env) {
 // static
 static void JNI_AwContentsStatics_LogFlagMetrics(
     JNIEnv* env,
-    const JavaRef<jobjectArray>& jswitches,
-    const JavaRef<jobjectArray>& jfeatures) {
+    const JavaRef<JArray<jstring>>& jswitches,
+    const JavaRef<JArray<jstring>>& jfeatures) {
   std::set<std::string> switches;
-  for (const auto& jswitch : jswitches.ReadElements<jstring>()) {
+  for (const auto& jswitch : jswitches.CreateView(env)) {
     switches.insert(ConvertJavaStringToUTF8(jswitch));
   }
   std::set<std::string> features;
-  for (const auto& jfeature : jfeatures.ReadElements<jstring>()) {
+  for (const auto& jfeature : jfeatures.CreateView(env)) {
     features.insert(ConvertJavaStringToUTF8(jfeature));
   }
 

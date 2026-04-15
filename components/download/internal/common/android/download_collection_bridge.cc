@@ -119,7 +119,7 @@ void DownloadCollectionBridge::GetDisplayNamesForDownloads(
     std::move(cb).Run(std::move(result));
     return;
   }
-  for (auto jdisplay_info : jdisplay_infos.ReadElements<jobject>()) {
+  for (auto jdisplay_info : jdisplay_infos.CreateView(env)) {
     std::string uri = Java_DisplayNameInfo_getDownloadUri(env, jdisplay_info);
     std::string display_name =
         Java_DisplayNameInfo_getDisplayName(env, jdisplay_info);

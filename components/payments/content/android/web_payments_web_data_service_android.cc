@@ -64,7 +64,8 @@ void WebPaymentsWebDataServiceAndroid::AddPaymentMethodManifest(
 
 void WebPaymentsWebDataServiceAndroid::AddPaymentWebAppManifest(
     JNIEnv* env,
-    const base::android::JavaRef<jobjectArray>& jmanifest_sections) {
+    const base::android::JavaRef<JArray<JWebAppManifestSection>>&
+        jmanifest_sections) {
   scoped_refptr<payments::WebPaymentsWebDataService> web_data_service =
       GetWebPaymentsWebDataService();
   if (web_data_service == nullptr) {
@@ -73,21 +74,22 @@ void WebPaymentsWebDataServiceAndroid::AddPaymentWebAppManifest(
 
   std::vector<WebAppManifestSection> manifest;
 
-  for (auto jsection : jmanifest_sections.ReadElements<jobject>()) {
+  for (auto jsection : jmanifest_sections.CreateView(env)) {
     WebAppManifestSection section;
 
     section.id = base::android::ConvertJavaStringToUTF8(
-        Java_WebPaymentsWebDataService_getIdFromSection(env, jsection));
+        WebPaymentsWebDataServiceJni::getIdFromSection(env, jsection));
     section.min_version = static_cast<int64_t>(
-        Java_WebPaymentsWebDataService_getMinVersionFromSection(env, jsection));
+        WebPaymentsWebDataServiceJni::getMinVersionFromSection(env, jsection));
 
-    base::android::ScopedJavaLocalRef<jobjectArray> jsection_fingerprints(
-        Java_WebPaymentsWebDataService_getFingerprintsFromSection(env,
-                                                                  jsection));
-    for (auto jfingerprint : jsection_fingerprints.ReadElements<jbyteArray>()) {
-      std::vector<uint8_t> fingerprint;
-      base::android::JavaByteArrayToByteVector(env, jfingerprint, &fingerprint);
-      section.fingerprints.emplace_back(fingerprint);
+    base::android::ScopedJavaLocalRef<JArray<JArray<int8_t>>>
+        jsection_fingerprints(
+            WebPaymentsWebDataServiceJni::getFingerprintsFromSection(env,
+                                                                     jsection));
+    for (auto jfingerprint : jsection_fingerprints.CreateView(env)) {
+      auto jfingerprint_view = jfingerprint.CreateView(env);
+      section.fingerprints.emplace_back(jfingerprint_view.begin(),
+                                        jfingerprint_view.end());
     }
 
     manifest.emplace_back(std::move(section));

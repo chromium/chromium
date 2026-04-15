@@ -11,6 +11,7 @@
 #include "base/android/scoped_java_ref.h"
 #include "content/browser/contacts/contacts_provider.h"
 #include "third_party/blink/public/mojom/contacts/contacts_manager.mojom.h"
+#include "third_party/jni_zero/system_jni_unchecked_exceptions/ByteBuffer_shared_jni.h"
 
 namespace content {
 
@@ -37,12 +38,13 @@ class ContactsProviderAndroid : public ContactsProvider {
   // Adds one contact to the list of contacts selected. Note, EndContactsList
   // (or EndWithPermissionDenied) must be called to signal the end of the
   // construction of the contacts list.
-  void AddContact(JNIEnv* env,
-                  const base::android::JavaRef<jobjectArray>& names_java,
-                  const base::android::JavaRef<jobjectArray>& emails_java,
-                  const base::android::JavaRef<jobjectArray>& tel_java,
-                  const base::android::JavaRef<jobjectArray>& addresses_java,
-                  const base::android::JavaRef<jobjectArray>& icons_java);
+  void AddContact(
+      JNIEnv* env,
+      const base::android::JavaRef<JArray<jstring>>& names_java,
+      const base::android::JavaRef<JArray<jstring>>& emails_java,
+      const base::android::JavaRef<JArray<jstring>>& tel_java,
+      const base::android::JavaRef<JArray<JByteBuffer>>& addresses_java,
+      const base::android::JavaRef<JArray<JByteBuffer>>& icons_java);
 
   // Signals the end of adding contacts to the list. The contact list is
   // returned to the web page, the other params are logged via UKM.

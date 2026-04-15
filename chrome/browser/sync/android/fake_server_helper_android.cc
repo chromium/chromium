@@ -187,9 +187,9 @@ static bool JNI_FakeServerHelper_VerifyEntityCountByTypeAndName(
 static bool JNI_FakeServerHelper_VerifySessions(
     JNIEnv* env,
     int64_t fake_server,
-    const JavaRef<jobjectArray>& url_array) {
+    const JavaRef<JArray<jstring>>& url_array) {
   std::multiset<std::string> tab_urls;
-  for (auto j_string : url_array.ReadElements<jstring>()) {
+  for (auto j_string : url_array.CreateView(env)) {
     tab_urls.insert(base::android::ConvertJavaStringToUTF8(env, j_string));
   }
   fake_server::SessionsHierarchy expected_sessions;

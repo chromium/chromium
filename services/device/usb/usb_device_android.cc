@@ -24,7 +24,6 @@
 #include "services/device/usb/jni_headers/ChromeUsbDevice_jni.h"
 
 using base::android::ConvertJavaStringToUTF16;
-using base::android::JavaObjectArrayReader;
 using base::android::JavaRef;
 using base::android::ScopedJavaLocalRef;
 
@@ -135,8 +134,9 @@ UsbDeviceAndroid::UsbDeviceAndroid(JNIEnv* env,
       device_id_(Java_ChromeUsbDevice_getDeviceId(env, wrapper)),
       service_(service),
       j_object_(wrapper) {
-  JavaObjectArrayReader<jobject> configs(
-      Java_ChromeUsbDevice_getConfigurations(env, j_object_));
+  ScopedJavaLocalRef<jobjectArray> configs_array =
+      Java_ChromeUsbDevice_getConfigurations(env, j_object_);
+  jni_zero::JArrayView<jobject> configs = configs_array.CreateView(env);
   device_info_->configurations.reserve(configs.size());
   for (auto config : configs) {
     device_info_->configurations.push_back(

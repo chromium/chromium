@@ -118,7 +118,7 @@ void MidiManagerAndroid::OnReceivedData(MidiInputPortAndroid* port,
 
 void MidiManagerAndroid::OnInitialized(JNIEnv* env,
                                        const JavaRef<jobjectArray>& devices) {
-  for (auto raw_device : devices.ReadElements<jobject>()) {
+  for (auto raw_device : devices.CreateView(env)) {
     AddDevice(std::make_unique<MidiDeviceAndroid>(env, raw_device, this));
   }
   service()->task_service()->PostBoundTask(

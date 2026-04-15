@@ -73,7 +73,7 @@ InstalledWebappBridge::GetInstalledWebappPermissions(ContentSettingsType type) {
       Java_InstalledWebappBridge_getPermissions(env, static_cast<int>(type));
 
   InstalledWebappProvider::RuleList rules;
-  for (auto j_permission : j_permissions.ReadElements<jobject>()) {
+  for (auto j_permission : j_permissions.CreateView(env)) {
     GURL origin(
         Java_InstalledWebappBridge_getOriginFromPermission(env, j_permission));
     ContentSetting setting = IntToContentSetting(

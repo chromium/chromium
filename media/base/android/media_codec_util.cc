@@ -315,8 +315,7 @@ void MediaCodecUtil::AddSupportedCodecProfileLevels(
   JNIEnv* env = AttachCurrentThread();
   ScopedJavaLocalRef<jobjectArray> j_codec_profile_levels(
       Java_MediaCodecUtil_getSupportedCodecProfileLevels(env));
-  for (auto java_codec_profile_level :
-       j_codec_profile_levels.ReadElements<jobject>()) {
+  for (auto java_codec_profile_level : j_codec_profile_levels.CreateView(env)) {
     result->push_back(MediaCodecProfileLevelToChromiumProfileLevel(
         env, java_codec_profile_level));
   }

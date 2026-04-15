@@ -299,10 +299,6 @@ class JNI_ZERO_COMPONENT_BUILD_EXPORT JavaRef<jobject> {
   jobject obj_ = nullptr;
 };
 
-// Forward declare the object array reader for the convenience function.
-template <typename T = jobject>
-class JavaObjectArrayReader;
-
 template <typename T = jobject>
 class ScopedJavaLocalRef;
 
@@ -331,17 +327,6 @@ class JavaRef : public JavaRef<jobject> {
     // This approach optimizes better than passing |this| as a parameter.
     return reinterpret_cast<const jni_zero_internal::_CalledByNatives<T>*>(
         this);
-  }
-
-  // Get a JavaObjectArrayReader for the array pointed to by this reference.
-  // Only defined for JavaRef<jobjectArray>.
-  // You must pass the type of the array elements (usually jobject) as the
-  // template parameter.
-  template <typename ElementType = jobject,
-            typename T_ = T,
-            typename = std::enable_if_t<std::is_same_v<T_, jobjectArray>>>
-  JavaObjectArrayReader<ElementType> ReadElements() const {
-    return JavaObjectArrayReader<ElementType>(*this);
   }
 
   // Create a JavaRef that is not automatically released. Used for JNI
@@ -580,10 +565,6 @@ class ScopedJavaLocalRef : public JavaRef<T> {
   // Friend required to get env_ from conversions.
   template <typename U>
   friend class ScopedJavaLocalRef;
-
-  // Avoids JavaObjectArrayReader having to accept and store its own env.
-  template <typename U>
-  friend class JavaObjectArrayReader;
 };
 
 // Holds a global reference to a Java object. The global reference is scoped
@@ -797,7 +778,8 @@ inline void JavaRef<T>::CopyTo(JNIEnv* env,
   requires std::is_convertible_v<T, jobjectArray>
 {
   jobjectArray arr = this->obj();
-  for (int32_t i = 0; i < this->GetLength(); i++) {
+  int32_t length = this->GetLength(env);
+  for (int32_t i = 0; i < length; i++) {
     jobject obj = env->GetObjectArrayElement(arr, i);
     buf->push_back(ScopedJavaLocalRef<U>::Adopt(env, static_cast<U>(obj)));
   }

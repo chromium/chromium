@@ -17,6 +17,7 @@
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/public/browser/contacts_picker_properties.h"
 #include "content/public/browser/web_contents.h"
+#include "third_party/jni_zero/system_jni_unchecked_exceptions/ByteBuffer_jni.h"
 #include "url/origin.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
@@ -72,11 +73,11 @@ void ContactsProviderAndroid::Select(bool multiple,
 
 void ContactsProviderAndroid::AddContact(
     JNIEnv* env,
-    const base::android::JavaRef<jobjectArray>& names_java,
-    const base::android::JavaRef<jobjectArray>& emails_java,
-    const base::android::JavaRef<jobjectArray>& tel_java,
-    const base::android::JavaRef<jobjectArray>& addresses_java,
-    const base::android::JavaRef<jobjectArray>& icons_java) {
+    const base::android::JavaRef<JArray<jstring>>& names_java,
+    const base::android::JavaRef<JArray<jstring>>& emails_java,
+    const base::android::JavaRef<JArray<jstring>>& tel_java,
+    const base::android::JavaRef<JArray<JByteBuffer>>& addresses_java,
+    const base::android::JavaRef<JArray<JByteBuffer>>& icons_java) {
   DCHECK(callback_);
 
   std::optional<std::vector<std::string>> names;
@@ -107,8 +108,7 @@ void ContactsProviderAndroid::AddContact(
   if (addresses_java) {
     std::vector<payments::mojom::PaymentAddressPtr> addresses_vector;
 
-    for (const base::android::JavaRef<jbyteArray>& j_address :
-         addresses_java.ReadElements<jbyteArray>()) {
+    for (const auto& j_address : addresses_java.CreateView(env)) {
       payments::mojom::PaymentAddressPtr address;
       base::span<const uint8_t> address_bytes =
           base::android::JavaByteBufferToSpan(env, j_address);
@@ -126,8 +126,7 @@ void ContactsProviderAndroid::AddContact(
   if (icons_java) {
     std::vector<blink::mojom::ContactIconBlobPtr> icons_vector;
 
-    for (const base::android::JavaRef<jbyteArray>& j_icon :
-         icons_java.ReadElements<jbyteArray>()) {
+    for (const auto& j_icon : icons_java.CreateView(env)) {
       blink::mojom::ContactIconBlobPtr icon;
       base::span<const uint8_t> icon_bytes =
           base::android::JavaByteBufferToSpan(env, j_icon);

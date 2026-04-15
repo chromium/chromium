@@ -26,8 +26,9 @@ mojom::UsbConfigurationInfoPtr UsbConfigurationAndroid::Convert(
       Java_ChromeUsbConfiguration_isRemoteWakeup(env, wrapper),
       Java_ChromeUsbConfiguration_getMaxPower(env, wrapper));
 
-  base::android::JavaObjectArrayReader<jobject> interfaces(
-      Java_ChromeUsbConfiguration_getInterfaces(env, wrapper));
+  ScopedJavaLocalRef<jobjectArray> interfaces_array =
+      Java_ChromeUsbConfiguration_getInterfaces(env, wrapper);
+  jni_zero::JArrayView<jobject> interfaces = interfaces_array.CreateView(env);
   config->interfaces.reserve(interfaces.size());
   for (auto interface : interfaces) {
     config->interfaces.push_back(UsbInterfaceAndroid::Convert(env, interface));

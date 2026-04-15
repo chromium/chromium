@@ -74,7 +74,7 @@ JNI_AutofillProviderTestHelper_SimulateMainFrameAutofillServerResponseForTesting
   std::vector<FormData> forms;
   for (const FormStructure* form_structure : form_structures) {
     FormData form_data = form_structure->ToFormData();
-    for (int32_t i = 0; i < field_types_view.GetLength(); ++i) {
+    for (int32_t i = 0; i < field_types_view.length(); ++i) {
       for (auto form_field_data : form_data.fields()) {
         if (form_field_data.id_attribute() ==
             jfield_ids.GetAs<std::u16string>(env, i)) {

@@ -51,7 +51,7 @@ const std::vector<MediaCodecEncoderInfo>& GetEncoderInfoCache() {
       return cpp_infos;
     }
 
-    for (auto java_profile : java_profiles.ReadElements<jobject>()) {
+    for (auto java_profile : java_profiles.CreateView(env)) {
       MediaCodecEncoderInfo info;
       info.profile.profile = static_cast<VideoCodecProfile>(
           Java_SupportedProfileAdapter_getProfile(env, java_profile));
@@ -122,7 +122,7 @@ const std::vector<MediaCodecDecoderInfo>& GetDecoderInfoCache() {
       return cpp_infos;
     }
 
-    for (auto java_profile : java_profiles.ReadElements<jobject>()) {
+    for (auto java_profile : java_profiles.CreateView(env)) {
       MediaCodecDecoderInfo info;
       info.profile = static_cast<VideoCodecProfile>(
           Java_SupportedProfileAdapter_getProfile(env, java_profile));

@@ -42,7 +42,7 @@ bool DeserializeFromJavaByteBufferArray(
     std::vector<mojo::StructPtr<T>>* out) {
   DCHECK(out);
   out->clear();
-  for (const auto& jbuffer : jbuffers.ReadElements<jobject>()) {
+  for (const auto& jbuffer : jbuffers.CreateView(env)) {
     mojo::StructPtr<T> data;
     if (!DeserializeFromJavaByteBuffer(env, jbuffer, &data)) {
       out->clear();

@@ -114,8 +114,8 @@ base::ListValue PolicyConverter::ConvertJavaStringArrayToListValue(
   auto array_reader = array.CreateView(env);
 
   base::ListValue list_value;
-  for (int i = 0; i < array_reader.GetLength(); i++) {
-    list_value.Append(array_reader.Get(i).ConvertTo<std::string>(env));
+  for (const auto& jstr : array_reader) {
+    list_value.Append(jstr.ConvertTo<std::string>(env));
   }
 
   return list_value;
