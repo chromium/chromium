@@ -53,6 +53,15 @@ chromium-metrics-reviews@google.com.
   <variant name=".Video" summary="The context menu was shown for a video"/>
 </variants>
 
+<variants name="CreationSource">
+  <variant name=".AllSources" summary="Aggregated across all sources"/>
+  <variant name=".BrowserInitiated"
+      summary="Triggered by browser action, e.g. shortcut or menu"/>
+  <variant name=".DragToNewWindow"
+      summary="Triggered by dragging a tab to a new window"/>
+  <variant name=".SessionRestore" summary="Triggered by session restore"/>
+</variants>
+
 <!-- LINT.IfChange(DefaultBrowserEntrypointType) -->
 
 <variants name="DefaultBrowserEntrypointType">
@@ -81,6 +90,11 @@ chromium-metrics-reviews@google.com.
   <variant name="WithoutExistingWindow"
       summary="the profile has no browser windows when this new window is
                created"/>
+</variants>
+
+<variants name="StartPoint">
+  <variant name="FromConstructor"
+      summary="immediately before the Browser constructor is called"/>
 </variants>
 
 <!-- LINT.IfChange(TopChromeWebUIName) -->
@@ -438,18 +452,8 @@ chromium-metrics-reviews@google.com.
     This is only recorded for desktop platforms when the InitialWebUIMetrics is
     enabled.
   </summary>
-  <token key="CreationSource">
-    <variant name=".AllSources" summary="Aggregated across all sources"/>
-    <variant name=".BrowserInitiated"
-        summary="Triggered by browser action, e.g. shortcut or menu"/>
-    <variant name=".DragToNewWindow"
-        summary="Triggered by dragging a tab to a new window"/>
-    <variant name=".SessionRestore" summary="Triggered by session restore"/>
-  </token>
-  <token key="StartPoint">
-    <variant name="FromConstructor"
-        summary="immediately before the Browser constructor is called"/>
-  </token>
+  <token key="CreationSource" variants="CreationSource"/>
+  <token key="StartPoint" variants="StartPoint"/>
 </histogram>
 
 <histogram
@@ -464,32 +468,23 @@ chromium-metrics-reviews@google.com.
     This is only recorded for desktop platforms when the InitialWebUIMetrics is
     enabled.
   </summary>
-  <token key="CreationSource">
-    <variant name=".AllSources" summary="Aggregated across all sources"/>
-    <variant name=".BrowserInitiated"
-        summary="Triggered by browser action, e.g. shortcut or menu"/>
-    <variant name=".DragToNewWindow"
-        summary="Triggered by dragging a tab to a new window"/>
-    <variant name=".SessionRestore" summary="Triggered by session restore"/>
-  </token>
+  <token key="CreationSource" variants="CreationSource"/>
   <token key="PaintType">
     <variant name="FirstContentfulPaint" summary="contentful paint"/>
     <variant name="FirstPaint" summary="paint"/>
   </token>
-  <token key="StartPoint">
-    <variant name="FromConstructor"
-        summary="immediately before the Browser constructor is called"/>
-  </token>
+  <token key="StartPoint" variants="StartPoint"/>
 </histogram>
 
 <histogram
-    name="InitialWebUI.NewWindow{CreationSource}.{ExistingWindow}.BrowserWindow.ShowRequestedToFirstPaint"
+    name="InitialWebUI.NewWindow{CreationSource}.{ExistingWindow}.BrowserWindow.ShowRequestedToFirstPaint.{StartPoint}"
     units="ms" expires_after="2026-09-17">
   <owner>mych@chromium.org</owner>
   <owner>chrome-webium-product-eng@google.com</owner>
   <summary>
     Records the duration from the initial show/activation request of a new
     browser window to its first paint. {CreationSource} {ExistingWindow}.
+    {StartPoint}
 
     This metric is used to measure the impact of window show deferral. It is
     recorded only once per window lifecycle. If multiple windows are shown
@@ -499,15 +494,9 @@ chromium-metrics-reviews@google.com.
     This is only recorded for desktop platforms when the InitialWebUIMetrics is
     enabled.
   </summary>
-  <token key="CreationSource">
-    <variant name=".AllSources" summary="Aggregated across all sources"/>
-    <variant name=".BrowserInitiated"
-        summary="Triggered by browser action, e.g. shortcut or menu"/>
-    <variant name=".DragToNewWindow"
-        summary="Triggered by dragging a tab to a new window"/>
-    <variant name=".SessionRestore" summary="Triggered by session restore"/>
-  </token>
+  <token key="CreationSource" variants="CreationSource"/>
   <token key="ExistingWindow" variants="ExistingWindow"/>
+  <token key="StartPoint" variants="StartPoint"/>
 </histogram>
 
 <histogram
@@ -526,14 +515,7 @@ chromium-metrics-reviews@google.com.
     This is only recorded for desktop platforms when the InitialWebUIMetrics is
     enabled.
   </summary>
-  <token key="CreationSource">
-    <variant name=".AllSources" summary="Aggregated across all sources"/>
-    <variant name=".BrowserInitiated"
-        summary="Triggered by browser action, e.g. shortcut or menu"/>
-    <variant name=".DragToNewWindow"
-        summary="Triggered by dragging a tab to a new window"/>
-    <variant name=".SessionRestore" summary="Triggered by session restore"/>
-  </token>
+  <token key="CreationSource" variants="CreationSource"/>
   <token key="ExistingWindow" variants="ExistingWindow"/>
 </histogram>
 
