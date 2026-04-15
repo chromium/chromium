@@ -1898,9 +1898,18 @@
       status: "experimental",
     },
     {
+      // path() and shape() basic shapes for shape-outside.
+      // https://drafts.csswg.org/css-shapes-1/#basic-shape-functions
+      // https://drafts.csswg.org/css-shapes/#shape-outside-property
+      // ChromeStatus: https://chromestatus.com/feature/5080980370096128
+      name: "CSSShapeOutsidePathAndShapeSupport",
+      status: "experimental",
+    },
+    {
       // rect() and xywh() basic shapes for shape-outside.
       // https://drafts.csswg.org/css-shapes-1/#basic-shape-functions
       // https://drafts.csswg.org/css-shapes/#shape-outside-property
+      // ChromeStatus: https://chromestatus.com/feature/6323071520735232
       name: "CSSShapeOutsideRectAndXywhSupport",
       status: "experimental",
     },

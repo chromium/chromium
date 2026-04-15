@@ -9097,16 +9097,22 @@ const CSSValue* ShapeOutside::ParseSingleValue(
   }
   CSSValueList* list = CSSValueList::CreateSpaceSeparated();
   CSSValue* box_value = css_parsing_utils::ConsumeShapeBox(stream);
+
+  const bool allow_path_shape =
+      RuntimeEnabledFeatures::CSSShapeOutsidePathAndShapeSupportEnabled();
   const bool allow_rect_xywh =
       RuntimeEnabledFeatures::CSSShapeOutsideRectAndXywhSupportEnabled();
   CSSValue* shape_value = css_parsing_utils::ConsumeBasicShape(
       stream, context, local_context,
-      css_parsing_utils::AllowPathValue::kForbid,
-      css_parsing_utils::AllowShapeValue::kForbid,
+      allow_path_shape ? css_parsing_utils::AllowPathValue::kAllow
+                       : css_parsing_utils::AllowPathValue::kForbid,
+      allow_path_shape ? css_parsing_utils::AllowShapeValue::kAllow
+                       : css_parsing_utils::AllowShapeValue::kForbid,
       allow_rect_xywh ? css_parsing_utils::AllowBasicShapeRectValue::kAllow
                       : css_parsing_utils::AllowBasicShapeRectValue::kForbid,
       allow_rect_xywh ? css_parsing_utils::AllowBasicShapeXYWHValue::kAllow
                       : css_parsing_utils::AllowBasicShapeXYWHValue::kForbid);
+
   if (shape_value) {
     list->Append(*shape_value);
     if (!box_value) {

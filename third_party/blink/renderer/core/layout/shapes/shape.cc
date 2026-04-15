@@ -146,7 +146,8 @@ static std::unique_ptr<Shape> CreateInsetShape(const ContouredRect& bounds) {
 std::unique_ptr<Shape> Shape::CreateShape(const BasicShape* basic_shape,
                                           const LogicalSize& logical_box_size,
                                           WritingMode writing_mode,
-                                          float margin) {
+                                          float margin,
+                                          float zoom) {
   DCHECK(basic_shape);
 
   WritingModeConverter converter({writing_mode, TextDirection::kLtr},
@@ -197,27 +198,8 @@ std::unique_ptr<Shape> Shape::CreateShape(const BasicShape* basic_shape,
         // the shape too complex to represent analytically as a PolygonShape.
         // Instead, rasterize the path into a RasterShape (similar to how
         // image-based shapes are handled).
-        Path physical_path =
-            polygon->GetPath(gfx::RectF(0, 0, box_width, box_height), 1, 1);
-        gfx::Rect path_rect =
-            gfx::ToEnclosingRect(physical_path.BoundingRect());
-        const gfx::Size raster_size(std::max(path_rect.right(), 0),
-                                    std::max(path_rect.bottom(), 0));
-        if (!IsValidRasterShapeSize(raster_size)) {
-          return CreateEmptyRasterShape(margin);
-        }
-        ArrayBufferContents contents;
-        if (!ExtractPathData(physical_path, raster_size, contents)) {
-          return CreateEmptyRasterShape(margin);
-        }
-        std::unique_ptr<RasterShapeIntervals> intervals =
-            ExtractIntervalsFromImageData(contents.ByteSpan(), /*threshold=*/0,
-                                          raster_size.height(), raster_size,
-                                          gfx::Rect(raster_size),
-                                          gfx::Rect(raster_size), writing_mode);
-        shape =
-            std::make_unique<RasterShape>(std::move(intervals), raster_size);
-        break;
+        return CreateRasterShapeFromPath(*polygon, box_width, box_height,
+                                         writing_mode, margin, zoom);
       }
       const Vector<Length>& values = polygon->Values();
       wtf_size_t values_size = values.size();
@@ -259,6 +241,11 @@ std::unique_ptr<Shape> Shape::CreateShape(const BasicShape* basic_shape,
           BoxShape::ToLogical(ContouredRect(physical_rect), converter));
       break;
     }
+
+    case BasicShape::kStylePathType:
+    case BasicShape::kStyleShapeType:
+      return CreateRasterShapeFromPath(*basic_shape, box_width, box_height,
+                                       writing_mode, margin, zoom);
 
     default:
       NOTREACHED();
@@ -429,6 +416,36 @@ bool IsValidRasterShapeSize(const gfx::Size& size) {
 }
 
 }  // namespace
+
+std::unique_ptr<Shape> Shape::CreateRasterShapeFromPath(
+    const BasicShape& basic_shape,
+    float box_width,
+    float box_height,
+    WritingMode writing_mode,
+    float margin,
+    float zoom) {
+  Path physical_path =
+      basic_shape.GetPath(gfx::RectF(0, 0, box_width, box_height), zoom, 1);
+  gfx::Rect path_rect = gfx::ToEnclosingRect(physical_path.BoundingRect());
+  const gfx::Size raster_size(std::max(path_rect.right(), 0),
+                              std::max(path_rect.bottom(), 0));
+  if (!IsValidRasterShapeSize(raster_size)) {
+    return CreateEmptyRasterShape(margin);
+  }
+  ArrayBufferContents contents;
+  if (!ExtractPathData(physical_path, raster_size, contents)) {
+    return CreateEmptyRasterShape(margin);
+  }
+  std::unique_ptr<RasterShapeIntervals> intervals =
+      ExtractIntervalsFromImageData(contents.ByteSpan(), /*threshold=*/0,
+                                    raster_size.height(), raster_size,
+                                    gfx::Rect(raster_size),
+                                    gfx::Rect(raster_size), writing_mode);
+  std::unique_ptr<RasterShape> shape =
+      std::make_unique<RasterShape>(std::move(intervals), raster_size);
+  shape->margin_ = margin;
+  return shape;
+}
 
 std::unique_ptr<Shape> Shape::CreateRasterShape(
     Image* image,

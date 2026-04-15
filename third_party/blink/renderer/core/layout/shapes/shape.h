@@ -81,7 +81,8 @@ class CORE_EXPORT Shape {
   static std::unique_ptr<Shape> CreateShape(const BasicShape*,
                                             const LogicalSize& logical_box_size,
                                             WritingMode,
-                                            float margin);
+                                            float margin,
+                                            float zoom);
   static std::unique_ptr<Shape> CreateRasterShape(
       Image*,
       float threshold,
@@ -116,6 +117,12 @@ class CORE_EXPORT Shape {
 
  private:
   static std::unique_ptr<Shape> CreateEmptyRasterShape(float margin);
+  static std::unique_ptr<Shape> CreateRasterShapeFromPath(const BasicShape&,
+                                                          float box_width,
+                                                          float box_height,
+                                                          WritingMode,
+                                                          float margin,
+                                                          float zoom);
 
   bool LineOverlapsBoundingBox(LayoutUnit line_top,
                                LayoutUnit line_height,

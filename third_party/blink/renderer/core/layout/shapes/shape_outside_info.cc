@@ -281,7 +281,7 @@ const Shape& ShapeOutsideInfo::ComputedShape() const {
       DCHECK(shape_value.Shape());
       shape_ =
           Shape::CreateShape(shape_value.Shape(), reference_box_logical_size_,
-                             writing_mode, margin);
+                             writing_mode, margin, style.EffectiveZoom());
       break;
     case ShapeValue::kImage:
       DCHECK(shape_value.GetImage());

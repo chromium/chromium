@@ -2761,7 +2761,8 @@ ShapeValue* StyleBuilderConverter::ConvertShapeValue(StyleResolverState& state,
   const auto& value_list = To<CSSValueList>(value);
   for (unsigned i = 0; i < value_list.length(); ++i) {
     const CSSValue& item_value = value_list.Item(i);
-    if (item_value.IsBasicShapeValue()) {
+    if (item_value.IsBasicShapeValue() || item_value.IsPathValue() ||
+        item_value.IsShapeValue()) {
       shape = BasicShapeForValue(state, item_value);
     } else {
       css_box = To<CSSIdentifierValue>(item_value).ConvertTo<CSSBoxType>();
