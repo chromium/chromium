@@ -643,6 +643,8 @@ const AttributeTriggers* HTMLElement::TriggersForAttributeName(
        event_type_names::kScrollsnapchanging, nullptr},
       {html_names::kOnstalledAttr, kNoWebFeature, event_type_names::kStalled,
        nullptr},
+      {html_names::kOnstreamAttr, kNoWebFeature, event_type_names::kStream,
+       nullptr},
       {html_names::kOnsubmitAttr, kNoWebFeature, event_type_names::kSubmit,
        nullptr},
       {html_names::kOnsuspendAttr, kNoWebFeature, event_type_names::kSuspend,

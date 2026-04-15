@@ -146,6 +146,7 @@
     "onshow",
     "onslotchange",
     "onstalled",
+    "onstream",
     "onstorage",
     "onsubmit",
     "onsuspend",
