@@ -40,7 +40,7 @@ enum class ResolvedUnderlinePosition {
   kOver
 };
 
-using MinimumThickness1 = base::StrongAlias<class MinimumThickness1Tag, bool>;
+using IsSvgText = base::StrongAlias<class IsSvgTextTag, bool>;
 
 // Holds the resolved metrics and styling for a single AppliedTextDecoration.
 // This immutable structure decouples index-specific properties from the overall
@@ -82,17 +82,16 @@ class CORE_EXPORT TextDecorationInfo {
   STACK_ALLOCATED();
 
  public:
-  TextDecorationInfo(
-      LineRelativeOffset local_origin,
-      LayoutUnit width,
-      const ComputedStyle& target_style,
-      const InlinePaintContext* inline_context,
-      const TextDecorationLine selection_decoration_line,
-      const Color selection_decoration_color,
-      const AppliedTextDecoration* decoration_override = nullptr,
-      const Font* font_override = nullptr,
-      MinimumThickness1 minimum_thickness1 = MinimumThickness1(true),
-      float svg_resource_scaling_factor = 1.0f);
+  TextDecorationInfo(LineRelativeOffset local_origin,
+                     LayoutUnit width,
+                     const ComputedStyle& target_style,
+                     const InlinePaintContext* inline_context,
+                     const TextDecorationLine selection_decoration_line,
+                     const Color selection_decoration_color,
+                     const AppliedTextDecoration* decoration_override = nullptr,
+                     const Font* font_override = nullptr,
+                     IsSvgText is_svg_text = IsSvgText(false),
+                     float svg_resource_scaling_factor = 1.0f);
 
   wtf_size_t AppliedDecorationCount() const;
   const AppliedTextDecoration& AppliedDecoration(wtf_size_t) const;
@@ -206,7 +205,7 @@ class CORE_EXPORT TextDecorationInfo {
 
   bool flip_underline_and_overline_ = false;
   bool use_decorating_box_ = false;
-  const bool minimum_thickness_is_one_ = false;
+  const bool is_svg_text_ = false;
   bool antialias_ = false;
 
   std::optional<Color> highlight_override_;

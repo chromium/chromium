@@ -674,12 +674,12 @@ LogicalRect InkOverflow::ComputeAppliedDecorationOverflow(
   DCHECK(style.HasAppliedTextDecorations() || decoration_override);
   // SVGText is currently the only reason we use decoration_override,
   // so use it as a proxy for determining minimum thickness.
-  const MinimumThickness1 kMinimumThicknessIsOne(!decoration_override);
+  const IsSvgText is_svg_text(decoration_override);
   TextDecorationInfo decoration_info(
       LineRelativeOffset::CreateFromBoxOrigin(offset_in_container),
       ink_overflow.size.inline_size, style, inline_context,
       TextDecorationLine::kNone, Color(), decoration_override, &scaled_font,
-      kMinimumThicknessIsOne);
+      is_svg_text);
   TextDecorationOffset decoration_offset(style);
   gfx::RectF accumulated_bound;
   for (wtf_size_t i = 0; i < decoration_info.AppliedDecorationCount(); i++) {

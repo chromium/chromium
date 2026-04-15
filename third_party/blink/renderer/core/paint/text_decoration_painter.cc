@@ -83,7 +83,7 @@ void TextDecorationPainter::UpdateDecorationInfo(
                    decoration_rect_.InlineSize(), style, inline_context_,
                    effective_selection_decoration_lines,
                    effective_selection_decoration_color, decoration_override,
-                   scaled_font, MinimumThickness1(false),
+                   scaled_font, IsSvgText(true),
                    text_item.SvgScalingFactor() / scaling_factor);
   } else {
     LineRelativeRect decoration_rect =
@@ -91,8 +91,7 @@ void TextDecorationPainter::UpdateDecorationInfo(
     result.emplace(decoration_rect.offset, decoration_rect.InlineSize(), style,
                    inline_context_, effective_selection_decoration_lines,
                    effective_selection_decoration_color, decoration_override,
-                   &text_item.ScaledFont(),
-                   MinimumThickness1(!text_item.IsSvgText()));
+                   &text_item.ScaledFont(), IsSvgText(text_item.IsSvgText()));
   }
 }
 

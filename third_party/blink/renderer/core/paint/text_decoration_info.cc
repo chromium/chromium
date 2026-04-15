@@ -140,7 +140,7 @@ TextDecorationInfo::TextDecorationInfo(
     const Color selection_decoration_color,
     const AppliedTextDecoration* decoration_override,
     const Font* font_override,
-    MinimumThickness1 minimum_thickness1,
+    IsSvgText is_svg_text,
     float svg_resource_scaling_factor)
     : target_style_(target_style),
       inline_context_(inline_context),
@@ -160,7 +160,7 @@ TextDecorationInfo::TextDecorationInfo(
       use_decorating_box_(inline_context && !decoration_override_ &&
                           !font_override_ &&
                           ShouldUseDecoratingBox(target_style)),
-      minimum_thickness_is_one_(minimum_thickness1) {
+      is_svg_text_(is_svg_text) {
   for (wtf_size_t i = 0; i < AppliedDecorationCount(); i++)
     union_all_lines_ |= AppliedDecoration(i).Lines();
   for (wtf_size_t i = 0; i < AppliedDecorationCount(); i++) {
@@ -473,8 +473,7 @@ float TextDecorationInfo::ComputeThickness(
   const float thickness = ComputeDecorationThickness(
       applied_text_decoration_->Thickness(), decoration.computed_font_size,
       decoration.font_data);
-  const float minimum_thickness = minimum_thickness_is_one_ ? 1.0f : 0.0f;
-  return std::max(minimum_thickness, thickness);
+  return std::max(is_svg_text_ ? 0.0f : 1.0f, thickness);
 }
 
 void TextDecorationInfo::SetHighlightOverrideColor(
