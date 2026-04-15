@@ -9,7 +9,6 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "device/bluetooth/bluetooth_adapter.h"
 #include "device/bluetooth/bluetooth_common.h"
 #include "device/bluetooth/bluetooth_device.h"
@@ -20,9 +19,7 @@ namespace bluetooth = extensions::api::bluetooth;
 using bluetooth::VendorIdSource;
 using device::BluetoothDevice;
 using device::BluetoothDeviceType;
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 using device::BluetoothTransport;
-#endif
 
 namespace {
 
@@ -94,7 +91,6 @@ bool ConvertDeviceTypeToApi(const BluetoothDeviceType& input,
   }
 }
 
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 bool ConvertTransportToApi(const BluetoothTransport& input,
                            bluetooth::Transport* output) {
   switch (input) {
@@ -114,7 +110,6 @@ bool ConvertTransportToApi(const BluetoothTransport& input,
       return false;
   }
 }
-#endif
 
 }  // namespace
 
@@ -163,7 +158,6 @@ void BluetoothDeviceToApiDevice(const device::BluetoothDevice& device,
     out->inquiry_tx_power.reset();
   }
 
-#if BUILDFLAG(IS_CHROMEOS)
   std::optional<device::BluetoothDevice::BatteryInfo> battery_info =
       device.GetBatteryInfo(device::BluetoothDevice::BatteryType::kDefault);
 
@@ -172,11 +166,8 @@ void BluetoothDeviceToApiDevice(const device::BluetoothDevice& device,
   } else {
     out->battery_percentage.reset();
   }
-#endif
 
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
   ConvertTransportToApi(device.GetType(), &(out->transport));
-#endif
 }
 
 void PopulateAdapterState(const device::BluetoothAdapter& adapter,
@@ -188,7 +179,6 @@ void PopulateAdapterState(const device::BluetoothAdapter& adapter,
   out->address = adapter.GetAddress();
 }
 
-#if BUILDFLAG(IS_CHROMEOS)
 device::BluetoothFilterType ToBluetoothDeviceFilterType(FilterType type) {
   switch (type) {
     case FilterType::kNone:
@@ -200,7 +190,6 @@ device::BluetoothFilterType ToBluetoothDeviceFilterType(FilterType type) {
       NOTREACHED();
   }
 }
-#endif
 
 }  // namespace bluetooth
 }  // namespace api

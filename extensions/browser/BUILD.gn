@@ -1176,8 +1176,6 @@ source_set("unit_tests") {
   # in the desktop-android build when the related APIs are enabled.
   if (enable_extensions) {
     sources += [
-      "api/bluetooth/bluetooth_event_router_unittest.cc",
-      "api/bluetooth_socket/bluetooth_socket_api_unittest.cc",
       "api/feedback_private/feedback_service_unittest.cc",
       "api/mime_handler_private/mime_handler_private_unittest.cc",
       "api/socket/mojo_data_pump_unittest.cc",
@@ -1200,6 +1198,8 @@ source_set("unit_tests") {
   if (is_chromeos) {
     sources += [
       "api/audio/audio_device_id_calculator_unittest.cc",
+      "api/bluetooth/bluetooth_event_router_unittest.cc",
+      "api/bluetooth_socket/bluetooth_socket_api_unittest.cc",
       "api/feedback_private/access_rate_limiter_chromeos_unittest.cc",
       "api/feedback_private/feedback_private_api_chromeos_unittest.cc",
       "api/feedback_private/feedback_private_api_unittest_base_chromeos.cc",
@@ -1274,11 +1274,6 @@ if (enable_extensions) {
   source_set("browser_tests") {
     testonly = true
     sources = [
-      # TODO(michaelpg): bluetooth_appshell_test.cc is a crutch until we have a
-      # better system for testing APIs in both app_shell and chrome. See
-      # crbug.com/650835.
-      "api/bluetooth/bluetooth_appshell_test.cc",
-      "api/bluetooth_socket/bluetooth_socket_apitest.cc",
       "api/hid/hid_apitest.cc",
       "api/socket/socket_apitest.cc",
       "api/sockets_tcp/sockets_tcp_apitest.cc",
@@ -1327,6 +1322,12 @@ if (enable_extensions) {
     if (is_chromeos) {
       sources += [
         "api/audio/audio_apitest_chromeos.cc",
+
+        # TODO(michaelpg): bluetooth_appshell_test.cc is a crutch until we have
+        # a better system for testing APIs in both app_shell and chrome. See
+        # crbug.com/650835.
+        "api/bluetooth/bluetooth_appshell_test.cc",
+        "api/bluetooth_socket/bluetooth_socket_apitest.cc",
         "api/cec_private/cec_private_ash_apitest.cc",
         "api/media_perception_private/media_perception_private_apitest.cc",
         "api/virtual_keyboard/virtual_keyboard_apitest.cc",

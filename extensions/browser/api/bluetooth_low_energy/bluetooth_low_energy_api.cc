@@ -87,10 +87,8 @@ const char kStatusAdvertisementAlreadyExists[] =
     "An advertisement is already advertising";
 const char kStatusAdvertisementDoesNotExist[] =
     "This advertisement does not exist";
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 const char kStatusInvalidAdvertisingInterval[] =
     "Invalid advertising interval specified.";
-#endif
 
 // Returns the correct error string based on error status |status|. This is used
 // to set the value of |chrome.runtime.lastError.message| and should not be
@@ -375,12 +373,14 @@ ExtensionFunction::ResponseAction BluetoothLowEnergyExtensionFunction::Run() {
 
   EXTENSION_FUNCTION_VALIDATE(ParseParams());
 
-  if (!BluetoothManifestData::CheckLowEnergyPermitted(extension()))
+  if (!BluetoothManifestData::CheckLowEnergyPermitted(extension())) {
     return RespondNow(Error(kErrorPermissionDenied));
+  }
 
   event_router_ = GetEventRouter(browser_context());
-  if (!event_router_->IsBluetoothSupported())
+  if (!event_router_->IsBluetoothSupported()) {
     return RespondNow(Error(kErrorPlatformNotSupported));
+  }
 
   // It is safe to pass |this| here as ExtensionFunction is refcounted.
   if (!event_router_->InitializeAdapterAndInvokeCallback(base::BindOnce(
@@ -423,8 +423,9 @@ ExtensionFunction::ResponseAction BLEPeripheralExtensionFunction::Run() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
   // Check permissions in manifest.
-  if (!BluetoothManifestData::CheckPeripheralPermitted(extension()))
+  if (!BluetoothManifestData::CheckPeripheralPermitted(extension())) {
     return RespondNow(Error(kErrorPermissionDenied));
+  }
 
   if (!(IsAutoLaunchedKioskApp(extension()->id()) ||
         IsPeripheralFlagEnabled())) {
@@ -457,8 +458,9 @@ void BluetoothLowEnergyConnectFunction::DoWork() {
   }
 
   bool persistent = false;  // Not persistent by default.
-  if (params_->properties)
+  if (params_->properties) {
     persistent = params_->properties->persistent;
+  }
 
   event_router->Connect(
       persistent, extension(), params_->device_address,
@@ -850,8 +852,9 @@ void BluetoothLowEnergyStartCharacteristicNotificationsFunction::DoWork() {
   }
 
   bool persistent = false;  // Not persistent by default.
-  if (params_->properties)
+  if (params_->properties) {
     persistent = params_->properties->persistent;
+  }
 
   event_router->StartCharacteristicNotifications(
       persistent, extension(), params_->characteristic_id,
@@ -1178,7 +1181,6 @@ bool BluetoothLowEnergyResetAdvertisingFunction::ParseParams() {
 }
 
 void BluetoothLowEnergyResetAdvertisingFunction::DoWork() {
-#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)
   BluetoothLowEnergyEventRouter* event_router =
       GetEventRouter(browser_context());
 
@@ -1206,7 +1208,6 @@ void BluetoothLowEnergyResetAdvertisingFunction::DoWork() {
                      this),
       base::BindOnce(&BluetoothLowEnergyResetAdvertisingFunction::ErrorCallback,
                      this));
-#endif
 }
 
 void BluetoothLowEnergyResetAdvertisingFunction::ErrorCallback(
@@ -1228,7 +1229,6 @@ bool BluetoothLowEnergySetAdvertisingIntervalFunction::ParseParams() {
 }
 
 void BluetoothLowEnergySetAdvertisingIntervalFunction::DoWork() {
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
   BluetoothLowEnergyEventRouter* event_router =
       GetEventRouter(browser_context());
   event_router->adapter()->SetAdvertisingInterval(
@@ -1240,12 +1240,10 @@ void BluetoothLowEnergySetAdvertisingIntervalFunction::DoWork() {
       base::BindOnce(
           &BluetoothLowEnergySetAdvertisingIntervalFunction::ErrorCallback,
           this));
-#endif
 }
 
 void BluetoothLowEnergySetAdvertisingIntervalFunction::ErrorCallback(
     device::BluetoothAdvertisement::ErrorCode status) {
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
   switch (status) {
     case device::BluetoothAdvertisement::ErrorCode::
         ERROR_INVALID_ADVERTISEMENT_INTERVAL:
@@ -1254,7 +1252,6 @@ void BluetoothLowEnergySetAdvertisingIntervalFunction::ErrorCallback(
     default:
       Respond(Error(kErrorOperationFailed));
   }
-#endif
 }
 
 // createService:
@@ -1266,21 +1263,11 @@ BluetoothLowEnergyCreateServiceFunction::
     ~BluetoothLowEnergyCreateServiceFunction() {}
 
 bool BluetoothLowEnergyCreateServiceFunction::ParseParams() {
-// Causes link error on Windows. API will never be on Windows, so #ifdefing.
-#if !BUILDFLAG(IS_WIN)
   params_ = apibtle::CreateService::Params::Create(args());
   return params_.has_value();
-#else
-  return true;
-#endif
 }
 
 void BluetoothLowEnergyCreateServiceFunction::DoWork() {
-// Causes link error on Windows. API will never be on Windows, so #ifdefing.
-// TODO: Ideally this should be handled by our feature system, so that this
-// code doesn't even compile on OSes it isn't being used on, but currently this
-// is not possible.
-#if !BUILDFLAG(IS_WIN)
   base::WeakPtr<device::BluetoothLocalGattService> service =
       event_router_->adapter()->CreateLocalGattService(
           device::BluetoothUUID(params_->service.uuid),
@@ -1289,9 +1276,6 @@ void BluetoothLowEnergyCreateServiceFunction::DoWork() {
   event_router_->AddServiceToApp(extension_id(), service->GetIdentifier());
   Respond(ArgumentList(
       apibtle::CreateService::Results::Create(service->GetIdentifier())));
-#else
-  Respond(Error(kErrorPlatformNotSupported));
-#endif
 }
 
 // createCharacteristic:

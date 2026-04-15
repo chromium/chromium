@@ -4671,8 +4671,6 @@ if (!is_android) {
         "../browser/extensions/api/autofill_private/autofill_private_apitest.cc",
         "../browser/extensions/api/autofill_private/autofill_util_browsertest.cc",
         "../browser/extensions/api/automation/automation_apitest.cc",
-        "../browser/extensions/api/bluetooth/bluetooth_apitest.cc",
-        "../browser/extensions/api/bluetooth/bluetooth_private_apitest.cc",
         "../browser/extensions/api/braille_display_private/braille_display_private_apitest.cc",
         "../browser/extensions/api/command_line_private/command_line_private_apitest.cc",
         "../browser/extensions/api/declarative/declarative_apitest.cc",
@@ -4908,6 +4906,8 @@ if (!is_android) {
           "../browser/chromeos/extensions/login_screen/storage_apitest.cc",
           "../browser/chromeos/extensions/wallpaper/wallpaper_apitest.cc",
           "../browser/chromeos/extensions/wm/wm_desks_private_apitest.cc",
+          "../browser/extensions/api/bluetooth/bluetooth_apitest.cc",
+          "../browser/extensions/api/bluetooth/bluetooth_private_apitest.cc",
           "../browser/extensions/api/bluetooth_low_energy/bluetooth_low_energy_apitest_chromeos.cc",
           "../browser/extensions/api/certificate_provider/certificate_provider_apitest.cc",
           "../browser/extensions/api/crash_report_private/crash_report_private_apitest.cc",
@@ -6087,7 +6087,7 @@ if (!is_android) {
       sources -= [ "../browser/extensions/api/braille_display_private/braille_display_private_apitest.cc" ]
     }
 
-    if (is_chromeos || (is_linux && use_dbus)) {
+    if (is_chromeos) {
       sources += [ "../browser/extensions/api/bluetooth_low_energy/bluetooth_low_energy_apitest.cc" ]
     }
 

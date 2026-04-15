@@ -211,10 +211,10 @@ class PermissionMessageCombinationsUnittest : public testing::Test {
   SimpleFeature::ScopedThreadUnsafeAllowlistForTest allowlisted_extension_id_;
 };
 
-#if !BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(IS_CHROMEOS)
 // Test that the USB, Bluetooth and Serial permissions do not coalesce on their
 // own, but do coalesce when more than 1 is present.
-// NOTE: Android does not support the serial API, so does not run this test.
+// NOTE: Chrome Apps APIs are being removed from WML builds.
 TEST_F(PermissionMessageCombinationsUnittest, USBSerialBluetoothCoalescing) {
   // Test that the USB permission does not coalesce on its own.
   CreateAndInstall(
@@ -245,7 +245,6 @@ TEST_F(PermissionMessageCombinationsUnittest, USBSerialBluetoothCoalescing) {
   ASSERT_TRUE(CheckManifestProducesPermissions(
       "Access USB devices from an unknown vendor"));
 
-#if BUILDFLAG(IS_CHROMEOS)
   // Test that the serial permission does not coalesce on its own.
   CreateAndInstall(
       "{"
@@ -259,7 +258,6 @@ TEST_F(PermissionMessageCombinationsUnittest, USBSerialBluetoothCoalescing) {
       "  ]"
       "}");
   ASSERT_TRUE(CheckManifestProducesPermissions("Access your serial devices"));
-#endif
 
   // Test that the bluetooth permission does not coalesce on its own.
   CreateAndInstall(
@@ -292,7 +290,6 @@ TEST_F(PermissionMessageCombinationsUnittest, USBSerialBluetoothCoalescing) {
       "Access information about Bluetooth devices paired with your system and "
       "discover nearby Bluetooth devices."));
 
-#if BUILDFLAG(IS_CHROMEOS)
   // Test that the USB and Serial permissions coalesce.
   CreateAndInstall(
       "{"
@@ -350,9 +347,8 @@ TEST_F(PermissionMessageCombinationsUnittest, USBSerialBluetoothCoalescing) {
   ASSERT_TRUE(CheckManifestProducesPermissions(
       "Access USB devices from an unknown vendor",
       "Access your Bluetooth and Serial devices"));
-#endif  // BUILDFLAG(IS_CHROMEOS)
 }
-#endif  // !BUILDFLAG(IS_ANDROID)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 // Test that the History permission takes precedence over the Tabs permission,
 // and that the Sessions permission modifies the Tabs permission message.

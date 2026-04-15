@@ -565,10 +565,7 @@ class BluetoothLowEnergyCreateServiceFunction
   void DoWork() override;
   bool ParseParams() override;
 
-  // Causes link error on Windows. API will never be on Windows, so #ifdefing.
-#if !BUILDFLAG(IS_WIN)
   std::optional<bluetooth_low_energy::CreateService::Params> params_;
-#endif
 };
 
 class BluetoothLowEnergyCreateCharacteristicFunction

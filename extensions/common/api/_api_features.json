@@ -105,8 +105,7 @@
   "bluetooth": [{
     "dependencies": ["manifest:bluetooth"],
     "contexts": ["privileged_extension"],
-    // "desktop_android" is not supported.
-    "platforms": ["chromeos", "linux", "mac", "win"]
+    "platforms": ["chromeos"]
   }, {
     "channel": "stable",
     "contexts": ["webui"],
@@ -114,13 +113,12 @@
       "chrome://bluetooth-pairing/*",
       "chrome://os-settings/*"
     ],
-    // "desktop_android" is not supported.
-    "platforms": ["chromeos", "linux", "mac", "win"]
+    "platforms": ["chromeos"]
   }],
   "bluetoothLowEnergy": {
     "dependencies": ["manifest:bluetooth"],
     "contexts": ["privileged_extension"],
-    "platforms": ["chromeos", "linux"]
+    "platforms": ["chromeos"]
   },
   "bluetoothPrivate": [{
     "dependencies": ["permission:bluetoothPrivate"],
@@ -136,8 +134,7 @@
   "bluetoothSocket": {
     "dependencies": ["manifest:bluetooth"],
     "contexts": ["privileged_extension"],
-    // "desktop_android" is not supported.
-    "platforms": ["chromeos", "linux", "mac", "win"]
+    "platforms": ["chromeos"]
   },
   "cecPrivate": {
     "dependencies": ["permission:cecPrivate"],

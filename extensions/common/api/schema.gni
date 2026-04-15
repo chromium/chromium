@@ -70,10 +70,6 @@ if (enable_extensions) {
     "audio.webidl",
     "automation_internal.webidl",
     "automation.webidl",
-    "bluetooth_low_energy.webidl",
-    "bluetooth_private.webidl",
-    "bluetooth_socket.webidl",
-    "bluetooth.webidl",
     "cec_private.webidl",
     "clipboard.webidl",
     "feedback_private.webidl",
@@ -98,6 +94,10 @@ if (enable_extensions) {
 
   if (is_chromeos) {
     extensions_api_schema_files_ += [
+      "bluetooth_low_energy.webidl",
+      "bluetooth_private.webidl",
+      "bluetooth_socket.webidl",
+      "bluetooth.webidl",
       "diagnostics.webidl",
       "media_perception_private.webidl",
       "serial.webidl",
