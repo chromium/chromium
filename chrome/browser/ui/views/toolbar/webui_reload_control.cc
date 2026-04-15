@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/views/toolbar/webui_reload_control.h"
 
+#include "base/time/time.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/ui/views/toolbar/webui_toolbar_web_view.h"
 #include "chrome/browser/ui/webui/webui_toolbar/webui_toolbar_ui.h"
@@ -42,11 +43,10 @@ void WebUIReloadControl::Init() {
 }
 
 void WebUIReloadControl::ChangeMode(ReloadControl::Mode mode, bool force) {
-  // TODO(crbug.com/444358999): Now the mode is always updated immediately from
-  // the browser side, then a mojo IPC is sent to the renderer to make the
-  // change accordingly. We may need to implement the timer/force updating logic
-  // in the future.
   mode_ = mode;
+  if (force) {
+    ++reset_state_count_;
+  }
   UpdateState();
 }
 
@@ -98,9 +98,11 @@ void WebUIReloadControl::ExecuteCommand(int command_id, int event_flags) {
 
 void WebUIReloadControl::UpdateState() {
   auto state = toolbar_ui_api::mojom::ReloadControlState::New();
+  state->double_click_interval = double_click_interval_;
   state->can_show_menu =
       is_dev_tools_connected_ && (mode_ == ReloadControl::Mode::kReload);
   state->is_navigation_loading = (mode_ == ReloadControl::Mode::kStop);
   state->is_context_menu_visible = menu_runner_->IsRunning();
+  state->reset_state_count = reset_state_count_;
   webui_toolbar_web_view_->OnReloadControlStateChanged(std::move(state));
 }

@@ -8,8 +8,8 @@ import type {ReloadButtonElement} from './reload_button.js';
 
 export function getHtml(this: ReloadButtonElement) {
   return html`<!--_html_template_start_-->
-<cr-icon-button class="${
-      this.state.isNavigationLoading ? 'icon-clear' : 'icon-refresh'}"
+<cr-icon-button
+    class="${this.showStopIcon ? 'icon-clear' : 'icon-refresh'}"
     title="${this.tooltip}"
     aria-label="${this.accName_}"
     aria-haspopup="${this.state.canShowMenu}"

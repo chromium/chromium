@@ -47,6 +47,8 @@ class ReloadButton : public ToolbarButton, public ReloadControl {
 
   Mode GetVisibleMode() const { return visible_mode_; }
 
+  bool GetDoubleClickTimerIsRunning() const;
+
   [[nodiscard]] base::CallbackListSubscription AddVisibleModeChangedCallback(
       views::PropertyChangedCallback callback);
 
@@ -80,6 +82,12 @@ class ReloadButton : public ToolbarButton, public ReloadControl {
   void SetDevToolsStatus(bool is_dev_tools_connected) override;
 
   void ExecuteCommand(int command_id, int event_flags) override;
+
+  // Overrides the double-click interval for testing.
+  void set_double_click_timer_delay_for_testing(
+      base::TimeDelta double_click_timer_delay) {
+    double_click_timer_delay_ = double_click_timer_delay;
+  }
 
  private:
   friend class ReloadButtonMetricsTest;

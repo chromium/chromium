@@ -89,9 +89,14 @@ export class ToolbarAppElement extends CrLitElement {
       loadTimeData.getBoolean('enablePinnedToolbarActions');
   protected accessor navigationControlsState_: NavigationControlsState = {
     reloadControlState: {
+      // While this will be overwritten anyways, this matches the default value
+      // on some platforms.
+      doubleClickInterval: {microseconds: BigInt(500 * 1000)},
+
       canShowMenu: false,
       isNavigationLoading: false,
       isContextMenuVisible: false,
+      resetStateCount: 0,
     },
     splitTabsControlState: {
       isCurrentTabSplit: false,

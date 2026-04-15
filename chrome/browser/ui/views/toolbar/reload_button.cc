@@ -88,6 +88,10 @@ ReloadButton::ReloadButton(
 
 ReloadButton::~ReloadButton() = default;
 
+bool ReloadButton::GetDoubleClickTimerIsRunning() const {
+  return double_click_timer_.IsRunning();
+}
+
 void ReloadButton::ChangeMode(Mode mode, bool force) {
   intended_mode_ = mode;
 

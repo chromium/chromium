@@ -6,6 +6,7 @@ module toolbar_ui_api.mojom;
 
 import "components/content_settings/core/common/content_settings_types.mojom";
 import "mojo/public/mojom/base/string16.mojom";
+import "mojo/public/mojom/base/time.mojom";
 import "ui/gfx/range/mojom/range.mojom";
 
 // The context menu types that can be opened with ToolbarUIService's
@@ -41,9 +42,21 @@ enum ToolbarButtonType {
 };
 
 struct ReloadControlState {
+  // The maximum delay for a double click. If there's a longer delay than this,
+  // it should be treated as two separate clicks.
+  mojo_base.mojom.TimeDelta double_click_interval;
+
   bool can_show_menu;
   bool is_navigation_loading;
   bool is_context_menu_visible;
+
+  // Number of times the state of the reload button has been forcibly reset.
+  // When its value changes, the reload button changes immediately to the
+  // state corresponding to the value of `is_navigation_loading`, ignoring all
+  // debounding logic and double click delays.
+  //
+  // Incremented when switching tabs, and possibly other times as well.
+  int32 reset_state_count;
 };
 
 struct SplitTabsControlState {
