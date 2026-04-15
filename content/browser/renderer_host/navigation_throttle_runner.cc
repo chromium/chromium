@@ -161,11 +161,6 @@ void NavigationThrottleRunner::ProcessInternal() {
   }
   base::WeakPtr<NavigationThrottleRunner> weak_ref = weak_factory_.GetWeakPtr();
 
-  // Capture into a local variable the |navigation_id_| value, since this
-  // object can be freed by any of the throttles being invoked and the trace
-  // events need to be able to use the navigation id safely in such a case.
-  int64_t local_navigation_id = navigation_id_;
-
   auto& throttles = registry_->GetThrottles();
   if (registry_->GetNavigationHandle().IsInitialWebUISyncNavigation()) {
     // We've skipped adding throttles for navigations to the initial WebUI.
@@ -174,8 +169,7 @@ void NavigationThrottleRunner::ProcessInternal() {
   for (size_t i = next_index_; i < throttles.size(); ++i) {
     TRACE_EVENT0("navigation",
                  "NavigationThrottleRunner::ProcessInternal.loop");
-    TRACE_EVENT_BEGIN("navigation", GetEventName(current_event_),
-                      perfetto::Track::Global(local_navigation_id), "throttle",
+    TRACE_EVENT_BEGIN("navigation", GetEventName(current_event_), "throttle",
                       throttles[i]->GetNameForLogging());
 
     base::Time start = base::Time::Now();
@@ -185,15 +179,12 @@ void NavigationThrottleRunner::ProcessInternal() {
       // The NavigationThrottle execution has destroyed this
       // NavigationThrottleRunner. Return immediately.
       // GetEventName(current_event_)
-      TRACE_EVENT_END("navigation",
-                      perfetto::Track::Global(local_navigation_id), "result",
-                      "deleted");
+      TRACE_EVENT_END("navigation", "result", "deleted");
       return;
     }
     RecordExecutionTimeHistogram(current_event_, start);
     // GetEventName(current_event_)
-    TRACE_EVENT_END("navigation", perfetto::Track::Global(local_navigation_id),
-                    "result", result.action());
+    TRACE_EVENT_END("navigation", "result", result.action());
 
     switch (result.action()) {
       case NavigationThrottle::PROCEED:
