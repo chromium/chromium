@@ -1,5 +1,5 @@
 ---
-name: loadline
+name: loadline-benchmark
 description: Running and analyzing LoadLine 1 and 2 benchmarks on Android using Crossbench. Use when you need to measure page loading performance, evaluate performance-related changes in Chrome, or collect Perfetto traces with realistic Chrome workload.
 ---
 

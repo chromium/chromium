@@ -1,8 +1,7 @@
 ---
 name: webui-lit-migration
-description: >-
-  Guide for migrating Chromium WebUI components from Polymer to Lit.
-  Activate this skill if the user asks to migrate a file or component to Lit.
+description: Guide for migrating Chromium WebUI components from Polymer to Lit.
+Activate this skill if the user asks to migrate a file or component to Lit.
 ---
 
 # Chromium WebUI Lit Migration
