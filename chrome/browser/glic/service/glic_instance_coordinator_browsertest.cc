@@ -1186,8 +1186,9 @@ IN_PROC_BROWSER_TEST_F(GlicInstanceCoordinatorToggleWithConversationTest,
 IN_PROC_BROWSER_TEST_F(GlicInstanceCoordinatorBrowserTest,
                        InvokeWithInvalidTab) {
   base::test::TestFuture<GlicInvokeError> error_future;
-  GlicInvokeOptions options(glic::Target(nullptr),
-                            mojom::InvocationSource::kOsButton);
+  GlicInvokeOptions options(
+      glic::Target(static_cast<tabs::TabInterface*>(nullptr)),
+      mojom::InvocationSource::kOsButton);
   options.on_error = error_future.GetCallback();
 
   coordinator().Invoke(std::move(options));
@@ -1466,6 +1467,61 @@ IN_PROC_BROWSER_TEST_F(GlicInstanceCoordinatorBrowserTest,
 
   // Clean up the new window.
   CloseBrowserSynchronously(new_browser);
+}
+#endif  // !BUILDFLAG(IS_ANDROID)
+
+IN_PROC_BROWSER_TEST_F(GlicInstanceCoordinatorBrowserTest, InvokeWithNewTab) {
+  BrowserWindowInterface* browser_window =
+      GetTabListInterface()->GetActiveTab()->GetBrowserWindowInterface();
+  int tab_count_before = GetTabListInterface()->GetTabCount();
+
+  base::test::TestFuture<void> success_future;
+  GlicInvokeOptions options(glic::Target(browser_window),
+                            mojom::InvocationSource::kOsButton);
+  options.on_success = success_future.GetCallback();
+
+  GlicTestTabAddedWaiter waiter(GetProfile());
+
+  coordinator().Invoke(std::move(options));
+
+  tabs::TabInterface* new_tab = waiter.Wait();
+  ASSERT_TRUE(new_tab);
+
+  EXPECT_TRUE(success_future.Wait());
+
+  // Verify a new tab was added.
+  EXPECT_EQ(GetTabListInterface()->GetTabCount(), tab_count_before + 1);
+
+  // Verify the active tab is the new one.
+  tabs::TabInterface* active_tab = GetTabListInterface()->GetActiveTab();
+  ASSERT_TRUE(active_tab);
+  EXPECT_EQ(active_tab, new_tab);
+
+  // Verify it is not loading now.
+  EXPECT_FALSE(active_tab->GetContents()->IsLoading());
+
+  // Verify instance exists for the new tab.
+  EXPECT_TRUE(coordinator().GetInstanceForTab(active_tab));
+}
+
+// This test is disabled on Android because creating a new window behavior
+// differs and is not supported by this test setup.
+#if !BUILDFLAG(IS_ANDROID)
+IN_PROC_BROWSER_TEST_F(GlicInstanceCoordinatorBrowserTest,
+                       InvokeWithNewTabCreatesNewWindow) {
+  size_t browser_count_before = chrome::GetTotalBrowserCount();
+
+  base::test::TestFuture<void> success_future;
+  GlicInvokeOptions options(glic::Target(glic::NewTab{}),
+                            mojom::InvocationSource::kOsButton);
+  options.on_success = success_future.GetCallback();
+
+  coordinator().Invoke(std::move(options));
+
+  EXPECT_TRUE(success_future.Wait());
+
+  // Verify a new browser window was created.
+  EXPECT_EQ(chrome::GetTotalBrowserCount(), browser_count_before + 1);
 }
 #endif  // !BUILDFLAG(IS_ANDROID)
 

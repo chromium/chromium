@@ -321,8 +321,9 @@ void GlicInstanceCoordinatorImpl::InvokeWithAutoSubmit(
 void GlicInstanceCoordinatorImpl::InvokeInternal(
     std::optional<InvokeWithAutoSubmitPasskey> auto_submit_passkey,
     GlicInvokeOptions options) {
-  tabs::TabInterface* tab =
-      GlicInvokeHandler::ResolveTargetSurface(profile_, options.target).tab;
+  GlicInvokeHandler::ResolvedTarget resolved_target =
+      GlicInvokeHandler::ResolveTargetSurface(profile_, options.target);
+  tabs::TabInterface* tab = resolved_target.tab;
   options.target.surface = tab;
 
   if (!tab || !GlicInstanceHelper::From(tab)) {
@@ -368,7 +369,7 @@ void GlicInstanceCoordinatorImpl::InvokeInternal(
   }
 
   invoke_handlers_[instance] = std::make_unique<GlicInvokeHandler>(
-      *instance, std::move(options), auto_submit_passkey,
+      *instance, resolved_target, std::move(options), auto_submit_passkey,
       base::BindOnce(&GlicInstanceCoordinatorImpl::OnInvokeHandlerComplete,
                      base::Unretained(this)));
   invoke_handlers_[instance]->Invoke();

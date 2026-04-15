@@ -48,10 +48,17 @@ struct DefaultSurface {
   raw_ptr<BrowserWindowInterface> browser = nullptr;
 };
 
+// Create a new tab in the specified window, or a new window if null.
+struct NewTab {
+  raw_ptr<BrowserWindowInterface> window = nullptr;
+};
+
 // The target for the invocation.
 struct Target {
   Target();
   explicit Target(tabs::TabInterface* tab);
+  explicit Target(BrowserWindowInterface* window);
+  explicit Target(NewTab new_tab);
   Target(tabs::TabInterface* tab,
          std::variant<DefaultConversation, NewConversation, ConversationId>
              conversation);
@@ -65,8 +72,10 @@ struct Target {
   // Specifies the surface where Glic should be invoked.
   // - DefaultSurface: Resolves to the active tab of the specified browser
   //   window, or creates a new window if no browser is specified.
+  // - NewTab: Creates a new tab in the specified window, or a new window if
+  // null.
   // - TabInterface*: Targets a specific tab. Must not be null.
-  std::variant<DefaultSurface, raw_ptr<tabs::TabInterface>> surface =
+  std::variant<DefaultSurface, NewTab, raw_ptr<tabs::TabInterface>> surface =
       DefaultSurface();
 
   // Specifies which conversation to use or create.

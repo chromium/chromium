@@ -23,6 +23,10 @@ Target::~Target() = default;
 
 Target::Target(tabs::TabInterface* tab) : surface(tab) {}
 
+Target::Target(BrowserWindowInterface* window) : surface(NewTab{window}) {}
+
+Target::Target(NewTab new_tab) : surface(std::move(new_tab)) {}
+
 Target::Target(
     tabs::TabInterface* tab,
     std::variant<DefaultConversation, NewConversation, ConversationId>

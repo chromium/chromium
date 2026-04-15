@@ -49,6 +49,7 @@ class GlicInvokeHandler : public Host::Observer,
 
   GlicInvokeHandler(
       GlicInstanceImpl& instance,
+      ResolvedTarget resolved_target,
       GlicInvokeOptions options,
       std::optional<InvokeWithAutoSubmitPasskey> auto_submit_passkey,
       CompletionCallback completion_callback);

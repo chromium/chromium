@@ -45,9 +45,9 @@ static tabs::TabInterface* CreateBrowserAndGetActiveTab(Profile* profile) {
 GlicInvokeHandler::ResolvedTarget GlicInvokeHandler::ResolveTargetSurface(
     Profile* profile,
     const Target& target) {
-  if (std::holds_alternative<DefaultSurface>(target.surface)) {
-    auto default_surface = std::get<DefaultSurface>(target.surface);
-    BrowserWindowInterface* browser = default_surface.browser;
+  if (const auto* default_surface =
+          std::get_if<DefaultSurface>(&target.surface)) {
+    BrowserWindowInterface* browser = default_surface->browser;
     if (browser) {
       tabs::TabInterface* tab = TabListInterface::From(browser)->GetActiveTab();
       if (tab) {
@@ -61,24 +61,42 @@ GlicInvokeHandler::ResolvedTarget GlicInvokeHandler::ResolveTargetSurface(
     }
 
     return {nullptr, /*is_new=*/false};
+  } else if (const auto* new_tab_opt = std::get_if<NewTab>(&target.surface)) {
+    BrowserWindowInterface* browser = new_tab_opt->window;
+    if (!browser) {
+      tabs::TabInterface* tab = CreateBrowserAndGetActiveTab(profile);
+      if (tab) {
+        return {tab, /*is_new=*/true};
+      }
+      return {nullptr, /*is_new=*/false};
+    }
+    tabs::TabInterface* tab = TabListInterface::From(browser)->OpenTab(
+        GURL(chrome::kChromeUINewTabURL), -1);
+    if (tab) {
+      return {tab, /*is_new=*/true};
+    }
+    return {nullptr, /*is_new=*/false};
   }
 
-  return {std::get<raw_ptr<tabs::TabInterface>>(target.surface).get(),
-          /*is_new=*/false};
+  if (const auto* tab_ptr =
+          std::get_if<raw_ptr<tabs::TabInterface>>(&target.surface)) {
+    return {tab_ptr->get(), /*is_new=*/false};
+  }
+
+  return {nullptr, /*is_new=*/false};
 }
 
 GlicInvokeHandler::GlicInvokeHandler(
     GlicInstanceImpl& instance,
+    ResolvedTarget resolved_target,
     GlicInvokeOptions options,
     std::optional<InvokeWithAutoSubmitPasskey> auto_submit_passkey,
     CompletionCallback completion_callback)
     : instance_(instance),
+      tab_(resolved_target.tab),
       options_(std::move(options)),
       auto_submit_passkey_(auto_submit_passkey),
       completion_callback_(std::move(completion_callback)) {
-  ResolvedTarget resolved_target =
-      ResolveTargetSurface(instance_->profile(), options_.target);
-  tab_ = resolved_target.tab;
   if (tab_ && GlicInstanceHelper::From(tab_)) {
     tab_destruction_subscription_ =
         GlicInstanceHelper::From(tab_)->SubscribeToDestruction(
