@@ -60,6 +60,7 @@ per-file security_interstitials_strings.grdp=file://components/security_intersti
 per-file send_tab_to_self_strings.grdp=file://components/send_tab_to_self/OWNERS
 per-file site_settings_strings.grdp=file://components/browser_ui/site_settings/OWNERS
 per-file site_settings_strings.grdp=file://chrome/browser/resources/settings/site_settings/OWNERS
+per-file smart_tab_sharing.grdp=file://components/contextual_tasks/OWNERS
 per-file sms_strings.grdp=file://content/browser/sms/OWNERS
 per-file ssl_errors_strings.grdp=file://components/ssl_errors/OWNERS
 per-file subresource_filter_strings.grdp=file://components/subresource_filter/OWNERS
