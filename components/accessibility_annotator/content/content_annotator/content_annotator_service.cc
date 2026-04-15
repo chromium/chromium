@@ -15,7 +15,6 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/string_util.h"
 #include "base/types/optional_util.h"
-#include "components/accessibility_annotator/content/content_annotator/content_annotation_validator.h"
 #include "components/accessibility_annotator/content/content_annotator/content_classifier.h"
 #include "components/accessibility_annotator/content/content_annotator/content_classifier_types.h"
 #include "components/accessibility_annotator/core/accessibility_annotator_features.h"
@@ -45,22 +44,6 @@ bool PassesSafetyChecks(const ContentClassificationResult& result) {
   // If language check isn't enabled, default to passing.
   return !result.is_sensitive.value_or(true) &&
          result.is_in_target_language.value_or(true);
-}
-
-// Strips markdown code blocks (e.g. ```json ... ```) from the input string.
-std::string StripMarkdown(std::string_view input) {
-  std::string_view result = base::TrimWhitespaceASCII(input, base::TRIM_ALL);
-  if (result.starts_with("```json")) {
-    result.remove_prefix(7);
-  } else if (result.starts_with("```")) {
-    result.remove_prefix(3);
-  }
-
-  if (result.ends_with("```")) {
-    result.remove_suffix(3);
-  }
-
-  return std::string(base::TrimWhitespaceASCII(result, base::TRIM_ALL));
 }
 
 base::DictValue ContentClassificationResultToDict(
@@ -100,16 +83,11 @@ std::unique_ptr<ContentAnnotatorService> ContentAnnotatorService::Create(
   if (!content_classifier) {
     return nullptr;
   }
-  std::unique_ptr<ContentAnnotationValidator> validator =
-      ContentAnnotationValidator::Create();
-  if (!validator) {
-    return nullptr;
-  }
   return base::WrapUnique(new ContentAnnotatorService(
       page_content_annotations_service, page_content_extraction_service,
       optimization_guide_remote_model_executor, page_embeddings_service,
       accessibility_annotator_backend, embedder, embedder_metadata_provider,
-      std::move(content_classifier), std::move(validator)));
+      std::move(content_classifier)));
 }
 
 ContentAnnotatorService::ContentAnnotatorService(
@@ -123,8 +101,7 @@ ContentAnnotatorService::ContentAnnotatorService(
     AccessibilityAnnotatorBackend& accessibility_annotator_backend,
     passage_embeddings::Embedder* embedder,
     passage_embeddings::EmbedderMetadataProvider* embedder_metadata_provider,
-    std::unique_ptr<ContentClassifier> content_classifier,
-    std::unique_ptr<ContentAnnotationValidator> validator)
+    std::unique_ptr<ContentClassifier> content_classifier)
     : page_content_annotations_service_(page_content_annotations_service),
       optimization_guide_remote_model_executor_(
           optimization_guide_remote_model_executor),
@@ -132,10 +109,8 @@ ContentAnnotatorService::ContentAnnotatorService(
       accessibility_annotator_backend_(accessibility_annotator_backend),
       embedder_(embedder),
       join_entries_(features::kContentAnnotatorMaxPendingUrls.Get()),
-      content_classifier_(std::move(content_classifier)),
-      validator_(std::move(validator)) {
+      content_classifier_(std::move(content_classifier)) {
   CHECK(content_classifier_);
-  CHECK(validator_);
   page_content_annotations_service_->AddObserver(
       page_content_annotations::AnnotationType::kContentVisibility, this);
   page_content_extraction_service_observation_.Observe(
@@ -345,17 +320,7 @@ void ContentAnnotatorService::HandleModelExecutionResult(
     std::optional<optimization_guide::proto::ContentAnnotation>
         content_annotation = response->content_annotation();
     if (content_annotation.has_value()) {
-      data.content_annotation = std::move(content_annotation);
-      accessibility_annotator_backend_->SetContentAnnotationsCacheData(
-          visit_id, std::move(data));
-    }
-  } else if (response->has_extracted_data() &&
-             !response->extracted_data().empty()) {
-    // TODO(crbug.com/497903571): Remove this once the new schema is enabled.
-    std::optional<base::DictValue> extracted_data =
-        validator_->Validate(StripMarkdown(response->extracted_data()));
-    if (extracted_data.has_value()) {
-      data.annotations = std::move(extracted_data);
+      data.content_annotation = std::move(*content_annotation);
       accessibility_annotator_backend_->SetContentAnnotationsCacheData(
           visit_id, std::move(data));
     }

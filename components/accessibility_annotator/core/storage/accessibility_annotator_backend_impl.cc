@@ -140,12 +140,8 @@ AccessibilityAnnotatorBackendImpl::GetContentAnnotationsCacheData(
 void AccessibilityAnnotatorBackendImpl::SetContentAnnotationsCacheData(
     history::VisitID visit_id,
     ContentAnnotationsData data) {
-  bool is_confirmed = false;
-
-  if (data.content_annotation.has_value()) {
-    is_confirmed = data.content_annotation->status() ==
+  bool is_confirmed = data.content_annotation.status() ==
                    optimization_guide::proto::ContentAnnotation::CONFIRMED;
-  }
 
   if (is_confirmed && data.tab_id) {
     ProcessConfirmedStatusLookback(data);
@@ -161,8 +157,7 @@ void AccessibilityAnnotatorBackendImpl::SetContentAnnotationsCacheData(
 
 void AccessibilityAnnotatorBackendImpl::ProcessConfirmedStatusLookback(
     const ContentAnnotationsData& data) {
-  if (data.navigation_timestamp.is_null() ||
-      !data.content_annotation.has_value()) {
+  if (data.navigation_timestamp.is_null()) {
     return;
   }
 
@@ -204,7 +199,7 @@ void AccessibilityAnnotatorBackendImpl::ProcessConfirmedStatusLookback(
 
   // Initialize with the triggering data (the most recent one).
   optimization_guide::proto::ContentAnnotation merged_annotation =
-      *data.content_annotation;
+      std::move(data.content_annotation);
 
   // Perform the lookback over multiple pages in descending chronological order
   // (most recent first), merging annotations into `merged_annotation`.
@@ -212,12 +207,8 @@ void AccessibilityAnnotatorBackendImpl::ProcessConfirmedStatusLookback(
   // represents a separate event that has been processed by
   // `ProcessConfirmedStatusLookback()` already.
   for (const ContentAnnotationsData* entry : multipage_entries) {
-    if (!entry->content_annotation) {
-      continue;
-    }
-
     const optimization_guide::proto::ContentAnnotation& src =
-        *entry->content_annotation;
+        std::move(entry->content_annotation);
 
     if (src.status() ==
         optimization_guide::proto::ContentAnnotation::CONFIRMED) {
@@ -287,13 +278,8 @@ base::Value AccessibilityAnnotatorBackendImpl::GetDebugUICacheData() const {
     if (item.second.tab_id) {
       entry.Set("tab_id", *item.second.tab_id);
     }
-    if (item.second.annotations) {
-      entry.Set("annotations", item.second.annotations->Clone());
-    }
-    if (item.second.content_annotation) {
-      entry.Set("content_annotation", optimization_guide::proto::ToValue(
-                                          *item.second.content_annotation));
-    }
+    entry.Set("content_annotation", optimization_guide::proto::ToValue(
+                                        item.second.content_annotation));
     result.Append(std::move(entry));
   }
   return base::Value(std::move(result));

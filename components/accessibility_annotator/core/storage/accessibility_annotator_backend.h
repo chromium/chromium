@@ -66,9 +66,7 @@ class AccessibilityAnnotatorBackend : public KeyedService {
 
     std::string page_title;
     std::optional<int> tab_id;
-    std::optional<base::DictValue> annotations;
-    std::optional<optimization_guide::proto::ContentAnnotation>
-        content_annotation;
+    optimization_guide::proto::ContentAnnotation content_annotation;
     base::DictValue classifier_results;
     base::Time navigation_timestamp;
     history::VisitID visit_id = history::kInvalidVisitID;

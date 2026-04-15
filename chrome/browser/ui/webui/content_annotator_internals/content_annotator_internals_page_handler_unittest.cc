@@ -107,15 +107,19 @@ TEST_F(ContentAnnotatorInternalsPageHandlerTest, GetAnnotatedContentWithData) {
       AccessibilityAnnotatorBackendFactory::GetForProfile(profile());
   ASSERT_TRUE(backend);
 
-  base::DictValue annotations;
-  annotations.Set("key", "value");
   base::DictValue classifier_results;
   classifier_results.Set("url_match_result", "test category");
 
-  base::DictValue expected_annotations = annotations.Clone();
   base::DictValue expected_classifier = classifier_results.Clone();
   base::Time now;
   ASSERT_TRUE(base::Time::FromUTCString("2026-04-10 10:00:00 UTC", &now));
+
+  optimization_guide::proto::ContentAnnotation content_annotation;
+  content_annotation.set_description("Test annotation description");
+  content_annotation.set_status(
+      optimization_guide::proto::ContentAnnotation::CONFIRMED);
+  auto* order = content_annotation.mutable_structured_data()->add_orders();
+  order->set_id("order_123");
 
   accessibility_annotator::AccessibilityAnnotatorBackend::ContentAnnotationsData
       data;
@@ -123,7 +127,7 @@ TEST_F(ContentAnnotatorInternalsPageHandlerTest, GetAnnotatedContentWithData) {
   data.tab_id = 123;
   data.url = GURL("https://example.com");
   data.navigation_timestamp = now;
-  data.annotations = std::move(annotations);
+  data.content_annotation = std::move(content_annotation);
   data.classifier_results = std::move(classifier_results);
 
   backend->SetContentAnnotationsCacheData(static_cast<history::VisitID>(123),
@@ -136,19 +140,28 @@ TEST_F(ContentAnnotatorInternalsPageHandlerTest, GetAnnotatedContentWithData) {
         const base::ListValue& list = content.GetList();
         ASSERT_EQ(list.size(), 1u);
         const base::DictValue& entry = list[0].GetDict();
-        EXPECT_THAT(entry,
-                    DictionaryHasValues(
+        EXPECT_THAT(
+            entry,
+            DictionaryHasValues(
+                base::DictValue()
+                    .Set("url", "https://example.com/")
+                    .Set("title", "Title")
+                    .Set("tab_id", 123)
+                    .Set("visit_id", "123")
+                    .Set("navigation_timestamp",
+                         "4/10/26, 10:00:00\xe2\x80\xaf"
+                         "AM")
+                    .Set("classifier_results", std::move(expected_classifier))
+                    .Set(
+                        "content_annotation",
                         base::DictValue()
-                            .Set("url", "https://example.com/")
-                            .Set("title", "Title")
-                            .Set("tab_id", 123)
-                            .Set("visit_id", "123")
-                            .Set("navigation_timestamp",
-                                 "4/10/26, 10:00:00\xe2\x80\xaf"
-                                 "AM")
-                            .Set("annotations", std::move(expected_annotations))
-                            .Set("classifier_results",
-                                 std::move(expected_classifier))));
+                            .Set("description", "Test annotation description")
+                            .Set("status", "CONFIRMED")
+                            .Set("structured_data",
+                                 base::DictValue().Set(
+                                     "orders", base::ListValue().Append(
+                                                   base::DictValue().Set(
+                                                       "id", "order_123")))))));
         run_loop.Quit();
       }));
   run_loop.Run();

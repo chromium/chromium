@@ -4,8 +4,6 @@
 
 source_set("content_annotator") {
   sources = [
-    "content_annotation_validator.cc",
-    "content_annotation_validator.h",
     "content_annotator_classifier_rules_parser.cc",
     "content_annotator_classifier_rules_parser.h",
     "content_annotator_rule_based_classifier.cc",
@@ -46,7 +44,6 @@ source_set("content_annotator") {
 source_set("unit_tests") {
   testonly = true
   sources = [
-    "content_annotation_validator_unittest.cc",
     "content_annotator_classifier_rules_parser_unittest.cc",
     "content_annotator_rule_based_classifier_unittest.cc",
     "content_annotator_semantic_match_classifier_unittest.cc",

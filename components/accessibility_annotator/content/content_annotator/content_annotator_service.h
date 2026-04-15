@@ -37,7 +37,6 @@ struct LanguageDetectionDetails;
 namespace accessibility_annotator {
 
 class ContentClassifier;
-class ContentAnnotationValidator;
 
 class ContentAnnotatorService
     : public KeyedService,
@@ -107,8 +106,7 @@ class ContentAnnotatorService
       AccessibilityAnnotatorBackend& accessibility_annotator_backend,
       passage_embeddings::Embedder* embedder,
       passage_embeddings::EmbedderMetadataProvider* embedder_metadata_provider,
-      std::unique_ptr<ContentClassifier> content_classifier,
-      std::unique_ptr<ContentAnnotationValidator> validator);
+      std::unique_ptr<ContentClassifier> content_classifier);
 
  private:
   using CacheIterator =
@@ -180,7 +178,6 @@ class ContentAnnotatorService
   SEQUENCE_CHECKER(sequence_checker_);
 
   std::unique_ptr<ContentClassifier> content_classifier_;
-  std::unique_ptr<ContentAnnotationValidator> validator_;
 
   base::WeakPtrFactory<ContentAnnotatorService> weak_ptr_factory_{this};
 };
