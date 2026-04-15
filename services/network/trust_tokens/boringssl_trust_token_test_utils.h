@@ -59,12 +59,8 @@ class TestTrustTokenIssuer {
   }
 
  private:
-  // A static private metadata value is used. The test issuer sets it only to
-  // confirm that it can encode the private metadata on issuance and recover it
-  // on redemption. see.
-  // https://github.com/WICG/trust-token-api#extension-private-metadata for
-  // details on the private metatadata extension.
-  static constexpr uint8_t kPrivateMetadata = 1;
+  // A static private metadata value is used.
+  static constexpr uint8_t kPrivateMetadata = 0;
   struct TokenKeyPair {
     TokenKeyPair();
     TokenKeyPair(const TokenKeyPair&);

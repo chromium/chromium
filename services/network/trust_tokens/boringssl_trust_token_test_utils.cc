@@ -52,7 +52,7 @@ TestTrustTokenIssuer::TokenKeyPair TestTrustTokenIssuer::GenerateTokenKeyPair(
 
   size_t signing_key_len, verification_key_len;
   CHECK(TRUST_TOKEN_generate_key(
-      TRUST_TOKEN_experiment_v2_pmb(), keys.signing.data(), &signing_key_len,
+      TRUST_TOKEN_pst_v1_voprf(), keys.signing.data(), &signing_key_len,
       keys.signing.size(), keys.verification.data(), &verification_key_len,
       keys.verification.size(), key_id));
   keys.signing.resize(signing_key_len);
@@ -79,7 +79,7 @@ TestTrustTokenIssuer::TestTrustTokenIssuer(uint8_t num_keys,
   }
 
   bssl::UniquePtr<TRUST_TOKEN_ISSUER> ctx(TRUST_TOKEN_ISSUER_new(
-      /*method=*/TRUST_TOKEN_experiment_v2_pmb(),
+      /*method=*/TRUST_TOKEN_pst_v1_voprf(),
       /*max_batchsize=*/max_issuance_));
 
   for (const TokenKeyPair& key_pair : keys_) {
@@ -87,17 +87,6 @@ TestTrustTokenIssuer::TestTrustTokenIssuer(uint8_t num_keys,
                                /*key=*/key_pair.signing.data(),
                                /*key_len=*/key_pair.signing.size());
   }
-  // Copying the comment from evp.h:
-  // The [Ed25519] RFC 8032 private key format is the 32-byte prefix of
-  // |ED25519_sign|'s 64-byte private key.
-  uint8_t public_key[32], private_key[64];
-  ED25519_keypair(/*out_public_key=*/public_key,
-                  /*out_private_key=*/private_key);
-  bssl::UniquePtr<EVP_PKEY> issuer_rr_key(EVP_PKEY_new_raw_private_key(
-      /*type=*/EVP_PKEY_ED25519, /*unused=*/nullptr, /*in=*/private_key,
-      /*len=*/32));
-  TRUST_TOKEN_ISSUER_set_srr_key(/*ctx=*/ctx.get(),
-                                 /*key=*/issuer_rr_key.get());
 
   ctx_ = std::move(ctx);
 }
@@ -161,45 +150,6 @@ bssl::UniquePtr<TRUST_TOKEN> TestTrustTokenIssuer::Redeem(
   };
 
   EXPECT_EQ(received_private_metadata, kPrivateMetadata);
-  EXPECT_NE(std::ranges::find_if(keys_,
-                                 [&received_public_metadata](auto& key) {
-                                   return key.key_id ==
-                                          received_public_metadata;
-                                 }),
-            std::end(keys_));
-
-  return bssl::UniquePtr<TRUST_TOKEN>(redeemed_token);
-}
-
-bssl::UniquePtr<TRUST_TOKEN> TestTrustTokenIssuer::RedeemOverMessage(
-    const std::string& redemption_request,
-    const std::string& message) const {
-  std::string raw_redemption_request;
-  if (!base::Base64Decode(redemption_request, &raw_redemption_request)) {
-    return nullptr;
-  }
-
-  TRUST_TOKEN* redeemed_token;
-  ScopedBoringsslBytes redeemed_client_data;
-  uint32_t received_public_metadata;
-  uint8_t received_private_metadata;
-
-  if (TRUST_TOKEN_ISSUER_redeem_over_message(
-          /*ctx=*/ctx_.get(), /*out_public=*/&received_public_metadata,
-          /*out_private=*/&received_private_metadata,
-          /*out_token=*/&redeemed_token,
-          /*out_client_data=*/
-          &redeemed_client_data.mutable_ptr()->AsEphemeralRawAddr(),
-          /*out_client_data_len=*/redeemed_client_data.mutable_len(),
-          /*request=*/
-          base::as_byte_span(raw_redemption_request).data(),
-          /*request_len=*/raw_redemption_request.size(),
-          /*msg=*/reinterpret_cast<const unsigned char*>(message.c_str()),
-          /*msg_len=*/message.size()) != 1) {
-    return nullptr;
-  }
-
-  EXPECT_EQ(received_private_metadata, 1);
   EXPECT_NE(std::ranges::find_if(keys_,
                                  [&received_public_metadata](auto& key) {
                                    return key.key_id ==
