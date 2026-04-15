@@ -69,17 +69,14 @@ class FakeGPUImageDecodeTestRasterInterface : public viz::TestRasterInterface,
 
   base::span<uint8_t> MapTransferCacheEntry(uint32_t serialized_size) override {
     mapped_entry_size_ = serialized_size;
-    auto buffer =
-        PaintOpWriter::AllocateAlignedBuffer<uint8_t>(serialized_size);
-    mapped_entry_.swap(buffer);
-    return UNSAFE_TODO(base::span(mapped_entry_.get(), mapped_entry_size_));
+    mapped_entry_ = PaintOpWriter::AllocateAlignedBuffer(serialized_size);
+    return mapped_entry_.as_span();
   }
 
   void UnmapAndCreateTransferCacheEntry(uint32_t type, uint32_t id) override {
-    transfer_cache_helper_->CreateEntryDirect(
-        MakeEntryKey(type, id),
-        UNSAFE_TODO(base::span(mapped_entry_.get(), mapped_entry_size_)));
-    mapped_entry_ = nullptr;
+    transfer_cache_helper_->CreateEntryDirect(MakeEntryKey(type, id),
+                                              mapped_entry_.as_span());
+    mapped_entry_ = base::AlignedHeapArray<uint8_t>();
     mapped_entry_size_ = 0;
   }
 
@@ -107,7 +104,7 @@ class FakeGPUImageDecodeTestRasterInterface : public viz::TestRasterInterface,
  private:
   raw_ptr<TransferCacheTestHelper> transfer_cache_helper_;
   size_t mapped_entry_size_ = 0;
-  std::unique_ptr<uint8_t, base::AlignedFreeDeleter> mapped_entry_;
+  base::AlignedHeapArray<uint8_t> mapped_entry_;
 };
 
 class FakeRasterDarkModeFilter : public RasterDarkModeFilter {

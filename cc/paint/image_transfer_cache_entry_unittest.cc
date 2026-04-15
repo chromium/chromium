@@ -201,15 +201,13 @@ TEST_P(ImageTransferCacheEntryTest, MAYBE_Deserialize) {
                                            nullptr /* decoded color space*/),
       true /* needs_mips */, gfx::HDRMetadata()));
   uint32_t size = client_entry->SerializedSize();
-  auto data = PaintOpWriter::AllocateAlignedBuffer<uint8_t>(size);
-  UNSAFE_TODO(ASSERT_TRUE(client_entry->Serialize(
-      base::span(static_cast<uint8_t*>(data.get()), size))));
+  auto data = PaintOpWriter::AllocateAlignedBuffer(size);
+  ASSERT_TRUE(client_entry->Serialize(data.as_span()));
 
   // Create service-side entry from the client-side serialize info
   auto entry(std::make_unique<ServiceImageTransferCacheEntry>());
-  UNSAFE_TODO(ASSERT_TRUE(
-      entry->Deserialize(gr_context(), /*graphite_recorder=*/nullptr,
-                         base::span(static_cast<uint8_t*>(data.get()), size))));
+  ASSERT_TRUE(entry->Deserialize(gr_context(), /*graphite_recorder=*/nullptr,
+                                 data.as_span()));
   ASSERT_TRUE(entry->is_yuv());
 
   // Check color of pixels
@@ -255,14 +253,12 @@ TEST(ImageTransferCacheEntryTestNoYUV, CPUImageWithMips) {
       ClientImageTransferCacheEntry::Image(&bitmap.pixmap()), true,
       gfx::HDRMetadata());
   const uint32_t storage_size = client_entry.SerializedSize();
-  auto storage = PaintOpWriter::AllocateAlignedBuffer<uint8_t>(storage_size);
-  client_entry.Serialize(UNSAFE_TODO(base::span(storage.get(), storage_size)));
+  auto storage = PaintOpWriter::AllocateAlignedBuffer(storage_size);
+  client_entry.Serialize(storage.as_span());
 
   ServiceImageTransferCacheEntry service_entry;
-  service_entry.Deserialize(
-      gr_context.get(),
-      /*graphite_recorder=*/nullptr,
-      UNSAFE_TODO(base::span(storage.get(), storage_size)));
+  service_entry.Deserialize(gr_context.get(),
+                            /*graphite_recorder=*/nullptr, storage.as_span());
   ASSERT_TRUE(service_entry.image());
   auto pre_mip_image = service_entry.image();
   EXPECT_FALSE(pre_mip_image->isTextureBacked());
@@ -286,14 +282,12 @@ TEST(ImageTransferCacheEntryTestNoYUV, CPUImageAddMipsLater) {
       ClientImageTransferCacheEntry::Image(&bitmap.pixmap()), false,
       gfx::HDRMetadata());
   const uint32_t storage_size = client_entry.SerializedSize();
-  auto storage = PaintOpWriter::AllocateAlignedBuffer<uint8_t>(storage_size);
-  client_entry.Serialize(UNSAFE_TODO(base::span(storage.get(), storage_size)));
+  auto storage = PaintOpWriter::AllocateAlignedBuffer(storage_size);
+  client_entry.Serialize(storage.as_span());
 
   ServiceImageTransferCacheEntry service_entry;
-  service_entry.Deserialize(
-      gr_context.get(),
-      /*graphite_recorder=*/nullptr,
-      UNSAFE_TODO(base::span(storage.get(), storage_size)));
+  service_entry.Deserialize(gr_context.get(),
+                            /*graphite_recorder=*/nullptr, storage.as_span());
   ASSERT_TRUE(service_entry.image());
   auto pre_mip_image = service_entry.image();
   EXPECT_FALSE(pre_mip_image->isTextureBacked());

@@ -5,6 +5,7 @@
 #include <utility>
 
 #include "base/compiler_specific.h"
+#include "base/containers/span.h"
 #include "base/test/launcher/unit_test_launcher.h"
 #include "base/test/test_suite.h"
 #include "base/timer/lap_timer.h"
@@ -48,7 +49,7 @@ class PaintOpPerfTest : public testing::Test {
     timer_.Reset();
     do {
       SimpleBufferSerializer serializer(
-          serialized_data_.get(), kMaxSerializedBufferBytes,
+          serialized_data_.data(), kMaxSerializedBufferBytes,
           test_options_provider.serialize_options());
       serializer.Serialize(buffer, nullptr, preamble);
       bytes_written = serializer.written();
@@ -69,7 +70,7 @@ class PaintOpPerfTest : public testing::Test {
 
     do {
       size_t remaining_read_bytes = bytes_written;
-      char* to_read = serialized_data_.get();
+      uint8_t* to_read = serialized_data_.data();
 
       while (true) {
         PaintOp* deserialized_op = PaintOp::Deserialize(
@@ -97,9 +98,9 @@ class PaintOpPerfTest : public testing::Test {
 
  protected:
   base::LapTimer timer_;
-  std::unique_ptr<char, base::AlignedFreeDeleter> serialized_data_;
-  alignas(PaintOpBuffer::kPaintOpAlign) char deserialized_data_
-      [kLargestPaintOpAlignedSize];
+  base::AlignedHeapArray<uint8_t> serialized_data_;
+  alignas(PaintOpBuffer::kPaintOpAlign) uint8_t
+      deserialized_data_[kLargestPaintOpAlignedSize];
 };
 
 // Ops that can be memcopied both when serializing and deserializing.

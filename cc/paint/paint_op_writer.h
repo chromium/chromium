@@ -93,11 +93,8 @@ class CC_PAINT_EXPORT PaintOpWriter {
 
   ~PaintOpWriter();
 
-  template <typename T = char>
-  static std::unique_ptr<T, base::AlignedFreeDeleter> AllocateAlignedBuffer(
-      size_t size) {
-    return std::unique_ptr<T, base::AlignedFreeDeleter>(
-        static_cast<T*>(base::AlignedAlloc(size, kMaxAlignment)));
+  static base::AlignedHeapArray<uint8_t> AllocateAlignedBuffer(size_t size) {
+    return base::AlignedUninit<uint8_t>(size, kMaxAlignment);
   }
 
   const PaintOp::SerializeOptions& options() const { return options_; }

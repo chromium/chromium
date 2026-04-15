@@ -115,14 +115,12 @@ ImageProvider::ScopedResult TestOptionsProvider::GetRasterContent(
       ClientImageTransferCacheEntry::Image(&bitmap.pixmap()),
       false /* needs_mips */, gfx::HDRMetadata());
   const uint32_t data_size = cache_entry.SerializedSize();
-  auto data = PaintOpWriter::AllocateAlignedBuffer<uint8_t>(data_size);
-  if (!cache_entry.Serialize(
-          UNSAFE_TODO(base::span<uint8_t>(data.get(), data_size)))) {
+  auto data = PaintOpWriter::AllocateAlignedBuffer(data_size);
+  if (!cache_entry.Serialize(data.as_span())) {
     return ScopedResult();
   }
 
-  CreateEntryDirect(entry_key,
-                    UNSAFE_TODO(base::span<uint8_t>(data.get(), data_size)));
+  CreateEntryDirect(entry_key, data.as_span());
 
   return ScopedResult(DecodedDrawImage(
       image_id, nullptr, SkSize::MakeEmpty(), draw_image.scale(),
