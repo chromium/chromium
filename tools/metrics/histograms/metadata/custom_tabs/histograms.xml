@@ -82,22 +82,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="CustomTab.SessionDuration{CustomTabOpenSource}" units="ms"
-    expires_after="2020-10-18">
-  <owner>ranj@chromium.org</owner>
-  <owner>yfriedman@chromium.org</owner>
-  <summary>
-    Records the time duration in CustomTab Activity from onStart/onResume to
-    onStop/onPause, if that activity is opened by Webapp/WebApk/Trusted Web
-    Activity. {CustomTabOpenSource}
-  </summary>
-  <token key="CustomTabOpenSource">
-    <variant name=".MediaLauncherActivity"
-        summary="CustomTab opened by MediaLauncherActivity."/>
-    <variant name=".Other" summary="CustomTab opened by other apps."/>
-  </token>
-</histogram>
-
 <histogram name="CustomTabs.AdaptiveToolbarButton.ChosenRanking" units="rank"
     expires_after="2026-09-20">
   <owner>jinsukkiim@google.com</owner>

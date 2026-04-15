@@ -1321,7 +1321,6 @@ chrome_java_sources = [
   "java/src/org/chromium/chrome/browser/webapps/WebappActivity.java",
   "java/src/org/chromium/chrome/browser/webapps/WebappActivityCoordinator.java",
   "java/src/org/chromium/chrome/browser/webapps/WebappAuthenticator.java",
-  "java/src/org/chromium/chrome/browser/webapps/WebappCustomTabTimeSpentLogger.java",
   "java/src/org/chromium/chrome/browser/webapps/WebappDataStorage.java",
   "java/src/org/chromium/chrome/browser/webapps/WebappDeferredStartupWithStorageHandler.java",
   "java/src/org/chromium/chrome/browser/webapps/WebappDirectoryManager.java",
