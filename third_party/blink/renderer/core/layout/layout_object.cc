@@ -3955,8 +3955,6 @@ void LayoutObject::WillBeDestroyed() {
       frame->GetPage()->GetAutoscrollController().StopAutoscrollIfNeeded(this);
   }
 
-  Remove();
-
   // Remove the handler if node had touch-action set. Handlers are not added
   // for text nodes so don't try removing for one too. Need to check if
   // m_style is null in cases of partial construction. Any handler we added
@@ -4207,6 +4205,8 @@ void LayoutObject::Destroy() {
   NOT_DESTROYED();
   DCHECK(g_allow_destroying_layout_object_in_finalizer ||
          !ThreadState::Current()->IsSweepingOnOwningThread());
+
+  Remove();
 
   // Mark as being destroyed to avoid trouble with merges in |RemoveChild()| and
   // other house keepings.

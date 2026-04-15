@@ -675,7 +675,7 @@ TEST_F(FragmentItemTest, MarkLineBoxesDirtyOnEndSpaceCollapsed) {
   Element* target = GetElementById("target");
   target->remove();
   // TODO(kojii): This can be optimized more.
-  TestFirstDirtyLineIndex("container", 0);
+  TestFirstDirtyLineIndex("container", 1);
 
   ForceLayout();  // Ensure running layout does not crash.
 }
