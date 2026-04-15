@@ -692,6 +692,10 @@ void V4L2VideoEncodeAccelerator::Destroy() {
   // We're destroying; cancel all callbacks.
   client_ptr_factory_.reset();
 
+  // Invalidates |child_weak_this_factory_| so that no callback to |this| is
+  // invoked hereafter.
+  child_weak_this_factory_.InvalidateWeakPtrs();
+
   encoder_task_runner_->PostTask(
       FROM_HERE, base::BindOnce(&V4L2VideoEncodeAccelerator::DestroyTask,
                                 base::Unretained(this)));
