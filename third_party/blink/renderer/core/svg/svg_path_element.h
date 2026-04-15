@@ -41,7 +41,6 @@ class SVGPathElement final : public SVGGeometryElement {
 
   Path AsPath() const override;
   PathBuilder AsMutablePath() const override;
-  Path AttributePath() const;
 
   float getTotalLength(ExceptionState&) override;
   SVGPointTearOff* getPointAtLength(float distance, ExceptionState&) override;
@@ -58,6 +57,7 @@ class SVGPathElement final : public SVGGeometryElement {
  private:
   const StylePath* GetStylePath() const;
 
+  void DidRecalcStyle(const StyleRecalcChange) override;
   void SvgAttributeChanged(const SvgAttributeChangedParams&) override;
 
   Node::InsertionNotificationRequest InsertedInto(ContainerNode&) override;

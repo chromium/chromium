@@ -121,6 +121,10 @@ class CORE_EXPORT SVGAnimationElement : public SVGSMILElement {
 
   bool HasKeyPoints() const { return !key_points_.empty(); }
 
+  void SetAlwaysRevalidateAnimationValue(bool value) {
+    always_revalidate_animation_value_ = value;
+  }
+
  private:
   bool IsValid() const final;
 
@@ -180,6 +184,7 @@ class CORE_EXPORT SVGAnimationElement : public SVGSMILElement {
     kInvalid,
   };
   AnimationValidity animation_valid_;
+  bool always_revalidate_animation_value_;
   bool registered_animation_;
   bool use_paced_key_times_;
 

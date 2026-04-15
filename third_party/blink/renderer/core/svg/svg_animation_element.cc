@@ -48,6 +48,7 @@ SVGAnimationElement::SVGAnimationElement(const QualifiedName& tag_name,
                                          Document& document)
     : SVGSMILElement(tag_name, document),
       animation_valid_(AnimationValidity::kUnknown),
+      always_revalidate_animation_value_(false),
       registered_animation_(false),
       calc_mode_(kCalcModeLinear),
       animation_mode_(kNoAnimation) {
@@ -731,6 +732,10 @@ SMILAnimationEffectParameters SVGAnimationElement::ComputeEffectParameters()
 }
 
 void SVGAnimationElement::ApplyAnimation(SMILAnimationValue& animation_value) {
+  if (always_revalidate_animation_value_) {
+    animation_valid_ = AnimationValidity::kUnknown;
+  }
+
   if (animation_valid_ == AnimationValidity::kUnknown) {
     if (UpdateAnimationMode() && UpdateAnimationValues() &&
         CheckAnimationParameters()) {

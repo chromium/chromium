@@ -43,10 +43,6 @@ void SVGPathElement::Trace(Visitor* visitor) const {
   SVGGeometryElement::Trace(visitor);
 }
 
-Path SVGPathElement::AttributePath() const {
-  return path_->CurrentValue()->GetStylePath()->GetPath();
-}
-
 const StylePath* SVGPathElement::GetStylePath() const {
   if (const ComputedStyle* style = GetComputedStyle()) {
     if (const StylePath* style_path = style->D())
@@ -103,6 +99,11 @@ SVGPointTearOff* SVGPathElement::getPointAtLength(
   }
   gfx::PointF point = path_query.GetPointAtLength(length);
   return SVGPointTearOff::CreateDetached(point);
+}
+
+void SVGPathElement::DidRecalcStyle(const StyleRecalcChange change) {
+  SVGGeometryElement::DidRecalcStyle(change);
+  InvalidateMPathDependencies();
 }
 
 void SVGPathElement::SvgAttributeChanged(

@@ -2,13 +2,13 @@
 <script src="../../resources/run-after-layout-and-paint.js"></script>
 <style>
 #track {
-  d: path('M20,100 H180');
+  d: path('M100,20 V180');
   stroke: blue;
 }
 </style>
 <svg id="svgRoot" width="200" height="200">
 
-  <path id="track" d="M20,20 H180"/>
+  <path id="track" d="M20,20 L180,180"/>
 
   <circle r="10" cx="0" cy="0" fill="green">
     <animateMotion dur="5s" fill="freeze">
@@ -19,7 +19,7 @@
 <script>
 'use strict';
 runAfterLayoutAndPaint(function() {
-  document.getElementById('track').setAttribute('d', 'M100,20 V180');
+  document.getElementById('track').style.d = 'path("M20,100 H180")';
   document.getElementById('svgRoot').setCurrentTime(5);
 }, true);
 </script>

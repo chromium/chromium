@@ -21,6 +21,7 @@
 
 #include "third_party/blink/renderer/core/svg/svg_animate_motion_element.h"
 
+#include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/element_traversal.h"
 #include "third_party/blink/renderer/core/svg/animation/smil_animation_effect_parameters.h"
 #include "third_party/blink/renderer/core/svg/animation/smil_animation_value.h"
@@ -194,11 +195,18 @@ SVGAnimateMotionElement::RotateMode SVGAnimateMotionElement::GetRotateMode()
 
 void SVGAnimateMotionElement::UpdateAnimationPath() {
   animation_path_ = Path();
+  SetAlwaysRevalidateAnimationValue(false);
 
   for (SVGMPathElement* mpath = Traversal<SVGMPathElement>::FirstChild(*this);
        mpath; mpath = Traversal<SVGMPathElement>::NextSibling(*mpath)) {
     if (SVGPathElement* path_element = mpath->PathElement()) {
-      animation_path_ = path_element->AttributePath();
+      // The style of the path referenced by mpath may change independently.
+      SetAlwaysRevalidateAnimationValue(true);
+      if (path_element->NeedsStyleRecalc()) {
+        path_element->GetDocument().UpdateStyleAndLayoutTreeForElement(
+            path_element, DocumentUpdateReason::kSMILAnimation);
+      }
+      animation_path_ = path_element->AsPath();
       return;
     }
   }
