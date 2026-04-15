@@ -18,8 +18,14 @@ bool StructTraits<
     VkExtensionProperties>::Read(gpu::mojom::VkExtensionPropertiesDataView data,
                                  VkExtensionProperties* out) {
   std::string_view extensionName;
-  if (!data.ReadExtensionName(&extensionName))
+  if (!data.ReadExtensionName(&extensionName)) {
     return false;
+  }
+  // There should be space for NUL.
+  if (extensionName.size() >= sizeof(out->extensionName)) {
+    return false;
+  }
+  // Mojo zero-initializes `out` so it is guaranteed to be NUL-terminated.
   extensionName.copy(out->extensionName, sizeof(out->extensionName));
 
   out->specVersion = data.specVersion();
@@ -31,8 +37,14 @@ bool StructTraits<
 bool StructTraits<gpu::mojom::VkLayerPropertiesDataView, VkLayerProperties>::
     Read(gpu::mojom::VkLayerPropertiesDataView data, VkLayerProperties* out) {
   std::string_view layerName;
-  if (!data.ReadLayerName(&layerName))
+  if (!data.ReadLayerName(&layerName)) {
     return false;
+  }
+  // There should be space for NUL.
+  if (layerName.size() >= sizeof(out->layerName)) {
+    return false;
+  }
+  // Mojo zero-initializes `out` so it is guaranteed to be NUL-terminated.
   layerName.copy(out->layerName, sizeof(out->layerName));
 
   out->specVersion = data.specVersion();
@@ -40,8 +52,14 @@ bool StructTraits<gpu::mojom::VkLayerPropertiesDataView, VkLayerProperties>::
   out->implementationVersion = data.implementationVersion();
 
   std::string_view description;
-  if (!data.ReadDescription(&description))
+  if (!data.ReadDescription(&description)) {
     return false;
+  }
+  // There should be space for NUL.
+  if (description.size() >= sizeof(out->description)) {
+    return false;
+  }
+  // Mojo zero-initializes `out` so it is guaranteed to be NUL-terminated.
   description.copy(out->description, sizeof(out->description));
 
   return true;
@@ -64,8 +82,14 @@ bool StructTraits<gpu::mojom::VkPhysicalDevicePropertiesDataView,
     return false;
 
   std::string_view deviceName;
-  if (!data.ReadDeviceName(&deviceName))
+  if (!data.ReadDeviceName(&deviceName)) {
     return false;
+  }
+  // There should be space for NUL.
+  if (deviceName.size() >= sizeof(out->deviceName)) {
+    return false;
+  }
+  // Mojo zero-initializes `out` so it is guaranteed to be NUL-terminated.
   deviceName.copy(out->deviceName, sizeof(out->deviceName));
 
   base::span<uint8_t> pipelineCacheUUID(out->pipelineCacheUUID);
