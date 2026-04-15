@@ -637,13 +637,9 @@ void WebUIBrowserWindow::UpdateTitleBar() {
   // TODO(webium): The icon might also need updating.
 }
 
-void WebUIBrowserWindow::BookmarkBarStateChanged(
+void WebUIBrowserWindow::OnBookmarkBarStateChanged(
     BookmarkBar::AnimateChangeType change_type) {
   GetWebUIBrowserUI()->BookmarkBarStateChanged(change_type);
-}
-
-void WebUIBrowserWindow::TemporarilyShowBookmarkBar(base::TimeDelta duration) {
-  NOTIMPLEMENTED_LOG_ONCE();
 }
 
 void WebUIBrowserWindow::UpdateDevTools(
@@ -810,7 +806,7 @@ void WebUIBrowserWindow::FocusAppMenu() {
   NOTIMPLEMENTED_LOG_ONCE();
 }
 
-void WebUIBrowserWindow::FocusBookmarksToolbar() {
+void WebUIBrowserWindow::OnFocusBookmarksToolbar() {
   NOTIMPLEMENTED_LOG_ONCE();
 }
 
@@ -824,16 +820,6 @@ void WebUIBrowserWindow::RotatePaneFocus(bool forwards) {
 
 void WebUIBrowserWindow::FocusWebContentsPane() {
   NOTIMPLEMENTED_LOG_ONCE();
-}
-
-bool WebUIBrowserWindow::IsBookmarkBarVisible() const {
-  NOTIMPLEMENTED_LOG_ONCE();
-  return false;
-}
-
-bool WebUIBrowserWindow::IsBookmarkBarAnimating() const {
-  NOTIMPLEMENTED_LOG_ONCE();
-  return false;
 }
 
 bool WebUIBrowserWindow::IsTabStripEditable() const {

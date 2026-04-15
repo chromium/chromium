@@ -124,7 +124,8 @@ class ResumptionRailPromoTest
     BookmarkBarView::DisableAnimationsForTesting(true);
     browser()->profile()->GetPrefs()->SetBoolean(
         bookmarks::prefs::kShowBookmarkBar, true);
-    if (!browser()->window()->IsBookmarkBarVisible()) {
+    if (!BrowserView::GetBrowserViewForBrowser(browser())
+             ->IsBookmarkBarVisible()) {
       chrome::ExecuteCommand(browser(), IDC_SHOW_BOOKMARK_BAR);
     }
     ASSERT_TRUE(tab_groups::SavedTabGroupUtils::IsEnabledForProfile(

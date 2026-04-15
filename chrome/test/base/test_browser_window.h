@@ -90,9 +90,6 @@ class TestBrowserWindow : public BrowserWindow,
   void SetTopControlsGestureScrollInProgress(bool in_progress) override;
   std::vector<StatusBubble*> GetStatusBubbles() override;
   void UpdateTitleBar() override {}
-  void BookmarkBarStateChanged(
-      BookmarkBar::AnimateChangeType change_type) override {}
-  void TemporarilyShowBookmarkBar(base::TimeDelta duration) override {}
   void UpdateDevTools(content::WebContents* inspected_web_contents) override {}
   bool CanDockDevTools() const override;
   void UpdateLoadingAnimations(bool is_visible) override {}
@@ -143,7 +140,6 @@ class TestBrowserWindow : public BrowserWindow,
   void TabDraggingStatusChanged(bool is_dragging) override {}
   void LinkOpeningFromGesture(WindowOpenDisposition disposition) override {}
   void FocusAppMenu() override {}
-  void FocusBookmarksToolbar() override {}
   void FocusInactivePopupForAccessibility() override {}
   void RotatePaneFocus(bool forwards) override {}
   void FocusWebContentsPane() override {}
@@ -156,8 +152,6 @@ class TestBrowserWindow : public BrowserWindow,
   content::KeyboardEventProcessingResult PreHandleKeyboardEvent(
       const input::NativeWebKeyboardEvent& event) override;
   bool HandleKeyboardEvent(const input::NativeWebKeyboardEvent& event) override;
-  bool IsBookmarkBarVisible() const override;
-  bool IsBookmarkBarAnimating() const override;
   bool IsTabStripEditable() const override;
   void DisableTabStripEditingForTesting() override;
   void SetIsTabStripEditable(bool is_editable);

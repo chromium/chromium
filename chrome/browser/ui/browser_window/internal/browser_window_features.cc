@@ -712,6 +712,8 @@ void BrowserWindowFeatures::InitPostWindowConstruction(Browser* browser) {
 
     // BrowserView is an AcceleratorProvider.
     accelerator_provider_ = browser_view;
+
+    bookmark_bar_controller_->SetDelegate(browser_view);
   }
 
   if (auto* const provider =
@@ -728,6 +730,8 @@ void BrowserWindowFeatures::InitPostWindowConstruction(Browser* browser) {
 
     // WebUIBrowserWindow is an AcceleratorProvider.
     accelerator_provider_ = webui_browser_window;
+
+    bookmark_bar_controller_->SetDelegate(webui_browser_window);
 
     find_bar_owner_ =
         std::make_unique<FindBarOwnerWebUIBrowser>(webui_browser_window);
@@ -1085,6 +1089,8 @@ void BrowserWindowFeatures::TearDownPreBrowserWindowDestruction() {
   if (user_education_) {
     user_education_->TearDown();
   }
+
+  bookmark_bar_controller_->SetDelegate(nullptr);
 
   immersive_mode_controller_.reset();
 

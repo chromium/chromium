@@ -2293,7 +2293,7 @@ void FocusAppMenu(BrowserWindowInterface* browser) {
 
 void FocusBookmarksToolbar(BrowserWindowInterface* browser) {
   base::RecordAction(UserMetricsAction("FocusBookmarksToolbar"));
-  browser->GetBrowserForMigrationOnly()->window()->FocusBookmarksToolbar();
+  BookmarkBarController::From(browser)->FocusBookmarksToolbar();
 }
 
 void FocusInactivePopupForAccessibility(BrowserWindowInterface* browser) {

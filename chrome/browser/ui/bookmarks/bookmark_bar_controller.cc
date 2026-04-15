@@ -98,6 +98,16 @@ const BookmarkBarController* BookmarkBarController::From(
       browser_window_interface->GetUnownedUserDataHost());
 }
 
+void BookmarkBarController::SetDelegate(Delegate* delegate) {
+  delegate_ = delegate;
+}
+
+void BookmarkBarController::FocusBookmarksToolbar() {
+  if (delegate_) {
+    delegate_->OnFocusBookmarksToolbar();
+  }
+}
+
 void BookmarkBarController::SetForceShowBookmarkBarFlag(ForceShowFlag flag) {
   force_show_bookmark_bar_flags_ |= flag;
   UpdateBookmarkBarState(StateChangeReason::kForceShow);
@@ -127,11 +137,11 @@ void BookmarkBarController::UpdateBookmarkBarState(StateChangeReason reason) {
 
   bool should_animate = reason == StateChangeReason::kPrefChange ||
                         reason == StateChangeReason::kForceShow;
-  Browser* browser = browser_->GetBrowserForMigrationOnly();
-  if (browser && browser->window()) {
-    browser->window()->BookmarkBarStateChanged(
-        should_animate ? BookmarkBar::ANIMATE_STATE_CHANGE
-                       : BookmarkBar::DONT_ANIMATE_STATE_CHANGE);
+  BookmarkBar::AnimateChangeType change_type =
+      should_animate ? BookmarkBar::ANIMATE_STATE_CHANGE
+                     : BookmarkBar::DONT_ANIMATE_STATE_CHANGE;
+  if (delegate_) {
+    delegate_->OnBookmarkBarStateChanged(change_type);
   }
 }
 

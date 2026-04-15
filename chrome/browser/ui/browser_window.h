@@ -225,14 +225,6 @@ class BrowserWindow : public ui::BaseWindow {
   // frames may need to refresh their title bar.
   virtual void UpdateTitleBar() = 0;
 
-  // Invoked when the state of the bookmark bar changes. This is only invoked if
-  // the state changes for the current tab, it is not sent when switching tabs.
-  virtual void BookmarkBarStateChanged(
-      BookmarkBar::AnimateChangeType change_type) = 0;
-
-  // Temporarily force shows the bookmark bar for the provided |duration|.
-  virtual void TemporarilyShowBookmarkBar(base::TimeDelta duration) = 0;
-
   // Inform the frame that the dev tools window for the selected tab has
   // changed.
   virtual void UpdateDevTools(content::WebContents* inspected_web_contents) = 0;
@@ -356,9 +348,6 @@ class BrowserWindow : public ui::BaseWindow {
   // Not used on the Mac, which has a "normal" menu bar.
   virtual void FocusAppMenu() = 0;
 
-  // Focuses the bookmarks toolbar (for accessibility).
-  virtual void FocusBookmarksToolbar() = 0;
-
   // Focuses a visible but inactive popup for accessibility.
   virtual void FocusInactivePopupForAccessibility() = 0;
 
@@ -367,12 +356,6 @@ class BrowserWindow : public ui::BaseWindow {
 
   // Moves keyboard focus directly to the web contents pane.
   virtual void FocusWebContentsPane() = 0;
-
-  // Returns whether the bookmark bar is visible or not.
-  virtual bool IsBookmarkBarVisible() const = 0;
-
-  // Returns whether the bookmark bar is animating or not.
-  virtual bool IsBookmarkBarAnimating() const = 0;
 
   // Returns whether the tab strip is editable (for extensions).
   virtual bool IsTabStripEditable() const = 0;

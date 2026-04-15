@@ -26,6 +26,16 @@ class BookmarkBarController : public TabStripModelObserver,
  public:
   DECLARE_USER_DATA(BookmarkBarController);
 
+  class Delegate {
+   public:
+    virtual void OnBookmarkBarStateChanged(
+        BookmarkBar::AnimateChangeType change_type) {}
+    virtual void OnFocusBookmarksToolbar() {}
+
+   protected:
+    virtual ~Delegate() = default;
+  };
+
   // Describes where the bookmark bar state change originated from.
   enum class StateChangeReason {
     // From the constructor.
@@ -66,6 +76,11 @@ class BookmarkBarController : public TabStripModelObserver,
   static const BookmarkBarController* From(
       const BrowserWindowInterface* browser_window_interface);
 
+  void SetDelegate(Delegate* delegate);
+
+  // Focuses the bookmarks toolbar (for accessibility).
+  void FocusBookmarksToolbar();
+
   // Returns the current state of the bookmark bar.
   BookmarkBar::State bookmark_bar_state() const { return bookmark_bar_state_; }
 
@@ -100,6 +115,8 @@ class BookmarkBarController : public TabStripModelObserver,
   int force_show_bookmark_bar_flags_ = ForceShowFlag::kNone;
 
   PrefChangeRegistrar pref_change_registrar_;
+
+  raw_ptr<Delegate> delegate_ = nullptr;
 
   ui::ScopedUnownedUserData<BookmarkBarController> scoped_data_holder_;
 };

@@ -44,7 +44,8 @@ class WebUIBrowserWindow : public BrowserWindow,
                            public ui::ColorProviderSource,
                            public ui::AcceleratorProvider,
                            public ui::AcceleratorTarget,
-                           public views::WidgetObserver {
+                           public views::WidgetObserver,
+                           public BookmarkBarController::Delegate {
  public:
   explicit WebUIBrowserWindow(Browser* browser);
   ~WebUIBrowserWindow() override;
@@ -75,9 +76,8 @@ class WebUIBrowserWindow : public BrowserWindow,
   void SetTopControlsGestureScrollInProgress(bool in_progress) override;
   std::vector<StatusBubble*> GetStatusBubbles() override;
   void UpdateTitleBar() override;
-  void BookmarkBarStateChanged(
+  void OnBookmarkBarStateChanged(
       BookmarkBar::AnimateChangeType change_type) override;
-  void TemporarilyShowBookmarkBar(base::TimeDelta duration) override;
   void UpdateDevTools(content::WebContents* inspected_web_contents) override;
   bool CanDockDevTools() const override;
   void UpdateLoadingAnimations(bool is_visible) override;
@@ -112,12 +112,10 @@ class WebUIBrowserWindow : public BrowserWindow,
   void TabDraggingStatusChanged(bool is_dragging) override;
   void LinkOpeningFromGesture(WindowOpenDisposition disposition) override;
   void FocusAppMenu() override;
-  void FocusBookmarksToolbar() override;
+  void OnFocusBookmarksToolbar() override;
   void FocusInactivePopupForAccessibility() override;
   void RotatePaneFocus(bool forwards) override;
   void FocusWebContentsPane() override;
-  bool IsBookmarkBarVisible() const override;
-  bool IsBookmarkBarAnimating() const override;
   bool IsTabStripEditable() const override;
   void DisableTabStripEditingForTesting() override;
   bool IsToolbarVisible() const override;

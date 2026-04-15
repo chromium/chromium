@@ -321,7 +321,9 @@ class BrowserBookmarkBarTest : public BrowserWithTestWindowTest {
   }
 
  private:
-  class BookmarkBarStateTestBrowserWindow : public TestBrowserWindow {
+  class BookmarkBarStateTestBrowserWindow
+      : public TestBrowserWindow,
+        public BookmarkBarController::Delegate {
    public:
     BookmarkBarStateTestBrowserWindow() = default;
 
@@ -330,21 +332,32 @@ class BrowserBookmarkBarTest : public BrowserWithTestWindowTest {
     BookmarkBarStateTestBrowserWindow& operator=(
         const BookmarkBarStateTestBrowserWindow&) = delete;
 
-    ~BookmarkBarStateTestBrowserWindow() override = default;
+    ~BookmarkBarStateTestBrowserWindow() override {
+      if (browser_) {
+        BookmarkBarController::From(browser_)->SetDelegate(nullptr);
+      }
+    }
 
-    void set_browser(Browser* browser) { browser_ = browser; }
+    void set_browser(Browser* browser) {
+      if (browser_) {
+        BookmarkBarController::From(browser_)->SetDelegate(nullptr);
+      }
+      browser_ = browser;
+      if (browser_) {
+        BookmarkBarController::From(browser_)->SetDelegate(this);
+      }
+    }
 
     BookmarkBar::State bookmark_bar_state() const {
       return bookmark_bar_state_;
     }
 
    private:
-    // TestBrowserWindow:
-    void BookmarkBarStateChanged(
+    // BookmarkBarController::Delegate:
+    void OnBookmarkBarStateChanged(
         BookmarkBar::AnimateChangeType change_type) override {
       bookmark_bar_state_ =
           BookmarkBarController::From(browser_)->bookmark_bar_state();
-      TestBrowserWindow::BookmarkBarStateChanged(change_type);
     }
 
     void OnActiveTabChanged(content::WebContents* old_contents,

@@ -1838,7 +1838,7 @@ void BrowserView::UpdateTitleBar() {
   }
 }
 
-void BrowserView::BookmarkBarStateChanged(
+void BrowserView::OnBookmarkBarStateChanged(
     BookmarkBar::AnimateChangeType change_type) {
   if (bookmark_bar_view_.get()) {
     BookmarkBar::State new_state = bookmark_bar_state();
@@ -1852,16 +1852,6 @@ void BrowserView::BookmarkBarStateChanged(
     // and removed.
     InvalidateLayout();
   }
-}
-
-void BrowserView::TemporarilyShowBookmarkBar(base::TimeDelta duration) {
-  SetForceShowBookmarkBarFlag(
-      BookmarkBarController::ForceShowFlag::kTabGroupSaved);
-  temporary_bookmark_bar_timer_.Start(
-      FROM_HERE, duration,
-      base::BindOnce(&BrowserView::ClearForceShowBookmarkBarFlag,
-                     GetAsWeakPtr(),
-                     BookmarkBarController::ForceShowFlag::kTabGroupSaved));
 }
 
 void BrowserView::UpdateDevTools(content::WebContents* inspected_web_contents) {
@@ -2808,7 +2798,7 @@ bool BrowserView::AreDraggableRegionsEnabled() const {
   return IsWindowControlsOverlayEnabled() || IsUnframedModeEnabled();
 }
 
-void BrowserView::FocusBookmarksToolbar() {
+void BrowserView::OnFocusBookmarksToolbar() {
   DCHECK(!ImmersiveModeController::From(browser())->IsEnabled());
   if (bookmark_bar_view_ && bookmark_bar_view_->GetVisible() &&
       bookmark_bar_view_->GetPreferredSize().height() != 0) {

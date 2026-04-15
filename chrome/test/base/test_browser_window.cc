@@ -291,16 +291,8 @@ bool TestBrowserWindow::HandleKeyboardEvent(
   return false;
 }
 
-bool TestBrowserWindow::IsBookmarkBarVisible() const {
-  return false;
-}
-
-bool TestBrowserWindow::IsBookmarkBarAnimating() const {
-  return false;
-}
-
 bool TestBrowserWindow::IsTabStripEditable() const {
-  return is_tab_strip_editable_;
+  return false;
 }
 
 void TestBrowserWindow::DisableTabStripEditingForTesting() {
