@@ -86,19 +86,14 @@ GURL GetServerURLForRender(const WhatsNewRegistry& whats_new_registry,
 
 namespace {
 
+// TODO(crbug.com/417823694): Migrate this to BrowserWindowFeatures and refactor
+// it such that it is not self-owned.
 class WhatsNewFetcher {
  public:
   explicit WhatsNewFetcher(Browser* browser) : browser_(browser) {
     browser_did_close_subscription_ =
         browser_->RegisterBrowserDidClose(base::BindRepeating(
             &WhatsNewFetcher::OnBrowserClosed, base::Unretained(this)));
-    browser_did_become_active_subscription_ = browser_->RegisterDidBecomeActive(
-        base::BindRepeating(&WhatsNewFetcher::OnBrowserDidBecomeActive,
-                            base::Unretained(this)));
-    browser_did_become_inactive_subscription_ =
-        browser_->RegisterDidBecomeInactive(
-            base::BindRepeating(&WhatsNewFetcher::OnBrowserDidBecomeInactive,
-                                base::Unretained(this)));
 
     const WhatsNewRegistry* whats_new_registry =
         g_browser_process->GetFeatures()->whats_new_registry();
@@ -182,20 +177,12 @@ class WhatsNewFetcher {
 
   ~WhatsNewFetcher() = default;
 
-  void OnBrowserDidBecomeActive(BrowserWindowInterface* browser) {
-    browser_closed_or_inactive_ = false;
-  }
-
-  void OnBrowserDidBecomeInactive(BrowserWindowInterface* browser) {
-    browser_closed_or_inactive_ = true;
-  }
-
   void OnBrowserClosed(BrowserWindowInterface* browser) {
-    CHECK(browser_ == browser);
-    browser_closed_or_inactive_ = true;
-    browser_did_become_active_subscription_ = {};
-    browser_did_become_inactive_subscription_ = {};
-    browser_ = nullptr;
+    CHECK_EQ(browser_, browser);
+    // If the browser was closed while What's New was loading record the outcome
+    // and delete the dialog to avoid leaking memory.
+    LogLoadEvent(LoadEvent::kLoadAbort);
+    delete this;
   }
 
  private:
@@ -210,7 +197,7 @@ class WhatsNewFetcher {
   }
 
   void OpenWhatsNewTabForTest() {
-    if (browser_closed_or_inactive_) {
+    if (!browser_->IsActive()) {
       return;
     }
 
@@ -219,6 +206,8 @@ class WhatsNewFetcher {
   }
 
   void OnResponseLoaded(std::optional<std::string> body) {
+    DCHECK(browser_);
+
     int error_or_response_code = simple_loader_->NetError();
     const auto& headers = simple_loader_->ResponseInfo()
                               ? simple_loader_->ResponseInfo()->headers
@@ -239,31 +228,26 @@ class WhatsNewFetcher {
     success = success && error_or_response_code >= 200 &&
               error_or_response_code <= 302 && body;
 
-    // If the browser was closed or moved to the background while What's New was
-    // loading, return early before recording that the user saw the page.
-    if (browser_closed_or_inactive_) {
+    if (!browser_->IsActive()) {
+      // If the browser was moved to the background while What's New was loading
+      // log the appropriate event and immediately destroy the dialog to avoid
+      // leaking memory.
       LogLoadEvent(LoadEvent::kLoadAbort);
-      return;
-    }
+    } else {
+      LogLoadEvent(success ? LoadEvent::kLoadSuccess
+                           : LoadEvent::kLoadFailAndDoNotShow);
 
-    DCHECK(browser_);
-
-    LogLoadEvent(success ? LoadEvent::kLoadSuccess
-                         : LoadEvent::kLoadFailAndDoNotShow);
-
-    if (success) {
-      AddWhatsNewTab(browser_);
+      if (success) {
+        AddWhatsNewTab(browser_);
+      }
     }
     delete this;
   }
 
   std::unique_ptr<network::SimpleURLLoader> simple_loader_;
   raw_ptr<Browser> browser_;
-  bool browser_closed_or_inactive_ = false;
   GURL startup_url_;
   base::CallbackListSubscription browser_did_close_subscription_;
-  base::CallbackListSubscription browser_did_become_active_subscription_;
-  base::CallbackListSubscription browser_did_become_inactive_subscription_;
 };
 
 }  // namespace
