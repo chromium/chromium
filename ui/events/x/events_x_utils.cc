@@ -11,6 +11,7 @@
 #include <cmath>
 #include <numeric>
 
+#include "base/containers/span.h"
 #include "base/logging.h"
 #include "base/memory/singleton.h"
 #include "base/time/time.h"
@@ -208,7 +209,7 @@ int GetEventFlagsForButton(x11::Button button) {
 int GetButtonMaskForX2Event(const x11::Input::DeviceEvent& xievent) {
   int buttonflags = 0;
   for (size_t i = 0; i < 32 * xievent.button_mask.size(); i++) {
-    if (ui::IsXinputMaskSet(xievent.button_mask.data(), i)) {
+    if (ui::IsXinputMaskSet(base::as_byte_span(xievent.button_mask), i)) {
       int button =
           (xievent.sourceid == xievent.deviceid)
               ? ui::DeviceDataManagerX11::GetInstance()->GetMappedButton(i)

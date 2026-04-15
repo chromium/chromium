@@ -143,6 +143,7 @@ source_set("x11_unittests") {
     "test/events_x_unittest.cc",
     "test/x11_event_translation_unittest.cc",
     "test/x11_window_unittest.cc",
+    "test/xinput_util_unittest.cc",
     "x11_screen_ozone_unittest.cc",
     "x11_window_ozone_unittest.cc",
   ]

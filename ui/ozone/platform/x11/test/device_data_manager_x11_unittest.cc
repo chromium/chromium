@@ -6,6 +6,7 @@
 
 #include <vector>
 
+#include "base/containers/span.h"
 #include "base/memory/raw_ptr.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/events/devices/device_hotplug_event_observer.h"
@@ -174,6 +175,36 @@ TEST_F(DeviceDataManagerX11Test, UnblockOnDeviceUnplugged) {
   devices = manager->GetKeyboardDevices();
   // Both devices now present.
   EXPECT_EQ(2u, devices.size());
+}
+
+// Tests that GetEventData handles cases where the event's valuator_mask is
+// shorter than the registered valuator's index.
+// Regression test for crbug.com/501862016.
+TEST_F(DeviceDataManagerX11Test, GetEventDataShortMask) {
+  DeviceDataManagerX11* manager = DeviceDataManagerX11::GetInstance();
+  const auto device_id = static_cast<x11::Input::DeviceId>(1);
+
+  // Initialize a device with some valuators. SetDeviceListForTest will
+  // initialize them with indices starting from 0.
+  // Touch major/minor/orientation/pressure/x/y/tracking_id/raw_timestamp
+  // are 8 valuators (indices 0-7).
+  manager->SetDeviceListForTest({static_cast<int>(device_id)}, {}, {});
+
+  // Manually create an event with an empty mask.
+  x11::Event event(false, x11::Input::DeviceEvent{
+                              .opcode = x11::Input::DeviceEvent::Motion,
+                              .deviceid = device_id,
+                              .sourceid = device_id,
+                              .valuator_mask = {},
+                              .axisvalues = {},
+                          });
+
+  double value = -1.0;
+  // This should not crash and should return false because any index is OOB
+  // for an empty mask.
+  EXPECT_FALSE(manager->GetEventData(
+      event, DeviceDataManagerX11::DT_TOUCH_MAJOR, &value));
+  EXPECT_EQ(value, -1.0);
 }
 
 }  // namespace test

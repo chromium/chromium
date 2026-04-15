@@ -4,6 +4,7 @@
 
 #include "ui/base/x/x11_user_input_monitor.h"
 
+#include "base/containers/span.h"
 #include "base/logging.h"
 #include "base/task/single_thread_task_runner.h"
 #include "ui/events/devices/x11/xinput_util.h"
@@ -78,8 +79,10 @@ void XUserInputMonitor::StartMonitor(WriteKeyPressCallback& callback) {
   }
 
   x11::Input::XIEventMask mask{};
-  SetXinputMask(&mask, x11::Input::RawDeviceEvent::RawKeyPress);
-  SetXinputMask(&mask, x11::Input::RawDeviceEvent::RawKeyRelease);
+  SetXinputMask(base::byte_span_from_ref(mask),
+                x11::Input::RawDeviceEvent::RawKeyPress);
+  SetXinputMask(base::byte_span_from_ref(mask),
+                x11::Input::RawDeviceEvent::RawKeyRelease);
   connection_->xinput().XISelectEvents(
       {connection_->default_root(),
        {{x11::Input::DeviceId::AllMaster, {mask}}}});

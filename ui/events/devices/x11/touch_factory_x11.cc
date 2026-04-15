@@ -11,6 +11,7 @@
 
 #include "base/command_line.h"
 #include "base/compiler_specific.h"
+#include "base/containers/span.h"
 #include "base/logging.h"
 #include "base/memory/singleton.h"
 #include "base/strings/string_number_conversions.h"
@@ -206,27 +207,27 @@ void TouchFactory::SetupXI2ForXWindow(x11::Window window) {
 
   x11::Input::EventMask mask{x11::Input::DeviceId::AllMaster};
   mask.mask.push_back({});
-  auto* mask_data = mask.mask.data();
+  auto mask_span = base::as_writable_byte_span(mask.mask);
 
-  SetXinputMask(mask_data, x11::Input::CrossingEvent::Enter);
-  SetXinputMask(mask_data, x11::Input::CrossingEvent::Leave);
-  SetXinputMask(mask_data, x11::Input::CrossingEvent::FocusIn);
-  SetXinputMask(mask_data, x11::Input::CrossingEvent::FocusOut);
+  SetXinputMask(mask_span, x11::Input::CrossingEvent::Enter);
+  SetXinputMask(mask_span, x11::Input::CrossingEvent::Leave);
+  SetXinputMask(mask_span, x11::Input::CrossingEvent::FocusIn);
+  SetXinputMask(mask_span, x11::Input::CrossingEvent::FocusOut);
 
-  SetXinputMask(mask_data, x11::Input::DeviceEvent::ButtonPress);
-  SetXinputMask(mask_data, x11::Input::DeviceEvent::ButtonRelease);
-  SetXinputMask(mask_data, x11::Input::DeviceEvent::Motion);
+  SetXinputMask(mask_span, x11::Input::DeviceEvent::ButtonPress);
+  SetXinputMask(mask_span, x11::Input::DeviceEvent::ButtonRelease);
+  SetXinputMask(mask_span, x11::Input::DeviceEvent::Motion);
 
-  SetXinputMask(mask_data, x11::Input::DeviceEvent::KeyPress);
-  SetXinputMask(mask_data, x11::Input::DeviceEvent::KeyRelease);
+  SetXinputMask(mask_span, x11::Input::DeviceEvent::KeyPress);
+  SetXinputMask(mask_span, x11::Input::DeviceEvent::KeyRelease);
 
   x11::Input::EventMask touch_mask{x11::Input::DeviceId::All};
   touch_mask.mask.push_back({});
-  auto* touch_mask_data = touch_mask.mask.data();
+  auto touch_mask_span = base::as_writable_byte_span(touch_mask.mask);
 
-  SetXinputMask(touch_mask_data, x11::Input::DeviceEvent::TouchBegin);
-  SetXinputMask(touch_mask_data, x11::Input::DeviceEvent::TouchUpdate);
-  SetXinputMask(touch_mask_data, x11::Input::DeviceEvent::TouchEnd);
+  SetXinputMask(touch_mask_span, x11::Input::DeviceEvent::TouchBegin);
+  SetXinputMask(touch_mask_span, x11::Input::DeviceEvent::TouchUpdate);
+  SetXinputMask(touch_mask_span, x11::Input::DeviceEvent::TouchEnd);
 
   connection->xinput().XISelectEvents({window, {mask, touch_mask}});
   connection->Flush();
