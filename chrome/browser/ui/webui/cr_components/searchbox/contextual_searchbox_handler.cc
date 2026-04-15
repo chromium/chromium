@@ -306,7 +306,9 @@ ContextualSearchboxHandler::ContextualSearchboxHandler(
                 &ContextualSearchboxHandler::GetContextualSessionHandle,
                 base::Unretained(this)),
             base::BindRepeating(
-                &ContextualSearchboxHandler::CreateImageEncodingOptions));
+                &ContextualSearchboxHandler::CreateImageEncodingOptions),
+            contextual_tasks_context_service_,
+            webui::GetBrowserWindowInterface(web_contents_));
     query_contextualizer_ =
         std::make_unique<contextual_tasks::QueryContextualizer>(
             contextual_tasks_service_, desktop_delegate_.get());
@@ -960,7 +962,11 @@ void ContextualSearchboxHandler::ContextualizeQueryWithRelevantTabsAndOpenUrl(
                                              std::move(params));
               },
               base::Unretained(this), query_text, disposition, aim_entry_point,
-              std::move(additional_params)));
+              std::move(additional_params)),
+          // TODO(crbug.com/502639860): Actually using this in
+          // contextual_searchbox_handler, setting enable_smart_tab_selection to true,
+          // and removing legacy logic will happen in a followup CL.
+          /*enable_smart_tab_selection=*/false);
       return;
   }
 

@@ -25,9 +25,12 @@ source_set("contextual_search") {
 
   deps = [
     "//base",
+    "//chrome/browser/contextual_tasks",
     "//chrome/browser/page_content_annotations:extraction_service",
     "//chrome/browser/profiles",
+    "//chrome/browser/ui/browser_window",
     "//chrome/browser/ui/tabs:tabs_public",
+    "//components/contextual_tasks/public:feature_list",
     "//components/contextual_tasks/public:query_contextualizer",
     "//components/lens",
     "//components/omnibox/browser:mojo_bindings",

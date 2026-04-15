@@ -341,6 +341,15 @@ class QueryContextualizerDelegateBridge
     return [mediator_ GetOrCreateSessionHandleForQueryContextualizer];
   }
 
+  void GetRelevantTabsForQuery(
+      const std::string& query_text,
+      const std::vector<GURL>& attached_context_urls,
+      base::OnceCallback<void(
+          std::vector<contextual_tasks::QueryContextualizer::TabId>)> callback)
+      override {
+    std::move(callback).Run({});
+  }
+
  private:
   __weak ComposeboxInputPlateMediator* mediator_;
 };
@@ -708,7 +717,8 @@ class QueryContextualizerDelegateBridge
             [](base::OnceClosure closure,
                base::WeakPtr<contextual_search::ContextualSearchSessionHandle>
                    ignored_handle) { std::move(closure).Run(); },
-            std::move(createSearchUrlCallback)));
+            std::move(createSearchUrlCallback)),
+        /*enable_smart_tab_selection=*/false);
   } else {
     std::move(createSearchUrlCallback).Run();
   }

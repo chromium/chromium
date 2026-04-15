@@ -194,6 +194,13 @@ ComposeboxQueryControllerBridge::
   return session_handle_.get();
 }
 
+void ComposeboxQueryControllerBridge::GetRelevantTabsForQuery(
+    const std::string& query_text,
+    const std::vector<GURL>& attached_context_urls,
+    base::OnceCallback<void(
+        std::vector<contextual_tasks::QueryContextualizer::TabId>)> callback) {
+  std::move(callback).Run({});
+}
 
 void ComposeboxQueryControllerBridge::NotifySessionStarted(JNIEnv* env) {
   session_handle_->NotifySessionStarted();
@@ -331,7 +338,8 @@ void ComposeboxQueryControllerBridge::ContextualizeAndCreateSearchUrl(
             [](base::OnceClosure closure,
                base::WeakPtr<contextual_search::ContextualSearchSessionHandle>
                    ignored_handle) { std::move(closure).Run(); },
-            std::move(callback)));
+            std::move(callback)),
+        /*enable_smart_tab_selection=*/false);
   } else {
     std::move(callback).Run();
   }

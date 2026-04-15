@@ -79,6 +79,9 @@ struct ContextualInputData {
   // Whether or not the request is for an implicit context upload.
   // e.g. a viewport screenshot from the Lens overlay contextual searchbox.
   bool is_implicit_upload = false;
+  // Whether or not the tab was added exclusively by the smart tab selection
+  // mechanism.
+  bool was_smart_tab_selection = false;
 };
 
 }  // namespace lens
