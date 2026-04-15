@@ -1150,6 +1150,46 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Gpu.GraphiteSharedContext.LockAcquireTimeUs"
+    units="microseconds" expires_after="2026-07-09">
+  <owner>sunnyps@chromium.org</owner>
+  <owner>magchen@chromium.org</owner>
+  <owner>chrome-gpu-metric-alerts@chromium.org</owner>
+  <summary>
+    Records the time spent waiting to acquire the lock in GraphiteSharedContext.
+    Recorded when AutoLock is created. This is subsampled at 1%. Only reported
+    for platforms supporting high resolution clocks.
+  </summary>
+</histogram>
+
+<histogram
+    name="Gpu.GraphiteSharedContext.LockAcquireTimeUs.LockedThreadInInsertRecording"
+    units="microseconds" expires_after="2026-07-09">
+  <owner>sunnyps@chromium.org</owner>
+  <owner>magchen@chromium.org</owner>
+  <owner>chrome-gpu-metric-alerts@chromium.org</owner>
+  <summary>
+    Records the time spent waiting to acquire the lock in GraphiteSharedContext
+    when the thread holding the lock was in insertRecording. Recorded when
+    AutoLock is created. This is subsampled at 1%. Only reported for platforms
+    supporting high resolution clocks.
+  </summary>
+</histogram>
+
+<histogram
+    name="Gpu.GraphiteSharedContext.LockAcquireTimeUs.LockedThreadInSubmit"
+    units="microseconds" expires_after="2026-07-09">
+  <owner>sunnyps@chromium.org</owner>
+  <owner>magchen@chromium.org</owner>
+  <owner>chrome-gpu-metric-alerts@chromium.org</owner>
+  <summary>
+    Records the time spent waiting to acquire the lock in GraphiteSharedContext
+    when the thread holding the lock was in submit or submitAndFlushBackend.
+    Recorded when AutoLock is created. This is subsampled at 1%. Only reported
+    for platforms supporting high resolution clocks.
+  </summary>
+</histogram>
+
 <histogram name="GPU.GraphValidation.Duration" units="ms"
     expires_after="2025-11-15">
   <owner>vasilyt@chromium.org</owner>
