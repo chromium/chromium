@@ -22,6 +22,7 @@
 #include "base/functional/callback.h"
 #include "base/logging.h"
 #include "base/mac/mac_util.h"
+#include "base/mac/process_requirement.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/process/launch.h"
@@ -37,6 +38,10 @@
 #include "chrome/updater/util/mac_util.h"
 #include "chrome/updater/util/posix_util.h"
 #include "chrome/updater/util/util.h"
+
+@interface NSXPCConnection (Private)
+@property(readonly) audit_token_t auditToken;
+@end
 
 @interface PrivilegedHelperServiceImpl
     : NSObject <PrivilegedHelperServiceProtocol> {
@@ -106,6 +111,19 @@
 
 - (BOOL)listener:(NSXPCListener*)listener
     shouldAcceptNewConnection:(NSXPCConnection*)newConnection {
+  std::optional<base::mac::ProcessRequirement> requirement =
+      base::mac::ProcessRequirement::Builder()
+          .IdentifierIsOneOf({MAC_BROWSER_BUNDLE_IDENTIFIER_STRING,
+                              MAC_BROWSER_BUNDLE_IDENTIFIER_STRING ".beta",
+                              MAC_BROWSER_BUNDLE_IDENTIFIER_STRING ".dev",
+                              MAC_BROWSER_BUNDLE_IDENTIFIER_STRING ".canary"})
+          .SignedWithSameIdentity()
+          .Build();
+  if (!requirement || !requirement->ValidateProcess(newConnection.auditToken)) {
+    // TODO(crbug.com/494281198): Consider shutting down and uninstalling.
+    return NO;
+  }
+
   newConnection.exportedInterface = [NSXPCInterface
       interfaceWithProtocol:@protocol(PrivilegedHelperServiceProtocol)];
 
