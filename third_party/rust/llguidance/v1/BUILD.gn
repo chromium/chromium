@@ -69,7 +69,7 @@ cargo_crate("lib") {
   cargo_pkg_name = "llguidance"
   cargo_pkg_description = "Super-fast Structured Outputs"
   cargo_pkg_repository = "https://github.com/guidance-ai/llguidance"
-  cargo_pkg_version = "1.7.0"
+  cargo_pkg_version = "1.7.2"
 
   allow_unsafe = true
 
@@ -83,10 +83,6 @@ cargo_crate("lib") {
     "//third_party/rust/toktrie/v1:lib",
   ]
   features = [ "lark" ]
-  build_root =
-      "//third_party/rust/chromium_crates_io/vendor/llguidance-v1/build.rs"
-  build_sources =
-      [ "//third_party/rust/chromium_crates_io/vendor/llguidance-v1/build.rs" ]
 
   #####################################################################
   # Tweaking which GN `config`s apply to this target.

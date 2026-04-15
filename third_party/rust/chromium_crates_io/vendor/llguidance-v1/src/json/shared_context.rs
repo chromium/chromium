@@ -24,16 +24,16 @@ const CHECK_LIMIT: u64 = 10_000;
 
 impl PatternPropertyCache {
     pub fn is_match(&mut self, regex: &str, value: &str) -> Result<bool> {
-        if let Some(cached_regex) = self.inner.get_mut(regex) {
+        let lark_regex = regex_to_lark(regex, "dw");
+        if let Some(cached_regex) = self.inner.get_mut(lark_regex.as_str()) {
             return Ok(cached_regex.is_match(value));
         }
 
-        let regex = regex_to_lark(regex, "dw");
         let mut builder = RegexBuilder::new();
-        let eref = builder.mk_regex_for_serach(regex.as_str())?;
+        let eref = builder.mk_regex_for_serach(lark_regex.as_str())?;
         let mut rx = builder.to_regex_limited(eref, CHECK_LIMIT)?;
         let res = rx.is_match(value);
-        self.inner.insert(regex.to_string(), rx);
+        self.inner.insert(lark_regex, rx);
         Ok(res)
     }
 
@@ -153,6 +153,13 @@ impl Context<'_> {
             .borrow_mut()
             .pattern_cache
             .property_schema(obj, prop)
+    }
+
+    pub fn property_schema_matches(&self, pattern: &str, name: &str) -> Result<bool> {
+        self.shared
+            .borrow_mut()
+            .pattern_cache
+            .is_match(pattern, name)
     }
 
     pub fn check_disjoint_pattern_properties(&self, regexes: &[&String]) -> Result<()> {

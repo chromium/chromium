@@ -13,7 +13,7 @@
 edition = "2021"
 rust-version = "1.87"
 name = "llguidance"
-version = "1.7.0"
+version = "1.7.2"
 build = "build.rs"
 autolib = false
 autobins = false
@@ -33,6 +33,7 @@ default = [
     "referencing",
     "ahash",
 ]
+generate-header = ["dep:cbindgen"]
 jsonschema_validation = [
     "dep:jsonschema",
     "dep:lazy_static",
@@ -52,6 +53,54 @@ crate-type = [
 ]
 path = "src/lib.rs"
 
+[[test]]
+name = "test_bias_cache"
+path = "tests/test_bias_cache.rs"
+
+[[test]]
+name = "test_json_arrays"
+path = "tests/test_json_arrays.rs"
+
+[[test]]
+name = "test_json_enum_const"
+path = "tests/test_json_enum_const.rs"
+
+[[test]]
+name = "test_json_objects"
+path = "tests/test_json_objects.rs"
+
+[[test]]
+name = "test_json_primitives"
+path = "tests/test_json_primitives.rs"
+
+[[test]]
+name = "test_json_schema_combinations"
+path = "tests/test_json_schema_combinations.rs"
+
+[[test]]
+name = "test_json_string_format"
+path = "tests/test_json_string_format.rs"
+
+[[test]]
+name = "test_json_x_guidance"
+path = "tests/test_json_x_guidance.rs"
+
+[[test]]
+name = "test_lark"
+path = "tests/test_lark.rs"
+
+[[test]]
+name = "test_ll"
+path = "tests/test_ll.rs"
+
+[[test]]
+name = "test_raw_parser"
+path = "tests/test_raw_parser.rs"
+
+[[test]]
+name = "test_stop"
+path = "tests/test_stop.rs"
+
 [[bench]]
 name = "compute_mask"
 path = "benches/compute_mask.rs"
@@ -61,7 +110,7 @@ harness = false
 version = "1.0.95"
 
 [dependencies.derivre]
-version = "=0.3.8"
+version = "=0.3.9"
 features = ["compress"]
 default-features = false
 
@@ -101,10 +150,30 @@ version = "1.0.138"
 features = ["preserve_order"]
 
 [dependencies.toktrie]
-version = "1.7.0"
+version = "1.7.2"
 
 [dev-dependencies.criterion]
 version = "0.8.1"
 
+[dev-dependencies.lazy_static]
+version = "1.5.0"
+
+[dev-dependencies.rand]
+version = "0.9"
+
 [dev-dependencies.regex]
 version = "1.11.1"
+
+[dev-dependencies.rstest]
+version = "0.25.0"
+
+[dev-dependencies.serde-json-fmt]
+version = "0.1.0"
+
+[dev-dependencies.serde_json]
+version = "1.0.138"
+features = ["preserve_order"]
+
+[build-dependencies.cbindgen]
+version = "0.29"
+optional = true

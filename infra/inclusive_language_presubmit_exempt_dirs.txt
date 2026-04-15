@@ -37,7 +37,6 @@ chrome/android/java/src/org/chromium/chrome/browser/omaha
 chrome/android/java/src/org/chromium/chrome/browser/tab
 chrome/android/junit/src/org/chromium/chrome/browser/payments
 chrome/browser
-chrome/browser/android/oom_intervention
 chrome/browser/ash/arc/file_system_watcher
 chrome/browser/ash/arc/policy
 chrome/browser/ash/crosapi
@@ -706,6 +705,7 @@ third_party/rust/chromium_crates_io/vendor/libc-v0_2/src/new/netbsd
 third_party/rust/chromium_crates_io/vendor/libc-v0_2/src/new/openbsd/sys
 third_party/rust/chromium_crates_io/vendor/litemap-v0_8/src
 third_party/rust/chromium_crates_io/vendor/llguidance-v1
+third_party/rust/chromium_crates_io/vendor/llguidance-v1/tests/data
 third_party/rust/chromium_crates_io/vendor/log-v0_4
 third_party/rust/chromium_crates_io/vendor/log-v0_4/.github/workflows
 third_party/rust/chromium_crates_io/vendor/minijinja-v2
@@ -902,6 +902,7 @@ tools/vim
 tools/web_bluetooth
 tools/win/RetrieveSymbols
 ui/base/cocoa/constrained_window
+ui/base/linux
 ui/base/prediction
 ui/base/x
 ui/events/devices/x11

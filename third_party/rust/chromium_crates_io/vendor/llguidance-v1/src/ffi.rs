@@ -1,3 +1,28 @@
+//! C-compatible FFI bindings for llguidance.
+//!
+//! This module exposes the llguidance constrained-decoding engine to C (and
+//! other languages that can call C functions). It is the API surface behind
+//! the generated `llguidance.h` header.
+//!
+//! # Typical usage
+//!
+//! 1. **Create a tokenizer** — fill in [`LlgTokenizerInit`] (or
+//!    [`LlgTokenizerInitV2`] for multiple EOS tokens) and call
+//!    [`llg_new_tokenizer()`] (or [`llg_new_tokenizer_v2()`]).
+//! 2. **Create a constraint** — fill in [`LlgConstraintInit`] (use
+//!    [`llg_constraint_init_set_defaults()`] for sane defaults) and call one
+//!    of the `llg_new_constraint*` functions, e.g. [`llg_new_constraint()`],
+//!    [`llg_new_constraint_json()`], or [`llg_new_constraint_regex()`].
+//! 3. **Sampling loop** — repeatedly call [`llg_compute_mask()`] to get the
+//!    set of allowed tokens, sample a token from the LLM, then call
+//!    [`llg_commit_token()`]. Stop when the result indicates completion.
+//! 4. **Free resources** — call [`llg_free_constraint()`] and
+//!    [`llg_free_tokenizer()`].
+//!
+//! Alternatively, the **matcher** API ([`llg_new_matcher()`] and the
+//! `llg_matcher_*` family) provides a lower-level interface for grammar
+//! validation and incremental token matching.
+
 use std::{
     ffi::{c_char, c_void, CStr},
     fmt::Display,
@@ -75,6 +100,11 @@ impl TokenizerEnv for CTokenizerInner {
     }
 }
 
+/// Tokenizer handle used by the C API.
+///
+/// Wraps a [`ParserFactory`] and the associated token environment. Create one
+/// with [`llg_new_tokenizer()`] or [`llg_new_tokenizer_v2()`], and free it
+/// with [`llg_free_tokenizer()`].
 #[derive(Clone)]
 pub struct LlgTokenizer {
     factory: Arc<ParserFactory>,
@@ -193,29 +223,37 @@ impl LlgTokenizer {
         })
     }
 
+    /// Return a cloned reference to the token environment.
     pub fn to_env(&self) -> TokEnv {
         self.factory.tok_env().clone()
     }
 
+    /// Return a reference to the token environment.
     pub fn tok_env(&self) -> &TokEnv {
         self.factory.tok_env()
     }
 
+    /// Return a reference to the token trie.
     pub fn tok_trie(&self) -> &TokTrie {
         self.factory.tok_env().tok_trie()
     }
 
+    /// Return a reference to the underlying [`ParserFactory`].
     pub fn factory(&self) -> &ParserFactory {
         &self.factory
     }
 }
 
+/// Token ID type used throughout the C API (alias for `u32`).
 pub type LlgToken = u32;
 
-/// Tokenization function
-/// Will not write more than output_tokens_len tokens (which can be 0)
-/// Returns the total number of tokens (which can be more than output_tokens_len)
-/// This function has to be thread-safe!
+/// Tokenization function.
+///
+/// Will not write more than `output_tokens_len` tokens (which can be 0).
+/// Returns the total number of tokens (which can be more than
+/// `output_tokens_len`).
+///
+/// **This function must be thread-safe.**
 pub type LlgTokenizeFn = Option<
     extern "C" fn(
         user_data: *const c_void,
@@ -226,49 +264,54 @@ pub type LlgTokenizeFn = Option<
     ) -> usize,
 >;
 
-/// Function which llg calls when an operation is done.
+/// Callback that llguidance invokes when an operation completes.
 pub type LlgCallback = Option<extern "C" fn(user_data: *const c_void)>;
 
+/// V1 tokenizer initialization parameters.
+///
 /// This struct must be zero-initialized (e.g., `= {}` in C/C++) before setting fields.
 /// New fields may be appended in future versions, and zero-initialization ensures
 /// they receive safe default values.
+///
+/// For multi-EOS support, use [`LlgTokenizerInitV2`] with [`llg_new_tokenizer_v2()`]
+/// instead.
 #[repr(C)]
 pub struct LlgTokenizerInit {
-    /// The number of tokens in the vocabulary
+    /// The number of tokens in the vocabulary.
     pub vocab_size: u32,
 
-    /// The token ID for the end of sentence token
-    /// For chat mode, set it to end-of-turn token
+    /// The token ID for the end-of-sentence token.
+    /// For chat mode, set this to the end-of-turn token.
     pub tok_eos: LlgToken,
 
-    /// An array of the lengths of the token strings (vocab_size elements)
+    /// An array of the lengths of the token strings (`vocab_size` elements).
     pub token_lens: *const u32,
 
-    /// A pointer to the token strings
-    /// The length of this the sum of all token_lens
+    /// A pointer to the token strings.
+    /// The length of this is the sum of all `token_lens`.
     pub token_bytes: *const u8,
 
-    /// Instead of passing token_lens and token_bytes, this can be set to
-    /// the contents of HF tokenizer.json file.
+    /// Instead of passing `token_lens` and `token_bytes`, this can be set to
+    /// the contents of a HuggingFace `tokenizer.json` file.
     pub tokenizer_json: *const c_char,
 
-    /// Set to true to enable hack that works around the tokenize_fn only
-    /// accepting valid UTF-8 strings and possibly adding `<BOS>` etc.
-    /// TODO: the `<BOS>` bit not implemented yet
+    /// Set to true to enable a workaround for tokenize functions that only
+    /// accept valid UTF-8 strings and possibly prepend `<BOS>` etc.
+    /// TODO: the `<BOS>` bit is not implemented yet.
     pub tokenize_assumes_string: bool,
 
-    /// Tokenization function, see LlgTokenizeFn docs.
+    /// Tokenization function; see [`LlgTokenizeFn`] for details.
     /// It should only tokenize the bytes and not add
     /// any `<BOS>` etc. It should also work on any byte sequence, including
-    /// invalid UTF-8. If this is not the case, set tokenize_assumes_string to true.
-    /// Either way, this function has to be thread-safe!
+    /// invalid UTF-8. If this is not the case, set `tokenize_assumes_string` to true.
+    /// Either way, this function must be thread-safe.
     pub tokenize_fn: LlgTokenizeFn,
 
-    /// Set to true to not use tokenize_fn and instead tokenize greedily,
+    /// Set to true to skip `tokenize_fn` and instead tokenize greedily,
     /// which is often incorrect and may reduce accuracy.
     pub use_approximate_greedy_tokenize_fn: bool,
 
-    /// User data to pass to the tokenize_fn
+    /// User data passed as the first argument to [`LlgTokenizeFn`].
     pub tokenize_user_data: *const c_void,
 
     /// Tokenizer partitions for the slicer optimization.
@@ -277,9 +320,10 @@ pub struct LlgTokenizerInit {
     pub slices: *const *const c_char,
 }
 
-/// V2 of the tokenizer initialization struct.
-/// Extends LlgTokenizerInit with support for multiple EOS tokens.
-/// Use with `llg_new_tokenizer_v2()`.
+/// V2 tokenizer initialization parameters.
+///
+/// Extends [`LlgTokenizerInit`] with support for multiple EOS tokens.
+/// Use with [`llg_new_tokenizer_v2()`].
 ///
 /// Initialize with: `LlgTokenizerInitV2 init = {}; init.struct_size = sizeof(init);`
 /// The library only reads `struct_size` bytes from the pointer, so callers
@@ -292,41 +336,41 @@ pub struct LlgTokenizerInitV2 {
     /// forward compatibility when new fields are appended in future versions.
     pub struct_size: usize,
 
-    /// The number of tokens in the vocabulary
+    /// The number of tokens in the vocabulary.
     pub vocab_size: u32,
 
-    /// The token ID for the end of sentence token
-    /// For chat mode, set it to end-of-turn token
+    /// The token ID for the end-of-sentence token.
+    /// For chat mode, set this to the end-of-turn token.
     pub tok_eos: LlgToken,
 
-    /// An array of the lengths of the token strings (vocab_size elements)
+    /// An array of the lengths of the token strings (`vocab_size` elements).
     pub token_lens: *const u32,
 
-    /// A pointer to the token strings
-    /// The length of this the sum of all token_lens
+    /// A pointer to the token strings.
+    /// The length of this is the sum of all `token_lens`.
     pub token_bytes: *const u8,
 
-    /// Instead of passing token_lens and token_bytes, this can be set to
-    /// the contents of HF tokenizer.json file.
+    /// Instead of passing `token_lens` and `token_bytes`, this can be set to
+    /// the contents of a HuggingFace `tokenizer.json` file.
     pub tokenizer_json: *const c_char,
 
-    /// Set to true to enable hack that works around the tokenize_fn only
-    /// accepting valid UTF-8 strings and possibly adding `<BOS>` etc.
-    /// TODO: the `<BOS>` bit not implemented yet
+    /// Set to true to enable a workaround for tokenize functions that only
+    /// accept valid UTF-8 strings and possibly prepend `<BOS>` etc.
+    /// TODO: the `<BOS>` bit is not implemented yet.
     pub tokenize_assumes_string: bool,
 
-    /// Tokenization function, see LlgTokenizeFn docs.
+    /// Tokenization function; see [`LlgTokenizeFn`] for details.
     /// It should only tokenize the bytes and not add
     /// any `<BOS>` etc. It should also work on any byte sequence, including
-    /// invalid UTF-8. If this is not the case, set tokenize_assumes_string to true.
-    /// Either way, this function has to be thread-safe!
+    /// invalid UTF-8. If this is not the case, set `tokenize_assumes_string` to true.
+    /// Either way, this function must be thread-safe.
     pub tokenize_fn: LlgTokenizeFn,
 
-    /// Set to true to not use tokenize_fn and instead tokenize greedily,
+    /// Set to true to skip `tokenize_fn` and instead tokenize greedily,
     /// which is often incorrect and may reduce accuracy.
     pub use_approximate_greedy_tokenize_fn: bool,
 
-    /// User data to pass to the tokenize_fn
+    /// User data passed as the first argument to [`LlgTokenizeFn`].
     pub tokenize_user_data: *const c_void,
 
     /// Tokenizer partitions for the slicer optimization.
@@ -334,12 +378,12 @@ pub struct LlgTokenizerInitV2 {
     /// Pass NULL to use defaults. Pass empty array to disable.
     pub slices: *const *const c_char,
 
-    /// Additional EOS token IDs beyond `tok_eos`.
-    /// Points to an array of `tok_eos_extra_count` elements.
-    /// When NULL (the default for zero-initialized structs), only `tok_eos` is used.
+    /// Additional EOS token IDs beyond [`tok_eos`](Self::tok_eos).
+    /// Points to an array of [`tok_eos_extra_count`](Self::tok_eos_extra_count) elements.
+    /// When `NULL` (the default for zero-initialized structs), only `tok_eos` is used.
     pub tok_eos_extra: *const LlgToken,
 
-    /// Number of elements in the `tok_eos_extra` array.
+    /// Number of elements in the [`tok_eos_extra`](Self::tok_eos_extra) array.
     pub tok_eos_extra_count: u32,
 }
 
@@ -363,32 +407,39 @@ impl LlgTokenizerInitV2 {
     }
 }
 
+/// Configuration for creating a new constraint or matcher.
+///
+/// Use [`llg_constraint_init_set_defaults()`] to populate sane defaults, then
+/// override individual fields as needed.
 #[derive(Clone)]
 #[repr(C)]
 pub struct LlgConstraintInit {
-    /// The tokenizer to use, created with llg_new_tokenizer()
+    /// The tokenizer to use, created with [`llg_new_tokenizer()`] or
+    /// [`llg_new_tokenizer_v2()`].
     pub tokenizer: *const LlgTokenizer,
-    /// The log level for the buffer that is kept inside of the constraint
-    /// 0 - no logging, 1 - warnings only, 2 - info
+    /// The log level for the buffer that is kept inside the constraint.
+    /// 0 — no logging, 1 — warnings only, 2 — info.
     pub log_buffer_level: u32,
-    /// The log level for writing to stderr
+    /// The log level for writing to stderr.
     pub log_stderr_level: u32,
-    /// Does the engine support fast-forward tokens?
-    /// (Appending more than one token to output at once)
+    /// Whether the engine supports fast-forward tokens
+    /// (appending more than one token to output at once).
     pub ff_tokens_ok: bool,
-    /// Does the engine support backtracking?
-    /// (Removing tokens from the output)
+    /// Whether the engine supports backtracking
+    /// (removing tokens from the output).
     pub backtrack_ok: bool,
-    /// The resource limits for the parser
-    /// Default values will be used for all fields that are 0
+    /// The resource limits for the parser.
+    /// Default values will be used for all fields that are 0.
     pub limits: ParserLimits,
 }
 
 impl LlgConstraintInit {
+    /// Build a [`Logger`] from the configured log levels.
     pub fn logger(&self) -> Logger {
         Logger::new(self.log_buffer_level, self.log_stderr_level)
     }
 
+    /// Build [`InferenceCapabilities`] from this configuration.
     pub fn inference_capabilities(&self) -> InferenceCapabilities {
         InferenceCapabilities {
             ff_tokens: self.ff_tokens_ok,
@@ -398,6 +449,9 @@ impl LlgConstraintInit {
         }
     }
 
+    /// Return a reference to the [`ParserFactory`] from the stored tokenizer.
+    ///
+    /// Returns an error if the tokenizer pointer is null.
     pub fn factory(&self) -> Result<&ParserFactory> {
         if self.tokenizer.is_null() {
             bail!("Tokenizer is null");
@@ -406,6 +460,7 @@ impl LlgConstraintInit {
         Ok(unsafe { &(*self.tokenizer).factory })
     }
 
+    /// Compile `grammar` into a [`TokenParser`].
     pub fn build_parser(&self, grammar: TopLevelGrammar) -> Result<TokenParser> {
         self.factory()?.create_parser_from_init_ext(
             GrammarInit::Serialized(grammar),
@@ -415,12 +470,17 @@ impl LlgConstraintInit {
         )
     }
 
+    /// Compile `grammar` into a [`Constraint`].
     pub fn build_constraint(&self, grammar: TopLevelGrammar) -> Result<Constraint> {
         let parser = self.build_parser(grammar)?;
         Ok(Constraint::new(parser))
     }
 }
 
+/// Describes one step for [`llg_par_compute_mask()`].
+///
+/// Each step pairs a constraint with a destination buffer for the resulting
+/// token mask.
 #[derive(Clone)]
 #[repr(C)]
 pub struct LlgConstraintStep {
@@ -428,13 +488,19 @@ pub struct LlgConstraintStep {
     pub constraint: *mut LlgConstraint,
     /// Pointer to memory where the mask should be written.
     pub mask_dest: *mut u32,
-    /// The length of the mask_dest array in bytes (not elements).
+    /// The length of the `mask_dest` array in bytes (not elements).
     pub mask_byte_len: usize,
 }
 // SAFETY: the caller of llg_par_compute_mask() needs to ensure the pointers remain valid
 #[cfg(feature = "rayon")]
 unsafe impl Send for LlgConstraintStep {}
 
+/// Opaque handle to a grammar constraint.
+///
+/// Created by one of the `llg_new_constraint*` functions (e.g.
+/// [`llg_new_constraint()`], [`llg_new_constraint_json()`]).
+/// Always check for errors after creation with [`llg_get_error()`].
+/// Free with [`llg_free_constraint()`] when done.
 pub struct LlgConstraint {
     local_error: Option<String>,
     last_logs: String,
@@ -442,6 +508,11 @@ pub struct LlgConstraint {
     last_commit_result: CommitResult,
 }
 
+/// Handle to a stop-sequence controller.
+///
+/// Tracks generated tokens and detects when a stop sequence has been produced.
+/// Created with [`llg_new_stop_controller()`] and freed with
+/// [`llg_free_stop_controller()`].
 #[derive(Clone)]
 pub struct LlgStopController {
     stop_controller: StopController,
@@ -470,30 +541,32 @@ impl Default for LlgConstraint {
     }
 }
 
+/// Result of [`llg_compute_mask()`].
 #[repr(C)]
 pub struct LlgMaskResult {
-    /// One bit per vocab token
-    /// This is valid until any call to llg_*() on the current constraint
+    /// One bit per vocab token.
+    /// This is valid until any subsequent `llg_*` call on the same constraint.
     pub sample_mask: *const u32,
-    /// Temperature to use for sampling
+    /// Temperature to use for sampling.
     pub temperature: f32,
-    /// Should the sequence stop?
+    /// Whether the sequence should stop.
     pub is_stop: bool,
 }
 
-/// Represents result from llg_commit_token()
+/// Result of [`llg_commit_token()`].
 #[repr(C)]
 pub struct LlgCommitResult {
-    /// The tokens to append to the output if any
-    /// This is valid until any call to llg_*() on the current constraint
+    /// The tokens to append to the output, if any.
+    /// This is valid until any subsequent `llg_*` call on the same constraint.
     pub tokens: *const u32,
-    /// The number of tokens in the tokens array (can be 0)
+    /// The number of tokens in the `tokens` array (can be 0).
     pub n_tokens: u32,
-    /// Should the sequence stop?
+    /// Whether the sequence should stop.
     pub is_stop: bool,
 }
 
 impl LlgCommitResult {
+    /// Convert from an internal [`CommitResult`].
     pub fn from_commit_result(r: &CommitResult) -> Self {
         let len = r.ff_tokens.len() as u32;
         LlgCommitResult {
@@ -567,10 +640,11 @@ impl LlgConstraint {
     }
 }
 
-/// Set the default values for the ConstraintInit
-/// Disables ff_tokens and backtracking, enables warnings on stderr
-/// and all logging to the buffer (get with llg_flush_logs()).
-/// You need to set the tokenizer field manually.
+/// Set default values for an [`LlgConstraintInit`].
+///
+/// Disables fast-forward tokens and backtracking, enables warnings on stderr,
+/// and sets all logging to the buffer (retrieve with [`llg_flush_logs()`]).
+/// You still need to set the `tokenizer` field manually.
 #[no_mangle]
 pub extern "C" fn llg_constraint_init_set_defaults(
     init: &mut LlgConstraintInit,
@@ -586,6 +660,11 @@ pub extern "C" fn llg_constraint_init_set_defaults(
     };
 }
 
+/// Convert a [`Constraint`] result into a heap-allocated [`LlgConstraint`].
+///
+/// On `Ok`, the constraint is stored inside the returned handle. On `Err`, the
+/// handle carries the error message (retrievable via [`llg_get_error()`]).
+/// Always returns a non-null pointer.
 pub fn constraint_to_llg(c: Result<Constraint>) -> *mut LlgConstraint {
     let mut res = LlgConstraint::default();
 
@@ -597,8 +676,10 @@ pub fn constraint_to_llg(c: Result<Constraint>) -> *mut LlgConstraint {
     Box::into_raw(Box::new(res))
 }
 
-/// Create a new constraint from a grammar JSON string
-/// Always returns a non-null value. Call llg_get_error() on the result to check for errors.
+/// Create a new constraint from a grammar JSON string.
+///
+/// Always returns a non-null value. Call [`llg_get_error()`] on the result to
+/// check for errors.
 #[no_mangle]
 pub extern "C" fn llg_new_constraint(
     init: &LlgConstraintInit,
@@ -607,8 +688,10 @@ pub extern "C" fn llg_new_constraint(
     new_constraint_tagged(init, "llguidance", llguidance)
 }
 
-/// Create a new constraint from a given regular expression
-/// Always returns a non-null value. Call llg_get_error() on the result to check for errors.
+/// Create a new constraint from a regular expression.
+///
+/// Always returns a non-null value. Call [`llg_get_error()`] on the result to
+/// check for errors.
 #[no_mangle]
 pub extern "C" fn llg_new_constraint_regex(
     init: &LlgConstraintInit,
@@ -617,8 +700,10 @@ pub extern "C" fn llg_new_constraint_regex(
     new_constraint_tagged(init, "regex", regex)
 }
 
-/// Create a new constraint from a given JSON schema
-/// Always returns a non-null value. Call llg_get_error() on the result to check for errors.
+/// Create a new constraint from a JSON schema.
+///
+/// Always returns a non-null value. Call [`llg_get_error()`] on the result to
+/// check for errors.
 #[no_mangle]
 pub extern "C" fn llg_new_constraint_json(
     init: &LlgConstraintInit,
@@ -627,8 +712,10 @@ pub extern "C" fn llg_new_constraint_json(
     new_constraint_tagged(init, "json_schema", json_schema)
 }
 
-/// Create a new constraint from a given lark grammar
-/// Always returns a non-null value. Call llg_get_error() on the result to check for errors.
+/// Create a new constraint from a Lark grammar.
+///
+/// Always returns a non-null value. Call [`llg_get_error()`] on the result to
+/// check for errors.
 #[no_mangle]
 pub extern "C" fn llg_new_constraint_lark(
     init: &LlgConstraintInit,
@@ -637,9 +724,13 @@ pub extern "C" fn llg_new_constraint_lark(
     new_constraint_tagged(init, "lark", lark)
 }
 
-/// Create a new constraint with specified type
-/// Type can be one of "regex", "json_schema" (or "json"), "lark", "llguidance" (or "guidance")
-/// Always returns a non-null value. Call llg_get_error() on the result to check for errors.
+/// Create a new constraint with a specified type.
+///
+/// `constraint_type` can be one of `"regex"`, `"json_schema"` (or `"json"`),
+/// `"lark"`, `"llguidance"` (or `"guidance"`).
+///
+/// Always returns a non-null value. Call [`llg_get_error()`] on the result to
+/// check for errors.
 #[no_mangle]
 pub extern "C" fn llg_new_constraint_any(
     init: &LlgConstraintInit,
@@ -649,22 +740,25 @@ pub extern "C" fn llg_new_constraint_any(
     constraint_to_llg(new_constraint_cstr_cstr(init, constraint_type, data))
 }
 
-/// Get the error message from the constraint or null if there is no error.
-/// After it returns a non-null value, it will always return it until the constraint is freed
-/// using llg_free_constraint() (at which point the pointer will be invalid).
+/// Get the error message from the constraint, or null if there is no error.
+///
+/// After it returns a non-null value, it will always return that same pointer
+/// until the constraint is freed with [`llg_free_constraint()`] (at which
+/// point the pointer becomes invalid).
 #[no_mangle]
 pub extern "C" fn llg_get_error(cc: &LlgConstraint) -> *const c_char {
     cc.get_error()
 }
 
 /// Get the current temperature of the constraint.
-/// It is updated by mask computation.
+///
+/// Updated by [`llg_compute_mask()`].
 #[no_mangle]
 pub extern "C" fn llg_get_temperature(cc: &LlgConstraint) -> f32 {
     cc.constraint.as_ref().map_or(0.0, |c| c.temperature)
 }
 
-/// Check if constraint is stopped (cannot be extended further).
+/// Check whether the constraint is stopped (cannot be extended further).
 #[no_mangle]
 pub extern "C" fn llg_is_stopped(cc: &LlgConstraint) -> bool {
     if let Some(c) = &cc.constraint {
@@ -675,10 +769,12 @@ pub extern "C" fn llg_is_stopped(cc: &LlgConstraint) -> bool {
     }
 }
 
-/// Compute mask for the next token sampling
-/// It typically takes up to a millisecond for a 100k tokenizer, so should be called in background.
-/// Returns 0 on success and -1 on error (use llg_get_error() to get the exact error).
-/// When 0 is returned, the result is written to *res_p.
+/// Compute the token mask for the next sampling step.
+///
+/// This typically takes up to a millisecond for a 100k tokenizer, so it should
+/// be called on a background thread. Returns 0 on success and −1 on error
+/// (use [`llg_get_error()`] to get the exact error). When 0 is returned, the
+/// result is written to `*res_p`.
 #[no_mangle]
 pub extern "C" fn llg_compute_mask(cc: &mut LlgConstraint, res_p: &mut LlgMaskResult) -> i32 {
     if let Some(constraint) = &mut cc.constraint {
@@ -700,10 +796,11 @@ pub extern "C" fn llg_compute_mask(cc: &mut LlgConstraint, res_p: &mut LlgMaskRe
     cc.get_error_code()
 }
 
-/// Commit the token sampled with the mask returned from llg_compute_mask().
-/// Can be run on the critical path of sampling (is fast).
-/// Returns 0 on success and -1 on error (use llg_get_error() to get the exact error).
-/// When 0 is returned, the result is written to *res_p.
+/// Commit the token sampled with the mask returned from [`llg_compute_mask()`].
+///
+/// Can be run on the critical path of sampling (it is fast). Returns 0 on
+/// success and −1 on error (use [`llg_get_error()`] to get the exact error).
+/// When 0 is returned, the result is written to `*res_p`.
 #[no_mangle]
 pub extern "C" fn llg_commit_token(
     cc: &mut LlgConstraint,
@@ -730,7 +827,8 @@ pub extern "C" fn llg_commit_token(
     cc.get_error_code()
 }
 
-/// Compute mask for several constraints in parallel.
+/// Compute masks for several constraints in parallel.
+///
 /// # Safety
 /// This function should only be called from C code.
 #[no_mangle]
@@ -757,13 +855,14 @@ pub unsafe extern "C" fn llg_par_compute_mask(
     }
 }
 
-/// Clone the constraint
+/// Clone the constraint.
 #[no_mangle]
 pub extern "C" fn llg_clone_constraint(cc: &LlgConstraint) -> *mut LlgConstraint {
     Box::into_raw(Box::new(cc.clone()))
 }
 
-/// Construct a new tokenizer from the given TokenizerInit
+/// Construct a new tokenizer from a [`LlgTokenizerInit`].
+///
 /// # Safety
 /// This function should only be called from C code.
 #[no_mangle]
@@ -781,7 +880,8 @@ pub unsafe extern "C" fn llg_new_tokenizer(
     }
 }
 
-/// Create a new tokenizer from a LlgTokenizerInitV2 struct.
+/// Create a new tokenizer from a [`LlgTokenizerInitV2`] struct.
+///
 /// This is the v2 API that supports multiple EOS tokens.
 ///
 /// The `tok_init` pointer must be valid and `tok_init->struct_size` must be set
@@ -793,8 +893,8 @@ pub unsafe extern "C" fn llg_new_tokenizer(
 /// # Safety
 /// `tok_init` must point to at least `tok_init->struct_size` bytes of
 /// initialized memory, and `struct_size` must be at least
-/// `offsetof(LlgTokenizerInitV2, token_lens)` (i.e., include struct_size,
-/// vocab_size, and the complete tok_eos field).
+/// `offset_of!(LlgTokenizerInitV2, token_lens)` (i.e., it must include
+/// `struct_size`, `vocab_size`, and the complete `tok_eos` field).
 #[no_mangle]
 pub unsafe extern "C" fn llg_new_tokenizer_v2(
     tok_init: *const LlgTokenizerInitV2,
@@ -847,15 +947,18 @@ pub unsafe extern "C" fn llg_new_tokenizer_v2(
 }
 
 /// Clone a tokenizer.
-/// This increments a reference count and does a small allocation.
+///
+/// This increments a reference count and performs a small allocation.
 #[no_mangle]
 pub extern "C" fn llg_clone_tokenizer(tok: &LlgTokenizer) -> *mut LlgTokenizer {
     Box::into_raw(Box::new(tok.clone()))
 }
 
 /// Tokenize the given bytes and return the tokens.
-/// Always returns the number of tokens that would be written to output_tokens
-/// if output_tokens_len was large enough.
+///
+/// Always returns the number of tokens that would be written to
+/// `output_tokens` if `output_tokens_len` were large enough.
+///
 /// # Safety
 /// This function should only be called from C code.
 #[no_mangle]
@@ -882,9 +985,11 @@ pub unsafe extern "C" fn llg_tokenize_bytes(
 }
 
 /// Tokenize the given bytes and return the tokens.
-/// Special tokens will be tokenized, if they follow 0xFF byte prefix.
-/// Always returns the number of tokens that would be written to output_tokens
-/// if output_tokens_len was large enough.
+///
+/// Special tokens will be tokenized if they follow a `0xFF` byte prefix.
+/// Always returns the number of tokens that would be written to
+/// `output_tokens` if `output_tokens_len` were large enough.
+///
 /// # Safety
 /// This function should only be called from C code.
 #[no_mangle]
@@ -912,8 +1017,10 @@ pub unsafe extern "C" fn llg_tokenize_bytes_marker(
 }
 
 /// Return a string representation of the tokens, useful for debugging.
-/// The output is NUL-terminated.
-/// Returns the number of bytes that would be written to output if output_len was large enough.
+///
+/// The output is NUL-terminated. Returns the number of bytes that would be
+/// written to `output` if `output_len` were large enough.
+///
 /// # Safety
 /// This function should only be called from C code.
 #[no_mangle]
@@ -940,7 +1047,7 @@ pub unsafe extern "C" fn llg_stringify_tokens(
     s.len() + 1
 }
 
-/// Do not include special tokens, and keep invalid UTF-8 as is.
+/// Do not include special tokens and keep invalid UTF-8 as-is.
 pub const LLG_DECODE_NONE: u32 = 0;
 
 /// Include special tokens in the output.
@@ -951,9 +1058,12 @@ pub const LLG_DECODE_INCLUDE_SPECIAL: u32 = 1;
 pub const LLG_DECODE_VALID_UTF8: u32 = 2;
 
 /// Return a string representation of the tokens, useful for debugging.
-/// The output is NUL-terminated.
-/// Returns the number of bytes that would be written to output if output_len was large enough.
-/// flags is one of LLG_DECODE_*
+///
+/// The output is NUL-terminated. Returns the number of bytes that would be
+/// written to `output` if `output_len` were large enough.
+/// `flags` is a combination of [`LLG_DECODE_NONE`], [`LLG_DECODE_INCLUDE_SPECIAL`],
+/// and [`LLG_DECODE_VALID_UTF8`].
+///
 /// # Safety
 /// This function should only be called from C code.
 #[no_mangle]
@@ -985,7 +1095,10 @@ pub unsafe extern "C" fn llg_decode_tokens(
     s.len() + 1
 }
 
-/// Free the tokenizer. Should *NOT* be called while there are still constraints using it.
+/// Free the tokenizer.
+///
+/// Must **not** be called while there are still constraints using it.
+///
 /// # Safety
 /// This function should only be called from C code.
 #[no_mangle]
@@ -995,7 +1108,8 @@ pub unsafe extern "C" fn llg_free_tokenizer(tok: *mut LlgTokenizer) {
     }
 }
 
-/// Free the constraint
+/// Free the constraint.
+///
 /// # Safety
 /// This function should only be called from C code.
 #[no_mangle]
@@ -1005,10 +1119,10 @@ pub unsafe extern "C" fn llg_free_constraint(cc: *mut LlgConstraint) {
     }
 }
 
-/// Get the logs from the constraint, since last call to this function.
-/// The logs are null-terminated.
-/// The logs are kept in the constraint until the next call to this function
-/// or until the constraint is freed.
+/// Get the logs from the constraint since the last call to this function.
+///
+/// The returned string is NUL-terminated and remains valid until the next
+/// call to this function or until the constraint is freed.
 #[no_mangle]
 pub extern "C" fn llg_flush_logs(cc: &mut LlgConstraint) -> *const c_char {
     if let Some(constraint) = &mut cc.constraint {
@@ -1036,11 +1150,14 @@ fn build_stop_controller(
     StopController::new(tokenizer.to_env(), stop_tokens.to_vec(), stop_rx, vec![])
 }
 
-/// Save the error string to the given pointer.
-/// The string is NUL-terminated.
-/// The function will write at most error_string_len bytes (including the NUL).
+/// Write an error message into a caller-provided buffer.
+///
+/// The string is NUL-terminated. The function will write at most
+/// `error_string_len` bytes (including the NUL).
+///
 /// # Safety
-/// This function should only when interacting with pointers passed from C.
+/// This function should only be called when interacting with pointers passed
+/// from C.
 pub unsafe fn save_error_string(
     e: impl Display,
     error_string: *mut c_char,
@@ -1058,7 +1175,8 @@ pub unsafe fn save_error_string(
     }
 }
 
-/// Create a new stop-sequence controller
+/// Create a new stop-sequence controller.
+///
 /// # Safety
 /// This function should only be called from C code.
 #[no_mangle]
@@ -1084,9 +1202,11 @@ pub unsafe extern "C" fn llg_new_stop_controller(
 }
 
 /// Commit a token to the stop-sequence controller.
-/// Returns a valid utf8 string to be returned to the user (which can be empty)
-/// and whether the sequence should be then finished.
-/// The string is valid until the next call to this function, or until the stop-sequence controller is freed.
+///
+/// Returns a pointer to a valid UTF-8 string to be returned to the user (which
+/// may be empty) and sets `*is_stopped_p` to indicate whether the sequence
+/// should then be finished. The returned string is valid until the next call
+/// to this function or until the controller is freed.
 #[no_mangle]
 pub extern "C" fn llg_stop_commit_token(
     stop_ctrl: &mut LlgStopController,
@@ -1102,7 +1222,8 @@ pub extern "C" fn llg_stop_commit_token(
 }
 
 /// Clone the stop-sequence controller.
-/// The cloned controller shares (under mutex) regex caches if any, so that
+///
+/// The cloned controller shares (under a mutex) regex caches, if any, so
 /// cloning is cheap.
 #[no_mangle]
 pub extern "C" fn llg_clone_stop_controller(
@@ -1111,7 +1232,8 @@ pub extern "C" fn llg_clone_stop_controller(
     Box::into_raw(Box::new(stop_ctrl.clone()))
 }
 
-/// Free the stop-sequence controller
+/// Free the stop-sequence controller.
+///
 /// # Safety
 /// This function should only be called from C code.
 #[no_mangle]
@@ -1121,6 +1243,10 @@ pub unsafe extern "C" fn llg_free_stop_controller(stop_ctrl: *mut LlgStopControl
     }
 }
 
+/// Opaque handle to a grammar matcher.
+///
+/// Created with [`llg_new_matcher()`]. Check for errors with
+/// [`llg_matcher_get_error()`]. Free with [`llg_free_matcher()`].
 pub struct LlgMatcher {
     last_error: Option<String>,
     matcher: Matcher,
@@ -1145,19 +1271,27 @@ impl LlgMatcher {
     }
 }
 
-/// Create a new matcher from the given ConstraintInit
-/// Always returns a non-null value. Call llg_matcher_get_error() on the result to check for errors.
-/// init.ff_tokens_ok and init.backtrack_ok are ignored
-/// (backtracking is always disabled, and ff_tokens can be retrieved using llg_matcher_compute_ff_tokens()).
-/// The data is of different format, depending on constraint_type:
-/// - "regex" - data is regular expression in rust regex format
+/// Create a new matcher from the given [`LlgConstraintInit`].
+///
+/// Always returns a non-null value. Call [`llg_matcher_get_error()`] on the
+/// result to check for errors.
+///
+/// `init.ff_tokens_ok` and `init.backtrack_ok` are ignored
+/// (backtracking is always disabled, and fast-forward tokens can be retrieved
+/// using [`llg_matcher_compute_ff_tokens()`]).
+///
+/// The `data` argument is interpreted differently depending on
+/// `constraint_type`:
+/// - `"regex"` — data is a regular expression in Rust regex format;
 ///   see <https://docs.rs/regex/latest/regex/#syntax>
-/// - "json" or "json_schema" - data is (stringifed) JSON schema
+/// - `"json"` or `"json_schema"` — data is a (stringified) JSON schema;
 ///   see <https://github.com/guidance-ai/llguidance/blob/main/docs/json_schema.md>
-/// - "json_object" - equivalent to JSON schema: {"type":"object"}
-/// - "lark" - data is grammar in a variant of Lark syntax
+/// - `"json_object"` — equivalent to JSON schema `{"type":"object"}`
+/// - `"lark"` — data is a grammar in a variant of Lark syntax;
 ///   see <https://github.com/guidance-ai/llguidance/blob/main/docs/syntax.md>
-/// - "llguidance" or "guidance" - data is a list of Lark or JSON schemas in JSON format
+/// - `"llguidance"` or `"guidance"` — data is a list of Lark or JSON schemas
+///   in JSON format
+///
 /// # Safety
 /// This function should only be called from C code.
 #[no_mangle]
@@ -1201,12 +1335,13 @@ fn validate_grammar(
     }
 }
 
-/// Check if given grammar is valid.
-/// This about twice as fast as creating a matcher (which also validates).
-/// See llg_new_matcher() for the grammar format.
-/// Returns 0 on success and -1 on error and 1 on warning.
-/// The error message or warning is written to message, which is message_len bytes long.
-/// It's always NUL-terminated.
+/// Check if the given grammar is valid.
+///
+/// This is about twice as fast as creating a matcher (which also validates).
+/// See [`llg_new_matcher()`] for the grammar format. Returns 0 on success,
+/// −1 on error, and 1 on warning. The error message or warning is written to
+/// `message`, which is `message_len` bytes long. It is always NUL-terminated.
+///
 /// # Safety
 /// This function should only be called from C code.
 #[no_mangle]
@@ -1234,10 +1369,12 @@ pub unsafe extern "C" fn llg_validate_grammar(
     }
 }
 
-/// Compute the set of allowed tokens for the current state.
-/// The result is written to mask_dest.
-/// mask_byte_len must be equal to llg_matcher_get_mask_byte_size().
-/// Returns 0 on success and -1 on error.
+/// Compute the set of allowed tokens for the current state into a
+/// caller-provided buffer.
+///
+/// `mask_byte_len` must equal the value returned by
+/// [`llg_matcher_get_mask_byte_size()`]. Returns 0 on success and −1 on error.
+///
 /// # Safety
 /// This function should only be called from C code.
 #[no_mangle]
@@ -1267,8 +1404,9 @@ pub unsafe extern "C" fn llg_matcher_compute_mask_into(
 }
 
 /// Compute the set of allowed tokens for the current state.
-/// Use llg_matcher_get_mask() to get the result.
-/// Returns 0 on success and -1 on error.
+///
+/// Use [`llg_matcher_get_mask()`] to retrieve the result.
+/// Returns 0 on success and −1 on error.
 #[no_mangle]
 pub extern "C" fn llg_matcher_compute_mask(matcher: &mut LlgMatcher) -> i32 {
     matcher.clear_mask();
@@ -1284,7 +1422,8 @@ pub extern "C" fn llg_matcher_compute_mask(matcher: &mut LlgMatcher) -> i32 {
     }
 }
 
-/// Return pointer to the mask computed by llg_matcher_compute_mask(), if any.
+/// Return a pointer to the mask computed by [`llg_matcher_compute_mask()`],
+/// or null if no mask has been computed yet.
 #[no_mangle]
 pub extern "C" fn llg_matcher_get_mask(matcher: &mut LlgMatcher) -> *const u32 {
     matcher
@@ -1300,7 +1439,8 @@ pub extern "C" fn llg_matcher_get_mask_byte_size(matcher: &mut LlgMatcher) -> us
 }
 
 /// Advance the matcher by one token.
-/// Returns 0 on success and -1 on error.
+///
+/// Returns 0 on success and −1 on error.
 #[no_mangle]
 pub extern "C" fn llg_matcher_consume_token(matcher: &mut LlgMatcher, token: u32) -> i32 {
     matcher.clear_mask();
@@ -1311,7 +1451,9 @@ pub extern "C" fn llg_matcher_consume_token(matcher: &mut LlgMatcher, token: u32
 }
 
 /// Advance the matcher by several tokens.
-/// Returns 0 on success and -1 on error.
+///
+/// Returns 0 on success and −1 on error.
+///
 /// # Safety
 /// This function should only be called from C code.
 #[no_mangle]
@@ -1328,9 +1470,12 @@ pub unsafe extern "C" fn llg_matcher_consume_tokens(
     })
 }
 
-/// Get the error message from the matcher or null if there is no error.
-/// After it returns a non-null value, it will always return it until the matcher is freed
-/// using llg_free_matcher() (at which point the pointer will be invalid).
+/// Get the error message from the matcher, or null if there is no error.
+///
+/// After it returns a non-null value, it will always return that same pointer
+/// until the matcher is freed with [`llg_free_matcher()`] (at which point the
+/// pointer becomes invalid).
+///
 /// # Safety
 /// This function should only be called from C code.
 #[no_mangle]
@@ -1346,13 +1491,14 @@ pub extern "C" fn llg_matcher_get_error(matcher: &mut LlgMatcher) -> *const c_ch
     matcher.last_error.as_ref().unwrap().as_ptr() as *const c_char
 }
 
-/// Check if the matcher is in an error state.
+/// Check whether the matcher is in an error state.
 #[no_mangle]
 pub extern "C" fn llg_matcher_is_error(matcher: &mut LlgMatcher) -> bool {
     matcher.matcher.is_error()
 }
 
 /// Free the matcher.
+///
 /// # Safety
 /// This function should only be called from C code.
 #[no_mangle]
@@ -1362,8 +1508,9 @@ pub unsafe extern "C" fn llg_free_matcher(matcher: *mut LlgMatcher) {
     }
 }
 
-/// Backtracks the matcher states by num_tokens.
-/// Returns 0 on success and -1 on error.
+/// Roll back the matcher state by `num_tokens`.
+///
+/// Returns 0 on success and −1 on error.
 #[no_mangle]
 pub extern "C" fn llg_matcher_rollback(matcher: &mut LlgMatcher, num_tokens: usize) -> i32 {
     matcher.clear_mask();
@@ -1373,9 +1520,10 @@ pub extern "C" fn llg_matcher_rollback(matcher: &mut LlgMatcher, num_tokens: usi
     })
 }
 
-/// Resets the matcher to the initial state.
-/// A matcher in error state cannot be reset.
-/// Returns 0 on success and -1 on error.
+/// Reset the matcher to the initial state.
+///
+/// A matcher in an error state cannot be reset.
+/// Returns 0 on success and −1 on error.
 #[no_mangle]
 pub extern "C" fn llg_matcher_reset(matcher: &mut LlgMatcher) -> i32 {
     matcher.clear_mask();
@@ -1385,21 +1533,24 @@ pub extern "C" fn llg_matcher_reset(matcher: &mut LlgMatcher) -> i32 {
     })
 }
 
-/// Check if the grammar can fully accept the input.
+/// Check whether the grammar can fully accept the input so far.
 #[no_mangle]
 pub extern "C" fn llg_matcher_is_accepting(matcher: &mut LlgMatcher) -> bool {
     matcher.matcher.is_accepting().unwrap_or(false)
 }
 
-/// Check if the matcher will force EOS token.
-/// This returns true also in error state, as that is a forced stop.
+/// Check whether the matcher will force an EOS token.
+///
+/// Also returns true in the error state, since that is a forced stop.
 #[no_mangle]
 pub extern "C" fn llg_matcher_is_stopped(matcher: &LlgMatcher) -> bool {
     matcher.matcher.is_stopped()
 }
 
-/// Check how many tokens can be consumed from the given tokens.
-/// Returns the number of tokens that can be consumed, or -1 on error.
+/// Check how many tokens can be consumed from the given token sequence.
+///
+/// Returns the number of tokens that can be consumed, or −1 on error.
+///
 /// # Safety
 /// This function should only be called from C code.
 #[no_mangle]
@@ -1413,8 +1564,10 @@ pub unsafe extern "C" fn llg_matcher_validate_tokens(
 }
 
 /// Compute the fast-forward (forced) tokens for the current state.
-/// The result is written to output.
-/// Returns the number of tokens written to output (which can be 0) or -1 on error.
+///
+/// The result is written to `output`. Returns the number of tokens written
+/// (which can be 0) or −1 on error.
+///
 /// # Safety
 /// This function should only be called from C code.
 #[no_mangle]

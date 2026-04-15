@@ -89,13 +89,12 @@ impl TokenParser {
             limits.clone(),
             factory.extra_lexemes(),
         )?;
-        let mut parser = Parser::new(
+        let parser = Parser::new(
             token_env.clone(),
             compiled_grammar,
             limits.clone(),
             factory.perf_counters(),
         )?;
-        parser.metrics_mut().rand = factory.next_rng();
         let eos_tokens = token_env.tok_trie().eos_tokens().to_vec();
 
         Ok(TokenParser {

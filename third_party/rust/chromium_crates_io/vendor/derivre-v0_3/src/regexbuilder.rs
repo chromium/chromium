@@ -533,6 +533,8 @@ impl RegexBuilder {
                                     idx += 1;
                                 }
                             }
+                            // Append the mapped tail so it isn't dropped.
+                            ConcatElement::Expr(args[0]).push_owned_to(&mut acc);
                             exprset._mk_concat_vec(acc)
                         } else if args[0] == args0 {
                             e
