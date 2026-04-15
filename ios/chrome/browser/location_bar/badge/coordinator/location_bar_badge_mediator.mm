@@ -93,9 +93,6 @@ constexpr base::TimeDelta kStartCollapseTransitionTime = base::Seconds(5);
   // Forwarder to always be observing the active ContextualPanelTabHelper.
   std::unique_ptr<ActiveContextualPanelTabHelperObservationForwarder>
       _activeContextualPanelObservationForwarder;
-  // Boolean to track whether the FET tracker successfully triggered and is
-  // awaiting dismissal.
-  BOOL _didPromoShow;
 }
 
 - (instancetype)initWithWebStateList:(WebStateList*)webStateList
@@ -205,7 +202,6 @@ constexpr base::TimeDelta kStartCollapseTransitionTime = base::Seconds(5);
     didStartNavigation:(web::NavigationContext*)navigationContext {
   // Do not modify badge state if the navigation is on the same document.
   if (!navigationContext->IsSameDocument()) {
-    [self ensureFETFeatureIsDismissed];
     _promoStartTimer = nil;
     _promoEndTimer = nil;
     [self.consumer hideBadge];
@@ -363,7 +359,9 @@ constexpr base::TimeDelta kStartCollapseTransitionTime = base::Seconds(5);
 - (void)handleBadgeContainerCollapse:(LocationBarBadgeType)badgeType {
   switch (badgeType) {
     case LocationBarBadgeType::kGeminiContextualCueChip:
-      [self ensureFETFeatureIsDismissed];
+      if (!IsAskGeminiChipIgnoreCriteria()) {
+        _tracker->Dismissed(feature_engagement::kIPHiOSGeminiContextualCueChip);
+      }
       break;
     default:
       break;
@@ -371,18 +369,6 @@ constexpr base::TimeDelta kStartCollapseTransitionTime = base::Seconds(5);
 }
 
 #pragma mark - Private
-
-// Dismisses the Feature Engagement Tracker feature. Safe to call
-// multiple times as a cleanup function since Dismissed() only clears active
-// in-memory tracking states without side effects.
-- (void)ensureFETFeatureIsDismissed {
-  if (_didPromoShow) {
-    if (!IsAskGeminiChipIgnoreCriteria()) {
-      _tracker->Dismissed(feature_engagement::kIPHiOSGeminiContextualCueChip);
-    }
-    _didPromoShow = NO;
-  }
-}
 
 // Starts the promo timer.
 - (void)startPromoTimer:(LocationBarBadgeConfiguration*)badgeConfig {
@@ -711,12 +697,8 @@ constexpr base::TimeDelta kStartCollapseTransitionTime = base::Seconds(5);
     return YES;
   }
 
-  BOOL shouldTrigger = _tracker->ShouldTriggerHelpUI(
+  return _tracker->ShouldTriggerHelpUI(
       feature_engagement::kIPHiOSGeminiContextualCueChip);
-  if (shouldTrigger) {
-    _didPromoShow = YES;
-  }
-  return shouldTrigger;
 }
 
 // Returns whether the promo timers exist which implies a promo is in the

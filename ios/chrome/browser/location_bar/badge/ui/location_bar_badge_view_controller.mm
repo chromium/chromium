@@ -103,8 +103,6 @@ const CGFloat kLeadingSeparatorSpace = 5.0;
   // View that displays a blue dot on the top-right corner of the displayed
   // badge if there are unread badges to be shown in the overflow menu.
   UIView* _unreadIndicatorView;
-  // Timestamp of when the badge configuration was last set.
-  NSDate* _badgeConfigSetTime;
 }
 
 #pragma mark - Public
@@ -234,7 +232,6 @@ const CGFloat kLeadingSeparatorSpace = 5.0;
 
   _badgeIcon.image = config.badgeImage;
   _badgeConfig = config;
-  _badgeConfigSetTime = [NSDate date];
 }
 
 #pragma mark - ContextualPanelEntrypointVisibilityDelegate
@@ -510,9 +507,6 @@ const CGFloat kLeadingSeparatorSpace = 5.0;
 // Refreshes the VoiceOver bounding box and notifies the mutator that the
 // animation to collapse the badge container is complete.
 - (void)didCollapseBadgeContainer {
-  if (_expandedContainerTrailingConstraint.active) {
-    return;
-  }
   [self refreshVoiceOverBoundingBoxIfFocused];
   if ([_badgeConfig isContextualPanelEntrypointBadge]) {
     [self.contextualPanelEntryPointMutator
@@ -522,13 +516,6 @@ const CGFloat kLeadingSeparatorSpace = 5.0;
   }
 
   if (_badgeConfig.shouldHideBadgeAfterChipCollapse) {
-    // Prevent an old badge's collapse animation from incorrectly hiding a newly
-    // set badge configuration.
-    if (_badgeConfigSetTime &&
-        -[_badgeConfigSetTime timeIntervalSinceNow] < 1.0) {
-      // Skipped hiding badge to prevent race condition for new config.
-      return;
-    }
     [self hideBadge];
   }
 }
@@ -857,8 +844,7 @@ const CGFloat kLeadingSeparatorSpace = 5.0;
   [UIView animateWithDuration:kBadgeContainerCollapseAnimationTime
                         delay:0
                       options:(UIViewAnimationOptionCurveEaseOut |
-                               UIViewAnimationOptionAllowUserInteraction |
-                               UIViewAnimationOptionBeginFromCurrentState)
+                               UIViewAnimationOptionAllowUserInteraction)
                    animations:animateBadgeContainerCollapse
                    completion:^(BOOL completed) {
                      [weakSelf didCollapseBadgeContainer];
@@ -904,8 +890,7 @@ const CGFloat kLeadingSeparatorSpace = 5.0;
   [UIView animateWithDuration:kBadgeContainerExpandAnimationTime
                         delay:0
                       options:(UIViewAnimationOptionCurveEaseOut |
-                               UIViewAnimationOptionAllowUserInteraction |
-                               UIViewAnimationOptionBeginFromCurrentState)
+                               UIViewAnimationOptionAllowUserInteraction)
                    animations:animateTransitionToLargeEntrypoint
                    completion:^(BOOL completed) {
                      [weakSelf refreshVoiceOverBoundingBoxIfFocused];
