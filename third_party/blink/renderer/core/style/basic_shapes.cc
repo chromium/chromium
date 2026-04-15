@@ -78,29 +78,36 @@ RoundedPolygonVertex ComputeRoundedPolygonVertex(const gfx::PointF& previous,
   incoming_unit.InvScale(incoming_length);
   gfx::Vector2dF outgoing_unit = outgoing;
   outgoing_unit.InvScale(outgoing_length);
-  const double cos_theta =
-      std::clamp(gfx::DotProduct(incoming_unit, outgoing_unit), -1.0, 1.0);
-  const double theta = std::acos(cos_theta);
-  if (theta <= std::numeric_limits<double>::epsilon() ||
-      std::abs(theta - kPiDouble) <= std::numeric_limits<double>::epsilon()) {
+  // The interior angle at the vertex: the angle between the vectors pointing
+  // from the vertex toward the previous and next vertices.  Since incoming_unit
+  // points INTO the vertex, negate it to get the outward direction.
+  const double cos_interior =
+      std::clamp(-gfx::DotProduct(incoming_unit, outgoing_unit), -1.0, 1.0);
+  const double interior_angle = std::acos(cos_interior);
+  if (interior_angle <= std::numeric_limits<double>::epsilon() ||
+      std::abs(interior_angle - kPiDouble) <=
+          std::numeric_limits<double>::epsilon()) {
     return vertex;
   }
 
-  const double tan_half_theta = std::tan(theta / 2.0);
-  if (!std::isfinite(tan_half_theta) ||
-      tan_half_theta <= std::numeric_limits<double>::epsilon()) {
+  const double tan_half_interior = std::tan(interior_angle / 2.0);
+  if (!std::isfinite(tan_half_interior) ||
+      tan_half_interior <= std::numeric_limits<double>::epsilon()) {
     return vertex;
   }
 
-  const double max_radius = std::min(tan_half_theta * incoming_length * 0.5,
-                                     tan_half_theta * outgoing_length * 0.5);
+  // The spec clamps the radius so it never exceeds
+  // tan(interior_angle/2) × segment / 2 for either adjacent segment.
+  // Spec: https://www.w3.org/TR/css-shapes-1/#funcdef-basic-shape-polygon
+  const double max_radius = std::min(tan_half_interior * incoming_length * 0.5,
+                                     tan_half_interior * outgoing_length * 0.5);
   const double radius =
       std::min(static_cast<double>(requested_radius), max_radius);
   if (radius <= std::numeric_limits<double>::epsilon()) {
     return vertex;
   }
 
-  const float tangent_distance = ClampTo<float>(radius / tan_half_theta);
+  const float tangent_distance = ClampTo<float>(radius / tan_half_interior);
   vertex.entry = current - gfx::ScaleVector2d(incoming_unit, tangent_distance);
   vertex.exit = current + gfx::ScaleVector2d(outgoing_unit, tangent_distance);
   vertex.radius = ClampTo<float>(radius);
