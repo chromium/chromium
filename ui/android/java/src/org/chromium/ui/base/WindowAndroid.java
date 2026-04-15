@@ -218,12 +218,17 @@ public class WindowAndroid
 
     private final boolean mOcclusionTrackingAllowed;
 
+    // Whether occlusion is actually tracked for this window.
+    private boolean mIsOcclusionTracked;
+
     /** True when this window is occluded. */
     private final SettableNonNullObservableSupplier<Boolean> mOcclusionSupplier =
             ObservableSuppliers.createNonNull(false);
 
     private boolean mIsOccluded;
     private long mOcclusionStartTimeMs;
+    private long mTotalOccludedTimeMs;
+    private final long mCreationTimeMs;
 
     private boolean mIsTopResumedActivity;
     private final boolean mActivityTopResumedSupported;
@@ -284,6 +289,7 @@ public class WindowAndroid
             boolean activityTopResumedSupported,
             boolean occlusionTrackingAllowed) {
         mLifetimeAssert = LifetimeAssert.create(this);
+        mCreationTimeMs = SystemClock.uptimeMillis();
         // context does not have the same lifetime guarantees as an application context so we can't
         // hold a strong reference to it.
         assert context != null : "Context when creating WindowAndroid must not be null.";
@@ -378,6 +384,8 @@ public class WindowAndroid
                     PostTask.postTask(TaskTraits.UI_DEFAULT, r);
                 },
                 mTrustedPresentationOcclusionObserver);
+
+        mIsOcclusionTracked = true;
     }
 
     @SuppressWarnings("NewApi")
@@ -402,6 +410,16 @@ public class WindowAndroid
     }
 
     /**
+     * Sets whether occlusion is tracked for this window.
+     *
+     * @param isOcclusionTracked Whether occlusion is tracked for this window.
+     */
+    public void setIsOcclusionTracked(boolean isOcclusionTracked) {
+        assert !shouldTrackOcclusionWithTrustedPresentationApi();
+        mIsOcclusionTracked = isOcclusionTracked;
+    }
+
+    /**
      * Sets whether the window is occluded.
      *
      * @param isOccluded Whether the window is occluded.
@@ -414,7 +432,8 @@ public class WindowAndroid
         updateOcclusionState(isOccluded);
     }
 
-    private void recordOcclusionDuration() {
+    private void onUnoccluded() {
+        // The window wasn't occluded to begin with. Nothing to do.
         if (mOcclusionStartTimeMs == 0) return;
 
         long durationMs = SystemClock.uptimeMillis() - mOcclusionStartTimeMs;
@@ -422,6 +441,7 @@ public class WindowAndroid
         // complete.
         RecordHistogram.recordLongTimesHistogram(
                 "Android.Window.OcclusionExperimental.Duration", durationMs);
+        mTotalOccludedTimeMs += durationMs;
         mOcclusionStartTimeMs = 0;
     }
 
@@ -438,7 +458,7 @@ public class WindowAndroid
         if (isOccluded) {
             mOcclusionStartTimeMs = SystemClock.uptimeMillis();
         } else {
-            recordOcclusionDuration();
+            onUnoccluded();
         }
     }
 
@@ -996,7 +1016,17 @@ public class WindowAndroid
     @CalledByNative
     @Override
     public void destroy() {
-        recordOcclusionDuration();
+        // This is safe to call even if the window was not occluded before destruction.
+        onUnoccluded();
+
+        long lifetimeMs = SystemClock.uptimeMillis() - mCreationTimeMs;
+        if (lifetimeMs > 0 && mIsOcclusionTracked) {
+            int percent = Math.round(mTotalOccludedTimeMs * 100f / lifetimeMs);
+            // TODO(crbug.com/488882847): Rename to non-experimental once occlusion experiments are
+            // complete.
+            RecordHistogram.recordPercentageHistogram(
+                    "Android.Window.OcclusionExperimental.OccludedTimePercent", percent);
+        }
 
         LifetimeAssert.destroy(mLifetimeAssert);
         if (mDestroyStack == null) {

@@ -218,4 +218,43 @@ public class WindowAndroidTest {
         mWindowAndroid.setOccluded(false);
         assertFalse(mWindowAndroid.getOcclusionSupplier().get());
     }
+
+    @Test
+    public void testOcclusionTimePercentMetric() {
+        var histogramWatcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        "Android.Window.OcclusionExperimental.OccludedTimePercent", 40);
+
+        mWindowAndroid.setIsOcclusionTracked(true);
+
+        ShadowSystemClock.advanceBy(java.time.Duration.ofSeconds(1));
+        mWindowAndroid.setOccluded(true);
+        ShadowSystemClock.advanceBy(java.time.Duration.ofSeconds(4));
+        mWindowAndroid.setOccluded(false);
+        ShadowSystemClock.advanceBy(java.time.Duration.ofSeconds(5));
+
+        mWindowAndroid.destroy();
+
+        histogramWatcher.assertExpected();
+    }
+
+    @Test
+    public void testOcclusionTimePercentMetricOcclusionNotTracked() {
+        var histogramWatcher =
+                HistogramWatcher.newBuilder()
+                        .expectNoRecords("Android.Window.OcclusionExperimental.OccludedTimePercent")
+                        .build();
+
+        // Do not call setIsOcclusionTracked().
+
+        ShadowSystemClock.advanceBy(java.time.Duration.ofSeconds(1));
+        mWindowAndroid.setOccluded(true);
+        ShadowSystemClock.advanceBy(java.time.Duration.ofSeconds(4));
+        mWindowAndroid.setOccluded(false);
+        ShadowSystemClock.advanceBy(java.time.Duration.ofSeconds(5));
+
+        mWindowAndroid.destroy();
+
+        histogramWatcher.assertExpected();
+    }
 }

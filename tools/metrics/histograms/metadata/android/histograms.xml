@@ -9670,6 +9670,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Android.Window.OcclusionExperimental.OccludedTimePercent"
+    units="%" expires_after="2027-04-02">
+  <owner>kalutes@google.com</owner>
+  <owner>clank-large-form-factors@google.com</owner>
+  <summary>
+    Records the percentage of the window's lifetime that it spent occluded.
+    Recorded when the window is destroyed.
+  </summary>
+</histogram>
+
 <histogram name="Android.Window.TimeToAcquireWindowBounds" units="ms"
     expires_after="2026-08-23">
   <owner>chominskib@google.com</owner>
