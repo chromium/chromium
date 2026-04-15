@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.video;
 
+import static org.chromium.base.test.util.Restriction.RESTRICTION_TYPE_NON_LOW_END_DEVICE;
+
 import android.graphics.Rect;
 
 import androidx.test.espresso.Espresso;
@@ -101,7 +103,10 @@ public class FullscreenVideoTest {
     /** Tests that the PIP transition can be done. */
     @Test
     @MediumTest
-    @Restriction(DeviceRestriction.RESTRICTION_TYPE_NON_AUTO) // PiP not supported on AAOS.
+    @Restriction({
+        RESTRICTION_TYPE_NON_LOW_END_DEVICE,
+        DeviceRestriction.RESTRICTION_TYPE_NON_AUTO // PiP not supported on AAOS.
+    })
     public void testFullscreenToPip() throws TimeoutException {
         loadUrlAndEnterFullscreen("/content/test/data/media/video-player-pip.html");
         // Test framework requirement. This will prevent visual transition but should keep all the

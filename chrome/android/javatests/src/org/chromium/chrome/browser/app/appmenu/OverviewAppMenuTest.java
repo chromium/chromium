@@ -21,6 +21,7 @@ import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.HistogramWatcher;
+import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.incognito.IncognitoUtils;
@@ -41,6 +42,7 @@ import java.util.List;
 
 /** Tests the Tab Switcher app menu. */
 @RunWith(ChromeJUnit4ClassRunner.class)
+@Restriction({Restriction.RESTRICTION_TYPE_NON_LOW_END_DEVICE})
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 @Batch(Batch.PER_CLASS)
 public class OverviewAppMenuTest {

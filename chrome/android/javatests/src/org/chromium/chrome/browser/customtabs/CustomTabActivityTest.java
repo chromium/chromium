@@ -34,6 +34,7 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import static org.chromium.base.test.util.Restriction.RESTRICTION_TYPE_NON_LOW_END_DEVICE;
 import static org.chromium.chrome.browser.customtabs.CustomTabsTestUtils.createTestBitmap;
 import static org.chromium.chrome.test.util.ChromeTabUtils.getTabCountOnUiThread;
 import static org.chromium.components.content_settings.PrefNames.COOKIE_CONTROLS_MODE;
@@ -1600,6 +1601,7 @@ public class CustomTabActivityTest {
      */
     @Test
     @SmallTest
+    @Restriction(RESTRICTION_TYPE_NON_LOW_END_DEVICE)
     public void testHiddenTabAndChangingFragmentIgnoreFragments() throws Exception {
         startHiddenTabAndChangeFragment(true, true);
     }
@@ -1607,6 +1609,7 @@ public class CustomTabActivityTest {
     /** Same as above, but the hidden tab matching should not ignore the fragment. */
     @Test
     @SmallTest
+    @Restriction(RESTRICTION_TYPE_NON_LOW_END_DEVICE)
     public void testHiddenTabAndChangingFragmentDontIgnoreFragments() throws Exception {
         startHiddenTabAndChangeFragment(false, true);
     }
@@ -1614,6 +1617,7 @@ public class CustomTabActivityTest {
     /** Same as above, hidden tab matching ignores the fragment, don't wait. */
     @Test
     @SmallTest
+    @Restriction(RESTRICTION_TYPE_NON_LOW_END_DEVICE)
     @DisabledTest(message = "https://crbug.com/1148544")
     public void testHiddenTabAndChangingFragmentDontWait() throws Exception {
         startHiddenTabAndChangeFragment(true, false);
@@ -1622,6 +1626,7 @@ public class CustomTabActivityTest {
     /** Same as above, hidden tab matching doesn't ignore the fragment, don't wait. */
     @Test
     @SmallTest
+    @Restriction(RESTRICTION_TYPE_NON_LOW_END_DEVICE)
     public void testHiddenTabAndChangingFragmentDontWaitDrop() throws Exception {
         startHiddenTabAndChangeFragment(false, false);
     }
@@ -1734,6 +1739,7 @@ public class CustomTabActivityTest {
      */
     @Test
     @SmallTest
+    @Restriction(RESTRICTION_TYPE_NON_LOW_END_DEVICE)
     public void testHiddenTabCorrectUrl() throws Exception {
         Context context = getInstrumentation().getTargetContext().getApplicationContext();
         final CustomTabsConnection connection = CustomTabsTestUtils.warmUpAndWait();
@@ -1754,6 +1760,7 @@ public class CustomTabActivityTest {
     /** Test that hidden tab speculation is not performed if 3rd party cookies are blocked. */
     @Test
     @SmallTest
+    @Restriction(RESTRICTION_TYPE_NON_LOW_END_DEVICE)
     @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
     public void testHiddenTabThirdPartyCookiesBlocked() throws Exception {
         final CustomTabsConnection connection = CustomTabsTestUtils.warmUpAndWait();
@@ -1780,6 +1787,7 @@ public class CustomTabActivityTest {
     /** Test whether invalid urls are avoided for hidden tab. */
     @Test
     @SmallTest
+    @Restriction(RESTRICTION_TYPE_NON_LOW_END_DEVICE)
     public void testHiddenTabInvalidUrl() throws Exception {
         final CustomTabsConnection connection = CustomTabsTestUtils.warmUpAndWait();
         CustomTabsSessionToken token = CustomTabsSessionToken.createMockSessionTokenForTesting();
@@ -1795,6 +1803,7 @@ public class CustomTabActivityTest {
      */
     @Test
     @SmallTest
+    @Restriction(RESTRICTION_TYPE_NON_LOW_END_DEVICE)
     public void testAllocateChildConnectionWithWarmup() throws Exception {
         Context context = getInstrumentation().getTargetContext().getApplicationContext();
         final CustomTabsConnection connection = CustomTabsTestUtils.warmUpAndWait();
@@ -1812,6 +1821,7 @@ public class CustomTabActivityTest {
     /** Tests that the activity knows there is no child process. */
     @Test
     @SmallTest
+    @Restriction(RESTRICTION_TYPE_NON_LOW_END_DEVICE)
     public void testAllocateChildConnectionNoWarmup() {
         Context context = getInstrumentation().getTargetContext().getApplicationContext();
         final CustomTabsConnection connection = CustomTabsConnection.getInstance();
@@ -1830,6 +1840,7 @@ public class CustomTabActivityTest {
     /** Tests that the activity knows there is already a child process with a hidden tab. */
     @Test
     @SmallTest
+    @Restriction(RESTRICTION_TYPE_NON_LOW_END_DEVICE)
     public void testAllocateChildConnectionWithHiddenTab() throws Exception {
         Context context = getInstrumentation().getTargetContext().getApplicationContext();
         final CustomTabsConnection connection = CustomTabsTestUtils.warmUpAndWait();
@@ -1849,6 +1860,7 @@ public class CustomTabActivityTest {
 
     @Test
     @SmallTest
+    @Restriction(RESTRICTION_TYPE_NON_LOW_END_DEVICE)
     public void testRecreateSpareRendererOnTabClose() throws Exception {
         Context context = getInstrumentation().getTargetContext().getApplicationContext();
         CustomTabsTestUtils.warmUpAndWait();
@@ -1877,6 +1889,7 @@ public class CustomTabActivityTest {
 
     @Test
     @SmallTest
+    @Restriction(RESTRICTION_TYPE_NON_LOW_END_DEVICE)
     public void testInteractionRecordedOnClose() throws Exception {
         Context context = getInstrumentation().getTargetContext().getApplicationContext();
         mCustomTabActivityTestRule.startCustomTabActivityWithIntent(
@@ -1909,6 +1922,7 @@ public class CustomTabActivityTest {
      */
     @Test
     @SmallTest
+    @Restriction(RESTRICTION_TYPE_NON_LOW_END_DEVICE)
     public void testHiddenTabWithReferrer() throws Exception {
         String referrer = "android-app://com.foo.me/";
         maybeSpeculateAndLaunchWithReferrers(
@@ -1928,6 +1942,7 @@ public class CustomTabActivityTest {
      */
     @Test
     @SmallTest
+    @Restriction(RESTRICTION_TYPE_NON_LOW_END_DEVICE)
     public void testHiddenTabWithMismatchedReferrers() throws Exception {
         String prerenderReferrer = "android-app://com.foo.me/";
         String launchReferrer = "android-app://com.foo.me.i.changed.my.mind/";
@@ -1945,6 +1960,7 @@ public class CustomTabActivityTest {
     /** Tests that a client can set a referrer, without speculating. */
     @Test
     @SmallTest
+    @Restriction(RESTRICTION_TYPE_NON_LOW_END_DEVICE)
     public void testClientCanSetReferrer() throws Exception {
         String referrerUrl = "android-app://com.foo.me/";
         maybeSpeculateAndLaunchWithReferrers(mTestPage, false, null, referrerUrl);
@@ -2074,12 +2090,14 @@ public class CustomTabActivityTest {
      */
     @Test
     @SmallTest
+    @Restriction(RESTRICTION_TYPE_NON_LOW_END_DEVICE)
     public void testHistoryAfterHiddenTabHit() throws Exception {
         verifyHistoryAfterHiddenTab(true);
     }
 
     @Test
     @SmallTest
+    @Restriction(RESTRICTION_TYPE_NON_LOW_END_DEVICE)
     public void testHistoryAfterHiddenTabMiss() throws Exception {
         verifyHistoryAfterHiddenTab(false);
     }

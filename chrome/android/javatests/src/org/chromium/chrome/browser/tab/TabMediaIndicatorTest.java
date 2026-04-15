@@ -12,6 +12,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.fail;
 import static org.junit.Assume.assumeTrue;
 
+import static org.chromium.base.test.util.Restriction.RESTRICTION_TYPE_NON_LOW_END_DEVICE;
 import static org.chromium.ui.test.util.ViewUtils.onViewWaiting;
 
 import android.app.Activity;
@@ -83,6 +84,7 @@ import java.util.concurrent.TimeoutException;
             + ":sharing/true",
 })
 @Batch(Batch.PER_CLASS)
+@Restriction(RESTRICTION_TYPE_NON_LOW_END_DEVICE)
 @EnableFeatures({ChromeFeatureList.ANDROID_NEW_MEDIA_PICKER})
 public class TabMediaIndicatorTest {
     @Rule

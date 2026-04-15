@@ -10,6 +10,7 @@ import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
+import static org.chromium.base.test.util.Restriction.RESTRICTION_TYPE_NON_LOW_END_DEVICE;
 import static org.chromium.chrome.browser.multiwindow.MultiWindowTestHelper.moveActivityToFront;
 import static org.chromium.chrome.browser.multiwindow.MultiWindowTestHelper.waitForSecondChromeTabbedActivity;
 import static org.chromium.chrome.browser.tasks.tab_management.TabUiTestHelper.clickFirstCardFromTabSwitcher;
@@ -56,7 +57,7 @@ import org.chromium.ui.base.UiAndroidFeatures;
     ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE,
     ChromeSwitches.DISABLE_TAB_MERGING_FOR_TESTING
 })
-@Restriction(DeviceFormFactor.PHONE)
+@Restriction({DeviceFormFactor.PHONE, RESTRICTION_TYPE_NON_LOW_END_DEVICE})
 @DisableIf.Build(sdk_is_greater_than = VERSION_CODES.R) // https://crbug.com/1297370
 @DisableFeatures(UiAndroidFeatures.USE_NEW_ETC1_ENCODER) // https://crbug.com/400962657
 // TODO(crbug.com/344669867): Failing when batched, batch this again.

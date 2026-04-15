@@ -87,7 +87,7 @@ import java.util.concurrent.TimeoutException;
 /** Tests for the {@link TabSwitcher} on tablet */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add(ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE)
-@Restriction(DeviceFormFactor.TABLET_OR_DESKTOP)
+@Restriction({Restriction.RESTRICTION_TYPE_NON_LOW_END_DEVICE, DeviceFormFactor.TABLET_OR_DESKTOP})
 @DisableFeatures({
     ChromeFeatureList.ANDROID_SURFACE_COLOR_UPDATE,
     ChromeFeatureList.GRID_TAB_SWITCHER_SURFACE_COLOR_UPDATE,

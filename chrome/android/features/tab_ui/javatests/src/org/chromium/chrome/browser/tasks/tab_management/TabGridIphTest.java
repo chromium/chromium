@@ -21,6 +21,7 @@ import static org.hamcrest.Matchers.not;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
+import static org.chromium.base.test.util.Restriction.RESTRICTION_TYPE_NON_LOW_END_DEVICE;
 import static org.chromium.chrome.browser.tasks.tab_management.TabUiTestHelper.clickFirstCardFromTabSwitcher;
 import static org.chromium.chrome.browser.tasks.tab_management.TabUiTestHelper.closeFirstTabInTabSwitcher;
 import static org.chromium.chrome.browser.tasks.tab_management.TabUiTestHelper.createTabs;
@@ -78,7 +79,7 @@ import java.io.IOException;
 /** End-to-end tests for TabGridIph component. */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add(ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE)
-@Restriction(DeviceFormFactor.PHONE)
+@Restriction({DeviceFormFactor.PHONE, RESTRICTION_TYPE_NON_LOW_END_DEVICE})
 @EnableFeatures(
         "IPH_TabGroupsDragAndDrop:availability/any"
             + "/event_trigger/name%3Aiph_tabgroups_drag_and_drop;comparator%3A==0;window%3A30;storage%3A365"

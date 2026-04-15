@@ -173,6 +173,7 @@ import java.util.concurrent.TimeoutException;
 @RunWith(ParameterizedRunner.class)
 @ParameterAnnotations.UseRunnerDelegate(ChromeJUnit4RunnerDelegate.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
+@Restriction({Restriction.RESTRICTION_TYPE_NON_LOW_END_DEVICE})
 @EnableFeatures({DATA_SHARING, DATA_SHARING_JOIN_ONLY})
 @Batch(Batch.PER_CLASS)
 @DisableIf.Device(DeviceFormFactor.DESKTOP) // crbug.com/394671175

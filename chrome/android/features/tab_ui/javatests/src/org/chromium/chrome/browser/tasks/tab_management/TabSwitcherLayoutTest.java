@@ -124,7 +124,7 @@ import java.util.concurrent.ExecutionException;
 @SuppressWarnings("ConstantConditions")
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add(ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE)
-@Restriction(DeviceFormFactor.PHONE)
+@Restriction({DeviceFormFactor.PHONE, Restriction.RESTRICTION_TYPE_NON_LOW_END_DEVICE})
 public class TabSwitcherLayoutTest {
     @Rule
     public FreshCtaTransitTestRule mActivityTestRule =

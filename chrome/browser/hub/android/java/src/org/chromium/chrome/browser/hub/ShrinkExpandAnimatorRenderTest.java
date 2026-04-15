@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.hub;
 
+import static org.chromium.base.test.util.Restriction.RESTRICTION_TYPE_NON_LOW_END_DEVICE;
+
 import android.animation.ObjectAnimator;
 import android.animation.RectEvaluator;
 import android.app.Activity;
@@ -34,6 +36,7 @@ import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.Feature;
+import org.chromium.base.test.util.Restriction;
 import org.chromium.ui.animation.RenderTestAnimationUtils;
 import org.chromium.ui.test.util.BlankUiTestActivity;
 import org.chromium.ui.test.util.NightModeTestUtils;
@@ -106,6 +109,7 @@ public class ShrinkExpandAnimatorRenderTest {
     @Test
     @MediumTest
     @Feature({"RenderTest"})
+    @Restriction({RESTRICTION_TYPE_NON_LOW_END_DEVICE})
     public void testExpandRect() throws Exception {
         Size thumbnailSize = getThumbnailSize();
 
@@ -154,6 +158,7 @@ public class ShrinkExpandAnimatorRenderTest {
     @Test
     @MediumTest
     @Feature({"RenderTest"})
+    @Restriction({RESTRICTION_TYPE_NON_LOW_END_DEVICE})
     public void testExpandRectWithTopClip() throws Exception {
         Size thumbnailSize = getThumbnailSize();
 
@@ -192,6 +197,7 @@ public class ShrinkExpandAnimatorRenderTest {
     @Test
     @MediumTest
     @Feature({"RenderTest"})
+    @Restriction({RESTRICTION_TYPE_NON_LOW_END_DEVICE})
     public void testExpandRectWithTopClip_hubSearchBoxAdjustment() throws Exception {
         Size thumbnailSize = getThumbnailSize();
 
@@ -231,6 +237,7 @@ public class ShrinkExpandAnimatorRenderTest {
     @Test
     @MediumTest
     @Feature({"RenderTest"})
+    @Restriction({RESTRICTION_TYPE_NON_LOW_END_DEVICE})
     public void testShrinkRect() throws Exception {
         Size thumbnailSize = getThumbnailSize();
 

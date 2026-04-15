@@ -11,6 +11,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
+import static org.chromium.base.test.util.Restriction.RESTRICTION_TYPE_NON_LOW_END_DEVICE;
 import static org.chromium.chrome.test.util.ChromeTabUtils.getTabCountOnUiThread;
 
 import android.content.Intent;
@@ -33,6 +34,7 @@ import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.RequiresRestart;
+import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
@@ -118,6 +120,7 @@ public class ChromeTabCreatorTest {
 
     /** Verify that tabs opened in background on regular devices are loaded eagerly. */
     @Test
+    @Restriction(RESTRICTION_TYPE_NON_LOW_END_DEVICE)
     @MediumTest
     @Feature({"Browser"})
     @DisableIf.Device(DeviceFormFactor.DESKTOP) // crbug.com/376371633

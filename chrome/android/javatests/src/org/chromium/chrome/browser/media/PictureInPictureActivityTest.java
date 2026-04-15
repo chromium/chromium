@@ -12,6 +12,7 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import static org.chromium.base.test.util.Restriction.RESTRICTION_TYPE_NON_LOW_END_DEVICE;
 import static org.chromium.chrome.browser.media.PictureInPictureActivity.PICTURE_IN_PICTURE_ACTION_HISTOGRAM;
 
 import android.app.Activity;
@@ -156,6 +157,7 @@ public class PictureInPictureActivityTest {
     @Test
     @MediumTest
     @DisabledTest(message = "b/353025645")
+    @Restriction(RESTRICTION_TYPE_NON_LOW_END_DEVICE)
     public void testMakeEnterPictureInPictureWithBadSourceRect() throws Throwable {
         mSourceRectHint.left = -1;
         PictureInPictureActivity activity = startPictureInPictureActivity();
@@ -166,6 +168,7 @@ public class PictureInPictureActivityTest {
 
     @Test
     @MediumTest
+    @Restriction(RESTRICTION_TYPE_NON_LOW_END_DEVICE)
     public void testExitOnBackToTab() throws Throwable {
         PictureInPictureActivity activity = startPictureInPictureActivity();
         Configuration newConfig = activity.getResources().getConfiguration();
@@ -179,6 +182,7 @@ public class PictureInPictureActivityTest {
 
     @Test
     @MediumTest
+    @Restriction(RESTRICTION_TYPE_NON_LOW_END_DEVICE)
     public void testResize() throws Throwable {
         PictureInPictureActivity activity = startPictureInPictureActivity();
         // Resize to some reasonable size, and verify that native is told about it.
@@ -197,6 +201,7 @@ public class PictureInPictureActivityTest {
 
     @Test
     @MediumTest
+    @Restriction(RESTRICTION_TYPE_NON_LOW_END_DEVICE)
     public void testMediaActions() throws Throwable {
         PictureInPictureActivity activity = startPictureInPictureActivity();
         PictureInPictureActivity.MediaActionButtonsManager manager =
@@ -234,8 +239,7 @@ public class PictureInPictureActivityTest {
         Assert.assertTrue(actions.get(0).isEnabled());
         Assert.assertFalse(actions.get(2).isEnabled());
 
-        // When all actions are not handled, there should be a placeholder action
-        // presented to prevent
+        // When all actions are not handled, there should be a dummy action presented to prevent
         // android picture-in-picture from using default MediaSession.
         activity.updateVisibleActions(new int[] {});
         actions = manager.getActionsForPictureInPictureParams();
@@ -246,6 +250,7 @@ public class PictureInPictureActivityTest {
 
     @Test
     @MediumTest
+    @Restriction(RESTRICTION_TYPE_NON_LOW_END_DEVICE)
     public void testMediaActionsForVideoConferencing() throws Throwable {
         PictureInPictureActivity activity = startPictureInPictureActivity();
         PictureInPictureActivity.MediaActionButtonsManager manager =
@@ -270,6 +275,7 @@ public class PictureInPictureActivityTest {
 
     @Test
     @MediumTest
+    @Restriction(RESTRICTION_TYPE_NON_LOW_END_DEVICE)
     public void testMediaActionsForTrackControl() throws Throwable {
         PictureInPictureActivity activity = startPictureInPictureActivity();
         PictureInPictureActivity.MediaActionButtonsManager manager =
@@ -300,6 +306,7 @@ public class PictureInPictureActivityTest {
 
     @Test
     @MediumTest
+    @Restriction(RESTRICTION_TYPE_NON_LOW_END_DEVICE)
     public void testMediaActionsForSlideControl() throws Throwable {
         PictureInPictureActivity activity = startPictureInPictureActivity();
         PictureInPictureActivity.MediaActionButtonsManager manager =
@@ -330,6 +337,7 @@ public class PictureInPictureActivityTest {
 
     @Test
     @MediumTest
+    @Restriction(RESTRICTION_TYPE_NON_LOW_END_DEVICE)
     @EnableFeatures(MediaFeatures.AUTO_PICTURE_IN_PICTURE_ANDROID)
     public void testMediaActionHide() throws Throwable {
         PictureInPictureActivity activity = startPictureInPictureActivity();
@@ -350,6 +358,7 @@ public class PictureInPictureActivityTest {
 
     @Test
     @MediumTest
+    @Restriction(RESTRICTION_TYPE_NON_LOW_END_DEVICE)
     public void testIconAccessibilityString() throws Throwable {
         PictureInPictureActivity activity = startPictureInPictureActivity();
         PictureInPictureActivity.MediaActionButtonsManager manager =
@@ -406,6 +415,7 @@ public class PictureInPictureActivityTest {
 
     @Test
     @MediumTest
+    @Restriction(RESTRICTION_TYPE_NON_LOW_END_DEVICE)
     @EnableFeatures(MediaFeatures.AUTO_PICTURE_IN_PICTURE_ANDROID)
     public void testActionTrimmingPriority() throws Throwable {
         PictureInPictureActivity activity = startPictureInPictureActivity();
@@ -464,6 +474,7 @@ public class PictureInPictureActivityTest {
 
     @Test
     @MediumTest
+    @Restriction(RESTRICTION_TYPE_NON_LOW_END_DEVICE)
     public void testActionsInSync() throws Throwable {
         PictureInPictureActivity activity = startPictureInPictureActivity();
         PictureInPictureActivity.MediaActionButtonsManager manager =
@@ -542,6 +553,7 @@ public class PictureInPictureActivityTest {
 
     @Test
     @MediumTest
+    @Restriction(RESTRICTION_TYPE_NON_LOW_END_DEVICE)
     public void testNotifyNativeWhenTabClose() throws Throwable {
         mActivityTestRule.skipWindowAndTabStateCleanup();
 
@@ -552,6 +564,7 @@ public class PictureInPictureActivityTest {
 
     @Test
     @MediumTest
+    @Restriction(RESTRICTION_TYPE_NON_LOW_END_DEVICE)
     public void testPipWindowExitsIfTokenDoesNotExist() throws Throwable {
         // If the window token doesn't produce a native window, then the activity should exit.
         when(mNativeMock.onActivityStart(eq(mNativeWindowToken), any(), any())).thenReturn(0L);

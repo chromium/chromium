@@ -17,6 +17,7 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 import static org.chromium.base.ThreadUtils.runOnUiThreadBlocking;
+import static org.chromium.base.test.util.Restriction.RESTRICTION_TYPE_NON_LOW_END_DEVICE;
 import static org.chromium.chrome.test.util.ChromeTabUtils.getTabCountOnUiThread;
 import static org.chromium.ui.test.util.ViewUtils.onViewWaiting;
 
@@ -159,6 +160,7 @@ public class TabsTest {
     @Test
     @LargeTest
     @Feature({"Navigation"})
+    @Restriction(RESTRICTION_TYPE_NON_LOW_END_DEVICE)
     @CommandLineFlags.Add(ContentSwitches.DISABLE_POPUP_BLOCKING)
     // TODO(crbug.com/457847264): Change to @Restriction(DeviceFormFactor.PHONE) after launch
     @DisableFeatures(ChromeFeatureList.ANDROID_OPEN_INCOGNITO_AS_WINDOW)
@@ -545,6 +547,7 @@ public class TabsTest {
     @Test
     @MediumTest
     @Feature({"Android-TabSwitcher"})
+    @Restriction(RESTRICTION_TYPE_NON_LOW_END_DEVICE)
     public void testOrientationChangeCausesLiveTabReflowInNormalView()
             throws InterruptedException, TimeoutException {
         mActivityTestRule
@@ -635,7 +638,7 @@ public class TabsTest {
     // Regression test for https://crbug.com/1394372.
     @Test
     @MediumTest
-    @Restriction(DeviceFormFactor.PHONE)
+    @Restriction({DeviceFormFactor.PHONE, RESTRICTION_TYPE_NON_LOW_END_DEVICE})
     @Feature({"Android-TabSwitcher"})
     @DisabledTest(message = "https://crbug.com/373446108")
     public void testRequestFocusOnCloseTab() throws Exception {
@@ -739,7 +742,7 @@ public class TabsTest {
 
     @Test
     @MediumTest
-    @Restriction(DeviceFormFactor.PHONE)
+    @Restriction({DeviceFormFactor.PHONE, RESTRICTION_TYPE_NON_LOW_END_DEVICE})
     @Feature({"Android-TabSwitcher"})
     public void testRequestFocusOnSwitchTab() {
         final TabModel model =

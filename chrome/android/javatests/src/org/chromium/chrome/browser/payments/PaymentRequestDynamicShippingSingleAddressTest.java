@@ -218,7 +218,11 @@ public class PaymentRequestDynamicShippingSingleAddressTest {
                 new String[] {"User closed the Payment Request UI."});
     }
 
-    /** Add a valid address and complete the transaction. */
+    /**
+     * Add a valid address and complete the
+     * transaction. @MediumTest @Restriction(RESTRICTION_TYPE_NON_LOW_END_DEVICE) //
+     * crbug.com/626289
+     */
     @Test
     @MediumTest
     @Feature({"Payments"})

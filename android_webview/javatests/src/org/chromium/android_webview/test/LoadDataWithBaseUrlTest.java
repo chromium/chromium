@@ -24,6 +24,7 @@ import org.chromium.android_webview.AwSettings;
 import org.chromium.android_webview.AwWebResourceRequest;
 import org.chromium.android_webview.test.util.CommonResources;
 import org.chromium.base.test.util.Feature;
+import org.chromium.base.test.util.Restriction;
 import org.chromium.components.embedder_support.util.WebResourceResponseInfo;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.test.util.HistoryUtils;
@@ -538,6 +539,7 @@ public class LoadDataWithBaseUrlTest extends AwParameterizedTest {
     @Test
     @SmallTest
     @Feature({"AndroidWebView"})
+    @Restriction(Restriction.RESTRICTION_TYPE_NON_LOW_END_DEVICE)
     public void testLoadLargeData() throws Throwable {
         // Chrome only allows URLs up to 2MB in IPC. Test something larger than this.
         // Note that the real URI may be significantly large if it gets encoded into

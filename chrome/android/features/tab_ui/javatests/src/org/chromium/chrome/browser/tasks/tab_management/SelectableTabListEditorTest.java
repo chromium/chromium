@@ -29,6 +29,8 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
+import static org.chromium.base.test.util.Restriction.RESTRICTION_TYPE_NON_LOW_END_DEVICE;
+
 import android.content.Intent;
 import android.graphics.Rect;
 import android.os.Build;
@@ -1077,7 +1079,7 @@ public class SelectableTabListEditorTest {
     @Test
     @MediumTest
     @Feature({"RenderTest"})
-    @Restriction(DeviceFormFactor.PHONE)
+    @Restriction({DeviceFormFactor.PHONE, RESTRICTION_TYPE_NON_LOW_END_DEVICE})
     public void testGridViewAppearance() throws IOException {
         prepareBlankTabWithThumbnail(3, false);
         List<Tab> tabs = getTabsInCurrentTabModel();
@@ -1115,7 +1117,7 @@ public class SelectableTabListEditorTest {
     @Test
     @MediumTest
     @Feature({"RenderTest"})
-    @Restriction(DeviceFormFactor.PHONE)
+    @Restriction({DeviceFormFactor.PHONE, RESTRICTION_TYPE_NON_LOW_END_DEVICE})
     public void testGridViewAppearance_oneSelectedTab() throws IOException {
         prepareBlankTabWithThumbnail(3, false);
         List<Tab> tabs = getTabsInCurrentTabModel();
@@ -1155,7 +1157,7 @@ public class SelectableTabListEditorTest {
     @Test
     @MediumTest
     @Feature({"RenderTest"})
-    @Restriction(DeviceFormFactor.PHONE)
+    @Restriction({DeviceFormFactor.PHONE, RESTRICTION_TYPE_NON_LOW_END_DEVICE})
     public void testSelectionAction_Toggle() throws IOException {
         prepareBlankTabWithThumbnail(3, false);
         List<Tab> tabs = getTabsInCurrentTabModel();

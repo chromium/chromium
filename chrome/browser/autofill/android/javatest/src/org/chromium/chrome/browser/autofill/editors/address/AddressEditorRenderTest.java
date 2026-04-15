@@ -10,6 +10,7 @@ import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.when;
 
 import static org.chromium.base.ThreadUtils.runOnUiThreadBlocking;
+import static org.chromium.base.test.util.Restriction.RESTRICTION_TYPE_NON_LOW_END_DEVICE;
 
 import android.view.View;
 
@@ -74,7 +75,7 @@ import java.util.List;
 @DoNotBatch(reason = "The tests can't be batched because they run for different set-ups.")
 @RunWith(ParameterizedRunner.class)
 @ParameterAnnotations.UseRunnerDelegate(ChromeJUnit4RunnerDelegate.class)
-@Restriction(DeviceFormFactor.PHONE)
+@Restriction({DeviceFormFactor.PHONE, RESTRICTION_TYPE_NON_LOW_END_DEVICE})
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 public class AddressEditorRenderTest {
     private static final String USER_EMAIL = "example@gmail.com";

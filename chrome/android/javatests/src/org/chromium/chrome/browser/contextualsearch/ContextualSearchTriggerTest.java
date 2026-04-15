@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.contextualsearch;
 
+import static org.chromium.base.test.util.Restriction.RESTRICTION_TYPE_NON_LOW_END_DEVICE;
+
 import android.os.Build;
 import android.text.TextUtils;
 import android.view.ViewConfiguration;
@@ -39,6 +41,7 @@ import org.chromium.ui.base.DeviceFormFactor;
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 @EnableFeatures(ChromeFeatureList.CONTEXTUAL_SEARCH_DISABLE_ONLINE_DETECTION)
 @Features.DisableFeatures({ContentFeatures.ANDROID_DESKTOP_ZOOM_SCALING})
+@Restriction(RESTRICTION_TYPE_NON_LOW_END_DEVICE)
 @Batch(Batch.PER_CLASS)
 public class ContextualSearchTriggerTest extends ContextualSearchInstrumentationBase {
     @Override
@@ -246,6 +249,7 @@ public class ContextualSearchTriggerTest extends ContextualSearchInstrumentation
     @Test
     @SmallTest
     @Feature({"ContextualSearch"})
+    @Restriction(Restriction.RESTRICTION_TYPE_NON_LOW_END_DEVICE)
     @EnableFeatures(ChromeFeatureList.CONTEXTUAL_SEARCH_SUPPRESS_SHORT_VIEW)
     public void testIsSuppressedOnViewHeight_ridiculouslyShort() {
         FeatureOverrides.overrideParam(
@@ -258,6 +262,7 @@ public class ContextualSearchTriggerTest extends ContextualSearchInstrumentation
     @Test
     @SmallTest
     @Feature({"ContextualSearch"})
+    @Restriction(Restriction.RESTRICTION_TYPE_NON_LOW_END_DEVICE)
     @EnableFeatures(ChromeFeatureList.CONTEXTUAL_SEARCH_SUPPRESS_SHORT_VIEW)
     public void testIsSuppressedOnViewHeight_ridiculouslyTall() {
         FeatureOverrides.overrideParam(

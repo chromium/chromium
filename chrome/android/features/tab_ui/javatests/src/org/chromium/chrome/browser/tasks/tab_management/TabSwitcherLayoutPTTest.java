@@ -43,6 +43,7 @@ import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.base.test.util.RequiresRestart;
+import org.chromium.base.test.util.Restriction;
 import org.chromium.base.test.util.TestAnimations;
 import org.chromium.base.test.util.TestAnimations.EnableAnimations;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
@@ -90,6 +91,7 @@ import java.util.function.Supplier;
 @SuppressWarnings("ConstantConditions")
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
+@Restriction({Restriction.RESTRICTION_TYPE_NON_LOW_END_DEVICE})
 @Batch(Batch.PER_CLASS)
 // TODO(https://crbug.com/392634251): Fix line height when elegant text height is used with Roboto
 // or enable Google Sans (Text) in //chrome/ tests on Android T+.

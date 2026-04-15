@@ -9,6 +9,7 @@ import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import static org.chromium.base.test.util.Restriction.RESTRICTION_TYPE_NON_LOW_END_DEVICE;
 import static org.chromium.chrome.browser.multiwindow.MultiWindowTestHelper.waitForSecondChromeTabbedActivity;
 import static org.chromium.chrome.browser.multiwindow.MultiWindowTestHelper.waitForTabs;
 
@@ -104,6 +105,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 @EnableFeatures(ChromeFeatureList.CONTEXTUAL_SEARCH_DISABLE_ONLINE_DETECTION)
 @DisableFeatures({ContentFeatures.ANDROID_DESKTOP_ZOOM_SCALING})
+@Restriction(RESTRICTION_TYPE_NON_LOW_END_DEVICE)
 @Batch(Batch.PER_CLASS)
 public class ContextualSearchManagerTest extends ContextualSearchInstrumentationBase {
     @Mock private EdgeToEdgeController mMockEdgeToEdgeController;

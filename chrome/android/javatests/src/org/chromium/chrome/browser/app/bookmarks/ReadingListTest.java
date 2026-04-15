@@ -18,6 +18,7 @@ import static androidx.test.espresso.matcher.ViewMatchers.withText;
 import static org.mockito.Mockito.doReturn;
 
 import static org.chromium.base.ThreadUtils.runOnUiThreadBlocking;
+import static org.chromium.base.test.util.Restriction.RESTRICTION_TYPE_NON_LOW_END_DEVICE;
 import static org.chromium.chrome.browser.url_constants.UrlConstantResolver.getOriginalNativeBookmarksUrl;
 import static org.chromium.chrome.browser.url_constants.UrlConstantResolver.getOriginalNonNativeNtpUrl;
 
@@ -339,6 +340,7 @@ public class ReadingListTest {
 
     @Test
     @SmallTest
+    @Restriction(RESTRICTION_TYPE_NON_LOW_END_DEVICE)
     public void testReadingListEmptyStateView() throws Exception {
         SigninPromoCoordinator.disablePromoForTesting();
         openBookmarkManager();

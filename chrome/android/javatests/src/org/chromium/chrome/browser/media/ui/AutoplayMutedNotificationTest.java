@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.media.ui;
 
+import static org.chromium.base.test.util.Restriction.RESTRICTION_TYPE_NON_LOW_END_DEVICE;
+
 import android.content.Context;
 import android.media.AudioManager;
 
@@ -17,6 +19,7 @@ import org.junit.runner.RunWith;
 
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.DisableIf;
+import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
@@ -89,6 +92,7 @@ public class AutoplayMutedNotificationTest {
 
     @Test
     @SmallTest
+    @Restriction(RESTRICTION_TYPE_NON_LOW_END_DEVICE)
     public void testBasic() throws Exception {
         Tab tab = mActivityTestRule.getActivityTab();
 
@@ -113,6 +117,7 @@ public class AutoplayMutedNotificationTest {
 
     @Test
     @SmallTest
+    @Restriction(RESTRICTION_TYPE_NON_LOW_END_DEVICE)
     public void testDoesNotReactToAudioFocus() throws Exception {
         Tab tab = mActivityTestRule.getActivityTab();
 
@@ -138,6 +143,7 @@ public class AutoplayMutedNotificationTest {
 
     @Test
     @SmallTest
+    @Restriction(RESTRICTION_TYPE_NON_LOW_END_DEVICE)
     public void testAutoplayMutedThenUnmute() throws Exception {
         Tab tab = mActivityTestRule.getActivityTab();
 
@@ -178,6 +184,7 @@ public class AutoplayMutedNotificationTest {
 
     @Test
     @SmallTest
+    @Restriction(RESTRICTION_TYPE_NON_LOW_END_DEVICE)
     @DisableIf.Device(DeviceFormFactor.DESKTOP) // https://crbug.com/481443731
     public void testMutedPlaybackDoesNotTakeAudioFocus() throws Exception {
         Tab tab = mActivityTestRule.getActivityTab();
@@ -209,6 +216,7 @@ public class AutoplayMutedNotificationTest {
 
     @Test
     @SmallTest
+    @Restriction(RESTRICTION_TYPE_NON_LOW_END_DEVICE)
     @DisableIf.Device(DeviceFormFactor.DESKTOP) // https://crbug.com/481443731
     public void testUnmutedPlaybackTakesAudioFocus() throws Exception {
         Tab tab = mActivityTestRule.getActivityTab();
