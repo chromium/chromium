@@ -319,7 +319,7 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
     private @Nullable GestureUserEducationIphController mGestureUserEducationIphController;
     private final InsetObserver mInsetObserver;
     private final Function<Tab, Boolean> mBackButtonShouldCloseTabFn;
-    private final Callback<Tab> mSendToBackground;
+    private final Callback<@Nullable Tab> mSendToBackground;
     private final LayoutStateProvider.LayoutStateObserver mGestureNavLayoutObserver;
 
     private Callback<Integer> mOnTabStripHeightChangedCallback;
@@ -512,7 +512,7 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
             IntentRequestTracker intentRequestTracker,
             InsetObserver insetObserver,
             Function<Tab, Boolean> backButtonShouldCloseTabFn,
-            Callback<Tab> sendToBackground,
+            Callback<@Nullable Tab> sendToBackground,
             boolean initializeUiWithIncognitoColors,
             BackPressManager backPressManager,
             @Nullable Bundle savedInstanceState,
