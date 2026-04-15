@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/core/css/css_image_set_type_value.h"
 
 #include "third_party/blink/public/common/mime_util/mime_util.h"
+#include "third_party/blink/renderer/core/css/css_markup.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 
 namespace blink {
@@ -17,9 +18,9 @@ CSSImageSetTypeValue::~CSSImageSetTypeValue() = default;
 String CSSImageSetTypeValue::CustomCSSText() const {
   StringBuilder result;
 
-  result.Append("type(\"");
-  result.Append(type_);
-  result.Append("\")");
+  result.Append("type(");
+  SerializeString(type_, result);
+  result.Append(")");
 
   return result.ReleaseString();
 }
