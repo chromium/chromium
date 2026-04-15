@@ -7925,7 +7925,13 @@ void WebContentsImpl::DidNavigateAnyFramePreCommit(
   }
 
   if (should_exit_fullscreen) {
+    base::WeakPtr<WebContentsImpl> weak_this = weak_factory_.GetWeakPtr();
     ExitFullscreen(false);
+
+    // If `this` gets destructed due to ExitFullscreen(), we need to exit early.
+    if (!weak_this) {
+      return;
+    }
     CancelKeyboardLock(keyboard_lock_widget_);
   }
 }
