@@ -330,7 +330,11 @@ suite('ContextualTasksComposeboxMiscInputsTest', () => {
         new File(['foo'], 'malware.exe', {type: 'application/x-msdownload'});
     await dispatchDragAndDropEvent(dropZone, [testFile]);
 
-    assertEquals(0, mockSearchboxPageHandler.getCallCount(ADD_FILE_CONTEXT_FN));
+    const expectedCallCount =
+        loadTimeData.getBoolean('lensSendRawFileMediaTypesEnabled') ? 1 : 0;
+    assertEquals(
+        expectedCallCount,
+        mockSearchboxPageHandler.getCallCount(ADD_FILE_CONTEXT_FN));
   });
 
   test('accepts images', async () => {

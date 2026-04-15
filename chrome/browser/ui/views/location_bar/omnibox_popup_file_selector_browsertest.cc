@@ -11,6 +11,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/run_loop.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
@@ -21,6 +22,7 @@
 #include "chrome/browser/ui/webui/searchbox/searchbox_test_utils.h"
 #include "chrome/browser/ui/webui/webui_embedding_context.h"
 #include "chrome/test/base/in_process_browser_test.h"
+#include "components/lens/lens_features.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "ui/shell_dialogs/fake_select_file_dialog.h"
@@ -28,6 +30,11 @@
 
 class OmniboxPopupFileSelectorBrowserTest : public InProcessBrowserTest {
  public:
+  OmniboxPopupFileSelectorBrowserTest() {
+    scoped_feature_list_.InitAndDisableFeature(
+        lens::features::kLensSendRawFileMediaTypes);
+  }
+
   void SetUpOnMainThread() override {
     InProcessBrowserTest::SetUpOnMainThread();
     auto* factory = ui::FakeSelectFileDialog::RegisterFactory();
@@ -38,6 +45,9 @@ class OmniboxPopupFileSelectorBrowserTest : public InProcessBrowserTest {
     ui::SelectFileDialog::SetFactory(nullptr);
     InProcessBrowserTest::TearDownOnMainThread();
   }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_F(OmniboxPopupFileSelectorBrowserTest,

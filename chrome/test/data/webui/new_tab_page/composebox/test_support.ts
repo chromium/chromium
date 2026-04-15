@@ -75,6 +75,7 @@ export function setupComposeboxTest(): ComposeboxTestElement {
       'composeboxAttachmentFileTypes': '.pdf,application/pdf',
       'contextualMenuUsePecApi': false,
       'searchboxComposePlaceholder': 'Placeholder',
+      'lensSendRawFileMediaTypesEnabled': false,
     });
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
 
