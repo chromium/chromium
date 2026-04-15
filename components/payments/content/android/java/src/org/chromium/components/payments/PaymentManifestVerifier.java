@@ -264,7 +264,7 @@ public class PaymentManifestVerifier
         }
 
         // Try to fetch manifest from the cache first.
-        if (!mCache.getPaymentMethodManifest(mMethodName.toString(), this)) {
+        if (!mCache.getPaymentMethodManifest(mMethodName.getSpec(), this)) {
             mIsManifestCacheStaleOrUnusable = true;
             mDownloader.downloadPaymentMethodManifest(mMerchantOrigin, mMethodName, this);
         }
@@ -455,7 +455,7 @@ public class PaymentManifestVerifier
 
         // Cache supported apps' package names and origins. (Also cache "*" if applicable.)
         mCache.addPaymentMethodManifest(
-                mMethodName.toString(),
+                mMethodName.getSpec(),
                 mAppIdentifiersToCache.toArray(new String[mAppIdentifiersToCache.size()]));
 
         // Cache supported apps' parsed manifests.
