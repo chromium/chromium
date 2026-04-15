@@ -221,6 +221,13 @@ export function recordContextualElementClickedMetric(
   recordEnumerationValue(metricName, contextType, ContextType.MAX_VALUE + 1);
 }
 
+export function recordContextualElementShownMetric(
+    composeboxSource: string, popupType: string, contextType: ContextType) {
+  const metricName =
+      `${composeboxSource}.AimEntrypoint.${popupType}.ContextualElement.Shown`;
+  recordEnumerationValue(metricName, contextType, ContextType.MAX_VALUE + 1);
+}
+
 export function recordToolModeSelection(
     mode: ToolMode, composeboxSource: string, popupType: string) {
   let contextType = ContextType.UNKNOWN;
@@ -239,6 +246,25 @@ export function recordToolModeSelection(
   }
   recordContextualElementClickedMetric(
       composeboxSource, popupType, contextType);
+}
+
+export function recordToolModeShown(
+    mode: ToolMode, composeboxSource: string, popupType: string) {
+  let contextType = ContextType.UNKNOWN;
+  switch (mode) {
+    case ToolMode.kImageGen:
+      contextType = ContextType.IMAGE_GEN;
+      break;
+    case ToolMode.kDeepSearch:
+      contextType = ContextType.DEEP_RESEARCH;
+      break;
+    case ToolMode.kCanvas:
+      contextType = ContextType.CANVAS;
+      break;
+    default:
+      break;
+  }
+  recordContextualElementShownMetric(composeboxSource, popupType, contextType);
 }
 
 export function recordModelModeSelection(
@@ -262,6 +288,47 @@ export function recordModelModeSelection(
   }
   recordContextualElementClickedMetric(
       composeboxSource, popupType, contextType);
+}
+
+export function recordModelModeShown(
+    model: ModelMode, composeboxSource: string, popupType: string) {
+  let contextType = ContextType.UNKNOWN;
+  switch (model) {
+    case ModelMode.kGeminiRegular:
+      contextType = ContextType.REGULAR_MODEL;
+      break;
+    case ModelMode.kGeminiPro:
+      contextType = ContextType.THINKING_MODEL;
+      break;
+    case ModelMode.kGeminiProAutoroute:
+      contextType = ContextType.AUTO_MODEL;
+      break;
+    case ModelMode.kGeminiProNoGenUi:
+      contextType = ContextType.PRO_NO_GEN_UI_MODEL;
+      break;
+    default:
+      break;
+  }
+  recordContextualElementShownMetric(composeboxSource, popupType, contextType);
+}
+
+export function recordInputTypeShown(
+    type: InputType, composeboxSource: string, popupType: string) {
+  let contextType = ContextType.UNKNOWN;
+  switch (type) {
+    case InputType.kLensFile:
+      contextType = ContextType.FILE;
+      break;
+    case InputType.kLensImage:
+      contextType = ContextType.IMAGE;
+      break;
+    case InputType.kBrowserTab:
+      contextType = ContextType.TAB;
+      break;
+    default:
+      break;
+  }
+  recordContextualElementShownMetric(composeboxSource, popupType, contextType);
 }
 
 export function hasAllowedInputs(

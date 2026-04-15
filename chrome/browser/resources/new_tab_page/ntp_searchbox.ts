@@ -9,7 +9,7 @@ import '//resources/cr_components/search/animated_glow.js';
 import '//resources/cr_components/searchbox/searchbox_input.js';
 
 import type {ContextualUpload, TabUpload, TabUploadOrigin} from '//resources/cr_components/composebox/common.js';
-import {ContextType, GlifAnimationState, recordContextualElementClickedMetric} from '//resources/cr_components/composebox/common.js';
+import {ContextType, GlifAnimationState, recordContextualElementClickedMetric, recordInputTypeShown, recordModelModeShown, recordToolModeShown} from '//resources/cr_components/composebox/common.js';
 import type {ContextualEntrypointAndMenuElement} from '//resources/cr_components/composebox/contextual_entrypoint_and_menu.js';
 import {ComposeboxContextAddedMethod, GlowAnimationState} from '//resources/cr_components/search/constants.js';
 import {DragAndDropHandler} from '//resources/cr_components/search/drag_drop_handler.js';
@@ -23,7 +23,7 @@ import {loadTimeData} from '//resources/js/load_time_data.js';
 import type {PropertyValues} from '//resources/lit/v3_0/lit.rollup.js';
 import type {TabInfo} from '//resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
 import type {InputState} from '//resources/mojo/components/omnibox/composebox/composebox_query.mojom-webui.js';
-import {ModelMode, ToolMode} from '//resources/mojo/components/omnibox/composebox/composebox_query.mojom-webui.js';
+import {InputType, ModelMode, ToolMode} from '//resources/mojo/components/omnibox/composebox/composebox_query.mojom-webui.js';
 import type {Url} from '//resources/mojo/url/mojom/url.mojom-webui.js';
 
 import {getCss} from './ntp_searchbox.css.js';
@@ -251,6 +251,16 @@ export class NtpSearchboxElement extends SearchboxElement implements
     }
     const {tabs} = await this.pageHandler().getRecentTabs();
     this.tabSuggestions_ = [...tabs];
+
+    if (this.contextMenuOpened_ && this.inputState_) {
+      const {allowedInputTypes, disabledInputTypes} = this.inputState_;
+      if (allowedInputTypes.includes(InputType.kBrowserTab) &&
+          !disabledInputTypes.includes(InputType.kBrowserTab) &&
+          this.tabSuggestions_.length > 0) {
+        recordInputTypeShown(
+            InputType.kBrowserTab, this.composeboxSource, 'ClassicPopup');
+      }
+    }
   }
 
   protected async onGetTabPreview_(e: CustomEvent<{
@@ -270,6 +280,33 @@ export class NtpSearchboxElement extends SearchboxElement implements
   protected onContextMenuOpened_() {
     this.contextMenuOpened_ = true;
     this.refreshTabSuggestions_(/*forceRefresh=*/ true);
+
+    if (this.inputState_) {
+      const {allowedInputTypes, disabledInputTypes} = this.inputState_;
+      allowedInputTypes.forEach((inputType: InputType) => {
+        // The `kBrowserTab` InputType requires special metrics handling as part
+        // of `refreshTabSuggestions_()`.
+        if (inputType !== InputType.kBrowserTab &&
+            !disabledInputTypes.includes(inputType)) {
+          recordInputTypeShown(
+              inputType, this.composeboxSource, 'ClassicPopup');
+        }
+      });
+
+      const {allowedTools, disabledTools} = this.inputState_;
+      allowedTools.forEach((tool: ToolMode) => {
+        if (!disabledTools.includes(tool)) {
+          recordToolModeShown(tool, this.composeboxSource, 'ClassicPopup');
+        }
+      });
+
+      const {allowedModels, disabledModels} = this.inputState_;
+      allowedModels.forEach((model: ModelMode) => {
+        if (!disabledModels.includes(model)) {
+          recordModelModeShown(model, this.composeboxSource, 'ClassicPopup');
+        }
+      });
+    }
   }
 
   protected onContextMenuEntrypointClick_() {
