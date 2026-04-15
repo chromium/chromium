@@ -70,6 +70,9 @@ bool IsComposebox(
 bool IsNTPRealbox(
     ::metrics::OmniboxEventProto::PageClassification classification);
 
+// Return true, if supplied page classification is an omnibox.
+bool IsOmnibox(::metrics::OmniboxEventProto::PageClassification classification);
+
 }  // namespace omnibox
 
 #endif  // COMPONENTS_OMNIBOX_BROWSER_PAGE_CLASSIFICATION_FUNCTIONS_H_

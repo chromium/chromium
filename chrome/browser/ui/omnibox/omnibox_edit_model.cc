@@ -2696,6 +2696,9 @@ void OmniboxEditModel::OpenMatch(OmniboxPopupSelection selection,
       ->UpdateMatchDestinationURLWithAdditionalSearchboxStats(
           elapsed_time_since_user_first_modified_omnibox, &match);
 
+  autocomplete_controller()->UpdateMatchDestinationURLWithInvocationSource(
+      &match);
+
   GURL destination_url = action ? action->getUrl() : match.destination_url;
 
   // Save the result of the interaction, but do not record the histogram yet.

@@ -48,6 +48,7 @@
 #include "content/public/browser/browser_accessibility_state.h"
 #include "content/public/browser/scoped_accessibility_mode.h"
 #include "content/public/test/browser_test.h"
+#include "net/base/url_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/omnibox_proto/aim_eligibility_response.pb.h"
 #include "ui/accessibility/ax_mode.h"
@@ -196,7 +197,9 @@ IN_PROC_BROWSER_TEST_F(OmniboxWebUiInteractiveTest, GeminiHidesVerbatimMatch) {
       // Confirming should navigate to the Gemini URL.
       Confirm(kOmniboxElementId),
       WaitForWebContentsNavigation(
-          kNewTab, GURL(OmniboxFieldTrial::kGeminiUrlOverride.Get())));
+          kNewTab, net::AppendOrReplaceQueryParameter(
+                       GURL(OmniboxFieldTrial::kGeminiUrlOverride.Get()),
+                       "source", "chrome.ob")));
 }
 
 // Ensures Gemini mode's null match; e.g. "<Type search term>" is hidden, and

@@ -248,6 +248,10 @@ class AutocompleteController : public AutocompleteProviderListener,
       base::TimeDelta query_formulation_time,
       TemplateURLRef::SearchTermsArgs& search_terms_args) const;
 
+  // Adds an invocation source parameter to the match's destination URL.
+  void UpdateMatchDestinationURLWithInvocationSource(
+      AutocompleteMatch* match) const;
+
   // Constructs and sets the final destination URL on the given match.
   void SetMatchDestinationURL(AutocompleteMatch* match) const;
 
