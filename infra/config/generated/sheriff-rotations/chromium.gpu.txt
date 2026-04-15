@@ -25,6 +25,7 @@ ci/GPU FYI Win x64 DX12 Vulkan Builder
 ci/GPU FYI Win x64 DX12 Vulkan Builder (dbg)
 ci/GPU FYI XR Win x64 Builder
 ci/GPU Linux Builder
+ci/GPU Mac Builder
 ci/GPU Mac Builder (dbg)
 ci/GPU Mac arm64 Builder
 ci/GPU Win x64 Builder
@@ -59,7 +60,9 @@ ci/Mac FYI Retina Release (AMD)
 ci/Mac FYI Retina Release (Apple M2)
 ci/Mac FYI Retina Release (Apple M3)
 ci/Mac Pro FYI Release (AMD)
+ci/Mac Release (Intel)
 ci/Mac Retina Debug (AMD)
+ci/Mac Retina Release (AMD)
 ci/Mac Retina Release (Apple M2)
 ci/Win10 FYI x64 DX12 Vulkan Debug (NVIDIA)
 ci/Win10 FYI x64 DX12 Vulkan Release (NVIDIA)

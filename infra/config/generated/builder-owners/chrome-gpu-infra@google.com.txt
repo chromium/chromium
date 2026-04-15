@@ -272,6 +272,8 @@ try/linux-dawn-rel
 try/linux_optional_gpu_tests_rel
 try/mac-arm64-dawn-rel
 try/mac-dawn-rel
+try/mac-gpu-rel
+try/mac-gpu-rel-compilator
 try/mac_optional_gpu_tests_rel
 try/win-dawn-rel
 try/win11-arm64-dawn-rel

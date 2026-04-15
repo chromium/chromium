@@ -68,6 +68,12 @@
           "project": "chromium"
         }
       ],
+      "mirroring_builder_group_and_names": [
+        {
+          "builder": "mac-gpu-rel",
+          "group": "tryserver.chromium.mac"
+        }
+      ],
       "targets_spec_directory": "infra/config/generated/builders/ci/Mac Retina Release (AMD)/targets"
     }
   },
@@ -79,5 +85,11 @@
     ]
   },
   "builder_group": "chromium.gpu",
-  "recipe": "chromium"
+  "gardener_rotations": [
+    "chromium.gpu"
+  ],
+  "recipe": "chromium",
+  "sheriff_rotations": [
+    "chromium.gpu"
+  ]
 }

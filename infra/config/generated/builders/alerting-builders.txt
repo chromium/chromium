@@ -104,6 +104,7 @@ ci/GPU FYI Win x64 DX12 Vulkan Builder
 ci/GPU FYI Win x64 DX12 Vulkan Builder (dbg)
 ci/GPU FYI XR Win x64 Builder
 ci/GPU Linux Builder
+ci/GPU Mac Builder
 ci/GPU Mac Builder (dbg)
 ci/GPU Mac arm64 Builder
 ci/GPU Win x64 Builder
@@ -177,7 +178,9 @@ ci/Mac FYI Retina Release (AMD)
 ci/Mac FYI Retina Release (Apple M2)
 ci/Mac FYI Retina Release (Apple M3)
 ci/Mac Pro FYI Release (AMD)
+ci/Mac Release (Intel)
 ci/Mac Retina Debug (AMD)
+ci/Mac Retina Release (AMD)
 ci/Mac Retina Release (Apple M2)
 ci/Mac12 Tests
 ci/Mac13 Tests
@@ -679,6 +682,7 @@ try/mac-clobber-rel
 try/mac-enterprise-companion-try-builder-dbg
 try/mac-enterprise-companion-try-builder-rel
 try/mac-fieldtrial-tester
+try/mac-gpu-rel
 try/mac-libfuzzer-asan-rel
 try/mac-official
 try/mac-rel
