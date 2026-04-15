@@ -260,23 +260,13 @@ suite('SearchboxTest', () => {
       description: 'theming refresh disabled',
       properties: {
         searchboxChromeRefreshTheming: false,
-        colorSourceIsBaseline: true,
       },
       shouldUseWebkit: false,
     },
     {
-      description: 'theming refresh with baseline color',
+      description: 'theming refresh enabled',
       properties: {
         searchboxChromeRefreshTheming: true,
-        colorSourceIsBaseline: true,
-      },
-      shouldUseWebkit: false,
-    },
-    {
-      description: 'theming refresh with non-baseline color',
-      properties: {
-        searchboxChromeRefreshTheming: true,
-        colorSourceIsBaseline: false,
       },
       shouldUseWebkit: true,
     },

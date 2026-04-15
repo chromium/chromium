@@ -75,11 +75,6 @@ export class SearchboxElement extends SearchboxElementBase implements
         reflect: true,
       },
 
-      colorSourceIsBaseline: {
-        type: Boolean,
-        reflect: true,
-      },
-
       /**
        * Whether the secondary side was at any point available to be shown.
        */
@@ -97,12 +92,6 @@ export class SearchboxElement extends SearchboxElementBase implements
         reflect: true,
       },
 
-      /** Whether the theme is dark. */
-      isDark: {
-        type: Boolean,
-        reflect: true,
-      },
-
       searchboxChromeRefreshTheming: {
         type: Boolean,
         reflect: true,
@@ -110,11 +99,6 @@ export class SearchboxElement extends SearchboxElementBase implements
 
       searchboxSteadyStateShadow: {
         type: Boolean,
-        reflect: true,
-      },
-
-      searchboxLayoutMode: {
-        type: String,
         reflect: true,
       },
 
@@ -160,15 +144,12 @@ export class SearchboxElement extends SearchboxElementBase implements
   // being needed for regular searchbox
   showThumbnail: boolean = false;
   accessor canShowSecondarySide: boolean = false;
-  accessor colorSourceIsBaseline: boolean = false;
   accessor hadSecondarySide: boolean = false;
   accessor hasSecondarySide: boolean = false;
-  accessor isDark: boolean = false;
   accessor searchboxChromeRefreshTheming: boolean =
       loadTimeData.getBoolean('searchboxCr23Theming');
   accessor searchboxSteadyStateShadow: boolean =
       loadTimeData.getBoolean('searchboxCr23SteadyStateShadow');
-  accessor searchboxLayoutMode: string = '';
   accessor placeholderText: string = '';
   protected accessor enableThumbnailSizingTweaks_: boolean =
       loadTimeData.getBoolean('enableThumbnailSizingTweaks');
@@ -211,10 +192,8 @@ export class SearchboxElement extends SearchboxElementBase implements
   override willUpdate(changedProperties: PropertyValues<this>) {
     super.willUpdate(changedProperties);
 
-    if (changedProperties.has('searchboxChromeRefreshTheming') ||
-        changedProperties.has('colorSourceIsBaseline')) {
-      this.useWebkitSearchIcons_ =
-          this.searchboxChromeRefreshTheming && !this.colorSourceIsBaseline;
+    if (changedProperties.has('searchboxChromeRefreshTheming')) {
+      this.useWebkitSearchIcons_ = this.searchboxChromeRefreshTheming;
     }
 
     const changedPrivateProperties =
@@ -396,10 +375,6 @@ export class SearchboxElement extends SearchboxElementBase implements
 
   protected onHasSecondarySideChanged_(e: CustomEvent<{value: boolean}>) {
     this.hasSecondarySide = e.detail.value;
-  }
-
-  protected useCompactLayout_(): boolean {
-    return this.searchboxLayoutMode === 'Compact';
   }
 
   protected processFiles_(

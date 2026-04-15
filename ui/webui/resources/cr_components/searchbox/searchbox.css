@@ -36,22 +36,6 @@
   --cr-searchbox-shadow: none;
 }
 
-:host-context([searchbox-width-behavior_='revert']):host([can-show-secondary-side]:not([dropdown-is-visible])) {
-  --cr-searchbox-width: var(--cr-searchbox-min-width);
-}
-
-/**
- * Show the secondary side if it can be shown and is currently available to be
- * shown.
- */
-:host([can-show-secondary-side][has-secondary-side]) {
-  --cr-searchbox-secondary-side-display: block;
-}
-
-:host([is-dark]) {
-  --cr-searchbox-shadow: 0 2px 6px 0 var(--color-searchbox-shadow);
-}
-
 :host([searchbox-voice-search-enabled_]) {
   --cr-searchbox-voice-search-button-width: var(--cr-searchbox-icon-width);
 }
