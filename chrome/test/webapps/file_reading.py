@@ -529,6 +529,7 @@ def get_and_maybe_delete_tests_in_browsertest(
         required_tests = set()
     tests: Dict[TestIdTestNameTuple, Set[TestPlatform]] = {}
     required_tests_ids = {test_id for test_id, _ in required_tests}
+    required_test_names = {test_name for _, test_name in required_tests}
 
     with open(filename, 'r') as fp:
         file = fp.read()
@@ -552,7 +553,8 @@ def get_and_maybe_delete_tests_in_browsertest(
             tests[TestIdTestNameTuple(test_id, test_name)] = set(TestPlatform)
             browser_test_name = f"{CoverageTest.TEST_ID_PREFIX}{test_name}"
             if f"DISABLED_{browser_test_name}" not in file:
-                if delete_in_place and test_id not in required_tests_ids:
+                if (delete_in_place and test_id not in required_tests_ids
+                        and test_name not in required_test_names):
                     del tests[TestIdTestNameTuple(test_id, test_name)]
                     # Remove the matching test code block when the test is not
                     # in required_tests
@@ -569,12 +571,15 @@ def get_and_maybe_delete_tests_in_browsertest(
                 # characters between the macro and the disabled test name, which
                 #  ensures that the macro is applying to the correct test.
                 if re.search(
-                        fr"{macro_for_regex}[^{{}}]+DISABLED_{browser_test_name}",
-                        file):
+                        fr"{macro_for_regex}[^{{}}]+"
+                        f"DISABLED_{browser_test_name}", file):
                     enabled_platforms.remove(platform)
             if len(enabled_platforms) == len(TestPlatform):
                 enabled_platforms.clear()
     if delete_in_place:
+        # Ensure that the number of blank new lines left behind if a test
+        # was deleted in place is limited to 2, to ensure readability.
+        result_file = re.sub(r"\n{3,}", "\n\n", result_file)
         with open(filename, 'w') as fp:
             fp.write(result_file.rstrip("\n") + "\n")
     return tests

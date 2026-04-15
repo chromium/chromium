@@ -222,6 +222,62 @@ class FileReadingTest(unittest.TestCase):
                 {TestPlatform.LINUX, TestPlatform.CHROME_OS, TestPlatform.MAC},
                 tests_and_platforms)
 
+    def test_browsertest_in_place_deletion_keeps_matching_test_name(self):
+        """Tests that a test whose test_id changed but test_name stayed the
+        same is kept (not deleted) so it can be updated in place later."""
+        input_file = os.path.join(
+            TEST_DATA_DIR, "tests_change_for_replacing_test_same_test_name.cc")
+        with tempfile.TemporaryDirectory(dir=TEST_DATA_DIR) as tmpdirname:
+            output_file = os.path.join(tmpdirname, "output.cc")
+            shutil.copyfile(input_file, output_file)
+
+            tests_and_platforms = get_and_maybe_delete_tests_in_browsertest(
+                output_file, {
+                    TestIdTestNameTuple(
+                        "state_change_a_Chicken_state_change_a_Dog_check_a_Dog",
+                        "StateChangeAChicken_StateChangeADog"),
+                    TestIdTestNameTuple(
+                        "state_change_a_Chicken_state_change_a_Dog_state_change_a_Chicken",
+                        "StateChangeAChicken_StateChangeADog_StateChangeAChicken"
+                    ),
+                },
+                delete_in_place=True)
+
+            with open(output_file, "r", encoding="utf-8") as f, open(
+                    input_file, "r", encoding="utf-8") as expected_file:
+                self.assertEqual(expected_file.read(), f.read())
+            self.assertIn(
+                TestIdTestNameTuple(
+                    "state_change_a_Chicken_state_change_a_Dog_check_a_Dog_state_change_a_Chicken",
+                    "StateChangeAChicken_StateChangeADog_StateChangeAChicken"),
+                tests_and_platforms)
+
+    def test_browsertest_in_place_deletion_normalizes_blank_lines(self):
+        """Tests that consecutive blank lines left by deleted tests are
+        collapsed to a single blank line."""
+        input_file = os.path.join(TEST_DATA_DIR,
+                                  "tests_for_blank_line_normalization.cc")
+        expected_file = os.path.join(
+            TEST_DATA_DIR, "expected_test_txt",
+            "tests_after_blank_line_normalization.cc")
+        with tempfile.TemporaryDirectory(dir=TEST_DATA_DIR) as tmpdirname:
+            output_file = os.path.join(tmpdirname, "output.cc")
+            shutil.copyfile(input_file, output_file)
+
+            get_and_maybe_delete_tests_in_browsertest(output_file, {
+                TestIdTestNameTuple("state_change_a_Chicken",
+                                    "StateChangeAChicken"),
+                TestIdTestNameTuple("state_change_b_Chicken_Green",
+                                    "StateChangeBChickenGreen"),
+            },
+                                                      delete_in_place=True)
+
+            with open(output_file, "r",
+                      encoding="utf-8") as f, open(expected_file,
+                                                   "r",
+                                                   encoding="utf-8") as f2:
+                self.assertEqual(f.read(), f2.read())
+
     def test_action_param_expansion(self):
         enum_map: Dict[str, ArgEnum] = {
             "EnumType": ArgEnum("EnumType", ["Value1", "Value2"], None)

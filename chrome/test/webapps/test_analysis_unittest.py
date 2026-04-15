@@ -36,6 +36,40 @@ TEST_DATA_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)),
                              "test_data")
 
 
+def read_test_data_file(filename: str) -> str:
+    with open(os.path.join(TEST_DATA_DIR, filename), "r",
+              encoding="utf-8") as f:
+        return f.read()
+
+
+def get_test_actions() -> ActionsByName:
+    actions_filename = os.path.join(TEST_DATA_DIR, "test_actions.md")
+    supported_actions_filename = os.path.join(
+        TEST_DATA_DIR, "framework_supported_actions.csv")
+    enums_filename = os.path.join(TEST_DATA_DIR, "test_enums.md")
+
+    actions: ActionsByName = {}
+    action_base_name_to_default_param = {}
+    enums: EnumsByType = {}
+    with open(actions_filename, "r", encoding="utf-8") as f, open(
+            supported_actions_filename, "r",
+            encoding="utf-8") as supported_actions_file, open(
+                enums_filename, "r", encoding="utf-8") as enums_file:
+        supported_actions = read_platform_supported_actions(
+            csv.reader(supported_actions_file, delimiter=','))
+        enums = read_enums_file(enums_file.readlines())
+        (actions, action_base_name_to_default_param) = read_actions_file(
+            f.readlines(), enums, supported_actions)
+    return actions
+
+
+def create_coverage_test_from_action_names(
+        action_names: List[str]) -> CoverageTest:
+    actions = get_test_actions()
+    return CoverageTest([actions[action_name] for action_name in action_names],
+                        set(TestPlatform))
+
+
 def create_dummy_action(id: str) -> Action:
     return Action(id, id, id, id, ActionType.STATE_CHANGE, TestPlatform,
                   TestPlatform)
@@ -63,7 +97,8 @@ def get_existing_test_ids_test_names_by_platform_set(
         delete_in_place: bool) -> TestIdsTestNamesByPlatformSet:
     # Read in existing tests from a file.
     platforms = frozenset(
-        TestPlatform.get_platforms_from_browsertest_filename(filename))
+        TestPlatform.get_platforms_from_browsertest_filename(
+            os.path.basename(filename)))
     existing_tests_in_file = get_and_maybe_delete_tests_in_browsertest(
         filename,
         required_tests=required_tests,
@@ -181,7 +216,8 @@ class TestAnalysisTest(unittest.TestCase):
                     filename=test_file,
                     required_tests={
                         TestIdTestNameTuple(
-                            "state_change_a_Chicken_check_a_Chicken_check_b_Chicken_Green",
+                            "state_change_a_Chicken_check_a_Chicken_"
+                            "check_b_Chicken_Green",
                             "3Chicken_1Chicken_2ChickenGreen")
                     },
                     delete_in_place=False))
@@ -259,7 +295,8 @@ class TestAnalysisTest(unittest.TestCase):
                     filename=test_file,
                     required_tests={
                         TestIdTestNameTuple(
-                            "state_change_a_Chicken_state_change_a_Dog_check_a_Dog",
+                            "state_change_a_Chicken_state_change_a_Dog_"
+                            "check_a_Dog",
                             "StateChangeAChicken_StateChangeADog")
                     },
                     delete_in_place=True))
@@ -371,6 +408,134 @@ class TestAnalysisTest(unittest.TestCase):
             with open(expected_file, "r", encoding="utf-8") as f:
                 self.assertEqual(f.read() % test_output_file,
                                  console_output_str)
+
+    def test_compare_and_print_tests_updates_generated_test_in_place(self):
+        with tempfile.TemporaryDirectory(dir=TEST_DATA_DIR) as tmpdirname:
+            original_file = os.path.join(TEST_DATA_DIR,
+                                         "tests_for_generated_name_update.cc")
+            test_file = os.path.join(tmpdirname,
+                                     "tests_for_generated_name_update.cc")
+            shutil.copyfile(original_file, test_file)
+
+            existing_tests = get_existing_test_ids_test_names_by_platform_set(
+                filename=test_file,
+                required_tests=set(),
+                delete_in_place=False)
+            required_tests = {
+                frozenset(set(TestPlatform)): [
+                    create_coverage_test_from_action_names(
+                        ["state_change_a_Chicken"]),
+                    create_coverage_test_from_action_names(
+                        ["state_change_a_Dog", "check_a_Dog"]),
+                    create_coverage_test_from_action_names(
+                        ["state_change_b_Chicken_Green"]),
+                ]
+            }
+
+            captured_output = StringIO()
+            with redirect_stdout(captured_output):
+                compare_and_print_tests_to_remove_and_add(
+                    existing_tests,
+                    required_tests,
+                    test_partitions=[],
+                    default_partition=TestPartitionDescription(
+                        action_name_prefixes=set(),
+                        browsertest_dir=tmpdirname,
+                        test_file_prefix="tests_for_generated_name_update",
+                        test_fixture="TestName"),
+                    add_to_file=True)
+
+            self.assertEqual("", captured_output.getvalue())
+            with open(test_file, "r", encoding="utf-8") as f:
+                self.assertEqual(
+                    read_test_data_file(
+                        "expected_test_txt/tests_after_generated_name_update.cc"
+                    ), f.read())
+
+    def test_compare_and_print_tests_updates_generated_test_without_marker(
+            self):
+        with tempfile.TemporaryDirectory(dir=TEST_DATA_DIR) as tmpdirname:
+            original_file = os.path.join(
+                TEST_DATA_DIR, "tests_for_generated_name_update_no_marker.cc")
+            test_file = os.path.join(
+                tmpdirname, "tests_for_generated_name_update_no_marker.cc")
+            shutil.copyfile(original_file, test_file)
+
+            existing_tests = get_existing_test_ids_test_names_by_platform_set(
+                filename=test_file,
+                required_tests=set(),
+                delete_in_place=False)
+            required_tests = {
+                frozenset(set(TestPlatform)): [
+                    create_coverage_test_from_action_names(
+                        ["state_change_a_Dog", "check_a_Dog"]),
+                ]
+            }
+
+            captured_output = StringIO()
+            with redirect_stdout(captured_output):
+                compare_and_print_tests_to_remove_and_add(
+                    existing_tests,
+                    required_tests,
+                    test_partitions=[],
+                    default_partition=TestPartitionDescription(
+                        action_name_prefixes=set(),
+                        browsertest_dir=tmpdirname,
+                        test_file_prefix=
+                        "tests_for_generated_name_update_no_marker",
+                        test_fixture="TestName"),
+                    add_to_file=True)
+
+            self.assertEqual("", captured_output.getvalue())
+            with open(test_file, "r", encoding="utf-8") as f:
+                self.assertEqual(
+                    read_test_data_file(
+                        "expected_test_txt/"
+                        "tests_after_generated_name_update_no_marker.cc"),
+                    f.read())
+
+    def test_compare_and_print_tests_appends_to_related_generated_cluster(
+            self):
+        with tempfile.TemporaryDirectory(dir=TEST_DATA_DIR) as tmpdirname:
+            original_file = os.path.join(
+                TEST_DATA_DIR, "tests_for_related_generated_cluster_append.cc")
+            test_file = os.path.join(
+                tmpdirname, "tests_for_related_generated_cluster_append.cc")
+            shutil.copyfile(original_file, test_file)
+
+            existing_tests = get_existing_test_ids_test_names_by_platform_set(
+                filename=test_file,
+                required_tests=set(),
+                delete_in_place=False)
+            required_tests = {
+                frozenset(set(TestPlatform)): [
+                    create_coverage_test_from_action_names(
+                        ["state_change_a_Dog", "state_change_a_Chicken"]),
+                    create_coverage_test_from_action_names(
+                        ["state_change_a_Dog", "state_change_b_Chicken_Red"]),
+                    create_coverage_test_from_action_names(
+                        ["state_change_b_Chicken_Green"]),
+                ]
+            }
+
+            compare_and_print_tests_to_remove_and_add(
+                existing_tests,
+                required_tests,
+                test_partitions=[],
+                default_partition=TestPartitionDescription(
+                    action_name_prefixes=set(),
+                    browsertest_dir=tmpdirname,
+                    test_file_prefix=
+                    "tests_for_related_generated_cluster_append",
+                    test_fixture="TestName"),
+                add_to_file=True)
+
+            with open(test_file, "r", encoding="utf-8") as f:
+                self.assertEqual(
+                    read_test_data_file(
+                        "expected_test_txt/"
+                        "tests_after_related_generated_cluster_append.cc"),
+                    f.read())
 
 
 if __name__ == '__main__':
