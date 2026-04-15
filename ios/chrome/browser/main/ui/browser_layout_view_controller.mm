@@ -237,7 +237,7 @@
 // Ensures the status bar background views are created and installed in the
 // view hierarchy with proper constraints.
 - (void)ensureStatusBarViewsInstalled {
-  DCHECK(self.isViewLoaded);
+  DCHECK(self.viewLoaded);
   if ([self.fadingStatusBarView isDescendantOfView:self.view]) {
     return;
   }
@@ -268,7 +268,7 @@
 
 // Updates the status bar background views properties and visibility.
 - (void)updateStatusBarBackgroundViews {
-  DCHECK(self.isViewLoaded);
+  DCHECK(self.viewLoaded);
 
   bool shouldShow = CanShowTabStrip(self) && _tabStripViewController;
 
