@@ -454,6 +454,19 @@ field, and other binaries on a machine could launch the Native Messaging Host
 and communicate with it. Both of these are outside of Chrome's security model
 which [does not consider physically-local attacks to be security bugs][physically-local-attacks].
 
+### Are bugs that assume a compromised Chrome Web Store renderer considered security issues?
+
+In general, _no_, these are not be considered security bugs. The Chrome Web
+Store is process-isolated (meaning it won't share a process with other
+renderers), put in its own browsing instance, and runs trusted code. Similar to
+to other highly-privileged pages that still run HTML, CSS, and JS (like
+chrome://settings and other WebUI pages), these are not considered "inherently
+compromisable" in the same way that other web renderers are, and so issues that
+assume a compromise Chrome Web Store renderer are not typically considered
+security bugs. However, if you can trigger a renderer compromise in the Chrome
+Web Store renderer process, that may then be considered a security issue
+(subject to our other guidelines).
+
 ### What is your stance on click-jacking using extensions?
 
 This depends on the attack. In general, these will *not* be considered security
