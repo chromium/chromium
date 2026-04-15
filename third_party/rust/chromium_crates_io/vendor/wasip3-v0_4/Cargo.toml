@@ -1,0 +1,25 @@
+# Copyright 2023 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+# @generated from `tools/crates/gnrt/removed_Cargo.toml.hbs`
+# by `tools/crates/run_gnrt.py vendor`. Do not edit!
+#
+# This is an empty placeholder that has replaced the
+# `wasip3-0.4.0+wasi-0.3.0-rc-2026-01-06` crate.
+#
+# See `//tools/crates/gnrt/removed_crate.md` to learn more.
+
+[package]
+name = "wasip3"
+version = "0.4.0+wasi-0.3.0-rc-2026-01-06"
+
+[package.metadata.gnrt]
+is_placeholder = true
+
+[features]
+"http-compat" = []
+
+[dependencies.wit-bindgen]
+version = "^0.51.0"
+default_features = false

@@ -1,0 +1,56 @@
+# Copyright 2023 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+# @generated from `tools/crates/gnrt/removed_Cargo.toml.hbs`
+# by `tools/crates/run_gnrt.py vendor`. Do not edit!
+#
+# This is an empty placeholder that has replaced the
+# `wit-parser-0.244.0` crate.
+#
+# See `//tools/crates/gnrt/removed_crate.md` to learn more.
+
+[package]
+name = "wit-parser"
+version = "0.244.0"
+
+[package.metadata.gnrt]
+is_placeholder = true
+
+[features]
+"decoding" = []
+"default" = []
+"serde" = []
+"serde_json" = []
+"wat" = []
+
+[dependencies.anyhow]
+version = "^1.0.58"
+default_features = false
+[dependencies.id-arena]
+version = "^2"
+default_features = false
+[dependencies.indexmap]
+version = "^2.7.0"
+default_features = false
+[dependencies.log]
+version = "^0.4.17"
+default_features = false
+[dependencies.semver]
+version = "^1.0.0"
+default_features = false
+[dependencies.serde]
+version = "^1.0.166"
+default_features = false
+[dependencies.serde_derive]
+version = "^1.0.166"
+default_features = false
+[dependencies.serde_json]
+version = "^1"
+default_features = false
+[dependencies.unicode-xid]
+version = "^0.2.2"
+default_features = false
+[dependencies.wasmparser]
+version = "^0.244.0"
+default_features = false

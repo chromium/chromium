@@ -1,0 +1,47 @@
+# Copyright 2023 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+# @generated from `tools/crates/gnrt/removed_Cargo.toml.hbs`
+# by `tools/crates/run_gnrt.py vendor`. Do not edit!
+#
+# This is an empty placeholder that has replaced the
+# `wit-bindgen-rust-0.51.0` crate.
+#
+# See `//tools/crates/gnrt/removed_crate.md` to learn more.
+
+[package]
+name = "wit-bindgen-rust"
+version = "0.51.0"
+
+[package.metadata.gnrt]
+is_placeholder = true
+
+[features]
+"clap" = []
+"serde" = []
+
+[dependencies.anyhow]
+version = "^1.0.72"
+default_features = false
+[dependencies.heck]
+version = "^0.5"
+default_features = false
+[dependencies.indexmap]
+version = "^2.0.0"
+default_features = false
+[dependencies.prettyplease]
+version = "^0.2.20"
+default_features = false
+[dependencies.syn]
+version = "^2.0.89"
+default_features = false
+[dependencies.wasm-metadata]
+version = "^0.244.0"
+default_features = false
+[dependencies.wit-bindgen-core]
+version = "^0.51.0"
+default_features = false
+[dependencies.wit-component]
+version = "^0.244.0"
+default_features = false

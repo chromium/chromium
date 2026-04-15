@@ -1,0 +1,42 @@
+# Copyright 2023 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+# @generated from `tools/crates/gnrt/removed_Cargo.toml.hbs`
+# by `tools/crates/run_gnrt.py vendor`. Do not edit!
+#
+# This is an empty placeholder that has replaced the
+# `wasmparser-0.244.0` crate.
+#
+# See `//tools/crates/gnrt/removed_crate.md` to learn more.
+
+[package]
+name = "wasmparser"
+version = "0.244.0"
+
+[package.metadata.gnrt]
+is_placeholder = true
+
+[features]
+"component-model" = []
+"default" = []
+"features" = []
+"hash-collections" = []
+"prefer-btree-collections" = []
+"serde" = []
+"simd" = []
+"std" = []
+"validate" = []
+
+[dependencies.bitflags]
+version = "^2.4.1"
+default_features = false
+[dependencies.hashbrown]
+version = "^0.15.2"
+default_features = false
+[dependencies.indexmap]
+version = "^2.7.0"
+default_features = false
+[dependencies.semver]
+version = "^1.0.0"
+default_features = false

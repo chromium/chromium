@@ -21,7 +21,7 @@ version = "0.8.12"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 dependencies = [
  "cfg-if",
- "getrandom",
+ "getrandom 0.3.4",
  "once_cell",
  "version_check",
  "zerocopy",
@@ -241,6 +241,7 @@ dependencies = [
  "fend-core",
  "font-types",
  "fs2",
+ "getrandom 0.4.1",
  "hex",
  "hmac-sha256",
  "icu_casemap",
@@ -582,6 +583,18 @@ dependencies = [
  "libc",
  "r-efi",
  "wasip2",
+]
+
+[[package]]
+name = "getrandom"
+version = "0.4.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+dependencies = [
+ "cfg-if",
+ "libc",
+ "r-efi",
+ "wasip2",
+ "wasip3",
 ]
 
 [[package]]
@@ -1744,6 +1757,14 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 [[package]]
 name = "wasip2"
 version = "1.0.2+wasi-0.2.9"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+dependencies = [
+ "wit-bindgen",
+]
+
+[[package]]
+name = "wasip3"
+version = "0.4.0+wasi-0.3.0-rc-2026-01-06"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 dependencies = [
  "wit-bindgen",
