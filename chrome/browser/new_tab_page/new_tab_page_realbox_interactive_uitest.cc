@@ -240,56 +240,6 @@ std::unique_ptr<KeyedService> BuildMockAimServiceEligibilityServiceInstance(
   return std::move(mock_aim_eligibility_service);
 }
 
-std::unique_ptr<KeyedService> BuildMockContextualSearchServiceInstance(
-    content::BrowserContext* context) {
-  auto mock_service =
-      std::make_unique<contextual_search::MockContextualSearchService>(
-          /*identity_manager=*/nullptr,
-          /*url_loader_factory=*/nullptr,
-          /*template_url_service=*/nullptr,
-          /*variations_client=*/nullptr, version_info::Channel::UNKNOWN,
-          "en-US");
-
-  ON_CALL(*mock_service, CreateSession)
-      .WillByDefault(
-          [service_ptr = mock_service.get()](
-              std::unique_ptr<
-                  contextual_search::ContextualSearchContextController::
-                      ConfigParams> params,
-              contextual_search::ContextualSearchSource source,
-              std::optional<lens::LensOverlayInvocationSource>
-                  invocation_source) {
-            auto query_controller = std::make_unique<MockQueryController>(
-                /*identity_manager=*/nullptr, /*url_loader_factory=*/nullptr,
-                version_info::Channel::UNKNOWN, "en-US",
-                /*template_url_service=*/nullptr,
-                /*variations_client=*/nullptr, std::move(params));
-
-            auto* query_controller_ptr = query_controller.get();
-
-            ON_CALL(*query_controller_ptr, GetFileInfo)
-                .WillByDefault(
-                    testing::Invoke(query_controller_ptr,
-                                    &MockQueryController::FakeGetFileInfo));
-            ON_CALL(*query_controller_ptr, StartFileUploadFlow)
-                .WillByDefault(testing::Invoke(
-                    query_controller_ptr,
-                    &MockQueryController::FakeStartFileUploadFlow));
-            ON_CALL(*query_controller_ptr, CreateSearchUrl)
-                .WillByDefault(
-                    testing::Invoke(query_controller_ptr,
-                                    &MockQueryController::FakeCreateSearchUrl));
-
-            auto metrics_recorder =
-                std::make_unique<MockContextualSearchMetricsRecorder>();
-
-            return service_ptr->CreateSessionForTesting(
-                std::move(query_controller), std::move(metrics_recorder));
-          });
-
-  return std::move(mock_service);
-}
-
 }  // namespace
 
 class NtpRealboxUiTestBase
@@ -301,8 +251,8 @@ class NtpRealboxUiTestBase
 
   void TearDownOnMainThread() override {
     ui::SelectFileDialog::SetFactory(nullptr);
-    SearchboxInteractiveTestMixin<WebUiInteractiveTestMixin<
-        InteractiveBrowserTest>>::TearDownOnMainThread();
+    SearchboxInteractiveTestMixin<
+        WebUiInteractiveTestMixin<InteractiveBrowserTest>>::TearDownOnMainThread();
   }
 
   MultiStep FocusAndInputText(

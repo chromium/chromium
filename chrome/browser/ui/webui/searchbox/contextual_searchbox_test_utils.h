@@ -27,6 +27,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 
 namespace content {
+class BrowserContext;
 class WebContents;
 }
 
@@ -35,7 +36,11 @@ class IdentityManager;
 }
 
 class FakeVariationsClient;
+class KeyedService;
 class TemplateURLService;
+
+std::unique_ptr<KeyedService> BuildMockContextualSearchServiceInstance(
+    content::BrowserContext* context);
 
 class MockQueryController
     : public contextual_search::TestComposeboxQueryController {

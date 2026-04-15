@@ -127,6 +127,7 @@ source_set("searchbox_test_utils") {
     "//chrome/browser/search_engines",
     "//chrome/browser/ui/omnibox",
     "//chrome/browser/ui/webui/omnibox_popup/mojom",
+    "//components/contextual_search:test_support",
     "//components/omnibox/browser:vector_icons",
     "//components/search",
   ]
