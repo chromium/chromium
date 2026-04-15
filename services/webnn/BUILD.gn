@@ -326,6 +326,7 @@ test("webnn_graph_impl_fuzzer") {
 
   fuzztests = [
     "WebNNGraphImplFuzzer_CPU.SingleOpConv2d",
+    "WebNNGraphImplFuzzer_CPU.SingleOpGatherND",
     "WebNNGraphImplFuzzer_CPU.SingleOpGemm",
     "WebNNGraphImplFuzzer_CPU.SingleOpPool2d",
     "WebNNGraphImplFuzzer_CPU.SingleOpScatterElements",
@@ -333,6 +334,7 @@ test("webnn_graph_impl_fuzzer") {
     "WebNNGraphImplFuzzer_CPU.SubgraphDQGemmQ",
     "WebNNGraphImplFuzzer_CPU.SubgraphDQPool2dQ",
     "WebNNGraphImplFuzzer_GPU.SingleOpConv2d",
+    "WebNNGraphImplFuzzer_GPU.SingleOpGatherND",
     "WebNNGraphImplFuzzer_GPU.SingleOpGemm",
     "WebNNGraphImplFuzzer_GPU.SingleOpPool2d",
     "WebNNGraphImplFuzzer_GPU.SingleOpScatterElements",
@@ -340,6 +342,7 @@ test("webnn_graph_impl_fuzzer") {
     "WebNNGraphImplFuzzer_GPU.SubgraphDQGemmQ",
     "WebNNGraphImplFuzzer_GPU.SubgraphDQPool2dQ",
     "WebNNGraphImplFuzzer_NPU.SingleOpConv2d",
+    "WebNNGraphImplFuzzer_NPU.SingleOpGatherND",
     "WebNNGraphImplFuzzer_NPU.SingleOpGemm",
     "WebNNGraphImplFuzzer_NPU.SingleOpPool2d",
     "WebNNGraphImplFuzzer_NPU.SingleOpScatterElements",
