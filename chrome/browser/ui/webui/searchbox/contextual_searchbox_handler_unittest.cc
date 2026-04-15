@@ -26,6 +26,7 @@
 #include "chrome/browser/contextual_search/contextual_search_service_factory.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_context_service.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_context_service_factory.h"
+#include "chrome/browser/contextual_tasks/contextual_tasks_service_factory.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/browser/tab_list/mock_tab_list_interface.h"
 #include "chrome/browser/tab_list/tab_list_interface.h"
@@ -47,6 +48,7 @@
 #include "components/contextual_search/internal/test_composebox_query_controller.h"
 #include "components/contextual_search/pref_names.h"
 #include "components/contextual_tasks/public/features.h"
+#include "components/contextual_tasks/public/mock_contextual_tasks_service.h"
 #include "components/contextual_tasks/public/prefs.h"
 #include "components/lens/lens_overlay_invocation_source.h"
 #include "components/lens/proto/server/lens_overlay_response.pb.h"
@@ -70,6 +72,7 @@
 #include "mojo/public/cpp/test_support/test_utils.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/base/unowned_user_data/unowned_user_data_host.h"
 #include "ui/base/webui/web_ui_util.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
@@ -728,9 +731,19 @@ class SmartTabSharingTest : public ContextualSearchboxHandlerTestHarness {
   void SetUp() override {
     ContextualSearchboxHandlerTestHarness::SetUp();
 
-    feature_list_.InitAndEnableFeatureWithParameters(
-        contextual_tasks::kContextualTasksContext,
-        {{"ContextualTasksContextSmartTabSharing", "true"}});
+    webui::SetBrowserWindowInterface(web_contents(),
+                                     &mock_browser_window_interface_);
+
+    ON_CALL(mock_browser_window_interface_, GetUnownedUserDataHost())
+        .WillByDefault(testing::ReturnRef(unowned_user_data_host_));
+    ON_CALL(mock_browser_window_interface_, GetWeakPtr())
+        .WillByDefault(testing::Return(weak_factory_.GetWeakPtr()));
+
+    feature_list_.InitWithFeaturesAndParameters(
+        {{contextual_tasks::kContextualTasks, {}},
+         {contextual_tasks::kContextualTasksContext,
+          {{"ContextualTasksContextSmartTabSharing", "true"}}}},
+        {});
 
     auto query_controller_config_params = std::make_unique<
         contextual_search::ContextualSearchContextController::ConfigParams>();
@@ -771,6 +784,15 @@ class SmartTabSharingTest : public ContextualSearchboxHandlerTestHarness {
                   return service;
                 },
                 this));
+
+    contextual_tasks::ContextualTasksServiceFactory::GetInstance()
+        ->SetTestingFactory(
+            profile(),
+            base::BindRepeating([](content::BrowserContext* context)
+                                    -> std::unique_ptr<KeyedService> {
+              return std::make_unique<testing::NiceMock<
+                  contextual_tasks::MockContextualTasksService>>();
+            }));
 
     handler_ = std::make_unique<FakeContextualSearchboxHandler>(
         mojo::PendingReceiver<searchbox::mojom::PageHandler>(),
@@ -833,6 +855,10 @@ class SmartTabSharingTest : public ContextualSearchboxHandlerTestHarness {
   TestWebContentsDelegate delegate_;
   raw_ptr<MockQueryController> query_controller_;
   raw_ptr<contextual_search::ContextualSearchService> service_;
+  testing::NiceMock<MockBrowserWindowInterface> mock_browser_window_interface_;
+  ui::UnownedUserDataHost unowned_user_data_host_;
+  base::WeakPtrFactory<MockBrowserWindowInterface> weak_factory_{
+      &mock_browser_window_interface_};
 };
 
 TEST_F(SmartTabSharingTest, IsSmartTabSharingActive_ReadsPref) {

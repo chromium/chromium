@@ -88,7 +88,8 @@ DesktopQueryContextualizerDelegate::
 void DesktopQueryContextualizerDelegate::GetRelevantTabsForQuery(
     const std::string& query_text,
     const std::vector<GURL>& attached_context_urls,
-    base::OnceCallback<void(std::vector<QueryContextualizer::TabId>)> callback) {
+    base::OnceCallback<void(std::vector<QueryContextualizer::TabId>)>
+        callback) {
   if (!service_ || !browser_window_interface_) {
     std::move(callback).Run({});
     return;
@@ -102,7 +103,8 @@ void DesktopQueryContextualizerDelegate::GetRelevantTabsForQuery(
   service_->GetRelevantTabsForQuery(
       tab_selection_options, query_text, attached_context_urls,
       base::BindOnce(
-          [](base::OnceCallback<void(std::vector<QueryContextualizer::TabId>)> cb,
+          [](base::OnceCallback<void(std::vector<QueryContextualizer::TabId>)>
+                 cb,
              std::vector<base::WeakPtr<content::WebContents>> relevant_tabs) {
             std::vector<QueryContextualizer::TabId> tab_ids;
             for (const auto& weak_wc : relevant_tabs) {

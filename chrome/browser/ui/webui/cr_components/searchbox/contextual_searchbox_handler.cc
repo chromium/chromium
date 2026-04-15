@@ -870,7 +870,11 @@ void ContextualSearchboxHandler::ContextualizeQueryAndOpenUrl(
         }
       }
     }
-    if (contextual_tasks::GetIsSmartTabSharingEnabled()) {
+
+    const bool is_eligible_for_promo =
+        !IsSmartTabSharingActive() &&
+        contextual_tasks::GetIsSmartTabSharingEnabled();
+    if (is_eligible_for_promo) {
       contextual_tasks::TabSelectionOptions tab_selection_options;
       tab_selection_options.tab_selection_timeout =
           contextual_tasks::GetSmartTabSharingTabSelectionTimeout();
@@ -879,23 +883,6 @@ void ContextualSearchboxHandler::ContextualizeQueryAndOpenUrl(
         tab_selection_options.browser_window_interface =
             browser_window_interface->GetWeakPtr();
       }
-      if (IsSmartTabSharingActive()) {
-        // Explicitly do not set threshold - it should just use the default
-        // if smart tab sharing is active.
-
-        contextual_tasks_context_service_->GetRelevantTabsForQuery(
-            tab_selection_options, query_text, explicit_urls,
-            base::BindOnce(&ContextualSearchboxHandler::
-                               ContextualizeQueryWithRelevantTabsAndOpenUrl,
-                           weak_ptr_factory_.GetWeakPtr(), query_text,
-                           disposition, aim_entry_point,
-                           std::move(additional_params)));
-
-        return;
-      }
-
-      // Run tab relevancy logic to determine if smart tab sharing promo should
-      // be shown, but do not block the query.
       tab_selection_options.min_model_score = static_cast<float>(
           contextual_tasks::GetSmartTabSharingPromoScoreThreshold());
       contextual_tasks_context_service_->GetRelevantTabsForQuery(
@@ -903,7 +890,7 @@ void ContextualSearchboxHandler::ContextualizeQueryAndOpenUrl(
           base::BindOnce(&ContextualSearchboxHandler::
                              OnRelevantTabsReceivedToMaybeShowPromo,
                          weak_ptr_factory_.GetWeakPtr()));
-    } else {
+    } else if (!contextual_tasks::GetIsSmartTabSharingEnabled()) {
       // Run dark experiment if smart tab sharing is not enabled and do not
       // block.
       contextual_tasks::TabSelectionOptions tab_selection_options;
@@ -917,57 +904,26 @@ void ContextualSearchboxHandler::ContextualizeQueryAndOpenUrl(
     }
   }
 
-  ContextualizeQueryWithRelevantTabsAndOpenUrl(
-      query_text, disposition, aim_entry_point, std::move(additional_params),
-      /*relevant_tabs=*/{});
-}
-
-void ContextualSearchboxHandler::ContextualizeQueryWithRelevantTabsAndOpenUrl(
-    const std::string& query_text,
-    WindowOpenDisposition disposition,
-    omnibox::ChromeAimEntryPoint aim_entry_point,
-    std::map<std::string, std::string> additional_params,
-    std::vector<base::WeakPtr<content::WebContents>> relevant_tabs) {
   if (query_contextualizer_) {
-    std::vector<int32_t> tabs_to_recontextualize;
-    std::vector<int32_t> tabs_to_force_contextualize;
-    tabs_to_force_contextualize.reserve(relevant_tabs.size());
-    for (const auto& relevant_tab : relevant_tabs) {
-      if (relevant_tab) {
-        tabs::TabInterface* tab =
-            tabs::TabInterface::MaybeGetFromContents(relevant_tab.get());
-        if (tab) {
-          tabs_to_force_contextualize.push_back(tab->GetHandle().raw_value());
-        }
-      }
-    }
-      // It is safe to use base::Unretained(this) here because
-      // `query_contextualizer_` is owned by `this` and will be destroyed when
-      // `this` is destroyed, cancelling any pending callbacks.
-      query_contextualizer_->Contextualize(
-          GetTaskId(), query_text, tabs_to_recontextualize,
-          tabs_to_force_contextualize,
-          /*on_ineligible_callback=*/base::DoNothing(),
-          /*on_processed_callback=*/base::DoNothing(),
-          base::BindOnce(
-              [](ContextualSearchboxHandler* self, const std::string& query,
-                 WindowOpenDisposition disp,
-                 omnibox::ChromeAimEntryPoint entry_point,
-                 std::map<std::string, std::string> params,
-                 base::WeakPtr<contextual_search::ContextualSearchSessionHandle>
-                     handle) {
-                // The session handle is accessed via
-                // GetContextualSessionHandle(), so we ignore it here.
-                self->ComputeAndOpenQueryUrl(query, disp, entry_point,
-                                             std::move(params));
-              },
-              base::Unretained(this), query_text, disposition, aim_entry_point,
-              std::move(additional_params)),
-          // TODO(crbug.com/502639860): Actually using this in
-          // contextual_searchbox_handler, setting enable_smart_tab_selection to true,
-          // and removing legacy logic will happen in a followup CL.
-          /*enable_smart_tab_selection=*/false);
-      return;
+    query_contextualizer_->Contextualize(
+        GetTaskId(), query_text, /*tabs_to_recontextualize=*/{},
+        /*tabs_to_force_contextualize=*/{},
+        /*on_ineligible_callback=*/base::DoNothing(),
+        /*on_processed_callback=*/base::DoNothing(),
+        base::BindOnce(
+            [](ContextualSearchboxHandler* self, const std::string& query,
+               WindowOpenDisposition disp,
+               omnibox::ChromeAimEntryPoint entry_point,
+               std::map<std::string, std::string> params,
+               base::WeakPtr<contextual_search::ContextualSearchSessionHandle>
+                   handle) {
+              self->ComputeAndOpenQueryUrl(query, disp, entry_point,
+                                           std::move(params));
+            },
+            base::Unretained(this), query_text, disposition, aim_entry_point,
+            std::move(additional_params)),
+        /*enable_smart_tab_selection=*/IsSmartTabSharingActive());
+    return;
   }
 
   ComputeAndOpenQueryUrl(query_text, disposition, aim_entry_point,

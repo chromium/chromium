@@ -366,7 +366,7 @@ void ContextualTasksComposeboxHandler::CreateAndSendQueryMessage(
             handler->ContinueCreateAndSendQueryMessage(query, task_id, token);
           },
           base::Unretained(this), query, task_id, overlay_token),
-      /*enable_smart_tab_selection=*/false);
+      IsSmartTabSharingActive());
 }
 
 contextual_tasks::ContextualTasksService*
