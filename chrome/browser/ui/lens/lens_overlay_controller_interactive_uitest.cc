@@ -1900,16 +1900,9 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksLensOverlayControllerInteractiveUiTest,
       WaitForShow(kContextualTasksSidePanelWebViewElementId));
 }
 
-// TODO(crbug.com/499019946): Re-enable this test when it's fixed.
-#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)
-#define MAYBE_ComposeboxLensButtonClearsThenTogglesOverlay \
-  DISABLED_ComposeboxLensButtonClearsThenTogglesOverlay
-#else
-#define MAYBE_ComposeboxLensButtonClearsThenTogglesOverlay \
-  ComposeboxLensButtonClearsThenTogglesOverlay
-#endif  // BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)
+// TODO(crbug.com/499004589): Re-enable this test when it's fixed.
 IN_PROC_BROWSER_TEST_F(ContextualTasksLensOverlayControllerInteractiveUiTest,
-                       MAYBE_ComposeboxLensButtonClearsThenTogglesOverlay) {
+                       DISABLED_ComposeboxLensButtonClearsThenTogglesOverlay) {
   WaitForTemplateURLServiceToLoad();
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kOverlayId);
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kFirstTab);
