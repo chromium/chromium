@@ -7,12 +7,17 @@
 #include <algorithm>
 
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/lifetime/application_lifetime_desktop.h"
+#include "chrome/browser/lifetime/browser_shutdown.h"
+#include "chrome/browser/lifetime/termination_notification.h"
 #include "chrome/browser/printing/background_printing_manager.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_destroyer.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window/public/browser_collection_observer.h"
 #include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
+#include "components/keep_alive_registry/keep_alive_registry.h"
+#include "components/keep_alive_registry/keep_alive_types.h"
 #include "printing/buildflags/buildflags.h"
 
 BrowserManagerService::BrowserManagerService(Profile* profile)
@@ -122,6 +127,21 @@ void BrowserManagerService::DeleteBrowser(Browser* removed_browser) {
     // An incognito profile is no longer needed, this indirectly frees
     // its cache and cookies once it gets destroyed at the appropriate time.
     ProfileDestroyer::DestroyOTRProfileWhenAppropriate(&profile_.get());
+  }
+
+  // If we're exiting, send out the APP_TERMINATING notification to allow other
+  // modules to shut themselves down.
+  if (!KeepAliveRegistry::GetInstance()->IsOriginRegistered(
+          KeepAliveOrigin::BROWSER) &&
+      (browser_shutdown::IsTryingToQuit() ||
+       g_browser_process->IsShuttingDown())) {
+    // Last browser has just closed, and this is a user-initiated quit or there
+    // is no module keeping the app alive, so send out our notification. No need
+    // to call ProfileManager::ShutdownSessionServices() as part of the
+    // shutdown, because Browser::WindowClosing() already makes sure that the
+    // SessionService is created and notified.
+    browser_shutdown::NotifyAppTerminating();
+    chrome::OnAppExiting();
   }
 }
 

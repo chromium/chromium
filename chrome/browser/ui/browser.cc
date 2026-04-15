@@ -20,8 +20,10 @@
 #include "base/functional/callback_helpers.h"
 #include "base/location.h"
 #include "base/logging.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/user_metrics.h"
+#include "base/metrics/user_metrics_action.h"
 #include "base/notimplemented.h"
 #include "base/process/process_info.h"
 #include "base/strings/string_number_conversions.h"
@@ -609,7 +611,10 @@ Browser::Browser(const CreateParams& params)
       initial_vertical_tab_strip_collapsed_(
           params.vertical_tab_strip_collapsed),
       initial_vertical_tab_strip_uncollapsed_width_(
-          params.vertical_tab_strip_uncollapsed_width) {
+          params.vertical_tab_strip_uncollapsed_width),
+      keep_alive_(
+          std::make_unique<ScopedKeepAlive>(KeepAliveOrigin::BROWSER,
+                                            KeepAliveRestartOption::DISABLED)) {
   if (!profile_->IsOffTheRecord()) {
     profile_keep_alive_ = std::make_unique<ScopedProfileKeepAlive>(
         params.profile->GetOriginalProfile(),
@@ -676,7 +681,14 @@ Browser::Browser(const CreateParams& params)
   // the browser list until it is marked for destruction.
   is_initialized_ = true;
 
-  BrowserList::AddBrowser(this);
+  if (profile_->IsGuestSession()) {
+    base::UmaHistogramCounts100("Browser.WindowCount.Guest",
+                                chrome::GetGuestBrowserCount());
+  } else if (profile_->IsIncognitoProfile()) {
+    base::UmaHistogramCounts100(
+        "Browser.WindowCount.Incognito",
+        chrome::GetOffTheRecordBrowsersActiveForProfile(profile_));
+  }
 }
 
 Browser::~Browser() {
@@ -693,7 +705,6 @@ Browser::~Browser() {
   // with destruction. Profile destruction will unload extensions and reentrant
   // calls to Browser:: should be avoided while it is being torn down.
 
-  BrowserList::RemoveBrowser(this);
   window_.reset();
 
   // Tear down `BrowserWindowFeatures` to avoid exposing it to Browser in a
@@ -1248,8 +1259,8 @@ const DesktopBrowserWindowCapabilities* Browser::capabilities() const {
 void Browser::DidBecomeActive() {
   if (!is_active_) {
     is_active_ = true;
-    BrowserList::SetLastActive(this);
     did_become_active_callback_list_.Notify(this);
+    base::RecordAction(base::UserMetricsAction("ActiveBrowserChanged"));
   }
 }
 
@@ -1483,14 +1494,6 @@ void Browser::UpdateUIForNavigationInTab(WebContents* contents,
        action == NavigateParams::WindowAction::kShowWindow)) {
     contents->SetInitialFocus();
   }
-}
-
-void Browser::RegisterKeepAlive() {
-  keep_alive_ = std::make_unique<ScopedKeepAlive>(
-      KeepAliveOrigin::BROWSER, KeepAliveRestartOption::DISABLED);
-}
-void Browser::UnregisterKeepAlive() {
-  keep_alive_.reset();
 }
 
 ///////////////////////////////////////////////////////////////////////////////

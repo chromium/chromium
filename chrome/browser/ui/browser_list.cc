@@ -7,21 +7,9 @@
 #include <algorithm>
 
 #include "base/check.h"
-#include "base/metrics/histogram_functions.h"
-#include "base/metrics/user_metrics.h"
-#include "chrome/browser/browser_process.h"
 #include "chrome/browser/buildflags.h"
-#include "chrome/browser/lifetime/application_lifetime_desktop.h"
-#include "chrome/browser/lifetime/browser_shutdown.h"
-#include "chrome/browser/lifetime/termination_notification.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/browser_finder.h"
-#include "chrome/browser/ui/browser_window.h"
-#include "components/keep_alive_registry/keep_alive_registry.h"
-#include "components/keep_alive_registry/keep_alive_types.h"
-
-using base::UserMetricsAction;
 
 // static
 BrowserList* BrowserList::instance_ = nullptr;
@@ -45,18 +33,7 @@ void BrowserList::AddBrowser(Browser* browser) {
                                "until it is fully constructed.";
   GetInstance()->browsers_.push_back(browser);
 
-  browser->RegisterKeepAlive();
-
   AddBrowserToActiveList(browser);
-
-  if (browser->profile()->IsGuestSession()) {
-    base::UmaHistogramCounts100("Browser.WindowCount.Guest",
-                                chrome::GetGuestBrowserCount());
-  } else if (browser->profile()->IsIncognitoProfile()) {
-    base::UmaHistogramCounts100(
-        "Browser.WindowCount.Incognito",
-        chrome::GetOffTheRecordBrowsersActiveForProfile(browser->profile()));
-  }
 }
 
 // static
@@ -66,23 +43,6 @@ void BrowserList::RemoveBrowser(Browser* browser) {
   RemoveBrowserFrom(browser, &browser_list->browsers_ordered_by_activation_);
 
   RemoveBrowserFrom(browser, &browser_list->browsers_);
-
-  browser->UnregisterKeepAlive();
-
-  // If we're exiting, send out the APP_TERMINATING notification to allow other
-  // modules to shut themselves down.
-  if (!KeepAliveRegistry::GetInstance()->IsOriginRegistered(
-          KeepAliveOrigin::BROWSER) &&
-      (browser_shutdown::IsTryingToQuit() ||
-       g_browser_process->IsShuttingDown())) {
-    // Last browser has just closed, and this is a user-initiated quit or there
-    // is no module keeping the app alive, so send out our notification. No need
-    // to call ProfileManager::ShutdownSessionServices() as part of the
-    // shutdown, because Browser::WindowClosing() already makes sure that the
-    // SessionService is created and notified.
-    browser_shutdown::NotifyAppTerminating();
-    chrome::OnAppExiting();
-  }
 }
 
 // static
@@ -108,8 +68,6 @@ void BrowserList::SetLastActive(Browser* browser) {
          "the BrowserList.";
   DCHECK(browser->window())
       << "SetLastActive called for a browser with no window set.";
-
-  base::RecordAction(UserMetricsAction("ActiveBrowserChanged"));
 
   RemoveBrowserFrom(browser, &instance->browsers_ordered_by_activation_);
   instance->browsers_ordered_by_activation_.push_back(browser);

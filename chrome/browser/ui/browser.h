@@ -654,12 +654,6 @@ class Browser : public TabStripModelObserver,
                                   NavigateParams::WindowAction action,
                                   bool user_initiated);
 
-  // Used to register a KeepAlive to affect the Chrome lifetime. The KeepAlive
-  // is registered when the browser is added to the browser list, and unregisted
-  // when it is removed from it.
-  void RegisterKeepAlive();
-  void UnregisterKeepAlive();
-
   // Interface implementations ////////////////////////////////////////////////
 
   // Overridden from TabStripModelObserver:
