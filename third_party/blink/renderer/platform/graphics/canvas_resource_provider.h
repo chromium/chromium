@@ -379,7 +379,8 @@ class PLATFORM_EXPORT CanvasResourceProviderSharedImage
     : public CanvasResourceProvider,
       public WebGraphicsContext3DProviderWrapper::DestructionObserver,
       public viz::ContextLostObserver,
-      public BitmapGpuChannelLostObserver {
+      public BitmapGpuChannelLostObserver,
+      public CanvasResourceSharedImage::Client {
  public:
   CanvasResourceProviderSharedImage(
       gfx::Size,
@@ -404,8 +405,8 @@ class PLATFORM_EXPORT CanvasResourceProviderSharedImage
     }
   }
   void OnResourceRefReturned(
-      scoped_refptr<CanvasResourceSharedImage>&& resource);
-  void OnDestroyResource() { --num_inflight_resources_; }
+      scoped_refptr<CanvasResourceSharedImage>&& resource) override;
+  void OnDestroyResource() override { --num_inflight_resources_; }
 
   bool unused_resources_reclaim_timer_is_running_for_testing() const {
     return image_pool_ ? image_pool_->IsReclaimTimerRunningForTesting() : false;

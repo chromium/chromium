@@ -163,6 +163,14 @@ class PLATFORM_EXPORT CanvasResource : public gpu::ClientImage {
 // Resource type for SharedImage
 class PLATFORM_EXPORT CanvasResourceSharedImage final : public CanvasResource {
  public:
+  class Client {
+   public:
+    virtual ~Client() = default;
+    virtual void OnResourceRefReturned(
+        scoped_refptr<CanvasResourceSharedImage>&& resource) = 0;
+    virtual void OnDestroyResource() = 0;
+  };
+
   explicit CanvasResourceSharedImage(
       scoped_refptr<gpu::ClientSharedImage> shared_image);
 
@@ -174,15 +182,14 @@ class PLATFORM_EXPORT CanvasResourceSharedImage final : public CanvasResource {
       gpu::SharedImageUsageSet shared_image_usage_flags,
       bool is_software,
       bool is_accelerated,
-      base::WeakPtr<CanvasResourceProviderSharedImage>,
+      base::WeakPtr<Client>,
       base::WeakPtr<WebGraphicsContext3DProviderWrapper>,
       base::WeakPtr<WebGraphicsSharedImageInterfaceProvider>);
 
-  void InitializeSoftware(
-      base::WeakPtr<CanvasResourceProviderSharedImage> provider,
-      base::WeakPtr<WebGraphicsSharedImageInterfaceProvider>
-          shared_image_interface_provider);
-  void Initialize(base::WeakPtr<CanvasResourceProviderSharedImage> provider,
+  void InitializeSoftware(base::WeakPtr<Client> client,
+                          base::WeakPtr<WebGraphicsSharedImageInterfaceProvider>
+                              shared_image_interface_provider);
+  void Initialize(base::WeakPtr<Client> client,
                   base::WeakPtr<WebGraphicsContext3DProviderWrapper>
                       context_provider_wrapper,
                   bool is_accelerated);
@@ -256,7 +263,7 @@ class PLATFORM_EXPORT CanvasResourceSharedImage final : public CanvasResource {
   bool is_accelerated_ = false;
   bool is_initialized_ = false;
   const SkAlphaType alpha_type_;
-  base::WeakPtr<CanvasResourceProviderSharedImage> provider_;
+  base::WeakPtr<Client> client_;
 };
 
 // Resource type for a given opaque external resource described on construction
