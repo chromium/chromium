@@ -18,6 +18,8 @@
 #include "third_party/abseil-cpp/absl/container/flat_hash_set.h"
 #include "third_party/blink/public/mojom/page/page.mojom-forward.h"
 
+class Profile;
+
 namespace content {
 class WebContents;
 }
@@ -33,7 +35,7 @@ namespace glic {
 // client. It also handles caching of metadata when the Glic panel is inactive.
 class PageMetadataManager {
  public:
-  explicit PageMetadataManager(glic::mojom::WebClient* web_client);
+  PageMetadataManager(Profile* profile, glic::mojom::WebClient* web_client);
   ~PageMetadataManager();
 
   PageMetadataManager(const PageMetadataManager&) = delete;
@@ -57,6 +59,7 @@ class PageMetadataManager {
   void NotifyPageMetadataChanged(int32_t tab_id,
                                  blink::mojom::PageMetadataPtr page_metadata);
 
+  const raw_ptr<Profile> profile_;
   // Unowned. The client is owned by the owner of this PageMetadataManager.
   const raw_ptr<glic::mojom::WebClient> web_client_;
 

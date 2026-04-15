@@ -195,8 +195,8 @@ GlicKeyedService::GlicKeyedService(
 #if !BUILDFLAG(IS_ANDROID)  // Single instance only
       occlusion_notifier_(nullptr),
 #endif
-      tab_data_observer_(std::make_unique<GlicTabDataObserver>()),
-      tab_favicon_observer_(std::make_unique<GlicTabFaviconObserver>()),
+      tab_data_observer_(std::make_unique<GlicTabDataObserver>(profile)),
+      tab_favicon_observer_(std::make_unique<GlicTabFaviconObserver>(profile)),
       web_contents_warming_pool_(
           std::make_unique<GlicWebContentsWarmingPool>(profile)),
       contextual_cueing_service_(contextual_cueing_service) {

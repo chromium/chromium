@@ -6,6 +6,8 @@
 
 #include "base/functional/bind.h"
 #include "build/build_config.h"
+#include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "components/optimization_guide/content/browser/page_content_metadata_observer.h"
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/web_contents.h"
@@ -48,8 +50,9 @@ PageMetadataManager::PageMetadataSubscription&
 PageMetadataManager::PageMetadataSubscription::operator=(
     PageMetadataSubscription&&) = default;
 
-PageMetadataManager::PageMetadataManager(glic::mojom::WebClient* web_client)
-    : web_client_(web_client) {}
+PageMetadataManager::PageMetadataManager(Profile* profile,
+                                         glic::mojom::WebClient* web_client)
+    : profile_(profile), web_client_(web_client) {}
 
 PageMetadataManager::~PageMetadataManager() = default;
 
@@ -70,6 +73,10 @@ void PageMetadataManager::SubscribeToPageMetadata(
   tabs::TabHandle tab_handle(tab_id);
   auto* tab = tab_handle.Get();
   if (!tab) {
+    std::move(callback).Run(false);
+    return;
+  }
+  if (tab->GetBrowserWindowInterface()->GetProfile() != profile_) {
     std::move(callback).Run(false);
     return;
   }

@@ -744,7 +744,7 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
         &GlicWebClientHandler::WebClientDisconnected, base::Unretained(this)));
 
     page_metadata_manager_ =
-        std::make_unique<PageMetadataManager>(web_client_.get());
+        std::make_unique<PageMetadataManager>(profile_, web_client_.get());
 
     // Listen for changes to prefs.
     pref_change_registrar_.Init(pref_service_);
@@ -1416,6 +1416,9 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
 #if !BUILDFLAG(IS_ANDROID)  // NEEDS_ANDROID_IMPL: CaptureRegion (b/494315475)
     tabs::TabInterface* tab = tabs::TabHandle(tab_id).Get();
     if (!tab) {
+      return;
+    }
+    if (tab->GetBrowserWindowInterface()->GetProfile() != profile_) {
       return;
     }
     glic_service_->DeleteCapturedRegion(tab, id);

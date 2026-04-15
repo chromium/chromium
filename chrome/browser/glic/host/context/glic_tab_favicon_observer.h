@@ -9,6 +9,7 @@
 #include <memory>
 #include <set>
 
+#include "base/memory/raw_ptr.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/glic/host/glic.mojom.h"
 #include "components/tabs/public/tab_interface.h"
@@ -16,13 +17,15 @@
 #include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
 #include "third_party/abseil-cpp/absl/container/flat_hash_set.h"
 
+class Profile;
+
 namespace glic {
 
 // Observers tabs for favicon changes. Plumbs these changes to the provided
 // mojo receiver.
 class GlicTabFaviconObserver {
  public:
-  GlicTabFaviconObserver();
+  explicit GlicTabFaviconObserver(Profile* profile);
   ~GlicTabFaviconObserver();
 
   GlicTabFaviconObserver(const GlicTabFaviconObserver&) = delete;
@@ -47,6 +50,7 @@ class GlicTabFaviconObserver {
   absl::flat_hash_map<tabs::TabHandle, std::unique_ptr<TabObserver>> observers_;
   absl::flat_hash_set<tabs::TabHandle> pending_cleanup_;
   base::OneShotTimer cleanup_timer_;
+  const raw_ptr<Profile> profile_;
 };
 
 }  // namespace glic

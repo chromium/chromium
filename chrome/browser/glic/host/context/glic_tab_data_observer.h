@@ -7,9 +7,12 @@
 
 #include <map>
 
+#include "base/memory/raw_ptr.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/glic/host/context/glic_tab_data.h"
 #include "components/tabs/public/tab_interface.h"
+
+class Profile;
 
 namespace glic {
 
@@ -25,7 +28,7 @@ namespace glic {
 // API.
 class GlicTabDataObserver {
  public:
-  GlicTabDataObserver();
+  explicit GlicTabDataObserver(Profile* profile);
   ~GlicTabDataObserver();
 
   GlicTabDataObserver(const GlicTabDataObserver&) = delete;
@@ -51,6 +54,7 @@ class GlicTabDataObserver {
   std::map<tabs::TabHandle, std::unique_ptr<TabObserver>> observers_;
   std::set<tabs::TabHandle> pending_cleanup_;
   base::OneShotTimer cleanup_timer_;
+  const raw_ptr<Profile> profile_;
 };
 
 }  // namespace glic

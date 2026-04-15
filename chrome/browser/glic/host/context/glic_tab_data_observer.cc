@@ -10,6 +10,7 @@
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/glic/common/future_browser_features.h"
 #include "chrome/browser/glic/host/context/glic_tab_data.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/web_contents_observer.h"
@@ -154,7 +155,8 @@ class GlicTabDataObserver::TabObserver : public content::WebContentsObserver {
   base::WeakPtrFactory<TabObserver> weak_ptr_factory_{this};
 };
 
-GlicTabDataObserver::GlicTabDataObserver() = default;
+GlicTabDataObserver::GlicTabDataObserver(Profile* profile)
+    : profile_(profile) {}
 GlicTabDataObserver::~GlicTabDataObserver() = default;
 
 void GlicTabDataObserver::OnTabWillClose(tabs::TabHandle tab_handle) {
@@ -167,6 +169,10 @@ void GlicTabDataObserver::SubscribeToTabData(
   tabs::TabInterface::Handle handle(tab_id);
   tabs::TabInterface* tab = handle.Get();
   if (!tab) {
+    remote.reset();
+    return;
+  }
+  if (tab->GetBrowserWindowInterface()->GetProfile() != profile_) {
     remote.reset();
     return;
   }

@@ -5,6 +5,7 @@
 #include "base/test/gmock_expected_support.h"
 #include "base/test/scoped_logging_settings.h"
 #include "base/values.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/enterprise/browser_management/management_service_factory.h"
 #include "chrome/browser/glic/host/glic_features.mojom-features.h"
 #include "chrome/browser/glic/host/glic_web_contents_warming_pool.h"
@@ -19,11 +20,15 @@
 #include "chrome/browser/glic/test_support/new_glic_api_test.h"
 #include "chrome/browser/policy/chrome_browser_policy_connector.h"
 #include "chrome/browser/policy/profile_policy_connector.h"
+#include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/browser/profiles/profile_test_util.h"
 #include "chrome/browser/signin/chrome_signin_client_factory.h"
 #include "chrome/browser/signin/chrome_signin_client_test_util.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
 #include "chrome/browser/skills/skills_ui_tab_controller_interface.h"
+#include "chrome/browser/tab_list/tab_list_interface.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/webui_url_constants.h"
@@ -40,6 +45,7 @@
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/skills/features.h"
 #include "components/skills/public/skills_service.h"
+#include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/favicon_status.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_entry.h"
@@ -54,6 +60,10 @@
 #include "chrome/browser/skills/skills_service_factory.h"
 #include "chrome/browser/skills/skills_ui_tab_controller.h"
 #include "chrome/test/base/ui_test_utils.h"
+#endif
+
+#if !BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/ui/browser.h"
 #endif
 
 #if BUILDFLAG(IS_ANDROID)
@@ -80,12 +90,17 @@ std::vector<std::string> GetTestSuiteNames() {
       "NewGlicApiTestWithWebContentsWarming",
       "NewGlicApiTestWithPixelOutput",
       "NewGlicApiTestWithGeminiActOnWebPolicy",
+      "NewGlicApiMultiProfileTest",
 #if !BUILDFLAG(IS_ANDROID)
       "NewGlicApiTestWithSkills",
 #endif
   };
 
   return names;
+}
+
+std::string GlicTabId(tabs::TabHandle tab_handle) {
+  return base::NumberToString(tab_handle.raw_value());
 }
 
 }  // namespace
@@ -194,6 +209,22 @@ class NewGlicApiTest : public GlicApiBrowserTest,
  private:
   logging::ScopedVmoduleSwitches scoped_vmodule_switches_;
   base::test::ScopedFeatureList features_;
+};
+
+class NewGlicApiMultiProfileTest : public NewGlicApiTest {
+ public:
+  BrowserWindowInterface* CreateBrowserWithNewProfile() {
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+    ProfileManager* profile_manager = g_browser_process->profile_manager();
+    base::FilePath new_path =
+        profile_manager->GenerateNextProfileDirectoryPath();
+    Profile& new_profile =
+        profiles::testing::CreateProfileSync(profile_manager, new_path);
+    return CreateBrowser(&new_profile);
+#else
+    NOTREACHED();
+#endif
+  }
 };
 
 class NewGlicApiTestWithWebContentsWarming : public NewGlicApiTest {
@@ -460,6 +491,67 @@ IN_PROC_BROWSER_TEST_P(NewGlicApiTest, testInvokeWaitsForNotifyPanelWillOpen) {
   coordinator().InvokeWithAutoSubmit(GetPassKey(), std::move(options));
 
   ExecuteJsTest();
+}
+
+IN_PROC_BROWSER_TEST_P(NewGlicApiMultiProfileTest,
+                       testPageMetadataCrossProfile) {
+#if !BUILDFLAG(IS_LINUX) && !BUILDFLAG(IS_WIN) && !BUILDFLAG(IS_MAC)
+  GTEST_SKIP() << "Multi-profile tests only supported on Desktop";
+#endif
+  ASSERT_OK(OpenGlicForActiveTab());
+  BrowserWindowInterface* other_browser = CreateBrowserWithNewProfile();
+  ASSERT_TRUE(other_browser);
+  ASSERT_TRUE(content::NavigateToURL(
+      TabListInterface::From(other_browser)->GetActiveTab()->GetContents(),
+      GetTestUrl("page.html")));
+  auto other_tab_handle =
+      TabListInterface::From(other_browser)->GetTab(0)->GetHandle();
+  ExecuteJsTest({.params = base::Value(GlicTabId(other_tab_handle))});
+}
+
+IN_PROC_BROWSER_TEST_P(NewGlicApiMultiProfileTest, testTabDataCrossProfile) {
+#if !BUILDFLAG(IS_LINUX) && !BUILDFLAG(IS_WIN) && !BUILDFLAG(IS_MAC)
+  GTEST_SKIP() << "Multi-profile tests only supported on Desktop";
+#endif
+  ASSERT_OK(OpenGlicForActiveTab());
+  BrowserWindowInterface* other_browser = CreateBrowserWithNewProfile();
+  ASSERT_TRUE(other_browser);
+  ASSERT_TRUE(content::NavigateToURL(
+      TabListInterface::From(other_browser)->GetActiveTab()->GetContents(),
+      GetTestUrl("page.html")));
+  auto other_tab_handle =
+      TabListInterface::From(other_browser)->GetTab(0)->GetHandle();
+  ExecuteJsTest({.params = base::Value(GlicTabId(other_tab_handle))});
+}
+
+IN_PROC_BROWSER_TEST_P(NewGlicApiMultiProfileTest, testTabFaviconCrossProfile) {
+#if !BUILDFLAG(IS_LINUX) && !BUILDFLAG(IS_WIN) && !BUILDFLAG(IS_MAC)
+  GTEST_SKIP() << "Multi-profile tests only supported on Desktop";
+#endif
+  ASSERT_OK(OpenGlicForActiveTab());
+  BrowserWindowInterface* other_browser = CreateBrowserWithNewProfile();
+  ASSERT_TRUE(other_browser);
+  ASSERT_TRUE(content::NavigateToURL(
+      TabListInterface::From(other_browser)->GetActiveTab()->GetContents(),
+      GetTestUrl("page.html")));
+  auto other_tab_handle =
+      TabListInterface::From(other_browser)->GetTab(0)->GetHandle();
+  ExecuteJsTest({.params = base::Value(GlicTabId(other_tab_handle))});
+}
+
+IN_PROC_BROWSER_TEST_P(NewGlicApiMultiProfileTest, testGetContextCrossProfile) {
+#if !BUILDFLAG(IS_LINUX) && !BUILDFLAG(IS_WIN) && !BUILDFLAG(IS_MAC)
+  GTEST_SKIP() << "Multi-profile tests only supported on Desktop";
+#endif
+  ASSERT_OK(OpenGlicForActiveTab());
+  BrowserWindowInterface* other_browser = CreateBrowserWithNewProfile();
+  ASSERT_TRUE(other_browser);
+  ASSERT_TRUE(content::NavigateToURL(
+      TabListInterface::From(other_browser)->GetActiveTab()->GetContents(),
+      GetTestUrl("page.html")));
+  auto other_tab_handle =
+      TabListInterface::From(other_browser)->GetTab(0)->GetHandle();
+  ExecuteJsTest({.params = base::Value(GlicTabId(other_tab_handle))});
 }
 
 IN_PROC_BROWSER_TEST_P(NewGlicApiTestWithWebContentsWarming,
@@ -923,6 +1015,11 @@ INSTANTIATE_TEST_SUITE_P(,
                          DefaultTestParamSet(),
                          &WithTestParams::PrintTestVariant);
 
+INSTANTIATE_TEST_SUITE_P(,
+                         NewGlicApiMultiProfileTest,
+                         DefaultTestParamSet(),
+                         &WithTestParams::PrintTestVariant);
+
 // Skills are not supported yet on Android.
 #if !BUILDFLAG(IS_ANDROID)
 INSTANTIATE_TEST_SUITE_P(,
@@ -930,7 +1027,6 @@ INSTANTIATE_TEST_SUITE_P(,
                          DefaultTestParamSet(),
                          &WithTestParams::PrintTestVariant);
 #endif
-
 #else
 GTEST_ALLOW_UNINSTANTIATED_PARAMETERIZED_TEST(NewGlicApiTest);
 GTEST_ALLOW_UNINSTANTIATED_PARAMETERIZED_TEST(
@@ -938,6 +1034,7 @@ GTEST_ALLOW_UNINSTANTIATED_PARAMETERIZED_TEST(
 GTEST_ALLOW_UNINSTANTIATED_PARAMETERIZED_TEST(NewGlicApiTestWithPixelOutput);
 GTEST_ALLOW_UNINSTANTIATED_PARAMETERIZED_TEST(
     NewGlicApiTestWithGeminiActOnWebPolicy);
+GTEST_ALLOW_UNINSTANTIATED_PARAMETERIZED_TEST(NewGlicApiMultiProfileTest);
 #if !BUILDFLAG(IS_ANDROID)
 GTEST_ALLOW_UNINSTANTIATED_PARAMETERIZED_TEST(NewGlicApiTestWithSkills);
 #endif

@@ -5,7 +5,7 @@
 import {ClientCapabilities, SkillSource} from '/glic/glic_api/glic_api.js';
 import type {GlicWebClient, InvokeOptions, Observable, OpenPanelInfo, PageMetadata, PanelOpeningData, PanelState, TabData} from '/glic/glic_api/glic_api.js';
 
-import {ApiTestError, ApiTestFixtureBase, assertDefined, assertEquals, assertTrue, assertUndefined, checkDefined, mapObservable, observeSequence, runUntil, sleep, testMain, waitFor, WebClient} from './browser_test_base.js';
+import {ApiTestError, ApiTestFixtureBase, assertDefined, assertEquals, assertRejects, assertTrue, assertUndefined, checkDefined, mapObservable, observeSequence, runUntil, sleep, testMain, waitFor, WebClient} from './browser_test_base.js';
 
 class ApiTests extends ApiTestFixtureBase {
   override async setUpTest() {
@@ -239,6 +239,45 @@ class ApiTests extends ApiTestFixtureBase {
     await actOnWebCapabilitySequence.waitForValue(true);
     await this.advanceToNextStep();
     await actOnWebCapabilitySequence.waitForValue(false);
+  }
+
+  async testPageMetadataCrossProfile() {
+    const otherTabId = this.testParams as string;
+    assertDefined(this.host.getPageMetadata);
+    const observable = this.host.getPageMetadata(otherTabId, ['title']);
+    const sequence = observeSequence(observable);
+    await sequence.waitForComplete();
+    assertEquals(
+        true, sequence.isEmpty(),
+        'Expected no page metadata for cross-profile tab');
+  }
+
+  async testTabDataCrossProfile() {
+    const otherTabId = this.testParams as string;
+    assertDefined(this.host.getTabById);
+    const observable = this.host.getTabById(otherTabId);
+    const sequence = observeSequence(observable);
+    await sequence.waitForComplete();
+    assertEquals(
+        true, sequence.isEmpty(), 'Expected no tab data for cross-profile tab');
+  }
+
+  async testTabFaviconCrossProfile() {
+    const otherTabId = this.testParams as string;
+    assertDefined(this.host.getTabFaviconById);
+    const observable = this.host.getTabFaviconById(otherTabId);
+    const sequence = observeSequence(observable);
+    await sequence.waitForComplete();
+    assertEquals(
+        true, sequence.isEmpty(), 'Expected no favicon for cross-profile tab');
+  }
+
+  async testGetContextCrossProfile() {
+    const otherTabId = this.testParams as string;
+    assertDefined(this.host.getContextForActorFromTab);
+    await assertRejects(this.host.getContextForActorFromTab(otherTabId, {}), {
+      withErrorMessage: 'tabContext failed: profile mismatch',
+    });
   }
 }
 

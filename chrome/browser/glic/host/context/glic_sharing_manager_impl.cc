@@ -273,7 +273,11 @@ void GlicSharingManagerImpl::GetContextForActorFromTab(
         GlicGetContextFromTabError::kTabNotFound, "tab not found"}));
     return;
   }
-
+  if (tab->GetBrowserWindowInterface()->GetProfile() != profile_) {
+    std::move(callback).Run(base::unexpected(GlicGetContextError{
+        GlicGetContextFromTabError::kPermissionDenied, "profile mismatch"}));
+    return;
+  }
   GetContextFromTabImpl(tab, options, std::move(callback));
 }
 

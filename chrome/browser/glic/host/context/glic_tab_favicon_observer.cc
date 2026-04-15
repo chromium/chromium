@@ -11,6 +11,8 @@
 #include "chrome/browser/glic/common/future_browser_features.h"
 #include "chrome/browser/glic/host/context/glic_tab_data.h"
 #include "chrome/browser/glic/host/glic.mojom.h"
+#include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/common/chrome_features.h"
 #include "components/favicon/content/content_favicon_driver.h"
 #include "components/favicon/core/favicon_driver_observer.h"
@@ -253,7 +255,8 @@ class GlicTabFaviconObserver::TabObserver
   base::CallbackListSubscription will_discard_contents_subscription_;
 };
 
-GlicTabFaviconObserver::GlicTabFaviconObserver() = default;
+GlicTabFaviconObserver::GlicTabFaviconObserver(Profile* profile)
+    : profile_(profile) {}
 GlicTabFaviconObserver::~GlicTabFaviconObserver() = default;
 
 void GlicTabFaviconObserver::OnTabWillClose(tabs::TabHandle tab_handle) {
@@ -266,6 +269,10 @@ void GlicTabFaviconObserver::SubscribeToTabFavicon(
   tabs::TabInterface::Handle handle(tab_id);
   tabs::TabInterface* tab = handle.Get();
   if (!tab) {
+    remote.reset();
+    return;
+  }
+  if (tab->GetBrowserWindowInterface()->GetProfile() != profile_) {
     remote.reset();
     return;
   }
