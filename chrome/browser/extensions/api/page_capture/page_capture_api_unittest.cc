@@ -6,12 +6,16 @@
 
 #include <memory>
 
+#include "base/functional/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "base/test/values_test_util.h"
 #include "chrome/browser/extensions/extension_service_test_base.h"
 #include "chrome/browser/extensions/extension_tab_util.h"
+#include "chrome/browser/extensions/window_controller.h"
+#include "chrome/browser/extensions/window_controller_list.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/browser.h"
-#include "chrome/test/base/test_browser_window.h"
+#include "chrome/browser/ui/browser_window/test/mock_browser_window_interface.h"
+#include "components/sessions/content/session_tab_helper.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/web_contents_tester.h"
 #include "extensions/browser/api_test_utils.h"
@@ -21,27 +25,64 @@
 
 namespace extensions {
 
+// A fake window controller so that GetTabById can find our
+// WebContents. We return dummy values everywhere except
+// `GetBrowserWindowInterface` and `GetWebContentsAt`.
+class TestWindowController : public WindowController {
+ public:
+  TestWindowController(Profile* profile, content::WebContents* contents)
+      : WindowController(nullptr, profile), contents_(contents) {
+    WindowControllerList::GetInstance()->AddExtensionWindow(this);
+  }
+  ~TestWindowController() override {
+    WindowControllerList::GetInstance()->RemoveExtensionWindow(this);
+  }
+  int GetWindowId() const override { return 1; }
+  std::string GetWindowTypeText() const override { return "normal"; }
+  void SetFullscreenMode(bool is_fullscreen,
+                         const GURL& extension_url) const override {}
+  content::WebContents* GetActiveTab() const override { return contents_; }
+  int GetTabCount() const override { return 1; }
+  content::WebContents* GetWebContentsAt(int i) const override {
+    return contents_;
+  }
+  bool IsVisibleToTabsAPIForExtension(
+      const Extension* extension,
+      bool include_dev_tools_windows) const override {
+    return true;
+  }
+  base::DictValue CreateWindowValueForExtension(
+      const Extension* extension,
+      PopulateTabBehavior populate_tab_behavior,
+      mojom::ContextType context) const override {
+    return base::DictValue();
+  }
+  base::ListValue CreateTabList(const Extension* extension,
+                                mojom::ContextType context) const override {
+    return base::ListValue();
+  }
+  bool OpenOptionsPage(const Extension* extension,
+                       const GURL& url,
+                       bool open_in_tab) override {
+    return false;
+  }
+  BrowserWindowInterface* GetBrowserWindowInterface() override {
+    return &browser_window_interface_;
+  }
+
+ private:
+  raw_ptr<content::WebContents> contents_;
+  testing::NiceMock<MockBrowserWindowInterface> browser_window_interface_;
+};
+
 class PageCaptureApiUnitTest : public ExtensionServiceTestBase {
  protected:
   void SetUp() override {
     ExtensionServiceTestBase::SetUp();
     InitializeEmptyExtensionService();
-
-    auto browser_window = std::make_unique<TestBrowserWindow>();
-    Browser::CreateParams params(profile(), true);
-    params.type = Browser::TYPE_NORMAL;
-    params.window = browser_window.release();
-    browser_ = Browser::DeprecatedCreateOwnedForTesting(params);
   }
 
-  void TearDown() override {
-    browser_.reset();
-    ExtensionServiceTestBase::TearDown();
-  }
-  Browser* browser() { return browser_.get(); }
-
- private:
-  std::unique_ptr<Browser> browser_;
+  void TearDown() override { ExtensionServiceTestBase::TearDown(); }
 };
 
 // Tests that if a page navigates during a call to pageCature.saveAsMHTML(), the
@@ -57,11 +98,16 @@ TEST_F(PageCaptureApiUnitTest, PageNavigationDuringSaveAsMHTML) {
       content::WebContentsTester::CreateTestWebContents(profile(), nullptr);
   content::WebContentsTester* web_contents_tester =
       content::WebContentsTester::For(web_contents.get());
-  browser()->tab_strip_model()->AppendWebContents(std::move(web_contents),
-                                                  /*foreground=*/true);
+  content::WebContents* raw_web_contents = web_contents.get();
+  sessions::SessionTabHelper::CreateForWebContents(
+      raw_web_contents,
+      base::BindRepeating(
+          [](content::WebContents*) -> sessions::SessionTabHelperDelegate* {
+            return nullptr;
+          }));
+  TestWindowController window_controller(profile(), raw_web_contents);
   web_contents_tester->NavigateAndCommit(GURL("https://www.google.com"));
-  const int tab_id = ExtensionTabUtil::GetTabId(
-      browser()->tab_strip_model()->GetWebContentsAt(0));
+  const int tab_id = ExtensionTabUtil::GetTabId(raw_web_contents);
 
   // To capture the page as MHTML, the extension function needs to hop from the
   // UI thread to the IO thread to create the temporary file, then back to the
@@ -89,9 +135,6 @@ TEST_F(PageCaptureApiUnitTest, PageNavigationDuringSaveAsMHTML) {
             *function->response_type());
   EXPECT_EQ("Tab navigated before capture could complete.",
             function->GetError());
-
-  // Clean up.
-  browser()->tab_strip_model()->CloseAllTabs();
 }
 
 }  // namespace extensions
