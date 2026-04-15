@@ -449,8 +449,8 @@ class PLATFORM_EXPORT CanvasResourceProviderSharedImage
     return image_pool_.get();
   }
   gpu::raster::RasterInterface* RasterInterface() const;
-  void EnsureWriteAccess();
-  void EndWriteAccess();
+  virtual void EnsureWriteAccess() = 0;
+  virtual void EndWriteAccess() = 0;
 
   scoped_refptr<CanvasResourceSharedImage> NewOrRecycledResource();
   bool IsResourceUsable(CanvasResourceSharedImage* resource);
@@ -570,6 +570,9 @@ class PLATFORM_EXPORT Canvas2DResourceProviderSharedImage
 
   virtual scoped_refptr<CanvasResource> ProduceCanvasResource(FlushReason);
 
+  void EnsureWriteAccess() override;
+  void EndWriteAccess() override;
+
   // CanvasResourceProvider:
   void OnFlushForImage(cc::PaintImage::ContentId content_id) override;
   void RasterRecordForCanvas2D(cc::PaintRecord last_recording) override;
@@ -682,6 +685,9 @@ class PLATFORM_EXPORT CanvasNon2DResourceProviderSharedImage
 
   // WebGraphicsContext3DProviderWrapper::DestructionObserver implementation.
   void OnContextDestroyed() override;
+
+  void EnsureWriteAccess() override;
+  void EndWriteAccess() override;
 
   scoped_refptr<CanvasResource> ProduceCanvasResource();
 

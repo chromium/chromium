@@ -532,48 +532,6 @@ bool CanvasResourceProviderSharedImage::ShouldReplaceTargetBuffer(
   return !resource_->HasOneRef();
 }
 
-void CanvasResourceProviderSharedImage::EnsureWriteAccess() {
-  DCHECK(resource_);
-  // In software mode, we don't need write access to the resource during
-  // drawing since it is executed on CPU memory managed by Skia.
-  DCHECK(resource_->HasOneRef() || IsSingleBuffered() || !is_accelerated_)
-      << "Write access requires exclusive access to the resource";
-  DCHECK(!resource()->is_cross_thread())
-      << "Write access is only allowed on the owning thread";
-
-  if (current_resource_has_write_access_ || IsGpuContextLost()) {
-    return;
-  }
-  current_resource_has_write_access_ = true;
-}
-
-void CanvasResourceProviderSharedImage::EndWriteAccess() {
-  DCHECK(!resource()->is_cross_thread());
-
-  if (!current_resource_has_write_access_ || IsGpuContextLost()) {
-    return;
-  }
-
-  if (is_accelerated_) {
-    if (IsCanvas2D()) {
-      // As a write operation has just completed on the current resource, it is
-      // now necessary to preserve that resource's contents on a subsequent
-      // CopyOnWrite.
-      must_preserve_content_on_copy_on_write_for_canvas_2d_ = true;
-    }
-  } else {
-    if (ShouldReplaceTargetBuffer()) {
-      resource_ = NewOrRecycledResource();
-    }
-    if (!resource() || !GetSkSurface()) {
-      return;
-    }
-    resource()->UploadSoftwareRenderingResults(GetSkSurface());
-  }
-
-  current_resource_has_write_access_ = false;
-}
-
 std::unique_ptr<gpu::RasterScopedAccess>
 Canvas2DResourceProviderSharedImage::WillDrawInternal() {
   DCHECK(resource_);
@@ -1058,6 +1016,46 @@ CanvasNon2DResourceProviderSharedImage::DoExternalOverdrawAndSnapshot(
   return Snapshot(orientation);
 }
 
+void Canvas2DResourceProviderSharedImage::EnsureWriteAccess() {
+  DCHECK(resource_);
+  // In software mode, we don't need write access to the resource during
+  // drawing since it is executed on CPU memory managed by Skia.
+  DCHECK(resource_->HasOneRef() || IsSingleBuffered() || !is_accelerated_)
+      << "Write access requires exclusive access to the resource";
+  DCHECK(!resource()->is_cross_thread())
+      << "Write access is only allowed on the owning thread";
+
+  if (current_resource_has_write_access_ || IsGpuContextLost()) {
+    return;
+  }
+  current_resource_has_write_access_ = true;
+}
+
+void Canvas2DResourceProviderSharedImage::EndWriteAccess() {
+  DCHECK(!resource()->is_cross_thread());
+
+  if (!current_resource_has_write_access_ || IsGpuContextLost()) {
+    return;
+  }
+
+  if (is_accelerated_) {
+    // As a write operation has just completed on the current resource, it is
+    // now necessary to preserve that resource's contents on a subsequent
+    // CopyOnWrite.
+    must_preserve_content_on_copy_on_write_for_canvas_2d_ = true;
+  } else {
+    if (ShouldReplaceTargetBuffer()) {
+      resource_ = NewOrRecycledResource();
+    }
+    if (!resource() || !GetSkSurface()) {
+      return;
+    }
+    resource()->UploadSoftwareRenderingResults(GetSkSurface());
+  }
+
+  current_resource_has_write_access_ = false;
+}
+
 scoped_refptr<StaticBitmapImage>
 Canvas2DResourceProviderSharedImage::SnapshotForCanvas2D(
     ImageOrientation orientation) {
@@ -1101,6 +1099,41 @@ Canvas2DResourceProviderSharedImage::SnapshotForCanvas2D(
 scoped_refptr<StaticBitmapImage>
 CanvasNon2DResourceProviderSharedImage::SnapshotForCanvas2D(ImageOrientation) {
   NOTREACHED();
+}
+
+void CanvasNon2DResourceProviderSharedImage::EnsureWriteAccess() {
+  DCHECK(resource_);
+  // In software mode, we don't need write access to the resource during
+  // drawing since it is executed on CPU memory managed by Skia.
+  DCHECK(resource_->HasOneRef() || IsSingleBuffered() || !is_accelerated_)
+      << "Write access requires exclusive access to the resource";
+  DCHECK(!resource()->is_cross_thread())
+      << "Write access is only allowed on the owning thread";
+
+  if (current_resource_has_write_access_ || IsGpuContextLost()) {
+    return;
+  }
+  current_resource_has_write_access_ = true;
+}
+
+void CanvasNon2DResourceProviderSharedImage::EndWriteAccess() {
+  DCHECK(!resource()->is_cross_thread());
+
+  if (!current_resource_has_write_access_ || IsGpuContextLost()) {
+    return;
+  }
+
+  if (!is_accelerated_) {
+    if (ShouldReplaceTargetBuffer()) {
+      resource_ = NewOrRecycledResource();
+    }
+    if (!resource() || !GetSkSurface()) {
+      return;
+    }
+    resource()->UploadSoftwareRenderingResults(GetSkSurface());
+  }
+
+  current_resource_has_write_access_ = false;
 }
 
 scoped_refptr<StaticBitmapImage>
