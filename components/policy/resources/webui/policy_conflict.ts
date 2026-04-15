@@ -16,6 +16,24 @@ export interface Conflict {
   value: any;
 }
 
+// Converts a policy value to a JSON string and optionally formats it.
+export function stringifyPolicyValue(value: any, format?: boolean): string {
+  // Guard against undefined values;
+  // pass nulls, as they are a valid policy value.
+  if (value === undefined) {
+    return '';
+  }
+  // Skip 'string' policy to avoid unnecessary conversions.
+  if (typeof value === 'string') {
+    return value;
+  }
+  if (format) {
+    return JSON.stringify(value, null, 2);
+  } else {
+    return JSON.stringify(value, null);
+  }
+}
+
 // Copies the text content of an element to the clipboard.
 export function copyValue(element: CustomElement) {
   const selection = window.getSelection();
@@ -51,7 +69,7 @@ export class PolicyConflictElement extends CustomElement {
         conflict.level === 'recommended' ? 'levelRecommended' :
                                            'levelMandatory');
     const sourceText = loadTimeData.getString(conflict.source);
-    const valueText = JSON.stringify(conflict.value);
+    const valueText = stringifyPolicyValue(conflict.value, /*format=*/ true);
     const nameText = loadTimeData.getString(rowLabel);
 
     const setText = (selector: string, text: string) => {

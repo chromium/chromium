@@ -10,7 +10,7 @@ import {CustomElement} from 'chrome://resources/js/custom_element.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 
 import type {Conflict} from './policy_conflict.js';
-import {copyValue} from './policy_conflict.js';
+import {copyValue, stringifyPolicyValue} from './policy_conflict.js';
 import {getTemplate} from './policy_row.html.js';
 
 export interface Policy {
@@ -128,22 +128,10 @@ export class PolicyRowElement extends CustomElement {
 
     const sourceDisplay = this.shadowRoot!.querySelector('.source');
     sourceDisplay!.textContent = loadTimeData.getString(policy.source);
+
     // Reduces load on the DOM for long values;
-
-    const convertValue = (value: string, format?: boolean) => {
-      // Skip 'string' policy to avoid unnecessary conversions.
-      if (typeof value === 'string') {
-        return value;
-      }
-      if (format) {
-        return JSON.stringify(value, null, 2);
-      } else {
-        return JSON.stringify(value, null);
-      }
-    };
-
     // If value is longer than 256 characters, truncate and add ellipsis.
-    const policyValueStr = convertValue(policy.value);
+    const policyValueStr = stringifyPolicyValue(policy.value);
     const truncatedValue = policyValueStr.length > 256 ?
         `${policyValueStr.substring(0, 256)}\u2026` :
         policyValueStr;
@@ -158,7 +146,7 @@ export class PolicyRowElement extends CustomElement {
         this.shadowRoot!.querySelector('.value.row .value');
     // Expanded policy value is formatted.
     valueRowContentDisplay!.textContent =
-        convertValue(policy.value, /*format=*/ true);
+        stringifyPolicyValue(policy.value, /*format=*/ true);
 
     const errorRowContentDisplay =
         this.shadowRoot!.querySelector('.errors.row .value');
