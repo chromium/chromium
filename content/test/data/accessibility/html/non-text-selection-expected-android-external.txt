@@ -1,5 +1,5 @@
 WebView focusable focused actions:[CLEAR_FOCUS, AX_FOCUS] bundle:[chromeRole="rootWebArea", hasImage="true"]
-++View actions:[CLEAR_AX_FOCUS] bundle:[chromeRole="genericContainer", hasImage="true"] extendedSelectionStart:0 extendedSelectionEnd:3
+++View actions:[AX_FOCUS] bundle:[chromeRole="genericContainer", hasImage="true"] extendedSelectionStart:0 extendedSelectionEnd:3
 ++++Image contentDescription:"pipe" viewIdResName:"image" actions:[AX_FOCUS] bundle:[chromeRole="image", hasImage="true", targetUrl="file:///storage/emulated/0/chromium_tests_root/content/test/data/accessibility/html/pipe.jpg"]
 ++++TextView text:" Some Text " actions:[AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="staticText"]
 ++++Button text:"Button" viewIdResName:"button1" clickable focusable actions:[FOCUS, CLICK, AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="button", clickableScore="300"]

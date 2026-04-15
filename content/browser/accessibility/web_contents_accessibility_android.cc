@@ -1070,20 +1070,6 @@ void WebContentsAccessibilityAndroid::HandleTextSelectionChanged(
                                                                unique_id);
 }
 
-void WebContentsAccessibilityAndroid::HandleExtendedSelectionChanged(
-    int32_t unique_id,
-    int32_t focus_unique_id,
-    int32_t focus_offset) {
-  JNIEnv* env = AttachCurrentThread();
-  ScopedJavaLocalRef<jobject> obj = GetJavaObject(env);
-  if (obj.is_null()) {
-    return;
-  }
-
-  Java_WebContentsAccessibilityImpl_handleExtendedSelectionChange(
-      env, obj, unique_id, focus_unique_id, focus_offset);
-}
-
 void WebContentsAccessibilityAndroid::HandleEditableTextChanged(
     int32_t unique_id,
     int32_t subType) {
@@ -1371,6 +1357,16 @@ bool WebContentsAccessibilityAndroid::IsFocused(JNIEnv* env,
   }
 
   return node->IsFocused();
+}
+
+bool WebContentsAccessibilityAndroid::IsTextSelectable(JNIEnv* env,
+                                                       int32_t unique_id) {
+  BrowserAccessibilityAndroid* node = GetAXFromUniqueID(unique_id);
+  if (!node) {
+    return false;
+  }
+
+  return node->IsTextSelectable();
 }
 
 int32_t WebContentsAccessibilityAndroid::GetEditableTextSelectionStart(

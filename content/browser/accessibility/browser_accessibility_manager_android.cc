@@ -306,15 +306,7 @@ void BrowserAccessibilityManagerAndroid::FireDocumentSelectionChangedEvent(
           static_cast<BrowserAccessibilityAndroid*>(
               GetFromAXNode(ax_tree()->root()));
       ClearNodeInfoCacheForGivenId(android_root_object->GetUniqueId());
-      if (selection.has_value()) {
-        wcax->HandleExtendedSelectionChanged(
-            android_root_object->GetUniqueId(),
-            selection->focus_object->GetUniqueId(), selection->focus_offset);
-      } else {
-        wcax->HandleExtendedSelectionChanged(
-            android_root_object->GetUniqueId(), ui::kAXAndroidInvalidViewId,
-            ui::kAXAndroidUndefinedSelectionIndex);
-      }
+      wcax->HandleTextSelectionChanged(android_root_object->GetUniqueId());
       return;
     }
   } else if (!selection.has_value()) {
