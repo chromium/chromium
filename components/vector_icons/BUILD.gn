@@ -69,6 +69,7 @@ if (current_toolchain == default_toolchain) {
       "content_paste.icon",
       "content_paste_off.icon",
       "cookie_chrome_refresh.icon",
+      "crop_free.icon",
       "dangerous.icon",
       "dangerous_chrome_refresh.icon",
       "database.icon",

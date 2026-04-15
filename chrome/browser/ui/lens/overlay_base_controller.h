@@ -33,6 +33,10 @@ namespace views {
 class WebView;
 }  // namespace views
 
+namespace gfx {
+struct VectorIcon;
+}  // namespace gfx
+
 class PrefService;
 
 // Manages all state associated with the overlay.
@@ -239,6 +243,7 @@ class OverlayBaseController : public content::WebContentsDelegate,
     int message_string_id = -1;
     bool show_cancel_button = false;
     ui::ColorId bubble_background_color = ui::kUiColorsLast;
+    raw_ptr<const gfx::VectorIcon> icon = nullptr;
   };
 
   // Returns the resources for the preselection bubble.

@@ -63,6 +63,7 @@ LensPreselectionBubble::LensPreselectionBubble(
     bool offline,
     bool show_cancel_button,
     ui::ColorId bubble_background_color,
+    const gfx::VectorIcon* icon,
     ExitClickedCallback exit_clicked_callback,
     base::OnceClosure on_cancel_callback)
     : BubbleDialogDelegateView(anchor_view,
@@ -72,7 +73,9 @@ LensPreselectionBubble::LensPreselectionBubble(
       show_cancel_button_(show_cancel_button),
       offline_(offline),
       bubble_background_color_(bubble_background_color),
+      icon_(icon),
       exit_clicked_callback_(std::move(exit_clicked_callback)) {
+  CHECK(icon_);
   SetShowCloseButton(false);
   set_close_on_deactivate(false);
   DialogDelegate::SetButtons(static_cast<int>(ui::mojom::DialogButton::kNone));
@@ -105,11 +108,7 @@ void LensPreselectionBubble::Init() {
   if (offline_) {
     icon = &vector_icons::kErrorOutlineIcon;
   } else {
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-    icon = &vector_icons::kGoogleLensMonochromeLogoIcon;
-#else
-    icon = &vector_icons::kSearchChromeRefreshIcon;
-#endif
+    icon = icon_;
   }
   icon_view_->SetImage(ui::ImageModel::FromVectorIcon(
       *icon, kColorLensOverlayToastForeground, 24));
