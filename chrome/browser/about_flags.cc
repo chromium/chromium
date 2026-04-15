@@ -10803,12 +10803,6 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(display::features::kFastDrmMasterDrop)},
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
-#if !BUILDFLAG(IS_ANDROID)
-    {"bookmarks-tree-view", flag_descriptions::kBookmarksTreeViewName,
-     flag_descriptions::kBookmarksTreeViewDescription, kOsDesktop,
-     FEATURE_VALUE_TYPE(features::kBookmarksTreeView)},
-#endif
-
 #if BUILDFLAG(IS_ANDROID)
     {"new-etc1-encoder", flag_descriptions::kNewEtc1EncoderName,
      flag_descriptions::kNewEtc1EncoderDescription, kOsAndroid,

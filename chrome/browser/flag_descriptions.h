@@ -289,11 +289,6 @@ inline constexpr char kBlockingFocusWithoutUserActivationDescription[] =
     "(element.focus(), window.focus(), autofocus) from iframes unless "
     "triggered by a user gesture.";
 
-inline constexpr char kBookmarksTreeViewName[] =
-    "Top Chrome Bookmarks Tree View";
-inline constexpr char kBookmarksTreeViewDescription[] =
-    "Show the bookmarks side panel in a tree view while in compact mode.";
-
 inline constexpr char kBrowsingHistoryActorIntegrationM2Name[] =
     "Browsing History Actor Integration M2";
 inline constexpr char kBrowsingHistoryActorIntegrationM2Description[] =
