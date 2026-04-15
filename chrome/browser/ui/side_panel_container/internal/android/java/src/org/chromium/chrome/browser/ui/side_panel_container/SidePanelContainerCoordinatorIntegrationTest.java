@@ -201,7 +201,7 @@ public class SidePanelContainerCoordinatorIntegrationTest {
 
     @Test
     @MediumTest
-    public void isShowing_afterRemovingContent_returnsFalse() {
+    public void isShowing_afterRemovingContentAndClose_returnsFalse() {
         // Arrange.
         var coordinator = getSidePanelContainerCoordinator();
         var sidePanelContent = createSidePanelContent("Side Panel Content To Remove");

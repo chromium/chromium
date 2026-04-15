@@ -18,6 +18,7 @@
 #include "ui/base/unowned_user_data/scoped_unowned_user_data.h"
 
 class BrowserWindowInterface;
+class SidePanelEntryWaiter;
 
 // Android implementation of `SidePanelUIBase`.
 //
@@ -50,8 +51,8 @@ class SidePanelCoordinatorAndroid : public SidePanelUIBase {
   // Implements Java `SidePanelCoordinatorAndroid.Natives`. These methods are
   // called from Java via JNI, see `SidePanelCoordinatorAndroidImpl.java`.
   void Destroy(JNIEnv* env);
-  void NotifyCloseAnimationFinished(JNIEnv* env, int32_t panel_type_int);
-  void NotifyOpenAnimationFinished(JNIEnv* env, int32_t panel_type_int);
+  void NotifyCloseAnimationFinished(JNIEnv* env, SidePanelType panel_type);
+  void NotifyOpenAnimationFinished(JNIEnv* env, SidePanelType panel_type);
 
   // Implements `SidePanelUI`:
   void ShowFrom(SidePanelEntryKey entry_key,
@@ -65,6 +66,11 @@ class SidePanelCoordinatorAndroid : public SidePanelUIBase {
   void DisableAnimationsForTesting() override;
   void SetNoDelaysForTesting(bool no_delays_for_testing) override;
 
+  SidePanelEntryWaiter* GetWaiterForTesting(SidePanelType type) {
+    return waiter(type);
+  }
+
+  bool IsClosing() const { return state_ == SidePanelState::kClosing; }
 
  protected:
   // Implements `SidePanelUIBase`:

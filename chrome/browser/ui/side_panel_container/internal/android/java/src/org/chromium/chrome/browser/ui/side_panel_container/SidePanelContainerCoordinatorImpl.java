@@ -90,7 +90,7 @@ final class SidePanelContainerCoordinatorImpl
     @Override
     public void removeContentAndClose(
             Callback<@Nullable Void> onAnimationFinishedCallback, boolean suppressAnimations) {
-        log(TAG, "removeContent");
+        log(TAG, "removeContentAndClose", mPanelType, suppressAnimations);
         ThreadUtils.assertOnUiThread();
         mContainerView.removeAllViews();
         mSideUiCoordinator.requestUpdateContainer(

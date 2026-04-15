@@ -8,13 +8,16 @@
 
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/side_panel/android/side_panel_native_view_android.h"
+#include "chrome/browser/ui/side_panel/side_panel_content_proxy.h"
 #include "chrome/browser/ui/side_panel/side_panel_entry.h"
 #include "chrome/browser/ui/side_panel/side_panel_entry_id.h"
 #include "chrome/browser/ui/side_panel/side_panel_entry_key.h"
 #include "chrome/browser/ui/side_panel/side_panel_entry_observer.h"
+#include "chrome/browser/ui/side_panel/side_panel_entry_waiter.h"
 #include "chrome/browser/ui/side_panel/side_panel_registry.h"
 #include "chrome/browser/ui/side_panel/side_panel_ui.h"
 #include "chrome/browser/ui/side_panel/side_panel_ui_provider.h"
+#include "chrome/browser/ui/side_panel/side_panel_util.h"
 #include "chrome/browser/ui/side_panel/test/android/browser_test_support_jni/SidePanelCoordinatorAndroidBrowserTestSupport_jni.h"
 #include "chrome/browser/ui/side_panel/test/android/side_panel_android_browser_test_base.h"
 #include "content/public/test/browser_test.h"
@@ -440,4 +443,156 @@ IN_PROC_BROWSER_TEST_F(
   // Assert: The 1st tab's entry should be shown.
   EXPECT_TRUE(
       coordinator->SidePanelUIBase::IsSidePanelEntryShowing(first_entry_key));
+}
+
+IN_PROC_BROWSER_TEST_F(SidePanelCoordinatorAndroidBrowserTest,
+                       ShowAndClose_TogglesSidePanel) {
+  // Arrange:
+  BrowserWindowInterface* browser = GetBrowserWindow();
+
+  auto entry_key = SidePanelEntryKey(SidePanelEntryId::kAboutThisSite);
+  std::unique_ptr<SidePanelEntry> entry =
+      CreateSidePanelEntry(entry_key, browser);
+  TestSidePanelEntryObserver entry_observer;
+  entry->AddObserver(&entry_observer);
+
+  auto* registry = SidePanelRegistry::From(browser);
+  registry->Register(std::move(entry));
+
+  auto* coordinator = SidePanelCoordinatorAndroid::From(browser);
+  coordinator->SetNoDelaysForTesting(true);
+
+  // Act: Show
+  coordinator->SidePanelUIBase::Show(entry_key,
+                                     SidePanelOpenTrigger::kToolbarButton,
+                                     /*suppress_animations=*/true);
+
+  // Assert:
+  EXPECT_TRUE(coordinator->SidePanelUIBase::IsSidePanelEntryShowing(entry_key));
+  EXPECT_EQ(entry_key.id(), entry_observer.id_for_last_entry_shown_.value());
+
+  // Act: Close
+  coordinator->Close(SidePanelType::kToolbar,
+                     SidePanelEntryHideReason::kSidePanelClosed,
+                     /*suppress_animations=*/true);
+
+  // Assert:
+  EXPECT_FALSE(
+      coordinator->SidePanelUIBase::IsSidePanelEntryShowing(entry_key));
+  EXPECT_EQ(entry_key.id(), entry_observer.id_for_last_entry_hidden_.value());
+}
+
+IN_PROC_BROWSER_TEST_F(SidePanelCoordinatorAndroidBrowserTest,
+                       Close_CancelsLoadingAndClosesShowingEntry) {
+  // Arrange:
+  BrowserWindowInterface* browser = GetBrowserWindow();
+  auto* coordinator = SidePanelCoordinatorAndroid::From(browser);
+  coordinator->SetNoDelaysForTesting(true);
+
+  auto* registry = SidePanelRegistry::From(browser);
+
+  // 1. Show the first entry (AboutThisSite).
+  auto first_entry_key = SidePanelEntryKey(SidePanelEntryId::kAboutThisSite);
+  registry->Register(CreateSidePanelEntry(first_entry_key, browser));
+  coordinator->SidePanelUIBase::Show(first_entry_key,
+                                     SidePanelOpenTrigger::kToolbarButton,
+                                     /*suppress_animations=*/true);
+  ASSERT_TRUE(
+      coordinator->SidePanelUIBase::IsSidePanelEntryShowing(first_entry_key));
+
+  // 2. Prepare a second entry (Glic) that is not available immediately.
+  auto second_entry_key = SidePanelEntryKey(SidePanelEntryId::kGlic);
+  SidePanelEntry::CreateContentCallback create_content_callback =
+      base::BindRepeating(
+          [](BrowserWindowInterface* browser, SidePanelEntryScope& scope) {
+            ui::WindowAndroid* window_android =
+                browser->GetWindow()->GetNativeWindow();
+            base::android::ScopedJavaLocalRef<jobject> java_view =
+                Java_SidePanelCoordinatorAndroidBrowserTestSupport_createTestView(
+                    base::android::AttachCurrentThread(),
+                    window_android->GetJavaObject());
+            auto native_view = std::make_unique<SidePanelNativeViewAndroid>(
+                base::android::ScopedJavaGlobalRef<jobject>(java_view));
+            SidePanelUtil::GetSidePanelContentProxy(native_view.get())
+                ->SetAvailable(false);
+            return native_view;
+          },
+          base::Unretained(browser));
+  auto default_content_width_callback = base::RepeatingCallback<int()>();
+  registry->Register(std::make_unique<SidePanelEntry>(
+      SidePanelType::kToolbar, second_entry_key, create_content_callback,
+      default_content_width_callback));
+
+  // 3. Act: Start showing the second entry (starts loading).
+  coordinator->SetNoDelaysForTesting(false);
+  coordinator->SidePanelUIBase::Show(second_entry_key,
+                                     SidePanelOpenTrigger::kToolbarButton,
+                                     /*suppress_animations=*/true);
+
+  // 4. Assert: First entry is still showing, second is loading.
+  EXPECT_TRUE(
+      coordinator->SidePanelUIBase::IsSidePanelEntryShowing(first_entry_key));
+  EXPECT_FALSE(
+      coordinator->SidePanelUIBase::IsSidePanelEntryShowing(second_entry_key));
+  EXPECT_EQ(registry->GetEntryForKey(second_entry_key),
+            coordinator->GetWaiterForTesting(SidePanelType::kToolbar)
+                ->loading_entry());
+
+  // 5. Act: Close the side panel.
+  coordinator->Close(SidePanelType::kToolbar,
+                     SidePanelEntryHideReason::kSidePanelClosed,
+                     /*suppress_animations=*/true);
+
+  // 6. Assert: Everything is closed/cancelled.
+  EXPECT_FALSE(
+      coordinator->SidePanelUIBase::IsSidePanelEntryShowing(first_entry_key));
+  EXPECT_FALSE(
+      coordinator->SidePanelUIBase::IsSidePanelEntryShowing(second_entry_key));
+  EXPECT_EQ(nullptr, coordinator->GetWaiterForTesting(SidePanelType::kToolbar)
+                         ->loading_entry());
+}
+
+IN_PROC_BROWSER_TEST_F(SidePanelCoordinatorAndroidBrowserTest,
+                       Show_ReShowsClosingEntry) {
+  // Arrange:
+  BrowserWindowInterface* browser = GetBrowserWindow();
+
+  auto entry_key = SidePanelEntryKey(SidePanelEntryId::kAboutThisSite);
+  std::unique_ptr<SidePanelEntry> entry =
+      CreateSidePanelEntry(entry_key, browser);
+  TestSidePanelEntryObserver entry_observer;
+  entry->AddObserver(&entry_observer);
+
+  auto* registry = SidePanelRegistry::From(browser);
+  registry->Register(std::move(entry));
+
+  auto* coordinator = SidePanelCoordinatorAndroid::From(browser);
+  coordinator->SetNoDelaysForTesting(true);
+
+  // Show the entry first.
+  coordinator->SidePanelUIBase::Show(entry_key,
+                                     SidePanelOpenTrigger::kToolbarButton,
+                                     /*suppress_animations=*/true);
+  ASSERT_TRUE(coordinator->SidePanelUIBase::IsSidePanelEntryShowing(entry_key));
+  ASSERT_FALSE(coordinator->IsClosing());
+
+  // Act: Starts closing (finishes synchronously when animations are suppressed)
+  coordinator->Close(SidePanelType::kToolbar,
+                     SidePanelEntryHideReason::kSidePanelClosed,
+                     /*suppress_animations=*/true);
+
+  // Assert it's closed (implementation is synchronous for now).
+  EXPECT_FALSE(coordinator->IsClosing());
+  EXPECT_FALSE(
+      coordinator->SidePanelUIBase::IsSidePanelEntryShowing(entry_key));
+
+  // Act: Should re-show
+  coordinator->SidePanelUIBase::Show(entry_key,
+                                     SidePanelOpenTrigger::kToolbarButton,
+                                     /*suppress_animations=*/true);
+
+  // Assert:
+  // It should no longer be closing, and showing again.
+  EXPECT_FALSE(coordinator->IsClosing());
+  EXPECT_TRUE(coordinator->SidePanelUIBase::IsSidePanelEntryShowing(entry_key));
 }

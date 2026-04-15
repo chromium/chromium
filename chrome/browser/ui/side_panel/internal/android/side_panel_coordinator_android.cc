@@ -63,8 +63,9 @@ void SidePanelCoordinatorAndroid::Destroy(JNIEnv* env) {
 
 void SidePanelCoordinatorAndroid::NotifyOpenAnimationFinished(
     JNIEnv* env,
-    int32_t panel_type_int) {
-  SPLOG("NotifyOpenAnimationFinished - panel_type: " << panel_type_int);
+    SidePanelType panel_type) {
+  SPLOG("NotifyOpenAnimationFinished - panel_type: "
+        << static_cast<int>(panel_type));
 
   CHECK(state_ == SidePanelState::kOpening)
       << "Should only receive open animation finished callback when side "
@@ -75,27 +76,30 @@ void SidePanelCoordinatorAndroid::NotifyOpenAnimationFinished(
 
 void SidePanelCoordinatorAndroid::NotifyCloseAnimationFinished(
     JNIEnv* env,
-    int32_t panel_type_int) {
-  SPLOG("NotifyCloseAnimationFinished - panel_type: " << panel_type_int);
+    SidePanelType panel_type) {
+  SPLOG("NotifyCloseAnimationFinished - panel_type: "
+        << static_cast<int>(panel_type));
 
-  SidePanelType panel_type = static_cast<SidePanelType>(panel_type_int);
-
-  CHECK(state_ == SidePanelState::kClosing)
+  CHECK(IsClosing())
       << "Should only receive close animation finished callback when side "
          "panel is closing.";
 
   std::optional<UniqueKey> key = current_key(panel_type);
-  CHECK(key) << "Current key should still exist when side panel is closing.";
+  CHECK(key) << "Current key should exist when side panel animation finishes.";
 
   SidePanelEntry* entry = GetEntryForUniqueKey(*key);
   CHECK(entry)
       << "Current entry should still exist when side panel is closing.";
 
+  SetCurrentKey(panel_type, /*new_key=*/std::nullopt);
   // Now that the animation has completed, we can update our local state to be
   // closed, and trigger the entry hidden callbacks.
-  SetCurrentKey(panel_type, /*new_key=*/std::nullopt);
   entry->OnEntryHidden();
   entry->OnEntryHiddenWithReason(pending_hide_reason_);
+
+  // TODO(crbug.com/493931023): Record metrics here
+  // (SidePanelMetrics::RecordSidePanelClosed).
+
   state_ = SidePanelState::kClosed;
 }
 
@@ -115,12 +119,17 @@ void SidePanelCoordinatorAndroid::Close(SidePanelType panel_type,
         << static_cast<int>(panel_type)
         << ", hide_reason: " << static_cast<int>(hide_reason)
         << ", suppress_animations: " << suppress_animations);
+  CHECK(state_ == SidePanelState::kOpening || state_ == SidePanelState::kShown)
+      << "Close calls should only occur for opening or shown side panels. "
+         "Current state: "
+      << static_cast<int>(state_);
 
-  CHECK(state_ != SidePanelState::kClosing && state_ != SidePanelState::kClosed)
-      << "Close calls should not occur for closing or closed side panels";
+  // Stop any pending load.
+  waiter(panel_type)->ResetLoadingEntryIfNecessary();
 
-  CHECK(IsSidePanelShowing(panel_type))
-      << "Close calls should only be for currently shown side panel type.";
+  if (!IsSidePanelShowing(panel_type)) {
+    return;
+  }
 
   std::optional<UniqueKey> key = current_key(panel_type);
   CHECK(key) << "Current key should exist when side panel is showing.";
@@ -249,7 +258,7 @@ void SidePanelCoordinatorAndroid::MaybeShowEntryOnTabStripModelChanged(
   // consider all SidePanelTypes,
   // consider fallback logic, such as falling back to global entries,
   // etc.
-  auto panel_type = SidePanelType::kContent;
+  auto panel_type = SidePanelType::kToolbar;
 
   // If the side panel is showing, check if we should:
   // (1) replace the current UI content by calling `Show()`, or

@@ -11,6 +11,7 @@ import android.view.View;
 import androidx.annotation.VisibleForTesting;
 
 import org.jni_zero.CalledByNative;
+import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.build.annotations.NullMarked;
@@ -86,28 +87,27 @@ public final class SidePanelCoordinatorAndroidImpl implements SidePanelCoordinat
 
     @CalledByNative
     private void removeContentAndClose(boolean suppressAnimations) {
-        log(TAG, "removeContentAndClose", suppressAnimations);
+        @SidePanelType int type = mSidePanelContainerCoordinator.getPanelType();
+        log(TAG, "removeContentAndClose", type, suppressAnimations);
         mSidePanelContainerCoordinator.removeContentAndClose(
                 result -> notifyCloseAnimationFinished(null), suppressAnimations);
     }
 
     private void notifyOpenAnimationFinished(@Nullable Void unused) {
-        log(TAG, "notifyOpenAnimationFinished", mSidePanelContainerCoordinator.getPanelType());
+        @SidePanelType int type = mSidePanelContainerCoordinator.getPanelType();
+        log(TAG, "notifyOpenAnimationFinished", type);
         if (mNativeSidePanelCoordinatorAndroid != 0) {
             SidePanelCoordinatorAndroidImplJni.get()
-                    .notifyOpenAnimationFinished(
-                            mNativeSidePanelCoordinatorAndroid,
-                            mSidePanelContainerCoordinator.getPanelType());
+                    .notifyOpenAnimationFinished(mNativeSidePanelCoordinatorAndroid, type);
         }
     }
 
     private void notifyCloseAnimationFinished(@Nullable Void unused) {
-        log(TAG, "notifyAnimationsFinished", mSidePanelContainerCoordinator.getPanelType());
+        @SidePanelType int type = mSidePanelContainerCoordinator.getPanelType();
+        log(TAG, "notifyCloseAnimationFinished", type);
         if (mNativeSidePanelCoordinatorAndroid != 0) {
             SidePanelCoordinatorAndroidImplJni.get()
-                    .notifyCloseAnimationFinished(
-                            mNativeSidePanelCoordinatorAndroid,
-                            mSidePanelContainerCoordinator.getPanelType());
+                    .notifyCloseAnimationFinished(mNativeSidePanelCoordinatorAndroid, type);
         }
     }
 
@@ -138,7 +138,7 @@ public final class SidePanelCoordinatorAndroidImpl implements SidePanelCoordinat
          * @param panelType SidePanelType of the current UI coordinator.
          */
         void notifyCloseAnimationFinished(
-                long nativeSidePanelCoordinatorAndroid, @SidePanelType int panelType);
+                long nativeSidePanelCoordinatorAndroid, @JniType("SidePanelType") int panelType);
 
         /**
          * Notifies the underlying native object that animations for opening have finished.
@@ -148,6 +148,6 @@ public final class SidePanelCoordinatorAndroidImpl implements SidePanelCoordinat
          * @param panelType SidePanelType of the current UI coordinator.
          */
         void notifyOpenAnimationFinished(
-                long nativeSidePanelCoordinatorAndroid, @SidePanelType int panelType);
+                long nativeSidePanelCoordinatorAndroid, @JniType("SidePanelType") int panelType);
     }
 }
