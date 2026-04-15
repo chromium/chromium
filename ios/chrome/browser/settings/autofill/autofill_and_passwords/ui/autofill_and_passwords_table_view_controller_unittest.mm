@@ -57,7 +57,7 @@ TEST_F(AutofillAndPasswordsTableViewControllerTest, TestModel) {
                              0);
   CheckDetailItemTextWithIds(IDS_AUTOFILL_PAYMENTS_TITLE, IDS_IOS_SETTING_OFF,
                              0, 1);
-  CheckDetailItemTextWithIds(IDS_AUTOFILL_ADDRESSES_SETTINGS_TITLE,
+  CheckDetailItemTextWithIds(IDS_AUTOFILL_CONTACT_INFO_TITLE,
                              IDS_IOS_SETTING_ON, 0, 2);
 }
 

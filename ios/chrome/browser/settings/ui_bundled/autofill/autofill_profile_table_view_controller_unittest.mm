@@ -8,6 +8,7 @@
 #import "base/strings/utf_string_conversions.h"
 #import "base/test/ios/wait_util.h"
 #import "base/test/scoped_feature_list.h"
+#import "base/test/with_feature_override.h"
 #import "base/uuid.h"
 #import "components/autofill/core/browser/data_manager/addresses/address_data_manager.h"
 #import "components/autofill/core/browser/data_manager/personal_data_manager.h"
@@ -24,6 +25,7 @@
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_detail_icon_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/legacy_chrome_table_view_controller_test.h"
 #import "ios/chrome/browser/signin/model/authentication_service.h"
@@ -263,5 +265,27 @@ TEST_F(AutofillProfileTableViewControllerTest,
   NSString* text = l10n_util::GetNSString(IDS_SETTINGS_AUTOFILL_AI_PAGE_TITLE);
   EXPECT_NSEQ(text, item.text);
 }
+
+// TODO(crbug.com/496456595): Alter this test once YourSavedInfoSettingsPageIos
+// is fully rolled out.
+class AutofillProfileTableViewControllerTitleTest
+    : public base::test::WithFeatureOverride,
+      public AutofillProfileTableViewControllerTest {
+ public:
+  AutofillProfileTableViewControllerTitleTest()
+      : base::test::WithFeatureOverride(kYourSavedInfoSettingsPageIos) {}
+};
+
+// Tests the title of the view controller when the feature is enabled/disabled.
+TEST_P(AutofillProfileTableViewControllerTitleTest, Title) {
+  CreateController();
+  CheckController();
+
+  CheckTitleWithId(IsParamFeatureEnabled() ? IDS_AUTOFILL_CONTACT_INFO_TITLE
+                                           : IDS_AUTOFILL_ADDRESSES_SETTINGS_TITLE);
+}
+
+INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(
+    AutofillProfileTableViewControllerTitleTest);
 
 }  // namespace

@@ -295,7 +295,10 @@ ItemType ItemTypeForEntitySectionHeader(SectionIdentifier section_identifier) {
 
   self = [super initWithStyle:ChromeTableViewStyle()];
   if (self) {
-    self.title = l10n_util::GetNSString(IDS_AUTOFILL_ADDRESSES_SETTINGS_TITLE);
+    self.title =
+        l10n_util::GetNSString(IsYourSavedInfoSettingsPageIosEnabled()
+                                   ? IDS_AUTOFILL_CONTACT_INFO_TITLE
+                                   : IDS_AUTOFILL_ADDRESSES_SETTINGS_TITLE);
     self.shouldDisableDoneButtonOnEdit = YES;
     _browser = browser;
     _personalDataManager = autofill::PersonalDataManagerFactory::GetForProfile(

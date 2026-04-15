@@ -82,9 +82,13 @@ TableViewDetailIconItem* AutofillCreditCardItem(BOOL enabled) {
 }
 
 TableViewDetailIconItem* AutofillProfileItem(BOOL enabled) {
+  NSString* title = l10n_util::GetNSString(
+      IsYourSavedInfoSettingsPageIosEnabled()
+          ? IDS_AUTOFILL_CONTACT_INFO_TITLE
+          : IDS_AUTOFILL_ADDRESSES_SETTINGS_TITLE);
+
   return DetailItemWithType(
-      SettingsItemTypeAutofillProfile,
-      l10n_util::GetNSString(IDS_AUTOFILL_ADDRESSES_SETTINGS_TITLE),
+      SettingsItemTypeAutofillProfile, title,
       AutofillProfileItemDetailText(enabled),
       CustomSettingsRootSymbol(kLocationSymbol),
       [UIColor colorNamed:kYellow500Color], kSettingsAddressesAndMoreCellId);
