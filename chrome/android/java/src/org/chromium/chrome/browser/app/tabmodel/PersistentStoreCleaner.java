@@ -230,7 +230,10 @@ public class PersistentStoreCleaner {
         for (TabModelSelector selector : selectors) {
             if (!selector.isTabStateInitialized()) {
                 TabModelUtils.runOnTabStateInitialized(
-                        () -> maybeCleanUnusedWindows(),
+                        () -> {
+                            deps.mCleanupRunnable = null;
+                            maybeCleanUnusedWindows();
+                        },
                         selectors.toArray(new TabModelSelector[0]));
                 return;
             }
@@ -276,5 +279,9 @@ public class PersistentStoreCleaner {
             TabStateStorageService service = TabStateStorageServiceFactory.getForProfile(mProfile);
             if (service != null) service.clearAllWindowsExcept(windowTags);
         }
+    }
+
+    public boolean hasUnusedDataDepsForTesting() {
+        return mUnusedDataDeps != null;
     }
 }

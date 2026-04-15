@@ -256,6 +256,11 @@ public class PersistentStoreCleanerTest {
                 () -> !tabWindowManager.getAllTabModelSelectors().contains(headlessSelector));
         assertTrue(tabWindowManager.isAllTabStateInitialized());
 
+        CriteriaHelper.pollUiThread(
+                () ->
+                        !PersistentStoreCleanerFactory.getForProfile(mProfile)
+                                .hasUnusedDataDepsForTesting());
+
         runOnUiThreadBlocking(
                 () ->
                         PersistentStoreCleanerFactory.getForProfile(mProfile)
