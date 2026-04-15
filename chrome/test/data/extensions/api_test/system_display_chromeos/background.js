@@ -6,7 +6,7 @@ chrome.test.runTests([
   function waitForDisplayChangedEvent() {
     chrome.test.listenOnce(chrome.system.display.onDisplayChanged,
                            function() {
-                             chrome.test.sendMessage("success");
+                             chrome.test.sendMessage('success');
                            });
   }
 ]);

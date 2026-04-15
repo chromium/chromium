@@ -8,13 +8,13 @@
 // At least one url must be specified.
 // The |callback| should look like function(windowId, tabIds) {...}.
 function createWindow(tabUrls, winOptions, callback) {
-  winOptions["url"] = tabUrls;
+  winOptions['url'] = tabUrls;
   chrome.windows.create(winOptions, function(win) {
-    var newTabIds = [];
+    const newTabIds = [];
     assertTrue(win.id > 0);
     assertEq(tabUrls.length, win.tabs.length);
 
-    for (var i = 0; i < win.tabs.length; i++)
+    for (let i = 0; i < win.tabs.length; i++)
       newTabIds.push(win.tabs[i].id);
 
     callback(win.id, newTabIds);
@@ -27,11 +27,11 @@ function createWindow(tabUrls, winOptions, callback) {
 function waitForAllTabs(callback) {
   // Wait for all tabs to load.
   function waitForTabs(){
-    chrome.windows.getAll({"populate": true}, function(windows) {
-      var ready = true;
-      for (var i in windows){
-        for (var j in windows[i].tabs) {
-          if (windows[i].tabs[j].status != "complete") {
+    chrome.windows.getAll({populate: true}, function(windows) {
+      let ready = true;
+      for (let i in windows){
+        for (let j in windows[i].tabs) {
+          if (windows[i].tabs[j].status != 'complete') {
             ready = false;
             break;
           }
@@ -63,18 +63,18 @@ function getPixels(imgUrl, windowRect, callbackFn) {
   }).then(pass(function(img) {
     // Comparing pixels is slow enough to hit timeouts if we run on
     // the whole image..  Compare a 10x10 region.
-    var canvas = new OffscreenCanvas(10, 10);
+    const canvas = new OffscreenCanvas(10, 10);
 
-    var context = canvas.getContext('2d');
+    const context = canvas.getContext('2d');
     context.drawImage(
       img,
       10, 10, 10, 10,  // Source rect: Crop to x in 10..20, y in 10..20.
       0, 0, 10, 10);   // Dest rect is 10x10.  No resizing is done.
 
-    var imageData = context.getImageData(0, 0, 10, 10).data;
+    const imageData = context.getImageData(0, 0, 10, 10).data;
 
-    var pixelColors = [];
-    for (var i = 0, n = imageData.length; i < n; i += 4) {
+    const pixelColors = [];
+    for (let i = 0, n = imageData.length; i < n; i += 4) {
       pixelColors.push([imageData[i+0],
                         imageData[i+1],
                         imageData[i+2],
@@ -89,10 +89,10 @@ function getPixels(imgUrl, windowRect, callbackFn) {
 // |expectedColor|.
 function testPixelsAreExpectedColor(imgUrl, windowRect, expectedColor) {
   getPixels(imgUrl, windowRect, function(pixelColors) {
-    var badPixels = [];
-    for (var i = 0, ie = pixelColors.length; i < ie; ++i) {
+    const badPixels = [];
+    for (let i = 0, ie = pixelColors.length; i < ie; ++i) {
       if (pixelColors[i] != expectedColor) {
-        badPixels.push({'i': i, 'color': pixelColors[i]});
+        badPixels.push({i: i, color: pixelColors[i]});
       }
     }
     assertEq('[]', JSON.stringify(badPixels, null, 2));
@@ -103,13 +103,13 @@ function testPixelsAreExpectedColor(imgUrl, windowRect, expectedColor) {
 // |expectedColors| occur in a small part of the image at |imgUrl|.
 function countPixelsWithColors(imgUrl, windowRect, expectedColors, callback) {
   colorCounts = new Array(expectedColors.length);
-  for (var i = 0; i < expectedColors.length; ++i) {
+  for (let i = 0; i < expectedColors.length; ++i) {
     colorCounts[i] = 0;
   }
 
   getPixels(imgUrl, windowRect, function(pixelColors) {
-    for (var i = 0, ie = pixelColors.length; i < ie; ++i) {
-      var colorIdx = expectedColors.indexOf(pixelColors[i]);
+    for (let i = 0, ie = pixelColors.length; i < ie; ++i) {
+      const colorIdx = expectedColors.indexOf(pixelColors[i]);
       if (colorIdx != -1)
         colorCounts[colorIdx]++;
     }

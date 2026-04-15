@@ -4,7 +4,7 @@
 
 // Content script that echoes back all messages.
 // Posting a message with "GET" returns the name and # of connections opened.
-var connections = 0;
+let connections = 0;
 
 // Notify the test that the content script is ready to go.
 chrome.runtime.sendMessage('ready');
@@ -12,8 +12,8 @@ chrome.runtime.sendMessage('ready');
 chrome.runtime.onConnect.addListener(function onConnect(port) {
   connections++;
   port.onMessage.addListener(function onMessage(msg) {
-    if (msg == "GET") {
-      port.postMessage({"name": port.name, "connections": connections});
+    if (msg == 'GET') {
+      port.postMessage({name: port.name, connections: connections});
     } else {
       port.postMessage(msg);
     }

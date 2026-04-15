@@ -28,13 +28,13 @@ chrome.test.runTests([
     });
   },
   function testCreateEventDispatched() {
-    let onCreatedPromise = new Promise((resolve) => {
+    const onCreatedPromise = new Promise((resolve) => {
       chrome.tabGroups.onCreated.addListener((group) => {
         resolve(group.id);
       });
     });
 
-    let createPromise = new Promise((resolve) => {
+    const createPromise = new Promise((resolve) => {
       chrome.tabs.create({}, (tab) => {
         chrome.tabs.group({tabIds: tab.id}, (groupId) => {
           resolve(groupId);

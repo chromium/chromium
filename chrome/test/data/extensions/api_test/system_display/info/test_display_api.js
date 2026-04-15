@@ -7,14 +7,14 @@
 
 chrome.test.runTests([
   function testGet() {
-    for(var i = 0; i < 10; ++i) {
+    for(let i = 0; i < 10; ++i) {
       chrome.system.display.getInfo(
         chrome.test.callbackPass(function(result) {
           chrome.test.assertEq(4, result.length);
-          for (var i = 0; i < result.length; i++) {
-            var info = result[i];
-            chrome.test.assertEq('' + i, info.id);
-            chrome.test.assertEq('DISPLAY NAME FOR ' + i, info.name);
+          for (let i = 0; i < result.length; i++) {
+            const info = result[i];
+            chrome.test.assertEq(`${i}`, info.id);
+            chrome.test.assertEq(`DISPLAY NAME FOR ${i}`, info.name);
             chrome.test.assertEq(i == 0 ? true : false, info.isPrimary);
             chrome.test.assertEq(i == 0 ? true : false, info.isInternal);
             if (i == 1) {

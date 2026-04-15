@@ -6,12 +6,12 @@ import {openTab} from '/_test_resources/test_util/tabs_util.js';
 
 // A test tab which has the listener we are sending messages to injected as a
 // content script.
-var testTab = null;
+let testTab = null;
 
 chrome.test.runTests([
   async function setup() {
     const config = await chrome.test.getConfig();
-    let url = `http://example.com:${config.testServer.port}/empty.html`;
+    const url = `http://example.com:${config.testServer.port}/empty.html`;
     testTab = await openTab(url);
     chrome.test.succeed();
   },

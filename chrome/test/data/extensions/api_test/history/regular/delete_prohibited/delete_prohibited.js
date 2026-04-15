@@ -62,8 +62,8 @@ function verifyNoDeletion(testFunction) {
   }));
 }
 
-const scriptUrl = '_test_resources/api_test/history/regular/common.js';
-const loadScript = chrome.test.loadScript(scriptUrl);
+const SCRIPT_URL = '_test_resources/api_test/history/regular/common.js';
+const loadScript = chrome.test.loadScript(SCRIPT_URL);
 
 loadScript.then(async function() {
   chrome.test.runTests([

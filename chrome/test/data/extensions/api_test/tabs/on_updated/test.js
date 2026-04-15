@@ -2,9 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-var expectedEventData;
-var capturedEventData;
-var shouldIgnore;
+let expectedEventData;
+let capturedEventData;
+let shouldIgnore;
 
 function expect(data, ignoreFunc) {
   expectedEventData = data;
@@ -21,11 +21,10 @@ function checkExpectations() {
   chrome.test.succeed();
 }
 
-var getURL = chrome.runtime.getURL;
+const getURL = chrome.runtime.getURL;
 
 chrome.tabs.onUpdated.addListener(function(tabId, info, tab) {
-  console.log('---onUpdated: ' + info.status + ', ' + info.url + '. ' +
-               info.favIconUrl);
+  console.log(`---onUpdated: ${info.status}, ${info.url}. ${info.favIconUrl}`);
   if (shouldIgnore && shouldIgnore(info)) {
     return;
   }
@@ -50,7 +49,7 @@ chrome.test.runTests([
     // Test for crbug.com/27208.
     expect([
       { status: 'loading', url: 'chrome://chrome-urls/' },
-      { title : "Chrome URLs" },
+      { title : 'Chrome URLs' },
       { status: 'complete' }
     ]);
 
@@ -63,7 +62,7 @@ chrome.test.runTests([
     // Test for crbug.com/27204.
     // We have to ignore anything that comes before the about:blank loading
     // status.
-    var ignore = true;
+    let ignore = true;
     expect([
       { status: 'loading', url: 'about:blank' },
       { status: 'complete' }

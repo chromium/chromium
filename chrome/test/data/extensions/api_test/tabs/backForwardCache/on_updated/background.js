@@ -2,9 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-var expectedEventData;
-var capturedEventData;
-var shouldIgnore = true;
+let expectedEventData;
+let capturedEventData;
+let shouldIgnore = true;
 
 function expect(data) {
   chrome.tabs.onUpdated.addListener(function(tabId, info, tab) {
@@ -55,27 +55,25 @@ function promise(fun, ...args) {
 }
 
 chrome.test.getConfig(async function(config) {
-  let tab = await promise(chrome.tabs.create, {"url": "about:blank"});
-  let port = config.testServer.port;
-  let URL_A = "http://a.com:" + port +
-      "/extensions/api_test/tabs/backForwardCache/on_updated/a.html";
-  let URL_B = "http://b.com:" + port +
-        "/extensions/api_test/tabs/backForwardCache/on_updated/b.html";
+  const tab = await promise(chrome.tabs.create, {url: 'about:blank'});
+  const port = config.testServer.port;
+  const urlA = `http://a.com:${
+      port}/extensions/api_test/tabs/backForwardCache/on_updated/a.html`;
+  const urlB = `http://b.com:${
+      port}/extensions/api_test/tabs/backForwardCache/on_updated/b.html`;
 
-  chrome.test.runTests([
-    function backForwardNavigation() {
-      expect([
-        { status: 'loading', url: URL_A },
-        { status: 'complete' },
-        { status: 'loading', url: URL_B },
+  chrome.test.runTests([function backForwardNavigation() {
+    expect([
+      {status: 'loading', url: urlA},
+      {status: 'complete'},
+      {status: 'loading', url: urlB},
 
-        // Asserts that back forward cache restoring A generates loading
-        // and complete events.
-        { status: 'loading', url: URL_A },
-        { status: 'complete' },
-      ]);
+      // Asserts that back forward cache restoring A generates loading
+      // and complete events.
+      {status: 'loading', url: urlA},
+      {status: 'complete'},
+    ]);
 
-      chrome.tabs.update(tab.id, { url: URL_A });
-    }
-  ])
+    chrome.tabs.update(tab.id, {url: urlA});
+  }])
 });

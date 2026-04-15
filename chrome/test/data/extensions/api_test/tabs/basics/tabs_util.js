@@ -2,28 +2,28 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-var pass = chrome.test.callbackPass;
-var fail = chrome.test.callbackFail;
-var assertEq = chrome.test.assertEq;
-var assertFalse = chrome.test.assertFalse;
-var assertTrue = chrome.test.assertTrue;
+const pass = chrome.test.callbackPass;
+const fail = chrome.test.callbackFail;
+const assertEq = chrome.test.assertEq;
+const assertFalse = chrome.test.assertFalse;
+const assertTrue = chrome.test.assertTrue;
 
 function pageUrl(name) {
   return chrome.runtime.getURL(
-      '_test_resources/api_test/tabs/basics/' + name + '.html');
+      `_test_resources/api_test/tabs/basics/${name}.html`);
 }
 
 // Creates one window with tabs set to the urls in the array |tabUrls|.
 // At least one url must be specified.
 // The |callback| should look like function(windowId, tabIds) {...}.
 function createWindow(tabUrls, winOptions, callback) {
-  winOptions["url"] = tabUrls;
+  winOptions['url'] = tabUrls;
   chrome.windows.create(winOptions, function(win) {
-    var newTabIds = [];
+    const newTabIds = [];
     assertTrue(win.id > 0);
     assertEq(tabUrls.length, win.tabs.length);
 
-    for (var i = 0; i < win.tabs.length; i++)
+    for (let i = 0; i < win.tabs.length; i++)
       newTabIds.push(win.tabs[i].id);
 
     callback(win.id, newTabIds);
@@ -37,11 +37,11 @@ function createWindow(tabUrls, winOptions, callback) {
 function waitForAllTabs(callback) {
   // Wait for all tabs to load.
   function waitForTabs() {
-    chrome.windows.getAll({"populate": true}, function(windows) {
-      var ready = true;
-      for (var i in windows) {
-        for (var j in windows[i].tabs) {
-          if (windows[i].tabs[j].status != "complete") {
+    chrome.windows.getAll({populate: true}, function(windows) {
+      let ready = true;
+      for (let i in windows) {
+        for (let j in windows[i].tabs) {
+          if (windows[i].tabs[j].status != 'complete') {
             ready = false;
             break;
           }
@@ -63,7 +63,7 @@ function waitForAllTabs(callback) {
 function queryForTab(tabId, queryInfo, callback) {
   chrome.tabs.query(queryInfo,
     pass(function(tabs) {
-      var foundTabs = tabs.filter(function(tab) {
+      const foundTabs = tabs.filter(function(tab) {
         return (tab.id == tabId);
       });
       if (callback !== null)
@@ -78,13 +78,13 @@ function queryForTab(tabId, queryInfo, callback) {
 // (nonqueryable attribute, expected value) pair in nonqueryableAttribsDict
 // except it does not check the query.
 function onUpdatedExpect(queryableAttrib, expected, nonqueryableAttribsDict) {
-  var onUpdatedCompleted = chrome.test.listenForever(
+  const onUpdatedCompleted = chrome.test.listenForever(
     chrome.tabs.onUpdated,
     function(tabId, changeInfo, tab) {
       if (nonqueryableAttribsDict !== null) {
-        var nonqueryableAttribs = Object.keys(nonqueryableAttribsDict);
+        const nonqueryableAttribs = Object.keys(nonqueryableAttribsDict);
         nonqueryableAttribs.forEach(function(nonqueryableAttrib) {
-          if (typeof changeInfo[nonqueryableAttrib] !== "undefined") {
+          if (typeof changeInfo[nonqueryableAttrib] !== 'undefined') {
             assertEq(nonqueryableAttribsDict[nonqueryableAttrib],
                      changeInfo[nonqueryableAttrib]);
             assertEq(nonqueryableAttribsDict[nonqueryableAttrib],
@@ -95,7 +95,7 @@ function onUpdatedExpect(queryableAttrib, expected, nonqueryableAttribsDict) {
       if (changeInfo.hasOwnProperty(queryableAttrib)) {
         assertEq(expected, changeInfo[queryableAttrib]);
         assertEq(expected, tab[queryableAttrib]);
-        var queryInfo = {};
+        const queryInfo = {};
         queryInfo[queryableAttrib] = expected;
         queryForTab(tabId, queryInfo, pass(function(tab) {
           assertEq(expected, tab[queryableAttrib]);

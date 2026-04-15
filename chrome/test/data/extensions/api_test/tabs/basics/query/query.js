@@ -2,22 +2,23 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-var testWindowId;
-var active_tabs = [];
-var highlighted_tabs = [];
-var window_tabs = [];
-var pinned_tabs = [];
-var active_and_window_tabs = [];
+let testWindowId;
+const activeTabs = [];
+const highlightedTabs = [];
+const windowTabs = [];
+const pinnedTabs = [];
+const activeAndWindowTabs = [];
 
-const scriptUrl = '_test_resources/api_test/tabs/basics/tabs_util.js';
-let loadScript = chrome.test.loadScript(scriptUrl);
+const SCRIPT_URL = '_test_resources/api_test/tabs/basics/tabs_util.js';
+const loadScript = chrome.test.loadScript(SCRIPT_URL);
 let isAndroid;
 
 loadScript.then(async function() {
 chrome.test.runTests([
   async function setup() {
     isAndroid = (await chrome.runtime.getPlatformInfo()).os === 'android';
-    var tabs = ['http://example.org/a.html', 'http://www.google.com/favicon.ico'];
+    const tabs = ['http://example.org/a.html',
+                  'http://www.google.com/favicon.ico'];
     chrome.windows.create({url: tabs}, pass(function(window) {
       waitForAllTabs(pass(function() {
         assertEq(2, window.tabs.length);
@@ -43,52 +44,52 @@ chrome.test.runTests([
   function queryAll() {
     chrome.tabs.query({}, pass(function(tabs) {
       assertEq(4, tabs.length);
-      for (var x = 0; x < tabs.length; x++) {
+      for (let x = 0; x < tabs.length; x++) {
         if (tabs[x].highlighted)
-          highlighted_tabs.push(tabs[x]);
+          highlightedTabs.push(tabs[x]);
         if (tabs[x].active)
-          active_tabs.push(tabs[x]);
+          activeTabs.push(tabs[x]);
         if (tabs[x].windowId == testWindowId) {
-          window_tabs.push(tabs[x]);
+          windowTabs.push(tabs[x]);
           if (tabs[x].active)
-            active_and_window_tabs.push(tabs[x]);
+            activeAndWindowTabs.push(tabs[x]);
         }
         if (tabs[x].pinned)
-          pinned_tabs.push(tabs[x]);
+          pinnedTabs.push(tabs[x]);
       }
     }));
   },
 
   function queryHighlighted() {
     chrome.tabs.query({highlighted:true}, pass(function(tabs) {
-      assertEq(highlighted_tabs.length, tabs.length);
-      for (var x = 0; x < tabs.length; x++)
+      assertEq(highlightedTabs.length, tabs.length);
+      for (let x = 0; x < tabs.length; x++)
         assertTrue(tabs[x].highlighted);
     }));
     chrome.tabs.query({highlighted:false}, pass(function(tabs) {
-      assertEq(4-highlighted_tabs.length, tabs.length);
-      for (var x = 0; x < tabs.length; x++)
+      assertEq(4-highlightedTabs.length, tabs.length);
+      for (let x = 0; x < tabs.length; x++)
         assertFalse(tabs[x].highlighted);
     }));
   },
 
   function queryActive() {
     chrome.tabs.query({active: true}, pass(function(tabs) {
-      assertEq(active_tabs.length, tabs.length);
-      for (var x = 0; x < tabs.length; x++)
+      assertEq(activeTabs.length, tabs.length);
+      for (let x = 0; x < tabs.length; x++)
         assertTrue(tabs[x].active);
     }));
     chrome.tabs.query({active: false}, pass(function(tabs) {
-      assertEq(4-active_tabs.length, tabs.length);
-      for (var x = 0; x < tabs.length; x++)
+      assertEq(4-activeTabs.length, tabs.length);
+      for (let x = 0; x < tabs.length; x++)
         assertFalse(tabs[x].active);
     }));
   },
 
   function queryWindowID() {
     chrome.tabs.query({windowId: testWindowId}, pass(function(tabs) {
-      assertEq(window_tabs.length, tabs.length);
-      for (var x = 0; x < tabs.length; x++)
+      assertEq(windowTabs.length, tabs.length);
+      for (let x = 0; x < tabs.length; x++)
         assertEq(testWindowId, tabs[x].windowId);
     }));
   },
@@ -101,13 +102,13 @@ chrome.test.runTests([
       return;
     }
     chrome.tabs.query({pinned: true}, pass(function(tabs) {
-      assertEq(pinned_tabs.length, tabs.length);
-      for (var x = 0; x < tabs.length; x++)
+      assertEq(pinnedTabs.length, tabs.length);
+      for (let x = 0; x < tabs.length; x++)
         assertTrue(tabs[x].pinned);
     }));
     chrome.tabs.query({pinned: false}, pass(function(tabs) {
-      assertEq(4-pinned_tabs.length, tabs.length);
-      for (var x = 0; x < tabs.length; x++)
+      assertEq(4-pinnedTabs.length, tabs.length);
+      for (let x = 0; x < tabs.length; x++)
         assertFalse(tabs[x].pinned);
     }));
   },
@@ -117,8 +118,8 @@ chrome.test.runTests([
       active: true,
       windowId: testWindowId
     }, pass(function(tabs) {
-      assertEq(active_and_window_tabs.length, tabs.length);
-      for (var x = 0; x < tabs.length; x++) {
+      assertEq(activeAndWindowTabs.length, tabs.length);
+      for (let x = 0; x < tabs.length; x++) {
         assertTrue(tabs[x].active);
         assertEq(testWindowId, tabs[x].windowId);
       }
@@ -126,40 +127,40 @@ chrome.test.runTests([
   },
 
   function queryUrl() {
-    chrome.tabs.query({url: "http://*.example.org/*"}, pass(function(tabs) {
+    chrome.tabs.query({url: 'http://*.example.org/*'}, pass(function(tabs) {
       assertEq(1, tabs.length);
-      assertEq("http://example.org/a.html", tabs[0].url);
+      assertEq('http://example.org/a.html', tabs[0].url);
     }));
   },
 
   function queryUrlAsArray() {
-    chrome.tabs.query({url: ["http://*.example.org/*"]}, pass(function(tabs) {
+    chrome.tabs.query({url: ['http://*.example.org/*']}, pass(function(tabs) {
       assertEq(1, tabs.length);
-      assertEq("http://example.org/a.html", tabs[0].url);
+      assertEq('http://example.org/a.html', tabs[0].url);
     }));
   },
 
   function queryUrlAsArray2() {
-    chrome.tabs.query({url: ["http://*.example.org/*", "*://*.google.com/*"]}, pass(function(tabs) {
+    chrome.tabs.query({url: ['http://*.example.org/*', '*://*.google.com/*']}, pass(function(tabs) {
       assertEq(2, tabs.length);
-      assertEq("http://example.org/a.html", tabs[0].url);
-      assertEq("http://www.google.com/favicon.ico", tabs[1].url);
+      assertEq('http://example.org/a.html', tabs[0].url);
+      assertEq('http://www.google.com/favicon.ico', tabs[1].url);
     }));
   },
 
   function queryStatus() {
-    chrome.tabs.query({status: "complete"}, pass(function(tabs) {
-      for (var x = 0; x < tabs.length; x++)
-        assertEq("complete", tabs[x].status);
+    chrome.tabs.query({status: 'complete'}, pass(function(tabs) {
+      for (let x = 0; x < tabs.length; x++)
+        assertEq('complete', tabs[x].status);
     }));
   },
 
   function queryWindowType() {
-    chrome.tabs.query({windowType: "normal"}, pass(function(tabs) {
+    chrome.tabs.query({windowType: 'normal'}, pass(function(tabs) {
       assertEq(4, tabs.length);
-      for (var x = 0; x < tabs.length; x++) {
+      for (let x = 0; x < tabs.length; x++) {
         chrome.windows.get(tabs[x].windowId, pass(function(win) {
-          assertTrue(win.type == "normal");
+          assertTrue(win.type == 'normal');
           assertEq(false, win.alwaysOnTop);
         }));
       }
@@ -180,7 +181,7 @@ chrome.test.runTests([
         }));
         chrome.tabs.query({windowType: 'popup'}, pass(function(tabs) {
           assertEq(2, tabs.length);
-          for (var i = 0; i < tabs.length; i++)
+          for (let i = 0; i < tabs.length; i++)
             assertFalse(tabs[i].id == chrome.tabs.TAB_ID_NONE);
         }));
         chrome.tabs.query({
@@ -188,7 +189,7 @@ chrome.test.runTests([
           url: 'about:*'
         }, pass(function(tabs) {
           assertEq(2, tabs.length);
-          for (var i = 0; i < tabs.length; i++)
+          for (let i = 0; i < tabs.length; i++)
             assertFalse(tabs[i].id == chrome.tabs.TAB_ID_NONE);
         }));
       }));
@@ -199,18 +200,18 @@ chrome.test.runTests([
     chrome.tabs.query({index: 0}, pass(function(tabs) {
       // Each of the 4 windows should have a tab at index 0.
       assertEq(4, tabs.length);
-      for (var i = 0; i < tabs.length; i++)
+      for (let i = 0; i < tabs.length; i++)
         assertEq(0, tabs[i].index);
     }));
   },
 
   function queryTitle() {
-    let title_url = chrome.runtime.getURL("query.html");
-    chrome.tabs.create({url: title_url}, pass(function() {
+    const titleUrl = chrome.runtime.getURL('query.html');
+    chrome.tabs.create({url: titleUrl}, pass(function() {
       waitForAllTabs(pass(function() {
-        chrome.tabs.query({title: "*query.html"}, pass(function(tabs) {
+        chrome.tabs.query({title: '*query.html'}, pass(function(tabs) {
           assertEq(1, tabs.length);
-          assertEq(title_url, tabs[0].title);
+          assertEq(titleUrl, tabs[0].title);
         }));
       }));
     }));

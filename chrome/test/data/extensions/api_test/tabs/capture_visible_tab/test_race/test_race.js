@@ -8,37 +8,37 @@
 // are of the expected colors).
 // browser_tests.exe --gtest_filter=ExtensionApiTest.CaptureVisibleTabRace
 
-var pass = chrome.test.callbackPass;
-var fail = chrome.test.callbackFail;
-var assertEq = chrome.test.assertEq;
-var assertTrue = chrome.test.assertTrue;
-var scriptUrl =
+const pass = chrome.test.callbackPass;
+const fail = chrome.test.callbackFail;
+const assertEq = chrome.test.assertEq;
+const assertTrue = chrome.test.assertTrue;
+const scriptUrl =
     '_test_resources/api_test/tabs/capture_visible_tab/common/tabs_util.js';
 
-var kWindowRect = {
-  'width': 400,
-  'height': 400,
+const kWindowRect = {
+  width: 400,
+  height: 400,
 };
 
 function log(message) {
-  console.log(new Date().toLocaleTimeString() + ' - ' + message);
+  console.log(`${new Date().toLocaleTimeString()} - ${message}`);
 }
 
-let loadScript = chrome.test.loadScript(scriptUrl);
+const loadScript = chrome.test.loadScript(scriptUrl);
 loadScript.then(() => {chrome.test.runTests([
 
   function captureVisibleTabRace() {
     // Simulate a callback being added to make sure that the test isn't
     // considered complete until all of the 8 windows are tested (this happens
     // in parallel, so the normal nesting of pass() calls is not sufficient).
-    var callbackCompleted = chrome.test.callbackAdded();
+    const callbackCompleted = chrome.test.callbackAdded();
 
     log('creating windows');
 
-    var windowsAndColors = [];
-    for (var i = 0; i < 8; i++) {
-      var colorName;
-      var expectedColor;
+    const windowsAndColors = [];
+    for (let i = 0; i < 8; i++) {
+      let colorName;
+      let expectedColor;
       if (i % 2) {
         colorName = 'white';
         expectedColor = '255,255,255,255';
@@ -46,12 +46,12 @@ loadScript.then(() => {chrome.test.runTests([
         colorName = 'black';
         expectedColor = '0,0,0,255';
       }
-      var url = chrome.runtime.getURL('/common/' + colorName + '.html');
+      const url = chrome.runtime.getURL(`/common/${colorName}.html`);
       createWindow(
           [url],
           kWindowRect,
           (function(expectedColor, winId, tabIds) {
-            log('created ' + winId);
+            log(`created ${winId}`);
             windowsAndColors.push([winId, expectedColor]);
           }).bind(this, expectedColor));
     }
@@ -59,22 +59,22 @@ loadScript.then(() => {chrome.test.runTests([
     waitForAllTabs(function() {
       log('capturing contents');
 
-      var testedWindowCount = 0;
+      let testedWindowCount = 0;
       windowsAndColors.forEach(function(windowIdAndExpectedColor) {
-        var windowId = windowIdAndExpectedColor[0];
-        var expectedColor = windowIdAndExpectedColor[1];
+        const windowId = windowIdAndExpectedColor[0];
+        const expectedColor = windowIdAndExpectedColor[1];
         chrome.tabs.captureVisibleTab(
             windowId,
-            {'format': 'png'},
+            {format: 'png'},
             function(imgDataUrl) {
-              log('captured ' + windowId);
+              log(`captured ${windowId}`);
               if (chrome.runtime.lastError) {
                 chrome.test.fail('captureVisibleTab error: ' +
                     chrome.runtime.lastError.message);
               }
               testPixelsAreExpectedColor(
                   imgDataUrl, kWindowRect, expectedColor);
-              log('tested pixels for ' + windowId);
+              log(`tested pixels for ${windowId}`);
               testedWindowCount++;
               if (testedWindowCount == windowsAndColors.length) {
                 log('test complete');

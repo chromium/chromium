@@ -5,23 +5,23 @@
 // API test for chrome.tabs.captureVisibleTab(), capturing JPEG images.
 // browser_tests.exe --gtest_filter=ExtensionApiTest.CaptureVisibleFile
 
-var pass = chrome.test.callbackPass;
-var fail = chrome.test.callbackFail;
-var assertEq = chrome.test.assertEq;
-var assertTrue = chrome.test.assertTrue;
-var assertFalse = chrome.test.assertFalse;
+const pass = chrome.test.callbackPass;
+const fail = chrome.test.callbackFail;
+const assertEq = chrome.test.assertEq;
+const assertTrue = chrome.test.assertTrue;
+const assertFalse = chrome.test.assertFalse;
 
-var kWindowRect = {
-  'width': 400,
-  'height': 400
+const WINDOW_RECT = {
+  width: 400,
+  height: 400
 };
 
-var fail_url = "file:///nosuch.html";
+const FAIL_URL = 'file:///nosuch.html';
 
 const scriptUrl =
     '_test_resources/api_test/tabs/capture_visible_tab/common/tabs_util.js';
 
-let loadScript = chrome.test.loadScript(scriptUrl);
+const loadScript = chrome.test.loadScript(scriptUrl);
 loadScript.then(() => {chrome.test.runTests([
   // Check that test infrastructure launched us with permissions.
   function checkAllowedAccess() {
@@ -33,7 +33,7 @@ loadScript.then(() => {chrome.test.runTests([
   // Check that we get image data back (but not the contents, which are
   // platform-specific)
   function captureVisibleFile() {
-    createWindow([fail_url], kWindowRect, pass(function(winId, tabIds) {
+    createWindow([FAIL_URL], WINDOW_RECT, pass(function(winId, tabIds) {
       waitForAllTabs(pass(function() {
         chrome.tabs.query({active: true, windowId: winId}, pass(function(tabs) {
           assertEq('complete', tabs[0].status);

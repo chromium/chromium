@@ -1,3 +1,7 @@
+// Copyright 2026 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
 // Open a window using chrome.windows.create(options),
 // and see that chrome.extension.getViews() can find all the tabs
 // in the window by searching for views with the window ID of the
@@ -9,15 +13,15 @@ function testGetNewWindowView(options, expectedViewURLs) {
 
     // Wait for tabs to load, so we can look at window.location.href.
     waitForAllTabs(pass(function() {
-      var views = chrome.extension.getViews({'windowId': win.id});
+      const views = chrome.extension.getViews({windowId: win.id});
 
       // Build a sorted array of the URLs in |views|.
-      var actualUrls = views.map(function(view) {
+      const actualUrls = views.map(function(view) {
         return view.location.href;
       }).sort();
 
       // Make the expected URLs non-relative, and sort them.
-      var expectedUrls = expectedViewURLs.map(function(url) {
+      const expectedUrls = expectedViewURLs.map(function(url) {
         return chrome.runtime.getURL(url);
       }).sort();
 

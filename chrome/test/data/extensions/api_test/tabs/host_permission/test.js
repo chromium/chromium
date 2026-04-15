@@ -5,15 +5,15 @@
 function assertNoSensitiveFields(tab) {
   ['url', 'pendingUrl', 'title', 'favIconUrl'].forEach(function(field) {
     chrome.test.assertEq(undefined, tab[field],
-                         'Sensitive property ' + field + ' is visible')
+                         `Sensitive property ${field} is visible`)
   });
 }
 
-var port;
+let port;
 
 function testUrl(domain, file) {
-    return 'http://' + domain + ':' + port +
-      '/extensions/favicon/' + file;
+    return `http://${domain}:${port}` +
+      `/extensions/favicon/${file}`;
 }
 
 function makeCallbackAfterLoaded(expectedTabId, needsFavIcon, callback) {
@@ -26,27 +26,27 @@ function makeCallbackAfterLoaded(expectedTabId, needsFavIcon, callback) {
   });
 }
 
-var pass = chrome.test.callbackPass;
+const pass = chrome.test.callbackPass;
 
 chrome.test.getConfig(function(config) {
   port = config.testServer.port;
 
-  const HAS_PERMISSION_URL = testUrl('a.com', 'test_file.html');
-  const NO_PERMISSION_URL = testUrl('b.com', 'test_file.html');
-  const FAV_ICON_URL = testUrl('a.com', 'favicon.ico');
+  const hasPermissionUrl = testUrl('a.com', 'test_file.html');
+  const noPermissionUrl = testUrl('b.com', 'test_file.html');
+  const favIconUrl = testUrl('a.com', 'favicon.ico');
 
   chrome.test.runTests([
     function testSimpleCreateWithHostPermission() {
-      chrome.tabs.create({url: HAS_PERMISSION_URL}, function (tab) {
-        chrome.test.assertEq(HAS_PERMISSION_URL, tab.pendingUrl);
+      chrome.tabs.create({url: hasPermissionUrl}, function (tab) {
+        chrome.test.assertEq(hasPermissionUrl, tab.pendingUrl);
         chrome.test.assertEq(undefined, tab.url);
 
         makeCallbackAfterLoaded(tab.id, true, function() {
           chrome.tabs.get(tab.id, function(tab) {
             chrome.test.assertEq(undefined, tab.pendingUrl);
-            chrome.test.assertEq(HAS_PERMISSION_URL, tab.url);
+            chrome.test.assertEq(hasPermissionUrl, tab.url);
             chrome.test.assertEq('Title', tab.title);
-            chrome.test.assertEq(FAV_ICON_URL, tab.favIconUrl);
+            chrome.test.assertEq(favIconUrl, tab.favIconUrl);
             chrome.test.succeed();
           });
         });
@@ -56,8 +56,8 @@ chrome.test.getConfig(function(config) {
     function testUpdateToAndFromHostPermissions() {
       // On creation of a page we have host permissions to, we should be able to
       // see the pendingUrl, but no other sensitive properties.
-      var assertPropertiesOnCreated = function(tab) {
-        chrome.test.assertEq(HAS_PERMISSION_URL, tab.pendingUrl);
+      const assertPropertiesOnCreated = function(tab) {
+        chrome.test.assertEq(hasPermissionUrl, tab.pendingUrl);
         chrome.test.assertEq(undefined, tab.url);
         chrome.test.assertEq(undefined, tab.title);
         chrome.test.assertEq(undefined, tab.favIconUrl);
@@ -65,17 +65,17 @@ chrome.test.getConfig(function(config) {
       // Updating away from a page we have host permissions to, we shouldn't
       // get the pendingUrl, but we will still be on the context of the previous
       // page at the time of callback, so will get that info still.
-      var assertPropertiesOnUpdatingAwayFromPermission = function(tab) {
+      const assertPropertiesOnUpdatingAwayFromPermission = function(tab) {
         chrome.test.assertEq(undefined, tab.pendingUrl);
-        chrome.test.assertEq(HAS_PERMISSION_URL, tab.url);
+        chrome.test.assertEq(hasPermissionUrl, tab.url);
         chrome.test.assertEq('Title', tab.title);
-        chrome.test.assertEq(FAV_ICON_URL, tab.favIconUrl);
+        chrome.test.assertEq(favIconUrl, tab.favIconUrl);
       };
       // Updating from a page we do not have host permissions to, to a page we
       // do have host permissions to, we should see the pendingUrl, but none of
       // the previous page details.
-      var assertPropertiesOnUpdatingBackToPermission = function(tab) {
-        chrome.test.assertEq(HAS_PERMISSION_URL, tab.pendingUrl);
+      const assertPropertiesOnUpdatingBackToPermission = function(tab) {
+        chrome.test.assertEq(hasPermissionUrl, tab.pendingUrl);
         chrome.test.assertEq(undefined, tab.url);
         chrome.test.assertEq(undefined, tab.title);
         chrome.test.assertEq(undefined, tab.favIconUrl);
@@ -83,13 +83,13 @@ chrome.test.getConfig(function(config) {
 
       // These checks each rely on the previous navigation having completed, to
       // check for the correct values for favIconUrl, title and url.
-      chrome.tabs.create({url: HAS_PERMISSION_URL}, function(tab) {
+      chrome.tabs.create({url: hasPermissionUrl}, function(tab) {
         assertPropertiesOnCreated(tab);
         makeCallbackAfterLoaded(tab.id, true, function() {
-          chrome.tabs.update({url: NO_PERMISSION_URL}, function(tab) {
+          chrome.tabs.update({url: noPermissionUrl}, function(tab) {
             assertPropertiesOnUpdatingAwayFromPermission(tab);
             makeCallbackAfterLoaded(tab.id, false, function() {
-              chrome.tabs.update({url: HAS_PERMISSION_URL}, function(tab) {
+              chrome.tabs.update({url: hasPermissionUrl}, function(tab) {
                 assertPropertiesOnUpdatingBackToPermission(tab);
                 chrome.test.succeed();
               });
@@ -100,15 +100,15 @@ chrome.test.getConfig(function(config) {
     },
 
     function testOnUpdatedRevealsNoSensitiveFieldsWithNoHostPermission() {
-      var getCurrentTabs = new Promise(function(resolve) {
+      const getCurrentTabs = function(resolve) {
         chrome.tabs.query({}, (tabs) => {
           resolve(tabs);
         });
       });
 
       getCurrentTabs.then((existingTabs) => {
-        var neededCallbacks = 2;
-        var existingTabIds = existingTabs.map(tab => tab.id);
+        let neededCallbacks = 2;
+        const existingTabIds = existingTabs.map(tab => tab.id);
         chrome.tabs.onUpdated.addListener(function _listener(tabId, info, tab) {
           if (existingTabIds.includes(tabId))
             return; // Ignore tabs that were already around.

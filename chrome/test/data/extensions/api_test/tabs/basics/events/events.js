@@ -2,15 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-var testTabId;
-var otherTabId;
-var firstWindowId;
-var secondWindowId;
+let testTabId;
+let otherTabId;
+let firstWindowId;
+let secondWindowId;
 
 const manifest = chrome.runtime.getManifest();
 
-const scriptUrl = '_test_resources/api_test/tabs/basics/tabs_util.js';
-let loadScript = chrome.test.loadScript(scriptUrl);
+const SCRIPT_URL = '_test_resources/api_test/tabs/basics/tabs_util.js';
+const loadScript = chrome.test.loadScript(SCRIPT_URL);
 
 loadScript.then(async function() {
 chrome.test.runTests([
@@ -23,31 +23,31 @@ chrome.test.runTests([
 
   function tabsOnCreated() {
     chrome.test.listenOnce(chrome.tabs.onCreated, function(tab) {
-      assertEq(pageUrl("f"), tab.pendingUrl || tab.url);
+      assertEq(pageUrl('f'), tab.pendingUrl || tab.url);
       otherTabId = tab.id;
       assertEq(true, tab.selected);
     });
 
-    chrome.tabs.create({"windowId": firstWindowId, "url": pageUrl("f"),
-                        "selected": true}, pass(function(tab) {}));
+    chrome.tabs.create({windowId: firstWindowId, url: pageUrl('f'),
+                        selected: true}, pass(function(tab) {}));
   },
 
   function tabsOnUpdatedIgnoreTabArg() {
     // A third argument was added to the onUpdated event callback.
     // Test that an event handler which ignores this argument works.
-    var onUpdatedCompleted = chrome.test.listenForever(chrome.tabs.onUpdated,
+    const onUpdatedCompleted = chrome.test.listenForever(chrome.tabs.onUpdated,
       function(tabid, changeInfo) {
-        if (tabid == otherTabId && changeInfo.status == "complete") {
+        if (tabid == otherTabId && changeInfo.status == 'complete') {
           onUpdatedCompleted();
         }
       }
     );
 
-    chrome.tabs.update(otherTabId, {"url": pageUrl("f")}, pass());
+    chrome.tabs.update(otherTabId, {url: pageUrl('f')}, pass());
   },
 
   function tabsOnUpdated() {
-    var onUpdatedCompleted = chrome.test.listenForever(
+    const onUpdatedCompleted = chrome.test.listenForever(
       chrome.tabs.onUpdated,
       function(tabid, changeInfo, tab) {
         // |tab| contains the id of the tab it describes.
@@ -60,13 +60,13 @@ chrome.test.runTests([
           assertEq(changeInfo.status, tab.status);
         }
 
-        if (tabid == otherTabId && changeInfo.status == "complete") {
+        if (tabid == otherTabId && changeInfo.status == 'complete') {
           onUpdatedCompleted();
         }
       }
     );
 
-    chrome.tabs.update(otherTabId, {"url": pageUrl("f")}, pass());
+    chrome.tabs.update(otherTabId, {url: pageUrl('f')}, pass());
   },
 
   function tabsOnMoved() {
@@ -74,7 +74,7 @@ chrome.test.runTests([
       assertEq(otherTabId, tabid);
     });
 
-    chrome.tabs.move(otherTabId, {"index": 0}, pass());
+    chrome.tabs.move(otherTabId, {index: 0}, pass());
   },
 
   function tabsOnSelectionChanged() {
@@ -91,7 +91,7 @@ chrome.test.runTests([
       }
     );
 
-    chrome.tabs.update(testTabId, {"selected": true}, pass());
+    chrome.tabs.update(testTabId, {selected: true}, pass());
   },
 
   function tabsOnActiveChanged() {
@@ -108,7 +108,7 @@ chrome.test.runTests([
       }
     );
 
-    chrome.tabs.update(otherTabId, {"active": true}, pass());
+    chrome.tabs.update(otherTabId, {active: true}, pass());
   },
 
   function tabsOnActivated() {
@@ -119,11 +119,11 @@ chrome.test.runTests([
       }
     );
 
-    chrome.tabs.update(testTabId, {"active": true}, pass());
+    chrome.tabs.update(testTabId, {active: true}, pass());
   },
 
   function setupTabsOnAttachDetach() {
-    createWindow([pageUrl("a")], {}, pass(function(winId, tabIds) {
+    createWindow([pageUrl('a')], {}, pass(function(winId, tabIds) {
       secondWindowId = winId;
     }));
   },
@@ -145,9 +145,9 @@ chrome.test.runTests([
     // Move tab to second window, then back to first.
     // The original tab/window configuration should be restored.
     // tabsOnDetached() depends on it.
-    moveAndListen(testTabId, {"windowId": secondWindowId, "index": 0},
+    moveAndListen(testTabId, {windowId: secondWindowId, index: 0},
                   pass(function() {
-      moveAndListen(testTabId, {"windowId": firstWindowId, "index": 1});
+      moveAndListen(testTabId, {windowId: firstWindowId, index: 1});
     }));
   },
 
@@ -168,9 +168,9 @@ chrome.test.runTests([
 
     // Move tab to second window, then back to first.
     moveAndListen(testTabId, firstWindowId, 1,
-                  {"windowId": secondWindowId, "index": 0}, pass(function() {
+                  {windowId: secondWindowId, index: 0}, pass(function() {
       moveAndListen(testTabId, secondWindowId, 0,
-                    {"windowId": firstWindowId, "index": 1});
+                    {windowId: firstWindowId, index: 1});
                   }));
   },
 
@@ -182,8 +182,8 @@ chrome.test.runTests([
             assertEq(testTabId, zoomChangeInfo.tabId);
             assertEq(1, zoomChangeInfo.oldZoomFactor);
             assertEq(3.14159, +zoomChangeInfo.newZoomFactor.toFixed(5));
-            assertEq("automatic", zoomChangeInfo.zoomSettings.mode);
-            assertEq("per-origin", zoomChangeInfo.zoomSettings.scope);
+            assertEq('automatic', zoomChangeInfo.zoomSettings.mode);
+            assertEq('per-origin', zoomChangeInfo.zoomSettings.scope);
           });
 
       chrome.tabs.setZoom(testTabId, 3.14159);
@@ -194,15 +194,15 @@ chrome.test.runTests([
     chrome.test.listenOnce(chrome.windows.onCreated, function(window) {
       assertTrue(window.width > 0);
       assertTrue(window.height > 0);
-      assertEq("normal", window.type);
+      assertEq('normal', window.type);
       assertTrue(!window.incognito);
       windowEventsWindow = window;
       chrome.tabs.query({windowId:window.id}, pass(function(tabs) {
-        assertEq(pageUrl("a"), tabs[0].pendingUrl || tabs[0].url);
+        assertEq(pageUrl('a'), tabs[0].pendingUrl || tabs[0].url);
       }));
     });
 
-    chrome.windows.create({"url": pageUrl("a")}, pass(function(tab) {}));
+    chrome.windows.create({url: pageUrl('a')}, pass(function(tab) {}));
   },
 
   /*

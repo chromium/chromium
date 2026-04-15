@@ -5,23 +5,23 @@
 // browser_tests --gtest_filter=ExtensionApiTest.TabConnect
 
 // The test tab used for all tests.
-var testTab = null;
+const testTab = null;
 
 // Path to the empty HTML document, fetched from the test configuration.
-var emptyDocumentURL = null;
+const emptyDocumentURL = null;
 
 // The could-not-establish-connection error message. Used in a number of tests.
-var couldNotEstablishError =
+const couldNotEstablishError =
     'Could not establish connection. Receiving end does not exist.';
 
-var assertEq = chrome.test.assertEq;
-var assertFalse = chrome.test.assertFalse;
-var assertTrue = chrome.test.assertTrue;
-var callbackFail = chrome.test.callbackFail;
-var fail = chrome.test.fail;
-var listenForever = chrome.test.listenForever;
-var listenOnce = chrome.test.listenOnce;
-var pass = chrome.test.callbackPass;
+const assertEq = chrome.test.assertEq;
+const assertFalse = chrome.test.assertFalse;
+const assertTrue = chrome.test.assertTrue;
+const callbackFail = chrome.test.callbackFail;
+const fail = chrome.test.fail;
+const listenForever = chrome.test.listenForever;
+const listenOnce = chrome.test.listenOnce;
+const pass = chrome.test.callbackPass;
 
 // Removes current windows and creates one window with tabs set to
 // the urls in the array |tabUrls|. At least one url must be specified.
@@ -29,9 +29,9 @@ var pass = chrome.test.callbackPass;
 function setupWindow(tabUrls, callback) {
   createWindow(tabUrls, {}, function(winId, tabIds) {
     // Remove all other windows.
-    var removedCount = 0;
+    let removedCount = 0;
     chrome.windows.getAll({}, function(windows) {
-      for (var i in windows) {
+      for (let i in windows) {
         if (windows[i].id != winId) {
           chrome.windows.remove(windows[i].id, function() {
             removedCount++;
@@ -50,13 +50,13 @@ function setupWindow(tabUrls, callback) {
 // At least one url must be specified.
 // The |callback| should look like function(windowId, tabIds) {...}.
 function createWindow(tabUrls, winOptions, callback) {
-  winOptions["url"] = tabUrls;
+  winOptions['url'] = tabUrls;
   chrome.windows.create(winOptions, function(win) {
-    var newTabIds = [];
+    const newTabIds = [];
     assertTrue(win.id > 0);
     assertEq(tabUrls.length, win.tabs.length);
 
-    for (var i = 0; i < win.tabs.length; i++)
+    for (let i = 0; i < win.tabs.length; i++)
       newTabIds.push(win.tabs[i].id);
 
     callback(win.id, newTabIds);
@@ -73,7 +73,7 @@ function waitForReady(ready) {
 chrome.test.runTests([
   function setup() {
     chrome.test.getConfig(pass(function(config) {
-      emptyDocumentURL = 'http://localhost:' + config.testServer.port +
+      emptyDocumentURL = `http://localhost:${config.testServer.port}` +
                          '/extensions/api_test/tabs/connect/empty.html';
       setupWindow([emptyDocumentURL], pass());
       waitForReady(pass(function(tab) {
@@ -83,9 +83,9 @@ chrome.test.runTests([
   },
 
   function connectMultipleConnects() {
-    var connectCount = 0;
+    let connectCount = 0;
     function connect10() {
-      var port = chrome.tabs.connect(testTab.id);
+      const port = chrome.tabs.connect(testTab.id);
       listenOnce(port.onMessage, function(msg) {
         assertEq(++connectCount, msg.connections);
         if (connectCount < 10)
@@ -97,12 +97,12 @@ chrome.test.runTests([
   },
 
   function connectName() {
-    var name = 'akln3901n12la';
-    var port = chrome.tabs.connect(testTab.id, {'name': name});
+    const name = 'akln3901n12la';
+    const port = chrome.tabs.connect(testTab.id, {name: name});
     listenOnce(port.onMessage, function(msg) {
       assertEq(name, msg.name);
 
-      var port = chrome.tabs.connect(testTab.id);
+      const port = chrome.tabs.connect(testTab.id);
       listenOnce(port.onMessage, function(msg) {
         assertEq('', msg.name);
       });
@@ -112,10 +112,10 @@ chrome.test.runTests([
   },
 
   function connectPostMessageTypes() {
-    var port = chrome.tabs.connect(testTab.id);
+    const port = chrome.tabs.connect(testTab.id);
     // Test the content script echoes the message back.
-    var echoMsg = {'num': 10, 'string': 'hi', 'array': [1,2,3,4,5],
-                   'obj':{'dec': 1.0}};
+    const echoMsg = {num: 10, string: 'hi', array: [1,2,3,4,5],
+                   obj:{dec: 1.0}};
     listenOnce(port.onMessage, function(msg) {
       assertEq(echoMsg.num, msg.num);
       assertEq(echoMsg.string, msg.string);
@@ -126,15 +126,15 @@ chrome.test.runTests([
   },
 
   function connectPostManyMessages() {
-    var port = chrome.tabs.connect(testTab.id);
-    var count = 0;
-    var done = listenForever(port.onMessage, function(msg) {
+    const port = chrome.tabs.connect(testTab.id);
+    let count = 0;
+    const done = function(msg) {
       assertEq(count++, msg);
       if (count == 100) {
         done();
       }
     });
-    for (var i = 0; i < 100; i++) {
+    for (let i = 0; i < 100; i++) {
       port.postMessage(i);
     }
   },
@@ -144,7 +144,7 @@ chrome.test.runTests([
     // once disconnected, expect an error while trying to post messages.
     chrome.tabs.create({}, pass(function(tab) {
       chrome.tabs.remove(tab.id, pass(function() {
-        var p = chrome.tabs.connect(tab.id);
+        const p = chrome.tabs.connect(tab.id);
         p.onDisconnect.addListener(callbackFail(couldNotEstablishError,
                                                 function() {
           try {
@@ -159,7 +159,7 @@ chrome.test.runTests([
   },
 
   function sendRequest() {
-    var request = 'test';
+    const request = 'test';
     chrome.tabs.sendRequest(testTab.id, request, pass(function(response) {
       assertEq(request, response);
     }));
@@ -187,9 +187,9 @@ chrome.test.runTests([
     // chrome.tabs.create doesn't guarantee that.
     chrome.tabs.sendMessage(testTab.id, {open: emptyDocumentURL});
     waitForReady(pass(function(secondTab) {
-      var gotDuplicates = false;
-      var messages = new Set();
-      var done = listenForever(chrome.runtime.onMessage, function(msg) {
+      const gotDuplicates = false;
+      const messages = new Set();
+      const done = function(msg) {
         if (messages.has(msg))
           gotDuplicates = true;
         else

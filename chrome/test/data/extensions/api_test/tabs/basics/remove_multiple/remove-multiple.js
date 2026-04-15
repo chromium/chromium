@@ -2,18 +2,18 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-var firstTabId;
-var secondTabId;
-var thirdTabId;
-var fourthTabId;
+let firstTabId;
+let secondTabId;
+let thirdTabId;
+let fourthTabId;
 
 function resolveOnStorageChanged(key, resolve) {
   chrome.storage.local.onChanged.addListener(function local(changes,
                                                             areaName) {
-    let change = changes[key];
+    const change = changes[key];
     if (change == undefined)
       return;
-    assertEq({'newValue': 'yes'}, change)
+    assertEq({newValue: 'yes'}, change)
     chrome.storage.local.onChanged.removeListener(local);
     resolve();
   });
@@ -22,7 +22,7 @@ function resolveOnStorageChanged(key, resolve) {
 function createTab(createParams) {
   return new Promise((resolve) => {
     chrome.tabs.create(createParams, (tab) => {
-      var createdTabId = tab.id;
+      const createdTabId = tab.id;
       chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
         // Wait for the tab to finish loading.
         if (tabId == createdTabId && changeInfo.status == 'complete') {
@@ -33,8 +33,8 @@ function createTab(createParams) {
   });
 }
 
-const scriptUrl = '_test_resources/api_test/tabs/basics/tabs_util.js';
-let loadScript = chrome.test.loadScript(scriptUrl);
+const SCRIPT_URL = '_test_resources/api_test/tabs/basics/tabs_util.js';
+const loadScript = chrome.test.loadScript(SCRIPT_URL);
 
 loadScript.then(async function() {
 chrome.test.runTests([
@@ -72,12 +72,12 @@ chrome.test.runTests([
       });
   },
   function removeCreatedTabs() {
-    let onStorageChangedPromise1 =
+    const onStorageChangedPromise1 =
         new Promise(resolveOnStorageChanged.bind(this, 'did_run_unload_1'));
-    let onStorageChangedPromise2 =
+    const onStorageChangedPromise2 =
         new Promise(resolveOnStorageChanged.bind(this, 'did_run_unload_2'));
 
-    let removePromise = new Promise((resolve) => {
+    const removePromise = new Promise((resolve) => {
       chrome.tabs.remove([secondTabId, thirdTabId, fourthTabId], () => {
         chrome.tabs.query({ windowId: chrome.windows.WINDOW_ID_CURRENT },
           (tabs) => {

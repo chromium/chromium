@@ -141,7 +141,7 @@ const tests = [
         }));
 
     chrome.management.getAll(callback(function(items) {
-      let extension = getItemNamed(items, 'Extension Management API Test');
+      const extension = getItemNamed(items, 'Extension Management API Test');
       chrome.management.getPermissionWarningsById(extension.id,
                                                   callback(function(warnings) {
         chrome.test.assertEq(1, warnings.length);
@@ -205,8 +205,8 @@ const tests = [
   }
 ];
 
-const scriptUrl = '_test_resources/api_test/management/common.js';
-const loadScript = chrome.test.loadScript(scriptUrl);
+const SCRIPT_URL = '_test_resources/api_test/management/common.js';
+const loadScript = chrome.test.loadScript(SCRIPT_URL);
 
 loadScript.then(async function() {
   chrome.test.runTests(tests);

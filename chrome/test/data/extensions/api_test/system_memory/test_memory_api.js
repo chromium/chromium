@@ -7,7 +7,7 @@
 
 chrome.test.runTests([
   function testGet() {
-    for(var i = 0; i < 10; ++i) {
+    for(let i = 0; i < 10; ++i) {
       chrome.system.memory.getInfo(chrome.test.callbackPass(function(result) {
         chrome.test.assertEq(4096, result.capacity);
         chrome.test.assertEq(1024, result.availableCapacity);

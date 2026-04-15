@@ -26,7 +26,7 @@ chrome.test.runTests([
     // Create a group and then ungroup it, then try to get the group.
     const tab = await chrome.tabs.create({});
     const groupId = await chrome.tabs.group({tabIds: tab.id});
-    let tabGroup = await chrome.tabGroups.get(groupId);
+    const tabGroup = await chrome.tabGroups.get(groupId);
     chrome.test.assertNoLastError();
     chrome.test.assertNe(0, tabGroup.id);
 

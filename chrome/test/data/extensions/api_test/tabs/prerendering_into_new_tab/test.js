@@ -138,11 +138,11 @@ async function testOnAttachedWithoutActivation() {
                 chrome.test.assertNe(windowId, -1);
                 chrome.test.assertNe(secondWindowId, -1);
                 chrome.tabs.move(
-                    prerenderingTabId, {'windowId': secondWindowId, 'index': 0},
+                    prerenderingTabId, {windowId: secondWindowId, index: 0},
                     function() {
                       chrome.test.assertEq(
                           chrome.runtime.lastError.message,
-                          'No tab with id: ' + prerenderingTabId + '.');
+                          `No tab with id: ${prerenderingTabId}.`);
                     });
               }));
         }));
@@ -157,7 +157,7 @@ async function testOnAttachedAfterActivation() {
   const activationCallback = details => {
     if (details.documentLifecycle === 'prerender') {
       chrome.tabs.executeScript(tabId, {
-        code: `document.getElementById(\'link\').click();`,
+        code: `document.getElementById('link').click();`,
         runAt: 'document_idle'
       });
 
@@ -183,7 +183,7 @@ async function testOnAttachedAfterActivation() {
                              chrome.test.assertNe(secondWindowId, -1);
                              chrome.tabs.move(
                                  prerenderingTabId,
-                                 {'windowId': secondWindowId, 'index': 0},
+                                 {windowId: secondWindowId, index: 0},
                                  function() {});
                            }));
             }));

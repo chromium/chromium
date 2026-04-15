@@ -5,28 +5,28 @@
 // API test for chrome.tabs.captureVisibleTab(), capturing PNG images.
 // browser_tests.exe --gtest_filter=ExtensionApiTest.CaptureVisibleTabPng
 
-var pass = chrome.test.callbackPass;
-var fail = chrome.test.callbackFail;
-var assertEq = chrome.test.assertEq;
-var assertTrue = chrome.test.assertTrue;
+const pass = chrome.test.callbackPass;
+const fail = chrome.test.callbackFail;
+const assertEq = chrome.test.assertEq;
+const assertTrue = chrome.test.assertTrue;
 
-var kWindowRect = {
-  'width': 400,
-  'height': 400
+const WINDOW_RECT = {
+  width: 400,
+  height: 400
 };
 
-var kTestDir = '/extensions/api_test/tabs/capture_visible_tab/test_png/';
-var kURLBaseA = 'http://a.com:PORT' + kTestDir;
+const TEST_DIR = '/extensions/api_test/tabs/capture_visible_tab/test_png/';
+const URL_BASE_A = `http://a.com:PORT${TEST_DIR}`;
 
-var whiteImageUrl;
-var textImageUrl;
+let whiteImageUrl;
+let textImageUrl;
 
-var scriptUrl =
+const scriptUrl =
     '_test_resources/api_test/tabs/capture_visible_tab/common/tabs_util.js';
-let loadScript = chrome.test.loadScript(scriptUrl);
+const loadScript = chrome.test.loadScript(scriptUrl);
 loadScript.then(() => {
   chrome.test.getConfig(function(config) {
-    var fixPort = function(url) {
+    const fixPort = function(url) {
       return url.replace(/PORT/, config.testServer.port);
     };
 
@@ -35,7 +35,7 @@ loadScript.then(() => {
       function captureVisibleTabWhiteImage() {
         // Keep the resulting image small by making the window small.
         createWindow(
-            [fixPort(kURLBaseA + 'white.html')], kWindowRect,
+            [fixPort(`${URL_BASE_A}white.html`)], WINDOW_RECT,
             pass(function(winId, tabIds) {
               waitForAllTabs(pass(function() {
                 chrome.tabs.query(
@@ -43,7 +43,7 @@ loadScript.then(() => {
                       // waitForAllTabs ensures this.
                       assertEq('complete', tabs[0].status);
                       chrome.tabs.captureVisibleTab(
-                          winId, {'format': 'png'}, pass(function(imgDataUrl) {
+                          winId, {format: 'png'}, pass(function(imgDataUrl) {
                             // The URL should be a data URL with has a PNG mime
                             // type.
                             assertIsStringWithPrefix(
@@ -51,7 +51,7 @@ loadScript.then(() => {
                             whiteImageUrl = imgDataUrl;
 
                             testPixelsAreExpectedColor(
-                                whiteImageUrl, kWindowRect,
+                                whiteImageUrl, WINDOW_RECT,
                                 '255,255,255,255');  // White.
                           }));
                     }));
@@ -62,7 +62,7 @@ loadScript.then(() => {
       function captureVisibleTabText() {
         // Keep the resulting image small by making the window small.
         createWindow(
-            [fixPort(kURLBaseA + 'text.html')], kWindowRect,
+            [fixPort(`${URL_BASE_A}text.html`)], WINDOW_RECT,
             pass(function(winId, tabIds) {
               waitForAllTabs(pass(function() {
                 chrome.tabs.query(
@@ -70,7 +70,7 @@ loadScript.then(() => {
                       // waitForAllTabs ensures this.
                       assertEq('complete', tabs[0].status);
                       chrome.tabs.captureVisibleTab(
-                          winId, {'format': 'png'}, pass(function(imgDataUrl) {
+                          winId, {format: 'png'}, pass(function(imgDataUrl) {
                             // The URL should be a data URL with has a PNG mime
                             // type.
                             assertIsStringWithPrefix(
@@ -80,7 +80,7 @@ loadScript.then(() => {
                             assertTrue(whiteImageUrl != textImageUrl);
 
                             countPixelsWithColors(
-                                imgDataUrl, kWindowRect, ['255,255,255,255'],
+                                imgDataUrl, WINDOW_RECT, ['255,255,255,255'],
                                 pass(function(colorCounts, totalPixelsChecked) {
                                   // Some pixels should not be white, because
                                   // the text is not white.  Can't test for
@@ -107,22 +107,22 @@ loadScript.then(() => {
       },
 
       function captureVisibleTabChromeExtensionScheme() {
-        var url = chrome.runtime.getURL('/white.html');
+        const url = chrome.runtime.getURL('/white.html');
         createWindow(
-            [url], kWindowRect, pass(function(winId, tabIds) {
+            [url], WINDOW_RECT, pass(function(winId, tabIds) {
               waitForAllTabs(pass(function() {
                 chrome.tabs.query(
                     {active: true, windowId: winId}, pass(function(tabs) {
                       // waitForAllTabs ensures this.
                       assertEq('complete', tabs[0].status);
                       chrome.tabs.captureVisibleTab(
-                          winId, {'format': 'png'}, pass(function(imgDataUrl) {
+                          winId, {format: 'png'}, pass(function(imgDataUrl) {
                             // The URL should be a data URL with has a PNG mime
                             // type.
                             assertIsStringWithPrefix(
                                 'data:image/png;base64,', imgDataUrl);
                             testPixelsAreExpectedColor(
-                                imgDataUrl, kWindowRect,
+                                imgDataUrl, WINDOW_RECT,
                                 '255,255,255,255');  // White.
                           }));
                     }));
@@ -133,9 +133,9 @@ loadScript.then(() => {
       // Test that capturing with a rect captures only the specified region.
       // It captures a region of text.html that is known to be only white.
       function captureVisibleTabWithRect() {
-        const kCaptureRect = {'x': 100, 'y': 100, 'width': 50, 'height': 50};
+        const captureRect = {x: 100, y: 100, width: 50, height: 50};
         createWindow(
-            [fixPort(kURLBaseA + 'text.html')], kWindowRect,
+            [fixPort(`${URL_BASE_A}text.html`)], WINDOW_RECT,
             pass(function(winId, tabIds) {
               waitForAllTabs(pass(function() {
                 chrome.tabs.query(
@@ -152,7 +152,7 @@ loadScript.then(() => {
                                 parseFloat(devicePixelRatioStr);
 
                             chrome.tabs.captureVisibleTab(
-                                winId, {'format': 'png', 'rect': kCaptureRect},
+                                winId, {format: 'png', rect: captureRect},
                                 pass(function(imgDataUrl) {
                                   assertIsStringWithPrefix(
                                       'data:image/png;base64,', imgDataUrl);
@@ -160,11 +160,11 @@ loadScript.then(() => {
                                   // all white.
                                   testPixelsAreExpectedColor(
                                       imgDataUrl, {
-                                        'width': Math.ceil(
-                                            kCaptureRect.width *
+                                        width: Math.ceil(
+                                            captureRect.width *
                                             devicePixelRatio),
-                                        'height': Math.ceil(
-                                            kCaptureRect.height *
+                                        height: Math.ceil(
+                                            captureRect.height *
                                             devicePixelRatio)
                                       },
                                       '255,255,255,255');  // White.
@@ -179,7 +179,7 @@ loadScript.then(() => {
         const rect = {x: 10, y: 20, width: 80, height: 60};
         const scale = 2.0;
         createWindow(
-            [fixPort(kURLBaseA + 'text.html')], kWindowRect,
+            [fixPort(`${URL_BASE_A}text.html`)], WINDOW_RECT,
             pass(function(winId, tabIds) {
               waitForAllTabs(pass(function() {
                 chrome.tabs.query(
@@ -198,8 +198,8 @@ loadScript.then(() => {
                             // all white.
                             testPixelsAreExpectedColor(
                                 imgDataUrl, {
-                                  'width': Math.ceil(rect.width * scale),
-                                  'height': Math.ceil(rect.height * scale)
+                                  width: Math.ceil(rect.width * scale),
+                                  height: Math.ceil(rect.height * scale)
                                 },
                                 '255,255,255,255');  // White.
                           }));
@@ -212,7 +212,7 @@ loadScript.then(() => {
         const rect = {x: 10, y: 20, width: 80, height: 60};
         const scale = 2000000000;
         createWindow(
-            [fixPort(kURLBaseA + 'white.html')], kWindowRect,
+            [fixPort(`${URL_BASE_A}white.html`)], WINDOW_RECT,
             pass(function(winId, tabIds) {
               waitForAllTabs(pass(function() {
                 chrome.tabs.query(
@@ -243,20 +243,19 @@ loadScript.then(() => {
                                       .then(pass(imageBitmap => {
                                         assertEq(
                                             Math.ceil(
-                                                kWindowRect.width *
+                                                WINDOW_RECT.width *
                                                 devicePixelRatio),
                                             imageBitmap.width,
                                             'Image width should match window width');
                                         assertEq(
                                             Math.ceil(
-                                                kWindowRect.height *
+                                                WINDOW_RECT.height *
                                                 devicePixelRatio),
                                             imageBitmap.height,
                                             'Image height should match window height');
                                       }))
                                       .catch(fail(e => {
-                                        return 'Checking image dimensions failed: ' +
-                                            e;
+                                        return `Checking image dimensions failed: ${e}`;
                                       }));
                                 });
                           }));

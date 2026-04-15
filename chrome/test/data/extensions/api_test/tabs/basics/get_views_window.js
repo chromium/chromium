@@ -4,26 +4,26 @@
 
 chrome.test.runTests([
   function canGetViewsOfEmptyWindow() {
-    testGetNewWindowView({type: "normal"}, []);
+    testGetNewWindowView({type: 'normal'}, []);
   },
 
   function canGetViewsOfWindowWithUrl() {
-    var URLS = ["a.html"];
-    testGetNewWindowView({type: "normal", url: URLS}, URLS);
+    const urls = ['a.html'];
+    testGetNewWindowView({type: 'normal', url: urls}, urls);
   },
 
   function canGetViewsOfWindowWithManyUrls() {
-    var URLS = ["a.html", "b.html", "c.html"];
-    testGetNewWindowView({type: "normal", url: URLS}, URLS);
+    const urls = ['a.html', 'b.html', 'c.html'];
+    testGetNewWindowView({type: 'normal', url: urls}, urls);
   },
 
   function canGetViewsOfDetatchedTab() {
     // Start with a window holding two tabs.
-    chrome.windows.create({"url": ["a.html", "b.html"]}, function(win) {
+    chrome.windows.create({url: ['a.html', 'b.html']}, function(win) {
       // Detatch the first tab.  See that the tab is findable with the new
       // window ID.
       testGetNewWindowView(
-          {type: "normal", tabId: win.tabs[0].id}, ["a.html"]);
+          {type: 'normal', tabId: win.tabs[0].id}, ['a.html']);
     });
   }
 ]);

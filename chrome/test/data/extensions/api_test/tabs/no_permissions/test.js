@@ -5,15 +5,14 @@
 function assertNoSensitiveFields(tab) {
   ['url', 'pendingUrl', 'title', 'favIconUrl'].forEach(function(field) {
     chrome.test.assertEq(undefined, tab[field],
-                         'Sensitive property ' + field + ' is visible')
+                         `Sensitive property ${field} is visible`)
   });
 }
 
-var port;
+let port;
 
 function testUrl(domain) {
-    return 'http://' + domain + ':' + port +
-      '/extensions/test_file.html';
+    return `http://${domain}:${port}/extensions/test_file.html`;
 }
 
 chrome.test.getConfig(function(config) {
@@ -21,8 +20,8 @@ chrome.test.getConfig(function(config) {
   chrome.test.runTests([
     function testOnUpdated() {
       // two onUpdateListener calls, one create callback
-      var neededCallbacks = 3;
-      var countDown = function() {
+      let neededCallbacks = 3;
+      const countDown = function() {
         neededCallbacks--;
         if (neededCallbacks == 0) {
           chrome.tabs.onUpdated.removeListener(onUpdateListener);
@@ -30,7 +29,7 @@ chrome.test.getConfig(function(config) {
         }
       };
 
-      var onUpdateListener = function(tabId, info, tab) {
+      const onUpdateListener = function(tabId, info, tab) {
         assertNoSensitiveFields(info);
         assertNoSensitiveFields(tab);
         countDown();

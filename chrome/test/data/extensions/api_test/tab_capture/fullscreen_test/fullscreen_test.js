@@ -10,20 +10,20 @@ window.addEventListener('load', function() {
       else if (document.webkitExitFullscreen)
         document.webkitExitFullscreen();
       else
-        chrome.test.assertTrue(!"HTML5 Fullscreen API missing");
+        chrome.test.assertTrue(!'HTML5 Fullscreen API missing');
     } else {
       if (document.body.requestFullscreen)
         document.body.requestFullscreen();
       else if (document.body.webkitRequestFullscreen)
         document.body.webkitRequestFullscreen();
       else
-        chrome.test.assertTrue(!"HTML5 Fullscreen API missing");
+        chrome.test.assertTrue(!'HTML5 Fullscreen API missing');
     }
   };
 });
 
-var mediaStream = null;
-var events = [];
+let mediaStream = null;
+const events = [];
 
 chrome.tabCapture.onStatusChanged.addListener(function(info) {
   if (info.status == 'active') {

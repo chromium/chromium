@@ -2,20 +2,20 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-var newTabUrls = [
+const newTabUrls = [
   'chrome://newtab/',
   'chrome-native://newtab/',
 ];
 
-var firstWindowId;
-var secondWindowId;
-var thirdWindowId;
-var testTabId;
+let firstWindowId;
+let secondWindowId;
+let thirdWindowId;
+let testTabId;
 
 function clickLink(id) {
-  var clickEvent = document.createEvent('MouseEvents');
+  const clickEvent = document.createEvent('MouseEvents');
   clickEvent.initMouseEvent('click', true, true, window);
-  document.querySelector('#' + id).dispatchEvent(clickEvent);
+  document.querySelector(`#${id}`).dispatchEvent(clickEvent);
 }
 
 
@@ -27,13 +27,13 @@ const tests = [
   },
 
   function setupTwoWindows() {
-    createWindow(["about:blank", "chrome://newtab/", pageUrl("a")], {},
+    createWindow(['about:blank', 'chrome://newtab/', pageUrl('a')], {},
                  pass(function(winId, tabIds) {
       waitForAllTabs(pass(function() {
         secondWindowId = winId;
         testTabId = tabIds[2];
 
-        createWindow(["chrome://newtab/", pageUrl("b")], {},
+        createWindow(['chrome://newtab/', pageUrl('b')], {},
                      pass(function(winId, tabIds) {
           waitForAllTabs(pass(function() {
             thirdWindowId = winId;
@@ -47,28 +47,28 @@ const tests = [
     chrome.tabs.getAllInWindow(secondWindowId,
                                pass(function(tabs) {
       assertEq(3, tabs.length);
-      for (var i = 0; i < tabs.length; i++) {
+      for (let i = 0; i < tabs.length; i++) {
         assertEq(secondWindowId, tabs[i].windowId);
         assertEq(i, tabs[i].index);
 
         // The first tab should be active
         assertEq((i == 0), tabs[i].active && tabs[i].selected);
       }
-      assertEq("about:blank", tabs[0].url);
+      assertEq('about:blank', tabs[0].url);
       assertTrue(newTabUrls.includes(tabs[1].url),
-                 'Unexpected URL: ' + tabs[1].url);
-      assertEq(pageUrl("a"), tabs[2].url);
+                 `Unexpected URL: ${tabs[1].url}`);
+      assertEq(pageUrl('a'), tabs[2].url);
     }));
 
     chrome.tabs.getAllInWindow(thirdWindowId,
                                pass(function(tabs) {
       assertEq(2, tabs.length);
-      for (var i = 0; i < tabs.length; i++) {
+      for (let i = 0; i < tabs.length; i++) {
         assertEq(thirdWindowId, tabs[i].windowId);
         assertEq(i, tabs[i].index);
       }
       assertTrue(newTabUrls.includes(tabs[0].url));
-      assertEq(pageUrl("b"), tabs[1].url);
+      assertEq(pageUrl('b'), tabs[1].url);
     }));
   },
 
@@ -114,17 +114,17 @@ const tests = [
 
   function update() {
     chrome.tabs.get(testTabId, pass(function(tab) {
-      assertEq(pageUrl("a"), tab.url);
+      assertEq(pageUrl('a'), tab.url);
       // Update url.
-      chrome.tabs.update(testTabId, {"url": pageUrl("c")},
+      chrome.tabs.update(testTabId, {url: pageUrl('c')},
                          pass(function(tab){
-        chrome.test.assertEq(pageUrl("a"), tab.url);
+        chrome.test.assertEq(pageUrl('a'), tab.url);
         chrome.test.assertEq('A', tab.title);
-        chrome.test.assertEq(pageUrl("c"), tab.pendingUrl);
+        chrome.test.assertEq(pageUrl('c'), tab.pendingUrl);
         waitForAllTabs(pass(function() {
           // Check url
           chrome.tabs.get(testTabId, pass(function(tab) {
-            assertEq(pageUrl("c"), tab.url);
+            assertEq(pageUrl('c'), tab.url);
             assertEq('C', tab.title);
             assertEq(undefined, tab.pendingUrl);
           }));
@@ -142,7 +142,7 @@ const tests = [
       }));
     });
     // Pretend to click a link (openers aren't tracked when using tabs.create).
-    clickLink("test_link");
+    clickLink('test_link');
   },
 
   // The window on chrome.tabs.create is ignored if it doesn't accept tabs.
@@ -176,7 +176,7 @@ const tests = [
   // before and after creation should be the same.
   function testOpenEmptyPopup() {
     chrome.tabs.query({}, pass(function(tabs) {
-      var tabsCountBefore = tabs.length;
+      const tabsCountBefore = tabs.length;
       chrome.windows.create({type: 'popup'}, pass(function(window) {
         assertEq(window.tabs.length, 0);
         chrome.tabs.query({}, pass(function(tabs) {
@@ -219,7 +219,7 @@ const tests = [
   function detectLanguage() {
     chrome.tabs.getAllInWindow(null, pass(function(tabs) {
       chrome.tabs.detectLanguage(tabs[0].id, pass(function(lang) {
-        assertEq("und", lang);
+        assertEq('und', lang);
       }));
     }));
   },
@@ -228,7 +228,7 @@ const tests = [
   // where the current window is guaranteed, or be moved to the interactive
   // test so there's consistent focus to guarantee which window is the default.
   function getCurrentWindow() {
-    var errorMsg = "No window with id: -1.";
+    const errorMsg = 'No window with id: -1.';
     chrome.windows.get(chrome.windows.WINDOW_ID_NONE, fail(errorMsg));
     chrome.windows.get(chrome.windows.WINDOW_ID_CURRENT, pass(function(win1) {
       chrome.windows.getCurrent(pass(function(win2) {

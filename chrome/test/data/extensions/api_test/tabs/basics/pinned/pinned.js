@@ -2,23 +2,23 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-var firstWindowId;
+let firstWindowId;
 
-const scriptUrl = '_test_resources/api_test/tabs/basics/tabs_util.js';
-let loadScript = chrome.test.loadScript(scriptUrl);
+const SCRIPT_URL = '_test_resources/api_test/tabs/basics/tabs_util.js';
+const loadScript = chrome.test.loadScript(SCRIPT_URL);
 
 loadScript.then(async function() {
 chrome.test.runTests([
   function setupWindow() {
-    createWindow(["about:blank", "chrome://newtab/", pageUrl("a")], {},
+    createWindow(['about:blank', 'chrome://newtab/', pageUrl('a')], {},
                  pass(function(winId, tabIds) {
       firstWindowId = winId;
     }));
   },
 
   function createPinned() {
-    var winOptions = {"windowId": firstWindowId, "pinned": true};
-    var onUpdatedCompleted = chrome.test.listenForever(
+    const winOptions = {windowId: firstWindowId, pinned: true};
+    const onUpdatedCompleted = chrome.test.listenForever(
       chrome.tabs.onUpdated,
       function(tabId, changeInfo, tab) {
         if ('pinned' in changeInfo) {
@@ -30,7 +30,7 @@ chrome.test.runTests([
     );
     chrome.tabs.create(winOptions, pass(function(tab) {
       assertEq(true, tab.pinned);
-      chrome.tabs.update(tab.id, {"pinned":false}, pass(function() {
+      chrome.tabs.update(tab.id, {pinned:false}, pass(function() {
         // Leave a clean slate for the next test.
         chrome.tabs.remove(tab.id);
       }));
@@ -40,8 +40,8 @@ chrome.test.runTests([
   function updatePinned() {
     // A helper function that (un)pins a tab and verifies that both the callback
     // and the chrome.tabs.onUpdated event listeners are called.
-    var pinTab = function(id, pinnedState, callback) {
-      var onUpdatedCompleted = chrome.test.listenForever(
+    const pinTab = function(id, pinnedState, callback) {
+      const onUpdatedCompleted = chrome.test.listenForever(
         chrome.tabs.onUpdated,
         function(tabId, changeInfo, tab) {
           if ('pinned' in changeInfo) {
@@ -53,7 +53,7 @@ chrome.test.runTests([
           }
         }
       );
-      chrome.tabs.update(id, { "pinned": pinnedState }, pass(function(tab) {
+      chrome.tabs.update(id, { pinned: pinnedState }, pass(function(tab) {
         assertEq(pinnedState, tab.pinned);
       }));
     };
@@ -69,7 +69,7 @@ chrome.test.runTests([
     chrome.tabs.query({windowId:firstWindowId},
       pass(function(tabs) {
         assertEq(tabs.length, 3);
-        for (var i = 0; i < tabs.length; i++)
+        for (let i = 0; i < tabs.length; i++)
           assertEq(false, tabs[i].pinned);
 
         pinTab(tabs[0].id, true, function(tab) {

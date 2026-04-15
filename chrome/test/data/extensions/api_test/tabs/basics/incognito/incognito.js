@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-const scriptUrl = '_test_resources/api_test/tabs/basics/tabs_util.js';
-let loadScript = chrome.test.loadScript(scriptUrl);
+const SCRIPT_URL = '_test_resources/api_test/tabs/basics/tabs_util.js';
+const loadScript = chrome.test.loadScript(SCRIPT_URL);
 
 loadScript.then(async function() {
 chrome.test.getConfig(function(config) {
-  let args = JSON.parse(config.customArg);
+  const args = JSON.parse(config.customArg);
   chrome.test.runTests([
     function queryTabs() {
       chrome.tabs.query(
@@ -23,7 +23,7 @@ chrome.test.getConfig(function(config) {
           {windowId: args.windowId},
           args.isIncognito ?
             pass(function(tab) {assertTrue(tab.incognito);}) :
-            fail('No window with id: ' + args.windowId + ".")
+            fail(`No window with id: ${args.windowId}.`)
       );
     },
   ]);

@@ -38,7 +38,7 @@ const tests = [
   },
 
   function generateAppForLinkWithShortURL() {
-    let url = 'http://google.com', title = 'testApp';
+    const url = 'http://google.com', title = 'testApp';
     testGenerateAppForLink(url, title, null, function(data) {
       assertEq('http://google.com/', data.appLaunchUrl);
       assertEq(title, data.name);
@@ -59,8 +59,8 @@ const tests = [
   }
 ];
 
-const scriptUrl = '_test_resources/api_test/management/common.js';
-const loadScript = chrome.test.loadScript(scriptUrl);
+const SCRIPT_URL = '_test_resources/api_test/management/common.js';
+const loadScript = chrome.test.loadScript(SCRIPT_URL);
 
 loadScript.then(async function() {
   chrome.test.runTests(tests);

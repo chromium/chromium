@@ -2,18 +2,18 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-var testTab;
+let testTab;
 
-const scriptUrl = '_test_resources/api_test/tabs/basics/tabs_util.js';
-let loadScript = chrome.test.loadScript(scriptUrl);
+const SCRIPT_URL = '_test_resources/api_test/tabs/basics/tabs_util.js';
+const loadScript = chrome.test.loadScript(SCRIPT_URL);
 
 loadScript.then(async function() {
 chrome.test.runTests([
 
     function setupWindow() {
-      var testTabId;
+      let testTabId;
 
-      createWindow(["about:blank", "chrome://newtab/"], {},
+      createWindow(['about:blank', 'chrome://newtab/'], {},
                    pass(function(winId, tabIds) {
         testTabId = tabIds[1];
       }));
@@ -30,7 +30,7 @@ chrome.test.runTests([
       // Initially tab isn't discarded.
       assertFalse(testTab.discarded);
 
-      var onUpdatedCompleted = chrome.test.listenForever(
+      const onUpdatedCompleted = chrome.test.listenForever(
           chrome.tabs.onUpdated,
           function(tabId, changeInfo, tab) {
         if ('discarded' in changeInfo) {
@@ -62,7 +62,7 @@ chrome.test.runTests([
     // Tab is already discarded.
     assertTrue(testTab.discarded);
 
-    var onUpdatedCompleted = chrome.test.listenForever(
+    const onUpdatedCompleted = chrome.test.listenForever(
         chrome.tabs.onUpdated,
         function(tabId, changeInfo, tab) {
       if ('discarded' in changeInfo) {
@@ -86,7 +86,7 @@ chrome.test.runTests([
     // Initially the tab is auto-discardable.
     assertTrue(testTab.autoDiscardable);
 
-    var onUpdatedCompleted = chrome.test.listenForever(
+    const onUpdatedCompleted = chrome.test.listenForever(
         chrome.tabs.onUpdated,
         function(tabId, changeInfo, tab) {
       if ('autoDiscardable' in changeInfo) {
@@ -112,7 +112,7 @@ chrome.test.runTests([
     // Tab was set to non auto-discardable.
     assertFalse(testTab.autoDiscardable);
 
-    var onUpdatedCompleted = chrome.test.listenForever(
+    const onUpdatedCompleted = chrome.test.listenForever(
         chrome.tabs.onUpdated,
         function(tabId, changeInfo, tab) {
       if ('autoDiscardable' in changeInfo) {

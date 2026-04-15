@@ -2,30 +2,30 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-var assertEq = chrome.test.assertEq;
-var pass = chrome.test.callbackPass;
+const assertEq = chrome.test.assertEq;
+const pass = chrome.test.callbackPass;
 
 chrome.test.getConfig(function(config) {
-  var javaScriptURL = "javascript:void(document.title='js-url-success')";
+  const javaScriptURL = `javascript:void(document.title='js-url-success')`;
 
-  var fixPort = function(url) {
-    return url.replace(/PORT/, config.testServer.port);
-  };
-  var urlA = fixPort("http://a.com:PORT/extensions/test_file.html");
-  var urlB = fixPort("http://b.com:PORT/extensions/test_file.html");
+  const urlA =
+      `http://a.com:${config.testServer.port}/extensions/test_file.html`;
+  const urlB =
+      `http://b.com:${config.testServer.port}/extensions/test_file.html`;
 
-  chrome.tabs.create({ url: urlA }, function(tab) {
-    var firstTabId = tab.id;
+  chrome.tabs.create({url: urlA}, function(tab) {
+    const firstTabId = tab.id;
 
-    chrome.tabs.create({ url: urlB }, function(tab) {
-      var secondTabId = tab.id;
+    chrome.tabs.create({url: urlB}, function(tab) {
+      const secondTabId = tab.id;
 
       chrome.test.runTests([
         function javaScriptURLShouldFail() {
-          chrome.tabs.update(firstTabId, {url: javaScriptURL},
-              chrome.test.callbackFail('Cannot access contents of url ' +
-                   '"' + urlA + '". Extension manifest must request ' +
-                   'permission to access this host.'));
+          chrome.tabs.update(
+              firstTabId, {url: javaScriptURL},
+              chrome.test.callbackFail(
+                  `Cannot access contents of url "${urlA}". Extension ` +
+                  'manifest must request permission to access this host.'));
         },
 
         function javaScriptURLShouldSucceed() {

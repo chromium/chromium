@@ -2,10 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-var tabCapture = chrome.tabCapture;
+const tabCapture = chrome.tabCapture;
 
-var helloWorldPageUri = 'data:text/html;charset=UTF-8,' +
-    encodeURIComponent('<html><body>Hello world!</body></html>');
+const helloWorldPageUri = `data:text/html;charset=UTF-8,${
+    encodeURIComponent('<html><body>Hello world!</body></html>')}`;
 
 function assertIsSameSetOfTabs(list_a, list_b, id_field_name) {
   chrome.test.assertEq(list_a.length, list_b.length);
@@ -14,7 +14,7 @@ function assertIsSameSetOfTabs(list_a, list_b, id_field_name) {
   }
   list_a.sort(tabIdSortFunction);
   list_b.sort(tabIdSortFunction);
-  for (var i = 0, end = list_a.length; i < end; ++i) {
+  for (let i = 0, end = list_a.length; i < end; ++i) {
     chrome.test.assertEq(list_a[i][id_field_name], list_b[i][id_field_name]);
   }
 }
@@ -29,24 +29,24 @@ const CaptureState = {
   kActive: 'active',
   kStopped: 'stopped'
 };
-let g_state = CaptureState.kStopped;
-let g_should_call_succeed = false;
+let gState = CaptureState.kStopped;
+let gShouldCallSucceed = false;
 
 tabCapture.onStatusChanged.addListener(function(info) {
-  g_state = info.status;
-  if (g_should_call_succeed) {
+  gState = info.status;
+  if (gShouldCallSucceed) {
     chrome.test.succeed();
-    g_should_call_succeed = false;
+    gShouldCallSucceed = false;
   }
 });
 
 // Since if capture is already stopped this method immediately calls succeed,
 // tests should use it directly in place of a chrome.test.succeed call.
 function succeedOnCaptureStopped() {
-  if (g_state == CaptureState.kStopped) {
+  if (gState == CaptureState.kStopped) {
     chrome.test.succeed();
   } else {
-    g_should_call_succeed = true;
+    gShouldCallSucceed = true;
   }
 }
 
@@ -95,12 +95,12 @@ function assertGetUserMediaError(streamId) {
       });
 }
 
-var testsToRun = [
+const testsToRun = [
   function captureTabAndVerifyStateTransitions() {
     // Tab capture events in the order they happen.
-    var tabCaptureEvents = [];
+    const tabCaptureEvents = [];
 
-    var tabCaptureListener = function(info) {
+    const tabCaptureListener = function(info) {
       if (info.status == 'stopped') {
         chrome.test.assertEq('active', tabCaptureEvents.pop());
         chrome.test.assertEq('pending', tabCaptureEvents.pop());
@@ -125,7 +125,7 @@ var testsToRun = [
       chrome.test.assertTrue(secondTab.active);
 
       function checkInfoForSecondTabHasStatus(infos, status) {
-        for (var i = 0; i < infos.length; ++i) {
+        for (let i = 0; i < infos.length; ++i) {
           if (infos[i].tabId == secondTab) {
             chrome.test.assertNe(null, status);
             chrome.test.assertEq(status, infos[i].status);
@@ -144,18 +144,18 @@ var testsToRun = [
         });
       });
 
-      var activeStream = null;
+      let activeStream = null;
 
       // Step 3: After the stream is stopped, check that getCapturedTabs()
       // returns 'stopped' capturing status for the second tab.
-      var capturedTabsAfterStopCapture = function(infos) {
+      const capturedTabsAfterStopCapture = function(infos) {
         checkInfoForSecondTabHasStatus(infos, 'stopped');
         chrome.tabs.remove(secondTab.id);
       };
 
       // Step 2: After the stream is started, check that getCapturedTabs()
       // returns 'active' capturing status for the second tab.
-      var capturedTabsAfterStartCapture = function(infos) {
+      const capturedTabsAfterStartCapture = function(infos) {
         checkInfoForSecondTabHasStatus(infos, 'active');
         activeStream.getVideoTracks()[0].stop();
         activeStream.getAudioTracks()[0].stop();
@@ -172,9 +172,9 @@ var testsToRun = [
   },
 
   function captureSameTab() {
-    var stream1 = null;
+    let stream1 = null;
 
-    var tabMediaRequestCallback2 = function(stream) {
+    const tabMediaRequestCallback2 = function(stream) {
       chrome.test.assertLastError(
           'Cannot capture a tab with an active stream.');
       chrome.test.assertTrue(!stream);
@@ -241,10 +241,10 @@ var testsToRun = [
   // Test that if calling getMediaStreamId() with consumer tab specified and
   // then calling getUserMedia() on another tab will fail to get the stream.
   function getMediaStreamIdAndGetUserMediaOnDifferentTabs() {
-    var currentTabId;
-    var secondTabId;
+    let currentTabId;
+    let secondTabId;
 
-    var listener = function(tabId, changeInfo, tab) {
+    const listener = function(tabId, changeInfo, tab) {
       if (changeInfo.status == 'complete') {
         chrome.tabs.onUpdated.removeListener(listener);
         tabCapture.getMediaStreamId(
@@ -268,7 +268,7 @@ var testsToRun = [
   },
 
   function getMediaStreamIdWithCallerTabWithoutSecuredUrl() {
-    var listener = function(tabId, changeInfo, tab) {
+    const listener = function(tabId, changeInfo, tab) {
       if (changeInfo.status == 'complete') {
         chrome.tabs.onUpdated.removeListener(listener);
         tabCapture.getMediaStreamId({consumerTabId: tabId}, function(streamId) {

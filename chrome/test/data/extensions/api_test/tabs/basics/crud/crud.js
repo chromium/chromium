@@ -2,10 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-var firstWindowId;
+let firstWindowId;
 
-const scriptUrl = '_test_resources/api_test/tabs/basics/tabs_util.js';
-let loadScript = chrome.test.loadScript(scriptUrl);
+const SCRIPT_URL = '_test_resources/api_test/tabs/basics/tabs_util.js';
+const loadScript = chrome.test.loadScript(SCRIPT_URL);
 
 let isAndroid;
 
@@ -53,13 +53,13 @@ const tests = [
   },
 
   function create() {
-    chrome.tabs.create({"windowId" : firstWindowId, "active" : false},
+    chrome.tabs.create({windowId: firstWindowId, active: false},
                        pass(function(tab){
       assertEq(1, tab.index);
       assertEq(firstWindowId, tab.windowId);
       assertEq(false, tab.selected);
       smellsLikeNewTabPage(tab.pendingUrl, tab.title);
-      assertEq("", tab.url);
+      assertEq('', tab.url);
       assertEq(false, tab.pinned);
       waitForAllTabs(pass(function() {
         chrome.tabs.get(tab.id, pass(function(tab) {
@@ -71,7 +71,7 @@ const tests = [
   },
 
   function createInCurrent() {
-    chrome.tabs.create({'windowId': chrome.windows.WINDOW_ID_CURRENT},
+    chrome.tabs.create({windowId: chrome.windows.WINDOW_ID_CURRENT},
                        pass(function(tab) {
       chrome.windows.getCurrent(pass(function(win) {
         assertEq(win.id, tab.windowId);
@@ -82,26 +82,26 @@ const tests = [
   function createInOtherWindow() {
     chrome.windows.create({}, pass(function(win) {
       // Create a tab in the older window.
-      chrome.tabs.create({"windowId" : firstWindowId, "active" : false},
+      chrome.tabs.create({windowId: firstWindowId, active: false},
                          pass(function(tab) {
         assertEq(firstWindowId, tab.windowId);
       }));
       // Create a tab in this new window.
-      chrome.tabs.create({"windowId" : win.id}, pass(function(tab) {
+      chrome.tabs.create({windowId: win.id}, pass(function(tab) {
         assertEq(win.id, tab.windowId);
       }));
     }));
   },
 
   function createAtIndex() {
-    chrome.tabs.create({"windowId" : firstWindowId, "index" : 1},
+    chrome.tabs.create({windowId: firstWindowId, index: 1},
                        pass(function(tab) {
       assertEq(1, tab.index);
     }));
   },
 
   function createSelected() {
-    chrome.tabs.create({"windowId" : firstWindowId, "active" : true},
+    chrome.tabs.create({windowId: firstWindowId, active: true},
                        pass(function(tab) {
       assertTrue(tab.active && tab.selected);
       getSelectedAdapter(firstWindowId, pass(function(selectedTab) {
@@ -111,7 +111,7 @@ const tests = [
   },
 
   function createWindowWithDefaultTab() {
-    var verify_default = function() {
+    const verifyDefault = function() {
       return pass(function(win) {
         assertEq(1, win.tabs.length);
         // In case the URL has or has not committed yet, check both.
@@ -121,20 +121,20 @@ const tests = [
     };
 
     // Make sure the window always has the NTP when no URL is supplied.
-    chrome.windows.create({}, verify_default());
-    chrome.windows.create({url:[]}, verify_default());
+    chrome.windows.create({}, verifyDefault());
+    chrome.windows.create({url:[]}, verifyDefault());
   },
 
   function createWindowWithExistingTab() {
     // Create a tab in the old window
-    chrome.tabs.create({"windowId" : firstWindowId, "url": pageUrl('a'),
-                        "active" : false},
+    chrome.tabs.create({windowId: firstWindowId, url: pageUrl('a'),
+                        active: false},
                        pass(function(tab) {
       assertEq(firstWindowId, tab.windowId);
       assertEq(pageUrl('a'), tab.pendingUrl);
 
       // Create a new window with this tab
-      chrome.windows.create({"tabId": tab.id}, pass(function(win) {
+      chrome.windows.create({tabId: tab.id}, pass(function(win) {
         assertEq(1, win.tabs.length);
         assertEq(tab.id, win.tabs[0].id);
         assertEq(win.id, win.tabs[0].windowId);
@@ -146,8 +146,8 @@ const tests = [
   },
 
   function windowCreate() {
-    chrome.windows.create({type: "popup"}, pass(function(window) {
-      assertEq("popup", window.type);
+    chrome.windows.create({type: 'popup'}, pass(function(window) {
+      assertEq('popup', window.type);
       assertTrue(!window.incognito);
     }));
     chrome.windows.create({incognito: true}, pass(function(window) {

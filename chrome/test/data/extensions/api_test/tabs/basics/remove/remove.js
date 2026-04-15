@@ -5,15 +5,15 @@
 function resolveOnStorageChanged(resolve) {
   chrome.storage.local.onChanged.addListener(function local(changes,
                                                             areaName) {
-    assertEq({'newValue': 'yes'}, changes['did_run_unload_1'])
+    assertEq({newValue: 'yes'}, changes['did_run_unload_1'])
     chrome.storage.local.onChanged.removeListener(local);
     resolve();
   });
 }
 
-var secondTabId;
-const scriptUrl = '_test_resources/api_test/tabs/basics/tabs_util.js';
-let loadScript = chrome.test.loadScript(scriptUrl);
+let secondTabId;
+const SCRIPT_URL = '_test_resources/api_test/tabs/basics/tabs_util.js';
+const loadScript = chrome.test.loadScript(SCRIPT_URL);
 
 loadScript.then(async function() {
 chrome.test.runTests([
@@ -37,9 +37,9 @@ chrome.test.runTests([
       });
   },
   function removeSecondTab() {
-    let onStoragePromise = new Promise(resolveOnStorageChanged);
+    const onStoragePromise = new Promise(resolveOnStorageChanged);
 
-    let removePromise = new Promise((resolve) => {
+    const removePromise = new Promise((resolve) => {
       chrome.tabs.remove(secondTabId, () => {
       resolve();
       });

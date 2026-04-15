@@ -2,11 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-var firstWindowId;
-var testTabId;
+let firstWindowId;
+let testTabId;
 
-const scriptUrl = '_test_resources/api_test/tabs/basics/tabs_util.js';
-let loadScript = chrome.test.loadScript(scriptUrl);
+const SCRIPT_URL = '_test_resources/api_test/tabs/basics/tabs_util.js';
+const loadScript = chrome.test.loadScript(SCRIPT_URL);
 
 loadScript.then(async function() {
 function resolveOnMessage(resolve) {
@@ -19,15 +19,15 @@ function resolveOnMessage(resolve) {
 
 chrome.test.runTests([
   function setupRelativeUrlTests() {
-    createWindow(["about:blank"], {}, pass(function(winId, tabIds) {
+    createWindow(['about:blank'], {}, pass(function(winId, tabIds) {
       firstWindowId = winId;
     }));
   },
 
   function relativeUrlTestsTabsCreate() {
-    let onMessagePromise = new Promise(resolveOnMessage);
+    const onMessagePromise = new Promise(resolveOnMessage);
 
-    let createPromise = new Promise((resolve) => {
+    const createPromise = new Promise((resolve) => {
       chrome.tabs.create({windowId: firstWindowId, url: 'relative.html'},
         function(tab) {
           testTabId = tab.id;
@@ -39,12 +39,12 @@ chrome.test.runTests([
   },
 
   function relativeUrlTestsTabsUpdate() {
-    let onMessagePromise = new Promise(resolveOnMessage);
+    const onMessagePromise = new Promise(resolveOnMessage);
 
-    let updatePromise = new Promise((resolve) => {
-      chrome.tabs.update(testTabId, {url: pageUrl("a")}, function(tab) {
-        chrome.test.assertEq(pageUrl("a"), tab.pendingUrl);
-        chrome.tabs.update(tab.id, {url: "relative.html"}, function(tab) {
+    const updatePromise = new Promise((resolve) => {
+      chrome.tabs.update(testTabId, {url: pageUrl('a')}, function(tab) {
+        chrome.test.assertEq(pageUrl('a'), tab.pendingUrl);
+        chrome.tabs.update(tab.id, {url: 'relative.html'}, function(tab) {
           resolve();
         });
       });
@@ -54,10 +54,10 @@ chrome.test.runTests([
   },
 
   function relativeUrlTestsWindowCreate() {
-    let onMessagePromise = new Promise(resolveOnMessage);
+    const onMessagePromise = new Promise(resolveOnMessage);
 
-    let createPromise = new Promise((resolve) => {
-      chrome.windows.create({url: "relative.html"}, (window) => {
+    const createPromise = new Promise((resolve) => {
+      chrome.windows.create({url: 'relative.html'}, (window) => {
         resolve();
       });
     });

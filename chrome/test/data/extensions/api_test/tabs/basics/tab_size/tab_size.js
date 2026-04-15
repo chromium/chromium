@@ -2,16 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-var firstTabId;
-var firstTab;
+let firstTabId;
+let firstTab;
 
-const scriptUrl = '_test_resources/api_test/tabs/basics/tabs_util.js';
-let loadScript = chrome.test.loadScript(scriptUrl);
+const SCRIPT_URL = '_test_resources/api_test/tabs/basics/tabs_util.js';
+const loadScript = chrome.test.loadScript(SCRIPT_URL);
 
 loadScript.then(async function() {
 chrome.test.runTests([
   function setupWindow() {
-    createWindow([pageUrl("a")], {}, pass(function(winId, tabIds) {
+    createWindow([pageUrl('a')], {}, pass(function(winId, tabIds) {
       firstTabId = tabIds[0];
       chrome.tabs.get(firstTabId, pass(function(tab) {
         assertTrue(tab.width > 0);

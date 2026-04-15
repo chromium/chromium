@@ -2,15 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-var INDUCE_BROWSER_CRASH_URL = 'about:inducebrowsercrashforrealz';
-var INDUCE_RENDERER_CRASH_URL = 'about:crash';
-var ERROR = "I'm sorry. I'm afraid I can't do that.";
+const INDUCE_BROWSER_CRASH_URL = 'about:inducebrowsercrashforrealz';
+const INDUCE_RENDERER_CRASH_URL = 'about:crash';
+const ERROR = `I'm sorry. I'm afraid I can't do that.`;
 
-var succeed = chrome.test.succeed;
-var callbackFail = chrome.test.callbackFail;
+const succeed = chrome.test.succeed;
+const callbackFail = chrome.test.callbackFail;
 
-const scriptUrl = '_test_resources/api_test/tabs/basics/tabs_util.js';
-let loadScript = chrome.test.loadScript(scriptUrl);
+const SCRIPT_URL = '_test_resources/api_test/tabs/basics/tabs_util.js';
+const loadScript = chrome.test.loadScript(SCRIPT_URL);
 
 loadScript.then(async function() {
 chrome.test.runTests([
@@ -24,7 +24,7 @@ chrome.test.runTests([
   },
 
   function crashBrowserWindowCreateArray() {
-    var urls = ['about:blank', INDUCE_BROWSER_CRASH_URL];
+    const urls = ['about:blank', INDUCE_BROWSER_CRASH_URL];
     chrome.windows.create({url: urls}, callbackFail(ERROR));
   },
 
@@ -46,7 +46,7 @@ chrome.test.runTests([
   },
 
   function crashRendererWindowCreateArray() {
-    var urls = ['about:blank', INDUCE_RENDERER_CRASH_URL];
+    const urls = ['about:blank', INDUCE_RENDERER_CRASH_URL];
     chrome.windows.create({url: urls}, callbackFail(ERROR));
   },
 

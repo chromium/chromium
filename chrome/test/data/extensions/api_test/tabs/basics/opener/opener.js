@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-var firstTabId;
-var secondTabId;
-var thirdTabId;
+let firstTabId;
+let secondTabId;
+let thirdTabId;
 
-const scriptUrl = '_test_resources/api_test/tabs/basics/tabs_util.js';
-let loadScript = chrome.test.loadScript(scriptUrl);
+const SCRIPT_URL = '_test_resources/api_test/tabs/basics/tabs_util.js';
+const loadScript = chrome.test.loadScript(SCRIPT_URL);
 
 loadScript.then(async function() {
 chrome.test.runTests([
@@ -49,7 +49,7 @@ chrome.test.runTests([
     chrome.tabs.create({active: true}, pass(function(tab1) {
       thirdTabId = tab1.id;
       assertTrue(tab1.active);
-      assertFalse("openerTabId" in tab1);
+      assertFalse('openerTabId' in tab1);
       chrome.tabs.update(
           tab1.id, {openerTabId: firstTabId},
           pass(function(tab2) {

@@ -4,11 +4,11 @@
 
 chrome.test.runTests([
   function canGetViewsOfEmptyPopup() {
-    testGetNewWindowView({type: "popup"}, []);
+    testGetNewWindowView({type: 'popup'}, []);
   },
 
   function canGetViewsOfPopupWithUrl() {
-    var URLS = ["a.html"];
-    testGetNewWindowView({type: "popup", url: URLS}, URLS);
+    const urls = ['a.html'];
+    testGetNewWindowView({type: 'popup', url: urls}, urls);
   }
 ]);

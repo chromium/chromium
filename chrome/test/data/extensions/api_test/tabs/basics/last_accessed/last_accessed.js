@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-var TEST_URL_1 = 'https://example.com/1';
-var TEST_URL_2 = 'https://example.com/2';
-var TEST_URL_3 = 'https://example.com/3';
+const TEST_URL_1 = 'https://example.com/1';
+const TEST_URL_2 = 'https://example.com/2';
+const TEST_URL_3 = 'https://example.com/3';
 
-const scriptUrl = '_test_resources/api_test/tabs/basics/tabs_util.js';
-let loadScript = chrome.test.loadScript(scriptUrl);
+const SCRIPT_URL = '_test_resources/api_test/tabs/basics/tabs_util.js';
+const loadScript = chrome.test.loadScript(SCRIPT_URL);
 
 function sleep(ms) {
   return new Promise(resolve => setTimeout(resolve, ms));
@@ -26,13 +26,13 @@ function createAndSelectTab(url) {
 loadScript.then(async function() {
 chrome.test.runTests([
   async function testLastAccessedForTwoTabs() {
-    let firstTabCreatedTime = Date.now();
+    const firstTabCreatedTime = Date.now();
 
     const firstTab = await createAndSelectTab(TEST_URL_1);
     assertTrue(firstTab.active);
     assertTrue(firstTabCreatedTime < firstTab.lastAccessed);
 
-    let secondTabCreatedTime = Date.now();
+    const secondTabCreatedTime = Date.now();
     // Adding a short delay to ensure different access times for each tab.
     await sleep(1);
 
@@ -44,7 +44,7 @@ chrome.test.runTests([
     chrome.test.succeed();
   },
   async function testLastAccessedForMovedTab() {
-    let firstTabCreatedTime = Date.now();
+    const firstTabCreatedTime = Date.now();
     // Adding a short delay to ensure different access times for each tab.
     await sleep(1);
 
@@ -52,14 +52,14 @@ chrome.test.runTests([
     assertTrue(firstTab.active);
     assertTrue(firstTabCreatedTime < firstTab.lastAccessed);
 
-    let secondTabCreatedTime = Date.now();
+    const secondTabCreatedTime = Date.now();
     await sleep(1);
 
     const secondTab = await createAndSelectTab(TEST_URL_2);
     assertTrue(secondTab.active);
     assertTrue(secondTabCreatedTime < secondTab.lastAccessed);
 
-    let thirdTabCreatedTime = Date.now();
+    const thirdTabCreatedTime = Date.now();
     await sleep(1);
 
     const thirdTab = await createAndSelectTab(TEST_URL_3);

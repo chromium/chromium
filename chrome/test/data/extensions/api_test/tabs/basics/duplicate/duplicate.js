@@ -2,16 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-var firstTabId;
-var firstWindowId;
+let firstTabId;
+let firstWindowId;
 
-const scriptUrl = '_test_resources/api_test/tabs/basics/tabs_util.js';
-let loadScript = chrome.test.loadScript(scriptUrl);
+const SCRIPT_URL = '_test_resources/api_test/tabs/basics/tabs_util.js';
+const loadScript = chrome.test.loadScript(SCRIPT_URL);
 
 loadScript.then(async function() {
 chrome.test.runTests([
   function setupWindow() {
-    createWindow([pageUrl("a")], {},
+    createWindow([pageUrl('a')], {},
                  pass(function(winId, tabIds) {
       waitForAllTabs(pass(function() {
         firstWindowId = winId;
@@ -23,7 +23,7 @@ chrome.test.runTests([
   function duplicateTab() {
     chrome.tabs.duplicate(firstTabId, pass(function(tab) {
       waitForAllTabs(pass(function() {
-        assertEq(pageUrl("a"), tab.url);
+        assertEq(pageUrl('a'), tab.url);
         assertEq(1, tab.index);
       }));
     }));
@@ -42,11 +42,11 @@ chrome.test.runTests([
 /*
   function duplicateTabFromNewPopupWindow() {
     chrome.windows.create({
-        "url": "http://google.com",
-        "type": "popup"
+        url: 'http://google.com',
+        type: 'popup'
     },
     function(wnd) {
-      var firstTab = wnd.tabs[0];
+      const firstTab = wnd.tabs[0];
       chrome.tabs.duplicate(firstTab.id, pass(function(tab) {
         // Because the parent window is a popup, the duplicated tab will open
         // in a new window.

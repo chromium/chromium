@@ -11,16 +11,15 @@ import { openTab } from '/_test_resources/test_util/tabs_util.js';
 // * Waits for the corresponding tabs.onUpdated and tabs.onRemoved events.
 chrome.test.runTests([
   async function addTabsToGroupAndRemove() {
-    let windowId;
     let tab1;
     let tab2;
     let resolveTabGroupUpdated;
     let resolveTabRemoved;
     // Promises to wait for the given events from the tabs.
-    let tabGroupUpdatedPromise = new Promise((resolve) => {
+    const tabGroupUpdatedPromise = new Promise((resolve) => {
       resolveTabGroupUpdated = resolve;
     });
-    let tabRemovedPromise = new Promise((resolve) => {
+    const tabRemovedPromise = new Promise((resolve) => {
       resolveTabRemoved = resolve;
     });
 

@@ -2,21 +2,21 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-var myTabId;
+let myTabId;
 
 function pageUrl(letter) {
-  return chrome.runtime.getURL(letter + ".html");
+  return chrome.runtime.getURL(`${letter}.html`);
 }
 
 function withTabOnReload(fn) {
-  let onMessagePromise = new Promise((resolve) => {
+  const onMessagePromise = new Promise((resolve) => {
     chrome.runtime.onMessage.addListener(function local(message) {
       chrome.runtime.onMessage.removeListener(local);
-      chrome.test.assertEq(pageUrl("a"), message);
+      chrome.test.assertEq(pageUrl('a'), message);
       resolve();
     });
   });
-  let functionPromise = new Promise((resolve) => {
+  const functionPromise = new Promise((resolve) => {
     fn(resolve);
   });
   Promise.all([onMessagePromise, functionPromise]).then(chrome.test.succeed);
@@ -25,7 +25,7 @@ function withTabOnReload(fn) {
 chrome.test.runTests([
   function createTab() {
     withTabOnReload(function(resolve) {
-      chrome.tabs.create({url: pageUrl("a"), selected: true}, function(tab) {
+      chrome.tabs.create({url: pageUrl('a'), selected: true}, function(tab) {
         myTabId = tab.id;
         resolve();
       });

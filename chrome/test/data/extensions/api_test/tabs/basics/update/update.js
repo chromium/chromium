@@ -2,21 +2,21 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-var tabIds = [];
+const tabIds = [];
 
-const scriptUrl = '_test_resources/api_test/tabs/basics/tabs_util.js';
-let loadScript = chrome.test.loadScript(scriptUrl);
+const SCRIPT_URL = '_test_resources/api_test/tabs/basics/tabs_util.js';
+const loadScript = chrome.test.loadScript(SCRIPT_URL);
 
 loadScript.then(async function() {
 chrome.test.runTests([
   function setUp() {
-    chrome.tabs.create({"url": pageUrl("a")}, pass(function(tab) {
+    chrome.tabs.create({url: pageUrl('a')}, pass(function(tab) {
       tabIds.push(tab.id);
     }));
-    chrome.tabs.create({"url": pageUrl("b")}, pass(function(tab) {
+    chrome.tabs.create({url: pageUrl('b')}, pass(function(tab) {
       tabIds.push(tab.id);
     }));
-    chrome.tabs.create({"url": pageUrl("c")}, pass(function(tab) {
+    chrome.tabs.create({url: pageUrl('c')}, pass(function(tab) {
       tabIds.push(tab.id);
     }));
     },
@@ -24,13 +24,13 @@ chrome.test.runTests([
   function testBasicSetup() {
     waitForAllTabs(pass(function() {
       chrome.tabs.get(tabIds[0], pass(function(tab) {
-        assertEq(pageUrl("a"), tab.url);
+        assertEq(pageUrl('a'), tab.url);
       }));
       chrome.tabs.get(tabIds[1], pass(function(tab) {
-        assertEq(pageUrl("b"), tab.url);
+        assertEq(pageUrl('b'), tab.url);
       }));
       chrome.tabs.get(tabIds[2], pass(function(tab) {
-        assertEq(pageUrl("c"), tab.url);
+        assertEq(pageUrl('c'), tab.url);
       }));
     }));
   },
@@ -38,17 +38,17 @@ chrome.test.runTests([
   function testUpdatingDefaultTabViaUndefined() {
     chrome.tabs.update(
       tabIds[1],
-      {"selected": true},
+      {selected: true},
       pass(function(tab) {
         chrome.tabs.update(
           undefined,
-          {"url": pageUrl("d")},
+          {url: pageUrl('d')},
           pass(function(tab) {
             waitForAllTabs(pass(function() {
               chrome.tabs.get(
                 tabIds[1],
                 pass(function(tab) {
-                  assertEq(pageUrl("d"), tab.url);
+                  assertEq(pageUrl('d'), tab.url);
                 }));
             }));
           }));
@@ -58,17 +58,17 @@ chrome.test.runTests([
   function testUpdatingDefaultTabViaNull() {
     chrome.tabs.update(
       tabIds[2],
-      {"selected": true},
+      {selected: true},
       pass(function(tab) {
         chrome.tabs.update(
           null,
-          {"url": pageUrl("e")},
+          {url: pageUrl('e')},
           pass(function(tab) {
             waitForAllTabs(pass(function() {
             chrome.tabs.get(
               tabIds[2],
               pass(function(tab) {
-                assertEq(pageUrl("e"), tab.url);
+                assertEq(pageUrl('e'), tab.url);
               }));
             }));
           }));
@@ -77,15 +77,15 @@ chrome.test.runTests([
 
   function testUpdatingWithPermissionReturnsTabInfo() {
     chrome.tabs.update(
-      undefined, {"url": pageUrl("neutrinos")}, pass(function(tab) {
-        assertEq(pageUrl("neutrinos"), tab.pendingUrl);
+      undefined, {url: pageUrl('neutrinos')}, pass(function(tab) {
+        assertEq(pageUrl('neutrinos'), tab.pendingUrl);
     }));
   },
 
   function testUpdatingToUrlThatWillBeRejectedDuringNavigation() {
     // We have a maximum length on URLs that we support. Today, this is
     // 2 * 1024 * 1024. Pick a URL significantly longer than that.
-    const url = 'http://example.com/' + 'a'.repeat(10 * 1024 * 1024);
+    const url = `http://example.com/${'a'.repeat(10 * 1024 * 1024)}`;
 
     // Try to update the tab to that URL. This will result in the navigation
     // failing, but shouldn't result in any browser crashes.

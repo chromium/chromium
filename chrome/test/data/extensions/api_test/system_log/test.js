@@ -4,7 +4,7 @@
 
 const testCases = [
   async function SystemLogAvailable() {
-    const logOptions = { message: "Test log message" };
+    const logOptions = { message: 'Test log message' };
     await chrome.systemLog.add(logOptions);
     chrome.test.succeed();
   },
