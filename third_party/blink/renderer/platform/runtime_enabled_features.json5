@@ -3351,6 +3351,11 @@
       status: "stable",
     },
     {
+      // See crbug.com/40695399
+      name: "InlineBlockLineNavigation",
+      status: "stable",
+    },
+    {
       // If enabled, and the inner html parser is unable to successfully
       // parse, it will log histograms of why it failed. The logging is
       // non-trivial.

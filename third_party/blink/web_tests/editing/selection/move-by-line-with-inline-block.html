@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<script src="../../resources/ahem.js"></script>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+<script src="../assert_selection.js"></script>
+<script>
+
+const kStyle =
+    '<style>' +
+    'div { font: 10px/10px Ahem; width: 100px; }' +
+    'span { display: inline-block; }' +
+    '</style>';
+
+// Layout with 4 inline-blocks of 40px each and 10px spaces, 100px container:
+//   Line 1: [aaaa] [aaaa]
+//   Line 2: [aaaa] [aaaa]
+
+selection_test(
+    [
+      kStyle,
+      '<div contenteditable>',
+        '<span>aa|aa</span> ',
+        '<span>aaaa</span> ',
+        '<span>aaaa</span> ',
+        '<span>aaaa</span>',
+      '</div>',
+    ],
+    selection => selection.modify('move', 'forward', 'line'),
+    [
+      kStyle,
+      '<div contenteditable>',
+        '<span>aaaa</span> ',
+        '<span>aaaa</span> ',
+        '<span>aa|aa</span> ',
+        '<span>aaaa</span>',
+      '</div>',
+    ],
+    'Move down from inline-block on line 1 reaches line 2');
+
+selection_test(
+    [
+      kStyle,
+      '<div contenteditable>',
+        '<span>aaaa</span> ',
+        '<span>aaaa</span> ',
+        '<span>aa|aa</span> ',
+        '<span>aaaa</span>',
+      '</div>',
+    ],
+    selection => selection.modify('move', 'backward', 'line'),
+    [
+      kStyle,
+      '<div contenteditable>',
+        '<span>aa|aa</span> ',
+        '<span>aaaa</span> ',
+        '<span>aaaa</span> ',
+        '<span>aaaa</span>',
+      '</div>',
+    ],
+    'Move up from inline-block on line 2 reaches line 1');
+
+// Single-line layout: no width constraint, all inline-blocks fit on one line.
+// Down arrow should move to end of line, up arrow should move to start.
+const kSingleLineStyle =
+    '<style>' +
+    'div { font: 10px/10px Ahem; }' +
+    'span { display: inline-block; }' +
+    '</style>';
+
+selection_test(
+    [
+      kSingleLineStyle,
+      '<div contenteditable>',
+        '<span>aa|aa</span> ',
+        '<span>aaaa</span>',
+      '</div>',
+    ],
+    selection => selection.modify('move', 'forward', 'line'),
+    [
+      kSingleLineStyle,
+      '<div contenteditable>',
+        '<span>aaaa</span> ',
+        '<span>aaaa|</span>',
+      '</div>',
+    ],
+    'Move down on single line moves to end of line');
+
+selection_test(
+    [
+      kSingleLineStyle,
+      '<div contenteditable>',
+        '<span>aaaa</span> ',
+        '<span>aa|aa</span>',
+      '</div>',
+    ],
+    selection => selection.modify('move', 'backward', 'line'),
+    [
+      kSingleLineStyle,
+      '<div contenteditable>',
+        '<span>|aaaa</span> ',
+        '<span>aaaa</span>',
+      '</div>',
+    ],
+    'Move up on single line moves to start of line');
+
+// Multi-line content inside inline-block: Normal line navigation should work
+// within the inline-block without triggering the escape logic.
+const kMultiLineInnerStyle =
+    '<style>' +
+    'div { font: 10px/10px Ahem; }' +
+    'span { display: inline-block; width: 40px; }' +
+    '</style>';
+
+// Layout: inline-block with text that wraps to 2 lines internally
+//   [aaaa    (line 1 inside span)
+//    aaaa]   (line 2 inside span)
+// Cursor starts on inner line 2, moves up to inner line 1.
+selection_test(
+    [
+      kMultiLineInnerStyle,
+      '<div contenteditable>',
+        '<span>aaaaaa|aa</span>',  // 8 chars, cursor after 6th = inner line 2
+      '</div>',
+    ],
+    selection => selection.modify('move', 'backward', 'line'),
+    [
+      kMultiLineInnerStyle,
+      '<div contenteditable>',
+        '<span>aa|aaaaaa</span>',
+      '</div>',
+    ],
+    'Move up within multi-line inline-block navigates inside the inline-block');
+
+// Cursor starts on inner line 1, moves down to inner line 2.
+selection_test(
+    [
+      kMultiLineInnerStyle,
+      '<div contenteditable>',
+        '<span>aa|aaaaaa</span>',  // 8 chars, cursor after 2nd = inner line 1
+      '</div>',
+    ],
+    selection => selection.modify('move', 'forward', 'line'),
+    [
+      kMultiLineInnerStyle,
+      '<div contenteditable>',
+        '<span>aaaaaa|aa</span>',
+      '</div>',
+    ],
+    'Move down within multi-line inline-block navigates inside the inline-block');
+</script>
