@@ -100,7 +100,7 @@ std::optional<blink::WebFontDescription> PdfFontToBlinkFontMapping(
   bool found_substitution = false;
   for (const auto& substitution : kPdfFontSubstitutions) {
     if (face == substitution.pdf_name) {
-      desc.family = blink::WebString::FromUTF8(substitution.face);
+      desc.family = blink::WebString::FromUtf8(substitution.face);
       if (substitution.bold) {
         desc.weight = blink::WebFontDescription::kWeightBold;
       }
@@ -129,7 +129,7 @@ std::optional<blink::WebFontDescription> PdfFontToBlinkFontMapping(
       return std::nullopt;
     }
 
-    desc.family = blink::WebString::FromUTF8(face_utf8);
+    desc.family = blink::WebString::FromUtf8(face_utf8);
     desc.weight = WeightToBlinkWeight(weight);
     desc.italic = italic > 0;
   }

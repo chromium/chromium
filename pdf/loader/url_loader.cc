@@ -96,7 +96,7 @@ void UrlLoader::Open(const UrlRequest& request, OpenCallback callback) {
   // that we probably don't need in the new process model.
   blink::WebURLRequest blink_request;
   blink_request.SetUrl(
-      client_->CompleteURL(blink::WebString::FromUTF8(request.url)));
+      client_->CompleteURL(blink::WebString::FromUtf8(request.url)));
   blink_request.SetHttpMethod(blink::WebString::FromAscii(request.method));
 
   blink_request.SetSiteForCookies(client_->SiteForCookies());
@@ -106,8 +106,8 @@ void UrlLoader::Open(const UrlRequest& request, OpenCallback callback) {
   if (!request.headers.empty()) {
     net::HttpUtil::HeadersIterator it(request.headers, "\n\r");
     while (it.GetNext()) {
-      blink_request.AddHttpHeaderField(blink::WebString::FromUTF8(it.name()),
-                                       blink::WebString::FromUTF8(it.values()));
+      blink_request.AddHttpHeaderField(blink::WebString::FromUtf8(it.name()),
+                                       blink::WebString::FromUtf8(it.values()));
     }
   }
 

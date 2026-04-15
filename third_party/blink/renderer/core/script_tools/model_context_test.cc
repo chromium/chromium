@@ -78,7 +78,7 @@ class ModelContextTestBase : public SimTest {
   int EvalJsInteger(const char* script) {
     return MainFrame()
         .ExecuteScriptAndReturnValue(
-            WebScriptSource(WebString::FromUTF8(script)))
+            WebScriptSource(WebString::FromUtf8(script)))
         .As<v8::Integer>()
         ->Value();
   }
@@ -1763,8 +1763,7 @@ TEST_F(ModelContextTest, ExecuteDeclarativeFormTool_UnrelatedSubmitAndRemove) {
   }));
 
   // Trigger the unrelated submit and remove.
-  MainFrame().ExecuteScript(
-      WebScriptSource(WebString::FromUTF8("doUnrelatedSubmit()")));
+  MainFrame().ExecuteScript(WebScriptSource(WebString("doUnrelatedSubmit()")));
 
   run_loop.Run();
   EXPECT_TRUE(got_callback);

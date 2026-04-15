@@ -31,7 +31,7 @@ void ActivityFilteringWebSocketHandshakeThrottle::ThrottleHandshake(
   }
 
   std::move(completion_callback)
-      .Run(blink::WebString::FromUTF8(base::StringPrintf(
+      .Run(blink::WebString::FromUtf8(base::StringPrintf(
           "WebSocket connection to %s is blocked", gurl.spec().c_str())));
 }
 

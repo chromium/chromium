@@ -44,7 +44,7 @@ bool GenerateModuleCodeCache(v8::Isolate* isolate,
   const blink::WebBundledCodeCacheGenerator::SerializedCodeCacheData
       serialized_code_cache_data = blink::WebBundledCodeCacheGenerator::
           CreateSerializedCodeCacheForModule(
-              isolate, blink::WebString::FromUTF8(module_file_string));
+              isolate, blink::WebString::FromUtf8(module_file_string));
 
   // Attempt to write the cached metadata.
   if (!base::WriteFile(out_code_cache_path, serialized_code_cache_data)) {
