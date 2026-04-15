@@ -8,8 +8,9 @@
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "chrome/browser/history/history_service_factory.h"
-#include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
-#include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
+#include "chrome/browser/optimization_guide/model_execution/optimization_guide_global_state.h"
+#include "chrome/browser/optimization_guide/optimization_guide_global_state_holder_keyed_service.h"
+#include "chrome/browser/optimization_guide/optimization_guide_global_state_holder_keyed_service_factory.h"
 #include "chrome/browser/privacy_sandbox/privacy_sandbox_settings_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/browsing_topics/annotator.h"
@@ -56,7 +57,8 @@ BrowsingTopicsServiceFactory::BrowsingTopicsServiceFactory()
               .Build()) {
   DependsOn(PrivacySandboxSettingsFactory::GetInstance());
   DependsOn(HistoryServiceFactory::GetInstance());
-  DependsOn(OptimizationGuideKeyedServiceFactory::GetInstance());
+  DependsOn(
+      OptimizationGuideGlobalStateHolderKeyedServiceFactory::GetInstance());
 }
 
 BrowsingTopicsServiceFactory::~BrowsingTopicsServiceFactory() = default;
@@ -86,8 +88,13 @@ BrowsingTopicsServiceFactory::BuildServiceInstanceForBrowserContext(
   if (!site_data_manager)
     return nullptr;
 
-  OptimizationGuideKeyedService* opt_guide_service =
-      OptimizationGuideKeyedServiceFactory::GetForProfile(profile);
+  auto* global_state_holder =
+      OptimizationGuideGlobalStateHolderKeyedServiceFactory::GetForProfile(
+          profile);
+  auto* opt_guide_service =
+      global_state_holder
+          ? &global_state_holder->GetGlobalState().prediction_manager()
+          : nullptr;
   if (!opt_guide_service) {
     return nullptr;
   }
