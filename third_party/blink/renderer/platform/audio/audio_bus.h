@@ -124,7 +124,7 @@ class PLATFORM_EXPORT AudioBus final : public ThreadSafeRefCounted<AudioBus> {
   bool TopologyMatches(const AudioBus& source_bus) const;
 
   // Creates a new buffer from a range in the source buffer.
-  // 0 may be returned if the range does not fit in the sourceBuffer
+  // Returns nullptr if the range does not fit or if the allocation fails.
   static scoped_refptr<AudioBus> CreateBufferFromRange(
       const AudioBus* source_buffer,
       unsigned start_frame,
@@ -140,10 +140,16 @@ class PLATFORM_EXPORT AudioBus final : public ThreadSafeRefCounted<AudioBus> {
       bool mix_to_mono,
       double new_sample_rate);
 
+  // Returns nullptr when the allocation fails (e.g. OOM).
+  static scoped_refptr<AudioBus> TryCreateBySampleRateConverting(
+      const AudioBus* source_bus,
+      bool mix_to_mono,
+      double new_sample_rate);
+
   // Creates a new AudioBus by mixing all the channels down to mono.
-  // If sourceBus is already mono, then the returned AudioBus will simply be a
-  // copy.
-  static scoped_refptr<AudioBus> CreateByMixingToMono(
+  // If `source_bus` is already mono, then the returned AudioBus will simply be
+  // a copy. Returns nullptr when the allocation fails (e.g. OOM).
+  static scoped_refptr<AudioBus> TryCreateByMixingToMono(
       const AudioBus* source_bus);
 
   // Scales all samples by the same amount.
