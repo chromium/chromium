@@ -90,7 +90,7 @@ class COMPONENT_EXPORT(CHROMEOS_UI_FRAME) HeaderView
 
   void UpdateCaptionButtons();
 
-  void SetWidthInPixels(std::optional<int> width_in_pixels);
+  void SetWidthInPixels(int width_in_pixels);
 
   void SetHeaderCornerRadius(int radius);
 

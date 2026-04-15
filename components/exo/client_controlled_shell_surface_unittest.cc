@@ -2456,16 +2456,13 @@ TEST_F(ClientControlledShellSurfaceScaleTest,
       int expected_width_in_pixels =
           std::round(std::round(width * 1.f / dsf) * dsf);
 
-      ASSERT_TRUE(frame_header->width_in_pixels().has_value());
-      EXPECT_EQ(expected_width_in_pixels,
-                frame_header->width_in_pixels().value());
+      EXPECT_EQ(expected_width_in_pixels, frame_header->width_in_pixels());
 
       // Move the shell surface.
       shell_surface->SetShadowBounds(gfx::Rect(12, 12, width, 11));
       surface->Commit();
 
-      EXPECT_EQ(expected_width_in_pixels,
-                frame_header->width_in_pixels().value());
+      EXPECT_EQ(expected_width_in_pixels, frame_header->width_in_pixels());
     }
   }
 }
