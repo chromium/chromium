@@ -13,7 +13,6 @@
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/scoped_observation.h"
-#include "chrome/browser/ui/browser_list_observer.h"
 #include "chrome/browser/ui/browser_window/public/browser_collection_observer.h"
 #include "chrome/browser/ui/exclusive_access/fullscreen_observer.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
@@ -34,7 +33,6 @@
 #endif
 
 class Browser;
-class BrowserList;
 class BrowserWindowInterface;
 class FullscreenController;
 class GlobalBrowserCollection;
@@ -199,12 +197,11 @@ void WaitForHistoryToLoad(history::HistoryService* history_service);
 BrowserWindowInterface* FindAnyBrowser(const Profile* profile,
                                        bool match_original_profiles = true);
 
-// Blocks until a Browser is added to the BrowserList.
+// Blocks until a Browser is created.
 Browser* WaitForBrowserToOpen();
 
-// Blocks until a Browser is removed from the BrowserList. If |browser| is null,
-// the removal of any browser will suffice; otherwise the removed browser must
-// match |browser|.
+// Blocks until a Browser is closed. If |browser| is null, the removal of any
+// browser will suffice; otherwise the removed browser must match |browser|.
 // DEPRECATED: Please use BrowserDestroyedObserver.
 void WaitForBrowserToClose(BrowserWindowInterface* browser = nullptr);
 
@@ -294,24 +291,20 @@ class FullscreenWaiter : public FullscreenObserver {
 };
 
 // This waiter waits for the specified |browser| becoming the last active
-// browser in BrowserList. In Lacros, BrowserList::SetLastActive is triggered by
-// OnWidgetActivationChanged when wayland notify the UI change asynchronously.
-// Many testing code needs to wait until the expected browser to be set as
-// the last active browser, and some testing code needs to wait until
-// BrowserList::OnSetLastActive() is observed.
+// browser. Many testing code needs to wait until the expected browser to be set
+// as the last active browser, and some testing code needs to wait until
+// BrowserWindowInterface activation is observed.
 class BrowserDidBecomeActiveWaiter {
  public:
   // By default, the waiting will be satisfied if the expected |browser| is the
-  // last active browser in BrowserList. In most cases, the testing code
-  // depending on chrome::FindLastActive() should be good.
-  // In some cases, for example, when there is only one browser in the
-  // BrowserList, |browser| can be returned as the last active browser even if
-  // the asynchronous Wayland UI event has not arrived yet (i.e.
-  // BrowserList::SetLastActive() is not triggered and the code observing
-  // BrowserList::OnSetLastActive() will not be called). If the test case
-  // depends on the code observing BrowserList::OnSetLastActive() being executed
-  // first, we can configure the waiter to be satisfied upon
-  // OnBrowserSetLastActive is observed by passing
+  // last active browser. In most cases, the testing code depending on
+  // GlobalBrowserCollection::GetActiveBrowser() should be good. In some cases,
+  // for example, when there is only one browser, |browser| can be returned as
+  // the last active browser even if the asynchronous Wayland UI event has not
+  // arrived yet (i.e. a BrowserWindowInterface activation event is not
+  // triggered and the code observing listening for this event will not be
+  // called). If the test case depends on the code observing the activation
+  // event first, we can configure the waiter to be satisfied by passing
   // |wait_for_set_last_active_observed| being true.
   explicit BrowserDidBecomeActiveWaiter(
       BrowserWindowInterface* browser,
@@ -352,20 +345,19 @@ Browser* OpenNewEmptyWindowAndWaitUntilActivated(
 
 // Waits for |browser| becomes the last active browser.
 // By default, the waiting will be satisfied if the expected |browser| is the
-// last active browser in BrowserList. In most cases, this is enough for the
-// testing code depending on chrome::FindLastActive(). In some cases, for
-// example, when there is only one browser in the BrowserList, |browser| can be
-// returned as the last active browser even if the asynchronous Wayland UI event
-// has not arrived yet (i.e. BrowserList::SetLastActive() is not triggered and
-// the code observing BrowserList::OnSetLastActive() will not be called). If the
-// test case depends on the code observing BrowserList::OnSetLastActive() being
-// executed first, we can configure the waiter to be satisfied upon
-// OnBrowserSetLastActive is observed by passing
-// |wait_for_set_last_active_observed| being true.
+// last active browser. In most cases, the testing code depending on
+// GlobalBrowserCollection::GetActiveBrowser() should be good. In some cases,
+// for example, when there is only one browser, |browser| can be returned as the
+// last active browser even if the asynchronous Wayland UI event has not arrived
+// yet (i.e. a BrowserWindowInterface activation event is not triggered and the
+// code observing listening for this event will not be called). If the test case
+// depends on the code observing the activation event first, we can configure
+// the waiter to be satisfied by passing |wait_for_set_last_active_observed|
+// being true.
 // Note: The last active browser is not necessarily the current active browser.
 // A browser could be de-activated and still the last active browser. In many
-// tests, BrowserList::GetLastActive() is incorrectly used to verify the
-// expected browser being the active browser, see b/345848530.
+// tests, GlobalBrowserCollection::GetActiveBrowser() is incorrectly used to
+// verify the expected browser being the active browser, see b/345848530.
 void WaitForBrowserSetLastActive(
     BrowserWindowInterface* browser,
     bool wait_for_set_last_active_observed = false);

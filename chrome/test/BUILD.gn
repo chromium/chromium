@@ -3778,7 +3778,6 @@ if (!is_android) {
       "../browser/ui/browser_command_controller_browsertest.cc",
       "../browser/ui/browser_commands_browsertest.cc",
       "../browser/ui/browser_instant_controller_browsertest.cc",
-      "../browser/ui/browser_list_browsertest.cc",
       "../browser/ui/browser_navigator_browsertest.cc",
       "../browser/ui/browser_navigator_browsertest.h",
       "../browser/ui/browser_tab_strip_model_delegate_browsertest.cc",

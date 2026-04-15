@@ -5715,10 +5715,7 @@ source_set("browser_navigator_params_headers") {
 
 if (!is_android) {
   source_set("browser_list") {
-    sources = [
-      "browser_list.h",
-      "browser_list_observer.h",
-    ]
+    sources = [ "browser_list.h" ]
     public_deps = [ "//base" ]
   }
 
