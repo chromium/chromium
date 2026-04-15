@@ -81,6 +81,7 @@
 #include "third_party/blink/renderer/core/paint/timing/container_timing.h"
 #include "third_party/blink/renderer/core/performance_entry_names.h"
 #include "third_party/blink/renderer/core/timing/animation_frame_timing_info.h"
+#include "third_party/blink/renderer/core/timing/global_performance.h"
 #include "third_party/blink/renderer/core/timing/interaction_contentful_paint.h"
 #include "third_party/blink/renderer/core/timing/largest_contentful_paint.h"
 #include "third_party/blink/renderer/core/timing/layout_shift.h"
@@ -1714,6 +1715,15 @@ void WindowPerformance::IterateEventTimingsByAnimationFrame(
       callback(entry);
     }
   }
+}
+
+// static
+void WindowPerformance::ClearForWindowReuse(LocalDOMWindow& window) {
+  // While `WindowPerformance` is per-`LocalDOMWindow`, metrics data is
+  // typically per-`Document`. Some data (e.g. first input timestamp) can be
+  // captured and cached on the initially empty document, so we need to clear it
+  // if clearing that document so it doesn't leak to the new document.
+  GlobalPerformance::performance(window)->timing_for_reporting_ = nullptr;
 }
 
 }  // namespace blink

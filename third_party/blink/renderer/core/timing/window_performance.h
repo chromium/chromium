@@ -80,6 +80,10 @@ class CORE_EXPORT WindowPerformance final : public Performance,
 
   static base::TimeTicks GetTimeOrigin(LocalDOMWindow* window);
 
+  // Clears any metrics state that should not persist when the initially empty
+  // document is cleared.
+  static void ClearForWindowReuse(LocalDOMWindow&);
+
   ExecutionContext* GetExecutionContext() const override;
 
   PerformanceTiming* timing() const override;

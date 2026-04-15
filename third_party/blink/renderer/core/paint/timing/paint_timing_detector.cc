@@ -30,6 +30,7 @@
 #include "third_party/blink/renderer/core/style/style_fetched_image.h"
 #include "third_party/blink/renderer/core/svg/graphics/svg_image.h"
 #include "third_party/blink/renderer/core/timing/dom_window_performance.h"
+#include "third_party/blink/renderer/core/timing/performance_timing_for_reporting.h"
 #include "third_party/blink/renderer/core/timing/soft_navigation_heuristics.h"
 #include "third_party/blink/renderer/core/timing/window_performance.h"
 #include "third_party/blink/renderer/platform/graphics/bitmap_image.h"
@@ -299,17 +300,16 @@ void PaintTimingDetector::NotifyImageRemoved(
 }
 
 void PaintTimingDetector::OnInputOrScroll() {
-  if (LocalDOMWindow* window = DomWindow()) {
-    if (auto* heuristics = window->GetSoftNavigationHeuristics()) {
-      heuristics->OnInputOrScroll();
-    }
+  LocalDOMWindow* window = DomWindow();
+  if (SoftNavigationHeuristics* heuristics =
+          window ? window->GetSoftNavigationHeuristics() : nullptr) {
+    heuristics->OnInputOrScroll();
   }
 
-  // Set first_input_or_scroll_notified_timestamp_ only once.
-  if (!first_input_or_scroll_notified_timestamp_.is_null()) {
+  if (did_notify_first_input_or_scroll_) {
     return;
   }
-  first_input_or_scroll_notified_timestamp_ = base::TimeTicks::Now();
+  did_notify_first_input_or_scroll_ = true;
 
   // TextPaintTimingDetector is used for both Largest Contentful Paint and for
   // Element Timing. Therefore, here we only want to stop recording Largest
@@ -321,6 +321,13 @@ void PaintTimingDetector::OnInputOrScroll() {
   image_paint_timing_detector_->StopRecordingLargestImagePaint();
   largest_contentful_paint_calculator_ = nullptr;
 
+  if (!window) {
+    return;
+  }
+
+  DOMWindowPerformance::performance(*window)
+      ->timingForReporting()
+      ->SetFirstInputOrScrollNotifiedTimestamp(base::TimeTicks::Now());
   DidChangePerformanceTiming();
 }
 
@@ -352,7 +359,7 @@ void PaintTimingDetector::NotifyScroll(mojom::blink::ScrollType scroll_type) {
 LargestContentfulPaintCalculator*
 PaintTimingDetector::GetLargestContentfulPaintCalculator() {
   // Do not create an LCP calculator once we stop measuring hard LCP.
-  if (!first_input_or_scroll_notified_timestamp_.is_null()) {
+  if (did_notify_first_input_or_scroll_) {
     return nullptr;
   }
   if (largest_contentful_paint_calculator_) {
@@ -373,13 +380,14 @@ PaintTimingDetector::GetLargestContentfulPaintCalculator() {
 void PaintTimingDetector::OnLcpMetricsForReportingChanged() {
   // The DidChangePerformanceTiming method which triggers the reporting of
   // metrics LCP would not be called when we are not recording metrics LCP.
-  if (!first_input_or_scroll_notified_timestamp_.is_null()) {
+  if (did_notify_first_input_or_scroll_) {
     return;
   }
 
-  lcp_details_for_metrics_ =
-      GetLargestContentfulPaintCalculator()->LatestLcpDetails();
-
+  DOMWindowPerformance::performance(CHECK_DEREF(DomWindow()))
+      ->timingForReporting()
+      ->SetLargestContentfulPaintDetailsForMetrics(
+          GetLargestContentfulPaintCalculator()->LatestLcpDetails());
   DidChangePerformanceTiming();
 }
 
@@ -449,21 +457,12 @@ void PaintTimingDetector::UpdateLcpCandidate() {
   if (!lcp_calculator) {
     return;
   }
-  CHECK_EQ(first_input_or_scroll_notified_timestamp_.is_null(),
-           image_paint_timing_detector_->IsRecordingLargestImagePaint());
-  CHECK_EQ(first_input_or_scroll_notified_timestamp_.is_null(),
-           text_paint_timing_detector_->IsRecordingLargestTextPaint());
   lcp_calculator->MaybeFlushCandidates();
 }
 
 void PaintTimingDetector::ReportIgnoredContent() {
   text_paint_timing_detector_->ReportLargestIgnoredText();
   image_paint_timing_detector_->ReportLargestIgnoredImage();
-}
-
-const LargestContentfulPaintDetails&
-PaintTimingDetector::LatestLcpDetailsForTest() {
-  return GetLargestContentfulPaintCalculator()->LatestLcpDetails();
 }
 
 void PaintTimingDetector::EmitLcpPerformanceEntry(

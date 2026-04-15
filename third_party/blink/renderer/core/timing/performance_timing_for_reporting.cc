@@ -17,7 +17,6 @@
 #include "third_party/blink/renderer/core/loader/interactive_detector.h"
 #include "third_party/blink/renderer/core/paint/timing/lcp_objects.h"
 #include "third_party/blink/renderer/core/paint/timing/paint_timing.h"
-#include "third_party/blink/renderer/core/paint/timing/paint_timing_detector.h"
 #include "third_party/blink/renderer/core/timing/performance.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_load_timing.h"
 
@@ -228,19 +227,6 @@ uint64_t PerformanceTimingForReporting::FirstMeaningfulPaintCandidate() const {
       timing->FirstMeaningfulPaintCandidate());
 }
 
-LargestContentfulPaintDetailsForReporting
-PerformanceTimingForReporting::LargestContentfulPaintDetailsForMetrics() const {
-  PaintTimingDetector* paint_timing_detector = GetPaintTimingDetector();
-  if (!paint_timing_detector) {
-    return {};
-  }
-
-  auto timing =
-      paint_timing_detector->LargestContentfulPaintDetailsForMetrics();
-
-  return PopulateLargestContentfulPaintDetailsForReporting(timing);
-}
-
 uint64_t PerformanceTimingForReporting::FirstEligibleToPaint() const {
   const PaintTiming* timing = GetPaintTiming();
   if (!timing) {
@@ -248,16 +234,6 @@ uint64_t PerformanceTimingForReporting::FirstEligibleToPaint() const {
   }
 
   return MonotonicTimeToIntegerMilliseconds(timing->FirstEligibleToPaint());
-}
-
-uint64_t PerformanceTimingForReporting::FirstInputOrScrollNotifiedTimestamp()
-    const {
-  PaintTimingDetector* paint_timing_detector = GetPaintTimingDetector();
-  if (!paint_timing_detector)
-    return 0;
-
-  return MonotonicTimeToIntegerMilliseconds(
-      paint_timing_detector->FirstInputOrScrollNotifiedTimestamp());
 }
 
 std::optional<base::TimeDelta> PerformanceTimingForReporting::FirstInputDelay()
@@ -482,13 +458,6 @@ InteractiveDetector* PerformanceTimingForReporting::GetInteractiveDetector()
   return InteractiveDetector::From(*DomWindow()->document());
 }
 
-PaintTimingDetector* PerformanceTimingForReporting::GetPaintTimingDetector()
-    const {
-  if (!DomWindow())
-    return nullptr;
-  return &DomWindow()->GetFrame()->View()->GetPaintTimingDetector();
-}
-
 std::optional<base::TimeDelta>
 PerformanceTimingForReporting::MonotonicTimeToPseudoWallTime(
     const std::optional<base::TimeTicks>& time) const {
@@ -522,6 +491,16 @@ uint64_t PerformanceTimingForReporting::MonotonicTimeToIntegerMilliseconds(
 
 void PerformanceTimingForReporting::Trace(Visitor* visitor) const {
   ExecutionContextClient::Trace(visitor);
+}
+
+void PerformanceTimingForReporting::SetFirstInputOrScrollNotifiedTimestamp(
+    base::TimeTicks timestamp) {
+  // TODO(crbug.com/494589343): Confirm that this no longer fails since this
+  // object is cleared in WindowPerformance on document reuse.
+  CHECK_EQ(first_input_or_scroll_notified_timestamp_, 0u,
+           base::NotFatalUntil::M152);
+  first_input_or_scroll_notified_timestamp_ =
+      MonotonicTimeToIntegerMilliseconds(timestamp);
 }
 
 }  // namespace blink

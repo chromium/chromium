@@ -277,10 +277,13 @@ void LocalDOMWindow::ClearForReuse() {
         });
   }
   document_ = nullptr;
+
+  // Reset per-document metrics bookkeeping.
   if (soft_navigation_heuristics_) {
     soft_navigation_heuristics_->Shutdown();
     soft_navigation_heuristics_ = nullptr;
   }
+  WindowPerformance::ClearForWindowReuse(*this);
 }
 
 void LocalDOMWindow::ResetWindowAgent(WindowAgent* agent) {

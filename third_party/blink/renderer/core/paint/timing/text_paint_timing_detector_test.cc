@@ -121,13 +121,15 @@ class TextPaintTimingDetectorTest : public testing::Test {
 
   base::TimeTicks LargestPaintTime() {
     return GetPaintTimingDetector()
-        .LatestLcpDetailsForTest()
+        .GetLargestContentfulPaintCalculator()
+        ->LatestLcpDetails()
         .largest_text_paint_time;
   }
 
   uint64_t LargestPaintSize() {
     return GetPaintTimingDetector()
-        .LatestLcpDetailsForTest()
+        .GetLargestContentfulPaintCalculator()
+        ->LatestLcpDetails()
         .largest_text_paint_size;
   }
 
