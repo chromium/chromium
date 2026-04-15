@@ -40,6 +40,7 @@ static_library("safe_browsing") {
     "//chrome/browser/history",
     "//chrome/browser/net",
     "//chrome/browser/optimization_guide",
+    "//chrome/browser/password_manager",
     "//chrome/browser/password_manager/factories",
     "//chrome/browser/preloading/prefetch/no_state_prefetch",
     "//chrome/browser/profiles",

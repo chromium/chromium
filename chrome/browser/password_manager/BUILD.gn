@@ -3,37 +3,54 @@
 # found in the LICENSE file.
 
 import("//build/config/chrome_build.gni")
+import("//components/signin/features.gni")
 
 source_set("password_manager") {
   sources = []
-  deps = []
-  if (is_mac) {
-    sources += [
-      "password_manager_util_mac.h",
-      "password_manager_util_mac.mm",
-    ]
-  }
+  public = [
+    "chrome_password_change_service.h",
+    "chrome_password_manager_client.h",
+    "chrome_webauthn_credentials_delegate.h",
+    "chrome_webauthn_credentials_delegate_factory.h",
+    "password_change_delegate.h",
+    "password_change_service_factory.h",
+    "password_field_classification_model_handler_factory.h",
+  ]
 
-  if (is_win) {
-    sources += [
-      "password_manager_util_win.cc",
-      "password_manager_util_win.h",
-    ]
-    deps += [ "//chrome/app:branded_strings" ]
-  }
+  public_deps = [
+    "//chrome/browser/password_manager/factories",
 
-  public_deps = [ "//chrome/browser/password_manager/factories" ]
-
-  deps += [
+    # deps for public headers
     "//base",
-    "//components/affiliations/core/browser:affiliations",
+    "//build:branding_buildflags",
+    "//build:buildflag_header_h",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/webauthn",
     "//components/autofill/core/browser",
-    "//components/optimization_guide/core",
+    "//components/autofill/core/common",
+    "//components/credential_management:browser",
+    "//components/enterprise/buildflags",
+    "//components/enterprise/connectors/core",
+    "//components/keyed_service/content",
+    "//components/keyed_service/core",
+    "//components/password_manager/content/browser",
     "//components/password_manager/core/browser",
+    "//components/password_manager/core/browser:password_manager_buildflags",
     "//components/password_manager/core/browser/features:password_features",
     "//components/prefs",
+    "//components/safe_browsing:buildflags",
+    "//components/signin/public/base:signin_buildflags",
+    "//components/sync/service",
     "//content/public/browser",
+    "//content/public/common",
+    "//extensions/buildflags",
     "//ui/gfx",
+    "//url",
+  ]
+
+  deps = [
+    "//components/affiliations/core/browser:affiliations",
+    "//components/optimization_guide/core",
   ]
 
   if (is_mac) {
@@ -45,13 +62,200 @@ source_set("password_manager") {
       "//chrome/app:branded_strings",
       "//chrome/app:generated_resources",
     ]
+    public += [ "password_manager_util_mac.h" ]
+    sources += [ "password_manager_util_mac.mm" ]
   }
 
   if (is_win) {
     deps += [
+      "//chrome/app:branded_strings",
       "//ui/aura",
       "//ui/views",
     ]
+    public += [ "password_manager_util_win.h" ]
+    sources += [ "password_manager_util_win.cc" ]
+  }
+
+  if (!is_android) {
+    public += [
+      "password_change/password_change_from_checkup_delegate.h",
+      "web_app_profile_switcher.h",
+    ]
+    public_deps += [
+      "//chrome/browser/actor",
+      "//chrome/browser/password_manager/password_change",
+      "//chrome/browser/web_applications",
+      "//components/webapps/common",
+    ]
+  }
+
+  if (is_android) {
+    public += [
+      "android/account_chooser_dialog_android.h",
+      "android/all_passwords_bottom_sheet_controller.h",
+      "android/all_passwords_bottom_sheet_helper.h",
+      "android/auto_signin_first_run_dialog_android.h",
+      "android/auto_signin_prompt_controller.h",
+      "android/cred_man_controller.h",
+      "android/credential_android.h",
+      "android/credential_leak_controller_android.h",
+      "android/generated_password_saved_message_delegate.h",
+      "android/password_accessory_metrics_util.h",
+      "android/password_checkup_launcher_helper.h",
+      "android/password_checkup_launcher_helper_impl.h",
+      "android/password_generation_controller.h",
+      "android/password_generation_controller_impl.h",
+      "android/password_manager_error_message_delegate.h",
+      "android/password_manager_error_message_helper_bridge.h",
+      "android/password_manager_error_message_helper_bridge_impl.h",
+      "android/password_manager_launcher_android.h",
+      "android/password_store_bridge.h",
+      "android/save_update_password_message_delegate.h",
+    ]
+    public_deps += [
+      "//chrome/browser/affiliations",
+      "//chrome/browser/password_edit_dialog/android",
+      "//chrome/browser/password_manager/android:utils",
+      "//chrome/browser/touch_to_fill/password_manager/password_generation/android",
+      "//chrome/browser/touch_to_fill/password_manager/password_generation/android:public",
+      "//chrome/browser/ui/passwords",
+      "//components/browser_ui/device_lock/android",
+      "//components/device_reauth",
+      "//components/messages/android",
+    ]
+  }
+
+  if (enable_dice_support) {
+    public += [ "multi_profile_credentials_filter.h" ]
+  }
+}
+
+source_set("impl") {
+  sources = [
+    "chrome_password_change_service.cc",
+    "chrome_password_manager_client.cc",
+    "chrome_webauthn_credentials_delegate.cc",
+    "chrome_webauthn_credentials_delegate_factory.cc",
+    "password_change_service_factory.cc",
+    "password_field_classification_model_handler_factory.cc",
+  ]
+
+  public_deps = [
+    ":password_manager",
+    "//chrome/browser:browser_public_dependencies",
+  ]
+
+  deps = [
+    "//chrome/browser/affiliations",
+    "//chrome/browser/autofill",
+    "//chrome/browser/enterprise/connectors/reporting",
+    "//chrome/browser/favicon",
+    "//chrome/browser/glic",
+    "//chrome/browser/optimization_guide",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/safe_browsing",
+    "//chrome/browser/safe_browsing:advanced_protection",
+    "//chrome/browser/signin",
+    "//chrome/browser/sync",
+    "//chrome/browser/sync:factories",
+    "//chrome/browser/tab_contents",
+    "//chrome/browser/touch_to_fill/password_manager:public",
+    "//chrome/browser/ui/autofill",
+    "//chrome/browser/ui/browser_window",
+    "//chrome/browser/ui/hats",
+    "//chrome/browser/ui/passwords",
+    "//chrome/browser/webauthn",
+    "//chrome/common:channel_info",
+    "//components/autofill/content/browser",
+    "//components/autofill/core/browser",
+    "//components/autofill/core/browser/integrators/password_manager",
+    "//components/browsing_data/content",
+    "//components/device_reauth",
+    "//components/feature_engagement/public",
+    "//components/no_state_prefetch/browser",
+    "//components/password_manager/content/browser",
+    "//components/password_manager/core/browser",
+    "//components/password_manager/core/browser:password_manager_buildflags",
+    "//components/password_manager/core/browser/affiliation:affiliation_fetching",
+    "//components/password_manager/core/browser/affiliation:affiliation_match_helper",
+    "//components/password_manager/core/browser/features:password_features",
+    "//components/password_manager/core/browser/generation:core",
+    "//components/password_manager/core/browser/sharing",
+    "//components/password_manager/core/common",
+    "//components/policy/core/browser",
+    "//components/prefs",
+    "//components/profile_metrics",
+    "//components/safe_browsing/core/common:features",
+    "//components/sessions",
+    "//components/signin/public/identity_manager",
+    "//components/site_engagement/content",
+    "//components/site_isolation",
+    "//components/variations/service",
+    "//components/version_info",
+    "//extensions/buildflags",
+  ]
+
+  if (!is_android) {
+    sources += [
+      "generated_password_leak_detection_pref.cc",
+      "generated_password_leak_detection_pref.h",
+      "password_change/password_change_from_checkup_delegate.cc",
+      "password_change_delegate_impl.cc",
+      "password_change_delegate_impl.h",
+      "web_app_profile_switcher.cc",
+    ]
+    deps += [
+      "//chrome/browser/actor",
+      "//chrome/browser/password_manager/password_change",
+      "//chrome/browser/ui/passwords",
+      "//chrome/browser/ui/passwords:impl",
+      "//chrome/browser/ui/tabs:tab_strip",
+      "//chrome/browser/ui/user_education",
+      "//chrome/browser/ui/web_applications",
+      "//chrome/browser/web_applications",
+    ]
+  }
+
+  if (is_android) {
+    sources += [
+      "android/account_chooser_dialog_android.cc",
+      "android/all_passwords_bottom_sheet_controller.cc",
+      "android/all_passwords_bottom_sheet_helper.cc",
+      "android/auto_signin_first_run_dialog_android.cc",
+      "android/auto_signin_prompt_controller.cc",
+      "android/cred_man_controller.cc",
+      "android/credential_android.cc",
+      "android/credential_leak_controller_android.cc",
+      "android/generated_password_saved_message_delegate.cc",
+      "android/password_checkup_launcher_helper.cc",
+      "android/password_checkup_launcher_helper_impl.cc",
+      "android/password_generation_controller_impl.cc",
+      "android/password_manager_error_message_delegate.cc",
+      "android/password_manager_error_message_helper_bridge_impl.cc",
+      "android/password_manager_launcher_android.cc",
+      "android/password_store_bridge.cc",
+      "android/save_update_password_message_delegate.cc",
+    ]
+    deps += [
+      "//chrome/android:chrome_jni_headers",
+      "//chrome/browser/keyboard_accessory/android:public",
+      "//chrome/browser/password_manager/android:password_manager_android",
+      "//chrome/browser/plus_addresses",
+      "//chrome/browser/touch_to_fill/password_manager:public",
+      "//chrome/browser/touch_to_fill/password_manager/no_passkeys/android:public",
+      "//chrome/browser/touch_to_fill/password_manager/password_generation/android",
+      "//chrome/browser/touch_to_fill/password_manager/password_generation/android:public",
+      "//components/messages/android",
+      "//components/password_manager/core/browser/affiliation:affiliation_fetching",
+      "//components/password_manager/core/browser/form_parsing",
+      "//components/password_manager/core/browser/leak_detection",
+      "//components/plus_addresses/core/browser",
+      "//components/webauthn/android",
+    ]
+  }
+
+  if (enable_dice_support) {
+    sources += [ "multi_profile_credentials_filter.cc" ]
   }
 }
 

@@ -578,6 +578,7 @@ source_set("unit_tests") {
     "//chrome/browser/autofill",
     "//chrome/browser/keyboard_accessory/test_utils/android",
     "//chrome/browser/password_edit_dialog/android",
+    "//chrome/browser/password_manager",
     "//chrome/browser/password_manager/android/add_username_dialog:android",
     "//chrome/browser/password_manager/factories",
     "//chrome/browser/plus_addresses",

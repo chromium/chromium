@@ -121,6 +121,7 @@ static_library("login") {
     "//chrome/browser/ash/policy/remote_commands/crd",
     "//chrome/browser/ash/system",
     "//chrome/browser/media/webrtc",
+    "//chrome/browser/password_manager",
     "//chrome/browser/safe_browsing",
     "//chrome/browser/themes",
     "//chrome/browser/ui/content_settings",
