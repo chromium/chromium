@@ -7,8 +7,8 @@
 #import "base/test/test_future.h"
 #import "components/optimization_guide/proto/features/actions_data.pb.h"
 #import "ios/chrome/browser/intelligence/actor/tools/model/actor_tool.h"
-#import "ios/chrome/browser/intelligence/actor/tools/model/actor_tool_error.h"
 #import "ios/chrome/browser/intelligence/actor/tools/model/actor_tool_java_script_feature_test_base.h"
+#import "ios/chrome/browser/intelligence/actor/tools/public/actor_tool_error.h"
 #import "testing/gtest/include/gtest/gtest.h"
 
 using optimization_guide::proto::ClickAction;
@@ -62,8 +62,8 @@ TEST_F(ClickToolJavaScriptFeatureTest, JsReturnsNonDict) {
   MockClickJsFunctions(/*mock_return_value=*/"'unexpected type'");
   ClickAction click_by_coordinate = CreateClickActionWithCoordinates();
   ClickAction click_by_node_id = CreateClickActionWithNodeId();
-  base::test::TestFuture<ActorTool::ToolExecutionResult> coordinate_future;
-  base::test::TestFuture<ActorTool::ToolExecutionResult> node_id_future;
+  base::test::TestFuture<ToolExecutionResult> coordinate_future;
+  base::test::TestFuture<ToolExecutionResult> node_id_future;
 
   feature()->Click(GetMainFrame(feature()), click_by_coordinate,
                    coordinate_future.GetCallback());
@@ -86,8 +86,8 @@ TEST_F(ClickToolJavaScriptFeatureTest, JsReturnsError) {
       /*mock_return_value=*/"{success: false, message: 'Custom JS Error'}");
   ClickAction click_by_coordinate = CreateClickActionWithCoordinates();
   ClickAction click_by_node_id = CreateClickActionWithNodeId();
-  base::test::TestFuture<ActorTool::ToolExecutionResult> coordinate_future;
-  base::test::TestFuture<ActorTool::ToolExecutionResult> node_id_future;
+  base::test::TestFuture<ToolExecutionResult> coordinate_future;
+  base::test::TestFuture<ToolExecutionResult> node_id_future;
 
   feature()->Click(GetMainFrame(feature()), click_by_coordinate,
                    coordinate_future.GetCallback());
@@ -110,8 +110,8 @@ TEST_F(ClickToolJavaScriptFeatureTest, JsReturnsError) {
 TEST_F(ClickToolJavaScriptFeatureTest, InvalidatedWebFrame) {
   ClickAction type_by_coordinate = CreateClickActionWithCoordinates();
   ClickAction type_by_node_id = CreateClickActionWithNodeId();
-  base::test::TestFuture<ActorTool::ToolExecutionResult> coordinate_future;
-  base::test::TestFuture<ActorTool::ToolExecutionResult> node_id_future;
+  base::test::TestFuture<ToolExecutionResult> coordinate_future;
+  base::test::TestFuture<ToolExecutionResult> node_id_future;
 
   feature()->Click(/*target_frame=*/nullptr, type_by_coordinate,
                    coordinate_future.GetCallback());
@@ -132,8 +132,8 @@ TEST_F(ClickToolJavaScriptFeatureTest, JsReturnsErrorWithoutMessage) {
   MockClickJsFunctions(/*mock_return_value=*/"{success: false}");
   ClickAction click_by_coordinate = CreateClickActionWithCoordinates();
   ClickAction click_by_node_id = CreateClickActionWithNodeId();
-  base::test::TestFuture<ActorTool::ToolExecutionResult> coordinate_future;
-  base::test::TestFuture<ActorTool::ToolExecutionResult> node_id_future;
+  base::test::TestFuture<ToolExecutionResult> coordinate_future;
+  base::test::TestFuture<ToolExecutionResult> node_id_future;
 
   feature()->Click(GetMainFrame(feature()), click_by_coordinate,
                    coordinate_future.GetCallback());
@@ -157,7 +157,7 @@ TEST_F(ClickToolJavaScriptFeatureTest, ClickByCoordinate_Success) {
   MockClickJsFunctions(
       /*mock_return_value=*/"{success: true, message: 'fake success!'}");
   ClickAction action = CreateClickActionWithCoordinates();
-  base::test::TestFuture<ActorTool::ToolExecutionResult> future;
+  base::test::TestFuture<ToolExecutionResult> future;
 
   feature()->Click(GetMainFrame(feature()), action, future.GetCallback());
 
@@ -169,7 +169,7 @@ TEST_F(ClickToolJavaScriptFeatureTest, ClickByNodeId_Success) {
   MockClickJsFunctions(
       /*mock_return_value=*/"{success: true, message: 'fake success!'}");
   ClickAction action = CreateClickActionWithNodeId();
-  base::test::TestFuture<ActorTool::ToolExecutionResult> future;
+  base::test::TestFuture<ToolExecutionResult> future;
 
   feature()->Click(GetMainFrame(feature()), action, future.GetCallback());
 

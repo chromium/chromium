@@ -4,7 +4,7 @@
 
 #import "ios/chrome/browser/intelligence/actor/tools/model/actor_tool.h"
 
-#import "ios/chrome/browser/intelligence/actor/tools/model/actor_tool_error.h"
+#import "ios/chrome/browser/intelligence/actor/tools/public/actor_tool_error.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/browser/browser_list.h"
 #import "ios/chrome/browser/shared/model/browser/browser_list_factory.h"

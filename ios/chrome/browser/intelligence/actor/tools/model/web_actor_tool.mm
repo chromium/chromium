@@ -6,7 +6,7 @@
 
 #import "base/memory/weak_ptr.h"
 #import "ios/chrome/browser/intelligence/actor/tools/model/action_target_java_script_feature.h"
-#import "ios/chrome/browser/intelligence/actor/tools/model/actor_tool_error.h"
+#import "ios/chrome/browser/intelligence/actor/tools/public/actor_tool_error.h"
 #import "ios/web/public/web_state.h"
 
 namespace actor {

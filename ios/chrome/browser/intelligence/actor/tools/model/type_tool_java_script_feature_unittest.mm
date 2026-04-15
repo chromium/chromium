@@ -7,8 +7,8 @@
 #import "base/test/test_future.h"
 #import "components/optimization_guide/proto/features/actions_data.pb.h"
 #import "ios/chrome/browser/intelligence/actor/tools/model/actor_tool.h"
-#import "ios/chrome/browser/intelligence/actor/tools/model/actor_tool_error.h"
 #import "ios/chrome/browser/intelligence/actor/tools/model/actor_tool_java_script_feature_test_base.h"
+#import "ios/chrome/browser/intelligence/actor/tools/public/actor_tool_error.h"
 #import "testing/gtest/include/gtest/gtest.h"
 
 using optimization_guide::proto::TypeAction;
@@ -64,8 +64,8 @@ TEST_F(TypeToolJavaScriptFeatureTest, JsReturnsNonDict) {
   MockTypeJsFunctions(/*mock_return_value=*/"'unexpected type'");
   TypeAction type_by_coordinate = CreateTypeActionWithCoordinates();
   TypeAction type_by_node_id = CreateTypeActionWithIdentifiers();
-  base::test::TestFuture<ActorTool::ToolExecutionResult> coordinate_future;
-  base::test::TestFuture<ActorTool::ToolExecutionResult> node_id_future;
+  base::test::TestFuture<ToolExecutionResult> coordinate_future;
+  base::test::TestFuture<ToolExecutionResult> node_id_future;
 
   feature()->Type(GetMainFrame(feature()), type_by_coordinate,
                   coordinate_future.GetCallback());
@@ -88,8 +88,8 @@ TEST_F(TypeToolJavaScriptFeatureTest, JsReturnsError) {
       /*mock_return_value=*/"{success: false, message: 'Custom JS Error'}");
   TypeAction type_by_coordinate = CreateTypeActionWithCoordinates();
   TypeAction type_by_node_id = CreateTypeActionWithIdentifiers();
-  base::test::TestFuture<ActorTool::ToolExecutionResult> coordinate_future;
-  base::test::TestFuture<ActorTool::ToolExecutionResult> node_id_future;
+  base::test::TestFuture<ToolExecutionResult> coordinate_future;
+  base::test::TestFuture<ToolExecutionResult> node_id_future;
 
   feature()->Type(GetMainFrame(feature()), type_by_coordinate,
                   coordinate_future.GetCallback());
@@ -112,8 +112,8 @@ TEST_F(TypeToolJavaScriptFeatureTest, JsReturnsError) {
 TEST_F(TypeToolJavaScriptFeatureTest, InvalidatedWebFrame) {
   TypeAction type_by_coordinate = CreateTypeActionWithCoordinates();
   TypeAction type_by_node_id = CreateTypeActionWithIdentifiers();
-  base::test::TestFuture<ActorTool::ToolExecutionResult> coordinate_future;
-  base::test::TestFuture<ActorTool::ToolExecutionResult> node_id_future;
+  base::test::TestFuture<ToolExecutionResult> coordinate_future;
+  base::test::TestFuture<ToolExecutionResult> node_id_future;
 
   feature()->Type(/*target_frame=*/nullptr, type_by_coordinate,
                   coordinate_future.GetCallback());
@@ -134,7 +134,7 @@ TEST_F(TypeToolJavaScriptFeatureTest, TypeByCoordinate_Success) {
   MockTypeJsFunctions(
       /*mock_return_value=*/"{success: true, message: 'fake success!'}");
   TypeAction action = CreateTypeActionWithCoordinates();
-  base::test::TestFuture<ActorTool::ToolExecutionResult> future;
+  base::test::TestFuture<ToolExecutionResult> future;
 
   feature()->Type(GetMainFrame(feature()), action, future.GetCallback());
 
@@ -146,7 +146,7 @@ TEST_F(TypeToolJavaScriptFeatureTest, TypeByIdentifier_Success) {
   MockTypeJsFunctions(
       /*mock_return_value=*/"{success: true, message: 'fake success!'}");
   TypeAction action = CreateTypeActionWithIdentifiers();
-  base::test::TestFuture<ActorTool::ToolExecutionResult> future;
+  base::test::TestFuture<ToolExecutionResult> future;
 
   feature()->Type(GetMainFrame(feature()), action, future.GetCallback());
 

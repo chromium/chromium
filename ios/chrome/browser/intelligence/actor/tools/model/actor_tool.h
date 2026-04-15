@@ -8,7 +8,7 @@
 #import "base/functional/callback_forward.h"
 #import "base/memory/raw_ptr.h"
 #import "base/memory/weak_ptr.h"
-#import "base/types/expected.h"
+#import "ios/chrome/browser/intelligence/actor/tools/public/actor_tool_types.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 
 class Browser;
@@ -20,13 +20,9 @@ class WebState;
 
 namespace actor {
 
-struct ActorToolError;
-
 // Abstract base class for all actor tools.
 class ActorTool {
  public:
-  using ToolExecutionResult = base::expected<void, ActorToolError>;
-  using ToolExecutionCallback = base::OnceCallback<void(ToolExecutionResult)>;
 
   // Result of resolving a tab ID to its associated objects.
   struct TabResolutionResult {

@@ -14,7 +14,7 @@ class Value;
 namespace actor {
 
 // Processes a standard {success: bool, message: string} JS result.
-void ParseJavaScriptResult(ActorTool::ToolExecutionCallback callback,
+void ParseJavaScriptResult(ToolExecutionCallback callback,
                            const base::Value* result);
 
 }  // namespace actor

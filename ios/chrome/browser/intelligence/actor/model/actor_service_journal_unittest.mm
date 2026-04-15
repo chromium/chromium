@@ -11,8 +11,8 @@
 #import "ios/chrome/browser/intelligence/actor/model/actor_service_factory.h"
 #import "ios/chrome/browser/intelligence/actor/model/aggregated_journal.h"
 #import "ios/chrome/browser/intelligence/actor/tools/model/actor_tool.h"
-#import "ios/chrome/browser/intelligence/actor/tools/model/actor_tool_error.h"
 #import "ios/chrome/browser/intelligence/actor/tools/model/actor_tool_factory.h"
+#import "ios/chrome/browser/intelligence/actor/tools/public/actor_tool_error.h"
 #import "ios/chrome/browser/intelligence/features/features.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "testing/gmock/include/gmock/gmock.h"
@@ -24,10 +24,7 @@ namespace {
 
 class MockActorTool : public ActorTool {
  public:
-  MOCK_METHOD(void,
-              Execute,
-              (ActorTool::ToolExecutionCallback callback),
-              (override));
+  MOCK_METHOD(void, Execute, (ToolExecutionCallback callback), (override));
 };
 
 class MockActorToolFactory : public ActorToolFactory {
@@ -86,7 +83,7 @@ TEST_F(ActorServiceJournalTest, ToolExecutionFails) {
       .WillOnce(testing::Return(std::move(mock_tool)));
 
   EXPECT_CALL(*tool_ptr, Execute(testing::_))
-      .WillOnce([](ActorTool::ToolExecutionCallback callback) {
+      .WillOnce([](ToolExecutionCallback callback) {
         std::move(callback).Run(base::unexpected(
             ActorToolError{ActorToolErrorCode::kNavigationInvalidURL}));
       });
@@ -123,7 +120,7 @@ TEST_F(ActorServiceJournalTest, ToolExecutionSucceeds) {
       .WillOnce(testing::Return(std::move(mock_tool)));
 
   EXPECT_CALL(*tool_ptr, Execute(testing::_))
-      .WillOnce([](ActorTool::ToolExecutionCallback callback) {
+      .WillOnce([](ToolExecutionCallback callback) {
         std::move(callback).Run(base::ok());
       });
 

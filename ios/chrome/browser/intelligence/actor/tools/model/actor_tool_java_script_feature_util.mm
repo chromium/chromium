@@ -6,11 +6,11 @@
 
 #import "base/functional/callback.h"
 #import "base/values.h"
-#import "ios/chrome/browser/intelligence/actor/tools/model/actor_tool_error.h"
+#import "ios/chrome/browser/intelligence/actor/tools/public/actor_tool_error.h"
 
 namespace actor {
 
-void ParseJavaScriptResult(ActorTool::ToolExecutionCallback callback,
+void ParseJavaScriptResult(ToolExecutionCallback callback,
                            const base::Value* result) {
   if (!result || !result->is_dict()) {
     std::move(callback).Run(base::unexpected(ActorToolError{

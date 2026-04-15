@@ -13,7 +13,7 @@
 #import "ios/chrome/browser/intelligence/actor/model/actor_service.h"
 #import "ios/chrome/browser/intelligence/actor/model/actor_service_factory.h"
 #import "ios/chrome/browser/intelligence/actor/tools/model/actor_tool.h"
-#import "ios/chrome/browser/intelligence/actor/tools/model/actor_tool_error.h"
+#import "ios/chrome/browser/intelligence/actor/tools/public/actor_tool_error.h"
 #import "ios/chrome/browser/intelligence/proto_wrappers/page_context_wrapper.h"
 #import "ios/chrome/browser/intelligence/proto_wrappers/page_context_wrapper_config.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
@@ -57,7 +57,7 @@ const base::TimeDelta kApcFetchingTimeout = base::Seconds(10);
   }
 
   service->ExecuteAction(
-      action, base::BindOnce(^(actor::ActorTool::ToolExecutionResult result) {
+      action, base::BindOnce(^(actor::ToolExecutionResult result) {
         if (result.has_value()) {
           completion(nil);
         } else {

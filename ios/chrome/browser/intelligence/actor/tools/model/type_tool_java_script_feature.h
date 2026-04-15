@@ -28,7 +28,7 @@ class TypeToolJavaScriptFeature : public web::JavaScriptFeature {
   // Executes a type action on the given WebFrame.
   void Type(base::WeakPtr<web::WebFrame> target_frame,
             const optimization_guide::proto::TypeAction& action,
-            ActorTool::ToolExecutionCallback callback);
+            ToolExecutionCallback callback);
 
  protected:
   TypeToolJavaScriptFeature();

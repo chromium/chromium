@@ -7,14 +7,12 @@
 #import "base/test/task_environment.h"
 #import "base/test/test_future.h"
 #import "components/optimization_guide/proto/features/actions_data.pb.h"
-#import "ios/chrome/browser/intelligence/actor/tools/model/actor_tool_error.h"
+#import "ios/chrome/browser/intelligence/actor/tools/public/actor_tool_error.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/platform_test.h"
 
 namespace actor {
-
-using ToolExecutionResult = ActorTool::ToolExecutionResult;
 
 namespace {
 

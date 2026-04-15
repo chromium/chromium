@@ -6,7 +6,6 @@
 
 #import "components/optimization_guide/proto/features/actions_data.pb.h"
 #import "ios/chrome/browser/intelligence/actor/tools/model/actor_tool.h"
-#import "ios/chrome/browser/intelligence/actor/tools/model/actor_tool_error.h"
 #import "ios/chrome/browser/intelligence/actor/tools/model/click_tool.h"
 #import "ios/chrome/browser/intelligence/actor/tools/model/history_tool.h"
 #import "ios/chrome/browser/intelligence/actor/tools/model/navigate_tool.h"
@@ -14,6 +13,7 @@
 #import "ios/chrome/browser/intelligence/actor/tools/model/scroll_tool.h"
 #import "ios/chrome/browser/intelligence/actor/tools/model/type_tool.h"
 #import "ios/chrome/browser/intelligence/actor/tools/model/wait_tool.h"
+#import "ios/chrome/browser/intelligence/actor/tools/public/actor_tool_error.h"
 #import "ios/chrome/browser/intelligence/features/features.h"
 
 namespace actor {

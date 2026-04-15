@@ -13,8 +13,8 @@
 #import "ios/chrome/browser/intelligence/actor/model/actor_task.h"
 #import "ios/chrome/browser/intelligence/actor/model/aggregated_journal.h"
 #import "ios/chrome/browser/intelligence/actor/tools/model/actor_tool.h"
-#import "ios/chrome/browser/intelligence/actor/tools/model/actor_tool_error.h"
 #import "ios/chrome/browser/intelligence/actor/tools/model/actor_tool_factory.h"
+#import "ios/chrome/browser/intelligence/actor/tools/public/actor_tool_error.h"
 #import "ios/chrome/browser/intelligence/actor/tools/utils/actor_tool_utils.h"
 #import "ios/chrome/browser/intelligence/features/features.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
@@ -38,7 +38,7 @@ void ActorService::Shutdown() {}
 
 void ActorService::ExecuteAction(
     const optimization_guide::proto::Action& action,
-    ActorTool::ToolExecutionCallback callback) {
+    ToolExecutionCallback callback) {
   CHECK(IsActorEnabled());
 
   if (action.action_case() ==
@@ -88,11 +88,10 @@ void ActorService::ExecuteAction(
           GURL(), ActorTaskId(), 0,
           base::StringPrintf("Execute Tool: %s", tool_name.c_str()), {});
 
-  ActorTool::ToolExecutionCallback wrapped_callback = base::BindOnce(
+  ToolExecutionCallback wrapped_callback = base::BindOnce(
       [](std::unique_ptr<ActorTool> tool,
          std::unique_ptr<AggregatedJournal::PendingAsyncEntry> entry,
-         ActorTool::ToolExecutionCallback callback,
-         ActorTool::ToolExecutionResult result) {
+         ToolExecutionCallback callback, ToolExecutionResult result) {
         std::vector<JournalDetails> details;
         if (!result.has_value()) {
           // Log if an error happens between Begin and End.
@@ -124,9 +123,9 @@ ActorTaskId ActorService::CreateTask(const std::string& title,
 void ActorService::ExecuteTools(ActorTaskId task_id,
                                 std::vector<std::unique_ptr<ActorTool>> tools,
                                 const std::string& task_update,
-                                ExecuteToolsCallback callback) {
+                                PerformActionsCallback callback) {
   // TODO(crbug.com/496163986): Implement and test.
-  std::move(callback).Run(ActorTaskStoppedReason::kStoppedByUser);
+  std::move(callback).Run({});
 }
 
 void ActorService::PauseTask(ActorTaskId task_id, bool from_actor) {

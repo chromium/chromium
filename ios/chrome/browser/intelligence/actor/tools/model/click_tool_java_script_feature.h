@@ -30,7 +30,7 @@ class ClickToolJavaScriptFeature : public web::JavaScriptFeature {
   // Executes a click action on the given WebFrame.
   void Click(base::WeakPtr<web::WebFrame> target_frame,
              const optimization_guide::proto::ClickAction& action,
-             ActorTool::ToolExecutionCallback callback);
+             ToolExecutionCallback callback);
 
  protected:
   ClickToolJavaScriptFeature();

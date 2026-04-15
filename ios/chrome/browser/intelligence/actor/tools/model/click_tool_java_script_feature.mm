@@ -10,8 +10,8 @@
 #import "base/memory/weak_ptr.h"
 #import "base/values.h"
 #import "components/optimization_guide/proto/features/actions_data.pb.h"
-#import "ios/chrome/browser/intelligence/actor/tools/model/actor_tool_error.h"
 #import "ios/chrome/browser/intelligence/actor/tools/model/actor_tool_java_script_feature_util.h"
+#import "ios/chrome/browser/intelligence/actor/tools/public/actor_tool_error.h"
 #import "ios/web/public/js_messaging/web_frame.h"
 
 namespace {
@@ -40,7 +40,7 @@ ClickToolJavaScriptFeature::~ClickToolJavaScriptFeature() = default;
 void ClickToolJavaScriptFeature::Click(
     base::WeakPtr<web::WebFrame> target_frame,
     const optimization_guide::proto::ClickAction& action,
-    ActorTool::ToolExecutionCallback callback) {
+    ToolExecutionCallback callback) {
   CHECK(action.has_target());
   CHECK(action.has_click_count() && action.has_click_type());
   CHECK(action.target().has_coordinate() ||

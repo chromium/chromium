@@ -10,7 +10,7 @@
 #import "base/functional/callback.h"
 #import "base/task/sequenced_task_runner.h"
 #import "components/optimization_guide/proto/features/actions_data.pb.h"
-#import "ios/chrome/browser/intelligence/actor/tools/model/actor_tool_error.h"
+#import "ios/chrome/browser/intelligence/actor/tools/public/actor_tool_error.h"
 #import "ios/web/public/web_state.h"
 
 namespace actor {

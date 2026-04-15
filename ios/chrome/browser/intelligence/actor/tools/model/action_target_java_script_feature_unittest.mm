@@ -12,7 +12,7 @@
 #import "components/autofill/ios/form_util/autofill_form_features_java_script_feature.h"
 #import "components/autofill/ios/form_util/child_frame_registrar.h"
 #import "components/optimization_guide/proto/features/actions_data.pb.h"
-#import "ios/chrome/browser/intelligence/actor/tools/model/actor_tool_error.h"
+#import "ios/chrome/browser/intelligence/actor/tools/public/actor_tool_error.h"
 #import "ios/chrome/browser/intelligence/features/features.h"
 #import "ios/chrome/test/ios_chrome_test_with_web_state.h"
 #import "ios/web/common/features.h"

@@ -3,8 +3,14 @@
 # found in the LICENSE file.
 
 source_set("actor_types") {
-  sources = [ "actor_types.h" ]
-  deps = [ "//base" ]
+  sources = [
+    "actor_types.h",
+    "actor_types.mm",
+  ]
+  deps = [
+    "//base",
+    "//ios/chrome/browser/intelligence/actor/tools/public",
+  ]
 }
 
 source_set("actor_task_ui_protocols") {

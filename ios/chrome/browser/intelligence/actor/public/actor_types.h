@@ -5,8 +5,11 @@
 #ifndef IOS_CHROME_BROWSER_INTELLIGENCE_ACTOR_PUBLIC_ACTOR_TYPES_H_
 #define IOS_CHROME_BROWSER_INTELLIGENCE_ACTOR_PUBLIC_ACTOR_TYPES_H_
 
+#import <vector>
+
 #import "base/functional/callback_forward.h"
 #import "base/types/id_type.h"
+#import "ios/chrome/browser/intelligence/actor/tools/public/actor_tool_types.h"
 
 namespace actor {
 
@@ -54,8 +57,23 @@ enum class ActorTaskStoppedReason {
   kUserStartedNewChat = 6
 };
 
-// Callback for when a tool or set of tools finishes.
-using ExecuteToolsCallback = base::OnceCallback<void(ActorTaskStoppedReason)>;
+// Represents the result of an action execution.
+struct ActionResult {
+  ActionResult();
+  ~ActionResult();
+  ActionResult(const ActionResult&) = delete;
+  ActionResult& operator=(const ActionResult&) = delete;
+  ActionResult(ActionResult&&);
+  ActionResult& operator=(ActionResult&&);
+  explicit ActionResult(ToolExecutionResult result);
+
+  // The result of the tool execution.
+  ToolExecutionResult tool_result;
+};
+
+// Callback for when a set of actions finishes execution.
+using PerformActionsCallback =
+    base::OnceCallback<void(std::vector<ActionResult>)>;
 
 }  // namespace actor
 

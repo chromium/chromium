@@ -28,13 +28,13 @@ class ScrollToolJavaScriptFeature : public web::JavaScriptFeature {
   // WebFrame.
   void Scroll(base::WeakPtr<web::WebFrame> target_frame,
               const optimization_guide::proto::ScrollAction& action,
-              ActorTool::ToolExecutionCallback callback);
+              ToolExecutionCallback callback);
 
   // Attempts to bring a target element into visibility within the given
   // WebFrame by scrolling the page or any parent scroll views as needed.
   void ScrollTo(base::WeakPtr<web::WebFrame> target_frame,
                 const optimization_guide::proto::ScrollToAction& action,
-                ActorTool::ToolExecutionCallback callback);
+                ToolExecutionCallback callback);
 
  protected:
   ScrollToolJavaScriptFeature();
@@ -54,7 +54,7 @@ class ScrollToolJavaScriptFeature : public web::JavaScriptFeature {
       std::optional<
           std::pair<optimization_guide::proto::ScrollAction_ScrollDirection,
                     int>> direction_and_distance,
-      ActorTool::ToolExecutionCallback callback);
+      ToolExecutionCallback callback);
 };
 
 }  // namespace actor

@@ -8,8 +8,8 @@
 #import "base/test/test_future.h"
 #import "components/optimization_guide/proto/features/actions_data.pb.h"
 #import "ios/chrome/browser/intelligence/actor/tools/model/actor_tool.h"
-#import "ios/chrome/browser/intelligence/actor/tools/model/actor_tool_error.h"
 #import "ios/chrome/browser/intelligence/actor/tools/model/click_tool_java_script_feature.h"
+#import "ios/chrome/browser/intelligence/actor/tools/public/actor_tool_error.h"
 #import "ios/chrome/browser/shared/model/browser/browser_list.h"
 #import "ios/chrome/browser/shared/model/browser/browser_list_factory.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
@@ -21,9 +21,6 @@
 #import "testing/platform_test.h"
 
 namespace actor {
-
-using ToolExecutionCallback = ActorTool::ToolExecutionCallback;
-using ToolExecutionResult = ActorTool::ToolExecutionResult;
 
 class ClickToolTest : public PlatformTest {
  public:

@@ -33,7 +33,7 @@
 #import "ios/chrome/browser/ai_prototyping/utils/page_context_util.h"
 #import "ios/chrome/browser/intelligence/actor/model/actor_service.h"
 #import "ios/chrome/browser/intelligence/actor/model/actor_service_factory.h"
-#import "ios/chrome/browser/intelligence/actor/tools/model/actor_tool_error.h"
+#import "ios/chrome/browser/intelligence/actor/tools/public/actor_tool_error.h"
 #import "ios/chrome/browser/intelligence/enhanced_calendar/model/enhanced_calendar_service_impl.h"
 #import "ios/chrome/browser/intelligence/proto_wrappers/ios_smart_tab_grouping_request_wrapper.h"
 #import "ios/chrome/browser/intelligence/proto_wrappers/page_context_wrapper.h"
@@ -619,8 +619,7 @@
     remaining_actions->erase(remaining_actions->begin());
 
     actorService->ExecuteAction(
-        next_action,
-        base::BindOnce(^(actor::ActorTool::ToolExecutionResult result) {
+        next_action, base::BindOnce(^(actor::ToolExecutionResult result) {
           NSLog(@"[AIPrototypingMediator] Actor callback executed.");
           if (result.has_value()) {
             dispatch_async(dispatch_get_main_queue(), ^{

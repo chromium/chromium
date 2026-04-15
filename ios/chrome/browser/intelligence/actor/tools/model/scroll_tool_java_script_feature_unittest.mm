@@ -8,8 +8,8 @@
 #import "base/test/test_future.h"
 #import "components/optimization_guide/proto/features/actions_data.pb.h"
 #import "ios/chrome/browser/intelligence/actor/tools/model/actor_tool.h"
-#import "ios/chrome/browser/intelligence/actor/tools/model/actor_tool_error.h"
 #import "ios/chrome/browser/intelligence/actor/tools/model/actor_tool_java_script_feature_test_base.h"
+#import "ios/chrome/browser/intelligence/actor/tools/public/actor_tool_error.h"
 #import "testing/gtest/include/gtest/gtest.h"
 
 using optimization_guide::proto::ScrollAction;
@@ -85,8 +85,8 @@ TEST_F(ScrollToolJavaScriptFeatureTest, JsReturnsNonDict) {
   MockScrollJsFunctions(/*mock_return_value=*/"'unexpected type'");
   ScrollAction scroll_by_coordinate = CreateScrollActionWithCoordinates();
   ScrollToAction scroll_to_by_node_id = CreateScrollToActionWithIdentifiers();
-  base::test::TestFuture<ActorTool::ToolExecutionResult> scroll_future;
-  base::test::TestFuture<ActorTool::ToolExecutionResult> scroll_to_future;
+  base::test::TestFuture<ToolExecutionResult> scroll_future;
+  base::test::TestFuture<ToolExecutionResult> scroll_to_future;
 
   feature()->Scroll(GetMainFrame(feature()), scroll_by_coordinate,
                     scroll_future.GetCallback());
@@ -109,8 +109,8 @@ TEST_F(ScrollToolJavaScriptFeatureTest, JsReturnsError) {
       /*mock_return_value=*/"{success: false, message: 'Custom JS Error'}");
   ScrollAction scroll_by_coordinate = CreateScrollActionWithCoordinates();
   ScrollToAction scroll_to_by_node_id = CreateScrollToActionWithIdentifiers();
-  base::test::TestFuture<ActorTool::ToolExecutionResult> scroll_future;
-  base::test::TestFuture<ActorTool::ToolExecutionResult> scroll_to_future;
+  base::test::TestFuture<ToolExecutionResult> scroll_future;
+  base::test::TestFuture<ToolExecutionResult> scroll_to_future;
 
   feature()->Scroll(GetMainFrame(feature()), scroll_by_coordinate,
                     scroll_future.GetCallback());
@@ -135,8 +135,8 @@ TEST_F(ScrollToolJavaScriptFeatureTest, WebFrameInvalidated) {
       /*mock_return_value=*/"{success: true, message: 'fake success!'}");
   ScrollAction scroll_by_coordinate = CreateScrollActionWithCoordinates();
   ScrollToAction scroll_to_by_node_id = CreateScrollToActionWithIdentifiers();
-  base::test::TestFuture<ActorTool::ToolExecutionResult> scroll_future;
-  base::test::TestFuture<ActorTool::ToolExecutionResult> scroll_to_future;
+  base::test::TestFuture<ToolExecutionResult> scroll_future;
+  base::test::TestFuture<ToolExecutionResult> scroll_to_future;
 
   feature()->Scroll(nullptr, scroll_by_coordinate, scroll_future.GetCallback());
   feature()->ScrollTo(nullptr, scroll_to_by_node_id,
@@ -156,7 +156,7 @@ TEST_F(ScrollToolJavaScriptFeatureTest, Scroll_ByCoordinate_Success) {
   MockScrollJsFunctions(
       /*mock_return_value=*/"{success: true, message: 'fake success!'}");
   ScrollAction action = CreateScrollActionWithCoordinates();
-  base::test::TestFuture<ActorTool::ToolExecutionResult> future;
+  base::test::TestFuture<ToolExecutionResult> future;
 
   feature()->Scroll(GetMainFrame(feature()), action, future.GetCallback());
 
@@ -168,7 +168,7 @@ TEST_F(ScrollToolJavaScriptFeatureTest, Scroll_ByIdentifier_Success) {
   MockScrollJsFunctions(
       /*mock_return_value=*/"{success: true, message: 'fake success!'}");
   ScrollAction action = CreateScrollActionWithIdentifiers();
-  base::test::TestFuture<ActorTool::ToolExecutionResult> future;
+  base::test::TestFuture<ToolExecutionResult> future;
 
   feature()->Scroll(GetMainFrame(feature()), action, future.GetCallback());
 
@@ -180,7 +180,7 @@ TEST_F(ScrollToolJavaScriptFeatureTest, ScrollTo_ByCoordinate_Success) {
   MockScrollJsFunctions(
       /*mock_return_value=*/"{success: true, message: 'fake success!'}");
   ScrollToAction action = CreateScrollToActionWithCoordinates();
-  base::test::TestFuture<ActorTool::ToolExecutionResult> future;
+  base::test::TestFuture<ToolExecutionResult> future;
 
   feature()->ScrollTo(GetMainFrame(feature()), action, future.GetCallback());
 
@@ -192,7 +192,7 @@ TEST_F(ScrollToolJavaScriptFeatureTest, ScrollTo_ByIdentifier_Success) {
   MockScrollJsFunctions(
       /*mock_return_value=*/"{success: true, message: 'fake success!'}");
   ScrollToAction action = CreateScrollToActionWithIdentifiers();
-  base::test::TestFuture<ActorTool::ToolExecutionResult> future;
+  base::test::TestFuture<ToolExecutionResult> future;
 
   feature()->ScrollTo(GetMainFrame(feature()), action, future.GetCallback());
 

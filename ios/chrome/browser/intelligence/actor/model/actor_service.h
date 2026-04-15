@@ -42,7 +42,7 @@ class ActorService : public KeyedService {
   // TODO(crbug.com/498191921): This is legacy/deprecated. Use `CreateTask` and
   // `ExecuteTools` instead. It will be cleaned up soon.
   void ExecuteAction(const optimization_guide::proto::Action& action,
-                     ActorTool::ToolExecutionCallback callback);
+                     ToolExecutionCallback callback);
 
   // Creates a new task.
   ActorTaskId CreateTask(const std::string& title,
@@ -53,7 +53,7 @@ class ActorService : public KeyedService {
   void ExecuteTools(ActorTaskId task_id,
                     std::vector<std::unique_ptr<ActorTool>> tools,
                     const std::string& task_update,
-                    ExecuteToolsCallback callback);
+                    PerformActionsCallback callback);
 
   // Pauses a task.
   void PauseTask(ActorTaskId task_id, bool from_actor);
