@@ -169,25 +169,19 @@ TEST_F(ProgressWndTest, ClickedButton) {
 }
 
 TEST_F(ProgressWndTest, OnInstallStopped) {
-  for (auto id : {IDOK, IDCANCEL}) {
     mock_progress_wnd_events_ = std::make_unique<MockProgressWndEvents>();
     WTL::CMessageLoop ui_message_loop;
     std::unique_ptr<ProgressWnd> progress_wnd =
         MakeProgressWindow(&ui_message_loop);
+    progress_wnd->OnCheckingForUpdate();
+    EXPECT_EQ(progress_wnd->cur_state_,
+              ProgressWnd::States::STATE_CHECKING_FOR_UPDATE);
+    EXPECT_CALL(*mock_progress_wnd_events_, DoCancel());
     BOOL handled = false;
-    if (id == IDCANCEL) {
-      EXPECT_CALL(*mock_progress_wnd_events_, DoCancel());
-    }
-    progress_wnd->OnInstallStopped(WM_INSTALL_STOPPED, id, 0, handled);
-    if (id == IDCANCEL) {
-      EXPECT_TRUE(progress_wnd->is_canceled_);
-
-      // Second call to `OnInstallStopped` is ignored.
-      progress_wnd->OnInstallStopped(WM_INSTALL_STOPPED, id, 0, handled);
-    }
+    progress_wnd->OnClose(WM_CLOSE, 0, 0, handled);
+    EXPECT_TRUE(progress_wnd->is_canceled_);
     EXPECT_TRUE(handled);
     progress_wnd->DestroyWindow();
-  }
 }
 
 TEST_F(ProgressWndTest, MaybeCloseWindow) {
@@ -198,13 +192,7 @@ TEST_F(ProgressWndTest, MaybeCloseWindow) {
   WTL::CMessageLoop message_loop;
   std::unique_ptr<ProgressWnd> progress_wnd = MakeProgressWindow(&message_loop);
   progress_wnd->MaybeCloseWindow();
-  EXPECT_TRUE(progress_wnd->IsInstallStoppedWindowPresent());
-  const HWND button = progress_wnd->install_stopped_wnd_->GetDlgItem(IDOK);
-  progress_wnd->install_stopped_wnd_->SendMessage(
-      WM_COMMAND, MAKEWPARAM(IDCANCEL, BN_CLICKED),
-      reinterpret_cast<LPARAM>(button));
   message_loop.Run();
-  EXPECT_FALSE(progress_wnd->IsInstallStoppedWindowPresent());
   progress_wnd->DestroyWindow();
 }
 

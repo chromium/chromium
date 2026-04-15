@@ -39,9 +39,6 @@ class Version;
 
 namespace updater::ui {
 
-// Used to communicate between InstallStoppedWnd and ProgressWnd.
-inline constexpr unsigned int WM_INSTALL_STOPPED = WM_APP;
-
 class ProgressWndEvents : public CompleteWndEvents {
  public:
   // Restarts the running browsers.
@@ -56,61 +53,6 @@ class ProgressWndEvents : public CompleteWndEvents {
   virtual void DoCancel() = 0;
 };
 
-// Implements the "Installation Stopped" window. |InstallStoppedWnd| is
-// modal relative to its parent. When the window is closed it sends
-// a user message to its parent to notify which button the user has clicked on.
-class InstallStoppedWnd : public CAxDialogImpl<InstallStoppedWnd>,
-                          public OwnerDrawTitleBar,
-                          public CustomDlgColors,
-                          public WTL::CMessageFilter {
-  using Base = CAxDialogImpl<InstallStoppedWnd>;
-
- public:
-  static constexpr int IDD = IDD_INSTALL_STOPPED;
-
-  InstallStoppedWnd(WTL::CMessageLoop* message_loop, HWND parent);
-  InstallStoppedWnd(const InstallStoppedWnd&) = delete;
-  InstallStoppedWnd& operator=(const InstallStoppedWnd&) = delete;
-  ~InstallStoppedWnd() override;
-
-  // Closes the window, handling transition back to the parent window.
-  HRESULT CloseWindow();
-
-  // Overrides for WTL::CMessageFilter.
-  BOOL PreTranslateMessage(MSG* msg) override;
-
-  BEGIN_MSG_MAP(InstallStoppedWnd)
-    MESSAGE_HANDLER(WM_INITDIALOG, OnInitDialog)
-    MESSAGE_HANDLER(WM_DESTROY, OnDestroy)
-    COMMAND_ID_HANDLER(IDOK, OnClickButton)
-    COMMAND_ID_HANDLER(IDCANCEL, OnClickButton)
-    CHAIN_MSG_MAP(Base)
-    CHAIN_MSG_MAP(OwnerDrawTitleBar)
-    CHAIN_MSG_MAP(CustomDlgColors)
-  END_MSG_MAP()
-
- private:
-  LRESULT OnInitDialog(UINT msg,
-                       WPARAM wparam,
-                       LPARAM lparam,
-                       BOOL& handled);  // NOLINT
-  LRESULT OnClickButton(WORD notify_code,
-                        WORD id,
-                        HWND wnd_ctl,
-                        BOOL& handled);  // NOLINT
-  LRESULT OnDestroy(UINT msg,
-                    WPARAM wparam,
-                    LPARAM lparam,
-                    BOOL& handled);  // NOLINT
-
-  SEQUENCE_CHECKER(sequence_checker_);
-
-  raw_ptr<WTL::CMessageLoop> message_loop_ = nullptr;
-  HWND parent_ = nullptr;
-
-  WTL::CFont default_font_;
-};
-
 // Implements the UI progress window.
 class ProgressWnd : public CompleteWnd, public AppInstallProgress {
  public:
@@ -123,7 +65,6 @@ class ProgressWnd : public CompleteWnd, public AppInstallProgress {
 
   BEGIN_MSG_MAP(ProgressWnd)
     MESSAGE_HANDLER(WM_INITDIALOG, OnInitDialog)
-    MESSAGE_HANDLER(WM_INSTALL_STOPPED, OnInstallStopped)
     MESSAGE_HANDLER(WM_ERASEBKGND, OnEraseBkgnd)
     MSG_WM_CTLCOLORSTATIC(OnCtlColorStatic)
     COMMAND_HANDLER(IDC_BUTTON1, BN_CLICKED, OnClickedButton)
@@ -194,10 +135,6 @@ class ProgressWnd : public CompleteWnd, public AppInstallProgress {
                        WPARAM wparam,
                        LPARAM lparam,
                        BOOL& handled);  // NOLINT
-  LRESULT OnInstallStopped(UINT msg,
-                           WPARAM wparam,
-                           LPARAM lparam,
-                           BOOL& handled);  // NOLINT
   LRESULT OnClickedButton(WORD notify_code,
                           WORD id,
                           HWND wnd_ctl,
@@ -216,20 +153,13 @@ class ProgressWnd : public CompleteWnd, public AppInstallProgress {
   HRESULT ChangeControlState();
   HRESULT SetMarqueeMode(bool is_marquee);
 
-  bool IsInstallStoppedWindowPresent();
-
   void HandleCancelRequest();
-
-  // Returns true if the |InstallStoppedWnd| window is closed.
-  bool CloseInstallStoppedWindow();
 
   void DeterminePostInstallUrls(const ObserverCompletionInfo& info);
 
   SEQUENCE_CHECKER(sequence_checker_);
 
   States cur_state_ = States::STATE_INIT;
-
-  std::unique_ptr<InstallStoppedWnd> install_stopped_wnd_;
 
   raw_ptr<ProgressWndEvents> events_sink_ = nullptr;
   std::vector<GURL> post_install_urls_;

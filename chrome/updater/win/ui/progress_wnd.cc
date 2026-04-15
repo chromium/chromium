@@ -47,65 +47,6 @@ bool AreAllAppsCanceled(const std::vector<AppCompletionInfo>& apps_info) {
 
 }  // namespace
 
-InstallStoppedWnd::InstallStoppedWnd(WTL::CMessageLoop* message_loop,
-                                     HWND parent)
-    : message_loop_(message_loop), parent_(parent) {
-  CHECK(message_loop);
-  CHECK(::IsWindow(parent));
-}
-
-InstallStoppedWnd::~InstallStoppedWnd() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (IsWindow()) {
-    CloseWindow();
-  }
-}
-
-BOOL InstallStoppedWnd::PreTranslateMessage(MSG* msg) {
-  return CWindow::IsDialogMessage(msg);
-}
-
-HRESULT InstallStoppedWnd::CloseWindow() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  CHECK(IsWindow());
-  ::EnableWindow(parent_, true);
-  return DestroyWindow() ? S_OK : HRESULTFromLastError();
-}
-
-LRESULT InstallStoppedWnd::OnInitDialog(UINT, WPARAM, LPARAM, BOOL& handled) {
-  // Simulates the modal behavior by disabling its parent window. The parent
-  // window must be enabled before this window is destroyed.
-  ::EnableWindow(parent_, false);
-
-  message_loop_->AddMessageFilter(this);
-
-  default_font_.CreatePointFont(90, kDialogFont);
-  SendMessageToDescendants(
-      WM_SETFONT, reinterpret_cast<WPARAM>(static_cast<HFONT>(default_font_)),
-      0);
-
-  CreateOwnerDrawTitleBar(m_hWnd, GetDlgItem(IDC_TITLE_BAR_SPACER), kBkColor);
-  SetCustomDlgColors(kTextColor, kBkColor);
-
-  EnableFlatButtons(m_hWnd);
-
-  handled = true;
-  return 1;
-}
-
-LRESULT InstallStoppedWnd::OnClickButton(WORD, WORD id, HWND, BOOL& handled) {
-  CHECK(id == IDOK || id == IDCANCEL);
-  ::PostMessage(parent_, WM_INSTALL_STOPPED, id, 0);
-  handled = true;
-  return 0;
-}
-
-LRESULT InstallStoppedWnd::OnDestroy(UINT, WPARAM, LPARAM, BOOL& handled) {
-  message_loop_->RemoveMessageFilter(this);
-  handled = true;
-  return 0;
-}
-
 ProgressWnd::ProgressWnd(WTL::CMessageLoop* message_loop, HWND parent)
     : CompleteWnd(IDD_PROGRESS,
                   ICC_STANDARD_CLASSES | ICC_PROGRESS_CLASS,
@@ -283,8 +224,8 @@ void ProgressWnd::SetControlText(int id, const std::wstring& text) {
 
 // If closing is disabled, then it does not close the window.
 // If in a completion state, then the window is closed.
-// Otherwise, the InstallStoppedWnd is displayed and the window is closed only
-// if the user chooses cancel.
+// Otherwise, `HandleCancelRequest` is called which attempts to cancel the
+// install.
 bool ProgressWnd::MaybeCloseWindow() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!is_close_enabled()) {
@@ -296,33 +237,9 @@ bool ProgressWnd::MaybeCloseWindow() {
       cur_state_ != States::STATE_COMPLETE_RESTART_BROWSER &&
       cur_state_ != States::STATE_COMPLETE_RESTART_ALL_BROWSERS &&
       cur_state_ != States::STATE_COMPLETE_REBOOT) {
-    // The UI is not in final state: ask the user to proceed with closing it.
-    // A modal dialog opens up and sends a message back to this window to
-    // communicate the user decision.
-    install_stopped_wnd_ =
-        std::make_unique<InstallStoppedWnd>(message_loop(), *this);
-    HWND hwnd = install_stopped_wnd_->Create(*this);
-    if (hwnd) {
-      install_stopped_wnd_->SetWindowText(
-          GetLocalizedString(IDS_INSTALLATION_STOPPED_WINDOW_TITLE_BASE, lang())
-              .c_str());
-
-      install_stopped_wnd_->SetDlgItemText(
-          IDOK,
-          GetLocalizedString(IDS_RESUME_INSTALLATION_BASE, lang()).c_str());
-
-      install_stopped_wnd_->SetDlgItemText(
-          IDCANCEL,
-          GetLocalizedString(IDS_CANCEL_INSTALLATION_BASE, lang()).c_str());
-
-      install_stopped_wnd_->SetDlgItemText(
-          IDC_INSTALL_STOPPED_TEXT,
-          GetLocalizedString(IDS_INSTALL_STOPPED_BASE, lang()).c_str());
-
-      install_stopped_wnd_->CenterWindow(*this);
-      install_stopped_wnd_->ShowWindow(SW_SHOWDEFAULT);
-      return false;
-    }
+    // The UI is not in final state: attempt to cancel the install.
+    HandleCancelRequest();
+    return false;
   }
 
   CloseWindow();
@@ -382,28 +299,6 @@ LRESULT ProgressWnd::OnClickedButton(WORD notify_code,
   handled = true;
   CloseWindow();
 
-  return 0;
-}
-
-LRESULT ProgressWnd::OnInstallStopped(UINT msg,
-                                      WPARAM wparam,
-                                      LPARAM,
-                                      BOOL& handled) {
-  install_stopped_wnd_.reset();
-
-  CHECK_EQ(msg, WM_INSTALL_STOPPED);
-  CHECK(wparam == IDOK || wparam == IDCANCEL);
-  switch (wparam) {
-    case IDOK:
-      break;
-    case IDCANCEL:
-      HandleCancelRequest();
-      break;
-    default:
-      NOTREACHED();
-  }
-
-  handled = true;
   return 0;
 }
 
@@ -630,8 +525,6 @@ void ProgressWnd::OnComplete(const ObserverCompletionInfo& observer_info) {
     return;
   }
 
-  CloseInstallStoppedWindow();
-
   bool launch_commands_succeeded = LaunchCmdLines(observer_info);
 
   CompletionCodes overall_completion_code =
@@ -760,19 +653,6 @@ HRESULT ProgressWnd::SetMarqueeMode(bool is_marquee) {
   progress_bar.SendMessage(PBM_SETMARQUEE, is_marquee, 0);
 
   return S_OK;
-}
-
-bool ProgressWnd::IsInstallStoppedWindowPresent() {
-  return install_stopped_wnd_.get() && install_stopped_wnd_->IsWindow();
-}
-
-bool ProgressWnd::CloseInstallStoppedWindow() {
-  if (IsInstallStoppedWindowPresent()) {
-    install_stopped_wnd_->CloseWindow();
-    install_stopped_wnd_.reset();
-    return true;
-  }
-  return false;
 }
 
 }  // namespace updater::ui
