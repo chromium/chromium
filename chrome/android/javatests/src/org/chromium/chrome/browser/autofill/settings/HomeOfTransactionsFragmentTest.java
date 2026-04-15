@@ -249,6 +249,17 @@ public class HomeOfTransactionsFragmentTest {
     @Test
     @SmallTest
     @EnableFeatures(ChromeFeatureList.YOUR_SAVED_INFO_SETTINGS_PAGE_ANDROID)
+    public void testClickIdentityDocsLaunchesIdentityDocs() {
+        mSettingsActivityTestRule.startSettingsActivity();
+
+        onView(withText(R.string.autofill_identity_docs_title)).perform(click());
+
+        // TODO(crbug.com/482994257): Verify the content is displayed once implemented.
+    }
+
+    @Test
+    @SmallTest
+    @EnableFeatures(ChromeFeatureList.YOUR_SAVED_INFO_SETTINGS_PAGE_ANDROID)
     public void testClickTravelLaunchesTravel() {
         mSettingsActivityTestRule.startSettingsActivity();
 

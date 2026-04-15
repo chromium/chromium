@@ -575,6 +575,7 @@ android_library("chrome_test_java_org.chromium.chrome.browser.autofill") {
     "src/org/chromium/chrome/browser/autofill/save_card/AutofillSaveCardBottomSheetRenderTest.java",
     "src/org/chromium/chrome/browser/autofill/save_card/AutofillSaveCardBottomSheetViewBinderTest.java",
     "src/org/chromium/chrome/browser/autofill/settings/AutofillCardBenefitsFragmentTest.java",
+    "src/org/chromium/chrome/browser/autofill/settings/AutofillIdentityDocsFragmentTest.java",
     "src/org/chromium/chrome/browser/autofill/settings/AutofillPaymentMethodsFragmentCardBenefitsTest.java",
     "src/org/chromium/chrome/browser/autofill/settings/AutofillPaymentMethodsFragmentTest.java",
     "src/org/chromium/chrome/browser/autofill/settings/AutofillProfilesFragmentTest.java",

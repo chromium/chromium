@@ -122,6 +122,7 @@ chromium-metrics-reviews@google.com.
   <int value="1849593145" label="AndroidPaymentAppsFragment"/>
   <int value="1891640238" label="AutofillPaymentMethodsFragment"/>
   <int value="1952237285" label="TracingSettings"/>
+  <int value="1966306427" label="AutofillIdentityDocsFragment"/>
   <int value="1968319616" label="(Obsolete) ClearBrowsingDataFragmentBasic"/>
   <int value="1969661266" label="AddressBarSettingsFragment"/>
   <int value="2070921964" label="(Obsolete) ClearBrowsingDataTabsFragment"/>
