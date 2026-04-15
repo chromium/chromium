@@ -42,8 +42,13 @@ class DesktopBnplUiDelegateBrowserTest
  public:
   DesktopBnplUiDelegateBrowserTest() {
     if (GetParam().dialog == DialogEnum::kSelectBnplIssuerUpdate) {
-      feature_list_.InitAndEnableFeature(
-          features::kAutofillEnableAiBasedAmountExtraction);
+      feature_list_.InitWithFeatures(
+          {/*enabled_features=*/features::
+               kAutofillEnableAiBasedAmountExtraction},
+          {/*disabled_features=*/features::kAutofillEnablePayNowPayLaterTabs});
+    } else if (GetParam().dialog == DialogEnum::kSelectBnplIssuer) {
+      feature_list_.InitAndDisableFeature(
+          features::kAutofillEnablePayNowPayLaterTabs);
     }
   }
   DesktopBnplUiDelegateBrowserTest(const DesktopBnplUiDelegateBrowserTest&) =

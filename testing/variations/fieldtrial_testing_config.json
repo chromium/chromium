@@ -2671,6 +2671,24 @@
             ]
         }
     ],
+    "AutofillEnablePayNowPayLaterTabs": [
+        {
+            "platforms": [
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "AutofillEnablePayNowPayLaterTabs"
+                    ]
+                }
+            ]
+        }
+    ],
     "AutofillEnableSaveAndFill": [
         {
             "platforms": [
