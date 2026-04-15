@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ui/webui/top_chrome/webui_contents_wrapper.h"
 
+#include "base/debug/crash_logging.h"
+#include "base/debug/dump_without_crashing.h"
 #include "chrome/browser/page_load_metrics/page_load_metrics_initialize.h"
 #include "chrome/browser/task_manager/web_contents_tags.h"
 #include "chrome/browser/ui/browser_window.h"
@@ -303,21 +305,38 @@ base::WeakPtr<WebUIContentsWrapper::Host> WebUIContentsWrapper::GetHost() {
 
 void WebUIContentsWrapper::SetHost(
     base::WeakPtr<WebUIContentsWrapper::Host> host) {
-  DCHECK(!web_contents_->IsCrashed());
   host_ = std::move(host);
   if (!host_) {
+    return;
+  }
+
+  if (web_contents_->IsCrashed()) {
     return;
   }
 
   // Resize the host to the frame size. If there are new updates to the frame
   // size they will be capture by WebUIContentsWrapper::ResizeDueToAutoResize().
   content::RenderFrameHost* rfh = web_contents_->GetPrimaryMainFrame();
-  if (webui_resizes_host_ && rfh && rfh->GetFrameSize().has_value()) {
-    // RenderFrameHost::GetFrameSize() returns the actual frame size while
-    // the host view expects device-independent size.
-    const gfx::Size frame_dip_size = gfx::ScaleToCeiledSize(
-        *rfh->GetFrameSize(), 1.f / rfh->GetView()->GetDeviceScaleFactor());
-    host_->ResizeDueToAutoResize(web_contents_.get(), frame_dip_size);
+  if (webui_resizes_host_ && rfh) {
+    // TODO(crbug.com/376493192): RWHView is found to be sometimes null in the
+    // wild. This is suspected to happen when the render process is crashed.
+    // The code now early returns in that case, and hence we should not reach
+    // this point. If so, use a DumpWithoutCrashing to get more information on
+    // the state of the system.
+    if (!rfh->GetView()) {
+      SCOPED_CRASH_KEY_NUMBER("WebUIContentsWrapper", "lifecycle_state",
+                              static_cast<int>(rfh->GetLifecycleState()));
+      base::debug::DumpWithoutCrashing();
+      return;
+    }
+
+    if (rfh->GetFrameSize().has_value()) {
+      // RenderFrameHost::GetFrameSize() returns the actual frame size while
+      // the host view expects device-independent size.
+      const gfx::Size frame_dip_size = gfx::ScaleToCeiledSize(
+          *rfh->GetFrameSize(), 1.f / rfh->GetView()->GetDeviceScaleFactor());
+      host_->ResizeDueToAutoResize(web_contents_.get(), frame_dip_size);
+    }
   }
 
   if (supports_draggable_regions_ && draggable_regions_.has_value()) {
