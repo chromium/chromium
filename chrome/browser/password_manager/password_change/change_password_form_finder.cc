@@ -270,6 +270,19 @@ void ChangePasswordFormFinder::OnButtonClicked(
     return;
   }
 
+  if (base::FeatureList::IsEnabled(
+          password_manager::features::kAwaitPageStabilityForPasswordChange)) {
+    page_stability_waiter_ =
+        std::make_unique<PasswordChangePageStabilityWaiter>(
+            web_contents_, client_,
+            base::BindOnce(&ChangePasswordFormFinder::OnPageStableAfterClick,
+                           weak_ptr_factory_.GetWeakPtr()));
+  } else {
+    OnPageStableAfterClick();
+  }
+}
+
+void ChangePasswordFormFinder::OnPageStableAfterClick() {
   form_waiter_ =
       ChangePasswordFormWaiter::Builder(
           web_contents_, client_,
