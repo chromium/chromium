@@ -171,14 +171,19 @@ class MEDIA_EXPORT AudioBus {
   // Returns a raw pointer to the requested channel.  Pointer is guaranteed to
   // have a 16-byte alignment.  Warning: Do not rely on having sane (i.e. not
   // inf, nan, or between [-1.0, 1.0]) values in the channel data.
-  // TODO(crbug.com/373960632): Rename `channel_span` to `channel`.
-  Channel channel_span(int channel) {
+  // TODO(crbug.com/373960632): Replace all `channel_span()` calls with
+  // `channel()` and delete `channel_span()`.
+  Channel channel(int channel) {
     CHECK(!is_bitstream_format_);
     return channel_data_[channel];
   }
-  ConstChannel channel_span(int channel) const {
+  ConstChannel channel(int channel) const {
     CHECK(!is_bitstream_format_);
     return channel_data_[channel];
+  }
+  Channel channel_span(int channel_number) { return channel(channel_number); }
+  ConstChannel channel_span(int channel_number) const {
+    return channel(channel_number);
   }
 
   // Convenience function to allow range-based for-loops.
@@ -331,7 +336,7 @@ void AudioBus::CopyConvertFromInterleavedSourceToAudioBus(
     AudioBus* dest) {
   const int channels = dest->channels();
   for (int ch = 0; ch < channels; ++ch) {
-    AudioBus::Channel channel_data = dest->channel_span(ch);
+    AudioBus::Channel channel_data = dest->channel(ch);
     for (int target_frame_index = write_offset_in_frames,
              read_pos_in_source = ch;
          target_frame_index < write_offset_in_frames + num_frames_to_write;
@@ -353,7 +358,7 @@ void AudioBus::CopyConvertFromAudioBusToInterleavedTarget(
     typename TargetSampleTypeTraits::ValueType* dest_buffer) {
   const int channels = source->channels();
   for (int ch = 0; ch < channels; ++ch) {
-    AudioBus::ConstChannel channel_data = source->channel_span(ch);
+    AudioBus::ConstChannel channel_data = source->channel(ch);
     for (int source_frame_index = read_offset_in_frames, write_pos_in_dest = ch;
          source_frame_index < read_offset_in_frames + num_frames_to_read;
          ++source_frame_index, write_pos_in_dest += channels) {
