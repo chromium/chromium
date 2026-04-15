@@ -311,6 +311,8 @@
     _topLocationBarCoordinator = nil;
     _topToolbarViewController = nil;
 
+    [_tabGroupIndicatorCoordinator stop];
+
     [_bottomToolbarMediator disconnect];
     _bottomToolbarMediator = nil;
     [_bottomLocationBarCoordinator stop];
