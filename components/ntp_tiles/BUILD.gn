@@ -144,6 +144,7 @@ source_set("unit_tests") {
     "//components/image_fetcher/core:test_support",
     "//components/pref_registry",
     "//components/prefs",
+    "//components/search",
     "//components/supervised_user/core/common:buildflags",
     "//components/sync_preferences:test_support",
     "//components/webapps/common",

@@ -449,13 +449,13 @@ const base::FeatureParam<int> kStaleModulesCountThreshold(
     14);
 
 const base::FeatureParam<int> kMaxTilesInCollapsedState{
-    &ntp_features::kNtpShortcutsRedesign, "max_tiles_in_collapsed_state", 6};
+    &ntp_features::kNtpShortcutsRedesign, "max_tiles_in_collapsed_state", 4};
 const base::FeatureParam<int> kMaxShortcutsInExpandedState{
     &ntp_features::kNtpShortcutsRedesign, "max_shortcuts_in_expanded_state",
-    10};
+    20};
 const base::FeatureParam<int> kMaxMostVisitedTilesInExpandedState{
     &ntp_features::kNtpShortcutsRedesign,
-    "max_most_visited_tiles_in_expanded_state", 8};
+    "max_most_visited_tiles_in_expanded_state", 10};
 const base::FeatureParam<int> kMaxEnterpriseShortcuts{
     &ntp_features::kNtpShortcutsRedesign, "max_enterprise_shortcuts", 10};
 
@@ -503,14 +503,23 @@ int GetWallpaperSearchButtonHideCondition() {
 }
 
 int GetMaxTilesInCollapsedState() {
+  if (!base::FeatureList::IsEnabled(kNtpShortcutsRedesign)) {
+    return 6;
+  }
   return kMaxTilesInCollapsedState.Get();
 }
 
 int GetMaxShortcutsInExpandedState() {
+  if (!base::FeatureList::IsEnabled(kNtpShortcutsRedesign)) {
+    return 10;
+  }
   return kMaxShortcutsInExpandedState.Get();
 }
 
 int GetMaxMostVisitedTilesInExpandedState() {
+  if (!base::FeatureList::IsEnabled(kNtpShortcutsRedesign)) {
+    return 8;
+  }
   return kMaxMostVisitedTilesInExpandedState.Get();
 }
 
