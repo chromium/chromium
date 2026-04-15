@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/memory/weak_ptr.h"
 #include "components/printing/browser/print_manager.h"
 #include "components/printing/common/print.mojom-forward.h"
 #include "content/public/browser/web_contents_user_data.h"
@@ -50,8 +51,7 @@ class AwPrintManager : public printing::PrintManager,
   void ScriptedPrint(printing::mojom::ScriptedPrintParamsPtr params,
                      ScriptedPrintCallback callback) override;
 
-  static void OnDidPrintDocumentWritingDone(
-      const PdfWritingDoneCallback& callback,
+  void OnDidPrintDocumentWritingDone(
       DidPrintDocumentCallback did_print_document_cb,
       uint32_t page_count);
 
@@ -61,6 +61,8 @@ class AwPrintManager : public printing::PrintManager,
   int fd_ = -1;
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();
+
+  base::WeakPtrFactory<AwPrintManager> weak_ptr_factory_{this};
 };
 
 }  // namespace android_webview
