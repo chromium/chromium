@@ -263,8 +263,7 @@ ManifestV2ExperimentManager::ManifestV2ExperimentManager(
       // Note: passing `ExtensionManagement` is safe and guaranteed to outlive
       // the `impact_checker_` because this class is a KeyedService that depends
       // on `ExtensionManagement`.
-      impact_checker_(
-          ExtensionManagementFactory::GetForBrowserContext(browser_context)),
+      impact_checker_(browser_context),
       browser_context_(browser_context) {
   registry_observation_.Observe(ExtensionRegistry::Get(browser_context));
 

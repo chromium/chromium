@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_EXTENSIONS_MV2_DEPRECATION_IMPACT_CHECKER_H_
-#define CHROME_BROWSER_EXTENSIONS_MV2_DEPRECATION_IMPACT_CHECKER_H_
+#ifndef EXTENSIONS_BROWSER_MV2_DEPRECATION_IMPACT_CHECKER_H_
+#define EXTENSIONS_BROWSER_MV2_DEPRECATION_IMPACT_CHECKER_H_
 
 #include "base/memory/raw_ptr.h"
 #include "extensions/buildflags/buildflags.h"
@@ -12,9 +12,12 @@
 
 static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
+namespace content {
+class BrowserContext;
+}
+
 namespace extensions {
 class Extension;
-class ExtensionManagement;
 class HashedExtensionId;
 
 // A helper class to determine if an extension is affected by the MV2
@@ -24,7 +27,7 @@ class HashedExtensionId;
 class MV2DeprecationImpactChecker {
  public:
   explicit MV2DeprecationImpactChecker(
-      ExtensionManagement* extension_management);
+      content::BrowserContext* browser_context);
   ~MV2DeprecationImpactChecker();
 
   // Returns true if the given `extension` is affected by the MV2 deprecation.
@@ -39,11 +42,9 @@ class MV2DeprecationImpactChecker {
                            const HashedExtensionId& hashed_id);
 
  private:
-  // The associated `ExtensionManagement` class. Must be guaranteed to outlive
-  // this class.
-  raw_ptr<ExtensionManagement> extension_management_;
+  raw_ptr<content::BrowserContext> browser_context_;
 };
 
 }  // namespace extensions
 
-#endif  // CHROME_BROWSER_EXTENSIONS_MV2_DEPRECATION_IMPACT_CHECKER_H_
+#endif  // EXTENSIONS_BROWSER_MV2_DEPRECATION_IMPACT_CHECKER_H_

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/extensions/mv2_deprecation_impact_checker.h"
+#include "extensions/browser/mv2_deprecation_impact_checker.h"
 
 #include <algorithm>
 #include <string>
@@ -10,7 +10,9 @@
 
 #include "base/no_destructor.h"
 #include "base/strings/string_split.h"
-#include "chrome/browser/extensions/extension_management.h"
+#include "content/public/browser/browser_context.h"
+#include "extensions/browser/extension_management_client.h"
+#include "extensions/browser/extensions_browser_client.h"
 #include "extensions/buildflags/buildflags.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_features.h"
@@ -38,8 +40,8 @@ const std::vector<std::string>& GetHashedExceptionList() {
 }  // namespace
 
 MV2DeprecationImpactChecker::MV2DeprecationImpactChecker(
-    ExtensionManagement* extension_management)
-    : extension_management_(extension_management) {}
+    content::BrowserContext* browser_context)
+    : browser_context_(browser_context) {}
 MV2DeprecationImpactChecker::~MV2DeprecationImpactChecker() = default;
 
 bool MV2DeprecationImpactChecker::IsExtensionAffected(
@@ -71,8 +73,11 @@ bool MV2DeprecationImpactChecker::IsExtensionAffected(
     return false;
   }
 
+  auto* extension_management_client =
+      ExtensionsBrowserClient::Get()->GetExtensionManagementClient(
+          browser_context_);
   // Ignore MV2 extensions that are allowed by policy.
-  if (extension_management_->IsExemptFromMV2DeprecationByPolicy(
+  if (extension_management_client->IsExemptFromMV2DeprecationByPolicy(
           manifest_version, extension_id, manifest_type)) {
     return false;
   }

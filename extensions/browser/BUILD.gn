@@ -457,6 +457,8 @@ source_set("browser_sources") {
     "message_tracker.h",
     "mojo/keep_alive_impl.cc",
     "mojo/keep_alive_impl.h",
+    "mv2_deprecation_impact_checker.cc",
+    "mv2_deprecation_impact_checker.h",
     "mv2_experiment_stage.h",
     "network_permissions_updater.cc",
     "network_permissions_updater.h",
