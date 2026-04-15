@@ -72,7 +72,6 @@ public class ActivityLifecycleDispatcherImpl implements ActivityLifecycleDispatc
 
     @Override
     public void register(LifecycleObserver observer) {
-        assert mActivity != null;
         if (mActivity == null) {
             return;
         }
