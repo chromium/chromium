@@ -30,7 +30,6 @@ import org.chromium.content_public.browser.WebContents;
  */
 @NullMarked
 public class CoBrowseViews {
-    private final @Nullable TabBottomSheetToolbar mToolbar;
     private final @Nullable TabBottomSheetWebUi mWebUi;
     private final @Nullable ContextualTasksFusebox mFusebox;
     private final View mView;
@@ -40,16 +39,13 @@ public class CoBrowseViews {
      * Constructor for CoBrowseViews.
      *
      * @param context The context for the view.
-     * @param toolbar The toolbar for the view.
      * @param webUi The web UI for the view.
      * @param fusebox The fusebox for the view.
      */
     public CoBrowseViews(
             Context context,
-            @Nullable TabBottomSheetToolbar toolbar,
             @Nullable TabBottomSheetWebUi webUi,
             @Nullable ContextualTasksFusebox fusebox) {
-        mToolbar = toolbar;
         mWebUi = webUi;
         mFusebox = fusebox;
         mView = buildView(context);
@@ -60,11 +56,6 @@ public class CoBrowseViews {
         TabBottomSheetWebUiContainer webUiContainer =
                 assertNonNull(mView.findViewById(R.id.web_ui_container));
         webUiContainer.setTouchHandler(touchHandler);
-    }
-
-    /** Returns whether the toolbar is present. */
-    public boolean hasToolbar() {
-        return mToolbar != null;
     }
 
     /** Returns the view for the co-browse content. */
@@ -81,13 +72,9 @@ public class CoBrowseViews {
     @CalledByNative
     @VisibleForTesting
     void destroy() {
-        ViewGroup toolbarContainer = mView.findViewById(R.id.toolbar_container);
         ViewGroup webUiContainer = mView.findViewById(R.id.web_ui_container);
         ViewGroup fuseboxContainer = mView.findViewById(R.id.fusebox_container);
         ViewGroup peekContainer = mView.findViewById(R.id.actor_control_container);
-        if (mToolbar != null) {
-            toolbarContainer.removeAllViews();
-        }
         if (mWebUi != null) {
             webUiContainer.removeAllViews();
             mWebUi.destroy();
@@ -150,9 +137,6 @@ public class CoBrowseViews {
     }
 
     int getToolbarHeight() {
-        if (mToolbar != null) {
-            return mToolbar.getToolbarView().getHeight();
-        }
         return 0;
     }
 
@@ -172,16 +156,10 @@ public class CoBrowseViews {
 
     private View buildView(Context context) {
         View view = LayoutInflater.from(context).inflate(R.layout.tab_bottom_sheet, null);
-        ViewGroup toolbarContainer = view.findViewById(R.id.toolbar_container);
         ViewGroup webUiContainer = view.findViewById(R.id.web_ui_container);
         ViewGroup fuseboxContainer = view.findViewById(R.id.fusebox_container);
         ViewGroup peekContainer = view.findViewById(R.id.actor_control_container);
 
-        if (mToolbar != null) {
-            View toolbarView = mToolbar.getToolbarView();
-            detachFromParent(toolbarView);
-            toolbarContainer.addView(toolbarView);
-        }
         if (mWebUi != null) {
             View webUiView = mWebUi.getWebUiView();
             detachFromParent(webUiView);
