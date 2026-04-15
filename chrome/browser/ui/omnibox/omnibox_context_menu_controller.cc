@@ -690,7 +690,7 @@ ui::ImageModel OmniboxContextMenuController::GetIconForInputType(
     case omnibox::InputType::INPUT_TYPE_DRIVE:
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
       return ui::ImageModel::FromVectorIcon(
-          vector_icons::kGoogleDriveIcon, ui::kColorMenuIcon,
+          vector_icons::kGoogleDriveMonochromeIcon, ui::kColorMenuIcon,
           ui::SimpleMenuModel::kDefaultIconSize);
 #else
       return ui::ImageModel();

@@ -178,7 +178,7 @@ TEST_F(OmniboxContextMenuControllerTest, GetMaxTabSuggestions_UsesServerLimit) {
 TEST_F(OmniboxContextMenuControllerTest, GetIconForInputType_Drive) {
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
   ui::ImageModel expected_icon = ui::ImageModel::FromVectorIcon(
-      vector_icons::kGoogleDriveIcon, ui::kColorMenuIcon,
+      vector_icons::kGoogleDriveMonochromeIcon, ui::kColorMenuIcon,
       ui::SimpleMenuModel::kDefaultIconSize);
 #else
   ui::ImageModel expected_icon = ui::ImageModel();
