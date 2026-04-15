@@ -577,6 +577,13 @@ bool IsCredentialLocalPassword(const CredentialUIEntry& credential) {
 
 // Called when the PasskeyModel changes or becomes ready.
 - (void)passkeysDidChange {
+  // Passkey model shutdown can trigger a change event. Ignore it if
+  // `_passkeyModel` has already been cleared. (i.e., shutdown or closure is in
+  // progress).
+  if (!_passkeyModel) {
+    return;
+  }
+
   _hasSavedPasskeys =
       !_passkeyModel
            ->GetPasskeys(webauthn::PasskeyModel::AnyRp{},
