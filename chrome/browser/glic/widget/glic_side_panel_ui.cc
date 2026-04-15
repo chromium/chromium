@@ -230,6 +230,7 @@ void GlicSidePanelUi::Close(const CloseOptions& options) {
   if (screenshot_capturer_) {
     screenshot_capturer_->CloseScreenPicker();
   }
+  CloseSelectionOverlay();
   auto* glic_side_panel_coordinator = GetGlicSidePanelCoordinator();
   if (!glic_side_panel_coordinator) {
     return;
@@ -314,6 +315,9 @@ void GlicSidePanelUi::CloseSelectionOverlay() {
   }
   auto* selection_overlay_controller =
       SelectionOverlayController::FromTabWebContents(tab_->GetContents());
+  if (!selection_overlay_controller) {
+    return;
+  }
   selection_overlay_controller->Close();
 }
 
