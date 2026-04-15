@@ -23,6 +23,7 @@ class RealboxHandler : public ContextualSearchboxHandler {
  public:
   RealboxHandler(
       mojo::PendingReceiver<searchbox::mojom::PageHandler> pending_page_handler,
+      mojo::PendingRemote<searchbox::mojom::Page> pending_page,
       Profile* profile,
       content::WebContents* web_contents,
       GetSessionHandleCallback get_session_callback);

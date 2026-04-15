@@ -11,7 +11,7 @@
 #include "chrome/browser/ui/webui/top_chrome/top_chrome_webui_config.h"
 #include "chrome/browser/ui/webui/top_chrome/untrusted_top_chrome_web_ui_controller.h"
 #include "chrome/common/webui_url_constants.h"
-#include "components/omnibox/browser/searchbox.mojom-forward.h"
+#include "components/omnibox/browser/searchbox.mojom.h"
 #include "components/user_education/webui/help_bubble_handler.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_ui_data_source.h"
@@ -36,7 +36,8 @@ class LensOverlayUntrustedUI
     : public UntrustedTopChromeWebUIController,
       public lens::mojom::LensPageHandlerFactory,
       public lens::mojom::LensGhostLoaderPageHandlerFactory,
-      public help_bubble::mojom::HelpBubbleHandlerFactory {
+      public help_bubble::mojom::HelpBubbleHandlerFactory,
+      public searchbox::mojom::PageHandlerFactory {
  public:
   explicit LensOverlayUntrustedUI(content::WebUI* web_ui);
 
@@ -56,10 +57,10 @@ class LensOverlayUntrustedUI
       mojo::PendingReceiver<lens::mojom::LensGhostLoaderPageHandlerFactory>
           pending_receiver);
 
-  // Instantiates the implementor of the searchbox::mojom::PageHandler mojo
-  // interface passing the pending receiver that will be internally bound.
+  // Instantiates the implementor of the searchbox::mojom::PageHandlerFactory
+  // mojo interface passing the pending receiver that will be internally bound.
   void BindInterface(
-      mojo::PendingReceiver<searchbox::mojom::PageHandler> receiver);
+      mojo::PendingReceiver<searchbox::mojom::PageHandlerFactory> receiver);
 
   // Instantiates the implementor of the help_bubble::mojom::HelpBubbleHandler
   // mojo interface passing the pending receiver that will be internally bound.
@@ -87,6 +88,10 @@ class LensOverlayUntrustedUI
       mojo::PendingRemote<help_bubble::mojom::HelpBubbleClient> client,
       mojo::PendingReceiver<help_bubble::mojom::HelpBubbleHandler> handler)
       override;
+  // searchbox::mojom::PageHandlerFactory:
+  void CreatePageHandler(
+      mojo::PendingRemote<searchbox::mojom::Page> page,
+      mojo::PendingReceiver<searchbox::mojom::PageHandler> handler) override;
 
   mojo::Receiver<lens::mojom::LensPageHandlerFactory>
       lens_page_factory_receiver_{this};
@@ -95,6 +100,8 @@ class LensOverlayUntrustedUI
   std::unique_ptr<user_education::HelpBubbleHandler> help_bubble_handler_;
   mojo::Receiver<help_bubble::mojom::HelpBubbleHandlerFactory>
       help_bubble_handler_factory_receiver_{this};
+  mojo::Receiver<searchbox::mojom::PageHandlerFactory>
+      searchbox_page_factory_receiver_{this};
 
   base::WeakPtrFactory<LensOverlayUntrustedUI> weak_factory_{this};
 

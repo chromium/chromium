@@ -344,6 +344,7 @@ class ContextualTasksComposeboxHandlerTest
         mojo::PendingReceiver<composebox::mojom::PageHandler>(),
         std::move(page_remote),
         mojo::PendingReceiver<searchbox::mojom::PageHandler>(),
+        searchbox_page_receiver_.BindNewPipeAndPassRemote(),
         base::BindRepeating(
             &ContextualTasksUI::GetOrCreateContextualSessionHandle,
             base::Unretained(mock_ui_.get())),
@@ -373,10 +374,6 @@ class ContextualTasksComposeboxHandlerTest
                                                context_upload_status,
                                                error_type);
             });
-
-    auto searchbox_page_remote =
-        searchbox_page_receiver_.BindNewPipeAndPassRemote();
-    handler_->SetPage(std::move(searchbox_page_remote));
 
     // Setup MockTabContextualizationController
     tabs::TabInterface* active_tab =
@@ -2882,12 +2879,16 @@ TEST_F(ContextualTasksComposeboxHandlerTest, AddFileContext_NullSessionHandle) {
   mojo::PendingRemote<composebox::mojom::Page> page_remote;
   mojo::PendingReceiver<composebox::mojom::Page> page_receiver =
       page_remote.InitWithNewPipeAndPassReceiver();
+  mojo::PendingRemote<searchbox::mojom::Page> searchbox_page_remote;
+  mojo::PendingReceiver<searchbox::mojom::Page> searchbox_page_receiver =
+      searchbox_page_remote.InitWithNewPipeAndPassReceiver();
 
   auto handler = std::make_unique<TestContextualTasksComposeboxHandler>(
       mock_ui_.get(), profile(), web_contents(),
       mojo::PendingReceiver<composebox::mojom::PageHandler>(),
       std::move(page_remote),
       mojo::PendingReceiver<searchbox::mojom::PageHandler>(),
+      std::move(searchbox_page_remote),
       base::BindRepeating(
           []() -> contextual_search::ContextualSearchSessionHandle* {
             return nullptr;
@@ -2949,12 +2950,17 @@ TEST_F(ContextualTasksComposeboxHandlerTest, ActiveModelIsPassed) {
       &ContextualTasksComposeboxHandlerTest::CreateMockInputStateModel,
       base::Unretained(this));
   mojo::PendingRemote<composebox::mojom::Page> page_remote;
-  auto page_receiver = page_remote.InitWithNewPipeAndPassReceiver();
+  mojo::PendingReceiver<composebox::mojom::Page> page_receiver =
+      page_remote.InitWithNewPipeAndPassReceiver();
+  mojo::PendingRemote<searchbox::mojom::Page> searchbox_page_remote;
+  mojo::PendingReceiver<searchbox::mojom::Page> searchbox_page_receiver =
+      searchbox_page_remote.InitWithNewPipeAndPassReceiver();
   auto custom_handler = std::make_unique<TestContextualTasksComposeboxHandler>(
       mock_ui_.get(), profile(), web_contents(),
       mojo::PendingReceiver<composebox::mojom::PageHandler>(),
       std::move(page_remote),
       mojo::PendingReceiver<searchbox::mojom::PageHandler>(),
+      std::move(searchbox_page_remote),
       base::BindRepeating(
           &ContextualTasksUI::GetOrCreateContextualSessionHandle,
           base::Unretained(mock_ui_.get())),
@@ -2992,13 +2998,18 @@ TEST_F(ContextualTasksComposeboxHandlerTest, SuggestInputsCallbackWorks) {
       mock_session_ptr);
 
   mojo::PendingRemote<composebox::mojom::Page> page_remote;
-  auto page_receiver = page_remote.InitWithNewPipeAndPassReceiver();
+  mojo::PendingReceiver<composebox::mojom::Page> page_receiver =
+      page_remote.InitWithNewPipeAndPassReceiver();
+  mojo::PendingRemote<searchbox::mojom::Page> searchbox_page_remote;
+  mojo::PendingReceiver<searchbox::mojom::Page> searchbox_page_receiver =
+      searchbox_page_remote.InitWithNewPipeAndPassReceiver();
 
   auto custom_handler = std::make_unique<TestContextualTasksComposeboxHandler>(
       mock_ui_.get(), profile(), web_contents(),
       mojo::PendingReceiver<composebox::mojom::PageHandler>(),
       std::move(page_remote),
       mojo::PendingReceiver<searchbox::mojom::PageHandler>(),
+      std::move(searchbox_page_remote),
       mock_get_session_callback,
       base::BindRepeating(&ContextualTasksUI::ClearContextualSessionHandle,
                           base::Unretained(mock_ui_.get())),

@@ -130,13 +130,12 @@ class RealboxHandlerTest : public SearchboxHandlerTest {
     web_contents_ =
         content::WebContentsTester::CreateTestWebContents(profile(), nullptr);
     handler_ = std::make_unique<RealboxHandler>(
-        mojo::PendingReceiver<searchbox::mojom::PageHandler>(), profile(),
-        web_contents_.get(),
+        mojo::PendingReceiver<searchbox::mojom::PageHandler>(),
+        page_.BindAndGetRemote(), profile(), web_contents_.get(),
         base::BindLambdaForTesting(
             []() -> contextual_search::ContextualSearchSessionHandle* {
               return nullptr;
             }));
-    handler_->SetPage(page_.BindAndGetRemote());
   }
 
   void TearDown() override {
@@ -269,13 +268,12 @@ class SearchboxHandlerPecApiTest : public RealboxHandlerTest {
     web_contents_ =
         content::WebContentsTester::CreateTestWebContents(profile(), nullptr);
     handler_ = std::make_unique<RealboxHandler>(
-        mojo::PendingReceiver<searchbox::mojom::PageHandler>(), profile(),
-        web_contents_.get(),
+        mojo::PendingReceiver<searchbox::mojom::PageHandler>(),
+        page_.BindAndGetRemote(), profile(), web_contents_.get(),
         base::BindLambdaForTesting(
             []() -> contextual_search::ContextualSearchSessionHandle* {
               return nullptr;
             }));
-    handler_->SetPage(page_.BindAndGetRemote());
   }
 
   void TearDown() override {
@@ -386,10 +384,9 @@ class LensSearchboxHandlerTest : public SearchboxHandlerTest {
         std::make_unique<testing::NiceMock<MockLensSearchboxClient>>();
 
     handler_ = std::make_unique<LensSearchboxHandler>(
-        mojo::PendingReceiver<searchbox::mojom::PageHandler>(), profile(),
+        mojo::PendingReceiver<searchbox::mojom::PageHandler>(),
+        page_.BindAndGetRemote(), profile(),
         /*web_contents=*/nullptr, lens_searchbox_client_.get());
-
-    handler_->SetPage(page_.BindAndGetRemote());
   }
 };
 
@@ -549,12 +546,12 @@ class WebuiOmniboxHandlerTest : public SearchboxHandlerTest {
 
     handler_ = std::make_unique<WebuiOmniboxHandler>(
         mojo::PendingReceiver<searchbox::mojom::PageHandler>(),
+        page_.BindAndGetRemote(),
         /*metrics_reporter=*/nullptr, omnibox_controller_.get(), &web_ui_,
         base::BindLambdaForTesting(
             []() -> contextual_search::ContextualSearchSessionHandle* {
               return nullptr;
             }));
-    handler_->SetPage(page_.BindAndGetRemote());
   }
 
   void TearDown() override {

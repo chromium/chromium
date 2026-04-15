@@ -379,7 +379,7 @@ void PopulateChromeWebUIFrameBindersPartsDesktop(
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
       NewTabPageUI>(map);
 
-  RegisterWebUIControllerInterfaceBinder<searchbox::mojom::PageHandler,
+  RegisterWebUIControllerInterfaceBinder<searchbox::mojom::PageHandlerFactory,
                                          NewTabPageUI, OmniboxPopupUI>(map);
 
   RegisterWebUIControllerInterfaceBinder<suggest_internals::mojom::PageHandler,
@@ -683,7 +683,7 @@ void PopulateChromeWebUIFrameInterfaceBrokersTrustedPartsDesktop(
         .Add<webui_browser::mojom::PageHandlerFactory>()
         .Add<bookmark_bar::mojom::PageHandlerFactory>()
         .Add<extensions_bar::mojom::PageHandlerFactory>()
-        .Add<searchbox::mojom::PageHandler>()
+        .Add<searchbox::mojom::PageHandlerFactory>()
         .Add<tabs_api::mojom::TabStripService>()
         .Add<tracked_element::mojom::TrackedElementHandler>();
   }
@@ -709,7 +709,7 @@ void PopulateChromeWebUIFrameInterfaceBrokersUntrustedPartsDesktop(
     registry.ForWebUI<lens::LensSidePanelUntrustedUI>()
         .Add<lens::mojom::LensSidePanelPageHandlerFactory>()
         .Add<lens::mojom::LensGhostLoaderPageHandlerFactory>()
-        .Add<searchbox::mojom::PageHandler>()
+        .Add<searchbox::mojom::PageHandlerFactory>()
         .Add<help_bubble::mojom::HelpBubbleHandlerFactory>()
         .Add<composebox::mojom::PageHandlerFactory>();
   }
@@ -718,7 +718,7 @@ void PopulateChromeWebUIFrameInterfaceBrokersUntrustedPartsDesktop(
         .Add<lens::mojom::LensPageHandlerFactory>()
         .Add<lens::mojom::LensGhostLoaderPageHandlerFactory>()
         .Add<help_bubble::mojom::HelpBubbleHandlerFactory>()
-        .Add<searchbox::mojom::PageHandler>();
+        .Add<searchbox::mojom::PageHandlerFactory>();
   }
   registry.ForWebUI<ReadAnythingUntrustedUI>();
 

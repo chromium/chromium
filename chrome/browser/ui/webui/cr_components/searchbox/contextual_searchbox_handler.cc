@@ -264,11 +264,13 @@ ContextualSearchboxHandler::CreateTabPreviewEncodingOptions(
 ContextualSearchboxHandler::ContextualSearchboxHandler(
     mojo::PendingReceiver<searchbox::mojom::PageHandler>
         pending_searchbox_handler,
+    mojo::PendingRemote<searchbox::mojom::Page> pending_page,
     Profile* profile,
     content::WebContents* web_contents,
     std::unique_ptr<OmniboxController> controller,
     GetSessionHandleCallback get_session_callback)
     : SearchboxHandler(std::move(pending_searchbox_handler),
+                       std::move(pending_page),
                        profile,
                        web_contents,
                        std::move(controller)),

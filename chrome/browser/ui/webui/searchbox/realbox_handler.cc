@@ -74,11 +74,13 @@ void RealboxOmniboxClient::OnBookmarkLaunched() {
 
 RealboxHandler::RealboxHandler(
     mojo::PendingReceiver<searchbox::mojom::PageHandler> pending_page_handler,
+    mojo::PendingRemote<searchbox::mojom::Page> pending_page,
     Profile* profile,
     content::WebContents* web_contents,
     GetSessionHandleCallback get_session_callback)
     : ContextualSearchboxHandler(
           std::move(pending_page_handler),
+          std::move(pending_page),
           profile,
           web_contents,
           std::make_unique<OmniboxController>(

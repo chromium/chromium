@@ -100,6 +100,7 @@ class ContextualSearchboxHandler
   explicit ContextualSearchboxHandler(
       mojo::PendingReceiver<searchbox::mojom::PageHandler>
           pending_searchbox_handler,
+      mojo::PendingRemote<searchbox::mojom::Page> pending_page,
       Profile* profile,
       content::WebContents* web_contents,
       std::unique_ptr<OmniboxController> controller,

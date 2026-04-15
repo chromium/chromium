@@ -171,13 +171,21 @@ void WebUIBrowserUI::BindInterface(
 }
 
 void WebUIBrowserUI::BindInterface(
+    mojo::PendingReceiver<searchbox::mojom::PageHandlerFactory>
+        receiver) {
+  searchbox_page_factory_receiver_.reset();
+  searchbox_page_factory_receiver_.Bind(std::move(receiver));
+}
+
+void WebUIBrowserUI::CreatePageHandler(
+    mojo::PendingRemote<searchbox::mojom::Page> page,
     mojo::PendingReceiver<searchbox::mojom::PageHandler> pending_page_handler) {
-  content::WebUI* webui = web_ui();
-  content::WebContents* web_contents = webui->GetWebContents();
+  content::WebContents* web_contents = web_ui()->GetWebContents();
   // TODO(crbug.com/445510209): Pass `metrics_reporter_` after installing a
   // WebUIOmniboxHandler.
   realbox_handler_ = std::make_unique<RealboxHandler>(
-      std::move(pending_page_handler), Profile::FromWebUI(webui), web_contents,
+      std::move(pending_page_handler), std::move(page),
+      Profile::FromWebUI(web_ui()), web_contents,
       base::BindRepeating(&WebUIBrowserUI::GetOrCreateContextualSessionHandle,
                           base::Unretained(this)));
 }

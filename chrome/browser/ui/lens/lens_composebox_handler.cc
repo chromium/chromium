@@ -120,9 +120,11 @@ LensComposeboxHandler::LensComposeboxHandler(
     mojo::PendingReceiver<composebox::mojom::PageHandler> pending_handler,
     mojo::PendingRemote<composebox::mojom::Page> pending_page,
     mojo::PendingReceiver<searchbox::mojom::PageHandler>
-        pending_searchbox_handler)
+        pending_searchbox_handler,
+    mojo::PendingRemote<searchbox::mojom::Page> pending_searchbox_page)
     : SearchboxHandler(
           std::move(pending_searchbox_handler),
+          std::move(pending_searchbox_page),
           profile,
           web_contents,
           std::make_unique<OmniboxController>(

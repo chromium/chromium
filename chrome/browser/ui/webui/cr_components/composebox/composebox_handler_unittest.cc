@@ -100,13 +100,11 @@ class ComposeboxHandlerTest : public ContextualSearchboxHandlerTestHarness {
     handler_ = std::make_unique<ComposeboxHandler>(
         mojo::PendingReceiver<composebox::mojom::PageHandler>(),
         mock_page_.BindAndGetRemote(),
-        mojo::PendingReceiver<searchbox::mojom::PageHandler>(), profile(),
-        web_contents(), base::BindLambdaForTesting([&]() {
-          return contextual_session_handle_.get();
-        }),
+        mojo::PendingReceiver<searchbox::mojom::PageHandler>(),
+        mock_searchbox_page_.BindAndGetRemote(), profile(), web_contents(),
+        base::BindLambdaForTesting(
+            [&]() { return contextual_session_handle_.get(); }),
         base::DoNothing());
-
-    handler_->SetPage(mock_searchbox_page_.BindAndGetRemote());
   }
 
   ComposeboxHandler& handler() { return *handler_; }

@@ -731,7 +731,7 @@ void ContextualTasksUI::CreatePageHandler(
   auto handler = std::make_unique<ContextualTasksComposeboxHandler>(
       this, Profile::FromWebUI(web_ui()), web_ui()->GetWebContents(),
       std::move(pending_page_handler), std::move(pending_page),
-      std::move(pending_searchbox_handler),
+      std::move(pending_searchbox_handler), std::move(pending_searchbox_page),
       base::BindRepeating(
           &ContextualTasksUI::GetOrCreateContextualSessionHandle,
           base::Unretained(this)),
@@ -739,7 +739,6 @@ void ContextualTasksUI::CreatePageHandler(
                           base::Unretained(this)),
       base::BindRepeating(&ContextualTasksUI::TakeInputStateModel,
                           base::Unretained(this)));
-  handler->SetPage(std::move(pending_searchbox_page));
   composebox_handler_ = std::move(handler);
 }
 #endif  // !BUILDFLAG(IS_ANDROID)

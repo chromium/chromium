@@ -67,10 +67,7 @@ void LensComposeboxController::BindComposebox(
   composebox_handler_ = std::make_unique<LensComposeboxHandler>(
       this, profile_, lens_search_controller_->GetTabInterface()->GetContents(),
       std::move(pending_handler), std::move(pending_page),
-      std::move(pending_searchbox_handler));
-
-  // TODO(crbug.com/435288212): Move searchbox mojom to use factory pattern.
-  composebox_handler_->SetPage(std::move(pending_searchbox_page));
+      std::move(pending_searchbox_handler), std::move(pending_searchbox_page));
 
   // Set the visual selection context if it was already made before the
   // composebox was bound.

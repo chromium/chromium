@@ -15,6 +15,7 @@
 #include "chrome/browser/ui/webui_browser/webui_browser_window.h"
 #include "components/browser_apis/tab_strip/tab_strip_api.mojom.h"
 #include "components/guest_contents/common/guest_contents.mojom.h"
+#include "components/omnibox/browser/searchbox.mojom.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui_controller.h"
 #include "content/public/browser/webui_config.h"
@@ -32,10 +33,6 @@ class BrowserContext;
 namespace contextual_search {
 class ContextualSearchSessionHandle;
 }  // namespace contextual_search
-
-namespace searchbox::mojom {
-class PageHandler;
-}  // namespace searchbox::mojom
 
 namespace ui {
 class TrackedElementHandler;
@@ -58,7 +55,8 @@ class WebUIBrowserUIConfig
 class WebUIBrowserUI : public ui::MojoWebUIController,
                        public webui_browser::mojom::PageHandlerFactory,
                        public bookmark_bar::mojom::PageHandlerFactory,
-                       public extensions_bar::mojom::PageHandlerFactory {
+                       public extensions_bar::mojom::PageHandlerFactory,
+                       public searchbox::mojom::PageHandlerFactory {
  public:
   explicit WebUIBrowserUI(content::WebUI* web_ui);
   ~WebUIBrowserUI() override;
@@ -70,8 +68,9 @@ class WebUIBrowserUI : public ui::MojoWebUIController,
   void BindInterface(
       mojo::PendingReceiver<extensions_bar::mojom::PageHandlerFactory>
           receiver);
-  void BindInterface(mojo::PendingReceiver<searchbox::mojom::PageHandler>
-                         pending_page_handler);
+  void BindInterface(
+      mojo::PendingReceiver<searchbox::mojom::PageHandlerFactory>
+          receiver);
   void BindInterface(
       mojo::PendingReceiver<guest_contents::mojom::GuestContentsHost> receiver);
   void BindInterface(
@@ -120,6 +119,11 @@ class WebUIBrowserUI : public ui::MojoWebUIController,
       mojo::PendingReceiver<extensions_bar::mojom::PageHandler> receiver)
       override;
 
+  // searchbox::mojom::PageHandlerFactory:
+  void CreatePageHandler(
+      mojo::PendingRemote<searchbox::mojom::Page> page,
+      mojo::PendingReceiver<searchbox::mojom::PageHandler> receiver) override;
+
   // Returns the list of known element identifiers. These elements are HTML
   // elements tracked by ui/webui/tracked_element. Used for anchoring secondary
   // UIs.
@@ -141,6 +145,9 @@ class WebUIBrowserUI : public ui::MojoWebUIController,
       bookmark_bar_page_factory_receiver_{this};
   mojo::Receiver<extensions_bar::mojom::PageHandlerFactory>
       extensions_bar_page_factory_receiver_{this};
+
+  mojo::Receiver<searchbox::mojom::PageHandlerFactory>
+      searchbox_page_factory_receiver_{this};
 
   raw_ptr<Browser> browser_;
 

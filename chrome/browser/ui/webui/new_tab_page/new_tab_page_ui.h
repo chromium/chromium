@@ -40,7 +40,7 @@
 #include "chrome/browser/ui/webui/customize_buttons/customize_buttons.mojom.h"
 #include "chrome/browser/ui/webui/new_tab_page/new_tab_page.mojom.h"
 #include "chrome/common/webui_url_constants.h"
-#include "components/omnibox/browser/searchbox.mojom-forward.h"
+#include "components/omnibox/browser/searchbox.mojom.h"
 #include "components/page_image_service/mojom/page_image_service.mojom.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "content/public/browser/web_contents_observer.h"
@@ -119,6 +119,7 @@ class NewTabPageUI
       public ntp_promo::mojom::NtpPromoHandlerFactory,
       public NtpCustomBackgroundServiceObserver,
       public action_chips::mojom::ActionChipsHandlerFactory,
+      public searchbox::mojom::PageHandlerFactory,
       content::WebContentsObserver {
  public:
   explicit NewTabPageUI(content::WebUI* web_ui);
@@ -143,10 +144,11 @@ class NewTabPageUI
       mojo::PendingReceiver<new_tab_page::mojom::PageHandlerFactory>
           pending_receiver);
 
-  // Instantiates the implementor of the searchbox::mojom::PageHandler mojo
-  // interface passing the pending receiver that will be internally bound.
-  void BindInterface(mojo::PendingReceiver<searchbox::mojom::PageHandler>
-                         pending_page_handler);
+  // Instantiates the implementor of the searchbox::mojom::PageHandlerFactory
+  // mojo interface passing the pending receiver that will be internally bound.
+  void BindInterface(
+      mojo::PendingReceiver<searchbox::mojom::PageHandlerFactory>
+          pending_receiver);
 
   // Instantiates the implementor of the
   // browser_command::mojom::CommandHandlerFactory mojo interface passing
@@ -288,6 +290,12 @@ class NewTabPageUI
       mojo::PendingReceiver<searchbox::mojom::PageHandler>
           pending_searchbox_handler) override;
 
+  // searchbox::mojom::PageHandlerFactory:
+  void CreatePageHandler(
+      mojo::PendingRemote<searchbox::mojom::Page> pending_page,
+      mojo::PendingReceiver<searchbox::mojom::PageHandler>
+          pending_page_handler) override;
+
   // help_bubble::mojom::HelpBubbleHandlerFactory:
   void CreateHelpBubbleHandler(
       mojo::PendingRemote<help_bubble::mojom::HelpBubbleClient> client,
@@ -357,6 +365,8 @@ class NewTabPageUI
   mojo::Receiver<browser_command::mojom::CommandHandlerFactory>
       browser_command_factory_receiver_;
   std::unique_ptr<RealboxHandler> realbox_handler_;
+  mojo::Receiver<searchbox::mojom::PageHandlerFactory>
+      searchbox_page_factory_receiver_{this};
   std::unique_ptr<user_education::HelpBubbleHandler> help_bubble_handler_;
   mojo::Receiver<help_bubble::mojom::HelpBubbleHandlerFactory>
       help_bubble_handler_factory_receiver_{this};

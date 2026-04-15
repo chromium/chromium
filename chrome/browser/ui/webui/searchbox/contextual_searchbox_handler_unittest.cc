@@ -106,11 +106,13 @@ class FakeContextualSearchboxHandler : public ContextualSearchboxHandler {
  public:
   FakeContextualSearchboxHandler(
       mojo::PendingReceiver<searchbox::mojom::PageHandler> pending_page_handler,
+      mojo::PendingRemote<searchbox::mojom::Page> pending_page,
       Profile* profile,
       content::WebContents* web_contents,
       std::unique_ptr<OmniboxController> controller,
       GetSessionHandleCallback get_session_callback)
       : ContextualSearchboxHandler(std::move(pending_page_handler),
+                                   std::move(pending_page),
                                    profile,
                                    web_contents,
                                    std::move(controller),
@@ -214,13 +216,17 @@ class ContextualSearchboxHandlerTest
 
     web_contents()->SetDelegate(&delegate_);
     handler_ = std::make_unique<FakeContextualSearchboxHandler>(
-        mojo::PendingReceiver<searchbox::mojom::PageHandler>(), profile(),
-        web_contents(),
+        mojo::PendingReceiver<searchbox::mojom::PageHandler>(),
+        mock_searchbox_page_.BindAndGetRemote(), profile(), web_contents(),
         std::make_unique<OmniboxController>(
             std::make_unique<TestOmniboxClient>()),
         base::BindLambdaForTesting(
             [&]() { return contextual_session_handle_.get(); }));
-    handler_->SetPage(mock_searchbox_page_.BindAndGetRemote());
+
+    // Drain the Mojo pipe and clear setup-related calls to searchbox page.
+    mock_searchbox_page_.FlushForTesting();
+    base::RunLoop().RunUntilIdle();
+    testing::Mock::VerifyAndClearExpectations(&mock_searchbox_page_);
 
     ON_CALL(query_controller(), CreateSearchUrl)
         .WillByDefault(
@@ -767,13 +773,17 @@ class SmartTabSharingTest : public ContextualSearchboxHandlerTestHarness {
                 this));
 
     handler_ = std::make_unique<FakeContextualSearchboxHandler>(
-        mojo::PendingReceiver<searchbox::mojom::PageHandler>(), profile(),
-        web_contents(),
+        mojo::PendingReceiver<searchbox::mojom::PageHandler>(),
+        mock_searchbox_page_.BindAndGetRemote(), profile(), web_contents(),
         std::make_unique<OmniboxController>(
             std::make_unique<TestOmniboxClient>()),
         base::BindLambdaForTesting(
             [&]() { return contextual_session_handle_.get(); }));
-    handler_->SetPage(mock_searchbox_page_.BindAndGetRemote());
+
+    // Drain the Mojo pipe and clear setup-related calls to searchbox page.
+    mock_searchbox_page_.FlushForTesting();
+    base::RunLoop().RunUntilIdle();
+    testing::Mock::VerifyAndClearExpectations(&mock_searchbox_page_);
 
     ON_CALL(query_controller(), CreateSearchUrl)
         .WillByDefault(
@@ -888,9 +898,10 @@ TEST_F(SmartTabSharingTest, InitializationFromPref) {
       contextual_tasks::kContextualTasksShareOpenTabsEveryThread, true);
 
   // Recreate handler to test initialization.
+  mock_searchbox_page_.receiver_.reset();
   auto handler = std::make_unique<FakeContextualSearchboxHandler>(
-      mojo::PendingReceiver<searchbox::mojom::PageHandler>(), profile(),
-      web_contents(),
+      mojo::PendingReceiver<searchbox::mojom::PageHandler>(),
+      mock_searchbox_page_.BindAndGetRemote(), profile(), web_contents(),
       std::make_unique<OmniboxController>(
           std::make_unique<TestOmniboxClient>()),
       base::BindLambdaForTesting(
@@ -1686,9 +1697,12 @@ TEST_F(ContextualSearchboxHandlerTestTabsTest,
 TEST_F(ContextualSearchboxHandlerTestTabsTest,
        DISABLED_TabStripModelObserverIsNotAddedWithNullSession) {
   // Create a handler with a null session handle.
+  // Use a new MockSearchboxPage for the new handler.
+  testing::NiceMock<MockSearchboxPage> local_mock_searchbox_page;
   auto handler_with_null_session =
       std::make_unique<FakeContextualSearchboxHandler>(
-          mojo::PendingReceiver<searchbox::mojom::PageHandler>(), profile(),
+          mojo::PendingReceiver<searchbox::mojom::PageHandler>(),
+          local_mock_searchbox_page.BindAndGetRemote(), profile(),
           web_contents(),
           std::make_unique<OmniboxController>(
               std::make_unique<TestOmniboxClient>()),
@@ -1696,11 +1710,6 @@ TEST_F(ContextualSearchboxHandlerTestTabsTest,
               []() -> contextual_search::ContextualSearchSessionHandle* {
                 return nullptr;
               }));
-
-  // Use a new MockSearchboxPage for the new handler.
-  testing::NiceMock<MockSearchboxPage> local_mock_searchbox_page;
-  handler_with_null_session->SetPage(
-      local_mock_searchbox_page.BindAndGetRemote());
 
   // The observer should not be added, so OnTabStripChanged should not be
   // called.

@@ -1036,11 +1036,12 @@ void NewTabPageUI::BindInterface(
 }
 
 void NewTabPageUI::BindInterface(
-    mojo::PendingReceiver<searchbox::mojom::PageHandler> pending_page_handler) {
-  realbox_handler_ = std::make_unique<RealboxHandler>(
-      std::move(pending_page_handler), profile_, web_contents(),
-      base::BindRepeating(&NewTabPageUI::GetOrCreateContextualSessionHandle,
-                          base::Unretained(this)));
+    mojo::PendingReceiver<searchbox::mojom::PageHandlerFactory>
+        pending_receiver) {
+  if (searchbox_page_factory_receiver_.is_bound()) {
+    searchbox_page_factory_receiver_.reset();
+  }
+  searchbox_page_factory_receiver_.Bind(std::move(pending_receiver));
 }
 
 void NewTabPageUI::BindInterface(
@@ -1239,6 +1240,16 @@ void NewTabPageUI::CreatePageHandler(
 }
 
 void NewTabPageUI::CreatePageHandler(
+    mojo::PendingRemote<searchbox::mojom::Page> pending_page,
+    mojo::PendingReceiver<searchbox::mojom::PageHandler> pending_page_handler) {
+  realbox_handler_ = std::make_unique<RealboxHandler>(
+      std::move(pending_page_handler), std::move(pending_page), profile_,
+      web_contents(),
+      base::BindRepeating(&NewTabPageUI::GetOrCreateContextualSessionHandle,
+                          base::Unretained(this)));
+}
+
+void NewTabPageUI::CreatePageHandler(
     mojo::PendingRemote<composebox::mojom::Page> pending_page,
     mojo::PendingReceiver<composebox::mojom::PageHandler> pending_page_handler,
     mojo::PendingRemote<searchbox::mojom::Page> pending_searchbox_page,
@@ -1248,14 +1259,12 @@ void NewTabPageUI::CreatePageHandler(
 
   composebox_handler_ = std::make_unique<ComposeboxHandler>(
       std::move(pending_page_handler), std::move(pending_page),
-      std::move(pending_searchbox_handler), profile_, web_contents(),
+      std::move(pending_searchbox_handler), std::move(pending_searchbox_page),
+      profile_, web_contents(),
       base::BindRepeating(&NewTabPageUI::GetOrCreateContextualSessionHandle,
                           base::Unretained(this)),
       base::BindRepeating(&NewTabPageUI::ClearContextualSessionHandle,
                           base::Unretained(this)));
-
-  // TODO(crbug.com/435288212): Move searchbox mojom to use factory pattern.
-  composebox_handler_->SetPage(std::move(pending_searchbox_page));
 }
 
 void NewTabPageUI::CreateHelpBubbleHandler(
