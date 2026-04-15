@@ -1053,8 +1053,9 @@ function extractMediaData(document: Document): PageContentMediaData|undefined {
 
   const durationMilliseconds =
       Math.floor(selectedMedia.duration * SECOND_TO_MS_RATIO);
-  if (isNaN(durationMilliseconds)) {
-    // Duration is required for proto.
+
+  // Duration is required for proto and must be a valid finite number.
+  if (!Number.isFinite(durationMilliseconds)) {
     return undefined;
   }
 
