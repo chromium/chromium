@@ -182,10 +182,122 @@ TEST(RuleTest, StyleRuleToString) {
   StyleRule rule;
   rule.is_allowlist = true;
   rule.domains = {"example.com", "~exception.example.com"};
-  rule.style_selector = "#example-id";
+  rule.selector = "#example-id";
 
   EXPECT_EQ("example.com,~exception.example.com#@##example-id",
             ToString(rule.ToProtobuf()));
+
+  // Blocklist rule with domains.
+  rule.is_allowlist = false;
+  EXPECT_EQ("example.com,~exception.example.com###example-id",
+            ToString(rule.ToProtobuf()));
+
+  // Global blocklist rule (no domains).
+  rule = StyleRule();
+  rule.selector = ".ad";
+  EXPECT_EQ("##.ad", ToString(rule.ToProtobuf()));
+
+  // Global allowlist rule (no domains).
+  rule.is_allowlist = true;
+  EXPECT_EQ("#@#.ad", ToString(rule.ToProtobuf()));
+}
+
+TEST(RuleTest, GetAnchorsIfSupported) {
+  enum Support { kSlow = false, kFast = true };
+  enum Site { kGlobal = false, kSpecific = true };
+
+  struct {
+    const char* selector;
+    Site site;
+    Support support;
+    std::vector<std::string> classes;
+    std::vector<std::string> ids;
+  } kTestCases[] = {
+      // Global rules (no site-specific domains).
+      {"#ad", kGlobal, kFast, {}, {"ad"}},
+      {".ad", kGlobal, kFast, {"ad"}, {}},
+      {"div", kGlobal, kSlow, {}, {}},  // Global tag selector is too slow.
+      {"", kGlobal, kSlow, {}, {}},
+      {"@rule", kGlobal, kSlow, {}, {}},
+
+      // Site-specific rules.
+      {"#ad", kSpecific, kFast, {}, {"ad"}},
+      {".ad", kSpecific, kFast, {"ad"}, {}},
+      {"div", kSpecific, kFast, {}, {}},  // Site-specific tag is fast enough.
+
+      // Combinators.
+      {"div .ad", kGlobal, kFast, {"ad"}, {}},
+      {"div .ad", kSpecific, kFast, {"ad"}, {}},
+
+      // Attribute selectors.
+      {".ad[title='ad']", kGlobal, kFast, {"ad"}, {}},
+      {"div[title='ad']", kSpecific, kFast, {}, {}},
+      {"div[title='ad']", kGlobal, kSlow, {}, {}},
+
+      // Pseudo-classes (require an anchor even if site-specific).
+      {".ad:hover", kGlobal, kFast, {"ad"}, {}},
+      {".ad:hover", kSpecific, kFast, {"ad"}, {}},
+      {"div:hover", kGlobal, kSlow, {}, {}},
+      {"div:hover", kSpecific, kSlow, {}, {}},
+      {":empty", kGlobal, kSlow, {}, {}},
+      {".ad:not(body)", kGlobal, kFast, {"ad"}, {}},
+
+      // Wildcard selectors (supported if they have other anchors or are
+      // specific).
+      {"*.ad", kGlobal, kFast, {"ad"}, {}},
+      {"*.ad", kSpecific, kFast, {"ad"}, {}},
+      {"*", kGlobal, kSlow, {}, {}},
+      {"*", kSpecific, kFast, {}, {}},
+
+      // Extraction of multiple identifiers.
+      {".class1 #id1 .class2", kSpecific, kFast, {"class1", "class2"}, {"id1"}},
+      {".🚀 #ad-🔥", kSpecific, kFast, {"🚀"}, {"ad-🔥"}},
+
+      // Handling of escaped characters in identifiers.
+      {".class\\.with\\.dots", kSpecific, kFast, {"class.with.dots"}, {}},
+      {"#id\\#with\\#hashes", kSpecific, kFast, {}, {"id#with#hashes"}},
+      {".class\\ name", kSpecific, kFast, {"class name"}, {}},
+
+      // Attribute noise should be ignored by the anchor extractor.
+      {"div[attr=\".not-a-class\"]#real-id", kSpecific, kFast, {}, {"real-id"}},
+      {"[id=\"#not-an-id\"].real-class", kSpecific, kFast, {"real-class"}, {}},
+
+      // Pseudo-elements and pseudo-classes extraction.
+      {".class:hover", kSpecific, kFast, {"class"}, {}},
+      {".class::after", kSpecific, kFast, {"class"}, {}},
+
+      // Handling of tricky characters inside attribute quotes.
+      {"div[attr=\"]\"]#id", kSpecific, kFast, {}, {"id"}},
+      {"[attr=']']#id", kSpecific, kFast, {}, {"id"}},
+      {"[attr=\"#not-an-id\"]#real-id", kSpecific, kFast, {}, {"real-id"}},
+
+      // Multiple identifiers without whitespace separation.
+      {"#id.class1.class2", kSpecific, kFast, {"class1", "class2"}, {"id"}},
+
+      // Selectors with only anchor characters but no identifiers.
+      {".", kGlobal, kSlow, {}, {}},
+      {"#", kSpecific, kFast, {}, {}},  // Allowed if specific, but no anchor.
+      {". ", kGlobal, kSlow, {}, {}},
+      {"# :hover", kSpecific, kSlow, {}, {}},  // Pseudo-class requires anchor.
+
+      // Contains operator in attribute selectors.
+      {"[class*=\"ad-\"]", kGlobal, kSlow, {}, {}},
+      {"div[class*=\"ad-\"]", kSpecific, kFast, {}, {}},
+      {".ad[class*=\"ad-\"]", kGlobal, kFast, {"ad"}, {}},
+  };
+
+  for (const auto& test_case : kTestCases) {
+    SCOPED_TRACE(test_case.selector);
+    std::vector<std::string> classes;
+    std::vector<std::string> ids;
+    bool is_fast =
+        GetAnchorsIfSupported(test_case.selector, test_case.site, classes, ids);
+    EXPECT_EQ(is_fast, test_case.support);
+    if (is_fast) {
+      EXPECT_EQ(classes, test_case.classes);
+      EXPECT_EQ(ids, test_case.ids);
+    }
+  }
 }
 
 }  // namespace subresource_filter

@@ -44,23 +44,37 @@ UnindexedRulesetWriter::UnindexedRulesetWriter(
     : coded_stream_(stream), max_rules_per_chunk_(max_rules_per_chunk) {}
 
 UnindexedRulesetWriter::~UnindexedRulesetWriter() {
-  CHECK_EQ(pending_chunk_.url_rules_size(), 0);
-  CHECK_EQ(pending_chunk_.style_rules_size(), 0);
+  CHECK(IsPendingChunkEmpty());
 }
 
 bool UnindexedRulesetWriter::AddUrlRule(const proto::UrlRule& rule) {
   CHECK(!had_error());
   pending_chunk_.add_url_rules()->CopyFrom(rule);
-  if (pending_chunk_.url_rules_size() >= max_rules_per_chunk_) {
-    CHECK_EQ(pending_chunk_.url_rules_size(), max_rules_per_chunk_);
+  return WriteChunkIfFull();
+}
+
+bool UnindexedRulesetWriter::AddStyleRule(const proto::StyleRule& rule) {
+  CHECK(!had_error());
+  pending_chunk_.add_style_rules()->CopyFrom(rule);
+  return WriteChunkIfFull();
+}
+
+bool UnindexedRulesetWriter::WriteChunkIfFull() {
+  if (pending_chunk_.url_rules_size() + pending_chunk_.style_rules_size() >=
+      max_rules_per_chunk_) {
     return WritePendingChunk();
   }
   return true;
 }
 
+bool UnindexedRulesetWriter::IsPendingChunkEmpty() const {
+  return pending_chunk_.url_rules_size() == 0 &&
+         pending_chunk_.style_rules_size() == 0;
+}
+
 bool UnindexedRulesetWriter::Finish() {
   CHECK(!had_error());
-  const bool success = !pending_chunk_.url_rules_size() || WritePendingChunk();
+  const bool success = IsPendingChunkEmpty() || WritePendingChunk();
   if (success) {
     coded_stream_.Trim();
   }
@@ -69,7 +83,7 @@ bool UnindexedRulesetWriter::Finish() {
 
 bool UnindexedRulesetWriter::WritePendingChunk() {
   CHECK(!had_error());
-  CHECK_GT(pending_chunk_.url_rules_size(), 0);
+  CHECK(!IsPendingChunkEmpty());
 
   proto::FilteringRules chunk;
   chunk.Swap(&pending_chunk_);

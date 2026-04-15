@@ -80,7 +80,7 @@ class UnindexedRulesetWriter {
   // Places the |rule| to the current chunk, and serializes the chunk if it has
   // grown up to |max_rules_per_chunk|.
   bool AddUrlRule(const url_pattern_index::proto::UrlRule& rule);
-  // TODO(pkalinnikov): Implement AddStyleRule when needed.
+  bool AddStyleRule(const url_pattern_index::proto::StyleRule& rule);
 
   // Finalizes the serialization of the unindexed ruleset, i.e., writes the
   // final chunk of rules, if there are any still pending. This method *should*
@@ -93,6 +93,12 @@ class UnindexedRulesetWriter {
   // Writes the non-empty |pending_chunk_| to the |coded_stream_|. Always leaves
   // the |panding_chunk_| empty, regardless of whether an error occurred.
   bool WritePendingChunk();
+
+  // Checks if the current chunk is full, and writes it if so.
+  bool WriteChunkIfFull();
+
+  // Returns true if the pending chunk has no rules.
+  bool IsPendingChunkEmpty() const;
 
   google::protobuf::io::CodedOutputStream coded_stream_;
 

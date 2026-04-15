@@ -276,7 +276,7 @@ class UnindexedRulesetRuleOutputStream : public RuleOutputStream {
   }
 
   bool PutStyleRule(const url_pattern_index::proto::StyleRule& rule) override {
-    return true;
+    return ruleset_writer_.AddStyleRule(rule);
   }
 
   bool Finish() override {
@@ -397,11 +397,16 @@ bool TransferRules(RuleInputStream* input,
         }
         break;
       }
-      case url_pattern_index::proto::RULE_TYPE_STYLE:
-        if (style_rules_output) {
-          style_rules_output->PutStyleRule(input->GetStyleRule());
+      case url_pattern_index::proto::RULE_TYPE_STYLE: {
+        if (!style_rules_output) {
+          break;
+        }
+        url_pattern_index::proto::StyleRule style_rule = input->GetStyleRule();
+        if (!DeleteStyleRuleOrAmend(&style_rule)) {
+          style_rules_output->PutStyleRule(style_rule);
         }
         break;
+      }
       case url_pattern_index::proto::RULE_TYPE_COMMENT:
         // Ignore comments.
         break;
@@ -451,6 +456,35 @@ bool DeleteUrlRuleOrAmend(url_pattern_index::proto::UrlRule* rule,
 
   // The rule should have at least 1 type bit, otherwise it targets nothing.
   return !rule->element_types() && !rule->activation_types();
+}
+
+bool DeleteStyleRuleOrAmend(url_pattern_index::proto::StyleRule* rule) {
+  bool is_site_specific = false;
+  for (const auto& domain : rule->domains()) {
+    if (!domain.exclude()) {
+      is_site_specific = true;
+      break;
+    }
+  }
+
+  std::vector<std::string> classes;
+  std::vector<std::string> ids;
+  if (!GetAnchorsIfSupported(rule->selector(), is_site_specific, classes,
+                             ids)) {
+    return true;
+  }
+
+  // Populate anchors if not already there.
+  if (rule->classes_size() == 0 && rule->ids_size() == 0) {
+    for (const auto& class_name : classes) {
+      rule->add_classes(class_name);
+    }
+    for (const auto& id_name : ids) {
+      rule->add_ids(id_name);
+    }
+  }
+
+  return false;
 }
 
 }  // namespace subresource_filter

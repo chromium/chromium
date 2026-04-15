@@ -10,6 +10,7 @@
 
 #include "base/files/file_util.h"
 #include "components/subresource_filter/tools/rule_parser/rule_parser.h"
+#include "components/subresource_filter/tools/ruleset_converter/rule_stream.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace subresource_filter {
@@ -30,9 +31,13 @@ void TestRulesetContents::AppendRules(
       case url_pattern_index::proto::RULE_TYPE_URL:
         url_rules.push_back(parser.url_rule().ToProtobuf());
         break;
-      case url_pattern_index::proto::RULE_TYPE_STYLE:
-        style_rules.push_back(parser.style_rule().ToProtobuf());
+      case url_pattern_index::proto::RULE_TYPE_STYLE: {
+        auto proto = parser.style_rule().ToProtobuf();
+        if (!DeleteStyleRuleOrAmend(&proto)) {
+          style_rules.push_back(proto);
+        }
         break;
+      }
       case url_pattern_index::proto::RULE_TYPE_UNSPECIFIED:
         ASSERT_TRUE(allow_errors);
         break;
@@ -141,7 +146,11 @@ bool AreUrlRulesEqual(const url_pattern_index::proto::UrlRule& first,
 
 bool AreStyleRulesEqual(const url_pattern_index::proto::StyleRule& first,
                         const url_pattern_index::proto::StyleRule& second) {
-  return first.SerializeAsString() == second.SerializeAsString();
+  url_pattern_index::proto::StyleRule first_copy = first;
+  url_pattern_index::proto::StyleRule second_copy = second;
+  DeleteStyleRuleOrAmend(&first_copy);
+  DeleteStyleRuleOrAmend(&second_copy);
+  return first_copy.SerializeAsString() == second_copy.SerializeAsString();
 }
 
 }  // namespace subresource_filter

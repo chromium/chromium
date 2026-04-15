@@ -23,7 +23,8 @@ namespace proto = url_pattern_index::proto;
 namespace testing = url_pattern_index::testing;
 using url_pattern_index::UrlPattern;
 
-bool IsEqual(const proto::UrlRule& lhs, const proto::UrlRule& rhs) {
+template <typename T>
+bool IsEqual(const T& lhs, const T& rhs) {
   return lhs.SerializeAsString() == rhs.SerializeAsString();
 }
 
@@ -56,15 +57,13 @@ class UnindexedRulesetTestBuilder {
   bool AddUrlRule(const UrlPattern& url_pattern,
                   proto::SourceType source_type,
                   bool is_allowlist = false) {
-    auto rule = testing::MakeUrlRule(url_pattern);
+    auto& rule = url_rules_.emplace_back(testing::MakeUrlRule(url_pattern));
     if (is_allowlist) {
       rule.set_semantics(proto::RULE_SEMANTICS_ALLOWLIST);
     }
     rule.set_source_type(source_type);
 
-    url_rules_.push_back(rule);
-    return !ruleset_writer_.had_error() &&
-           ruleset_writer_.AddUrlRule(url_rules_.back());
+    return !ruleset_writer_.had_error() && ruleset_writer_.AddUrlRule(rule);
   }
 
   bool AddUrlRules(int number_of_rules) {
@@ -77,6 +76,33 @@ class UnindexedRulesetTestBuilder {
     return true;
   }
 
+  bool AddStyleRule(const std::string& selector,
+                    const std::vector<std::string>& domains = {},
+                    bool is_allowlist = false) {
+    auto& rule = style_rules_.emplace_back();
+    rule.set_semantics(is_allowlist ? proto::RULE_SEMANTICS_ALLOWLIST
+                                    : proto::RULE_SEMANTICS_BLOCKLIST);
+    rule.set_selector(selector);
+    for (const auto& domain : domains) {
+      auto* item = rule.add_domains();
+      if (!domain.empty() && domain[0] == '~') {
+        item->set_domain(domain.substr(1));
+        item->set_exclude(true);
+      } else {
+        item->set_domain(domain);
+      }
+    }
+
+    // Simulate what the real tool does by populating pre-parsed fields.
+    if (selector == "#id") {
+      rule.add_ids("id");
+    } else if (selector == ".class") {
+      rule.add_classes("class");
+    }
+
+    return !ruleset_writer_.had_error() && ruleset_writer_.AddStyleRule(rule);
+  }
+
   bool Finish() {
     if (!ruleset_writer_.had_error() && ruleset_writer_.Finish()) {
       // Note: This line has effect only when |output_| is an ArrayOutputStream.
@@ -87,39 +113,58 @@ class UnindexedRulesetTestBuilder {
   }
 
   const std::vector<proto::UrlRule>& url_rules() const { return url_rules_; }
+  const std::vector<proto::StyleRule>& style_rules() const {
+    return style_rules_;
+  }
   const std::string& ruleset_contents() const { return ruleset_contents_; }
 
  private:
   std::vector<proto::UrlRule> url_rules_;
+  std::vector<proto::StyleRule> style_rules_;
   std::string ruleset_contents_;
   std::unique_ptr<google::protobuf::io::ZeroCopyOutputStream> output_;
   UnindexedRulesetWriter ruleset_writer_;
 };
 
-bool IsRulesetValid(const std::string& ruleset_contents,
-                    const std::vector<proto::UrlRule>& expected_url_rules) {
+bool IsRulesetValid(
+    const std::string& ruleset_contents,
+    const std::vector<proto::UrlRule>& expected_url_rules,
+    const std::vector<proto::StyleRule>& expected_style_rules = {}) {
   google::protobuf::io::ArrayInputStream array_input(ruleset_contents.data(),
                                                      ruleset_contents.size());
   UnindexedRulesetReader reader(&array_input);
   proto::FilteringRules chunk;
-  std::vector<proto::UrlRule> read_rules;
+  std::vector<proto::UrlRule> read_url_rules;
+  std::vector<proto::StyleRule> read_style_rules;
   while (reader.ReadNextChunk(&chunk)) {
-    read_rules.insert(read_rules.end(), chunk.url_rules().begin(),
-                      chunk.url_rules().end());
+    read_url_rules.insert(read_url_rules.end(), chunk.url_rules().begin(),
+                          chunk.url_rules().end());
+    read_style_rules.insert(read_style_rules.end(), chunk.style_rules().begin(),
+                            chunk.style_rules().end());
   }
   if (base::checked_cast<size_t>(reader.num_bytes_read()) !=
       ruleset_contents.size()) {
     return false;
   }
 
-  if (expected_url_rules.size() != read_rules.size()) {
+  if (expected_url_rules.size() != read_url_rules.size()) {
     return false;
   }
-  for (size_t i = 0, size = read_rules.size(); i != size; ++i) {
-    if (!IsEqual(expected_url_rules[i], read_rules[i])) {
+  for (size_t i = 0, size = read_url_rules.size(); i != size; ++i) {
+    if (!IsEqual(expected_url_rules[i], read_url_rules[i])) {
       return false;
     }
   }
+
+  if (expected_style_rules.size() != read_style_rules.size()) {
+    return false;
+  }
+  for (size_t i = 0, size = read_style_rules.size(); i != size; ++i) {
+    if (!IsEqual(expected_style_rules[i], read_style_rules[i])) {
+      return false;
+    }
+  }
+
   return true;
 }
 
@@ -137,6 +182,30 @@ TEST(UnindexedRulesetTest, OneUrlRule) {
       builder.AddUrlRule(UrlPattern("example.com"), testing::kThirdParty));
   EXPECT_TRUE(builder.Finish());
   EXPECT_TRUE(IsRulesetValid(builder.ruleset_contents(), builder.url_rules()));
+}
+
+TEST(UnindexedRulesetTest, OneStyleRule) {
+  UnindexedRulesetTestBuilder builder;
+  EXPECT_TRUE(builder.AddStyleRule("#id", {"example.com"}));
+  EXPECT_TRUE(builder.Finish());
+  EXPECT_TRUE(IsRulesetValid(builder.ruleset_contents(), builder.url_rules(),
+                             builder.style_rules()));
+}
+
+TEST(UnindexedRulesetTest, PreParsedStyleRule) {
+  UnindexedRulesetTestBuilder builder;
+  EXPECT_TRUE(builder.AddStyleRule(".class"));
+  EXPECT_TRUE(builder.Finish());
+
+  // Verify that the pre-parsed anchor was actually stored.
+  google::protobuf::io::ArrayInputStream array_input(
+      builder.ruleset_contents().data(), builder.ruleset_contents().size());
+  UnindexedRulesetReader reader(&array_input);
+  proto::FilteringRules chunk;
+  ASSERT_TRUE(reader.ReadNextChunk(&chunk));
+  ASSERT_EQ(1, chunk.style_rules_size());
+  EXPECT_EQ(1, chunk.style_rules(0).classes_size());
+  EXPECT_EQ("class", chunk.style_rules(0).classes(0));
 }
 
 TEST(UnindexedRulesetTest, ManyUrlRules) {

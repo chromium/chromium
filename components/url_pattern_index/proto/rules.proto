@@ -183,7 +183,12 @@ message StyleRule {
   repeated DomainListItem domains = 2;
 
   // A CSS selector as specified in http://www.w3.org/TR/css3-selectors.
-  optional string style_selector = 3;
+  optional string selector = 3;
+
+  // Pre-parsed anchors for indexing. These are populated by the tools and
+  // trusted by the browser to avoid complex parsing in the browser process.
+  repeated string classes = 4;
+  repeated string ids = 5;
 }
 
 // A comment line.

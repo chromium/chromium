@@ -114,7 +114,7 @@ struct StyleRule {
   // The list of domains, same as UrlRule::domains.
   std::vector<std::string> domains;
   // A CSS selector as specified in http://www.w3.org/TR/css3-selectors.
-  std::string style_selector;
+  std::string selector;
 };
 
 // Sorts domain patterns in decreasing order of length (and alphabetically
@@ -123,6 +123,40 @@ void CanonicalizeDomainList(std::vector<std::string>* domains);
 
 // Converts protobuf |rule| into its canonical EasyList string representation.
 std::string ToString(const url_pattern_index::proto::UrlRule& rule);
+
+// Analyzes `selector` and extracts anchors (classes and ids) if it is
+// considered performant enough for the subresource filter. Returns true if the
+// selector is supported, and populates `classes` and `ids`. A selector is
+// considered not performant if it has no anchor and is either a global rule
+// or a pseudo-class selector.
+//
+// The performance standard for style rules is as follows:
+// 1. Anchored rules (classes or IDs, e.g., .ad, #id) are performant because
+//    they can be indexed. Note that attribute selectors (e.g.,
+//    [class*="ad-"]) are not used for anchor extraction and do not satisfy
+//    the anchor requirement.
+// 2. Site-specific rules without anchors (e.g., example.com##div,
+//    example.com##[attr]) are allowed because their performance impact is
+//    limited to a single domain.
+// 3. Rules with pseudo-classes (e.g., :hover, :empty) always require a class
+//    or ID anchor, even if site-specific, because they can be expensive to
+//    evaluate and often act as pseudo-universal selectors.
+// 4. Global unanchored rules (e.g., ##div, ##*, ##[attr]) are rejected as
+//    they would be evaluated on every element of every page.
+//
+// IMPORTANT: Since this is not a perfect parser, it is feasible for classes
+// and ids to be incorrectly parsed. Therefore, do not use the output of this
+// method directly for matching (e.g., creating a stylesheet). It is intended
+// to be used for direct indexing into the list of style rules in the indexed
+// ruleset. This design can lead to either missing a style rule (false negative)
+// which is safe, or adding the wrong global style rule into the document (safe,
+// since global rules are meant to be on all documents anyway) so we don't get
+// false positives.
+bool GetAnchorsIfSupported(std::string_view selector,
+                           bool is_site_specific,
+                           std::vector<std::string>& classes,
+                           std::vector<std::string>& ids);
+
 std::string ToString(const url_pattern_index::proto::StyleRule& rule);
 
 // For testing.

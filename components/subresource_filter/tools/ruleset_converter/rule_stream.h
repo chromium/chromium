@@ -87,11 +87,15 @@ bool TransferRules(RuleInputStream* input,
 // according to the given |lowest_chrome_version| which uses the produced
 // ruleset. Exposed here only for testing purposes.
 //
-// Returns false if the |rule| should be deleted altogether, otherwise returns
-// true and amends the |rule| if necessary for the given
+// Returns true if the |rule| should be deleted altogether, otherwise returns
+// false and amends the |rule| if necessary for the given
 // |lowest_chrome_version|.
 bool DeleteUrlRuleOrAmend(url_pattern_index::proto::UrlRule* rule,
                           int lowest_chrome_version);
+
+// Returns true if the style |rule| should be deleted (e.g. if it is "slow"),
+// otherwise returns false and populates pre-parsed anchors in the |rule|.
+bool DeleteStyleRuleOrAmend(url_pattern_index::proto::StyleRule* rule);
 
 }  // namespace subresource_filter
 

@@ -294,16 +294,7 @@ TEST_F(RulesetConverterTest, FormatConversions) {
 
       TestRulesetContents input_contents = input_file.ReadContents();
       TestRulesetContents output_contents = output_file.ReadContents();
-      TestRulesetContents expected_output;
-
-      // Unindexed format strips CSS rules.
-      if (output_format == "unindexed-ruleset" &&
-          input_format != output_format) {
-        expected_output.url_rules = input_contents.url_rules;
-      } else {
-        expected_output = input_contents;
-      }
-      EXPECT_EQ(expected_output, output_contents);
+      EXPECT_EQ(input_contents, output_contents);
     }
   }
 }

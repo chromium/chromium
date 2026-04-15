@@ -320,7 +320,7 @@ TEST(RuleParserTest, ParseStyleRules) {
   static const std::string kTestSubDomain = "however.example.com";
 
   StyleRule expected_rule;
-  expected_rule.style_selector = kCssSelector;
+  expected_rule.selector = kCssSelector;
 
   ParseAndExpectStyleRule("##" + kCssSelector, expected_rule);
   ParseAndExpectStyleRule(" ##" + kCssSelector, expected_rule);

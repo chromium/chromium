@@ -458,7 +458,7 @@ RuleType RuleParser::ParseStyleRule(std::string_view origin,
     return url_pattern_index::proto::RULE_TYPE_UNSPECIFIED;
   }
 
-  style_rule_.style_selector = std::string(part);
+  style_rule_.selector = std::string(part);
   style_rule_.Canonicalize();
   return url_pattern_index::proto::RULE_TYPE_STYLE;
 }
