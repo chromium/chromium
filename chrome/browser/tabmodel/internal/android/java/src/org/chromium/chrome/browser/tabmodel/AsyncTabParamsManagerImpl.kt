@@ -35,6 +35,11 @@ class AsyncTabParamsManagerImpl internal constructor() : AsyncTabParamsManager {
     return false
   }
 
+  override fun hasParamsWithTabToReparent(tabId: Int): Boolean {
+    val params = mAsyncTabParams[tabId]
+    return params != null && params.tabToReparent != null
+  }
+
   override fun remove(tabId: Int): AsyncTabParams? {
     val data = mAsyncTabParams[tabId]
     mAsyncTabParams.remove(tabId)
