@@ -54,6 +54,19 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange() -->
 
+<!-- LINT.IfChange(AccessibilityAnnotatorRemoteAnnotatorInfo) -->
+
+<enum name="AccessibilityAnnotatorRemoteAnnotatorInfo">
+  <summary>
+    The outcomes of interaction with the Accessibility Annotator info dialog.
+  </summary>
+  <int value="0" label="Shown"/>
+  <int value="1" label="Accepted"/>
+  <int value="2" label="Dismissed"/>
+</enum>
+
+<!-- LINT.ThenChange(//components/accessibility_annotator/first_run/accessibility_annotator_first_run_types.h:InfoShowRequestResult) -->
+
 <!-- LINT.IfChange(ContentAnnotatorDependentInformationTypes) -->
 
 <enum name="ContentAnnotatorDependentInformationTypes">

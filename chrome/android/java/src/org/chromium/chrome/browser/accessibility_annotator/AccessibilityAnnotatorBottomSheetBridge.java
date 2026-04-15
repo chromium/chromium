@@ -62,8 +62,8 @@ class AccessibilityAnnotatorBottomSheetBridge
     }
 
     @CalledByNative
-    private void show() {
-        mCoordinator.requestShowContent();
+    private boolean show() {
+        return mCoordinator.requestShowContent();
     }
 
     @CalledByNative

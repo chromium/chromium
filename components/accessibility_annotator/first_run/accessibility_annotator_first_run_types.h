@@ -21,6 +21,18 @@ enum class InfoResult {
                          // Info without acknowledging.
 };
 
+// The outcome of a request to show the Accessibility Annotator info dialog.
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+// LINT.IfChange(InfoShowRequestResult)
+enum class InfoShowRequestResult {
+  kShown = 0,
+  kAccepted = 1,
+  kDismissed = 2,
+  kMaxValue = kDismissed,
+};
+// LINT.ThenChange(//tools/metrics/histograms/metadata/accessibility_annotator/enums.xml:AccessibilityAnnotatorRemoteAnnotatorInfo)
+
 // Source of the first run invocation.
 enum class FirstRunInvocationSource {
   kAutofill = 0,

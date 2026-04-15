@@ -87,10 +87,14 @@ public class AccessibilityAnnotatorBottomSheetCoordinator {
         mView.setAnimation(R.raw.chrome_finds_opt_in_animation);
     }
 
-    /** Requests to show the bottom sheet. */
-    public void requestShowContent() {
+    /**
+     * Requests to show the bottom sheet.
+     *
+     * @return True if the content was shown, false if it was suppressed.
+     */
+    public boolean requestShowContent() {
         mView.playAnimation();
-        mMediator.requestShowContent();
+        return mMediator.requestShowContent();
     }
 
     /** Hides the bottom sheet. */

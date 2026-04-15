@@ -37,13 +37,18 @@ import org.chromium.components.browser_ui.bottomsheet.EmptyBottomSheetObserver;
         mDelegate = delegate;
     }
 
-    /** Requests to show the bottom sheet. */
-    void requestShowContent() {
+    /**
+     * Requests to show the bottom sheet.
+     *
+     * @return True if the content was shown, false if it was suppressed.
+     */
+    boolean requestShowContent() {
         mBottomSheetController.addObserver(mBottomSheetObserver);
         if (!mBottomSheetController.requestShowContent(mContent, /* animate= */ true)) {
             mBottomSheetController.removeObserver(mBottomSheetObserver);
-            mDelegate.onInfoDismissed();
+            return false;
         }
+        return true;
     }
 
     /** Handles the acknowledge action. */

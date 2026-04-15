@@ -32,9 +32,9 @@ class AccessibilityAnnotatorBottomSheetBridge {
   AccessibilityAnnotatorBottomSheetBridge& operator=(
       const AccessibilityAnnotatorBottomSheetBridge&) = delete;
 
-  ~AccessibilityAnnotatorBottomSheetBridge();
+  virtual ~AccessibilityAnnotatorBottomSheetBridge();
 
-  // Displays the bottom sheet.
+  // Requests to display the bottom sheet.
   void Show();
 
   // Hides the bottom sheet.
@@ -53,6 +53,12 @@ class AccessibilityAnnotatorBottomSheetBridge {
 
   // Called from Java when the user dismissed the Info dialog.
   void OnInfoDismissed(JNIEnv* env);
+
+ protected:
+  // Helper method to call Java to show the sheet. Virtual for testing.
+  // Returns true if the content was shown, false if it was suppressed (e.g. if
+  // higher priority content is in the sheet).
+  virtual bool PerformShowContent();
 
  private:
   // The Java-side bridge object.
