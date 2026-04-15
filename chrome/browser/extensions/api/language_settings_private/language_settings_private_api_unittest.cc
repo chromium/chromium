@@ -142,9 +142,6 @@ class LanguageSettingsPrivateApiTest : public ExtensionServiceTestBase {
     SpellcheckServiceFactory::GetInstance()->SetTestingFactoryAndUse(
         profile(), base::BindRepeating(&BuildSpellcheckService));
   }
-
-  std::unique_ptr<TestBrowserWindow> browser_window_;
-  std::unique_ptr<Browser> browser_;
 };
 
 TEST_F(LanguageSettingsPrivateApiTest, RetryDownloadHunspellDictionaryTest) {
