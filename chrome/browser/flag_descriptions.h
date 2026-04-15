@@ -2889,6 +2889,11 @@ inline constexpr char kLensUpdatedFeedbackEntrypointName[] =
 inline constexpr char kLensUpdatedFeedbackEntrypointDescription[] =
     "Enables an updated feedback entry point in the Lens side panel.";
 
+inline constexpr char kLensSidePanelUnificationName[] =
+    "Lens Side Panel Unification";
+inline constexpr char kLensSidePanelUnificationDescription[] =
+    "Unifies the Lens and Contextual Tasks side panels into a single panel.";
+
 inline constexpr char kLoadAllTabsAtStartupName[] = "Load all tabs at startup";
 inline constexpr char kLoadAllTabsAtStartupDescription[] =
     "Creates WebContents without renderers for all tabs at startup. Warning: "

@@ -175,6 +175,11 @@ BASE_DECLARE_FEATURE(kLensVideoCitations);
 COMPONENT_EXPORT(LENS_FEATURES)
 BASE_DECLARE_FEATURE(kLensUpdatedFeedbackEntrypoint);
 
+// Unifies the Lens and Contextual Tasks side panels into a single cohesive
+// panel and prepares for the removal of the old LensOverlay panel.
+COMPONENT_EXPORT(LENS_FEATURES)
+BASE_DECLARE_FEATURE(kLensSidePanelUnification);
+
 // Enables using the optimization filter for triggering the action chip.
 COMPONENT_EXPORT(LENS_FEATURES)
 BASE_DECLARE_FEATURE(kLensOverlayOptimizationFilter);
