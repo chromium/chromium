@@ -505,9 +505,10 @@ void CanvasRenderingContext2D::WillDraw(
     CanvasPerformanceMonitor::DrawType draw_type) {
   if (ShouldAntialias()) {
     SkIRect inflated_dirty_rect = dirty_rect.makeOutset(1, 1);
-    CanvasRenderingContext::DidDraw(inflated_dirty_rect, draw_type);
+    CanvasRenderingContext::DidDraw(gfx::SkIRectToRect(inflated_dirty_rect),
+                                    draw_type);
   } else {
-    CanvasRenderingContext::DidDraw(dirty_rect, draw_type);
+    CanvasRenderingContext::DidDraw(gfx::SkIRectToRect(dirty_rect), draw_type);
   }
 
   if (!canvas()) {
@@ -996,7 +997,8 @@ void CanvasRenderingContext2D::DrawFocusRing(const Path& path,
   if (!ComputeDirtyRect(path.StrokeBoundingRect(stroke_data), &dirty_rect))
     return;
 
-  DidDraw(dirty_rect, CanvasPerformanceMonitor::DrawType::kPath);
+  DidDraw(gfx::SkIRectToRect(dirty_rect),
+          CanvasPerformanceMonitor::DrawType::kPath);
 }
 
 void CanvasRenderingContext2D::UpdateElementAccessibility(const Path& path,

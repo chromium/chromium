@@ -240,7 +240,7 @@ scoped_refptr<StaticBitmapImage> CanvasRenderingContext::GetElementImage(
 }
 
 void CanvasRenderingContext::DidDraw(
-    const SkIRect& dirty_rect,
+    const gfx::Rect& dirty_rect,
     CanvasPerformanceMonitor::DrawType draw_type) {
   CanvasRenderingContextHost* const host = Host();
   host->DidDraw(dirty_rect);

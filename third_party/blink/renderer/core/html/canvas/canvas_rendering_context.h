@@ -48,6 +48,7 @@
 #include "third_party/skia/include/core/SkImageInfo.h"
 #include "third_party/skia/include/core/SkRect.h"
 #include "third_party/skia/include/core/SkRefCnt.h"
+#include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
 
 namespace base {
@@ -192,11 +193,9 @@ class CORE_EXPORT CanvasRenderingContext
   virtual bool IsPaintable() const = 0;
   void DidDraw(CanvasPerformanceMonitor::DrawType draw_type) {
     const CanvasRenderingContextHost* const host = Host();
-    return DidDraw(host ? SkIRect::MakeWH(host->width(), host->height())
-                        : SkIRect::MakeEmpty(),
-                   draw_type);
+    return DidDraw(host ? gfx::Rect(host->Size()) : gfx::Rect(), draw_type);
   }
-  void DidDraw(const SkIRect& dirty_rect, CanvasPerformanceMonitor::DrawType);
+  void DidDraw(const gfx::Rect& dirty_rect, CanvasPerformanceMonitor::DrawType);
 
   // Returns a StaticBitmapImage containing the current content, or nullptr if
   // it was not possible to obtain that content.

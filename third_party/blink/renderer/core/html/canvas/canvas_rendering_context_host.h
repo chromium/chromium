@@ -22,6 +22,7 @@
 #include "third_party/blink/renderer/platform/graphics/canvas_resource_provider.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/text/text_direction.h"
+#include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
 
 namespace cc {
@@ -63,8 +64,8 @@ class CORE_EXPORT CanvasRenderingContextHost
 
   virtual void DetachContext() = 0;
 
-  virtual void DidDraw(const SkIRect& rect) = 0;
-  void DidDraw() { DidDraw(SkIRect::MakeWH(width(), height())); }
+  virtual void DidDraw(const gfx::Rect& rect) = 0;
+  void DidDraw() { DidDraw(gfx::Rect(Size())); }
 
   virtual void PostFinalizeFrame(FlushReason) = 0;
   void NotifyCachesOfSwitchingFrame();

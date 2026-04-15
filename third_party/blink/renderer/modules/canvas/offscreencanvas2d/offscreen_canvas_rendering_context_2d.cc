@@ -36,6 +36,7 @@
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/wtf/linked_hash_set.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
+#include "ui/gfx/geometry/skia_conversions.h"
 
 namespace blink {
 
@@ -418,7 +419,7 @@ void OffscreenCanvasRenderingContext2D::WillDraw(
   }
 
   GetCanvasPerformanceMonitor().DidDraw(draw_type);
-  Host()->DidDraw(adjusted_dirty_rect);
+  Host()->DidDraw(gfx::SkIRectToRect(adjusted_dirty_rect));
 
   if (layer_count_ == 0 && resource_provider_ != nullptr) [[likely]] {
     // TODO(crbug.com/1246486): Make auto-flushing layer friendly.

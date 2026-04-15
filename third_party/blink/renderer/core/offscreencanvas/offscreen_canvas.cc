@@ -560,12 +560,12 @@ CanvasResourceDispatcher* OffscreenCanvas::GetOrCreateResourceDispatcher() {
   return frame_dispatcher_.get();
 }
 
-void OffscreenCanvas::DidDraw(const SkIRect& rect) {
-  if (rect.isEmpty()) {
+void OffscreenCanvas::DidDraw(const gfx::Rect& rect) {
+  if (rect.IsEmpty()) {
     return;
   }
 
-  current_frame_damage_rect_.Union(gfx::SkIRectToRect(rect));
+  current_frame_damage_rect_.Union(rect);
 
   if (HasPlaceholderCanvas()) {
     needs_push_frame_ = true;
