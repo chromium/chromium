@@ -145,7 +145,10 @@ class TestLensQueryFlowRouter : public LensQueryFlowRouter {
         profile->GetPrefs());
     viewport_screenshot_.allocN32Pixels(10, 10);
   }
-  ~TestLensQueryFlowRouter() override = default;
+  ~TestLensQueryFlowRouter() override {
+    raw_mock_session_handle_ = nullptr;
+    side_panel_session_handle_ = nullptr;
+  }
 
   std::unique_ptr<contextual_search::ContextualSearchSessionHandle>
   CreateContextualSearchSessionHandle() override {
@@ -168,8 +171,17 @@ class TestLensQueryFlowRouter : public LensQueryFlowRouter {
     side_panel_session_handle_ = handle;
   }
 
+  void SetTransferredSessionHandle(
+      std::unique_ptr<contextual_search::ContextualSearchSessionHandle>
+          handle) {
+    transferred_session_handle_ = std::move(handle);
+  }
+
   contextual_search::ContextualSearchSessionHandle*
   GetContextualSearchSessionHandle() const override {
+    if (transferred_session_handle_) {
+      return transferred_session_handle_.get();
+    }
     if (side_panel_session_handle_) {
       return side_panel_session_handle_;
     }
@@ -200,6 +212,8 @@ class TestLensQueryFlowRouter : public LensQueryFlowRouter {
   // test will seg fault.
   raw_ptr<contextual_search::MockContextualSearchSessionHandle>
       raw_mock_session_handle_;
+  std::unique_ptr<contextual_search::ContextualSearchSessionHandle>
+      transferred_session_handle_;
   raw_ptr<contextual_search::ContextualSearchSessionHandle>
       side_panel_session_handle_ = nullptr;
   raw_ptr<TabContextualizationController> tab_contextualization_controller_ =
@@ -252,6 +266,14 @@ class MockContextualTasksUiService
               (BrowserWindowInterface * browser_window_interface,
                tabs::TabInterface* tab_interface,
                const GURL& url,
+               std::unique_ptr<contextual_search::ContextualSearchSessionHandle>
+                   session_handle),
+              (override));
+
+  MOCK_METHOD(void,
+              InitSidePanelWithGhostLoader,
+              (BrowserWindowInterface * browser_window_interface,
+               tabs::TabInterface* tab_interface,
                std::unique_ptr<contextual_search::ContextualSearchSessionHandle>
                    session_handle),
               (override));
@@ -928,8 +950,13 @@ TEST_F(LensQueryFlowRouterContextualTaskEnabledTest,
               StartTaskUiInSidePanelWithErrorPage(
                   mock_browser_window_interface_.get(), &mock_tab_interface_,
                   testing::Pointer(router.mock_session_handle())))
-      .WillOnce(testing::InvokeWithoutArgs(
-          [&router]() { router.ClearMockSessionHandle(); }));
+      .WillOnce(
+          [&router](
+              BrowserWindowInterface*, tabs::TabInterface*,
+              std::unique_ptr<contextual_search::ContextualSearchSessionHandle>
+                  handle) {
+            router.SetTransferredSessionHandle(std::move(handle));
+          });
 
   // Assert: Expect CreateSearchUrl to NOT be called.
   EXPECT_CALL(*router.mock_session_handle(), CreateSearchUrl(_, _)).Times(0);
@@ -985,8 +1012,13 @@ TEST_F(LensQueryFlowRouterContextualTaskEnabledTest,
               StartTaskUiInSidePanelWithErrorPage(
                   mock_browser_window_interface_.get(), &mock_tab_interface_,
                   testing::Pointer(router.mock_session_handle())))
-      .WillOnce(testing::InvokeWithoutArgs(
-          [&router]() { router.ClearMockSessionHandle(); }));
+      .WillOnce(
+          [&router](
+              BrowserWindowInterface*, tabs::TabInterface*,
+              std::unique_ptr<contextual_search::ContextualSearchSessionHandle>
+                  handle) {
+            router.SetTransferredSessionHandle(std::move(handle));
+          });
 
   // Assert: Expect CreateSearchUrl to NOT be called.
   EXPECT_CALL(*router.mock_session_handle(), CreateSearchUrl(_, _)).Times(0);
@@ -1045,8 +1077,13 @@ TEST_F(LensQueryFlowRouterContextualTaskEnabledTest,
               StartTaskUiInSidePanelWithErrorPage(
                   mock_browser_window_interface_.get(), &mock_tab_interface_,
                   testing::Pointer(router.mock_session_handle())))
-      .WillOnce(testing::InvokeWithoutArgs(
-          [&router]() { router.ClearMockSessionHandle(); }));
+      .WillOnce(
+          [&router](
+              BrowserWindowInterface*, tabs::TabInterface*,
+              std::unique_ptr<contextual_search::ContextualSearchSessionHandle>
+                  handle) {
+            router.SetTransferredSessionHandle(std::move(handle));
+          });
 
   // Assert: Expect CreateSearchUrl to NOT be called.
   EXPECT_CALL(*router.mock_session_handle(), CreateSearchUrl(_, _)).Times(0);
@@ -1120,12 +1157,23 @@ TEST_F(LensQueryFlowRouterContextualTaskEnabledTest,
   // Clear the mock session handle when the side panel is opened to avoid a
   // dangling pointer.
   EXPECT_CALL(*service,
-              StartTaskUiInSidePanel(
+              InitSidePanelWithGhostLoader(
                   mock_browser_window_interface_.get(), &mock_tab_interface_,
-                  GURL("https://www.google.com/search?q=test"),
                   testing::Pointer(router.mock_session_handle())))
-      .WillOnce(testing::InvokeWithoutArgs(
-          [&router]() { router.ClearMockSessionHandle(); }));
+      .WillOnce(
+          [&router](
+              BrowserWindowInterface*, tabs::TabInterface*,
+              std::unique_ptr<contextual_search::ContextualSearchSessionHandle>
+                  handle) {
+            router.SetTransferredSessionHandle(std::move(handle));
+          });
+
+  EXPECT_CALL(
+      *service,
+      StartTaskUiInSidePanel(
+          mock_browser_window_interface_.get(), &mock_tab_interface_,
+          GURL("https://www.google.com/search?q=test"), testing::IsNull()))
+      .Times(1);
   EXPECT_CALL(*mock_tab_contextualization_controller_, GetPageContext(_))
       .WillOnce([](lens::TabContextualizationController::GetPageContextCallback
                        callback) { std::move(callback).Run(nullptr); });
@@ -1183,8 +1231,13 @@ TEST_F(LensQueryFlowRouterContextualTaskEnabledTest,
               StartTaskUiInSidePanelWithErrorPage(
                   mock_browser_window_interface_.get(), &mock_tab_interface_,
                   testing::Pointer(router.mock_session_handle())))
-      .WillOnce(testing::InvokeWithoutArgs(
-          [&router]() { router.ClearMockSessionHandle(); }));
+      .WillOnce(
+          [&router](
+              BrowserWindowInterface*, tabs::TabInterface*,
+              std::unique_ptr<contextual_search::ContextualSearchSessionHandle>
+                  handle) {
+            router.SetTransferredSessionHandle(std::move(handle));
+          });
 
   // Assert: Expect CreateSearchUrl to NOT be called.
   EXPECT_CALL(*router.mock_session_handle(), CreateSearchUrl(_, _)).Times(0);
@@ -1274,12 +1327,23 @@ TEST_F(LensQueryFlowRouterContextualTaskEnabledTest,
       contextual_tasks::ContextualTasksUiServiceFactory::GetForBrowserContext(
           profile_.get()));
   EXPECT_CALL(*service,
-              StartTaskUiInSidePanel(
+              InitSidePanelWithGhostLoader(
                   mock_browser_window_interface_.get(), &mock_tab_interface_,
-                  GURL("https://www.google.com/search?q=test"),
                   testing::Pointer(router.mock_session_handle())))
-      .WillOnce(testing::InvokeWithoutArgs(
-          [&router]() { router.ClearMockSessionHandle(); }));
+      .WillOnce(
+          [&router](
+              BrowserWindowInterface*, tabs::TabInterface*,
+              std::unique_ptr<contextual_search::ContextualSearchSessionHandle>
+                  handle) {
+            router.SetTransferredSessionHandle(std::move(handle));
+          });
+
+  EXPECT_CALL(
+      *service,
+      StartTaskUiInSidePanel(
+          mock_browser_window_interface_.get(), &mock_tab_interface_,
+          GURL("https://www.google.com/search?q=test"), testing::IsNull()))
+      .Times(1);
 
   // Act: Call the method.
   router.SendRegionSearch(query_start_time, std::move(region), selection_type,
@@ -1350,12 +1414,23 @@ TEST_F(LensQueryFlowRouterContextualTaskEnabledTest,
   // Clear the mock session handle when the side panel is opened to avoid a
   // dangling pointer.
   EXPECT_CALL(*service,
-              StartTaskUiInSidePanel(
+              InitSidePanelWithGhostLoader(
                   mock_browser_window_interface_.get(), &mock_tab_interface_,
-                  GURL("https://www.google.com/search?q=test"),
                   testing::Pointer(router.mock_session_handle())))
-      .WillOnce(testing::InvokeWithoutArgs(
-          [&router]() { router.ClearMockSessionHandle(); }));
+      .WillOnce(
+          [&router](
+              BrowserWindowInterface*, tabs::TabInterface*,
+              std::unique_ptr<contextual_search::ContextualSearchSessionHandle>
+                  handle) {
+            router.SetTransferredSessionHandle(std::move(handle));
+          });
+
+  EXPECT_CALL(
+      *service,
+      StartTaskUiInSidePanel(
+          mock_browser_window_interface_.get(), &mock_tab_interface_,
+          GURL("https://www.google.com/search?q=test"), testing::IsNull()))
+      .Times(1);
   EXPECT_CALL(*mock_tab_contextualization_controller_, GetPageContext(_))
       .WillOnce([](lens::TabContextualizationController::GetPageContextCallback
                        callback) { std::move(callback).Run(nullptr); });
@@ -1512,15 +1587,20 @@ TEST_F(LensQueryFlowRouterContextualTaskEnabledTest,
   auto* service = static_cast<MockContextualTasksUiService*>(
       contextual_tasks::ContextualTasksUiServiceFactory::GetForBrowserContext(
           profile_.get()));
-  // Clear the mock session handle when the side panel is opened to avoid a
-  // dangling pointer.
+  // Expect StartTaskUiInSidePanel to be called with the real URL and the
+  // session handle.
   EXPECT_CALL(*service,
               StartTaskUiInSidePanel(
                   mock_browser_window_interface_.get(), &mock_tab_interface_,
                   GURL("https://www.google.com/search?q=test"),
                   testing::Pointer(router.mock_session_handle())))
-      .WillOnce(testing::InvokeWithoutArgs(
-          [&router]() { router.ClearMockSessionHandle(); }));
+      .WillOnce(
+          [&router](
+              BrowserWindowInterface*, tabs::TabInterface*, const GURL&,
+              std::unique_ptr<contextual_search::ContextualSearchSessionHandle>
+                  handle) {
+            router.SetTransferredSessionHandle(std::move(handle));
+          });
   EXPECT_CALL(*mock_tab_contextualization_controller_, GetPageContext(_))
       .WillOnce([](lens::TabContextualizationController::GetPageContextCallback
                        callback) { std::move(callback).Run(nullptr); });
@@ -1595,12 +1675,23 @@ TEST_F(LensQueryFlowRouterContextualTaskEnabledTest,
   // Clear the mock session handle when the side panel is opened to avoid a
   // dangling pointer.
   EXPECT_CALL(*service,
-              StartTaskUiInSidePanel(
+              InitSidePanelWithGhostLoader(
                   mock_browser_window_interface_.get(), &mock_tab_interface_,
-                  GURL("https://www.google.com/search?q=test"),
                   testing::Pointer(router.mock_session_handle())))
-      .WillOnce(testing::InvokeWithoutArgs(
-          [&router]() { router.ClearMockSessionHandle(); }));
+      .WillOnce(
+          [&router](
+              BrowserWindowInterface*, tabs::TabInterface*,
+              std::unique_ptr<contextual_search::ContextualSearchSessionHandle>
+                  handle) {
+            router.SetTransferredSessionHandle(std::move(handle));
+          });
+
+  EXPECT_CALL(
+      *service,
+      StartTaskUiInSidePanel(
+          mock_browser_window_interface_.get(), &mock_tab_interface_,
+          GURL("https://www.google.com/search?q=test"), testing::IsNull()))
+      .Times(1);
   EXPECT_CALL(*mock_tab_contextualization_controller_, GetPageContext(_))
       .WillOnce([](lens::TabContextualizationController::GetPageContextCallback
                        callback) { std::move(callback).Run(nullptr); });

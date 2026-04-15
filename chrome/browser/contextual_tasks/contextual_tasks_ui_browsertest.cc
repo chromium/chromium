@@ -7,6 +7,7 @@
 #include "base/functional/bind.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
+#include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/unguessable_token.h"
 #include "chrome/browser/contextual_search/contextual_search_service_factory.h"
@@ -14,7 +15,10 @@
 #include "chrome/browser/contextual_tasks/contextual_tasks.mojom.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_composebox_handler.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_cookie_synchronizer.h"
+#include "chrome/browser/contextual_tasks/contextual_tasks_panel_controller.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_service_factory.h"
+#include "chrome/browser/contextual_tasks/contextual_tasks_ui_service.h"
+#include "chrome/browser/contextual_tasks/contextual_tasks_ui_service_factory.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_utils.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
@@ -47,6 +51,7 @@
 #include "content/public/test/test_web_ui.h"
 #include "google_apis/gaia/google_service_auth_error.h"
 #include "mojo/public/cpp/bindings/receiver.h"
+#include "net/base/url_util.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "third_party/lens_server_proto/aim_communication.pb.h"
 #include "ui/webui/resources/cr_components/composebox/composebox.mojom.h"
@@ -559,6 +564,30 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksNoMockBrowserTest,
       zoom::ZoomController::FromWebContents(side_panel_contents.get());
   ASSERT_EQ(zoom::ZoomController::ZoomMode::ZOOM_MODE_DISABLED,
             zoom_controller->zoom_mode());
+}
+
+IN_PROC_BROWSER_TEST_F(ContextualTasksNoMockBrowserTest,
+                       InitSidePanelWithGhostLoader_WaitUntilPanelOpen) {
+  auto* service =
+      contextual_tasks::ContextualTasksUiServiceFactory::GetForBrowserContext(
+          browser()->profile());
+  auto* tab = TabListInterface::From(browser())->GetActiveTab();
+
+  // Call InitSidePanelWithGhostLoader.
+  service->InitSidePanelWithGhostLoader(browser(), tab, nullptr);
+
+  // Wait for side panel to open and load WebUI.
+  auto* controller =
+      contextual_tasks::ContextualTasksPanelController::From(browser());
+  ASSERT_TRUE(controller);
+  EXPECT_TRUE(base::test::RunUntil(
+      [&]() { return controller->IsPanelOpenForContextualTask(); }));
+
+  content::WebContents* web_contents = controller->GetActiveWebContents();
+  ASSERT_TRUE(web_contents);
+
+  // Wait for load stop on that web_contents.
+  EXPECT_TRUE(content::WaitForLoadStop(web_contents));
 }
 
 IN_PROC_BROWSER_TEST_F(ContextualTasksUIBrowserTest,

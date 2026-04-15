@@ -138,6 +138,16 @@ class ContextualTasksUiService : public KeyedService {
   // entry is removed from the cache.
   virtual std::optional<GURL> GetInitialUrlForTask(const base::Uuid& uuid);
 
+  // Adds a callback to be run when the URL for a task becomes available.
+  // This is only used in cases where the side panel is "warmed up" (i.e. using
+  // very specific *GhostLoader methods).
+  virtual void AddPendingUrlCallback(
+      const base::Uuid& task_id,
+      base::OnceCallback<void(const GURL&)> callback);
+
+  // Returns whether the task is waiting for a URL to be generated.
+  virtual bool IsTaskWaitingForUrl(const base::Uuid& task_id);
+
   // Get a thread URL based on the task ID. If no task is found or the task does
   // not have a thread ID, the default AI URL is returned.
   virtual void GetThreadUrlFromTaskId(const base::Uuid& task_id,
@@ -162,6 +172,15 @@ class ContextualTasksUiService : public KeyedService {
       BrowserWindowInterface* browser_window_interface,
       tabs::TabInterface* tab_interface,
       const GURL& url,
+      std::unique_ptr<contextual_search::ContextualSearchSessionHandle>
+          session_handle);
+
+  // Opens the contextual tasks side panel showing a ghost loader while waiting
+  // for the initial thread URL to be provided for that task. This creates an
+  // empty task. If the panel is already open for a task, this is a no-op.
+  virtual void InitSidePanelWithGhostLoader(
+      BrowserWindowInterface* browser_window_interface,
+      tabs::TabInterface* tab_interface,
       std::unique_ptr<contextual_search::ContextualSearchSessionHandle>
           session_handle);
 
@@ -326,6 +345,11 @@ class ContextualTasksUiService : public KeyedService {
   // Navigates to a share URL.
   virtual void OnShareUrlNavigation(const GURL& url);
 
+  // Sets the initial thread URL for a given task and runs any pending
+  // callbacks.
+  virtual void OnInitialThreadUrlAvailable(const base::Uuid& task_id,
+                                           const GURL& url);
+
   // Checks if the provided URL matches any of the allowed hosts.
   static bool IsAllowedHost(const GURL& url);
 
@@ -373,6 +397,12 @@ class ContextualTasksUiService : public KeyedService {
   // Map of tasks that should show the error page on load to the source trigger.
   std::map<base::Uuid, contextual_search::ContextualSearchSource>
       pending_error_page_tasks_;
+
+  // Map of tasks that are waiting for a URL to be generated. The value is a
+  // callback to be run when the URL becomes available, or null if no callback
+  // has been added yet.
+  std::map<base::Uuid, base::OnceCallback<void(const GURL&)>>
+      tasks_waiting_for_url_;
 
   base::WeakPtrFactory<ContextualTasksUiService> weak_ptr_factory_{this};
 };
