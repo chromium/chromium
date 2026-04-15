@@ -807,7 +807,7 @@ bool CGaiaCredentialBase::IsCloudAssociationEnabled() {
 }
 
 bool CGaiaCredentialBase::IsSecurityKeySupportEnabled() {
-  return GetGlobalFlagOrDefault(kRegEnableSecurityKeySupport, 0);
+  return GetGlobalFlagOrDefault(kRegEnableSecurityKeySupport, 1);
 }
 
 // static
