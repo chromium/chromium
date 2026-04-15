@@ -2983,22 +2983,24 @@ void OpenPasswordManagerWidgetPromoInstructions() {
 
 // Tests that the percentage of favicons for the password manager metric is
 // logged properly when there are passwords with a favicon.
-// TODO(crbug.com/413072881): Test is failing on ios-fieldtrial-rel, and flaky
-// on device.
-- (void)DISABLED_testLogFaviconsForPasswordsPercentageMetricWithPassword {
+- (void)testLogFaviconsForPasswordsPercentageMetricWithPassword {
   // Sign-in and wait for fully active sync.
   FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
   [SigninEarlGrey signinWithFakeIdentity:fakeIdentity];
   [ChromeEarlGrey
       waitForSyncTransportStateActiveWithTimeout:kSyncActiveTimeout];
 
-  SaveExamplePasswordForms();
+  // Use unique domains to avoid favicon cache pollution between tests.
+  SavePasswordFormToProfileStore(@"password1", @"user1",
+                                 @"https://favicon-test-1.com");
+  SavePasswordFormToProfileStore(@"password2", @"user2",
+                                 @"https://favicon-test-2.com");
   OpenPasswordManager();
 
   // Metrics are logged when the password list view is disappearing, tap on a
   // password entry to trigger that. Make sure the details view is loaded
   // properly before verifying that.
-  [[self interactionForSinglePasswordEntryWithDomain:@"example12.com"]
+  [[self interactionForSinglePasswordEntryWithDomain:@"favicon-test-2.com"]
       performAction:grey_tap()];
   ConditionBlock condition = ^{
     NSError* error = nil;
