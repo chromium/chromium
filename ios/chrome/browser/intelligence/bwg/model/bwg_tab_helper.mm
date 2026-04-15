@@ -471,10 +471,13 @@ void BwgTabHelper::DidFinishNavigation(
       return;
     }
 
-    optimization_guide_decider_->CanApplyOptimization(
-        current_url, optimization_guide::proto::GLIC_CONTEXTUAL_CUEING,
-        base::BindOnce(&BwgTabHelper::OnCanApplyContextualCueingDecision,
-                       weak_ptr_factory_.GetWeakPtr(), current_url));
+    // Don't re-trigger Gemini contextual cues for same-document navigations.
+    if (!navigation_context->IsSameDocument()) {
+      optimization_guide_decider_->CanApplyOptimization(
+          current_url, optimization_guide::proto::GLIC_CONTEXTUAL_CUEING,
+          base::BindOnce(&BwgTabHelper::OnCanApplyContextualCueingDecision,
+                         weak_ptr_factory_.GetWeakPtr(), current_url));
+    }
   }
 }
 
