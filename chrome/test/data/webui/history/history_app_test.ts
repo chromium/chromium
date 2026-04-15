@@ -139,8 +139,7 @@ suite('HistoryAppTest', function() {
         element.shadowRoot.querySelector('cr-history-embeddings');
     assertTrue(!!historyEmbeddings);
 
-    const changeQueryEventPromise =
-        eventToPromise<CustomEvent<{search: string}>>('change-query', element);
+    const changeQueryEventPromise = eventToPromise('change-query', element);
     historyEmbeddings.dispatchEvent(new CustomEvent('more-from-site-click', {
       detail: {
         title: 'Google',
@@ -185,9 +184,7 @@ suite('HistoryAppTest', function() {
   test('ChangesQueryStateWithFilterChips', async () => {
     const filterChips =
         element.shadowRoot.querySelector('cr-history-embeddings-filter-chips')!;
-    const changeQueryEventPromise =
-        eventToPromise<CustomEvent<{search: string, after: string}>>(
-            'change-query', element);
+    const changeQueryEventPromise = eventToPromise('change-query', element);
     filterChips.dispatchEvent(new CustomEvent('selected-suggestion-changed', {
       detail: {
         value: {

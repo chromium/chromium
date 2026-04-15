@@ -25,6 +25,19 @@ export function convertDateToQueryValue(date: Date) {
   return `${fullYear}-${twoDigits(month)}-${twoDigits(day)}`;
 }
 
+export type ChangeQueryEvent = CustomEvent<{
+  search: string | null,
+  after: string | null,
+  includeUserVisits?: boolean,
+  includeActorVisits?: boolean,
+}>;
+
+declare global {
+  interface HTMLElementEventMap {
+    'change-query': ChangeQueryEvent;
+  }
+}
+
 export class HistoryQueryManagerElement extends CrLitElement {
   static get is() {
     return 'history-query-manager';
@@ -118,12 +131,7 @@ export class HistoryQueryManagerElement extends CrLitElement {
     promise.then((result) => this.onQueryResult_(result.results), () => {});
   }
 
-  private onChangeQuery_(e: CustomEvent<{
-    search: string,
-    after: string,
-    includeUserVisits?: boolean,
-    includeActorVisits?: boolean,
-  }>) {
+  private onChangeQuery_(e: ChangeQueryEvent) {
     const changes = e.detail;
     let needsUpdate = false;
 

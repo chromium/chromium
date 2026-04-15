@@ -30,6 +30,7 @@ export {HistoryItemElement} from './history_item.js';
 export type {ActionMenuModel} from './history_list.js';
 export {HistoryListElement} from './history_list.js';
 export {HistoryToolbarElement} from './history_toolbar.js';
+export type {ChangeQueryEvent} from './query_manager.js';
 export {HistorySearchedLabelElement} from './searched_label.js';
 export {HistorySideBarElement} from './side_bar.js';
 export {HistorySyncedDeviceCardElement} from './synced_device_card.js';
