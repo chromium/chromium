@@ -19899,23 +19899,6 @@
             ]
         }
     ],
-    "SaasUsageReporting": [
-        {
-            "platforms": [
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "SaasUsageReporting"
-                    ]
-                }
-            ]
-        }
-    ],
     "SafeBrowsingDailyPhishingReportsLimit": [
         {
             "platforms": [

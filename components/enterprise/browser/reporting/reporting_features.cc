@@ -8,7 +8,7 @@
 
 namespace enterprise_reporting {
 
-BASE_FEATURE(kSaasUsageReporting, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kSaasUsageReporting, base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kBrowserLaunchMetadataReporting,
              base::FEATURE_DISABLED_BY_DEFAULT);
