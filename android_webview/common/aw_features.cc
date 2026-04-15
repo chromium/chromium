@@ -326,4 +326,9 @@ BASE_FEATURE(kStartupNonBlockingWebViewConstructor,
 // when kStartupNonBlockingWebViewConstructor is enabled.
 BASE_FEATURE(kPostChromiumStartupInWebViewConstructor,
              base::FEATURE_DISABLED_BY_DEFAULT);
+
+// When enabled, HttpServerProperties will be persisted to disk across
+// app restarts.
+BASE_FEATURE(kWebViewPersistHttpServerProperties,
+             base::FEATURE_DISABLED_BY_DEFAULT);
 }  // namespace android_webview::features
