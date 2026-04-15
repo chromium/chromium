@@ -91,10 +91,12 @@ TEST_F(UserUploadedImageManagerTest, LoadImage) {
 
   base::RunLoop load_run_loop;
   UIImage* loaded_image;
+  CGSize original_size;
   UserUploadedImageError error;
   image_manager_->LoadUserUploadedImage(
-      relative_image_file_path,
-      CaptureArgs(loaded_image, error).Then(load_run_loop.QuitClosure()));
+      relative_image_file_path, CGSizeMake(100, 100),
+      CaptureArgs(loaded_image, original_size, error)
+          .Then(load_run_loop.QuitClosure()));
 
   load_run_loop.Run();
 
@@ -104,21 +106,28 @@ TEST_F(UserUploadedImageManagerTest, LoadImage) {
   // The image is compressed and converted before being stored, so the bytes may
   // not be identical. Compare sizes to check similarity.
   EXPECT_TRUE(CGSizeEqualToSize(test_image.size, loaded_image.size));
+
+  // Verify that the original image size is returned.
+  EXPECT_GT(original_size.width, 0);
+  EXPECT_GT(original_size.height, 0);
 }
 
 // Tests that loading a non-existent image returns nil.
 TEST_F(UserUploadedImageManagerTest, LoadNonexistentImage) {
   base::RunLoop run_loop;
   UIImage* loaded_image = GenerateTestImage(CGSizeMake(3, 3));
+  CGSize original_size;
   UserUploadedImageError error = UserUploadedImageError::kNone;
   image_manager_->LoadUserUploadedImage(
-      base::FilePath("nonexistent_image.png"),
-      CaptureArgs(loaded_image, error).Then(run_loop.QuitClosure()));
+      base::FilePath("nonexistent_image.png"), CGSizeMake(100, 100),
+      CaptureArgs(loaded_image, original_size, error)
+          .Then(run_loop.QuitClosure()));
 
   run_loop.Run();
 
   ASSERT_NSEQ(nil, loaded_image);
   EXPECT_EQ(UserUploadedImageError::kFailedToReadFile, error);
+  EXPECT_TRUE(CGSizeEqualToSize(original_size, CGSizeZero));
 }
 
 // Tests that images can be deleted.

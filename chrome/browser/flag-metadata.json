@@ -6664,6 +6664,14 @@
     "expiry_milestone": 150
   },
   {
+    "name": "ntp-background-downsample-image",
+    "owners": [
+      "rkgibson@google.com",
+      "pabouchard@google.com"
+    ],
+    "expiry_milestone": 160
+  },
+  {
     "name": "ntp-background-image-cache",
     "owners": [ "scottyoder@google.com", "bling-pandamonium@google.com" ],
     "expiry_milestone": 150

@@ -345,6 +345,7 @@ const net::NetworkTrafficAnnotationTag kTrafficAnnotation =
 }
 
 - (void)fetchBackgroundCustomizationUserUploadedImage:(NSString*)imagePath
+                                           targetSize:(CGSize)targetSize
                                            completion:
                                                (UserUploadImageCompletion)
                                                    completion {
@@ -353,8 +354,8 @@ const net::NetworkTrafficAnnotationTag kTrafficAnnotation =
 
   base::FilePath path = base::FilePath(base::SysNSStringToUTF8(imagePath));
 
-  _userUploadedImageManager->LoadUserUploadedImage(path,
-                                                   base::BindOnce(completion));
+  _userUploadedImageManager->LoadUserUploadedImage(
+      path, targetSize, base::BindOnce(completion));
 }
 
 - (void)applyBackgroundForConfiguration:

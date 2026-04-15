@@ -176,46 +176,50 @@ CGRect UpdateDesiredFrame(CGRect desired_frame,
   [NSLayoutConstraint deactivateConstraints:_fullSizeConstraints];
   [NSLayoutConstraint activateConstraints:_fixedSizeConstraints];
 
+  // visibleRect is in the original image's coordinate space.
+  // Use pixel dimensions (size * scale) to match, since a downsampled
+  // image with scale > 1 has size in points, not pixels.
+  CGSize imagePixelSize = CGSizeMake(image.size.width * image.scale,
+                                     image.size.height * image.scale);
+
+  CGRect visibleRect = _framingCoordinates.visibleRect;
+
+  // If the image has been downsampled, scale visibleRect from the original
+  // image's coordinate space to the current (smaller) image's pixel space.
+  CGSize originalSize = _framingCoordinates.originalImageSize;
+  if (originalSize.width > 0 && originalSize.height > 0) {
+    CGFloat xRatio = imagePixelSize.width / originalSize.width;
+    CGFloat yRatio = imagePixelSize.height / originalSize.height;
+    visibleRect = CGRectMake(
+        visibleRect.origin.x * xRatio, visibleRect.origin.y * yRatio,
+        visibleRect.size.width * xRatio, visibleRect.size.height * yRatio);
+  }
+
   // Check if the stored coordinates are same orientation as current.
-  BOOL orientationMatches = _framingCoordinates.visibleRect.size.height >
-                                _framingCoordinates.visibleRect.size.width ==
+  BOOL orientationMatches = visibleRect.size.height > visibleRect.size.width ==
                             self.bounds.size.height > self.bounds.size.width;
-  CGRect desiredFrame = UpdateDesiredFrame(_framingCoordinates.visibleRect,
-                                           orientationMatches, image.size);
+  CGRect desiredFrame =
+      UpdateDesiredFrame(visibleRect, orientationMatches, imagePixelSize);
 
   if (CGRectIsEmpty(desiredFrame) || CGRectIsEmpty(self.bounds)) {
     return;
   }
 
-  // Calculate desired scale factor to size the image view correctly.
-  CGFloat imageHeightScale = image.size.height / desiredFrame.size.height;
-  CGFloat imageWidthScale = image.size.width / desiredFrame.size.width;
+  // Calculate the scale factor to aspect-fill the desired frame into the view
+  // bounds (the image must cover the entire view, so use the larger scale).
+  CGFloat scaleX = self.bounds.size.width / desiredFrame.size.width;
+  CGFloat scaleY = self.bounds.size.height / desiredFrame.size.height;
+  CGFloat fillScale = MAX(scaleX, scaleY);
 
-  CGFloat frameAspectRatio = desiredFrame.size.width / desiredFrame.size.height;
-  CGFloat viewAspectRatio = self.bounds.size.width / self.bounds.size.height;
+  _imageFixedWidthConstraint.constant =
+      imagePixelSize.width * fillScale;
+  _imageFixedHeightConstraint.constant =
+      imagePixelSize.height * fillScale;
 
-  if (frameAspectRatio <= viewAspectRatio) {
-    // View is slightly shorter than desired frame, so use view's width as the
-    // fixed dimension. frame will spill slightly over the bottom of the view.
-    _imageFixedHeightConstraint.constant =
-        self.bounds.size.width / frameAspectRatio * imageHeightScale;
-    _imageFixedWidthConstraint.constant =
-        self.bounds.size.width * imageWidthScale;
-  } else {
-    // View is slightly narrower than desired frame, so use view's height as the
-    // fixed dimension. frame will spill slightly over the right of the view.
-    _imageFixedHeightConstraint.constant =
-        self.bounds.size.height * imageHeightScale;
-    _imageFixedWidthConstraint.constant =
-        self.bounds.size.height * frameAspectRatio * imageWidthScale;
-  }
-
-  // Calculate desired scale factor to convert the offset from "initial image"
-  // coordinate space to view coordinate space.
-  CGFloat frameToViewScale = self.bounds.size.width / desiredFrame.size.width;
-
-  CGFloat offsetY = -desiredFrame.origin.y * frameToViewScale;
-  CGFloat offsetX = -desiredFrame.origin.x * frameToViewScale;
+  // Calculate the offset to position the desired frame's origin at the view's
+  // origin.
+  CGFloat offsetX = -desiredFrame.origin.x * fillScale;
+  CGFloat offsetY = -desiredFrame.origin.y * fillScale;
 
   _imageFixedTopConstraint.constant = offsetY;
   _imageFixedLeadingConstraint.constant = offsetX;

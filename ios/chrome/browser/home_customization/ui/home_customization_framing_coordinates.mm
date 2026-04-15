@@ -51,8 +51,11 @@ const char kHeightKey[] = "height";
 }
 
 - (id)copyWithZone:(NSZone*)zone {
-  return [[HomeCustomizationFramingCoordinates alloc]
-      initWithVisibleRect:self.visibleRect];
+  HomeCustomizationFramingCoordinates* copy =
+      [[HomeCustomizationFramingCoordinates alloc]
+          initWithVisibleRect:self.visibleRect];
+  copy.originalImageSize = self.originalImageSize;
+  return copy;
 }
 
 @end

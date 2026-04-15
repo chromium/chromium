@@ -42,6 +42,7 @@ source_set("model") {
     "//ios/chrome/browser/shared/model/profile:profile_keyed_service_factory",
     "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/browser/shared/ui/util",
+    "//ios/chrome/browser/shared/ui/util/image",
     "//services/network/public/cpp",
     "//ui/base",
     "//url",

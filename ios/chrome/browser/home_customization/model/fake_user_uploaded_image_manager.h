@@ -19,7 +19,7 @@ class FakeUserUploadedImageManager : public UserUploadedImageManager {
 
   // UserUploadedImageManager methods done synchronously.
   base::FilePath StoreUserUploadedImage(UIImage* image);
-  UIImage* LoadUserUploadedImage(base::FilePath relative_image_file_path);
+  bool HasImage(const base::FilePath& relative_image_file_path) const;
   void DeleteUserUploadedImageSynchronously(
       base::FilePath relative_image_file_path);
   void DeleteUnusedImagesSynchronously(
@@ -29,8 +29,10 @@ class FakeUserUploadedImageManager : public UserUploadedImageManager {
   void StoreUserUploadedImage(
       UIImage* image,
       base::OnceCallback<void(base::FilePath)> callback) override;
-  void LoadUserUploadedImage(base::FilePath relative_image_file_path,
-                             UserUploadImageCallback callback) override;
+  void LoadUserUploadedImage(
+      base::FilePath relative_image_file_path,
+      CGSize target_point_size,
+      UserUploadImageCallback callback) override;
   void DeleteUserUploadedImage(
       base::FilePath relative_image_file_path,
       base::OnceClosure completion = base::DoNothing()) override;

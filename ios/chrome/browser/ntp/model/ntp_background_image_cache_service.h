@@ -5,6 +5,8 @@
 #ifndef IOS_CHROME_BROWSER_NTP_MODEL_NTP_BACKGROUND_IMAGE_CACHE_SERVICE_H_
 #define IOS_CHROME_BROWSER_NTP_MODEL_NTP_BACKGROUND_IMAGE_CACHE_SERVICE_H_
 
+#import <CoreGraphics/CoreGraphics.h>
+
 #import "base/memory/raw_ptr.h"
 #import "base/scoped_observation.h"
 #import "components/keyed_service/core/keyed_service.h"
@@ -40,12 +42,18 @@ class NTPBackgroundImageCacheService
   // Returns the cached background image, or nil if none is cached.
   UIImage* GetCachedBackgroundImage();
 
-  // Sets the cached background image.
-  void SetCachedBackgroundImage(UIImage* image);
+  // Returns the cached original image size, or CGSizeZero if none is cached.
+  CGSize GetCachedOriginalImageSize();
+
+  // Sets the cached background image and its original image size.
+  void SetCachedBackgroundImage(UIImage* image, CGSize original_image_size);
 
  private:
   // Contains the cached background image.
   NSCache<NSNumber*, UIImage*>* background_image_cache_;
+
+  // The original image size associated with the cached image.
+  CGSize cached_original_image_size_ = CGSizeZero;
 
   // Observation of the HomeBackgroundCustomizationService.
   base::ScopedObservation<HomeBackgroundCustomizationService,

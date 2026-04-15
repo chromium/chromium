@@ -16,6 +16,8 @@
 #import "base/strings/strcat.h"
 #import "base/task/sequenced_task_runner.h"
 #import "base/uuid.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
+#import "ios/chrome/browser/shared/ui/util/image/image_util.h"
 
 namespace {
 
@@ -25,6 +27,7 @@ const char image_filename_prefix[] = "background_image_";
 // A struct that holds the result of a user-uploaded image load operation.
 struct LoadImageResult {
   UIImage* image;
+  CGSize original_size;
   UserUploadedImageError error;
 };
 
@@ -73,23 +76,31 @@ base::FilePath SaveImageToDirectory(const base::FilePath& directory_path,
   return image_relative_file_path;
 }
 
-// Loads the image at the given path.
-LoadImageResult LoadImageAtPath(const base::FilePath& path) {
+// Loads the image at the given path. If kNTPBackgroundDownsampleImage is
+// enabled, downsamples to `target_point_size` at 2x scale.
+// Otherwise, loads at full resolution. Also returns the original image size.
+LoadImageResult LoadImageAtPath(const base::FilePath& path,
+                                CGSize target_point_size) {
   NSURL* image_url =
       [NSURL fileURLWithPath:base::apple::FilePathToNSString(path)];
 
-  // Load the image from disk.
-  NSData* image_data = [NSData dataWithContentsOfURL:image_url];
-  if (!image_data) {
-    return {nil, UserUploadedImageError::kFailedToReadFile};
-  }
+  // Get original image size before downsampling.
+  CGSize original_size = ImageSizeFromURL(image_url);
 
-  UIImage* image = [UIImage imageWithData:image_data];
+  UIImage* image;
+  if (base::FeatureList::IsEnabled(kNTPBackgroundDownsampleImage)) {
+    // Use 2x scale — all devices supporting iOS 17+ are at least 2x, and
+    // capping at 2x is sufficient for a background image.
+    image = DownsampledImageFromURL(image_url, target_point_size, 2.0);
+  } else {
+    NSData* data = [NSData dataWithContentsOfURL:image_url];
+    image = [UIImage imageWithData:data];
+  }
   if (!image) {
-    return {nil, UserUploadedImageError::kFailedToCreateImageFromData};
+    return {nil, CGSizeZero, UserUploadedImageError::kFailedToReadFile};
   }
 
-  return {image, UserUploadedImageError::kNone};
+  return {image, original_size, UserUploadedImageError::kNone};
 }
 
 // Deletes any unused image files that exist in `directory_path` but not in
@@ -131,17 +142,20 @@ void UserUploadedImageManager::StoreUserUploadedImage(
 
 void UserUploadedImageManager::LoadUserUploadedImage(
     base::FilePath relative_image_file_path,
+    CGSize target_point_size,
     UserUploadImageCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   base::FilePath full_file_path =
       storage_directory_path_.Append(relative_image_file_path);
 
   task_runner_->PostTaskAndReplyWithResult(
-      FROM_HERE, base::BindOnce(&LoadImageAtPath, full_file_path),
+      FROM_HERE,
+      base::BindOnce(&LoadImageAtPath, full_file_path, target_point_size),
       base::BindOnce(
           [](UserUploadImageCallback original_callback,
              LoadImageResult result) {
-            std::move(original_callback).Run(result.image, result.error);
+            std::move(original_callback)
+                .Run(result.image, result.original_size, result.error);
           },
           std::move(callback)));
 }

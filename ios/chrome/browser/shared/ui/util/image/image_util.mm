@@ -189,6 +189,37 @@ CGSize ImageSizeFromData(NSData* data) {
   return CGSizeMake(width.doubleValue, height.doubleValue);
 }
 
+CGSize ImageSizeFromURL(NSURL* fileURL) {
+  if (!fileURL) {
+    return CGSizeZero;
+  }
+
+  CGImageSourceRef source = CGImageSourceCreateWithURL(
+      (__bridge CFURLRef)fileURL,
+      (__bridge CFDictionaryRef) @{
+        (__bridge id)kCGImageSourceShouldCache : @NO
+      });
+  if (!source) {
+    return CGSizeZero;
+  }
+
+  CFDictionaryRef properties =
+      CGImageSourceCopyPropertiesAtIndex(source, 0, nil);
+  CFRelease(source);
+  if (!properties) {
+    return CGSizeZero;
+  }
+
+  NSDictionary* dict = CFBridgingRelease(properties);
+  NSNumber* width = dict[(__bridge id)kCGImagePropertyPixelWidth];
+  NSNumber* height = dict[(__bridge id)kCGImagePropertyPixelHeight];
+  if (!width || !height) {
+    return CGSizeZero;
+  }
+
+  return CGSizeMake(width.doubleValue, height.doubleValue);
+}
+
 UIImage* DownsampledImageFromData(NSData* data,
                                   CGSize point_size,
                                   CGFloat scale) {

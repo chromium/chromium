@@ -727,6 +727,9 @@ extern const char kNTPBackgroundColorSliderDescription[];
 extern const char kNTPBackgroundCustomizationName[];
 extern const char kNTPBackgroundCustomizationDescription[];
 
+extern const char kNTPBackgroundDownsampleImageName[];
+extern const char kNTPBackgroundDownsampleImageDescription[];
+
 extern const char kNativeFindInPageName[];
 extern const char kNativeFindInPageDescription[];
 

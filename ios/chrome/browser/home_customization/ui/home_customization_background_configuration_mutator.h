@@ -10,7 +10,8 @@
 #import "ios/chrome/browser/home_customization/utils/home_customization_constants.h"
 #import "url/gurl.h"
 
-using UserUploadImageCompletion = void (^)(UIImage*, UserUploadedImageError);
+using UserUploadImageCompletion =
+    void (^)(UIImage*, CGSize, UserUploadedImageError);
 
 @protocol BackgroundCustomizationConfiguration;
 
@@ -29,10 +30,11 @@ using UserUploadImageCompletion = void (^)(UIImage*, UserUploadedImageError);
                                                           completion;
 
 // Loads and returns (asynchronously via `completion`) the user-uploaded
-// image at the given `imagePath`. The method is intended to be used for
-// background customization thumbnails, such as loading preview images for a
-// collection view cell when it becomes visible.
+// image at the given `imagePath`, downsampled to `targetSize`. The completion
+// block also receives the original image size so callers can correctly scale
+// framing coordinates.
 - (void)fetchBackgroundCustomizationUserUploadedImage:(NSString*)imagePath
+                                           targetSize:(CGSize)targetSize
                                            completion:
                                                (UserUploadImageCompletion)
                                                    completion;

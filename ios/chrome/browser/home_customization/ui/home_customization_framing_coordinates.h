@@ -18,6 +18,11 @@
 // This defines which pixels from the original image should be displayed.
 @property(nonatomic, assign) CGRect visibleRect;
 
+// The original image size in pixels.
+// Used to correctly scale visibleRect when the image is downsampled.
+// Not persisted; set dynamically at image load time.
+@property(nonatomic, assign) CGSize originalImageSize;
+
 // Designated initializer.
 - (instancetype)initWithVisibleRect:(CGRect)visibleRect
     NS_DESIGNATED_INITIALIZER;

@@ -35,6 +35,10 @@ NSString* GetImageUTIFromData(NSData* data);
 // the full image. Returns CGSizeZero if the data is nil or cannot be read.
 CGSize ImageSizeFromData(NSData* data);
 
+// Returns the pixel dimensions of the image at `fileURL` without decoding
+// the full image. Returns CGSizeZero if the URL is nil or cannot be read.
+CGSize ImageSizeFromURL(NSURL* fileURL);
+
 // Decodes `data` into a UIImage downsampled to fit within `point_size` at
 // the given display `scale`. Uses CGImageSource to decode only the needed
 // pixels, significantly reducing memory usage compared to decoding the

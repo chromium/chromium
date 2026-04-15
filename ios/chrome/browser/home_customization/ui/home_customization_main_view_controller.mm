@@ -509,22 +509,26 @@
     HomeCustomizationFramingCoordinates* framingCoordinates =
         backgroundConfiguration.userUploadedFramingCoordinates;
     __weak __typeof(self) weakSelf = self;
-    void (^imageHandler)(UIImage*, UserUploadedImageError) = ^(
-        UIImage* image, UserUploadedImageError error) {
-      [weakSelf handleLoadedUserUploadedImage:image
-                           framingCoordinates:framingCoordinates
-                               backgroundCell:backgroundCell
-                                    imagePath:imagePath];
-      if (!image) {
-        base::UmaHistogramEnumeration(
-            "IOS.HomeCustomization.Background.RecentlyUsed."
-            "ImageUserUploadedFetchError",
-            error);
-      }
-    };
+    void (^imageHandler)(UIImage*, CGSize, UserUploadedImageError) =
+        ^(UIImage* image, CGSize originalImageSize,
+          UserUploadedImageError error) {
+          [weakSelf handleLoadedUserUploadedImage:image
+                               framingCoordinates:framingCoordinates
+                                originalImageSize:originalImageSize
+                                   backgroundCell:backgroundCell
+                                        imagePath:imagePath];
+          if (!image) {
+            base::UmaHistogramEnumeration(
+                "IOS.HomeCustomization.Background.RecentlyUsed."
+                "ImageUserUploadedFetchError",
+                error);
+          }
+        };
     [self.customizationMutator
         fetchBackgroundCustomizationUserUploadedImage:backgroundConfiguration
                                                           .userUploadedImagePath
+                                          targetSize:self.view.window.windowScene
+                                                         .screen.bounds.size
                                            completion:imageHandler];
   }
 }
@@ -720,15 +724,36 @@
 }
 
 // Handles a loaded user-uploaded image, including optimizations for displaying
-// large images in the small menu thumbnails.
+// large images in the small menu thumbnails. `originalImageSize` is the size
+// of the image before any downsampling (in points), used to correctly scale
+// framing coordinates when the loaded image has been downsampled.
 - (void)handleLoadedUserUploadedImage:(UIImage*)image
                    framingCoordinates:
                        (HomeCustomizationFramingCoordinates*)framingCoordinates
+                    originalImageSize:(CGSize)originalImageSize
                        backgroundCell:
                            (HomeCustomizationBackgroundCell*)backgroundCell
                             imagePath:(NSString*)imagePath {
   UIImage* imageToPrepare = image;
+
+  CGImageRef cgImage = image.CGImage;
+  if (!cgImage) {
+    return;
+  }
+
+  // visibleRect is in the original image's point coordinate space.
+  // CGImageCreateWithImageInRect operates in pixel coordinates.
+  // Scale visibleRect to the current image's pixel space.
+  CGSize imagePixelSize =
+      CGSizeMake(CGImageGetWidth(cgImage), CGImageGetHeight(cgImage));
   CGRect visibleRect = framingCoordinates.visibleRect;
+  if (originalImageSize.width > 0 && originalImageSize.height > 0) {
+    CGFloat xRatio = imagePixelSize.width / originalImageSize.width;
+    CGFloat yRatio = imagePixelSize.height / originalImageSize.height;
+    visibleRect = CGRectMake(
+        visibleRect.origin.x * xRatio, visibleRect.origin.y * yRatio,
+        visibleRect.size.width * xRatio, visibleRect.size.height * yRatio);
+  }
 
   // Crop to a square centered on the visible rect to avoid losing data on
   // rotation.
@@ -740,12 +765,8 @@
   // `CGImageCreateWithImageInRect` has undefined behavior if the crop rect
   // extends beyond the image bounds. To be safe, intersect the desired crop
   // rect with the image's bounds.
-  CGImageRef cgImage = image.CGImage;
-  if (!cgImage) {
-    return;
-  }
   CGRect imagePixelBounds =
-      CGRectMake(0, 0, CGImageGetWidth(cgImage), CGImageGetHeight(cgImage));
+      CGRectMake(0, 0, imagePixelSize.width, imagePixelSize.height);
   CGRect cropPixelRect = CGRectIntersection(squareCropRect, imagePixelBounds);
 
   UIImage* croppedImage = [self cropImage:image toPixelRect:cropPixelRect];
@@ -774,9 +795,12 @@
       }
 
       // Calculate the new framing rect for the user's selection within the
-      // prepared square thumbnail so the preview accurately represent the
-      // user's selection.
-      CGFloat scale = preparedImage.size.width / cropPixelRect.size.width;
+      // prepared square thumbnail so the preview accurately represents the
+      // user's selection. Use pixel dimensions since visibleRect and
+      // cropPixelRect are in pixel coordinates.
+      CGFloat preparedPixelWidth =
+          preparedImage.size.width * preparedImage.scale;
+      CGFloat scale = preparedPixelWidth / cropPixelRect.size.width;
       CGRect finalVisibleRect = CGRectMake(
           visibleRect.origin.x * scale, visibleRect.origin.y * scale,
           visibleRect.size.width * scale, visibleRect.size.height * scale);

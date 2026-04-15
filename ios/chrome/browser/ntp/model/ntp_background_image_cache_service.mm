@@ -30,17 +30,26 @@ void NTPBackgroundImageCacheService::Shutdown() {
 
 void NTPBackgroundImageCacheService::OnBackgroundChanged() {
   background_image_cache_ = nil;
+  cached_original_image_size_ = CGSizeZero;
 }
 
 UIImage* NTPBackgroundImageCacheService::GetCachedBackgroundImage() {
   return [background_image_cache_ objectForKey:@(kCacheKey)];
 }
 
-void NTPBackgroundImageCacheService::SetCachedBackgroundImage(UIImage* image) {
+CGSize NTPBackgroundImageCacheService::GetCachedOriginalImageSize() {
+  return cached_original_image_size_;
+}
+
+void NTPBackgroundImageCacheService::SetCachedBackgroundImage(
+    UIImage* image,
+    CGSize original_image_size) {
   if (!image) {
     background_image_cache_ = nil;
+    cached_original_image_size_ = CGSizeZero;
     return;
   }
   background_image_cache_ = [[NSCache alloc] init];
   [background_image_cache_ setObject:image forKey:@(kCacheKey)];
+  cached_original_image_size_ = original_image_size;
 }

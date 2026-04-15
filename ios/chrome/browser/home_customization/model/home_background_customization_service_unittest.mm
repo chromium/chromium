@@ -885,8 +885,8 @@ TEST_F(HomeBackgroundCustomizationServiceTest,
   // image 2 from the manager.
   CreateService();
 
-  EXPECT_NE(nil, user_image_manager_->LoadUserUploadedImage(image1_file_path));
-  EXPECT_EQ(nil, user_image_manager_->LoadUserUploadedImage(image2_file_path));
+  EXPECT_TRUE(user_image_manager_->HasImage(image1_file_path));
+  EXPECT_FALSE(user_image_manager_->HasImage(image2_file_path));
 }
 
 // Tests that when `syncer::kSyncThemesIos` is enabled, the service migrates

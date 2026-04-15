@@ -732,18 +732,25 @@ TEST_F(HomeCustomizationBackgroundConfigurationMediatorTest,
   base::RunLoop run_loop;
   base::RunLoop* run_loop_ptr = &run_loop;
   __block UIImage* actual_image;
+  __block CGSize actual_original_size;
 
   [mediator_
       fetchBackgroundCustomizationUserUploadedImage:base::SysUTF8ToNSString(
                                                         image_path.value())
+                                        targetSize:CGSizeMake(390, 844)
                                          completion:^(
                                              UIImage* image,
+                                             CGSize originalImageSize,
                                              UserUploadedImageError error) {
                                            actual_image = image;
+                                           actual_original_size =
+                                               originalImageSize;
                                            run_loop_ptr->Quit();
                                          }];
 
   run_loop.Run();
 
   EXPECT_EQ(expected_image, actual_image);
+  EXPECT_GT(actual_original_size.width, 0);
+  EXPECT_GT(actual_original_size.height, 0);
 }

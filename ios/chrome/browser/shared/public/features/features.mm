@@ -652,6 +652,9 @@ bool IsNTPBackgroundColorSliderEnabled() {
   return base::FeatureList::IsEnabled(kNTPBackgroundColorSlider);
 }
 
+BASE_FEATURE(kNTPBackgroundDownsampleImage,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kRunDefaultStatusCheck, base::FEATURE_ENABLED_BY_DEFAULT);
 
 bool IsRunDefaultStatusCheckEnabled() {

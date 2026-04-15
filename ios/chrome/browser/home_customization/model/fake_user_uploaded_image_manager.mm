@@ -4,7 +4,7 @@
 
 #import "ios/chrome/browser/home_customization/model/fake_user_uploaded_image_manager.h"
 
-#import <UIKit/UIKey.h>
+#import <UIKit/UIKit.h>
 
 #import "base/strings/strcat.h"
 #import "base/task/sequenced_task_runner.h"
@@ -37,25 +37,30 @@ void FakeUserUploadedImageManager::StoreUserUploadedImage(
       base::BindOnce(std::move(callback), StoreUserUploadedImage(image)));
 }
 
-UIImage* FakeUserUploadedImageManager::LoadUserUploadedImage(
-    base::FilePath relative_image_file_path) {
-  auto found_image = images_.find(relative_image_file_path);
-  return (found_image != images_.end()) ? found_image->second : nil;
+bool FakeUserUploadedImageManager::HasImage(
+    const base::FilePath& relative_image_file_path) const {
+  return images_.contains(relative_image_file_path);
 }
 
 void FakeUserUploadedImageManager::LoadUserUploadedImage(
     base::FilePath relative_image_file_path,
+    CGSize target_point_size,
     UserUploadImageCallback callback) {
+  auto found_image = images_.find(relative_image_file_path);
+  UIImage* image =
+      (found_image != images_.end()) ? found_image->second : nil;
+  CGSize original_size =
+      image ? CGSizeMake(image.size.width, image.size.height) : CGSizeZero;
   task_runner_->PostTask(
-      FROM_HERE, base::BindOnce(
-                     [](UIImage* image, UserUploadImageCallback cb) {
-                       UserUploadedImageError error =
-                           image ? UserUploadedImageError::kNone
-                                 : UserUploadedImageError::kFailedToReadFile;
-                       std::move(cb).Run(image, error);
-                     },
-                     LoadUserUploadedImage(relative_image_file_path),
-                     std::move(callback)));
+      FROM_HERE,
+      base::BindOnce(
+          [](UIImage* img, CGSize size, UserUploadImageCallback cb) {
+            UserUploadedImageError error =
+                img ? UserUploadedImageError::kNone
+                    : UserUploadedImageError::kFailedToReadFile;
+            std::move(cb).Run(img, size, error);
+          },
+          image, original_size, std::move(callback)));
 }
 
 void FakeUserUploadedImageManager::DeleteUserUploadedImageSynchronously(

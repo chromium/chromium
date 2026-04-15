@@ -1177,6 +1177,12 @@ const char kNTPBackgroundCustomizationName[] =
 const char kNTPBackgroundCustomizationDescription[] =
     "When enabled, the background customization menu is available on the NTP.";
 
+const char kNTPBackgroundDownsampleImageName[] =
+    "NTP Background Downsample Image";
+const char kNTPBackgroundDownsampleImageDescription[] =
+    "Downsamples user-uploaded NTP background images to screen size, "
+    "reducing memory usage.";
+
 const char kNativeFindInPageName[] = "Native Find in Page";
 const char kNativeFindInPageDescription[] =
     "When enabled, the JavaScript implementation of the Find in Page feature "

@@ -5,6 +5,8 @@
 #ifndef IOS_CHROME_BROWSER_HOME_CUSTOMIZATION_MODEL_USER_UPLOADED_IMAGE_MANAGER_H_
 #define IOS_CHROME_BROWSER_HOME_CUSTOMIZATION_MODEL_USER_UPLOADED_IMAGE_MANAGER_H_
 
+#import <CoreGraphics/CoreGraphics.h>
+
 #import <set>
 
 #import "base/files/file_path.h"
@@ -38,10 +40,14 @@ class UserUploadedImageManager : public KeyedService {
       base::OnceCallback<void(base::FilePath)> callback);
 
   using UserUploadImageCallback =
-      base::OnceCallback<void(UIImage*, UserUploadedImageError)>;
-  // Loads an image previously stored at the provided relative file path.
-  virtual void LoadUserUploadedImage(base::FilePath relative_image_file_path,
-                                     UserUploadImageCallback callback);
+      base::OnceCallback<void(UIImage*, CGSize, UserUploadedImageError)>;
+  // Loads an image previously stored at the provided relative file path,
+  // downsampled to `target_point_size` at 2x scale. The callback also receives
+  // the original image size.
+  virtual void LoadUserUploadedImage(
+      base::FilePath relative_image_file_path,
+      CGSize target_point_size,
+      UserUploadImageCallback callback);
 
   // Deletes an image previously stored at the provided relative file path.
   virtual void DeleteUserUploadedImage(

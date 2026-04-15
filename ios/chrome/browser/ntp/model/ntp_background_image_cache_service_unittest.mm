@@ -84,14 +84,24 @@ class NTPBackgroundImageCacheServiceTest : public PlatformTest {
 // Tests setting and getting the cached image.
 TEST_F(NTPBackgroundImageCacheServiceTest, SetAndGetImage) {
   UIImage* image = gfx::test::CreateImage(10, 10).ToUIImage();
-  cache_service_->SetCachedBackgroundImage(image);
+  cache_service_->SetCachedBackgroundImage(image, CGSizeMake(100, 100));
   EXPECT_EQ(image, cache_service_->GetCachedBackgroundImage());
+}
+
+// Tests setting and getting the cached original image size.
+TEST_F(NTPBackgroundImageCacheServiceTest, SetAndGetOriginalImageSize) {
+  UIImage* image = gfx::test::CreateImage(10, 10).ToUIImage();
+  CGSize original_size = CGSizeMake(7680, 4320);
+  cache_service_->SetCachedBackgroundImage(image, original_size);
+  CGSize cached_size = cache_service_->GetCachedOriginalImageSize();
+  EXPECT_EQ(original_size.width, cached_size.width);
+  EXPECT_EQ(original_size.height, cached_size.height);
 }
 
 // Tests that the cache is cleared when the background changes.
 TEST_F(NTPBackgroundImageCacheServiceTest, ClearsOnBackgroundChange) {
   UIImage* image = gfx::test::CreateImage(10, 10).ToUIImage();
-  cache_service_->SetCachedBackgroundImage(image);
+  cache_service_->SetCachedBackgroundImage(image, CGSizeMake(100, 100));
   EXPECT_EQ(image, cache_service_->GetCachedBackgroundImage());
 
   // Simulate background change.
@@ -99,4 +109,7 @@ TEST_F(NTPBackgroundImageCacheServiceTest, ClearsOnBackgroundChange) {
       SK_ColorRED, sync_pb::UserColorTheme_BrowserColorVariant_TONAL_SPOT);
 
   EXPECT_EQ(nil, cache_service_->GetCachedBackgroundImage());
+  CGSize cleared_size = cache_service_->GetCachedOriginalImageSize();
+  EXPECT_EQ(0, cleared_size.width);
+  EXPECT_EQ(0, cleared_size.height);
 }

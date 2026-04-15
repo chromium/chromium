@@ -543,8 +543,10 @@ const CGFloat kGradientSpacingAboveInstructions = 150;
                           std::fmax(0, _originalImage.size.height -
                                            visibleRectInOriginal.size.height));
 
-  return [[HomeCustomizationFramingCoordinates alloc]
-      initWithVisibleRect:visibleRectInOriginal];
+  HomeCustomizationFramingCoordinates* coordinates =
+      [[HomeCustomizationFramingCoordinates alloc]
+          initWithVisibleRect:visibleRectInOriginal];
+  return coordinates;
 }
 
 @end
