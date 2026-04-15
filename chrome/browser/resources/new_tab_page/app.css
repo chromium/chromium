@@ -180,7 +180,7 @@ cr-most-visited {
 }
 
 #logo {
-  margin-bottom: 38px;
+  margin-bottom: var(--ntp-logo-margin-bottom, 38px);
   z-index: 1; /* Needed so it layers on top of OneGoogleBar. */
 }
 
