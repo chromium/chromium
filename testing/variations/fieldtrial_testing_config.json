@@ -7432,7 +7432,11 @@
                 {
                     "name": "Enabled",
                     "enable_features": [
-                        "CriticalUserJourneyService"
+                        "ClearBrowsingHistoryJourney",
+                        "CriticalUserJourneyService",
+                        "PinExtensionJourney",
+                        "ViewDownloadedFileFromAppMenuJourney",
+                        "ViewDownloadedFileJourney"
                     ]
                 }
             ]
