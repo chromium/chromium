@@ -1646,9 +1646,6 @@ void PermissionUmaUtil::RecordTimeElapsedBetweenGrantAndUse(
     case SettingSource::kInstalledWebApp:
       source_suffix = "FromInstalledWebApp";
       break;
-    case SettingSource::kTpcdGrant:
-      source_suffix = "FromSourceTpcdGrant";
-      break;
     case SettingSource::kOsJavascriptOptimizer:
       source_suffix = "FromOsJavascriptOptimizer";
       break;

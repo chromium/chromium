@@ -268,9 +268,7 @@ bool ShouldReportDevToolsIssueForStatus(
              net::CookieInclusionStatus::ExclusionReason::
                  EXCLUDE_THIRD_PARTY_BLOCKED_WITHIN_FIRST_PARTY_SET) ||
          status.HasExclusionReason(net::CookieInclusionStatus::ExclusionReason::
-                                       EXCLUDE_THIRD_PARTY_PHASEOUT) ||
-         status.exemption_reason() ==
-             net::CookieInclusionStatus::ExemptionReason::k3PCDMetadata;
+                                       EXCLUDE_THIRD_PARTY_PHASEOUT);
 }
 
 }  // namespace

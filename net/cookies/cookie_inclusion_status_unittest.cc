@@ -169,18 +169,18 @@ TEST(CookieInclusionStatusTest, AddExclusionReason) {
 TEST(CookieInclusionStatusTest, ExemptionReason) {
   CookieInclusionStatus status;
   status.MaybeSetExemptionReason(
-      CookieInclusionStatus::ExemptionReason::k3PCDMetadata);
+      CookieInclusionStatus::ExemptionReason::kUserSetting);
   ASSERT_EQ(status.exemption_reason(),
-            CookieInclusionStatus::ExemptionReason::k3PCDMetadata);
+            CookieInclusionStatus::ExemptionReason::kUserSetting);
   ASSERT_TRUE(status.IsInclude());
   ASSERT_EQ(status.GetDebugString(),
-            "INCLUDE, DO_NOT_WARN, Exemption3PCDMetadata");
+            "INCLUDE, DO_NOT_WARN, ExemptionUserSetting");
 
   // Updating exemption reason would be no-op.
   status.MaybeSetExemptionReason(
       CookieInclusionStatus::ExemptionReason::kEnterprisePolicy);
   EXPECT_EQ(status.exemption_reason(),
-            CookieInclusionStatus::ExemptionReason::k3PCDMetadata);
+            CookieInclusionStatus::ExemptionReason::kUserSetting);
 
   // Adding an exclusion reason resets the exemption reason.
   status.AddExclusionReason(

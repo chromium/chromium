@@ -1092,8 +1092,6 @@ Network::CookieExemptionReason GetProtocolCookieExemptionReason(
       return Network::CookieExemptionReasonEnum::None;
     case net::CookieInclusionStatus::ExemptionReason::kUserSetting:
       return Network::CookieExemptionReasonEnum::UserSetting;
-    case net::CookieInclusionStatus::ExemptionReason::k3PCDMetadata:
-      return Network::CookieExemptionReasonEnum::TPCDMetadata;
     case net::CookieInclusionStatus::ExemptionReason::kEnterprisePolicy:
       return Network::CookieExemptionReasonEnum::EnterprisePolicy;
     case net::CookieInclusionStatus::ExemptionReason::kStorageAccess:

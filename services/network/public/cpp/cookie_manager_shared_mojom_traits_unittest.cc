@@ -111,7 +111,6 @@ TEST(CookieManagerSharedMojomTraitsTest, Roundtrips_CookieExemptionReason) {
   for (net::CookieInclusionStatus::ExemptionReason exemption_reason : {
            net::CookieInclusionStatus::ExemptionReason::kNone,
            net::CookieInclusionStatus::ExemptionReason::kUserSetting,
-           net::CookieInclusionStatus::ExemptionReason::k3PCDMetadata,
            net::CookieInclusionStatus::ExemptionReason::kEnterprisePolicy,
            net::CookieInclusionStatus::ExemptionReason::kStorageAccess,
            net::CookieInclusionStatus::ExemptionReason::kTopLevelStorageAccess,

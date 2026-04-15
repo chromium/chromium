@@ -12,8 +12,7 @@ enum class CookieControlsEnforcement {
   kEnforcedByPolicy = 1,
   kEnforcedByExtension = 2,
   kEnforcedByCookieSetting = 3,
-  kEnforcedByTpcdGrant = 4,
-  kMaxValue = kEnforcedByTpcdGrant,
+  kMaxValue = kEnforcedByCookieSetting,
 };
 
 #endif  // COMPONENTS_CONTENT_SETTINGS_CORE_COMMON_COOKIE_CONTROLS_ENFORCEMENT_H_

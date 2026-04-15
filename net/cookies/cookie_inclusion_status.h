@@ -269,8 +269,7 @@ class NET_EXPORT CookieInclusionStatus {
     kNone = 0,
     // For user explicit settings, including User bypass.
     kUserSetting = 1,
-    // For 3PCD metadata .
-    k3PCDMetadata = 2,
+    // k3PCDMetadata = 2,  // Deprecated
     // k3PCDDeprecationTrial = 3,  // Deprecated
     // kTopLevel3PCDDeprecationTrial = 4,  // Deprecated
     // k3PCDHeuristics = 5,  // Deprecated

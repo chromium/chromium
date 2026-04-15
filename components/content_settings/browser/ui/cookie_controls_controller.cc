@@ -185,15 +185,9 @@ CookieControlsController::Status CookieControlsController::GetStatus(
       cookie_settings_->IsThirdPartyAccessAllowed(url, &info);
   CookieControlsEnforcement enforcement =
       GetEnforcementForThirdPartyCookieBlocking(url, info, cookies_allowed);
-
-  CookieControlsState controls_state;
-  if (enforcement == CookieControlsEnforcement::kEnforcedByTpcdGrant) {
-    controls_state = CookieControlsState::kHidden;
-  } else {
-    controls_state = cookies_allowed ? CookieControlsState::kAllowed3pc
-                                     : CookieControlsState::kBlocked3pc;
-  }
-
+  CookieControlsState controls_state = cookies_allowed
+                                           ? CookieControlsState::kAllowed3pc
+                                           : CookieControlsState::kBlocked3pc;
   return {controls_state, enforcement, info.metadata.expiration()};
 }
 

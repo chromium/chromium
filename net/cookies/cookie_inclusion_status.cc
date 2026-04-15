@@ -332,9 +332,6 @@ std::string CookieInclusionStatus::GetDebugString() const {
     case ExemptionReason::kUserSetting:
       reason = "ExemptionUserSetting";
       break;
-    case ExemptionReason::k3PCDMetadata:
-      reason = "Exemption3PCDMetadata";
-      break;
     case ExemptionReason::kEnterprisePolicy:
       reason = "ExemptionEnterprisePolicy";
       break;

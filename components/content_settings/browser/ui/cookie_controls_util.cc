@@ -54,7 +54,6 @@ const gfx::VectorIcon& CookieControlsUtil::GetEnforcedIcon(
       return vector_icons::kBusinessChromeRefreshIcon;
     case CookieControlsEnforcement::kEnforcedByCookieSetting:
       return vector_icons::kSettingsChromeRefreshIcon;
-    case CookieControlsEnforcement::kEnforcedByTpcdGrant:
     case CookieControlsEnforcement::kNoEnforcement:
       NOTREACHED();
   }
@@ -73,7 +72,6 @@ std::u16string CookieControlsUtil::GetEnforcedTooltip(
     case CookieControlsEnforcement::kEnforcedByCookieSetting:
       return l10n_util::GetStringUTF16(
           IDS_PAGE_INFO_BLOCK_THIRD_PARTY_COOKIES_MANAGED_BY_SETTINGS_TOOLTIP);
-    case CookieControlsEnforcement::kEnforcedByTpcdGrant:
     case CookieControlsEnforcement::kNoEnforcement:
       NOTREACHED();
   }

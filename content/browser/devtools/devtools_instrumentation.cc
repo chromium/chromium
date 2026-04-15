@@ -1975,12 +1975,6 @@ std::unique_ptr<protocol::Array<protocol::String>> BuildWarningReasons(
         protocol::Audits::CookieWarningReasonEnum::WarnThirdPartyPhaseout);
   }
 
-  if (status.exemption_reason() ==
-      net::CookieInclusionStatus::ExemptionReason::k3PCDMetadata) {
-    warning_reasons->push_back(protocol::Audits::CookieWarningReasonEnum::
-                                   WarnDeprecationTrialMetadata);
-  }
-
   // This warning only affects cookies when the corresponding feature is
   // enabled, therefore we should only create an issue for it then.
   if (base::FeatureList::IsEnabled(

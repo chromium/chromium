@@ -35,8 +35,6 @@ EnumTraits<network::mojom::CookieExemptionReason,
       return network::mojom::CookieExemptionReason::kNone;
     case net::CookieInclusionStatus::ExemptionReason::kUserSetting:
       return network::mojom::CookieExemptionReason::kUserSetting;
-    case net::CookieInclusionStatus::ExemptionReason::k3PCDMetadata:
-      return network::mojom::CookieExemptionReason::k3PCDMetadata;
     case net::CookieInclusionStatus::ExemptionReason::kEnterprisePolicy:
       return network::mojom::CookieExemptionReason::kEnterprisePolicy;
     case net::CookieInclusionStatus::ExemptionReason::kStorageAccess:
@@ -62,8 +60,6 @@ EnumTraits<network::mojom::CookieExemptionReason,
       return net::CookieInclusionStatus::ExemptionReason::kNone;
     case network::mojom::CookieExemptionReason::kUserSetting:
       return net::CookieInclusionStatus::ExemptionReason::kUserSetting;
-    case network::mojom::CookieExemptionReason::k3PCDMetadata:
-      return net::CookieInclusionStatus::ExemptionReason::k3PCDMetadata;
     case network::mojom::CookieExemptionReason::kEnterprisePolicy:
       return net::CookieInclusionStatus::ExemptionReason::kEnterprisePolicy;
     case network::mojom::CookieExemptionReason::kStorageAccess:
