@@ -11,7 +11,9 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/logging.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/strings/strcat.h"
 #include "base/synchronization/lock.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
@@ -654,31 +656,45 @@ void Scheduler::ExecuteSequence(const SequenceId sequence_id) {
   auto* task_runner = base::SingleThreadTaskRunner::GetCurrentDefault().get();
   auto& thread_state = GetThreadState(task_runner);
 
-  // Subsampling these metrics reduced CPU utilization (crbug.com/1295441).
-  const bool log_histograms = metrics_subsampler_.ShouldSample(0.001);
-
-  if (log_histograms) {
-    UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES(
-        "GPU.SchedulerDfs.ThreadSuspendedTime",
-        base::TimeTicks::Now() - thread_state.run_next_task_scheduled,
-        base::Microseconds(10), base::Seconds(30), 100);
-  }
-
+  DVLOG(10) << "Executing sequence " << sequence_id.value() << ".";
   Sequence* sequence = GetSequence(sequence_id);
   DCHECK(sequence);
   DCHECK(sequence->HasTasksAndEnabled());
   DCHECK_EQ(sequence->task_runner(), task_runner);
 
-  DVLOG(10) << "Executing sequence " << sequence_id.value() << ".";
+  // Subsampling these metrics reduced CPU utilization (crbug.com/1295441).
+  const bool log_histograms = metrics_subsampler_.ShouldSample(0.001);
+  const std::string_view priority_str =
+      SchedulingPriorityToString(sequence->default_priority_);
 
   if (log_histograms) {
     UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES(
-        "GPU.SchedulerDfs.TaskDependencyTime",
+        "GPU.Scheduler.ThreadSuspendedTime",
+        base::TimeTicks::Now() - thread_state.run_next_task_scheduled,
+        base::Microseconds(10), base::Seconds(30), 100);
+    base::UmaHistogramCustomTimes(
+        base::StrCat(
+            {"GPU.Scheduler.ThreadSuspendedTime.", priority_str, "Priority"}),
+        base::TimeTicks::Now() - thread_state.run_next_task_scheduled,
+        base::Microseconds(10), base::Seconds(30), 100);
+
+    UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES(
+        "GPU.Scheduler.TaskDependencyTime",
+        sequence->FrontTaskWaitingDependencyDelta(), base::Microseconds(10),
+        base::Seconds(30), 100);
+    base::UmaHistogramCustomTimes(
+        base::StrCat(
+            {"GPU.Scheduler.TaskDependencyTime.", priority_str, "Priority"}),
         sequence->FrontTaskWaitingDependencyDelta(), base::Microseconds(10),
         base::Seconds(30), 100);
 
     UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES(
-        "GPU.SchedulerDfs.TaskSchedulingDelayTime",
+        "GPU.Scheduler.TaskSchedulingDelayTime",
+        sequence->FrontTaskSchedulingDelay(), base::Microseconds(10),
+        base::Seconds(30), 100);
+    base::UmaHistogramCustomTimes(
+        base::StrCat({"GPU.Scheduler.TaskSchedulingDelayTime.", priority_str,
+                      "Priority"}),
         sequence->FrontTaskSchedulingDelay(), base::Microseconds(10),
         base::Seconds(30), 100);
   }
