@@ -79,6 +79,8 @@ BASE_DECLARE_FEATURE(kWebViewFasterGetDefaultUserAgent);
 BASE_DECLARE_FEATURE(kWebViewSaveStateIncludeHeaders);
 BASE_DECLARE_FEATURE(kWebViewSkipFaviconJavaCopyUntilNeeded);
 BASE_DECLARE_FEATURE(kWebViewPassNullFaviconToOnPageStarted);
+BASE_DECLARE_FEATURE(kStartupNonBlockingWebViewConstructor);
+BASE_DECLARE_FEATURE(kPostChromiumStartupInWebViewConstructor);
 }  // namespace android_webview::features
 
 #endif  // ANDROID_WEBVIEW_COMMON_AW_FEATURES_H_

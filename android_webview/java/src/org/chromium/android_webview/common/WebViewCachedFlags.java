@@ -167,6 +167,12 @@ public class WebViewCachedFlags {
                                     Map.entry(
                                             BaseFeatures
                                                     .SHUTDOWN_PRE_NATIVE_THREAD_POOL_AFTER_STARTUP,
+                                            DefaultState.DISABLED),
+                                    Map.entry(
+                                            AwFeatures.STARTUP_NON_BLOCKING_WEBVIEW_CONSTRUCTOR,
+                                            DefaultState.DISABLED),
+                                    Map.entry(
+                                            AwFeatures.POST_CHROMIUM_STARTUP_IN_WEBVIEW_CONSTRUCTOR,
                                             DefaultState.DISABLED)));
         }
     }

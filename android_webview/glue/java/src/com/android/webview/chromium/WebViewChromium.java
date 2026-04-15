@@ -1310,14 +1310,12 @@ class WebViewChromium
             }
             // Needed for https://crbug.com/1417872
             mWebView.setDefaultFocusHighlightEnabled(false);
-            if (CommandLine.getInstance()
-                    .hasSwitch(AwSwitches.STARTUP_NON_BLOCKING_WEBVIEW_CONSTRUCTOR)) {
+            if (shouldEnableStartupNonBlockingWebViewConstructor()) {
                 // We call `lock()` during Chromium startup, but if we are going to not
                 // synchronously run Chromium startup as part of WebView construction, then attempt
                 // to lock here as well to maintain the same locking behavior as before.
                 AwDataDirLock.lock(ContextUtils.getApplicationContext());
-                if (CommandLine.getInstance()
-                        .hasSwitch(AwSwitches.POST_CHROMIUM_STARTUP_IN_WEBVIEW_CONSTRUCTOR)) {
+                if (shouldEnablePostChromiumStartupInWebViewConstructor()) {
                     mAwInit.postChromiumStartupIfNeeded(CallSite.WEBVIEW_INSTANCE_INIT);
                 }
             } else {
@@ -4535,5 +4533,21 @@ class WebViewChromium
 
     SharedWebViewChromium getSharedWebViewChromium() {
         return mSharedWebViewChromium;
+    }
+
+    private boolean shouldEnableStartupNonBlockingWebViewConstructor() {
+        return CommandLine.getInstance()
+                        .hasSwitch(AwSwitches.STARTUP_NON_BLOCKING_WEBVIEW_CONSTRUCTOR)
+                || WebViewCachedFlags.get()
+                        .isCachedFeatureEnabled(
+                                AwFeatures.STARTUP_NON_BLOCKING_WEBVIEW_CONSTRUCTOR);
+    }
+
+    private boolean shouldEnablePostChromiumStartupInWebViewConstructor() {
+        return CommandLine.getInstance()
+                        .hasSwitch(AwSwitches.POST_CHROMIUM_STARTUP_IN_WEBVIEW_CONSTRUCTOR)
+                || WebViewCachedFlags.get()
+                        .isCachedFeatureEnabled(
+                                AwFeatures.POST_CHROMIUM_STARTUP_IN_WEBVIEW_CONSTRUCTOR);
     }
 }

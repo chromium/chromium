@@ -317,4 +317,13 @@ BASE_FEATURE(kWebViewSkipFaviconJavaCopyUntilNeeded,
 // onPageStarted method.
 BASE_FEATURE(kWebViewPassNullFaviconToOnPageStarted,
              base::FEATURE_DISABLED_BY_DEFAULT);
+
+// Enables non-blocking WebView constructor.
+BASE_FEATURE(kStartupNonBlockingWebViewConstructor,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+// Post Chromium startup in the WebView constructor. Only has any effect
+// when kStartupNonBlockingWebViewConstructor is enabled.
+BASE_FEATURE(kPostChromiumStartupInWebViewConstructor,
+             base::FEATURE_DISABLED_BY_DEFAULT);
 }  // namespace android_webview::features
