@@ -45,9 +45,8 @@ namespace blink {
 // thread was torn down).
 struct CanvasResourceDispatcher::ExportedResource {
  public:
-  ExportedResource(scoped_refptr<CanvasResource> resource,
-                   CanvasResource::ReleaseCallback callback)
-      : resource_(std::move(resource)), release_callback_(std::move(callback)) {
+  explicit ExportedResource(scoped_refptr<CanvasResource> resource)
+      : resource_(std::move(resource)) {
     CHECK(resource_);
   }
 
@@ -64,13 +63,16 @@ struct CanvasResourceDispatcher::ExportedResource {
   void ReleaseResource(const gpu::SyncToken& sync_token, bool is_lost) {
     auto resource = std::move(resource_);
     if (resource) {
-      std::move(release_callback_)
-          .Run(std::move(resource), sync_token, is_lost);
+      resource->WaitSyncToken(sync_token);
+      if (is_lost) {
+        resource->NotifyResourceLost();
+      }
+
+      CanvasResource::DropRefOnOwningThread(std::move(resource));
     }
   }
 
   scoped_refptr<CanvasResource> resource_;
-  CanvasResource::ReleaseCallback release_callback_;
 };
 
 CanvasResourceDispatcher::CanvasResourceDispatcher(
@@ -268,17 +270,6 @@ bool CanvasResourceDispatcher::PrepareFrame(
   // value will have no effect.
   const bool nearest_neighbor = false;
 
-  CanvasResource::ReleaseCallback release_callback =
-      base::BindOnce([](scoped_refptr<CanvasResource>&& resource,
-                        const gpu::SyncToken& sync_token, bool lost_resource) {
-        CHECK(resource);
-        resource->WaitSyncToken(sync_token);
-        if (lost_resource) {
-          resource->NotifyResourceLost();
-        }
-
-        CanvasResource::DropRefOnOwningThread(std::move(resource));
-      });
   canvas_resource->PrepareTransferableResource(
       &resource,
       /*needs_verified_synctoken=*/true);
@@ -298,8 +289,7 @@ bool CanvasResourceDispatcher::PrepareFrame(
   // notifies us that it is no longer using the resource via
   // `ReclaimResources()`).
   exported_resources_.insert(resource_id, std::make_unique<ExportedResource>(
-                                              std::move(canvas_resource),
-                                              std::move(release_callback)));
+                                              std::move(canvas_resource)));
 
   frame->resource_list.push_back(std::move(resource));
 
