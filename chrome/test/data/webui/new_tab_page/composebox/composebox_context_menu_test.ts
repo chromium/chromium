@@ -187,6 +187,118 @@ suite('NewTabPageComposeboxContextMenuTest', () => {
       await testProxy.searchboxCallbackRouterRemote.$.flushForTesting();
       assertEquals(testProxy.searchboxHandler.getCallCount('getRecentTabs'), 2);
     });
+
+    test('context menu opens below anchor when space is sufficient',
+        async () => {
+      createComposeboxElement(testProxy);
+
+      // Get the contextual action menu element.
+      const entrypointAndMenu =
+          testProxy.element.shadowRoot.querySelector(
+          'cr-composebox-contextual-entrypoint-and-menu');
+      assertTrue(!!entrypointAndMenu);
+      const contextActionMenu =
+          entrypointAndMenu.shadowRoot.querySelector(
+          'cr-composebox-contextual-action-menu');
+      assertTrue(!!contextActionMenu);
+
+      // Create a fake anchor near the viewport top to guarantee sufficient
+      // space below.
+      const fakeAnchor = document.createElement('div');
+      fakeAnchor.style.cssText = `
+        position: fixed;
+        top: 10px;
+        left: 100px;
+        height: 36px;
+        width: 40px;
+      `;
+      document.body.appendChild(fakeAnchor);
+
+      // Open the menu at the fake anchor.
+      (contextActionMenu as any).showAt(fakeAnchor);
+      await microtasksFinished();
+
+      try {
+        // Access the dialog.
+        const crActionMenu =
+            contextActionMenu.shadowRoot.querySelector('#menu');
+        assertTrue(!!crActionMenu);
+        const dialog =
+            crActionMenu.shadowRoot!.querySelector<HTMLDialogElement>(
+              'dialog');
+        assertTrue(!!dialog);
+        assertTrue(dialog.open);
+
+        // Assert: menu should open below the anchor.
+        const anchorRect = fakeAnchor.getBoundingClientRect();
+        const dialogRect = dialog.getBoundingClientRect();
+        assertTrue(dialogRect.height > 0);
+        assertTrue(dialogRect.top >= anchorRect.bottom - 1);
+      } finally {
+        // Clean even if the assertions fail.
+        (contextActionMenu as any).close();
+        fakeAnchor.remove();
+      }
+    });
+
+    test('context menu flips above when insufficient space below', async () => {
+      createComposeboxElement(testProxy);
+
+      // Push an input state with tools so the menu has visible content.
+      const inputState = new MockInputState({
+        allowedTools: [ToolMode.kDeepSearch],
+      });
+      testProxy.searchboxCallbackRouterRemote.onInputStateChanged(inputState);
+      await testProxy.searchboxCallbackRouterRemote.$.flushForTesting();
+      await microtasksFinished();
+
+      // Get the contextual action menu element.
+      const entrypointAndMenu =
+          testProxy.element.shadowRoot.querySelector(
+          'cr-composebox-contextual-entrypoint-and-menu');
+      assertTrue(!!entrypointAndMenu);
+      const contextActionMenu =
+          entrypointAndMenu.shadowRoot.querySelector(
+          'cr-composebox-contextual-action-menu');
+      assertTrue(!!contextActionMenu);
+
+      // Create a fake anchor near the viewport bottom to force a flip.
+      const fakeAnchor = document.createElement('div');
+      fakeAnchor.style.cssText = `
+        position: fixed;
+        bottom: 10px;
+        left: 100px;
+        height: 36px;
+        width: 40px;
+      `;
+      document.body.appendChild(fakeAnchor);
+
+      // Open the menu anchored to the fake element.
+      (contextActionMenu as any).showAt(fakeAnchor);
+      await microtasksFinished();
+
+      try {
+        // Access the dialog.
+        const crActionMenu =
+            contextActionMenu.shadowRoot.querySelector('#menu');
+        assertTrue(!!crActionMenu);
+        const dialog =
+            crActionMenu.shadowRoot!.querySelector<HTMLDialogElement>(
+              'dialog');
+        assertTrue(!!dialog);
+        assertTrue(dialog.open);
+
+        // Assert: menu should flip above the anchor.
+        const anchorRect = fakeAnchor.getBoundingClientRect();
+        const dialogRect = dialog.getBoundingClientRect();
+        assertTrue(dialogRect.height > anchorRect.height);
+        assertTrue(dialogRect.top < anchorRect.top);
+      } finally {
+        // Clean even if the assertions fail.
+        (contextActionMenu as any).close();
+        fakeAnchor.remove();
+      }
+    });
   });
 
   suite('Context menu mouse events', () => {
