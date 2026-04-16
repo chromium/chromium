@@ -1896,6 +1896,21 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="ServiceWorker.StaticRouter.{Resource}.CORPCheckResult"
+    enum="ServiceWorkerStaticRouterCORPCheckResult" expires_after="2027-04-15">
+  <owner>yyanagisawa@chromium.org</owner>
+  <owner>chrome-worker@google.com</owner>
+  <summary>
+    Records the result of the Cross-Origin Resource Policy (CORP) check for
+    responses from the ServiceWorker Static Routing API with source: 'cache'.
+    This metric is recorded for {Resource}.
+  </summary>
+  <token key="Resource">
+    <variant name="MainResource" summary="main resource"/>
+    <variant name="Subresource" summary="subresource"/>
+  </token>
+</histogram>
+
 <histogram name="ServiceWorker.StaticRouter.{Resource}.ValidResponse"
     enum="Boolean" expires_after="2027-03-26">
   <owner>yyanagisawa@chromium.org</owner>

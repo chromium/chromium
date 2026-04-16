@@ -24866,6 +24866,16 @@ Called by update_net_error_codes.py.-->
   <int value="3" label="kCache"/>
 </enum>
 
+<!-- LINT.IfChange(ServiceWorkerStaticRouterCORPCheckResult) -->
+
+<enum name="ServiceWorkerStaticRouterCORPCheckResult">
+  <int value="0" label="Success"/>
+  <int value="1" label="Blocked"/>
+  <int value="2" label="Violation"/>
+</enum>
+
+<!-- LINT.ThenChange(/content/common/service_worker/service_worker_resource_loader.h:CORPCheckResult) -->
+
 <!-- LINT.IfChange(ServiceWorkerStatus) -->
 
 <enum name="ServiceWorkerStatus">

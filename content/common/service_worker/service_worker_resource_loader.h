@@ -87,12 +87,14 @@ class CONTENT_EXPORT ServiceWorkerResourceLoader {
   // Results of the CORP check for the static router's cache source.
   // These values are persisted to logs. Entries should not be renumbered and
   // numeric values should never be reused.
+  // LINT.IfChange(CORPCheckResult)
   enum class CORPCheckResult {
     kSuccess = 0,    // Not blocked by policy.
     kBlocked = 1,    // Blocked by policy, and feature flag enabled.
     kViolation = 2,  // Blocked by policy, but feature flag disabled.
     kMaxValue = kViolation,
   };
+  // LINT.ThenChange(//tools/metrics/histograms/enums.xml:ServiceWorkerStaticRouterCORPCheckResult)
 
   // Static helper to validate the response from the Service Worker according
   // to the Fetch spec (4.4 HTTP fetch, Step 3.5.6).
