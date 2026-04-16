@@ -35,7 +35,6 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/browser_window.h"
-#include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
 #include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
@@ -119,8 +118,9 @@ void DownloadBubbleUIControllerDelegate::OnNewDownloadReady(
     item->AddObserver(handler);
   }
 #endif
-  if (!DownloadItemModel(item).ShouldShowInBubble())
+  if (!DownloadItemModel(item).ShouldShowInBubble()) {
     return;
+  }
   // crx downloads are handled by the DownloadBubbleUpdateService.
   // TODO(chlily): Consolidate these code paths.
   if (extensions::util::IsExtensionDownload(*item)) {
@@ -139,8 +139,7 @@ void DownloadBubbleUIControllerDelegate::OnButtonClicked() {
   ForEachCurrentBrowserWindowInterfaceOrderedByActivation(
       [](BrowserWindowInterface* browser_window_interface) {
         DownloadToolbarUIController* download_controller =
-            browser_window_interface->GetFeatures()
-                .download_toolbar_ui_controller();
+            DownloadToolbarUIController::From(browser_window_interface);
         DownloadBubbleUIController* bubble_ui_controller =
             download_controller ? download_controller->bubble_controller()
                                 : nullptr;
@@ -152,7 +151,7 @@ void DownloadBubbleUIControllerDelegate::OnButtonClicked() {
 }
 
 #endif
-} // namespace
+}  // namespace
 
 DownloadUIController::Delegate::~Delegate() = default;
 
@@ -162,8 +161,9 @@ DownloadUIController::DownloadUIController(content::DownloadManager* manager,
                                            std::unique_ptr<Delegate> delegate)
     : download_notifier_(manager, this), delegate_(std::move(delegate)) {
 #if BUILDFLAG(IS_ANDROID)
-  if (!delegate_)
+  if (!delegate_) {
     delegate_ = std::make_unique<AndroidUIControllerDelegate>();
+  }
 #else
   // The download bubble UI is used on desktop platforms besides ChromeOS,
   // which uses system notifications instead.
@@ -280,8 +280,9 @@ void DownloadUIController::OnDownloadUpdated(content::DownloadManager* manager,
 #endif  // BUILDFLAG(IS_ANDROID)
   }
 
-  if (item->GetState() == download::DownloadItem::CANCELLED)
+  if (item->GetState() == download::DownloadItem::CANCELLED) {
     return;
+  }
 
   DownloadItemModel(item).SetWasUINotified(true);
   delegate_->OnNewDownloadReady(item);

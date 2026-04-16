@@ -12,12 +12,14 @@
 #include "base/timer/timer.h"
 #include "chrome/browser/download/download_ui_model.h"
 #include "chrome/browser/ui/browser_window/public/browser_collection_observer.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/download/download_bubble_row_list_view_info.h"
 #include "chrome/browser/ui/download/download_display.h"
 #include "chrome/browser/ui/views/download/bubble/download_bubble_navigation_handler.h"
 #include "chrome/browser/ui/views/frame/immersive_mode_controller.h"
 #include "components/offline_items_collection/core/offline_item.h"
 #include "ui/base/metadata/metadata_header_macros.h"
+#include "ui/base/unowned_user_data/scoped_unowned_user_data.h"
 #include "ui/events/event_observer.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 #include "ui/views/widget/widget_observer.h"
@@ -48,6 +50,10 @@ class DownloadToolbarUIController
       public BrowserCollectionObserver,
       public DownloadBubbleRowListViewInfoObserver {
  public:
+  DECLARE_USER_DATA(DownloadToolbarUIController);
+
+  static DownloadToolbarUIController* From(BrowserWindowInterface* browser);
+
   // Identifies the bubble dialog widget for testing.
   static constexpr char kBubbleName[] = "DownloadBubbleDialog";
 
@@ -265,6 +271,9 @@ class DownloadToolbarUIController
   std::unique_ptr<ImmersiveRevealedLock> immersive_revealed_lock_;
 
   std::unique_ptr<BubbleCloser> bubble_closer_;
+
+  ui::ScopedUnownedUserData<DownloadToolbarUIController>
+      scoped_unowned_user_data_;
 
   base::WeakPtrFactory<DownloadToolbarUIController> weak_factory_{this};
 };

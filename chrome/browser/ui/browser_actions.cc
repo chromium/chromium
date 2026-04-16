@@ -1258,7 +1258,9 @@ void BrowserActions::InitializeToolbarAndMiscActions() {
           base::BindRepeating(
               [](BrowserWindowInterface* bwi, actions::ActionItem* item,
                  actions::ActionInvocationContext context) {
-                bwi->GetFeatures().download_toolbar_ui_controller()->InvokeUI();
+                if (auto* controller = DownloadToolbarUIController::From(bwi)) {
+                  controller->InvokeUI();
+                }
               },
               bwi),
           kActionShowDownloads, IDS_SHOW_DOWNLOADS, IDS_TOOLTIP_DOWNLOAD_ICON,

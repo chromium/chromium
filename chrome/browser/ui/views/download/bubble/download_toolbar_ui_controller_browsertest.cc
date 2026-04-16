@@ -12,7 +12,6 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/actions/chrome_action_id.h"
-#include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/toolbar/pinned_toolbar/pinned_toolbar_actions_model.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/download/bubble/download_bubble_contents_view.h"
@@ -44,12 +43,10 @@ class DownloadToolbarUIControllerBrowserTest : public DownloadTestBase {
   DownloadToolbarUIControllerBrowserTest() = default;
 
   DownloadToolbarUIController* controller(Browser* browser) {
-    return browser->GetFeatures().download_toolbar_ui_controller();
+    return DownloadToolbarUIController::From(browser);
   }
 
-  void SetUp() override {
-    DownloadTestBase::SetUp();
-  }
+  void SetUp() override { DownloadTestBase::SetUp(); }
 
   void SetUpOnMainThread() override {
     // OS integration is needed to be able to launch web applications. This
@@ -252,10 +249,9 @@ IN_PROC_BROWSER_TEST_F(DownloadToolbarUIControllerBrowserTest,
 
   // Click the button and verify the bubble opens.
   ClickButton(toolbar_button(app_browser2));
-  EXPECT_EQ(controller(app_browser2)
-                ->bubble_contents_for_testing()
-                ->VisiblePage(),
-            DownloadBubbleContentsView::Page::kPrimary);
+  EXPECT_EQ(
+      controller(app_browser2)->bubble_contents_for_testing()->VisiblePage(),
+      DownloadBubbleContentsView::Page::kPrimary);
 }
 
 IN_PROC_BROWSER_TEST_F(DownloadToolbarUIControllerBrowserTest,

@@ -16,7 +16,6 @@
 #include "chrome/browser/ui/accelerator_utils.h"
 #include "chrome/browser/ui/actions/chrome_action_id.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
-#include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_test.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/download/bubble/download_bubble_contents_view.h"
@@ -151,8 +150,7 @@ class DownloadBubbleInteractiveUiTest
  public:
   DownloadBubbleInteractiveUiTest()
       : InteractiveFeaturePromoTestMixin(UseDefaultTrackerAllowingPromos(
-            {feature_engagement::kIPHDownloadEsbPromoFeature})) {
-  }
+            {feature_engagement::kIPHDownloadEsbPromoFeature})) {}
 
   void SetUpInProcessBrowserTestFixture() override {
     InteractiveFeaturePromoTestMixin::SetUpInProcessBrowserTestFixture();
@@ -170,7 +168,7 @@ class DownloadBubbleInteractiveUiTest
   }
 
   DownloadDisplay* GetDownloadDisplay() {
-      return browser()->GetFeatures().download_toolbar_ui_controller();
+    return DownloadToolbarUIController::From(browser());
   }
 
   auto DownloadBubbleIsShowingDetails(bool showing) {
@@ -183,19 +181,18 @@ class DownloadBubbleInteractiveUiTest
 
   // Whether the download bubble's widget is showing and active.
   auto DownloadBubbleIsActive(bool active) {
-      return base::BindOnce(
-          [](DownloadToolbarUIController* toolbar_ui_controller, bool active) {
-            if (!toolbar_ui_controller->IsShowingDetails() ||
-                !toolbar_ui_controller->bubble_contents_for_testing()
-                     ->GetWidget()) {
-              return false;
-            }
-            return active ==
-                   toolbar_ui_controller->bubble_contents_for_testing()
-                       ->GetWidget()
-                       ->IsActive();
-          },
-          browser()->GetFeatures().download_toolbar_ui_controller(), active);
+    return base::BindOnce(
+        [](DownloadToolbarUIController* toolbar_ui_controller, bool active) {
+          if (!toolbar_ui_controller->IsShowingDetails() ||
+              !toolbar_ui_controller->bubble_contents_for_testing()
+                   ->GetWidget()) {
+            return false;
+          }
+          return active == toolbar_ui_controller->bubble_contents_for_testing()
+                               ->GetWidget()
+                               ->IsActive();
+        },
+        DownloadToolbarUIController::From(browser()), active);
   }
 
   auto DownloadBubblePromoIsActive(bool active, const base::Feature& feature) {
@@ -510,19 +507,18 @@ IN_PROC_BROWSER_TEST_F(
       NavigateWebContents(kWebContentsElementId,
                           embedded_test_server()->GetURL("/empty.html")),
       // Enter tab fullscreen.
-      InParallel(
-          RunSubsequence(
-              ExecuteJs(kWebContentsElementId,
-                        "() => document.documentElement.requestFullscreen()")),
-          RunSubsequence(
-              InAnyContext(WaitForShow(kExclusiveAccessBubbleViewElementId))),
-          RunSubsequence(Do([&]() {
-            tab_fullscreen_waiter->Wait();
-            // Reset the fullscreen waiter to wait for exiting fullscreen next
-            // time.
-            tab_fullscreen_waiter = std::make_unique<FullscreenWaiter>(
-                browser(), FullscreenWaiter::kNoFullscreen);
-          }))),
+      InParallel(RunSubsequence(ExecuteJs(
+                     kWebContentsElementId,
+                     "() => document.documentElement.requestFullscreen()")),
+                 RunSubsequence(InAnyContext(
+                     WaitForShow(kExclusiveAccessBubbleViewElementId))),
+                 RunSubsequence(Do([&]() {
+                   tab_fullscreen_waiter->Wait();
+                   // Reset the fullscreen waiter to wait for exiting fullscreen
+                   // next time.
+                   tab_fullscreen_waiter = std::make_unique<FullscreenWaiter>(
+                       browser(), FullscreenWaiter::kNoFullscreen);
+                 }))),
       // The exclusive access bubble should notify about the fullscreen change.
       Check(IsExclusiveAccessBubbleDisplayed(true),
             "Exclusive access bubble is displayed upon entering fullscreen"),

@@ -328,12 +328,6 @@ class BrowserWindowFeatures {
     return extension_keybinding_registry_.get();
   }
 
-#if !BUILDFLAG(IS_CHROMEOS)
-  DownloadToolbarUIController* download_toolbar_ui_controller() {
-    return download_toolbar_ui_controller_.get();
-  }
-#endif
-
   tab_groups::MostRecentSharedTabUpdateStore*
   most_recent_shared_tab_update_store() {
     return most_recent_shared_tab_update_store_.get();

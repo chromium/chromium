@@ -33,7 +33,6 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_key.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
-#include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/profile_browser_collection.h"
 #include "chrome/browser/ui/views/download/bubble/download_toolbar_ui_controller.h"
@@ -214,8 +213,7 @@ bool BrowserMatchesWebAppData(const BrowserWindowInterface* browser,
 
 DownloadBubbleUIController* GetBubbleController(
     BrowserWindowInterface* browser) {
-  auto* download_controller =
-      browser->GetFeatures().download_toolbar_ui_controller();
+  auto* download_controller = DownloadToolbarUIController::From(browser);
   return download_controller ? download_controller->bubble_controller()
                              : nullptr;
 }
@@ -830,15 +828,14 @@ void DownloadBubbleUpdateService::NotifyWindowsOfDownloadItemAdded(
   BrowserWindowInterface* browser_to_show_animation =
       FindBrowserToShowAnimation(item, profile_);
   auto* web_app_data = DownloadItemWebAppData::Get(item);
-  ProfileBrowserCollection::GetForProfile(profile_)
-      ->ForEach([&](BrowserWindowInterface* browser) {
+  ProfileBrowserCollection::GetForProfile(profile_)->ForEach(
+      [&](BrowserWindowInterface* browser) {
         auto* bubble_controller = GetBubbleController(browser);
         if (bubble_controller &&
             BrowserMatchesWebAppData(browser, web_app_data)) {
           bubble_controller->OnDownloadItemAdded(
               item,
-              /*may_show_animation=*/browser ==
-                  browser_to_show_animation);
+              /*may_show_animation=*/browser == browser_to_show_animation);
         }
         return true;
       });
@@ -930,8 +927,8 @@ void DownloadBubbleUpdateService::OnDownloadRemoved(
   GetCacheForItem(item).OnDownloadItemRemoved(item);
 
   auto* web_app_data = DownloadItemWebAppData::Get(item);
-  ProfileBrowserCollection::GetForProfile(profile_)
-      ->ForEach([&](BrowserWindowInterface* browser) {
+  ProfileBrowserCollection::GetForProfile(profile_)->ForEach(
+      [&](BrowserWindowInterface* browser) {
         auto* bubble_controller = GetBubbleController(browser);
         if (bubble_controller &&
             BrowserMatchesWebAppData(browser, web_app_data)) {
@@ -983,8 +980,8 @@ void DownloadBubbleUpdateService::OnItemsAdded(
                                            /*maybe_add_alert=*/true);
   }
 
-  ProfileBrowserCollection::GetForProfile(profile_)
-      ->ForEach([&](BrowserWindowInterface* browser) {
+  ProfileBrowserCollection::GetForProfile(profile_)->ForEach(
+      [&](BrowserWindowInterface* browser) {
         auto* bubble_controller = GetBubbleController(browser);
         if (bubble_controller &&
             !web_app::AppBrowserController::IsWebApp(browser)) {
@@ -1006,8 +1003,8 @@ void DownloadBubbleUpdateService::OnItemRemoved(const ContentId& id) {
   }
   main_cache_.OnOfflineItemRemoved(id);
 
-  ProfileBrowserCollection::GetForProfile(profile_)
-      ->ForEach([&](BrowserWindowInterface* browser) {
+  ProfileBrowserCollection::GetForProfile(profile_)->ForEach(
+      [&](BrowserWindowInterface* browser) {
         auto* bubble_controller = GetBubbleController(browser);
         if (bubble_controller &&
             !web_app::AppBrowserController::IsWebApp(browser)) {
@@ -1041,8 +1038,8 @@ void DownloadBubbleUpdateService::OnItemUpdated(
   }
   main_cache_.OnOfflineItemUpdated(item);
 
-  ProfileBrowserCollection::GetForProfile(profile_)
-      ->ForEach([&](BrowserWindowInterface* browser) {
+  ProfileBrowserCollection::GetForProfile(profile_)->ForEach(
+      [&](BrowserWindowInterface* browser) {
         auto* bubble_controller = GetBubbleController(browser);
         if (bubble_controller &&
             !web_app::AppBrowserController::IsWebApp(browser)) {
@@ -1423,8 +1420,8 @@ void DownloadBubbleUpdateService::OnEphemeralWarningExpired(
   GetCacheForItem(item).UpdateDisplayInfo(guid);
 
   auto* web_app_data = DownloadItemWebAppData::Get(item);
-  ProfileBrowserCollection::GetForProfile(profile_)
-      ->ForEach([&](BrowserWindowInterface* browser) {
+  ProfileBrowserCollection::GetForProfile(profile_)->ForEach(
+      [&](BrowserWindowInterface* browser) {
         auto* bubble_controller = GetBubbleController(browser);
         if (bubble_controller &&
             BrowserMatchesWebAppData(browser, web_app_data)) {

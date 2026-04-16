@@ -24,7 +24,6 @@
 #include "chrome/browser/ui/browser_actions.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_window.h"
-#include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/hats/hats_service_factory.h"
 #include "chrome/browser/ui/hats/mock_hats_service.h"
@@ -382,8 +381,7 @@ IN_PROC_BROWSER_TEST_F(RealCriticalUserJourneyServiceInteractiveTest,
       // The download is now complete. Forcibly open the download bubble to
       // satisfy Step 2 of the journey (the bubble must be shown).
       Do([this]() {
-        if (auto* display =
-                browser()->GetFeatures().download_toolbar_ui_controller()) {
+        if (auto* display = DownloadToolbarUIController::From(browser())) {
           display->ShowDetails();
         }
       }),
@@ -395,8 +393,7 @@ IN_PROC_BROWSER_TEST_F(RealCriticalUserJourneyServiceInteractiveTest,
 
       // Hide the bubble before teardown to allow the test to cleanup properly.
       Do([this]() {
-        if (auto* display =
-                browser()->GetFeatures().download_toolbar_ui_controller()) {
+        if (auto* display = DownloadToolbarUIController::From(browser())) {
           display->HideDetails();
         }
       }));

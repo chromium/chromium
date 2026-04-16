@@ -34,7 +34,6 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window.h"
-#include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
 #include "chrome/browser/ui/hats/trust_safety_sentiment_service.h"
 #include "chrome/browser/ui/hats/trust_safety_sentiment_service_factory.h"
@@ -95,15 +94,13 @@ DownloadBubbleUIController* DownloadBubbleUIController::GetForDownload(
   DownloadBubbleUIController* controller = nullptr;
   ForEachCurrentBrowserWindowInterfaceOrderedByActivation(
       [&](BrowserWindowInterface* browser) {
-        if (IsForDownload(browser, item) &&
-            browser->GetFeatures().download_toolbar_ui_controller() &&
-            browser->GetFeatures()
-                .download_toolbar_ui_controller()
-                ->bubble_controller()) {
-          controller = browser->GetFeatures()
-                           .download_toolbar_ui_controller()
-                           ->bubble_controller();
-          return false;  // stop iterating
+        if (IsForDownload(browser, item)) {
+          DownloadToolbarUIController* toolbar_controller =
+              DownloadToolbarUIController::From(browser);
+          if (toolbar_controller && toolbar_controller->bubble_controller()) {
+            controller = toolbar_controller->bubble_controller();
+            return false;  // stop iterating
+          }
         }
         return true;  // continue iterating
       });

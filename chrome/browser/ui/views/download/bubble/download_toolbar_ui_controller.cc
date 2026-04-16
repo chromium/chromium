@@ -4,6 +4,10 @@
 
 #include "chrome/browser/ui/views/download/bubble/download_toolbar_ui_controller.h"
 
+#include "ui/base/unowned_user_data/scoped_unowned_user_data.h"
+
+DEFINE_USER_DATA(DownloadToolbarUIController);
+
 #include <string>
 
 #include "base/functional/bind.h"
@@ -427,6 +431,12 @@ DownloadsImageBadge* GetImageBadge(BrowserView* browser_view) {
 
 }  // namespace
 
+// static
+DownloadToolbarUIController* DownloadToolbarUIController::From(
+    BrowserWindowInterface* browser) {
+  return Get(browser->GetUnownedUserDataHost());
+}
+
 DownloadToolbarUIController::DownloadToolbarUIController(
     BrowserView* browser_view)
     : browser_view_(browser_view),
@@ -435,7 +445,10 @@ DownloadToolbarUIController::DownloadToolbarUIController(
           kAutoClosePartialViewDelay,
           base::BindRepeating(
               &DownloadToolbarUIController::AutoClosePartialView,
-              base::Unretained(this))) {
+              base::Unretained(this))),
+      scoped_unowned_user_data_(
+          browser_view->browser()->GetUnownedUserDataHost(),
+          *this) {
   Browser* const browser = browser_view_->browser();
   action_item_ = actions::ActionManager::Get().FindAction(
       kActionShowDownloads, browser->browser_actions()->root_action_item());

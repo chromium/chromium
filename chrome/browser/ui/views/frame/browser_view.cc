@@ -397,7 +397,6 @@
 #undef LoadAccelerators
 #endif
 
-
 #if BUILDFLAG(ENABLE_WEBUI_TAB_STRIP)
 #include "chrome/browser/ui/views/frame/webui_tab_strip_container_view.h"
 #endif  // BUILDFLAG(ENABLE_WEBUI_TAB_STRIP)
@@ -2054,17 +2053,17 @@ void BrowserView::OnActiveTabChanged(content::WebContents* old_contents,
       loading_bar_->SetWebContents(new_contents);
     }
 
-      const tabs::TabInterface* active_tab =
-          tabs::TabInterface::GetFromContents(new_contents);
-      if (active_tab->IsSplit()) {
-        ShowSplitView(/*focus_active_view=*/false);
-      } else {
-        if (multi_contents_view_->IsInSplitView()) {
-          HideSplitView();
-        }
-        multi_contents_view_->GetActiveContentsView()->SetWebContents(
-            new_contents);
+    const tabs::TabInterface* active_tab =
+        tabs::TabInterface::GetFromContents(new_contents);
+    if (active_tab->IsSplit()) {
+      ShowSplitView(/*focus_active_view=*/false);
+    } else {
+      if (multi_contents_view_->IsInSplitView()) {
+        HideSplitView();
       }
+      multi_contents_view_->GetActiveContentsView()->SetWebContents(
+          new_contents);
+    }
 
     SadTabHelper* sad_tab_helper = SadTabHelper::FromWebContents(new_contents);
     if (sad_tab_helper) {
@@ -2379,10 +2378,10 @@ void BrowserView::UpdateToolbar(content::WebContents* contents) {
   if (toolbar_) {
     toolbar_->Update(contents);
   }
-    for (ContentsContainerView* contents_container :
-         multi_contents_view_->contents_container_views()) {
-      contents_container->mini_toolbar()->UpdateContents();
-    }
+  for (ContentsContainerView* contents_container :
+       multi_contents_view_->contents_container_views()) {
+    contents_container->mini_toolbar()->UpdateContents();
+  }
 }
 
 bool BrowserView::UpdateToolbarSecurityState() {
@@ -3328,7 +3327,7 @@ void BrowserView::StartPartialTranslate(const std::string& source_language,
 DownloadBubbleUIController* BrowserView::GetDownloadBubbleUIController() {
 #if !BUILDFLAG(IS_CHROMEOS)
   if (auto* download_controller =
-          browser_->GetFeatures().download_toolbar_ui_controller()) {
+          DownloadToolbarUIController::From(browser_.get())) {
     return download_controller->bubble_controller();
   }
 #endif
@@ -5226,7 +5225,9 @@ void BrowserView::AddedToWidget() {
   }
 
 #if !BUILDFLAG(IS_CHROMEOS)
-  browser_->GetFeatures().download_toolbar_ui_controller()->Init();
+  if (auto* controller = DownloadToolbarUIController::From(browser_.get())) {
+    controller->Init();
+  }
 #endif
 
   auto* const frame_view = GetFrameView();

@@ -198,6 +198,7 @@ source_set("impl") {
     "//components/security_state/content",
     "//components/services/quarantine",
     "//components/strings",
+    "//ui/base/unowned_user_data",
     "//url",
   ]
 

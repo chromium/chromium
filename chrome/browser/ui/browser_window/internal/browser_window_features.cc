@@ -759,7 +759,6 @@ void BrowserWindowFeatures::InitPostWindowConstruction(Browser* browser) {
                 *browser->GetTabStripModel()));
   }
 
-
   // Initialize post-window dependent embedder features last.
   embedder_browser_window_features_->InitPostWindowConstruction(browser);
 }
@@ -939,7 +938,8 @@ void BrowserWindowFeatures::InitPostBrowserViewConstruction(
 
 #if !BUILDFLAG(IS_CHROMEOS)
   download_toolbar_ui_controller_ =
-      std::make_unique<DownloadToolbarUIController>(browser_view);
+      GetUserDataFactory().CreateInstance<DownloadToolbarUIController>(
+          *browser_view->browser(), browser_view);
 #endif
 
   if (base::FeatureList::IsEnabled(ntp_features::kNtpFooter)) {

@@ -16,6 +16,7 @@ source_set("download") {
     "//components/offline_items_collection/core",
     "//content/public/browser",
     "//ui/base",
+    "//ui/base/unowned_user_data",
     "//ui/events",
     "//ui/gfx",
     "//ui/gfx/animation",
