@@ -271,12 +271,6 @@ class CONTENT_EXPORT ClipboardHostImpl
   // reinitialize it in preparation for the next write.
   void ResetClipboardWriter();
 
-  // Creates a `ui::DataTransferEndpoint` representing the last committed URL.
-  std::optional<ui::DataTransferEndpoint> CreateDataEndpoint();
-
-  // Creates a `content::ClipboardEndpoint` representing the last committed URL.
-  ClipboardEndpoint CreateClipboardEndpoint();
-
   // Stops observing clipboard changes and resets the listener.
   void StopObservingClipboard();
 

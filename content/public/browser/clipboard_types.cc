@@ -9,8 +9,11 @@
 #include "base/pickle.h"
 #include "base/types/optional_util.h"
 #include "content/public/browser/browser_context.h"
+#include "content/public/browser/content_browser_client.h"
+#include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/common/content_client.h"
 #include "ui/base/clipboard/clipboard.h"
 
 namespace content {
@@ -185,6 +188,44 @@ void AddSourceDataToClipboardWriter(ui::ScopedClipboardWriter& clipboard_writer,
                                     rfh.GetLastCommittedURL());
   clipboard_writer.WritePickledData(rfh.GetGlobalFrameToken().ToPickle(),
                                     SourceRFHTokenType());
+}
+
+std::optional<ui::DataTransferEndpoint> CreateDataEndpoint(
+    content::RenderFrameHost& rfh) {
+  auto* render_frame_host_main_frame = rfh.GetMainFrame();
+  auto source_url = render_frame_host_main_frame->GetLastCommittedURL();
+  if (!source_url.is_valid()) {
+    return std::nullopt;
+  }
+
+  if (auto maybe_url = GetContentClient()
+                           ->browser()
+                           ->MaybeOverrideSourceURLForClipboardAccess(
+                               render_frame_host_main_frame, source_url)) {
+    source_url = *maybe_url;
+  }
+
+  return ui::DataTransferEndpoint(
+      source_url,
+      ui::DataTransferEndpointOptions{
+          .notify_if_restricted = rfh.HasTransientUserActivation(),
+          .off_the_record = rfh.GetBrowserContext()->IsOffTheRecord(),
+      });
+}
+
+ClipboardEndpoint CreateClipboardEndpoint(content::RenderFrameHost& rfh) {
+  return ClipboardEndpoint(
+      CreateDataEndpoint(rfh),
+      base::BindRepeating(
+          [](GlobalRenderFrameHostId rfh_id) -> BrowserContext* {
+            auto* rfh = RenderFrameHost::FromID(rfh_id);
+            if (!rfh) {
+              return nullptr;
+            }
+            return rfh->GetBrowserContext();
+          },
+          rfh.GetGlobalId()),
+      rfh);
 }
 
 }  // namespace content

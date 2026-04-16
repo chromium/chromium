@@ -156,6 +156,14 @@ CONTENT_EXPORT void AddSourceDataToClipboardWriter(
     ui::ScopedClipboardWriter& clipboard_writer,
     content::RenderFrameHost& rfh);
 
+// Creates a `ui::DataTransferEndpoint` representing the last committed URL.
+CONTENT_EXPORT std::optional<ui::DataTransferEndpoint> CreateDataEndpoint(
+    content::RenderFrameHost& rfh);
+
+// Creates a `content::ClipboardEndpoint` representing the last committed URL.
+CONTENT_EXPORT ClipboardEndpoint
+CreateClipboardEndpoint(content::RenderFrameHost& rfh);
+
 }  // namespace content
 
 #endif  // CONTENT_PUBLIC_BROWSER_CLIPBOARD_TYPES_H_
