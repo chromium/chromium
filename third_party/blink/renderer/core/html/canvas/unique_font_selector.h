@@ -7,14 +7,14 @@
 
 #include <optional>
 
-#include "base/memory/memory_pressure_listener.h"
+#include "base/memory_coordinator/memory_consumer.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/platform/fonts/font_description.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_map.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/member.h"
 #include "third_party/blink/renderer/platform/heap/prefinalizer.h"
-#include "third_party/blink/renderer/platform/instrumentation/memory_pressure_listener.h"
+#include "third_party/blink/renderer/platform/instrumentation/memory_coordinator/memory_consumer_registration.h"
 #include "third_party/blink/renderer/platform/wtf/vector_backed_linked_list.h"
 
 namespace blink {
@@ -28,7 +28,7 @@ class FontSelectorClient;
 // equivalent blink::FontDescription instances.
 class CORE_EXPORT UniqueFontSelector
     : public GarbageCollected<UniqueFontSelector>,
-      public base::MemoryPressureListener {
+      public base::MemoryConsumer {
   USING_PRE_FINALIZER(UniqueFontSelector, Dispose);
 
  public:
@@ -49,8 +49,9 @@ class CORE_EXPORT UniqueFontSelector
   friend class OffscreenCanvasTest;
   friend class UniqueFontSelectorTest;
 
-  // base::MemoryPressureListener:
-  void OnMemoryPressure(base::MemoryPressureLevel) override;
+  // base::MemoryConsumer:
+  void OnUpdateMemoryLimit() override;
+  void OnReleaseMemory() override;
 
   unsigned GetCurrentMaxFonts() const;
 
@@ -78,8 +79,8 @@ class CORE_EXPORT UniqueFontSelector
   VectorBackedLinkedList<LruListKey> lru_list_;
   uint32_t frame_generation_ = 0;
 
-  std::optional<MemoryPressureListenerRegistration>
-      memory_pressure_listener_registration_;
+  std::optional<MemoryConsumerRegistration> memory_consumer_registration_;
+  unsigned current_max_fonts_ = 0;
 };
 
 }  // namespace blink

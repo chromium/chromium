@@ -1,6 +1,9 @@
 include_rules = [
 "+base/memory/memory_pressure_listener.h",
+"+base/memory_coordinator/memory_consumer.h",
 "+base/memory_coordinator/memory_coordinator_features.h",
+"+base/memory_coordinator/test_memory_consumer_registry.h",
+"+base/memory_coordinator/utils.h",
 "+cc/layers/texture_layer.h",
 "+cc/layers/texture_layer_client.h",
 "+components/viz/common/resources/shared_image_format.h",
