@@ -20,6 +20,8 @@
 #include "components/search_engines/search_engines_switches.h"
 #include "components/search_engines/template_url_service.h"
 #include "content/public/test/browser_test.h"
+#include "content/public/test/browser_test_utils.h"
+#include "content/public/test/test_navigation_observer.h"
 #include "services/preferences/tracked/pref_hash_filter.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/events/event_constants.h"
@@ -59,16 +61,6 @@ views::BubbleDialogDelegate* GetDseResetBubble(Browser* browser) {
   return nullptr;
 }
 
-void Click(views::View* clickable_view) {
-  // Simulate a mouse click. Note: Buttons are either fired when pressed or
-  // when released, so the corresponding methods need to be called.
-  clickable_view->OnMousePressed(
-      ui::MouseEvent(ui::EventType::kMousePressed, gfx::Point(), gfx::Point(),
-                     ui::EventTimeForNow(), ui::EF_LEFT_MOUSE_BUTTON, 0));
-  clickable_view->OnMouseReleased(
-      ui::MouseEvent(ui::EventType::kMouseReleased, gfx::Point(), gfx::Point(),
-                     ui::EventTimeForNow(), ui::EF_LEFT_MOUSE_BUTTON, 0));
-}
 
 }  // namespace
 
@@ -140,31 +132,33 @@ IN_PROC_BROWSER_TEST_F(DseResetDialogBrowserTest, GotItButtonClosesDialog) {
   EXPECT_EQ(nullptr, GetDseResetBubble(browser()));
 }
 
-// Verifies the "Learn More" button opens a new tab with the correct URL.
-IN_PROC_BROWSER_TEST_F(DseResetDialogBrowserTest, LearnMoreButtonOpensNewTab) {
+// Verifies the "Search settings" button opens a new tab with the correct URL.
+IN_PROC_BROWSER_TEST_F(DseResetDialogBrowserTest,
+                       SearchSettingsButtonOpensSettings) {
   ShowUi("default");
 
   views::BubbleDialogDelegate* bubble = GetDseResetBubble(browser());
-  ui_test_utils::TabAddedWaiter tab_waiter(browser());
+  content::LoadStopObserver observer(
+      browser()->tab_strip_model()->GetActiveWebContents());
 
-  // The "Learn More" button is the dialog's "extra" view.
-  views::View* learn_more_button = bubble->GetExtraView();
-  ASSERT_NE(nullptr, learn_more_button);
+  // The "Search settings" button is the dialog's Cancel button.
+  bubble->CancelDialog();
 
-  Click(learn_more_button);
-
-  tab_waiter.Wait();
+  observer.Wait();
 
   content::WebContents* new_tab =
       browser()->tab_strip_model()->GetActiveWebContents();
-  const GURL kExpectedLearnMoreUrl(
-      "https://support.google.com/chrome?p=chrome_reset_settings");
-  EXPECT_EQ(kExpectedLearnMoreUrl, new_tab->GetVisibleURL());
+
+  GURL current_url = new_tab->GetVisibleURL();
+  bool is_valid_url = (current_url == GURL("chrome://settings/searchEngines") ||
+                       current_url == GURL("chrome://settings/search"));
+  EXPECT_TRUE(is_valid_url) << "Actual URL: " << current_url;
+
   EXPECT_FALSE(
       default_search_manager()->GetUnacknowledgedDefaultSearchEngineReset());
 
-  // The dialog should not close when the learn more link is clicked.
-  EXPECT_NE(nullptr, GetDseResetBubble(browser()));
+  // The dialog should close when the search settings button is clicked.
+  EXPECT_EQ(nullptr, GetDseResetBubble(browser()));
 }
 
 // Verifies the dialog is not shown for non-search match types (e.g., a URL).
