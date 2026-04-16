@@ -27,6 +27,9 @@
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/side_panel/side_panel_enums.h"
+#include "chrome/browser/ui/side_panel/side_panel_ui.h"
+#include "chrome/browser/ui/side_panel/side_panel_ui_provider.h"
 #include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/browser/ui/user_education/browser_user_education_interface.h"
 #include "components/feature_engagement/public/feature_constants.h"
@@ -395,8 +398,18 @@ void ContextualCueingHelper::OnCueingDecision(
     return;
   }
 
+  auto* tab_interface = tabs::TabInterface::GetFromContents(web_contents());
+  auto* bwi =
+      tab_interface ? tab_interface->GetBrowserWindowInterface() : nullptr;
+  auto* side_panel_ui = bwi ? SidePanelUIProvider::From(bwi) : nullptr;
+
+  bool existing_side_panel_open =
+      side_panel_ui &&
+      (side_panel_ui->IsSidePanelShowing(SidePanelEntry::PanelType::kContent) ||
+       side_panel_ui->IsSidePanelShowing(SidePanelEntry::PanelType::kToolbar));
+
   const bool should_open_side_panel =
-      decision_result->auto_open_eligible &&
+      !existing_side_panel_open && decision_result->auto_open_eligible &&
       base::FeatureList::IsEnabled(kEnableAutoOpenGlicSidePanel);
 
   Profile* profile =
@@ -423,7 +436,6 @@ void ContextualCueingHelper::OnCueingDecision(
   // Handle side panel auto-open case: bypass nudge and open panel directly.
   // If auto-open fails or is disabled, falls through to standard nudge.
   if (should_open_side_panel) {
-    auto* tab_interface = tabs::TabInterface::GetFromContents(web_contents());
     auto* glic_service =
         glic::GlicKeyedServiceFactory::GetGlicKeyedService(profile);
     if (glic_service && tab_interface) {
