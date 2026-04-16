@@ -737,17 +737,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Download.Open.ContentType" enum="DownloadContentType"
-    expires_after="2026-05-24">
-  <owner>drubery@chromium.org</owner>
-  <owner>chrome-counter-abuse-alerts@google.com</owner>
-  <summary>
-    Content types of the downloads being opened. This histogram is logged
-    whenever a download is opened, whether from the shelf/bubble or
-    chrome://downloads. Logged on Desktop platforms.
-  </summary>
-</histogram>
-
 <histogram name="Download.OpenDownloads.OpenWithExternalAppsSource"
     enum="OpenDownloadWithExternalAppsSource" expires_after="2026-06-30">
   <owner>shuyng@google.com</owner>

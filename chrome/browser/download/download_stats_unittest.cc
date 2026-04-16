@@ -8,7 +8,6 @@
 #include "base/test/metrics/user_action_tester.h"
 #include "build/build_config.h"
 #include "chrome/browser/download/download_prompt_status.h"
-#include "components/download/public/common/download_content.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace {
@@ -52,10 +51,6 @@ TEST(DownloadStatsTest, RecordDownloadOpen) {
   histogram_tester.ExpectUniqueSample(
       "Download.OpenMethod",
       /*sample=*/DOWNLOAD_OPEN_METHOD_DEFAULT_BROWSER,
-      /*expected_bucket_count=*/1);
-  histogram_tester.ExpectUniqueSample(
-      "Download.Open.ContentType",
-      /*sample=*/download::DownloadContent::kPdf,
       /*expected_bucket_count=*/1);
 }
 
