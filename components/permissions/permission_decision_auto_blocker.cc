@@ -38,7 +38,7 @@ constexpr int kDefaultIgnoresBeforeBlock = 4;
 #if BUILDFLAG(IS_ANDROID)
 // The number of times that users may ignore a permission prompt from an origin.
 // before it is automatically blocked. This is used for the Clapper UI.
-constexpr int kClapperIgnoresBeforeBlock = 1;
+constexpr int kClapperIgnoresBeforeBlock = 2;
 #endif
 
 // The number of times that users may dismiss a permission prompt that uses the
@@ -424,6 +424,7 @@ bool PermissionDecisionAutoBlocker::RecordIgnoreAndEmbargo(
 #if BUILDFLAG(IS_ANDROID)
   if (base::FeatureList::IsEnabled(
           permissions::kPermissionsAndroidClapperLoud) &&
+      permission == ContentSettingsType::NOTIFICATIONS &&
       !ignored_prompt_was_quiet) {
     ignores_before_block = kClapperIgnoresBeforeBlock;
   }
