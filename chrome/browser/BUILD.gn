@@ -991,12 +991,6 @@ static_library("browser") {
     "//chrome/browser/push_messaging:impl",
   ]
 
-  if (is_android) {
-    # TODO(crbug.com/353332589): Remove this circular dependency when
-    # profiles/profile_manager.h gets componentized.
-    allow_circular_includes_from += [ "//chrome/browser/share" ]
-  }
-
   public_deps = [
     # WARNING WARNING WARNING
     # New dependencies outside of //chrome/browser should be added to
