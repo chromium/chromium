@@ -11,7 +11,7 @@ In this document, we respond to frequently asked questions regarding this
 situation.
 
 Googlers can also refer to the [internal
-version](go/chrome-ai-generated-security-bugs-faq) of this FAQ.
+version](http://go/chrome-ai-generated-security-bugs-faq) of this FAQ.
 
 ---
 
@@ -22,7 +22,7 @@ For now, please prioritize remediating:
 * S0 security bugs within 1 week
 * S1 security bugs within 4 weeks
 
-For more information, please see [go/chrome-slo](go/chrome-slo).
+For more information, please see [go/chrome-slo](http://go/chrome-slo).
 
 ---
 
@@ -118,11 +118,11 @@ functional issues. For example, if a bug describes hitting a DCHECK (which could
 be triggered by a compromised renderer), a security mitigation fix would be to
 convert that to a CHECK.
 
-See [go/security-mitigation-explainer](go/security-mitigation-explainer) for
-some possible security mitigation fixes. If you land a security mitigation fix,
-you can close a bug. A follow-up bug to fix the underlying logic issue could
-then be filed, but will be lower-priority than addressing other open S0s and
-S1s.
+See [go/security-mitigation-explainer](http://go/security-mitigation-explainer)
+for some possible security mitigation fixes. If you land a security mitigation
+fix, you can close a bug. A follow-up bug to fix the underlying logic issue
+could then be filed, but will be lower-priority than addressing other open S0s
+and S1s.
 
 ---
 
@@ -130,5 +130,5 @@ S1s.
 
 We're here to help, but please do not assign the bug to a Chrome Security team
 member or security@chromium.org. Instead, reach out over chat to one of the
-[current shepherds](go/current-security-shepherds) or email
+[current shepherds](http://go/current-security-shepherds) or email
 security@chromium.org directly.
