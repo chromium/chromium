@@ -9670,6 +9670,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Android.Window.OcclusionExperimental.OccludedCount"
+    units="count" expires_after="2027-04-02">
+  <owner>kalutes@google.com</owner>
+  <owner>clank-large-form-factors@google.com</owner>
+  <summary>
+    Records the number of WindowAndroid instances that are currently occluded.
+    Recorded periodically every 5 minutes.
+  </summary>
+</histogram>
+
 <histogram name="Android.Window.OcclusionExperimental.OccludedTimePercent"
     units="%" expires_after="2027-04-02">
   <owner>kalutes@google.com</owner>

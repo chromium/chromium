@@ -30,6 +30,7 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.Spy;
 import org.robolectric.annotation.Config;
+import org.robolectric.shadows.ShadowLooper;
 import org.robolectric.shadows.ShadowSystemClock;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
@@ -180,6 +181,22 @@ public class WindowAndroidTest {
         mWindowAndroid.setOccluded(true);
         ShadowSystemClock.advanceBy(Duration.ofSeconds(5));
         mWindowAndroid.setOccluded(false);
+
+        histogramWatcher.assertExpected();
+    }
+
+    @Test
+    public void testOccludedCountMetric() {
+        var histogramWatcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        "Android.Window.OcclusionExperimental.OccludedCount", 1);
+
+        WindowAndroid.postPeriodicMetricRunner();
+
+        mWindowAndroid.setIsOcclusionTracked(true);
+        mWindowAndroid.setOccluded(true);
+
+        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
 
         histogramWatcher.assertExpected();
     }

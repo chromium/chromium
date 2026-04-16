@@ -51,6 +51,7 @@ import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
 import org.chromium.base.ObserverList;
 import org.chromium.base.PackageManagerUtils;
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.TraceEvent;
 import org.chromium.base.UnownedUserDataHost;
 import org.chromium.base.lifetime.Destroyable;
@@ -81,6 +82,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
 
 /** The window base class that has the minimum functionality. */
@@ -98,6 +100,32 @@ public class WindowAndroid
     // Arbitrary error margin to account for cases where the display's refresh rate might not
     // exactly match the target rate.
     private static final float MAX_REFRESH_RATE_DELTA = 2.f;
+
+    private static final long PERIODIC_METRIC_DELAY_MS = TimeUnit.MINUTES.toMillis(5);
+
+    private static int sOccludedCount;
+
+    private static final ThreadUtils.ThreadChecker sThreadChecker = new ThreadUtils.ThreadChecker();
+
+    private static final Runnable PERIODIC_METRICS_TASK =
+            new Runnable() {
+                @Override
+                public void run() {
+                    // TODO(crbug.com/488882847): Rename to non-experimental once occlusion
+                    // experiments are
+                    // complete.
+                    RecordHistogram.recordCount100Histogram(
+                            "Android.Window.OcclusionExperimental.OccludedCount", sOccludedCount);
+                    ThreadUtils.postOnUiThreadDelayed(this, PERIODIC_METRIC_DELAY_MS);
+                }
+            };
+
+    private static boolean sPeriodicMetricsRunning;
+
+    @VisibleForTesting
+    static void postPeriodicMetricRunner() {
+        ThreadUtils.postOnUiThreadDelayed(PERIODIC_METRICS_TASK, PERIODIC_METRIC_DELAY_MS);
+    }
 
     // Constants that must be consistent with ui_controls::KeyEventType in C++.
     private static final int KEY_EVENT_TYPE_KEY_PRESS = 1;
@@ -288,6 +316,15 @@ public class WindowAndroid
             DisplayAndroid display,
             boolean activityTopResumedSupported,
             boolean occlusionTrackingAllowed) {
+
+        // When the first occlusion tracked window is created, start periodic metrics collection.
+        if (occlusionTrackingAllowed
+                && UiAndroidFeatureList.sAndroidWindowOcclusion.isEnabled()
+                && !sPeriodicMetricsRunning) {
+            sPeriodicMetricsRunning = true;
+            postPeriodicMetricRunner();
+        }
+
         mLifetimeAssert = LifetimeAssert.create(this);
         mCreationTimeMs = SystemClock.uptimeMillis();
         // context does not have the same lifetime guarantees as an application context so we can't
@@ -415,6 +452,7 @@ public class WindowAndroid
      * @param isOcclusionTracked Whether occlusion is tracked for this window.
      */
     public void setIsOcclusionTracked(boolean isOcclusionTracked) {
+        sThreadChecker.assertOnValidThread();
         assert !shouldTrackOcclusionWithTrustedPresentationApi();
         mIsOcclusionTracked = isOcclusionTracked;
     }
@@ -425,11 +463,17 @@ public class WindowAndroid
      * @param isOccluded Whether the window is occluded.
      */
     public void setOccluded(boolean isOccluded) {
+        sThreadChecker.assertOnValidThread();
         // If the Trusted Presentation API is already tracking occlusion, it takes precedence.
         if (!mOcclusionTrackingAllowed || shouldTrackOcclusionWithTrustedPresentationApi()) {
             return;
         }
         updateOcclusionState(isOccluded);
+    }
+
+    private void onOccluded() {
+        mOcclusionStartTimeMs = SystemClock.uptimeMillis();
+        sOccludedCount++;
     }
 
     private void onUnoccluded() {
@@ -443,6 +487,7 @@ public class WindowAndroid
                 "Android.Window.OcclusionExperimental.Duration", durationMs);
         mTotalOccludedTimeMs += durationMs;
         mOcclusionStartTimeMs = 0;
+        sOccludedCount--;
     }
 
     private void updateOcclusionState(boolean isOccluded) {
@@ -456,7 +501,7 @@ public class WindowAndroid
         }
 
         if (isOccluded) {
-            mOcclusionStartTimeMs = SystemClock.uptimeMillis();
+            onOccluded();
         } else {
             onUnoccluded();
         }
