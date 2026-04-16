@@ -105,6 +105,22 @@ void WebBluetoothServiceImpl::ScanningClient::SendEvent(
   // TODO(crbug.com/40707749): Filter out advertisement data if not
   // included in the filters, optionalServices, or optionalManufacturerData.
   auto filtered_event = event.Clone();
+
+  std::erase_if(filtered_event->uuids, [](const BluetoothUUID& uuid) {
+    return BluetoothBlocklist::Get().IsExcluded(uuid);
+  });
+  base::EraseIf(
+      filtered_event->service_data,
+      [](const std::pair<BluetoothUUID, std::vector<uint8_t>>& entry) {
+        return BluetoothBlocklist::Get().IsExcluded(entry.first);
+      });
+  base::EraseIf(filtered_event->manufacturer_data,
+                [](const std::pair<blink::mojom::WebBluetoothCompanyPtr,
+                                   std::vector<uint8_t>>& entry) {
+                  return BluetoothBlocklist::Get().IsExcluded(entry.first->id,
+                                                              entry.second);
+                });
+
   if (options_->accept_all_advertisements) {
     if (prompt_controller_) {
       AddFilteredDeviceToPrompt(filtered_event->device->id.str(),
