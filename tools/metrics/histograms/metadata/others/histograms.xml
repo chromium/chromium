@@ -2580,28 +2580,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="BlueZ.ChipLost2" units="seconds" expires_after="2024-04-28">
-  <owner>sonnysasaka@chromium.org</owner>
-  <owner>chromeos-bt-platform-sw-core@google.com</owner>
-  <summary>
-    This is specific to Chrome OS. Records a duration of a Bluetooth adapter
-    being lost caused by hardware disconnection. This helps us better understand
-    the Bluetooth controller drop issue in the field.
-  </summary>
-</histogram>
-
-<histogram name="BlueZ.NumberOfExistingAdvertisements" units="advertisements"
-    expires_after="2023-08-13">
-  <owner>mcchou@chromium.org</owner>
-  <owner>chromeos-bt-platform-sw-core@google.com</owner>
-  <summary>
-    This is specific to Chrome OS. Records the number of existing advertisements
-    when registering for a new advertisement. This helps us better understand
-    the common amount of advertisments used and the registration failures due to
-    the limited number of advertisement slots.
-  </summary>
-</histogram>
-
 <histogram name="BlueZ.PerProfile.{BlueZPerProfileResult}ConnectionResult"
     enum="BlueZResultOfPerProfileConnection" expires_after="2023-06-11">
   <owner>mmandlik@google.com</owner>
@@ -4385,13 +4363,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="FirstRun.IOSFirebaseConfigured" enum="FirebaseConfiguredState"
-    expires_after="M89">
-  <owner>ghendel@chromium.org</owner>
-  <owner>pkl@chromium.org</owner>
-  <summary>Track whether Firebase is enabled or not at app startup.</summary>
-</histogram>
-
 <histogram name="FirstRun.LaunchSource" enum="FirstRunLaunchSource"
     expires_after="2027-04-01">
   <owner>jlebel@chromium.org</owner>
@@ -4412,19 +4383,6 @@ chromium-metrics-reviews@google.com.
     record both accept and reject but are not recording when a user ignored the
     prompt completely. Users can ignore this prompt by closing the tab or
     navigating away, we record when the prompt is shown.
-
-    Warning: this histogram was expired from M76 to M100; data may be missing.
-  </summary>
-</histogram>
-
-<histogram name="FirstRun.NewUserExperience.GoogleAppsSelection"
-    enum="NuxGoogleAppsSelections" expires_after="2024-06-30">
-  <owner>johntlee@chromium.org</owner>
-  <owner>dpapad@chromium.org</owner>
-  <summary>
-    Records what Google apps were selected as part of the Google Apps New User
-    Experience. Histogram is only recorded when a user accepts the prompt to add
-    Google Apps.
 
     Warning: this histogram was expired from M76 to M100; data may be missing.
   </summary>
@@ -4467,19 +4425,6 @@ chromium-metrics-reviews@google.com.
   <summary>
     Records when a user interacted with the set default page of the onboarding
     process. We record that the page was seen and what action the user took.
-  </summary>
-</histogram>
-
-<histogram name="FirstRun.NewUserExperience.SignInInterstitialInteraction"
-    enum="NuxSignInInterstitialInteractions" expires_after="2024-07-28">
-  <owner>johntlee@chromium.org</owner>
-  <owner>dpapad@chromium.org</owner>
-  <summary>
-    Records when a user interacted with the sign in interstitial of the
-    onboarding process. We record that the page was seen and what action the
-    user took.
-
-    Warning: this histogram was expired from M76 to M100; data may be missing.
   </summary>
 </histogram>
 

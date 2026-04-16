@@ -4024,15 +4024,6 @@ Called by update_net_error_codes.py.-->
   </int>
 </enum>
 
-<enum name="FirebaseConfiguredState">
-  <int value="0" label="Disabled"/>
-  <int value="1" label="Enabled, at First Run"/>
-  <int value="2" label="Enabled, not at First Run"/>
-  <int value="3" label="Disabled, Conversion Window expired"/>
-  <int value="4" label="Disabled, Legacy User upgraded"/>
-  <int value="5" label="Disabled, First Open already recorded"/>
-</enum>
-
 <enum name="FirstPartyMetadataSource">
   <int value="0" label="None"/>
   <int value="1" label="FirstPartyDt"/>
@@ -21890,17 +21881,6 @@ Called by update_net_error_codes.py.-->
   <int value="12" label="Navigated away through browser history"/>
 </enum>
 
-<enum name="NuxGoogleAppsSelections">
-  <summary>Google apps that can be added by the NUX.</summary>
-  <int value="0" label="Gmail"/>
-  <int value="1" label="YouTube"/>
-  <int value="2" label="Maps"/>
-  <int value="3" label="Translate"/>
-  <int value="4" label="News"/>
-  <int value="5" label="Chrome Web Store"/>
-  <int value="6" label="Search"/>
-</enum>
-
 <enum name="NuxLandingPageInteractions">
   <summary>
     Interactions a user can take on the initial onboarding step.
@@ -21939,17 +21919,6 @@ Called by update_net_error_codes.py.-->
   <int value="3" label="Clicked Set Default"/>
   <int value="4" label="Successfully Set Default"/>
   <int value="5" label="Navigated Away Through Browser History"/>
-</enum>
-
-<enum name="NuxSignInInterstitialInteractions">
-  <summary>
-    Interactions a user can take on the sign in interstitial onboarding step.
-  </summary>
-  <int value="0" label="Page Shown"/>
-  <int value="1" label="Navigated Away"/>
-  <int value="2" label="Skip"/>
-  <int value="3" label="Sign In"/>
-  <int value="4" label="Navigated Away Through Browser History"/>
 </enum>
 
 <!-- LINT.IfChange(OAuth2Response) -->
