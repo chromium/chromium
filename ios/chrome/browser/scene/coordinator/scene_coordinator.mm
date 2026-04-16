@@ -988,6 +988,12 @@ void OnListFamilyMembersResponse(
 }
 
 - (void)showManagedProfileCreation {
+  if (_managedConfirmationScreenCoordinator) {
+    // According to crbug.com/502634641 this function can be called twice.
+    // There is no reason to show this view twice, so let’s ignore the second
+    // call.
+    return;
+  }
   SystemIdentityManager* systemIdentityManager =
       GetApplicationContext()->GetSystemIdentityManager();
   AuthenticationService* authenticationService =

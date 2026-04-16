@@ -95,19 +95,18 @@
   CHECK(AreSeparateProfilesForManagedAccountsEnabled(),
         base::NotFatalUntil::M148);
 
+  localState->SetBoolean(prefs::kMultiProfileForcedMigrationDone, false);
   id<SystemIdentity> systemIdentity =
       authenticationService->GetPrimaryIdentity(signin::ConsentLevel::kSignin);
   if (!systemIdentity) {
     // If the migrated account signs out before the confirmation dialog is shown
     // (a rare case), skip showing the dialog.
-    localState->SetBoolean(prefs::kMultiProfileForcedMigrationDone, false);
     return;
   }
 
   id<SceneCommands> sceneCommandHandler =
       HandlerForProtocol(browser->GetCommandDispatcher(), SceneCommands);
   [sceneCommandHandler showManagedProfileCreation];
-  localState->SetBoolean(prefs::kMultiProfileForcedMigrationDone, false);
   base::RecordAction(base::UserMetricsAction(
       "Signin_MultiProfileForcedMigration_DialogShown"));
 }

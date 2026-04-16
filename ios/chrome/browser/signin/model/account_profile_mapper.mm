@@ -205,7 +205,7 @@ class AccountProfileMapper::Assigner
   bool IsProfileForGaiaIDFullyInitialized(const GaiaId& gaia_id);
   void MakePersonalProfileManagedWithGaiaID(
       const GaiaId& managed_gaia_id,
-      bool migrating_primary_managed_account = false);
+      bool migrating_primary_managed_account);
   void MoveManagedAccountToPersonalProfileForTesting(  // IN-TEST
       const GaiaId& managed_gaia_id);
 
@@ -901,7 +901,7 @@ void AccountProfileMapper::Assigner::MaybeMigratePrimaryManagedAccount(
       prefs::kWaitingForMultiProfileForcedMigrationTimestamp);
   if (recorded_at == base::Time()) {
     // Record force migration pref for managed accounts in personal profile if
-    // not recoreded yet.
+    // not recorded yet.
     local_pref_service_->SetTime(
         prefs::kWaitingForMultiProfileForcedMigrationTimestamp,
         base::Time::Now());
@@ -910,12 +910,14 @@ void AccountProfileMapper::Assigner::MaybeMigratePrimaryManagedAccount(
 
   if (!base::FeatureList::IsEnabled(
           kSeparateProfilesForManagedAccountsForceMigration) ||
+      // If the grace period is not over yet, do nothing.
       base::Time::Now() - recorded_at <
           kMultiProfileMigrationGracePeriod.Get()) {
     return;
   }
 
-  MakePersonalProfileManagedWithGaiaID(gaia_id, true);
+  MakePersonalProfileManagedWithGaiaID(
+      gaia_id, /* migrating_primary_managed_account= */ true);
 }
 
 void AccountProfileMapper::Assigner::MaybeUpdateCachedMappingAndNotify() {
@@ -1089,7 +1091,8 @@ bool AccountProfileMapper::IsProfileForGaiaIDFullyInitialized(
 
 void AccountProfileMapper::MakePersonalProfileManagedWithGaiaID(
     const GaiaId& gaia_id) {
-  assigner_->MakePersonalProfileManagedWithGaiaID(gaia_id);
+  assigner_->MakePersonalProfileManagedWithGaiaID(
+      gaia_id, /* migrating_primary_managed_account= */ false);
 }
 
 void AccountProfileMapper::MoveManagedAccountToPersonalProfileForTesting(
