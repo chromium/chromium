@@ -7,7 +7,6 @@
 
 #include "ipc/param_traits_macros.h"
 #include "media/base/audio_codecs.h"
-#include "media/base/audio_parameters.h"
 #include "media/base/buffering_state.h"
 #include "media/base/cdm_promise.h"
 #include "media/base/channel_layout.h"
@@ -53,12 +52,6 @@ IPC_ENUM_TRAITS_MAX_VALUE(media::AudioCodec, media::AudioCodec::kMaxValue)
 IPC_ENUM_TRAITS_MAX_VALUE(media::AudioCodecProfile,
                           media::AudioCodecProfile::kMaxValue)
 
-IPC_ENUM_TRAITS_MAX_VALUE(media::AudioLatency::Type,
-                          media::AudioLatency::Type::kMaxValue)
-
-IPC_ENUM_TRAITS_MAX_VALUE(media::AudioParameters::Format,
-                          media::AudioParameters::AUDIO_FORMAT_LAST)
-
 IPC_ENUM_TRAITS_MAX_VALUE(media::BufferingState,
                           media::BufferingState::BUFFERING_STATE_MAX)
 
@@ -74,8 +67,6 @@ IPC_ENUM_TRAITS_MAX_VALUE(media::CdmPromise::Exception,
 
 IPC_ENUM_TRAITS_MAX_VALUE(media::CdmSessionType,
                           media::CdmSessionType::kMaxValue)
-
-IPC_ENUM_TRAITS_MAX_VALUE(media::ChannelLayout, media::CHANNEL_LAYOUT_MAX)
 
 IPC_ENUM_TRAITS_MAX_VALUE(media::Decryptor::Status,
                           media::Decryptor::Status::kStatusMax)

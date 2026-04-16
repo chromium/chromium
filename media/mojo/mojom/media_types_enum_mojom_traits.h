@@ -7,7 +7,9 @@
 
 #include "base/notreached.h"
 #include "build/build_config.h"
+#include "media/base/audio_codecs.h"
 #include "media/base/cdm_factory.h"
+#include "media/base/channel_layout.h"
 #include "media/base/demuxer.h"
 #include "media/base/renderer_factory_selector.h"
 #include "media/base/svc_scalability_mode.h"
@@ -600,6 +602,173 @@ struct EnumTraits<media::mojom::CreateCdmStatus, media::CreateCdmStatus> {
         return media::CreateCdmStatus::kAndroidUnsupportedMediaCryptoScheme;
     }
 
+    NOTREACHED();
+  }
+};
+
+template <>
+struct EnumTraits<media::mojom::ChannelLayout, ::media::ChannelLayout> {
+  static media::mojom::ChannelLayout ToMojom(::media::ChannelLayout input) {
+    switch (input) {
+      case ::media::CHANNEL_LAYOUT_NONE:
+        return media::mojom::ChannelLayout::kNone;
+      case ::media::CHANNEL_LAYOUT_UNSUPPORTED:
+        return media::mojom::ChannelLayout::kUnsupported;
+      case ::media::CHANNEL_LAYOUT_MONO:
+        return media::mojom::ChannelLayout::kMono;
+      case ::media::CHANNEL_LAYOUT_STEREO:
+        return media::mojom::ChannelLayout::kStereo;
+      case ::media::CHANNEL_LAYOUT_2_1:
+        return media::mojom::ChannelLayout::k2_1;
+      case ::media::CHANNEL_LAYOUT_SURROUND:
+        return media::mojom::ChannelLayout::kSurround;
+      case ::media::CHANNEL_LAYOUT_4_0:
+        return media::mojom::ChannelLayout::k4_0;
+      case ::media::CHANNEL_LAYOUT_2_2:
+        return media::mojom::ChannelLayout::k2_2;
+      case ::media::CHANNEL_LAYOUT_QUAD:
+        return media::mojom::ChannelLayout::kQuad;
+      case ::media::CHANNEL_LAYOUT_5_0:
+        return media::mojom::ChannelLayout::k5_0;
+      case ::media::CHANNEL_LAYOUT_5_1:
+        return media::mojom::ChannelLayout::k5_1;
+      case ::media::CHANNEL_LAYOUT_5_0_BACK:
+        return media::mojom::ChannelLayout::k5_0Back;
+      case ::media::CHANNEL_LAYOUT_5_1_BACK:
+        return media::mojom::ChannelLayout::k5_1Back;
+      case ::media::CHANNEL_LAYOUT_7_0:
+        return media::mojom::ChannelLayout::k7_0;
+      case ::media::CHANNEL_LAYOUT_7_1:
+        return media::mojom::ChannelLayout::k7_1;
+      case ::media::CHANNEL_LAYOUT_7_1_WIDE:
+        return media::mojom::ChannelLayout::k7_1Wide;
+      case ::media::CHANNEL_LAYOUT_STEREO_DOWNMIX:
+        return media::mojom::ChannelLayout::kStereoDownmix;
+      case ::media::CHANNEL_LAYOUT_2POINT1:
+        return media::mojom::ChannelLayout::k2Point1;
+      case ::media::CHANNEL_LAYOUT_3_1:
+        return media::mojom::ChannelLayout::k3_1;
+      case ::media::CHANNEL_LAYOUT_4_1:
+        return media::mojom::ChannelLayout::k4_1;
+      case ::media::CHANNEL_LAYOUT_6_0:
+        return media::mojom::ChannelLayout::k6_0;
+      case ::media::CHANNEL_LAYOUT_6_0_FRONT:
+        return media::mojom::ChannelLayout::k6_0Front;
+      case ::media::CHANNEL_LAYOUT_HEXAGONAL:
+        return media::mojom::ChannelLayout::kHexagonal;
+      case ::media::CHANNEL_LAYOUT_6_1:
+        return media::mojom::ChannelLayout::k6_1;
+      case ::media::CHANNEL_LAYOUT_6_1_BACK:
+        return media::mojom::ChannelLayout::k6_1Back;
+      case ::media::CHANNEL_LAYOUT_6_1_FRONT:
+        return media::mojom::ChannelLayout::k6_1Front;
+      case ::media::CHANNEL_LAYOUT_7_0_FRONT:
+        return media::mojom::ChannelLayout::k7_0Front;
+      case ::media::CHANNEL_LAYOUT_7_1_WIDE_BACK:
+        return media::mojom::ChannelLayout::k7_1WideBack;
+      case ::media::CHANNEL_LAYOUT_OCTAGONAL:
+        return media::mojom::ChannelLayout::kOctagonal;
+      case ::media::CHANNEL_LAYOUT_DISCRETE:
+        return media::mojom::ChannelLayout::kDiscrete;
+      case ::media::CHANNEL_LAYOUT_STEREO_AND_KEYBOARD_MIC:
+        return media::mojom::ChannelLayout::kStereoAndKeyboardMic;
+      case ::media::CHANNEL_LAYOUT_4_1_QUAD_SIDE:
+        return media::mojom::ChannelLayout::k4_1QuadSide;
+      case ::media::CHANNEL_LAYOUT_BITSTREAM:
+        return media::mojom::ChannelLayout::kBitstream;
+      case ::media::CHANNEL_LAYOUT_5_1_4_DOWNMIX:
+        return media::mojom::ChannelLayout::k5_1_4Downmix;
+      case ::media::CHANNEL_LAYOUT_1_1:
+        return media::mojom::ChannelLayout::k1_1;
+      case ::media::CHANNEL_LAYOUT_3_1_BACK:
+        return media::mojom::ChannelLayout::k3_1Back;
+      case ::media::CHANNEL_LAYOUT_5_1_4:
+        return media::mojom::ChannelLayout::k5_1_4;
+      case ::media::CHANNEL_LAYOUT_7_1_4:
+        return media::mojom::ChannelLayout::k7_1_4;
+    }
+    NOTREACHED();
+  }
+
+  static ::media::ChannelLayout FromMojom(media::mojom::ChannelLayout input) {
+    switch (input) {
+      case media::mojom::ChannelLayout::kNone:
+        return ::media::CHANNEL_LAYOUT_NONE;
+      case media::mojom::ChannelLayout::kUnsupported:
+        return ::media::CHANNEL_LAYOUT_UNSUPPORTED;
+      case media::mojom::ChannelLayout::kMono:
+        return ::media::CHANNEL_LAYOUT_MONO;
+      case media::mojom::ChannelLayout::kStereo:
+        return ::media::CHANNEL_LAYOUT_STEREO;
+      case media::mojom::ChannelLayout::k2_1:
+        return ::media::CHANNEL_LAYOUT_2_1;
+      case media::mojom::ChannelLayout::kSurround:
+        return ::media::CHANNEL_LAYOUT_SURROUND;
+      case media::mojom::ChannelLayout::k4_0:
+        return ::media::CHANNEL_LAYOUT_4_0;
+      case media::mojom::ChannelLayout::k2_2:
+        return ::media::CHANNEL_LAYOUT_2_2;
+      case media::mojom::ChannelLayout::kQuad:
+        return ::media::CHANNEL_LAYOUT_QUAD;
+      case media::mojom::ChannelLayout::k5_0:
+        return ::media::CHANNEL_LAYOUT_5_0;
+      case media::mojom::ChannelLayout::k5_1:
+        return ::media::CHANNEL_LAYOUT_5_1;
+      case media::mojom::ChannelLayout::k5_0Back:
+        return ::media::CHANNEL_LAYOUT_5_0_BACK;
+      case media::mojom::ChannelLayout::k5_1Back:
+        return ::media::CHANNEL_LAYOUT_5_1_BACK;
+      case media::mojom::ChannelLayout::k7_0:
+        return ::media::CHANNEL_LAYOUT_7_0;
+      case media::mojom::ChannelLayout::k7_1:
+        return ::media::CHANNEL_LAYOUT_7_1;
+      case media::mojom::ChannelLayout::k7_1Wide:
+        return ::media::CHANNEL_LAYOUT_7_1_WIDE;
+      case media::mojom::ChannelLayout::kStereoDownmix:
+        return ::media::CHANNEL_LAYOUT_STEREO_DOWNMIX;
+      case media::mojom::ChannelLayout::k2Point1:
+        return ::media::CHANNEL_LAYOUT_2POINT1;
+      case media::mojom::ChannelLayout::k3_1:
+        return ::media::CHANNEL_LAYOUT_3_1;
+      case media::mojom::ChannelLayout::k4_1:
+        return ::media::CHANNEL_LAYOUT_4_1;
+      case media::mojom::ChannelLayout::k6_0:
+        return ::media::CHANNEL_LAYOUT_6_0;
+      case media::mojom::ChannelLayout::k6_0Front:
+        return ::media::CHANNEL_LAYOUT_6_0_FRONT;
+      case media::mojom::ChannelLayout::kHexagonal:
+        return ::media::CHANNEL_LAYOUT_HEXAGONAL;
+      case media::mojom::ChannelLayout::k6_1:
+        return ::media::CHANNEL_LAYOUT_6_1;
+      case media::mojom::ChannelLayout::k6_1Back:
+        return ::media::CHANNEL_LAYOUT_6_1_BACK;
+      case media::mojom::ChannelLayout::k6_1Front:
+        return ::media::CHANNEL_LAYOUT_6_1_FRONT;
+      case media::mojom::ChannelLayout::k7_0Front:
+        return ::media::CHANNEL_LAYOUT_7_0_FRONT;
+      case media::mojom::ChannelLayout::k7_1WideBack:
+        return ::media::CHANNEL_LAYOUT_7_1_WIDE_BACK;
+      case media::mojom::ChannelLayout::kOctagonal:
+        return ::media::CHANNEL_LAYOUT_OCTAGONAL;
+      case media::mojom::ChannelLayout::kDiscrete:
+        return ::media::CHANNEL_LAYOUT_DISCRETE;
+      case media::mojom::ChannelLayout::kStereoAndKeyboardMic:
+        return ::media::CHANNEL_LAYOUT_STEREO_AND_KEYBOARD_MIC;
+      case media::mojom::ChannelLayout::k4_1QuadSide:
+        return ::media::CHANNEL_LAYOUT_4_1_QUAD_SIDE;
+      case media::mojom::ChannelLayout::kBitstream:
+        return ::media::CHANNEL_LAYOUT_BITSTREAM;
+      case media::mojom::ChannelLayout::k5_1_4Downmix:
+        return ::media::CHANNEL_LAYOUT_5_1_4_DOWNMIX;
+      case media::mojom::ChannelLayout::k1_1:
+        return ::media::CHANNEL_LAYOUT_1_1;
+      case media::mojom::ChannelLayout::k3_1Back:
+        return ::media::CHANNEL_LAYOUT_3_1_BACK;
+      case media::mojom::ChannelLayout::k5_1_4:
+        return ::media::CHANNEL_LAYOUT_5_1_4;
+      case media::mojom::ChannelLayout::k7_1_4:
+        return ::media::CHANNEL_LAYOUT_7_1_4;
+    }
     NOTREACHED();
   }
 };

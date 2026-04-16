@@ -9,6 +9,7 @@ import "gpu/ipc/common/mailbox.mojom";
 import "gpu/ipc/common/sync_token.mojom";
 import "gpu/ipc/common/vulkan_ycbcr_info.mojom";
 import "media/mojo/mojom/audio_data.mojom";
+import "media/mojo/mojom/channel_layout.mojom";
 import "media/mojo/mojom/encryption_pattern.mojom";
 import "mojo/public/mojom/base/byte_string.mojom";
 import "mojo/public/mojom/base/shared_memory.mojom";
@@ -31,10 +32,6 @@ enum AudioCodecProfile;
 enum BufferingState;
 [Native]
 enum BufferingStateChangeReason;
-
-// See media/base/channel_layout.h for descriptions.
-[Native]
-enum ChannelLayout;
 
 // See media/base/media_content_type.h for descriptions.
 [Native]

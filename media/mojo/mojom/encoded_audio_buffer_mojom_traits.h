@@ -8,6 +8,7 @@
 #include "media/base/audio_encoder.h"
 #include "media/base/ipc/media_param_traits.h"
 #include "media/mojo/mojom/audio_encoder.mojom.h"
+#include "media/mojo/mojom/audio_parameters_mojom_traits.h"
 #include "media/mojo/mojom/media_types.mojom.h"
 
 namespace mojo {

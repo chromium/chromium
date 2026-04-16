@@ -4,6 +4,54 @@
 
 module media.mojom;
 
-// Native struct media::AudioParameters;
-[Native]
-struct AudioParameters;
+import "media/mojo/mojom/channel_layout.mojom";
+import "ui/gfx/geometry/mojom/geometry.mojom";
+
+// See media::AudioParameters::Format for descriptions.
+enum AudioParametersFormat {
+  // Creates a fake AudioOutputStream object.
+  kFake = 0,
+  kPcmLinear = 1,
+  kPcmLowLatency = 2,
+  kBitstreamAc3 = 4,
+  kBitstreamEac3 = 8,
+  kBitstreamDts = 16,
+  kBitstreamDtsHd = 32,
+  kBitstreamDtsxP2 = 64,
+  kBitstreamIec61937 = 128,
+  kBitstreamDtsHdMa = 256,
+};
+
+// See media::AudioLatency::Type for descriptions.
+enum AudioLatencyType {
+  kExactMs,
+  kInteractive,
+  kRtc,
+  kPlayback,
+  // Default value when the type is unknown.
+  kUnknown,
+};
+
+struct AudioParametersHardwareCapabilities {
+  // Either value can be 0 and means that the min or max is not known.
+  int32 min_frames_per_buffer;
+  int32 max_frames_per_buffer;
+  // The default buffer size that the device will use when frames_per_buffer
+  // is not specified. Can be 0 when the default is unknown.
+  int32 default_frames_per_buffer;
+  int32 bitstream_formats;
+  bool require_encapsulation;
+  bool require_audio_offload;
+};
+
+struct AudioParameters {
+  AudioParametersFormat format;
+  ChannelLayout channel_layout;
+  int32 sample_rate;
+  int32 frames_per_buffer;
+  int32 channels;
+  uint32 effects;
+  array<gfx.mojom.Point3F> mic_positions;
+  AudioLatencyType latency_tag;
+  AudioParametersHardwareCapabilities? hardware_capabilities;
+};

@@ -1,0 +1,49 @@
+// Copyright 2026 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module media.mojom;
+
+// See media/base/channel_layout.h for descriptions.
+enum ChannelLayout {
+  // NONE is 0.
+  kNone = 0,
+  // UNSUPPORTED is 1.
+  kUnsupported = 1,
+  kMono = 2,
+  kStereo = 3,
+  k2_1 = 4,
+  kSurround = 5,
+  k4_0 = 6,
+  k2_2 = 7,
+  kQuad = 8,
+  k5_0 = 9,
+  k5_1 = 10,
+  k5_0Back = 11,
+  k5_1Back = 12,
+  k7_0 = 13,
+  k7_1 = 14,
+  k7_1Wide = 15,
+  kStereoDownmix = 16,
+  k2Point1 = 17,
+  k3_1 = 18,
+  k4_1 = 19,
+  k6_0 = 20,
+  k6_0Front = 21,
+  kHexagonal = 22,
+  k6_1 = 23,
+  k6_1Back = 24,
+  k6_1Front = 25,
+  k7_0Front = 26,
+  k7_1WideBack = 27,
+  kOctagonal = 28,
+  kDiscrete = 29,
+  kStereoAndKeyboardMic = 30,
+  k4_1QuadSide = 31,
+  kBitstream = 32,
+  k5_1_4Downmix = 33,
+  k1_1 = 34,
+  k3_1Back = 35,
+  k5_1_4 = 36,
+  k7_1_4 = 37,
+};
