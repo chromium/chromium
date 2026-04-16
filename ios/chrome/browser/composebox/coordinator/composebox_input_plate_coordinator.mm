@@ -281,7 +281,9 @@ contextual_search::ContextualSearchSource ContextualSearchSourceFromEntrypoint(
       didMoveToParentViewController:_viewController];
 
   [_omniboxCoordinator updateOmniboxState];
-  [_omniboxCoordinator focusOmnibox];
+  if (_entrypoint != ComposeboxEntrypoint::kCobrowse) {
+    [_omniboxCoordinator focusOmnibox];
+  }
 }
 
 - (void)stop {

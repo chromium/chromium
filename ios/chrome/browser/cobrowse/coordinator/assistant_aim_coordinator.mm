@@ -139,11 +139,6 @@
 - (void)assistantAIMViewController:(AssistantAIMViewController*)viewController
        didShowKeyboardWithDuration:(NSTimeInterval)duration
                              curve:(UIViewAnimationCurve)curve {
-  // When the keyboard is shown, prevent collapsing before latching to the
-  // medium detent first.
-  [_containerHandler
-      setAssistantContainerDetents:{AssistantContainerDetent::kMedium,
-                                    AssistantContainerDetent::kLarge}];
   [_containerHandler
       animateAssistantContainerToDetent:AssistantContainerDetent::kLarge
                                duration:duration
@@ -152,19 +147,18 @@
 
 - (void)assistantAIMViewControllerDidHideKeyboard:
     (AssistantAIMViewController*)viewController {
-  // When the keyboard is dismissed, all detents are available.
-  [_containerHandler
-      setAssistantContainerDetents:{AssistantContainerDetent::kMinimized,
-                                    AssistantContainerDetent::kMedium,
-                                    AssistantContainerDetent::kLarge}];
 }
 
 - (void)assistantAIMViewControllerDidRequestEndEditing:
     (AssistantAIMViewController*)viewController {
-  [_inputPlateCoordinator endEditing];
+  [self dismissKeyboard];
 }
 
 #pragma mark - Private
+
+- (void)dismissKeyboard {
+  [_inputPlateCoordinator endEditing];
+}
 
 // Dismisses the assistant container safely.
 - (void)dismissAssistantContainerAnimated:(BOOL)animated {
@@ -204,14 +198,14 @@
   _currentDetent = newDetent;
   // Attempt to dismiss the keyboard when the sheet is collapsing.
   if (newDetent == AssistantContainerDetent::kMedium) {
-    [_inputPlateCoordinator endEditing];
+    [self dismissKeyboard];
   }
 }
 
 #pragma mark - AssistantAIMMediatorDelegate
 
 - (void)assistantAIMMediatorDidLoadQuery:(AssistantAIMMediator*)mediator {
-  [_inputPlateCoordinator endEditing];
+  [self dismissKeyboard];
 }
 
 - (BOOL)assistantContainer:(AssistantContainerViewController*)container
