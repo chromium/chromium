@@ -36,6 +36,7 @@ bool IsValidFormFieldData(const FormFieldData& field) {
   return IsValidString16(field.label()) && IsValidString16(field.name()) &&
          IsValidString16(field.value()) &&
          mojom::IsKnownEnumValue(field.form_control_type()) &&
+         (!field.IsSelectElement() || field.max_length() == 0) &&
          IsValidString(field.autocomplete_attribute()) &&
          IsValidOptionVector(field.options());
 }

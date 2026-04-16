@@ -174,6 +174,9 @@ FormFieldData CreateTestFormField(std::u16string_view label,
   field.set_value(std::u16string(value));
   field.set_form_control_type(type);
   field.set_is_focusable(true);
+  if (field.IsSelectElement()) {
+    field.set_max_length(0);
+  }
   return field;
 }
 
@@ -240,6 +243,7 @@ FormFieldData CreateTestSelectField(std::string_view label,
   FormFieldData field = CreateTestFormField(label, name, value, type);
   field.set_autocomplete_attribute(std::string(autocomplete));
   field.set_parsed_autocomplete(ParseAutocompleteAttribute(autocomplete));
+  field.set_max_length(0);
 
   std::vector<SelectOption> options;
   options.reserve(values.size());

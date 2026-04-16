@@ -5695,6 +5695,9 @@ void DoTestFormSubmittedControlWithDefaultValue(
   ASSERT_TRUE(state_field != nullptr);
   state_field->set_form_control_type(form_control_type);
   state_field->set_value(base::UTF8ToUTF16(GetElvisAddressFillData().state));
+  if (state_field->IsSelectElement()) {
+    state_field->set_max_length(0);
+  }
 
   test->FormsSeen({form});
 

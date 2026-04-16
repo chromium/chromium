@@ -582,6 +582,8 @@ FormFieldData GetFormFieldData(const FieldDescription& fd) {
   }
   if (fd.max_length) {
     ff.set_max_length(*fd.max_length);
+  } else if (ff.IsSelectElement()) {
+    ff.set_max_length(0);
   }
   if (fd.origin) {
     ff.set_origin(*fd.origin);
