@@ -485,7 +485,6 @@
   }
 
   CGRect contentFrame = UIEdgeInsetsInsetRect(frame, insets);
-  _appContentView.frame = contentFrame;
   _appContentContainerView.frame = contentFrame;
 }
 
@@ -548,7 +547,7 @@
   }
 
   CGFloat width = panelWidth + _assistantLeadingConstraint.constant;
-  return MAX(0, width + (_assistantVisible ? kAssistantContainerMargin : 0.0));
+  return MAX(0, width + kAssistantContainerMargin);
 }
 
 // Helper method for dismissal block when attempting to show the Gemini floaty
