@@ -64,6 +64,7 @@ static_library("enrollment") {
     "//chromeos/ash/components/dbus/cryptohome:attestation_proto",
     "//chromeos/ash/components/dbus/cryptohome:cryptohome_proto",
     "//chromeos/ash/components/dbus/device_management",
+    "//chromeos/ash/components/dbus/session_manager",
     "//chromeos/ash/components/dbus/upstart",
     "//chromeos/ash/components/system",
   ]

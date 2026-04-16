@@ -887,15 +887,10 @@ class EnrollmentStateFetcherImpl::Sequence {
   void OnOwnershipChecked(ash::DeviceSettingsService::OwnershipStatus status) {
     base::UmaHistogramEnumeration(kUMAStateDeterminationOwnershipStatus,
                                   status);
-    if (status ==
-        ash::DeviceSettingsService::OwnershipStatus::kOwnershipUnknown) {
+    if (status != ash::DeviceSettingsService::OwnershipStatus::kOwnershipNone) {
+      // Note: OwnershipUnknown is treated as owned.
+      // Unknown is weird. Do not trust it and assume ownership.
       // See crbug.com/470630590
-      LOG(ERROR) << "Device ownership is unknown. Powerwash might be required.";
-    }
-
-    if (status ==
-        ash::DeviceSettingsService::OwnershipStatus::kOwnershipTaken) {
-      LOG(WARNING) << "Device ownership is already taken. Skipping enrollment";
       return ReportResult(AutoEnrollmentResult::kDeviceAlreadyOwned);
     }
 

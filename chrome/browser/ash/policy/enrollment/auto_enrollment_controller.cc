@@ -8,6 +8,7 @@
 
 #include "base/check_is_test.h"
 #include "base/functional/bind.h"
+#include "base/functional/callback_helpers.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/time/time.h"
@@ -22,6 +23,7 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part.h"
 #include "chrome/browser/net/system_network_context_manager.h"
+#include "chromeos/ash/components/dbus/session_manager/session_manager_client.h"
 #include "chromeos/ash/components/install_attributes/install_attributes.h"
 #include "chromeos/ash/components/network/network_handler.h"
 #include "chromeos/ash/components/network/network_state_handler.h"
@@ -192,6 +194,15 @@ void AutoEnrollmentController::UpdateState(AutoEnrollmentState new_state) {
   LOG(WARNING) << "New auto-enrollment state: "
                << AutoEnrollmentStateToString(new_state);
   state_ = new_state;
+
+  if (state_ == AutoEnrollmentResult::kDeviceAlreadyOwned) {
+    LOG(ERROR) << "Device already owned. Powerwash required.";
+    ash::SessionManagerClient::Get()->StartDeviceWipe(base::DoNothing());
+
+    // Will trigger timeout after a while in case powerwash should fail for
+    // whatever reason.
+    return;
+  }
 
   if (IsFinalAutoEnrollmentState(state_.value())) {
     network_state_observation_.Reset();

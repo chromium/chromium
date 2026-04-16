@@ -26,10 +26,10 @@ enum class AutoEnrollmentResult {
   kDisabled,
   // Check completed successfully, enrollment is suggested but not enforced.
   kSuggestedEnrollment,
-  // Check completed successfully. The device was found to be owned already (TPM
-  // is locked). We should neither enroll nor touch the block_devmode settings.
-  // This state can be reached by restarting OOBE right after enrollment (before
-  // OOBE is marked as finished), see crbug.com/445121415, for instance.
+  // Device is already owned. This is an invalid state. We need to powerwash.
+  // See for instance
+  //   crbug.com/470630590
+  //   crbug.com/483169442
   kDeviceAlreadyOwned,
 };
 

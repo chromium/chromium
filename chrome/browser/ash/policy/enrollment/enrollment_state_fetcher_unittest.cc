@@ -427,14 +427,9 @@ TEST_F(EnrollmentStateFetcherTest, OwnershipUnknown) {
       .WillOnce(RunOnceCallback<0>(
           ash::DeviceSettingsService::OwnershipStatus::kOwnershipUnknown));
 
-  // In case of unknown ownership, we continue with state determination:
-  psm_test_case_ = psm::testing::LoadTestCase(/*is_member=*/false);
-  ExpectOprfRequest();
-  ExpectQueryRequest();
-
   const AutoEnrollmentState state = FetchEnrollmentState();
 
-  EXPECT_EQ(state, AutoEnrollmentResult::kNoEnrollment);
+  EXPECT_EQ(state, AutoEnrollmentResult::kDeviceAlreadyOwned);
 }
 
 TEST_F(EnrollmentStateFetcherTest, StateKeysMissingDueToCommunicationError) {
