@@ -17,9 +17,12 @@ enum class GeminiFREType;
 @interface GeminiConsentViewController
     : UIViewController <GeminiFREViewControllerProtocol>
 
-// Initializer for the VC whether the account is managed.
+// Initializer for the consent VC with the properties needed to determine what
+// UI to present. `country` is an optional field, leaving it as nil will show
+// the default consent UI.
 - (instancetype)initWithIsAccountManaged:(BOOL)isAccountManaged
-                                 FREType:(GeminiFREType)FREType;
+                                 FREType:(GeminiFREType)FREType
+                                 country:(NSString*)country;
 
 - (instancetype)init NS_UNAVAILABLE;
 - (instancetype)initWithNibName:(NSString*)nibNameOrNil

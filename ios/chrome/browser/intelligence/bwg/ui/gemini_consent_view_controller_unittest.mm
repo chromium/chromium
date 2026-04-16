@@ -57,11 +57,13 @@ constexpr CGFloat kExpectedMinimumContentHeight = 300.0;
 // Test fixture for GeminiConsentViewController.
 class GeminiConsentViewControllerTest : public PlatformTest {
  public:
-  GeminiConsentViewController* CreateViewController(BOOL is_account_managed) {
+  GeminiConsentViewController* CreateViewController(BOOL is_account_managed,
+                                                    NSString* country = nil) {
     GeminiConsentViewController* controller =
         [[GeminiConsentViewController alloc]
             initWithIsAccountManaged:is_account_managed
-                             FREType:GeminiFREType::kNewUser];
+                             FREType:GeminiFREType::kNewUser
+                             country:country];
     mock_mutator_ = OCMProtocolMock(@protocol(GeminiConsentMutator));
     controller.mutator = mock_mutator_;
     // Force view initialization since this view controller is never added into
@@ -83,7 +85,8 @@ class GeminiConsentViewControllerTest : public PlatformTest {
 
 // Tests initialization with a managed account.
 TEST_F(GeminiConsentViewControllerTest, InitializationWithManagedAccount) {
-  GeminiConsentViewController* view_controller = CreateViewController(YES);
+  GeminiConsentViewController* view_controller =
+      CreateViewController(YES, @"us");
 
   EXPECT_NE(nil, view_controller);
   EXPECT_TRUE(view_controller.view);
@@ -92,7 +95,8 @@ TEST_F(GeminiConsentViewControllerTest, InitializationWithManagedAccount) {
 
 // Tests initialization with a non-managed account.
 TEST_F(GeminiConsentViewControllerTest, InitializationWithNonManagedAccount) {
-  GeminiConsentViewController* view_controller = CreateViewController(NO);
+  GeminiConsentViewController* view_controller =
+      CreateViewController(NO, @"us");
 
   EXPECT_NE(nil, view_controller);
   EXPECT_TRUE(view_controller.view);
@@ -102,7 +106,8 @@ TEST_F(GeminiConsentViewControllerTest, InitializationWithNonManagedAccount) {
 // Tests that contentHeight returns a value greater than the expected minimum
 // content height.
 TEST_F(GeminiConsentViewControllerTest, ContentHeightReturnsValidValue) {
-  GeminiConsentViewController* view_controller = CreateViewController(NO);
+  GeminiConsentViewController* view_controller =
+      CreateViewController(NO, @"us");
 
   CGFloat contentHeight = [view_controller contentHeight];
   EXPECT_GT(contentHeight, kExpectedMinimumContentHeight);
@@ -110,7 +115,8 @@ TEST_F(GeminiConsentViewControllerTest, ContentHeightReturnsValidValue) {
 
 // Tests that the primary button action calls the correct mutator method.
 TEST_F(GeminiConsentViewControllerTest, TestPrimaryButtonAction) {
-  GeminiConsentViewController* view_controller = CreateViewController(NO);
+  GeminiConsentViewController* view_controller =
+      CreateViewController(NO, @"us");
   OCMExpect([mock_mutator_ didConsentGemini]);
 
   UIButton* primaryButton =
@@ -125,7 +131,8 @@ TEST_F(GeminiConsentViewControllerTest, TestPrimaryButtonAction) {
 
 // Tests that the secondary button action calls the correct mutator method.
 TEST_F(GeminiConsentViewControllerTest, TestSecondaryButtonAction) {
-  GeminiConsentViewController* view_controller = CreateViewController(NO);
+  GeminiConsentViewController* view_controller =
+      CreateViewController(NO, @"us");
   OCMExpect([mock_mutator_ didRefuseGeminiConsent]);
 
   UIButton* secondaryButton =
@@ -140,7 +147,8 @@ TEST_F(GeminiConsentViewControllerTest, TestSecondaryButtonAction) {
 
 // Tests that tapping the primary button records the correct metrics.
 TEST_F(GeminiConsentViewControllerTest, PrimaryButtonRecordsMetrics) {
-  GeminiConsentViewController* view_controller = CreateViewController(NO);
+  GeminiConsentViewController* view_controller =
+      CreateViewController(NO, @"us");
 
   UIButton* primaryButton =
       static_cast<UIButton*>(GetViewWithAccessibilityIdentifier(
@@ -156,7 +164,8 @@ TEST_F(GeminiConsentViewControllerTest, PrimaryButtonRecordsMetrics) {
 
 // Tests that tapping the secondary button records the correct metrics.
 TEST_F(GeminiConsentViewControllerTest, SecondaryButtonRecordsMetrics) {
-  GeminiConsentViewController* view_controller = CreateViewController(NO);
+  GeminiConsentViewController* view_controller =
+      CreateViewController(NO, @"us");
 
   UIButton* secondaryButton =
       static_cast<UIButton*>(GetViewWithAccessibilityIdentifier(
@@ -172,7 +181,8 @@ TEST_F(GeminiConsentViewControllerTest, SecondaryButtonRecordsMetrics) {
 
 // Tests footnote links for non-managed accounts.
 TEST_F(GeminiConsentViewControllerTest, TestFootnoteLinksForNonManagedAccount) {
-  GeminiConsentViewController* view_controller = CreateViewController(NO);
+  GeminiConsentViewController* view_controller =
+      CreateViewController(NO, @"us");
 
   UITextView* footnoteView =
       static_cast<UITextView*>(GetViewWithAccessibilityIdentifier(
@@ -186,7 +196,8 @@ TEST_F(GeminiConsentViewControllerTest, TestFootnoteLinksForNonManagedAccount) {
 
 // Tests footnote links for managed accounts.
 TEST_F(GeminiConsentViewControllerTest, TestFootnoteLinksForManagedAccount) {
-  GeminiConsentViewController* view_controller = CreateViewController(YES);
+  GeminiConsentViewController* view_controller =
+      CreateViewController(YES, @"us");
 
   UITextView* footnoteView =
       static_cast<UITextView*>(GetViewWithAccessibilityIdentifier(
@@ -196,4 +207,20 @@ TEST_F(GeminiConsentViewControllerTest, TestFootnoteLinksForManagedAccount) {
 
   EXPECT_TRUE(
       HasLinkWithURL(footnoteView, kGeminiFootnoteLinkActionManagedAccount));
+}
+
+// Tests footnote links for South Korea.
+TEST_F(GeminiConsentViewControllerTest, TestFootnoteLinksForSouthKorea) {
+  GeminiConsentViewController* view_controller =
+      CreateViewController(NO, @"kr");
+
+  UITextView* footnoteView =
+      static_cast<UITextView*>(GetViewWithAccessibilityIdentifier(
+          view_controller.view,
+          kGeminiFootNoteTextViewAccessibilityIdentifier));
+  ASSERT_NE(nil, footnoteView);
+
+  EXPECT_TRUE(HasLinkWithURL(footnoteView, kGeminiFirstFootnoteLinkAction));
+  EXPECT_TRUE(HasLinkWithURL(footnoteView, kGeminiKoreanTermsLinkAction));
+  EXPECT_TRUE(HasLinkWithURL(footnoteView, kGeminiSecondFootnoteLinkAction));
 }

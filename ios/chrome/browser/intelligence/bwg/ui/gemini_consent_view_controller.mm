@@ -52,6 +52,9 @@ const CGFloat kLiveHeaderIconSizeMultiplier = 0.55;
 // Symbol names not present in shared symbol_names.h.
 NSString* const kWarningShieldSymbol = @"exclamationmark.shield";
 
+// ISO alpha-2 country code for South Korea.
+NSString* const kSouthKoreaCountryCode = @"kr";
+
 }  // namespace
 
 @interface GeminiConsentViewController () <UITextViewDelegate>
@@ -64,14 +67,18 @@ NSString* const kWarningShieldSymbol = @"exclamationmark.shield";
   BOOL _isAccountManaged;
   // Type of Gemini FRE.
   GeminiFREType _FREType;
+  // The country for the consent UI.
+  NSString* _country;
 }
 
 - (instancetype)initWithIsAccountManaged:(BOOL)isAccountManaged
-                                 FREType:(GeminiFREType)FREType {
+                                 FREType:(GeminiFREType)FREType
+                                 country:(NSString*)country {
   self = [super init];
   if (self) {
     _isAccountManaged = isAccountManaged;
     _FREType = FREType;
+    _country = country;
   }
   return self;
 }
@@ -147,7 +154,48 @@ NSString* const kWarningShieldSymbol = @"exclamationmark.shield";
 
   UIFontTextStyle fontStyle = UIFontTextStyleFootnote;
 
-  if (_isAccountManaged) {
+  // Consent footnote for South Korea. Managed and non-managed accounts are the
+  // same.
+  if ([_country isEqualToString:kSouthKoreaCountryCode]) {
+    NSString* link1NSString = l10n_util::GetNSString(
+        IDS_IOS_BWG_CONSENT_FOOTNOTE_TEXT_SOUTH_KOREA_LINK_1);
+    NSString* link2NSString = l10n_util::GetNSString(
+        IDS_IOS_BWG_CONSENT_FOOTNOTE_TEXT_SOUTH_KOREA_LINK_2);
+    NSString* link3NSString = l10n_util::GetNSString(
+        IDS_IOS_BWG_CONSENT_FOOTNOTE_TEXT_SOUTH_KOREA_LINK_3);
+
+    std::vector<std::u16string> substitutions;
+    substitutions.push_back(base::SysNSStringToUTF16(link1NSString));
+    substitutions.push_back(base::SysNSStringToUTF16(link2NSString));
+    substitutions.push_back(base::SysNSStringToUTF16(link3NSString));
+
+    std::u16string fullTextUTF16 = base::ReplaceStringPlaceholders(
+        l10n_util::GetStringUTF16(
+            IDS_IOS_BWG_CONSENT_FOOTNOTE_TEXT_SOUTH_KOREA),
+        substitutions, nullptr);
+
+    NSString* fullText = base::SysUTF16ToNSString(fullTextUTF16);
+
+    NSRange link1Range = [fullText rangeOfString:link1NSString];
+    NSRange link2Range = [fullText rangeOfString:link2NSString];
+    NSRange link3Range = [fullText rangeOfString:link3NSString];
+
+    NSArray<NSString*>* linkActions = @[
+      kGeminiFirstFootnoteLinkAction, kGeminiKoreanTermsLinkAction,
+      kGeminiSecondFootnoteLinkAction
+    ];
+    NSArray<NSValue*>* linkRanges = @[
+      [NSValue valueWithRange:link1Range], [NSValue valueWithRange:link2Range],
+      [NSValue valueWithRange:link3Range]
+    ];
+
+    return [self createAttributedString:fullText
+                        withLinkActions:linkActions
+                               inRanges:linkRanges
+                         textAttributes:textAttributes
+                              fontStyle:fontStyle];
+  } else if (_isAccountManaged) {
+    // Consent footnote for managed accounts.
     NSString* linkText =
         l10n_util::GetNSString(IDS_IOS_BWG_CONSENT_FOOTNOTE_MANAGED_LINK);
     std::u16string formatStringUTF16 =
@@ -167,37 +215,38 @@ NSString* const kWarningShieldSymbol = @"exclamationmark.shield";
                       inRanges:@[ [NSValue valueWithRange:linkRange] ]
                 textAttributes:textAttributes
                      fontStyle:fontStyle];
+  } else {
+    NSString* link1NSString =
+        l10n_util::GetNSString(IDS_IOS_BWG_CONSENT_FOOTNOTE_NON_MANAGED_LINK_1);
+    NSString* link2NSString =
+        l10n_util::GetNSString(IDS_IOS_BWG_CONSENT_FOOTNOTE_NON_MANAGED_LINK_2);
+
+    std::vector<std::u16string> substitutions;
+    substitutions.push_back(base::SysNSStringToUTF16(link1NSString));
+    substitutions.push_back(base::SysNSStringToUTF16(link2NSString));
+
+    std::u16string fullTextUTF16 = base::ReplaceStringPlaceholders(
+        l10n_util::GetStringUTF16(
+            IDS_IOS_BWG_CONSENT_FOOTNOTE_NON_MANAGED_TEXT),
+        substitutions, nullptr);
+
+    NSString* fullText = base::SysUTF16ToNSString(fullTextUTF16);
+
+    NSRange link1Range = [fullText rangeOfString:link1NSString];
+    NSRange link2Range = [fullText rangeOfString:link2NSString];
+
+    NSArray<NSString*>* linkActions =
+        @[ kGeminiFirstFootnoteLinkAction, kGeminiSecondFootnoteLinkAction ];
+    NSArray<NSValue*>* linkRanges = @[
+      [NSValue valueWithRange:link1Range], [NSValue valueWithRange:link2Range]
+    ];
+
+    return [self createAttributedString:fullText
+                        withLinkActions:linkActions
+                               inRanges:linkRanges
+                         textAttributes:textAttributes
+                              fontStyle:fontStyle];
   }
-
-  NSString* link1NSString =
-      l10n_util::GetNSString(IDS_IOS_BWG_CONSENT_FOOTNOTE_NON_MANAGED_LINK_1);
-  NSString* link2NSString =
-      l10n_util::GetNSString(IDS_IOS_BWG_CONSENT_FOOTNOTE_NON_MANAGED_LINK_2);
-
-  std::vector<std::u16string> substitutions;
-  substitutions.push_back(base::SysNSStringToUTF16(link1NSString));
-  substitutions.push_back(base::SysNSStringToUTF16(link2NSString));
-
-  std::u16string fullTextUTF16 = base::ReplaceStringPlaceholders(
-      l10n_util::GetStringUTF16(IDS_IOS_BWG_CONSENT_FOOTNOTE_NON_MANAGED_TEXT),
-      substitutions, nullptr);
-
-  NSString* fullText = base::SysUTF16ToNSString(fullTextUTF16);
-
-  NSRange link1Range = [fullText rangeOfString:link1NSString];
-  NSRange link2Range = [fullText rangeOfString:link2NSString];
-
-  NSArray<NSString*>* linkActions =
-      @[ kGeminiFirstFootnoteLinkAction, kGeminiSecondFootnoteLinkAction ];
-  NSArray<NSValue*>* linkRanges = @[
-    [NSValue valueWithRange:link1Range], [NSValue valueWithRange:link2Range]
-  ];
-
-  return [self createAttributedString:fullText
-                      withLinkActions:linkActions
-                             inRanges:linkRanges
-                       textAttributes:textAttributes
-                            fontStyle:fontStyle];
 }
 
 // Helper to construct attributed text with standard styles and specified links.
@@ -803,6 +852,13 @@ NSString* const kWarningShieldSymbol = @"exclamationmark.shield";
     __weak __typeof(self) weakSelf = self;
     return [UIAction actionWithHandler:^(UIAction* action) {
       [weakSelf.mutator openNewTabWithURL:GURL(kLivePrivacyPolicyLinkURL)];
+    }];
+  }
+  if ([textItem.link.absoluteString
+          isEqualToString:kGeminiKoreanTermsLinkAction]) {
+    __weak __typeof(self) weakSelf = self;
+    return [UIAction actionWithHandler:^(UIAction* action) {
+      [weakSelf.mutator openNewTabWithURL:GURL(kKoreanTermsFootnoteLinkURL)];
     }];
   }
   return defaultAction;

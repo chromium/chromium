@@ -172,6 +172,7 @@ extern const char kURLOnLastInteractionDictKey[];
 // Links for attributed links.
 extern const char kFirstFootnoteLinkURL[];
 extern const char kSecondFootnoteLinkURL[];
+extern const char kKoreanTermsFootnoteLinkURL[];
 extern const char kFootnoteLinkURLManagedAccount[];
 extern const char kSecondBoxLinkURLManagedAccount[];
 extern const char kSecondBoxLink1URLNonManagedAccount[];
@@ -183,6 +184,7 @@ extern const char kLivePrivacyPolicyLinkURL[];
 // Action identifier on a tap on links in the footnote.
 extern NSString* const kGeminiFirstFootnoteLinkAction;
 extern NSString* const kGeminiSecondFootnoteLinkAction;
+extern NSString* const kGeminiKoreanTermsLinkAction;
 extern NSString* const kGeminiFootnoteLinkActionManagedAccount;
 extern NSString* const kGeminiSecondBoxLinkActionManagedAccount;
 extern NSString* const kGeminiSecondBoxLink1ActionNonManagedAccount;

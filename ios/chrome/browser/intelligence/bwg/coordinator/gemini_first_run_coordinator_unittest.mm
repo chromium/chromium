@@ -35,6 +35,7 @@
 #import "ios/chrome/browser/signin/model/authentication_service_factory.h"
 #import "ios/chrome/browser/signin/model/fake_authentication_service_delegate.h"
 #import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
+#import "ios/chrome/test/ios_chrome_scoped_testing_variations_service.h"
 #import "ios/chrome/test/scoped_key_window.h"
 #import "ios/web/public/test/web_task_environment.h"
 #import "testing/platform_test.h"
@@ -65,7 +66,13 @@ class GeminiFirstRunCoordinatorTest : public PlatformTest {
     builder.AddTestingFactory(
         OptimizationGuideServiceFactory::GetInstance(),
         OptimizationGuideServiceFactory::GetDefaultFactory());
+    builder.AddTestingFactory(
+        OptimizationGuideServiceFactory::GetInstance(),
+        OptimizationGuideServiceFactory::GetDefaultFactory());
     builder.SetName(kFirstProfileName);
+
+    // Set a default country for the variations service.
+    scoped_variations_service_.Get()->OverrideStoredPermanentCountry("us");
     ProfileIOS* profile =
         profile_manager_.AddProfileWithBuilder(std::move(builder));
 
@@ -112,6 +119,7 @@ class GeminiFirstRunCoordinatorTest : public PlatformTest {
  protected:
   web::WebTaskEnvironment task_environment_;
   IOSChromeScopedTestingLocalState scoped_testing_local_state_;
+  IOSChromeScopedTestingVariationsService scoped_variations_service_;
   base::test::ScopedFeatureList feature_list_;
   TestProfileManagerIOS profile_manager_;
   std::unique_ptr<Browser> browser_;

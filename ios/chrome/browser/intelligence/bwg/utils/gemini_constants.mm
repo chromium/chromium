@@ -16,6 +16,8 @@ const char kURLOnLastInteractionDictKey[] = "url_on_last_interaction";
 const char kFirstFootnoteLinkURL[] = "https://policies.google.com/terms";
 const char kSecondFootnoteLinkURL[] =
     "https://support.google.com/gemini/answer/13594961";
+const char kKoreanTermsFootnoteLinkURL[] =
+    "https://www.google.com/intl/ko/policies/terms/location";
 const char kFootnoteLinkURLManagedAccount[] =
     "https://support.google.com/a/answer/15706919";
 const char kSecondBoxLinkURLManagedAccount[] =
@@ -48,6 +50,7 @@ NSString* const kGeminiFirstFootnoteLinkAction =
     @"GeminiFirstFootnoteLinkAction";
 NSString* const kGeminiSecondFootnoteLinkAction =
     @"GeminiSecondFootnoteLinkAction";
+NSString* const kGeminiKoreanTermsLinkAction = @"GeminiKoreanTermsLinkAction";
 NSString* const kGeminiFootnoteLinkActionManagedAccount =
     @"GeminiFootnoteLinkActionManagedAccount";
 NSString* const kGeminiSecondBoxLinkActionManagedAccount =
