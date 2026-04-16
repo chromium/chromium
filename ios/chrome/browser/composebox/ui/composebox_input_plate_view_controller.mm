@@ -1286,38 +1286,48 @@ UIImage* SendButtonImage(BOOL highlighted, ComposeboxTheme* theme) {
   }
 
   __weak __typeof__(self) weakSelf = self;
-  UIAction* galleryAction = [UIAction
+
+  using enum ComposeboxAttachmentOption;
+  UIAction* galleryAction = [self
       actionWithTitle:l10n_util::GetNSString(IDS_IOS_COMPOSEBOX_GALLERY_ACTION)
                 image:DefaultSymbolWithPointSize(kPhotoSymbol,
                                                  kSymbolActionPointSize)
-           identifier:nil
-              handler:^(UIAction* action) {
+               hidden:[_state isAttachmentHidden:kGallery]
+             disabled:[_state isAttachmentDisabled:kGallery]
+             selected:NO
+              handler:^{
                 [weakSelf.delegate
                     composeboxViewControllerDidTapGalleryButton:weakSelf];
               }];
   galleryAction.accessibilityIdentifier =
       kComposeboxGalleryActionAccessibilityIdentifier;
-  UIAction* cameraAction = [UIAction
+
+  UIAction* cameraAction = [self
       actionWithTitle:l10n_util::GetNSString(IDS_IOS_COMPOSEBOX_CAMERA_ACTION)
                 image:DefaultSymbolWithPointSize(kSystemCameraSymbol,
                                                  kSymbolActionPointSize)
-           identifier:nil
-              handler:^(UIAction* action) {
+               hidden:[_state isAttachmentHidden:kCamera]
+             disabled:[_state isAttachmentDisabled:kCamera]
+             selected:NO
+              handler:^{
                 [weakSelf.delegate
                     composeboxViewControllerDidTapCameraButton:weakSelf];
               }];
   cameraAction.accessibilityIdentifier =
       kComposeboxCameraActionAccessibilityIdentifier;
 
-  UIAction* fileAction = [UIAction
+  UIAction* fileAction = [self
       actionWithTitle:l10n_util::GetNSString(IDS_IOS_COMPOSEBOX_FILES_ACTION)
                 image:DefaultSymbolWithPointSize(kDocSymbol,
                                                  kSymbolActionPointSize)
-           identifier:nil
-              handler:^(UIAction* action) {
+               hidden:[_state isAttachmentHidden:kFile]
+             disabled:[_state isAttachmentDisabled:kFile]
+             selected:NO
+              handler:^{
                 [weakSelf.delegate
                     composeboxViewControllerDidTapFileButton:weakSelf];
               }];
+
   fileAction.accessibilityIdentifier =
       kComposeboxAttachFileActionAccessibilityIdentifier;
 
@@ -1325,123 +1335,86 @@ UIImage* SendButtonImage(BOOL highlighted, ComposeboxTheme* theme) {
   if (favicon) {
     favicon = ImageWithCornerRadius(favicon, kAttachCurrentTabIconRadius);
   }
-
   UIAction* attachCurrentTabAction =
-      [UIAction actionWithTitle:l10n_util::GetNSString(
-                                    IDS_IOS_COMPOSEBOX_ADD_CURRENT_TAB_ACTION)
-                          image:favicon
-                                    ?: DefaultSymbolWithPointSize(
-                                           kNewTabGroupActionSymbol,
-                                           kSymbolActionPointSize)
-                     identifier:nil
-                        handler:^(UIAction* action) {
-                          [weakSelf.mutator attachCurrentTabContent];
-                        }];
+      [self actionWithTitle:l10n_util::GetNSString(
+                                IDS_IOS_COMPOSEBOX_ADD_CURRENT_TAB_ACTION)
+                      image:favicon
+                                ?: DefaultSymbolWithPointSize(
+                                       kNewTabGroupActionSymbol,
+                                       kSymbolActionPointSize)
+                     hidden:[_state isAttachmentHidden:kCurrentTab]
+                   disabled:[_state isAttachmentDisabled:kCurrentTab]
+                   selected:NO
+                    handler:^{
+                      [weakSelf.mutator attachCurrentTabContent];
+                    }];
   attachCurrentTabAction.accessibilityIdentifier =
       kComposeboxAttachCurrentTabActionAccessibilityIdentifier;
 
-  UIAction* selectTabsAction = [UIAction
-      actionWithTitle:l10n_util::GetNSString(
-                          IDS_IOS_COMPOSEBOX_SELECT_TAB_ACTION)
-                image:DefaultSymbolWithPointSize(kNewTabGroupActionSymbol,
-                                                 kSymbolActionPointSize)
-           identifier:nil
-              handler:^(UIAction* action) {
-                [weakSelf handleAttachTabs];
-              }];
+  UIAction* selectTabsAction =
+      [self actionWithTitle:l10n_util::GetNSString(
+                                IDS_IOS_COMPOSEBOX_SELECT_TAB_ACTION)
+                      image:DefaultSymbolWithPointSize(kNewTabGroupActionSymbol,
+                                                       kSymbolActionPointSize)
+                     hidden:[_state isAttachmentHidden:kTab]
+                   disabled:[_state isAttachmentDisabled:kTab]
+                   selected:NO
+                    handler:^{
+                      [weakSelf handleAttachTabs];
+                    }];
   selectTabsAction.accessibilityIdentifier =
       kComposeboxSelectTabsActionAccessibilityIdentifier;
 
-  UIAction* aimAction = [UIAction
+  UIAction* aimAction = [self
       actionWithTitle:[self titleFor:InputPlateString::kAIM
                                 type:InputPlateStringType::kMenuLabel]
                 image:CustomSymbolWithPointSize(kMagnifyingglassSparkSymbol,
                                                 kSymbolActionPointSize)
-           identifier:nil
-              handler:^(UIAction* action) {
+               hidden:[_state isToolHidden:ComposeboxMode::kAIM]
+             disabled:NO
+             selected:_state.activeTool == ComposeboxMode::kAIM
+              handler:^{
                 [weakSelf handleAIMTappedFromToolMenu];
               }];
   aimAction.accessibilityIdentifier =
       kComposeboxAIMActionAccessibilityIdentifier;
 
-  if (_state.activeTool == ComposeboxMode::kAIM) {
-    [aimAction setState:UIMenuElementStateOn];
-  }
-  if ([_state isToolHidden:ComposeboxMode::kAIM]) {
-    aimAction.attributes |= UIMenuElementAttributesHidden;
-  }
-
-  UIAction* createImageAction = [UIAction
+  UIAction* createImageAction = [self
       actionWithTitle:[self titleFor:InputPlateString::kImageGeneration
                                 type:InputPlateStringType::kMenuLabel]
                 image:[self bananaIcon]
-           identifier:nil
-              handler:^(UIAction* action) {
+               hidden:[_state isToolHidden:ComposeboxMode::kImageGeneration]
+             disabled:[_state isToolDisabled:ComposeboxMode::kImageGeneration]
+             selected:_state.activeTool == ComposeboxMode::kImageGeneration
+              handler:^{
                 [weakSelf handleImageGenTappedFromToolMenu];
               }];
   createImageAction.accessibilityIdentifier =
       kComposeboxImageGenerationActionAccessibilityIdentifier;
 
-  using enum ComposeboxAttachmentOption;
+  UIAction* canvasAction =
+      [self actionWithTitle:[self titleFor:InputPlateString::kCanvas
+                                      type:InputPlateStringType::kMenuLabel]
+                      image:CustomSymbolWithPointSize(kDocumentBadgeSpark,
+                                                      kSymbolActionPointSize)
+                     hidden:[_state isToolHidden:ComposeboxMode::kCanvas]
+                   disabled:[_state isToolDisabled:ComposeboxMode::kCanvas]
+                   selected:_state.activeTool == ComposeboxMode::kCanvas
+                    handler:^{
+                      [weakSelf handleCanvasTappedFromToolMenu];
+                    }];
 
-  if (_state.activeTool == ComposeboxMode::kImageGeneration) {
-    [createImageAction setState:UIMenuElementStateOn];
-  }
-
-  UIMenuElementAttributes attachTabAttributes = 0;
-  if ([_state isAttachmentHidden:kTab]) {
-    attachTabAttributes |= UIMenuElementAttributesHidden;
-  }
-  if ([_state isAttachmentDisabled:kTab]) {
-    attachTabAttributes |= UIMenuElementAttributesDisabled;
-  }
-  selectTabsAction.attributes = attachTabAttributes;
-
-  UIMenuElementAttributes attachCurrentTabAttributes = attachTabAttributes;
-  if ([_state isAttachmentHidden:kCurrentTab]) {
-    attachCurrentTabAttributes |= UIMenuElementAttributesHidden;
-  }
-  attachCurrentTabAction.attributes = attachCurrentTabAttributes;
-
-  using enum ComposeboxAttachmentOption;
-
-  UIMenuElementAttributes attachFileAttributes = 0;
-  if ([_state isAttachmentHidden:kFile]) {
-    attachFileAttributes |= UIMenuElementAttributesHidden;
-  }
-  if ([_state isAttachmentDisabled:kFile]) {
-    attachFileAttributes |= UIMenuElementAttributesDisabled;
-  }
-  fileAction.attributes = attachFileAttributes;
-
-  UIMenuElementAttributes createImageAttributes = 0;
-  if ([_state isToolHidden:ComposeboxMode::kImageGeneration]) {
-    createImageAttributes |= UIMenuElementAttributesHidden;
-  }
-  if ([_state isToolDisabled:ComposeboxMode::kImageGeneration]) {
-    createImageAttributes |= UIMenuElementAttributesDisabled;
-  }
-  createImageAction.attributes = createImageAttributes;
-
-  using enum ComposeboxAttachmentOption;
-  UIMenuElementAttributes galleryAttributes = 0;
-  if ([_state isAttachmentHidden:kGallery]) {
-    galleryAttributes |= UIMenuElementAttributesHidden;
-  }
-  if ([_state isAttachmentDisabled:kGallery]) {
-    galleryAttributes |= UIMenuElementAttributesDisabled;
-  }
-  galleryAction.attributes = galleryAttributes;
-
-  using enum ComposeboxAttachmentOption;
-  UIMenuElementAttributes cameraAttributes = 0;
-  if ([_state isAttachmentHidden:kCamera]) {
-    cameraAttributes |= UIMenuElementAttributesHidden;
-  }
-  if ([_state isAttachmentDisabled:kCamera]) {
-    cameraAttributes |= UIMenuElementAttributesDisabled;
-  }
-  cameraAction.attributes = cameraAttributes;
+  UIAction* deepSearchAction =
+      [self actionWithTitle:[self titleFor:InputPlateString::kDeepSearch
+                                      type:InputPlateStringType::kMenuLabel]
+                      image:CustomSymbolWithPointSize(kDeepSearchSymbol,
+                                                      kSymbolActionPointSize)
+                     hidden:[_state isToolHidden:ComposeboxMode::kDeepSearch]
+                   disabled:[_state isToolDisabled:ComposeboxMode::kDeepSearch]
+                   selected:_state.activeTool == ComposeboxMode::kDeepSearch
+                    handler:^{
+                      [weakSelf handleDeepSearchTappedFromToolMenu];
+                    }];
 
   UIMenu* attachmentMenu =
       [UIMenu menuWithTitle:@""
@@ -1452,51 +1425,6 @@ UIImage* SendButtonImage(BOOL highlighted, ComposeboxTheme* theme) {
                      attachCurrentTabAction, selectTabsAction, cameraAction,
                      galleryAction, fileAction
                    ]];
-
-  UIAction* canvasAction =
-      [UIAction actionWithTitle:[self titleFor:InputPlateString::kCanvas
-                                          type:InputPlateStringType::kMenuLabel]
-                          image:CustomSymbolWithPointSize(
-                                    kDocumentBadgeSpark, kSymbolActionPointSize)
-                     identifier:nil
-                        handler:^(UIAction* action) {
-                          [weakSelf handleCanvasTappedFromToolMenu];
-                        }];
-  UIMenuElementAttributes canvasAttributes = 0;
-  if ([_state isToolHidden:ComposeboxMode::kCanvas]) {
-    canvasAttributes |= UIMenuElementAttributesHidden;
-  }
-  if ([_state isToolDisabled:ComposeboxMode::kCanvas]) {
-    canvasAttributes |= UIMenuElementAttributesDisabled;
-  }
-  canvasAction.attributes = canvasAttributes;
-
-  if (_state.activeTool == ComposeboxMode::kCanvas) {
-    [canvasAction setState:UIMenuElementStateOn];
-  }
-
-  NSString* deepSearchTitle = [self titleFor:InputPlateString::kDeepSearch
-                                        type:InputPlateStringType::kMenuLabel];
-  UIAction* deepSearchAction =
-      [UIAction actionWithTitle:deepSearchTitle
-                          image:CustomSymbolWithPointSize(
-                                    kDeepSearchSymbol, kSymbolActionPointSize)
-                     identifier:nil
-                        handler:^(UIAction* action) {
-                          [weakSelf handleDeepSearchTappedFromToolMenu];
-                        }];
-  UIMenuElementAttributes deepSearchAttributes = 0;
-  if ([_state isToolHidden:ComposeboxMode::kDeepSearch]) {
-    deepSearchAttributes |= UIMenuElementAttributesHidden;
-  }
-  if ([_state isToolDisabled:ComposeboxMode::kDeepSearch]) {
-    deepSearchAttributes |= UIMenuElementAttributesDisabled;
-  }
-  deepSearchAction.attributes = deepSearchAttributes;
-
-  if (_state.activeTool == ComposeboxMode::kDeepSearch) {
-    [deepSearchAction setState:UIMenuElementStateOn];
-  }
 
   NSString* toolsSectionTitle =
       [self titleFor:InputPlateString::kToolsSection
@@ -1515,92 +1443,65 @@ UIImage* SendButtonImage(BOOL highlighted, ComposeboxTheme* theme) {
   if (_state.allowModelPicker) {
     CHECK(ShowComposeboxAdditionalAdvancedTools());
 
+    BOOL regularHidden =
+        [_state isModelHidden:ComposeboxModelOption::kRegular] ||
+        ![_state isModelHidden:ComposeboxModelOption::kAuto];
     // Note: When possible, this is meant to be replaced by 'Auto'.
-    UIAction* regularModelOption = [UIAction
+    UIAction* regularModelOption = [self
         actionWithTitle:[self titleFor:InputPlateString::kRegularModel
                                   type:InputPlateStringType::kMenuLabel]
                   image:DefaultSymbolWithPointSize(kBoltSymbol,
                                                    kSymbolActionPointSize)
-             identifier:nil
-                handler:^(UIAction* action) {
+                 hidden:regularHidden
+               disabled:[_state isModelDisabled:ComposeboxModelOption::kRegular]
+               selected:_state.activeModel == ComposeboxModelOption::kRegular
+                handler:^{
                   [weakSelf handleModelChangeFromToolsMenuWithOption:
                                 ComposeboxModelOption::kRegular];
                 }];
 
-    if ([_state isModelHidden:ComposeboxModelOption::kRegular] ||
-        ![_state isModelHidden:ComposeboxModelOption::kAuto]) {
-      regularModelOption.attributes |= UIMenuElementAttributesHidden;
-    }
-    if ([_state isModelDisabled:ComposeboxModelOption::kRegular]) {
-      regularModelOption.attributes |= UIMenuElementAttributesDisabled;
-    }
-    if (_state.activeModel == ComposeboxModelOption::kRegular) {
-      [regularModelOption setState:UIMenuElementStateOn];
-    }
-
-    NSString* autoModelTitle = [self titleFor:InputPlateString::kAutoModel
-                                         type:InputPlateStringType::kMenuLabel];
-    UIAction* autoModelOption = [UIAction
-        actionWithTitle:autoModelTitle
+    UIAction* autoModelOption = [self
+        actionWithTitle:[self titleFor:InputPlateString::kAutoModel
+                                  type:InputPlateStringType::kMenuLabel]
                   image:DefaultSymbolWithPointSize(kSyncEnabledSymbol,
                                                    kSymbolActionPointSize)
-             identifier:nil
-                handler:^(UIAction* action) {
+                 hidden:[_state isModelHidden:ComposeboxModelOption::kAuto]
+               disabled:[_state isModelDisabled:ComposeboxModelOption::kAuto]
+               selected:_state.activeModel == ComposeboxModelOption::kAuto
+                handler:^{
                   [weakSelf handleModelChangeFromToolsMenuWithOption:
                                 ComposeboxModelOption::kAuto];
                 }];
 
-    if ([_state isModelHidden:ComposeboxModelOption::kAuto]) {
-      autoModelOption.attributes |= UIMenuElementAttributesHidden;
-    }
-    if ([_state isModelDisabled:ComposeboxModelOption::kAuto]) {
-      autoModelOption.attributes |= UIMenuElementAttributesDisabled;
-    }
-    if (_state.activeModel == ComposeboxModelOption::kAuto) {
-      [autoModelOption setState:UIMenuElementStateOn];
-    }
-
-    UIAction* thinkingModelOption = [UIAction
+    UIAction* thinkingModelOption = [self
         actionWithTitle:[self titleFor:InputPlateString::kThinkingModel
                                   type:InputPlateStringType::kMenuLabel]
                   image:DefaultSymbolWithPointSize(kClockSymbol,
                                                    kSymbolActionPointSize)
-             identifier:nil
-                handler:^(UIAction* action) {
+                 hidden:[_state isModelHidden:ComposeboxModelOption::kThinking]
+               disabled:[_state
+                            isModelDisabled:ComposeboxModelOption::kThinking]
+               selected:_state.activeModel == ComposeboxModelOption::kThinking
+                handler:^{
                   [weakSelf handleModelChangeFromToolsMenuWithOption:
                                 ComposeboxModelOption::kThinking];
                 }];
 
-    if ([_state isModelHidden:ComposeboxModelOption::kThinking]) {
-      thinkingModelOption.attributes |= UIMenuElementAttributesHidden;
-    }
-    if ([_state isModelDisabled:ComposeboxModelOption::kThinking]) {
-      thinkingModelOption.attributes |= UIMenuElementAttributesDisabled;
-    }
-    if (_state.activeModel == ComposeboxModelOption::kThinking) {
-      [thinkingModelOption setState:UIMenuElementStateOn];
-    }
-
-    UIAction* thinkingModelNoGenUIOption = [UIAction
+    UIAction* thinkingModelNoGenUIOption = [self
         actionWithTitle:[self titleFor:InputPlateString::kThinkingModelNoGenUI
                                   type:InputPlateStringType::kMenuLabel]
                   image:DefaultSymbolWithPointSize(kClockSymbol,
                                                    kSymbolActionPointSize)
-             identifier:nil
-                handler:^(UIAction* action) {
+                 hidden:[_state isModelHidden:ComposeboxModelOption::
+                                                  kThinkingNoGenUI]
+               disabled:[_state isModelDisabled:ComposeboxModelOption::
+                                                    kThinkingNoGenUI]
+               selected:_state.activeModel ==
+                        ComposeboxModelOption::kThinkingNoGenUI
+                handler:^{
                   [weakSelf handleModelChangeFromToolsMenuWithOption:
                                 ComposeboxModelOption::kThinkingNoGenUI];
                 }];
-
-    if ([_state isModelHidden:ComposeboxModelOption::kThinkingNoGenUI]) {
-      thinkingModelNoGenUIOption.attributes |= UIMenuElementAttributesHidden;
-    }
-    if ([_state isModelDisabled:ComposeboxModelOption::kThinkingNoGenUI]) {
-      thinkingModelNoGenUIOption.attributes |= UIMenuElementAttributesDisabled;
-    }
-    if (_state.activeModel == ComposeboxModelOption::kThinkingNoGenUI) {
-      [thinkingModelNoGenUIOption setState:UIMenuElementStateOn];
-    }
 
     NSString* modelPickerTitle =
         [self titleFor:InputPlateString::kModelsSection
@@ -1621,6 +1522,35 @@ UIImage* SendButtonImage(BOOL highlighted, ComposeboxTheme* theme) {
   _plusButton.menu = [UIMenu menuWithTitle:@"" children:sections];
   _plusButton.preferredMenuElementOrder =
       UIContextMenuConfigurationElementOrderFixed;
+}
+
+// Creates a new UIAction based on the given configuration.
+- (UIAction*)actionWithTitle:(NSString*)title
+                       image:(UIImage*)image
+                      hidden:(BOOL)hidden
+                    disabled:(BOOL)disabled
+                    selected:(BOOL)selected
+                     handler:(void (^)(void))handler {
+  UIAction* action = [UIAction actionWithTitle:[title copy]
+                                         image:image
+                                    identifier:nil
+                                       handler:^(UIAction*) {
+                                         if (handler) {
+                                           handler();
+                                         }
+                                       }];
+
+  if (hidden) {
+    action.attributes |= UIMenuElementAttributesHidden;
+  }
+  if (disabled) {
+    action.attributes |= UIMenuElementAttributesDisabled;
+  }
+  if (selected) {
+    [action setState:UIMenuElementStateOn];
+  }
+
+  return action;
 }
 
 /// Initializes and configures the collection view for the attachment carousel.

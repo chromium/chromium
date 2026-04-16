@@ -2688,7 +2688,7 @@ class QueryContextualizerDelegateBridge
   std::unordered_set<ComposeboxAttachmentOption> allowedAttachments;
   std::unordered_set<ComposeboxAttachmentOption> disabledAttachments;
 
-  if ([self canAttachActiveTab]) {
+  if ([self canAttachActiveTab] && [self tabAttachmentAllowed]) {
     allowedAttachments.insert(ComposeboxAttachmentOption::kCurrentTab);
   }
   if ([self tabAttachmentAllowed]) {
