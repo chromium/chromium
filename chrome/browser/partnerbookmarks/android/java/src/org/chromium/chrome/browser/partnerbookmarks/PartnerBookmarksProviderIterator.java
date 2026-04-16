@@ -91,6 +91,24 @@ public class PartnerBookmarksProviderIterator implements PartnerBookmark.Bookmar
             protected void onPostExecute(@Nullable Cursor result) {
                 if (result != null) {
                     callback.onResult(new PartnerBookmarksProviderIterator(result));
+                } else {
+                    // Many callsites depend on some sort of callback even with null result.
+                    // Send an empty BookmarkIterator.
+                    callback.onResult(
+                            new BookmarkIterator() {
+                                @Override
+                                public void close() {}
+
+                                @Override
+                                public boolean hasNext() {
+                                    return false;
+                                }
+
+                                @Override
+                                public PartnerBookmark next() {
+                                    throw new NoSuchElementException();
+                                }
+                            });
                 }
             }
         }.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
