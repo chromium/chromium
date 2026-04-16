@@ -245,6 +245,7 @@ BrowserContext::StartPrefetchFromPrePrefetch(
     // TODO(crbug.com/452406598): Call `PrefetchRequestStatusListener`'s
     // `OnPrefetchStartFailedGeneric()`, like `StartBrowserPrefetchRequest()`
     // does.
+    return nullptr;
   }
 
   return prefetch_service->AddPrefetchRequestFromPrePrefetch(
