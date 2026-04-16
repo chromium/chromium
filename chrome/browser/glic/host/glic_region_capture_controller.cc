@@ -9,6 +9,9 @@
 #include "base/notreached.h"
 #include "chrome/browser/glic/host/context/glic_tab_data.h"
 #include "chrome/browser/glic/host/glic.mojom.h"
+#include "chrome/browser/glic/public/context/glic_sharing_manager.h"
+#include "chrome/browser/glic/public/glic_keyed_service.h"
+#include "chrome/browser/glic/public/glic_keyed_service_factory.h"
 #include "chrome/common/chrome_features.h"
 #include "content/public/browser/render_widget_host_view.h"
 #include "content/public/browser/web_contents.h"
@@ -64,6 +67,20 @@ void GlicRegionCaptureController::CaptureRegion(
       remote->OnUpdate(mojom::CaptureRegionResultPtr(),
                        mojom::CaptureRegionErrorReason::kUnknown);
       LOG(ERROR) << "Overlay is still showing for " << web_contents->GetURL();
+      return;
+    }
+    GlicKeyedService* glic_service =
+        GlicKeyedServiceFactory::GetGlicKeyedService(
+            web_contents->GetBrowserContext());
+    CHECK(glic_service);
+    std::optional<GlicGetContextError> eligibility_error =
+        glic_service->sharing_manager().CheckContextSharingEligibility(
+            tab->GetHandle());
+    if (eligibility_error.has_value()) {
+      mojo::Remote<mojom::CaptureRegionObserver> remote(std::move(observer));
+      remote->OnUpdate(mojom::CaptureRegionResultPtr(),
+                       mojom::CaptureRegionErrorReason::kUnknown);
+      LOG(ERROR) << "Cannot share tab context for " << web_contents->GetURL();
       return;
     }
     selection_overlay_controller->BindCaptureRegionObserver(

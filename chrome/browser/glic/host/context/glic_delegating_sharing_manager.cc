@@ -131,6 +131,17 @@ int32_t GlicDelegatingSharingManagerBase::SetMaxPinnedTabs(
              : 0;
 }
 
+std::optional<GlicGetContextError>
+GlicDelegatingSharingManagerBase::CheckContextSharingEligibility(
+    tabs::TabHandle tab_handle) const {
+  return sharing_manager_delegate_
+             ? sharing_manager_delegate_->CheckContextSharingEligibility(
+                   tab_handle)
+             : GlicGetContextError{
+                   GlicGetContextFromTabError::kPageContextNotEligible,
+                   "tab not eligible"};
+}
+
 void GlicDelegatingSharingManagerBase::GetContextFromTab(
     tabs::TabHandle tab_handle,
     const mojom::GetTabContextOptions& options,

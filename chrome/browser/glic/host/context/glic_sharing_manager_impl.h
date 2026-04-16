@@ -100,6 +100,9 @@ class GlicSharingManagerImpl : public GlicSharingManager {
 
   std::vector<content::WebContents*> GetPinnedTabs() const override;
 
+  std::optional<GlicGetContextError> CheckContextSharingEligibility(
+      tabs::TabHandle tab_handle) const override;
+
   void GetContextFromTab(
       tabs::TabHandle tab_handle,
       const mojom::GetTabContextOptions& options,

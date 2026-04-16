@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import type {FocusedTabData, GlicBrowserHost, GlicWebClient, InvokeOptions, Observable, OpenPanelInfo, PanelOpeningData, PanelState, WebClientInitializeError} from '/glic/glic_api/glic_api.js';
-import {WebClientInitializeErrorReason, WebClientMode} from '/glic/glic_api/glic_api.js';
+import {InvocationSource, WebClientInitializeErrorReason, WebClientMode} from '/glic/glic_api/glic_api.js';
 
 import {$} from './page_element_types.js';
 
@@ -279,6 +279,10 @@ class WebClient implements GlicWebClient {
     entry.style.padding = '4px';
     entry.textContent = `invoke(${JSON.stringify(options, null, 2)})`;
     $.invocationLog.prepend(entry);
+
+    if (options.invocationSource === InvocationSource.CAPTURE_REGION_HOTKEY) {
+      $.captureRegionBtn.click();
+    }
   }
 
   getInitialized(): Promise<void> {
