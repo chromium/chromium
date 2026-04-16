@@ -139,6 +139,9 @@ void OtpManagerImpl::OnOneTimeTokenReceived(
   }
 
   OneTimeToken& token = token_or_error.value();
+  if (!token.value().empty()) {
+    owner_->GetOtpFormEventLogger().OnOtpAvailable();
+  }
 
   // We run PhishGuard check to make sure OTPs are not shown to users on
   // potential phishing sites.
@@ -195,7 +198,6 @@ void OtpManagerImpl::MaybeShowOtpSuggestions(
     suggestions.clear();
   }
 
-  owner_->GetOtpFormEventLogger().OnOtpAvailable();
   std::move(last_pending_get_suggestions_callback_).Run(std::move(suggestions));
 }
 

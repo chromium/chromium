@@ -468,6 +468,39 @@ TEST_F(OtpManagerImplTest, GetOtpSuggestions_NoPhishingDelegate) {
       /*OneTimeTokensPhishGuardVerdict::kUnknown*/ 0, 1);
 }
 
+// Tests that `OnOtpAvailable` is logged even if the PhishGuard check blocks delivery.
+TEST_F(OtpManagerImplTest, OnOtpAvailable_LoggedEvenIfPhishGuardBlocks) {
+  OtpManagerImpl otp_manager(autofill_manager(), &one_time_token_service_);
+
+  one_time_tokens::OneTimeToken otp(one_time_tokens::OneTimeTokenType::kSmsOtp,
+                                    kDefaultOtpValue, base::Time::Now());
+  EXPECT_CALL(sms_otp_backend_, RetrieveSmsOtp)
+      .WillOnce(RunOnceCallback<0>(otp));
+
+  base::OnceCallback<void(bool)> phish_guard_callback;
+  EXPECT_CALL(otp_phish_guard_delegate(), StartOtpPhishGuardCheck)
+      .WillOnce([&](const GURL&, base::OnceCallback<void(bool)> callback) {
+        phish_guard_callback = std::move(callback);
+      });
+
+  // Observing an OTP field triggers retrieval.
+  AddFormWithOtpField();
+
+  base::test::TestFuture<const std::vector<std::string>> future;
+  otp_manager.GetOtpSuggestions(future.GetCallback());
+
+  // Simulate phishing detection.
+  std::move(phish_guard_callback).Run(true);
+
+  // Suggestions should be empty because delivery is blocked.
+  EXPECT_TRUE(future.Get().empty());
+
+  // However, the metric should still be logged as the OTP was successfully retrieved.
+  EXPECT_TRUE(autofill_manager()
+                  .GetOtpFormEventLogger()
+                  .HasLoggedDataToFillAvailableForTesting());
+}
+
 // Tests that `OnBeforeFocusOnFormField` clears the pending callback for
 // `GetOtpSuggestions`.
 TEST_F(OtpManagerImplTest, OnBeforeFocusOnFormField_ClearsPendingCallback) {
