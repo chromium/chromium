@@ -62,17 +62,6 @@ constexpr std::array kChannels = {
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/windows/histograms.xml:PinAppToTaskbarChannel)
 
-bool PinLimitedAccessFeatureAvailable() {
-  static constexpr wchar_t taskbar_api_token[] =
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-      L"InBNYixzyiUzivxj5T/HqA==";
-#else
-      L"ILzQYl3daXqTIyjmNj5xwg==";
-#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
-  return base::win::TryToUnlockLimitedAccessFeature(
-      L"com.microsoft.windows.taskbar.pin", taskbar_api_token);
-}
-
 // Returns whether pinning is allowed or not. If it returns std::nullopt, an
 // ITaskbarManager method returned an error.
 std::optional<bool> IsPinningAllowed(
@@ -284,6 +273,17 @@ void PinAppToTaskbarInternal(const std::wstring& app_user_model_id,
 }
 
 }  // namespace
+
+bool PinLimitedAccessFeatureAvailable() {
+  static constexpr wchar_t taskbar_api_token[] =
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+      L"InBNYixzyiUzivxj5T/HqA==";
+#else
+      L"ILzQYl3daXqTIyjmNj5xwg==";
+#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
+  return base::win::TryToUnlockLimitedAccessFeature(
+      L"com.microsoft.windows.taskbar.pin", taskbar_api_token);
+}
 
 void ShouldOfferToPin(const std::wstring& app_user_model_id,
                       PinAppToTaskbarChannel channel,
