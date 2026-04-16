@@ -1137,3 +1137,25 @@ IN_PROC_BROWSER_TEST_F(VerticalTabStripRegionViewTest,
       [&]() { return region_view()->is_expanded_on_hover(); }));
   ASSERT_FALSE(region_view()->resize_area_for_testing()->GetVisible());
 }
+
+IN_PROC_BROWSER_TEST_F(VerticalTabStripRegionViewTest,
+                       ExpandOnHoverDisabledWhenWindowInactive) {
+  VerticalTabStripRegionView* view = region_view();
+  state_controller()->SetExpandOnHoverEnabled(true);
+  state_controller()->RequestCollapse(true);
+
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return state_controller()->IsCollapsed(); }));
+
+  view->RequestFocus();
+
+  ASSERT_TRUE(
+      base::test::RunUntil([&]() { return view->is_expanded_on_hover(); }));
+
+  // Create a second window to make the first inactive.
+  Browser* second_browser = CreateBrowser(browser()->profile());
+  ASSERT_TRUE(second_browser);
+
+  ASSERT_TRUE(
+      base::test::RunUntil([&]() { return !view->is_expanded_on_hover(); }));
+}

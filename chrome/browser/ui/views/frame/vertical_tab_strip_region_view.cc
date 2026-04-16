@@ -348,7 +348,11 @@ TabDragTarget* VerticalTabStripRegionView::GetTabDragTarget(
 void VerticalTabStripRegionView::AddedToWidget() {
   paint_as_active_subscription_ =
       GetWidget()->RegisterPaintAsActiveChangedCallback(base::BindRepeating(
-          &VerticalTabStripRegionView::UpdateColors, base::Unretained(this)));
+          [](VerticalTabStripRegionView* view) {
+            view->UpdateColors();
+            view->UpdateExpandOnHoverState();
+          },
+          base::Unretained(this)));
   if (GetFocusManager()) {
     GetFocusManager()->AddFocusChangeListener(&focus_listener_);
   }
@@ -1055,9 +1059,10 @@ void VerticalTabStripRegionView::UpdateExpandOnHoverState(
     is_expanded_on_hover_ = false;
     return;
   }
-  // If expand on hover is locked (e.g. omnibox popup is open), then we
-  // should not enter the expand on hover state or exit it if already expanded.
-  if (force_collapse_lock_count_ > 0) {
+  // If expand on hover is locked (e.g. omnibox popup is open) or the window
+  // becomes inactive, then we should not enter the expand on hover state or
+  // exit it if already expanded.
+  if (force_collapse_lock_count_ > 0 || !IsFrameActive()) {
     if (is_expanded_on_hover_) {
       AnimateExpandOnHover(/*expand=*/false);
     }
