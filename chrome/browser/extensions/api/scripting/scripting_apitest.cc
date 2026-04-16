@@ -57,7 +57,6 @@ namespace {
 
 constexpr const char kSimulatedResourcePath[] = "/simulated-resource.html";
 
-#if BUILDFLAG(ENABLE_EXTENSIONS)
 // Returns the IDs of all divs in a page; used for testing script injections.
 constexpr char kGetDivIds[] =
     R"(let childIds = [];
@@ -65,7 +64,6 @@ constexpr char kGetDivIds[] =
          childIds.push(child.id);
        }
        JSON.stringify(childIds.sort());)";
-#endif
 
 }  // namespace
 
@@ -636,10 +634,8 @@ IN_PROC_BROWSER_TEST_F(ScriptingAPITest, InjectImmediately) {
 }
 #endif
 
-#if !BUILDFLAG(IS_ANDROID)
 // Verifies dynamic scripts are properly injected in incognito.
 // Regression test for https://crbug.com/1495191.
-// TODO(crbug.com/40200835): Flaky on Android.
 IN_PROC_BROWSER_TEST_F(ScriptingAPITest,
                        PRE_DynamicContentScriptsInjectInIncognito) {
   // TODO(crbug.com/40937027): Convert test to use HTTPS and then remove.
@@ -713,7 +709,6 @@ IN_PROC_BROWSER_TEST_F(ScriptingAPITest,
   EXPECT_EQ(R"(["incognito-allowed"])",
             content::EvalJs(incognito_web_contents, kGetDivIds));
 }
-#endif  // BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 // Base test fixture for tests spanning multiple sessions where a custom arg is
