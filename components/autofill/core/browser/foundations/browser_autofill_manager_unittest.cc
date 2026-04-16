@@ -3962,47 +3962,6 @@ TEST_F(BrowserAutofillManagerTest, GetProfileSuggestions_FieldSwapping) {
        CreateUndoOrClearFormSuggestion(), CreateManageAddressesSuggestion()});
 }
 
-// Tests that fields with unrecognized autocomplete attribute don't contribute
-// to key metrics.
-TEST_F(BrowserAutofillManagerTest, AutocompleteUnrecognizedFields_KeyMetrics) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndDisableFeature(
-      features::kAutofillConsiderAutocompleteUnrecognizedFieldsInMetrics);
-  // Create an address form where field 1 has an unrecognized autocomplete
-  // attribute.
-  FormData form = CreateTestAddressFormData();
-  ASSERT_GE(form.fields().size(), 2u);
-  test_api(form).field(1).set_parsed_autocomplete(
-      AutocompleteParsingResult{.field_type = HtmlFieldType::kUnrecognized});
-
-  // Interact with an ac != unrecognized field: Expect key metrics to be
-  // emitted. Note that "interacting" means querying suggestions, usually
-  // caused by clicking into a field.
-  {
-    FormsSeen({form});
-    OnAskForValuesToFill(form, form.fields()[0]);
-    FormSubmitted(form);
-
-    base::HistogramTester histogram_tester;
-    autofill_client().GetAutofillDriverFactory().Reset(autofill_driver());
-    histogram_tester.ExpectTotalCount(
-        "Autofill.KeyMetrics.FillingAssistance.Address", 1);
-  }
-
-  // Interact with an ac = unrecognized field: Expect no key metric to be
-  // emitted.
-  {
-    FormsSeen({form});
-    OnAskForValuesToFill(form, form.fields()[1]);
-    FormSubmitted(form);
-
-    base::HistogramTester histogram_tester;
-    autofill_client().GetAutofillDriverFactory().Reset(autofill_driver());
-    histogram_tester.ExpectTotalCount(
-        "Autofill.KeyMetrics.FillingAssistance.Address", 0);
-  }
-}
-
 TEST_F(BrowserAutofillManagerTest,
        OnCreditCardFetchedSuccessfully_LocalCreditCard) {
   const CreditCard local_card = test::GetCreditCard();

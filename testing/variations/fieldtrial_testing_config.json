@@ -2535,26 +2535,6 @@
             ]
         }
     ],
-    "AutofillConsiderAutocompleteUnrecognizedFieldsInMetrics": [
-        {
-            "platforms": [
-                "android",
-                "chromeos",
-                "ios",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "AutofillConsiderAutocompleteUnrecognizedFieldsInMetrics"
-                    ]
-                }
-            ]
-        }
-    ],
     "AutofillCreditCardUserPerceptionSurvey": [
         {
             "platforms": [
