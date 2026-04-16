@@ -40,8 +40,13 @@ class TestUserSessionManager {
   // Following methods add a user. They must be called *ANY* of LogIn call.
   // Returns nullptr on error, so callers should check it always.
   [[nodiscard]] user_manager::User* AddRegularUser(const AccountId& account_id);
+  [[nodiscard]] user_manager::User* AddPublicAccountUser(
+      std::string_view user_id);
   [[nodiscard]] user_manager::User* AddKioskChromeAppUser(
       std::string_view user_id);
+  [[nodiscard]] user_manager::User* AddKioskWebAppUser(
+      std::string_view user_id);
+  [[nodiscard]] user_manager::User* AddKioskIwaUser(std::string_view user_id);
 
   // Logs in to a new user session with the user specified by `account_id`.
   void LogIn(const AccountId& account_id, bool new_user = false);

@@ -39,11 +39,31 @@ user_manager::User* TestUserSessionManager::AddRegularUser(
       .AddRegularUser(account_id);
 }
 
+user_manager::User* TestUserSessionManager::AddPublicAccountUser(
+    std::string_view user_id) {
+  CHECK(session_manager_->sessions().empty());
+  return user_manager::TestHelper(user_manager_.Get())
+      .AddPublicAccountUser(user_id);
+}
+
 user_manager::User* TestUserSessionManager::AddKioskChromeAppUser(
     std::string_view user_id) {
   CHECK(session_manager_->sessions().empty());
   return user_manager::TestHelper(user_manager_.Get())
       .AddKioskChromeAppUser(user_id);
+}
+
+user_manager::User* TestUserSessionManager::AddKioskWebAppUser(
+    std::string_view user_id) {
+  CHECK(session_manager_->sessions().empty());
+  return user_manager::TestHelper(user_manager_.Get())
+      .AddKioskWebAppUser(user_id);
+}
+
+user_manager::User* TestUserSessionManager::AddKioskIwaUser(
+    std::string_view user_id) {
+  CHECK(session_manager_->sessions().empty());
+  return user_manager::TestHelper(user_manager_.Get()).AddKioskIwaUser(user_id);
 }
 
 void TestUserSessionManager::LogIn(const AccountId& account_id, bool new_user) {
