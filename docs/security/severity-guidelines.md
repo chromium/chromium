@@ -51,7 +51,7 @@ Example bugs:
   ([on some platforms we consider the GPU process 'sandboxed'](../../docs/security/process-sandboxes-by-platform.md)).
 * Exploit chains made up of multiple bugs that can lead to code execution
   outside of the sandbox ([416449](https://crbug.com/416449)).
-* A bug that enables web content to read local files
+* A bug that enables web content to read arbitrary local files
   ([962500](https://crbug.com/962500)).
 
 Note that the individual bugs that make up the chain will have lower severity
@@ -61,6 +61,7 @@ ratings.
 
 High severity (S1) vulnerabilities allow an attacker to execute code in the
 context of, or otherwise impersonate other origins or read cross-origin data.
+
 Bugs which would normally be critical severity with unusual mitigating factors
 may be rated as high severity. For example, renderer sandbox escapes fall into
 this category as their impact is that of a critical severity bug, but they
@@ -73,31 +74,33 @@ would lower these issues to high severity. A bug with the precondition of
 browser shutdown or profile destruction should be considered to have a maximum
 severity of high and could potentially be reduced by other mitigating factors.
 
-Example bugs:
+### Memory Safety
 
-* A bug that allows full circumvention of the same origin policy. Universal XSS
-bugs fall into this category, as they allow script execution in the context of
-an arbitrary origin ([534923](https://crbug.com/534923)).
 * A bug that allows arbitrary code execution within the confines of the sandbox,
 such as memory corruption in the renderer process
 ([570427](https://crbug.com/570427), [468936](https://crbug.com/468936)).
-* Complete control over the apparent origin in the omnibox
-([76666](https://crbug.com/76666)).
 * Memory corruption in the browser or another high privileged process (e.g. a
   GPU or network process on a [platform where they're not sandboxed](../../docs/security/process-sandboxes-by-platform.md)),
   that can only be triggered from a compromised renderer,
   leading to a sandbox escape ([1393177](https://crbug.com/1393177),
   [1421268](crbug.com/1421268)).
-* Kernel memory corruption that could be used as a sandbox escape from a
-compromised renderer ([377392](https://crbug.com/377392)).
 * Memory corruption in the browser or another high privileged process (e.g.
   GPU or network process on a [platform where they're not sandboxed](../../docs/security/process-sandboxes-by-platform.md))
   that requires specific user interaction, such as granting a permission ([455735](https://crbug.com/455735)).
+* Kernel memory corruption that could be used as a sandbox escape from a
+  compromised renderer ([377392](https://crbug.com/377392)).
+
+### Web Platform & UX
+
+* A bug that allows full circumvention of the same origin policy. Universal XSS
+bugs fall into this category, as they allow script execution in the context of
+an arbitrary origin ([534923](https://crbug.com/534923)).
 * Site Isolation bypasses:
   * Cross-site execution contexts unexpectedly sharing a renderer process
       ([863069](https://crbug.com/863069), [886976](https://crbug.com/886976)).
   * Cross-site data disclosure
       ([917668](https://crbug.com/917668), [927849](https://crbug.com/927849)).
+* Complete control over the apparent origin in the omnibox ([76666](https://crbug.com/76666)).
 
 ## Medium severity (S2) {#TOC-Medium-severity}
 
@@ -112,7 +115,7 @@ medium severity.
 Certain vulnerabilities in [sandboxed GPU shader compilers](#TOC-Sandboxed-shader-compilers)
 should be marked as medium severity.
 
-Example bugs:
+### Memory Safety
 
 * An out-of-bounds read in a renderer process
 ([281480](https://crbug.com/281480)).
@@ -124,6 +127,11 @@ passed to a compromised renderer via IPC ([469151](https://crbug.com/469151)).
   is not reliably triggered and/or is difficult to trigger ([1230513](https://crbug.com/1230513)).
 * Memory corruption in the browser process, requiring a non-standard flag and
   user interaction ([1255332](https://crbug.com/1255332)).
+* Memory corruption in a renderer process that requires specific user
+  interaction, such as dragging an object ([303772](https://crbug.com/303772)).
+
+### Web Platform & UX
+
 * An HSTS bypass ([461481](https://crbug.com/461481)).
 * A bypass of the same origin policy for pages that meet several preconditions
   ([419383](https://crbug.com/419383)).
@@ -137,8 +145,6 @@ passed to a compromised renderer via IPC ([469151](https://crbug.com/469151)).
   ([381808](https://crbug.com/381808)).
 * An address bar spoof where only certain URLs can be displayed, or with other
   mitigating factors ([265221](https://crbug.com/265221)).
-* Memory corruption in a renderer process that requires specific user
-  interaction, such as dragging an object ([303772](https://crbug.com/303772)).
 * A clickjacking bug that does **not** require convincing the user to do
   something unusual (click repeated and quickly, hold down Enter, similar)
   ([364508693](https://issues.chromium.org/issues/364508693))
@@ -151,13 +157,16 @@ Low severity (S3) vulnerabilities are usually bugs that would normally be a
 higher severity, but which have extreme mitigating factors or highly limited
 scope.
 
-Example bugs:
+### Memory Safety
+
+* An uncontrolled single-byte out-of-bounds read
+  ([128163](https://crbug.com/128163)).
+
+### Web Platform & UX
 
 * Bypass requirement for a user gesture ([256057](https://crbug.com/256057)).
 * Partial CSP bypass ([534570](https://crbug.com/534570)).
 * A limited extension permission bypass ([169632](https://crbug.com/169632)).
-* An uncontrolled single-byte out-of-bounds read
-  ([128163](https://crbug.com/128163)).
 * A UI spoof on a surface that isn't primary security UI
   ([421690383](https://issues.chromium.org/issues/421690383))
 * Clickjacking bugs that require unusual user behavior (rapid clicks, holding
