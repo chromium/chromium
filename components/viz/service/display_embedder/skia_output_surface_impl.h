@@ -136,7 +136,8 @@ class VIZ_SERVICE_EXPORT SkiaOutputSurfaceImpl : public SkiaOutputSurface {
   void EndPaint(
       base::OnceClosure on_finished,
       base::OnceCallback<void(gfx::GpuFenceHandle)> return_release_fence_cb,
-      const gfx::Rect& update_rect) override;
+      const gfx::Rect& update_rect,
+      bool is_overlay) override;
   void MakePromiseSkImage(ImageContext* image_context,
                           bool force_rgbx) override;
   sk_sp<SkImage> MakePromiseSkImageFromRenderPass(
