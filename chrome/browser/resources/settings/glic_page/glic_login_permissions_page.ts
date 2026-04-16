@@ -4,12 +4,14 @@
 
 import 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
+import 'chrome://resources/cr_elements/cr_toast/cr_toast.js';
 import 'chrome://resources/cr_elements/cr_shared_style.css.js';
 import '../settings_page/settings_subpage.js';
 import '../simple_confirmation_dialog.js';
 import '../site_favicon.js';
 
 import {assert} from '//resources/js/assert.js';
+import type {CrToastElement} from 'chrome://resources/cr_elements/cr_toast/cr_toast.js';
 import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
 import {WebUiListenerMixin} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
@@ -86,16 +88,22 @@ export class SettingsGlicLoginPermissionsPageElement extends
     this.selectedPermissionToRemove_ = e.model.item;
   }
 
-  private onRemoveDialogClose_() {
+  private async onRemoveDialogClose_() {
     const dialog =
         this.shadowRoot!.querySelector<SettingsSimpleConfirmationDialogElement>(
             'settings-simple-confirmation-dialog');
     assert(dialog);
     assert(this.selectedPermissionToRemove_);
     if (dialog.wasConfirmed()) {
-      this.browserProxy_.revokeActorLoginPermission(
+      const success = await this.browserProxy_.revokeActorLoginPermission(
           this.selectedPermissionToRemove_.signonRealm,
           this.selectedPermissionToRemove_.username);
+      if (!success) {
+        const toast =
+            this.shadowRoot!.querySelector<CrToastElement>('#removeErrorToast');
+        assert(toast);
+        toast.show();
+      }
     }
     this.selectedPermissionToRemove_ = null;
   }

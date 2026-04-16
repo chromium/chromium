@@ -42,7 +42,10 @@ class GlicHandler : public SettingsPageUIHandler,
   FRIEND_TEST_ALL_PREFIXES(GlicHandlerBrowserTest, UpdateShortcutSuspension);
   FRIEND_TEST_ALL_PREFIXES(GlicHandlerBrowserTest, UpdateGlicShortcut);
   FRIEND_TEST_ALL_PREFIXES(GlicHandlerBrowserTest, GetActorLoginPermissions);
-  FRIEND_TEST_ALL_PREFIXES(GlicHandlerBrowserTest, RevokeActorLoginPermission);
+  FRIEND_TEST_ALL_PREFIXES(GlicHandlerBrowserTest,
+                           RevokeActorLoginPermissionSucceeded);
+  FRIEND_TEST_ALL_PREFIXES(GlicHandlerBrowserTest,
+                           RevokeActorLoginPermissionFailed);
   FRIEND_TEST_ALL_PREFIXES(GlicHandlerConsentBrowserTest,
                            GetWebActuationToggleVisibility_ConsentAccepted);
   FRIEND_TEST_ALL_PREFIXES(GlicHandlerConsentBrowserTest,
@@ -90,6 +93,9 @@ class GlicHandler : public SettingsPageUIHandler,
 
   // Handles requests to revoke an actor login permission.
   void HandleRevokeActorLoginPermission(const base::ListValue& args);
+
+  // Resolves the async request to revoke an actor login permission.
+  void OnRevokeActorLoginPermission(std::string callback_id_str, bool success);
 
   // Sends to the settings page the last saved shortcut.
   void HandleGetGlicSelectionShortcut(const base::ListValue& args);

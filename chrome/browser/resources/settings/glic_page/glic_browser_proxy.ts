@@ -30,7 +30,8 @@ export interface GlicBrowserProxy {
    * Revoke actor login permission for a given signonRealm.
    * @param signonRealm The signon realm for which to revoke the permission.
    */
-  revokeActorLoginPermission(signonRealm: string, username: string): void;
+  revokeActorLoginPermission(signonRealm: string, username: string):
+      Promise<boolean>;
   getGlicSelectionShortcut(): Promise<string>;
   setGlicSelectionShortcut(shortcut: string): Promise<void>;
   getWebActuationToggleVisibility(): Promise<boolean>;
@@ -70,7 +71,8 @@ export class GlicBrowserProxyImpl implements GlicBrowserProxy {
   }
 
   revokeActorLoginPermission(signonRealm: string, username: string) {
-    chrome.send('revokeActorLoginPermission', [signonRealm, username]);
+    return sendWithPromise<boolean>(
+        'revokeActorLoginPermission', signonRealm, username);
   }
 
   getGlicSelectionShortcut() {

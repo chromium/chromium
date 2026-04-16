@@ -47,7 +47,9 @@ class MockActorLoginPermissionsManager
   MOCK_METHOD(void, RemoveObserver, (Observer*), (override));
   MOCK_METHOD(void,
               RevokePermission,
-              (const std::string&, const std::string&),
+              (const std::string&,
+               const std::string&,
+               base::OnceCallback<void(bool)>),
               (override));
   MOCK_METHOD(void,
               GetAllPermissions,
@@ -192,12 +194,17 @@ IN_PROC_BROWSER_TEST_F(GlicHandlerBrowserTest, GetActorLoginPermissions) {
   EXPECT_EQ("example.com", *permission_dict.FindString("signonRealm"));
 }
 
-IN_PROC_BROWSER_TEST_F(GlicHandlerBrowserTest, RevokeActorLoginPermission) {
+IN_PROC_BROWSER_TEST_F(GlicHandlerBrowserTest,
+                       RevokeActorLoginPermissionSucceeded) {
   glic_handler()->AllowJavascript();
 
   auto mock_manager =
       std::make_unique<testing::NiceMock<MockActorLoginPermissionsManager>>();
-  EXPECT_CALL(*mock_manager, RevokePermission("example.com", "user"));
+  EXPECT_CALL(*mock_manager, RevokePermission("example.com", "user", _))
+      .WillOnce([](const std::string&, const std::string&,
+                   base::OnceCallback<void(bool)> callback) {
+        std::move(callback).Run(true);
+      });
 
   glic_handler()->observation_.Reset();
   glic_handler()->actor_login_permissions_manager_ = std::move(mock_manager);
@@ -205,9 +212,50 @@ IN_PROC_BROWSER_TEST_F(GlicHandlerBrowserTest, RevokeActorLoginPermission) {
       glic_handler()->actor_login_permissions_manager_.get());
 
   base::ListValue args;
+  args.Append("callback-id");
   args.Append("example.com");
   args.Append("user");
   glic_handler()->HandleRevokeActorLoginPermission(args);
+
+  const content::TestWebUI::CallData& data = *web_ui()->call_data().back();
+  EXPECT_EQ("cr.webUIResponse", data.function_name());
+  EXPECT_EQ("callback-id", data.arg1()->GetString());
+  // promise resolved successfully
+  EXPECT_TRUE(data.arg2()->GetBool());
+  // boolean true returned by RevokePermission
+  EXPECT_TRUE(data.arg3()->GetBool());
+}
+
+IN_PROC_BROWSER_TEST_F(GlicHandlerBrowserTest,
+                       RevokeActorLoginPermissionFailed) {
+  glic_handler()->AllowJavascript();
+
+  auto mock_manager =
+      std::make_unique<testing::NiceMock<MockActorLoginPermissionsManager>>();
+  EXPECT_CALL(*mock_manager, RevokePermission("example.com", "user", _))
+      .WillOnce([](const std::string&, const std::string&,
+                   base::OnceCallback<void(bool)> callback) {
+        std::move(callback).Run(false);
+      });
+
+  glic_handler()->observation_.Reset();
+  glic_handler()->actor_login_permissions_manager_ = std::move(mock_manager);
+  glic_handler()->observation_.Observe(
+      glic_handler()->actor_login_permissions_manager_.get());
+
+  base::ListValue args;
+  args.Append("callback-id");
+  args.Append("example.com");
+  args.Append("user");
+  glic_handler()->HandleRevokeActorLoginPermission(args);
+
+  const content::TestWebUI::CallData& data = *web_ui()->call_data().back();
+  EXPECT_EQ("cr.webUIResponse", data.function_name());
+  EXPECT_EQ("callback-id", data.arg1()->GetString());
+  // promise resolved successfully
+  EXPECT_TRUE(data.arg2()->GetBool());
+  // boolean false returned by RevokePermission
+  EXPECT_FALSE(data.arg3()->GetBool());
 }
 
 IN_PROC_BROWSER_TEST_F(GlicHandlerConsentBrowserTest,

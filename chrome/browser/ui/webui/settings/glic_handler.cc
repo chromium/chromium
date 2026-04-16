@@ -395,12 +395,24 @@ void GlicHandler::OnGetActorLoginPermissions(std::string callback_id_str,
 
 void GlicHandler::HandleRevokeActorLoginPermission(
     const base::ListValue& args) {
-  CHECK_EQ(2U, args.size());
-  const std::string* signon_realm = args[0].GetIfString();
-  const std::string* username = args[1].GetIfString();
+  CHECK_EQ(3U, args.size());
+  const std::string& callback_id = args[0].GetString();
+  const std::string* signon_realm = args[1].GetIfString();
+  const std::string* username = args[2].GetIfString();
   if (signon_realm && username) {
-    actor_login_permissions_manager_->RevokePermission(*signon_realm,
-                                                       *username);
+    AllowJavascript();
+    actor_login_permissions_manager_->RevokePermission(
+        *signon_realm, *username,
+        base::BindOnce(&GlicHandler::OnRevokeActorLoginPermission,
+                       weak_ptr_factory_.GetWeakPtr(), callback_id));
+  }
+}
+
+void GlicHandler::OnRevokeActorLoginPermission(std::string callback_id_str,
+                                               bool success) {
+  if (IsJavascriptAllowed()) {
+    ResolveJavascriptCallback(base::Value(callback_id_str),
+                              base::Value(success));
   }
 }
 

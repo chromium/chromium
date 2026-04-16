@@ -19,9 +19,10 @@ class SyncService;
 
 namespace actor_login {
 
-// Manages permissions for the actor login feature. This class provides a
-// unified view of permissions for different credential types (e.g., passwords,
-// federated credentials).
+// UI manager for actor login permissions.
+//
+// This class provides a unified view of permissions for different credential
+// types (e.g., passwords, federated credentials).
 class ActorLoginPermissionsManager {
  public:
   using GetAllPermissionsResult = base::OnceCallback<void(
@@ -40,7 +41,8 @@ class ActorLoginPermissionsManager {
   // Revokes the actor login permission for the specified `signon_realm` and
   // `username` for all credential types.
   virtual void RevokePermission(const std::string& signon_realm,
-                                const std::string& username) = 0;
+                                const std::string& username,
+                                base::OnceCallback<void(bool)> callback) = 0;
 
   // Fetches all actor login permissions and returns them via the callback.
   virtual void GetAllPermissions(const syncer::SyncService* sync_service,
