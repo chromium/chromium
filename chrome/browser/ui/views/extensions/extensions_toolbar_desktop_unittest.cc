@@ -1048,6 +1048,10 @@ TEST_F(ExtensionsToolbarDesktopUnitTest,
 
   extensions::PermissionsManagerWaiter waiter(
       PermissionsManager::Get(profile()));
+  // In tests, the button may not be "drawn" even if it's visible, which causes
+  // the InputEventActivationProtector to ignore the click. We'll disable it for
+  // this test.
+  request_access_button()->disable_input_protection_for_testing();
   ClickButton(request_access_button());
   waiter.WaitForExtensionPermissionsUpdate();
   WaitForAnimation();
@@ -1109,6 +1113,7 @@ TEST_F(ExtensionsToolbarDesktopUnitTest,
   EXPECT_THAT(request_access_button()->GetExtensionIdsForTesting(),
               testing::ElementsAre(extension_A->id(), extension_B->id()));
 
+  request_access_button()->disable_input_protection_for_testing();
   ClickButton(request_access_button());
   WaitForAnimation();
   LayoutContainerIfNecessary();
@@ -1122,6 +1127,7 @@ TEST_F(ExtensionsToolbarDesktopUnitTest,
 
   // Add a site access request for extension C before the confirmation is
   // collapsed.
+  request_access_button()->disable_input_protection_for_testing();
   AddHostAccessRequest(*extension_C, web_contents);
 
   // Confirmation is still showing since collapse time hasn't elapsed.

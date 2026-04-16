@@ -546,6 +546,11 @@ ExtensionFunction::ResponseAction
 PermissionsAddHostAccessRequestFunction::Run() {
   CHECK(base::FeatureList::IsEnabled(
       extensions_features::kApiPermissionsHostAccessRequests));
+
+  if (!user_gesture() && !ignore_user_gesture_for_tests &&
+      extension_->location() != mojom::ManifestLocation::kComponent) {
+    return RespondNow(Error(kUserGestureRequiredError));
+  }
   std::optional<api::permissions::AddHostAccessRequest::Params> params =
       api::permissions::AddHostAccessRequest::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
@@ -640,6 +645,11 @@ ExtensionFunction::ResponseAction
 PermissionsRemoveHostAccessRequestFunction::Run() {
   CHECK(base::FeatureList::IsEnabled(
       extensions_features::kApiPermissionsHostAccessRequests));
+
+  if (!user_gesture() && !ignore_user_gesture_for_tests &&
+      extension_->location() != mojom::ManifestLocation::kComponent) {
+    return RespondNow(Error(kUserGestureRequiredError));
+  }
   std::optional<api::permissions::RemoveHostAccessRequest::Params> params =
       api::permissions::RemoveHostAccessRequest::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);

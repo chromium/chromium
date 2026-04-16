@@ -301,6 +301,7 @@ class PermissionsApiHostAccessRequestsTest : public PermissionsApiTest {
 
 IN_PROC_BROWSER_TEST_F(PermissionsApiHostAccessRequestsTest,
                        InvalidAddHostAccessRequests) {
+  PermissionsRequestFunction::SetIgnoreUserGestureForTests(true);
   ASSERT_TRUE(StartEmbeddedTestServer());
 
   ASSERT_TRUE(RunExtensionTest("permissions/add_host_access_request"))
@@ -309,6 +310,7 @@ IN_PROC_BROWSER_TEST_F(PermissionsApiHostAccessRequestsTest,
 
 IN_PROC_BROWSER_TEST_F(PermissionsApiHostAccessRequestsTest,
                        InvalidRemoveHostAccessRequests) {
+  PermissionsRequestFunction::SetIgnoreUserGestureForTests(true);
   ASSERT_TRUE(StartEmbeddedTestServer());
 
   ASSERT_TRUE(RunExtensionTest("permissions/remove_host_access_request"))

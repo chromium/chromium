@@ -830,6 +830,7 @@ IN_PROC_BROWSER_TEST_F(PermissionsAPIHostAccessRequestsUnitTest,
     // Function should fail since extension already has host access.
     auto function =
         base::MakeRefCounted<PermissionsAddHostAccessRequestFunction>();
+    function->set_user_gesture(true);
     function->set_extension(extension.get());
     std::string error = api_test_utils::RunFunctionAndReturnError(
         function.get(), GetFunctionParams(tab_id), profile());
@@ -850,6 +851,7 @@ IN_PROC_BROWSER_TEST_F(PermissionsAPIHostAccessRequestsUnitTest,
     // Function should succeed since extension can be granted access.
     auto function =
         base::MakeRefCounted<PermissionsAddHostAccessRequestFunction>();
+    function->set_user_gesture(true);
     function->set_extension(extension.get());
     EXPECT_TRUE(api_test_utils::RunFunction(
         function.get(), GetFunctionParams(tab_id), profile(),
@@ -886,6 +888,7 @@ IN_PROC_BROWSER_TEST_F(PermissionsAPIHostAccessRequestsUnitTest,
     // permissions.
     auto function =
         base::MakeRefCounted<PermissionsAddHostAccessRequestFunction>();
+    function->set_user_gesture(true);
     function->set_extension(extension.get());
     std::string error = api_test_utils::RunFunctionAndReturnError(
         function.get(),
@@ -908,6 +911,7 @@ IN_PROC_BROWSER_TEST_F(PermissionsAPIHostAccessRequestsUnitTest,
     // permissions.
     auto function =
         base::MakeRefCounted<PermissionsAddHostAccessRequestFunction>();
+    function->set_user_gesture(true);
     function->set_extension(extension.get());
     EXPECT_TRUE(api_test_utils::RunFunction(
         function.get(), GetFunctionParams(tab_id, "*://www.requested.com/*"),
@@ -925,6 +929,7 @@ IN_PROC_BROWSER_TEST_F(PermissionsAPIHostAccessRequestsUnitTest,
     // Function should succeed since extension can be granted access.
     auto function =
         base::MakeRefCounted<PermissionsAddHostAccessRequestFunction>();
+    function->set_user_gesture(true);
     function->set_extension(extension.get());
     EXPECT_TRUE(api_test_utils::RunFunction(
         function.get(), GetFunctionParams(tab_id, "*://*/title2.html"),
@@ -970,6 +975,7 @@ IN_PROC_BROWSER_TEST_F(PermissionsAPIHostAccessRequestsUnitTest,
     // permissions for.
     auto function =
         base::MakeRefCounted<PermissionsAddHostAccessRequestFunction>();
+    function->set_user_gesture(true);
     function->set_extension(extension.get());
     EXPECT_TRUE(api_test_utils::RunFunction(
         function.get(), GetFunctionParams(tab_id), profile(),
@@ -987,6 +993,7 @@ IN_PROC_BROWSER_TEST_F(PermissionsAPIHostAccessRequestsUnitTest,
     // permissions.
     auto function =
         base::MakeRefCounted<PermissionsAddHostAccessRequestFunction>();
+    function->set_user_gesture(true);
     function->set_extension(extension.get());
     std::string error = api_test_utils::RunFunctionAndReturnError(
         function.get(),
@@ -1022,6 +1029,7 @@ IN_PROC_BROWSER_TEST_F(PermissionsAPIHostAccessRequestsUnitTest,
   // any host permissions.
   auto function =
       base::MakeRefCounted<PermissionsAddHostAccessRequestFunction>();
+  function->set_user_gesture(true);
   function->set_extension(extension.get());
   std::string error = api_test_utils::RunFunctionAndReturnError(
       function.get(), GetFunctionParams(tab_id), profile());
@@ -1058,6 +1066,7 @@ IN_PROC_BROWSER_TEST_F(PermissionsAPIHostAccessRequestsUnitTest,
     // about the current host to the extension, but request is not added.
     auto function =
         base::MakeRefCounted<PermissionsAddHostAccessRequestFunction>();
+    function->set_user_gesture(true);
     function->set_extension(extension.get());
     EXPECT_TRUE(api_test_utils::RunFunction(
         function.get(), GetFunctionParams(tab_id), profile(),
@@ -1094,6 +1103,7 @@ IN_PROC_BROWSER_TEST_F(PermissionsAPIHostAccessRequestsUnitTest,
   // succeed since extension can be granted access.
   auto function =
       base::MakeRefCounted<PermissionsAddHostAccessRequestFunction>();
+  function->set_user_gesture(true);
   function->set_extension(extension.get());
   EXPECT_TRUE(api_test_utils::RunFunction(function.get(),
                                           GetFunctionParams(tab_id), profile(),
@@ -1128,6 +1138,7 @@ IN_PROC_BROWSER_TEST_F(PermissionsAPIHostAccessRequestsUnitTest,
   // succeed since extension can be granted access.
   auto function =
       base::MakeRefCounted<PermissionsAddHostAccessRequestFunction>();
+  function->set_user_gesture(true);
   function->set_extension(extension.get());
   EXPECT_TRUE(api_test_utils::RunFunction(function.get(),
                                           GetFunctionParams(tab_id), profile(),
@@ -1168,6 +1179,7 @@ IN_PROC_BROWSER_TEST_F(PermissionsAPIHostAccessRequestsUnitTest,
   {
     auto function =
         base::MakeRefCounted<PermissionsAddHostAccessRequestFunction>();
+    function->set_user_gesture(true);
     function->set_extension(extension.get());
     std::string error = api_test_utils::RunFunctionAndReturnError(
         function.get(), GetFunctionParams(tab_id), profile(),
@@ -1189,6 +1201,7 @@ IN_PROC_BROWSER_TEST_F(PermissionsAPIHostAccessRequestsUnitTest,
   {
     auto function =
         base::MakeRefCounted<PermissionsAddHostAccessRequestFunction>();
+    function->set_user_gesture(true);
     function->set_extension(extension.get());
     EXPECT_TRUE(api_test_utils::RunFunction(
         function.get(), GetFunctionParams(tab_id), profile(),
@@ -1226,6 +1239,7 @@ IN_PROC_BROWSER_TEST_F(PermissionsAPIHostAccessRequestsUnitTest,
   {
     auto function =
         base::MakeRefCounted<PermissionsAddHostAccessRequestFunction>();
+    function->set_user_gesture(true);
     function->set_extension(extension.get());
     std::string error = api_test_utils::RunFunctionAndReturnError(
         function.get(), GetFunctionParams(tab_id), profile(),
@@ -1269,6 +1283,7 @@ IN_PROC_BROWSER_TEST_F(PermissionsAPIHostAccessRequestsUnitTest,
     // Function should fail since extension already has host access.
     auto function =
         base::MakeRefCounted<PermissionsAddHostAccessRequestFunction>();
+    function->set_user_gesture(true);
     function->set_extension(extension.get());
     std::string error = api_test_utils::RunFunctionAndReturnError(
         function.get(), function_params(document_id), profile());
@@ -1289,6 +1304,7 @@ IN_PROC_BROWSER_TEST_F(PermissionsAPIHostAccessRequestsUnitTest,
     // Function should succeed since extension can be granted access.
     auto function =
         base::MakeRefCounted<PermissionsAddHostAccessRequestFunction>();
+    function->set_user_gesture(true);
     function->set_extension(extension.get());
     EXPECT_TRUE(api_test_utils::RunFunction(
         function.get(), function_params(document_id), profile(),
@@ -1321,6 +1337,7 @@ IN_PROC_BROWSER_TEST_F(PermissionsAPIHostAccessRequestsUnitTest,
   {
     auto remove_function =
         base::MakeRefCounted<PermissionsRemoveHostAccessRequestFunction>();
+    remove_function->set_user_gesture(true);
     remove_function->set_extension(extension.get());
     std::string error = api_test_utils::RunFunctionAndReturnError(
         remove_function.get(), GetFunctionParams(tab_id), profile(),
@@ -1341,6 +1358,7 @@ IN_PROC_BROWSER_TEST_F(PermissionsAPIHostAccessRequestsUnitTest,
     // means request will be shown for all patterns.
     auto add_function =
         base::MakeRefCounted<PermissionsAddHostAccessRequestFunction>();
+    add_function->set_user_gesture(true);
     add_function->set_extension(extension.get());
     EXPECT_TRUE(api_test_utils::RunFunction(
         add_function.get(), GetFunctionParams(tab_id), profile(),
@@ -1355,6 +1373,7 @@ IN_PROC_BROWSER_TEST_F(PermissionsAPIHostAccessRequestsUnitTest,
     // request. We do this because we don't support "all urls but <x>".
     auto remove_function =
         base::MakeRefCounted<PermissionsRemoveHostAccessRequestFunction>();
+    remove_function->set_user_gesture(true);
     remove_function->set_extension(extension.get());
     std::string error = api_test_utils::RunFunctionAndReturnError(
         remove_function.get(),
@@ -1376,6 +1395,7 @@ IN_PROC_BROWSER_TEST_F(PermissionsAPIHostAccessRequestsUnitTest,
     // request overrides existent request.
     auto add_function =
         base::MakeRefCounted<PermissionsAddHostAccessRequestFunction>();
+    add_function->set_user_gesture(true);
     add_function->set_extension(extension.get());
     EXPECT_TRUE(api_test_utils::RunFunction(
         add_function.get(), GetFunctionParams(tab_id, "*://*.requested.com/*"),
@@ -1390,6 +1410,7 @@ IN_PROC_BROWSER_TEST_F(PermissionsAPIHostAccessRequestsUnitTest,
     // 'requested.com'.
     auto remove_function =
         base::MakeRefCounted<PermissionsRemoveHostAccessRequestFunction>();
+    remove_function->set_user_gesture(true);
     remove_function->set_extension(extension.get());
     std::string error = api_test_utils::RunFunctionAndReturnError(
         remove_function.get(), GetFunctionParams(tab_id, "*://*.other.com/*"),
@@ -1429,6 +1450,7 @@ IN_PROC_BROWSER_TEST_F(PermissionsAPIHostAccessRequestsUnitTest,
     // Add a host access request without a pattern.
     auto add_function =
         base::MakeRefCounted<PermissionsAddHostAccessRequestFunction>();
+    add_function->set_user_gesture(true);
     add_function->set_extension(extension.get());
     EXPECT_TRUE(api_test_utils::RunFunction(
         add_function.get(), GetFunctionParams(tab_id), profile(),
@@ -1441,6 +1463,7 @@ IN_PROC_BROWSER_TEST_F(PermissionsAPIHostAccessRequestsUnitTest,
     // Remove a host access request without a pattern.
     auto remove_function =
         base::MakeRefCounted<PermissionsRemoveHostAccessRequestFunction>();
+    remove_function->set_user_gesture(true);
     remove_function->set_extension(extension.get());
     EXPECT_TRUE(api_test_utils::RunFunction(
         remove_function.get(), GetFunctionParams(tab_id), profile(),
@@ -1457,6 +1480,7 @@ IN_PROC_BROWSER_TEST_F(PermissionsAPIHostAccessRequestsUnitTest,
     // Add a host access request with 'requested.com' pattern.
     auto add_function =
         base::MakeRefCounted<PermissionsAddHostAccessRequestFunction>();
+    add_function->set_user_gesture(true);
     add_function->set_extension(extension.get());
     EXPECT_TRUE(api_test_utils::RunFunction(
         add_function.get(),
@@ -1470,6 +1494,7 @@ IN_PROC_BROWSER_TEST_F(PermissionsAPIHostAccessRequestsUnitTest,
     // Remove a host access request with 'requested.com' pattern.
     auto remove_function =
         base::MakeRefCounted<PermissionsRemoveHostAccessRequestFunction>();
+    remove_function->set_user_gesture(true);
     remove_function->set_extension(extension.get());
     EXPECT_TRUE(api_test_utils::RunFunction(
         remove_function.get(), GetFunctionParams(tab_id), profile(),
@@ -1486,6 +1511,7 @@ IN_PROC_BROWSER_TEST_F(PermissionsAPIHostAccessRequestsUnitTest,
     // Add a host access request with 'requested.com' pattern.
     auto add_function =
         base::MakeRefCounted<PermissionsAddHostAccessRequestFunction>();
+    add_function->set_user_gesture(true);
     add_function->set_extension(extension.get());
     EXPECT_TRUE(api_test_utils::RunFunction(
         add_function.get(),
@@ -1501,6 +1527,7 @@ IN_PROC_BROWSER_TEST_F(PermissionsAPIHostAccessRequestsUnitTest,
     // ('all patterns' which matches current request on 'requested.com').
     auto remove_function =
         base::MakeRefCounted<PermissionsRemoveHostAccessRequestFunction>();
+    remove_function->set_user_gesture(true);
     remove_function->set_extension(extension.get());
     EXPECT_TRUE(api_test_utils::RunFunction(
         remove_function.get(), GetFunctionParams(tab_id), profile(),
@@ -1543,6 +1570,7 @@ IN_PROC_BROWSER_TEST_F(PermissionsAPIHostAccessRequestsUnitTest,
   {
     auto function =
         base::MakeRefCounted<PermissionsRemoveHostAccessRequestFunction>();
+    function->set_user_gesture(true);
     function->set_extension(extension.get());
 
     std::string error = api_test_utils::RunFunctionAndReturnError(
@@ -1561,6 +1589,7 @@ IN_PROC_BROWSER_TEST_F(PermissionsAPIHostAccessRequestsUnitTest,
   {
     auto function =
         base::MakeRefCounted<PermissionsAddHostAccessRequestFunction>();
+    function->set_user_gesture(true);
     function->set_extension(extension.get());
     EXPECT_TRUE(api_test_utils::RunFunction(
         function.get(), function_params(document_id), profile(),
@@ -1575,6 +1604,7 @@ IN_PROC_BROWSER_TEST_F(PermissionsAPIHostAccessRequestsUnitTest,
   {
     auto function =
         base::MakeRefCounted<PermissionsRemoveHostAccessRequestFunction>();
+    function->set_user_gesture(true);
     function->set_extension(extension.get());
 
     EXPECT_TRUE(api_test_utils::RunFunction(

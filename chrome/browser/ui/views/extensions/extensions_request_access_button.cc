@@ -68,7 +68,11 @@ void ExtensionsRequestAccessButton::Update(
   CHECK(!IsShowingConfirmation());
   extension_ids_ = request_access_button_params.extension_ids;
 
-  SetVisible(!request_access_button_params.extension_ids.empty());
+  bool will_be_visible = !request_access_button_params.extension_ids.empty();
+  if (!GetVisible() && will_be_visible) {
+    input_event_activation_protector_.VisibilityChanged(true);
+  }
+  SetVisible(will_be_visible);
   SetTooltipText(request_access_button_params.tooltip_text);
 
   // TODO(crbug.com/40784980): Set the label and background color without
@@ -130,7 +134,19 @@ bool ExtensionsRequestAccessButton::ShouldShowInkdropAfterIphInteraction() {
   return false;
 }
 
-void ExtensionsRequestAccessButton::OnButtonPressed() {
+void ExtensionsRequestAccessButton::NotifyClick(const ui::Event& event) {
+  if (!GetVisible()) {
+    return;
+  }
+  ToolbarChipButton::NotifyClick(event);
+}
+
+void ExtensionsRequestAccessButton::OnButtonPressed(const ui::Event& event) {
+  if (!disable_input_protection_for_testing_ &&
+      input_event_activation_protector_.IsPossiblyUnintendedInteraction(
+          event, /*allow_key_events=*/false)) {
+    return;
+  }
   // Record IPH usage.
   BrowserUserEducationInterface::From(browser_)->NotifyFeaturePromoFeatureUsed(
       feature_engagement::kIPHExtensionsRequestAccessButtonFeature,

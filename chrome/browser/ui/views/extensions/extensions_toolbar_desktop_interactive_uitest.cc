@@ -46,6 +46,7 @@
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/test_navigation_observer.h"
 #include "content/public/test/test_utils.h"
+#include "extensions/browser/background_script_executor.h"
 #include "extensions/browser/disable_reason.h"
 #include "extensions/browser/extension_host_test_helper.h"
 #include "extensions/browser/extension_registrar.h"
@@ -65,6 +66,7 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/views/bubble/bubble_dialog_model_host.h"
 #include "ui/views/layout/animating_layout_manager_test_util.h"
+#include "ui/views/metrics.h"
 #include "ui/views/test/widget_test.h"
 #include "ui/views/widget/widget.h"
 
@@ -1076,6 +1078,7 @@ IN_PROC_BROWSER_TEST_P(
   // Don't show the confirmation since it's dependent on time, and we have other
   // tests for it.
   request_access_button()->remove_confirmation_for_testing(true);
+  request_access_button()->disable_input_protection_for_testing();
 
   // Click the request access button to always grants site access. A reload
   // page dialog will appear since extension A needs a page reload to run its
@@ -1201,6 +1204,7 @@ IN_PROC_BROWSER_TEST_F(
   // Don't show the confirmation since it's dependent on time, and we have other
   // tests for it.
   request_access_button()->remove_confirmation_for_testing(true);
+  request_access_button()->disable_input_protection_for_testing();
 
   // Click the request access button to always grant site access. Since no
   // extensions need page refresh to run their actions, it immediately grants
@@ -1253,6 +1257,8 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_TRUE(request_access_button()->GetVisible());
   EXPECT_THAT(request_access_button()->GetExtensionIdsForTesting(),
               testing::ElementsAre(extension->id()));
+
+  request_access_button()->disable_input_protection_for_testing();
 
   // Click the button to grant one-time access on example.com. Verify
   // confirmation message appears on the request access button.
@@ -1463,6 +1469,103 @@ IN_PROC_BROWSER_TEST_F(ExtensionsToolbarDesktopFeatureUITest,
                 ->GetActionName(),
             base::ASCIIToUTF16(extensionB->name()));
   EXPECT_TRUE(views::IsViewClass<ExtensionsToolbarButton>(visible_children[2]));
+}
+
+// Tests that chrome.permissions.addHostAccessRequest() requires a user gesture,
+// so an extension extension cannot pop the toolbar chip in/out at moments of
+// its choosing. Also tests that when the chip becomes visible, a mouse click
+// within the views::GetDoubleClickInterval time window is rejected by
+// InputEventActivationProtector.
+IN_PROC_BROWSER_TEST_F(
+    ExtensionsToolbarDesktopFeatureUITest,
+    RequestAccessButton_InputProtection_IgnoresAccidentalClicks) {
+  // Install an extension with <all_urls> host_permissions and a service worker.
+  extensions::TestExtensionDir test_dir;
+  test_dir.WriteManifest(R"({
+        "name": "Test Extension",
+        "manifest_version": 3,
+        "version": "0.1",
+        "host_permissions": ["<all_urls>"],
+        "background": {"service_worker": "sw.js"}
+      })");
+  test_dir.WriteFile(FILE_PATH_LITERAL("sw.js"), "/* idle */");
+  scoped_refptr<const extensions::Extension> extension =
+      extensions::ChromeTestExtensionLoader(browser()->profile())
+          .LoadExtension(test_dir.UnpackedPath());
+  ASSERT_TRUE(extension);
+  AppendExtension(extension);
+
+  // The user has restricted this extension to "On click".
+  extensions::ScriptingPermissionsModifier(profile(), extension)
+      .SetWithholdHostPermissions(true);
+
+  GURL url = embedded_test_server()->GetURL("example.com", "/title1.html");
+  NavigateToUrl(url);
+
+  auto* permissions_manager =
+      extensions::PermissionsManager::Get(browser()->profile());
+  ASSERT_EQ(permissions_manager->GetUserSiteAccess(*extension, url),
+            UserSiteAccess::kOnClick);
+  ASSERT_FALSE(permissions_manager->HasGrantedHostPermission(*extension, url));
+  ASSERT_FALSE(request_access_button()->GetVisible());
+
+  // Test that user gesture is required.
+  static constexpr char kScript[] = R"(
+      setTimeout(async () => {
+        try {
+          const [tab] =
+              await chrome.tabs.query({active: true, currentWindow: true});
+          await chrome.permissions.addHostAccessRequest({tabId: tab.id});
+          chrome.test.sendScriptResult('ok');
+        } catch (e) {
+          chrome.test.sendScriptResult('FAILED: ' + e.message);
+        }
+      }, 0);
+    )";
+  base::Value result = extensions::BackgroundScriptExecutor::ExecuteScript(
+      browser()->profile(), extension->id(), kScript,
+      extensions::BackgroundScriptExecutor::ResultCapture::kSendScriptResult,
+      extensions::browsertest_util::ScriptUserActivation::kDontActivate);
+  ASSERT_TRUE(result.is_string());
+  EXPECT_NE(result.GetString(), "ok");
+  EXPECT_TRUE(result.GetString().find(
+                  "This function must be called during a user gesture") !=
+              std::string::npos);
+
+  // To test the input protection, we bypass the gesture check (using the C++
+  // API directly) to add the request and make the button visible.
+  auto* web_contents = browser()->tab_strip_model()->GetActiveWebContents();
+  int tab_id = extensions::ExtensionTabUtil::GetTabId(web_contents);
+  permissions_manager->AddHostAccessRequest(web_contents, tab_id, *extension);
+
+  WaitForAnimation();
+
+  base::TimeTicks visible_at = base::TimeTicks::Now();
+  ASSERT_TRUE(request_access_button()->GetVisible());
+  ASSERT_TRUE(request_access_button()->GetEnabled());
+  EXPECT_THAT(request_access_button()->GetExtensionIdsForTesting(),
+              testing::ElementsAre(extension->id()));
+
+  // A click within the protector window is ignored.
+  request_access_button()->remove_confirmation_for_testing(true);
+
+  base::TimeTicks click_at = base::TimeTicks::Now();
+  ASSERT_LT(click_at - visible_at, views::GetDoubleClickInterval())
+      << "test ran too slowly to land click inside the 500 ms window";
+
+  ui::MouseEvent press(ui::EventType::kMousePressed, gfx::Point(), gfx::Point(),
+                       click_at, ui::EF_LEFT_MOUSE_BUTTON,
+                       ui::EF_LEFT_MOUSE_BUTTON);
+  ui::MouseEvent release(ui::EventType::kMouseReleased, gfx::Point(),
+                         gfx::Point(), click_at, ui::EF_LEFT_MOUSE_BUTTON,
+                         ui::EF_LEFT_MOUSE_BUTTON);
+  request_access_button()->OnMousePressed(press);
+  request_access_button()->OnMouseReleased(release);
+
+  EXPECT_EQ(permissions_manager->GetUserSiteAccess(*extension, url),
+            UserSiteAccess::kOnClick)
+      << "Click should be ignored by InputEventActivationProtector";
+  EXPECT_FALSE(permissions_manager->HasGrantedHostPermission(*extension, url));
 }
 
 // Temporary test class to test functionality while kExtensionsMenuAccessControl
