@@ -14,6 +14,8 @@
 #include <stddef.h>
 #include <wrl/client.h>
 
+#include <string_view>
+
 #include "base/logging.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
@@ -205,50 +207,6 @@ static bool GetDeviceNamesWinImpl(
 
   return true;
 }
-
-// The waveform API is weird in that it has completely separate but
-// almost identical functions and structs for input devices vs. output
-// devices. We deal with this by implementing the logic as a templated
-// function that takes the functions and struct type to use as
-// template parameters.
-template <UINT(__stdcall* NumDevsFunc)(),
-          typename CAPSSTRUCT,
-          MMRESULT(__stdcall* DevCapsFunc)(UINT_PTR, CAPSSTRUCT*, UINT)>
-static bool GetDeviceNamesWinXPImpl(AudioDeviceNames* device_names) {
-  // Retrieve the number of active waveform input devices.
-  UINT number_of_active_devices = NumDevsFunc();
-  if (number_of_active_devices == 0)
-    return true;
-
-  AudioDeviceName device;
-  CAPSSTRUCT capabilities;
-  MMRESULT err = MMSYSERR_NOERROR;
-
-  // Loop over all active capture devices and add friendly name and
-  // unique ID to the |device_names| list. Note that, for Wave on XP,
-  // the "unique" name will simply be a copy of the friendly name since
-  // there is no safe method to retrieve a unique device name on XP.
-  for (UINT i = 0; i < number_of_active_devices; ++i) {
-    // Retrieve the capabilities of the specified waveform-audio input device.
-    err = DevCapsFunc(i, &capabilities, sizeof(capabilities));
-    if (err != MMSYSERR_NOERROR)
-      continue;
-
-    // Store the user-friendly name. Max length is MAXPNAMELEN(=32)
-    // characters and the name cane be truncated on XP.
-    // Example: "Microphone (Realtek High Defini".
-    device.device_name = base::WideToUTF8(capabilities.szPname);
-
-    // Store the "unique" name (we use same as friendly name on Windows XP).
-    device.unique_id = device.device_name;
-
-    // Add combination of user-friendly and unique name to the output list.
-    device_names->push_back(device);
-  }
-
-  return true;
-}
-
 bool GetInputDeviceNamesWin(
     AudioDeviceNames* device_names,
     const media::AudioManager::LogCallback& log_callback) {
@@ -261,29 +219,22 @@ bool GetOutputDeviceNamesWin(
   return GetDeviceNamesWinImpl(eRender, device_names, log_callback);
 }
 
-bool GetInputDeviceNamesWinXP(AudioDeviceNames* device_names) {
-  return GetDeviceNamesWinXPImpl<waveInGetNumDevs, WAVEINCAPSW,
-                                 waveInGetDevCapsW>(device_names);
-}
-
-bool GetOutputDeviceNamesWinXP(AudioDeviceNames* device_names) {
-  return GetDeviceNamesWinXPImpl<waveOutGetNumDevs, WAVEOUTCAPSW,
-                                 waveOutGetDevCapsW>(device_names);
-}
-
-std::string GetDeviceSuffixWin(const std::string& controller_id) {
-  std::string suffix;
-  if (controller_id.size() >= 21 && controller_id.substr(0, 8) == "USB\\VID_" &&
+std::string GetDeviceSuffixWin(std::string_view controller_id) {
+  if (controller_id.size() >= 21 &&
+      base::StartsWith(controller_id, "USB\\VID_") &&
       controller_id.substr(12, 5) == "&PID_") {
-    suffix = " (" + base::ToLowerASCII(controller_id.substr(8, 4)) + ":" +
-             base::ToLowerASCII(controller_id.substr(17, 4)) + ")";
-  } else if ((controller_id.size() >= 22 &&
-              controller_id.substr(0, 22) == "BTHHFENUM\\BthHFPAudio\\") ||
-             (controller_id.size() >= 8 &&
-              controller_id.substr(0, 8) == "BTHENUM\\")) {
-    suffix = " (Bluetooth)";
+    return base::StrCat({" (", base::ToLowerASCII(controller_id.substr(8, 4)),
+                         ":", base::ToLowerASCII(controller_id.substr(17, 4)),
+                         ")"});
   }
-  return suffix;
+
+  if ((controller_id.size() >= 22 &&
+       base::StartsWith(controller_id, "BTHHFENUM\\BthHFPAudio\\")) ||
+      (controller_id.size() >= 8 &&
+       base::StartsWith(controller_id, "BTHENUM\\"))) {
+    return " (Bluetooth)";
+  }
+  return std::string();
 }
 
 }  // namespace media

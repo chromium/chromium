@@ -6,6 +6,7 @@
 #define MEDIA_AUDIO_WIN_DEVICE_ENUMERATION_WIN_H_
 
 #include <string>
+#include <string_view>
 
 #include "media/audio/audio_device_name.h"
 #include "media/audio/audio_manager.h"
@@ -29,14 +30,6 @@ bool GetOutputDeviceNamesWin(
     const media::AudioManager::LogCallback& log_callback =
         media::AudioManager::LogCallback());
 
-// Returns a list of audio output device structures (name and
-// unique device ID) using the WaveIn API which is supported on
-// Windows XP and higher.
-// Example record in the output list:
-// - device_name: "Microphone (Realtek High Defini".
-// - unique_id: "Microphone (Realtek High Defini" (same as friendly name).
-bool GetOutputDeviceNamesWinXP(media::AudioDeviceNames* device_names);
-
 // Given a string |controller_id| with the controller ID of an audio device,
 // returns a string containing extra information about the device.
 // If the device is a USB device, the format of the returned string is
@@ -47,9 +40,8 @@ bool GetOutputDeviceNamesWinXP(media::AudioDeviceNames* device_names);
 // further formatting.
 // If |controller_id| does not refer to a USB or Bluetooth device, this
 // function returns an empty string.
-MEDIA_EXPORT std::string GetDeviceSuffixWin(const std::string& controller_id);
+MEDIA_EXPORT std::string GetDeviceSuffixWin(std::string_view controller_id);
 
 }  // namespace media
 
 #endif  // MEDIA_AUDIO_WIN_DEVICE_ENUMERATION_WIN_H_
-
