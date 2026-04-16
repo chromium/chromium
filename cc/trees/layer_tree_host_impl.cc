@@ -1459,6 +1459,8 @@ DrawResult LayerTreeHostImpl::CalculateRenderPasses(FrameData* frame,
   bool has_damage = HasDamage();
 
   if (expects_to_draw) {
+    SCOPED_CRASH_KEY_STRING64("cc", "client_damage",
+                              root_layer_damage_rect_.ToString());
     if (active_tree_->RootRenderSurface()) {
       gfx::Rect viz_damage_rect =
           active_tree_->RootRenderSurface()->GetDamageRect();
@@ -1470,23 +1472,44 @@ DrawResult LayerTreeHostImpl::CalculateRenderPasses(FrameData* frame,
       // rendering (just potentially wasteful). If Viz has LESS damage, we might
       // miss redrawing some areas.
       if (!root_layer_damage_rect_.IsEmpty()) {
+        SCOPED_CRASH_KEY_STRING64("cc", "viz_damage",
+                                  viz_damage_rect.ToString());
+        SCOPED_CRASH_KEY_STRING64(
+            "cc", "viz_content",
+            active_tree_->RootRenderSurface()->content_rect().ToString());
+        SCOPED_CRASH_KEY_STRING64(
+            "cc", "insets",
+            viz_damage_rect.InsetsFrom(root_layer_damage_rect_).ToString());
+        SCOPED_CRASH_KEY_STRING32(
+            "cc", "dsf",
+            base::NumberToString(active_tree_->device_scale_factor()));
+        SCOPED_CRASH_KEY_STRING256(
+            "cc", "transform",
+            active_tree_->RootRenderSurface()->draw_transform().ToString());
+        SCOPED_CRASH_KEY_STRING64(
+            "cc", "damage_reasons",
+            base::NumberToString(frame->damage_reasons.ToEnumBitmask()));
+        SCOPED_CRASH_KEY_STRING64("cc", "viewport_damage",
+                                  viewport_damage_rect_.ToString());
+        SCOPED_CRASH_KEY_BOOL("cc", "has_view_transitions",
+                              active_tree_->HasViewTransitionRequests());
+        SCOPED_CRASH_KEY_STRING64(
+            "cc", "root_layer_bounds",
+            active_tree_->root_layer()
+                ? active_tree_->root_layer()->bounds().ToString()
+                : "null");
+        SCOPED_CRASH_KEY_NUMBER("cc", "surface_count",
+                                frame->render_surface_list->size());
+
         DUMP_WILL_BE_CHECK(viz_damage_rect.Contains(root_layer_damage_rect_))
             << "crbug.com/454680865: Viz damage does not contain client "
-               "damage! "
-            << "Client: " << root_layer_damage_rect_.ToString()
-            << " Viz: " << viz_damage_rect.ToString() << " Viz content rect: "
-            << active_tree_->RootRenderSurface()->content_rect().ToString()
-            << " Client-in-Viz Insets: "
-            << viz_damage_rect.InsetsFrom(root_layer_damage_rect_).ToString()
-            << " DSF: " << active_tree_->device_scale_factor() << " Transform: "
-            << active_tree_->RootRenderSurface()->draw_transform().ToString();
+               "damage!";
       }
     }
 
     // Force drawing, but assert in DCHECK builds.
     DUMP_WILL_BE_CHECK(has_damage)
-        << "crbug.com/454680865: Has no damage while expects_to_draw is set."
-        << " Client damage: " << root_layer_damage_rect_.ToString();
+        << "crbug.com/454680865: Has no damage while expects_to_draw is set.";
     has_damage = true;
   }
 
