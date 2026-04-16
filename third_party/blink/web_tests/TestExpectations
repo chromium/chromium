@@ -6655,10 +6655,6 @@ crbug.com/341935362 virtual/dialog-close-when-open-removed-disabled/external/wpt
 # unicode-bidi invalidation bug
 crbug.com/391865300 fast/forms/select/menulist-appearance-rtl.html [ Failure ]
 
-# To-be-fixed tests from the IndexedDB SQLite virtual suite.
-crbug.com/40253999 virtual/indexeddb_sqlite/external/wpt/clear-site-data/storage.https.html [ Failure ]
-crbug.com/40253999 virtual/indexeddb_sqlite/external/wpt/storage/partitioned-estimate-usage-details-indexeddb.tentative.https.sub.html [ Timeout ]
-
 # Flaky on headless_shell_wpt_tests
 crbug.com/40146374 external/wpt/html/semantics/forms/the-select-element/customizable-select/select-option-images.html [ Failure Pass ]
 
