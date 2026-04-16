@@ -292,6 +292,14 @@ constexpr auto kPageActionProperties = base::MakeFixedFlatMap<
             .type = PageActionIconType::kAnchoredContextualCue,
         },
     },
+    {
+        kActionWebAuthnAmbientSignin,
+        {
+            .histogram_name = "WebAuthnAmbientSignin",
+            .type = PageActionIconType::kWebAuthnAmbientSignin,
+            .element_identifier = kWebAuthnAmbientSigninIconElementId,
+        },
+    },
 });
 
 constexpr bool CheckIgnoreFlagUsage() {

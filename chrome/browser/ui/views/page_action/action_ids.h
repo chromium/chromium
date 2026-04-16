@@ -44,6 +44,7 @@ inline constexpr auto kActionIds = std::to_array<actions::ActionId>({
     kActionGlicContextualCueing,
     kActionBookmarkThisTab,
     kActionAnchoredContextualCue,
+    kActionWebAuthnAmbientSignin,
     kActionFederation,
 });
 

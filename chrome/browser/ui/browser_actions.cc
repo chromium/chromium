@@ -108,6 +108,7 @@
 #include "chrome/browser/ui/views/zoom/zoom_view_controller.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "chrome/browser/ui/web_applications/web_app_dialog_utils.h"
+#include "chrome/browser/ui/webauthn/ambient/ambient_signin_controller.h"
 #include "chrome/browser/ui/webid/account_selection_view.h"
 #include "chrome/browser/ui/webui/side_panel/customize_chrome/customize_chrome_section.h"
 #include "chrome/common/chrome_features.h"
@@ -514,6 +515,25 @@ void BrowserActions::InitializePageActionIconActions() {
               },
               bwi))
           .SetActionId(kActionFederation)
+          .SetEnabled(true)
+          .Build());
+
+  root_action_item_->AddChild(
+      actions::ActionItem::Builder(
+          base::BindRepeating(
+              [](BrowserWindowInterface* bwi, actions::ActionItem* item,
+                 actions::ActionInvocationContext context) {
+                auto* web_contents =
+                    bwi->GetActiveTabInterface()->GetContents();
+                auto* controller = ambient_signin::AmbientSigninController::
+                    GetForCurrentDocument(web_contents->GetPrimaryMainFrame());
+                if (!controller) {
+                  return;
+                }
+                controller->TriggerPageActionSignIn();
+              },
+              bwi))
+          .SetActionId(kActionWebAuthnAmbientSignin)
           .SetEnabled(true)
           .Build());
 

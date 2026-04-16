@@ -72,6 +72,7 @@ bool IsPageActionMigrated(PageActionIconType page_action) {
     case PageActionIconType::kDiscounts:
     case PageActionIconType::kFederation:
     case PageActionIconType::kManagePasswords:
+    case PageActionIconType::kWebAuthnAmbientSignin:
       return true;
     default:
       break;

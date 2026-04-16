@@ -65,7 +65,7 @@ class AmbientSigninBubbleView : public views::BubbleDialogDelegateView {
   void Hide();
   void Close();
 
-  void NotifyWidgetDestroyed();
+  void DisconnectController();
 
  private:
   void OnPasskeySelected(const std::vector<uint8_t>& account_id,

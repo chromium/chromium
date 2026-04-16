@@ -18304,6 +18304,9 @@ Please help our engineers fix this problem. Tell us what happened right before y
       <message name="IDS_WEBAUTHN_SIGN_IN_TO_WEBSITE_DIALOG_TITLE" desc="The title of a bubble that displays passkeys or passwords for signing in to a given site.">
         Sign in to <ph name="RP_ID">$1<ex>webauthn.io</ex></ph>
       </message>
+      <message name="IDS_WEBAUTHN_SIGN_IN_AS_PROMPT" desc="The text of a prompt that allows the user to sign in to a website using an account with the provided username." translateable="false">
+        Sign in as <ph name="USERNAME">$1<ex>elisa@example.com</ex></ph>
+      </message>
 
       <!-- WebAuthn Automatic Passkey Upgrades -->
       <message name="IDS_PASSKEY_UPGRADE_BUBBLE_TITLE" desc="The title of a bubble that informs the user a passkey was created for them automatically. Refer to Glossary for the meaning of 'passkey'.">

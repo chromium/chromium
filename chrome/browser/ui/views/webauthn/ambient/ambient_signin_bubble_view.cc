@@ -28,12 +28,15 @@
 #include "ui/base/models/image_model.h"
 #include "ui/base/mojom/dialog_button.mojom.h"
 #include "ui/color/color_id.h"
+#include "ui/gfx/font_list.h"
 #include "ui/views/bubble/bubble_border.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 #include "ui/views/controls/button/button.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/layout/box_layout.h"
+#include "ui/views/layout/layout_provider.h"
 #include "ui/views/layout/layout_types.h"
+#include "ui/views/style/typography.h"
 #include "ui/views/view.h"
 
 namespace ambient_signin {
@@ -79,7 +82,12 @@ AmbientSigninBubbleView::AmbientSigninBubbleView(
   SetLayoutManager(std::move(layout));
 }
 
-AmbientSigninBubbleView::~AmbientSigninBubbleView() = default;
+AmbientSigninBubbleView::~AmbientSigninBubbleView() {
+  if (controller_) {
+    controller_->OnBubbleViewDestroyed();
+    controller_ = nullptr;
+  }
+}
 
 void AmbientSigninBubbleView::ShowCredentials(
     const std::vector<password_manager::PasskeyCredential>& credentials,
@@ -90,11 +98,6 @@ void AmbientSigninBubbleView::ShowCredentials(
   }
 
   for (const auto& form : forms) {
-    // TODO(ambient): For now we ignore federated credentials, but these will
-    // likely need to be displayed in the future.
-    if (form->IsFederatedCredential()) {
-      continue;
-    }
     AddChildView(CreatePasswordRow(form.get()));
   }
   SetButtonArea();
@@ -104,8 +107,7 @@ void AmbientSigninBubbleView::ShowCredentials(
 
 void AmbientSigninBubbleView::Show() {
   if (!widget_) {
-    widget_ = BubbleDialogDelegateView::CreateBubble(this)->GetWeakPtr();
-    widget_->AddObserver(controller_);
+    widget_ = views::BubbleDialogDelegate::CreateBubble(this)->GetWeakPtr();
   }
   widget_->Show();
 }
@@ -118,13 +120,14 @@ void AmbientSigninBubbleView::Hide() {
 }
 
 void AmbientSigninBubbleView::Close() {
-  widget_->Close();
+  if (widget_) {
+    widget_->Close();
+  }
 }
 
-void AmbientSigninBubbleView::NotifyWidgetDestroyed() {
-  widget_->RemoveObserver(controller_);
+void AmbientSigninBubbleView::DisconnectController() {
   controller_ = nullptr;
-  BubbleDialogDelegateView::OnWidgetDestroying(widget_.get());
+  Close();
 }
 
 void AmbientSigninBubbleView::OnPasskeySelected(
