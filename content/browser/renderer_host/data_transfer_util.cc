@@ -398,7 +398,7 @@ DropData DragDataToDropData(const blink::mojom::DragData& drag_data) {
             binary_item->is_image_accessible;
         result.file_contents_source_url = binary_item->source_url;
         result.file_contents_filename_extension =
-            binary_item->filename_extension.value();
+            binary_item->filename_extension.BaseName().value();
         if (binary_item->content_disposition) {
           result.file_contents_content_disposition =
               *binary_item->content_disposition;

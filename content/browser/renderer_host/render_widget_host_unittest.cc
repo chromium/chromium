@@ -2411,6 +2411,28 @@ TEST_F(RenderWidgetHostDragTest, FileUrlSpecifiesDownloadUrlWithFileUrl) {
   EXPECT_TRUE(drop_data().download_metadata.has_value());
 }
 
+TEST_F(RenderWidgetHostDragTest, SanitizeFilenameExtensionOnDrag) {
+  NavigateAndCommit(GURL("https://example.com"));
+  EXPECT_EQ(start_dragging_count(), 0);
+
+  auto drag_data = blink::mojom::DragData::New();
+  blink::mojom::DragItemBinaryPtr item = blink::mojom::DragItemBinary::New();
+  item->data = mojo_base::BigBuffer(std::vector<uint8_t>{1, 2, 3});
+  item->is_image_accessible = true;
+  item->source_url = GURL("http://example.com/image.png");
+  item->filename_extension =
+      base::FilePath(FILE_PATH_LITERAL("png/../../payload.so"));
+  drag_data->items.push_back(
+      blink::mojom::DragItem::NewBinary(std::move(item)));
+
+  StartDragWithDragData(std::move(drag_data));
+
+  EXPECT_EQ(start_dragging_count(), 1);
+  // BaseName() should strip the path traversal components.
+  EXPECT_EQ(drop_data().file_contents_filename_extension,
+            FILE_PATH_LITERAL("payload.so"));
+}
+
 // Hiding the RenderWidgetHostImpl instance via a call to WasHidden should
 // not reject a pending pointer lock, if the operation is waiting for the
 // user to make a selection on the permission prompt.
