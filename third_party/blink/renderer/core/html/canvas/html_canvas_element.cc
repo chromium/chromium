@@ -259,13 +259,17 @@ class TransferToGPUTextureInvokedSupplement final
   bool transfer_to_gpu_texture_was_invoked_ = false;
 };
 
-// Adapter for wrapping a CanvasResourceReleaseCallback into a
-// viz::ReleaseCallback
-void ReleaseCanvasResource(CanvasResource::ReleaseCallback callback,
-                           scoped_refptr<CanvasResource> canvas_resource,
+// viz::ReleaseCallback for CanvasResource
+void ReleaseCanvasResource(scoped_refptr<CanvasResource> canvas_resource,
                            const gpu::SyncToken& sync_token,
                            bool is_lost) {
-  std::move(callback).Run(std::move(canvas_resource), sync_token, is_lost);
+  CHECK(canvas_resource);
+  canvas_resource->WaitSyncToken(sync_token);
+  if (is_lost) {
+    canvas_resource->NotifyResourceLost();
+  }
+
+  CanvasResource::DropRefOnOwningThread(std::move(canvas_resource));
 }
 
 void UmaHistogramCompressionRatio(
@@ -374,26 +378,13 @@ bool HTMLCanvasElement::PrepareTransferableResource(
     return false;
   }
 
-  CanvasResource::ReleaseCallback release_callback =
-      base::BindOnce([](scoped_refptr<CanvasResource>&& resource,
-                        const gpu::SyncToken& sync_token, bool lost_resource) {
-        CHECK(resource);
-        resource->WaitSyncToken(sync_token);
-        if (lost_resource) {
-          resource->NotifyResourceLost();
-        }
-
-        CanvasResource::DropRefOnOwningThread(std::move(resource));
-      });
-
   if (!frame->PrepareTransferableResource(out_resource,
                                           /*needs_verified_synctoken=*/false) ||
       *out_resource == cc_layer_->current_transferable_resource()) {
     // If the resource did not change, the release will be handled correctly
-    // when the callback from the previous frame is dispatched. But run the
-    // |release_callback| to release the ref acquired above.
-    std::move(release_callback)
-        .Run(std::move(frame), gpu::SyncToken(), false /* is_lost */);
+    // when the callback from the previous frame is dispatched. But we need to
+    // drop ref to the current resource.
+    CanvasResource::DropRefOnOwningThread(std::move(frame));
     return false;
   }
   // TODO(https://crbug.com/1475955): HDR metadata should be propagated to
@@ -402,8 +393,8 @@ bool HTMLCanvasElement::PrepareTransferableResource(
   // here.
   out_resource->hdr_metadata = hdr_metadata_;
   // Note: frame is kept alive via a reference kept in out_release_callback.
-  *out_release_callback = blink::BindOnce(
-      ReleaseCanvasResource, std::move(release_callback), std::move(frame));
+  *out_release_callback =
+      blink::BindOnce(ReleaseCanvasResource, std::move(frame));
 
   return true;
 }
