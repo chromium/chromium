@@ -46,6 +46,7 @@
 #include "components/optimization_guide/core/optimization_guide_util.h"
 #include "components/optimization_guide/proto/model_execution.pb.h"
 #include "components/optimization_guide/public/mojom/model_broker.mojom.h"
+#include "components/optimization_guide/public/mojom/model_broker_debug.mojom.h"
 #include "mojo/public/cpp/bindings/callback_helpers.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -146,6 +147,20 @@ OnDeviceModelServiceController::OnDeviceModelServiceController(
 }
 
 OnDeviceModelServiceController::~OnDeviceModelServiceController() = default;
+
+std::vector<mojom::BrokerModelInfoPtr>
+OnDeviceModelServiceController::GetBrokerModels() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  std::vector<mojom::BrokerModelInfoPtr> models;
+  if (base_model_controller_ && base_model_controller_->model_metadata()) {
+    auto model_info = mojom::BrokerModelInfo::New();
+    model_info->name = "Base Model";
+    model_info->weights_path =
+        base_model_controller_->model_metadata()->model_path().AsUTF8Unsafe();
+    models.push_back(std::move(model_info));
+  }
+  return models;
+}
 
 void OnDeviceModelServiceController::SetLanguageDetectionModel(
     base::optional_ref<const ModelInfo> model_info) {

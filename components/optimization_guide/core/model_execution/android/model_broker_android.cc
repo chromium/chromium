@@ -362,6 +362,34 @@ void ModelBrokerAndroid::BindModelBroker(
   }
 }
 
+void ModelBrokerAndroid::BindModelBrokerDebug(
+    base::PassKey<on_device_internals::PageHandler> key,
+    mojo::PendingReceiver<mojom::ModelBrokerDebug> receiver) {
+  receivers_.Add(this, std::move(receiver));
+}
+
+void ModelBrokerAndroid::GetStateInfo(
+    mojom::ModelBrokerDebug::GetStateInfoCallback callback) {
+  auto result = mojom::BrokerStateInfo::New();
+  // TODO: crbug.com/489511500 - Expose relevant info.
+  // result->properties = performance_classifier_.GetBrokerProperties();
+  // base::Extend(result->properties,
+  //              component_state_manager_.GetBrokerProperties());
+  // result->assets = component_state_manager_.GetBrokerAssets();
+  result->use_cases = impl_.GetBrokerUseCaseInfo();
+  // result->models = base_model_controller_.GetBrokerModels();
+  std::move(callback).Run(std::move(result));
+}
+
+void ModelBrokerAndroid::SetUseCaseRequested(const std::string& use_case,
+                                             bool requested) {
+  usage_tracker_.SetUseCaseRequested(use_case, requested);
+}
+
+void ModelBrokerAndroid::UninstallModels() {
+  // Not supported for android, since we don't own the models.
+}
+
 mojo::Remote<on_device_model::mojom::OnDeviceModel>&
 ModelBrokerAndroid::GetOrCreateModelRemote(
     proto::ModelExecutionFeature feature) {

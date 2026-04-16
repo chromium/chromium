@@ -1,0 +1,97 @@
+// Copyright 2026 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module optimization_guide.mojom;
+
+import "components/optimization_guide/public/mojom/model_broker.mojom";
+import "mojo/public/mojom/base/proto_wrapper.mojom";
+import "services/on_device_model/public/mojom/download_observer.mojom";
+import "services/on_device_model/public/mojom/on_device_model.mojom";
+
+// Describes some system property the broker evaluated.
+struct BrokerPropertyInfo {
+  // A description of the property, e.g.
+  // "free disk space" / "enterprise on-device model policy"
+  // This is intended for display to the user, verbatim.
+  string description;
+  // The value of the property e.g. "100GB" / "allowed".
+  // This is intended for display to the user, verbatim.
+  string value;
+};
+
+// What the broker is doing with asset.
+enum BrokerAssetState {
+  // Not installed, not attempting to install.
+  kNotInstalled,
+  // The asset is being registered, we don't know if we already have it.
+  kRegistering,
+  // Install requested, at low priority.
+  kBackgroundInstalling,
+  // Immediate install requested.
+  kForegroundInstalling,
+  // Asset is available at the intended version.
+  kReady,
+  // Currently being removed.
+  kUninstalling,
+};
+
+// Information about an asset the broker might download.
+struct BrokerAssetInfo {
+  // The name of the asset.
+  string name;
+  // The version that broker wants to install, if determined.
+  // If the state is kReady, this is the actual version.
+  string? version;
+  // The current status of the asset.
+  BrokerAssetState state;
+  // Some description of a problem encountered with this asset.
+  // This is intended for display to the user, verbatim.
+  string? error;
+};
+
+// Information about a use case the broker supports.
+struct BrokerUseCaseInfo {
+  // The name of the use case.
+  string name;
+  // Whether assets for the use case have been requested.
+  bool assets_requested;
+  // Why this model is not available, if it's not available.
+  ModelUnavailableReason? unavailable_reason;
+};
+
+// Information about a models that the broker can load via the
+// on-device-model Service.
+struct BrokerModelInfo {
+  // The name of the model.
+  string name;
+  // The absolute path to the weights file for the model.
+  string weights_path;
+};
+
+// A snapshot of the ModelBroker's internal state.
+struct BrokerStateInfo {
+  array<BrokerPropertyInfo> properties;
+  array<BrokerAssetInfo> assets;
+  array<BrokerUseCaseInfo> use_cases;
+  array<BrokerModelInfo> models;
+};
+
+// A debug interface for ModelBroker. This is primarily exposed for
+// chrome://on-device-internals. We may want to expose it through
+// dev-tools as well.
+interface ModelBrokerDebug {
+  // Get a snapshot of the Broker's internal state.
+  GetStateInfo() => (BrokerStateInfo state);
+
+  // Set / clear use case "requested" state.
+  // Setting a use case requested may cause model assets to be downloaded,
+  // and behaves similarly to ModelBroker::RequestAssetsFor.
+  // Clearing state *may* prevent a download from occuring, or revert a
+  // model to showing a "downloadable" status instead of "downloading".
+  SetUseCaseRequested(string use_case, bool requested);
+
+  // Request uninstallation of models.
+  // Not all implementations may honor this request.
+  UninstallModels();
+};

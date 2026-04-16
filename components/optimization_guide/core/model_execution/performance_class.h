@@ -11,6 +11,7 @@
 #include "base/component_export.h"
 #include "components/optimization_guide/core/optimization_guide_enums.h"
 #include "components/optimization_guide/proto/on_device_base_model_metadata.pb.h"
+#include "components/optimization_guide/public/mojom/model_broker_debug.mojom-forward.h"
 #include "components/prefs/pref_service.h"
 #include "services/on_device_model/public/cpp/service_client.h"
 #include "services/on_device_model/public/mojom/on_device_model.mojom-shared.h"
@@ -52,6 +53,9 @@ std::string_view SyntheticTrialGroupForPerformanceClass(
 // Get the name of the synthetic trial group for this performance hint.
 std::string_view SyntheticTrialGroupForPerformanceHint(
     proto::OnDeviceModelPerformanceHint performance_hint);
+
+std::ostream& operator<<(std::ostream& out,
+                         OnDeviceModelPerformanceClass performance_class);
 
 // Computes performance class at most once, and allows observation of it's
 // availability.
@@ -107,6 +111,8 @@ class PerformanceClassifier final {
   std::vector<proto::OnDeviceModelPerformanceHint> GetPossibleHints() const;
 
   on_device_model::Capabilities GetPossibleOnDeviceCapabilities() const;
+
+  std::vector<mojom::BrokerPropertyInfoPtr> GetBrokerProperties() const;
 
  private:
   // Called when performance class has finished evaluating.

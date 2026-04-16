@@ -33,6 +33,7 @@
 #include "components/optimization_guide/core/optimization_guide_features.h"
 #include "components/optimization_guide/proto/on_device_base_model_metadata.pb.h"
 #include "components/optimization_guide/public/mojom/model_broker.mojom-forward.h"
+#include "components/optimization_guide/public/mojom/model_broker_debug.mojom-forward.h"
 #include "components/prefs/pref_change_registrar.h"
 
 class PrefService;
@@ -290,9 +291,8 @@ class OnDeviceModelComponentStateManager final : public UsageTracker::Observer {
           !enabled_by_user_setting) {
         return true;
       }
-      if (out_of_retention &&
-          !base::FeatureList::IsEnabled(
-              features::kOnDeviceModelBackgroundDownload)) {
+      if (out_of_retention && !base::FeatureList::IsEnabled(
+                                  features::kOnDeviceModelBackgroundDownload)) {
         return true;
       }
       return false;
@@ -376,9 +376,12 @@ class OnDeviceModelComponentStateManager final : public UsageTracker::Observer {
     return weak_ptr_factory_.GetWeakPtr();
   }
 
- private:
   DebugState GetDebugState();
 
+  std::vector<mojom::BrokerPropertyInfoPtr> GetBrokerProperties() const;
+  std::vector<mojom::BrokerAssetInfoPtr> GetBrokerAssets() const;
+
+ private:
   // Should be called whenever the device performance class changes.
   void OnPerformanceClassAvailable();
 

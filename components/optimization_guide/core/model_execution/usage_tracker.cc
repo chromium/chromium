@@ -73,4 +73,14 @@ void UsageTracker::RemoveObserver(Observer* observer) {
   observers_.RemoveObserver(observer);
 }
 
+void UsageTracker::SetUseCaseRequested(const std::string& use_case_name,
+                                       bool requested) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (requested) {
+    OnDeviceEligibleUseCaseUsed(use_case_name);
+  } else {
+    model_execution::prefs::ClearUseCaseUsage(&*local_state_, use_case_name);
+  }
+}
+
 }  // namespace optimization_guide

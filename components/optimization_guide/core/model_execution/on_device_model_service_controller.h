@@ -35,6 +35,7 @@
 #include "components/optimization_guide/core/model_execution/session_impl.h"
 #include "components/optimization_guide/proto/model_execution.pb.h"
 #include "components/optimization_guide/public/mojom/model_broker.mojom.h"
+#include "components/optimization_guide/public/mojom/model_broker_debug.mojom-forward.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -122,6 +123,8 @@ class OnDeviceModelServiceController final {
     return safety_client_;
   }
 
+  std::vector<mojom::BrokerModelInfoPtr> GetBrokerModels() const;
+
  private:
   // A set of (references to) compatible, versioned dependencies that implement
   // a OnDeviceFeature.
@@ -195,7 +198,9 @@ class OnDeviceModelServiceController final {
 
     on_device_model::ModelAssetPaths PopulateModelPaths();
 
-    OnDeviceModelMetadata* model_metadata() { return model_metadata_.get(); }
+    const OnDeviceModelMetadata* model_metadata() const {
+      return model_metadata_.get();
+    }
 
     base::WeakPtr<BaseModelController> GetWeakPtr() {
       return weak_ptr_factory_.GetWeakPtr();

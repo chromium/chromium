@@ -15,6 +15,7 @@
 #include "components/optimization_guide/core/model_execution/model_broker_client.h"
 #include "components/optimization_guide/core/model_execution/on_device_capability.h"
 #include "components/optimization_guide/public/mojom/model_broker.mojom.h"
+#include "components/optimization_guide/public/mojom/model_broker_debug.mojom-forward.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "mojo/public/cpp/bindings/remote_set.h"
@@ -65,7 +66,7 @@ class ModelBrokerImpl final : public mojom::ModelBroker {
 
     void Update(MaybeSolution solution);
 
-    MaybeSolution& solution() { return solution_; }
+    const MaybeSolution& solution() const { return solution_; }
     // The local subscriber is a special subscriber that gets updated
     // synchronously.
     ModelSubscriberImpl& local_subscriber() { return local_subscriber_; }
@@ -102,6 +103,8 @@ class ModelBrokerImpl final : public mojom::ModelBroker {
   // Set the feature configs for the current manifest.
   void SetFeatureConfigs(
       base::flat_map<mojom::OnDeviceFeature, proto::Any> feature_configs);
+
+  std::vector<mojom::BrokerUseCaseInfoPtr> GetBrokerUseCaseInfo() const;
 
  private:
   // mojom::ModelBroker:

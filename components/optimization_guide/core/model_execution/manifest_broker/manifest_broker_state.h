@@ -24,7 +24,8 @@ class PrefService;
 namespace optimization_guide {
 
 // This holds the state for the manifest based on-device model broker.
-class ManifestBrokerState final : public OnDeviceCapability {
+class ManifestBrokerState final : public OnDeviceCapability,
+                                  mojom::ModelBrokerDebug {
  public:
   ManifestBrokerState(PrefService& local_state,
                       std::unique_ptr<ManifestAssetManager::Delegate> delegate,
@@ -34,6 +35,9 @@ class ManifestBrokerState final : public OnDeviceCapability {
   // OnDeviceCapability
   void BindModelBroker(
       mojo::PendingReceiver<mojom::ModelBroker> receiver) override;
+  void BindModelBrokerDebug(
+      base::PassKey<on_device_internals::PageHandler> key,
+      mojo::PendingReceiver<mojom::ModelBrokerDebug> receiver) override;
   std::unique_ptr<OnDeviceSession> StartSession(
       mojom::OnDeviceFeature feature,
       const SessionConfigParams& config_params,
@@ -51,6 +55,13 @@ class ManifestBrokerState final : public OnDeviceCapability {
       const on_device_model::Capabilities& capabilities,
       base::OnceCallback<void(OnDeviceModelEligibilityReason)> callback)
       override;
+
+  // mojom::ModelBrokerDebug
+  void GetStateInfo(
+      mojom::ModelBrokerDebug::GetStateInfoCallback callback) override;
+  void SetUseCaseRequested(const std::string& use_case,
+                           bool requested) override;
+  void UninstallModels() override;
 
  private:
   // Ensure any delayed initialization tasks are complete, then call `callback`.
@@ -80,6 +91,7 @@ class ManifestBrokerState final : public OnDeviceCapability {
   std::vector<ModelBrokerImpl::InitCallback> init_callbacks_;
   ManifestMonitor manifest_monitor_;
   std::unique_ptr<ManifestAssetManager> asset_manager_;
+  mojo::ReceiverSet<ModelBrokerDebug> receivers_;
   base::WeakPtrFactory<ManifestBrokerState> weak_ptr_factory_{this};
 };
 

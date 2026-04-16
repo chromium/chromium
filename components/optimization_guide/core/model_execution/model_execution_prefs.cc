@@ -166,6 +166,19 @@ void RecordUseCaseUsage(PrefService* local_state,
   update->Set(use_case_name, base::TimeToValue(base::Time::Now()));
 }
 
+void ClearUseCaseUsage(PrefService* local_state,
+                       const std::string& use_case_name) {
+  ::prefs::ScopedDictionaryPrefUpdate update(local_state,
+                                             localstate::kLastUsageByFeature);
+  update->Remove(use_case_name);
+  // TODO(crbug.com/489511499): Remove this fallback once all features have
+  // migrated to using RecordUseCaseUsage with string names.
+  if (std::optional<mojom::OnDeviceFeature> feature =
+          GetFeatureForUseCase(use_case_name)) {
+    update->Remove(PrefKey(*feature));
+  }
+}
+
 bool WasUseCaseRecentlyUsed(const PrefService* local_state,
                             const std::string& use_case_name) {
   const auto& dict = local_state->GetDict(localstate::kLastUsageByFeature);

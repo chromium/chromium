@@ -17,13 +17,15 @@
 #include "components/optimization_guide/core/model_execution/performance_class.h"
 #include "components/optimization_guide/core/model_execution/usage_tracker.h"
 #include "components/optimization_guide/public/mojom/model_broker.mojom.h"
+#include "mojo/public/cpp/bindings/receiver_set.h"
 
 namespace optimization_guide {
 
 // This holds the state for the on-device model broker. This is an abstraction
 // to allow chrome and other embedders to share the same broker logic while
 // owning the state separately.
-class ModelBrokerState final : public OnDeviceCapability {
+class ModelBrokerState final : public OnDeviceCapability,
+                               mojom::ModelBrokerDebug {
  public:
   ModelBrokerState(
       PrefService& local_state,
@@ -56,6 +58,9 @@ class ModelBrokerState final : public OnDeviceCapability {
   // OnDeviceCapability
   void BindModelBroker(
       mojo::PendingReceiver<mojom::ModelBroker> receiver) override;
+  void BindModelBrokerDebug(
+      base::PassKey<on_device_internals::PageHandler> key,
+      mojo::PendingReceiver<mojom::ModelBrokerDebug> receiver) override;
   std::unique_ptr<OnDeviceSession> StartSession(
       mojom::OnDeviceFeature feature,
       const SessionConfigParams& config_params,
@@ -73,6 +78,13 @@ class ModelBrokerState final : public OnDeviceCapability {
   void RemoveOnDeviceModelAvailabilityChangeObserver(
       mojom::OnDeviceFeature feature,
       OnDeviceModelAvailabilityObserver* observer) override;
+
+  // mojom::ModelBrokerDebug
+  void GetStateInfo(
+      mojom::ModelBrokerDebug::GetStateInfoCallback callback) override;
+  void SetUseCaseRequested(const std::string& use_case,
+                           bool requested) override;
+  void UninstallModels() override;
 
  private:
   // Ensure any delayed initialization tasks are complete, then call `callback`.
@@ -94,6 +106,7 @@ class ModelBrokerState final : public OnDeviceCapability {
   OnDeviceModelServiceController base_model_controller_;
   std::optional<OnDeviceModelClassifierController> classifier_controller_;
   OnDeviceAssetManager asset_manager_;
+  mojo::ReceiverSet<ModelBrokerDebug> receivers_;
   base::WeakPtrFactory<ModelBrokerState> weak_ptr_factory_{this};
 };
 

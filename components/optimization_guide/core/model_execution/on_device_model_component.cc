@@ -33,6 +33,7 @@
 #include "components/optimization_guide/core/optimization_guide_enums.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
 #include "components/optimization_guide/public/mojom/model_broker.mojom-shared.h"
+#include "components/optimization_guide/public/mojom/model_broker_debug.mojom.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/prefs/pref_service.h"
 #include "components/version_info/version_info.h"
@@ -366,6 +367,68 @@ OnDeviceModelComponentStateManager::GetDebugState() {
   debug.has_override_ = !!switches::GetOnDeviceModelExecutionOverride();
   debug.state_ = state_.get();
   return debug;
+}
+
+std::vector<mojom::BrokerPropertyInfoPtr>
+OnDeviceModelComponentStateManager::GetBrokerProperties() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  std::vector<mojom::BrokerPropertyInfoPtr> props;
+  if (registration_criteria_) {
+    props.push_back(mojom::BrokerPropertyInfo::New(
+        "Feature recently used",
+        base::ToString(
+            registration_criteria_->on_device_feature_recently_used)));
+    props.push_back(mojom::BrokerPropertyInfo::New(
+        "Enabled by feature flag",
+        base::ToString(registration_criteria_->enabled_by_feature)));
+    props.push_back(mojom::BrokerPropertyInfo::New(
+        "Enabled by enterprise policy",
+        base::ToString(registration_criteria_->enabled_by_enterprise_policy)));
+    props.push_back(mojom::BrokerPropertyInfo::New(
+        "Enabled by user setting",
+        base::ToString(registration_criteria_->enabled_by_user_setting)));
+    props.push_back(mojom::BrokerPropertyInfo::New(
+        "On external power",
+        base::ToString(registration_criteria_->is_on_external_power)));
+    props.push_back(mojom::BrokerPropertyInfo::New(
+        "Disk space free",
+        base::ToString(registration_criteria_->disk_space_free.InMiB()) +
+            " MiB"));
+  }
+  return props;
+}
+
+std::vector<mojom::BrokerAssetInfoPtr>
+OnDeviceModelComponentStateManager::GetBrokerAssets() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  std::vector<mojom::BrokerAssetInfoPtr> assets;
+  auto asset = mojom::BrokerAssetInfo::New();
+  asset->name = "Base Model";
+  if (state_) {
+    asset->version = state_->GetComponentVersion().GetString();
+  }
+  switch (component_installer_state_) {
+    case ComponentInstallerState::kNotRegistered:
+      asset->state = mojom::BrokerAssetState::kNotInstalled;
+      break;
+    case ComponentInstallerState::kRegistering:
+      asset->state = mojom::BrokerAssetState::kRegistering;
+      break;
+    case ComponentInstallerState::kRegistered:
+      asset->state = mojom::BrokerAssetState::kBackgroundInstalling;
+      break;
+    case ComponentInstallerState::kOnDemandDownloading:
+      asset->state = mojom::BrokerAssetState::kForegroundInstalling;
+      break;
+    case ComponentInstallerState::kInstalled:
+      asset->state = mojom::BrokerAssetState::kReady;
+      break;
+    case ComponentInstallerState::kUninstalling:
+      asset->state = mojom::BrokerAssetState::kUninstalling;
+      break;
+  }
+  assets.push_back(std::move(asset));
+  return assets;
 }
 
 void OnDeviceModelComponentStateManager::SetReady(

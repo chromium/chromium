@@ -16,10 +16,15 @@
 #include "components/optimization_guide/proto/model_execution.pb.h"
 #include "components/optimization_guide/proto/model_quality_metadata.pb.h"
 #include "components/optimization_guide/public/mojom/model_broker.mojom.h"
+#include "components/optimization_guide/public/mojom/model_broker_debug.mojom.h"
 #include "services/on_device_model/public/cpp/capabilities.h"
 #include "services/on_device_model/public/mojom/on_device_model.mojom.h"
 
 class OptimizationGuideLogger;
+
+namespace on_device_internals {
+class PageHandler;
+}
 
 namespace optimization_guide {
 
@@ -334,6 +339,11 @@ class OnDeviceCapability {
 
   // Convenience method to bind a model broker receiver and pass the remote.
   mojo::PendingRemote<mojom::ModelBroker> BindAndPassRemoteBroker();
+
+  // Binds a debug interface for chrome://on-device-internals.
+  virtual void BindModelBrokerDebug(
+      base::PassKey<on_device_internals::PageHandler> key,
+      mojo::PendingReceiver<mojom::ModelBrokerDebug> receiver) {}
 
   // Starts a session which allows streaming input and output from the model.
   // May return nullptr if model execution is not supported. This session should

@@ -7,17 +7,23 @@
 #include <cstddef>
 #include <memory>
 
+#include "base/containers/extend.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/strings/string_util.h"
+#include "base/strings/stringprintf.h"
+#include "base/strings/to_string.h"
 #include "base/trace_event/trace_event.h"
 #include "components/optimization_guide/core/delivery/optimization_guide_model_provider.h"
 #include "components/optimization_guide/core/model_execution/on_device_asset_manager.h"
 #include "components/optimization_guide/core/model_execution/on_device_features.h"
 #include "components/optimization_guide/core/model_execution/on_device_model_access_controller.h"
 #include "components/optimization_guide/core/model_execution/on_device_model_classifier_controller.h"
+#include "components/optimization_guide/core/model_execution/on_device_model_metadata.h"
 #include "components/optimization_guide/core/model_execution/on_device_model_service_controller.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
 #include "components/optimization_guide/public/mojom/model_broker.mojom.h"
+#include "components/optimization_guide/public/mojom/model_broker_debug.mojom.h"
 
 namespace optimization_guide {
 
@@ -45,7 +51,7 @@ ModelBrokerState::ModelBrokerState(
     : service_client_(std::move(launch_fn)),
       download_progress_manager_(
           component_update_service,
-              std::vector<std::string>{base_delegate->GetComponentId()}),
+          std::vector<std::string>{base_delegate->GetComponentId()}),
       usage_tracker_(&local_state),
       model_broker_impl_(
           usage_tracker_,
@@ -84,6 +90,12 @@ void ModelBrokerState::BindModelBroker(
     return;
   }
   model_broker_impl_.BindBroker(std::move(receiver));
+}
+
+void ModelBrokerState::BindModelBrokerDebug(
+    base::PassKey<on_device_internals::PageHandler> key,
+    mojo::PendingReceiver<mojom::ModelBrokerDebug> receiver) {
+  receivers_.Add(this, std::move(receiver));
 }
 
 std::unique_ptr<OnDeviceSession> ModelBrokerState::StartSession(
@@ -192,6 +204,27 @@ void ModelBrokerState::RemoveOnDeviceModelAvailabilityChangeObserver(
     return;
   }
   model_broker_impl_.GetSolutionProvider(feature).RemoveObserver(observer);
+}
+
+void ModelBrokerState::GetStateInfo(
+    mojom::ModelBrokerDebug::GetStateInfoCallback callback) {
+  auto result = mojom::BrokerStateInfo::New();
+  result->properties = performance_classifier_.GetBrokerProperties();
+  base::Extend(result->properties,
+               component_state_manager_.GetBrokerProperties());
+  result->assets = component_state_manager_.GetBrokerAssets();
+  result->use_cases = model_broker_impl_.GetBrokerUseCaseInfo();
+  result->models = base_model_controller_.GetBrokerModels();
+  std::move(callback).Run(std::move(result));
+}
+
+void ModelBrokerState::SetUseCaseRequested(const std::string& use_case,
+                                           bool requested) {
+  usage_tracker_.SetUseCaseRequested(use_case, requested);
+}
+
+void ModelBrokerState::UninstallModels() {
+  component_state_manager_.ForceUninstall();
 }
 
 }  // namespace optimization_guide

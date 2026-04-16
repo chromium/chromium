@@ -51,6 +51,10 @@ class UsageTracker {
   void AddObserver(Observer* observer);
   void RemoveObserver(Observer* observer);
 
+  // Set / Clear use case requested state.
+  // Clear is supported for debug through chrome://on-device-internals.
+  void SetUseCaseRequested(const std::string& use_case_name, bool requested);
+
  private:
   SEQUENCE_CHECKER(sequence_checker_);
 

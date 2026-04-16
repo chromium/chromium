@@ -12,6 +12,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
+#include "base/strings/string_util.h"
 #include "base/strings/to_string.h"
 #include "base/trace_event/trace_event.h"
 #include "base/version_info/version_info.h"
@@ -20,6 +21,7 @@
 #include "components/optimization_guide/core/optimization_guide_enums.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
 #include "components/optimization_guide/core/optimization_guide_switches.h"
+#include "components/optimization_guide/public/mojom/model_broker_debug.mojom.h"
 #include "components/prefs/pref_service.h"
 #include "components/variations/synthetic_trials.h"
 #include "mojo/public/cpp/bindings/callback_helpers.h"
@@ -145,6 +147,32 @@ std::string_view SyntheticTrialGroupForPerformanceHint(
       return "FastestInference";
     case proto::ON_DEVICE_MODEL_PERFORMANCE_HINT_CPU:
       return "Cpu";
+  }
+}
+
+std::ostream& operator<<(std::ostream& out,
+                         OnDeviceModelPerformanceClass performance_class) {
+  switch (performance_class) {
+    case OnDeviceModelPerformanceClass::kUnknown:
+      return out << "Unknown";
+    case OnDeviceModelPerformanceClass::kError:
+      return out << "Error";
+    case OnDeviceModelPerformanceClass::kVeryLow:
+      return out << "VeryLow";
+    case OnDeviceModelPerformanceClass::kLow:
+      return out << "Low";
+    case OnDeviceModelPerformanceClass::kMedium:
+      return out << "Medium";
+    case OnDeviceModelPerformanceClass::kHigh:
+      return out << "High";
+    case OnDeviceModelPerformanceClass::kVeryHigh:
+      return out << "VeryHigh";
+    case OnDeviceModelPerformanceClass::kServiceCrash:
+      return out << "ServiceCrash";
+    case OnDeviceModelPerformanceClass::kGpuBlocked:
+      return out << "GpuBlocked";
+    case OnDeviceModelPerformanceClass::kFailedToLoadLibrary:
+      return out << "FailedToLoadLibrary";
   }
 }
 
@@ -337,6 +365,36 @@ PerformanceClassifier::GetPossibleOnDeviceCapabilities() const {
     capabilities.Put(on_device_model::CapabilityFlags::kAudioInput);
   }
   return capabilities;
+}
+
+std::vector<mojom::BrokerPropertyInfoPtr>
+PerformanceClassifier::GetBrokerProperties() const {
+  std::vector<mojom::BrokerPropertyInfoPtr> props;
+  if (!IsPerformanceClassAvailable()) {
+    props.push_back(mojom::BrokerPropertyInfo::New("Performance Class",
+                                                   "Not available yet"));
+    return props;
+  }
+  props.push_back(mojom::BrokerPropertyInfo::New(
+      "Performance Class", base::ToString(GetPerformanceClass())));
+  props.push_back(mojom::BrokerPropertyInfo::New(
+      "Device Capable", base::ToString(IsDeviceCapable())));
+
+  auto capabilities = GetPossibleOnDeviceCapabilities();
+  std::vector<std::string_view> capabilities_strings;
+  if (capabilities.Has(on_device_model::CapabilityFlags::kImageInput)) {
+    capabilities_strings.push_back("Image");
+  }
+  if (capabilities.Has(on_device_model::CapabilityFlags::kAudioInput)) {
+    capabilities_strings.push_back("Audio");
+  }
+  if (capabilities.Has(on_device_model::CapabilityFlags::kToolUse)) {
+    capabilities_strings.push_back("ToolUse");
+  }
+  props.push_back(mojom::BrokerPropertyInfo::New(
+      "Possible Capabilities", base::JoinString(capabilities_strings, ", ")));
+
+  return props;
 }
 
 void PerformanceClassifier::OnDeviceAndPerformanceInfo(

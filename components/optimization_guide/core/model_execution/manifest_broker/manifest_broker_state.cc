@@ -75,6 +75,12 @@ void ManifestBrokerState::BindModelBroker(
   model_broker_impl_.BindBroker(std::move(receiver));
 }
 
+void ManifestBrokerState::BindModelBrokerDebug(
+    base::PassKey<on_device_internals::PageHandler> key,
+    mojo::PendingReceiver<mojom::ModelBrokerDebug> receiver) {
+  receivers_.Add(this, std::move(receiver));
+}
+
 std::unique_ptr<OnDeviceSession> ManifestBrokerState::StartSession(
     mojom::OnDeviceFeature feature,
     const SessionConfigParams& config_params,
@@ -218,6 +224,29 @@ void ManifestBrokerState::FinishGetOnDeviceModelEligibility(
     return;
   }
   std::move(callback).Run(GetOnDeviceModelEligibility(feature));
+}
+
+void ManifestBrokerState::GetStateInfo(
+    mojom::ModelBrokerDebug::GetStateInfoCallback callback) {
+  auto result = mojom::BrokerStateInfo::New();
+  // TODO: crbug.com/489511500 - Add missing info.
+  result->properties = performance_classifier_.GetBrokerProperties();
+  // base::Extend(result->properties,
+  //              component_state_manager_.GetBrokerProperties());
+  // result->assets = component_state_manager_.GetBrokerAssets();
+  result->use_cases = model_broker_impl_.GetBrokerUseCaseInfo();
+  // result->models = base_model_controller_.GetBrokerModels();
+  std::move(callback).Run(std::move(result));
+}
+
+void ManifestBrokerState::SetUseCaseRequested(const std::string& use_case,
+                                              bool requested) {
+  usage_tracker_.SetUseCaseRequested(use_case, requested);
+}
+
+void ManifestBrokerState::UninstallModels() {
+  // TODO: crbug.com/489511500 - Implement this.
+  // component_state_manager_.ForceUninstall();
 }
 
 }  // namespace optimization_guide

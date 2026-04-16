@@ -9,11 +9,13 @@
 #include "base/functional/bind.h"
 #include "base/strings/to_string.h"
 #include "base/trace_event/trace_event.h"
+#include "components/optimization_guide/core/model_execution/on_device_capability.h"
 #include "components/optimization_guide/core/model_execution/on_device_features.h"
-#include "mojo/public/cpp/bindings/message.h"
 #include "components/optimization_guide/core/model_execution/usage_tracker.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
 #include "components/optimization_guide/public/mojom/model_broker.mojom.h"
+#include "components/optimization_guide/public/mojom/model_broker_debug.mojom.h"
+#include "mojo/public/cpp/bindings/message.h"
 
 namespace optimization_guide {
 
@@ -43,10 +45,10 @@ void ModelBrokerImpl::Subscribe(
     mojo::PendingRemote<mojom::ModelSubscriber> subscriber) {
   TRACE_EVENT("optimization_guide", "ModelBrokerImpl::Subscribe",
               perfetto::Flow::FromPointer(this));
-  ensure_init_callback_.Run(base::BindOnce(
-      &ModelBrokerImpl::SubscribeInternal, weak_ptr_factory_.GetWeakPtr(),
-      std::move(options), std::move(subscriber),
-      mojo::GetBadMessageCallback()));
+  ensure_init_callback_.Run(
+      base::BindOnce(&ModelBrokerImpl::SubscribeInternal,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(options),
+                     std::move(subscriber), mojo::GetBadMessageCallback()));
 }
 
 void ModelBrokerImpl::SubscribeInternal(
@@ -62,8 +64,8 @@ void ModelBrokerImpl::SubscribeInternal(
     std::move(bad_message_callback).Run("Unsupported use case");
     return;
   }
-  GetSolutionProvider(use_case)
-      .AddSubscriber(std::move(subscriber), capabilities);
+  GetSolutionProvider(use_case).AddSubscriber(std::move(subscriber),
+                                              capabilities);
 }
 
 void ModelBrokerImpl::GetConfig(mojom::OnDeviceFeature feature,
@@ -130,6 +132,20 @@ void ModelBrokerImpl::SetFeatureConfigs(
   feature_configs_ = std::move(feature_configs);
 }
 
+std::vector<mojom::BrokerUseCaseInfoPtr> ModelBrokerImpl::GetBrokerUseCaseInfo()
+    const {
+  std::vector<mojom::BrokerUseCaseInfoPtr> use_cases;
+  for (const auto& [use_case, provider] : solution_providers_) {
+    auto info = mojom::BrokerUseCaseInfo::New();
+    info->name = use_case;
+    info->assets_requested = usage_tracker_->WasUseCaseRecentlyUsed(use_case);
+    info->unavailable_reason = AvailabilityFromEligibilityReason(
+        provider.solution().error_or(OnDeviceModelEligibilityReason::kSuccess));
+    use_cases.push_back(std::move(info));
+  }
+  return use_cases;
+}
+
 #if !BUILDFLAG(IS_ANDROID)
 void ModelBrokerImpl::AddModelDownloadProgressObserver(
     mojo::PendingRemote<on_device_model::mojom::DownloadObserver> observer) {
@@ -178,8 +194,7 @@ void ModelBrokerImpl::SolutionProvider::RemoveObserver(
 
 void ModelBrokerImpl::SolutionProvider::Update(MaybeSolution solution) {
   TRACE_EVENT("optimization_guide", "ModelBrokerImpl::SolutionProvider::Update",
-              perfetto::Flow::FromPointer(this), "use_case",
-              use_case_);
+              perfetto::Flow::FromPointer(this), "use_case", use_case_);
   CHECK(!solution.has_value() || solution.value());
   if (solution.has_value()) {
     if (solution_.has_value() && solution_.value()->IsValid()) {
@@ -207,8 +222,7 @@ void ModelBrokerImpl::SolutionProvider::UpdateSubscriber(
     mojom::ModelSubscriber& subscriber) {
   TRACE_EVENT("optimization_guide",
               "ModelBrokerImpl::SolutionProvider::UpdateSubscriber",
-              perfetto::Flow::FromPointer(this), "use_case",
-              use_case_);
+              perfetto::Flow::FromPointer(this), "use_case", use_case_);
   if (!solution_.has_value()) {
     subscriber.Unavailable(
         *AvailabilityFromEligibilityReason(solution_.error()),
@@ -247,8 +261,7 @@ void ModelBrokerImpl::SolutionProvider::UpdatePossibleCapabilities(
     const on_device_model::Capabilities& capabilities) {
   TRACE_EVENT("optimization_guide",
               "ModelBrokerImpl::SolutionProvider::UpdatePossibleCapabilities",
-              perfetto::Flow::FromPointer(this), "use_case",
-              use_case_);
+              perfetto::Flow::FromPointer(this), "use_case", use_case_);
   subscriber.CapabilitiesUpdated(capabilities);
 }
 

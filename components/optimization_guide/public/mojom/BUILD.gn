@@ -5,7 +5,10 @@
 import("//mojo/public/tools/bindings/mojom.gni")
 
 mojom("mojom") {
-  sources = [ "model_broker.mojom" ]
+  sources = [
+    "model_broker.mojom",
+    "model_broker_debug.mojom",
+  ]
 
   deps = [
     "//mojo/public/mojom/base",
