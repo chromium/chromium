@@ -13,6 +13,7 @@
 #include <vector>
 
 #include "ash/constants/ash_pref_names.h"
+#include "ash/constants/webui_url_constants.h"
 #include "ash/webui/settings/public/constants/routes.mojom.h"
 #include "base/command_line.h"
 #include "base/containers/fixed_flat_map.h"
@@ -699,31 +700,35 @@ ExtensionFunction::ResponseAction TerminalPrivateOpenWindowFunction::Run() {
   std::optional<OpenWindow::Params> params = OpenWindow::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
 
-  const std::string* url = &guest_os::GetTerminalHomeUrl();
+  GURL url(guest_os::GetTerminalHomeUrl());
   bool as_tab = false;
 
   auto& data = params->data;
   if (data) {
     if (data->url) {
-      url = &*data->url;
+      url = GURL(*data->url);
     }
     if (data->as_tab) {
       as_tab = *data->as_tab;
     }
   }
 
+  if (url.DeprecatedGetOriginAsURL() != ash::kChromeUIUntrustedTerminalURL) {
+    return RespondNow(
+        Error("Trying to launch terminal with an invalid url: " + url.spec()));
+  }
+
   if (as_tab) {
     auto* browser = chrome::FindBrowserWithTab(GetSenderWebContents());
     if (browser) {
-      chrome::AddTabAt(browser->GetBrowserForMigrationOnly(), GURL(*url), -1,
-                       true);
+      chrome::AddTabAt(browser->GetBrowserForMigrationOnly(), url, -1, true);
     } else {
       LOG(ERROR) << "cannot find the browser";
     }
   } else {
     guest_os::LaunchTerminalWithUrl(
         Profile::FromBrowserContext(browser_context()),
-        display::kInvalidDisplayId, /*restore_id=*/0, GURL(*url));
+        display::kInvalidDisplayId, /*restore_id=*/0, url);
   }
 
   return RespondNow(NoArguments());
