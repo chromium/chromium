@@ -22,6 +22,7 @@ source_set("on_device_translation") {
   public_deps = [
     "//chrome/browser:browser_public_dependencies",
     "//components/on_device_translation:public",
+    "//components/on_device_translation/service:service_launcher",
   ]
   deps = [
     "//base",

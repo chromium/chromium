@@ -17,7 +17,8 @@ namespace on_device_translation {
 
 class FakeServiceControllerManager : public ServiceControllerManager {
  public:
-  explicit FakeServiceControllerManager(PrefService* local_state);
+  explicit FakeServiceControllerManager(PrefService* local_state,
+                                        LauncherFactory launcher_factory = {});
   ~FakeServiceControllerManager() override;
 
   FakeServiceControllerManager(const FakeServiceControllerManager&) = delete;

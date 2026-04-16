@@ -6,13 +6,16 @@
 
 #include "base/functional/bind.h"
 #include "base/memory/scoped_refptr.h"
+#include "components/on_device_translation/service/service_launcher.h"
 #include "components/on_device_translation/service_controller.h"
 
 namespace on_device_translation {
 
 FakeServiceControllerManager::FakeServiceControllerManager(
-    PrefService* local_state)
-    : ServiceControllerManager(local_state), local_state_(local_state) {}
+    PrefService* local_state,
+    LauncherFactory launcher_factory)
+    : ServiceControllerManager(local_state, std::move(launcher_factory)),
+      local_state_(local_state) {}
 
 FakeServiceControllerManager::~FakeServiceControllerManager() = default;
 void FakeServiceControllerManager::CreateTranslator(

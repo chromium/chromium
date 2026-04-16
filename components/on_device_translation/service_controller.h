@@ -22,11 +22,9 @@
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
 
-class PrefService;
-
 namespace on_device_translation {
 
-class FileOperationProxyImpl;
+class OnDeviceTranslationServiceLauncher;
 enum class LanguagePackKey;
 
 class OnDeviceTranslationController {
@@ -83,8 +81,9 @@ class OnDeviceTranslationServiceController
     : public OnDeviceTranslationController,
       public OnDeviceTranslationInstaller::Observer {
  public:
-  OnDeviceTranslationServiceController(PrefService* local_state,
-                                       std::string service_display_name_prefix);
+  OnDeviceTranslationServiceController(
+      std::unique_ptr<OnDeviceTranslationServiceLauncher> launcher,
+      std::string service_display_name_suffix);
   ~OnDeviceTranslationServiceController() override;
 
   OnDeviceTranslationServiceController(
@@ -157,16 +156,13 @@ class OnDeviceTranslationServiceController
   base::RepeatingCallback<bool()> can_start_service_check_;
   base::OnceClosure on_deleted_callback_;
 
+  std::unique_ptr<OnDeviceTranslationServiceLauncher> launcher_;
   // This gets appended to the display name of the service.
   std::string service_display_name_suffix_;
   // The idle timeout for the translation service. When the service is idle for
   // this amount of time, the service will be terminated.
   base::TimeDelta service_idle_timeout_;
   mojo::Remote<mojom::OnDeviceTranslationService> service_remote_;
-  // The file operation proxy to access the files on disk. This is deleted on
-  // a background task runner.
-  std::unique_ptr<FileOperationProxyImpl, base::OnTaskRunnerDeleter>
-      file_operation_proxy_;
   // The pending tasks that are waiting for the language packs to be installed.
   std::vector<PendingTask> pending_tasks_;
 };

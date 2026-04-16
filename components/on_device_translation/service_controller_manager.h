@@ -6,6 +6,7 @@
 #define COMPONENTS_ON_DEVICE_TRANSLATION_SERVICE_CONTROLLER_MANAGER_H_
 
 #include <map>
+#include <memory>
 
 #include "base/containers/lru_cache.h"
 #include "base/functional/callback.h"
@@ -27,7 +28,8 @@ class PrefService;
 
 namespace on_device_translation {
 
-class OnDeviceTranslationServiceController;
+class OnDeviceTranslationController;
+class OnDeviceTranslationServiceLauncher;
 class ServiceControllerManagerFactory;
 
 // Manages the OnDeviceTranslationServiceControllers for a BrowserContext.
@@ -35,13 +37,17 @@ class ServiceControllerManagerFactory;
 // OnDeviceTranslationServiceController.
 class ServiceControllerManager : public KeyedService {
  public:
-  explicit ServiceControllerManager(
-      PrefService* local_state,
-      base::PassKey<ServiceControllerManagerFactory>);
+  using LauncherFactory = base::RepeatingCallback<
+      std::unique_ptr<OnDeviceTranslationServiceLauncher>()>;
+
+  ServiceControllerManager(PrefService* local_state,
+                           LauncherFactory launcher_factory,
+                           base::PassKey<ServiceControllerManagerFactory>);
   ~ServiceControllerManager() override;
 
   // Constructor for testing.
-  explicit ServiceControllerManager(PrefService* local_state);
+  ServiceControllerManager(PrefService* local_state,
+                           LauncherFactory launcher_factory);
 
   ServiceControllerManager(const ServiceControllerManager&) = delete;
   ServiceControllerManager& operator=(const ServiceControllerManager&) = delete;
@@ -81,6 +87,7 @@ class ServiceControllerManager : public KeyedService {
   // methods `CreateTranslator` and `CanTranslate` here.
   base::LRUCache<url::Origin, std::unique_ptr<OnDeviceTranslationController>>
       service_controllers_;
+  LauncherFactory launcher_factory_;
   // Safe because BrowserProcess::local_state() outlives the Profile.
   raw_ptr<PrefService> local_state_;
   base::WeakPtrFactory<ServiceControllerManager> weak_ptr_factory_{this};

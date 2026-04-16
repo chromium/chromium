@@ -10,6 +10,40 @@ proto_library("translate_kit_api_proto") {
   sources = [ "proto/translate_kit_api.proto" ]
 }
 
+source_set("file_operation_proxy") {
+  sources = [
+    "file_operation_proxy_impl.cc",
+    "file_operation_proxy_impl.h",
+  ]
+  deps = [
+    "//base",
+    "//components/on_device_translation/public/mojom",
+    "//mojo/public/cpp/bindings",
+  ]
+}
+
+source_set("launcher_interface") {
+  sources = [ "service_launcher.h" ]
+  deps = [
+    "//components/on_device_translation/public/mojom",
+    "//mojo/public/cpp/bindings",
+  ]
+}
+
+source_set("service_launcher") {
+  sources = [ "service_launcher.cc" ]
+  public_deps = [ ":launcher_interface" ]
+  deps = [
+    ":file_operation_proxy",
+    "//base",
+    "//components/on_device_translation",
+    "//components/on_device_translation:features",
+    "//components/on_device_translation/public/mojom",
+    "//content/public/browser",
+    "//mojo/public/cpp/bindings",
+  ]
+}
+
 source_set("on_device_translation_service") {
   sources = [
     "on_device_translation_service.cc",
@@ -44,10 +78,12 @@ source_set("unit_tests") {
   testonly = true
 
   sources = [
+    "file_operation_proxy_impl_unittest.cc",
     "on_device_translation_service_unittest.cc",
     "translate_kit_client_unittest.cc",
   ]
   deps = [
+    ":file_operation_proxy",
     ":test_support",
     "//base/test:test_support",
     "//components/on_device_translation",

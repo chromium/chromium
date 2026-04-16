@@ -27,16 +27,14 @@
 #include "components/on_device_translation/component_manager.h"
 #include "components/on_device_translation/constants.h"
 #include "components/on_device_translation/features.h"
-#include "components/on_device_translation/file_operation_proxy_impl.h"
 #include "components/on_device_translation/installer.h"
 #include "components/on_device_translation/metrics.h"
 #include "components/on_device_translation/public/language_pack.h"
 #include "components/on_device_translation/public/mojom/on_device_translation_service.mojom.h"
 #include "components/on_device_translation/public/mojom/translator.mojom.h"
 #include "components/on_device_translation/public/pref_names.h"
+#include "components/on_device_translation/service/service_launcher.h"
 #include "components/on_device_translation/translation_manager_util.h"
-#include "content/public/browser/service_process_host.h"
-#include "content/public/browser/service_process_host_passkeys.h"
 #include "mojo/public/cpp/bindings/callback_helpers.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -54,11 +52,6 @@ using mojom::OnDeviceTranslationLanguagePackage;
 using mojom::OnDeviceTranslationLanguagePackagePtr;
 using mojom::OnDeviceTranslationServiceConfig;
 using mojom::OnDeviceTranslationServiceConfigPtr;
-
-// Prefix for the display name of the on-device translation service. The origin
-// is appended to the prefix.
-constexpr std::string_view kOnDeviceTranslationServiceDisplayNamePrefix =
-    "On-device Translation Service: ";
 
 constexpr std::string_view kCreateTranslatorMetricActionName =
     "CreateTranslator";
@@ -110,34 +103,6 @@ std::optional<std::string> GetBestFitLanguageCode(
   best_fit = SwitchLanguageCodeForChinese(best_fit);
   return LookupMatchingLocaleByBestFit(kSupportedLanguageCodes,
                                        std::move(best_fit));
-}
-
-std::string ToString(const base::FilePath& path) {
-#if BUILDFLAG(IS_WIN)
-  // TODO(crbug.com/362123222): Get rid of conditional decoding.
-  return path.AsUTF8Unsafe();
-#else
-  return path.value();
-#endif  // BUILDFLAG(IS_WIN)
-}
-
-std::vector<base::FilePath> GetLanguagePackInfo(
-    std::vector<mojom::OnDeviceTranslationLanguagePackagePtr>& packages) {
-  CHECK(packages.empty());
-  std::vector<base::FilePath> package_paths;
-  for (const auto& it : kLanguagePackComponentConfigMap) {
-    auto file_path =
-        OnDeviceTranslationInstaller::GetInstance()->GetLanguagePackPath(
-            it.first);
-    if (!file_path.empty()) {
-      packages.push_back(mojom::OnDeviceTranslationLanguagePackage::New(
-          std::string(ToLanguageCode(it.second->language1)),
-          std::string(ToLanguageCode(it.second->language2))));
-      package_paths.push_back(file_path);
-    }
-  }
-
-  return package_paths;
 }
 
 LanguagePackRequirements GetLanguagePackRequirements(
@@ -206,11 +171,11 @@ OnDeviceTranslationServiceController::PendingTask::operator=(PendingTask&&) =
     default;
 
 OnDeviceTranslationServiceController::OnDeviceTranslationServiceController(
-    PrefService* local_state,
+    std::unique_ptr<OnDeviceTranslationServiceLauncher> launcher,
     std::string service_display_name_suffix)
-    : service_display_name_suffix_(service_display_name_suffix),
-      service_idle_timeout_(kTranslationAPIServiceIdleTimeout.Get()),
-      file_operation_proxy_(nullptr, base::OnTaskRunnerDeleter(nullptr)) {
+    : launcher_(std::move(launcher)),
+      service_display_name_suffix_(service_display_name_suffix),
+      service_idle_timeout_(kTranslationAPIServiceIdleTimeout.Get()) {
   OnDeviceTranslationInstaller::GetInstance()->AddObserver(this);
 }
 
@@ -434,54 +399,13 @@ bool OnDeviceTranslationServiceController::MaybeStartService() {
     return true;
   }
 
-  auto receiver = service_remote_.BindNewPipeAndPassReceiver();
+  service_remote_.Bind(launcher_->Launch(service_display_name_suffix_));
   service_remote_.reset_on_disconnect();
   service_remote_.set_idle_handler(
       service_idle_timeout_,
       base::BindRepeating(&OnDeviceTranslationServiceController::OnServiceIdle,
                           base::Unretained(this)));
 
-  const base::FilePath binary_path =
-      OnDeviceTranslationInstaller::GetInstance()->GetLibraryPath();
-  CHECK(!binary_path.empty())
-      << "Got an empty path to TranslateKit binary on the device.";
-
-  std::vector<std::string> extra_switches;
-  extra_switches.push_back(
-      base::StrCat({kTranslateKitBinaryPath, "=", ToString(binary_path)}));
-
-  content::ServiceProcessHost::Launch<mojom::OnDeviceTranslationService>(
-      std::move(receiver),
-      content::ServiceProcessHost::Options()
-          .WithDisplayName(
-              base::StrCat({kOnDeviceTranslationServiceDisplayNamePrefix,
-                            service_display_name_suffix_}))
-          .WithExtraCommandLineSwitches(extra_switches)
-#if BUILDFLAG(IS_WIN)
-          .WithPreloadedLibraries(
-              {binary_path},
-              content::ServiceProcessHostPreloadLibraries::GetPassKey())
-#endif
-          .Pass());
-
-  auto config = OnDeviceTranslationServiceConfig::New();
-  std::vector<base::FilePath> package_pathes =
-      GetLanguagePackInfo(config->packages);
-  mojo::PendingReceiver<FileOperationProxy> proxy_receiver =
-      config->file_operation_proxy.InitWithNewPipeAndPassReceiver();
-  service_remote_->SetServiceConfig(std::move(config));
-
-  // Create a task runner to run the FileOperationProxy.
-  scoped_refptr<base::SequencedTaskRunner> task_runner =
-      base::ThreadPool::CreateSequencedTaskRunner(
-          {base::MayBlock(), base::TaskPriority::USER_VISIBLE});
-  // Create the FileOperationProxy which lives in the background thread of
-  // `task_runner`.
-  file_operation_proxy_ =
-      std::unique_ptr<FileOperationProxyImpl, base::OnTaskRunnerDeleter>(
-          new FileOperationProxyImpl(std::move(proxy_receiver), task_runner,
-                                     std::move(package_pathes)),
-          base::OnTaskRunnerDeleter(task_runner));
   return true;
 }
 

@@ -2,18 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/on_device_translation/file_operation_proxy_impl.h"
+#include "components/on_device_translation/service/file_operation_proxy_impl.h"
 
 #include "base/files/file_util.h"
+#include "mojo/public/cpp/bindings/message.h"
 
 namespace on_device_translation {
 
 FileOperationProxyImpl::FileOperationProxyImpl(
-    mojo::PendingReceiver<FileOperationProxy> proxy_receiver,
     scoped_refptr<base::SequencedTaskRunner> task_runner,
     std::vector<base::FilePath> package_paths)
-    : receiver_(this, std::move(proxy_receiver), task_runner),
-      package_paths_(std::move(package_paths)) {}
+    : task_runner_(task_runner), package_paths_(std::move(package_paths)) {}
 
 FileOperationProxyImpl::~FileOperationProxyImpl() = default;
 
@@ -26,7 +25,8 @@ void FileOperationProxyImpl::FileExists(uint32_t package_index,
     // Calling `ReportBadMessage` to crash the service, because this is
     // likely caused by a compromised service. We check the validity of the
     // `path` before passing it from the service in translate_kit_client.cc.
-    receiver_.ReportBadMessage("Invalid `path` was passed.");
+    mojo::ReportBadMessage("Invalid `path` was passed.");
+    std::move(callback).Run(/*exists=*/false, /*is_directory=*/false);
     return;
   }
   if (!base::PathExists(file_path)) {
@@ -48,7 +48,8 @@ void FileOperationProxyImpl::Open(uint32_t package_index,
     // Calling `ReportBadMessage` to crash the service, because this is
     // likely caused by a compromised service. We check the validity of the
     // `path` before passing it from the service in translate_kit_client.cc.
-    receiver_.ReportBadMessage("Invalid `path` was passed.");
+    mojo::ReportBadMessage("Invalid `path` was passed.");
+    std::move(callback).Run(base::File());
     return;
   }
   // Sends a file object only if the file exists and is not a directory.

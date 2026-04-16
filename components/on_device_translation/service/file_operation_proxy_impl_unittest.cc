@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/on_device_translation/file_operation_proxy_impl.h"
+#include "components/on_device_translation/service/file_operation_proxy_impl.h"
 
 #include <string_view>
 #include <vector>
@@ -22,6 +22,7 @@
 #include "components/on_device_translation/service/test/test_util.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "mojo/public/cpp/system/functions.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -34,17 +35,17 @@ namespace {
 class FileOperationProxyImplWithDeletedClosure : public FileOperationProxyImpl {
  public:
   FileOperationProxyImplWithDeletedClosure(
-      mojo::PendingReceiver<mojom::FileOperationProxy> proxy_receiver,
+      mojo::PendingReceiver<mojom::FileOperationProxy> receiver,
       scoped_refptr<base::SequencedTaskRunner> task_runner,
       std::vector<base::FilePath> package_paths,
       base::OnceClosure deleted_callback)
-      : FileOperationProxyImpl(std::move(proxy_receiver),
-                               std::move(task_runner),
-                               std::move(package_paths)),
+      : FileOperationProxyImpl(task_runner, std::move(package_paths)),
+        receiver_(this, std::move(receiver), task_runner),
         closure_runner_(std::move(deleted_callback)) {}
   ~FileOperationProxyImplWithDeletedClosure() override = default;
 
  private:
+  mojo::Receiver<mojom::FileOperationProxy> receiver_;
   base::ScopedClosureRunner closure_runner_;
 };
 
@@ -59,6 +60,7 @@ class FileOperationProxyImplTest : public testing::Test {
 
   // testing::Test overrides.
   void TearDown() override {
+    // Trigger the proxy deletion.
     file_operation_proxy_.reset();
     // Wait for the background thread to finish deleting the proxy.
     if (run_loop_to_detect_proxy_deletion_) {
@@ -118,16 +120,12 @@ class FileOperationProxyImplTest : public testing::Test {
       uint32_t package_index,
       const std::string_view path_str) {
     base::RunLoop run_loop;
-    std::string received_error;
-    mojo::SetDefaultProcessErrorHandler(
-        base::BindLambdaForTesting([&](const std::string& error) {
-          EXPECT_EQ(error, "Invalid `path` was passed.");
-          run_loop.Quit();
-        }));
     remote->FileExists(
         package_index, base::FilePath::FromASCII(path_str),
-        base::BindLambdaForTesting(
-            [](bool exists, bool is_directory) { NOTREACHED(); }));
+        base::BindLambdaForTesting([&](bool exists, bool is_directory) {
+          EXPECT_FALSE(exists);
+          run_loop.Quit();
+        }));
     run_loop.Run();
   }
 
@@ -161,20 +159,15 @@ class FileOperationProxyImplTest : public testing::Test {
                                 uint32_t package_index,
                                 const std::string_view path_str) {
     base::RunLoop run_loop;
-    std::string received_error;
-    mojo::SetDefaultProcessErrorHandler(
-        base::BindLambdaForTesting([&](const std::string& error) {
-          EXPECT_EQ(error, "Invalid `path` was passed.");
-          run_loop.Quit();
-        }));
-    remote->Open(
-        package_index, base::FilePath::FromASCII(path_str),
-        base::BindLambdaForTesting([](base::File file) { NOTREACHED(); }));
+    remote->Open(package_index, base::FilePath::FromASCII(path_str),
+                 base::BindLambdaForTesting([&](base::File file) {
+                   EXPECT_FALSE(file.IsValid());
+                   run_loop.Quit();
+                 }));
     run_loop.Run();
   }
 
  private:
-  std::vector<base::ScopedTempDir> package_paths_;
   std::unique_ptr<FileOperationProxyImpl, base::OnTaskRunnerDeleter>
       file_operation_proxy_;
   std::unique_ptr<base::RunLoop> run_loop_to_detect_proxy_deletion_;

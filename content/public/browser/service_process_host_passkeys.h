@@ -17,7 +17,7 @@ class ScreenAIServiceHandlerBase;
 }  // namespace screen_ai
 
 namespace on_device_translation {
-class OnDeviceTranslationServiceController;
+class OnDeviceTranslationServiceLauncherImpl;
 }  // namespace on_device_translation
 
 namespace content {
@@ -34,7 +34,7 @@ class ServiceProcessHostPreloadLibraries {
   // Service launchers using `ServiceProcessHost::Options::WithPreloadLibraries`
   // should be added here and must be reviewed by the security team.
   friend class screen_ai::ScreenAIServiceHandlerBase;
-  friend class on_device_translation::OnDeviceTranslationServiceController;
+  friend class on_device_translation::OnDeviceTranslationServiceLauncherImpl;
   friend shape_detection::mojom::ShapeDetectionService*
   content::GetShapeDetectionService();
 

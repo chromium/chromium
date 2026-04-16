@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_ON_DEVICE_TRANSLATION_FILE_OPERATION_PROXY_IMPL_H_
-#define COMPONENTS_ON_DEVICE_TRANSLATION_FILE_OPERATION_PROXY_IMPL_H_
+#ifndef COMPONENTS_ON_DEVICE_TRANSLATION_SERVICE_FILE_OPERATION_PROXY_IMPL_H_
+#define COMPONENTS_ON_DEVICE_TRANSLATION_SERVICE_FILE_OPERATION_PROXY_IMPL_H_
 
 #include <vector>
 
@@ -20,10 +20,8 @@ namespace on_device_translation {
 // destroyed on the background thread of the passed `task_runner`.
 class FileOperationProxyImpl : public mojom::FileOperationProxy {
  public:
-  FileOperationProxyImpl(
-      mojo::PendingReceiver<mojom::FileOperationProxy> proxy_receiver,
-      scoped_refptr<base::SequencedTaskRunner> task_runner,
-      std::vector<base::FilePath> package_paths);
+  FileOperationProxyImpl(scoped_refptr<base::SequencedTaskRunner> task_runner,
+                         std::vector<base::FilePath> package_paths);
   ~FileOperationProxyImpl() override;
 
   // FileOperationProxy implementation:
@@ -41,10 +39,10 @@ class FileOperationProxyImpl : public mojom::FileOperationProxy {
   base::FilePath GetFilePath(uint32_t package_index,
                              const base::FilePath& relative_path) const;
 
-  mojo::Receiver<FileOperationProxy> receiver_{this};
+  scoped_refptr<base::SequencedTaskRunner> task_runner_;
   std::vector<base::FilePath> package_paths_;
 };
 
 }  // namespace on_device_translation
 
-#endif  // COMPONENTS_ON_DEVICE_TRANSLATION_FILE_OPERATION_PROXY_IMPL_H_
+#endif  // COMPONENTS_ON_DEVICE_TRANSLATION_SERVICE_FILE_OPERATION_PROXY_IMPL_H_

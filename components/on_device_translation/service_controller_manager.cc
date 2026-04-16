@@ -5,23 +5,30 @@
 #include "components/on_device_translation/service_controller_manager.h"
 
 #include "base/check_is_test.h"
+#include "base/functional/bind.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/types/expected.h"
 #include "components/on_device_translation/features.h"
+#include "components/on_device_translation/service/service_launcher.h"
 #include "components/on_device_translation/service_controller.h"
 
 namespace on_device_translation {
 
 ServiceControllerManager::ServiceControllerManager(
     PrefService* local_state,
+    LauncherFactory launcher_factory,
     base::PassKey<ServiceControllerManagerFactory>)
     : service_controllers_(kTranslationAPIMaxServiceCount.Get()),
+      launcher_factory_(std::move(launcher_factory)),
       local_state_(local_state) {
   CHECK_GT(service_controllers_.max_size(), 0u);
 }
 
-ServiceControllerManager::ServiceControllerManager(PrefService* local_state)
+ServiceControllerManager::ServiceControllerManager(
+    PrefService* local_state,
+    LauncherFactory launcher_factory)
     : service_controllers_(kTranslationAPIMaxServiceCount.Get()),
+      launcher_factory_(std::move(launcher_factory)),
       local_state_(local_state) {
   CHECK_GT(service_controllers_.max_size(), 0u);
 }
@@ -44,7 +51,7 @@ OnDeviceTranslationController* ServiceControllerManager::GetOrCreateController(
 
   auto service_controller =
       std::make_unique<OnDeviceTranslationServiceController>(
-          local_state_, origin.Serialize());
+          launcher_factory_.Run(), origin.Serialize());
   auto it_inserted =
       service_controllers_.Put(origin, std::move(service_controller));
   return it_inserted->second.get();

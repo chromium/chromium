@@ -13,6 +13,7 @@
 #include "components/live_caption/live_translate_controller.h"
 #include "components/live_caption/translation_dispatcher_on_device.h"
 #include "components/on_device_translation/buildflags/buildflags.h"
+#include "components/on_device_translation/service/service_launcher.h"
 #include "components/on_device_translation/service_controller.h"
 #include "components/on_device_translation/service_controller_manager.h"
 #include "google_apis/google_api_keys.h"
@@ -66,7 +67,8 @@ LiveTranslateControllerFactory::BuildServiceInstanceForBrowserContext(
     on_device_dispatcher = std::make_unique<TranslationDispatcherOnDevice>(
         std::make_unique<
             on_device_translation::OnDeviceTranslationServiceController>(
-            profile->GetPrefs(), ""));
+            on_device_translation::CreateOnDeviceTranslationServiceLauncher(),
+            /*service_display_name_suffix=*/""));
   }
   google_api_dispatcher = std::make_unique<GoogleApiTranslationDispatcher>(
       google_apis::GetAPIKey(), context);
