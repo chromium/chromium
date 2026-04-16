@@ -524,15 +524,14 @@ ImageResourceContent::UpdateImageResult ImageResourceContent::UpdateImage(
         return UpdateImageResult::kNoDecodeError;
 
       if (image_) {
-        // Mime type could be null, see https://crbug.com/1485926.
-        if (!image_->MimeType()) {
-          return UpdateImageResult::kShouldDecodeError;
-        }
+        // The MIME type can be null if no decoder was found.
+        const AtomicString& mime_type = image_->MimeType();
         const HashSet<String>* unsupported_mime_types =
             info_->GetUnsupportedImageMimeTypes();
-        if (unsupported_mime_types &&
-            unsupported_mime_types->Contains(image_->MimeType())) {
-          return UpdateImageResult::kShouldDecodeError;
+        if (mime_type && unsupported_mime_types &&
+            unsupported_mime_types->Contains(mime_type)) {
+          // Drop the Image, simulating a missing decoder.
+          image_ = nullptr;
         }
       }
 
