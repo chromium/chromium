@@ -87,9 +87,10 @@ void CompositorAnimation::RemoveKeyframeModel(int keyframe_model_id) {
   animation_->RemoveKeyframeModel(keyframe_model_id);
 }
 
-void CompositorAnimation::PauseKeyframeModel(int keyframe_model_id,
-                                             base::TimeDelta time_offset) {
-  animation_->PauseKeyframeModel(keyframe_model_id, time_offset);
+void CompositorAnimation::PauseKeyframeModelForTesting(
+    int keyframe_model_id,
+    base::TimeDelta hold_time) {
+  animation_->PauseKeyframeModelForTesting(keyframe_model_id, hold_time);
 }
 
 void CompositorAnimation::AbortKeyframeModel(int keyframe_model_id) {

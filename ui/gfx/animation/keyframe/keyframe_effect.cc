@@ -19,49 +19,7 @@ static int s_next_group_id = 1;
 
 void ReverseKeyframeModel(base::TimeTicks monotonic_time,
                           KeyframeModel* keyframe_model) {
-  keyframe_model->set_direction(keyframe_model->direction() ==
-                                        KeyframeModel::Direction::NORMAL
-                                    ? KeyframeModel::Direction::REVERSE
-                                    : KeyframeModel::Direction::NORMAL);
-  // Our goal here is to reverse the given keyframe_model. That is, if
-  // we're 20% of the way through the keyframe_model in the forward direction,
-  // we'd like to be 80% of the way of the reversed keyframe model (so it will
-  // end quickly).
-  //
-  // We can modify our "progress" through an animation by modifying the "time
-  // offset", a value added to the current time by the animation system before
-  // applying any other adjustments.
-  //
-  // Let our start time be s, our current time be t, and our final time (or
-  // duration) be d. After reversing the keyframe_model, we would like to start
-  // sampling from d - t as depicted below.
-  //
-  //  Forward:
-  //  s    t                         d
-  //  |----|-------------------------|
-  //
-  //  Reversed:
-  //  s                         t    d
-  //  |----|--------------------|----|
-  //       -----time-offset----->
-  //
-  // Now, if we let o represent our desired offset, we need to ensure that
-  //   t = d - (o + t)
-  //
-  // That is, sampling at the current time in either the forward or reverse
-  // curves must result in the same value, otherwise we'll get jank.
-  //
-  // This implies that,
-  //   0 = d - o - 2t
-  //   o = d - 2t
-  //
-  // Now if there was a previous offset, we must adjust d by that offset before
-  // performing this computation, so it becomes d - o_old - 2t:
-  // TODO(crbug.com/497867796): Delete time_offset.
-  keyframe_model->set_time_offset(
-      keyframe_model->curve()->Duration() + keyframe_model->start_delay() -
-      keyframe_model->time_offset() -
-      (2 * (monotonic_time - keyframe_model->start_time())));
+  keyframe_model->Reverse(monotonic_time);
 }
 
 std::unique_ptr<CubicBezierTimingFunction> CreateTransitionTimingFunction() {
@@ -363,7 +321,11 @@ void KeyframeEffect::StartKeyframeModels(base::TimeTicks monotonic_time,
             KeyframeModel::WAITING_FOR_TARGET_AVAILABILITY) {
       animated_properties[keyframe_model->TargetProperty()] = true;
       keyframe_model->SetRunState(KeyframeModel::RUNNING, monotonic_time);
-      keyframe_model->set_start_time(monotonic_time);
+      keyframe_model->set_start_time(
+          monotonic_time -
+          keyframe_model->hold_time().value_or(base::TimeDelta()) /
+              keyframe_model->playback_rate());
+      keyframe_model->set_hold_time(std::nullopt);
     }
   }
 }

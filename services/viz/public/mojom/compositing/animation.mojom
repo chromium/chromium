@@ -169,9 +169,12 @@ struct AnimationKeyframeModel {
   double iterations;
   double iteration_start;
 
-  // Offsets the start time, effectively skipping ahead to some desired point
-  // within the animation.
-  mojo_base.mojom.TimeDelta time_offset;
+  // The amount of time to wait after the start time before the animation
+  // actually begins to affect the element.
+  mojo_base.mojom.TimeDelta start_delay;
+
+  // If set, the animation is paused at this local time.
+  mojo_base.mojom.TimeDelta? hold_time;
 };
 
 // A collection of keyframe models associated with a specific ElementId. This

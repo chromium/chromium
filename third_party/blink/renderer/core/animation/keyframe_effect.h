@@ -120,7 +120,7 @@ class CORE_EXPORT KeyframeEffect final : public AnimationEffect {
   // Must only be called once.
   void StartAnimationOnCompositor(int group,
                                   std::optional<double> start_time,
-                                  base::TimeDelta time_offset,
+                                  std::optional<base::TimeDelta> hold_time,
                                   double animation_playback_rate,
                                   CompositorAnimation* = nullptr,
                                   bool is_monotonic_timeline = true,
@@ -129,7 +129,7 @@ class CORE_EXPORT KeyframeEffect final : public AnimationEffect {
   bool HasActiveAnimationsOnCompositor(const PropertyHandle&) const;
   bool CancelAnimationOnCompositor(CompositorAnimation*);
   void CancelIncompatibleAnimationsOnCompositor();
-  void PauseAnimationForTestingOnCompositor(base::TimeDelta pause_time);
+  void PauseAnimationForTestingOnCompositor(base::TimeDelta hold_time);
 
   void AttachCompositedLayers();
 

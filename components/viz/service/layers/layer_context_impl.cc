@@ -1449,7 +1449,8 @@ base::expected<void, std::string> DeserializeAnimationCurve(
   model->set_playback_rate(wire.playback_rate);
   model->set_iterations(wire.iterations);
   model->set_iteration_start(wire.iteration_start);
-  model->set_time_offset(wire.time_offset);
+  model->set_start_delay(wire.start_delay);
+  model->set_hold_time(wire.hold_time);
   model->set_element_id(wire.element_id);
   animation.keyframe_effect()->AddKeyframeModel(std::move(model));
   return base::ok();

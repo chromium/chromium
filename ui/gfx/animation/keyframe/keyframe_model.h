@@ -64,10 +64,17 @@ class GFX_KEYFRAME_ANIMATION_EXPORT KeyframeModel {
   virtual int TargetProperty() const;
 
   RunState run_state() const { return run_state_; }
+  // TODO(crbug.com/497867796): Rename this to set_run_state and delete unused
+  // |monotonic_time| param.
   virtual void SetRunState(RunState run_state, base::TimeTicks monotonic_time);
 
-  // Pause the keyframe effect at local time |pause_offset|.
-  void Pause(base::TimeDelta pause_offset);
+  // Pause the keyframe effect at |hold_time|. Note that this clears the start
+  // time.
+  void Pause(base::TimeDelta hold_time);
+
+  // Reverse the playback direction of the keyframe effect by negating its
+  // playback rate.
+  void Reverse(base::TimeTicks monotonic_time);
 
   base::TimeTicks start_time() const {
     return start_time_.value_or(base::TimeTicks());
@@ -77,11 +84,8 @@ class GFX_KEYFRAME_ANIMATION_EXPORT KeyframeModel {
     start_time_ = monotonic_time;
   }
   bool has_set_start_time() const { return start_time_.has_value(); }
-
-  base::TimeDelta time_offset() const { return time_offset_; }
-  void set_time_offset(base::TimeDelta monotonic_time) {
-    time_offset_ = monotonic_time;
-  }
+  void ResetStartTimeForTesting() { start_time_ = std::nullopt; }
+  void UnpauseForTesting(base::TimeTicks monotonic_time);
 
   base::TimeDelta start_delay() const { return start_delay_; }
   void set_start_delay(base::TimeDelta start_delay) {
@@ -99,14 +103,9 @@ class GFX_KEYFRAME_ANIMATION_EXPORT KeyframeModel {
     playback_rate_ = playback_rate;
   }
 
-  base::TimeTicks pause_time() const { return pause_time_; }
-  void set_pause_time(base::TimeTicks pause_time) { pause_time_ = pause_time; }
-
-  base::TimeDelta total_paused_duration() const {
-    return total_paused_duration_;
-  }
-  void set_total_paused_duration(base::TimeDelta total_paused_duration) {
-    total_paused_duration_ = total_paused_duration;
+  std::optional<base::TimeDelta> hold_time() const { return hold_time_; }
+  void set_hold_time(std::optional<base::TimeDelta> hold_time) {
+    hold_time_ = hold_time;
   }
 
   // This is the number of times that the keyframe model will play. If this
@@ -182,10 +181,9 @@ class GFX_KEYFRAME_ANIMATION_EXPORT KeyframeModel {
   // time.
   //
   // Local time represents the time value that is used to tick this keyframe
-  // model and is relative to its start time. It is closely related to the local
-  // time concept in web animations [1]. It is:
-  //  - for playing animation : wall time - start time - paused duration
-  //  - for paused animation  : paused time
+  // model and is relative to its start time. It is:
+  //  - for playing animation : (wall time - start time) * playback_rate
+  //  - for paused animation  : hold time
   //  - otherwise             : zero
   //
   // Here is small diagram that shows how active, local, and monotonic times
@@ -199,11 +197,19 @@ class GFX_KEYFRAME_ANIMATION_EXPORT KeyframeModel {
   //     local time     +-----------------+      +---+      +--------->
   //                    |                                          |
   //    active time     +          +------+      +---+      +------+
-  //                      (-offset)
+  //                      (-delay)
   //
   // [1] https://drafts.csswg.org/web-animations/#local-time-section
   base::TimeDelta ConvertMonotonicTimeToLocalTime(
       base::TimeTicks monotonic_time) const;
+  // Calculate the hold time using the current local time. If there is no
+  // start time, this returns a fallback hold time matching blink's hold time
+  // calculation if current time is unresolved.
+  base::TimeDelta CalculateHoldTime(base::TimeTicks monotonic_time,
+                                    double playback_rate) const;
+  // Calculate the effect end time[1].
+  // [1] https://www.w3.org/TR/web-animations-1/#end-time
+  base::TimeDelta CalculateEndTime() const;
 
   std::unique_ptr<AnimationCurve> curve_;
 
@@ -220,21 +226,9 @@ class GFX_KEYFRAME_ANIMATION_EXPORT KeyframeModel {
 
   std::optional<base::TimeTicks> start_time_;
 
-  // The time offset effectively pushes the start of the keyframe model back in
-  // time. This is used for resuming paused KeyframeModels -- an animation is
-  // added with a non-zero time offset, causing the keyframe model to skip ahead
-  // to the desired point in time.
-  base::TimeDelta time_offset_;
-
   // https://www.w3.org/TR/web-animations-1/#start-delay
   base::TimeDelta start_delay_;
-
-  // These are used when converting monotonic to local time to account for time
-  // spent while paused. This is not included in AnimationState since it
-  // there is absolutely no need for clients of this controller to know
-  // about these values.
-  base::TimeTicks pause_time_;
-  base::TimeDelta total_paused_duration_;
+  std::optional<base::TimeDelta> hold_time_;
 };
 
 }  // namespace gfx

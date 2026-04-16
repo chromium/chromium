@@ -488,7 +488,7 @@ KeyframeEffect::CheckCanStartAnimationOnCompositor(
 void KeyframeEffect::StartAnimationOnCompositor(
     int group,
     std::optional<double> start_time,
-    base::TimeDelta time_offset,
+    std::optional<base::TimeDelta> hold_time,
     double animation_playback_rate,
     CompositorAnimation* compositor_animation,
     bool is_monotonic_timeline,
@@ -505,7 +505,7 @@ void KeyframeEffect::StartAnimationOnCompositor(
   DCHECK(Model());
 
   CompositorAnimations::StartAnimationOnCompositor(
-      *effect_target_, group, start_time, time_offset, SpecifiedTiming(),
+      *effect_target_, group, start_time, hold_time, SpecifiedTiming(),
       NormalizedTiming(), GetAnimation(), *compositor_animation, *Model(),
       compositor_keyframe_model_ids_, animation_playback_rate,
       is_monotonic_timeline, is_boundary_aligned);
@@ -557,7 +557,7 @@ void KeyframeEffect::CancelIncompatibleAnimationsOnCompositor() {
 }
 
 void KeyframeEffect::PauseAnimationForTestingOnCompositor(
-    base::TimeDelta pause_time) {
+    base::TimeDelta hold_time) {
   DCHECK(!compositor_keyframe_model_ids_.empty());
   if (!effect_target_ || !effect_target_->GetLayoutObject())
     return;
@@ -567,7 +567,7 @@ void KeyframeEffect::PauseAnimationForTestingOnCompositor(
        compositor_keyframe_model_ids_) {
     CompositorAnimations::PauseAnimationForTestingOnCompositor(
         *effect_target_, *GetAnimation(), compositor_keyframe_model_id,
-        pause_time, *Model());
+        hold_time, *Model());
   }
 }
 

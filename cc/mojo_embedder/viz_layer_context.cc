@@ -1228,7 +1228,8 @@ void SerializeAnimationCurve(const KeyframeModel& model,
   wire.playback_rate = model.playback_rate();
   wire.iterations = model.iterations();
   wire.iteration_start = model.iteration_start();
-  wire.time_offset = model.time_offset();
+  wire.start_delay = model.start_delay();
+  wire.hold_time = model.hold_time();
   wire.keyframes.reserve(curve.keyframes().size());
   for (const auto& keyframe : curve.keyframes()) {
     auto wire_keyframe = viz::mojom::AnimationKeyframe::New();

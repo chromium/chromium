@@ -782,7 +782,7 @@ class CSSAnimationsCompositorSyncTest : public CSSAnimationsTest {
     EXPECT_TRUE(animation->HasActiveAnimationsOnCompositor());
     VerifyCompositorStartTime(TimelineTime().since_origin().InMillisecondsF());
     VerifyCompositorPlaybackRate(1.0);
-    VerifyCompositorTimeOffset(0.0);
+    VerifyCompositorHoldTime(std::nullopt);
     VerifyCompositorIterationTime(0);
     int compositor_group = animation->CompositorGroup();
 
@@ -793,7 +793,7 @@ class CSSAnimationsCompositorSyncTest : public CSSAnimationsTest {
     VerifyCompositorStartTime(TimelineTime().since_origin().InMillisecondsF() -
                               500);
     VerifyCompositorPlaybackRate(1.0);
-    VerifyCompositorTimeOffset(0.0);
+    VerifyCompositorHoldTime(std::nullopt);
     VerifyCompositorIterationTime(500);
     VerifyCompositorOpacity(0.5);
   }
@@ -826,9 +826,10 @@ class CSSAnimationsCompositorSyncTest : public CSSAnimationsTest {
     // blink::Animation.
     base::TimeTicks timeline_time = TimelineTime();
     keyframe_model->SetRunState(cc::KeyframeModel::RUNNING, TimelineTime());
-    if (needs_start_time)
-      keyframe_model->set_start_time(timeline_time);
     keyframe_model->set_needs_synchronized_start_time(false);
+    if (needs_start_time) {
+      keyframe_model->UnpauseForTesting(timeline_time);
+    }
     NotifyStartTime();
   }
 
@@ -843,10 +844,15 @@ class CSSAnimationsCompositorSyncTest : public CSSAnimationsTest {
     EXPECT_NEAR(expected_value, keyframe_model->playback_rate(), kTolerance);
   }
 
-  void VerifyCompositorTimeOffset(double expected_value) {
+  void VerifyCompositorHoldTime(std::optional<double> expected_value) {
     cc::KeyframeModel* keyframe_model = GetCompositorKeyframeForOpacity();
-    EXPECT_NEAR(expected_value, keyframe_model->time_offset().InMillisecondsF(),
-                kTimeToleranceMilliseconds);
+    EXPECT_EQ(expected_value.has_value(),
+              keyframe_model->hold_time().has_value());
+    if (expected_value.has_value()) {
+      EXPECT_NEAR(expected_value.value(),
+                  keyframe_model->hold_time()->InMillisecondsF(),
+                  kTimeToleranceMilliseconds);
+    }
   }
 
   void VerifyCompositorStartTime(double expected_value) {
@@ -923,12 +929,13 @@ TEST_P(CSSAnimationsCompositorSyncTest, UpdatePlaybackRate) {
   // No jump in opacity after changing the playback rate.
   EXPECT_NEAR(0.5, element_->GetComputedStyle()->Opacity(), kTolerance);
   VerifyCompositorPlaybackRate(0.5);
-  // The time offset tells the compositor where to seek into the animation, and
-  // is calculated as follows:
-  // time_offset = current_time / playback_rate = 0.5 / 0.5 = 1.0.
-  VerifyCompositorTimeOffset(1000);
-  // Start time must have been reset.
-  VerifyCompositorStartTime(TimelineTime().since_origin().InMillisecondsF());
+  // The hold time tells the compositor where to seek into the animation.
+  VerifyCompositorHoldTime(std::nullopt);
+  // Start time must have been reset. To preserve the current time with respect
+  // to the new (halved) playback rate, the start time is pushed back by double
+  // the current time.
+  VerifyCompositorStartTime(TimelineTime().since_origin().InMillisecondsF() -
+                            1000);
   VerifyCompositorIterationTime(500);
   VerifyCompositorOpacity(0.5);
 
@@ -938,9 +945,9 @@ TEST_P(CSSAnimationsCompositorSyncTest, UpdatePlaybackRate) {
   UpdateAllLifecyclePhasesForTest();
   EXPECT_NEAR(0.25, element_->GetComputedStyle()->Opacity(), kTolerance);
   EXPECT_EQ(post_update_compositor_group, animation->CompositorGroup());
-  VerifyCompositorTimeOffset(1000);
+  VerifyCompositorHoldTime(std::nullopt);
   VerifyCompositorStartTime(TimelineTime().since_origin().InMillisecondsF() -
-                            500);
+                            1500);
   VerifyCompositorIterationTime(750);
   VerifyCompositorOpacity(0.25);
 }
@@ -952,7 +959,6 @@ TEST_P(CSSAnimationsCompositorSyncTest, Reverse) {
 
   animation->reverse(ASSERT_NO_EXCEPTION);
   UpdateAllLifecyclePhasesForTest();
-
   // Verify update in web-animation API.
   EXPECT_NEAR(-1, animation->playbackRate(), kTolerance);
 
@@ -966,9 +972,10 @@ TEST_P(CSSAnimationsCompositorSyncTest, Reverse) {
 
   // Verify updates to cc Keyframe model.
   // Start time must have been reset.
-  VerifyCompositorStartTime(TimelineTime().since_origin().InMillisecondsF());
+  VerifyCompositorStartTime(TimelineTime().since_origin().InMillisecondsF() +
+                            500);
   VerifyCompositorPlaybackRate(-1.0);
-  VerifyCompositorTimeOffset(500);
+  VerifyCompositorHoldTime(std::nullopt);
   VerifyCompositorIterationTime(500);
   VerifyCompositorOpacity(0.5);
 
@@ -978,7 +985,7 @@ TEST_P(CSSAnimationsCompositorSyncTest, Reverse) {
   UpdateAllLifecyclePhasesForTest();
   EXPECT_NEAR(0.75, element_->GetComputedStyle()->Opacity(), kTolerance);
   EXPECT_EQ(post_update_compositor_group, animation->CompositorGroup());
-  VerifyCompositorStartTime(TimelineTime().since_origin().InMillisecondsF() -
+  VerifyCompositorStartTime(TimelineTime().since_origin().InMillisecondsF() +
                             250);
   VerifyCompositorIterationTime(250);
   VerifyCompositorOpacity(0.75);
@@ -1014,7 +1021,7 @@ TEST_P(CSSAnimationsCompositorSyncTest, SetStartTime) {
   // Verify updates to cc Keyframe model.
   VerifyCompositorStartTime(new_start_time->GetAsDouble());
   VerifyCompositorPlaybackRate(1.0);
-  VerifyCompositorTimeOffset(0.0);
+  VerifyCompositorHoldTime(std::nullopt);
   VerifyCompositorIterationTime(250);
   VerifyCompositorOpacity(0.75);
 
@@ -1055,7 +1062,7 @@ TEST_P(CSSAnimationsCompositorSyncTest, SetCurrentTime) {
   // Start time should be set to the recalculated value.
   VerifyCompositorStartTime(animation->startTime()->GetAsDouble());
   VerifyCompositorPlaybackRate(1.0);
-  VerifyCompositorTimeOffset(0.0);
+  VerifyCompositorHoldTime(std::nullopt);
   VerifyCompositorIterationTime(750);
   VerifyCompositorOpacity(0.25);
 

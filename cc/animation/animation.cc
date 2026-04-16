@@ -305,13 +305,13 @@ void Animation::AddKeyframeModel(
   keyframe_effect()->AddKeyframeModel(std::move(keyframe_model));
 }
 
-void Animation::PauseKeyframeModel(int keyframe_model_id,
-                                   base::TimeDelta time_offset) {
-  keyframe_effect()->PauseKeyframeModel(keyframe_model_id, time_offset);
+void Animation::PauseKeyframeModelForTesting(int keyframe_model_id,
+                                             base::TimeDelta hold_time) {
+  keyframe_effect()->PauseKeyframeModelForTesting(keyframe_model_id, hold_time);
 }
 
-void Animation::PauseKeyframeModels(base::TimeDelta time_offset) {
-  keyframe_effect()->PauseKeyframeModels(time_offset);
+void Animation::Pause(base::TimeDelta hold_time) {
+  keyframe_effect()->Pause(hold_time);
 }
 
 void Animation::RemoveKeyframeModel(int keyframe_model_id) {

@@ -511,7 +511,7 @@ TEST_F(AnimationTest, AddRemoveAnimationCausesSetNeedsCommit) {
   EXPECT_TRUE(client_.mutators_need_commit());
   client_.set_mutators_need_commit(false);
 
-  animation_->PauseKeyframeModel(keyframe_model_id, base::Seconds(1));
+  animation_->PauseKeyframeModelForTesting(keyframe_model_id, base::Seconds(1));
   EXPECT_TRUE(client_.mutators_need_commit());
   client_.set_mutators_need_commit(false);
 

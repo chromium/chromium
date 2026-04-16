@@ -20,14 +20,17 @@ static base::TimeTicks TicksFromSecondsF(double seconds) {
   return base::TimeTicks() + base::Seconds(seconds);
 }
 
-std::unique_ptr<KeyframeModel> CreateKeyframeModel(double iterations,
-                                                   double duration,
-                                                   double playback_rate) {
+std::unique_ptr<KeyframeModel> CreateKeyframeModel(
+    double iterations,
+    double duration,
+    double playback_rate,
+    base::TimeTicks start_time = base::TimeTicks()) {
   std::unique_ptr<KeyframeModel> to_return(KeyframeModel::Create(
       std::make_unique<FakeFloatAnimationCurve>(duration), 0, 1,
       KeyframeModel::TargetPropertyId(TargetProperty::OPACITY)));
   to_return->set_iterations(iterations);
   to_return->set_playback_rate(playback_rate);
+  to_return->set_start_time(start_time);
   return to_return;
 }
 
@@ -372,9 +375,9 @@ TEST(KeyframeModelTest, TrimTimeStartTimeReverse) {
                 .InSecondsF());
 }
 
-TEST(KeyframeModelTest, TrimTimeTimeOffset) {
+TEST(KeyframeModelTest, TrimTimeNegativeStartDelay) {
   std::unique_ptr<KeyframeModel> keyframe_model(CreateKeyframeModel(1));
-  keyframe_model->set_time_offset(base::Milliseconds(4000));
+  keyframe_model->set_start_delay(base::Milliseconds(-4000));
   keyframe_model->set_start_time(TicksFromSecondsF(4));
   EXPECT_EQ(0,
             keyframe_model->TrimTimeToCurrentIteration(TicksFromSecondsF(0.0))
@@ -390,11 +393,12 @@ TEST(KeyframeModelTest, TrimTimeTimeOffset) {
                 .InSecondsF());
 }
 
-TEST(KeyframeModelTest, TrimTimeTimeOffsetReverse) {
+TEST(KeyframeModelTest, TrimTimeNegativeStartDelayReverse) {
   std::unique_ptr<KeyframeModel> keyframe_model(CreateKeyframeModel(1));
-  keyframe_model->set_time_offset(base::Milliseconds(4000));
+  keyframe_model->set_start_delay(base::Milliseconds(-4000));
   keyframe_model->set_start_time(TicksFromSecondsF(4));
   keyframe_model->set_direction(KeyframeModel::Direction::REVERSE);
+
   EXPECT_EQ(1.0,
             keyframe_model->TrimTimeToCurrentIteration(TicksFromSecondsF(0.0))
                 .InSecondsF());
@@ -406,40 +410,40 @@ TEST(KeyframeModelTest, TrimTimeTimeOffsetReverse) {
                 .InSecondsF());
 }
 
-TEST(KeyframeModelTest, TrimTimeNegativeTimeOffset) {
+TEST(KeyframeModelTest, TrimTimeStartDelay) {
   std::unique_ptr<KeyframeModel> keyframe_model(CreateKeyframeModel(1));
-  keyframe_model->set_time_offset(base::Milliseconds(-4000));
-
-  EXPECT_EQ(0,
-            keyframe_model->TrimTimeToCurrentIteration(TicksFromSecondsF(0.0))
-                .InSecondsF());
+  keyframe_model->set_start_delay(base::Milliseconds(4000));
+  keyframe_model->set_start_time(TicksFromSecondsF(4));
   EXPECT_EQ(0,
             keyframe_model->TrimTimeToCurrentIteration(TicksFromSecondsF(4.0))
                 .InSecondsF());
+  EXPECT_EQ(0,
+            keyframe_model->TrimTimeToCurrentIteration(TicksFromSecondsF(8.0))
+                .InSecondsF());
   EXPECT_EQ(0.5,
-            keyframe_model->TrimTimeToCurrentIteration(TicksFromSecondsF(4.5))
+            keyframe_model->TrimTimeToCurrentIteration(TicksFromSecondsF(8.5))
                 .InSecondsF());
   EXPECT_EQ(1,
-            keyframe_model->TrimTimeToCurrentIteration(TicksFromSecondsF(5.0))
+            keyframe_model->TrimTimeToCurrentIteration(TicksFromSecondsF(9.0))
                 .InSecondsF());
 }
 
-TEST(KeyframeModelTest, TrimTimeNegativeTimeOffsetReverse) {
+TEST(KeyframeModelTest, TrimTimeStartDelayReverse) {
   std::unique_ptr<KeyframeModel> keyframe_model(CreateKeyframeModel(1));
-  keyframe_model->set_time_offset(base::Milliseconds(-4000));
+  keyframe_model->set_start_delay(base::Milliseconds(4000));
+  keyframe_model->set_start_time(TicksFromSecondsF(4));
   keyframe_model->set_direction(KeyframeModel::Direction::REVERSE);
-
-  EXPECT_EQ(1.0,
-            keyframe_model->TrimTimeToCurrentIteration(TicksFromSecondsF(0.0))
-                .InSecondsF());
   EXPECT_EQ(1.0,
             keyframe_model->TrimTimeToCurrentIteration(TicksFromSecondsF(4.0))
                 .InSecondsF());
+  EXPECT_EQ(1.0,
+            keyframe_model->TrimTimeToCurrentIteration(TicksFromSecondsF(8.0))
+                .InSecondsF());
   EXPECT_EQ(0.5,
-            keyframe_model->TrimTimeToCurrentIteration(TicksFromSecondsF(4.5))
+            keyframe_model->TrimTimeToCurrentIteration(TicksFromSecondsF(8.5))
                 .InSecondsF());
   EXPECT_EQ(0,
-            keyframe_model->TrimTimeToCurrentIteration(TicksFromSecondsF(5.0))
+            keyframe_model->TrimTimeToCurrentIteration(TicksFromSecondsF(9.0))
                 .InSecondsF());
 }
 
@@ -448,7 +452,7 @@ TEST(KeyframeModelTest, TrimTimePauseBasic) {
   keyframe_model->set_fill_mode(KeyframeModel::FillMode::NONE);
 
   keyframe_model->Pause(base::Seconds(0.5));
-  // When paused, the time returned is always the pause time
+  // When paused, the time returned is always the hold time
   EXPECT_EQ(0.5,
             keyframe_model->TrimTimeToCurrentIteration(TicksFromSecondsF(-1))
                 .InSecondsF());
@@ -463,15 +467,15 @@ TEST(KeyframeModelTest, TrimTimePauseBasic) {
 TEST(KeyframeModelTest, TrimTimePauseAffectedByDelay) {
   std::unique_ptr<KeyframeModel> keyframe_model(CreateKeyframeModel(1));
   keyframe_model->set_fill_mode(KeyframeModel::FillMode::NONE);
-  // Pause time is in local time so delay should apply on top of it.
-  keyframe_model->set_time_offset(base::Seconds(-0.2));
+  // Delay of 0.2s
+  keyframe_model->set_start_delay(base::Seconds(0.2));
   keyframe_model->Pause(base::Seconds(0.5));
   EXPECT_EQ(0.3,
             keyframe_model->TrimTimeToCurrentIteration(TicksFromSecondsF(0.1))
                 .InSecondsF());
 
-  keyframe_model->set_time_offset(base::Seconds(0.2));
-  keyframe_model->Pause(base::Seconds(0.5));
+  // Negative delay (seek) of 0.2s
+  keyframe_model->set_start_delay(base::Seconds(-0.2));
   EXPECT_EQ(0.7,
             keyframe_model->TrimTimeToCurrentIteration(TicksFromSecondsF(0.1))
                 .InSecondsF());
@@ -487,67 +491,73 @@ TEST(KeyframeModelTest, TrimTimePauseNotAffectedByStartTime) {
             keyframe_model->TrimTimeToCurrentIteration(TicksFromSecondsF(0.1))
                 .InSecondsF());
 
-  keyframe_model->set_start_time(TicksFromSecondsF(0.4));
-  keyframe_model->Pause(base::Seconds(0.5));
-  EXPECT_EQ(0.5,
+  keyframe_model->UnpauseForTesting(TicksFromSecondsF(0.7));
+  keyframe_model->Pause(base::Seconds(0.7));
+  EXPECT_EQ(0.7,
             keyframe_model->TrimTimeToCurrentIteration(TicksFromSecondsF(0.1))
                 .InSecondsF());
 }
 
 TEST(KeyframeModelTest, TrimTimePauseResume) {
   std::unique_ptr<KeyframeModel> keyframe_model(CreateKeyframeModel(1));
-  keyframe_model->SetRunState(KeyframeModel::RUNNING, TicksFromSecondsF(0.0));
   EXPECT_EQ(0,
             keyframe_model->TrimTimeToCurrentIteration(TicksFromSecondsF(0.0))
                 .InSecondsF());
   EXPECT_EQ(0.4,
             keyframe_model->TrimTimeToCurrentIteration(TicksFromSecondsF(0.4))
                 .InSecondsF());
-  keyframe_model->Pause(base::Seconds(0.5));
-  EXPECT_EQ(
-      0.5, keyframe_model->TrimTimeToCurrentIteration(TicksFromSecondsF(1024.0))
-               .InSecondsF());
-  keyframe_model->SetRunState(KeyframeModel::RUNNING,
-                              TicksFromSecondsF(1024.0));
-  EXPECT_EQ(
-      0.5, keyframe_model->TrimTimeToCurrentIteration(TicksFromSecondsF(1024.0))
-               .InSecondsF());
-  EXPECT_EQ(
-      1, keyframe_model->TrimTimeToCurrentIteration(TicksFromSecondsF(1024.5))
-             .InSecondsF());
   keyframe_model->Pause(base::Seconds(0.6));
-  EXPECT_EQ(
-      0.6, keyframe_model->TrimTimeToCurrentIteration(TicksFromSecondsF(2000.0))
-               .InSecondsF());
-  keyframe_model->SetRunState(KeyframeModel::RUNNING,
-                              TicksFromSecondsF(2000.0));
-  EXPECT_EQ(
-      0.7, keyframe_model->TrimTimeToCurrentIteration(TicksFromSecondsF(2000.1))
-               .InSecondsF());
+  EXPECT_EQ(0.6,
+            keyframe_model->TrimTimeToCurrentIteration(TicksFromSecondsF(1.0))
+                .InSecondsF());
+  EXPECT_EQ(0.6,
+            keyframe_model->TrimTimeToCurrentIteration(TicksFromSecondsF(1.5))
+                .InSecondsF());
+  keyframe_model->Pause(base::Seconds(0.7));
+  EXPECT_EQ(0.7,
+            keyframe_model->TrimTimeToCurrentIteration(TicksFromSecondsF(1.0))
+                .InSecondsF());
+  // Resuming at monotonic time 1.0 with a hold time of 0.7 means start time is
+  // 0.3.
+  keyframe_model->UnpauseForTesting(TicksFromSecondsF(1.0));
+  EXPECT_EQ(0, keyframe_model->TrimTimeToCurrentIteration(TicksFromSecondsF(0))
+                   .InSecondsF());
+  EXPECT_EQ(0,
+            keyframe_model->TrimTimeToCurrentIteration(TicksFromSecondsF(0.3))
+                .InSecondsF());
+  EXPECT_EQ(0.5,
+            keyframe_model->TrimTimeToCurrentIteration(TicksFromSecondsF(0.8))
+                .InSecondsF());
+  EXPECT_EQ(1,
+            keyframe_model->TrimTimeToCurrentIteration(TicksFromSecondsF(1.3))
+                .InSecondsF());
+  EXPECT_EQ(1,
+            keyframe_model->TrimTimeToCurrentIteration(TicksFromSecondsF(1.5))
+                .InSecondsF());
 }
 
 TEST(KeyframeModelTest, TrimTimePauseResumeReverse) {
   std::unique_ptr<KeyframeModel> keyframe_model(CreateKeyframeModel(1));
   keyframe_model->set_direction(KeyframeModel::Direction::REVERSE);
-  keyframe_model->SetRunState(KeyframeModel::RUNNING, TicksFromSecondsF(0.0));
   EXPECT_EQ(1.0,
             keyframe_model->TrimTimeToCurrentIteration(TicksFromSecondsF(0.0))
                 .InSecondsF());
   EXPECT_EQ(0.5,
             keyframe_model->TrimTimeToCurrentIteration(TicksFromSecondsF(0.5))
                 .InSecondsF());
-  keyframe_model->Pause(base::Seconds(0.25));
-  EXPECT_EQ(0.75, keyframe_model
-                      ->TrimTimeToCurrentIteration(TicksFromSecondsF(1024.0))
-                      .InSecondsF());
-  keyframe_model->SetRunState(KeyframeModel::RUNNING,
-                              TicksFromSecondsF(1024.0));
-  EXPECT_EQ(0.75, keyframe_model
-                      ->TrimTimeToCurrentIteration(TicksFromSecondsF(1024.0))
-                      .InSecondsF());
-  EXPECT_EQ(
-      0, keyframe_model->TrimTimeToCurrentIteration(TicksFromSecondsF(1024.75))
-             .InSecondsF());
+  keyframe_model->Pause(base::Seconds(0.4));
+  EXPECT_EQ(0.6,
+            keyframe_model->TrimTimeToCurrentIteration(TicksFromSecondsF(1.0))
+                .InSecondsF());
+  // Resuming at monotonic time 1.0 with a hold time of 0.4 means start time is
+  // 0.6.
+  keyframe_model->UnpauseForTesting(TicksFromSecondsF(1.0));
+  EXPECT_EQ(0.6,
+            keyframe_model->TrimTimeToCurrentIteration(TicksFromSecondsF(1.0))
+                .InSecondsF());
+  EXPECT_EQ(0,
+            keyframe_model->TrimTimeToCurrentIteration(TicksFromSecondsF(1.6))
+                .InSecondsF());
 }
 
 TEST(KeyframeModelTest, TrimTimeZeroDuration) {
@@ -564,8 +574,13 @@ TEST(KeyframeModelTest, TrimTimeZeroDuration) {
                 .InSecondsF());
 }
 
+// TODO(crbug.com/497867796): This is testing the special treatment of
+// run_state_ == STARTING && start_time_ == null. This diverges from blink which
+// would consider the currentTime null instead of zero. We should update any
+// code relying on this behavior and delete this test.
 TEST(KeyframeModelTest, TrimTimeStarting) {
   std::unique_ptr<KeyframeModel> keyframe_model(CreateKeyframeModel(1, 5.0));
+  keyframe_model->ResetStartTimeForTesting();
   keyframe_model->SetRunState(KeyframeModel::STARTING, TicksFromSecondsF(0.0));
   EXPECT_EQ(0.0,
             keyframe_model->TrimTimeToCurrentIteration(TicksFromSecondsF(-1.0))
@@ -576,7 +591,8 @@ TEST(KeyframeModelTest, TrimTimeStarting) {
   EXPECT_EQ(0.0,
             keyframe_model->TrimTimeToCurrentIteration(TicksFromSecondsF(1.0))
                 .InSecondsF());
-  keyframe_model->set_time_offset(base::Milliseconds(2000));
+  keyframe_model->ResetStartTimeForTesting();
+  keyframe_model->set_hold_time(base::Milliseconds(2000));
   EXPECT_EQ(2.0,
             keyframe_model->TrimTimeToCurrentIteration(TicksFromSecondsF(-1.0))
                 .InSecondsF());
@@ -586,17 +602,19 @@ TEST(KeyframeModelTest, TrimTimeStarting) {
   EXPECT_EQ(2.0,
             keyframe_model->TrimTimeToCurrentIteration(TicksFromSecondsF(1.0))
                 .InSecondsF());
-  keyframe_model->set_start_time(TicksFromSecondsF(1.0));
-  EXPECT_EQ(0.0,
-            keyframe_model->TrimTimeToCurrentIteration(TicksFromSecondsF(-1.0))
-                .InSecondsF());
+  // Transition to RUNNING computes start_time = 0s - 2s = -2s.
+  keyframe_model->UnpauseForTesting(TicksFromSecondsF(0.0));
+  keyframe_model->SetRunState(KeyframeModel::RUNNING, TicksFromSecondsF(0.0));
   EXPECT_EQ(1.0,
-            keyframe_model->TrimTimeToCurrentIteration(TicksFromSecondsF(0.0))
+            keyframe_model->TrimTimeToCurrentIteration(TicksFromSecondsF(-1.0))
                 .InSecondsF());
   EXPECT_EQ(2.0,
-            keyframe_model->TrimTimeToCurrentIteration(TicksFromSecondsF(1.0))
+            keyframe_model->TrimTimeToCurrentIteration(TicksFromSecondsF(0.0))
                 .InSecondsF());
   EXPECT_EQ(3.0,
+            keyframe_model->TrimTimeToCurrentIteration(TicksFromSecondsF(1.0))
+                .InSecondsF());
+  EXPECT_EQ(4.0,
             keyframe_model->TrimTimeToCurrentIteration(TicksFromSecondsF(2.0))
                 .InSecondsF());
 }
@@ -614,7 +632,8 @@ TEST(KeyframeModelTest, TrimTimeNeedsSynchronizedStartTime) {
   EXPECT_EQ(0.0,
             keyframe_model->TrimTimeToCurrentIteration(TicksFromSecondsF(1.0))
                 .InSecondsF());
-  keyframe_model->set_time_offset(base::Milliseconds(2000));
+  keyframe_model->ResetStartTimeForTesting();
+  keyframe_model->set_hold_time(base::Milliseconds(2000));
   EXPECT_EQ(2.0,
             keyframe_model->TrimTimeToCurrentIteration(TicksFromSecondsF(-1.0))
                 .InSecondsF());
@@ -624,8 +643,16 @@ TEST(KeyframeModelTest, TrimTimeNeedsSynchronizedStartTime) {
   EXPECT_EQ(2.0,
             keyframe_model->TrimTimeToCurrentIteration(TicksFromSecondsF(1.0))
                 .InSecondsF());
-  keyframe_model->set_start_time(TicksFromSecondsF(1.0));
   keyframe_model->set_needs_synchronized_start_time(false);
+  // hold_time of 2s above means start_time = -1
+  keyframe_model->UnpauseForTesting(TicksFromSecondsF(1.0));
+  // With start_time = -1s, at 0s local_time is 1s.
+  EXPECT_EQ(0.0,
+            keyframe_model->TrimTimeToCurrentIteration(TicksFromSecondsF(-2.0))
+                .InSecondsF());
+  EXPECT_EQ(0.0,
+            keyframe_model->TrimTimeToCurrentIteration(TicksFromSecondsF(-1.0))
+                .InSecondsF());
   EXPECT_EQ(1.0,
             keyframe_model->TrimTimeToCurrentIteration(TicksFromSecondsF(0.0))
                 .InSecondsF());
@@ -664,9 +691,9 @@ TEST(KeyframeModelTest, IsFinishedAtInfiniteIterations) {
   EXPECT_FALSE(keyframe_model->IsFinishedAt(TicksFromSecondsF(1.5)));
 }
 
-TEST(KeyframeModelTest, IsFinishedNegativeTimeOffset) {
+TEST(KeyframeModelTest, IsFinishedStartDelay) {
   std::unique_ptr<KeyframeModel> keyframe_model(CreateKeyframeModel(1));
-  keyframe_model->set_time_offset(base::Milliseconds(-500));
+  keyframe_model->set_start_delay(base::Milliseconds(500));
   keyframe_model->SetRunState(KeyframeModel::RUNNING, TicksFromSecondsF(0.0));
 
   EXPECT_FALSE(keyframe_model->IsFinishedAt(TicksFromSecondsF(-1.0)));
@@ -678,9 +705,9 @@ TEST(KeyframeModelTest, IsFinishedNegativeTimeOffset) {
   EXPECT_TRUE(keyframe_model->IsFinishedAt(TicksFromSecondsF(2.5)));
 }
 
-TEST(KeyframeModelTest, IsFinishedPositiveTimeOffset) {
+TEST(KeyframeModelTest, IsFinishedNegativeStartDelay) {
   std::unique_ptr<KeyframeModel> keyframe_model(CreateKeyframeModel(1));
-  keyframe_model->set_time_offset(base::Milliseconds(500));
+  keyframe_model->set_start_delay(base::Milliseconds(-500));
   keyframe_model->SetRunState(KeyframeModel::RUNNING, TicksFromSecondsF(0.0));
 
   EXPECT_FALSE(keyframe_model->IsFinishedAt(TicksFromSecondsF(-1.0)));
@@ -802,88 +829,121 @@ TEST(KeyframeModelTest, TrimTimePlaybackFast) {
 
 TEST(KeyframeModelTest, TrimTimePlaybackNormalReverse) {
   std::unique_ptr<KeyframeModel> keyframe_model(CreateKeyframeModel(1, 2, -1));
+  // Total active duration is 2s.
+  // With playback_rate = -1 and start_time = 0s, local_time = -monotonic_time.
+  // The animation runs backward from end to start over the monotonic time
+  // interval [-2s, 0s].
+  //
+  // Diagram:
+  // monotonic_time: -2.5     -2.0     -1.5     -1.0     -0.5      0.0      0.5
+  // local_time:      2.5      2.0      1.5      1.0      0.5      0.0     -0.5
   EXPECT_EQ(2.0,
-            keyframe_model->TrimTimeToCurrentIteration(TicksFromSecondsF(-1.0))
+            keyframe_model->TrimTimeToCurrentIteration(TicksFromSecondsF(-2.5))
                 .InSecondsF());
   EXPECT_EQ(2.0,
-            keyframe_model->TrimTimeToCurrentIteration(TicksFromSecondsF(0))
+            keyframe_model->TrimTimeToCurrentIteration(TicksFromSecondsF(-2.0))
                 .InSecondsF());
   EXPECT_EQ(1.5,
-            keyframe_model->TrimTimeToCurrentIteration(TicksFromSecondsF(0.5))
+            keyframe_model->TrimTimeToCurrentIteration(TicksFromSecondsF(-1.5))
                 .InSecondsF());
-  EXPECT_EQ(1,
-            keyframe_model->TrimTimeToCurrentIteration(TicksFromSecondsF(1.0))
+  EXPECT_EQ(1.0,
+            keyframe_model->TrimTimeToCurrentIteration(TicksFromSecondsF(-1.0))
                 .InSecondsF());
   EXPECT_EQ(0.5,
-            keyframe_model->TrimTimeToCurrentIteration(TicksFromSecondsF(1.5))
+            keyframe_model->TrimTimeToCurrentIteration(TicksFromSecondsF(-0.5))
                 .InSecondsF());
-  EXPECT_EQ(0,
-            keyframe_model->TrimTimeToCurrentIteration(TicksFromSecondsF(2.0))
+  EXPECT_EQ(0.0,
+            keyframe_model->TrimTimeToCurrentIteration(TicksFromSecondsF(0.0))
                 .InSecondsF());
-  EXPECT_EQ(0,
-            keyframe_model->TrimTimeToCurrentIteration(TicksFromSecondsF(2.5))
+  EXPECT_EQ(0.0,
+            keyframe_model->TrimTimeToCurrentIteration(TicksFromSecondsF(0.5))
                 .InSecondsF());
 }
 
 TEST(KeyframeModelTest, TrimTimePlaybackSlowReverse) {
   std::unique_ptr<KeyframeModel> keyframe_model(
       CreateKeyframeModel(1, 2, -0.5));
+  // Total active duration is 2s.
+  // With playback_rate = -0.5 and start_time = 0s, local_time = -0.5 *
+  // monotonic_time. The animation runs backward from end to start over the
+  // monotonic time interval [-4s, 0s].
+  //
+  // Diagram:
+  // monotonic_time:
+  // -4.5   -4.0   -3.5   -3.0   -2.5   -2.0   -1.5   -1.0   -0.5    0.0    0.5
+  // local_time:
+  // 2.25   2.0    1.75   1.5    1.25   1.0    0.75   0.5    0.25    0.0   -0.25
   EXPECT_EQ(2.0,
-            keyframe_model->TrimTimeToCurrentIteration(TicksFromSecondsF(-1.0))
+            keyframe_model->TrimTimeToCurrentIteration(TicksFromSecondsF(-4.5))
                 .InSecondsF());
   EXPECT_EQ(2.0,
-            keyframe_model->TrimTimeToCurrentIteration(TicksFromSecondsF(0))
+            keyframe_model->TrimTimeToCurrentIteration(TicksFromSecondsF(-4.0))
                 .InSecondsF());
   EXPECT_EQ(1.75,
-            keyframe_model->TrimTimeToCurrentIteration(TicksFromSecondsF(0.5))
+            keyframe_model->TrimTimeToCurrentIteration(TicksFromSecondsF(-3.5))
                 .InSecondsF());
   EXPECT_EQ(1.5,
-            keyframe_model->TrimTimeToCurrentIteration(TicksFromSecondsF(1.0))
+            keyframe_model->TrimTimeToCurrentIteration(TicksFromSecondsF(-3.0))
                 .InSecondsF());
   EXPECT_EQ(1.25,
-            keyframe_model->TrimTimeToCurrentIteration(TicksFromSecondsF(1.5))
+            keyframe_model->TrimTimeToCurrentIteration(TicksFromSecondsF(-2.5))
                 .InSecondsF());
-  EXPECT_EQ(1,
-            keyframe_model->TrimTimeToCurrentIteration(TicksFromSecondsF(2.0))
+  EXPECT_EQ(1.0,
+            keyframe_model->TrimTimeToCurrentIteration(TicksFromSecondsF(-2.0))
                 .InSecondsF());
   EXPECT_EQ(0.75,
-            keyframe_model->TrimTimeToCurrentIteration(TicksFromSecondsF(2.5))
+            keyframe_model->TrimTimeToCurrentIteration(TicksFromSecondsF(-1.5))
                 .InSecondsF());
   EXPECT_EQ(0.5,
-            keyframe_model->TrimTimeToCurrentIteration(TicksFromSecondsF(3))
+            keyframe_model->TrimTimeToCurrentIteration(TicksFromSecondsF(-1.0))
                 .InSecondsF());
   EXPECT_EQ(0.25,
-            keyframe_model->TrimTimeToCurrentIteration(TicksFromSecondsF(3.5))
+            keyframe_model->TrimTimeToCurrentIteration(TicksFromSecondsF(-0.5))
                 .InSecondsF());
-  EXPECT_EQ(0, keyframe_model->TrimTimeToCurrentIteration(TicksFromSecondsF(4))
-                   .InSecondsF());
-  EXPECT_EQ(0,
-            keyframe_model->TrimTimeToCurrentIteration(TicksFromSecondsF(4.5))
+  EXPECT_EQ(0.0,
+            keyframe_model->TrimTimeToCurrentIteration(TicksFromSecondsF(0.0))
+                .InSecondsF());
+  EXPECT_EQ(0.0,
+            keyframe_model->TrimTimeToCurrentIteration(TicksFromSecondsF(0.5))
                 .InSecondsF());
 }
 
 TEST(KeyframeModelTest, TrimTimePlaybackFastReverse) {
   std::unique_ptr<KeyframeModel> keyframe_model(CreateKeyframeModel(1, 2, -2));
+  // Total active duration is 2s.
+  // With playback_rate = -2 and start_time = 0s, local_time = -2.0 *
+  // monotonic_time. The animation runs backward from end to start over the
+  // monotonic time interval [-1s, 0s].
+  //
+  // Diagram:
+  // monotonic_time: -1.5   -1.25  -1.0   -0.75  -0.5   -0.25   0.0    0.25 0.5
+  // local_time:      3.0    2.5    2.0    1.5    1.0    0.5    0.0   -0.5 -1.0
+  EXPECT_EQ(2.0,
+            keyframe_model->TrimTimeToCurrentIteration(TicksFromSecondsF(-1.5))
+                .InSecondsF());
+  EXPECT_EQ(2.0,
+            keyframe_model->TrimTimeToCurrentIteration(TicksFromSecondsF(-1.25))
+                .InSecondsF());
   EXPECT_EQ(2.0,
             keyframe_model->TrimTimeToCurrentIteration(TicksFromSecondsF(-1.0))
                 .InSecondsF());
-  EXPECT_EQ(2.0,
-            keyframe_model->TrimTimeToCurrentIteration(TicksFromSecondsF(0))
-                .InSecondsF());
   EXPECT_EQ(1.5,
-            keyframe_model->TrimTimeToCurrentIteration(TicksFromSecondsF(0.25))
+            keyframe_model->TrimTimeToCurrentIteration(TicksFromSecondsF(-0.75))
                 .InSecondsF());
-  EXPECT_EQ(1,
-            keyframe_model->TrimTimeToCurrentIteration(TicksFromSecondsF(0.5))
+  EXPECT_EQ(1.0,
+            keyframe_model->TrimTimeToCurrentIteration(TicksFromSecondsF(-0.5))
                 .InSecondsF());
   EXPECT_EQ(0.5,
-            keyframe_model->TrimTimeToCurrentIteration(TicksFromSecondsF(0.75))
+            keyframe_model->TrimTimeToCurrentIteration(TicksFromSecondsF(-0.25))
                 .InSecondsF());
-  EXPECT_EQ(0,
-            keyframe_model->TrimTimeToCurrentIteration(TicksFromSecondsF(1.0))
+  EXPECT_EQ(0.0,
+            keyframe_model->TrimTimeToCurrentIteration(TicksFromSecondsF(0.0))
                 .InSecondsF());
-  EXPECT_EQ(0,
-            keyframe_model->TrimTimeToCurrentIteration(TicksFromSecondsF(1.5))
+  EXPECT_EQ(0.0,
+            keyframe_model->TrimTimeToCurrentIteration(TicksFromSecondsF(0.25))
+                .InSecondsF());
+  EXPECT_EQ(0.0,
+            keyframe_model->TrimTimeToCurrentIteration(TicksFromSecondsF(0.5))
                 .InSecondsF());
 }
 
@@ -913,46 +973,66 @@ TEST(KeyframeModelTest, TrimTimePlaybackFastInfiniteIterations) {
 TEST(KeyframeModelTest, TrimTimePlaybackNormalDoubleReverse) {
   std::unique_ptr<KeyframeModel> keyframe_model(CreateKeyframeModel(1, 1, -1));
   keyframe_model->set_direction(KeyframeModel::Direction::REVERSE);
-  EXPECT_EQ(0,
+  // Total active duration is 1s.
+  // With playback_rate = -1 and start_time = 0s, local_time = -1.0 *
+  // monotonic_time. The animation runs backward from end to start over the
+  // monotonic time interval [-1s, 0s]. Since direction is REVERSE, the
+  // iteration progress is flipped again, making it run from 0 to 1 over the
+  // active interval.
+  //
+  // Diagram:
+  // monotonic_time: -1.5   -1.0   -0.5    0.0    0.5
+  // local_time:      1.5    1.0    0.5    0.0   -0.5
+  EXPECT_EQ(0.0,
+            keyframe_model->TrimTimeToCurrentIteration(TicksFromSecondsF(-1.5))
+                .InSecondsF());
+  EXPECT_EQ(0.0,
             keyframe_model->TrimTimeToCurrentIteration(TicksFromSecondsF(-1.0))
                 .InSecondsF());
-  EXPECT_EQ(0,
+  EXPECT_EQ(0.5,
+            keyframe_model->TrimTimeToCurrentIteration(TicksFromSecondsF(-0.5))
+                .InSecondsF());
+  EXPECT_EQ(1.0,
             keyframe_model->TrimTimeToCurrentIteration(TicksFromSecondsF(0.0))
                 .InSecondsF());
-  EXPECT_EQ(0.5,
+  EXPECT_EQ(1.0,
             keyframe_model->TrimTimeToCurrentIteration(TicksFromSecondsF(0.5))
-                .InSecondsF());
-  EXPECT_EQ(1,
-            keyframe_model->TrimTimeToCurrentIteration(TicksFromSecondsF(1.0))
-                .InSecondsF());
-  EXPECT_EQ(1,
-            keyframe_model->TrimTimeToCurrentIteration(TicksFromSecondsF(2.0))
                 .InSecondsF());
 }
 
 TEST(KeyframeModelTest, TrimTimePlaybackFastDoubleReverse) {
   std::unique_ptr<KeyframeModel> keyframe_model(CreateKeyframeModel(1, 4, -2));
   keyframe_model->set_direction(KeyframeModel::Direction::REVERSE);
-  EXPECT_EQ(0,
+  // Total active duration is 4s.
+  // With playback_rate = -2 and start_time = 0s, local_time = -2.0 *
+  // monotonic_time. The animation runs backward from end to start over the
+  // monotonic time interval [-2s, 0s]. Since direction is REVERSE, the
+  // iteration progress is flipped again, making it run from 0 to 4 over the
+  // active interval.
+  //
+  // Diagram:
+  // monotonic_time: -2.5   -2.0   -1.5   -1.0   -0.5    0.0    0.5
+  // local_time:      5.0    4.0    3.0    2.0    1.0    0.0   -1.0
+  EXPECT_EQ(0.0,
+            keyframe_model->TrimTimeToCurrentIteration(TicksFromSecondsF(-2.5))
+                .InSecondsF());
+  EXPECT_EQ(0.0,
+            keyframe_model->TrimTimeToCurrentIteration(TicksFromSecondsF(-2.0))
+                .InSecondsF());
+  EXPECT_EQ(1.0,
+            keyframe_model->TrimTimeToCurrentIteration(TicksFromSecondsF(-1.5))
+                .InSecondsF());
+  EXPECT_EQ(2.0,
             keyframe_model->TrimTimeToCurrentIteration(TicksFromSecondsF(-1.0))
                 .InSecondsF());
-  EXPECT_EQ(0,
+  EXPECT_EQ(3.0,
+            keyframe_model->TrimTimeToCurrentIteration(TicksFromSecondsF(-0.5))
+                .InSecondsF());
+  EXPECT_EQ(4.0,
             keyframe_model->TrimTimeToCurrentIteration(TicksFromSecondsF(0.0))
                 .InSecondsF());
-  EXPECT_EQ(1,
+  EXPECT_EQ(4.0,
             keyframe_model->TrimTimeToCurrentIteration(TicksFromSecondsF(0.5))
-                .InSecondsF());
-  EXPECT_EQ(2,
-            keyframe_model->TrimTimeToCurrentIteration(TicksFromSecondsF(1.0))
-                .InSecondsF());
-  EXPECT_EQ(3,
-            keyframe_model->TrimTimeToCurrentIteration(TicksFromSecondsF(1.5))
-                .InSecondsF());
-  EXPECT_EQ(4,
-            keyframe_model->TrimTimeToCurrentIteration(TicksFromSecondsF(2.0))
-                .InSecondsF());
-  EXPECT_EQ(4,
-            keyframe_model->TrimTimeToCurrentIteration(TicksFromSecondsF(2.5))
                 .InSecondsF());
 }
 
@@ -1033,35 +1113,59 @@ TEST(KeyframeModelTest,
      TrimTimeAlternateTwoIterationsPlaybackFastDoubleReverse) {
   std::unique_ptr<KeyframeModel> keyframe_model(CreateKeyframeModel(2, 2, -2));
   keyframe_model->set_direction(KeyframeModel::Direction::ALTERNATE_REVERSE);
+  // Total active duration is 4s (2 iterations of 2s).
+  // With playback_rate = -2 and start_time = 0s, the animation runs backward
+  // over the monotonic time interval [-2s, 0s].
+  //
+  // - Negative playback rate makes active time move backwards from active
+  //   duration (4s) down to 0s. This means we process iterations in reverse
+  //   order: iteration index 1 first, then iteration index 0.
+  // - For Direction::ALTERNATE_REVERSE:
+  //   - Even indices (0) are reversed.
+  //   - Odd indices (1) are normal.
+  // - So as monotonic time goes from -2.0s to 0.0s:
+  //   - [-2.0s, -1.0s] we are in iteration index 1 (Normal). Negative playback
+  //     rate means it plays backwards relative to monotonic time (2.0 to 0.0).
+  //   - [-1.0s,  0.0s] we are in iteration index 0 (Reverse). Negative playback
+  //     rate means it plays forwards relative to monotonic time (0.0 to 2.0).
+  //
+  // Diagram:
+  // monotonic_time:
+  // -2.5  -2.0  -1.75  -1.5  -1.25  -1.0  -0.75  -0.5  -0.25  0.0  0.25
+  // local_time:
+  //  5.0   4.0   3.5    3.0   2.5    2.0   1.5    1.0   0.5   0.0 -0.5
+  EXPECT_EQ(2.0,
+            keyframe_model->TrimTimeToCurrentIteration(TicksFromSecondsF(-2.5))
+                .InSecondsF());
+  EXPECT_EQ(2.0,
+            keyframe_model->TrimTimeToCurrentIteration(TicksFromSecondsF(-2.0))
+                .InSecondsF());
+  EXPECT_EQ(1.5,
+            keyframe_model->TrimTimeToCurrentIteration(TicksFromSecondsF(-1.75))
+                .InSecondsF());
+  EXPECT_EQ(1.0,
+            keyframe_model->TrimTimeToCurrentIteration(TicksFromSecondsF(-1.5))
+                .InSecondsF());
+  EXPECT_EQ(0.5,
+            keyframe_model->TrimTimeToCurrentIteration(TicksFromSecondsF(-1.25))
+                .InSecondsF());
+  EXPECT_EQ(0.0,
+            keyframe_model->TrimTimeToCurrentIteration(TicksFromSecondsF(-1.0))
+                .InSecondsF());
+  EXPECT_EQ(0.5,
+            keyframe_model->TrimTimeToCurrentIteration(TicksFromSecondsF(-0.75))
+                .InSecondsF());
+  EXPECT_EQ(1.0,
+            keyframe_model->TrimTimeToCurrentIteration(TicksFromSecondsF(-0.5))
+                .InSecondsF());
+  EXPECT_EQ(1.5,
+            keyframe_model->TrimTimeToCurrentIteration(TicksFromSecondsF(-0.25))
+                .InSecondsF());
   EXPECT_EQ(2.0,
             keyframe_model->TrimTimeToCurrentIteration(TicksFromSecondsF(0.0))
                 .InSecondsF());
-  EXPECT_EQ(1.5,
+  EXPECT_EQ(2.0,
             keyframe_model->TrimTimeToCurrentIteration(TicksFromSecondsF(0.25))
-                .InSecondsF());
-  EXPECT_EQ(1.0,
-            keyframe_model->TrimTimeToCurrentIteration(TicksFromSecondsF(0.5))
-                .InSecondsF());
-  EXPECT_EQ(0.5,
-            keyframe_model->TrimTimeToCurrentIteration(TicksFromSecondsF(0.75))
-                .InSecondsF());
-  EXPECT_EQ(0.0,
-            keyframe_model->TrimTimeToCurrentIteration(TicksFromSecondsF(1.0))
-                .InSecondsF());
-  EXPECT_EQ(0.5,
-            keyframe_model->TrimTimeToCurrentIteration(TicksFromSecondsF(1.25))
-                .InSecondsF());
-  EXPECT_EQ(1.0,
-            keyframe_model->TrimTimeToCurrentIteration(TicksFromSecondsF(1.5))
-                .InSecondsF());
-  EXPECT_EQ(1.5,
-            keyframe_model->TrimTimeToCurrentIteration(TicksFromSecondsF(1.75))
-                .InSecondsF());
-  EXPECT_EQ(2.0,
-            keyframe_model->TrimTimeToCurrentIteration(TicksFromSecondsF(2.0))
-                .InSecondsF());
-  EXPECT_EQ(2.0,
-            keyframe_model->TrimTimeToCurrentIteration(TicksFromSecondsF(2.25))
                 .InSecondsF());
 }
 
@@ -1069,47 +1173,75 @@ TEST(KeyframeModelTest,
      TrimTimeAlternateReverseThreeIterationsPlaybackFastAlternateReverse) {
   std::unique_ptr<KeyframeModel> keyframe_model(CreateKeyframeModel(3, 2, -2));
   keyframe_model->set_direction(KeyframeModel::Direction::ALTERNATE_REVERSE);
+  // Total active duration is 6s (3 iterations of 2s).
+  // With playback_rate = -2 and start_time = 0s, the animation runs backward
+  // over the monotonic time interval [-3s, 0s].
+  //
+  // - Negative playback rate makes time move backwards from active duration
+  //   (6s) down to 0s. This means we process iterations in reverse order:
+  //   iteration index 2 first, then 1, then 0.
+  // - For Direction::ALTERNATE_REVERSE:
+  //   - Even indices (0, 2) are reversed.
+  //   - Odd indices (1) are normal.
+  // - So as monotonic time goes from -3.0s to 0.0s:
+  //   - [-3.0s, -2.0s] we are in iteration index 2 (Reversed). Negative
+  //     playback rate means it plays forwards relative to monotonic time (0.0
+  //     to 2.0).
+  //   - [-2.0s, -1.0s] we are in iteration index 1 (Normal). Negative playback
+  //     rate means it plays backwards relative to monotonic time (2.0 to 0.0).
+  //   - [-1.0s,  0.0s] we are in iteration index 0 (Reversed). Negative
+  //     playback rate means it plays forwards relative to monotonic time (0.0
+  //     to 2.0).
+  //
+  // Diagram:
+  // monotonic_time:
+  // -3.0  -2.5  -2.25  -2.0  -1.75  -1.5  -1.25 -1.0  -0.75  -0.5  -0.25  0.0
+  // local_time:
+  // 6.0    5.0   4.5    4.0   3.5    3.0   2.5    2.0   1.5    1.0   0.5  0.0
   EXPECT_EQ(0.0,
+            keyframe_model->TrimTimeToCurrentIteration(TicksFromSecondsF(-3.5))
+                .InSecondsF());
+  EXPECT_EQ(0.0,
+            keyframe_model->TrimTimeToCurrentIteration(TicksFromSecondsF(-3.0))
+                .InSecondsF());
+  EXPECT_EQ(0.5,
+            keyframe_model->TrimTimeToCurrentIteration(TicksFromSecondsF(-2.75))
+                .InSecondsF());
+  EXPECT_EQ(1.0,
+            keyframe_model->TrimTimeToCurrentIteration(TicksFromSecondsF(-2.5))
+                .InSecondsF());
+  EXPECT_EQ(1.5,
+            keyframe_model->TrimTimeToCurrentIteration(TicksFromSecondsF(-2.25))
+                .InSecondsF());
+  EXPECT_EQ(2.0,
+            keyframe_model->TrimTimeToCurrentIteration(TicksFromSecondsF(-2.0))
+                .InSecondsF());
+  EXPECT_EQ(1.5,
+            keyframe_model->TrimTimeToCurrentIteration(TicksFromSecondsF(-1.75))
+                .InSecondsF());
+  EXPECT_EQ(1.0,
+            keyframe_model->TrimTimeToCurrentIteration(TicksFromSecondsF(-1.5))
+                .InSecondsF());
+  EXPECT_EQ(0.5,
+            keyframe_model->TrimTimeToCurrentIteration(TicksFromSecondsF(-1.25))
+                .InSecondsF());
+  EXPECT_EQ(0.0,
+            keyframe_model->TrimTimeToCurrentIteration(TicksFromSecondsF(-1.0))
+                .InSecondsF());
+  EXPECT_EQ(0.5,
+            keyframe_model->TrimTimeToCurrentIteration(TicksFromSecondsF(-0.75))
+                .InSecondsF());
+  EXPECT_EQ(1.0,
+            keyframe_model->TrimTimeToCurrentIteration(TicksFromSecondsF(-0.5))
+                .InSecondsF());
+  EXPECT_EQ(1.5,
+            keyframe_model->TrimTimeToCurrentIteration(TicksFromSecondsF(-0.25))
+                .InSecondsF());
+  EXPECT_EQ(2.0,
             keyframe_model->TrimTimeToCurrentIteration(TicksFromSecondsF(0.0))
                 .InSecondsF());
-  EXPECT_EQ(0.5,
+  EXPECT_EQ(2.0,
             keyframe_model->TrimTimeToCurrentIteration(TicksFromSecondsF(0.25))
-                .InSecondsF());
-  EXPECT_EQ(1.0,
-            keyframe_model->TrimTimeToCurrentIteration(TicksFromSecondsF(0.5))
-                .InSecondsF());
-  EXPECT_EQ(1.5,
-            keyframe_model->TrimTimeToCurrentIteration(TicksFromSecondsF(0.75))
-                .InSecondsF());
-  EXPECT_EQ(2.0,
-            keyframe_model->TrimTimeToCurrentIteration(TicksFromSecondsF(1.0))
-                .InSecondsF());
-  EXPECT_EQ(1.5,
-            keyframe_model->TrimTimeToCurrentIteration(TicksFromSecondsF(1.25))
-                .InSecondsF());
-  EXPECT_EQ(1.0,
-            keyframe_model->TrimTimeToCurrentIteration(TicksFromSecondsF(1.5))
-                .InSecondsF());
-  EXPECT_EQ(0.5,
-            keyframe_model->TrimTimeToCurrentIteration(TicksFromSecondsF(1.75))
-                .InSecondsF());
-  EXPECT_EQ(0.0,
-            keyframe_model->TrimTimeToCurrentIteration(TicksFromSecondsF(2.0))
-                .InSecondsF());
-  EXPECT_EQ(0.5,
-            keyframe_model->TrimTimeToCurrentIteration(TicksFromSecondsF(2.25))
-                .InSecondsF());
-  EXPECT_EQ(1.0,
-            keyframe_model->TrimTimeToCurrentIteration(TicksFromSecondsF(2.5))
-                .InSecondsF());
-  EXPECT_EQ(1.5,
-            keyframe_model->TrimTimeToCurrentIteration(TicksFromSecondsF(2.75))
-                .InSecondsF());
-  EXPECT_EQ(2.0,
-            keyframe_model->TrimTimeToCurrentIteration(TicksFromSecondsF(3.0))
-                .InSecondsF());
-  EXPECT_EQ(2.0,
-            keyframe_model->TrimTimeToCurrentIteration(TicksFromSecondsF(3.25))
                 .InSecondsF());
 }
 
@@ -1117,35 +1249,60 @@ TEST(KeyframeModelTest,
      TrimTimeAlternateReverseTwoIterationsPlaybackNormalAlternate) {
   std::unique_ptr<KeyframeModel> keyframe_model(CreateKeyframeModel(2, 2, -1));
   keyframe_model->set_direction(KeyframeModel::Direction::ALTERNATE_NORMAL);
+  // Total active duration is 4s (2 iterations of 2s).
+  // With playback_rate = -1 and start_time = 0s, the animation runs backward
+  // over the monotonic time interval [-4s, 0s].
+  //
+  // - Negative playback rate makes time move backwards from active duration
+  //   (4s) down to 0s. This means we process iterations in reverse
+  //   order: iteration index 1 first, then 0.
+  // - For Direction::ALTERNATE_NORMAL:
+  //   - Even indices (0) are normal.
+  //   - Odd indices (1) are reversed.
+  // - So as monotonic time goes from -4.0s to 0.0s:
+  //   - [-4.0s, -2.0s] we are in iteration index 1 (reversed). Negative
+  //   playback rate means it plays forwards relative to monotonic time (0.0 to
+  //   2.0).
+  //   - [-2.0s,  0.0s] we are in iteration index 0 (normal). Negative playback
+  //   rate means it plays backwards relative to monotonic time (2.0 to 0.0).
+  //
+  // Diagram:
+  // monotonic_time:
+  // -4.5  -4.0  -3.5  -3.0  -2.5  -2.0  -1.5   -1.0  -0.5  0.0   0.5
+  // local_time:
+  //  4.5   4.0   3.5   3.0   2.5   2.0   1.5    1.0   0.5  0.0  -0.5
+  EXPECT_EQ(0.0,
+            keyframe_model->TrimTimeToCurrentIteration(TicksFromSecondsF(-4.5))
+                .InSecondsF());
+  EXPECT_EQ(0.0,
+            keyframe_model->TrimTimeToCurrentIteration(TicksFromSecondsF(-4.0))
+                .InSecondsF());
+  EXPECT_EQ(0.5,
+            keyframe_model->TrimTimeToCurrentIteration(TicksFromSecondsF(-3.5))
+                .InSecondsF());
+  EXPECT_EQ(1.0,
+            keyframe_model->TrimTimeToCurrentIteration(TicksFromSecondsF(-3.0))
+                .InSecondsF());
+  EXPECT_EQ(1.5,
+            keyframe_model->TrimTimeToCurrentIteration(TicksFromSecondsF(-2.5))
+                .InSecondsF());
+  EXPECT_EQ(2.0,
+            keyframe_model->TrimTimeToCurrentIteration(TicksFromSecondsF(-2.0))
+                .InSecondsF());
+  EXPECT_EQ(1.5,
+            keyframe_model->TrimTimeToCurrentIteration(TicksFromSecondsF(-1.5))
+                .InSecondsF());
+  EXPECT_EQ(1.0,
+            keyframe_model->TrimTimeToCurrentIteration(TicksFromSecondsF(-1.0))
+                .InSecondsF());
+  EXPECT_EQ(0.5,
+            keyframe_model->TrimTimeToCurrentIteration(TicksFromSecondsF(-0.5))
+                .InSecondsF());
   EXPECT_EQ(0.0,
             keyframe_model->TrimTimeToCurrentIteration(TicksFromSecondsF(0.0))
                 .InSecondsF());
-  EXPECT_EQ(0.5,
+  EXPECT_EQ(0.0,
             keyframe_model->TrimTimeToCurrentIteration(TicksFromSecondsF(0.5))
-                .InSecondsF());
-  EXPECT_EQ(1.0,
-            keyframe_model->TrimTimeToCurrentIteration(TicksFromSecondsF(1.0))
-                .InSecondsF());
-  EXPECT_EQ(1.5,
-            keyframe_model->TrimTimeToCurrentIteration(TicksFromSecondsF(1.5))
-                .InSecondsF());
-  EXPECT_EQ(2.0,
-            keyframe_model->TrimTimeToCurrentIteration(TicksFromSecondsF(2.0))
-                .InSecondsF());
-  EXPECT_EQ(1.5,
-            keyframe_model->TrimTimeToCurrentIteration(TicksFromSecondsF(2.5))
-                .InSecondsF());
-  EXPECT_EQ(1.0,
-            keyframe_model->TrimTimeToCurrentIteration(TicksFromSecondsF(3.0))
-                .InSecondsF());
-  EXPECT_EQ(0.5,
-            keyframe_model->TrimTimeToCurrentIteration(TicksFromSecondsF(3.5))
-                .InSecondsF());
-  EXPECT_EQ(0.0,
-            keyframe_model->TrimTimeToCurrentIteration(TicksFromSecondsF(4.0))
-                .InSecondsF());
-  EXPECT_EQ(0.0,
-            keyframe_model->TrimTimeToCurrentIteration(TicksFromSecondsF(4.5))
                 .InSecondsF());
 }
 
@@ -1240,20 +1397,59 @@ TEST(KeyframeModelTest,
   std::unique_ptr<KeyframeModel> keyframe_model(CreateKeyframeModel(3, 1, -1));
   keyframe_model->set_direction(KeyframeModel::Direction::ALTERNATE_NORMAL);
   keyframe_model->set_iteration_start(1);
+  // Total active duration is 3s (3 iterations of 1s).
+  // With playback_rate = -1, start_time = 0s, and iteration_start = 1,
+  // the animation runs backward over the monotonic time interval [-3s, 0s].
+  // Note: iteration_start=1 shifts the iteration indices to [1, 2, 3].
+  //
+  // Relationship between Iteration Index, Playback Rate, and Direction:
+  // - Negative playback rate makes time move backwards from active duration
+  // (3s)
+  //   down to 0s (in local time, 3s down to 0s). This means we process
+  //   iterations in reverse chronological order: index 3 first, then 2, then 1.
+  // - For Direction::ALTERNATE_NORMAL:
+  //   - Even indices (2) are Normal.
+  //   - Odd indices (1, 3) are Reverse.
+  // - So as monotonic time goes from -3.0s to 0.0s:
+  //   - [-3.0s, -2.0s] we are in iteration index 3 (Reverse). Negative playback
+  //   rate
+  //     means it plays forwards relative to monotonic time (0.0 to 1.0).
+  //   - [-2.0s, -1.0s] we are in iteration index 2 (Normal). Negative playback
+  //   rate
+  //     means it plays backwards relative to monotonic time (1.0 to 0.0).
+  //   - [-1.0s,  0.0s] we are in iteration index 1 (Reverse). Negative playback
+  //   rate
+  //     means it plays forwards relative to monotonic time (0.0 to 1.0).
+  //
+  // Diagram:
+  // monotonic_time: -3.5  -3.0  -2.5  -2.0  -1.5  -1.0  -0.5   0.0   0.5
+  // local_time:      3.5   3.0   2.5   2.0   1.5   1.0   0.5   0.0  -0.5
   EXPECT_EQ(0.0,
+            keyframe_model->TrimTimeToCurrentIteration(TicksFromSecondsF(-3.5))
+                .InSecondsF());
+  EXPECT_EQ(0.0,
+            keyframe_model->TrimTimeToCurrentIteration(TicksFromSecondsF(-3.0))
+                .InSecondsF());
+  EXPECT_EQ(0.5,
+            keyframe_model->TrimTimeToCurrentIteration(TicksFromSecondsF(-2.5))
+                .InSecondsF());
+  EXPECT_EQ(1.0,
+            keyframe_model->TrimTimeToCurrentIteration(TicksFromSecondsF(-2.0))
+                .InSecondsF());
+  EXPECT_EQ(0.5,
+            keyframe_model->TrimTimeToCurrentIteration(TicksFromSecondsF(-1.5))
+                .InSecondsF());
+  EXPECT_EQ(0.0,
+            keyframe_model->TrimTimeToCurrentIteration(TicksFromSecondsF(-1.0))
+                .InSecondsF());
+  EXPECT_EQ(0.5,
+            keyframe_model->TrimTimeToCurrentIteration(TicksFromSecondsF(-0.5))
+                .InSecondsF());
+  EXPECT_EQ(1.0,
             keyframe_model->TrimTimeToCurrentIteration(TicksFromSecondsF(0.0))
                 .InSecondsF());
   EXPECT_EQ(1.0,
-            keyframe_model->TrimTimeToCurrentIteration(TicksFromSecondsF(1.0))
-                .InSecondsF());
-  EXPECT_EQ(0.0,
-            keyframe_model->TrimTimeToCurrentIteration(TicksFromSecondsF(2.0))
-                .InSecondsF());
-  EXPECT_EQ(1.0,
-            keyframe_model->TrimTimeToCurrentIteration(TicksFromSecondsF(3.0))
-                .InSecondsF());
-  EXPECT_EQ(1.0,
-            keyframe_model->TrimTimeToCurrentIteration(TicksFromSecondsF(3.5))
+            keyframe_model->TrimTimeToCurrentIteration(TicksFromSecondsF(0.5))
                 .InSecondsF());
 }
 
@@ -1286,14 +1482,14 @@ TEST(KeyframeModelTest, InEffectFillMode) {
 TEST(KeyframeModelTest, InEffectFillModeNoneWithNegativePlaybackRate) {
   std::unique_ptr<KeyframeModel> keyframe_model(CreateKeyframeModel(1, 1, -1));
   keyframe_model->set_fill_mode(KeyframeModel::FillMode::NONE);
-  EXPECT_FALSE(keyframe_model->InEffect(TicksFromSecondsF(-1.0)));
+  EXPECT_TRUE(keyframe_model->InEffect(TicksFromSecondsF(-1.0)));
   EXPECT_FALSE(keyframe_model->InEffect(TicksFromSecondsF(0.0)));
-  EXPECT_TRUE(keyframe_model->InEffect(TicksFromSecondsF(1.0)));
+  EXPECT_FALSE(keyframe_model->InEffect(TicksFromSecondsF(1.0)));
 
   keyframe_model->set_fill_mode(KeyframeModel::FillMode::FORWARDS);
-  EXPECT_FALSE(keyframe_model->InEffect(TicksFromSecondsF(-1.0)));
+  EXPECT_TRUE(keyframe_model->InEffect(TicksFromSecondsF(-1.0)));
   EXPECT_FALSE(keyframe_model->InEffect(TicksFromSecondsF(0.0)));
-  EXPECT_TRUE(keyframe_model->InEffect(TicksFromSecondsF(1.0)));
+  EXPECT_FALSE(keyframe_model->InEffect(TicksFromSecondsF(1.0)));
 
   keyframe_model->set_fill_mode(KeyframeModel::FillMode::BACKWARDS);
   EXPECT_TRUE(keyframe_model->InEffect(TicksFromSecondsF(-1.0)));
@@ -1366,16 +1562,14 @@ TEST(KeyframeModelTest, InEffectReverseWithIterations) {
   EXPECT_FALSE(keyframe_model->InEffect(TicksFromSecondsF(2.0)));
 }
 
-// CalculatePhase uses -time_offset_ which may cause integer overflow when
-// time_offset_ is set to min(). This test makes sure that the code handles it
-// correctly. See https://crbug.com/921454.
-TEST(KeyframeModelTest, CalculatePhaseWithMinTimeOffset) {
+// CalculatePhase uses start_delay_ which may cause integer overflow if not
+// handled correctly.
+TEST(KeyframeModelTest, CalculatePhaseWithMaxStartDelay) {
   std::unique_ptr<KeyframeModel> keyframe_model(CreateKeyframeModel(1));
-  keyframe_model->set_time_offset(
-      base::Milliseconds(std::numeric_limits<int64_t>::min()));
+  keyframe_model->set_start_delay(base::TimeDelta::Max());
 
-  // Setting the time_offset_ to min implies that the effect has a max start
-  // delay and any local time will fall into the BEFORE phase.
+  // Setting the start_delay_ to max implies that any local time will fall into
+  // the BEFORE phase.
   EXPECT_EQ(keyframe_model->CalculatePhaseForTesting(base::Seconds(1.0)),
             KeyframeModel::Phase::BEFORE);
 }

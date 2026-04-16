@@ -84,7 +84,7 @@ void ScrollOffsetAnimationImpl::ScrollAnimationCreateInternal(
       std::move(curve), AnimationIdProvider::NextKeyframeModelId(),
       AnimationIdProvider::NextGroupId(),
       KeyframeModel::TargetPropertyId(TargetProperty::SCROLL_OFFSET));
-  keyframe_model->set_time_offset(animation_start_offset);
+  keyframe_model->set_hold_time(animation_start_offset);
   keyframe_model->SetIsImplOnly();
 
   DCHECK(scroll_offset_animation_);

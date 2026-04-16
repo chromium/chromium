@@ -156,7 +156,7 @@ class CORE_EXPORT CompositorAnimations {
       const Element&,
       int group,
       std::optional<double> start_time,
-      base::TimeDelta time_offset,
+      std::optional<base::TimeDelta> hold_time,
       const Timing&,
       const Timing::NormalizedTiming&,
       const Animation*,
@@ -173,7 +173,7 @@ class CORE_EXPORT CompositorAnimations {
   static void PauseAnimationForTestingOnCompositor(const Element&,
                                                    const Animation&,
                                                    int id,
-                                                   base::TimeDelta pause_time,
+                                                   base::TimeDelta hold_time,
                                                    const EffectModel&);
 
   static void AttachCompositedLayers(Element&, CompositorAnimation*);
@@ -181,7 +181,7 @@ class CORE_EXPORT CompositorAnimations {
   struct CompositorTiming {
     Timing::PlaybackDirection direction;
     AnimationTimeDelta scaled_duration;
-    base::TimeDelta scaled_time_offset;
+    std::optional<base::TimeDelta> hold_time;
     double adjusted_iteration_count;
     double playback_rate;
     Timing::FillMode fill_mode;
@@ -189,13 +189,14 @@ class CORE_EXPORT CompositorAnimations {
     base::TimeDelta start_delay;
   };
 
-  static bool ConvertTimingForCompositor(const Timing&,
-                                         const Timing::NormalizedTiming&,
-                                         base::TimeDelta time_offset,
-                                         CompositorTiming& out,
-                                         double animation_playback_rate,
-                                         bool is_monotonic_timeline = true,
-                                         bool is_boundary_aligned = false);
+  static bool ConvertTimingForCompositor(
+      const Timing&,
+      const Timing::NormalizedTiming&,
+      std::optional<base::TimeDelta> hold_time,
+      CompositorTiming& out,
+      double animation_playback_rate,
+      bool is_monotonic_timeline = true,
+      bool is_boundary_aligned = false);
 
   static void GetAnimationOnCompositor(
       const Element&,
@@ -203,7 +204,7 @@ class CORE_EXPORT CompositorAnimations {
       const Timing::NormalizedTiming&,
       int group,
       std::optional<double> start_time,
-      base::TimeDelta time_offset,
+      std::optional<base::TimeDelta> hold_time,
       const KeyframeEffectModelBase&,
       Vector<std::unique_ptr<cc::KeyframeModel>>& animations,
       double animation_playback_rate,

@@ -467,10 +467,10 @@ CompositorAnimations::CheckCanStartEffectOnCompositor(
   }
 
   CompositorTiming out;
-  base::TimeDelta time_offset =
-      animation_to_add ? animation_to_add->ComputeCompositorTimeOffset()
-                       : base::TimeDelta();
-  if (!ConvertTimingForCompositor(timing, normalized_timing, time_offset, out,
+  std::optional<base::TimeDelta> hold_time =
+      animation_to_add ? animation_to_add->ComputeCompositorHoldTime()
+                       : std::nullopt;
+  if (!ConvertTimingForCompositor(timing, normalized_timing, hold_time, out,
                                   animation_playback_rate)) {
     reasons |= kEffectHasUnsupportedTimingParameters;
   }
@@ -672,7 +672,7 @@ void CompositorAnimations::StartAnimationOnCompositor(
     const Element& element,
     int group,
     std::optional<double> start_time,
-    base::TimeDelta time_offset,
+    std::optional<base::TimeDelta> hold_time,
     const Timing& timing,
     const Timing::NormalizedTiming& normalized_timing,
     const Animation* animation,
@@ -694,7 +694,7 @@ void CompositorAnimations::StartAnimationOnCompositor(
 
   Vector<std::unique_ptr<cc::KeyframeModel>> keyframe_models;
   GetAnimationOnCompositor(element, timing, normalized_timing, group,
-                           start_time, time_offset, keyframe_effect,
+                           start_time, hold_time, keyframe_effect,
                            keyframe_models, animation_playback_rate,
                            is_monotonic_timeline, is_boundary_aligned);
   DCHECK(!keyframe_models.empty());
@@ -727,13 +727,13 @@ void CompositorAnimations::PauseAnimationForTestingOnCompositor(
     const Element& element,
     const Animation& animation,
     int id,
-    base::TimeDelta pause_time,
+    base::TimeDelta hold_time,
     const EffectModel& model) {
   DCHECK_EQ(CheckCanStartElementOnCompositor(element, model), kNoFailure);
   CompositorAnimation* compositor_animation =
       animation.GetCompositorAnimation();
   DCHECK(compositor_animation);
-  compositor_animation->PauseKeyframeModel(id, pause_time);
+  compositor_animation->PauseKeyframeModelForTesting(id, hold_time);
 }
 
 void CompositorAnimations::AttachCompositedLayers(
@@ -757,7 +757,7 @@ void CompositorAnimations::AttachCompositedLayers(
 bool CompositorAnimations::ConvertTimingForCompositor(
     const Timing& timing,
     const Timing::NormalizedTiming& normalized_timing,
-    base::TimeDelta time_offset,
+    std::optional<base::TimeDelta> hold_time,
     CompositorTiming& out,
     double animation_playback_rate,
     bool is_monotonic_timeline,
@@ -776,27 +776,18 @@ bool CompositorAnimations::ConvertTimingForCompositor(
       normalized_timing.iteration_duration.is_max())
     return false;
 
-  // Compositor's time offset is positive for seeking into the animation.
   DCHECK(animation_playback_rate);
-  double delay = animation_playback_rate > 0
-                     ? normalized_timing.start_delay.InSecondsF()
-                     : 0;
-
-  base::TimeDelta scaled_delay = base::Seconds(delay / animation_playback_rate);
-
-  // Arithmetic operations involving a value that is effectively +/-infinity
-  // result in a value that is +/-infinity or undefined. Check before computing
-  // the scaled time offset to guard against the following:
-  //     infinity - infinity or
-  //     -infinity + infinity
-  // The result of either of these edge cases is undefined.
-  if (scaled_delay.is_max() || scaled_delay.is_min())
+  base::TimeDelta delay =
+      base::Seconds(normalized_timing.start_delay.InSecondsF());
+  if (delay.is_max() || delay.is_min()) {
     return false;
-  out.start_delay = scaled_delay;
+  }
+  out.start_delay = delay;
 
-  out.scaled_time_offset = time_offset;
-  if (out.scaled_time_offset.is_max() || out.scaled_time_offset.is_min())
+  if (hold_time && (hold_time->is_max() || hold_time->is_min())) {
     return false;
+  }
+  out.hold_time = hold_time;
 
   out.adjusted_iteration_count = std::isfinite(timing.iteration_count)
                                      ? timing.iteration_count
@@ -987,7 +978,7 @@ void CompositorAnimations::GetAnimationOnCompositor(
     const Timing::NormalizedTiming& normalized_timing,
     int group,
     std::optional<double> start_time,
-    base::TimeDelta time_offset,
+    std::optional<base::TimeDelta> hold_time,
     const KeyframeEffectModelBase& effect,
     Vector<std::unique_ptr<cc::KeyframeModel>>& keyframe_models,
     double animation_playback_rate,
@@ -996,7 +987,7 @@ void CompositorAnimations::GetAnimationOnCompositor(
   DCHECK(keyframe_models.empty());
   CompositorTiming compositor_timing;
   [[maybe_unused]] bool timing_valid = ConvertTimingForCompositor(
-      timing, normalized_timing, time_offset, compositor_timing,
+      timing, normalized_timing, hold_time, compositor_timing,
       animation_playback_rate, is_monotonic_timeline, is_boundary_aligned);
 
   auto properties = effect.DynamicProperties();
@@ -1143,7 +1134,7 @@ void CompositorAnimations::GetAnimationOnCompositor(
     keyframe_model->set_element_id(id);
     keyframe_model->set_iterations(compositor_timing.adjusted_iteration_count);
     keyframe_model->set_iteration_start(compositor_timing.iteration_start);
-    keyframe_model->set_time_offset(compositor_timing.scaled_time_offset);
+    keyframe_model->set_hold_time(compositor_timing.hold_time);
     keyframe_model->set_start_delay(compositor_timing.start_delay);
     keyframe_model->set_direction(compositor_timing.direction);
     keyframe_model->set_playback_rate(compositor_timing.playback_rate);

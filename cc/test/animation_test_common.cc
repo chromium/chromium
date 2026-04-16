@@ -75,6 +75,7 @@ int AddAnimatedTransform(Animation* target,
       std::move(curve), id, AnimationIdProvider::NextGroupId(),
       KeyframeModel::TargetPropertyId(TargetProperty::TRANSFORM)));
   keyframe_model->set_needs_synchronized_start_time(true);
+  keyframe_model->set_hold_time(base::TimeDelta());
 
   target->AddKeyframeModel(std::move(keyframe_model));
   return id;

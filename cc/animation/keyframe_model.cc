@@ -97,9 +97,7 @@ std::unique_ptr<KeyframeModel> KeyframeModel::CreateImplInstance(
   if (has_set_start_time()) {
     to_return->set_start_time(start_time());
   }
-  to_return->set_pause_time(pause_time());
-  to_return->set_total_paused_duration(total_paused_duration());
-  to_return->set_time_offset(time_offset());
+  to_return->set_hold_time(hold_time());
   to_return->set_start_delay(start_delay());
   to_return->set_direction(direction());
   to_return->set_playback_rate(playback_rate());
@@ -188,8 +186,7 @@ void KeyframeModel::PushPropertiesTo(KeyframeModel* other) const {
   if (run_state() == KeyframeModel::PAUSED ||
       other->run_state() == KeyframeModel::PAUSED) {
     other->ForceRunState(run_state());
-    other->set_pause_time(pause_time());
-    other->set_total_paused_duration(total_paused_duration());
+    other->set_hold_time(hold_time());
   }
 }
 

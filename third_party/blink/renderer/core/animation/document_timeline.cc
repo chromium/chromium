@@ -180,10 +180,9 @@ AnimationTimeline::PhaseAndTime DocumentTimeline::CurrentPhaseAndTime() {
   return {TimelinePhase::kActive, result};
 }
 
-void DocumentTimeline::PauseAnimationsForTesting(
-    AnimationTimeDelta pause_time) {
+void DocumentTimeline::PauseAnimationsForTesting(AnimationTimeDelta hold_time) {
   for (const auto& animation : animations_needing_update_)
-    animation->PauseForTesting(pause_time);
+    animation->PauseForTesting(hold_time);
   ServiceAnimations(kTimingUpdateOnDemand);
 }
 

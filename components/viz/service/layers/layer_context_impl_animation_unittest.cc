@@ -96,7 +96,8 @@ class LayerContextImplAnimationTest : public LayerContextImplTest {
     model->playback_rate = kDefaultPlaybackRate;
     model->iterations = kDefaultIterations;
     model->iteration_start = kDefaultIterationStart;
-    model->time_offset = base::TimeDelta();
+    model->start_delay = base::TimeDelta();
+    model->hold_time = std::nullopt;
     model->element_id = kDefaultElementId;
     // Add default keyframes for opacity as a common case.
     if (target_property_type == cc::TargetProperty::OPACITY) {
@@ -296,7 +297,8 @@ TEST_F(LayerContextImplAnimationTest, AddNewAnimationTimelineAndAnimation) {
   EXPECT_EQ(gfx_keyframe_model->fill_mode(),
             gfx::KeyframeModel::FillMode::FORWARDS);
   EXPECT_EQ(gfx_keyframe_model->playback_rate(), kDefaultPlaybackRate);
-  EXPECT_EQ(gfx_keyframe_model->time_offset(), base::TimeDelta());
+  EXPECT_EQ(gfx_keyframe_model->start_delay(), base::TimeDelta());
+  EXPECT_FALSE(gfx_keyframe_model->hold_time().has_value());
 
   // Verify cc::KeyframeModel specific properties
   EXPECT_EQ(cc_keyframe_model->group(), kGroupId);

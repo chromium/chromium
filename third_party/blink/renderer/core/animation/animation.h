@@ -307,7 +307,7 @@ class CORE_EXPORT Animation : public EventTarget,
   // Pausing via this method is not reflected in the value returned by
   // paused() and must never overlap with pausing via pause().
   // Deprecated: Do not use in new tests.
-  void PauseForTesting(AnimationTimeDelta pause_time);
+  void PauseForTesting(AnimationTimeDelta hold_time);
   void DisableCompositedAnimationForTesting();
 
   // This should only be used for CSS
@@ -428,7 +428,7 @@ class CORE_EXPORT Animation : public EventTarget,
 
   bool IsInDisplayLockedSubtree();
 
-  base::TimeDelta ComputeCompositorTimeOffset() const;
+  std::optional<base::TimeDelta> ComputeCompositorHoldTime() const;
 
   // Updates |compositor_property_animations_have_no_effect_| and marks the
   // animation as pending if it changes.

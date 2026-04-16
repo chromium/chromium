@@ -536,10 +536,11 @@ TEST_F(ElementAnimationsTest, SyncPause) {
   const int keyframe_model_id =
       AddOpacityStepsToAnimation(animation_.get(), duration, 0.2f, 0.4f, 2);
 
-  // Set start offset to be at the beginning of the second range.
+  // Set hold time so that local time is at the beginning of the second range.
+  const base::TimeDelta hold_time = base::Seconds(1.01);
   animation_->keyframe_effect()
       ->GetKeyframeModelById(keyframe_model_id)
-      ->set_time_offset(base::Seconds(1.01));
+      ->set_hold_time(hold_time);
 
   PushProperties();
   animation_impl_->ActivateKeyframeModels();
@@ -578,16 +579,19 @@ TEST_F(ElementAnimationsTest, SyncPause) {
   EXPECT_EQ(0.3f,
             client_impl_.GetOpacity(element_id_, ElementListType::ACTIVE));
 
-  EXPECT_EQ(kInitialTickTime, animation_->keyframe_effect()
-                                  ->GetKeyframeModelById(keyframe_model_id)
-                                  ->start_time());
-  EXPECT_EQ(kInitialTickTime, animation_impl_->keyframe_effect()
-                                  ->GetKeyframeModelById(keyframe_model_id)
-                                  ->start_time());
+  EXPECT_EQ(kInitialTickTime - hold_time,
+            animation_->keyframe_effect()
+                ->GetKeyframeModelById(keyframe_model_id)
+                ->start_time());
+  EXPECT_EQ(kInitialTickTime - hold_time,
+            animation_impl_->keyframe_effect()
+                ->GetKeyframeModelById(keyframe_model_id)
+                ->start_time());
 
   // Pause the animation at the middle of the second range so the offset
   // delays animation until the middle of the third range.
-  animation_->PauseKeyframeModel(keyframe_model_id, base::Milliseconds(1500));
+  animation_->PauseKeyframeModelForTesting(keyframe_model_id,
+                                           base::Milliseconds(1500));
   EXPECT_EQ(KeyframeModel::PAUSED, animation_->keyframe_effect()
                                        ->GetKeyframeModelById(keyframe_model_id)
                                        ->run_state());
@@ -1710,9 +1714,9 @@ TEST_F(ElementAnimationsTest, PauseResume) {
   EXPECT_EQ(0.5f, client_.GetOpacity(element_id_, ElementListType::ACTIVE));
 
   EXPECT_TRUE(animation_->GetKeyframeModel(TargetProperty::OPACITY));
+  // Pause
   animation_->GetKeyframeModel(TargetProperty::OPACITY)
-      ->SetRunState(KeyframeModel::PAUSED,
-                    kInitialTickTime + base::Milliseconds(500));
+      ->Pause(base::Milliseconds(500));
 
   animation_->Tick(kInitialTickTime + base::Milliseconds(1024000));
   animation_->UpdateState(true, events.get());
@@ -1720,9 +1724,9 @@ TEST_F(ElementAnimationsTest, PauseResume) {
   EXPECT_EQ(0.5f, client_.GetOpacity(element_id_, ElementListType::ACTIVE));
 
   EXPECT_TRUE(animation_->GetKeyframeModel(TargetProperty::OPACITY));
+  // Resume
   animation_->GetKeyframeModel(TargetProperty::OPACITY)
-      ->SetRunState(KeyframeModel::RUNNING,
-                    kInitialTickTime + base::Milliseconds(1024000));
+      ->UnpauseForTesting(kInitialTickTime + base::Milliseconds(1024000));
   animation_->Tick(kInitialTickTime + base::Milliseconds(1024250));
   animation_->UpdateState(true, events.get());
   EXPECT_TRUE(animation_->keyframe_effect()->HasTickingKeyframeModel());
@@ -2787,7 +2791,7 @@ TEST_F(ElementAnimationsTest, ObserverNotifiedWhenTransformAnimationChanges) {
       AddAnimatedTransformToAnimation(animation_.get(), 10.0, 2, 1);
   animation_->keyframe_effect()
       ->GetKeyframeModelById(animation2_id)
-      ->set_time_offset(base::Milliseconds(-10000));
+      ->set_start_delay(base::Milliseconds(10000));
   animation_->keyframe_effect()
       ->GetKeyframeModelById(animation2_id)
       ->set_fill_mode(KeyframeModel::FillMode::NONE);
@@ -2902,7 +2906,7 @@ TEST_F(ElementAnimationsTest, ObserverNotifiedWhenTransformAnimationChanges) {
       AddAnimatedTransformToAnimation(animation_.get(), 1.0, 1, 6);
   animation_->keyframe_effect()
       ->GetKeyframeModelById(keyframe_model_id)
-      ->set_time_offset(base::Milliseconds(-10000));
+      ->set_start_delay(base::Milliseconds(10000));
   animation_->keyframe_effect()
       ->GetKeyframeModelById(keyframe_model_id)
       ->set_fill_mode(KeyframeModel::FillMode::NONE);
@@ -3121,7 +3125,7 @@ TEST_F(ElementAnimationsTest, ObserverNotifiedWhenOpacityAnimationChanges) {
       animation_.get(), 1.0, 0.f, 0.5f, false /*use_timing_function*/);
   animation_->keyframe_effect()
       ->GetKeyframeModelById(keyframe_model_id)
-      ->set_time_offset(base::Milliseconds(-10000));
+      ->set_start_delay(base::Milliseconds(10000));
   animation_->keyframe_effect()
       ->GetKeyframeModelById(keyframe_model_id)
       ->set_fill_mode(KeyframeModel::FillMode::NONE);
@@ -3339,7 +3343,7 @@ TEST_F(ElementAnimationsTest, ObserverNotifiedWhenFilterAnimationChanges) {
       AddAnimatedFilterToAnimation(animation_.get(), 1.0, 0.f, 0.5f);
   animation_->keyframe_effect()
       ->GetKeyframeModelById(keyframe_model_id)
-      ->set_time_offset(base::Milliseconds(-10000));
+      ->set_start_delay(base::Milliseconds(10000));
   animation_->keyframe_effect()
       ->GetKeyframeModelById(keyframe_model_id)
       ->set_fill_mode(KeyframeModel::FillMode::NONE);
@@ -3558,7 +3562,7 @@ TEST_F(ElementAnimationsTest,
       AddAnimatedBackdropFilterToAnimation(animation_.get(), 1.0, 0.f, 0.5f);
   animation_->keyframe_effect()
       ->GetKeyframeModelById(keyframe_model_id)
-      ->set_time_offset(base::Milliseconds(-10000));
+      ->set_start_delay(base::Milliseconds(10000));
   animation_->keyframe_effect()
       ->GetKeyframeModelById(keyframe_model_id)
       ->set_fill_mode(KeyframeModel::FillMode::NONE);
@@ -3868,7 +3872,7 @@ TEST_F(ElementAnimationsTest, TestIsAnimatingPropertyTimeOffsetFillMode) {
       CreateKeyframeModel(std::make_unique<FakeFloatTransition>(1.0, 0.f, 1.f),
                           1, TargetProperty::OPACITY);
   keyframe_model->set_fill_mode(KeyframeModel::FillMode::NONE);
-  keyframe_model->set_time_offset(base::Milliseconds(-2000));
+  keyframe_model->set_start_delay(base::Milliseconds(2000));
   keyframe_model->set_affects_active_elements(false);
 
   animation_->AddKeyframeModel(std::move(keyframe_model));

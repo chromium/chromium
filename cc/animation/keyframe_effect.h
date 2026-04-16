@@ -98,13 +98,17 @@ class CC_ANIMATION_EXPORT KeyframeEffect : public gfx::KeyframeEffect {
   void UpdateState(bool start_ready_keyframe_models, AnimationEvents* events);
   void UpdateTickingState();
 
-  void Pause(base::TimeTicks timeline_time,
+  // Sets the hold_time of each KeyframeModel to the specified value and
+  // clears the start time.
+  void Pause(base::TimeDelta hold_time,
              PauseCondition = PauseCondition::kUnconditional);
 
   void AddKeyframeModel(
       std::unique_ptr<gfx::KeyframeModel> keyframe_model) override;
-  void PauseKeyframeModel(int keyframe_model_id, base::TimeDelta time_offset);
-  void PauseKeyframeModels(base::TimeDelta time_offset);
+  // TODO(crbug.com/497867796): We don't need a per-keyframe Pause method.
+  // Delete this method.
+  void PauseKeyframeModelForTesting(int keyframe_model_id,
+                                    base::TimeDelta hold_time);
   void AbortKeyframeModel(int keyframe_model_id);
   void AbortKeyframeModelsWithProperty(TargetProperty::Type target_property,
                                        bool needs_completion);

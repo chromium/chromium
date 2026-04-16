@@ -232,7 +232,7 @@ class AnimationCompositorAnimationsTest : public PaintTestConfigurations,
                                   CompositorAnimations::CompositorTiming& out,
                                   double playback_rate = 1) {
     return CompositorAnimations::ConvertTimingForCompositor(
-        t, NormalizedTiming(t), base::TimeDelta(), out, playback_rate);
+        t, NormalizedTiming(t), std::nullopt, out, playback_rate);
   }
 
   CompositorAnimations::FailureReasons CanStartEffectOnCompositor(
@@ -273,7 +273,7 @@ class AnimationCompositorAnimationsTest : public PaintTestConfigurations,
       double animation_playback_rate) {
     CompositorAnimations::GetAnimationOnCompositor(
         *element_, timing, NormalizedTiming(timing), 0, std::nullopt,
-        base::TimeDelta(), effect, keyframe_models, animation_playback_rate,
+        std::nullopt, effect, keyframe_models, animation_playback_rate,
         /*is_monotonic_timeline=*/true, /*is_boundary_aligned=*/false);
   }
 
@@ -894,22 +894,22 @@ TEST_P(AnimationCompositorAnimationsTest,
   timing_.start_delay = Timing::Delay(ANIMATION_TIME_DELTA_FROM_SECONDS(2.0));
   EXPECT_TRUE(
       ConvertTimingForCompositor(timing_, compositor_timing_, play_forward));
-  EXPECT_DOUBLE_EQ(0.0, compositor_timing_.scaled_time_offset.InSecondsF());
   EXPECT_DOUBLE_EQ(2.0, compositor_timing_.start_delay.InSecondsF());
+  EXPECT_FALSE(compositor_timing_.hold_time.has_value());
   EXPECT_TRUE(
       ConvertTimingForCompositor(timing_, compositor_timing_, play_reverse));
-  EXPECT_DOUBLE_EQ(0.0, compositor_timing_.scaled_time_offset.InSecondsF());
-  EXPECT_DOUBLE_EQ(0.0, compositor_timing_.start_delay.InSecondsF());
+  EXPECT_DOUBLE_EQ(2.0, compositor_timing_.start_delay.InSecondsF());
+  EXPECT_FALSE(compositor_timing_.hold_time.has_value());
 
   timing_.start_delay = Timing::Delay(ANIMATION_TIME_DELTA_FROM_SECONDS(-2.0));
   EXPECT_TRUE(
       ConvertTimingForCompositor(timing_, compositor_timing_, play_forward));
-  EXPECT_DOUBLE_EQ(0.0, compositor_timing_.scaled_time_offset.InSecondsF());
   EXPECT_DOUBLE_EQ(-2.0, compositor_timing_.start_delay.InSecondsF());
+  EXPECT_FALSE(compositor_timing_.hold_time.has_value());
   EXPECT_TRUE(
       ConvertTimingForCompositor(timing_, compositor_timing_, play_reverse));
-  EXPECT_DOUBLE_EQ(0.0, compositor_timing_.scaled_time_offset.InSecondsF());
-  EXPECT_DOUBLE_EQ(0.0, compositor_timing_.start_delay.InSecondsF());
+  EXPECT_DOUBLE_EQ(-2.0, compositor_timing_.start_delay.InSecondsF());
+  EXPECT_FALSE(compositor_timing_.hold_time.has_value());
 
   // Stress test with an effectively infinite start delay.
   timing_.start_delay = Timing::Delay(ANIMATION_TIME_DELTA_FROM_SECONDS(1e19));
@@ -942,7 +942,7 @@ TEST_P(AnimationCompositorAnimationsTest,
   timing_.iteration_duration = ANIMATION_TIME_DELTA_FROM_SECONDS(5);
   timing_.start_delay = Timing::Delay(ANIMATION_TIME_DELTA_FROM_SECONDS(-6.0));
   EXPECT_TRUE(ConvertTimingForCompositor(timing_, compositor_timing_));
-  EXPECT_DOUBLE_EQ(0.0, compositor_timing_.scaled_time_offset.InSecondsF());
+  EXPECT_FALSE(compositor_timing_.hold_time.has_value());
   EXPECT_DOUBLE_EQ(-6.0, compositor_timing_.start_delay.InSecondsF());
   EXPECT_EQ(std::numeric_limits<double>::infinity(),
             compositor_timing_.adjusted_iteration_count);
@@ -955,13 +955,13 @@ TEST_P(AnimationCompositorAnimationsTest,
 
   timing_.start_delay = Timing::Delay(ANIMATION_TIME_DELTA_FROM_SECONDS(6.0));
   EXPECT_TRUE(ConvertTimingForCompositor(timing_, compositor_timing_));
-  EXPECT_DOUBLE_EQ(0.0, compositor_timing_.scaled_time_offset.InSecondsF());
+  EXPECT_FALSE(compositor_timing_.hold_time.has_value());
   EXPECT_DOUBLE_EQ(6.0, compositor_timing_.start_delay.InSecondsF());
   EXPECT_DOUBLE_EQ(4.0, compositor_timing_.adjusted_iteration_count);
 
   timing_.start_delay = Timing::Delay(ANIMATION_TIME_DELTA_FROM_SECONDS(-6.0));
   EXPECT_TRUE(ConvertTimingForCompositor(timing_, compositor_timing_));
-  EXPECT_DOUBLE_EQ(0.0, compositor_timing_.scaled_time_offset.InSecondsF());
+  EXPECT_FALSE(compositor_timing_.hold_time.has_value());
   EXPECT_DOUBLE_EQ(-6.0, compositor_timing_.start_delay.InSecondsF());
   EXPECT_DOUBLE_EQ(4.0, compositor_timing_.adjusted_iteration_count);
 
@@ -996,7 +996,7 @@ TEST_P(AnimationCompositorAnimationsTest,
   timing_.iteration_duration = ANIMATION_TIME_DELTA_FROM_SECONDS(5);
   timing_.start_delay = Timing::Delay(ANIMATION_TIME_DELTA_FROM_SECONDS(-6.0));
   EXPECT_TRUE(ConvertTimingForCompositor(timing_, compositor_timing_));
-  EXPECT_DOUBLE_EQ(0.0, compositor_timing_.scaled_time_offset.InSecondsF());
+  EXPECT_FALSE(compositor_timing_.hold_time.has_value());
   EXPECT_DOUBLE_EQ(-6.0, compositor_timing_.start_delay.InSecondsF());
   EXPECT_EQ(4, compositor_timing_.adjusted_iteration_count);
   EXPECT_EQ(compositor_timing_.direction,
@@ -1007,7 +1007,7 @@ TEST_P(AnimationCompositorAnimationsTest,
   timing_.iteration_duration = ANIMATION_TIME_DELTA_FROM_SECONDS(5);
   timing_.start_delay = Timing::Delay(ANIMATION_TIME_DELTA_FROM_SECONDS(-11.0));
   EXPECT_TRUE(ConvertTimingForCompositor(timing_, compositor_timing_));
-  EXPECT_DOUBLE_EQ(0.0, compositor_timing_.scaled_time_offset.InSecondsF());
+  EXPECT_FALSE(compositor_timing_.hold_time.has_value());
   EXPECT_DOUBLE_EQ(-11.0, compositor_timing_.start_delay.InSecondsF());
   EXPECT_EQ(4, compositor_timing_.adjusted_iteration_count);
   EXPECT_EQ(compositor_timing_.direction,
@@ -1018,7 +1018,7 @@ TEST_P(AnimationCompositorAnimationsTest,
   timing_.iteration_duration = ANIMATION_TIME_DELTA_FROM_SECONDS(5);
   timing_.start_delay = Timing::Delay(ANIMATION_TIME_DELTA_FROM_SECONDS(-6.0));
   EXPECT_TRUE(ConvertTimingForCompositor(timing_, compositor_timing_));
-  EXPECT_DOUBLE_EQ(0.0, compositor_timing_.scaled_time_offset.InSecondsF());
+  EXPECT_FALSE(compositor_timing_.hold_time.has_value());
   EXPECT_DOUBLE_EQ(-6.0, compositor_timing_.start_delay.InSecondsF());
   EXPECT_EQ(4, compositor_timing_.adjusted_iteration_count);
   EXPECT_EQ(compositor_timing_.direction,
@@ -1029,7 +1029,7 @@ TEST_P(AnimationCompositorAnimationsTest,
   timing_.iteration_duration = ANIMATION_TIME_DELTA_FROM_SECONDS(5);
   timing_.start_delay = Timing::Delay(ANIMATION_TIME_DELTA_FROM_SECONDS(-11.0));
   EXPECT_TRUE(ConvertTimingForCompositor(timing_, compositor_timing_));
-  EXPECT_DOUBLE_EQ(0.0, compositor_timing_.scaled_time_offset.InSecondsF());
+  EXPECT_FALSE(compositor_timing_.hold_time.has_value());
   EXPECT_DOUBLE_EQ(-11.0, compositor_timing_.start_delay.InSecondsF());
   EXPECT_EQ(4, compositor_timing_.adjusted_iteration_count);
   EXPECT_EQ(compositor_timing_.direction,
@@ -1612,7 +1612,8 @@ TEST_P(AnimationCompositorAnimationsTest, CreateSimpleOpacityAnimation) {
       ConvertToCompositorAnimation(*effect);
   EXPECT_EQ(cc::TargetProperty::OPACITY, keyframe_model->TargetProperty());
   EXPECT_EQ(1.0, keyframe_model->iterations());
-  EXPECT_EQ(0, keyframe_model->time_offset().InSecondsF());
+  EXPECT_EQ(base::TimeDelta(), keyframe_model->start_delay());
+  EXPECT_FALSE(keyframe_model->hold_time().has_value());
   EXPECT_EQ(cc::KeyframeModel::Direction::NORMAL, keyframe_model->direction());
   EXPECT_EQ(1.0, keyframe_model->playback_rate());
 
@@ -1674,7 +1675,8 @@ TEST_P(AnimationCompositorAnimationsTest,
       ConvertToCompositorAnimation(*effect, 2.0);
   EXPECT_EQ(cc::TargetProperty::OPACITY, keyframe_model->TargetProperty());
   EXPECT_EQ(5.0, keyframe_model->iterations());
-  EXPECT_EQ(0, keyframe_model->time_offset().InSecondsF());
+  EXPECT_EQ(base::TimeDelta(), keyframe_model->start_delay());
+  EXPECT_FALSE(keyframe_model->hold_time().has_value());
   EXPECT_EQ(cc::KeyframeModel::Direction::ALTERNATE_NORMAL,
             keyframe_model->direction());
   EXPECT_EQ(2.0, keyframe_model->playback_rate());
@@ -1730,8 +1732,8 @@ TEST_P(AnimationCompositorAnimationsTest,
 
   EXPECT_EQ(cc::TargetProperty::OPACITY, keyframe_model->TargetProperty());
   EXPECT_EQ(5.0, keyframe_model->iterations());
-  EXPECT_EQ(0.0, keyframe_model->time_offset().InSecondsF());
   EXPECT_EQ(kStartDelay, keyframe_model->start_delay().InSecondsF());
+  EXPECT_FALSE(keyframe_model->hold_time().has_value());
 
   std::unique_ptr<gfx::KeyframedFloatAnimationCurve> keyframed_float_curve =
       CreateKeyframedFloatAnimationCurve(keyframe_model.get());
@@ -1770,7 +1772,8 @@ TEST_P(AnimationCompositorAnimationsTest,
       ConvertToCompositorAnimation(*effect);
   EXPECT_EQ(cc::TargetProperty::OPACITY, keyframe_model->TargetProperty());
   EXPECT_EQ(10.0, keyframe_model->iterations());
-  EXPECT_EQ(0, keyframe_model->time_offset().InSecondsF());
+  EXPECT_EQ(base::TimeDelta(), keyframe_model->start_delay());
+  EXPECT_FALSE(keyframe_model->hold_time().has_value());
   EXPECT_EQ(cc::KeyframeModel::Direction::ALTERNATE_NORMAL,
             keyframe_model->direction());
   EXPECT_EQ(1.0, keyframe_model->playback_rate());
@@ -1836,7 +1839,8 @@ TEST_P(AnimationCompositorAnimationsTest, CreateReversedOpacityAnimation) {
       ConvertToCompositorAnimation(*effect);
   EXPECT_EQ(cc::TargetProperty::OPACITY, keyframe_model->TargetProperty());
   EXPECT_EQ(10.0, keyframe_model->iterations());
-  EXPECT_EQ(0, keyframe_model->time_offset().InSecondsF());
+  EXPECT_EQ(base::TimeDelta(), keyframe_model->start_delay());
+  EXPECT_FALSE(keyframe_model->hold_time().has_value());
   EXPECT_EQ(cc::KeyframeModel::Direction::ALTERNATE_REVERSE,
             keyframe_model->direction());
   EXPECT_EQ(1.0, keyframe_model->playback_rate());
@@ -1895,8 +1899,8 @@ TEST_P(AnimationCompositorAnimationsTest,
       ConvertToCompositorAnimation(*effect);
   EXPECT_EQ(cc::TargetProperty::OPACITY, keyframe_model->TargetProperty());
   EXPECT_EQ(5.0, keyframe_model->iterations());
-  EXPECT_EQ(0.0, keyframe_model->time_offset().InSecondsF());
   EXPECT_EQ(kNegativeStartDelay, keyframe_model->start_delay().InSecondsF());
+  EXPECT_FALSE(keyframe_model->hold_time().has_value());
   EXPECT_EQ(cc::KeyframeModel::Direction::ALTERNATE_REVERSE,
             keyframe_model->direction());
   EXPECT_EQ(1.0, keyframe_model->playback_rate());
@@ -1938,7 +1942,8 @@ TEST_P(AnimationCompositorAnimationsTest,
       ConvertToCompositorAnimation(*effect);
   EXPECT_EQ(cc::TargetProperty::OPACITY, keyframe_model->TargetProperty());
   EXPECT_EQ(1.0, keyframe_model->iterations());
-  EXPECT_EQ(0, keyframe_model->time_offset().InSecondsF());
+  EXPECT_EQ(base::TimeDelta(), keyframe_model->start_delay());
+  EXPECT_FALSE(keyframe_model->hold_time().has_value());
   EXPECT_EQ(cc::KeyframeModel::Direction::NORMAL, keyframe_model->direction());
   EXPECT_EQ(1.0, keyframe_model->playback_rate());
   // Time based animations implicitly fill forwards to remain active until

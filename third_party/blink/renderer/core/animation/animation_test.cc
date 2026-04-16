@@ -1992,7 +1992,8 @@ TEST_P(AnimationAnimationTestCompositing,
       (keyframe_model->start_time() - base::TimeTicks()).InMillisecondsF();
   double progress_percent = (start_time_ms / timeline_duration_ms) * 100;
   EXPECT_NEAR(progress_percent, TEST_START_PERCENT, 1e-3);
-  EXPECT_EQ(keyframe_model->time_offset(), base::TimeDelta());
+  EXPECT_EQ(keyframe_model->start_delay(), base::TimeDelta());
+  EXPECT_FALSE(keyframe_model->hold_time().has_value());
 }
 
 // Verifies correctness of scroll linked animation current and start times in

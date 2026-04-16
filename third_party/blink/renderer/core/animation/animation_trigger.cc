@@ -317,7 +317,8 @@ void AnimationTrigger::UpdateCompositorTriggerAnimations(
     // animation so as not to interfere with an animation that was already
     // playing.
     if (pause_keyframe_models) {
-      cc_animation->PauseKeyframeModels(base::TimeDelta());
+      cc_animation->Pause(
+          base::Seconds(animation->CurrentTimeInternal()->InSecondsF()));
     }
   }
 
