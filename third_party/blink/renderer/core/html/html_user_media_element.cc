@@ -160,7 +160,6 @@ void HTMLUserMediaElement::OnPermissionStatusChange(
 }
 
 void HTMLUserMediaElement::DefaultEventHandler(Event& event) {
-  HTMLCapabilityElementBase::DefaultEventHandler(event);
   // HTMLCapabilityElementBase::HandleActivation checks that the event is
   // trusted before proceeding with the permission request.
   // If the element only has type attribute and no constraints, we do not want
@@ -168,8 +167,12 @@ void HTMLUserMediaElement::DefaultEventHandler(Event& event) {
   // legacy mode.
   if (event.type() == event_type_names::kDOMActivate && PermissionsGranted() &&
       has_constraints_) {
-    StartMediaStreamRequest();
+    HTMLCapabilityElementBase::HandleActivation(
+        event, blink::BindOnce(&HTMLUserMediaElement::StartMediaStreamRequest,
+                               WrapWeakPersistent(this)));
+    return;
   }
+  HTMLCapabilityElementBase::DefaultEventHandler(event);
 }
 
 mojom::blink::EmbeddedPermissionRequestDescriptorPtr
@@ -187,6 +190,11 @@ Vector<PermissionDescriptorPtr> HTMLUserMediaElement::ParseType(
 }
 
 void HTMLUserMediaElement::StartMediaStreamRequest() {
+  if (!media_stream_request_start_time_.is_null()) {
+    return;
+  }
+  media_stream_request_start_time_ = base::TimeTicks::Now();
+
   // We should start a getUserMedia request only when the element has
   // constraints and the required permissions.
   CHECK_GT(permission_descriptors_.size(), 0U);
@@ -199,6 +207,10 @@ void HTMLUserMediaElement::StartMediaStreamRequest() {
       provider->StartRequest(this, permission_descriptors_);
     }
   }
+}
+
+void HTMLUserMediaElement::ResetMediaStreamRequestTime() {
+  media_stream_request_start_time_ = base::TimeTicks();
 }
 
 }  // namespace blink

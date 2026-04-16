@@ -78,14 +78,14 @@
         // should_trigger is true if the element has at least one permission descriptor.
         const should_trigger = (type !== null) || (video === true) || (audio === true);
 
-        // Wait for PEPC registration
-        await new Promise(r => t.step_timeout(r, 100));
+        // Wait until the element is clickable.
+        await new Promise(r => t.step_timeout(r, 600));
 
         if (should_trigger) {
-          await test_driver.bless("click", () => usermedia.click());
+          await test_driver.click(usermedia);
           await stream_promise;
         } else {
-          await test_driver.bless("click", () => usermedia.click());
+          await test_driver.click(usermedia);
           // Wait a bit to ensure no stream event is fired
           await new Promise(r => t.step_timeout(r, 200));
         }

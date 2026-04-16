@@ -81,11 +81,6 @@ TEST_F(HTMLUserMediaElementTest, StartRequestOnClick) {
   element->OnPermissionStatusChange(mojom::blink::PermissionName::VIDEO_CAPTURE,
                                     mojom::blink::PermissionStatus::GRANTED);
   ::testing::Mock::VerifyAndClearExpectations(provider);
-
-  // Now, since permissions are granted, another click should trigger a request.
-  EXPECT_CALL(*provider, StartRequest(element, _)).Times(1);
-  element->click();
-  ::testing::Mock::VerifyAndClearExpectations(provider);
 }
 
 TEST_F(HTMLUserMediaElementTest, OnConstraintsSetTriggersRequest) {
@@ -148,6 +143,42 @@ TEST_F(HTMLUserMediaElementTest, NoRequestWhenNoPermissionGranted) {
 
   // A click should NOT trigger a request because permission is not granted.
   EXPECT_CALL(*provider, StartRequest(element, _)).Times(0);
+  element->click();
+  ::testing::Mock::VerifyAndClearExpectations(provider);
+}
+
+TEST_F(HTMLUserMediaElementTest, DoNotStartRequestTwiceOnClick) {
+  ScopedBypassPepcSecurityForTestingForTest bypass_pepc(true);
+  MockUserMediaRequestProvider* provider =
+      MockUserMediaRequestProvider::CreateAndProvideTo(
+          *GetDocument().domWindow());
+
+  auto* element = MakeGarbageCollected<HTMLUserMediaElement>(GetDocument());
+  element->OnConstraintsSet(/*has_video=*/true, /*has_audio=*/false);
+
+  // Initialize and grant the permission.
+  HashMap<mojom::blink::PermissionName, mojom::blink::PermissionStatus>
+      init_map;
+  init_map.insert(mojom::blink::PermissionName::VIDEO_CAPTURE,
+                  mojom::blink::PermissionStatus::GRANTED);
+  element->OnPermissionStatusInitialized(init_map);
+
+  // First click: HandleActivation calls StartMediaStreamRequest.
+  EXPECT_CALL(*provider, StartRequest(element, _)).Times(1);
+  element->click();
+  ::testing::Mock::VerifyAndClearExpectations(provider);
+
+  // Second click: HandleActivation calls StartMediaStreamRequest again,
+  // but it returns early due to the timestamp.
+  EXPECT_CALL(*provider, StartRequest(element, _)).Times(0);
+  element->click();
+  ::testing::Mock::VerifyAndClearExpectations(provider);
+
+  // Reset the timestamp as if the request finished.
+  element->ResetMediaStreamRequestTime();
+
+  // Third click: Should trigger a new request.
+  EXPECT_CALL(*provider, StartRequest(element, _)).Times(1);
   element->click();
   ::testing::Mock::VerifyAndClearExpectations(provider);
 }

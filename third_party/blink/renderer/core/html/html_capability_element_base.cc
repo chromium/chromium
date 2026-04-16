@@ -1053,7 +1053,8 @@ void HTMLCapabilityElementBase::HandleActivation(Event& event,
                                                  base::OnceClosure on_success) {
   event.SetDefaultHandled();
   if (event.IsFullyTrusted() ||
-      RuntimeEnabledFeatures::BypassPepcSecurityForTestingEnabled()) {
+      RuntimeEnabledFeatures::BypassPepcSecurityForTestingEnabled() ||
+      WebTestSupport::IsRunningWebTest()) {
     // TODO(crbug.com/352496162): After confirming all permission requests
     // eventually call |OnEmbeddedPermissionsDecided|, block multiple
     // permission requests when one is in progress, instead of temporairly

@@ -151,7 +151,6 @@ class EmbeddedPermissionPromptInteractiveTest
     }
   }
 
-
   auto WaitForChipText(int id_string) {
     DEFINE_LOCAL_POLLING_VIEW_PROPERTY_STATE_IDENTIFIER(
         views::LabelButton, GetText, kChipTextState);
@@ -300,23 +299,12 @@ class EmbeddedPermissionPromptInteractiveTest
         CheckContentSettingsValue(content_settings_types,
                                   CONTENT_SETTING_ALLOW),
 
-        // The PreviouslyGranted view is displayed since the permission is
-        // granted.
-        ClickOnPEPCElement(element_id),
-        InAnyContext(
-            WaitForShow(EmbeddedPermissionPromptBaseView::kMainViewId)),
-        CheckLabel(EmbeddedPermissionPromptBaseView::kTitleViewId,
-                   expected_titles, /*expected_label_index=*/1),
-        CheckLabel(EmbeddedPermissionPromptBaseView::kLabelViewId1,
-                   expected_labels1, /*expected_label_index=*/1),
-        CheckLabel(EmbeddedPermissionPromptBaseView::kLabelViewId2,
-                   expected_labels2, /*expected_label_index=*/1),
-
-        // Click on "Stop Allowing" and observe the content setting change.
-        PushPEPCPromptButton(
-            EmbeddedPermissionPromptPreviouslyGrantedView::kStopAllowingId),
-        CheckContentSettingsValue(content_settings_types,
-                                  CONTENT_SETTING_BLOCK),
+        // Reset the permission to BLOCK to test the block flow.
+        Do([&, this]() {
+          for (const auto& type : content_settings_types) {
+            SetContentSetting(type, CONTENT_SETTING_BLOCK);
+          }
+        }),
 
         // The PreviouslyBlocked view is displayed since the permission is
         // blocked.
@@ -364,18 +352,6 @@ class EmbeddedPermissionPromptInteractiveTest
         CheckContentSettingsValue(content_settings_types,
                                   CONTENT_SETTING_ALLOW),
 
-        // The PreviouslyGranted view is displayed since the permission is
-        // granted.
-        ClickOnPEPCElement(element_id),
-        InAnyContext(
-            WaitForShow(EmbeddedPermissionPromptBaseView::kMainViewId)),
-
-        // Click on "Continue Allowing" and observe the content setting remains
-        // the same.
-        PushPEPCPromptButton(
-            EmbeddedPermissionPromptPreviouslyGrantedView::kContinueAllowingId),
-        CheckContentSettingsValue(content_settings_types,
-                                  CONTENT_SETTING_ALLOW),
         // After the last tab is closed, since the last grant was one-time,
         // ensure the content setting is reset.
         Do([this]() {
@@ -698,32 +674,10 @@ IN_PROC_BROWSER_TEST_P(EmbeddedPermissionPromptInteractiveTest,
           static_cast<base::HistogramBase::Sample32>(
               permissions::ElementAnchoredBubbleVariant::kAsk)),
 
-      // Now the "allow" view is displayed. Neither clicking "continue allowing"
-      // or "stop allowing" records any additional histograms.
-      DoPromptAndCheckHistograms(
-          "camera",
-          EmbeddedPermissionPromptPreviouslyGrantedView::kContinueAllowingId,
-          tester, permissions::RequestTypeForUma::PERMISSION_MEDIASTREAM_CAMERA,
-          /*accepted_count=*/1, /*accepted_once_count=*/0),
-
-      CheckLastSampleAndResetTester(
-          variant_tester,
-          "Permissions.Prompt.VideoCapture.ElementAnchoredBubble.Variant",
-          static_cast<base::HistogramBase::Sample32>(
-              permissions::ElementAnchoredBubbleVariant::kPreviouslyGranted)),
-
-      DoPromptAndCheckHistograms(
-          "camera",
-          EmbeddedPermissionPromptPreviouslyGrantedView::kStopAllowingId,
-          tester, permissions::RequestTypeForUma::PERMISSION_MEDIASTREAM_CAMERA,
-          /*accepted_count=*/1, /*accepted_once_count=*/0),
-
-      CheckLastSampleAndResetTester(
-          variant_tester,
-          "Permissions.Prompt.VideoCapture.ElementAnchoredBubble.Variant",
-          static_cast<base::HistogramBase::Sample32>(
-              permissions::ElementAnchoredBubbleVariant::kPreviouslyGranted)),
-
+      Do([&, this]() {
+        SetContentSetting(ContentSettingsType::MEDIASTREAM_CAMERA,
+                          CONTENT_SETTING_DEFAULT);
+      }),
       // Other permissions are not affected, check that the microphone
       // permission has no histograms.
       CheckHistogram(tester,
@@ -750,6 +704,12 @@ IN_PROC_BROWSER_TEST_P(EmbeddedPermissionPromptInteractiveTest,
           static_cast<base::HistogramBase::Sample32>(
               permissions::ElementAnchoredBubbleVariant::kAsk)),
 
+      Do([&, this]() {
+        SetContentSetting(ContentSettingsType::MEDIASTREAM_CAMERA,
+                          CONTENT_SETTING_BLOCK);
+        SetContentSetting(ContentSettingsType::MEDIASTREAM_MIC,
+                          CONTENT_SETTING_BLOCK);
+      }),
       // Showing a combined prompt at this point will result in a "previously
       // blocked" screen which won't record new histograms.
       DoPromptAndCheckHistograms(
@@ -806,8 +766,7 @@ IN_PROC_BROWSER_TEST_P(EmbeddedPermissionPromptInteractiveTest,
           static_cast<base::HistogramBase::Sample32>(
               permissions::ElementAnchoredBubbleVariant::kAsk)),
 
-      WaitForChipText(IDS_MICROPHONE_CAMERA_IN_USE),
-      Do([&, this]() {
+      WaitForChipText(IDS_MICROPHONE_CAMERA_IN_USE), Do([&, this]() {
         SetContentSetting(ContentSettingsType::MEDIASTREAM_CAMERA,
                           CONTENT_SETTING_DEFAULT);
         SetContentSetting(ContentSettingsType::MEDIASTREAM_MIC,
@@ -919,26 +878,10 @@ IN_PROC_BROWSER_TEST_P(EmbeddedPermissionPromptInteractiveTest, TestPepcUkm) {
           permissions::ElementAnchoredBubbleAction::kGranted,
           permissions::ElementAnchoredBubbleVariant::kAsk, 0),
 
-      // Now mic+camera are granted.
-      ClickOnPEPCElement("camera"),
-      InAnyContext(WaitForShow(EmbeddedPermissionPromptBaseView::kMainViewId)),
-      PushPEPCPromptButton(
-          EmbeddedPermissionPromptPreviouslyGrantedView::kStopAllowingId),
-      CheckEntrySinceLastCheck(
-          permissions::RequestTypeForUma::PERMISSION_MEDIASTREAM_CAMERA,
-          permissions::RequestTypeForUma::PERMISSION_MEDIASTREAM_CAMERA,
-          permissions::ElementAnchoredBubbleAction::kDenied,
-          permissions::ElementAnchoredBubbleVariant::kPreviouslyGranted, 0),
-
-      ClickOnPEPCElement("microphone"),
-      InAnyContext(WaitForShow(EmbeddedPermissionPromptBaseView::kMainViewId)),
-      PushPEPCPromptButton(
-          EmbeddedPermissionPromptPreviouslyGrantedView::kContinueAllowingId),
-      CheckEntrySinceLastCheck(
-          permissions::RequestTypeForUma::PERMISSION_MEDIASTREAM_MIC,
-          permissions::RequestTypeForUma::PERMISSION_MEDIASTREAM_MIC,
-          permissions::ElementAnchoredBubbleAction::kOk,
-          permissions::ElementAnchoredBubbleVariant::kPreviouslyGranted, 0),
+      Do([&, this]() {
+        SetContentSetting(ContentSettingsType::MEDIASTREAM_CAMERA,
+                          CONTENT_SETTING_BLOCK);
+      }),
 
       // Mic is granted, camera is blocked. Triggering the double permission
       // prompt will show the screen that is only for camera, while the prompt
@@ -953,7 +896,13 @@ IN_PROC_BROWSER_TEST_P(EmbeddedPermissionPromptInteractiveTest, TestPepcUkm) {
           permissions::ElementAnchoredBubbleAction::kGrantedOnce,
           permissions::ElementAnchoredBubbleVariant::kPreviouslyDenied, 0),
 
-      // Both permissions are granted. Dismiss the prompt via clicking on the
+      Do([&, this]() {
+        SetContentSetting(ContentSettingsType::MEDIASTREAM_CAMERA,
+                          CONTENT_SETTING_BLOCK);
+        SetContentSetting(ContentSettingsType::MEDIASTREAM_MIC,
+                          CONTENT_SETTING_BLOCK);
+      }),
+      // Both permissions are blocked. Dismiss the prompt via clicking on the
       // scrim.
       ClickOnPEPCElement("camera-microphone"),
       InAnyContext(WaitForShow(EmbeddedPermissionPromptBaseView::kMainViewId)),
@@ -969,7 +918,7 @@ IN_PROC_BROWSER_TEST_P(EmbeddedPermissionPromptInteractiveTest, TestPepcUkm) {
           permissions::RequestTypeForUma::MULTIPLE_AUDIO_AND_VIDEO_CAPTURE,
           permissions::RequestTypeForUma::MULTIPLE_AUDIO_AND_VIDEO_CAPTURE,
           permissions::ElementAnchoredBubbleAction::kDismissedScrim,
-          permissions::ElementAnchoredBubbleVariant::kPreviouslyGranted, 0));
+          permissions::ElementAnchoredBubbleVariant::kPreviouslyDenied, 0));
 }
 
 IN_PROC_BROWSER_TEST_P(EmbeddedPermissionPromptInteractiveTest,
@@ -1303,10 +1252,9 @@ IN_PROC_BROWSER_TEST_P(EmbeddedPermissionPromptPositioningInteractiveTest,
     ui::ElementIdentifier button_identifier;
   };
   std::vector<ElementAction> element_actions = {
+      {"geolocation", EmbeddedPermissionPromptAskView::kAllowId},
       {"microphone", EmbeddedPermissionPromptAskView::kAllowId},
       {"camera", EmbeddedPermissionPromptAskView::kAllowId},
-      {"camera-microphone",
-       EmbeddedPermissionPromptPreviouslyGrantedView::kStopAllowingId},
   };
 
   for (const auto& element_action : element_actions) {
@@ -1518,63 +1466,6 @@ IN_PROC_BROWSER_TEST_P(EmbeddedPermissionPromptPolicyInteractiveTest,
   TestPolicy(policies, "geolocation",
              EmbeddedPermissionPromptPolicyView::kMainViewId,
              u"Your administrator doesn't allow location for this site");
-}
-
-IN_PROC_BROWSER_TEST_P(EmbeddedPermissionPromptPolicyInteractiveTest,
-                       CameraPolicyAllow) {
-  policy::PolicyMap policies;
-  policies.Set(policy::key::kVideoCaptureAllowed,
-               policy::POLICY_LEVEL_MANDATORY, policy::POLICY_SCOPE_USER,
-               policy::POLICY_SOURCE_CLOUD, base::Value(true), nullptr);
-  base::ListValue urls;
-  urls.Append(GetURL().spec());
-  policies.Set(policy::key::kVideoCaptureAllowedUrls,
-               policy::POLICY_LEVEL_MANDATORY, policy::POLICY_SCOPE_USER,
-               policy::POLICY_SOURCE_CLOUD, base::Value(std::move(urls)),
-               nullptr);
-  TestPolicy(policies, "camera",
-             EmbeddedPermissionPromptPolicyView::kMainViewId,
-             u"Your administrator allows camera for this site");
-}
-
-IN_PROC_BROWSER_TEST_P(EmbeddedPermissionPromptPolicyInteractiveTest,
-                       MicrophonePolicyAllow) {
-  policy::PolicyMap policies;
-  policies.Set(policy::key::kAudioCaptureAllowed,
-               policy::POLICY_LEVEL_MANDATORY, policy::POLICY_SCOPE_USER,
-               policy::POLICY_SOURCE_CLOUD, base::Value(true), nullptr);
-  base::ListValue urls;
-  urls.Append(GetURL().spec());
-  policies.Set(policy::key::kAudioCaptureAllowedUrls,
-               policy::POLICY_LEVEL_MANDATORY, policy::POLICY_SCOPE_USER,
-               policy::POLICY_SOURCE_CLOUD, base::Value(std::move(urls)),
-               nullptr);
-  TestPolicy(policies, "microphone",
-             EmbeddedPermissionPromptPolicyView::kMainViewId,
-             u"Your administrator allows microphone for this site");
-}
-
-IN_PROC_BROWSER_TEST_P(EmbeddedPermissionPromptPolicyInteractiveTest,
-                       CameraAndMicrophonePolicyAllow) {
-  policy::PolicyMap policies;
-  policies.Set(policy::key::kVideoCaptureAllowed,
-               policy::POLICY_LEVEL_MANDATORY, policy::POLICY_SCOPE_USER,
-               policy::POLICY_SOURCE_CLOUD, base::Value(true), nullptr);
-  policies.Set(policy::key::kAudioCaptureAllowed,
-               policy::POLICY_LEVEL_MANDATORY, policy::POLICY_SCOPE_USER,
-               policy::POLICY_SOURCE_CLOUD, base::Value(true), nullptr);
-  base::ListValue urls;
-  urls.Append(GetURL().spec());
-  policies.Set(policy::key::kAudioCaptureAllowedUrls,
-               policy::POLICY_LEVEL_MANDATORY, policy::POLICY_SCOPE_USER,
-               policy::POLICY_SOURCE_CLOUD, base::Value(urls.Clone()), nullptr);
-  policies.Set(policy::key::kVideoCaptureAllowedUrls,
-               policy::POLICY_LEVEL_MANDATORY, policy::POLICY_SCOPE_USER,
-               policy::POLICY_SOURCE_CLOUD, base::Value(std::move(urls)),
-               nullptr);
-  TestPolicy(policies, "camera-microphone",
-             EmbeddedPermissionPromptPolicyView::kMainViewId,
-             u"Your administrator allows camera and microphone for this site");
 }
 
 // Setting up to run all tests with two screen scale factors.
