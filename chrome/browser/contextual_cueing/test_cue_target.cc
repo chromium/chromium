@@ -23,7 +23,11 @@ void TestCueTarget::OnClick(CueActionData data) {
   click_data = std::move(data);
 }
 
-ui::ImageModel TestCueTarget::GetIcon() const {
+ui::ImageModel TestCueTarget::GetAnchoredMessageIcon() const {
+  return {};
+}
+
+ui::ImageModel TestCueTarget::GetOmniboxChipIcon() const {
   return {};
 }
 

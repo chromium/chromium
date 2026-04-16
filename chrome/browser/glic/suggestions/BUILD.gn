@@ -45,6 +45,7 @@ source_set("impl") {
     "//chrome/browser/actor",
     "//chrome/browser/contextual_cueing",
     "//chrome/browser/glic",
+    "//chrome/browser/glic/browser_ui",
     "//chrome/browser/optimization_guide",
     "//chrome/browser/page_content_annotations:extraction_service",
     "//chrome/browser/profiles:profile",

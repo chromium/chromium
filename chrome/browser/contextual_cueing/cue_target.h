@@ -51,7 +51,10 @@ class CueTarget {
   virtual void OnClick(CueActionData data) = 0;
 
   // Icon to be shown in the anchored message.
-  virtual ui::ImageModel GetIcon() const = 0;
+  virtual ui::ImageModel GetAnchoredMessageIcon() const = 0;
+
+  // Icon to be shown in the omnibox chip.
+  virtual ui::ImageModel GetOmniboxChipIcon() const = 0;
 
   // Extract this feature's click data from a contextual cueing response.
   virtual CueActionData CueActionDataFromResponse(

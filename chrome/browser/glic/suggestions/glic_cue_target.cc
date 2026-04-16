@@ -6,6 +6,7 @@
 
 #include "base/notimplemented.h"
 #include "chrome/browser/contextual_cueing/contextual_cueing_controller.h"
+#include "chrome/browser/glic/browser_ui/glic_vector_icon_manager.h"
 #include "chrome/browser/glic/public/glic_enabling.h"
 #include "chrome/browser/glic/public/glic_invoke_options.h"
 #include "chrome/browser/glic/public/glic_keyed_service.h"
@@ -72,11 +73,17 @@ void GlicCueTarget::OnClick(contextual_cueing::CueActionData data) {
 #endif
 }
 
-ui::ImageModel GlicCueTarget::GetIcon() const {
+ui::ImageModel GlicCueTarget::GetAnchoredMessageIcon() const {
   gfx::ImageSkia* icon =
       ui::ResourceBundle::GetSharedInstance().GetImageSkiaNamed(
           IDR_GLIC_BUTTON_ALT_ICON);
   return icon ? ui::ImageModel::FromImageSkia(*icon) : ui::ImageModel();
+}
+
+ui::ImageModel GlicCueTarget::GetOmniboxChipIcon() const {
+  return ui::ImageModel::FromVectorIcon(
+      glic::GlicVectorIconManager::GetVectorIcon(IDR_GLIC_BUTTON_VECTOR_ICON),
+      ui::kColorSysOnSurface, 18);
 }
 
 contextual_cueing::CueActionData GlicCueTarget::CueActionDataFromResponse(

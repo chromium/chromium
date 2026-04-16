@@ -25,7 +25,8 @@ class GlicCueTarget : public contextual_cueing::CueTarget {
   // contextual_cueing::CueTarget:
   bool IsEligible() const override;
   void OnClick(contextual_cueing::CueActionData data) override;
-  ui::ImageModel GetIcon() const override;
+  ui::ImageModel GetAnchoredMessageIcon() const override;
+  ui::ImageModel GetOmniboxChipIcon() const override;
   contextual_cueing::CueActionData CueActionDataFromResponse(
       const optimization_guide::proto::ContextualCueingResponse& response)
       const override;

@@ -143,9 +143,6 @@ TEST_F(GlicCueTargetTest, OnClick) {
   glic_data.prompt = "test prompt";
   contextual_cueing::CueActionData data = glic_data;
 
-  // tabs::TabInterface* active_tab =
-  // mock_browser_window_interface_.GetActiveTabInterface();
-
   EXPECT_CALL(*mock_glic_keyed_service_, InvokeWithAutoSubmit(_, _))
       .WillOnce([](InvokeWithAutoSubmitPasskey, GlicInvokeOptions options) {
         EXPECT_TRUE(std::holds_alternative<raw_ptr<tabs::TabInterface>>(
@@ -163,7 +160,8 @@ TEST_F(GlicCueTargetTest, GetIcon) {
   GlicCueTarget target(*mock_glic_keyed_service_,
                        mock_browser_window_interface_);
   if (ui::ResourceBundle::HasSharedInstance()) {
-    EXPECT_FALSE(target.GetIcon().IsEmpty());
+    EXPECT_FALSE(target.GetAnchoredMessageIcon().IsEmpty());
+    EXPECT_FALSE(target.GetOmniboxChipIcon().IsEmpty());
   }
 }
 

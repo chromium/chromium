@@ -22,7 +22,8 @@ class TestCueTarget : public CueTarget {
   // CueTarget:
   bool IsEligible() const override;
   void OnClick(CueActionData data) override;
-  ui::ImageModel GetIcon() const override;
+  ui::ImageModel GetAnchoredMessageIcon() const override;
+  ui::ImageModel GetOmniboxChipIcon() const override;
   CueActionData CueActionDataFromResponse(
       const optimization_guide::proto::ContextualCueingResponse& response)
       const override;

@@ -346,8 +346,8 @@ void ContextualCueingController::ShowCue(
   CHECK(action);
 
   const auto& strings = response.anchored_message_cue();
-  // TODO(crbug.com/501162817): Set the icon for the omnibox chip
   action->SetText(base::UTF8ToUTF16(strings.action_text()));
+  action->SetImage(target.GetOmniboxChipIcon());
   action->SetInvokeActionCallback(base::BindRepeating(
       &ContextualCueingController::OnCueClicked, weak_ptr_factory_.GetWeakPtr(),
       cue_type, target.CueActionDataFromResponse(response)));
@@ -360,12 +360,14 @@ void ContextualCueingController::ShowCue(
   }
 
   page_action_controller->Show(kActionAnchoredContextualCue);
+  page_action_controller->SetAnchoredMessageIcon(
+      kActionAnchoredContextualCue, target.GetAnchoredMessageIcon());
   page_action_controller->SetAnchoredMessageText(
       kActionAnchoredContextualCue,
       base::UTF8ToUTF16(strings.anchored_message_text()));
   page_action_controller->OverrideText(
       kActionAnchoredContextualCue, base::UTF8ToUTF16(strings.action_text()));
-  // TODO(crbug.com/501162817): Set the icon for the anchored message bubble
+
   // TODO(crbug.com/500407600): Show a dropdown menu instead of a close button
   page_action_controller->SetAnchoredMessageAction(
       kActionAnchoredContextualCue,
