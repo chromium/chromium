@@ -3,6 +3,7 @@
 # found in the LICENSE file.
 
 import("//build/config/chrome_build.gni")
+import("//testing/libfuzzer/fuzzer_test.gni")
 
 assert(is_chromeos, "Nearby Share is CrOS only")
 
@@ -261,4 +262,15 @@ source_set("impl") {
   if (is_chrome_branded) {
     deps += [ "//chrome/browser/nearby_sharing/internal/icons:vector_icons" ]
   }
+}
+
+fuzzer_test("nearby_sharing_instantmessaging_stream_parser_fuzzer") {
+  sources = [ "instantmessaging/stream_parser_fuzzer.cc" ]
+  deps = [
+    ":impl",
+    ":nearby_sharing",
+    "//base",
+    "//chrome/browser",
+    "//components/exo/wayland:ui_controls_protocol_stub",
+  ]
 }
