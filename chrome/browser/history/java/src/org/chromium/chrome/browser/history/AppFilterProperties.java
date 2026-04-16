@@ -16,15 +16,16 @@ import org.chromium.ui.modelutil.PropertyModel.WritableObjectPropertyKey;
 /** Property model properties for app filter sheet UI. */
 @NullMarked
 class AppFilterProperties {
-    public static final ReadableObjectPropertyKey<String> ID = new ReadableObjectPropertyKey();
-    public static final ReadableObjectPropertyKey<Drawable> ICON = new ReadableObjectPropertyKey();
+    public static final ReadableObjectPropertyKey<String> ID = new ReadableObjectPropertyKey<>();
+    public static final ReadableObjectPropertyKey<Drawable> ICON =
+            new ReadableObjectPropertyKey<>();
     public static final ReadableObjectPropertyKey<CharSequence> LABEL =
-            new ReadableObjectPropertyKey();
+            new ReadableObjectPropertyKey<>();
     public static final WritableObjectPropertyKey<View.OnClickListener> CLICK_LISTENER =
-            new WritableObjectPropertyKey();
+            new WritableObjectPropertyKey<>();
     public static final WritableBooleanPropertyKey SELECTED = new WritableBooleanPropertyKey();
     public static final ReadableObjectPropertyKey<View.OnClickListener> CLOSE_BUTTON_CALLBACK =
-            new ReadableObjectPropertyKey();
+            new ReadableObjectPropertyKey<>();
 
     /** Property keys for a list item. */
     public static final PropertyKey[] LIST_ITEM_KEYS = {ID, ICON, LABEL, CLICK_LISTENER, SELECTED};

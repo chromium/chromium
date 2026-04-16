@@ -30,7 +30,7 @@ class TouchToFillPaymentMethodProperties {
     static final PropertyModel.WritableIntPropertyKey FOCUSED_VIEW_ID_FOR_ACCESSIBILITY =
             new PropertyModel.WritableIntPropertyKey("focused_view_id_for_accessibility");
     public static final PropertyModel.WritableObjectPropertyKey<ModelList> SHEET_ITEMS =
-            new PropertyModel.WritableObjectPropertyKey("sheet_items");
+            new PropertyModel.WritableObjectPropertyKey<>("sheet_items");
     static final PropertyModel.ReadableObjectPropertyKey<Runnable> BACK_PRESS_HANDLER =
             new PropertyModel.ReadableObjectPropertyKey<>("back_press_handler");
     static final PropertyModel.ReadableObjectPropertyKey<Callback<Integer>> DISMISS_HANDLER =
@@ -444,7 +444,7 @@ class TouchToFillPaymentMethodProperties {
      */
     static class BnplSelectionProgressTermsProperties {
         static final PropertyModel.ReadableObjectPropertyKey<CharSequence> TERMS_TEXT =
-                new PropertyModel.ReadableObjectPropertyKey("terms_text");
+                new PropertyModel.ReadableObjectPropertyKey<>("terms_text");
         static final PropertyModel.ReadableBooleanPropertyKey TERMS_LINK_ENABLED =
                 new PropertyModel.ReadableBooleanPropertyKey("terms_link_enabled");
         static final PropertyKey[] ALL_KEYS = {TERMS_TEXT, TERMS_LINK_ENABLED};

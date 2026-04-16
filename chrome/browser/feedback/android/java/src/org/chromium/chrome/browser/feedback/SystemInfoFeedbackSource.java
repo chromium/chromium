@@ -36,7 +36,7 @@ public class SystemInfoFeedbackSource extends AsyncFeedbackSourceAdapter<StatFs>
 
     @Override
     public Map<String, String> getFeedback() {
-        HashMap<String, String> feedback = new HashMap();
+        HashMap<String, String> feedback = new HashMap<>();
         feedback.put("CPU Architecture", SystemInfoFeedbackSourceJni.get().getCpuArchitecture());
         feedback.put(
                 "Available Memory (MB)",

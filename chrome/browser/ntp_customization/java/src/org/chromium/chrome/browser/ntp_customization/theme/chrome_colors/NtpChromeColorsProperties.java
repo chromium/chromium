@@ -47,13 +47,13 @@ public class NtpChromeColorsProperties {
     // This value isn't updated when the DAILY_REFRESH_SWITCH_ON_CHECKED_CHANGE_LISTENER handles the
     // clicking of the toggle. We have to skip equality check to allow the refreshed state is set.
     public static final WritableObjectPropertyKey<Boolean> IS_DAILY_REFRESH_SWITCH_CHECKED =
-            new WritableObjectPropertyKey(/* skipEquality= */ true);
+            new WritableObjectPropertyKey<>(/* skipEquality= */ true);
 
     // This index isn't updated when the RECYCLER_VIEW_ADAPTER handles the highlighted items. We
     // have to skip equality check to allow the refreshed value is set. The default 0 is set when
     // user turns on daily refresh without choosing any color.
     public static final WritableObjectPropertyKey<Integer> HIGHLIGHTED_ITEM_INDEX =
-            new WritableObjectPropertyKey(/* skipEquality= */ true);
+            new WritableObjectPropertyKey<>(/* skipEquality= */ true);
 
     public static final PropertyKey[] ALL_KEYS =
             new PropertyKey[] {

@@ -117,7 +117,7 @@ public class SearchEngineAdapter extends BaseAdapter
     private List<TemplateUrl> mRecentSearchEngines = new ArrayList<>();
 
     /** Cache for storing fetched search icon bitmaps. */
-    private final Map<GURL, Bitmap> mIconCache = new HashMap();
+    private final Map<GURL, Bitmap> mIconCache = new HashMap<>();
 
     /**
      * The position (index into mPrepopulatedSearchEngines) of the currently selected search engine.

@@ -122,6 +122,8 @@ public class TabGroupMetadata {
         // A valid bundle should have all required properties.
         @Nullable Token tabGroupIdFromBundle =
                 Token.maybeCreateFromBundle(bundle.getBundle(KEY_TAB_GROUP_ID));
+        // Cast from Serializable to generic ArrayList is unchecked due to type erasure.
+        @SuppressWarnings("unchecked")
         ArrayList<Map.Entry<Integer, String>> tabIdsToUrls =
                 (ArrayList<Map.Entry<Integer, String>>) bundle.getSerializable(KEY_TAB_IDS_TO_URLS);
         if (tabGroupIdFromBundle == null

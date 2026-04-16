@@ -28,7 +28,7 @@ class QuickDeleteProperties {
             new PropertyModel.WritableBooleanPropertyKey();
 
     public static final PropertyModel.ReadableObjectPropertyKey<Context> CONTEXT =
-            new PropertyModel.ReadableObjectPropertyKey();
+            new PropertyModel.ReadableObjectPropertyKey<>();
     public static final PropertyModel.ReadableBooleanPropertyKey HAS_MULTI_WINDOWS =
             new PropertyModel.ReadableBooleanPropertyKey();
 

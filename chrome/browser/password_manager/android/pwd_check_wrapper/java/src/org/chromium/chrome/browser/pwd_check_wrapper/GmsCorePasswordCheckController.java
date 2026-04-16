@@ -43,7 +43,7 @@ class GmsCorePasswordCheckController
     @Override
     public CompletableFuture<PasswordCheckResult> checkPasswords(
             @PasswordStorageType int passwordStorageType) {
-        WeakReference<GmsCorePasswordCheckController> weakRef = new WeakReference(this);
+        WeakReference<GmsCorePasswordCheckController> weakRef = new WeakReference<>(this);
         CompletableFuture<PasswordCheckResult> passwordCheckResult = new CompletableFuture<>();
         mPasswordManagerHelper.runPasswordCheckupInBackground(
                 PasswordCheckReferrer.SAFETY_CHECK,
@@ -74,7 +74,7 @@ class GmsCorePasswordCheckController
     private CompletableFuture<PasswordCheckResult> getBreachedCredentialsCount(
             @PasswordStorageType int passwordStorageType,
             CompletableFuture<PasswordCheckResult> passwordCheckResult) {
-        WeakReference<GmsCorePasswordCheckController> weakRef = new WeakReference(this);
+        WeakReference<GmsCorePasswordCheckController> weakRef = new WeakReference<>(this);
         mPasswordManagerHelper.getBreachedCredentialsCount(
                 PasswordCheckReferrer.SAFETY_CHECK,
                 PasswordCheckController.getAccountNameForPasswordStorageType(

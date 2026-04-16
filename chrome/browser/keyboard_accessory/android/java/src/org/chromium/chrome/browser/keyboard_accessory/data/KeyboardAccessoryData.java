@@ -383,7 +383,7 @@ public class KeyboardAccessoryData {
      */
     public static final class UserInfoSection {
         private final String mTitle;
-        private final List<UserInfo> mUserInfoList = new ArrayList();
+        private final List<UserInfo> mUserInfoList = new ArrayList<>();
 
         public UserInfoSection(String title) {
             mTitle = title;

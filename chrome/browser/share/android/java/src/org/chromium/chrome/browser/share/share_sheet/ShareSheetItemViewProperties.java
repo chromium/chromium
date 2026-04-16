@@ -18,10 +18,10 @@ final class ShareSheetItemViewProperties {
     public static final WritableObjectPropertyKey<Drawable> ICON =
             new WritableObjectPropertyKey<>();
 
-    public static final WritableObjectPropertyKey<String> LABEL = new WritableObjectPropertyKey();
+    public static final WritableObjectPropertyKey<String> LABEL = new WritableObjectPropertyKey<>();
 
     public static final WritableObjectPropertyKey<String> CONTENT_DESCRIPTION =
-            new WritableObjectPropertyKey();
+            new WritableObjectPropertyKey<>();
 
     public static final WritableObjectPropertyKey<OnClickListener> CLICK_LISTENER =
             new WritableObjectPropertyKey<>();

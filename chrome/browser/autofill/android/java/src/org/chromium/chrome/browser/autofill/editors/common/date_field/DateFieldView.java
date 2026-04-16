@@ -336,7 +336,7 @@ public class DateFieldView extends LinearLayout implements FieldView {
     }
 
     private static List<DropdownKeyValue> getDayDropdownValues() {
-        List<DropdownKeyValue> dayList = new ArrayList();
+        List<DropdownKeyValue> dayList = new ArrayList<>();
         for (int day = 1; day <= 31; day++) {
             dayList.add(new DropdownKeyValue(String.valueOf(day), String.valueOf(day)));
         }

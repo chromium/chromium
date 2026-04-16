@@ -218,7 +218,10 @@ public class BackPressManager implements Destroyable, BackPressHandlerRegistry {
     private final boolean mUseSystemBack;
     private boolean mHasSystemBackArm;
 
+    // Generic array creation is not supported in Java.
+    @SuppressWarnings("unchecked")
     private final @Nullable Callback<Boolean>[] mObserverCallbacks = new Callback[Type.NUM_TYPES];
+
     private @Nullable OnBackInvokedCallback mOnSystemNavigationCallback;
     private Runnable mFallbackOnBackPressed;
     private int mLastCalledHandlerType = -1;

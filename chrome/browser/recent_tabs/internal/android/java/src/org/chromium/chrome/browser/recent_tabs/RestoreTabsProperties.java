@@ -62,15 +62,15 @@ public class RestoreTabsProperties {
 
     /** The models corresponding to all user synced devices. */
     public static final ReadableObjectPropertyKey<ModelList> DEVICE_MODEL_LIST =
-            new ReadableObjectPropertyKey();
+            new ReadableObjectPropertyKey<>();
 
     /** The models corresponding to all synced tabs from the selected device. */
     public static final ReadableObjectPropertyKey<ModelList> REVIEW_TABS_MODEL_LIST =
-            new ReadableObjectPropertyKey();
+            new ReadableObjectPropertyKey<>();
 
     /**
-     * The delegate that handles actions on the home screen.
-     * This key is effectively read-only, as it is set once in the RestoreTabsMediator.
+     * The delegate that handles actions on the home screen. This key is effectively read-only, as
+     * it is set once in the RestoreTabsMediator.
      */
     public static final WritableObjectPropertyKey<RestoreTabsPromoScreenCoordinator.Delegate>
             HOME_SCREEN_DELEGATE = new WritableObjectPropertyKey<>();

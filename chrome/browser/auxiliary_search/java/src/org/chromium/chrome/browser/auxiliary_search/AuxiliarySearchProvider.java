@@ -207,6 +207,8 @@ public class AuxiliarySearchProvider {
      * @param stream The stream pointing to the tab donation metadata file to be parsed.
      * @param <T> The type of the entry data for donation.
      */
+    // Casts to generic type T are unchecked due to type erasure.
+    @SuppressWarnings("unchecked")
     static <T> @Nullable List<T> readSavedMetadataFile(@Nullable DataInputStream stream)
             throws IOException {
         if (stream == null) return null;

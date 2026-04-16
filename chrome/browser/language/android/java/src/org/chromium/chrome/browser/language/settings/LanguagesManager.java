@@ -275,7 +275,7 @@ public class LanguagesManager {
      */
     private List<LanguageItem> getPotentialAcceptLanguages() {
         // Always read the latest user accept language code list from native.
-        HashSet<String> codesToSkip = new HashSet(TranslateBridge.getUserLanguageCodes(mProfile));
+        HashSet<String> codesToSkip = new HashSet<>(TranslateBridge.getUserLanguageCodes(mProfile));
         LinkedHashSet<LanguageItem> results = new LinkedHashSet<>();
         addItemsToResult(
                 results, mLanguagesMap.values(), (item) -> !codesToSkip.contains(item.getCode()));
@@ -309,7 +309,7 @@ public class LanguagesManager {
     public Collection<LanguageItem> getAlwaysTranslateLanguageItems() {
         // Get the latest always translate list from native. This list has no guaranteed order.
         List<String> codes = TranslateBridge.getAlwaysTranslateLanguages(mProfile);
-        TreeSet<LanguageItem> results = new TreeSet(LanguageItem.COMPARE_BY_DISPLAY_NAME);
+        TreeSet<LanguageItem> results = new TreeSet<>(LanguageItem.COMPARE_BY_DISPLAY_NAME);
         for (String code : codes) {
             if (mLanguagesMap.containsKey(code)) results.add(mLanguagesMap.get(code));
         }
@@ -325,7 +325,7 @@ public class LanguagesManager {
     public Collection<LanguageItem> getNeverTranslateLanguageItems() {
         // Get the latest never translate list from native. This list has no guaranteed order.
         List<String> codes = TranslateBridge.getNeverTranslateLanguages(mProfile);
-        TreeSet<LanguageItem> results = new TreeSet(LanguageItem.COMPARE_BY_DISPLAY_NAME);
+        TreeSet<LanguageItem> results = new TreeSet<>(LanguageItem.COMPARE_BY_DISPLAY_NAME);
         for (String code : codes) {
             if (mLanguagesMap.containsKey(code)) results.add(mLanguagesMap.get(code));
         }

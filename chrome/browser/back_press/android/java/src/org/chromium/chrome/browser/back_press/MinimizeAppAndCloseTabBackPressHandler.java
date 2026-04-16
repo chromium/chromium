@@ -236,7 +236,7 @@ public class MinimizeAppAndCloseTabBackPressHandler
             minimizeApp = !shouldCloseTab || mMinimizationShouldCloseTab.test(currentTab);
         }
 
-        return new Pair(minimizeApp, shouldCloseTab);
+        return new Pair<>(minimizeApp, shouldCloseTab);
     }
 
     @Override

@@ -20,7 +20,7 @@ class BatchUploadCardProperties {
     static final PropertyModel.ReadableIntPropertyKey BUTTON_TEXT =
             new ReadableIntPropertyKey("button_text");
     static final WritableObjectPropertyKey<OnClickListener> ON_CLICK_LISTENER =
-            new WritableObjectPropertyKey("on_click_listener");
+            new WritableObjectPropertyKey<>("on_click_listener");
     static final PropertyModel.ReadableObjectPropertyKey<Drawable> ICON =
             new PropertyModel.ReadableObjectPropertyKey<>("icon");
 
