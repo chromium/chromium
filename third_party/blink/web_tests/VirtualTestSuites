@@ -2903,7 +2903,6 @@
       "external/wpt/css/css-grid/animation",
       "external/wpt/css/css-sizing/responsive-iframe/responsive-iframe.tentative.html",
       "external/wpt/css/css-sizing/responsive-iframe/responsive-iframe-dom-content-loaded.tentative.html",
-      "external/wpt/css/css-sizing/responsive-iframe/responsive-iframe-fallback.tentative.html",
       "external/wpt/css/printing",
       "external/wpt/largest-contentful-paint",
       "fast/forms/file/file-appearance-no-default-width.html",
