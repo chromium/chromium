@@ -5,6 +5,7 @@
 #include "components/affiliations/core/browser/lookup_affiliation_response_parser.h"
 
 #include "base/containers/flat_set.h"
+#include "url/url_constants.h"
 
 namespace affiliations {
 
@@ -29,8 +30,12 @@ std::vector<Facet> ParseFacets(const MessageT& response) {
           facet.branding_info().name(), GURL(facet.branding_info().icon_url())};
     }
     if (facet.has_change_password_info()) {
-      new_facet.change_password_url =
-          GURL(facet.change_password_info().change_password_url());
+      GURL change_password_url(
+          facet.change_password_info().change_password_url());
+      if (change_password_url.is_valid() &&
+          change_password_url.SchemeIs(url::kHttpsScheme)) {
+        new_facet.change_password_url = std::move(change_password_url);
+      }
     }
     if (facet.has_main_domain()) {
       new_facet.main_domain = facet.main_domain();

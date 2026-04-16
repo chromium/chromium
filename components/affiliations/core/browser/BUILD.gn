@@ -110,6 +110,7 @@ source_set("unit_tests") {
     "affiliation_utils_unittest.cc",
     "facet_manager_unittest.cc",
     "hash_affiliation_fetcher_unittest.cc",
+    "lookup_affiliation_response_parser_unittest.cc",
     "sql_table_builder_unittest.cc",
   ]
   deps = [
