@@ -14,8 +14,8 @@
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/values.h"
-#include "build/branding_buildflags.h"
 #include "chrome/browser/actor/actor_keyed_service.h"
+#include "chrome/browser/actor/enterprise_policy_checker.h"
 #include "chrome/browser/actor/execution_engine.h"
 #include "chrome/browser/glic/public/glic_invoke_options.h"
 #include "chrome/browser/glic/public/glic_keyed_service.h"
@@ -44,6 +44,28 @@ namespace {
 
 bool IsValidUrl(const GURL& url) {
   return url.is_valid() && url.SchemeIsHTTPOrHTTPS();
+}
+
+void CreateDummyTaskAndTiedTab(glic::GlicKeyedService* glic_service,
+                               content::WebContents* web_contents) {
+  if (!glic_service || !web_contents) {
+    return;
+  }
+  actor::ActorKeyedService* actor_service = actor::ActorKeyedService::Get(
+      Profile::FromBrowserContext(web_contents->GetBrowserContext()));
+  if (!actor_service) {
+    return;
+  }
+  actor::TaskId dummy_task_id = actor_service->CreateTask(
+      actor::TaskSourceInfo(actor::TaskSourceInfo::Client::kGlic, std::nullopt),
+      reinterpret_cast<const actor::EnterprisePolicyChecker*>(
+          &glic_service->actor_policy_checker()));
+  actor::ActorTask* dummy_task = actor_service->GetTask(dummy_task_id);
+  tabs::TabInterface* actuation_tab =
+      tabs::TabInterface::MaybeGetFromContents(web_contents);
+  CHECK(dummy_task && actuation_tab);
+  dummy_task->AddTab(actuation_tab->GetHandle(), /*stop_task_on_detach=*/true,
+                     base::DoNothing());
 }
 
 bool IsSameOrigin(const std::u16string& credential_source_site_or_app,
@@ -224,6 +246,7 @@ void PasswordChangeFromCheckupDelegate::StartPasswordChangeFlow(
       Profile::FromBrowserContext(new_contents->GetBrowserContext()));
   if (actor_service) {
     actuation_web_contents_ = new_contents->GetWeakPtr();
+    CreateDummyTaskAndTiedTab(glic_service, new_contents);
     actor_task_state_subscription_ =
         actor_service->AddTaskStateChangedCallback(base::BindRepeating(
             &PasswordChangeFromCheckupDelegate::OnFindFormTaskStateChanged,
@@ -301,6 +324,8 @@ void PasswordChangeFromCheckupDelegate::OnFindFormTaskStateChanged(
 
   if (new_state == actor::ActorTask::State::kFinished) {
     actor_task_state_subscription_ = {};
+    CreateDummyTaskAndTiedTab(GetGlicService(), actuation_web_contents_.get());
+
     auto* client = ChromePasswordManagerClient::FromWebContents(
         actuation_web_contents_.get());
     if (!client) {
