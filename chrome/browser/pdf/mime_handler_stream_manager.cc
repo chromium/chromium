@@ -464,11 +464,8 @@ void MimeHandlerStreamManager::ReadyToCommitNavigation(
   }
 
   extensions::StreamInfo* claimed_stream_info = ClaimStreamInfo(embedder_host);
-
-  // Set the internal ID to set up postMessage later, when the PDF content host
-  // finishes navigating.
-  auto container_manager = GetMimeHandlerViewContainerManager(embedder_host);
-  container_manager->SetInternalId(claimed_stream_info->internal_id());
+  claimed_stream_info->delegate()->OnStreamClaimed(embedder_host,
+                                                   claimed_stream_info);
 }
 
 void MimeHandlerStreamManager::DidFinishNavigation(

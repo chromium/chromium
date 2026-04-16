@@ -30,11 +30,27 @@ namespace pdf {
 
 namespace {
 
+using ::testing::_;
 using ::testing::NiceMock;
 using ::testing::Return;
+using ::testing::SaveArg;
 
 constexpr char kOriginalUrl1[] = "https://original_url1";
 constexpr char kOriginalUrl2[] = "https://original_url2";
+
+class MockMimeHandlerStreamDelegate
+    : public extensions::MimeHandlerStreamDelegate {
+ public:
+  MockMimeHandlerStreamDelegate() = default;
+  ~MockMimeHandlerStreamDelegate() override = default;
+
+  MOCK_METHOD(void,
+              OnStreamClaimed,
+              (content::RenderFrameHost*, extensions::StreamInfo*),
+              (override));
+  MOCK_METHOD(bool, PluginCanSave, (), (const, override));
+  MOCK_METHOD(void, SetPluginCanSave, (bool), (override));
+};
 
 }  // namespace
 
@@ -784,6 +800,53 @@ TEST_F(MimeHandlerStreamManagerTest,
 }
 
 // The initial load should claim the stream.
+TEST_F(MimeHandlerStreamManagerTest,
+       ReadyToCommitNavigationCallsOnStreamClaimed) {
+  auto* embedder_host = NavigateAndCommit(main_rfh(), GURL(kOriginalUrl1));
+  MimeHandlerStreamManager* manager = mime_handler_stream_manager();
+
+  auto delegate = std::make_unique<NiceMock<MockMimeHandlerStreamDelegate>>();
+  auto* delegate_ptr = delegate.get();
+  extensions::StreamInfo* captured_stream_info = nullptr;
+  EXPECT_CALL(*delegate_ptr, OnStreamClaimed(embedder_host, _))
+      .WillOnce(SaveArg<1>(&captured_stream_info));
+  manager->AddStreamContainer(
+      embedder_host->GetFrameTreeNodeId(), "internal_id",
+      pdf_test_util::GenerateSampleStreamContainer(1), std::move(delegate));
+
+  NiceMock<content::MockNavigationHandle> navigation_handle;
+  navigation_handle.set_render_frame_host(embedder_host);
+  manager->ReadyToCommitNavigation(&navigation_handle);
+
+  auto* stream_info = manager->GetClaimedStreamInfoForTesting(embedder_host);
+  ASSERT_TRUE(stream_info);
+  EXPECT_EQ(stream_info, captured_stream_info);
+}
+
+TEST_F(MimeHandlerStreamManagerTest,
+       OnStreamClaimedNotCalledForUnrelatedNavigation) {
+  auto* embedder_host = NavigateAndCommit(main_rfh(), GURL(kOriginalUrl1));
+  auto* unrelated_host =
+      CreateChildRenderFrameHost(embedder_host, "unrelated host");
+  unrelated_host = NavigateAndCommit(unrelated_host, GURL("https://unrelated"));
+
+  MimeHandlerStreamManager* manager = mime_handler_stream_manager();
+  auto delegate = std::make_unique<NiceMock<MockMimeHandlerStreamDelegate>>();
+  auto* delegate_ptr = delegate.get();
+  EXPECT_CALL(*delegate_ptr, OnStreamClaimed(_, _)).Times(0);
+  manager->AddStreamContainer(
+      embedder_host->GetFrameTreeNodeId(), "internal_id",
+      pdf_test_util::GenerateSampleStreamContainer(1), std::move(delegate));
+
+  NiceMock<content::MockNavigationHandle> navigation_handle;
+  navigation_handle.set_render_frame_host(unrelated_host);
+  manager->ReadyToCommitNavigation(&navigation_handle);
+
+  EXPECT_TRUE(manager->ContainsUnclaimedStreamInfo(
+      embedder_host->GetFrameTreeNodeId()));
+  EXPECT_FALSE(manager->GetClaimedStreamInfoForTesting(embedder_host));
+}
+
 TEST_F(MimeHandlerStreamManagerTest, ReadyToCommitNavigationClaimAndReplace) {
   content::RenderFrameHost* embedder_host =
       NavigateAndCommit(main_rfh(), GURL(kOriginalUrl1));
