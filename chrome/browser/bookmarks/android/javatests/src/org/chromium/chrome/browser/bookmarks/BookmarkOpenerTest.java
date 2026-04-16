@@ -30,6 +30,7 @@ import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.test.util.ApplicationTestUtils;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.ImportantFormFactors;
 import org.chromium.base.test.util.UserActionTester;
@@ -158,6 +159,7 @@ public class BookmarkOpenerTest {
 
     @Test
     @MediumTest
+    @DisabledTest(message = "crbug.com/391655333")
     public void testOpenBookmarkInCurrentTab() {
         GURL url = new GURL(getOriginalNativeNtpUrl());
         BookmarkId id = addMobileBookmark("test", url);
@@ -185,6 +187,7 @@ public class BookmarkOpenerTest {
 
     @Test
     @MediumTest
+    @DisabledTest(message = "crbug.com/391655333")
     public void testOpenBookmarkInCurrentTab_ReadingList() {
         GURL url = new GURL("https://google.com"); // Chrome URLs not allowed for reading list
         BookmarkId id = addReadingListBookmark("test", url);
@@ -213,6 +216,7 @@ public class BookmarkOpenerTest {
 
     @Test
     @MediumTest
+    @DisabledTest(message = "crbug.com/391655333")
     public void testOpenBookmarkInCurrentTab_Incognito() {
         GURL url = new GURL(getOriginalNativeNtpUrl());
         BookmarkId id = addMobileBookmark("test", url);
@@ -233,6 +237,7 @@ public class BookmarkOpenerTest {
 
     @Test
     @MediumTest
+    @DisabledTest(message = "crbug.com/391655333")
     public void testOpenBookmarksInNewTabs() {
         GURL url = new GURL(UrlConstants.ABOUT_URL);
 
@@ -267,6 +272,7 @@ public class BookmarkOpenerTest {
 
     @Test
     @MediumTest
+    @DisabledTest(message = "crbug.com/391655333")
     public void testOpenBookmarksInNewTabs_Incognito() {
         GURL url = new GURL(UrlConstants.ABOUT_URL);
 

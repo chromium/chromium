@@ -287,6 +287,7 @@ public class BookmarkTest {
 
     @Test
     @SmallTest
+    @DisabledTest(message = "crbug.com/391655333")
     public void testAddBookmarkToOtherFolder() {
         mActivityTestRule.loadUrl(mTestPage);
         BookmarkTestUtil.readPartnerBookmarks(mActivityTestRule.getActivityTestRule());
@@ -323,6 +324,7 @@ public class BookmarkTest {
 
     @Test
     @SmallTest
+    @DisabledTest(message = "crbug.com/391655333")
     public void testOpenBookmark() throws InterruptedException, ExecutionException {
         addBookmark(TEST_PAGE_TITLE_GOOGLE, mTestPage);
         openBookmarkManager();
@@ -345,6 +347,7 @@ public class BookmarkTest {
 
     @Test
     @SmallTest
+    @DisabledTest(message = "crbug.com/391655333")
     public void testUrlComposition() {
         BookmarkTestUtil.readPartnerBookmarks(mActivityTestRule.getActivityTestRule());
         runOnUiThreadBlocking(
@@ -548,6 +551,7 @@ public class BookmarkTest {
 
     @Test
     @MediumTest
+    @DisabledTest(message = "crbug.com/391655333")
     public void testSearchBookmarks() throws Exception {
         BookmarkId folder = addFolder(TEST_FOLDER_TITLE);
         addBookmark(TEST_PAGE_TITLE_GOOGLE, mTestPage, folder);
@@ -735,6 +739,7 @@ public class BookmarkTest {
     @MediumTest
     @EnableFeatures(ChromeFeatureList.ENABLE_ESCAPE_HANDLING_FOR_SECONDARY_ACTIVITIES)
     @Restriction({DeviceFormFactor.ONLY_TABLET})
+    @DisabledTest(message = "crbug.com/391655333")
     public void testTabletSearch_EscapeKeyClearsSearch() throws Exception {
         // Setup: Add a bookmark so the folder isn't empty.
         BookmarkId folder = addFolder(TEST_FOLDER_TITLE);
@@ -780,6 +785,7 @@ public class BookmarkTest {
     @Test
     @MediumTest
     @DisableIf.Device(DeviceFormFactor.DESKTOP) // https://crbug.com/481444847
+    @DisabledTest(message = "crbug.com/391655333")
     public void testSearchBookmarks_Delete() throws Exception {
         BookmarkId testFolder = addFolder(TEST_FOLDER_TITLE);
         addBookmark(TEST_PAGE_TITLE_GOOGLE, mTestPage, testFolder);
@@ -835,6 +841,7 @@ public class BookmarkTest {
 
     @Test
     @MediumTest
+    @DisabledTest(message = "crbug.com/391655333")
     public void testSearchBookmarks_DeleteFolderWithChildrenInResults() throws Exception {
         BookmarkId testFolder = addFolder(TEST_FOLDER_TITLE);
         addBookmark(TEST_PAGE_TITLE_FOO, mTestPageFoo, testFolder);
@@ -946,6 +953,7 @@ public class BookmarkTest {
 
     @Test
     @MediumTest
+    @DisabledTest(message = "crbug.com/391655333")
     public void testEndIconVisibilityInSelectionMode() throws Exception {
         addFolder(TEST_FOLDER_TITLE);
         addBookmark(TEST_TITLE_A, mTestUrlA);
@@ -1171,6 +1179,7 @@ public class BookmarkTest {
 
     @Test
     @MediumTest
+    @DisabledTest(message = "crbug.com/391655333")
     public void testSmallDrag_Down_MixedFoldersAndBookmarks() throws Exception {
         List<BookmarkId> initial = new ArrayList<>();
         List<BookmarkId> expected = new ArrayList<>();
@@ -1238,6 +1247,7 @@ public class BookmarkTest {
 
     @Test
     @MediumTest
+    @DisabledTest(message = "crbug.com/391655333")
     public void testPromoDraggability() throws Exception {
         addFolder(TEST_FOLDER_TITLE);
 
@@ -1260,6 +1270,7 @@ public class BookmarkTest {
 
     @Test
     @MediumTest
+    @DisabledTest(message = "crbug.com/391655333")
     public void testItemDraggability() throws Exception {
         addBookmark("a", mTestUrlA);
         addFolder(TEST_FOLDER_TITLE);
@@ -1278,6 +1289,7 @@ public class BookmarkTest {
 
     @Test
     @MediumTest
+    @DisabledTest(message = "crbug.com/391655333")
     public void testCannotSelectPromo() throws Exception {
         addFolder(TEST_FOLDER_TITLE);
 
@@ -1359,6 +1371,7 @@ public class BookmarkTest {
 
     @Test
     @MediumTest
+    @DisabledTest(message = "crbug.com/391655333")
     public void testMoveUpGoneForTopElement() throws Exception {
         addBookmark(TEST_PAGE_TITLE_GOOGLE, mTestUrlA);
         addFolder(TEST_FOLDER_TITLE);
@@ -1397,6 +1410,7 @@ public class BookmarkTest {
 
     @Test
     @MediumTest
+    @DisabledTest(message = "crbug.com/391655333")
     public void testMoveButtonsGoneWithOneBookmark() throws Exception {
         addFolder(TEST_FOLDER_TITLE);
         openBookmarkManager();
@@ -1416,6 +1430,7 @@ public class BookmarkTest {
 
     @Test
     @MediumTest
+    @DisabledTest(message = "crbug.com/391655333")
     public void testTopLevelFolders() throws Exception {
         // NOTE: Hide promos to ensure top level-folders will fit the viewport.
         SigninPromoCoordinator.disablePromoForTesting();
@@ -1432,6 +1447,7 @@ public class BookmarkTest {
 
     @Test
     @MediumTest
+    @DisabledTest(message = "crbug.com/391655333")
     public void testTopLevelFolderUpdateAfterSync() throws Exception {
         // Set up the test and open the bookmark manager to the Mobile Bookmarks folder.
         BookmarkTestUtil.readPartnerBookmarks(mActivityTestRule.getActivityTestRule());
@@ -1598,6 +1614,7 @@ public class BookmarkTest {
 
     @Test
     @SmallTest
+    @DisabledTest(message = "crbug.com/391655333")
     public void testAddBookmarkInBackgroundWithSelection() throws Exception {
         BookmarkId folder = addFolder(TEST_FOLDER_TITLE);
         addBookmark(TEST_PAGE_TITLE_FOO, mTestPageFoo, folder);
@@ -1670,6 +1687,7 @@ public class BookmarkTest {
 
     @Test
     @SmallTest
+    @DisabledTest(message = "crbug.com/391655333")
     public void testDeleteSomeSelectedBookmarksInBackground() throws Exception {
         // selected on bookmarks and then remove one of them in background
         // in the meantime, the toolbar stays in selection mode
@@ -1714,6 +1732,7 @@ public class BookmarkTest {
 
     @Test
     @SmallTest
+    @DisabledTest(message = "crbug.com/391655333")
     public void testUpdateSelectedBookmarkInBackground() throws Exception {
         BookmarkId folder = addFolder(TEST_FOLDER_TITLE);
         BookmarkId id = addBookmark(TEST_PAGE_TITLE_FOO, mTestPageFoo, folder);
@@ -1752,6 +1771,7 @@ public class BookmarkTest {
 
     @Test
     @MediumTest
+    @DisabledTest(message = "crbug.com/391655333")
     public void testBookmarksDoesNotRecordLaunchMetrics() throws Throwable {
         assertEquals(
                 1,

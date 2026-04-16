@@ -32,6 +32,7 @@ import org.mockito.quality.Strictness;
 
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
@@ -90,6 +91,7 @@ public class BookmarkPersonalizedSigninPromoTest {
 
     @Test
     @MediumTest
+    @DisabledTest(message = "crbug.com/391655333")
     public void shouldHideBookmarksSigninPromoIfDataTypesAreManagedByPolicy() {
         SyncServiceFactory.setInstanceForTesting(mSyncService);
         when(mSyncService.isTypeManagedByPolicy(UserSelectableType.BOOKMARKS)).thenReturn(true);
@@ -100,6 +102,7 @@ public class BookmarkPersonalizedSigninPromoTest {
 
     @Test
     @MediumTest
+    @DisabledTest(message = "crbug.com/391655333")
     public void shouldShowBookmarksSigninPromoIfDataTypesAreNotManagedByPolicy() {
         SyncServiceFactory.setInstanceForTesting(mSyncService);
         when(mSyncService.isTypeManagedByPolicy(UserSelectableType.BOOKMARKS)).thenReturn(false);
@@ -110,6 +113,7 @@ public class BookmarkPersonalizedSigninPromoTest {
 
     @Test
     @MediumTest
+    @DisabledTest(message = "crbug.com/391655333")
     public void shouldHideBookmarksSigninPromoIfDataTypesSyncing() {
         SyncServiceFactory.setInstanceForTesting(mSyncService);
         when(mSyncService.isTypeManagedByPolicy(UserSelectableType.BOOKMARKS)).thenReturn(false);
@@ -121,6 +125,7 @@ public class BookmarkPersonalizedSigninPromoTest {
 
     @Test
     @MediumTest
+    @DisabledTest(message = "crbug.com/391655333")
     public void shouldShowBookmarksSigninPromoIfBookmarkNotSyncing() {
         SyncServiceFactory.setInstanceForTesting(mSyncService);
         when(mSyncService.isTypeManagedByPolicy(UserSelectableType.BOOKMARKS)).thenReturn(false);
@@ -131,6 +136,7 @@ public class BookmarkPersonalizedSigninPromoTest {
 
     @Test
     @MediumTest
+    @DisabledTest(message = "crbug.com/391655333")
     public void shouldShowBookmarksSigninPromoIfReadingListNotSyncing() {
         SyncServiceFactory.setInstanceForTesting(mSyncService);
         when(mSyncService.isTypeManagedByPolicy(UserSelectableType.BOOKMARKS)).thenReturn(false);
