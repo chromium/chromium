@@ -380,6 +380,14 @@ IN_PROC_BROWSER_TEST_P(MultiContentsViewTabDragEntrypointsUiParamTest,
 #endif
 IN_PROC_BROWSER_TEST_F(MultiContentsViewTabDragEntrypointsUiTest,
                        MAYBE_DragAndDropDisabled) {
+  // TODO(crbug.com/448651072): Remove when Weston support is added.
+#if BUILDFLAG(IS_LINUX)
+  if (views::test::InteractionTestUtilSimulatorViews::IsWayland()) {
+    GTEST_SKIP() << "Weston's implementation of tab dragging is incompatible "
+                    "with creating a split view.";
+  }
+#endif
+
   BrowserView& browser_view = GetBrowserView();
 
   // Disable drag and drop.
