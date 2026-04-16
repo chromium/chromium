@@ -29,16 +29,14 @@
 #lineFocus {
   position: absolute;
   top: var(--line-focus-y);
-  left: var(--sp-card-block-padding);
-  right: var(--sp-card-block-padding);
+  left: var(--line-focus-side-padding);
+  right: var(--line-focus-side-padding);
   height: var(--line-focus-height);
   background-color: var(--line-focus-bg);
   display: var(--line-focus-display);
   /* Darkens the area around this element when it is a window. Does nothing when
      it is a line. */
   box-shadow: var(--line-focus-shadow);
-  /* Clip path ensures the box shadow doesn't go beyond the content window. */
-  clip-path: inset(var(--line-focus-clip-top) 0 var(--line-focus-clip-bottom) 0 round 12px);
   pointer-events: none;
   z-index: 9997;
 }

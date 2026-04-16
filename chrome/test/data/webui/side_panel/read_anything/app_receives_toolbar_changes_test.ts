@@ -202,8 +202,9 @@ suite('AppReceivesToolbarChanges', () => {
 
   test('line focus style change updates line focus', async () => {
     chrome.readingMode.isLineFocusEnabled = true;
-    const lineFocus =
-        app.$.containerParent.querySelector<HTMLElement>('#lineFocus');
+    app.updateContent();
+    await microtasksFinished();
+    const lineFocus = app.$.lineFocus;
     assertTrue(!!lineFocus);
 
     let expectedData = LineFocusStyle.UNDERLINE;
@@ -310,8 +311,7 @@ suite('AppReceivesToolbarChanges', () => {
 
   test('line focus change does nothing with flag disabled', async () => {
     chrome.readingMode.isLineFocusEnabled = false;
-    const lineFocus =
-        app.$.containerParent.querySelector<HTMLElement>('#lineFocus');
+    const lineFocus = app.$.lineFocus;
     assertTrue(!!lineFocus);
 
     emitEvent(

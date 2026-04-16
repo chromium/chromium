@@ -62,6 +62,8 @@
   height: fit-content;
   margin-inline-end: var(--audio-controls-right-margin);
   padding: 4px var(--audio-controls-right-padding) 4px 4px;
+  position: relative;
+  z-index: 9998;
 }
 
 #audio-controls.audio-background-immersive-enabled {
@@ -205,6 +207,9 @@
   height: 20px;
   margin: 6px 8px;
   width: 0;
+  /* Ensure this stays above the line focus scrim. */
+  position: relative;
+  z-index: 9998;
 }
 
 .spinner {

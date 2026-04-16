@@ -218,6 +218,22 @@ suite('AppContent', () => {
     assertLT(0, getLineFocusPadding());
   });
 
+  test('line focus only shows on content', async () => {
+    chrome.readingMode.isLineFocusEnabled = true;
+
+    contentController.setState(ContentType.NO_CONTENT);
+    await microtasksFinished();
+    assertTrue(app.$.lineFocus.hasAttribute('hidden'));
+
+    contentController.setState(ContentType.LOADING);
+    await microtasksFinished();
+    assertTrue(app.$.lineFocus.hasAttribute('hidden'));
+
+    contentController.setState(ContentType.HAS_CONTENT);
+    await microtasksFinished();
+    assertFalse(app.$.lineFocus.hasAttribute('hidden'));
+  });
+
   test('showLoading shows spinner', async () => {
     const spinner = 'throbber';
 

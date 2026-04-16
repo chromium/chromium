@@ -4,7 +4,6 @@
 import {AppStyleUpdater, BrowserProxy, LineFocusType} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import type {AppElement} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import {assertEquals, assertGT, assertNotEquals, assertStringContains} from 'chrome-untrusted://webui-test/chai_assert.js';
-import {microtasksFinished} from 'chrome-untrusted://webui-test/test_util.js';
 
 import {createApp} from './common.js';
 import {FakeReadingMode} from './fake_reading_mode.js';
@@ -16,6 +15,10 @@ suite('AppStyleUpdater', () => {
 
   function computeStyle(style: string) {
     return window.getComputedStyle(app.$.container).getPropertyValue(style);
+  }
+
+  function computeLineFocusStyle(style: string) {
+    return window.getComputedStyle(app.$.lineFocus).getPropertyValue(style);
   }
 
   function setAppFontSize(size: number) {
@@ -139,62 +142,34 @@ suite('AppStyleUpdater', () => {
         assertNotEquals(windowBg, lineBg);
       });
 
+  test('setLineFocusStyle sets different padding for different types', () => {
+    chrome.readingMode.isLineFocusEnabled = true;
+
+    updater.setLineFocusStyle(LineFocusType.WINDOW);
+    assertEquals('0px', computeLineFocusStyle('left'));
+    assertEquals('0px', computeLineFocusStyle('right'));
+
+    updater.setLineFocusStyle(LineFocusType.LINE);
+    assertNotEquals('0px', computeLineFocusStyle('left'));
+    assertNotEquals('0px', computeLineFocusStyle('right'));
+  });
+
   test('setLineFocusPos sets y position', () => {
     const pos = 123;
 
-    updater.setLineFocusPos(pos, null, app.$.containerParent);
+    updater.setLineFocusPos(pos, null);
 
     assertEquals(`${pos}px`, app.style.getPropertyValue('--line-focus-y'));
-    assertEquals(
-        `-${pos}px`, app.style.getPropertyValue('--line-focus-clip-top'));
     assertEquals('', app.style.getPropertyValue('--line-focus-height'));
-    assertEquals('', app.style.getPropertyValue('--line-focus-clip-bottom'));
-  });
-
-  test('setLineFocusPos offsets top', async () => {
-    const pos = 123;
-    // Ensure there's content so there is an offset.
-    app.updateContent();
-    await microtasksFinished();
-
-    updater.setLineFocusPos(pos, null, app.$.containerParent);
-
-    assertEquals(`${pos}px`, app.style.getPropertyValue('--line-focus-y'));
-    assertEquals(
-        `-${pos - app.$.containerParent.offsetTop}px`,
-        app.style.getPropertyValue('--line-focus-clip-top'));
-    assertEquals('', app.style.getPropertyValue('--line-focus-height'));
-    assertEquals('', app.style.getPropertyValue('--line-focus-clip-bottom'));
   });
 
   test('setLineFocusPos sets height', () => {
     const height = 456;
 
-    updater.setLineFocusPos(0, height, app.$.containerParent);
+    updater.setLineFocusPos(0, height);
 
     assertEquals(
         `${height}px`, app.style.getPropertyValue('--line-focus-height'));
-    assertEquals(
-        `${height}px`, app.style.getPropertyValue('--line-focus-clip-bottom'));
-  });
-
-  test('setLineFocusPos offsets bottom when height given', async () => {
-    const pos = 123;
-    // Ensure there's content so there is an offset.
-    app.updateContent();
-    await microtasksFinished();
-    const containerHeight = app.$.containerParent.offsetHeight;
-    const containerTop = app.$.containerParent.offsetTop;
-    const windowHeight = containerHeight / 10;
-    console.error('height', app.$.containerParent.offsetHeight);
-
-    updater.setLineFocusPos(pos, windowHeight, app.$.containerParent);
-
-    assertEquals(
-        `${windowHeight}px`, app.style.getPropertyValue('--line-focus-height'));
-    assertEquals(
-        `-${containerHeight - pos - windowHeight + containerTop}px`,
-        app.style.getPropertyValue('--line-focus-clip-bottom'));
   });
 
   test('line spacing depends on font size', () => {

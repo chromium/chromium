@@ -10,9 +10,10 @@ export function getHtml(this: AppElement) {
   // clang-format off
   return html`<!--_html_template_start_-->
 <div id="appFlexParent" class="${this.getImmersiveClass_()}">
-<!-- Overlay to prevent cursor from interacting with background elements when
- the settings menu is open. -->
-<div id="settingsOverlay" class="settings-overlay"></div>
+  <!-- Overlay to prevent cursor from interacting with background elements when
+  the settings menu is open. -->
+  <div id="settingsOverlay" class="settings-overlay"></div>
+  <div id="lineFocus" ?hidden="${!this.computeHasContent()}"></div>
   <div id="toolbar-container">
     <read-anything-toolbar
         .presentationState="${this.presentationState_}"
@@ -60,7 +61,6 @@ export function getHtml(this: AppElement) {
   </div>
   <div id="containerParent" class="sp-card"
       ?hidden="${!this.computeHasContent()}">
-    <div id="lineFocus"></div>
     <div id="containerScroller" class="sp-scroller"
         @scroll="${this.onContainerScroll_}"
         @scrollend="${this.onContainerScrollend_}"

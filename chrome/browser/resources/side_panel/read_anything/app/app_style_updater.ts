@@ -59,6 +59,8 @@ const LINE_FOCUS_BOX_SHADOW_WINDOW =
 const LINE_FOCUS_BG_LINE_DEFAULT = 'var(--color-sys-state-focus-ring)';
 const LINE_FOCUS_BG_LINE_CUSTOM = 'var(--color-read-anything-line-focus';
 const LINE_FOCUS_BG_WINDOW = 'none';
+const LINE_FOCUS_SIDE_PADDING_LINE = 'var(--sp-card-block-padding)';
+const LINE_FOCUS_SIDE_PADDING_WINDOW = '0';
 
 // Suffixes used in combination with the color vars above to get the color
 // values for the current theme.
@@ -101,16 +103,10 @@ export class AppStyleUpdater {
     return padding ? parseInt(padding) : 0;
   }
 
-  setLineFocusPos(y: number, height: number|null, container: HTMLElement) {
-    const containerTop = container.offsetTop;
-    const containerHeight = container.offsetHeight;
+  setLineFocusPos(y: number, height: number|null) {
     this.setStyle_('--line-focus-y', `${y}px`);
-    this.setStyle_('--line-focus-clip-top', `-${y - containerTop}px`);
     if (height) {
       this.setStyle_('--line-focus-height', `${height}px`);
-      this.setStyle_(
-          '--line-focus-clip-bottom',
-          `${- (containerHeight - y - height + containerTop)}px`);
     }
   }
 
@@ -133,6 +129,10 @@ export class AppStyleUpdater {
     this.setStyle_(
         '--line-focus-bg', isWindow ? LINE_FOCUS_BG_WINDOW : lineFocusBgLine);
     this.setStyle_('--line-focus-display', 'block');
+    this.setStyle_(
+        '--line-focus-side-padding',
+        isWindow ? LINE_FOCUS_SIDE_PADDING_WINDOW :
+                   LINE_FOCUS_SIDE_PADDING_LINE);
   }
 
   setLineFocusHeight() {

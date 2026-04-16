@@ -502,7 +502,7 @@ export class LineFocusController {
     const currentLineFocus = this.getCurrentLineFocusStyle();
     assert(!!currentLineFocus);
     this.model_.setMinY(container.offsetTop);
-    this.model_.setMaxY(this.model_.getMinY() + height);
+    this.model_.setMaxY(height);
 
     const range = document.createRange();
     range.selectNodeContents(container);
@@ -585,7 +585,7 @@ export class LineFocusController {
   }
 
   private setCenterY_() {
-    this.setY_((this.model_.getMinY() + this.model_.getMaxY()) / 2);
+    this.setY_(this.model_.getMaxY() / 2);
   }
 
   static getInstance(): LineFocusController {

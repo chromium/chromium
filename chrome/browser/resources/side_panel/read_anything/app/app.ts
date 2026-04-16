@@ -475,7 +475,7 @@ export class AppElement extends AppElementBase implements SpeechListener,
 
     this.styleUpdater_.setLineFocusPos(
         this.lineFocusController_.getTop(),
-        this.lineFocusController_.getHeight(), this.$.containerParent);
+        this.lineFocusController_.getHeight());
   }
 
   onNeedScrollForLineFocus(scrollDiff: number, instant: boolean = false): void {
@@ -622,7 +622,7 @@ export class AppElement extends AppElementBase implements SpeechListener,
       this.lineFocusController_.restoreFromPrefs(
           chrome.readingMode.lastNonDisabledLineFocus,
           chrome.readingMode.isLineFocusOn, this.$.container,
-          this.$.containerParent.clientHeight);
+          this.$.appFlexParent.clientHeight);
       this.setLineFocus_();
     }
     // TODO: crbug.com/40927698 - Remove this call. Using this.settingsPrefs_
@@ -686,7 +686,7 @@ export class AppElement extends AppElementBase implements SpeechListener,
     if (chrome.readingMode.isLineFocusEnabled) {
       this.lineFocusController_.onStyleChange(
           event.detail.data, this.$.container,
-          this.$.containerParent.clientHeight);
+          this.$.appFlexParent.clientHeight);
       this.lineFocusStyle_ =
           this.lineFocusController_.getCurrentLineFocusStyle();
       this.setLineFocus_();
@@ -698,7 +698,7 @@ export class AppElement extends AppElementBase implements SpeechListener,
     if (chrome.readingMode.isLineFocusEnabled) {
       this.lineFocusController_.onMovementChange(
           event.detail.data, this.$.container,
-          this.$.containerParent.clientHeight);
+          this.$.appFlexParent.clientHeight);
       this.lineFocusMovement_ =
           this.lineFocusController_.getCurrentLineFocusMovement();
       this.setLineFocus_();
@@ -739,7 +739,7 @@ export class AppElement extends AppElementBase implements SpeechListener,
         this.styleUpdater_.setPaddingForLineFocus(padding);
       }
       this.lineFocusController_.onTextLocationsChange(
-          this.$.container, this.$.containerParent.clientHeight);
+          this.$.container, this.$.appFlexParent.clientHeight);
     }
   }
 
@@ -774,7 +774,7 @@ export class AppElement extends AppElementBase implements SpeechListener,
     } else if (
         chrome.readingMode.isLineFocusEnabled && isLineFocusShortcut(e)) {
       this.lineFocusController_.toggle(
-          this.$.container, this.$.containerParent.offsetHeight);
+          this.$.container, this.$.appFlexParent.offsetHeight);
       this.styleUpdater_.setLineFocusStyle(
           this.lineFocusController_.getCurrentLineFocusType());
     }

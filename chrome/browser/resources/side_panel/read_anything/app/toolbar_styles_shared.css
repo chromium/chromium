@@ -18,3 +18,9 @@ cr-icon-button {
 cr-icon-button.active {
   background-color: var(--cr-active-background-color);
 }
+
+.toolbar-button {
+  /* Ensure buttons stay above the line focus scrim. */
+  position: relative;
+  z-index: 9998;
+}
