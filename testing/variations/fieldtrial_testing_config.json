@@ -7501,18 +7501,18 @@
             ],
             "experiments": [
                 {
-                    "name": "EnabledInfraOnly",
-                    "enable_features": [
-                        "EnableCrossDevicePrefTracker",
-                        "HomeModulePrefRefactor"
-                    ]
-                },
-                {
                     "name": "EnabledAll",
                     "enable_features": [
                         "EnableCrossDevicePrefTracker",
                         "HomeModulePrefRefactor",
                         "XplatSyncedSetup"
+                    ]
+                },
+                {
+                    "name": "EnabledInfraOnly",
+                    "enable_features": [
+                        "EnableCrossDevicePrefTracker",
+                        "HomeModulePrefRefactor"
                     ]
                 }
             ]
