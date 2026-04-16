@@ -515,7 +515,9 @@ public class PageContentProviderImpl extends SplitCompatContentProvider.Impl {
     }
 
     /**
-     * Generates a URI for the proto format to be shared with the specified package.
+     * Generates a URI for the proto format to be shared with the specified package. Only one URI is
+     * valid at a time, and only the result from the most recent call to either this or {@link
+     * #getAssistContentStructuredDataForUrl} will be valid.
      *
      * @param url The URL of the currently active page, the returned URI will only work for this
      *     URL.
@@ -523,7 +525,8 @@ public class PageContentProviderImpl extends SplitCompatContentProvider.Impl {
      *     {@code query()}
      * @param targetPackage The package to grant access to. If null, the default assistant package
      *     will be used.
-     * @return A URI to be used with the {@code query()} method to extract the text of {@code url}.
+     * @return A URI to be used with the {@code openFile()} method to extract the contents of {@code
+     *     url}.
      */
     public static @Nullable Uri getProtoContentUriForUrl(
             String url, Supplier<@Nullable Tab> tabSupplier, @Nullable String targetPackage) {
@@ -550,7 +553,8 @@ public class PageContentProviderImpl extends SplitCompatContentProvider.Impl {
 
     /**
      * Generates a JSON string to be attached to AssistContent to be shared with the specified
-     * package.
+     * package. Only one URI is valid at a time, and only the result from the most recent call to
+     * either this or {@link #getProtoContentUriForUrl} will be valid.
      *
      * @param url The URL of the currently active page, the returned URI will only work for this
      *     URL.

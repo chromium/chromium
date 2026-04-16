@@ -263,6 +263,30 @@ public class PageContentProviderImplUnitTest {
     }
 
     @Test
+    public void testGetProtoContentUriForUrl() {
+        var eventChecker = getWatcherForEvent(PageContentProviderEvent.GET_CONTENT_URI_SUCCESS);
+        Uri protoContentUri;
+        try (HistogramWatcher histogramWatcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        "Android.AssistContent.WebPageContentProvider.TargetPackageProvided",
+                        true)) {
+            protoContentUri =
+                    PageContentProviderImpl.getProtoContentUriForUrl(
+                            JUnitTestGURLs.GOOGLE_URL.getSpec(),
+                            mActivityTabProvider,
+                            "com.google.android.googlequicksearchbox");
+        }
+
+        assertNotNull(protoContentUri);
+        verify(mContextSpy)
+                .grantUriPermission(
+                        eq("com.google.android.googlequicksearchbox"),
+                        eq(protoContentUri),
+                        eq(Intent.FLAG_GRANT_READ_URI_PERMISSION));
+        eventChecker.assertExpected();
+    }
+
+    @Test
     public void testTextQueryValidContentUrl() {
         setInnerTextExtractionResult("Page contents!", 200);
 
