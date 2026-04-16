@@ -10,6 +10,8 @@ import static org.chromium.build.NullUtil.assumeNonNull;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.Fragment;
+import android.app.HandoffActivityData;
+import android.app.HandoffActivityDataRequestInfo;
 import android.app.KeyguardManager;
 import android.app.PictureInPictureUiState;
 import android.app.assist.AssistContent;
@@ -302,6 +304,10 @@ public abstract class ChromeActivity extends AsyncInitializationActivity
 
     private static final String TAG = "ChromeActivity";
     private static final int CONTENT_VIS_DELAY_MS = 5;
+
+    // TODO(crbug.com/503422619): Replace this with the official SDK version constant once it is
+    //  integrated into the Chrome build.
+    public static final int HANDOFF_SDK_VERSION = 37;
 
     /** Used to generate a unique ID for each ChromeActivity. */
     private static long sNextActivityId;
@@ -1814,6 +1820,16 @@ public abstract class ChromeActivity extends AsyncInitializationActivity
         } else {
             PageContentProviderMetrics.recordUrlAttachedToAssistContent(false);
         }
+    }
+
+    @Override
+    public @Nullable HandoffActivityData onHandoffActivityDataRequested(
+            HandoffActivityDataRequestInfo requestInfo) {
+        if (Build.VERSION.SDK_INT < HANDOFF_SDK_VERSION) return null;
+
+        var controller = mRootUiCoordinator.getHandoffController();
+        assumeNonNull(controller);
+        return controller.onHandoffActivityDataRequested(requestInfo);
     }
 
     @Override

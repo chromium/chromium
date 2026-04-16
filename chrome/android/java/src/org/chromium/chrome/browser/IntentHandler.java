@@ -159,6 +159,16 @@ public class IntentHandler {
     public static final String EXTRA_INVOKED_FROM_LAUNCH_NEW_INCOGNITO_TAB =
             "org.chromium.chrome.browser.incognito.invoked_from_launch_new_incognito_tab";
 
+    /** An extra to indicate that the intent was created by the cross-device Handoff feature. */
+    public static final String EXTRA_INVOKED_FROM_HANDOFF =
+            "org.chromium.chrome.browser.invoked_from_handoff";
+
+    /**
+     * Intent extra providing the active tab URL for the cross-device Handoff feature. Used by the
+     * Handoff feature to launch the target page on the receiver device.
+     */
+    public static final String EXTRA_HANDOFF_URL = "org.chromium.chrome.browser.handoff_url";
+
     /** Intent extra used to deliver the original activity referrer. */
     public static final String EXTRA_ACTIVITY_REFERRER =
             "org.chromium.chrome.browser.activity_referrer";
@@ -990,8 +1000,6 @@ public class IntentHandler {
                 }
                 setTabGroupMetadata(intent, tabGroupMetadata);
 
-                // TODO(crbug.com/384979079) Add metrics for invalid url and ignored intent during
-                // group drag drop.
                 return tabIdsToUrls.size() == 0;
             } else {
                 return shouldIgnoreIntentUrl(
@@ -1252,6 +1260,7 @@ public class IntentHandler {
         if (url == null) url = getUrlForCustomTab(intent);
         if (url == null) url = getUrlForWebapp(intent);
         if (url == null) url = getUrlFromShareIntent(intent);
+        if (url == null) url = getUrlForHandoff(intent);
         if (url == null) url = intent.getDataString();
         if (url == null) return null;
         url = url.trim();
@@ -1339,6 +1348,16 @@ public class IntentHandler {
         return TextUtils.equals(data.getScheme(), WebappActivity.WEBAPP_SCHEME)
                 ? IntentUtils.safeGetStringExtra(intent, WebappConstants.EXTRA_URL)
                 : null;
+    }
+
+    private static @Nullable String getUrlForHandoff(@Nullable Intent intent) {
+        if (intent == null) return null;
+        return IntentUtils.safeGetStringExtra(intent, EXTRA_HANDOFF_URL);
+    }
+
+    public static boolean isIntentFromHandoff(@Nullable Intent intent) {
+        if (intent == null) return false;
+        return IntentUtils.safeGetBooleanExtra(intent, EXTRA_INVOKED_FROM_HANDOFF, false);
     }
 
     public static @Nullable String maybeAddAdditionalContentHeaders(

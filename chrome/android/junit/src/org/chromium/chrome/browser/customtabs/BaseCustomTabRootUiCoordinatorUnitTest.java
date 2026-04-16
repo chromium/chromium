@@ -110,6 +110,7 @@ import java.util.function.Supplier;
 @RunWith(BaseRobolectricTestRunner.class)
 @Batch(Batch.UNIT_TESTS)
 @Config(manifest = Config.NONE)
+@EnableFeatures(ChromeFeatureList.CROSS_DEVICE_TASK_HANDOFF)
 public final class BaseCustomTabRootUiCoordinatorUnitTest {
 
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();

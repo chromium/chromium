@@ -119,6 +119,7 @@ public abstract class LaunchCauseMetrics
         LaunchCause.NFC,
         LaunchCause.AUTH_TAB,
         LaunchCause.RECREATION,
+        LaunchCause.HANDOFF,
     })
     @Retention(RetentionPolicy.SOURCE)
     public @interface LaunchCause {
@@ -144,8 +145,9 @@ public abstract class LaunchCauseMetrics
         int NFC = 18;
         int AUTH_TAB = 19;
         int RECREATION = 20;
+        int HANDOFF = 21;
 
-        int NUM_ENTRIES = 22;
+        int NUM_ENTRIES = 23;
     }
 
     /**

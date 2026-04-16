@@ -44,6 +44,11 @@ public class TabbedActivityLaunchCauseMetrics extends LaunchCauseMetrics {
             return LaunchCause.MAIN_LAUNCHER_ICON_SHORTCUT;
         }
 
+        if (IntentUtils.safeGetBooleanExtra(
+                launchIntent, IntentHandler.EXTRA_INVOKED_FROM_HANDOFF, false)) {
+            return LaunchCause.HANDOFF;
+        }
+
         if (ShortcutSource.BOOKMARK_NAVIGATOR_WIDGET
                 == IntentUtils.safeGetIntExtra(
                         launchIntent, WebappConstants.EXTRA_SOURCE, ShortcutSource.UNKNOWN)) {

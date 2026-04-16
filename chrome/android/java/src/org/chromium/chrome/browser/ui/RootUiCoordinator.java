@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.ui;
 
 import static org.chromium.build.NullUtil.assertNonNull;
 import static org.chromium.build.NullUtil.assumeNonNull;
+import static org.chromium.chrome.browser.app.ChromeActivity.HANDOFF_SDK_VERSION;
 import static org.chromium.chrome.browser.ui.activity_recreation.ActivityRecreationController.IS_TAB_SWITCHER_SHOWN;
 import static org.chromium.chrome.browser.ui.activity_recreation.ActivityRecreationController.URL_BAR_EDIT_TEXT;
 
@@ -105,6 +106,7 @@ import org.chromium.chrome.browser.fullscreen.BrowserControlsManager;
 import org.chromium.chrome.browser.fullscreen.FullscreenBackPressHandler;
 import org.chromium.chrome.browser.fullscreen.FullscreenManager;
 import org.chromium.chrome.browser.fullscreen.FullscreenOptions;
+import org.chromium.chrome.browser.handoff.HandoffController;
 import org.chromium.chrome.browser.host_zoom.HostZoomListenerFactory;
 import org.chromium.chrome.browser.image_descriptions.ImageDescriptionsController;
 import org.chromium.chrome.browser.incognito.reauth.IncognitoReauthController;
@@ -283,7 +285,6 @@ public class RootUiCoordinator
                 ContextualSearchTabPromotionDelegate,
                 WindowFocusChangedObserver {
     private static final String TAG = "RootUiCoordinator";
-
     protected final NonNullObservableSupplier<TabObscuringHandler> mTabObscuringHandlerSupplier;
 
     private final SettableMonotonicObservableSupplier<DeviceLockActivityLauncher>
@@ -374,6 +375,7 @@ public class RootUiCoordinator
     private VoiceRecognitionHandler.@Nullable Observer mMicStateObserver;
     private @Nullable MediaCaptureOverlayController mCaptureController;
     private @Nullable ScrollCaptureManager mScrollCaptureManager;
+    private @Nullable HandoffController mHandoffController;
     protected final ActivityLifecycleDispatcher mActivityLifecycleDispatcher;
     protected final MonotonicObservableSupplier<LayoutManagerImpl> mLayoutManagerImplSupplier;
     protected final NullableObservableSupplier<@StripVisibilityState Integer>
@@ -1061,6 +1063,11 @@ public class RootUiCoordinator
             mDesktopWindowStateManager = null;
         }
 
+        if (mHandoffController != null) {
+            mHandoffController.destroy();
+            mHandoffController = null;
+        }
+
         mActivity = null;
     }
 
@@ -1420,6 +1427,15 @@ public class RootUiCoordinator
     @CallSuper
     protected void initProfileDependentFeatures(Profile currentlySelectedProfile) {
         Profile originalProfile = currentlySelectedProfile.getOriginalProfile();
+
+        if (ChromeFeatureList.isEnabled(ChromeFeatureList.CROSS_DEVICE_TASK_HANDOFF)
+                && Build.VERSION.SDK_INT >= HANDOFF_SDK_VERSION) {
+            mHandoffController =
+                    new HandoffController(
+                            mActivity,
+                            mTabModelSelectorSupplier.asNonNull().get(),
+                            mActivityTabProvider);
+        }
 
         if (SigninFeatureMap.getInstance().isActivitylessSigninAllEntryPointEnabled()) {
             initBottomSheetSigninAndHistorySyncController(originalProfile);
@@ -2728,5 +2744,9 @@ public class RootUiCoordinator
 
     public @Nullable OpenInAppMenuItemProvider getOpenInAppMenuItemProvider() {
         return mOpenInAppEntryPoint;
+    }
+
+    public @Nullable HandoffController getHandoffController() {
+        return mHandoffController;
     }
 }
