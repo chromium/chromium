@@ -375,14 +375,16 @@
     </div>
   </div>
 
-  <sp-empty-state id="topLevelEmptyState"
-      hidden="[[!sectionVisibility_.topLevelEmptyState]]"
-      guest$="[[guestMode_]]"
-      image-path="[[getEmptyImagePath_(hasSomeActiveFilter_)]]"
-      dark-image-path="[[getEmptyImagePathDark_(hasSomeActiveFilter_)]]"
-      heading="[[getEmptyTitle_(hasSomeActiveFilter_)]]"
-      body="[[getEmptyBody_(hasSomeActiveFilter_)]]">
-  </sp-empty-state>
+  <div class="sp-scroller">
+    <sp-empty-state id="topLevelEmptyState"
+        hidden="[[!sectionVisibility_.topLevelEmptyState]]"
+        guest$="[[guestMode_]]"
+        image-path="[[getEmptyImagePath_(hasSomeActiveFilter_)]]"
+        dark-image-path="[[getEmptyImagePathDark_(hasSomeActiveFilter_)]]"
+        heading="[[getEmptyTitle_(hasSomeActiveFilter_)]]"
+        body="[[getEmptyBody_(hasSomeActiveFilter_)]]">
+    </sp-empty-state>
+  </div>
   <sp-footer id="footer"
       hidden="[[!sectionVisibility_.footer]]"
       pinned>
