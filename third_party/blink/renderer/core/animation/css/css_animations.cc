@@ -1718,7 +1718,7 @@ bool ComputedTransitionValuesEqual(const PropertyHandle& property,
 
 void CSSAnimations::CalculateCompositorAnimationUpdate(
     CSSAnimationUpdate& update,
-    const Element& animating_element,
+    Element& animating_element,
     Element& element,
     const ComputedStyle& style,
     const ComputedStyle* parent_style,
@@ -1785,7 +1785,7 @@ void CSSAnimations::CalculateCompositorAnimationUpdate(
       Animation::NativePaintWorkletProperties::kNoPaintWorklet) {
     CHECK(NativePaintImageGenerator::NativePaintWorkletAnimationsEnabled());
     element_animations->RecalcCompositedStatusForKeyframeChange(
-        element, properties_for_force_update);
+        animating_element, properties_for_force_update);
   }
 
   for (auto& entry : element_animations->GetWorkletAnimations()) {

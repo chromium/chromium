@@ -99,7 +99,7 @@ class CORE_EXPORT CSSAnimations final {
                                        bool can_trigger_animations);
   static void CalculateCompositorAnimationUpdate(
       CSSAnimationUpdate&,
-      const Element& animating_element,
+      Element& animating_element,
       Element&,
       const ComputedStyle&,
       const ComputedStyle* parent_style,
