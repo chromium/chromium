@@ -14,7 +14,6 @@ source_set("unit_tests") {
   testonly = true
 
   sources = [
-    "../extensions/api/enterprise_platform_keys/enterprise_platform_keys_api_unittest.cc",
     "../extensions/updater/local_extension_cache_unittest.cc",
     "../metrics/chromeos_system_profile_provider_unittest.cc",
     "../metrics/cros_healthd_metrics_provider_unittest.cc",

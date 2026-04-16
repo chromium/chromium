@@ -14,20 +14,25 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/test/task_environment.h"
 #include "base/values.h"
 #include "chrome/browser/ash/attestation/mock_tpm_challenge_key.h"
 #include "chrome/browser/ash/platform_keys/key_permissions/fake_user_private_token_kpm_service.h"
 #include "chrome/browser/ash/platform_keys/key_permissions/mock_key_permissions_manager.h"
 #include "chrome/browser/ash/platform_keys/key_permissions/user_private_token_kpm_service_factory.h"
+#include "chrome/browser/extensions/api/platform_keys/platform_keys_test_base.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
+#include "chrome/browser/ui/browser.h"
 #include "chrome/common/extensions/api/enterprise_platform_keys.h"
+#include "chrome/common/extensions/chrome_extensions_client.h"
 #include "chrome/common/pref_names.h"
-#include "chrome/test/base/browser_with_test_window_test.h"
 #include "chrome/test/base/testing_profile_manager.h"
 #include "chromeos/ash/components/dbus/attestation/keystore.pb.h"
 #include "chromeos/ash/components/dbus/constants/attestation_constants.h"
+#include "components/prefs/pref_service.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
+#include "content/public/test/browser_test.h"
 #include "extensions/browser/api_test_utils.h"
 #include "extensions/common/extension_builder.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -56,16 +61,23 @@ void FakeRunCheckNotRegister(::attestation::VerifiedAccessFlow flow_type,
           kChallengeResponse));
 }
 
-class EPKChallengeKeyTestBase : public BrowserWithTestWindowTest {
+class EPKChallengeKeyTestBase : public PlatformKeysTestBase {
  protected:
-  EPKChallengeKeyTestBase() : extension_(ExtensionBuilder("Test").Build()) {
-    stub_install_attributes_.SetCloudManaged("google.com", "device_id");
-  }
+  EPKChallengeKeyTestBase()
+      : PlatformKeysTestBase(SystemTokenStatus::EXISTS,
+                             EnrollmentStatus::ENROLLED,
+                             UserStatus::MANAGED_AFFILIATED_DOMAIN) {}
 
-  void SetUp() override {
-    BrowserWithTestWindowTest::SetUp();
+  void SetUpOnMainThread() override {
+    PlatformKeysTestBase::SetUpOnMainThread();
+
+    chrome_extensions_client_ =
+        std::make_unique<extensions::ChromeExtensionsClient>();
+    extensions::ExtensionsClient::Set(chrome_extensions_client_.get());
+
+    extension_ = ExtensionBuilder("Test").Build();
+
     prefs_ = profile()->GetPrefs();
-    SetAuthenticatedUser();
 
     // UserPrivateTokenKeyPermissionsManagerService and the underlying
     // KeyPermissionsManager are not actually used by *ChallengeKey* classes,
@@ -79,6 +91,12 @@ class EPKChallengeKeyTestBase : public BrowserWithTestWindowTest {
                 base::BindRepeating(&EPKChallengeKeyTestBase::
                                         CreateKeyPermissionsManagerService,
                                     base::Unretained(this)));
+  }
+
+  void TearDownOnMainThread() override {
+    extensions::ExtensionsClient::Set(nullptr);
+    chrome_extensions_client_.reset();
+    PlatformKeysTestBase::TearDownOnMainThread();
   }
 
   void SetMockTpmChallenger() {
@@ -101,19 +119,6 @@ class EPKChallengeKeyTestBase : public BrowserWithTestWindowTest {
     // transfer ownership inside factory
     ash::attestation::TpmChallengeKeyFactory::SetForTesting(
         std::move(mock_tpm_challenge_key));
-  }
-
-  // This will be called by BrowserWithTestWindowTest::SetUp();
-  std::optional<std::string> GetDefaultProfileName() override {
-    return kUserEmail;
-  }
-
-  void LogIn(std::string_view email, const GaiaId& gaia_id) override {
-    BrowserWithTestWindowTest::LogIn(email, gaia_id);
-    user_manager()->SetUserPolicyStatus(
-        AccountId::FromUserEmailGaiaId(email, gaia_id),
-        /*is_managed=*/true,
-        /*is_affiliated=*/true);
   }
 
   std::unique_ptr<KeyedService> CreateKeyPermissionsManagerService(
@@ -167,8 +172,8 @@ class EPKChallengeKeyTestBase : public BrowserWithTestWindowTest {
   }
 
   scoped_refptr<const extensions::Extension> extension_;
-  ash::StubInstallAttributes stub_install_attributes_;
   ash::platform_keys::MockKeyPermissionsManager key_permissions_manager_;
+  std::unique_ptr<extensions::ChromeExtensionsClient> chrome_extensions_client_;
   raw_ptr<PrefService, DanglingUntriaged> prefs_ = nullptr;
   raw_ptr<ash::attestation::MockTpmChallengeKey, DanglingUntriaged>
       mock_tpm_challenge_key_ = nullptr;
@@ -176,9 +181,12 @@ class EPKChallengeKeyTestBase : public BrowserWithTestWindowTest {
 
 class EPKChallengeMachineKeyTest : public EPKChallengeKeyTestBase {
  protected:
-  EPKChallengeMachineKeyTest()
-      : func_(base::MakeRefCounted<
-              EnterprisePlatformKeysChallengeMachineKeyFunction>()) {
+  EPKChallengeMachineKeyTest() = default;
+
+  void SetUpOnMainThread() override {
+    EPKChallengeKeyTestBase::SetUpOnMainThread();
+    func_ = base::MakeRefCounted<
+        EnterprisePlatformKeysChallengeMachineKeyFunction>();
     func_->set_extension(extension_.get());
   }
 
@@ -205,7 +213,11 @@ class EPKChallengeMachineKeyTest : public EPKChallengeKeyTestBase {
   scoped_refptr<EnterprisePlatformKeysChallengeMachineKeyFunction> func_;
 };
 
-TEST_F(EPKChallengeMachineKeyTest, ExtensionNotAllowed) {
+IN_PROC_BROWSER_TEST_F(EPKChallengeMachineKeyTest, PRE_ExtensionNotAllowed) {
+  RunPreTest();
+}
+
+IN_PROC_BROWSER_TEST_F(EPKChallengeMachineKeyTest, ExtensionNotAllowed) {
   base::ListValue empty_allowlist;
   prefs_->SetList(prefs::kAttestationExtensionAllowlist,
                   std::move(empty_allowlist));
@@ -215,7 +227,11 @@ TEST_F(EPKChallengeMachineKeyTest, ExtensionNotAllowed) {
       RunFunctionAndReturnError(func_.get(), CreateArgs(), profile()));
 }
 
-TEST_F(EPKChallengeMachineKeyTest, Success) {
+IN_PROC_BROWSER_TEST_F(EPKChallengeMachineKeyTest, PRE_Success) {
+  RunPreTest();
+}
+
+IN_PROC_BROWSER_TEST_F(EPKChallengeMachineKeyTest, Success) {
   SetMockTpmChallenger();
 
   base::ListValue allowlist;
@@ -230,7 +246,13 @@ TEST_F(EPKChallengeMachineKeyTest, Success) {
   EXPECT_EQ(response, kChallengeResponse);
 }
 
-TEST_F(EPKChallengeMachineKeyTest, BadChallengeThenErrorMessageReturned) {
+IN_PROC_BROWSER_TEST_F(EPKChallengeMachineKeyTest,
+                       PRE_BadChallengeThenErrorMessageReturned) {
+  RunPreTest();
+}
+
+IN_PROC_BROWSER_TEST_F(EPKChallengeMachineKeyTest,
+                       BadChallengeThenErrorMessageReturned) {
   SetMockTpmChallengerBadBase64Error();
 
   base::ListValue allowlist;
@@ -245,7 +267,12 @@ TEST_F(EPKChallengeMachineKeyTest, BadChallengeThenErrorMessageReturned) {
       value);
 }
 
-TEST_F(EPKChallengeMachineKeyTest, KeyNotRegisteredByDefault) {
+IN_PROC_BROWSER_TEST_F(EPKChallengeMachineKeyTest,
+                       PRE_KeyNotRegisteredByDefault) {
+  RunPreTest();
+}
+
+IN_PROC_BROWSER_TEST_F(EPKChallengeMachineKeyTest, KeyNotRegisteredByDefault) {
   SetMockTpmChallenger();
 
   base::ListValue allowlist;
@@ -262,9 +289,12 @@ TEST_F(EPKChallengeMachineKeyTest, KeyNotRegisteredByDefault) {
 
 class EPKChallengeUserKeyTest : public EPKChallengeKeyTestBase {
  protected:
-  EPKChallengeUserKeyTest()
-      : func_(base::MakeRefCounted<
-              EnterprisePlatformKeysChallengeUserKeyFunction>()) {
+  EPKChallengeUserKeyTest() = default;
+
+  void SetUpOnMainThread() override {
+    EPKChallengeKeyTestBase::SetUpOnMainThread();
+    func_ =
+        base::MakeRefCounted<EnterprisePlatformKeysChallengeUserKeyFunction>();
     func_->set_extension(extension_.get());
   }
 
@@ -283,7 +313,11 @@ class EPKChallengeUserKeyTest : public EPKChallengeKeyTestBase {
   scoped_refptr<EnterprisePlatformKeysChallengeUserKeyFunction> func_;
 };
 
-TEST_F(EPKChallengeUserKeyTest, Success) {
+IN_PROC_BROWSER_TEST_F(EPKChallengeUserKeyTest, PRE_Success) {
+  RunPreTest();
+}
+
+IN_PROC_BROWSER_TEST_F(EPKChallengeUserKeyTest, Success) {
   SetMockTpmChallenger();
 
   base::ListValue allowlist;
@@ -298,7 +332,13 @@ TEST_F(EPKChallengeUserKeyTest, Success) {
   EXPECT_EQ(response, kChallengeResponse);
 }
 
-TEST_F(EPKChallengeUserKeyTest, BadChallengeThenErrorMessageReturned) {
+IN_PROC_BROWSER_TEST_F(EPKChallengeUserKeyTest,
+                       PRE_BadChallengeThenErrorMessageReturned) {
+  RunPreTest();
+}
+
+IN_PROC_BROWSER_TEST_F(EPKChallengeUserKeyTest,
+                       BadChallengeThenErrorMessageReturned) {
   SetMockTpmChallengerBadBase64Error();
 
   base::ListValue allowlist;
@@ -313,7 +353,13 @@ TEST_F(EPKChallengeUserKeyTest, BadChallengeThenErrorMessageReturned) {
       value);
 }
 
-TEST_F(EPKChallengeUserKeyTest, ExtensionNotAllowedThenErrorMessageReturned) {
+IN_PROC_BROWSER_TEST_F(EPKChallengeUserKeyTest,
+                       PRE_ExtensionNotAllowedThenErrorMessageReturned) {
+  RunPreTest();
+}
+
+IN_PROC_BROWSER_TEST_F(EPKChallengeUserKeyTest,
+                       ExtensionNotAllowedThenErrorMessageReturned) {
   base::ListValue empty_allowlist;
   prefs_->SetList(prefs::kAttestationExtensionAllowlist,
                   std::move(empty_allowlist));
@@ -331,9 +377,11 @@ class EPKChallengeKeyTest
     : public EPKChallengeKeyTestBase,
       public testing::WithParamInterface<EPKChallengeKeyParams> {
  protected:
-  EPKChallengeKeyTest()
-      : func_(base::MakeRefCounted<
-              EnterprisePlatformKeysChallengeKeyFunction>()) {
+  EPKChallengeKeyTest() = default;
+
+  void SetUpOnMainThread() override {
+    EPKChallengeKeyTestBase::SetUpOnMainThread();
+    func_ = base::MakeRefCounted<EnterprisePlatformKeysChallengeKeyFunction>();
     func_->set_extension(extension_.get());
   }
 
@@ -367,7 +415,11 @@ class EPKChallengeKeyTest
 
 // This test ensures challengeKey propagates algorithm, scope, and registerKey
 // parameters to the TpmChallengeKey class.
-TEST_P(EPKChallengeKeyTest, Success) {
+IN_PROC_BROWSER_TEST_P(EPKChallengeKeyTest, PRE_Success) {
+  RunPreTest();
+}
+
+IN_PROC_BROWSER_TEST_P(EPKChallengeKeyTest, Success) {
   SetMockTpmChallenger();
   AllowlistExtension();
 
@@ -415,7 +467,11 @@ TEST_P(EPKChallengeKeyTest, Success) {
 
 // This test ensures challengeKey cannot be called by extensions not on the
 // allow list.
-TEST_P(EPKChallengeKeyTest, ExtensionNotAllowed) {
+IN_PROC_BROWSER_TEST_P(EPKChallengeKeyTest, PRE_ExtensionNotAllowed) {
+  RunPreTest();
+}
+
+IN_PROC_BROWSER_TEST_P(EPKChallengeKeyTest, ExtensionNotAllowed) {
   base::ListValue empty_allowlist;
   prefs_->SetList(prefs::kAttestationExtensionAllowlist,
                   std::move(empty_allowlist));
