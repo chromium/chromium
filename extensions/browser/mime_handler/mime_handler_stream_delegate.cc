@@ -9,6 +9,10 @@ namespace extensions {
 MimeHandlerStreamDelegate::MimeHandlerStreamDelegate() = default;
 MimeHandlerStreamDelegate::~MimeHandlerStreamDelegate() = default;
 
+void MimeHandlerStreamDelegate::OnExtensionFrameFinished(
+    content::NavigationHandle* navigation_handle,
+    StreamInfo* stream_info) {}
+
 void MimeHandlerStreamDelegate::OnStreamClaimed(
     content::RenderFrameHost* embedder_host,
     StreamInfo* stream_info) {}

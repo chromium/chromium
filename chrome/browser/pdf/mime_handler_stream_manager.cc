@@ -18,9 +18,7 @@
 #include "components/crash/core/common/crash_key.h"
 #include "components/pdf/browser/pdf_frame_util.h"
 #include "components/pdf/common/pdf_util.h"
-#include "components/zoom/zoom_controller.h"
 #include "content/public/browser/global_routing_id.h"
-#include "content/public/browser/host_zoom_map.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/render_frame_host.h"
@@ -513,19 +511,8 @@ void MimeHandlerStreamManager::DidFinishNavigation(
           scoped_crash_key_did_finish_navigation_url(
               &crash_key_did_finish_navigation_url, url.spec());
       stream_info->SetDidExtensionFinishNavigation();
-
-      // Setup zoom level for the PDF extension. Zoom level 0 corresponds
-      // to zoom factor of 1, or 100%. This is done so the PDF viewer UI
-      // does not change if the page zoom does. This is analogous to page
-      // zoom not affecting the browser UI.
-      content::HostZoomMap::Get(
-          navigation_handle->GetRenderFrameHost()->GetSiteInstance())
-          ->SetZoomLevelForHostAndScheme(pdf_extension_url.GetScheme(),
-                                         pdf_extension_url.GetHost(), 0);
-      // Set ZoomController on the extension host.
-      zoom::ZoomController::CreateForWebContentsAndRenderFrameHost(
-          web_contents(),
-          navigation_handle->GetRenderFrameHost()->GetGlobalId());
+      stream_info->delegate()->OnExtensionFrameFinished(navigation_handle,
+                                                        stream_info);
     }
     return;
   }

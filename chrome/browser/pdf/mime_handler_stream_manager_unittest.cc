@@ -45,6 +45,10 @@ class MockMimeHandlerStreamDelegate
   ~MockMimeHandlerStreamDelegate() override = default;
 
   MOCK_METHOD(void,
+              OnExtensionFrameFinished,
+              (content::NavigationHandle*, extensions::StreamInfo*),
+              (override));
+  MOCK_METHOD(void,
               OnStreamClaimed,
               (content::RenderFrameHost*, extensions::StreamInfo*),
               (override));
@@ -897,6 +901,57 @@ TEST_F(MimeHandlerStreamManagerTest, ReadyToCommitNavigationClaimAndReplace) {
   EXPECT_TRUE(manager->GetStreamContainer(embedder_host));
   EXPECT_FALSE(original_stream);
   EXPECT_TRUE(mime_handler_stream_manager());
+}
+
+TEST_F(MimeHandlerStreamManagerTest,
+       DidFinishNavigationDelegateExtensionFinished) {
+  auto* embedder_host = NavigateAndCommit(main_rfh(), GURL(kOriginalUrl1));
+  auto* extension_host =
+      CreateChildRenderFrameHost(embedder_host, "extension host");
+
+  MimeHandlerStreamManager* manager = mime_handler_stream_manager();
+  auto delegate = std::make_unique<NiceMock<MockMimeHandlerStreamDelegate>>();
+  auto* delegate_ptr = delegate.get();
+  manager->AddStreamContainer(
+      embedder_host->GetFrameTreeNodeId(), "internal_id",
+      pdf_test_util::GenerateSampleStreamContainer(1), std::move(delegate));
+  manager->ClaimStreamInfoForTesting(embedder_host);
+  manager->SetExtensionFrameTreeNodeIdForTesting(
+      embedder_host, extension_host->GetFrameTreeNodeId());
+
+  auto* stream_info = manager->GetClaimedStreamInfoForTesting(embedder_host);
+  ASSERT_TRUE(stream_info);
+
+  NiceMock<content::MockNavigationHandle> navigation_handle(
+      stream_info->stream()->handler_url(), extension_host);
+  navigation_handle.set_has_committed(true);
+
+  EXPECT_CALL(*delegate_ptr,
+              OnExtensionFrameFinished(&navigation_handle, stream_info));
+  manager->DidFinishNavigation(&navigation_handle);
+}
+
+TEST_F(MimeHandlerStreamManagerTest,
+       DidFinishNavigationDelegateExtensionFinishedIgnoresNonMatchingUrl) {
+  auto* embedder_host = NavigateAndCommit(main_rfh(), GURL(kOriginalUrl1));
+  auto* extension_host =
+      CreateChildRenderFrameHost(embedder_host, "extension host");
+
+  MimeHandlerStreamManager* manager = mime_handler_stream_manager();
+  manager->AddStreamContainer(embedder_host->GetFrameTreeNodeId(),
+                              "internal_id",
+                              pdf_test_util::GenerateSampleStreamContainer(1),
+                              std::make_unique<PdfHandlerStreamDelegate>());
+  manager->ClaimStreamInfoForTesting(embedder_host);
+  manager->SetExtensionFrameTreeNodeIdForTesting(
+      embedder_host, extension_host->GetFrameTreeNodeId());
+
+  NiceMock<content::MockNavigationHandle> navigation_handle(GURL(kOriginalUrl2),
+                                                            extension_host);
+  navigation_handle.set_has_committed(true);
+  manager->DidFinishNavigation(&navigation_handle);
+
+  EXPECT_FALSE(manager->DidPdfExtensionFinishNavigation(embedder_host));
 }
 
 // If the PDF URL is reloaded during a PDF load, `MimeHandlerStreamManager`

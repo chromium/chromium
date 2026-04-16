@@ -6,6 +6,7 @@
 #define EXTENSIONS_BROWSER_MIME_HANDLER_MIME_HANDLER_STREAM_DELEGATE_H_
 
 namespace content {
+class NavigationHandle;
 class RenderFrameHost;
 }  // namespace content
 
@@ -20,6 +21,16 @@ class MimeHandlerStreamDelegate {
   MimeHandlerStreamDelegate& operator=(const MimeHandlerStreamDelegate&) =
       delete;
   virtual ~MimeHandlerStreamDelegate();
+
+  // Called once the MIME handler extension frame has committed its
+  // navigation to the claimed stream's handler URL. Gives the delegate a
+  // chance to perform any post-commit setup that needs the just-committed
+  // extension host, such as attaching per-frame services. Neither
+  // `navigation_handle` nor `stream_info` may be null, and neither pointer is
+  // retained past the call. Default implementation is a no-op.
+  virtual void OnExtensionFrameFinished(
+      content::NavigationHandle* navigation_handle,
+      StreamInfo* stream_info);
 
   // Called when `stream_info` has just been claimed by `embedder_host`,
   // before the MIME handler navigates. Gives the delegate a chance to
