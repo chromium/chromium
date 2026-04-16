@@ -341,6 +341,12 @@ NET_EXPORT BASE_DECLARE_FEATURE(kTcpPortReuseMetricsWin);
 // Whether to use a TCP socket implementation which uses an IO completion
 // handler to be notified of completed reads and writes, instead of an event.
 NET_EXPORT BASE_DECLARE_FEATURE(kTcpSocketIoCompletionPortWin);
+
+// Whether to defer the initial connection type computation from the
+// NetworkChangeNotifierWin constructor to an async call in
+// WatchForAddressChange(), avoiding a synchronous cross-process call that can
+// block the UI thread for ~50ms during startup.
+NET_EXPORT BASE_DECLARE_FEATURE(kDeferConnectionTypeAtStartup);
 #endif
 
 #if BUILDFLAG(IS_MAC)

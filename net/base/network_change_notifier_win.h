@@ -156,6 +156,13 @@ class NET_EXPORT_PRIVATE NetworkChangeNotifierWin
   // Number of times WatchForAddressChange has failed in a row.
   int sequential_failures_ = 0;
 
+  // Whether the initial connection type has been computed asynchronously.
+  // The constructor defers this computation to WatchForAddressChange() to
+  // avoid a synchronous cross-process call that blocks startup. Until the
+  // async computation completes, GetCurrentConnectionType() returns
+  // CONNECTION_UNKNOWN.
+  bool initial_connection_type_initialized_ = false;
+
   scoped_refptr<base::SequencedTaskRunner> blocking_task_runner_;
 
   mutable base::Lock last_computed_connection_type_lock_;

@@ -57,9 +57,22 @@ NetworkChangeNotifierWin::NetworkChangeNotifierWin(
       addr_overlapped_(),
       blocking_task_runner_(
           base::ThreadPool::CreateSequencedTaskRunner({base::MayBlock()})),
-      last_computed_connection_type_(RecomputeCurrentConnectionType()),
-      last_announced_offline_(last_computed_connection_type_ ==
-                              CONNECTION_NONE),
+      // When kDeferConnectionTypeAtStartup is enabled, CONNECTION_UNKNOWN is
+      // used as the initial value instead of calling
+      // RecomputeCurrentConnectionType() synchronously, which makes a
+      // cross-process call that can block the UI thread for ~50ms during
+      // startup. The actual connection type is computed asynchronously in
+      // WatchForAddressChange(). Callers that query before the async
+      // computation completes will see CONNECTION_UNKNOWN, meaning "connected,
+      // type not yet determined" -- IsOffline() will return false.
+      last_computed_connection_type_(
+          base::FeatureList::IsEnabled(features::kDeferConnectionTypeAtStartup)
+              ? CONNECTION_UNKNOWN
+              : RecomputeCurrentConnectionType()),
+      last_announced_offline_(
+          base::FeatureList::IsEnabled(features::kDeferConnectionTypeAtStartup)
+              ? false
+              : (last_computed_connection_type_ == CONNECTION_NONE)),
       sequence_runner_for_registration_(
           base::SequencedTaskRunner::GetCurrentDefault()) {
   addr_overlapped_.hEvent = WSACreateEvent();
@@ -341,8 +354,20 @@ void NetworkChangeNotifierWin::WatchForAddressChange() {
   // network change event, since network changes were not being observed in
   // that interval.
   if (sequential_failures_ > 0) {
+    initial_connection_type_initialized_ = true;
     RecomputeCurrentConnectionTypeOnBlockingSequence(
         base::BindOnce(&NetworkChangeNotifierWin::NotifyObservers,
+                       weak_factory_.GetWeakPtr()));
+  } else if (!initial_connection_type_initialized_ &&
+             base::FeatureList::IsEnabled(
+                 features::kDeferConnectionTypeAtStartup)) {
+    // Compute the initial connection type asynchronously to avoid blocking
+    // startup. The constructor defers this work since
+    // RecomputeCurrentConnectionType() makes a cross-process call that can
+    // take ~50ms.
+    initial_connection_type_initialized_ = true;
+    RecomputeCurrentConnectionTypeOnBlockingSequence(
+        base::BindOnce(&NetworkChangeNotifierWin::SetCurrentConnectionType,
                        weak_factory_.GetWeakPtr()));
   }
 

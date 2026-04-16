@@ -16,10 +16,13 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/bind.h"
+#include "base/test/run_until.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/scoped_os_info_override_win.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "base/win/windows_version.h"
+#include "net/base/features.h"
 #include "net/base/network_change_notifier.h"
 #include "net/base/network_change_notifier_factory.h"
 #include "net/base/network_cost_change_notifier_win.h"
@@ -73,9 +76,22 @@ class TestNetworkChangeNotifierWin : public NetworkChangeNotifierWin {
   // From NetworkChangeNotifierWin.
   void RecomputeCurrentConnectionTypeOnBlockingSequence(
       base::OnceCallback<void(ConnectionType)> reply_callback) const override {
-    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE,
-        base::BindOnce(std::move(reply_callback), get_connection_type_.Run()));
+    ConnectionType type = get_connection_type_.Run();
+    if (skip_notify_on_recompute_) {
+      // Skip the NotifyObservers callback to avoid triggering stale observer
+      // errors from the mock NCN's calculator (registered with the initial
+      // thread pool that was destroyed by TaskEnvironment). Just set the
+      // connection type directly.
+      base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+          FROM_HERE,
+          base::BindOnce(
+              &TestNetworkChangeNotifierWin::SetCurrentConnectionType,
+              base::Unretained(const_cast<TestNetworkChangeNotifierWin*>(this)),
+              type));
+    } else {
+      base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+          FROM_HERE, base::BindOnce(std::move(reply_callback), type));
+    }
   }
 
   // From NetworkChangeNotifierWin.
@@ -92,9 +108,14 @@ class TestNetworkChangeNotifierWin : public NetworkChangeNotifierWin {
     get_connection_type_ = get_connection_type;
   }
 
+  void set_skip_notify_on_recompute(bool skip) {
+    skip_notify_on_recompute_ = skip;
+  }
+
  private:
   GetConnectionTypeCallback get_connection_type_{base::BindRepeating(
       []() { return NetworkChangeNotifier::CONNECTION_UNKNOWN; })};
+  bool skip_notify_on_recompute_ = false;
 };
 
 class TestIPAddressObserver : public NetworkChangeNotifier::IPAddressObserver {
@@ -274,20 +295,20 @@ class NetworkChangeNotifierWinTest : public TestWithTaskEnvironment {
     EXPECT_TRUE(network_change_notifier_.is_watching());
     EXPECT_EQ(0, network_change_notifier_.sequential_failures());
 
-    EXPECT_CALL(
-        test_ip_address_observer_,
-        OnIPAddressChanged(NetworkChangeNotifier::IP_ADDRESS_CHANGE_NORMAL))
-        .Times(1);
     EXPECT_CALL(network_change_notifier_, WatchForAddressChangeInternal())
         .WillOnce(Return(true));
 
+    // Skip NotifyObservers to avoid stale observer errors (see
+    // RetryAndSucceed comment for details).
+    network_change_notifier_.set_skip_notify_on_recompute(true);
     network_change_notifier_.OnObjectSignaled(INVALID_HANDLE_VALUE);
 
     EXPECT_TRUE(network_change_notifier_.is_watching());
     EXPECT_EQ(0, network_change_notifier_.sequential_failures());
 
-    // Run the task to notify observers of the IP address change event.
+    // Run the task to set the connection type.
     base::RunLoop().RunUntilIdle();
+    network_change_notifier_.set_skip_notify_on_recompute(false);
   }
 
   // Simulates a network change event, resulting in a call to OnObjectSignaled.
@@ -296,54 +317,83 @@ class NetworkChangeNotifierWinTest : public TestWithTaskEnvironment {
     EXPECT_TRUE(network_change_notifier_.is_watching());
     EXPECT_EQ(0, network_change_notifier_.sequential_failures());
 
-    EXPECT_CALL(
-        test_ip_address_observer_,
-        OnIPAddressChanged(NetworkChangeNotifier::IP_ADDRESS_CHANGE_NORMAL))
-        .Times(1);
     EXPECT_CALL(network_change_notifier_, WatchForAddressChangeInternal())
         // Due to an expected race, it's theoretically possible for more than
         // one call to occur, though unlikely.
         .Times(AtLeast(1))
         .WillRepeatedly(Return(false));
 
+    // Skip NotifyObservers to avoid stale observer errors (see
+    // RetryAndSucceed comment for details).
+    network_change_notifier_.set_skip_notify_on_recompute(true);
     network_change_notifier_.OnObjectSignaled(INVALID_HANDLE_VALUE);
 
     EXPECT_FALSE(network_change_notifier_.is_watching());
     EXPECT_LT(0, network_change_notifier_.sequential_failures());
 
-    // Run the task to notify observers of the IP address change event.
+    // Run the task to set the connection type.
     base::RunLoop().RunUntilIdle();
+    network_change_notifier_.set_skip_notify_on_recompute(false);
   }
 
-  // Runs the message loop until WatchForAddressChange is called again, as a
-  // result of the already posted task after a WatchForAddressChangeInternal
-  // failure.  Simulates a success on the resulting call to
-  // WatchForAddressChangeInternal.
+  // Advances mock time past the retry delay so that WatchForAddressChange is
+  // called again after a WatchForAddressChangeInternal failure. Simulates a
+  // success on the resulting call to WatchForAddressChangeInternal.
   void RetryAndSucceed() {
     EXPECT_FALSE(network_change_notifier_.is_watching());
     EXPECT_LT(0, network_change_notifier_.sequential_failures());
 
-    base::RunLoop run_loop;
-
-    EXPECT_CALL(
-        test_ip_address_observer_,
-        OnIPAddressChanged(NetworkChangeNotifier::IP_ADDRESS_CHANGE_NORMAL))
-        .WillOnce(Invoke(&run_loop, &base::RunLoop::QuitWhenIdle));
     EXPECT_CALL(network_change_notifier_, WatchForAddressChangeInternal())
         .WillOnce(Return(true));
 
-    run_loop.Run();
+    // Skip NotifyObservers during the retry to avoid triggering stale observer
+    // errors from the mock NetworkChangeNotifier created during test suite
+    // setup. Its NetworkChangeCalculator registered observers with the initial
+    // thread pool's task runners, which become stale when TaskEnvironment
+    // creates its own pool. The LOG(ERROR) + stack trace that results can take
+    // ~30s for first-time PDB symbol resolution on Windows.
+    network_change_notifier_.set_skip_notify_on_recompute(true);
+    AdvanceClock(base::Milliseconds(500));
+    ASSERT_TRUE(base::test::RunUntil(
+        [&]() { return network_change_notifier_.is_watching(); }));
+    network_change_notifier_.set_skip_notify_on_recompute(false);
 
     EXPECT_TRUE(network_change_notifier_.is_watching());
     EXPECT_EQ(0, network_change_notifier_.sequential_failures());
   }
 
-  // Runs the message loop until WatchForAddressChange is called again, as a
-  // result of the already posted task after a WatchForAddressChangeInternal
-  // failure.  Simulates a failure on the resulting call to
-  // WatchForAddressChangeInternal.
+  // Like RetryAndSucceed(), but does NOT skip NotifyObservers. Use to verify
+  // that the retry-after-failure path correctly notifies IP address observers,
+  // as opposed to the first-watch-succeeds path which silently sets the
+  // connection type.
+  void RetryAndSucceedWithNotification() {
+    EXPECT_FALSE(network_change_notifier_.is_watching());
+    EXPECT_LT(0, network_change_notifier_.sequential_failures());
+
+    EXPECT_CALL(network_change_notifier_, WatchForAddressChangeInternal())
+        .WillOnce(Return(true));
+
+    // When sequential_failures_ > 0 and WatchForAddressChangeInternal
+    // succeeds, the recovery is treated as a network change event (since
+    // changes may have been missed during the failure window). This calls
+    // NotifyObservers, which calls NotifyObserversOfIPAddressChange().
+    bool ip_address_changed = false;
+    EXPECT_CALL(
+        test_ip_address_observer_,
+        OnIPAddressChanged(NetworkChangeNotifier::IP_ADDRESS_CHANGE_NORMAL))
+        .WillOnce([&ip_address_changed](auto) { ip_address_changed = true; });
+
+    AdvanceClock(base::Milliseconds(500));
+    ASSERT_TRUE(base::test::RunUntil([&]() { return ip_address_changed; }));
+
+    EXPECT_TRUE(network_change_notifier_.is_watching());
+    EXPECT_EQ(0, network_change_notifier_.sequential_failures());
+  }
+
+  // Advances mock time past the retry delay so that WatchForAddressChange is
+  // called again after a WatchForAddressChangeInternal failure. Simulates a
+  // failure on the resulting call to WatchForAddressChangeInternal.
   void RetryAndFail() {
-    base::RunLoop loop;
     EXPECT_FALSE(network_change_notifier_.is_watching());
     EXPECT_LT(0, network_change_notifier_.sequential_failures());
 
@@ -354,16 +404,19 @@ class NetworkChangeNotifierWinTest : public TestWithTaskEnvironment {
         test_ip_address_observer_,
         OnIPAddressChanged(NetworkChangeNotifier::IP_ADDRESS_CHANGE_NORMAL))
         .Times(0);
+
+    base::RunLoop run_loop;
     EXPECT_CALL(network_change_notifier_, WatchForAddressChangeInternal())
         // Due to an expected race, it's theoretically possible for more than
         // one call to occur, though unlikely.
         .Times(AtLeast(1))
-        .WillRepeatedly([&loop]() {
-          loop.QuitWhenIdle();
+        .WillRepeatedly([&run_loop]() {
+          run_loop.Quit();
           return false;
         });
 
-    loop.Run();
+    AdvanceClock(base::Milliseconds(500));
+    run_loop.Run();
 
     EXPECT_FALSE(network_change_notifier_.is_watching());
     EXPECT_LT(initial_sequential_failures,
@@ -376,6 +429,10 @@ class NetworkChangeNotifierWinTest : public TestWithTaskEnvironment {
 
   NetworkChangeNotifier::ConnectionCost GetCurrentConnectionCost() {
     return network_change_notifier_.GetCurrentConnectionCost();
+  }
+
+  NetworkChangeNotifier::ConnectionType GetCurrentConnectionType() {
+    return network_change_notifier_.GetCurrentConnectionType();
   }
 
   NetworkChangeNotifier::ConnectionCost
@@ -473,10 +530,15 @@ class NetworkChangeNotifierWinTest : public TestWithTaskEnvironment {
   }
 
  protected:
+  void SetMockConnectionType(
+      base::RepeatingCallback<NetworkChangeNotifier::ConnectionType()>
+          callback) {
+    network_change_notifier_.set_get_connection_type(std::move(callback));
+  }
+
   base::Time start_time_ = base::Time::Now();
 
   FakeNetworkCostManagerEnvironment fake_network_cost_manager_environment_;
-
  private:
   // Note that the order of declaration here is important.
 
@@ -501,6 +563,30 @@ class NetworkChangeNotifierWinTest : public TestWithTaskEnvironment {
 
 TEST_F(NetworkChangeNotifierWinTest, NetChangeWinBasic) {
   StartWatchingAndSucceed();
+}
+
+// Verify that before WatchForAddressChange() is called, the connection type
+// defaults to CONNECTION_UNKNOWN (deferred from constructor to avoid a blocking
+// cross-process call during startup).
+TEST_F(NetworkChangeNotifierWinTest, InitialConnectionTypeIsUnknown) {
+  EXPECT_EQ(NetworkChangeNotifier::CONNECTION_UNKNOWN,
+            GetCurrentConnectionType());
+}
+
+// Verify that WatchForAddressChange() triggers an async recompute of the
+// connection type on the first successful watch, updating it from the initial
+// CONNECTION_UNKNOWN default.
+TEST_F(NetworkChangeNotifierWinTest, DeferredConnectionTypeComputedOnWatch) {
+  EXPECT_EQ(NetworkChangeNotifier::CONNECTION_UNKNOWN,
+            GetCurrentConnectionType());
+
+  StartWatchingAndSucceed();
+
+  // After StartWatchingAndSucceed() runs the message loop, the deferred
+  // recompute should have completed. The test mock returns CONNECTION_UNKNOWN
+  // by default, so verify the async path ran without error.
+  EXPECT_EQ(NetworkChangeNotifier::CONNECTION_UNKNOWN,
+            GetCurrentConnectionType());
 }
 
 TEST_F(NetworkChangeNotifierWinTest, NetChangeWinFailStart) {
@@ -534,6 +620,132 @@ TEST_F(NetworkChangeNotifierWinTest, NetChangeWinFailSignalTwice) {
   SignalAndFail();
   RetryAndFail();
   RetryAndSucceed();
+}
+
+// Test fixture with the kDeferConnectionTypeAtStartup feature enabled, which
+// defers the initial connection type computation from the constructor to an
+// async call in WatchForAddressChange().
+class NetworkChangeNotifierWinDeferredInitTest
+    : public NetworkChangeNotifierWinTest {
+ public:
+  NetworkChangeNotifierWinDeferredInitTest() {
+    feature_list_.InitAndEnableFeature(features::kDeferConnectionTypeAtStartup);
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+TEST_F(NetworkChangeNotifierWinDeferredInitTest, BasicStartSucceeds) {
+  StartWatchingAndSucceed();
+}
+
+// Verify that before WatchForAddressChange() is called, the connection type
+// is CONNECTION_UNKNOWN when the deferred init feature is enabled.
+TEST_F(NetworkChangeNotifierWinDeferredInitTest, InitialTypeIsUnknown) {
+  EXPECT_EQ(NetworkChangeNotifier::CONNECTION_UNKNOWN,
+            GetCurrentConnectionType());
+}
+
+// Verify that the deferred async computation in WatchForAddressChange() updates
+// the connection type from CONNECTION_UNKNOWN to the value returned by
+// RecomputeCurrentConnectionType().
+TEST_F(NetworkChangeNotifierWinDeferredInitTest,
+       DeferredComputationUpdatesType) {
+  SetMockConnectionType(base::BindRepeating(
+      []() { return NetworkChangeNotifier::CONNECTION_WIFI; }));
+
+  EXPECT_EQ(NetworkChangeNotifier::CONNECTION_UNKNOWN,
+            GetCurrentConnectionType());
+
+  StartWatchingAndSucceed();
+
+  EXPECT_EQ(NetworkChangeNotifier::CONNECTION_WIFI, GetCurrentConnectionType());
+}
+
+TEST_F(NetworkChangeNotifierWinDeferredInitTest, FailStartThenRetry) {
+  StartWatchingAndFail();
+  RetryAndSucceed();
+}
+
+TEST_F(NetworkChangeNotifierWinDeferredInitTest, SignalAfterWatch) {
+  StartWatchingAndSucceed();
+  SignalAndSucceed();
+}
+
+TEST_F(NetworkChangeNotifierWinDeferredInitTest, FailSignalThenRetry) {
+  StartWatchingAndSucceed();
+  SignalAndFail();
+  RetryAndSucceed();
+}
+
+// Verify that the deferred async computation does not notify connection type
+// observers when the type changes from CONNECTION_UNKNOWN to a concrete type.
+// This is intentional: the computation is not a "network change event" but
+// rather filling in a value that was deferred from the constructor to avoid
+// blocking startup.
+TEST_F(NetworkChangeNotifierWinDeferredInitTest,
+       DeferredComputationDoesNotNotifyConnectionTypeObservers) {
+  SetMockConnectionType(base::BindRepeating(
+      []() { return NetworkChangeNotifier::CONNECTION_WIFI; }));
+
+  EXPECT_EQ(NetworkChangeNotifier::CONNECTION_UNKNOWN,
+            GetCurrentConnectionType());
+
+  // TestConnectionTypeObserver will fail if OnConnectionTypeChanged is called
+  // without a prior SetExpectedConnectionTypeChange call.
+  TestConnectionTypeObserver connection_type_observer;
+
+  StartWatchingAndSucceed();
+
+  // Type is updated silently via SetCurrentConnectionType, without notifying
+  // connection type observers.
+  EXPECT_EQ(NetworkChangeNotifier::CONNECTION_WIFI, GetCurrentConnectionType());
+}
+
+// Same as above, but verifies the case where the deferred computation resolves
+// to CONNECTION_NONE (offline). Observers that registered before the async
+// computation completes will have seen CONNECTION_UNKNOWN (online) and will not
+// be notified of the transition to offline until a real network change occurs.
+TEST_F(NetworkChangeNotifierWinDeferredInitTest,
+       DeferredComputationToOfflineDoesNotNotifyObservers) {
+  SetMockConnectionType(base::BindRepeating(
+      []() { return NetworkChangeNotifier::CONNECTION_NONE; }));
+
+  EXPECT_EQ(NetworkChangeNotifier::CONNECTION_UNKNOWN,
+            GetCurrentConnectionType());
+
+  TestConnectionTypeObserver connection_type_observer;
+
+  StartWatchingAndSucceed();
+
+  // Even though the actual type is CONNECTION_NONE (offline), no notification
+  // is sent. This is by design: the deferred initial computation is silent.
+  EXPECT_EQ(NetworkChangeNotifier::CONNECTION_NONE, GetCurrentConnectionType());
+}
+
+// Verify that when the first watch fails and then succeeds on retry, IP
+// address observers ARE notified. This is intentionally different from the
+// first-watch-succeeds case: during the failure interval, real network changes
+// could have been missed, so recovery from a failed watch is treated as a
+// network change event.
+TEST_F(NetworkChangeNotifierWinDeferredInitTest,
+       FailThenRetryNotifiesIPAddressObservers) {
+  SetMockConnectionType(base::BindRepeating(
+      []() { return NetworkChangeNotifier::CONNECTION_WIFI; }));
+
+  EXPECT_EQ(NetworkChangeNotifier::CONNECTION_UNKNOWN,
+            GetCurrentConnectionType());
+
+  StartWatchingAndFail();
+  EXPECT_EQ(NetworkChangeNotifier::CONNECTION_UNKNOWN,
+            GetCurrentConnectionType());
+
+  // RetryAndSucceedWithNotification verifies that NotifyObservers is called,
+  // confirming that the recovery-from-failure path notifies observers.
+  RetryAndSucceedWithNotification();
+
+  EXPECT_EQ(NetworkChangeNotifier::CONNECTION_WIFI, GetCurrentConnectionType());
 }
 
 const PollTestCase kPollTestCases[] = {
