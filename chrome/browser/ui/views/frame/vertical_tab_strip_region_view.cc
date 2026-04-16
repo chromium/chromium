@@ -261,6 +261,19 @@ void VerticalTabStripRegionView::OnAnimationProgressed(
       if (tab_strip_view_) {
         tab_strip_view_->SetIsAnimatingSize(false);
       }
+
+      // If the collapse animation is cancelled by requesting the tabstrip to
+      // expand, then we will not receive a BrowserAnimationUpdate::kEnded event
+      // which is usually where we update collapsed state of the controller to
+      // true.
+      // The current motion in the animation controller has already been cleared
+      // at this point, so instead check that the target collapse state is
+      // expanded. As a result, this also gets executed when cancelling expand
+      // on hover animations, but since the collapse state must have already
+      // been true in that case, this would be a no-op.
+      if (!target_collapse_state_.collapsed) {
+        update_state_controller_collapsed_callback_.Run(true);
+      }
       break;
   }
 }

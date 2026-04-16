@@ -9,8 +9,10 @@
 #include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/actions/chrome_action_id.h"
 #include "chrome/browser/ui/animation/browser_animation_controller.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_actions.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/tabs/features.h"
 #include "chrome/browser/ui/tabs/split_tab_metrics.h"
@@ -28,12 +30,14 @@
 #include "chrome/browser/ui/views/tabs/vertical/vertical_tab_strip_top_container.h"
 #include "chrome/browser/ui/views/tabs/vertical/vertical_unpinned_tab_container_view.h"
 #include "chrome/browser/ui/views/test/vertical_tabs_browser_test_mixin.h"
+#include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/tabs/public/tab_group.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/base/pointer/touch_ui_controller.h"
 #include "ui/display/screen.h"
 #include "ui/views/controls/button/button_controller.h"
@@ -486,6 +490,33 @@ IN_PROC_BROWSER_TEST_F(VerticalTabStripRegionViewTest, LogsResizeMetrics) {
         "Tabs.VerticalTabs.TabStripSize",
         VerticalTabStripRegionView::kCollapsedWidth, 1);
   }
+}
+
+IN_PROC_BROWSER_TEST_F(VerticalTabStripRegionViewTest,
+                       CancelCollapseAnimationUpdatesCollapseButton) {
+  actions::ActionItem* collapse_action =
+      actions::ActionManager::Get().FindAction(kActionToggleCollapseVertical);
+
+  // Request that the tabstrip collapses. The state controller collapse state
+  // should not be updated immediately.
+  state_controller()->RequestCollapse(true);
+  ASSERT_FALSE(state_controller()->IsCollapsed());
+
+  // The collapse button should be updated immediately to use the expand icon
+  // and text.
+  EXPECT_EQ(BrowserActions::GetCleanTitleAndTooltipText(
+                l10n_util::GetStringUTF16(IDS_EXPAND_VERTICAL_TABS)),
+            collapse_action->GetText());
+
+  // Cancel the collapse request with an expand request.
+  state_controller()->RequestCollapse(false);
+  EXPECT_FALSE(state_controller()->IsCollapsed());
+
+  // The collapse button should be updated immediately to use the collapse icon
+  // and text.
+  EXPECT_EQ(BrowserActions::GetCleanTitleAndTooltipText(
+                l10n_util::GetStringUTF16(IDS_COLLAPSE_VERTICAL_TABS)),
+            collapse_action->GetText());
 }
 
 // Verify that the pinned tabs container will never be larger than the unpinned
