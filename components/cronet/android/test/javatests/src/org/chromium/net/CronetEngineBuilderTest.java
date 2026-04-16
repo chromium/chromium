@@ -167,6 +167,7 @@ public class CronetEngineBuilderTest {
                         name = CronetProvider.USE_SCORE_BASED_PROVIDER_SELECTION_HTTP_FLAG_NAME,
                         value = true)
             })
+    @RequiresMinAndroidApi(Build.VERSION_CODES.N)
     public void testSmartLogicSorting() {
         var providerInfo1 = new CronetProvider.ProviderInfo();
         providerInfo1.providerScore = 2;
@@ -205,6 +206,7 @@ public class CronetEngineBuilderTest {
                         name = CronetProvider.USE_SCORE_BASED_PROVIDER_SELECTION_HTTP_FLAG_NAME,
                         value = true)
             })
+    @RequiresMinAndroidApi(Build.VERSION_CODES.N)
     public void testSmartLogicSortingShouldFetchFirstEnabledOnly() {
         var providerInfo1 = new CronetProvider.ProviderInfo();
         providerInfo1.providerScore = 2;

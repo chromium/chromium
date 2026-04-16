@@ -8,6 +8,8 @@ import static com.google.common.truth.Truth.assertThat;
 
 import static org.chromium.net.truth.UrlResponseInfoSubject.assertThat;
 
+import android.os.Build;
+
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 import androidx.test.filters.SmallTest;
 
@@ -22,6 +24,7 @@ import org.chromium.net.CronetTestFramework.CronetImplementation;
 import org.chromium.net.CronetTestRule.BoolFlag;
 import org.chromium.net.CronetTestRule.Flags;
 import org.chromium.net.CronetTestRule.IgnoreFor;
+import org.chromium.net.CronetTestRule.RequiresMinAndroidApi;
 import org.chromium.net.CronetTestRule.RequiresMinApi;
 import org.chromium.net.impl.CronetUrlRequestContext;
 import org.chromium.net.test.ServerCertificate;
@@ -82,6 +85,7 @@ public class BrotliTest {
                         name = CronetUrlRequestContext.ALWAYS_ENABLE_BROTLI_FLAG_NAME,
                         value = true)
             })
+    @RequiresMinAndroidApi(Build.VERSION_CODES.N)
     @IgnoreFor(
             implementations = {CronetImplementation.AOSP_PLATFORM},
             reason = "This feature flag has not reached platform Cronet yet")
@@ -102,6 +106,7 @@ public class BrotliTest {
                         name = CronetUrlRequestContext.ALWAYS_ENABLE_BROTLI_FLAG_NAME,
                         value = true)
             })
+    @RequiresMinAndroidApi(Build.VERSION_CODES.N)
     @IgnoreFor(
             implementations = {CronetImplementation.AOSP_PLATFORM},
             reason = "This feature flag has not reached platform Cronet yet")

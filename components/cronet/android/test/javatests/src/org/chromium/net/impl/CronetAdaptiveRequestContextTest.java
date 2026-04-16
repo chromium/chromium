@@ -30,6 +30,7 @@ import org.chromium.net.CronetTestRule;
 import org.chromium.net.CronetTestRule.BoolFlag;
 import org.chromium.net.CronetTestRule.Flags;
 import org.chromium.net.CronetTestRule.IgnoreFor;
+import org.chromium.net.CronetTestRule.RequiresMinAndroidApi;
 import org.chromium.net.CronetTestRule.StringFlag;
 import org.chromium.net.httpflags.HttpFlagsLoader;
 
@@ -86,6 +87,7 @@ public class CronetAdaptiveRequestContextTest {
                         name = CronetAdaptiveRequestContext.ENABLE_ADAPTIVE_NETWORK_NAME,
                         value = true)
             })
+    @RequiresMinAndroidApi(Build.VERSION_CODES.N)
     public void reportFallbackUsed_memorizesNetwork() {
         // We need java.util.stream.Stream to be available for these tests.
         assumeTrue(Build.VERSION.SDK_INT >= Build.VERSION_CODES.N);
@@ -124,6 +126,7 @@ public class CronetAdaptiveRequestContextTest {
     @IgnoreFor(
             implementations = {CronetImplementation.FALLBACK, CronetImplementation.AOSP_PLATFORM},
             reason = "Logging is not supported for these implementations.")
+    @RequiresMinAndroidApi(Build.VERSION_CODES.N)
     public void telemetrySmokeTest() {
         // We need java.util.stream.Stream to be available for these tests.
         assumeTrue(Build.VERSION.SDK_INT >= Build.VERSION_CODES.N);
@@ -164,6 +167,7 @@ public class CronetAdaptiveRequestContextTest {
                         name = CronetAdaptiveRequestContext.ENABLE_ADAPTIVE_NETWORK_NAME,
                         value = true)
             })
+    @RequiresMinAndroidApi(Build.VERSION_CODES.N)
     public void getFallbackNetwork_expired_returnsNull() {
         // We need java.util.stream.Stream to be available for these tests.
         assumeTrue(Build.VERSION.SDK_INT >= Build.VERSION_CODES.N);
@@ -200,6 +204,7 @@ public class CronetAdaptiveRequestContextTest {
                         name = CronetAdaptiveRequestContext.ENABLE_ADAPTIVE_NETWORK_NAME,
                         value = true)
             })
+    @RequiresMinAndroidApi(Build.VERSION_CODES.N)
     public void getFallbackNetwork_notExpired_returnsNetwork() {
         // We need java.util.stream.Stream to be available for these tests.
         assumeTrue(Build.VERSION.SDK_INT >= Build.VERSION_CODES.N);
@@ -235,6 +240,7 @@ public class CronetAdaptiveRequestContextTest {
                         name = CronetAdaptiveRequestContext.ENABLE_ADAPTIVE_NETWORK_NAME,
                         value = true)
             })
+    @RequiresMinAndroidApi(Build.VERSION_CODES.N)
     public void getFallbackNetwork_networkNotAvailable_returnsNull() {
         // We need java.util.stream.Stream to be available for these tests.
         assumeTrue(Build.VERSION.SDK_INT >= Build.VERSION_CODES.N);

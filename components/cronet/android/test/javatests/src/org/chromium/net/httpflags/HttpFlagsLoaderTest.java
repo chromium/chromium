@@ -6,6 +6,7 @@ package org.chromium.net.httpflags;
 
 import static com.google.common.truth.Truth.assertThat;
 
+import android.os.Build;
 import android.os.Bundle;
 
 import androidx.test.ext.junit.runners.AndroidJUnit4;
@@ -56,7 +57,7 @@ public final class HttpFlagsLoaderTest {
 
     @Test
     @SmallTest
-    public void testLoad_returnsFileFlagContents() {
+    public void testLoad_returnsFileFlagContentsOnNAndHigher() {
         setShouldReadHttpFlagsInManifest(true);
         Flags flags =
                 Flags.newBuilder()
@@ -70,6 +71,13 @@ public final class HttpFlagsLoaderTest {
                                         .build())
                         .build();
         mCronetTestFramework.setHttpFlags(flags);
-        assertThat(HttpFlagsLoader.load(mCronetTestFramework.getContext())).isEqualTo(flags);
+        var actualFlags = HttpFlagsLoader.load(mCronetTestFramework.getContext());
+        // Android below N doesn't provide the necessary APIs for us to be able to resolve the flags
+        // file provider package.
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            assertThat(actualFlags).isEqualTo(flags);
+        } else {
+            assertThat(actualFlags).isNull();
+        }
     }
 }

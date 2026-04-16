@@ -40,6 +40,7 @@ import org.chromium.net.CronetTestRule;
 import org.chromium.net.CronetTestRule.BoolFlag;
 import org.chromium.net.CronetTestRule.Flags;
 import org.chromium.net.CronetTestRule.IgnoreFor;
+import org.chromium.net.CronetTestRule.RequiresMinAndroidApi;
 import org.chromium.net.CronetTestRule.StringFlag;
 import org.chromium.net.CronetTestUtil;
 import org.chromium.net.ExperimentalCronetEngine;
@@ -171,6 +172,7 @@ public class AdaptiveBidirectionalStreamTest {
     @IgnoreFor(
             implementations = {CronetImplementation.FALLBACK, CronetImplementation.AOSP_PLATFORM},
             reason = "Logging is not supported for these implementations.")
+    @RequiresMinAndroidApi(Build.VERSION_CODES.N)
     public void postViaBidirectionalStreamWithFallbackSet_successOnPrimaryNetwork()
             throws Exception {
         // We need java.util.stream.Stream to be available for these tests.
@@ -216,6 +218,7 @@ public class AdaptiveBidirectionalStreamTest {
             })
     @Test
     @SmallTest
+    @RequiresMinAndroidApi(Build.VERSION_CODES.N)
     public void tlsConnectionFailsAllNetworks_throwsConnectionTimeoutError() throws Exception {
         // We need java.util.stream.Stream to be available for these tests.
         assumeTrue(Build.VERSION.SDK_INT >= Build.VERSION_CODES.N);
@@ -255,6 +258,7 @@ public class AdaptiveBidirectionalStreamTest {
                         name = CronetAdaptiveRequestContext.ENABLE_ADAPTIVE_NETWORK_PATHS_FLAG_NAME,
                         value = "/echostream,/echostream2")
             })
+    @RequiresMinAndroidApi(Build.VERSION_CODES.N)
     public void adaptiveNetworkPaths() throws Exception {
         // We need java.util.stream.Stream to be available for these tests.
         assumeTrue(Build.VERSION.SDK_INT >= Build.VERSION_CODES.N);
@@ -283,6 +287,7 @@ public class AdaptiveBidirectionalStreamTest {
                         name = CronetAdaptiveRequestContext.ENABLE_ADAPTIVE_NETWORK_PATHS_FLAG_NAME,
                         value = "")
             })
+    @RequiresMinAndroidApi(Build.VERSION_CODES.N)
     public void adaptiveNetworkPaths_empty() throws Exception {
         // We need java.util.stream.Stream to be available for these tests.
         assumeTrue(Build.VERSION.SDK_INT >= Build.VERSION_CODES.N);
@@ -311,6 +316,7 @@ public class AdaptiveBidirectionalStreamTest {
             reason = "Logging is not supported for these implementations.")
     @Test
     @SmallTest
+    @RequiresMinAndroidApi(Build.VERSION_CODES.N)
     public void postViaBidirectionalStreamWithFallbackSet_successOnFallbackNetwork()
             throws Exception {
         // We need java.util.stream.Stream to be available for these tests.
@@ -361,6 +367,7 @@ public class AdaptiveBidirectionalStreamTest {
             })
     @Test
     @SmallTest
+    @RequiresMinAndroidApi(Build.VERSION_CODES.N)
     public void postViaBidirectionalStreamWithMemorizedFallback_successOnPrimaryNetwork()
             throws Exception {
         // We need java.util.stream.Stream to be available for these tests.
@@ -413,6 +420,7 @@ public class AdaptiveBidirectionalStreamTest {
             })
     @Test
     @SmallTest
+    @RequiresMinAndroidApi(Build.VERSION_CODES.N)
     public void getFallbackNetworkHandle_networkNotAvailable_returnsNull() throws Exception {
         // We need java.util.stream.Stream to be available for these tests.
         assumeTrue(Build.VERSION.SDK_INT >= Build.VERSION_CODES.N);

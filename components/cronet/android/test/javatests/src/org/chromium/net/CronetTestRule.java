@@ -277,6 +277,14 @@ public class CronetTestRule implements TestRule {
         if (httpFlags == null) {
             return null;
         }
+
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.N) {
+            throw new IllegalStateException(
+                    "Android M (API 23) and below does not support HTTP flags. Remove the @Flags"
+                            + " test method annotation or add"
+                            + " @RequiresMinAndroidApi(Build.VERSION_CODES.N).");
+        }
+
         if (getTestClassAnnotation(desc, DoNotBatch.class) == null) {
             throw new IllegalStateException(
                     "Using @Flags annotation requires the test methods to be run individually by"

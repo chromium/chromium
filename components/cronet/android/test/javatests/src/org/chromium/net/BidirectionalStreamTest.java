@@ -416,6 +416,7 @@ public class BidirectionalStreamTest {
     @Test
     @SmallTest
     @Flags(boolFlags = {@BoolFlag(name = JavaCronetProvider.FORCE_HTTPENGINE_FLAG, value = false)})
+    @RequiresMinAndroidApi(Build.VERSION_CODES.N)
     public void testSimpleGetWithFallbackForcingHttpEngineDisabled() throws Exception {
         String url = Http2TestServer.getEchoMethodUrl();
         TestBidirectionalStreamCallback callback = new TestBidirectionalStreamCallback();
