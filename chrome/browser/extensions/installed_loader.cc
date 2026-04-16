@@ -369,6 +369,17 @@ void InstalledLoader::LoadAllExtensions(Profile* profile) {
   ExtensionPrefs::ExtensionsInfo extensions_info =
       extension_prefs_->GetInstalledExtensionsInfo();
 
+  std::erase_if(extensions_info, [this](const ExtensionInfo& info) {
+    // Skip extensions installed via CDP because they are only meant for the
+    // current session.
+    int creation_flags = GetCreationFlags(&info);
+    if (creation_flags & Extension::INSTALLED_VIA_CDP) {
+      extension_prefs_->DeleteExtensionPrefs(info.extension_id);
+      return true;
+    }
+    return false;
+  });
+
   bool should_write_prefs = false;
 
   for (auto& info : extensions_info) {

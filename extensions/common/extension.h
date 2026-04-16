@@ -123,6 +123,10 @@ class Extension final : public base::RefCountedThreadSafe<Extension> {
     // for permissions to be withheld from the extension by default.
     WITHHOLD_PERMISSIONS = 1 << 14,
 
+    // `INSTALLED_VIA_CDP` indicates that this extension was installed via
+    // Chrome DevTools Protocol.
+    INSTALLED_VIA_CDP = 1 << 15,
+
     // When adding new flags, make sure to update kInitFromValueFlagBits.
   };
 

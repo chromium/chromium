@@ -298,6 +298,10 @@ int UnpackedInstaller::GetFlags() {
     result |= Extension::WITHHOLD_PERMISSIONS;
   }
 
+  if (installed_via_cdp_) {
+    result |= Extension::INSTALLED_VIA_CDP;
+  }
+
   return result;
 }
 

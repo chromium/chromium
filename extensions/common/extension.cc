@@ -212,7 +212,7 @@ std::u16string InvalidManifestVersionError(const char* manifest_version_error,
 
 }  // namespace
 
-const int Extension::kInitFromValueFlagBits = 15;
+const int Extension::kInitFromValueFlagBits = 16;
 
 const char Extension::kMimeType[] = "application/x-chrome-extension";
 

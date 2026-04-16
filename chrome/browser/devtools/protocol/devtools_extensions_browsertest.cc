@@ -4,7 +4,9 @@
 
 #include "base/features.h"
 #include "base/files/file.h"
+#include "base/one_shot_event.h"
 #include "base/path_service.h"
+#include "base/run_loop.h"
 #include "base/test/values_test_util.h"
 #include "base/values.h"
 #include "chrome/browser/devtools/protocol/devtools_protocol_test_support.h"
@@ -237,6 +239,44 @@ IN_PROC_BROWSER_TEST_F(DevToolsExtensionsProtocolWithUnsafeDebuggingTest,
   const extensions::Extension* extension_after =
       registry->GetInstalledExtension(id);
   ASSERT_FALSE(extension_after);
+}
+
+IN_PROC_BROWSER_TEST_F(DevToolsExtensionsProtocolWithUnsafeDebuggingTest,
+                       PRE_ExtensionMarkedAsInstalledViaCdp) {
+  const base::DictValue* install_result =
+      SendLoadUnpackedCommand("simple_background_page");
+
+  std::string id = *install_result->FindString("id");
+  extensions::ExtensionRegistry* registry =
+      extensions::ExtensionRegistry::Get(browser()->profile());
+  const extensions::Extension* extension = registry->GetInstalledExtension(id);
+  ASSERT_TRUE(extension);
+  EXPECT_TRUE(extension->creation_flags() &
+              extensions::Extension::INSTALLED_VIA_CDP);
+}
+
+IN_PROC_BROWSER_TEST_F(DevToolsExtensionsProtocolWithUnsafeDebuggingTest,
+                       ExtensionMarkedAsInstalledViaCdp) {
+  base::RunLoop run_loop;
+  extensions::ExtensionSystem::Get(browser()->profile())
+      ->ready()
+      .Post(FROM_HERE, run_loop.QuitWhenIdleClosure());
+  run_loop.Run();
+
+  extensions::ExtensionRegistry* registry =
+      extensions::ExtensionRegistry::Get(browser()->profile());
+  // The extension should not be loaded on a subsequent run.
+
+  // Verify that the extension is not in the registry.
+  // We identify the extension by checking its name.
+  bool found = false;
+  for (const auto& extension : registry->GenerateInstalledExtensionsSet()) {
+    if (extension->name() == "Test Extension - Simple Background Page") {
+      found = true;
+      break;
+    }
+  }
+  EXPECT_FALSE(found);
 }
 
 IN_PROC_BROWSER_TEST_F(DevToolsExtensionsProtocolWithUnsafeDebuggingTest,

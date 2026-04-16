@@ -99,6 +99,10 @@ class UnpackedInstaller : public base::RefCountedThreadSafe<
 
   void set_install_param(const std::string& param) { install_param_ = param; }
 
+  void set_installed_via_cdp(bool installed_via_cdp) {
+    installed_via_cdp_ = installed_via_cdp;
+  }
+
  private:
   friend struct content::BrowserThread::DeleteOnThread<
       content::BrowserThread::UI>;
@@ -199,6 +203,8 @@ class UnpackedInstaller : public base::RefCountedThreadSafe<
 
   // Specify an install param.
   std::optional<std::string> install_param_;
+
+  bool installed_via_cdp_ = false;
 
   // Subscription for a callback that runs when the BrowserContext* is
   // destroyed.

@@ -10,7 +10,9 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/test/base/testing_profile.h"
 #include "content/public/test/browser_task_environment.h"
+#include "extensions/browser/extension_prefs.h"
 #include "extensions/browser/extension_registrar.h"
+#include "extensions/browser/extension_registry.h"
 #include "extensions/browser/permissions/permissions_updater.h"
 #include "extensions/browser/permissions/scripting_permissions_modifier.h"
 #include "extensions/buildflags/buildflags.h"
@@ -211,6 +213,27 @@ class InstalledLoaderUnitTestWithRegularUser : public InstalledLoaderUnitTest {
     ASSERT_NO_FATAL_FAILURE(MaybeSetUpTestUser(/*is_guest=*/false));
   }
 };
+
+TEST_F(InstalledLoaderUnitTestWithRegularUser,
+       DoesNotLoadCdpInstalledExtensions) {
+  scoped_refptr<const Extension> extension =
+      ExtensionBuilder("cdp_extension")
+          .SetLocation(mojom::ManifestLocation::kUnpacked)
+          .AddFlags(Extension::INSTALLED_VIA_CDP)
+          .Build();
+
+  ExtensionPrefs* prefs = ExtensionPrefs::Get(profile());
+  prefs->OnExtensionInstalled(extension.get(), base::flat_set<int>(),
+                              syncer::StringOrdinal(), "");
+
+  EXPECT_TRUE(prefs->HasPrefForExtension(extension->id()));
+
+  InstalledLoader loader(profile());
+  loader.LoadAllExtensions(profile());
+
+  EXPECT_FALSE(registry()->GetInstalledExtension(extension->id()));
+  EXPECT_FALSE(prefs->HasPrefForExtension(extension->id()));
+}
 
 // Tests that some histograms that only emit for profiles that can use
 // non-component extensions emit as expected.

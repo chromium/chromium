@@ -229,6 +229,7 @@ void ExtensionsHandler::LoadUnpacked(
   if (enable_in_incognito.has_value()) {
     installer->set_allow_incognito_access(enable_in_incognito.value());
   }
+  installer->set_installed_via_cdp(true);
   installer->set_completion_callback(
       base::BindOnce(&ExtensionsHandler::OnLoaded, weak_factory_.GetWeakPtr(),
                      std::move(callback)));
