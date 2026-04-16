@@ -26,15 +26,6 @@ class AnnotationIndexClientImplTestApi {
   explicit AnnotationIndexClientImplTestApi(AnnotationIndexClientImpl& client)
       : client_(client) {}
 
-  void ExecuteRequest(
-      std::unique_ptr<network::ResourceRequest> request,
-      std::string request_body,
-      net::NetworkTrafficAnnotationTag traffic_annotation,
-      base::OnceCallback<void(std::optional<std::string>)> callback) {
-    client_->ExecuteRequest(std::move(request), std::move(request_body),
-                            traffic_annotation, std::move(callback));
-  }
-
   static std::unique_ptr<AnnotationIndexClientImpl> CreateManagerForApiKey(
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       const std::string& api_key) {

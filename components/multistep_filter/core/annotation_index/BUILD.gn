@@ -72,6 +72,7 @@ source_set("unit_tests") {
     "//base/test:test_support",
     "//components/multistep_filter/core",
     "//components/multistep_filter/core:features",
+    "//components/multistep_filter/core:switches",
     "//components/multistep_filter/core/annotation_index/proto",
     "//components/multistep_filter/core/data_models",
     "//google_apis/common:test_support",
