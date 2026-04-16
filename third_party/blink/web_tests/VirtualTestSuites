@@ -4603,27 +4603,7 @@
     "args": [
       "--enable-threaded-compositing",
       "--enable-viewport",
-      "--blink-settings=textAutosizingEnabled=true,textSizeAdjustEnabled=true,viewportMetaEnabled=true"
-    ],
-    "expires": "never"
-  },
-  {
-    "prefix": "text-size-adjust-with-os-font-scale",
-    "owners": [
-      "pdr@chromium.org"
-    ],
-    "platforms": [
-      "Linux",
-      "Mac"
-    ],
-    "bases": [
-      "wpt_internal/css/css-size-adjust",
-      "external/wpt/css/css-size-adjust"
-    ],
-    "args": [
-      "--enable-threaded-compositing",
-      "--enable-viewport",
-      "--blink-settings=textSizeAdjustEnabled=true,accessibilityFontScaleFactor=2,viewportMetaEnabled=true"
+      "--blink-settings=textSizeAdjustEnabled=true"
     ],
     "expires": "never"
   },

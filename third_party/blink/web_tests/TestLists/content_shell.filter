@@ -20,7 +20,6 @@ virtual/task-tracking/wpt_internal/*
 virtual/fenced-frame-mparch-internal/wpt_internal/*
 virtual/js-shared-memory/wpt_internal/*
 virtual/text-size-adjust/wpt_internal/*
-virtual/text-size-adjust-with-os-font-scale/wpt_internal/*
 virtual/generic-sensor-extra-classes/wpt_internal/*
 virtual/unload-allowed/wpt_internal/*
 virtual/indexeddb_sqlite/wpt_internal/*

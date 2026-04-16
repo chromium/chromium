@@ -1,1 +1,0 @@
-PASS: All inlines have the same width.

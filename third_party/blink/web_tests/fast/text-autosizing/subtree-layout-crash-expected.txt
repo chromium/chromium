@@ -1,3 +1,0 @@
-Test for crbug.com/360171: this test passes if it does not crash.
-
-This text appears inside a relayout boundary.

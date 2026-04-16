@@ -1,1 +1,0 @@
-Test for crbug.com/348458: this test passes if it does not crash. PASS

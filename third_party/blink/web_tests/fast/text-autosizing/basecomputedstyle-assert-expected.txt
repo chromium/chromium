@@ -1,3 +1,0 @@
-PASS if test doesn't assert or crash.
-
-xxxxxxxxxxxxxxxxxxxxxxxxxxxx

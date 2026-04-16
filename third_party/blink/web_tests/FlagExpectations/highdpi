@@ -197,8 +197,6 @@ crbug.com/1179554 http/tests/csspaint/paint2d-zoom.html [ Failure ]
 crbug.com/1179554 http/tests/csspaint/shadow-scale-with-page-zoom.html [ Failure ]
 crbug.com/1179554 http/tests/csspaint/transform-with-page-zoom-002.html [ Failure ]
 crbug.com/1179554 http/tests/csspaint/transform-with-page-zoom-003.html [ Failure ]
-crbug.com/1179554 http/tests/text-autosizing/narrow-iframe.html [ Failure ]
-crbug.com/1179554 http/tests/text-autosizing/wide-iframe.html [ Failure ]
 
 crbug.com/1179572 ietestcenter/css3/flexbox/flexbox-align-baseline-001.htm [ Failure ]
 crbug.com/1179572 ietestcenter/css3/flexbox/flexbox-align-center-001.htm [ Failure ]

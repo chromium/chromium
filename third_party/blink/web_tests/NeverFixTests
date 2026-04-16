@@ -1860,12 +1860,3 @@ crbug.com/40550039 svg/W3C-SVG-1.1-SE/struct-use-11-f.svg [ Skip ]
 [ Mac ] editing/selection/move-by-word-win-punctuation-newline.html [ Skip ]
 [ Android ] editing/selection/move-by-word-win-punctuation-newline.html [ Skip ]
 [ Fuchsia ] editing/selection/move-by-word-win-punctuation-newline.html [ Skip ]
-
-# TODO(dgrogan): Remove these once the directories are deleted from the repo.
-# Text Autosizing has been removed
-fast/lists/list-with-autosizing-crash.html [ Skip ]
-fast/text-autosizing/basecomputedstyle-assert.html [ Skip ]
-fast/text-autosizing/* [ Skip ]
-http/tests/text-autosizing/* [ Skip ]
-http/tests/devtools/text-autosizing-override.js [ Skip ]
-

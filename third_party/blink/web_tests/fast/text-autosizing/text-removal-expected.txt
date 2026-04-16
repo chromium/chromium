@@ -1,6 +1,0 @@
-PASS window.getComputedStyle(span1).lineHeight is "16px"
-PASS window.getComputedStyle(span2).lineHeight is "16px"
-PASS successfullyParsed is true
-
-TEST COMPLETE
-

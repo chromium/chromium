@@ -1256,7 +1256,6 @@ fast/table/percent-widths-stretch-vertical.html
 fast/table/percent-widths-stretch.html
 fast/table/tbody-background-image-fills-tbody.html
 fast/table/tbody-background-image-repeat-y.html
-fast/text-autosizing/
 fast/writing-mode/english-lr-text.html
 fonts/default.html
 fragmentation/multi-line-cells.html
@@ -1313,8 +1312,6 @@ http/tests/images/png-partial-load-as-document.html
 http/tests/inspector-protocol/page/page-captureScreenshot-clip.js
 http/tests/media/video-buffered-range-contains-currentTime.html
 http/tests/misc/destroy-middle-click-locked-target-crash.html
-http/tests/text-autosizing/narrow-iframe.html
-http/tests/text-autosizing/wide-iframe.html
 http/tests/webfont/popup-menu-load-webfont-after-open.html
 ietestcenter/css3/bordersbackgrounds/background-color-border-box.htm
 ietestcenter/css3/flexbox/flexbox-align-baseline-001.htm
