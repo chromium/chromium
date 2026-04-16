@@ -2015,8 +2015,13 @@ UIImage* SendButtonImage(BOOL highlighted, ComposeboxTheme* theme) {
 // Returns the title for the given input plate element of a certain type.
 - (NSString*)titleFor:(InputPlateString)element
                  type:(InputPlateStringType)type {
-  return [self serverStringForElement:element type:type]
-             ?: [self localFallbackForElement:element type:type];
+  NSString* serverString = [self serverStringForElement:element type:type];
+  BOOL useLocalFallback = [serverString length] == 0;
+  if (useLocalFallback) {
+    return [self localFallbackForElement:element type:type];
+  }
+
+  return serverString;
 }
 
 // Creates a new canvas button to be displayed in the input plate.
