@@ -11,6 +11,7 @@
 #include "base/time/time.h"
 #include "components/media_router/common/providers/cast/certificate/cast_cert_reader.h"
 #include "components/media_router/common/providers/cast/certificate/cast_cert_test_helpers.h"
+#include "components/media_router/common/providers/cast/certificate/cast_crl.h"
 #include "components/media_router/common/providers/cast/certificate/switches.h"
 #include "net/cert/x509_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -22,6 +23,18 @@
 namespace cast_certificate {
 
 namespace {
+
+class MockCastCRL : public CastCRL {
+ public:
+  explicit MockCastCRL(bool revoked) : revoked_(revoked) {}
+  bool CheckRevocation(const bssl::ParsedCertificateList& trusted_chain,
+                       const base::Time& time) const override {
+    return !revoked_;
+  }
+
+ private:
+  bool revoked_;
+};
 
 // Creates an std::string given a uint8_t array.
 template <size_t N>
@@ -632,6 +645,63 @@ TEST(VerifyCastDeviceCertTest, DeviceCertHas2048BitRsaKey) {
           "rsa2048_device_cert.pem", AprilFirst2016(),
           TRUST_STORE_FROM_TEST_FILE,
           "signeddata/rsa2048_device_cert_data.pem");
+}
+
+TEST(CastCertValidatorRevocationTest, StaleDeviceCrlBypassesFallbackCrl) {
+  // Load a valid certificate chain.
+  auto certs = ReadCertificateChainFromFile(
+      testing::GetCastCertificatesSubDirectory().AppendASCII(
+          "chromecast_gen1.pem"));
+  ASSERT_FALSE(certs.empty());
+
+  // Setup trust store.
+  bssl::CertErrors errors;
+  std::shared_ptr<const bssl::ParsedCertificate> root =
+      bssl::ParsedCertificate::Create(
+          net::x509_util::CreateCryptoBuffer(certs.back()), {}, &errors);
+  ASSERT_TRUE(root) << errors.ToDebugString();
+  certs.pop_back();
+
+  bssl::TrustStoreInMemory trust_store;
+  trust_store.AddTrustAnchorWithConstraints(std::move(root));
+
+  std::unique_ptr<CertVerificationContext> context;
+  CastDeviceCertPolicy policy;
+  base::Time time = AprilFirst2016();
+
+  // 1. No device CRL, fallback CRL revokes.
+  // Expect: ERR_CERTS_REVOKED_BY_FALLBACK_CRL
+  {
+    MockCastCRL fallback_crl(true);  // Revoked
+    CastCertError result = VerifyDeviceCertUsingCustomTrustStore(
+        certs, time, &context, &policy, nullptr, &fallback_crl,
+        CRLPolicy::CRL_REQUIRED_WITH_FALLBACK, &trust_store);
+    EXPECT_EQ(CastCertError::ERR_CERTS_REVOKED_BY_FALLBACK_CRL, result);
+  }
+
+  // 2. Device CRL (not revoking), fallback CRL (revoking).
+  // This is the VULNERABILITY: device CRL shadows fallback CRL.
+  // Expect: ERR_CERTS_REVOKED_BY_FALLBACK_CRL
+  {
+    MockCastCRL device_crl(false);   // Not revoked (stale CRL)
+    MockCastCRL fallback_crl(true);  // Revoked
+    CastCertError result = VerifyDeviceCertUsingCustomTrustStore(
+        certs, time, &context, &policy, &device_crl, &fallback_crl,
+        CRLPolicy::CRL_REQUIRED_WITH_FALLBACK, &trust_store);
+
+    EXPECT_EQ(CastCertError::ERR_CERTS_REVOKED_BY_FALLBACK_CRL, result);
+  }
+
+  // 3. Valid device CRL, no fallback CRL (e.g. built-in fallback CRL expired).
+  // Expect: OK
+  {
+    MockCastCRL device_crl(false);  // Not revoked
+    CastCertError result = VerifyDeviceCertUsingCustomTrustStore(
+        certs, time, &context, &policy, &device_crl, nullptr,
+        CRLPolicy::CRL_REQUIRED_WITH_FALLBACK, &trust_store);
+
+    EXPECT_EQ(CastCertError::OK, result);
+  }
 }
 
 }  // namespace
