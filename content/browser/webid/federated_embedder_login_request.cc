@@ -11,6 +11,7 @@
 #include "base/time/time.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/webid/identity_credential_source.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_set.h"
 #include "url/origin.h"
 
 namespace content::webid {
@@ -88,21 +89,26 @@ void FederatedEmbedderLoginRequest::Remove(WebContents* web_contents) {
 // static
 FederatedEmbedderLoginRequest* FederatedEmbedderLoginRequest::Get(
     WebContents* web_contents) {
-  if (!web_contents) {
-    return nullptr;
-  }
+  // There can be cycles in the opener chain; keep track of visited openers to
+  // avoid getting stuck in a cycle.
+  absl::flat_hash_set<WebContents*> visited;
+  while (web_contents) {
+    if (!visited.insert(web_contents).second) {
+      return nullptr;
+    }
 
-  FederatedEmbedderLoginRequest* request = FromWebContents(web_contents);
-  if (request) {
-    return request;
-  }
+    FederatedEmbedderLoginRequest* request = FromWebContents(web_contents);
+    if (request) {
+      return request;
+    }
 
-  RenderFrameHost* opener_rfh = web_contents->GetOpener();
-  if (!opener_rfh) {
-    return nullptr;
+    RenderFrameHost* opener_rfh = web_contents->GetOpener();
+    if (!opener_rfh) {
+      return nullptr;
+    }
+    web_contents = WebContents::FromRenderFrameHost(opener_rfh);
   }
-
-  return Get(WebContents::FromRenderFrameHost(opener_rfh));
+  return nullptr;
 }
 
 base::CallbackListSubscription
