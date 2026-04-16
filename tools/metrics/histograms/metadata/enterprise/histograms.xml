@@ -3250,7 +3250,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Enterprise.ProfileSeparation.DasherPolicyFetch.HttpResponse"
-    enum="HttpResponseCode" expires_after="2025-07-01">
+    enum="HttpResponseCode" expires_after="2026-07-01">
   <owner>ydago@chromium.org</owner>
   <owner>zmin@chromium.org</owner>
   <summary>
@@ -3258,17 +3258,23 @@ chromium-metrics-reviews@google.com.
     ManagedAccountsSigninRestriction policy value for individual dasher
     accounts. This is recorded after trying to the the policy value, when the
     status is available.
+
+    Warning: this histogram was expired from 2025-07-01 to 2026-04-15; data may
+    be missing.
   </summary>
 </histogram>
 
 <histogram name="Enterprise.ProfileSeparation.DasherPolicyFetch.NetworkError"
-    enum="NetErrorCodes" expires_after="2025-07-01">
+    enum="NetErrorCodes" expires_after="2026-07-01">
   <owner>ydago@chromium.org</owner>
   <owner>zmin@chromium.org</owner>
   <summary>
     The network errors that happen when trying to get the
     ManagedAccountsSigninRestriction policy value for individual dasher
     accounts. This is recorded every time after trying to the the policy value.
+
+    Warning: this histogram was expired from 2025-07-01 to 2026-04-15; data may
+    be missing.
   </summary>
 </histogram>
 
