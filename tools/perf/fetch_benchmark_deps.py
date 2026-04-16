@@ -10,7 +10,6 @@ import json
 import os
 import sys
 import logging
-from concurrent.futures import ThreadPoolExecutor
 from six.moves import input  # pylint: disable=redefined-builtin
 
 from chrome_telemetry_build import chromium_config
@@ -85,7 +84,7 @@ def _FetchDepsForBenchmark(benchmark):
   return deps
 
 
-def FetchDepsForCrossbench(max_workers=None):
+def FetchDepsForCrossbench():
   # Note: Any new crossbench archives need to be added below
   cb_story_sets = [
       speedometer3_pages.Speedometer30CrossbenchStory(),
@@ -93,10 +92,8 @@ def FetchDepsForCrossbench(max_workers=None):
       crossbench_embedder.EmbedderCrossbenchStorySet(),
       crossbench_gma_embedder.GmaEmbedderCrossbenchStorySet(),
   ]
-  with ThreadPoolExecutor(max_workers=max_workers) as executor:
-    list(
-        executor.map(lambda s: s.wpr_archive_info.DownloadArchivesIfNeeded(),
-                     cb_story_sets))
+  for story_set in cb_story_sets:
+    story_set.wpr_archive_info.DownloadArchivesIfNeeded()
 
   platform = platform_module.GetHostPlatform()
   binary_manager.InitDependencyManager(None)
@@ -128,11 +125,6 @@ def main(args):
   parser.add_argument(
         '-v', '--verbose', action='count', dest='verbosity', default=0,
         help='Increase verbosity level (repeat as needed)')
-  parser.add_argument('-j',
-                      '--jobs',
-                      type=int,
-                      help='Number of concurrent jobs to run. '
-                      'Defaults to ThreadPoolExecutor default.')
 
   options = parser.parse_args(args)
 
@@ -158,23 +150,14 @@ def main(args):
     if not options.force:
       input('No benchmark name is specified. Fetching all benchmark deps. '
             'Press enter to continue...')
-    benchmarks_to_fetch = []
     for b in benchmark_finders.GetOfficialBenchmarks():
       supported_platforms = b.GetSupportedPlatformNames(b.SUPPORTED_PLATFORMS)
       if(not options.platform or
          options.platform in supported_platforms or
          'all' in supported_platforms):
-        benchmarks_to_fetch.append(b)
+        deps[b.Name()] = _FetchDepsForBenchmark(b)
 
-    def Fetch(b):
-      return b.Name(), _FetchDepsForBenchmark(b)
-
-    with ThreadPoolExecutor(max_workers=options.jobs) as executor:
-      results = executor.map(Fetch, benchmarks_to_fetch)
-      for name, benchmark_deps in results:
-        deps[name] = benchmark_deps
-
-  FetchDepsForCrossbench(max_workers=options.jobs)
+  FetchDepsForCrossbench()
 
   if options.output_deps:
     with open(options.output_deps, 'w') as outfile:
