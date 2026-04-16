@@ -181,5 +181,19 @@ TEST_F(PopupSearchBarViewTest, ClearButton) {
       PopupSearchBarView::kInputChangeCallbackDelay);
 }
 
+TEST_F(PopupSearchBarViewTest, ClearButtonVisibility) {
+  PopupSearchBarView* view = widget().SetContentsView(
+      std::make_unique<PopupSearchBarView>(u"placeholder", delegate()));
+  widget().Show();
+
+  EXPECT_FALSE(view->IsClearButtonVisibleForTesting());
+
+  view->SetInputTextForTesting(u"a");
+  EXPECT_TRUE(view->IsClearButtonVisibleForTesting());
+
+  view->SetInputTextForTesting(u"");
+  EXPECT_FALSE(view->IsClearButtonVisibleForTesting());
+}
+
 }  // namespace
 }  // namespace autofill

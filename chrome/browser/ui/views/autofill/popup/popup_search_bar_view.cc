@@ -83,6 +83,7 @@ PopupSearchBarView::PopupSearchBarView(const std::u16string& placeholder,
           .Build());
   clear_->SetFocusBehavior(FocusBehavior::ALWAYS);
   views::InstallCircleHighlightPathGenerator(clear_);
+  clear_->SetVisible(false);
 }
 
 void PopupSearchBarView::AddedToWidget() {
@@ -125,9 +126,14 @@ gfx::Point PopupSearchBarView::GetClearButtonScreenCenterPointForTesting()
   return clear_->GetBoundsInScreen().CenterPoint();
 }
 
+bool PopupSearchBarView::IsClearButtonVisibleForTesting() const {
+  return clear_->GetVisible();
+}
+
 PopupSearchBarView::~PopupSearchBarView() = default;
 
 void PopupSearchBarView::OnInputChanged() {
+  clear_->SetVisible(!input_->GetText().empty());
   input_change_notification_timer_.Start(
       FROM_HERE, kInputChangeCallbackDelay,
       // `delegate_` is expected to outlive `this`, the timer will either be
