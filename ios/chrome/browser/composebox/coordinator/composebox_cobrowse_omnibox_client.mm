@@ -242,7 +242,7 @@ void ComposeboxCobrowseOmniboxClient::OnAutocompleteAccept(
     const std::u16string& text,
     const AutocompleteMatch& match,
     const AutocompleteMatch& alternative_nav_match) {
-  [delegate_ omniboxDidAcceptText:match.fill_into_edit
+  [delegate_ omniboxDidAcceptText:text + match.inline_autocompletion
                    destinationURL:destination_url
                     URLLoadParams:CreateOmniboxUrlLoadParams(
                                       destination_url, post_content,

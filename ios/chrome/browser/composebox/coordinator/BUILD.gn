@@ -279,7 +279,10 @@ source_set("constants") {
 
 source_set("unit_tests") {
   testonly = true
-  sources = [ "composebox_input_plate_mediator_unittest.mm" ]
+  sources = [
+    "composebox_cobrowse_omnibox_client_unittest.mm",
+    "composebox_input_plate_mediator_unittest.mm",
+  ]
   deps = [
     ":coordinator",
     ":input_plate",
@@ -292,6 +295,7 @@ source_set("unit_tests") {
     "//components/contextual_search/internal:test_support",
     "//components/contextual_search/internal/ios",
     "//components/contextual_tasks/public:query_contextualizer",
+    "//components/feature_engagement/test:test_support",
     "//components/omnibox/browser",
     "//components/omnibox/browser:test_support",
     "//components/search_engines",
@@ -302,6 +306,7 @@ source_set("unit_tests") {
     "//ios/chrome/browser/cobrowse/model:factory",
     "//ios/chrome/browser/composebox/public",
     "//ios/chrome/browser/composebox/ui",
+    "//ios/chrome/browser/shared/model/browser/test:test_support",
     "//ios/chrome/browser/shared/model/profile/test",
     "//ios/chrome/browser/shared/model/web_state_list",
     "//ios/chrome/browser/shared/model/web_state_list/test:test_support",
