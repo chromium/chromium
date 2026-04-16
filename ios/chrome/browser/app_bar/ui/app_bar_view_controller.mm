@@ -271,6 +271,9 @@ UIFont* AssistantButtonFontSize(UITraitCollection* traitCollection) {
   }
   _backgroundView.incognito = incognito;
   [self updateNewTabButtonAccessibilityLabel];
+  if (incognito) {
+    _assistantButton.enabled = NO;
+  }
 }
 
 - (void)setInTabGroup:(BOOL)inTabGroup {
@@ -327,7 +330,7 @@ UIFont* AssistantButtonFontSize(UITraitCollection* traitCollection) {
 }
 
 - (void)setButtonsEnabled:(BOOL)enabled {
-  _assistantButton.enabled = enabled;
+  _assistantButton.enabled = enabled && !_backgroundView.incognito;
   _openNewTabButton.enabled = enabled;
   _tabGridButton.enabled = enabled;
 }
@@ -622,15 +625,20 @@ UIFont* AssistantButtonFontSize(UITraitCollection* traitCollection) {
   configuration.titleLineBreakMode = NSLineBreakByTruncatingTail;
 
   __weak __typeof(self) weakSelf = self;
+  __weak UIButton* weakButton = button;
   configuration.titleTextAttributesTransformer =
       ^NSDictionary<NSAttributedStringKey, id>*(
           NSDictionary<NSAttributedStringKey, id>* textAttributes) {
     NSMutableDictionary* mutableAttributes = [textAttributes mutableCopy];
     mutableAttributes[NSFontAttributeName] =
         AssistantButtonFontSize(weakSelf.traitCollection);
-    mutableAttributes[NSForegroundColorAttributeName] =
-        [ButtonsForegroundColor()
-            colorWithAlphaComponent:weakSelf.buttonsTitleAlpha];
+
+    BOOL useEnabledColor = !weakButton || weakButton.enabled;
+    UIColor* textColor = useEnabledColor ? ButtonsForegroundColor()
+                                         : [ButtonsForegroundColor()
+                                               colorWithAlphaComponent:0.5];
+
+    mutableAttributes[NSForegroundColorAttributeName] = textColor;
     return mutableAttributes;
   };
 
