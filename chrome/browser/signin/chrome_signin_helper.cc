@@ -419,7 +419,7 @@ void ProcessMirrorHeader(
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
 
 void ProcessDiceHeader(
-    const DiceResponseParams& dice_params,
+    DiceResponseParams dice_params,
     const content::WebContents::Getter& web_contents_getter) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
@@ -438,7 +438,8 @@ void ProcessDiceHeader(
   DiceResponseHandler* dice_response_handler =
       DiceResponseHandlerFactory::GetForProfile(profile);
   dice_response_handler->ProcessDiceHeader(
-      dice_params, ProcessDiceHeaderDelegateImpl::Create(web_contents));
+      std::move(dice_params),
+      ProcessDiceHeaderDelegateImpl::Create(web_contents));
 }
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 
