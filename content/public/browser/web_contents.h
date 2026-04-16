@@ -1122,6 +1122,11 @@ class WebContents : public PageNavigator, public base::SupportsUserData {
                                                 int end_adjust,
                                                 bool show_selection_menu) = 0;
 
+  // Returns the bounds of the text selection in global screen coordinates in
+  // DIPs.
+  virtual const std::optional<gfx::Rect> GetTextSelectionBounds(
+      RenderFrameHost* render_frame_host) const = 0;
+
   // Replaces the currently selected word or a word around the cursor.
   virtual void Replace(const std::u16string& word) = 0;
 
