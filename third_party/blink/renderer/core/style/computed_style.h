@@ -822,9 +822,6 @@ class ComputedStyle final : public ComputedStyleBase {
 
   // Inherited properties.
 
-  // line-height
-  CORE_EXPORT Length LineHeight() const;
-
   // List style properties.
 
   // list-style-type
@@ -847,7 +844,7 @@ class ComputedStyle final : public ComputedStyleBase {
   LineLogicalSide GetTextEmphasisLineLogicalSide() const;
 
   CORE_EXPORT FontSizeStyle GetFontSizeStyle() const {
-    return FontSizeStyle(GetFont(), LineHeightInternal(), EffectiveZoom());
+    return FontSizeStyle(GetFont(), LineHeight(), EffectiveZoom());
   }
 
   // Font properties.
@@ -1312,7 +1309,6 @@ class ComputedStyle final : public ComputedStyleBase {
                      TextOffsetMap* offset_map = nullptr) const;
 
   // Line-height utility functions.
-  const Length& SpecifiedLineHeight() const { return LineHeightInternal(); }
   static float ComputedLineHeight(const Length& line_height, const Font&);
   float ComputedLineHeight() const;
   CORE_EXPORT LayoutUnit ComputedLineHeightAsFixed() const;
@@ -3304,7 +3300,7 @@ class ComputedStyleBuilder final : public ComputedStyleBuilderBase {
   void UpdateFontOrientation();
 
   FontSizeStyle GetFontSizeStyle() const {
-    return FontSizeStyle(GetFont(), LineHeightInternal(), EffectiveZoom());
+    return FontSizeStyle(GetFont(), LineHeight(), EffectiveZoom());
   }
 
   // grid-template-*
@@ -3325,10 +3321,8 @@ class ComputedStyleBuilder final : public ComputedStyleBuilderBase {
 
   // line-height
   bool HasInitialLineHeight() const {
-    return LineHeightInternal() ==
-           ComputedStyleInitialValues::InitialLineHeight();
+    return LineHeight() == ComputedStyleInitialValues::InitialLineHeight();
   }
-  const Length& LineHeight() const { return LineHeightInternal(); }
 
   // margin-*
   void SetMarginTop(const Length& v) {

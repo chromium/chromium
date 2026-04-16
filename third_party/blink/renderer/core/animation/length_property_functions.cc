@@ -442,7 +442,7 @@ bool LengthPropertyFunctions::GetLength(const CSSProperty& property,
       }
       break;
     case CSSPropertyID::kLineHeight: {
-      const Length& line_height = style.SpecifiedLineHeight();
+      const Length& line_height = style.LineHeight();
       // Percent Lengths are used to represent numbers on line-height.
       if (!line_height.HasPercent()) {
         result = line_height;

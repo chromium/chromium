@@ -592,7 +592,7 @@ bool CSSPropertyEquality::PropertiesEqual(const PropertyHandle& property,
     case CSSPropertyID::kLineBreak:
       return a.GetLineBreak() == b.GetLineBreak();
     case CSSPropertyID::kLineHeight:
-      return a.SpecifiedLineHeight() == b.SpecifiedLineHeight();
+      return a.LineHeight() == b.LineHeight();
     case CSSPropertyID::kTabSize:
       return a.GetTabSize() == b.GetTabSize();
     case CSSPropertyID::kListStyleImage:

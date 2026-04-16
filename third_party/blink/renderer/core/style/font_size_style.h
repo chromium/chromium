@@ -31,7 +31,7 @@ class CORE_EXPORT FontSizeStyle {
   }
 
   const Font* GetFont() const { return font_; }
-  const Length& SpecifiedLineHeight() const { return specified_line_height_; }
+  const Length& LineHeight() const { return specified_line_height_; }
   float SpecifiedFontSize() const {
     return font_->GetFontDescription().SpecifiedSize();
   }

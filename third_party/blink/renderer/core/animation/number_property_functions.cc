@@ -67,7 +67,7 @@ std::optional<double> NumberPropertyFunctions::GetNumber(
       return style.ZIndex();
 
     case CSSPropertyID::kLineHeight: {
-      const Length& length = style.SpecifiedLineHeight();
+      const Length& length = style.LineHeight();
       // Numbers are represented by percentages.
       if (!length.IsPercent()) {
         return std::optional<double>();

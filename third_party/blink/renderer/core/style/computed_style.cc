@@ -2438,11 +2438,6 @@ StyleScrollbarColor* ComputedStyle::UsedScrollbarColor() const {
   return ScrollbarColor();
 }
 
-// TODO(dgrogan): Condense LineHeight() with LineHeightInternal().
-Length ComputedStyle::LineHeight() const {
-  return LineHeightInternal();
-}
-
 float ComputedStyle::ComputedLineHeight(const Length& lh, const Font& font) {
   // For "normal" line-height use the font's built-in spacing if available.
   if (lh.IsAuto()) {
