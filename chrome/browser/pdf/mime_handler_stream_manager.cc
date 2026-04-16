@@ -29,7 +29,6 @@
 #include "extensions/browser/guest_view/mime_handler_view/mime_handler_view_guest.h"
 #include "extensions/browser/mime_handler/stream_container.h"
 #include "extensions/browser/mime_handler/stream_info.h"
-#include "extensions/common/api/mime_handler.mojom.h"
 #include "extensions/common/constants.h"
 #include "extensions/common/mojom/guest_view.mojom.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
@@ -765,14 +764,6 @@ bool MimeHandlerStreamManager::MaybeSetUpPostMessage(
 
   auto container_manager = GetMimeHandlerViewContainerManager(container_host);
 
-  // Set up beforeunload support for full page PDF viewer, which will also help
-  // set up postMessage support.
-  if (is_full_page) {
-    container_manager->CreateBeforeUnloadControl(
-        base::BindOnce(&MimeHandlerStreamManager::SetUpBeforeUnloadControl,
-                       weak_factory_.GetWeakPtr()));
-  }
-
   // Enable postMessage support.
   // The first parameter for DidLoad() is
   // mime_handler_view_guest_element_instance_id, which is used to identify and
@@ -802,12 +793,6 @@ void MimeHandlerStreamManager::SetStreamContentHostFrameTreeNodeId(
   CHECK(claimed_stream_info);
   claimed_stream_info->set_content_host_frame_tree_node_id(
       navigation_handle->GetFrameTreeNodeId());
-}
-
-void MimeHandlerStreamManager::SetUpBeforeUnloadControl(
-    mojo::PendingRemote<extensions::mime_handler::BeforeUnloadControl>
-        before_unload_control_remote) {
-  // TODO(crbug.com/40268279): Currently a no-op. Support the beforeunload API.
 }
 
 WEB_CONTENTS_USER_DATA_KEY_IMPL(MimeHandlerStreamManager);
