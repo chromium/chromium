@@ -62,6 +62,12 @@ class CRYPTO_EXPORT PrivateKey {
   static std::optional<PrivateKey> FromRSAPrivateKey(
       base::span<const uint8_t> key);
 
+  // Imports an RFC 5915-encoded EC private key. Returns nullopt if the
+  // passed-in buffer is not a valid P-256 private key. If the passed-in key
+  // does not specify a group, it will be treated as though it was P-256.
+  static std::optional<PrivateKey> FromEcP256PrivateKey(
+      base::span<const uint8_t> key);
+
   // Imports an RFC 8032-encoded Ed25519 private key.
   //
   // The encoding used doesn't allow for importing to fail (all input bit
@@ -82,6 +88,13 @@ class CRYPTO_EXPORT PrivateKey {
   // Exports an RFC 8017-encoded RSA private key. It is illegal to call this if
   // !IsRsa().
   std::vector<uint8_t> ToRSAPrivateKey() const;
+
+  // Exports an RFC 5915-encoded EC private key. It is illegal to call this if
+  // !IsEcP256(). The returned ECPrivateKey struct does *not* include the
+  // optional parameters or publicKey fields, despite what RFC 5915 recommends,
+  // because existing clients don't use them. If you need those fields, please
+  // talk to an owner of this class.
+  std::vector<uint8_t> ToEcP256PrivateKey() const;
 
   // Exports an Ed25519 private key in RFC 8032 format. It is illegal to call
   // this if !IsEd25519().

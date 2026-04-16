@@ -206,9 +206,25 @@ std::optional<PrivateKey> PrivateKey::FromRSAPrivateKey(
 
   bssl::UniquePtr<EVP_PKEY> pkey(EVP_PKEY_new());
   CHECK(pkey);
-  if (!EVP_PKEY_set1_RSA(pkey.get(), rsa.get())) {
+  CHECK(EVP_PKEY_set1_RSA(pkey.get(), rsa.get()));
+
+  return PrivateKey(std::move(pkey));
+}
+
+// static
+std::optional<PrivateKey> PrivateKey::FromEcP256PrivateKey(
+    base::span<const uint8_t> key) {
+  OpenSSLErrStackTracer err_tracer(FROM_HERE);
+
+  CBS cbs(key);
+  bssl::UniquePtr<EC_KEY> ec(EC_KEY_parse_private_key(&cbs, EC_group_p256()));
+  if (!ec || CBS_len(&cbs) != 0) {
     return std::nullopt;
   }
+
+  bssl::UniquePtr<EVP_PKEY> pkey(EVP_PKEY_new());
+  CHECK(pkey);
+  CHECK(EVP_PKEY_set1_EC_KEY(pkey.get(), ec.get()));
 
   return PrivateKey(std::move(pkey));
 }
@@ -248,6 +264,19 @@ std::vector<uint8_t> PrivateKey::ToRSAPrivateKey() const {
   RSA* rsa = EVP_PKEY_get0_RSA(key_.get());
   CHECK(rsa);
   CHECK(RSA_marshal_private_key(cbb.get(), rsa));
+  return CBBToVector(cbb.get());
+}
+
+std::vector<uint8_t> PrivateKey::ToEcP256PrivateKey() const {
+  CHECK(IsEcP256());
+  OpenSSLErrStackTracer err_tracer(FROM_HERE);
+  bssl::ScopedCBB cbb;
+
+  CHECK(CBB_init(cbb.get(), 0));
+  EC_KEY* ec = EVP_PKEY_get0_EC_KEY(key_.get());
+  CHECK(ec);
+  CHECK(EC_KEY_marshal_private_key(cbb.get(), ec,
+                                   EC_PKEY_NO_PARAMETERS | EC_PKEY_NO_PUBKEY));
   return CBBToVector(cbb.get());
 }
 
