@@ -69,7 +69,6 @@ import org.chromium.base.test.BaseActivityTestRule;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CallbackHelper;
-import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.components.browser_ui.modaldialog.test.R;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
@@ -728,7 +727,6 @@ public class ModalDialogViewTest {
     @Test
     @MediumTest
     @Feature({"ModalDialog"})
-    @DisabledTest(message = "crbug.com/329163841")
     public void testButtonGroupIsScrollable() throws InterruptedException {
         ModalDialogProperties.ModalDialogButtonSpec[] buttonSpecList =
                 new ModalDialogButtonSpec[20];
