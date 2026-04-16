@@ -4,20 +4,30 @@
 
 package org.chromium.chrome.browser.ui.side_ui;
 
+import android.animation.Animator;
+
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.ui.side_ui.SideUiCoordinator.SideUiSpecs;
 
 /** Observer for side UI changes. */
 @NullMarked
 public interface SideUiObserver {
-
-    // TODO(crbug.com/491606333): Support animations by adding a new observer event:
-    //  * @Nullable Animator onPreSideUiSpecsChange(SideUiSpecs)
-    //  This new event will be called after the new SideUiSpecs have been determined, but before
-    //  these specs are actually used by the SideUiCoordinator to animate the UI change, so that the
-    //  SideUiCoordinator can kick off all of the animators together. The return type is @Nullable
-    //  to allow for clients to skip animating (e.g. if they're not visible). They are still
-    //  expected to statically resize through the #onSideUiSpecsChanged below.
+    /**
+     * Called to notify observers of new side UI specs, and collect animators for a synchronized
+     * animation transition. This will be followed up with call to #onSideUiSpecsChanged after the
+     * animation is finished.
+     *
+     * @param sideUiSpecs The new {@link SideUiSpecs}.
+     * @return The {@link Animator} used to handle the animation for this observer. This animator
+     *     will be used to ensure that all animations from this side UI change happen together. An
+     *     observer can return a null animator to opt out of the animation (e.g. if they're not
+     *     visible), though they should still statically resize to the new specs via
+     *     #onSideUiSpecsChanged.
+     */
+    default @Nullable Animator onPreSideUiSpecsChange(SideUiSpecs sideUiSpecs) {
+        return null;
+    }
 
     /**
      * Called after the Side UI has reached its new resting UI state to handle a resize. This will
