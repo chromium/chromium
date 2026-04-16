@@ -1118,11 +1118,11 @@ class ComputedStyle final : public ComputedStyleBase {
     }
     return FlexWrap().GetWrapMode() == FlexWrapMode::kNowrap;
   }
-  std::optional<wtf_size_t> ResolvedFlexBalanceMinLineCount() const {
+  std::optional<wtf_size_t> ResolvedFlexLineCount() const {
     if (IsDeprecatedFlexbox() || !FlexWrap().IsBalanced()) {
       return std::nullopt;
     }
-    return FlexWrap().MinLineCount();
+    return FlexLineCount();
   }
 
   float ResolvedFlexGrow(const ComputedStyle& box_style) const {

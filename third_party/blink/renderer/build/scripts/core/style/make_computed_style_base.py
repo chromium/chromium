@@ -114,12 +114,13 @@ ALIGNMENT_ORDER = [
     'PositionArea',
     'GridLanesDirection',
     # Aligns like short
-    'StyleFlexWrapData',
     'unsigned short',
+    'uint16_t',
     'short',
     # Aligns like char
     'StyleSelfAlignmentData',
     'StyleContentAlignmentData',
+    'StyleFlexWrapData',
     'uint8_t',
     'char',
     # Aligns like bool

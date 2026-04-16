@@ -4255,6 +4255,24 @@ const CSSValue* FlexGrow::CSSValueFromComputedStyleInternal(
                                         CSSPrimitiveValue::UnitType::kNumber);
 }
 
+const CSSValue* FlexLineCount::ParseSingleValue(
+    CSSParserTokenStream& stream,
+    const CSSParserContext& context,
+    CSSParserLocalContext& local_context) const {
+  return css_parsing_utils::ConsumeIntegerOrNumberCalc(
+      stream, context, local_context,
+      CSSPrimitiveValue::ValueRange::kPositiveInteger);
+}
+
+const CSSValue* FlexLineCount::CSSValueFromComputedStyleInternal(
+    const ComputedStyle& style,
+    const LayoutObject*,
+    bool allow_visited_style,
+    CSSValuePhase value_phase) const {
+  return CSSNumericLiteralValue::Create(style.FlexLineCount(),
+                                        CSSPrimitiveValue::UnitType::kNumber);
+}
+
 const CSSValue* FlexShrink::ParseSingleValue(
     CSSParserTokenStream& stream,
     const CSSParserContext& context,
@@ -4283,27 +4301,15 @@ const CSSValue* FlexWrap::CSSValueFromComputedStyleInternal(
     return CSSIdentifierValue::Create(data.GetWrapMode());
   }
 
-  const uint16_t min_line_count = data.MinLineCount();
   switch (data.GetWrapMode()) {
     case FlexWrapMode::kNowrap:
       NOTREACHED();
     case FlexWrapMode::kWrap:
-      if (min_line_count > 1u) {
-        CSSValueList* list = CSSValueList::CreateSpaceSeparated();
-        list->Append(*CSSIdentifierValue::Create(CSSValueID::kBalance));
-        list->Append(*CSSNumericLiteralValue::Create(
-            min_line_count, CSSPrimitiveValue::UnitType::kNumber));
-        return list;
-      }
       return CSSIdentifierValue::Create(CSSValueID::kBalance);
     case FlexWrapMode::kWrapReverse: {
       CSSValueList* list = CSSValueList::CreateSpaceSeparated();
       list->Append(*CSSIdentifierValue::Create(CSSValueID::kWrapReverse));
       list->Append(*CSSIdentifierValue::Create(CSSValueID::kBalance));
-      if (min_line_count > 1u) {
-        list->Append(*CSSNumericLiteralValue::Create(
-            min_line_count, CSSPrimitiveValue::UnitType::kNumber));
-      }
       return list;
     }
   }
@@ -4313,7 +4319,7 @@ const CSSValue* FlexWrap::ParseSingleValue(
     CSSParserTokenStream& stream,
     const CSSParserContext& context,
     CSSParserLocalContext& local_context) const {
-  // flex-wrap: nowrap | [ [ wrap | wrap-reverse ] || balance <integer [1,∞]>?]
+  // flex-wrap: nowrap | [ [ wrap | wrap-reverse ] || balance ]
   if (CSSValue* value =
           css_parsing_utils::ConsumeIdent<CSSValueID::kNowrap>(stream)) {
     return value;
@@ -4321,7 +4327,6 @@ const CSSValue* FlexWrap::ParseSingleValue(
 
   CSSIdentifierValue* wrap_value = nullptr;
   CSSIdentifierValue* balance_value = nullptr;
-  CSSPrimitiveValue* min_line_count_value = nullptr;
 
   do {
     if (!wrap_value) {
@@ -4336,9 +4341,6 @@ const CSSValue* FlexWrap::ParseSingleValue(
       balance_value =
           css_parsing_utils::ConsumeIdent<CSSValueID::kBalance>(stream);
       if (balance_value) {
-        min_line_count_value = css_parsing_utils::ConsumeIntegerOrNumberCalc(
-            stream, context, local_context,
-            CSSPrimitiveValue::ValueRange::kPositiveInteger);
         continue;
       }
     }
@@ -4352,14 +4354,7 @@ const CSSValue* FlexWrap::ParseSingleValue(
   if (wrap_value && wrap_value->GetValueID() == CSSValueID::kWrap) {
     wrap_value = nullptr;
   }
-  // Coerce "balance 1" to "balance".
-  if (const auto* value =
-          DynamicTo<CSSNumericLiteralValue>(min_line_count_value)) {
-    if (value->ComputeInteger() == 1u) {
-      min_line_count_value = nullptr;
-    }
-  }
-  if (!wrap_value && !min_line_count_value) {
+  if (!wrap_value) {
     return balance_value;
   }
   CSSValueList* list = CSSValueList::CreateSpaceSeparated();
@@ -4367,9 +4362,6 @@ const CSSValue* FlexWrap::ParseSingleValue(
     list->Append(*wrap_value);
   }
   list->Append(*balance_value);
-  if (min_line_count_value) {
-    list->Append(*min_line_count_value);
-  }
   return list;
 }
 

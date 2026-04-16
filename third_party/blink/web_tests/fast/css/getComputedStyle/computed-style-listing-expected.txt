@@ -192,6 +192,7 @@ filter: none
 flex-basis: auto
 flex-direction: row
 flex-grow: 0
+flex-line-count: 1
 flex-shrink: 1
 flex-wrap: nowrap
 float: none

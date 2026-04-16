@@ -6,6 +6,6 @@ This is a testharness.js-based test.
 [FAIL] Unknown pseudo-element with a known identifier: placeholder
   assert_equals: Should return the ::placeholder style expected "rgb(0, 128, 0)" but got "rgb(255, 0, 0)"
 [FAIL] Prefixed ::-webkit-file-upload-button does not resolve in getComputedStyle
-  assert_equals: ::-webkit-file-upload-button should return empty style expected 0 but got 484
+  assert_equals: ::-webkit-file-upload-button should return empty style expected 0 but got 485
 Harness: the test ran to completion.
 

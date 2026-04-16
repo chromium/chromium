@@ -417,14 +417,7 @@ StyleFlexWrapData StyleBuilderConverter::ConvertFlexWrapData(
     const CSSValue& value) {
   FlexWrapMode wrap_mode = FlexWrapMode::kNowrap;
   bool is_balanced = false;
-  uint16_t min_line_count = 1u;
   auto process = [&](const CSSValue& value) {
-    if (const CSSPrimitiveValue* primitive =
-            DynamicTo<CSSPrimitiveValue>(value)) {
-      DCHECK(primitive->IsNumber());
-      min_line_count = ClampTo<uint16_t>(ConvertInteger(state, *primitive));
-      return;
-    }
     const CSSIdentifierValue& identifier = To<CSSIdentifierValue>(value);
     if (identifier.GetValueID() == CSSValueID::kBalance) {
       is_balanced = true;
@@ -446,7 +439,7 @@ StyleFlexWrapData StyleBuilderConverter::ConvertFlexWrapData(
     wrap_mode = FlexWrapMode::kWrap;
   }
 
-  return StyleFlexWrapData(wrap_mode, is_balanced, min_line_count);
+  return StyleFlexWrapData(wrap_mode, is_balanced);
 }
 
 static FontDescription::GenericFamilyType ConvertGenericFamily(

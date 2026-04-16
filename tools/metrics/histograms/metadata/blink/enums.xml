@@ -8405,6 +8405,7 @@ Called by update_use_counter_css.py.-->
   <int value="939" label="rule-inset-end"/>
   <int value="940" label="path-length"/>
   <int value="941" label="hanging-punctuation"/>
+  <int value="942" label="flex-line-count"/>
 </enum>
 
 <!-- LINT.ThenChange(//third_party/blink/public/mojom/use_counter/metrics/css_property_id.mojom:CSSSampleId) -->

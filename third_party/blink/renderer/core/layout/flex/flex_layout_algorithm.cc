@@ -178,7 +178,7 @@ FlexLayoutAlgorithm::FlexLayoutAlgorithm(
       is_horizontal_flow_(Style().IsHorizontalWritingMode() ? !is_column_
                                                             : is_column_),
       is_cross_size_definite_(IsContainerCrossSizeDefinite()),
-      balance_min_line_count_(Style().ResolvedFlexBalanceMinLineCount()),
+      balance_min_line_count_(Style().ResolvedFlexLineCount()),
       child_percentage_size_(
           CalculateChildPercentageSize(GetConstraintSpace(),
                                        Node(),

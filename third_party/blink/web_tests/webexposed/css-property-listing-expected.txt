@@ -195,6 +195,7 @@ All changes to this list should go through Blink's feature review process: http:
     flex-basis
     flex-direction
     flex-grow
+    flex-line-count
     flex-shrink
     flex-wrap
     float

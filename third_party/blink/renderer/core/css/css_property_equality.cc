@@ -441,6 +441,8 @@ bool CSSPropertyEquality::PropertiesEqual(const PropertyHandle& property,
       return a.FlexShrink() == b.FlexShrink();
     case CSSPropertyID::kFlexWrap:
       return a.FlexWrap() == b.FlexWrap();
+    case CSSPropertyID::kFlexLineCount:
+      return a.FlexLineCount() == b.FlexLineCount();
     case CSSPropertyID::kFloat:
       return a.Floating() == b.Floating();
     case CSSPropertyID::kFloodColor:

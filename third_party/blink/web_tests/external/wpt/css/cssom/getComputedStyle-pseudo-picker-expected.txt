@@ -2,6 +2,6 @@ This is a testharness.js-based test.
 [FAIL] ::picker(select) on non-select element resolves the style
   assert_equals: expected "rgb(0, 0, 255)" but got "rgba(0, 0, 0, 0)"
 [FAIL] Invalid pseudo-element should return empty style: ::picker(div)
-  assert_equals: expected 0 but got 484
+  assert_equals: expected 0 but got 485
 Harness: the test ran to completion.
 

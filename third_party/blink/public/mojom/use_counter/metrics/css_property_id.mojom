@@ -1011,6 +1011,7 @@ enum CSSSampleId {
     kRuleInsetEnd = 939,
     kPathLength = 940,
     kHangingPunctuation = 941,
+    kFlexLineCount = 942,
 
     // 1. Add new features above this line (don't change the assigned numbers of
     //    the existing items).

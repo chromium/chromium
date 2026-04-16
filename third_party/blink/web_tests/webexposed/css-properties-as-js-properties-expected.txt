@@ -211,6 +211,7 @@ flexBasis
 flexDirection
 flexFlow
 flexGrow
+flexLineCount
 flexShrink
 flexWrap
 float

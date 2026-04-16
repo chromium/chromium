@@ -17,7 +17,7 @@ import copy
 # if applicable.
 PRIMITIVE_TYPES = [
     'short', 'unsigned short', 'int', 'unsigned int', 'unsigned', 'float',
-    'LineClampValue'
+    'LineClampValue', 'uint16_t'
 ]
 
 
