@@ -465,6 +465,8 @@ void WebNNContextProviderImpl::OnCreateWebNNContextImpl(
     return;
   }
 
+  gpu::CommandBufferId command_buffer_id =
+      context_impl->gpu_sequence()->command_buffer_id();
   ContextProperties context_properties = context_impl->properties();
   const blink::WebNNContextToken& context_handle = context_impl->handle();
   context_impls_.emplace(std::move(context_impl));
@@ -474,7 +476,7 @@ void WebNNContextProviderImpl::OnCreateWebNNContextImpl(
   auto success = mojom::CreateContextSuccess::New(
       std::move(remote), std::move(context_properties),
       std::move(context_handle), std::move(write_tensor_producer),
-      std::move(read_tensor_consumer));
+      std::move(read_tensor_consumer), command_buffer_id.GetUnsafeValue());
   std::move(callback).Run(
       mojom::CreateContextResult::NewSuccess(std::move(success)));
 }

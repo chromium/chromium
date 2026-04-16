@@ -114,12 +114,14 @@ class MODULES_EXPORT MLContext : public ScriptWrappable {
                 const MLNamedTensors& outputs,
                 ExceptionState& exception_state);
 
-  ScriptPromise<GPUBuffer> exportToGPU(ScriptState* script_state,
-                                       MLTensor* tensor,
-                                       ExceptionState& exception_state);
+  GPUBuffer* exportToGPU(ScriptState* script_state,
+                         MLTensor* tensor,
+                         ExceptionState& exception_state);
 
   MLGraphBuilder* CreateWebNNGraphBuilder(ScriptState* script_state,
                                           ExceptionState& exception_state);
+
+  gpu::SyncToken GenerateVerifiedReleaseToken();
 
   const MLOpSupportLimits* opSupportLimits(ScriptState* script_state);
 
@@ -170,6 +172,9 @@ class MODULES_EXPORT MLContext : public ScriptWrappable {
   HeapHashSet<WeakMember<MLGraph>> graphs_;
   HeapHashSet<WeakMember<MLGraphBuilder>> graph_builders_;
   HeapHashSet<WeakMember<MLTensor>> tensors_;
+
+  const gpu::CommandBufferId command_buffer_id_;
+  uint64_t last_sync_token_release_id_ = 0;
 };
 
 }  // namespace blink

@@ -426,7 +426,14 @@ class FakeWebNNTensor : public blink_mojom::WebNNTensor {
     base::span(buffer_).copy_prefix_from(src_buffer);
   }
 
-  void ExportTensor(uint64_t flow_id, ExportTensorCallback callback) override {
+  void ExportTensor(uint64_t flow_id,
+                    const gpu::SyncToken& sync_token_fence) override {
+    NOTIMPLEMENTED();
+  }
+
+  void ExportTensorSync(uint64_t flow_id,
+                        const gpu::SyncToken& sync_token_fence,
+                        ExportTensorSyncCallback callback) override {
     NOTIMPLEMENTED();
   }
 
@@ -775,7 +782,7 @@ class FakeWebNNContextProvider : public blink_mojom::WebNNContextProvider {
     auto success = blink_mojom::CreateContextSuccess::New(
         std::move(blink_remote), std::move(context_properties),
         blink::WebNNContextToken(), mojo::ScopedDataPipeProducerHandle(),
-        mojo::ScopedDataPipeConsumerHandle());
+        mojo::ScopedDataPipeConsumerHandle(), /*command_buffer_id=*/0);
     std::move(callback).Run(
         blink_mojom::CreateContextResult::NewSuccess(std::move(success)));
   }

@@ -17,6 +17,7 @@
 #include "base/logging.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/notimplemented.h"
 #include "base/notreached.h"
 #include "base/types/expected.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_representation.h"
@@ -380,8 +381,16 @@ void TensorImplCoreml::ExportTensorImpl(ScopedAccessPtr access) {
 }
 
 void TensorImplCoreml::ExportTensor(uint64_t flow_id,
-                                    ExportTensorCallback callback) {
-  ScopedTrace scoped_trace("TensorImplCoreml::ExportTensor");
+                                    const gpu::SyncToken& sync_token_fence) {
+  // Since we currently depend on `ResourceTask`, we can't support the
+  // asynchronous `ExportTensor`.
+  NOTIMPLEMENTED();
+}
+
+void TensorImplCoreml::ExportTensorSync(uint64_t flow_id,
+                                        const gpu::SyncToken& sync_token_fence,
+                                        ExportTensorSyncCallback callback) {
+  ScopedTrace scoped_trace("TensorImplCoreml::ExportTensorSync");
 
   if (!usage().Has(MLTensorUsageFlags::kWebGpuInterop)) {
     GetMojoReceiver().ReportBadMessage(kBadMessageInvalidTensor);
@@ -394,23 +403,21 @@ void TensorImplCoreml::ExportTensor(uint64_t flow_id,
   auto mojo_callback_wrapper = base::BindPostTask(
       context_->scheduler_task_runner(),
       base::BindOnce(
-          [](ExportTensorCallback callback, ScopedTrace scoped_trace,
-             uint64_t flow_id, gpu::SyncToken token) {
-            TRACE_EVENT("webnn", "TensorImplCoreml::ExportTensor",
+          [](ExportTensorSyncCallback callback, ScopedTrace scoped_trace,
+             uint64_t flow_id) {
+            TRACE_EVENT("webnn", "TensorImplCoreml::ExportTensorSync",
                         perfetto::TerminatingFlow::Global(flow_id));
-            gpu::SyncToken verified_token = token;
-            verified_token.SetVerifyFlush();
-            std::move(callback).Run(verified_token);
+            std::move(callback).Run();
           },
           std::move(callback), std::move(scoped_trace), flow_id));
 
   context_->gpu_sequence()->ScheduleGpuTask(base::BindOnce(
-      [](TensorImplCoreml* self,
-         base::OnceCallback<void(gpu::SyncToken)> callback,
-         mojo::ReportBadMessageCallback bad_message_cb) {
+      [](TensorImplCoreml* self, base::OnceCallback<void()> callback,
+         mojo::ReportBadMessageCallback bad_message_cb,
+         gpu::SyncToken sync_token_fence) {
         if (self->is_exported()) {
           LOG(ERROR)
-              << "[WebNN] ExportTensor called on already exported tensor.";
+              << "[WebNN] ExportTensorSync called on already exported tensor.";
           std::move(bad_message_cb).Run(kBadMessageInvalidTensor);
           return;
         }
@@ -429,7 +436,8 @@ void TensorImplCoreml::ExportTensor(uint64_t flow_id,
             std::move(exclusive_resources),
             base::BindOnce(
                 [](base::WeakPtr<WebNNContextImpl> context,
-                   base::OnceCallback<void(gpu::SyncToken)> callback,
+                   base::OnceCallback<void()> callback,
+                   gpu::SyncToken sync_token_fence,
                    base::OnceClosure completion_closure) {
                   std::move(completion_closure).Run();
                   if (!context) {
@@ -438,15 +446,16 @@ void TensorImplCoreml::ExportTensor(uint64_t flow_id,
 
                   // Schedule a task first to ensure export waits until
                   // ResourceTask completes.
-                  std::move(callback).Run(
-                      context->gpu_sequence()->ScheduleGpuTask(
-                          base::DoNothing()));
+                  context->gpu_sequence()->ScheduleGpuTaskWithReleaseToken(
+                      base::DoNothing(), sync_token_fence);
+                  std::move(callback).Run();
                 },
-                self->context_->AsWeakPtr(), std::move(callback)));
+                self->context_->AsWeakPtr(), std::move(callback),
+                sync_token_fence));
         task->Enqueue();
       },
       base::RetainedRef(this), std::move(mojo_callback_wrapper),
-      GetMojoReceiver().GetBadMessageCallback()));
+      GetMojoReceiver().GetBadMessageCallback(), sync_token_fence));
 }
 
 }  // namespace webnn::coreml

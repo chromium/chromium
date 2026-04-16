@@ -354,5 +354,6 @@ typedef record<USVString, MLTensor> MLNamedTensors;
     RuntimeEnabled=MachineLearningNeuralNetwork,
     CallWith=ScriptState,
     RaisesException
-  ] Promise<GPUBuffer> exportToGPU(MLTensor tensor);
+  ] GPUBuffer exportToGPU(MLTensor tensor);
+
 };

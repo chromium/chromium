@@ -245,7 +245,9 @@ MLContext::MLContext(
           std::move(create_context_success->write_tensor_producer)),
       read_tensor_consumer_(
           std::move(create_context_success->read_tensor_consumer)),
-      webnn_handle_(std::move(create_context_success->context_handle)) {
+      webnn_handle_(std::move(create_context_success->context_handle)),
+      command_buffer_id_(gpu::CommandBufferId::FromUnsafeValue(
+          create_context_success->command_buffer_id)) {
   context_remote_.Bind(
       std::move(create_context_success->context_remote),
       execution_context->GetTaskRunner(TaskType::kMachineLearning));
@@ -343,6 +345,15 @@ void MLContext::OnLost(uint32_t custom_reason, const std::string& description) {
                                      "Context is lost.");
   }
   pending_resolvers_.clear();
+}
+
+gpu::SyncToken MLContext::GenerateVerifiedReleaseToken() {
+  gpu::SyncToken token(gpu::CommandBufferNamespace::WEBNN_CONTEXT_INTERFACE,
+                       command_buffer_id_, ++last_sync_token_release_id_);
+  // Verify the sync token since it will be passed to WebGPU which requires
+  // verification.
+  token.SetVerifyFlush();
+  return token;
 }
 
 const MLOpSupportLimits* MLContext::opSupportLimits(ScriptState* script_state) {
@@ -1584,25 +1595,24 @@ void MLContext::DidCreateWebNNTensor(
   resolver->Resolve(tensor);
 }
 
-ScriptPromise<GPUBuffer> MLContext::exportToGPU(
-    ScriptState* script_state,
-    MLTensor* tensor,
-    ExceptionState& exception_state) {
+GPUBuffer* MLContext::exportToGPU(ScriptState* script_state,
+                                  MLTensor* tensor,
+                                  ExceptionState& exception_state) {
   webnn::ScopedTrace scoped_trace("MLContext::exportToGPU");
   if (!script_state->ContextIsValid()) {
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
                                       "Invalid script state");
-    return EmptyPromise();
+    return nullptr;
   }
   if (!context_remote_.is_bound()) {
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
                                       "Context is lost.");
-    return EmptyPromise();
+    return nullptr;
   }
   if (tensor->context() != this) {
     exception_state.ThrowTypeError(
         "The source tensor was not created by this context.");
-    return EmptyPromise();
+    return nullptr;
   }
 
   return tensor->ExportToGPUImpl(std::move(scoped_trace), script_state,

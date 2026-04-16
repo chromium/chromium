@@ -34,4 +34,8 @@ specific_include_rules = {
   "webnn_introspection_impl\.h" : [
     "+base/no_destructor.h",
   ],
+  # Required to check if SyncPointGraphValidation is enabled.
+  "ml_tensor\.cc" : [
+    "+gpu/config/gpu_finch_features.h"
+  ]
 }

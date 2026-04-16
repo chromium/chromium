@@ -42,6 +42,9 @@ struct CreateContextSuccess {
   // and the GPU process.
   handle<data_pipe_producer>? write_tensor_producer;
   handle<data_pipe_consumer>? read_tensor_consumer;
+  // The command buffer ID of the context, which is used to create a sync token
+  // for synchronizing access to resources between WebNN and WebGPU.
+  uint64 command_buffer_id;
 };
 
 // Represents the return value of `WebNNContextProvider::CreateWebNNContext()`.

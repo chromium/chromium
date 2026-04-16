@@ -44,8 +44,7 @@ ScopedGpuSequence::~ScopedGpuSequence() {
   scheduler_->DestroySequence(sequence_id_);
 }
 
-gpu::SyncToken ScopedGpuSequence::ScheduleGpuTask(
-    base::OnceClosure task_closure) {
+void ScopedGpuSequence::ScheduleGpuTask(base::OnceClosure task_closure) {
   return ScheduleGpuTaskImpl(std::move(task_closure), {});
 }
 
@@ -54,9 +53,16 @@ void ScopedGpuSequence::ScheduleGpuTask(base::OnceClosure task_closure,
   ScheduleGpuTaskImpl(std::move(task_closure), {fence});
 }
 
-gpu::SyncToken ScopedGpuSequence::ScheduleGpuTaskImpl(
+void ScopedGpuSequence::ScheduleGpuTaskWithReleaseToken(
     base::OnceClosure task_closure,
-    std::vector<gpu::SyncToken> sync_token_fences) {
+    const gpu::SyncToken& sync_token) {
+  ScheduleGpuTaskImpl(std::move(task_closure), {}, sync_token);
+}
+
+void ScopedGpuSequence::ScheduleGpuTaskImpl(
+    base::OnceClosure task_closure,
+    std::vector<gpu::SyncToken> sync_token_fences,
+    gpu::SyncToken release_token) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   base::OnceClosure runnable_task = base::BindOnce(
@@ -70,17 +76,9 @@ gpu::SyncToken ScopedGpuSequence::ScheduleGpuTaskImpl(
       },
       weak_factory_.GetWeakPtr(), std::move(task_closure));
 
-  // Generate a new sync token release for this task. The scheduler guarantees
-  // the release will be signaled once the task has completed or destroyed,
-  // ensuring fences created from this sync token can be satisfied.
-  gpu::SyncToken release(namespace_id_, command_buffer_id_,
-                         ++last_sync_token_release_id_);
-
   scheduler_->ScheduleTask(
       gpu::Scheduler::Task(sequence_id_, std::move(runnable_task),
-                           std::move(sync_token_fences), release));
-
-  return release;
+                           std::move(sync_token_fences), release_token));
 }
 
 }  // namespace webnn

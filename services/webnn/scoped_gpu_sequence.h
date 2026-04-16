@@ -51,14 +51,18 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) ScopedGpuSequence {
   }
 
   // Schedules a task to be executed in this gpu sequence.
-  // Returns a sync token which will satisfy when the task is completed; this
-  // return value can safely be ignored if the caller does not need to wait on
-  // the task.
-  gpu::SyncToken ScheduleGpuTask(base::OnceClosure task_closure);
+  void ScheduleGpuTask(base::OnceClosure task_closure);
 
   // Schedules a task to be executed in this gpu sequence after the given fence.
   void ScheduleGpuTask(base::OnceClosure task_closure,
                        const gpu::SyncToken& fence);
+
+  // Schedules a task to be executed in this gpu sequence and release the given
+  // sync token when the task is completed.
+  void ScheduleGpuTaskWithReleaseToken(base::OnceClosure task_closure,
+                                       const gpu::SyncToken& sync_token);
+
+  gpu::CommandBufferId command_buffer_id() const { return command_buffer_id_; }
 
  private:
   // Binds the gpu sequence thread upon the first call to ScheduleGpuTask.
@@ -66,13 +70,9 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) ScopedGpuSequence {
   // and destroyed on the same sequence.
   SEQUENCE_CHECKER(sequence_checker_);
 
-  gpu::SyncToken ScheduleGpuTaskImpl(
-      base::OnceClosure task_closure,
-      std::vector<gpu::SyncToken> sync_token_fences);
-
-  // Marks the completion of the last schedule task in this sequence.
-  // Used to generate a SyncToken which can be waited on by another sequence.
-  uint64_t last_sync_token_release_id_ = 0;
+  void ScheduleGpuTaskImpl(base::OnceClosure task_closure,
+                           std::vector<gpu::SyncToken> sync_token_fences,
+                           gpu::SyncToken release_token = gpu::SyncToken());
 
   const raw_ref<gpu::Scheduler> scheduler_;
   const gpu::CommandBufferId command_buffer_id_;
