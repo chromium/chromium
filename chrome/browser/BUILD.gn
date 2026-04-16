@@ -475,24 +475,6 @@ static_library("browser") {
     "policy/value_provider/value_provider_util.h",
     "policy/webusb_allow_devices_for_urls_policy_handler.cc",
     "policy/webusb_allow_devices_for_urls_policy_handler.h",
-
-    # TODO(crbug.com/408801109) Remove this once the privacy_sandbox_service_factory is moved to chrome/browser/prviacy_sandbox/BUILD.
-    "privacy_sandbox/notice/notice_service_factory.cc",
-    "privacy_sandbox/privacy_sandbox_notice_confirmation.cc",
-    "privacy_sandbox/privacy_sandbox_notice_confirmation.h",
-    "privacy_sandbox/privacy_sandbox_policy_handler.cc",
-    "privacy_sandbox/privacy_sandbox_policy_handler.h",
-    "privacy_sandbox/privacy_sandbox_service_factory.cc",
-    "privacy_sandbox/privacy_sandbox_service_impl.cc",
-    "privacy_sandbox/privacy_sandbox_service_impl.h",
-    "privacy_sandbox/privacy_sandbox_settings_delegate.cc",
-    "privacy_sandbox/privacy_sandbox_settings_delegate.h",
-    "privacy_sandbox/privacy_sandbox_settings_factory.cc",
-    "privacy_sandbox/privacy_sandbox_settings_factory.h",
-    "privacy_sandbox/privacy_sandbox_utils.cc",
-    "privacy_sandbox/privacy_sandbox_utils.h",
-    "privacy_sandbox/profile_bucket_metrics.cc",
-    "privacy_sandbox/profile_bucket_metrics.h",
     "process_resource_usage.cc",
     "process_resource_usage.h",
     "process_singleton.h",
@@ -807,6 +789,7 @@ static_library("browser") {
     "//chrome/browser/plugins:impl",
     "//chrome/browser/policy/messaging_layer/storage_selector",
     "//chrome/browser/prefs:impl",
+    "//chrome/browser/privacy_sandbox:impl",
     "//chrome/browser/prefs:util_impl",
     "//chrome/browser/profiles:profiles_extra_parts_impl",
     "//chrome/browser/profiles:profile_util_impl",
@@ -1009,6 +992,7 @@ static_library("browser") {
     "//chrome/browser/interstitials",
     "//chrome/browser/ntp_tiles",
     "//chrome/browser/obsolete_system",
+    "//chrome/browser/privacy_sandbox:headers",
     "//chrome/browser/profiles",
     "//chrome/browser/tab_contents",
     "//chrome/browser/ui/tabs:tab_enums",
@@ -1263,7 +1247,7 @@ static_library("browser") {
     "//chrome/browser/preloading/search_preload",
     "//chrome/browser/privacy",
     "//chrome/browser/privacy_sandbox",
-    "//chrome/browser/privacy_sandbox:headers",
+    "//chrome/browser/privacy_sandbox:impl",
     "//chrome/browser/profiles",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/profiles:profile_downloader",
@@ -2465,8 +2449,6 @@ static_library("browser") {
       "prefetch/android/preload_pages_settings_bridge.cc",
       "preloading/android/preloading_data_bridge.cc",
       "preloading/android/preloading_feature_map.cc",
-      "privacy_sandbox/android/privacy_sandbox_bridge.cc",
-      "privacy_sandbox/android/tracking_protection_settings_bridge.cc",
       "profiles/android/profile_manager_utils.cc",
       "profiles/android/profile_resolver.cc",
       "profiles/android/profile_resolver.h",
@@ -6859,8 +6841,6 @@ static_library("test_support") {
       "hid/mock_hid_device_observer.h",
       "notifications/notification_test_util.cc",
       "notifications/notification_test_util.h",
-      "privacy_sandbox/privacy_sandbox_attestations/privacy_sandbox_attestations_mixin.cc",
-      "privacy_sandbox/privacy_sandbox_attestations/privacy_sandbox_attestations_mixin.h",
       "sessions/app_session_service_test_helper.cc",
       "sessions/app_session_service_test_helper.h",
       "sessions/session_restore_test_helper.cc",
@@ -6878,6 +6858,7 @@ static_library("test_support") {
       "speech/fake_speech_recognizer.cc",
       "speech/fake_speech_recognizer.h",
     ]
+    public_deps += [ "//chrome/browser/privacy_sandbox:attestations_mixin" ]
     deps += [
       "//chrome/browser/apps/app_service",
       "//chrome/browser/hid",
@@ -6887,9 +6868,6 @@ static_library("test_support") {
       "//components/privacy_sandbox:features",
       "//components/privacy_sandbox/privacy_sandbox_attestations:test_support",
       "//components/services/app_service",
-
-      # TODO(413315837): remove this dep when c/b/privacy_sandbox/BUILD.gn is complete.
-      "//chrome/browser/privacy_sandbox:headers",
     ]
   }
 

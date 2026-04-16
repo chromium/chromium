@@ -53,16 +53,14 @@ source_set("interfaces") {
 
 source_set("catalog") {
   sources = [ "notice_catalog.cc" ]
-  public = [
-    "notice_catalog.h",
-  ]
+  public = [ "notice_catalog.h" ]
   deps = [
     ":core",
     ":notice_definitions",
     ":notice_mojom",
     "//base",
-    "//chrome/browser/privacy_sandbox:headers",
   ]
+  public_deps = [ "//chrome/browser/privacy_sandbox:headers" ]
 }
 
 source_set("factory") {

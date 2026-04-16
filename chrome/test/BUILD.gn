@@ -11035,12 +11035,14 @@ if (!is_android) {
     allow_circular_includes_from = [
       # TODO(crbug.com/353332589): Remove this circular dependency when
       # chrome/test/base/in_process_browser_test.h gets componentized.
+      "//chrome/browser/privacy_sandbox:attestations_mixin",
       "//chrome/browser/ui/test:dialog",
     ]
 
     public_deps = [
       ":in_process_browser_test_mixin",
       "//chrome/browser:test_support_ui",
+      "//chrome/browser/privacy_sandbox:attestations_mixin",
       "//chrome/browser/renderer_context_menu:test_support",
       "//chrome/browser/ui/exclusive_access",
       "//chrome/browser/ui/test:dialog",

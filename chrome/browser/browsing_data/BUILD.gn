@@ -122,6 +122,7 @@ source_set("impl") {
     "//chrome/browser/permissions",
     "//chrome/browser/preloading/prefetch/no_state_prefetch",
     "//chrome/browser/preloading/prefetch/search_prefetch",
+    "//chrome/browser/privacy_sandbox:headers",
     "//chrome/browser/profiles/keep_alive",
     "//chrome/browser/reading_list",
     "//chrome/browser/safe_browsing",

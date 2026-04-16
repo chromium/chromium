@@ -164,6 +164,7 @@ source_set("impl") {
     "//chrome/browser/policy:path_parser",
     "//chrome/browser/prefs:util",
     "//chrome/browser/preloading/prefetch/no_state_prefetch",
+    "//chrome/browser/privacy_sandbox:headers",
     "//chrome/browser/safe_browsing",
     "//chrome/browser/webid",
     "//chrome/common:version_header",

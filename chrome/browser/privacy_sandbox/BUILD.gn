@@ -7,20 +7,105 @@ import("//build/config/chromeos/args.gni")
 assert(!is_ios)
 
 source_set("headers") {
-  sources = [
+  public = [
+    "privacy_sandbox_notice_confirmation.h",
+    "privacy_sandbox_policy_handler.h",
     "privacy_sandbox_service.h",
     "privacy_sandbox_service_factory.h",
+    "privacy_sandbox_service_impl.h",
+    "privacy_sandbox_settings_delegate.h",
+    "privacy_sandbox_settings_factory.h",
+    "privacy_sandbox_utils.h",
+    "profile_bucket_metrics.h",
   ]
 
   public_deps = [
+    ":countries",
     "notice:notice_definitions",
     "//base",
+    "//chrome/browser/first_party_sets",
     "//chrome/browser/profiles:profile",
+    "//components/content_settings/core/browser",
     "//components/keyed_service/core",
+    "//components/policy/core/browser",
+    "//components/prefs",
     "//components/privacy_sandbox",
     "//components/privacy_sandbox:privacy_sandbox_prefs",
+    "//components/profile_metrics",
+    "//components/user_education/common",
+    "//content/public/browser",
     "//net",
   ]
+}
+
+source_set("impl") {
+  sources = [
+    "notice/notice_service_factory.cc",
+    "privacy_sandbox_notice_confirmation.cc",
+    "privacy_sandbox_policy_handler.cc",
+    "privacy_sandbox_service_factory.cc",
+    "privacy_sandbox_service_impl.cc",
+    "privacy_sandbox_settings_delegate.cc",
+    "privacy_sandbox_settings_factory.cc",
+    "privacy_sandbox_utils.cc",
+    "profile_bucket_metrics.cc",
+  ]
+
+  public_deps = [
+    ":headers",
+    "//chrome/browser:browser_public_dependencies",
+  ]
+
+  deps = [
+    "notice",
+    "notice:catalog",
+    "notice:core",
+    "//build:branding_buildflags",
+    "//chrome/browser:browser_process",
+    "//chrome/browser/content_settings:content_settings_factory",
+    "//chrome/browser/profiles:profile_manager",
+    "//chrome/browser/profiles:profile_util",
+    "//chrome/browser/signin",
+    "//components/browsing_topics",
+    "//components/browsing_topics/common",
+    "//components/content_settings/core/browser:cookie_settings",
+    "//components/content_settings/core/common",
+    "//components/google/core/common",
+    "//components/metrics:metrics_pref_names",
+    "//components/policy:generated",
+    "//components/policy/core/common",
+    "//components/privacy_sandbox:features",
+    "//components/signin/public/identity_manager",
+    "//components/strings:components_strings",
+    "//components/url_formatter",
+    "//third_party/blink/public/common:headers",
+    "//ui/base",
+    "//url",
+  ]
+
+  if (is_android) {
+    sources += [
+      "android/privacy_sandbox_bridge.cc",
+      "android/tracking_protection_settings_bridge.cc",
+    ]
+    deps += [
+      "android:jni_headers",
+      "//components/privacy_sandbox:tracking_protection_settings",
+    ]
+  }
+
+  if (!is_android) {
+    deps += [ "//ui/views" ]
+  }
+
+  if (is_chromeos) {
+    deps += [
+      "//chrome/browser/profiles",
+      "//chromeos/ash/components/browser_context_helper",
+      "//chromeos/components/kiosk",
+      "//chromeos/components/mgs",
+    ]
+  }
 }
 
 group("privacy_sandbox") {
@@ -335,9 +420,7 @@ if (!is_android && !is_chromeos_device) {
       ":headers",
       "//base",
       "//base/test:test_support",
-      "//chrome/browser",
       "//chrome/browser/profiles:profile",
-      "//chrome/browser/ui",
       "//chrome/browser/ui:browser_element_identifiers",
       "//chrome/common",
       "//chrome/test:test_support",
@@ -357,6 +440,24 @@ if (!is_android && !is_chromeos_device) {
       "//third_party/blink/public:blink_headers",
       "//third_party/blink/public/common",
       "//url",
+    ]
+  }
+}
+
+if (!is_android) {
+  source_set("attestations_mixin") {
+    testonly = true
+    sources = [
+      "privacy_sandbox_attestations/privacy_sandbox_attestations_mixin.cc",
+      "privacy_sandbox_attestations/privacy_sandbox_attestations_mixin.h",
+    ]
+    public_deps = [ "//chrome/test:in_process_browser_test_mixin" ]
+    deps = [
+      "//base/test:test_support",
+      "//components/privacy_sandbox:features",
+      "//components/privacy_sandbox/privacy_sandbox_attestations",
+      "//components/privacy_sandbox/privacy_sandbox_attestations:test_support",
+      "//ui/views",
     ]
   }
 }
