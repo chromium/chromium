@@ -1179,7 +1179,7 @@ TEST_F(LockStateControllerInformedRestoreTest, ShutdownInOverview) {
 
   base::HistogramTester histogram_tester;
   // Create a window and enter the overview before requesting shutdown.
-  CreateTestWindow();
+  auto window = CreateTestWindow();
   EnterOverview();
 
   RequestShutdownWithoutFailTimer();
@@ -1200,7 +1200,7 @@ TEST_F(LockStateControllerInformedRestoreTest, ShutdownInGuest) {
   ASSERT_TRUE(base::WriteFile(file_path(), ""));
 
   base::HistogramTester histogram_tester;
-  CreateTestWindow();
+  auto window = CreateTestWindow();
   ASSERT_TRUE(Shell::Get()->session_controller()->IsUserGuest());
 
   // Request shutdown while in guest mode.

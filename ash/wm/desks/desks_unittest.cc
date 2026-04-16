@@ -7586,13 +7586,14 @@ TEST_P(DesksTest, DragMiniViewWhileRemoving) {
 // really fast. Regression test for https://crbug.com/1194757.
 TEST_P(DesksTest, FastDeskSwitches) {
   // Add 3 more desks and add a couple windows on each one.
-  CreateTestWindow();
-  CreateTestWindow();
+  // Released windows are destroyed during shutdown.
+  CreateTestWindow().release();
+  CreateTestWindow().release();
 
   for (int i = 0; i < 3; ++i) {
     NewDesk();
-    CreateTestWindow();
-    CreateTestWindow();
+    CreateTestWindow().release();
+    CreateTestWindow().release();
   }
 
   // Start at the rightmost, 4th desk.

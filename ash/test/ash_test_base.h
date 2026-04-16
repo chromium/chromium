@@ -140,7 +140,7 @@ class AshTestBase : public testing::Test {
 
   // Creates and shows a widget. See ash/public/cpp/shell_window_ids.h for
   // values for |container_id|.
-  static std::unique_ptr<views::Widget> CreateTestWidget(
+  [[nodiscard]] static std::unique_ptr<views::Widget> CreateTestWidget(
       views::Widget::InitParams::Ownership ownership,
       views::WidgetDelegate* delegate = nullptr,
       int container_id = desks_util::GetActiveDeskContainerId(),
@@ -149,7 +149,7 @@ class AshTestBase : public testing::Test {
 
   // Creates a frameless widget for testing.
   // TODO(crbug.com/339619005) - Make the ownership parameter required.
-  static std::unique_ptr<views::Widget> CreateFramelessTestWidget(
+  [[nodiscard]] static std::unique_ptr<views::Widget> CreateFramelessTestWidget(
       views::Widget::InitParams::Ownership ownership =
           views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET);
 
@@ -160,7 +160,7 @@ class AshTestBase : public testing::Test {
   // display matching |bounds_in_screen|. |shell_window_id| is the shell window
   // id to give to the new window. If |delegate| is empty, a new
   // |TestWidgetDelegate| instance will be set as this widget's delegate.
-  std::unique_ptr<aura::Window> CreateAppWindow(
+  [[nodiscard]] std::unique_ptr<aura::Window> CreateAppWindow(
       const gfx::Rect& bounds_in_screen = gfx::Rect(),
       chromeos::AppType app_type = chromeos::AppType::SYSTEM_APP,
       int shell_window_id = kShellWindowId_Invalid,
@@ -174,13 +174,13 @@ class AshTestBase : public testing::Test {
   // the new window.
   // If |type| is WINDOW_TYPE_NORMAL this creates a views::Widget, otherwise
   // this creates an aura::Window.
-  std::unique_ptr<aura::Window> CreateTestWindow(
+  [[nodiscard]] std::unique_ptr<aura::Window> CreateTestWindow(
       const gfx::Rect& bounds_in_screen = gfx::Rect(),
       aura::client::WindowType type = aura::client::WINDOW_TYPE_NORMAL,
       int shell_window_id = kShellWindowId_Invalid);
 
   // Creates a visible top-level window with a delegate.
-  std::unique_ptr<aura::Window> CreateToplevelTestWindow(
+  [[nodiscard]] std::unique_ptr<aura::Window> CreateToplevelTestWindow(
       const gfx::Rect& bounds_in_screen = gfx::Rect(),
       int shell_window_id = kShellWindowId_Invalid);
 
