@@ -336,12 +336,12 @@ class CC_EXPORT BrowserControlsOffsetManager {
     // Animation duration.
     base::TimeDelta duration_;
     // Start and stop values.
-    float start_value_ = 0.f;
-    float stop_value_ = 0.f;
+    float start_value_ = 0.0f;
+    float stop_value_ = 0.0f;
     // Minimum and maximum values the animation can have, used to decide if the
     // animation is complete.
-    float min_value_ = 0.f;
-    float max_value_ = 1.f;
+    float min_value_ = 0.0f;
+    float max_value_ = 1.0f;
     // Whether to fast-forward to end when reset. It is still BCOM's
     // responsibility to actually set the shown ratios using the value returned
     // by ::Reset().
