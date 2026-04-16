@@ -222,6 +222,7 @@ void MemoryCache::Trace(Visitor* visitor) const {
   visitor->Trace(resource_maps_);
   visitor->Trace(strong_references_);
   visitor->Trace(tiered_strong_references_);
+  visitor->Trace(data_uri_strong_references_);
   MemoryCacheDumpClient::Trace(visitor);
 }
 
@@ -337,6 +338,11 @@ void MemoryCache::RemoveInternal(ResourceMap* resource_map,
     // Otherwise, the resource can only be in the original strong references
     // set.
     strong_references_.erase(resource);
+  }
+  // Also remove from data URI strong references if present.
+  if (data_uri_strong_references_.Contains(resource)) {
+    data_uri_strong_references_total_bytes_ -= resource->size();
+    data_uri_strong_references_.erase(resource);
   }
 }
 
@@ -473,6 +479,7 @@ void MemoryCache::EvictResources() {
     resource_map_iter = resource_maps_.begin();
   }
   ClearStrongReferences();
+  ClearDataURIStrongReferences();
 }
 
 void MemoryCache::EvictResourcesForCacheIdentifier(
@@ -708,9 +715,49 @@ void MemoryCache::PruneStrongReferences() {
   }
 }
 
+void MemoryCache::SaveDataURIStrongReference(Resource* resource) {
+  if (!base::FeatureList::IsEnabled(features::kDataURIMemoryCache)) {
+    return;
+  }
+  CHECK(resource);
+  CHECK(resource->Url().ProtocolIsData());
+
+  const size_t max_total_size = static_cast<size_t>(
+      features::kDataURIMemoryCacheTotalSizeThresholdParam.Get());
+
+  // Move to end if already present (LRU touch).
+  if (data_uri_strong_references_.Contains(resource)) {
+    data_uri_strong_references_.AppendOrMoveToLast(resource);
+    return;
+  }
+
+  const size_t resource_size = resource->size();
+
+  // Evict oldest entries (LRU) to stay within the size budget.
+  while ((data_uri_strong_references_total_bytes_ + resource_size) >
+             max_total_size &&
+         !data_uri_strong_references_.empty()) {
+    Resource* front_resource = data_uri_strong_references_.front();
+    data_uri_strong_references_total_bytes_ -= front_resource->size();
+    data_uri_strong_references_.erase(data_uri_strong_references_.begin());
+  }
+
+  data_uri_strong_references_.AppendOrMoveToLast(resource);
+  data_uri_strong_references_total_bytes_ += resource_size;
+}
+
 void MemoryCache::ClearStrongReferences() {
   strong_references_.clear();
   tiered_strong_references_.clear();
+  // Data URI strong references are intentionally NOT cleared here. They have
+  // their own size budget (5MB default) and are designed to survive memory
+  // pressure to persist across navigations. They are cleared in
+  // EvictResources() when the cache is fully emptied.
+}
+
+void MemoryCache::ClearDataURIStrongReferences() {
+  data_uri_strong_references_.clear();
+  data_uri_strong_references_total_bytes_ = 0;
 }
 
 double MemoryCache::CalculateResourceValue(const Resource* resource) const {

@@ -34,6 +34,7 @@
 #include <variant>
 
 #include "base/memory_coordinator/test_memory_consumer_registry.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/test/scoped_feature_list.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/features.h"
@@ -419,6 +420,186 @@ TEST_F(MemoryCacheStrongReferenceTest, ChangeMemoryCacheSize) {
   task_environment_.RunUntilQuit();
   EXPECT_EQ(MemoryCache::Get()->strong_references_max_size_, 0u);
   EXPECT_EQ(MemoryCache::Get()->strong_references_.size(), 0u);
+}
+
+class MemoryCacheDataURIStrongReferenceTest : public MemoryCacheTest {
+ public:
+  void SetUp() override {
+    scoped_feature_list_.InitWithFeatures({features::kDataURIMemoryCache}, {});
+    MemoryCacheTest::SetUp();
+  }
+
+  void TearDown() override {
+    // Explicitly clear data URI strong references before fixture destruction.
+    // On Android, conservative GC stack scanning may keep the test's
+    // MemoryCache alive past ScopedMemoryCacheForTesting destruction, causing
+    // it to be collected after infrastructure teardown.
+    MemoryCache::Get()->EvictResources();
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+TEST_F(MemoryCacheDataURIStrongReferenceTest, DataURIStrongReference) {
+  const KURL url("data:image/svg+xml,<svg></svg>");
+  Member<FakeResource> resource =
+      MakeGarbageCollected<FakeResource>(url, ResourceType::kImage);
+
+  EXPECT_EQ(MemoryCache::Get()->data_uri_strong_references_.size(), 0u);
+  MemoryCache::Get()->SaveDataURIStrongReference(resource);
+  EXPECT_EQ(MemoryCache::Get()->data_uri_strong_references_.size(), 1u);
+  EXPECT_TRUE(
+      MemoryCache::Get()->data_uri_strong_references_.Contains(resource.Get()));
+}
+
+TEST_F(MemoryCacheDataURIStrongReferenceTest, DataURILRU) {
+  const KURL url1("data:image/svg+xml,<svg><text>1</text></svg>");
+  const KURL url2("data:image/svg+xml,<svg><text>2</text></svg>");
+  Member<FakeResource> resource1 =
+      MakeGarbageCollected<FakeResource>(url1, ResourceType::kImage);
+  Member<FakeResource> resource2 =
+      MakeGarbageCollected<FakeResource>(url2, ResourceType::kImage);
+
+  MemoryCache::Get()->SaveDataURIStrongReference(resource1);
+  MemoryCache::Get()->SaveDataURIStrongReference(resource2);
+  EXPECT_EQ(MemoryCache::Get()->data_uri_strong_references_.size(), 2u);
+  // resource1 is at front (oldest).
+  EXPECT_EQ(*MemoryCache::Get()->data_uri_strong_references_.begin(),
+            resource1.Get());
+
+  // Touching resource1 moves it to the back.
+  MemoryCache::Get()->SaveDataURIStrongReference(resource1);
+  EXPECT_EQ(MemoryCache::Get()->data_uri_strong_references_.size(), 2u);
+  EXPECT_EQ(*MemoryCache::Get()->data_uri_strong_references_.begin(),
+            resource2.Get());
+}
+
+TEST_F(MemoryCacheDataURIStrongReferenceTest, DataURIClearStrongReferences) {
+  const KURL url("data:image/svg+xml,<svg></svg>");
+  Member<FakeResource> resource =
+      MakeGarbageCollected<FakeResource>(url, ResourceType::kImage);
+
+  MemoryCache::Get()->SaveDataURIStrongReference(resource);
+  EXPECT_EQ(MemoryCache::Get()->data_uri_strong_references_.size(), 1u);
+
+  // ClearStrongReferences does NOT clear data URI refs (they should survive
+  // memory pressure).
+  MemoryCache::Get()->ClearStrongReferences();
+  EXPECT_EQ(MemoryCache::Get()->data_uri_strong_references_.size(), 1u);
+
+  // ClearDataURIStrongReferences clears them explicitly.
+  MemoryCache::Get()->ClearDataURIStrongReferences();
+  EXPECT_EQ(MemoryCache::Get()->data_uri_strong_references_.size(), 0u);
+  EXPECT_EQ(MemoryCache::Get()->data_uri_strong_references_total_bytes_, 0u);
+}
+
+TEST_F(MemoryCacheDataURIStrongReferenceTest,
+       DataURIRemovedFromStrongRefsOnRemove) {
+  const KURL url("data:image/svg+xml,<svg></svg>");
+  Member<FakeResource> resource =
+      MakeGarbageCollected<FakeResource>(url, ResourceType::kImage);
+
+  MemoryCache::Get()->Add(resource);
+  MemoryCache::Get()->SaveDataURIStrongReference(resource);
+  EXPECT_EQ(MemoryCache::Get()->data_uri_strong_references_.size(), 1u);
+  EXPECT_TRUE(MemoryCache::Get()->Contains(resource));
+
+  MemoryCache::Get()->Remove(resource);
+  EXPECT_EQ(MemoryCache::Get()->data_uri_strong_references_.size(), 0u);
+  EXPECT_FALSE(MemoryCache::Get()->Contains(resource));
+}
+
+class MemoryCacheDataURIEvictionTest : public MemoryCacheTest {
+ public:
+  void SetUp() override {
+    // Probe the size of a single FakeResource so we can set a threshold that
+    // holds exactly 2. Resource overhead varies across platforms.
+    FakeResource* probe = MakeGarbageCollected<FakeResource>(
+        KURL("data:image/svg+xml,<svg><text>0</text></svg>"),
+        ResourceType::kImage);
+    // Threshold = 2.5× a single resource: holds 2, but not 3.
+    threshold_bytes_ = probe->size() * 5 / 2;
+
+    scoped_feature_list_.InitWithFeaturesAndParameters(
+        {{features::kDataURIMemoryCache,
+          {{"data_uri_memory_cache_total_size_threshold",
+            base::NumberToString(threshold_bytes_)}}}},
+        {});
+    MemoryCacheTest::SetUp();
+  }
+
+  void TearDown() override { MemoryCache::Get()->EvictResources(); }
+
+  size_t threshold_bytes_ = 0;
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+TEST_F(MemoryCacheDataURIEvictionTest, EvictsOldestWhenOverCapacity) {
+  const KURL url1("data:image/svg+xml,<svg><text>1</text></svg>");
+  const KURL url2("data:image/svg+xml,<svg><text>2</text></svg>");
+  const KURL url3("data:image/svg+xml,<svg><text>3</text></svg>");
+  Member<FakeResource> resource1 =
+      MakeGarbageCollected<FakeResource>(url1, ResourceType::kImage);
+  Member<FakeResource> resource2 =
+      MakeGarbageCollected<FakeResource>(url2, ResourceType::kImage);
+  Member<FakeResource> resource3 =
+      MakeGarbageCollected<FakeResource>(url3, ResourceType::kImage);
+
+  // Verify that 2 resources fit within the threshold but 3 do not.
+  const size_t single_size = resource1->size();
+  ASSERT_GT(single_size, 0u);
+  ASSERT_LE(single_size * 2, threshold_bytes_)
+      << "Threshold too small to hold 2 resources";
+  ASSERT_GT(single_size * 3, threshold_bytes_)
+      << "Threshold too large: 3 resources should exceed it";
+
+  MemoryCache::Get()->SaveDataURIStrongReference(resource1);
+  MemoryCache::Get()->SaveDataURIStrongReference(resource2);
+  EXPECT_EQ(MemoryCache::Get()->data_uri_strong_references_.size(), 2u);
+  EXPECT_EQ(MemoryCache::Get()->data_uri_strong_references_total_bytes_,
+            single_size * 2);
+
+  // Adding a third should evict the oldest (resource1) to stay within budget.
+  MemoryCache::Get()->SaveDataURIStrongReference(resource3);
+  EXPECT_FALSE(
+      MemoryCache::Get()->data_uri_strong_references_.Contains(resource1));
+  EXPECT_TRUE(
+      MemoryCache::Get()->data_uri_strong_references_.Contains(resource2));
+  EXPECT_TRUE(
+      MemoryCache::Get()->data_uri_strong_references_.Contains(resource3));
+  EXPECT_EQ(MemoryCache::Get()->data_uri_strong_references_.size(), 2u);
+  EXPECT_EQ(MemoryCache::Get()->data_uri_strong_references_total_bytes_,
+            single_size * 2);
+}
+
+TEST_F(MemoryCacheDataURIEvictionTest, LRUTouchPreventsEviction) {
+  const KURL url1("data:image/svg+xml,<svg><text>1</text></svg>");
+  const KURL url2("data:image/svg+xml,<svg><text>2</text></svg>");
+  const KURL url3("data:image/svg+xml,<svg><text>3</text></svg>");
+  Member<FakeResource> resource1 =
+      MakeGarbageCollected<FakeResource>(url1, ResourceType::kImage);
+  Member<FakeResource> resource2 =
+      MakeGarbageCollected<FakeResource>(url2, ResourceType::kImage);
+  Member<FakeResource> resource3 =
+      MakeGarbageCollected<FakeResource>(url3, ResourceType::kImage);
+
+  MemoryCache::Get()->SaveDataURIStrongReference(resource1);
+  MemoryCache::Get()->SaveDataURIStrongReference(resource2);
+
+  // Touch resource1 to move it to the back (most recently used).
+  MemoryCache::Get()->SaveDataURIStrongReference(resource1);
+
+  // Adding resource3 should evict resource2 (now the oldest), not resource1.
+  MemoryCache::Get()->SaveDataURIStrongReference(resource3);
+  EXPECT_TRUE(
+      MemoryCache::Get()->data_uri_strong_references_.Contains(resource1));
+  EXPECT_FALSE(
+      MemoryCache::Get()->data_uri_strong_references_.Contains(resource2));
+  EXPECT_TRUE(
+      MemoryCache::Get()->data_uri_strong_references_.Contains(resource3));
 }
 
 }  // namespace blink

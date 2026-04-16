@@ -1372,6 +1372,14 @@ BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(
 // `kMemoryPurgeOnFreezeLimit` to do this only once per backgrounded session.
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kMemoryPurgeOnFreeze);
 
+// Keep strong references for data URI resources in the blink memory cache so
+// they survive garbage collection across navigations. This avoids redundant
+// reparsing of data URIs (especially SVG) that appear on multiple pages.
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kDataURIMemoryCache);
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(
+    int,
+    kDataURIMemoryCacheTotalSizeThresholdParam);
+
 // Limits the number of memory purges on page freezing to 1 per background
 // session. Without this, memory purge is performed every time a page becomes
 // frozen, which can be too much with periodic freezing/unfreezing.

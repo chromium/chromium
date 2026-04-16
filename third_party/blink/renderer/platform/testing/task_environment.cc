@@ -8,6 +8,7 @@
 #include "third_party/blink/public/web/blink.h"
 #include "third_party/blink/renderer/platform/fonts/font_cache.h"
 #include "third_party/blink/renderer/platform/heap/thread_state.h"
+#include "third_party/blink/renderer/platform/loader/fetch/memory_cache.h"
 #include "third_party/blink/renderer/platform/scheduler/main_thread/main_thread_scheduler_impl.h"
 #include "third_party/blink/renderer/platform/scheduler/public/main_thread_scheduler.h"
 #include "third_party/blink/renderer/platform/wtf/wtf.h"
@@ -18,6 +19,12 @@ TaskEnvironment::~TaskEnvironment() {
   // Since `SimpleFontData` is associated with `v8::isolate`, it must be
   // destroyed before `main_thread_isolate_.reset()`.
   FontCache::Get().Invalidate();
+
+  // Evict MemoryCache resources before GC. Strong references in the cache
+  // (e.g., data URI resources) can keep objects like IsolatedSVGDocuments and
+  // their PerformanceMonitors alive, preventing cleanup before the main thread
+  // overrider is reset below.
+  MemoryCache::Get()->EvictResources();
 
   // Run a full GC before resetting the main thread overrider. This ensures that
   // we can properly clean up objects like PerformanceMonitor that need to call
