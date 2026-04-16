@@ -94,9 +94,14 @@ class QuickDeleteTabsFilter {
     /** Closes list of tabs currently filtered for deletion. */
     void closeTabsFilteredForQuickDelete() {
         assert mTabs != null;
-        mTabGroupModelFilter
-                .getTabModel()
-                .getTabRemover()
+        // If quick delete runs on a tab model that does not have a profile it may crash the app.
+        // This should only happen if quick delete is triggered very early in startup or after the
+        // app has already started to shutdown.
+        var tabModel = mTabGroupModelFilter.getTabModel();
+        if (tabModel.getProfile() == null) {
+            return;
+        }
+        tabModel.getTabRemover()
                 .closeTabs(
                         TabClosureParams.closeTabs(mTabs)
                                 .allowUndo(false)
