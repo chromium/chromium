@@ -25,6 +25,7 @@
 #include "components/privacy_sandbox/privacy_sandbox_features.h"
 #include "components/signin/public/base/signin_switches.h"
 #include "components/variations/service/google_groups_manager.h"
+#include "extensions/common/extension_features.h"
 #include "media/base/media_switches.h"
 
 #if !BUILDFLAG(IS_ANDROID)
@@ -330,7 +331,11 @@ std::vector<hats::SurveyConfig> GetAllSurveyConfigs() {
 
   survey_configs.emplace_back(
       &features::kHappinessTrackingSurveysForDesktopSEHijacking,
-      kHatsSurveyTriggerSEHijacking, "e4BYNZZ5u0ugnJ3q1cK0Q9A3oP6L");
+      kHatsSurveyTriggerSEHijacking,
+      base::FeatureList::IsEnabled(
+          extensions_features::kSearchEngineExplicitChoiceDialog)
+          ? "e4BYNZZ5u0ugnJ3q1cK0Q9A3oP6L"
+          : "9yoU8xqnq0ugnJ3q1cK0WjmeXHFn");
 
   // NTP modules survey.
   survey_configs.emplace_back(
