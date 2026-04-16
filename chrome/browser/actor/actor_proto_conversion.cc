@@ -968,20 +968,22 @@ void FetchCallback(
   }
 
   FetchPageContextResult& fetch_result = **result;
-
   bool has_apc = fetch_result.annotated_page_content_result.has_value();
   tab_observation->set_annotated_page_content_result(
       has_apc ? apc::TabObservation::ANNOTATED_PAGE_CONTENT_OK
               : apc::TabObservation::ANNOTATED_PAGE_CONTENT_ERROR);
 
   bool has_screenshot = fetch_result.screenshot_result.has_value();
+  bool screenshot_required =
+      !base::FeatureList::IsEnabled(actor::kGlicActorSkipScreenshot);
   tab_observation->set_screenshot_result(
-      has_screenshot ? apc::TabObservation::SCREENSHOT_OK
-                     : apc::TabObservation::SCREENSHOT_ERROR);
+      has_screenshot || !screenshot_required
+          ? apc::TabObservation::SCREENSHOT_OK
+          : apc::TabObservation::SCREENSHOT_ERROR);
 
-  // Context for actor observations should always have an APC and a screenshot,
-  // return failure if either is missing.
-  if (!has_apc || !has_screenshot) {
+  // Context for actor observations should always have an APC. It should also
+  // have a screenshot unless it was skipped.
+  if (!has_apc || (screenshot_required && !has_screenshot)) {
     tab_observation->set_result(
         apc::TabObservation::TAB_OBSERVATION_FETCH_ERROR);
     return;
@@ -1004,7 +1006,7 @@ void FetchCallback(
         fetch_context_time);
   }
 
-  {
+  if (has_screenshot) {
     apc::ActionsResult_LatencyInformation_LatencyStep* latency_step =
         latency_info->add_latency_steps();
     latency_step->mutable_screenshot()->set_id(tab_observation->id());

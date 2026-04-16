@@ -8836,6 +8836,7 @@ from previous Chrome versions.
   <int value="-1738015645" label="ForceAppLanguagePrompt:disabled"/>
   <int value="-1737769448" label="WebUITabStripTabDragIntegration:disabled"/>
   <int value="-1737637342" label="NtpRealboxIsTall:enabled"/>
+  <int value="-1737590057" label="GlicActorSkipScreenshot:disabled"/>
   <int value="-1736992465" label="TabGroupHoverCards:disabled"/>
   <int value="-1736655556" label="MantaService:enabled"/>
   <int value="-1736503278" label="CredentialManagementUnifiedUi:disabled"/>
@@ -15978,6 +15979,7 @@ from previous Chrome versions.
   <int value="644189071" label="PermissionsBlacklist:enabled"/>
   <int value="644367202" label="SafetyHubHaTSOneOffSurvey:disabled"/>
   <int value="644526367" label="TerminalMultiProfile:disabled"/>
+  <int value="645180626" label="GlicActorSkipScreenshot:enabled"/>
   <int value="645518695" label="EolIncentive:enabled"/>
   <int value="646163532" label="CameraAppPreviewOcr:enabled"/>
   <int value="646252875" label="ReadItLaterInMenu:enabled"/>

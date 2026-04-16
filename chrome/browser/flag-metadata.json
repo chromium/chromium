@@ -5090,6 +5090,14 @@
     "expiry_milestone": 170
   },
   {
+    "name": "glic-actor-skip-screenshot",
+    "owners": [
+      "mfoltz@chromium.org",
+      "agentic-web-platform-team@google.com"
+    ],
+    "expiry_milestone": 160
+  },
+  {
     "name": "glic-actor-transient-tasks",
     "owners": [
       "mfoltz@chromium.org",

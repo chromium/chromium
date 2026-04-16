@@ -99,6 +99,10 @@ extern const base::FeatureParam<
 // Kill switch for binding the created tab to the task that created it.
 BASE_DECLARE_FEATURE(kActorBindCreatedTabToTask);
 
+// When enabled, the actor will skip uploading screenshots when an actor turn
+// is completed.
+BASE_DECLARE_FEATURE(kGlicActorSkipScreenshot);
+
 BASE_DECLARE_FEATURE(kActorRestartObservationDelayControllerOnNavigate);
 
 // Kill switch to disable sending a browser signal (which is used for user

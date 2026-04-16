@@ -429,17 +429,19 @@ void ActorKeyedService::RequestTabObservation(
       "RequestTabObservation", {});
   page_content_annotations::FetchPageContextOptions options;
 
-  options.screenshot_options =
-      kFullPageScreenshot.Get()
-          // It's safe to dereference the optional here because
-          // kFullPageScreenshot being true implies
-          // kGlicTabScreenshotPaintPreviewBackend is enabled.
-          ? page_content_annotations::ScreenshotOptions::FullPage(
-                CreateOptionalPaintPreviewOptions().value(),
-                std::move(screenshot_collection_options))
-          : page_content_annotations::ScreenshotOptions::ViewportOnly(
-                CreateOptionalPaintPreviewOptions(),
-                std::move(screenshot_collection_options));
+  if (!base::FeatureList::IsEnabled(actor::kGlicActorSkipScreenshot)) {
+    options.screenshot_options =
+        kFullPageScreenshot.Get()
+            // It's safe to dereference the optional here because
+            // kFullPageScreenshot being true implies
+            // kGlicTabScreenshotPaintPreviewBackend is enabled.
+            ? page_content_annotations::ScreenshotOptions::FullPage(
+                  CreateOptionalPaintPreviewOptions().value(),
+                  std::move(screenshot_collection_options))
+            : page_content_annotations::ScreenshotOptions::ViewportOnly(
+                  CreateOptionalPaintPreviewOptions(),
+                  std::move(screenshot_collection_options));
+  }
 
   options.annotated_page_content_options =
       optimization_guide::ActionableAIPageContentOptions(
@@ -469,8 +471,7 @@ void ActorKeyedService::RequestTabObservation(
             }
 
             if (result.has_value() &&
-                result.value()->annotated_page_content_result.has_value() &&
-                result.value()->screenshot_result.has_value()) {
+                result.value()->annotated_page_content_result.has_value()) {
               auto& fetch_result = **result;
               size_t size = fetch_result.annotated_page_content_result->proto
                                 .ByteSizeLong();
@@ -481,11 +482,14 @@ void ActorKeyedService::RequestTabObservation(
                   last_committed_url, pending_journal_entry->GetTaskId(),
                   buffer);
 
-              auto& data = fetch_result.screenshot_result->screenshot_data;
-              pending_journal_entry->GetJournal().LogScreenshot(
-                  last_committed_url, pending_journal_entry->GetTaskId(),
-                  fetch_result.screenshot_result->mime_type,
-                  base::as_byte_span(data));
+              if (fetch_result.screenshot_result.has_value()) {
+                auto& data = fetch_result.screenshot_result->screenshot_data;
+                pending_journal_entry->GetJournal().LogScreenshot(
+                    last_committed_url, pending_journal_entry->GetTaskId(),
+                    fetch_result.screenshot_result->mime_type,
+                    base::as_byte_span(data));
+              }
+
               if (tab) {
                 actor::ActorTabData::From(tab.get())->DidObserveContent(
                     fetch_result.annotated_page_content_result->proto);
@@ -510,11 +514,13 @@ std::optional<std::string> ActorKeyedService::ExtractErrorMessageIfFailed(
 
   page_content_annotations::FetchPageContextResult& fetch_result = **result;
 
-  // Context for actor observations should always have an APC and a screenshot,
-  // return failure if either is missing.
+  // Context for actor observations should always have an APC. It should also
+  // have a screenshot unless it was skipped.
   bool has_apc = fetch_result.annotated_page_content_result.has_value();
   bool has_screenshot = fetch_result.screenshot_result.has_value();
-  if (!has_apc || !has_screenshot) {
+  bool screenshot_required =
+      !base::FeatureList::IsEnabled(actor::kGlicActorSkipScreenshot);
+  if (!has_apc || (screenshot_required && !has_screenshot)) {
     return absl::StrFormat(
         "Fetch Error: APC[%s] screenshot[%s]",
         has_apc ? std::string("OK")

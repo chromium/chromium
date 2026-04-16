@@ -1463,6 +1463,11 @@ inline constexpr char kGlicActorTransientTasksName[] =
 inline constexpr char kGlicActorTransientTasksDescription[] =
     "Support for transient tasks in actor. If enabled, all tasks will use the "
     "transient actor UI.";
+inline constexpr char kGlicActorSkipScreenshotName[] =
+    "Glic actor skip screenshots";
+inline constexpr char kGlicActorSkipScreenshotDescription[] =
+    "If enabled, Glic actor will skip capturing and uploading screenshots when "
+    "an actor turn is completed.";
 inline constexpr char kGlicCaptureRegionDescription[] =
     "Enables Glic to capture a region of the screen.";
 inline constexpr char kGlicCaptureRegionName[] = "Glic Capture Region";
