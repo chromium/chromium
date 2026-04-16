@@ -642,10 +642,11 @@ void ExpectCRURegistrationFindsKSAdmin(UpdaterScope scope) {
     ADD_FAILURE() << "test issue - no impl provided";
     return false;
   }
-  NSString* ns_xc_path = @"NOT PROVIDED FOR THIS TEST";
-  if (!xc_path.empty()) {
-    ns_xc_path = base::apple::FilePathToNSString(xc_path);
+  if (xc_path.empty()) {
+    ADD_FAILURE() << "test issue - xc_path must not be empty";
+    return false;
   }
+  NSString* ns_xc_path = base::apple::FilePathToNSString(xc_path);
   if (!ns_xc_path) {
     ADD_FAILURE() << "test issue - xc_path could not be converted to NSString";
     return false;
@@ -745,12 +746,13 @@ void ExpectCRURegistrationCannotRegister(const std::string& app_id,
   }
 }
 
-void ExpectCRURegistrationMarksActive(const std::string& app_id) {
+void ExpectCRURegistrationMarksActive(const std::string& app_id,
+                                      const base::FilePath& xc_path) {
   @autoreleasepool {
     __block NSError* got_error = nil;
 
     ASSERT_TRUE(InvokeCRURegistrationAndWait(
-        app_id, {},
+        app_id, xc_path,
         ^(CRURegistration* registration, dispatch_semaphore_t semaphore) {
           [registration markActiveWithReply:^(NSError* error) {
             got_error = error;
@@ -759,6 +761,29 @@ void ExpectCRURegistrationMarksActive(const std::string& app_id) {
         }));
 
     EXPECT_FALSE(got_error) << base::SysNSStringToUTF8([got_error description]);
+  }
+}
+
+void ExpectCRURegistrationChecksForUpdate(const std::string& app_id,
+                                          const base::FilePath& xc_path,
+                                          const std::string& expected_version) {
+  @autoreleasepool {
+    __block NSError* got_error = nil;
+    __block NSString* got_version = nil;
+
+    ASSERT_TRUE(InvokeCRURegistrationAndWait(
+        app_id, xc_path,
+        ^(CRURegistration* registration, dispatch_semaphore_t semaphore) {
+          [registration
+              checkForUpdateWithReply:^(NSString* version, NSError* error) {
+                got_version = version;
+                got_error = error;
+                dispatch_semaphore_signal(semaphore);
+              }];
+        }));
+
+    EXPECT_FALSE(got_error) << base::SysNSStringToUTF8([got_error description]);
+    EXPECT_EQ(base::SysNSStringToUTF8(got_version), expected_version);
   }
 }
 

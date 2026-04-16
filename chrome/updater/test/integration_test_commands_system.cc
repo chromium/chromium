@@ -563,6 +563,10 @@ class IntegrationTestCommandsSystem : public IntegrationTestCommands {
     return base::FilePath();
   }
 
+  base::FilePath GetNonExistentPath() const override {
+    return updater::test::GetNonExistentPath();
+  }
+
   void StressUpdateService() const override {
     RunCommand("stress_update_service");
   }
@@ -622,6 +626,16 @@ class IntegrationTestCommandsSystem : public IntegrationTestCommands {
       std::optional<std::string> want_brand) const override {
     updater::test::ExpectKSAdminXattrBrand(updater_scope_, elevate, path,
                                            std::move(want_brand));
+  }
+
+  void ExpectCRURegistrationChecksForUpdate(
+      const std::string& app_id,
+      const base::FilePath& xc_path,
+      const std::string& expected_version) const override {
+    RunCommand(
+        "expect_cru_registration_checks_for_update",
+        {Param("app_id", app_id), Param("xc_path", xc_path.AsUTF8Unsafe()),
+         Param("expected_version", expected_version)});
   }
 #endif  // BUILDFLAG(IS_MAC)
 

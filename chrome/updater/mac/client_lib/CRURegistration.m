@@ -6,6 +6,9 @@
 #error "CRURegistration requires ARC support. Compile with `-fobjc-arc.`"
 #endif
 
+// In the Chromium build, CRURegistration.h is generated from
+// CRURegistration.h.in by substituting branding constants. That is the file
+// to modify if you need to change the public API of CRURegistration.
 #import "CRURegistration.h"
 
 #import <Foundation/Foundation.h>
@@ -219,6 +222,8 @@ NSString* const CRUReturnCodeKey = @"org.chromium.CRUReturnCode";
 - (instancetype)initWithAppId:(NSString*)appId
          existenceCheckerPath:(NSString*)xcPath
                   targetQueue:(dispatch_queue_t)targetQueue {
+  NSAssert(appId.length != 0, @"appId must be non-empty");
+  NSAssert(xcPath.length != 0, @"xcPath must be non-empty");
   if (self = [super init]) {
     _appId = appId;
     _existenceCheckerPath = xcPath;
@@ -262,13 +267,12 @@ NSString* const CRUReturnCodeKey = @"org.chromium.CRUReturnCode";
     return;
   }
   CRURegistrationWorkItem* fetchTagItem = [self newKSAdminItem];
-  fetchTagItem.args = @[
-    @"--print-tag",
-    @"--productid",
-    _appId,
-    @"--xcpath",
-    _existenceCheckerPath,
-  ];
+  NSMutableArray<NSString*>* args = [NSMutableArray
+      arrayWithArray:@[ @"--print-tag", @"--productid", _appId ]];
+  if (_existenceCheckerPath.length != 0) {
+    [args addObjectsFromArray:@[ @"--xcpath", _existenceCheckerPath ]];
+  }
+  fetchTagItem.args = args;
   fetchTagItem.resultCallback =
       ^(NSString* gotStdout, NSString* gotStderr, NSError* gotFailure) {
         if (gotFailure) {
@@ -406,6 +410,39 @@ NSString* const CRUReturnCodeKey = @"org.chromium.CRUReturnCode";
     // this "install" request behind another operation that might have been
     // enqueued before we got around to running this setup work.
     [self->_pendingWork addObject:unzipItem];
+    [self syncMaybeStartMoreWork];
+  });
+}
+
+- (void)checkForUpdateWithReply:(void (^)(NSString* _Nullable,
+                                          NSError* _Nullable))reply {
+  CRURegistrationWorkItem* updateItem = [self newKSAdminItem];
+  NSMutableArray<NSString*>* args = [NSMutableArray arrayWithArray:@[
+    @"--list", @"--user-initiated", @"--productid", _appId
+  ]];
+  if (_existenceCheckerPath.length != 0) {
+    [args addObjectsFromArray:@[ @"--xcpath", _existenceCheckerPath ]];
+  }
+  updateItem.args = args;
+  updateItem.resultCallback =
+      ^(NSString* gotStdout, NSString* gotStderr, NSError* gotFailure) {
+        NSError* error = [self wrapError:gotFailure
+                              withStdout:gotStdout
+                               andStderr:gotStderr];
+        NSString* version = nil;
+
+        if (!error) {
+          version = CRUExtractVersionFromKSAdminOutput(gotStdout);
+        }
+
+        if (reply) {
+          dispatch_async(self->_parentQueue, ^{
+            reply(version, error);
+          });
+        }
+      };
+  dispatch_async(_privateQueue, ^{
+    [self->_pendingWork addObject:updateItem];
     [self syncMaybeStartMoreWork];
   });
 }
@@ -679,3 +716,26 @@ NSString* const CRUReturnCodeKey = @"org.chromium.CRUReturnCode";
 }
 
 @end
+
+NSString* _Nullable CRUExtractVersionFromKSAdminOutput(
+    NSString* _Nullable stdout_content) {
+  if (stdout_content.length == 0) {
+    return nil;
+  }
+
+  // ksadmin.mm (in DoListAppUpdate) explicitly promises not to
+  // change this output format, as the Keystone Registration Framework
+  // expects it exactly.
+  NSRegularExpression* regex = [NSRegularExpression
+      regularExpressionWithPattern:@"kServerVersion = \"([^\"]+)\";"
+                           options:0
+                             error:nil];
+  NSTextCheckingResult* match =
+      [regex firstMatchInString:stdout_content
+                        options:0
+                          range:NSMakeRange(0, stdout_content.length)];
+  if (match && match.numberOfRanges > 1) {
+    return [stdout_content substringWithRange:[match rangeAtIndex:1]];
+  }
+  return nil;
+}

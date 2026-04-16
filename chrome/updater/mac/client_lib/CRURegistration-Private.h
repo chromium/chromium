@@ -73,6 +73,25 @@ typedef CRURegistrationWorkItem* _Nullable (^CRUNextTaskCallback)(
     NSString* _Nullable,
     NSError* _Nullable);
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+/**
+ * CRUExtractVersionFromKSAdminOutput parses the stdout of a `ksadmin --list`
+ * command and returns the value of the `kServerVersion` key if found.
+ *
+ * Parameters:
+ *  NSString* -- the stdout of `ksadmin --list`.
+ *
+ * Returns:
+ *  NSString* -- the version string if found, nil otherwise.
+ */
+NSString* _Nullable CRUExtractVersionFromKSAdminOutput(
+    NSString* _Nullable stdout_content);
+#ifdef __cplusplus
+}
+#endif
+
 /**
  * CRUAsyncTaskRunner runs an NSTask and asynchronously accumulates its stdout
  * and stderr streams into NSMutableData buffers.

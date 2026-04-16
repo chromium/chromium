@@ -434,4 +434,32 @@ TEST(CRURegistrationTest, CannotInstallMissingArchive) {
   [results_lock unlock];
 }
 
+TEST(CRURegistrationTest, ExtractVersionFromKSAdminOutput) {
+  // Typical success case.
+  EXPECT_NSEQ(@"1.2.3.4", CRUExtractVersionFromKSAdminOutput(
+                              @"kServerVersion = \"1.2.3.4\";"));
+
+  // Success with other keys present.
+  EXPECT_NSEQ(@"101.0.4900.0", CRUExtractVersionFromKSAdminOutput(
+                                   @"{\n"
+                                    "  kServerVersion = \"101.0.4900.0\";\n"
+                                    "  kSomeOtherKey = \"some-value\";\n"
+                                    "}"));
+
+  // Missing the key.
+  EXPECT_FALSE(CRUExtractVersionFromKSAdminOutput(@"random text"));
+
+  // Malformed: missing semicolon.
+  EXPECT_FALSE(
+      CRUExtractVersionFromKSAdminOutput(@"kServerVersion = \"1.2.3.4\""));
+
+  // Malformed: missing quotes around the value.
+  EXPECT_FALSE(
+      CRUExtractVersionFromKSAdminOutput(@"kServerVersion = 1.2.3.4;"));
+
+  // Empty/nil cases.
+  EXPECT_FALSE(CRUExtractVersionFromKSAdminOutput(@""));
+  EXPECT_FALSE(CRUExtractVersionFromKSAdminOutput(nil));
+}
+
 }  // namespace

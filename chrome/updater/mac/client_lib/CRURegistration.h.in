@@ -1,6 +1,11 @@
-// Copyright 2024 The Chromium Authors
+// Copyright 2026 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
+
+// CRURegistration is an Objective-C library intended to be statically compiled
+// into MacOS software that wants to use the Chromium Updater. It is a wrapper
+// for updater command line tools. It manages an operation queue internally, so
+// callers are not required to wait for results between requests to the updater.
 
 #ifndef CHROME_UPDATER_MAC_CLIENT_LIB_CRUREGISTRATION_H_
 #define CHROME_UPDATER_MAC_CLIENT_LIB_CRUREGISTRATION_H_
@@ -243,6 +248,22 @@ typedef NS_ERROR_ENUM(CRURegistrationErrorDomain, CRURegistrationError){
  * will be nil. If it fails, the argument will contain a descriptive error.
  */
 - (void)installUpdaterWithReply:(void (^_Nullable)(NSError* _Nullable))reply;
+
+/**
+ * Asynchronously requests the updater to immediately check for updates for the
+ * registered app.
+ *
+ * `reply` will be dispatched to the target queue when the request has been
+ * processed or failed. If the update check was successful, the `NSError*`
+ * argument to `reply` will be nil. If an update is available, its version
+ * will be passed as the `version` argument.
+ *
+ * If the check succeeds but no update is available, both arguments will be nil.
+ * If it fails to start or run, the `error` argument will contain a descriptive
+ * error.
+ */
+- (void)checkForUpdateWithReply:(void (^_Nullable)(NSString* _Nullable version,
+                                                   NSError* _Nullable error))reply;
 
 /**
  * Asynchronously marks the current product active for the current user.

@@ -1979,4 +1979,12 @@ void ExpectProxyPacScriptRequest(ScopedServer& test_server) {
           test_server.host_port_pair().c_str()));
 }
 
+base::FilePath GetNonExistentPath() {
+  base::ScopedTempDir temp_dir;
+  if (!temp_dir.CreateUniqueTempDir()) {
+    return {};
+  }
+  return temp_dir.GetPath().Append(FILE_PATH_LITERAL("non_existent_file"));
+}
+
 }  // namespace updater::test

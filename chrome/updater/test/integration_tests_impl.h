@@ -678,7 +678,16 @@ void ExpectKSAdminXattrBrand(UpdaterScope scope,
                              bool elevate,
                              const base::FilePath& path,
                              std::optional<std::string> want_brand);
+
+void ExpectCRURegistrationChecksForUpdate(const std::string& app_id,
+                                          const base::FilePath& xc_path,
+                                          const std::string& expected_version);
+void ExpectCRURegistrationMarksActive(const std::string& app_id,
+                                      const base::FilePath& xc_path);
 #endif  // BUILDFLAG(IS_MAC)
+
+// Returns a path to a file that does not exist.
+base::FilePath GetNonExistentPath();
 
 }  // namespace updater::test
 

@@ -53,12 +53,17 @@ void ExpectCRURegistrationCannotRegister(const std::string& app_id,
 // Creates a CRURegistration and expects it to successfully mark the specified
 // app active. CRURegistration is always used in-process as the current user;
 // it never elevates.
-void ExpectCRURegistrationMarksActive(const std::string& app_id);
+void ExpectCRURegistrationMarksActive(const std::string& app_id,
+                                      const base::FilePath& xc_path);
 
 // Launches the executable `registration_test_app_bundle` to install the updater
 // as an unprivileged user via CRURegistration, pulling the installer out from
 // inside the application bundle.
 void ExpectRegistrationTestAppUserUpdaterInstallSuccess();
+
+// Creates a CRURegistration and expects it to successfully check for updates.
+void ExpectCRURegistrationChecksForUpdate(const std::string& app_id,
+                                          const base::FilePath& xc_path);
 
 // Launches the executable `registration_test_app_bundle` to register itself
 // with an (already-installed) user updater via CRURegistration.
