@@ -1057,12 +1057,7 @@ ItemType ItemTypeForEntitySectionHeader(SectionIdentifier section_identifier) {
   [self setSwitchItemOn:switchOn itemType:ItemTypeAutofillAddressSwitch];
   [self setAutofillProfileEnabled:switchOn];
 
-  if ([self shouldShowAddMenu]) {
-    _addButtonInToolbar.menu =
-        [self buildAddEntitiesMenuWithProfileEnabled:switchOn];
-  } else {
-    _addButtonInToolbar.enabled = switchOn;
-  }
+  [self updateAddButtonInToolbar];
 }
 
 - (void)verificationSwitchChanged:(UISwitch*)switchView {
@@ -1213,15 +1208,7 @@ ItemType ItemTypeForEntitySectionHeader(SectionIdentifier section_identifier) {
   if (!_addButtonInToolbar) {
     _addButtonInToolbar =
         [self addButtonWithAction:@selector(handleAddAddress)];
-    bool isAutofillProfileEnabled = [self isAutofillProfileEnabled];
-    if ([self shouldShowAddMenu]) {
-      _addButtonInToolbar.action = nil;
-      _addButtonInToolbar.target = nil;
-      _addButtonInToolbar.menu = [self
-          buildAddEntitiesMenuWithProfileEnabled:isAutofillProfileEnabled];
-    } else {
-      _addButtonInToolbar.enabled = isAutofillProfileEnabled;
-    }
+    [self updateAddButtonInToolbar];
   }
   return _addButtonInToolbar;
 }
@@ -1242,6 +1229,8 @@ ItemType ItemTypeForEntitySectionHeader(SectionIdentifier section_identifier) {
     _enhancedAutofillItem.detailText = detailText;
 
     [self reconfigureCellsForItems:@[ _enhancedAutofillItem ]];
+
+    [self updateAddButtonInToolbar];
   }
 }
 
@@ -1630,6 +1619,20 @@ ItemType ItemTypeForEntitySectionHeader(SectionIdentifier section_identifier) {
 // Returns whether to show the add menu with addresses and entities.
 - (bool)shouldShowAddMenu {
   return _entityDataManager != nullptr;
+}
+
+// Updates the add button in the toolbar based on whether the add menu should be
+// shown and whether autofill profile is enabled.
+- (void)updateAddButtonInToolbar {
+  BOOL profileEnabled = [self isAutofillProfileEnabled];
+  if ([self shouldShowAddMenu]) {
+    _addButtonInToolbar.action = nil;
+    _addButtonInToolbar.target = nil;
+    _addButtonInToolbar.menu =
+        [self buildAddEntitiesMenuWithProfileEnabled:profileEnabled];
+  } else {
+    _addButtonInToolbar.enabled = profileEnabled;
+  }
 }
 
 // Returns whether it is allowed to add entities. When adding entities is not
