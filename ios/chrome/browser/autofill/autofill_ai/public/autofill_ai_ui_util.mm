@@ -216,6 +216,7 @@ UIView* CreateBrandedTitleForWalletSave(NSString* title) {
 #endif
   titleView.title = title;
   titleView.titleLogoSpacing = kWalletLogoSpacing;
+  titleView.accessibilityLabel = title;
   return titleView;
 }
 
