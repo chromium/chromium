@@ -182,7 +182,7 @@
       <message name="IDS_FUSEBOX_MODELS_HEADER" desc="The text in attachments popup to indicate following buttons are all models." formatter_data="android_java">
         Gemini 3 models
       </message>
-      <message name="IDS_FUSEBOX_MODEL_PRO" desc="The text in attachments popup for the button to switch the active model to pro." formatter_data="android_java">
+      <message name="IDS_FUSEBOX_MODEL_PRO" desc="The text in attachments popup for the button to switch the active model to pro.">
         Pro
       </message>
     </if>

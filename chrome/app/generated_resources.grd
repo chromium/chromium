@@ -8726,7 +8726,7 @@ Keep your key file in a safe place. You will need it to create new versions of y
       <message name="IDS_NTP_COMPOSE_MODELS_LABEL" desc="The label for the models label in the context menu in the composebox.">
         Models
       </message>
-      <message name="IDS_NTP_COMPOSE_AUTO_MODEL" desc="The label for the Auto model button in the context menu in the composebox as well as the chip that indicates that the user is using the Auto model." formatter_data="android_java">
+      <message name="IDS_NTP_COMPOSE_AUTO_MODEL" desc="The label for the Auto model button in the context menu in the composebox as well as the chip that indicates that the user is using the Auto model.">
         Auto
       </message>
       <message name="IDS_NTP_COMPOSE_THINKING_3_PRO" desc="The label for the Thinking 3 Pro model button in the context menu in the composebox as well as the chip that indicates that the user is using the Thinking 3 Pro model.">
