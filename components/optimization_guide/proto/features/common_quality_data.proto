@@ -2415,6 +2415,9 @@ enum RedactionDecision {
   // Is a non-empty field that autofill recognized as an OTP field and so must
   // be redacted.
   REDACTION_DECISION_REDACTED_IS_OTP = 8;
+
+  // Is a empty field that autofill recognized as an OTP field.
+  REDACTION_DECISION_UNREDACTED_EMPTY_OTP_FIELD = 9;
 }
 
 // The type of data that can be autofilled into a form.
@@ -2424,6 +2427,8 @@ enum CoarseAutofillFieldType {
   COARSE_AUTOFILL_FIELD_TYPE_ADDRESS = 1;
 
   COARSE_AUTOFILL_FIELD_TYPE_CREDIT_CARD = 2;
+
+  COARSE_AUTOFILL_FIELD_TYPE_OTP = 3;
 }
 
 // Indicates the type of media in the media data.
