@@ -4,10 +4,13 @@
 
 #include "chrome/browser/indigo/indigo_service.h"
 
+#include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/task/sequenced_task_runner.h"
+#include "chrome/browser/extensions/component_loader.h"
 #include "chrome/browser/indigo/api_client.h"
 #include "chrome/browser/indigo/indigo_alpha_rpc.h"
+#include "chrome/browser/indigo/indigo_extension_utils.h"
 #include "chrome/browser/indigo/indigo_prefs.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/chrome_features.h"
@@ -50,6 +53,7 @@ IndigoService::IndigoService(Profile* profile,
     : profile_(profile),
       identity_manager_(identity_manager),
       pref_service_(pref_service) {
+  CHECK(base::FeatureList::IsEnabled(features::kIndigo));
   if (identity_manager_) {
     identity_manager_observation_.Observe(identity_manager_);
   }
@@ -67,6 +71,11 @@ IndigoService::IndigoService(Profile* profile,
   api_client_ = std::make_unique<ApiClient>(
       identity_manager, profile->GetDefaultStoragePartition()
                             ->GetURLLoaderFactoryForBrowserProcess());
+
+  // Register component extension for Indigo.
+  extensions::ComponentLoader::Get(profile_)->Add(
+      indigo_extension_utils::GetManifest(),
+      base::FilePath(FILE_PATH_LITERAL("indigo")));
 }
 
 IndigoService::~IndigoService() = default;

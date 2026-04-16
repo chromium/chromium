@@ -3276,6 +3276,9 @@ Google Chrome is unable to recover your settings.
       <message name="IDS_INDIGO_ENTRYPOINT_ANCHORED_MESSAGE_TEXT" desc="The text shown in the anchored message bubble for the Indigo page action." translateable="false">
         Indigo is available for this page
       </message>
+      <message name="IDS_INDIGO_TITLE" desc="Title for the Indigo page." translateable="false">
+        Indigo
+      </message>
     </messages>
   </release>
 </grit>

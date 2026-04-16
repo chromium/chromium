@@ -6,37 +6,16 @@
 
 #include "base/check.h"
 #include "base/logging.h"
-#include "base/strings/escape.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/page.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/web_contents.h"
+#include "extensions/common/constants.h"
+#include "extensions/common/extension.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
 
 namespace indigo {
-
-namespace {
-inline constexpr char kIndigoHtml[] = R"html(
-<head>
-  <style>
-    body {
-      background: indigo;
-      color: white;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      margin: 0;
-      width: 100%;
-      height: 100%;
-    }
-  </style>
-</head>
-<body>
-  <h1>REPLACED</h1>
-</body>
-)html";
-}  // namespace
 
 IndigoImageReplacementManager::IndigoImageReplacementManager(
     content::Page& page)
@@ -76,17 +55,18 @@ void IndigoImageReplacementManager::ReplacementFrameAttached(
     return;
   }
 
-  // TODO(b/489445294): Replace this with a WebUI URL once implemented.
-  const GURL indigo_url("data:text/html;charset=utf-8," +
-                        base::EscapeAllExceptUnreserved(kIndigoHtml));
-  content::NavigationController::LoadURLParams params{indigo_url};
+  content::NavigationController::LoadURLParams params{
+      extensions::Extension::GetResourceURL(
+          extensions::Extension::GetBaseURLFromExtensionId(
+              extension_misc::kIndigoExtensionId),
+          "index.html")};
   params.frame_tree_node_id = image_replacement_subframe->GetFrameTreeNodeId();
   params.should_replace_current_entry = true;
   content::WebContents::FromRenderFrameHost(&page().GetMainDocument())
       ->GetController()
       .LoadURLWithParams(std::move(params));
 
-  // TODO(b/489468738): We should wait for this subframe to finish loading
+  // TODO(b/489468738): We should wait for the extension to finish loading
   // before calling RenderReplacement.
   receivers_.current_context()->RenderReplacement();
 }

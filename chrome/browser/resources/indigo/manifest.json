@@ -1,0 +1,14 @@
+{
+  "key": "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAonZAEiUrRWGuYYXjwEM1bGyY4JqtGxTMBsEWovOPEDfZaT8lgptcgSjRtmrzRyzC+pl4DU9lbkYqLQQRYRmbEarhXqvBYTIDb8YLPw9VpZmEaCI4kKA1B92UvMUiVerSgFNO3vb0Q1I6mcjHRr5HcormwlPd2rBOTINdMKZm/THbRRLIcHOsEbYEOZp3sCayroVjSlhTh2mcZttbxsyA7lro7W7VTjhHtS5ja8fbotfIDuNuI/jJ4DY1aPKAENyHPr1S9VWdzD0znnbaILI8b74+4wjNMOaua56QCBlj/9p+ZTmPg+tDRyLYnJUpMo+o5SMlPgv0GsyDBvLbw5sdvwIDAQAB",
+  "manifest_version": 3,
+  "name": "Indigo",
+  "version": "1.0",
+  "description": "Indigo Component Extension",
+  "incognito": "not_allowed",
+  "content_security_policy": {
+    "extension_pages": "script-src 'self' chrome://resources; object-src 'self';"
+  },
+  "host_permissions": [
+    "chrome://resources/"
+  ]
+}

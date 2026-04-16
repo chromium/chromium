@@ -73,6 +73,10 @@ const char* const kHashSourcePrefixes[] = {
 const char kWhitespaceDelimiters[] = " \t\r\n\f";
 
 constexpr char kChromeResourcesUrl[] = "chrome://resources";
+constexpr const char* const kExtensionsAllowedToUseChromeResources[] = {
+    extension_misc::kChromeVoxExtensionId,
+    extension_misc::kIndigoExtensionId,
+};
 
 using Directive = CSPParser::Directive;
 
@@ -721,11 +725,11 @@ bool DoesCSPDisallowRemoteCode(const std::string& extension_id,
           std::string source_lower = base::ToLowerASCII(source);
 
           if (source_lower == kChromeResourcesUrl &&
-              extension_id == extension_misc::kChromeVoxExtensionId &&
+              IsExtensionAllowedToUseChromeResources(extension_id) &&
               location == mojom::ManifestLocation::kComponent) {
-            // We explicitly allow ChromeVox to include scripts from
-            // chrome://resources. ChromeVox is built into the browser as a
-            // component extension, and chrome://resources aren't remote.
+            // We explicitly allow some component extensions to include scripts
+            // from chrome://resources. These extensions are built into the
+            // browser, and chrome://resources isn't really remote.
             return true;
           }
 
@@ -766,6 +770,11 @@ bool DoesCSPDisallowRemoteCode(const std::string& extension_id,
   }
 
   return true;
+}
+
+bool IsExtensionAllowedToUseChromeResources(const std::string& extension_id) {
+  return std::ranges::contains(kExtensionsAllowedToUseChromeResources,
+                               extension_id);
 }
 
 }  // namespace csp_validator

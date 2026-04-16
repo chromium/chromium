@@ -48,6 +48,7 @@ group("resources") {
       "gaia_auth_host:resources",
       "glic/selection_overlay:resources",
       "history:resources",
+      "indigo:resources",
       "inspect:resources",
       "key_value_pair_viewer_shared:resources",
       "lens/overlay:resources",

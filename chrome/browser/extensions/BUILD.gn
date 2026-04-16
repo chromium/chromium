@@ -675,6 +675,7 @@ source_set("extensions") {
       "//components/app_icon_loader",
     ]
     deps += [
+      "//chrome/browser/indigo",
       "//chrome/browser/ui/interaction",
       "//chrome/browser/ui/user_education",
       "//chrome/browser/ui/web_applications:launch_utils",

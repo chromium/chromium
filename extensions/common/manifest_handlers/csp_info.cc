@@ -142,12 +142,11 @@ const char* GetDefaultExtensionPagesCSP(Extension* extension) {
 const std::string* GetMinimumMV3CSPForExtension(const Extension& extension) {
   DCHECK_GE(extension.manifest_version(), 3);
 
-  if (extension.id() == extension_misc::kChromeVoxExtensionId &&
+  if (csp_validator::IsExtensionAllowedToUseChromeResources(extension.id()) &&
       extension.location() == mojom::ManifestLocation::kComponent) {
-    // The minimum CSP for ChromeVox should include access to
-    // chrome://resources, which is necessary for the ChromeVox tutorial.
-    // This is okay because it's built into the browser as a component
-    // extension.
+    // The minimum CSP for these extensions should include access to
+    // chrome://resources. This is okay because they are built into the browser
+    // as component extensions.
     static const base::NoDestructor<std::string> csp_with_resources(
         kMinimumMV3CSPWithChromeResources);
     return csp_with_resources.get();

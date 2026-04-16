@@ -55,6 +55,9 @@ bool IsComponentExtensionAllowlisted(const std::string& extension_id) {
       extension_misc::kTTSEngineExtensionId,
       extension_misc::kComponentUpdaterTTSEngineExtensionId,
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC)
+#if !BUILDFLAG(IS_ANDROID)
+      extension_misc::kIndigoExtensionId,
+#endif  // !BUILDFLAG(IS_ANDROID)
   });
 
   if (kAllowed.contains(extension_id)) {

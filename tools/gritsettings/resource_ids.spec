@@ -474,9 +474,13 @@
     "META": {"sizes": {"includes": [53]}},
     "includes": [4040],
   },
+  "<(SHARED_INTERMEDIATE_DIR)/chrome/browser/resources/indigo/resources.grd": {
+    "META": {"sizes": {"includes": [10],}},
+    "includes": [4043],
+  },
   "<(SHARED_INTERMEDIATE_DIR)/chrome/browser/resources/indigo_internals/resources.grd": {
     "META": {"sizes": {"includes": [10]}},
-    "includes": [4045],
+     "includes": [4045],
   },
   "<(SHARED_INTERMEDIATE_DIR)/chrome/browser/resources/infobar_internals/resources.grd": {
     "META": {"sizes": {"includes": [10],}},

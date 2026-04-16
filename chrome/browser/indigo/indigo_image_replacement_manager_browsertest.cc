@@ -10,16 +10,16 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/common/chrome_features.h"
-#include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
-#include "content/public/browser/web_ui.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/test_navigation_observer.h"
 #include "content/public/test/test_utils.h"
+#include "extensions/common/constants.h"
+#include "extensions/common/extension.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -93,7 +93,7 @@ class IndigoImageReplacementManagerBrowserTest : public InProcessBrowserTest {
 };
 
 IN_PROC_BROWSER_TEST_F(IndigoImageReplacementManagerBrowserTest,
-                       RegistersAndNavigatesToWebUI) {
+                       RegistersAndNavigatesToComponentExtension) {
   GURL test_url = embedded_test_server()->GetURL("/empty.html");
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), test_url));
 
@@ -111,18 +111,31 @@ IN_PROC_BROWSER_TEST_F(IndigoImageReplacementManagerBrowserTest,
   manager->RegisterImageReplacement(receiver.BindNewPipeAndPassRemote());
   mock_replacement.WaitForStartReplacement();
 
-  // Setup observer for the subframe navigation.
-  content::TestNavigationObserver navigation_observer(web_contents, 1);
+  GURL component_extension_url = extensions::Extension::GetResourceURL(
+      extensions::Extension::GetBaseURLFromExtensionId(
+          extension_misc::kIndigoExtensionId),
+      "index.html");
+  // Setup observer for the subframe navigation to the Indigo Component
+  // Extension URL.
+  content::TestNavigationObserver navigation_observer(component_extension_url);
+  navigation_observer.WatchExistingWebContents();
   navigation_observer.Wait();
 
   // Find the subframe and verify its URL.
   content::RenderFrameHostWrapper subframe(
       content::ChildFrameAt(main_rfh.get(), 0));
   ASSERT_TRUE(subframe.get());
-  EXPECT_TRUE(subframe->GetLastCommittedURL().SchemeIs(url::kDataScheme));
+  EXPECT_EQ(subframe->GetLastCommittedURL(), component_extension_url);
   EXPECT_FALSE(subframe->IsErrorDocument());
-  EXPECT_EQ("REPLACED",
-            content::EvalJs(subframe.get(), "document.body.innerText"));
+  EXPECT_EQ("Indigo", content::EvalJs(subframe.get(), "document.title"));
+  EXPECT_TRUE(content::EvalJs(subframe.get(), R"js(
+    (() => {
+      const shadowRoot = document.body.querySelector(
+        'indigo-image-replacement-app').shadowRoot;
+      return !!(shadowRoot && shadowRoot.children.length);
+    })();
+  )js")
+                  .ExtractBool());
 
   mock_replacement.WaitForRenderReplacement();
 }

@@ -140,6 +140,10 @@ bool DoesCSPDisallowRemoteCode(const std::string& extension_id,
                                std::string_view manifest_key,
                                std::u16string* error);
 
+// Returns true if the extension with the given `extension_id` is allowed to use
+// chrome://resources in its Content Security Policy.
+bool IsExtensionAllowedToUseChromeResources(const std::string& extension_id);
+
 }  // namespace csp_validator
 
 }  // namespace extensions

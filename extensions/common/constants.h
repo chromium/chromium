@@ -302,6 +302,10 @@ inline constexpr char kQuickOfficeExtensionId[] =
 inline constexpr char kMimeHandlerPrivateTestExtensionId[] =
     "oickdpebdnfbgkcaoklfcdhjniefkcji";
 
+// The extension id of the component extension used to render Indigo's image
+// replacement.
+inline constexpr char kIndigoExtensionId[] = "gcgachbpjjonjloecffgdajegokngglh";
+
 // The extension id of the Files Manager application.
 inline constexpr char kFilesManagerAppId[] = "hhaomjibdihmijegdhdafkllkbggdgoj";
 
