@@ -607,6 +607,12 @@ export class ComposeboxElement extends ComposeboxEmbedderMixin
       return false;
     }
 
+    // Don't show dropdown if there's only verbatim match.
+    if (this.result?.matches.length === 1 &&
+        this.result?.matches[0]?.allowedToBeDefaultMatch) {
+      return false;
+    }
+
     // Do not show dropdown if there's an error scrim.
     if (this.errorMessage !== '') {
       return false;
