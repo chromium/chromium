@@ -5,6 +5,7 @@
 #include "components/metrics/version_utils.h"
 
 #include "base/notreached.h"
+#include "base/system/sys_info.h"
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
 #include "components/version_info/version_info.h"
@@ -52,6 +53,14 @@ std::string GetAppPackageName() {
   return base::android::apk_info::package_name();
 #else
   return std::string();
+#endif
+}
+
+std::string GetOperatingSystemName() {
+#if BUILDFLAG(IS_CHROMEOS)
+  return "CrOS";
+#else
+  return base::SysInfo::OperatingSystemName();
 #endif
 }
 
