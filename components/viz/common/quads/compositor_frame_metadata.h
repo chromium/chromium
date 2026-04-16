@@ -227,7 +227,8 @@ class VIZ_COMMON_EXPORT CompositorFrameMetadata {
   // Timestamps for TreesInViz metric reporting.
   TreesInVizTiming trees_in_viz_timing_details;
 
-  // Tracked element rects for the frame.
+  // Tracked element rects for the frame. The tracked elements are in the
+  // coordinate space of the root render pass.
   TrackedElementRects tracked_element_rects;
 
  private:

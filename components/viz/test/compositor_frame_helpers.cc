@@ -561,6 +561,14 @@ CompositorFrame CompositorFrameBuilder::MakeInitCompositorFrame() const {
   return frame;
 }
 
+CompositorFrameBuilder& CompositorFrameBuilder::AddTrackedElementRect(
+    TrackedElementFeature feature,
+    const TrackedElementRect& tracked_element_rect) {
+  frame_->metadata.tracked_element_rects[feature].push_back(
+      tracked_element_rect);
+  return *this;
+}
+
 CompositorRenderPassList CopyRenderPasses(
     const CompositorRenderPassList& render_pass_list) {
   CompositorRenderPassList copy_list;

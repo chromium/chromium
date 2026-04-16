@@ -888,6 +888,12 @@ void SurfaceAggregator::EmitSurfaceContent(
   gfx::Transform combined_transform = scaled_quad_to_target_transform;
   combined_transform.PostConcat(target_transform);
 
+  if (resolved_frame.WillDraw()) {
+    CollectTrackedElementRects(frame_metadata, combined_transform,
+                               dest_pass->transform_to_root_target,
+                               dest_root_target_clip_rect);
+  }
+
   // If the SurfaceDrawQuad is marked as being reflected and surface contents
   // are going to be scaled then keep the RenderPass. This allows the reflected
   // surface to be drawn with AA enabled for smooth scaling and preserves the
@@ -1501,6 +1507,14 @@ void SurfaceAggregator::CopyPasses(ResolvedFrameData& resolved_frame) {
           surface_transform, root_resolved_pass.render_pass().output_rect);
 
   const auto& frame_metadata = resolved_frame.GetMetadata();
+
+  if (resolved_frame.WillDraw()) {
+    CollectTrackedElementRects(
+        frame_metadata, surface_transform,
+        root_resolved_pass.render_pass().transform_to_root_target,
+        /*root_target_clip_rect=*/std::nullopt);
+  }
+
   if (frame_metadata.delegated_ink_metadata) {
     // Copy delegated ink metadata from the compositor frame metadata. This
     // prevents the delegated ink trail from flickering if a compositor frame
@@ -2139,6 +2153,7 @@ AggregatedFrame SurfaceAggregator::Aggregate(
   is_inside_aggregate_ = true;
 
   root_surface_id_ = surface_id;
+  tracked_element_rects_ = {};
 
   ResolvedFrameData* resolved_frame = GetResolvedFrame(surface_id);
 
@@ -2320,6 +2335,8 @@ AggregatedFrame SurfaceAggregator::Aggregate(
   if (frame_annotator_)
     frame_annotator_->AnnotateAggregatedFrame(&frame);
 
+  frame.tracked_element_rects = std::move(tracked_element_rects_);
+
   return frame;
 }
 
@@ -2460,6 +2477,23 @@ void SurfaceAggregator::DebugLogSurface(const Surface* surface,
           surface->surface_id().ToString().c_str(),
           surface->size_in_pixels().ToString().c_str(),
           base::ToString(will_draw).c_str());
+}
+
+void SurfaceAggregator::CollectTrackedElementRects(
+    const CompositorFrameMetadata& frame_metadata,
+    const gfx::Transform& target_transform,
+    const gfx::Transform& transform_to_root_target,
+    const std::optional<gfx::Rect> root_target_clip_rect) {
+  for (const auto& [feature, tracked_elements] :
+       frame_metadata.tracked_element_rects) {
+    for (const auto& rect_data : tracked_elements) {
+      TrackedElementRect transformed_rect_data = rect_data;
+      transformed_rect_data.visible_bounds = TransformRectToDestRootTargetSpace(
+          rect_data.visible_bounds, target_transform, transform_to_root_target,
+          root_target_clip_rect);
+      tracked_element_rects_[feature].push_back(transformed_rect_data);
+    }
+  }
 }
 
 }  // namespace viz

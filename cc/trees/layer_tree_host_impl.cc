@@ -2703,6 +2703,10 @@ viz::TrackedElementRects LayerTreeHostImpl::CollectTrackedElementRects(
           continue;
         }
 
+        // TODO(http://crbug.com/441532128): Elements that are being added to
+        // the compositor frame metadata should be transformed to the coordinate
+        // space of the compositor frame.
+
         viz::TrackedElementRect transformed_rect = rect_data;
         gfx::Rect visible_layer_rect =
             layer->draw_properties().visible_layer_rect;

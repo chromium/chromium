@@ -11,6 +11,7 @@
 #include <vector>
 
 #include "components/viz/common/quads/aggregated_render_pass.h"
+#include "components/viz/common/surfaces/tracked_element_rects.h"
 #include "components/viz/service/viz_service_export.h"
 #include "ui/gfx/delegated_ink_metadata.h"
 #include "ui/gfx/display_color_spaces.h"
@@ -62,6 +63,11 @@ class VIZ_SERVICE_EXPORT AggregatedFrame {
   std::unique_ptr<gfx::DelegatedInkMetadata> delegated_ink_metadata;
 
   AggregatedRenderPassList render_pass_list;
+
+  // The combined tracked element rects, aggregated from the individual
+  // compositor frames and transformed to the coordinate space of the root
+  // render pass.
+  TrackedElementRects tracked_element_rects;
 };
 
 }  // namespace viz

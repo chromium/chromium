@@ -9716,6 +9716,151 @@ TEST_F(SurfaceAggregatorValidSurfaceTest,
   EXPECT_FALSE(new_aggregated_frame.delegated_ink_metadata);
 }
 
+// Confirm that tracked element rects on all surfaces are aggregated to the
+// aggregated frame and transformed to the root target space.
+TEST_F(SurfaceAggregatorValidSurfaceTest, AggregateTrackedElementRects) {
+  TrackedElementFeature feature =
+      TrackedElementFeature::kTrackedElementFeatureMax;
+
+  // Element on the root surface.
+  TrackedElementId element_id0 = base::Token::CreateRandom();
+  TrackedElementRect rect0(element_id0, gfx::Rect(25, 25, 30, 30));
+
+  // Elements on the first child surface.
+  TrackedElementId element_id1 = base::Token::CreateRandom();
+  TrackedElementId element_id2 = base::Token::CreateRandom();
+  TrackedElementRect rect1(element_id1, gfx::Rect(10, 10, 20, 20));
+  TrackedElementRect rect2(element_id2, gfx::Rect(50, 50, 30, 30));
+
+  // Element on the second child surface.
+  TrackedElementId element_id3 = base::Token::CreateRandom();
+  TrackedElementRect rect3(element_id3, gfx::Rect(20, 20, 30, 30));
+
+  // Set up the first child surface.
+  TestSurfaceIdAllocator child_surface_id(child_sink_->frame_sink_id());
+  {
+    CompositorFrame child_frame =
+        CompositorFrameBuilder()
+            .AddRenderPass(
+                RenderPassBuilder(CompositorRenderPassId{1},
+                                  gfx::Size(100, 100))
+                    .AddSolidColorQuad(gfx::Rect(5, 5), SkColors::kGreen))
+            .AddTrackedElementRect(feature, rect1)
+            .AddTrackedElementRect(feature, rect2)
+            .Build();
+    child_sink_->SubmitCompositorFrame(child_surface_id.local_surface_id(),
+                                       std::move(child_frame));
+  }
+
+  // Set up the second child surface.
+  auto child_2_sink = std::make_unique<CompositorFrameSinkSupport>(
+      nullptr, &manager_, kArbitraryMiddleFrameSinkId, /*is_root=*/false);
+  TestSurfaceIdAllocator child_2_surface_id(child_2_sink->frame_sink_id());
+  {
+    CompositorFrame child_2_frame =
+        CompositorFrameBuilder()
+            .AddRenderPass(
+                RenderPassBuilder(CompositorRenderPassId{1},
+                                  gfx::Size(100, 100))
+                    .AddSolidColorQuad(gfx::Rect(5, 5), SkColors::kBlue))
+            .AddTrackedElementRect(feature, rect3)
+            .Build();
+    child_2_sink->SubmitCompositorFrame(child_2_surface_id.local_surface_id(),
+                                        std::move(child_2_frame));
+  }
+
+  // Set up the root surface.
+  gfx::Transform scale_and_translate1;
+  scale_and_translate1.Scale(1.5, 1.5);
+  scale_and_translate1.Translate(70, 240);
+  gfx::Transform scale_and_translate2;
+  scale_and_translate2.Scale(0.5, 0.5);
+  scale_and_translate2.Translate(10, 10);
+
+  CompositorFrame root_frame =
+      CompositorFrameBuilder()
+          .AddRenderPass(RenderPassBuilder(CompositorRenderPassId{1},
+                                           gfx::Size(1000, 1000))
+                             .AddSurfaceQuad(gfx::Rect(1000, 1000),
+                                             SurfaceRange(child_surface_id))
+                             .SetQuadToTargetTransform(scale_and_translate1)
+                             .AddSurfaceQuad(gfx::Rect(1000, 1000),
+                                             SurfaceRange(child_2_surface_id))
+                             .SetQuadToTargetTransform(scale_and_translate2))
+          .AddTrackedElementRect(feature, rect0)
+          .Build();
+
+  // Update the expected tracked_element_rects to reflect the transforms.
+  gfx::Rect expected_bounds1 = cc::MathUtil::MapEnclosingClippedRect(
+      scale_and_translate1, rect1.visible_bounds);
+
+  gfx::Rect expected_bounds2 = cc::MathUtil::MapEnclosingClippedRect(
+      scale_and_translate1, rect2.visible_bounds);
+
+  gfx::Rect expected_bounds3 = cc::MathUtil::MapEnclosingClippedRect(
+      scale_and_translate2, rect3.visible_bounds);
+
+  root_sink_->SubmitCompositorFrame(root_surface_id_.local_surface_id(),
+                                    std::move(root_frame));
+
+  auto aggregated_frame = AggregateFrame(root_surface_id_);
+
+  // Confirm that the tracked element rects from all surfaces have been
+  // aggregated to the aggregated frame and transformed to the root target
+  // space.
+  EXPECT_EQ(aggregated_frame.tracked_element_rects.size(), 1u);
+  auto& elements = aggregated_frame.tracked_element_rects[feature];
+  ASSERT_EQ(elements.size(), 4u);
+
+  EXPECT_EQ(elements[0].id, element_id0);
+  EXPECT_EQ(elements[0].visible_bounds, rect0.visible_bounds);
+
+  EXPECT_EQ(elements[1].id, element_id1);
+  EXPECT_EQ(elements[1].visible_bounds, expected_bounds1);
+
+  EXPECT_EQ(elements[2].id, element_id2);
+  EXPECT_EQ(elements[2].visible_bounds, expected_bounds2);
+
+  EXPECT_EQ(elements[3].id, element_id3);
+  EXPECT_EQ(elements[3].visible_bounds, expected_bounds3);
+
+  // Send frames with no tracked_element_rects.
+  CompositorFrame blank_frame =
+      CompositorFrameBuilder()
+          .AddRenderPass(
+              RenderPassBuilder(CompositorRenderPassId{1}, gfx::Size(100, 100))
+                  .AddSolidColorQuad(gfx::Rect(5, 5), SkColors::kGreen))
+          .Build();
+  child_sink_->SubmitCompositorFrame(child_surface_id.local_surface_id(),
+                                     std::move(blank_frame));
+  CompositorFrame blank_frame2 =
+      CompositorFrameBuilder()
+          .AddRenderPass(
+              RenderPassBuilder(CompositorRenderPassId{1}, gfx::Size(100, 100))
+                  .AddSolidColorQuad(gfx::Rect(5, 5), SkColors::kBlue))
+          .Build();
+  child_2_sink->SubmitCompositorFrame(child_2_surface_id.local_surface_id(),
+                                      std::move(blank_frame2));
+  CompositorFrame blank_root_frame =
+      CompositorFrameBuilder()
+          .AddRenderPass(RenderPassBuilder(CompositorRenderPassId{1},
+                                           gfx::Size(1000, 1000))
+                             .AddSurfaceQuad(gfx::Rect(1000, 1000),
+                                             SurfaceRange(child_surface_id))
+                             .SetQuadToTargetTransform(scale_and_translate1)
+                             .AddSurfaceQuad(gfx::Rect(1000, 1000),
+                                             SurfaceRange(child_2_surface_id))
+                             .SetQuadToTargetTransform(scale_and_translate2))
+          .Build();
+  root_sink_->SubmitCompositorFrame(root_surface_id_.local_surface_id(),
+                                    std::move(blank_root_frame));
+
+  // Confirm that the |tracked_element_rects| was reset and the new
+  // aggregated frame does not contain any tracked elements.
+  auto new_aggregated_frame = AggregateFrame(root_surface_id_);
+  EXPECT_TRUE(new_aggregated_frame.tracked_element_rects.empty());
+}
+
 // Confirm that delegated ink metadata on an undrawn surface is not on the
 // aggregated surface unless the undrawn surface contains a CopyOutputRequest.
 TEST_F(SurfaceAggregatorValidSurfaceTest,

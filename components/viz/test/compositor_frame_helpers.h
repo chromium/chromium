@@ -302,6 +302,9 @@ class CompositorFrameBuilder {
       const ContentFrameIntervalInfo& content_frame_interval_info);
 
   CompositorFrameBuilder& SetValidTreesInVizTimestamps(base::TimeTicks now);
+  CompositorFrameBuilder& AddTrackedElementRect(
+      TrackedElementFeature feature,
+      const TrackedElementRect& tracked_element_rect);
 
  private:
   CompositorFrame MakeInitCompositorFrame() const;
