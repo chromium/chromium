@@ -8,6 +8,7 @@
 #import "base/check_op.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
+#import "ios/chrome/browser/shared/model/url/url_util.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/web/model/page_placeholder_tab_helper.h"
 #import "ios/web/public/web_state.h"
@@ -18,7 +19,7 @@ namespace {
 // when it is realized.
 bool ShouldInstallPagePlaceholder(web::WebState* web_state) {
   const GURL& visible_url = web_state->GetVisibleURL();
-  return visible_url.is_valid() && visible_url != kChromeUINewTabURL;
+  return visible_url.is_valid() && !IsUrlNtp(visible_url);
 }
 
 }  // namespace
