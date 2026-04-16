@@ -21,6 +21,7 @@ namespace autofill_metrics {
 
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
+// LINT.IfChange(MandatoryReauthOfferOptInDecision)
 enum class MandatoryReauthOfferOptInDecision {
   // Opt-in is offered.
   kOffered = 0,
@@ -50,17 +51,21 @@ enum class MandatoryReauthOfferOptInDecision {
   kBlockedByStrikeDatabase = 12,
   kMaxValue = kBlockedByStrikeDatabase,
 };
+// LINT.ThenChange(//tools/metrics/histograms/metadata/autofill/enums.xml:MandatoryReauthOfferOptInDecision)
 
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
+// LINT.IfChange(MandatoryReauthOptInBubbleOffer)
 enum class MandatoryReauthOptInBubbleOffer {
   // The user is shown the opt-in bubble.
   kShown = 0,
   kMaxValue = kShown,
 };
+// LINT.ThenChange(//tools/metrics/histograms/metadata/autofill/enums.xml:MandatoryReauthOptInBubbleOffer)
 
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
+// LINT.IfChange(MandatoryReauthOptInBubbleResult)
 enum class MandatoryReauthOptInBubbleResult {
   // The reason why the bubble is closed is not clear. Possible reason is the
   // logging function is invoked before the closed reason is correctly set.
@@ -77,9 +82,11 @@ enum class MandatoryReauthOptInBubbleResult {
   kLostFocus = 5,
   kMaxValue = kLostFocus,
 };
+// LINT.ThenChange(//tools/metrics/histograms/metadata/autofill/enums.xml:MandatoryReauthOptInBubbleResult)
 
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
+// LINT.IfChange(MandatoryReauthOptInConfirmationBubbleMetric)
 enum class MandatoryReauthOptInConfirmationBubbleMetric {
   // The user is shown the opt-in confirmation bubble.
   kShown = 0,
@@ -87,6 +94,7 @@ enum class MandatoryReauthOptInConfirmationBubbleMetric {
   kSettingsLinkClicked = 1,
   kMaxValue = kSettingsLinkClicked,
 };
+// LINT.ThenChange(//tools/metrics/histograms/metadata/autofill/enums.xml:MandatoryReauthOptInConfirmationBubbleMetric)
 
 // Enum class to include all the possible auth flows that can occur for
 // mandatory reauth.

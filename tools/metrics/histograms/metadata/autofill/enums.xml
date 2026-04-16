@@ -5286,6 +5286,8 @@ Called by update_autofill_enums.py.-->
   <int value="4" label="Flow skipped"/>
 </enum>
 
+<!-- LINT.IfChange(MandatoryReauthOfferOptInDecision) -->
+
 <enum name="MandatoryReauthOfferOptInDecision">
   <int value="0" label="Offered"/>
   <int value="1" label="Incognito mode"/>
@@ -5302,9 +5304,17 @@ Called by update_autofill_enums.py.-->
   <int value="12" label="Blocked by strike database"/>
 </enum>
 
+<!-- LINT.ThenChange(//components/autofill/core/browser/metrics/payments/mandatory_reauth_metrics.h:MandatoryReauthOfferOptInDecision) -->
+
+<!-- LINT.IfChange(MandatoryReauthOptInBubbleOffer) -->
+
 <enum name="MandatoryReauthOptInBubbleOffer">
   <int value="0" label="Shown"/>
 </enum>
+
+<!-- LINT.ThenChange(//components/autofill/core/browser/metrics/payments/mandatory_reauth_metrics.h:MandatoryReauthOptInBubbleOffer) -->
+
+<!-- LINT.IfChange(MandatoryReauthOptInBubbleResult) -->
 
 <enum name="MandatoryReauthOptInBubbleResult">
   <int value="0" label="Unknown"/>
@@ -5315,10 +5325,16 @@ Called by update_autofill_enums.py.-->
   <int value="5" label="Lost focus"/>
 </enum>
 
+<!-- LINT.ThenChange(//components/autofill/core/browser/metrics/payments/mandatory_reauth_metrics.h:MandatoryReauthOptInBubbleResult) -->
+
+<!-- LINT.IfChange(MandatoryReauthOptInConfirmationBubbleMetric) -->
+
 <enum name="MandatoryReauthOptInConfirmationBubbleMetric">
   <int value="0" label="Shown"/>
   <int value="1" label="Settings link clicked"/>
 </enum>
+
+<!-- LINT.ThenChange(//components/autofill/core/browser/metrics/payments/mandatory_reauth_metrics.h:MandatoryReauthOptInConfirmationBubbleMetric) -->
 
 <!-- LINT.IfChange(OmniboxAutofillShowChipDecisionPart1) -->
 
