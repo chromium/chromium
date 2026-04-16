@@ -134,8 +134,8 @@ std::string GetWalletManagementURL(const EntityInstance& entity) {
 }
 
 consent_auditor::ConsentAuditor::SessionId RecordWalletPrivatePassConsent(
-    int consent_string_id,
-    int clicked_button_string_id,
+    int accepted_consent_string_id,
+    int accept_button_string_id,
     consent_auditor::ConsentAuditor& consent_auditor,
     signin::IdentityManager& identity_manager) {
   CHECK(base::FeatureList::IsEnabled(
@@ -150,8 +150,8 @@ consent_auditor::ConsentAuditor::SessionId RecordWalletPrivatePassConsent(
   consent_auditor::ConsentAuditor::SessionId session_id =
       consent_auditor.GenerateSessionId();
   sync_pb::UserConsentTypes::WalletPrivatePassConsent consent;
-  consent.mutable_description_grd_ids()->Add(consent_string_id);
-  consent.set_confirmation_grd_id(clicked_button_string_id);
+  consent.mutable_description_grd_ids()->Add(accepted_consent_string_id);
+  consent.set_confirmation_grd_id(accept_button_string_id);
   consent_auditor.RecordWalletPrivatePassConsent(gaia_id, session_id, consent);
   return session_id;
 }

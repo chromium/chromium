@@ -269,8 +269,8 @@ TEST_F(AutofillAiWalletUtilsTest, RecordWalletPrivatePassConsent) {
                       SaveArg<2>(&consent)));
 
   consent_auditor::ConsentAuditor::SessionId returned_session_id =
-      RecordWalletPrivatePassConsent(/*consent_string_id=*/1,
-                                     /*clicked_button_string_id=*/2,
+      RecordWalletPrivatePassConsent(/*accepted_consent_string_id=*/1,
+                                     /*accept_button_string_id=*/2,
                                      *autofill_client().GetConsentAuditor(),
                                      *autofill_client().GetIdentityManager());
   // Expect that the consent details are populated correctly and that the same
