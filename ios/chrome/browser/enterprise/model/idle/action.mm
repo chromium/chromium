@@ -70,7 +70,7 @@ class SignOutAction : public Action {
     if (identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSignin)) {
       signout_start_time_ = base::TimeTicks::Now();
       signin::MultiProfileSignOutForProfile(
-          profile,
+          profile, /*trigger_scene_session_id=*/std::string(),
           signin_metrics::ProfileSignout::kIdleTimeoutPolicyTriggeredSignOut,
           base::BindOnce(&SignOutAction::OnSignOutCompleted,
                          base::Unretained(this), std::move(continuation)));
@@ -80,7 +80,7 @@ class SignOutAction : public Action {
     std::move(continuation).Run(true);
   }
 
-  void OnSignOutCompleted(Continuation continuation) {
+  void OnSignOutCompleted(Continuation continuation, SceneState*) {
     metrics::RecordIdleTimeoutActionTimeTaken(
         metrics::IdleTimeoutActionType::kSignOut,
         base::TimeTicks::Now() - signout_start_time_);

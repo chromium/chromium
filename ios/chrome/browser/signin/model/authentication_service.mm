@@ -76,10 +76,11 @@ enum class IOSDeviceRestoreSignedinState : int {
 void MultiProfileSignOutForProfile(
     base::WeakPtr<ProfileIOS> profile,
     signin_metrics::ProfileSignout signout_source,
-    base::OnceClosure signout_completion_closure) {
+    signin::SignoutCompletion signout_completion_closure) {
   if (profile) {
     signin::MultiProfileSignOutForProfile(
-        profile.get(), signout_source, std::move(signout_completion_closure));
+        profile.get(), /*trigger_scene_session_id=*/std::string(),
+        signout_source, std::move(signout_completion_closure));
   }
 }
 
@@ -764,9 +765,9 @@ void AuthenticationService::HandleForgottenIdentity(
   }
 
   // Sign the user out.
-  base::OnceClosure closure =
+  signin::SignoutCompletion closure = base::IgnoreArgs<SceneState*>(
       base::BindOnce(&AuthenticationService::HandleForgottenIdentityCallback,
-                     weak_pointer_factory_.GetWeakPtr(), account_info);
+                     weak_pointer_factory_.GetWeakPtr(), account_info));
   base::OnceClosure signout =
       base::BindOnce(&MultiProfileSignOutForProfile, profile_->AsWeakPtr(),
                      signout_source, std::move(closure));

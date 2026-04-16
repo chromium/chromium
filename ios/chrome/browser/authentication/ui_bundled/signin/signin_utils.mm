@@ -4,7 +4,7 @@
 
 #import "ios/chrome/browser/authentication/ui_bundled/signin/signin_utils.h"
 
-#import "base/barrier_closure.h"
+#import "base/barrier_callback.h"
 #import "base/command_line.h"
 #import "base/functional/bind.h"
 #import "base/functional/callback_helpers.h"
@@ -158,6 +158,26 @@ syncer::DataTypeSet DataCountsMapToDataTypeSet(
     types.Put(type);
   }
   return types;
+}
+
+// This function is called once all browser are signed out.
+// `completion` is called with the new scene state with session id that mathces
+// `trigger_scene_session_id`.
+// If `trigger_scene_session_id` is empty or invalid, the new scene state is
+// nullptr.
+void AllBrowsersSignedOut(signin::SignoutCompletion completion,
+                          std::string trigger_scene_session_id,
+                          std::vector<SceneState*> results) {
+  SceneState* new_scene_state = nullptr;
+  if (trigger_scene_session_id.empty()) {
+    for (SceneState* scene_state : results) {
+      if (scene_state.sceneSessionID == trigger_scene_session_id) {
+        new_scene_state = scene_state;
+        break;
+      }
+    }
+  }
+  std::move(completion).Run(new_scene_state);
 }
 
 }  // namespace
@@ -507,15 +527,27 @@ void ProfileSignoutRequest::Run(Browser* browser) && {
 
 void MultiProfileSignOutForProfile(
     ProfileIOS* profile,
+    std::string trigger_scene_session_id,
     signin_metrics::ProfileSignout signout_source,
-    base::OnceClosure signout_completion_closure) {
+    SignoutCompletion signout_completion_closure) {
   // Simply sign out if no profile switching is needed.
   AuthenticationService* authentication_service =
       AuthenticationServiceFactory::GetForProfile(profile);
   if (!ShouldSwitchProfileAtSignout(authentication_service, profile)) {
+    SceneState* trigger_scene_state = nullptr;
+    for (Browser* browser :
+         BrowserListFactory::GetForProfile(profile)->BrowsersOfType(
+             BrowserList::BrowserType::kAll)) {
+      if (browser->GetSceneState().sceneSessionID == trigger_scene_session_id) {
+        trigger_scene_state = browser->GetSceneState();
+        break;
+      }
+    }
+    base::OnceClosure authentication_signout_completion = base::BindOnce(
+        std::move(signout_completion_closure), trigger_scene_state);
     authentication_service->SignOut(
         signout_source,
-        base::CallbackToBlock(std::move(signout_completion_closure)));
+        base::CallbackToBlock(std::move(authentication_signout_completion)));
     return;
   }
 
@@ -529,16 +561,19 @@ void MultiProfileSignOutForProfile(
 
   // Only call `signout_completion_closure` after all browsers have switched to
   // the personal profile.
-  base::RepeatingClosure barrier = base::BarrierClosure(
-      browser_list.size(), std::move(signout_completion_closure));
-
+  auto on_all_switches_done = base::BindOnce(
+      &AllBrowsersSignedOut, std::move(signout_completion_closure),
+      trigger_scene_session_id);
+  base::RepeatingCallback<void(SceneState*)> barrier =
+      base::BarrierCallback<SceneState*>(browser_list.size(),
+                                         std::move(on_all_switches_done));
   // Sign the user out in all browsers.
   for (Browser* browser : browser_list) {
     ChangeProfileContinuation continuation =
         CreateChangeProfileSignoutContinuation(
             signout_source, /*force_snackbar_over_toolbar=*/false,
             /*should_record_metrics=*/false, /*snackbar_message =*/nil,
-            base::IgnoreArgs<SceneState*>(barrier));
+            std::move(barrier));
     SwitchToPersonalProfile(browser->GetSceneState(),
                             ChangeProfileReason::kManagedAccountSignOut,
                             std::move(continuation));

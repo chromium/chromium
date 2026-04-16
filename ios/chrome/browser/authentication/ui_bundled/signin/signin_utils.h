@@ -7,6 +7,8 @@
 
 #import <UIKit/UIKit.h>
 
+#import <optional>
+#import <string>
 #import <utility>
 
 #import "base/functional/callback.h"
@@ -43,6 +45,12 @@ class SyncService;
 @protocol BuggyAuthenticationViewOwner;
 
 namespace signin {
+
+// Completion block called after a sign-out.
+// `scene_state` is the scene state from the window that requested the sign-out
+// after the profile switching it was needed, otherwise, the profile didn't
+// change, the value is the same as the one when the sign-out was requested.
+using SignoutCompletion = base::OnceCallback<void(SceneState* scene_state)>;
 
 class IdentityManager;
 
@@ -144,13 +152,20 @@ std::optional<AccountInfo> GetAccountInfoOnDeviceWithEmail(
     std::string email);
 
 // Switch profile if needed in all windows then sign out from the current
-// profile, but switches to personal profile in all. This also skips
-// recording metrics for single profile signout as policies have their
-// own metrics for signout.
+// profile, but switches to personal profile in all.
+// `trigger_scene_session_id` is the scene session identifier from the window
+// that requested the sign-out. This parameter is used to ensure that
+// `signout_completion_closure` receives the `scene_state` corresponding to the
+// same window.
+// If the string is empty (or invalid), `signout_completion_closure` will
+// receive nullptr.
+// This also skips recording metrics for single profile signout as policies
+// have their own metrics for signout.
 void MultiProfileSignOutForProfile(
     ProfileIOS* profile,
+    std::string trigger_scene_session_id,
     signin_metrics::ProfileSignout signout_source,
-    base::OnceClosure signout_completion_closure);
+    SignoutCompletion signout_completion_closure);
 
 // Returns whether the sign-in fullscreen promo migration is done.
 bool IsFullscreenSigninPromoManagerMigrationDone();
