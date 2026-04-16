@@ -170,7 +170,7 @@ IN_PROC_BROWSER_TEST_P(BrowserViewLayoutDelegateImplBrowsertest,
                  bounds.set_x(0);
                  bounds.set_width(browser_view->width());
                }),
-      Screenshot(kBrowserViewElementId, "tabstrip_region", "6956029",
+      Screenshot(kBrowserViewElementId, "tabstrip_region", "7763146",
                  std::ref(bounds)));
 }
 
@@ -189,20 +189,19 @@ IN_PROC_BROWSER_TEST_P(BrowserViewLayoutDelegateImplBrowsertest,
   ApplyWindowState(app_browser);
 
   gfx::Rect bounds;
-  RunTestSequence(
-      InContext(
-          BrowserElements::From(app_browser)->GetContext(),
-          WaitForShow(kBrowserViewElementId),
-          WithView(kBrowserViewElementId,
-                   [&bounds](BrowserView* browser_view) {
-                     WebAppFrameToolbarView* const toolbar =
-                         browser_view->web_app_frame_toolbar_for_testing();
-                     toolbar->InvalidateLayout();
-                     views::test::RunScheduledLayout(browser_view);
-                     bounds = GetBoundsInWindow(toolbar);
-                     bounds.set_x(0);
-                     bounds.set_width(browser_view->width());
-                   }),
-          Screenshot(kBrowserViewElementId, "tabstrip_region", "6956029",
-                     std::ref(bounds))));
+  RunTestSequence(InContext(
+      BrowserElements::From(app_browser)->GetContext(),
+      WaitForShow(kBrowserViewElementId),
+      WithView(kBrowserViewElementId,
+               [&bounds](BrowserView* browser_view) {
+                 WebAppFrameToolbarView* const toolbar =
+                     browser_view->web_app_frame_toolbar_for_testing();
+                 toolbar->InvalidateLayout();
+                 views::test::RunScheduledLayout(browser_view);
+                 bounds = GetBoundsInWindow(toolbar);
+                 bounds.set_x(0);
+                 bounds.set_width(browser_view->width());
+               }),
+      Screenshot(kBrowserViewElementId, "tabstrip_region", "7763146",
+                 std::ref(bounds))));
 }
