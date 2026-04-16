@@ -456,28 +456,39 @@ bool VerticalTabStripRegionView::OnKeyPressed(const ui::KeyEvent& event) {
 }
 
 void VerticalTabStripRegionView::OnMouseEntered(const ui::MouseEvent& event) {
-  UpdateExpandOnHoverState();
+  if (mouse_exit_timer_.IsRunning()) {
+    mouse_exit_timer_.Stop();
+    return;
+  }
+  UpdateExpandOnHoverState(true);
 }
 
 void VerticalTabStripRegionView::OnMouseMoved(const ui::MouseEvent& event) {
-  UpdateExpandOnHoverState();
+  if (mouse_exit_timer_.IsRunning()) {
+    mouse_exit_timer_.Stop();
+  }
+  UpdateExpandOnHoverState(true);
 }
 
 void VerticalTabStripRegionView::OnMouseExited(const ui::MouseEvent& event) {
-  UpdateExpandOnHoverState(
-#if BUILDFLAG(IS_LINUX)
-      // On Linux, `GetCursorScreenPoint()` can be buggy because it doesn't
-      // return values outside the browser window. To work around that, force a
-      // value of false when `OnMouseExited` is called. See
-      // `WaylandScreen::GetCursorScreenPoint()` for details.
-      false
-#else
-      // On Windows, we can get OnMouseExited events when the region view has
-      // fully expanded due to hover and the mouse leaves the original bounds of
-      // the region view. So defer to checking the mouse position in this case.
-      std::nullopt
+  HandleMouseExited();
+}
+
+void VerticalTabStripRegionView::HandleMouseExited() {
+  // On Windows, we get mouse exit events when moving between the caption area
+  // and client as well as when we transition between web contents area
+  // underneath the expanded on hover overlay to outside it.
+#if BUILDFLAG(IS_WIN)
+  constexpr base::TimeDelta kMouseExitDebounceTimer = base::Milliseconds(100);
+  if (IsMouseHovered()) {
+    mouse_exit_timer_.Start(
+        FROM_HERE, kMouseExitDebounceTimer,
+        base::BindOnce(&VerticalTabStripRegionView::HandleMouseExited,
+                       base::Unretained(this)));
+    return;
+  }
 #endif
-  );
+  UpdateExpandOnHoverState(false);
 }
 
 void VerticalTabStripRegionView::InitializeTabStrip() {
@@ -1075,10 +1086,6 @@ void VerticalTabStripRegionView::UpdateExpandOnHoverState(
     return;
   }
 
-  // On Linux, `GetCursorScreenPoint()` can be buggy because it doesn't return
-  // values outside the browser window. To work around that, force a value of
-  // false when `OnMouseExited` is called. See
-  // `WaylandScreen::GetCursorScreenPoint()` for details.
   const bool should_expand =
       (hovered.value_or(IsMouseHovered()) ||
        (GetFocusManager() && Contains(GetFocusManager()->GetFocusedView())));
