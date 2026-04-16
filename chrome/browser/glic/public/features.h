@@ -26,6 +26,7 @@ extern const base::FeatureParam<bool> kAutoOpenGlicForPdfWithOnboarding;
 BASE_DECLARE_FEATURE(kGlicInvoke);
 
 BASE_DECLARE_FEATURE(kGlicSelectionPrompt);
+extern const base::FeatureParam<bool> kGlicSelectionPromptUseWidget;
 
 BASE_DECLARE_FEATURE(kGlicSummarizeVideoSuggestion);
 
