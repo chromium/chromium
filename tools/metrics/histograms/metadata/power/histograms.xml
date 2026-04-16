@@ -1336,16 +1336,6 @@ tools/metrics/histograms/metadata/stability/enums.xml
   </token>
 </histogram>
 
-<histogram name="Power.FirmwareResumeTimeOnBattery" units="ms"
-    expires_after="2022-03-31">
-  <owner>puthik@chromium.org</owner>
-  <owner>chromeos-platform-power@google.com</owner>
-  <summary>
-    The time that the firmware took to resume the Chrome OS device from
-    suspend-to-RAM state when running on battery at pre-suspend time.
-  </summary>
-</histogram>
-
 <histogram
     name="Power.ForegroundBatteryDrain.30SecondsAvg2{Exclusive}{DarkeningType}"
     units="uAh" expires_after="never">
@@ -1533,64 +1523,6 @@ tools/metrics/histograms/metadata/stability/enums.xml
   </summary>
 </histogram>
 
-<histogram name="Power.IdleTimeAfterDimOnAC" units="ms"
-    expires_after="2022-04-24">
-  <owner>tbroch@chromium.org</owner>
-  <owner>napper@chromium.org</owner>
-  <summary>
-    Chrome OS user idle time since the screen dimmed sampled when the user
-    becomes active again if the device runs on AC.
-  </summary>
-</histogram>
-
-<histogram name="Power.IdleTimeAfterDimOnBattery" units="ms"
-    expires_after="2022-04-17">
-  <owner>tbroch@chromium.org</owner>
-  <owner>napper@chromium.org</owner>
-  <summary>
-    Chrome OS user idle time since the screen dimmed sampled when the user
-    becomes active again if the device runs on battery.
-  </summary>
-</histogram>
-
-<histogram name="Power.IdleTimeAfterScreenOffOnAC" units="ms"
-    expires_after="2022-05-01">
-  <owner>tbroch@chromium.org</owner>
-  <owner>napper@chromium.org</owner>
-  <summary>
-    Chrome OS user idle time since the screen turned off sampled when the user
-    becomes active again if the device runs on AC.
-  </summary>
-</histogram>
-
-<histogram name="Power.IdleTimeAfterScreenOffOnBattery" units="ms"
-    expires_after="2022-04-17">
-  <owner>tbroch@chromium.org</owner>
-  <owner>napper@chromium.org</owner>
-  <summary>
-    Chrome OS user idle time since the screen turned off sampled when the user
-    becomes active again if the device runs on battery.
-  </summary>
-</histogram>
-
-<histogram name="Power.IdleTimeOnAC" units="ms" expires_after="2022-04-24">
-  <owner>tbroch@chromium.org</owner>
-  <owner>napper@chromium.org</owner>
-  <summary>
-    Chrome OS user idle time sampled when the user becomes active again if the
-    device runs on AC.
-  </summary>
-</histogram>
-
-<histogram name="Power.IdleTimeOnBattery" units="ms" expires_after="2021-10-17">
-  <owner>tbroch@chromium.org</owner>
-  <owner>napper@chromium.org</owner>
-  <summary>
-    Chrome OS user idle time sampled when the user becomes active again if the
-    device runs on battery.
-  </summary>
-</histogram>
-
 <histogram name="Power.IOPMPowerSource.SamplingEventDelta" units="ms"
     expires_after="2024-04-28">
   <owner>pmonette@chromium.org</owner>
@@ -1735,74 +1667,6 @@ tools/metrics/histograms/metadata/stability/enums.xml
         summary="Sampled once per second during the first 30 seconds after
                  launch."/>
   </token>
-</histogram>
-
-<histogram name="Power.PC10inS0ixRuntimeResidencyRate" units="%"
-    expires_after="2024-09-22">
-  <owner>skardach@google.com</owner>
-  <owner>svenva@google.com</owner>
-  <owner>chromeos-platform-power@google.com</owner>
-  <summary>
-    Reports the time a Chrome OS device spends in the S0ix idle state while not
-    suspended (that is between system resume and suspend events) as a percentage
-    of the time spent in the Package C10 (PC10) idle state. Reported only if at
-    the time of measurement the time spent in PC10 is non-zero.
-
-    Data points for this metric are recorded on every resume and suspend event
-    and therefore the metric itself is reported on every suspend attempt,
-    starting from the second one.
-
-    Only available on Chrome OS devices with Intel CPU.
-  </summary>
-</histogram>
-
-<histogram name="Power.PC10RuntimeResidencyRate" units="%"
-    expires_after="2024-09-22">
-  <owner>skardach@google.com</owner>
-  <owner>svenva@google.com</owner>
-  <owner>chromeos-platform-power@google.com</owner>
-  <summary>
-    Reports the time a Chrome OS device spends in the Package C10 (PC10) idle
-    state as a percentage of the time device is not suspended (that is between
-    system resume and suspend events). Reported even if the value is zero.
-
-    Data points for this metric are recorded on every resume and suspend event
-    and therefore the metric itself is reported on every suspend attempt,
-    starting from the second one.
-
-    Only available on Chrome OS devices with Intel CPU.
-  </summary>
-</histogram>
-
-<histogram name="Power.PeripheralReadErrorLatencyMs" units="ms"
-    expires_after="2024-07-07">
-  <owner>skyostil@chromium.org</owner>
-  <owner>chromeos-platform-power@google.com</owner>
-  <summary>
-    The amount of wall time in milliseconds taken to fail a read of the battery
-    capacity of a peripheral.
-  </summary>
-</histogram>
-
-<histogram name="Power.PeripheralReadLatencyMs" units="ms"
-    expires_after="2024-07-07">
-  <owner>skyostil@chromium.org</owner>
-  <owner>chromeos-platform-power@google.com</owner>
-  <summary>
-    The amount of wall time in milliseconds taken to complete a read of the
-    battery capacity of a peripheral.
-  </summary>
-</histogram>
-
-<histogram name="Power.PowerButtonAcknowledgmentDelay" units="ms"
-    expires_after="M100">
-  <owner>puthik@chromium.org</owner>
-  <owner>chromeos-platform-power@google.com</owner>
-  <summary>
-    The amount of time between the user pressing the power button and Chrome
-    acknowledging the button-down event on Chrome OS. Values for this metric are
-    capped to two seconds.
-  </summary>
 </histogram>
 
 <histogram name="Power.PowerButtonMenuAction" enum="PowerButtonMenuActionType"
