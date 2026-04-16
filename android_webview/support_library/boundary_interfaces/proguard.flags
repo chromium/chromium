@@ -6,4 +6,6 @@
 # this API is shared with the Android Support Library.
 # Note that we only 'keep' the package org.chromium.support_lib_boundary itself,
 # any sub-packages of that package can still be obfuscated.
--keep public class org.chromium.support_lib_boundary.* { public *; }
+# The "allowcodereplacement" is necessary to prevent R8 from making assumptions
+# about the implementations of these interfaces (b/503109544).
+-keep,allowcodereplacement public class org.chromium.support_lib_boundary.* { public *; }
