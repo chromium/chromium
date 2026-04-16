@@ -11596,6 +11596,21 @@
             ]
         }
     ],
+    "GridMediatorSnapshotUpdateBatchGuard": [
+        {
+            "platforms": [
+                "ios"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "GridMediatorSnapshotUpdateBatchGuard"
+                    ]
+                }
+            ]
+        }
+    ],
     "GroupedHistoryAllLocales": [
         {
             "platforms": [
