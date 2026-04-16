@@ -728,8 +728,14 @@ void GlicKeyedService::SendAdditionalContext(
     tabs::TabHandle tab_handle,
     mojom::AdditionalContextPtr context) {
   auto* tab = tab_handle.Get();
-  auto* host = &instance_coordinator().GetInstanceForTab(tab)->host();
-  host->NotifyAdditionalContext(std::move(context));
+  if (!tab) {
+    return;
+  }
+  auto* instance = instance_coordinator().GetInstanceForTab(tab);
+  if (!instance) {
+    return;
+  }
+  instance->host().NotifyAdditionalContext(std::move(context));
 }
 
 void GlicKeyedService::Close(
