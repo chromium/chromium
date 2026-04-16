@@ -185,6 +185,7 @@ class DnsOverHttpsIntegrationTest : public TestWithTaskEnvironment {
         require_network_anonymization_key);
     context_builder->set_host_resolver(std::move(resolver));
 
+#if BUILDFLAG(ENABLE_REPORTING)
     if (enable_reporting) {
       context_builder->set_network_error_logging_enabled(true);
 
@@ -196,6 +197,9 @@ class DnsOverHttpsIntegrationTest : public TestWithTaskEnvironment {
       reporting_policy->delivery_interval = base::Milliseconds(1);
       context_builder->set_reporting_policy(std::move(reporting_policy));
     }
+#else
+    CHECK(!enable_reporting);
+#endif
 
     auto ssl_config_service =
         std::make_unique<TestSSLConfigService>(SSLContextConfig());
@@ -932,6 +936,7 @@ class DnsOverHttpsReportingTest : public DnsOverHttpsIntegrationTest {
   bool report_uploaded_ GUARDED_BY(report_uploaded_lock_) = false;
 };
 
+#if BUILDFLAG(ENABLE_REPORTING)
 // Regression test for crbug.com/500671397. Ensures that if a DoH query
 // results in a reporting API upload it doesn't trigger a CHECK.
 TEST_F(DnsOverHttpsReportingTest, ReportingApi) {
@@ -997,5 +1002,7 @@ TEST_F(DnsOverHttpsReportingTest, ReportingApi) {
   context()->reporting_service()->GetContextForTesting()->RemoveCacheObserver(
       &observer);
 }
+#endif
+
 }  // namespace
 }  // namespace net
