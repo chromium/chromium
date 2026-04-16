@@ -11,6 +11,7 @@
 #include "base/android/jni_android.h"
 #include "base/android/jni_array.h"
 #include "base/android/jni_bytebuffer.h"
+#include "base/android/jni_string.h"
 #include "base/base64.h"
 #include "base/check.h"
 #include "base/containers/span.h"
@@ -24,6 +25,8 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/contextual_search/contextual_search_service_factory.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_service_factory.h"
+#include "chrome/browser/contextual_tasks/contextual_tasks_ui_interface.h"
+#include "chrome/browser/contextual_tasks/contextual_tasks_utils.h"
 #include "chrome/browser/page_content_annotations/page_content_extraction_service_factory.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
@@ -70,8 +73,9 @@ void RunJavaCallback(
 
 static int64_t JNI_ComposeboxQueryControllerBridge_Init(
     JNIEnv* env,
+    const base::android::JavaRef<jobject>& java_obj,
     Profile* profile,
-    const base::android::JavaRef<jobject>& java_obj) {
+    content::WebContents* contextual_tasks_web_contents) {
   auto* aim_service = AimEligibilityServiceFactory::GetForProfile(profile);
   if (!aim_service || !aim_service->IsAimEligible()) {
     return 0L;
@@ -85,14 +89,22 @@ static int64_t JNI_ComposeboxQueryControllerBridge_Init(
   }
 
   ComposeboxQueryControllerBridge* instance =
-      new ComposeboxQueryControllerBridge(profile, java_obj);
+      new ComposeboxQueryControllerBridge(java_obj, profile,
+                                          contextual_tasks_web_contents);
   return reinterpret_cast<intptr_t>(instance);
 }
 
 ComposeboxQueryControllerBridge::ComposeboxQueryControllerBridge(
+    const base::android::JavaRef<jobject>& java_obj,
     Profile* profile,
-    const base::android::JavaRef<jobject>& java_obj)
+    content::WebContents* contextual_tasks_web_contents)
     : profile_{profile}, java_obj_(java_obj) {
+  if (contextual_tasks_web_contents &&
+      !contextual_tasks_web_contents->IsBeingDestroyed()) {
+    contextual_tasks_web_ui_interface_ =
+        contextual_tasks::GetWebUiInterface(contextual_tasks_web_contents);
+  }
+
   auto query_controller_config_params = std::make_unique<
       contextual_search::ContextualSearchContextController::ConfigParams>();
   query_controller_config_params->send_lns_surface = false;

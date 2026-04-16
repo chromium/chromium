@@ -25,6 +25,10 @@ namespace content {
 class WebContents;
 }  //  namespace content
 
+namespace contextual_tasks {
+class ContextualTasksUIInterface;
+}  // namespace contextual_tasks
+
 namespace optimization_guide::proto {
 class PageContext;
 }  // namespace optimization_guide::proto
@@ -38,8 +42,9 @@ class ComposeboxQueryControllerBridge
       public contextual_tasks::QueryContextualizer::Delegate {
  public:
   explicit ComposeboxQueryControllerBridge(
+      const base::android::JavaRef<jobject>& java_obj,
       Profile* profile,
-      const base::android::JavaRef<jobject>& java_obj);
+      content::WebContents* contextual_tasks_web_contents);
   ~ComposeboxQueryControllerBridge() override;
   void Destroy(JNIEnv* env);
   void NotifySessionStarted(JNIEnv* env);
@@ -151,6 +156,8 @@ class ComposeboxQueryControllerBridge
   }
 
   raw_ptr<Profile> profile_;
+  raw_ptr<contextual_tasks::ContextualTasksUIInterface>
+      contextual_tasks_web_ui_interface_ = nullptr;
   std::unique_ptr<contextual_search::ContextualSearchSessionHandle>
       session_handle_;
   std::unique_ptr<contextual_search::InputStateModel> input_state_model_;

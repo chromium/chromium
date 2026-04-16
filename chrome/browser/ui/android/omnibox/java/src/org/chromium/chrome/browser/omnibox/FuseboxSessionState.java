@@ -22,6 +22,7 @@ import org.chromium.components.omnibox.AutocompleteInput;
 import org.chromium.components.omnibox.AutocompleteRequestType;
 import org.chromium.components.omnibox.OmniboxFeatures;
 import org.chromium.components.omnibox.ToolModeUtils;
+import org.chromium.content_public.browser.WebContents;
 
 import java.util.Optional;
 
@@ -72,6 +73,9 @@ public class FuseboxSessionState implements UserData {
     private @Nullable OneShotCallback<Profile> mPendingProfileCallback;
     private boolean mIsActive;
 
+    /** The WebContents of the contextual tasks WebUI containing the embedded AI page. */
+    private final @Nullable WebContents mContextualTasksWebContents;
+
     /**
      * Retrieve the session state for the supplied Tab, or an ephemeral session state if no tab
      * exists.
@@ -95,9 +99,25 @@ public class FuseboxSessionState implements UserData {
 
     /** Constructs a new, empty FuseboxSessionState. */
     public FuseboxSessionState() {
+        this(null);
+    }
+
+    /**
+     * Constructs a new, empty FuseboxSessionState with the given contextual tasks WebUI
+     * WebContents.
+     *
+     * @param contextualTasksWebContents The WebContents of the contextual tasks WebUI.
+     */
+    public FuseboxSessionState(@Nullable WebContents contextualTasksWebContents) {
+        mContextualTasksWebContents = contextualTasksWebContents;
         if (OmniboxFeatures.sShowModelPicker.getValue()) {
             mAutocompleteInput.getRequestTypeSupplier().addSyncObserver(mOnRequestTypeChanged);
         }
+    }
+
+    /** Returns the WebContents of the contextual tasks WebUI associated with the fusebox. */
+    public @Nullable WebContents getContextualTasksWebContents() {
+        return mContextualTasksWebContents;
     }
 
     /** Returns the current {@link Profile} for this session. */
@@ -197,7 +217,7 @@ public class FuseboxSessionState implements UserData {
         mAutocomplete = AutocompleteController.getForProfile(mProfile);
 
         mComposeBoxQueryControllerBridge =
-                ComposeboxQueryControllerBridge.createForProfile(mProfile);
+                ComposeboxQueryControllerBridge.create(mProfile, mContextualTasksWebContents);
 
         if (mComposeBoxQueryControllerBridge != null) {
             // Composebox Controller may not be instantiated if locale or policies prohibit AIM.

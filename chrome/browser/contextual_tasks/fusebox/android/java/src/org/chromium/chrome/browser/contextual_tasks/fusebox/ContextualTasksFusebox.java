@@ -4,8 +4,6 @@
 
 package org.chromium.chrome.browser.contextual_tasks.fusebox;
 
-import static org.chromium.build.NullUtil.assumeNonNull;
-
 import android.app.Activity;
 import android.view.View;
 
@@ -67,11 +65,9 @@ public class ContextualTasksFusebox {
             WindowAndroid windowAndroid,
             ActivityLifecycleDispatcher lifecycleDispatcher,
             Callback<String> loadUrlCallback,
-            SnackbarManager snackbarManager) {
-
-        mDataProvider = new ContextualTasksFuseboxDataProvider();
-        mDataProvider.initialize(activity, assumeNonNull(profileSupplier.get()).isOffTheRecord());
-
+            SnackbarManager snackbarManager,
+            ContextualTasksFuseboxDataProvider dataProvider) {
+        mDataProvider = dataProvider;
         mContentView = contentView;
         View locationBarLayout = config.locationBarLayout;
         View anchorView = config.anchorView;
@@ -132,11 +128,12 @@ public class ContextualTasksFusebox {
 
     public void destroy() {
         mLocationBarCoordinator.destroy();
-        mDataProvider.destroy();
     }
 
     /** Returns the fusebox view. */
     public View getFuseboxView() {
+        // We don't destroy the ContextualTasksFuseboxDataProvider because it is shared across
+        // multiple ContextualTasksFusebox and is destroyed during activity destruction.
         return mContentView;
     }
 }

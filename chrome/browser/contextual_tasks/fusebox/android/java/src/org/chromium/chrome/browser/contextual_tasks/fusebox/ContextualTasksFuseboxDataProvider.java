@@ -33,17 +33,32 @@ import org.chromium.url.GURL;
 public class ContextualTasksFuseboxDataProvider implements LocationBarDataProvider {
     private final NonNullObservableSupplier<@ControlsPosition Integer> mToolbarPosition =
             ObservableSuppliers.createNonNull(ControlsPosition.TOP);
-    private final FuseboxSessionState mFuseboxSessionState = new FuseboxSessionState();
-    private @ColorInt int mPrimaryColor;
-    private boolean mIsIncognito;
+    private @Nullable FuseboxSessionState mFuseboxSessionState;
+    private final @ColorInt int mPrimaryColor;
+    private final boolean mIsIncognito;
 
-    void initialize(Context context, boolean isIncognito) {
+    /**
+     * @param context The current {@link Context}.
+     * @param isIncognito Whether the current session is incognito.
+     */
+    public ContextualTasksFuseboxDataProvider(Context context, boolean isIncognito) {
         mPrimaryColor = ChromeColors.getPrimaryBackgroundColor(context, isIncognito);
         mIsIncognito = isIncognito;
     }
 
+    /**
+     * Set the {@link FuseboxSessionState} associated with the fusebox.
+     *
+     * @param fuseboxSessionState The {@link FuseboxSessionState} representing the fusebox.
+     */
+    public void setFuseboxSessionState(@Nullable FuseboxSessionState fuseboxSessionState) {
+        mFuseboxSessionState = fuseboxSessionState;
+    }
+
     void destroy() {
-        mFuseboxSessionState.destroy();
+        if (mFuseboxSessionState != null) {
+            mFuseboxSessionState.destroy();
+        }
     }
 
     @Override
@@ -87,7 +102,7 @@ public class ContextualTasksFuseboxDataProvider implements LocationBarDataProvid
     }
 
     @Override
-    public FuseboxSessionState getFuseboxSessionState() {
+    public @Nullable FuseboxSessionState getFuseboxSessionState() {
         return mFuseboxSessionState;
     }
 

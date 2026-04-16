@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.contextual_tasks.fusebox;
 
 import android.app.Activity;
+import android.text.TextUtils;
 import android.view.View;
 
 import org.chromium.base.CallbackUtils;
@@ -14,15 +15,19 @@ import org.chromium.base.supplier.NullableObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
+import org.chromium.chrome.browser.omnibox.FuseboxSessionState;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.CurrentTabObserver;
 import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.content_public.browser.NavigationHandle;
+import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.url.GURL;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.function.Supplier;
 
 /**
@@ -45,6 +50,8 @@ public class ContextualTasksFuseboxManager {
 
     // The fusebox instance. Shared across all tabs. Lazily initialized.
     private @Nullable ContextualTasksFusebox mFusebox;
+    private final ContextualTasksFuseboxDataProvider mFuseboxDataProvider;
+    private final Map<String, FuseboxSessionState> mTaskSessionMap = new HashMap<>();
 
     public ContextualTasksFuseboxManager(
             Activity activity,
@@ -60,6 +67,12 @@ public class ContextualTasksFuseboxManager {
         mLifecycleDispatcher = lifecycleDispatcher;
         mProfileSupplier = profileSupplier;
         mSnackbarManagerSupplier = snackbarManagerSupplier;
+        mFuseboxDataProvider =
+                new ContextualTasksFuseboxDataProvider(
+                        mActivity,
+                        mProfileSupplier.get() == null
+                                ? false
+                                : mProfileSupplier.get().isOffTheRecord());
 
         mCurrentTabObserver =
                 new CurrentTabObserver(
@@ -92,11 +105,44 @@ public class ContextualTasksFuseboxManager {
         return KEY.retrieveDataFromHost(windowAndroid.getUnownedUserDataHost());
     }
 
+    /**
+     * Called to initialize the {@ link FuseboxSessionState} associated with a task. Ignored if the
+     * task is already associated with a {@link FuseboxSessionState}.
+     *
+     * @param taskId The ID of the task.
+     * @param webContents The WebContents of the contextual tasks WebUI associated with the fusebox.
+     */
+    public void ensureFuseboxSessionState(String taskId, @Nullable WebContents webContents) {
+        FuseboxSessionState fuseboxSessionState = mTaskSessionMap.get(taskId);
+        if (fuseboxSessionState == null) {
+            fuseboxSessionState = new FuseboxSessionState(webContents);
+            mTaskSessionMap.put(taskId, fuseboxSessionState);
+        }
+        mFuseboxDataProvider.setFuseboxSessionState(fuseboxSessionState);
+    }
+
+    /** Returns the {@link ContextualTasksFuseboxDataProvider}. One per activity. */
+    public ContextualTasksFuseboxDataProvider getFuseboxDataProvider() {
+        return mFuseboxDataProvider;
+    }
+
+    private @Nullable String getTaskIdForTab(@Nullable Tab tab) {
+        if (tab == null || tab.getUrl().isEmpty()) return null;
+        return null;
+    }
+
     private void updateFuseboxVisibility(@Nullable Tab currentTab) {
-        if (currentTab != null && isContextualTasksUrl(currentTab.getUrl())) {
+        String taskId = getTaskIdForTab(currentTab);
+        if (currentTab != null
+                && !TextUtils.isEmpty(taskId)
+                && isContextualTasksUrl(currentTab.getUrl())) {
+
+            ensureFuseboxSessionState(taskId, currentTab.getWebContents());
+
             ensureFuseboxInitialized();
             setFuseboxVisible(true);
         } else {
+            mFuseboxDataProvider.setFuseboxSessionState(/* fuseboxSessionState= */ null);
             setFuseboxVisible(false);
         }
     }
@@ -128,7 +174,8 @@ public class ContextualTasksFuseboxManager {
                         mWindowAndroid,
                         mLifecycleDispatcher,
                         /* loadUrlCallback= */ CallbackUtils.emptyCallback(),
-                        mSnackbarManagerSupplier.get());
+                        mSnackbarManagerSupplier.get(),
+                        mFuseboxDataProvider);
     }
 
     public void destroy() {
@@ -137,5 +184,10 @@ public class ContextualTasksFuseboxManager {
         if (mFusebox != null) {
             mFusebox.destroy();
         }
+        for (FuseboxSessionState fuseboxSessionState : mTaskSessionMap.values()) {
+            fuseboxSessionState.destroy();
+        }
+        mTaskSessionMap.clear();
+        mFuseboxDataProvider.destroy();
     }
 }
