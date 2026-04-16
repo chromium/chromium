@@ -12,7 +12,8 @@
         disabled="[[optInToggleDisabled_(
             enhancedAutofillEligibleUser_, enhancedAutofillOptedIn_,
             autofillAddOtherDatatypesPrefIsEnabled_,
-            prefs.autofill.profile_enabled.value)]]"
+            prefs.autofill.profile_enabled.value,
+            prefsInitialized_)]]"
         on-settings-boolean-control-change="onOptInToggleChange_"
         pref="[[travelOptedIn_]]"
         no-extension-indicator
@@ -20,7 +21,7 @@
         sub-label="$i18n{travelOptInToggleSubLabel}">
     </settings-toggle-button>
     <template is="dom-if" if="[[extensionControlledIndicatorIsVisible_(
-            prefs.autofill.profile_enabled.extensionId)]]">
+            prefs.autofill.profile_enabled.extensionId, prefsInitialized_)]]">
       <div class="cr-row continuation">
         <extension-controlled-indicator class="flex"
             id="autofillExtensionIndicator"
