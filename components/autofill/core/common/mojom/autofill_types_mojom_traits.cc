@@ -589,7 +589,7 @@ bool StructTraits<autofill::mojom::TriggeringFieldDataView,
   out->show_webauthn_credentials = data.show_webauthn_credentials();
   out->show_identity_credentials = data.show_identity_credentials();
 
-  return data.ReadElementId(&out->element_id) &&
+  return data.ReadElementId(&out->element_id.renderer_id) &&
          data.ReadTriggerSource(&out->trigger_source) &&
          data.ReadTextDirection(&out->text_direction) &&
          data.ReadTypedUsername(&out->typed_username) &&
@@ -602,8 +602,8 @@ bool StructTraits<autofill::mojom::PasswordSuggestionRequestDataView,
     Read(autofill::mojom::PasswordSuggestionRequestDataView data,
          autofill::PasswordSuggestionRequest* out) {
   return data.ReadField(&out->field) && data.ReadFormData(&out->form_data) &&
-         data.ReadUsernameFieldId(&out->username_field_id) &&
-         data.ReadPasswordFieldId(&out->password_field_id);
+         data.ReadUsernameFieldId(&out->username_field_id.renderer_id) &&
+         data.ReadPasswordFieldId(&out->password_field_id.renderer_id);
 }
 
 bool StructTraits<

@@ -670,7 +670,7 @@ struct StructTraits<autofill::mojom::TriggeringFieldDataView,
                     autofill::TriggeringField> {
   static autofill::FieldRendererId element_id(
       const autofill::TriggeringField& r) {
-    return r.element_id;
+    return r.element_id.renderer_id;
   }
 
   static autofill::AutofillSuggestionTriggerSource trigger_source(
@@ -719,12 +719,12 @@ struct StructTraits<autofill::mojom::PasswordSuggestionRequestDataView,
 
   static autofill::FieldRendererId username_field_id(
       const autofill::PasswordSuggestionRequest& r) {
-    return r.username_field_id;
+    return r.username_field_id.renderer_id;
   }
 
   static autofill::FieldRendererId password_field_id(
       const autofill::PasswordSuggestionRequest& r) {
-    return r.password_field_id;
+    return r.password_field_id.renderer_id;
   }
 
   static bool Read(autofill::mojom::PasswordSuggestionRequestDataView data,

@@ -86,7 +86,8 @@ void CreatePasswordGenerationUIData(
 }
 
 void CreateTriggeringField(TriggeringField* data) {
-  data->element_id = FieldRendererId(123);
+  data->element_id = {.frame_token = LocalFrameToken(),
+                      .renderer_id = FieldRendererId(123)};
   data->trigger_source =
       AutofillSuggestionTriggerSource::kFormControlElementClicked;
   data->text_direction = base::i18n::RIGHT_TO_LEFT;
@@ -98,8 +99,8 @@ void CreateTriggeringField(TriggeringField* data) {
 void CreatePasswordSuggestionRequest(PasswordSuggestionRequest* data) {
   CreateTriggeringField(&data->field);
   data->form_data = test::CreateTestAddressFormData();
-  data->username_field_id = data->form_data.fields()[0].renderer_id();
-  data->password_field_id = data->form_data.fields()[1].renderer_id();
+  data->username_field_id = data->form_data.fields()[0].global_id();
+  data->password_field_id = data->form_data.fields()[1].global_id();
 }
 
 void CheckEqualPasswordFormFillData(const PasswordFormFillData& expected,
@@ -146,8 +147,12 @@ void CheckEqualPasswordSuggestionRequest(
   CheckEqualTriggeringField(expected.field, actual.field);
   EXPECT_EQ(test::WithoutUnserializedData(expected.form_data),
             test::WithoutUnserializedData(actual.form_data));
-  EXPECT_EQ(expected.username_field_id, actual.username_field_id);
-  EXPECT_EQ(expected.password_field_id, actual.password_field_id);
+  EXPECT_TRUE(actual.username_field_id.frame_token.is_empty());
+  EXPECT_TRUE(actual.password_field_id.frame_token.is_empty());
+  EXPECT_EQ(expected.username_field_id.renderer_id,
+            actual.username_field_id.renderer_id);
+  EXPECT_EQ(expected.password_field_id.renderer_id,
+            actual.password_field_id.renderer_id);
 }
 
 class AutofillTypeTraitsTestImpl : public testing::Test,

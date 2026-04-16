@@ -40,7 +40,8 @@
 
 namespace {
 
-constexpr autofill::FieldRendererId kElementId(1000);
+constexpr autofill::FieldGlobalId kElementId(autofill::LocalFrameToken(),
+                                             autofill::FieldRendererId(1000));
 
 }  // namespace
 

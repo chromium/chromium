@@ -146,7 +146,7 @@ const Suggestion::Text kSeparatorEntry(u"", Suggestion::Text::IsPrimary(false));
 constexpr autofill::FieldRendererId kElementId;
 
 const autofill::TriggeringField kTriggeringField(
-    kElementId,
+    {.frame_token = autofill::LocalFrameToken(), .renderer_id = kElementId},
     kDefaultTriggerSource,
     base::i18n::RIGHT_TO_LEFT,
     std::u16string(),

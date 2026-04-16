@@ -123,8 +123,8 @@ bool CalculateTriggerSubmission(SubmissionReadinessState submission_readiness);
 // filling.
 SubmissionReadinessState CalculateSubmissionReadiness(
     const autofill::FormData& form_data,
-    const autofill::FieldRendererId username_field_id,
-    const autofill::FieldRendererId password_field_id);
+    const autofill::FieldGlobalId& username_field_id,
+    const autofill::FieldGlobalId& password_field_id);
 
 // Returns whether to use Google Chrome branded strings.
 constexpr bool UsesPasswordManagerGoogleBranding() {

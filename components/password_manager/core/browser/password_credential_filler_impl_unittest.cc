@@ -180,17 +180,15 @@ class PasswordCredentialFillerBaseTest : public testing::Test {
     form.set_likely_contains_captcha(has_captcha);
 
     auto get_field_id = [&form](size_t i) {
-      return i < form.fields().size() ? form.fields()[i].renderer_id()
-                                      : autofill::FieldRendererId();
+      return autofill::FieldGlobalId{
+          .frame_token = form.host_frame(),
+          .renderer_id = i < form.fields().size()
+                             ? form.fields()[i].renderer_id()
+                             : autofill::FieldRendererId()};
     };
-    autofill::FieldRendererId username_field_id =
-        get_field_id(username_field_index);
-    autofill::FieldRendererId password_field_id =
-        get_field_id(password_field_index);
-
-    return autofill::PasswordSuggestionRequest(autofill::TriggeringField(),
-                                               form, username_field_id,
-                                               password_field_id);
+    return autofill::PasswordSuggestionRequest(
+        autofill::TriggeringField(), form, get_field_id(username_field_index),
+        get_field_id(password_field_index));
   }
 
  private:

@@ -523,7 +523,7 @@ void PasswordAutofillManager::ShowSuggestions(
               password_client_->GetProfilePasswordStore(),
               password_client_->GetAccountPasswordStore()));
     }
-    manual_fallback_flow_->RunFlow(field.element_id, field.bounds,
+    manual_fallback_flow_->RunFlow(field.element_id.renderer_id, field.bounds,
                                    field.text_direction);
     return;
   }
@@ -612,7 +612,7 @@ void PasswordAutofillManager::ContinueShowingSuggestions(
       field.show_webauthn_credentials);
 
   password_manager_driver_->SetSuggestionAvailability(
-      field.element_id,
+      field.element_id.renderer_id,
       autofill_available
           ? autofill::mojom::AutofillSuggestionAvailability::kAutofillAvailable
           : autofill::mojom::AutofillSuggestionAvailability::kNoSuggestions);

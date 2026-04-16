@@ -120,6 +120,11 @@ PasswordSuggestionRequest Lift(ContentAutofillDriver& source,
                                PasswordSuggestionRequest request) {
   request.form_data = Lift(source, std::move(request.form_data));
   request.field.bounds = Lift(source, std::move(request.field.bounds));
+  request.field.element_id = Lift(source, request.field.element_id.renderer_id);
+  request.username_field_id =
+      Lift(source, request.username_field_id.renderer_id);
+  request.password_field_id =
+      Lift(source, request.password_field_id.renderer_id);
   return request;
 }
 

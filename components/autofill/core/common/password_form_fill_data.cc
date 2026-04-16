@@ -28,7 +28,7 @@ TriggeringField::TriggeringField(const FormFieldData& field,
                                  const std::u16string& typed_username,
                                  const gfx::RectF& bounds)
     : TriggeringField(
-          field.renderer_id(),
+          field.global_id(),
           trigger_source,
           field.text_direction(),
           typed_username,
@@ -37,7 +37,7 @@ TriggeringField::TriggeringField(const FormFieldData& field,
               field.parsed_autocomplete()->webidentity,
           bounds) {}
 
-TriggeringField::TriggeringField(FieldRendererId element_id,
+TriggeringField::TriggeringField(FieldGlobalId element_id,
                                  AutofillSuggestionTriggerSource trigger_source,
                                  base::i18n::TextDirection text_direction,
                                  const std::u16string& typed_username,
@@ -61,12 +61,12 @@ TriggeringField::~TriggeringField() = default;
 PasswordSuggestionRequest::PasswordSuggestionRequest(
     TriggeringField field,
     const FormData& form_data,
-    FieldRendererId username_field_id,
-    FieldRendererId password_field_id)
+    FieldGlobalId username_field_id,
+    FieldGlobalId password_field_id)
     : field(field),
       form_data(form_data),
-      username_field_id(username_field_id),
-      password_field_id(password_field_id) {}
+      username_field_id(std::move(username_field_id)),
+      password_field_id(std::move(password_field_id)) {}
 
 PasswordSuggestionRequest::PasswordSuggestionRequest() = default;
 PasswordSuggestionRequest::PasswordSuggestionRequest(

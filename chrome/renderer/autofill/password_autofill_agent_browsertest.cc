@@ -2704,10 +2704,11 @@ TEST_F(PasswordAutofillAgentTest, CredentialsOnClick) {
       fake_autofill_driver_,
       AskForValuesToFill(
           _, _, _, _,
-          Optional(
-              Field(&autofill::PasswordSuggestionRequest::field,
-                    Field(&autofill::TriggeringField::element_id,
-                          form_util::GetFieldRendererId(username_element_))))))
+          Optional(Field(&autofill::PasswordSuggestionRequest::field,
+                         Field(&autofill::TriggeringField::element_id,
+                               FieldGlobalId(LocalFrameToken(),
+                                             form_util::GetFieldRendererId(
+                                                 username_element_)))))))
       .Times(NumShowSuggestionsCalls());
   SimulateUsernameTyping(kAliceUsername);
 }
@@ -4248,9 +4249,11 @@ TEST_F(PasswordAutofillAgentTest, SuggestPasswordWhenUsernameFieldDisabled) {
 
   ASSERT_TRUE(suggestion_request);
   EXPECT_EQ(suggestion_request->username_field_id,
-            form_util::GetFieldRendererId(username_element_));
+            FieldGlobalId(LocalFrameToken(),
+                          form_util::GetFieldRendererId(username_element_)));
   EXPECT_EQ(suggestion_request->password_field_id,
-            form_util::GetFieldRendererId(password_element_));
+            FieldGlobalId(LocalFrameToken(),
+                          form_util::GetFieldRendererId(password_element_)));
 }
 
 // TODO(crbug.com/40819370): Amend the test to port it on Android if possible.

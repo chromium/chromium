@@ -671,13 +671,13 @@ void ChromePasswordManagerClient::ContinueShowKeyboardReplacingSurface(
     }
   }
 
-  const PasswordForm* form_to_fill =
-      password_manager_.GetParsedObservedForm(driver, request.field.element_id);
+  const PasswordForm* form_to_fill = password_manager_.GetParsedObservedForm(
+      driver, request.field.element_id.renderer_id);
   auto ttf_controller_autofill_delegate =
       std::make_unique<TouchToFillControllerAutofillDelegate>(
           this, GetDeviceAuthenticator(), webauthn_delegate->AsWeakPtr(),
           std::make_unique<PasswordCredentialFillerImpl>(weak_driver, request),
-          form_to_fill, request.field.element_id,
+          form_to_fill, request.field.element_id.renderer_id,
           TouchToFillControllerAutofillDelegate::ShowHybridOption(
               should_show_hybrid_option));
 

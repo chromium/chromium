@@ -1178,10 +1178,12 @@ PasswordAutofillAgent::CreateSuggestionRequest(
                       gfx::RectF(render_frame()->ConvertViewportToWindow(
                           user_input.BoundsInWidget()))),
       std::move(form_and_field->first),
-      username_element ? GetFieldRendererId(username_element)
-                       : FieldRendererId(),
-      password_element ? GetFieldRendererId(password_element)
-                       : FieldRendererId());
+      {.frame_token = {},
+       .renderer_id = username_element ? GetFieldRendererId(username_element)
+                                       : FieldRendererId()},
+      {.frame_token = {},
+       .renderer_id = password_element ? GetFieldRendererId(password_element)
+                                       : FieldRendererId()});
 }
 
 bool PasswordAutofillAgent::FindPasswordInfoForElement(

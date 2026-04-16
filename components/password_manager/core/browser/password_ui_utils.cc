@@ -170,13 +170,13 @@ bool CalculateTriggerSubmission(SubmissionReadinessState submission_readiness) {
 // elements.
 SubmissionReadinessState CalculateSubmissionReadiness(
     const autofill::FormData& form_data,
-    const autofill::FieldRendererId username_field_id,
-    const autofill::FieldRendererId password_field_id) {
+    const autofill::FieldGlobalId& username_field_id,
+    const autofill::FieldGlobalId& password_field_id) {
   const std::vector<autofill::FormFieldData>& fields = form_data.fields();
   auto username_it = std::ranges::find(fields, username_field_id,
-                                       &autofill::FormFieldData::renderer_id);
+                                       &autofill::FormFieldData::global_id);
   auto password_it = std::ranges::find(fields, password_field_id,
-                                       &autofill::FormFieldData::renderer_id);
+                                       &autofill::FormFieldData::global_id);
   if (username_it == fields.end() && password_it == fields.end()) {
     // This is unexpected. `form` is supposed to contain username or password
     // elements.

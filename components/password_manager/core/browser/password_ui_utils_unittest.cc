@@ -19,7 +19,7 @@
 namespace password_manager {
 namespace {
 
-using ::autofill::FieldRendererId;
+using ::autofill::FieldGlobalId;
 using ::autofill::FormControlType;
 using ::autofill::FormData;
 using ::autofill::FormFieldData;
@@ -136,21 +136,21 @@ class CalculateSubmissionReadinessTest : public testing::Test {
 };
 
 TEST_F(CalculateSubmissionReadinessTest, Error) {
-  EXPECT_EQ(CalculateSubmissionReadiness(CreateForm(0), FieldRendererId(),
-                                         FieldRendererId()),
+  EXPECT_EQ(CalculateSubmissionReadiness(CreateForm(0), FieldGlobalId(),
+                                         FieldGlobalId()),
             SubmissionReadinessState::kError);
   EXPECT_EQ(CalculateSubmissionReadiness(CreateForm(0),
-                                         autofill::test::MakeFieldRendererId(),
-                                         autofill::test::MakeFieldRendererId()),
+                                         autofill::test::MakeFieldGlobalId(),
+                                         autofill::test::MakeFieldGlobalId()),
             SubmissionReadinessState::kError);
 
   // Unknown field IDs.
-  EXPECT_EQ(CalculateSubmissionReadiness(CreateForm(1), FieldRendererId(),
-                                         FieldRendererId()),
+  EXPECT_EQ(CalculateSubmissionReadiness(CreateForm(1), FieldGlobalId(),
+                                         FieldGlobalId()),
             SubmissionReadinessState::kError);
   EXPECT_EQ(CalculateSubmissionReadiness(CreateForm(1),
-                                         autofill::test::MakeFieldRendererId(),
-                                         autofill::test::MakeFieldRendererId()),
+                                         autofill::test::MakeFieldGlobalId(),
+                                         autofill::test::MakeFieldGlobalId()),
             SubmissionReadinessState::kError);
 }
 
@@ -158,23 +158,23 @@ TEST_F(CalculateSubmissionReadinessTest, NoUsernameField) {
   FormData form = CreateForm(1);
   // Username index out of bounds.
   EXPECT_EQ(
-      CalculateSubmissionReadiness(form, autofill::test::MakeFieldRendererId(),
-                                   form.fields()[0].renderer_id()),
+      CalculateSubmissionReadiness(form, autofill::test::MakeFieldGlobalId(),
+                                   form.fields()[0].global_id()),
       SubmissionReadinessState::kNoUsernameField);
 }
 
 TEST_F(CalculateSubmissionReadinessTest, NoPasswordField) {
   FormData form = CreateForm(1);
   // Password index out of bounds.
-  EXPECT_EQ(CalculateSubmissionReadiness(form, form.fields()[0].renderer_id(),
-                                         autofill::test::MakeFieldRendererId()),
+  EXPECT_EQ(CalculateSubmissionReadiness(form, form.fields()[0].global_id(),
+                                         autofill::test::MakeFieldGlobalId()),
             SubmissionReadinessState::kNoPasswordField);
 }
 
 TEST_F(CalculateSubmissionReadinessTest, FieldBetweenUsernameAndPassword) {
   FormData form = CreateForm(3);
-  EXPECT_EQ(CalculateSubmissionReadiness(form, form.fields()[0].renderer_id(),
-                                         form.fields()[2].renderer_id()),
+  EXPECT_EQ(CalculateSubmissionReadiness(form, form.fields()[0].global_id(),
+                                         form.fields()[2].global_id()),
             SubmissionReadinessState::kFieldBetweenUsernameAndPassword);
 }
 
@@ -184,16 +184,16 @@ TEST_F(CalculateSubmissionReadinessTest,
   test_api(form).field(1).set_is_focusable(false);
 
   // Intermediate field is ignored because it is not focusable.
-  EXPECT_EQ(CalculateSubmissionReadiness(form, form.fields()[0].renderer_id(),
-                                         form.fields()[2].renderer_id()),
+  EXPECT_EQ(CalculateSubmissionReadiness(form, form.fields()[0].global_id(),
+                                         form.fields()[2].global_id()),
             SubmissionReadinessState::kTwoFields);
 }
 
 TEST_F(CalculateSubmissionReadinessTest, FieldAfterPasswordField) {
   FormData form = CreateForm(3);
 
-  EXPECT_EQ(CalculateSubmissionReadiness(form, form.fields()[0].renderer_id(),
-                                         form.fields()[1].renderer_id()),
+  EXPECT_EQ(CalculateSubmissionReadiness(form, form.fields()[0].global_id(),
+                                         form.fields()[1].global_id()),
             SubmissionReadinessState::kFieldAfterPasswordField);
 }
 
@@ -202,8 +202,8 @@ TEST_F(CalculateSubmissionReadinessTest, FieldAfterPasswordFieldIgnored) {
   test_api(form).field(2).set_is_focusable(false);
 
   // Field after password is ignored because it is not focusable.
-  EXPECT_EQ(CalculateSubmissionReadiness(form, form.fields()[0].renderer_id(),
-                                         form.fields()[1].renderer_id()),
+  EXPECT_EQ(CalculateSubmissionReadiness(form, form.fields()[0].global_id(),
+                                         form.fields()[1].global_id()),
             SubmissionReadinessState::kTwoFields);
 
   form = CreateForm(3);
@@ -211,8 +211,8 @@ TEST_F(CalculateSubmissionReadinessTest, FieldAfterPasswordFieldIgnored) {
       FormControlType::kInputCheckbox);
 
   // Field after password is ignored because it is a checkbox.
-  EXPECT_EQ(CalculateSubmissionReadiness(form, form.fields()[0].renderer_id(),
-                                         form.fields()[1].renderer_id()),
+  EXPECT_EQ(CalculateSubmissionReadiness(form, form.fields()[0].global_id(),
+                                         form.fields()[1].global_id()),
             SubmissionReadinessState::kTwoFields);
 }
 
@@ -220,8 +220,8 @@ TEST_F(CalculateSubmissionReadinessTest, LikelyHasCaptcha) {
   FormData form = CreateForm(2);
   form.set_likely_contains_captcha(true);
 
-  EXPECT_EQ(CalculateSubmissionReadiness(form, form.fields()[0].renderer_id(),
-                                         form.fields()[1].renderer_id()),
+  EXPECT_EQ(CalculateSubmissionReadiness(form, form.fields()[0].global_id(),
+                                         form.fields()[1].global_id()),
             SubmissionReadinessState::kLikelyHasCaptcha);
 }
 
@@ -229,8 +229,8 @@ TEST_F(CalculateSubmissionReadinessTest, EmptyFields) {
   FormData form = CreateForm(3);
 
   // Field 1 is empty and visible.
-  EXPECT_EQ(CalculateSubmissionReadiness(form, form.fields()[0].renderer_id(),
-                                         form.fields()[2].renderer_id()),
+  EXPECT_EQ(CalculateSubmissionReadiness(form, form.fields()[0].global_id(),
+                                         form.fields()[2].global_id()),
             SubmissionReadinessState::kFieldBetweenUsernameAndPassword);
 }
 
@@ -241,22 +241,22 @@ TEST_F(CalculateSubmissionReadinessTest, EmptyFieldsIgnored) {
   FormData form = CreateForm(3);
 
   // `pre_field` is empty and visible.
-  EXPECT_EQ(CalculateSubmissionReadiness(form, form.fields()[1].renderer_id(),
-                                         form.fields()[2].renderer_id()),
+  EXPECT_EQ(CalculateSubmissionReadiness(form, form.fields()[1].global_id(),
+                                         form.fields()[2].global_id()),
             SubmissionReadinessState::kEmptyFields);
 
   // If the preceding field is filled, we now have 3 visible elements.
   test_api(form).field(0).set_value(u"val");
-  EXPECT_EQ(CalculateSubmissionReadiness(form, form.fields()[1].renderer_id(),
-                                         form.fields()[2].renderer_id()),
+  EXPECT_EQ(CalculateSubmissionReadiness(form, form.fields()[1].global_id(),
+                                         form.fields()[2].global_id()),
             SubmissionReadinessState::kMoreThanTwoFields);
 }
 
 TEST_F(CalculateSubmissionReadinessTest, TwoFields) {
   FormData form = CreateForm(2);
 
-  EXPECT_EQ(CalculateSubmissionReadiness(form, form.fields()[0].renderer_id(),
-                                         form.fields()[1].renderer_id()),
+  EXPECT_EQ(CalculateSubmissionReadiness(form, form.fields()[0].global_id(),
+                                         form.fields()[1].global_id()),
             SubmissionReadinessState::kTwoFields);
 }
 
@@ -265,8 +265,8 @@ TEST_F(CalculateSubmissionReadinessTest, MoreThanTwoFields) {
   test_api(form).field(0).set_value(u"val");
 
   // field_1 is before username/password (indices 1 and 2).
-  EXPECT_EQ(CalculateSubmissionReadiness(form, form.fields()[1].renderer_id(),
-                                         form.fields()[2].renderer_id()),
+  EXPECT_EQ(CalculateSubmissionReadiness(form, form.fields()[1].global_id(),
+                                         form.fields()[2].global_id()),
             SubmissionReadinessState::kMoreThanTwoFields);
 }
 
@@ -277,8 +277,8 @@ TEST_F(CalculateSubmissionReadinessTest,
 
   // field_2 is between username (0) and password (2).
   // Expect kFieldBetweenUsernameAndPassword, not kLikelyHasCaptcha.
-  EXPECT_EQ(CalculateSubmissionReadiness(form, form.fields()[0].renderer_id(),
-                                         form.fields()[2].renderer_id()),
+  EXPECT_EQ(CalculateSubmissionReadiness(form, form.fields()[0].global_id(),
+                                         form.fields()[2].global_id()),
             SubmissionReadinessState::kFieldBetweenUsernameAndPassword);
 }
 
@@ -289,8 +289,8 @@ TEST_F(CalculateSubmissionReadinessTest,
 
   // field_3 is after password (1).
   // Expect kFieldAfterPasswordField, not kLikelyHasCaptcha.
-  EXPECT_EQ(CalculateSubmissionReadiness(form, form.fields()[0].renderer_id(),
-                                         form.fields()[1].renderer_id()),
+  EXPECT_EQ(CalculateSubmissionReadiness(form, form.fields()[0].global_id(),
+                                         form.fields()[1].global_id()),
             SubmissionReadinessState::kFieldAfterPasswordField);
 }
 
@@ -302,8 +302,8 @@ TEST_F(CalculateSubmissionReadinessTest,
   // field_1 is empty and before username (1).
   // This would normally trigger kEmptyFields (or kMoreThanTwoFields if filled).
   // But Captcha check comes first.
-  EXPECT_EQ(CalculateSubmissionReadiness(form, form.fields()[1].renderer_id(),
-                                         form.fields()[2].renderer_id()),
+  EXPECT_EQ(CalculateSubmissionReadiness(form, form.fields()[1].global_id(),
+                                         form.fields()[2].global_id()),
             SubmissionReadinessState::kLikelyHasCaptcha);
 }
 
@@ -313,8 +313,8 @@ TEST_F(CalculateSubmissionReadinessTest,
   test_api(form).field(1).set_form_control_type(FormControlType::kInputRadio);
 
   // Radio button between username and password should block submission.
-  EXPECT_EQ(CalculateSubmissionReadiness(form, form.fields()[0].renderer_id(),
-                                         form.fields()[2].renderer_id()),
+  EXPECT_EQ(CalculateSubmissionReadiness(form, form.fields()[0].global_id(),
+                                         form.fields()[2].global_id()),
             SubmissionReadinessState::kFieldBetweenUsernameAndPassword);
 }
 

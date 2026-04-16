@@ -50,7 +50,7 @@ struct TriggeringField {
                   AutofillSuggestionTriggerSource trigger_source,
                   const std::u16string& typed_username,
                   const gfx::RectF& bounds);
-  TriggeringField(FieldRendererId element_id,
+  TriggeringField(FieldGlobalId element_id,
                   AutofillSuggestionTriggerSource trigger_source,
                   base::i18n::TextDirection text_direction,
                   const std::u16string& typed_username,
@@ -64,7 +64,7 @@ struct TriggeringField {
   ~TriggeringField();
 
   // The unique renderer id of the field that the user has clicked.
-  FieldRendererId element_id;
+  FieldGlobalId element_id;
   // Describes the way suggestion generation for this field was triggered.
   AutofillSuggestionTriggerSource trigger_source =
       AutofillSuggestionTriggerSource ::kUnspecified;
@@ -86,8 +86,8 @@ struct TriggeringField {
 struct PasswordSuggestionRequest {
   PasswordSuggestionRequest(TriggeringField field,
                             const FormData& form_data,
-                            FieldRendererId username_field_id,
-                            FieldRendererId password_field_id);
+                            FieldGlobalId username_field_id,
+                            FieldGlobalId password_field_id);
 
   PasswordSuggestionRequest();
   PasswordSuggestionRequest(const PasswordSuggestionRequest&);
@@ -101,13 +101,13 @@ struct PasswordSuggestionRequest {
   // A web form extracted from the DOM that contains the triggering field.
   FormData form_data;
   // The username field in the `form_data.fields`. If the password form doesn't
-  // contain the username field, this value is the null FieldRendererId. Either
+  // contain the username field, this value is the null FieldGlobalId. Either
   // this or `password_field_index` should be non-null.
-  FieldRendererId username_field_id;
+  FieldGlobalId username_field_id;
   // The password field in the `form_data.fields`. If the password form doesn't
-  // contain the password field, this value is the null FieldRendererId. Either
+  // contain the password field, this value is the null FieldGlobalId. Either
   // this or `username_field_index` should be non-null.
-  FieldRendererId password_field_id;
+  FieldGlobalId password_field_id;
 };
 
 // Structure used for autofilling password forms. Note that the realms in this

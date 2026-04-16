@@ -1479,8 +1479,15 @@ class ChromePasswordManagerClientAndroidTest
 
   autofill::PasswordSuggestionRequest GetFocusedFieldSuggestionRequest(
       const FormData& form) {
+    auto get_field_id = [&form](size_t i) {
+      return autofill::FieldGlobalId{
+          .frame_token = form.host_frame(),
+          .renderer_id = i < form.fields().size()
+                             ? form.fields()[i].renderer_id()
+                             : autofill::FieldRendererId()};
+    };
     return autofill::PasswordSuggestionRequest(
-        autofill::TriggeringField(form.fields()[0].renderer_id(),
+        autofill::TriggeringField(form.fields()[0].global_id(),
                                   autofill::AutofillSuggestionTriggerSource::
                                       kPasswordManagerProcessedFocusedField,
                                   base::i18n::LEFT_TO_RIGHT, u"",
@@ -1488,12 +1495,8 @@ class ChromePasswordManagerClientAndroidTest
                                   /*show_identity_credentials=*/false,
                                   gfx::RectF()),
         form,
-        /*username_field_id=*/form.fields().size() > 0
-            ? form.fields()[0].renderer_id()
-            : FieldRendererId(),
-        /*password_field_id=*/form.fields().size() > 1
-            ? form.fields()[1].renderer_id()
-            : FieldRendererId());
+        /*username_field_id=*/get_field_id(0),
+        /*password_field_id=*/get_field_id(1));
   }
 
  private:
