@@ -428,13 +428,18 @@ void AutofillExternalDelegate::AttemptToDisplayAutofillSuggestions(
         .SetAutofillHasSeenBnpl();
   }
 
+  // Tabbed popups may call `OnSuggestionsChanged()` when the active tab is
+  // updated, so prefer the previous arrow side to keep the dropdown in
+  // the same place relative to the field after the update.
+  const bool prefer_prev_arrow_side_on_suggestions_update = show_tabbed_popup;
+
   AutofillClient::PopupOpenArgs open_args(
       should_use_caret_bounds ? gfx::RectF(caret_bounds_)
                               : query_field_.bounds(),
       query_field_.text_direction(), suggestions, trigger_source_,
       query_field_.form_control_ax_id(),
       should_use_caret_bounds ? PopupAnchorType::kCaret : default_anchor_type,
-      show_tabbed_popup);
+      show_tabbed_popup, prefer_prev_arrow_side_on_suggestions_update);
   manager_->client().ShowAutofillSuggestions(open_args, GetWeakPtr());
 }
 

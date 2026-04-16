@@ -16,11 +16,13 @@ namespace autofill {
 // the pop-up bounds, text direction and container view.
 struct PopupControllerCommon {
  public:
-  PopupControllerCommon(gfx::RectF element_bounds,
-                        base::i18n::TextDirection text_direction,
-                        gfx::NativeView container_view,
-                        PopupAnchorType anchor_type = PopupAnchorType::kField,
-                        bool show_tabbed_popup = false);
+  PopupControllerCommon(
+      gfx::RectF element_bounds,
+      base::i18n::TextDirection text_direction,
+      gfx::NativeView container_view,
+      PopupAnchorType anchor_type = PopupAnchorType::kField,
+      bool show_tabbed_popup = false,
+      bool prefer_prev_arrow_side_on_suggestions_update = false);
   PopupControllerCommon(const PopupControllerCommon&);
   PopupControllerCommon(PopupControllerCommon&&);
   PopupControllerCommon& operator=(const PopupControllerCommon&);
@@ -43,6 +45,11 @@ struct PopupControllerCommon {
 
   // True if the popup should contain a tabbed pane.
   bool show_tabbed_popup;
+
+  // True if the popup should prefer the previous arrow side when suggestions
+  // are updated. This avoids unnecessary jumping when the popup is updated,
+  // unless the popup would otherwise go out of bounds.
+  bool prefer_prev_arrow_side_on_suggestions_update;
 };
 
 }  // namespace autofill

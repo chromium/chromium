@@ -1018,6 +1018,45 @@ TEST_F(AutofillExternalDelegateTest,
                                           SuggestionPosition{.row = 0});
 }
 
+// Tests that `prefer_prev_arrow_side_on_suggestions_update` is true when
+// tabbed popup is shown.
+TEST_F(AutofillExternalDelegateTest, ShowTabbedPopup_PreferPrevArrowSide) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(
+      /*enabled_features=*/{features::kAutofillEnableAmountExtraction,
+                            features::kAutofillEnableBuyNowPayLaterSyncing,
+                            features::kAutofillEnableBuyNowPayLater,
+                            features::kAutofillEnableAiBasedAmountExtraction,
+                            features::kAutofillEnablePayNowPayLaterTabs},
+      /*disabled_features=*/{});
+
+  TestPaymentsDataManager& paydm =
+      static_cast<TestPaymentsDataManager&>(pdm().payments_data_manager());
+  paydm.AddCreditCard(test::GetCreditCard());
+  paydm.AddBnplIssuer(test::GetTestLinkedBnplIssuer());
+
+  ON_CALL(*static_cast<MockAutofillOptimizationGuideDecider*>(
+              autofill_client().GetAutofillOptimizationGuideDecider()),
+          IsUrlEligibleForBnplIssuer)
+      .WillByDefault(Return(true));
+
+  test::FormDescription form_description = {
+      .fields = {
+          {.role = CREDIT_CARD_NUMBER, .heuristic_type = CREDIT_CARD_NUMBER}}};
+  IssueOnQuery(form_description);
+
+  EXPECT_CALL(autofill_client(),
+              ShowAutofillSuggestions(
+                  Field("prefer_prev_arrow_side_on_suggestions_update",
+                        &AutofillClient::PopupOpenArgs::
+                            prefer_prev_arrow_side_on_suggestions_update,
+                        true),
+                  _));
+
+  OnSuggestionsReturned(queried_field().global_id(),
+                        {Suggestion(SuggestionType::kCreditCardEntry)});
+}
+
 // Tests that `show_tabbed_popup` is not present when the main filling
 // product is not a credit card (e.g., an Address field).
 TEST_F(AutofillExternalDelegateTest, ShowTabbedPopup_NotCreditCard) {

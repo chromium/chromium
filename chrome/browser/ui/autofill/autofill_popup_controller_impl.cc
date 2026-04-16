@@ -425,7 +425,8 @@ void AutofillPopupControllerImpl::ViewDestroyed() {
 }
 
 void AutofillPopupControllerImpl::OnSuggestionsChanged() {
-  OnSuggestionsChanged(/*prefer_prev_arrow_side=*/false);
+  OnSuggestionsChanged(
+      controller_common_.prefer_prev_arrow_side_on_suggestions_update);
 }
 
 void AutofillPopupControllerImpl::AcceptSuggestion(

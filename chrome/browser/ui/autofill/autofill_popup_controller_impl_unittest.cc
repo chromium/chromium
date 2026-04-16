@@ -606,6 +606,34 @@ TEST_F(AutofillPopupControllerImplTest,
                        AutofillPopupController::FilterSource::kInputChanged);
 }
 
+TEST_F(AutofillPopupControllerImplTest,
+       OnSuggestionsChanged_PreferPrevArrowSide_True) {
+  ShowSuggestions(manager(), {SuggestionType::kCreditCardEntry});
+
+  test_api(static_cast<AutofillPopupControllerImpl&>(
+               client().suggestion_controller(manager())))
+      .SetPreferPrevArrowSideOnSuggestionsUpdate(true);
+
+  EXPECT_CALL(*client().popup_view(),
+              OnSuggestionsChanged(/*prefer_prev_arrow_side=*/true));
+
+  client().suggestion_controller(manager()).OnSuggestionsChanged();
+}
+
+TEST_F(AutofillPopupControllerImplTest,
+       OnSuggestionsChanged_PreferPrevArrowSide_False) {
+  ShowSuggestions(manager(), {SuggestionType::kCreditCardEntry});
+
+  test_api(static_cast<AutofillPopupControllerImpl&>(
+               client().suggestion_controller(manager())))
+      .SetPreferPrevArrowSideOnSuggestionsUpdate(false);
+
+  EXPECT_CALL(*client().popup_view(),
+              OnSuggestionsChanged(/*prefer_prev_arrow_side=*/false));
+
+  client().suggestion_controller(manager()).OnSuggestionsChanged();
+}
+
 TEST_F(AutofillPopupControllerImplTest, SuggestionFiltering_MatchingMainText) {
   AutofillPopupController& controller =
       client().suggestion_controller(manager());
