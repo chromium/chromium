@@ -95,15 +95,18 @@ scoped_refptr<DeviceAllocator> DeviceAllocator::Create(
 
   // SAFETY: ORT guarantees that `ep_name` is valid and null-terminated.
   return base::MakeRefCounted<DeviceAllocator>(
-      base::PassKey<DeviceAllocator>(), std::move(trivial_session),
-      std::move(device_allocator), UNSAFE_BUFFERS(base::cstring_view(ep_name)));
+      base::PassKey<DeviceAllocator>(), std::move(env),
+      std::move(trivial_session), std::move(device_allocator),
+      UNSAFE_BUFFERS(base::cstring_view(ep_name)));
 }
 
 DeviceAllocator::DeviceAllocator(base::PassKey<DeviceAllocator>,
+                                 scoped_refptr<Environment> env,
                                  ScopedOrtSession trivial_session,
                                  ScopedOrtAllocator device_allocator,
                                  base::cstring_view ep_name)
-    : trivial_session_(std::move(trivial_session)),
+    : env_(std::move(env)),
+      trivial_session_(std::move(trivial_session)),
       device_allocator_(std::move(device_allocator)),
       ep_name_(ep_name) {}
 

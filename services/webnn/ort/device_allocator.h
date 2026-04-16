@@ -33,6 +33,7 @@ class DeviceAllocator final : public base::RefCounted<DeviceAllocator> {
       scoped_refptr<Environment> env);
 
   DeviceAllocator(base::PassKey<DeviceAllocator>,
+                  scoped_refptr<Environment> env,
                   ScopedOrtSession trivial_session,
                   ScopedOrtAllocator device_allocator,
                   base::cstring_view ep_name);
@@ -52,6 +53,12 @@ class DeviceAllocator final : public base::RefCounted<DeviceAllocator> {
   friend class base::RefCounted<DeviceAllocator>;
 
   ~DeviceAllocator();
+
+  // The environment must outlive the session and allocator because their
+  // destruction may call into execution provider DLLs that could potentially
+  // be unloaded when the environment is released. Hold a reference to
+  // prevent premature environment release.
+  scoped_refptr<Environment> env_;
 
   // The trivial session is only used to keep the allocator valid. It is not
   // used for inference.
