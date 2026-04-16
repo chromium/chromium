@@ -1976,11 +1976,11 @@ PopoverHideResult HTMLElement::HideAllPopoversUntil(
     bool should_hide_hint_stack = false;
     if (auto* hint_parent = document.PopoverHintStackParent()) {
       for (auto& popover : base::Reversed(auto_stack)) {
-        if (popover == hint_parent) {
-          should_hide_hint_stack = true;
+        if (popover == endpoint) {
           break;
         }
-        if (popover == endpoint) {
+        if (popover == hint_parent) {
+          should_hide_hint_stack = true;
           break;
         }
       }
@@ -2068,6 +2068,17 @@ PopoverHideResult HTMLElement::HidePopoverInternal(
   };
   if (PopoverType() == PopoverValueType::kAuto ||
       PopoverType() == PopoverValueType::kHint) {
+    // If this popover is the anchor for a hint stack, hiding it must
+    // also hide its descendant hint popovers.
+    if (RuntimeEnabledFeatures::PopoverHintNewBehaviorEnabled() &&
+        document.PopoverHintStackParent() == this) {
+      if (CloseEntirePopoverStack(document.PopoverHintStack(), focus_behavior,
+                                  transition_behavior) ==
+          PopoverHideResult::kForcedOpenByInspector) {
+        hide_all_popovers_result = PopoverHideResult::kForcedOpenByInspector;
+      }
+      document.SetPopoverHintStackParent(nullptr);
+    }
     // Hide any popovers above us in the stack.
     hide_all_popovers_result = HideAllPopoversUntil(
         this, document, focus_behavior, transition_behavior,

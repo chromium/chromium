@@ -617,3 +617,64 @@ promise_test(async () => {
   assert_true(p30.matches(':popover-open'),'showing after pointerup');
 },`Pointer down inside invoker and up outside that invoker shouldn't dismiss popover`);
 </script>
+
+<div id=p31 popover=auto>p31
+  <button id=buttonp32 popovertarget=p32>Open p32</button>
+  <div id=p33 popover=auto>p33</div>
+</div>
+<div id=p32 popover=auto>p32
+  <button id=buttonp33 popovertarget=p33>Open p33</button>
+</div>
+<script>
+test(() => {
+  assert_false(p31.matches(':popover-open'));
+  assert_false(p32.matches(':popover-open'));
+  assert_false(p33.matches(':popover-open'));
+
+  p31.showPopover();
+  buttonp32.click();
+  buttonp33.click();
+
+  assert_true(p31.matches(':popover-open'), 'p31 should be open');
+  assert_true(p32.matches(':popover-open'), 'p32 should be open');
+  assert_true(p33.matches(':popover-open'), 'p33 should be open');
+
+  p31.hidePopover();
+  assert_false(p31.matches(':popover-open'), 'p31 should be closed');
+  assert_false(p32.matches(':popover-open'), 'p32 should be closed');
+  assert_false(p33.matches(':popover-open'), 'p33 should be closed');
+}, 'Invoker and DOM ancestor relationship - "latest" wins');
+</script>
+
+<div id=p34 popover=auto>p34
+  <div id=p35 popover=auto>p35</div>
+  <div id=p36 popover=hint>p36</div>
+</div>
+<script>
+promise_test(async () => {
+  assert_false(p34.matches(':popover-open'));
+  assert_false(p35.matches(':popover-open'));
+  assert_false(p36.matches(':popover-open'));
+
+  p34.showPopover();
+  p35.showPopover();
+  p36.showPopover();
+
+  assert_true(p34.matches(':popover-open'), 'p34 should be open');
+  assert_true(p35.matches(':popover-open'), 'p35 should be open');
+  assert_true(p36.matches(':popover-open'), 'p36 should be open');
+
+  await clickOn(p36);
+
+  assert_true(p34.matches(':popover-open'), 'p34 should remain open');
+  assert_false(p35.matches(':popover-open'), 'p35 should be light dismissed');
+  assert_true(p36.matches(':popover-open'), 'p36 should remain open, because its ancestor p34 is still open');
+
+  p34.hidePopover();
+  assert_false(p34.matches(':popover-open'), 'p34 should be closed');
+  assert_true(p36.matches(':popover-open'), 'p36 should be left open');
+  p36.hidePopover();
+  assert_false(p36.matches(':popover-open'), 'p36 should be closed');
+}, 'Light dismissing from within an auto popover should not hide a hint whose topmost popover ancestor is not hidden');
+</script>
+

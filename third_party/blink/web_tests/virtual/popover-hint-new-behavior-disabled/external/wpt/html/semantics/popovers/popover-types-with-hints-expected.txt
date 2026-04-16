@@ -3,11 +3,11 @@ This is a testharness.js-based test.
   assert_equals: Error, index 1 (<div popover="hint">Hint</div>) expected true but got false
 [FAIL] autos close hints but not manuals
   assert_equals: Error, index 2 (<div popover="manual">Async</div>) expected false but got true
-[FAIL] If a popover=auto is shown, it should hide any open popover=hint, including if the popover=hint is an ancestral popover of the popover=auto. (You can't nest a popover=auto inside a popover=hint)
+[FAIL] Opening an auto popover inside a hint popover is disallowed and will fail.
   assert_throws_dom: function "() => {\n      auto.showPopover();\n    }" did not throw
-[FAIL] If you: a) show a popover=auto (call it D), then b) show a descendent popover=hint of D (call it T), then c) hide D, then T should be hidden. (A popover=hint can be nested inside a popover=auto)
+[FAIL] If you: a) show a popover=auto (call it D), then b) show a descendent popover=hint of D (call it T), then c) hide D, then T should be hidden. (A popover=hint gets hidden when its ancestral popover=auto is hidden)
   assert_equals: Error, index 1 (<div popover="">Nested Auto</div>) expected true but got false
-[FAIL] If you: a) show a popover=auto (call it D), then b) show a non-descendent popover=hint of D (call it T), then c) hide D, then T should be hidden. (Non-nested popover=hint gets hidden when unrelated popover=autos are hidden)
+[FAIL] If you: a) show a popover=auto (call it D), then b) show a non-descendent popover=hint of D (call it T), then c) hide D, then T should stay open. (Non-nested popover=hint does not get hidden when unrelated popover=autos are hidden)
   assert_equals: Error, index 1 (<div popover="hint">Non-Nested hint</div>) expected true but got false
 Harness: the test ran to completion.
 

@@ -1,0 +1,5 @@
+This is a testharness.js-based test.
+[FAIL] Light dismissing from within an auto popover should not hide a hint whose topmost popover ancestor is not hidden
+  assert_true: p35 should be open expected true got false
+Harness: the test ran to completion.
+

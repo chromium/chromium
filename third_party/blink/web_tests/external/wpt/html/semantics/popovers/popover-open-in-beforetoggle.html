@@ -64,3 +64,25 @@
     assert_false(p3.matches(':popover-open'));
   },'Open double-nested popovers from closing beforetoggle event, light dismiss');
 </script>
+
+<div id=p4 popover=auto>p4</div>
+<div id=p5 popover=auto>p5</div>
+<div id=p6 popover=hint>p6</div>
+<script>
+test(() => {
+  assert_false(p4.matches(':popover-open'));
+  assert_false(p5.matches(':popover-open'));
+  assert_false(p6.matches(':popover-open'));
+
+  p4.showPopover();
+  p4.onbeforetoggle = (e) => p6.showPopover();
+  assert_true(p4.matches(':popover-open'), 'p4 should be open');
+  p5.showPopover();
+
+  assert_false(p4.matches(':popover-open'), 'p4 should be closed (by opening p5)');
+  assert_false(p5.matches(':popover-open'), 'B2 should be closed (cancelled by new p6)');
+  assert_true(p6.matches(':popover-open'), 'p6 should be open');
+  p6.hidePopover(); // Cleanup
+}, 'Showing a hint during a showPopover that hides an auto should cancel the new auto show');
+</script>
+
