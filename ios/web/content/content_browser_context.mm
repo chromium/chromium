@@ -145,16 +145,6 @@ ContentBrowserContext::GetContentIndexProvider() {
   return nullptr;
 }
 
-content::FederatedIdentityApiPermissionContextDelegate*
-ContentBrowserContext::GetFederatedIdentityApiPermissionContext() {
-  return nullptr;
-}
-
-content::FederatedIdentityPermissionContextDelegate*
-ContentBrowserContext::GetFederatedIdentityPermissionContext() {
-  return nullptr;
-}
-
 content::ReduceAcceptLanguageControllerDelegate*
 ContentBrowserContext::GetReduceAcceptLanguageControllerDelegate() {
   return nullptr;
