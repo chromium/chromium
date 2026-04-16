@@ -46,10 +46,6 @@ struct TestParams {
   CanvasResourceDispatcher::AnimationState animation_state;
 };
 
-viz::ResourceId NextId(viz::ResourceId id) {
-  return viz::ResourceId(id.GetUnsafeValue() + 1);
-}
-
 class MockCanvasResourceDispatcherClient
     : public CanvasResourceDispatcherClient {
  public:
@@ -70,9 +66,7 @@ class MockCanvasResourceDispatcher : public CanvasResourceDispatcher {
             /*placeholder_canvas_id=*/0,
             /*canvas_size=*/{kWidth, kHeight}) {}
 
-  MOCK_METHOD2(PostImageToPlaceholder,
-               void(scoped_refptr<CanvasResource>&&,
-                    viz::ResourceId resource_id));
+  MOCK_METHOD1(PostImageToPlaceholder, void(scoped_refptr<CanvasResource>&&));
 
   MockCanvasResourceDispatcherClient& MockClient() { return client_; }
 
@@ -101,10 +95,6 @@ class CanvasResourceDispatcherTest
 
   CanvasResource* GetLatestUnpostedImage() {
     return dispatcher_->latest_unposted_resource_.get();
-  }
-
-  viz::ResourceId GetLatestUnpostedResourceId() {
-    return dispatcher_->latest_unposted_resource_id_;
   }
 
   viz::ResourceId PeekNextResourceId() {
@@ -155,27 +145,21 @@ class CanvasResourceDispatcherTest
 TEST_F(CanvasResourceDispatcherTest, PlaceholderRunsNormally) {
   CreateCanvasResourceDispatcher();
   // Post first frame
-  viz::ResourceId post_resource_id(1u);
-  EXPECT_CALL(*(Dispatcher()), PostImageToPlaceholder(_, post_resource_id));
+  EXPECT_CALL(*(Dispatcher()), PostImageToPlaceholder(_));
   auto frame1 = DispatchOneFrame();
   EXPECT_EQ(1u, GetNumPendingPlaceholderResources());
-  EXPECT_EQ(NextId(post_resource_id), PeekNextResourceId());
   Mock::VerifyAndClearExpectations(Dispatcher());
 
   // Post second frame
-  post_resource_id = NextId(post_resource_id);
-  EXPECT_CALL(*(Dispatcher()), PostImageToPlaceholder(_, post_resource_id));
+  EXPECT_CALL(*(Dispatcher()), PostImageToPlaceholder(_));
   auto frame2 = DispatchOneFrame();
   EXPECT_EQ(2u, GetNumPendingPlaceholderResources());
-  EXPECT_EQ(NextId(post_resource_id), PeekNextResourceId());
   Mock::VerifyAndClearExpectations(Dispatcher());
 
   // Post third frame
-  post_resource_id = NextId(post_resource_id);
-  EXPECT_CALL(*(Dispatcher()), PostImageToPlaceholder(_, post_resource_id));
+  EXPECT_CALL(*(Dispatcher()), PostImageToPlaceholder(_));
   auto frame3 = DispatchOneFrame();
   EXPECT_EQ(3u, GetNumPendingPlaceholderResources());
-  EXPECT_EQ(NextId(post_resource_id), PeekNextResourceId());
   EXPECT_EQ(nullptr, GetLatestUnpostedImage());
   Mock::VerifyAndClearExpectations(Dispatcher());
 
@@ -198,7 +182,7 @@ TEST_F(CanvasResourceDispatcherTest,
 
   // When agent_group_scheduler_compositor_task_runner is null,
   // PostImageToPlaceholder should not be called.
-  EXPECT_CALL(*(Dispatcher()), PostImageToPlaceholder(_, _)).Times(0);
+  EXPECT_CALL(*(Dispatcher()), PostImageToPlaceholder(_)).Times(0);
   auto frame1 = DispatchOneFrame();
   EXPECT_EQ(0u, GetNumPendingPlaceholderResources());
 }
@@ -208,7 +192,7 @@ TEST_F(CanvasResourceDispatcherTest, PlaceholderBeingBlocked) {
   /* When main thread is blocked, attempting to post one more than the max
    * number of pending frames will result in the latest attempt being saved as
    * an unposted resource. */
-  EXPECT_CALL(*(Dispatcher()), PostImageToPlaceholder(_, _))
+  EXPECT_CALL(*(Dispatcher()), PostImageToPlaceholder(_))
       .Times(CanvasResourceDispatcher::kMaxPendingPlaceholderResources);
 
   // Attempt to post kMaxPendingPlaceholderResources+1 times
@@ -219,28 +203,21 @@ TEST_F(CanvasResourceDispatcherTest, PlaceholderBeingBlocked) {
        i < CanvasResourceDispatcher::kMaxPendingPlaceholderResources - 1; i++) {
     other_frames.push_back(DispatchOneFrame());
   }
-  viz::ResourceId post_resource_id(
-      CanvasResourceDispatcher::kMaxPendingPlaceholderResources + 1);
   EXPECT_EQ(CanvasResourceDispatcher::kMaxPendingPlaceholderResources,
             GetNumPendingPlaceholderResources());
-  EXPECT_EQ(NextId(post_resource_id), PeekNextResourceId());
   EXPECT_TRUE(GetLatestUnpostedImage());
-  EXPECT_EQ(post_resource_id, GetLatestUnpostedResourceId());
 
   // Attempt to post again. The latest unposted image will be replaced.
-  post_resource_id = NextId(post_resource_id);
   other_frames.push_back(DispatchOneFrame());
   EXPECT_EQ(CanvasResourceDispatcher::kMaxPendingPlaceholderResources,
             GetNumPendingPlaceholderResources());
-  EXPECT_EQ(NextId(post_resource_id), PeekNextResourceId());
   EXPECT_TRUE(GetLatestUnpostedImage());
-  EXPECT_EQ(post_resource_id, GetLatestUnpostedResourceId());
 
   Mock::VerifyAndClearExpectations(Dispatcher());
 
   /* The main thread becoming unblocked will trigger CanvasResourceDispatcher
    * to post the last saved image. */
-  EXPECT_CALL(*(Dispatcher()), PostImageToPlaceholder(_, post_resource_id));
+  EXPECT_CALL(*(Dispatcher()), PostImageToPlaceholder(_));
   Dispatcher()->OnMainThreadReceivedImage();
 
   // The main thread received 1 frame and the dispatcher thread posted 1 frame,
@@ -249,12 +226,10 @@ TEST_F(CanvasResourceDispatcherTest, PlaceholderBeingBlocked) {
   EXPECT_EQ(CanvasResourceDispatcher::kMaxPendingPlaceholderResources,
             GetNumPendingPlaceholderResources());
   // Not generating new resource Id
-  EXPECT_EQ(NextId(post_resource_id), PeekNextResourceId());
   EXPECT_FALSE(GetLatestUnpostedImage());
-  EXPECT_EQ(viz::kInvalidResourceId, GetLatestUnpostedResourceId());
   Mock::VerifyAndClearExpectations(Dispatcher());
 
-  EXPECT_CALL(*(Dispatcher()), PostImageToPlaceholder(_, _)).Times(0);
+  EXPECT_CALL(*(Dispatcher()), PostImageToPlaceholder(_)).Times(0);
   Dispatcher()->OnMainThreadReceivedImage();
   EXPECT_EQ(CanvasResourceDispatcher::kMaxPendingPlaceholderResources - 1,
             GetNumPendingPlaceholderResources());
@@ -401,7 +376,7 @@ TEST_P(CanvasResourceDispatcherTest, DispatchFrame) {
   ASSERT_LE(kDamageWidth, kWidth);
   ASSERT_LE(kDamageHeight, kHeight);
 
-  EXPECT_CALL(*(Dispatcher()), PostImageToPlaceholder(_, _));
+  EXPECT_CALL(*(Dispatcher()), PostImageToPlaceholder(_));
   EXPECT_CALL(mock_embedded_frame_sink_provider.mock_compositor_frame_sink(),
               SubmitCompositorFrame_(_))
       .WillOnce(

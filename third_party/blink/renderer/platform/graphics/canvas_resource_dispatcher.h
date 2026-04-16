@@ -146,11 +146,9 @@ class PLATFORM_EXPORT CanvasResourceDispatcher
   // state has actually changed or not.
   void UpdateBeginFrameSource();
 
-  void PostImageToPlaceholderIfNotBlocked(scoped_refptr<CanvasResource>&&,
-                                          viz::ResourceId resource_id);
+  void PostImageToPlaceholderIfNotBlocked(scoped_refptr<CanvasResource>&&);
   // virtual for testing
-  virtual void PostImageToPlaceholder(scoped_refptr<CanvasResource>&&,
-                                      viz::ResourceId resource_id);
+  virtual void PostImageToPlaceholder(scoped_refptr<CanvasResource>&&);
 
   mojo::Remote<viz::mojom::blink::CompositorFrameSink> sink_;
   mojo::Remote<mojom::blink::SurfaceEmbedder> surface_embedder_;
@@ -167,10 +165,9 @@ class PLATFORM_EXPORT CanvasResourceDispatcher
 
   viz::FrameTokenGenerator next_frame_token_;
 
-  // The latest_unposted_resource_id_ always refers to the Id of the frame
+  // The latest_unposted_resource_ always refers to the frame
   // resource used by the latest_unposted_resource_.
   scoped_refptr<CanvasResource> latest_unposted_resource_;
-  viz::ResourceId latest_unposted_resource_id_;
   unsigned num_pending_placeholder_resources_;
 
   viz::BeginFrameAck current_begin_frame_ack_;

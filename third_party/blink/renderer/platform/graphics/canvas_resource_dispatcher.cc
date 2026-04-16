@@ -116,19 +116,17 @@ CanvasResourceDispatcher::~CanvasResourceDispatcher() = default;
 
 namespace {
 
-void UpdatePlaceholderImage(
+static void UpdatePlaceholderImage(
     base::WeakPtr<CanvasResourceDispatcher> dispatcher,
     scoped_refptr<base::SingleThreadTaskRunner> task_runner,
     int placeholder_canvas_id,
-    scoped_refptr<blink::CanvasResource>&& canvas_resource,
-    viz::ResourceId resource_id) {
+    scoped_refptr<blink::CanvasResource>&& canvas_resource) {
   DCHECK(IsMainThread());
   OffscreenCanvasPlaceholder* placeholder_canvas =
       OffscreenCanvasPlaceholder::GetPlaceholderCanvasById(
           placeholder_canvas_id);
   if (placeholder_canvas) {
-    placeholder_canvas->SetOffscreenCanvasResource(std::move(canvas_resource),
-                                                   resource_id);
+    placeholder_canvas->SetOffscreenCanvasResource(std::move(canvas_resource));
     task_runner->PostTask(
         FROM_HERE,
         base::BindOnce(&CanvasResourceDispatcher::OnMainThreadReceivedImage,
@@ -152,8 +150,7 @@ void UpdatePlaceholderDispatcher(
 }  // namespace
 
 void CanvasResourceDispatcher::PostImageToPlaceholderIfNotBlocked(
-    scoped_refptr<CanvasResource>&& canvas_resource,
-    viz::ResourceId resource_id) {
+    scoped_refptr<CanvasResource>&& canvas_resource) {
   if (placeholder_canvas_id_ == kInvalidPlaceholderCanvasId ||
       // `agent_group_scheduler_compositor_task_runner_` may be null if this
       // was created from a SharedWorker.
@@ -167,7 +164,7 @@ void CanvasResourceDispatcher::PostImageToPlaceholderIfNotBlocked(
   // Determines whether the main thread may be blocked. If unblocked, post
   // |canvas_resource|. Otherwise, save it but do not post it.
   if (num_pending_placeholder_resources_ < kMaxPendingPlaceholderResources) {
-    PostImageToPlaceholder(std::move(canvas_resource), resource_id);
+    PostImageToPlaceholder(std::move(canvas_resource));
     num_pending_placeholder_resources_++;
   } else {
     DCHECK(num_pending_placeholder_resources_ ==
@@ -180,13 +177,11 @@ void CanvasResourceDispatcher::PostImageToPlaceholderIfNotBlocked(
         std::move(latest_unposted_resource_));
 
     latest_unposted_resource_ = std::move(canvas_resource);
-    latest_unposted_resource_id_ = resource_id;
   }
 }
 
 void CanvasResourceDispatcher::PostImageToPlaceholder(
-    scoped_refptr<CanvasResource>&& canvas_resource,
-    viz::ResourceId resource_id) {
+    scoped_refptr<CanvasResource>&& canvas_resource) {
   // After this point, |canvas_resource| can only be used on the main thread,
   // until it is returned.
   canvas_resource->Transfer();
@@ -195,8 +190,7 @@ void CanvasResourceDispatcher::PostImageToPlaceholder(
   PostCrossThreadTask(
       *agent_group_scheduler_compositor_task_runner_, FROM_HERE,
       CrossThreadBindOnce(UpdatePlaceholderImage, GetWeakPtr(), task_runner_,
-                          placeholder_canvas_id_, std::move(canvas_resource),
-                          resource_id));
+                          placeholder_canvas_id_, std::move(canvas_resource)));
 }
 
 void CanvasResourceDispatcher::DispatchFrame(
@@ -230,8 +224,7 @@ bool CanvasResourceDispatcher::PrepareFrame(
 
   // For frameless canvas, we don't get a valid frame_sink_id and should drop.
   if (!frame_sink_id_.is_valid()) {
-    PostImageToPlaceholderIfNotBlocked(std::move(canvas_resource),
-                                       next_resource_id);
+    PostImageToPlaceholderIfNotBlocked(std::move(canvas_resource));
     return false;
   }
 
@@ -298,8 +291,7 @@ bool CanvasResourceDispatcher::PrepareFrame(
   // Create a new ref on `canvas_resource` to pass to the placeholder, which
   // will manage the lifetime of this ref.
   auto resource_ref_for_placeholder = canvas_resource;
-  PostImageToPlaceholderIfNotBlocked(std::move(resource_ref_for_placeholder),
-                                     resource_id);
+  PostImageToPlaceholderIfNotBlocked(std::move(resource_ref_for_placeholder));
 
   // Now store our ref to ensure that the resource remains valid for the
   // duration of the compositor's usage (we'll drop our ref when the compositor
@@ -467,13 +459,11 @@ void CanvasResourceDispatcher::OnMainThreadReceivedImage() {
   if (latest_unposted_resource_) {
     DCHECK(num_pending_placeholder_resources_ ==
            kMaxPendingPlaceholderResources - 1);
-    PostImageToPlaceholderIfNotBlocked(std::move(latest_unposted_resource_),
-                                       latest_unposted_resource_id_);
+    PostImageToPlaceholderIfNotBlocked(std::move(latest_unposted_resource_));
     // To make it safe to use/check latest_unposted_resource_ after using
     // std::move on it, we need to force a reset because the move above is
     // elide-able.
     latest_unposted_resource_.reset();
-    latest_unposted_resource_id_ = viz::kInvalidResourceId;
   }
 }
 

@@ -43,8 +43,7 @@ namespace {
 }  // unnamed namespace
 
 void OffscreenCanvasPlaceholder::SetOffscreenCanvasResource(
-    scoped_refptr<CanvasResource>&& new_frame,
-    viz::ResourceId resource_id) {
+    scoped_refptr<CanvasResource>&& new_frame) {
   DCHECK(IsOffscreenCanvasRegistered());
   DCHECK(new_frame);
   CanvasResource::OnPlaceholderReleasedResource(std::move(placeholder_frame_));
