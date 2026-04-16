@@ -377,15 +377,6 @@ public class AutocompleteCoordinator implements OmniboxSuggestionsVisualState {
 
         boolean isShowingList = mContainer != null && mContainer.isShown();
 
-        if (event.getKeyCode() == KeyEvent.KEYCODE_ESCAPE) {
-            if (isShowingList) {
-                mMediator.stopAutocomplete(true);
-            } else {
-                mMediator.finishInteraction();
-            }
-            return true;
-        }
-
         // Always handle <ENTER> key, even if the suggestions list is not showing.
         // This allows users to navigate to the typed url or query.
         // Try to dispatch to suggestions list, if one is showing, otherwise invoke navigation.
@@ -478,6 +469,19 @@ public class AutocompleteCoordinator implements OmniboxSuggestionsVisualState {
      */
     public void prefetchZeroSuggestResults(@Nullable Tab tab) {
         mMediator.startPrefetch(tab != null ? tab.getWebContents() : null);
+    }
+
+    /** Stop current suggestions requests and clear the suggestions list. */
+    public void stopAutocomplete() {
+        mMediator.stopAutocomplete(/* clear= */ true);
+    }
+
+    /** Returns whether Autocomplete is serving suggestions. */
+    public boolean isServingSuggestions() {
+        return mMediator.isInInputSession()
+                && mContainer != null
+                && mContainer.isShown()
+                && mMediator.getSuggestionCount() > 0;
     }
 
     /**
