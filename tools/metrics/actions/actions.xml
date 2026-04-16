@@ -255,6 +255,8 @@ should be able to be added at any place in this file.
       summary="For Autofill credit card benefit message."/>
   <variant name="_AutofillDisabledVirtualCardSuggestion"
       summary="For AutofillDisabledVirtualCardSuggestion feature."/>
+  <variant name="_AutofillDownstreamCardAwareness"
+      summary="For AutofillDownstreamCardAwareness IPH feature."/>
   <variant name="_AutofillEnableLoyaltyCards"
       summary="For AutofillEnableLoyaltyCards feature."/>
   <variant name="_AutofillExternalAccountProfileSuggestion"

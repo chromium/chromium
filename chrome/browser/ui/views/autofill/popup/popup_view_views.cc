@@ -1162,7 +1162,9 @@ void PopupViewViews::CreateSuggestionViews() {
               feature == &feature_engagement::
                              kIPHAutofillDisabledVirtualCardSuggestionFeature ||
               feature == &feature_engagement::
-                             kIPHAutofillCardInfoRetrievalSuggestionFeature) {
+                             kIPHAutofillCardInfoRetrievalSuggestionFeature ||
+              feature == &feature_engagement::
+                             kIPHAutofillDownstreamCardAwarenessFeature) {
             row_view->SetProperty(views::kElementIdentifierKey,
                                   kAutofillCreditCardSuggestionEntryElementId);
           } else if (feature ==

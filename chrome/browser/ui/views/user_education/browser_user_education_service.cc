@@ -518,6 +518,19 @@ void MaybeRegisterChromeFeaturePromos(
                        "Triggered after autofill popup appears for disabled "
                        "virtual card.")));
 
+  // kIPHAutofillDownstreamCardAwarenessFeature:
+  registry.RegisterFeature(std::move(
+      FeaturePromoSpecification::CreateForToastPromo(
+          feature_engagement::kIPHAutofillDownstreamCardAwarenessFeature,
+          autofill::PopupViewViews::kAutofillCreditCardSuggestionEntryElementId,
+          IDS_AUTOFILL_DOWNSTREAM_CARD_AWARENESS_IPH_BUBBLE_LABEL,
+          IDS_AUTOFILL_DOWNSTREAM_CARD_AWARENESS_IPH_BUBBLE_LABEL_SCREENREADER,
+          FeaturePromoSpecification::AcceleratorInfo())
+          .SetBubbleArrow(HelpBubbleArrow::kLeftCenter)
+          .SetMetadata(149, "ferny@google.com",
+                       "Triggered after autofill popup appears featuring an "
+                       "externally-saved card.")));
+
   // kIPHCreatePlusAddressSuggestionFeature:
   registry.RegisterFeature(std::move(
       FeaturePromoSpecification::CreateForToastPromo(

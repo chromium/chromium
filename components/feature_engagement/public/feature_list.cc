@@ -331,6 +331,7 @@ const base::Feature* const kAllFeatures[] = {
     &kIPHAutofillCardInfoRetrievalSuggestionFeature,
     &kIPHAutofillCreditCardBenefitFeature,
     &kIPHAutofillDisabledVirtualCardSuggestionFeature,
+    &kIPHAutofillDownstreamCardAwarenessFeature,
     &kIPHAutofillEnableLoyaltyCardsFeature,
     &kIPHAutofillExternalAccountProfileSuggestionFeature,
     &kIPHAutofillHomeWorkProfileSuggestionFeature,

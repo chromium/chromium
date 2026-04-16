@@ -4880,6 +4880,84 @@ TEST_P(SuggestionIphBubbleTest,
 #endif
 }
 
+// Params of DownstreamCardAwarenessIphTest:
+// -- `bool` is_downstream_card_awareness_iph_enabled: Indicates whether the
+// downstream IPH feature is enabled.
+// -- `CreditCard::CardCreationSource` enrollment_source: The source of the
+// card's enrollment.
+// -- `size_t` use_count: The number of times the card has been used.
+class DownstreamCardAwarenessIphTest
+    : public PaymentsSuggestionGeneratorTest,
+      public testing::WithParamInterface<
+          std::tuple<bool, CreditCard::CardCreationSource, size_t>> {
+ public:
+  DownstreamCardAwarenessIphTest() = default;
+
+  void SetUp() override {
+    PaymentsSuggestionGeneratorTest::SetUp();
+    if (is_downstream_card_awareness_iph_enabled()) {
+      scoped_feature_list_.InitAndEnableFeature(
+          features::kAutofillEnableDownstreamCardAwarenessIph);
+    } else {
+      scoped_feature_list_.InitAndDisableFeature(
+          features::kAutofillEnableDownstreamCardAwarenessIph);
+    }
+  }
+
+  bool is_downstream_card_awareness_iph_enabled() const {
+    return std::get<0>(GetParam());
+  }
+  CreditCard::CardCreationSource enrollment_source() const {
+    return std::get<1>(GetParam());
+  }
+  size_t use_count() const { return std::get<2>(GetParam()); }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+INSTANTIATE_TEST_SUITE_P(
+    PaymentsSuggestionGeneratorTest,
+    DownstreamCardAwarenessIphTest,
+    testing::Combine(
+        testing::Bool(),
+        testing::Values(
+            CreditCard::CardCreationSource::kCreationSourceUnspecified,
+            CreditCard::CardCreationSource::kCreationSourceChromePayments,
+            CreditCard::CardCreationSource::kCreationSourceNonChromePayments),
+        testing::Values(0, 1, 2)));
+
+// Verify that the downstream card awareness suggestion `feature` is set ONLY
+// when the feature flag is enabled, the card enrollment source is
+// `kCreationSourceNonChromePayments`, and the card has a `use_count` of 1.
+// Since `use_count` is initialized to 1, a value of 1 indicates that the card
+// has not yet been used.
+TEST_P(DownstreamCardAwarenessIphTest,
+       CreateCreditCardSuggestion_DownstreamCardAwarenessIph) {
+  CreditCard server_card = CreateServerCard();
+  server_card.set_card_creation_source(enrollment_source());
+  server_card.usage_history().set_use_count(use_count());
+
+  Suggestion card_number_field_suggestion = CreateCreditCardSuggestionForTest(
+      server_card, autofill_client(), CREDIT_CARD_NUMBER,
+      /*virtual_card_option=*/false,
+      /*card_linked_offer_available=*/false);
+
+  bool should_show_iph =
+      is_downstream_card_awareness_iph_enabled() &&
+      enrollment_source() ==
+          CreditCard::CardCreationSource::kCreationSourceNonChromePayments &&
+      use_count() == 1;
+
+  if (should_show_iph) {
+    EXPECT_EQ(card_number_field_suggestion.iph_metadata.feature,
+              &feature_engagement::kIPHAutofillDownstreamCardAwarenessFeature);
+  } else {
+    EXPECT_NE(card_number_field_suggestion.iph_metadata.feature,
+              &feature_engagement::kIPHAutofillDownstreamCardAwarenessFeature);
+  }
+}
+
 // Params of GetFilteredCardsToSuggestTest:
 // -- FieldType get_trigger_field_type: Indicates triggered field type.
 class GetFilteredCardsToSuggestTest
