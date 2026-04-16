@@ -15,6 +15,7 @@
 #include "base/compiler_specific.h"
 #include "base/file_descriptor_posix.h"
 #include "base/files/file_util.h"
+#include "base/files/scoped_file.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/logging.h"
@@ -162,13 +163,17 @@ void ProcessProxy::Write(const std::string& text,
     return std::move(callback).Run(false);
 
   // Use ThreadPool for write to avoid deadlock on registry TaskRunner.
+  base::ScopedFD dup_fd(HANDLE_EINTR(dup(pt_pair_[PT_MASTER_FD])));
+  if (!dup_fd.is_valid()) {
+    return std::move(callback).Run(false);
+  }
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE, {base::TaskPriority::BEST_EFFORT, base::MayBlock()},
       base::BindOnce(
-          [](int fd, const std::string& text) {
-            return base::WriteFileDescriptor(fd, text);
+          [](base::ScopedFD fd, const std::string& text) {
+            return base::WriteFileDescriptor(fd.get(), text);
           },
-          pt_pair_[PT_MASTER_FD], text),
+          std::move(dup_fd), text),
       std::move(callback));
 }
 
