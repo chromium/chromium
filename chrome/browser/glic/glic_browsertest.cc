@@ -2,12 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/memory/raw_ptr.h"
+#include "base/test/gmock_expected_support.h"
 #include "base/test/run_until.h"
 #include "chrome/browser/glic/glic_pref_names.h"
 #include "chrome/browser/glic/host/host.h"
 #include "chrome/browser/glic/public/glic_enabling.h"
 #include "chrome/browser/glic/public/glic_keyed_service.h"
 #include "chrome/browser/glic/public/glic_keyed_service_factory.h"
+#include "chrome/browser/glic/test_support/glic_browser_test.h"
 #include "chrome/browser/glic/test_support/glic_test_environment.h"
 #include "chrome/browser/glic/test_support/glic_test_util.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
@@ -59,6 +62,30 @@ class GlicBrowserTest : public InProcessBrowserTest {
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
+class SharedGlicBrowserTest : public glic::GlicBrowserTest {
+ public:
+  // Set up the Glic UI for testing. This runs after the browser is launched.
+  void SetUpOnMainThread() override {
+    glic::GlicBrowserTest::SetUpOnMainThread();
+    auto* profile = GetProfile();
+    SetFRECompletion(profile, prefs::FreStatus::kCompleted);
+
+    ASSERT_OK_AND_ASSIGN(auto* instance, OpenGlicForActiveTab());
+    web_contents_ = instance->host().webui_contents();
+    ASSERT_TRUE(web_contents_);
+    ASSERT_TRUE(WaitForWebUiState(mojom::WebUiState::kReady).has_value());
+  }
+  // Clear the raw_ptr before the test environment destroys the WebContents,
+  // preventing a dangling pointer error.
+  void TearDownOnMainThread() override {
+    web_contents_ = nullptr;
+    glic::GlicBrowserTest::TearDownOnMainThread();
+  }
+
+ protected:
+  raw_ptr<content::WebContents> web_contents_ = nullptr;
+};
+
 // Ensure basic incognito window doesn't cause a crash. Simply opens an
 // incognito window and navigates, test passes if it doesn't crash.
 IN_PROC_BROWSER_TEST_F(GlicBrowserTest, IncognitoModeCrash) {
@@ -102,6 +129,29 @@ IN_PROC_BROWSER_TEST_F(GlicBrowserTest, GlicEnablingDismissed) {
   // Simulate user shown FRE again and accepted.
   SetFRECompletion(profile, prefs::FreStatus::kCompleted);
   ASSERT_FALSE(GlicEnabling::DidDismissForProfile(profile));
+}
+
+// This test verifies that focus is correctly trapped and forwarded to the
+// guest panel's webview when the guest panel is visible.
+// This simulates the behavior expected by the focus listener in
+// glic_app_controller.ts.
+IN_PROC_BROWSER_TEST_F(SharedGlicBrowserTest, FocusTrappingGuestPanel) {
+  // Execute script to simulate focus trapping.
+  std::string script = R"(
+    (() => {
+      // Simulate focus on body
+      document.body.focus();
+      // Trigger the focus event listener
+      window.dispatchEvent(new Event('focus'));
+      const webview = document.querySelector('#webviewContainer webview');
+      if (document.activeElement === webview) {
+        return 'success';
+      }
+      return 'activeElement is ' + document.activeElement.tagName;
+    })()
+  )";
+
+  EXPECT_EQ("success", content::EvalJs(web_contents_, script));
 }
 
 }  // namespace

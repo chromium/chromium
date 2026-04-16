@@ -138,6 +138,19 @@ export class GlicAppController implements WebviewDelegate, ApiHostEmbedder {
       }
     });
 
+    // Programmatically redirect focus to the embedded guest
+    // webview if focus gets trapped on the orchestrator container
+    // (document.body) while the guest panel is visible.
+    window.addEventListener('focus', () => {
+      const isGuestVisible = !$.guestPanel.hidden;
+      const isFocusTrapped =
+          document.activeElement === document.body || !document.activeElement;
+
+      if (isGuestVisible && isFocusTrapped) {
+        this.webview?.focus();
+      }
+    });
+
     if (this.isOnline()) {
       this.setState(WebUiState.kBeginLoad);
     } else {
