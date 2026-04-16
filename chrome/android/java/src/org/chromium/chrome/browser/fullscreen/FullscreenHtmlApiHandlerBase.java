@@ -33,6 +33,7 @@ import org.chromium.base.ApplicationStatus;
 import org.chromium.base.ApplicationStatus.ActivityStateListener;
 import org.chromium.base.ApplicationStatus.WindowFocusChangedListener;
 import org.chromium.base.DeviceInfo;
+import org.chromium.base.Log;
 import org.chromium.base.ObserverList;
 import org.chromium.base.supplier.NonNullObservableSupplier;
 import org.chromium.base.supplier.ObservableSuppliers;
@@ -961,7 +962,20 @@ public abstract class FullscreenHtmlApiHandlerBase
             @Nullable OutcomeReceiver<@Nullable Void, Throwable> callback,
             int fullscreenModeRequest) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
-            mActivity.requestFullscreenMode(fullscreenModeRequest, callback);
+            OutcomeReceiver<@Nullable Void, Throwable> receiver =
+                    new OutcomeReceiver<>() {
+                        @Override
+                        public void onResult(@Nullable Void unused) {
+                            if (callback != null) callback.onResult(null);
+                        }
+
+                        @Override
+                        public void onError(Throwable error) {
+                            Log.w(TAG, "Failed to request fullscreen mode", error);
+                            if (callback != null) callback.onError(error);
+                        }
+                    };
+            mActivity.requestFullscreenMode(fullscreenModeRequest, receiver);
         }
     }
 

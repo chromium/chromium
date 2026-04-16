@@ -103,6 +103,7 @@ by a child template that "extends" this file.
       resizeTo, moveBy}|).
     -->
     <uses-permission android:name="android.permission.REPOSITION_SELF_WINDOWS"/>
+    <uses-permission android:name="android.permission.REQUEST_FULLSCREEN_MODE"/>
     <uses-permission android:name="android.permission.USE_CREDENTIALS"/>
     <uses-permission-sdk-23 android:name="android.permission.USE_BIOMETRIC"/>
     <uses-permission-sdk-23 android:name="android.permission.USE_FINGERPRINT"/>
