@@ -435,16 +435,6 @@ CanvasResourceProviderSharedImage::NewOrRecycledResource() {
   return resource;
 }
 
-bool CanvasResourceProviderSharedImage::IsResourceUsable(
-    CanvasResourceSharedImage* resource) {
-  const auto& si = resource->GetSharedImage();
-  gpu::ImageInfo image_info(si->size(), si->format(), si->usage(),
-                            si->color_space(), si->surface_origin(),
-                            si->alpha_type(), si->buffer_usage(),
-                            si->is_software());
-  return image_pool_->GetImageInfo() == image_info;
-}
-
 void CanvasResourceProviderSharedImage::OnResourceRefReturned(
     scoped_refptr<CanvasResourceSharedImage>&& resource) {
   if (!resource->IsLost() && resource->HasOneRef() &&
@@ -860,6 +850,16 @@ Canvas2DResourceProviderSharedImage::ProduceCanvasResource(FlushReason reason) {
   EndWriteAccess();
 
   return resource_;
+}
+
+bool Canvas2DResourceProviderSharedImage::IsResourceUsable(
+    CanvasResourceSharedImage* resource) {
+  const auto& si = resource->GetSharedImage();
+  gpu::ImageInfo image_info(si->size(), si->format(), si->usage(),
+                            si->color_space(), si->surface_origin(),
+                            si->alpha_type(), si->buffer_usage(),
+                            si->is_software());
+  return image_pool_->GetImageInfo() == image_info;
 }
 
 void CanvasNon2DResourceProviderSharedImage::OnContextDestroyed() {

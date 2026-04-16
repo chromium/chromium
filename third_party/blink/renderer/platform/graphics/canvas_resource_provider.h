@@ -453,7 +453,6 @@ class PLATFORM_EXPORT CanvasResourceProviderSharedImage
   virtual void EndWriteAccess() = 0;
 
   scoped_refptr<CanvasResourceSharedImage> NewOrRecycledResource();
-  bool IsResourceUsable(CanvasResourceSharedImage* resource);
   bool ShouldReplaceTargetBuffer(
       PaintImage::ContentId content_id = PaintImage::kInvalidContentId);
 
@@ -613,6 +612,8 @@ class PLATFORM_EXPORT Canvas2DResourceProviderSharedImage
   ScopedRasterTimer CreateScopedRasterTimerForCanvas2D() override;
 
  private:
+  bool IsResourceUsable(CanvasResourceSharedImage* resource);
+
   CanvasImageProvider* GetOrCreateCanvasImageProvider();
   std::unique_ptr<gpu::RasterScopedAccess> WillDrawInternal();
 
