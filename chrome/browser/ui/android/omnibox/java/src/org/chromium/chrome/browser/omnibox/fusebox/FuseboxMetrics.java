@@ -8,15 +8,14 @@ import android.annotation.SuppressLint;
 import android.os.SystemClock;
 
 import androidx.annotation.IntDef;
+import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.metrics.RecordHistogram;
-import org.chromium.build.annotations.CheckDiscard;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.omnibox.fusebox.FuseboxProperties.PopupButtonData;
 import org.chromium.chrome.browser.omnibox.fusebox.FuseboxProperties.PopupButtonType;
 import org.chromium.components.feature_engagement.EventConstants;
 import org.chromium.components.feature_engagement.Tracker;
-import org.chromium.components.omnibox.AimModelsProto.ModelMode;
 import org.chromium.components.omnibox.AutocompleteRequestType;
 import org.chromium.components.omnibox.ToolModeUtils;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -33,6 +32,8 @@ public class FuseboxMetrics {
     private static final String FAILED_HISTOGRAM = "Omnibox.MobileFusebox.AttachmentFailed";
     private static final String SUCCEEDED_HISTOGRAM = "Omnibox.MobileFusebox.AttachmentSucceeded";
     private static final String TOKEN_SEPARATOR = ".";
+
+    @VisibleForTesting /* package */ static final int MODEL_MODE_HISTOGRAM_BOUND = 5;
 
     // LINT.IfChange(AiModeActivationSource)
     @IntDef({
@@ -76,25 +77,6 @@ public class FuseboxMetrics {
     }
 
     // LINT.ThenChange(//tools/metrics/histograms/metadata/omnibox/enums.xml:FuseboxAttachmentButtonType)
-
-    // LINT.IfChange(OmniboxModelMode)
-    private static final int MODEL_MODE_HISTOGRAM_BOUND = 5;
-
-    /* If adding new enums to the switch, make sure the above constant is 1 larger than new max. */
-    @CheckDiscard("Compile time validation, never called or used.")
-    private static void unusedCompileTimeCheckForModelMode(ModelMode mode) {
-        switch (mode) {
-            case MODEL_MODE_UNSPECIFIED:
-            case MODEL_MODE_GEMINI_REGULAR:
-            case MODEL_MODE_GEMINI_PRO:
-            case MODEL_MODE_GEMINI_PRO_AUTOROUTE:
-            case MODEL_MODE_GEMINI_PRO_NO_GEN_UI:
-            case UNRECOGNIZED:
-                break;
-        }
-    }
-
-    // LINT.ThenChange(//tools/metrics/histograms/metadata/omnibox/enums.xml:OmniboxModelMode)
 
     private boolean mSessionStarted;
     private boolean mAttachmentsPopupButtonUsedInSession;

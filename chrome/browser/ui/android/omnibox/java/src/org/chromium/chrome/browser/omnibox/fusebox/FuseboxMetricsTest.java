@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.omnibox.fusebox;
 
+import static com.google.common.truth.Truth.assertThat;
+
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -88,6 +90,16 @@ public class FuseboxMetricsTest {
         FuseboxMetrics.notifyModelButtonUsed(ModelMode.MODEL_MODE_GEMINI_PRO_VALUE);
 
         histogramWatcher.assertExpected();
+    }
+
+    @Test
+    public void testModelModeHistogramBound() {
+        // When this test fails, it means the proto added a new model mode, and
+        // MODEL_MODE_HISTOGRAM_BOUND needs to be updated.
+        for (ModelMode mode : ModelMode.values()) {
+            if (mode == ModelMode.UNRECOGNIZED) continue;
+            assertThat(mode.getNumber()).isLessThan(FuseboxMetrics.MODEL_MODE_HISTOGRAM_BOUND);
+        }
     }
 
     @Test
