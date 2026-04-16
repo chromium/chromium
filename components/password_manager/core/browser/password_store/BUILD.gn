@@ -15,6 +15,8 @@ source_set("password_store_interface") {
     "password_store_interface.h",
     "password_store_util.cc",
     "password_store_util.h",
+    "stored_credential.cc",
+    "stored_credential.h",
   ]
   public_deps = [ "//components/password_manager/core/browser:password_form" ]
   deps = [
@@ -30,6 +32,8 @@ source_set("password_store_impl") {
     "encrypt_decrypt_interface.h",
     "get_logins_with_affiliations_request_handler.cc",
     "get_logins_with_affiliations_request_handler.h",
+    "password_form_converters.cc",
+    "password_form_converters.h",
     "password_store.cc",
     "password_store.h",
     "password_store_backend.h",
@@ -143,6 +147,7 @@ source_set("unit_tests") {
   testonly = true
   sources = [
     "get_logins_with_affiliations_request_handler_unittest.cc",
+    "password_form_converters_unittest.cc",
     "password_store_consumer_unittest.cc",
     "psl_matching_helper_unittest.cc",
   ]
@@ -182,6 +187,7 @@ source_set("unit_tests") {
     "//components/password_manager/core/common",
     "//components/prefs",
     "//components/prefs:test_support",
+    "//components/signin/public/base",
     "//components/sync:test_support",
     "//components/sync/model",
     "//sql",
