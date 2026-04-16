@@ -23,7 +23,6 @@ Thread::Thread(ThreadType type,
       last_turn_time(base::Time::FromMillisecondsSinceUnixEpoch(
           last_turn_time_unix_epoch_millis)),
       conversation_turn_id(conversation_turn_id) {
-  DCHECK(type != ThreadType::kAiMode || conversation_turn_id);
 }
 Thread::Thread(const Thread& other) = default;
 Thread::~Thread() = default;
