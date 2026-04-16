@@ -106,15 +106,11 @@ void CanvasResource::ReleaseFrameResources(
   CHECK(resource);
 
   resource->WaitSyncToken(sync_token);
-
-  // TODO(khushalsagar): If multiple readers had access to this resource, losing
-  // it once should make sure subsequent releases don't try to recycle this
-  // resource.
   if (lost_resource) {
     resource->NotifyResourceLost();
-  } else {
-    CanvasResource::DropRefOnOwningThread(std::move(resource));
   }
+
+  CanvasResource::DropRefOnOwningThread(std::move(resource));
 }
 
 // static
