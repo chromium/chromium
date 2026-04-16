@@ -7,17 +7,19 @@
 
 #import <Foundation/Foundation.h>
 
-namespace web {
-class BrowserState;
-}
 @class WKWebViewConfiguration;
+
+namespace web {
+class CobaltController;
+}
 
 namespace web::provider {
 
-// Initializes Cobalt in `configuration` for the given `browser_state`.
+// Initializes Cobalt in `configuration` using the given `cobalt_controller`.
 void InitializeCobaltInWKWebViewConfiguration(
     WKWebViewConfiguration* configuration,
-    BrowserState* browser_state);
+    bool is_off_the_record,
+    web::CobaltController* cobalt_controller);
 
 // Returns the list of origins that are allowed to use Cobalt.
 NSArray<NSString*>* GetCobaltOriginList();

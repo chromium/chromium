@@ -202,8 +202,10 @@ void WKWebViewConfigurationProvider::ResetWithWebViewConfiguration(
   UpdateScripts();
 
   if (web::features::IsCobaltEnabled()) {
-    web::provider::InitializeCobaltInWKWebViewConfiguration(configuration_,
-                                                            browser_state_);
+    web::CobaltController* controller =
+        GetWebClient()->GetCobaltController(browser_state_);
+    web::provider::InitializeCobaltInWKWebViewConfiguration(
+        configuration_, browser_state_->IsOffTheRecord(), controller);
   }
 
   if (!scheme_handler_) {

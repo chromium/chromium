@@ -18,6 +18,7 @@ class TabHelperAttacher;
 
 namespace web {
 class JavaScriptFeature;
+class CobaltController;
 }  // namespace web
 
 // Completion block for Cobalt alerts, called with `granted` set to true if the
@@ -58,6 +59,9 @@ ChromeCoordinator* CreateCobaltCoordinator(
 // Returns the Cobalt JavaScript feature for `profile`.
 web::JavaScriptFeature* GetCobaltJavascriptFeatureForProfile(
     ProfileIOS* profile);
+
+// Returns the Cobalt controller for `profile`.
+web::CobaltController* GetCobaltController(ProfileIOS* profile);
 
 // Returns the coordinator for Cobalt alerts.
 ChromeCoordinator* CreateCobaltAlertCoordinator(

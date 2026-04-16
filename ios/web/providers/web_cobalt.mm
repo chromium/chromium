@@ -8,7 +8,8 @@ namespace web::provider {
 
 void InitializeCobaltInWKWebViewConfiguration(
     WKWebViewConfiguration* configuration,
-    BrowserState* browser_state) {
+    bool is_off_the_record,
+    web::CobaltController* cobalt_controller) {
   // Nothing to do.
 }
 

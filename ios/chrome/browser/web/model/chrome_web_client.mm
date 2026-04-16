@@ -681,6 +681,12 @@ web::JSErrorReportLoggingLevel ChromeWebClient::GetJSErrorReportLoggingLevel(
   return web::JSErrorReportLoggingLevel::REPORT_WITHOUT_URL;
 }
 
+web::CobaltController* ChromeWebClient::GetCobaltController(
+    web::BrowserState* browser_state) const {
+  ProfileIOS* profile = ProfileIOS::FromBrowserState(browser_state);
+  return ios::provider::GetCobaltController(profile);
+}
+
 bool ChromeWebClient::IsSmoothScrollingSupported() const {
   return ios::provider::IsFullscreenSmoothScrollingSupported();
 }

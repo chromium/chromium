@@ -35,6 +35,10 @@ web::JavaScriptFeature* GetCobaltJavascriptFeatureForProfile(
   return nullptr;
 }
 
+web::CobaltController* GetCobaltController(ProfileIOS* profile) {
+  return nullptr;
+}
+
 ChromeCoordinator* CreateCobaltAlertCoordinator(
     UIViewController* base_view_controller,
     Browser* browser,
