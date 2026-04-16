@@ -145,6 +145,9 @@ NET_EXPORT BASE_DECLARE_FEATURE(kEnableTLS13EarlyData);
 // quality estimator (NQE).
 NET_EXPORT BASE_DECLARE_FEATURE(kNetworkQualityEstimator);
 
+// Enables caching of IsPrivateHost() results in NetworkQualityEstimator.
+NET_EXPORT BASE_DECLARE_FEATURE(kNetworkQualityEstimatorIsPrivateHostCache);
+
 // The maximum age in seconds of observations to be used for calculating the
 // HTTP RTT from the historical data.
 // Negative value means infinite. i.e. all data are used.

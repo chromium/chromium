@@ -104,6 +104,9 @@ BASE_FEATURE(kEnableTLS13EarlyData, base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kNetworkQualityEstimator, base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kNetworkQualityEstimatorIsPrivateHostCache,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 const base::FeatureParam<int> kRecentHTTPThresholdInSeconds{
     &kNetworkQualityEstimator, "RecentHTTPThresholdInSeconds", -1};
 const base::FeatureParam<int> kRecentTransportThresholdInSeconds{

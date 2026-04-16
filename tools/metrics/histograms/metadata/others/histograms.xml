@@ -5416,6 +5416,27 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="NQE.IsPrivateHost.CacheHit" enum="BooleanCacheHit"
+    expires_after="2027-04-01">
+  <owner>hayato@chromium.org</owner>
+  <owner>blink-network-stack@google.com</owner>
+  <summary>
+    Counts how many times the result of NetworkQualityEstimator::IsPrivateHost
+    is served from the LRU cache or not. Recorded every time the method is
+    called.
+  </summary>
+</histogram>
+
+<histogram name="NQE.IsPrivateHost.Duration" units="ms"
+    expires_after="2027-04-01">
+  <owner>hayato@chromium.org</owner>
+  <owner>blink-network-stack@google.com</owner>
+  <summary>
+    The duration of NetworkQualityEstimator::IsPrivateHost. Recorded every time
+    the method is called.
+  </summary>
+</histogram>
+
 <histogram name="NQE.RTT.Error.Absolute" units="ms" expires_after="2025-06-08">
   <owner>yyanagisawa@chromium.org</owner>
   <owner>chrome-loading@google.com</owner>

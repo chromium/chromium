@@ -26,6 +26,7 @@
 #include "base/task/thread_pool/thread_pool_instance.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/run_until.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/simple_test_tick_clock.h"
 #include "base/threading/platform_thread.h"
 #include "base/time/time.h"
@@ -33,6 +34,7 @@
 #include "net/base/load_flags.h"
 #include "net/base/network_activity_monitor.h"
 #include "net/base/network_change_notifier.h"
+#include "net/dns/mock_host_resolver.h"
 #include "net/http/http_response_headers.h"
 #include "net/http/http_response_info.h"
 #include "net/http/http_status_code.h"
@@ -2899,5 +2901,114 @@ TEST_F(NetworkQualityEstimatorTest,
   EXPECT_GT(throughput_observer.observations().front().throughput_kbps, 0);
   estimator.RemoveThroughputObserver(&throughput_observer);
 }
+
+// Helper class to count the number of DNS resolution requests. Used to verify
+// that the IsPrivateHost cache effectively suppresses redundant lookups.
+class CountingHostResolver : public MockHostResolver {
+ public:
+  CountingHostResolver() = default;
+  ~CountingHostResolver() override = default;
+
+  int num_resolve_calls() const { return num_resolve_calls_; }
+
+  std::unique_ptr<ResolveHostRequest> CreateRequest(
+      url::SchemeHostPort host,
+      NetworkAnonymizationKey network_anonymization_key,
+      NetLogWithSource net_log,
+      std::optional<ResolveHostParameters> optional_parameters) override {
+    num_resolve_calls_++;
+    return MockHostResolver::CreateRequest(
+        std::move(host), std::move(network_anonymization_key),
+        std::move(net_log), std::move(optional_parameters));
+  }
+
+ private:
+  int num_resolve_calls_ = 0;
+};
+
+class NetworkQualityEstimatorIsPrivateHostCacheTest
+    : public NetworkQualityEstimatorTest,
+      public testing::WithParamInterface<bool> {
+ public:
+  NetworkQualityEstimatorIsPrivateHostCacheTest() {
+    if (IsCacheEnabled()) {
+      feature_list_.InitAndEnableFeature(
+          features::kNetworkQualityEstimatorIsPrivateHostCache);
+    } else {
+      feature_list_.InitAndDisableFeature(
+          features::kNetworkQualityEstimatorIsPrivateHostCache);
+    }
+  }
+
+  bool IsCacheEnabled() const { return GetParam(); }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+TEST_P(NetworkQualityEstimatorIsPrivateHostCacheTest, IsPrivateHostCaching) {
+  base::HistogramTester histogram_tester;
+
+  TestNetworkQualityEstimator estimator;
+  TestDelegate test_delegate;
+  auto host_resolver = std::make_unique<CountingHostResolver>();
+  CountingHostResolver* host_resolver_ptr = host_resolver.get();
+
+  // Set up the context with our counting host resolver.
+  auto context_builder = CreateTestURLRequestContextBuilder();
+  context_builder->set_network_quality_estimator(&estimator);
+  context_builder->set_host_resolver(std::move(host_resolver));
+  auto context = context_builder->Build();
+
+  GURL url("http://www.google.com");
+  std::unique_ptr<URLRequest> request(context->CreateRequest(
+      url, DEFAULT_PRIORITY, &test_delegate, TRAFFIC_ANNOTATION_FOR_TESTS));
+
+  // 1. First call: Should always trigger a physical resolution.
+  estimator.IsPrivateHost(*request);
+  EXPECT_EQ(1, host_resolver_ptr->num_resolve_calls());
+  if (IsCacheEnabled()) {
+    histogram_tester.ExpectBucketCount("NQE.IsPrivateHost.CacheHit", false, 1);
+    histogram_tester.ExpectBucketCount("NQE.IsPrivateHost.CacheHit", true, 0);
+  }
+  histogram_tester.ExpectTotalCount("NQE.IsPrivateHost.Duration", 1);
+
+  // 2. Second call for the same host: Should be cached if the feature is ON.
+  estimator.IsPrivateHost(*request);
+  if (IsCacheEnabled()) {
+    histogram_tester.ExpectBucketCount("NQE.IsPrivateHost.CacheHit", false, 1);
+    histogram_tester.ExpectBucketCount("NQE.IsPrivateHost.CacheHit", true, 1);
+    EXPECT_EQ(1, host_resolver_ptr->num_resolve_calls());
+  } else {
+    EXPECT_EQ(2, host_resolver_ptr->num_resolve_calls());
+  }
+
+  // 3. Network change: Should clear the cache if it exists.
+  estimator.SimulateNetworkChange(
+      NetworkChangeNotifier::ConnectionType::CONNECTION_WIFI, "wifi");
+
+  // 4. Third call after network change: Should resolve again because host
+  // "private-ness" might have changed on the new network.
+  estimator.IsPrivateHost(*request);
+  if (IsCacheEnabled()) {
+    // Resolved once more (Total 2)
+    EXPECT_EQ(2, host_resolver_ptr->num_resolve_calls());
+  } else {
+    // Just continues to resolve (Total 3)
+    EXPECT_EQ(3, host_resolver_ptr->num_resolve_calls());
+  }
+
+  // 5. Fourth call: Should be cached again if the feature is ON.
+  estimator.IsPrivateHost(*request);
+  if (IsCacheEnabled()) {
+    EXPECT_EQ(2, host_resolver_ptr->num_resolve_calls());
+  } else {
+    EXPECT_EQ(4, host_resolver_ptr->num_resolve_calls());
+  }
+}
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         NetworkQualityEstimatorIsPrivateHostCacheTest,
+                         testing::Bool());
 
 }  // namespace net

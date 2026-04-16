@@ -15,6 +15,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/containers/lru_cache.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
@@ -195,6 +196,9 @@ class NET_EXPORT_PRIVATE NetworkQualityEstimator
 
   // Notifies NetworkQualityEstimator that `request` will be destroyed.
   void NotifyURLRequestDestroyed(const URLRequest& request);
+
+  // Returns true if the request is for a private host.
+  bool IsPrivateHost(const URLRequest& request) const;
 
   // Adds `rtt_observer` to the list of round trip time observers. Must be
   // called on the IO thread.
@@ -682,6 +686,9 @@ class NET_EXPORT_PRIVATE NetworkQualityEstimator
   // NotifyStartTransaction above.
   std::unordered_map<raw_ptr<const URLRequest>, base::TimeTicks>
       waiting_async_notify_headers_received_;
+
+  // Cache for IsPrivateHost results.
+  mutable base::LRUCache<std::string, bool> is_private_host_cache_{64};
 
   base::WeakPtrFactory<NetworkQualityEstimator> weak_ptr_factory_{this};
 };
