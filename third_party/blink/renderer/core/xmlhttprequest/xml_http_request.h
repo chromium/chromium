@@ -176,8 +176,6 @@ class CORE_EXPORT XMLHttpRequest final
   bool HasRequestHeaderForTesting(AtomicString name) const;
 
  private:
-  friend class XMLHttpRequestTest_ResponseTextUsesDecodedData_Test;
-
   class BlobLoader;
 
   void DidSendData(uint64_t bytes_sent,
