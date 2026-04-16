@@ -1621,6 +1621,28 @@
             ]
         }
     ],
+    "AnnotatedPageContentNonSalientFiltering": [
+        {
+            "platforms": [
+                "android",
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "enabled",
+                    "params": {
+                        "exclude_ad_related": "true"
+                    },
+                    "enable_features": [
+                        "AnnotatedPageContentNonSalientFiltering"
+                    ]
+                }
+            ]
+        }
+    ],
     "AnnotatedPageContentsVirtualStructure": [
         {
             "platforms": [
