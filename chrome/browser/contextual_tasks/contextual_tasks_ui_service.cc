@@ -1484,7 +1484,11 @@ GURL ContextualTasksUiService::CopyParamsFromWebUIUrl(const GURL& base_url,
   GURL aim_url(base_url);
   while (!it.IsAtEnd()) {
     if (it.GetKey() != kTaskQueryParam) {
-      aim_url = net::AppendQueryParameter(aim_url, it.GetKey(), it.GetValue());
+      // The QueryIterator does not decode the URL params, use the net util to
+      // extract the value for transfer to the result URL.
+      std::string value;
+      net::GetValueForKeyInQuery(webui_url, it.GetKey(), &value);
+      aim_url = net::AppendOrReplaceQueryParameter(aim_url, it.GetKey(), value);
     }
     it.Advance();
   }

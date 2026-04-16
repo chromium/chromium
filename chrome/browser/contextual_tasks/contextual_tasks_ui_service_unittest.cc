@@ -1201,6 +1201,29 @@ TEST_F(ContextualTasksUiServiceTest, CopyParamsFromWebUIUrl) {
       ContextualTasksUiService::CopyParamsFromWebUIUrl(base_url, webui_url));
 }
 
+TEST_F(ContextualTasksUiServiceTest, CopyParamsFromWebUIUrl_DuplicateParams) {
+  // The value from the webui url should be prioritized and replace existing
+  // values on the base url.
+  GURL base_url("https://google.com/search?param1=bad");
+  GURL webui_url("chrome://contextual-tasks?param1=1&param2=2");
+
+  EXPECT_EQ(
+      GURL("https://google.com/search?param1=1&param2=2"),
+      ContextualTasksUiService::CopyParamsFromWebUIUrl(base_url, webui_url));
+}
+
+TEST_F(ContextualTasksUiServiceTest,
+       CopyParamsFromWebUIUrl_ParamEncodingCorrect) {
+  // Transfer of params from the webui url should not have extra artifacts added
+  // and should be decoded correctly prior to being moved to the base url.
+  GURL base_url("https://google.com/search?param1=bad");
+  GURL webui_url("chrome://contextual-tasks?param1=a+query+with+spaces");
+
+  EXPECT_EQ(
+      GURL("https://google.com/search?param1=a+query+with+spaces"),
+      ContextualTasksUiService::CopyParamsFromWebUIUrl(base_url, webui_url));
+}
+
 // If the navigation is to sign the user out, ensure it opens outside the
 // webview to ensure the user is signed out of the main storage partition.
 TEST_F(ContextualTasksUiServiceTest, SignOutNavigation_OpenedInTab) {
