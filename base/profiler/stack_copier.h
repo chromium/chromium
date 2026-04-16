@@ -61,8 +61,10 @@ class BASE_EXPORT StackCopier {
                                           RegisterContext* thread_context);
 
  protected:
-  virtual std::vector<uintptr_t*> GetRegistersToRewrite(
+  virtual std::vector<uintptr_t> GetRegisters(
       RegisterContext* thread_context) = 0;
+  virtual void SetRegisters(RegisterContext* thread_context,
+                            const std::vector<uintptr_t>& registers) = 0;
 
   // If the value at |pointer| points to the original stack, rewrite it to point
   // to the corresponding location in the copied stack.

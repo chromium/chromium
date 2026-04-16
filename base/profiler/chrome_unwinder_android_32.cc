@@ -41,9 +41,10 @@ bool PopRegister(RegisterContext* context, uint8_t register_index) {
   const uintptr_t sp = RegisterContextStackPointer(context);
   const uintptr_t stacktop_value = *reinterpret_cast<uintptr_t*>(sp);
   const auto new_sp = CheckedNumeric<uintptr_t>(sp) + sizeof(uintptr_t);
-  const bool success =
-      new_sp.AssignIfValid(&RegisterContextStackPointer(context));
+  uintptr_t sp_val;
+  const bool success = new_sp.AssignIfValid(&sp_val);
   if (success) {
+    SetRegisterContextStackPointer(context, sp_val);
     *GetRegisterPointer(context, register_index) = stacktop_value;
   }
   return success;
@@ -192,9 +193,11 @@ UnwindInstructionResult ExecuteUnwindInstruction(
     const auto new_sp =
         CheckedNumeric<uintptr_t>(RegisterContextStackPointer(thread_context)) +
         offset;
-    if (!new_sp.AssignIfValid(&RegisterContextStackPointer(thread_context))) {
+    uintptr_t sp_val;
+    if (!new_sp.AssignIfValid(&sp_val)) {
       return UnwindInstructionResult::kAborted;
     }
+    SetRegisterContextStackPointer(thread_context, sp_val);
   } else if (GetTopBits(*instruction, 2) == 0b01) {
     // 01xxxxxx
     // vsp = vsp - (xxxxxx << 2) - 4. Covers range 0x04-0x100 inclusive.
@@ -203,9 +206,11 @@ UnwindInstructionResult ExecuteUnwindInstruction(
     const auto new_sp =
         CheckedNumeric<uintptr_t>(RegisterContextStackPointer(thread_context)) -
         offset;
-    if (!new_sp.AssignIfValid(&RegisterContextStackPointer(thread_context))) {
+    uintptr_t sp_val;
+    if (!new_sp.AssignIfValid(&sp_val)) {
       return UnwindInstructionResult::kAborted;
     }
+    SetRegisterContextStackPointer(thread_context, sp_val);
   } else if (GetTopBits(*instruction, 4) == 0b1001) {
     // 1001nnnn (nnnn != 13,15)
     // Set vsp = r[nnnn].
@@ -216,8 +221,8 @@ UnwindInstructionResult ExecuteUnwindInstruction(
     // using this instruction.
     DCHECK_GE(register_index, 4);
 
-    RegisterContextStackPointer(thread_context) =
-        *GetRegisterPointer(thread_context, register_index);
+    SetRegisterContextStackPointer(
+        thread_context, *GetRegisterPointer(thread_context, register_index));
   } else if (GetTopBits(*instruction, 5) == 0b10101) {
     // 10101nnn
     // Pop r4-r[4+nnn], r14
@@ -275,9 +280,11 @@ UnwindInstructionResult ExecuteUnwindInstruction(
         CheckedNumeric<uintptr_t>(RegisterContextStackPointer(thread_context)) +
         (CheckedNumeric<uintptr_t>(DecodeULEB128(instruction)) << 2) + 0x204;
 
-    if (!new_sp.AssignIfValid(&RegisterContextStackPointer(thread_context))) {
+    uintptr_t sp_val;
+    if (!new_sp.AssignIfValid(&sp_val)) {
       return UnwindInstructionResult::kAborted;
     }
+    SetRegisterContextStackPointer(thread_context, sp_val);
   } else {
     NOTREACHED();
   }

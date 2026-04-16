@@ -228,24 +228,44 @@ bool SuspendableThreadDelegateWin::CanCopyStack(uintptr_t stack_pointer) {
   return !PointsToGuardPage(stack_pointer);
 }
 
-std::vector<uintptr_t*> SuspendableThreadDelegateWin::GetRegistersToRewrite(
-    CONTEXT* thread_context) {
+std::vector<uintptr_t> SuspendableThreadDelegateWin::GetRegisters(
+    RegisterContext* thread_context) {
   // Return the set of non-volatile registers.
   return {
 #if defined(ARCH_CPU_X86_64)
-      &thread_context->R12, &thread_context->R13,
-      &thread_context->R14, &thread_context->R15,
-      &thread_context->Rdi, &thread_context->Rsi,
-      &thread_context->Rbx, &thread_context->Rbp,
-      &thread_context->Rsp
+      thread_context->Rbx, thread_context->Rbp, thread_context->Rsp
 #elif defined(ARCH_CPU_ARM64)
-      &thread_context->X19, &thread_context->X20, &thread_context->X21,
-      &thread_context->X22, &thread_context->X23, &thread_context->X24,
-      &thread_context->X25, &thread_context->X26, &thread_context->X27,
-      &thread_context->X28, &thread_context->Fp,  &thread_context->Lr,
-      &thread_context->Sp
+      thread_context->X19, thread_context->X20, thread_context->X21,
+      thread_context->X22, thread_context->X23, thread_context->X24,
+      thread_context->X25, thread_context->X26, thread_context->X27,
+      thread_context->X28, thread_context->Fp,  thread_context->Lr,
+      thread_context->Sp
 #endif
   };
+}
+
+void SuspendableThreadDelegateWin::SetRegisters(
+    RegisterContext* thread_context,
+    const std::vector<uintptr_t>& registers) {
+#if defined(ARCH_CPU_X86_64)
+  thread_context->Rbx = registers[0];
+  thread_context->Rbp = registers[1];
+  thread_context->Rsp = registers[2];
+#elif defined(ARCH_CPU_ARM64)
+  thread_context->X19 = registers[0];
+  thread_context->X20 = registers[1];
+  thread_context->X21 = registers[2];
+  thread_context->X22 = registers[3];
+  thread_context->X23 = registers[4];
+  thread_context->X24 = registers[5];
+  thread_context->X25 = registers[6];
+  thread_context->X26 = registers[7];
+  thread_context->X27 = registers[8];
+  thread_context->X28 = registers[9];
+  thread_context->Fp = registers[10];
+  thread_context->Lr = registers[11];
+  thread_context->Sp = registers[12];
+#endif
 }
 
 }  // namespace base

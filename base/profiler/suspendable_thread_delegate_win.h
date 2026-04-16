@@ -55,8 +55,9 @@ class BASE_EXPORT SuspendableThreadDelegateWin
   PlatformThreadId GetThreadId() const override;
   uintptr_t GetStackBaseAddress() const override;
   bool CanCopyStack(uintptr_t stack_pointer) override;
-  std::vector<uintptr_t*> GetRegistersToRewrite(
-      CONTEXT* thread_context) override;
+  std::vector<uintptr_t> GetRegisters(RegisterContext* thread_context) override;
+  void SetRegisters(RegisterContext* thread_context,
+                    const std::vector<uintptr_t>& registers) override;
 
  private:
   const PlatformThreadId thread_id_;

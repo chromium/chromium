@@ -119,9 +119,10 @@ UnwindResult FramePointerUnwinder::TryUnwind(
       return UnwindResult::kAborted;
     }
 
-    RegisterContextFramePointer(thread_context) = next_frame;
-    RegisterContextInstructionPointer(thread_context) = retaddr;
-    RegisterContextStackPointer(thread_context) = frame + sizeof(uintptr_t) * 2;
+    SetRegisterContextFramePointer(thread_context, next_frame);
+    SetRegisterContextInstructionPointer(thread_context, retaddr);
+    SetRegisterContextStackPointer(thread_context,
+                                   frame + sizeof(uintptr_t) * 2);
     stack->emplace_back(retaddr, module);
   }
 

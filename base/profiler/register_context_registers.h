@@ -8,6 +8,7 @@
 #ifndef BASE_PROFILER_REGISTER_CONTEXT_REGISTERS_H_
 #define BASE_PROFILER_REGISTER_CONTEXT_REGISTERS_H_
 
+#include <ptrauth.h>
 #include <stdint.h>
 
 #include "build/build_config.h"
@@ -38,46 +39,89 @@ uintptr_t& AsUintPtr(T* value) {
 
 #if BUILDFLAG(IS_WIN)
 
-inline uintptr_t& RegisterContextStackPointer(::CONTEXT* context) {
+inline uintptr_t RegisterContextStackPointer(::CONTEXT* context) {
 #if defined(ARCH_CPU_X86_64)
   return context->Rsp;
 #elif defined(ARCH_CPU_ARM64)
   return context->Sp;
+#elif defined(ARCH_CPU_X86)
+  return context->Esp;
 #else
-  return AsUintPtr(&context->Esp);
+#error "Unknown architecture"
 #endif
 }
 
-inline uintptr_t& RegisterContextFramePointer(::CONTEXT* context) {
+inline void SetRegisterContextStackPointer(::CONTEXT* context, uintptr_t val) {
+#if defined(ARCH_CPU_X86_64)
+  context->Rsp = val;
+#elif defined(ARCH_CPU_ARM64)
+  context->Sp = val;
+#elif defined(ARCH_CPU_X86)
+  context->Esp = val;
+#else
+#error "Unknown architecture"
+#endif
+}
+
+inline uintptr_t RegisterContextFramePointer(::CONTEXT* context) {
 #if defined(ARCH_CPU_X86_64)
   return context->Rbp;
 #elif defined(ARCH_CPU_ARM64)
   return context->Fp;
+#elif defined(ARCH_CPU_X86)
+  return context->Ebp;
 #else
-  return AsUintPtr(&context->Ebp);
+#error "Unknown architecture"
 #endif
 }
 
-inline uintptr_t& RegisterContextInstructionPointer(::CONTEXT* context) {
+inline void SetRegisterContextFramePointer(::CONTEXT* context, uintptr_t val) {
+#if defined(ARCH_CPU_X86_64)
+  context->Rbp = val;
+#elif defined(ARCH_CPU_ARM64)
+  context->Fp = val;
+#elif defined(ARCH_CPU_X86)
+  context->Ebp = val;
+#else
+#error "Unknown architecture"
+#endif
+}
+
+inline uintptr_t RegisterContextInstructionPointer(::CONTEXT* context) {
 #if defined(ARCH_CPU_X86_64)
   return context->Rip;
 #elif defined(ARCH_CPU_ARM64)
   return context->Pc;
+#elif defined(ARCH_CPU_X86)
+  return context->Eip;
 #else
-  return AsUintPtr(&context->Eip);
+#error "Unknown architecture"
+#endif
+}
+
+inline void SetRegisterContextInstructionPointer(::CONTEXT* context,
+                                                 uintptr_t val) {
+#if defined(ARCH_CPU_X86_64)
+  context->Rip = val;
+#elif defined(ARCH_CPU_ARM64)
+  context->Pc = val;
+#elif defined(ARCH_CPU_X86)
+  context->Eip = val;
+#else
+#error "Unknown architecture"
 #endif
 }
 
 #elif BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 
-inline uintptr_t& RegisterContextStackPointer(mcontext_t* context) {
-#if defined(ARCH_CPU_ARM_FAMILY) && defined(ARCH_CPU_32_BITS)
-  return AsUintPtr(&context->arm_sp);
-#elif defined(ARCH_CPU_ARM_FAMILY) && defined(ARCH_CPU_64_BITS)
-  return AsUintPtr(&context->sp);
-#elif defined(ARCH_CPU_X86_FAMILY) && defined(ARCH_CPU_32_BITS)
+inline uintptr_t RegisterContextStackPointer(mcontext_t* context) {
+#if defined(ARCH_CPU_ARMEL)
+  return context->arm_sp;
+#elif defined(ARCH_CPU_ARM64)
+  return context->sp;
+#elif defined(ARCH_CPU_X86)
   return AsUintPtr(&context->gregs[REG_ESP]);
-#elif defined(ARCH_CPU_X86_FAMILY) && defined(ARCH_CPU_64_BITS)
+#elif defined(ARCH_CPU_X86_64)
   return AsUintPtr(&context->gregs[REG_RSP]);
 #else
   // The implementations here and below are placeholders for other POSIX
@@ -86,82 +130,199 @@ inline uintptr_t& RegisterContextStackPointer(mcontext_t* context) {
 #endif
 }
 
-inline uintptr_t& RegisterContextFramePointer(mcontext_t* context) {
-#if defined(ARCH_CPU_ARM_FAMILY) && defined(ARCH_CPU_32_BITS)
-  return AsUintPtr(&context->arm_fp);
-#elif defined(ARCH_CPU_ARM_FAMILY) && defined(ARCH_CPU_64_BITS)
-  // r29 is the FP register on 64-bit ARM per the Procedure Call Standard,
-  // section 5.1.1.
-  return AsUintPtr(&context->regs[29]);
-#elif defined(ARCH_CPU_X86_FAMILY) && defined(ARCH_CPU_32_BITS)
-  return AsUintPtr(&context->gregs[REG_EBP]);
-#elif defined(ARCH_CPU_X86_FAMILY) && defined(ARCH_CPU_64_BITS)
-  return AsUintPtr(&context->gregs[REG_RBP]);
+inline void SetRegisterContextStackPointer(mcontext_t* context, uintptr_t val) {
+#if defined(ARCH_CPU_ARMEL)
+  context->arm_sp = val;
+#elif defined(ARCH_CPU_ARM64)
+  context->sp = val;
+#elif defined(ARCH_CPU_X86)
+  AsUintPtr(&context->gregs[REG_ESP]) = val;
+#elif defined(ARCH_CPU_X86_64)
+  AsUintPtr(&context->gregs[REG_RSP]) = val;
 #else
-  return *(UNSAFE_TODO(reinterpret_cast<uintptr_t*>(context) + 1));
+  // The implementations here and below are placeholders for other POSIX
+  // platforms that just the first three register slots in the context.
+  *reinterpret_cast<uintptr_t*>(context) = val;
 #endif
 }
 
-inline uintptr_t& RegisterContextInstructionPointer(mcontext_t* context) {
-#if defined(ARCH_CPU_ARM_FAMILY) && defined(ARCH_CPU_32_BITS)
-  return AsUintPtr(&context->arm_pc);
-#elif defined(ARCH_CPU_ARM_FAMILY) && defined(ARCH_CPU_64_BITS)
-  return AsUintPtr(&context->pc);
-#elif defined(ARCH_CPU_X86_FAMILY) && defined(ARCH_CPU_32_BITS)
+inline uintptr_t RegisterContextFramePointer(mcontext_t* context) {
+#if defined(ARCH_CPU_ARMEL)
+  return context->arm_fp;
+#elif defined(ARCH_CPU_ARM64)
+  // r29 is the FP register on 64-bit ARM per the Procedure Call Standard,
+  // section 5.1.1.
+  return context->regs[29];
+#elif defined(ARCH_CPU_X86)
+  return AsUintPtr(&context->gregs[REG_EBP]);
+#elif defined(ARCH_CPU_X86_64)
+  return AsUintPtr(&context->gregs[REG_RBP]);
+#else
+  return *(reinterpret_cast<uintptr_t*>(context) + 1);
+#endif
+}
+
+inline void SetRegisterContextFramePointer(mcontext_t* context, uintptr_t val) {
+#if defined(ARCH_CPU_ARMEL)
+  context->arm_fp = val;
+#elif defined(ARCH_CPU_ARM64)
+  // r29 is the FP register on 64-bit ARM per the Procedure Call Standard,
+  // section 5.1.1.
+  context->regs[29] = val;
+#elif defined(ARCH_CPU_X86)
+  AsUintPtr(&context->gregs[REG_EBP]) = val;
+#elif defined(ARCH_CPU_X86_64)
+  AsUintPtr(&context->gregs[REG_RBP]) = val;
+#else
+  *(reinterpret_cast<uintptr_t*>(context) + 1) = val;
+#endif
+}
+
+inline uintptr_t RegisterContextInstructionPointer(mcontext_t* context) {
+#if defined(ARCH_CPU_ARMEL)
+  return context->arm_pc;
+#elif defined(ARCH_CPU_ARM64)
+  return context->pc;
+#elif defined(ARCH_CPU_X86)
   return AsUintPtr(&context->gregs[REG_EIP]);
-#elif defined(ARCH_CPU_X86_FAMILY) && defined(ARCH_CPU_64_BITS)
+#elif defined(ARCH_CPU_X86_64)
   return AsUintPtr(&context->gregs[REG_RIP]);
 #else
-  return *(UNSAFE_TODO(reinterpret_cast<uintptr_t*>(context) + 2));
+  return *(reinterpret_cast<uintptr_t*>(context) + 2);
+#endif
+}
+
+inline void SetRegisterContextInstructionPointer(mcontext_t* context,
+                                                 uintptr_t val) {
+#if defined(ARCH_CPU_ARMEL)
+  context->arm_pc = val;
+#elif defined(ARCH_CPU_ARM64)
+  context->pc = val;
+#elif defined(ARCH_CPU_X86)
+  AsUintPtr(&context->gregs[REG_EIP]) = val;
+#elif defined(ARCH_CPU_X86_64)
+  AsUintPtr(&context->gregs[REG_RIP]) = val;
+#else
+  *(reinterpret_cast<uintptr_t*>(context) + 2) = val;
 #endif
 }
 
 #elif BUILDFLAG(IS_APPLE) && defined(ARCH_CPU_X86_64)
 
-inline uintptr_t& RegisterContextStackPointer(x86_thread_state64_t* context) {
-  return AsUintPtr(&context->__rsp);
+inline uintptr_t RegisterContextStackPointer(x86_thread_state64_t* context) {
+  return context->__rsp;
 }
 
-inline uintptr_t& RegisterContextFramePointer(x86_thread_state64_t* context) {
-  return AsUintPtr(&context->__rbp);
+inline void SetRegisterContextStackPointer(x86_thread_state64_t* context,
+                                           uintptr_t val) {
+  context->__rsp = val;
 }
 
-inline uintptr_t& RegisterContextInstructionPointer(
+inline uintptr_t RegisterContextFramePointer(x86_thread_state64_t* context) {
+  return context->__rbp;
+}
+
+inline void SetRegisterContextFramePointer(x86_thread_state64_t* context,
+                                           uintptr_t val) {
+  context->__rbp = val;
+}
+
+inline uintptr_t RegisterContextInstructionPointer(
     x86_thread_state64_t* context) {
-  return AsUintPtr(&context->__rip);
+  return context->__rip;
+}
+
+inline void SetRegisterContextInstructionPointer(x86_thread_state64_t* context,
+                                                 uintptr_t val) {
+  context->__rip = val;
 }
 
 #elif BUILDFLAG(IS_APPLE) && defined(ARCH_CPU_ARM64)
 
-// TODO(thakis): Have getter/setter functions instead of returning a ref to
-// prepare for arm64e. See __DARWIN_OPAQUE_ARM_THREAD_STATE6 in
-// mach/arm/_structs.h
-inline uintptr_t& RegisterContextStackPointer(arm_thread_state64_t* context) {
-  return AsUintPtr(&context->__sp);
+#if BUILDFLAG(ARCH_CPU_PTRAUTH)
+inline auto& Arm64Sp(arm_thread_state64_t* ctx) {
+  return ctx->__opaque_sp;
+}
+inline auto& Arm64Fp(arm_thread_state64_t* ctx) {
+  return ctx->__opaque_fp;
+}
+inline auto& Arm64Pc(arm_thread_state64_t* ctx) {
+  return ctx->__opaque_pc;
+}
+#else   // !BUILDFLAG(ARCH_CPU_PTRAUTH)
+inline auto& Arm64Sp(arm_thread_state64_t* ctx) {
+  return ctx->__sp;
+}
+inline auto& Arm64Fp(arm_thread_state64_t* ctx) {
+  return ctx->__fp;
+}
+inline auto& Arm64Pc(arm_thread_state64_t* ctx) {
+  return ctx->__pc;
+}
+#endif  // !BUILDFLAG(ARCH_CPU_PTRAUTH)
+
+inline uintptr_t RegisterContextStackPointer(arm_thread_state64_t* context) {
+  void* val = ptrauth_strip(reinterpret_cast<void*>(Arm64Sp(context)),
+                            ptrauth_key_asda);
+  return AsUintPtr(&val);
 }
 
-inline uintptr_t& RegisterContextFramePointer(arm_thread_state64_t* context) {
-  return AsUintPtr(&context->__fp);
+inline void SetRegisterContextStackPointer(arm_thread_state64_t* context,
+                                           uintptr_t val) {
+  AsUintPtr(&Arm64Sp(context)) = val;
 }
 
-inline uintptr_t& RegisterContextInstructionPointer(
+inline uintptr_t RegisterContextFramePointer(arm_thread_state64_t* context) {
+  void* val = ptrauth_strip(reinterpret_cast<void*>(Arm64Fp(context)),
+                            ptrauth_key_asda);
+  return AsUintPtr(&val);
+}
+
+inline void SetRegisterContextFramePointer(arm_thread_state64_t* context,
+                                           uintptr_t val) {
+  AsUintPtr(&Arm64Fp(context)) = val;
+}
+
+inline uintptr_t RegisterContextInstructionPointer(
     arm_thread_state64_t* context) {
-  return AsUintPtr(&context->__pc);
+  void* val = ptrauth_strip(reinterpret_cast<void*>(Arm64Pc(context)),
+                            ptrauth_key_asia);
+  return AsUintPtr(&val);
 }
 
-#else
+inline void SetRegisterContextInstructionPointer(arm_thread_state64_t* context,
+                                                 uintptr_t val) {
+  AsUintPtr(&Arm64Pc(context)) = val;
+}
+
+#else  // BUILDFLAG(IS_APPLE) && defined(ARCH_CPU_ARM64)
 
 // Placeholders for other cases.
-inline uintptr_t& RegisterContextStackPointer(RegisterContext* context) {
+inline uintptr_t RegisterContextStackPointer(RegisterContext* context) {
   return context->stack_pointer;
 }
 
-inline uintptr_t& RegisterContextFramePointer(RegisterContext* context) {
+inline void SetRegisterContextStackPointer(RegisterContext* context,
+                                           uintptr_t val) {
+  context->stack_pointer = val;
+}
+
+inline uintptr_t RegisterContextFramePointer(RegisterContext* context) {
   return context->frame_pointer;
 }
 
-inline uintptr_t& RegisterContextInstructionPointer(RegisterContext* context) {
+inline void SetRegisterContextFramePointer(RegisterContext* context,
+                                           uintptr_t val) {
+  context->frame_pointer = val;
+}
+
+inline uintptr_t RegisterContextInstructionPointer(RegisterContext* context) {
   return context->instruction_pointer;
+}
+
+inline void SetRegisterContextInstructionPointer(RegisterContext* context,
+                                                 uintptr_t val) {
+  context->instruction_pointer = val;
 }
 
 #endif

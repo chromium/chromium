@@ -112,29 +112,57 @@ bool SuspendableThreadDelegateMac::CanCopyStack(uintptr_t stack_pointer) {
   return true;
 }
 
-std::vector<uintptr_t*> SuspendableThreadDelegateMac::GetRegistersToRewrite(
+std::vector<uintptr_t> SuspendableThreadDelegateMac::GetRegisters(
     RegisterContext* thread_context) {
 #if defined(ARCH_CPU_X86_64)
-  return {
-      &AsUintPtr(&thread_context->__rbx), &AsUintPtr(&thread_context->__rbp),
-      &AsUintPtr(&thread_context->__rsp), &AsUintPtr(&thread_context->__r12),
-      &AsUintPtr(&thread_context->__r13), &AsUintPtr(&thread_context->__r14),
-      &AsUintPtr(&thread_context->__r15)};
+  return {AsUintPtr(&thread_context->__rbx), AsUintPtr(&thread_context->__rbp),
+          AsUintPtr(&thread_context->__rsp), AsUintPtr(&thread_context->__r12),
+          AsUintPtr(&thread_context->__r13), AsUintPtr(&thread_context->__r14),
+          AsUintPtr(&thread_context->__r15)};
 #elif defined(ARCH_CPU_ARM64)  // defined(ARCH_CPU_X86_64)
   return {
-      &AsUintPtr(&thread_context->__fp),
-      &AsUintPtr(&thread_context->__sp),
-      &AsUintPtr(&thread_context->__x[19]),
-      &AsUintPtr(&thread_context->__x[20]),
-      &AsUintPtr(&thread_context->__x[21]),
-      &AsUintPtr(&thread_context->__x[22]),
-      &AsUintPtr(&thread_context->__x[23]),
-      &AsUintPtr(&thread_context->__x[24]),
-      &AsUintPtr(&thread_context->__x[25]),
-      &AsUintPtr(&thread_context->__x[26]),
-      &AsUintPtr(&thread_context->__x[27]),
-      &AsUintPtr(&thread_context->__x[28]),
+      RegisterContextFramePointer(thread_context),
+      RegisterContextStackPointer(thread_context),
+      thread_context->__x[19],
+      thread_context->__x[20],
+      thread_context->__x[21],
+      thread_context->__x[22],
+      thread_context->__x[23],
+      thread_context->__x[24],
+      thread_context->__x[25],
+      thread_context->__x[26],
+      thread_context->__x[27],
+      thread_context->__x[28],
   };
+#endif                         // defined(ARCH_CPU_ARM64)
+}
+
+void SuspendableThreadDelegateMac::SetRegisters(
+    RegisterContext* thread_context,
+    const std::vector<uintptr_t>& registers) {
+#if defined(ARCH_CPU_X86_64)
+  CHECK_EQ(registers.size(), 7u);
+  AsUintPtr(&thread_context->__rbx) = registers[0];
+  AsUintPtr(&thread_context->__rbp) = registers[1];
+  AsUintPtr(&thread_context->__rsp) = registers[2];
+  AsUintPtr(&thread_context->__r12) = registers[3];
+  AsUintPtr(&thread_context->__r13) = registers[4];
+  AsUintPtr(&thread_context->__r14) = registers[5];
+  AsUintPtr(&thread_context->__r15) = registers[6];
+#elif defined(ARCH_CPU_ARM64)  // defined(ARCH_CPU_X86_64)
+  CHECK_EQ(registers.size(), 12u);
+  SetRegisterContextFramePointer(thread_context, registers[0]);
+  SetRegisterContextStackPointer(thread_context, registers[1]);
+  thread_context->__x[19] = registers[2];
+  thread_context->__x[20] = registers[3];
+  thread_context->__x[21] = registers[4];
+  thread_context->__x[22] = registers[5];
+  thread_context->__x[23] = registers[6];
+  thread_context->__x[24] = registers[7];
+  thread_context->__x[25] = registers[8];
+  thread_context->__x[26] = registers[9];
+  thread_context->__x[27] = registers[10];
+  thread_context->__x[28] = registers[11];
 #endif                         // defined(ARCH_CPU_ARM64)
 }
 

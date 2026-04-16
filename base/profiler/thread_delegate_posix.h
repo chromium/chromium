@@ -30,8 +30,9 @@ class BASE_EXPORT ThreadDelegatePosix : public ThreadDelegate {
   // ThreadDelegate
   PlatformThreadId GetThreadId() const override;
   uintptr_t GetStackBaseAddress() const override;
-  std::vector<uintptr_t*> GetRegistersToRewrite(
-      RegisterContext* thread_context) override;
+  std::vector<uintptr_t> GetRegisters(RegisterContext* thread_context) override;
+  void SetRegisters(RegisterContext* thread_context,
+                    const std::vector<uintptr_t>& registers) override;
 
  private:
   ThreadDelegatePosix(PlatformThreadId id, uintptr_t base_address);

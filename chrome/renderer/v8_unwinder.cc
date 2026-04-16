@@ -283,12 +283,12 @@ base::UnwindResult V8Unwinder::TryUnwind(
   DCHECK_GT(reinterpret_cast<uintptr_t>(register_state.sp), prev_stack_pointer);
   DCHECK_LT(reinterpret_cast<uintptr_t>(register_state.sp), stack_top);
 
-  base::RegisterContextInstructionPointer(thread_context) =
-      reinterpret_cast<uintptr_t>(register_state.pc);
-  base::RegisterContextStackPointer(thread_context) =
-      reinterpret_cast<uintptr_t>(register_state.sp);
-  base::RegisterContextFramePointer(thread_context) =
-      reinterpret_cast<uintptr_t>(register_state.fp);
+  base::SetRegisterContextInstructionPointer(
+      thread_context, reinterpret_cast<uintptr_t>(register_state.pc));
+  base::SetRegisterContextStackPointer(
+      thread_context, reinterpret_cast<uintptr_t>(register_state.sp));
+  base::SetRegisterContextFramePointer(
+      thread_context, reinterpret_cast<uintptr_t>(register_state.fp));
 
   CopyCalleeSavedRegisterToRegisterContext(register_state.callee_saved.get(),
                                            *thread_context);

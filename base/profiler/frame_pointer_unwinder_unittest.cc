@@ -130,9 +130,9 @@ TEST_F(FramePointerUnwinderTest, FPPointsOutsideOfStack) {
   });
 
   RegisterContext context;
-  RegisterContextStackPointer(&context) = input.bottom();
-  RegisterContextInstructionPointer(&context) = kModuleStart;
-  RegisterContextFramePointer(&context) = 0x1;
+  SetRegisterContextStackPointer(&context, input.bottom());
+  SetRegisterContextInstructionPointer(&context, kModuleStart);
+  SetRegisterContextFramePointer(&context, 0x1);
   std::vector<Frame> stack = {
       Frame(RegisterContextInstructionPointer(&context), module())};
 
@@ -141,13 +141,13 @@ TEST_F(FramePointerUnwinderTest, FPPointsOutsideOfStack) {
                                   input.top(), &stack));
   EXPECT_EQ(std::vector<Frame>({{kModuleStart, module()}}), stack);
 
-  RegisterContextFramePointer(&context) = input.bottom() - sizeof(uintptr_t);
+  SetRegisterContextFramePointer(&context, input.bottom() - sizeof(uintptr_t));
   EXPECT_EQ(UnwindResult::kAborted,
             unwinder()->TryUnwind(/*state_capture=*/nullptr, &context,
                                   input.top(), &stack));
   EXPECT_EQ(std::vector<Frame>({{kModuleStart, module()}}), stack);
 
-  RegisterContextFramePointer(&context) = input.top();
+  SetRegisterContextFramePointer(&context, input.top());
   EXPECT_EQ(UnwindResult::kAborted,
             unwinder()->TryUnwind(/*state_capture=*/nullptr, &context,
                                   input.top(), &stack));
@@ -165,9 +165,9 @@ TEST_F(FramePointerUnwinderTest, FPPointsToSelf) {
   });
 
   RegisterContext context;
-  RegisterContextStackPointer(&context) = input.bottom();
-  RegisterContextInstructionPointer(&context) = kModuleStart;
-  RegisterContextFramePointer(&context) = input.bottom();
+  SetRegisterContextStackPointer(&context, input.bottom());
+  SetRegisterContextInstructionPointer(&context, kModuleStart);
+  SetRegisterContextFramePointer(&context, input.bottom());
   std::vector<Frame> stack = {
       Frame(RegisterContextInstructionPointer(&context), module())};
 
@@ -195,9 +195,9 @@ TEST_F(FramePointerUnwinderTest, FPCycle) {
   });
 
   RegisterContext context;
-  RegisterContextStackPointer(&context) = input.bottom();
-  RegisterContextInstructionPointer(&context) = kModuleStart;
-  RegisterContextFramePointer(&context) = input.bottom();
+  SetRegisterContextStackPointer(&context, input.bottom());
+  SetRegisterContextInstructionPointer(&context, kModuleStart);
+  SetRegisterContextFramePointer(&context, input.bottom());
   std::vector<Frame> stack = {
       Frame(RegisterContextInstructionPointer(&context), module())};
 
@@ -223,9 +223,9 @@ TEST_F(FramePointerUnwinderTest, NoModuleForIP) {
   });
 
   RegisterContext context;
-  RegisterContextStackPointer(&context) = input.bottom();
-  RegisterContextInstructionPointer(&context) = kModuleStart;
-  RegisterContextFramePointer(&context) = input.bottom();
+  SetRegisterContextStackPointer(&context, input.bottom());
+  SetRegisterContextInstructionPointer(&context, kModuleStart);
+  SetRegisterContextFramePointer(&context, input.bottom());
   std::vector<Frame> stack = {
       Frame(RegisterContextInstructionPointer(&context), module())};
 
@@ -249,9 +249,9 @@ TEST_F(FramePointerUnwinderTest, FPAdditionOverflows) {
   });
 
   RegisterContext context;
-  RegisterContextStackPointer(&context) = input.bottom();
-  RegisterContextInstructionPointer(&context) = kModuleStart;
-  RegisterContextFramePointer(&context) = will_overflow;
+  SetRegisterContextStackPointer(&context, input.bottom());
+  SetRegisterContextInstructionPointer(&context, kModuleStart);
+  SetRegisterContextFramePointer(&context, will_overflow);
   std::vector<Frame> stack = {
       Frame(RegisterContextInstructionPointer(&context), module())};
 
@@ -280,9 +280,9 @@ TEST_F(FramePointerUnwinderTest, RegularUnwind) {
   });
 
   RegisterContext context;
-  RegisterContextStackPointer(&context) = input.bottom();
-  RegisterContextInstructionPointer(&context) = kModuleStart;
-  RegisterContextFramePointer(&context) = input.bottom();
+  SetRegisterContextStackPointer(&context, input.bottom());
+  SetRegisterContextInstructionPointer(&context, kModuleStart);
+  SetRegisterContextFramePointer(&context, input.bottom());
   std::vector<Frame> stack = {
       Frame(RegisterContextInstructionPointer(&context), module())};
 
@@ -318,9 +318,9 @@ TEST_F(FramePointerUnwinderTest, NonNativeFrame) {
   });
 
   RegisterContext context;
-  RegisterContextStackPointer(&context) = input.bottom();
-  RegisterContextInstructionPointer(&context) = kModuleStart;
-  RegisterContextFramePointer(&context) = input.bottom();
+  SetRegisterContextStackPointer(&context, input.bottom());
+  SetRegisterContextInstructionPointer(&context, kModuleStart);
+  SetRegisterContextFramePointer(&context, input.bottom());
   std::vector<Frame> stack = {
       Frame(RegisterContextInstructionPointer(&context), module())};
 
@@ -354,9 +354,9 @@ TEST_F(FramePointerUnwinderTest, NonNativeUnaligned) {
   });
 
   RegisterContext context;
-  RegisterContextStackPointer(&context) = input.bottom();
-  RegisterContextInstructionPointer(&context) = kModuleStart;
-  RegisterContextFramePointer(&context) = input.bottom();
+  SetRegisterContextStackPointer(&context, input.bottom());
+  SetRegisterContextInstructionPointer(&context, kModuleStart);
+  SetRegisterContextFramePointer(&context, input.bottom());
   std::vector<Frame> stack = {
       Frame(RegisterContextInstructionPointer(&context), module())};
 

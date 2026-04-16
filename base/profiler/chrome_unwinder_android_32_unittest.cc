@@ -1121,8 +1121,8 @@ TEST(ChromeUnwinderAndroid32Test, TryUnwind) {
 
   std::vector<Frame> unwound_frames = {{first_pc, chrome_module}};
   RegisterContext context;
-  RegisterContextInstructionPointer(&context) = first_pc;
-  RegisterContextStackPointer(&context) = stack_memory.stack_start_address();
+  SetRegisterContextInstructionPointer(&context, first_pc);
+  SetRegisterContextStackPointer(&context, stack_memory.stack_start_address());
   context.arm_lr = second_pc;
 
   EXPECT_EQ(
@@ -1189,8 +1189,8 @@ TEST(ChromeUnwinderAndroid32Test, TryUnwindInfiniteLoopSingleFrame) {
 
   std::vector<Frame> unwound_frames = {{pc, chrome_module}};
   RegisterContext context;
-  RegisterContextInstructionPointer(&context) = pc;
-  RegisterContextStackPointer(&context) = stack_memory.stack_start_address();
+  SetRegisterContextInstructionPointer(&context, pc);
+  SetRegisterContextStackPointer(&context, stack_memory.stack_start_address());
 
   // Set lr = pc so that both sp and pc stays the same after first round of
   // unwind.
@@ -1284,8 +1284,8 @@ TEST(ChromeUnwinderAndroid32Test, TryUnwindInfiniteLoopMultipleFrames) {
 
   std::vector<Frame> unwound_frames = {{first_pc, chrome_module}};
   RegisterContext context;
-  RegisterContextInstructionPointer(&context) = first_pc;
-  RegisterContextStackPointer(&context) = stack_memory.stack_start_address();
+  SetRegisterContextInstructionPointer(&context, first_pc);
+  SetRegisterContextStackPointer(&context, stack_memory.stack_start_address());
 
   context.arm_lr = second_pc;
   context.arm_r4 = stack_memory.stack_start_address();
@@ -1354,10 +1354,10 @@ TEST(ChromeUnwinderAndroid32Test, TryUnwindUnalignedSPFrameUnwind) {
 
   std::vector<Frame> unwound_frames = {{pc, chrome_module}};
   RegisterContext context;
-  RegisterContextInstructionPointer(&context) = pc;
+  SetRegisterContextInstructionPointer(&context, pc);
   // Make stack memory not aligned to 2 * sizeof(uintptr_t);
-  RegisterContextStackPointer(&context) =
-      stack_memory.stack_start_address() + sizeof(uintptr_t);
+  SetRegisterContextStackPointer(
+      &context, stack_memory.stack_start_address() + sizeof(uintptr_t));
 
   // The address is outside chrome module, which will result the unwind to
   // stop with result kUnrecognizedFrame if SP alignment issue was not detected.
@@ -1428,8 +1428,8 @@ TEST(ChromeUnwinderAndroid32Test, TryUnwindUnalignedSPInstructionUnwind) {
 
   std::vector<Frame> unwound_frames = {{pc, chrome_module}};
   RegisterContext context;
-  RegisterContextInstructionPointer(&context) = pc;
-  RegisterContextStackPointer(&context) = stack_memory.stack_start_address();
+  SetRegisterContextInstructionPointer(&context, pc);
+  SetRegisterContextStackPointer(&context, stack_memory.stack_start_address());
 
   // The address is outside chrome module, which will result the unwind to
   // stop with result kUnrecognizedFrame if SP alignment issue was not detected.
@@ -1499,8 +1499,8 @@ TEST(ChromeUnwinderAndroid32Test, TryUnwindSPOverflow) {
   };
   std::vector<Frame> unwound_frames = {{pc, chrome_module}};
   RegisterContext context;
-  RegisterContextInstructionPointer(&context) = pc;
-  RegisterContextStackPointer(&context) = stack_memory.stack_start_address();
+  SetRegisterContextInstructionPointer(&context, pc);
+  SetRegisterContextStackPointer(&context, stack_memory.stack_start_address());
 
   // Setting vsp = 0xffffffff should cause SP overflow.
   context.arm_r4 = 0xffffffff;
@@ -1572,8 +1572,8 @@ TEST(ChromeUnwinderAndroid32Test, TryUnwindNullSP) {
   };
   std::vector<Frame> unwound_frames = {{pc, chrome_module}};
   RegisterContext context;
-  RegisterContextInstructionPointer(&context) = pc;
-  RegisterContextStackPointer(&context) = stack_memory.stack_start_address();
+  SetRegisterContextInstructionPointer(&context, pc);
+  SetRegisterContextStackPointer(&context, stack_memory.stack_start_address());
 
   // Setting vsp = 0x0 should cause the unwinder to abort.
   context.arm_r4 = 0x0;
@@ -1648,8 +1648,8 @@ TEST(ChromeUnwinderAndroid32Test, TryUnwindInvalidSPOperation) {
   };
   std::vector<Frame> unwound_frames = {{pc, chrome_module}};
   RegisterContext context;
-  RegisterContextInstructionPointer(&context) = pc;
-  RegisterContextStackPointer(&context) = stack_memory.stack_start_address();
+  SetRegisterContextInstructionPointer(&context, pc);
+  SetRegisterContextStackPointer(&context, stack_memory.stack_start_address());
 
   context.arm_r4 = stack_memory.stack_start_address() - 2 * sizeof(uintptr_t);
   context.arm_r5 = stack_memory.stack_start_address() + 2 * sizeof(uintptr_t);

@@ -4,6 +4,7 @@
 
 #include "base/debug/stack_trace.h"
 
+#include <ptrauth.h>
 #include <stddef.h>
 
 #include <limits>
@@ -350,8 +351,10 @@ code_start:
 
   constexpr size_t frame_index = Depth - 1;
   const void* frame = frames[frame_index];
-  EXPECT_GE(frame, &&code_start) << "For frame at index " << frame_index;
-  EXPECT_LE(frame, &&code_end) << "For frame at index " << frame_index;
+  const void* start = ptrauth_strip(&&code_start, ptrauth_key_function_pointer);
+  const void* end = ptrauth_strip(&&code_end, ptrauth_key_function_pointer);
+  EXPECT_GE(frame, start) << "For frame at index " << frame_index;
+  EXPECT_LE(frame, end) << "For frame at index " << frame_index;
 code_end:
   return;
 }
@@ -366,8 +369,10 @@ code_start:
   ASSERT_EQ(frames.size(), count);
 
   const void* frame = frames[0];
-  EXPECT_GE(frame, &&code_start) << "For the top frame";
-  EXPECT_LE(frame, &&code_end) << "For the top frame";
+  const void* start = ptrauth_strip(&&code_start, ptrauth_key_function_pointer);
+  const void* end = ptrauth_strip(&&code_end, ptrauth_key_function_pointer);
+  EXPECT_GE(frame, start) << "For the top frame";
+  EXPECT_LE(frame, end) << "For the top frame";
 code_end:
   return;
 }

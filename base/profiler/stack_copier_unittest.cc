@@ -26,9 +26,14 @@ class CopyFunctions : public StackCopier {
   using StackCopier::CopyStackContentsAndRewritePointers;
   using StackCopier::RewritePointerIfInOriginalStack;
 
-  std::vector<uintptr_t*> GetRegistersToRewrite(
+  std::vector<uintptr_t> GetRegisters(
       RegisterContext* thread_context) override {
-    return {&RegisterContextStackPointer(thread_context)};
+    return {RegisterContextStackPointer(thread_context)};
+  }
+
+  void SetRegisters(RegisterContext* thread_context,
+                    const std::vector<uintptr_t>& registers) override {
+    SetRegisterContextStackPointer(thread_context, registers[0]);
   }
 
   bool CopyStack(StackBuffer* stack_buffer,
@@ -272,8 +277,8 @@ TEST(StackCopierTest, CloneStack) {
                         original_stack.size();
   CopyFunctions copy_functions;
   RegisterContext thread_context;
-  RegisterContextStackPointer(&thread_context) =
-      reinterpret_cast<uintptr_t>(original_stack.buffer());
+  SetRegisterContextStackPointer(
+      &thread_context, reinterpret_cast<uintptr_t>(original_stack.buffer()));
   std::unique_ptr<StackBuffer> cloned_stack =
       copy_functions.CloneStack(original_stack, &stack_top, &thread_context);
 

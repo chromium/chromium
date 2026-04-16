@@ -66,10 +66,10 @@ class TestSuspendableThreadDelegate : public SuspendableThreadDelegate {
       *thread_context = *thread_context_;
     }
     // Set the stack pointer to be consistent with the provided fake stack.
-    RegisterContextStackPointer(thread_context) =
-        reinterpret_cast<uintptr_t>(&(*fake_stack_)[0]);
-    RegisterContextInstructionPointer(thread_context) =
-        reinterpret_cast<uintptr_t>((*fake_stack_)[0]);
+    SetRegisterContextStackPointer(
+        thread_context, reinterpret_cast<uintptr_t>(&(*fake_stack_)[0]));
+    SetRegisterContextInstructionPointer(
+        thread_context, reinterpret_cast<uintptr_t>((*fake_stack_)[0]));
     return true;
   }
 
@@ -82,9 +82,14 @@ class TestSuspendableThreadDelegate : public SuspendableThreadDelegate {
 
   bool CanCopyStack(uintptr_t stack_pointer) override { return true; }
 
-  std::vector<uintptr_t*> GetRegistersToRewrite(
+  std::vector<uintptr_t> GetRegisters(
       RegisterContext* thread_context) override {
-    return {&RegisterContextFramePointer(thread_context)};
+    return {RegisterContextFramePointer(thread_context)};
+  }
+
+  void SetRegisters(RegisterContext* thread_context,
+                    const std::vector<uintptr_t>& registers) override {
+    SetRegisterContextFramePointer(thread_context, registers[0]);
   }
 
  private:
@@ -235,12 +240,12 @@ TEST(StackCopierSuspendTest, CopyStackDelegateInvoked) {
   EXPECT_TRUE(stack_copier_delegate.on_stack_copy_was_invoked());
 }
 
-TEST(StackCopierSuspendTest, RewriteRegisters) {
+TEST(StackCopierSuspendTest, SetRegisters) {
   std::vector<uintptr_t> stack = {0, 1, 2};
   RegisterContext register_context{};
   TestStackCopierDelegate stack_copier_delegate;
-  RegisterContextFramePointer(&register_context) =
-      reinterpret_cast<uintptr_t>(&stack[1]);
+  SetRegisterContextFramePointer(&register_context,
+                                 reinterpret_cast<uintptr_t>(&stack[1]));
   StackCopierSuspend stack_copier_suspend(
       std::make_unique<TestSuspendableThreadDelegate>(stack,
                                                       &register_context));

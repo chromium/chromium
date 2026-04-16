@@ -34,8 +34,10 @@ class BASE_EXPORT ThreadDelegate {
   // Returns a list of registers that should be rewritten to point into the
   // stack copy, if they originally pointed into the original stack.
   // May heap allocate.
-  virtual std::vector<uintptr_t*> GetRegistersToRewrite(
+  virtual std::vector<uintptr_t> GetRegisters(
       RegisterContext* thread_context) = 0;
+  virtual void SetRegisters(RegisterContext* thread_context,
+                            const std::vector<uintptr_t>& registers) = 0;
 };
 
 }  // namespace base

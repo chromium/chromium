@@ -48,6 +48,7 @@
 //  Processor features:
 //    ARCH_CPU_31_BITS / ARCH_CPU_32_BITS / ARCH_CPU_64_BITS
 //    ARCH_CPU_BIG_ENDIAN / ARCH_CPU_LITTLE_ENDIAN
+//    ARCH_CPU_PTRAUTH
 
 // Mapping to some Rust conditionals:
 //
@@ -270,6 +271,12 @@
 #define BUILDFLAG_INTERNAL_IS_OZONE() (1)
 #else
 #define BUILDFLAG_INTERNAL_IS_OZONE() (0)
+#endif
+
+#if __PTRAUTH__
+#define BUILDFLAG_INTERNAL_ARCH_CPU_PTRAUTH() (1)
+#else
+#define BUILDFLAG_INTERNAL_ARCH_CPU_PTRAUTH() (0)
 #endif
 
 // Compiler detection. Note: clang masquerades as GCC on POSIX and as MSVC on
