@@ -452,7 +452,7 @@ class PLATFORM_EXPORT CanvasResourceProviderSharedImage
   virtual void EnsureWriteAccess() = 0;
   virtual void EndWriteAccess() = 0;
 
-  scoped_refptr<CanvasResourceSharedImage> NewOrRecycledResource();
+  virtual scoped_refptr<CanvasResourceSharedImage> NewOrRecycledResource() = 0;
   bool ShouldReplaceTargetBuffer(
       PaintImage::ContentId content_id = PaintImage::kInvalidContentId);
 
@@ -485,11 +485,16 @@ class PLATFORM_EXPORT CanvasResourceProviderSharedImage
   base::WeakPtr<WebGraphicsSharedImageInterfaceProvider>
       shared_image_interface_provider_;
 
- private:
-  scoped_refptr<CanvasResourceSharedImage> CreateResource();
+  base::WeakPtr<CanvasResourceProviderSharedImage> CreateWeakPtr();
 
   static void NotifyGpuContextLostTask(
       base::WeakPtr<CanvasResourceProviderSharedImage>);
+
+  int num_inflight_resources_ = 0;
+  int max_inflight_resources_ = 0;
+
+ private:
+  scoped_refptr<CanvasResourceSharedImage> CreateResource();
 
   // The maximum number of in-flight resources waiting to be used for
   // recycling.
@@ -499,16 +504,11 @@ class PLATFORM_EXPORT CanvasResourceProviderSharedImage
     return static_cast<const CanvasResourceSharedImage*>(resource_.get());
   }
 
-  base::WeakPtr<CanvasResourceProviderSharedImage> CreateWeakPtr();
-
   // `viz::ContextLostObserver`:
   void OnContextLost() final;
 
   // BitmapGpuChannelLostObserver:
   void OnGpuChannelLost() final;
-
-  int num_inflight_resources_ = 0;
-  int max_inflight_resources_ = 0;
 
   bool notified_context_lost_ = false;
   base::WeakPtrFactory<CanvasResourceProviderSharedImage> weak_ptr_factory_{
@@ -571,6 +571,8 @@ class PLATFORM_EXPORT Canvas2DResourceProviderSharedImage
 
   void EnsureWriteAccess() override;
   void EndWriteAccess() override;
+
+  scoped_refptr<CanvasResourceSharedImage> NewOrRecycledResource() override;
 
   // CanvasResourceProvider:
   void OnFlushForImage(cc::PaintImage::ContentId content_id) override;
@@ -689,6 +691,8 @@ class PLATFORM_EXPORT CanvasNon2DResourceProviderSharedImage
 
   void EnsureWriteAccess() override;
   void EndWriteAccess() override;
+
+  scoped_refptr<CanvasResourceSharedImage> NewOrRecycledResource() override;
 
   scoped_refptr<CanvasResource> ProduceCanvasResource();
 

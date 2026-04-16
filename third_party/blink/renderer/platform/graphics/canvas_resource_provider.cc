@@ -406,7 +406,7 @@ void CanvasResourceProviderSharedImage::OnGpuChannelLost() {
 }
 
 scoped_refptr<CanvasResourceSharedImage>
-CanvasResourceProviderSharedImage::NewOrRecycledResource() {
+Canvas2DResourceProviderSharedImage::NewOrRecycledResource() {
   if (!image_pool_) {
     return nullptr;
   }
@@ -441,6 +441,36 @@ void CanvasResourceProviderSharedImage::OnResourceRefReturned(
       resource_recycling_enabled_ && image_pool_) {
     image_pool_->ReleaseImage(std::move(resource));
   }
+}
+
+scoped_refptr<CanvasResourceSharedImage>
+CanvasNon2DResourceProviderSharedImage::NewOrRecycledResource() {
+  if (!image_pool_) {
+    return nullptr;
+  }
+
+  auto resource = image_pool_->GetImage();
+  if (!resource) {
+    return nullptr;
+  }
+
+  CHECK(!IsSingleBuffered() || !resource->IsInitialized());
+
+  if (!resource->IsInitialized()) {
+    if (image_pool_->GetImageInfo().is_software) {
+      resource->InitializeSoftware(CreateWeakPtr(),
+                                   shared_image_interface_provider_);
+    } else {
+      resource->Initialize(CreateWeakPtr(), context_provider_wrapper_,
+                           is_accelerated_);
+    }
+    ++num_inflight_resources_;
+    if (num_inflight_resources_ > max_inflight_resources_) {
+      max_inflight_resources_ = num_inflight_resources_;
+    }
+  }
+  DCHECK(resource->HasOneRef());
+  return resource;
 }
 
 scoped_refptr<gpu::ClientSharedImage> Canvas2DResourceProviderSharedImage::
