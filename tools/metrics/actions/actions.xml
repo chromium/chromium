@@ -936,8 +936,6 @@ should be able to be added at any place in this file.
       summary="Gemini Site Search Shortcut"/>
   <variant name=".GenerativeThemes" summary="Generative Themes"/>
   <variant name=".GenerativeTheming" summary="Generative Theming"/>
-  <variant name=".GlicIntro" summary="Glic Intro"/>
-  <variant name=".GlicLearnMore" summary="Glic Learn More"/>
   <variant name=".GoogleLens" summary="Google Lens"/>
   <variant name=".Googlepayreauth" summary="Google Pay Re-auth"/>
   <variant name=".HelpMeWrite" summary="Help Me Write"/>

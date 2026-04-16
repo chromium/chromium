@@ -115,8 +115,6 @@ chromium-metrics-reviews@google.com.
   <variant name="GenerativeThemes" summary="the module for Generative Themes"/>
   <variant name="GenerativeTheming"
       summary="the module for Generative Theming"/>
-  <variant name="GlicIntro" summary="the module for Glic Intro"/>
-  <variant name="GlicLearnMore" summary="the module for Glic Learn More"/>
   <variant name="GlitterAIFeaturesVideo"
       summary="the module for Glitter AI Features Video"/>
   <variant name="GlitterAIMode" summary="the module for Glitter AI Mode"/>

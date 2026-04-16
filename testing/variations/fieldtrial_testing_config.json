@@ -11183,25 +11183,6 @@
             ]
         }
     ],
-    "GlicGA": [
-        {
-            "platforms": [
-                "mac",
-                "windows",
-                "linux"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "GlicIntro",
-                        "GlicLearnMore",
-                        "GlicRollout"
-                    ]
-                }
-            ]
-        }
-    ],
     "GlicGeminiInstructions": [
         {
             "platforms": [
