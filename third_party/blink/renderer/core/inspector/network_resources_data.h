@@ -30,6 +30,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_INSPECTOR_NETWORK_RESOURCES_DATA_H_
 
 #include "net/cert/x509_certificate.h"
+#include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/html/parser/text_resource_decoder.h"
 #include "third_party/blink/renderer/core/inspector/inspector_page_agent.h"
@@ -80,11 +81,11 @@ class XHRReplayData final : public GarbageCollected<XHRReplayData> {
   bool include_credentials_;
 };
 
-class NetworkResourcesData final
+class CORE_EXPORT NetworkResourcesData final
     : public GarbageCollected<NetworkResourcesData> {
  public:
-  class ResourceData final : public GarbageCollected<ResourceData>,
-                             public FontResourceClearDataObserver {
+  class CORE_EXPORT ResourceData final : public GarbageCollected<ResourceData>,
+                                         public FontResourceClearDataObserver {
     friend class NetworkResourcesData;
 
    public:

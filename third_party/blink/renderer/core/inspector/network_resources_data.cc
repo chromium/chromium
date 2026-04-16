@@ -435,6 +435,10 @@ void NetworkResourcesData::Clear(const String& preserved_loader_id) {
         resource_data->LoaderId() == preserved_loader_id) {
       preserved_map.Set(resource.key, resource.value);
       content_size_ += resource_data->ContentSize();
+      // Ensure preserved resources are also in the deque to maintain
+      // synchronization between content_size_ and the eviction queue.
+      // See crbug.com/501878477.
+      request_ids_deque_.push_back(resource.key);
     }
   }
   request_id_to_resource_data_map_.swap(preserved_map);
@@ -474,6 +478,12 @@ bool NetworkResourcesData::EnsureFreeSpace(uint64_t size) {
     return false;
 
   while (content_size_ + size > maximum_resources_content_size_) {
+    // Safety check: if the deque is empty but content_size_ still indicates
+    // we need to free space, we must stop to avoid OOB reads.
+    // See crbug.com/501878477.
+    if (request_ids_deque_.empty()) {
+      break;
+    }
     String request_id = request_ids_deque_.TakeFirst();
     ResourceData* resource_data = ResourceDataForRequestId(request_id);
     if (resource_data)

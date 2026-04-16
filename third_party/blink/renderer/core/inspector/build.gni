@@ -163,6 +163,7 @@ blink_core_tests_inspector = [
   "inspector_style_resolver_test.cc",
   "invalidation_set_to_selector_map_test.cc",
   "main_thread_debugger_test.cc",
+  "network_resources_data_test.cc",
   "protocol_parser_test.cc",
   "protocol_unittest.cc",
 ]
