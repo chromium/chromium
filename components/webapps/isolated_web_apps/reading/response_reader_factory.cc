@@ -77,7 +77,8 @@ void IsolatedWebAppResponseReaderFactory::OnReaderCreated(
   RETURN_IF_ERROR(
       IsolatedWebAppValidator::ValidateIntegrityBlockAndMetadata(
           &browser_context_.get(), web_bundle_id, reader->GetIntegrityBlock(),
-          reader->GetPrimaryURL(), reader->GetEntries()),
+          reader->GetPrimaryURL(), reader->GetEntries(),
+          /*allow_soft_key_rotation=*/true),
       [&](const auto& error) {
         UmaLogExpectedStatus<UnusableSwbnFileError>(
             "WebApp.Isolated.SwbnFileUsability", base::unexpected(error));

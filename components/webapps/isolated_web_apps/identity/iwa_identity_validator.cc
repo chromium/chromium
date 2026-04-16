@@ -22,11 +22,12 @@ namespace {
 using KeyRotationInfo = IwaRuntimeDataProvider::KeyRotationInfo;
 
 bool Matches(const web_package::PublicKey& public_key,
-             const KeyRotationInfo& kr_info) {
+             const KeyRotationInfo& kr_info,
+             bool allow_soft_key_rotation) {
   return std::visit(
       [&](const auto& public_key) {
         return std::ranges::equal(public_key.bytes(), kr_info.public_key) ||
-               (kr_info.previous_key &&
+               (allow_soft_key_rotation && kr_info.previous_key &&
                 std::ranges::equal(public_key.bytes(), *kr_info.previous_key));
       },
       public_key);
@@ -36,9 +37,10 @@ base::expected<void, std::string>
 ValidateWebBundleIdentityAgainstKeyRotationInfo(
     const std::string& web_bundle_id,
     const std::vector<web_package::PublicKey>& public_keys,
-    const KeyRotationInfo& kr_info) {
+    const KeyRotationInfo& kr_info,
+    bool allow_soft_key_rotation) {
   if (std::ranges::any_of(public_keys, [&](const auto& public_key) {
-        return Matches(public_key, kr_info);
+        return Matches(public_key, kr_info, allow_soft_key_rotation);
       })) {
     return base::ok();
   }
@@ -64,12 +66,31 @@ IwaIdentityValidator::ValidateWebBundleIdentity(
           IwaClient::GetInstance()->GetRuntimeDataProvider()) {
     if (const auto* kr_info = provider->GetKeyRotationInfo(web_bundle_id)) {
       return ValidateWebBundleIdentityAgainstKeyRotationInfo(
-          web_bundle_id, public_keys, *kr_info);
+          web_bundle_id, public_keys, *kr_info,
+          /*allow_soft_key_rotation=*/true);
     }
   }
 
   return IdentityValidator::ValidateWebBundleIdentity(web_bundle_id,
                                                       public_keys);
+}
+
+// static
+base::expected<void, std::string>
+IwaIdentityValidator::ValidateWebBundleIdentity(
+    const std::string& web_bundle_id,
+    const std::vector<web_package::PublicKey>& public_keys,
+    bool allow_soft_key_rotation) {
+  if (const auto* provider =
+          IwaClient::GetInstance()->GetRuntimeDataProvider()) {
+    if (const auto* kr_info = provider->GetKeyRotationInfo(web_bundle_id)) {
+      return ValidateWebBundleIdentityAgainstKeyRotationInfo(
+          web_bundle_id, public_keys, *kr_info, allow_soft_key_rotation);
+    }
+  }
+
+  return web_package::IdentityValidator::GetInstance()
+      ->ValidateWebBundleIdentity(web_bundle_id, public_keys);
 }
 
 }  // namespace web_app

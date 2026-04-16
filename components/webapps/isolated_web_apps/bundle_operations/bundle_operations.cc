@@ -51,11 +51,15 @@ void OnTrustAndSignaturesOfBundleChecked(
         std::move(callback).Run(base::unexpected(error.ToString()));
       });
 
+  // Validate that the bundle's identity matches its ID. Soft key rotation is
+  // not supported here because this function is used for IWA modification
+  // operations (installs, updates, etc.), which must always use the most
+  // up-to-date keys. See go/iwa-soft-key-rotation for more details.
   auto validation_result =
       IsolatedWebAppValidator::ValidateIntegrityBlockAndMetadata(
           browser_context.get(), expected_web_bundle_id,
           reader->GetIntegrityBlock(), reader->GetPrimaryURL(),
-          reader->GetEntries());
+          reader->GetEntries(), /*allow_soft_key_rotation=*/false);
   UmaLogExpectedStatus("WebApp.Isolated.SwbnFileUsability", validation_result);
 
   IntegrityBlockResult integrity_block_result =

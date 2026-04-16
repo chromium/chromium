@@ -34,12 +34,17 @@ class IsolatedWebAppValidator {
   // derived from the `integrity_block`.
   //
   // Important: This method does not verify the signatures themselves - it only
-  // checks whether the public keys associated with these signatures correspond
-  // to trusted parties.
+  // Validates that the integrity block of the Isolated Web App is valid given
+  // the `expected_web_bundle_id`.
+  //
+  // `allow_soft_key_rotation` should be true if "previous" keys from the
+  // key distribution component should be accepted (e.g. during runtime resource
+  // loading). See go/iwa-soft-key-rotation for more details.
   static base::expected<void, UnusableSwbnFileError> ValidateIntegrityBlock(
       content::BrowserContext* browser_context,
       const web_package::SignedWebBundleId& expected_web_bundle_id,
-      const web_package::SignedWebBundleIntegrityBlock& integrity_block);
+      const web_package::SignedWebBundleIntegrityBlock& integrity_block,
+      bool allow_soft_key_rotation);
 
   // Validates that the metadata of the Isolated Web App is valid given the
   // `web_bundle_id`.
@@ -55,7 +60,8 @@ class IsolatedWebAppValidator {
       const web_package::SignedWebBundleId& expected_web_bundle_id,
       const web_package::SignedWebBundleIntegrityBlock& integrity_block,
       const std::optional<GURL>& primary_url,
-      const std::vector<GURL>& entries);
+      const std::vector<GURL>& entries,
+      bool allow_soft_key_rotation);
 };
 
 }  // namespace web_app

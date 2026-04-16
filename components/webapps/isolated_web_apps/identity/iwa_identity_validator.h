@@ -21,6 +21,15 @@ class IwaIdentityValidator : public web_package::IdentityValidator {
       const std::string& web_bundle_id,
       const std::vector<web_package::PublicKey>& public_keys) const override;
 
+  // Same as above, but allows disabling "soft" key rotation (i.e. accepting
+  // "previous" keys that are still trusted for execution, but shouldn't be used
+  // for fresh installs or updates).
+  // See go/iwa-soft-key-rotation for more details.
+  static base::expected<void, std::string> ValidateWebBundleIdentity(
+      const std::string& web_bundle_id,
+      const std::vector<web_package::PublicKey>& public_keys,
+      bool allow_soft_key_rotation);
+
  private:
   IwaIdentityValidator() = default;
   ~IwaIdentityValidator() override = default;

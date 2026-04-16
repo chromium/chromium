@@ -106,7 +106,7 @@ TEST_F(IsolatedWebAppValidatorIntegrityBlockTest,
 
   EXPECT_THAT(IsolatedWebAppValidator::ValidateIntegrityBlock(
                   &browser_context_, test::GetDefaultEcdsaP256WebBundleId(),
-                  integrity_block),
+                  integrity_block, /*allow_soft_key_rotation=*/false),
               UnusableSwbnErrorIs(Error::kIntegrityBlockValidationError,
                                   "does not match the expected Web Bundle ID"));
 }

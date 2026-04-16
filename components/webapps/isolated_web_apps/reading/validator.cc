@@ -12,10 +12,10 @@
 #include "base/strings/stringprintf.h"
 #include "base/types/expected.h"
 #include "base/types/expected_macros.h"
-#include "components/web_package/signed_web_bundles/identity_validator.h"
 #include "components/web_package/signed_web_bundles/signed_web_bundle_id.h"
 #include "components/web_package/signed_web_bundles/signed_web_bundle_integrity_block.h"
 #include "components/webapps/isolated_web_apps/error/unusable_swbn_file_error.h"
+#include "components/webapps/isolated_web_apps/identity/iwa_identity_validator.h"
 #include "components/webapps/isolated_web_apps/types/iwa_origin.h"
 #include "url/gurl.h"
 #include "url/url_constants.h"
@@ -27,7 +27,8 @@ namespace {
 base::expected<void, std::string> ValidateIntegrityBlockImpl(
     content::BrowserContext* browser_context,
     const web_package::SignedWebBundleId& expected_web_bundle_id,
-    const web_package::SignedWebBundleIntegrityBlock& integrity_block) {
+    const web_package::SignedWebBundleIntegrityBlock& integrity_block,
+    bool allow_soft_key_rotation) {
   if (expected_web_bundle_id.is_for_proxy_mode()) {
     return base::unexpected(
         "Web Bundle IDs of type ProxyMode are not supported.");
@@ -42,10 +43,10 @@ base::expected<void, std::string> ValidateIntegrityBlockImpl(
         expected_web_bundle_id.id().c_str()));
   }
 
-  RETURN_IF_ERROR(
-      web_package::IdentityValidator::GetInstance()->ValidateWebBundleIdentity(
-          derived_web_bundle_id.id(),
-          integrity_block.signature_stack().public_keys()));
+  RETURN_IF_ERROR(IwaIdentityValidator::ValidateWebBundleIdentity(
+      derived_web_bundle_id.id(),
+      integrity_block.signature_stack().public_keys(),
+      allow_soft_key_rotation));
 
   return base::ok();
 }
@@ -101,9 +102,10 @@ base::expected<void, UnusableSwbnFileError>
 IsolatedWebAppValidator::ValidateIntegrityBlock(
     content::BrowserContext* browser_context,
     const web_package::SignedWebBundleId& expected_web_bundle_id,
-    const web_package::SignedWebBundleIntegrityBlock& integrity_block) {
+    const web_package::SignedWebBundleIntegrityBlock& integrity_block,
+    bool allow_soft_key_rotation) {
   return ValidateIntegrityBlockImpl(browser_context, expected_web_bundle_id,
-                                    integrity_block)
+                                    integrity_block, allow_soft_key_rotation)
       .transform_error([](const auto& error) {
         return UnusableSwbnFileError(
             UnusableSwbnFileError::Error::kIntegrityBlockValidationError,
@@ -131,9 +133,11 @@ IsolatedWebAppValidator::ValidateIntegrityBlockAndMetadata(
     const web_package::SignedWebBundleId& expected_web_bundle_id,
     const web_package::SignedWebBundleIntegrityBlock& integrity_block,
     const std::optional<GURL>& primary_url,
-    const std::vector<GURL>& entries) {
+    const std::vector<GURL>& entries,
+    bool allow_soft_key_rotation) {
   RETURN_IF_ERROR(IsolatedWebAppValidator::ValidateIntegrityBlock(
-      browser_context, expected_web_bundle_id, integrity_block));
+      browser_context, expected_web_bundle_id, integrity_block,
+      allow_soft_key_rotation));
   RETURN_IF_ERROR(IsolatedWebAppValidator::ValidateMetadata(
       expected_web_bundle_id, primary_url, entries));
   return base::ok();

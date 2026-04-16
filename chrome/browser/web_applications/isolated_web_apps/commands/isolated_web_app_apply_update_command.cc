@@ -153,28 +153,46 @@ void IsolatedWebAppApplyUpdateCommand::HandleKeyRotationOrDowngradeIfNecessary(
   const IwaVersion& pending_version = pending_update_info().version;
   const IwaVersion& current_version = isolation_data().version();
 
+  std::optional<KeyRotationData> kr_data =
+      GetKeyRotationData(url_info_.web_bundle_id(), isolation_data());
+  if (kr_data) {
+    GetMutableDebugValue().Set("rotated_key",
+                               base::Base64Encode(kr_data->rotated_key));
+  }
+
+  // 1. If a key rotation is announced, the update must contain the rotated key.
+  // Exit early if we know that the bundle cannot be installed.
+  if (kr_data && !kr_data->pending_update_has_rk) {
+    ReportFailure(base::StringPrintf(
+        "The update for version %s does not contain the rotated key.",
+        pending_version.GetString().c_str()));
+    return;
+  }
+
+  // 2. Handle version-based update logic.
   if (pending_version > current_version) {
+    // Standard update: the new version is strictly greater.
     std::move(next_step_callback).Run();
   } else if (pending_version < current_version) {
-    // Downgrade: Remove user data to avoid incompatibility. Proceed with
-    // update.
+    // Downgrade: The candidate version is older than the current one.
+    // Proceed with the update, but remove user data first to avoid
+    // incompatibility.
     web_app::RemoveIsolatedWebAppBrowsingData(&profile(), url_info_.origin(),
                                               std::move(next_step_callback));
   } else {
-    // Handle key rotation for same-version updates.
-    if (auto kr_data =
-            GetKeyRotationData(url_info_.web_bundle_id(), isolation_data())) {
-      GetMutableDebugValue().Set("rotated_key",
-                                 base::Base64Encode(kr_data->rotated_key));
-      if (!kr_data->current_installation_has_rk &&
-          kr_data->pending_update_has_rk) {
-        std::move(next_step_callback).Run();
-        return;
-      }
+    // Same-version update: This is only allowed if it fulfills a required
+    // key rotation.
+    if (kr_data && !kr_data->current_installation_has_rk) {
+      // Rotation fulfillment: same version, but moving the app from the
+      // compromised key to the rotated key.
+      CHECK(kr_data->pending_update_has_rk);
+      std::move(next_step_callback).Run();
+      return;
     }
-    // No version change, and no key rotation needed.
+
+    // Otherwise, there's no reason to apply an update for the same version.
     ReportFailure(base::StringPrintf("Installed app is already on version %s.",
-                                     current_version.GetString()));
+                                     current_version.GetString().c_str()));
   }
 }
 
