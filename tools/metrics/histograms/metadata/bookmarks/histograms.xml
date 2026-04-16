@@ -323,18 +323,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Bookmarks.BookmarksBarStatus.OnReadingListOpened"
-    enum="BookmarkBarPrefAndState" expires_after="2022-08-28">
-  <owner>corising@chromium.org</owner>
-  <owner>top-chrome-desktop-ui@google.com</owner>
-  <summary>
-    This records the Boomarks bar pref state and status when the reading list is
-    opened. This will help determine how often the reading list is accessed from
-    the NTP where the bookmarks bar is always visible and the bookmark bar pref
-    state for those from the NTP. (Desktop only).
-  </summary>
-</histogram>
-
 <histogram name="Bookmarks.BookmarksExistInStorageType.{SubtreeSelection}"
     enum="BookmarksExistInStorageType" expires_after="2026-09-06">
   <owner>rsult@google.com</owner>
@@ -1107,28 +1095,6 @@ chromium-metrics-reviews@google.com.
   <summary>
     Records the view type when the side panel is shown or when the view type
     changes.
-  </summary>
-</histogram>
-
-<histogram name="PowerBookmarks.Storage.DatabaseDirSizeAtStartup" units="KB"
-    expires_after="2025-03-02">
-  <owner>wylieb@google.com</owner>
-  <owner>chrome-collections@google.com</owner>
-  <summary>
-    Size of the power bookmarks database directory, recorded when the database
-    is loaded.
-  </summary>
-</histogram>
-
-<histogram name="PowerBookmarks.Storage.DatabaseError" enum="SqliteErrorCode"
-    expires_after="2025-03-02">
-  <owner>wylieb@google.com</owner>
-  <owner>chrome-collections@google.com</owner>
-  <summary>
-    Errors that occur in Power Bookmarks database. Recorded by
-    SharedStorageDatabase::DatabaseErrorCallback() just before the SQLite
-    database determines whether the error is catastrophic and handles it
-    accordingly.
   </summary>
 </histogram>
 

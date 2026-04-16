@@ -53,22 +53,6 @@ chromium-metrics-reviews@google.com.
   <int value="9" label="Reorder subfolder in folder"/>
 </enum>
 
-<enum name="BookmarkBarPrefAndState">
-  <summary>
-    The Boomarks bar pref state and whether the user is on the NTP when the
-    reading list is opened.
-  </summary>
-  <int value="0"
-      label="Bookmarks bar pref is set to shown and user is opening the
-             reading list from the NTP"/>
-  <int value="1"
-      label="Bookmarks bar pref is set to hidden and user is opening the
-             reading list from the NTP"/>
-  <int value="2"
-      label="Bookmarks bar pref is set to shown and user is not opening the
-             reading list from the NTP"/>
-</enum>
-
 <!-- LINT.IfChange(BookmarkBarShownReason)-->
 
 <enum name="BookmarkBarShownReason">
