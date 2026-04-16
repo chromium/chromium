@@ -161,8 +161,8 @@ bool UpdateFrameHeaderForTemporalLayerEncoding(
     Vp8FrameHeader& frame_hdr,
     Vp8Metadata& metadata,
     std::array<bool, kNumVp8ReferenceBuffers>& ref_frames_used) {
-  DCHECK_GE(num_layers, kMinSupportedVP8TemporalLayers);
-  DCHECK_LE(num_layers, kMaxSupportedVP8TemporalLayers);
+  CHECK_GE(num_layers, kMinSupportedVP8TemporalLayers);
+  CHECK_LE(num_layers, kMaxSupportedVP8TemporalLayers);
   enum BufferFlags : uint8_t {
     kNone = 0,
     kReference = 1,
@@ -461,6 +461,13 @@ bool VP8VaapiVideoEncoderDelegate::UpdateRates(
   if (VP8TLEncodingIsEnabled()) {
     const size_t new_num_temporal_layers =
         GetActiveTemporalLayers(bitrate_allocation);
+    if (new_num_temporal_layers > kMaxSupportedVP8TemporalLayers ||
+        new_num_temporal_layers < kMinSupportedVP8TemporalLayers) {
+      VLOGF(1) << "Unsupported number of temporal layers: "
+               << new_num_temporal_layers;
+      return false;
+    }
+
     if (new_num_temporal_layers != num_temporal_layers_) {
       VLOGF(2) << "The number of temporal layers is changed, from "
                << base::strict_cast<int>(num_temporal_layers_) << " to "
