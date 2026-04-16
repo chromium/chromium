@@ -562,6 +562,7 @@ Called by update_bad_message_reasons.py.-->
   <int value="1" label="GVM_INVALID_GUESTVIEW_TYPE"/>
   <int value="2" label="GVMF_UNEXPECTED_MESSAGE_BEFORE_GVM_CREATION"/>
   <int value="3" label="GVM_INVALID_ATTACH"/>
+  <int value="4" label="GVMH_GUEST_NOT_AVAILABLE_TO_ATTACH"/>
 </enum>
 
 <enum name="BadMessageReasonPasswordManager">
