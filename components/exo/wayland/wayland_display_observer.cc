@@ -109,7 +109,12 @@ void WaylandDisplayHandler::SendDisplayActivated() {
 
 void WaylandDisplayHandler::OnXdgOutputCreated(
     wl_resource* xdg_output_resource) {
-  DCHECK(!xdg_output_resource_);
+  if (xdg_output_resource_) {
+    wl_resource_post_error(output_resource_, WL_DISPLAY_ERROR_INVALID_OBJECT,
+                           "wl_output already has xdg_output");
+    return;
+  }
+
   xdg_output_resource_ = xdg_output_resource;
 
   display::Display display;
