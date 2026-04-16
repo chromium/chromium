@@ -90,12 +90,11 @@ IN_PROC_BROWSER_TEST_F(
       GetURL(kCookieHost, "/"), "shadowed=b;SameSite=None;Secure;Partitioned",
       net::CookiePartitionKey::FromURLForTesting(GetURL(kParentHost, "/")));
   NavigateTo(kParentHost, "/iframe.html");
-  NavigateIframeTo(kCookieHost, "/simple.html");
+  NavigateIframeTo(kCookieHost, "/echoheader?cookie");
   histogram_tester.ExpectBucketCount(
       "Blink.UseCounter.Features",
       blink::mojom::WebFeature::kHttpOnlyCookieShadowedByNonHttpOnlyPartitioned,
       /*expected_count=*/1);
-  NavigateIframeTo(kCookieHost, "/echoheader?cookie");
   EXPECT_EQ(GetIframeContent(), "shadowed=a; shadowed=b");
 }
 
@@ -109,12 +108,11 @@ IN_PROC_BROWSER_TEST_F(
       GetURL(kCookieHost, "/"), "shadowed=b;Secure;Partitioned",
       net::CookiePartitionKey::FromURLForTesting(GetURL(kParentHost, "/")));
   NavigateTo(kParentHost, "/iframe.html");
-  NavigateIframeTo(kCookieHost, "/simple.html");
+  NavigateIframeTo(kCookieHost, "/echoheader?cookie");
   histogram_tester.ExpectBucketCount(
       "Blink.UseCounter.Features",
       blink::mojom::WebFeature::kHttpOnlyCookieShadowedByNonHttpOnlyPartitioned,
       /*expected_count=*/0);
-  NavigateIframeTo(kCookieHost, "/echoheader?cookie");
   EXPECT_EQ(GetIframeContent(), "shadowed=a");
 }
 
@@ -127,12 +125,11 @@ IN_PROC_BROWSER_TEST_F(
       GetURL(kCookieHost, "/"), "shadowed=b;SameSite=None;Secure;Partitioned",
       net::CookiePartitionKey::FromURLForTesting(GetURL(kParentHost, "/")));
   NavigateTo(kParentHost, "/iframe.html");
-  NavigateIframeTo(kCookieHost, "/simple.html");
+  NavigateIframeTo(kCookieHost, "/echoheader?cookie");
   histogram_tester.ExpectBucketCount(
       "Blink.UseCounter.Features",
       blink::mojom::WebFeature::kHttpOnlyCookieShadowedByNonHttpOnlyPartitioned,
       /*expected_count=*/1);
-  NavigateIframeTo(kCookieHost, "/echoheader?cookie");
   EXPECT_EQ(GetIframeContent(), "shadowed=b");
 }
 
@@ -145,12 +142,11 @@ IN_PROC_BROWSER_TEST_F(
       GetURL(kCookieHost, "/"), "shadowed=b;Secure;Partitioned",
       net::CookiePartitionKey::FromURLForTesting(GetURL(kParentHost, "/")));
   NavigateTo(kParentHost, "/iframe.html");
-  NavigateIframeTo(kCookieHost, "/simple.html");
+  NavigateIframeTo(kCookieHost, "/echoheader?cookie");
   histogram_tester.ExpectBucketCount(
       "Blink.UseCounter.Features",
       blink::mojom::WebFeature::kHttpOnlyCookieShadowedByNonHttpOnlyPartitioned,
       /*expected_count=*/0);
-  NavigateIframeTo(kCookieHost, "/echoheader?cookie");
   EXPECT_EQ(GetIframeContent(), "None");
 }
 
@@ -165,12 +161,11 @@ IN_PROC_BROWSER_TEST_F(
       "shadowed=b;SameSite=None;Secure;Partitioned;HttpOnly",
       net::CookiePartitionKey::FromURLForTesting(GetURL(kParentHost, "/")));
   NavigateTo(kParentHost, "/iframe.html");
-  NavigateIframeTo(kCookieHost, "/simple.html");
+  NavigateIframeTo(kCookieHost, "/echoheader?cookie");
   histogram_tester.ExpectBucketCount(
       "Blink.UseCounter.Features",
       blink::mojom::WebFeature::kHttpOnlyCookieShadowedByNonHttpOnlyPartitioned,
       /*expected_count=*/0);
-  NavigateIframeTo(kCookieHost, "/echoheader?cookie");
   EXPECT_EQ(GetIframeContent(), "shadowed=a; shadowed=b");
 }
 
@@ -181,12 +176,11 @@ IN_PROC_BROWSER_TEST_F(
   SetCookie(GetURL(kCookieHost, "/"),
             "shadowed=a;SameSite=None;Secure;HttpOnly");
   NavigateTo(kParentHost, "/iframe.html");
-  NavigateIframeTo(kCookieHost, "/simple.html");
+  NavigateIframeTo(kCookieHost, "/echoheader?cookie");
   histogram_tester.ExpectBucketCount(
       "Blink.UseCounter.Features",
       blink::mojom::WebFeature::kHttpOnlyCookieShadowedByNonHttpOnlyPartitioned,
       /*expected_count=*/0);
-  NavigateIframeTo(kCookieHost, "/echoheader?cookie");
   EXPECT_EQ(GetIframeContent(), "shadowed=a");
 }
 
@@ -198,12 +192,11 @@ IN_PROC_BROWSER_TEST_F(
       GetURL(kCookieHost, "/"), "shadowed=b;SameSite=None;Secure;Partitioned",
       net::CookiePartitionKey::FromURLForTesting(GetURL(kParentHost, "/")));
   NavigateTo(kParentHost, "/iframe.html");
-  NavigateIframeTo(kCookieHost, "/simple.html");
+  NavigateIframeTo(kCookieHost, "/echoheader?cookie");
   histogram_tester.ExpectBucketCount(
       "Blink.UseCounter.Features",
       blink::mojom::WebFeature::kHttpOnlyCookieShadowedByNonHttpOnlyPartitioned,
       /*expected_count=*/0);
-  NavigateIframeTo(kCookieHost, "/echoheader?cookie");
   EXPECT_EQ(GetIframeContent(), "shadowed=b");
 }
 
@@ -218,12 +211,11 @@ IN_PROC_BROWSER_TEST_F(
       "not_shadowed=b;SameSite=None;Secure;Partitioned",
       net::CookiePartitionKey::FromURLForTesting(GetURL(kParentHost, "/")));
   NavigateTo(kParentHost, "/iframe.html");
-  NavigateIframeTo(kCookieHost, "/simple.html");
+  NavigateIframeTo(kCookieHost, "/echoheader?cookie");
   histogram_tester.ExpectBucketCount(
       "Blink.UseCounter.Features",
       blink::mojom::WebFeature::kHttpOnlyCookieShadowedByNonHttpOnlyPartitioned,
       /*expected_count=*/0);
-  NavigateIframeTo(kCookieHost, "/echoheader?cookie");
   EXPECT_EQ(GetIframeContent(), "shadowed=a; not_shadowed=b");
 }
 
