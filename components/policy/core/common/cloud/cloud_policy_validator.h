@@ -20,13 +20,15 @@
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "components/account_id/account_id.h"
+#include "extensions/buildflags/buildflags.h"
 #include "components/policy/core/common/cloud/policy_value_validator.h"
 #include "components/policy/policy_export.h"
 #include "components/policy/proto/cloud_policy.pb.h"
 #include "components/policy/proto/device_management_backend.pb.h"
 #include "google_apis/gaia/gaia_id.h"
 
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+#if (!BUILDFLAG(IS_ANDROID) || BUILDFLAG(ENABLE_EXTENSIONS_CORE)) && !BUILDFLAG(IS_IOS)
+
 #include "components/policy/proto/chrome_extension_policy.pb.h"
 #endif
 
@@ -468,7 +470,7 @@ using UserCloudPolicyValidator =
 using ExtensionInstallCloudPolicyValidator =
     CloudPolicyValidator<enterprise_management::ExtensionInstallPolicies>;
 
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+#if (!BUILDFLAG(IS_ANDROID) || BUILDFLAG(ENABLE_EXTENSIONS_CORE)) && !BUILDFLAG(IS_IOS)
 using ComponentCloudPolicyValidator =
     CloudPolicyValidator<enterprise_management::ExternalPolicyData>;
 #endif

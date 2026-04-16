@@ -366,7 +366,7 @@ TEST_F(CloudPolicyManagerTest, RefreshSuccessful) {
   Mock::VerifyAndClearExpectations(&observer_);
 }
 
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+#if (!BUILDFLAG(IS_ANDROID) || BUILDFLAG(ENABLE_EXTENSIONS_CORE)) && !BUILDFLAG(IS_IOS)
 TEST_F(CloudPolicyManagerTest, ComponentPolicyInitWithPendingRefresh) {
   auto client_ptr = std::make_unique<MockCloudPolicyClient>();
   MockCloudPolicyClient* client = client_ptr.get();

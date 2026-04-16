@@ -829,7 +829,7 @@ CloudPolicyValidatorBase::GetSignatureType() {
 
 template class CloudPolicyValidator<em::CloudPolicySettings>;
 
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+#if (!BUILDFLAG(IS_ANDROID) || BUILDFLAG(ENABLE_EXTENSIONS_CORE)) && !BUILDFLAG(IS_IOS)
 template class CloudPolicyValidator<em::ExternalPolicyData>;
 #endif
 

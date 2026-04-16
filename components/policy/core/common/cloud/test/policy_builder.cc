@@ -546,7 +546,7 @@ TypedPolicyBuilder<em::ExtensionInstallPolicies>::TypedPolicyBuilder() {
 
 template class TypedPolicyBuilder<em::ExtensionInstallPolicies>;
 
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+#if (!BUILDFLAG(IS_ANDROID) || BUILDFLAG(ENABLE_EXTENSIONS_CORE)) && !BUILDFLAG(IS_IOS)
 template <>
 TypedPolicyBuilder<em::ExternalPolicyData>::TypedPolicyBuilder() {
   CreatePayload();
