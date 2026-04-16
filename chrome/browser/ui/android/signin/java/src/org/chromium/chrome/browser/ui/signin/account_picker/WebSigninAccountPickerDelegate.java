@@ -18,6 +18,7 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.ui.signin.BottomSheetSigninAndHistorySyncCoordinator;
 import org.chromium.chrome.browser.ui.signin.DelegateContext;
+import org.chromium.chrome.browser.ui.signin.SigninSurveyController;
 import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.browser.WebSigninTrackerResult;
 import org.chromium.components.signin.metrics.AccountConsistencyPromoAction;
@@ -174,6 +175,8 @@ public class WebSigninAccountPickerDelegate
                         // that the tab is still alive.
                         tab.loadUrl(new LoadUrlParams(continueUrl));
                     }
+                    SigninSurveyController.registerTrigger(
+                            mProfile, SigninSurveyController.SigninSurveyType.WEB);
                     break;
                 case WebSigninTrackerResult.AUTH_ERROR:
                     SigninMetricsUtils.logAccountConsistencyPromoAction(
