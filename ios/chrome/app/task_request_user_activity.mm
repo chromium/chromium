@@ -41,6 +41,7 @@
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/lens_commands.h"
 #import "ios/chrome/browser/shared/public/commands/open_lens_input_selection_command.h"
+#import "ios/chrome/browser/shared/public/commands/quick_delete_commands.h"
 #import "ios/chrome/browser/shared/public/commands/scene_commands.h"
 #import "ios/chrome/browser/shared/public/commands/settings_commands.h"
 #import "ios/chrome/browser/url_loading/model/url_loading_params.h"
@@ -332,6 +333,15 @@ void OpenTabGridWithBrowser(base::WeakPtr<Browser> weak_browser) {
   }
 }
 
+// Opens quick delete to clear browsing data.
+void OpenClearBrowsingDataWithBrowser(base::WeakPtr<Browser> weak_browser) {
+  if (Browser* browser = weak_browser.get()) {
+    id<QuickDeleteCommands> handler = HandlerForProtocol(
+        browser->GetCommandDispatcher(), QuickDeleteCommands);
+    [handler showQuickDeleteAndCanPerformRadialWipeAnimation:YES];
+  }
+}
+
 // Adds bookmarks to Chrome.
 void AddBookmarkToChromeWithIntent(INIntent* intent,
                                    base::WeakPtr<Browser> weak_browser) {
@@ -440,6 +450,8 @@ std::vector<GURL> GetURLsFromOpenInChromeIntent(INIntent* intent) {
   id<TabOpening> tabOpener = sceneState.controller;
   Browser* browser =
       sceneState.browserProviderInterface.currentBrowserProvider.browser;
+  Browser* mainBrowser =
+      sceneState.browserProviderInterface.mainBrowserProvider.browser;
 
   switch (_userActivityType) {
     case UserActivityType::kHandoff:
@@ -537,7 +549,9 @@ std::vector<GURL> GetURLsFromOpenInChromeIntent(INIntent* intent) {
       webpageGURLs.push_back(GURL(kChromeUINewTabURL));
       break;
     case UserActivityType::kClearBrowsingData:
-      // TODO(crbug.com/492115056): Add implementation.
+      completion = base::CallbackToBlock(base::BindRepeating(
+          &OpenClearBrowsingDataWithBrowser, mainBrowser->AsWeakPtr()));
+      webpageGURLs.push_back(GURL(kChromeUINewTabURL));
       break;
     case UserActivityType::kCredentialExchange:
       // TODO(crbug.com/492115056): Add implementation.
