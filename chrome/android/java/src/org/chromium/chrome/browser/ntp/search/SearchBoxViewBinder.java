@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.ntp.search;
 
 import android.os.Build;
+import android.text.TextWatcher;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewGroup.MarginLayoutParams;
@@ -69,8 +70,17 @@ class SearchBoxViewBinder
             searchBoxTextView.setOnDragListener(
                     model.get(SearchBoxProperties.SEARCH_BOX_DRAG_CALLBACK));
         } else if (SearchBoxProperties.SEARCH_BOX_TEXT_WATCHER == propertyKey) {
-            searchBoxTextView.addTextChangedListener(
-                    model.get(SearchBoxProperties.SEARCH_BOX_TEXT_WATCHER));
+            // Sets the search box text watcher. Previously added text watcher will be removed.
+            TextWatcher oldWatcher =
+                    (TextWatcher) searchBoxTextView.getTag(R.id.ntp_search_box_text_watcher_tag);
+            if (oldWatcher != null) {
+                searchBoxTextView.removeTextChangedListener(oldWatcher);
+            }
+            TextWatcher newWatcher = model.get(SearchBoxProperties.SEARCH_BOX_TEXT_WATCHER);
+            if (newWatcher != null) {
+                searchBoxTextView.addTextChangedListener(newWatcher);
+            }
+            searchBoxTextView.setTag(R.id.ntp_search_box_text_watcher_tag, newWatcher);
         } else if (SearchBoxProperties.SEARCH_TEXT == propertyKey) {
             searchBoxTextView.setText(model.get(SearchBoxProperties.SEARCH_TEXT));
         } else if (SearchBoxProperties.SEARCH_HINT_VISIBILITY == propertyKey) {

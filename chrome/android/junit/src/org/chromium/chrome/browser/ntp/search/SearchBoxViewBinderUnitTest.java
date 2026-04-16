@@ -4,12 +4,16 @@
 
 package org.chromium.chrome.browser.ntp.search;
 
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.clearInvocations;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import android.graphics.drawable.Drawable;
+import android.text.TextWatcher;
 import android.view.View;
 import android.widget.TextView;
 
@@ -113,5 +117,19 @@ public class SearchBoxViewBinderUnitTest {
         Drawable drawable = mock(Drawable.class);
         mPropertyModel.set(SearchBoxProperties.DSE_ICON_DRAWABLE, drawable);
         verify(mSearchBoxLayout).setDseIconDrawable(eq(drawable));
+    }
+
+    @Test
+    public void testSetTextWatcher() {
+        TextWatcher textWatcher = mock(TextWatcher.class);
+        mPropertyModel.set(SearchBoxProperties.SEARCH_BOX_TEXT_WATCHER, textWatcher);
+        verify(mSearchBoxTextView).addTextChangedListener(eq(textWatcher));
+
+        clearInvocations(mSearchBoxTextView);
+        when(mSearchBoxTextView.getTag(R.id.ntp_search_box_text_watcher_tag))
+                .thenReturn(textWatcher);
+        mPropertyModel.set(SearchBoxProperties.SEARCH_BOX_TEXT_WATCHER, null);
+        verify(mSearchBoxTextView).removeTextChangedListener(eq(textWatcher));
+        verify(mSearchBoxTextView, never()).addTextChangedListener(any(TextWatcher.class));
     }
 }

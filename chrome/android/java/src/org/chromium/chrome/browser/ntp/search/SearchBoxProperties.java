@@ -38,6 +38,7 @@ interface SearchBoxProperties {
             new WritableObjectPropertyKey<>();
     WritableObjectPropertyKey<OnDragListener> SEARCH_BOX_DRAG_CALLBACK =
             new WritableObjectPropertyKey<>();
+    // Sets the search box text watcher. Previously added text watcher will be removed.
     WritableObjectPropertyKey<TextWatcher> SEARCH_BOX_TEXT_WATCHER =
             new WritableObjectPropertyKey<>();
     WritableIntPropertyKey SEARCH_BOX_HEIGHT = new WritableIntPropertyKey();

@@ -116,6 +116,8 @@ found in the LICENSE file.
     <!-- Tags -->
     <item type="id" name="highlight_color" />
     <item type="id" name="context_menu_delegate" />
+    <item type="id" name="ntp_view_layout_change_listener_tag" />
+    <item type="id" name="ntp_search_box_text_watcher_tag" />
 
     <!-- NTP-->
     <item type="id" name="ntp_feed_header_menu_item_manage" />

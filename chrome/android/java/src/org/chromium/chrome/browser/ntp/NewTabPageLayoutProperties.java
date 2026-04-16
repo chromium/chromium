@@ -19,7 +19,10 @@ class NewTabPageLayoutProperties {
     static final PropertyModel.WritableObjectPropertyKey<NewTabPageLayout.Delegate> DELEGATE =
             new PropertyModel.WritableObjectPropertyKey<>();
 
-    /** The layout change listener for NewTabPageLayout. */
+    /**
+     * Sets the layout change listener for NewTabPageLayout. Previously added listener will be
+     * removed.
+     */
     static final PropertyModel.WritableObjectPropertyKey<View.OnLayoutChangeListener>
             ON_LAYOUT_CHANGE_LISTENER = new PropertyModel.WritableObjectPropertyKey<>();
 
