@@ -277,7 +277,11 @@ void AccountHoverButton::OnPressed(const ui::Event& event) {
   has_been_clicked_ = true;
   // If the callback |OnAccountSelected| returns false, e.g. the click is
   // blocked by input protector, reset the state to handle future |OnPressed|.
+  base::WeakPtr<AccountHoverButton> weak_this = weak_ptr_factory_.GetWeakPtr();
   if (callback_ && !callback_.Run(event)) {
+    if (!weak_this) {
+      return;
+    }
     has_been_clicked_ = false;
   }
   // If callback_.Run(event) returns true, |this| may be destructed because the
