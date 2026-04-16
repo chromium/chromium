@@ -7,6 +7,7 @@
 #include "base/check.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
+#include "base/notreached.h"
 #include "base/trace_event/trace_event.h"
 #include "base/uuid.h"
 #include "base/version.h"
@@ -101,6 +102,14 @@ void SharingIOSPushSender::DoSendUnencryptedMessageToDevice(
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback),
                      /*message_id=*/SharingMessageTypeToString(message_type),
                      SharingChannelType::kIosPush));
+}
+
+void SharingIOSPushSender::DoSendMessageToServerTarget(
+    const components_sharing_message::ServerChannelConfiguration&
+        server_channel,
+    components_sharing_message::SharingMessage message,
+    SendMessageCallback callback) {
+  NOTREACHED();
 }
 
 void SharingIOSPushSender::ClearPendingMessages() {

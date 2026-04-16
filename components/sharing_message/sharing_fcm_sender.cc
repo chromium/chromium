@@ -10,6 +10,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/notimplemented.h"
 #include "base/notreached.h"
 #include "base/trace_event/trace_event.h"
 #include "base/uuid.h"
@@ -98,6 +99,15 @@ void SharingFCMSender::DoSendUnencryptedMessageToDevice(
     sync_pb::UnencryptedSharingMessage message,
     SendMessageCallback callback) {
   NOTREACHED();
+}
+
+void SharingFCMSender::DoSendMessageToServerTarget(
+    const components_sharing_message::ServerChannelConfiguration&
+        server_channel_config,
+    SharingMessage message,
+    SendMessageCallback callback) {
+  // TODO(crbug.com/500810707): Implement this.
+  NOTIMPLEMENTED();
 }
 
 void SharingFCMSender::SendMessageToFcmTarget(

@@ -107,6 +107,11 @@ class SharingFCMSender : public SharingMessageSender::SendMessageDelegate,
       const SharingTargetDeviceInfo& device,
       sync_pb::UnencryptedSharingMessage message,
       SendMessageCallback callback) override;
+  void DoSendMessageToServerTarget(
+      const components_sharing_message::ServerChannelConfiguration&
+          server_channel_config,
+      SharingMessage message,
+      SendMessageCallback callback) override;
 
  private:
   using MessageSender = base::OnceCallback<void(std::string message,

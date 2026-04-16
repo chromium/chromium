@@ -15,11 +15,13 @@
 #include "base/memory/weak_ptr.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
+#include "components/sharing_message/sharing_constants.h"
 #include "components/sharing_message/sharing_target_device_info.h"
 
 namespace components_sharing_message {
 class ResponseMessage;
 class SharingMessage;
+class ServerChannelConfiguration;
 }  // namespace components_sharing_message
 
 namespace sharing_message {
@@ -60,6 +62,12 @@ class SharingMessageSender {
         components_sharing_message::SharingMessage message,
         SendMessageCallback callback) = 0;
 
+    virtual void DoSendMessageToServerTarget(
+        const components_sharing_message::ServerChannelConfiguration&
+            server_target,
+        components_sharing_message::SharingMessage message,
+        SendMessageCallback callback) = 0;
+
     virtual void DoSendUnencryptedMessageToDevice(
         const SharingTargetDeviceInfo& device,
         sync_pb::UnencryptedSharingMessage message,
@@ -69,6 +77,7 @@ class SharingMessageSender {
   };
 
   // Delegate type used to send a message.
+  // TODO(crbug.com/502086601): Consider removing delegate types.
   enum class DelegateType { kFCM, kWebRtc, kIOSPush };
 
   SharingMessageSender(
@@ -88,6 +97,14 @@ class SharingMessageSender {
   virtual base::OnceClosure SendUnencryptedMessageToDevice(
       const SharingTargetDeviceInfo& device,
       sync_pb::UnencryptedSharingMessage message,
+      DelegateType delegate_type,
+      ResponseCallback callback);
+
+  virtual base::OnceClosure SendMessageToServerTarget(
+      const components_sharing_message::ServerChannelConfiguration&
+          server_channel,
+      base::TimeDelta response_timeout,
+      components_sharing_message::SharingMessage message,
       DelegateType delegate_type,
       ResponseCallback callback);
 
@@ -113,7 +130,6 @@ class SharingMessageSender {
                         sharing_message::MessageType type,
                         SharingDevicePlatform receiver_device_platform,
                         int trace_id,
-                        SharingChannelType channel_type,
                         base::TimeDelta receiver_pulse_interval);
     SentMessageMetadata(SentMessageMetadata&& other);
     SentMessageMetadata& operator=(SentMessageMetadata&& other);
@@ -124,7 +140,7 @@ class SharingMessageSender {
     sharing_message::MessageType type;
     SharingDevicePlatform receiver_device_platform;
     int trace_id;
-    SharingChannelType channel_type;
+    SharingChannelType channel_type = SharingChannelType::kUnknown;
     base::TimeDelta receiver_pulse_interval;
   };
 
@@ -139,12 +155,23 @@ class SharingMessageSender {
       SharingSendMessageResult result,
       std::unique_ptr<components_sharing_message::ResponseMessage> response);
 
-  SendMessageDelegate* MaybeGetSendMessageDelegate(
-      const SharingTargetDeviceInfo& device,
+  base::OnceClosure SendMessageToTarget(
+      DelegateType delegate_type,
+      base::TimeDelta response_timeout,
+      components_sharing_message::SharingMessage message,
+      std::variant<
+          const SharingTargetDeviceInfo*,
+          const components_sharing_message::ServerChannelConfiguration*> target,
+      ResponseCallback callback);
+
+  static SentMessageMetadata CreateSentMessageMetadata(
+      ResponseCallback callback,
       sharing_message::MessageType message_type,
       int trace_id,
-      const std::string& message_guid,
-      DelegateType delegate_type);
+      std::variant<
+          const SharingTargetDeviceInfo*,
+          const components_sharing_message::ServerChannelConfiguration*>
+          target);
 
   raw_ptr<syncer::LocalDeviceInfoProvider> local_device_info_provider_;
 

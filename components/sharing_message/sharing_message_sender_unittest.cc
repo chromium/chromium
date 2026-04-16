@@ -62,6 +62,12 @@ class MockSharingFCMSender : public SharingFCMSender {
                     base::TimeDelta time_to_live,
                     SharingMessage message,
                     SendMessageCallback callback));
+  MOCK_METHOD3(
+      DoSendMessageToServerTarget,
+      void(const components_sharing_message::ServerChannelConfiguration&
+               server_target,
+           SharingMessage message,
+           SendMessageCallback callback));
 };
 
 class MockSharingIOSPushSender : public sharing_message::SharingIOSPushSender {
@@ -84,6 +90,12 @@ class MockSharingIOSPushSender : public sharing_message::SharingIOSPushSender {
                void(const SharingTargetDeviceInfo& device,
                     sync_pb::UnencryptedSharingMessage message,
                     SendMessageCallback callback));
+  MOCK_METHOD3(
+      DoSendMessageToServerTarget,
+      void(const components_sharing_message::ServerChannelConfiguration&
+               server_target,
+           components_sharing_message::SharingMessage message,
+           SendMessageCallback callback));
   MOCK_METHOD1(CanSendSendTabPushMessage,
                bool(const syncer::DeviceInfo& target_device_info));
 };
@@ -101,6 +113,17 @@ class MockSendMessageDelegate
                     base::TimeDelta time_to_live,
                     components_sharing_message::SharingMessage message,
                     SendMessageCallback callback));
+  MOCK_METHOD3(DoSendUnencryptedMessageToDevice,
+               void(const SharingTargetDeviceInfo& device,
+                    sync_pb::UnencryptedSharingMessage message,
+                    SendMessageCallback callback));
+  MOCK_METHOD3(
+      DoSendMessageToServerTarget,
+      void(const components_sharing_message::ServerChannelConfiguration&
+               server_target,
+           components_sharing_message::SharingMessage message,
+           SendMessageCallback callback));
+  MOCK_METHOD0(ClearPendingMessages, void());
 };
 
 syncer::DeviceInfo::SharingInfo CreateLocalSharingInfo() {
@@ -447,4 +470,46 @@ TEST_F(SharingMessageSenderTest, RequestCancelled) {
 
   ASSERT_FALSE(cancel_callback.is_null());
   std::move(cancel_callback).Run();
+}
+
+TEST_F(SharingMessageSenderTest, SendMessageToServerTarget_Success) {
+  components_sharing_message::ServerChannelConfiguration server_channel;
+  server_channel.set_configuration("test_configuration");
+  server_channel.set_p256dh("test_p256dh");
+  server_channel.set_auth_secret("test_auth_secret");
+
+  components_sharing_message::SharingMessage sent_message;
+  sent_message.mutable_click_to_call_message()->set_phone_number("999999");
+
+  components_sharing_message::ResponseMessage expected_response_message;
+  base::MockCallback<SharingMessageSender::ResponseCallback> mock_callback;
+  EXPECT_CALL(mock_callback, Run(SharingSendMessageResult::kSuccessful,
+                                 ProtoEquals(expected_response_message)));
+
+  auto simulate_expected_ack_message_received =
+      [&](const components_sharing_message::ServerChannelConfiguration&
+              server_channel_config,
+          components_sharing_message::SharingMessage message,
+          SharingFCMSender::SendMessageCallback callback) {
+        // FCM message sent successfully.
+        std::move(callback).Run(SharingSendMessageResult::kSuccessful,
+                                kSenderMessageID, SharingChannelType::kServer);
+
+        // Simulate ack message received.
+        std::unique_ptr<components_sharing_message::ResponseMessage>
+            response_message =
+                std::make_unique<components_sharing_message::ResponseMessage>();
+        response_message->CopyFrom(expected_response_message);
+
+        sharing_message_sender_.OnAckReceived(kSenderMessageID,
+                                              std::move(response_message));
+      };
+
+  EXPECT_CALL(*mock_sharing_fcm_sender_,
+              DoSendMessageToServerTarget(testing::_, testing::_, testing::_))
+      .WillOnce(simulate_expected_ack_message_received);
+
+  sharing_message_sender_.SendMessageToServerTarget(
+      server_channel, kTimeToLive, std::move(sent_message),
+      SharingMessageSender::DelegateType::kFCM, mock_callback.Get());
 }

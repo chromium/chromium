@@ -62,6 +62,11 @@ class SharingIOSPushSender : public SharingMessageSender::SendMessageDelegate {
                              base::TimeDelta time_to_live,
                              components_sharing_message::SharingMessage message,
                              SendMessageCallback callback) override {}
+  void DoSendMessageToServerTarget(
+      const components_sharing_message::ServerChannelConfiguration&
+          server_channel,
+      components_sharing_message::SharingMessage message,
+      SendMessageCallback callback) override;
   void DoSendUnencryptedMessageToDevice(
       const SharingTargetDeviceInfo& device,
       sync_pb::UnencryptedSharingMessage message,
