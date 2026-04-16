@@ -110,4 +110,31 @@ void OpenCoBrowse(net::EmbeddedTestServer* testServer) {
       assertWithMatcher:grey_nil()];
 }
 
+- (void)testAssistantPersistsThroughTabGrid {
+  OpenCoBrowse(self.testServer);
+
+  // Wait for the assistant to appear.
+  [ChromeEarlGrey waitForUIElementToAppearWithMatcher:
+                      grey_accessibilityID(
+                          kAssistantAIMCloseButtonAccessibilityIdentifier)];
+
+  // Enter Tab Grid.
+  [ChromeEarlGreyUI openTabGrid];
+
+  // Verify the assistant is NOT visible in Tab Grid.
+  [[EarlGrey
+      selectElementWithMatcher:
+          grey_accessibilityID(kAssistantAIMCloseButtonAccessibilityIdentifier)]
+      assertWithMatcher:grey_nil()];
+
+  // Exit Tab Grid.
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::TabGridDoneButton()]
+      performAction:grey_tap()];
+
+  // Verify the assistant is visible again.
+  [ChromeEarlGrey waitForUIElementToAppearWithMatcher:
+                      grey_accessibilityID(
+                          kAssistantAIMCloseButtonAccessibilityIdentifier)];
+}
+
 @end
