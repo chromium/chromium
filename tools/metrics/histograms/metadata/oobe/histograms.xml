@@ -31,7 +31,6 @@ chromium-metrics-reviews@google.com.
   <variant name="App-launch-splash"/>
   <variant name="Apply-online-password"/>
   <variant name="Assistant-optin-flow"/>
-  <variant name="Autolaunch" summary="(obsolete) Not used since M-129"/>
   <variant name="Categories-selection"/>
   <variant name="Choobe"/>
   <variant name="Consolidated-consent"/>
@@ -52,14 +51,11 @@ chromium-metrics-reviews@google.com.
   <variant name="Fjord-station-setup"/>
   <variant name="Fjord-touch-controller"/>
   <variant name="Gaia-info"/>
-  <variant name="Gaia-password-changed"
-      summary="(obsolete) Not used since M-122"/>
   <variant name="Gaia-signin"/>
   <variant name="Gemini-intro"/>
   <variant name="Gesture-navigation"/>
   <variant name="Guest-tos"/>
   <variant name="Hw-data-collection"/>
-  <variant name="Kiosk-enable" summary="(obsolete) Not used since M-129"/>
   <variant name="Local-data-loss-warning"/>
   <variant name="Local-password-setup"/>
   <variant name="Local-state-error"/>
@@ -91,7 +87,6 @@ chromium-metrics-reviews@google.com.
   <variant name="Theme-selection"/>
   <variant name="Touchpad-scroll"/>
   <variant name="Tpm-error-message"/>
-  <variant name="Tuna" summary="(obsolete) Not used since M-128"/>
   <variant name="Update-required"/>
   <variant name="User-allowlist-check-screen"/>
   <variant name="User-creation"/>
@@ -125,7 +120,6 @@ chromium-metrics-reviews@google.com.
   <variant name="Apply-online-password"/>
   <variant name="Assistant-optin-flow"/>
   <variant name="Auto-enrollment-check"/>
-  <variant name="Autolaunch" summary="(obsolete) Not used since M-129"/>
   <variant name="Categories-selection"/>
   <variant name="Choobe"/>
   <variant name="Consolidated-consent"/>
@@ -151,15 +145,12 @@ chromium-metrics-reviews@google.com.
   <variant name="Fjord-station-setup"/>
   <variant name="Fjord-touch-controller"/>
   <variant name="Gaia-info"/>
-  <variant name="Gaia-password-changed"
-      summary="(obsolete) Not used since M-122"/>
   <variant name="Gaia-signin"/>
   <variant name="Gemini-intro"/>
   <variant name="Gesture-navigation"/>
   <variant name="Guest-tos"/>
   <variant name="Hid-detection"/>
   <variant name="Hw-data-collection"/>
-  <variant name="Kiosk-enable" summary="(obsolete) Not used since M-129"/>
   <variant name="Local-data-loss-warning"/>
   <variant name="Local-password-setup"/>
   <variant name="Local-state-error"/>
@@ -194,7 +185,6 @@ chromium-metrics-reviews@google.com.
   <variant name="Tos"/>
   <variant name="Touchpad-scroll"/>
   <variant name="Tpm-error-message"/>
-  <variant name="Tuna" summary="(obsolete) Not used since M-128"/>
   <variant name="Update-required"/>
   <variant name="User-allowlist-check-screen"/>
   <variant name="User-creation"/>
@@ -267,10 +257,6 @@ chromium-metrics-reviews@google.com.
   <variant name="Apply-online-password.Success"/>
   <variant name="Assistant-optin-flow.Next"/>
   <variant name="Auto-enrollment-check.Next"/>
-  <variant name="Autolaunch.Canceled"
-      summary="(obsolete) Not used since M-129"/>
-  <variant name="Autolaunch.Completed"
-      summary="(obsolete) Not used since M-129"/>
   <variant name="Categories-selection.DataMalformed"/>
   <variant name="Categories-selection.Error"/>
   <variant name="Categories-selection.Next"/>
@@ -300,14 +286,6 @@ chromium-metrics-reviews@google.com.
   <variant name="Cryptohome-recovery.FallbackLocal"/>
   <variant name="Cryptohome-recovery.FallbackOnline"/>
   <variant name="Cryptohome-recovery.GaiaLogin"/>
-  <variant name="Cryptohome-recovery.ManualRecovery"
-      summary="(obsolete) Not used since M-122"/>
-  <variant name="Cryptohome-recovery.NoRecoveryFactor"
-      summary="(obsolete) Not used since M-122"/>
-  <variant name="Cryptohome-recovery.Retry"
-      summary="(obsolete) Not used since M-122"/>
-  <variant name="Cryptohome-recovery.Succeeded"
-      summary="(obsolete) Not used since M-122"/>
   <variant name="Debugging.Next"/>
   <variant name="Demo-preferences.Canceled"/>
   <variant name="Demo-preferences.Completed"/>
@@ -334,21 +312,11 @@ chromium-metrics-reviews@google.com.
   <variant name="Gaia-info.Back"/>
   <variant name="Gaia-info.EnterQuickStart"/>
   <variant name="Gaia-info.Manual"/>
-  <variant name="Gaia-password-changed.Cancel"
-      summary="(obsolete) Not used since M-122"/>
-  <variant name="Gaia-password-changed.ContinueLogin"
-      summary="(obsolete) Not used since M-122"/>
-  <variant name="Gaia-password-changed.CryptohomeError"
-      summary="(obsolete) Not used since M-122"/>
-  <variant name="Gaia-password-changed.RecreateUser"
-      summary="(obsolete) Not used since M-122"/>
   <variant name="Gaia-signin.Back"/>
   <variant name="Gaia-signin.BackChild"/>
   <variant name="Gaia-signin.Cancel"/>
   <variant name="Gaia-signin.EnterpriseEnroll"/>
   <variant name="Gaia-signin.EnterQuickStart"/>
-  <variant name="Gaia-signin.StartConsumerKiosk"
-      summary="(obsolete) Not used since M-129"/>
   <variant name="Gemini-intro.Back"/>
   <variant name="Gemini-intro.Next"/>
   <variant name="Gesture-navigation.Next"/>
@@ -359,7 +327,6 @@ chromium-metrics-reviews@google.com.
   <variant name="Hid-detection.Next"/>
   <variant name="Hw-data-collection.AcceptedWithHWDataUsage"/>
   <variant name="Hw-data-collection.AcceptedWithoutHWDataUsage"/>
-  <variant name="Kiosk-enable.Next" summary="(obsolete) Not used since M-129"/>
   <variant name="Local-data-loss-warning.Back"/>
   <variant name="Local-data-loss-warning.Cancel"/>
   <variant name="Local-data-loss-warning.CryptohomeError"/>
@@ -445,8 +412,6 @@ chromium-metrics-reviews@google.com.
   <variant name="Terms-of-service.Declined"/>
   <variant name="Theme-selection.Proceed"/>
   <variant name="Touchpad-scroll.Next"/>
-  <variant name="Tuna.Back" summary="(obsolete) Not used since M-128"/>
-  <variant name="Tuna.Next" summary="(obsolete) Not used since M-128"/>
   <variant name="User-allowlist-check-screen.Retry"/>
   <variant name="User-creation.AddChild"/>
   <variant name="User-creation.Cancel"/>
