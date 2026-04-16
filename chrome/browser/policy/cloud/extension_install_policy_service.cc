@@ -102,6 +102,43 @@ bool HasNonDefaultInstallationMode(Profile* profile,
   return installation_mode != extensions::ManagedInstallationMode::kAllowed;
 }
 
+bool IsAnyEntryBlocked(const PolicyMap::Entry* entry,
+                       const ExtensionIdAndVersion& extension_id_and_version) {
+  if (IsExtensionInstallBlocked(*entry, extension_id_and_version)) {
+    return true;
+  }
+  for (const auto& conflict : entry->conflicts) {
+    if (IsExtensionInstallBlocked(conflict.entry(), extension_id_and_version)) {
+      return true;
+    }
+  }
+  return false;
+}
+
+std::optional<bool> GetEarlyAllowedResult(
+    Profile* profile,
+    const ExtensionIdAndVersion& extension_id_and_version,
+    const char* histogram_name) {
+  if (!profile->GetPrefs()->GetBoolean(
+          extensions::pref_names::kExtensionInstallCloudPolicyChecksEnabled)) {
+    base::UmaHistogramEnumeration(
+        histogram_name,
+        IsExtensionAllowedResult::kExtensionInstallCloudPolicyChecksDisabled);
+    return true;
+  }
+
+  if (HasNonDefaultInstallationMode(profile,
+                                    extension_id_and_version.extension_id)) {
+    base::UmaHistogramEnumeration(
+        histogram_name,
+        IsExtensionAllowedResult::kHasNonDefaultInstallationMode);
+    // Installation mode always takes priority over cloud-based blocking.
+    return true;
+  }
+
+  return std::nullopt;
+}
+
 // Returns true if any of the `decisions` contains `reason`.
 bool DecisionsContainReason(
     const std::vector<ExtensionInstallDecision>& decisions,
@@ -274,23 +311,10 @@ void ExtensionInstallPolicyServiceImpl::CanInstallExtension(
   std::move(callback).Run(true, std::u16string());
   return;
 #else
-  if (!profile_->GetPrefs()->GetBoolean(
-          extensions::pref_names::kExtensionInstallCloudPolicyChecksEnabled)) {
-    base::UmaHistogramEnumeration(
-        kUserCanInstallPolicyFetchResult,
-        IsExtensionAllowedResult::kExtensionInstallCloudPolicyChecksDisabled);
-    std::move(callback).Run(true, std::u16string());
-    return;
-  }
-
-  if (HasNonDefaultInstallationMode(&profile_.get(),
-                                    extension_id_and_version.extension_id)) {
-    base::UmaHistogramEnumeration(
-        kUserCanInstallPolicyFetchResult,
-        IsExtensionAllowedResult::kHasNonDefaultInstallationMode);
-    // Installation mode always takes priority over cloud-based blocking. Do
-    // not fetch policy.
-    std::move(callback).Run(true, std::u16string());
+  if (auto early_result =
+          GetEarlyAllowedResult(&profile_.get(), extension_id_and_version,
+                                kUserCanInstallPolicyFetchResult)) {
+    std::move(callback).Run(*early_result, std::u16string());
     return;
   }
 
@@ -329,21 +353,10 @@ std::optional<bool> ExtensionInstallPolicyServiceImpl::IsExtensionAllowed(
 #if !BUILDFLAG(ENABLE_EXTENSIONS)
   return std::nullopt;
 #else
-  if (!profile_->GetPrefs()->GetBoolean(
-          extensions::pref_names::kExtensionInstallCloudPolicyChecksEnabled)) {
-    base::UmaHistogramEnumeration(
-        kExtensionIsExtensionAllowedResult,
-        IsExtensionAllowedResult::kExtensionInstallCloudPolicyChecksDisabled);
-    return true;
-  }
-
-  if (HasNonDefaultInstallationMode(&profile_.get(),
-                                    extension_id_and_version.extension_id)) {
-    base::UmaHistogramEnumeration(
-        kExtensionIsExtensionAllowedResult,
-        IsExtensionAllowedResult::kHasNonDefaultInstallationMode);
-    // Installation mode always takes priority over cloud-based blocking.
-    return true;
+  if (auto early_result =
+          GetEarlyAllowedResult(&profile_.get(), extension_id_and_version,
+                                kExtensionIsExtensionAllowedResult)) {
+    return early_result;
   }
 
   auto* policy_service =
@@ -374,20 +387,12 @@ std::optional<bool> ExtensionInstallPolicyServiceImpl::IsExtensionAllowed(
     return true;
   }
 
-  if (IsExtensionInstallBlocked(*entry, extension_id_and_version)) {
+  if (IsAnyEntryBlocked(entry, extension_id_and_version)) {
     base::UmaHistogramEnumeration(kExtensionIsExtensionAllowedResult,
                                   IsExtensionAllowedResult::kExtensionBlocked);
     return false;
   }
 
-  for (const auto& conflict : entry->conflicts) {
-    if (IsExtensionInstallBlocked(conflict.entry(), extension_id_and_version)) {
-      base::UmaHistogramEnumeration(
-          kExtensionIsExtensionAllowedResult,
-          IsExtensionAllowedResult::kExtensionBlocked);
-      return false;
-    }
-  }
   base::UmaHistogramEnumeration(kExtensionIsExtensionAllowedResult,
                                 IsExtensionAllowedResult::kExtensionAllowed);
   return true;
