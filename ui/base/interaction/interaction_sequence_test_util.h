@@ -5,6 +5,8 @@
 #ifndef UI_BASE_INTERACTION_INTERACTION_SEQUENCE_TEST_UTIL_H_
 #define UI_BASE_INTERACTION_INTERACTION_SEQUENCE_TEST_UTIL_H_
 
+#include "base/run_loop.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/test/bind.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"

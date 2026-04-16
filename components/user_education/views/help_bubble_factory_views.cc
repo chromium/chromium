@@ -66,19 +66,15 @@ std::unique_ptr<HelpBubble> HelpBubbleFactoryViews::CreateBubbleImpl(
     const internal::HelpBubbleAnchorParams& anchor,
     HelpBubbleParams params,
     std::unique_ptr<HelpBubbleEventRelay> event_relay) {
-  anchor.view->SetProperty(kHasInProductHelpPromoKey, true);
   auto result = base::WrapUnique(new HelpBubbleViews(
-      new HelpBubbleView(delegate_, anchor, std::move(params),
-                         std::move(event_relay)),
+      HelpBubbleView::Create(delegate_, anchor, std::move(params),
+                             std::move(event_relay)),
       element));
   for (const auto& accelerator :
        delegate_->GetPaneNavigationAccelerators(element)) {
     result->help_bubble_view_->GetFocusManager()->RegisterAccelerator(
         accelerator, ui::AcceleratorManager::HandlerPriority::kNormalPriority,
         result.get());
-  }
-  if (result) {
-    MaybeApplyAttentionStateToTrackedElement(anchor.view);
   }
   return result;
 }

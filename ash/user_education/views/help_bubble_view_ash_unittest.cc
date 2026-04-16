@@ -80,12 +80,12 @@ using HelpBubbleViewAshTest = HelpBubbleViewAshTestBase;
 
 // Verifies that help bubbles are contained within the correct parent window.
 TEST_F(HelpBubbleViewAshTest, ParentWindow) {
-  auto* const help_bubble_view = CreateHelpBubbleView();
-  EXPECT_TRUE(help_bubble_view->anchor_widget()
+  auto const help_bubble = CreateHelpBubbleView();
+  EXPECT_TRUE(help_bubble.bubble_view->anchor_widget()
                   ->GetNativeWindow()
                   ->GetRootWindow()
                   ->GetChildById(kShellWindowId_HelpBubbleContainer)
-                  ->Contains(help_bubble_view->GetWidget()->GetNativeWindow()));
+                  ->Contains(help_bubble.widget->GetNativeWindow()));
 }
 
 // HelpBubbleViewAshBodyIconTest -----------------------------------------------
@@ -154,8 +154,8 @@ TEST_P(HelpBubbleViewAshBodyIconTest, BodyIcon) {
   }
 
   // Create `help_bubble_view`.
-  auto* const help_bubble_view = CreateHelpBubbleView(std::move(params));
-  ASSERT_NE(help_bubble_view, nullptr);
+  auto const help_bubble = CreateHelpBubbleView(std::move(params));
+  ASSERT_NE(help_bubble.bubble_view, nullptr);
 
   // Cache `expected_body_icon` based on order of precedence.
   const gfx::VectorIcon& expected_body_icon =
@@ -167,7 +167,8 @@ TEST_P(HelpBubbleViewAshBodyIconTest, BodyIcon) {
       views::ElementTrackerViews::GetInstance()
           ->GetUniqueViewAs<views::ImageView>(
               HelpBubbleViewAsh::kBodyIconIdForTesting,
-              views::ElementTrackerViews::GetContextForView(help_bubble_view)),
+              views::ElementTrackerViews::GetContextForView(
+                  help_bubble.bubble_view)),
       Conditional(&expected_body_icon != &gfx::VectorIcon::EmptyIcon(),
                   Property(&views::ImageView::GetImageModel,
                            Eq(ui::ImageModel::FromVectorIcon(
@@ -178,33 +179,33 @@ TEST_P(HelpBubbleViewAshBodyIconTest, BodyIcon) {
 
 // Verifies that help bubbles have the appropriate background color.
 TEST_F(HelpBubbleViewAshTest, BackgroundColor) {
-  const auto* const help_bubble_view = CreateHelpBubbleView();
-  EXPECT_EQ(help_bubble_view->background_color(),
+  const auto help_bubble = CreateHelpBubbleView();
+  EXPECT_EQ(help_bubble.bubble_view->background_color(),
             cros_tokens::kCrosSysDialogContainer);
 }
 
 // Verifies that help bubbles can activate.
 TEST_F(HelpBubbleViewAshTest, CanActivate) {
-  const auto* const help_bubble_view = CreateHelpBubbleView();
-  EXPECT_TRUE(help_bubble_view->CanActivate());
+  const auto help_bubble = CreateHelpBubbleView();
+  EXPECT_TRUE(help_bubble.bubble_view->CanActivate());
 }
 
 TEST_F(HelpBubbleViewAshTest, RootViewAccessibleName) {
-  auto* const help_bubble_view = CreateHelpBubbleView();
+  auto const help_bubble = CreateHelpBubbleView();
   ui::AXNodeData root_view_data;
-  help_bubble_view->GetWidget()
-      ->GetRootView()
+  help_bubble.widget->GetRootView()
       ->GetViewAccessibility()
       .GetAccessibleNodeData(&root_view_data);
   EXPECT_EQ(
       root_view_data.GetString16Attribute(ax::mojom::StringAttribute::kName),
-      help_bubble_view->GetAccessibleWindowTitle());
+      help_bubble.bubble_view->GetAccessibleWindowTitle());
 }
 
 // Verifies that help bubbles do not handle events within their shadows.
 TEST_F(HelpBubbleViewAshTest, HitTest) {
-  auto* const help_bubble_view = CreateHelpBubbleView();
-  auto* const help_bubble_widget = help_bubble_view->GetWidget();
+  auto const help_bubble = CreateHelpBubbleView();
+  auto* const help_bubble_view = help_bubble.bubble_view.get();
+  auto* const help_bubble_widget = help_bubble.widget.get();
   auto* const help_bubble_window = help_bubble_widget->GetNativeWindow();
   auto* const root_window = help_bubble_window->GetRootWindow();
   auto* const root_window_targeter = root_window->targeter();

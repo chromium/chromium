@@ -308,7 +308,8 @@ class FeaturePromoControllerImpl : public FeaturePromoController {
   void FinishContinuedPromo(const base::Feature& iph_feature) override;
 
   // Callback that cleans up a help bubble when it is closed.
-  void OnHelpBubbleClosed(HelpBubble* bubble, HelpBubble::CloseReason reason);
+  void OnHelpBubbleClosed(base::WeakPtr<HelpBubble> bubble,
+                          HelpBubble::CloseReason reason);
 
   // Callback when the help bubble times out.
   void OnHelpBubbleTimedOut(const base::Feature* feature);
