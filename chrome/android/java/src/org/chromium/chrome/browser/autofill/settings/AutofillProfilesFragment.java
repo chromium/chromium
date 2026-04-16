@@ -11,10 +11,8 @@ import android.content.res.Configuration;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
 
+import androidx.lifecycle.Lifecycle;
 import androidx.preference.Preference;
 import androidx.preference.PreferenceCategory;
 import androidx.preference.PreferenceScreen;
@@ -215,7 +213,10 @@ public class AutofillProfilesFragment extends ChromeBaseSettingsFragment
         } else {
             mPageTitle.set(getString(R.string.autofill_addresses_settings_title));
         }
-        setHasOptionsMenu(true);
+
+        requireActivity()
+                .addMenuProvider(new AutofillHelpMenuProvider(this), this, Lifecycle.State.RESUMED);
+
         PreferenceScreen screen = getPreferenceManager().createPreferenceScreen(getStyledContext());
         // Suppresses unwanted animations while Preferences are removed from and re-added to the
         // screen.
@@ -238,27 +239,6 @@ public class AutofillProfilesFragment extends ChromeBaseSettingsFragment
         if (mEntityEditor != null) {
             mEntityEditor.onConfigurationChanged();
         }
-    }
-
-    @Override
-    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        menu.clear();
-        MenuItem help =
-                menu.add(Menu.NONE, R.id.menu_id_targeted_help, Menu.NONE, R.string.menu_help);
-        help.setIcon(R.drawable.ic_help_24dp);
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        if (item.getItemId() == R.id.menu_id_targeted_help) {
-            getHelpAndFeedbackLauncher()
-                    .show(
-                            getActivity(),
-                            getActivity().getString(R.string.help_context_autofill),
-                            null);
-            return true;
-        }
-        return super.onOptionsItemSelected(item);
     }
 
     @Override

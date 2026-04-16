@@ -10,15 +10,11 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static org.robolectric.Shadows.shadowOf;
 
 import android.os.Bundle;
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
 
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentFactory;
@@ -64,8 +60,6 @@ public class AutofillBuyNowPayLaterFragmentTest {
     @Mock private PersonalDataManager mPersonalDataManager;
     @Mock private Profile mProfile;
     @Mock private HelpAndFeedbackLauncher mHelpAndFeedbackLauncher;
-    @Mock private Menu mHelpMenu;
-    @Mock private MenuItem mHelpItem;
 
     private static final String AFFIRM_ISSUER_ID = "affirm";
     private static final String AFFIRM_DISPLAY_NAME = "Affirm";
@@ -138,16 +132,10 @@ public class AutofillBuyNowPayLaterFragmentTest {
 
     @Test
     public void testHelpMenuTriggersAutofillHelp() {
-        doReturn(mHelpItem)
-                .when(mHelpMenu)
-                .add(Menu.NONE, R.id.menu_id_targeted_help, Menu.NONE, R.string.menu_help);
-        doReturn(R.id.menu_id_targeted_help).when(mHelpItem).getItemId();
         launchAutofillBuyNowPayLaterFragment();
-        mAutofillBuyNowPayLaterFragment.onCreateOptionsMenu(mHelpMenu, mock(MenuInflater.class));
-        verify(mHelpMenu).clear();
-        verify(mHelpItem).setIcon(R.drawable.ic_help_24dp);
 
-        mAutofillBuyNowPayLaterFragment.onOptionsItemSelected(mHelpItem);
+        shadowOf(mAutofillBuyNowPayLaterFragment.getActivity())
+                .clickMenuItem(R.id.menu_id_targeted_help);
 
         verify(mHelpAndFeedbackLauncher)
                 .show(

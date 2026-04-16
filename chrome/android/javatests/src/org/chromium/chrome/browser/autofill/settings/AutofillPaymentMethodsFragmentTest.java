@@ -54,6 +54,7 @@ import org.mockito.junit.MockitoRule;
 import org.mockito.quality.Strictness;
 
 import org.chromium.base.Callback;
+import org.chromium.base.ContextUtils;
 import org.chromium.base.DeviceInfo;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.Batch;
@@ -71,6 +72,8 @@ import org.chromium.chrome.browser.autofill.PersonalDataManager.Iban;
 import org.chromium.chrome.browser.autofill.options.AutofillOptionsFragment;
 import org.chromium.chrome.browser.device_reauth.BiometricStatus;
 import org.chromium.chrome.browser.device_reauth.ReauthenticatorBridge;
+import org.chromium.chrome.browser.feedback.HelpAndFeedbackLauncher;
+import org.chromium.chrome.browser.feedback.HelpAndFeedbackLauncherFactory;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.preferences.Pref;
@@ -124,6 +127,7 @@ public class AutofillPaymentMethodsFragmentTest {
     @Mock private ReauthenticatorBridge mReauthenticatorMock;
     @Mock private AutofillPaymentMethodsDelegate.Natives mNativeMock;
     @Mock private Callback<String> mServerIbanManageLinkOpenerCallback;
+    @Mock private HelpAndFeedbackLauncher mHelpAndFeedbackLauncher;
     @Mock private PackageManagerDelegate mPackageManagerDelegate;
 
     // Card Issuer values that map to the browser CreditCard.Issuer enum.
@@ -315,6 +319,7 @@ public class AutofillPaymentMethodsFragmentTest {
                     AutofillClientProviderUtils.setAutofillAvailabilityToUseForTesting(
                             AndroidAutofillAvailabilityStatus.SETTING_TURNED_OFF);
                 });
+        HelpAndFeedbackLauncherFactory.setInstanceForTesting(mHelpAndFeedbackLauncher);
     }
 
     @After
@@ -1956,9 +1961,7 @@ public class AutofillPaymentMethodsFragmentTest {
 
     @Test
     @MediumTest
-    @EnableFeatures({
-        ChromeFeatureList.AUTOFILL_ENABLE_SEPARATE_PIX_PREFERENCE_ITEM
-    })
+    @EnableFeatures({ChromeFeatureList.AUTOFILL_ENABLE_SEPARATE_PIX_PREFERENCE_ITEM})
     @DisableFeatures({ChromeFeatureList.AUTOFILL_ENABLE_SEPARATE_PIX_PREFERENCE_ITEM})
     public void testSettingsState_hidePayWithPixPreferenceInThirdPartyMode() throws Exception {
         ThreadUtils.runOnUiThreadBlocking(
@@ -2047,6 +2050,21 @@ public class AutofillPaymentMethodsFragmentTest {
                 (AutofillPaymentMethodsFragment) activity.getMainFragment();
         assertThat(fragment.getPageTitle().get())
                 .isEqualTo(activity.getString(R.string.autofill_payments_title));
+    }
+
+    @Test
+    @SmallTest
+    public void testHelpMenuTriggersAutofillHelp() {
+        SettingsActivity settingsActivity = mSettingsActivityTestRule.startSettingsActivity();
+
+        onView(withId(R.id.menu_id_targeted_help)).perform(click());
+
+        verify(mHelpAndFeedbackLauncher)
+                .show(
+                        settingsActivity,
+                        ContextUtils.getApplicationContext()
+                                .getString(org.chromium.chrome.R.string.help_context_autofill),
+                        /* url= */ null);
     }
 
     private void setUpBiometricAuthenticationResult(boolean success) {
