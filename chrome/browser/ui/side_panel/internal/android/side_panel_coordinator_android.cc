@@ -92,10 +92,37 @@ void SidePanelCoordinatorAndroid::NotifyCloseAnimationFinished(
       << "Current entry should still exist when side panel is closing.";
 
   SetCurrentKey(panel_type, /*new_key=*/std::nullopt);
+
   // Now that the animation has completed, we can update our local state to be
   // closed, and trigger the entry hidden callbacks.
   entry->OnEntryHidden();
   entry->OnEntryHiddenWithReason(pending_hide_reason_);
+
+  // We need to explicitly reset the active entry for the "close side panel"
+  // case.
+  //
+  // Context as of Apr 15, 2026:
+  //
+  // `SidePanelRegistry` observes all its `SidePanelEntries` via
+  // `SidePanelEntryObserver`.
+  //
+  // For the "open side panel" case, the active entry is set via
+  // `SidePanelEntry::OnEntryShown()` -> `SidePanelRegistry::OnEntryShown()`.
+  //
+  // For the "close side panel" case, `SidePanelRegistry` doesn't implement
+  // `SidePanelEntryObserver::OnEntryHidden()` or
+  // `SidePanelEntryObserver::OnEntryHiddenWithReason()`, so
+  // `SidePanelEntry::OnEntryHidden()` and
+  // `SidePanelEntry::OnEntryHiddenWithReason()` can't reset the active entry.
+  //
+  // TODO(crbug.com/503113522): Consider having `SidePanelRegistry` _reset_ the
+  // active entry so it's consistent with how the active entry is _set_.
+  if (auto* contextual_registry = GetActiveContextualRegistry()) {
+    contextual_registry->ResetActiveEntryFor(panel_type);
+  }
+  if (auto* window_registry = SidePanelRegistry::From(browser())) {
+    window_registry->ResetActiveEntryFor(panel_type);
+  }
 
   // TODO(crbug.com/493931023): Record metrics here
   // (SidePanelMetrics::RecordSidePanelClosed).

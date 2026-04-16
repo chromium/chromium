@@ -129,6 +129,64 @@ IN_PROC_BROWSER_TEST_F(SidePanelCoordinatorAndroidBrowserTest,
   EXPECT_EQ(entry_key.id(), entry_observer.id_for_last_entry_shown_.value());
 }
 
+IN_PROC_BROWSER_TEST_F(SidePanelCoordinatorAndroidBrowserTest,
+                       Show_TabScopedEntry_SetsActiveEntry) {
+  // Arrange:
+  BrowserWindowInterface* browser = GetBrowserWindow();
+  auto* tab_list = TabListInterface::From(browser);
+  auto* active_tab = tab_list->GetActiveTab();
+
+  auto entry_key = SidePanelEntryKey(SidePanelEntryId::kAboutThisSite);
+  std::unique_ptr<SidePanelEntry> entry =
+      CreateSidePanelEntry(entry_key, browser);
+  SidePanelType entry_type = entry->type();
+  SidePanelEntry* entry_ptr = entry.get();
+
+  auto* registry = SidePanelRegistry::From(active_tab);
+  registry->Register(std::move(entry));
+
+  auto* coordinator = SidePanelCoordinatorAndroid::From(browser);
+  coordinator->SetNoDelaysForTesting(true);
+
+  // Act:
+  coordinator->SidePanelUIBase::Show(entry_key, /*open_trigger=*/std::nullopt,
+                                     /*suppress_animations=*/true);
+
+  // Assert:
+  std::optional<SidePanelEntry*> active_entry =
+      registry->GetActiveEntryFor(entry_type);
+  EXPECT_TRUE(active_entry.has_value());
+  EXPECT_EQ(entry_ptr, active_entry.value());
+}
+
+IN_PROC_BROWSER_TEST_F(SidePanelCoordinatorAndroidBrowserTest,
+                       Show_WindowScopedEntry_SetsActiveEntry) {
+  // Arrange:
+  BrowserWindowInterface* browser = GetBrowserWindow();
+
+  auto entry_key = SidePanelEntryKey(SidePanelEntryId::kAboutThisSite);
+  std::unique_ptr<SidePanelEntry> entry =
+      CreateSidePanelEntry(entry_key, browser);
+  SidePanelType entry_type = entry->type();
+  SidePanelEntry* entry_ptr = entry.get();
+
+  auto* registry = SidePanelRegistry::From(browser);
+  registry->Register(std::move(entry));
+
+  auto* coordinator = SidePanelCoordinatorAndroid::From(browser);
+  coordinator->SetNoDelaysForTesting(true);
+
+  // Act:
+  coordinator->SidePanelUIBase::Show(entry_key, /*open_trigger=*/std::nullopt,
+                                     /*suppress_animations=*/true);
+
+  // Assert:
+  std::optional<SidePanelEntry*> active_entry =
+      registry->GetActiveEntryFor(entry_type);
+  EXPECT_TRUE(active_entry.has_value());
+  EXPECT_EQ(entry_ptr, active_entry.value());
+}
+
 IN_PROC_BROWSER_TEST_F(
     SidePanelCoordinatorAndroidBrowserTest,
     Show_SidePanelAlreadyShownWithDifferentEntry_ReplacesSidePanelContent) {
@@ -254,6 +312,66 @@ IN_PROC_BROWSER_TEST_F(SidePanelCoordinatorAndroidBrowserTest,
             entry_observer.id_for_last_entry_hidden_with_reason_.value());
   EXPECT_EQ(SidePanelEntryHideReason::kSidePanelClosed,
             entry_observer.reason_for_last_entry_hidden_with_reason_.value());
+}
+
+IN_PROC_BROWSER_TEST_F(SidePanelCoordinatorAndroidBrowserTest,
+                       Close_TabScopedEntry_ResetsActiveEntry) {
+  // Arrange:
+  BrowserWindowInterface* browser = GetBrowserWindow();
+  auto* tab_list = TabListInterface::From(browser);
+  auto* active_tab = tab_list->GetActiveTab();
+
+  auto entry_key = SidePanelEntryKey(SidePanelEntryId::kAboutThisSite);
+  std::unique_ptr<SidePanelEntry> entry =
+      CreateSidePanelEntry(entry_key, browser);
+  SidePanelType entry_type = entry->type();
+
+  auto* registry = SidePanelRegistry::From(active_tab);
+  registry->Register(std::move(entry));
+
+  auto* coordinator = SidePanelCoordinatorAndroid::From(browser);
+  coordinator->SetNoDelaysForTesting(true);
+  coordinator->SidePanelUIBase::Show(entry_key, /*open_trigger=*/std::nullopt,
+                                     /*suppress_animations=*/true);
+  ASSERT_TRUE(coordinator->SidePanelUIBase::IsSidePanelEntryShowing(entry_key));
+
+  // Act:
+  coordinator->Close(entry_type, SidePanelEntryHideReason::kSidePanelClosed,
+                     /*suppress_animations=*/true);
+
+  // Assert:
+  std::optional<SidePanelEntry*> active_entry =
+      registry->GetActiveEntryFor(entry_type);
+  EXPECT_FALSE(active_entry.has_value());
+}
+
+IN_PROC_BROWSER_TEST_F(SidePanelCoordinatorAndroidBrowserTest,
+                       Close_WindowScopedEntry_ResetsActiveEntry) {
+  // Arrange:
+  BrowserWindowInterface* browser = GetBrowserWindow();
+
+  auto entry_key = SidePanelEntryKey(SidePanelEntryId::kAboutThisSite);
+  std::unique_ptr<SidePanelEntry> entry =
+      CreateSidePanelEntry(entry_key, browser);
+  SidePanelType entry_type = entry->type();
+
+  auto* registry = SidePanelRegistry::From(browser);
+  registry->Register(std::move(entry));
+
+  auto* coordinator = SidePanelCoordinatorAndroid::From(browser);
+  coordinator->SetNoDelaysForTesting(true);
+  coordinator->SidePanelUIBase::Show(entry_key, /*open_trigger=*/std::nullopt,
+                                     /*suppress_animations=*/true);
+  ASSERT_TRUE(coordinator->SidePanelUIBase::IsSidePanelEntryShowing(entry_key));
+
+  // Act:
+  coordinator->Close(entry_type, SidePanelEntryHideReason::kSidePanelClosed,
+                     /*suppress_animations=*/true);
+
+  // Assert:
+  std::optional<SidePanelEntry*> active_entry =
+      registry->GetActiveEntryFor(entry_type);
+  EXPECT_FALSE(active_entry.has_value());
 }
 
 IN_PROC_BROWSER_TEST_F(SidePanelCoordinatorAndroidBrowserTest,
