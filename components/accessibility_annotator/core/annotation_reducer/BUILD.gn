@@ -35,6 +35,8 @@ source_set("annotation_reducer") {
     "entry_type.h",
     "entry_type_util.cc",
     "entry_type_util.h",
+    "ingested_content_annotation.cc",
+    "ingested_content_annotation.h",
     "memory_data_provider.h",
     "memory_search_result.cc",
     "memory_search_result.h",
