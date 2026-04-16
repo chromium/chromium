@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+<head>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+</head>
+<body>
+<script>
+promise_test(async () => {
+  if (!window.testRunner) {
+    assert_unreached("This test requires testRunner");
+  }
+
+  // 1. Call getLayoutMap in isolated world first.
+  testRunner.evaluateScriptInIsolatedWorld(1, `
+    window.isolated_promise = navigator.keyboard.getLayoutMap();
+    window.isolated_promise.leaked_marker = true;
+  `);
+
+  // 2. Call getLayoutMap in main world.
+  let main_promise = navigator.keyboard.getLayoutMap();
+
+  // 3. Check if main_promise is the leaked one.
+  assert_false("leaked_marker" in main_promise, "Main world promise should not be the same as isolated world promise");
+
+  await main_promise;
+}, "navigator.keyboard.getLayoutMap() does not leak promises from isolated world to main world");
+</script>
+</body>
+</html>

@@ -7,12 +7,12 @@
 #include "third_party/blink/public/platform/browser_interface_broker_proxy.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/platform/task_type.h"
-#include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
-#include "third_party/blink/renderer/bindings/core/v8/v8_throw_dom_exception.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
+#include "third_party/blink/renderer/modules/keyboard/keyboard_layout_map.h"
+#include "third_party/blink/renderer/platform/bindings/dom_wrapper_world.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
@@ -41,10 +41,6 @@ ScriptPromise<KeyboardLayoutMap> KeyboardLayout::GetKeyboardLayoutMap(
     ExceptionState& exception_state) {
   DCHECK(script_state);
 
-  if (script_promise_resolver_) {
-    return script_promise_resolver_->Promise();
-  }
-
   if (!IsLocalFrameAttached()) {
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
                                       kKeyboardMapFrameDetachedErrorMsg);
@@ -57,13 +53,19 @@ ScriptPromise<KeyboardLayoutMap> KeyboardLayout::GetKeyboardLayoutMap(
     return EmptyPromise();
   }
 
-  script_promise_resolver_ =
-      MakeGarbageCollected<ScriptPromiseResolver<KeyboardLayoutMap>>(
-          script_state, exception_state.GetContext());
-  service_->GetKeyboardLayoutMap(
-      script_promise_resolver_->WrapCallbackInScriptScope(BindOnce(
-          &KeyboardLayout::GotKeyboardLayoutMap, WrapPersistent(this))));
-  return script_promise_resolver_->Promise();
+  if (!layout_map_property_) {
+    layout_map_property_ = MakeGarbageCollected<LayoutMapProperty>(
+        ExecutionContext::From(script_state));
+  }
+
+  auto promise = layout_map_property_->Promise(script_state->World());
+
+  if (!is_request_pending_) {
+    is_request_pending_ = true;
+    service_->GetKeyboardLayoutMap(
+        BindOnce(&KeyboardLayout::GotKeyboardLayoutMap, WrapPersistent(this)));
+  }
+  return promise;
 }
 
 bool KeyboardLayout::IsLocalFrameAttached() {
@@ -72,8 +74,9 @@ bool KeyboardLayout::IsLocalFrameAttached() {
 
 bool KeyboardLayout::EnsureServiceConnected() {
   if (!service_.is_bound()) {
-    if (!DomWindow())
+    if (!DomWindow()) {
       return false;
+    }
     DomWindow()->GetBrowserInterfaceBroker().GetInterface(
         service_.BindNewPipeAndPassReceiver(
             DomWindow()->GetTaskRunner(TaskType::kMiscPlatformAPI)));
@@ -83,33 +86,31 @@ bool KeyboardLayout::EnsureServiceConnected() {
 }
 
 void KeyboardLayout::GotKeyboardLayoutMap(
-    ScriptPromiseResolver<KeyboardLayoutMap>* resolver,
     mojom::blink::GetKeyboardLayoutMapResultPtr result) {
-  DCHECK(script_promise_resolver_);
+  DCHECK(layout_map_property_);
+  DCHECK(is_request_pending_);
+  is_request_pending_ = false;
 
   switch (result->status) {
     case mojom::blink::GetKeyboardLayoutMapStatus::kSuccess:
-      resolver->Resolve(
+      layout_map_property_->Resolve(
           MakeGarbageCollected<KeyboardLayoutMap>(result->layout_map));
       break;
     case mojom::blink::GetKeyboardLayoutMapStatus::kFail:
-      resolver->Reject(V8ThrowDOMException::CreateOrDie(
-          resolver->GetScriptState()->GetIsolate(),
+      layout_map_property_->Reject(MakeGarbageCollected<DOMException>(
           DOMExceptionCode::kInvalidStateError,
           kKeyboardMapRequestFailedErrorMsg));
       break;
     case mojom::blink::GetKeyboardLayoutMapStatus::kDenied:
-      resolver->Reject(V8ThrowDOMException::CreateOrDie(
-          resolver->GetScriptState()->GetIsolate(),
+      layout_map_property_->Reject(MakeGarbageCollected<DOMException>(
           DOMExceptionCode::kSecurityError, kFeaturePolicyBlocked));
       break;
   }
-
-  script_promise_resolver_ = nullptr;
+  layout_map_property_ = nullptr;
 }
 
 void KeyboardLayout::Trace(Visitor* visitor) const {
-  visitor->Trace(script_promise_resolver_);
+  visitor->Trace(layout_map_property_);
   visitor->Trace(service_);
   ExecutionContextClient::Trace(visitor);
 }
