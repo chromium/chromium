@@ -56,4 +56,8 @@ ChromeCoordinator* CreateCobaltPopupCoordinator(
   return nil;
 }
 
+ObservingSceneAgent* CreateCobaltSceneAgent() {
+  return nil;
+}
+
 }  // namespace ios::provider

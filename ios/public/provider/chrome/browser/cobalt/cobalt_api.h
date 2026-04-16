@@ -15,6 +15,7 @@ class Browser;
 class ProfileIOS;
 class TabHelperAttacher;
 @class UIViewController;
+@class ObservingSceneAgent;
 
 namespace web {
 class JavaScriptFeature;
@@ -77,6 +78,9 @@ ChromeCoordinator* CreateCobaltPopupCoordinator(
     Browser* browser,
     UIViewController* popup_view_controller,
     CobaltPopupCompletion completion);
+
+// Returns the Cobalt scene agent.
+ObservingSceneAgent* CreateCobaltSceneAgent();
 
 }  // namespace ios::provider
 
