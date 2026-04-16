@@ -51,8 +51,14 @@
 }
 </if>
 
+.copy,
 .toggle {
   cursor: pointer;
+}
+
+.link img {
+  height: 12px;
+  width: 12px;
 }
 
 <if expr="is_android or is_ios">
@@ -73,11 +79,6 @@
   flex: 1;
 }
 
-.link img {
-  height: 12px;
-  width: 12px;
-}
-
 .copy {
   flex: 0 0 auto;
 }
@@ -90,7 +91,11 @@
   <div class="scope" role="cell"></div>
   <div class="level" role="cell"></div>
   <div class="messages" role="cell"></div>
-  <div class="toggle" role="cell"></div>
+  <div class="copy" role="cell">
+    <a is="action-link" class="copy-value link" role="cell">
+      <img src="chrome://resources/images/icon_copy_content.svg">
+    </a>
+  </div>
 </div>
 <if expr="is_android or is_ios">
   <div class="policy conflict entry" role="rowgroup">

@@ -56,7 +56,7 @@ export class PolicyConflictElement extends CustomElement {
     this.toggleAttribute('hidden', true);
     this.setAttribute('role', 'rowgroup');
 
-    const copyLink = this.shadowRoot!.querySelector('.value.row .copy-value');
+    const copyLink = this.shadowRoot!.querySelector('.row .copy-value');
     if (copyLink) {
       copyLink.addEventListener('click', () => this.copyValue_());
     }
@@ -92,20 +92,20 @@ export class PolicyConflictElement extends CustomElement {
     setText('.source.row .value', sourceText);
     setText('.scope.row .value', scopeText);
     setText('.level.row .value', levelText);
+    // </if>
 
     // Set the label for the copy link.
-    const copyLink = this.shadowRoot!.querySelector('.value.row .copy-value');
+    const copyLink = this.shadowRoot!.querySelector('.row .copy-value');
     if (copyLink) {
       const copyLabel = loadTimeData.getStringF('policyCopyValue', _policyName);
       copyLink.setAttribute('title', copyLabel);
       copyLink.setAttribute('aria-label', copyLabel);
     }
-    // </if>
   }
 
   // Copies the policy's conflicting/superseded value to the clipboard.
   private copyValue_() {
-    const valueDisplay = this.shadowRoot!.querySelector('.value.row .value');
+    const valueDisplay = this.shadowRoot!.querySelector('.row .value');
     if (valueDisplay) {
       copyValue(valueDisplay as CustomElement);
     }
