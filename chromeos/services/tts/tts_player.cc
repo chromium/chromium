@@ -13,10 +13,17 @@ namespace tts {
 TtsPlayer::TtsPlayer(
     mojo::PendingRemote<media::mojom::AudioStreamFactory> factory,
     const media::AudioParameters& params)
-    : output_device_(std::move(factory), params, this, std::string()),
+    : output_device_(
+          std::make_unique<audio::OutputDevice>(std::move(factory),
+                                                params,
+                                                this,
+                                                std::string())),
       task_runner_(base::SingleThreadTaskRunner::GetCurrentDefault()) {}
 
-TtsPlayer::~TtsPlayer() = default;
+TtsPlayer::~TtsPlayer() {
+  // Join the audio thread before any members it accesses are destroyed.
+  output_device_.reset();
+}
 
 void TtsPlayer::Play(
     base::OnceCallback<void(::mojo::PendingReceiver<mojom::TtsEventObserver>)>
@@ -25,7 +32,7 @@ void TtsPlayer::Play(
   auto pending_receiver = tts_event_observer_.BindNewPipeAndPassReceiver();
   std::move(callback).Run(std::move(pending_receiver));
 
-  output_device_.Play();
+  output_device_->Play();
 }
 
 void TtsPlayer::AddAudioBuffer(AudioBuffer buf) {
@@ -44,7 +51,7 @@ void TtsPlayer::Stop() {
 }
 
 void TtsPlayer::SetVolume(float volume) {
-  output_device_.SetVolume(volume);
+  output_device_->SetVolume(volume);
 }
 
 void TtsPlayer::Pause() {
@@ -53,7 +60,7 @@ void TtsPlayer::Pause() {
 }
 
 void TtsPlayer::Resume() {
-  output_device_.Play();
+  output_device_->Play();
 }
 
 int TtsPlayer::Render(base::TimeDelta delay,
@@ -96,7 +103,7 @@ int TtsPlayer::Render(base::TimeDelta delay,
 void TtsPlayer::OnRenderError() {}
 
 void TtsPlayer::StopLocked(bool clear_buffers) {
-  output_device_.Pause();
+  output_device_->Pause();
   rendered_buffers_ = std::queue<AudioBuffer>();
   if (clear_buffers) {
     buffers_ = std::queue<AudioBuffer>();

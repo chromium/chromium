@@ -4,9 +4,17 @@
 
 #include "chromeos/services/tts/tts_player.h"
 
+#include <memory>
+
+#include "base/containers/span.h"
+#include "base/memory/unsafe_shared_memory_region.h"
+#include "base/sync_socket.h"
 #include "chromeos/services/tts/constants.h"
 #include "chromeos/services/tts/tts_test_utils.h"
 #include "media/base/audio_bus.h"
+#include "media/base/audio_parameters.h"
+#include "media/mojo/mojom/audio_data_pipe.mojom.h"
+#include "mojo/public/cpp/platform/platform_handle.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
 namespace chromeos {
@@ -234,6 +242,84 @@ TEST_F(TtsPlayerTest, RenderMultiBusFromMultiBuffers) {
   auto second_actual = second_bus->channel(0).first<2u>();
   constexpr std::array<float, 2> kSecondExpected = {0.6, 0.7};
   EXPECT_THAT(second_actual, base::span(kSecondExpected));
+}
+
+// Unlike MockAudioStreamFactory, provides a real data pipe so OutputDevice
+// creates a real audio render thread.
+class RealPipeAudioStreamFactory : public MockAudioStreamFactory {
+ public:
+  void CreateOutputStream(
+      mojo::PendingReceiver<media::mojom::AudioOutputStream> stream,
+      mojo::PendingAssociatedRemote<media::mojom::AudioOutputStreamObserver>
+          observer,
+      mojo::PendingRemote<media::mojom::AudioLog> log,
+      const std::string& device_id,
+      const media::AudioParameters& params,
+      const base::UnguessableToken& group_id,
+      base::OnceCallback<void(media::mojom::ReadWriteAudioDataPipePtr)>
+          callback) override {
+    audio_output_stream_ = std::move(stream);
+
+    uint32_t buffer_size = media::ComputeAudioOutputBufferSize(params);
+    auto shared_memory_region =
+        base::UnsafeSharedMemoryRegion::Create(buffer_size);
+    CHECK(shared_memory_region.IsValid());
+
+    {
+      auto mapping = shared_memory_region.Map();
+      CHECK(mapping.IsValid());
+      auto span = mapping.GetMemoryAsSpan<uint8_t>(buffer_size);
+      std::ranges::fill(span, 0);
+    }
+
+    base::CancelableSyncSocket foreign_socket;
+    CHECK(base::CancelableSyncSocket::CreatePair(&local_socket_,
+                                                  &foreign_socket));
+
+    std::move(callback).Run(media::mojom::ReadWriteAudioDataPipe::New(
+        std::move(shared_memory_region),
+        mojo::PlatformHandle(foreign_socket.Take())));
+  }
+
+  void SignalRender() {
+    uint32_t pending_data = 0;
+    local_socket_.Send(base::byte_span_from_ref(pending_data));
+  }
+
+  base::CancelableSyncSocket local_socket_;
+};
+
+// Regression test for crbug.com/502514784. Destroying a TtsPlayer while the
+// audio thread is in Render() would UAF on buffers_ if output_device_ were
+// declared before them (wrong C++ destruction order). TSAN/ASAN catch this.
+TEST(TtsPlayerDestructionTest, DestroyDuringActiveRenderIsNotUAF) {
+  base::test::TaskEnvironment task_environment;
+  const media::AudioParameters params(
+      media::AudioParameters::AUDIO_PCM_LOW_LATENCY,
+      media::ChannelLayoutConfig::Mono(), kDefaultSampleRate,
+      kDefaultBufferSize);
+
+  RealPipeAudioStreamFactory real_pipe_factory;
+  mojo::Receiver<media::mojom::AudioStreamFactory> factory_receiver(
+      &real_pipe_factory);
+
+  auto player = std::make_unique<TtsPlayer>(
+      factory_receiver.BindNewPipeAndPassRemote(), params);
+
+  // Let mojo deliver the data pipe so the real audio thread starts.
+  task_environment.RunUntilIdle();
+
+  // Many small buffers keep Render() busy long enough to race with destruction.
+  for (int i = 0; i < 10000; i++) {
+    TtsPlayer::AudioBuffer buffer;
+    buffer.frames = {0.5f};
+    buffer.status = 1;
+    buffer.char_index = -1;
+    player->AddAudioBuffer(std::move(buffer));
+  }
+
+  real_pipe_factory.SignalRender();
+  player.reset();
 }
 
 }  // namespace

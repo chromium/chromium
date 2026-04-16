@@ -70,7 +70,10 @@ source_set("services_unittests") {
     "//base",
     "//base/test:test_support",
     "//chromeos/services/tts/public/mojom",
+    "//media",
+    "//media/mojo/mojom",
     "//mojo/public/cpp/bindings",
+    "//mojo/public/cpp/platform",
     "//testing/gtest",
   ]
   sources = [

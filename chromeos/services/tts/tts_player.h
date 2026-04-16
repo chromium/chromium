@@ -5,6 +5,7 @@
 #ifndef CHROMEOS_SERVICES_TTS_TTS_PLAYER_H_
 #define CHROMEOS_SERVICES_TTS_TTS_PLAYER_H_
 
+#include <memory>
 #include <queue>
 
 #include "base/synchronization/lock.h"
@@ -84,8 +85,10 @@ class TtsPlayer : public media::AudioRendererSink::RenderCallback {
   // Connection to send tts events.
   mojo::Remote<mojom::TtsEventObserver> tts_event_observer_;
 
-  // Outputs speech synthesis to audio.
-  audio::OutputDevice output_device_;
+  // Outputs speech synthesis to audio. Wrapped in unique_ptr so the destructor
+  // can join the audio thread before any members accessed by Render() (buffers_,
+  // weak_factory_, etc.) are destroyed.
+  std::unique_ptr<audio::OutputDevice> output_device_;
 
   // The queue of audio buffers to be played by the audio thread.
   std::queue<AudioBuffer> buffers_ GUARDED_BY(state_lock_);
