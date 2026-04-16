@@ -112,6 +112,8 @@ class MEDIA_EXPORT HlsDataSourceStream {
 
   bool would_taint_origin() const { return would_taint_origin_; }
 
+  bool DidRedirect() const { return did_redirect_; }
+
   // Allows the stream creator to update memory usage after the first or after
   // subsequent reads.
   void set_total_memory_usage(uint64_t usage) { memory_usage_ = usage; }
@@ -128,6 +130,10 @@ class MEDIA_EXPORT HlsDataSourceStream {
   bool HasIncompatibleRangeAndOrigin() const {
     return would_taint_origin_ && requires_range_request_;
   }
+
+  // A stream in which any constituent request had a redirect is considered to
+  // have a redirect. This state must never unset for security reasons.
+  void set_did_redirect() { did_redirect_ = true; }
 
   // Often the network data for HLS consists of plain-text manifest files, so
   // this supports accessing the fetched data as a string view.
@@ -175,9 +181,10 @@ class MEDIA_EXPORT HlsDataSourceStream {
   // size-flexible data structure to avoid resizing.
   std::vector<uint8_t> buffer_;
 
-  // This is critical to security. Once set to true, it must _never_ be set back
-  // to false.
+  // These are critical to security. Once set to true, these flags must _never_
+  // be set back to false.
   bool would_taint_origin_ = false;
+  bool did_redirect_ = false;
 
   // This is critical for security. Range requests are not allowed to be mixed
   // with cross-origin requests at any point. Once this has been set, it must

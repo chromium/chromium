@@ -137,6 +137,8 @@ class PLATFORM_EXPORT MultiBufferDataSource
 
   int64_t GetMemoryUsage() override;
 
+  bool DidRedirect() const override { return did_redirect_; }
+
   GURL GetUrlAfterRedirects() const override;
 
   // media::DataSource implementation.
@@ -242,6 +244,11 @@ class PLATFORM_EXPORT MultiBufferDataSource
 
   // True if a failure has occured.
   bool failed_ = false;
+
+  // Records whether this DataSource had a redirect, minimizing the need to
+  // call `GetUrlAfterRedirects` in some cases. It must never be set to false
+  // once true.
+  bool did_redirect_ = false;
 
   // The task runner of the render thread.
   const scoped_refptr<base::SingleThreadTaskRunner> render_task_runner_;

@@ -355,4 +355,45 @@ TEST_F(HlsNetworkAccessImplUnittest, TestSegmentWithCORSKey) {
   task_environment_.RunUntilIdle();
 }
 
+TEST_F(HlsNetworkAccessImplUnittest, TestSegmentWithRedirectionKey) {
+  auto segment = MakeSegment(std::nullopt, std::nullopt, InitMode::kAbsent,
+                             "https://example.com/enc.key");
+
+  // This actually has to be 16 non-zero bytes.
+  auto* ds_for_keyfetch = factory_->PregenerateNextMock();
+  EXPECT_CALL(*ds_for_keyfetch, Initialize)
+      .WillOnce(base::test::RunOnceCallback<0>(true));
+  EXPECT_CALL(*ds_for_keyfetch, Read(0, SpanSizeEq(16384), _))
+      .WillOnce([](int64_t, base::span<uint8_t> data, DataSource::ReadCB cb) {
+        std::ranges::fill(data.first<16>(), 'x');
+        std::move(cb).Run(16);
+      });
+  EXPECT_CALL(*ds_for_keyfetch, DidRedirect())
+      .WillRepeatedly(testing::Return(true));
+  EXPECT_CALL(*ds_for_keyfetch, Read(16, SpanSizeEq(16384), _))
+      .WillOnce(base::test::RunOnceCallback<2>(0));
+  EXPECT_CALL(*ds_for_keyfetch, WouldTaintOrigin())
+      .WillRepeatedly(testing::Return(true));
+
+  // Then expect media content to be read.
+  factory_->AddReadExpectation(0, 16384, 1000);
+  factory_->AddReadExpectation(1000, 16384, 0);
+
+  ASSERT_NE(segment->GetEncryptionData(), nullptr);
+  ASSERT_TRUE(segment->GetEncryptionData()->NeedsKeyFetch());
+  network_access_->ReadMediaSegment(
+      *segment, /*read_chunked=*/false, /*include_init_segment=*/true,
+      base::BindOnce(
+          [&](scoped_refptr<hls::MediaSegment> segment,
+              HlsDataSourceProvider::ReadResult result) {
+            // The key was hosted on example.com but performed a redirect. After
+            // redirection, the request did not present an
+            // Access-Control-Allow-Origin header, so the use of the key is
+            // blocked, and the segment cannot be decrypted.
+            ASSERT_FALSE(result.has_value());
+          },
+          segment));
+  task_environment_.RunUntilIdle();
+}
+
 }  // namespace media

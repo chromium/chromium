@@ -88,6 +88,11 @@ void HlsDataSourceProviderImpl::UpdateStreamMetadata(
   for (const auto& it : data_source_map_) {
     usage += it.second->GetMemoryUsage();
     would_taint_origin_ |= it.second->WouldTaintOrigin();
+    if (it.first == stream.stream_id()) {
+      if (it.second->DidRedirect()) {
+        stream.set_did_redirect();
+      }
+    }
   }
   stream.set_total_memory_usage(usage);
   if (would_taint_origin_) {

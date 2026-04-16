@@ -120,6 +120,11 @@ class MEDIA_EXPORT DataSource : public DataSourceInfo {
   // preload value.
   virtual void SetPreload(media::DataSource::Preload preload);
 
+  // Returns whether this data source was involved in a web-based redirection.
+  // The default implementation is always false, as most data source objects
+  // (like MemoryDataSource and FileDataSource) cannot do redirection at all.
+  virtual bool DidRedirect() const;
+
   // Gets the url for this data source, if it exists. By default this returns
   // an empty GURL.
   virtual GURL GetUrlAfterRedirects() const;

@@ -54,12 +54,10 @@ void HlsNetworkAccessImpl::OnKeyFetch(
     return;
   }
 
+  bool safe_key = enc_data->GetKeyLocation() ==
+                  hls::MediaSegment::EncryptionData::KeyLocation::kSafeOrigin;
   auto stream = std::move(result).value();
-  if (stream->would_taint_origin() &&
-      enc_data->GetKeyLocation() ==
-          hls::MediaSegment::EncryptionData::KeyLocation::kUnsafeOrigin) {
-    // Do not accept keys which would taint the origin, unless it is on the same
-    // origin as the manifest which includes the key.
+  if (stream->would_taint_origin() && (stream->DidRedirect() || !safe_key)) {
     std::move(cb).Run({HlsDataSourceProvider::ReadStatus::Codes::kError,
                        "insecure key request"});
     return;
