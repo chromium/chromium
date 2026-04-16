@@ -63,14 +63,14 @@ class TestThrottleDelegate : public blink::URLLoaderThrottle::Delegate {
 
 class AwContentRestrictionURLLoaderThrottleTest : public testing::Test {
  protected:
-  void SetUp() override { throttle.set_delegate(&delegate); }
+  void SetUp() override { throttle_.set_delegate(&delegate_); }
 
   content::BrowserTaskEnvironment task_environment_;
   MockAwContentRestrictionManagerClient mock_client_;
   AwContentRestrictionBlockedNavigationTracker tracker_;
-  AwContentRestrictionURLLoaderThrottle throttle{&mock_client_, &tracker_,
-                                                 kTestNavigationId};
-  TestThrottleDelegate delegate;
+  TestThrottleDelegate delegate_;
+  AwContentRestrictionURLLoaderThrottle throttle_{&mock_client_, &tracker_,
+                                                  kTestNavigationId};
 };
 
 TEST_F(AwContentRestrictionURLLoaderThrottleTest,
@@ -81,11 +81,11 @@ TEST_F(AwContentRestrictionURLLoaderThrottleTest,
   network::ResourceRequest request;
   request.url = GURL(kTestUrl);
   bool defer = false;
-  throttle.WillStartRequest(&request, &defer);
+  throttle_.WillStartRequest(&request, &defer);
 
   EXPECT_FALSE(defer);
-  EXPECT_FALSE(delegate.resume_called());
-  EXPECT_FALSE(delegate.cancel_called());
+  EXPECT_FALSE(delegate_.resume_called());
+  EXPECT_FALSE(delegate_.cancel_called());
   EXPECT_FALSE(tracker_.IsNavigationBlocked(kTestNavigationId));
 }
 
@@ -100,11 +100,11 @@ TEST_F(AwContentRestrictionURLLoaderThrottleTest, AllowRequest) {
   network::ResourceRequest request;
   request.url = GURL(kTestUrl);
   bool defer = false;
-  throttle.WillStartRequest(&request, &defer);
+  throttle_.WillStartRequest(&request, &defer);
 
   EXPECT_TRUE(defer);
-  EXPECT_TRUE(delegate.resume_called());
-  EXPECT_FALSE(delegate.cancel_called());
+  EXPECT_TRUE(delegate_.resume_called());
+  EXPECT_FALSE(delegate_.cancel_called());
 }
 
 TEST_F(AwContentRestrictionURLLoaderThrottleTest, BlockRequest) {
@@ -118,12 +118,12 @@ TEST_F(AwContentRestrictionURLLoaderThrottleTest, BlockRequest) {
   network::ResourceRequest request;
   request.url = GURL(kTestUrl);
   bool defer = false;
-  throttle.WillStartRequest(&request, &defer);
+  throttle_.WillStartRequest(&request, &defer);
 
   EXPECT_TRUE(defer);
-  EXPECT_FALSE(delegate.resume_called());
-  EXPECT_TRUE(delegate.cancel_called());
-  EXPECT_EQ(delegate.error_code(), net::ERR_BLOCKED_BY_CLIENT);
+  EXPECT_FALSE(delegate_.resume_called());
+  EXPECT_TRUE(delegate_.cancel_called());
+  EXPECT_EQ(delegate_.error_code(), net::ERR_BLOCKED_BY_CLIENT);
   EXPECT_TRUE(tracker_.IsNavigationBlocked(kTestNavigationId));
 }
 
