@@ -309,6 +309,11 @@ void EchoURLDefaultSearchEngineResponseProvider::GetResponseHeadersAndBody(
     config.features_enabled.push_back(kTabSwitcherOverflowMenu);
   }
 
+  if ([self isRunningTest:@selector
+            (testIncognitoTabOperationsWithChromeNextIa)]) {
+    config.features_enabled.push_back(kChromeNextIa);
+  }
+
   return config;
 }
 
@@ -633,6 +638,25 @@ void EchoURLDefaultSearchEngineResponseProvider::GetResponseHeadersAndBody(
                                    grey_accessibilityTrait(
                                        UIAccessibilityTraitNotEnabled),
                                    nil)];
+}
+
+// Tests opening an incognito tabs after closing all incognito tabs with Chrome
+// Next IA flag enabled. This is to prevent regression during development.
+- (void)testIncognitoTabOperationsWithChromeNextIa {
+  // Opens an incognito tab.
+  [ChromeEarlGrey openNewIncognitoTab];
+  [ChromeEarlGrey waitForIncognitoTabCount:1];
+
+  [ChromeEarlGreyUI openTabGrid];
+
+  [ChromeEarlGrey closeAllIncognitoTabs];
+  [ChromeEarlGrey waitForIncognitoTabCount:0];
+
+  [[EarlGrey
+      selectElementWithMatcher:chrome_test_util::TabGridNewIncognitoTabButton()]
+      performAction:grey_tap()];
+
+  [ChromeEarlGrey waitForIncognitoTabCount:1];
 }
 
 // Tests "Close Other Tabs" functionality from the Edit menu.

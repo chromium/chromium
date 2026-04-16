@@ -19,4 +19,10 @@ extern const CGFloat kAppBarCornerRadius;
 // Accessibility identifier for the assistant button.
 extern NSString* const kAppBarAssistantButtonId;
 
+// Accessibility identifier for the app bar tab grid button.
+extern NSString* const kAppBarTabGridButtonIdentifier;
+
+// Accessibility identifier for the app bar new tab button.
+extern NSString* const kAppBarNewTabButtonIdentifier;
+
 #endif  // IOS_CHROME_BROWSER_APP_BAR_UI_APP_BAR_CONSTANTS_H_
