@@ -1,0 +1,28 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("logging") {
+  sources = [
+    "log_entry.cc",
+    "log_entry.h",
+    "multistep_filter_log_router.h",
+    "multistep_filter_logger.cc",
+    "multistep_filter_logger.h",
+  ]
+  deps = [ "//base" ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [
+    "log_entry_unittest.cc",
+    "multistep_filter_logger_unittest.cc",
+  ]
+  deps = [
+    ":logging",
+    "//base",
+    "//base/test:test_support",
+    "//testing/gtest",
+  ]
+}
