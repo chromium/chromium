@@ -16,7 +16,18 @@ chrome.test.getConfig(config => {
       tests_runNotReady();
       return;
     case 'feature_disabled':
+    case 'invoke_feature_disabled':
       tests_runFeatureDisabled();
+      return;
+    case 'invoke':
+    case 'invoke_not_ready':
+      tests_runInvoke();
+      return;
+    case 'invoke_disabled':
+      tests_runInvokeDisabled();
+      return;
+    case 'invoke_new_tab':
+      tests_runInvokeNewTab();
       return;
     default:
       chrome.test.fail('invalid mode provided.');
@@ -95,6 +106,35 @@ function tests_runNotReady() {
 function tests_runFeatureDisabled() {
   chrome.test.runTests([function isUndefined() {
     chrome.test.assertEq(undefined, chrome.glicPrivate);
+    chrome.test.succeed();
+  }]);
+}
+
+function tests_runInvoke() {
+  chrome.test.runTests([async function invokeSuccess() {
+    await chrome.glicPrivate.invoke(
+        {promptId: 'TEST_PROMPT_ID', invocationSource: 'UniversalCart'});
+    chrome.test.succeed();
+  }]);
+}
+
+function tests_runInvokeDisabled() {
+  chrome.test.runTests([async function invoke() {
+    await chrome.test.assertPromiseRejects(
+        chrome.glicPrivate.invoke(
+            {promptId: 'TEST_PROMPT_ID', invocationSource: 'UniversalCart'}),
+        'Error: Glic is not enabled.');
+    chrome.test.succeed();
+  }]);
+}
+
+function tests_runInvokeNewTab() {
+  chrome.test.runTests([async function invokeSuccessInNewTab() {
+    await chrome.glicPrivate.invoke({
+      promptId: 'TEST_PROMPT_ID',
+      invocationSource: 'UniversalCart',
+      inNewTab: true
+    });
     chrome.test.succeed();
   }]);
 }

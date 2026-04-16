@@ -2023,6 +2023,7 @@ enum HistogramValue {
   PDFVIEWERPRIVATE_GLICSUMMARIZE = 1960,
   GLICPRIVATE_GETSTATE = 1961,
   ACCESSIBILITY_PRIVATE_INSTALLTENJI = 1962,
+  GLICPRIVATE_INVOKE = 1963,
   // Last entry: Add new entries above, then run:
   // tools/metrics/histograms/update_extension_histograms.py
   ENUM_BOUNDARY

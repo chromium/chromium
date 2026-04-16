@@ -26,6 +26,22 @@ class GlicPrivateGetStateFunction : public ExtensionFunction {
   ResponseAction Run() override;
 };
 
+class GlicPrivateInvokeFunction : public ExtensionFunction {
+ public:
+  DECLARE_EXTENSION_FUNCTION("glicPrivate.invoke", GLICPRIVATE_INVOKE)
+
+  GlicPrivateInvokeFunction();
+  GlicPrivateInvokeFunction(const GlicPrivateInvokeFunction&) = delete;
+  GlicPrivateInvokeFunction& operator=(const GlicPrivateInvokeFunction&) =
+      delete;
+
+ protected:
+  ~GlicPrivateInvokeFunction() override;
+
+  // ExtensionFunction:
+  ResponseAction Run() override;
+};
+
 }  // namespace extensions
 
 #endif  // CHROME_BROWSER_EXTENSIONS_API_GLIC_PRIVATE_GLIC_PRIVATE_API_H_

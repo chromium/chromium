@@ -28,6 +28,7 @@ class GlicPrivateApiTest : public ExtensionApiTest {
   GlicPrivateApiTest() {
     scoped_feature_list_.InitWithFeaturesAndParameters(
         {{extensions_features::kApiGlicPrivate, {}},
+         {extensions_features::kApiGlicAccessFromGoogleWebpage, {}},
          {features::kGlicActor,
           {{"glic_actor_policy_control_exemption", "true"}}}},
         {});
@@ -97,5 +98,59 @@ IN_PROC_BROWSER_TEST_F(GlicPrivateApiFeatureDisabledTest, GetState) {
                                {.load_as_component = true}))
       << message_;
 }
+
+// Invoke is not supported in Android yet.
+#if !BUILDFLAG(IS_ANDROID)
+IN_PROC_BROWSER_TEST_F(GlicPrivateApiFullyEnabledTest, Invoke) {
+  SimpleFeature::ScopedThreadUnsafeAllowlistForTest allowlist(kExtensionId);
+  EXPECT_TRUE(RunExtensionTest(
+      "glic_private", {.extension_url = "test.html", .custom_arg = "invoke"},
+      {.load_as_component = true}))
+      << message_;
+}
+
+IN_PROC_BROWSER_TEST_F(GlicPrivateApiFullyEnabledTest, InvokeInNewTab) {
+  SimpleFeature::ScopedThreadUnsafeAllowlistForTest allowlist(kExtensionId);
+
+  int initial_tab_count = browser()->tab_strip_model()->count();
+
+  EXPECT_TRUE(RunExtensionTest(
+      "glic_private",
+      {.extension_url = "test.html", .custom_arg = "invoke_new_tab"},
+      {.load_as_component = true}))
+      << message_;
+
+  // Verify that at least one new tab was created.
+  // Note: The test may run twice (in service worker and page), opening 2 tabs.
+  EXPECT_GE(browser()->tab_strip_model()->count(), initial_tab_count + 1);
+}
+
+IN_PROC_BROWSER_TEST_F(GlicPrivateApiDisabledTest, Invoke) {
+  SimpleFeature::ScopedThreadUnsafeAllowlistForTest allowlist(kExtensionId);
+  EXPECT_TRUE(RunExtensionTest(
+      "glic_private",
+      {.extension_url = "test.html", .custom_arg = "invoke_disabled"},
+      {.load_as_component = true}))
+      << message_;
+}
+
+IN_PROC_BROWSER_TEST_F(GlicPrivateApiFeatureDisabledTest, Invoke) {
+  SimpleFeature::ScopedThreadUnsafeAllowlistForTest allowlist(kExtensionId);
+  EXPECT_TRUE(RunExtensionTest(
+      "glic_private",
+      {.extension_url = "test.html", .custom_arg = "invoke_feature_disabled"},
+      {.load_as_component = true}))
+      << message_;
+}
+
+IN_PROC_BROWSER_TEST_F(GlicPrivateApiNotReadyTest, Invoke) {
+  SimpleFeature::ScopedThreadUnsafeAllowlistForTest allowlist(kExtensionId);
+  EXPECT_TRUE(RunExtensionTest(
+      "glic_private",
+      {.extension_url = "test.html", .custom_arg = "invoke_not_ready"},
+      {.load_as_component = true}))
+      << message_;
+}
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 }  // namespace extensions

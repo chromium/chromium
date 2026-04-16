@@ -2892,6 +2892,7 @@ Called by update_extension_histograms.py.-->
   <int value="1960" label="PDFVIEWERPRIVATE_GLICSUMMARIZE"/>
   <int value="1961" label="GLICPRIVATE_GETSTATE"/>
   <int value="1962" label="ACCESSIBILITY_PRIVATE_INSTALLTENJI"/>
+  <int value="1963" label="GLICPRIVATE_INVOKE"/>
 </enum>
 
 <!-- LINT.ThenChange(//extensions/browser/extension_function_histogram_value.h:HistogramValue) -->
@@ -3283,6 +3284,7 @@ Called by update_extension_permission.py.-->
   <int value="263" label="kEnterpriseLogin"/>
   <int value="264" label="kProxyOverrideRulesPrivate"/>
   <int value="265" label="kGlicPrivate"/>
+  <int value="266" label="kGlicPrivateInvoke"/>
 </enum>
 
 <enum name="ExtensionPolicyReinstallReason">

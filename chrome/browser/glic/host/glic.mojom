@@ -1617,6 +1617,8 @@ enum InvocationSource {
   [MinVersion=16] kTextSelectionWidget = 25,
   // Automatic summarization upon opening.
   [MinVersion=17] kZeroStateAutoSummarize = 26,
+  // From the universal cart.
+  [MinVersion=18] kUniversalCart = 27,
 };
 
 // LINT.ThenChange(//tools/metrics/histograms/metadata/glic/enums.xml:GlicInvocationSource, //chrome/browser/glic/service/metrics/metrics_types.h:ResponseSegmentation)

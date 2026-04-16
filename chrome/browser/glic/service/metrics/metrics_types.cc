@@ -100,6 +100,8 @@ std::string GetInvocationSourceString(mojom::InvocationSource source) {
       return "ThreeDotsMenu";
     case mojom::InvocationSource::kTopChromeButton:
       return "TopChromeButton";
+    case mojom::InvocationSource::kUniversalCart:
+      return "UniversalCart";
     case mojom::InvocationSource::kUnsupported:
       return "Unsupported";
     case mojom::InvocationSource::kWebContentsContextMenu:

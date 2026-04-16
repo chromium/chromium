@@ -73,6 +73,9 @@
     "dependencies": ["permission:glicPrivate"],
     "feature_flag": "ApiGlicPrivate"
   },
+  "glicPrivate.invoke": {
+    "dependencies": ["permission:glicPrivate.invoke"]
+  },
   "app": {
     "blocklist": [
       "2FC374607C2DF285634B67C64A2E356C607091C3",  // Quickoffice

@@ -418,6 +418,15 @@
     "allowlist": ["56D158B3E10A304CB840CD4C28C7AF74A4B11433"],
     "feature_flag": "ApiGlicPrivate"
   },
+  "glicPrivate.invoke": {
+    "channel": "stable",
+    "extension_types": ["extension"],
+    "location": "component",
+    // "desktop_android" is not supported.
+    "platforms": ["chromeos", "linux", "mac", "win"],
+    "allowlist": ["56D158B3E10A304CB840CD4C28C7AF74A4B11433"],
+    "feature_flag": "ApiGlicPrivate"
+  },
   "favicon": {
     "channel": "stable",
     "extension_types": ["extension"]

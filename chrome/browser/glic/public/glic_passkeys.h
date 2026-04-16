@@ -15,6 +15,7 @@ class TabInterface;
 }
 
 namespace extensions {
+class GlicPrivateInvokeFunction;
 class PdfViewerPrivateGlicSummarizeFunction;
 }
 
@@ -39,6 +40,7 @@ class InvokeWithAutoSubmitPasskeyProvider {
   friend class ::TabStripActionContainer;
   friend void GlicContextMenuInvocationHelper::HandleContextualMenuClick(
       tabs::TabInterface* tab);
+  friend class extensions::GlicPrivateInvokeFunction;
   friend class extensions::PdfViewerPrivateGlicSummarizeFunction;
   friend class ::PasswordChangeFromCheckupDelegate;
   friend class GlicInternalsPageHandler;
