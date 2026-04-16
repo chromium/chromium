@@ -7,6 +7,7 @@
 #import <PDFKit/PDFKit.h>
 
 #import <memory>
+#import <optional>
 #import <queue>
 #import <set>
 #import <unordered_map>
@@ -64,7 +65,7 @@
 #import "ios/chrome/browser/composebox/ui/composebox_input_item.h"
 #import "ios/chrome/browser/composebox/ui/composebox_input_item_collection.h"
 #import "ios/chrome/browser/composebox/ui/composebox_metrics_recorder.h"
-#import "ios/chrome/browser/composebox/ui/composebox_server_strings.h"
+#import "ios/chrome/browser/composebox/ui/composebox_strings.h"
 #import "ios/chrome/browser/composebox/ui/composebox_ui_input_state.h"
 #import "ios/chrome/browser/favicon/model/favicon_loader.h"
 #import "ios/chrome/browser/intelligence/persist_tab_context/model/persist_tab_context_browser_agent.h"
@@ -130,47 +131,49 @@ ComposeboxModelOption ModelOptionForModelMode(omnibox::ModelMode model_mode) {
 }
 
 // Returns the input plate control for the given tool mode.
-ComposeboxInputPlateControls InputPlateControlForToolMode(
-    omnibox::ToolMode tool_mode) {
+std::optional<ComposeboxMode> ModeForToolMode(omnibox::ToolMode tool_mode) {
   switch (tool_mode) {
     case omnibox::ToolMode::TOOL_MODE_CANVAS:
-      return ComposeboxInputPlateControls::kCanvas;
+      return ComposeboxMode::kCanvas;
     case omnibox::ToolMode::TOOL_MODE_DEEP_SEARCH:
-      return ComposeboxInputPlateControls::kDeepSearch;
+      return ComposeboxMode::kDeepSearch;
     case omnibox::ToolMode::TOOL_MODE_IMAGE_GEN:
     case omnibox::ToolMode::TOOL_MODE_IMAGE_GEN_UPLOAD:
-      return ComposeboxInputPlateControls::kCreateImage;
-    case omnibox::ToolMode::TOOL_MODE_UNSPECIFIED:
+    case omnibox::ToolMode::TOOL_MODE_IMAGE_GEN_SELFIE:
+      return ComposeboxMode::kImageGeneration;
+    case omnibox::ToolMode::TOOL_MODE_AIM:
+      return ComposeboxMode::kAIM;
     default:
-      return ComposeboxInputPlateControls::kNone;
+      return std::nullopt;
   }
 }
 
 // Returns the server strings object from a given input state.
-ComposeboxServerStrings* ServerStringsFromInputState(
+ComposeboxStrings* ServerStringsFromInputState(
     const contextual_search::InputState& input_state) {
-  std::unordered_map<ComposeboxInputPlateControls,
-                     ComposeboxServerStringBundle*>
-      tool_mapping;
+  std::unordered_map<ComposeboxMode, ComposeboxStringBundle*> tool_mapping;
   for (const omnibox::ToolConfig& tool_config : input_state.tool_configs) {
     NSString* menuLabel = base::SysUTF8ToNSString(tool_config.menu_label());
     NSString* chipLabel = base::SysUTF8ToNSString(tool_config.chip_label());
     NSString* hintText = base::SysUTF8ToNSString(tool_config.hint_text());
-    tool_mapping[InputPlateControlForToolMode(tool_config.tool())] =
-        [[ComposeboxServerStringBundle alloc] initWithMenuLabel:menuLabel
-                                                      chipLabel:chipLabel
-                                                       hintText:hintText];
+    std::optional<ComposeboxMode> mode = ModeForToolMode(tool_config.tool());
+    if (mode) {
+      tool_mapping[*mode] =
+          [[ComposeboxStringBundle alloc] initWithMenuLabel:menuLabel
+                                                  chipLabel:chipLabel
+                                                   hintText:hintText];
+    }
   }
 
-  std::unordered_map<ComposeboxModelOption, ComposeboxServerStringBundle*>
+  std::unordered_map<ComposeboxModelOption, ComposeboxStringBundle*>
       model_mapping;
   for (const omnibox::ModelConfig& model_config : input_state.model_configs) {
     NSString* menuLabel = base::SysUTF8ToNSString(model_config.menu_label());
     NSString* hintText = base::SysUTF8ToNSString(model_config.hint_text());
     model_mapping[ModelOptionForModelMode(model_config.model())] =
-        [[ComposeboxServerStringBundle alloc] initWithMenuLabel:menuLabel
-                                                      chipLabel:nil
-                                                       hintText:hintText];
+        [[ComposeboxStringBundle alloc] initWithMenuLabel:menuLabel
+                                                chipLabel:nil
+                                                 hintText:hintText];
   }
 
   NSString* modelSectionHeader = @"";
@@ -186,11 +189,10 @@ ComposeboxServerStrings* ServerStringsFromInputState(
         base::SysUTF8ToNSString(input_state.tools_section_config->header());
   }
 
-  return
-      [[ComposeboxServerStrings alloc] initWithToolMapping:tool_mapping
-                                              modelMapping:model_mapping
-                                        modelSectionHeader:modelSectionHeader
-                                        toolsSectionHeader:toolsSectionHeader];
+  return [[ComposeboxStrings alloc] initWithToolMapping:tool_mapping
+                                           modelMapping:model_mapping
+                                     modelSectionHeader:modelSectionHeader
+                                     toolsSectionHeader:toolsSectionHeader];
 }
 
 // Reads data from a file URL. Runs on a background thread.
@@ -387,7 +389,7 @@ class QueryContextualizerDelegateBridge
   raw_ptr<CobrowseBrowserAgent> _cobrowseBrowserAgent;
 
   // Cached server strings.
-  ComposeboxServerStrings* _serverStrings;
+  ComposeboxStrings* _strings;
   // Cached current tab favicon.
   UIImage* _currentTabFavicon;
 
@@ -471,6 +473,9 @@ class QueryContextualizerDelegateBridge
                          entrypoint:(ComposeboxEntrypoint)entrypoint {
   self = [super init];
   if (self) {
+    // Initialize with local fallback strings. These will be overwritten
+    // when server-side strings become available via the input state model.
+    _strings = [ComposeboxStrings localFallbackStrings];
     _entrypoint = entrypoint;
     _browserCoordinatorHandler = browserCoordinatorHandler;
     _sceneHandler = sceneHandler;
@@ -2680,9 +2685,7 @@ class QueryContextualizerDelegateBridge
   state.activeModel =
       _modeHolder.isRegularSearch ? ComposeboxModelOption::kNone : _modelOption;
 
-  if (EnableComposeboxServerSideState()) {
-    state.serverStrings = _serverStrings;
-  }
+  state.strings = _strings;
 
   // Populate allowed/disabled attachments
   std::unordered_set<ComposeboxAttachmentOption> allowedAttachments;
@@ -2856,7 +2859,7 @@ class QueryContextualizerDelegateBridge
   _inputState = inputState;
 
   if (EnableComposeboxServerSideState()) {
-    _serverStrings = ServerStringsFromInputState(inputState);
+    _strings = ServerStringsFromInputState(inputState);
   }
 
   [self changeModeForInputState:inputState];

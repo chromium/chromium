@@ -13,7 +13,7 @@
 #import "ios/chrome/browser/composebox/public/composebox_attachment_option.h"
 #import "ios/chrome/browser/composebox/public/composebox_model_option.h"
 
-@class ComposeboxServerStrings;
+@class ComposeboxStrings;
 
 // State object containing all UI input state for the composebox.
 @interface ComposeboxUIInputState : NSObject
@@ -43,8 +43,8 @@
 @property(nonatomic, assign) std::unordered_set<ComposeboxModelOption>
     disabledModels;
 
-/// The localized server-side strings.
-@property(nonatomic, strong) ComposeboxServerStrings* serverStrings;
+/// The localized composebox strings.
+@property(nonatomic, strong) ComposeboxStrings* strings;
 
 /// The remaining capacity for attachments.
 @property(nonatomic, assign) NSUInteger remainingAttachmentCapacity;

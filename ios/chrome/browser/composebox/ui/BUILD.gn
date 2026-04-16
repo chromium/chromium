@@ -25,10 +25,10 @@ source_set("ui") {
     "composebox_navigation_consumer.h",
     "composebox_present_animator.h",
     "composebox_present_animator.mm",
-    "composebox_server_strings.h",
-    "composebox_server_strings.mm",
     "composebox_snackbar_presenter.h",
     "composebox_snackbar_presenter.mm",
+    "composebox_strings.h",
+    "composebox_strings.mm",
     "composebox_ui_input_state.h",
     "composebox_ui_input_state.mm",
     "composebox_view_controller.h",
@@ -81,10 +81,15 @@ source_set("ui_constants") {
 
 source_set("unit_tests") {
   testonly = true
-  sources = [ "composebox_metrics_recorder_unittest.mm" ]
+  sources = [
+    "composebox_metrics_recorder_unittest.mm",
+    "composebox_strings_unittest.mm",
+  ]
   deps = [
     ":ui",
     "//base/test:test_support",
+    "//ios/chrome/app/strings",
     "//testing/gtest",
+    "//ui/base",
   ]
 }
