@@ -465,21 +465,18 @@ class WebApp {
   void SetDescription(const std::string& description);
 
   // Sets the start_url of the web app.  This call will CHECK-fail if the
-  // start_url is empty or not valid. If the manifest_id is not yet set, this
-  // will set the manifest_id using the start_url.
+  // start_url is empty or not valid, or if `SetManifestId()` has not been
+  // called yet.
   // TODO(): Remove this fallback as all web apps should be guaranteed to have
   // the manifest_id set.
   //
-  // Note: When serialized to disk, the code will CHECK-fail if the start_url is
-  // not prefixed by the scope.
-  void SetStartUrl(const GURL& start_url);
-
-  // The scope will have the query and fragment from the scope url, as per spec.
+  // The scope will have the query and fragment removed from the scope url,
+  // as per spec.
   // This call will CHECK-fail if the scope is empty or not valid.
   //
   // Note: When serialized to disk, the code will CHECK-fail if the start_url is
   // not prefixed by the scope.
-  void SetScope(const GURL& scope);
+  void SetStartUrlAndScope(const GURL& start_url, const GURL& scope);
 
   void SetLaunchQueryParams(std::optional<std::string> launch_query_params);
   void SetThemeColor(std::optional<SkColor> theme_color);

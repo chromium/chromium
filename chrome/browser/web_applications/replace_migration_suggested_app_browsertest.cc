@@ -189,7 +189,7 @@ IN_PROC_BROWSER_TEST_P(ReplaceMigrationSuggestedAppBrowserTest,
       sync_proto.set_start_url(start_url.spec());
       sync_proto.set_relative_manifest_id(RelativeManifestIdPath(manifest_id));
       sync_proto.set_scope(start_url.GetWithoutFilename().spec());
-      auto app = test::CreateWebAppFromSyncProto(std::move(sync_proto));
+      auto app = test::CreateWebAppFromSyncProto(sync_proto);
       app->SetName("Test App");
       app->SetUserDisplayMode(mojom::UserDisplayMode::kStandalone);
       app->SetInstallState(

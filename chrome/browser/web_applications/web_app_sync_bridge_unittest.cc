@@ -885,8 +885,9 @@ TEST_F(WebAppSyncBridgeTest, PutCalledOnUpdate) {
   {
     ScopedRegistryUpdate update =
         sync_bridge().BeginUpdate(future.GetCallback());
-    update->UpdateApp(app_id)->SetStartUrl(
-        GURL("https://www.example.com/index2.html"));
+    update->UpdateApp(app_id)->SetStartUrlAndScope(
+        GURL("https://www.example.com/index2.html"),
+        update->UpdateApp(app_id)->scope());
   }
   ASSERT_TRUE(future.Take());
 
@@ -1126,6 +1127,108 @@ TEST_F(WebAppSyncBridgeTest, InvalidSyncData) {
                   base::Bucket(StorageKeyParseResult::kNoStartUrl, 1),
                   base::Bucket(StorageKeyParseResult::kInvalidStartUrl, 1),
                   base::Bucket(StorageKeyParseResult::kInvalidManifestId, 1)));
+}
+
+TEST_F(WebAppSyncBridgeTest, ScopeFixing) {
+  StartWebAppProvider();
+
+  // 1. Invalid scope.
+  {
+    GURL start_url("https://example.com/app1/start");
+    WebAppSpecifics sync_proto =
+        CreateWebAppSpecificsForTesting("Test App 1", start_url);
+    sync_proto.set_scope("invalid_url");
+
+    sync_bridge().ApplyIncrementalSyncChanges(
+        sync_bridge().CreateMetadataChangeList(),
+        ToEntityChangeList(GetAppIdFromWebAppSpecifics(sync_proto), sync_proto,
+                           sync_bridge()));
+
+    const WebApp* app =
+        registrar().GetAppById(GetAppIdFromWebAppSpecifics(sync_proto));
+    ASSERT_TRUE(app);
+    // Should be fixed to start_url.GetWithoutFilename().
+    EXPECT_EQ(app->scope(), start_url.GetWithoutFilename());
+  }
+
+  // 2. Scope different origin.
+  {
+    GURL start_url("https://example.com/app2/start");
+    WebAppSpecifics sync_proto =
+        CreateWebAppSpecificsForTesting("Test App 2", start_url);
+    sync_proto.set_scope("https://different-origin.com/app/");
+
+    sync_bridge().ApplyIncrementalSyncChanges(
+        sync_bridge().CreateMetadataChangeList(),
+        ToEntityChangeList(GetAppIdFromWebAppSpecifics(sync_proto), sync_proto,
+                           sync_bridge()));
+
+    const WebApp* app =
+        registrar().GetAppById(GetAppIdFromWebAppSpecifics(sync_proto));
+    ASSERT_TRUE(app);
+    EXPECT_EQ(app->scope(), start_url.GetWithoutFilename());
+  }
+
+  // 3. Start URL not nested in scope.
+  {
+    GURL start_url("https://example.com/app3/start");
+    WebAppSpecifics sync_proto =
+        CreateWebAppSpecificsForTesting("Test App 3", start_url);
+    sync_proto.set_scope("https://example.com/app3/other/");
+
+    sync_bridge().ApplyIncrementalSyncChanges(
+        sync_bridge().CreateMetadataChangeList(),
+        ToEntityChangeList(GetAppIdFromWebAppSpecifics(sync_proto), sync_proto,
+                           sync_bridge()));
+
+    const WebApp* app =
+        registrar().GetAppById(GetAppIdFromWebAppSpecifics(sync_proto));
+    ASSERT_TRUE(app);
+    EXPECT_EQ(app->scope(), start_url.GetWithoutFilename());
+  }
+
+  // 4. Scope with ref and query.
+  {
+    GURL start_url("https://example.com/app4/start");
+    WebAppSpecifics sync_proto =
+        CreateWebAppSpecificsForTesting("Test App 4", start_url);
+    sync_proto.set_scope("https://example.com/app4/#ref?query=1");
+
+    sync_bridge().ApplyIncrementalSyncChanges(
+        sync_bridge().CreateMetadataChangeList(),
+        ToEntityChangeList(GetAppIdFromWebAppSpecifics(sync_proto), sync_proto,
+                           sync_bridge()));
+
+    const WebApp* app =
+        registrar().GetAppById(GetAppIdFromWebAppSpecifics(sync_proto));
+    ASSERT_TRUE(app);
+    // Ref and query should be stripped by WebApp constructor.
+    EXPECT_EQ(app->scope(), GURL("https://example.com/app4/"));
+  }
+}
+
+TEST_F(WebAppSyncBridgeTest, ManifestIdFixing) {
+  StartWebAppProvider();
+
+  GURL start_url("https://example.com/app/start");
+
+  // Manifest ID with ref.
+  WebAppSpecifics sync_proto =
+      CreateWebAppSpecificsForTesting("Test App", start_url);
+  sync_proto.set_relative_manifest_id("id#ref");
+
+  sync_bridge().ApplyIncrementalSyncChanges(
+      sync_bridge().CreateMetadataChangeList(),
+      ToEntityChangeList(GetAppIdFromWebAppSpecifics(sync_proto), sync_proto,
+                         sync_bridge()));
+
+  // Should be installed.
+  const WebApp* app =
+      registrar().GetAppById(GetAppIdFromWebAppSpecifics(sync_proto));
+  ASSERT_TRUE(app);
+  // Ref should be removed by GenerateManifestId.
+  // GenerateManifestId also makes it relative to the origin, not the path.
+  EXPECT_EQ(app->manifest_id(), GURL("https://example.com/id"));
 }
 
 // Test that a serialized proto with an unrecognized new field can successfully

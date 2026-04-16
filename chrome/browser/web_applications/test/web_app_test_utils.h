@@ -63,7 +63,7 @@ std::unique_ptr<WebApp> CreateWebApp(
 // Will check fail if the sync proto does not have the start_url and
 // relative_manifest_id unset.
 std::unique_ptr<WebApp> CreateWebAppFromSyncProto(
-    const sync_pb::WebAppSpecifics& sync_proto);
+    sync_pb::WebAppSpecifics& sync_proto);
 
 // Do not use this for installation! Instead, use the utilities in
 // web_app_install_test_util.h.
