@@ -16,15 +16,6 @@ namespace dom_distiller {
 // A utility class for logging UMA metrics.
 class UMAHelper {
  public:
-  // Must agree with ReaderModeEntryPoint in enums.xml.
-  // LINT.IfChange(ReaderModeEntryPoint)
-  enum class ReaderModeEntryPoint {
-    kOmniboxIcon = 0,
-    kMenuOption = 1,
-    kMaxValue = kMenuOption,
-  };
-  // LINT.ThenChange(/tools/metrics/histograms/metadata/accessibility/enums.xml:ReaderModeEntryPoint)
-
   // A page can be distillable (an article), distilled (a reader mode
   // page), or neither (some other webpage).
   enum class ReaderModePageType {
@@ -61,9 +52,6 @@ class UMAHelper {
     base::Time active_time_start_;
     bool is_distilled_page_ = false;
   };
-
-  static void RecordReaderModeEntry(ReaderModeEntryPoint entry_point);
-  static void RecordReaderModeExit(ReaderModeEntryPoint exit_point);
 
   // Timers at the old contents may need to be stopped / paused.
   static void UpdateTimersOnContentsChange(content::WebContents* web_contents,

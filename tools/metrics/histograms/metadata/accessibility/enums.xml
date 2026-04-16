@@ -2426,15 +2426,6 @@ Unknown properties are collapsed to zero. -->
 
 <!-- LINT.ThenChange(//chrome/android/java/src/org/chromium/chrome/browser/dom_distiller/ReaderModeMetrics.java:ReaderModeContextualPageActionEvent) -->
 
-<!-- LINT.IfChange(ReaderModeEntryPoint) -->
-
-<enum name="ReaderModeEntryPoint">
-  <int value="0" label="Omnibox icon"/>
-  <int value="1" label="Menu option"/>
-</enum>
-
-<!-- LINT.ThenChange(//components/dom_distiller/content/browser/uma_helper.h:ReaderModeEntryPoint) -->
-
 <enum name="ReaderModePrefsFontFamily">
   <int value="0" label="Sans serif"/>
   <int value="1" label="Serif"/>

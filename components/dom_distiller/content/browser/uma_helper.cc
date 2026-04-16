@@ -55,20 +55,6 @@ base::TimeDelta UMAHelper::DistillabilityDriverTimer::GetElapsedTime() {
 }
 
 // static
-void UMAHelper::RecordReaderModeEntry(ReaderModeEntryPoint entry_point) {
-  // Use histograms instead of user actions because order doesn't matter.
-  base::UmaHistogramEnumeration("DomDistiller.ReaderMode.EntryPoint",
-                                entry_point);
-}
-
-// static
-void UMAHelper::RecordReaderModeExit(ReaderModeEntryPoint exit_point) {
-  // Use histograms instead of user actions because order doesn't matter.
-  base::UmaHistogramEnumeration("DomDistiller.ReaderMode.ExitPoint",
-                                exit_point);
-}
-
-// static
 void UMAHelper::UpdateTimersOnContentsChange(
     content::WebContents* web_contents,
     content::WebContents* old_contents) {
