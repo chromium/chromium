@@ -175,6 +175,10 @@ BASE_FEATURE(kHideAimEntrypointOnUserInput,
 // When enabled, AI mode will remove verbatim suggestions from the suggestions
 // list.
 BASE_FEATURE(kAIMSuppressVerbatimMatch, ENABLED);
+// When enabled, the AIM WebUI popup will defer showing until the WebUI has
+// painted a clean frame, avoiding the issue of the popup being shown with a
+// stale frame.
+BASE_FEATURE(kOmniboxAimDeferShowUntilVisualStateReady, ENABLED);
 
 // Feature used to default typed navigations to use HTTPS instead of HTTP.
 // This only applies to navigations that don't have a scheme such as

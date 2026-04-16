@@ -56,6 +56,11 @@ BASE_DECLARE_FEATURE(kShowPopupOnMouseReleased);
 BASE_DECLARE_FEATURE(kMostVisitedTilesHorizontalRenderGroup);
 BASE_DECLARE_FEATURE(kRichAutocompletion);
 BASE_DECLARE_FEATURE(kAIMSuppressVerbatimMatch);
+BASE_DECLARE_FEATURE(kOmniboxAimDeferShowUntilVisualStateReady);
+inline constexpr base::FeatureParam<int>
+    kOmniboxAimDeferShowUntilVisualStateReadyTimeoutMs{
+        &kOmniboxAimDeferShowUntilVisualStateReady,
+        "omnibox_aim_defer_show_until_visual_state_ready_timeout_ms", 250};
 
 // Omnibox UI - these affect the UI or function of the location bar (not the
 // popup).

@@ -1961,6 +1961,19 @@ bool OmniboxViewViews::ShouldShowPlaceholderText() const {
     return true;
   }
 
+  if (base::FeatureList::IsEnabled(
+          omnibox::kOmniboxAimDeferShowUntilVisualStateReady)) {
+    // Suppress the hint text while the AIM popup is displayed or in deferred
+    // transition.
+    bool is_aim_popup = controller()->popup_state_manager()->popup_state() ==
+                        OmniboxPopupState::kAim;
+    bool is_transitioning =
+        location_bar_view_ && location_bar_view_->in_popup_state_transition();
+    if (is_aim_popup || is_transitioning) {
+      return false;
+    }
+  }
+
   // If the omnibox is blurred, only show the DSE placeholder if there is no
   // keyword selected.
   if (!controller()->edit_model()->is_caret_visible()) {
