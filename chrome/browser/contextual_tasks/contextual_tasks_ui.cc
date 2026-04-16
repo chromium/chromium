@@ -43,6 +43,7 @@
 #include "chrome/browser/ui/webui/new_tab_page/composebox/variations/composebox_fieldtrial.h"
 #include "chrome/browser/ui/webui/sanitized_image/sanitized_image_source.h"
 #include "chrome/browser/ui/webui/webui_embedding_context.h"
+#include "chrome/common/pref_names.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/branded_strings.h"
 #include "chrome/grit/contextual_tasks_resources.h"
@@ -383,6 +384,13 @@ ContextualTasksUI::ContextualTasksUI(content::WebUI* web_ui)
       contextual_tasks::GetIsContextualTasksNextboxContextMenuEnabled());
   source->AddBoolean("composeboxShowContextMenuDescription", false);
   source->AddBoolean(
+      "enablePinButton",
+      contextual_tasks::IsContextualTasksPinButtonInToolbarEnabled());
+  source->AddBoolean(
+      "isSidePanelPinned",
+      contextual_tasks::IsContextualTasksPinButtonInToolbarEnabled() &&
+          profile->GetPrefs()->GetBoolean(prefs::kPinContextualTaskButton));
+  source->AddBoolean(
       "showOnboardingTooltip",
       base::FeatureList::IsEnabled(
           contextual_tasks::kContextualTasksShowOnboardingTooltip));
@@ -458,6 +466,10 @@ ContextualTasksUI::ContextualTasksUI(content::WebUI* web_ui)
   source->AddLocalizedString(
       "protectedErrorPageTopLine",
       IDS_SIDE_PANEL_LENS_OVERLAY_PROTECTED_PAGE_ERROR_FIRST_LINE);
+  source->AddLocalizedString("pinTooltip",
+                             IDS_SIDE_PANEL_HEADER_PIN_BUTTON_TOOLTIP);
+  source->AddLocalizedString("unpinTooltip",
+                             IDS_SIDE_PANEL_HEADER_UNPIN_BUTTON_TOOLTIP);
   source->AddLocalizedString(
       "protectedErrorPageBottomLine",
       IDS_SIDE_PANEL_LENS_OVERLAY_PROTECTED_PAGE_ERROR_SECOND_LINE);

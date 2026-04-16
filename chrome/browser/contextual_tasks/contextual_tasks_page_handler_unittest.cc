@@ -10,6 +10,8 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/test/bind.h"
+#include "base/test/gmock_callback_support.h"
+#include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/unguessable_token.h"
 #include "chrome/browser/browser_process.h"
@@ -579,10 +581,16 @@ TEST_F(ContextualTasksPageHandlerTest, PinSidePanel) {
       contextual_tasks::kEnableContextualTasksPinButtonInToolbar);
 
   // Recreate page_handler_ to pick up the feature flag.
+  // Expect any sequence of false transitions caused by baseline sync.
+  EXPECT_CALL(page_, OnSidePanelPinStateChanged(false))
+      .Times(testing::AnyNumber());
+
   page_handler_ = std::make_unique<ContextualTasksPageHandler>(
       mojo::PendingReceiver<mojom::PageHandler>(), contextual_tasks_ui_.get(),
       mock_contextual_tasks_ui_service_, mock_contextual_tasks_service_);
   page_handler_->set_skip_feedback_ui_for_testing(true);
+  // Set default to false for testing, as the default registered value is true.
+  profile()->GetPrefs()->SetBoolean(prefs::kPinContextualTaskButton, false);
 
   // Initial state should be unpinned.
   EXPECT_FALSE(
@@ -593,6 +601,9 @@ TEST_F(ContextualTasksPageHandlerTest, PinSidePanel) {
 
   // Pin the side panel.
   page_handler_->PinSidePanel();
+  EXPECT_TRUE(base::test::RunUntil([&]() {
+    return profile()->GetPrefs()->GetBoolean(prefs::kPinContextualTaskButton);
+  }));
 
   // Verify state via pref.
   EXPECT_TRUE(
@@ -601,9 +612,9 @@ TEST_F(ContextualTasksPageHandlerTest, PinSidePanel) {
   // Now unpin.
   EXPECT_CALL(page_, OnSidePanelPinStateChanged(false)).Times(1);
   page_handler_->UnpinSidePanel();
-
-  EXPECT_FALSE(
-      profile()->GetPrefs()->GetBoolean(prefs::kPinContextualTaskButton));
+  EXPECT_TRUE(base::test::RunUntil([&]() {
+    return !profile()->GetPrefs()->GetBoolean(prefs::kPinContextualTaskButton);
+  }));
 }
 
 TEST_F(ContextualTasksPageHandlerTest, PinSidePanel_FeatureDisabled) {
@@ -953,6 +964,29 @@ TEST_F(ContextualTasksPageHandlerTest,
 
   page_handler_->OnTaskUpdated(task,
                                ContextualTasksService::TriggerSource::kLocal);
+  run_loop.Run();
+}
+
+TEST_F(ContextualTasksPageHandlerTest, PrefChangeNotification) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(kEnableContextualTasksPinButtonInToolbar);
+
+  // Ignore any unpinned syncs fired initially by constructor setup.
+  EXPECT_CALL(page_, OnSidePanelPinStateChanged(false))
+      .Times(testing::AnyNumber());
+
+  // Recreate page_handler_ to pick up the feature flag.
+  page_handler_ = std::make_unique<ContextualTasksPageHandler>(
+      mojo::PendingReceiver<mojom::PageHandler>(), contextual_tasks_ui_.get(),
+      mock_contextual_tasks_ui_service_, mock_contextual_tasks_service_);
+  page_handler_->set_skip_feedback_ui_for_testing(true);
+
+  base::RunLoop run_loop;
+  EXPECT_CALL(page_, OnSidePanelPinStateChanged(true))
+      .WillOnce(base::test::RunClosure(run_loop.QuitClosure()));
+
+  profile()->GetPrefs()->SetBoolean(prefs::kPinContextualTaskButton, true);
+
   run_loop.Run();
 }
 

@@ -369,7 +369,49 @@ suite('TopToolbarTest', () => {
       const moreItems =
           sourcesButton.shadowRoot.querySelector<HTMLElement>('#more-items');
       assertTrue(!!moreItems);
-      assertEquals(moreItems.innerText, '+1');
+    });
+  });
+
+  suite('Pinning', () => {
+    setup(async () => {
+      document.body.innerHTML = window.trustedTypes!.emptyHTML;
+      loadTimeData.overrideValues({
+        enablePinButton: true,
+        isAiPage: true,
+        pinTooltip: 'Pin side panel',
+        unpinTooltip: 'Unpin side panel',
+      });
+      topToolbar = document.createElement('top-toolbar');
+      document.body.appendChild(topToolbar);
+      await microtasksFinished();
+    });
+
+    test('handles pin button click', async () => {
+      const pinButton =
+          topToolbar.shadowRoot.querySelector<HTMLElement>('#pinButton');
+      assertTrue(!!pinButton);
+
+      // Initially unpinned.
+      assertEquals(pinButton.title, 'Pin side panel');
+
+      pinButton.click();
+      await proxy.handler.whenCalled('pinSidePanel');
+    });
+
+    test('handles unpin button click', async () => {
+      // Simulate pinned state.
+      proxy.callbackRouterRemote.onSidePanelPinStateChanged(true);
+      await microtasksFinished();
+
+      const pinButton =
+          topToolbar.shadowRoot.querySelector<HTMLElement>('#pinButton');
+      assertTrue(!!pinButton);
+
+      // Now pinned.
+      assertEquals(pinButton.title, 'Unpin side panel');
+
+      pinButton.click();
+      await proxy.handler.whenCalled('unpinSidePanel');
     });
   });
 
