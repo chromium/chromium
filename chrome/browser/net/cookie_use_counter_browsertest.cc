@@ -227,15 +227,8 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_EQ(GetIframeContent(), "shadowed=a; not_shadowed=b");
 }
 
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN)
-#define MAYBE_PartitionedCookiePresentV3_CountOnce \
-  DISABLED_PartitionedCookiePresentV3_CountOnce
-#else
-#define MAYBE_PartitionedCookiePresentV3_CountOnce \
-  PartitionedCookiePresentV3_CountOnce
-#endif
 IN_PROC_BROWSER_TEST_F(CookieUseCounterBrowserTest,
-                       MAYBE_PartitionedCookiePresentV3_CountOnce) {
+                       PartitionedCookiePresentV3_CountOnce) {
   ukm::TestAutoSetUkmRecorder ukm_recorder;
 
   SetCookie(

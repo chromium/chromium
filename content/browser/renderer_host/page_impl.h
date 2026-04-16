@@ -91,6 +91,13 @@ class CONTENT_EXPORT PageImpl : public Page {
     is_on_load_completed_in_main_document_ = completed;
   }
 
+  bool has_recorded_partitioned_cookie_use() const {
+    return has_recorded_partitioned_cookie_use_;
+  }
+  void set_has_recorded_partitioned_cookie_use(bool recorded) {
+    has_recorded_partitioned_cookie_use_ = recorded;
+  }
+
   std::optional<base::TimeDelta> GetFirstContentfulPaintInMainDocumentDuration()
       const {
     return first_contentful_paint_in_main_document_duration_;
@@ -306,6 +313,10 @@ class CONTENT_EXPORT PageImpl : public Page {
   // True if we've received a notification that the onload() handler has
   // run for the main document.
   bool is_on_load_completed_in_main_document_ = false;
+
+  // True if we have already recorded the PartitionedCookiePresent UKM event
+  // for this page.
+  bool has_recorded_partitioned_cookie_use_ = false;
 
   // Time taken for first contentful paint to occur.
   std::optional<base::TimeDelta>
