@@ -394,13 +394,6 @@ EncoderStatus D3D12VideoEncodeH264Delegate::EncodeImpl(
       destroy_buffer = 1;
     }
   } else {
-    for (uint8_t ref_idx : options.reference_buffers) {
-      if (ref_idx >= GetMaxNumOfManualRefBuffers()) {
-        return {EncoderStatus::Codes::kBadReferenceBuffer,
-                "Manual reference buffer index exceeds that is supported by "
-                "encoder"};
-      }
-    }
     if (options.reference_buffers.size() > list0_reference_frames_.size()) {
       return {EncoderStatus::Codes::kBadReferenceBuffer,
               "Number of manual reference buffers exceeds that is supported by "

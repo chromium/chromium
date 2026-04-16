@@ -11,6 +11,7 @@
 
 #include <wrl.h>
 
+#include <atomic>
 #include <vector>
 
 #include "base/containers/circular_deque.h"
@@ -124,7 +125,8 @@ class MEDIA_GPU_EXPORT D3D12VideoEncodeAccelerator
   void EncodeTask(scoped_refptr<VideoFrame> frame,
                   const VideoEncoder::EncodeOptions& options);
 
-  void DoEncodeTask(const InputFrameRef& input_frame,
+  // Returns false if an error was encountered.
+  bool DoEncodeTask(const InputFrameRef& input_frame,
                     const BitstreamBuffer& bitstream_buffer);
 
   void TryEncodeFrames();
@@ -138,6 +140,8 @@ class MEDIA_GPU_EXPORT D3D12VideoEncodeAccelerator
   void NotifyFlushDone(bool succeed);
 
   void NotifyError(EncoderStatus status);
+
+  void NotifyErrorOnChildSequence(EncoderStatus status);
 
   // Invoked when the CommandBufferHelper is available.
   void OnCommandBufferHelperAvailable(GetCommandBufferHelperResult result);
@@ -183,7 +187,8 @@ class MEDIA_GPU_EXPORT D3D12VideoEncodeAccelerator
   base::WeakPtr<Client> client_;
   std::unique_ptr<MediaLog> media_log_;
 
-  bool error_occurred_ = false;
+  // Whether an encoding error has occurred.
+  std::atomic<bool> error_occurred_ = false;
 
   // True if Destroy() has been called.
   bool destroy_requested_ GUARDED_BY_CONTEXT(child_sequence_checker_) = false;

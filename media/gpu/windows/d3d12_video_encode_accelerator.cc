@@ -845,6 +845,10 @@ void D3D12VideoEncodeAccelerator::EncodeTask(
 void D3D12VideoEncodeAccelerator::TryEncodeFrames() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(encoder_sequence_checker_);
 
+  if (error_occurred_) {
+    return;
+  }
+
   while (!input_frames_queue_.empty() && !bitstream_buffers_.empty()) {
     auto& next_input = input_frames_queue_.front();
     if (next_input.resolving_shared_image ||
@@ -856,9 +860,12 @@ void D3D12VideoEncodeAccelerator::TryEncodeFrames() {
       break;
     }
 
-    DoEncodeTask(next_input, bitstream_buffers_.front());
+    const bool success = DoEncodeTask(next_input, bitstream_buffers_.front());
     input_frames_queue_.pop_front();
     bitstream_buffers_.pop();
+    if (!success) {
+      break;
+    }
   }
 
   if (flush_requested_ && input_frames_queue_.empty()) {
@@ -869,7 +876,7 @@ void D3D12VideoEncodeAccelerator::TryEncodeFrames() {
   }
 }
 
-void D3D12VideoEncodeAccelerator::DoEncodeTask(
+bool D3D12VideoEncodeAccelerator::DoEncodeTask(
     const InputFrameRef& input_frame,
     const BitstreamBuffer& bitstream_buffer) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(encoder_sequence_checker_);
@@ -882,9 +889,10 @@ void D3D12VideoEncodeAccelerator::DoEncodeTask(
     } else {
       frame = ConvertToMemoryMappedFrame(std::move(frame));
       if (!frame) {
-        return NotifyError(
+        NotifyError(
             {EncoderStatus::Codes::kInvalidInputFrame,
              "Failed to convert shared memory mappable SI for encoding"});
+        return false;
       }
       picture_buffer = CreateResourceForSharedMemoryVideoFrame(*frame);
     }
@@ -893,19 +901,22 @@ void D3D12VideoEncodeAccelerator::DoEncodeTask(
   } else if (frame->HasSharedImage()) {
     picture_buffer = input_frame.resolved_picture;
   } else {
-    return NotifyError({EncoderStatus::Codes::kInvalidInputFrame,
-                        "Unsupported frame storage type for encoding"});
+    NotifyError({EncoderStatus::Codes::kInvalidInputFrame,
+                 "Unsupported frame storage type for encoding"});
+    return false;
   }
   if (!picture_buffer.resource) {
-    return NotifyError({EncoderStatus::Codes::kInvalidInputFrame,
-                        "Failed to create input_texture"});
+    NotifyError({EncoderStatus::Codes::kInvalidInputFrame,
+                 "Failed to create input_texture"});
+    return false;
   }
 
   auto result_or_error =
       encoder_->Encode(picture_buffer, frame->ColorSpace(), bitstream_buffer,
                        input_frame.options);
   if (!result_or_error.has_value()) {
-    return NotifyError(std::move(result_or_error).error());
+    NotifyError(std::move(result_or_error).error());
+    return false;
   }
 
   D3D12VideoEncodeDelegate::EncodeResult result =
@@ -924,6 +935,7 @@ void D3D12VideoEncodeAccelerator::DoEncodeTask(
   child_task_runner_->PostTask(
       FROM_HERE, BindOnce(&Client::BitstreamBufferReady, client_,
                           result.bitstream_buffer_id, result.metadata));
+  return true;
 }
 
 void D3D12VideoEncodeAccelerator::DestroyTask() {
@@ -933,26 +945,36 @@ void D3D12VideoEncodeAccelerator::DestroyTask() {
 }
 
 void D3D12VideoEncodeAccelerator::NotifyError(EncoderStatus status) {
+  // We return here when `error_occurred_` was already true, as this is not the
+  // first error that is reported.
+  if (error_occurred_.exchange(true)) {
+    return;
+  }
+
+  CHECK(!status.is_ok());
   base::UmaHistogramEnumeration(
       GetEncoderStatusHistogramName(config_.output_profile), status.code());
 
   if (!child_task_runner_->RunsTasksInCurrentSequence()) {
     child_task_runner_->PostTask(
-        FROM_HERE, BindOnce(&D3D12VideoEncodeAccelerator::NotifyError,
-                            child_weak_this_, std::move(status)));
+        FROM_HERE,
+        BindOnce(&D3D12VideoEncodeAccelerator::NotifyErrorOnChildSequence,
+                 child_weak_this_, std::move(status)));
     return;
   }
 
-  CHECK(!status.is_ok());
+  NotifyErrorOnChildSequence(std::move(status));
+}
+
+void D3D12VideoEncodeAccelerator::NotifyErrorOnChildSequence(
+    EncoderStatus status) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(child_sequence_checker_);
   MEDIA_LOG(ERROR, media_log_)
       << "D3D12VEA error " << static_cast<int32_t>(status.code()) << ": "
       << status.message();
-  if (!error_occurred_) {
-    if (client_) {
-      client_->NotifyErrorStatus(status);
-      client_ptr_factory_->InvalidateWeakPtrs();
-    }
-    error_occurred_ = true;
+  if (client_) {
+    client_->NotifyErrorStatus(status);
+    client_ptr_factory_->InvalidateWeakPtrs();
   }
 }
 

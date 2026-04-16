@@ -279,6 +279,23 @@ D3D12VideoEncodeDelegate::Encode(D3D12PictureBuffer picture_buffer,
             "encoder"};
   }
 
+  // Validate reference buffer indices early, before submitting any GPU work
+  // (e.g., video processing). This prevents a scenario where GPU commands are
+  // submitted but the subsequent CPU synchronization is skipped due to an
+  // error in EncodeImpl().
+  for (uint8_t ref_idx : options.reference_buffers) {
+    if (ref_idx >= GetMaxNumOfManualRefBuffers()) {
+      return {EncoderStatus::Codes::kBadReferenceBuffer,
+              "Manual reference buffer index exceeds that is supported by "
+              "encoder"};
+    }
+  }
+  if (options.update_buffer.has_value() &&
+      options.update_buffer.value() >= GetMaxNumOfManualRefBuffers()) {
+    return {EncoderStatus::Codes::kBadReferenceBuffer,
+            "Update buffer index is out of range"};
+  }
+
   const gfx::ColorSpace& output_color_space =
       GetEncoderOutputColorSpaceFromInputColorSpace(input_frame_color_space);
   if (D3D12_RESOURCE_DESC input_frame_desc = picture_buffer.resource->GetDesc();

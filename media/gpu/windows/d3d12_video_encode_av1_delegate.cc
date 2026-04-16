@@ -1002,20 +1002,6 @@ EncoderStatus D3D12VideoEncodeAV1Delegate::EncodeImpl(
     UINT input_frame_subresource,
     const VideoEncoder::EncodeOptions& options,
     const gfx::ColorSpace& input_color_space) {
-  for (uint8_t ref_idx : options.reference_buffers) {
-    if (ref_idx >= GetMaxNumOfManualRefBuffers()) {
-      return {EncoderStatus::Codes::kBadReferenceBuffer,
-              "Manual reference buffer index exceeds that is supported by "
-              "encoder"};
-    }
-  }
-
-  if (options.update_buffer.has_value() &&
-      options.update_buffer.value() >= GetMaxNumOfManualRefBuffers()) {
-    return {EncoderStatus::Codes::kBadReferenceBuffer,
-            "Update buffer index exceeds that is supported by encoder"};
-  }
-
   input_arguments_.SequenceControlDesc.Flags =
       D3D12_VIDEO_ENCODER_SEQUENCE_CONTROL_FLAG_NONE;
   input_arguments_.SequenceControlDesc.RateControl =

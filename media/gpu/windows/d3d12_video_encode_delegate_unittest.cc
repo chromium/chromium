@@ -333,4 +333,52 @@ TEST_F(D3D12VideoEncodeDelegateTest, EncodeWithTooManyReferenceBuffersFails) {
   EXPECT_EQ(result_or_error.code(), EncoderStatus::Codes::kBadReferenceBuffer);
 }
 
+TEST_F(D3D12VideoEncodeDelegateTest,
+       EncodeWithOutOfRangeReferenceBufferIndexFails) {
+  VideoEncodeAccelerator::Config config = GetDefaultH264Config();
+  ASSERT_TRUE(encoder_delegate_->Initialize(config).is_ok());
+
+  gfx::Size input_size = config.input_visible_size;
+  auto input_frame = CreateResource(input_size, config.input_format);
+  gfx::ColorSpace color_space = gfx::ColorSpace::CreateREC709();
+  constexpr size_t kPayloadSize = 1024;
+  auto shared_memory = base::UnsafeSharedMemoryRegion::Create(kPayloadSize);
+  BitstreamBuffer bitstream_buffer(0, shared_memory.Duplicate(), kPayloadSize);
+
+  VideoEncoder::EncodeOptions options;
+  // Use a single reference buffer with an index >= GetMaxNumOfManualRefBuffers.
+  options.reference_buffers.push_back(
+      static_cast<uint8_t>(encoder_delegate_->GetMaxNumOfManualRefBuffers()));
+
+  auto result_or_error = encoder_delegate_->Encode(input_frame, color_space,
+                                                   bitstream_buffer, options);
+
+  EXPECT_FALSE(result_or_error.has_value());
+  EXPECT_EQ(result_or_error.code(), EncoderStatus::Codes::kBadReferenceBuffer);
+}
+
+TEST_F(D3D12VideoEncodeDelegateTest,
+       EncodeWithOutOfRangeUpdateBufferIndexFails) {
+  VideoEncodeAccelerator::Config config = GetDefaultH264Config();
+  ASSERT_TRUE(encoder_delegate_->Initialize(config).is_ok());
+
+  gfx::Size input_size = config.input_visible_size;
+  auto input_frame = CreateResource(input_size, config.input_format);
+  gfx::ColorSpace color_space = gfx::ColorSpace::CreateREC709();
+  constexpr size_t kPayloadSize = 1024;
+  auto shared_memory = base::UnsafeSharedMemoryRegion::Create(kPayloadSize);
+  BitstreamBuffer bitstream_buffer(0, shared_memory.Duplicate(), kPayloadSize);
+
+  VideoEncoder::EncodeOptions options;
+  // Set update_buffer to a value >= GetMaxNumOfRefFrames.
+  options.update_buffer =
+      static_cast<uint8_t>(encoder_delegate_->GetMaxNumOfRefFrames());
+
+  auto result_or_error = encoder_delegate_->Encode(input_frame, color_space,
+                                                   bitstream_buffer, options);
+
+  EXPECT_FALSE(result_or_error.has_value());
+  EXPECT_EQ(result_or_error.code(), EncoderStatus::Codes::kBadReferenceBuffer);
+}
+
 }  // namespace media

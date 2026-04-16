@@ -147,6 +147,20 @@ D3D12FenceAndValue D3D12VideoProcessorWrapper::ProcessFrames(
     output_stream_desc_ = output_stream_desc;
   }
 
+  // Ensure the GPU has finished executing previous commands before resetting
+  // the allocator. Without this guard, a downstream error could leave the
+  // allocator in use when Reset() is called.
+  // An alternative approach is to reuse the allocator without resetting it.
+  // However, this could potentially cause the allocator to grow unboundedly.
+  if (fence_->GetCompletedValue() < fence_->Value()) {
+    auto status = fence_->WaitCPU(fence_->Value());
+    if (!status.is_ok()) {
+      DLOG(ERROR) << "Waiting for previous video processing failed: "
+                  << static_cast<int>(status.code());
+      return {};
+    }
+  }
+
   hr = command_allocator_->Reset();
   if (FAILED(hr)) {
     DLOG(ERROR) << "Reset video process command allocator failed:"
