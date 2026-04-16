@@ -983,7 +983,9 @@ IN_PROC_BROWSER_TEST_F(ExtensionCrxInstallerTest,
       "y0ury28n8jbN0PnInKKWcxpIXXmNQyC19HBuO3QIeUq9Dqc+7YFQIDAQAB";
 
   // Test updating an existing extension.
-  AddExtension(extension_id, "0.0");
+  AddExtension(extension_id, /*version=*/"0.0");
+
+  base::HistogramTester histogram_tester;
 
   auto temp_dir = UnpackedCrxTempDir();
   RunUpdateExtension(
@@ -997,6 +999,10 @@ IN_PROC_BROWSER_TEST_F(ExtensionCrxInstallerTest,
 
   // The unpacked folder should be deleted.
   EXPECT_FALSE(base::PathExists(temp_dir->GetPath()));
+
+  histogram_tester.ExpectUniqueSample(
+      "Extensions.SandboxUnpackSuccessForUpdates", true,
+      /*expected_bucket_count=*/1);
 
   const Extension* extension = GetInstalledExtension(extension_id);
   ASSERT_NE(nullptr, extension);
@@ -1014,7 +1020,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionCrxInstallerTest,
   const std::string public_key = "invalid public key";
 
   // Test updating an existing extension.
-  AddExtension(extension_id, "0.0");
+  AddExtension(extension_id, /*version=*/"0.0");
 
   auto temp_dir = UnpackedCrxTempDir();
   RunUpdateExtension(
@@ -1046,6 +1052,49 @@ IN_PROC_BROWSER_TEST_F(ExtensionCrxInstallerTest,
   EXPECT_EQ(std::nullopt, installation_failure.install_error_detail);
 }
 
+// Tests that the `Extensions.Update.SandboxUnpackFailureReason` histogram is
+// correctly recorded when an extension update fails during the unpacking stage
+// due to an invalid manifest (which is a `SandboxedUnpackerFailureReason`).
+// We expect the histogram to be recorded with the `INVALID_MANIFEST` reason.
+IN_PROC_BROWSER_TEST_F(ExtensionCrxInstallerTest,
+                       UpdateExtension_SandboxUnpackFailureReason) {
+  base::ScopedAllowBlockingForTesting allow_io;
+  std::unique_ptr<MockPromptProxy> mock_prompt =
+      CreateMockPromptProxyForBrowser(browser());
+
+  const extensions::ExtensionId extension_id =
+      "ldnnhddmnhbkjipkidpdiheffobcpfmf";
+  const std::string public_key = "invalid public key";
+
+  // Test updating an existing extension.
+  AddExtension(extension_id, /*version=*/"0.0");
+
+  base::HistogramTester histogram_tester;
+
+  auto temp_dir = UnpackedCrxTempDir();
+  RunUpdateExtension(
+      mock_prompt->CreatePrompt(), extension_id, public_key,
+      temp_dir->GetPath(),
+      base::BindOnce([](const std::optional<CrxInstallError>& error) {
+        ASSERT_NE(std::nullopt, error);
+        ASSERT_EQ(CrxInstallErrorType::SANDBOXED_UNPACKER_FAILURE,
+                  error->type());
+        EXPECT_EQ(SandboxedUnpackerFailureReason::INVALID_MANIFEST,
+                  error->sandbox_failure_detail());
+      }));
+
+  EXPECT_FALSE(mock_prompt->did_succeed());
+
+  histogram_tester.ExpectUniqueSample(
+      "Extensions.SandboxUnpackFailureReasonForUpdates",
+      SandboxedUnpackerFailureReason::INVALID_MANIFEST,
+      /*expected_bucket_count=*/1);
+
+  histogram_tester.ExpectUniqueSample(
+      "Extensions.SandboxUnpackSuccessForUpdates", false,
+      /*expected_bucket_count=*/1);
+}
+
 IN_PROC_BROWSER_TEST_F(ExtensionCrxInstallerTest,
                        UpdateExtensionFromUnpackedCrx_WrongPublicKey) {
   base::ScopedAllowBlockingForTesting allow_io;
@@ -1061,7 +1110,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionCrxInstallerTest,
       "y0ury28n8jbN0PnInKKWcxpIXXmNQyC19HBuO3QIeUq9Dqc+7YFQIDAQAB";
 
   // Test updating an existing extension.
-  AddExtension(extension_id, "0.0");
+  AddExtension(extension_id, /*version=*/"0.0");
 
   auto temp_dir = UnpackedCrxTempDir();
   RunUpdateExtension(

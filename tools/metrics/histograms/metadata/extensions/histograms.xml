@@ -4033,6 +4033,16 @@ This is emitted for two scenarios when a worker may be unregistered:
   </summary>
 </histogram>
 
+<histogram name="Extensions.SandboxUnpackFailureReasonForUpdates"
+    enum="ExtensionUnpackFailureReason" expires_after="2026-10-14">
+  <owner>jlulejian@chromium.org</owner>
+  <owner>extensions-core@chromium.org</owner>
+  <summary>
+    Records the reason an extension failed to unpack during an update. Emits
+    when a failure occurs.
+  </summary>
+</histogram>
+
 <histogram name="Extensions.SandboxUnpackSuccess" units="units"
     expires_after="never">
 <!-- expires-never: Monitors core extension installation flows. -->
@@ -4040,6 +4050,17 @@ This is emitted for two scenarios when a worker may be unregistered:
   <owner>rdevlin.cronin@chromium.org</owner>
   <owner>extensions-core@chromium.org</owner>
   <summary>Count the number of times a sandboxed CRX unpack succeeds.</summary>
+</histogram>
+
+<histogram name="Extensions.SandboxUnpackSuccessForUpdates"
+    enum="BooleanSuccess" expires_after="2026-10-14">
+  <owner>jlulejian@chromium.org</owner>
+  <owner>extensions-core@chromium.org</owner>
+  <summary>
+    Records whether a sandboxed CRX unpack succeeds or fails during an update.
+    Emits when the installation completes (either successfully or with a
+    sandboxed unpacker failure).
+  </summary>
 </histogram>
 
 <histogram name="Extensions.SearchEngineOverrides2" units="units"

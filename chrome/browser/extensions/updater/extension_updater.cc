@@ -883,6 +883,7 @@ scoped_refptr<CrxInstaller> ExtensionUpdater::CreateUpdateInstaller(
 
   // Either |pending_extension_info| or |extension| or both must not be null.
   scoped_refptr<CrxInstaller> installer(CrxInstaller::CreateSilent(profile_));
+  installer->set_is_update(true);
   installer->set_expected_id(id);
   installer->set_expected_hash(file.expected_hash);
   int creation_flags = Extension::NO_FLAGS;

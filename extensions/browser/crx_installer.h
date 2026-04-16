@@ -198,6 +198,9 @@ class CrxInstaller : public SandboxedUnpackerClient {
   bool grant_permissions() const { return grant_permissions_; }
   void set_grant_permissions(bool val) { grant_permissions_ = val; }
 
+  bool is_update() const { return is_update_; }
+  void set_is_update(bool val) { is_update_ = val; }
+
   bool is_gallery_install() const {
     return (creation_flags_ & Extension::FROM_WEBSTORE) > 0;
   }
@@ -553,6 +556,9 @@ class CrxInstaller : public SandboxedUnpackerClient {
   // Whether the update is initiated by the user from the extension settings
   // page.
   bool update_from_settings_page_;
+
+  // Whether the operation is an extension update.
+  bool is_update_ = false;
 
   // The flags for ExtensionService::OnExtensionInstalled.
   int install_flags_;
