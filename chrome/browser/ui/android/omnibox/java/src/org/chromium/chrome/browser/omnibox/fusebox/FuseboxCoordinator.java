@@ -11,13 +11,11 @@ import android.content.ComponentCallbacks;
 import android.content.Context;
 import android.content.res.Configuration;
 import android.content.res.Resources;
-import android.graphics.Rect;
 import android.util.DisplayMetrics;
 import android.view.LayoutInflater;
 
 import androidx.annotation.IntDef;
 import androidx.constraintlayout.widget.ConstraintLayout;
-import androidx.window.layout.WindowMetricsCalculator;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.DeviceInfo;
@@ -83,6 +81,7 @@ public class FuseboxCoordinator implements TemplateUrlServiceObserver {
     private final SnackbarManager mSnackbarManager;
     private @Nullable ViewportRectProvider mViewportRectProvider;
     private @Nullable FuseboxMetrics mMetrics;
+    private @Nullable BottomSheetRectProvider mBottomSheetRectProvider;
 
     // Mediator is scoped to a particular profile. Can reuse as long as the profile does not change.
     private @Nullable FuseboxMediator mMediator;
@@ -133,12 +132,9 @@ public class FuseboxCoordinator implements TemplateUrlServiceObserver {
 
         // Prepare rect provider for the bottom-sheet like popup window.
         Activity activity = assumeNonNull(ContextUtils.activityFromContext(mContext));
-        var windowMetrics =
-                WindowMetricsCalculator.getOrCreate().computeCurrentWindowMetrics(activity);
-        var bounds = new Rect(windowMetrics.getBounds());
-        bounds.top = bounds.bottom; // Anchor popup to the bottom of the window.
-        var bottomRectProvider = new RectProvider(bounds);
-        var dynamicRectProvider = new DynamicRectProvider(viewRectProvider, bottomRectProvider);
+        mBottomSheetRectProvider = new BottomSheetRectProvider(activity, mParent);
+        var dynamicRectProvider =
+                new DynamicRectProvider(viewRectProvider, mBottomSheetRectProvider);
 
         var popupView = LayoutInflater.from(mContext).inflate(R.layout.fusebox_context_popup, null);
         mViewportRectProvider = new ViewportRectProvider(mContext);
@@ -156,11 +152,6 @@ public class FuseboxCoordinator implements TemplateUrlServiceObserver {
                         .setAnimateFromAnchor(true)
                         .setPreferredHorizontalOrientation(HorizontalOrientation.LAYOUT_DIRECTION)
                         .setViewportRectProvider(mViewportRectProvider)
-                        .setDesiredContentWidth(
-                                OmniboxFeatures.sShowBottomSheetPopup.getValue()
-                                        ? bottomRectProvider.getRect().width()
-                                        : mContext.getResources()
-                                                .getDimensionPixelSize(R.dimen.fusebox_popup_width))
                         .setHorizontalOverlapAnchor(true)
                         .setVerticalOverlapAnchor(true);
 
@@ -217,6 +208,9 @@ public class FuseboxCoordinator implements TemplateUrlServiceObserver {
         }
         if (mViewportRectProvider != null) {
             mViewportRectProvider.destroy();
+        }
+        if (mBottomSheetRectProvider != null) {
+            mBottomSheetRectProvider.destroy();
         }
     }
 

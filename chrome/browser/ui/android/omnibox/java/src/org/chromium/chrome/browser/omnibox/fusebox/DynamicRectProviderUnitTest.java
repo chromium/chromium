@@ -4,10 +4,13 @@
 
 package org.chromium.chrome.browser.omnibox.fusebox;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 import android.content.res.Resources;
 
@@ -104,15 +107,21 @@ public class DynamicRectProviderUnitTest {
         int width =
                 mDynamicRectProvider.getPopupWidth(
                         FuseboxProperties.PopupState.FLOATING, mResources);
-        org.junit.Assert.assertEquals(500, width);
+        assertEquals(500, width);
     }
 
     @Test
     public void testGetPopupWidth_bottom() {
         android.graphics.Rect rect = new android.graphics.Rect(0, 0, 300, 0);
-        org.mockito.Mockito.when(mBottomDelegate.getRect()).thenReturn(rect);
+        when(mBottomDelegate.getRect()).thenReturn(rect);
         int width =
                 mDynamicRectProvider.getPopupWidth(FuseboxProperties.PopupState.BOTTOM, mResources);
-        org.junit.Assert.assertEquals(300, width);
+        assertEquals(300, width);
+    }
+
+    @Test
+    public void testGetRect_nullDelegate_returnsEmptyRect() {
+        android.graphics.Rect rect = mDynamicRectProvider.getRect();
+        assertTrue(rect.isEmpty());
     }
 }

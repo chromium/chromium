@@ -105,7 +105,9 @@ class DynamicRectProvider extends RectProvider implements RectProvider.Observer 
 
     @Override
     public Rect getRect() {
-        return mCurrentDelegate != null ? mCurrentDelegate.getRect() : super.getRect();
+        // Fallback to an empty rect rather than super.getRect() to prevent layout churn when
+        // hidden.
+        return mCurrentDelegate != null ? mCurrentDelegate.getRect() : new Rect();
     }
 
     // RectProvider.Observer implementation.
