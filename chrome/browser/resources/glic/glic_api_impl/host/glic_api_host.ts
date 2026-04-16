@@ -53,8 +53,10 @@ export enum DetailedWebClientState {
   RESPONSIVE = 6,
   RESPONSIVE_INACTIVE = 7,
   UNRESPONSIVE_INACTIVE = 8,
-  MOJO_PIPE_CLOSED_UNEXPECTEDLY = 9,
-  MAX_VALUE = MOJO_PIPE_CLOSED_UNEXPECTEDLY,
+  // OBSOLETE: MOJO_PIPE_CLOSED_UNEXPECTEDLY = 9,
+  MOJO_PIPE_CLOSED_UNEXPECTEDLY_BEFORE_INITIALIZE = 10,
+  MOJO_PIPE_CLOSED_UNEXPECTEDLY_AFTER_INITIALIZE = 11,
+  MAX_VALUE = MOJO_PIPE_CLOSED_UNEXPECTEDLY_AFTER_INITIALIZE,
 }
 // LINT.ThenChange(//tools/metrics/histograms/metadata/glic/enums.xml:GlicDetailedWebClientState)
 
@@ -209,8 +211,12 @@ export class GlicApiHost implements PostMessageRequestHandler {
     this.handler.onConnectionError.addListener(() => {
       if (this.webClientState.getCurrentValue() !== WebClientState.ERROR) {
         console.warn(`Mojo connection error in glic host`);
-        this.detailedWebClientState =
-            DetailedWebClientState.MOJO_PIPE_CLOSED_UNEXPECTEDLY;
+        this.detailedWebClientState = this.detailedWebClientState ===
+                DetailedWebClientState.BOOTSTRAP_PENDING ?
+            DetailedWebClientState
+                .MOJO_PIPE_CLOSED_UNEXPECTEDLY_BEFORE_INITIALIZE :
+            DetailedWebClientState
+                .MOJO_PIPE_CLOSED_UNEXPECTEDLY_AFTER_INITIALIZE;
         this.webClientState.assignAndSignal(WebClientState.ERROR);
       }
     });

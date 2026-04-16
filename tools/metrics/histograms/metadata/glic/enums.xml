@@ -171,7 +171,9 @@ chromium-metrics-reviews@google.com.
   <int value="6" label="Responsive"/>
   <int value="7" label="Responsive Inactive"/>
   <int value="8" label="Unresponsive Inactive"/>
-  <int value="9" label="Mojo pipe closed unexpectedly"/>
+  <int value="9" label="(Obsolete) Mojo pipe closed unexpectedly"/>
+  <int value="10" label="Mojo pipe closed unexpectedly before initialize"/>
+  <int value="11" label="Mojo pipe closed unexpectedly after initialization"/>
 </enum>
 
 <!-- LINT.ThenChange(//chrome/browser/resources/glic/glic_api_impl/host/glic_api_host.ts:DetailedWebClientState) -->

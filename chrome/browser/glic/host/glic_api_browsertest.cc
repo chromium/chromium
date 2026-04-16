@@ -1549,8 +1549,9 @@ IN_PROC_BROWSER_TEST_P(GlicApiTestRuntimeFeatureOff,
   ASSERT_EQ("Method called", result.ExtractString());
 
   WaitForWebUiState(mojom::WebUiState::kError);
-  histogram_tester->ExpectUniqueSample("Glic.Host.WebClientState.OnDestroy",
-                                       9 /*MOJO_PIPE_CLOSED_UNEXPECTEDLY*/, 1);
+  histogram_tester->ExpectUniqueSample(
+      "Glic.Host.WebClientState.OnDestroy",
+      11 /*MOJO_PIPE_CLOSED_UNEXPECTEDLY_AFTER_INITIALIZE*/, 1);
 
   // Verify the reload button works.
   RunTestSequence(
