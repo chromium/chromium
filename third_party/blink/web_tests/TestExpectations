@@ -1783,12 +1783,10 @@ crbug.com/1040611 [ Debug ] external/wpt/uievents/order-of-events/mouse-events/w
 crbug.com/1040611 [ Release ] external/wpt/uievents/order-of-events/mouse-events/wheel-basic.html [ Failure Timeout ]
 
 # crbug.com/1298321: "element click intercepted error" when <body style="zoom:2">.
-crbug.com/1298321 virtual/scalefactor200/fast/hidpi/static/calendar-picker-appearance.html [ Failure Pass Timeout ]
-crbug.com/1298321 virtual/scalefactor200/fast/hidpi/static/data-suggestion-picker-appearance.html [ Failure Pass Timeout ]
-crbug.com/1298321 virtual/scalefactor200/fast/hidpi/static/popup-menu-appearance.html [ Failure Pass Timeout ]
-crbug.com/1298321 virtual/scalefactor150/fast/hidpi/static/calendar-picker-appearance.html [ Failure Pass Timeout ]
-crbug.com/1298321 virtual/scalefactor150/fast/hidpi/static/data-suggestion-picker-appearance.html [ Failure Pass Timeout ]
-crbug.com/1298321 virtual/scalefactor150/fast/hidpi/static/popup-menu-appearance.html [ Failure Pass Timeout ]
+crbug.com/1298321 [ Win11 ] virtual/scalefactor150/fast/hidpi/static/data-suggestion-picker-appearance.html [ Failure ]
+crbug.com/1298321 [ Win11 ] virtual/scalefactor200/fast/hidpi/static/data-suggestion-picker-appearance.html [ Failure ]
+crbug.com/1298321 [ Win11-arm64 ] virtual/scalefactor150/fast/hidpi/static/data-suggestion-picker-appearance.html [ Failure ]
+crbug.com/1298321 [ Win11-arm64 ] virtual/scalefactor200/fast/hidpi/static/data-suggestion-picker-appearance.html [ Failure ]
 
 # crbug.com/40215845: These need more work after the revamp of picker-common.js
 crbug.com/40215845 fast/forms/select-popup/popup-menu-appearance-coarse.html [ Failure Pass Timeout ]
