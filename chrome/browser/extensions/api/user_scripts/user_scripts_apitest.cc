@@ -277,11 +277,8 @@ IN_PROC_BROWSER_TEST_F(UserScriptsAPITest,
       << message_;
 }
 
-#if BUILDFLAG(ENABLE_EXTENSIONS)
 // Base test fixture for tests spanning multiple sessions where a custom arg
 // is set before the test is run.
-// TODO(crbug.com/40200835): PRE_ tests are not supported on Android and all
-// these tests require a PRE_ step.
 class PersistentUserScriptsAPITest : public UserScriptsAPITest {
  public:
   PersistentUserScriptsAPITest() = default;
@@ -319,7 +316,6 @@ class PersistentUserScriptsAPITest : public UserScriptsAPITest {
 
 // Tests that registered user scripts persist across sessions. The test is run
 // across three sessions.
-// TODO(crbug.com/40200835): PRE_ tests are not supported on Android.
 IN_PROC_BROWSER_TEST_F(PersistentUserScriptsAPITest,
                        PRE_PRE_PersistentScripts) {
   const Extension* extension = LoadExtension(
@@ -349,7 +345,6 @@ IN_PROC_BROWSER_TEST_F(PersistentUserScriptsAPITest, PersistentScripts) {
 
 // Tests that the world configuration of a registered user script is persisted
 // across sessions. The test is run across three sessions.
-// TODO(crbug.com/40200835): PRE_ tests are not supported on Android.
 IN_PROC_BROWSER_TEST_F(PersistentUserScriptsAPITest,
                        PRE_PRE_PersistentWorldConfiguration) {
   const Extension* extension = LoadExtension(
@@ -378,8 +373,6 @@ IN_PROC_BROWSER_TEST_F(PersistentUserScriptsAPITest,
       testing::UnitTest::GetInstance()->current_test_info()->name());
   EXPECT_TRUE(result_catcher_.GetNextResult()) << result_catcher_.message();
 }
-
-#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
 class UserScriptsAPITestWithoutAPIAllowed : public UserScriptsAPITest {
  public:
