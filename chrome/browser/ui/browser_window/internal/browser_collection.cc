@@ -7,6 +7,8 @@
 #include "base/scoped_observation.h"
 #include "chrome/browser/ui/browser_window/public/browser_collection_observer.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "components/tabs/public/tab_interface.h"
+#include "content/public/browser/web_contents.h"
 #include "ui/base/base_window.h"
 
 namespace {
@@ -106,6 +108,30 @@ BrowserWindowInterface* BrowserCollection::FindBrowserWithID(
       },
       Order::kActivation);
   return found;
+}
+
+BrowserWindowInterface* BrowserCollection::FindBrowserWithTab(
+    const content::WebContents* web_contents) {
+  DCHECK(web_contents);
+  tabs::TabInterface* tab = tabs::TabInterface::MaybeGetFromContents(
+      const_cast<content::WebContents*>(web_contents));
+  if (!tab) {
+    return nullptr;
+  }
+  BrowserWindowInterface* host_browser = tab->GetBrowserWindowInterface();
+  if (!host_browser) {
+    return nullptr;
+  }
+
+  // Test to see if the host browser belongs to the current collection.
+  bool found = false;
+  ForEach([&found, host_browser](BrowserWindowInterface* browser) {
+    if (host_browser == browser) {
+      found = true;
+    }
+    return !found;
+  });
+  return found ? host_browser : nullptr;
 }
 
 void BrowserCollection::AddObserver(BrowserCollectionObserver* observer) {

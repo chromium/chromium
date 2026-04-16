@@ -6,8 +6,8 @@
 
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "chrome/browser/web_applications/mojom/user_display_mode.mojom.h"
 #include "chrome/browser/web_applications/proto/web_app_install_state.pb.h"
@@ -55,7 +55,8 @@ std::optional<std::string> GetInstanceAppIdForWebContents(
   Profile* profile = Profile::FromBrowserContext(tab->GetBrowserContext());
   // Note: It is possible to come here after a tab got removed from the browser
   // before it gets destroyed, in which case there is no browser.
-  BrowserWindowInterface* browser = chrome::FindBrowserWithTab(tab);
+  BrowserWindowInterface* browser =
+      GlobalBrowserCollection::GetInstance()->FindBrowserWithTab(tab);
 
   // Use the Browser's app name to determine the web app for app windows and use
   // the tab's url for app tabs.

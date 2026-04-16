@@ -48,8 +48,8 @@
 #include "content/public/browser/web_contents.h"
 #else
 #include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #endif
 
 namespace {
@@ -145,7 +145,8 @@ history::VisitContextAnnotations::BrowserType GetBrowserType(
       return history::VisitContextAnnotations::BrowserType::kUnknown;
   }
 #else
-  BrowserWindowInterface* browser = chrome::FindBrowserWithTab(web_contents);
+  BrowserWindowInterface* browser =
+      GlobalBrowserCollection::GetInstance()->FindBrowserWithTab(web_contents);
   if (!browser) {
     return history::VisitContextAnnotations::BrowserType::kUnknown;
   }
@@ -682,7 +683,8 @@ bool HistoryTabHelper::IsEligibleTab(
   return true;
 #else
   // Don't update history if this web contents isn't associated with a tab.
-  return chrome::FindBrowserWithTab(web_contents()) != nullptr;
+  return GlobalBrowserCollection::GetInstance()->FindBrowserWithTab(
+             web_contents()) != nullptr;
 #endif
 }
 

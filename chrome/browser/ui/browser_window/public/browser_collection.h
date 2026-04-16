@@ -17,6 +17,10 @@
 class BrowserCollectionObserver;
 class BrowserWindowInterface;
 
+namespace content {
+class WebContents;
+}
+
 // A common base class for collections of BrowserWindowInterface objects.
 class BrowserCollection {
  public:
@@ -67,6 +71,12 @@ class BrowserCollection {
   // Finds a browser by its session ID. Returns nullptr if no browser with the
   // given ID exists in this collection.
   BrowserWindowInterface* FindBrowserWithID(SessionID desired_id);
+
+  // Returns the browser containing the specified `web_contents` as a tab.
+  // Returns nullptr if no such browser exists in this collection.
+  // `web_contents` must not be nullptr.
+  BrowserWindowInterface* FindBrowserWithTab(
+      const content::WebContents* web_contents);
 
  protected:
   BrowserCollection();

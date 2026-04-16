@@ -19,6 +19,7 @@ source_set("internal") {
     "//chrome/browser/ui/browser_window",
     "//chrome/browser/ui/browser_window:create_browser_window",
     "//components/sessions:session_id",
+    "//components/tabs:public",
     "//ui/base",
     "//ui/base/unowned_user_data",
   ]
@@ -125,7 +126,6 @@ source_set("internal") {
       "//components/profile_metrics",
       "//components/saved_tab_groups/public",
       "//components/search",
-      "//components/tabs:public",
     ]
 
     if (is_win || is_mac) {

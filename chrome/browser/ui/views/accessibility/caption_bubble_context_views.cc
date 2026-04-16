@@ -9,8 +9,8 @@
 #include "base/location.h"
 #include "base/task/sequenced_task_runner.h"
 #include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/views/accessibility/caption_bubble_session_observer_views.h"
 #include "components/live_caption/caption_util.h"
@@ -64,7 +64,8 @@ void CaptionBubbleContextViews::Activate() {
   // Activate the web contents and the browser window that the web contents is
   // in. Order matters: web contents needs to be active in order for the widget
   // getter to work.
-  BrowserWindowInterface* browser = chrome::FindBrowserWithTab(web_contents_);
+  BrowserWindowInterface* browser =
+      GlobalBrowserCollection::GetInstance()->FindBrowserWithTab(web_contents_);
   if (!browser) {
     return;
   }
@@ -90,7 +91,8 @@ bool CaptionBubbleContextViews::IsActivatable() const {
 
 bool CaptionBubbleContextViews::ShouldAvoidOverlap() const {
   // Avoid overlap if web_contents_ doesn't belong to a tab.
-  return !chrome::FindBrowserWithTab(web_contents_);
+  return !GlobalBrowserCollection::GetInstance()->FindBrowserWithTab(
+      web_contents_);
 }
 
 std::unique_ptr<CaptionBubbleSessionObserver>

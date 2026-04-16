@@ -13,8 +13,8 @@
 #include "chrome/browser/permissions/permission_manager_factory.h"
 #include "chrome/browser/permissions/system/system_permission_settings.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/page_info/merchant_trust_side_panel.h"
 #include "chrome/browser/ui/ui_features.h"
@@ -126,7 +126,8 @@ std::u16string ChromePageInfoUiDelegate::GetAutomaticallyBlockedReason(
 #if !BUILDFLAG(IS_ANDROID)
 std::optional<page_info::proto::SiteInfo>
 ChromePageInfoUiDelegate::GetAboutThisSiteInfo() {
-  BrowserWindowInterface* browser = chrome::FindBrowserWithTab(web_contents_);
+  BrowserWindowInterface* browser =
+      GlobalBrowserCollection::GetInstance()->FindBrowserWithTab(web_contents_);
   if (!browser || browser->GetType() != BrowserWindowInterface::TYPE_NORMAL) {
     // TODO(crbug.com/40904874): SidePanel is not available. Evaluate if we can
     //                          show ATP in a different way.
@@ -194,7 +195,8 @@ void ChromePageInfoUiDelegate::OpenSiteSettingsFileSystem() {
 }
 
 void ChromePageInfoUiDelegate::ShowPrivacySandboxSettings() {
-  BrowserWindowInterface* browser = chrome::FindBrowserWithTab(web_contents_);
+  BrowserWindowInterface* browser =
+      GlobalBrowserCollection::GetInstance()->FindBrowserWithTab(web_contents_);
   chrome::ShowPrivacySandboxSettings(browser);
 }
 

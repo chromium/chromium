@@ -13,7 +13,8 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/shortcuts/create_shortcut_for_current_web_contents_task.h"
 #include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/browser_finder.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/browser/ui/dialogs/browser_dialogs.h"
 #include "chrome/browser/ui/views/controls/site_icon_text_and_origin_view.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
@@ -51,7 +52,8 @@ void ShowCreateDesktopShortcutDialog(
     const gfx::ImageSkia& icon,
     std::u16string title,
     CreateShortcutDialogCallback dialog_action_and_text_callback) {
-  BrowserWindowInterface* browser = chrome::FindBrowserWithTab(web_contents);
+  BrowserWindowInterface* browser =
+      GlobalBrowserCollection::GetInstance()->FindBrowserWithTab(web_contents);
   if (!browser) {
     std::move(dialog_action_and_text_callback).Run(std::nullopt);
     return;

@@ -32,7 +32,7 @@
 #include "chrome/browser/android/tab_android.h"
 #else
 #include "chrome/browser/devtools/devtools_window.h"
-#include "chrome/browser/ui/browser_finder.h"
+#include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #endif
 
 namespace performance_manager {
@@ -154,7 +154,8 @@ bool PageLoadMetricsWebContentsObserver::IsTab() const {
 #if BUILDFLAG(IS_ANDROID)
   return !!TabAndroid::FromWebContents(web_contents());
 #else
-  return !!chrome::FindBrowserWithTab(web_contents());
+  return !!GlobalBrowserCollection::GetInstance()->FindBrowserWithTab(
+      web_contents());
 #endif
 }
 

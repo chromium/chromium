@@ -13,8 +13,8 @@
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
-#include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
@@ -41,7 +41,9 @@ void ChromeControllerClient::Proceed() {
   // Hosted Apps should not be allowed to run if Safe Browsing considers them
   // dangerous. So, when users click proceed on an interstitial, move the tab
   // to a regular Chrome window and proceed as usual there.
-  BrowserWindowInterface* browser = chrome::FindBrowserWithTab(web_contents());
+  BrowserWindowInterface* browser =
+      GlobalBrowserCollection::GetInstance()->FindBrowserWithTab(
+          web_contents());
   if (web_app::AppBrowserController::IsWebApp(browser))
     chrome::OpenInChrome(browser->GetBrowserForMigrationOnly());
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)

@@ -9,8 +9,8 @@
 #include "build/build_config.h"
 #include "chrome/browser/media/router/media_router_feature.h"
 #include "chrome/browser/ui/actions/chrome_action_id.h"
-#include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_manager.h"
 #include "chrome/browser/ui/exclusive_access/fullscreen_controller.h"
 #include "chrome/browser/ui/global_media_controls/media_notification_service.h"
@@ -66,7 +66,8 @@ void MediaRouterDialogControllerViews::CreateMediaRouterDialog(
       Profile::FromBrowserContext(initiator()->GetBrowserContext());
 
   InitializeMediaRouterUI();
-  BrowserWindowInterface* browser = chrome::FindBrowserWithTab(initiator());
+  BrowserWindowInterface* browser =
+      GlobalBrowserCollection::GetInstance()->FindBrowserWithTab(initiator());
 
   // Block tab fullscreen. There is no toolbar to anchor the cast dialog to in
   // tab fullscreen mode. It is unsafe to show the dialog entirely within the
@@ -234,7 +235,7 @@ void MediaRouterDialogControllerViews::ShowGlobalMediaControlsDialog() {
     return;
   }
   BrowserWindowInterface* const browser =
-      chrome::FindBrowserWithTab(initiator());
+      GlobalBrowserCollection::GetInstance()->FindBrowserWithTab(initiator());
   BrowserView* const browser_view =
       browser ? BrowserView::GetBrowserViewForBrowser(browser) : nullptr;
   // If there exists a browser_view, anchor the dialog to the top center of the
@@ -263,7 +264,7 @@ MediaToolbarButtonView* MediaRouterDialogControllerViews::GetMediaButton() {
     return nullptr;
   }
   BrowserWindowInterface* const browser =
-      chrome::FindBrowserWithTab(initiator());
+      GlobalBrowserCollection::GetInstance()->FindBrowserWithTab(initiator());
   BrowserView* const browser_view =
       browser ? BrowserView::GetBrowserViewForBrowser(browser) : nullptr;
   ToolbarView* const toolbar_view =
