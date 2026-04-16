@@ -585,8 +585,7 @@ const CGFloat kIdentityDiscMaxFontSize = 24;
     return;
   }
   _defaultSearchEngineName = defaultSearchEngineName;
-  self.headerView.placeholderText = self.placeholderText;
-  self.accessibilityButton.accessibilityLabel = self.placeholderText;
+  [self updatePlaceholderText];
 }
 
 - (void)setDefaultSearchEngineImage:(UIImage*)image {
@@ -624,6 +623,7 @@ const CGFloat kIdentityDiscMaxFontSize = 24;
 - (void)setFuseboxEligible:(BOOL)eligible {
   [_headerView setFuseboxEligible:eligible];
   _fuseboxEligible = eligible;
+  [self updatePlaceholderText];
 }
 
 #pragma mark - UserAccountImageUpdateDelegate
@@ -1249,10 +1249,22 @@ const CGFloat kIdentityDiscMaxFontSize = 24;
   }
 }
 
+// Updates the placeholder text.
+- (void)updatePlaceholderText {
+  NSString* placeholderText = [self placeholderText];
+  self.headerView.placeholderText = placeholderText;
+  self.accessibilityButton.accessibilityLabel = placeholderText;
+}
+
 // Returns the omnibox placeholder text.
 - (NSString*)placeholderText {
-  return l10n_util::GetNSStringF(IDS_OMNIBOX_EMPTY_HINT_WITH_DSE_NAME,
-                                 self.defaultSearchEngineName.cr_UTF16String);
+  if ([self.headerView shouldShowPlusButton]) {
+    return l10n_util::GetNSStringF(IDS_OMNIBOX_EMPTY_ASK_HINT_WITH_DSE_NAME,
+                                   self.defaultSearchEngineName.cr_UTF16String);
+  } else {
+    return l10n_util::GetNSStringF(IDS_OMNIBOX_EMPTY_HINT_WITH_DSE_NAME,
+                                   self.defaultSearchEngineName.cr_UTF16String);
+  }
 }
 
 @end
