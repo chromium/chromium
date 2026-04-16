@@ -29,33 +29,6 @@ void AddCustomMessageRule(
 
 }  // namespace
 
-enterprise_connectors::DeepScanAccessPoint AccessPointFromRequest(
-    enterprise_connectors::AnalysisConnector connector,
-    enterprise_connectors::ContentAnalysisRequest::Reason reason) {
-  switch (connector) {
-    case enterprise_connectors::FILE_DOWNLOADED:
-      return enterprise_connectors::DeepScanAccessPoint::DOWNLOAD;
-    case enterprise_connectors::FILE_ATTACHED:
-      if (reason ==
-          enterprise_connectors::ContentAnalysisRequest::DRAG_AND_DROP) {
-        return enterprise_connectors::DeepScanAccessPoint::DRAG_AND_DROP;
-      }
-      if (reason ==
-          enterprise_connectors::ContentAnalysisRequest::CLIPBOARD_PASTE) {
-        return enterprise_connectors::DeepScanAccessPoint::PASTE;
-      }
-      return enterprise_connectors::DeepScanAccessPoint::UPLOAD;
-    case enterprise_connectors::BULK_DATA_ENTRY:
-      return enterprise_connectors::DeepScanAccessPoint::PASTE;
-    case enterprise_connectors::PRINT:
-      return enterprise_connectors::DeepScanAccessPoint::PRINT;
-    case enterprise_connectors::FILE_TRANSFER:
-      return enterprise_connectors::DeepScanAccessPoint::FILE_TRANSFER;
-    case enterprise_connectors::ANALYSIS_CONNECTOR_UNSPECIFIED:
-      return enterprise_connectors::DeepScanAccessPoint::UPLOAD;
-  }
-}
-
 enterprise_connectors::ContentAnalysisResponse
 SimpleContentAnalysisResponseForTesting(std::optional<bool> dlp_success,
                                         std::optional<bool> malware_success,

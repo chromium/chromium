@@ -19,12 +19,6 @@ class ContentAnalysisResponse;
 
 namespace safe_browsing {
 
-// Maps the request's connector and reason to the corresponding
-// DeepScanAccessPoint.
-enterprise_connectors::DeepScanAccessPoint AccessPointFromRequest(
-    enterprise_connectors::AnalysisConnector connector,
-    enterprise_connectors::ContentAnalysisRequest::Reason reason);
-
 // Helper function to make ContentAnalysisResponses for tests.
 enterprise_connectors::ContentAnalysisResponse
 SimpleContentAnalysisResponseForTesting(std::optional<bool> dlp_success,

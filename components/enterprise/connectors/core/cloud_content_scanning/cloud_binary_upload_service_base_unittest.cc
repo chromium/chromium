@@ -40,6 +40,16 @@ class TestCloudBinaryUploadServiceBase : public CloudBinaryUploadServiceBase {
 
   // CloudBinaryUploadServiceBase:
   void MaybeGetAccessToken(BinaryUploadRequest::Id request_id) override {}
+  enterprise_connectors::BinaryUploadRequest::BrowserPolicyConnectorGetter
+  BrowserPolicyConnectorGetter() override {
+    return base::BindRepeating(
+        []() -> policy::BrowserPolicyConnector* { return nullptr; });
+  }
+  bool IsAdvancedProtection() override { return false; }
+  bool IsEnhancedProtection() override { return false; }
+#if BUILDFLAG(IS_CHROMEOS)
+  bool IsManagedGuestSession() override { return false; }
+#endif
 };
 
 }  // namespace

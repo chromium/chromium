@@ -580,4 +580,29 @@ void DecrementCrashKey(ScanningCrashKey key, int delta) {
   ModifyKey(key, -delta);
 }
 
+DeepScanAccessPoint AccessPointFromRequest(
+    AnalysisConnector connector,
+    ContentAnalysisRequest::Reason reason) {
+  switch (connector) {
+    case FILE_DOWNLOADED:
+      return DeepScanAccessPoint::DOWNLOAD;
+    case FILE_ATTACHED:
+      if (reason == ContentAnalysisRequest::DRAG_AND_DROP) {
+        return DeepScanAccessPoint::DRAG_AND_DROP;
+      }
+      if (reason == ContentAnalysisRequest::CLIPBOARD_PASTE) {
+        return DeepScanAccessPoint::PASTE;
+      }
+      return DeepScanAccessPoint::UPLOAD;
+    case BULK_DATA_ENTRY:
+      return DeepScanAccessPoint::PASTE;
+    case PRINT:
+      return DeepScanAccessPoint::PRINT;
+    case FILE_TRANSFER:
+      return DeepScanAccessPoint::FILE_TRANSFER;
+    case ANALYSIS_CONNECTOR_UNSPECIFIED:
+      return DeepScanAccessPoint::UPLOAD;
+  }
+}
+
 }  // namespace enterprise_connectors

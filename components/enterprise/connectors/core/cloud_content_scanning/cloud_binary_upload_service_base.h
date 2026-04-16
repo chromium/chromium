@@ -34,6 +34,11 @@ class CloudBinaryUploadServiceBase {
   // Protection users.
   static GURL GetUploadUrl(bool is_consumer_scan_eligible);
 
+  // Upload the given file contents for deep scanning if the browser is
+  // authorized to upload data, otherwise queue the request.
+  void MaybeUploadForDeepScanning(
+      std::unique_ptr<enterprise_connectors::BinaryUploadRequest> request);
+
   // Returns true if all expected connector results (tags) have been received
   // for the given `request_id`.
   bool ResponseIsComplete(BinaryUploadRequest::Id request_id);
@@ -53,6 +58,19 @@ class CloudBinaryUploadServiceBase {
                             ScanRequestUploadResult result,
                             BinaryUploadRequest* request,
                             const ContentAnalysisResponse& response);
+
+  // Indicates whether the DM token/Connector combination is allowed to upload
+  // data.
+  using AuthorizationCallback =
+      base::OnceCallback<void(enterprise_connectors::ScanRequestUploadResult)>;
+  void IsAuthorized(const GURL& url,
+                    bool per_profile_request,
+                    AuthorizationCallback callback,
+                    const std::string& dm_token,
+                    enterprise_connectors::AnalysisConnector connector);
+
+  // Resets `can_upload_data_`. Called every 24 hour by `timer_`.
+  void ResetAuthorizationData(const GURL& url);
 
   // TODO(crbug.com/501456247): Change the "protected" below to "private" once
   // the migration is done.
@@ -81,9 +99,23 @@ class CloudBinaryUploadServiceBase {
     bool IsAuthRequest() const override;
   };
 
-  // TODO(crbug.com/501456247): Move this method to the Delegate class once the
-  // migration is complete.
+  // TODO(crbug.com/501456247): Move these methods to the Delegate class once
+  // the migration is complete.
+  // Get the access token only if the user matches the management and
+  // affiliation requirements.
   virtual void MaybeGetAccessToken(BinaryUploadRequest::Id request_id) = 0;
+  virtual BinaryUploadRequest::BrowserPolicyConnectorGetter
+  BrowserPolicyConnectorGetter() = 0;
+  virtual bool IsAdvancedProtection() = 0;
+  virtual bool IsEnhancedProtection() = 0;
+#if BUILDFLAG(IS_CHROMEOS)
+  virtual bool IsManagedGuestSession() = 0;
+#endif
+
+  // Queue the file for deep scanning. This method should be the only caller of
+  // UploadForDeepScanning to avoid consuming too many user resources.
+  void QueueForDeepScanning(
+      std::unique_ptr<enterprise_connectors::BinaryUploadRequest> request);
 
   // Upload the given file contents for deep scanning. The results will be
   // returned asynchronously by calling `request`'s `callback`. This must be
@@ -179,6 +211,10 @@ class CloudBinaryUploadServiceBase {
       ResumableUploadRequestBase::OnceRegisterOnGotHashCallback
           register_on_got_hash_callback);
 
+  void MaybeUploadForDeepScanningCallback(
+      std::unique_ptr<enterprise_connectors::BinaryUploadRequest> request,
+      enterprise_connectors::ScanRequestUploadResult auth_check_result);
+
   // enterprise_connectors::BinaryUploadRequest queued for upload.
   base::circular_deque<
       std::unique_ptr<enterprise_connectors::BinaryUploadRequest>>
@@ -230,6 +266,10 @@ class CloudBinaryUploadServiceBase {
 
   scoped_refptr<base::SequencedTaskRunner> ui_task_runner_;
 
+  // Ensures we validate the browser is registered with the backend every 24
+  // hours.
+  base::RepeatingTimer timer_;
+
  private:
   void RegisterOnGotHashCallback(BinaryUploadRequest::Id request_id,
                                  OnGotHashCallback on_got_hash_callback);
@@ -249,12 +289,30 @@ class CloudBinaryUploadServiceBase {
   void OnIpAddressesFetched(BinaryUploadRequest::Id request_id,
                             std::vector<std::string> ip_addresses);
 
+  std::optional<enterprise_connectors::ScanRequestUploadResult>
+  MaybeGetEnterpriseAuthResult(
+      const enterprise_connectors::BinaryUploadRequest& request);
+
+  enterprise_connectors::ScanRequestUploadResult GetConsumerAuthResult(
+      const enterprise_connectors::BinaryUploadRequest& request);
+
+  // Callback once the response from the backend is received.
+  void ValidateDataUploadRequestConnectorCallback(
+      const std::string& dm_token,
+      enterprise_connectors::AnalysisConnector connector,
+      enterprise_connectors::ScanRequestUploadResult result,
+      enterprise_connectors::ContentAnalysisResponse response);
+
   // Resources associated with an in-progress request.
   base::flat_map<BinaryUploadRequest::Id,
                  std::unique_ptr<ConnectorUploadRequest>>
       active_uploads_;
 
   BinaryUploadRequest::Id::Generator request_id_generator_;
+
+  // Indicates if this service is waiting on the backend to validate event
+  // reporting. Used to avoid spamming the backend.
+  base::flat_set<TokenAndConnector> pending_validate_data_upload_request_;
 
   base::WeakPtrFactory<CloudBinaryUploadServiceBase> weakptr_factory_{this};
 };
