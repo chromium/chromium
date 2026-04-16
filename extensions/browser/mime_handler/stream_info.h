@@ -15,6 +15,7 @@
 
 namespace extensions {
 
+class MimeHandlerStreamDelegate;
 class StreamContainer;
 
 // Information about a single stream navigation. Stores the
@@ -23,7 +24,8 @@ class StreamContainer;
 class StreamInfo {
  public:
   StreamInfo(const std::string& embed_internal_id,
-             std::unique_ptr<StreamContainer> stream_container);
+             std::unique_ptr<StreamContainer> stream_container,
+             std::unique_ptr<MimeHandlerStreamDelegate> delegate);
 
   StreamInfo(const StreamInfo&) = delete;
   StreamInfo& operator=(const StreamInfo&) = delete;
@@ -35,6 +37,9 @@ class StreamInfo {
   const std::string& internal_id() const { return internal_id_; }
 
   StreamContainer* stream() { return stream_.get(); }
+
+  MimeHandlerStreamDelegate* delegate() { return delegate_.get(); }
+  const MimeHandlerStreamDelegate* delegate() const { return delegate_.get(); }
 
   bool did_extension_finish_navigation() const {
     return did_extension_finish_navigation_;
@@ -78,12 +83,6 @@ class StreamInfo {
     content_host_frame_tree_node_id_ = frame_tree_node_id;
   }
 
-  bool plugin_can_save() const { return plugin_can_save_; }
-
-  void set_plugin_can_save(bool plugin_can_save) {
-    plugin_can_save_ = plugin_can_save;
-  }
-
  private:
   // A unique ID for the viewer instance. Used to set up postMessage
   // support for the full-page viewer.
@@ -92,6 +91,9 @@ class StreamInfo {
   // A container for the stream. Holds data needed to load the content
   // in the viewer.
   const std::unique_ptr<StreamContainer> stream_;
+
+  // Non-null. MIME-type-specific delegate for this stream.
+  const std::unique_ptr<MimeHandlerStreamDelegate> delegate_;
 
   // True if the extension host has finished navigating to the
   // extension URL.
@@ -113,9 +115,6 @@ class StreamInfo {
   // A unique ID for this instance. Used for postMessage support to
   // identify `extensions::MimeHandlerViewFrameContainer` objects.
   int32_t instance_id_;
-
-  // True if the plugin should handle save events.
-  bool plugin_can_save_ = false;
 };
 
 }  // namespace extensions

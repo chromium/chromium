@@ -13,6 +13,7 @@
 #include "base/test/values_test_util.h"
 #include "chrome/browser/extensions/extension_service_test_base.h"
 #include "chrome/browser/pdf/mime_handler_stream_manager.h"
+#include "chrome/browser/pdf/pdf_handler_stream_delegate.h"
 #include "chrome/browser/pdf/pdf_test_util.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "components/pdf/common/constants.h"
@@ -149,7 +150,8 @@ class PdfViewerPrivateApiUnitTest : public ChromeRenderViewHostTestHarness {
     auto* manager = mime_handler_stream_manager();
     manager->AddStreamContainer(
         embedder_host->GetFrameTreeNodeId(), "internal_id",
-        pdf_test_util::GenerateSampleStreamContainer(1));
+        pdf_test_util::GenerateSampleStreamContainer(1),
+        std::make_unique<pdf::PdfHandlerStreamDelegate>());
     manager->ClaimStreamInfoForTesting(embedder_host);
 
     // After navigation, the extension host needs to be appended again.

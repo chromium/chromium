@@ -27,6 +27,7 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "extensions/browser/guest_view/mime_handler_view/mime_handler_view_guest.h"
+#include "extensions/browser/mime_handler/mime_handler_stream_delegate.h"
 #include "extensions/browser/mime_handler/stream_container.h"
 #include "extensions/browser/mime_handler/stream_info.h"
 #include "extensions/common/constants.h"
@@ -191,8 +192,10 @@ void MimeHandlerStreamManager::SetFactoryForTesting(Factory* factory) {
 void MimeHandlerStreamManager::AddStreamContainer(
     content::FrameTreeNodeId frame_tree_node_id,
     const std::string& internal_id,
-    std::unique_ptr<extensions::StreamContainer> stream_container) {
+    std::unique_ptr<extensions::StreamContainer> stream_container,
+    std::unique_ptr<extensions::MimeHandlerStreamDelegate> delegate) {
   CHECK(stream_container);
+  CHECK(delegate);
 
   // If an entry with the same frame tree node ID already exists in
   // `stream_infos_`, then a new PDF navigation has occurred. If the
@@ -203,7 +206,7 @@ void MimeHandlerStreamManager::AddStreamContainer(
   // viewer refreshes or navigates to another PDF URL.
   auto embedder_host_info = GetUnclaimedEmbedderHostInfo(frame_tree_node_id);
   stream_infos_[embedder_host_info] = std::make_unique<extensions::StreamInfo>(
-      internal_id, std::move(stream_container));
+      internal_id, std::move(stream_container), std::move(delegate));
 }
 
 base::WeakPtr<extensions::StreamContainer>
@@ -289,8 +292,8 @@ bool MimeHandlerStreamManager::DidPdfContentNavigate(
 
 bool MimeHandlerStreamManager::PluginCanSave(
     const content::RenderFrameHost* embedder_host) const {
-  auto* stream_info = GetClaimedStreamInfo(embedder_host);
-  return stream_info && stream_info->plugin_can_save();
+  const auto* stream_info = GetClaimedStreamInfo(embedder_host);
+  return stream_info && stream_info->delegate()->PluginCanSave();
 }
 
 void MimeHandlerStreamManager::SetPluginCanSave(
@@ -301,7 +304,7 @@ void MimeHandlerStreamManager::SetPluginCanSave(
     return;
   }
 
-  stream_info->set_plugin_can_save(plugin_can_save);
+  stream_info->delegate()->SetPluginCanSave(plugin_can_save);
 }
 
 bool MimeHandlerStreamManager::ContainsUnclaimedStreamInfo(
@@ -560,6 +563,12 @@ void MimeHandlerStreamManager::DidFinishNavigation(
 void MimeHandlerStreamManager::ClaimStreamInfoForTesting(
     content::RenderFrameHost* embedder_host) {
   ClaimStreamInfo(embedder_host);
+}
+
+extensions::StreamInfo*
+MimeHandlerStreamManager::GetClaimedStreamInfoForTesting(
+    content::RenderFrameHost* embedder_host) {
+  return GetClaimedStreamInfo(embedder_host);
 }
 
 void MimeHandlerStreamManager::SetExtensionFrameTreeNodeIdForTesting(

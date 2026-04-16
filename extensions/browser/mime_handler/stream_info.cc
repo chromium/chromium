@@ -7,13 +7,18 @@
 #include <utility>
 
 #include "base/check.h"
+#include "extensions/browser/mime_handler/mime_handler_stream_delegate.h"
 #include "extensions/browser/mime_handler/stream_container.h"
 
 namespace extensions {
 
 StreamInfo::StreamInfo(const std::string& embed_internal_id,
-                       std::unique_ptr<StreamContainer> stream_container)
-    : internal_id_(embed_internal_id), stream_(std::move(stream_container)) {
+                       std::unique_ptr<StreamContainer> stream_container,
+                       std::unique_ptr<MimeHandlerStreamDelegate> delegate)
+    : internal_id_(embed_internal_id),
+      stream_(std::move(stream_container)),
+      delegate_(std::move(delegate)) {
+  CHECK(delegate_);
   // Make sure 0 is never used because some APIs
   // (particularly WebRequest) have special meaning for 0 IDs.
   static int32_t next_instance_id = 0;
