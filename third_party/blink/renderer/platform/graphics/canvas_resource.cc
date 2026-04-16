@@ -98,7 +98,8 @@ gpu::webgpu::WebGPUInterface* CanvasResource::WebGPUInterface() const {
   return ContextProviderWrapper()->ContextProvider().WebGPUInterface();
 }
 
-static void ReleaseFrameResources(
+// static
+void CanvasResource::ReleaseFrameResources(
     scoped_refptr<CanvasResource>&& resource,
     const gpu::SyncToken& sync_token,
     bool lost_resource) {
@@ -112,10 +113,7 @@ static void ReleaseFrameResources(
   if (lost_resource) {
     resource->NotifyResourceLost();
   } else {
-    // Allow the resource to determine whether it wants to preserve itself for
-    // reuse.
-    auto* raw_resource = resource.get();
-    raw_resource->OnRefReturned(std::move(resource));
+    CanvasResource::DropRefOnOwningThread(std::move(resource));
   }
 }
 
@@ -128,12 +126,11 @@ void CanvasResource::OnPlaceholderReleasedResource(
 
   auto& owning_thread_task_runner = resource->owning_thread_task_runner_;
   owning_thread_task_runner->PostTask(
-      FROM_HERE, base::BindOnce(&OnPlaceholderReleasedResourceOnOwningThread,
-                                std::move(resource)));
+      FROM_HERE, base::BindOnce(&DropRefOnOwningThread, std::move(resource)));
 }
 
 // static
-void CanvasResource::OnPlaceholderReleasedResourceOnOwningThread(
+void CanvasResource::DropRefOnOwningThread(
     scoped_refptr<CanvasResource> resource) {
   CHECK(resource);
   DCHECK(!resource->is_cross_thread());

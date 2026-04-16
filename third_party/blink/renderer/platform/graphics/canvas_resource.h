@@ -123,6 +123,10 @@ class PLATFORM_EXPORT CanvasResource : public gpu::ClientImage {
  protected:
   explicit CanvasResource(scoped_refptr<gpu::ClientSharedImage> shared_image);
 
+  static void ReleaseFrameResources(scoped_refptr<CanvasResource>&& resource,
+                                    const gpu::SyncToken& sync_token,
+                                    bool lost_resource);
+
   virtual gfx::HDRMetadata GetHDRMetadata() const { return gfx::HDRMetadata(); }
   virtual viz::TransferableResource::ResourceSource
   GetTransferableResourceSource() const {
@@ -143,8 +147,7 @@ class PLATFORM_EXPORT CanvasResource : public gpu::ClientImage {
   friend class CanvasResourceProviderTest;
   friend class WebGPUMailboxTexture;
 
-  static void OnPlaceholderReleasedResourceOnOwningThread(
-      scoped_refptr<CanvasResource> resource);
+  static void DropRefOnOwningThread(scoped_refptr<CanvasResource> resource);
 
   // Returns true if the resource is rastered via the GPU.
   virtual bool UsesAcceleratedRaster() const = 0;
