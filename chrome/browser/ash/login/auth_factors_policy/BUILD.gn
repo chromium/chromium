@@ -21,6 +21,7 @@ static_library("auth_factors_policy") {
   ]
   deps = [
     "//chrome/browser/ash/login",
+    "//chrome/browser/ash/login/quick_unlock",
     "//chromeos/ash/components/browser_context_helper",
     "//chromeos/ash/services/auth_factor_config",
     "//components/session_manager/core",

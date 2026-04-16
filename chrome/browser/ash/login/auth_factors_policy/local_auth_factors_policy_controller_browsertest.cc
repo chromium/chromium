@@ -85,14 +85,22 @@ class LocalAuthFactorsPolicyControllerTest : public LoginManagerTest {
   }
 
  protected:
+  void UpdatePolicy() { provider_.UpdateChromePolicy(policy_map_); }
+
   void DisableAllAllowedAuthFactorsPolicy() {
-    base::Value allowed_auth_factors(base::Value::Type::LIST);
-    policy::PolicyMap user_policy;
-    user_policy.Set(policy::key::kAllowedLocalAuthFactors,
+    policy_map_.Set(policy::key::kAllowedLocalAuthFactors,
                     policy::POLICY_LEVEL_MANDATORY, policy::POLICY_SCOPE_USER,
                     policy::POLICY_SOURCE_CLOUD,
-                    std::move(allowed_auth_factors), nullptr);
-    provider_.UpdateChromePolicy(user_policy);
+                    base::Value(base::Value::Type::LIST), nullptr);
+    UpdatePolicy();
+  }
+
+  void SetQuickUnlockAllowedModesPolicy(base::ListValue modes) {
+    policy_map_.Set(policy::key::kQuickUnlockModeAllowlist,
+                    policy::POLICY_LEVEL_MANDATORY, policy::POLICY_SCOPE_USER,
+                    policy::POLICY_SOURCE_CLOUD, base::Value(std::move(modes)),
+                    nullptr);
+    UpdatePolicy();
   }
 
   void PerformLoginAndVerifyPolicyEnforcement(
@@ -145,6 +153,7 @@ class LocalAuthFactorsPolicyControllerTest : public LoginManagerTest {
       &cryptohome_};
   std::unique_ptr<base::AutoReset<bool>> ignore_sync_errors_for_test_;
   testing::NiceMock<policy::MockConfigurationPolicyProvider> provider_;
+  policy::PolicyMap policy_map_;
   base::test::ScopedFeatureList feature_list_{
       ash::features::kManagedLocalPinAndPassword};
 };
@@ -174,15 +183,34 @@ IN_PROC_BROWSER_TEST_F(LocalAuthFactorsPolicyControllerTest,
       LoginScreenTestApi::IsForcedOnlineSignin(pin_only_user_.account_id));
 }
 
-IN_PROC_BROWSER_TEST_F(LocalAuthFactorsPolicyControllerTest,
-                       PRE_ForceReauthForOnlinePasswordAndPinOnly) {
+IN_PROC_BROWSER_TEST_F(
+    LocalAuthFactorsPolicyControllerTest,
+    PRE_NoForceReauthForOnlinePasswordAndPinWhenPinAllowedByQuickUnlock) {
+  PerformLoginAndVerifyPolicyEnforcement(gaia_password_and_pin_user_,
+                                         ReauthReason::kNone);
+}
+
+IN_PROC_BROWSER_TEST_F(
+    LocalAuthFactorsPolicyControllerTest,
+    NoForceReauthForOnlinePasswordAndPinWhenPinAllowedByQuickUnlock) {
+  EXPECT_FALSE(LoginScreenTestApi::IsForcedOnlineSignin(
+      gaia_password_and_pin_user_.account_id));
+}
+
+IN_PROC_BROWSER_TEST_F(
+    LocalAuthFactorsPolicyControllerTest,
+    PRE_ForceReauthForOnlinePasswordAndPinWhenPinDisallowedByQuickUnlock) {
+  base::ListValue quick_unlock_allowlist;
+  // Disallow PIN by providing an empty allowlist.
+  SetQuickUnlockAllowedModesPolicy(std::move(quick_unlock_allowlist));
   PerformLoginAndVerifyPolicyEnforcement(
       gaia_password_and_pin_user_,
       ReauthReason::kForcedByLocalAuthFactorsPolicy);
 }
 
-IN_PROC_BROWSER_TEST_F(LocalAuthFactorsPolicyControllerTest,
-                       ForceReauthForOnlinePasswordAndPinOnly) {
+IN_PROC_BROWSER_TEST_F(
+    LocalAuthFactorsPolicyControllerTest,
+    ForceReauthForOnlinePasswordAndPinWhenPinDisallowedByQuickUnlock) {
   EXPECT_TRUE(LoginScreenTestApi::IsForcedOnlineSignin(
       gaia_password_and_pin_user_.account_id));
 }
@@ -211,4 +239,27 @@ IN_PROC_BROWSER_TEST_F(LocalAuthFactorsPolicyControllerTest,
       LoginScreenTestApi::IsForcedOnlineSignin(gaia_password_user_.account_id));
 }
 
+IN_PROC_BROWSER_TEST_F(LocalAuthFactorsPolicyControllerTest,
+                       PRE_ReauthForcedWhenPinDisabledAfterPolicyEnforcement) {
+  // Pin allowed by QuickUnlock, so we do not expect a Reauth.
+  PerformLoginAndVerifyPolicyEnforcement(gaia_password_and_pin_user_,
+                                         ReauthReason::kNone);
+  // Now we disable PIN via QuickUnlock policy.
+  ClearPendingPrefProcessedCallback();
+  base::ListValue quick_unlock_allowlist;
+  // Empty list means no modes allowed, so PIN is disabled.
+  SetQuickUnlockAllowedModesPolicy(std::move(quick_unlock_allowlist));
+  WaitForPrefProcessedCallback();
+
+  // Now that PIN is disabled, it's no longer a safe secondary factor.
+  // Reauth should be forced.
+  AssertReauthReason(gaia_password_and_pin_user_.account_id,
+                     ReauthReason::kForcedByLocalAuthFactorsPolicy);
+}
+
+IN_PROC_BROWSER_TEST_F(LocalAuthFactorsPolicyControllerTest,
+                       ReauthForcedWhenPinDisabledAfterPolicyEnforcement) {
+  EXPECT_TRUE(LoginScreenTestApi::IsForcedOnlineSignin(
+      gaia_password_and_pin_user_.account_id));
+}
 }  // namespace ash

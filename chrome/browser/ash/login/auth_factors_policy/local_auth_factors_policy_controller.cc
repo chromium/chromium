@@ -16,6 +16,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
 #include "base/no_destructor.h"
+#include "chrome/browser/ash/login/quick_unlock/quick_unlock_utils.h"
 #include "chrome/browser/ash/login/reauth_stats.h"
 #include "chromeos/ash/components/login/auth/auth_factor_editor.h"
 #include "chromeos/ash/components/login/auth/public/authentication_error.h"
@@ -61,6 +62,11 @@ LocalAuthFactorsPolicyController::LocalAuthFactorsPolicyController(
   // `base::Unretained(this)` is safe as `this` outlives the registrar.
   pref_change_registrar_.Add(
       ash::prefs::kAllowedLocalAuthFactors,
+      base::BindRepeating(
+          &LocalAuthFactorsPolicyController::OnAllowedAuthFactorsPrefUpdated,
+          base::Unretained(this)));
+  pref_change_registrar_.Add(
+      ash::prefs::kQuickUnlockModeAllowlist,
       base::BindRepeating(
           &LocalAuthFactorsPolicyController::OnAllowedAuthFactorsPrefUpdated,
           base::Unretained(this)));
@@ -112,11 +118,16 @@ void LocalAuthFactorsPolicyController::OnGetAuthFactorsConfiguration(
       config.FindFactorByType(cryptohome::AuthFactorType::kPassword);
   auto* pin_factor = config.FindFactorByType(cryptohome::AuthFactorType::kPin);
 
+  bool pin_is_secondary_and_allowed =
+      pin_factor && password_factor &&
+      ash::auth::IsGaiaPassword(*password_factor) &&
+      !ash::quick_unlock::IsPinDisabledByPolicy(
+          pref_change_registrar_.prefs(), ash::quick_unlock::Purpose::kUnlock);
+
   bool has_local_auth_factors =
-      pin_factor ||
+      (pin_factor && !pin_is_secondary_and_allowed) ||
       (password_factor && ash::auth::IsLocalPassword(*password_factor));
-  // TODO: b/487597055 - Do not force reauth when pin allowed by QuickUnlock
-  // policy.
+
   if (has_local_auth_factors) {
     user_manager::UserManager::Get()->SaveForceOnlineSignin(
         user_context->GetAccountId(), /*force_online_signin=*/true);
