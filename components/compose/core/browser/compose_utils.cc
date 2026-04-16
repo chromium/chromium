@@ -6,7 +6,6 @@
 
 #include "base/strings/string_tokenizer.h"
 #include "base/strings/string_util.h"
-#include "base/third_party/icu/icu_utf.h"
 
 namespace compose {
 
