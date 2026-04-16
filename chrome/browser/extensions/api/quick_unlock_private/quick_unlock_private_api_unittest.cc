@@ -266,6 +266,8 @@ class QuickUnlockPrivateUnitTest
     ash::SystemSaltGetter::Shutdown();
     ash::UserDataAuthClient::Shutdown();
     ash::CryptohomeMiscClient::Shutdown();
+
+    ash::quick_unlock::PinBackend::Shutdown();
   }
 
   TestingProfile::TestingFactories GetTestingFactories() override {

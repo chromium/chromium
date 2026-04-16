@@ -107,6 +107,18 @@ PinBackend* PinBackend::GetInstance() {
 }
 
 // static
+void PinBackend::Shutdown() {
+  if (!g_instance_) {
+    return;
+  }
+
+  // Cancel ongoing PinStorageCryptohome::IsSupported() request if any.
+  g_instance_->weak_ptr_factory_.InvalidateWeakPtrs();
+  g_instance_->on_cryptohome_support_received_.clear();
+  g_instance_->cryptohome_state_.Shutdown();
+}
+
+// static
 std::string PinBackend::ComputeSalt() {
   // The salt needs to be base64 encoded because the pref service requires a
   // UTF8 string.
@@ -138,10 +150,9 @@ void PinBackend::ResetForTesting() {
 }
 
 PinBackend::PinBackend() {
-  // base::Unretained is safe because the PinBackend instance is never
-  // destroyed.
-  PinStorageCryptohome::IsSupported(base::BindOnce(
-      &PinBackend::OnIsCryptohomeBackendSupported, base::Unretained(this)));
+  PinStorageCryptohome::IsSupported(
+      base::BindOnce(&PinBackend::OnIsCryptohomeBackendSupported,
+                     weak_ptr_factory_.GetWeakPtr()));
 }
 
 PinBackend::~PinBackend() {
@@ -639,6 +650,10 @@ void PinBackend::CryptohomeBackendState::Set(
   } else {
     is_supported_ = false;
   }
+}
+
+void PinBackend::CryptohomeBackendState::Shutdown() {
+  cryptohome_backend_.reset();
 }
 
 bool PinBackend::CryptohomeBackendState::IsResolving() const {

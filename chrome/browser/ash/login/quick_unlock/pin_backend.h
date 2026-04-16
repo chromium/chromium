@@ -9,6 +9,7 @@
 #include <string>
 
 #include "base/functional/callback.h"
+#include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "chromeos/ash/components/login/auth/public/auth_callbacks.h"
 #include "chromeos/ash/components/login/auth/public/key.h"
@@ -32,6 +33,11 @@ class PinBackend : public ash::auth::PinBackendDelegate {
 
   // Fetch the PinBackend instance.
   static PinBackend* GetInstance();
+
+  // Cleans up internal states.
+  // TODO(crbug.com/498416395): Refactor PinBackend to destroy the singleton
+  // object, and remove this.
+  static void Shutdown();
 
   // Computes a new salt.
   static std::string ComputeSalt();
@@ -132,6 +138,9 @@ class PinBackend : public ash::auth::PinBackendDelegate {
     // non-null. Otherwiser, it must be nullptr.
     void Set(std::unique_ptr<PinStorageCryptohome> cryptohome_backend_or_null);
 
+    // TODO(crbug.com/498416395): Removed with PinBackend::Shutdown.
+    void Shutdown();
+
     // Returns true until `Set` is called.
     bool IsResolving() const;
 
@@ -223,6 +232,8 @@ class PinBackend : public ash::auth::PinBackendDelegate {
   std::vector<base::OnceClosure> on_cryptohome_support_received_;
 
   CryptohomeBackendState cryptohome_state_;
+
+  base::WeakPtrFactory<PinBackend> weak_ptr_factory_{this};
 };
 
 }  // namespace ash::quick_unlock
