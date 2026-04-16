@@ -913,9 +913,12 @@ using segmentation_platform::TipIdentifier;
     case ContentSuggestionsModuleType::kSafetyCheck:
       [self didSelectSafetyCheckItem:SafetyCheckItemType::kDefault];
       break;
-    case ContentSuggestionsModuleType::kCompactedSetUpList:
-      [self showSetUpListSeeMoreMenuExpanded:NO];
+    case ContentSuggestionsModuleType::kCompactedSetUpList: {
+      BOOL expanded = !IsCompactWidth(
+          _magicStackCollectionView.view.window.traitCollection);
+      [self showSetUpListSeeMoreMenuExpanded:expanded];
       break;
+    }
     case ContentSuggestionsModuleType::kTabResumption:
       [self showMagicStackRecentTabs];
       break;
