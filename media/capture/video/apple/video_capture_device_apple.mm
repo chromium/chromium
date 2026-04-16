@@ -257,7 +257,8 @@ void VideoCaptureDeviceApple::ReceiveExternalGpuMemoryBufferFrame(
 
   client_->OnIncomingCapturedExternalBuffer(
       std::move(frame), base::TimeTicks::Now(), timestamp, capture_begin_time,
-      gfx::Rect(capture_format_.frame_size), GetVideoFrameMetadata());
+      gfx::Rect(capture_format_.frame_size), capture_format_.frame_size,
+      GetVideoFrameMetadata());
 }
 
 void VideoCaptureDeviceApple::OnPhotoTaken(const uint8_t* image_data,

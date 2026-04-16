@@ -2405,7 +2405,7 @@ HRESULT VideoCaptureDeviceMFWin::DeliverExternalBufferToClient(
   client_->OnIncomingCapturedExternalBuffer(
       std::move(external_buffer), reference_time, timestamp,
       MaybeForwardCaptureBeginTime(capture_begin_time), gfx::Rect(texture_size),
-      frame_metadata);
+      texture_size, frame_metadata);
   return hr;
 }
 

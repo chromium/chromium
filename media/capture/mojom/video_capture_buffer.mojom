@@ -18,8 +18,16 @@ struct VideoFrameInfo {
   mojo_base.mojom.TimeDelta timestamp;
   VideoFrameMetadata metadata;
   VideoCapturePixelFormat pixel_format;
+  // The full dimensions of the video frame data.
   gfx.mojom.Size coded_size;
+  // A subsection of [0, 0, coded_size().width(), coded_size.height()]. This
+  // can be set to "soft-apply" a cropping. It determines the pointers into
+  // the data returned by visible_data().
   gfx.mojom.Rect visible_rect;
+  // Specifies that the |visible_rect| section of the frame is supposed to be
+  // scaled to this size when being presented. This can be used to represent
+  // anamorphic frames, or to "soft-apply" any custom scaling.
+  gfx.mojom.Size natural_size;
   // Some buffer types may be preemtively mapped in the capturer.
   // In that case a shared memory region is passed to the consumer together
   // with a GMB handle, and this flag here is passed to notify the consumer

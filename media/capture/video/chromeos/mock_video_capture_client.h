@@ -67,6 +67,7 @@ class MockVideoCaptureClient : public VideoCaptureDevice::Client {
       base::TimeDelta timestamp,
       std::optional<base::TimeTicks> capture_begin_time,
       const gfx::Rect& visible_rect,
+      const gfx::Size& natural_size,
       const std::optional<media::VideoFrameMetadata>& metadata) override;
   // Trampoline methods to workaround GMOCK problems with std::unique_ptr<>.
   ReserveResult ReserveOutputBuffer(const gfx::Size& dimensions,

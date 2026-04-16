@@ -87,6 +87,7 @@ void FakeVideoSource::SendFrame() {
   info->pixel_format = media::PIXEL_FORMAT_I420;
   info->coded_size = requested_settings_.requested_format.frame_size;
   info->visible_rect = gfx::Rect(info->coded_size);
+  info->natural_size = info->coded_size;
   info->is_premapped = false;
   video_frame_handler_->OnFrameReadyInBuffer(
       video_capture::mojom::ReadyFrameInBuffer::New(current_buffer_id_,

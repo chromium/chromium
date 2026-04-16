@@ -317,7 +317,7 @@ class ScreenCaptureKitDeviceMacTest : public testing::Test {
       API_AVAILABLE(macos(12.3)) {
     base::RunLoop frame_loop;
     EXPECT_CALL(*mock_client,
-                OnIncomingCapturedExternalBuffer(_, _, _, _, _, _))
+                OnIncomingCapturedExternalBuffer(_, _, _, _, _, _, _))
         .WillOnce(base::test::RunClosure(frame_loop.QuitClosure()));
 
     ASSERT_NO_FATAL_FAILURE(SimulateFrame());

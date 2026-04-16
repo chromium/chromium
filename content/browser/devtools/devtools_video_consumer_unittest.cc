@@ -205,8 +205,8 @@ class DevToolsVideoConsumerTest : public testing::Test {
 
     media::mojom::VideoFrameInfoPtr info = media::mojom::VideoFrameInfo::New(
         base::TimeDelta(), media::VideoFrameMetadata(), kFormat, kResolution,
-        gfx::Rect(kResolution), kNotPremapped, gfx::ColorSpace::CreateREC709(),
-        nullptr);
+        gfx::Rect(kResolution), /*natural_size=*/kResolution, kNotPremapped,
+        gfx::ColorSpace::CreateREC709(), nullptr);
 
     consumer_->OnFrameCaptured(
         media::mojom::VideoBufferHandle::NewReadOnlyShmemRegion(

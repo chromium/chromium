@@ -249,6 +249,7 @@ class MockFrameSinkVideoCapturer : public viz::mojom::FrameSinkVideoCapturer {
     auto info = media::mojom::VideoFrameInfo::New(
         frame->timestamp(), metadata, frame->format(), frame->coded_size(),
         /*visible_rect=*/gfx::Rect(params.size()),
+        /*natural_size=*/params.size(),
         /*is_premapped=*/false, frame->ColorSpace(),
         /*strides=*/nullptr);
 

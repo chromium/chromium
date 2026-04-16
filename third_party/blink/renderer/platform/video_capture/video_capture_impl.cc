@@ -359,7 +359,7 @@ bool VideoCaptureImpl::ProcessBuffer(
           buffer_context->shared_image_sync_token(),
           media::VideoFrame::ReleaseMailboxCB(),
           gfx::Rect(video_frame_init_data.ready_buffer->info->visible_rect),
-          video_frame_init_data.ready_buffer->info->visible_rect.size(),
+          video_frame_init_data.ready_buffer->info->natural_size,
           video_frame_init_data.ready_buffer->info->timestamp);
       break;
     }

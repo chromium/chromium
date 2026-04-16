@@ -130,6 +130,7 @@ void VideoCaptureJpegDecoderImpl::DecodeCapturedData(
   out_frame_info->pixel_format = media::PIXEL_FORMAT_I420;
   out_frame_info->coded_size = dimensions;
   out_frame_info->visible_rect = gfx::Rect(dimensions);
+  out_frame_info->natural_size = dimensions;
   out_frame_info->metadata = VideoFrameMetadata();
   out_frame_info->metadata.frame_rate = frame_format.frame_rate;
   out_frame_info->metadata.reference_time = reference_time;

@@ -232,6 +232,7 @@ mojom::VideoFrameInfoPtr CreateNewVideoFrameInfo(
     const VideoCaptureFormat& format,
     const std::optional<VideoFrameMetadata>& current_metadata,
     const gfx::Rect& visible_rect,
+    const gfx::Size& natural_size,
     bool is_premapped,
     const gfx::ColorSpace& color_space) {
   VideoFrameMetadata metadata = current_metadata.value_or(VideoFrameMetadata{});
@@ -244,7 +245,7 @@ mojom::VideoFrameInfoPtr CreateNewVideoFrameInfo(
 
   return mojom::VideoFrameInfo::New(
       timestamp, metadata, format.pixel_format, format.frame_size, visible_rect,
-      is_premapped, color_space, mojom::PlaneStridesPtr{});
+      natural_size, is_premapped, color_space, mojom::PlaneStridesPtr{});
 }
 
 class ScopedAccessPermissionEndWithCallback
@@ -602,7 +603,7 @@ void VideoCaptureDeviceClient::OnIncomingCapturedImageZeroCopy(
   ReadyFrameInBuffer ready_frame;
   if (CreateReadyFrameFromExternalBuffer(
           std::move(buffer), reference_time, timestamp, capture_begin_timestamp,
-          gfx::Rect(buffer_size), new_metadata,
+          gfx::Rect(buffer_size), buffer_size, new_metadata,
           &ready_frame) != ReserveResult::kSucceeded) {
     DVLOG(2) << __func__
              << " CreateReadyFrameFromExternalBuffer failed: reservation "
@@ -618,6 +619,7 @@ void VideoCaptureDeviceClient::OnIncomingCapturedExternalBuffer(
     base::TimeDelta timestamp,
     std::optional<base::TimeTicks> capture_begin_timestamp,
     const gfx::Rect& visible_rect,
+    const gfx::Size& natural_size,
     const std::optional<VideoFrameMetadata>& metadata) {
   DFAKE_SCOPED_RECURSIVE_LOCK(call_from_producer_);
   TRACE_EVENT0(TRACE_DISABLED_BY_DEFAULT("video_and_image_capture"),
@@ -626,7 +628,8 @@ void VideoCaptureDeviceClient::OnIncomingCapturedExternalBuffer(
   ReadyFrameInBuffer ready_frame;
   if (CreateReadyFrameFromExternalBuffer(
           std::move(buffer), reference_time, timestamp, capture_begin_timestamp,
-          visible_rect, metadata, &ready_frame) != ReserveResult::kSucceeded) {
+          visible_rect, natural_size, metadata,
+          &ready_frame) != ReserveResult::kSucceeded) {
     DVLOG(2) << __func__
              << " CreateReadyFrameFromExternalBuffer failed: reservation "
                 "tracker failed.";
@@ -642,6 +645,7 @@ VideoCaptureDeviceClient::CreateReadyFrameFromExternalBuffer(
     base::TimeDelta timestamp,
     std::optional<base::TimeTicks> capture_begin_timestamp,
     const gfx::Rect& visible_rect,
+    const gfx::Size& natural_size,
     const std::optional<VideoFrameMetadata>& metadata,
     ReadyFrameInBuffer* ready_buffer) {
   // Reserve an ID for this buffer that will not conflict with any of the IDs
@@ -691,7 +695,8 @@ VideoCaptureDeviceClient::CreateReadyFrameFromExternalBuffer(
   // of this method.
   mojom::VideoFrameInfoPtr info = CreateNewVideoFrameInfo(
       reference_time, timestamp, capture_begin_timestamp, buffer.format,
-      metadata, visible_rect, /*is_premapped=*/false, buffer.color_space);
+      metadata, visible_rect, natural_size, /*is_premapped=*/false,
+      buffer.color_space);
 
   buffer_pool_->HoldForConsumers(buffer_id, 1);
   buffer_pool_->RelinquishProducerReservation(buffer_id);
@@ -798,7 +803,7 @@ void VideoCaptureDeviceClient::OnIncomingCapturedBufferExt(
 
   mojom::VideoFrameInfoPtr info = CreateNewVideoFrameInfo(
       reference_time, timestamp, capture_begin_timestamp, format, metadata,
-      visible_rect, buffer.is_premapped, color_space);
+      visible_rect, visible_rect.size(), buffer.is_premapped, color_space);
 
   buffer_pool_->HoldForConsumers(buffer.id, 1);
   receiver_->OnFrameReadyInBuffer(ReadyFrameInBuffer(

@@ -208,6 +208,7 @@ class VideoCaptureImplTest : public ::testing::Test {
       info->pixel_format = pixel_format;
       info->coded_size = size;
       info->visible_rect = gfx::Rect(size);
+      info->natural_size = size;
       info->color_space = gfx::ColorSpace();
       info->metadata = metadata;
       return media::mojom::blink::ReadyBuffer::New(buffer_id, std::move(info));

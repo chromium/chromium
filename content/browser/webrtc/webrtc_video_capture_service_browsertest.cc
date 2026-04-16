@@ -175,6 +175,7 @@ class TextureDeviceExerciser : public VirtualDeviceExerciser {
     info->pixel_format = media::PIXEL_FORMAT_ARGB;
     info->coded_size = kDummyFrameCodedSize;
     info->visible_rect = gfx::Rect(kDummyFrameCodedSize);
+    info->natural_size = kDummyFrameCodedSize;
     info->metadata = metadata;
 
     frame_being_consumed_[dummy_frame_index_] = true;
@@ -317,6 +318,7 @@ class SharedMemoryDeviceExerciser : public VirtualDeviceExerciser,
     info->pixel_format = media::PIXEL_FORMAT_I420;
     info->coded_size = kDummyFrameCodedSize;
     info->visible_rect = kDummyFrameVisibleRect;
+    info->natural_size = kDummyFrameVisibleRect.size();
     info->metadata = metadata;
     info->strides = strides_.Clone();
 

@@ -77,6 +77,7 @@ void MockVideoCaptureClient::OnIncomingCapturedExternalBuffer(
     base::TimeDelta timestamp,
     std::optional<base::TimeTicks> capture_begin_time,
     const gfx::Rect& visible_rect,
+    const gfx::Size& natural_size,
     const std::optional<media::VideoFrameMetadata>& metadata) {
   if (frame_cb_)
     std::move(frame_cb_).Run();

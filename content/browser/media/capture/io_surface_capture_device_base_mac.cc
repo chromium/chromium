@@ -69,7 +69,7 @@ void IOSurfaceCaptureDeviceBase::SendLastReceivedIOSurfaceToClient() {
                                          last_received_capture_format_,
                                          gfx::ColorSpace::CreateREC709()),
       now, now - first_frame_time_, std::nullopt, last_visible_rect_,
-      last_received_metadata_);
+      last_visible_rect_.size(), last_received_metadata_);
 }
 
 void IOSurfaceCaptureDeviceBase::ComputeFrameSizeAndDestRect(

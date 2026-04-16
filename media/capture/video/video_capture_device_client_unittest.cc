@@ -365,7 +365,7 @@ TEST_F(VideoCaptureDeviceClientTest,
           VideoCaptureFormat(resolution, 30, PIXEL_FORMAT_NV12),
           gfx::ColorSpace::CreateREC601()),
       base::TimeTicks(), base::TimeDelta(), expected_timestamp,
-      gfx::Rect(resolution), /*metadata=*/std::nullopt);
+      gfx::Rect(resolution), resolution, /*metadata=*/std::nullopt);
 
   Cleanup();
 }

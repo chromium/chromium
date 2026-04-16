@@ -174,6 +174,7 @@ class TestVideoCaptureClient final : public VideoCaptureDevice::Client {
       base::TimeDelta timestamp,
       std::optional<base::TimeTicks> capture_begin_time,
       const gfx::Rect& visible_rect,
+      const gfx::Size& natural_size,
       const std::optional<VideoFrameMetadata>& metadata) override {
     NOTREACHED();
   }

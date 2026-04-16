@@ -263,6 +263,7 @@ class CAPTURE_EXPORT VideoCaptureDevice
         base::TimeDelta timestamp,
         std::optional<base::TimeTicks> capture_begin_timestamp,
         const gfx::Rect& visible_rect,
+        const gfx::Size& natural_size,
         const std::optional<VideoFrameMetadata>& metadata) = 0;
 
     // Reserve an output buffer into which contents can be captured directly.
