@@ -407,7 +407,7 @@ public class ContextualSearchPromoControl extends OverlayPanelInflater {
             return;
         }
 
-        float offsetX = mOverlayPanel.getOffsetX() * mDpToPx;
+        float offsetX = mOverlayPanel.getRelativeOffsetX() * mDpToPx;
         if (LocalizationUtils.isLayoutRtl()) {
             offsetX = -offsetX;
         }

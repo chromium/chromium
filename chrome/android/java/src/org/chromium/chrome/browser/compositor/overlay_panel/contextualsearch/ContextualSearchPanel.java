@@ -45,6 +45,7 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.toolbar.ToolbarManager;
 import org.chromium.chrome.browser.toolbar.top.ToolbarLayout;
 import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeController;
+import org.chromium.chrome.browser.ui.side_panel.AndroidSidePanelEnabledFn;
 import org.chromium.chrome.browser.ui.side_ui.SideUiCoordinator.SideUiSpecs;
 import org.chromium.chrome.browser.ui.side_ui.SideUiObserver;
 import org.chromium.chrome.browser.ui.side_ui.SideUiStateProvider;
@@ -1122,7 +1123,7 @@ public class ContextualSearchPanel extends OverlayPanel implements SideUiObserve
                             this,
                             getContextualSearchPromoHost(),
                             mContext,
-                            getCoordinatorView(),
+                            getParentView(),
                             mResourceLoader);
         }
         return mPromoControl;
@@ -1171,13 +1172,21 @@ public class ContextualSearchPanel extends OverlayPanel implements SideUiObserve
         return mPromoHost;
     }
 
-    private @Nullable ViewGroup getCoordinatorView() {
+    private @Nullable ViewGroup getParentView() {
         ViewGroup result = mContainerView;
         assumeNonNull(mContainerView);
         // Use the coordinator inside of the container if we can get it. See crbug.com/1258902.
         ViewGroup coordinator = mContainerView.findViewById(R.id.coordinator);
         // Returns null in tests. TODO(donnd): figure out why - tests should have the same views.
         if (coordinator != null) result = coordinator;
+
+        // Use the "secondary" UI container if available - this container adjusts itself relative to
+        // side UI like the side panel, so setting it as the parent will ensure the search panel is
+        // correctly positioned over tab content.
+        ViewGroup secondaryUiContainer = mContainerView.findViewById(R.id.secondary_ui_container);
+        if (AndroidSidePanelEnabledFn.isEnabled() && secondaryUiContainer != null) {
+            result = secondaryUiContainer;
+        }
         return result;
     }
 
@@ -1197,7 +1206,7 @@ public class ContextualSearchPanel extends OverlayPanel implements SideUiObserve
                             this,
                             getRelatedSearchesInBarHost(),
                             mContext,
-                            getCoordinatorView(),
+                            getParentView(),
                             mResourceLoader);
         }
         return mRelatedSearchesInBarControl;

@@ -570,6 +570,10 @@ abstract class OverlayPanelBase implements OverlayPanelStateProvider, AppHeaderO
         return mOffsetX + getLayoutMarginX();
     }
 
+    public float getRelativeOffsetX() {
+        return mOffsetX;
+    }
+
     /**
      * @return The vertical offset of the Overlay Panel in DPs.
      */
