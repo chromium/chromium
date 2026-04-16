@@ -24,10 +24,6 @@ BASE_FEATURE(kWebAuthnAndroidCredManRequestExtraBundle,
              "WebAuthenticationAndroidCredManRequestExtraBundle",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Enabled by default in M145. Remove in or after M148.
-BASE_FEATURE(kWebAuthnConditionalUiSuppressedOnWebView,
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 #endif  // BUILDFLAG(IS_ANDROID)
 
 #if !BUILDFLAG(IS_ANDROID)

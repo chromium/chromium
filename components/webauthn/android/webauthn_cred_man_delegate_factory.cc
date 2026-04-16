@@ -10,7 +10,6 @@
 #include "base/containers/flat_map.h"
 #include "components/webauthn/android/webauthn_client_android.h"
 #include "components/webauthn/android/webauthn_cred_man_delegate.h"
-#include "components/webauthn/features.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_contents_user_data.h"
@@ -48,9 +47,7 @@ WebAuthnCredManDelegate* WebAuthnCredManDelegateFactory::GetRequestDelegate(
   // If the embedder did not initialize the client handling webauthn requests,
   // the delegate won't be of much use. The unavailable delegate can be used as
   // a good signal that conditional requests cannot be handled.
-  if (base::FeatureList::IsEnabled(
-          features::kWebAuthnConditionalUiSuppressedOnWebView) &&
-      !WebAuthnClientAndroid::HasClient()) {
+  if (!WebAuthnClientAndroid::HasClient()) {
     return nullptr;
   }
 

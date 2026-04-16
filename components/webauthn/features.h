@@ -26,11 +26,6 @@ extern const base::FeatureParam<std::string> kWebAuthnAndroidCredManForDevMode;
 COMPONENT_EXPORT(WEBAUTHN)
 BASE_DECLARE_FEATURE(kWebAuthnAndroidCredManRequestExtraBundle);
 
-// This flag ensures the CredMan UI is suppressed on WebView by returning a
-// `WebAuthnCredManDelegates` only if a `WebAuthnClientAndroid` is available.
-COMPONENT_EXPORT(WEBAUTHN)
-BASE_DECLARE_FEATURE(kWebAuthnConditionalUiSuppressedOnWebView);
-
 #endif  // BUILDFLAG(IS_ANDROID)
 
 #if !BUILDFLAG(IS_ANDROID)
