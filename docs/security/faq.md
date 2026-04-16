@@ -1421,3 +1421,8 @@ Security Issues report and request a review from there. There is no separate
 appeal form or process at this time. Please follow these
 [guidelines](https://developers.google.com/search/docs/monitor-debug/security/malware#guidelines)
 to avoid having your binary show warnings from Safe Browsing.
+
+<a name="TOC-What-is-the-security-model-for-Split-View-"></a>
+### What's the security model for Split View?
+
+See our [Split View Security FAQ](https://chromium.googlesource.com/chromium/src/+/main/chrome/browser/ui/tabs/docs/split_view_security_faq.md).
