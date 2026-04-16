@@ -393,6 +393,7 @@ void LockManager::RequestImpl(const LockOptions* options,
 
     if (!service_.is_bound()) {
       resolver->RejectWithDOMException(DOMExceptionCode::kAbortError, "");
+      return;
     }
   }
   if (!observer_.is_bound()) {
@@ -402,6 +403,7 @@ void LockManager::RequestImpl(const LockOptions* options,
 
     if (!observer_.is_bound()) {
       resolver->RejectWithDOMException(DOMExceptionCode::kAbortError, "");
+      return;
     }
   }
 
@@ -482,6 +484,7 @@ void LockManager::QueryImpl(
 
     if (!service_.is_bound()) {
       resolver->RejectWithDOMException(DOMExceptionCode::kAbortError, "");
+      return;
     }
   }
 

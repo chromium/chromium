@@ -23,14 +23,17 @@
 namespace blink {
 
 class LockManagerSnapshot;
+class LockManagerUnboundTest;
 class NavigatorBase;
 class ScriptState;
 class V8LockGrantedCallback;
 
-class LockManager final : public ScriptWrappable,
-                          public Supplement<NavigatorBase>,
-                          public ExecutionContextLifecycleObserver {
+class MODULES_EXPORT LockManager final
+    : public ScriptWrappable,
+      public Supplement<NavigatorBase>,
+      public ExecutionContextLifecycleObserver {
   DEFINE_WRAPPERTYPEINFO();
+  friend class LockManagerUnboundTest;
 
  public:
   static const char kSupplementName[];
