@@ -6066,7 +6066,7 @@
 <translation id="5084328598860513926">روند آماده‌سازی قطع شد. لطفاً دوباره امتحان کنید یا با سرپرست یا مالک دستگاه تماس بگیرید. کد خطا: <ph name="ERROR_CODE" />.</translation>
 <translation id="5084622689760736648">سایت‌ها به‌احتمال زیاد عملکردی مطابق انتظار شما خواهند داشت</translation>
 <translation id="5084686326967545037">مراحل نمایش‌داده‌شده در دستگاهتان را دنبال کنید</translation>
-<translation id="5085162214018721575">در حال بررسی به‌روزرسانی‌ها</translation>
+<translation id="5085162214018721575">درحال بررسی وجود به‌روزرسانی</translation>
 <translation id="5086082738160935172">HID</translation>
 <translation id="508645147179720015">یادداشت بیش‌از ۱۰۰۰ نویسه دارد</translation>
 <translation id="5087249366037322692">توسط یک شخص ثالث اضافه شده است</translation>
@@ -9606,7 +9606,7 @@
 <translation id="75362970626182391">گروه زبانه جدید</translation>
 <translation id="7536815228183532290">واردشده به سیستم با <ph name="EMAIL" /></translation>
 <translation id="7538013435257102593">این نوع فایل معمولاً بارگیری نمی‌شود و ممکن است خطرناک باشد</translation>
-<translation id="7540972813190816353">در هنگام بررسی برای وجود به‌روزرسانی خطایی رخ داد: <ph name="ERROR" /></translation>
+<translation id="7540972813190816353">هنگام بررسی وجود به‌روزرسانی، خطایی رخ داد: <ph name="ERROR" /></translation>
 <translation id="7541076351905098232"><ph name="MANAGER" /> این دستگاه را به نسخه قبلی برگردانده است. لطفاً فایل‌های مهم را ذخیره کنید، سپس دستگاه را بازراه‌اندازی کنید. همه داده‌های ذخیره‌شده در دستگاه حذف خواهد شد.</translation>
 <translation id="7541773865713908457"><ph name="ACTION_NAME" /> با برنامه <ph name="APP_NAME" /></translation>
 <translation id="754207240458482646">با دستگاه‌های دیگر در حسابتان همگام‌سازی شده است. <ph name="LINK_BEGIN" />بیشتر بدانید<ph name="LINK_END" /></translation>
