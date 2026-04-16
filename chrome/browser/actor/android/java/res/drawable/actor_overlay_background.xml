@@ -13,7 +13,7 @@ found in the LICENSE file.
             <!-- Angle 270 is Top-to-Bottom -->
             <gradient
                 android:angle="270"
-                android:startColor="@color/material_primary_60"
+                android:startColor="@color/baseline_primary_60"
                 android:centerColor="@android:color/transparent"
                 android:endColor="@android:color/transparent" />
         </shape>
@@ -25,7 +25,7 @@ found in the LICENSE file.
             <!-- Angle 90 is Bottom-to-Top -->
             <gradient
                 android:angle="90"
-                android:startColor="@color/material_primary_60"
+                android:startColor="@color/baseline_primary_60"
                 android:centerColor="@android:color/transparent"
                 android:endColor="@android:color/transparent" />
         </shape>
@@ -37,7 +37,7 @@ found in the LICENSE file.
             <!-- Angle 0 is Left-to-Right -->
             <gradient
                 android:angle="0"
-                android:startColor="@color/material_primary_60"
+                android:startColor="@color/baseline_primary_60"
                 android:centerColor="@android:color/transparent"
                 android:endColor="@android:color/transparent" />
         </shape>
@@ -49,7 +49,7 @@ found in the LICENSE file.
             <!-- Angle 180 is Right-to-Left -->
             <gradient
                 android:angle="180"
-                android:startColor="@color/material_primary_60"
+                android:startColor="@color/baseline_primary_60"
                 android:centerColor="@android:color/transparent"
                 android:endColor="@android:color/transparent" />
         </shape>
