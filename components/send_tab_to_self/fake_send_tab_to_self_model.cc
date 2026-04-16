@@ -71,14 +71,6 @@ const SendTabToSelfEntry* FakeSendTabToSelfModel::AddEntry(
   return result;
 }
 
-void FakeSendTabToSelfModel::DeleteEntry(const std::string& guid) {
-  if (entries_.erase(guid)) {
-    for (auto& observer : observers_) {
-      observer.EntriesRemovedRemotely({guid});
-    }
-  }
-}
-
 void FakeSendTabToSelfModel::DismissEntry(const std::string& guid) {
   last_dismissed_guid_ = guid;
   std::map<std::string, std::unique_ptr<SendTabToSelfEntry>>::iterator it =

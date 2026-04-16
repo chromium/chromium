@@ -97,20 +97,6 @@ static void JNI_SendTabToSelfAndroidBridge_SendTabToDevice(
                         std::move(commit_confirmation));
 }
 
-// Deletes the entry associated with the passed in GUID.
-static void JNI_SendTabToSelfAndroidBridge_DeleteEntry(
-    JNIEnv* env,
-    Profile* profile,
-    const JavaRef<jstring>& j_guid) {
-  SendTabToSelfModel* model =
-      SendTabToSelfSyncServiceFactory::GetForProfile(profile)
-          ->GetSendTabToSelfModel();
-  if (model->IsReady()) {
-    const std::string guid = ConvertJavaStringToUTF8(env, j_guid);
-    model->DeleteEntry(guid);
-  }
-}
-
 // Marks the entry with the associated GUID as opened.
 static void JNI_SendTabToSelfAndroidBridge_MarkEntryOpened(
     JNIEnv* env,

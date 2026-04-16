@@ -65,10 +65,6 @@ class SendTabToSelfModel {
       NavigationHistory navigation_history,
       base::OnceCallback<void(SendTabToSelfResult)> commit_confirmation) = 0;
 
-  // Remove entry with |guid| from entries. Allows clients to modify the state
-  // of the model as driven by user behaviors.
-  virtual void DeleteEntry(const std::string& guid) = 0;
-
   // Dismiss entry with key |guid|. Allows clients to modify the state
   // of the model as driven by user behaviors.
   virtual void DismissEntry(const std::string& guid) = 0;

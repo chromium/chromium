@@ -445,19 +445,6 @@ const SendTabToSelfEntry* SendTabToSelfBridge::AddEntry(
   return result;
 }
 
-void SendTabToSelfBridge::DeleteEntry(const std::string& guid) {
-  // Assure that an entry with that guid exists.
-  if (GetEntryByGUID(guid) == nullptr) {
-    return;
-  }
-
-  std::unique_ptr<DataTypeStore::WriteBatch> batch = store_->CreateWriteBatch();
-
-  DeleteEntryWithBatch(guid, batch.get());
-
-  Commit(std::move(batch));
-}
-
 void SendTabToSelfBridge::DismissEntry(const std::string& guid) {
   SendTabToSelfEntry* entry = GetMutableEntryByGUID(guid);
   // Assure that an entry with that guid exists.
@@ -761,21 +748,26 @@ bool SendTabToSelfBridge::ShouldIncludeDevice(
 }
 
 void SendTabToSelfBridge::DoGarbageCollection() {
-  std::vector<std::string> removed;
+  std::vector<std::string> removed_guids;
 
-  auto entry = entries_.begin();
-  while (entry != entries_.end()) {
-    DCHECK_EQ(entry->first, entry->second->GetGUID());
+  for (const auto& it : entries_) {
+    DCHECK_EQ(it.first, it.second->GetGUID());
 
-    std::string guid = entry->first;
-    bool expired = entry->second->IsExpired(clock_->Now());
-    entry++;
-    if (expired) {
-      DeleteEntry(guid);
-      removed.push_back(guid);
+    if (it.second->IsExpired(clock_->Now())) {
+      removed_guids.push_back(it.first);
     }
   }
-  NotifyRemoteSendTabToSelfEntryDeleted(removed);
+
+  if (removed_guids.empty()) {
+    return;
+  }
+
+  std::unique_ptr<DataTypeStore::WriteBatch> batch = store_->CreateWriteBatch();
+  for (const std::string& guid : removed_guids) {
+    DeleteEntryWithBatch(guid, batch.get());
+  }
+  Commit(std::move(batch));
+  NotifyRemoteSendTabToSelfEntryDeleted(removed_guids);
 }
 
 void SendTabToSelfBridge::DeleteEntryWithBatch(

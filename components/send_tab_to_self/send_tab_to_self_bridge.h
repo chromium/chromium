@@ -96,7 +96,6 @@ class SendTabToSelfBridge : public syncer::DataTypeSyncBridge,
       NavigationHistory navigation_history,
       base::OnceCallback<void(SendTabToSelfResult)> commit_confirmation)
       override;
-  void DeleteEntry(const std::string& guid) override;
   void DismissEntry(const std::string& guid) override;
   void MarkEntryOpened(const std::string& guid) override;
   bool IsReady() override;
