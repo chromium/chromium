@@ -607,7 +607,12 @@ template("rust_target") {
           script = "//build/rust/gni_impl/clippy_wrapper.py"
 
           # `import`ed for `LoadRustEnvAndFlags`, etc.
-          inputs = [ "//build/rust/gni_impl/rustc_wrapper.py" ]
+          inputs = rustc_wrapper_inputs
+          if (host_os == "win") {
+            inputs += [ "//third_party/rust-toolchain/bin/clippy-driver.exe" ]
+          } else {
+            inputs += [ "//third_party/rust-toolchain/bin/clippy-driver" ]
+          }
 
           args = [
             "--clippy-driver",
