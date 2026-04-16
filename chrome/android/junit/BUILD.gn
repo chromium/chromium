@@ -482,6 +482,7 @@ if (is_android) {
       "src/org/chromium/chrome/browser/autofill/AutofillImageFetcherTest.java",
       "src/org/chromium/chrome/browser/autofill/AutofillImageFetcherUtilsTest.java",
       "src/org/chromium/chrome/browser/autofill/AutofillUiUtilsTest.java",
+      "src/org/chromium/chrome/browser/autofill/CardUnmaskBridgeTest.java",
       "src/org/chromium/chrome/browser/autofill/GoogleWalletLauncherTest.java",
       "src/org/chromium/chrome/browser/autofill/iban/AutofillSaveIbanBottomSheetBridgeTest.java",
       "src/org/chromium/chrome/browser/autofill/iban/AutofillSaveIbanBottomSheetContentTest.java",
@@ -514,6 +515,7 @@ if (is_android) {
     deps = [
       ":chrome_junit_tests_helper",
       "//chrome/browser/actor/android:java",
+      "//url:gurl_java",
     ]
   }
 
