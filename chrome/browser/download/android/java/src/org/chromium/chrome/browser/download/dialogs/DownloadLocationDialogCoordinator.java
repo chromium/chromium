@@ -6,11 +6,14 @@ package org.chromium.chrome.browser.download.dialogs;
 
 import static org.chromium.build.NullUtil.assertNonNull;
 import static org.chromium.build.NullUtil.assumeNonNull;
+import static org.chromium.chrome.browser.download.settings.DownloadDirectoryAdapter.NO_SELECTED_ITEM_ID;
 
 import android.content.Context;
 import android.content.res.Resources;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
+import android.view.View;
+import android.widget.AdapterView;
 
 import org.chromium.build.annotations.Initializer;
 import org.chromium.build.annotations.NullMarked;
@@ -21,7 +24,10 @@ import org.chromium.chrome.browser.download.DownloadDirectoryProvider;
 import org.chromium.chrome.browser.download.DownloadLocationDialogType;
 import org.chromium.chrome.browser.download.DownloadPromptStatus;
 import org.chromium.chrome.browser.download.R;
+import org.chromium.chrome.browser.download.settings.DownloadDirectoryAdapter;
+import org.chromium.chrome.browser.download.settings.DownloadDirectoryAdapter.DownloadLocationHelper;
 import org.chromium.chrome.browser.download.settings.DownloadLocationHelperImpl;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.browser_ui.util.DownloadUtils;
 import org.chromium.ui.UiUtils;
@@ -40,7 +46,8 @@ import java.util.ArrayList;
  * Also provides the public functionalties to interact with dialog.
  */
 @NullMarked
-public class DownloadLocationDialogCoordinator implements ModalDialogProperties.Controller {
+public class DownloadLocationDialogCoordinator
+        implements ModalDialogProperties.Controller, DownloadDirectoryAdapter.Delegate {
     private DownloadLocationDialogController mController;
     private @Nullable PropertyModel mDialogModel;
     private @Nullable PropertyModel mDownloadLocationDialogModel;
@@ -59,6 +66,8 @@ public class DownloadLocationDialogCoordinator implements ModalDialogProperties.
     private @Nullable Profile mProfile;
 
     private boolean mLocationDialogManaged;
+    private @Nullable DownloadDirectoryAdapter mDirectoryAdapter;
+    private @Nullable DownloadLocationHelper mDownloadLocationHelper;
 
     /**
      * Initializes the download location dialog.
@@ -196,8 +205,10 @@ public class DownloadLocationDialogCoordinator implements ModalDialogProperties.
                             isChecked
                                     ? DownloadPromptStatus.DONT_SHOW
                                     : DownloadPromptStatus.SHOW_PREFERENCE);
-                },
-                new DownloadLocationHelperImpl(mProfile));
+                });
+        mDownloadLocationHelper = new DownloadLocationHelperImpl(mProfile);
+        mDirectoryAdapter = new DownloadDirectoryAdapter(mContext, this);
+        mDirectoryAdapter.update();
         mPropertyModelChangeProcessor =
                 PropertyModelChangeProcessor.create(
                         mDownloadLocationDialogModel,
@@ -368,5 +379,54 @@ public class DownloadLocationDialogCoordinator implements ModalDialogProperties.
     private void cancel() {
         assert mController != null;
         mController.onDownloadLocationDialogCanceled();
+    }
+
+    // DownloadDirectoryAdapter.Delegate implementation.
+
+    @Override
+    public void onDirectoryOptionsUpdated() {
+        if (mCustomView == null || mDirectoryAdapter == null) return;
+
+        int selectedItemId = mDirectoryAdapter.getSelectedItemId();
+        if (selectedItemId == NO_SELECTED_ITEM_ID
+                || mDialogType == DownloadLocationDialogType.LOCATION_FULL
+                || mDialogType == DownloadLocationDialogType.LOCATION_NOT_FOUND) {
+            selectedItemId = mDirectoryAdapter.useFirstValidSelectableItemId();
+        }
+        if (mDialogType == DownloadLocationDialogType.LOCATION_SUGGESTION) {
+            selectedItemId = mDirectoryAdapter.useSuggestedItemId(mTotalBytes);
+        }
+
+        mCustomView.setFileLocationSpinner(mDirectoryAdapter, selectedItemId);
+
+        // Show "not enough space" error text when the chosen storage doesn't have enough space.
+        if (ChromeFeatureList.isEnabled(ChromeFeatureList.SMART_SUGGESTION_FOR_LARGE_DOWNLOADS)) {
+            mCustomView.setFileLocationSpinnerListener(
+                    new AdapterView.OnItemSelectedListener() {
+                        @Override
+                        public void onItemSelected(
+                                AdapterView<?> parent, View view, int position, long id) {
+                            DirectoryOption option =
+                                    (DirectoryOption)
+                                            assumeNonNull(mDirectoryAdapter).getItem(position);
+                            assumeNonNull(option);
+                            assumeNonNull(mCustomView)
+                                    .setLocationAvailableSpace(option.availableSpace);
+                        }
+
+                        @Override
+                        public void onNothingSelected(AdapterView<?> parent) {
+                            // No callback. Only update listeners when an actual option is selected.
+                        }
+                    });
+        }
+    }
+
+    @Override
+    public void onDirectorySelectionChanged() {}
+
+    @Override
+    public DownloadLocationHelper getDownloadLocationHelper() {
+        return assumeNonNull(mDownloadLocationHelper);
     }
 }

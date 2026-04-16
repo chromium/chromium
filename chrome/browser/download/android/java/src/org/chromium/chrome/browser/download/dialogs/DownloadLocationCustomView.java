@@ -5,7 +5,6 @@
 package org.chromium.chrome.browser.download.dialogs;
 
 import static org.chromium.build.NullUtil.assumeNonNull;
-import static org.chromium.chrome.browser.download.settings.DownloadDirectoryAdapter.NO_SELECTED_ITEM_ID;
 
 import android.content.Context;
 import android.content.res.ColorStateList;
@@ -17,6 +16,7 @@ import android.widget.CompoundButton;
 import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.widget.ScrollView;
 import android.widget.Spinner;
+import android.widget.SpinnerAdapter;
 import android.widget.TextView;
 
 import androidx.appcompat.content.res.AppCompatResources;
@@ -32,16 +32,11 @@ import org.chromium.chrome.browser.download.DownloadLocationDialogMetrics.Downlo
 import org.chromium.chrome.browser.download.DownloadLocationDialogType;
 import org.chromium.chrome.browser.download.R;
 import org.chromium.chrome.browser.download.StringUtils;
-import org.chromium.chrome.browser.download.settings.DownloadDirectoryAdapter;
-import org.chromium.chrome.browser.download.settings.DownloadDirectoryAdapter.DownloadLocationHelper;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.components.browser_ui.widget.text.AlertDialogEditText;
 
 /** Dialog that is displayed to ask user where they want to download the file. */
 @NullMarked
-public class DownloadLocationCustomView extends ScrollView
-        implements OnCheckedChangeListener, DownloadDirectoryAdapter.Delegate {
-    private final DownloadDirectoryAdapter mDirectoryAdapter;
+public class DownloadLocationCustomView extends ScrollView implements OnCheckedChangeListener {
 
     private TextView mTitle;
     private TextView mSubtitleView;
@@ -54,11 +49,9 @@ public class DownloadLocationCustomView extends ScrollView
     private @DownloadLocationDialogType int mDialogType;
     private long mTotalBytes;
     private @Nullable Callback<Boolean> mOnClickedCallback;
-    private @Nullable DownloadLocationHelper mDownloadLocationHelper;
 
     public DownloadLocationCustomView(Context context, AttributeSet attrs) {
         super(context, attrs);
-        mDirectoryAdapter = new DownloadDirectoryAdapter(context, this);
     }
 
     @Override
@@ -78,14 +71,11 @@ public class DownloadLocationCustomView extends ScrollView
     void initialize(
             @DownloadLocationDialogType int dialogType,
             long totalBytes,
-            Callback<Boolean> onClickedCallback,
-            DownloadLocationHelper downloadLocationHelper) {
+            Callback<Boolean> onClickedCallback) {
         // TODO(xingliu): Remove this function, currently used by smart suggestion.
         mDialogType = dialogType;
         mTotalBytes = totalBytes;
         mOnClickedCallback = onClickedCallback;
-        mDownloadLocationHelper = downloadLocationHelper;
-        mDirectoryAdapter.update();
     }
 
     void setTitle(CharSequence title) {
@@ -172,7 +162,7 @@ public class DownloadLocationCustomView extends ScrollView
      * Show the available space below the file location spinner.
      * @param  availableSpace The available space of the file location.
      */
-    private void setLocationAvailableSpace(long availableSpace) {
+    void setLocationAvailableSpace(long availableSpace) {
         if (mDialogType != DownloadLocationDialogType.LOCATION_SUGGESTION) return;
         String locationAvailableSpaceText =
                 StringUtils.getAvailableBytesForUi(getContext(), availableSpace);
@@ -204,50 +194,14 @@ public class DownloadLocationCustomView extends ScrollView
         DrawableCompat.setTint(mFileLocation.getBackground().mutate(), barColor);
     }
 
-    // DownloadDirectoryAdapter.Delegate implementation.
-    @Override
-    public void onDirectoryOptionsUpdated() {
-        // TODO(xingliu): Move this to other places. UI shouldn't interact with the adapter.
-        int selectedItemId = mDirectoryAdapter.getSelectedItemId();
-        if (selectedItemId == NO_SELECTED_ITEM_ID
-                || mDialogType == DownloadLocationDialogType.LOCATION_FULL
-                || mDialogType == DownloadLocationDialogType.LOCATION_NOT_FOUND) {
-            selectedItemId = mDirectoryAdapter.useFirstValidSelectableItemId();
-        }
-        if (mDialogType == DownloadLocationDialogType.LOCATION_SUGGESTION) {
-            selectedItemId = mDirectoryAdapter.useSuggestedItemId(mTotalBytes);
-        }
-
-        mFileLocation.setAdapter(mDirectoryAdapter);
+    /** Sets the adapter and selection for the file location spinner. */
+    void setFileLocationSpinner(SpinnerAdapter adapter, int selectedItemId) {
+        mFileLocation.setAdapter(adapter);
         mFileLocation.setSelection(selectedItemId);
-
-        // Show "not enough space" error text the new chosen storage doesn't have enough space.
-        if (ChromeFeatureList.isEnabled(ChromeFeatureList.SMART_SUGGESTION_FOR_LARGE_DOWNLOADS)) {
-            mFileLocation.setOnItemSelectedListener(
-                    new AdapterView.OnItemSelectedListener() {
-                        @Override
-                        public void onItemSelected(
-                                AdapterView<?> parent, View view, int position, long id) {
-                            DirectoryOption option =
-                                    (DirectoryOption) mDirectoryAdapter.getItem(position);
-                            assumeNonNull(option);
-                            setLocationAvailableSpace(option.availableSpace);
-                        }
-
-                        @Override
-                        public void onNothingSelected(AdapterView<?> parent) {
-                            // No callback. Only update listeners when an actual option is selected.
-                        }
-                    });
-        }
     }
 
-    @Override
-    public void onDirectorySelectionChanged() {}
-
-    @Override
-    public DownloadLocationHelper getDownloadLocationHelper() {
-        assumeNonNull(mDownloadLocationHelper);
-        return mDownloadLocationHelper;
+    /** Sets the item selected listener for the file location spinner. */
+    void setFileLocationSpinnerListener(AdapterView.OnItemSelectedListener listener) {
+        mFileLocation.setOnItemSelectedListener(listener);
     }
 }
