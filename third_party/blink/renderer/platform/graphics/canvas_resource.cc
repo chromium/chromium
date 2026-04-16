@@ -135,10 +135,13 @@ void CanvasResource::OnPlaceholderReleasedResource(
 // static
 void CanvasResource::OnPlaceholderReleasedResourceOnOwningThread(
     scoped_refptr<CanvasResource> resource) {
+  CHECK(resource);
   DCHECK(!resource->is_cross_thread());
 
-  ReleaseFrameResources(std::move(resource), gpu::SyncToken(),
-                        /*is_lost=*/false);
+  // Allow the resource to determine whether it wants to preserve itself for
+  // reuse.
+  auto* raw_resource = resource.get();
+  raw_resource->OnRefReturned(std::move(resource));
 }
 
 bool CanvasResource::PrepareTransferableResource(
