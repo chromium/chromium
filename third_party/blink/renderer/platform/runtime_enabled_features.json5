@@ -1435,7 +1435,13 @@
     {
       // The AccentColor And AccentColorText CSS system color keywords
       name: "CSSAccentColorKeyword",
-      status: "experimental",
+      status: {
+        "ChromeOS": "stable",
+        "Linux": "stable",
+        "Mac": "stable",
+        "Win": "stable",
+        "default": "experimental",
+      },
     },
     {
       // Maps deprecated ActiveCaption to Canvas instead of CanvasText.
@@ -1940,6 +1946,7 @@
       name: "CSSSystemAccentColor",
       status: {
         "ChromeOS": "stable",
+        "Linux": "stable",
         "Mac": "stable",
         "Win": "stable",
         "default": "experimental",
