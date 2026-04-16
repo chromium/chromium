@@ -60,6 +60,8 @@ std::optional<std::string> ActorActionCaseToToolName(Action::ActionCase tool) {
       return "AttemptFormFillingTool";
     case Action::kLoadAndExtractContent:
       return "LoadAndExtractContentTool";
+    case Action::kAttemptOtpFilling:
+      return "AttemptOtpFillingTool";
     case Action::ACTION_NOT_SET:
       return std::nullopt;
   }
