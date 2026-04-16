@@ -67,8 +67,6 @@ namespace {
 constexpr char kDigestHeader[] = "digest";
 constexpr char kHistogramSignatureVerificationResult[] =
     "SignedExchange.SignatureVerificationResult";
-constexpr char kHistogramCertVerificationResult[] =
-    "SignedExchange.CertVerificationResult";
 constexpr char kHistogramCTVerificationResult[] =
     "SignedExchange.CTVerificationResult";
 constexpr char kHistogramOCSPResponseStatus[] =
@@ -603,8 +601,6 @@ void SignedExchangeHandler::OnVerifyCert(int32_t error_code,
                                          bool pkp_bypassed) {
   TRACE_EVENT0(TRACE_DISABLED_BY_DEFAULT("loading"),
                "SignedExchangeHandler::OnCertVerifyComplete");
-  // net::Error codes are negative, so we put - in front of it.
-  base::UmaHistogramSparse(kHistogramCertVerificationResult, -error_code);
   UMA_HISTOGRAM_ENUMERATION(kHistogramCTVerificationResult,
                             cv_result.policy_compliance,
                             net::ct::CTPolicyCompliance::CT_POLICY_COUNT);

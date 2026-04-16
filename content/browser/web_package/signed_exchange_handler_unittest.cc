@@ -372,19 +372,12 @@ class SignedExchangeHandlerTest
 
   void ExpectHistogramValues(
       std::optional<SignedExchangeSignatureVerifier::Result> signature_result,
-      std::optional<int32_t> cert_result,
       std::optional<net::ct::CTPolicyCompliance> ct_result,
       std::optional<bssl::OCSPVerifyResult::ResponseStatus>
           ocsp_response_status,
       std::optional<bssl::OCSPRevocationStatus> ocsp_revocation_status) {
-    // CertVerificationResult histogram records negated net::Error code.
-    if (cert_result.has_value())
-      *cert_result = -*cert_result;
-
     ExpectZeroOrUniqueSample("SignedExchange.SignatureVerificationResult",
                              signature_result);
-    ExpectZeroOrUniqueSample("SignedExchange.CertVerificationResult",
-                             cert_result);
     ExpectZeroOrUniqueSample("SignedExchange.CTVerificationResult", ct_result);
     ExpectZeroOrUniqueSample("SignedExchange.OCSPResponseStatus",
                              ocsp_response_status);
@@ -490,7 +483,7 @@ TEST_P(SignedExchangeHandlerTest, Simple) {
   EXPECT_EQ(payload, expected_payload);
   EXPECT_EQ(rv, static_cast<int>(expected_payload.size()));
   ExpectHistogramValues(
-      SignedExchangeSignatureVerifier::Result::kSuccess, net::OK,
+      SignedExchangeSignatureVerifier::Result::kSuccess,
       /*ct_result=*/
       IsCTSupported() ? net::ct::CTPolicyCompliance::CT_POLICY_COMPLIES_VIA_SCTS
                       : net::ct::CTPolicyCompliance::
@@ -689,8 +682,7 @@ TEST_P(SignedExchangeHandlerTest, CertSha256Mismatch) {
   EXPECT_EQ(kTestSxgInnerURL, inner_url());
   ExpectHistogramValues(
       SignedExchangeSignatureVerifier::Result::kErrCertificateSHA256Mismatch,
-      std::nullopt /* cert_result */, std::nullopt /* ct_result */,
-      std::nullopt /* ocsp_response_status */,
+      std::nullopt /* ct_result */, std::nullopt /* ocsp_response_status */,
       std::nullopt /* ocsp_revocation_status */);
 
   // Drain the MockSourceStream, otherwise its destructer causes DCHECK failure.
@@ -717,7 +709,7 @@ TEST_P(SignedExchangeHandlerTest, VerifyCertFailure) {
   EXPECT_EQ(net::ERR_INVALID_SIGNED_EXCHANGE, error());
   EXPECT_EQ("https://test.example.com/test/", inner_url());
   ExpectHistogramValues(
-      SignedExchangeSignatureVerifier::Result::kSuccess, net::ERR_CERT_INVALID,
+      SignedExchangeSignatureVerifier::Result::kSuccess,
       net::ct::CTPolicyCompliance::CT_POLICY_COMPLIANCE_DETAILS_NOT_AVAILABLE,
       std::nullopt /* ocsp_response_status */,
       std::nullopt /* ocsp_revocation_status */);
@@ -885,7 +877,6 @@ TEST_P(SignedExchangeHandlerTest, NotEnoughSCTsFromPubliclyTrustedCert) {
   EXPECT_EQ(net::ERR_INVALID_SIGNED_EXCHANGE, error());
   EXPECT_EQ(kTestSxgInnerURL, inner_url());
   ExpectHistogramValues(SignedExchangeSignatureVerifier::Result::kSuccess,
-                        net::ERR_CERTIFICATE_TRANSPARENCY_REQUIRED,
                         net::ct::CTPolicyCompliance::CT_POLICY_NOT_ENOUGH_SCTS,
                         std::nullopt /* ocsp_response_status */,
                         std::nullopt /* ocsp_revocation_status */);
@@ -924,7 +915,7 @@ TEST_P(SignedExchangeHandlerTest, CTRequirementsMetForPubliclyTrustedCert) {
   EXPECT_EQ(net::ct::CTPolicyCompliance::CT_POLICY_COMPLIES_VIA_SCTS,
             resource_response().ssl_info->ct_policy_compliance);
   ExpectHistogramValues(
-      SignedExchangeSignatureVerifier::Result::kSuccess, net::OK,
+      SignedExchangeSignatureVerifier::Result::kSuccess,
       net::ct::CTPolicyCompliance::CT_POLICY_COMPLIES_VIA_SCTS,
       bssl::OCSPVerifyResult::PROVIDED, bssl::OCSPRevocationStatus::GOOD);
 
@@ -959,10 +950,10 @@ TEST_P(SignedExchangeHandlerTest, CTNotRequiredForLocalAnchors) {
   EXPECT_EQ(net::OK, error());
   EXPECT_EQ(net::ct::CTPolicyCompliance::CT_POLICY_NOT_ENOUGH_SCTS,
             resource_response().ssl_info->ct_policy_compliance);
-  ExpectHistogramValues(
-      SignedExchangeSignatureVerifier::Result::kSuccess, net::OK,
-      net::ct::CTPolicyCompliance::CT_POLICY_NOT_ENOUGH_SCTS,
-      bssl::OCSPVerifyResult::PROVIDED, bssl::OCSPRevocationStatus::GOOD);
+  ExpectHistogramValues(SignedExchangeSignatureVerifier::Result::kSuccess,
+                        net::ct::CTPolicyCompliance::CT_POLICY_NOT_ENOUGH_SCTS,
+                        bssl::OCSPVerifyResult::PROVIDED,
+                        bssl::OCSPRevocationStatus::GOOD);
 
   std::string payload;
   int rv = ReadPayloadStream(&payload);

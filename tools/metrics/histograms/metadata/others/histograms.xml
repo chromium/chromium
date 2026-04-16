@@ -7025,15 +7025,6 @@ useful for Chirp alerts (go/crca-alerts). -->
   </summary>
 </histogram>
 
-<histogram name="SignedExchange.CertVerificationResult" enum="NetErrorCodes"
-    expires_after="2023-03-29">
-  <owner>ksakamoto@chromium.org</owner>
-  <owner>webpackage-dev@chromium.org</owner>
-  <summary>
-    Reports the result of Signed Exchange cert verification, including success.
-  </summary>
-</histogram>
-
 <histogram name="SignedExchange.CTVerificationResult" enum="CTComplianceStatus"
     expires_after="2023-03-29">
   <owner>ksakamoto@chromium.org</owner>
