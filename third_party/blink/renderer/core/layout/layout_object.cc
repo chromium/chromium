@@ -2238,37 +2238,6 @@ String LayoutObject::DebugName() const {
   return name.ToString();
 }
 
-void LayoutObject::DumpForBug478682594() const {
-  // Dump only once per instance. Might become noisy otherwise.
-  static bool has_dumped;
-
-  if (has_dumped) {
-    return;
-  }
-  has_dumped = true;
-
-  StringBuilder value_builder;
-  for (const LayoutObject* obj = this; obj; obj = obj->Parent()) {
-    unsigned needs_layout_flags =
-        obj->bitfields_.SelfNeedsFullLayout() |
-        (obj->bitfields_.ChildNeedsFullLayout() << 1) |
-        (obj->bitfields_.NeedsSimplifiedLayout() << 2);
-
-    value_builder.AppendNumber(needs_layout_flags);
-    value_builder.Append(" ");
-    value_builder.Append(obj->DecoratedName());
-    if (obj->IsRelayoutBoundary()) {
-      value_builder.Append("(RELAYOUT-BOUNDARY)");
-    }
-    value_builder.Append("; ");
-  }
-
-  auto* key = base::debug::AllocateCrashKeyString(
-      "Bug478682594-layout-tree", base::debug::CrashKeySize::Size1024);
-  base::debug::SetCrashKeyString(key, value_builder.ToString().Ascii().c_str());
-  base::debug::DumpWithoutCrashing();
-}
-
 DOMNodeId LayoutObject::OwnerNodeId(bool is_internal_content) const {
   NOT_DESTROYED();
   if (RuntimeEnabledFeatures::HTMLPrintingArtifactAnnotationsEnabled() &&

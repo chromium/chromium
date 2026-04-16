@@ -252,7 +252,6 @@ void LayoutBlock::Paint(const PaintInfo& paint_info) const {
 
   // Avoid painting dirty objects because descendants maybe already destroyed.
   if (NeedsLayout() && !ChildLayoutBlockedByDisplayLock()) [[unlikely]] {
-    DumpForBug478682594();
     DUMP_WILL_BE_NOTREACHED();
     return;
   }

@@ -322,9 +322,6 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
   // id attributes, if present).
   String ToString() const;
 
-  // TODO(crbug.com/478682594): Remove when done investigating.
-  void DumpForBug478682594() const;
-
   // This is an inexact determination of whether the display of this objects is
   // altered or obscured by CSS effects.
   bool HasDistortingVisualEffects() const;
