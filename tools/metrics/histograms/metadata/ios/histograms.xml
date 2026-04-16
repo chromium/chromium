@@ -3707,15 +3707,6 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
-<histogram name="IOS.MagicStack.NTP.SegmentationRankingFetchTime" units="ms"
-    expires_after="2026-04-26">
-  <owner>thegreenfrog@chromium.org</owner>
-  <owner>bling-pandamonium@google.com</owner>
-  <summary>
-    Records the fetch time for the Segmentation ranking for Magic Stack on NTP.
-  </summary>
-</histogram>
-
 <histogram name="IOS.MagicStack.ScrollActionToIndex" units="index"
     expires_after="2026-09-07">
   <owner>thegreenfrog@chromium.org</owner>
@@ -3763,16 +3754,6 @@ chromium-metrics-reviews@google.com.
     <variant name="TabResumptionWithPriceTracking"
         summary="tab resumption where the URL is price trackable"/>
   </token>
-</histogram>
-
-<histogram name="IOS.MagicStack.Start.SegmentationRankingFetchTime" units="ms"
-    expires_after="2026-06-28">
-  <owner>thegreenfrog@chromium.org</owner>
-  <owner>bling-pandamonium@google.com</owner>
-  <summary>
-    Records the fetch time for the Segmentation ranking for Magic Stack on
-    Start.
-  </summary>
 </histogram>
 
 <histogram name="IOS.MagicStack.TabResumption.{Type}.Impression" units="index"

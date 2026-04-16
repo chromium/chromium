@@ -78,7 +78,3 @@ const char kContentNotificationSnackbarEventHistogram[] =
 const char kIOSSafetyCheckMagicStackHiddenReason[] =
     "IOS.SafetyCheck.MagicStack.HiddenReason";
 
-const char kMagicStackStartSegmentationRankingFetchTimeHistogram[] =
-    "IOS.MagicStack.Start.SegmentationRankingFetchTime";
-const char kMagicStackNTPSegmentationRankingFetchTimeHistogram[] =
-    "IOS.MagicStack.NTP.SegmentationRankingFetchTime";
