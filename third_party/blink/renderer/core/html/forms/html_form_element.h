@@ -236,6 +236,8 @@ class CORE_EXPORT HTMLFormElement final : public HTMLElement {
 
   bool IsValidWebMCPForm() const;
   void UpdateMcpDefinitionsIfNeeded();
+  void ReportInvalidMCPFormIssueIfNeeded(const String& name,
+                                         const String& description);
 
   using PastNamesMap = GCedHeapHashMap<AtomicString, Member<Element>>;
 

@@ -31,6 +31,7 @@
 #include "base/auto_reset.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/security_context/insecure_request_policy.h"
+#include "third_party/blink/public/mojom/devtools/inspector_issue.mojom-blink.h"
 #include "third_party/blink/public/mojom/security_context/insecure_request_policy.mojom-blink.h"
 #include "third_party/blink/public/web/web_form_related_change_type.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_controller.h"
@@ -40,6 +41,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_element_radionodelist.h"
 #include "third_party/blink/renderer/core/dom/attribute.h"
 #include "third_party/blink/renderer/core/dom/document.h"
+#include "third_party/blink/renderer/core/dom/dom_node_ids.h"
 #include "third_party/blink/renderer/core/dom/element_traversal.h"
 #include "third_party/blink/renderer/core/dom/events/event.h"
 #include "third_party/blink/renderer/core/dom/events/scoped_event_queue.h"
@@ -73,6 +75,7 @@
 #include "third_party/blink/renderer/core/html_names.h"
 #include "third_party/blink/renderer/core/input_type_names.h"
 #include "third_party/blink/renderer/core/inspector/console_message.h"
+#include "third_party/blink/renderer/core/inspector/inspector_audits_issue.h"
 #include "third_party/blink/renderer/core/layout/layout_object.h"
 #include "third_party/blink/renderer/core/loader/form_submission.h"
 #include "third_party/blink/renderer/core/loader/mixed_content_checker.h"
@@ -320,6 +323,26 @@ void HTMLFormElement::HandleWebMcpToolResponse(HTMLFormMcpTool* tool,
   }
 }
 
+void HTMLFormElement::ReportInvalidMCPFormIssueIfNeeded(
+    const String& name,
+    const String& description) {
+  if (!isConnected()) {
+    return;
+  }
+  if (name.empty()) {
+    AuditsIssue::ReportGenericIssue(
+        GetDocument().GetFrame(),
+        mojom::blink::GenericIssueErrorType::kFormModelContextMissingToolName,
+        DOMNodeIds::IdForNode(this));
+    return;
+  }
+  CHECK(description.empty());
+  AuditsIssue::ReportGenericIssue(GetDocument().GetFrame(),
+                                  mojom::blink::GenericIssueErrorType::
+                                      kFormModelContextMissingToolDescription,
+                                  DOMNodeIds::IdForNode(this));
+}
+
 // This gets called when a <form> is added or removed from the document, or
 // when `toolname` or `tooldescription` attributes are added, removed, or
 // changed.
@@ -333,6 +356,12 @@ void HTMLFormElement::UpdateMcpDefinitionsIfNeeded() {
   String name = FastGetAttribute(html_names::kToolnameAttr);
   String description = FastGetAttribute(html_names::kTooldescriptionAttr);
   bool is_valid_mcp_form = isConnected() && name && description;
+  // Only report issues if it is not a valid mcp form and
+  // at least one of name or description is present.
+  // If no name or description are present, ignore.
+  if (!is_valid_mcp_form && (name || description)) {
+    ReportInvalidMCPFormIssueIfNeeded(name, description);
+  }
   bool name_or_description_changed =
       is_valid_mcp_form && active_webmcp_tool_ &&
       (active_webmcp_tool_->ToolName() != name ||

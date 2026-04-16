@@ -3324,4 +3324,111 @@ TEST_F(HTMLFormMcpToolTest, FieldsetDescription_Checkbox_Multiple_Basic) {
   EXPECT_EQ(expected_json->ToJSONString(), actual);
 }
 
+TEST_F(HTMLFormMcpToolTest, GenericIssue_MissingName) {
+  InspectorIssueStorage& storage =
+      GetDocument().GetPage()->GetInspectorIssueStorage();
+  storage.Clear();
+  EXPECT_EQ(0u, storage.size());
+
+  SetBodyInnerHTML(
+      R"HTML(
+    <form id="form" tooldescription="perform task">
+      <input name="text1" type="text">
+    </form>
+  )HTML");
+
+  EXPECT_EQ(1u, storage.size());
+  protocol::Audits::InspectorIssue* issue = storage.at(0);
+  EXPECT_EQ(protocol::Audits::InspectorIssueCodeEnum::GenericIssue,
+            issue->getCode());
+  EXPECT_TRUE(issue->getDetails()->hasGenericIssueDetails());
+  EXPECT_EQ(protocol::Audits::GenericIssueErrorTypeEnum::
+                FormModelContextMissingToolName,
+            issue->getDetails()->getGenericIssueDetails()->getErrorType());
+}
+
+TEST_F(HTMLFormMcpToolTest, GenericIssue_MissingDescription) {
+  InspectorIssueStorage& storage =
+      GetDocument().GetPage()->GetInspectorIssueStorage();
+  storage.Clear();
+  EXPECT_EQ(0u, storage.size());
+
+  SetBodyInnerHTML(
+      R"HTML(
+    <form id="form" toolname="mytool">
+      <input name="text1" type="text">
+    </form>
+  )HTML");
+
+  EXPECT_EQ(1u, storage.size());
+  protocol::Audits::InspectorIssue* issue = storage.at(0);
+  EXPECT_EQ(protocol::Audits::InspectorIssueCodeEnum::GenericIssue,
+            issue->getCode());
+  EXPECT_TRUE(issue->getDetails()->hasGenericIssueDetails());
+  EXPECT_EQ(protocol::Audits::GenericIssueErrorTypeEnum::
+                FormModelContextMissingToolDescription,
+            issue->getDetails()->getGenericIssueDetails()->getErrorType());
+}
+
+TEST_F(HTMLFormMcpToolTest, GenericIssue_MissingDescriptionTwice) {
+  InspectorIssueStorage& storage =
+      GetDocument().GetPage()->GetInspectorIssueStorage();
+  storage.Clear();
+  EXPECT_EQ(0u, storage.size());
+
+  SetBodyInnerHTML(
+      R"HTML(
+    <form id="form" toolname="mytool">
+      <input name="text1" type="text">
+    </form>
+  )HTML");
+
+  EXPECT_EQ(1u, storage.size());
+  SetBodyInnerHTML(
+      R"HTML(
+    <form id="form" toolname="mytool">
+      <input name="text1" type="text">
+    </form>
+  )HTML");
+  EXPECT_EQ(2u, storage.size());
+  EXPECT_EQ(
+      storage.at(0)->getDetails()->getGenericIssueDetails()->getErrorType(),
+      storage.at(1)->getDetails()->getGenericIssueDetails()->getErrorType());
+}
+
+TEST_F(HTMLFormMcpToolTest, GenericIssue_RegularFormNoIssues) {
+  InspectorIssueStorage& storage =
+      GetDocument().GetPage()->GetInspectorIssueStorage();
+  storage.Clear();
+  EXPECT_EQ(0u, storage.size());
+
+  SetBodyInnerHTML(
+      R"HTML(
+    <form id="form">
+      <input name="text1" type="text">
+    </form>
+  )HTML");
+
+  EXPECT_EQ(0u, storage.size());
+}
+
+TEST_F(HTMLFormMcpToolTest, GenericIssue_NotConnectedNoIssues) {
+  UpdateAllLifecyclePhasesForTest();
+
+  InspectorIssueStorage& storage =
+      GetDocument().GetPage()->GetInspectorIssueStorage();
+  storage.Clear();
+  EXPECT_EQ(0u, storage.size());
+
+  HTMLFormElement* form_element =
+      MakeGarbageCollected<HTMLFormElement>(GetDocument());
+  form_element->setAttribute(html_names::kToolnameAttr, AtomicString("mytool"));
+  form_element->setAttribute(html_names::kTooldescriptionAttr,
+                             AtomicString("description"));
+  EXPECT_FALSE(IsValidWebMCPForm(*form_element));  // Not connected.
+
+  // Should not report issues because it's not connected.
+  EXPECT_EQ(0u, storage.size());
+}
+
 }  // namespace blink
