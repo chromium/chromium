@@ -6,21 +6,16 @@
 
 #include <utility>
 
-#include "base/check_deref.h"
-#include "base/check_is_test.h"
-#include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/time/time.h"
+#include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/browser/profiles/profiles_state.h"
 #include "chrome/common/pref_names.h"
 #include "chromeos/dbus/regmon/regmon_client.h"
 #include "chromeos/dbus/regmon/regmon_service.pb.h"
 #include "components/prefs/pref_service.h"
-#include "components/session_manager/core/session.h"
-#include "components/session_manager/core/session_manager.h"
-#include "components/user_manager/user.h"
-#include "components/user_manager/user_manager.h"
 
 NetworkAnnotationMonitor::NetworkAnnotationMonitor() = default;
 NetworkAnnotationMonitor::~NetworkAnnotationMonitor() = default;
@@ -33,24 +28,16 @@ void NetworkAnnotationMonitor::Report(int32_t hash_code) {
 
   // Get blocklist prefs from the current active profile, which on ChromeOS
   // should be the only profile based on the above check.
-  const auto* active_session =
-      session_manager::SessionManager::Get()->GetActiveSession();
-  if (!active_session) {
+  const Profile* profile = ProfileManager::GetActiveUserProfile();
+  if (!profile) {
+    // This case should be rare, but is possible. We have observed empty
+    // profiles in browser tests, for example.
     return;
   }
-
-  // The user must exist always.
-  const auto& user = CHECK_DEREF(
-      user_manager::UserManager::Get()->FindUser(active_session->account_id()));
-  if (!user.is_profile_created()) {
-    // This happens during the user log-in. User session is created at earlier
-    // timing, but its corresponding Profile is created asynchronously later.
-    return;
-  }
+  const base::DictValue& blocklist =
+      profile->GetPrefs()->GetDict(prefs::kNetworkAnnotationBlocklist);
 
   // Ignore any network calls not in the blocklist.
-  const base::DictValue& blocklist =
-      user.GetProfilePrefs()->GetDict(prefs::kNetworkAnnotationBlocklist);
   if (!blocklist.contains(base::NumberToString(hash_code))) {
     return;
   }

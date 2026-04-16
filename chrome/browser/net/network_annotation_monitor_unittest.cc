@@ -11,47 +11,25 @@
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile_manager.h"
-#include "chromeos/ash/components/browser_context_helper/annotated_account_id.h"
 #include "chromeos/dbus/regmon/regmon_client.h"
-#include "components/account_id/account_id.h"
-#include "components/account_id/account_id_literal.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
-#include "components/prefs/testing_pref_service.h"
-#include "components/session_manager/test/test_user_session_manager.h"
 #include "content/public/test/browser_task_environment.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "testing/gtest/include/gtest/gtest.h"
-
-constexpr auto kAccountId =
-    AccountId::Literal::FromUserEmailGaiaId("user@email.com",
-                                            GaiaId::Literal("1234567890"));
 
 TEST(NetworkAnnotationMonitorTest, ReportTest) {
   constexpr int32_t kTestDisabledHashCode = 123;
   constexpr int32_t kTestAllowedHashCode = 456;
   content::BrowserTaskEnvironment task_environment;
 
-  ash::test::TestUserSessionManager test_user_session_manager(
-      TestingBrowserProcess::GetGlobal()->GetTestingLocalState());
-  ASSERT_TRUE(test_user_session_manager.AddRegularUser(kAccountId));
-  test_user_session_manager.LogIn(kAccountId);
-
   // Setup profile with the disabled hash code in blocklist pref.
   TestingProfileManager profile_manager_(TestingBrowserProcess::GetGlobal());
   ASSERT_TRUE(profile_manager_.SetUp());
-  auto* profile = profile_manager_.CreateTestingProfile("testing_profile");
-  ash::AnnotatedAccountId::Set(profile, kAccountId);
-  {
-    auto* profile_prefs = profile->GetPrefs();
-    profile_prefs->SetDict(
-        prefs::kNetworkAnnotationBlocklist,
-        base::DictValue().Set(base::NumberToString(kTestDisabledHashCode),
-                              true));
-
-    user_manager::UserManager::Get()->OnUserProfileCreated(kAccountId,
-                                                           profile_prefs);
-  }
+  profile_manager_.CreateTestingProfile("testing_profile");
+  ProfileManager::GetActiveUserProfile()->GetPrefs()->SetDict(
+      prefs::kNetworkAnnotationBlocklist,
+      base::DictValue().Set(base::NumberToString(kTestDisabledHashCode), true));
 
   // Initialize fake Regmon D-Bus client. This fake client is used below to
   // verify that violations are reported.
@@ -71,8 +49,6 @@ TEST(NetworkAnnotationMonitorTest, ReportTest) {
   std::list<int32_t> expected_reported_hash_codes{kTestDisabledHashCode};
   EXPECT_EQ(regmon_client->GetReportedHashCodes(),
             expected_reported_hash_codes);
-
-  user_manager::UserManager::Get()->OnUserProfileWillBeDestroyed(kAccountId);
 }
 
 // Verify that GetClient() can be called multiple times. This simulates what
