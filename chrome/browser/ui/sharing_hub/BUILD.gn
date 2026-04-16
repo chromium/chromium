@@ -19,6 +19,7 @@ source_set("sharing_hub") {
     "//chrome/browser/share",
     "//chrome/browser/sharing_hub",
     "//content/public/browser",
+    "//ui/base/interaction",
   ]
 
   if (is_chromeos) {
