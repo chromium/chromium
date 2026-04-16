@@ -63,7 +63,7 @@ struct CanvasResourceDispatcher::ExportedResource {
  private:
   void ReleaseResource(const gpu::SyncToken& sync_token, bool is_lost) {
     auto resource = std::move(resource_);
-    if (release_callback_) {
+    if (resource) {
       std::move(release_callback_)
           .Run(std::move(resource), sync_token, is_lost);
     }
