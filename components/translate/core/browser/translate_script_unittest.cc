@@ -8,9 +8,11 @@
 #include "base/functional/bind.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/bind.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "build/build_config.h"
 #include "components/translate/core/browser/translate_download_manager.h"
+#include "components/translate/core/common/translate_features.h"
 #include "components/translate/core/common/translate_switches.h"
 #include "components/variations/scoped_variations_ids_provider.h"
 #include "components/variations/variations_ids_provider.h"
@@ -82,6 +84,10 @@ class TranslateScriptTest : public testing::Test {
 };
 
 TEST_F(TranslateScriptTest, CheckScriptParameters) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      translate::kTranslateSimplifiedHindi);
+
   network::ResourceRequest last_resource_request;
   GetTestURLLoaderFactory()->SetInterceptor(
       base::BindLambdaForTesting([&](const network::ResourceRequest& request) {
@@ -106,11 +112,11 @@ TEST_F(TranslateScriptTest, CheckScriptParameters) {
   net::HttpRequestHeaders extra_headers = last_resource_request.headers;
   EXPECT_EQ(expected_extra_headers, extra_headers.ToString());
 
-  std::string always_use_ssl;
-  net::GetValueForKeyInQuery(
-      url, TranslateScript::kAlwaysUseSslQueryName, &always_use_ssl);
-  EXPECT_EQ(std::string(TranslateScript::kAlwaysUseSslQueryValue),
-            always_use_ssl);
+  std::string experiment_filter;
+  net::GetValueForKeyInQuery(url, TranslateScript::kExperimentFilterQueryName,
+                             &experiment_filter);
+  EXPECT_EQ(std::string(TranslateScript::kExperimentFilterQueryValue),
+            experiment_filter);
 
   std::string callback;
   net::GetValueForKeyInQuery(

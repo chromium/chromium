@@ -12,6 +12,9 @@ namespace translate {
 // Controls whether PDF translation is enabled.
 BASE_DECLARE_FEATURE(kEnableTranslatePdf);
 
+// Controls whether the simplified Hindi model is used.
+BASE_DECLARE_FEATURE(kTranslateSimplifiedHindi);
+
 }  // namespace translate
 
 #endif  // COMPONENTS_TRANSLATE_CORE_COMMON_TRANSLATE_FEATURES_H_
