@@ -49,6 +49,9 @@ struct ResolvedDecoration {
   STACK_ALLOCATED();
 
  public:
+  // ResolveDecorationAt() must fill `applied_text_decoration`, so it never be
+  // nullptr.
+  const AppliedTextDecoration* applied_text_decoration = nullptr;
   const SimpleFontData* font_data = nullptr;
   TextDecorationLine lines = TextDecorationLine::kNone;
   float ascent = 0.f;
@@ -167,7 +170,7 @@ class CORE_EXPORT TextDecorationInfo {
   // Decorating box properties for the current |decoration_index_|.
   const InlinePaintContext* const inline_context_ = nullptr;
   const DecoratingBox* decorating_box_ = nullptr;
-  const AppliedTextDecoration* applied_text_decoration_ = nullptr;
+
   const TextDecorationLine selection_decoration_line_ =
       TextDecorationLine::kNone;
   const Color selection_decoration_color_;

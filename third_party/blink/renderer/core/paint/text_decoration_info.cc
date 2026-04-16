@@ -198,8 +198,8 @@ const ResolvedDecoration TextDecorationInfo::ResolveDecorationAt(
 const ResolvedDecoration TextDecorationInfo::UpdateForDecorationIndex() {
   DCHECK_LT(decoration_index_, AppliedDecorationCount());
   ResolvedDecoration decoration;
-  applied_text_decoration_ = &AppliedDecoration(decoration_index_);
-  decoration.lines = applied_text_decoration_->Lines();
+  decoration.applied_text_decoration = &AppliedDecoration(decoration_index_);
+  decoration.lines = decoration.applied_text_decoration->Lines();
   decoration.has_underline =
       EnumHasFlags(decoration.lines, TextDecorationLine::kUnderline);
   decoration.has_overline =
@@ -325,8 +325,8 @@ DecorationGeometry TextDecorationInfo::ComputeLineData(
         MakeSpellingGrammarWave(decorating_box_style_->EffectiveZoom());
 #endif
   } else {
-    DCHECK(applied_text_decoration_);
-    style = TextDecorationStyleToStrokeStyle(applied_text_decoration_->Style());
+    style = TextDecorationStyleToStrokeStyle(
+        decoration.applied_text_decoration->Style());
   }
 
   const gfx::PointF start_point =
@@ -363,7 +363,7 @@ DecorationGeometry TextDecorationInfo::ComputeUnderlineLineData(
   if (decoration.is_flipped_underline_and_overline) [[unlikely]] {
     line_offset = Length();
   } else {
-    line_offset = applied_text_decoration_->UnderlineOffset();
+    line_offset = decoration.applied_text_decoration->UnderlineOffset();
   }
   float paint_underline_offset = decoration_offset.ComputeUnderlineOffset(
       decoration.underline_position, decoration.computed_font_size,
@@ -384,7 +384,7 @@ DecorationGeometry TextDecorationInfo::ComputeOverlineLineData(
   Length line_offset;
   FontVerticalPositionType position;
   if (decoration.is_flipped_underline_and_overline) [[unlikely]] {
-    line_offset = applied_text_decoration_->UnderlineOffset();
+    line_offset = decoration.applied_text_decoration->UnderlineOffset();
     position = FontVerticalPositionType::TopOfEmHeight;
   } else {
     line_offset = Length();
@@ -417,7 +417,6 @@ DecorationGeometry TextDecorationInfo::ComputeSpellingOrGrammarErrorLineData(
   DCHECK(!decoration.HasUnderline());
   DCHECK(!decoration.HasOverline());
   DCHECK(!decoration.HasLineThrough());
-  DCHECK(applied_text_decoration_);
   const int paint_underline_offset = decoration_offset.ComputeUnderlineOffset(
       decoration.underline_position, TargetStyle().ComputedFontSize(),
       decoration.font_data, Length(), decoration.resolved_thickness);
@@ -442,17 +441,15 @@ Color TextDecorationInfo::LineColor(
 
   // Find the matched normal and selection |AppliedTextDecoration|
   // and use the text-decoration-color from selection when it is.
-  DCHECK(applied_text_decoration_);
   if (decoration.lines == selection_decoration_line_) {
     return selection_decoration_color_;
   }
 
-  return applied_text_decoration_->GetColor();
+  return decoration.applied_text_decoration->GetColor();
 }
 
 float TextDecorationInfo::ComputeThickness(
     const ResolvedDecoration& decoration) const {
-  DCHECK(applied_text_decoration_);
   if (decoration.HasSpellingOrGrammarError()) {
     // Spelling and grammar error thickness doesn't depend on the font size.
 #if BUILDFLAG(IS_ANDROID)
@@ -472,8 +469,8 @@ float TextDecorationInfo::ComputeThickness(
 #endif
   }
   const float thickness = ComputeDecorationThickness(
-      applied_text_decoration_->Thickness(), decoration.computed_font_size,
-      decoration.font_data);
+      decoration.applied_text_decoration->Thickness(),
+      decoration.computed_font_size, decoration.font_data);
   return std::max(is_svg_text_ ? 0.0f : 1.0f, thickness);
 }
 
