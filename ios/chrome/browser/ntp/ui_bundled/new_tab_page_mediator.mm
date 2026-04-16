@@ -769,11 +769,8 @@ const net::NetworkTrafficAnnotationTag kTrafficAnnotation =
           std::get<HomeUserUploadedBackground>(customBackground.value());
 
       __weak __typeof(self) weakSelf = self;
-      // Downsample to screen size to reduce memory.
-      CGSize screenSize =
-          self.contentCollectionView.window.windowScene.screen.bounds.size;
       _userUploadedImageManager->LoadUserUploadedImage(
-          base::FilePath(userBackground.image_path), screenSize,
+          base::FilePath(userBackground.image_path), self.screenSize,
           base::BindOnce(^(UIImage* image, CGSize originalSize,
                            UserUploadedImageError error) {
             [weakSelf setCustomBackground:userBackground

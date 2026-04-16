@@ -814,6 +814,8 @@
                          feedViewController:self.feedViewController];
   self.NTPMediator.contentCollectionView =
       self.feedWrapperViewController.contentCollectionView;
+  self.NTPMediator.screenSize =
+      self.browser->GetSceneState().scene.screen.bounds.size;
 
   if ([self isFeedVisible]) {
     self.NTPViewController.feedTopSectionViewController =

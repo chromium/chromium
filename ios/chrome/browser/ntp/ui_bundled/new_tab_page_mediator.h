@@ -110,6 +110,9 @@ class UserUploadedImageManager;
 // A pointer to the collection view that currently embeds all the contents on
 // the new tab page.
 @property(nonatomic, weak) UICollectionView* contentCollectionView;
+// The screen size of the scene displaying this NTP, used for downsampling
+// user-uploaded background images. Set by the coordinator.
+@property(nonatomic, assign) CGSize screenSize;
 
 // Indicates whether the feed header should be visible.
 - (BOOL)isFeedHeaderVisible;
