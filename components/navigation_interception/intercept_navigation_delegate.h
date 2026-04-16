@@ -94,6 +94,10 @@ class InterceptNavigationDelegate : public base::SupportsUserData::Data {
   // redirects/commits will be deferred.
   void RequestFinishPendingShouldIgnoreCheck();
 
+  base::WeakPtr<InterceptNavigationDelegate> GetWeakPtr() {
+    return weak_ptr_factory_.GetWeakPtr();
+  }
+
   // See ContentBrowserClient::HandleExternalProtocol for the semantics around
   // |out_factory|.
   virtual void HandleSubframeExternalProtocol(

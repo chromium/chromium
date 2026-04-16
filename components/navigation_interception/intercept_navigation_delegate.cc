@@ -55,6 +55,26 @@ void AllowNavigationToProceed(
   std::move(result_callback).Run(false);
 }
 
+// This wrapper is necessary because `InterceptNavigationThrottle` can outlive
+// `InterceptNavigationDelegate` (e.g., during prerender cancellation).
+// If we bound `ShouldIgnoreNavigation` directly to a `WeakPtr`,
+// `base::RepeatingCallback` would silently drop the call when the `WeakPtr`
+// is invalidated. This would destroy `result_callback` without running it,
+// stalling the navigation in `DEFER`. The wrapper detects the dead `WeakPtr`
+// and safely invokes `result_callback(false)` to allow continuation.
+void ShouldIgnoreNavigationWrapper(
+    base::WeakPtr<InterceptNavigationDelegate> delegate,
+    content::NavigationHandle* navigation_handle,
+    bool should_run_async,
+    InterceptNavigationThrottle::ResultCallback result_callback) {
+  if (!delegate) {
+    std::move(result_callback).Run(false);
+    return;
+  }
+  delegate->ShouldIgnoreNavigation(navigation_handle, should_run_async,
+                                   std::move(result_callback));
+}
+
 class RedirectURLLoader : public network::mojom::URLLoader {
  public:
   RedirectURLLoader(const network::ResourceRequest& resource_request,
@@ -167,14 +187,14 @@ void InterceptNavigationDelegate::MaybeCreateAndAdd(
         registry, base::BindRepeating(&AllowNavigationToProceed), mode,
         base::DoNothing()));
   } else {
-  registry.AddThrottle(std::make_unique<InterceptNavigationThrottle>(
-      registry,
-      base::BindRepeating(&InterceptNavigationDelegate::ShouldIgnoreNavigation,
-                          base::Unretained(intercept_navigation_delegate)),
-      mode,
-      base::BindRepeating(
-          &InterceptNavigationDelegate::RequestFinishPendingShouldIgnoreCheck,
-          base::Unretained(intercept_navigation_delegate))));
+    registry.AddThrottle(std::make_unique<InterceptNavigationThrottle>(
+        registry,
+        base::BindRepeating(&ShouldIgnoreNavigationWrapper,
+                            intercept_navigation_delegate->GetWeakPtr()),
+        mode,
+        base::BindRepeating(
+            &InterceptNavigationDelegate::RequestFinishPendingShouldIgnoreCheck,
+            intercept_navigation_delegate->GetWeakPtr())));
   }
 }
 
