@@ -156,6 +156,11 @@ public abstract class EditorViewBase extends AlwaysDismissedDialog
 
         mContainerView =
                 LayoutInflater.from(mContext).inflate(R.layout.autofill_editor_dialog, null);
+        if (ChromeFeatureList.isEnabled(ChromeFeatureList.AUTOFILL_AI_WITH_DATA_SCHEMA)) {
+            // TODO: crbug.com/501305415 - Move to xml.
+            mContainerView.setBackgroundColor(
+                    SemanticColorUtils.getSettingsBackgroundColor(mContext));
+        }
         setContentView(mContainerView);
 
         mContentView = mContainerView.findViewById(R.id.contents);
@@ -163,6 +168,10 @@ public abstract class EditorViewBase extends AlwaysDismissedDialog
         prepareToolbar();
 
         mButtonBar = mContainerView.findViewById(R.id.button_bar);
+        if (ChromeFeatureList.isEnabled(ChromeFeatureList.AUTOFILL_AI_WITH_DATA_SCHEMA)) {
+            // TODO: crbug.com/501305415 - Move to xml.
+            mButtonBar.setBackgroundColor(SemanticColorUtils.getSettingsBackgroundColor(mContext));
+        }
         mButtonBar.findViewById(R.id.button_primary).setId(R.id.editor_dialog_done_button);
         mButtonBar.findViewById(R.id.button_secondary).setId(R.id.payments_edit_cancel_button);
 
@@ -409,7 +418,11 @@ public abstract class EditorViewBase extends AlwaysDismissedDialog
     private void prepareToolbar() {
         EditorDialogToolbar toolbar =
                 (EditorDialogToolbar) mContainerView.findViewById(R.id.action_bar);
-        toolbar.setBackgroundColor(SemanticColorUtils.getDefaultBgColor(toolbar.getContext()));
+        if (ChromeFeatureList.isEnabled(ChromeFeatureList.AUTOFILL_AI_WITH_DATA_SCHEMA)) {
+            toolbar.setBackgroundColor(SemanticColorUtils.getSettingsBackgroundColor(mContext));
+        } else {
+            toolbar.setBackgroundColor(SemanticColorUtils.getDefaultBgColor(mContext));
+        }
         toolbar.setTitleTextAppearance(
                 toolbar.getContext(), R.style.TextAppearance_Headline_Primary);
 
