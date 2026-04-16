@@ -1168,6 +1168,17 @@ public class UrlBar extends AutocompleteEditText {
 
     @Override
     public @Nullable InputConnection onCreateInputConnection(EditorInfo outAttrs) {
+        // This check is part of a mitigation to to avoid an InputConnection remaining connected to
+        // the UrlBar without it being focused. This can happen the InputMethod framework is
+        // slow/lazy about cleaning up connections. For soft keyboards this is typically harmless,
+        // as hiding the keyboard prevents late input. But with a hardware keyboard attached, the
+        // results can be quite confusing, e.g. inline edits to the current url. To avoid this, we
+        // call restartInput when losing focus which then triggers a call to
+        // onCreateInputConnection; the null return value prevents further keyboard input.
+        if (!mFocused) {
+            return null;
+        }
+
         InputConnection connection = super.onCreateInputConnection(outAttrs);
         if (mUrlBarDelegate == null || !mUrlBarDelegate.allowKeyboardLearning()) {
             outAttrs.imeOptions |= EditorInfoCompat.IME_FLAG_NO_PERSONALIZED_LEARNING;

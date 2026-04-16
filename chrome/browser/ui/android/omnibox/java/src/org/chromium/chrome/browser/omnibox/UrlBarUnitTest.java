@@ -218,6 +218,7 @@ public class UrlBarUnitTest {
 
     @Test
     public void onCreateInputConnection_ensureNoAutocorrect() {
+        mUrlBar.onFocusChanged(true, 0, null);
         var info = new EditorInfo();
         mUrlBar.onCreateInputConnection(info);
         assertEquals(
@@ -230,6 +231,7 @@ public class UrlBarUnitTest {
     public void onCreateInputConnection_disallowKeyboardLearningPassedToIme() {
         doReturn(true).when(mUrlBarDelegate).allowKeyboardLearning();
 
+        mUrlBar.onFocusChanged(true, 0, null);
         var info = new EditorInfo();
         mUrlBar.onCreateInputConnection(info);
         assertEquals(0, info.imeOptions & EditorInfoCompat.IME_FLAG_NO_PERSONALIZED_LEARNING);
@@ -239,6 +241,7 @@ public class UrlBarUnitTest {
     public void onCreateInputConnection_allowKeyboardLearningPassedToIme() {
         doReturn(false).when(mUrlBarDelegate).allowKeyboardLearning();
 
+        mUrlBar.onFocusChanged(true, 0, null);
         var info = new EditorInfo();
         mUrlBar.onCreateInputConnection(info);
         assertEquals(
@@ -250,6 +253,7 @@ public class UrlBarUnitTest {
     public void onCreateInputConnection_setDefaultsWhenDelegateNotPresent() {
         mUrlBar.setDelegate(null);
 
+        mUrlBar.onFocusChanged(true, 0, null);
         var info = new EditorInfo();
         mUrlBar.onCreateInputConnection(info);
 
