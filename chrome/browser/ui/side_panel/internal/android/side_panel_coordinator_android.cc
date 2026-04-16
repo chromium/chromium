@@ -279,11 +279,8 @@ void SidePanelCoordinatorAndroid::MaybeShowEntryOnTabStripModelChanged(
   SPLOG("MaybeShowEntryOnTabStripModelChanged - old_contextual_registry: "
         << old_contextual_registry
         << ", new_contextual_registry: " << new_contextual_registry);
-  // TODO(crbug.com/494002625): Complete the full implementation.
-  // The full implementation will need to:
-  // consider all SidePanelTypes,
-  // consider fallback logic, such as falling back to global entries,
-  // etc.
+
+  // We only have the toolbar type on Android.
   auto panel_type = SidePanelType::kToolbar;
 
   // If the side panel is showing, check if we should:
@@ -291,7 +288,7 @@ void SidePanelCoordinatorAndroid::MaybeShowEntryOnTabStripModelChanged(
   // (2) close the side panel by calling `Close()`.
   //
   // For (1), don't call `Close()` then `Show()`, which will cause janky UI.
-  if (IsSidePanelShowing(panel_type)) {
+  if (IsSidePanelShowing(panel_type) && state_ != SidePanelState::kClosing) {
     std::optional<UniqueKey> new_active_key =
         GetNewActiveKeyOnTabChanged(panel_type);
 
