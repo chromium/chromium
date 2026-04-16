@@ -145,9 +145,12 @@ scoped_refptr<AudioBus> GetConcatenatedImpulseResponsesForSubject(
   return bus;
 }
 
-}  // namespace
-
-bool HRTFElevation::CalculateKernelsForAzimuthElevation(
+// Given a specific azimuth and elevation angle, returns the left and right
+// HRTFKernel.
+// Valid values for azimuth are 0 -> 345 in 15 degree increments.
+// Valid values for elevation are -45 -> +90 in 15 degree increments.
+// Returns true on success.
+bool CalculateKernelsForAzimuthElevation(
     int azimuth,
     int elevation,
     float sample_rate,
@@ -248,6 +251,8 @@ bool HRTFElevation::CalculateKernelsForAzimuthElevation(
 
   return true;
 }
+
+}  // namespace
 
 std::unique_ptr<HRTFElevation> HRTFElevation::CreateForSubject(
     int subject_resource_id,

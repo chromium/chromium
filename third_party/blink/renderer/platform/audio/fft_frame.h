@@ -151,59 +151,11 @@ class PLATFORM_EXPORT FFTFrame final {
   AudioFloatArray imag_data_;
 
 #if BUILDFLAG(IS_MAC) && !defined(WTF_USE_WEBAUDIO_PFFFT)
-  // Thin wrapper around FFTSetup so we can call the appropriate routines to
-  // construct or release the FFTSetup objects.
-  class FFTSetupDatum {
-   public:
-    FFTSetupDatum(unsigned fft_size);
-    ~FFTSetupDatum();
-    FFTSetup GetSetup() const { return setup_; }
-
-   private:
-    FFTSetup setup_;
-  };
-
-  // Returns the vector that holds all of the possible FFTSetupData
-  // objects. This should be set up in the |Initialize()| method that is called
-  // when the context is created.
-  static Vector<std::unique_ptr<FFTSetupDatum>>& FFTSetups();
-
-  static void InitializeFFTSetupForSize(wtf_size_t fft_order);
-
   DSPSplitComplex& DspSplitComplex() { return frame_; }
   DSPSplitComplex DspSplitComplex() const { return frame_; }
-  static FFTSetup FftSetupForSize(unsigned fft_size);
   FFTSetup fft_setup_;
   DSPSplitComplex frame_;
 #elif defined(WTF_USE_WEBAUDIO_PFFFT)
-  // Thin wrapper around PFFFT_Setup so we can call the appropriate PFFFT
-  // routines to construct or release the PFFFT_Setup objects.
-  class FFTSetup {
-   public:
-    explicit FFTSetup(unsigned fft_size);
-    ~FFTSetup();
-    PFFFT_Setup* GetSetup() const { return setup_; }
-
-   private:
-    raw_ptr<PFFFT_Setup> setup_;
-  };
-
-  // Returns the HashMap that holds all of the possible FFTSetup objects.  This
-  // should be setup in the |Initialize()| method that is called when a context
-  // is created.
-  static HashMap<unsigned, std::unique_ptr<FFTSetup>>& FFTSetups();
-
-  // Initialize an entry in FFTSetups for an FFT of size `fft_size`. This can
-  // be called from any thread, but if a new FFTSetup needs to be allocated,
-  // then it MUST happen on the main thread.
-  static void InitializeFFTSetupForSize(wtf_size_t fft_size);
-
-  // Get the PFFFT_Setup that is appropriate for an FFT of size `fft_size`.
-  // This can be called from any thread.
-  // `InitializeFFTSetupForSize()` must be called for this size before calling
-  // `FFTSetupForSize()`.
-  static PFFFT_Setup* FFTSetupForSize(wtf_size_t fft_size);
-
   // Work array for converting PFFFT results to and from the format expected in
   // `real_data_` and `imag_data_`.
   AudioFloatArray complex_data_;

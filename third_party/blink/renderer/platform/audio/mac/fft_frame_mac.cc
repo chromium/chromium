@@ -40,22 +40,36 @@
 
 namespace blink {
 
+namespace {
+
 constexpr int kMaxFFTPow2Size = 24;
 constexpr int kMinFFTPow2Size = 2;
 
-FFTFrame::FFTSetupDatum::FFTSetupDatum(unsigned log2fft_size) {
+// Thin wrapper around FFTSetup so we can call the appropriate routines to
+// construct or release the FFTSetup objects.
+class FFTSetupDatum {
+ public:
+  explicit FFTSetupDatum(unsigned fft_size);
+  ~FFTSetupDatum();
+  FFTSetup GetSetup() const { return setup_; }
+
+ private:
+  FFTSetup setup_;
+};
+
+FFTSetupDatum::FFTSetupDatum(unsigned log2fft_size) {
   // We only need power-of-two sized FFTS, so FFT_RADIX2.
   setup_ = vDSP_create_fftsetup(log2fft_size, FFT_RADIX2);
   CHECK(setup_);
 }
 
-FFTFrame::FFTSetupDatum::~FFTSetupDatum() {
+FFTSetupDatum::~FFTSetupDatum() {
   CHECK(setup_);
 
   vDSP_destroy_fftsetup(setup_);
 }
 
-Vector<std::unique_ptr<FFTFrame::FFTSetupDatum>>& FFTFrame::FFTSetups() {
+Vector<std::unique_ptr<FFTSetupDatum>>& FFTSetups() {
   // TODO(rtoy): Let this bake for a bit and then remove the assertions after
   // we're confident the first call is from the main thread.
   static bool first_call = true;
@@ -75,7 +89,7 @@ Vector<std::unique_ptr<FFTFrame::FFTSetupDatum>>& FFTFrame::FFTSetups() {
   return fft_setups;
 }
 
-void FFTFrame::InitializeFFTSetupForSize(wtf_size_t log2fft_size) {
+void InitializeFFTSetupForSize(wtf_size_t log2fft_size) {
   auto& setup = FFTSetups();
 
   if (!setup[log2fft_size]) {
@@ -87,6 +101,13 @@ void FFTFrame::InitializeFFTSetupForSize(wtf_size_t log2fft_size) {
     setup[log2fft_size] = std::make_unique<FFTSetupDatum>(log2fft_size);
   }
 }
+
+FFTSetup FftSetupForSize(unsigned log2fft_size) {
+  auto& setup = FFTSetups();
+  return setup[log2fft_size]->GetSetup();
+}
+
+}  // namespace
 
 // Normal constructor: allocates for a given FFT size.
 FFTFrame::FFTFrame(unsigned fft_size)
@@ -161,11 +182,6 @@ void FFTFrame::DoInverseFFT(float* data) {
   // Do final scaling so that x == IFFT(FFT(x)).
   float scale = 1.0f / fft_size_;
   vector_math::Vsmul(data, 1, &scale, data, 1, fft_size_);
-}
-
-FFTSetup FFTFrame::FftSetupForSize(unsigned log2fft_size) {
-  auto& setup = FFTSetups();
-  return setup[log2fft_size]->GetSetup();
 }
 
 unsigned FFTFrame::MinFFTSize() {

@@ -15,13 +15,27 @@
 
 namespace blink {
 
+namespace {
+
 // PFFFT supports real FFTs up to at least order 20 (1048576 samples).
 constexpr unsigned kMaxFFTPow2Size = 20;
 
 // PFFFT has a minimum real FFT order of 5 (32-point transforms).
 constexpr unsigned kMinFFTPow2Size = 5;
 
-FFTFrame::FFTSetup::FFTSetup(unsigned fft_size) {
+// Thin wrapper around PFFFT_Setup so we can call the appropriate PFFFT
+// routines to construct or release the PFFFT_Setup objects.
+class FFTSetup {
+ public:
+  explicit FFTSetup(unsigned fft_size);
+  ~FFTSetup();
+  PFFFT_Setup* GetSetup() const { return setup_; }
+
+ private:
+  raw_ptr<PFFFT_Setup> setup_;
+};
+
+FFTSetup::FFTSetup(unsigned fft_size) {
   CHECK_LE(fft_size, 1U << kMaxFFTPow2Size);
   CHECK_GE(fft_size, 1U << kMinFFTPow2Size);
 
@@ -31,13 +45,13 @@ FFTFrame::FFTSetup::FFTSetup(unsigned fft_size) {
   CHECK(setup_);
 }
 
-FFTFrame::FFTSetup::~FFTSetup() {
+FFTSetup::~FFTSetup() {
   CHECK(setup_);
 
   pffft_destroy_setup(setup_);
 }
 
-HashMap<unsigned, std::unique_ptr<FFTFrame::FFTSetup>>& FFTFrame::FFTSetups() {
+HashMap<unsigned, std::unique_ptr<FFTSetup>>& FFTSetups() {
   // TODO(rtoy): Let this bake for a bit and then remove the assertions after
   // we're confident the first call is from the main thread.
   static bool first_call = true;
@@ -86,7 +100,7 @@ HashMap<unsigned, std::unique_ptr<FFTFrame::FFTSetup>>& FFTFrame::FFTSetups() {
   return fft_setups;
 }
 
-void FFTFrame::InitializeFFTSetupForSize(wtf_size_t fft_size) {
+void InitializeFFTSetupForSize(wtf_size_t fft_size) {
   auto& setup = FFTSetups();
 
   CHECK(setup.Contains(fft_size));
@@ -105,7 +119,7 @@ void FFTFrame::InitializeFFTSetupForSize(wtf_size_t fft_size) {
   }
 }
 
-PFFFT_Setup* FFTFrame::FFTSetupForSize(wtf_size_t fft_size) {
+PFFFT_Setup* FFTSetupForSize(wtf_size_t fft_size) {
   auto& setup = FFTSetups();
 
   CHECK(setup.Contains(fft_size));
@@ -113,6 +127,8 @@ PFFFT_Setup* FFTFrame::FFTSetupForSize(wtf_size_t fft_size) {
 
   return setup.find(fft_size)->value->GetSetup();
 }
+
+}  // namespace
 
 FFTFrame::FFTFrame(unsigned fft_size)
     : fft_size_(fft_size),

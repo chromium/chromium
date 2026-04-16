@@ -116,11 +116,6 @@ class MODULES_EXPORT AudioBuffer final : public ScriptWrappable {
   std::unique_ptr<SharedAudioBuffer> CreateSharedAudioBuffer();
 
  private:
-  static DOMFloat32Array* CreateFloat32ArrayOrNull(
-      uint32_t length,
-      InitializationPolicy allocation_policy =
-          InitializationPolicy::kZeroInitialize);
-
   bool CreatedSuccessfully(unsigned desired_number_of_channels) const;
 
   float sample_rate_;

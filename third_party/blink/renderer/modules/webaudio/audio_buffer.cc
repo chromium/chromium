@@ -42,6 +42,18 @@
 
 namespace blink {
 
+namespace {
+
+DOMFloat32Array* CreateFloat32ArrayOrNull(
+    uint32_t length,
+    AudioBuffer::InitializationPolicy policy) {
+  return policy == AudioBuffer::InitializationPolicy::kZeroInitialize
+             ? DOMFloat32Array::CreateOrNull(length)
+             : DOMFloat32Array::CreateUninitializedOrNull(length);
+}
+
+}  // namespace
+
 AudioBuffer* AudioBuffer::Create(unsigned number_of_channels,
                                  uint32_t number_of_frames,
                                  float sample_rate) {
@@ -149,14 +161,6 @@ AudioBuffer* AudioBuffer::CreateFromAudioBus(AudioBus* bus) {
 bool AudioBuffer::CreatedSuccessfully(
     unsigned desired_number_of_channels) const {
   return numberOfChannels() == desired_number_of_channels;
-}
-
-DOMFloat32Array* AudioBuffer::CreateFloat32ArrayOrNull(
-    uint32_t length,
-    InitializationPolicy policy) {
-  return policy == InitializationPolicy::kZeroInitialize
-             ? DOMFloat32Array::CreateOrNull(length)
-             : DOMFloat32Array::CreateUninitializedOrNull(length);
 }
 
 AudioBuffer::AudioBuffer(unsigned number_of_channels,

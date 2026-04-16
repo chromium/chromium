@@ -111,13 +111,6 @@ class MODULES_EXPORT OfflineAudioContext final : public BaseAudioContext {
   bool HasPendingActivity() const final;
 
  private:
-  static OfflineAudioContext* Create(ExecutionContext*,
-                                     unsigned number_of_channels,
-                                     unsigned number_of_frames,
-                                     float sample_rate,
-                                     uint32_t render_quantum_frames,
-                                     ExceptionState&);
-
   // Fetch directly the destination handler.
   OfflineAudioDestinationHandler& DestinationHandler();
 
