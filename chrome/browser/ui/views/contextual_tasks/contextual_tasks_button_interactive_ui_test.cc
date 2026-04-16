@@ -23,6 +23,8 @@
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/contextual_tasks/contextual_tasks_button.h"
 #include "chrome/browser/ui/views/contextual_tasks/contextual_tasks_close_tab_button.h"
+#include "chrome/browser/ui/views/frame/browser_view.h"
+#include "chrome/browser/ui/views/frame/immersive_mode_tester.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/interaction/interactive_browser_test.h"
@@ -519,6 +521,41 @@ IN_PROC_BROWSER_TEST_P(ContextualTasksEphemeralButtonInteractiveTest,
       EnsurePresent(ContextualTasksButton::kContextualTasksToolbarButton),
       EnsureNotPresent(
           ContextualTasksCloseTabButton::kContextualTasksCloseTabButton));
+}
+
+IN_PROC_BROWSER_TEST_P(ContextualTasksEphemeralButtonInteractiveTest,
+                       DISABLED_BackgroundUpdatesOnImmersiveModeChange) {
+  if (GetParam() != "toolbar-ephemeral-branded") {
+    GTEST_SKIP() << "Branded variant button background behavior.";
+  }
+
+  RunTestSequence(
+      SignIntoEligibleAccount(), InstrumentTab(kFirstTab),
+      AddInstrumentedTab(kSecondTab, GetTestURL()),
+      SelectTab(kTabStripElementId, 0),
+      EnsureNotPresent(ContextualTasksButton::kContextualTasksToolbarButton),
+      CreateTaskForTab(0),
+      EnsureNotPresent(ContextualTasksButton::kContextualTasksToolbarButton),
+      SimulateOpeningContextualTaskSidePanel(),
+      EnsureNotPresent(ContextualTasksButton::kContextualTasksToolbarButton),
+      SimulateClosingContextualTaskSidePanel(),
+      WaitForShow(ContextualTasksButton::kContextualTasksToolbarButton),
+      Do([&]() {
+        // Simulate entering immersive mode.
+        auto* controller = ImmersiveModeController::From(browser());
+        controller->SetEnabled(true);
+      }),
+      EnsurePresent(ContextualTasksButton::kContextualTasksToolbarButton),
+      CheckView(ContextualTasksButton::kContextualTasksToolbarButton,
+                [](ContextualTasksButton* button) {
+                  return button->GetBackground() != nullptr;
+                }),
+      Do([&]() {
+        // Simulate exiting immersive mode.
+        auto* controller = ImmersiveModeController::From(browser());
+        controller->SetEnabled(false);
+      }),
+      EnsurePresent(ContextualTasksButton::kContextualTasksToolbarButton));
 }
 
 INSTANTIATE_TEST_SUITE_P(All,
