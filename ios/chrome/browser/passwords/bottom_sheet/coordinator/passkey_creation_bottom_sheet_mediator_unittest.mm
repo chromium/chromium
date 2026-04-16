@@ -9,6 +9,7 @@
 #import "base/memory/raw_ptr.h"
 #import "base/test/task_environment.h"
 #import "components/password_manager/core/browser/password_manager_driver.h"
+#import "components/password_manager/core/browser/password_store/password_store_interface.h"
 #import "components/sync/protocol/webauthn_credential_specifics.pb.h"
 #import "components/webauthn/core/browser/test_passkey_model.h"
 #import "components/webauthn/ios/fake_ios_passkey_client.h"
@@ -79,6 +80,7 @@ class PasskeyCreationBottomSheetMediatorTest : public PlatformTest {
     auto client = std::make_unique<webauthn::FakeIOSPasskeyClient>();
     fake_client_ = client.get();
     webauthn::PasskeyTabHelper::CreateForWebState(web_state_, model_.get(),
+                                                  /*password_store=*/nullptr,
                                                   std::move(client));
   }
 

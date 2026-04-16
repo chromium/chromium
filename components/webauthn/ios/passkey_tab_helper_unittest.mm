@@ -78,6 +78,7 @@ class PasskeyTabHelperTest : public PlatformTest {
     auto client = std::make_unique<FakeIOSPasskeyClient>();
     client_ = client.get();
     PasskeyTabHelper::CreateForWebState(&fake_web_state_, passkey_model_.get(),
+                                        /*password_store=*/nullptr,
                                         std::move(client));
   }
 

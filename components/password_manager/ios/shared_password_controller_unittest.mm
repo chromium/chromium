@@ -44,6 +44,7 @@
 #import "components/password_manager/core/browser/mock_webauthn_credentials_delegate.h"
 #import "components/password_manager/core/browser/password_generation_frame_helper.h"
 #import "components/password_manager/core/browser/password_manager_interface.h"
+#import "components/password_manager/core/browser/password_store/password_store_interface.h"
 #import "components/password_manager/core/browser/stub_password_manager_client.h"
 #import "components/password_manager/core/browser/stub_password_manager_driver.h"
 #import "components/password_manager/core/common/password_manager_features.h"
@@ -279,7 +280,7 @@ class SharedPasswordControllerTest : public PlatformTest {
   void SetupWebAuthnCredentialsDelegate() {
     passkey_model_ = std::make_unique<webauthn::TestPasskeyModel>();
     webauthn::PasskeyTabHelper::CreateForWebState(
-        &web_state_, passkey_model_.get(),
+        &web_state_, passkey_model_.get(), /*password_store=*/nullptr,
         std::make_unique<webauthn::FakeIOSPasskeyClient>());
 
     webauthn::IOSWebAuthnCredentialsDelegateFactory* factory =

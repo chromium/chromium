@@ -82,6 +82,7 @@
 #import "ios/chrome/browser/overscroll_actions/model/overscroll_actions_tab_helper.h"
 #import "ios/chrome/browser/page_info/features/features.h"
 #import "ios/chrome/browser/page_info/model/about_this_site_tab_helper.h"
+#import "ios/chrome/browser/passwords/model/ios_chrome_account_password_store_factory.h"
 #import "ios/chrome/browser/passwords/model/password_controller.h"
 #import "ios/chrome/browser/passwords/model/password_tab_helper.h"
 #import "ios/chrome/browser/passwords/model/well_known_change_password_tab_helper.h"
@@ -298,6 +299,10 @@ void AttachTabHelpers(web::WebState* web_state, TabHelperFilter filter_flags) {
           attacher.IsForStandardNavigation() &&
           base::FeatureList::IsEnabled(kIOSPasskeyShim))
       .With([&]() { return IOSPasskeyModelFactory::GetForProfile(profile); },
+            [&]() {
+              return IOSChromeAccountPasswordStoreFactory::GetForProfile(
+                  profile, ServiceAccessType::EXPLICIT_ACCESS);
+            },
             [&]() {
               return std::make_unique<IOSChromePasskeyClient>(web_state);
             });

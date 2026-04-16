@@ -27,6 +27,10 @@ namespace web {
 class WebFrame;
 }  // namespace web
 
+namespace password_manager {
+class PasswordStoreInterface;
+}  // namespace password_manager
+
 @protocol IOSPasskeyClientCommands;
 
 namespace webauthn {
@@ -127,9 +131,11 @@ class PasskeyTabHelper : public web::WebStateObserver,
   using PendingRequest =
       std::variant<AssertionRequestParams, RegistrationRequestParams>;
 
-  explicit PasskeyTabHelper(web::WebState* web_state,
-                            PasskeyModel* passkey_model,
-                            std::unique_ptr<IOSPasskeyClient> client);
+  explicit PasskeyTabHelper(
+      web::WebState* web_state,
+      PasskeyModel* passkey_model,
+      scoped_refptr<password_manager::PasswordStoreInterface> password_store,
+      std::unique_ptr<IOSPasskeyClient> client);
 
   // Handles passkey assertion requests. Defers if the rp ID is invalid.
   void HandleGetRequestedEvent(web::WebFrame* web_frame,
@@ -234,6 +240,9 @@ class PasskeyTabHelper : public web::WebStateObserver,
 
   // Provides access to stored WebAuthn credentials.
   const raw_ref<PasskeyModel> passkey_model_;
+
+  // Provides access to the account password store.
+  scoped_refptr<password_manager::PasswordStoreInterface> password_store_;
 
   // The WebState with which this object is associated.
   base::WeakPtr<web::WebState> web_state_;

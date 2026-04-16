@@ -9,6 +9,7 @@
 #import "base/metrics/histogram_functions.h"
 #import "base/notreached.h"
 #import "components/password_manager/core/browser/passkey_credential.h"
+#import "components/password_manager/core/browser/password_store/password_store_interface.h"
 #import "components/webauthn/core/browser/client_data_json.h"
 #import "components/webauthn/core/browser/common_utils.h"
 #import "components/webauthn/core/browser/passkey_model.h"
@@ -381,10 +382,13 @@ bool PasskeyTabHelper::HasCredential(const std::string& rp_id,
       .has_value();
 }
 
-PasskeyTabHelper::PasskeyTabHelper(web::WebState* web_state,
-                                   PasskeyModel* passkey_model,
-                                   std::unique_ptr<IOSPasskeyClient> client)
+PasskeyTabHelper::PasskeyTabHelper(
+    web::WebState* web_state,
+    PasskeyModel* passkey_model,
+    scoped_refptr<password_manager::PasswordStoreInterface> password_store,
+    std::unique_ptr<IOSPasskeyClient> client)
     : passkey_model_(CHECK_DEREF(passkey_model)),
+      password_store_(std::move(password_store)),
       web_state_(web_state->GetWeakPtr()),
       client_(std::move(client)) {
   CHECK(client_);
