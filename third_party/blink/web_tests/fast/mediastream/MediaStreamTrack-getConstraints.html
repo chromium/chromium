@@ -9,7 +9,7 @@
 
 // If a constraint is specified, it should come back in getConstraints().
 promise_test(function() {
-  return navigator.mediaDevices.getUserMedia({audio: { echoCancellation: { exact: true}, autoGainControl: { exact: true }, noiseSuppression: { exact: true }, voiceIsolation: { exact: true }}})
+  return navigator.mediaDevices.getUserMedia({audio: { echoCancellation: { exact: true}, autoGainControl: { exact: true }, noiseSuppression: { exact: true }, voiceIsolation: { exact: false }}})
       .then(function(s) {
     constraints = s.getAudioTracks()[0].getConstraints();
     assert_equals(Object.keys(constraints).length, 4);
@@ -20,7 +20,7 @@ promise_test(function() {
     assert_true(constraints.hasOwnProperty('noiseSuppression'));
     assert_true(constraints.noiseSuppression.exact);
     assert_true(constraints.hasOwnProperty('voiceIsolation'));
-    assert_true(constraints.voiceIsolation.exact);
+    assert_false(constraints.voiceIsolation.exact);
   });
 }, 'A set constraint is returned on getConstraints');
 
@@ -165,7 +165,7 @@ constraintSyntaxTestWithChange('noiseSuppression with exact unwrapped boolean va
 constraintSyntaxTest('voiceIsolation with simple boolean value', { voiceIsolation: true });
 constraintSyntaxTest('voiceIsolation with ideal boolean value', { voiceIsolation: { ideal: true }});
 constraintSyntaxTestWithChange('voiceIsolation with exact unwrapped boolean value',
-    { voiceIsolation: { exact: true } }, { voiceIsolation: true });
+    { voiceIsolation: { exact: false } }, { voiceIsolation: false });
 
 </script>
 </body>

@@ -1433,6 +1433,8 @@ TEST_P(MediaStreamConstraintsUtilAudioTest,
 #endif
 }
 
+#if BUILDFLAG(IS_CHROMEOS)
+// Voice Isolation is only supported on ChromeOS.
 TEST_P(MediaStreamConstraintsUtilAudioTest, VoiceIsolationControl) {
   if (!IsDeviceCapture()) {
     return;
@@ -1459,6 +1461,44 @@ TEST_P(MediaStreamConstraintsUtilAudioTest, VoiceIsolationControl) {
       settings.audio_processing_properties().voice_isolation,
       AudioProcessingProperties::VoiceIsolationType::kVoiceIsolationDefault);
 }
+#else
+TEST_P(MediaStreamConstraintsUtilAudioTest, VoiceIsolationControl) {
+  if (!IsDeviceCapture()) {
+    return;
+  }
+  constraint_factory_.Reset();
+  constraint_factory_.basic().voice_isolation.SetExact(true);
+  AudioCaptureSettings settings = SelectSettings(true, capabilities_);
+  EXPECT_FALSE(settings.HasValue());
+  constraint_factory_.Reset();
+  constraint_factory_.basic().voice_isolation.SetExact(false);
+  settings = SelectSettings(true, capabilities_);
+  EXPECT_TRUE(settings.HasValue());
+  EXPECT_EQ(
+      settings.audio_processing_properties().voice_isolation,
+      AudioProcessingProperties::VoiceIsolationType::kVoiceIsolationDisabled);
+  constraint_factory_.Reset();
+  constraint_factory_.basic().voice_isolation.SetIdeal(true);
+  settings = SelectSettings(true, capabilities_);
+  EXPECT_TRUE(settings.HasValue());
+  EXPECT_EQ(
+      settings.audio_processing_properties().voice_isolation,
+      AudioProcessingProperties::VoiceIsolationType::kVoiceIsolationDisabled);
+  constraint_factory_.Reset();
+  constraint_factory_.basic().voice_isolation.SetIdeal(false);
+  settings = SelectSettings(true, capabilities_);
+  EXPECT_TRUE(settings.HasValue());
+  EXPECT_EQ(
+      settings.audio_processing_properties().voice_isolation,
+      AudioProcessingProperties::VoiceIsolationType::kVoiceIsolationDisabled);
+  constraint_factory_.Reset();
+  settings = SelectSettings(true, capabilities_);
+  EXPECT_TRUE(settings.HasValue());
+  EXPECT_EQ(
+      settings.audio_processing_properties().voice_isolation,
+      AudioProcessingProperties::VoiceIsolationType::kVoiceIsolationDisabled);
+}
+#endif
 
 // Test advanced constraints sets that can be satisfied.
 TEST_P(MediaStreamConstraintsUtilAudioTest, AdvancedCompatibleConstraints) {

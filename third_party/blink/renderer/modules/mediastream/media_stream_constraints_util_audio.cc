@@ -717,7 +717,8 @@ class VoiceIsolationContainer {
     BooleanConstraint voice_isolation_constraint =
         constraint_set.voice_isolation;
 
-    if (voice_isolation_constraint.HasIdeal()) {
+    if (voice_isolation_constraint.HasIdeal() &&
+        allowed_values_.Contains(voice_isolation_constraint.Ideal())) {
       VoiceIsolationType voice_isolation_type_ideal =
           voice_isolation_constraint.Ideal()
               ? VoiceIsolationType::kVoiceIsolationEnabled
@@ -750,22 +751,24 @@ Vector<int> GetApmSupportedChannels(
   // APM always supports mono output;
   result.push_back(1);
   const int channels = device_params.channels();
-  if (channels > 1)
+  if (channels > 1) {
     result.push_back(channels);
+  }
   return result;
 }
 
 // This container represents the supported audio settings for a given type of
-// audio source. In practice, there are three types of sources: processed using
-// APM, processed without APM, and unprocessed. Processing using APM has two
-// flavors: one for the systems where audio processing is done in the renderer,
-// another for the systems where audio processing is done in the audio service.
+// audio source. In practice, there are three types of sources: processed
+// using APM, processed without APM, and unprocessed. Processing using APM has
+// two flavors: one for the systems where audio processing is done in the
+// renderer, another for the systems where audio processing is done in the
+// audio service.
 class ProcessingBasedContainer {
  public:
   // Creates an instance of ProcessingBasedContainer for the WebRTC processed
   // source type. The source type allows (a) any type of echo cancellation,
-  // though the system echo cancellation type depends on the availability of the
-  // related |parameters.effects()|, and (b) any combination of processing
+  // though the system echo cancellation type depends on the availability of
+  // the related |parameters.effects()|, and (b) any combination of processing
   // properties settings.
   static ProcessingBasedContainer CreateApmProcessedContainer(
       std::optional<SourceInfo> source_info,
@@ -785,11 +788,15 @@ class ProcessingBasedContainer {
       }
     }
     echo_cancellation_modes.push_back(EchoCancellationMode::kDisabled);
+    BoolSet voice_isolation_set;
+#if !BUILDFLAG(IS_CHROMEOS)
+    // Voice Isolation is only supported on ChromeOS.
+    voice_isolation_set = BoolSet({false});
+#endif
     return ProcessingBasedContainer(
         ProcessingType::kApmProcessed, std::move(echo_cancellation_modes),
         /*auto_gain_control_set=*/BoolSet(),
-        /*noise_suppression_set=*/BoolSet(),
-        /*voice_isolation_set=*/BoolSet(),
+        /*noise_suppression_set=*/BoolSet(), voice_isolation_set,
         /*sample_size_range=*/IntRangeSet::FromValue(GetSampleSize()),
         /*channels_set=*/GetApmSupportedChannels(device_parameters),
         /*sample_rate_range=*/
@@ -806,11 +813,15 @@ class ProcessingBasedContainer {
       AudioCaptureApi api,
       const media::AudioParameters& device_parameters,
       bool is_reconfiguration_allowed) {
+    BoolSet voice_isolation_set;
+#if !BUILDFLAG(IS_CHROMEOS)
+    // Voice Isolation is only supported on ChromeOS.
+    voice_isolation_set = BoolSet({false});
+#endif
     return ProcessingBasedContainer(
         ProcessingType::kNoApmProcessed, {EchoCancellationMode::kDisabled},
         /*auto_gain_control_set=*/BoolSet({false}),
-        /*noise_suppression_set=*/BoolSet({false}),
-        /*voice_isolation_set=*/BoolSet(),
+        /*noise_suppression_set=*/BoolSet({false}), voice_isolation_set,
         /*sample_size_range=*/IntRangeSet::FromValue(GetSampleSize()),
         /*channels_set=*/{device_parameters.channels()},
         /*sample_rate_range=*/
@@ -818,10 +829,10 @@ class ProcessingBasedContainer {
         api, device_parameters, is_reconfiguration_allowed);
   }
 
-  // Creates an instance of ProcessingBasedContainer for the unprocessed source
-  // type. The source type allows (a) either system echo cancellation, if
-  // allowed by the |parameters.effects()|, or none, while (c) all processing
-  // properties settings cannot be enabled.
+  // Creates an instance of ProcessingBasedContainer for the unprocessed
+  // source type. The source type allows (a) either system echo cancellation,
+  // if allowed by the |parameters.effects()|, or none, while (c) all
+  // processing properties settings cannot be enabled.
   static ProcessingBasedContainer CreateUnprocessedContainer(
       std::optional<SourceInfo> source_info,
       AudioCaptureApi api,
@@ -844,13 +855,15 @@ class ProcessingBasedContainer {
 
     failed_constraint_name =
         echo_cancellation_container_.ApplyConstraintSet(constraint_set);
-    if (failed_constraint_name)
+    if (failed_constraint_name) {
       return failed_constraint_name;
+    }
 
     failed_constraint_name =
         auto_gain_control_container_.ApplyConstraintSet(constraint_set);
-    if (failed_constraint_name)
+    if (failed_constraint_name) {
       return failed_constraint_name;
+    }
 
     failed_constraint_name =
         voice_isolation_container_.ApplyConstraintSet(constraint_set);
@@ -860,23 +873,27 @@ class ProcessingBasedContainer {
 
     failed_constraint_name =
         sample_size_container_.ApplyConstraintSet(constraint_set.sample_size);
-    if (failed_constraint_name)
+    if (failed_constraint_name) {
       return failed_constraint_name;
+    }
 
     failed_constraint_name =
         channels_container_.ApplyConstraintSet(constraint_set.channel_count);
-    if (failed_constraint_name)
+    if (failed_constraint_name) {
       return failed_constraint_name;
+    }
 
     failed_constraint_name =
         sample_rate_container_.ApplyConstraintSet(constraint_set.sample_rate);
-    if (failed_constraint_name)
+    if (failed_constraint_name) {
       return failed_constraint_name;
+    }
 
     failed_constraint_name =
         latency_container_.ApplyConstraintSet(constraint_set.latency);
-    if (failed_constraint_name)
+    if (failed_constraint_name) {
       return failed_constraint_name;
+    }
 
     failed_constraint_name = noise_suppression_container_.ApplyConstraintSet(
         constraint_set.noise_suppression);
@@ -1036,8 +1053,9 @@ class ProcessingBasedContainer {
     }
 
     // If the device is already opened, restrict supported values for
-    // non-reconfigurable settings to what is already configured. The rationale
-    // for this is that opening multiple instances of the APM is costly.
+    // non-reconfigurable settings to what is already configured. The
+    // rationale for this is that opening multiple instances of the APM is
+    // costly.
     // TODO(crbug.com/1147928): Consider removing this restriction.
     auto_gain_control_container_ = AutoGainControlContainer(
         BoolSet({source_info->properties().auto_gain_control}));
@@ -1126,14 +1144,14 @@ class DeviceContainer {
 
     // If the device is in use, a source will be provided and all containers
     // must be initialized such that their only supported values correspond to
-    // the source settings. Otherwise, the containers are initialized to contain
-    // all possible values.
+    // the source settings. Otherwise, the containers are initialized to
+    // contain all possible values.
     std::optional<SourceInfo> source_info =
         SourceInfo::FromSource(capability.source());
 
     // Three variations of the processing-based container. Each variant is
-    // associated to a different type of audio processing configuration, namely
-    // unprocessed, processed by WebRTC, or processed by other means.
+    // associated to a different type of audio processing configuration,
+    // namely unprocessed, processed by WebRTC, or processed by other means.
     processing_based_containers_.push_back(
         ProcessingBasedContainer::CreateUnprocessedContainer(
             source_info, api, device_parameters_, is_reconfiguration_allowed));
