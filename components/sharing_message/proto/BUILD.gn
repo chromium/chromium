@@ -20,5 +20,6 @@ proto_library("proto") {
     "sharing_message.proto",
     "sharing_message_type.proto",
     "sms_fetch_message_test_proto3_optional.proto",
+    "timestamp.proto",
   ]
 }

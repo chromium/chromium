@@ -12,6 +12,8 @@ package components_sharing_message;
 // Required in Chrome.
 option optimize_for = LITE_RUNTIME;
 
+import "timestamp.proto";
+
 // Message indicating that there's a one time token available for the client to
 // retrieve.
 // Note, that this message is designed not to carry the actual one time token,
@@ -28,4 +30,10 @@ message GmailMessageReference {
   // Encrypted reference to the email that contains the OTP.
   // Clients should treat this as an opaque blob and pass it to the backend.
   bytes encrypted_message_reference = 1;
+
+  // Time when the OTP message was created on the email sender's side.
+  Timestamp otp_created_timestamp = 2;
+
+  // Time when the OTP message was received by the Gmail SMTP servers.
+  Timestamp email_received_timestamp = 3;
 }
