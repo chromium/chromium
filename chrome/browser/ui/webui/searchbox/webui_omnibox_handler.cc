@@ -14,10 +14,13 @@
 #include "chrome/browser/autocomplete/aim_eligibility_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/bookmarks/bookmark_stats.h"
+#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
+#include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/contextual_search/searchbox_context_data.h"
+#include "chrome/browser/ui/location_bar/location_bar.h"
 #include "chrome/browser/ui/omnibox/omnibox_controller.h"
 #include "chrome/browser/ui/omnibox/omnibox_edit_model.h"
 #include "chrome/browser/ui/omnibox/omnibox_next_features.h"
@@ -31,6 +34,7 @@
 #include "chrome/browser/ui/webui/cr_components/searchbox/searchbox_omnibox_client.h"
 #include "chrome/browser/ui/webui/metrics_reporter/metrics_reporter.h"
 #include "chrome/browser/ui/webui/omnibox_popup/omnibox_popup_ui.h"
+#include "chrome/browser/ui/webui/omnibox_popup/omnibox_popup_web_contents_helper.h"
 #include "chrome/browser/ui/webui/webui_embedding_context.h"
 #include "chrome/grit/new_tab_page_resources.h"
 #include "components/contextual_search/contextual_search_service.h"
@@ -57,6 +61,7 @@
 #include "components/profile_metrics/browser_profile_type.h"
 #include "components/search_engines/template_url_service.h"
 #include "components/strings/grit/components_strings.h"
+#include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/web_contents.h"
 #include "net/cookies/cookie_util.h"
@@ -129,6 +134,14 @@ WebuiOmniboxHandler::WebuiOmniboxHandler(
       contextual_search::kSearchContentSharingSettings,
       base::BindRepeating(&WebuiOmniboxHandler::OnContentSharingPolicyChanged,
                           base::Unretained(this)));
+
+  if (tabs::TabInterface* tab =
+          tabs::TabInterface::MaybeGetFromContents(web_ui->GetWebContents())) {
+    tab_will_detach_subscription_ = tab->RegisterWillDetach(base::BindRepeating(
+        &WebuiOmniboxHandler::OnTabWillDetach, base::Unretained(this)));
+    tab_did_insert_subscription_ = tab->RegisterDidInsert(base::BindRepeating(
+        &WebuiOmniboxHandler::OnTabDidInsert, base::Unretained(this)));
+  }
 
   OnAimPopupEligibilityChanged();
   OnContentSharingPolicyChanged();
@@ -389,6 +402,36 @@ void WebuiOmniboxHandler::OnActiveTabChanged(TabListInterface& tab_list,
                                              tabs::TabInterface* tab) {
   web_contents_observer_.ScopedObserve(tab->GetContents());
   ContextualSearchboxHandler::OnActiveTabChanged(tab_list, tab);
+}
+
+void WebuiOmniboxHandler::OnTabWillDetach(
+    tabs::TabInterface* tab,
+    tabs::TabInterface::DetachReason reason) {
+  edit_model_observation_.Reset();
+  autocomplete_controller_observation_.Reset();
+  controller_ = nullptr;
+  UpdateTabListObservation(nullptr);
+}
+
+void WebuiOmniboxHandler::OnTabDidInsert(tabs::TabInterface* tab) {
+  if (auto* browser_window_interface = tab->GetBrowserWindowInterface()) {
+    if (auto* location_bar =
+            browser_window_interface->GetFeatures().location_bar()) {
+      if (auto* omnibox_controller = location_bar->GetOmniboxController()) {
+        edit_model_observation_.Reset();
+        autocomplete_controller_observation_.Reset();
+        controller_ = omnibox_controller;
+        autocomplete_controller_observation_.Observe(autocomplete_controller());
+        edit_model_observation_.Observe(omnibox_controller->edit_model());
+        if (auto* helper = OmniboxPopupWebContentsHelper::FromWebContents(
+                web_contents_.get())) {
+          helper->set_omnibox_controller(omnibox_controller);
+        }
+        UpdateTabListObservation(
+            TabListInterface::From(browser_window_interface));
+      }
+    }
+  }
 }
 
 WebuiOmniboxHandler::WebContentsObserver::WebContentsObserver(

@@ -92,6 +92,13 @@ class WebuiOmniboxHandler : public ContextualSearchboxHandler,
                           tabs::TabInterface* tab) override;
 
  private:
+  // When the omnibox is hosted in a tab, e.g. for debug, it must remain
+  // connected with the host window's OmniboxController. These methods
+  // support disconnect and reconnect as the window changes to avoid UAF.
+  void OnTabWillDetach(tabs::TabInterface* tab,
+                       tabs::TabInterface::DetachReason reason);
+  void OnTabDidInsert(tabs::TabInterface* tab);
+
   // Delegate to observe WebContents.
   // Managed as a separate class to prevent member naming conflicts
   // of `web_contents_` with a member of the same name in `SearchboxHandler`.
@@ -123,6 +130,8 @@ class WebuiOmniboxHandler : public ContextualSearchboxHandler,
 
   PrefChangeRegistrar pref_change_registrar_;
   base::CallbackListSubscription aim_eligibility_subscription_;
+  base::CallbackListSubscription tab_will_detach_subscription_;
+  base::CallbackListSubscription tab_did_insert_subscription_;
 
   raw_ptr<MetricsReporter> metrics_reporter_;
 
