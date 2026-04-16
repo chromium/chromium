@@ -448,7 +448,8 @@ void TabStripActionContainer::OnHideGlicNudgeUI() {
 }
 
 bool TabStripActionContainer::GetIsShowingGlicNudge() {
-  return glic_button_ && glic_button_->GetIsShowingNudge();
+  return (glic_button_ && glic_button_->GetIsShowingNudge()) ||
+         !!anchored_message_subscription_;
 }
 
 void TabStripActionContainer::SetButtonController(
